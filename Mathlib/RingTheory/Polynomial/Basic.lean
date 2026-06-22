@@ -242,6 +242,7 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
   exact one_ne_zero this
 
+set_option backward.defeqAttrib.useBackward true in
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
       (Finset.range n).sum fun i : ℕ => (n.choose (i + 1) : R[X]) * X ^ i := by
@@ -423,7 +424,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
       · simp [h]
     · simp
     · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
-    · refine fun f g _ hg n => ?_
+    · intro f g _ hg n
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf
@@ -575,7 +576,7 @@ theorem eq_zero_of_constant_mem_of_maximal (hR : IsField R) (I : Ideal R[X]) [hI
     (x : R) (hx : C x ∈ I) : x = 0 := by
   refine Classical.by_contradiction fun hx0 => hI.ne_top ((eq_top_iff_one I).2 ?_)
   obtain ⟨y, hy⟩ := hR.mul_inv_cancel hx0
-  convert I.mul_mem_left (C y) hx
+  convert! I.mul_mem_left (C y) hx
   rw [← C.map_mul, hR.mul_comm y x, hy, map_one]
 
 end Ring
@@ -593,13 +594,13 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
   constructor
   · intro H
     have := comap_isPrime C (map C P)
-    convert this using 1
+    convert! this using 1
     ext x
     simp only [mem_comap, mem_map_C_iff]
     constructor
     · rintro h (- | n)
       · rwa [coeff_C_zero]
-      · simp only [coeff_C_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
+      · simp only [coeff_C_of_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
     · intro h
       simpa only [coeff_C_zero] using h 0
   · intro h
@@ -683,7 +684,7 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
     rw [mem_setOf_eq]
     use n
   have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
-  convert this using 1
+  convert! this using 1
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
   rw [← C_mul_X_pow_eq_monomial]
 
@@ -727,7 +728,7 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
   · induction Fintype.card σ with
     | zero => exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
     | succ d hd =>
-      convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
+      convert! MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
       · simp [← finSuccEquiv_comp_C_eq_C]
       · simp [← hd, Polynomial.prime_C_iff]
 
@@ -744,7 +745,7 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
       have : algebraMap R _ r ∣ a' * b' := by
-        convert _root_.map_dvd (killCompl Subtype.val_injective) hd
+        convert! _root_.map_dvd (killCompl Subtype.val_injective) hd
         · simp
         · simp
       rw [← rename_C ((↑) : s → σ)]
@@ -762,17 +763,8 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
         (renameEquiv R <| (Equiv.sumComm (↥sᶜ) s).trans <| Equiv.Set.sumCompl s)
     have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
       apply ringHom_ext
-      · intro
-        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_C,
-          AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, AlgEquiv.coe_trans,
-          Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply, iterToSum_C_C,
-          renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
-      · intro
-        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_X,
-          AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, AlgEquiv.coe_trans,
-          Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply, iterToSum_C_X,
-          renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
-          Equiv.Set.sumCompl_apply_inl]
+      · simp [eqv]
+      · simp [eqv]
     apply_fun (· p) at this
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_toRingHom,
       RingHom.coe_comp, Function.comp_apply] at this
@@ -848,7 +840,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           have := Polynomial.degree_sub_lt h1 hp0 h2
           rw [Polynomial.degree_eq_natDegree hp0] at this
           rw [← sub_add_cancel p (q * Polynomial.X ^ (k - q.natDegree))]
-          convert (Ideal.span ↑s).add_mem _ ((Ideal.span (s : Set R[X])).mul_mem_right _ _)
+          convert! (Ideal.span ↑s).add_mem _ ((Ideal.span (s : Set R[X])).mul_mem_right _ _)
           · by_cases hpq : p - q * Polynomial.X ^ (k - q.natDegree) = 0
             · rw [hpq]
               exact Ideal.zero_mem _
@@ -886,7 +878,7 @@ theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hp
   use LinearMap.mem_range.2 ⟨aeval f p' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
   use aeval f (q * q') v
   use LinearMap.mem_range.2 ⟨aeval f q' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
-  simpa only [mul_comm p p', mul_comm q q', aeval_one, aeval_add] using
+  simpa only [mul_comm p p', mul_comm q q', aeval_one, aeval_add] using!
     congr_arg (fun p : R[X] => aeval f p v) hpq'
 
 theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
@@ -920,7 +912,7 @@ theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X
     ⟨aeval f (q * q') v, LinearMap.mem_ker.1 h_eval₂_pqq', aeval f (p * p') v,
       LinearMap.mem_ker.1 h_eval₂_qpp', ?_⟩
   rw [add_comm, mul_comm p p', mul_comm q q']
-  simpa only [map_add, map_mul, aeval_one] using congr_arg (fun p : R[X] => aeval f p v) hpq'
+  simpa only [map_add, map_mul, aeval_one] using! congr_arg (fun p : R[X] => aeval f p v) hpq'
 
 end Polynomial
 
@@ -1008,7 +1000,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
       · simp [Ne.symm h]
     · simp
     · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
-    · refine fun f g _ hg n => ?_
+    · intro f g _ hg n
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf

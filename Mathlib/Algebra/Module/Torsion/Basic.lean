@@ -134,7 +134,7 @@ theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
   have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
     refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
-    convert hi
+    convert! hi
     ext
     simp
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
@@ -339,7 +339,7 @@ theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R 
 
 theorem isTorsionBySet_iff_is_torsion_by_span :
     IsTorsionBySet R M s ↔ IsTorsionBySet R M (Ideal.span s) := by
-  simpa only [isTorsionBySet_iff_subset_annihilator] using Ideal.span_le.symm
+  simpa only [isTorsionBySet_iff_subset_annihilator] using! Ideal.span_le.symm
 
 theorem isTorsionBySet_span_singleton_iff : IsTorsionBySet R M (R ∙ a) ↔ IsTorsionBy R M a :=
   (isTorsionBySet_iff_is_torsion_by_span _).symm.trans <| isTorsionBySet_singleton_iff _
@@ -459,6 +459,7 @@ theorem sup_torsionBySet_ideal_eq_torsionBySet_inf (P Q : Ideal R) {hc : P ⊔ Q
     simpa [Finset.top_eq_univ, Fin.univ_succ, Fin.isValue, coe_iInf, this] using heq
   · simp_all [Set.pairwise_pair, Fin.univ_succ, map, sup_comm]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     S.SupIndep fun i => torsionBySet R M <| p i :=
   fun T hT i hi hiT => by
@@ -495,7 +496,8 @@ theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise <| (IsCopri
 
 theorem supIndep_torsionBy (hq : (S : Set ι).Pairwise <| (IsCoprime on q)) :
     S.SupIndep fun i => torsionBy R M <| q i := by
-  convert supIndep_torsionBySet_ideal (M := M) fun i hi j hj ij =>
+  convert!
+    supIndep_torsionBySet_ideal (M := M) fun i hi j hj ij =>
       (Ideal.sup_eq_top_iff_isCoprime (q i) _).mpr <| hq hi hj ij
   exact (torsionBySet_span_singleton_eq (R := R) (M := M) _).symm
 
@@ -534,7 +536,8 @@ theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCo
     DirectSum.IsInternal fun i : S => torsionBy R M <| q i := by
   rw [← Module.isTorsionBySet_span_singleton_iff, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf] at hM
-  convert torsionBySet_isInternal
+  convert!
+    torsionBySet_isInternal
       (fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime (q i) _).mpr <| hq hi hj ij) hM
   exact (torsionBySet_span_singleton_eq _ (R := R) (M := M)).symm
 

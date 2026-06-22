@@ -87,9 +87,9 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
     filter_upwards [hf, hu₄] with x hx₁ hx₂
     grind
   have vol_sum : volume (⋃ z : u, Icc z.val.1 z.val.2) = ENNReal.ofReal (b - d) := by
-    convert Real.volume_Ioo ▸
-      measure_eq_measure_of_null_diff (by simp only [iUnion_subset_iff]; grind) hu₄
-      using 2
+    convert!
+      Real.volume_Ioo ▸
+        measure_eq_measure_of_null_sdiff (by simp only [iUnion_subset_iff]; grind) hu₄ using 2
     simp
   rw [measure_iUnion this (by simp)] at vol_sum
   simp_rw [Real.volume_Icc] at vol_sum
@@ -142,11 +142,11 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   replace hu₃ : Tendsto T atTop (totalLengthFilter ⊓ 𝓟 (disjWithin d b)) := by
     refine tendsto_inf.mpr ⟨?_, hT.tendsto.mono_left (by simp)⟩
     simp only [totalLengthFilter, tendsto_comap_iff]
-    convert hu₃.const_sub (b - d) with s
+    convert! hu₃.const_sub (b - d) with s
     · simp only [comp_apply]
       rw [Finset.sum_congr rfl (g := fun i ↦ ((T s).2 i).2 - ((T s).2 i).1)
             (fun i hi ↦ by rw [dist_comm, Real.dist_eq, abs_of_nonneg (by grind)])]
-      convert (u_coe s).sum_intervalGapsWithin_eq_sub_sub_sum rfl id
+      convert! (u_coe s).sum_intervalGapsWithin_eq_sub_sub_sum rfl id
       exact u_coe_sum s fun x y ↦ y - x
     · abel
   rw [HasSum] at hu₄
@@ -203,7 +203,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
       have slope_bound := hu₁ z (by simp) |>.right |>.le
       have : 0 < z.val.2 - z.val.1 := by linarith [hu₁ z (by simp)]
       grw [← slope_bound]
-      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, ge_iff_le, g, mul_comm]
+      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, g, mul_comm]
       nth_rw 1 [← Real.norm_of_nonneg this.le]
       simp only [norm_smul, Real.norm_eq_abs, norm_inv]
       field_simp
@@ -234,7 +234,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
   have g_ae_deriv_zero : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt g 0 x := by
     filter_upwards [hf.ae_differentiableAt, hf.intervalIntegrable_deriv.ae_hasDerivAt_integral]
       with x hx₁ hx₂ hx₃
-    convert (hx₁ hx₃).hasDerivAt.sub (hx₂ hx₃ a (by simp))
+    convert! (hx₁ hx₃).hasDerivAt.sub (hx₂ hx₃ a (by simp))
     abel
   obtain ⟨C, hC⟩ := g_ac.const_of_ae_hasDerivAt_zero g_ae_deriv_zero
   have : f a = g a := by simp [g]
@@ -250,7 +250,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
   rw [← (hf.fun_mul hg).integral_deriv_eq_sub]
   apply intervalIntegral.integral_congr_ae
   filter_upwards [hf.ae_differentiableAt, hg.ae_differentiableAt] with x hx₁ hx₂ hx₃
-  have hx₄ : x ∈ uIcc a b := by grind [uIcc, uIoc]
+  have hx₄ : x ∈ uIcc a b := uIoc_subset_uIcc hx₃
   have hx₅ := (hx₁ hx₄).hasDerivAt.mul (hx₂ hx₄).hasDerivAt
   exact hx₅.deriv.symm
 

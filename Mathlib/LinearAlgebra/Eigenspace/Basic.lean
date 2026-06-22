@@ -280,7 +280,7 @@ lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R 
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
     (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
-  convert this using 1
+  convert! this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
@@ -884,6 +884,36 @@ lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [IsDomain R] [IsTorsionFre
   apply Disjoint.mono_left (genEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) k k (h x y))
   simp only [g, map_add]
   exact disjoint_genEigenspace (f x + f y) (Ne.symm contra) _ k
+
+section Arithmetic
+
+variable {f : End R M} {μ ρ : R}
+
+lemma hasEigenvalue_neg_iff :
+    HasEigenvalue (-f) μ ↔ HasEigenvalue f (-μ) := by
+  simp only [hasEigenvalue_iff, eigenspace_def]
+  rw [← LinearMap.ker_neg]
+  simp [add_comm]
+
+lemma hasEigenvalue_add_iff :
+    HasEigenvalue (f + ρ • .id) μ ↔ HasEigenvalue f (μ - ρ) := by
+  have aux : f + ρ • .id - μ • 1 = f - (μ - ρ) • 1 := by module
+  simp only [hasEigenvalue_iff, eigenspace_def, aux]
+
+lemma hasEigenvalue_add'_iff :
+    HasEigenvalue (ρ • .id + f) μ ↔ HasEigenvalue f (μ - ρ) := by
+  have aux : ρ • .id + f - μ • 1 = f - (μ - ρ) • 1 := by module
+  simp only [hasEigenvalue_iff, eigenspace_def, aux]
+
+lemma hasEigenvalue_sub_iff :
+    HasEigenvalue (f - ρ • .id) μ ↔ HasEigenvalue f (μ + ρ) := by
+  rw [sub_eq_add_neg, ← neg_smul, hasEigenvalue_add_iff, sub_neg_eq_add]
+
+lemma hasEigenvalue_sub'_iff :
+    HasEigenvalue (ρ • .id - f) μ ↔ HasEigenvalue f (ρ - μ) := by
+  rw [sub_eq_add_neg, hasEigenvalue_add'_iff, hasEigenvalue_neg_iff, neg_sub]
+
+end Arithmetic
 
 end End
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
+import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 
 /-!
 # Higher differentiability of usual operations
@@ -79,7 +80,7 @@ theorem hasFTaylorSeriesUpToOn_pi' {n : ℕ∞ω} :
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
         (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
           (P' x m)) s := by
-  convert hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
+  convert! hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
 
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
@@ -283,8 +284,7 @@ theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) 
       _ = fderivWithin 𝕜 (-iteratedFDerivWithin 𝕜 i f s) s x (h 0) (Fin.tail h) := by
         rw [fderivWithin_congr' (@hi) hx, Pi.neg_def]
       _ = -(fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i f s) s) x (h 0) (Fin.tail h) := by
-        rw [fderivWithin_neg (hu x hx), ContinuousLinearMap.neg_apply,
-          ContinuousMultilinearMap.neg_apply]
+        rw [fderivWithin_neg (hu x hx), neg_apply, neg_apply]
       _ = -(iteratedFDerivWithin 𝕜 (i + 1) f s) x h := by
         rw [iteratedFDerivWithin_succ_apply_left]
 
@@ -404,7 +404,7 @@ theorem iteratedFDerivWithin_fun_sum_apply {ι : Type*} {f : ι → E → F} {u 
     {x : E} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffWithinAt 𝕜 i (f j) s x) :
     iteratedFDerivWithin 𝕜 i (fun z ↦ ∑ j ∈ u, f j z) s x =
       ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
-  convert iteratedFDerivWithin_sum_apply hs hx h
+  convert! iteratedFDerivWithin_sum_apply hs hx h
   rw [Finset.sum_apply]
 
 theorem iteratedFDeriv_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
@@ -417,7 +417,7 @@ theorem iteratedFDeriv_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset �
 theorem iteratedFDeriv_fun_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
     (h : ∀ j ∈ u, ContDiffAt 𝕜 n (f j) x) :
     iteratedFDeriv 𝕜 n (fun z ↦ ∑ j ∈ u, f j z) x = ∑ j ∈ u, iteratedFDeriv 𝕜 n (f j) x := by
-  convert iteratedFDeriv_sum_apply h
+  convert! iteratedFDeriv_sum_apply h
   rw [Finset.sum_apply]
 
 theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
@@ -689,8 +689,7 @@ theorem iteratedFDeriv_comp_const_smul (a : 𝕜) (hf : ContDiff 𝕜 i f) :
     ext v
     rw [iteratedFDeriv_succ_eq_comp_left, iteratedFDeriv_succ_eq_comp_left]
     simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, self_le_add_right, hf.of_le, hi,
-      comp_apply, continuousMultilinearCurryLeftEquiv_symm_apply,
-      ContinuousMultilinearMap.smul_apply]
+      comp_apply, continuousMultilinearCurryLeftEquiv_symm_apply, smul_apply]
     rw [fderiv_fun_const_smul, fderiv_comp_smul, smul_smul, ← pow_succ]
     · simp
     rw [← Function.comp_def (g := (a • ·))]
@@ -786,7 +785,7 @@ variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 @[fun_prop]
 theorem contDiffAt_inv {x : 𝕜'} (hx : x ≠ 0) {n} : ContDiffAt 𝕜 n Inv.inv x := by
-  simpa only [Ring.inverse_eq_inv'] using contDiffAt_ringInverse 𝕜 (Units.mk0 x hx)
+  simpa only [Ring.inverse_eq_inv'] using! contDiffAt_ringInverse 𝕜 (Units.mk0 x hx)
 
 @[fun_prop]
 theorem contDiffOn_inv {n} : ContDiffOn 𝕜 n (Inv.inv : 𝕜' → 𝕜') {0}ᶜ := fun _ hx =>
@@ -866,7 +865,7 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   have h₁ : ContDiff 𝕜 n O₁ := contDiff_id.clm_comp contDiff_const
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
   refine h₁.contDiffAt.comp _ (ContDiffAt.comp _ ?_ h₂.contDiffAt)
-  convert contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
+  convert! contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
   simp [O₂, one_def]
 
 /-- At an invertible map `e : M →L[R] M₂` between Banach spaces, the operation of
@@ -928,7 +927,7 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
         have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
           rw [he]
           exact hff' (f.symm x) hxu
-        convert f.hasFDerivAt_symm hx.1 h_deriv
+        convert! f.hasFDerivAt_symm hx.1 h_deriv
         simp [← he]
       · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
         -- itself `ContDiff`
