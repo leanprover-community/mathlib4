@@ -794,8 +794,7 @@ open Pointwise in
 theorem restrictHom_smul_under [Finite G] [Finite G'] [MulSemiringAction G C]
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (g : G) (I : Ideal C) :
     restrictHom G G' A B C g • I.under B = (g • I).under B := by
-  ext x
-  simp [Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv]
+  simp [Ideal.ext_iff, Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv]
 
 end Domain
 
