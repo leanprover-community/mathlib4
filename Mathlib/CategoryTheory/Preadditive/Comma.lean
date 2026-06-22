@@ -42,9 +42,11 @@ namespace CommaMorphism
 @[simps!]
 instance : Add (u ⟶ v) where
   add α β := CommaMorphism.mk (α.left + β.left) (α.right + β.right) (by simp)
+
 @[simps!]
 instance : Sub (u ⟶ v) where
   sub α β := CommaMorphism.mk (α.left - β.left) (α.right - β.right) (by simp)
+
 @[simps!]
 instance : Zero (u ⟶ v) where
   zero := CommaMorphism.mk 0 0
@@ -61,6 +63,7 @@ instance : AddCommGroup (u ⟶ v) where
   add_zero _ := by cat_disch
   add_comm _ _ := by ext <;> simp [add_comm]
   neg_add_cancel _ := by cat_disch
+  sub_eq_add_neg _ _ := by ext <;> simp [sub_eq_add_neg]
   nsmul n α := CommaMorphism.mk (n • α.left) (n • α.right)
     (by simp [Functor.map_nsmul, Preadditive.comp_nsmul, Preadditive.nsmul_comp])
   zsmul n α := CommaMorphism.mk (n • α.left) (n • α.right)
