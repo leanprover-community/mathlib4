@@ -745,7 +745,7 @@ lemma transvection_mem_commutator₀ {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1)
     (div_mul_cancel₀ c (sub_ne_zero_of_ne hasq)).symm]
   exact Subgroup.commutator_mem_commutator (Subgroup.mem_top _) (Subgroup.mem_top _)
 
-lemma transvection_mem_commutator₁ (a : F) (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) (c : F) :
+lemma transvection_mem_commutator₁ {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) (c : F) :
     SpecialLinearGroup.transvection one_ne_zero c ∈ commutator SL(2, F) := by
   have (b c' : F) (hc : c' = b * (a ^ 2 - 1)) :
       ⁅diag2 a⁻¹ (inv_ne_zero ha), SpecialLinearGroup.transvection one_ne_zero b⁆ =
