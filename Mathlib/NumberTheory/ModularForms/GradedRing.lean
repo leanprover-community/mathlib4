@@ -31,6 +31,18 @@ open UpperHalfPlane ModularForm ModularFormClass MatrixGroups EisensteinSeries
 
 namespace ModularForm
 
+/-- Transport a `DirectSum.of` along an equality of indices. -/
+private theorem of_eq_of_eq {ι : Type*} [DecidableEq ι] {β : ι → Type*}
+    [∀ i, AddCommMonoid (β i)] {i j : ι} (h : i = j) (x : β i) :
+    DirectSum.of β i x = DirectSum.of β j (h ▸ x) := by
+  subst h; rfl
+
+/-- Split off a scalar multiple of `DirectSum.of M i g` from `DirectSum.of M i f`. -/
+private theorem of_eq_sub_add_smul {ι : Type*} [DecidableEq ι] {R : Type*} [Semiring R]
+    {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] {i : ι} (f g : M i) (c : R) :
+    DirectSum.of M i f = DirectSum.of M i (f - c • g) + c • DirectSum.of M i g := by
+  rw [← DirectSum.of_smul, ← map_add, sub_add_cancel]
+
 /-- Evaluation homomorphism sending `ℂ[X₀, X₁]` to the graded ring of level 1 modular forms
 via `X₀ ↦ E₄` and `X₁ ↦ E₆`. -/
 noncomputable def evalE₄E₆ :
@@ -161,9 +173,9 @@ private lemma surj_at_weight_inductive {n : ℕ} (hn12 : 12 ≤ n) (hk_even : Ev
       (CuspForm.discriminantEquiv (ModularForm.toCuspForm (f - c • mn)
         ((ModularForm.isCuspForm_iff_coeffZero_eq_zero _).mp hg_cusp))) ∈
         Set.range evalE₄E₆ := by
-    rw [DirectSum.of_eq_of_eq (show ((↑n : ℤ) - 12 : ℤ) = ((n - 12 : ℕ) : ℤ) by lia)]
+    rw [of_eq_of_eq (show ((↑n : ℤ) - 12 : ℤ) = ((n - 12 : ℕ) : ℤ) by lia)]
     exact ih _ (by lia) _
-  rw [DirectSum.of_eq_sub_add_smul f mn c, directSum_of_E₄_pow_mul_E₆_pow_apply hab]
+  rw [of_eq_sub_add_smul f mn c, directSum_of_E₄_pow_mul_E₆_pow_apply hab]
   exact ⟨p1 * discriminantPoly + MvPolynomial.C c * (MvPolynomial.X 0 ^ a * MvPolynomial.X 1 ^ b),
     by rw [map_add, map_mul, hp1, evalE₄E₆_discriminantPoly,
       cuspForm_eq_discriminant_mul (f - c • mn) hg_cusp, map_mul,
@@ -667,6 +679,12 @@ theorem E₄E₆_generate :
     from (Matrix.range_cons_cons_empty _ _ _).symm,
     Algebra.adjoin_range_eq_range_aeval]
   exact (AlgHom.range_eq_top evalE₄E₆).mpr evalE₄E₆_surjective
+
+/-- The graded ring of level-1 modular forms is an integral domain, being isomorphic (via
+`modularFormsEquivMvPolynomial`) to the polynomial ring `ℂ[X₀, X₁]`. -/
+instance : IsDomain (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
+  Function.Injective.isDomain modularFormsEquivMvPolynomial.symm.toAlgHom.toRingHom
+    modularFormsEquivMvPolynomial.symm.injective
 
 end ModularForm
 

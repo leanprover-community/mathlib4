@@ -444,29 +444,32 @@ lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [Canonicall
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le
 
-/-- In a canonically-ordered additive monoid, if `S'` is contained in `(S.erase d) ∪ {d'}` and
-`f d' < f d` for some `d ∈ S`, then the sum of `f` over `S'` is strictly less than over `S`. -/
-lemma sum_lt_sum_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq ι] [AddCommMonoid M]
-    [PartialOrder M] [CanonicallyOrderedAdd M] [AddLeftStrictMono M] {S S' : Finset ι} {f : ι → M}
+/-- In a canonically-ordered monoid, if `S'` is contained in `(S.erase d) ∪ {d'}` and
+`f d' < f d` for some `d ∈ S`, then the product of `f` over `S'` is strictly less than over `S`. -/
+@[to_additive "In a canonically-ordered additive monoid, if `S'` is contained in
+`(S.erase d) ∪ {d'}` and `f d' < f d` for some `d ∈ S`, then the sum of `f` over `S'` is
+strictly less than over `S`."]
+lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq ι] [CommMonoid M]
+    [PartialOrder M] [CanonicallyOrderedMul M] [MulLeftStrictMono M] {S S' : Finset ι} {f : ι → M}
     {d d' : ι} (hd_mem : d ∈ S) (hd_not : d ∉ S') (hS' : S' ⊆ S.erase d ∪ {d'})
-    (hlt : f d' < f d) : ∑ x ∈ S', f x < ∑ x ∈ S, f x := by
+    (hlt : f d' < f d) : ∏ x ∈ S', f x < ∏ x ∈ S, f x := by
   by_cases hd'S : d' ∈ S
-  · calc ∑ x ∈ S', f x
-        ≤ ∑ x ∈ S.erase d, f x := Finset.sum_le_sum_of_subset (fun x hx ↦
+  · calc ∏ x ∈ S', f x
+        ≤ ∏ x ∈ S.erase d, f x := Finset.prod_le_prod_of_subset' (fun x hx ↦
           Finset.mem_erase.mpr ⟨fun h ↦ hd_not (h ▸ hx),
             match Finset.mem_union.mp (hS' hx) with
             | .inl h => Finset.mem_of_mem_erase h
             | .inr h => Finset.mem_singleton.mp h ▸ hd'S⟩)
-      _ < ∑ x ∈ S.erase d, f x + f d :=
-          lt_add_of_pos_right _ (zero_le.trans_lt hlt)
-      _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
-  · calc ∑ x ∈ S', f x
-        ≤ ∑ x ∈ S.erase d ∪ {d'}, f x := Finset.sum_le_sum_of_subset hS'
-      _ = ∑ x ∈ S.erase d, f x + f d' := by
-          rw [Finset.sum_union (Finset.disjoint_singleton_right.mpr
-            (fun h ↦ hd'S (Finset.mem_of_mem_erase h))), Finset.sum_singleton]
-      _ < ∑ x ∈ S.erase d, f x + f d := add_lt_add_right hlt _
-      _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
+      _ < (∏ x ∈ S.erase d, f x) * f d :=
+          lt_mul_of_one_lt_right' _ (one_le.trans_lt hlt)
+      _ = ∏ x ∈ S, f x := Finset.prod_erase_mul S f hd_mem
+  · calc ∏ x ∈ S', f x
+        ≤ ∏ x ∈ S.erase d ∪ {d'}, f x := Finset.prod_le_prod_of_subset' hS'
+      _ = (∏ x ∈ S.erase d, f x) * f d' := by
+          rw [Finset.prod_union (Finset.disjoint_singleton_right.mpr
+            (fun h ↦ hd'S (Finset.mem_of_mem_erase h))), Finset.prod_singleton]
+      _ < (∏ x ∈ S.erase d, f x) * f d := mul_lt_mul_right hlt _
+      _ = ∏ x ∈ S, f x := Finset.prod_erase_mul S f hd_mem
 
 end CanonicallyOrderedMul
 
