@@ -140,15 +140,13 @@ lemma serreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
 Basic properties of Serre derivative.
 -/
 theorem serreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    serreDerivative k (F + G) = serreDerivative k F + serreDerivative k G
-    := by
+    serreDerivative k (F + G) = serreDerivative k F + serreDerivative k G := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_add F G hF hG]
   ring_nf
 
 theorem serreDerivative_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    serreDerivative k (F - G) = serreDerivative k F - serreDerivative k G
-    := by
+    serreDerivative k (F - G) = serreDerivative k F - serreDerivative k G := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_sub F G hF hG]
   ring_nf
@@ -214,8 +212,7 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) 
 Serre derivative is equivariant under the slash action. More precisely,
 $\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \in SL(2, \mathbb{Z})$.
 -/
-theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
-    (γ : SL(2, ℤ)) :
+theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
     serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
   ext z
   simp only [serreDerivative_apply]
@@ -243,9 +240,8 @@ theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDif
 As a corollary, if `F` is invariant under the slash action of weight `k`, then
 `serreDerivative k F` is invariant under the slash action of weight `k + 2`.
 -/
-theorem serreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
-    (γ : SL(2, ℤ)) (h : F ∣[k] γ = F) : serreDerivative k F ∣[k + 2] γ =
-      serreDerivative k F := by
+theorem serreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ))
+    (h : F ∣[k] γ = F) : serreDerivative k F ∣[k + 2] γ = serreDerivative k F := by
   rw [serreDerivative_slash_equivariant, h]
   exact hF
 
