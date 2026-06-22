@@ -30,8 +30,7 @@ lemma mk (h₁ : IsUnit (algebraMap R (Module.End R N) r))
     use ⟨y, ⟨_, n, rfl⟩⟩, hy
   exists_of_eq {x y} hxy := by
     obtain ⟨n, hn⟩ := h₃ _ _ hxy
-    use ⟨_, n, rfl⟩
-    exact hn
+    use ⟨_, n, rfl⟩, hn
 
 lemma mk_of_addCommGroup {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
     {f : M →ₗ[R] N} {r : R} (h₁ : IsUnit (algebraMap R (Module.End R N) r))
