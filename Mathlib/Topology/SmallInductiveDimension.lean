@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Small inductive dimension
@@ -88,9 +89,12 @@ instance (n : ℕ) [IsEmpty X] : HasSmallInductiveDimensionLT X n :=
 /-! ### Zero-dimensional spaces -/
 
 variable (X) in
-/-- A zero-dimensional topological space is one with a basis of clopen sets. These are the spaces of
-small inductive dimension ≤ 0. In particular, our definition of `ZeroDimensionalSpace` allows the
-empty space even though, strictly speaking, it is (-1)-dimensional. -/
+/-- A zero-dimensional topological space is defined as one with small inductive dimension ≤ 0. In
+particular, our definition of `ZeroDimensionalSpace` allows the empty space even though, strictly
+speaking, it is (-1)-dimensional.
+
+An equivalent characterization is that a zero-dimensional space is one with a basis of clopen
+sets. -/
 abbrev ZeroDimensionalSpace :=
   HasSmallInductiveDimensionLT X 1
 
@@ -113,21 +117,32 @@ lemma zeroDimensionalSpace_iff_isTopologicalBasis :
 @[deprecated (since := "2026-06-21")]
 alias hasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis
 
-variable (X) in
 theorem isTopologicalBasis_isClopen [ZeroDimensionalSpace X] :
     IsTopologicalBasis { s : Set X | IsClopen s } :=
   zeroDimensionalSpace_iff_isTopologicalBasis.1 ‹_›
 
 theorem zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis :
     ZeroDimensionalSpace X ↔ ∀ x : X, (𝓝 x).HasBasis (fun s ↦ IsClopen s ∧ x ∈ s) id where
-  mp _ _ := (isTopologicalBasis_isClopen X).nhds_hasBasis
+  mp _ _ := isTopologicalBasis_isClopen.nhds_hasBasis
   mpr H := by
     rw [zeroDimensionalSpace_iff_isTopologicalBasis]
     exact .of_hasBasis_nhds H
 
 theorem exists_isClopen_mem_of_isOpen [ZeroDimensionalSpace X] {x : X} {U : Set X}
     (hU : IsOpen U) (hx : x ∈ U) : ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
-  (isTopologicalBasis_isClopen X).mem_nhds_iff.1 (hU.mem_nhds hx)
+  isTopologicalBasis_isClopen.mem_nhds_iff.1 (hU.mem_nhds hx)
+
+instance [DiscreteTopology X] : ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+  simpa using isTopologicalBasis_opens (α := X)
+
+instance [T0Space X] [ZeroDimensionalSpace X] : TotallySeparatedSpace X := by
+  simp_rw [totallySeparatedSpace_iff_exists_isClopen, mem_compl_iff]
+  intro x y hxy
+  contrapose! hxy
+  apply Inseparable.eq
+  rw [isTopologicalBasis_isClopen.inseparable_iff]
+  exact fun V hV ↦ ⟨hxy V hV, (hxy Vᶜ hV.compl).mtr⟩
 
 /-! ### Small inductive dimension -/
 
@@ -184,7 +199,6 @@ variable (X) in
 theorem smallInductiveDimension_of_isEmpty [IsEmpty X] : smallInductiveDimension X = ⊥ :=
   smallInductiveDimension_eq_bot.2 ‹_›
 
-@[simp]
 theorem smallInductiveDimension_eq_zero :
     smallInductiveDimension X = 0 ↔ ZeroDimensionalSpace X ∧ Nonempty X := by
   rw [← not_isEmpty_iff, ← hasSmallInductiveDimensionLT_zero_iff]
