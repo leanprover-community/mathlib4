@@ -167,7 +167,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
 attribute [local simp] types_tensorObj_def in
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (Type v) C where
   Hom X Y := 𝒞.Hom X Y

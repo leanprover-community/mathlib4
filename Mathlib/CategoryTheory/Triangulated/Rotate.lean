@@ -132,7 +132,6 @@ def invRotCompRot : invRotate C ⋙ rotate C ≅ 𝟭 (Triangle C) :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     ((shiftEquiv C (1 : ℤ)).counitIso.app T.obj₃)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 /-- Rotating triangles gives an auto-equivalence on the category of triangles in `C`.
 -/

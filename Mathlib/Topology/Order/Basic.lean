@@ -66,7 +66,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 `(a, ∞) = { x ∣ a < x }, (-∞, b) = {x ∣ x < b}` for all `a, b` in `α`. We do not register it as an
 instance as many ordered sets are already endowed with the same topology, most often in a non-defeq
 way though. Register as a local instance when necessary. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Preorder.topology (α : Type*) [Preorder α] : TopologicalSpace α :=
   generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a }
 
