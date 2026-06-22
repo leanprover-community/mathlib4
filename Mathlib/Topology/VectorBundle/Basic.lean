@@ -429,6 +429,11 @@ theorem symmL_apply (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb :
     (y : F) : e.symmL R b y = e.symm b y :=
   e.toPretrivialization.symmₗ_apply R hb y
 
+@[simp]
+lemma symmL_apply_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
+    (hb : b ∉ e.baseSet) (y : F) : e.symmL R b y = 0 :=
+  e.toPretrivialization.symmₗ_apply_of_notMem _ hb _
+
 theorem symmL_continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) (y : E b) : e.symmL R b (e.continuousLinearMapAt R b y) = y :=
   e.symmₗ_linearMapAt hb y
