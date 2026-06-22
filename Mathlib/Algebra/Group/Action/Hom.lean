@@ -46,9 +46,9 @@ a multiplicative action of `N` on `α`.
 See note [reducible non-instances]. -/
 @[to_additive]
 abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
-  smul := SMul.comp.smul g
-  one_smul _ := by simpa [(· • ·)] using one_smul ..
-  mul_smul _ _ _ := by simpa [(· • ·)] using mul_smul ..
+  toSMul := SMul.comp _ g
+  one_smul _ := by simp [SMul.comp_smul_def]
+  mul_smul _ _ _ := by simpa [SMul.comp_smul_def] using mul_smul ..
 
 /-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
 an additive action of `N` on `α`.
@@ -61,6 +61,9 @@ lemma compHom_smul_def
     {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G] (f : E →* F) (a : E) (x : G) :
     letI : MulAction E G := MulAction.compHom _ f
     a • x = (f a) • x := rfl
+
+attribute [deprecated SMul.comp_smul_def (since := "2026-05-26")] compHom_smul_def
+attribute [deprecated VAdd.comp_vadd_def (since := "2026-05-26")] AddAction.compHom_vadd_def
 
 /-- If an action is transitive, then composing this action with a surjective homomorphism gives
 again a transitive action. -/

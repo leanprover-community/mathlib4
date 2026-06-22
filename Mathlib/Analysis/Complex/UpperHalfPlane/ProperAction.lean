@@ -77,7 +77,7 @@ private lemma cdsq_le {K : Set ℍ} (hK : IsCompact K) :
     match hK.exists_isMinOn hKne continuous_im.continuousOn with | ⟨z, _, h⟩ => ⟨_, z.im_pos, h⟩
   refine ⟨1 / δ, fun g hg ↦ ?_⟩
   specialize hδK (g • I) hg
-  simp only [MulAction.compHom_smul_def, im_smul_eq_div_normSq, Matrix.SpecialLinearGroup.det_mapGL,
+  simp only [SMul.comp_smul_def, im_smul_eq_div_normSq, Matrix.SpecialLinearGroup.det_mapGL,
     Units.val_one, abs_one, I_im, mul_one] at hδK
   rw [le_div_iff₀ (normSq_denom_pos (Matrix.SpecialLinearGroup.mapGL ℝ g) (show I.im ≠ 0 by simp)),
     mul_comm, ← le_div_iff₀ hδ] at hδK

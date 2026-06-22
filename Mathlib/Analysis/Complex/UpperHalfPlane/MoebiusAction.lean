@@ -287,7 +287,7 @@ theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g
     ↑(g • z) =
       (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
       ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ))) := by
-  rw [MulAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
+  rw [SMul.comp_smul_def, coe_smul_of_det_pos (by simp)]
   rfl
 
 theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
@@ -368,7 +368,7 @@ instance isPretransitiveSL2R : MulAction.IsPretransitive SL(2, ℝ) ℍ :=
 
 /-- `GL(2, ℝ)` acts transitively on the upper half-plane. -/
 instance isPretransitiveGL2R : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ :=
-  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ (MulAction.compHom_smul_def _ g z).symm
+  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ by exact SMul.comp_smul_def _ g z |>.symm
 
 end toSL2R
 
