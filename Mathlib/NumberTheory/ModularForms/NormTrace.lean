@@ -376,7 +376,7 @@ lemma qExpansion_one_galoisProd_order_eq_qExpansion_self_order (hN : 0 < N)
       analyticOrderAt_congr (cuspFunction_one_galoisProd_pow_eq hN hf_per hf_bdd hf_mdiff),
       ← Finset.prod_fn, analyticOrderAt_prod h_factor_an,
       Finset.sum_congr rfl h_factor_order, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
-  exact ENat.mul_left_cancel₀ (mod_cast hN.ne') (ENat.coe_ne_top _) (mul_comm ML _ ▸ h_combine)
+  exact (ENat.mul_right_inj (mod_cast hN.ne') (ENat.coe_ne_top _)).mp (mul_comm ML _ ▸ h_combine)
 
 end GaloisProdComplex
 

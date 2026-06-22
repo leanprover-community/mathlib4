@@ -189,11 +189,11 @@ lemma qExpansion_order_eq_analyticOrderAt_cuspFunction {f : ℍ → ℂ}
     exact (mul_eq_zero.mp hcoeff).resolve_left (inv_ne_zero (mod_cast Nat.factorial_ne_zero i))
   · rw [qExpansion_coeff, H i hi, mul_zero]
 
-/-- The order of the `q`-expansion at period `h` is bounded above by the order of the `q`-expansion
-at period `m * h`, for any positive natural number `m`. -/
-lemma qExpansion_order_le_qExpansion_nat_mul_order {g : ℍ → ℂ} {m : ℕ} (hh : 0 < h) (hm : 0 < m)
+/-- The order of the `q`-expansion at period `m * h` equals `m` times the order at period `h`,
+for any positive natural number `m`. -/
+lemma qExpansion_nat_mul_order_eq {g : ℍ → ℂ} {m : ℕ} (hh : 0 < h) (hm : 0 < m)
     (hg_per : Periodic (g ∘ ofComplex) h) (hg_bdd : IsBoundedAtImInfty g) (hg_mdiff : MDiff g) :
-    (qExpansion h g).order ≤ (qExpansion ((m * h : ℝ)) g).order := by
+    (qExpansion ((m * h : ℝ)) g).order = (qExpansion h g).order * m := by
   have hmh : (0 : ℝ) < (m : ℝ) * h := by positivity
   have hg_per_mh : Periodic (g ∘ ofComplex) (((m : ℝ) * h : ℝ)) := by
     simpa using hg_per.nat_mul m
@@ -224,7 +224,14 @@ lemma qExpansion_order_le_qExpansion_nat_mul_order {g : ℍ → ℂ} {m : ℕ} (
     rw [hqm, ← hτq, eq_cuspFunction τ hmh.ne' hg_per_mh,
       eq_cuspFunction τ hh.ne' hg_per]
   rw [analyticOrderAt_congr h_eqOn, analyticOrderAt_comp_pow_zero hLHS_an hm]
-  exact ENat.self_le_mul_right _ (mod_cast hm.ne')
+
+/-- The order of the `q`-expansion at period `h` is bounded above by the order of the `q`-expansion
+at period `m * h`, for any positive natural number `m`. -/
+lemma qExpansion_order_le_qExpansion_nat_mul_order {g : ℍ → ℂ} {m : ℕ} (hh : 0 < h) (hm : 0 < m)
+    (hg_per : Periodic (g ∘ ofComplex) h) (hg_bdd : IsBoundedAtImInfty g) (hg_mdiff : MDiff g) :
+    (qExpansion h g).order ≤ (qExpansion ((m * h : ℝ)) g).order :=
+  (ENat.self_le_mul_right _ (mod_cast hm.ne')).trans
+    (qExpansion_nat_mul_order_eq hh hm hg_per hg_bdd hg_mdiff).ge
 
 lemma hasSum_qExpansion_of_norm_lt {f : ℍ → ℂ} (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f)
@@ -666,6 +673,13 @@ def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
   toFun f := qExpansion h f
   map_zero' := qExpansion_zero h
   map_add' f g := ModularForm.qExpansion_add hh hΓ f g
+
+/-- The qExpansion map as a `ℂ`-linear map to power series over `ℂ`. -/
+def qExpansionLinearMap [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
+    ModularForm Γ k →ₗ[ℂ] PowerSeries ℂ where
+  toFun f := qExpansion h f
+  map_add' f g := ModularForm.qExpansion_add hh hΓ f g
+  map_smul' a f := ModularForm.qExpansion_smul hh hΓ a f
 
 open scoped DirectSum in
 /-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
