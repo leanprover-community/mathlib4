@@ -210,7 +210,7 @@ theorem differentiableAt_cuspFunction_zero (hh : 0 < h) (hf : Periodic f h)
     fun x hx ↦ (hS1 x hx.1 hx.2).1.differentiableWithinAt
   have hF_bd : BddAbove (norm ∘ cuspFunction h f '' (S \ {0})) := by
     use c
-    simp only [mem_upperBounds, Set.mem_image, Set.mem_diff, forall_exists_index, and_imp]
+    simp only [mem_upperBounds, Set.mem_image, Set.mem_sdiff, forall_exists_index, and_imp]
     intro y q hq hq2 hy
     simpa only [← hy, norm_one, mul_one] using! (hS1 q hq hq2).2
   have := differentiableOn_update_limUnder_of_bddAbove (IsOpen.mem_nhds hS2 hS3) h_diff hF_bd

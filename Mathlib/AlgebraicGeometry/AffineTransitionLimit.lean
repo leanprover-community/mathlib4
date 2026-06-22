@@ -11,6 +11,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
+public import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
@@ -24,7 +25,7 @@ following EGA IV 8 and https://stacks.math.columbia.edu/tag/01YT.
 
 @[expose] public section
 
-universe uI u
+universe w uI u
 
 open CategoryTheory Limits
 
@@ -748,7 +749,7 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
     have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
     obtain ⟨j, f, hj⟩ := exists_appTop_map_eq_zero_of_isAffine_of_isLimit _ _
       (isLimitOpensCone D c hc i U) (.mk (𝟙 i)) (((opensDiagramι D i U).app _).appTop s) (by
-        convert! congr((c.pt.presheaf.map (homOfLE le_top).op).hom $hs) using 1
+        convert congr((c.pt.presheaf.map (homOfLE le_top).op).hom $hs)
         · simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE, ← ConcreteCategory.comp_apply]; rfl
         · simp)
     refine ⟨U, hU, hxU, j.left, j.hom, ?_⟩
@@ -815,7 +816,6 @@ lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D
     simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_app_map_eq_map_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     {i : I} {U : (D.obj i).Opens} (hU : IsCompact (X := D.obj i) U) (s t : Γ(D.obj i, U))
@@ -1074,6 +1074,30 @@ lemma exists_isAffineOpen_preimage_eq
 set_option backward.isDefEq.respectTransparency false in
 open TopologicalSpace in
 include hc in
+lemma Scheme.exists_isOpenCover_and_isAffine_of_finite [IsCofiltered I]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ (i : I), CompactSpace (D.obj i)]
+    [∀ (i : I), QuasiSeparatedSpace (D.obj i)]
+    {J : Type*} [Finite J] (U : J → c.pt.Opens) (hU : IsOpenCover U)
+    (hU' : ∀ i, IsAffineOpen (U i)) :
+    ∃ (i : I) (V : J → (D.obj i).Opens),
+      IsOpenCover V ∧ ∀ j, IsAffineOpen (V j) ∧ U j = c.π.app i ⁻¹ᵁ (V j) := by
+  classical
+  choose j V hV hVU using fun k ↦ exists_isAffineOpen_preimage_eq D c hc (U k) (hU' k)
+  cases nonempty_fintype J
+  obtain ⟨i, fi⟩ := IsCofiltered.inf_objs_exists (Finset.univ.image j)
+  replace fi : ∀ k, i ⟶ j k := fun k ↦ (fi (by simp)).some
+  obtain ⟨k, fkj, e⟩ := exists_map_eq_top D c hc (⨆ (k), D.map (fi k) ⁻¹ᵁ V k) (by
+    simp_rw [Hom.preimage_iSup, ← Hom.comp_preimage, c.w, hVU]
+    exact hU)
+  refine ⟨k, fun x ↦ D.map (fkj ≫ fi x) ⁻¹ᵁ V _, ?_, fun k ↦ ⟨(hV k).preimage _, ?_⟩⟩
+  · refine top_le_iff.mp (e.symm.trans_le ?_)
+    simp_rw [Hom.preimage_iSup, ← Hom.comp_preimage, ← D.map_comp]
+    simp
+  · rw [← hVU, ← Hom.comp_preimage, c.w]
+
+set_option backward.isDefEq.respectTransparency false in
+open TopologicalSpace in
+include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 Then any affine open cover of `lim Xᵢ` comes from a finite level. -/
 lemma Scheme.exists_isOpenCover_and_isAffine [IsCofiltered I]
@@ -1085,19 +1109,48 @@ lemma Scheme.exists_isOpenCover_and_isAffine [IsCofiltered I]
       IsOpenCover V ∧ ∀ j, IsAffineOpen (V j) ∧ U j = c.π.app i ⁻¹ᵁ (V j) := by
   classical
   have := compactSpace_of_isLimit D c hc
-  choose j V hV hVU using fun k ↦ exists_isAffineOpen_preimage_eq D c hc (U k) (hU' k)
   obtain ⟨s, hs⟩ := isCompact_univ.elim_finite_subcover _
     (fun i ↦ (U i).isOpen) hU.iSup_set_eq_univ.ge
-  obtain ⟨i, fi⟩ := IsCofiltered.inf_objs_exists (s.image j)
-  replace fi : ∀ k ∈ s, i ⟶ j k := fun k hk ↦ (fi (Finset.mem_image_of_mem _ hk)).some
-  obtain ⟨k, fkj, e⟩ := exists_map_eq_top D c hc (⨆ (k) (hk : k ∈ s), D.map (fi k hk) ⁻¹ᵁ V k) (by
-    simp_rw [Hom.preimage_iSup, ← Hom.comp_preimage, c.w, hVU]
-    exact top_le_iff.mp fun x _ ↦ by simpa using hs (Set.mem_univ x))
-  refine ⟨k, s, fun x ↦ D.map (fkj ≫ fi x.1 x.2) ⁻¹ᵁ V _, ?_, fun k ↦ ⟨(hV k).preimage _, ?_⟩⟩
-  · refine top_le_iff.mp (e.symm.trans_le ?_)
-    simp_rw [Hom.preimage_iSup, ← Hom.comp_preimage, iSup_subtype, ← D.map_comp]
-    simp
-  · rw [← hVU, ← Hom.comp_preimage, c.w]
+  have hU : IsOpenCover fun j : s ↦ U ↑j := by
+    simpa only [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe, Opens.coe_top, Opens.iSup_mk,
+      Opens.carrier_eq_coe, Opens.coe_mk, Set.iUnion_subtype]
+  obtain ⟨i, V, hV, heq⟩ := Scheme.exists_isOpenCover_and_isAffine_of_finite _ _ hc _ hU (hU' ·)
+  use i, s, V, hV
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+include hc in
+/-- Variant of `Scheme.exists_isOpenCover_and_isAffine_of_finite` in terms of `Scheme.OpenCover`. -/
+lemma Scheme.OpenCover.exists_of_isCofiltered_of_finite [IsCofiltered I]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ (i : I), CompactSpace (D.obj i)]
+    [∀ (i : I), QuasiSeparatedSpace (D.obj i)]
+    (𝒰 : OpenCover.{w} c.pt) [∀ i, IsAffine (𝒰.X i)] [Finite 𝒰.I₀] :
+    ∃ (i : I) (R : 𝒰.I₀ → CommRingCat.{u}) (f : ∀ (a : 𝒰.I₀), Spec (R a) ⟶ (D.obj i))
+      (_ : Presieve.ofArrows _ f ∈ zariskiPrecoverage _) (g : ∀ (j : 𝒰.I₀), 𝒰.X j ⟶ Spec (R j)),
+      ∀ (j : 𝒰.I₀), IsPullback (g j) (𝒰.f j) (f j) (c.π.app i) := by
+  obtain ⟨i, V, hV, hV'⟩ := Scheme.exists_isOpenCover_and_isAffine_of_finite _ _ hc _
+    𝒰.isOpenCover_opensRange fun k ↦ isAffineOpen_opensRange (𝒰.f k)
+  have hV'' (k) := dsimp% congr($((hV' k).right).carrier)
+  refine ⟨i, fun k ↦ Γ(_, V k), fun k ↦ (hV' k).left.isoSpec.inv ≫ (V k).ι, ?_, ?_, ?_⟩
+  · simp only [IsAffineOpen.isoSpec_inv_ι, ofArrows_mem_precoverage_iff,
+      IsAffineOpen.range_fromSpec, SetLike.mem_coe]
+    exact ⟨fun x ↦ hV.exists_mem x, inferInstance⟩
+  · intro k
+    exact IsOpenImmersion.lift (V k).ι (𝒰.f _ ≫ c.π.app i) (by simp [hV'', Set.range_comp]) ≫
+      (hV' k).left.isoSpec.hom
+  · intro k
+    dsimp
+    refine ⟨⟨?_⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+    · simp [← IsAffineOpen.isoSpec_inv_ι]
+    · intro s
+      refine IsOpenImmersion.lift (𝒰.f k) s.snd ?_
+      simp only [hV'', Set.range_subset_iff, Set.mem_preimage, SetLike.mem_coe]
+      intro y
+      rw [← Scheme.Hom.comp_apply, ← s.condition]
+      simp [← IsAffineOpen.isoSpec_inv_ι]
+    · simp [← cancel_mono (hV' _).left.isoSpec.inv, ← cancel_mono (V k).ι, PullbackCone.condition]
+    · simp
+    · simp [← cancel_mono (𝒰.f k)]
 
 end IsAffine
 
@@ -1283,6 +1336,36 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
       congr(Scheme.homOfLE _ h ≫ $(hak' j))
   · refine 𝒲.hom_ext _ _ fun j ↦ ?_
     simp [F, Cover.ι_glueMorphisms_assoc, hak]; rfl
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- `Hom_S(-, X)` sends a cofiltered limit of qcqs `S`-schemes with affine transition maps
+to a filtered colimit if `X` is locally of finite presentation over `X`. -/
+instance Scheme.preservesColimit_yoneda (D : I ⥤ Over S) [IsCofiltered I]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f).left]
+    [∀ (i : I), CompactSpace (D.obj i).left] [∀ (i : I), QuasiSeparatedSpace (D.obj i).left]
+    (X : Over S) [LocallyOfFinitePresentation X.hom] :
+    PreservesColimit D.op (yoneda.obj X) where
+  preserves {c hc} := by
+    rw [Limits.Types.isColimit_iff_coconeTypesIsColimit]
+    have (i : I) : CompactSpace ((D ⋙ Over.forget S).obj i) := by dsimp; infer_instance
+    have (i : I) : QuasiSeparatedSpace ((D ⋙ Over.forget S).obj i) := by dsimp; infer_instance
+    have {i j : I} (f : i ⟶ j) : IsAffineHom ((D ⋙ Over.forget S).map f) := by
+      dsimp; infer_instance
+    refine ⟨⟨?_, ?_⟩⟩
+    · rw [Functor.CoconeTypes.descColimitType_injective_iff_of_isFiltered']
+      intro k g₁ g₂ hg
+      obtain ⟨k, hik, heq⟩ := Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
+        (D ⋙ Over.forget _) (.mk (fun _ ↦ (D.obj _).hom)) X.hom _ (isLimitOfPreserves _ hc.unop)
+        g₁.left g₂.left (Over.w g₁).symm (Over.w g₂).symm congr($(hg).left)
+      use .op k, hik.op
+      cat_disch
+    · intro g
+      obtain ⟨k, u, h, h'⟩ := Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
+        (D ⋙ Over.forget _) (.mk (fun _ ↦ (D.obj _).hom)) X.hom _ (isLimitOfPreserves _ hc.unop)
+        g.left (by ext; simp)
+      use Functor.ιColimitType _ (.op k) (Over.homMk u)
+      cat_disch
 
 end LocallyOfFinitePresentation
 
