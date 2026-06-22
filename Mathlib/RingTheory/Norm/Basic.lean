@@ -104,7 +104,7 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
       leftMulMatrix_mulVec_repr] at hv
     refine (mul_eq_zero.mp (b.ext_elem fun i => ?_)).resolve_right (show ∑ i, v i • b i ≠ 0 from ?_)
-    · simpa only [map_zero, Pi.zero_apply] using congr_fun hv i
+    · simpa only [map_zero, Pi.zero_apply] using! congr_fun hv i
     · contrapose v_ne with sum_eq
       apply b.equivFun.symm.injective
       rw [b.equivFun_symm_apply, sum_eq, map_zero]
@@ -127,12 +127,21 @@ theorem norm_ne_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {
     Algebra.norm R x ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr (norm_eq_zero_iff_of_basis b)
 
-theorem norm_inv [Module.Finite K L] (x : L) : Algebra.norm K x⁻¹ = (Algebra.norm K x)⁻¹ := by
+end EqZeroIff
+
+section DivisionRing
+
+variable {L : Type*} [DivisionRing L] [Algebra K L] [Module.Finite K L]
+
+theorem norm_inv (x : L) : Algebra.norm K x⁻¹ = (Algebra.norm K x)⁻¹ := by
   by_cases hx : x = 0
   · simp [hx]
   exact mul_left_injective₀ (norm_ne_zero_iff.mpr hx) (by simp [hx, ← map_mul])
 
-end EqZeroIff
+theorem norm_zpow (x : L) (n : ℤ) : Algebra.norm K (x ^ n) = Algebra.norm K x ^ n :=
+  map_zpow' _ norm_inv _ _
+
+end DivisionRing
 
 open IntermediateField
 

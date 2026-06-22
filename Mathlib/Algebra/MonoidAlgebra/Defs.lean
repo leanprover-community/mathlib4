@@ -590,7 +590,7 @@ lemma ringHom_ext [Semiring S] {f g : R[M] →+* S}
     (h₁ : ∀ r, f (single 1 r) = g (single 1 r)) (h_of : ∀ m, f (single m 1) = g (single m 1)) :
     f = g :=
   RingHom.coe_addMonoidHom_injective <| addHom_ext fun m r ↦ by
-    simpa [← map_mul] using congr($(h₁ r) * $(h_of m))
+    simpa [← map_mul] using! congr($(h₁ r) * $(h_of m))
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
 and `single 1 r`, then they are equal.
@@ -849,8 +849,8 @@ def singleHom [AddZeroClass M] : R × Multiplicative M →* R[M] where
 theorem induction_on [AddMonoid M] {p : R[M] → Prop} (x : R[M])
     (hM : ∀ m, p (of R M <| .ofAdd m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
     (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
-  Finsupp.induction_linear x (by simpa using hsmul 0 (of R M 1) (hM 0))
-    (fun x y hf hg ↦ hadd x y hf hg) fun m r ↦ by simpa using hsmul r (of R M m) (hM m)
+  Finsupp.induction_linear x (by simpa using! hsmul 0 (of R M 1) (hM 0))
+    (fun x y hf hg ↦ hadd x y hf hg) fun m r ↦ by simpa using! hsmul r (of R M m) (hM m)
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
 and `single 0 r`, then they are equal.

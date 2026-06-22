@@ -15,7 +15,6 @@ The associator functor `((C ⊕ D) ⊕ E) ⥤ (C ⊕ (D ⊕ E))` and its inverse
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory
@@ -49,14 +48,12 @@ theorem associator_map_inl_inl {X Y : C} (f : X ⟶ Y) :
     (associator C D E).map ((inl_ _ _).map ((inl_ _ _).map f)) = (inl_ _ _).map f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem associator_map_inl_inr {X Y : D} (f : X ⟶ Y) :
     (associator C D E).map ((inl_ _ _).map ((inr_ _ _).map f)) =
     (inr_ _ _).map ((inl_ _ _).map f) := by
   simp [associator]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem associator_map_inr {X Y : E} (f : X ⟶ Y) :
     (associator C D E).map ((inr_ _ _).map f) = (inr_ _ _).map ((inr_ _ _).map f) := by
@@ -102,13 +99,11 @@ theorem inverseAssociator_obj_inr_inl (X) :
 theorem inverseAssociator_obj_inr_inr (X) : (inverseAssociator C D E).obj (inr (inr X)) = inr X :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inverseAssociator_map_inl {X Y : C} (f : X ⟶ Y) :
     (inverseAssociator C D E).map ((inl_ _ _).map f) = (inl_ _ _).map ((inl_ _ _).map f) := by
   simp [inverseAssociator]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inverseAssociator_map_inr_inl {X Y : D} (f : X ⟶ Y) :
     (inverseAssociator C D E).map ((inr_ _ _).map ((inl_ _ _).map f)) =
@@ -147,6 +142,7 @@ def inrCompInrCompInverseAssociator :
     inr_ D E ⋙ inr_ C (D ⊕ E) ⋙ inverseAssociator C D E ≅ inr_ (C ⊕ D) E :=
   isoWhiskerLeft (inr_ _ _) (inrCompInverseAssociator C D E) ≪≫ Functor.inrCompSum' _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing associativity of sums of categories.
 -/
 @[simps functor inverse]
