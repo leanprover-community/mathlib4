@@ -11,7 +11,7 @@ public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Logic.Relator
 public import Mathlib.Util.CompileInductive
 public import Aesop
-public import Batteries.Tactic.Lint.Simp
+public import Batteries.Linter.Simp
 
 /-!
 # Option of a type
