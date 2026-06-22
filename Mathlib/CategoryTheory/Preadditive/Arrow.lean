@@ -24,9 +24,7 @@ namespace CategoryTheory
 
 universe v u
 
-variable {T : Type u} [Category.{v} T] [Preadditive T]
-
-variable {u v : Arrow T}
+variable {T : Type u} [Category.{v} T] [Preadditive T] {u v : Arrow T}
 
 instance : Add (u ⟶ v) where
   add α β := Arrow.homMk (α.left + β.left) (α.right + β.right) (by simp)
@@ -55,7 +53,7 @@ lemma Arrow.Hom.neg_left (α : u ⟶ v) : (- α).left = - α.left := rfl
 @[simp]
 lemma Arrow.Hom.neg_right (α : u ⟶ v) : (- α).right = - α.right := rfl
 
-instance {u v : Arrow T} : AddCommGroup (u ⟶ v) where
+instance : AddCommGroup (u ⟶ v) where
   add_assoc _ _ _ := by ext <;> simp [add_assoc]
   zero_add _ := by cat_disch
   add_zero _ := by cat_disch
