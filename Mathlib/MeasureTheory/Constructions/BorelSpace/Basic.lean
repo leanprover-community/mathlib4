@@ -500,7 +500,8 @@ is ae-measurable. -/
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 
-theorem IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) : Measurable f :=
+theorem Topology.IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) :
+    Measurable f :=
   hf.continuous.measurable
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
