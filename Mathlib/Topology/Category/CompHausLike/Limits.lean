@@ -120,6 +120,11 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩
 
+/-
+This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
+in the indexing type of the coproduct. In almost all cases, `w` will be either `0` or `u`, but we
+want to allow both possibilities.
+-/
 set_option linter.checkUnivs false in
 variable (P) in
 /--
@@ -128,13 +133,6 @@ property `P`.
 -/
 class HasExplicitFiniteCoproducts : Prop where
   hasProp {α : Type w} [Finite α] (X : α → CompHausLike.{max u w} P) : HasExplicitFiniteCoproduct X
-
-/-
-This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
-in the indexing type of the coproduct. In almost all cases, `w` will be either `0` or `u`, but we
-want to allow both possibilities.
--/
-attribute [nolint checkUnivs] HasExplicitFiniteCoproducts
 
 attribute [instance] HasExplicitFiniteCoproducts.hasProp
 
