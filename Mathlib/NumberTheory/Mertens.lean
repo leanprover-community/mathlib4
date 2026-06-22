@@ -206,7 +206,7 @@ theorem first_theorem_nat : |∑ n ∈ Ioc 0 N, f n - log N| ≤ F.C₁ := by
   simpa using F.first_theorem (mod_cast (by lia) : 1 ≤ (N : ℝ))
 
 theorem first_theorem_error_bounded : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, F.f n - log x)
-    =O[atTop] (fun _ ↦ (1 : ℝ)) := by
+    =O[atTop] fun _ ↦ (1 : ℝ) := by
   simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
   exact ⟨F.C₁, 1, fun _ ↦ F.first_theorem⟩
 
@@ -273,7 +273,7 @@ theorem ContinuousOn.pow' {M : Type*} {X : Type*} [TopologicalSpace X] [Topologi
     ContinuousOn (f^n) s := hf.pow n
 
 private lemma integral_one_div_mul_log {x : ℝ} (hx : 2 ≤ x) :
-    (∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * log t) = log (log x) - log (log 2) := by
+    ∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * log t = log (log x) - log (log 2) := by
   suffices ∫ (t : ℝ) in 2..x, (inv * inv_log ^ 2 * log) t = log_log x - log_log 2 by
     unfold inv_log inv log_log at this; convert this; simp [field]
   rw [← integral_deriv_eq_sub (f := log_log)]
@@ -433,7 +433,7 @@ theorem second_theorem_error_bigO_inv_log :
     grind [abs_of_pos this]
 
 theorem second_theorem_error_littleO_one :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - F.M) =o[atTop] (fun _ ↦ (1:ℝ)) :=
+    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - F.M) =o[atTop] fun _ ↦ (1:ℝ) :=
   F.second_theorem_error_bigO_inv_log.trans_isLittleO inv_log_eq_o_one
 
 theorem second_theorem_error_bounded : ∃ C, ∀ x ≥ 2,
@@ -444,14 +444,14 @@ theorem second_theorem_error_bounded : ∃ C, ∀ x ≥ 2,
   ring_nf; rfl
 
 theorem second_theorem_error_bigO_one :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x)) =O[atTop] (fun _ ↦ (1:ℝ)) := by
+    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x)) =O[atTop] fun _ ↦ (1:ℝ) := by
   simp only [isBigO_iff, norm_eq_abs, one_mem, CStarRing.norm_of_mem_unitary, mul_one,
       eventually_atTop]
   obtain ⟨ C, _ ⟩ := F.second_theorem_error_bounded
   use C, 2
 
 theorem second_theorem_asymp :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊ x ⌋₊, (log n)⁻¹ * f n) ~[atTop] (fun x ↦ log (log x)) := by
+    (fun x ↦ ∑ n ∈ Ioc 0 ⌊ x ⌋₊, (log n)⁻¹ * f n) ~[atTop] fun x ↦ log (log x) := by
     apply IsLittleO.isEquivalent (IsBigO.trans_isLittleO _ one_eq_o_log_log)
     convert! F.second_theorem_error_bigO_one using 1
 
