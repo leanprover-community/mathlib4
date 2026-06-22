@@ -50,9 +50,7 @@ weak-star, weak dual, duality
 
 noncomputable section
 
-open Filter
-
-open Topology
+open Filter Topology LinearMap
 
 variable {α 𝕜 𝕝 E F : Type*}
 
@@ -62,47 +60,7 @@ def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Conti
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
 deriving AddCommMonoid, TopologicalSpace, ContinuousAdd, Inhabited,
-  FunLike, ContinuousLinearMapClass
-
-namespace WeakDual
-
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
-
-/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
-multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
-instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
-  inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
-
-/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
-multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
-instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
-  inferInstanceAs <| DistribMulAction M (E →L[𝕜] 𝕜)
-
-instance instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : ContinuousConstSMul M (WeakDual 𝕜 E) :=
-  ⟨fun m =>
-    continuous_induced_rng.2 <| (WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).const_smul m⟩
-
-/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
-multiplication on `𝕜`, then it continuously acts on `WeakDual 𝕜 E`. -/
-instance instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [TopologicalSpace M] [ContinuousSMul M 𝕜] : ContinuousSMul M (WeakDual 𝕜 E) :=
-  ⟨continuous_induced_rng.2 <|
-      continuous_fst.smul ((WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).comp continuous_snd)⟩
-
-/-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
-multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
-instance (priority := 950) instModule'
-    (R : Type*) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
-    Module R (WeakDual 𝕜 E) :=
-  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
-
-instance instModule : Module 𝕜 (WeakDual 𝕜 E) := inferInstance
-
-end WeakDual
+  FunLike, ContinuousLinearMapClass, Module 𝕜
 
 namespace StrongDual
 
@@ -164,19 +122,74 @@ theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜)
 theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
 
+variable (𝕜 E) in
+/-- The canonical bilinear pairing between an element `f : WeakDual 𝕜 E` and `x : E` given by
+the evaluation `f x`. -/
+@[simps! -isSimp]
+def pairing : WeakDual 𝕜 E →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
+  StrongDual.toWeakDual.arrowCongr (.refl ..) (topDualPairing 𝕜 E)
+
+@[simp]
+lemma pairing_apply_apply (f : WeakDual 𝕜 E) (x : E) :
+    pairing 𝕜 E f x = f x :=
+  rfl
+
+instance isWeak : (pairing 𝕜 E).IsWeak where eq_induced := rfl
+
+/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
+multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
+instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
+  inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
+
+instance (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : IsSMulApply M (WeakDual 𝕜 E) E 𝕜 where
+  smul_apply _ _ _ := rfl
+
+/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
+multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
+instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
+  inferInstanceAs <| DistribMulAction M (E →L[𝕜] 𝕜)
 
 theorem coeFn_continuous : Continuous fun (x : WeakDual 𝕜 E) y => x y :=
-  continuous_induced_dom
+  IsWeak.coeFn_continuous (pairing 𝕜 E)
 
+@[fun_prop]
+theorem continuous_eval {α : Type*} [TopologicalSpace α] {f : α → WeakDual 𝕜 E} (hf : Continuous f)
+    (y : E) : Continuous fun x ↦ f x y :=
+  IsWeak.continuous_eval (pairing 𝕜 E) y |>.comp hf
+
+@[deprecated continuous_eval (since := "2026-06-15")]
 theorem eval_continuous (y : E) : Continuous fun x : WeakDual 𝕜 E => x y :=
   continuous_pi_iff.mp coeFn_continuous y
 
+@[fun_prop]
 theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual 𝕜 E}
-    (h : ∀ y, Continuous fun a => (g a) y) : Continuous g :=
-  continuous_induced_rng.2 (continuous_pi_iff.mpr h)
+    (h : ∀ y, Continuous fun a ↦ g a y) : Continuous g :=
+  IsWeak.continuous_of_continuous_eval (pairing 𝕜 E) h
+
+instance instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : ContinuousConstSMul M (WeakDual 𝕜 E) where
+  continuous_const_smul _ := IsWeak.continuous_of_continuous_eval (pairing 𝕜 E) <| by
+    simp only [pairing_apply_apply, _root_.smul_apply]; fun_prop
+
+/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
+multiplication on `𝕜`, then it continuously acts on `WeakDual 𝕜 E`. -/
+instance instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [TopologicalSpace M] [ContinuousSMul M 𝕜] : ContinuousSMul M (WeakDual 𝕜 E) where
+  continuous_smul := IsWeak.continuous_of_continuous_eval (pairing 𝕜 E) <| by
+    simp only [pairing_apply_apply, _root_.smul_apply]; fun_prop
+
+/-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
+multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
+instance (priority := 950) instModule'
+    (R : Type*) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
+    Module R (WeakDual 𝕜 E) :=
+  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
-  (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
+  IsWeak.isEmbedding (B := pairing 𝕜 E) ContinuousLinearMap.coe_injective |>.t2Space
 
 end Semiring
 
@@ -189,7 +202,7 @@ instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
   inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E))
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakDual 𝕜 E) :=
-  WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E)
+  IsWeak.isTopologicalAddGroup (pairing 𝕜 E)
 
 end Ring
 
@@ -200,7 +213,7 @@ end WeakDual
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
-deriving AddCommMonoid, TopologicalSpace, ContinuousAdd
+deriving AddCommMonoid, TopologicalSpace, ContinuousAdd, Module 𝕜
 
 section Semiring
 
@@ -208,56 +221,81 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
+variable (𝕜 E) in
+/-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
+
 namespace WeakSpace
+
+variable (𝕜 E) in
+/-- The canonical bilinear pairing between an element `x : WeakSpace 𝕜 E` and `f : StrongDual 𝕜 E`
+given by the evaluation `f ((toWeakSpace 𝕜 E).symm x)`. -/
+@[simps!]
+def pairing : WeakSpace 𝕜 E →ₗ[𝕜] StrongDual 𝕜 E →ₗ[𝕜] 𝕜 :=
+  (toWeakSpace 𝕜 E).arrowCongr (.refl ..) (topDualPairing 𝕜 E).flip
+
+variable (𝕜 E) in
+instance isWeak : (pairing 𝕜 E).IsWeak where eq_induced := rfl
+
+@[fun_prop]
+theorem continuous_eval {α : Type*} [TopologicalSpace α] {x : α → WeakSpace 𝕜 E} (hx : Continuous x)
+    (f : StrongDual 𝕜 E) : Continuous fun a ↦ f ((toWeakSpace 𝕜 E).symm (x a)) :=
+  IsWeak.continuous_eval (pairing 𝕜 E) f |>.comp hx
+
+@[fun_prop] -- this `fun_prop` lemma doesn't work. :(
+theorem continuous_of_continuous_eval [TopologicalSpace α] {x : α → WeakSpace 𝕜 E}
+    (h : ∀ f : StrongDual 𝕜 E, Continuous fun a ↦ f ((toWeakSpace 𝕜 E).symm (x a))) :
+    Continuous x :=
+  IsWeak.continuous_of_continuous_eval (pairing 𝕜 E) h
+
+@[fun_prop]
+lemma continuous_toWeakSpace : Continuous (toWeakSpace 𝕜 E) :=
+  continuous_of_continuous_eval fun f => by simp only [LinearEquiv.symm_apply_apply]; fun_prop
 
 instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
   inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
-
-instance instModule : Module 𝕜 (WeakSpace 𝕜 E) := inferInstance
 
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
   WeakBilin.instIsScalarTower (topDualPairing 𝕜 E).flip
 
 instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) :=
-  WeakBilin.instContinuousSMul _
+  isWeak 𝕜 E |>.continuousSMul
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A continuous linear map from `E` to `F` is still continuous when `E` and `F` are equipped with
 their weak topologies. -/
 def map (f : E →L[𝕜] F) : WeakSpace 𝕜 E →L[𝕜] WeakSpace 𝕜 F :=
-  { f with
-    cont :=
-      WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘L f) }
+  { (toWeakSpace 𝕜 E).arrowCongr (toWeakSpace 𝕜 F) f with
+    cont := continuous_of_continuous_eval fun l ↦ continuous_eval (by fun_prop) (l ∘L f) }
 
-theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
+theorem map_apply (f : E →L[𝕜] F) (x : E) :
+    WeakSpace.map f x = (toWeakSpace 𝕜 F) (f ((toWeakSpace 𝕜 E).symm x)) :=
   rfl
 
-@[simp]
+@[deprecated map_apply "this lemma should not be used, it constitutes abuse of
+definitional equality" (since := "2026-06-15")]
 theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
   rfl
 
 end WeakSpace
 
 variable (𝕜 E) in
-/-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
-mapping). It is a linear equivalence. -/
-def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
-
-variable (𝕜 E) in
 /-- For a topological vector space `E`, "identity mapping" `E → WeakSpace 𝕜 E` is continuous.
 This definition implements it as a continuous linear map. -/
 def toWeakSpaceCLM : E →L[𝕜] WeakSpace 𝕜 E where
   __ := toWeakSpace 𝕜 E
-  cont := by
-    apply WeakBilin.continuous_of_continuous_eval
-    exact ContinuousLinearMap.continuous
 
 variable (𝕜 E) in
 @[simp]
-theorem toWeakSpaceCLM_eq_toWeakSpace (x : E) :
-    toWeakSpaceCLM 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
+theorem toWeakSpaceCLM_apply (x : E) :
+    toWeakSpaceCLM 𝕜 E x = toWeakSpace 𝕜 E x :=
+  rfl
+
+@[deprecated toWeakSpaceCLM_eq_toWeakSpace (since := "2026-06-15")]
+alias toWeakSpaceCLM_eq_toWeakSpace := toWeakSpaceCLM_apply
 
 theorem toWeakSpaceCLM_bijective :
     Function.Bijective (toWeakSpaceCLM 𝕜 E) :=
@@ -273,11 +311,13 @@ theorem WeakSpace.isOpen_of_isOpen (V : Set E)
     (hV : IsOpen ((toWeakSpaceCLM 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
   simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
 
+@[deprecated IsWeak.tendsto_iff_forall_eval_tendsto (since := "2026-06-15")]
 theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :
     Tendsto f l (𝓝 x) ↔
       ∀ y, Tendsto (fun i => topDualPairing 𝕜 E (f i) y) l (𝓝 (topDualPairing 𝕜 E x y)) :=
-  WeakBilin.tendsto_iff_forall_eval_tendsto _ ContinuousLinearMap.coe_injective
+  IsWeak.tendsto_iff_forall_eval_tendsto (B := WeakDual.pairing 𝕜 E)
+    ContinuousLinearMap.coe_injective
 
 end Semiring
 
