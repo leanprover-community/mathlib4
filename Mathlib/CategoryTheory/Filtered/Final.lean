@@ -487,8 +487,8 @@ lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J
       exact ⟨c, 𝟙 _, rfl⟩
 
 lemma Monotone.initial_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
-  [IsCodirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
-  hf.functor.Initial ↔ ( ∀ j₁,∃ j₂, f j₂ ≤ j₁) := by
+    [IsCodirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
+    hf.functor.Initial ↔ ( ∀ j₁,∃ j₂, f j₂ ≤ j₁) := by
   rw [Functor.initial_iff_of_isCofiltered]
   constructor
   · rintro ⟨h, _⟩ j₂

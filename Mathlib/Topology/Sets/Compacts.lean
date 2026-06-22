@@ -276,7 +276,8 @@ theorem singleton_prod_singleton (x : α) (y : β) :
 open Topology
 
 /-- The compacts neigbourhoods of a compact -/
-def compactNhds (K : Compacts α) : Set (Compacts α) := {K' | ∀ (x : K), (K': Set α) ∈ 𝓝 x.val}
+def compactNhds (K : Compacts α) : Set (Compacts α) :=
+  {K' | ∀ (x : K), (K': Set α) ∈ 𝓝 x.val}
 
 lemma subset_of_mem_compactNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) :
     (K : Set α) ⊆ K' :=
@@ -289,8 +290,8 @@ lemma exists_open_nhds_sub_compact_nhds {K : Compacts α} (L : K.compactNhds) :
 
 /-- The compact neigbourhood induced by the existence of an open subset between two compacts -/
 def compactNhds_of_existsOpenSubsetBetween {K : Compacts α} (L : Compacts α) (U : Opens α)
-  (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
-  K.compactNhds :=
+    (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
+    K.compactNhds :=
   ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
 
 instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
@@ -324,7 +325,7 @@ lemma compactclosure_of_mem_openRcNhds {K : Compacts α} {U : Opens α} (h : U �
   IsCompact (closure (U : Set α)) := h.left
 
 lemma is_compactNhds_of_isOpenRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.openRcNhds) :
-  ⟨closure (U : Set α), compactclosure_of_mem_openRcNhds h⟩ ∈ K.compactNhds := by
+    ⟨closure (U : Set α), compactclosure_of_mem_openRcNhds h⟩ ∈ K.compactNhds := by
   intro x
   have H : (U : Set α) ∈ 𝓝 (x : α) :=
     U.isOpen.mem_nhds <| Compacts.subset_of_mem_openRcNhds h (by simp)
@@ -345,7 +346,7 @@ lemma mono_oRcNhds_to_compactNhds (K : Compacts α) : Monotone K.oRcNhds_to_comp
 instance [T2Space α] (K : Compacts α) : IsCodirectedOrder K.openRcNhds where
   directed U1 U2 := ⟨⟨U1 ⊓ U2, (compactclosure_of_mem_openRcNhds (Subtype.coe_prop U1) |>.inter
     <| compactclosure_of_mem_openRcNhds U2.coe_prop).of_isClosed_subset
-       isClosed_closure <| closure_inter_subset_inter_closure ..,
+      isClosed_closure <| closure_inter_subset_inter_closure ..,
       le_inf (subset_of_mem_openRcNhds (Subtype.coe_prop U1))
       <| subset_of_mem_openRcNhds (Subtype.coe_prop U2)⟩,
          Subtype.coe_le_coe.mp inf_le_left,
