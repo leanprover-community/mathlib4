@@ -800,7 +800,7 @@ theorem IsOpenMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : I
     IsOpenMap (Sum.elim f g) :=
   isOpenMap_sumElim.2 ⟨hf, hg⟩
 
-lemma IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
+lemma Topology.IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g) (h : Injective (Sum.elim f g)) :
     IsOpenEmbedding (Sum.elim f g) := by
   rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
@@ -830,7 +830,7 @@ theorem IsClosedMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg
     IsClosedMap (Sum.elim f g) :=
   isClosedMap_sumElim.2 ⟨hf, hg⟩
 
-lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
+lemma Topology.IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) (h : Injective (Sum.elim f g)) :
     IsClosedEmbedding (Sum.elim f g) := by
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
@@ -974,16 +974,17 @@ theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f 
     exact disjoint_image_inl_image_inr
   exact B.mono_left A
 
-theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap X Y) :=
+theorem Topology.IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap X Y) :=
   (Homeomorph.sumComm X Y).isOpenEmbedding
 
-theorem IsInducing.sumSwap : IsInducing (@Sum.swap X Y) := IsOpenEmbedding.sumSwap.isInducing
+theorem Topology.IsInducing.sumSwap : IsInducing (@Sum.swap X Y) :=
+  IsOpenEmbedding.sumSwap.isInducing
 
 theorem isInducing_sumElim :
     IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
       Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) :=
   ⟨fun h ↦ ⟨h.sumElim_left, h.sumElim_right, h.disjoint_of_sumElim_aux,
-    ((Sum.elim_swap ▸ h.comp IsInducing.sumSwap).disjoint_of_sumElim_aux ).symm⟩,
+    ((Sum.elim_swap ▸ h.comp .sumSwap).disjoint_of_sumElim_aux ).symm⟩,
     fun ⟨hf, hg, hFg, hfG⟩ ↦ hf.sumElim hg hFg hfG⟩
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds
