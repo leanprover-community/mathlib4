@@ -29,6 +29,7 @@ instance : MulAction ℋ 𝒬 := .quotient ..
 
 namespace SlashInvariantForm
 
+section
 variable [SlashInvariantFormClass F 𝒢 k]
 
 /-- For `f` invariant under `𝒢`, this is a function on `(ℋ ⧸ 𝒢 ⊓ ℋ) × ℍ → ℂ` which packages up the
@@ -48,19 +49,27 @@ lemma quotientFunc_smul {h} (hh : h ∈ ℋ) (q : 𝒬) :
   induction q using Quotient.inductionOn with
   | h r => simp [SlashAction.slash_mul]
 
+end
+
+section
+variable [ModularFormClass F 𝒢 k]
+
 /-- Each `quotientFunc f q` is holomorphic on the upper half plane. -/
-lemma quotientFunc_mdiff [ModularFormClass F 𝒢 k] (q : 𝒬) :
+lemma quotientFunc_mdiff (q : 𝒬) :
     MDiff (quotientFunc f q) :=
   Quotient.inductionOn q fun r => (ModularForm.translate f r.val⁻¹).holo'
 
 /-- Each `quotientFunc f q` is bounded at `∞`. -/
-lemma quotientFunc_isBoundedAtImInfty [ModularFormClass F 𝒢 k] [𝒢.IsFiniteRelIndex ℋ]
+lemma quotientFunc_isBoundedAtImInfty [𝒢.IsFiniteRelIndex ℋ]
     [Fact (IsCusp OnePoint.infty ℋ)] (q : 𝒬) :
     IsBoundedAtImInfty (quotientFunc f q) :=
   Quotient.inductionOn q fun ⟨_, hr⟩ => OnePoint.isBoundedAt_infty_iff.mp <|
     (ModularForm.translate f _).bdd_at_cusps'
       ((Fact.out : IsCusp _ _).of_isFiniteRelIndex_conj hr)
 
+end
+
+variable [SlashInvariantFormClass F 𝒢 k]
 variable (ℋ) [𝒢.IsFiniteRelIndex ℋ]
 
 /-- The trace of a slash-invariant form, as a slash-invariant form. -/
