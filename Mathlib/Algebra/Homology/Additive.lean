@@ -204,6 +204,9 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
+/-- If additive functors are related by an isomorphism `F ⋙ G ≅ H`, this is
+the corresponding isomorphism for the induced functors on categories
+of homological complexes. -/
 @[simps!]
 def Functor.mapHomologicalComplexCompIso {W' : Type*} [Category W'] [Preadditive W']
     {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)

@@ -286,7 +286,8 @@ instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Linear R V] [Linear R
   (HomotopyCategory.quotient V c).linear_of_full_essSurj_comp (F.mapHomotopyCategory c)
 
 /-- If additive functors are related by an isomorphism `F ⋙ G ≅ H`, this is
-the corresponding isomorphism for the induced functors on homological complexes. -/
+the corresponding isomorphism for the induced functors on homotopy categories
+of homological complexes. -/
 def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W']
     {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
