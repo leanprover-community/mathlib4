@@ -34,6 +34,7 @@ namespace Scheme
 
 namespace PartialMap
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restricting a dominant partial map to a dense open yields a dominant partial map. -/
 lemma isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : IsDominant (f.restrict U hU hU').hom := by
@@ -54,6 +55,7 @@ lemma isDominant_hom_iff_isDominant_restrict_hom (f : X.PartialMap Y) (U : X.Ope
   ⟨fun _ ↦ f.isDominant_restrict_hom U hU hU',
     fun _ ↦ f.isDominant_hom_of_isDominant_restrict_hom U hU hU'⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Dominance of the underlying morphism is invariant under equivalence of partial maps. -/
 lemma isDominant_hom_iff_of_equiv (f g : X.PartialMap Y) (h : f.equiv g) :
     IsDominant f.hom ↔ IsDominant g.hom := by

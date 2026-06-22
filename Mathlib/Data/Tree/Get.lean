@@ -22,7 +22,7 @@ These definitions were moved from the main file to avoid a dependency on `Num`.
 
 @[expose] public section
 
-namespace Tree
+namespace BinaryTree
 
 variable {α : Type*}
 
@@ -30,7 +30,7 @@ variable {α : Type*}
 constructed according to the provided decidable order on its elements.
 If it hasn't, the result will be incorrect. If it has, but the element
 is not in the tree, returns none. -/
-def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → Option PosNum
+def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : BinaryTree α → Option PosNum
   | nil => none
   | node a t₁ t₂ =>
     match cmpUsing lt x a with
@@ -38,20 +38,38 @@ def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → O
     | Ordering.eq => some PosNum.one
     | Ordering.gt => PosNum.bit1 <$> indexOf lt x t₂
 
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.indexOf`. -/
+@[deprecated BinaryTree.indexOf (since := "2026-06-07")]
+abbrev _root_.Tree.indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → Option PosNum :=
+  BinaryTree.indexOf lt x
+
 /-- Retrieves an element uniquely determined by a `PosNum` from the tree,
 taking the following path to get to the element:
 - `bit0` - go to left child
 - `bit1` - go to right child
 - `PosNum.one` - retrieve from here -/
-def get : PosNum → Tree α → Option α
+def get : PosNum → BinaryTree α → Option α
   | _, nil => none
   | PosNum.one, node a _t₁ _t₂ => some a
   | PosNum.bit0 n, node _a t₁ _t₂ => t₁.get n
   | PosNum.bit1 n, node _a _t₁ t₂ => t₂.get n
 
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.get`. -/
+@[deprecated BinaryTree.get (since := "2026-06-07")]
+abbrev _root_.Tree.get (n : PosNum) (t : Tree α) : Option α :=
+  BinaryTree.get n t
+
 /-- Retrieves an element from the tree, or the provided default value
-if the index is invalid. See `Tree.get`. -/
-def getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
+if the index is invalid. See `BinaryTree.get`. -/
+def getOrElse (n : PosNum) (t : BinaryTree α) (v : α) : α :=
   (t.get n).getD v
 
-end Tree
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.getOrElse`. -/
+@[deprecated BinaryTree.getOrElse (since := "2026-06-07")]
+abbrev _root_.Tree.getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
+  BinaryTree.getOrElse n t v
+
+end BinaryTree

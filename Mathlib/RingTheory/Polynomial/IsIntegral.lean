@@ -69,7 +69,7 @@ lemma isIntegral_coeff_of_dvd (p : R[X]) (q : S[X]) (hp : p.Monic) (hq : q.Monic
   rw [IsScalarTower.coe_toAlgHom', ← coeff_map]
   refine Polynomial.isIntegral_coeff_of_factors _ (by simp [hq.map, isIntegral_one]) hqT ?_ i
   intro x hx
-  exact ⟨p, hp, by simpa using aeval_eq_zero_of_dvd_aeval_eq_zero (a := x) H (by simp_all)⟩
+  exact ⟨p, hp, by simpa using! aeval_eq_zero_of_dvd_aeval_eq_zero (x := x) H (by simp_all)⟩
 
 end Polynomial
 
@@ -225,8 +225,8 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
   · intro α β e IH f H n
     have := @IH (rename e.symm f) (.of_map (g := (rename e).toRingHom)
       (rename_injective _ e.injective) <| .of_comp (f := (rename e.symm).toRingHom)
-        (by convert! H <;> aesop)) (n.embDomain e.symm)
-    simpa [Finsupp.embDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective] using this
+        (by convert H <;> aesop)) (n.embDomain e.symm)
+    simpa [Finsupp.embDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective] using! this
   · intro f H n
     refine .of_map (g := (isEmptyAlgEquiv _ PEmpty).symm.toRingHom)
       (isEmptyAlgEquiv _ PEmpty).symm.injective
@@ -235,7 +235,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
     · aesop (add simp MvPolynomial.isEmptyAlgEquiv)
     · obtain rfl := Subsingleton.elim n 0
       have : constantCoeff = (isEmptyAlgEquiv S PEmpty).toRingHom := by aesop
-      simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using
+      simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using!
         congr((isEmptyAlgEquiv S PEmpty.{w + 1}).symm ($this f))
   · intro α _ IH f H n
     have := IH (IsIntegral.coeff (R := MvPolynomial α R)

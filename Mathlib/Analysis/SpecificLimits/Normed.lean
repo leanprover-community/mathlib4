@@ -637,7 +637,6 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     rw [← @summable_nat_add_iff α _ _ _ _ N]
     refine .of_norm_bounded (g := fun n ↦ ‖f N‖ * r ^ n)
       (Summable.mul_left _ <| summable_geometric_of_lt_one hr₀ hr₁) fun n ↦ ?_
-    simp only
     conv_rhs => rw [mul_comm, ← zero_add N]
     refine le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ ?_
     convert! hN (i + N) (N.le_add_left i) using 3
@@ -944,7 +943,6 @@ lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
     (hbdd : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f₁ x - f₂ x‖) :
     Tendsto (fun x ↦ f₂ x • g x) l (𝓝 t) := by
   apply hmul.congr_dist
-  dsimp
   simp_rw [dist_eq_norm, ← sub_smul, norm_smul]
   apply isBoundedUnder_le_mul_tendsto_zero
   · change IsBoundedUnder _ _ fun _ ↦ _

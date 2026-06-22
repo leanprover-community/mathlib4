@@ -520,7 +520,7 @@ lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun f κ μ)
     IndepFun (f i * f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f κ μ)
@@ -528,7 +528,7 @@ lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f κ μ)
     IndepFun (f i * f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk₀ hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun f κ μ)
@@ -569,7 +569,7 @@ lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun f κ μ)
     IndepFun (f i / f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_left₀ (hf_indep : iIndepFun f κ μ)
@@ -577,7 +577,7 @@ lemma iIndepFun.indepFun_div_left₀ (hf_indep : iIndepFun f κ μ)
     IndepFun (f i / f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk₀ hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun f κ μ)

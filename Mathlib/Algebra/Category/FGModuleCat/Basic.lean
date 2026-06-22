@@ -99,12 +99,6 @@ abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGMod
 lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] :
     of R V = V := rfl
 
-/-
-The reduction done by `simpVarHead` is stronger than the one actually used by `simp`,
-so we get a false positive here
--/
-attribute [nolint simpVarHead] of_carrier
-
 variable {R} in
 /-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/
 abbrev ofHom {V W : Type v} [AddCommGroup V] [Module R V] [Module.Finite R V]
