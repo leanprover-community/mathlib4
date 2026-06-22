@@ -19,10 +19,10 @@ We define the pullback (comap) of a `ValuativeRel` along a ring homomorphism.
 
 ## Main results
 
-* `IsUnit.not_vle_zero` : If `f` is a unit, then `¬ f ≤ᵥ 0`.
+* `ValuativeRel.not_vle_zero_of_isUnit` : If `f` is a unit, then `¬ f ≤ᵥ 0`.
 -/
 
-@[expose] public section
+public section
 
 namespace ValuativeRel
 
@@ -30,7 +30,7 @@ variable {A B : Type*} [CommRing A] [CommRing B]
 
 /-- The pullback of a `ValuativeRel` along `φ : A →+* B`:
 `a₁ ≤ᵥ a₂ ↔ φ(a₁) ≤ᵥ φ(a₂)`. -/
-@[implicit_reducible]
+@[expose, implicit_reducible]
 def comap (φ : A →+* B) (v : ValuativeRel B) : ValuativeRel A where
   vle a₁ a₂ := (φ a₁) ≤ᵥ (φ a₂)
   vle_total a₁ a₂ := v.vle_total (φ a₁) (φ a₂)
@@ -42,9 +42,11 @@ def comap (φ : A →+* B) (v : ValuativeRel B) : ValuativeRel A where
     simpa [map_mul] using v.vle_mul_cancel h₀ (by simpa [map_mul] using h)
   not_vle_one_zero := by simp [v.not_vle_one_zero]
 
-@[simp]
 theorem comap_vle (φ : A →+* B) (v : ValuativeRel B) (a₁ a₂ : A) :
     (comap φ v).vle a₁ a₂ ↔ v.vle (φ a₁) (φ a₂) := Iff.rfl
+
+theorem comap_vlt (φ : A →+* B) (v : ValuativeRel B) (a₁ a₂ : A) :
+    (comap φ v).vlt a₁ a₂ ↔ v.vlt (φ a₁) (φ a₂) := Iff.rfl
 
 @[simp]
 theorem comap_id (v : ValuativeRel A) : comap (RingHom.id A) v = v := by
@@ -54,14 +56,13 @@ theorem comap_comp {C : Type*} [CommRing C] (φ : A →+* B) (ψ : B →+* C) (v
     comap (ψ.comp φ) v = comap φ (comap ψ v) := by
   ext a₁ a₂; rfl
 
-end ValuativeRel
-
 /-- If `f` is a unit, then `¬ f ≤ᵥ 0`. -/
-theorem IsUnit.not_vle_zero {A : Type*} [CommRing A] [ValuativeRel A] {f : A} (hu : IsUnit f) :
+theorem not_vle_zero_of_isUnit {A : Type*} [CommRing A] [ValuativeRel A] {f : A} (hf : IsUnit f) :
     ¬ f ≤ᵥ (0 : A) := by
-  obtain ⟨u, rfl⟩ := hu
+  obtain ⟨u, rfl⟩ := hf
   intro h
-  simpa [Units.inv_mul, ValuativeRel.not_vle.mpr ValuativeRel.zero_vlt_one]
-    using ValuativeRel.mul_vle_mul_right h ↑u⁻¹
+  simpa [Units.inv_mul, not_vle.mpr zero_vlt_one] using mul_vle_mul_right h ↑u⁻¹
+
+end ValuativeRel
 
 end
