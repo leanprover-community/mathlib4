@@ -262,7 +262,7 @@ theorem IsFactorOf.trans (h₁ : IsFactorOf ϕ ψ) (h₂ : IsFactorOf ψ χ) : I
   h₁.elim fun π hπ => h₂.elim fun ρ hρ => ⟨π ∘ ρ, hρ.comp χ ψ ϕ hπ⟩
 
 /-- Every flow is a factor of itself. -/
-theorem IsFactorOf.self : IsFactorOf ϕ ϕ := ⟨id, (isSemiconjugacy_id_iff_eq ϕ ϕ).mpr (by rfl)⟩
+theorem IsFactorOf.self : IsFactorOf ϕ ϕ := ⟨id, (isSemiconjugacy_id_iff_eq ϕ ϕ).mpr rfl⟩
 
 end AddMonoid
 

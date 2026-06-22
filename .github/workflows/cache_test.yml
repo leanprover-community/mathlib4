@@ -1,0 +1,64 @@
+# Runs the cache tool's unit tests (`lake exe cache-test`) on Linux and Windows
+# for PRs that touch the cache code. The suite is deliberately network-free (see
+# the module docstring in `Cache/Test.lean`), so the job only needs the toolchain
+# and the package dependencies' sources — not a Mathlib build — and finishes in a
+# few minutes on a hosted runner. The Windows job guards the tool's cross-platform
+# behavior, such as the null device the marker probe and tests discard output to.
+name: cache tests
+
+on:
+  pull_request:
+    paths:
+      - 'Cache/**'
+      # The `cache-test` target and the toolchain it compiles under live here;
+      # a bump can break the tool's compilation even with `Cache/` untouched.
+      - 'lakefile.lean'
+      - 'lean-toolchain'
+      # Re-run when the workflow itself changes.
+      - '.github/workflows/cache_test.yml'
+
+concurrency:
+  group: cache-test-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  cache-test:
+    if: github.repository == 'leanprover-community/mathlib4'
+    strategy:
+      # Report both platforms even if one fails, so a Windows-only break is
+      # never hidden by a Linux failure (or vice versa).
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    # `leanprover/lean-action` installs elan from a bash step and adds it to the
+    # path in that shell's form, so the `lake` steps below must also run under
+    # bash (available on Windows runners as Git Bash) to find it.
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      # Install elan and the toolchain cross-platform. Build/test/lint, the
+      # Mathlib cache, and the GitHub cache are all disabled, so this is a
+      # toolchain-only setup; the `lake` steps below then build and run just the
+      # `cache-test` target. (The GitHub cache cannot be written from fork PRs
+      # and buys little for this small build, so it stays off.)
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        with:
+          auto-config: "false"
+          build: "false"
+          test: "false"
+          lint: "false"
+          use-mathlib-cache: "false"
+          use-github-cache: "false"
+
+      - name: build cache-test
+        run: lake build cache-test
+
+      - name: run cache tests
+        run: lake exe cache-test
