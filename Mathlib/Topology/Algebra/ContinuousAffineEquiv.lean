@@ -312,16 +312,34 @@ section
 variable (k)
 variable [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁]
 
+/-- The affine homeomorphism `V ≃ᴬ[k] P` given by `v ↦ v +ᵥ p`. This is `Equiv.vaddConst`
+as a `ContinuousAffineEquiv`. -/
+@[simps!]
+def vaddConst (p : P₁) : V₁ ≃ᴬ[k] P₁ where
+  __ := AffineEquiv.vaddConst k p
+  __ := Homeomorph.vaddConst p
+
+@[simp]
+lemma toAffineEquiv_vaddConst {p : P₁} : vaddConst k p = AffineEquiv.vaddConst k p := rfl
+
+/-- The affine homeomorphism given by `p' ↦ p -ᵥ p'`. This is `Equiv.constVSub` as a
+`ContinuousAffineEquiv`. -/
+@[simps!]
+def constVSub (p : P₁) : P₁ ≃ᴬ[k] V₁ where
+  __ := AffineEquiv.constVSub k p
+  __ := Homeomorph.constVSub p
+
+@[simp]
+lemma toAffineEquiv_constVSub {p : P₁} : vaddConst k p = AffineEquiv.vaddConst k p := rfl
+
 /-- The affine homeomorphism given by reflection about the point `x`.
 This is `Equiv.pointReflection` as a `ContinuousAffineEquiv`. -/
-@[simps toAffineEquiv]
-def pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ where
-  toAffineEquiv := AffineEquiv.pointReflection k x
-  continuous_toFun := by dsimp [Equiv.pointReflection]; fun_prop
-  continuous_invFun := by
-    let : ContinuousNeg V₁ :=
-      IsTopologicalAddTorsor.to_isTopologicalAddGroup (V := V₁) (P := P₁) |>.toContinuousNeg
-    dsimp [Equiv.pointReflection]; fun_prop
+def pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ :=
+    (constVSub k x).trans (vaddConst k x)
+
+@[simp]
+lemma coe_pointReflection (x : P₁) :
+    (pointReflection k x : P₁ → P₁) = Equiv.pointReflection x := rfl
 
 theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) +ᵥ x :=
   rfl
@@ -329,6 +347,17 @@ theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) 
 @[simp]
 theorem pointReflection_symm (x : P₁) : (pointReflection k x).symm = pointReflection k x :=
   toAffineEquiv_injective <| AffineEquiv.pointReflection_symm k x
+
+@[simp]
+theorem toAffineEquiv_pointReflection (x : P₁) :
+    (pointReflection k x).toAffineEquiv = AffineEquiv.pointReflection k x :=
+  rfl
+
+theorem pointReflection_self (x : P₁) : pointReflection k x x = x :=
+  vsub_vadd _ _
+
+theorem pointReflection_involutive (x : P₁) : Involutive (pointReflection k x : P₁ → P₁) :=
+  Equiv.pointReflection_involutive x
 
 end
 
