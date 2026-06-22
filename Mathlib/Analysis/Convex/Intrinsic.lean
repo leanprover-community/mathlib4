@@ -225,15 +225,13 @@ theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalS
     (Homeomorph.setCongr (coe_affineSpan_prod s t)).trans
       (Homeomorph.Set.prod (affineSpan 𝕜 s : Set P) (affineSpan 𝕜 t : Set Q))
   have himage : e '' ((↑) ⁻¹' (s ×ˢ t)) = ((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t) := by
-    ext ⟨a, b⟩; constructor
-    · rintro ⟨z, hz, heq⟩; exact heq ▸ hz
-    · intro h; exact ⟨e.symm (a, b), mem_preimage.mpr h, e.apply_symm_apply _⟩
-  have hfst : ∀ x : affineSpan 𝕜 (s ×ˢ t), ((e x).1 : P) = (x : P × Q).1 := fun _ => rfl
-  have hsnd : ∀ x : affineSpan 𝕜 (s ×ˢ t), ((e x).2 : Q) = (x : P × Q).2 := fun _ => rfl
-  simp only [intrinsicInterior]; ext ⟨p1, p2⟩; simp only [mem_image, Set.mem_prod]
-  constructor
-  · rintro ⟨x, hx, hx_eq⟩
-    have hmem : e x ∈ interior ((↑) ⁻¹' s) ×ˢ interior ((↑) ⁻¹' t) := by
+    refine ext fun ⟨a, b⟩ ↦ ⟨fun ⟨z, hz, heq⟩ ↦ heq ▸ hz, fun h ↦ ⟨e.symm (a, b), ?_⟩⟩
+    exact ⟨mem_preimage.mpr h, by simp⟩
+  have hfst (x : affineSpan 𝕜 (s ×ˢ t)) : ((e x).1 : P) = (x : P × Q).1 := rfl
+  have hsnd (x : affineSpan 𝕜 (s ×ˢ t)) : ((e x).2 : Q) = (x : P × Q).2 := rfl
+  simp only [intrinsicInterior, Set.ext_iff, mem_image, Set.mem_prod]
+  refine fun ⟨p1, p2⟩ ↦ ⟨fun ⟨x, hx, hx_eq⟩ ↦ ?_, ?_⟩
+  · have hmem : e x ∈ interior ((↑) ⁻¹' s) ×ˢ interior ((↑) ⁻¹' t) := by
       simp [← himage, ← e.image_interior, hx, ← interior_prod_eq]
     exact ⟨⟨(e x).1, hmem.1, by rw [hfst, hx_eq]⟩, ⟨(e x).2, hmem.2, by rw [hsnd, hx_eq]⟩⟩
   · rintro ⟨⟨a, ha, rfl⟩, ⟨b, hb, rfl⟩⟩

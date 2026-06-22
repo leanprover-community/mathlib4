@@ -878,7 +878,7 @@ theorem _root_.affineSpan_prod (s : Set P₁) (t : Set P₂) :
   · obtain ⟨x, hx⟩ := hs
     obtain ⟨y, hy⟩ := ht
     use ⟨x, y⟩
-    aesop (add simp [mem_spanPoints])
+    aesop (add simp mem_spanPoints)
 
 theorem _root_.coe_affineSpan_prod (s : Set P₁) (t : Set P₂) :
     affineSpan k (s ×ˢ t) = (affineSpan k s : Set P₁) ×ˢ (affineSpan k t : Set P₂) := by
