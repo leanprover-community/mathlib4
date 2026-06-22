@@ -508,11 +508,23 @@ lemma transvection_smul_single_fst {i j : ι} (hij : i ≠ j) (b : F) :
   simp [SpecialLinearGroup.smul_def, -mulVec_single, transvection_coe,
     add_mulVec, single_mulVec_eq, hij]
 
+@[deprecated transvection_smul_single_fst (since := "2026-06-22")]
+lemma transvection_mulVec_single_self {i j : ι} (hij : i ≠ j) (b : F) :
+    (transvection hij b).1 *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
+  rw [transvection_coe]
+  simp [-mulVec_single, add_mulVec, single_mulVec_eq, hij]
+
 /-- The transvection `transvection i j hij b` acts on `e_j = Pi.single j 1` by adding `b·e_i`. -/
 lemma transvection_smul_single_snd {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b) • (Pi.single j 1 : ι → F) = Pi.single j 1 + b • Pi.single i 1 := by
   simp [SpecialLinearGroup.smul_def, transvection_coe, -mulVec_single,
     add_mulVec, single_mulVec_eq]
+
+@[deprecated transvection_smul_single_snd (since := "2026-06-22")]
+lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
+    (transvection hij b).1 *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
+  rw [transvection_coe]
+  simp [-mulVec_single, add_mulVec, single_mulVec_eq]
 
 /-- Inverse of a transvection: `transvection i j hij b * transvection i j hij (-b) = 1`. -/
 lemma transvection_mul_neg {i j : ι} (hij : i ≠ j) (b : F) :
