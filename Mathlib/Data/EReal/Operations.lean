@@ -728,7 +728,7 @@ lemma mul_eq_top (a b : EReal) :
   | pos_bot _ hx => simp [hx.le, EReal.coe_mul_bot_of_pos hx]
   | coe_coe x y =>
     simpa only [EReal.coe_ne_bot, EReal.coe_neg', false_and, and_false, EReal.coe_ne_top,
-      EReal.coe_pos, or_self, iff_false, EReal.coe_mul] using EReal.coe_ne_top _
+      EReal.coe_pos, or_self, iff_false, EReal.coe_mul] using! EReal.coe_ne_top _
   | zero_bot => simp
   | neg_bot _ hx => simp [hx, EReal.coe_mul_bot_of_neg hx]
   | bot_bot => simp
@@ -821,7 +821,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
 @[positivity (_ + _ : EReal)]
-meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealAdd : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a + $b) =>
     assertInstancesCommute
@@ -840,7 +841,8 @@ meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: product of two `EReal`s. -/
 @[positivity (_ * _ : EReal)]
-meta def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealMul : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a * $b) =>
     assertInstancesCommute

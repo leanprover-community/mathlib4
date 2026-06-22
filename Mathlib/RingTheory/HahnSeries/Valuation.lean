@@ -10,7 +10,8 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Valuations on Hahn Series rings
-If `Γ` is a `LinearOrderedCancelAddCommMonoid` and `R` is a domain, then the domain `R⟦Γ⟧`
+
+If `Γ` is a linearly ordered cancellative monoid and `R` is a domain, then the domain `R⟦Γ⟧`
 admits an additive valuation given by `orderTop`.
 
 ## Main Definitions

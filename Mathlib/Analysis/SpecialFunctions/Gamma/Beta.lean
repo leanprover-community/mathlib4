@@ -242,7 +242,7 @@ theorem GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
       ← mul_assoc, mul_comm _ (Finset.prod _ _)]
   congr 3
   · rw [cpow_add _ _ (Nat.cast_ne_zero.mpr hn), cpow_one, mul_comm]
-  · refine Finset.prod_congr (by rfl) fun x _ => ?_
+  · refine Finset.prod_congr rfl fun x _ => ?_
     push_cast; ring
   · abel
 
@@ -253,7 +253,6 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
   rw [GammaSeq_eq_betaIntegral_of_re_pos hs]
   have := intervalIntegral.integral_comp_div (a := 0) (b := n)
     (fun x => ↑((1 - x) ^ n) * ↑(x * ↑n) ^ (s - 1) : ℝ → ℂ) (Nat.cast_ne_zero.mpr hn)
-  dsimp only at this
   rw [betaIntegral, this, real_smul, zero_div, div_self, add_sub_cancel_right,
     ← intervalIntegral.integral_const_mul, ← intervalIntegral.integral_const_mul]
   swap; · exact Nat.cast_ne_zero.mpr hn
@@ -586,7 +585,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℝ) :
     Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℝ) ^ (1 - 2 * s) * √π := by
   rw [← ofReal_inj]
   simpa only [← Gamma_ofReal, ofReal_cpow zero_le_two, ofReal_mul, ofReal_add, ofReal_div,
-    ofReal_sub] using Complex.Gamma_mul_Gamma_add_half ↑s
+    ofReal_sub] using! Complex.Gamma_mul_Gamma_add_half ↑s
 
 end Real
 
