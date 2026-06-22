@@ -28,5 +28,19 @@ instance AddSemigroup.instSMul [AddSemigroup M] : SMul ℕ+ M where
 attribute [to_additive existing AddSemigroup.instSMul] Semigroup.instPow
 
 @[to_additive (attr := simp)]
+lemma Semigroup.ppow_eq_pow [Semigroup M] (x : M) (n : ℕ+) :
+    Semigroup.ppow n n.property x = x ^ n :=
+  rfl
+
+@[to_additive (attr := simp)]
 lemma ppow_one [Semigroup M] (x : M) : x ^ (1 : ℕ+) = x :=
   Semigroup.ppow_one _
+
+@[to_additive (attr := simp)]
+theorem npow_val_eq_ppow [Monoid M] (n : ℕ+) (x : M) : x ^ n.val = x ^ n := by
+  rcases n with ⟨_|n, hn⟩
+  · contradiction
+  simp only [mk_coe, ← Semigroup.ppow_eq_pow]
+  induction n
+  · simp [Semigroup.ppow_one]
+  · simp_all [Semigroup.ppow_succ, pow_succ']

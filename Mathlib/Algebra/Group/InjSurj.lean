@@ -338,9 +338,18 @@ semigroup. See note [reducible non-instances]. -/
 @[to_additive
 /-- A type endowed with `+` is an additive semigroup, if it admits a
 surjective map that preserves `+` from an additive semigroup. -/]
-protected abbrev semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
-    (mul : ∀ x y, f (x * y) = f x * f y) : Semigroup M₂ where
+protected abbrev semigroup [Pow M₂ ℕ+] [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
+    (mul : ∀ x y, f (x * y) = f x * f y)
+    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) : Semigroup M₂ where
   mul_assoc := hf.forall₃.2 fun x y z => by simp only [← mul, mul_assoc]
+  ppow := fun n hn x => x ^ (PNat.mk n hn : ℕ+)
+  ppow_one := hf.forall.2 fun x => by simp [← ppow]
+  ppow_succ := hf.forall.2 fun x n => by
+    rw [← ppow, ← ppow, ← mul]
+    congr
+    change Semigroup.ppow (n + 2) _ _ = _
+    rw [Semigroup.ppow_succ]
+    rfl
 
 /-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
 `*` from a commutative semigroup. See note [reducible non-instances]. -/
@@ -356,9 +365,10 @@ protected abbrev commMagma [CommMagma M₁] (f : M₁ → M₂) (hf : Surjective
 @[to_additive
 /-- A type endowed with `+` is an additive commutative semigroup, if it admits
 a surjective map that preserves `+` from an additive commutative semigroup. -/]
-protected abbrev commSemigroup [CommSemigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
-    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₂ where
-  toSemigroup := hf.semigroup f mul
+protected abbrev commSemigroup [Pow M₂ ℕ+] [CommSemigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
+    (mul : ∀ x y, f (x * y) = f x * f y)
+    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) : CommSemigroup M₂ where
+  toSemigroup := hf.semigroup f mul ppow
   __ := hf.commMagma f mul
 
 variable [One M₂]
@@ -373,7 +383,7 @@ protected abbrev mulOneClass [MulOneClass M₁] (f : M₁ → M₂) (hf : Surjec
   one_mul := hf.forall.2 fun x => by rw [← one, ← mul, one_mul]
   mul_one := hf.forall.2 fun x => by rw [← one, ← mul, mul_one]
 
-variable [Pow M₂ ℕ]
+variable [Pow M₂ ℕ+] [Pow M₂ ℕ]
 
 /-- A type endowed with `1` and `*` is a monoid, if it admits a surjective map that preserves `1`
 and `*` to a monoid. See note [reducible non-instances]. -/
@@ -382,8 +392,9 @@ and `*` to a monoid. See note [reducible non-instances]. -/
 surjective map that preserves `0` and `+` to an additive monoid. This version takes a custom `nsmul`
 as a `[SMul ℕ M₂]` argument. -/]
 protected abbrev monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
-  { hf.semigroup f mul, hf.mulOneClass f one mul with
+    (mul : ∀ x y, f (x * y) = f x * f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
+  { hf.semigroup f mul ppow, hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
     npow_zero := hf.forall.2 fun x => by rw [← npow, pow_zero, ← one],
     npow_succ := fun n => hf.forall.2 fun x => by
@@ -396,9 +407,10 @@ preserves `1` and `*` from a commutative monoid. See note [reducible non-instanc
 /-- A type endowed with `0` and `+` is an additive commutative monoid, if it
 admits a surjective map that preserves `0` and `+` to an additive commutative monoid. -/]
 protected abbrev commMonoid [CommMonoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    (mul : ∀ x y, f (x * y) = f x * f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₂ :=
-  { hf.monoid f one mul npow, hf.commSemigroup f mul with }
+  { hf.monoid f one mul ppow npow, hf.commSemigroup f mul ppow with }
 
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
 which has an involutive inversion. See note [reducible non-instances] -/
@@ -419,16 +431,18 @@ that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducib
 a `SubNegMonoid`. -/]
 protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₂ :=
-  { hf.monoid f one mul npow with
+  { hf.monoid f one mul ppow npow with
     zpow := fun n x => x ^ n,
     zpow_zero' := hf.forall.2 fun x => by rw [← zpow, zpow_zero, ← one],
     zpow_succ' := fun n => hf.forall.2 fun x => by
       rw [← zpow, ← zpow, zpow_natCast, zpow_natCast, pow_succ, ← mul],
     zpow_neg' := fun n => hf.forall.2 fun x => by
       rw [← zpow, ← zpow, zpow_negSucc, zpow_natCast, inv],
-    div_eq_mul_inv := hf.forall₂.2 fun x y => by rw [← inv, ← mul, ← div, div_eq_mul_inv] }
+    div_eq_mul_inv := hf.forall₂.2 fun x y => by
+      rw [← inv, ← mul, ← div, div_eq_mul_inv] }
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a group, if it admits a surjective map that preserves
 `1`, `*` and `⁻¹` to a group. See note [reducible non-instances]. -/
@@ -437,9 +451,10 @@ protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surj
 surjective map that preserves `0` and `+` to an additive group. -/]
 protected abbrev group [Group M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₂ :=
-  { hf.divInvMonoid f one mul inv div npow zpow with
+  { hf.divInvMonoid f one mul inv ppow div npow zpow with
     inv_mul_cancel := hf.forall.2 fun x => by rw [← inv, ← mul, inv_mul_cancel, one] }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a commutative group, if it admits a surjective
@@ -450,9 +465,10 @@ map that preserves `1`, `*`, `⁻¹`, and `/` from a commutative group. See note
 admits a surjective map that preserves `0` and `+` to an additive commutative group. -/]
 protected abbrev commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₂ :=
-  { hf.group f one mul inv div npow zpow, hf.commMonoid f one mul npow with }
+  { hf.group f one mul inv ppow div npow zpow, hf.commMonoid f one mul ppow npow with }
 
 end Surjective
 
