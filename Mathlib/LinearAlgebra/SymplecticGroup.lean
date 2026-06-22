@@ -18,6 +18,7 @@ This file defines the symplectic group and proves elementary properties.
 * `symplecticGroup`: the group of symplectic matrices
 
 ## TODO
+* Every symplectic matrix has determinant 1.
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/
 
@@ -32,31 +33,14 @@ namespace Matrix
 
 variable (l) [DecidableEq l] (R) [CommRing R]
 
+section JMatrixLemmas
+
 /-- The matrix defining the canonical skew-symmetric bilinear form. -/
 def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
-/-- The group of symplectic matrices over a ring `R`. -/
-def symplecticGroup [Fintype l] : Submonoid (Matrix (l ⊕ l) (l ⊕ l) R) where
-  carrier := { A | A * J l R * Aᵀ = J l R }
-  mul_mem' {a b} ha hb := by
-    simp only [Set.mem_setOf_eq, transpose_mul] at *
-    rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
-    exact ha
-  one_mem' := by simp
-
-end Matrix
-
-namespace SymplecticGroup
-
-variable [DecidableEq l] [CommRing R]
-
-open Matrix
-
-section JMatrixLemmas
-
 @[simp]
-theorem map_J {F S : Type*} [CommRing S] [FunLike F R S]
+theorem map_J {F R S : Type*} [CommRing S] [CommRing R] [FunLike F R S]
     [AddMonoidHomClass F R S] [OneHomClass F R S] (f : F) :
     (J l R).map f = J l S := by
   simp [J, fromBlocks_map, Matrix.map_neg]
@@ -67,7 +51,7 @@ theorem J_transpose : (J l R)ᵀ = -J l R := by
     fromBlocks_smul, Matrix.transpose_zero, Matrix.transpose_one, transpose_neg]
   simp [fromBlocks]
 
-variable (l) (R) [Fintype l]
+variable [Fintype l]
 
 theorem J_squared : J l R * J l R = -1 := by
   rw [J, fromBlocks_multiply]
@@ -91,6 +75,23 @@ theorem isUnit_det_J : IsUnit (det (J l R)) :=
 end JMatrixLemmas
 
 variable [Fintype l]
+
+/-- The group of symplectic matrices over a ring `R`. -/
+def symplecticGroup : Submonoid (Matrix (l ⊕ l) (l ⊕ l) R) where
+  carrier := { A | A * J l R * Aᵀ = J l R }
+  mul_mem' {a b} ha hb := by
+    simp only [Set.mem_setOf_eq, transpose_mul] at *
+    rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
+    exact ha
+  one_mem' := by simp
+
+end Matrix
+
+namespace SymplecticGroup
+
+variable [DecidableEq l] [Fintype l] [CommRing R]
+
+open Matrix
 
 theorem mem_iff {A : Matrix (l ⊕ l) (l ⊕ l) R} :
     A ∈ symplecticGroup l R ↔ A * J l R * Aᵀ = J l R := by simp [symplecticGroup]
@@ -136,7 +137,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
 
 theorem map_mem {F S : Type*} [CommRing S] [FunLike F R S] [RingHomClass F R S]
     (f : F) (hA : A ∈ symplecticGroup l R) : A.map f ∈ symplecticGroup l S := by
-  simp_rw [mem_iff, ← transpose_map, ← map_J f, ← Matrix.map_mul, mem_iff.mp hA]
+  simp_rw [mem_iff, ← transpose_map, ← map_J _ f, ← Matrix.map_mul, mem_iff.mp hA]
 
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
