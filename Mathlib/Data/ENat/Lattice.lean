@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.ENat.Basic
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -69,7 +69,7 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · norm_cast
 
 @[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
-  simpa [lt_one_iff_eq_zero] using iInf_lt_iff (α := ℕ∞) (a := 1)
+  simpa [Order.lt_one_iff] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
@@ -77,8 +77,8 @@ lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
 
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
-  rw [← lt_one_iff_eq_zero]
-  simp only [sInf_lt_iff, lt_one_iff_eq_zero, exists_eq_right]
+  rw [← Order.lt_one_iff, sInf_lt_iff]
+  simp
 
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
   sSup_eq_bot'
