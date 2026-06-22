@@ -359,10 +359,10 @@ lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < 
 lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
   WithTop.add_lt_add_iff_left h
 
-theorem mul_right_inj {a b c : ℕ∞} (h0 : a ≠ 0) (htop : a ≠ ⊤) : a * b = a * c ↔ b = c :=
+protected theorem mul_right_inj {a b c : ℕ∞} (h0 : a ≠ 0) (htop : a ≠ ⊤) : a * b = a * c ↔ b = c :=
   (WithTop.mul_right_strictMono (pos_iff_ne_zero.2 h0) htop).injective.eq_iff
 
-theorem mul_left_inj {a b c : ℕ∞} (h0 : c ≠ 0) (htop : c ≠ ⊤) : a * c = b * c ↔ a = b :=
+protected theorem mul_left_inj {a b c : ℕ∞} (h0 : c ≠ 0) (htop : c ≠ ⊤) : a * c = b * c ↔ a = b :=
   (WithTop.mul_left_strictMono (pos_iff_ne_zero.2 h0) htop).injective.eq_iff
 
 protected lemma add_lt_add (hac : a < c) (hbd : b < d) : a + b < c + d :=
