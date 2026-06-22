@@ -6,7 +6,7 @@ Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y.
   Patrick Massot
 -/
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Tactic.ApplyFun
@@ -90,7 +90,7 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
     by_cases hx : x = 0
     · rwa [hx]
     · rw [← Fin.succ_pred x hx]
-      convert congr_fun h (Fin.pred x hx)
+      convert! congr_fun h (Fin.pred x hx)
 
 /-- The adjacency relation defining the graph structure on `Q n`:
 `p.adjacent q` if there is an edge from `p` to `q` in `Q n`. -/
@@ -131,7 +131,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
     rw [← Fin.pred_inj (ha := (?ha : y ≠ 0)) (hb := (?hb : i.succ ≠ 0)),
       Fin.pred_succ]
     case ha =>
-      contrapose! hy
+      contrapose hy
       rw [hy, h₀]
     case hb =>
       apply Fin.succ_ne_zero
@@ -285,7 +285,7 @@ using only the addition of `V`. -/
 set_option backward.isDefEq.respectTransparency false in
 theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
-  | zero => simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
+  | zero => simp only [Nat.cast_zero, zero_smul, f_zero, LinearMap.zero_apply]
   | succ n IH =>
     cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc]; abel
 
@@ -329,13 +329,13 @@ set_option backward.isDefEq.respectTransparency false in
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
+  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Function.prod_apply] at h
   exact h.right
 
 set_option backward.isDefEq.respectTransparency false in
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √(m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
+  have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le)
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul]
   abel
@@ -383,21 +383,21 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   suffices 0 < dim (W ⊓ img) by
     exact mod_cast exists_mem_ne_zero_of_rank_pos this
   have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1 : Cardinal) := by
-    convert ← Submodule.rank_le (W ⊔ img)
+    convert! ← Submodule.rank_le (W ⊔ img)
     rw [← Nat.cast_succ]
     apply dim_V
   have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
-    convert ← Submodule.rank_sup_add_rank_inf_eq W img
+    convert! ← Submodule.rank_sup_add_rank_inf_eq W img
     rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
     have li : LinearIndependent ℝ (H.restrict e) := by
-      convert (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
+      convert! (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
       rw [(dualBases_e_ε _).coe_basis]
       rfl
     have hdW := rank_span li
     rw [Set.range_restrict] at hdW
-    convert hdW
+    convert! hdW
     rw [← (dualBases_e_ε _).coe_basis, Cardinal.mk_image_eq (dualBases_e_ε _).basis.injective,
       Cardinal.mk_fintype]
   rw [← finrank_eq_rank ℝ] at dim_le dim_add dimW ⊢
@@ -429,7 +429,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   calc
     s * |ε q y| = |ε q (s • y)| := by
       rw [map_smul, smul_eq_mul, abs_mul, abs_of_nonneg (Real.sqrt_nonneg _)]
-    _ = |ε q (f m.succ y)| := by rw [← f_image_g y (by simpa using y_mem_g)]
+    _ = |ε q (f m.succ y)| := by rw [← f_image_g y (by simpa using! y_mem_g)]
     _ = |ε q (f m.succ (lc _ (coeffs y)))| := by rw [(dualBases_e_ε _).lc_coeffs y]
     _ =
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
@@ -452,7 +452,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       norm_cast
       apply card_le_card
       rw [Set.toFinset_inter]
-      convert inter_subset_inter_right coeffs_support
+      convert! inter_subset_inter_right coeffs_support
 
 end
 

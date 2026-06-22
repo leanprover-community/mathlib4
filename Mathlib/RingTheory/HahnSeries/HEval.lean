@@ -192,7 +192,7 @@ theorem heval_C (r : R) : heval x (C r) = r • 1 := by
   ext g
   simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
     HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
-  rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_ne_zero_C hn])]
+  rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_C_of_ne_zero hn])]
   by_cases hg : g = 0 <;> simp
 
 theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by

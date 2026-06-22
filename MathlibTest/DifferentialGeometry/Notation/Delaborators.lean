@@ -25,7 +25,7 @@ variable
 #guard_msgs in
 #check MDifferentiable I I f
 
-/-- info: MDiffAt (T% v) : Prop -/
+/-- info: MDiff (T% v) : Prop -/
 #guard_msgs in
 #check MDiff (T% v)
 
@@ -70,7 +70,7 @@ variable
 #guard_msgs in
 #check mfderiv% f x
 
-/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, E)) ⟨x, v x⟩ -/
+/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace I.tangent ⟨x, v x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% v) x
 
@@ -81,6 +81,22 @@ variable
 /-- info: ⟨x, v x⟩ : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check TotalSpace.mk (F := E) x (v x)
+
+/-- info: UniqueMDiff[s] : Prop -/
+#guard_msgs in
+#check UniqueMDiffOn I s
+
+/-- info: UniqueMDiffAt[s] : M → Prop -/
+#guard_msgs in
+#check UniqueMDiffWithinAt I s
+
+/-- info: UniqueMDiffAt[s] x : Prop -/
+#guard_msgs in
+#check UniqueMDiffWithinAt I s x
+
+/-- info: UniqueMDiffAt[s] : M → Prop -/
+#guard_msgs in
+#check UniqueMDiffWithinAt (𝕜 := ℝ) I s
 
 section ambiguity
 

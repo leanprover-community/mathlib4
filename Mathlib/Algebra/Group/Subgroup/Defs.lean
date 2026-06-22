@@ -302,7 +302,7 @@ structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
   /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 
-attribute [to_additive] Subgroup
+attribute [to_additive (attr := wikidata Q466109)] Subgroup
 
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
@@ -315,7 +315,7 @@ namespace Subgroup
 @[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
-  coe_injective' p q h := by
+  coe_injective p q h := by
     obtain ⟨⟨⟨hp, _⟩, _⟩, _⟩ := p
     obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
@@ -396,8 +396,11 @@ theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=
   Iff.rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
+
+attribute [deprecated OneMemClass.coe_nonempty (since := "2026-04-20")] Subgroup.coe_nonempty
+attribute [deprecated ZeroMemClass.coe_nonempty (since := "2026-04-20")] AddSubgroup.coe_nonempty
 
 end Subgroup
 
@@ -546,15 +549,13 @@ theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_e
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure. -/]
-instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H := fast_instance%
-  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
+  SubgroupClass.toGroup H
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H := fast_instance%
-  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+  SubgroupClass.toCommGroup H
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive /-- The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`. -/]
@@ -616,7 +617,7 @@ structure Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
-attribute [to_additive] Subgroup.Normal
+attribute [to_additive (attr := wikidata Q743179)] Subgroup.Normal
 
 attribute [class] Normal
 
@@ -637,7 +638,7 @@ namespace Normal
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert nH.conj_mem n hn g⁻¹
+  convert! nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]

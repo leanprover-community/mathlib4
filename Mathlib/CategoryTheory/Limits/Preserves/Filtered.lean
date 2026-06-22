@@ -20,7 +20,7 @@ types.
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory
@@ -48,7 +48,7 @@ filtered diagram `J ⥤ C` to colimit cocones, where `J : Type w` with `[Categor
 -- `PreservesFilteredColimitsOfSize`, `ReflectsFilteredColimitsOfSize`,
 -- `PreservesCofilteredLimitsOfSize`, and `ReflectsCofilteredLimitsOfSize` would default to
 -- universe output parameters. See Note [universe output parameters and typeclass caching].
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesFilteredColimitsOfSize (F : C ⥤ D) : Prop where
   preserves_filtered_colimits :
     ∀ (J : Type w) [Category.{w'} J] [IsFiltered J], PreservesColimitsOfShape J F
@@ -104,7 +104,7 @@ section Reflects
 -- This should be used with explicit universe variables.
 /-- `ReflectsFilteredColimitsOfSize.{w', w} F` means that whenever the image of a filtered cocone
 under `F` is a colimit cocone, the original cocone was already a colimit. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsFilteredColimitsOfSize (F : C ⥤ D) : Prop where
   reflects_filtered_colimits :
     ∀ (J : Type w) [Category.{w'} J] [IsFiltered J], ReflectsColimitsOfShape J F
@@ -164,7 +164,7 @@ section Preserves
 -- This should be used with explicit universe variables.
 /-- `PreservesCofilteredLimitsOfSize.{w', w} F` means that `F` sends all limit cones over any
 cofiltered diagram `J ⥤ C` to limit cones, where `J : Type w` with `[Category.{w'} J]`. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
   preserves_cofiltered_limits :
     ∀ (J : Type w) [Category.{w'} J] [IsCofiltered J], PreservesLimitsOfShape J F
@@ -220,7 +220,7 @@ section Reflects
 -- This should be used with explicit universe variables.
 /-- `ReflectsCofilteredLimitsOfSize.{w', w} F` means that whenever the image of a cofiltered cone
 under `F` is a limit cone, the original cone was already a limit. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
   reflects_cofiltered_limits :
     ∀ (J : Type w) [Category.{w'} J] [IsCofiltered J], ReflectsLimitsOfShape J F

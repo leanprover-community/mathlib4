@@ -24,7 +24,7 @@ Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing
 
 -/
 
-@[expose] public section
+public section
 
 namespace Ideal
 

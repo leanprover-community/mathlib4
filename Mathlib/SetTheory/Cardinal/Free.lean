@@ -24,7 +24,7 @@ Combined with the ring `Fin n` for the finite cases, this lets us show that ther
 any cardinality.
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable (α : Type u)

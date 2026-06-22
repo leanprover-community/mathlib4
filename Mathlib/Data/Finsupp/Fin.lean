@@ -69,7 +69,7 @@ lemma cons_zero_eq_single_zero : cons y (0 : Fin n →₀ M) = single 0 y := by
   ext j
   cases j using Fin.cases <;> simp
 
-lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y :=  by
+lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y := by
   ext j
   cases j using Fin.cases <;> simp [single_apply]
 
@@ -79,11 +79,11 @@ theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by simp [cons_zero_e
 variable {s} {y}
 
 theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   rw [← cons_zero y s, c, Finsupp.coe_zero, Pi.zero_apply]
 
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   ext a
   simp [← cons_succ a y s, c]
 

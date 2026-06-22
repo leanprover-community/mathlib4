@@ -73,7 +73,7 @@ lemma support_eq_univ_iff {L : SummationFilter β} :
   refine ⟨fun h s hs ↦ ?_, fun h b ↦ .filter_mono h ?_⟩
   · obtain ⟨t, ht⟩ := mem_atTop_sets.mp hs
     have := (Filter.biInter_finset_mem t).mpr fun b hb ↦ h b
-    exact Filter.mem_of_superset this fun r hr ↦ ht r (by simpa using hr)
+    exact Filter.mem_of_superset this fun r hr ↦ ht r (by simpa using! hr)
   · filter_upwards [eventually_ge_atTop {b}] using by simp
 
 @[simp] lemma support_eq_univ (L : SummationFilter β) [L.LeAtTop] : L.support = univ :=
@@ -182,7 +182,7 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
   classical
   simp only [unconditional, comap]
   congr 1 with s
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, Finset.le_eq_subset, mem_preimage]
+  simp only [mem_map, mem_atTop_sets, Finset.le_eq_subset, mem_preimage]
   constructor <;> rintro ⟨t, ht⟩
   · refine ⟨t.preimage f (by simp), fun x hx ↦ ?_⟩
     simpa [Finset.union_eq_right.mpr hx] using ht (t ∪ x.map f) t.subset_union_left
@@ -218,11 +218,10 @@ finite: this corresponds to limits of finite sums over larger and larger interva
 
 instance : (conditional β).LeAtTop := ⟨support_eq_univ_iff.mp <| by
   simpa [eq_univ_iff_forall, support, -eventually_and]
-    using fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
+    using! fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance [Nonempty β] [IsDirectedOrder β] [IsCodirectedOrder β] : (conditional β).NeBot :=
-  ⟨by simp; infer_instance⟩
+  ⟨by rw [conditional_filter]; infer_instance⟩
 
 instance [IsCountablyGenerated (atTop : Filter β)] [IsCountablyGenerated (atBot : Filter β)] :
     IsCountablyGenerated (conditional β).filter :=
@@ -252,7 +251,7 @@ lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Fin
       simp only [tendsto_atTop', mem_map, mem_atTop_sets, mem_preimage] <;>
       rintro s ⟨a, ha⟩
   · exact ⟨a + 1, fun b hb ↦ ha (b + 1) (by lia)⟩
-  · exact ⟨a + 1, fun b hb ↦ by convert ha (b - 1) (by lia); lia⟩
+  · exact ⟨a + 1, fun b hb ↦ by convert! ha (b - 1) (by lia); lia⟩
 
 end conditionalTop
 
