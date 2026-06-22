@@ -5,6 +5,7 @@ Authors: Damiano Testa, Yuyang Zhao
 -/
 module
 
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
@@ -555,6 +556,23 @@ lemma pow_left_strictMonoOn₀ [MulPosMono M₀] (hn : n ≠ 0) :
     StrictMonoOn (· ^ n : M₀ → M₀) {a | 0 ≤ a} :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left₀ hab ha hn
 
+@[simp] lemma ppow_pos (ha : 0 < a) (n : ℕ+) : 0 < a ^ n := by
+  rcases n with ⟨n, h⟩
+  rw [← npow_val_eq_ppow, mk_coe]
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
+  exact pow_succ_pos ha n
+
+@[gcongr, bound]
+lemma ppow_lt_ppow_left₀ [MulPosMono M₀] (hab : a < b) (ha : 0 ≤ a) {n : ℕ+} :
+    a ^ n < b ^ n := by
+  rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
+  exact pow_lt_pow_left₀ hab ha n.prop.ne'
+
+/-- See also `ppow_left_strictMono₀` -/
+lemma ppow_left_strictMonoOn₀ [MulPosMono M₀] (n : ℕ+) :
+    StrictMonoOn (· ^ n : M₀ → M₀) {a | 0 ≤ a} :=
+  fun _a ha _b _ hn ↦ ppow_lt_ppow_left₀ hn ha
+
 section ZeroLEOneClass
 
 variable [ZeroLEOneClass M₀]
@@ -567,14 +585,29 @@ lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (a ^ ·) :=
 @[gcongr]
 lemma pow_lt_pow_right₀ (h : 1 < a) (hmn : m < n) : a ^ m < a ^ n := pow_right_strictMono₀ h hmn
 
+lemma ppow_lt_ppow_right₀ (h : 1 < a) {m n : ℕ+} (hmn : m.val < n.val) : a ^ m < a ^ n := by
+  rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
+  exact pow_right_strictMono₀ h hmn
+
 lemma pow_lt_pow_iff_right₀ (h : 1 < a) : a ^ n < a ^ m ↔ n < m :=
   (pow_right_strictMono₀ h).lt_iff_lt
+
+lemma ppow_lt_ppow_iff_right₀ (h : 1 < a) {m n : ℕ+} : a ^ m < a ^ n ↔ m.val < n.val := by
+  rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
+  exact (pow_right_strictMono₀ h).lt_iff_lt
 
 lemma pow_le_pow_iff_right₀ (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
   (pow_right_strictMono₀ h).le_iff_le
 
+lemma ppow_le_ppow_iff_right₀ (h : 1 < a) {m n : ℕ+} : a ^ m ≤ a ^ n ↔ m.val ≤ n.val := by
+  rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
+  exact (pow_right_strictMono₀ h).le_iff_le
+
 lemma lt_self_pow₀ (h : 1 < a) (hm : 1 < m) : a < a ^ m := by
   simpa only [pow_one] using pow_lt_pow_right₀ h hm
+
+lemma lt_self_ppow₀ (h : 1 < a) {n : ℕ+} (hn : 1 < n.val) : a < a ^ n := by
+  simpa only [ppow_one] using ppow_lt_ppow_right₀ (m := 1) (n := n) h hn
 
 end ZeroLEOneClass
 
@@ -586,14 +619,31 @@ lemma pow_right_strictAnti₀ (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ ·
 lemma pow_le_pow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ m ≤ a ^ n ↔ n ≤ m :=
   (pow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
 
+lemma ppow_le_ppow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) {m n : ℕ+} :
+    a ^ m ≤ a ^ n ↔ n.val ≤ m.val := by
+  rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
+  exact (pow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
+
 lemma pow_lt_pow_iff_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) : a ^ m < a ^ n ↔ n < m :=
   (pow_right_strictAnti₀ h₀ h₁).lt_iff_gt
+
+lemma ppow_lt_ppow_iff_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) {m n : ℕ+} :
+    a ^ m < a ^ n ↔ n.val < m.val := by
+  rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
+  exact (pow_right_strictAnti₀ h₀ h₁).lt_iff_gt
 
 lemma pow_lt_pow_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
   (pow_lt_pow_iff_right_of_lt_one₀ h₀ h₁).2 hmn
 
+lemma ppow_lt_ppow_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) {m n : ℕ+} (hmn : m.val < n.val) :
+    a ^ n < a ^ m :=
+  (ppow_lt_ppow_iff_right_of_lt_one₀ h₀ h₁).2 hmn
+
 lemma pow_lt_self_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n < a := by
   simpa only [pow_one] using pow_lt_pow_right_of_lt_one₀ h₀ h₁ hn
+
+lemma ppow_lt_self_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) {n : ℕ+} (hn : 1 < n.val) : a ^ n < a := by
+  simpa only [ppow_one] using ppow_lt_ppow_right_of_lt_one₀ (m := 1) (n := n) h₀ h₁ hn
 
 end strict_mono
 
