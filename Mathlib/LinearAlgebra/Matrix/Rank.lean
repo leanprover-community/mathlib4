@@ -329,13 +329,14 @@ theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) 
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
 open TransvectionStruct in
+/-- Every square matrix over a field admits a rank normal form. -/
 theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
     ∃ (V U : Matrix m m R) (e : m ≃ Fin M.rank ⊕ Fin (Fintype.card m - M.rank)),
       IsUnit V ∧ IsUnit U ∧
       V * M * U = (fromBlocks 1 0 0 0).submatrix e e := by
   classical
   obtain ⟨L, L', D, hM0⟩ := Matrix.Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M
-  set E := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with hE
+  set E := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with E_def
   set s : Finset m := .filter (fun i ↦ D i ≠ 0) .univ with s_def
   set V := diagonal E * (L.reverse.map (toMatrix ∘ .inv)).prod with V_def
   set U := (L'.reverse.map (toMatrix ∘ .inv)).prod with U_def
@@ -348,7 +349,7 @@ theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
     rw [V_def, U_def, hM0, mul_assoc, mul_assoc _ (L'.map _).prod, prod_mul_reverse_inv_prod,
       mul_one, ← mul_assoc, mul_assoc _ (L.reverse.map _).prod, reverse_inv_prod_mul_prod, mul_one]
     ext
-    simp only [hE, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, s_def,
+    simp only [E_def, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, s_def,
       Finset.mem_filter, Finset.mem_univ, true_and, ite_not]
     split_ifs with h1 h2 <;> first | rw [← h1, h2] | rw [← h1, inv_mul_cancel₀ h2] | rfl
   have hs : s.card = M.rank := by
