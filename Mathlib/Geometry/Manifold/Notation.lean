@@ -474,8 +474,8 @@ where
         | ChartedSpace H _ M _ =>
           if ← withReducible (pureIsDefEq M e) then
             trace[Elab.DiffGeo.MDiff] "`{e}` is a charted space over `{H}` via `{inst}`"
-            return some H else
-          if ← withReducible (pureIsDefEq H e) then
+            return some H
+          else if ← withReducible (pureIsDefEq H e) then
             trace[Elab.DiffGeo.MDiff] "`{e}` is the charted space of `{M}` via `{inst}`"
             return some H else return none
         | _ => return none
@@ -744,8 +744,8 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
     let hint : MessageData := if e.hasExprMVar then
       .hint' "the expected type contains metavariables, \
         maybe you need to provide an implicit argument"
-      else if tracing then m!"" else
-        .hint' "failures to find a model with corners can be debugged with the \
+      else if tracing then m!""
+      else .hint' "failures to find a model with corners can be debugged with the \
           command `set_option trace.Elab.DiffGeo.MDiff true`."
     throwError "Could not find a model with corners for `{e}`.{hint}"
 where
