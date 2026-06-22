@@ -994,6 +994,8 @@ variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] [IsManifold 𝓘(�
 #guard_msgs in
 #check MDiff f
 
+-- This test is expected to fail: it passing would amount to guessing a model with corners on
+-- a product of two normed spaces (which is ambiguous).
 variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
 /--
 error: Could not find a model with corners for `X`.
