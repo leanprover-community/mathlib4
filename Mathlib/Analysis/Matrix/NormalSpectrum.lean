@@ -6,11 +6,10 @@ Authors: Judson Pereira de Moura
 module
 
 public import Mathlib.Algebra.Star.Module
-public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Analysis.InnerProductSpace.JointEigenspace
+public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Analysis.Matrix.Spectrum
 public import Mathlib.Tactic.NoncommRing
-public import Mathlib.Tactic.Module
 
 /-! # Spectral theorem for normal matrices
 
