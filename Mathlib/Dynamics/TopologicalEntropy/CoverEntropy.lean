@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Asymptotics.ExpGrowth
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
@@ -250,7 +249,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ coverMincard T F U n ↔ F.Nonempty := by
-  rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
+  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
   exact coverMincard_eq_zero_iff T F U n
 
 lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
@@ -313,7 +312,7 @@ lemma nonempty_inter_of_coverMincard [U.IsSymm] {s : Finset X} (h : IsDynCoverOf
     intro y y_F
     specialize h y_F
     simp only [s.mem_coe] at h
-    simp only [s.coe_erase, mem_diff, s.mem_coe, mem_singleton_iff]
+    simp only [s.coe_erase, mem_sdiff, s.mem_coe, mem_singleton_iff]
     obtain ⟨z, z_s, hz⟩ := h
     refine ⟨z, ⟨z_s, fun z_x ↦ notMem_empty y ?_⟩, hz⟩
     rw [← ball_empt]

@@ -76,7 +76,7 @@ section Prod
 
 /-- The product of two open partial homeomorphisms, as an open partial homeomorphism on the product
 space. -/
-@[simps! (attr := mfld_simps) -fullyApplied toPartialEquiv apply,
+@[simps! (attr := mfld_simps) -fullyApplied toPartialHomeomorph apply,
   simps! -isSimp source target symm_apply]
 def prod (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
     OpenPartialHomeomorph (X × Y) (X' × Y') where
@@ -137,7 +137,7 @@ variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace 
   [∀ i, TopologicalSpace (Y i)] (ei : ∀ i, OpenPartialHomeomorph (X i) (Y i))
 
 /-- The product of a finite family of `OpenPartialHomeomorph`s. -/
-@[simps! toPartialEquiv apply symm_apply source target]
+@[simps! toPartialHomeomorph apply symm_apply]
 def pi : OpenPartialHomeomorph (∀ i, X i) (∀ i, Y i) where
   toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
@@ -164,7 +164,7 @@ To ensure the maps `toFun` and `invFun` are inverse of each other on the new `so
 the definition assumes that the sets `s` and `t` are related both by `e.is_image` and `e'.is_image`.
 To ensure that the new maps are continuous on `source`/`target`, it also assumes that `e.source` and
 `e'.source` meet `frontier s` on the same set and `e x = e' x` on this intersection. -/
-@[simps! -fullyApplied toPartialEquiv apply]
+@[simps! -fullyApplied toPartialHomeomorph apply]
 def piecewise (e e' : OpenPartialHomeomorph X Y) (s : Set X) (t : Set Y) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t)
     (Hs : e.source ∩ frontier s = e'.source ∩ frontier s)
@@ -201,7 +201,7 @@ def disjointUnion (e e' : OpenPartialHomeomorph X Y) [∀ x, Decidable (x ∈ e.
         (by rw [e.open_source.inter_frontier_eq, (Hs.symm.frontier_right e'.open_source).inter_eq])
         (by
           rw [e.open_source.inter_frontier_eq]
-          exact eqOn_empty _ _)).replaceEquiv
+          exact eqOn_empty _ _)).replacePartialEquiv
     (e.toPartialEquiv.disjointUnion e'.toPartialEquiv Hs Ht)
     (PartialEquiv.disjointUnion_eq_piecewise _ _ _ _).symm
 
@@ -360,7 +360,7 @@ noncomputable def lift_openEmbedding (e : OpenPartialHomeomorph X Z) (hf : IsOpe
     rw [← hxx₀, hf.injective.extend_apply e, comp_apply]
     congr
     exact e.left_inv' hx₀
-  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using e.right_inv' hz
+  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using! e.right_inv' hz
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
   continuousOn_toFun := by

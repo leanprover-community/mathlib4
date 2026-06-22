@@ -69,7 +69,8 @@ theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   · simp only [Subring.coe_mul, SubmonoidClass.coe_pow, pow_succ, ← ha, mul_assoc, mul_comm x.val _]
 
 theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
-  apply le_antisymm (by simpa [ringKrullDim_A_eq_one k] using Polynomial.ringKrullDim_le (R := A k))
+  apply le_antisymm
+    (by simpa [ringKrullDim_A_eq_one k] using! Polynomial.ringKrullDim_le (R := A k))
   let φ : (A k) →+* k := by
     refine ((((⊤ : Subring k).equivMapOfInjective _ RatFunc.C_injective).symm.trans
       Subring.topEquiv).toRingHom.comp (Subring.inclusion ?_)).comp

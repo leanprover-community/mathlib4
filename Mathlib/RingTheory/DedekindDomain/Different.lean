@@ -560,6 +560,8 @@ lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) :
 
 variable (A K B L)
 
+set_option linter.overlappingInstances false
+
 open FractionalIdeal in
 /-- Transitivity of the different ideal. -/
 theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomain B] [CommRing C]
@@ -682,6 +684,8 @@ section
 variable (L)
 variable [IsFractionRing B L] [IsDedekindDomain A] [IsDedekindDomain B]
   [IsTorsionFree A B] [Module.Finite A B]
+
+set_option linter.overlappingInstances false
 
 include K L in
 lemma pow_sub_one_dvd_differentIdeal_aux

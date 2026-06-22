@@ -543,6 +543,7 @@ def imageZero {X Y : C} : image (0 : X ⟶ Y) ≅ 0 :=
 def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 :=
   image.eqToIso h ≪≫ imageZero
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem image.ι_zero {X Y : C} [HasImage (0 : X ⟶ Y)] : image.ι (0 : X ⟶ Y) = 0 := by
   rw [← image.lift_fac (monoFactorisationZero X Y)]

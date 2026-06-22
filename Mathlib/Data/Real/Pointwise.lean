@@ -6,8 +6,8 @@ Authors: Yaël Dillies, Eric Wieser
 module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Module.Pointwise
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
