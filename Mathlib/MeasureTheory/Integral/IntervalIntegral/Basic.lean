@@ -171,10 +171,9 @@ theorem intervalIntegrable_const_iff {c : ε} (hc : ‖c‖ₑ ≠ ⊤ := by fin
   simp [intervalIntegrable_iff, integrableOn_const_iff hc]
 
 @[simp]
-theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ]
-    {c : E} (hc : ‖c‖ₑ ≠ ⊤ := by finiteness) :
+theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
     IntervalIntegrable (fun _ => c) μ a b :=
-  intervalIntegrable_const_iff hc |>.2 <| Or.inr measure_Ioc_lt_top
+  intervalIntegrable_const_iff (by simp) |>.2 <| Or.inr measure_Ioc_lt_top
 
 protected theorem IntervalIntegrable.zero : IntervalIntegrable (0 : ℝ → E) μ a b :=
   (intervalIntegrable_const_iff <| by finiteness).mpr <| .inl rfl
