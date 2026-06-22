@@ -377,7 +377,7 @@ lemma Hom.sieve₀_le_sieve₀ {E F : PreZeroHypercover S} (f : E.Hom F) : E.sie
 lemma sieve₀_eq_of_iso {E F : PreZeroHypercover S} (e : E ≅ F) : E.sieve₀ = F.sieve₀ :=
   le_antisymm e.hom.sieve₀_le_sieve₀ e.inv.sieve₀_le_sieve₀
 
-/-- The equivalence on index types induced by an isomorphism of pre-`1`-hypercovers. -/
+/-- The equivalence on index types induced by an isomorphism of pre-`0`-hypercovers. -/
 @[simps]
 def equivOfIso {E F : PreZeroHypercover.{w} S} (e : E ≅ F) : E.I₀ ≃ F.I₀ where
   toFun := e.hom.s₀

@@ -164,7 +164,7 @@ lemma MorphismProperty.morphismProperty_precoverage (P : MorphismProperty C) :
 
 namespace Precoverage
 
-variable {K : Precoverage C} {P : MorphismProperty C}
+variable {K L : Precoverage C} {P : MorphismProperty C}
 
 lemma morphismProperty_le_iff_le_precoverage :
     K.morphismProperty ≤ P ↔ K ≤ P.precoverage :=
@@ -177,6 +177,17 @@ lemma galoisConnection_morphismProperty_precoverage :
 lemma monotone_morphismProperty : Monotone (Precoverage.morphismProperty (C := C)) :=
   Precoverage.galoisConnection_morphismProperty_precoverage.monotone_l
 
+lemma le_precoverage_morphismProperty : K ≤ K.morphismProperty.precoverage :=
+  galoisConnection_morphismProperty_precoverage.le_u_l _
+
+@[simp]
+lemma morphismProperty_bot : (⊥ : Precoverage C).morphismProperty = ⊥ :=
+  Precoverage.galoisConnection_morphismProperty_precoverage.l_bot
+
+@[simp]
+lemma morphismProperty_sup : (K ⊔ L).morphismProperty = K.morphismProperty ⊔ L.morphismProperty :=
+  Precoverage.galoisConnection_morphismProperty_precoverage.l_sup
+
 instance [K.HasIsos] : K.morphismProperty.ContainsIdentities where
   id_mem X := ⟨.singleton (𝟙 X), K.mem_coverings_of_isIso _, by simp⟩
 
@@ -186,5 +197,9 @@ lemma ZeroHypercover.morphismProperty {X : C} {E : ZeroHypercover.{w} K X} (i : 
   ⟨_, E.mem₀, ⟨i⟩⟩
 
 end Precoverage
+
+@[simp]
+lemma MorphismProperty.precoverage_top : (⊤ : MorphismProperty C).precoverage = ⊤ :=
+  Precoverage.galoisConnection_morphismProperty_precoverage.u_top
 
 end CategoryTheory

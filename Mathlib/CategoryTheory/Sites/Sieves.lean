@@ -318,7 +318,7 @@ lemma pushforward_singleton {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (singleton f).pushforward g = .singleton (f ≫ g) := by
   rw [← ofArrows_pUnit.{_, _, 0}, pushforward_ofArrows, ofArrows_pUnit.{_, _, 0}]
 
-/-- Pullback a presieve `R` on `Y` along a morphism `f : X ⟶ Y` is the presieve on `X`
+/-- The pullback of a presieve `R` on `Y` along a morphism `f : X ⟶ Y` is the presieve on `X`
 given by all morphisms `g : Z ⟶ X` such that `f ≫ g` is in `R`. -/
 def pullback {X Y : C} (f : X ⟶ Y) (R : Presieve Y) : Presieve X :=
   fun _ g ↦ R (g ≫ f)
