@@ -53,6 +53,7 @@ def label : Database → String
   | .stacks => "Stacks Tag"
   | .wikidata => "Wikidata"
 
+/-- A lowercase short name for the given database. Useful when exporting to JSON. -/
 def shortName : Database → String
   | .kerodon  => "kerodon"
   | .stacks   => "stacks"
