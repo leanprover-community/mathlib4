@@ -164,13 +164,12 @@ def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generator
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
-def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  (mapFreeIso F P.generators.I η).hom ≫ F.map (P.generators.π)
+abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M := P.generators.mapFreeHom F η
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
-  simp only [mapRelations, mapGenerators, Category.assoc, Iso.inv_hom_id_assoc,
+  simp only [mapRelations, GeneratingSections.mapFreeHom, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -185,7 +184,7 @@ def Presentation.map : Presentation (F.obj M) :=
       (parallelPairIsoMk (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
         (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
-      <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
+      <;> simp [Presentation.mapRelations, GeneratingSections.mapFreeHom, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
     (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
@@ -382,7 +381,7 @@ def Presentation.quasicoherentData {M : SheafOfModules.{u} R} (P : Presentation 
   coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
     rw [Sieve.ext_iff]
     intro _ f
-    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+    simp [Sieve.top_apply]
   presentation x := P.map (pushforward (𝟙 (R.over x))) (by rfl)
 
 /-- If a sheaf of `R`-modules `M` has a presentation, then `M` is quasi-coherent. -/

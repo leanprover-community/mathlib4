@@ -27,7 +27,7 @@ we show that they interact with the composition of morphisms similarly as pseudo
 
 universe w v' u' v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
-open CategoryTheory Functor
+open CategoryTheory Functor Limits
 
 namespace SheafOfModules
 
@@ -48,16 +48,52 @@ noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S wh
   map f :=
     { val := (PresheafOfModules.pushforward φ.hom).map f.val }
 
+variable (R) in
+/-- The restriction functor from sheaves of `R`-modules to sheaves of `R.over X`-modules
+for some `X : D`. -/
+noncomputable def overFunctor (X : D) :
+    SheafOfModules.{v} R ⥤ SheafOfModules.{v} (R.over X) :=
+  pushforward (𝟙 _)
+
 /-- Given `M : SheafOfModules R` and `X : D`, this is the restriction of `M`
 over the sheaf of rings `R.over X` on the category `Over X`. -/
 noncomputable abbrev over (M : SheafOfModules.{v} R) (X : D) : SheafOfModules.{v} (R.over X) :=
-  (pushforward.{v} (𝟙 _)).obj M
+  (overFunctor R X).obj M
 
 /-- Given a map `f : M ⟶ N` between sheaves of modules over `R`, this is the restriction
 to the map `M.over X ⟶ N.over X` between sheaves of modules over `R.over X`. -/
 noncomputable abbrev Hom.over {M N : SheafOfModules.{v} R} (f : M ⟶ N) (X : D) :
     M.over X ⟶ N.over X :=
-  (pushforward.{v} (𝟙 _)).map f
+  (overFunctor R X).map f
+
+variable (R) in
+/-- If `f : X ⟶ Y`, this is the pushforward of sheaves of modules along `Over.map f`. -/
+noncomputable def overMap {X Y : D} (f : X ⟶ Y) :
+    SheafOfModules.{v} (R.over Y) ⥤ SheafOfModules.{v} (R.over X) :=
+  pushforward (F := Over.map f) (Sheaf.pushforwardOverMapIso R f).inv
+
+variable (R) in
+/-- First restricting to `Over Y` and then extending to `Over X` is the same as restricting to
+`Over X`. -/
+noncomputable def overFunctorMap {X Y : D} (f : X ⟶ Y) :
+    overFunctor.{v} R Y ⋙ overMap.{v} R f ≅ overFunctor.{v} R X :=
+  NatIso.ofComponents
+    fun M ↦ (SheafOfModules.fullyFaithfulForget _).preimageIso <|
+      PresheafOfModules.isoMk (fun U ↦ Iso.refl _)
+
+/-- The pushforward of `R.over Y` along `Over.map f` is isomorphic to `R.over X`. -/
+@[simps! +dsimpLhs]
+noncomputable def overMapUnitIso {X Y : D}
+    [(K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+    [(K.over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})] (f : X ⟶ Y) :
+    (overMap.{u} R f).obj (.unit (R.over Y)) ≅ .unit (R.over X) :=
+  Iso.refl _
+
+variable (R) in
+/-- If `f : X ⟶ Y`, this is the pushforward of sheaves of modules along `Over.pullback f`. -/
+noncomputable def overPullback [Limits.HasPullbacks D] {X Y : D} (f : X ⟶ Y) :
+    SheafOfModules.{v} (R.over X) ⥤ SheafOfModules.{v} (R.over Y) :=
+  pushforward (F := Over.pullback f) (Sheaf.toPushforwardOverPullback R f)
 
 section
 
@@ -273,7 +309,6 @@ instance isLeftAdjoint_pushforward_of_isIso [F.IsCocontinuous J K] [IsIso φ] [F
       IsIso.eq_inv_comp] at this
     simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
 
-
 noncomputable section
 
 open CategoryTheory Limits
@@ -301,6 +336,21 @@ def overPushforwardOverAdj (x : C) :
 
 instance (x : C) : IsLeftAdjoint (pushforward.{w} (𝟙 (R.over x))) where
   exists_rightAdjoint := ⟨_, Nonempty.intro (overPushforwardOverAdj x)⟩
+
+variable (R) in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- The adjunction between pushforward along `Over.map` and pushforward along `Over.pullback`. -/
+def overMapPushforwardAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    overMap R f ⊣ overPullback R f := by
+  refine pushforwardPushforwardAdj (Over.mapPullbackAdj f) _ _ ?_ ?_
+  · ext
+    simp [Sheaf.pushforwardOverMapIso]
+  · ext
+    simp [← Functor.map_comp, ← op_comp, Sheaf.pushforwardOverMapIso]
+
+instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : (overMap R f).IsLeftAdjoint :=
+  (overMapPushforwardAdj R f).isLeftAdjoint
 
 end
 

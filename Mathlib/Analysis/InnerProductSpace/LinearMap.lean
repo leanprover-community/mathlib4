@@ -334,7 +334,8 @@ theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
 @[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
 
 lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
-    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by simp [comp_rankOne]
+    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
+  simp [comp_rankOne]
 
 lemma inner_left_rankOne_apply (x : F) (y z : G) (w : F) :
     inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
@@ -359,7 +360,7 @@ theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
     IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
   refine ⟨?_, isIdempotentElem_rankOne_self⟩
   simp only [IsIdempotentElem, mul_def, comp_rankOne, rankOne_apply, inner_self_eq_norm_sq_to_K,
-    map_smul, coe_smul', Pi.smul_apply]
+    map_smul, _root_.smul_apply]
   nth_rw 2 [← one_smul 𝕜 (rankOne 𝕜 x x)]
   rw [← sub_eq_zero, ← sub_smul]
   simp only [smul_eq_zero, rankOne_eq_zero, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
