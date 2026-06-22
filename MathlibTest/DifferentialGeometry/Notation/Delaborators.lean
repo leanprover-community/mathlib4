@@ -70,7 +70,7 @@ variable
 #guard_msgs in
 #check mfderiv% f x
 
-/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, E)) ⟨x, v x⟩ -/
+/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace I.tangent ⟨x, v x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% v) x
 
