@@ -134,7 +134,7 @@ theorem sInter_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα :
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   obtain hα | hα := hα.lt_or_gt
   · apply IsClub.sInter_of_cof_le_one _ hs
-    rwa [← cof_lt_aleph0_iff]
+    rwa [← Order.cof_lt_aleph0_iff]
   · apply IsClub.sInter hα.ne' (hα.trans_le' _) hs
     rwa [le_aleph0_iff_set_countable]
 
@@ -241,10 +241,6 @@ theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
   intro h
   simpa using h .univ
 
-theorem IsClub.isStationary [Nonempty α] [WellFoundedLT α] (hα : cof α ≠ ℵ₀) (hs : IsClub s) :
-    IsStationary s :=
-  fun _ ht ↦ (hs.inter hα ht).nonempty
-
 @[simp]
 theorem not_isStationary_of_isEmpty [IsEmpty α] : ¬ IsStationary s :=
   s.eq_empty_of_isEmpty ▸ not_isStationary_empty
@@ -312,7 +308,7 @@ theorem isStationary_sUnion_iff_of_countable {s : Set (Set α)} (hα : cof α �
     (hsα : s.Countable) : IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x := by
   obtain hα | hα := hα.lt_or_gt
   · apply isStationary_sUnion_iff_of_cof_le_one
-    rwa [← cof_lt_aleph0_iff]
+    rwa [← Order.cof_lt_aleph0_iff]
   · apply isStationary_sUnion_iff hα.ne' (hα.trans_le' _)
     rwa [le_aleph0_iff_set_countable]
 
