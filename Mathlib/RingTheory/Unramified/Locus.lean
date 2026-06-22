@@ -98,6 +98,9 @@ unramified . -/
 def IsUnramifiedIn (𝔭 : Ideal R) : Prop :=
   ∀ (𝔓 : Ideal A) (_ : 𝔓.IsPrime), 𝔓.LiesOver 𝔭 → Algebra.IsUnramifiedAt R 𝔓
 
+theorem isUnramifiedIn_top : IsUnramifiedIn A (⊤ : Ideal R) :=
+  fun P hP _ ↦ (hP.ne_top ((Ideal.eq_top_iff_of_liesOver P (⊤ : Ideal R)).mpr rfl)).elim
+
 end IsUnramifiedIn
 section
 
