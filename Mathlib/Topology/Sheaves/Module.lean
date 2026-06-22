@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.Topology.Sheaves.Over
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
-/-! # Specialized results for sheaf of modules over topological spaces -/
+/-! # Specialized results for sheaves of modules over topological spaces -/
 
 @[expose] public section
 
