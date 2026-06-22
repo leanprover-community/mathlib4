@@ -1077,6 +1077,8 @@ section fromAssumption
 
 open scoped ContDiff
 
+section
+
 variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X] [IsManifold 𝓘(ℝ) ω X]
   [TopologicalSpace Y] [ChartedSpace ℝ Y] [IsManifold 𝓘(ℝ) ω Y] {f : X → Y}
 
@@ -1103,14 +1105,30 @@ variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] [IsManifold 
 #guard_msgs in
 #check MDiff f
 
--- TODO: is there something else to copy over from the phrasebook test?
-
 -- When there are two such hypotheses in context, we pick the first one.
+-- This can lead to confusing error messages: TODO change this.
+-- Or should we pick the last hypothesis instead?
 -- (In practice, there should not be two conflicting ones.)
--- TODO or should pick the last one instead?
+set_option pp.mvars.anonymous false in
+variable [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
+/--
+error: Application type mismatch: The argument
+  modelWithCornersSelf 𝕜 𝕜
+has type
+  ModelWithCorners.{u_1, u_1, u_1} 𝕜 𝕜 𝕜
+but is expected to have type
+  ModelWithCorners.{0, _, _} Real ?E' ?H'
+in the application
+  @MDifferentiable Real DenselyNormedField.toNontriviallyNormedField Real Real.normedAddCommGroup
+    NormedField.toNormedSpace Real PseudoMetricSpace.toUniformSpace.toTopologicalSpace (modelWithCornersSelf Real Real)
+    ?M ?inst✝ ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ (modelWithCornersSelf 𝕜 𝕜)
+-/
+#guard_msgs in
+#check MDiff f
+
+end
 
 end fromAssumption
-#exit
 
 /-! Tests for the elaborators for `tangentMap(Within)` and `TangentSpace` -/
 section
