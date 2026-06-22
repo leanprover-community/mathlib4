@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
-# The projective derivability structure
+# Homological complexes in full subcategories
 
 -/
 
@@ -18,6 +18,9 @@ open CategoryTheory Limits ZeroObject Category
 
 namespace HomologicalComplex
 
+/-- Given `P : ObjectProperty V` and `K : HomologicalComplex V c`,
+this is a lift of `K` in `HomologicalComplex P.FullSubcategory c`
+when `K.X n` satisfies `P` for all `n`. -/
 @[simps X d]
 def liftObjectProperty {ι : Type*} {c : ComplexShape ι}
     {V : Type*} [Category* V] [Preadditive V] (P : ObjectProperty V)
@@ -27,6 +30,10 @@ def liftObjectProperty {ι : Type*} {c : ComplexShape ι}
   d i j := ObjectProperty.homMk (K.d i j)
 
 set_option backward.defeqAttrib.useBackward true in
+/-- The functor `D ⥤ HomologicalComplex P.FullSubcategory c`
+which is obtained by lifting a functor `D ⥤ HomologicalComplex V c`
+when for any `X : D` and `n`, the objects `(F.obj X).X n`
+satisfies a property `P : ObjectProperty V`. -/
 @[simps]
 def liftFunctorObjectProperty {D : Type*} [Category* D] {ι : Type*} {c : ComplexShape ι}
     {V : Type*} [Category* V] [Preadditive V] (P : ObjectProperty V)
