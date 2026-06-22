@@ -47,22 +47,6 @@ https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
 
 @[expose] public section
 
-/- Move elsewhere-/
-namespace Real
-
-open Filter Asymptotics
-
-theorem inv_log_eq_o_one : (fun x ↦ 1 / log x) =o[atTop] (fun _ ↦ (1:ℝ)) := by
-    rw [isLittleO_one_iff]
-    convert tendsto_log_atTop.inv_tendsto_atTop using 1
-    ext; simp
-
-theorem one_eq_o_log_log : (fun _ ↦ (1:ℝ)) =o[atTop] (fun x ↦ log (log x)) := by
-    simp only [isLittleO_one_left_iff, norm_eq_abs]
-    exact tendsto_abs_atTop_atTop.comp (tendsto_log_atTop.comp tendsto_log_atTop)
-
-end Real
-
 namespace Mertens
 
 open Nat hiding log log_pos
@@ -493,7 +477,12 @@ noncomputable def fΛ : ℕ → ℝ := fun n ↦ Λ n / n
 
 noncomputable def fp : ℕ → ℝ := fun n ↦ if n.Prime then log n / n else 0
 
-private theorem sum_fp_le_sum_fΛ : ∑ n ∈ Ioc 0 ⌊x⌋₊, fp n ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, fΛ n := by
+theorem sum_fΛ_eq : ∑ n ∈ Ioc 0 N, fΛ n = ∑ n ∈ Ioc 0 N, Λ n / n := rfl
+
+theorem sum_fp_eq : ∑ n ∈ Ioc 0 N, fp n = ∑ p ∈ primesLE N, log p / p := by
+  simp [fp, primesLE_eq_filter_Ioc_zero, sum_filter]
+
+theorem sum_fp_le_sum_fΛ : ∑ n ∈ Ioc 0 ⌊x⌋₊, fp n ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, fΛ n := by
   unfold fp fΛ
   gcongr with p _
   split_ifs with hp
@@ -507,9 +496,6 @@ private theorem le_mul_sum_fΛ {x : ℝ} (hx : 0 ≤ x) :
   _ ≥ _ := by
     rw [sum_log_eq_sum_mangoldt]
     gcongr; exacts [vonMangoldt_nonneg, floor_le <| div_nonneg (by linarith) (by linarith)]
-
-private theorem sum_fp_eq : ∑ n ∈ Ioc 0 ⌊x⌋₊, fp n = ∑ p ∈ primesLE ⌊x⌋₊, log p / p := by
-  simp [fp, primesLE_eq_filter_Ioc_zero, sum_filter]
 
 private theorem mul_sum_fp_le :
     x * ∑ n ∈ Ioc 0 ⌊x⌋₊, fp n ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + θ x := calc
@@ -691,7 +677,8 @@ noncomputable def Weight.vonMangoldt : Weight := {
     linarith [log_le_self (by linarith : 0 ≤ x)]
   first_le' x hx := by
     unfold fΛ
-    linarith [sum_fp_le hx, E₁_le, sum_von_mangoldt_div_le_sum_log_prime_div_add_E₁ hx, sum_fp_eq x]
+    linarith [sum_fp_le hx, E₁_le, sum_von_mangoldt_div_le_sum_log_prime_div_add_E₁ hx,
+      sum_fp_eq ⌊x⌋₊]
 }
 
 theorem Weight.vonMangoldt_f_eq : vonMangoldt.f = fΛ := rfl
@@ -714,7 +701,7 @@ noncomputable def Weight.prime : Weight := {
   C_hi := log 4
   le_first' x hx := by
     have : -2 ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x := Weight.vonMangoldt.le_first' x hx
-    linarith [E₁_le, sum_von_mangoldt_div_le_sum_log_prime_div_add_E₁ hx, sum_fp_eq x]
+    linarith [E₁_le, sum_von_mangoldt_div_le_sum_log_prime_div_add_E₁ hx, sum_fp_eq ⌊x⌋₊]
   first_le' x hx := by linarith [sum_fp_le hx]
 }
 
@@ -755,7 +742,7 @@ theorem le_sum_von_Mangoldt_div_sub_nat : - 1 ≤ ∑ n ∈ Ioc 0 N, Λ n / n - 
   ring_nf; rfl
 
 theorem le_sum_log_prime_div_sub (hx : 1 ≤ x) : - 3 ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x
-    := (sum_fp_eq x).symm ▸ Weight.prime.le_first' x hx
+    := (sum_fp_eq _).symm ▸ Weight.prime.le_first' x hx
 
 /-- A sharper lower bound in the case of natural numbers. -/
 theorem le_sum_log_prime_div_sub_nat : - 2 ≤ ∑ p ∈ primesLE N, log p / p - log N := by
@@ -769,7 +756,7 @@ theorem sum_von_Mangoldt_div_sub_le (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊,
     := Weight.vonMangoldt.first_le' x hx
 
 theorem sum_log_prime_div_sub_le (hx : 1 ≤ x) : ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x ≤ log 4
-    := (sum_fp_eq x).symm ▸ Weight.prime.first_le' x hx
+    := (sum_fp_eq _).symm ▸ Weight.prime.first_le' x hx
 
 theorem abs_sum_von_Mangoldt_div_sub_le (hx : 1 ≤ x) :
     |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x| ≤ log 4 + 1 := by
@@ -783,7 +770,7 @@ theorem abs_sum_von_Mangoldt_div_sub_le_nat :
 
 theorem abs_sum_log_prime_div_sub_le (hx : 1 ≤ x) :
     |∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x| ≤ 3 := by
-    convert! (sum_fp_eq x).symm ▸ Weight.prime.first_theorem hx
+    convert! (sum_fp_eq _).symm ▸ Weight.prime.first_theorem hx
     rw [Weight.prime_C_eq]
 
 /-- A sharper bound in the case of natural numbers. -/
