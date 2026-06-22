@@ -97,18 +97,6 @@ theorem coe_coe (e : P₁ ≃ᴬ[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
 theorem coe_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 
-/-- See Note [custom simps projection].
-  We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
-def Simps.apply (e : P₁ ≃ᴬ[k] P₂) : P₁ → P₂ :=
-  e
-
-/-- See Note [custom simps projection]. -/
-def Simps.symm_apply (e : P₁ ≃ᴬ[k] P₂) : P₂ → P₁ :=
-  e.symm
-
-initialize_simps_projections ContinuousAffineEquiv (toFun → apply, invFun → symm_apply)
-
 @[ext]
 theorem ext {e e' : P₁ ≃ᴬ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
@@ -177,6 +165,18 @@ def symm (e : P₁ ≃ᴬ[k] P₂) : P₂ ≃ᴬ[k] P₁ where
   toAffineEquiv := e.toAffineEquiv.symm
   continuous_toFun := e.continuous_invFun
   continuous_invFun := e.continuous_toFun
+
+/-- See Note [custom simps projection].
+  We need to specify this projection explicitly in this case,
+  because it is a composition of multiple projections. -/
+def Simps.apply (e : P₁ ≃ᴬ[k] P₂) : P₁ → P₂ :=
+  e
+
+/-- See Note [custom simps projection]. -/
+def Simps.symm_apply (e : P₁ ≃ᴬ[k] P₂) : P₂ → P₁ :=
+  e.symm
+
+initialize_simps_projections ContinuousAffineEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem toAffineEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
@@ -335,7 +335,7 @@ lemma toAffineEquiv_constVSub {p : P₁} : vaddConst k p = AffineEquiv.vaddConst
 /-- The affine homeomorphism given by reflection about the point `x`.
 This is `Equiv.pointReflection` as a `ContinuousAffineEquiv`. -/
 def pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ :=
-    (constVSub k x).trans (vaddConst k x)
+  (constVSub k x).trans (vaddConst k x)
 
 @[simp]
 lemma coe_pointReflection (x : P₁) :
