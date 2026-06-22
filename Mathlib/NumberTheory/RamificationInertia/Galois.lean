@@ -229,52 +229,9 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
 
 end fundamental_identity
 
--- #38864
-section foo
-
-@[simp]
-theorem smul_under (A : Type*) [CommSemiring A] {B C : Type*} [Semiring B] [Semiring C] [Algebra A B]
-    [Algebra A C] (P : Ideal B) {G : Type*} [Group G] [MulSemiringAction G B] (g : G)
-    [MulSemiringAction G A] [SMulDistribClass G A B] :
-    g • P.under A = (g • P).under A := by
-  conv_lhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
-  conv_rhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
-  congr
-  ext
-  simp [algebraMap.smul']
-
-variable (G G' A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [IsDomain C] [Algebra A B]
-    [Algebra A C] [Algebra B C] [FaithfulSMul A B] [FaithfulSMul B C] [IsScalarTower A B C]
-    [Group G] [Group G']
-
-/-- The restriction homomorphism from the Galois group of `C/A` to the Galois group of `B/A` where
-`C/B/A` is a tower of domains with `C/A` and `B/A` Galois. -/
-noncomputable def restrictHom [Finite G] [Finite G'] [MulSemiringAction G C] [IsGaloisGroup G A C]
-    [MulSemiringAction G' B] [IsGaloisGroup G' A B] : G →* G' :=
-  sorry
-
-@[simp]
-theorem algebraMap_restrictHom_smul [Finite G] [Finite G'] [MulSemiringAction G C]
-    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (g : G) (x : B) :
-    algebraMap B C (restrictHom G G' A B C g • x) = g • algebraMap B C x := by
-  sorry
-
-theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
-    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
-    Function.Surjective (restrictHom G G' A B C) := by
-  sorry
-
-theorem restrictHom_smul_under [Finite G] [Finite G'] [MulSemiringAction G C]
-    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B]
-    (g : G) (I : Ideal C) : restrictHom G G' A B C g • I.under B = (g • I).under B := by
-  ext x
-  simp [Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv]
-
-end foo
-
 section tower
 
-variable {A B : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
+variable {A B : Type*} [CommRing A] [CommRing B]
   [Algebra A B] [FaithfulSMul A B] {p : Ideal A} (P : Ideal B)
   [P.IsPrime] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
   [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDomain C] [Algebra A C] [Algebra B C]
@@ -282,12 +239,13 @@ variable {A B : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
 
 include G GAC in
-theorem ncard_primesOver_mul_ncard_primesOver' :
+open IsGaloisGroup in
+theorem ncard_primesOver_mul_ncard_primesOver :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
   have : Algebra.IsIntegral A C := IsGaloisGroup.isInvariant.isIntegral A C GAC
   have : Algebra.IsIntegral B C := Algebra.IsIntegral.tower_top A
-  let f := restrictHom GAC G A B C
-  have hf : Function.Surjective f := restrictHom_surjective GAC G A B C
+  let f := IsGaloisGroup.restrictHom GAC G A B C
+  have hf : Function.Surjective f := IsGaloisGroup.restrictHom_surjective GAC G A B C
   obtain ⟨Q, _, hQ⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P (S := C) (by simp)
   have : Q.LiesOver P := ⟨hQ.symm⟩
   have : Q.LiesOver p := .trans Q P p
@@ -323,42 +281,6 @@ theorem ncard_primesOver_mul_ncard_primesOver' :
   rw [← Subgroup.index_comap_of_surjective (MulAction.stabilizer G P) hf,
     mul_comm, Subgroup.relIndex_mul_index]
   exact key Q Q
-
-end tower
-
-section tower
-
-variable {A B : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
-  [Algebra A B] [Flat A B] {p : Ideal A} (P : Ideal B) [p.IsPrime]
-  [P.IsPrime] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
-  [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDomain C] [Algebra A C]
-  [Algebra B C] [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [Flat A C]
-  [Flat B C] [IsScalarTower A B C]
-  (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
-  (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
-
--- todo: use transitivity to prove this under much weaker assumptions
-include G GAC GBC in
-theorem ncard_primesOver_mul_ncard_primesOver :
-    (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
-  let := IsFractionRing.mulSemiringAction G B (FractionRing B)
-  let := IsFractionRing.mulSemiringAction GAC C (FractionRing C)
-  let := IsFractionRing.mulSemiringAction GBC C (FractionRing C)
-  have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
-    mul_ne_zero (ramificationIdxIn_ne_zero GAC) (inertiaDegIn_ne_zero GAC)
-  rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p C GAC]
-  calc
-    _ = ((p.primesOver B).ncard * (p.ramificationIdxIn B * p.inertiaDegIn B)) *
-          ((P.primesOver C).ncard * (P.ramificationIdxIn C * P.inertiaDegIn C)) := by
-      rw [← inertiaDegIn_mul_inertiaDegIn p P G C GAC GBC,
-        ← ramificationIdxIn_mul_ramificationIdxIn P G C GAC GBC]
-      ring
-    _ = Nat.card GAC := by
-      rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G,
-        ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn P C GBC,
-        (IsGaloisGroup.toFractionRing G A B).card_eq_finrank,
-        (IsGaloisGroup.toFractionRing GAC A C).card_eq_finrank,
-        (IsGaloisGroup.toFractionRing GBC B C).card_eq_finrank, Module.finrank_mul_finrank]
 
 end tower
 
