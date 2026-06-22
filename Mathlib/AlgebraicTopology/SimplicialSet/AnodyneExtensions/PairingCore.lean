@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
 /-!
 # Helper structure in order to construct pairings
@@ -116,7 +117,7 @@ lemma injective_type₂ : Function.Injective h.type₂ :=
   fun s t hst ↦ h.injective_type₂' (by rwa [Subcomplex.N.ext_iff, SSet.N.ext_iff] at hst)
 
 lemma type₁_ne_type₂ (s t : h.ι) : h.type₁ s ≠ h.type₂ t := by
-  simpa only [ne_eq, N.ext_iff, SSet.N.ext_iff] using h.type₁_ne_type₂' s t
+  simpa only [ne_eq, N.ext_iff, SSet.N.ext_iff] using! h.type₁_ne_type₂' s t
 
 lemma surjective (x : A.N) :
     ∃ (s : h.ι), x = h.type₁ s ∨ x = h.type₂ s := by
@@ -166,6 +167,7 @@ lemma pairing_p_symm_equivI (x : h.ι) :
     DFunLike.coe (F := h.I ≃ h.II) h.pairing.p.symm (h.equivI x) = h.equivII x := by
   simp [pairing]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma type₁_pairing (x : h.ι) :
     h.type₁ x = h.pairing.p (h.equivII x) := by
   simp +instances
@@ -181,6 +183,14 @@ lemma isUniquelyCodimOneFace [h.IsProper] (s : h.ι) :
     S.IsUniquelyCodimOneFace (h.type₂ s).toS (h.type₁ s).toS :=
   IsProper.isUniquelyCodimOneFace _
 
+instance [X.Nonsingular] : h.IsProper where
+  isUniquelyCodimOneFace s :=
+    (S.IsUniquelyCodimOneFace.iff _ _).2
+      (existsUnique_of_exists_of_unique ⟨_, rfl⟩
+        (fun _ _ hi hj ↦ Nonsingular.δ_injective _
+          (h.nonDegenerate₁ s) _ _ (hi.trans hj.symm)))
+
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [h.IsProper] : h.pairing.IsProper where
   isUniquelyCodimOneFace x := by
@@ -211,6 +221,7 @@ class IsInner where
   ne_zero (s : h.ι) : h.index s ≠ 0
   ne_last (s : h.ι) : h.index s ≠ Fin.last _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [h.IsInner] [h.IsProper] : h.pairing.IsInner where
   ne_zero x := by
@@ -226,6 +237,7 @@ instance [h.IsInner] [h.IsProper] : h.pairing.IsInner where
 def AncestralRel (s t : h.ι) : Prop :=
   s ≠ t ∧ h.type₂ s < h.type₁ t
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ancestralRel_iff (s t : h.ι) :
     h.AncestralRel s t ↔ h.pairing.AncestralRel (h.equivII s) (h.equivII t) := by

@@ -41,7 +41,7 @@ namespace Function
 
 
 /-- A function `f` is said to be `Periodic` with period `c` if for all `x`, `f (x + c) = f x`. -/
-@[simp]
+@[simp, wikidata Q184743]
 def Periodic [Add α] (f : α → β) (c : α) : Prop :=
   ∀ x : α, f (x + c) = f x
 
@@ -355,11 +355,11 @@ theorem Antiperiodic.add_nsmul_eq [AddMonoid α] [SubtractionMonoid β] (h : Ant
 
 theorem Antiperiodic.sub_nsmul_eq [AddGroup α] [SubtractionMonoid β] (h : Antiperiodic f c)
     (n : ℕ) : f (x - n • c) = (-1) ^ n • f x := by
-  simpa only [Int.reduceNeg, natCast_zsmul] using h.sub_zsmul_eq n
+  simpa only [Int.reduceNeg, natCast_zsmul] using! h.sub_zsmul_eq n
 
 theorem Antiperiodic.nsmul_sub_eq [AddCommGroup α] [SubtractionMonoid β] (h : Antiperiodic f c)
     (n : ℕ) : f (n • c - x) = (-1) ^ n • f (-x) := by
-  simpa only [Int.reduceNeg, natCast_zsmul] using h.zsmul_sub_eq n
+  simpa only [Int.reduceNeg, natCast_zsmul] using! h.zsmul_sub_eq n
 
 theorem Antiperiodic.const_add [AddSemigroup α] [Neg β] (h : Antiperiodic f c) (a : α) :
     Antiperiodic (fun x => f (a + x)) c := fun x => by simpa [add_assoc] using h (a + x)

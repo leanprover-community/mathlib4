@@ -141,7 +141,7 @@ variable (S)
 
 variable {M} in
 theorem smul_bijective (m : M) : Bijective fun s : S ↦ m • s := by
-  simpa only [Submonoid.smul_def, Algebra.smul_def] using (map_units S m).smul_bijective
+  simpa only [Submonoid.smul_def, Algebra.smul_def] using! (map_units S m).smul_bijective
 
 /-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
 abbrev toLocalizationMap : M.LocalizationMap S where
@@ -151,7 +151,7 @@ abbrev toLocalizationMap : M.LocalizationMap S where
 
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
-    (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
+    (toLocalizationMap M S).toMonoidHom = (.ofClass (algebraMap R S) : R →*₀ S) := rfl
 
 @[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
 
@@ -669,7 +669,7 @@ variable (S Q)
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M, T` respectively, an
 isomorphism `j : R ≃+* P` such that `j(M) = T` induces an isomorphism of localizations
 `S ≃+* Q`. -/
-@[simps]
+@[simps apply]
 noncomputable def ringEquivOfRingEquiv (h : R ≃+* P) (H : M.map h.toMonoidHom = T) : S ≃+* Q :=
   have H' : T.map h.symm.toMonoidHom = M := by
     rw [← M.map_id, ← H, Submonoid.map_map]
