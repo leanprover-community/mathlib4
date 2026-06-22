@@ -9,21 +9,33 @@ public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
-/-! ## Equivalence of manifold differentiability with the basic definition for functions between
+/-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
 
 The API in this file is mostly copied from `Mathlib/Geometry/Manifold/ContMDiff/NormedSpace.lean`,
 providing the same statements for higher smoothness. In this file, we do the same for
 differentiability.
 
-In addition to the above, this file provides
-* results about the differentiability of scalar multiplication (`mfderiv_smul` and friends),
-* `mvfderiv`: the exterior derivative of a vector-valued function, as a section of the
-  cotangent bundle; adds notation `d% f` for `mvfderiv I f` via a custom elaborator scoped to the
-  `Manifold` namespace, with a corresponding delaborator, and
-  adds basic lemmas about `mvfderiv` (such as addition, subtraction, multiplication and constants).
+## Main definitions
+
+In addition to the above, this file provides two important definitions.
+* `mvfderiv I f x` is the manifold Fréchet derivative at `x : M` of a vector-valued function
+  `f : M → V`, but taking values in the target normed space `V` instead of `TangentSpace% (f x) V`.
+  Mathematically, this uses the global trivialization `T V ≅ V × V`, yielding an identification
+  `T_v V ≅ V` for each `v : V`. In Lean, we post-compose the differential `mfderiv% f x` with
+  `NormedSpace.fromTangentSpace`. If `V` is a field, this coincides with the exterior derivative
+  of `f` as a section of the cotangent bundle.
+  There is notation `d%f` for `mvfderiv I f` via a custom elaborator scoped to the
+  `Manifold` namespace, with a corresponding delaborator,
 * `mvfderivWithin` with notation `d[s]f` for `mvfderivWithin I f s` in the `Manifold` namespace:
   the analogous concept within a set, with analogous API lemmas
+
+## Main results
+
+This file contains
+* results about the differentiability of scalar multiplication (`mfderiv_smul` and friends),
+* basic lemmas about `mvfderiv` (such as addition, subtraction, multiplication and constants),
+* analogous lemmas about `mvfderivWithin`.
 
 -/
 
@@ -410,8 +422,10 @@ end smul
 /-! ### Exterior derivative of a vector-valued function -/
 
 variable (I) in
-/-- `mvfderivWithin I J f s x` is the exterior derivative of a vector-valued function `g` on `M`
-at `x` within the set `s`, as a section of the cotangent bundle.
+/-- `mvfderivWithin I J f s x` is the `mfderiv` of a vector-valued function `f` on `M` at `x`
+within the set `s`, but taking values in the target normed space directly.
+The difference to `mfderivWithin` is explained in the module-docstring for
+`Mathlib/Geometry/Manifold/MFDeriv/NormedSpace.lean`.
 
 Future: this could be generalised to functions into additive torsors over abelian Lie groups.
 -/
@@ -421,8 +435,10 @@ noncomputable def mvfderivWithin (g : M → F) (s : Set M) :
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv[s] g x)
 
 variable (I) in
-/-- `mvfderiv I J f x` is the exterior derivative of a vector-valued function `g` on `M` at `x`,
-as a section of the cotangent bundle.
+/-- `mvfderiv I J f x` is the `mfderiv` of a vector-valued function `f` on `M` at `x`,
+but taking values in the target normed space directly.
+The difference to `mfderiv` is explained in the module-docstring for
+`Mathlib/Geometry/Manifold/MFDeriv/NormedSpace.lean`.
 
 Future: this could be generalised to functions into additive torsors over abelian Lie groups.
 -/
