@@ -81,19 +81,19 @@ lemma detp_submatrix_equiv (e : m ≃ n) : (A.submatrix e e).detp s = A.detp s :
 
 variable {A}
 
-lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A p = A q) : A.detp 1 = A.detp (-1) :=
+lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A.row p = A.row q) :
+    A.detp 1 = A.detp (-1) :=
   sum_equiv (.mulRight <| swap p q) (by simp [hpq]) fun _ _ ↦
-    prod_equiv (swap p q) (by simp) (by aesop)
+    prod_equiv (swap p q) (by simp) (by aesop (add simp row))
 
 lemma detp_eq_of_col_eq {p q : n} (hpq : p ≠ q) (hcol : A.col p = A.col q) :
-    A.detp 1 = A.detp (-1) := by
-  simp_rw [← A.detp_transpose]; exact detp_eq_of_row_eq hpq hcol
+    A.detp 1 = A.detp (-1) := by simpa using detp_eq_of_row_eq (A := Aᵀ) hpq hcol
 
-lemma detp_eq_of_row_eq_zero {p : n} (hrow : A p = 0) : A.detp s = 0 :=
+lemma detp_eq_of_row_eq_zero {p : n} (hrow : A.row p = 0) : A.detp s = 0 :=
   sum_eq_zero fun _ _ ↦ prod_eq_zero (mem_univ p) congr($hrow _)
 
 lemma detp_eq_of_col_eq_zero {p : n} (hcol : A.col p = 0) : A.detp s = 0 := by
-  simpa only [detp_transpose] using detp_eq_of_row_eq_zero (A := Aᵀ) s hcol
+  simpa using detp_eq_of_row_eq_zero (A := Aᵀ) s hcol
 
 variable (A)
 
@@ -105,9 +105,8 @@ lemma adjp_apply (i j : n) :
     adjp s A i j = ∑ σ ∈ (ofSign s).filter (· j = i), ∏ k ∈ {j}ᶜ, A k (σ k) :=
   rfl
 
-lemma adjp_transpose : A.transpose.adjp s = (A.adjp s).transpose := by
-  ext; exact sum_equiv (.inv _) (by aesop) fun σ hσ ↦
-    prod_equiv σ (by simp [← (mem_filter.mp hσ).2]) (by simp)
+lemma adjp_transpose : A.transpose.adjp s = (A.adjp s).transpose :=
+  ext fun _ _ ↦ sum_equiv (.inv _) (by aesop) fun σ hσ ↦ prod_equiv σ (by aesop) (by simp)
 
 private lemma adjp_none_right (A : Matrix (Option n) (Option n) R) (i : Option n) :
     A.adjp s i none = (A.submatrix some <| swap none i ∘ some).detp (sign (swap none i) * s) := by
@@ -115,12 +114,7 @@ private lemma adjp_none_right (A : Matrix (Option n) (Option n) R) (i : Option n
   convert sum_image (g := fun σ ↦ decomposeOption.symm (i, σ))
     ((Equiv.injective _).comp (Prod.mk_right_injective i)).injOn
   · ext σ; simp only [mem_filter, mem_ofSign, mem_image]
-    refine ⟨fun h ↦ ⟨σ.removeNone, ?_⟩, ?_⟩
-    · rw [← optionCongr_sign, map_equiv_removeNone, map_mul, h.1, h.2, mul_comm]
-      use rfl; rw [← h.2]; exact decomposeOption.left_inv σ
-    · rintro ⟨σ, h, rfl⟩
-      rw [decomposeOption_symm_apply, map_mul, optionCongr_sign, h, ← mul_assoc, Int.units_mul_self]
-      simp
+    exact ⟨fun _ ↦ ⟨σ.removeNone, by rw [← optionCongr_sign]; aesop⟩, by aesop⟩
   convert (prod_image (Option.some_injective n).injOn).symm
   · rfl
   · apply SetLike.coe_injective; simp [← Set.compl_range_some]
@@ -137,9 +131,7 @@ lemma adjp_some_none (A : Matrix (Option n) (Option n) R) :
 
 lemma adjp_none_some (A : Matrix (Option n) (Option n) R) :
     A.adjp s none (some i) = (A.submatrix (Function.update some i none) some).detp (-s) := by
-  convert A.transpose.adjp_some_none s i using 1
-  · rw [adjp_transpose, transpose_apply]
-  · rw [← detp_transpose, transpose_submatrix]
+  rw [← detp_transpose]; simp [← A.transpose.adjp_some_none, adjp_transpose]
 
 theorem detp_mul :
     detp 1 (A * B) + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) =
@@ -191,12 +183,10 @@ theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
 theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
   let A' : Matrix n n R := of <| Function.update A j (A i)
   have h' s : (A * adjp s A) i j = (A' * adjp s A') j j := sum_congr rfl fun _ _ ↦
-    congr_arg₂ (· * ·) (by simp [A']) <| sum_congr rfl fun σ hσ ↦ prod_congr rfl fun k hk ↦ by
-      rw [mem_compl, mem_singleton] at hk
-      simp [A', hk]
+    congr_arg₂ (· * ·) (by simp [A']) <| sum_congr rfl fun σ hσ ↦ prod_congr rfl fun _ _ ↦ by aesop
   simp_rw [h', mul_adjp_apply_eq]
   apply detp_eq_of_row_eq h
-  ext; simp [A', h]
+  simp [A', h]
 
 theorem adjp_mul_apply_eq : (adjp s A * A) i i = detp s A := by
   rw [← detp_transpose, ← mul_adjp_apply_eq _ _ i, adjp_transpose, ← transpose_mul, transpose_apply]
