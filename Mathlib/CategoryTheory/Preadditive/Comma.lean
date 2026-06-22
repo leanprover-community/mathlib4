@@ -42,7 +42,9 @@ namespace CommaMorphism
 @[simps!]
 instance : Add (u ⟶ v) where
   add α β := CommaMorphism.mk (α.left + β.left) (α.right + β.right) (by simp)
-
+@[simps!]
+instance : Sub (u ⟶ v) where
+  sub α β := CommaMorphism.mk (α.left - β.left) (α.right - β.right) (by simp)
 @[simps!]
 instance : Zero (u ⟶ v) where
   zero := CommaMorphism.mk 0 0
