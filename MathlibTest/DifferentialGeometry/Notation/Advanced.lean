@@ -508,7 +508,19 @@ variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : Model
   {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 
 variable {g : unitInterval → M} in
-/-- info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) J g : Prop -/
+/--
+error: Application type mismatch: The argument
+  I
+has type
+  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
+but is expected to have type
+  ModelWithCorners.{0, ?u.150, ?u.151} Real ?E' ?H'
+in the application
+  @MDifferentiable Real DenselyNormedField.toNontriviallyNormedField (EuclideanSpace Real (Fin 1))
+    (PiLp.normedAddCommGroup 2 fun x ↦ Real) (PiLp.normedSpace 2 Real fun x ↦ Real) (EuclideanHalfSpace 1)
+    (instTopologicalSpaceEuclideanHalfSpace 1) (modelWithCornersEuclideanHalfSpace 1) ?M ?inst✝ ?inst✝¹ ?E' ?inst✝²
+    ?inst✝³ ?H' ?inst✝⁴ I
+-/
 #guard_msgs in
 #check MDiff g
 
@@ -530,10 +542,17 @@ info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) (modelWithCornersSe
 variable {x y : ℝ} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
 /--
-error: failed to synthesize
-  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc 0 2)
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: Application type mismatch: The argument
+  I
+has type
+  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
+but is expected to have type
+  ModelWithCorners.{0, ?u.176, ?u.177} Real ?E' ?H'
+in the application
+  @ContMDiff Real DenselyNormedField.toNontriviallyNormedField (EuclideanSpace Real (Fin 1))
+    (PiLp.normedAddCommGroup 2 fun x ↦ Real) (PiLp.normedSpace 2 Real fun x ↦ Real) (EuclideanHalfSpace 1)
+    (instTopologicalSpaceEuclideanHalfSpace 1) (modelWithCornersEuclideanHalfSpace 1) ?M ?inst✝ ?inst✝¹ ?E' ?inst✝²
+    ?inst✝³ ?H' ?inst✝⁴ I
 -/
 #guard_msgs in
 variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
@@ -599,7 +618,21 @@ variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 -- Now, with a fact about x < y: these should behave well.
 variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
-/-- info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) J g : Prop -/
+#where
+set_option trace.Elab.DiffGeo.MDiff true in
+/--
+error: Application type mismatch: The argument
+  I
+has type
+  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
+but is expected to have type
+  ModelWithCorners.{0, ?u.203, ?u.204} Real ?E' ?H'
+in the application
+  @MDifferentiable Real DenselyNormedField.toNontriviallyNormedField (EuclideanSpace Real (Fin 1))
+    (PiLp.normedAddCommGroup 2 fun x ↦ Real) (PiLp.normedSpace 2 Real fun x ↦ Real) (EuclideanHalfSpace 1)
+    (instTopologicalSpaceEuclideanHalfSpace 1) (modelWithCornersEuclideanHalfSpace 1) ?M ?inst✝ ?inst✝¹ ?E' ?inst✝²
+    ?inst✝³ ?H' ?inst✝⁴ I
+-/
 #guard_msgs in
 variable [h: Fact ((0 : ℝ) < (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check MDiff g
