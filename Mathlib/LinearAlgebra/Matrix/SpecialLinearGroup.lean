@@ -498,9 +498,9 @@ namespace SpecialLinearGroup
 lemma transvection_coe {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b) = (1 : Matrix ι ι F) + single i j b := rfl
 
-lemma transvection_eq_one {i j : ι} (hij : i ≠ j) : transvection hij (0 : F) = 1 := by
-  ext
-  simp [transvection_coe]
+@[simp]
+lemma transvection_coeff_zero {i j : ι} (hij : i ≠ j) :
+    transvection hij (0 : F) = 1 := by ext; simp [transvection_coe]
 
 /-- The transvection `transvection i j hij b` acts on `e_i = Pi.single i 1` as the identity. -/
 lemma transvection_smul_single_fst {i j : ι} (hij : i ≠ j) (b : F) :
@@ -705,7 +705,7 @@ theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup
     (htransvec : ∀ (i j : ι) (hij : i ≠ j) (a : F), P (transvection hij a))
     (hmul : ∀ A B, P A → P B → P (A * B)) : P M := by
   obtain ⟨i₀, j₀, hij₀⟩ := exists_pair_ne ι
-  have hP1 : P 1 := transvection_eq_one (F := F) hij₀ ▸ htransvec i₀ j₀ hij₀ 0
+  have hP1 : P 1 := transvection_coeff_zero (F := F) hij₀ ▸ htransvec i₀ j₀ hij₀ 0
   have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) : P ⟨diagonal D, hD⟩ := by
     rw [diag_eq_diag2n_prod i₀ D hD]
     refine Finset.noncommProd_induction _ _ _ P hmul hP1 fun i hi => ?_
