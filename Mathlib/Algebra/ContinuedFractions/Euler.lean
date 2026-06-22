@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 emlis. All rights reserved.
+Copyright (c) 2026 Emlis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: emlis
+Authors: Emlis
 -/
 module
 
@@ -11,24 +11,24 @@ public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 public import Mathlib.Tactic.Ring
 
 /-!
-# Euler's continued fraction
+# Euler continued fraction
 
-This file formalizes an transformation on generalized continued fractions over a field `K`.
-It defines a map sending a generalized continued fraction to an equivalent Euler's continued
+This file formalizes a transformation on generalized continued fractions over a field `K`.
+It defines a map sending a generalized continued fraction to an equivalent Euler continued
 fraction obtained by an explicit transformation of its coefficient stream.
 
 ## Main definitions
 
-* `GenContFract.Euler` : constructs a generalized continued fraction from a head term `h`
+* `GenContFract.euler` : constructs a generalized continued fraction from a head term `h`
   and a coefficient stream `ρ`.
-* `GenContFract.toEuler` : transforms a generalized continued fraction to a Euler's continued
+* `GenContFract.toEuler` : transforms a generalized continued fraction to a Euler continued
   fraction.
 
 ## Main results
 
 * `euler_convs` : explicit formula for convergents of an Euler-transformed continued fraction.
 * `convs_toEuler_eq_convs` : equivalence of convergents between a generalized continued fraction
-  and its corresponding Euler's continued fraction.
+  and its corresponding Euler continued fraction.
 
 ## References
 
@@ -44,7 +44,7 @@ namespace GenContFract
 variable {K : Type*} [Field K]
 variable {n : ℕ} {h : K} {ρ : Stream'.Seq K} {g : GenContFract K}
 
-/-- A *Euler's continued fraction* is a generalized continued fraction of the form
+/-- An *Euler continued fraction* is a generalized continued fraction of the form
 $$
   h + \cfrac{\rho_0}
             {1 - \cfrac{\rho_1}
@@ -52,7 +52,7 @@ $$
                                            {1 + \rho_2 - \cfrac{\rho_3}
                                                                {1 + \rho_3 - \dots}}}}
 $$
-`euler h ρ` constructs a Euler's continued fraction whose coefficients are obtained
+`euler h ρ` constructs an Euler continued fraction whose coefficients are obtained
 from the stream `ρ` with head term `h`.
 -/
 def euler (h : K) (ρ : Stream'.Seq K) : GenContFract K :=
@@ -62,8 +62,7 @@ private def toEulerAux (g : GenContFract K) : Stream'.Seq K :=
   g.s.enum.map fun (n, ⟨a, b⟩) =>
     n.casesOn (a / b) fun n' => - a * g.dens n' / g.dens (n' + 2)
 
-/--
-`toEuler g` is the Euler's continued fraction equivalent to `g`, where `ρ₀` = `a₀ / b₀` and
+/-- `toEuler g` is the Euler continued fraction equivalent to `g`, where `ρ₀` = `a₀ / b₀` and
 `ρₙ` = `- aₙ * Bₙ₋₁ / Bₙ₊₁` for `n > 0`.
 -/
 def toEuler (g : GenContFract K) : GenContFract K :=
@@ -120,7 +119,7 @@ private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
       first_den_eq <| exists_euler_s_of_not_terminatedAt_zero
         (terminatedAt_euler_iff_terminatedAt (K := K) |>.eq ▸ not_terminatedAt_zero) |>.choose_spec)
 
-/-- the denominators of an Euler's continued fraction are all 1. -/
+/-- The denominators of an Euler continued fraction are all 1. -/
 theorem dens_euler : (euler h ρ).dens n = 1 := by
   set g := euler h ρ
   induction n using Nat.strong_induction_on with | h n ih =>
@@ -167,7 +166,7 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
       simp [g, euler] at g_n_succ_eq
       grind
 
-/-- the numerators of an Euler's continued fraction are given by the formula
+/-- The numerators of an Euler continued fraction are given by the formula
 $$
   A_n = h + \sum_{i = 0}^{n - 1} \prod_{j = 0}^i \rho_j
 $$
@@ -178,7 +177,7 @@ theorem nums_euler :
   simp only [← nums_euler_aux (h := h)]
   rw [Finset.sum_range_sub, zeroth_num_eq_h, euler_h, add_sub_cancel]
 
-/-- **Euler's continued fraction formula**: the convergents of an Euler's continued fraction
+/-- **Euler's continued fraction formula**: the convergents of an Euler continued fraction
 are given by the formula
 $$
   \dfrac{A_n}{B_n} = h + \sum_{i = 0}^{n - 1} \prod_{j = 0}^i \rho_j
@@ -194,7 +193,7 @@ theorem convs_euler :
       h + ∑ i ∈ Finset.range n, ∏ j ∈ Finset.range (i + 1), (ρ.get? j).getD 0 := by
   rw [convs, dens_euler, nums_euler, div_one]
 
-/-- the transformation `toEuler` is idempotent. -/
+/-- The transformation `toEuler` is idempotent. -/
 theorem toEuler_toEuler :
   g.toEuler.toEuler = g.toEuler := by
   set h := g.h
@@ -252,7 +251,7 @@ theorem convs_toEuler_eq_convs_of_forall_le_dens_ne_zero (hB : ∀ m ≤ n, g.de
         grind [nums_recurrence g_mth_eq rfl rfl, dens_recurrence g_mth_eq rfl rfl,
           nums_recurrence g_toEuler_mth_eq rfl rfl, convs, hB m, hB (m + 1), hB (m + 2)]
 
-/-- the transformation `toEuler` preserves the convergents -/
+/-- The transformation `toEuler` preserves the convergents. -/
 theorem convs_toEuler_eq_convs (hB : ∀ m, g.dens m ≠ 0) :
     g.toEuler.convs = g.convs :=
   funext fun m =>
