@@ -5,7 +5,7 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Unique
@@ -55,6 +55,9 @@ instance commMagma [∀ i, CommMagma (f i)] : CommMagma (∀ i, f i) where
 @[to_additive]
 instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
   mul_assoc := by intros; ext; exact mul_assoc _ _ _
+  ppow := fun n hn x i => x i ^ PNat.mk n hn
+  ppow_one := by intros; ext; exact ppow_one _
+  ppow_succ := by intros; ext; exact Semigroup.ppow_succ _ _
 
 @[to_additive]
 instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i) where
