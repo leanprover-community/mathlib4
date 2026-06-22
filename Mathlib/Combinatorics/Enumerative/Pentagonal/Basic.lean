@@ -96,5 +96,6 @@ theorem pentagonalCoeff_pentagonal (k : ℤ) :
   simp [pentagonalCoeff]
 
 theorem pentagonalCoeff_eq_zero_iff [Nontrivial R] {n : ℕ} :
-    pentagonalCoeff R n = 0 ↔ n ∉ Set.range pentagonal := by
+    pentagonalCoeff R n = 0 ↔ n ∉ Set.range pentagonal :=
+  open Classical in
   Ne.dite_eq_right_iff <| by rintro ⟨k, rfl⟩; rw [Int.coe_negOnePow]; apply neg_one_pow_ne_zero
