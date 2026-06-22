@@ -161,6 +161,46 @@ lemma lift_π₁ : lift φ₀ φ₁ h ≫ π₁ K = φ₁ :=
 
 end
 
+section
+
+variable (F) {D : Type*} [Category* D] [Preadditive D] (H : C ⥤ D) [H.Additive]
+  [∀ (i : α), HasBinaryBiproduct (((H.mapHomologicalComplex c).obj K).X i)
+    (((H.mapHomologicalComplex c).obj K).X i)]
+  [((H.mapHomologicalComplex c).obj K).HasPathObject]
+
+variable
+  [∀ (i : α),
+    HasBinaryBiproduct (((H.op.mapHomologicalComplex c.symm).obj K.op).X i)
+      (((H.op.mapHomologicalComplex c.symm).obj K.op).X i)]
+  [HasHomotopyCofiber (biprod.lift (𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op))
+    (-𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op)))]
+  [HasHomotopyCofiber ((H.op.mapHomologicalComplex c.symm).map (biprod.lift (𝟙 K.op) (-𝟙 K.op)))]
+  [∀ (i : α), HasBinaryBiproduct (K.op.X i) (K.op.X i)]
+
+variable (hc : ∀ (i : α), ∃ j, c.Rel i j)
+
+@[no_expose]
+noncomputable def mapHomologicalComplexObjIso :
+    (H.mapHomologicalComplex c).obj (K.pathObject) ≅
+      pathObject ((H.mapHomologicalComplex c).obj K) :=
+  (unopFunctor _ _).mapIso (cylinder.mapHomologicalComplexObjIso K.op H.op hc).op.symm
+
+@[reassoc (attr := simp)]
+lemma mapHomologicalComplexObjIso_hom_map_π₀ :
+    (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₀ K) =
+      π₀ _ :=
+  Quiver.Hom.op_inj ((opFunctor _ _).map_injective
+    (cylinder.map_ι₀_mapHomologicalComplexObjIso_hom K.op H.op hc))
+
+@[reassoc (attr := simp)]
+lemma mapHomologicalComplexObjIso_hom_map_π₁ :
+    (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₁ K) =
+      π₁ _ :=
+  Quiver.Hom.op_inj ((opFunctor _ _).map_injective
+    (cylinder.map_ι₁_mapHomologicalComplexObjIso_hom K.op H.op hc))
+end
+
+
 end pathObject
 
 end HomologicalComplex

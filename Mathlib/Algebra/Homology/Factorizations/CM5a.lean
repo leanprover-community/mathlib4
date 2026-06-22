@@ -652,4 +652,10 @@ public lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
   exact ⟨K', inferInstance, ι, π ≫ p, inferInstance, inferInstance,
     MorphismProperty.comp_mem _ _ _ hπ hp, by simp⟩
 
+variable (K) in
+public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
+    ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
+      (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
+  sorry
+
 end CochainComplex.Plus.modelCategoryQuillen
