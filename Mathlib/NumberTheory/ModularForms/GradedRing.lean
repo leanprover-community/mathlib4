@@ -34,7 +34,8 @@ namespace ModularForm
 private theorem of_eq_of_eq {ι : Type*} [DecidableEq ι] {β : ι → Type*}
     [∀ i, AddCommMonoid (β i)] {i j : ι} (h : i = j) (x : β i) :
     DirectSum.of β i x = DirectSum.of β j (h ▸ x) := by
-  subst h; rfl
+  subst h
+  rfl
 
 private theorem of_eq_sub_add_smul {ι : Type*} [DecidableEq ι] {R : Type*} [Semiring R]
     {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] {i : ι} (f g : M i) (c : R) :
@@ -251,8 +252,7 @@ theorem evalE₄E₆_surjective : Function.Surjective evalE₄E₆ := by
 
 private lemma weight_fin2 (w : Fin 2 → ℕ) (d : Fin 2 →₀ ℕ) :
     Finsupp.weight w d = d 0 * w 0 + d 1 * w 1 := by
-  rw [Finsupp.weight_eq_sum]
-  simp [Fin.sum_univ_two, smul_eq_mul, mul_comm]
+  simp [Finsupp.weight_eq_sum, Fin.sum_univ_two, mul_comm]
 
 private lemma weight_eq_4a_6b (d : Fin 2 →₀ ℕ) :
     Finsupp.weight (![4, 6] : Fin 2 → ℕ) d = d 0 * 4 + d 1 * 6 := by
@@ -681,8 +681,7 @@ theorem E₄E₆_generate :
 /-- The graded ring of level-1 modular forms is an integral domain, being isomorphic (via
 `modularFormsEquivMvPolynomial`) to the polynomial ring `ℂ[X₀, X₁]`. -/
 instance : IsDomain (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
-  Function.Injective.isDomain modularFormsEquivMvPolynomial.symm.toAlgHom.toRingHom
-    modularFormsEquivMvPolynomial.symm.injective
+  modularFormsEquivMvPolynomial.symm.toMulEquiv.isDomain _
 
 end ModularForm
 

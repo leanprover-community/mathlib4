@@ -446,13 +446,13 @@ lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [Canonicall
 
 /-- In a canonically-ordered monoid, if `S'` is contained in `(S.erase d) ∪ {d'}` and
 `f d' < f d` for some `d ∈ S`, then the product of `f` over `S'` is strictly less than over `S`. -/
-@[to_additive "In a canonically-ordered additive monoid, if `S'` is contained in
+@[to_additive /-- In a canonically-ordered additive monoid, if `S'` is contained in
 `(S.erase d) ∪ {d'}` and `f d' < f d` for some `d ∈ S`, then the sum of `f` over `S'` is
-strictly less than over `S`."]
+strictly less than over `S`. -/]
 lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq ι] [CommMonoid M]
     [PartialOrder M] [CanonicallyOrderedMul M] [MulLeftStrictMono M] {S S' : Finset ι} {f : ι → M}
-    {d d' : ι} (hd_mem : d ∈ S) (hd_not : d ∉ S') (hS' : S' ⊆ S.erase d ∪ {d'})
-    (hlt : f d' < f d) : ∏ x ∈ S', f x < ∏ x ∈ S, f x := by
+    {d d' : ι} (hd_mem : d ∈ S) (hd_not : d ∉ S') (hS' : S' ⊆ S.erase d ∪ {d'}) (hlt : f d' < f d) :
+    ∏ x ∈ S', f x < ∏ x ∈ S, f x := by
   by_cases hd'S : d' ∈ S
   · calc ∏ x ∈ S', f x
         ≤ ∏ x ∈ S.erase d, f x := Finset.prod_le_prod_of_subset' (fun x hx ↦
