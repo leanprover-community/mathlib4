@@ -132,7 +132,7 @@ theorem smallInductiveDimension_lt_iff {n : ℕ} :
       · exact fun i _ ↦ h.mono zero_le
     | succ n =>
       apply (smallInductiveDimension_le_iff.2 h).trans_lt
-      exact_mod_cast lt_add_one n
+      exact_mod_cast n.lt_add_one
 
 theorem smallInductiveDimension_eq (n : ℕ)
     (hle : HasSmallInductiveDimensionLE X n) (hlt : ¬ HasSmallInductiveDimensionLT X n) :
