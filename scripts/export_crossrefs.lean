@@ -26,7 +26,8 @@ open Lean Mathlib.CrossRef
 
 namespace ExportCrossRefs
 
-/-- The source file and 1-based line number of `decl`, if known. -/
+/-- The name of the module containing `decl`, and the 1-based line number where `decl` is
+declared, if known. -/
 def declLocation (env : Environment) (decl : Name) : Option (String × Nat) := do
   -- Inline `findDeclarationRangesCore?` since it's monadic.
   let ranges ← declRangeExt.find? (level := .exported) env decl <|>

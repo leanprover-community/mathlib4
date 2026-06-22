@@ -104,6 +104,9 @@ jobs:
           # Commit only when the entries themselves change. The `generated`
           # timestamp and source `commit` change on every run, so comparing the
           # whole file would produce a commit even when nothing of substance did.
+          # Consequence: the published `generated`/`commit` fields record when the
+          # entries last changed, not the latest commit the export ran against, so
+          # consumers should not read `generated` as a "data freshness" signal.
           if [ -f crossrefs.json ] && \
              diff -q <(jq -S '.entries' crossrefs.json) <(jq -S '.entries' ../crossrefs.json) > /dev/null; then
             echo "No change in entries; nothing to commit."

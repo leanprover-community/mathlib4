@@ -847,6 +847,9 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
+          # Elaborating this also runs the export and writes a (gitignored) `crossrefs.json`,
+          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
+          lake env lean scripts/export_crossrefs.lean
           lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
