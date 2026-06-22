@@ -83,7 +83,7 @@ protected theorem mdifferentiable : MDiff f :=
 theorem mfderiv_eq : mfderiv% f x = f :=
   f.hasMFDerivAt.mfderiv
 
-theorem mfderivWithin_eq (hs : UniqueMDiffWithinAt 𝓘(𝕜, E) s x) : mfderiv[s] f x = f :=
+theorem mfderivWithin_eq (hs : UniqueMDiffAt[s] x) : mfderiv[s] f x = f :=
   f.hasMFDerivWithinAt.mfderivWithin hs
 
 end ContinuousLinearMap
@@ -113,7 +113,7 @@ protected theorem mdifferentiable : MDiff f :=
 theorem mfderiv_eq : mfderiv% f x = (f : E →L[𝕜] E') :=
   f.hasMFDerivAt.mfderiv
 
-theorem mfderivWithin_eq (hs : UniqueMDiffWithinAt 𝓘(𝕜, E) s x) :
+theorem mfderivWithin_eq (hs : UniqueMDiffAt[s] x) :
     mfderiv[s] f x = (f : E →L[𝕜] E') :=
   f.hasMFDerivWithinAt.mfderivWithin hs
 
@@ -153,7 +153,7 @@ theorem mdifferentiableOn_id : MDiff[s] (@id M) :=
 theorem mfderiv_id : mfderiv% (@id M) x = ContinuousLinearMap.id 𝕜 (TangentSpace% x) :=
   (hasMFDerivAt_id x).mfderiv
 
-theorem mfderivWithin_id (hxs : UniqueMDiffWithinAt I s x) :
+theorem mfderivWithin_id (hxs : UniqueMDiffAt[s] x) :
     mfderiv[s] (@id M) x = ContinuousLinearMap.id 𝕜 (TangentSpace% x) := by
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_id hxs]
   exact mfderiv_id
@@ -162,7 +162,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem tangentMap_id : tangentMap% (@id M) = id := by ext1 ⟨x, v⟩; simp [tangentMap]
 
-theorem tangentMapWithin_id {p : TangentBundle I M} (hs : UniqueMDiffWithinAt I s p.proj) :
+theorem tangentMapWithin_id {p : TangentBundle I M} (hs : UniqueMDiffAt[s] p.proj) :
     tangentMap[s] (id : M → M) p = p := by
   simp only [tangentMapWithin, id]
   rw [mfderivWithin_id]
@@ -227,7 +227,7 @@ theorem HasMFDerivWithinAt.prodMk {f : M → M'} {g : M → M''}
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 lemma mfderivWithin_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
-    (hs : UniqueMDiffWithinAt I s x) :
+    (hs : UniqueMDiffAt[s] x) :
     mfderiv[s] (fun x ↦ (f x, g x)) x = (mfderiv[s] f x).prod (mfderiv[s] g x) :=
   (hf.hasMFDerivWithinAt.prodMk hg.hasMFDerivWithinAt).mfderivWithin hs
 
@@ -316,7 +316,7 @@ theorem mfderiv_fst {x : M × M'} :
   (hasMFDerivAt_fst x).mfderiv
 
 theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
-    (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
+    (hxs : UniqueMDiffAt[s] x) :
     mfderiv[s] (@Prod.fst M M') x =
       ContinuousLinearMap.fst 𝕜 (TangentSpace% x.1) (TangentSpace% x.2) := by
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_fst hxs]; exact mfderiv_fst
@@ -327,7 +327,7 @@ theorem tangentMap_prodFst {p : TangentBundle (I.prod I') (M × M')} :
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prodFst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
-    (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
+    (hs : UniqueMDiffAt[s] p.proj) :
     tangentMap[s] (@Prod.fst M M') p = ⟨p.proj.1, p.2.1⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_fst]
@@ -375,7 +375,7 @@ theorem mfderiv_snd {x : M × M'} :
   (hasMFDerivAt_snd x).mfderiv
 
 theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
-    (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
+    (hxs : UniqueMDiffAt[s] x) :
     mfderiv[s] (@Prod.snd M M') x =
       ContinuousLinearMap.snd 𝕜 (TangentSpace% x.1) (TangentSpace% x.2) := by
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_snd hxs]; exact mfderiv_snd
@@ -516,7 +516,7 @@ lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
 -- could be a strict superset of `s`.
 lemma mfderivWithin_prodMap {p : M × M'} {t : Set M'} {f : M → N} {g : M' → N'}
     (hf : MDiffAt[s] f p.1) (hg : MDiffAt[t] g p.2)
-    (hs : UniqueMDiffWithinAt I s p.1) (ht : UniqueMDiffWithinAt I' t p.2) :
+    (hs : UniqueMDiffAt[s] p.1) (ht : UniqueMDiffAt[t] p.2) :
     mfderiv[s ×ˢ t] (Prod.map f g) p = (mfderiv[s] f p.1).prodMap (mfderiv[t] g p.2) := by
   have hf' : HasMFDerivAt[Prod.fst '' s ×ˢ t] f p.1 (mfderiv[s] f p.1) :=
     hf.hasMFDerivWithinAt.mono (by grind)
@@ -539,7 +539,7 @@ theorem tangentMap_prodSnd {p : TangentBundle (I.prod I') (M × M')} :
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
-    (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
+    (hs : UniqueMDiffAt[s] p.proj) :
     tangentMap[s] (@Prod.snd M M') p = ⟨p.proj.2, p.2.2⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_snd hs]
@@ -671,7 +671,7 @@ theorem hasMFDerivAt_sumSwap :
     cases p <;> simp
 
 @[simp]
-theorem mfderivWithin_sumSwap {s : Set (M ⊕ M')} (hs : UniqueMDiffWithinAt I s p) :
+theorem mfderivWithin_sumSwap {s : Set (M ⊕ M')} (hs : UniqueMDiffAt[s] p) :
     mfderiv[s] (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace% p) :=
   hasMFDerivAt_sumSwap.hasMFDerivWithinAt.mfderivWithin hs
 
@@ -732,7 +732,7 @@ theorem hasMFDerivAt_inr :
     HasMFDerivAt% (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
   simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inr (t := Set.univ)
 
-theorem mfderivWithin_sumInl (hU : UniqueMDiffWithinAt I s q) :
+theorem mfderivWithin_sumInl (hU : UniqueMDiffAt[s] q) :
     mfderiv[s] (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace% p) :=
   hasMFDerivWithinAt_inl.mfderivWithin hU
 
@@ -740,7 +740,7 @@ theorem mfderiv_sumInl :
     mfderiv% (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace% p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumInl (uniqueMDiffWithinAt_univ I))
 
-theorem mfderivWithin_sumInr {t : Set M'} (hU : UniqueMDiffWithinAt I t q') :
+theorem mfderivWithin_sumInr {t : Set M'} (hU : UniqueMDiffAt[t] q') :
     mfderiv[t] (@Sum.inr M M') q' = ContinuousLinearMap.id 𝕜 (TangentSpace% q') :=
   hasMFDerivWithinAt_inr.mfderivWithin hU
 
@@ -794,7 +794,7 @@ theorem mfderiv_add (hf : MDiffAt f z) (hg : MDiffAt g z) :
   (hf.hasMFDerivAt.add hg.hasMFDerivAt).mfderiv
 
 theorem mfderivWithin_add (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
-    (hs : UniqueMDiffWithinAt I s z) :
+    (hs : UniqueMDiffAt[s] z) :
     (mfderiv[s] (f + g) z : TangentSpace% z →L[𝕜] E') =
       (by exact mfderiv[s] f z) + (by exact mfderiv[s] g z) :=
   (hf.hasMFDerivWithinAt.add hg.hasMFDerivWithinAt).mfderivWithin hs
@@ -881,7 +881,7 @@ theorem mdifferentiableAt_neg : MDiffAt (-f) z ↔ MDiffAt f z :=
 theorem MDifferentiable.neg (hf : MDiff f) : MDiff (-f) := fun x ↦ (hf x).neg
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mfderivWithin_neg (hs : UniqueMDiffWithinAt I s x) :
+theorem mfderivWithin_neg (hs : UniqueMDiffAt[s] x) :
     mfderiv[s] (-f) x = -mfderiv[s] f x := by
   simp_rw [mfderivWithin]
   by_cases hf : MDiffAt[s] f x
@@ -914,7 +914,7 @@ theorem MDifferentiable.sub (hf : MDiff f) (hg : MDiff g) : MDiff (f - g) :=
   fun x ↦ (hf x).sub (hg x)
 
 theorem mfderivWithin_sub (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
-    (hs : UniqueMDiffWithinAt I s z) :
+    (hs : UniqueMDiffAt[s] z) :
     (mfderiv[s] (f - g) z : TangentSpace% z →L[𝕜] E') =
       (by exact mfderiv[s] f z) - (by exact mfderiv[s] g z) :=
   (hf.hasMFDerivWithinAt.sub hg.hasMFDerivWithinAt).mfderivWithin hs

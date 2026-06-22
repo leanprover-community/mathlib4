@@ -25,6 +25,17 @@ def MATHLIBREPO := "leanprover-community/mathlib4"
 def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
 
 /--
+Canonical form of a GitHub `owner/repo` name for use as a cache blob path
+segment.
+
+GitHub treats owner and repository names case-insensitively, while Azure Blob
+Storage paths are case-sensitive. Lowercasing yields one shared key whatever
+capitalization a remote URL or the GitHub Actions context supplies, so a fork's
+uploads and downloads always meet at the same path.
+-/
+def normalizeRepo (repo : String) : String := repo.toLower
+
+/--
 Trust-classified Azure storage containers for the Mathlib cache.
 
 Each variant maps to one Azure Blob Storage container on the `lakecache` storage
@@ -139,12 +150,9 @@ def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master, .legacy]
   else if repo == NIGHTLY_TESTING_REPO then
-    -- Trusted-nightly consumers (`nightly-testing`, `nightly-testing-green`,
-    -- `bump/*`) read only `nightly-testing` + `legacy`; `pr-toolchain-tests` is
-    -- excluded so low-trust toolchain-PR uploads can't reach them. Toolchain-PR
-    -- branches opt into reading their own uploads with `--cache-from=...` (or,
-    -- in CI, via the `MATHLIB_CACHE_FROM` env var).
-    [.nightlyTesting, .legacy]
+    -- `forks` is needed for PRs opened from this repo into mathlib4: their CI
+    -- uploads land in `forks`. `pr-toolchain-tests` is excluded.
+    [.nightlyTesting, .forks, .legacy]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
     -- own container for PR-specific files, then `legacy`.
