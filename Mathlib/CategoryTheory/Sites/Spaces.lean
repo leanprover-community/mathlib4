@@ -60,7 +60,6 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
 lemma mem_grothendieckTopology {U : Opens T} {S : Sieve U} :
     S ∈ Opens.grothendieckTopology T U ↔ ∀ x ∈ U, ∃ (V : _) (f : V ⟶ U), S f ∧ x ∈ V := .rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
   coverings X := {R | ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U}
