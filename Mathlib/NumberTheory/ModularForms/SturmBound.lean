@@ -39,10 +39,8 @@ variable {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.HasDetPlusMinusOne] [𝒢.IsFi
 variable {k : ℤ} (f : ModularForm 𝒢 k)
 
 omit [𝒢.HasDetPlusMinusOne] in
-private lemma qExpansion_order_le_qExpansion_norm_order
-    [DiscreteTopology 𝒢.strictPeriods] :
-    (qExpansion 𝒢.strictWidthInfty f).order ≤
-      (qExpansion 1 (ModularForm.norm 𝒮ℒ f)).order := by
+private lemma qExpansion_order_le_qExpansion_norm_order [DiscreteTopology 𝒢.strictPeriods] :
+    (qExpansion 𝒢.strictWidthInfty f).order ≤ (qExpansion 1 (ModularForm.norm 𝒮ℒ f)).order := by
   obtain ⟨m', hm'_pos, hnRw⟩ := integerCuspWidth_eq_nat_mul_strictWidthInfty (𝒢 := 𝒢)
   have hn_pos : 0 < integerCuspWidth 𝒢 := integerCuspWidth_pos
   have hnR_pos : (0 : ℝ) < integerCuspWidth 𝒢 := by exact_mod_cast hn_pos
