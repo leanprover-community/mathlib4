@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
+public import Mathlib.Topology.Semicontinuity.Basic
 
 import Mathlib.MeasureTheory.Integral.Layercake
 
@@ -35,6 +36,12 @@ general hypotheses) are:
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
   (B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
       the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
+  (LSC) For any lower semicontinuous real-valued function f bounded from below,
+      ∫ x, f x ∂μ ≤ liminfᵢ ∫ x, f x ∂μsᵢ, in the integrable real-valued
+      formulation.
+  (USC) For any upper semicontinuous real-valued function f bounded from above,
+      limsupᵢ ∫ x, f x ∂μsᵢ ≤ ∫ x, f x ∂μ, in the integrable real-valued
+      formulation.
 
 The separate implications are:
 * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` is the implication (T) → (C).
@@ -44,6 +51,20 @@ The separate implications are:
 * `MeasureTheory.tendsto_of_forall_isOpen_le_liminf` gives the implication (O) → (T) for
     any sequence of Borel probability measures.
 * `MeasureTheory.tendsto_of_limsup_measure_closed_le` gives the implication (C) → (T).
+* The lower-semicontinuous layer-cake theorem gives
+    (O) → the nonnegative lower semicontinuous `lintegral` inequality.
+* `MeasureTheory.ProbabilityMeasure.integral_le_liminf_integral_of_tendsto_of_lowerSemicontinuous`
+    gives (T) → (LSC), in the integrable real-valued formulation with the needed real-liminf
+    boundedness hypothesis.
+* `MeasureTheory.ProbabilityMeasure.limsup_integral_le_integral_of_tendsto_of_upperSemicontinuous`
+    gives (T) → (USC), in the integrable real-valued formulation with the needed real-limsup
+    boundedness hypothesis.
+* `MeasureTheory.integral_lowerSemicontinuous_liminf_iff_integral_upperSemicontinuous_limsup`
+    gives the real-valued (LSC) ↔ (USC) duality under the same boundedness bookkeeping.
+* `MeasureTheory.ProbabilityMeasure.tendsto_of_forall_integral_lowerSemicontinuous_le_liminf`
+    gives (LSC) → (T).
+* `MeasureTheory.ProbabilityMeasure.tendsto_of_forall_limsup_integral_upperSemicontinuous_le`
+    gives (USC) → (T).
 
 We also deduce a practical convergence criterion for probability measures, in
 `IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem`.
@@ -511,6 +532,233 @@ lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
     exact lintegral_liminf_le (fun n ↦ Antitone.measurable (fun s t hst ↦
             measure_mono (fun ω hω ↦ lt_of_le_of_lt hst hω)))
 
+/-- If the portmanteau open-set liminf condition holds, then the `lintegral` of any
+nonnegative real-valued lower semicontinuous function against the limit measure is at most the
+liminf of the corresponding `lintegral`s. -/
+lemma
+  lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure_of_lowerSemicontinuous
+    {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated] {μ : Measure Ω}
+    {μs : ι → Measure Ω}
+    {f : Ω → ℝ} (hf_lsc : LowerSemicontinuous f) (hf_nonneg : 0 ≤ f)
+    (h_opens : ∀ G, IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)) :
+    ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤
+      L.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i)) := by
+  simp_rw [lintegral_eq_lintegral_meas_lt _ (Eventually.of_forall hf_nonneg)
+    hf_lsc.measurable.aemeasurable]
+  calc ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a}
+      ≤ ∫⁻ (t : ℝ) in Set.Ioi 0,
+          L.liminf (fun i ↦ (μs i) {a | t < f a}) := ?_
+    _ ≤ L.liminf (fun i ↦ ∫⁻ (t : ℝ) in Set.Ioi 0, (μs i) {a | t < f a}) := ?_
+  · exact lintegral_mono fun t ↦ h_opens _ (hf_lsc.isOpen_preimage t)
+  · exact lintegral_liminf_le (fun i ↦ Antitone.measurable (fun s t hst ↦
+      measure_mono (fun ω hω ↦ lt_of_le_of_lt hst hω)))
+
+/-- If the portmanteau open-set liminf condition holds and `f` is lower semicontinuous and bounded
+below by `c`, then the shifted nonnegative `lintegral`s of `f - c` satisfy the corresponding
+liminf inequality. -/
+lemma lintegral_ofReal_sub_const_le_liminf_of_forall_isOpen_measure_le_liminf
+    {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated] {μ : Measure Ω}
+    {μs : ι → Measure Ω}
+    {f : Ω → ℝ} {c : ℝ} (hf_lsc : LowerSemicontinuous f) (hc : ∀ x, c ≤ f x)
+    (h_opens : ∀ G, IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)) :
+    ∫⁻ x, ENNReal.ofReal (f x - c) ∂μ ≤
+      L.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x - c) ∂(μs i)) := by
+  refine
+    lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure_of_lowerSemicontinuous
+      ?_ (fun x ↦ sub_nonneg.mpr (hc x)) h_opens
+  simpa only [Pi.sub_apply, sub_eq_add_neg] using hf_lsc.add lowerSemicontinuous_const
+
+/-- One implication of the portmanteau theorem:
+weak convergence of probability measures implies the nonnegative lower semicontinuous `lintegral`
+inequality. -/
+theorem ProbabilityMeasure.lintegral_le_liminf_lintegral_of_tendsto_of_lowerSemicontinuous
+    {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated] [HasOuterApproxClosed Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    (h_tendsto : Tendsto μs L (𝓝 μ)) {f : Ω → ℝ} (hf_lsc : LowerSemicontinuous f)
+    (hf_nonneg : 0 ≤ f) :
+    ∫⁻ x, ENNReal.ofReal (f x) ∂(μ : Measure Ω) ≤
+      L.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i : Measure Ω)) :=
+  lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure_of_lowerSemicontinuous
+    hf_lsc hf_nonneg fun _G hG ↦
+      ProbabilityMeasure.le_liminf_measure_open_of_tendsto h_tendsto hG
+
+/-- One implication of the portmanteau theorem:
+weak convergence of probability measures implies the shifted `lintegral` inequality for lower
+semicontinuous functions bounded from below. -/
+theorem ProbabilityMeasure.lintegral_ofReal_sub_const_le_liminf_of_tendsto_of_lowerSemicontinuous
+    {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated] [HasOuterApproxClosed Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    (h_tendsto : Tendsto μs L (𝓝 μ)) {f : Ω → ℝ} {c : ℝ}
+    (hf_lsc : LowerSemicontinuous f) (hc : ∀ x, c ≤ f x) :
+    ∫⁻ x, ENNReal.ofReal (f x - c) ∂(μ : Measure Ω) ≤
+      L.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x - c) ∂(μs i : Measure Ω)) :=
+  lintegral_ofReal_sub_const_le_liminf_of_forall_isOpen_measure_le_liminf
+    hf_lsc hc fun _G hG ↦
+      ProbabilityMeasure.le_liminf_measure_open_of_tendsto h_tendsto hG
+
+/-- One implication of the portmanteau theorem:
+weak convergence of probability measures implies the real-valued lower semicontinuous test-function
+liminf inequality, for integrable functions bounded from below whose integrals along the filter are
+eventually bounded above. The extra bound is needed because `Filter.liminf` on `ℝ` is not an
+extended-real liminf. -/
+theorem ProbabilityMeasure.integral_le_liminf_integral_of_tendsto_of_lowerSemicontinuous
+    {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated] [NeBot L]
+    [HasOuterApproxClosed Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    (h_tendsto : Tendsto μs L (𝓝 μ)) {f : Ω → ℝ}
+    (hf_lsc : LowerSemicontinuous f) (hf_bddBelow : BddBelow (Set.range f))
+    (h_int_mu : Integrable f (μ : Measure Ω))
+    (h_int_mus : ∀ i, Integrable f (μs i : Measure Ω))
+    (h_bddAbove_integral :
+      L.IsBoundedUnder (· ≤ ·) (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω))) :
+    ∫ x, f x ∂(μ : Measure Ω) ≤
+      L.liminf (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) := by
+  rcases hf_bddBelow with ⟨c, hc_mem⟩
+  have hc : ∀ x, c ≤ f x := fun x ↦ hc_mem (Set.mem_range_self x)
+  let g : Ω → ℝ := fun x ↦ f x - c
+  have hg_nonneg : 0 ≤ g := fun x ↦ sub_nonneg.mpr (hc x)
+  have h_int_g_mu : Integrable g (μ : Measure Ω) := h_int_mu.sub (integrable_const c)
+  have h_int_g_mus : ∀ i, Integrable g (μs i : Measure Ω) :=
+    fun i ↦ (h_int_mus i).sub (integrable_const c)
+  have h_lint :
+      ∫⁻ x, ENNReal.ofReal (g x) ∂(μ : Measure Ω) ≤
+        L.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (g x) ∂(μs i : Measure Ω)) := by
+    simpa only [g] using
+      ProbabilityMeasure.lintegral_ofReal_sub_const_le_liminf_of_tendsto_of_lowerSemicontinuous
+        h_tendsto hf_lsc hc
+  rcases h_bddAbove_integral with ⟨C, hC_map⟩
+  have hC : ∀ᶠ i in L, ∫ x, f x ∂(μs i : Measure Ω) ≤ C := by
+    simpa only [eventually_map] using hC_map
+  have h_lint_bdd :
+      ∀ᶠ i in L, ∫⁻ x, ENNReal.ofReal (g x) ∂(μs i : Measure Ω) ≤
+        ENNReal.ofReal (C - c) := by
+    filter_upwards [hC] with i hi
+    rw [← ofReal_integral_eq_lintegral_ofReal (h_int_g_mus i)
+      (Eventually.of_forall hg_nonneg)]
+    exact ENNReal.ofReal_le_ofReal (by
+      dsimp only [g]
+      rw [integral_sub (h_int_mus i) (integrable_const c), integral_const]
+      simp only [probReal_univ, one_smul]
+      exact sub_le_sub_right hi c)
+  have h_liminf_ne_top :
+      L.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (g x) ∂(μs i : Measure Ω)) ≠ ∞ := by
+    exact ne_top_of_le_ne_top ENNReal.ofReal_ne_top
+      (liminf_le_of_le (by isBoundedDefault) fun b hb ↦ by
+        obtain ⟨i, hbi, hiC⟩ := (hb.and h_lint_bdd).exists
+        exact hbi.trans hiC)
+  have h_real_g :
+      ∫ x, g x ∂(μ : Measure Ω) ≤
+        L.liminf (fun i ↦ ∫ x, g x ∂(μs i : Measure Ω)) := by
+    have h_toReal := ENNReal.toReal_mono h_liminf_ne_top h_lint
+    rw [← integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall hg_nonneg)
+        h_int_g_mu.aestronglyMeasurable] at h_toReal
+    rw [← ENNReal.liminf_toReal_eq ENNReal.ofReal_ne_top h_lint_bdd] at h_toReal
+    simp_rw [← integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall hg_nonneg)
+        (h_int_g_mus _).aestronglyMeasurable] at h_toReal
+    exact h_toReal
+  have h_bddBelow_integral :
+      L.IsBoundedUnder (· ≥ ·) (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) := by
+    refine ⟨c, ?_⟩
+    simpa only [eventually_map] using Eventually.of_forall (fun i ↦ by
+      calc c = ∫ _x, c ∂(μs i : Measure Ω) := by
+            simp only [integral_const, probReal_univ, one_smul]
+        _ ≤ ∫ x, f x ∂(μs i : Measure Ω) :=
+            integral_mono (integrable_const c) (h_int_mus i) hc)
+  have h_liminf_sub :
+      L.liminf (fun i ↦ ∫ x, g x ∂(μs i : Measure Ω)) =
+        L.liminf (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) - c := by
+    rw [show (fun i ↦ ∫ x, g x ∂(μs i : Measure Ω)) =
+        fun i ↦ ∫ x, f x ∂(μs i : Measure Ω) - c by
+      funext i
+      dsimp only [g]
+      rw [integral_sub (h_int_mus i) (integrable_const c), integral_const]
+      simp only [probReal_univ, one_smul]]
+    exact liminf_sub_const L (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) c
+      (IsBoundedUnder.isCoboundedUnder_ge ⟨C, hC_map⟩) h_bddBelow_integral
+  rw [h_liminf_sub] at h_real_g
+  have h_mu_sub : ∫ x, g x ∂(μ : Measure Ω) = ∫ x, f x ∂(μ : Measure Ω) - c := by
+    dsimp only [g]
+    rw [integral_sub h_int_mu (integrable_const c), integral_const]
+    simp only [probReal_univ, one_smul]
+  rw [h_mu_sub] at h_real_g
+  linarith
+
+/-- One implication of the portmanteau theorem:
+weak convergence of probability measures implies the real-valued upper semicontinuous test-function
+limsup inequality, for integrable functions bounded from above whose integrals along the filter are
+frequently bounded below. The extra bound is needed because `Filter.limsup` on `ℝ` is not an
+extended-real limsup. -/
+theorem ProbabilityMeasure.limsup_integral_le_integral_of_tendsto_of_upperSemicontinuous
+    {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated] [NeBot L]
+    [HasOuterApproxClosed Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    (h_tendsto : Tendsto μs L (𝓝 μ)) {f : Ω → ℝ}
+    (hf_usc : UpperSemicontinuous f) (hf_bddAbove : BddAbove (Set.range f))
+    (h_int_mu : Integrable f (μ : Measure Ω))
+    (h_int_mus : ∀ i, Integrable f (μs i : Measure Ω))
+    (h_bddBelow_integral :
+      L.IsBoundedUnder (· ≥ ·) (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω))) :
+    L.limsup (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) ≤
+      ∫ x, f x ∂(μ : Measure Ω) := by
+  rcases hf_bddAbove with ⟨C, hC_mem⟩
+  have hC : ∀ x, f x ≤ C := fun x ↦ hC_mem (Set.mem_range_self x)
+  let g : Ω → ℝ := fun x ↦ C - f x
+  have hg_lsc : LowerSemicontinuous g := by
+    rw [lowerSemicontinuous_iff_isOpen_preimage]
+    intro t
+    convert hf_usc.isOpen_preimage (C - t) using 1
+    ext x
+    dsimp only [g]
+    simp only [Set.mem_preimage, Set.mem_Ioi, Set.mem_Iio]
+    constructor <;> intro hx <;> linarith
+  have hg_bddBelow : BddBelow (Set.range g) := by
+    refine ⟨0, ?_⟩
+    rintro _ ⟨x, rfl⟩
+    exact sub_nonneg.mpr (hC x)
+  have h_int_g_mu : Integrable g (μ : Measure Ω) := (integrable_const C).sub h_int_mu
+  have h_int_g_mus : ∀ i, Integrable g (μs i : Measure Ω) :=
+    fun i ↦ (integrable_const C).sub (h_int_mus i)
+  rcases h_bddBelow_integral with ⟨B, hB_map⟩
+  have hB : ∀ᶠ i in L, B ≤ ∫ x, f x ∂(μs i : Measure Ω) := by
+    simpa only [eventually_map] using hB_map
+  have h_bddAbove_g_integral :
+      L.IsBoundedUnder (· ≤ ·) (fun i ↦ ∫ x, g x ∂(μs i : Measure Ω)) := by
+    refine ⟨C - B, ?_⟩
+    simpa only [eventually_map] using hB.mono (fun i hi ↦ by
+      dsimp only [g]
+      rw [integral_sub (integrable_const C) (h_int_mus i), integral_const]
+      simp only [probReal_univ, one_smul]
+      linarith)
+  have h_lsc_g :
+      ∫ x, g x ∂(μ : Measure Ω) ≤
+        L.liminf (fun i ↦ ∫ x, g x ∂(μs i : Measure Ω)) :=
+    ProbabilityMeasure.integral_le_liminf_integral_of_tendsto_of_lowerSemicontinuous
+      h_tendsto hg_lsc hg_bddBelow h_int_g_mu h_int_g_mus h_bddAbove_g_integral
+  have h_bddAbove_integral :
+      L.IsBoundedUnder (· ≤ ·) (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) := by
+    refine ⟨C, ?_⟩
+    simpa only [eventually_map] using Eventually.of_forall (fun i ↦ by
+      calc ∫ x, f x ∂(μs i : Measure Ω) ≤ ∫ _x, C ∂(μs i : Measure Ω) :=
+            integral_mono (h_int_mus i) (integrable_const C) hC
+        _ = C := by simp only [integral_const, probReal_univ, one_smul])
+  have h_liminf_g :
+      L.liminf (fun i ↦ ∫ x, g x ∂(μs i : Measure Ω)) =
+        C - L.limsup (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) := by
+    rw [show (fun i ↦ ∫ x, g x ∂(μs i : Measure Ω)) =
+        fun i ↦ C - ∫ x, f x ∂(μs i : Measure Ω) by
+      funext i
+      dsimp only [g]
+      rw [integral_sub (integrable_const C) (h_int_mus i), integral_const]
+      simp only [probReal_univ, one_smul]]
+    exact liminf_const_sub L (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) C
+      h_bddAbove_integral (IsBoundedUnder.isCoboundedUnder_le ⟨B, hB_map⟩)
+  have h_mu_g : ∫ x, g x ∂(μ : Measure Ω) = C - ∫ x, f x ∂(μ : Measure Ω) := by
+    dsimp only [g]
+    rw [integral_sub (integrable_const C) h_int_mu, integral_const]
+    simp only [probReal_univ, one_smul]
+  rw [h_mu_g, h_liminf_g] at h_lsc_g
+  linarith
+
 lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     {μ : Measure Ω} {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     {f : Ω →ᵇ ℝ} (f_nn : 0 ≤ f)
@@ -679,6 +927,175 @@ theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
     exact le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp
 
 end Closed
+
+section Semicontinuous
+
+variable {Ω ι : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    {L : Filter ι}
+
+omit [OpensMeasurableSpace Ω] in
+/-- The real-valued lower-semicontinuous and upper-semicontinuous Portmanteau test-function
+conditions are dual by negation, provided the scalar integral sequences have the one-sided bounds
+needed by real `Filter.liminf`/`Filter.limsup`. -/
+theorem integral_lowerSemicontinuous_liminf_iff_integral_upperSemicontinuous_limsup
+    [NeBot L] :
+    (∀ f : Ω → ℝ, LowerSemicontinuous f → BddBelow (Set.range f) →
+      Integrable f (μ : Measure Ω) → (∀ i, Integrable f (μs i : Measure Ω)) →
+      L.IsBoundedUnder (· ≤ ·) (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) →
+      ∫ x, f x ∂(μ : Measure Ω) ≤ L.liminf (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω))) ↔
+    (∀ f : Ω → ℝ, UpperSemicontinuous f → BddAbove (Set.range f) →
+      Integrable f (μ : Measure Ω) → (∀ i, Integrable f (μs i : Measure Ω)) →
+      L.IsBoundedUnder (· ≥ ·) (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) →
+      L.limsup (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) ≤
+        ∫ x, f x ∂(μ : Measure Ω)) := by
+  constructor
+  · intro h_lsc f hf_usc hf_bddAbove h_int_mu h_int_mus h_bddBelow_integral
+    rcases hf_bddAbove with ⟨C, hC_mem⟩
+    have hC : ∀ x, f x ≤ C := fun x ↦ hC_mem (Set.mem_range_self x)
+    have h_neg_lsc : LowerSemicontinuous fun x ↦ -f x := by
+      rw [lowerSemicontinuous_iff_isOpen_preimage]
+      intro t
+      convert hf_usc.isOpen_preimage (-t) using 1
+      ext x
+      simp only [Set.mem_preimage, Set.mem_Ioi, Set.mem_Iio]
+      constructor <;> intro hx <;> linarith
+    have h_neg_bddBelow : BddBelow (Set.range fun x ↦ -f x) := by
+      refine ⟨-C, ?_⟩
+      rintro _ ⟨x, rfl⟩
+      exact neg_le_neg (hC x)
+    rcases h_bddBelow_integral with ⟨B, hB_map⟩
+    have hB : ∀ᶠ i in L, B ≤ ∫ x, f x ∂(μs i : Measure Ω) := by
+      simpa only [eventually_map] using hB_map
+    have h_neg_bddAbove_integral :
+        L.IsBoundedUnder (· ≤ ·) (fun i ↦ ∫ x, -f x ∂(μs i : Measure Ω)) := by
+      refine ⟨-B, ?_⟩
+      simpa only [eventually_map] using hB.mono (fun i hi ↦ by
+        rw [integral_neg]
+        linarith)
+    have hneg := h_lsc (fun x ↦ -f x) h_neg_lsc h_neg_bddBelow h_int_mu.neg
+      (fun i ↦ (h_int_mus i).neg) h_neg_bddAbove_integral
+    have h_bddAbove_integral :
+        L.IsBoundedUnder (· ≤ ·) (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) := by
+      refine ⟨C, ?_⟩
+      simpa only [eventually_map] using Eventually.of_forall (fun i ↦ by
+        calc ∫ x, f x ∂(μs i : Measure Ω) ≤ ∫ _x, C ∂(μs i : Measure Ω) :=
+              integral_mono (h_int_mus i) (integrable_const C) hC
+          _ = C := by simp only [integral_const, probReal_univ, one_smul])
+    have h_liminf_neg :
+        L.liminf (fun i ↦ ∫ x, -f x ∂(μs i : Measure Ω)) =
+          -L.limsup (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) := by
+      rw [show (fun i ↦ ∫ x, -f x ∂(μs i : Measure Ω)) =
+          fun i ↦ 0 - ∫ x, f x ∂(μs i : Measure Ω) by
+        funext i
+        rw [integral_neg]
+        ring]
+      simpa using liminf_const_sub L (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) 0
+        h_bddAbove_integral (IsBoundedUnder.isCoboundedUnder_le ⟨B, hB_map⟩)
+    rw [integral_neg, h_liminf_neg] at hneg
+    linarith
+  · intro h_usc f hf_lsc hf_bddBelow h_int_mu h_int_mus h_bddAbove_integral
+    rcases hf_bddBelow with ⟨c, hc_mem⟩
+    have hc : ∀ x, c ≤ f x := fun x ↦ hc_mem (Set.mem_range_self x)
+    have h_neg_usc : UpperSemicontinuous fun x ↦ -f x := by
+      rw [upperSemicontinuous_iff_isOpen_preimage]
+      intro t
+      convert hf_lsc.isOpen_preimage (-t) using 1
+      ext x
+      simp only [Set.mem_preimage, Set.mem_Iio, Set.mem_Ioi]
+      constructor <;> intro hx <;> linarith
+    have h_neg_bddAbove : BddAbove (Set.range fun x ↦ -f x) := by
+      refine ⟨-c, ?_⟩
+      rintro _ ⟨x, rfl⟩
+      exact neg_le_neg (hc x)
+    rcases h_bddAbove_integral with ⟨C, hC_map⟩
+    have hC : ∀ᶠ i in L, ∫ x, f x ∂(μs i : Measure Ω) ≤ C := by
+      simpa only [eventually_map] using hC_map
+    have h_neg_bddBelow_integral :
+        L.IsBoundedUnder (· ≥ ·) (fun i ↦ ∫ x, -f x ∂(μs i : Measure Ω)) := by
+      refine ⟨-C, ?_⟩
+      simpa only [eventually_map] using hC.mono (fun i hi ↦ by
+        rw [integral_neg]
+        linarith)
+    have hneg := h_usc (fun x ↦ -f x) h_neg_usc h_neg_bddAbove h_int_mu.neg
+      (fun i ↦ (h_int_mus i).neg) h_neg_bddBelow_integral
+    have h_bddBelow_integral :
+        L.IsBoundedUnder (· ≥ ·) (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) := by
+      refine ⟨c, ?_⟩
+      simpa only [eventually_map] using Eventually.of_forall (fun i ↦ by
+        calc c = ∫ _x, c ∂(μs i : Measure Ω) := by
+              simp only [integral_const, probReal_univ, one_smul]
+          _ ≤ ∫ x, f x ∂(μs i : Measure Ω) :=
+              integral_mono (integrable_const c) (h_int_mus i) hc)
+    have h_limsup_neg :
+        L.limsup (fun i ↦ ∫ x, -f x ∂(μs i : Measure Ω)) =
+          -L.liminf (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) := by
+      rw [show (fun i ↦ ∫ x, -f x ∂(μs i : Measure Ω)) =
+          fun i ↦ 0 - ∫ x, f x ∂(μs i : Measure Ω) by
+        funext i
+        rw [integral_neg]
+        ring]
+      simpa using limsup_const_sub L (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) 0
+        (IsBoundedUnder.isCoboundedUnder_ge ⟨C, hC_map⟩) h_bddBelow_integral
+    rw [integral_neg, h_limsup_neg] at hneg
+    linarith
+
+/-- One implication of the portmanteau theorem:
+if the lower semicontinuous real-valued test-function liminf inequality holds for all integrable
+functions bounded from below, then the probability measures converge weakly. -/
+theorem ProbabilityMeasure.tendsto_of_forall_integral_lowerSemicontinuous_le_liminf
+    (h_lsc : ∀ f : Ω → ℝ, LowerSemicontinuous f → BddBelow (Set.range f) →
+      Integrable f (μ : Measure Ω) → (∀ i, Integrable f (μs i : Measure Ω)) →
+      ∫ x, f x ∂(μ : Measure Ω) ≤ L.liminf (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω))) :
+    Tendsto μs L (𝓝 μ) := by
+  refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr fun f ↦ ?_
+  refine BoundedContinuousFunction.tendsto_integral_of_forall_integral_le_liminf_integral
+    (μ := (μ : Measure Ω)) (μs := fun i ↦ (μs i : Measure Ω)) ?_ f
+  intro g _hg_nonneg
+  exact h_lsc (fun x ↦ g x) g.continuous.lowerSemicontinuous
+    g.isBounded_range.bddBelow (g.integrable _) fun i ↦ g.integrable _
+
+/-- One implication of the portmanteau theorem:
+if the upper semicontinuous real-valued test-function limsup inequality holds for all integrable
+functions bounded from above, then the probability measures converge weakly. -/
+theorem ProbabilityMeasure.tendsto_of_forall_limsup_integral_upperSemicontinuous_le
+    (h_usc : ∀ f : Ω → ℝ, UpperSemicontinuous f → BddAbove (Set.range f) →
+      Integrable f (μ : Measure Ω) → (∀ i, Integrable f (μs i : Measure Ω)) →
+      L.limsup (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) ≤ ∫ x, f x ∂(μ : Measure Ω)) :
+    Tendsto μs L (𝓝 μ) := by
+  refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr fun f ↦ ?_
+  refine BoundedContinuousFunction.tendsto_integral_of_forall_limsup_integral_le_integral
+    (μ := (μ : Measure Ω)) (μs := fun i ↦ (μs i : Measure Ω)) ?_ f
+  intro g _hg_nonneg
+  exact h_usc (fun x ↦ g x) g.continuous.upperSemicontinuous
+    g.isBounded_range.bddAbove (g.integrable _) fun i ↦ g.integrable _
+
+/-- One implication of the portmanteau theorem:
+if both lower and upper semicontinuous real-valued test-function inequalities hold, then the
+probability measures converge weakly. -/
+theorem ProbabilityMeasure.tendsto_of_forall_lsc_liminf_of_forall_usc_limsup
+    (h_lsc : ∀ f : Ω → ℝ, LowerSemicontinuous f → BddBelow (Set.range f) →
+      Integrable f (μ : Measure Ω) → (∀ i, Integrable f (μs i : Measure Ω)) →
+      ∫ x, f x ∂(μ : Measure Ω) ≤ L.liminf (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)))
+    (h_usc : ∀ f : Ω → ℝ, UpperSemicontinuous f → BddAbove (Set.range f) →
+      Integrable f (μ : Measure Ω) → (∀ i, Integrable f (μs i : Measure Ω)) →
+      L.limsup (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) ≤ ∫ x, f x ∂(μ : Measure Ω)) :
+    Tendsto μs L (𝓝 μ) := by
+  refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr fun f ↦ ?_
+  rcases L.eq_or_neBot with rfl | _hne
+  · simp
+  have obs :=
+    BoundedContinuousFunction.isBounded_range_integral
+      (fun i ↦ (μs i : Measure Ω)) f
+  have bdd_above := BddAbove.isBoundedUnder L.univ_mem (by simpa using obs.bddAbove)
+  have bdd_below := BddBelow.isBoundedUnder L.univ_mem (by simpa using obs.bddBelow)
+  refine tendsto_of_le_liminf_of_limsup_le ?_ ?_ bdd_above bdd_below
+  · exact h_lsc (fun x ↦ f x) f.continuous.lowerSemicontinuous
+      f.isBounded_range.bddBelow (f.integrable _) fun i ↦ f.integrable _
+  · exact h_usc (fun x ↦ f x) f.continuous.upperSemicontinuous
+      f.isBounded_range.bddAbove (f.integrable _) fun i ↦ f.integrable _
+
+end Semicontinuous
 
 section Lipschitz
 
