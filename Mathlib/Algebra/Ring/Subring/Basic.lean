@@ -747,6 +747,9 @@ theorem top_prod (s : Subring S) : (⊤ : Subring R).prod s = s.comap (RingHom.s
 theorem top_prod_top : (⊤ : Subring R).prod (⊤ : Subring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
+
 /-- Product of subrings is isomorphic to their product as rings. -/
 def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
@@ -1163,5 +1166,5 @@ end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
-  convert! AddSubgroup.zsmul_mem G h k using 1
+  convert AddSubgroup.zsmul_mem G h k
   rw [zsmul_eq_mul]

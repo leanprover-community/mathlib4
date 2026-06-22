@@ -66,16 +66,16 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
 set_option backward.isDefEq.respectTransparency false in
 instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
-    ext X S
-    rw [show S ∈ (e.functor.inducedTopology (e.inverse.inducedTopology J)) X ↔ _
-      from (GrothendieckTopology.pullback_mem_iff_of_isIso (i := e.unit.app X)).symm]
-    congr!; ext Y f; simp
+    ext
+    simp [mem_inducedTopology_iff_of_isCoverDense, mem_inducedTopology_iff_of_isCoverDense,
+      Sieve.functorPushforward_equivalence_eq_pullback]
   nth_rw 1 [this]
   infer_instance
 
 lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
     K = e.inverse.inducedTopology J := by
   ext
+  rw [mem_inducedTopology_iff_of_isCoverDense]
   exact (e.inverse.functorPushforward_mem_iff K J).symm
 
 set_option backward.defeqAttrib.useBackward true in
