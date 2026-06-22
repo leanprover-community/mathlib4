@@ -359,6 +359,37 @@ theorem map_ker_stabilizer_subtype :
     (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.inertia G := by
   simp [ker_stabilizerHom, Ideal.inertia_le_stabilizer]
 
+section stabilizerAlgEquiv
+
+omit [SMulCommClass G A B]
+
+/-- If `g` stabilizes `P` and fixes the image of `A` in `B ⧸ P`, then the residue action of `g`
+on `B ⧸ P` is `A ⧸ p`-linear, so it defines an automorphism of the extension `(B ⧸ P) / (A ⧸ p)`.
+Unlike `Ideal.Quotient.stabilizerHom`, this does not require the whole `G`-action to fix `A`. -/
+def stabilizerAlgEquiv (g : MulAction.stabilizer G P)
+    (hg : ∀ a : A, (g : G) • algebraMap A B a - algebraMap A B a ∈ P) :
+    (B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P) :=
+  AlgEquiv.ofRingEquiv (f := Ideal.quotientEquiv P P (MulSemiringAction.toRingAut G B g) g.2.symm)
+    fun q ↦ by
+      obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective q
+      rw [algebraMap_mk_of_liesOver, Ideal.quotientEquiv_mk, Quotient.mk_eq_mk_iff_sub_mem]
+      exact hg a
+
+@[simp]
+theorem stabilizerAlgEquiv_mk (g : MulAction.stabilizer G P)
+    (hg : ∀ a : A, (g : G) • algebraMap A B a - algebraMap A B a ∈ P) (b : B) :
+    stabilizerAlgEquiv P p G g hg (Ideal.Quotient.mk P b) = Ideal.Quotient.mk P ((g : G) • b) :=
+  rfl
+
+@[simp]
+theorem stabilizerAlgEquiv_symm_mk (g : MulAction.stabilizer G P)
+    (hg : ∀ a : A, (g : G) • algebraMap A B a - algebraMap A B a ∈ P) (b : B) :
+    (stabilizerAlgEquiv P p G g hg).symm (Ideal.Quotient.mk P b) =
+      Ideal.Quotient.mk P ((g : G)⁻¹ • b) :=
+  rfl
+
+end stabilizerAlgEquiv
+
 instance (p : Ideal R) (P : Ideal A) [P.IsPrime] [P.LiesOver p] :
     (P.map (Ideal.Quotient.mk <| p.map (algebraMap R A))).IsPrime := by
   apply Ideal.isPrime_map_quotientMk_of_isPrime

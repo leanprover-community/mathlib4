@@ -806,6 +806,30 @@ theorem algebraMap_restrictHom_smul [Finite G] [Finite G'] [MulSemiringAction G 
   rw [algebraMap.smul', algebraMap_quotientMulEquiv_smul, ← IsScalarTower.algebraMap_apply,
     algebraMap.smul', ← IsScalarTower.algebraMap_apply]
 
+/-- The kernel of `restrictHom G G' A B C : G →* G'` is the subgroup of `G` fixing the image of
+`B` in `C`. -/
+theorem restrictHom_ker [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
+    (restrictHom G G' A B C).ker = fixingSubgroup G (Set.range (algebraMap B C)) := by
+  have : FaithfulSMul G' B := ‹IsGaloisGroup G' A B›.faithful
+  ext g
+  simp only [MonoidHom.mem_ker, mem_fixingSubgroup_iff, Set.mem_range, forall_exists_index,
+    forall_apply_eq_imp_iff]
+  refine ⟨fun hg b ↦ ?_, fun hg ↦ eq_of_smul_eq_smul (α := B) fun b ↦ ?_⟩
+  · rw [← algebraMap_restrictHom_smul G G' A B C, hg, one_smul]
+  · apply FaithfulSMul.algebraMap_injective B C
+    simp [hg b]
+
+/-- If `C/B/A` is a tower of domains with `C/A` Galois, `C/B` integral and `B` integrally closed,
+then the kernel of `restrictHom G G' A B C` is a Galois group for `C/B`. -/
+instance isGaloisGroup_restrictHom_ker [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] [IsIntegrallyClosed B] :
+    IsGaloisGroup (restrictHom G G' A B C).ker B C := by
+  have : Algebra.IsIntegral A C := ‹IsGaloisGroup G A C›.isInvariant.isIntegral
+  have : Algebra.IsIntegral B C := Algebra.IsIntegral.tower_top (R := A)
+  rw [restrictHom_ker]
+  exact of_isScalarTower' G A B C
+
 attribute [local instance] FractionRing.liftAlgebra in
 theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
