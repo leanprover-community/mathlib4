@@ -239,29 +239,25 @@ variable {A B : Type*} [CommRing A] [CommRing B]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
 
 include G GAC in
-open IsGaloisGroup in
+open IsGaloisGroup MulAction in
 theorem ncard_primesOver_mul_ncard_primesOver :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
-  have : Algebra.IsIntegral A C := IsGaloisGroup.isInvariant.isIntegral A C GAC
+  have : Algebra.IsIntegral A C := isInvariant.isIntegral A C GAC
   have : Algebra.IsIntegral B C := Algebra.IsIntegral.tower_top A
-  let f := IsGaloisGroup.restrictHom GAC G A B C
-  have hf : Function.Surjective f := IsGaloisGroup.restrictHom_surjective GAC G A B C
-  obtain ⟨Q, _, hQ⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P (S := C) (by simp)
-  have : Q.LiesOver P := ⟨hQ.symm⟩
+  let f := restrictHom GAC G A B C
+  have key (Q Q' : Ideal C) [Q.LiesOver P] [Q'.LiesOver P] g (hg : g • Q = Q') :
+      f g ∈ stabilizer G P := by
+    simpa [← restrictHom_smul_under GAC G A B C, ← Ideal.over_def _ P] using congr_arg (under B) hg
+  obtain ⟨Q, _, _⟩ := (inferInstance : Nonempty (P.primesOver C))
   have : Q.LiesOver p := .trans Q P p
-  have key (Q Q' : Ideal C) [Q.LiesOver P] [Q'.LiesOver P] (g : GAC) (hg : g • Q = Q') : f g ∈ MulAction.stabilizer G P := by
-    apply_fun comap (algebraMap B C) at hg
-    simp_rw [← Ideal.under_def, ← restrictHom_smul_under GAC G A B C,
-          ← Ideal.over_def _ P] at hg
-    exact hg
-  have h1 : MulAction.orbit ((MulAction.stabilizer G P).comap f) Q = P.primesOver C := by
+  have h1 : orbit ((stabilizer G P).comap f) Q = P.primesOver C := by
     ext Q'
     constructor
     · rintro ⟨⟨g, hg⟩, rfl⟩
       refine ⟨inferInstance, ?_⟩
       simp [liesOver_iff]
       simp at hg
-      rw [← restrictHom_smul_under GAC G A B C, ← Ideal.over_def Q P]
+      rw [← restrictHom_smul_under GAC G A B C, ← Q.over_def P]
       exact hg.symm
     · rintro ⟨_, _⟩
       have : Q'.LiesOver p := .trans Q' P p
@@ -270,15 +266,15 @@ theorem ncard_primesOver_mul_ncard_primesOver :
       refine ⟨⟨g, ?_⟩, ?_⟩
       · apply key Q Q' g hg.symm
       · simpa [Subgroup.smul_def] using hg.symm
-  rw [← Algebra.IsInvariant.orbit_eq_primesOver A B G p P, ← MulAction.index_stabilizer]
-  rw [← Algebra.IsInvariant.orbit_eq_primesOver A C GAC p Q, ← MulAction.index_stabilizer]
-  rw [← h1, ← MulAction.index_stabilizer]
-  have h2 : MulAction.stabilizer ((MulAction.stabilizer G P).comap f) Q =
-    (MulAction.stabilizer GAC Q).subgroupOf ((MulAction.stabilizer G P).comap f) := by
+  rw [← IsInvariant.orbit_eq_primesOver A B G p P, ← index_stabilizer]
+  rw [← IsInvariant.orbit_eq_primesOver A C GAC p Q, ← index_stabilizer]
+  rw [← h1, ← index_stabilizer]
+  have h2 : stabilizer ((stabilizer G P).comap f) Q =
+    (stabilizer GAC Q).subgroupOf ((stabilizer G P).comap f) := by
     ext
     simp [Subgroup.mem_subgroupOf, Subgroup.smul_def]
   rw [h2, ← Subgroup.relIndex]
-  rw [← Subgroup.index_comap_of_surjective (MulAction.stabilizer G P) hf,
+  rw [← Subgroup.index_comap_of_surjective (stabilizer G P) (restrictHom_surjective GAC G A B C),
     mul_comm, Subgroup.relIndex_mul_index]
   exact key Q Q
 
