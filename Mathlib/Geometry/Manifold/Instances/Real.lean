@@ -641,8 +641,29 @@ theorem Icc_signedOrientation_compatible (p q r : Set.Icc x y)
 
 instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
   manifoldOrientation :=
-    { chartSign := fun p => LocallyConstant.const _ (if p.1 < y then (0 : ZMod 2) else 1)
-      compatible := fun p q r hr => Icc_signedOrientation_compatible p q r hr }
+    { sign := fun p => if (p : ℝ) < y then 0 else 1
+      continuousOn_sign := fun q => by
+        -- After correcting by the chart transition, the sign is *constant* (`= sign q`) on the
+        -- chart domain, hence continuous there.
+        have heq : ∀ z ∈ (chartAt (EuclideanHalfSpace 1) q).source,
+            (if (z : ℝ) < y then (0 : ZMod 2) else 1) + Manifold.transSign (𝓡∂ 1) q z =
+              if (q : ℝ) < y then (0 : ZMod 2) else 1 := by
+          intro z hz
+          have hr : z ∈
+              (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) z).baseSet ∩
+                (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet :=
+            ⟨mem_baseSet_trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) z, hz⟩
+          refine Manifold.signedOrientation_injective
+            (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) (show
+            Manifold.signedOrientation
+                ((if (z : ℝ) < y then (0 : ZMod 2) else 1) + Manifold.transSign (𝓡∂ 1) q z)
+                (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
+              Manifold.signedOrientation (if (q : ℝ) < y then (0 : ZMod 2) else 1)
+                (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) from ?_)
+          rw [Manifold.signedOrientation_add, ← Manifold.transSign_baseOrientation_eq,
+            ← Manifold.Orientation.map_signedOrientation]
+          exact Icc_signedOrientation_compatible z q z hr
+        exact ContinuousOn.congr continuousOn_const heq }
 
 instance instOrientableIcc : Manifold.Orientable (𝓡∂ 1) (Set.Icc x y) := by infer_instance
 
