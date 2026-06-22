@@ -170,6 +170,22 @@ end SMul
 
 section Cast
 
+/-- `IsNatCastApplyEqNat F α β` states for all `n : ℕ` and `x : α`, `(n : F) x = n`. -/
+class IsNatCastApplyEqConst (F : Type*) (α β : outParam Type*) [FunLike F α β] [NatCast F]
+    [NatCast β] where
+  natCast_apply_eq_const (n : Nat) (x : α) : (n : F) x = n
+
+@[simp, grind =]
+alias natCast_apply_eq_const := IsNatCastApplyEqConst.natCast_apply_eq_const
+
+/-- `IsIntCastApply F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n`. -/
+class IsIntCastApplyEqConst (F : Type*) (α β : outParam Type*) [FunLike F α β] [IntCast F]
+    [IntCast β] where
+  intCast_apply_eq_const (n : Int) (x : α) : (n : F) x = n
+
+@[simp, grind =]
+alias intCast_apply_eq_const := IsIntCastApplyEqConst.intCast_apply_eq_const
+
 /-- `IsNatCastApply F α` states for all `n : ℕ` and `x : α`, `(n : F) x = n • x`. -/
 class IsNatCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [NatCast F] [SMul Nat α] where
   natCast_apply (n : Nat) (x : α) : (n : F) x = n • x
@@ -244,6 +260,16 @@ theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F' α] (f : F') : (f : α �
 @[norm_cast]
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F' α] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
+
+@[norm_cast]
+theorem coe_natCast_eq_const [NatCast F] [NatCast β] [IsNatCastApplyEqConst F α β] (n : Nat) :
+  ((n : F) : α → β) = n := by
+  funext x; simp
+
+@[norm_cast]
+theorem coe_intCast_eq_const [IntCast F] [IntCast β] [IsIntCastApplyEqConst F α β] (n : Int) :
+  ((n : F) : α → β) = n := by
+  funext x; simp
 
 @[norm_cast]
 theorem coe_natCast [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F'] [IsSMulApply Nat F' α α]

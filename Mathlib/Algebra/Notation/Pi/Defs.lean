@@ -148,6 +148,22 @@ lemma pow_comp (f : β → M) (a : α) (g : ι → β) : (f ^ a) ∘ g = f ∘ g
 
 end Pow
 
+section Cast
+
+instance instNatCast [∀ i, NatCast (M i)] : NatCast (∀ i, M i) where
+  natCast n _ := n
+
+@[simp]
+lemma natCast_apply [∀ i, NatCast (M i)] (n : Nat) (i : ι) : (n : ∀ i, M i) i = n := rfl
+
+instance instIntCast [∀ i, IntCast (M i)] : IntCast (∀ i, M i) where
+  intCast n _ := n
+
+@[simp]
+lemma intCast_apply [∀ i, IntCast (M i)] (n : Int) (i : ι) : (n : ∀ i, M i) i = n := rfl
+
+end Cast
+
 section Star
 
 variable [∀ i, Star (R i)]
