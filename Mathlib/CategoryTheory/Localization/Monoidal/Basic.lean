@@ -108,6 +108,7 @@ local notation "L'" => toMonoidalCategory L W ε
 
 instance : (L').IsLocalization W := inferInstanceAs (L.IsLocalization W)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isInvertedBy₂ :
     MorphismProperty.IsInvertedBy₂ W W
@@ -208,6 +209,7 @@ lemma μ_inv_natural_right (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :
       (L').map (X ◁ g) ≫ (μ L W ε X Y₂).inv := by
   simp [Iso.eq_comp_inv]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_hom_app (Y : C) :
     (λ_ ((L').obj Y)).hom =
@@ -219,6 +221,7 @@ lemma leftUnitor_hom_app (Y : C) :
   change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_hom_app (X : C) :
     (ρ_ ((L').obj X)).hom =
@@ -231,6 +234,7 @@ lemma rightUnitor_hom_app (X : C) :
   change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma associator_hom_app (X₁ X₂ X₃ : C) :
     (α_ ((L').obj X₁) ((L').obj X₂) ((L').obj X₃)).hom =
       ((μ L W ε _ _).hom ⊗ₘ 𝟙 _) ≫ (μ L W ε _ _).hom ≫ (L').map (α_ X₁ X₂ X₃).hom ≫
@@ -282,6 +286,7 @@ lemma whisker_exchange {Q X Y Z : LocalizedMonoidal L W ε} (f : Q ⟶ X) (g : Y
     Q ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
   simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, id_comp, comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :

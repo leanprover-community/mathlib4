@@ -85,7 +85,7 @@ series. -/
 theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.leftInv i x = p.leftInv i x := by
   ext1 n
-  induction n using Nat.strongRec' with | _ n IH
+  induction n using Nat.strong_induction_on with | _ n IH
   match n with
   | 0 => simp -- if one replaces `simp` with `refl`, the proof times out in the kernel.
   | 1 => simp -- TODO: why?
@@ -133,8 +133,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       (p.leftInv i x (n + 2) fun j : Fin (n + 2) => p 1 fun _ => v j) =
         -∑ c ∈ {c : Composition (n + 2) | c.length < n + 2}.toFinset,
             (p.leftInv i x c.length) (p.applyComposition c v) := by
-      simp only [leftInv, ContinuousMultilinearMap.neg_apply, neg_inj,
-        ContinuousMultilinearMap.sum_apply]
+      simp only [leftInv, _root_.neg_apply, neg_inj, _root_.sum_apply]
       convert!
         (sum_toFinset_eq_subtype (fun c : Composition (n + 2) => c.length < n + 2)
               (fun c : Composition (n + 2) =>
@@ -189,7 +188,7 @@ series. -/
 theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.rightInv i x = p.rightInv i x := by
   ext1 n
-  induction n using Nat.strongRec' with | _ n IH
+  induction n using Nat.strong_induction_on with | _ n IH
   match n with
   | 0 => simp only [rightInv_coeff_zero]
   | 1 => simp only [rightInv_coeff_one]
@@ -629,7 +628,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
   have L : Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
     apply (closed_nhds_basis (g (f (x + y)))).tendsto_right_iff.2
     rintro u ⟨hu, u_closed⟩
-    simp only [id_eq, eventually_atTop, ge_iff_le]
+    simp only [id_eq, eventually_atTop]
     rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
     obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
         q.partialSum a (p.partialSum b y - (p 0) fun _ ↦ 0) ∈ v := by
@@ -665,24 +664,24 @@ theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph 
     filter_upwards [f.open_source.mem_nhds h0] with x hx using by simp [hx]
   have B : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f (a + y) - f a)
       (f.symm (f (a + y))) := by
-    simpa using A.eventually_hasSum_of_comp h (radius_leftInv_pos_of_radius_pos h.radius_pos hp)
+    simpa using! A.eventually_hasSum_of_comp h (radius_leftInv_pos_of_radius_pos h.radius_pos hp)
   have C : ∀ᶠ (y : E) in 𝓝 a, HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f y - f a)
       (f.symm (f y)) := by
     rw [← sub_eq_zero_of_eq (a := a) rfl] at B
     have : ContinuousAt (fun x ↦ x - a) a := by fun_prop
-    simpa using this.preimage_mem_nhds B
+    simpa using! this.preimage_mem_nhds B
   have D : ∀ᶠ (y : E) in 𝓝 (f.symm (f a)),
       HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f y - f a) y := by
     simp only [h0, OpenPartialHomeomorph.left_inv]
     filter_upwards [C, f.open_source.mem_nhds h0] with x hx h'x
-    simpa [h'x] using hx
+    simpa [h'x] using! hx
   have E : ∀ᶠ z in 𝓝 (f a), HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f (f.symm z) - f a)
       (f.symm z) := by
     have : ContinuousAt f.symm (f a) := f.continuousAt_symm (f.map_source h0)
     exact this D
   have F : ∀ᶠ z in 𝓝 (f a), HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ z - f a) (f.symm z) := by
     filter_upwards [f.open_target.mem_nhds (f.map_source h0), E] with z hz h'z
-    simpa [hz] using h'z
+    simpa [hz] using! h'z
   rcases EMetric.mem_nhds_iff.1 F with ⟨r, r_pos, hr⟩
   refine ⟨min r (p.leftInv i a).radius, min_le_right _ _,
     lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
@@ -690,4 +689,4 @@ theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph 
     simp only [Metric.mem_eball, edist_eq_enorm_sub, sub_zero, lt_min_iff,
       add_sub_cancel_right] at hy ⊢
     exact hy.1
-  simpa [add_comm] using hr this
+  simpa [add_comm] using! hr this

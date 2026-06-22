@@ -6,7 +6,6 @@ Authors: Vincent Beffara, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
@@ -418,6 +417,60 @@ lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
       · contrapose hz
         exact (pow_eq_zero_iff'.mp hz).1 ▸ mem_of_mem_nhds hU0
 
+variable [CharZero 𝕜] [CompleteSpace E] {z₀ : 𝕜} {f : 𝕜 → E}
+  (hf : AnalyticAt 𝕜 f z₀) (hzero : f z₀ = 0)
+
+include hf hzero
+
+/-- If an analytic function `f` vanishes at `z₀`, then the analytic order of its derivative
+at `z₀` is at least `n` if and only if the analytic order of `f` at `z₀` is at least `n + 1`. -/
+lemma analyticOrderAt_deriv_ge_iff {n : ℕ} :
+    n ≤ analyticOrderAt (deriv f) z₀ ↔ n + 1 ≤ analyticOrderAt f z₀ := by
+  rw [natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero hf.deriv,
+    ← Nat.cast_add_one, natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero hf]
+  simp only [← iteratedDeriv_succ']
+  refine ⟨fun h k hk ↦ ?_, fun h k hk ↦ h (k + 1) <| by lia⟩
+  cases k with
+  | zero => simpa
+  | succ k => exact h k <| by lia
+
+/-- The derivative of an analytic function `f` has infinite analytic order at a zero `z₀` if and
+only if `f` has infinite analytic order at `z₀`. -/
+lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero :
+    analyticOrderAt (deriv f) z₀ = ⊤ ↔ analyticOrderAt f z₀ = ⊤ := by
+  simp_rw [ENat.eq_top_iff_forall_ge, analyticOrderAt_deriv_ge_iff hf hzero]
+  exact ⟨fun h m ↦ le_self_add.trans (h m), fun h m ↦ h (m + 1)⟩
+
+/-- If an analytic function `f` vanishes at `z₀`, then its derivative has finite analytic order `n`
+at `z₀` if and only if `f` has analytic order `n + 1` at `z₀`. -/
+lemma analyticOrderAt_deriv_eq_iff {n : ℕ} :
+    analyticOrderAt f z₀ = n + 1 ↔ analyticOrderAt (deriv f) z₀ = n := by
+  have H {m : ℕ} {n : ℕ∞} : n = m ↔ m ≤ n ∧ ¬ m + 1 ≤ n := by
+    cases n with | top => simp | coe _ => norm_cast; lia
+  rw [← Nat.cast_add_one n, H, H, analyticOrderAt_deriv_ge_iff hf hzero, ← Nat.cast_add_one n,
+    analyticOrderAt_deriv_ge_iff hf hzero]
+
+omit hzero in
+/-- An analytic function `f` has finite analytic order `n` at `z₀` if and only if its first
+`n` iterated derivatives (including `f` itself) vanish at `z₀` and the `n`-th iterated derivative is
+non-zero. -/
+lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero {n : ℕ} :
+    analyticOrderAt f z₀ = n ↔ (∀ k < n, iteratedDeriv k f z₀ = 0) ∧ iteratedDeriv n f z₀ ≠ 0 := by
+  induction n generalizing f with
+  | zero => simp [hf.analyticOrderAt_eq_zero]
+  | succ n IH =>
+    specialize IH hf.deriv
+    simp_rw [← iteratedDeriv_succ'] at IH
+    refine ⟨fun ho ↦ ?_, fun ⟨hz, hnz⟩ ↦ ?_⟩
+    · have ⟨h_zero, h_nz⟩ := IH.mp (analyticOrderAt_deriv_of_pos hf ho)
+      refine ⟨fun k hk ↦ ?_, h_nz⟩
+      match k with
+      | 0 => rw [iteratedDeriv_zero, ← hf.analyticOrderAt_ne_zero, ho, Nat.cast_add_one]
+             exact Nat.cast_add_one_ne_zero _
+      | k + 1 => exact h_zero k (by lia)
+    · exact (analyticOrderAt_deriv_eq_iff hf <| by simpa using hz 0 (by lia)).mpr <|
+        IH.mpr ⟨fun j _ ↦ hz (j + 1) (by lia), hnz⟩
+
 end NormedSpace
 
 /-!
@@ -636,14 +689,9 @@ codiscrete sets.
 theorem preimage_zero_mem_codiscreteWithin {x : 𝕜} (h₁f : AnalyticOnNhd 𝕜 f U) (h₂f : f x ≠ 0)
     (hx : x ∈ U) (hU : IsConnected U) :
     f ⁻¹' {0}ᶜ ∈ codiscreteWithin U := by
-  filter_upwards [h₁f.codiscreteWithin_setOf_analyticOrderAt_eq_zero_or_top,
-    self_mem_codiscreteWithin U] with a ha h₂a
-  rw [← (h₁f x hx).analyticOrderAt_eq_zero] at h₂f
-  have {u : U} : analyticOrderAt f u ≠ ⊤ := by
-    apply (h₁f.exists_analyticOrderAt_ne_top_iff_forall hU).1
-    use ⟨x, hx⟩
-    simp_all
-  simp_all [(h₁f a h₂a).analyticOrderAt_eq_zero]
+  rcases h₁f.eqOn_zero_or_eventually_ne_zero_of_preconnected hU.isPreconnected with hzero | hne
+  · exact (h₂f (hzero hx)).elim
+  · exact hne
 
 /--
 If an analytic function `f` is not constantly zero on `𝕜`, then its set of zeros is codiscrete.

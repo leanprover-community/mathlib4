@@ -22,7 +22,7 @@ public section
 open Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*}
-[NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 namespace SameRay
 
