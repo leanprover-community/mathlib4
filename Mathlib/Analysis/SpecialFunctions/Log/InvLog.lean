@@ -28,33 +28,31 @@ open Filter Asymptotics
 lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) 0 := by
   simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero,
     inv_zero, sub_zero, smul_eq_mul, ← mul_inv, mul_comm _ (log _)]
-  have H' : Tendsto (fun x ↦ log x * x) (nhdsWithin 0 (.Iio 0)) (nhdsWithin 0 (.Ioi 0)) := by
-    refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
-      tendsto_log_mul_self_nhdsLT_zero ?_
-    simp only [← nhdsWithin_Ioo_eq_nhdsLT neg_one_lt_zero, Set.mem_Ioi]
-    refine eventually_nhdsWithin_of_forall fun x ⟨hx₁, hx₂⟩ ↦ mul_pos_of_neg_of_neg ?_ hx₂
-    refine log_neg_eq_log x ▸ log_neg ?_ ?_ <;> grind
-  exact fun H ↦ (tendsto_nhdsWithin_mono_left (by grind : .Iio (0 : ℝ) ⊆ _) H).not_tendsto
-    (by simp) (tendsto_inv_nhdsGT_zero.comp H')
+  refine fun H ↦ (tendsto_nhdsWithin_mono_left (by grind : .Iio (0 : ℝ) ⊆ _) H).not_tendsto
+    (by simp) (tendsto_inv_nhdsGT_zero.comp ?_)
+  refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
+    tendsto_log_mul_self_nhdsLT_zero ?_
+  simp only [← nhdsWithin_Ioo_eq_nhdsLT neg_one_lt_zero, Set.mem_Ioi]
+  refine eventually_nhdsWithin_of_forall fun x ⟨hx₁, hx₂⟩ ↦ mul_pos_of_neg_of_neg ?_ hx₂
+  apply log_neg_eq_log x ▸ log_neg <;> grind
 
 lemma not_continuousAt_inv_log_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹) 1 := by
   suffices Tendsto (fun x ↦ (log x)⁻¹) (nhdsWithin 1 {1}ᶜ) (Bornology.cobounded ℝ) from
     not_continuousAt_of_tendsto this nhdsWithin_le_nhds (Metric.disjoint_nhds_cobounded _)
-  have H := HasDerivAt.tendsto_nhdsNE (by simpa using hasDerivAt_log one_ne_zero) one_ne_zero
-  exact tendsto_inv₀_nhdsNE_zero.comp <| log_one ▸ H
+  exact tendsto_inv₀_nhdsNE_zero.comp <| log_one ▸
+    HasDerivAt.tendsto_nhdsNE (by simpa using hasDerivAt_log one_ne_zero) one_ne_zero
 
-lemma not_continuousAt_inv_log_neg_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹) (-1) := by
-  refine fun H ↦ not_continuousAt_inv_log_one ?_
-  simpa only [log_neg_eq_log] using H.comp' continuousAt_neg
+lemma not_continuousAt_inv_log_neg_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹) (-1) :=
+  fun H ↦ not_continuousAt_inv_log_one
+    (by simpa only [log_neg_eq_log] using H.comp' continuousAt_neg)
 
-theorem deriv_inv_log {x : ℝ} :
-    deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / log x ^ 2 := by
-  rcases eq_or_ne x 0 with rfl | h0
+theorem deriv_inv_log {x : ℝ} : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / log x ^ 2 := by
+  rcases eq_or_ne x 0 with rfl | _
   · simpa using deriv_zero_of_not_differentiableAt not_differentiableAt_inv_log_zero
-  rcases eq_or_ne x 1 with rfl | h1
+  rcases eq_or_ne x 1 with rfl | _
   · simpa using deriv_zero_of_not_differentiableAt <|
       mt DifferentiableAt.continuousAt not_continuousAt_inv_log_one
-  rcases eq_or_ne x (-1) with rfl | h2
+  rcases eq_or_ne x (-1) with rfl | _
   · simpa using deriv_zero_of_not_differentiableAt <|
       mt DifferentiableAt.continuousAt not_continuousAt_inv_log_neg_one
   simp_all
