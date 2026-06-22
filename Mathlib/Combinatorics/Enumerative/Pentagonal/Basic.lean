@@ -97,8 +97,4 @@ theorem pentagonalCoeff_pentagonal (k : ℤ) :
 
 theorem pentagonalCoeff_eq_zero_iff [Nontrivial R] {n : ℕ} :
     pentagonalCoeff R n = 0 ↔ n ∉ Set.range pentagonal := by
-  refine ⟨fun h ↦ ?_, pentagonalCoeff_eq_zero R⟩
-  contrapose h
-  obtain ⟨k, rfl⟩ := h
-  rw [pentagonalCoeff_pentagonal, Int.coe_negOnePow]
-  apply neg_one_pow_ne_zero
+  Ne.dite_eq_right_iff <| by rintro ⟨k, rfl⟩; rw [Int.coe_negOnePow]; apply neg_one_pow_ne_zero
