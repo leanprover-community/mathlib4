@@ -237,31 +237,26 @@ lemma sum_f_div_log_eq : ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n = log (l
 
 private noncomputable def inv : ℝ → ℝ := (·⁻¹)
 
-private noncomputable def inv_log : ℝ → ℝ := inv ∘ log
+private noncomputable def inv_log : ℝ → ℝ := (·⁻¹) ∘ log
 
 private noncomputable def log_log : ℝ → ℝ := fun x ↦ log (log x)
 
-private lemma deriv_log_log {x : ℝ} (hx : 1 < x) :
+private lemma deriv_log_log' {x : ℝ} (hx : 1 < x) :
     deriv log_log x = (inv * inv_log^2 * log) x := by
-  unfold log_log
-  rw [deriv.log (differentiableAt_log (by linarith)) (by simp; grind), deriv_log]
+  convert! deriv_log_log hx using 1
   simp [inv, inv_log, field]
 
 @[fun_prop]
-private lemma ContinuousOn.log_Ioi_one : ContinuousOn log (.Ioi 1) :=
+private lemma continuousOn_log_Ioi_one : ContinuousOn log (.Ioi 1) :=
   continuousOn_log.mono (by grind)
 
 @[fun_prop]
-private lemma ContinuousOn.log_inv_Ioi_one : ContinuousOn inv_log (.Ioi 1) :=
-  log_Ioi_one.inv₀ (by simp; grind)
+private lemma continuousOn_log_inv_Ioi_one : ContinuousOn inv_log (.Ioi 1) :=
+  continuousOn_log_Ioi_one.inv₀ (by simp; grind)
 
 @[fun_prop]
-private lemma ContinuousOn.inv_Ioi_one : ContinuousOn inv (.Ioi 1) :=
+private lemma continuousOn_inv_Ioi_one : ContinuousOn inv (.Ioi 1) :=
   continuousOn_inv₀.mono (by grind)
-
-@[fun_prop]
-private lemma DifferentiableOn.log_log : DifferentiableOn ℝ log_log (.Ioi 1) :=
-  (differentiableOn_log.mono (by grind)).log (by simp; grind)
 
 /-- Remove after #40872 lands -/
 @[fun_prop]
@@ -287,14 +282,14 @@ private lemma integral_one_div_mul_log {x : ℝ} (hx : 2 ≤ x) :
     unfold inv_log inv log_log at this; convert this; simp [field]
   rw [← integral_deriv_eq_sub (f := log_log)]
   · exact intervalIntegral.integral_congr
-      fun _ _ ↦ (deriv_log_log (by grind [Set.uIcc_of_le])).symm
+      fun _ _ ↦ (deriv_log_log' (by grind [Set.uIcc_of_le])).symm
   · intro t ht
-    exact DifferentiableOn.log_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc_of_le]))
+    exact differentiableOn_log_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc_of_le]))
   · refine (ContinuousOn.congr (f := inv * inv_log^2 * log) ?_ ?_).intervalIntegrable
     · apply ContinuousOn.mono (s := .Ioi 1) _ (by grind [Set.uIcc_of_le])
       fun_prop
     · intro t ht
-      exact deriv_log_log (by grind [Set.uIcc_of_le])
+      exact deriv_log_log' (by grind [Set.uIcc_of_le])
 
 private theorem integrable_const_div_mul_log_sq {x : ℝ} (c : ℝ) (hx : 2 ≤ x) :
     IntegrableOn (c • (inv * inv_log^2)) (.Ioi x) volume := by
@@ -429,11 +424,12 @@ theorem second_theorem_nat (hN : 2 ≤ N) :
   simpa using F.second_theorem (mod_cast (by lia) : 2 ≤ (N : ℝ))
 
 theorem second_theorem_error_bigO_inv_log :
-  (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - F.M) =O[atTop] (1 / log ·) := by
-    simp only [one_div, isBigO_iff, norm_eq_abs, norm_inv, eventually_atTop]
-    refine ⟨C_hi - C_lo, 2, fun x hx ↦ ?_⟩
-    convert F.second_theorem hx using 1
-    grind [abs_of_pos (log_pos (by linarith) : 0 < log x)]
+    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - F.M)
+    =O[atTop] (fun x ↦ (log x)⁻¹) := by
+  simp only [isBigO_iff, norm_eq_abs, norm_inv, eventually_atTop]
+  refine ⟨C_hi - C_lo, 2, fun x hx ↦ ?_⟩
+  convert F.second_theorem hx using 1
+  grind [abs_of_pos (log_pos (by linarith) : 0 < log x)]
 
 theorem second_theorem_error_littleO_one :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - F.M) =o[atTop] fun _ ↦ (1:ℝ) :=
@@ -851,13 +847,13 @@ theorem sum_prime_div_mul_log_bound_nat (hN : 2 ≤ N) :
 
 theorem sum_von_Mangoldt_div_mul_log_bound_bigO_inv_log :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - Weight.vonMangoldt.M)
-    =O[atTop] (1 / log ·) := by
+    =O[atTop] fun x ↦ (log x)⁻¹ := by
   convert Weight.vonMangoldt.second_theorem_error_bigO_inv_log using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_bigO_inv_log :
     (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x) - Weight.prime.M)
-    =O[atTop] (1 / log ·) := by
+    =O[atTop] fun x ↦ (log x)⁻¹ := by
   convert Weight.prime.second_theorem_error_bigO_inv_log using 4
   rw [Weight.prime_sum_inv_log_mul_eq]
 
