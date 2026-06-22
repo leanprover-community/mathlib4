@@ -255,6 +255,7 @@ inst✝ : IsManifold I ∞ M
 f : M → M
 x : M
 s : Set M
+f' : TangentSpace I x →L[ℝ] TangentSpace I (f x)
 v : (x : M) → TangentSpace I x
 g✝ g : E × E → E × E
 ⊢ MDiff id
