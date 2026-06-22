@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.Matrix.Transvection
 
 /-!
 # Rank of matrices
@@ -326,6 +327,40 @@ theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) 
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
   rw [Matrix.rank, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
+
+open TransvectionStruct in
+theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
+    ∃ (V U : Matrix m m R) (e : m ≃ Fin M.rank ⊕ Fin (Fintype.card m - M.rank)),
+      IsUnit V ∧ IsUnit U ∧
+      V * M * U = (fromBlocks 1 0 0 0).submatrix e e := by
+  classical
+  obtain ⟨L, L', D, hM0⟩ := Matrix.Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M
+  set E := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with hE
+  set s : Finset m := .filter (fun i ↦ D i ≠ 0) .univ with s_def
+  set V := diagonal E * (L.reverse.map (toMatrix ∘ .inv)).prod with V_def
+  set U := (L'.reverse.map (toMatrix ∘ .inv)).prod with U_def
+  have hUdet : IsUnit U.det := (isUnit_iff_isUnit_det _).1 <| isUnit_prod_mul_reverse _
+  have hVdet : IsUnit V.det := by
+    rw [V_def, det_mul, det_diagonal]
+    exact IsUnit.mk0 _ (Finset.prod_ne_zero_iff.2 (by grind)) |>.mul <|
+      (isUnit_iff_isUnit_det _).1 (isUnit_prod_mul_reverse _)
+  have hM : V * M * U = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
+    rw [V_def, U_def, hM0, mul_assoc, mul_assoc _ (L'.map _).prod, prod_mul_reverse_inv_prod,
+      mul_one, ← mul_assoc, mul_assoc _ (L.reverse.map _).prod, reverse_inv_prod_mul_prod, mul_one]
+    ext
+    simp only [hE, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, s_def,
+      Finset.mem_filter, Finset.mem_univ, true_and, ite_not]
+    split_ifs with h1 h2 <;> first | rw [← h1, h2] | rw [← h1, inv_mul_cancel₀ h2] | rfl
+  have hs : s.card = M.rank := by
+    simp [← rank_mul_eq_right_of_isUnit_det V M hVdet, ← rank_mul_eq_left_of_isUnit_det U (V * M)
+      hUdet, hM, rank_diagonal]
+  set e : m ≃ Fin M.rank ⊕ Fin (Fintype.card m - M.rank) :=
+    (Equiv.sumCompl (· ∈ s)).symm.trans <| (Finset.equivFinOfCardEq hs).sumCongr <|
+      Fintype.equivFinOfCardEq <| by rw [Fintype.card_subtype_compl, Fintype.card_coe, hs] with he
+  refine ⟨V, U, e, (isUnit_iff_isUnit_det _).2 hVdet, isUnit_prod_mul_reverse _, ?_⟩
+  rw [hM, ← diagonal_one, ← diagonal_zero, fromBlocks_diagonal, submatrix_diagonal_equiv]
+  refine congrArg _ (funext fun i ↦ ?_)
+  split_ifs with hi <;> simp [he, hi]
 
 theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by

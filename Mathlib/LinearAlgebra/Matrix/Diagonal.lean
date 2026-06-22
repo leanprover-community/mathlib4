@@ -6,8 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 module
 
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Diagonal matrices
@@ -73,36 +72,6 @@ theorem range_diagonal [DecidableEq m] (w : m → K) :
   rw [← LinearMap.range_comp, diagonal_comp_single, ← range_smul']
 
 end Semifield
-
-section Field
-
-variable {m : Type*} [Fintype m] {K : Type u} [Field K]
-
-open TransvectionStruct in
-theorem exists_rank_normal_form [DecidableEq m] (M : Matrix m m K) :
-    ∃ (V U : Matrix m m K) (s : Finset m),
-      IsUnit V.det ∧ IsUnit U.det ∧
-      V * M * U = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
-  classical
-  obtain ⟨L, L', D, hM_eq⟩ := Matrix.Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M
-  set E := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with E_def
-  set s := Finset.filter (fun i ↦ D i ≠ 0) Finset.univ with s_def
-  have hS_unit : IsUnit (diagonal E).det := by
-    rw [det_diagonal]
-    exact IsUnit.mk0 _ <| Finset.prod_ne_zero_iff.2 (by grind)
-  have h2 : diagonal E * diagonal D = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
-    ext
-    simp only [E_def, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, s_def, ne_eq,
-      Finset.mem_filter, Finset.mem_univ, true_and, ite_not]; grind
-  refine ⟨diagonal E * (L.reverse.map (TransvectionStruct.toMatrix ∘ .inv)).prod,
-    (L'.reverse.map (TransvectionStruct.toMatrix ∘ .inv)).prod, s, ?_, ?_, ?_⟩
-  · rw [det_mul, IsUnit.mul_iff]
-    exact ⟨hS_unit, (isUnit_iff_isUnit_det _).1 <| isUnit_prod_mul_reverse _⟩
-  · exact (isUnit_iff_isUnit_det _).1 <| isUnit_prod_mul_reverse _
-  · rw [hM_eq, mul_assoc, mul_assoc _ (L'.map _).prod, prod_mul_reverse_inv_prod, mul_one,
-      ← mul_assoc, mul_assoc _ (L.reverse.map _).prod, reverse_inv_prod_mul_prod, mul_one, h2]
-
-end Field
 
 end Matrix
 

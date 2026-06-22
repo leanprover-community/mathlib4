@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
-public import Mathlib.LinearAlgebra.Matrix.Diagonal
+public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
@@ -227,85 +227,63 @@ private lemma det_one_if_fromBlocks_invertible [Invertible A]
     mul_sub, ← mul_assoc, ← mul_assoc, h_block.1, mul_assoc Cᵀ,
     mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
 
-private lemma ker_inter_eq_bot_of_rank_normal_form
-    (hU : IsUnit U.det) (hV : IsUnit V.det)
-    (h_rank : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0) (x : l → R)
-    (h1 : (Vᵀ⁻¹ * A * U) • x = 0) (h2 : (V * C * U) • x = 0) : x = 0 := by
-  refine (U.isUnit_iff_isUnit_det.2 hU).smul_left_cancel.1 ?_
-  rw [mul_assoc, mul_smul, IsUnit.smul_eq_zero, mul_smul] at h1 h2
-  all_goals simp_all [isUnit_iff_isUnit_det]
-
-private lemma symm_condition_of_rank_normal_form (hV : IsUnit V.det)
-    (h_symm : Aᵀ * C = Cᵀ * A) :
-    (Vᵀ⁻¹ * A * U)ᵀ * (V * C * U) = (V * C * U)ᵀ * (Vᵀ⁻¹ * A * U) := by
-  rw [transpose_mul, transpose_mul, transpose_mul, transpose_mul,
-    transpose_nonsing_inv, transpose_transpose]
-  convert_to Uᵀ * (Aᵀ * (V⁻¹ * V) * C * U) = Uᵀ * (Cᵀ * (Vᵀ * Vᵀ⁻¹) * A * U)
-  · ac_rfl
-  · ac_rfl
-  · rw [V.nonsing_inv_mul hV, mul_nonsing_inv _ (V.isUnit_det_transpose hV),
-      mul_one, mul_one, h_symm]
-
-private lemma eq_zero_and_symm_on_support_of_diagonal_symm {s : Finset l}
-    (hR1 : let E : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0)
-      Aᵀ * E = E * A) :
-    (∀ (i j : l), i ∈ s → j ∉ s → A i j = 0) ∧
-    (∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i) := by
-  have h_main1 (i j : l) : (if j ∈ s then A j i else 0) = (if i ∈ s then A i j else 0) := by
-    convert ext_iff.2 hR1 i j <;> simp
-  constructor <;> (intro i j hi hj; simpa [hi, hj] using (h_main1 i j).symm)
-
-private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field R] {s : Finset l}
-    {A : Matrix l l R} (h1 : ∀ (i j : l), i ∈ s → j ∉ s → A i j = 0)
-    (h2 : ∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i)
-    (h_rank1 : ∀ (x : l → R), (A • x = 0) →
-      ((diagonal (fun i ↦ if i ∈ s then 1 else (0 : R))) • x = 0) → x = 0) :
-    ∃ (X : Matrix l l R), X.IsSymm ∧
-      IsUnit (A + X * (diagonal (fun i : l ↦ if i ∈ s then 1 else 0))).det := by
-  set D : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0) with D_def
-  set X : Matrix l l R := fun i j ↦
-    if i ∈ s ∧ j ∈ s then (if i = j then 1 else 0) - A i j else 0 with X1_def
-  have hX_symm : X.IsSymm := by
-    ext; simp only [X1_def, transpose_apply]; grind
-  have hM1 (i : l) (hi : i ∈ s) (j : l) : (A + X * D) i j = if i = j then 1 else 0 := by
-    simp only [X1_def, D_def, Matrix.add_apply, mul_diagonal, mul_ite, mul_one, mul_zero]; grind
-  set M := A + X * D with M_def
-  refine ⟨X, hX_symm, M.isUnit_iff_isUnit_det.1 <|
-    isUnit_toLin'_iff.1 <| M.toLin'.isUnit_iff_ker_eq_bot.2 <|
-      ker_toLin'_eq_bot_iff.2 <| fun x (hx : M • x = 0) ↦ ?_⟩
-  have hDx : D • x = 0 := by
-    ext i
-    simp only [D_def, smul_eq_mulVec, mulVec_apply, diagonal_apply, ite_mul, one_mul, zero_mul,
-      Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, Pi.zero_apply, ite_eq_right_iff]
-    intro hi
-    simpa [hM1 i hi] using (show ∑ j : l, M i j * x j = 0 from congrFun hx i)
-  have hAx : A • x = 0 := by
-    rw [← left_eq_add (a := (X * D) • x), ← add_smul, add_comm,
-      ← M_def, hx, mul_smul, hDx, smul_zero]
-  exact h_rank1 x hAx hDx
-
 private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Type*} [Field R]
     {A C : Matrix l l R} (h_rank : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0)
     (h_symm : Aᵀ * C = Cᵀ * A) :
-    ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C).det := by
-  rcases exists_rank_normal_form C with ⟨V, U, s, hV, hU, hR1_eq⟩
-  set C' := V * C * U with C'_def
-  set A' := Vᵀ⁻¹ * A * U with A'_def
-  have h_main1 : (∀ (i j : l), i ∈ s → j ∉ s → A' i j = 0) ∧
-      (∀ (i j : l), i ∈ s → j ∈ s → A' i j = A' j i) := by
-    refine eq_zero_and_symm_on_support_of_diagonal_symm ?_
-    have h_symm1 : A'ᵀ * C' = C'ᵀ * A' := symm_condition_of_rank_normal_form hV h_symm
-    rwa [hR1_eq, diagonal_transpose] at h_symm1
-  obtain ⟨X, hX_symm, hM1⟩ := exists_symmetric_X_invertible_add_mul_diagonal
-    h_main1.1 h_main1.2 <| fun x hP1x hDx ↦
-      ker_inter_eq_bot_of_rank_normal_form hU hV h_rank x hP1x (hR1_eq ▸ hDx : C' *ᵥ x = 0)
-  refine ⟨Vᵀ * X * V, ?_, ?_⟩
-  · rw [Matrix.IsSymm, transpose_mul, transpose_mul, hX_symm, transpose_transpose, mul_assoc]
-  · convert_to IsUnit (Vᵀ * (A' + X * C') * U⁻¹).det
-    · simp [U.mul_nonsing_inv_cancel_right _ hU, mul_add, add_mul, mul_assoc, A'_def, C'_def,
-        Vᵀ.mul_nonsing_inv_cancel_left _ (V.isUnit_det_transpose hV)]
-    rw [det_mul, det_mul, hR1_eq]
-    exact ((V.det_transpose ▸ hV).mul hM1).mul <| U.isUnit_nonsing_inv_det hU
+    ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C) := by
+  rcases exists_rank_normal_form C with ⟨V, U, s, hV, hU, heq⟩
+  set P := V * C * U with P_def; set Q := Vᵀ⁻¹ * A * U with Q_def
+  set f := fun (x : Matrix l l R) ↦ x.submatrix s.symm s.symm
+  have hf (x) : f x = x.submatrix s.symm s.symm := rfl
+  have hf_unit {x} : IsUnit x → IsUnit (f x) := (isUnit_submatrix_equiv ..).2
+  have hf_mul (x y) : f (x * y) = f x * f y := submatrix_mul _ _ _ _ _ s.symm.bijective
+  have _ : Invertible V := hV.invertible
+  have _ : Invertible U := hU.invertible
+  have _ : Invertible (f Vᵀ) := (hf_unit (V.isUnit_transpose.2 hV)).invertible
+  have con1 (x : Fin C.rank ⊕ Fin (Fintype.card l - C.rank) → R)
+      (heq1 : (f (Vᵀ⁻¹ * A * U)) • x = 0) (heq2 : (f (V * C * U)) • x = 0) : x = 0 := by
+    refine (hf_unit hU).smul_left_cancel.1 ?_
+    rw [hf_mul, hf_mul, mul_assoc, mul_smul, IsUnit.smul_eq_zero, mul_smul, hf,
+      smul_eq_mulVec, submatrix_mulVec_equiv, Equiv.symm_symm] at heq1 heq2
+    · rw [Equiv.comp_symm_eq, Pi.zero_comp] at heq1 heq2
+      exact s.surjective.injective_comp_right <| by simpa using h_rank _ heq1 heq2
+    · exact hf_unit hV
+    · exact hf_unit <| isUnit_nonsing_inv_iff.2 <| V.isUnit_transpose.2 hV
+  have con2 : Qᵀ * P = Pᵀ * Q := by
+    simp only [P_def, mul_assoc, transpose_mul, transpose_nonsing_inv, transpose_transpose, Q_def,
+      inv_mul_cancel_left_of_invertible, mul_inv_cancel_left_of_invertible]
+    rw [← mul_assoc Aᵀ, h_symm, mul_assoc]
+  replace con2 : (f Q).toBlocks₁₁ᵀ = (f Q).toBlocks₁₁ ∧ (f Q).toBlocks₁₂ = 0 := by
+    apply_fun reindex s s at con2
+    rw [reindex_apply, reindex_apply, ← hf, ← hf, hf_mul, hf_mul Pᵀ, heq, hf,
+      ← transpose_submatrix, ← hf Q, ← (f Q).fromBlocks_toBlocks, hf (_)ᵀ, hf
+      ((fromBlocks 1 0 0 0).submatrix _ _)] at con2
+    simp [fromBlocks_transpose, fromBlocks_multiply] at con2; tauto
+  have con3 : IsUnit (f Q).toBlocks₂₂ := by
+    refine mulVec_injective_iff_isUnit.1 ?_
+    rw [← coe_mulVecLin, ← LinearMap.ker_eq_bot]
+    refine ker_mulVecLin_eq_bot_iff.2 fun x hx ↦ Sum.elim_injective' <|
+      (con1 _ ?_ ?_).trans Sum.elim_zero_zero.symm
+    · rw [← (f Q).fromBlocks_toBlocks]; simp [hx, con2.2, fromBlocks_mulVec]
+    · simp [← P_def, hf, heq, fromBlocks_mulVec]
+  set Y : Matrix (Fin C.rank ⊕ Fin (Fintype.card l - C.rank)) (Fin C.rank ⊕
+    Fin (Fintype.card l - C.rank)) R := fromBlocks (1 - (f Q).toBlocks₁₁) 0 0 0 with Y_def
+  have hY_symm : Y.IsSymm := by
+    rw [Y_def, isSymm_fromBlocks_iff]
+    exact ⟨IsSymm.sub isSymm_one con2.1, by simp⟩
+  set X := (f Vᵀ) * Y * (f V) with X_def
+  have heq' : f (A + X.submatrix s s * C) = (f Vᵀ) * (f Q + Y * (f P)) * f (U⁻¹) := by
+    simp_rw [hf, submatrix_add, Pi.add_apply, Q_def, P_def, ← hf, hf_mul, hf, mul_add, ← mul_assoc,
+      ← inv_submatrix_equiv, add_mul, mul_assoc _ (U.submatrix _ _), mul_inv_of_invertible]
+    simp [X_def]; rfl
+  refine ⟨X.submatrix s s, IsSymm.submatrix ?_ s, (isUnit_submatrix_equiv s.symm s.symm).1 ?_⟩
+  · simp_rw [X_def, Matrix.IsSymm, transpose_mul, hY_symm.eq, hf, transpose_submatrix,
+      transpose_transpose, mul_assoc]
+  · rw [← hf, heq', IsUnit.mul_iff, IsUnit.mul_iff]
+    refine ⟨⟨isUnit_of_invertible _, ?_⟩, ?_⟩
+    · nth_rw 1 [Y_def, heq, ← (f Q).fromBlocks_toBlocks, con2.2]
+      simpa [hf, fromBlocks_multiply, fromBlocks_add]
+    · exact hf_unit <| isUnit_nonsing_inv_iff.2 hU
 
 private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
@@ -318,7 +296,7 @@ private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R
     convert (symplectic_det hA).map f
     rw [RingHom.map_det, RingHom.mapMatrix_apply, Matrix.fromBlocks_map]; rfl
   have h_rank (x : l → k) (hx1 : A' *ᵥ x = 0) (hx2 : C' *ᵥ x = 0) : x = 0 := by
-    have h_v0 : F' *ᵥ Sum.elim x 0 = F' *ᵥ Sum.elim 0 0 := by
+    have h_v0 : F' *ᵥ (Sum.elim x 0) = F' *ᵥ (Sum.elim 0 0) := by
       simp [fromBlocks_mulVec, hx1, hx2, F'_def]
     exact (Sum.elim_eq_iff.1 (mulVec_injective_iff_isUnit.2 h15' h_v0)).1
   obtain ⟨Y, hY_symm, hY_det⟩ :=
@@ -330,7 +308,7 @@ private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R
     exact ⟨Y.map s, hY_symm.map s, Matrix.ext fun i j ↦ hs (Y i j)⟩
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
   rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hXY]
-  exact hY_det.ne_zero
+  exact ((isUnit_iff_isUnit_det _).1 hY_det).ne_zero
 
 /-- Over any local ring, every symplectic matrix has determinant 1. -/
 private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l ⊕ l) R}
