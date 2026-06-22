@@ -99,7 +99,8 @@ lemma Presieve.isSheafFor_sigmaDesc_iff {ι : Type*} {X : ι → C} (f : ∀ i, 
     dsimp [E]; infer_instance
   have : PreservesLimit (Discrete.functor fun i ↦ op (E.toPreOneHypercover.Y' i)) F := by
     convert! Functor.Initial.preservesLimit_of_comp (Discrete.equivalence <| .sigmaPUnit _).inverse
-    assumption
+    · infer_instance
+    · assumption
   let equiv := (E.isLimitSigmaOfIsColimitEquiv hc hc' F).nonempty_congr
   rwa [isLimit_toPreOneHypercover_type_iff, isLimit_toPreOneHypercover_type_iff,
     presieve₀_sigmaOfIsColimit] at equiv
