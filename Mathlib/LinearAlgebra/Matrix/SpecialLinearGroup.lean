@@ -764,9 +764,9 @@ lemma transvection_mem_commutator {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) {i
     (c : F) : SpecialLinearGroup.transvection h c ∈ commutator SL(2, F) := by
   fin_cases i
   · obtain rfl : j = 1 := by fin_cases j <;> tauto
-    exact transvection_mem_commutator₀ a ha hasq c
+    exact transvection_mem_commutator₀ ha hasq c
   · obtain rfl : j = 0 := by fin_cases j <;> tauto
-    exact transvection_mem_commutator₁ a ha hasq c
+    exact transvection_mem_commutator₁ ha hasq c
 
 lemma diag2_decompose (a : F) (ha : a ≠ 0) :
     diag2 a ha = SpecialLinearGroup.transvection zero_ne_one a *
@@ -798,7 +798,7 @@ theorem SL2.transvection_induction (P : SL(2, F) → Prop)
 lemma SL2.commutator_eq_top {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) :
     commutator SL(2, F) = ⊤ :=
   le_antisymm le_top (fun A _ ↦ SL2.transvection_induction _
-    (transvection_mem_commutator a ha hasq) (fun _ _ ↦ mul_mem) A)
+    (fun _ _ ↦ transvection_mem_commutator ha hasq) (fun _ _ ↦ mul_mem) A)
 
 end SL2
 
