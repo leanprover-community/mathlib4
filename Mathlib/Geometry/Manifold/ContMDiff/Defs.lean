@@ -69,8 +69,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
-  {e : OpenPartialHomeomorph M H}
-  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞ω}
+  {e : OpenPartialHomeomorph M H} {e' : OpenPartialHomeomorph M' H'}
+  {f f₁ : M → M'} {s s₁ t : Set M} {x x' : M} {y : M'} {m n : ℕ∞ω}
 
 variable (I I') in
 /-- Property in the model space of a model with corners of being `C^n` within a set at a point,
@@ -271,8 +271,9 @@ theorem contMDiffWithinAt_iff_target :
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, ContDiffWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
-    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.coe_coe,
-    modelWithCornersSelf_coe, chartAt_self_eq, OpenPartialHomeomorph.refl_apply, id_comp]
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
+    OpenPartialHomeomorph.refl_apply, id_comp]
   rfl
 
 theorem contMDiffAt_iff_target {x : M} :
@@ -280,36 +281,37 @@ theorem contMDiffAt_iff_target {x : M} :
       ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) x := by
   rw [ContMDiffAt, ContMDiffAt, contMDiffWithinAt_iff_target, continuousWithinAt_univ]
 
+theorem continuousWithinAt_iff_source :
+    ContinuousWithinAt f s x ↔
+      ContinuousWithinAt (f ∘ (extChartAt I x).symm)
+        ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · apply h.comp_of_eq
+    · exact (continuousAt_extChartAt_symm x).continuousWithinAt
+    · exact (mapsTo_preimage _ _).mono_left inter_subset_left
+    · exact extChartAt_to_inv x
+  · rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
+    have : ContinuousWithinAt ((f ∘ ↑(extChartAt I x).symm) ∘ ↑(extChartAt I x))
+        (s ∩ (extChartAt I x).source) x := by
+      apply h.comp (continuousAt_extChartAt x).continuousWithinAt
+      intro y hy
+      have : (chartAt H x).symm ((chartAt H x) y) = y :=
+        OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
+      simpa [this] using hy.1
+    apply this.congr
+    · intro y hy
+      have : (chartAt H x).symm ((chartAt H x) y) = y :=
+        OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
+      simp [this]
+    · simp
+
 /-- One can reformulate being `Cⁿ` within a set at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
 theorem contMDiffWithinAt_iff_source :
     ContMDiffWithinAt I I' n f s x ↔
       ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm)
         ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
-  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff']
-  have : ContinuousWithinAt f s x
-      ↔ ContinuousWithinAt (f ∘ ↑(extChartAt I x).symm) (↑(extChartAt I x).symm ⁻¹' s ∩ range ↑I)
-        (extChartAt I x x) := by
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · apply h.comp_of_eq
-      · exact (continuousAt_extChartAt_symm x).continuousWithinAt
-      · exact (mapsTo_preimage _ _).mono_left inter_subset_left
-      · exact extChartAt_to_inv x
-    · rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
-      have : ContinuousWithinAt ((f ∘ ↑(extChartAt I x).symm) ∘ ↑(extChartAt I x))
-          (s ∩ (extChartAt I x).source) x := by
-        apply h.comp (continuousAt_extChartAt x).continuousWithinAt
-        intro y hy
-        have : (chartAt H x).symm ((chartAt H x) y) = y :=
-          OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
-        simpa [this] using hy.1
-      apply this.congr
-      · intro y hy
-        have : (chartAt H x).symm ((chartAt H x) y) = y :=
-          OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
-        simp [this]
-      · simp
-  rw [← this]
+  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff', ← continuousWithinAt_iff_source]
   simp only [ContDiffWithinAtProp, mfld_simps, preimage_comp, comp_assoc]
 
 /-- One can reformulate being `Cⁿ` at a point as being `Cⁿ` in the source space when
@@ -323,7 +325,7 @@ theorem contMDiffAt_iff_source :
 section IsManifold
 
 theorem contMDiffWithinAt_iff_source_of_mem_maximalAtlas
-    [IsManifold I n M] (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
+    (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
     ContMDiffWithinAt I I' n f s x ↔
       ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (e.extend I).symm) ((e.extend I).symm ⁻¹' s ∩ range I)
         (e.extend I x) := by
@@ -336,43 +338,45 @@ theorem contMDiffWithinAt_iff_source_of_mem_maximalAtlas
   rfl
 
 theorem contMDiffWithinAt_iff_source_of_mem_source
-    [IsManifold I n M] {x' : M} (hx' : x' ∈ (chartAt H x).source) :
+    [IsManifold I n M] (hx' : x' ∈ (chartAt H x).source) :
     ContMDiffWithinAt I I' n f s x' ↔
       ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm)
         ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x') :=
   contMDiffWithinAt_iff_source_of_mem_maximalAtlas (chart_mem_maximalAtlas x) hx'
 
 theorem contMDiffAt_iff_source_of_mem_source
-    [IsManifold I n M] {x' : M} (hx' : x' ∈ (chartAt H x).source) :
+    [IsManifold I n M] (hx' : x' ∈ (chartAt H x).source) :
     ContMDiffAt I I' n f x' ↔
       ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm) (range I) (extChartAt I x x') := by
   simp_rw [ContMDiffAt, contMDiffWithinAt_iff_source_of_mem_source hx', preimage_univ, univ_inter]
 
-theorem contMDiffWithinAt_iff_target_of_mem_source
-    [IsManifold I' n M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
+theorem contMDiffWithinAt_iff_target_of_mem_maximalAtlas
+    (he' : e' ∈ maximalAtlas I' n M') (hx : f x ∈ e'.source) :
     ContMDiffWithinAt I I' n f s x ↔
-      ContinuousWithinAt f s x ∧ ContMDiffWithinAt I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) s x := by
-  simp_rw [ContMDiffWithinAt]
-  rw [(contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart_target
-      (chart_mem_maximalAtlas y) hy,
-    and_congr_right]
-  intro hf
-  simp_rw [StructureGroupoid.liftPropWithinAt_self_target]
-  simp_rw [((chartAt H' y).continuousAt hy).comp_continuousWithinAt hf]
-  rw [← extChartAt_source (I := I')] at hy
-  simp_rw [(continuousAt_extChartAt' hy).comp_continuousWithinAt hf]
-  rfl
+      ContinuousWithinAt f s x ∧ ContMDiffWithinAt I 𝓘(𝕜, E') n ((e'.extend I') ∘ f) s x := by
+  simp_rw [ContMDiffWithinAt,
+    (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart_target he' hx]
+  apply and_congr_right (fun h ↦ ?_)
+  have A : ContinuousWithinAt ((e'.extend I') ∘ f) s x :=
+    (e'.continuousAt_extend hx).comp_continuousWithinAt h
+  have A' : ContinuousWithinAt (e' ∘ f) s x := (e'.continuousAt hx).comp_continuousWithinAt h
+  simp_rw [StructureGroupoid.liftPropWithinAt_self_target, A, A']
+  simp [ContDiffWithinAtProp, comp_assoc]
 
-theorem contMDiffAt_iff_target_of_mem_source
-    [IsManifold I' n M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
+theorem contMDiffWithinAt_iff_target_of_mem_source [IsManifold I' n M']
+    (hy : f x ∈ (chartAt H' y).source) :
+    ContMDiffWithinAt I I' n f s x ↔
+      ContinuousWithinAt f s x ∧ ContMDiffWithinAt I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) s x :=
+  contMDiffWithinAt_iff_target_of_mem_maximalAtlas (chart_mem_maximalAtlas _) hy
+
+theorem contMDiffAt_iff_target_of_mem_source [IsManifold I' n M']
+    (hy : f x ∈ (chartAt H' y).source) :
     ContMDiffAt I I' n f x ↔
       ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) x := by
   rw [ContMDiffAt, contMDiffWithinAt_iff_target_of_mem_source hy, continuousWithinAt_univ,
     ContMDiffAt]
 
-variable [IsManifold I n M] [IsManifold I' n M']
-
-theorem contMDiffWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I n M)
+theorem contMDiffWithinAt_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I n M)
     (he' : e' ∈ maximalAtlas I' n M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
     ContMDiffWithinAt I I' n f s x ↔
       ContinuousWithinAt f s x ∧
@@ -380,10 +384,27 @@ theorem contMDiffWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtl
           ((e.extend I).symm ⁻¹' s ∩ range I) (e.extend I x) :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart he hx he' hy
 
+/-- An alternative version of `contMDiffWithinAt_iff_of_mem_maximalAtlas` which takes a
+chart `e'` in the target in the maximal atlas, but uses the preferred chart on the domain. -/
+theorem contMDiffWithinAt_iff_of_mem_maximalAtlas'
+    (he' : e' ∈ maximalAtlas I' n M') (hy : f x ∈ e'.source) :
+    ContMDiffWithinAt I I' n f s x ↔
+      ContinuousWithinAt f s x ∧
+        ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (extChartAt I x).symm)
+          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  rw [contMDiffWithinAt_iff_source,
+    contMDiffWithinAt_iff_target_of_mem_maximalAtlas he' (by simpa)]
+  apply and_congr continuousWithinAt_iff_source.symm
+  -- TODO: this is `contMDiffWithinAt_iff_contDiffWithinAt` copied,
+  -- which is not put here for import reasons
+  simp +contextual only [ContMDiffWithinAt, liftPropWithinAt_iff',
+    ContDiffWithinAtProp, iff_def, mfld_simps]
+  exact ContDiffWithinAt.continuousWithinAt
+
 /-- An alternative formulation of `contMDiffWithinAt_iff_of_mem_maximalAtlas`
-if the set if `s` lies in `e.source`. -/
-theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I n M)
-    (he' : e' ∈ maximalAtlas I' n M')
+if the set `s` lies in `e.source`. -/
+theorem contMDiffWithinAt_iff_image
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I' n M')
     (hs : s ⊆ e.source) (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
     ContMDiffWithinAt I I' n f s x ↔
       ContinuousWithinAt f s x ∧
@@ -395,8 +416,8 @@ theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I n M)
 
 /-- One can reformulate being `C^n` within a set at a point as continuity within this set at this
 point, and being `C^n` in any chart containing that point. -/
-theorem contMDiffWithinAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
-    (hy : f x' ∈ (chartAt H' y).source) :
+theorem contMDiffWithinAt_iff_of_mem_source [IsManifold I n M] [IsManifold I' n M']
+    (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     ContMDiffWithinAt I I' n f s x' ↔
       ContinuousWithinAt f s x' ∧
         ContDiffWithinAt 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
@@ -404,8 +425,8 @@ theorem contMDiffWithinAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (char
   contMDiffWithinAt_iff_of_mem_maximalAtlas (chart_mem_maximalAtlas x)
     (chart_mem_maximalAtlas y) hx hy
 
-theorem contMDiffWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
-    (hy : f x' ∈ (chartAt H' y).source) :
+theorem contMDiffWithinAt_iff_of_mem_source' [IsManifold I n M] [IsManifold I' n M']
+    (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     ContMDiffWithinAt I I' n f s x' ↔
       ContinuousWithinAt f s x' ∧
         ContDiffWithinAt 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
@@ -422,8 +443,8 @@ theorem contMDiffWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (cha
     ← map_extChartAt_nhdsWithin' hx, inter_comm, nhdsWithin_inter_of_mem]
   exact hc (extChartAt_source_mem_nhds' hy)
 
-theorem contMDiffAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
-    (hy : f x' ∈ (chartAt H' y).source) :
+theorem contMDiffAt_iff_of_mem_source [IsManifold I n M] [IsManifold I' n M']
+    (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     ContMDiffAt I I' n f x' ↔
       ContinuousAt f x' ∧
         ContDiffWithinAt 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (range I)
@@ -451,7 +472,8 @@ into a single chart, the fact that `f` is `C^n` on that set can be expressed by 
 these charts.
 Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
 that this set lies in `(extChartAt I x).target`. -/
-theorem contMDiffOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source)
+theorem contMDiffOn_iff_of_subset_source [IsManifold I n M] [IsManifold I' n M']
+    (hs : s ⊆ (chartAt H x).source)
     (h2s : MapsTo f s (chartAt H' y).source) :
     ContMDiffOn I I' n f s ↔
       ContinuousOn f s ∧
@@ -464,8 +486,8 @@ into a single chart, the fact that `f` is `C^n` on that set can be expressed by 
 these charts.
 Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
 that this set lies in `(extChartAt I x).target`. -/
-theorem contMDiffOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
-    (h2s : MapsTo f s (extChartAt I' y).source) :
+theorem contMDiffOn_iff_of_subset_source' [IsManifold I n M] [IsManifold I' n M']
+    (hs : s ⊆ (extChartAt I x).source) (h2s : MapsTo f s (extChartAt I' y).source) :
     ContMDiffOn I I' n f s ↔
         ContDiffOn 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (extChartAt I x '' s) := by
   rw [extChartAt_source] at hs h2s
@@ -474,7 +496,7 @@ theorem contMDiffOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChart
 
 /-- One can reformulate being `C^n` on a set as continuity on this set, and being `C^n` in any
 extended chart. -/
-theorem contMDiffOn_iff :
+theorem contMDiffOn_iff [IsManifold I n M] [IsManifold I' n M'] :
     ContMDiffOn I I' n f s ↔
       ContinuousOn f s ∧
         ∀ (x : M) (y : M'),
@@ -501,8 +523,7 @@ theorem contMDiffOn_iff :
     mfld_set_tac
 
 /-- zero-smoothness on a set is equivalent to continuity on this set. -/
-theorem contMDiffOn_zero_iff :
-    ContMDiffOn I I' 0 f s ↔ ContinuousOn f s := by
+theorem contMDiffOn_zero_iff : ContMDiffOn I I' 0 f s ↔ ContinuousOn f s := by
   rw [contMDiffOn_iff]
   refine ⟨fun h ↦ h.1, fun h ↦ ⟨h, ?_⟩⟩
   intro x y
@@ -517,7 +538,7 @@ theorem contMDiffOn_zero_iff :
 
 /-- One can reformulate being `C^n` on a set as continuity on this set, and being `C^n` in any
 extended chart in the target. -/
-theorem contMDiffOn_iff_target :
+theorem contMDiffOn_iff_target [IsManifold I n M] [IsManifold I' n M'] :
     ContMDiffOn I I' n f s ↔
       ContinuousOn f s ∧
         ∀ y : M',
@@ -535,7 +556,7 @@ theorem contMDiffOn_iff_target :
 
 
 /-- One can reformulate being `C^n` as continuity and being `C^n` in any extended chart. -/
-theorem contMDiff_iff :
+theorem contMDiff_iff [IsManifold I n M] [IsManifold I' n M'] :
     ContMDiff I I' n f ↔
       Continuous f ∧
         ∀ (x : M) (y : M'),
@@ -546,7 +567,7 @@ theorem contMDiff_iff :
 
 /-- One can reformulate being `C^n` as continuity and being `C^n` in any extended chart in the
 target. -/
-theorem contMDiff_iff_target :
+theorem contMDiff_iff_target [IsManifold I n M] [IsManifold I' n M'] :
     ContMDiff I I' n f ↔
       Continuous f ∧ ∀ y : M',
         ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
@@ -709,7 +730,7 @@ protected theorem ContMDiffOn.contMDiffAt (h : ContMDiffOn I I' n f s) (hx : s �
     ContMDiffAt I I' n f x :=
   (h x (mem_of_mem_nhds hx)).contMDiffAt hx
 
-theorem contMDiffOn_iff_source_of_mem_maximalAtlas [IsManifold I n M]
+theorem contMDiffOn_iff_source_of_mem_maximalAtlas
     (he : e ∈ maximalAtlas I n M) (hs : s ⊆ e.source) :
     ContMDiffOn I I' n f s ↔
       ContMDiffOn 𝓘(𝕜, E) I' n (f ∘ (e.extend I).symm) (e.extend I '' s) := by

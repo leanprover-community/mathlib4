@@ -361,8 +361,8 @@ theorem List.nnnorm_prod_le [NormOneClass α] (l : List α) : ‖l.prod‖₊ �
 theorem Finset.norm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
     (f : ι → α) : ‖∏ i ∈ s, f i‖ ≤ ∏ i ∈ s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
-  have : l.map f ≠ [] := by simpa using hs
-  simpa using List.norm_prod_le' this
+  have : l.map f ≠ [] := by simpa using! hs
+  simpa using! List.norm_prod_le' this
 
 theorem Finset.nnnorm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
     (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
@@ -371,7 +371,7 @@ theorem Finset.nnnorm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) 
 theorem Finset.norm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
     (f : ι → α) : ‖∏ i ∈ s, f i‖ ≤ ∏ i ∈ s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
-  simpa using (l.map f).norm_prod_le
+  simpa using! (l.map f).norm_prod_le
 
 theorem Finset.nnnorm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
     (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
@@ -472,7 +472,7 @@ lemma norm_commutator_units_sub_one_le (a b : αˣ) :
 
 lemma nnnorm_commutator_units_sub_one_le (a b : αˣ) :
     ‖(a * b * a⁻¹ * b⁻¹).val - 1‖₊ ≤ 2 * ‖a⁻¹.val‖₊ * ‖b⁻¹.val‖₊ * ‖a.val - 1‖₊ * ‖b.val - 1‖₊ := by
-  simpa using norm_commutator_units_sub_one_le a b
+  simpa using! norm_commutator_units_sub_one_le a b
 
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
@@ -943,10 +943,6 @@ variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
 lemma iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg {F : Type*} [FunLike F R ℝ]
     [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] (v : F) (x : ι → R) (y : ι' → R) :
     ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
-  rcases isEmpty_or_nonempty ι
-  · simp
-  rcases isEmpty_or_nonempty ι'
-  · simp
   simp_rw [Real.iSup_mul_of_nonneg (iSup_nonneg fun i ↦ apply_nonneg v (y i)),
     Real.mul_iSup_of_nonneg (apply_nonneg v _), map_mul, Finite.ciSup_prod]
 

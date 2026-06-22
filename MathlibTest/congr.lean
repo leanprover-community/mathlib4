@@ -334,7 +334,6 @@ example (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : Li
 set_option linter.overlappingInstances false in
 /--
 error: unsolved goals
-case h.e'_2
 α : Type
 inst1 : BEq α
 inst✝¹ : LawfulBEq α

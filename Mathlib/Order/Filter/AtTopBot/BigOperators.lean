@@ -39,7 +39,7 @@ theorem Filter.map_atTop_finsetProd_le_of_prod_eq {f : α → M} {g : β → M}
     refine ((atTop_basis.map _).le_basis_iff (atTop_basis.map _)).2 fun b _ => ?_
     let ⟨v, hv⟩ := h_eq b
     refine ⟨v, trivial, ?_⟩
-    simpa [Finset.image_subset_iff] using hv
+    simpa [Finset.image_subset_iff] using! hv
 
 @[deprecated (since := "2026-04-08")]
 alias Filter.map_atTop_finset_sum_le_of_sum_eq := Filter.map_atTop_finsetSum_le_of_sum_eq

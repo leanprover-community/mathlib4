@@ -101,7 +101,7 @@ instance Ordinal.isEquivalent : Setoid WellOrder where
     ⟨fun _ => ⟨RelIso.refl _⟩, fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans e₂⟩⟩
 
 /-- `Ordinal.{u}` is the type of well orders in `Type u`, up to order isomorphism. -/
-@[pp_with_univ]
+@[pp_with_univ, wikidata Q191780]
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 
@@ -146,7 +146,11 @@ def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
   ⟦⟨α, r, wo⟩⟧
 
 /-- `typeLT α` is an abbreviation for the order type of the `<` relation of `α`. -/
-scoped notation "typeLT " α:70 => @Ordinal.type α (· < ·) inferInstance
+scoped notation3 "typeLT " α:70 => @Ordinal.type α (· < ·) inferInstance
+
+/-- info: typeLT ℕ : Ordinal.{0} -/
+#guard_msgs in
+#check typeLT ℕ
 
 instance zero : Zero Ordinal :=
   ⟨type <| @emptyRelation PEmpty⟩
@@ -165,12 +169,19 @@ theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWel
     type r = type s ↔ Nonempty (r ≃r s) :=
   Quotient.eq'
 
-theorem _root_.RelIso.ordinal_type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
-    [IsWellOrder β s] (h : r ≃r s) : type r = type s :=
+theorem _root_.RelIso.ordinalType_congr {α β} {r : α → α → Prop} {s : β → β → Prop}
+    [IsWellOrder α r] [IsWellOrder β s] (h : r ≃r s) : type r = type s :=
   type_eq.2 ⟨h⟩
 
+@[deprecated (since := "2026-05-25")]
+alias _root_.RelIso.ordinal_type_eq := RelIso.ordinalType_congr
+
+theorem _root_.OrderIso.ordinalType_congr {α β} [LinearOrder α] [LinearOrder β]
+    [WellFoundedLT α] [WellFoundedLT β] (h : α ≃o β) : typeLT α = typeLT β :=
+  h.toRelIsoLT.ordinalType_congr
+
 theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
-  (RelIso.relIsoOfIsEmpty r _).ordinal_type_eq
+  (RelIso.relIsoOfIsEmpty r _).ordinalType_congr
 
 @[simp]
 theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α := by
@@ -191,7 +202,7 @@ theorem type_empty : type (@emptyRelation Empty) = 0 :=
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
-  exact (RelIso.ofUniqueOfIrrefl r _).ordinal_type_eq
+  exact (RelIso.ofUniqueOfIrrefl r _).ordinalType_congr
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
@@ -410,7 +421,7 @@ def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordina
     exact (PrincipalSeg.ofElement _ _).ordinal_type_lt
   · refine inductionOn a ?_
     rintro β s wo ⟨g⟩
-    exact ⟨_, g.subrelIso.ordinal_type_eq⟩
+    exact ⟨_, g.subrelIso.ordinalType_congr⟩
 
 @[simp]
 theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
@@ -431,7 +442,7 @@ theorem typein_lt_self {o : Ordinal} (i : o.ToType) : typein (α := o.ToType) (�
 @[simp]
 theorem typein_top {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (f : r ≺i s) : typein s f.top = type r :=
-  f.subrelIso.ordinal_type_eq
+  f.subrelIso.ordinalType_congr
 
 @[simp]
 theorem typein_lt_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} :
@@ -565,7 +576,6 @@ def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
 
-set_option linter.deprecated false in
 @[deprecated "use `WellFoundedLT.toOrderBot` if you need an `OrderBot` instance"
 (since := "2026-04-12")]
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
@@ -659,12 +669,12 @@ theorem type_lt_ulift [LinearOrder α] [WellFoundedLT α] :
 theorem _root_.RelIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (f : r ≃r s) : lift.{v} (type r) = lift.{u} (type s) :=
   ((RelIso.preimage Equiv.ulift r).trans <|
-      f.trans (RelIso.preimage Equiv.ulift s).symm).ordinal_type_eq
+      f.trans (RelIso.preimage Equiv.ulift s).symm).ordinalType_congr
 
 @[simp]
 theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     type (f ⁻¹'o r) = type r :=
-  (RelIso.preimage f r).ordinal_type_eq
+  (RelIso.preimage f r).ordinalType_congr
 
 @[simp]
 theorem type_lift_preimage (r : α → α → Prop) [IsWellOrder α r]
@@ -830,11 +840,11 @@ the addition, together with properties of the other operations, are proved in
 every element of `o₁` is smaller than every element of `o₂`. -/
 instance add : Add Ordinal.{u} :=
   ⟨fun o₁ o₂ => Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
-    fun _ _ _ _ ⟨f⟩ ⟨g⟩ => (RelIso.sumLexCongr f g).ordinal_type_eq⟩
+    fun _ _ _ _ ⟨f⟩ ⟨g⟩ => (RelIso.sumLexCongr f g).ordinalType_congr⟩
 
 instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
-  zero_add o := inductionOn o fun α _ _ => (RelIso.emptySumLex _ _).ordinal_type_eq
-  add_zero o := inductionOn o fun α _ _ => (RelIso.sumLexEmpty _ _).ordinal_type_eq
+  zero_add o := inductionOn o fun α _ _ => (RelIso.emptySumLex _ _).ordinalType_congr
+  add_zero o := inductionOn o fun α _ _ => (RelIso.sumLexEmpty _ _).ordinalType_congr
   add_assoc o₁ o₂ o₃ :=
     Quotient.inductionOn₃ o₁ o₂ o₃ fun _ _ _ ↦ Quot.sound ⟨⟨sumAssoc .., by simp⟩⟩
   nsmul := nsmulRec
@@ -876,7 +886,7 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal where
   exists_add_of_le {a b} := by
     refine inductionOn₂ a b fun α r _ β s _ ⟨f⟩ ↦ ?_
     obtain ⟨γ, t, _, ⟨g⟩⟩ := f.exists_sum_relIso
-    exact ⟨type t, g.ordinal_type_eq.symm⟩
+    exact ⟨type t, g.ordinalType_congr.symm⟩
 
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
   le_add_self a b := by simpa using add_le_add_left bot_le a
@@ -1212,7 +1222,6 @@ theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c :=
 
 @[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
 
-set_option linter.deprecated false in
 @[deprecated mk_Iio_lt (since := "2026-03-20")]
 theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c :=
@@ -1257,7 +1266,6 @@ theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
 def ord.orderEmbedding : Cardinal ↪o Ordinal :=
   OrderEmbedding.ofStrictMono _ fun _ _ ↦ Cardinal.ord_lt_ord.2
 
-set_option linter.deprecated false in
 @[deprecated ord (since := "2026-02-27")]
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
