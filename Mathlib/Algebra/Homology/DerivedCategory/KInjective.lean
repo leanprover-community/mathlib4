@@ -91,8 +91,7 @@ noncomputable def equivOfIsKInjective [L.IsKInjective] :
 
 end HomComplex.CohomologyClass
 
-open HomologicalComplex
-
+open HomologicalComplex in
 lemma quasiIso_iff_of_injective {K L : CochainComplex C ℕ}
     [∀ n, Injective (K.X n)] [∀ n, Injective (L.X n)]
     (f : K ⟶ L) :

@@ -37,7 +37,7 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category* C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
-  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
+  (K L M : HomologicalComplex₂ C c₁ c₂) (φ φ' : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [TotalComplexShape c₁ c₂ c₁₂]
 
 /-- A bicomplex has a total bicomplex if for any `i₁₂ : I₁₂`, the coproduct
@@ -421,6 +421,19 @@ lemma map_id : map (𝟙 K) c₁₂ = 𝟙 _ := by
   apply (HomologicalComplex.forget _ _).map_injective
   apply GradedObject.mapMap_id
 
+variable (K L) in
+@[simp]
+lemma map_add : map (φ + φ') c₁₂ = map φ c₁₂ + map φ' c₁₂ := by
+  apply (HomologicalComplex.forget _ _).map_injective
+  dsimp
+  apply GradedObject.mapMap_add
+
+variable (K L) in
+@[simp]
+lemma map_zero : map (0 : K ⟶ L) c₁₂ = 0 := by
+  apply (HomologicalComplex.forget _ _).map_injective
+  apply GradedObject.mapMap_zero
+
 variable [M.HasTotal c₁₂]
 
 @[simp, reassoc]
@@ -436,6 +449,10 @@ noncomputable def mapIso : K.total c₁₂ ≅ L.total c₁₂ where
   inv := map e.inv _
   hom_inv_id := by rw [← map_comp, e.hom_inv_id, map_id]
   inv_hom_id := by rw [← map_comp, e.inv_hom_id, map_id]
+
+lemma isZero (hK : IsZero K) : IsZero (K.total c₁₂) := by
+  rw [IsZero.iff_id_eq_zero, ← map_id, hK.eq_of_src (𝟙 K) 0,
+    map_zero]
 
 end total
 

@@ -4,6 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
+--public import Mathlib.Algebra.Homology.Factorizations.CM5a
+--public import Mathlib.Algebra.Homology.ModelCategory.Lifting
+--public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+--public import Mathlib.Algebra.Homology.HomologySequence
+--public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
+--public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
+--public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 public import Mathlib.Algebra.Homology.CochainComplexPlus
 public import Mathlib.Algebra.Homology.Factorizations.CM5a

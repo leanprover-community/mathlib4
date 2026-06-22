@@ -81,6 +81,26 @@ consisting of `X` in degree `n : ℤ` and zero otherwise.
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
+set_option backward.defeqAttrib.useBackward true in
+variable {C} in
+lemma singleFunctors_shiftIso_hom_app_f
+    (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
+    (((singleFunctors C).shiftIso n a a' ha').hom.app X).f i =
+      (singleObjXIsoOfEq (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).hom ≫
+        (singleObjXIsoOfEq (ComplexShape.up ℤ) a X i hi).inv := by
+  dsimp [singleObjXIsoOfEq, singleFunctors]
+  rw [eqToHom_trans]
+
+set_option backward.defeqAttrib.useBackward true in
+variable {C} in
+lemma singleFunctors_shiftIso_inv_app_f
+    (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
+    (((singleFunctors C).shiftIso n a a' ha').inv.app X).f i =
+        (singleObjXIsoOfEq (ComplexShape.up ℤ) a X i hi).hom ≫
+      (singleObjXIsoOfEq (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).inv := by
+  dsimp [singleObjXIsoOfEq, singleFunctors]
+  rw [eqToHom_trans]
+
 variable {C} in
 @[simp]
 lemma singleFunctor_obj_d (X : C) (n p q : ℤ) :

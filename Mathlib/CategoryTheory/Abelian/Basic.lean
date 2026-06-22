@@ -548,6 +548,46 @@ noncomputable def isColimitMapCoconeOfCokernelCoforkOfπ
 
 end
 
+section
+
+variable {D : Type*} [Category D] [HasZeroMorphisms D]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphisms
+admitting a cokernel such that `F` preserves this cokernel and  `F.map i` is a mono,
+then `F.map X` identifies to the kernel of `F.map (cokernel.π i)`. -/
+noncomputable def isLimitMapConeOfKernelForkOfιCokernelConditionOfMono
+    {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Mono (F.map i)]
+    [PreservesColimit (parallelPair i 0) F] :
+    IsLimit (F.mapCone (KernelFork.ofι i (cokernel.condition i))) := by
+  let e : parallelPair (cokernel.π (F.map i)) 0 ≅ parallelPair (cokernel.π i) 0 ⋙ F :=
+    parallelPair.ext (Iso.refl _) (asIso (cokernelComparison i F)) (by simp) (by simp)
+  refine IsLimit.postcomposeInvEquiv e _ ?_
+  let hi := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (F.map i))
+  refine IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) ?_)
+  change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
+  rw [Category.comp_id, Category.id_comp]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphisms
+admitting a kernel such that `F` preserves this kernel and  `F.map p` is an epi,
+then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
+noncomputable def isColimitMapCoconeOfCokernelCoforkOfπKernelConditionOfEpi
+    {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Epi (F.map p)]
+    [PreservesLimit (parallelPair p 0) F] :
+    IsColimit (F.mapCocone (CokernelCofork.ofπ p (kernel.condition p))) := by
+  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 :=
+    parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
+  refine IsColimit.precomposeInvEquiv e _ ?_
+  let hp := Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (F.map p))
+  refine IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) ?_)
+  change F.map p ≫ 𝟙 _ = 𝟙 _ ≫ F.map p
+  rw [Category.comp_id, Category.id_comp]
+
+end
+
 end CokernelOfKernel
 
 section

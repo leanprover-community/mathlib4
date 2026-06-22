@@ -177,6 +177,7 @@ lemma map_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.Com
   subst hm₀
   simp [map, mk₀, shiftFunctorZero', F.commShiftIso_zero M, ← Functor.map_comp_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma id_map {a : M} (f : ShiftedHom X Y a) : f.map (𝟭 C) = f := by
   simp [map]

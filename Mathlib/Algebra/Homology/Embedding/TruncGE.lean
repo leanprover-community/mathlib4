@@ -351,6 +351,14 @@ instance (i' : ι') : Epi ((K.πTruncGE e).f i') := by
 
 instance : Epi (K.πTruncGE e) := epi_of_epi_f _ (fun _ => inferInstance)
 
+set_option backward.isDefEq.respectTransparency false in
+lemma isIso_πTruncGE_f (i : ι) (hi : ¬ e.BoundaryGE i) :
+    IsIso ((K.πTruncGE e).f (e.f i)) := by
+  dsimp [πTruncGE]
+  rw [e.isIso_liftExtend_f_iff _ _ rfl,
+    restrictionToTruncGE'_f_eq_iso_hom_iso_inv _ _ rfl hi]
+  infer_instance
+
 instance : (K.truncGE e).IsStrictlySupported e := by
   dsimp [truncGE]
   infer_instance

@@ -977,6 +977,18 @@ theorem functorPullback_arrows (R : Sieve (F.obj X)) :
     (R.functorPullback F).arrows = R.arrows.functorPullback F :=
   rfl
 
+lemma functorPullback_eq_of_iso {F G : C ⥤ D} (e : F ≅ G) (R : Sieve (G.obj X)) :
+    functorPullback F (Sieve.pullback (e.hom.app X) R) =
+      functorPullback G R := by
+  ext Y f
+  constructor
+  · intro h
+    simpa only [functorPullback_apply, Presieve.functorPullback_mem, NatTrans.naturality,
+      Iso.inv_hom_id_app_assoc] using R.downward_closed h (e.inv.app Y)
+  · intro (h : R.arrows _)
+    simpa only [functorPullback_apply, Presieve.functorPullback_mem, pullback_apply,
+      NatTrans.naturality, comp_mem_iff] using R.downward_closed h (e.hom.app Y)
+
 @[simp]
 theorem functorPullback_id (R : Sieve X) : R.functorPullback (𝟭 _) = R := by
   ext
@@ -1016,6 +1028,18 @@ def functorPushforward (R : Sieve X) : Sieve (F.obj X) where
     intro _ _ f h g
     obtain ⟨X, α, β, hα, rfl⟩ := h
     exact ⟨X, α, g ≫ β, hα, by simp⟩
+
+lemma functorPushforward_eq_of_iso {F G : C ⥤ D} (e : F ≅ G) (R : Sieve X) :
+    Sieve.pullback (e.inv.app X) (Sieve.functorPushforward F R) =
+      Sieve.functorPushforward G R := by
+  ext Y f
+  constructor
+  · rintro ⟨W, a, b, ha, fac⟩
+    refine ⟨W, a, b ≫ e.hom.app W, ha, ?_⟩
+    rw [← cancel_mono (e.inv.app X), fac, assoc, assoc,
+      NatTrans.naturality, Iso.hom_inv_id_app_assoc]
+  · rintro ⟨W, a, b, ha, rfl⟩
+    exact ⟨W, a, b ≫ e.inv.app W, ha, by simp⟩
 
 theorem generate_map_eq_functorPushforward {s : Presieve X} :
     generate (s.map F) = (generate s).functorPushforward F := by

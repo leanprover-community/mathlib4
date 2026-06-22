@@ -36,6 +36,16 @@ variable {C D : Type*} [Category* C] [Category* D]
 
 open Category
 
+namespace Functor
+
+lemma congr_map_conjugate {C D : Type _} [Category C] [Category D] {F₁ F₂ : C ⥤ D}
+    (h : F₁ = F₂) {X Y : C} (f : X ⟶ Y) :
+    F₁.map f = eqToHom (by congr) ≫ F₂.map f ≫ eqToHom (by symm; congr) := by
+  subst h
+  simp
+
+end Functor
+
 namespace MorphismProperty
 
 /-- A left fraction from `X : C` to `Y : C` for `W : MorphismProperty C` consists of the
@@ -493,7 +503,7 @@ noncomputable def Q : C ⥤ Localization W where
   map_comp {X Y Z} f g := by
     change _ = Hom.comp _ _
     rw [Hom.comp_eq, comp_eq (ofHom W f) (ofHom W g) (ofHom W g) (by simp)]
-    simp only [ofHom, comp₀, comp_id]
+    simp [ofHom]
 
 /-- The morphism on `Localization W` that is induced by a left fraction. -/
 noncomputable abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y :=
@@ -503,7 +513,8 @@ lemma homMk_eq_hom_mk {X Y : C} (f : W.LeftFraction X Y) : homMk f = Hom.mk f :=
 
 variable (W)
 
-lemma Q_map {X Y : C} (f : X ⟶ Y) : (Q W).map f = homMk (ofHom W f) := rfl
+lemma Q_map {X Y : C} (f : X ⟶ Y) :
+    (Q W).map f = homMk (ofHom W f) := rfl
 
 variable {W}
 
@@ -514,8 +525,8 @@ lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFra
   change Hom.comp _ _ = _
   rw [Hom.comp_eq, comp_eq z₁ z₂ z₃ h₃]
 
-lemma homMk_eq_of_leftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y)
-    (h : LeftFractionRel z₁ z₂) :
+lemma homMk_eq_of_leftFractionRel
+    {X Y : C} (z₁ z₂ : W.LeftFraction X Y) (h : LeftFractionRel z₁ z₂) :
     homMk z₁ = homMk z₂ :=
   Quot.sound h
 
@@ -566,7 +577,6 @@ section
 
 variable {E : Type*} [Category* E]
 
-/-- The image by a functor which inverts `W` of an equivalence class of left fractions. -/
 noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     F.obj X ⟶ F.obj Y :=
   Quot.lift (fun f => f.map F hF) (by
@@ -647,6 +657,7 @@ lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) 
 end StrictUniversalPropertyFixedTarget
 
 variable (W)
+
 
 open StrictUniversalPropertyFixedTarget in
 /-- The universal property of the localization for the constructed localized category
@@ -800,7 +811,6 @@ lemma Localization.essSurj_mapArrow :
       MorphismProperty.LeftFraction.map_comp_map_s]
 
 end
-
 
 namespace MorphismProperty
 

@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.HomotopyFiber
-public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
+--public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
+public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 
 /-!
 # Precylinder and pre-path objects in the category of homological complexes
@@ -25,7 +26,7 @@ namespace HomologicalComplex
 
 variable {C : Type*} [Category* C] [Preadditive C]
   {ι : Type*} {c : ComplexShape ι} [DecidableRel c.Rel]
-  (K : HomologicalComplex C c)
+  (K L : HomologicalComplex C c)
   [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
 
 /-- The precylinder object of a homological complex that is given by

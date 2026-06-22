@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
@@ -232,7 +233,7 @@ obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c 
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
 gives the homology sequence of `S`. -/
 @[simps]
-noncomputable def snakeInput (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
+noncomputable def snakeInput :
     ShortComplex.SnakeInput C where
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
   L₁ := (opcyclesFunctor C c i).mapShortComplex.obj S

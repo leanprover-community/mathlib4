@@ -118,6 +118,10 @@ lemma exact_of_iso (e : S₁ ≅ S₂) (h : S₁.Exact) : S₂.Exact := by
 lemma exact_iff_of_iso (e : S₁ ≅ S₂) : S₁.Exact ↔ S₂.Exact :=
   ⟨exact_of_iso e, exact_of_iso e.symm⟩
 
+def exact_of_arrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂)
+    (hS : S.Exact) : (mkOfArrow₂Iso e).Exact :=
+  exact_of_iso (isoOfArrow₂Iso e).symm hS
+
 lemma exact_and_mono_f_iff_of_iso (e : S₁ ≅ S₂) :
     S₁.Exact ∧ Mono S₁.f ↔ S₂.Exact ∧ Mono S₂.f := by
   have : Mono S₁.f ↔ Mono S₂.f :=
@@ -236,15 +240,15 @@ lemma exact_map_iff_of_faithful [S.HasHomology]
     (F : C ⥤ D) [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] [F.Faithful] :
     (S.map F).Exact ↔ S.Exact := by
-  constructor
-  · intro h
-    rw [S.leftHomologyData.exact_iff, IsZero.iff_id_eq_zero]
-    rw [(S.leftHomologyData.map F).exact_iff, IsZero.iff_id_eq_zero,
-      LeftHomologyData.map_H] at h
-    apply F.map_injective
-    rw [F.map_id, F.map_zero, h]
-  · intro h
-    exact h.map F
+    constructor
+    · intro h
+      rw [S.leftHomologyData.exact_iff, IsZero.iff_id_eq_zero]
+      rw [(S.leftHomologyData.map F).exact_iff, IsZero.iff_id_eq_zero,
+        LeftHomologyData.map_H] at h
+      apply F.map_injective
+      rw [F.map_id, F.map_zero, h]
+    · intro h
+      exact h.map F
 
 variable {S}
 

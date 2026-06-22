@@ -249,6 +249,14 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
 
 set_option backward.defeqAttrib.useBackward true in
 variable {W₁ W₂} in
+lemma HasFunctorialFactorization.of_le
+    {W₁' W₂' : MorphismProperty C} [HasFunctorialFactorization W₁ W₂]
+    (le₁ : W₁ ≤ W₁') (le₂ : W₂ ≤ W₂') :
+    HasFunctorialFactorization W₁' W₂' where
+  nonempty_functorialFactorizationData :=
+    ⟨(functorialFactorizationData W₁ W₂).ofLE le₁ le₂⟩
+
+set_option backward.defeqAttrib.useBackward true in
 /-- The term in `MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f`
 deduced from `h : MapFactorizationData W₁ W₂ (F.map f)` when `F` is an equivalence
 of categories and both `W₁` and `W₂` respect isomorphisms. -/

@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
@@ -93,10 +94,71 @@ lemma ιHeart_obj_mem (X : H) : t.heart (t.ιHeart.obj X) := by
   rw [← t.essImage_ιHeart H]
   exact t.ιHeart.obj_mem_essImage X
 
+variable {H} in
+lemma mem_essImage_ιHeart_iff (X : C) :
+    (t.ιHeart (H := H)).essImage X ↔ t.heart X := by
+  dsimp [ιHeart]
+  rw [Heart.essImage_eq_heart]
+
 instance (X : H) : t.IsLE (t.ιHeart.obj X) 0 :=
   ⟨(t.ιHeart_obj_mem X).1⟩
 
 instance (X : H) : t.IsGE (t.ιHeart.obj X) 0 :=
   ⟨(t.ιHeart_obj_mem X).2⟩
 
-end CategoryTheory.Triangulated.TStructure
+variable {H} in
+noncomputable def heartMk (X : C) (hX : t.heart X) : H :=
+  Functor.essImage.witness ((t.mem_essImage_ιHeart_iff X).2 hX)
+
+variable {H} in
+noncomputable def ιHeartObjHeartMkIso (X : C) (hX : t.heart X) :
+    t.ιHeart.obj (t.heartMk (H := H) X hX) ≅ X :=
+  Functor.essImage.getIso ((t.mem_essImage_ιHeart_iff X).2 hX)
+
+variable {H} in
+@[simps obj]
+noncomputable def liftHeart {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) :
+    D ⥤ H where
+  obj X := t.heartMk (F.obj X) (hF X)
+  map {X Y} f := t.ιHeart.preimage ((t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
+      (t.ιHeartObjHeartMkIso _ (hF Y)).inv)
+  map_id X := t.ιHeart.map_injective (by simp)
+  map_comp f g := t.ιHeart.map_injective (by simp)
+
+@[simp, reassoc]
+lemma ιHeart_map_liftHeart_map {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) {X Y : D} (f : X ⟶ Y) :
+    t.ιHeart.map ((t.liftHeart (H := H) F hF).map f) =
+      (t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
+        (t.ιHeartObjHeartMkIso _ (hF Y)).inv := by
+  simp [liftHeart]
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def liftHeartιHeart {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) :
+    t.liftHeart F hF ⋙ t.ιHeart (H := H) ≅ F :=
+  NatIso.ofComponents (fun X => t.ιHeartObjHeartMkIso _ (hF X))
+
+
+end Triangulated.TStructure
+
+namespace ObjectProperty
+
+open Limits Triangulated
+
+variable {C : Type u} [Category.{v} C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+  (t : TStructure C)
+
+variable (P : ObjectProperty C) [P.IsTriangulated]
+    (t : TStructure C) [P.HasInducedTStructure t]
+
+@[simp]
+lemma mem_tStructure_heart_iff (X : P.FullSubcategory) :
+    (P.tStructure t).heart X ↔ t.heart X.1 := by
+  rfl
+
+end ObjectProperty
+
+end CategoryTheory

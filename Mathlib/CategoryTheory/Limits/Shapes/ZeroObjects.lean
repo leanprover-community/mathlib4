@@ -305,6 +305,7 @@ def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
 instance (priority := 100) initialMonoClass : InitialMonoClass C :=
   InitialMonoClass.of_isInitial zeroIsInitial fun X => by infer_instance
 
+
 end HasZeroObject
 
 end Limits

@@ -45,6 +45,10 @@ instance : (subcategoryAcyclic C).IsClosedUnderIsomorphisms := by
   dsimp [subcategoryAcyclic]
   infer_instance
 
+instance : (subcategoryAcyclic C).IsStableUnderRetracts := by
+  dsimp only [subcategoryAcyclic]
+  infer_instance
+
 variable {C}
 
 lemma mem_subcategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) :
@@ -73,6 +77,10 @@ lemma quasiIso_eq_trW_subcategoryAcyclic :
   quasiIso_eq_trW_subcategoryAcyclic
 
 instance : (quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
+  rw [quasiIso_eq_trW_subcategoryAcyclic]
+  infer_instance
+
+instance quasiIso_respectsIso : (quasiIso C (ComplexShape.up ℤ)).RespectsIso := by
   rw [quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 

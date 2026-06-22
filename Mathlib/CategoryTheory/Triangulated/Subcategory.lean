@@ -47,7 +47,55 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject Pretriangulated Triangulated
 
-variable {C : Type*} [Category* C] [HasZeroObject C] [HasShift C ℤ]
+namespace Limits
+
+variable {C J₁ J₂ : Type _} [Category C]
+  (X : J₂ → C) (e : J₁ ≃ J₂) [HasProduct X]
+
+noncomputable def fanOfEquiv : Fan (X ∘ e) := Fan.mk (∏ᶜ X) (fun _ => Pi.π _ _)
+
+@[simp]
+lemma fanOfEquiv_proj (j : J₁) : (fanOfEquiv X e).proj j = Pi.π _ (e j) := rfl
+
+@[reassoc]
+lemma Fan.congr_proj {J : Type _} {F : J → C} (s : Fan F)
+    {j₁ j₂ : J} (h : j₁ = j₂) : s.proj j₁ ≫ eqToHom (by rw [h]) = s.proj j₂ := by
+  subst h
+  simp
+
+@[reassoc]
+lemma Pi.congr_π {J : Type _} (F : J → C) [HasProduct F] {j₁ j₂ : J} (h : j₁ = j₂) :
+    Pi.π F j₁ ≫ eqToHom (by rw [h]) = Pi.π F j₂ := by
+  subst h
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def isLimitFanOfEquiv : IsLimit (fanOfEquiv X e) :=
+  Fan.IsLimit.mk _ (fun s => Pi.lift (fun j₂ => s.proj (e.symm j₂) ≫ eqToHom (by simp) ))
+    (fun s j => by simp [Fan.congr_proj _ (e.symm_apply_apply j)])
+    (fun s m hm => Limits.Pi.hom_ext (f := X) _ _ (fun j ↦ by simp [← hm]))
+
+lemma hasProductOfEquiv : HasProduct (X ∘ e) :=
+  ⟨⟨_, isLimitFanOfEquiv X e⟩⟩
+
+noncomputable def productIsoOfEquiv [HasProduct (X ∘ e)] : ∏ᶜ (X ∘ e) ≅ ∏ᶜ X :=
+  IsLimit.conePointUniqueUpToIso (limit.isLimit _) (isLimitFanOfEquiv X e)
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def productOptionIso {C J : Type _} [Category C]
+    (X : Option J → C) [HasProduct X] [HasProduct (fun j => X (some j))]
+    [HasBinaryProduct (∏ᶜ (fun j => X (some j))) (X none)] :
+    (∏ᶜ X) ≅ (∏ᶜ (fun j => X (some j))) ⨯ (X none) where
+  hom := prod.lift (Pi.lift (fun j => Pi.π _ (some j))) (Pi.π _ none)
+  inv := Pi.lift (fun b => match b with
+    | some j => prod.fst ≫ Pi.π _ j
+    | none => prod.snd)
+
+end Limits
+
+open Pretriangulated
+
+variable {C : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
   {D : Type*} [Category* D] [Preadditive D] [HasZeroObject D] [HasShift D ℤ]
   [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
@@ -749,6 +797,38 @@ instance {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
     (P.map F).IsTriangulated := by
   rw [← F.essImage_ι_comp]
   infer_instance
+
+end
+
+section
+
+variable {D : Type*} [Category D] [Preadditive D] [HasZeroObject D] [HasShift D ℤ]
+  [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+  {F G : C ⥤ D} [F.CommShift ℤ] [G.CommShift ℤ] [F.IsTriangulated]
+  [G.IsTriangulated] (τ : F ⟶ G) [NatTrans.CommShift τ ℤ]
+
+def ofNatTrans : ObjectProperty C := fun X ↦ IsIso (τ.app X)
+
+instance : (ofNatTrans τ).IsClosedUnderIsomorphisms where
+  of_iso e h := by
+    dsimp [ofNatTrans] at h ⊢
+    rwa [← NatTrans.isIso_app_iff_of_iso τ e]
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+instance : (ofNatTrans τ).IsTriangulated where
+  exists_zero := ⟨0, isZero_zero C,
+    ⟨0, (F.map_isZero (isZero_zero C)).eq_of_src _ _,
+      (G.map_isZero (isZero_zero C)).eq_of_src _ _⟩⟩
+  isStableUnderShiftBy n :=
+    { le_shift X (hX : IsIso _) := by
+        simp only [prop_shift_iff, ofNatTrans, NatTrans.app_shift]
+        infer_instance }
+  toIsTriangulatedClosed₂ := .mk' (fun T hT _ _ ↦ by
+    exact Pretriangulated.isIso₂_of_isIso₁₃
+        ((Pretriangulated.Triangle.homMk _ _ (τ.app _) (τ.app _) (τ.app _)
+          (by simp) (by simp) (by simp [NatTrans.shift_app_comm])))
+        (F.map_distinguished _ hT) (G.map_distinguished _ hT) (by assumption) (by assumption))
 
 end
 

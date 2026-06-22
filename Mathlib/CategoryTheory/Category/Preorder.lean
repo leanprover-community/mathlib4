@@ -67,6 +67,10 @@ def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
 @[inherit_doc homOfLE]
 abbrev _root_.LE.le.hom := @homOfLE
 
+/-- Express an inequality `x ≤ y` as a morphism in the corresponding preorder category.
+(In this version, the variables `x` and `y` are explicit.) -/
+abbrev homOfLE' (x y : X) (h : x ≤ y) : x ⟶ y := homOfLE h
+
 @[simp]
 theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
   rfl
