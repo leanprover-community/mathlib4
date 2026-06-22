@@ -19,6 +19,9 @@ def PNat := { n : ℕ // 0 < n } deriving DecidableEq
 @[inherit_doc]
 notation "ℕ+" => PNat
 
+/-- Helper constructor for `ℕ+`. -/
+def PNat.mk (n : ℕ) (h : 0 < n) : ℕ+ := ⟨n, h⟩
+
 /-- The underlying natural number -/
 @[coe]
 def PNat.val : ℕ+ → ℕ := Subtype.val
@@ -28,3 +31,22 @@ instance coePNatNat : Coe ℕ+ ℕ :=
 
 instance : Repr ℕ+ :=
   ⟨fun n n' => reprPrec n.1 n'⟩
+
+instance : One ℕ+ :=
+  ⟨⟨1, Nat.zero_lt_one⟩⟩
+
+instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
+  ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
+
+@[simp]
+lemma mk_one : PNat.mk 1 Nat.zero_lt_one = (1 : ℕ+) :=
+  rfl
+
+@[simp]
+lemma val_one : (1 : ℕ+).val = 1 :=
+  rfl
+
+-- Note: similar to Subtype.coe_mk
+@[simp]
+theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
+  rfl

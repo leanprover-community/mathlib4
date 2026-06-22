@@ -23,18 +23,7 @@ Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more import
 
 deriving instance LinearOrder for PNat
 
-instance : One ℕ+ :=
-  ⟨⟨1, Nat.zero_lt_one⟩⟩
-
-instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
-  ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
-
 namespace PNat
-
--- Note: similar to Subtype.coe_mk
-@[simp]
-theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
-  rfl
 
 /-- Predecessor of a `ℕ+`, as a `ℕ`. -/
 def natPred (i : ℕ+) : ℕ :=

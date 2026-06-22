@@ -26,3 +26,7 @@ instance AddSemigroup.instSMul [AddSemigroup M] : SMul ℕ+ M where
   smul n x := AddSemigroup.psmul n n.property x
 
 attribute [to_additive existing AddSemigroup.instSMul] Semigroup.instPow
+
+@[to_additive (attr := simp)]
+lemma ppow_one [Semigroup M] (x : M) : x ^ (1 : ℕ+) = x :=
+  Semigroup.ppow_one _
