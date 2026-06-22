@@ -244,9 +244,9 @@ variable {A B : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
 include G GAC GBC in
 theorem ncard_primesOver_mul_ncard_primesOver :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
-  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
-  let := IsFractionRing.mulSemiringAction GAC A C (FractionRing A) (FractionRing C)
-  let := IsFractionRing.mulSemiringAction GBC B C (FractionRing B) (FractionRing C)
+  let := IsFractionRing.mulSemiringAction G B (FractionRing B)
+  let := IsFractionRing.mulSemiringAction GAC C (FractionRing C)
+  let := IsFractionRing.mulSemiringAction GBC C (FractionRing C)
   have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
     mul_ne_zero (ramificationIdxIn_ne_zero GAC) (inertiaDegIn_ne_zero GAC)
   rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p C GAC]
