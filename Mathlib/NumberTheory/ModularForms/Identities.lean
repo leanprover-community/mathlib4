@@ -70,7 +70,7 @@ lemma σ_upperRightHom_apply (x : ℝ) (z : ℂ) :
 shift `g((j : ℝ) +ᵥ τ)`. -/
 lemma slash_T_zpow_apply_general (k : ℤ) (j : ℤ) (g : ℍ → ℂ) (τ : ℍ) :
     (g ∣[k] ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ)) τ = g ((j : ℝ) +ᵥ τ) := by
-  change (g ∣[k] ((Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)))^j)) τ = _
+  change (g ∣[k] ((mapGL ℝ (ModularGroup.T : SL(2, ℤ)))^j)) τ = _
   rw [← map_zpow, ModularGroup.mapGL_T_zpow_eq_upperRightHom,
     slash_apply, σ_upperRightHom_apply, upperRightHom_smul, denom_upperRightHom]
   simp
