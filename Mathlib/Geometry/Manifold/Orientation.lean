@@ -151,6 +151,20 @@ theorem transSign_baseOrientation_eq {M : Type*} [TopologicalSpace M] [ChartedSp
   · rw [signedOrientation_one]
     exact ((Module.finBasis ℝ E).orientation_eq_or_eq_neg _).resolve_left h
 
+/-- `transSign I x z` is `0` exactly when the coordinate change from the chart at `z` to the chart
+at `x` is orientation-preserving, i.e. has positive determinant. -/
+theorem transSign_eq_zero_iff {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    [IsManifold I 1 M] (x z : M) :
+    transSign I x z = 0 ↔
+      0 < LinearMap.det (((trivializationAt E (TangentSpace I) z).coordChangeL ℝ
+        (trivializationAt E (TangentSpace I) x) z).toLinearEquiv : E →ₗ[ℝ] E) := by
+  have hcard : Fintype.card (Fin (Module.finrank ℝ E)) = Module.finrank ℝ E := by simp
+  rw [transSign]
+  split_ifs with h
+  · exact iff_of_true rfl ((baseOrientation.map_eq_iff_det_pos _ hcard).mp h)
+  · exact iff_of_false (by decide)
+      fun hdet => h ((baseOrientation.map_eq_iff_det_pos _ hcard).mpr hdet)
+
 /-- Data of a chosen orientation on a manifold, encoded by a single `ZMod 2`-valued sign function
 that is locally constant on each chart domain after correcting by the chart-transition signs. -/
 @[ext]
