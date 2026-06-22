@@ -476,8 +476,8 @@ where
         | ChartedSpace H _ M _ =>
           if ← withReducible (pureIsDefEq M e) then
             trace[Elab.DiffGeo.MDiff] "`{e}` is a charted space over `{H}` via `{inst}`"
-            return some H else
-          if ← withReducible (pureIsDefEq H e) then
+            return some H
+          else if ← withReducible (pureIsDefEq H e) then
             trace[Elab.DiffGeo.MDiff] "`{e}` is the charted space of `{M}` via `{inst}`"
             return some H else return none
         | _ => return none
@@ -488,7 +488,24 @@ where
         | ModelWithCorners _ _ _ _ _ H' _ => do
           if ← withReducible (pureIsDefEq H' H) then return some fvar else return none
         | _ => return none
-      | throwError "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
+      | trace[Elab.DiffGeo.MDiff]
+          "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
+        -- Try a normed space, and a normed field as last alternatives.
+        let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+          match_expr type with
+          | NormedSpace K E _ _ =>
+            if ← withReducible (pureIsDefEq E H) then return some (inst, K)
+            else return none
+          | _ => return none
+        if let some (inst, K) := a then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
+          return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
+        trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
+          assuming it is a non-trivially normed field"
+        -- Return the trivial model with corners: this will work if `H` is a normed field.
+        let eT : Term ← Term.exprToSyntax H
+        let iTerm : Term ← ``(𝓘($eT))
+        Term.elabTerm iTerm none
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
@@ -729,8 +746,8 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
     let hint : MessageData := if e.hasExprMVar then
       .hint' "the expected type contains metavariables, \
         maybe you need to provide an implicit argument"
-      else if tracing then m!"" else
-        .hint' "failures to find a model with corners can be debugged with the \
+      else if tracing then m!""
+      else .hint' "failures to find a model with corners can be debugged with the \
           command `set_option trace.Elab.DiffGeo.MDiff true`."
     throwError "Could not find a model with corners for `{e}`.{hint}"
 where
