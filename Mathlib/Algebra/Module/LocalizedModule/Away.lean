@@ -27,8 +27,7 @@ lemma mk (h₁ : IsUnit (algebraMap R (Module.End R N) r))
   map_units := fun ⟨_, ⟨n, rfl⟩⟩ ↦ by simp [h₁.pow]
   surj x := by
     obtain ⟨n, y, hy⟩ := h₂ x
-    use ⟨y, ⟨_, n, rfl⟩⟩
-    exact hy
+    use ⟨y, ⟨_, n, rfl⟩⟩, hy
   exists_of_eq {x y} hxy := by
     obtain ⟨n, hn⟩ := h₃ _ _ hxy
     use ⟨_, n, rfl⟩
