@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Unit
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
 
 /-!
 # Limits and colimits in comma categories
@@ -265,6 +266,10 @@ noncomputable instance createsLimit [i : PreservesLimit (F ⋙ proj X G) G] :
 noncomputable instance createsLimitsOfShape [PreservesLimitsOfShape J G] :
     CreatesLimitsOfShape J (proj X G) where
 
+noncomputable instance createsFiniteLimits [PreservesFiniteLimits G] :
+    CreatesFiniteLimits (proj X G) where
+      createsFiniteLimits _ _ _ := inferInstance
+
 noncomputable instance createsLimitsOfSize [PreservesLimitsOfSize.{w, w'} G] :
     CreatesLimitsOfSize.{w, w'} (proj X G :) where
 
@@ -315,6 +320,10 @@ noncomputable instance createsColimit [i : PreservesColimit (F ⋙ proj G X) G] 
 
 noncomputable instance createsColimitsOfShape [PreservesColimitsOfShape J G] :
     CreatesColimitsOfShape J (proj G X) where
+
+noncomputable instance createsFiniteColimits [PreservesFiniteColimits G] :
+    CreatesFiniteColimits (proj G X) where
+      createsFiniteColimits _ _ _ := inferInstance
 
 noncomputable instance createsColimitsOfSize [PreservesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (proj G X :) where
