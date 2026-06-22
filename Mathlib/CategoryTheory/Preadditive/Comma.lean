@@ -37,17 +37,21 @@ variable {u v : Comma L R}
 
 section Comma
 
+namespace CommaMorphism
+
 @[simps!]
-instance CommaMorphismAdd : Add (u ⟶ v) where
+instance : Add (u ⟶ v) where
   add α β := CommaMorphism.mk (α.left + β.left) (α.right + β.right) (by simp)
 
 @[simps!]
-instance CommaMorphismZero : Zero (u ⟶ v) where
+instance : Zero (u ⟶ v) where
   zero := CommaMorphism.mk 0 0
 
 @[simps!]
-instance CommaMorphismNeg : Neg (u ⟶ v) where
+instance : Neg (u ⟶ v) where
   neg α := CommaMorphism.mk (- α.left) (- α.right)
+
+end CommaMorphism
 
 instance : AddCommGroup (u ⟶ v) where
   add_assoc _ _ _ := by ext <;> simp [add_assoc]
