@@ -419,35 +419,6 @@ lemma acyclic_truncLE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
 
 end HasZeroMorphisms
 
-section HasZeroMorphisms
-
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
-  (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
-  [∀ (i : ℤ), K.HasHomology i] [∀ (i : ℤ), L.HasHomology i] (n : ℤ)
-
-set_option backward.defeqAttrib.useBackward true in
-noncomputable def truncGEXIso (n : ℤ) (i : ℤ) (hi : n < i) :
-    (K.truncGE n).X i ≅ K.X i :=
-  HomologicalComplex.truncGEXIso K (embeddingUpIntGE n) (i := (i - n).natAbs) (by
-      dsimp
-      rw [Int.natAbs_of_nonneg (by lia), add_sub_cancel])
-    (fun h ↦ by
-      rw [boundaryGE_embeddingUpIntGE_iff, Int.natAbs_eq_zero] at h
-      lia)
-
-noncomputable def truncGEXIsoOpcycles (n : ℤ) :
-    (K.truncGE n).X n ≅ K.opcycles n :=
-  HomologicalComplex.truncGEXIsoOpcycles K (embeddingUpIntGE n) (i := 0) (by simp)
-    (by rw [boundaryGE_embeddingUpIntGE_iff])
-
-lemma acyclic_truncGE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
-    (K.truncGE n₁).Acyclic ↔ K.IsLE n₀ := by
-  dsimp [truncGE]
-  rw [acyclic_truncGE_iff_isSupportedOutside,
-    (Embedding.embeddingUpInt_areComplementary n₀ n₁ h).isSupportedOutside₂_iff]
-
-end HasZeroMorphisms
-
 section Abelian
 
 variable [Abelian C] (K L : CochainComplex C ℤ)
