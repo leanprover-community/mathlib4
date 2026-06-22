@@ -38,6 +38,9 @@ theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
     ⨅ i, f i = ⊤ := by
   rw [iInf_of_isEmpty, WithTop.sInf_empty]
 
+@[deprecated WithBot.iSup_empty (since := "2026-06-22")]
+alias WithBot.ciSup_empty := WithBot.iSup_empty
+
 @[to_dual (attr := norm_cast)]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
@@ -289,7 +292,7 @@ lemma ciSup_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
 
 /-- Note that equality need not hold: consider `ι := Bool, p := (·), α := ℤ, f := fun _ ↦ -1`,
 then the LHS is `-1` but the RHS is `-1 ⊔ sSup ∅ = -1 ⊔ 0 = 0`. -/
-@[to_dual]
+@[to_dual le_ciInf_exists]
 theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih ≤ ⨆ (i) (h), f ⟨i, h⟩ := by
   by_cases! h : Exists p
   · have : Nonempty <| Exists p := ⟨h⟩
