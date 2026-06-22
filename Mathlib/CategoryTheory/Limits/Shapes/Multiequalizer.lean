@@ -38,7 +38,6 @@ universe t w w' v u
 set_option linter.checkUnivs false in
 /-- The shape of a multiequalizer diagram. It involves two types `L` and `R`,
 and two maps `R → L`. -/
-@[nolint checkUnivs]
 structure MulticospanShape where
   /-- the left type -/
   L : Type w
@@ -62,7 +61,6 @@ def MulticospanShape.prod (ι : Type w) : MulticospanShape where
 set_option linter.checkUnivs false in
 /-- The shape of a multicoequalizer diagram. It involves two types `L` and `R`,
 and two maps `L → R`. -/
-@[nolint checkUnivs]
 structure MultispanShape where
   /-- the left type -/
   L : Type w
@@ -300,7 +298,6 @@ def arrowEquiv :
 end WalkingMultispan
 
 /-- This is a structure encapsulating the data necessary to define a `Multicospan`. -/
-@[nolint checkUnivs]
 structure MulticospanIndex (J : MulticospanShape.{w, w'})
     (C : Type u) [Category.{v} C] where
   /-- Left map, from `J.L` to `C` -/
@@ -313,7 +310,6 @@ structure MulticospanIndex (J : MulticospanShape.{w, w'})
   snd : ∀ b, left (J.snd b) ⟶ right b
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
-@[nolint checkUnivs]
 structure MultispanIndex (J : MultispanShape.{w, w'})
     (C : Type u) [Category.{v} C] where
   /-- Left map, from `J.L` to `C` -/
