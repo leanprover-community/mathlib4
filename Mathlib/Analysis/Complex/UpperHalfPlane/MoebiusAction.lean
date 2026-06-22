@@ -5,7 +5,6 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
