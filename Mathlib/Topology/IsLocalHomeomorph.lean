@@ -323,7 +323,7 @@ namespace Homeomorph
 open OpenPartialHomeomorph
 
 /--
-This lemma proves that the composition of `φ : OpenPartialHomeomorph` with its
+This lemma proves that the composition of `φ : X ≃ₜ Y` with its
 chosen local inverse `φ.isLocalHomeomorph.localInverseAt` is the identity.
 We have to use `OpenPartialHomemorph.EqOnSource` here because `localInverseAt` uses choice, which
 means that we can't prove anything about its source.
@@ -333,5 +333,17 @@ lemma toOpenPartialHomeomorph_trans_localInverseAt (φ : X ≃ₜ Y) (m : X) :
       <| .ofSet (φ ⁻¹' (φ.isLocalHomeomorph.localInverseAt m).source) (by simp [open_source]) := by
   simpa [EqOnSource, Set.EqOn, open_source]
     using fun _ hx ↦ φ.bijective.injective <| IsLocalHomeomorph.apply_localInverseAt_of_mem _ hx
+
+/--
+This lemma proves that the composition of `φ : X ≃ₜ Y` with its
+chosen local inverse `φ.isLocalHomeomorph.localInverseAt` is the identity.
+We have to use `OpenPartialHomemorph.EqOnSource` here because `localInverseAt` uses choice, which
+means that we can't prove anything about its source.
+-/
+lemma IsLocalHomeomorph.trans_localInverseAt (hf : IsLocalHomeomorph f) (m : X) :
+    Set.EqOn ((hf.localInverseAt m) ∘ f) id (hf.localInverseAt m).target := by
+  intro x hx
+  rw [Function.comp_apply, ← congrFun (hf.localInverseAt_symm m) x, id_eq,
+    OpenPartialHomeomorph.right_inv _ hx]
 
 end Homeomorph

@@ -229,12 +229,19 @@ theorem trans_transOpenPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
 
 @[simp]
 lemma toOpenPartialHomeomorph_symm_trans_self (e : X ≃ₜ Y) :
-    e.toOpenPartialHomeomorph.symm.trans  e.toOpenPartialHomeomorph = .refl Y := by
+    e.toOpenPartialHomeomorph.symm.trans e.toOpenPartialHomeomorph = .refl Y := by
   simp [← symm_toOpenPartialHomeomorph, ← trans_toOpenPartialHomeomorph]
 
 @[simp]
 lemma toOpenPartialHomeomorph_trans_symm_self (e : X ≃ₜ Y) :
-    e.toOpenPartialHomeomorph.trans  e.toOpenPartialHomeomorph.symm = .refl X := by
+    e.toOpenPartialHomeomorph.trans e.toOpenPartialHomeomorph.symm = .refl X := by
   simp [← symm_toOpenPartialHomeomorph, ← trans_toOpenPartialHomeomorph]
+
+open OpenPartialHomeomorph in
+lemma transOpenPartialHomeomorph_symm_trans {e e' : OpenPartialHomeomorph Y Z} (φ : X ≃ₜ Y) :
+   (φ.transOpenPartialHomeomorph e).symm.trans
+    (φ.transOpenPartialHomeomorph e') = e.symm.trans e' := by
+  simp [trans_symm_eq_symm_trans_symm, trans_assoc, ← trans_assoc φ.toOpenPartialHomeomorph.symm,
+    Homeomorph.transOpenPartialHomeomorph_eq_trans]
 
 end Homeomorph
