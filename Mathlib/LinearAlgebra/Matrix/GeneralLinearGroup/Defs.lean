@@ -298,12 +298,6 @@ lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
     ((mapGL S g) : Matrix n n S) = g.map (algebraMap R S) :=
   rfl
 
-/-- `mapGL` commutes with integer powers. -/
-@[simp]
-lemma mapGL_zpow (g : SpecialLinearGroup n R) (k : ℤ) :
-    mapGL S (g^k) = (mapGL S g)^k :=
-  map_zpow (mapGL S) g k
-
 @[simp]
 lemma map_mapGL {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (g : SpecialLinearGroup n R) :
