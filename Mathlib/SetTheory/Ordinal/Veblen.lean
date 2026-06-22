@@ -750,10 +750,8 @@ theorem card_veblen_le (a b : Ordinal) : (veblen a b).card ≤ max (max a.card b
     apply sup_le_sup_right (c := x.card) <| sup_le_sup_right ?_ ℵ₀
     simp [card_le_card i.2.le]
 
-private theorem le_card_veblen_aux (a b : Ordinal) : max a.card b.card ≤ (veblen a b).card := by
-  apply max_le
-  · exact card_le_card (left_le_veblen a b)
-  · exact card_le_card (right_le_veblen a b)
+private theorem le_card_veblen_aux (a b : Ordinal) : max a.card b.card ≤ (veblen a b).card :=
+  max_le (card_le_card (left_le_veblen a b)) (card_le_card (right_le_veblen a b))
 
 theorem card_veblen_eq_of_left_ne_zero {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) :
     (veblen a b).card = max (max a.card b.card) ℵ₀ := by

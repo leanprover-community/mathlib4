@@ -167,7 +167,7 @@ theorem card_derivFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
 
 theorem card_nfp_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
     (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (nfp f o).card ≤ max ℵ₀ o.card :=
-  card_nfpFamily_le (le_refl ℵ₀) (by simp) (fun () => hf) o
+  card_nfpFamily_le le_rfl (by simp) (fun _ => hf) o
 
 theorem card_deriv_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
     (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (deriv f o).card ≤ max ℵ₀ o.card :=

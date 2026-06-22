@@ -562,7 +562,7 @@ theorem countable_toType_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : Countab
   rwa [← mk_le_aleph0_iff, mk_toType, card_le_iff, succ_aleph0, ord_aleph]
 
 theorem countable_Iio_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : (Iio o).Countable := by
-  rw [← countable_coe_iff, ← ToType.mk.symm.toEquiv.countable_iff]
+  rw [← countable_coe_iff, ToType.mk.toEquiv.countable_iff]
   exact countable_toType_of_lt_omega_one h
 
 end Cardinal

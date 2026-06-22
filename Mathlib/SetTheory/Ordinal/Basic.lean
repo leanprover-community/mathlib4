@@ -1392,7 +1392,7 @@ theorem finite_toType_of_lt_omega0 {o} (h : o < ω) : Finite (ToType o) := by
   rwa [← mk_lt_aleph0_iff, mk_toType, card_lt_aleph0]
 
 theorem finite_Iio_of_lt_omega0 {o} (h : o < ω) : (Iio o).Finite := by
-  rw [← finite_coe_iff, ← ToType.mk.symm.toEquiv.finite_iff]
+  rw [← finite_coe_iff, ToType.mk.toEquiv.finite_iff]
   exact finite_toType_of_lt_omega0 h
 
 end Ordinal
