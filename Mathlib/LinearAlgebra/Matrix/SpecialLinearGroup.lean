@@ -590,7 +590,7 @@ lemma diag2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i 
 noncomputable abbrev diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
   diag2n zero_ne_one a ha
 
-lemma diag2_def (a : F) (ha : a ≠ 0) : diag2 a ha = diag2n zero_ne_one a ha := rfl
+lemma diag2_def {a : F} (ha : a ≠ 0) : diag2 a ha = diag2n zero_ne_one a ha := rfl
 
 lemma diag2_coe (a : F) (ha : a ≠ 0) :
     (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by simp [diag2n_coe]
