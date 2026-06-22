@@ -88,9 +88,7 @@ noncomputable def pentagonalCoeff (n : ℕ) : R :=
     0
 
 theorem pentagonalCoeff_eq_zero {n : ℕ} (h : n ∉ Set.range pentagonal) :
-    pentagonalCoeff R n = 0 := by
-  have h : ¬ ∃ k, pentagonal k = n := by simpa using h
-  simp [pentagonalCoeff, h]
+    pentagonalCoeff R n = 0 := dif_neg <| by simpa using h
 
 @[simp]
 theorem pentagonalCoeff_pentagonal (k : ℤ) :
