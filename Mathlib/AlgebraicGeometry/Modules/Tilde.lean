@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.Topology.Sheaves.Module
+public import Mathlib.Algebra.Module.LocalizedModule.Away
 
 /-!
 
@@ -561,36 +562,6 @@ section
 
 variable (M : (Spec R).Modules)
 
-lemma _root_.IsLocalizedModule.Away.mk {R : Type*} [CommRing R]
-    {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    {f : M →ₗ[R] N} {r : R}
-    (h₁ : IsUnit (algebraMap R (Module.End R N) r))
-    (h₂ : ∀ (x : N), ∃ (n : ℕ) (y : M), r ^ n • x = f y)
-    (h₃ : ∀ (x y : M), f x = f y → ∃ (n : ℕ), r ^ n • x = r ^ n • y) :
-    IsLocalizedModule.Away r f where
-  map_units := fun ⟨_, ⟨n, rfl⟩⟩ ↦ by simp [h₁.pow]
-  surj x := by
-    obtain ⟨n, y, hy⟩ := h₂ x
-    use ⟨y, ⟨_, n, rfl⟩⟩
-    exact hy
-  exists_of_eq {x y} hxy := by
-    obtain ⟨n, hn⟩ := h₃ _ _ hxy
-    use ⟨_, n, rfl⟩
-    exact hn
-
-lemma _root_.IsLocalizedModule.Away.mk_of_addCommGroup {R : Type*} [CommRing R]
-    {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    {f : M →ₗ[R] N} {r : R}
-    (h₁ : IsUnit (algebraMap R (Module.End R N) r))
-    (h₂ : ∀ (x : N), ∃ (n : ℕ) (y : M), r ^ n • x = f y)
-    (h₃ : ∀ (x : M), f x = 0 → ∃ (n : ℕ), r ^ n • x = 0) :
-    IsLocalizedModule.Away r f := by
-  refine IsLocalizedModule.Away.mk h₁ h₂ fun x y hxy ↦ ?_
-  have : f (x - y) = 0 := by simp [hxy]
-  obtain ⟨n, hn⟩ := h₃ _ this
-  use n
-  simpa [smul_sub, sub_eq_zero] using hn
-
 set_option backward.isDefEq.respectTransparency false in
 instance (U : (Spec R).Opens) : Module R Γ(M, U) :=
   inferInstanceAs <| Module R ((modulesSpecToSheaf.obj M).obj.obj (.op U))
@@ -833,8 +804,7 @@ lemma isLocalizing_iff_aux (M : (Spec R).Modules) :
   · have hf (f : R) : IsLocalizedModule.Away f (φ f) := h f
     refine ⟨?_, ?_⟩
     · intro f hle s
-      obtain ⟨⟨y, ⟨_, n, rfl⟩⟩, hy⟩ := (hf f).surj s
-      dsimp at hy
+      obtain ⟨n, y, hy⟩ := (hf f).surj _ _ s
       use n, y
       exact hy.symm
     · intro f hle s hs
