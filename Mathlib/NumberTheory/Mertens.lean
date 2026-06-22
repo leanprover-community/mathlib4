@@ -18,25 +18,32 @@ public import Mathlib.NumberTheory.Chebyshev
 /-!
 # Mertens theorems
 
-This file establishes the Mertens theorems that estimate sums and products involving primes
-or the von Mangoldt function.
+This file establishes the first and second Mertens theorems that estimate sums and products
+involving primes or the von Mangoldt function.
 
 ## Main definitions
 
-- `E₁Λ`: The error `∑ d ∈ Ioc 0 ⌊x⌋₊, (Λ d) / d - log x` in the von Mangoldt form
-of Mertens' first theorem.
-- `E₁p`: The error `∑ p ∈ primesLE ⌊x⌋₊, (log p) / p - log x` in the prime form of Mertens' first
-theorem.
+- `Mertens.Weight` a class of weights that obey Mertens' first and second theorems with explicit
+constants.
+- `Mertens.Weight.vonMangoldt`: The function `f n = Λ n / n` bundled as a Mertens weight.
+- `Mertens.Weight.prime`: The function `f p = if p.Prime then log p / p else 0` bundled as a
+Mertens weight.
 
 ## Main results
 
-- Mertens' first theorem: `|E₁Λ x|` and `|E₁p x|` are both bounded (by `log 4 + 1` and `3`
-respectively).  For natural numbers `N`, we obtain the improvement `|E₁p x| ≤ 2`.
-- Abstract conversion from first theorem to second theorem
+- Mertens' first theorem: if `f` is a Mertens weight, then `∑ n ∈ Ioc 0 ⌊x⌋₊, f n - log x` is
+bounded for `x ≥ 1`.
+- Mertens' second theorem: if `f` is a Mertens weight, then
+`∑ n ∈ Ioc 0 ⌊x⌋₊, f n / log n - log (log x) - M` decays like `1 / log x`, where `M` is the
+Meissel--Mertens constant associated to `f`.
+
+Explicit constants are available in all cases.
 
 ## TODO
 
-Add Mertens' second and third theorems.
+- Establish that the Meissel--Mertens constant for the von Mangoldt function is equal to the
+Euler--Mascheroni constant.
+- Establish Mertens' third theorems.
 
 ## References
 
@@ -59,7 +66,8 @@ open scoped Nat.Prime
 
 The partial sum of the logarithm can also be expressed as the logarithm of the factorial, as well
 as a sum involving the von Mangoldt function.  Here we state these identities and also provide
-some upper and lower bounds on the partial sum of `log n`.
+some upper and lower bounds on the partial sum of `log n`.  These estimates will be used to
+construct the von Mangoldt and prime Mertens weights.
 
 TODO: add sharper bounds arising from the Euler-Maclaurin formula.
 
@@ -134,7 +142,6 @@ theorem le_sum_log_nat {N : ℕ} : N * log N - N ≤ ∑ n ∈ Ioc 0 N, log n :=
   have : 0 ≤ log (2 * Real.pi) := log_nonneg (by linarith [two_le_pi])
   grw [sum_log_eq_log_factorial, ←Stirling.le_log_factorial_stirling hN]
   linarith
-
 
 /-!
 ## An abstract theory of Mertens weights
@@ -229,7 +236,9 @@ lemma sum_f_div_log_eq : ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n = log (l
   simpa [← add_sum_Ioc_eq_sum_Icc, h0] using F.sum_f_div_log_eq' x
 
 private noncomputable def inv : ℝ → ℝ := (·⁻¹)
+
 private noncomputable def inv_log : ℝ → ℝ := inv ∘ log
+
 private noncomputable def log_log : ℝ → ℝ := fun x ↦ log (log x)
 
 private lemma deriv_log_log {x : ℝ} (hx : 1 < x) :
@@ -292,10 +301,8 @@ private theorem integrable_const_div_mul_log_sq {x : ℝ} (c : ℝ) (hx : 2 ≤ 
   apply Integrable.const_mul
   refine integrableOn_Ioi_deriv_of_nonneg' ?_ ?_ tendsto_log_atTop.inv_tendsto_atTop.neg
   · intro t ht
-    have : log t ≠ 0 := by simp; grind
-    have : DifferentiableAt ℝ (fun t ↦ -(log t)⁻¹) t := by fun_prop (disch := grind)
-    convert! this.hasDerivAt using 1
-    simp [deriv_inv_log, inv, inv_log, field]
+    convert! (hasDerivAt_inv_log (by grind : 0 < t) (by grind)).neg using 1
+    simp [inv, inv_log, field]
   · intro t ht
     have : 0 < t := by grind
     simp only [Pi.mul_apply, inv, Pi.pow_apply]; positivity
@@ -424,11 +431,9 @@ theorem second_theorem_nat (hN : 2 ≤ N) :
 theorem second_theorem_error_bigO_inv_log :
   (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - F.M) =O[atTop] (1 / log ·) := by
     simp only [one_div, isBigO_iff, norm_eq_abs, norm_inv, eventually_atTop]
-    use C_hi - C_lo, 2
-    intro x hx
+    refine ⟨C_hi - C_lo, 2, fun x hx ↦ ?_⟩
     convert F.second_theorem hx using 1
-    have : 0 < log x := log_pos (by linarith)
-    grind [abs_of_pos this]
+    grind [abs_of_pos (log_pos (by linarith) : 0 < log x)]
 
 theorem second_theorem_error_littleO_one :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - F.M) =o[atTop] fun _ ↦ (1:ℝ) :=
@@ -449,13 +454,10 @@ theorem second_theorem_error_bigO_one :
   use C, 2
 
 theorem second_theorem_asymp :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊ x ⌋₊, (log n)⁻¹ * f n) ~[atTop] fun x ↦ log (log x) := by
-    apply IsLittleO.isEquivalent (IsBigO.trans_isLittleO _ one_eq_o_log_log)
-    convert! F.second_theorem_error_bigO_one using 1
+    (fun x ↦ ∑ n ∈ Ioc 0 ⌊ x ⌋₊, (log n)⁻¹ * f n) ~[atTop] fun x ↦ log (log x) :=
+    (F.second_theorem_error_bigO_one.trans_isLittleO one_eq_o_log_log).isEquivalent
 
 end Weight
-
-
 
 section ConstructWeights
 

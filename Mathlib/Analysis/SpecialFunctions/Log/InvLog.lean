@@ -63,12 +63,20 @@ theorem deriv_inv_log {x : ℝ} :
 theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / (log x ^ 2) :=
   funext fun _ ↦ deriv_inv_log
 
-theorem inv_log_eq_o_one : (fun x ↦ 1 / log x) =o[atTop] (fun _ ↦ (1:ℝ)) := by
+theorem differentiableAt_pos_ne_one {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1)
+    : DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x :=
+  (Real.differentiableAt_log hx.ne.symm).inv (by simp; grind : log x ≠ 0)
+
+theorem hasDerivAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1) :
+    HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
+  simpa using (differentiableAt_pos_ne_one hx hx').hasDerivAt
+
+theorem inv_log_eq_o_one : (fun x ↦ 1 / log x) =o[atTop] fun _ ↦ (1:ℝ) := by
     rw [isLittleO_one_iff]
     convert tendsto_log_atTop.inv_tendsto_atTop using 1
     ext; simp
 
-theorem one_eq_o_log_log : (fun _ ↦ (1:ℝ)) =o[atTop] (fun x ↦ log (log x)) := by
+theorem one_eq_o_log_log : (fun _ ↦ (1:ℝ)) =o[atTop] fun x ↦ log (log x) := by
     simp only [isLittleO_one_left_iff, norm_eq_abs]
     exact tendsto_abs_atTop_atTop.comp (tendsto_log_atTop.comp tendsto_log_atTop)
 
