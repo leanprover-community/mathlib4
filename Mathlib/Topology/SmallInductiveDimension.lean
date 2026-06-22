@@ -62,6 +62,16 @@ theorem hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0
 @[deprecated (since := "2026-06-21")]
 alias HasSmallInductiveDimensionLT_zero_iff := hasSmallInductiveDimensionLT_zero_iff
 
+lemma HasSmallInductiveDimensionLT_one_iff :
+    HasSmallInductiveDimensionLT X 1 ↔ IsTopologicalBasis { s : Set X | IsClopen s } := by
+  constructor
+  · intro (.succ _ s hs h)
+    refine hs.of_isOpen_of_subset (fun _ hU ↦ hU.isOpen) (fun U hU ↦ ⟨?_, hs.isOpen hU⟩)
+    rw [← closure_subset_iff_isClosed]
+    cases h U hU
+    rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, sdiff_eq_empty] at ‹_›
+  · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
+
 theorem HasSmallInductiveDimensionLT.mono {m n : ℕ} (hmn : m ≤ n)
     (H : HasSmallInductiveDimensionLT X m) : HasSmallInductiveDimensionLT X n := by
   induction n generalizing m X with
