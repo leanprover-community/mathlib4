@@ -276,29 +276,29 @@ theorem ContinuousOn.pow' {M : Type*} {X : Type*} [TopologicalSpace X] [Topologi
     [Monoid M] [ContinuousMul M] {f : X → M} {s : Set X} (hf : ContinuousOn f s) (n : ℕ) :
     ContinuousOn (f^n) s := hf.pow n
 
-private lemma integral_one_div_mul_log {x : ℝ} (hx : 2 ≤ x) :
+/-- Move to Analysis.SpecialFunctoins.Integrals.Basic -/
+theorem integral_inv_div_log {a b : ℝ} (ha : 1 < a) (hb : 1 < b) :
+    ∫ t in a..b, t⁻¹ / log t = log (log b) - log (log a) := by
+  convert! integral_deriv_eq_sub (f := log_log) (a := a) (b := b) (fun _ _ ↦ ?_) ?_ using 1
+  · exact intervalIntegral.integral_congr fun _ _ ↦ (deriv_log_log (by grind [Set.uIcc])).symm
+  · exact differentiableOn_log_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
+  refine (ContinuousOn.mono (s := .Ioi 1) ?_ (by grind [Set.uIcc])).intervalIntegrable
+  refine ContinuousOn.congr (f := inv * inv_log^2 * log) (by fun_prop) (fun _ _ ↦ ?_)
+  exact deriv_log_log' (by grind [Set.uIcc_of_le])
+
+private lemma integral_eq_log_log_sub_log_log {x : ℝ} (hx : 2 ≤ x) :
     ∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * log t = log (log x) - log (log 2) := by
-  suffices ∫ (t : ℝ) in 2..x, (inv * inv_log ^ 2 * log) t = log_log x - log_log 2 by
-    unfold inv_log inv log_log at this; convert this; simp [field]
-  rw [← integral_deriv_eq_sub (f := log_log)]
-  · exact intervalIntegral.integral_congr
-      fun _ _ ↦ (deriv_log_log' (by grind [Set.uIcc_of_le])).symm
-  · intro t ht
-    exact differentiableOn_log_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc_of_le]))
-  · refine (ContinuousOn.congr (f := inv * inv_log^2 * log) ?_ ?_).intervalIntegrable
-    · apply ContinuousOn.mono (s := .Ioi 1) _ (by grind [Set.uIcc_of_le])
-      fun_prop
-    · intro t ht
-      exact deriv_log_log' (by grind [Set.uIcc_of_le])
+  rw [← integral_inv_div_log (by norm_num) (by linarith)]
+  exact intervalIntegral.integral_congr fun x hx ↦ (by grind [Set.uIcc_of_le, log_pos])
 
 private theorem integrable_const_div_mul_log_sq {x : ℝ} (c : ℝ) (hx : 2 ≤ x) :
     IntegrableOn (c • (inv * inv_log^2)) (.Ioi x) volume := by
   apply Integrable.const_mul
   refine integrableOn_Ioi_deriv_of_nonneg' ?_ ?_ tendsto_log_atTop.inv_tendsto_atTop.neg
-  · intro t ht
+  · intro t _
     convert! (hasDerivAt_inv_log (by grind : 0 < t) (by grind)).neg using 1
     simp [inv, inv_log, field]
-  · intro t ht
+  · intro t _
     have : 0 < t := by grind
     simp only [Pi.mul_apply, inv, Pi.pow_apply]; positivity
 
@@ -345,7 +345,7 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
     simp [Set.mem_Ioc] at ht
     simp only [norm_mul, norm_inv, norm_pow, norm_eq_abs, sq_abs]
     grw [F.first_theorem' (by linarith), le_abs_self F.C₁]; gcongr; order
-  rw [integral_one_div_mul_log hx] at this
+  rw [integral_eq_log_log_sub_log_log hx] at this
   rw [sum_mul_eq_sub_integral_mul₁ _ h0 h1 x (f := fun t ↦ (log t)⁻¹)]
   · suffices ∫ t in .Ioc 2 x, deriv (fun t ↦ (log t)⁻¹) t * ∑ k ∈ Icc 0 ⌊t⌋₊, f k =
         - ∫ t in 2..x, (t * log t ^ 2)⁻¹ * ∑ n ∈ Icc 0 ⌊t⌋₊, f n by linarith

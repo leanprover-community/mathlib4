@@ -27,6 +27,8 @@ namespace Real
 
 open Filter Asymptotics
 
+variable {x : ℝ}
+
 lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) 0 := by
   simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero,
     inv_zero, sub_zero, smul_eq_mul, ← mul_inv, mul_comm _ (log _)]
@@ -48,7 +50,7 @@ lemma not_continuousAt_inv_log_neg_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹
   fun H ↦ not_continuousAt_inv_log_one
     (by simpa only [log_neg_eq_log] using H.comp' continuousAt_neg)
 
-theorem deriv_inv_log {x : ℝ} : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / log x ^ 2 := by
+theorem deriv_inv_log : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / log x ^ 2 := by
   rcases eq_or_ne x 0 with rfl | _
   · simpa using deriv_zero_of_not_differentiableAt not_differentiableAt_inv_log_zero
   rcases eq_or_ne x 1 with rfl | _
@@ -63,26 +65,24 @@ theorem deriv_inv_log {x : ℝ} : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / l
 theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / log x ^ 2 :=
   funext fun _ ↦ deriv_inv_log
 
-theorem differentiableAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1)
+theorem differentiableAt_inv_log (hx : 0 < x) (hx' : x ≠ 1)
     : DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x :=
   (differentiableAt_log hx.ne.symm).inv (by simp; grind : log x ≠ 0)
 
-theorem hasDerivAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1) :
+theorem hasDerivAt_inv_log (hx : 0 < x) (hx' : x ≠ 1) :
     HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
   simpa using (differentiableAt_inv_log hx hx').hasDerivAt
 
 theorem differentiableOn_inv_log : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) (.Ioi 1) :=
   (differentiableOn_log.mono (by grind)).inv (by simp; grind)
 
-theorem deriv_log_log {x : ℝ} (hx : 1 < x) : deriv (fun x ↦ log (log x)) x = x⁻¹ / log x := by
+theorem deriv_log_log (hx : 1 < x) : deriv (fun x ↦ log (log x)) x = x⁻¹ / log x := by
   rw [deriv.log (differentiableAt_log (by linarith)) (by simp; grind), deriv_log]
 
-theorem differentiableAt_log_log {x : ℝ} (hx : 1 < x) :
-    DifferentiableAt ℝ (fun x ↦ log (log x)) x :=
+theorem differentiableAt_log_log (hx : 1 < x) : DifferentiableAt ℝ (fun x ↦ log (log x)) x :=
   (differentiableAt_log (by linarith)).log (by simp; grind)
 
-theorem hasDerivAt_log_log {x : ℝ} (hx : 1 < x) :
-    HasDerivAt (fun x ↦ log (log x)) (x⁻¹ / log x) x := by
+theorem hasDerivAt_log_log (hx : 1 < x) : HasDerivAt (fun x ↦ log (log x)) (x⁻¹ / log x) x := by
   simpa [deriv_log_log hx] using (differentiableAt_log_log hx).hasDerivAt
 
 theorem differentiableOn_log_log : DifferentiableOn ℝ (fun x ↦ log (log x)) (.Ioi 1) :=
