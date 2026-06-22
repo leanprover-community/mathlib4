@@ -39,7 +39,7 @@ variable {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.HasDetPlusMinusOne] [𝒢.IsFi
 variable {k : ℤ} (f : ModularForm 𝒢 k)
 
 omit [𝒢.HasDetPlusMinusOne] in
-private lemma qExpansion_norm_order_ge_qExpansion_order
+private lemma qExpansion_order_le_qExpansion_norm_order
     [DiscreteTopology 𝒢.strictPeriods] :
     (qExpansion 𝒢.strictWidthInfty f).order ≤
       (qExpansion 1 (ModularForm.norm 𝒮ℒ f)).order := by
@@ -80,7 +80,7 @@ theorem sturm_bound_finiteIndex [DiscreteTopology 𝒢.strictPeriods]
     (h : (↑((k * Nat.card (𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ)).toNat / 12) : ℕ∞) <
       (qExpansion 𝒢.strictWidthInfty f).order) : f = 0 := by
   rw [← coe_eq_zero_iff, ← ModularForm.norm_eq_zero_iff (ℋ := 𝒮ℒ)]
-  exact sturm_bound_levelOne <| h.trans_le (qExpansion_norm_order_ge_qExpansion_order f)
+  exact sturm_bound_levelOne <| h.trans_le (qExpansion_order_le_qExpansion_norm_order f)
 
 /-- **Classical Sturm bound for finite-index subgroups of `SL(2, ℤ)`.** -/
 theorem sturm_bound_finiteIndex_SL2Z {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
@@ -95,14 +95,12 @@ theorem sturm_bound_finiteIndex_SL2Z {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
   exact sturm_bound_finiteIndex f (h_index ▸ h)
 
 /-- The `ℂ`-linear map sending a weight-`k` modular form for `𝒢` to the vector of the first
-`N` coefficients of its `q`-expansion at the cusp `∞` (cusp width `𝒢.strictWidthInfty`). -/
-@[simps]
+`N` coefficients of its `q`-expansion at the cusp `∞` (cusp width `𝒢.strictWidthInfty`),
+built from the `q`-expansion linear map `ModularForm.qExpansionLinearMap`. -/
 def qExpansionCoeffLinearMap {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.HasDetOne] {k : ℤ} (N : ℕ)
     (hh : 0 < 𝒢.strictWidthInfty) (hΓ : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods) :
-    ModularForm 𝒢 k →ₗ[ℂ] (Fin N → ℂ) where
-  toFun f i := (qExpansion 𝒢.strictWidthInfty f).coeff i
-  map_add' f g := by ext i; simp [ModularForm.qExpansion_add hh hΓ f g]
-  map_smul' a f := by ext i; simp [ModularForm.qExpansion_smul hh hΓ a f]
+    ModularForm 𝒢 k →ₗ[ℂ] (Fin N → ℂ) :=
+  LinearMap.pi fun i ↦ (PowerSeries.coeff (i : ℕ)).comp (qExpansionLinearMap hh hΓ k)
 
 /-- **Finite-dimensionality of modular forms for arithmetic subgroups.** As a corollary of
 the Sturm bound, the space `ModularForm 𝒢 k` is finite-dimensional over `ℂ` for any
@@ -119,7 +117,8 @@ instance finiteDimensional_modularForm_finiteIndex
   refine Module.Finite.of_injective (qExpansionCoeffLinearMap N hh hΓ)
     ((injective_iff_map_eq_zero _).mpr fun f hf ↦ ?_)
   exact sturm_bound_finiteIndex f <| lt_of_lt_of_le (by exact_mod_cast Nat.lt_succ_self _) <|
-    PowerSeries.nat_le_order _ _ fun i hi ↦ congr_fun hf ⟨i, hi⟩
+    PowerSeries.nat_le_order _ _ fun i hi ↦ by
+      simpa [qExpansionCoeffLinearMap, qExpansionLinearMap] using congr_fun hf ⟨i, hi⟩
 
 end ModularForm
 
