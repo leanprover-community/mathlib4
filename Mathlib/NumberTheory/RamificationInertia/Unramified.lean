@@ -104,13 +104,45 @@ lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
     (nonZeroDivisors (R ⧸ p.under R))
   infer_instance
 
+/-- In characteristic zero the generic point is unramified: if `S` is a domain that is integral
+over a characteristic-zero domain `R` and `R → S` is injective, then `S` is unramified at the zero
+ideal. -/
+theorem Algebra.isUnramifiedAt_bot [IsDomain R] [IsDomain S] [FaithfulSMul R S] [CharZero R]
+    [Algebra.IsIntegral R S] : IsUnramifiedAt R (⊥ : Ideal S) := by
+  have : IsFractionRing S (Localization.AtPrime (⊥ : Ideal S)) := by
+    simpa [Ideal.primeCompl_bot] using Localization.isLocalization (M := (⊥ : Ideal S).primeCompl)
+  let : Field (Localization.AtPrime (⊥ : Ideal S)) := IsFractionRing.toField S
+  have : FaithfulSMul R (Localization.AtPrime (⊥ : Ideal S)) := by
+    rw [faithfulSMul_iff_algebraMap_injective,
+      IsScalarTower.algebraMap_eq R S (Localization.AtPrime ⊥)]
+    exact (IsFractionRing.injective S _).comp (FaithfulSMul.algebraMap_injective R S)
+  let := FractionRing.liftAlgebra R (Localization.AtPrime (⊥ : Ideal S))
+  have : Algebra.IsAlgebraic (FractionRing R) (Localization.AtPrime ⊥) :=
+    isAlgebraic_of_isFractionRing R S (FractionRing R) (Localization.AtPrime (⊥ : Ideal S))
+  have : FormallyUnramified (FractionRing R) (Localization.AtPrime (⊥ : Ideal S)) :=
+    FormallyUnramified.of_isSeparable _ _
+  exact FormallyUnramified.comp R (FractionRing R) (Localization.AtPrime ⊥)
+
 /-- Let `S` be a Dedekind domain that is torsion-free over a domain `R`, and let `p ≠ ⊥` be an
 ideal of `R`. Then `p` is unramified in `S` if and only if `S` is unramified at every maximal
-ideal `P` of `S` lying over `p`. -/
-theorem Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDomain S]
+ideal `P` of `S` lying over `p`.
+
+See `Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain` if `R` is of characteristic zero. -/
+theorem Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain' [IsDomain R] [IsDedekindDomain S]
     [Module.IsTorsionFree R S] {p : Ideal R} (hp : p ≠ ⊥) :
+    IsUnramifiedIn S p ↔
+      ∀ (P : Ideal S) (_ : P.IsMaximal), P.LiesOver p → IsUnramifiedAt R P :=
+  ⟨fun h P hP hlo ↦ h P hP.isPrime hlo,
+    fun h P hP hlo ↦ h P (hP.isMaximal (Ideal.ne_bot_of_liesOver_of_ne_bot hp P)) hlo⟩
+
+/-- Let `S` be a Dedekind domain that is integral and torsion-free over a characteristic-zero
+domain `R`. Then an ideal `p` of `R` is unramified in `S` if and only if `S` is unramified at every
+maximal ideal `P` of `S` lying over `p`. -/
+theorem Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDomain S]
+    [Module.IsTorsionFree R S] [CharZero R] [Algebra.IsIntegral R S] {p : Ideal R} :
     IsUnramifiedIn S p ↔
       ∀ (P : Ideal S) (_ : P.IsMaximal), P.LiesOver p → IsUnramifiedAt R P := by
   refine ⟨fun h P hP hlo ↦ h P hP.isPrime hlo, fun h P hP hlo ↦ ?_⟩
-  haveI := hlo
-  exact h P (hP.isMaximal (Ideal.ne_bot_of_liesOver_of_ne_bot hp P)) hlo
+  rcases eq_or_ne P ⊥ with rfl | hPbot
+  · exact isUnramifiedAt_bot
+  · exact h P (hP.isMaximal hPbot) hlo
