@@ -141,6 +141,22 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
     haveI := fun n => isIso_of_reflects_iso (f.f n) F
     exact HomologicalComplex.Hom.isIso_of_components f⟩
 
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] :
+    (F.mapHomologicalComplex c).Faithful where
+  map_injective {K L} f₁ f₂ h := by
+    ext n
+    apply F.map_injective
+    exact (HomologicalComplex.eval W c n).congr_map h
+
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] [F.Full] :
+    (F.mapHomologicalComplex c).Full where
+  map_surjective {X Y} f := ⟨
+    { f n := F.preimage (f.f n)
+      comm' i j _ := by
+        apply F.map_injective
+        simp only [Functor.map_comp, Functor.map_preimage]
+        exact f.comm i j }, by cat_disch⟩
+
 variable {W₁}
 
 set_option backward.defeqAttrib.useBackward true in
@@ -187,6 +203,13 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
     NatTrans.mapHomologicalComplex_id]
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
+
+@[simps!]
+def Functor.mapHomologicalComplexCompIso {W' : Type*} [Category W'] [Preadditive W']
+    {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
+    F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c ≅ H.mapHomologicalComplex c :=
+  NatIso.mapHomologicalComplex e c
 
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalences between the respective categories
