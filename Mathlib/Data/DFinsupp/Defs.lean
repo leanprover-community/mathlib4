@@ -208,6 +208,18 @@ instance instIsRightCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsRightCancel
 instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)] :
     IsCancelAdd (Π₀ i, β i) where
 
+/-- Note the general `SMul` instance doesn't apply as `ℕ+` is not distributive
+unless `β i`'s addition is commutative. -/
+instance hasPNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ+ (Π₀ i, β i) :=
+  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => by rw [← nsmul_val_eq_psmul, nsmul_zero]⟩
+
+theorem psmul_apply [∀ i, AddMonoid (β i)] (b : ℕ+) (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_psmul [∀ i, AddMonoid (β i)] (b : ℕ+) (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
+  rfl
+
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
@@ -221,7 +233,8 @@ theorem coe_nsmul [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) : ⇑(
   rfl
 
 instance [∀ i, AddMonoid (β i)] : AddMonoid (Π₀ i, β i) :=
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
+  DFunLike.coe_injective.addMonoid _ coe_zero coe_add (fun _ _ => coe_psmul _ _)
+    fun _ _ => coe_nsmul _ _
 
 /-- Coercion from a `DFinsupp` to a pi type is an `AddMonoidHom`. -/
 def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i, β i where
@@ -234,7 +247,8 @@ lemma coeFnAddMonoidHom_apply [∀ i, AddZeroClass (β i)] (v : Π₀ i, β i) :
   rfl
 
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
+  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => coe_psmul _ _)
+    fun _ _ => coe_nsmul _ _
 
 instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
   ⟨fun f => f.mapRange (fun _ => Neg.neg) fun _ => neg_zero⟩
@@ -267,12 +281,12 @@ theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b
   rfl
 
 instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
-  fast_instance% DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
+  fast_instance% DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg
+    (fun _ _ => coe_psmul _ _) coe_sub (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
-  fast_instance% DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
+  fast_instance% DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg
+    (fun _ _ => coe_psmul _ _) coe_sub (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 end Algebra
 

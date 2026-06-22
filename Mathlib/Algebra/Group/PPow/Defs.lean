@@ -32,7 +32,11 @@ lemma Semigroup.ppow_eq_pow [Semigroup M] (x : M) (n : ℕ+) :
     Semigroup.ppow n n.property x = x ^ n :=
   rfl
 
-@[to_additive (attr := simp)]
+@[simp]
+lemma one_psmul [AddSemigroup M] (x : M) : (1 : ℕ+) • x = x :=
+  AddSemigroup.psmul_one _
+
+@[to_additive (attr := simp) existing]
 lemma ppow_one [Semigroup M] (x : M) : x ^ (1 : ℕ+) = x :=
   Semigroup.ppow_one _
 
