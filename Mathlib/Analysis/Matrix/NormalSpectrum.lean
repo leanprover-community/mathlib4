@@ -1,6 +1,6 @@
 /-
 Copyright (c) 2026 Judson Pereira de Moura. All rights reserved.
-Released under the Apache 2.0 license as described in the file LICENSE.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judson Pereira de Moura
 -/
 module
