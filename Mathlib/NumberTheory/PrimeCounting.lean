@@ -230,7 +230,7 @@ theorem primeCounting'_add_le (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) :
   calc
     _ ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by
       simp_rw [primeCounting', count_eq_card_filter_range, range_eq_Ico,
-      ← Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
+        ← Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
     _ ≤ π' k + #{p ∈ Ico k (k + n) | p.Prime} := by rw [primeCounting', count_eq_card_filter_range]
     _ ≤ π' k + #{b ∈ Ico k (k + n) | a.Coprime b} := by
