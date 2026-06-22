@@ -212,15 +212,15 @@ theorem ker_linearCombination_eq_of_inner_eq :
 
 variable (φ ψ)
 
-/-- The (unique) linear isometry equivalence `span 𝕜 (range φ) ≃ₗᵢ span 𝕜 (range ψ)` sending each
+/-- A linear isometry equivalence `span 𝕜 (range φ) ≃ₗᵢ span 𝕜 (range ψ)` sending each
 `φ i` to `ψ i`, when the families `φ`, `ψ` (in possibly different inner product spaces over `𝕜`)
 have equal pairwise inner products.  It is the map of linear combinations `∑ cᵢ • φ i ↦ ∑ cᵢ • ψ i`
 (well defined since the two linear-combination maps have equal kernels), transported to the spans
 and upgraded to an isometry via `LinearEquiv.isometryOfInner`.  No finiteness is required, and the
 ambient spaces need not coincide.
 
-It is the unique such isometry: a linear isometry equivalence of the spans sending `φ i ↦ ψ i` is
-determined on the spanning family `φ` (`LinearMap.eqOn_span`). -/
+Such an isometry is determined on the spanning family `φ` (`LinearMap.eqOn_span`), hence unique;
+this uniqueness is not separately formalized here. -/
 noncomputable def linearIsometryEquivSpanOfInnerEq :
     (Submodule.span 𝕜 (Set.range φ)) ≃ₗᵢ[𝕜] (Submodule.span 𝕜 (Set.range ψ)) :=
   (LinearIsometryEquiv.ofEq _ _ (Finsupp.range_linearCombination 𝕜)).symm.trans
