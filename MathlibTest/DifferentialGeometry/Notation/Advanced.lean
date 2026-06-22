@@ -827,7 +827,6 @@ variable {g : ℍ → N} {h : E'' → ℍ} {k : ℍ → ℂ} {y : ℍ}
 
 /-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
 #guard_msgs in
-variable {g : ℍ → M} in
 #check CMDiff 2 g
 
 /-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
