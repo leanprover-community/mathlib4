@@ -160,7 +160,7 @@ noncomputable def ofIsInitialLeft : F.PushoutObjObj f₁ f₂ where
     · exact isIso_of_isInitial hX₂ hY₂ _
     · exact ⟨hX₂.hom_ext _ _⟩
   ι := (F.obj Y₁).map f₂
-  inr_ι := (IsInitial.isInitialObj (F.flip.obj Y₂) _ h).hom_ext _ _
+  inr_ι := (IsInitial.isInitialObj (F.flip.obj Y₂) _ h).hom_ext ..
 
 end
 
