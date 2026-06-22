@@ -20,7 +20,7 @@ def PNat := { n : ℕ // 0 < n } deriving DecidableEq
 notation "ℕ+" => PNat
 
 /-- Helper constructor for `ℕ+`. -/
-def PNat.mk (n : ℕ) (h : 0 < n) : ℕ+ := ⟨n, h⟩
+abbrev PNat.mk (n : ℕ) (h : 0 < n) : ℕ+ := ⟨n, h⟩
 
 /-- The underlying natural number -/
 @[coe]

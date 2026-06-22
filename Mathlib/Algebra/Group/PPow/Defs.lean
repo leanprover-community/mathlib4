@@ -36,6 +36,13 @@ lemma Semigroup.ppow_eq_pow [Semigroup M] (x : M) (n : ℕ+) :
 lemma ppow_one [Semigroup M] (x : M) : x ^ (1 : ℕ+) = x :=
   Semigroup.ppow_one _
 
+@[to_additive]
+lemma ppow_mk_add_one [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0) :
+    x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x * x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) := by
+  cases n
+  · contradiction
+  · simp [← Semigroup.ppow_eq_pow, PNat.mk, Semigroup.ppow_succ]
+
 @[to_additive (attr := simp)]
 theorem npow_val_eq_ppow [Monoid M] (n : ℕ+) (x : M) : x ^ n.val = x ^ n := by
   rcases n with ⟨_|n, hn⟩

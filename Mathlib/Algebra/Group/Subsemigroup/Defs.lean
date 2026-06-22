@@ -281,18 +281,36 @@ theorem mk_mul_mk (x y : M) (hx : x ∈ S') (hy : y ∈ S') :
 theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
   rfl
 
+@[to_additive]
+lemma ppow_coe_mem {M A : Type*} [Semigroup M] [SetLike A M] [hA : MulMemClass A M] {S' : A}
+    (x : S') (n : ℕ+) : (x : M) ^ n ∈ S' := by
+  rcases n with ⟨n, hn⟩
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'
+  induction n with
+  | zero => simp [ppow_one]
+  | succ n IH =>
+    rw [ppow_mk_add_one _ (Nat.succ_ne_zero _)]
+    exact mul_mem x.2 (IH Nat.succ_pos')
+
+-- lower priority so other instances are found first
+/-- Iterated multiplication via exponentiation by a `ℕ+` is inherited by a submagma. -/
+@[to_additive /-- An additive submagma of an additive magma inherits an addition. -/]
+instance (priority := 900) {M A : Type*} [Semigroup M] [SetLike A M] [hA : MulMemClass A M]
+    {S' : A} : Pow S' ℕ+ :=
+  ⟨fun x n => ⟨x.1 ^ n, ppow_coe_mem _ _⟩⟩
+
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
 @[to_additive
 /-- An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure. -/]
 instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : Semigroup S := fast_instance%
-  Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
+  Subtype.coe_injective.semigroup Subtype.val (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
 @[to_additive /-- An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`. -/]
 instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : CommSemigroup S := fast_instance%
-  Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
+  Subtype.coe_injective.commSemigroup Subtype.val (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A submagma of a left cancellative magma inherits left cancellation. -/
 @[to_additive
