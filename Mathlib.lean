@@ -2871,6 +2871,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
+public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 public import Mathlib.CategoryTheory.Limits.Preserves.Over
@@ -5979,6 +5980,7 @@ public import Mathlib.Order.CountableSupClosed
 public import Mathlib.Order.Cover
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.PartialOrder
+public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.Directed
@@ -7105,6 +7107,7 @@ public import Mathlib.SetTheory.Cardinal.Defs
 public import Mathlib.SetTheory.Cardinal.Divisibility
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Cardinal.Embedding
+public import Mathlib.SetTheory.Cardinal.EventuallyConst
 public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.SetTheory.Cardinal.Finsupp
 public import Mathlib.SetTheory.Cardinal.Free
@@ -7781,6 +7784,7 @@ public import Mathlib.Topology.Connected.CardComponents
 public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.Connected.LocPathConnected
 public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.Connected.PathComponentOne
 public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Topology.Connected.Separation
