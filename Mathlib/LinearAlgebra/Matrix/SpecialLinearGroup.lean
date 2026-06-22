@@ -569,7 +569,7 @@ lemma toSpecialLinearGroup_coe (t : TransvectionStruct ι F) :
     (t.toSpecialLinearGroup : Matrix ι ι F) = t.toMatrix := rfl
 
 @[simp]
-lemma toSpecialLinearGroup_mk (i j : ι) (hij : i ≠ j) (c : F) :
+lemma toSpecialLinearGroup_mk {i j : ι} (hij : i ≠ j) (c : F) :
     (TransvectionStruct.mk i j hij c).toSpecialLinearGroup =
       SpecialLinearGroup.transvection hij c := rfl
 
