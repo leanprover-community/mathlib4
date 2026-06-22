@@ -325,6 +325,7 @@ theorem isStationary_union_iff (hα : cof α ≠ ℵ₀) :
 /-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of a regular
 cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there exists
 some stationary subset of `s` which is constant on `f`. -/
+@[wikidata Q1119050]
 theorem exists_isStationary_preimage_singleton [IsRegularCardinalOrder α] {f : α → α}
     (hα : cof α ≠ ℵ₀) (hs : IsStationary s) (hf : ∀ x ∈ s, f x < x) :
     ∃ a, IsStationary (s ∩ f ⁻¹' {a}) := by
