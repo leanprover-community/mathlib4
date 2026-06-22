@@ -1004,8 +1004,7 @@ open IsManifold OpenPartialHomeomorph in lemma chartedSpace_trans_mem_maximalAtl
     φ.transOpenPartialHomeomorph e ∈ maximalAtlas I n M := by
   rcases he with ⟨q, he⟩
   rw [← he, transOpenPartialHomeomorph_eq_trans, ← OpenPartialHomeomorph.trans_assoc]
-  -- We use here that the composition of φ with its local inverse at a point is equal to the
-  -- identity (on some open set).
+  -- Composing φ with its local inverse at a point is equal to the identity (on some open set).
   refine StructureGroupoid.mem_maximalAtlas_of_eqOnSource (Setoid.trans
       ((φ.toOpenPartialHomeomorph_trans_localInverseAt _).trans'
       (OpenPartialHomeomorph.eqOnSource_refl _)) (by rw [ofSet_trans])) ?_
