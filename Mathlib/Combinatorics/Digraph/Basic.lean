@@ -477,25 +477,18 @@ instance (G : Digraph V) : CompleteLattice G.SpanningSubgraph where
   isLUB_sSup s := ⟨le_sSup s, sSup_le s⟩
   isGLB_sInf s := ⟨sInf_le s, le_sInf s⟩
 
-instance (G : Digraph V) : DistribLattice G.SpanningSubgraph :=
-  Subtype.coe_injective.distribLattice (fun H : G.SpanningSubgraph => (H : Digraph V))
-    .rfl .rfl
-    (fun H₁ H₂ ↦ by simpa using (sup_of_val H₁ H₂))
-    (fun H₁ H₂ ↦ by simpa using (inf_of_val H₁ H₂))
-
-instance (G : Digraph V) : BooleanAlgebra G.SpanningSubgraph where
-  __ := (inferInstance : DistribLattice G.SpanningSubgraph)
-  __ := (inferInstance : Top G.SpanningSubgraph)
-  __ := (inferInstance : Bot G.SpanningSubgraph)
+instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
+  __ := (inferInstance : CompleteLattice G.SpanningSubgraph)
+  le_sup_inf H₁ H₂ H₃ := by
+    apply by_val
+    change (H₁.val ⊔ H₂.val) ⊓ (H₁.val ⊔ H₃.val) ≤
+      H₁.val ⊔ H₂.val ⊓ H₃.val
+    exact le_sup_inf
   compl := compl
   le_top := le_top
   bot_le := bot_le
   top_le_sup_compl := top_le_sup_compl
   inf_compl_le_bot := inf_compl_le_bot
-
-instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
-  __ := (inferInstance : CompleteLattice G.SpanningSubgraph)
-  __ := (inferInstance : BooleanAlgebra G.SpanningSubgraph)
 
 instance Top : Top (Digraph V) where
   top := Digraph.completeDigraph V
