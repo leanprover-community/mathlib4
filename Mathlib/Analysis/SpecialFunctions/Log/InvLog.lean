@@ -12,11 +12,13 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 /-!
 # Multiplicative inverse of real logarithm
 
-We prove properties of the function `x ↦ (log x)⁻¹`.
+We prove properties of the functions `x ↦ (log x)⁻¹` and `x ↦ log (log x)`.
 
 ## Main results
 
-- `deriv_inv_log` gives a formula for the derivative which holds for all values.
+- `deriv_inv_log` gives a formula for the derivative of `x ↦ (log x)⁻¹` which holds for all values.
+- `deriv_log_log` gives a formula for the derivative of `x ↦ log (log x)` which holds for all
+positive values other than 1.
 -/
 
 public section
@@ -61,13 +63,30 @@ theorem deriv_inv_log {x : ℝ} : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / l
 theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / log x ^ 2 :=
   funext fun _ ↦ deriv_inv_log
 
-theorem differentiableAt_pos_ne_one {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1)
+theorem differentiableAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1)
     : DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x :=
   (differentiableAt_log hx.ne.symm).inv (by simp; grind : log x ≠ 0)
 
 theorem hasDerivAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1) :
     HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
-  simpa using (differentiableAt_pos_ne_one hx hx').hasDerivAt
+  simpa using (differentiableAt_inv_log hx hx').hasDerivAt
+
+theorem differentiableOn_inv_log : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) (.Ioi 1) :=
+  (differentiableOn_log.mono (by grind)).inv (by simp; grind)
+
+theorem deriv_log_log {x : ℝ} (hx : 1 < x) : deriv (fun x ↦ log (log x)) x = x⁻¹ / log x := by
+  rw [deriv.log (differentiableAt_log (by linarith)) (by simp; grind), deriv_log]
+
+theorem differentiableAt_log_log {x : ℝ} (hx : 1 < x) :
+    DifferentiableAt ℝ (fun x ↦ log (log x)) x :=
+  (differentiableAt_log (by linarith)).log (by simp; grind)
+
+theorem hasDerivAt_log_log {x : ℝ} (hx : 1 < x) :
+    HasDerivAt (fun x ↦ log (log x)) (x⁻¹ / log x) x := by
+  simpa [deriv_log_log hx] using (differentiableAt_log_log hx).hasDerivAt
+
+theorem differentiableOn_log_log : DifferentiableOn ℝ (fun x ↦ log (log x)) (.Ioi 1) :=
+  (differentiableOn_log.mono (by grind)).log (by simp; grind)
 
 theorem inv_log_eq_o_one : (fun x ↦ (log x)⁻¹) =o[atTop] fun _ ↦ (1:ℝ) := by
   rw [isLittleO_one_iff]
