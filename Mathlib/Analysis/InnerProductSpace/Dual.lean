@@ -75,8 +75,6 @@ theorem toContinuousLinearMap_toDualMap :
 @[simp]
 theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := rfl
 
-@[deprecated (since := "2025-11-15")] alias toDualMap_apply := toDualMap_apply_apply
-
 variable {𝕜} in
 @[simp]
 theorem _root_.innerSL_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
@@ -142,9 +140,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
       by_cases htriv : Y = ⊤
       · have hℓ : ℓ = 0 := by
           have h' := LinearMap.ker_eq_top.mp htriv
-          rw [← coe_zero] at h'
-          apply coe_injective
-          exact h'
+          norm_cast at h'
         exact ⟨0, by simp [hℓ]⟩
       · rw [← Submodule.orthogonal_eq_bot_iff] at htriv
         change Yᗮ ≠ ⊥ at htriv
@@ -177,8 +173,6 @@ variable {𝕜} {E}
 @[simp]
 theorem toDual_apply_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ := rfl
 
-@[deprecated (since := "2025-11-15")] alias toDual_apply := toDual_apply_apply
-
 @[simp]
 theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply_apply]
@@ -208,8 +202,7 @@ theorem continuousLinearMapOfBilin_zero : (0 : E →L⋆[𝕜] E →L[𝕜] 𝕜
 
 @[simp]
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
-  rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
+  simp [continuousLinearMapOfBilin]
 
 theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
     f = B♯ v := by
@@ -225,7 +218,7 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
   continuous_uncurry := continuous_inner
   bijective_left := (toDual ℝ E).bijective
   bijective_right := by
-    convert (toDual ℝ E).bijective
+    convert! (toDual ℝ E).bijective
     ext y
     simp
 

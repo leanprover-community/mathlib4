@@ -1,0 +1,236 @@
+name: PR check downstream
+
+# Triggered by a `!downstream-check …` comment on a mathlib4 PR. Validates
+# the request, then dispatches the heavy validation workflow in
+# `leanprover-community/downstream-reports`. The result is posted back as a
+# comment on the same PR by the dispatched workflow.
+#
+# Comment grammar (the `!` prefix mirrors other bot directives like `!bench`):
+#
+#   !downstream-check <name-or-slug>[@<rev>] [--merge-branch][, ...]
+#
+# The directive may sit on *any* line of the comment, not just the first, but
+# that line must contain nothing other than the directive itself (a line that
+# merely mentions `!downstream-check` mid-sentence is ignored). A comment may
+# carry several directive lines; their entry lists are concatenated into a
+# single request, exactly as if they had been written as one comma-separated
+# directive.
+#
+# Each comma-separated entry:
+#   • <name-or-slug>     — either the downstream's short inventory name
+#                          (e.g. `FLT`) or its GitHub `owner/repo` slug
+#                          (e.g. `leanprover-community/FLT`). The short-name
+#                          match is case-sensitive; the slug match is
+#                          case-insensitive. Resolved by the dispatched
+#                          downstream-reports workflow.
+#   • [@<rev>]           — optional. Git refspec (branch / tag / commit SHA)
+#                          for the downstream checkout. Defaults to the
+#                          inventory's default_branch.
+#   • [--merge-branch]   — optional, per entry. Switches that single entry
+#                          from the default LKG mode to merge mode (i.e.
+#                          test against the PR's would-be-merged tree
+#                          instead of cherry-picking onto the downstream's
+#                          last-known-good mathlib commit).
+#
+# Grammar errors are surfaced as a comment on the PR by the
+# `check-downstream-validate` action.  Runtime errors (unknown
+# downstream name, build failures, etc.) come from the dispatched
+# downstream-reports workflow, keeping the two repos decoupled.
+#
+# See `docs/internal/pr-validation-workflow.md` in downstream-reports for
+# the full design.
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        required: true
+        type: string
+      downstreams:
+        required: true
+        # Comma-separated `<name-or-slug>[@<rev>] [--merge-branch]` entries.
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write   # required to post comments on PRs (issues: write alone is insufficient)
+  issues: write          # PR comments use the issues API
+  id-token: write        # required for the Azure Key Vault token mint
+
+concurrency:
+  # Do not cancel a running validation on a new comment. Both runs are useful
+  # and the dispatch itself is cheap; the heavy job in downstream-reports has
+  # its own per-PR concurrency group that serialises requeues without
+  # cancelling, so a fresh dispatch queues behind the running one rather
+  # than discarding it.
+  group: pr-check-downstream-${{ github.event.issue.number || inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  # Cheap, permission-less gate that scans the comment body and decides whether
+  # there is a real directive to act on. Splitting this out from `trigger` means
+  # a comment that only *mentions* `!downstream-check` (e.g. mid-sentence prose)
+  # is dropped here, before any team-membership lookup or "not authorized"
+  # reply — those only ever fire for genuine directive comments.
+  detect:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.issue.pull_request &&
+       contains(github.event.comment.body, '!downstream-check'))
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      # 'true' iff this run should proceed: a manual dispatch, or a comment with
+      # at least one standalone `!downstream-check` directive line.
+      proceed: ${{ steps.parse.outputs.proceed }}
+      # Concatenated entry list from every directive line (empty for dispatch,
+      # where `inputs.downstreams` is used instead).
+      downstreams: ${{ steps.parse.outputs.downstreams }}
+    steps:
+      - name: Parse directive lines
+        id: parse
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BODY: ${{ github.event.comment.body }}
+        run: |
+          # Manual dispatch carries its entries in `inputs.downstreams`; nothing
+          # to parse, just proceed.
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # issue_comment: scan every line. A directive line is one whose entire
+          # (whitespace-trimmed) content is the `!downstream-check` token,
+          # optionally followed by whitespace and an entry list. Lines that only
+          # mention the token mid-sentence are skipped. The entry lists from all
+          # directive lines are concatenated into one comma-separated request, so
+          # several directive lines behave exactly like a single directive.
+          # Empty / malformed grammar is not checked here — the validate action
+          # handles that path and posts a user-facing comment on failure.
+          args=""
+          found=false
+          while IFS= read -r raw || [ -n "$raw" ]; do
+            line="${raw%$'\r'}"
+            # trim leading/trailing whitespace (pure bash, no subshell per line)
+            line="${line#"${line%%[![:space:]]*}"}"
+            line="${line%"${line##*[![:space:]]}"}"
+            case "$line" in
+              '!downstream-check')              rest="" ;;
+              '!downstream-check'[[:space:]]*)  rest="${line#!downstream-check}" ;;
+              *)                                continue ;;
+            esac
+            found=true
+            # trim whitespace around this line's entry list
+            rest="${rest#"${rest%%[![:space:]]*}"}"
+            rest="${rest%"${rest##*[![:space:]]}"}"
+            [ -z "$rest" ] && continue
+            if [ -n "$args" ]; then args="$args, $rest"; else args="$rest"; fi
+          done <<< "$BODY"
+
+          echo "proceed=$found" >> "$GITHUB_OUTPUT"
+          {
+            echo "downstreams<<__EOF__"
+            printf '%s\n' "$args"
+            echo "__EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+  trigger:
+    needs: detect
+    if: needs.detect.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check team membership
+        if: github.event_name == 'issue_comment'
+        id: actorTeams
+        uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
+        with:
+          organization: leanprover-community
+          username: ${{ github.event.comment.user.login }}
+          GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }}
+
+      - name: Authorize commenter
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+          REPO: ${{ github.repository }}
+        run: |
+          AUTHORIZED="${{ contains(steps.actorTeams.outputs.teams, 'mathlib-reviewers') || contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') }}"
+          if [[ "$AUTHORIZED" != "true" ]]; then
+            gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+              -f body="Hi @$COMMENTER, only mathlib reviewers and maintainers can use \`!downstream-check\`."
+            exit 1
+          fi
+
+      # Pull mathlib4's own `.github/actions/` (just `get-mathlib-ci`)
+      # via a sparse checkout so we can run it; we never need the
+      # rest of the mathlib4 working tree on this runner.
+      - name: Checkout local actions
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      # Checks out leanprover-community/mathlib-ci at the canonical
+      # pinned SHA (see `.github/actions/get-mathlib-ci/action.yml`,
+      # auto-bumped by `update_dependencies.yml`).  Lands the checkout
+      # at `ci-tools/`, including the composite actions we use below.
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Validate downstream entries
+        id: validate
+        uses: ./ci-tools/.github/actions/check-downstream-validate
+        with:
+          names: ${{ needs.detect.outputs.downstreams || inputs.downstreams }}
+          pr-number: ${{ github.event.issue.number || inputs.pr_number }}
+          repo: ${{ github.repository }}
+          commenter: ${{ github.event.comment.user.login || github.actor }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Mint App token (for downstream-reports)
+        id: app_token
+        uses: ./ci-tools/.github/actions/azure-create-github-app-token
+        with:
+          app-id: ${{ secrets.DOWNSTREAM_REPORTS_AUTOMATION_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: downstream-reports-automation-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_DOWNSTREAM_REPORTS_AUTOMATION }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: leanprover-community
+          repositories: downstream-reports
+
+      - name: Dispatch downstream-reports workflow
+        env:
+          GH_TOKEN:     ${{ steps.app_token.outputs.token }}
+          PR_NUMBER:    ${{ github.event.issue.number || inputs.pr_number }}
+          MERGE_SHA:    ${{ steps.validate.outputs.merge_sha }}
+          DOWNSTREAMS:  ${{ steps.validate.outputs.resolved_names }}
+          # The commenter (issue_comment trigger) or the manual dispatcher
+          # (workflow_dispatch trigger). Forwarded so the dispatch-level
+          # result comment leads with `_Requested by @<user>._` and
+          # notifies them when the run finishes.
+          TRIGGERED_BY: ${{ github.event.comment.user.login || github.actor }}
+        run: |
+          gh workflow run mathlib-pr-validation.yml \
+            -R leanprover-community/downstream-reports \
+            -f pr_number="$PR_NUMBER" \
+            -f merge_sha="$MERGE_SHA" \
+            -f downstreams="$DOWNSTREAMS" \
+            -f triggered_by="$TRIGGERED_BY"
+
+      - name: Post ack comment
+        uses: ./ci-tools/.github/actions/check-downstream-ack
+        with:
+          repo: ${{ github.repository }}
+          pr-number: ${{ github.event.issue.number || inputs.pr_number }}
+          downstreams: ${{ steps.validate.outputs.resolved_names }}
+          merge-sha: ${{ steps.validate.outputs.merge_sha }}
+          run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

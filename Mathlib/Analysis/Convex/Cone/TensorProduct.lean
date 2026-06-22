@@ -98,7 +98,7 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
       Submodule.smul_mem _ _ (Submodule.subset_span (hc_supp hm))
   -- Extract basis from `C₁.IsSimplicial` + generating
   let b := Basis.mk hs_lin <| by
-    simpa only [id_eq, Subtype.range_coe] using
+    simpa only [id_eq, Subtype.range_coe] using!
       h₁_gen ▸ hs_span ▸ Submodule.span_le.mpr hull_sub_span
   -- Dual basis elements are in C₁*
   have h_coord_dual : ∀ i, b.coord i ∈ dual (Dual.eval ℝ E) C₁ :=
@@ -111,7 +111,7 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     TensorProduct.equivFinsuppOfBasisLeft_symm_apply, Finsupp.sum_fintype _ _ (by simp)]
   -- Show z ∈ min by showing b_i ∈ C₁ and y_i ∈ C₂
   refine Submodule.sum_mem _ fun i _ => tmul_mem_minTensorProduct ?_ ?_
-  · simpa only [b, Basis.coe_mk] using (hs_span ▸ subset_hull) i.prop
+  · simpa only [b, Basis.coe_mk] using! (hs_span ▸ subset_hull) i.prop
   · simp only [equivFinsuppOfBasisLeft_apply]
     rw [← ProperCone.dual_dual_flip (topDualPairing ℝ F) C₂]
     intro f (hf : (f : F →ₗ[ℝ] ℝ) ∈ dual (Dual.eval ℝ F) (C₂ : Set F))
@@ -120,7 +120,7 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     have h_eq : dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] (f : F →ₗ[ℝ] ℝ)) =
         (f : F →ₗ[ℝ] ℝ) ∘ₗ (TensorProduct.lid ℝ F) ∘ₗ (b.coord i).rTensor F := by
       ext; simp [mul_comm]
-    simpa only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_coe] using h_nonneg
+    simpa only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_coe] using! h_nonneg
 
 /-- If `C₁` is a proper cone and `C₂` is a simplicial and generating cone, then their minimal
 and maximal tensor products are equal. -/

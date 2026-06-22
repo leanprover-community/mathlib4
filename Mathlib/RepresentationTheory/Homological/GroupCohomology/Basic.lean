@@ -98,6 +98,7 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) :
 
 variable [Group G] (A : Rep k G) (n : ℕ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem d_eq :
     d A n =
@@ -123,7 +124,6 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
     classical
-    simp only
     rw [d_eq, d_eq]
     slice_lhs 3 4 => rw [Iso.hom_inv_id]
     slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]
@@ -138,9 +138,10 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = d A n := by
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousCochains.d_comp_d :
     d A n ≫ d A (n + 1) = 0 := by
-  simpa [CochainComplex.of] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
+  simpa [CochainComplex.of.d] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
@@ -157,7 +158,6 @@ def inhomogeneousCochainsIso :
 `n`th differential in the complex of inhomogeneous cochains. -/
 abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
 abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
@@ -173,7 +173,6 @@ inhomogeneous cochains. -/
 abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :=
   (inhomogeneousCochains A).toCycles i j
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
     iCocycles A n (cocyclesMk f h) = f := by

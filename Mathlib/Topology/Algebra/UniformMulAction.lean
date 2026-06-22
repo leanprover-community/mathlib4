@@ -100,7 +100,7 @@ lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuous
     UniformContinuousConstSMul M X where
   uniformContinuous_const_smul c := by
     simpa only [hf.uniformContinuous_iff, Function.comp_def, hsmul]
-      using hf.uniformContinuous.const_smul c
+      using! hf.uniformContinuous.const_smul c
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/

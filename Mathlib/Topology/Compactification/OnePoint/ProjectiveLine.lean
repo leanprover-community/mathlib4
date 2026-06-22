@@ -6,7 +6,7 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 module
 
 public import Mathlib.Algebra.QuadraticDiscriminant
-public import Mathlib.Data.Matrix.Action
+public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.LinearAlgebra.Projectivization.Action
 public import Mathlib.Topology.Compactification.OnePoint.Basic
@@ -65,7 +65,6 @@ lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
   simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum]
 
-set_option linter.deprecated false in
 @[deprecated Matrix.GeneralLinearGroup.fin_two_smul (since := "2026-04-19")]
 lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
     (g : GL (Fin 2) R) (v : R × R) :
@@ -167,7 +166,10 @@ namespace Matrix.GeneralLinearGroup
 variable {K : Type*} [Field K] [DecidableEq K]
 
 /-- The roots of `g.fixpointPolynomial` are the fixed points of `g ∈ GL(2, K)` acting on the finite
-part of `OnePoint K`. -/
+part of `OnePoint K`.
+
+See also `gl_smul_eq_self_iff_quadratic` for a similar lemma
+about the fixed points of the action of `GL(2, ℝ)` on the upper half-plane. -/
 lemma fixpointPolynomial_aeval_eq_zero_iff {c : K} {g : GL (Fin 2) K} :
     g.fixpointPolynomial.aeval c = 0 ↔ g • (c : OnePoint K) = c := by
   simp only [fixpointPolynomial, map_sub, map_mul, map_add, aeval_X_pow, aeval_C, aeval_X,

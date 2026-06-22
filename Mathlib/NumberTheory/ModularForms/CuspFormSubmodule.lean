@@ -6,7 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.NumberTheory.ModularForms.QExpansion
-public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 
 /-!
@@ -81,6 +81,11 @@ lemma mem_cuspFormSubmodule_iff [Γ.HasDetOne] {f : ModularForm Γ k} :
 def CuspForm.equivCuspFormSubmodule (Γ : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) [Γ.HasDetOne] :
     CuspForm Γ k ≃ₗ[ℂ] cuspFormSubmodule Γ k :=
   LinearEquiv.ofInjective CuspForm.toModularFormₗ CuspForm.toModularFormₗ_injective
+
+/-- The underlying modular form (via `toModularFormₗ`) of a `CuspForm` is itself a cusp form. -/
+lemma CuspForm.isCuspForm_toModularFormₗ {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetOne]
+    (f : CuspForm Γ k) : ModularForm.IsCuspForm f.toModularFormₗ := by
+  simp [← mem_cuspFormSubmodule_iff, ModularForm.cuspFormSubmodule]
 
 /-- A modular form is a cusp form if and only if it vanishes at every cusp. This is the
 general characterization valid for any subgroup. -/

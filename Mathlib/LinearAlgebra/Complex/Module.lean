@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.Data.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -109,6 +111,15 @@ instance : StarModule ℝ ℂ :=
 theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
   rfl
 
+example : (Semiring.toNatAlgebra : Algebra ℕ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : (Ring.toIntAlgebra ℂ : Algebra ℤ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
+  with_reducible_and_instances rfl
+
 section
 
 variable {A : Type*} [Semiring A] [Algebra ℝ A]
@@ -154,13 +165,13 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
 
 end Complex
 
-/- Register as an instance (with low priority) the fact that a complex vector space is also a real
+/-- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
 instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
   .restrictScalars ℝ ℂ E
 
-/- Register as an instance (with low priority) the fact that a complex algebra is also a real
+/-- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
 instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
     Algebra ℝ A :=
@@ -200,7 +211,6 @@ instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ 
 -- check that the following instance is implied by the one above.
 example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E] [Star E]
     [Module ℂ E] [StarModule ℂ E] : StarModule ℝ E :=
   ⟨fun r a => by rw [← smul_one_smul ℂ r a, star_smul, star_smul, star_one, smul_one_smul]⟩
@@ -209,7 +219,6 @@ namespace Complex
 
 open ComplexConjugate
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reLm : ℂ →ₗ[ℝ] ℝ where
   toFun x := x.re
@@ -220,7 +229,6 @@ def reLm : ℂ →ₗ[ℝ] ℝ where
 theorem reLm_coe : ⇑reLm = re :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Linear map version of the imaginary part function, from `ℂ` to `ℝ`. -/
 def imLm : ℂ →ₗ[ℝ] ℝ where
   toFun x := x.im
@@ -251,11 +259,10 @@ def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
 theorem conjAe_coe : ⇑conjAe = conj :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The matrix representation of `conjAe`. -/
 @[simp]
 theorem toMatrix_conjAe :
-    LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
+    conjAe.toLinearEquiv.toLinearMap.toMatrix basisOneI basisOneI = !![1, 0; 0, -1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 
@@ -266,7 +273,6 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
     refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
@@ -356,26 +362,26 @@ section AddCommGroup
 
 variable [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
 
+lemma Complex.I_mem_skewAdjoint : I ∈ skewAdjoint ℂ := by simp [skewAdjoint.mem_iff]
+
+@[simp] lemma Complex.I_smul_mem_skewAdjoint_iff_isSelfAdjoint {a : A} :
+    I • a ∈ skewAdjoint A ↔ IsSelfAdjoint a := by
+  simp [skewAdjoint.mem_iff, IsSelfAdjoint, smul_right_inj]
+
+@[simp] lemma Complex.isSelfAdjoint_I_smul_iff_mem_skewAdjoint {a : A} :
+    IsSelfAdjoint (I • a) ↔ a ∈ skewAdjoint A := by
+  simp [← I_smul_mem_skewAdjoint_iff_isSelfAdjoint, smul_smul]
+
 /-- Create a `selfAdjoint` element from a `skewAdjoint` element by multiplying by the scalar
 `-Complex.I`. -/
 @[simps]
 def skewAdjoint.negISMul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
-  toFun a :=
-    ⟨-I • ↑a, by
-      simp only [neg_smul, neg_mem_iff, selfAdjoint.mem_iff, star_smul, star_def, conj_I,
-        star_val_eq, smul_neg, neg_neg]⟩
-  map_add' a b := by
-    ext
-    simp only [AddSubgroup.coe_add, smul_add, AddMemClass.mk_add_mk]
-  map_smul' a b := by
-    ext
-    simp only [neg_smul, skewAdjoint.val_smul, RingHom.id_apply,
-      selfAdjoint.val_smul, smul_neg, neg_inj]
-    rw [smul_comm]
+  toFun a := ⟨-I • ↑a, by simp [selfAdjoint.mem_iff]⟩
+  map_add' a b := by simp
+  map_smul' a b := by ext; simp [smul_comm I]
 
 theorem skewAdjoint.I_smul_neg_I (a : skewAdjoint A) : I • (skewAdjoint.negISMul a : A) = a := by
-  simp only [smul_smul, skewAdjoint.negISMul_apply_coe, neg_smul, smul_neg, I_mul_I, one_smul,
-    neg_neg]
+  simp [smul_smul]
 
 /-- The real part `ℜ a` of an element `a` of a star module over `ℂ`, as a linear map. This is just
 `selfAdjointPart ℝ`, but we provide it as a separate definition in order to link it with lemmas
@@ -399,20 +405,15 @@ scoped[ComplexStarModule] notation "ℑ" => imaginaryPart
 open ComplexStarModule
 
 theorem realPart_apply_coe (a : A) : (ℜ a : A) = (2 : ℝ)⁻¹ • (a + star a) := by
-  unfold realPart
-  simp only [selfAdjointPart_apply_coe, invOf_eq_inv]
+  simp [realPart]
 
 theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ • (a - star a) := by
-  unfold imaginaryPart
-  simp only [LinearMap.coe_comp, Function.comp_apply, skewAdjoint.negISMul_apply_coe,
-    skewAdjointPart_apply_coe, invOf_eq_inv, neg_smul]
+  simp [imaginaryPart]
 
 /-- The standard decomposition of `ℜ a + Complex.I • ℑ a = a` of an element of a star module over
 `ℂ` into a linear combination of self adjoint elements. -/
 theorem realPart_add_I_smul_imaginaryPart (a : A) : (ℜ a : A) + I • (ℑ a : A) = a := by
-  simpa only [smul_smul, realPart_apply_coe, imaginaryPart_apply_coe, neg_smul, I_mul_I, one_smul,
-    neg_sub, add_add_sub_cancel, smul_sub, smul_add, neg_sub_neg, invOf_eq_inv] using
-    invOf_two_smul_add_invOf_two_smul ℝ a
+  simp [realPart, imaginaryPart, smul_smul, ← smul_add, inv_smul_eq_iff₀, two_smul]
 
 @[simp]
 theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
@@ -454,8 +455,7 @@ lemma realPart_comp_subtype_selfAdjoint :
 
 lemma imaginaryPart_comp_subtype_selfAdjoint :
     imaginaryPart.comp (selfAdjoint.submodule ℝ A).subtype = 0 := by
-  rw [imaginaryPart, LinearMap.comp_assoc, skewAdjointPart_comp_subtype_selfAdjoint,
-    LinearMap.comp_zero]
+  ext; simp [imaginaryPart]
 
 @[simp]
 lemma selfAdjoint.realPart_coe {x : selfAdjoint A} : ℜ (x : A) = x :=
@@ -499,7 +499,7 @@ theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := b
 
 @[simp]
 lemma imaginaryPart_eq_zero_iff {x : A} : ℑ x = 0 ↔ IsSelfAdjoint x := by
-  simpa [-ker_imaginaryPart] using SetLike.ext_iff.mp ker_imaginaryPart x
+  simpa [-ker_imaginaryPart] using! SetLike.ext_iff.mp ker_imaginaryPart x
 
 open Submodule
 
@@ -513,7 +513,6 @@ end AddCommGroup
 
 open scoped ComplexStarModule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℝ`-linear equivalence between `selfAdjoint ℂ` and `ℝ`. -/
 @[simps apply symm_apply]
 def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
@@ -537,12 +536,9 @@ lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
 lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
-  (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
-  _         = z.re                       := by
-    rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
-    simp
+lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := by
+  conv_lhs => rw [← re_add_im z]
+  simp [-re_add_im, realPart_I_smul, mul_comm _ I, ← smul_eq_mul]
 
 section NonUnitalNonAssocRing
 
@@ -591,6 +587,42 @@ lemma star_mul_self_eq_realPart_sq_add_imaginaryPart_sq (x : A) [hx : IsStarNorm
   _ = _ := by simp [Commute.realPart_imaginaryPart x |>.eq]
 
 end NonUnitalNonAssocRing
+
+section StarOrderedRing
+
+variable [NonUnitalRing A] [StarRing A] [PartialOrder A]
+    [StarOrderedRing A] [Module ℂ A] [StarModule ℂ A]
+
+lemma nonneg_iff_realPart_imaginaryPart {a : A} :
+    0 ≤ a ↔ 0 ≤ ℜ a ∧ ℑ a = 0 := by
+  refine ⟨fun h ↦ ⟨?_, h.isSelfAdjoint.imaginaryPart⟩, fun h ↦ ?_⟩
+  · simpa +singlePass [← h.isSelfAdjoint.coe_realPart] using! h
+  · rw [← realPart_add_I_smul_imaginaryPart a, h.2]
+    simpa using! h.1
+
+lemma nonpos_iff_realPart_imaginaryPart {a : A} :
+    a ≤ 0 ↔ ℜ a ≤ 0 ∧ ℑ a = 0 := by
+  simpa using nonneg_iff_realPart_imaginaryPart (a := -a)
+
+lemma realPart_nonneg_of_nonneg {a : A} (ha : 0 ≤ a) : 0 ≤ ℜ a :=
+  nonneg_iff_realPart_imaginaryPart.mp ha |>.1
+
+lemma realPart_nonpos_of_nonpos {a : A} (ha : a ≤ 0) : ℜ a ≤ 0 :=
+  nonpos_iff_realPart_imaginaryPart.mp ha |>.1
+
+lemma le_iff_realPart_imaginaryPart {a b : A} :
+    a ≤ b ↔ ℜ a ≤ ℜ b ∧ ℑ a = ℑ b := by
+  simpa [sub_eq_zero, eq_comm (a := ℑ a)] using nonneg_iff_realPart_imaginaryPart (a := b - a)
+
+lemma imaginaryPart_eq_of_le {a b : A} (hab : a ≤ b) :
+    ℑ a = ℑ b :=
+  le_iff_realPart_imaginaryPart.mp hab |>.2
+
+lemma realPart_mono {a b : A} (hab : a ≤ b) :
+    ℜ a ≤ ℜ b :=
+  le_iff_realPart_imaginaryPart.mp hab |>.1
+
+end StarOrderedRing
 
 @[simp]
 lemma realPart_one [Ring A] [StarRing A] [Module ℂ A] [StarModule ℂ A] :

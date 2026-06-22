@@ -305,7 +305,7 @@ def fixInduction' {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α}
   refine fixInduction h fun a' h ih => ?_
   rcases e : (f a').get (dom_of_mem_fix h) with b' | a'' <;> replace e : _ ∈ f a' := ⟨_, e⟩
   · apply hbase
-    convert e
+    convert! e
     exact Part.mem_unique h (fix_stop e)
   · exact hind _ _ (fix_fwd h e) e (ih _ e)
 

@@ -154,7 +154,7 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
-  convert rfl
+  convert! rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
@@ -270,10 +270,10 @@ theorem commute_monomial {a : R} {n} :
     split_ifs <;> [apply h; rfl]
 
 protected theorem one_mul : (1 : MvPowerSeries σ R) * φ = φ :=
-  ext fun n => by simpa using coeff_add_monomial_mul 0 n φ 1
+  ext fun n => by simpa using! coeff_add_monomial_mul 0 n φ 1
 
 protected theorem mul_one : φ * 1 = φ :=
-  ext fun n => by simpa using coeff_add_mul_monomial n 0 φ 1
+  ext fun n => by simpa using! coeff_add_mul_monomial n 0 φ 1
 
 protected theorem mul_add (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * (φ₂ + φ₃) = φ₁ * φ₂ + φ₁ * φ₃ :=
   ext fun n => by
@@ -357,7 +357,7 @@ theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
   rw [← coeff_zero_C a, h, coeff_zero_C]
 
 theorem C_surjective [IsEmpty σ] : Function.Surjective (C : R → MvPowerSeries σ R) :=
-  fun p => ⟨p 0, by ext n; simpa [coeff_C, Subsingleton.eq_zero n] using coeff_apply _ _⟩
+  fun p => ⟨p 0, by ext n; simpa [coeff_C, Subsingleton.eq_zero n] using! coeff_apply _ _⟩
 
 @[simp] theorem C_inj (r s : R) : (C r : MvPowerSeries σ R) = C s ↔ r = s := (C_injective).eq_iff
 
@@ -564,8 +564,8 @@ section toSubring
 variable [Ring R] (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a multivariate formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding multivariate formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding multivariate formal power series
+whose coefficients are in `T`. -/
 def toSubring : MvPowerSeries σ T := fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]
@@ -610,7 +610,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
       · rw [coeff_X_pow, if_pos rfl, one_mul]
-        simpa using congr_arg (fun m : σ →₀ ℕ => coeff m φ) H.symm
+        simpa using! congr_arg (fun m : σ →₀ ℕ => coeff m φ) H.symm
       · rintro ⟨i, j⟩ hij hne
         rw [mem_antidiagonal] at hij
         rw [coeff_X_pow]
@@ -641,7 +641,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
         ext t
         by_cases hst : s = t
         · subst t
-          simpa using tsub_add_cancel_of_le H
+          simpa using! tsub_add_cancel_of_le H
         · simp [hst]
 
 theorem X_dvd_iff {s : σ} {φ : MvPowerSeries σ R} :
@@ -747,7 +747,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
   simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,
     ← sum_sdiff (hs), sum_eq_zero (s := s) hs'', add_zero]
   rw [← hs_def]
-  convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
+  convert! Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
   · simp only [smul_eq_mul, mul_one]
   · simp only [degree_eq_weight_one, map_sum]
   · simp only [hs_def, mem_filter, mem_sdiff, mem_range, not_and, and_imp]
@@ -927,6 +927,11 @@ theorem _root_.MvPowerSeries.monomial_smul_eq (e : σ →₀ ℕ) (p : ℕ) (r :
   rw [MvPowerSeries.monomial_eq', Finsupp.prod_of_support_subset _ Finsupp.support_smul _
     (by simp), Finsupp.prod]
   simp [pow_mul]
+
+theorem _root_.MvPowerSeries.monomial_mapDomain_apply_one {τ : Type*} (d : σ →₀ ℕ) (f : σ → τ) :
+    MvPowerSeries.monomial (mapDomain f d) (1 : R) =
+      d.prod fun s e ↦ MvPowerSeries.X (f s) ^ e := by
+  simp [pow_add, prod_sum_index, MvPowerSeries.monomial_one_eq, mapDomain]
 
 section Algebra
 

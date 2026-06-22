@@ -49,7 +49,7 @@ def mkSelf (f : Y → Z) (y : Y) : (mk f y).val := ⟨y, rfl⟩
 lemma map_eq_image (f : Y → Z) (a : Fiber f) (x : a.1) : f x = a.image := by
   have := a.2.choose_spec
   rw [← Set.mem_singleton_iff, ← Set.mem_preimage]
-  convert x.prop
+  convert! x.prop
 
 lemma mk_image (f : Y → Z) (y : Y) : (Fiber.mk f y).image = f y :=
   (map_eq_image (x := mkSelf f y)).symm
