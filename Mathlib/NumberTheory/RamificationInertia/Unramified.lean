@@ -159,7 +159,7 @@ theorem isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDo
 
 /-- For a prime `𝔓` of `S` lying over an unramified prime `𝔭` of `R`, the ramification index
 `e(𝔓 ∣ 𝔭)` equals `1`. -/
-theorem UnramifiedIn.ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S]
+theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S]
     [Module.IsTorsionFree R S] [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) (h𝔭 : 𝔭 ≠ ⊥) {𝔓 : Ideal S}
     [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx 𝔭 𝔓 = 1 := by
@@ -174,7 +174,7 @@ theorem isUnramifiedIn_iff_forall_ramificationIdx_eq_one [IsDomain R] [IsDedekin
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} (h𝔭 : 𝔭 ≠ ⊥) :
     IsUnramifiedIn S 𝔭 ↔
       ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx 𝔭 𝔓 = 1 := by
-  refine ⟨fun hunr 𝔓 _ hP ↦ UnramifiedIn.ramificationIdx_eq_one hunr h𝔭 hP, fun h 𝔓 _ hP ↦ ?_⟩
+  refine ⟨fun hunr 𝔓 _ hP ↦ hunr.ramificationIdx_eq_one h𝔭 hP, fun h 𝔓 _ hP ↦ ?_⟩
   apply (isUnramifiedAt_iff_of_isDedekindDomain
     (Ideal.ne_bot_of_liesOver_of_ne_bot h𝔭 𝔓)).mpr
   rw [← (Ideal.liesOver_iff 𝔓 𝔭).mp hP]
