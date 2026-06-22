@@ -1388,6 +1388,17 @@ theorem not_lt_enum_ord_mk_min_compl [IsWellOrder α r] {s : Set α} (hfin : s.F
   grw [← typein_le_typein, typein_enum, Cardinal.le_ord_iff_card_le_of_lt_aleph0 _ hfin.lt_aleph0,
     card_typein_min_le_mk]
 
+theorem finite_toType_of_lt_omega0 {o} (h : o < ω) : Finite (ToType o) := by
+  rwa [← mk_lt_aleph0_iff, mk_toType, card_lt_aleph0]
+
+theorem finite_Iio_of_lt_omega0 {o} (h : o < ω) : (Iio o).Finite := by
+  rw [← finite_coe_iff, ← ToType.mk.symm.toEquiv.finite_iff]
+  exact finite_toType_of_lt_omega0 h
+
+instance {o} [h : Fact <| o < ω] : Finite (ToType o) := finite_toType_of_lt_omega0 h.out
+
+instance {o} [h : Fact <| o < ω] : Finite (Iio o) := finite_Iio_of_lt_omega0 h.out
+
 end Ordinal
 
 /-! ### Sorted lists -/

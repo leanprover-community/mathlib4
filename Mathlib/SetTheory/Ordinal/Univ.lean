@@ -191,4 +191,10 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
+theorem small_of_lift_mk_le_lift {c : Cardinal.{u}} {α : Type v}
+    (hα : lift.{u} #α ≤ lift.{v} c) : Small.{u} α := by
+  rw [small_iff_lift_mk_lt_univ]
+  apply (lift_lt_univ' c).trans_le'
+  simpa only [lift_lift] using lift_le.{u + 1, max u v}.mpr hα
+
 end Cardinal
