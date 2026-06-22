@@ -33,7 +33,7 @@ In this file we formalize this notion, and characterize the cases `n = 0` and `n
 
 @[expose] public section
 
-open Set TopologicalSpace
+open Set TopologicalSpace Topology
 
 /--
 For a topological space, the property of having small inductive dimension less than `n : ℕ`  is
@@ -65,8 +65,17 @@ lemma hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 �
 @[deprecated (since := "2026-06-21")]
 alias HasSmallInductiveDimensionLT_zero_iff := hasSmallInductiveDimensionLT_zero_iff
 
-lemma hasSmallInductiveDimensionLT_one_iff :
-    HasSmallInductiveDimensionLT X 1 ↔ IsTopologicalBasis { s : Set X | IsClopen s } := by
+/-! ### Zero-dimensional spaces -/
+
+variable (X) in
+/-- A zero-dimensional topological space is one with a basis of clopen sets. These are the spaces of
+small inductive dimension ≤ 0. In particular, our definition of `ZeroDimensionalSpace` allows the
+empty space even though, strictly speaking, it is (-1)-dimensional. -/
+abbrev ZeroDimensionalSpace :=
+  HasSmallInductiveDimensionLT X 1
+
+lemma zeroDimensionalSpace_iff_isTopologicalBasis :
+    ZeroDimensionalSpace X ↔ IsTopologicalBasis { s : Set X | IsClopen s } := by
   constructor
   · intro (.succ _ s hs h)
     refine hs.of_isOpen_of_subset (fun _ hU ↦ hU.isOpen) (fun U hU ↦ ⟨?_, hs.isOpen hU⟩)
@@ -76,6 +85,23 @@ lemma hasSmallInductiveDimensionLT_one_iff :
   · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
 
 @[deprecated (since := "2026-06-21")]
-alias HasSmallInductiveDimensionLT_one_iff := hasSmallInductiveDimensionLT_one_iff
+alias hasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis
 
-end
+@[deprecated (since := "2026-06-21")]
+alias HasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis
+
+variable (X) in
+theorem isTopologicalBasis_isClopen [ZeroDimensionalSpace X] :
+    IsTopologicalBasis { s : Set X | IsClopen s } :=
+  zeroDimensionalSpace_iff_isTopologicalBasis.1 ‹_›
+
+theorem zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis :
+    ZeroDimensionalSpace X ↔ ∀ x : X, (𝓝 x).HasBasis (fun s ↦ IsClopen s ∧ x ∈ s) id where
+  mp _ _ := (isTopologicalBasis_isClopen X).nhds_hasBasis
+  mpr H := by
+    rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+    exact .of_hasBasis_nhds H
+
+theorem exists_isClopen_mem_of_isOpen [ZeroDimensionalSpace X] {x : X} {U : Set X}
+    (hU : IsOpen U) (hx : x ∈ U) : ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
+  (isTopologicalBasis_isClopen X).mem_nhds_iff.1 (hU.mem_nhds hx)
