@@ -80,8 +80,8 @@ theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin
     exact contDiff_fourierIntegral _ hint'
   simp only [mul_inv_rev, neg_smul]
   rw [h, iteratedFDeriv_fourierIntegral _ hint' (by fun_prop) le_rfl]
-  simp only [ContinuousMultilinearMap.smul_apply, real_smul, ofReal_pow, ofReal_neg, ofReal_mul,
-    ofReal_inv, ofReal_ofNat, ofReal_prod]
+  simp only [smul_apply, real_smul, ofReal_pow, ofReal_neg, ofReal_mul, ofReal_inv, ofReal_ofNat,
+    ofReal_prod]
   rw [fourierIntegral_continuousMultilinearMap_apply Real.continuous_fourierChar]
   swap;
   · exact integrable_fourierPowSMulRight _ (by simpa using hint.integrable_norm_pow') (by fun_prop)

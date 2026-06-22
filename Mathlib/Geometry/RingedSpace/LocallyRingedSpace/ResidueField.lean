@@ -135,7 +135,7 @@ lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.base).obj V)
     (a : Y.presheaf.obj (op V)) :
     residueFieldMap f x.val (Y.evaluation ⟨f.base x, x.property⟩ a) =
       X.evaluation x (f.c.app (op V) a) := by
-  simpa using congrFun (congrArg (DFunLike.coe ∘ CommRingCat.Hom.hom) <|
+  simpa using! congrFun (congrArg (DFunLike.coe ∘ CommRingCat.Hom.hom) <|
     evaluation_naturality f x) a
 
 set_option backward.isDefEq.respectTransparency false in

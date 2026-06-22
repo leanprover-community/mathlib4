@@ -9,6 +9,7 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.Ideal.Basic
@@ -55,6 +56,7 @@ noncomputable section
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Formal power series over a coefficient type `R` -/
+@[wikidata Q1003025]
 abbrev PowerSeries (R : Type*) :=
   MvPowerSeries Unit R
 
@@ -548,7 +550,6 @@ noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
   map_add' := by
     intros
     ext
-    dsimp only
     exact mul_add _ _ _
   map_mul' f g := by
     ext
