@@ -174,7 +174,7 @@ lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* 
   simp only [IsInvertedBy.iff_map_le_isomorphisms, map_map]
 
 lemma isomorphisms_isInvertedBy (F : C ⥤ D) : (isomorphisms C).IsInvertedBy F := by
-  intro X Y f hf
+  intro _ _ _ hf
   simp only [isomorphisms.iff] at hf
   infer_instance
 
