@@ -291,7 +291,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism `π ⋙ H ≅ F`, where `π` is a functor which commutes
 with the shift by `M` and `H` is equipped with a shift sequence,
 then this is the shift sequence for `F` induced by composition. -/
-@[implicit_reducible]
+@[implicit_reducible, simps]
 def leftComp [π.CommShift M] [H.ShiftSequence M] : F.ShiftSequence M where
   sequence n := π ⋙ H.shift n
   isoZero := isoWhiskerLeft π (H.isoShiftZero M) ≪≫ e
