@@ -11,14 +11,13 @@ public import Mathlib.Data.Set.SMulAntidiagonal
 /-!
 # Antidiagonal for scalar multiplication as a `Finset`.
 
-Given partially ordered sets `G` and `P`, with an action of `G` on `P` that preserves and reflects
-the order relation, we construct, for any element `a` in `P` and partially well-ordered subsets `s`
-in `G` and `t` in `P`, the `Finset` of all pairs of an element in `s` and an element in `t` that
-scalar-multiply to `a`.
+Given sets `G` and `P`, with an action of `G` on `P`, we construct, for any element `a` in `P`,
+the `Finset` of all pairs of an element in `s` and an element in `t` that scalar-multiply to `a`,
+assuming that set is finite.
 
 ## Definitions
-* Finset.setSMulAntidiagonal : Set-based Finset antidiagonal for PWO inputs.
-* Finset.setVAddAntidiagonal : Set-based Finset antidiagonal for PWO inputs.
+* Finset.SMulAntidiagonal : Finset antidiagonal for PWO inputs.
+* Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
 
 -/
 
@@ -26,7 +25,7 @@ scalar-multiply to `a`.
 
 variable {G P : Type*}
 
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 
@@ -58,82 +57,65 @@ section
 
 open Set
 
-variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
+variable [SMul G P]
+
+/-- `Finset.SMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
+element in `t` whose scalar multiplication yields `a`, but its construction requires a proof that
+the set-theoretic antidiagonal is finite. -/
+@[to_additive /-- `Finset.VAddAntidiagonal hs ht a` is the set of all pairs of an element in `s`
+and an element in `t` whose vector addition yields `a`, but its construction requires proofs that
+`s` and `t` are well-ordered. -/]
+noncomputable def SMulAntidiagonal {s : Set G}
+    {t : Set P} (a : P) (h : (s.smulAntidiagonal t a).Finite) : Finset (G × P) :=
+  h.toFinset
+
+@[to_additive (attr := simp)]
+theorem mem_smulAntidiagonal {s : Set G}
+    {t : Set P} (a : P) (h : (s.smulAntidiagonal t a).Finite) {x : G × P} :
+    x ∈ SMulAntidiagonal a h ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
+  simp only [SMulAntidiagonal, Set.Finite.mem_toFinset]
+  exact Set.mem_sep_iff
+
+@[to_additive]
+theorem smulAntidiagonal_mono_left {s u : Set G} {t : Set P} (a : P) (h : u ⊆ s)
+    (hst : (s.smulAntidiagonal t a).Finite) (hut : (u.smulAntidiagonal t a).Finite) :
+    SMulAntidiagonal a hut ⊆ SMulAntidiagonal a hst :=
+  Set.Finite.toFinset_mono <| Set.smulAntidiagonal_mono_left h
+
+@[to_additive]
+theorem smulAntidiagonal_mono_right {s : Set G}
+    {t v : Set P} (a : P) (hst : (s.smulAntidiagonal t a).Finite)
+    (hsv : (s.smulAntidiagonal v a).Finite) (h : v ⊆ t) :
+    SMulAntidiagonal a hsv ⊆ SMulAntidiagonal a hst :=
+  Set.Finite.toFinset_mono <| Set.smulAntidiagonal_mono_right h
+
+@[to_additive]
+theorem support_smulAntidiagonal_subset_smul {s : Set G}
+    {t : Set P} (hst : ∀ a, (s.smulAntidiagonal t a).Finite) :
+    { a | (SMulAntidiagonal a (hst a)).Nonempty } ⊆ (s • t) := by
+  grind [mem_smul, mem_smulAntidiagonal]
+
+variable [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P] {s : Set G}
     {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) {u : Set G} {hu : u.IsPWO} {v : Set P}
     {hv : v.IsPWO} {x : G × P}
 
-/-- `Finset.setSMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
-element in `t` whose scalar multiplication yields `a`, but its construction requires proofs that `s`
-and `t` are well-ordered. -/
-@[to_additive /-- `Finset.setVAddAntidiagonal hs ht a` is the set of all pairs of an element in `s`
-and an element in `t` whose vector addition yields `a`, but its construction requires proofs that
-`s` and `t` are well-ordered. -/]
-noncomputable def setSMulAntidiagonal [IsOrderedCancelSMul G P]
-    {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
-  (SMulAntidiagonal.finite_of_isPWO hs ht a).toFinset
-
-/-- Deprecated alias of `Finset.setSMulAntidiagonal`. -/
-@[to_additive (attr := deprecated setVAddAntidiagonal (since := "2026-04-02"))
-    /-- Deprecated alias of `Finset.setVAddAntidiagonal`. -/,
-  deprecated setSMulAntidiagonal (since := "2026-04-02")]
-noncomputable alias SMulAntidiagonal := setSMulAntidiagonal
-
-@[to_additive (attr := simp)]
-theorem mem_setSMulAntidiagonal :
-    x ∈ setSMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
-  simp only [setSMulAntidiagonal, Set.Finite.mem_toFinset]
-  exact Set.mem_sep_iff
-
-@[to_additive (attr := deprecated mem_setVAddAntidiagonal (since := "2026-04-02")),
-  deprecated mem_setSMulAntidiagonal (since := "2026-04-02")]
-alias mem_smulAntidiagonal := mem_setSMulAntidiagonal
-
 @[to_additive]
-theorem setSMulAntidiagonal_mono_left {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : u ⊆ s) :
-    setSMulAntidiagonal hu ht a ⊆ setSMulAntidiagonal hs ht a :=
-  Set.Finite.toFinset_mono <| Set.smulAntidiagonal_mono_left h
-
-@[to_additive (attr := deprecated setVAddAntidiagonal_mono_left (since := "2026-04-02")),
-  deprecated setSMulAntidiagonal_mono_left (since := "2026-04-02")]
-alias smulAntidiagonal_mono_left := setSMulAntidiagonal_mono_left
-
-@[to_additive]
-theorem setSMulAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v ⊆ t) :
-    setSMulAntidiagonal hs hv a ⊆ setSMulAntidiagonal hs ht a :=
-  Set.Finite.toFinset_mono <| Set.smulAntidiagonal_mono_right h
-
-@[to_additive (attr := deprecated setVAddAntidiagonal_mono_right (since := "2026-04-02")),
-  deprecated setSMulAntidiagonal_mono_right (since := "2026-04-02")]
-alias smulAntidiagonal_mono_right := setSMulAntidiagonal_mono_right
-
-@[to_additive]
-theorem support_setSMulAntidiagonal_subset_smul {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (setSMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) := by
-  grind [mem_smul, mem_setSMulAntidiagonal]
-
-@[to_additive (attr := deprecated support_setVAddAntidiagonal_subset_vadd (since := "2026-04-02")),
-  deprecated support_setSMulAntidiagonal_subset_smul (since := "2026-04-02")]
-alias support_smulAntidiagonal_subset_smul := support_setSMulAntidiagonal_subset_smul
-
-@[to_additive]
-theorem isPWO_support_setSMulAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (setSMulAntidiagonal hs ht a).Nonempty }.IsPWO :=
-  (hs.smul ht).mono (support_setSMulAntidiagonal_subset_smul)
-
-@[to_additive (attr := deprecated isPWO_support_setVAddAntidiagonal (since := "2026-04-02")),
-  deprecated isPWO_support_setSMulAntidiagonal (since := "2026-04-02")]
-alias isPWO_support_smulAntidiagonal := isPWO_support_setSMulAntidiagonal
+theorem isPWO_support_smulAntidiagonal :
+    { a | (SMulAntidiagonal a (Set.SMulAntidiagonal.finite_of_isPWO hs ht a)).Nonempty }.IsPWO :=
+  (hs.smul ht).mono
+    (support_smulAntidiagonal_subset_smul (fun a ↦ (Set.SMulAntidiagonal.finite_of_isPWO hs ht a)))
 
 end
 
 @[to_additive]
-theorem setSMulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G P]
-    [IsOrderedCancelSMul G P] {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF)
-    (hns : s.Nonempty) (hnt : t.Nonempty) :
-    setSMulAntidiagonal hs.isPWO ht.isPWO (hs.min hns • ht.min hnt) =
+theorem smulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G P]
+    [IsOrderedCancelSMul G P] {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty)
+    (hnt : t.Nonempty) :
+    SMulAntidiagonal (hs.min hns • ht.min hnt)
+      (Set.SMulAntidiagonal.finite_of_isPWO hs.isPWO ht.isPWO (hs.min hns • ht.min hnt)) =
       {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
-  simp only [mem_setSMulAntidiagonal, mem_singleton, Prod.ext_iff]
+  simp only [mem_smulAntidiagonal, mem_singleton, Prod.ext_iff]
   constructor
   · rintro ⟨has, hat, hst⟩
     obtain rfl :=
@@ -142,9 +124,5 @@ theorem setSMulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G
     exact ⟨rfl, IsCancelSMul.left_cancel _ _ _ hst⟩
   · rintro ⟨rfl, rfl⟩
     exact ⟨hs.min_mem _, ht.min_mem _, rfl⟩
-
-@[to_additive (attr := deprecated setVAddAntidiagonal_min_vadd_min (since := "2026-04-02")),
-  deprecated setSMulAntidiagonal_min_smul_min (since := "2026-04-02")]
-alias smulAntidiagonal_min_smul_min := setSMulAntidiagonal_min_smul_min
 
 end Finset

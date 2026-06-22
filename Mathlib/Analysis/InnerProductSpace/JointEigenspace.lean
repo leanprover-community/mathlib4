@@ -84,7 +84,6 @@ variable [FiniteDimensional 𝕜 E]
 
 open IsFinitelySemisimple
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If A and B are commuting symmetric operators on a finite-dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
 theorem iSup_eigenspace_inf_eigenspace_of_commute (hB : B.IsSymmetric) (hAB : Commute A B) :
@@ -134,12 +133,16 @@ theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
 
 /-- In finite dimensions, given a commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
-theorem LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute [DecidableEq (n → 𝕜)]
+theorem directSum_isInternal_of_pairwise_commute [DecidableEq (n → 𝕜)]
     (hT : ∀ i, (T i).IsSymmetric) (hC : Pairwise (Commute on T)) :
     DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
   · rw [iSup_iInf_eq_top_of_commute hT hC, top_orthogonal_eq_bot]
   · exact orthogonalFamily_iInf_eigenspaces hT
+
+@[deprecated (since := "2026-05-24")]
+alias LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute :=
+  directSum_isInternal_of_pairwise_commute
 
 end RCLike
 

@@ -33,7 +33,8 @@ supremum helps define the meaning of recursive procedures.
 ## Instances of `OmegaCompletePartialOrder`
 
 * `Part`
-* every `CompleteLattice`
+* every `CompleteLattice` (proved in `BourbakiWitt` as a special case of chain-complete
+  partial orders)
 * pi-types
 * product types
 * `OrderHom`
@@ -78,7 +79,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
-  coe_injective' := by rintro ⟨f, hf⟩; congr!
+  coe_injective := by rintro ⟨f, hf⟩; congr!
 
 initialize_simps_projections Chain (toFun → apply)
 
@@ -104,7 +105,7 @@ instance instLE : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
 lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 
-lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
+lemma directed : Directed (· ≤ ·) c := directedOn_range.1 c.isChain_range.directedOn
 
 /-- `map` function for `Chain` -/
 @[simps toOrderHom]
@@ -134,7 +135,7 @@ theorem mem_map_iff {b : β} : b ∈ c.map f ↔ ∃ a, a ∈ c ∧ f a = b :=
 theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g := fun _ ↦ ⟨_, h _⟩
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
@@ -209,7 +210,7 @@ theorem ωSup_total {c : Chain α} {x : α} (h : ∀ i, c i ≤ x ∨ x ≤ c i)
       have : x ≤ c i := (h i).resolve_left hx
       Or.inr <| le_ωSup_of_le _ this)
 
-@[mono]
+@[gcongr, mono]
 theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup c₀ ≤ ωSup c₁ :=
   (ωSup_le _ _) fun i => by
     obtain ⟨_, h⟩ := h i
@@ -285,7 +286,7 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
     ωScottContinuous f ↔ ∃ hf : Monotone f, ∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, hf⟩) := by
   refine ⟨fun hf ↦ ⟨hf.monotone, hf.map_ωSup⟩, ?_⟩
   intro hf _ ⟨c, hc⟩ _ _ _ hda
-  convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+  convert! isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
   · simp [← hc, ← (Set.range_comp f ⇑c)]
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]
@@ -302,6 +303,8 @@ lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
 alias ⟨ωScottContinuous.map_ωSup_of_orderHom, ωScottContinuous.of_map_ωSup_of_orderHom⟩ :=
   ωScottContinuous_iff_map_ωSup_of_orderHom
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 attribute [local push] Function.const_def
 
@@ -352,7 +355,6 @@ theorem mem_chain_of_mem_ωSup {c : Chain (Part α)} {a : α} (h : a ∈ Part.ω
     exact h'
   · rcases h with ⟨⟨⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance omegaCompletePartialOrder :
     OmegaCompletePartialOrder (Part α) where
   ωSup := Part.ωSup
@@ -461,65 +463,6 @@ lemma ωScottContinuous_snd : ωScottContinuous (Prod.snd : α × β → β) :=
 
 end Prod
 
-namespace CompleteLattice
-
--- see Note [lower instance priority]
-/-- Any complete lattice has an `ω`-CPO structure where the countable supremum is a special case
-of arbitrary suprema. -/
-instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α where
-  ωSup c := ⨆ i, c i
-  ωSup_le := fun ⟨c, _⟩ s hs => by simpa only [iSup_le_iff]
-  le_ωSup := fun ⟨c, _⟩ i => le_iSup_of_le i le_rfl
-
-variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
-
-lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuous (f i)) :
-    ωScottContinuous (⨆ i, f i) := by
-  refine ωScottContinuous.of_monotone_map_ωSup
-    ⟨Monotone.iSup fun i ↦ (hf i).monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_comm ι]
-
-lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
-    ωScottContinuous (sSup s) := by
-  rw [sSup_eq_iSup]; exact ωScottContinuous.iSup fun f ↦ ωScottContinuous.iSup <| hs f
-
-lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
-    ωScottContinuous (f ⊔ g) := by
-  rw [← sSup_pair]
-  apply ωScottContinuous.sSup
-  rintro f (rfl | rfl | _) <;> assumption
-
-lemma ωScottContinuous.top : ωScottContinuous (⊤ : α → β) :=
-  ωScottContinuous.of_monotone_map_ωSup
-    ⟨monotone_const, fun c ↦ eq_of_forall_ge_iff fun a ↦ by simp⟩
-
-lemma ωScottContinuous.bot : ωScottContinuous (⊥ : α → β) := by
-  rw [← sSup_empty]; exact ωScottContinuous.sSup (by simp)
-
-end CompleteLattice
-
-namespace CompleteLattice
-
-variable [OmegaCompletePartialOrder α] [CompleteLinearOrder β] {f g : α → β}
-
--- TODO Prove this result for `ScottContinuousOn` and deduce this as a special case
--- Also consider if it holds in greater generality (e.g. finite sets)
--- N.B. The Scott Topology coincides with the Upper Topology on a Complete Linear Order
--- `Topology.IsScott.scott_eq_upper_of_completeLinearOrder`
--- We have that the product topology coincides with the upper topology
--- https://github.com/leanprover-community/mathlib4/pull/12133
-lemma ωScottContinuous.inf (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
-    ωScottContinuous (f ⊓ g) := by
-  refine ωScottContinuous.of_monotone_map_ωSup
-    ⟨hf.monotone.inf hg.monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp only [Pi.inf_apply, hf.map_ωSup c, hg.map_ωSup c, inf_le_iff, ωSup_le_iff, Chain.coe_map,
-    Function.comp, OrderHom.coe_mk, ← forall_or_left, ← forall_or_right]
-  exact ⟨fun h _ ↦ h _ _, fun h i j ↦
-    (h (max j i)).imp (le_trans <| hf.monotone <| c.mono <| le_max_left _ _)
-      (le_trans <| hg.monotone <| c.mono <| le_max_right _ _)⟩
-
-end CompleteLattice
-
 namespace OmegaCompletePartialOrder
 variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ] [OmegaCompletePartialOrder δ]
@@ -552,7 +495,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
 
 instance : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h
@@ -599,7 +542,7 @@ protected theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f
 protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   f.monotone'
 
-@[mono]
+@[gcongr, mono]
 theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
@@ -637,7 +580,7 @@ lemma ωScottContinuous.bind {β γ} {f : α → Part β} {g : α → β → Par
 
 lemma ωScottContinuous.map {β γ} {f : β → γ} {g : α → Part β} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ f <$> g x := by
-  simpa only [map_eq_bind_pure_comp] using ωScottContinuous.bind hg ωScottContinuous.const
+  simpa only [map_eq_bind_pure_comp] using! ωScottContinuous.bind hg ωScottContinuous.const
 
 lemma ωScottContinuous.seq {β γ} {f : α → Part (β → γ)} {g : α → Part β} (hf : ωScottContinuous f)
     (hg : ωScottContinuous g) : ωScottContinuous fun x ↦ f x <*> g x := by
@@ -731,6 +674,7 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
   OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 @[fun_prop]
 lemma ωScottContinuous_apply
     {f : α → β →𝒄 γ} (hf : ωScottContinuous f) {g : α → β} (hg : ωScottContinuous g) :

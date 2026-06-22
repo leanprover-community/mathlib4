@@ -39,7 +39,7 @@ suppress_compilation
 
 open Bornology Metric
 open Filter hiding map_smul
-open scoped NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity ENNReal
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
@@ -79,7 +79,7 @@ theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f :
     by simp_all⟩
 
 variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
-{τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
+  {τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
 
 theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
     (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
@@ -95,8 +95,6 @@ theorem norm_image_of_norm_eq_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : �
     {x : E} (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
   rw [← mem_closure_zero_iff_norm, ← specializes_iff_mem_closure, ← map_zero f] at *
   exact hx.map hf
-
-@[deprecated (since := "2025-11-15")] alias norm_image_of_norm_zero := norm_image_of_norm_eq_zero
 
 section
 
@@ -321,6 +319,7 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
     (norm_add_le_of_le (f.le_opNorm x) (g.le_opNorm x)).trans_eq (add_mul _ _ _).symm
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
 theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
   le_antisymm norm_id_le <| by
     let ⟨x, hx⟩ := exists_norm_ne_zero E
@@ -364,7 +363,7 @@ private lemma uniformity_eq_seminorm :
     refine ⟨‖c‖, ContinuousLinearMap.hasBasis_nhds_zero.mem_iff.2
       ⟨(closedBall 0 1, closedBall 0 1), ?_⟩⟩
     suffices ∀ f : E →SL[σ₁₂] F, (∀ x, ‖x‖ ≤ 1 → ‖f x‖ ≤ 1) → ‖f‖ ≤ ‖c‖ by
-      simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, subset_def] using this
+      simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, subset_def] using! this
     intro f hf
     refine opNorm_le_of_shell (f := f) one_pos (norm_nonneg c) hc fun x hcx hx ↦ ?_
     exact (hf x hx.le).trans ((div_le_iff₀' <| one_pos.trans hc).1 hcx)
@@ -421,6 +420,18 @@ lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
   gcongr
   exact f.le_opNorm x
 
+/-- If one controls the enorm of every `f x`, then one controls the enorm of `f`. -/
+theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ) :
+    ‖f‖ₑ ≤ M := by
+  rcases eq_top_or_lt_top M with rfl | h'M
+  · simp
+  lift M to NNReal using h'M.ne
+  simp only [← ofReal_norm, ENNReal.ofReal_le_coe]
+  apply opNorm_le_bound _ (by positivity) (fun x ↦ ?_)
+  specialize hM x
+  simp only [← ofReal_norm, ← ENNReal.ofReal_coe_nnreal] at hM
+  rwa [← ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_le_ofReal_iff (by positivity)] at hM
+
 variable {f} in
 theorem homothety_norm [NontrivialTopology E] (f : E →SL[σ₁₂] F) {a : ℝ}
     (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
@@ -473,6 +484,10 @@ lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
   refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
   exact (L i).le_of_opNorm_le (hL i) _
 
+lemma norm_postcomp_le [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] [RingHomIsometric σ₂₃]
+    (L : F →SL[σ₂₃] G) : ‖L.postcomp (σ := σ₁₂) E‖ ≤ ‖L‖ :=
+  L.postcomp (σ := σ₁₂) E |>.opNorm_le_bound (by positivity) <| opNorm_comp_le L
+
 end ContinuousLinearMap
 
 namespace LinearMap
@@ -501,7 +516,6 @@ end LinearIsometry
 
 namespace Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_subtypeL_le (K : Submodule 𝕜 E) : ‖K.subtypeL‖ ≤ 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap_le
 

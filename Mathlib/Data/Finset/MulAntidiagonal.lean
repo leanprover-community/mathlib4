@@ -15,16 +15,17 @@ We construct the `Finset` of all pairs
 of an element in `s` and an element in `t` that multiply to `a`,
 given that `s` and `t` are well-ordered.
 
-The definitions are named `setMulAntidiagonal` / `setAddAntidiagonal` to distinguish them from
-the typeclass-based `HasMulAntidiagonal.mulAntidiagonal` / `HasAntidiagonal.antidiagonal`
-in `Mathlib.Algebra.Order.Antidiag.Prod`. -/
+The multiplicative definitions are named `setMulAntidiagonal` to distinguish them from the
+typeclass-based `HasMulAntidiagonal.mulAntidiagonal` planned in
+`Mathlib.Algebra.Order.Antidiag.Prod`. The additive declarations keep their existing
+`addAntidiagonal` names, since `HasAntidiagonal` exports `antidiagonal` and does not collide. -/
 
 @[expose] public section
 
 
 namespace Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*} {s t : Set α}
 
@@ -52,7 +53,7 @@ end Set
 
 namespace Finset
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
@@ -61,77 +62,47 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 /-- `Finset.setMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` that multiply to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/
-@[to_additive /-- `Finset.setAddAntidiagonal hs ht a` is the set of all pairs of an element in
-`s` and an element in `t` that add to `a`, but its construction requires proofs that `s` and `t` are
-well-ordered. -/]
+@[to_additive addAntidiagonal /-- `Finset.addAntidiagonal hs ht a` is the set of all pairs of an
+element in `s` and an element in `t` that add to `a`, but its construction requires proofs that `s`
+and `t` are well-ordered. -/]
 noncomputable def setMulAntidiagonal : Finset (α × α) :=
   (Set.MulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
-/-- Deprecated alias of `Finset.setMulAntidiagonal`. -/
-@[to_additive (attr := deprecated setAddAntidiagonal (since := "2026-04-02"))
-    /-- Deprecated alias of `Finset.setAddAntidiagonal`. -/,
-  deprecated setMulAntidiagonal (since := "2026-04-02")]
-noncomputable alias mulAntidiagonal := setMulAntidiagonal
-
 variable {hs ht a} {u : Set α} {hu : u.IsPWO} {x : α × α}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) mem_addAntidiagonal]
 theorem mem_setMulAntidiagonal :
     x ∈ setMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
   simp only [setMulAntidiagonal, Set.Finite.mem_toFinset, Set.mem_mulAntidiagonal]
 
-@[to_additive (attr := deprecated mem_setAddAntidiagonal (since := "2026-04-02")),
-  deprecated mem_setMulAntidiagonal (since := "2026-04-02")]
-alias mem_mulAntidiagonal := mem_setMulAntidiagonal
-
-@[to_additive]
+@[to_additive addAntidiagonal_mono_left]
 theorem setMulAntidiagonal_mono_left (h : u ⊆ s) :
     setMulAntidiagonal hu ht a ⊆ setMulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.mulAntidiagonal_mono_left h
 
-@[to_additive (attr := deprecated setAddAntidiagonal_mono_left (since := "2026-04-02")),
-  deprecated setMulAntidiagonal_mono_left (since := "2026-04-02")]
-alias mulAntidiagonal_mono_left := setMulAntidiagonal_mono_left
-
-@[to_additive]
+@[to_additive addAntidiagonal_mono_right]
 theorem setMulAntidiagonal_mono_right (h : u ⊆ t) :
     setMulAntidiagonal hs hu a ⊆ setMulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.mulAntidiagonal_mono_right h
 
-@[to_additive (attr := deprecated setAddAntidiagonal_mono_right (since := "2026-04-02")),
-  deprecated setMulAntidiagonal_mono_right (since := "2026-04-02")]
-alias mulAntidiagonal_mono_right := setMulAntidiagonal_mono_right
-
-@[to_additive]
+@[to_additive swap_mem_addAntidiagonal]
 theorem swap_mem_setMulAntidiagonal :
     x.swap ∈ Finset.setMulAntidiagonal hs ht a ↔ x ∈ Finset.setMulAntidiagonal ht hs a := by
   simp
 
-@[to_additive (attr := deprecated swap_mem_setAddAntidiagonal (since := "2026-04-02")),
-  deprecated swap_mem_setMulAntidiagonal (since := "2026-04-02")]
-alias swap_mem_mulAntidiagonal := swap_mem_setMulAntidiagonal
-
-@[to_additive]
+@[to_additive support_addAntidiagonal_subset_add]
 theorem support_setMulAntidiagonal_subset_mul :
     { a | (setMulAntidiagonal hs ht a).Nonempty } ⊆ s * t :=
   fun a ⟨b, hb⟩ => by
   rw [mem_setMulAntidiagonal] at hb
   exact ⟨b.1, hb.1, b.2, hb.2⟩
 
-@[to_additive (attr := deprecated support_setAddAntidiagonal_subset_add (since := "2026-04-02")),
-  deprecated support_setMulAntidiagonal_subset_mul (since := "2026-04-02")]
-alias support_mulAntidiagonal_subset_mul := support_setMulAntidiagonal_subset_mul
-
-@[to_additive]
+@[to_additive isPWO_support_addAntidiagonal]
 theorem isPWO_support_setMulAntidiagonal :
     { a | (setMulAntidiagonal hs ht a).Nonempty }.IsPWO :=
   (hs.mul ht).mono support_setMulAntidiagonal_subset_mul
 
-@[to_additive (attr := deprecated isPWO_support_setAddAntidiagonal (since := "2026-04-02")),
-  deprecated isPWO_support_setMulAntidiagonal (since := "2026-04-02")]
-alias isPWO_support_mulAntidiagonal := isPWO_support_setMulAntidiagonal
-
-@[to_additive]
+@[to_additive addAntidiagonal_min_add_min]
 theorem setMulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α]
     [IsOrderedCancelMonoid α]
     {s t : Set α} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
@@ -147,9 +118,5 @@ theorem setMulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α]
     exact ⟨rfl, mul_left_cancel hst⟩
   · rintro ⟨rfl, rfl⟩
     exact ⟨hs.min_mem _, ht.min_mem _, rfl⟩
-
-@[to_additive (attr := deprecated setAddAntidiagonal_min_add_min (since := "2026-04-02")),
-  deprecated setMulAntidiagonal_min_mul_min (since := "2026-04-02")]
-alias mulAntidiagonal_min_mul_min := setMulAntidiagonal_min_mul_min
 
 end Finset

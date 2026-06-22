@@ -38,13 +38,13 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_point_point`: Both sets are singletons. Strict separation.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {𝕜 E : Type*}
 
@@ -78,7 +78,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
   simp only [mul_one, smul_eq_mul]
   obtain h | h := le_or_gt y 0
   · exact h.trans (gauge_nonneg _)
-  · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]
+  · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, RingHom.id_apply, le_mul_iff_one_le_right h]
     exact
       one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
@@ -144,7 +144,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   rw [← interior_Ici]
   refine interior_maximal (image_subset_iff.2 hf₂) (f.isOpenMap_of_ne_zero ?_ _ ht₃)
   rintro rfl
-  simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
+  simp_rw [zero_apply] at hf₁ hf₂
   exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
 /-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a nonzero

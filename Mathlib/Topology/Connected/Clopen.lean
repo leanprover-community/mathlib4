@@ -159,7 +159,7 @@ lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
     (h_open : ∀ i, IsOpen (s i)) (h_Union : ⋃ i, s i = univ) :
     Subsingleton ι := by
   refine subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨?_, h_open i⟩)
-  rw [← isOpen_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  rw [← isOpen_compl_iff, compl_eq_univ_sdiff, ← h_Union, iUnion_sdiff]
   refine isOpen_iUnion (fun j ↦ ?_)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
@@ -171,7 +171,7 @@ lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
     (h_closed : ∀ i, IsClosed (s i)) (h_Union : ⋃ i, s i = univ) :
     Subsingleton ι := by
   refine subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨h_closed i, ?_⟩)
-  rw [← isClosed_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  rw [← isClosed_compl_iff, compl_eq_univ_sdiff, ← h_Union, iUnion_sdiff]
   refine isClosed_iUnion_of_finite (fun j ↦ ?_)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
@@ -210,12 +210,11 @@ lemma PreconnectedSpace.induction₂' [PreconnectedSpace α] (P : α → α → 
 /-- In a preconnected space, if a symmetric transitive relation `P x y` is true for `y` close
 enough to `x`, then it holds for all `x, y`. This is a version of the fact that, if an equivalence
 relation has open classes, then it has a single equivalence class. -/
-lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → Prop)
-    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y) (h' : IsTrans α P) (h'' : Symmetric P) (x y : α) :
-    P x y := by
+lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → Prop) [Std.Symm P]
+    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y) (h' : IsTrans α P) (x y : α) : P x y := by
   refine PreconnectedSpace.induction₂' P (fun z ↦ ?_) h' x y
   filter_upwards [h z] with a ha
-  exact ⟨ha, h'' ha⟩
+  exact ⟨ha, symm ha⟩
 
 /-- In a preconnected set, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
@@ -403,31 +402,31 @@ variable [TopologicalSpace β] {f : α → β}
 
 /-- The preimage of a connected component is preconnected if the function has connected fibers
 and a subset is closed iff the preimage is. -/
-theorem preimage_connectedComponent_connected
+theorem Topology.IsCoinducing.isConnected_preimage_of_isClosed
     (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
-    (hcl : Topology.IsCoinducing f) (t : β) :
-    IsConnected (f ⁻¹' connectedComponent t) := by
+    (hcl : IsCoinducing f) {t : Set β} (ht : IsClosed t) (ht' : IsConnected t) :
+    IsConnected (f ⁻¹' t) := by
   -- The following proof is essentially https://stacks.math.columbia.edu/tag/0377
   -- although the statement is slightly different
   have hf : Surjective f := Surjective.of_comp fun t : β => (connected_fibers t).1
-  refine ⟨Nonempty.preimage connectedComponent_nonempty hf, ?_⟩
-  have hT : IsClosed (f ⁻¹' connectedComponent t) :=
-    hcl.isClosed_preimage.mpr isClosed_connectedComponent
-  -- To show it's preconnected we decompose (f ⁻¹' connectedComponent t) as a subset of two
+  refine ⟨Nonempty.preimage ht'.nonempty hf, ?_⟩
+  have hT : IsClosed (f ⁻¹' t) :=
+    hcl.isClosed_preimage.mpr ht
+  -- To show it's preconnected we decompose (f ⁻¹' t) as a subset of two
   -- closed disjoint sets in α. We want to show that it's a subset of either.
   rw [isPreconnected_iff_subset_of_fully_disjoint_closed hT]
   intro u v hu hv huv uv_disj
-  -- To do this we decompose connectedComponent t into T₁ and T₂
-  -- we will show that connectedComponent t is a subset of either and hence
-  -- (f ⁻¹' connectedComponent t) is a subset of u or v
-  let T₁ := { t' ∈ connectedComponent t | f ⁻¹' {t'} ⊆ u }
-  let T₂ := { t' ∈ connectedComponent t | f ⁻¹' {t'} ⊆ v }
-  have fiber_decomp : ∀ t' ∈ connectedComponent t, f ⁻¹' {t'} ⊆ u ∨ f ⁻¹' {t'} ⊆ v := by
+  -- To do this we decompose t into T₁ and T₂
+  -- we will show that t is a subset of either and hence
+  -- (f ⁻¹' t) is a subset of u or v
+  let T₁ := { t' ∈ t | f ⁻¹' {t'} ⊆ u }
+  let T₂ := { t' ∈ t | f ⁻¹' {t'} ⊆ v }
+  have fiber_decomp : ∀ t' ∈ t, f ⁻¹' {t'} ⊆ u ∨ f ⁻¹' {t'} ⊆ v := by
     intro t' ht'
     apply isPreconnected_iff_subset_of_disjoint_closed.1 (connected_fibers t').2 u v hu hv
     · exact Subset.trans (preimage_mono (singleton_subset_iff.2 ht')) huv
     rw [uv_disj.inter_eq, inter_empty]
-  have T₁_u : f ⁻¹' T₁ = f ⁻¹' connectedComponent t ∩ u := by
+  have T₁_u : f ⁻¹' T₁ = f ⁻¹' t ∩ u := by
     apply eq_of_subset_of_subset
     · rw [← biUnion_preimage_singleton]
       refine iUnion₂_subset fun t' ht' => subset_inter ?_ ht'.2
@@ -439,7 +438,7 @@ theorem preimage_connectedComponent_connected
     refine (fiber_decomp (f a) (mem_preimage.1 hat)).resolve_right fun h => ?_
     exact uv_disj.subset_compl_right hau (h rfl)
   -- This proof is exactly the same as the above (modulo some symmetry)
-  have T₂_v : f ⁻¹' T₂ = f ⁻¹' connectedComponent t ∩ v := by
+  have T₂_v : f ⁻¹' T₂ = f ⁻¹' t ∩ v := by
     apply eq_of_subset_of_subset
     · rw [← biUnion_preimage_singleton]
       refine iUnion₂_subset fun t' ht' => subset_inter ?_ ht'.2
@@ -450,10 +449,10 @@ theorem preimage_connectedComponent_connected
     · exact mem_preimage.1 hat
     · refine (fiber_decomp (f a) (mem_preimage.1 hat)).resolve_left fun h => ?_
       exact uv_disj.subset_compl_left hav (h rfl)
-  -- Now we show T₁, T₂ are closed, cover connectedComponent t and are disjoint.
+  -- Now we show T₁, T₂ are closed, cover t and are disjoint.
   have hT₁ : IsClosed T₁ := hcl.isClosed_preimage.mp (T₁_u.symm ▸ IsClosed.inter hT hu)
   have hT₂ : IsClosed T₂ := hcl.isClosed_preimage.mp (T₂_v.symm ▸ IsClosed.inter hT hv)
-  have T_decomp : connectedComponent t ⊆ T₁ ∪ T₂ := fun t' ht' => by
+  have T_decomp : t ⊆ T₁ ∪ T₂ := fun t' ht' => by
     rw [mem_union t' T₁ T₂]
     rcases fiber_decomp t' ht' with htu | htv
     · left; exact ⟨ht', htu⟩
@@ -462,26 +461,35 @@ theorem preimage_connectedComponent_connected
     refine Disjoint.of_preimage hf ?_
     rw [T₁_u, T₂_v, disjoint_iff_inter_eq_empty, ← inter_inter_distrib_left, uv_disj.inter_eq,
       inter_empty]
-  -- Now we do cases on whether (connectedComponent t) is a subset of T₁ or T₂ to show
+  -- Now we do cases on whether t is a subset of T₁ or T₂ to show
   -- that the preimage is a subset of u or v.
-  rcases (isPreconnected_iff_subset_of_fully_disjoint_closed isClosed_connectedComponent).1
-    isPreconnected_connectedComponent T₁ T₂ hT₁ hT₂ T_decomp T_disjoint with h | h
+  rcases (isPreconnected_iff_subset_of_fully_disjoint_closed ht).1
+    ht'.isPreconnected T₁ T₂ hT₁ hT₂ T_decomp T_disjoint with h | h
   · left
     rw [Subset.antisymm_iff] at T₁_u
-    suffices f ⁻¹' connectedComponent t ⊆ f ⁻¹' T₁
+    suffices f ⁻¹' t ⊆ f ⁻¹' T₁
       from (this.trans T₁_u.1).trans inter_subset_right
     exact preimage_mono h
   · right
     rw [Subset.antisymm_iff] at T₂_v
-    suffices f ⁻¹' connectedComponent t ⊆ f ⁻¹' T₂
+    suffices f ⁻¹' t ⊆ f ⁻¹' T₂
       from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
+
+@[deprecated Topology.IsCoinducing.isConnected_preimage_of_isClosed (since := "2026-04-01")]
+theorem preimage_connectedComponent_connected (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
+    (hcl : IsCoinducing f) (t : β) :
+    IsConnected (f ⁻¹' connectedComponent t) := by
+  apply hcl.isConnected_preimage_of_isClosed
+  · exact isClosed_connectedComponent
+  · exact isConnected_connectedComponent
+  · exact connected_fibers
 
 theorem Topology.IsCoinducing.preimage_connectedComponent (hf : IsCoinducing f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f ⁻¹' connectedComponent (f a) = connectedComponent a :=
-  ((preimage_connectedComponent_connected h_fibers hf
-      _).subset_connectedComponent mem_connectedComponent).antisymm
+  ((hf.isConnected_preimage_of_isClosed h_fibers isClosed_connectedComponent
+    isConnected_connectedComponent).subset_connectedComponent mem_connectedComponent).antisymm
     (hf.continuous.mapsTo_connectedComponent a)
 
 lemma Topology.IsCoinducing.image_connectedComponent {f : α → β} (hf : IsCoinducing f)
@@ -644,7 +652,7 @@ lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : �
     · simpa [Fin.forall_iff_succ, *] using fun x ↦ h₂ (Equiv.swap 0 i (.succ x))
     · have h₃' (j : _) : Disjoint (U j) a ∧ Disjoint (U j) b := by
         simpa [onFun] using h₃ ((Equiv.swap 0 i).injective.ne (Fin.succ_ne_zero j))
-      simpa [Pairwise, Fin.forall_iff_succ, onFun, hab,  disjoint_comm (a := a),
+      simpa [Pairwise, Fin.forall_iff_succ, onFun, hab, disjoint_comm (a := a),
         disjoint_comm (a := b), h₃'] using
         h₃.comp_of_injective ((Equiv.swap 0 i).injective.comp (Fin.succ_injective _))
     · simpa [← union_assoc, (Equiv.surjective _).iUnion_comp] using h₄

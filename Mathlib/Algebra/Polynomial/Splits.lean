@@ -85,21 +85,26 @@ protected theorem Splits.map {f : R[X]} (hf : Splits f) {S : Type*} [Semiring S]
     Splits (map i f) := by
   induction hf using Submonoid.closure_induction <;> aesop
 
-theorem splits_of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
+theorem Splits.of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
     Splits f := by
   rw [← (natDegree_eq_zero.mp hf).choose_spec]; aesop
 
-theorem splits_of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
+@[deprecated (since := "2026-06-06")]
+alias splits_of_natDegree_eq_zero := Splits.of_natDegree_eq_zero
+
+theorem Splits.of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
     Splits f :=
-  splits_of_natDegree_eq_zero (natDegree_eq_zero_iff_degree_le_zero.mpr hf)
+  .of_natDegree_eq_zero (natDegree_eq_zero_iff_degree_le_zero.mpr hf)
+
+@[deprecated (since := "2026-06-06")] alias splits_of_degree_le_zero := Splits.of_degree_le_zero
 
 theorem _root_.IsUnit.splits [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Splits f :=
-  splits_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
+  .of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
 
 @[deprecated (since := "2025-11-27")]
 alias splits_of_isUnit := IsUnit.splits
 
-theorem splits_of_natDegree_le_one_of_invertible {f : R[X]}
+theorem Splits.of_natDegree_le_one_of_invertible {f : R[X]}
     (hf : f.natDegree ≤ 1) (h : Invertible f.leadingCoeff) : f.Splits := by
   obtain ⟨a, b, rfl⟩ := exists_eq_X_add_C_of_natDegree_le_one hf
   rcases eq_or_ne a 0 with rfl | ha
@@ -108,17 +113,29 @@ theorem splits_of_natDegree_le_one_of_invertible {f : R[X]}
     rw [← mul_invOf_cancel_left a b, C_mul, ← mul_add]
     exact (Splits.C a).mul (Splits.X_add_C _)
 
-theorem splits_of_degree_le_one_of_invertible {f : R[X]}
+@[deprecated (since := "2026-06-06")]
+alias splits_of_natDegree_le_one_of_invertible := Splits.of_natDegree_le_one_of_invertible
+
+theorem Splits.of_degree_le_one_of_invertible {f : R[X]}
     (hf : f.degree ≤ 1) (h : Invertible f.leadingCoeff) : f.Splits :=
-  splits_of_natDegree_le_one_of_invertible (natDegree_le_of_degree_le hf) h
+  .of_natDegree_le_one_of_invertible (natDegree_le_of_degree_le hf) h
 
-theorem splits_of_natDegree_le_one_of_monic {f : R[X]} (hf : f.natDegree ≤ 1) (h : Monic f) :
-    f.Splits :=
-  splits_of_natDegree_le_one_of_invertible hf (h.leadingCoeff ▸ invertibleOne)
+@[deprecated (since := "2026-06-06")]
+alias splits_of_degree_le_one_of_invertible := Splits.of_degree_le_one_of_invertible
 
-theorem splits_of_degree_le_one_of_monic {f : R[X]} (hf : f.degree ≤ 1) (h : Monic f) :
+theorem Splits.of_natDegree_le_one_of_monic {f : R[X]} (hf : f.natDegree ≤ 1) (h : Monic f) :
     f.Splits :=
-  splits_of_natDegree_le_one_of_monic (natDegree_le_of_degree_le hf) h
+  .of_natDegree_le_one_of_invertible hf (h.leadingCoeff ▸ invertibleOne)
+
+@[deprecated (since := "2026-06-06")]
+alias splits_of_natDegree_le_one_of_monic := Splits.of_natDegree_le_one_of_monic
+
+theorem Splits.of_degree_le_one_of_monic {f : R[X]} (hf : f.degree ≤ 1) (h : Monic f) :
+    f.Splits :=
+  .of_natDegree_le_one_of_monic (natDegree_le_of_degree_le hf) h
+
+@[deprecated (since := "2026-06-06")]
+alias splits_of_degree_le_one_of_monic := Splits.of_degree_le_one_of_monic
 
 end Semiring
 
@@ -188,7 +205,7 @@ theorem Splits.comp_of_natDegree_le_one_of_invertible {f g : R[X]} (hf : f.Split
   refine (Splits.C _).mul (multisetProd ?_)
   simp only [Multiset.mem_map]
   rintro - ⟨-, ⟨a, -, rfl⟩, rfl⟩
-  apply splits_of_natDegree_le_one_of_invertible (by simpa)
+  apply of_natDegree_le_one_of_invertible (by simpa)
   rw [leadingCoeff, hg] at h
   simpa [leadingCoeff, hg]
 
@@ -226,7 +243,7 @@ variable [Ring R]
 
 @[simp, aesop safe apply]
 theorem Splits.X_sub_C (a : R) : Splits (X - C a) := by
-  simpa using Splits.X_add_C (-a)
+  simpa using! Splits.X_add_C (-a)
 
 @[aesop safe apply]
 protected theorem Splits.neg {f : R[X]} (hf : Splits f) : Splits (-f) := by
@@ -304,12 +321,6 @@ theorem Splits.eval_eq_prod_roots_of_monic (hf : Splits f) (hm : Monic f) (x : R
   simp [hf.eval_eq_prod_roots, hm]
 
 omit [IsDomain R] in
-theorem Splits.aeval_eq_prod_aroots [IsSimpleRing R]
-    (hf : (f.map (algebraMap R A)).Splits) (x : A) :
-    f.aeval x = algebraMap R A f.leadingCoeff * ((f.aroots A).map (x - ·)).prod := by
-  simp [← eval_map_algebraMap, hf.eval_eq_prod_roots]
-
-omit [IsDomain R] in
 theorem Splits.aeval_eq_prod_aroots_of_monic
     (hf : (f.map (algebraMap R A)).Splits) (hm : Monic f) (x : A) :
     f.aeval x = ((f.aroots A).map (x - ·)).prod := by
@@ -337,11 +348,6 @@ theorem Splits.of_splits_map_of_injective {S : Type*} [CommRing S] [IsDomain S] 
   refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i hi ?_⟩
   conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
-
-omit [IsDomain R] in
-theorem Splits.of_splits_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R] (i : R →+* S)
-    (hf : Splits (f.map i)) (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f :=
-  hf.of_splits_map_of_injective i.injective hi
 
 theorem Splits.mem_lift_of_roots_mem_range (hf : f.Splits) (hm : f.Monic)
     {S : Type*} [Ring S] (i : S →+* R) (hr : ∀ a ∈ f.roots, a ∈ i.range) :
@@ -387,34 +393,6 @@ theorem Splits.roots_map_of_injective {S : Type*} [CommRing S] [IsDomain S]
     (hf : f.Splits) {i : R →+* S} (hi : Function.Injective i) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree hi hf.natDegree_eq_card_roots.symm).symm
 
-theorem Splits.roots_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
-    (hf : f.Splits) (i : R →+* S) : (f.map i).roots = f.roots.map i :=
-  hf.roots_map_of_injective i.injective
-
-@[deprecated (since := "2025-11-27")]
-alias Splits.map_roots := Splits.roots_map
-
-theorem Splits.mem_range_of_isRoot {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
-    (hf : f.Splits) (hf0 : f ≠ 0) {i : R →+* S} {x : S} (hx : (f.map i).IsRoot x) :
-    x ∈ i.range := by
-  rw [← mem_roots (map_ne_zero hf0), hf.roots_map, Multiset.mem_map] at hx
-  obtain ⟨x, -, hx⟩ := hx
-  exact ⟨x, hx⟩
-
-omit [IsDomain R] in
-theorem Splits.image_rootSet [IsSimpleRing A] (hf : (f.map (algebraMap R A)).Splits)
-    (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
-  classical
-  rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
-    ← hf.roots_map, map_map, g.comp_algebraMap, ← rootSet]
-
-omit [IsDomain R] in
-theorem Splits.adjoin_rootSet_eq_range [IsSimpleRing A]
-    (hf : (f.map (algebraMap R A)).Splits) (g : A →ₐ[R] B) :
-    Algebra.adjoin R (f.rootSet B) = g.range ↔ Algebra.adjoin R (f.rootSet A) = ⊤ := by
-  rw [← hf.image_rootSet g, Algebra.adjoin_image, ← Algebra.map_top]
-  exact (Subalgebra.map_injective g.injective).eq_iff
-
 omit [IsDomain R] in
 theorem Splits.image_rootSet_of_map_ne_zero (hf : (f.map (algebraMap R A)).Splits)
     (φ : A →ₐ[R] B) (hφ : f.map (algebraMap R B) ≠ 0) : φ '' f.rootSet A = f.rootSet B := by
@@ -458,7 +436,7 @@ theorem splits_X_sub_C_mul_iff {a : R} : Splits ((X - C a) * f) ↔ Splits f := 
   rw [mul_left_cancel₀ (X_sub_C_ne_zero _) this]
   aesop
 
-theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
+theorem splits_mul (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     Splits (f * g) ↔ Splits f ∧ Splits g := by
   refine ⟨fun h ↦ ?_, and_imp.mpr .mul⟩
   generalize hp : f * g = p at *
@@ -466,7 +444,7 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
   induction n generalizing p f g with
   | zero =>
     rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero_iff] at hn
-    exact ⟨splits_of_natDegree_eq_zero hn.1, splits_of_natDegree_eq_zero hn.2⟩
+    exact ⟨.of_natDegree_eq_zero hn.1, .of_natDegree_eq_zero hn.2⟩
   | succ n ih =>
     obtain ⟨a, ha⟩ := Splits.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by simp)
     have := dvd_iff_isRoot.mpr ha
@@ -480,9 +458,27 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     have := ih (by aesop) hg₀ (f * g) rfl (splits_X_sub_C_mul_iff.mp h) hn
     aesop
 
+@[deprecated (since := "2026-06-08")] alias splits_mul_iff := splits_mul
+
+lemma splits_mul' : (f * g).Splits ↔ (f.Splits ∨ g = 0) ∧ (g.Splits ∨ f = 0) where
+  mp hpq := by grind [splits_mul]
+  mpr := by rintro ⟨hp | rfl, hq | rfl⟩ <;> simp [*]
+
+lemma splits_mul_iff_left (hg₀ : g ≠ 0) (hg : g.Splits) : (f * g).Splits ↔ f.Splits := by
+  simp [splits_mul', *]
+
+lemma splits_mul_iff_right (hf₀ : f ≠ 0) (hg : f.Splits) : (f * g).Splits ↔ g.Splits := by
+  simp [splits_mul', *]
+
+@[simp] lemma splits_X_mul : (X * f).Splits ↔ f.Splits := by simp [splits_mul']
+@[simp] lemma splits_mul_X : (f * X).Splits ↔ f.Splits := by simp [mul_comm f]
+
+alias ⟨Splits.of_X_mul, _⟩ := splits_X_mul
+alias ⟨Splits.of_mul_X, _⟩ := splits_mul_X
+
 theorem Splits.of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits f := by
   obtain ⟨g, rfl⟩ := hfg
-  exact ((splits_mul_iff (by simp_all) (by simp_all)).mp hg).1
+  exact ((splits_mul (by simp_all) (by simp_all)).mp hg).1
 
 @[deprecated (since := "2025-11-27")]
 alias Splits.splits_of_dvd := Splits.of_dvd
@@ -541,6 +537,59 @@ theorem Splits.of_degree_eq_one {f : R[X]} (hf : degree f = 1) : Splits f :=
 end DivisionSemiring
 
 section Field
+
+section
+
+variable {S : Type*} [Field R] [CommRing S] [IsDomain S]
+
+theorem Splits.of_splits_map {f : R[X]} (i : R →+* S)
+    (hf : Splits (f.map i)) (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f :=
+  hf.of_splits_map_of_injective i.injective hi
+
+theorem Splits.roots_map {f : R[X]} (hf : f.Splits) (i : R →+* S) :
+    (f.map i).roots = f.roots.map i :=
+  hf.roots_map_of_injective i.injective
+
+@[deprecated (since := "2025-11-27")]
+alias Splits.map_roots := Splits.roots_map
+
+theorem Splits.mem_range_of_isRoot {f : R[X]}
+    (hf : f.Splits) (hf0 : f ≠ 0) {i : R →+* S} {x : S} (hx : (f.map i).IsRoot x) :
+    x ∈ i.range := by
+  rw [← mem_roots (map_ne_zero hf0), hf.roots_map, Multiset.mem_map] at hx
+  obtain ⟨x, -, hx⟩ := hx
+  exact ⟨x, hx⟩
+
+theorem Splits.aeval_eq_prod_aroots [Algebra R S]
+    {f : R[X]} (hf : (f.map (algebraMap R S)).Splits) (x : S) :
+    f.aeval x = algebraMap R S f.leadingCoeff * ((f.aroots S).map (x - ·)).prod := by
+  simp [← eval_map_algebraMap, hf.eval_eq_prod_roots]
+
+end
+
+section
+
+variable {A B : Type*} [CommRing R] [Field A] [Algebra R A]
+  [CommRing B] [IsDomain B] [Algebra R B] {f : R[X]}
+
+theorem Splits.map_aroots_algebraMap [Algebra A B] [IsScalarTower R A B]
+    (hf : (f.map (algebraMap R A)).Splits) :
+    (f.aroots A).map (algebraMap A B) = f.aroots B := by
+  rw [← aroots_map B A, aroots, aroots, hf.roots_map]
+
+theorem Splits.image_rootSet (hf : (f.map (algebraMap R A)).Splits)
+    (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
+  classical
+  rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
+    ← hf.roots_map, map_map, g.comp_algebraMap, ← rootSet]
+
+theorem Splits.adjoin_rootSet_eq_range
+    (hf : (f.map (algebraMap R A)).Splits) (g : A →ₐ[R] B) :
+    Algebra.adjoin R (f.rootSet B) = g.range ↔ Algebra.adjoin R (f.rootSet A) = ⊤ := by
+  rw [← hf.image_rootSet g, Algebra.adjoin_image, ← Algebra.map_top]
+  exact (Subalgebra.map_injective g.injective).eq_iff
+
+end
 
 variable [Field R] {f g : R[X]}
 
@@ -611,7 +660,7 @@ theorem Splits.of_natDegree_eq_two {x : R} (h₁ : f.natDegree = 2) (h₂ : f.ev
     Splits f := by
   have h : (f /ₘ (X - C x)).natDegree = 1 := by
     rw [natDegree_divByMonic f (monic_X_sub_C x), h₁, natDegree_X_sub_C]
-  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂, splits_mul_iff (X_sub_C_ne_zero x) (by aesop)]
+  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂, splits_mul (X_sub_C_ne_zero x) (by aesop)]
   exact ⟨Splits.X_sub_C x, Splits.of_natDegree_eq_one h⟩
 
 theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x = 0) : Splits f :=
@@ -676,10 +725,7 @@ alias splits_of_natDegree_le_one := Splits.of_natDegree_le_one
 alias splits_of_natDegree_eq_one := Splits.of_natDegree_eq_one
 
 @[deprecated (since := "2025-11-25")]
-alias splits_mul := Splits.mul
-
-@[deprecated (since := "2025-11-25")]
-alias splits_of_splits_mul' := splits_mul_iff
+alias splits_of_splits_mul' := splits_mul
 
 @[deprecated "Use `Polynomial.map_map` instead." (since := "2025-11-24")]
 theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
@@ -748,7 +794,7 @@ alias splits_iff := splits_iff_splits
 alias Splits.def := splits_iff_splits
 
 @[deprecated (since := "2025-11-25")]
-alias splits_of_splits_mul := splits_mul_iff
+alias splits_of_splits_mul := splits_mul
 
 @[deprecated (since := "2025-11-25")]
 alias splits_of_splits_of_dvd := Splits.of_dvd
@@ -893,12 +939,6 @@ alias nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits :=
 
 @[deprecated (since := "2025-12-12")]
 alias nextCoeff_eq_neg_sum_roots_of_monic_of_splits := Splits.nextCoeff_eq_neg_sum_roots_of_monic
-
-@[deprecated (since := "2025-10-08")]
-alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_splits
-
-@[deprecated (since := "2025-10-08")]
-alias sum_roots_eq_nextCoeff_of_monic_of_split := nextCoeff_eq_neg_sum_roots_of_monic_of_splits
 
 end Splits
 

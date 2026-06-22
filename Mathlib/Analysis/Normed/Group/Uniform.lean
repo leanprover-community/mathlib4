@@ -17,7 +17,7 @@ This file proves lipschitzness of normed group operations and shows that normed 
 groups.
 -/
 
-@[expose] public section
+public section
 
 variable {𝓕 E F : Type*}
 
@@ -44,6 +44,10 @@ theorem norm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 
 theorem nnnorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map' f x
+
+@[to_additive (attr := simp) enorm_map]
+lemma enorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+    ‖f x‖ₑ = ‖x‖ₑ := by simp [enorm]
 
 @[to_additive (attr := simp)]
 theorem dist_self_mul_right (a b : E) : dist b (b * a) = ‖a‖ := by
@@ -151,7 +155,7 @@ theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : Antilips
 theorem antilipschitzWith_iff_exists_mul_le_norm' [MonoidHomClass 𝓕 E F] {f : 𝓕} :
     (∃ K, AntilipschitzWith K f) ↔ ∃ c > 0, ∀ x, c * ‖x‖ ≤ ‖f x‖ := by
   refine ⟨fun ⟨K, hK⟩ ↦ ⟨(K + 1)⁻¹, by positivity, fun x ↦ ?_⟩, fun ⟨c, hc0, hc⟩ ↦
-    ⟨⟨c⁻¹, by positivity⟩, MonoidHomClass.antilipschitz_of_bound f fun x ↦ ?_⟩⟩
+    ⟨.mk c⁻¹ (by positivity), MonoidHomClass.antilipschitz_of_bound f fun x ↦ ?_⟩⟩
   · grw [hK.le_mul_norm' (map_one f), ← mul_assoc]
     exact mul_le_of_le_one_left (norm_nonneg' (f x)) (by simp [field])
   · grw [← hc, NNReal.coe_mk, inv_mul_cancel_left₀ hc0.ne']
@@ -321,22 +325,22 @@ lemma LocallyLipschitz.mul (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
 @[to_additive]
 lemma LipschitzOnWith.div (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg g s) :
     LipschitzOnWith (Kf + Kg) (fun x ↦ f x / g x) s := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 theorem LipschitzWith.div (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (Kf + Kg) fun x => f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 lemma LocallyLipschitzOn.div (hf : LocallyLipschitzOn s f) (hg : LocallyLipschitzOn s g) :
     LocallyLipschitzOn s fun x ↦ f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 lemma LocallyLipschitz.div (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
     LocallyLipschitz fun x ↦ f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 namespace AntilipschitzWith
 
@@ -468,3 +472,20 @@ theorem LipschitzWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} {a b : E} {r
   (h.norm_div_le _ _).trans <| by gcongr
 
 end SeminormedCommGroup
+
+namespace Real
+open Topology
+
+theorem isometry_intCast : Isometry ((↑) : ℤ → ℝ) :=
+  Isometry.of_dist_eq <| by tauto
+
+theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
+  isometry_intCast.isClosedEmbedding
+
+lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℝ)) :=
+  isClosedEmbedding_intCast.isClosed_range
+
+lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℝ))ᶜ :=
+  Real.isClosed_range_intCast.isOpen_compl
+
+end Real

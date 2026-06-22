@@ -60,13 +60,13 @@ noncomputable section
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : ℕ∞ω}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 section
 
 variable [PseudoEMetricSpace M] [ChartedSpace H M]
-  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)]
 
 variable (I M) in
 /-- Consider a manifold in which the tangent spaces are already endowed with an inner product, and
@@ -101,7 +101,7 @@ variable (F) in
 /-- The standard Riemannian metric on a vector space with an inner product, given by this inner
 product on each tangent space. -/
 noncomputable def riemannianMetricVectorSpace :
-    ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) where
+    ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace% x) where
   inner x := (innerSL ℝ (E := F) : F →L[ℝ] F →L[ℝ] ℝ)
   symm x v w := real_inner_comm _ _
   pos x v hv := real_inner_self_pos.2 hv
@@ -119,24 +119,23 @@ noncomputable def riemannianMetricVectorSpace :
   contMDiff := by
     intro x
     rw [contMDiffAt_section]
-    convert contMDiffAt_const (c := innerSL ℝ)
+    convert! contMDiffAt_const (c := innerSL ℝ)
     ext v w
-    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-      Trivialization.linearMapAt_apply, TangentSpace]
+    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates, TangentSpace]
 
-noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
+noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace% x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
 set_option backward.isDefEq.respectTransparency false in
-lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
+lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖ = ‖letI V : F := v; V‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
 
-lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
+lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖₊ = ‖letI V : F := v; V‖₊ := by
   simp [nnnorm, norm_tangentSpace_vectorSpace]
 
-lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
+lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖ₑ = ‖letI V : F := v; V‖ₑ := by
   simp [enorm, nnnorm_tangentSpace_vectorSpace]
 
@@ -211,8 +210,8 @@ the image of the neighborhood in the extended chart.
 open Manifold Metric
 open scoped NNReal
 
-variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
-  [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
+variable [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)]
+  [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace% x)]
 
 /-- Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
 as in the vector space.
@@ -221,7 +220,7 @@ Should not be a global instance, as it does not coincide definitionally with the
 structure for inner product spaces, but can be activated locally. -/
 @[instance_reducible]
 def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
-    NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
+    NormedAddCommGroup (TangentSpace% x) :=
   inferInstanceAs (NormedAddCommGroup E)
 
 attribute [local instance] normedAddCommGroupTangentSpaceVectorSpace
@@ -232,22 +231,24 @@ as in the vector space.
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
 @[instance_reducible]
-def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) x) :=
+def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace% x) :=
   inferInstanceAs (NormedSpace ℝ E)
 
 attribute [local instance] normedSpaceTangentSpaceVectorSpace
 
 variable (I)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ < C := by
-  rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
+  rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace% x) x
     with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
   have hx : (chartAt H x).source ∈ 𝓝 x := chart_source_mem_nhds H x
   filter_upwards [hC, hx] with y hy h'y
   rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ₑ < C := by
   rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
@@ -258,9 +259,10 @@ lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
   simp only [enorm, nnnorm]
   exact_mod_cast hy
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)‖ < C := by
-  rcases eventually_norm_symmL_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
+  rcases eventually_norm_symmL_trivializationAt_lt E (fun (x : M) ↦ TangentSpace% x) x
     with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
   have hx : (chartAt H x).source ∈ 𝓝 x := chart_source_mem_nhds H x
@@ -268,8 +270,9 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
   rw [TangentBundle.symmL_trivializationAt h'y] at hy
   have A : (extChartAt I x).symm (extChartAt I x y) = y :=
     (extChartAt I x).left_inv (by simpa using h'y)
-  convert hy using 3 <;> congr
+  convert! hy using 3 <;> congr
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
     ‖mfderiv[range I] (extChartAt I x).symm y‖ < C := by
@@ -282,8 +285,9 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
   simp only [preimage_setOf_eq, mem_setOf_eq] at hy
-  convert hy
+  convert! hy
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
     ‖mfderiv[range I] (extChartAt I x).symm y‖ₑ < C := by
@@ -295,6 +299,7 @@ lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
   simp only [enorm, nnnorm]
   exact_mod_cast hy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Around any point `x`, the Riemannian distance between two points is controlled by the distance
 in the extended chart. In other words, the extended chart is locally Lipschitz. -/
 lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
@@ -379,6 +384,7 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
 lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
@@ -485,9 +491,9 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
     apply hr
     rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
-    convert this
+    convert! this
     simp [γ', hγx]
-  convert mem_preimage.1 this
+  convert! mem_preimage.1 this
   simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
 

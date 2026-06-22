@@ -38,7 +38,7 @@ number field, ring of integers
 
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/
-@[stacks 09GA]
+@[stacks 09GA, wikidata Q616608]
 class NumberField (K : Type*) [Field K] : Prop where
   [to_charZero : CharZero K]
   [to_finiteDimensional : FiniteDimensional ℚ K]
@@ -46,11 +46,6 @@ class NumberField (K : Type*) [Field K] : Prop where
 open Function Module
 
 open scoped nonZeroDivisors
-
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ := fun h =>
-  Int.not_even_one <|
-    (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
 
 namespace NumberField
 
@@ -90,7 +85,7 @@ theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
   letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
   {
     to_charZero := inferInstance
-    to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
+    to_finiteDimensional := (SemilinearEquivClass.semilinearEquiv e : K ≃ₗ[ℚ] L).finiteDimensional
   }
 
 /-- The ring of integers (or number ring) corresponding to a number field
@@ -222,13 +217,14 @@ namespace RingOfIntegers
 def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
   toRingHom := mapRingHom f
-  commutes' x := SetCoe.ext (AlgHomClass.commutes ((f : K →ₐ[k] L).restrictScalars (𝓞 k)) x)
+  commutes' x := SetCoe.ext (AlgHomClass.commutes
+    ((AlgHomClass.toAlgHom f).restrictScalars (𝓞 k)) x)
 
 /-- The isomorphism of algebras `(𝓞 K) ≃ₐ[𝓞 k] (𝓞 L)` given by restricting
   an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
-  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (e : K ≃ₐ[k] L).symm)
+  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (AlgEquivClass.toAlgEquiv e : K ≃ₐ[k] L).symm)
     (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
       (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
 
@@ -445,6 +441,6 @@ namespace AdjoinRoot
 is a number field. -/
 instance {f : Polynomial ℚ} [hf : Fact (Irreducible f)] : NumberField (AdjoinRoot f) where
   to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finite
+  to_finiteDimensional := by convert! (AdjoinRoot.powerBasis hf.out.ne_zero).finite
 
 end AdjoinRoot

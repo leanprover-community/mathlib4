@@ -82,7 +82,7 @@ theorem logDeriv_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'} {
     · exact hf.1
     · simpa [Finset.prod_eq_zero_iff] using hf.2
     · exact hd.1
-    · exact .fun_finset_prod hd.2
+    · exact .fun_finsetProd hd.2
 
 lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℤ) :
     logDeriv (f · ^ n) x = n * logDeriv f x := by
@@ -150,6 +150,6 @@ theorem AnalyticAt.tendsto_mul_logDeriv_simple_zero [CompleteSpace 𝕜]
       (𝓝[≠] x) (𝓝 1) := by
   have h_slope := hasDerivAt_iff_tendsto_slope.mp hf.differentiableAt.hasDerivAt
   rw [← div_self hf']
-  convert hf.deriv.continuousAt.tendsto.mono_left nhdsWithin_le_nhds |>.div h_slope hf' using 2
+  convert hf.deriv.continuousAt.tendsto.mono_left nhdsWithin_le_nhds |>.div h_slope hf'
   simp [logDeriv, slope, hfx]
   field

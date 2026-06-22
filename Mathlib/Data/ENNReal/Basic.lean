@@ -99,7 +99,6 @@ variable {α : Type*}
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0
-  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
 
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
@@ -110,6 +109,21 @@ scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
 scoped[ENNReal] notation3 "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
+
+/-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
+@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
+
+instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
+
+/- Declare these instances by hand for good defeqs -/
+instance : Zero ℝ≥0∞ := ⟨ofNNReal 0⟩
+instance : One ℝ≥0∞ := ⟨ofNNReal 1⟩
+instance : Bot ℝ≥0∞ := ⟨0⟩
+
+example : (0 : ℝ≥0∞) = ⊥ := by with_reducible_and_instances rfl
+
+deriving instance Top, LE, PartialOrder, Add, AddCommMonoidWithOne, SemilatticeSup, DistribLattice,
+  Nontrivial for ENNReal
 
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
 
@@ -125,9 +139,6 @@ instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
 noncomputable instance : CommSemiring ℝ≥0∞ :=
   inferInstanceAs (CommSemiring (WithTop ℝ≥0))
-
-instance : PartialOrder ℝ≥0∞ :=
-  inferInstanceAs (PartialOrder (WithTop ℝ≥0))
 
 instance : IsOrderedRing ℝ≥0∞ :=
   inferInstanceAs (IsOrderedRing (WithTop ℝ≥0))
@@ -174,11 +185,6 @@ instance : Unique (AddUnits ℝ≥0∞) where
   uniq a := AddUnits.ext <| nonpos_iff_eq_zero.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
-
-/-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
-@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
-
-instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
@@ -248,7 +254,7 @@ theorem coe_nnreal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
   rw [ENNReal.ofReal, Real.toNNReal_coe]
 
 theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
-    ENNReal.ofReal x = ofNNReal ⟨x, h⟩ :=
+    ENNReal.ofReal x = ofNNReal (NNReal.mk x h) :=
   (coe_nnreal_eq ⟨x, h⟩).symm
 
 theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.ofReal x := rfl
@@ -554,14 +560,19 @@ theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
 
-@[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
-@[simp] theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
+@[deprecated max_eq_zero (since := "2026-05-07")]
+theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
+@[deprecated min_eq_zero (since := "2026-05-07")]
+theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
+
+@[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : max 0 a = a :=
-  max_eq_right (zero_le a)
+  max_eq_right zero_le
 
+@[deprecated max_zero (since := "2026-05-07")]
 theorem max_zero_right : max a 0 = a :=
-  max_eq_left (zero_le a)
+  max_eq_left zero_le
 
 theorem lt_iff_exists_rat_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
@@ -618,19 +629,19 @@ theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
 
 @[simp]
 theorem iUnion_Ioc_coe_nat : ⋃ n : ℕ, Ioc a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, diff_eq]
+  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, sdiff_eq]
 
 @[simp]
 theorem iUnion_Ioo_coe_nat : ⋃ n : ℕ, Ioo a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, diff_eq]
+  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, sdiff_eq]
 
 @[simp]
 theorem iUnion_Icc_coe_nat : ⋃ n : ℕ, Icc a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, diff_eq]
+  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, sdiff_eq]
 
 @[simp]
 theorem iUnion_Ico_coe_nat : ⋃ n : ℕ, Ico a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, diff_eq]
+  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, sdiff_eq]
 
 @[simp]
 theorem iInter_Ici_coe_nat : ⋂ n : ℕ, Ici (n : ℝ≥0∞) = {∞} := by
@@ -712,7 +723,7 @@ theorem preimage_ennreal_ofReal (h : u.OrdConnected) : (ENNReal.ofReal ⁻¹' u)
   h.preimage_coe_nnreal_ennreal.preimage_real_toNNReal
 
 theorem image_ennreal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdConnected := by
-  simpa only [image_image] using h.image_real_toNNReal.image_coe_nnreal_ennreal
+  simpa only [image_image] using! h.image_real_toNNReal.image_coe_nnreal_ennreal
 
 end OrdConnected
 
@@ -730,7 +741,8 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
     assertInstancesCommute
@@ -739,11 +751,12 @@ meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure <| .positive q(ENNReal.coe_pos.mpr $pa)
     | _ => pure .none

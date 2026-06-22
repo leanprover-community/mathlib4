@@ -287,14 +287,14 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 @[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
   rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
 
-@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+@[simp]
 theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
   congr(Cardinal.toNat $(rank_bot'))
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
 
-@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+@[simp]
 protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
   rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
@@ -387,7 +387,7 @@ theorem minpoly_gen (α : E) :
 
 theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α) = 0 := by
   ext
-  convert minpoly.aeval F α
+  convert! minpoly.aeval F α
   conv in aeval α => rw [← AdjoinSimple.algebraMap_gen F α]
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 
@@ -504,8 +504,9 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     simp_all
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
-  convert natDegree_le_of_dvd dvd_g
-    ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
+  convert!
+    natDegree_le_of_dvd dvd_g
+      ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
 
 instance : Module.Finite F (⊥ : IntermediateField F E) := Subalgebra.finite_bot
@@ -531,15 +532,6 @@ theorem exists_lt_finrank_of_infinite_dimensional
     have h2 : F⟮x⟯ ≤ L' := le_sup_right
     exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
 
-theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
-    (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank (.of_finite _ _)).symm
-    K⟮x⟯.toSubmodule.finrank_le
-
-theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
-    (minpoly K x).degree ≤ finrank K L :=
-  degree_le_of_natDegree_le (minpoly.natDegree_le x)
-
 /-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
   minimal polynomial of `x` over `K` divides `[L : K]`. -/
 theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
@@ -559,7 +551,7 @@ theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irr
   rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
   apply minpoly.degree_dvd
   rw [← minpoly.ne_zero_iff]
-  contrapose! hi
+  contrapose hi
   rwa [hi, mul_zero] at key
 
 -- TODO: generalize to `Sort`

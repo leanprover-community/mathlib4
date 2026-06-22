@@ -71,7 +71,7 @@ open TensorProduct
 
 namespace Module
 
-open Function (Surjective)
+open Function (Injective Surjective)
 
 open LinearMap Submodule DirectSum
 
@@ -165,7 +165,7 @@ instance instSubalgebraToSubmodule {S : Type v} [Semiring S] [Algebra R S]
 instance self : Flat R R where
   out _ _ _ _ I _ := by
     rw [← (TensorProduct.rid R I).symm.injective_comp, ← (TensorProduct.rid R _).comp_injective]
-    convert Subtype.coe_injective using 1
+    convert! Subtype.coe_injective using 1
     ext; simp
 
 /-- A retract of a flat `R`-module is flat. -/
@@ -225,7 +225,7 @@ instance finsupp (ι : Type v) : Flat R (ι →₀ R) := by
   classical exact of_linearEquiv (finsuppLEquivDirectSum R R ι)
 
 instance of_projective [Projective R M] : Flat R M :=
-  have ⟨e, he⟩:= Module.projective_def'.mp ‹_›
+  have ⟨e, he⟩ := Module.projective_def'.mp ‹_›
   of_retract _ _ he
 
 instance of_free [Free R M] : Flat R M := inferInstance
@@ -236,17 +236,40 @@ instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
     letI := RestrictScalars.moduleOrig R S P
     change Submodule S (RestrictScalars R S P) at I
     change Function.Injective (rTensor _ I.subtype)
-    simpa [AlgebraTensorModule.rTensor_tensor] using
+    simpa [AlgebraTensorModule.rTensor_tensor] using!
       rTensor_preserves_injective_linearMap (.restrictScalars R <| I.subtype.rTensor M)
       (rTensor_preserves_injective_linearMap _ I.injective_subtype)
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
 
-theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι} {v : ι → M}
+section Algebra
+
+variable {S : Type*} [Semiring S] [Algebra R S]
+
+theorem linearIndependent_one_tmul [Flat R S] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent S ((1 : S) ⊗ₜ[R] v ·) := by
   classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
     Finsupp.linearCombination_one_tmul]
   simpa using lTensor_preserves_injective_linearMap _ hv
+
+variable (R S M)
+
+/-- See also `Module.FaithfullyFlat.tensorProduct_mk_injective`. -/
+lemma tensorProduct_mk_injective [FaithfulSMul R S] [Flat R M] :
+    Injective (TensorProduct.mk R S M 1) := by
+  have : TensorProduct.mk R S M 1 =
+      (Algebra.linearMap R S).rTensor M ∘ (TensorProduct.lid R M).symm := by ext; simp
+  rw [this]
+  refine Injective.comp ?_ (LinearEquiv.injective _)
+  exact Flat.rTensor_preserves_injective_linearMap _ <| FaithfulSMul.algebraMap_injective R S
+
+lemma _root_.LinearMap.baseChangeHom_injective [FaithfulSMul R S] [Flat R N] :
+    Injective (LinearMap.baseChangeHom R S M N) := by
+  intro f g h
+  ext m
+  simpa using Flat.tensorProduct_mk_injective R N S <| LinearMap.congr_fun h (1 ⊗ₜ[R] m)
+
+end Algebra
 
 end Flat
 
@@ -386,17 +409,40 @@ namespace Algebra.TensorProduct
 
 theorem includeLeft_injective [Module.Flat R A] (hb : Function.Injective (algebraMap R B)) :
     Function.Injective (includeLeft : A →ₐ[S] A ⊗[R] B) := by
-  convert Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb
-    |>.comp (_root_.TensorProduct.rid R A).symm.injective
+  convert!
+    Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb |>.comp
+      (_root_.TensorProduct.rid R A).symm.injective
   ext; simp
 
 theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algebraMap R A)) :
     Function.Injective (includeRight : B →ₐ[R] A ⊗[R] B) := by
-  convert Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha
-    |>.comp (_root_.TensorProduct.lid R B).symm.injective
+  convert!
+    Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha |>.comp
+      (_root_.TensorProduct.lid R B).symm.injective
   ext; simp
 
 end Algebra.TensorProduct
+
+variable (A) [Module.Flat R A] {M : Type*} [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+namespace Submodule
+
+theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
+  (p.subtype.baseChange A).injective_rangeRestrict_iff.mpr
+    (Module.Flat.lTensor_preserves_injective_linearMap p.subtype (injective_subtype p))
+
+/-- `Submodule.toBaseChange` as a `LinearEquiv`. -/
+@[simps! apply]
+noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
+  .ofBijective (p.toBaseChange A) ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
+
+@[simp]
+theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
+    (toBaseChange.toLinearEquiv A p).symm
+      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+  (toBaseChange.toLinearEquiv A p).symm_apply_apply (a ⊗ₜ[R] m)
+
+end Submodule
 
 end Injective
 
@@ -457,8 +503,9 @@ See `LinearIndependent.tmul_of_isDomain`. -/
 lemma _root_.LinearIndependent.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndependent R v)
     (hw : LinearIndependent R w) : LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 := by
   rw [LinearIndependent]
-  convert (TensorProduct.map_injective_of_flat_flat _ _ hv hw).comp
-    (finsuppTensorFinsupp' _ _ _).symm.injective
+  convert!
+    (TensorProduct.map_injective_of_flat_flat _ _ hv hw).comp
+      (finsuppTensorFinsupp' _ _ _).symm.injective
   rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   congr!
   ext i
