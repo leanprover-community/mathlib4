@@ -29,6 +29,7 @@ instance : MulAction ℋ 𝒬 := .quotient ..
 
 namespace SlashInvariantForm
 
+section
 variable [SlashInvariantFormClass F 𝒢 k]
 
 /-- For `f` invariant under `𝒢`, this is a function on `(ℋ ⧸ 𝒢 ⊓ ℋ) × ℍ → ℂ` which packages up the
@@ -48,19 +49,27 @@ lemma quotientFunc_smul {h} (hh : h ∈ ℋ) (q : 𝒬) :
   induction q using Quotient.inductionOn with
   | h r => simp [SlashAction.slash_mul]
 
+end
+
+section
+variable [ModularFormClass F 𝒢 k]
+
 /-- Each `quotientFunc f q` is holomorphic on the upper half plane. -/
-lemma quotientFunc_mdiff [ModularFormClass F 𝒢 k] (q : 𝒬) :
+lemma quotientFunc_mdiff (q : 𝒬) :
     MDiff (quotientFunc f q) :=
   Quotient.inductionOn q fun r ↦ (ModularForm.translate f r.val⁻¹).holo'
 
 /-- Each `quotientFunc f q` is bounded at `∞`. -/
-lemma quotientFunc_isBoundedAtImInfty [ModularFormClass F 𝒢 k] [𝒢.IsFiniteRelIndex ℋ]
+lemma quotientFunc_isBoundedAtImInfty [𝒢.IsFiniteRelIndex ℋ]
     [Fact (IsCusp OnePoint.infty ℋ)] (q : 𝒬) :
     IsBoundedAtImInfty (quotientFunc f q) :=
   Quotient.inductionOn q fun ⟨_, hr⟩ ↦ OnePoint.isBoundedAt_infty_iff.mp <|
     (ModularForm.translate f _).bdd_at_cusps'
       ((Fact.out : IsCusp _ _).of_isFiniteRelIndex_conj hr)
 
+end
+
+variable [SlashInvariantFormClass F 𝒢 k]
 variable (ℋ) [𝒢.IsFiniteRelIndex ℋ]
 
 /-- The trace of a slash-invariant form, as a slash-invariant form. -/
@@ -436,7 +445,10 @@ lemma image_T_pow_invariant_under_T_mul
   · have hj_eq : (j : ℕ) + 1 = 𝒢.integerCuspWidth := by lia
     refine ⟨⟨0, Subgroup.integerCuspWidth_pos⟩, Finset.mem_univ _, ?_⟩
     rw [hj_eq, QuotientGroup.eq, Subgroup.mem_subgroupOf]
-    simpa using Subgroup.T_pow_integerCuspWidth_mem (𝒢 := 𝒢)
+    have key : ((Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)))
+        ^ 𝒢.integerCuspWidth : GL (Fin 2) ℝ) ∈ 𝒢 :=
+      Subgroup.T_pow_integerCuspWidth_mem (𝒢 := 𝒢)
+    simpa using key
 
 /-- The action of `T` (via `mapGL`) on `𝒮ℒ ⧸ (𝒢 ⊓ 𝒮ℒ)` permutes the image of the `T^j` cosets. -/
 lemma image_T_pow_invariant_under_T_smul
@@ -515,15 +527,17 @@ lemma prod_quotientFunc_filter_image_one_vadd
               𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)))),
         SlashInvariantForm.quotientFunc f q τ := by
   set T_𝒮ℒ : 𝒮ℒ := (Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
-    (ModularGroup.T : SL(2, ℤ))
+    (ModularGroup.T : SL(2, ℤ)) with hT_𝒮ℒ_def
   have h_step1 (q : 𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)) :
       SlashInvariantForm.quotientFunc f q ((1 : ℝ) +ᵥ τ) =
         SlashInvariantForm.quotientFunc f (T_𝒮ℒ⁻¹ • q) τ := by
     rw [show (SlashInvariantForm.quotientFunc f q) ((1 : ℝ) +ᵥ τ) =
           ((SlashInvariantForm.quotientFunc f q) ∣[k] T_𝒮ℒ.val) τ by
-        simpa [zpow_one] using
-          (SlashInvariantForm.slash_T_zpow_apply_general k 1 (SlashInvariantForm.quotientFunc f q)
-            τ).symm,
+        have hT : T_𝒮ℒ.val = ((ModularGroup.T : SL(2, ℤ)) ^ (1 : ℤ) : GL (Fin 2) ℝ) := by
+          rw [hT_𝒮ℒ_def, MonoidHom.coe_rangeRestrict]
+          exact (zpow_one (Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)))).symm
+        rw [hT, SlashInvariantForm.slash_T_zpow_apply_general]
+        norm_num,
       SlashInvariantForm.quotientFunc_smul f T_𝒮ℒ.2]
   refine (Finset.prod_congr rfl fun q _ ↦ h_step1 q).trans <|
     Finset.prod_equiv (MulAction.toPerm T_𝒮ℒ⁻¹)
