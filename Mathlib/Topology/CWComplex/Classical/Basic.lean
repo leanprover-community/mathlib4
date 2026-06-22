@@ -1112,9 +1112,7 @@ def CWComplex.OfDiscreteClosed (hD : IsDiscrete D) (Dc : IsClosed D) : CWComplex
     intro x xD
     simp only [mem_iUnion, mem_image, mem_closedBall, dist_zero_right]
     refine ⟨0, ?_⟩
-    simp only [PartialEquiv.single_apply, const_apply, exists_and_right, Fin.exists_fin_zero_pi,
-      exists_and_left, Subtype.exists, exists_prop, exists_eq_right, xD, and_true]
-    exact zero_le_one
+    simpa [- Matrix.zero_empty]
 
 /-- A discrete space is a CW complex. -/
 instance CWComplex.ofDiscreteTopology {X : Type*} [TopologicalSpace X] [DiscreteTopology X] :
