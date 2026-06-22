@@ -42,6 +42,7 @@ public section
 namespace GenContFract
 
 variable {K : Type*} [Field K]
+
 variable {n : ℕ} {h : K} {ρ : Stream'.Seq K} {g : GenContFract K}
 
 /-- An *Euler continued fraction* is a generalized continued fraction of the form
@@ -58,15 +59,12 @@ from the stream `ρ` with head term `h`.
 def euler (h : K) (ρ : Stream'.Seq K) : GenContFract K :=
   ⟨h, ρ.enum.map fun (n, ρ) => n.casesOn ⟨ρ, 1⟩ fun _ => ⟨-ρ, 1 + ρ⟩⟩
 
-private def toEulerAux (g : GenContFract K) : Stream'.Seq K :=
-  g.s.enum.map fun (n, ⟨a, b⟩) =>
-    n.casesOn (a / b) fun n' => - a * g.dens n' / g.dens (n' + 2)
-
 /-- `toEuler g` is the Euler continued fraction equivalent to `g`, where `ρ₀` = `a₀ / b₀` and
 `ρₙ` = `- aₙ * Bₙ₋₁ / Bₙ₊₁` for `n > 0`.
 -/
 def toEuler (g : GenContFract K) : GenContFract K :=
-  euler g.h (toEulerAux g)
+  euler g.h <| g.s.enum.map fun (n, ⟨a, b⟩) =>
+    n.casesOn (a / b) fun n' => - a * g.dens n' / g.dens (n' + 2)
 
 section Translation
 
@@ -87,22 +85,19 @@ theorem exists_euler_s_of_not_terminatedAt_succ
     ∃ a, (euler h ρ).s.get? (n + 1) = some ⟨-a, 1 + a⟩ := by
   simpa [euler] using Option.ne_none_iff_exists'.mp not_terminatedAt_n_succ
 
-private theorem terminatedAt_toEulerAux_iff_terminatedAt :
-    g.toEulerAux.TerminatedAt n ↔ g.TerminatedAt n := by
-  simp [toEulerAux, TerminatedAt, Stream'.Seq.TerminatedAt]
-
 theorem terminatedAt_toEuler_iff_terminatedAt : g.toEuler.TerminatedAt n ↔ g.TerminatedAt n := by
-  rw [toEuler, terminatedAt_euler_iff_terminatedAt, terminatedAt_toEulerAux_iff_terminatedAt]
+  rw [toEuler, terminatedAt_euler_iff_terminatedAt, TerminatedAt]
+  simp [Stream'.Seq.TerminatedAt]
 
 theorem toEuler_s_zero : (toEuler g).s.get? 0 = (g.s.get? 0).map fun ⟨a, b⟩ => ⟨a / b, 1⟩ := by
-  simp only [toEuler, euler, toEulerAux, map_get?, get?_enum]
+  simp only [toEuler, euler, map_get?, get?_enum]
   rcases g.s.get? 0 with _ | ⟨a, b⟩ <;> simp
 
 theorem toEuler_s_succ :
     (toEuler g).s.get? (n + 1) =
       (g.s.get? (n + 1)).map
         fun ⟨a, _⟩ => ⟨a * g.dens n / g.dens (n + 2), 1 - a * g.dens n / g.dens (n + 2)⟩ := by
-  simp only [toEuler, euler, toEulerAux, map_get?, get?_enum]
+  simp only [toEuler, euler, map_get?, get?_enum]
   rcases g.s.get? (n + 1) with _ | a
   · simp
   · simpa [neg_div] using SubNegMonoid.sub_eq_add_neg .. |>.symm
@@ -196,8 +191,9 @@ theorem convs_euler :
 /-- The transformation `toEuler` is idempotent. -/
 theorem toEuler_toEuler :
   g.toEuler.toEuler = g.toEuler := by
-  set h := g.h
-  set ρ := toEulerAux g
+  set h : K := g.h
+  set ρ : Stream'.Seq K := g.s.enum.map fun (n, ⟨a, b⟩) =>
+    n.casesOn (a / b) fun n' => - a * g.dens n' / g.dens (n' + 2)
   change (euler h ρ).toEuler = euler h ρ
   ext n : 2
   · rfl
@@ -255,6 +251,6 @@ theorem convs_toEuler_eq_convs_of_forall_le_dens_ne_zero (hB : ∀ m ≤ n, g.de
 theorem convs_toEuler_eq_convs (hB : ∀ m, g.dens m ≠ 0) :
     g.toEuler.convs = g.convs :=
   funext fun m =>
-    convs_toEuler_eq_convs_of_forall_le_dens_ne_zero (fun m _ => hB m) m <| m.le_succ
+    convs_toEuler_eq_convs_of_forall_le_dens_ne_zero (fun m _ => hB m) m m.le_succ
 
 end GenContFract
