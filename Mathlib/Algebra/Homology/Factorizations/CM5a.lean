@@ -667,6 +667,13 @@ public lemma exists_injective_resolution' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁
 public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
       (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
+  /- The proof proceeds by first applying `exists_injective_resolution'` in order to
+  obtain a monomorphism `K ⟶ L` that is also a quasi-isomorphism
+  with `L` consisting of injective objects and `L` lying in degrees `≥ n - 1`.
+  Then, as it is quasi-isomorphic to `K`, the cochain complex `L` is cohomologically
+  in degrees `≥ n`, so that the composition `K ⟶ L ⟶ L.truncGE n` is a quasi-isomorphism.
+  In order to conclude, one needs to show that `(L.truncGE n).X n` is injective,
+  i.e. that `L.opcycles n` is injective. -/
   have : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
   obtain ⟨L, i, _, _, hL, _⟩ := exists_injective_resolution' K (n - 1) n (by simp)
   have : L.IsGE n := by
@@ -691,7 +698,7 @@ public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
       { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
   -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
   refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, fun q ↦ ?_, inferInstance⟩
-  rcases (lt_trichotomy q n) with h | rfl | h
+  obtain h | rfl | h := lt_trichotomy q n
   · exact (isZero_of_isStrictlyGE _ n _ h).injective
   · exact Injective.of_iso (L.truncGEXIsoOpcycles q).symm inferInstance
   · exact Injective.of_iso (L.truncGEXIso n q h).symm (hL q)
