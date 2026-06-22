@@ -103,6 +103,24 @@ lemma E2_eq_tsum_cexp : E2 z = 1 - 24 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : �
   simp [E2, G2_eq_tsum_cexp, riemannZeta_two]
   field
 
+/-- The `q`-expansion of `E2` as a `HasSum` over `ℕ`. -/
+theorem hasSum_qExpansion_E2 :
+    HasSum (fun m : ℕ ↦ (if m = 0 then 1 else -24 * σ 1 m : ℂ) • 𝕢 z ^ m) (E2 z) := by
+  have hS : Summable fun n : ℕ ↦ σ 1 (n + 1) * 𝕢 z ^ (n + 1) :=
+    (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (k := 2) (one_le_two) z)
+  rw [← hasSum_nat_add_iff' 1]
+  simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, smul_eq_mul, Finset.range_one,
+    ite_mul, one_mul, Finset.sum_singleton, pow_zero]
+  convert! (hS.mul_left (-24)).hasSum using 1
+  · ext n; ring
+  · rw [E2_eq_tsum_cexp, tsum_mul_left, ← tsum_pnat_eq_tsum_succ (f := fun n ↦ σ 1 n * 𝕢 z ^ n)]
+    ring
+
+/-- `E2` is bounded at `i∞`. -/
+theorem isBoundedAtImInfty_E2 : IsBoundedAtImInfty E2 :=
+  isBoundedAtImInfty_of_hasSum_qExpansion one_pos fun τ ↦ by
+    simpa only [Function.Periodic.qParam, ofReal_one, div_one] using hasSum_qExpansion_E2 (z := τ)
+
 lemma tendsto_e2Summand_atTop_nhds_zero : Tendsto (e2Summand · z) atTop (𝓝 0) :=
   (summable_e2Summand_symmetricIcc z).tendsto_zero_of_even_summable_symmetricIcc (e2Summand_even _)
 

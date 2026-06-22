@@ -258,6 +258,25 @@ private lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : �
     · simpa [update_of_ne hy', mul_comm]
         using hasSum_cuspFunction_of_hasSum_punctured hh hf hy hy'
 
+/-- A function on the upper half plane that is given everywhere by a convergent `q`-expansion with
+non-negative exponents, `f τ = ∑' m, c m * 𝕢 h τ ^ m`, is bounded at `i∞`. This is a converse to
+`hasSum_qExpansion`: there, boundedness is a hypothesis used to produce the `q`-expansion, while
+here convergence of the `q`-expansion is enough to deduce boundedness. -/
+theorem isBoundedAtImInfty_of_hasSum_qExpansion {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
+    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) : IsBoundedAtImInfty f := by
+  have hfeq : f = fun τ : ℍ ↦ update (cuspFunction h f) 0 (c 0) (𝕢 h τ) := by
+    funext τ
+    have : (0 : ℝ) < 2 * π * τ.im / h := by positivity
+    have hqlt : ‖𝕢 h (τ : ℂ)‖ < 1 := by simpa [Periodic.qParam, Complex.norm_exp, neg_div]
+    rw [update_of_ne (Periodic.qParam_ne_zero _)]
+    exact (hf τ).unique (hasSum_cuspFunction_of_hasSum_punctured hh hf hqlt (Complex.exp_ne_zero _))
+  have hball := hasFPowerSeriesOnBall_update hh hf
+  have htend : Tendsto f atImInfty (𝓝 (c 0)) := by
+    rw [hfeq]
+    simpa [update_self, Function.comp_def] using
+      hball.hasFPowerSeriesAt.continuousAt.tendsto.comp (qParam_tendsto_atImInfty hh)
+  exact htend.isBigO_one ℝ
+
 lemma hasFPowerSeriesOnBall_cuspFunction {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
     (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
