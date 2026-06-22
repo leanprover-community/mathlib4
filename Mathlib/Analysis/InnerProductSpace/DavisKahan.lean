@@ -32,8 +32,8 @@ summed over the block — but the result is self-contained and correct.
 * `Orthonormal.starProjection_span_image_apply`: the orthogonal projection onto
   the span of an orthonormal subfamily is the sum of the corresponding rank-one
   projections (`Submodule.starProjection` form; holds in any inner product space).
-* `OrthonormalBasis.sum_norm_sub_starProjection_span_sq_eq`: the canonical
-  projector identity — the squared Frobenius distance between the projections onto
+* `OrthonormalBasis.sum_norm_sub_starProjection_span_sq_eq`: the projector
+  identity — the squared Frobenius distance between the projections onto
   two orthonormal-subfamily spans is `2 ·` the cross overlap sum.
 * `LinearMap.IsSymmetric.sum_norm_sub_starProjection_span_sq_le`: the resulting
   `‖P̂ − P‖_F² ≤ 2 n ε² / gap²` Davis–Kahan sin-Θ bound for the spectral
@@ -210,7 +210,7 @@ theorem sum_cross_norm_inner_eigenvectorBasis_sq_le_of_rank_floor
 
 end LinearMap.IsSymmetric
 
-/-! ### Projector (canonical sin-Θ) form via `Submodule.starProjection`
+/-! ### Projector (sin-Θ) form via `Submodule.starProjection`
 
 The cross-block sum is exactly half the squared Frobenius distance between the
 orthogonal projections onto the two spectral subspaces.  The projections are
