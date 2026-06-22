@@ -121,7 +121,7 @@ private theorem jointEig_isInternal (hM : M * Mᴴ = Mᴴ * M) :
     DirectSum.IsInternal (jointEig M) :=
   LinearMap.IsSymmetric.directSum_isInternal_of_commute
     (reHermPart_toEuclideanLin_isSymmetric M) (imHermPart_toEuclideanLin_isSymmetric M)
-    (toEuclideanLin_commute (commute_reHermPart_imHermPart M (hM)))
+    (toEuclideanLin_commute (commute_reHermPart_imHermPart M hM).eq)
 
 omit [DecidableEq n] in
 /-- Normality, as the commutation `M * Mᴴ = Mᴴ * M`, from the `IsStarNormal` instance. -/
