@@ -374,13 +374,12 @@ theorem mulEquivCongr_symm_apply_smul (g : G') (x : B) :
 @[deprecated (since := "2026-06-19")] alias mulEquivCongr' := mulEquivCongr
 @[deprecated (since := "2026-06-19")] alias mulEquivCongr'_apply_smul := mulEquivCongr_apply_smul
 
-end IsDomain
-
-theorem mulEquivCongr_mapSubgroup_fixingSubgroup (F : Set L) [IsGaloisGroup G K L] [Finite G]
-    [IsGaloisGroup G' K L] [Finite G'] :
-    (fixingSubgroup G F).map (mulEquivCongr G G' K L) = fixingSubgroup G' F := by
+theorem mulEquivCongr_mapSubgroup_fixingSubgroup (S : Set B) :
+    (fixingSubgroup G S).map (mulEquivCongr G G' A B) = fixingSubgroup G' S := by
   ext g
   simp [Subgroup.map_equiv_eq_comap_symm, mem_fixingSubgroup_iff]
+
+end IsDomain
 
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
@@ -594,7 +593,7 @@ theorem normal_of_isGalois (E : Type*) [Field E] [Algebra K E] [Algebra E L] [Is
   have := isGalois G K L
   have : Finite Gal(L/K) := Finite.of_equiv _ (mulEquivAlgEquiv G K L).toEquiv
   rw [← fixingSubgroup_fixedPoints G K L H, subgroup_iff.mp hFL,
-    ← mulEquivCongr_mapSubgroup_fixingSubgroup Gal(L/K) G K, MulEquiv.normal_map_iff ]
+    ← mulEquivCongr_mapSubgroup_fixingSubgroup Gal(L/K) G K, MulEquiv.normal_map_iff]
   exact IsGalois.fixingSubgroup_normal_of_isGalois F
 
 end IsGaloisGroup
@@ -789,18 +788,6 @@ attribute [local instance] FractionRing.liftAlgebra in
 theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
     Function.Surjective (restrictHom G G' A B C) := by
-  have : IsDomain B := IsDomain.of_faithfulSMul B C
-  have : IsDomain A := IsDomain.of_faithfulSMul A B
-  have : FaithfulSMul A C := FaithfulSMul.trans A B C
-  let : MulSemiringAction G (FractionRing C) :=
-    IsFractionRing.mulSemiringAction G C (FractionRing C)
-  let N := fixingSubgroup G (Set.range (algebraMap (FractionRing B) (FractionRing C)))
-  have : IsGaloisGroup N (FractionRing B) (FractionRing C) :=
-    of_isScalarTower G (FractionRing A) (FractionRing C) (FractionRing B)
-  let : MulSemiringAction G' (FractionRing B) :=
-    IsFractionRing.mulSemiringAction G' B (FractionRing B)
-  have := isGalois G' (FractionRing A) (FractionRing B)
-  have : N.Normal := normal_of_isGalois G (FractionRing A) (FractionRing C) N (FractionRing B)
   simpa [restrictHom] using QuotientGroup.mk_surjective
 
 end Domain
