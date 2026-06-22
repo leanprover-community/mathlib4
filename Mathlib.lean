@@ -7736,6 +7736,7 @@ public import Mathlib.Topology.Category.Stonean.Basic
 public import Mathlib.Topology.Category.Stonean.EffectiveEpi
 public import Mathlib.Topology.Category.Stonean.Limits
 public import Mathlib.Topology.Category.TopCat.Adjunctions
+public import Mathlib.Topology.Category.TopCat.BaseChangeNhds
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 public import Mathlib.Topology.Category.TopCat.EpiMono
@@ -8098,6 +8099,7 @@ public import Mathlib.Topology.Sheaves.Flasque
 public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.Functors
 public import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Topology.Sheaves.KSheaf
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.LocalPredicate
 public import Mathlib.Topology.Sheaves.LocallySurjective
