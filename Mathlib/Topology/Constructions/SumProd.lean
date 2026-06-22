@@ -830,7 +830,7 @@ theorem IsClosedMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg
     IsClosedMap (Sum.elim f g) :=
   isClosedMap_sumElim.2 ⟨hf, hg⟩
 
-lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
+lemma Topology.IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) (h : Injective (Sum.elim f g)) :
     IsClosedEmbedding (Sum.elim f g) := by
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
