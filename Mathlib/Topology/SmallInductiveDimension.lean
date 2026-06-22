@@ -92,18 +92,6 @@ variable (X) in
 noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ i : ℕ, n < i → HasSmallInductiveDimensionLT X i}
 
-theorem smallInductiveDimension_eq (n : ℕ)
-    (hle : HasSmallInductiveDimensionLE X n) (hlt : ¬ HasSmallInductiveDimensionLT X n) :
-    smallInductiveDimension X = n := by
-  apply le_antisymm
-  · refine csInf_le' fun m h ↦ .mono ?_ hle
-    simpa using h
-  · rw [smallInductiveDimension, le_csInf_iff'']
-    · intro m hm
-      simpa using mt (hm n) hlt
-    · refine ⟨n, fun m hm ↦ HasSmallInductiveDimensionLT.mono ?_ hle⟩
-      simpa using hm
-
 @[simp]
 theorem smallInductiveDimension_eq_bot : smallInductiveDimension X = ⊥ ↔ IsEmpty X where
   mp h := by
@@ -117,6 +105,28 @@ theorem smallInductiveDimension_eq_bot : smallInductiveDimension X = ⊥ ↔ IsE
 
 variable (X) in
 @[simp]
-theorem smallInductiveDimension_of_isEmpty [IsEmpty X] :
-    smallInductiveDimension X = ⊥ :=
+theorem smallInductiveDimension_of_isEmpty [IsEmpty X] : smallInductiveDimension X = ⊥ :=
   smallInductiveDimension_eq_bot.2 ‹_›
+
+theorem smallInductiveDimension_le {n : ℕ} (h : HasSmallInductiveDimensionLE X n) :
+    smallInductiveDimension X ≤ n := by
+  refine csInf_le' fun m hm ↦ .mono ?_ h
+  simpa using hm
+
+theorem smallInductiveDimension_lt {n : ℕ} (h : HasSmallInductiveDimensionLT X n) :
+    smallInductiveDimension X < n := by
+  cases n with
+  | zero => simp_all
+  | succ n =>
+    apply (smallInductiveDimension_le h).trans_lt
+    exact_mod_cast lt_add_one n
+
+theorem smallInductiveDimension_eq (n : ℕ)
+    (hle : HasSmallInductiveDimensionLE X n) (hlt : ¬ HasSmallInductiveDimensionLT X n) :
+    smallInductiveDimension X = n := by
+  apply (smallInductiveDimension_le hle).antisymm
+  rw [smallInductiveDimension, le_csInf_iff'']
+  · intro m hm
+    simpa using mt (hm n) hlt
+  · refine ⟨n, fun m hm ↦ .mono ?_ hle⟩
+    simpa using hm
