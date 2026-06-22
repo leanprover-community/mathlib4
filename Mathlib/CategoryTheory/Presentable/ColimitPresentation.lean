@@ -79,7 +79,6 @@ section Small
 variable {J : Type w} {I : J → Type w} [SmallCategory J] [∀ j, SmallCategory (I j)]
   {D : J ⥤ C} {P : ∀ j, ColimitPresentation (I j) (D.obj j)}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Total.exists_hom_of_hom {j j' : J} (i : I j) (u : j ⟶ j')
     [IsFiltered (I j')] [IsFinitelyPresentable.{w} ((P j).diag.obj i)] :
     ∃ (i' : I j') (f : Total.mk P j i ⟶ Total.mk P j' i'), f.base = u := by

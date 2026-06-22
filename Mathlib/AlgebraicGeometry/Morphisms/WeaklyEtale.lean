@@ -95,7 +95,7 @@ instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [WeaklyEtale f] :
     WeaklyEtale (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
 
-/- This proof is by `inferInstance` and the argument goes through
+/-- This proof is by `inferInstance` and the argument goes through
 `IsImmersion (diagonal f) → Mono (diagonal f) → IsIso (diagonal (diagonal f))`. -/
 instance (f : X ⟶ Y) [WeaklyEtale f] : WeaklyEtale (pullback.diagonal f) where
 

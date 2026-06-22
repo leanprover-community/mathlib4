@@ -235,14 +235,14 @@ private theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
   apply le_of_eq_of_le _ <| (p * q).le_gaussNorm v hc0 (i + j)
   -- gaussNorm v c p * gaussNorm v c q is actually equal to v ((p * q).coeff (i + j)) * c ^ (i + j)
   rw [hi_p, hj_q, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk,
-    IsNonarchimedean.apply_sum_eq_of_lt hna (k := i) (by simp)]
+    IsNonarchimedean.apply_sum_eq_of_lt hna (k := i) (by simp) (by simp)]
   /- IsNonarchimedean.apply_sum_eq_of_lt makes the goal almost trivial so we are left to prove
   the hmax hypothesis -/
   · grind
   intro x hx hneq
   apply lt_of_mul_lt_mul_right _ <| pow_nonneg hc0 (i + j)
   have : x + (i + j - x) = i + j := by simp_all
-  convert_to v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
+  convert_to! v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
     v (p.coeff i) * c ^ i * (v (q.coeff j) * c ^ j)
   · grind
   · grind

@@ -72,7 +72,7 @@ three axioms:
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 
 See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
-@[stacks 00Z4]
+@[stacks 00Z4, wikidata Q1062242]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
   which satisfy some axioms. -/
@@ -91,7 +91,7 @@ namespace GrothendieckTopology
 
 instance : DFunLike (GrothendieckTopology C) C (fun X ↦ Set (Sieve X)) where
   coe J X := sieves J X
-  coe_injective' J₁ J₂ h := by cases J₁; cases J₂; congr
+  coe_injective J₁ J₂ h := by cases J₁; cases J₂; congr
 
 variable {C}
 variable {X Y : C} {S R : Sieve X}
