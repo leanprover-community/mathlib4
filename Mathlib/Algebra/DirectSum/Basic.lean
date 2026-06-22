@@ -310,7 +310,7 @@ def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
 /-- Reindexing terms of a direct sum: change indexing type from `ι` to `κ` along an equivalence
     `h : κ ≃ ι`. -/
 def equivCongrLeft' (h : κ ≃ ι) : (⨁ i, β i) ≃+ ⨁ k, β (h k) :=
-  { DFinsupp.equivCongrLeft h.symm with map_add' := DFinsupp.comapDomain'_add _ h.left_inv }
+  equivCongrLeft h.symm
 
 @[simp]
 theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
