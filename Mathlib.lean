@@ -3226,6 +3226,7 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.CommGrp_
+public import Mathlib.CategoryTheory.Preadditive.Comma
 public import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 public import Mathlib.CategoryTheory.Preadditive.EndoFunctor
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
