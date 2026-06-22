@@ -49,7 +49,7 @@ instance : Zero (u ⟶ v) where
 
 @[simps!]
 instance : Neg (u ⟶ v) where
-  neg α := CommaMorphism.mk (- α.left) (- α.right)
+  neg α := CommaMorphism.mk (-α.left) (-α.right)
 
 end CommaMorphism
 
