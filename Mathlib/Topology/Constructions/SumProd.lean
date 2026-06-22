@@ -800,7 +800,7 @@ theorem IsOpenMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : I
     IsOpenMap (Sum.elim f g) :=
   isOpenMap_sumElim.2 ⟨hf, hg⟩
 
-lemma IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
+lemma Topology.IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g) (h : Injective (Sum.elim f g)) :
     IsOpenEmbedding (Sum.elim f g) := by
   rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
@@ -974,7 +974,7 @@ theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f 
     exact disjoint_image_inl_image_inr
   exact B.mono_left A
 
-theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap X Y) :=
+theorem Topology.IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap X Y) :=
   (Homeomorph.sumComm X Y).isOpenEmbedding
 
 theorem Topology.IsInducing.sumSwap : IsInducing (@Sum.swap X Y) :=
