@@ -1099,13 +1099,11 @@ variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] [IsManifold 𝓘(�
 -- This even works when the model with corners would otherwise be ambiguous,
 -- such as on a product of two normed spaces.
 variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
-/--
-error: Could not find a model with corners for `X`.
-
-Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
--/
+/-- info: MDifferentiable (modelWithCornersSelf 𝕜 (Prod F F)) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
 #guard_msgs in
 #check MDiff f
+
+-- TODO: is there something else to copy over from the phrasebook test?
 
 -- When there are two such hypotheses in context, we pick the first one.
 -- (In practice, there should not be two conflicting ones.)
