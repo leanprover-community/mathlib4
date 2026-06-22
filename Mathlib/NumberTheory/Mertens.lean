@@ -381,8 +381,6 @@ private lemma inv_mul_sq_nonneg {x t : ℝ} (ht : t ∈ Set.Ioi x) (hx : 1 < x)
 
 theorem M_bounds :
     F.M ≤ C_hi / (log 2) + 1 - log (log 2) ∧ C_lo / (log 2) + 1 - log (log 2) ≤ F.M := by
-  have hbound : ∀ t ≥ 1, |F.E₁ t| ≤ max (-C_lo) C_hi := by
-    intro t ht; grw [abs_le, ← F.le_first ht, F.first_le ht]; grind
   unfold Weight.M
   rw [← integ_div_mul_log_sq C_hi (by rfl), ← integ_div_mul_log_sq C_lo (by rfl)]
   have := F.E₁_div_integrable (by rfl)
