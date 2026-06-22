@@ -182,6 +182,42 @@ instance isPrime_span_zeta_sub_one' : IsPrime (span {hζ.toInteger - 1}) := by
   rw [← pow_one p] at hK hζ
   exact isPrime_span_zeta_sub_one p 0 hζ
 
+/-- If `2 < p`, then `2` is not in the ideal `(ζ - 1)`, where `ζ` is a primitive `p`-th root of
+unity. -/
+theorem two_not_mem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.toInteger - 1} := by
+  rw [Ideal.mem_span_singleton]
+  rw [← pow_one p] at hK hζ
+  exact hζ.toInteger_sub_one_not_dvd_two h.ne'
+
+omit [NumberField K] hK in
+open Polynomial in
+/-- `(ζ - 1) ^ (p - 1)` is associated to `p`, where `ζ` is a primitive `p`-th root of unity and
+`p` is prime. -/
+theorem associated_zeta_sub_one_pow_prime :
+    Associated ((hζ.toInteger - 1) ^ (p - 1)) (p : 𝓞 K) := by
+  rw [← eval_one_cyclotomic_prime (R := 𝓞 K) (p := p),
+    cyclotomic_eq_prod_X_sub_primitiveRoots hζ.toInteger_isPrimitiveRoot, eval_prod]
+  simp only [eval_sub, eval_X, eval_C]
+  rw [← Nat.totient_prime hp.out, ← hζ.toInteger_isPrimitiveRoot.card_primitiveRoots,
+    ← Finset.prod_const]
+  apply Associated.prod
+  intro η hη
+  refine hζ.toInteger_isPrimitiveRoot.ntRootsFinset_pairwise_associated_sub_one_sub_of_prime
+    hp.out (one_mem_nthRootsFinset hp.out.pos) ?_ ?_
+  · exact (isPrimitiveRoot_of_mem_primitiveRoots hη).mem_nthRootsFinset hp.out.pos
+  · exact ((isPrimitiveRoot_of_mem_primitiveRoots hη).ne_one hp.out.one_lt).symm
+
+/-- If `ζ - 1` does not divide `x`, then `p` and `x` are coprime, where `ζ` is a primitive `p`-th
+root of unity and `p` is prime. -/
+theorem isCoprime_of_not_zeta_sub_one_dvd {x : 𝓞 K} (hx : ¬ hζ.toInteger - 1 ∣ x) :
+    IsCoprime (p : 𝓞 K) x := by
+  rwa [← Ideal.isCoprime_span_singleton_iff,
+    ← Ideal.span_singleton_eq_span_singleton.mpr (associated_zeta_sub_one_pow_prime p hζ),
+    ← Ideal.span_singleton_pow, IsCoprime.pow_left_iff, Ideal.isCoprime_iff_gcd,
+    (Ideal.prime_span_singleton_iff.mpr hζ.zeta_sub_one_prime').irreducible.gcd_eq_one_iff,
+    Ideal.dvd_span_singleton, Ideal.mem_span_singleton]
+  · simpa only [ge_iff_le, tsub_pos_iff_lt] using hp.out.one_lt
+
 theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
   rw [← pow_one p] at hK hζ
   exact inertiaDeg_span_zeta_sub_one p 0 hζ
