@@ -24,7 +24,7 @@ via `finFree_isColimit_at` and `Types.jointly_surjective_of_isColimit`.
 
 * `sol_leftCancel`: left-cancellability of the solidification map into `finFree T`.
   Mathematically proved in Clausen-Scholze, Condensed Mathematics Thm 5.8 + Lemma 5.9.
-  Not yet formalizable: requires CompHaus ⇔ TopMod equivalence.
+  Not yet formalizable: requires CompHaus <=> TopMod equivalence.
 -/
 
 universe u
@@ -52,6 +52,7 @@ def profiniteSolidIsPointwiseRightKanExtension :
     (Functor.RightExtension.mk _ (profiniteSolidCounit R)).IsPointwiseRightKanExtension :=
   Functor.isPointwiseRightKanExtensionOfIsRightKanExtension _ _
 
+/-- The natural transformation `R[S] --> R[S]^solid`. -/
 def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
   (profiniteSolid R).liftOfIsRightKanExtension (profiniteSolidCounit R) _ (𝟭 _)
 
@@ -122,12 +123,16 @@ private noncomputable def finFree_isColimit_at' (T : FintypeCat.{u}) (S : Profin
 
 private abbrev cH' (Z : Profinite.{u}) := profiniteToCompHaus.obj Z
 
+/-- Construct a natural transformation from `profiniteToCondensed.obj Y` to a condensed set `F`
+by specifying its value at the identity of `cH' Y`. -/
 private noncomputable def buildEta (Y : Profinite.{u}) (F : CondensedSet.{u})
-    (x : F.obj.obj (.op (cH' Y))) : profiniteToCondensed.obj Y ⟶ F :=
-  ⟨⟨fun S s => F.obj.map s.down.op x, by
-      intro S S' f; funext s
-      show F.obj.map (s.down.op ≫ f) x = F.obj.map f (F.obj.map s.down.op x)
-      rw [F.obj.map_comp]; rfl⟩⟩
+    (x : F.obj.obj (.op (cH' Y))) : profiniteToCondensed.obj Y ⟶ F := by
+  refine ⟨⟨fun S s => cast (congrArg F.obj.obj (Opposite.op_unop S))
+      (F.obj.map s.down.op x), ?_⟩⟩
+  intro S S' f; funext s
+  simp only [Function.comp, cast_eq]
+  show F.obj.map (s.down.op ≫ f) x = F.obj.map f (F.obj.map s.down.op x)
+  rw [F.obj.map_comp]; rfl
 
 private lemma pTC_inj (Y : Profinite.{u}) (F : CondensedSet.{u})
     (e1 e2 : profiniteToCondensed.obj Y ⟶ F)
@@ -145,6 +150,8 @@ private lemma pTC_inj (Y : Profinite.{u}) (F : CondensedSet.{u})
                (ULift.up (𝟭 (cH' Y))) from rfl, nat]; rfl
   rw [key e1, key e2, h]
 
+/-- Every morphism `profiniteFree X --> finFree T` factors through a finite level.
+Proved via discreteness of `finFree T`. -/
 lemma surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
     (h : (profiniteFree R).obj X ⟶ (finFree R).obj T) :
     ∃ (U₀ : FintypeCat.{u}) (q₀ : X ⟶ FintypeCat.toProfinite.obj U₀)
@@ -163,7 +170,7 @@ lemma surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
   let q_j := X.asLimitCone.π.app j
   let eta0 := buildEta (X.diagram.obj j) F_set elem₀
   let h₀ := ((Condensed.freeForgetAdjunction R).homEquiv _ _).symm eta0
-  refine ⟨X.fintypeDiagram.obj j, q_j, h₀, ?⟩
+  refine ⟨X.fintypeDiagram.obj j, q_j, h₀, ?_⟩
   have h_eq : h = ((Condensed.freeForgetAdjunction R).homEquiv _ _).symm eta_adj :=
     (Equiv.symm_apply_apply _ h).symm
   have eta_eq : eta_adj = profiniteToCondensed.map q_j ≫ eta0 :=
@@ -202,7 +209,7 @@ theorem profiniteSolid_fintype_isSolid (T : FintypeCat.{u}) :
     let h' : (profiniteFree R).obj X ⟶ (finFree R).obj T := h ≫ (finFreeIsoSolid R T).hom
     obtain ⟨U₀, q₀, h₀, hfact⟩ := surj_factor R T X h'
     refine ⟨(profiniteSolid R).map q₀ ≫ (finFreeIsoSolid R U₀).hom ≫
-            h₀ ≫ (finFreeIsoSolid R T).inv, ?⟩
+            h₀ ≫ (finFreeIsoSolid R T).inv, ?_⟩
     have step1 := congrArg (· ≫ h₀ ≫ (finFreeIsoSolid R T).inv) (sol_map_counit R U₀ X q₀)
     have step2 : (profiniteFree R).map q₀ ≫ h₀ ≫ (finFreeIsoSolid R T).inv = h := by
       have key2 := congrArg (· ≫ (finFreeIsoSolid R T).inv) hfact.symm
@@ -213,7 +220,7 @@ theorem profiniteSolid_fintype_isSolid (T : FintypeCat.{u}) :
 
 lemma isSolid_of_isLimit_gen {J : Type*} [Category J] {F : J ⥤ CondensedMod.{u} R}
     (c : Cone F) (hc : IsLimit c) (hj : ∀ j, (F.obj j).IsSolid) : c.pt.IsSolid := by
-  refine ⟨fun X => ?⟩
+  refine ⟨fun X => ?_⟩
   rw [isIso_iff_bijective]
   set sol := (profiniteSolidification R).app X
   have bijFun : ∀ j, Function.Bijective ((yoneda.obj (F.obj j)).map sol.op) := by
@@ -233,7 +240,7 @@ lemma isSolid_of_isLimit_gen {J : Type*} [Category J] {F : J ⥤ CondensedMod.{u
                 naturality := fun j k phi => by
                   change 𝟭 _ ≫ g_j k = g_j j ≫ F.map phi
                   simp only [Category.id_comp]; exact (compat phi).symm } }
-    refine ⟨hc.lift g_cone, ?⟩
+    refine ⟨hc.lift g_cone, ?_⟩
     apply hc.hom_ext; intro j
     rw [Category.assoc, hc.fac g_cone j]; exact hg_j j
 
