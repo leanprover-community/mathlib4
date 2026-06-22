@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Data.Int.SuccPred
+
 import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
