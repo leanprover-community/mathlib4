@@ -57,6 +57,8 @@ def buildEntries (env : Environment) : Array Json := Id.run do
 end ExportCrossRefs
 
 open ExportCrossRefs in
+-- TODO: consider moving to `importModules`, or managing with `lake`
+-- (see also environment linter internals, which may eventually do the latter)
 run_cmd do
   let entries := buildEntries (← getEnv)
   let now ← IO.Process.run { cmd := "date", args := #["-u", "+%Y-%m-%dT%H:%M:%SZ"] }
