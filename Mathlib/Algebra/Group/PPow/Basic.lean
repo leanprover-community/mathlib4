@@ -3,12 +3,16 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.PPow.Defs
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Algebra.Group.PPow.Defs
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # TODO : Fill in module docstring
 -/
+
+public section
 
 variable {M : Type*}
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.PNat.Notation
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.PNat.Notation
 
 /-!
 # Instances for `ℕ+`-indexed powers on semigroups
@@ -12,6 +14,8 @@ import Mathlib.Data.PNat.Notation
 Declared in a separate file to bootstrap the algebra hierarchy without
 requiring instances on `ℕ+`, which are usually inferred via inheriting from `ℕ`.
 -/
+
+public section
 
 variable {M : Type*}
 
