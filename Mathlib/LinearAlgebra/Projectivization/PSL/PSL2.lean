@@ -23,7 +23,7 @@ open scoped MatrixGroups
 namespace SL2Gen
 
 /-- A transvection `transvection i j hij b` lies in `lineStab (span F {Pi.single i 1})`. -/
-lemma transvection_mem_lineStab (i j : ι) (hij : i ≠ j) (b : F) :
+lemma transvection_mem_lineStab {i j : ι} (hij : i ≠ j) (b : F) :
     transvection hij b ∈ lineStab (Submodule.span F {(Pi.single i (1 : F) : ι → F)}) :=
   fun w ↦ Submodule.mem_span_singleton.2 ⟨b * w j, by simp [mul_smul,
     Matrix.SpecialLinearGroup.smul_def, transvection_coe, add_smul, Matrix.single_mulVec_eq]⟩
@@ -37,8 +37,8 @@ lemma transvection_mem_lineStab_sup (t : TransvectionStruct (Fin 2) F) :
   obtain ⟨i, j, hij, c⟩ := t
   simp only [Fin.isValue, TransvectionStruct.toSpecialLinearGroup_mk]
   fin_cases i <;> fin_cases j <;> try tauto
-  · exact Subgroup.mem_sup_left <| transvection_mem_lineStab 0 1 zero_ne_one c
-  · exact Subgroup.mem_sup_right <| transvection_mem_lineStab 1 0 one_ne_zero c
+  · exact Subgroup.mem_sup_left <| transvection_mem_lineStab zero_ne_one c
+  · exact Subgroup.mem_sup_right <| transvection_mem_lineStab one_ne_zero c
 
 /-- SL-level generation: in the 2-element-index case, the join of the two `lineStab` subgroups
 attached to the two coordinate axes is all of `SL ι F`. -/

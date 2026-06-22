@@ -633,8 +633,7 @@ lemma coeMonoidHom_apply (g : SpecialLinearGroup ι R) : coeMonoidHom g = (g : M
 lemma coeMonoidHom_injective : Function.Injective (coeMonoidHom : SpecialLinearGroup ι R → _) :=
   Subtype.val_injective
 
-private lemma diag_decompose {ι : Type*} [Fintype ι] [DecidableEq ι] (i₀ : ι) (D : ι → F)
-    (hD : det (diagonal D) = 1) :
+private lemma diag_decompose (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     Finset.prod {i | i ≠ i₀} (fun i k ↦ if k = i then D i else
       if k = i₀ then (D i)⁻¹ else 1 : ι → ι → F) = D := by
   rw [det_diagonal, show Finset.univ = insert i₀ ({i | i ≠ i₀} : Finset ι) by grind,
@@ -645,27 +644,24 @@ private lemma diag_decompose {ι : Type*} [Fintype ι] [DecidableEq ι] (i₀ : 
   · simpa [hx, hD, -Finset.prod_inv_distrib] using Finset.prod_congr rfl (by grind)
   · simp [hx]
 
-lemma diagonal_neZero {ι : Type*} [Fintype ι] [DecidableEq ι] (D : ι → F)
-    (hD : det (diagonal D) = 1) (j : ι) : D j ≠ 0 := fun h ↦ by
+lemma diagonal_neZero (D : ι → F) (hD : det (diagonal D) = 1) (j : ι) :
+    D j ≠ 0 := fun h ↦ by
   rw [det_diagonal, show Finset.univ = insert j ({i | i ≠ j} : Finset ι) by grind,
     Finset.prod_insert (by grind), h, zero_mul] at hD
   exact zero_ne_one hD
 
-/-- this lemma is given a junk namespace to prevent other uses. -/
-lemma junkProof.comm {ι : Type*} [Fintype ι] [DecidableEq ι] (i₀ : ι) (D : ι → F)
-    (hD : det (diagonal D) = 1) : (({i | i ≠ i₀} : Finset ι) : Set ι).Pairwise
-    (Function.onFun Commute fun i ↦ if hi : i ≠ i₀ then diag2n hi (D i)
-    (diagonal_neZero D hD i) else 1) := by
+lemma diag_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
+    (({i | i ≠ i₀} : Finset ι) : Set ι).Pairwise (Function.onFun Commute fun i ↦
+      if hi : i ≠ i₀ then diag2n hi (D i) (diagonal_neZero D hD i) else 1) := by
   intro i1 hi1 i2 hi2 hi12
   ext i j
   simp [apply_dite, diag2n_coe]
   split_ifs <;> simp [diagonal_apply]; grind
 
-lemma diag_eq_diag2n_prod {ι : Type*} [Fintype ι] [DecidableEq ι] (i₀ : ι) (D : ι → F)
-    (hD : det (diagonal D) = 1) :
+lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     (⟨diagonal D, hD⟩ : SpecialLinearGroup ι F) =
       Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
-      diag2n hi (D i) (diagonal_neZero D hD i) else 1) (junkProof.comm i₀ D hD) := by
+      diag2n hi (D i) (diagonal_neZero D hD i) else 1) (diag_commute i₀ D hD) := by
   classical
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
   apply coeMonoidHom_injective
@@ -682,8 +678,7 @@ lemma diag_eq_diag2n_prod {ι : Type*} [Fintype ι] [DecidableEq ι] (i₀ : ι)
   `Matrix.Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec`:
   every element of `SL(ι, F)` is a product of transvections,
   a diagonal matrix of determinant `1`, and transvections. -/
-theorem exists_list_transvec_mul_diagonal_mul_list_transvec {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (M : SpecialLinearGroup ι F) :
+theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : SpecialLinearGroup ι F) :
     ∃ (L L' : List (TransvectionStruct ι F)) (D : ι → F) (hD : det (diagonal D) = 1),
       M = (L.map TransvectionStruct.toSpecialLinearGroup).prod * ⟨diagonal D, hD⟩ *
         (L'.map TransvectionStruct.toSpecialLinearGroup).prod := by
@@ -692,9 +687,9 @@ theorem exists_list_transvec_mul_diagonal_mul_list_transvec {ι : Type*} [Fintyp
   simp_rw [coe_mul, ← coeMonoidHom_apply, map_list_prod, List.map_map, Function.comp_def,
     coeMonoidHom_apply, TransvectionStruct.toSpecialLinearGroup_coe, hM]
 
-theorem diagonal_transvection_induction' {ι : Type*} [Fintype ι] [DecidableEq ι] [Nontrivial ι]
-    (P : SpecialLinearGroup ι F → Prop) (M : SpecialLinearGroup ι F)
-    (hdiag : ∀ (i j : ι) (hij : i ≠ j) (a : F) (ha : a ≠ 0), P (diag2n hij a ha))
+theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup ι F → Prop)
+    (M : SpecialLinearGroup ι F)
+    (hdiag : ∀ (i j : ι) (hij : i ≠ j) {c : F} (hc : c ≠ 0), P (diag2n hij c hc))
     (htransvec : ∀ (i j : ι) (hij : i ≠ j) (a : F), P (transvection hij a))
     (hmul : ∀ A B, P A → P B → P (A * B)) : P M := by
   obtain ⟨i₀, j₀, hij₀⟩ := exists_pair_ne ι
