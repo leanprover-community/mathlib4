@@ -600,7 +600,7 @@ lemma diag2_coe' {a : F} (ha : a ≠ 0) :
   ext i j
   fin_cases i <;> fin_cases j <;> simp [diag2n_coe]
 
-lemma diag2_smul_single_i₁ (a : F) (ha : a ≠ 0) :
+lemma diag2_smul_single_i₁ {a : F} (ha : a ≠ 0) :
     diag2 a ha • (Pi.single 0 1 : Fin 2 → F) = a • Pi.single 0 (1 : F) := by
   ext k; fin_cases k <;> simp [Matrix.SpecialLinearGroup.smul_def, diag2_coe]
 
