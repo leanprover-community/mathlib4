@@ -27,7 +27,7 @@ permissions:
 
 env:
   # TODO: move to `leanprover-community/mathlib4-crossrefs` for the production deployment.
-  CROSSREFS_REPO: jcommelin/crossref-exports
+  CROSSREFS_REPO: leanprover-community/crossref-exports
 
 jobs:
   export:
