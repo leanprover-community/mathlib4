@@ -30,42 +30,55 @@ def_wanted IsAbelianGalois.conductor' [NumberField K] : ℕ :=
 
 end KroneckerWeber
 
-section HilberClassField
+namespace HilbertClassField
 
-def HilbertClassField (K : Type*) [Field K] [NumberField K] : Type := by sorry
+def_wanted HilbertClassField (K : Type*) [Field K] [NumberField K] : Type
 
 variable (K : Type*) [Field K] [NumberField K]
 
-instance : Field (HilbertClassField K) := sorry
+instance_wanted : Field (❰HilbertClassField❱ K)
 
-instance : Algebra K (HilbertClassField K) := sorry
+instance_wanted : Algebra K (❰HilbertClassField❱ K)
 
-instance : Module.Finite K (HilbertClassField K) := sorry
+instance_wanted : Module.Finite K (❰HilbertClassField❱ K)
 
-instance : NumberField (HilbertClassField K) := of_module_finite K (HilbertClassField K)
+instance_wanted instNumberField : NumberField (❰HilbertClassField❱ K) :=
+  of_module_finite K (❰HilbertClassField❱ K)
 
-instance : IsAbelianGalois K (HilbertClassField K) := sorry
+instance_wanted : IsAbelianGalois K (❰HilbertClassField❱ K)
 
-def HilbertClassField.galoisEquiv :
-  Gal((HilbertClassField K)/K) ≃* ClassGroup (𝓞 K) := sorry
+def_wanted HilbertClassField.galoisEquiv :
+  Gal((❰HilbertClassField❱ K)/K) ≃* ClassGroup (𝓞 K)
 
 open Algebra
 
-instance : Unramified (𝓞 K) (𝓞 (HilbertClassField K)) := sorry
+instance_wanted : Unramified (𝓞 K) (𝓞 (❰HilbertClassField❱ K))
 
-instance : IsUnramifiedAtInfinitePlaces K (HilbertClassField K) := sorry
+instance_wanted : IsUnramifiedAtInfinitePlaces K (❰HilbertClassField❱ K)
 
-proof_wanted HilbertClassField_eq_top (H : Type*) [Field H] [Algebra K H] [NumberField H]
-      [IsAbelianGalois K H] [Unramified (𝓞 K) (𝓞 (HilbertClassField K))]
-      [IsUnramifiedAtInfinitePlaces K (HilbertClassField K)] :
-    Nonempty (H ≃ₐ[K] HilbertClassField K)
+theorem_wanted eq_top (H : Type*) [Field H] [Algebra K H] [NumberField H]
+      [IsAbelianGalois K H] [Unramified (𝓞 K) (𝓞 H)] [IsUnramifiedAtInfinitePlaces K (H)] :
+    Nonempty (H ≃ₐ[K] ❰HilbertClassField❱ K)
 
-proof_wanted HilbertClassField.principal (P : Ideal (𝓞 K)) :
-  Submodule.IsPrincipal <| P.map (algebraMap (𝓞 K) (𝓞 (HilbertClassField K)))
+variable {K} in
+theorem_wanted principal (P : Ideal (𝓞 K)) :
+  Submodule.IsPrincipal <| P.map (algebraMap (𝓞 K) (𝓞 (❰HilbertClassField❱ K)))
 
--- theorem HilberClassField.extended : ClassGroup.extendedHom (𝓞 K) (𝓞 (HilbertClassField K)) = 1 := sorry
+#synth IsDedekindDomain (𝓞 K)
+theorem_wanted classGroupExtendedHom_eq_one :
+    ClassGroup.extendedHom (𝓞 K) (𝓞 (❰HilbertClassField❱ K)) = 1 := by
+  have := @ClassGroup.extendedHom_eq_one_of_forall_isPrincipal (𝓞 K) (𝓞 (❰HilbertClassField❱ K)) _ _
+    _ _ _ ?_
+  apply this
+  · intro I
+    have hpr := @principal K _ _ I ?_ _ _
+    sorry
+  -- apply isDedekindDom
+  have _ : NumberField (❰HilbertClassField❱ K) := instNumberField K
+  have := RingOfIntegers.instIsDedekindDomain (❰HilbertClassField❱ K)
 
-end HilberClassField
+
+end HilbertClassField
 
 end NumberField
 end
