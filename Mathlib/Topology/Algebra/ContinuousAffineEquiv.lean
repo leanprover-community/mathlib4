@@ -314,7 +314,7 @@ variable [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁]
 
 /-- The affine homeomorphism `V ≃ᴬ[k] P` given by `v ↦ v +ᵥ p`. This is `Equiv.vaddConst`
 as a `ContinuousAffineEquiv`. -/
-@[simps!]
+@[simps! apply symm_apply]
 def vaddConst (p : P₁) : V₁ ≃ᴬ[k] P₁ where
   __ := AffineEquiv.vaddConst k p
   __ := Homeomorph.vaddConst p
@@ -324,13 +324,13 @@ lemma toAffineEquiv_vaddConst {p : P₁} : vaddConst k p = AffineEquiv.vaddConst
 
 /-- The affine homeomorphism given by `p' ↦ p -ᵥ p'`. This is `Equiv.constVSub` as a
 `ContinuousAffineEquiv`. -/
-@[simps!]
+@[simps! apply symm_apply]
 def constVSub (p : P₁) : P₁ ≃ᴬ[k] V₁ where
   __ := AffineEquiv.constVSub k p
   __ := Homeomorph.constVSub p
 
 @[simp]
-lemma toAffineEquiv_constVSub {p : P₁} : vaddConst k p = AffineEquiv.vaddConst k p := rfl
+lemma toAffineEquiv_constVSub {p : P₁} : constVSub k p = AffineEquiv.constVSub k p := rfl
 
 /-- The affine homeomorphism given by reflection about the point `x`.
 This is `Equiv.pointReflection` as a `ContinuousAffineEquiv`. -/

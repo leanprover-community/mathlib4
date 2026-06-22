@@ -427,6 +427,7 @@ def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁ where
   map_vadd' _ _ := add_vadd _ _ _
 
 /-- `p' ↦ p -ᵥ p'` as an equivalence. -/
+@[simps! linear apply symm_apply]
 def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁ where
   toEquiv := Equiv.constVSub p
   linear := LinearEquiv.neg k
