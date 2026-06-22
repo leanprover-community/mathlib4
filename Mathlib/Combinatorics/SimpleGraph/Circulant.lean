@@ -6,7 +6,7 @@ Authors: Iván Renison, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Combinatorics.SimpleGraph.Cycle
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
 /-!
 # Definition of circulant graphs
