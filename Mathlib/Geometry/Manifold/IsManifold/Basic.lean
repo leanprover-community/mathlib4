@@ -996,11 +996,13 @@ end IsManifold
 
 namespace Homeomorph
 
-variable {N M 𝕜 E H : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [TopologicalSpace H]
-  [TopologicalSpace N] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} [TopologicalSpace M]
-  [ChartedSpace H M] {n : ℕ∞ω} [IsManifold I n M]
+variable {𝕜 E H M N : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  [TopologicalSpace M] [ChartedSpace H M] {n : ℕ∞ω}
+  [IsManifold I n M] [TopologicalSpace N]
 
-open IsManifold OpenPartialHomeomorph in lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N)
+open IsManifold OpenPartialHomeomorph in
+lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N)
     (e : OpenPartialHomeomorph N H) (he : letI := φ.chartedSpace H; e ∈ atlas H N) :
     φ.transOpenPartialHomeomorph e ∈ maximalAtlas I n M := by
   rcases he with ⟨q, he⟩
