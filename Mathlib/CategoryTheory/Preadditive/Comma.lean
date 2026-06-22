@@ -55,7 +55,7 @@ instance : AddCommGroup (u ⟶ v) where
   add_zero _ := by cat_disch
   add_comm _ _ := by ext <;> simp [add_comm]
   neg_add_cancel _ := by cat_disch
-  nsmul n α:= CommaMorphism.mk (n • α.left) (n • α.right)
+  nsmul n α := CommaMorphism.mk (n • α.left) (n • α.right)
     (by simp [Functor.map_nsmul, Preadditive.comp_nsmul, Preadditive.nsmul_comp])
   zsmul n α := CommaMorphism.mk (n • α.left) (n • α.right)
     (by simp [Functor.map_zsmul, Preadditive.comp_zsmul, Preadditive.zsmul_comp])
