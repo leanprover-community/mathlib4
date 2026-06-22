@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Preadditive.Basic
 # The category of arrows of a preadditive category is preadditive
 
 If `T` is a preadditive category, then there is a structure of preadditive category on `Arrow T`
-such that addition commutes with the left and right projections of arrows.
+such that addition commutes with the left and right projections of morphisms of arrows.
 
 ## Tags
 
