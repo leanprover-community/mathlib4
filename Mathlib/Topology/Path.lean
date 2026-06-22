@@ -63,7 +63,7 @@ structure Path (x y : X) extends C(I, X) where
 
 instance Path.instFunLike : FunLike (Path x y) I X where
   coe γ := ⇑γ.toContinuousMap
-  coe_injective' γ₁ γ₂ h := by
+  coe_injective γ₁ γ₂ h := by
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 

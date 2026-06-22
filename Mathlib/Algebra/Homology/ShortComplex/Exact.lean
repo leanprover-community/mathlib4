@@ -261,11 +261,11 @@ lemma Exact.isZero_of_both_zeros (ex : S.Exact) (hf : S.f = 0) (hg : S.g = 0) :
     IsZero S.X₂ :=
   (ShortComplex.HomologyData.ofZeros S hf hg).exact_iff.1 ex
 
-lemma Exact.isZero_of_both_isZero [HasZeroObject C] (ex : S.Exact)
-    (hX₁ : IsZero S.X₁) (hX₃ : IsZero S.X₃) : IsZero S.X₂ :=
-  ShortComplex.Exact.isZero_of_both_zeros ex
-    (zero_of_source_iso_zero S.f (IsZero.isoZero hX₁))
-    (zero_of_target_iso_zero S.g (IsZero.isoZero hX₃))
+/-- In an exact short complex, if the two outer objects are zero objects, then so is the
+middle object. -/
+lemma Exact.isZero_of_both_isZero (ex : S.Exact) (hX₁ : IsZero S.X₁) (hX₃ : IsZero S.X₃) :
+    IsZero S.X₂ :=
+  ex.isZero_of_both_zeros (hX₁.eq_zero_of_src _) (hX₃.eq_zero_of_tgt _)
 
 end
 

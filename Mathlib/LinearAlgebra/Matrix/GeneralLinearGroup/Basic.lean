@@ -46,7 +46,7 @@ lemma mem_center_iff_val_mem_range_scalar {g : GL n R} :
     refine Matrix.mem_range_scalar_of_commute_transvectionStruct fun t ↦ ?_
     simpa [Units.ext_iff] using! Subgroup.mem_center_iff.mp hg (.mk _ _ t.mul_inv t.inv_mul)
   · refine fun ⟨a, ha⟩ ↦ Subgroup.mem_center_iff.mpr fun h ↦ ?_
-    simpa [Units.ext_iff, ← ha] using! (scalar_commute a (mul_comm a ·) h.val).symm
+    simp [-scalar_apply, Units.ext_iff, ← ha, Matrix.scalar_comm a (Commute.all _)]
 
 @[deprecated (since := "2026-02-08")]
 alias mem_center_iff_val_eq_scalar := mem_center_iff_val_mem_range_scalar
@@ -74,8 +74,31 @@ lemma center_eq_range_scalar :
 @[deprecated (since := "2026-02-08")]
 alias center_eq_range_units := center_eq_range_scalar
 
+lemma map_center_le {S : Type*} [CommRing S] (f : R →+* S) :
+    Subgroup.center (GL n R) ≤ (Subgroup.center (GL n S)).comap (map f) := fun u hu ↦ by
+  simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
+    Subgroup.mem_comap] at hu ⊢
+  obtain ⟨r, rfl⟩ := hu
+  exact ⟨(Units.map f) r, GeneralLinearGroup.map_scalar _ _ |>.symm⟩
+
 end Center
 
 end GeneralLinearGroup
+
+lemma SpecialLinearGroup.toGL_mem_center_iff {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
+    (g : SpecialLinearGroup n R) :
+    toGL g ∈ Subgroup.center (GL n R) ↔ g ∈ Subgroup.center (SpecialLinearGroup n R) := by
+  if hn : IsEmpty n then simp [Subgroup.center_eq_top] else
+  replace hn : Nonempty n := by simpa using hn
+  obtain ⟨i⟩ := hn
+  simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
+    mem_center_iff, scalar_apply]
+  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r, by simpa [Units.ext_iff] using congr(GeneralLinearGroup.det $hr),
+    by simpa [Units.ext_iff] using hr⟩, fun ⟨r, hr1, hr⟩ ↦ ⟨⟨r, g⁻¹.1 i i, ?_, ?_⟩,
+      by simp [Units.ext_iff, hr]⟩⟩
+  · simpa [-mul_inv_cancel, ← hr, ← pow_succ',
+      Nat.sub_one_add_one Fintype.card_pos.ne.symm] using
+        Matrix.ext_iff.2 (Subtype.ext_iff.1 (mul_inv_cancel g)) i i
+  · simpa [-inv_mul_cancel, ← hr] using Matrix.ext_iff.2 (Subtype.ext_iff.1 (inv_mul_cancel g)) i i
 
 end Matrix

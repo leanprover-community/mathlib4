@@ -405,9 +405,9 @@ section ESeminormedAddMonoid
 variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 variable (α ε') in
-@[simp]
-theorem integrable_zero (μ : Measure α) : Integrable (fun _ => (0 : ε')) μ := by
-  simp [Integrable, aestronglyMeasurable_const]
+@[to_fun (attr := fun_prop, simp) integrable_fun_zero]
+theorem integrable_zero (μ : Measure α) : Integrable (0 : α → ε') μ := by
+  simp [Integrable, aestronglyMeasurable_zero]
 
 theorem Integrable.add' {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     HasFiniteIntegral (f + g) μ :=

@@ -64,7 +64,7 @@ theorem toDerivation_injective :
 
 instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
-  coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
+  coe_injective _ _ h := toDerivation_injective <| DFunLike.ext' h
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   map_add f := map_add f.1
