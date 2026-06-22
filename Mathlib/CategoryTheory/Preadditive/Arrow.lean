@@ -5,7 +5,6 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
@@ -70,5 +69,3 @@ instance {u v : Arrow T} : AddCommGroup (u ⟶ v) where
 instance : Preadditive (Arrow T) where
 
 end CategoryTheory
-
-#min_imports
