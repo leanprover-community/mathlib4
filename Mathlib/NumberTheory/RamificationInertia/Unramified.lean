@@ -76,7 +76,7 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
   refine this (H.trans (Ideal.pow_right_mono ?_ _))
   exact Ideal.map_le_iff_le_comap.mpr Ideal.LiesOver.over.le
 
-section IsUnramifiedOver
+section IsUnramifiedIn
 
 namespace Algebra
 
@@ -111,7 +111,7 @@ lemma isUnramifiedAt_iff_of_isDedekindDomain
 /-- In characteristic zero the generic point is unramified: if `S` is a domain that is integral
 over a characteristic-zero domain `R` and `R → S` is injective, then `S` is unramified at the zero
 ideal. -/
-theorem isUnramifiedAt_bot [IsDomain R] [IsDomain S] [FaithfulSMul R S] [CharZero R]
+theorem isUnramifiedAt_bot [IsDomain R] [IsDomain S] [Module.IsTorsionFree R S] [CharZero R]
     [Algebra.IsIntegral R S] : IsUnramifiedAt R (⊥ : Ideal S) := by
   have : IsFractionRing S (Localization.AtPrime (⊥ : Ideal S)) := by
     simpa [Ideal.primeCompl_bot] using Localization.isLocalization (M := (⊥ : Ideal S).primeCompl)
@@ -128,8 +128,8 @@ theorem isUnramifiedAt_bot [IsDomain R] [IsDomain S] [FaithfulSMul R S] [CharZer
   exact FormallyUnramified.comp R (FractionRing R) (Localization.AtPrime ⊥)
 
 /-- In characteristic zero, the zero ideal is unramified in an integral domain extension. -/
-theorem isUnramifiedOver_bot [IsDomain R] [IsDomain S] [FaithfulSMul R S] [CharZero R]
-    [Algebra.IsIntegral R S] : IsUnramifiedOver (⊥ : Ideal R) S := by
+theorem isUnramifiedIn_bot [IsDomain R] [IsDomain S] [FaithfulSMul R S] [CharZero R]
+    [Algebra.IsIntegral R S] : IsUnramifiedIn S (⊥ : Ideal R) := by
   intro P _ hP
   simpa [Ideal.eq_bot_of_liesOver_bot R P] using isUnramifiedAt_bot
 
@@ -137,10 +137,10 @@ theorem isUnramifiedOver_bot [IsDomain R] [IsDomain S] [FaithfulSMul R S] [CharZ
 ideal of `R`. Then `p` is unramified in `S` if and only if `S` is unramified at every maximal
 ideal `P` of `S` lying over `p`.
 
-See `Algebra.isUnramifiedOver_iff_forall_of_isDedekindDomain` if `R` is of characteristic zero. -/
-theorem isUnramifiedOver_iff_forall_of_isDedekindDomain' [IsDomain R] [IsDedekindDomain S]
+See `Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain` if `R` is of characteristic zero. -/
+theorem isUnramifiedIn_iff_forall_of_isDedekindDomain' [IsDomain R] [IsDedekindDomain S]
     [Module.IsTorsionFree R S] {p : Ideal R} (hp : p ≠ ⊥) :
-    IsUnramifiedOver p S ↔
+    IsUnramifiedIn S p ↔
       ∀ (P : Ideal S) (_ : P.IsMaximal), P.LiesOver p → IsUnramifiedAt R P :=
   ⟨fun h P hP hlo ↦ h P hP.isPrime hlo,
     fun h P hP hlo ↦ h P (hP.isMaximal (Ideal.ne_bot_of_liesOver_of_ne_bot hp P)) hlo⟩
@@ -148,9 +148,9 @@ theorem isUnramifiedOver_iff_forall_of_isDedekindDomain' [IsDomain R] [IsDedekin
 /-- Let `S` be a Dedekind domain that is integral and torsion-free over a characteristic-zero
 domain `R`. Then an ideal `p` of `R` is unramified in `S` if and only if `S` is unramified at every
 maximal ideal `P` of `S` lying over `p`. -/
-theorem isUnramifiedOver_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDomain S]
+theorem isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDomain S]
     [Module.IsTorsionFree R S] [CharZero R] [Algebra.IsIntegral R S] {p : Ideal R} :
-    IsUnramifiedOver p S ↔
+    IsUnramifiedIn S p ↔
       ∀ (P : Ideal S) (_ : P.IsMaximal), P.LiesOver p → IsUnramifiedAt R P := by
   refine ⟨fun h P hP hlo ↦ h P hP.isPrime hlo, fun h P hP hlo ↦ ?_⟩
   rcases eq_or_ne P ⊥ with rfl | hPbot
@@ -159,9 +159,9 @@ theorem isUnramifiedOver_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekind
 
 /-- For a prime `𝔓` of `S` lying over an unramified prime `𝔭` of `R`, the ramification index
 `e(𝔓 ∣ 𝔭)` equals `1`. -/
-theorem IsUnramifiedOver.ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S]
+theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S]
     [Module.IsTorsionFree R S] [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
-    [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedOver 𝔭 S) (h𝔭 : 𝔭 ≠ ⊥) {𝔓 : Ideal S}
+    [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) (h𝔭 : 𝔭 ≠ ⊥) {𝔓 : Ideal S}
     [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx 𝔭 𝔓 = 1 := by
   rw [(Ideal.liesOver_iff 𝔓 𝔭).mp hP]
   exact (isUnramifiedAt_iff_of_isDedekindDomain (Ideal.ne_bot_of_liesOver_of_ne_bot h𝔭 𝔓)).mp
@@ -169,10 +169,10 @@ theorem IsUnramifiedOver.ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S
 
 /-- A nonzero ideal of `R` is unramified in `S` if and only if every prime ideal of `S` lying
 over it has ramification index `1`. -/
-theorem isUnramifiedOver_iff_forall_ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S]
+theorem isUnramifiedIn_iff_forall_ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S]
     [Module.IsTorsionFree R S] [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} (h𝔭 : 𝔭 ≠ ⊥) :
-    IsUnramifiedOver 𝔭 S ↔
+    IsUnramifiedIn S 𝔭 ↔
       ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx 𝔭 𝔓 = 1 := by
   refine ⟨fun hunr 𝔓 _ hP ↦ hunr.ramificationIdx_eq_one h𝔭 hP, fun h 𝔓 _ hP ↦ ?_⟩
   apply (isUnramifiedAt_iff_of_isDedekindDomain
@@ -182,4 +182,4 @@ theorem isUnramifiedOver_iff_forall_ramificationIdx_eq_one [IsDomain R] [IsDedek
 
 end Algebra
 
-end IsUnramifiedOver
+end IsUnramifiedIn
