@@ -84,7 +84,7 @@ section Arrow
 
 /-- If a category `T` is preadditive, then so is its category of arrows.
 -/
-instance : Preadditive (Arrow T) := instPreadditiveComma ..
+instance : Preadditive (Arrow T) := inferInstanceAs (Preadditive (Comma (𝟭 T) (𝟭 T)))
 
 variable {u v : Arrow T}
 
