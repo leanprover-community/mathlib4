@@ -358,13 +358,15 @@ theorem ContinuousAt.prodMap' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : 
     (hg : ContinuousAt g y) : ContinuousAt (Prod.map f g) (x, y) :=
   hf.prodMap hg
 
+@[simp]
 theorem continuousAt_prodMap_iff {f : X → Z} {g : Y → W} {x : X} {y : Y} :
     ContinuousAt (Prod.map f g) (x, y) ↔ ContinuousAt f x ∧ ContinuousAt g y := by
- simp [ContinuousAt, nhds_prod_eq, tendsto_iff_comap, comap_prodMap_prod]
+  simp [ContinuousAt, nhds_prod_eq, tendsto_iff_comap, comap_prodMap_prod]
 
+@[simp]
 theorem continuous_prodMap_iff [Nonempty Z] [Nonempty W] {f : Z → X} {g : W → Y} :
     Continuous (Prod.map f g) ↔ Continuous f ∧ Continuous g := by
- simp [continuous_iff_continuousAt, continuousAt_prodMap_iff, forall_and]
+  simp [continuous_iff_continuousAt, forall_and]
 
 theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
     (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
@@ -603,6 +605,7 @@ protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap 
   rw [nhds_prod_eq, nhds_prod_eq, ← Filter.prod_map_map_eq']
   exact Filter.prod_mono (hf.nhds_le a) (hg.nhds_le b)
 
+@[simp]
 theorem isOpenMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
     IsOpenMap (Prod.map f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.prodMap hg⟩
@@ -634,6 +637,7 @@ theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotie
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
 
+@[simp]
 theorem isOpenQuotientMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
     IsOpenQuotientMap (Prod.map f g) ↔ IsOpenQuotientMap f ∧ IsOpenQuotientMap g := by
   have : Nonempty Y := .map f inferInstance
