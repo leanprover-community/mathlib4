@@ -7289,6 +7289,7 @@ public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.GRewrite.Core
 public import Mathlib.Tactic.GRewrite.Elab
 public import Mathlib.Tactic.Generalize
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Group
 public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
