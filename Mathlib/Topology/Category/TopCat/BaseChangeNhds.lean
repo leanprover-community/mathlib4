@@ -80,4 +80,3 @@ instance {K : Compacts α} [T2Space α] : K.mono_oRcNhds_to_compactNhds.functor.
 end Compacts
 
 end TopologicalSpace
-#lint
