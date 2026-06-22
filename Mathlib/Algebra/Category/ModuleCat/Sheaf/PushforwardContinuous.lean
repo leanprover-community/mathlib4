@@ -95,16 +95,6 @@ noncomputable def overPullback [Limits.HasPullbacks D] {X Y : D} (f : X ⟶ Y) :
     SheafOfModules.{v} (R.over X) ⥤ SheafOfModules.{v} (R.over Y) :=
   pushforward (F := Over.pullback f) (Sheaf.toPushforwardOverPullback R f)
 
-@[simp]
-lemma overFunctor_obj (X : D) (M : SheafOfModules.{v} R) :
-    (SheafOfModules.overFunctor R X).obj M = M.over X :=
-  rfl
-
-@[simp]
-lemma overFunctor_map (X : D) {M N : SheafOfModules.{v} R} (f : M ⟶ N) :
-    (SheafOfModules.overFunctor R X).map f = f.over X :=
-  rfl
-
 section
 
 variable (R) in
