@@ -5590,7 +5590,7 @@ public import Mathlib.MeasureTheory.Measure.TightNormed
 public import Mathlib.MeasureTheory.Measure.Tilted
 public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
@@ -7289,6 +7289,7 @@ public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.GRewrite.Core
 public import Mathlib.Tactic.GRewrite.Elab
 public import Mathlib.Tactic.Generalize
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Group
 public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums

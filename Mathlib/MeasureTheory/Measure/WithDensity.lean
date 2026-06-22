@@ -160,8 +160,12 @@ theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeas
   rw [← A, ← B]
   exact withDensity_apply _ (measurableSet_toMeasurable μ s)
 
-instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
+instance nullSingletonClass_withDensity [NullSingletonClass μ] (f : α → ℝ≥0∞) :
+    NullSingletonClass (μ.withDensity f) where
   measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
+
+@[deprecated (since := "2026-06-09")]
+alias noAtoms_withDensity := nullSingletonClass_withDensity
 
 @[simp]
 theorem withDensity_zero : μ.withDensity 0 = 0 := by
