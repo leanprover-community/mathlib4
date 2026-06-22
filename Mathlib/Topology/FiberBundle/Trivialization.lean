@@ -660,9 +660,9 @@ theorem symm_coe_proj {x : B} {y : F} (e : Trivialization F (π F E)) (h : x ∈
     (e.toOpenPartialHomeomorph.symm (x, y)).1 = x :=
   e.proj_symm_apply' h
 
-section Zero
+section Nonempty
 
-variable [∀ x, Zero (E x)]
+variable [∀ x, Nonempty (E x)]
 
 /-- A fiberwise inverse to `e'`. The function `F → E x` that induces a local inverse
 `B × F → TotalSpace F E` of `e'` on `e'.baseSet`. It takes on junk values chosen using
@@ -704,7 +704,7 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
   rw [← e.target_eq]
   exact e.toOpenPartialHomeomorph.continuousOn_symm
 
-end Zero
+end Nonempty
 
 /-- If `e` is a `Trivialization` of `proj : Z → B` with fiber `F` and `h` is a homeomorphism
 `F ≃ₜ F'`, then `e.trans_fiber_homeomorph h` is the trivialization of `proj` with the fiber `F'`
