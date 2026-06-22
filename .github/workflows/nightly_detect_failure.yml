@@ -133,11 +133,27 @@ jobs:
     - name: Update the nightly-testing-green branch
       continue-on-error: true
       run: |
-        # The `nightly-testing-green` branch keeps a record of the successfully built commits on `nightly-testing`.
-        # This is allowed to fail, because it might happen that an earlier commit finishes CI later,
-        # we don't want to force push and revert the history.
-        # In case `nightly-testing` does have its history rewritten, we do a force push once a day.
-        git push origin HEAD:nightly-testing-green
+        # `nightly-testing-green` records the latest successfully built `nightly-testing` commit;
+        # live.lean-lang.org and the prebuilt CI tools read from it. Normally a fast-forward, but
+        # if `nightly-testing`'s history is rewritten (e.g. a toolchain reset to an rc) the branch
+        # diverges and a plain push is rejected forever, freezing it. Recover by force-pushing, but
+        # only when the tested commit is strictly newer than the current tip (by committer date), so
+        # an out-of-order CI completion (older commit finishing after a newer one) can't roll back.
+        if git push origin HEAD:nightly-testing-green; then
+          exit 0
+        fi
+        git fetch origin nightly-testing-green
+        tip="$(git rev-parse FETCH_HEAD)"
+        head_ct="$(git show -s --format=%ct HEAD)"
+        tip_ct="$(git show -s --format=%ct "$tip")"
+        if git merge-base --is-ancestor HEAD "$tip"; then
+          echo "nightly-testing-green is ahead of the tested commit; leaving it alone."
+        elif (( head_ct > tip_ct )); then
+          echo "nightly-testing-green diverged; force-pushing to the newer tested commit."
+          git push --force-with-lease=refs/heads/nightly-testing-green:"$tip" origin HEAD:nightly-testing-green
+        else
+          echo "nightly-testing-green is newer than the tested commit; leaving it alone."
+        fi
     - name: Create a nightly-testing-YYYY-MM-DD tag
       id: tag
       run: |
@@ -162,14 +178,12 @@ jobs:
                   exit 1
                 fi
               fi
-              # Fast-forward `nightly-testing-daily` and `nightly-testing-green` to the tested SHA.
-              # Since we now pin to the SHA whose CI succeeded (which may be older than the current
-              # tip of `nightly-testing` if a CI run for an older commit finishes after a newer one),
-              # we must NOT force-push here, or we'd roll the tracking branches backwards.
-              # If the push isn't a fast-forward, leave the branch alone; the daily force-push
-              # job handles the rare case where `nightly-testing` history has been rewritten.
+              # Fast-forward `nightly-testing-daily` to the tested SHA. We pin to the SHA whose CI
+              # succeeded, which may be older than the current `nightly-testing` tip if an older
+              # commit's CI finishes after a newer one's, so don't force-push here or we'd roll the
+              # branch backwards. (`nightly-testing-green` is advanced, with recovery from a history
+              # rewrite, by the `Update the nightly-testing-green branch` step above.)
               git push origin HEAD:nightly-testing-daily || echo "Skipping nightly-testing-daily update: not a fast-forward."
-              git push origin HEAD:nightly-testing-green || echo "Skipping nightly-testing-green update: not a fast-forward."
               hash="$(git rev-parse "nightly-testing-${version}")"
               curl -X POST "https://speed.lean-lang.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
           fi
