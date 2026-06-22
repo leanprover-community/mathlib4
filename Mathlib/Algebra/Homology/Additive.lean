@@ -144,9 +144,8 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] :
     (F.mapHomologicalComplex c).Faithful where
   map_injective {K L} f₁ f₂ h := by
-    ext n
-    apply F.map_injective
-    exact (HomologicalComplex.eval W c n).congr_map h
+    ext
+    exact F.map_injective ((HomologicalComplex.eval W c _).congr_map h)
 
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] [F.Full] :
     (F.mapHomologicalComplex c).Full where
