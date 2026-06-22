@@ -25,9 +25,9 @@ In addition to the above, this file provides two important definitions.
   `T_v V ≅ V` for each `v : V`. In Lean, we post-compose the differential `mfderiv% f x` with
   `NormedSpace.fromTangentSpace`. If `V` is a field, this coincides with the exterior derivative
   of `f` as a section of the cotangent bundle.
-  There is notation `d%f` for `mvfderiv I f` via a custom elaborator scoped to the
+  There is notation `d% f` for `mvfderiv I f` via a custom elaborator scoped to the
   `Manifold` namespace, with a corresponding delaborator,
-* `mvfderivWithin` with notation `d[s]f` for `mvfderivWithin I f s` in the `Manifold` namespace:
+* `mvfderivWithin` with notation `d[s] f` for `mvfderivWithin I f s` in the `Manifold` namespace:
   the analogous concept within a set, with analogous API lemmas
 
 ## Main results
