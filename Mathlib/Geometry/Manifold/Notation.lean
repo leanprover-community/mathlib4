@@ -430,11 +430,8 @@ where
         -- on the nose.
         let some K ← guessBaseFieldForNormedSpace F
           | throwError "Couldn't find a `NormedSpace` structure on `{F}`"
-        let kT : Term ← Term.exprToSyntax K
-        let modelIT : Term ← Term.exprToSyntax baseModel
-        let FT : Term ← Term.exprToSyntax F
-        let iTerm : Term ← ``(ModelWithCorners.prod $modelIT 𝓘($kT, $FT))
-        Term.elabTerm iTerm none
+        let tgtMod ← mkAppOptM ``modelWithCornersSelf #[K, none, F, none, none]
+        mkAppM ``ModelWithCorners.prod  #[baseModel, tgtMod]
       | _ =>
         throwError s!"{e} is a TotalSpace {F} {V}, but {V} is not a pi type --- \
           could not infer base of the bundle"
