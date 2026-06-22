@@ -585,6 +585,31 @@ def homMk : M ⟶ N where
 lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGrpCat).map (homMk φ hφ) = φ := rfl
 
+def isoMk (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    M ≅ N :=
+  LinearEquiv.toModuleIso
+    { __ := φ.addCommGroupIsoToAddEquiv
+      map_smul' r x := congr($(hφ r) x).symm }
+
+@[simp]
+lemma isoMk_hom (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    (isoMk φ hφ).hom = homMk φ.hom hφ :=
+  rfl
+
+@[simp]
+lemma isoMk_inv (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    (isoMk φ hφ).inv = homMk φ.inv (ModuleCat.smul_naturality (isoMk φ hφ).inv) :=
+  rfl
+
+@[simp]
+lemma isoMk_symm (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    (isoMk φ hφ).symm = isoMk φ.symm (ModuleCat.smul_naturality (isoMk φ hφ).inv) :=
+  rfl
+
 end
 
 instance : (forget (ModuleCat.{v} R)).ReflectsIsomorphisms where

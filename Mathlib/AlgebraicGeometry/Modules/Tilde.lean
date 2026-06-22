@@ -937,24 +937,6 @@ lemma aux_basicOpen_of_aux_restrict (M : (Spec R).Modules) (g : R)
     exact this
 
 set_option backward.isDefEq.respectTransparency false in
-lemma _root_.TopologicalSpace.Opens.coversTop_iff {X : Type*} [TopologicalSpace X] {ι : Type*}
-    (U : ι → TopologicalSpace.Opens X) :
-    (Opens.grothendieckTopology X).CoversTop U ↔ IsOpenCover U := by
-  rw [GrothendieckTopology.coversTop_iff_of_isTerminal _ ⊤ isTerminalTop]
-  dsimp [Opens.grothendieckTopology]
-  rw [IsOpenCover, eq_top_iff, SetLike.le_def]
-  simp only [exists_and_right, Opens.mem_top, Opens.mem_iSup, forall_const]
-  refine ⟨?_, ?_⟩
-  · intro h x
-    obtain ⟨V, ⟨u, ⟨i, ⟨hi⟩⟩⟩, hx⟩ := h x trivial
-    use i
-    apply leOfHom hi
-    exact hx
-  · intro hU x hx
-    obtain ⟨i, hi⟩ := hU (x := x)
-    exact ⟨U i, ⟨homOfLE le_top, ⟨i, ⟨𝟙 _⟩⟩⟩, hi⟩
-
-set_option backward.isDefEq.respectTransparency false in
 lemma aux_basicOpen_of_presentation (g : R)
     (h : (M.restrict <| Spec.map (CommRingCat.ofHom <|
       algebraMap R (Localization.Away g))).Presentation) :
@@ -966,56 +948,6 @@ lemma aux_basicOpen_of_presentation (g : R)
   rw [isIso_fromTildeΓ_iff_isLocalizing, isLocalizing_iff_aux] at this
   apply aux_basicOpen_of_aux_restrict
   exact this
-
-lemma _root_.TopologicalSpace.Opens.IsBasis.exists_iSup_eq
-    {X : Type u} [TopologicalSpace X] {ι : Type*}
-    {U : ι → TopologicalSpace.Opens X}
-    (hU : TopologicalSpace.Opens.IsBasis (Set.range U))
-    (W : TopologicalSpace.Opens X) :
-    ∃ (κ : Type u) (a : κ → ι), W = ⨆ (k : κ), U (a k) := by
-  obtain ⟨Us, hsub, hUs⟩ := Opens.isBasis_iff_cover.mp hU W
-  choose a ha using hsub
-  use Us, fun i ↦ a i.2
-  rw [hUs]
-  dsimp only
-  simp_rw [ha, sSup_eq_iSup' Us]
-
-def _root_.ModuleCat.isoMk {R : Type*} [Ring R] {M N : ModuleCat R}
-    (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
-    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
-    M ≅ N :=
-  LinearEquiv.toModuleIso
-    { __ := φ.addCommGroupIsoToAddEquiv
-      map_smul' r x := congr($(hφ r) x).symm }
-
-@[simp]
-lemma _root_.ModuleCat.isoMk_hom {R : Type*} [Ring R] {M N : ModuleCat R}
-    (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
-    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
-    (ModuleCat.isoMk φ hφ).hom = ModuleCat.homMk φ.hom hφ :=
-  rfl
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-def Scheme.Modules.restrictUnitIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
-    Scheme.Modules.restrict (.unit <| Y.ringCatSheaf) f ≅ (.unit <| X.ringCatSheaf) := by
-  refine (SheafOfModules.fullyFaithfulForget _).preimageIso <|
-    PresheafOfModules.isoMk (fun U ↦ ?_) ?_
-  · refine ModuleCat.isoMk
-      ((forget₂ CommRingCat RingCat ⋙ forget₂ _ Ab).mapIso (f.appIso U.unop)) ?_
-    dsimp [restrict, restrictFunctor, SheafOfModules.pushforward]
-    intro r
-    ext x
-    dsimp at x
-    simp only [AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply]
-    change r * _ = (f.appIso U.unop).hom (_ * _)
-    rw [map_mul]
-    congr 1
-    exact (CommRingCat.hom_inv_apply (Hom.appIso f (unop U)) r).symm
-  · intros U V g
-    ext
-    change (Y.presheaf.map _ ≫ (f.appIso _).hom) _ = ((f.appIso U.unop).hom ≫ X.presheaf.map g) _
-    simp [Hom.appIso_hom']
 
 def Scheme.Modules.overEquiv {X : Scheme.{u}} (U : X.Opens) :
     SheafOfModules (X.ringCatSheaf.over U) ≌ (U : Scheme.{u}).Modules :=
@@ -1211,7 +1143,7 @@ instance isIso_fromTildeΓ_of_isQuasicoherent [M.IsQuasicoherent] : IsIso M.from
   choose κ a ha using fun i ↦ PrimeSpectrum.isBasis_basic_opens.exists_iSup_eq (W i)
   refine Aux.of_le_iSup _ isCompact_univ
       (fun (j : Sigma κ) ↦ basicOpen (a _ j.2)) ?_ ?_
-  · rw [TopologicalSpace.Opens.coversTop_iff, IsOpenCover] at cov
+  · rw [Opens.coversTop_iff, IsOpenCover] at cov
     rw [top_le_iff, iSup_sigma, ← cov]
     exact iSup_congr fun i ↦ (ha i).symm
   · intro i
