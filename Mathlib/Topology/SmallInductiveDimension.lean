@@ -90,7 +90,7 @@ instance (n : ℕ) [IsEmpty X] : HasSmallInductiveDimensionLT X n :=
 variable (X) in
 /-- The small inductive dimension of a topological space. -/
 noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
-  sInf {n : WithBot ℕ∞ | ∀ i : ℕ, n < i → HasSmallInductiveDimensionLT X i}
+  sInf {n | ∀ i : ℕ, n < i → HasSmallInductiveDimensionLT X i}
 
 @[simp]
 theorem smallInductiveDimension_eq_bot : smallInductiveDimension X = ⊥ ↔ IsEmpty X where
