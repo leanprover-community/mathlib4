@@ -16,9 +16,7 @@ public import Mathlib.RingTheory.Flat.Basic
 
 Given algebras `R → S → T`, the Jacobi-Zariski exact sequence is a long exact sequence
 relating the first homology of the naive cotangent complexes and Kaehler differentials of
-the respective algebras.
-
-It takes the form:
+the respective algebras. It takes the form:
 ```
 H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0
 ```
