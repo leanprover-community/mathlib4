@@ -370,6 +370,7 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
     TermElabM (Option FindModelResult) := do
+  if let some m ← tryStrategy "instance assumption" fromAssumption      then return some m
   if let some m ← tryStrategy "TotalSpace"          fromTotalSpace      then return some m
   if let some m ← tryStrategy "TangentBundle"       fromTangentBundle   then return some m
   if let some m ← tryStrategy "NormedSpace"         fromNormedSpace     then return some m
@@ -389,6 +390,19 @@ def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
+  /-- Attempt to find a model with corners on `M` by looking for an `IsManifold I _ M` hypothesis
+  in the local context. -/
+  fromAssumption : TermElabM FindModelResult := do
+    let some I ← findSomeLocalInstanceOf? ``IsManifold fun inst type ↦ do
+        match_expr type with
+        | IsManifold _k _ _E _ _ _H _ I _n M _ _ =>
+          trace[Elab.DiffGeo.MDiff] "trying `IsManifold` instance `{inst}` of type `{type}`"
+          if ← withReducible (pureIsDefEq M e) then return some I
+          else return none
+        | _ => return none
+      | throwError "Couldn't find an `IsManifold` hypothesis involving `{e}` among local instances."
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a manifold over the model with corners `{I}`"
+    return { model := I }
   /-- Attempt to find a model from a `TotalSpace` first by attempting to use any provided
   `baseInfo`, then by seeing if it is the total space of a tangent bundle. -/
   fromTotalSpace : TermElabM FindModelResult := do
