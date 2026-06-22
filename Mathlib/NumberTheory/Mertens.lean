@@ -251,8 +251,8 @@ private lemma continuousOn_log_Ioi_one : ContinuousOn log (.Ioi 1) :=
   continuousOn_log.mono (by grind)
 
 @[fun_prop]
-private lemma continuousOn_log_inv_Ioi_one : ContinuousOn inv_log (.Ioi 1) :=
-  continuousOn_log_Ioi_one.inv₀ (by simp; grind)
+private lemma continuousOn_inv_log : ContinuousOn inv_log (.Ioi 1) :=
+  differentiableOn_inv_log.continuousOn
 
 @[fun_prop]
 private lemma continuousOn_inv_Ioi_one : ContinuousOn inv (.Ioi 1) :=
