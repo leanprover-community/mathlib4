@@ -424,6 +424,11 @@ def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b
 
 variable {R}
 
+@[simp]
+theorem symmL_apply (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
+    (y : F) : e.symmL R b y = e.symm b y :=
+  e.toPretrivialization.symmₗ_apply R hb y
+
 theorem symmL_continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) (y : E b) : e.symmL R b (e.continuousLinearMapAt R b y) = y :=
   e.symmₗ_linearMapAt hb y
@@ -443,7 +448,7 @@ def continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : 
     invFun := e.symm b -- given explicitly to help `simps`
     continuous_toFun := (e.continuousOn.comp_continuous
       (FiberBundle.totalSpaceMk_isInducing F E b).continuous fun _ => e.mem_source.mpr hb).snd
-    continuous_invFun := (e.symmL R b).continuous }
+    continuous_invFun := by convert (e.symmL R b).continuous; ext; simp [hb] }
 
 theorem coe_continuousLinearEquivAt_eq (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) :
@@ -456,12 +461,13 @@ theorem coe_continuousLinearEquivAt_eq' (e : Trivialization F (π F E)) [e.IsLin
   DFunLike.coe_injective (e.coe_linearMapAt_of_mem hb).symm
 
 theorem symm_continuousLinearEquivAt_eq (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
-    (hb : b ∈ e.baseSet) : ((e.continuousLinearEquivAt R b hb).symm : F → E b) = e.symmL R b :=
-  rfl
+    (hb : b ∈ e.baseSet) : ((e.continuousLinearEquivAt R b hb).symm : F → E b) = e.symmL R b := by
+  ext; simp [hb]
 
 theorem symm_continuousLinearEquivAt_eq' (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
-    (hb : b ∈ e.baseSet) : ((e.continuousLinearEquivAt R b hb).symm : F →L[R] E b) = e.symmL R b :=
-  rfl
+    (hb : b ∈ e.baseSet) :
+    ((e.continuousLinearEquivAt R b hb).symm : F →L[R] E b) = e.symmL R b := by
+  ext; simp [hb]
 
 @[simp]
 theorem continuousLinearEquivAt_apply' (e : Trivialization F (π F E)) [e.IsLinear R]
@@ -761,7 +767,7 @@ theorem trivializationAt_continuousLinearMapAt {b₀ b : B}
 theorem localTriv_symmL {b : B} (hb : b ∈ (Z.localTriv i).baseSet) :
     (Z.localTriv i).symmL R b = Z.coordChange i (Z.indexAt b) b := by
   ext1 v
-  rw [(Z.localTriv i).symmL_apply R, (Z.localTriv i).symm_apply]
+  rw [(Z.localTriv i).symmL_apply hb, (Z.localTriv i).symm_apply]
   exacts [rfl, hb]
 
 @[simp, mfld_simps]

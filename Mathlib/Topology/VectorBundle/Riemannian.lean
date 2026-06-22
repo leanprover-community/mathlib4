@@ -183,7 +183,8 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
   let w := (trivializationAt F E x).continuousLinearMapAt ℝ y v
   suffices ‖((trivializationAt F E x).symmL ℝ x) w‖ ^ 2 ≤ r' ^ 2 * ‖v‖ ^ 2 from
     le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
-  simp only [Trivialization.symmL_apply, ← real_inner_self_eq_norm_sq, hg]
+  simp only [Trivialization.symmL_apply, mem_baseSet_trivializationAt,
+    ← real_inner_self_eq_norm_sq, hg]
   have hgy : g y v v = g' y w w := by
     rw [inCoordinates_apply_eq₂ h'y h'y (Set.mem_univ _)]
     have A : ((trivializationAt F E x).symm y)
@@ -229,7 +230,7 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
     ext v
     have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
     simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
-      Function.comp_apply, coe_id', id_eq]
+      mem_baseSet_trivializationAt, Function.comp_apply, coe_id', id_eq]
     convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
     simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).continuousLinearMapAt ℝ y =
@@ -286,7 +287,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
   let w := (trivializationAt F E x).continuousLinearMapAt ℝ x v
   suffices ‖((trivializationAt F E x).symmL ℝ y) w‖ ^ 2 ≤ r' ^ 2 * ‖v‖ ^ 2 from
     le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
-  simp only [Trivialization.symmL_apply, ← real_inner_self_eq_norm_sq, hg]
+  simp only [Trivialization.symmL_apply, h'y, ← real_inner_self_eq_norm_sq, hg]
   have hgx : g x v v = g' x w w := by
     rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
     have A : ((trivializationAt F E x).symm x)
@@ -334,7 +335,7 @@ lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
     ext v
     have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
     simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
-      Function.comp_apply, coe_id', id_eq]
+      mem_baseSet_trivializationAt, Function.comp_apply, coe_id', id_eq]
     convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
     simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).symmL ℝ y =

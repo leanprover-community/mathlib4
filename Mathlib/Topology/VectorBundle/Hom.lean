@@ -153,10 +153,9 @@ theorem continuousLinearMapCoordChange_apply (b : B)
   simp_rw [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
     ContinuousLinearEquiv.arrowCongrSL_apply, continuousLinearMap_apply,
     continuousLinearMap_symm_apply' σ e₁ e₂ hb.1, comp_apply, ContinuousLinearEquiv.coe_coe,
-    ContinuousLinearEquiv.symm_symm, Trivialization.continuousLinearMapAt_apply,
-    Trivialization.symmL_apply]
-  rw [e₂.coordChangeL_apply e₂', e₁'.coordChangeL_apply e₁, e₁.coe_linearMapAt_of_mem hb.1.1,
-    e₂'.coe_linearMapAt_of_mem hb.2.2]
+    ContinuousLinearEquiv.symm_symm, Trivialization.continuousLinearMapAt_apply]
+  rw [e₂.symmL_apply hb.1.2, e₁'.symmL_apply hb.2.1, e₂.coordChangeL_apply e₂',
+    e₁'.coordChangeL_apply e₁, e₁.coe_linearMapAt_of_mem hb.1.1, e₂'.coe_linearMapAt_of_mem hb.2.2]
   exacts [⟨hb.2.1, hb.1.1⟩, ⟨hb.1.2, hb.2.2⟩]
 
 end Bundle.Pretrivialization
@@ -206,7 +205,8 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
     convert this
     ext f
     dsimp [Pretrivialization.continuousLinearMap_apply]
-    rw [Trivialization.linearMapAt_def_of_mem _ (mem_baseSet_trivializationAt _ _ _)]
+    simp only [Trivialization.symmL_apply, mem_baseSet_trivializationAt,
+      Trivialization.linearMapAt_def_of_mem]
     rfl
 
 /-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
@@ -518,7 +518,7 @@ theorem inCoordinates_apply_eq₂
     (trivializationAt F₃ E₃ x₀).linearMapAt 𝕜 x
       (ϕ ((trivializationAt F₁ E₁ x₀).symm x v) ((trivializationAt F₂ E₂ x₀).symm x w)) := by
   rw [inCoordinates_eq h₁x (by simp [h₂x, h₃x])]
-  simp [hom_trivializationAt, Trivialization.continuousLinearMap_apply]
+  simp [hom_trivializationAt, Trivialization.continuousLinearMap_apply, h₂x]
 
 end TwoVariables
 
