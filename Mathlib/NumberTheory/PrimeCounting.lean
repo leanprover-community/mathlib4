@@ -160,7 +160,8 @@ lemma one_lt_of_mem_primesBelow (hp : p ∈ n.primesBelow) : 1 < p :=
 
 lemma one_lt_of_mem_primesLE (hp : p ∈ n.primesLE) : 1 < p := one_lt_of_mem_primesBelow hp
 
-lemma two_le_of_mem_primesBelow (hp : p ∈ n.primesBelow) : 2 ≤ p := one_lt_of_mem_primesBelow hp
+lemma two_le_of_mem_primesBelow (hp : p ∈ n.primesBelow) : 2 ≤ p :=
+  (prime_of_mem_primesBelow hp).two_le
 
 lemma two_le_of_mem_primesLE (hp : p ∈ n.primesLE) : 2 ≤ p := two_le_of_mem_primesBelow hp
 
@@ -196,9 +197,9 @@ lemma primesBelow_eq_filter_Ico_two : n.primesBelow = filter Prime (Ico 2 n) :=
 lemma primesLE_eq_filter_Icc_two : n.primesLE = filter Prime (Icc 2 n) :=
   primesLE_eq_filter_Ioc_one n
 
-lemma primesBelow_mono : Monotone primesBelow := by intro _ _ _ _; grind [mem_primesBelow]
+lemma primesBelow_mono : Monotone primesBelow := fun _ _ _ _ ↦ by grind [mem_primesBelow]
 
-lemma primesLE_mono : Monotone primesLE := by intro _ _ _ _; grind [mem_primesLE]
+lemma primesLE_mono : Monotone primesLE := fun _ _ _ _ ↦ by grind [mem_primesLE]
 
 lemma primesBelow_succ : (n + 1).primesBelow =
     if n.Prime then insert n n.primesBelow else n.primesBelow := by
