@@ -37,20 +37,36 @@ instance : Add { x : M // 0 < x } :=
 theorem coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
   rfl
 
+instance : SMul ℕ+ { x : M // 0 < x } :=
+  ⟨fun n x => ⟨n • (x : M), by
+    rcases n with ⟨n, h⟩
+    simp only [← nsmul_val_eq_psmul, mk_coe]
+    induction n with
+    | zero => exact absurd h (by decide)
+    | succ n IH =>
+      rcases n with - | n
+      · simp [one_nsmul, x.2]
+      · simpa [succ_nsmul _ (n + 1)] using add_pos (IH (Nat.zero_lt_succ n)) x.2
+  ⟩⟩
+
+@[simp, norm_cast]
+lemma coe_psmul (n : ℕ+) (x : { x : M // 0 < x }) : ↑(n • x) = (n • x : M) :=
+  rfl
+
 instance addSemigroup : AddSemigroup { x : M // 0 < x } := fast_instance%
-  Subtype.coe_injective.addSemigroup _ coe_add
+  Subtype.coe_injective.addSemigroup _ coe_add (swap coe_psmul)
 
 instance addCommSemigroup {M : Type*} [AddCommMonoid M] [Preorder M]
     [AddLeftStrictMono M] : AddCommSemigroup { x : M // 0 < x } := fast_instance%
-  Subtype.coe_injective.addCommSemigroup _ coe_add
+  Subtype.coe_injective.addCommSemigroup _ coe_add (swap coe_psmul)
 
 instance addLeftCancelSemigroup {M : Type*} [AddLeftCancelMonoid M] [Preorder M]
     [AddLeftStrictMono M] : AddLeftCancelSemigroup { x : M // 0 < x } := fast_instance%
-  Subtype.coe_injective.addLeftCancelSemigroup _ coe_add
+  Subtype.coe_injective.addLeftCancelSemigroup _ coe_add (swap coe_psmul)
 
 instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder M]
     [AddLeftStrictMono M] : AddRightCancelSemigroup { x : M // 0 < x } := fast_instance%
-  Subtype.coe_injective.addRightCancelSemigroup _ coe_add
+   Subtype.coe_injective.addRightCancelSemigroup _ coe_add (swap coe_psmul)
 
 instance addLeftStrictMono : AddLeftStrictMono { x : M // 0 < x } :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_right (show (y : M) < z from hyz) _⟩
@@ -90,13 +106,19 @@ theorem val_mul (x y : { x : R // 0 < x }) : ↑(x * y) = (x * y : R) :=
 instance : Pow { x : R // 0 < x } ℕ :=
   ⟨fun x n => ⟨(x : R) ^ n, pow_pos x.2 n⟩⟩
 
-@[simp]
+instance : Pow { x : R // 0 < x } ℕ+ :=
+  ⟨fun x n => ⟨(x : R) ^ n, ppow_pos x.2 n⟩⟩
+
 theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
     ↑(x ^ n) = (x : R) ^ n :=
   rfl
 
+theorem val_ppow (x : { x : R // 0 < x }) (n : ℕ+) :
+    ↑(x ^ n) = (x : R) ^ n :=
+  rfl
+
 instance : Semigroup { x : R // 0 < x } := fast_instance%
-  Subtype.coe_injective.semigroup Subtype.val val_mul
+  Subtype.coe_injective.semigroup Subtype.val val_mul val_ppow
 
 instance : Distrib { x : R // 0 < x } := fast_instance%
   Subtype.coe_injective.distrib _ coe_add val_mul
@@ -109,7 +131,7 @@ theorem val_one : ((1 : { x : R // 0 < x }) : R) = 1 :=
   rfl
 
 instance : Monoid { x : R // 0 < x } := fast_instance%
-  Subtype.coe_injective.monoid _ val_one val_mul val_pow
+  Subtype.coe_injective.monoid _ val_one val_mul val_ppow val_pow
 
 end Mul
 
@@ -117,7 +139,7 @@ section mul_comm
 
 instance commMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommMonoid { x : R // 0 < x } := fast_instance%
-  Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
+  Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_ppow val_pow
 
 instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     IsOrderedMonoid { x : R // 0 < x } where
