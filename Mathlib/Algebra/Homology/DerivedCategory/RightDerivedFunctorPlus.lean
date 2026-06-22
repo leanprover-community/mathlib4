@@ -10,6 +10,14 @@ public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInje
 /-!
 # The right derived functor on the bounded below derived category
 
+If `F : C ⥤ D` is an additive functors between abelian categories,
+where `C` has enough injectives, we define the right derived functor
+`F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
+between the corresponding bounded below derived categories.
+
+TODO(@joelriou): how that this functor is triangulated and refactor
+the definiton of `Functor.rightDerived`
+
 -/
 
 @[expose] public section
