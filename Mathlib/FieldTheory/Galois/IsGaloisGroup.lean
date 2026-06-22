@@ -609,6 +609,7 @@ noncomputable def mulSemiringActionOfNormal [IsGaloisGroup N B C] [N.Normal] :
   have : SMulDistribClass G B C := smulDistribClass_smulOfNormal G B C N
   exact mulSemiringActionOfSmulDistribClass B C G
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `N` is a normal subgroup of `G` and `IsGaloisGroup N B C`, then the quotient group `G ⧸ N`
 acts on `B` by `(g : G ⧸ N) • x = g • x`. -/
 @[implicit_reducible]
@@ -627,6 +628,7 @@ noncomputable def mulSemiringActionQuotient [IsGaloisGroup N B C] [N.Normal] :
     smul_one q := Quotient.inductionOn' q fun g ↦ smul_one g
     smul_mul q x y := Quotient.inductionOn' q fun g ↦ smul_mul' g x y }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mulSemiringActionQuotient_smul_def [MulSemiringAction G B] [SMulDistribClass G B C]
     [IsGaloisGroup N B C] [N.Normal] (g : G) (b : B) :
     letI := mulSemiringActionQuotient G B C N
@@ -701,6 +703,7 @@ instance [SMulCommClass G K L] [MulSemiringAction G F] [SMulDistribClass G F L]
     [IsScalarTower G (G ⧸ N) F] : SMulCommClass (G ⧸ N) K F :=
   smulCommClassQuotient G K F L N
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G` is a finite Galois group for `L/K` and `N` is a normal subgroup of `G` that is a
 Galois group for `L/F`, then the quotient group `G ⧸ N` is a Galois group for `F/K`. -/
 instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
@@ -712,6 +715,7 @@ instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
 
 variable (E : IntermediateField K L) [hE : IsGaloisGroup H E L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G` is a finite Galois group for `L/K`, `N` is a normal subgroup that is a Galois group for
 `L/F`, and `H` is a subgroup that is a Galois group for `L/E` with `E ≤ F`, then the image of `H`
 under the canonical quotient map `G → G ⧸ N` is a Galois group for `F/E`. -/

@@ -596,7 +596,7 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `IsUniformGroup.of_compactSpace`). -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
@@ -639,7 +639,7 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `IsUniformGroup.of_compactSpace`). -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- The left uniformity on a topological additive group (as opposed to the right
 uniformity).
 

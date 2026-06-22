@@ -101,7 +101,7 @@ notation3:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom
 namespace UniformConvergenceCLM
 
 /-- Reinterpret `f : E →SL[σ] F` as an element of `E →SLᵤ[σ, 𝔖] F`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofFun [TopologicalSpace F] (𝔖 : Set (Set E)) : (E →SL[σ] F) ≃ (E →SLᵤ[σ, 𝔖] F) :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 

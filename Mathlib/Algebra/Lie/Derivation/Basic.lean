@@ -333,6 +333,7 @@ variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie algebra morphism from Lie derivations into linear endomorphisms. -/
 def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
@@ -344,6 +345,7 @@ def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
 lemma toLinearMapLieHom_injective : Function.Injective (toLinearMapLieHom R L) :=
   fun _ _ h ↦ ext fun a ↦ congrFun (congrArg DFunLike.coe h) a
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lie derivations over a Noetherian Lie algebra form a Noetherian module. -/
 instance instNoetherian [IsNoetherian R L] : IsNoetherian R (LieDerivation R L L) :=
   isNoetherian_of_linearEquiv (LinearEquiv.ofInjective _ (toLinearMapLieHom_injective R L)).symm
@@ -355,6 +357,7 @@ section Inner
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
     [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from a Lie module to the derivations taking values in it. -/
 @[simps!]
 def inner : M →ₗ[R] LieDerivation R L M where

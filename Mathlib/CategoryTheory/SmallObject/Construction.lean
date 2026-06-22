@@ -322,8 +322,8 @@ end
 variable [HasPushouts C]
   [∀ {X S : C} (πX : X ⟶ S), HasColimitsOfShape (Discrete (FunctorObjIndex f πX)) C]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Arrow C ⥤ Arrow C` that is constructed in order to apply the small
 object argument to a family of morphisms `f i : A i ⟶ B i`, see the introduction
 of the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` -/

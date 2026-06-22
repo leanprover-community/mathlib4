@@ -835,7 +835,7 @@ def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
 attribute [local instance] comapMulAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
   when `G = kˣ`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def comapDistribMulActionSelf [AddCommMonoid k] :
     DistribMulAction G (SkewMonoidAlgebra k G) where
   smul_zero g := by

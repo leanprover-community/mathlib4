@@ -97,7 +97,7 @@ end InducedCategory
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def inducedFunctor : InducedCategory D F ⥤ D where
   obj := F
   map f := f.hom

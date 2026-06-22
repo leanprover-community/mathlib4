@@ -258,25 +258,11 @@ compile_inductive% Option
 compile_def% False.recOn
 compile_def% Empty.recOn
 
-set_option backward.privateInPublic true
-set_option backward.privateInPublic.warn false
-
--- In addition to the manual implementation below, we also have to override the `Float.val` and
--- `Float.mk` functions because these also have no implementation in core lean.
--- Because `floatSpec.float` is an opaque type, the identity function is as good an implementation
--- as any.
-private unsafe def Float.valUnsafe : Float → floatSpec.float := unsafeCast
-private unsafe def Float.mkUnsafe : floatSpec.float → Float := unsafeCast
-@[implemented_by Float.valUnsafe] private def Float.valImpl (x : Float) : floatSpec.float := x.1
-@[implemented_by Float.mkUnsafe] private def Float.mkImpl (x : floatSpec.float) : Float := ⟨x⟩
-@[csimp] private theorem Float.val_eq : @Float.val = Float.valImpl := rfl
-@[csimp] private theorem Float.mk_eq : @Float.mk = Float.mkImpl := rfl
-
 -- These types need manual implementations because the default implementation in `compileStruct`
 -- uses `Expr.proj` which has an invalid IR type.
 open Lean Meta Elab Mathlib.Util in
 run_cmd Command.liftTermElabM do
-  for n in [``UInt8, ``UInt16, ``UInt32, ``UInt64, ``USize, ``Float] do
+  for n in [``UInt8, ``UInt16, ``UInt32, ``UInt64, ``USize, ``Float, ``Float32] do
     let iv ← getConstInfoInduct n
     let rv ← getConstInfoRec <| mkRecName n
     let value ← Elab.Term.elabTerm (← `(fun H t => H t.1))
