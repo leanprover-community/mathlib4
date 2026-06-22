@@ -1248,7 +1248,7 @@ arguments that can use the `T%` elaborator. -/
   `(UniqueMDiffAt[$ss]) >>= annotateGoToSyntaxDef
 
 -- TODO: add more delaborators (and tests) for
--- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
+-- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt
 
 -- TODO: when adding more elaborators, also add the corresponding delaborators
 
