@@ -39,6 +39,8 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 suppress_compilation
 universe u v
 
+
+--------------------------------------------------------------------------------
 namespace ModuleConGen
 
 variable {R : Type u} {M : Type v} [Semiring R] [AddZeroClass M] [SMul R M]
@@ -53,7 +55,6 @@ inductive Rel (r : M → M → Prop) : M → M → Prop
   | add {w x y z} : Rel r w x → Rel r y z → Rel r (w + y) (x + z)     
   | smul  (s : R) {x y : M} :  Rel r x y → Rel r (s • x) (s • y)    
   
-
 end ModuleConGen
 
 variable {R : Type u} {M : Type v} [Semiring R] 
@@ -67,6 +68,46 @@ def moduleConGen [AddZeroClass M] [SMul R M] (r : M → M → Prop) : ModuleCon 
    add' := .add
    smul := .smul
    }
+
+--------------------------------------------------------------------------------
+namespace ModuleCon
+
+/-- The homomorphism on the quotient of an R-module by a congruence relation `c` induced by a
+homomorphism constant on `c`'s equivalence classes. -/
+def lift {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+    (c : ModuleCon R M) {N : Type*} [AddCommMonoid N] [Module R N]
+    (f : M →ₗ[R] N) (H : ∀ a b, c.r a b → f a = f b) : 
+    ModuleCon.Quotient M c →ₗ[R] N where
+  toFun x := Quotient.liftOn x f H
+  map_add' x y := Quotient.inductionOn₂ x y fun m n => map_add f m n
+  map_smul' r x := Quotient.inductionOn x fun m => map_smul f r m
+
+def mk' {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+    (c : ModuleCon R M) : M →ₗ[R] c.Quotient where
+  toFun := AddCon.mk' c.toAddCon
+  map_add' := (AddCon.mk' c.toAddCon).map_add
+  map_smul' _ _ := rfl  
+  
+theorem eq {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+    {c : ModuleCon R M} {x y : M} :
+    c.mk' x = c.mk' y ↔ c.r x y :=
+  AddCon.eq c.toAddCon
+
+theorem lift_mk' {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+    (c : ModuleCon R M) {N : Type*} [AddCommMonoid N] [Module R N]
+    (f : M →ₗ[R] N) (H : ∀ a b, c.r a b → f a = f b) (x : M) :
+    ModuleCon.lift c f H (c.mk' x) = f x :=
+  rfl
+    
+theorem mk'_surjective
+    {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+    (c : ModuleCon R M) : Function.Surjective c.mk' :=
+  letI : Setoid M := c.toAddCon.toSetoid    
+  Quotient.mk'_surjective  
+  
+end ModuleCon
+
+--------------------------------------------------------------------------------
 
 open TensorProduct Equiv
 
@@ -136,18 +177,70 @@ theorem span_tprod_eq_top : Submodule.span R (Set.range (tprod R (ι := ι) (M :
 
 -- UMP
 
+#check @PiTensorProduct.lift.tprod
+
+#check PiTensorProduct.lift.tprod
+
 def lift {N : Type*} [AddCommMonoid N] [Module R N] :
-    (M [Σ^ι]→ₗ[R] N) ≃ₗ[R] ((Sym[R] ι M) →ₗ[R] N) := 
-  { toFun := fun f => by
-      have := PiTensorProduct.lift f.toMultilinearMap
---      apply Quotient.lift this
-      sorry
+    (M [Σ^ι]→ₗ[R] N) ≃ₗ[R] ((Sym[R] ι M) →ₗ[R] N) :=
+  let liftFun : (M [Σ^ι]→ₗ[R] N) → (Sym[R] ι M →ₗ[R] N) := fun f =>
+    ModuleCon.lift (SymmetricCon R ι M) (PiTensorProduct.lift f.toMultilinearMap) (by
+      intro a b rel
+      induction rel with
+      | of h =>
+        match h with
+        | .perm e s => simp [PiTensorProduct.lift.tprod]
+      | refl => rfl
+      | symm _ ih => exact ih.symm
+      | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
+      | add _ _ ih₁ ih₂ => simp [map_add, ih₁, ih₂]
+      | smul s _ ih => simp [map_smul, ih])
+  let inv : (Sym[R] ι M →ₗ[R] N) → (M [Σ^ι]→ₗ[R] N) := fun g => by
+    let φ : (⨂[R] (_ : ι), M) →ₗ[R] N := g ∘ₗ (SymmetricCon R ι M).mk'
+    let Gm := φ.compMultilinearMap (PiTensorProduct.tprod R)
+    apply SymmetricMap.mk Gm
+    intro v e
+    change (g ∘ₗ (SymmetricCon R ι M).mk') (PiTensorProduct.tprod R (v ∘ e))
+       = (g ∘ₗ (SymmetricCon R ι M).mk') (PiTensorProduct.tprod R v)
+    simp only [LinearMap.comp_apply]
+    congr 1
+
+    exact ModuleCon.eq.mpr (ModuleConGen.Rel.of (SymmetricPower.Rel.perm e v)).symm
+  { toFun := liftFun
     map_add' := fun f g => sorry
     map_smul' := fun r f => sorry
-    invFun := fun g => sorry
-    left_inv := fun f => sorry
-    right_inv := fun g => sorry 
-  }
+    invFun := inv
+    
+    left_inv := fun f => by
+      apply SymmetricMap.ext
+      intro v
+      change ((liftFun f) ∘ₗ (SymmetricCon R ι M).mk').compMultilinearMap 
+        (PiTensorProduct.tprod R) v = f.toMultilinearMap v
+      simp only [LinearMap.compMultilinearMap_apply, LinearMap.comp_apply, liftFun]
+      exact (ModuleCon.lift_mk' (SymmetricCon R ι M) (PiTensorProduct.lift f.toMultilinearMap) _
+        (PiTensorProduct.tprod R v)).trans (PiTensorProduct.lift.tprod v)
+      
+    right_inv := fun g => by
+      apply LinearMap.ext
+      intro x
+      obtain ⟨y, rfl⟩ := (SymmetricCon R ι M).mk'_surjective x
+      change liftFun (inv g) ((SymmetricCon R ι M).mk' y) = g ((SymmetricCon R ι M).mk' y)
+      simp only [liftFun, inv]
+      have key : PiTensorProduct.lift
+          ((g ∘ₗ (SymmetricCon R ι M).mk').compMultilinearMap (PiTensorProduct.tprod R))
+          = g ∘ₗ (SymmetricCon R ι M).mk' := by
+        apply PiTensorProduct.ext
+        ext v
+        simp [PiTensorProduct.lift.tprod]
+      have h1 : (PiTensorProduct.lift
+          ((g ∘ₗ (SymmetricCon R ι M).mk').compMultilinearMap (PiTensorProduct.tprod R))) y
+          = (g ∘ₗ (SymmetricCon R ι M).mk') y :=
+        LinearMap.congr_fun key y
+      exact h1
+
+      }
+
+#check PiTensorProduct.tprod
 
 example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
   : (⨂[R] (_:ι), M) →ₗ[R] N  := by
@@ -157,6 +250,8 @@ example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
   : (⨂[R] (_:ι), M) →ₗ[R] N  := by
   exact PiTensorProduct.lift f 
 
+
+#check SymmetricMap.ext
 
     
 example (N : Type) [AddCommGroup N] [Module R N] (φ : Sym[R] ι M →ₗ[R] N)
