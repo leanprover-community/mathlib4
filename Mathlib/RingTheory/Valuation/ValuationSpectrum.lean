@@ -193,13 +193,16 @@ lemma ideal_le_supp_comap_mk (w : Spv (A ⧸ 𝔞)) :
   fun a ha ↦ by simp [Ideal.Quotient.eq_zero_iff_mem.mpr ha]
 
 /-- Lift a point `v ∈ Spv A` with `𝔞 ≤ supp v` to `Spv (A ⧸ 𝔞)`. -/
+@[expose]
 noncomputable def quotientLift (v : Spv A) (h : 𝔞 ≤ v.supp) : Spv (A ⧸ 𝔞) :=
   ofValuation (v.valuation.onQuot (v.supp_eq_valuation_supp ▸ h))
 
 /-- `comap (mk 𝔞) (quotientLift 𝔞 v h) = v`. -/
 lemma comap_quotientLift (v : Spv A) (h : 𝔞 ≤ v.supp) :
     comap (Ideal.Quotient.mk 𝔞) (quotientLift 𝔞 v h) = v := by
-  simpa using ofValuation_valuation v
+  rw [quotientLift, comap_ofValuation,
+    Valuation.onQuot_comap_eq v.valuation (v.supp_eq_valuation_supp ▸ h)]
+  exact ofValuation_valuation v
 
 /-- `quotientLift 𝔞 (comap (mk 𝔞) w) _ = w`. -/
 lemma quotientLift_comap (w : Spv (A ⧸ 𝔞)) :

@@ -41,6 +41,7 @@ def comap (φ : A →+* B) (v : ValuativeRel B) : ValuativeRel A where
     rw [map_zero] at h₀
     simpa [map_mul] using v.vle_mul_cancel h₀ (by simpa [map_mul] using h)
   not_vle_one_zero := by simp [v.not_vle_one_zero]
+  vle_mul_comm := by simp only [map_mul]; exact v.vle_mul_comm
 
 theorem comap_vle (φ : A →+* B) (v : ValuativeRel B) (a₁ a₂ : A) :
     (comap φ v).vle a₁ a₂ ↔ v.vle (φ a₁) (φ a₂) := Iff.rfl
