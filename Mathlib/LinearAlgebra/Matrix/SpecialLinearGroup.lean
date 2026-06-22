@@ -795,7 +795,7 @@ theorem SL2.transvection_induction (P : SL(2, F) → Prop)
     refine hmul _ _ (hmul _ _ (hmul _ _ (hmul _ _ (hmul _ _ ?_ ?_) ?_) ?_) ?_) ?_
     all_goals exact htransvec _ _ _ _
 
-lemma SL2.commutator_eq_top (a : F) (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) :
+lemma SL2.commutator_eq_top {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) :
     commutator SL(2, F) = ⊤ :=
   le_antisymm le_top (fun A _ ↦ SL2.transvection_induction _
     (transvection_mem_commutator a ha hasq) (fun _ _ ↦ mul_mem) A)
