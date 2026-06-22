@@ -274,8 +274,8 @@ variable [AddGroup τ] (ϕ : Flow τ α)
 def toHomeomorph (t : τ) : (α ≃ₜ α) where
   toFun := ϕ t
   invFun := ϕ (-t)
-  left_inv x := by rw [← map_add, neg_add_cancel, map_zero_apply]
-  right_inv x := by rw [← map_add, add_neg_cancel, map_zero_apply]
+  left_inv x := by simp [← map_add]
+  right_inv x := by simp [← map_add]
 
 @[simp]
 theorem toHomeomorph_apply (t : τ) (x : α) : ϕ.toHomeomorph t x = ϕ t x := rfl
