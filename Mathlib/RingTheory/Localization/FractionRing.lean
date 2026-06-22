@@ -438,6 +438,10 @@ lemma ringEquivOfRingEquiv_algebraMap
   simp
 
 @[simp]
+lemma ringEquivOfRingEquiv_refl :
+    ringEquivOfRingEquiv (.refl A) = .refl K := by ext; simp
+
+@[simp]
 lemma ringEquivOfRingEquiv_symm :
     (ringEquivOfRingEquiv h : K ≃+* L).symm = ringEquivOfRingEquiv h.symm := rfl
 
@@ -448,6 +452,26 @@ theorem ringEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C]
     (ringEquivOfRingEquiv (K := K) f).trans (ringEquivOfRingEquiv (K := L) (L := M) g) := by
   ext a
   simp [IsLocalization.map_map]
+
+variable (A K)
+
+/-- A ring automorphism of a ring induces an ring automorphism of its fraction field.
+
+This is a bundled version of `ringEquivOfRingEquiv`. -/
+noncomputable def ringEquivOfRingEquivHom : (A ≃+* A) →* (K ≃+* K) where
+  toFun := ringEquivOfRingEquiv
+  map_one' := ringEquivOfRingEquiv_refl
+  map_mul' f g := ringEquivOfRingEquiv_comp K K K g f
+
+@[simp]
+lemma ringEquivOfRingEquivHom_apply (f : A ≃+* A) :
+    ringEquivOfRingEquivHom A K f = ringEquivOfRingEquiv f :=
+  rfl
+
+lemma ringEquivOfRingEquivHom_injective : Function.Injective (ringEquivOfRingEquivHom A K) := by
+  intro f g h
+  ext b
+  simpa using RingEquiv.ext_iff.mp h (algebraMap A K b)
 
 end ringEquivOfRingEquiv
 
@@ -624,21 +648,21 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
 /-- Given a `MulSemiringAction G B`, extend the action of `G` on `B` to a `MulSemiringAction G L`
 on the fraction field `L` of `B`. -/
 @[implicit_reducible]
-noncomputable def mulSemiringAction [SMulCommClass G A B] :
+noncomputable def mulSemiringAction :
     MulSemiringAction G L :=
   MulSemiringAction.compHom L
-    ((fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
+    ((ringEquivOfRingEquivHom B L).comp (MulSemiringAction.toRingEquiv G B))
 
 /-- The action of `G` on the fraction field `L` of `B` given by `IsFractionRing.mulSemiringAction`
 is compatible with the embedding `B ⊆ L`. -/
-instance smulDistribClass [SMulCommClass G A B] :
-    letI := mulSemiringAction G A B K L
+instance smulDistribClass :
+    letI := mulSemiringAction G B L
     SMulDistribClass G B L :=
-  let := mulSemiringAction G A B K L
+  let := mulSemiringAction G B L
   ⟨fun g b x ↦ by
     rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
     congr
-    apply fieldEquivOfAlgEquiv_algebraMap⟩
+    apply ringEquivOfRingEquiv_algebraMap⟩
 
 variable [MulSemiringAction G L] [SMulDistribClass G B L]
 

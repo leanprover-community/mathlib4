@@ -187,12 +187,9 @@ theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
 lemma toRingEquiv_toRingHom : ((e : A ≃+* B) : A →+* B) = e :=
   rfl
 
-@[simp]
-theorem coe_ringEquiv : ((e : A ≃+* B) : A → B) = e :=
-  rfl
+theorem coe_ringEquiv : ((e : A ≃+* B) : A → B) = e := rfl
 
-theorem coe_ringEquiv' : (e.toRingEquiv : A → B) = e :=
-  rfl
+@[deprecated (since := "2026-06-21")] alias coe_ringEquiv' := coe_ringEquiv
 
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A ≃ₛₐ[φ] B) → A ≃+* B) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
