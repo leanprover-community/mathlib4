@@ -28,13 +28,13 @@ open Filter Asymptotics
 lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) 0 := by
   simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero,
     inv_zero, sub_zero, smul_eq_mul, ← mul_inv, mul_comm _ (log _)]
-  have H' : Tendsto (fun x ↦ log x * x) (nhdsWithin 0 (Set.Iio 0)) (nhdsWithin 0 (Set.Ioi 0)) := by
+  have H' : Tendsto (fun x ↦ log x * x) (nhdsWithin 0 (.Iio 0)) (nhdsWithin 0 (.Ioi 0)) := by
     refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       tendsto_log_mul_self_nhdsLT_zero ?_
     simp only [← nhdsWithin_Ioo_eq_nhdsLT neg_one_lt_zero, Set.mem_Ioi]
     refine eventually_nhdsWithin_of_forall fun x ⟨hx₁, hx₂⟩ ↦ mul_pos_of_neg_of_neg ?_ hx₂
     refine log_neg_eq_log x ▸ log_neg ?_ ?_ <;> grind
-  exact fun H ↦ (tendsto_nhdsWithin_mono_left (show Set.Iio (0 : ℝ) ⊆ _ by grind) H).not_tendsto
+  exact fun H ↦ (tendsto_nhdsWithin_mono_left (by grind : .Iio (0 : ℝ) ⊆ _) H).not_tendsto
     (by simp) (tendsto_inv_nhdsGT_zero.comp H')
 
 lemma not_continuousAt_inv_log_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹) 1 := by
@@ -45,10 +45,10 @@ lemma not_continuousAt_inv_log_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹) 1 
 
 lemma not_continuousAt_inv_log_neg_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹) (-1) := by
   refine fun H ↦ not_continuousAt_inv_log_one ?_
-  simpa only [log_neg_eq_log] using ContinuousAt.comp' H continuousAt_neg
+  simpa only [log_neg_eq_log] using H.comp' continuousAt_neg
 
 theorem deriv_inv_log {x : ℝ} :
-    deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / (log x ^ 2) := by
+    deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / log x ^ 2 := by
   rcases eq_or_ne x 0 with rfl | h0
   · simpa using deriv_zero_of_not_differentiableAt not_differentiableAt_inv_log_zero
   rcases eq_or_ne x 1 with rfl | h1
@@ -60,24 +60,24 @@ theorem deriv_inv_log {x : ℝ} :
   simp_all
 
 @[simp]
-theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / (log x ^ 2) :=
+theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / log x ^ 2 :=
   funext fun _ ↦ deriv_inv_log
 
 theorem differentiableAt_pos_ne_one {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1)
     : DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x :=
-  (Real.differentiableAt_log hx.ne.symm).inv (by simp; grind : log x ≠ 0)
+  (differentiableAt_log hx.ne.symm).inv (by simp; grind : log x ≠ 0)
 
 theorem hasDerivAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1) :
     HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
   simpa using (differentiableAt_pos_ne_one hx hx').hasDerivAt
-  
-theorem inv_log_eq_o_one : (fun x ↦ 1 / log x) =o[atTop] (fun _ ↦ (1:ℝ)) := by
-    rw [isLittleO_one_iff]
-    convert tendsto_log_atTop.inv_tendsto_atTop using 1
-    ext; simp
 
-theorem one_eq_o_log_log : (fun _ ↦ (1:ℝ)) =o[atTop] (fun x ↦ log (log x)) := by
-    simp only [isLittleO_one_left_iff, norm_eq_abs]
-    exact tendsto_abs_atTop_atTop.comp (tendsto_log_atTop.comp tendsto_log_atTop)
+theorem inv_log_eq_o_one : (fun x ↦ 1 / log x) =o[atTop] fun _ ↦ (1:ℝ) := by
+  rw [isLittleO_one_iff]
+  convert tendsto_log_atTop.inv_tendsto_atTop using 1
+  ext; simp
+
+theorem one_eq_o_log_log : (fun _ ↦ (1:ℝ)) =o[atTop] fun x ↦ log (log x) := by
+  simp only [isLittleO_one_left_iff, norm_eq_abs]
+  exact tendsto_abs_atTop_atTop.comp (tendsto_log_atTop.comp tendsto_log_atTop)
 
 end Real
