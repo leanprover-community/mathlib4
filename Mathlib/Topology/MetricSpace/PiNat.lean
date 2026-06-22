@@ -920,34 +920,34 @@ attribute [scoped instance] PiCountable.dist
 lemma dist_eq_tsum (x y : ∀ i, F i) : dist x y = ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i)) :=
   rfl
 
+lemma dist_nonneg (x y : ∀ i, F i) : 0 ≤ dist x y := by
+  rw [dist_eq_tsum]
+  positivity
+
 lemma dist_summable (x y : ∀ i, F i) :
     Summable fun i ↦ min (2⁻¹ ^ encode i) (dist (x i) (y i)) := by
   refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _) <| by
     simpa [one_div] using summable_geometric_two_encode
-  exact le_min (by positivity) dist_nonneg
+  exact le_min (by positivity) _root_.dist_nonneg
 
 lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
     min (2⁻¹ ^ encode i) (dist (x i) (y i)) ≤ dist x y :=
-  (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
+  (dist_summable x y).le_tsum i fun j _ => le_min (by simp) _root_.dist_nonneg
 
 lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
--- TODO: fix two non-terminal simps below; second one uses a long lemma list
-set_option linter.flexible false in
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
 @[instance_reducible]
 protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
-    (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
-      rw [edist_eq_tsum, dist_eq_tsum,
-        ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
-      simp [edist, ENNReal.inv_pow]
-      congr! with a
-      exact PseudoMetricSpace.edist_dist (x a) (y a)
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist dist_nonneg fun x y ↦ by
+    rw [edist_eq_tsum, dist_eq_tsum,
+      ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
+    congr! with a
+    simp [edist, ENNReal.inv_pow, PseudoMetricSpace.edist_dist (x a) (y a)]
 
 end PseudoMetricSpace
 
