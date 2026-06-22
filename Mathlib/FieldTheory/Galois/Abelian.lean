@@ -74,6 +74,6 @@ instance IsAbelianGalois.sup {F E : Type*} [Field F] [Field E] [Algebra F E]
     (K L : IntermediateField F E) [IsAbelianGalois F K] [IsAbelianGalois F L] :
     IsAbelianGalois F ↑(K ⊔ L) :=
   haveI : IsMulCommutative Gal(↑(K ⊔ L)/F) :=
-    .of_comm fun a b ↦ IntermediateField.galSupProd_injective K L <| by
+    .of_comm fun a b ↦ IntermediateField.restrictNormalHomSupProd_injective K L <| by
       rw [map_mul, map_mul, mul_comm']
   { }

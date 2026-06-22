@@ -649,7 +649,7 @@ end IntermediateField
 
 end restrictRestrictAlgEquivMapHom
 
-section galSupProd
+section Compositum
 
 variable {F : Type*} [Field F]
 
@@ -674,8 +674,8 @@ variable {E : Type*} [Field E] [Algebra F E]
 /-- The restriction homomorphism embedding the automorphism group of a compositum `K ⊔ L`
 into the product of the automorphism groups of two normal factors `K` and `L`,
 `σ ↦ (σ|_K, σ|_L)`. -/
-@[simps apply apply_fst apply_snd]
-noncomputable def galSupProd (K L : IntermediateField F E) [Normal F K] [Normal F L] :
+@[simps apply]
+noncomputable def restrictNormalHomSupProd (K L : IntermediateField F E) [Normal F K] [Normal F L] :
     Gal(↑(K ⊔ L)/F) →* Gal(K/F) × Gal(L/F) :=
   letI : Algebra K ↑(K ⊔ L) := (inclusion le_sup_left).toAlgebra
   letI : Algebra L ↑(K ⊔ L) := (inclusion le_sup_right).toAlgebra
@@ -685,8 +685,8 @@ noncomputable def galSupProd (K L : IntermediateField F E) [Normal F K] [Normal 
 
 /-- The restriction homomorphism into the product of the two factor automorphism groups is
 injective: an automorphism of the compositum is determined by its restrictions to `K` and `L`. -/
-theorem galSupProd_injective (K L : IntermediateField F E) [Normal F K] [Normal F L] :
-    Function.Injective (galSupProd K L) := by
+theorem restrictNormalHomSupProd_injective (K L : IntermediateField F E) [Normal F K] [Normal F L] :
+    Function.Injective (restrictNormalHomSupProd K L) := by
   letI : Algebra K ↑(K ⊔ L) := (inclusion le_sup_left).toAlgebra
   letI : Algebra L ↑(K ⊔ L) := (inclusion le_sup_right).toAlgebra
   rw [← MonoidHom.ker_eq_bot_iff]
@@ -700,7 +700,7 @@ theorem galSupProd_injective (K L : IntermediateField F E) [Normal F K] [Normal 
 
 end IntermediateField
 
-end galSupProd
+end Compositum
 
 namespace Algebra
 
