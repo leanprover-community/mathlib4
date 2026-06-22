@@ -88,7 +88,7 @@ lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
     infer_instance
   obtain ⟨I, e, rfl⟩ := IsClosedImmersion.Spec_iff.mp this
   obtain rfl := eq_bot_of_comp_quotientMk_eq_sigmaSpec R I (f ≫ e.hom) (by rwa [Category.assoc])
-  convert_to IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
+  convert_to! IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
   infer_instance
 
 variable (X : Scheme)
@@ -111,7 +111,7 @@ lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi 
 lemma pointsPi_surjective_of_isAffine [IsAffine X] : Function.Surjective (pointsPi R X) := by
   rintro f
   refine ⟨Spec.map (CommRingCat.ofHom
-    (Pi.ringHom fun i ↦ (Spec.preimage (f i ≫ X.isoSpec.hom)).1)) ≫ X.isoSpec.inv, ?_⟩
+    (RingHom.pi fun i ↦ (Spec.preimage (f i ≫ X.isoSpec.hom)).1)) ≫ X.isoSpec.inv, ?_⟩
   ext i : 1
   simp only [pointsPi, ← Spec.map_comp_assoc, Iso.comp_inv_eq]
   exact Spec.map_preimage _

@@ -220,7 +220,6 @@ instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
 
@@ -297,8 +296,11 @@ instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposi
     [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) :=
   CostructuredArrow.hasPullbacks _ _
 
-variable [HasPullbacks T] [P.IsStableUnderComposition] [P.ContainsIdentities]
+variable [HasPullbacks T] [P.IsMultiplicative]
   [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
+
+instance hasFiniteLimits : HasFiniteLimits (P.Over ⊤ X) :=
+  hasFiniteLimits_of_hasTerminal_and_pullbacks
 
 noncomputable instance : CreatesFiniteLimits (Over.forget P ⊤ X) :=
   createsFiniteLimitsOfCreatesTerminalAndPullbacks _

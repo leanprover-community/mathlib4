@@ -27,7 +27,7 @@ The essence of the (mathematical) proof is Fubini's theorem.
 
 We also give the most common application of the layer cake formula -
 a representation of the integral of a nonnegative function f:
-$$∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt$$
+$$∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt$$
 
 Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` instead of
 `{ω | f(ω) ≥ t}` are also included.
@@ -41,12 +41,12 @@ Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` in
 * `MeasureTheory.lintegral_eq_lintegral_meas_le` and
   `MeasureTheory.lintegral_eq_lintegral_meas_lt`:
   The most common special cases of the layer cake formulas, stating that for a nonnegative
-  function f we have $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt$ and
-  $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt$, respectively.
+  function f we have $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt$ and
+  $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt$, respectively.
 * `Integrable.integral_eq_integral_meas_lt`:
   A Bochner integral version of the most common special case of the layer cake formulas, stating
   that for an integrable and a.e.-nonnegative function f we have
-  $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt$.
+  $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt$.
 
 ## See also
 
@@ -548,10 +548,10 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) :
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, μ.real {a : α | t ≤ f a} := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]
-  rw [setIntegral_eq_of_subset_of_ae_diff_eq_zero
+  rw [setIntegral_eq_of_subset_of_ae_sdiff_eq_zero
       nullMeasurableSet_Ioi Ioc_subset_Ioi_self ?_]
   apply Eventually.of_forall (fun t ht ↦ ?_)
-  have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
+  have htM : M < t := by simp_all only [Set.mem_sdiff, mem_Ioi, mem_Ioc, not_and, not_le]
   have obs : μ {a | M < f a} = 0 := by
     rw [measure_eq_zero_iff_ae_notMem]
     filter_upwards [f_bdd] with a ha using not_lt.mpr ha
