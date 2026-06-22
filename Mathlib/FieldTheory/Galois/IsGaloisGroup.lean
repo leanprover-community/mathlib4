@@ -337,9 +337,11 @@ attribute [local instance] FractionRing.liftAlgebra in
 /-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
   MulEquiv.ofBijective (MulSemiringAction.toAlgAut G A B) (by
+    let := (algebraMap A B).rangeRestrict.toAlgebra
+    have : IsScalarTower A (algebraMap A B).range B := IsScalarTower.of_algebraMap_eq' rfl
+    refine .of_comp_left ?_
+      (AlgEquiv.extendScalarsHomOfSurjective (algebraMap A B).rangeRestrict_surjective).injective
     let A := (algebraMap A B).range
-    suffices Function.Bijective (MulSemiringAction.toAlgAut G A B) by
-      sorry
     letI K := FractionRing A
     letI L := FractionRing B
     letI := IsFractionRing.mulSemiringAction G B L
