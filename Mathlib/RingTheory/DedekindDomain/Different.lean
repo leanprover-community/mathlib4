@@ -5,9 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.NumberTheory.RamificationInertia.Unramified
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.FractionalIdeal.Extended
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Trace.Quotient
 
 /-!
@@ -960,3 +962,185 @@ theorem dvd_differentIdeal_iff
   iff_not_comm.mp not_dvd_differentIdeal_iff.symm
 
 end
+
+section IsUnramifiedAt
+
+variable {A} (L) [IsDedekindDomain A]
+
+omit [IsDomain A] in
+attribute [local instance] Ideal.Quotient.field in
+/-- If `L = K[α]` with `α = algebraMap B L x` for some `x : B`, and the reduction of the minimal
+polynomial of `x` modulo the prime `p` below `P` is separable, then `B / A` is unramified at `P`. -/
+lemma isUnramifiedAt_of_separable_minpoly'
+    (P : Ideal B) [hP : P.IsPrime] (hPbot : P ≠ ⊥) (x : B)
+    (hx' : Algebra.adjoin K {algebraMap B L x} = ⊤)
+    (h : ((minpoly A x).map (Ideal.Quotient.mk (P.under A))).Separable) :
+    Algebra.IsUnramifiedAt A P := by
+  classical
+  have : IsDomain B :=
+    (IsIntegralClosure.equiv A B L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
+  have hAB : Function.Injective (algebraMap A B) := by
+    refine Function.Injective.of_comp (f := algebraMap B L) ?_
+    rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A K L]
+    exact (algebraMap K L).injective.comp (IsFractionRing.injective _ _)
+  have := Module.isTorsionFree_iff_algebraMap_injective.mpr hAB
+  have := IsIntegralClosure.isNoetherian A K L B
+  have := IsIntegralClosure.isDedekindDomain A K L B
+  have := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
+  haveI : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra A L
+  haveI : Module.Finite A B := IsIntegralClosure.finite A K L B
+  have := aeval_derivative_mem_differentIdeal A K L x hx'
+  have H : RingHom.comp (algebraMap (FractionRing A) (FractionRing B))
+      (FractionRing.algEquiv A K).symm.toRingEquiv =
+        RingHom.comp (FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
+    apply IsLocalization.ringHom_ext A⁰
+    ext
+    simp only [RingHom.coe_comp, RingHom.coe_coe, AlgEquiv.coe_ringEquiv, Function.comp_apply,
+      AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+    rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+  have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
+    Algebra.IsSeparable.of_equiv_equiv _ _ H
+  rw [← not_dvd_differentIdeal_iff (A := A) (B := B) (P := P)]
+  intro hPdiv
+  have hxP : aeval x (derivative (minpoly A x)) ∈ P :=
+    (Ideal.dvd_iff_le.mp hPdiv) (aeval_derivative_mem_differentIdeal A K L _ hx')
+  rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq] at hxP
+  let p : Ideal A := P.under A
+  haveI : p.IsPrime := inferInstance
+  have hpbot : p ≠ ⊥ := Ideal.under_ne_bot A hPbot
+  haveI : p.IsMaximal := (show p.IsPrime from inferInstance).isMaximal hpbot
+  haveI : P.IsMaximal := (show P.IsPrime from inferInstance).isMaximal hPbot
+  letI : IsScalarTower B (B ⧸ P) (B ⧸ P) := IsScalarTower.right
+  have hle : p ≤ P.comap (algebraMap A B) := by
+    change P.under A ≤ P.comap (algebraMap A B)
+    rw [Ideal.under_def]
+  have := (separable_map (Ideal.quotientMap P (algebraMap A B) hle)).mpr h
+  rw [Polynomial.map_map, Ideal.quotientMap_comp_mk] at this
+  obtain ⟨a, b, e⟩ := this
+  apply_fun (aeval (Ideal.Quotient.mk P x)) at e
+  simp_rw [← Ideal.Quotient.algebraMap_eq, ← Polynomial.map_map, derivative_map, map_add,
+    _root_.map_mul, aeval_map_algebraMap, aeval_algebraMap_apply, minpoly.aeval, hxP, map_zero,
+    mul_zero, zero_add, map_one, zero_ne_one] at e
+
+omit [IsDomain A] in
+/-- If `L = K[α]` with `α` integral over `A`, and the reduction of the minimal polynomial of `α`
+modulo the prime `p` below `P` is separable, then `B / A` is unramified at `P`. -/
+lemma isUnramifiedAt_of_separable_minpoly
+    (P : Ideal B) [hP : P.IsPrime] (hPbot : P ≠ ⊥) (x : L) (hx : IsIntegral A x)
+    (hx' : Algebra.adjoin K {x} = ⊤)
+    (h : ((minpoly A x).map (Ideal.Quotient.mk (P.under A))).Separable) :
+    Algebra.IsUnramifiedAt A P := by
+  rw [← IsIntegralClosure.algebraMap_mk' B x hx, minpoly.algebraMap_eq
+    (IsIntegralClosure.algebraMap_injective B A L)] at h
+  exact isUnramifiedAt_of_separable_minpoly' K L P hPbot (IsIntegralClosure.mk' B x hx)
+    (by rwa [IsIntegralClosure.algebraMap_mk']) h
+
+end IsUnramifiedAt
+
+section UnramifiedDescent
+
+open UniqueFactorizationMonoid
+
+variable {A} [IsDedekindDomain A]
+
+omit [IsDomain A] in
+/-- If `B / A` is unramified, then the product of the primes of `B` over a nonzero prime `p` of `A`
+equals `p.map (algebraMap A B)`. -/
+lemma prod_primesOverFinset_of_unramified [Algebra.Unramified A B] [IsDedekindDomain B]
+    [Module.IsTorsionFree A B] (p : Ideal A) [p.IsPrime] (hp : p ≠ ⊥) :
+    ∏ P ∈ IsDedekindDomain.primesOverFinset p B, P = p.map (algebraMap A B) := by
+  classical
+  have hpbot' : p.map (algebraMap A B) ≠ ⊥ := (Ideal.map_eq_bot_iff_of_injective
+      (Module.isTorsionFree_iff_algebraMap_injective.mp inferInstance)).not.mpr hp
+  rw [← associated_iff_eq.mp (factors_pow_count_prod hpbot')]
+  apply Finset.prod_congr rfl
+  intros P hP
+  convert (pow_one _).symm
+  have : p.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hp ‹_›
+  rw [← Finset.mem_coe, IsDedekindDomain.coe_primesOverFinset hp] at hP
+  rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_factors_count hpbot' hP.1
+    (Ideal.ne_bot_of_mem_primesOver hp hP)]
+  letI : P.IsPrime := hP.1
+  letI : P.LiesOver p := hP.2
+  rw [Ideal.ramificationIdx_eq_ramificationIdx' p P hp]
+  exact Ideal.ramificationIdx'_eq_one P A
+
+omit [IsDomain A] in
+/-- If `L / K` is Galois and `B / A` is unramified, then any ideal `I` of `B` fixed by `Gal(L/K)`
+satisfies `(I ∩ A).map (algebraMap A B) = I`. -/
+lemma comap_map_eq_of_unramified [IsGalois K L] [Algebra.Unramified A B] (I : Ideal B)
+    (hI : ∀ σ : L ≃ₐ[K] L, I.comap (galRestrict A K L B σ) = I) :
+    (I.comap (algebraMap A B)).map (algebraMap A B) = I := by
+  classical
+  have : IsDomain B :=
+    (IsIntegralClosure.equiv A B L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
+  have := IsIntegralClosure.isDedekindDomain A K L B
+  have hAB : Function.Injective (algebraMap A B) := by
+    refine Function.Injective.of_comp (f := algebraMap B L) ?_
+    rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A K L]
+    exact (algebraMap K L).injective.comp (IsFractionRing.injective _ _)
+  have := Module.isTorsionFree_iff_algebraMap_injective.mpr hAB
+  by_cases hIbot : I = ⊥
+  · rw [hIbot, Ideal.comap_bot_of_injective _ hAB, Ideal.map_bot]
+  haveI : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra A L
+  have hIbot' : I.comap (algebraMap A B) ≠ ⊥ := mt Ideal.eq_bot_of_comap_eq_bot hIbot
+  have : ∀ p, (p.IsPrime ∧ I.comap (algebraMap A B) ≤ p) →
+      ∃ P ≥ I, P ∈ Ideal.primesOver p B := by
+    intro p ⟨hp₁, hp₂⟩
+    obtain ⟨P, hP1, hP2, hP3⟩ := Ideal.exists_ideal_over_prime_of_isIntegral _ _ hp₂
+    exact ⟨P, hP1, hP2, ⟨hP3.symm⟩⟩
+  choose 𝔓 h𝔓 h𝔓' using this
+  suffices I = ∏ p ∈ (factors (I.comap <| algebraMap A B)).toFinset,
+    (p.map (algebraMap A B)) ^ (if h : _ then (factors I).count (𝔓 p h) else 0) by
+    simp_rw [← Ideal.mapHom_apply, ← map_pow, ← map_prod, Ideal.mapHom_apply] at this
+    rw [this, Ideal.map_comap_map]
+  conv_lhs => rw [← associated_iff_eq.mp (factors_pow_count_prod hIbot)]
+  rw [← Finset.prod_fiberwise_of_maps_to
+    (g := (Ideal.comap (algebraMap A B) : Ideal B → Ideal A))
+    (t := (factors (I.comap (algebraMap A B))).toFinset)]
+  · apply Finset.prod_congr rfl
+    intros p hp
+    simp only [factors_eq_normalizedFactors, Multiset.mem_toFinset,
+      Ideal.mem_normalizedFactors_iff hIbot'] at hp
+    have hpbot : p ≠ ⊥ := fun hp' ↦ hIbot' (eq_bot_iff.mpr (hp.2.trans_eq hp'))
+    have hpbot' : p.map (algebraMap A B) ≠ ⊥ := (Ideal.map_eq_bot_iff_of_injective hAB).not.mpr
+      hpbot
+    have := hp.1
+    rw [← prod_primesOverFinset_of_unramified p hpbot, ← Finset.prod_pow]
+    have : p.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hpbot this
+    apply Finset.prod_congr
+    · ext P
+      rw [factors_eq_normalizedFactors, Finset.mem_filter, Multiset.mem_toFinset,
+        Ideal.mem_normalizedFactors_iff hIbot, ← Finset.mem_coe,
+          IsDedekindDomain.coe_primesOverFinset hpbot B]
+      refine ⟨fun H ↦ ⟨H.1.1, ⟨H.2.symm⟩⟩, fun H ↦ ⟨⟨H.1, ?_⟩, ?_⟩⟩
+      · have ⟨σ, hσ⟩ := Ideal.exists_comap_galRestrict_eq A K L B (h𝔓' _ hp) H
+        rw [← hσ, ← hI σ]
+        exact Ideal.comap_mono (h𝔓 _ hp)
+      · have := H.2.1
+        rw [Ideal.under_def] at this
+        exact this.symm
+    · intro P hP
+      rw [← Finset.mem_coe, IsDedekindDomain.coe_primesOverFinset hpbot B] at hP
+      congr
+      rw [dif_pos hp, ← Nat.cast_inj (R := ENat), ← normalize_eq P,
+        factors_eq_normalizedFactors,
+        ← emultiplicity_eq_count_normalizedFactors
+          (Ideal.prime_of_mem_primesOver hpbot hP).irreducible hIbot,
+        ← normalize_eq (𝔓 p hp), ← emultiplicity_eq_count_normalizedFactors
+          (Ideal.prime_of_mem_primesOver hpbot <| h𝔓' p hp).irreducible hIbot,
+          emultiplicity_eq_emultiplicity_iff]
+      intro n
+      have ⟨σ, hσ⟩ := Ideal.exists_comap_galRestrict_eq A K L B (h𝔓' _ hp) hP
+      rw [Ideal.dvd_iff_le, Ideal.dvd_iff_le]
+      conv_lhs => rw [← hI σ, ← hσ,
+        Ideal.comap_le_iff_le_map _ (AlgEquiv.bijective _), Ideal.map_pow,
+        Ideal.map_comap_of_surjective _ (AlgEquiv.surjective _)]
+  · intro P hP
+    simp only [factors_eq_normalizedFactors, Multiset.mem_toFinset,
+      Ideal.mem_normalizedFactors_iff hIbot] at hP
+    simp only [factors_eq_normalizedFactors, Multiset.mem_toFinset,
+      Ideal.mem_normalizedFactors_iff hIbot']
+    exact ⟨hP.1.comap _, Ideal.comap_mono hP.2⟩
+
+end UnramifiedDescent
