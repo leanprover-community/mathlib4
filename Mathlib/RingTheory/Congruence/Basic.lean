@@ -52,7 +52,7 @@ variable [SMul α R] [IsScalarTower α R R]
 variable [SMul β R] [IsScalarTower β R R]
 variable (c : RingCon R)
 
-instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
+instance : SMul α c.Quotient := ⟨c.smulAux (Con.smul c.toCon)⟩
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
@@ -142,6 +142,7 @@ instance : LE (RingCon R) where
 /-- Definition of `≤` for congruence relations. -/
 theorem le_def : c ≤ d ↔ ∀ {x y}, c x y → d x y := .rfl
 
+@[gcongr]
 theorem comap_mono {R' : Type*} [Add R'] [Mul R']
     {F : Type*} [FunLike F R R'] [AddHomClass F R R'] [MulHomClass F R R']
     {J J' : RingCon R'} {f : F} (h : J ≤ J') :
