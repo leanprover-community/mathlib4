@@ -27,7 +27,7 @@ The essence of the (mathematical) proof is Fubini's theorem.
 
 We also give the most common application of the layer cake formula -
 a representation of the integral of a nonnegative function f:
-$$∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt$$
+$$∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt$$
 
 Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` instead of
 `{ω | f(ω) ≥ t}` are also included.
@@ -41,12 +41,12 @@ Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` in
 * `MeasureTheory.lintegral_eq_lintegral_meas_le` and
   `MeasureTheory.lintegral_eq_lintegral_meas_lt`:
   The most common special cases of the layer cake formulas, stating that for a nonnegative
-  function f we have $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt$ and
-  $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt$, respectively.
+  function f we have $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt$ and
+  $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt$, respectively.
 * `Integrable.integral_eq_integral_meas_lt`:
   A Bochner integral version of the most common special case of the layer cake formulas, stating
   that for an integrable and a.e.-nonnegative function f we have
-  $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt$.
+  $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt$.
 
 ## See also
 
