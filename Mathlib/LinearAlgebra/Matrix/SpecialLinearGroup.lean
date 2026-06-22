@@ -595,7 +595,7 @@ lemma diag2_def {a : F} (ha : a ≠ 0) : diag2 a ha = diag2n zero_ne_one a ha :=
 lemma diag2_coe (a : F) (ha : a ≠ 0) :
     (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by simp [diag2n_coe]
 
-lemma diag2_coe' (a : F) (ha : a ≠ 0) :
+lemma diag2_coe' {a : F} (ha : a ≠ 0) :
     (diag2 a ha).1 = !![a, 0; 0, a⁻¹] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [diag2n_coe]
