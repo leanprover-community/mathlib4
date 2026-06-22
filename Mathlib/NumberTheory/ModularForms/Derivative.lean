@@ -12,14 +12,13 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 # Derivatives of modular forms
 
 This file defines normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$
-and Ramanujan-Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular forms.
+and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular forms.
 
 ## Main Definitions and Theorems
 
 - `normalizedDerivOfComplex`: $D = \frac{1}{2\pi i} \frac{d}{dz}$
-- `ramanujanSerreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
-- `ramanujanSerreDerivative_slash_equivariant`: Ramanujan-Serre derivative is equivariant
-  under the slash action.
+- `serreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
+- `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
 
 TODO:
 - Ramanujan-Serre derivative preserves modularity, i.e. $\partial_k (M_k) \subseteq M_{k+2}$.
@@ -126,53 +125,53 @@ theorem normalizedDerivOfComplex_pow (F : ℍ → ℂ) (n : ℕ) (hF : MDiff F) 
 /--
 Serre derivative of weight $k$.
 -/
-def ramanujanSerreDerivative (k : ℂ) (F : ℍ → ℂ) (z : ℍ) : ℂ :=
+def serreDerivative (k : ℂ) (F : ℍ → ℂ) (z : ℍ) : ℂ :=
   D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
 
 @[simp]
-lemma ramanujanSerreDerivative_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
-    ramanujanSerreDerivative k F z = D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
+lemma serreDerivative_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
+    serreDerivative k F z = D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
 @[simp]
-lemma ramanujanSerreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
-    ramanujanSerreDerivative k F = fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
+lemma serreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
+    serreDerivative k F = fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
 /-!
 Basic properties of Serre derivative.
 -/
-theorem ramanujanSerreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    ramanujanSerreDerivative k (F + G) = ramanujanSerreDerivative k F + ramanujanSerreDerivative k G
+theorem serreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative k (F + G) = serreDerivative k F + serreDerivative k G
     := by
   ext z
-  simp [ramanujanSerreDerivative, normalizedDerivOfComplex_add F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_add F G hF hG]
   ring_nf
 
-theorem ramanujanSerreDerivative_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    ramanujanSerreDerivative k (F - G) = ramanujanSerreDerivative k F - ramanujanSerreDerivative k G
+theorem serreDerivative_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative k (F - G) = serreDerivative k F - serreDerivative k G
     := by
   ext z
-  simp [ramanujanSerreDerivative, normalizedDerivOfComplex_sub F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_sub F G hF hG]
   ring_nf
 
-theorem ramanujanSerreDerivative_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
-    ramanujanSerreDerivative k (c • F) = c • (ramanujanSerreDerivative k F) := by
+theorem serreDerivative_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
+    serreDerivative k (c • F) = c • (serreDerivative k F) := by
   ext z
-  simp [ramanujanSerreDerivative, normalizedDerivOfComplex_smul c F hF, smul_eq_mul]
+  simp [serreDerivative, normalizedDerivOfComplex_smul c F hF, smul_eq_mul]
   ring_nf
 
-theorem ramanujanSerreDerivative_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    ramanujanSerreDerivative (k₁ + k₂) (F * G) =
-      (ramanujanSerreDerivative k₁ F) * G + F * (ramanujanSerreDerivative k₂ G) := by
+theorem serreDerivative_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative (k₁ + k₂) (F * G) =
+      (serreDerivative k₁ F) * G + F * (serreDerivative k₂ G) := by
   ext z
-  simp [ramanujanSerreDerivative, normalizedDerivOfComplex_mul F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_mul F G hF hG]
   ring_nf
 
 /--
 The Serre derivative preserves MDifferentiability.
-If `F : ℍ → ℂ` is MDifferentiable, then `ramanujanSerreDerivative k F` is also MDifferentiable.
+If `F : ℍ → ℂ` is MDifferentiable, then `serreDerivative k F` is also MDifferentiable.
 -/
-theorem ramanujanSerreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) :
-    MDiff (ramanujanSerreDerivative k F) := by
+theorem serreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) :
+    MDiff (serreDerivative k F) := by
   refine (normalizedDerivOfComplex_mdifferentiable hF).sub ?_
   convert!
     (MDifferentiable.mul mdifferentiable_const (E2_mdifferentiable.mul hF) :
@@ -215,15 +214,15 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) 
 Serre derivative is equivariant under the slash action. More precisely,
 $\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \in SL(2, \mathbb{Z})$.
 -/
-theorem ramanujanSerreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
+theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
     (γ : SL(2, ℤ)) :
-    ramanujanSerreDerivative k F ∣[k + 2] γ = ramanujanSerreDerivative k (F ∣[k] γ) := by
+    serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
   ext z
-  simp only [ramanujanSerreDerivative_apply]
-  have hLHS : (ramanujanSerreDerivative (k : ℂ) F ∣[k + 2] γ) z =
+  simp only [serreDerivative_apply]
+  have hLHS : (serreDerivative (k : ℂ) F ∣[k + 2] γ) z =
       (D F ∣[k + 2] γ) z - ↑k * 12⁻¹ * ((EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z * (F ∣[k] γ) z) := by
     have h := congrFun (ModularForm.mul_slash_SL2 (2 : ℤ) k γ EisensteinSeries.E2 F) z
-    simp only [ModularForm.SL_slash_apply, ramanujanSerreDerivative_apply, Pi.mul_apply] at h ⊢
+    simp only [ModularForm.SL_slash_apply, serreDerivative_apply, Pi.mul_apply] at h ⊢
     rw [← h]
     ring_nf
   have hDz : (D (F ∣[k] γ)) z = (D F ∣[k + 2] γ) z -
@@ -242,12 +241,12 @@ theorem ramanujanSerreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (
 
 /--
 As a corollary, if `F` is invariant under the slash action of weight `k`, then
-`ramanujanSerreDerivative k F` is invariant under the slash action of weight `k + 2`.
+`serreDerivative k F` is invariant under the slash action of weight `k + 2`.
 -/
-theorem ramanujanSerreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
-    (γ : SL(2, ℤ)) (h : F ∣[k] γ = F) : ramanujanSerreDerivative k F ∣[k + 2] γ =
-      ramanujanSerreDerivative k F := by
-  rw [ramanujanSerreDerivative_slash_equivariant, h]
+theorem serreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
+    (γ : SL(2, ℤ)) (h : F ∣[k] γ = F) : serreDerivative k F ∣[k + 2] γ =
+      serreDerivative k F := by
+  rw [serreDerivative_slash_equivariant, h]
   exact hF
 
 end
