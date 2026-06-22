@@ -1095,7 +1095,6 @@ lemma Scheme.exists_isOpenCover_and_isAffine_of_finite [IsCofiltered I]
     simp
   · rw [← hVU, ← Hom.comp_preimage, c.w]
 
-set_option backward.isDefEq.respectTransparency false in
 open TopologicalSpace in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.

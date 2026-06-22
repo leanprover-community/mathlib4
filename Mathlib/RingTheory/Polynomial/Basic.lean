@@ -761,10 +761,10 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     let eqv :=
       (sumAlgEquiv R (↥sᶜ) s).symm.trans
         (renameEquiv R <| (Equiv.sumComm (↥sᶜ) s).trans <| Equiv.Set.sumCompl s)
-    have : rename Subtype.val = eqv.toAlgHom.comp (Algebra.algHom _ (MvPolynomial s R) _) := by
-      apply algHom_ext
-      simp [eqv, rename, X, monomial, Algebra.algHom, renameEquiv, Finsupp.mapDomain.addMonoidHom,
-        sumAlgEquiv, C]
+    have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
+      apply ringHom_ext
+      · simp [eqv]
+      · simp [eqv]
     apply_fun (· p) at this
     simpa [this, MulEquiv.prime_iff, Algebra.algHom] using (prime_C_iff _).symm
 

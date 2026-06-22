@@ -316,6 +316,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
+@[wikidata Q45715]
 abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
 
 /-- The graph with no edges on a given vertex type `V`. -/
