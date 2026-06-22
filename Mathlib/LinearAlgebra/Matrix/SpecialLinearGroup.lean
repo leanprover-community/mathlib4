@@ -739,7 +739,7 @@ lemma commutator_diag2_transvection (a : F) (ha : a ≠ 0) (b c : F)
 
 /-- For any `c : F`, given `a ≠ 0` and `a² ≠ 1`, the transvection `transvection i₁ i₂ hij c` is
 a commutator in `SL ι F`, hence lies in `commutator (SL ι F)`. -/
-lemma transvection_mem_commutator₀ (a : F) (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) (c : F) :
+lemma transvection_mem_commutator₀ {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) (c : F) :
     SpecialLinearGroup.transvection zero_ne_one c ∈ commutator SL(2, F) := by
   rw [← commutator_diag2_transvection a ha (c / (a ^ 2 - 1)) c
     (div_mul_cancel₀ c (sub_ne_zero_of_ne hasq)).symm]
