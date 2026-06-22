@@ -105,54 +105,6 @@ lemma overFunctor_map (X : D) {M N : SheafOfModules.{v} R} (f : M ⟶ N) :
     (SheafOfModules.overFunctor R X).map f = f.over X :=
   rfl
 
-variable (R) in
-/-- `R.over Y` viewed as a sheaf on `Over X` is isomorphic to `R.Over X`. -/
-@[simps! +dsimpLhs]
-def _root_.CategoryTheory.pushforwardOverMapIso {X Y : D} (f : X ⟶ Y) :
-    ((Over.map f).sheafPushforwardContinuous RingCat (K.over X) (K.over Y)).obj (R.over Y) ≅
-      R.over X :=
-  ObjectProperty.isoMk _ (NatIso.ofComponents (fun _ ↦ Iso.refl _))
-
-variable (R) in
-/-- If `f : X ⟶ Y`, this is the pushforward of sheaves of modules along `Over.map f`. -/
-noncomputable def overMap {X Y : D} (f : X ⟶ Y) :
-    SheafOfModules.{v} (R.over Y) ⥤ SheafOfModules.{v} (R.over X) :=
-  pushforward (F := Over.map f) (pushforwardOverMapIso R f).inv
-
-variable (R) in
-/-- First restricting to `Over Y` and then extending to `Over X` is the same as restricting to
-`Over X`. -/
-noncomputable def overFunctorMap {X Y : D} (f : X ⟶ Y) :
-    overFunctor.{v} R Y ⋙ overMap.{v} R f ≅ overFunctor.{v} R X :=
-  NatIso.ofComponents
-    fun M ↦ (SheafOfModules.fullyFaithfulForget _).preimageIso <|
-      PresheafOfModules.isoMk (fun U ↦ Iso.refl _)
-
-/-- The pushforward of `R.over Y` along `Over.map f` is isomorphic to `R.over X`. -/
-@[simps! +dsimpLhs]
-noncomputable def overMapUnitIso {X Y : D}
-    [(K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-    [(K.over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})] (f : X ⟶ Y) :
-    (overMap.{u} R f).obj (.unit (R.over Y)) ≅ (.unit (R.over X)) :=
-  Iso.refl _
-
-set_option backward.isDefEq.respectTransparency false in
-variable (R) in
-/-- (Implementation): The map on sheaves of rings induced by `pullback.fst`. -/
-@[simps]
-noncomputable
-def _root_.CategoryTheory.pushforwardOverPullback [Limits.HasPullbacks D] {X Y : D} (f : X ⟶ Y) :
-    R.over Y ⟶
-      ((Over.pullback f).sheafPushforwardContinuous RingCat _ _).obj (R.over X) where
-  hom.app U := R.obj.map (.op <| pullback.fst _ _)
-  hom.naturality := by simp [← Functor.map_comp, ← op_comp]
-
-variable (R) in
-/-- If `f : X ⟶ Y`, this is the pushforward of sheaves of modules along `Over.pullback f`. -/
-noncomputable def overPullback [Limits.HasPullbacks D] {X Y : D} (f : X ⟶ Y) :
-    SheafOfModules.{v} (R.over X) ⥤ SheafOfModules.{v} (R.over Y) :=
-  pushforward (F := Over.pullback f) (pushforwardOverPullback R f)
-
 section
 
 variable (R) in
