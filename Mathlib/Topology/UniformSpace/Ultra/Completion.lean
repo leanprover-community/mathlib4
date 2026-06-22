@@ -36,26 +36,24 @@ instance CauchyFilter.isSymm_gen {s : SetRel X X} [s.IsSymm] : (gen s).IsSymm wh
 instance CauchyFilter.isTrans_gen {s : SetRel X X} [s.IsTrans] : (gen s).IsTrans where
   trans _ _ _ := IsTransitiveRel.mem_filter_prod_trans
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :
     IsUltraUniformity (CauchyFilter X) := by
   apply mk_of_hasBasis (CauchyFilter.basis_uniformity IsUltraUniformity.hasBasis)
-  · exact fun _ ⟨_, hU, _⟩ ↦ by simp; infer_instance
-  · exact fun _ ⟨_, _, hU⟩ ↦ by simp; infer_instance
+  · exact fun _ ⟨_, hU, _⟩ ↦ by rw [Function.comp_apply, id_eq]; exact CauchyFilter.isSymm_gen
+  · exact fun _ ⟨_, _, hU⟩ ↦ by rw [Function.comp_apply, id_eq]; exact CauchyFilter.isTrans_gen
 
 @[simp] lemma IsUltraUniformity.cauchyFilter_iff :
     IsUltraUniformity (CauchyFilter X) ↔ IsUltraUniformity X :=
   ⟨fun _ ↦ CauchyFilter.isUniformInducing_pureCauchy.isUltraUniformity,
    fun _ ↦ inferInstance⟩
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.separationQuotient [IsUltraUniformity X] :
     IsUltraUniformity (SeparationQuotient X) := by
   have := IsUltraUniformity.hasBasis.map
     (Prod.map SeparationQuotient.mk (SeparationQuotient.mk (X := X)))
   rw [← SeparationQuotient.uniformity_eq] at this
   apply mk_of_hasBasis this
-  · exact fun _ ⟨_, hU, _⟩ ↦ by simp; infer_instance
+  · exact fun _ ⟨_, hU, _⟩ ↦ by rw [id_eq]; infer_instance
   · rintro U ⟨hU', _, hU⟩
     constructor
     rintro x y z
