@@ -691,11 +691,9 @@ public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
       { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
   -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
   refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, fun q ↦ ?_, inferInstance⟩
-  by_cases h : q < n
+  rcases (lt_trichotomy q n) with h | rfl | h
   · exact (isZero_of_isStrictlyGE _ n _ h).injective
-  · simp only [not_lt] at h
-    obtain (hq | rfl) := h.lt_or_eq
-    · exact Injective.of_iso (L.truncGEXIso n q hq).symm (hL q)
-    · exact Injective.of_iso (L.truncGEXIsoOpcycles n).symm inferInstance
+  · exact Injective.of_iso (L.truncGEXIsoOpcycles q).symm inferInstance
+  · exact Injective.of_iso (L.truncGEXIso n q h).symm (hL q)
 
 end CochainComplex.Plus.modelCategoryQuillen
