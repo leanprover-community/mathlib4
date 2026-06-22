@@ -178,7 +178,7 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
 @[simps!]
 def TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
     Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
-  haveI H : IsOpenEmbedding (TopCat.Hom.hom (X := .of U) (Y := X) _) :=
+  haveI H : IsOpenEmbedding (TopCat.Hom.hom (TopCat.ofHom ⟨_, continuous_subtype_val⟩)) :=
     U.isOpenEmbedding
   haveI := H.functor_isContinuous
   H.isOpenMap.functor.sheafPushforwardContinuous C _ _

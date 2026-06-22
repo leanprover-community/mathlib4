@@ -80,7 +80,7 @@ instance : U.overEquivalence.inverse.IsDenseSubsite
       (Opens.grothendieckTopology U) ((Opens.grothendieckTopology X).over U) :=
   inferInstanceAs (U.overEquivalence.symm.functor.IsDenseSubsite ..)
 
-/-- Sheaves on the over category of `U` is equivalent to sheaves on `U` as a topological space. -/
+/-- Sheaves on the over category of `U` are equivalent to sheaves on `U` as a topological space. -/
 @[simps!] def sheafEquivOver :
     Sheaf ((Opens.grothendieckTopology X).over U) A ≌ Sheaf (Opens.grothendieckTopology U) A :=
   U.overEquivalence.sheafCongr

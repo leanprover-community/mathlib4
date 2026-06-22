@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.Topology.Sheaves.Over
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
-/-! # Specialized results for sheaf of modules over topological spaces -/
+/-! # Specialized results for sheaves of modules over topological spaces -/
 
 @[expose] public section
 
@@ -32,9 +32,8 @@ def sheafOfModulesEquivOver :
   refine SheafOfModules.pushforwardPushforwardEquivalence (eqv := U.overEquivalence.symm)
     (U.overPullbackSheafEquivOver.app _).inv (U.sheafRestrictSheafEquivOver.app _).inv rfl ?_
   ext : 2
-  dsimp [overPullbackSheafEquivOver, sheafRestrictSheafEquivOver]
-  simp [eqToHom_map]
-  rfl
+  simp [overPullbackSheafEquivOver, sheafRestrictSheafEquivOver, eqToHom_map, overEquivalence,
+    IsOpenMap.functor]
 
 /-- `sheafOfModulesEquivOver` takes `R.over U` to `R |_ U`. -/
 def sheafOfModulesEquivOverUnit (R : X.Sheaf RingCat.{u}) :
