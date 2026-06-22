@@ -138,8 +138,8 @@ lemma adjp_some_none (A : Matrix (Option n) (Option n) R) :
 lemma adjp_none_some (A : Matrix (Option n) (Option n) R) :
     A.adjp s none (some i) = (A.submatrix (Function.update some i none) some).detp (-s) := by
   convert A.transpose.adjp_some_none s i using 1
-  · rw [adjp_transpose]; rfl
-  · rw [← detp_transpose]; rfl
+  · rw [adjp_transpose, transpose_apply]
+  · rw [← detp_transpose, transpose_submatrix]
 
 theorem detp_mul :
     detp 1 (A * B) + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) =
@@ -199,7 +199,7 @@ theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A)
   ext; simp [A', h]
 
 theorem adjp_mul_apply_eq : (adjp s A * A) i i = detp s A := by
-  rw [← detp_transpose, ← mul_adjp_apply_eq _ _ i, adjp_transpose, ← transpose_mul]; rfl
+  rw [← detp_transpose, ← mul_adjp_apply_eq _ _ i, adjp_transpose, ← transpose_mul, transpose_apply]
 
 theorem adjp_mul_apply_ne (h : i ≠ j) : (adjp 1 A * A) i j = (adjp (-1) A * A) i j := by
   simp_rw [← transpose_apply (_ * _) j i, transpose_mul,
