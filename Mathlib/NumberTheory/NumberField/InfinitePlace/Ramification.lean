@@ -23,7 +23,7 @@ This file studies the ramification of infinite places of a number field.
   if the restriction has the same multiplicity.
 * `NumberField.InfinitePlace.not_isUnramified_iff`: an infinite place is not unramified
   (i.e., is ramified) iff it is a complex place above a real place.
-* `NumberField.InfinitePlace.IsUnramifiedIn`: an infinite place of the base field is unramified
+* `NumberField.InfinitePlace.IsUnramifiedOver`: an infinite place of the base field is unramified
   in a field extension if every infinite place over it is unramified.
 * `IsUnramifiedAtInfinitePlaces`: a field extension is unramified at infinite places if every
   infinite place is unramified.
@@ -441,27 +441,27 @@ lemma isUnramified_smul_iff :
 variable (K) in
 /-- An infinite place of the base field is unramified in a field extension if every
 infinite place over it is unramified. -/
-def IsUnramifiedIn (w : InfinitePlace k) : Prop :=
+def IsUnramifiedOver (w : InfinitePlace k) : Prop :=
   ∀ v, comap v (algebraMap k K) = w → IsUnramified k v
 
-lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
-    (w.comap (algebraMap k K)).IsUnramifiedIn K ↔ w.IsUnramified k := by
+lemma isUnramifiedOver_comap [IsGalois k K] {w : InfinitePlace K} :
+    (w.comap (algebraMap k K)).IsUnramifiedOver K ↔ w.IsUnramified k := by
   refine ⟨fun H ↦ H _ rfl, fun H v hv ↦ ?_⟩
   obtain ⟨σ, rfl⟩ := exists_smul_eq_of_comap_eq hv
   rwa [isUnramified_smul_iff] at H
 
-lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K]
-    {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedIn K) :
+lemma even_card_aut_of_not_isUnramifiedOver [IsGalois k K]
+    {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedOver K) :
     Even (Nat.card Gal(K/k)) := by
   obtain ⟨v, rfl⟩ := comap_surjective (K := K) w
-  rw [isUnramifiedIn_comap] at hw
+  rw [isUnramifiedOver_comap] at hw
   exact even_card_aut_of_not_isUnramified hw
 
-lemma even_finrank_of_not_isUnramifiedIn
-    [IsGalois k K] {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedIn K) :
+lemma even_finrank_of_not_isUnramifiedOver
+    [IsGalois k K] {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedOver K) :
     Even (finrank k K) := by
   obtain ⟨v, rfl⟩ := comap_surjective (K := K) w
-  rw [isUnramifiedIn_comap] at hw
+  rw [isUnramifiedOver_comap] at hw
   exact even_finrank_of_not_isUnramified hw
 
 variable (k K)
@@ -471,10 +471,10 @@ open Finset in
 open scoped Classical in
 lemma card_isUnramified [NumberField k] [IsGalois k K] :
     #{w : InfinitePlace K | w.IsUnramified k} =
-      #{w : InfinitePlace k | w.IsUnramifiedIn K} * finrank k K := by
+      #{w : InfinitePlace k | w.IsUnramifiedOver K} * finrank k K := by
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
-    (t := {w : InfinitePlace k | w.IsUnramifiedIn K}), ← smul_eq_mul, ← sum_const]
+    (t := {w : InfinitePlace k | w.IsUnramifiedOver K}), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     rw [mem_filter_univ] at hw
@@ -482,22 +482,22 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
     · congr; ext w'
       rw [mem_filter, mem_filter_univ, Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _),
         and_iff_right_iff_imp]
-      intro e; rwa [← isUnramifiedIn_comap, ← e]
+      intro e; rwa [← isUnramifiedOver_comap, ← e]
     · rw [Nat.card_eq_fintype_card,
         ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
         mul_one, Set.toFinset_card]
-      rwa [← isUnramifiedIn_comap]
-  · simp [Set.MapsTo, isUnramifiedIn_comap]
+      rwa [← isUnramifiedOver_comap]
+  · simp [Set.MapsTo, isUnramifiedOver_comap]
 
 open Finset in
 open scoped Classical in
 lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
     #({w : InfinitePlace K | w.IsUnramified k} : Finset _)ᶜ =
-      #({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ * (finrank k K / 2) := by
+      #({w : InfinitePlace k | w.IsUnramifiedOver K} : Finset _)ᶜ * (finrank k K / 2) := by
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
-    (t := ({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ), ← smul_eq_mul, ← sum_const]
+    (t := ({w : InfinitePlace k | w.IsUnramifiedOver K} : Finset _)ᶜ), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     rw [compl_filter, mem_filter_univ] at hw
@@ -505,19 +505,19 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
     · congr; ext w'
       rw [mem_filter, compl_filter, mem_filter_univ, @eq_comm _ (comap w' _), Set.mem_toFinset,
         mem_orbit_iff, and_iff_right_iff_imp]
-      intro e; rwa [← isUnramifiedIn_comap, ← e]
+      intro e; rwa [← isUnramifiedOver_comap, ← e]
     · rw [Nat.card_eq_fintype_card,
         ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
-      rwa [← isUnramifiedIn_comap]
-  · simp [Set.MapsTo, isUnramifiedIn_comap]
+      rwa [← isUnramifiedOver_comap]
+  · simp [Set.MapsTo, isUnramifiedOver_comap]
 
 open scoped Classical in
-lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
+lemma card_eq_card_isUnramifiedOver [NumberField k] [IsGalois k K] :
     Fintype.card (InfinitePlace K) =
-      #{w : InfinitePlace k | w.IsUnramifiedIn K} * finrank k K +
-      #({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ * (finrank k K / 2) := by
+      #{w : InfinitePlace k | w.IsUnramifiedOver K} * finrank k K +
+      #({w : InfinitePlace k | w.IsUnramifiedOver K} : Finset _)ᶜ * (finrank k K / 2) := by
   rw [← card_isUnramified, ← card_isUnramified_compl, Finset.card_add_card_compl]
 
 end NumberField.InfinitePlace
@@ -559,8 +559,8 @@ lemma NumberField.InfinitePlace.isUnramified [IsUnramifiedAtInfinitePlaces k K]
 
 variable {k} (K)
 
-lemma NumberField.InfinitePlace.isUnramifiedIn [IsUnramifiedAtInfinitePlaces k K]
-    (w : InfinitePlace k) : IsUnramifiedIn K w := fun v _ ↦ v.isUnramified k
+lemma NumberField.InfinitePlace.isUnramifiedOver [IsUnramifiedAtInfinitePlaces k K]
+    (w : InfinitePlace k) : IsUnramifiedOver K w := fun v _ ↦ v.isUnramified k
 
 variable {K}
 
@@ -579,11 +579,11 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
     [IsGalois k K] [IsUnramifiedAtInfinitePlaces k K] :
     Fintype.card (InfinitePlace K) = Fintype.card (InfinitePlace k) * finrank k K := by
   classical
-  rw [InfinitePlace.card_eq_card_isUnramifiedIn (k := k) (K := K), Finset.filter_true_of_mem,
+  rw [InfinitePlace.card_eq_card_isUnramifiedOver (k := k) (K := K), Finset.filter_true_of_mem,
     Finset.card_univ, Finset.card_eq_zero.mpr, zero_mul, add_zero]
   · exact Finset.compl_univ
   simp only [Finset.mem_univ, forall_true_left]
-  exact InfinitePlace.isUnramifiedIn K
+  exact InfinitePlace.isUnramifiedOver K
 
 namespace NumberField.InfinitePlace
 
