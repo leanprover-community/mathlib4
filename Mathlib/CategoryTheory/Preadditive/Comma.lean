@@ -112,7 +112,7 @@ lemma Arrow.Hom.zero_right : (0 : u ⟶ v).right = 0 := rfl
 lemma Arrow.Hom.neg_left (α : u ⟶ v) : (-α).left = -α.left := rfl
 
 @[simp]
-lemma Arrow.Hom.neg_right (α : u ⟶ v) : (- α).right = - α.right := rfl
+lemma Arrow.Hom.neg_right (α : u ⟶ v) : (-α).right = -α.right := rfl
 
 end Arrow
 
