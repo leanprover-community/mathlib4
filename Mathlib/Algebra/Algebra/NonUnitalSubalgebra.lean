@@ -82,7 +82,7 @@ lemma toNonUnitalSubsemiring_injective :
 
 instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toNonUnitalSubsemiring_injective
+  coe_injective := SetLike.coe_injective.comp toNonUnitalSubsemiring_injective
 
 lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodule R A).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
@@ -153,7 +153,7 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    smul_mem' r a := by simpa [hs] using S.smul_mem r }
+    smul_mem' r a := by simpa [hs] using! S.smul_mem r }
 
 @[simp, norm_cast]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
@@ -1010,7 +1010,6 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
           Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
             (fun i j x hxi hxj => by
               let ⟨k, hik, hjk⟩ := dir i j
-              simp only
               rw [hf i k hik, hf j k hjk]
               rfl)
             _ (by rw [coe_iSup_of_directed dir])
@@ -1111,6 +1110,11 @@ theorem center_toNonUnitalSubsemiring :
     (center R A).toNonUnitalSubring = NonUnitalSubring.center A :=
   rfl
 
+protected theorem center_prod {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B]
+    [IsScalarTower R B B] [SMulCommClass R B B] :
+    center R (A × B) = prod (center R A) (center R B) :=
+  SetLike.coe_injective Set.center_prod
+
 end NonUnitalNonAssocSemiring
 
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
@@ -1183,7 +1187,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
 lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
     (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) :
     Commute a b := by
-  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using h
+  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using! h
   exact adjoin_le_centralizer_centralizer R s hb a this
 
 lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}

@@ -100,7 +100,7 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       (∀ {X Y : C} {f : Y ⟶ X} (R : Presieve X), R ∈ J X →
         Presieve.IsSheafFor P ((Sieve.generate R).pullback f).arrows) := by
   constructor
-  · refine fun H _ _ _ _ hR => ?_
+  · intro H _ _ _ _ hR
     apply H.isSheafFor
     rw [Sieve.generate_sieve]
     exact J.toGrothendieck.pullback_stable _ (Saturate.of _ _ hR)
@@ -239,6 +239,7 @@ open Limits
 
 variable {D : Type*} [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks (F : C ⥤ D) (P : Dᵒᵖ ⥤ Type*)
     {X : C} (R : Presieve X) [R.HasPairwisePullbacks]
@@ -329,6 +330,7 @@ lemma Precoverage.toGrothendieck_mono {J K : Precoverage C} (h : J ≤ K) :
     J.toGrothendieck ≤ K.toGrothendieck :=
   toGrothendieck_monotone h
 
+@[mono, gcongr]
 lemma GrothendieckTopology.toPrecoverage_monotone : Monotone (toPrecoverage (C := C)) :=
   (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).monotone_u
 

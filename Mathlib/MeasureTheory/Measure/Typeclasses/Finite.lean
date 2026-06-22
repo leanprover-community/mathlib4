@@ -104,7 +104,7 @@ instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFinite
 
 instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
   measure_univ_lt_top := by
-    rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+    rw [Measure.smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
@@ -198,7 +198,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
-  convert key
+  convert! key
 
 open scoped symmDiff
 
@@ -206,12 +206,12 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
     (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
     |μ.real s - μ.real t| ≤ μ.real (s ∆ t) := by
   simp only [Measure.real]
-  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset diff_subset hs').ne
-  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
+  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset sdiff_subset hs').ne
+  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset sdiff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
-    convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
-  rw [measure_diff' s ht ht', measure_diff' t hs hs',
+    convert! abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
+  rw [measure_sdiff' s ht ht', measure_sdiff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     union_comm t s]
@@ -609,7 +609,7 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
   have T_ne : T.Nonempty := by
     by_contra h'T
     rw [not_nonempty_iff_eq_empty.1 h'T, sUnion_empty] at hT
-    simpa only [← hT] using mem_univ (default : α)
+    simpa only [← hT] using! mem_univ (default : α)
   obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, T = range f := T_count.exists_eq_range T_ne
   have fS : ∀ n, f n ∈ S := by
     intro n
@@ -625,7 +625,7 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
   obtain ⟨t, tT, xt⟩ : ∃ t : Set α, t ∈ range f ∧ x ∈ t := by
     have : x ∈ ⋃₀ T := by simp only [hT, mem_univ]
     simpa only [mem_sUnion, exists_prop, ← hf]
-  obtain ⟨n, rfl⟩ : ∃ n : ℕ, f n = t := by simpa only using tT
+  obtain ⟨n, rfl⟩ : ∃ n : ℕ, f n = t := by simpa only using! tT
   exact mem_iUnion_of_mem _ xt
 
 section MeasureIxx

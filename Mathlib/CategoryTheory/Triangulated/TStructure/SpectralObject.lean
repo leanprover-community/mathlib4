@@ -44,6 +44,7 @@ namespace TStructure
 
 variable (t : TStructure C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a t-structure `t` on a triangulated category `C`, this is the functor
 `ComposableArrows EInt 1 ⥤ C ⥤ C` which sends an arrows `a ⟶ b` in `EInt`
 to the functor `t.eTruncLT.obj b ⋙ t.eTruncGE.obj a`. -/
@@ -70,6 +71,7 @@ noncomputable def ω₁δ :
         whiskerRight ((associator _ _ _).hom ≫ whiskerLeft _ (t.eTruncLTGEIsoGELT a b).hom ≫
           (associator _ _ _).inv ≫ whiskerRight (t.eTruncLTLTToLT c b) _) _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
@@ -96,6 +98,7 @@ noncomputable def triangleω₁δ : C ⥤ Triangle C :=
   Triangle.functorMk (t.ω₁.map (twoδ₂Toδ₁' a b c hab hbc))
     (t.ω₁.map (twoδ₁Toδ₀' a b c hab hbc)) (t.ω₁δ a b c hab hbc)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `(t.triangleω₁δ a b c hab hbc).obj X` is isomorphic to
 the (distinguished) triangle obtained by applying the functor `t.eTriangleLTGE.obj b`

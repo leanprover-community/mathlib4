@@ -973,7 +973,7 @@ theorem inCoordinates_eq {x₀ x : B} {y₀ y : B'} {ϕ : E x →SL[σ] E' y}
         (ϕ.comp <|
           (((trivializationAt F E x₀).continuousLinearEquivAt 𝕜₁ x hx).symm : F →L[𝕜₁] E x)) := by
   ext
-  simp_rw [inCoordinates, ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe,
+  simp_rw [inCoordinates, ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe,
     Trivialization.coe_continuousLinearEquivAt_eq, Trivialization.symm_continuousLinearEquivAt_eq]
 
 set_option backward.isDefEq.respectTransparency false in
