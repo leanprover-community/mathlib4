@@ -86,8 +86,8 @@ theorem isDiscrete_iff_forall_exists_isClosed {S : Set X} :
   constructor <;> intro h s sS
   · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
     exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
-  obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
-  exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+  · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
+    exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
 
 theorem isClosed_of_subset_discrete_closed {s t : Set X} (sd : s ⊆ t)
     (ht : IsDiscrete t) (tc : IsClosed t) : IsClosed s := by
