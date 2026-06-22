@@ -9,7 +9,7 @@ max_batch_size = 16
 
 [labels]
 on_queue  = "ready-to-merge"   # PR is on the merge queue (a batch waiting or running)
-building  = "bors-staging"     # PR is currently building on staging (overlay on on_queue)
+building  = "bors-staging"     # PR is currently building on staging (such PRs will also have the on_queue label)
 failed    = "awaiting-requeue" # PR's merge build failed terminally and was dropped; needs a re-queue
 delegated = "delegated"        # PR has at least one active (non-expired) delegation
 
