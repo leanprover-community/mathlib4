@@ -77,6 +77,7 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
   exact Ideal.map_le_iff_le_comap.mpr Ideal.LiesOver.over.le
 
 section IsUnramifiedIn
+
 namespace Algebra
 
 variable (R) in
