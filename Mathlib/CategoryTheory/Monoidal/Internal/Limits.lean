@@ -37,6 +37,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
 open MonObj
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 We construct the limit object of a functor `F : J ⥤ Mon C` given a limit cone `c` of
@@ -69,6 +70,7 @@ def limitCone (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c)
   π.app j := .mk' (c.π.app j)
   π.naturality j j' f := Hom.ext' (c.π.naturality f)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The image of the proposed limit cone for `F : J ⥤ Mon C` under the forgetful functor
 `forget C : Mon C ⥤ C` is isomorphic to the limit cone of `F ⋙ forget C`.
 -/
@@ -77,6 +79,7 @@ def forgetMapConeLimitConeIso (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) 
     (forget C).mapCone (limitCone F c hc) ≅ c :=
   Cone.ext (Iso.refl _) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.hasLimitsOfShape`:
 the proposed cone over a functor `F : J ⥤ Mon C` is a limit cone.

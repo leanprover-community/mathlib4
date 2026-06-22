@@ -86,7 +86,7 @@ instance : LE (ValueGroup A K) :=
         constructor
         · rintro ⟨e, he⟩; use (c⁻¹ : Aˣ) * e * d
           apply_fun fun t => c⁻¹ • t at he
-          simpa [mul_smul] using he
+          simpa [mul_smul] using! he
         · rintro ⟨e, he⟩; dsimp
           use c * e * (d⁻¹ : Aˣ)
           simp_rw [Units.smul_def, ← he, mul_smul]

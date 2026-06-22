@@ -83,7 +83,7 @@ lemma rTensor_apply_monomial_tmul (e : σ →₀ ℕ) (s : S) (n : N) (d : σ �
 
 lemma rTensor_apply_X_tmul (s : σ) (n : N) (d : σ →₀ ℕ) :
     rTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then (1 : S) ⊗ₜ[R] n else 0 := by
-  rw [rTensor_apply_tmul_apply, coeff_X', ite_tmul]
+  rw [rTensor_apply_tmul_apply, coeff_X, ite_tmul]
 
 lemma rTensor_apply (t : MvPolynomial σ S ⊗[R] N) (d : σ →₀ ℕ) :
     rTensor t d = ((lcoeff S d).restrictScalars R).rTensor N t :=
@@ -115,7 +115,7 @@ lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d :
 
 lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ) :
     scalarRTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then n else 0 := by
-  rw [scalarRTensor_apply_tmul_apply, coeff_X', ite_smul, one_smul, zero_smul]
+  rw [scalarRTensor_apply_tmul_apply, coeff_X, ite_smul, one_smul, zero_smul]
 
 lemma scalarRTensor_symm_apply_single (d : σ →₀ ℕ) (n : N) :
     scalarRTensor.symm (Finsupp.single d n) = (monomial d 1) ⊗ₜ[R] n :=
@@ -160,8 +160,6 @@ lemma rTensorAlgHom_toLinearMap :
       MvPolynomial σ S ⊗[R] N →ₐ[S] MvPolynomial σ (S ⊗[R] N)).toLinearMap =
       rTensor.toLinearMap := by
   ext d n e
-  dsimp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-    LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
   simp only [coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply, curry_apply,
     LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
   rw [coeff_rTensorAlgHom_tmul]
@@ -193,7 +191,7 @@ lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
     rTensorAlgEquiv x = rTensorAlgHom x := by
   rw [← AlgHom.coe_coe]
   congr 1
-  ext _ d <;> simpa [rTensorAlgEquiv] using rTensor_apply_tmul_apply _ _ d
+  ext _ d <;> simpa [rTensorAlgEquiv] using! rTensor_apply_tmul_apply _ _ d
 
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with

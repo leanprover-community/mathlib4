@@ -621,7 +621,7 @@ theorem toList_nil : toList (nil : WSeq α) = Computation.pure [] :=
 theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
   induction l with
   | nil => simp
-  | cons a l IH => simpa [ret_mem] using think_mem (Computation.mem_map _ IH)
+  | cons a l IH => simpa [ret_mem] using! think_mem (Computation.mem_map _ IH)
 
 @[simp]
 theorem destruct_ofSeq (s : Seq α) :
@@ -701,7 +701,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;>
       simp at this; cases this
     case cons.intro b' s =>
-      substs b' ss
+      subst b' ss
       simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
       rcases o with e | IH
       · simp [e]
