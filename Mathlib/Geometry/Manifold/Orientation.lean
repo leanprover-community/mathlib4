@@ -124,6 +124,16 @@ theorem map_signedOrientation (f : E ≃ₗ[ℝ] E) (s : ZMod 2)
 
 end Orientation
 
+private theorem map_orientation_comp (e₁ e₂ : E ≃ₗ[ℝ] E)
+    (o : Orientation ℝ E (Fin (Module.finrank ℝ E))) :
+    Orientation.map (Fin (Module.finrank ℝ E)) e₂
+        (Orientation.map (Fin (Module.finrank ℝ E)) e₁ o) =
+      Orientation.map (Fin (Module.finrank ℝ E)) (e₁ ≪≫ₗ e₂) o := by
+  rw [(Module.finBasis ℝ E).map_orientation_eq_det_inv_smul,
+    (Module.finBasis ℝ E).map_orientation_eq_det_inv_smul,
+    (Module.finBasis ℝ E).map_orientation_eq_det_inv_smul, LinearEquiv.det_trans, smul_smul,
+    mul_inv]
+
 open Classical in
 /-- The sign, relative to `baseOrientation`, of the coordinate change from the tangent
 trivialization at `z` to the tangent trivialization at `x`, evaluated at `z`. It records whether
@@ -165,6 +175,35 @@ theorem transSign_eq_zero_iff {M : Type*} [TopologicalSpace M] [ChartedSpace H M
   · exact iff_of_false (by decide)
       fun hdet => h ((baseOrientation.map_eq_iff_det_pos _ hcard).mpr hdet)
 
+omit [FiniteDimensional ℝ E] in
+private theorem coordChangeL_toLinearEquiv_trans {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] [IsManifold I 1 M] (x y z : M)
+    (hzx : z ∈ (chartAt H x).source) (hzy : z ∈ (chartAt H y).source) :
+    (((trivializationAt E (TangentSpace I) z).coordChangeL ℝ
+        (trivializationAt E (TangentSpace I) x) z).toLinearEquiv) ≪≫ₗ
+      (((trivializationAt E (TangentSpace I) x).coordChangeL ℝ
+        (trivializationAt E (TangentSpace I) y) z).toLinearEquiv) =
+      ((trivializationAt E (TangentSpace I) z).coordChangeL ℝ
+        (trivializationAt E (TangentSpace I) y) z).toLinearEquiv := by
+  have hzz : z ∈ (trivializationAt E (TangentSpace I) z).baseSet :=
+    mem_baseSet_trivializationAt E (TangentSpace I) z
+  rw [Bundle.Trivialization.coe_coordChangeL' _ _ ⟨hzz, hzx⟩,
+    Bundle.Trivialization.coe_coordChangeL' _ _ ⟨hzx, hzy⟩,
+    Bundle.Trivialization.coe_coordChangeL' _ _ ⟨hzz, hzy⟩]
+  ext v
+  simp only [LinearEquiv.trans_apply, LinearEquiv.symm_apply_apply]
+
+private theorem map_signedOrientation_transSign {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] [IsManifold I 1 M] (x y z : M)
+    (hzx : z ∈ (chartAt H x).source) (hzy : z ∈ (chartAt H y).source) :
+    Orientation.map (Fin (Module.finrank ℝ E))
+        (((trivializationAt E (TangentSpace I) x).coordChangeL ℝ
+          (trivializationAt E (TangentSpace I) y) z).toLinearEquiv)
+        (signedOrientation (transSign I x z) baseOrientation) =
+      signedOrientation (transSign I y z) baseOrientation := by
+  rw [← transSign_baseOrientation_eq I x z, map_orientation_comp,
+    coordChangeL_toLinearEquiv_trans I x y z hzx hzy, transSign_baseOrientation_eq I y z]
+
 /-- Data of a chosen orientation on a manifold, encoded by a single `ZMod 2`-valued sign function
 that is locally constant on each chart domain after correcting by the chart-transition signs. -/
 @[ext]
@@ -177,6 +216,20 @@ structure ManifoldOrientation (M : Type*) [TopologicalSpace M] [ChartedSpace H M
   chart domain. -/
   continuousOn_sign : ∀ x : M,
     ContinuousOn (fun z => sign z + transSign I x z) (chartAt H x).source
+
+/-- The chart-sign cocycle satisfied by any manifold orientation: viewing the orientation through
+the charts at `x` and `y` (as `signedOrientation (sign z + transSign · z) baseOrientation`), the
+tangent coordinate change from chart `x` to chart `y` carries one to the other. -/
+theorem ManifoldOrientation.compatible {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    [IsManifold I 1 M] (o : ManifoldOrientation I M) {x y z : M}
+    (hzx : z ∈ (chartAt H x).source) (hzy : z ∈ (chartAt H y).source) :
+    Orientation.map (Fin (Module.finrank ℝ E))
+        (((trivializationAt E (TangentSpace I) x).coordChangeL ℝ
+          (trivializationAt E (TangentSpace I) y) z).toLinearEquiv)
+        (signedOrientation (o.sign z + transSign I x z) baseOrientation) =
+      signedOrientation (o.sign z + transSign I y z) baseOrientation := by
+  rw [signedOrientation_add, Orientation.map_signedOrientation,
+    map_signedOrientation_transSign I x y z hzx hzy, ← signedOrientation_add]
 
 /-- A manifold is orientable if it admits a manifold orientation. -/
 abbrev Orientable (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] : Prop :=
