@@ -680,9 +680,7 @@ public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
     have hK : K.IsGE n := inferInstance
     rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
     exact DerivedCategory.TStructure.t.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
-  have : QuasiIso (L.πTruncGE n) := by
-    rw [L.quasiIso_πTruncGE_iff n]
-    infer_instance
+  have : QuasiIso (L.πTruncGE n) := (L.quasiIso_πTruncGE_iff n).mpr inferInstance
   have : Injective (L.opcycles n) := by
     let S : ShortComplex C := ShortComplex.mk (L.d (n - 1) n) (L.pOpcycles n) (by simp)
     have : Mono S.f := by
