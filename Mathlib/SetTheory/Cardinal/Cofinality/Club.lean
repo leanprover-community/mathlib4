@@ -188,7 +188,8 @@ protected theorem diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : co
         rw [Nat.lt_add_one_iff] at hm
         simp_rw [Set.sInter_image, Set.mem_iInter] at hg
         exact (hg _).1 _ (hb.trans_le <| hgm.monotone hm)
-    · use g^[n + 1] a; simp [- Function.iterate_succ]
+    · use g^[n + 1] a
+      simp [- Function.iterate_succ]
 
 theorem _root_.Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
