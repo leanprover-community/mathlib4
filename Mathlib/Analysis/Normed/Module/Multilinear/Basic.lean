@@ -932,9 +932,9 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
   MultilinearMap.mkContinuous
     { toFun := fun m =>
         LinearMap.mkContinuous
-          { toFun := fun x => f x m
-            map_add' := fun x y => by simp
-            map_smul' := fun c x => by simp }
+          { toFun := (f · m)
+            map_add' := by simp
+            map_smul' := by simp }
           (‖f‖ * ∏ i, ‖m i‖) fun x => by
           rw [mul_right_comm]
           exact (f x).le_of_opNorm_le (f.le_opNorm x) _
