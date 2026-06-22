@@ -109,7 +109,7 @@ theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' e : ℕ+, σ k e * r ^ (e : ℕ) by rwa [← (summable_prod_mul_pow k hr).tsum_prod]
   simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd,
     divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div, cast_sum,
-    cast_pow, Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k hr)]
+    cast_pow, Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k hr :)]
   refine tsum_congr fun n ↦ ?_
   simpa [tsum_fintype, Finset.sum_mul,
     (n : ℕ).divisorsAntidiagonal.sum_attach fun x : ℕ × ℕ ↦ x.2 ^ k * r ^ (x.1 * x.2),
@@ -134,7 +134,7 @@ lemma tendsto_zero_geometric_tsum_pnat {r : 𝕜} (hr : ‖r‖ < 1) :
     rwa [norm_pow, pow_lt_one_iff_of_nonneg (norm_nonneg _) (NeZero.ne _)]
   have h2 (m : ℕ+) : ∑' n : ℕ+, r ^ (n * m : ℕ) = (1 - r ^ (m : ℕ))⁻¹ - 1 := by
     have := tsum_geometric_of_norm_lt_one (h1 m)
-    rw [← tsum_zero_pnat_eq_tsum_nat (summable_geometric_of_norm_lt_one (h1 m))] at this
+    rw [← tsum_zero_pnat_eq_tsum_nat (summable_geometric_of_norm_lt_one (h1 m) :)] at this
     simp_rw [← this, pow_zero, add_sub_cancel_left, mul_comm, pow_mul]
   rw [funext h2, (by simp : 𝓝 (0 : 𝕜) = 𝓝 ((1 - 0)⁻¹ - 1)), tendsto_sub_const_iff,
     tendsto_inv_iff₀ (by simp), tendsto_const_sub_iff]

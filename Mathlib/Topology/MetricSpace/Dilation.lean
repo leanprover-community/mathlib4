@@ -89,7 +89,7 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 instance funLike : FunLike (α →ᵈ β) α β where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance toDilationClass : DilationClass (α →ᵈ β) α β where
   edist_eq' f := edist_eq' f
