@@ -195,9 +195,7 @@ section interaction
 
 -- Note: these tests might be incomplete; extend as needed!
 
-/--
-info: MDifferentiableAt I (I.prod (modelWithCornersSelf 𝕜 E)) fun m ↦ TotalSpace.mk' E m (X m) : M → Prop
--/
+/-- info: MDifferentiableAt I I.tangent fun m ↦ TotalSpace.mk' E m (X m) : M → Prop -/
 #guard_msgs in
 #check MDiffAt (T% X)
 
@@ -233,15 +231,22 @@ error: failed to synthesize
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (TangentSpace I)`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝¹` of type `IsManifold I 1 M`
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝` of type `IsManifold I 2 M`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `TotalSpace F (TangentSpace I)` among local instances.
 [Elab.DiffGeo.MDiff] ✅️ TotalSpace
-  [Elab.DiffGeo.MDiff] 💥️ From base info
-    [Elab.DiffGeo.MDiff] Failed with error:
-        No `baseInfo` provided
   [Elab.DiffGeo.MDiff] ✅️ TangentSpace
     [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the `TangentBundle` of `M`
-    [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
-  [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
+    [Elab.DiffGeo.MDiff] Found model: `I.tangent`
+  [Elab.DiffGeo.MDiff] Found model: `I.tangent`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `F`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝¹` of type `IsManifold I 1 M`
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝` of type `IsManifold I 2 M`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `F` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `F` is not a `Bundle.TotalSpace`.
@@ -329,20 +334,15 @@ variable {f : M → E'' →SL[id'] E'''} in
 error: Could not find a model with corners for `ContinuousLinearMap id' E'' E'''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
-[Elab.DiffGeo.MDiff] 💥️ TotalSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      `M` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] 💥️ TangentBundle
-  [Elab.DiffGeo.MDiff] Failed with error:
-      `M` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] 💥️ NormedSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on `M` among local instances.
-[Elab.DiffGeo.MDiff] ✅️ Manifold
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
-  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²²`
+[Elab.DiffGeo.MDiff] ✅️ instance assumption
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝⁴` of type `IsManifold I 1 M`
+  [Elab.DiffGeo.MDiff] `M` is a manifold over the model with corners `I`
   [Elab.DiffGeo.MDiff] Found model: `I`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap id' E'' E'''`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝⁴` of type `IsManifold I 1 M`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `ContinuousLinearMap id' E'' E'''` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a `Bundle.TotalSpace`.
@@ -432,20 +432,15 @@ variable {f : M → E'' →SL[σ] E''''} in
 error: Could not find a model with corners for `ContinuousLinearMap σ E'' E''''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
-[Elab.DiffGeo.MDiff] 💥️ TotalSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      `M` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] 💥️ TangentBundle
-  [Elab.DiffGeo.MDiff] Failed with error:
-      `M` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] 💥️ NormedSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on `M` among local instances.
-[Elab.DiffGeo.MDiff] ✅️ Manifold
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
-  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁵`
+[Elab.DiffGeo.MDiff] ✅️ instance assumption
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝⁷` of type `IsManifold I 1 M`
+  [Elab.DiffGeo.MDiff] `M` is a manifold over the model with corners `I`
   [Elab.DiffGeo.MDiff] Found model: `I`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap σ E'' E''''`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝⁷` of type `IsManifold I 1 M`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `ContinuousLinearMap σ E'' E''''` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a `Bundle.TotalSpace`.
@@ -513,7 +508,19 @@ variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : Model
   {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 
 variable {g : unitInterval → M} in
-/-- info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) J g : Prop -/
+/--
+error: Application type mismatch: The argument
+  I
+has type
+  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
+but is expected to have type
+  ModelWithCorners.{0, ?u.150, ?u.151} Real ?E' ?H'
+in the application
+  @MDifferentiable Real DenselyNormedField.toNontriviallyNormedField (EuclideanSpace Real (Fin 1))
+    (PiLp.normedAddCommGroup 2 fun x ↦ Real) (PiLp.normedSpace 2 Real fun x ↦ Real) (EuclideanHalfSpace 1)
+    (instTopologicalSpaceEuclideanHalfSpace 1) (modelWithCornersEuclideanHalfSpace 1) ?M ?inst✝ ?inst✝¹ ?E' ?inst✝²
+    ?inst✝³ ?H' ?inst✝⁴ I
+-/
 #guard_msgs in
 #check MDiff g
 
@@ -535,10 +542,17 @@ info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) (modelWithCornersSe
 variable {x y : ℝ} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
 /--
-error: failed to synthesize
-  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc 0 2)
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: Application type mismatch: The argument
+  I
+has type
+  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
+but is expected to have type
+  ModelWithCorners.{0, ?u.176, ?u.177} Real ?E' ?H'
+in the application
+  @ContMDiff Real DenselyNormedField.toNontriviallyNormedField (EuclideanSpace Real (Fin 1))
+    (PiLp.normedAddCommGroup 2 fun x ↦ Real) (PiLp.normedSpace 2 Real fun x ↦ Real) (EuclideanHalfSpace 1)
+    (instTopologicalSpaceEuclideanHalfSpace 1) (modelWithCornersEuclideanHalfSpace 1) ?M ?inst✝ ?inst✝¹ ?E' ?inst✝²
+    ?inst✝³ ?H' ?inst✝⁴ I
 -/
 #guard_msgs in
 variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
@@ -604,7 +618,21 @@ variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 -- Now, with a fact about x < y: these should behave well.
 variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
-/-- info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) J g : Prop -/
+#where
+set_option trace.Elab.DiffGeo.MDiff true in
+/--
+error: Application type mismatch: The argument
+  I
+has type
+  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
+but is expected to have type
+  ModelWithCorners.{0, ?u.203, ?u.204} Real ?E' ?H'
+in the application
+  @MDifferentiable Real DenselyNormedField.toNontriviallyNormedField (EuclideanSpace Real (Fin 1))
+    (PiLp.normedAddCommGroup 2 fun x ↦ Real) (PiLp.normedSpace 2 Real fun x ↦ Real) (EuclideanHalfSpace 1)
+    (instTopologicalSpaceEuclideanHalfSpace 1) (modelWithCornersEuclideanHalfSpace 1) ?M ?inst✝ ?inst✝¹ ?E' ?inst✝²
+    ?inst✝³ ?H' ?inst✝⁴ I
+-/
 #guard_msgs in
 variable [h: Fact ((0 : ℝ) < (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check MDiff g
@@ -651,6 +679,11 @@ set_option trace.Elab.DiffGeo.MDiff true in
 error: Could not find a model with corners for `↑(Set.Icc x y)`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝⁷` of type `IsManifold I 1 M`
+  [Elab.DiffGeo.MDiff] trying `IsManifold` instance `inst✝²` of type `IsManifold J 2 N`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `↑(Set.Icc x y)` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a `Bundle.TotalSpace`.
@@ -827,7 +860,6 @@ variable {g : ℍ → N} {h : E'' → ℍ} {k : ℍ → ℂ} {y : ℍ}
 
 /-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
 #guard_msgs in
-variable {g : ℍ → M} in
 #check CMDiff 2 g
 
 /-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
@@ -956,9 +988,8 @@ variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
 
 /--
-info: mfderiv I (I.prod (modelWithCornersSelf 𝕜 E)) (fun m ↦ TotalSpace.mk' E m (X m))
-  x : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x)
-  (TangentSpace (I.prod (modelWithCornersSelf 𝕜 E)) (TotalSpace.mk' E x (X x)))
+info: mfderiv I I.tangent (fun m ↦ TotalSpace.mk' E m (X m))
+  x : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace I.tangent (TotalSpace.mk' E x (X x)))
 -/
 #guard_msgs in
 #check mfderiv% (T% X) x
@@ -1099,24 +1130,19 @@ variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
 
 /--
-info: mfderiv I (I.prod (modelWithCornersSelf 𝕜 E)) (fun m ↦ TotalSpace.mk' E m (X m))
-  x : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x)
-  (TangentSpace (I.prod (modelWithCornersSelf 𝕜 E)) (TotalSpace.mk' E x (X x)))
+info: mfderiv I I.tangent (fun m ↦ TotalSpace.mk' E m (X m))
+  x : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace I.tangent (TotalSpace.mk' E x (X x)))
 -/
 #guard_msgs in
 #check mfderiv% (T% X) x
 
 variable {dXm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))}
 
-/--
-info: HasMFDerivAt I (I.prod (modelWithCornersSelf 𝕜 E)) (fun m ↦ TotalSpace.mk' E m (X m)) x dXm : Prop
--/
+/-- info: HasMFDerivAt I I.tangent (fun m ↦ TotalSpace.mk' E m (X m)) x dXm : Prop -/
 #guard_msgs in
 #check HasMFDerivAt% (T% X) x dXm
 
-/--
-info: HasMFDerivWithinAt I (I.prod (modelWithCornersSelf 𝕜 E)) (fun m ↦ TotalSpace.mk' E m (X m)) t x dXm : Prop
--/
+/-- info: HasMFDerivWithinAt I I.tangent (fun m ↦ TotalSpace.mk' E m (X m)) t x dXm : Prop -/
 #guard_msgs in
 variable {t : Set M} in
 #check HasMFDerivAt[t] (T% X) x dXm

@@ -186,6 +186,9 @@ variable [Fact (Module.finrank ℝ E = 3)] in
 error: Could not find a model with corners for `↑(Metric.sphere 0 1)`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere 0 1)`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `↑(Metric.sphere 0 1)` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a `Bundle.TotalSpace`.
