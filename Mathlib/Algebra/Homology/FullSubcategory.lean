@@ -32,7 +32,7 @@ def liftObjectProperty {ι : Type*} {c : ComplexShape ι}
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `D ⥤ HomologicalComplex P.FullSubcategory c`
 which is obtained by lifting a functor `D ⥤ HomologicalComplex V c`
-when for any `X : D` and `n`, the objects `(F.obj X).X n`
+when for any `X : D` and `n`, the object `(F.obj X).X n`
 satisfies a property `P : ObjectProperty V`. -/
 @[simps]
 def liftFunctorObjectProperty {D : Type*} [Category* D] {ι : Type*} {c : ComplexShape ι}
