@@ -32,8 +32,6 @@ For `Dₕ : Dihypergraph α`:
 
 * `Dₕ.vertexSet` (abbrev. `V(Dₕ)`) denotes the vertex set of `Dₕ` as a term in `Set α`.
 * `Dₕ.edgeSet` (abbrev. `E(Dₕ)`) denotes the edge set of `Dₕ` as a term in `((Set α) × (Set α))`.
-* `Dₕ.Adj x y` means that there exists some edge where `x` is in the source and `y` is in the
-  destination.
 * `Dₕ.EAdj e f` means that there exists some vertex that is in the destination of `e` and in the
   source of `f`.
 
@@ -169,21 +167,7 @@ The *positive degree* of a vertex `x` is the cardinality of the positive star of
 @[expose]
 noncomputable def posDegree (Dₕ : Dihypergraph α) (x : α) : ℕ∞ := (Dₕ.posStar x).encard
 
-
 /-! Adjacency -/
-
-section Adjacency
-
-/--
-Two vertices `x` and `y` are adjacent if there is some edge `e ∈ E(H)` where `x` is in the tail of
-`e`  and `y` is in the head of `e`.
-
-Note that we do not need to explicitly check that x, y ∈ V(H) here because a vertex that is not in
-the vertex set cannot be incident to any edge.
--/
-@[expose]
-def Adj (Dₕ : Dihypergraph α) (x : α) (y : α) : Prop :=
-  ∃ e ∈ E(Dₕ), x ∈ e.1 ∧ y ∈ e.2
 
 /--
 Edges `e` and `f` are adjacent if there is some vertex `x ∈ V(H)` where `x` is in the head of `e`
@@ -199,11 +183,7 @@ lemma EAdj.exists_vertex (h : Dₕ.EAdj e f) : ∃ x ∈ V(Dₕ), x ∈ e.2 ∧ 
 lemma EAdj.inter_nonempty (hef : Dₕ.EAdj e f) : (e.2 ∩ f.1).Nonempty := by
   grind only [eq_def, Set.inter_nonempty]
 
-end Adjacency
-
 /-! ## Isolated vertices -/
-
-section Isolated
 
 /--
 Predicate to determine if a vertex is isolated, meaning that it is not incident to any edges.
@@ -234,11 +214,7 @@ lemma isIsolated_posStar_empty (h : Dₕ.IsIsolated x) : Dₕ.posStar x = ∅ :=
 lemma isIsolated_posDegree_zero (h : Dₕ.IsIsolated x) : Dₕ.posDegree x = 0 := by
   grind [posDegree, Set.encard_eq_zero, isIsolated_posStar_empty]
 
-end Isolated
-
 /-! ## Empty Dihypergraphs -/
-
-section Empty
 
 /--
 Predicate to determine if a dihypergraph is nonempty
@@ -287,6 +263,27 @@ lemma eq_bot_or_isNonempty : Dₕ = ⊥ ∨ Dₕ.IsNonempty := by
 
 lemma edge_not_mem_empty : e ∉ E(⊥) := by simp
 
-end Empty
+/-! ## Trivial Dihypergraphs -/
+
+/-- A dihypergraph is trivial if it has at least one vertex but no edges. -/
+@[expose]
+def IsTrivial (Dₕ : Dihypergraph α) : Prop := Set.Nonempty V(Dₕ) ∧ E(Dₕ) = ∅
+
+/-- The trivial hypergraph with a given vertex set is defined by having no edges on that vertex
+set. -/
+@[simps, expose]
+def trivialOn (s : Set α) : Dihypergraph α where
+  vertexSet := s
+  edgeSet := ∅
+  subset_vertexSet_of_src_dst_of_mem_edgeSet' := by simp
+
+lemma IsTrivial.trivialOn (hf : Set.Nonempty s) :
+    IsTrivial (trivialOn s) := by
+  grind [trivialOn, IsTrivial]
+
+lemma IsTrivial.isNonempty (h : IsTrivial Dₕ) : IsNonempty Dₕ := by
+  grind [IsNonempty, IsTrivial, Set.nonempty_iff_ne_empty]
+
+lemma IsTrivial.not_mem_edgeSet (h : Dₕ.IsTrivial) : e ∉ E(Dₕ) := by grind [IsTrivial]
 
 end Dihypergraph
