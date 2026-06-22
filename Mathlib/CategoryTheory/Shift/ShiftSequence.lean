@@ -284,23 +284,24 @@ end
 
 end
 
-
 namespace ShiftSequence
 
 variable {F} in
 set_option backward.isDefEq.respectTransparency false in
+/-- Given an isomorphism `π ⋙ H ≅ F`, where `π` is a functor which commutes
+with the shift by `M` and `H` is equipped with a shift sequence,
+then this is the shift sequence for `F` induced by composition. -/
 @[implicit_reducible]
-def leftcomp [π.CommShift M] [H.ShiftSequence M] : F.ShiftSequence M where
+def leftComp [π.CommShift M] [H.ShiftSequence M] : F.ShiftSequence M where
   sequence n := π ⋙ H.shift n
   isoZero := isoWhiskerLeft π (H.isoShiftZero M) ≪≫ e
-  shiftIso n a a' ha' := (Functor.associator _ _ _).symm ≪≫
+  shiftIso n a a' ha' :=
+    (Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (π.commShiftIso n) _ ≪≫ Functor.associator _ _ _ ≪≫
       isoWhiskerLeft π (H.shiftIso n a a' ha')
   shiftIso_zero a := by
     ext K
-    dsimp
-    simp only [shiftIso_zero_hom_app, id_obj, id_comp, comp_id, ← Functor.map_comp,
-      commShiftIso_zero, CommShift.isoZero_hom_app, assoc, Iso.inv_hom_id_app]
+    simp [← Functor.map_comp, commShiftIso_zero]
   shiftIso_add n m a a' a'' ha' ha'':= by
     ext K
     dsimp
@@ -310,7 +311,7 @@ def leftcomp [π.CommShift M] [H.ShiftSequence M] : F.ShiftSequence M where
     simp
 
 instance [π.CommShift M] [H.ShiftSequence M] : (π ⋙ H).ShiftSequence M :=
-  leftcomp (Iso.refl _) _
+  leftComp (Iso.refl _) _
 
 end ShiftSequence
 
