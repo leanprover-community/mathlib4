@@ -760,7 +760,7 @@ lemma transvection_mem_commutator₁ {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1)
   rw [← this (c / (a ^ 2 - 1)) c (div_mul_cancel₀ c (sub_ne_zero_of_ne hasq)).symm]
   exact Subgroup.commutator_mem_commutator (Subgroup.mem_top _) (Subgroup.mem_top _)
 
-lemma transvection_mem_commutator (a : F) (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) (i j : Fin 2) (h : i ≠ j)
+lemma transvection_mem_commutator {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) {i j : Fin 2} (h : i ≠ j)
     (c : F) : SpecialLinearGroup.transvection h c ∈ commutator SL(2, F) := by
   fin_cases i
   · obtain rfl : j = 1 := by fin_cases j <;> tauto
