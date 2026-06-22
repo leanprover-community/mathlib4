@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.PPow.Defs
 import Mathlib.Data.PNat.Basic
 
 /-!
@@ -11,14 +11,6 @@ import Mathlib.Data.PNat.Basic
 -/
 
 variable {M : Type*}
-
-instance Semigroup.instPow [Semigroup M] : Pow M ℕ+ where
-  pow x n := Semigroup.ppow n n.pos x
-
-instance AddSemigroup.instSMul [AddSemigroup M] : SMul ℕ+ M where
-  smul n x := AddSemigroup.psmul n n.pos x
-
-attribute [to_additive existing AddSemigroup.instSMul] Semigroup.instPow
 
 section Semigroup
 
