@@ -23,7 +23,7 @@ public section
 
 namespace Real
 
-open Filter
+open Filter Asymptotics
 
 lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) 0 := by
   simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero,
@@ -62,5 +62,14 @@ theorem deriv_inv_log {x : ℝ} :
 @[simp]
 theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / (log x ^ 2) :=
   funext fun _ ↦ deriv_inv_log
+
+theorem inv_log_eq_o_one : (fun x ↦ 1 / log x) =o[atTop] (fun _ ↦ (1:ℝ)) := by
+    rw [isLittleO_one_iff]
+    convert tendsto_log_atTop.inv_tendsto_atTop using 1
+    ext; simp
+
+theorem one_eq_o_log_log : (fun _ ↦ (1:ℝ)) =o[atTop] (fun x ↦ log (log x)) := by
+    simp only [isLittleO_one_left_iff, norm_eq_abs]
+    exact tendsto_abs_atTop_atTop.comp (tendsto_log_atTop.comp tendsto_log_atTop)
 
 end Real
