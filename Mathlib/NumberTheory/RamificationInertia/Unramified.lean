@@ -103,3 +103,14 @@ lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
   have : Finite ((p.under R).ResidueField) := IsLocalization.finite _
     (nonZeroDivisors (R ⧸ p.under R))
   infer_instance
+
+/-- Let `S` be a Dedekind domain that is torsion-free over a domain `R`, and let `p ≠ ⊥` be an
+ideal of `R`. Then `p` is unramified in `S` if and only if `S` is unramified at every maximal
+ideal `P` of `S` lying over `p`. -/
+theorem Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDomain S]
+    [Module.IsTorsionFree R S] {p : Ideal R} (hp : p ≠ ⊥) :
+    IsUnramifiedIn S p ↔
+      ∀ (P : Ideal S) (_ : P.IsMaximal), P.LiesOver p → IsUnramifiedAt R P := by
+  refine ⟨fun h P hP hlo ↦ h P hP.isPrime hlo, fun h P hP hlo ↦ ?_⟩
+  haveI := hlo
+  exact h P (hP.isMaximal (Ideal.ne_bot_of_liesOver_of_ne_bot hp P)) hlo
