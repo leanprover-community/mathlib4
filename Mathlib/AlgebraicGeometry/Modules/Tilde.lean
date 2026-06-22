@@ -45,7 +45,7 @@ def modulesSpecToSheaf :
 
 /-- The global section functor for `𝒪_{Spec R}` modules -/
 noncomputable
-def moduleSpecΓFunctor : (Spec (.of R)).Modules ⥤ ModuleCat R :=
+def moduleSpecΓFunctor : (Spec R).Modules ⥤ ModuleCat R :=
   modulesSpecToSheaf ⋙ TopCat.Sheaf.forget _ _ ⋙ (evaluation _ _).obj (.op ⊤)
 
 set_option backward.isDefEq.respectTransparency false in

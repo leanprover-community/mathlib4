@@ -6,6 +6,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib
+public import Mathlib.AlgebraicGeometry.Modules.ModuleProperty
 
 /-!
 

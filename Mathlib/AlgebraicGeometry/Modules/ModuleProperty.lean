@@ -81,6 +81,36 @@ theorem restrict_locus_eq_preimage_locus [IsRestrictStable P]
 class IsLocal : Prop where
   isLocal : ∀ X {M : X.Modules} (𝒰 : OpenCover.{u} X), (∀ i, P (M.restrict (𝒰.f i))) → P M
 
-theorem openLocus_eq_top_iff [IsLocal P] : OpenLocus P M = ⊤ ↔ P M := sorry
+theorem openLocus_eq_top_iff [IsLocal P] [∀ X, (P (X := X)).IsClosedUnderIsomorphisms] :
+    OpenLocus P M = ⊤ ↔ P M := by
+  constructor
+  · intro h
+    have hx : ∀ x : X, ∃ (U : Scheme.{u}) (f : U ⟶ X) (_ : IsOpenImmersion f),
+        x ∈ f.opensRange ∧ P (M.restrict f) := by
+      intro x
+      rw [← openLocus_def P M x]
+      simp [h]
+    choose U f hf hxU hP using hx
+    let 𝒰 : OpenCover.{u} X :=
+      { I₀ := X
+        X := U
+        f := f
+        mem₀ := by
+          rw [presieve₀_mem_precoverage_iff]
+          exact ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, hf⟩ }
+    exact IsLocal.isLocal X 𝒰 hP
+  · intro h
+    rw [eq_top_iff]
+    intro x hx
+    rw [openLocus_def]
+    exact ⟨X, 𝟙 X, inferInstance, by simp,
+      ObjectProperty.prop_of_iso P (restrictFunctorId.symm.app M) h⟩
+
+def moduleAffineLocally (P : ∀ (R M : Type u) [CommRing R] [AddCommGroup M] [Module R M], Prop)
+    {X : Scheme.{u}} : ObjectProperty X.Modules :=
+  fun M => ∀ {R : CommRingCat.{u}} {f : Spec R ⟶ X} [IsOpenImmersion f],
+    P R (moduleSpecΓFunctor.obj (M.restrict f))
+
+
 
 end AlgebraicGeometry.Scheme.Modules
