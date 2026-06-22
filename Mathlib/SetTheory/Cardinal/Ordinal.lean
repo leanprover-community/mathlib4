@@ -123,6 +123,56 @@ theorem card_sSup_le {c : Cardinal} {s : Set Ordinal.{u}}
   · rwa [Cardinal.lift_id'.{u, u + 1}]
   · simpa
 
+theorem card_nfpFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
+    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
+    (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
+    (nfpFamily f o).card ≤ max c o.card := by
+  haveI : Small.{u} ι := small_of_lift_mk_le_lift hι
+  replace hι : #(Shrink.{u} ι) ≤ c := by rwa [← Cardinal.lift_le.{v}, Cardinal.lift_mk_shrink' ι]
+  set σ := equivShrink (List ι) |>.symm
+  rw [nfpFamily, ← Equiv.iSup_comp σ]
+  apply card_iSup_le_sum_card (List.foldr f o <| σ ·) |>.trans <|
+    sum_le_lift_mk_mul_iSup _ |>.trans <|
+    mul_le_mul' (b := c) ?_ (d := max c o.card) ?_ |>.trans ?_
+  · simp only [Cardinal.lift_id]
+    apply max_le hc hι |>.trans'
+    grw [mk_congr (σ.trans (equivShrink ι).listEquivOfEquiv), mk_list_le_max (Shrink ι)]
+  · have : Nonempty (Shrink (List ι)) := ⟨σ.symm []⟩
+    apply ciSup_le fun i => ?_
+    induction σ i with
+    | nil => simp
+    | cons => grind
+  · rw [Cardinal.mul_eq_max hc (le_trans hc (le_max_left _ _)), ← max_assoc, max_self]
+
+theorem card_derivFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
+    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
+    (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
+    (derivFamily f o).card ≤ max c o.card := by
+  induction o using limitRecOn with
+  | zero => simpa using card_nfpFamily_le hc hι hf 0
+  | add_one o ih =>
+    simp only [derivFamily_add_one, card_add_one]
+    grw [card_nfpFamily_le hc hι hf ((derivFamily f o) + 1), card_add_one, ih]
+    suffices max c o.card + 1 ≤ c ∨ c ≤ o.card + 1 ∧ c ≤ o.card by simp [this]
+    rcases lt_or_ge c o.card with ho | ho
+    · simp [ho.le, hc.trans ho.le]
+    · simp [ho, hc]
+  | limit o ho ih =>
+    rw [derivFamily_limit f ho]
+    apply card_iSup_Iio_le_card_mul_iSup _ |>.trans <|
+      mul_le_mul' (Cardinal.lift_le.mpr <| le_max_right c o.card)
+        (ciSup_le' (a := max c o.card) ?_) |>.trans ?_
+    · exact fun ⟨i, hi⟩ => ih _ hi |>.trans <| max_le_max_left _ (card_le_card hi.le)
+    · grw [Cardinal.lift_id, ← sq, power_nat_le (by simp [hc])]
+
+theorem card_nfp_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (nfp f o).card ≤ max ℵ₀ o.card :=
+  card_nfpFamily_le (le_refl ℵ₀) (by simp) (fun () => hf) o
+
+theorem card_deriv_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (deriv f o).card ≤ max ℵ₀ o.card :=
+  card_derivFamily_le (le_refl ℵ₀) (by simp) (fun () => hf) o
+
 theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordinal) :
     (a ^ b).card ≤ max a.card b.card := by
   induction b using limitRecOn with
@@ -174,56 +224,6 @@ theorem card_omega0_opow {a : Ordinal} (h : a ≠ 0) : card (ω ^ a) = max ℵ�
 
 theorem card_opow_omega0 {a : Ordinal} (h : 1 < a) : card (a ^ ω) = max ℵ₀ a.card := by
   rw [card_opow_eq_of_omega0_le_right h le_rfl, card_omega0, max_comm]
-
-theorem card_nfpFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
-    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
-    (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
-    (nfpFamily f o).card ≤ max c o.card := by
-  haveI : Small.{u} ι := small_of_lift_mk_le_lift hι
-  replace hι : #(Shrink.{u} ι) ≤ c := by rwa [← Cardinal.lift_le.{v}, Cardinal.lift_mk_shrink' ι]
-  set σ := equivShrink (List ι) |>.symm
-  rw [nfpFamily, ← Equiv.iSup_comp σ]
-  apply card_iSup_le_sum_card (List.foldr f o <| σ ·) |>.trans <|
-    sum_le_lift_mk_mul_iSup _ |>.trans <|
-    mul_le_mul' (b := c) ?_ (d := max c o.card) ?_ |>.trans ?_
-  · simp only [Cardinal.lift_id]
-    apply max_le hc hι |>.trans'
-    grw [mk_congr (σ.trans (equivShrink ι).listEquivOfEquiv), mk_list_le_max (Shrink ι)]
-  · have : Nonempty (Shrink (List ι)) := ⟨σ.symm []⟩
-    apply ciSup_le fun i => ?_
-    induction σ i with
-    | nil => simp
-    | cons => grind
-  · rw [Cardinal.mul_eq_max hc (le_trans hc (le_max_left _ _)), ← max_assoc, max_self]
-
-theorem card_derivFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
-    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
-    (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
-    (derivFamily f o).card ≤ max c o.card := by
-  induction o using limitRecOn with
-  | zero => simpa using card_nfpFamily_le hc hι hf 0
-  | add_one o ih =>
-    simp only [derivFamily_add_one, card_add_one]
-    grw [card_nfpFamily_le hc hι hf ((derivFamily f o) + 1), card_add_one, ih]
-    suffices max c o.card + 1 ≤ c ∨ c ≤ o.card + 1 ∧ c ≤ o.card by simp [this]
-    rcases lt_or_ge c o.card with ho | ho
-    · simp [ho.le, hc.trans ho.le]
-    · simp [ho, hc]
-  | limit o ho ih =>
-    rw [derivFamily_limit f ho]
-    apply card_iSup_Iio_le_card_mul_iSup _ |>.trans <|
-      mul_le_mul' (Cardinal.lift_le.mpr <| le_max_right c o.card)
-        (ciSup_le' (a := max c o.card) ?_) |>.trans ?_
-    · exact fun ⟨i, hi⟩ => ih _ hi |>.trans <| max_le_max_left _ (card_le_card hi.le)
-    · grw [Cardinal.lift_id, ← sq, power_nat_le (by simp [hc])]
-
-theorem card_nfp_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
-    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (nfp f o).card ≤ max ℵ₀ o.card :=
-  card_nfpFamily_le (le_refl ℵ₀) (by simp) (fun () => hf) o
-
-theorem card_deriv_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
-    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (deriv f o).card ≤ max ℵ₀ o.card :=
-  card_derivFamily_le (le_refl ℵ₀) (by simp) (fun () => hf) o
 
 theorem isPrincipal_opow_omega (o : Ordinal) : IsPrincipal (· ^ ·) (ω_ o) := by
   obtain rfl | ho := eq_zero_or_pos o

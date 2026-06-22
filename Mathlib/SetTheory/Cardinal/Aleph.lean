@@ -565,12 +565,6 @@ theorem countable_Iio_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : (Iio o).Co
   rw [← countable_coe_iff, ← ToType.mk.symm.toEquiv.countable_iff]
   exact countable_toType_of_lt_omega_one h
 
-instance {o : Ordinal} [h : Fact <| o < ω₁] : Countable (ToType o) :=
-  countable_toType_of_lt_omega_one h.out
-
-instance {o : Ordinal} [h : Fact <| o < ω₁] : Countable (Iio o) :=
-  countable_Iio_of_lt_omega_one h.out
-
 end Cardinal
 
 /-! ### Beth cardinals -/

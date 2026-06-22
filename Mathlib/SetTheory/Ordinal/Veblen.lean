@@ -599,6 +599,18 @@ theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
 theorem epsilon_pos (o : Ordinal) : 0 < ε_ o :=
   veblen_pos
 
+theorem omega0_le_veblen_of_left_ne_zero
+    {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) : ω ≤ veblen a b :=
+  calc ω ≤ veblen 1 b := omega0_lt_epsilon b |>.le
+    _ ≤ veblen a b := veblen_left_monotone b <| Order.one_le_iff_ne_zero.mpr ha
+
+theorem omega0_le_veblen_of_right_ne_zero
+    (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : ω ≤ veblen a b :=
+  calc ω = ω ^ 1 := opow_one _ |>.symm
+    _ ≤ ω ^ b := opow_le_opow_right omega0_pos <| Order.one_le_iff_ne_zero.mpr hb
+    _ = veblen 0 b := veblen_zero_apply b |>.symm
+    _ ≤ veblen a b := veblen_left_monotone b zero_le
+
 theorem invVeblen₁_epsilon (h : o < ε_ o) : invVeblen₁ (ε_ o) = 1 :=
   invVeblen₁_veblen h
 
@@ -743,34 +755,20 @@ private theorem le_card_veblen_aux (a b : Ordinal) : max a.card b.card ≤ (vebl
   · exact card_le_card (left_le_veblen a b)
   · exact card_le_card (right_le_veblen a b)
 
-theorem omega0_le_veblen_of_left_ne_zero (a b : Ordinal) (ha : a ≠ 0) : ω ≤ veblen a b :=
-  calc ω ≤ veblen 1 b := omega0_lt_epsilon b |>.le
-    _ ≤ veblen a b := veblen_left_monotone b <| Order.one_le_iff_ne_zero.mpr ha
-
-theorem omega0_le_veblen_of_right_ne_zero (a b : Ordinal) (hb : b ≠ 0) : ω ≤ veblen a b :=
-  calc ω = ω ^ 1 := opow_one _ |>.symm
-    _ ≤ ω ^ b := opow_le_opow_right omega0_pos <| Order.one_le_iff_ne_zero.mpr hb
-    _ = veblen 0 b := veblen_zero_apply b |>.symm
-    _ ≤ veblen a b := veblen_left_monotone b zero_le
-
-theorem card_veblen_eq_of_left_ne_zero (a b : Ordinal) (ha : a ≠ 0) :
+theorem card_veblen_eq_of_left_ne_zero {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) :
     (veblen a b).card = max (max a.card b.card) ℵ₀ := by
   apply le_antisymm (card_veblen_le a b)
   exact max_le (le_card_veblen_aux a b) <|
-    aleph0_le_card.mpr <| omega0_le_veblen_of_left_ne_zero a b ha
+    aleph0_le_card.mpr <| omega0_le_veblen_of_left_ne_zero b ha
 
-theorem card_veblen_eq_of_right_ne_zero (a b : Ordinal) (hb : b ≠ 0) :
+theorem card_veblen_eq_of_right_ne_zero (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) :
     (veblen a b).card = max (max a.card b.card) ℵ₀ := by
   apply le_antisymm (card_veblen_le a b)
   exact max_le (le_card_veblen_aux a b) <|
-    aleph0_le_card.mpr <| omega0_le_veblen_of_right_ne_zero a b hb
-
-theorem card_veblen_eq (a b : Ordinal) (h : a ≠ 0 ∨ b ≠ 0) :
-    (veblen a b).card = max (max a.card b.card) ℵ₀ :=
-  h.elim (card_veblen_eq_of_left_ne_zero a b) (card_veblen_eq_of_right_ne_zero a b)
+    aleph0_le_card.mpr <| omega0_le_veblen_of_right_ne_zero a hb
 
 theorem card_epsilon (o : Ordinal) : (ε_ o).card = max ℵ₀ o.card := by
-  rw [card_veblen_eq_of_left_ne_zero 1 o one_ne_zero,
+  rw [card_veblen_eq_of_left_ne_zero o one_ne_zero,
     card_one, max_right_comm, max_eq_right one_le_aleph0]
 
 theorem card_gamma (o : Ordinal) : (Γ_ o).card = max ℵ₀ o.card := by
@@ -779,20 +777,20 @@ theorem card_gamma (o : Ordinal) : (Γ_ o).card = max ℵ₀ o.card := by
   · exact aleph0_le_card.mpr <| omega0_lt_gamma o |>.le
   · exact card_le_card isNormal_gamma.strictMono.le_apply
 
-theorem epsilon_lt_omega_of_lt_omega_of_ne_zero (hx : x ≠ 0) (ho : o < ω_ x) : ε_ o < ω_ x := by
+theorem epsilon_lt_omega_of_lt_omega (hx : x ≠ 0) (ho : o < ω_ x) : ε_ o < ω_ x := by
   simp_all [card_epsilon, lt_omega_iff_card_lt, hx.pos]
 
 theorem epsilon_zero_lt_omega_one : ε₀ < ω₁ :=
-  epsilon_lt_omega_of_lt_omega_of_ne_zero one_ne_zero <| omega_pos 1
+  epsilon_lt_omega_of_lt_omega one_ne_zero <| omega_pos 1
 
 instance : Countable (ToType ε₀) :=
   countable_toType_of_lt_omega_one epsilon_zero_lt_omega_one
 
-theorem gamma_lt_omega_of_lt_omega_of_ne_zero (hx : x ≠ 0) (ho : o < ω_ x) : Γ_ o < ω_ x := by
+theorem gamma_lt_omega_of_lt_omega (hx : x ≠ 0) (ho : o < ω_ x) : Γ_ o < ω_ x := by
   simp_all [card_gamma, lt_omega_iff_card_lt, hx.pos]
 
 theorem gamma_zero_lt_omega_one : Γ₀ < ω₁ :=
-  gamma_lt_omega_of_lt_omega_of_ne_zero one_ne_zero <| omega_pos 1
+  gamma_lt_omega_of_lt_omega one_ne_zero <| omega_pos 1
 
 instance : Countable (ToType Γ₀) :=
   countable_toType_of_lt_omega_one gamma_zero_lt_omega_one

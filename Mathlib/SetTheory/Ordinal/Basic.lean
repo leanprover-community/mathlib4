@@ -1395,10 +1395,6 @@ theorem finite_Iio_of_lt_omega0 {o} (h : o < ω) : (Iio o).Finite := by
   rw [← finite_coe_iff, ← ToType.mk.symm.toEquiv.finite_iff]
   exact finite_toType_of_lt_omega0 h
 
-instance {o} [h : Fact <| o < ω] : Finite (ToType o) := finite_toType_of_lt_omega0 h.out
-
-instance {o} [h : Fact <| o < ω] : Finite (Iio o) := finite_Iio_of_lt_omega0 h.out
-
 end Ordinal
 
 /-! ### Sorted lists -/
