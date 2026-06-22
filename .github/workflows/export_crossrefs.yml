@@ -21,6 +21,9 @@ concurrency:
 
 permissions:
   contents: read
+  # Required for the token-minting action to request a GitHub OIDC token,
+  # which it exchanges (via Azure Key Vault) for a GitHub App installation token.
+  id-token: write
 
 env:
   # TODO: move to `leanprover-community/mathlib4-crossrefs` for the production deployment.
@@ -66,9 +69,33 @@ jobs:
           jq -e '.entries | length > 0' crossrefs.json > /dev/null
           echo "Exported $(jq '.entries | length' crossrefs.json) entries."
 
+      # Split `owner/repo` so the token can be scoped to the crossrefs repo. The
+      # app is installed on the crossrefs repo's owner, not on this repository,
+      # so the token-minting action must resolve the installation from there.
+      - name: Resolve crossrefs repository owner and name
+        id: repo
+        run: |
+          echo "owner=${CROSSREFS_REPO%%/*}" >> "$GITHUB_OUTPUT"
+          echo "name=${CROSSREFS_REPO#*/}" >> "$GITHUB_OUTPUT"
+
+      # Mint a short-lived GitHub App installation token scoped to the crossrefs
+      # repo, instead of relying on a long-lived personal access token.
+      - name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_CROSSREFS_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-crossrefs-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_CROSSREFS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: ${{ steps.repo.outputs.owner }}
+          repositories: ${{ steps.repo.outputs.name }}
+
+      # This token is masked by the token minting action and will not be logged accidentally.
       - name: Push to the crossrefs repository
         env:
-          CROSSREFS_PUSH_TOKEN: ${{ secrets.CROSSREFS_PUSH_TOKEN }}
+          CROSSREFS_PUSH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           git clone --depth 1 \
             "https://x-access-token:${CROSSREFS_PUSH_TOKEN}@github.com/${CROSSREFS_REPO}.git" \
