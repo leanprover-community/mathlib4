@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 public import Mathlib.Algebra.Homology.Refinements
@@ -652,10 +653,59 @@ public lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
   exact ⟨K', inferInstance, ι, π ≫ p, inferInstance, inferInstance,
     MorphismProperty.comp_mem _ _ _ hπ hp, by simp⟩
 
-variable (K) in
+open ZeroObject
+
+variable (K)
+
+public lemma exists_injective_resolution' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia)
+    [K.IsStrictlyGE n₁] :
+    ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi : Mono i) (_hi' : QuasiIso i)
+      (_ : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n₀ := by
+  have : K.IsStrictlyGE (n₀ + 1) := by rw [h]; infer_instance
+  obtain ⟨L, hL, i, p, hi, hi', hp, _⟩ := cm5a (0 : K ⟶ 0) n₀
+  have hp₀ : p = 0 := (isZero_zero _).eq_of_tgt _ _
+  refine ⟨L, i, hi, hi', fun n => Injective.of_iso ?_ ((hp n).2), hL⟩
+  exact
+    { hom := kernel.ι _
+      inv := kernel.lift _ (𝟙 _) (by simp [hp₀])
+      hom_inv_id := by simp [← cancel_mono (kernel.ι _)]
+      inv_hom_id := by simp }
+
 public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
       (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
-  sorry
+  have : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+  obtain ⟨L, i, _, _, hL, _⟩  := exists_injective_resolution' K (n - 1) n (by simp)
+  have : L.IsGE n := by
+    have hK : K.IsGE n := inferInstance
+    rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
+    exact DerivedCategory.TStructure.t.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
+  have : QuasiIso (L.πTruncGE n) := by
+    rw [L.quasiIso_πTruncGE_iff n]
+    infer_instance
+  have : Injective (L.opcycles n) := by
+    let S : ShortComplex C := ShortComplex.mk (L.d (n-1) n) (L.pOpcycles n) (by simp)
+    have : Mono S.f := by
+      let T := L.sc' (n-2) (n-1) n
+      have hT : T.Exact := by
+        rw [← L.exactAt_iff' (n-2) (n-1) n (by simp; linarith) (by simp),
+          exactAt_iff_isZero_homology]
+        exact L.isZero_of_isGE n (n-1) (by linarith)
+      apply hT.mono_g
+      apply IsZero.eq_of_src
+      exact L.isZero_of_isStrictlyGE (n - 1) _
+    have hS : S.ShortExact :=
+      { exact := S.exact_of_g_is_cokernel (L.opcyclesIsCokernel (n-1) n (by simp)) }
+    exact Retract.injective
+      { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
+  -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
+  refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, ?_, inferInstance⟩
+  intro q
+  by_cases h : q < n
+  · exact (isZero_of_isStrictlyGE _ n _ h).injective
+  · simp only [not_lt] at h
+    obtain (hq | rfl) := h.lt_or_eq
+    · exact Injective.of_iso (L.truncGEXIso n q hq).symm (hL q)
+    · exact Injective.of_iso (L.truncGEXIsoOpcycles n).symm inferInstance
 
 end CochainComplex.Plus.modelCategoryQuillen
