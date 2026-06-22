@@ -140,7 +140,7 @@ namespace Subsemiring
 
 instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R) R
 

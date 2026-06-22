@@ -160,8 +160,12 @@ theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeas
   rw [← A, ← B]
   exact withDensity_apply _ (measurableSet_toMeasurable μ s)
 
-instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
+instance nullSingletonClass_withDensity [NullSingletonClass μ] (f : α → ℝ≥0∞) :
+    NullSingletonClass (μ.withDensity f) where
   measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
+
+@[deprecated (since := "2026-06-09")]
+alias noAtoms_withDensity := nullSingletonClass_withDensity
 
 @[simp]
 theorem withDensity_zero : μ.withDensity 0 = 0 := by
@@ -371,6 +375,15 @@ theorem count_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) :
 theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
     count.withDensity f = sum (fun a ↦ f a • dirac a) := by
   simp [count, withDensity_sum, dirac_withDensity]
+
+@[fun_prop]
+theorem measurable_withDensity {β : Type*} [MeasurableSpace β] {f : β → α → ℝ≥0∞}
+    [SFinite μ] (hf : Measurable f.uncurry) :
+    Measurable fun b ↦ μ.withDensity (f b) := by
+  rw [Measure.measurable_measure]
+  intro s hs
+  simp only [withDensity_apply _ hs]
+  fun_prop
 
 open MeasureTheory.SimpleFunc
 
