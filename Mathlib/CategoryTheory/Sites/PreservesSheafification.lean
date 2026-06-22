@@ -131,7 +131,6 @@ variable {G₁ : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj₁ : G₁ ⊣ sheafToPreshe
   {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     (adj₂ : G₂ ⊣ sheafToPresheaf J B) :
     J.PreservesSheafification F ↔ ∀ (P : Cᵒᵖ ⥤ A),
@@ -183,14 +182,13 @@ lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
   simp [sheafComposeNatTrans, -ObjectProperty.ι_obj, -ObjectProperty.ι_map,
     Adjunction.homEquiv_counit]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
     (α : G₂.obj (P ⋙ F) ⟶ (sheafCompose J F).obj (G₁.obj P))
     (hα : adj₂.unit.app (P ⋙ F) ≫ (sheafToPresheaf J B).map α =
         whiskerRight (adj₁.unit.app P) F) :
     α = (sheafComposeNatTrans J F adj₁ adj₂).app P := by
   apply (adj₂.homEquiv _ _).injective
-  dsimp [sheafComposeNatTrans]
+  dsimp [ObjectProperty.ι_obj, sheafComposeNatTrans, id_obj]
   erw [Equiv.apply_symm_apply]
   rw [← hα]
   apply adj₂.homEquiv_unit

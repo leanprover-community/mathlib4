@@ -636,7 +636,7 @@ private noncomputable local instance normedAddCommGroupAux :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
-@[implicit_reducible]
+@[instance_reducible]
 private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 

@@ -142,22 +142,22 @@ abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
 abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
   e.counitIso.hom
 
-@[reassoc +to_dual (attr := simp)]
+@[reassoc +to_dual]
 lemma unitIso_hom_inv_id_app (e : C ≌ D) (X : C) :
     dsimp% e.unit.app X ≫ e.unitInv.app X = 𝟙 X :=
   e.unitIso.hom_inv_id_app X
 
-@[reassoc +to_dual (attr := simp)]
+@[reassoc +to_dual]
 lemma unitIso_inv_hom_id_app (e : C ≌ D) (X : C) :
     dsimp% e.unitInv.app X ≫ e.unit.app X = 𝟙 _ :=
   e.unitIso.inv_hom_id_app X
 
-@[reassoc +to_dual (attr := simp)]
+@[reassoc +to_dual]
 lemma counitIso_hom_inv_id_app (e : C ≌ D) (Y : D) :
     dsimp% e.counit.app Y ≫ e.counitInv.app Y = 𝟙 _ :=
   e.counitIso.hom_inv_id_app Y
 
-@[reassoc +to_dual (attr := simp)]
+@[reassoc +to_dual]
 lemma counitIso_inv_hom_id_app (e : C ≌ D) (Y : D) :
     dsimp% e.counitInv.app Y ≫ e.counit.app Y = 𝟙 Y :=
   e.counitIso.inv_hom_id_app Y
@@ -269,7 +269,6 @@ theorem counit_app_functor (e : C ≌ D) (X : C) :
     e.counit.app (e.functor.obj X) = e.functor.map (e.unitInv.app X) := by
   simpa using Iso.hom_comp_eq_id (e.functor.mapIso (e.unitIso.app X)) (f := e.counit.app _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The other triangle equality. The proof follows the following proof in Globular:
   http://globular.science/1905.001 -/
 @[to_dual (attr := reassoc (attr := simp)) inverse_counitInv_comp]
@@ -381,7 +380,6 @@ lemma symm_unit (e : C ≌ D) : e.symm.unit = e.counitInv := rfl
 
 variable {E : Type u₃} [Category.{v₃} E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence of categories is transitive. -/
 @[trans, simps]
 def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
@@ -457,51 +455,43 @@ section CancellationLemmas
 
 variable (e : C ≌ D)
 
-set_option backward.isDefEq.respectTransparency false in
 /- We need special forms of `cancel_natIso_hom_right(_assoc)` and
 `cancel_natIso_inv_right(_assoc)` for units and counits, because neither `simp` or `rw` will apply
 those lemmas in this setting without providing `e.unitIso` (or similar) as an explicit argument.
 We also provide the lemmas for length four compositions, since they're occasionally useful.
 (e.g. in proving that equivalences take monos to monos) -/
-@[to_dual (attr := simp) cancel_unitInv_left]
+@[to_dual cancel_unitInv_left, simp]
 theorem cancel_unit_right {X Y : C} (f f' : X ⟶ Y) :
     f ≫ e.unit.app Y = f' ≫ e.unit.app Y ↔ f = f' := by simp only [cancel_mono]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual (attr := simp) cancel_unit_left]
 theorem cancel_unitInv_right {X Y : C} (f f' : X ⟶ e.inverse.obj (e.functor.obj Y)) :
     f ≫ e.unitInv.app Y = f' ≫ e.unitInv.app Y ↔ f = f' := by simp only [cancel_mono]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual (attr := simp) cancel_counitInv_left]
 theorem cancel_counit_right {X Y : D} (f f' : X ⟶ e.functor.obj (e.inverse.obj Y)) :
     f ≫ e.counit.app Y = f' ≫ e.counit.app Y ↔ f = f' := by simp only [cancel_mono]
 
-set_option backward.isDefEq.respectTransparency false in
-@[to_dual (attr := simp) cancel_counit_left]
+@[to_dual cancel_counit_left, simp]
 theorem cancel_counitInv_right {X Y : D} (f f' : X ⟶ Y) :
     f ≫ e.counitInv.app Y = f' ≫ e.counitInv.app Y ↔ f = f' := by simp only [cancel_mono]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, to_dual none]
 theorem cancel_unit_right_assoc {W X X' Y : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X') (g' : X' ⟶ Y) :
     f ≫ g ≫ e.unit.app Y = f' ≫ g' ≫ e.unit.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, to_dual none]
 theorem cancel_counitInv_right_assoc {W X X' Y : D} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) : f ≫ g ≫ e.counitInv.app Y = f' ≫ g' ≫ e.counitInv.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, to_dual none]
 theorem cancel_unit_right_assoc' {W X X' Y Y' Z : C} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z)
     (f' : W ⟶ X') (g' : X' ⟶ Y') (h' : Y' ⟶ Z) :
     f ≫ g ≫ h ≫ e.unit.app Z = f' ≫ g' ≫ h' ≫ e.unit.app Z ↔ f ≫ g ≫ h = f' ≫ g' ≫ h' := by
   simp only [← Category.assoc, cancel_mono]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, to_dual none]
 theorem cancel_counitInv_right_assoc' {W X X' Y Y' Z : D} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z)
     (f' : W ⟶ X') (g' : X' ⟶ Y') (h' : Y' ⟶ Z) :

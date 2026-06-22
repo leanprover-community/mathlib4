@@ -91,7 +91,6 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
 
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp←] comp_apply in
-set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
     naturally in `F` and `X`. -/

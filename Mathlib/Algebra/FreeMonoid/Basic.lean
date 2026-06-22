@@ -340,7 +340,7 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
   DFunLike.ext_iff.1 (comp_lift g f) x
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b

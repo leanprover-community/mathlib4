@@ -287,7 +287,7 @@ instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebr
 end
 
 /-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
-@[implicit_reducible] -- Not `@[reducible]` because it is an order embedding rather than a function.
+@[instance_reducible] -- Not `@[reducible]` because it is an order embedding rather than a function.
 def toSubmodule : Subalgebra R A ↪o Submodule R A where
   toEmbedding :=
     { toFun := fun S =>

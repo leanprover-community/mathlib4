@@ -77,7 +77,7 @@ A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound
 
 For mild conditions on `D`, this is equivalent to saying that open sets are `DirSupInaccOn D`,
 and closed sets are `DirSupClosedOn D`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
@@ -162,7 +162,7 @@ section Preorder
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
-@[implicit_reducible]
+@[instance_reducible]
 def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
   upperSet α ⊔ scottHausdorff α D
 

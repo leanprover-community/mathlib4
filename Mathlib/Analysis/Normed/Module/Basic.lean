@@ -469,7 +469,7 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   { Module.restrictScalars 𝕜 𝕜' E with
     norm_smul_le := fun c x =>
@@ -491,7 +491,7 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
 /-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
@@ -513,7 +513,7 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   { NormedSpace.restrictScalars 𝕜 𝕜' E, Algebra.restrictScalars 𝕜 𝕜' E with }
 
@@ -527,7 +527,7 @@ instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars �
 /-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I

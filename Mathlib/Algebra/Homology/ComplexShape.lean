@@ -96,7 +96,7 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
 
 /-- If `c : ComplexShape α` is such that `c.Rel` is decidable, it is also the
 case of `c.symm.Rel`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def decidableRelSymm {α : Type*} (c : ComplexShape α) [DecidableRel c.Rel] :
     DecidableRel c.symm.Rel :=
   fun a b ↦ decidable_of_iff (c.Rel b a) Iff.rfl

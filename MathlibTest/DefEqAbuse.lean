@@ -128,9 +128,9 @@ def myOp {α : Type} [AddCommGroup α] [MyAction ℕ α] (x : α) : α :=
 def testVirtualParent {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
   myOp x
 
--- The fix: marking the virtual parent `def` as `@[implicit_reducible]` makes it
+-- The fix: marking the virtual parent `def` as `@[instance_reducible]` makes it
 -- transparent enough for instance synthesis to unify the two `AddCommMonoid` paths.
-attribute [implicit_reducible] MySub₂.toAddSubgroup
+attribute [instance_reducible] MySub₂.toAddSubgroup
 
 /-- info: #defeq_abuse: command succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
 #guard_msgs in

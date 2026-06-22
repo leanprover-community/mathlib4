@@ -43,7 +43,7 @@ namespace MonModuleEquivalenceAlgebra
 /-- The ring structure on a monoid object.
 This instance is dangerous as it doesn't round trip from a ring to a monoid object and then back
 to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped. -/
-@[implicit_reducible]
+@[instance_reducible]
 def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)

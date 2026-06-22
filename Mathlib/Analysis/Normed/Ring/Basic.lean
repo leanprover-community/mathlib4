@@ -912,7 +912,7 @@ end SubringClass
 namespace AbsoluteValue
 
 /-- A real absolute value on a ring determines a `NormedRing` structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
   norm := v
   dist x y := v (-x + y)

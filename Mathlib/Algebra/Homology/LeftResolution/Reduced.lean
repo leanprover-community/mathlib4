@@ -94,7 +94,6 @@ lemma karoubi.π_app_toKaroubi_obj (X : A) :
     (karoubi.π Λ).app ((toKaroubi _).obj X) = (karoubi.π' Λ).app X := by
   simp [π, whiskeringLeftObjToKaroubiFullyFaithful]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : A) : Epi ((karoubi.π Λ).app ((toKaroubi _).obj X)) := by
   rw [karoubi.π_app_toKaroubi_obj]
   infer_instance

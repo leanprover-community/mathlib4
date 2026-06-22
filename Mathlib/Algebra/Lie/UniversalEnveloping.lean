@@ -74,6 +74,7 @@ def mkAlgHom : TensorAlgebra R L →ₐ[R] UniversalEnvelopingAlgebra R L :=
 variable {L}
 attribute [local instance 100] LieRing.ofAssociativeRing
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural Lie algebra morphism from a Lie algebra to its universal enveloping algebra. -/
 @[simps!]
 def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
