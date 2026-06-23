@@ -558,12 +558,12 @@ def algEquivQuotAlgEquiv (f : A ≃ₐ[S] B) (rel : A → A → Prop) :
     RingQuot rel ≃ₐ[S] RingQuot (rel on f.symm) :=
   AlgEquiv.ofAlgHom
     (RingQuot.liftAlgHom S (s := rel)
-      ⟨AlgHom.comp (RingQuot.mkAlgHom S (rel on f.symm)) f,
+      ⟨AlgHom.comp (RingQuot.mkAlgHom S (rel on f.symm)) f.toAlgHom,
       fun x y h_rel ↦ by
         apply RingQuot.mkAlgHom_rel
         simpa [Function.onFun]⟩)
     ((RingQuot.liftAlgHom S (s := rel on f.symm)
-      ⟨AlgHom.comp (RingQuot.mkAlgHom S rel) f.symm,
+      ⟨AlgHom.comp (RingQuot.mkAlgHom S rel) f.symm.toAlgHom,
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
