@@ -16,7 +16,13 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 
 /-!
-# The category D^+
+# The bounded below derived category
+
+Let `C` be an abelian category. In this file, we show that
+the bounded below derived category `DerivedCategory.Plus C` (defined
+as a full subcategory of `DerivedCategory C`) is the localization
+of the bounded below homotopy category `HomotopyCategory.Plus C`
+with respect to quasi-isomorphisms.
 
 -/
 
@@ -24,14 +30,14 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 
 open CategoryTheory Category Triangulated Limits
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
-namespace HomotopyCategory
-
-namespace Plus
+namespace HomotopyCategory.Plus
 
 variable (C)
 
+/-- The property of objects in `HomotopyCategory.Plus C` that is satisfied
+by acyclic complexes. -/
 abbrev subcategoryAcyclic :
     ObjectProperty (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
@@ -46,9 +52,7 @@ lemma quasiIso_eq_subcategoryAcyclic_trW :
   erw [(subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
   exact this
 
-end Plus
-
-end HomotopyCategory
+end HomotopyCategory.Plus
 
 namespace DerivedCategory
 
@@ -58,6 +62,7 @@ variable [HasDerivedCategory C]
 
 namespace Plus
 
+/-- The localization functor `HomotopyCategory.Plus C ⥤ DerivedCategory.Plus C`. -/
 noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
   t.plus.lift (HomotopyCategory.Plus.ι _ ⋙ DerivedCategory.Qh) (by
     rintro ⟨K, hK⟩
@@ -103,6 +108,8 @@ instance : (HomotopyCategory.plus C).IsVerdierRightLocalizing
 
 variable (C)
 
+/-- The functor `DerivedCategory.Plus.Qh : HomotopyCategory.Plus C ⥤ DerivedCategory.Plus C`
+is induced by `DerivedCategory.Qh : HomotopyCategory C (.up ℤ) ⥤ DerivedCategory C`. -/
 noncomputable def QhCompιIsoιCompQh :
     Qh ⋙ Plus.ι ≅ HomotopyCategory.Plus.ι C ⋙ DerivedCategory.Qh := Iso.refl _
 
@@ -131,14 +138,20 @@ instance : Qh.IsLocalization (HomotopyCategory.Plus.quasiIso C) := by
   rw [HomotopyCategory.Plus.quasiIso_eq_subcategoryAcyclic_trW]
   infer_instance
 
+/-- The single functors `C ⥤ DerivedCategory.Plus C` for all `n : ℤ` along with
+their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
   SingleFunctors.lift (DerivedCategory.singleFunctors C) Plus.ι
       (fun n => t.plus.lift (DerivedCategory.singleFunctor C n)
       (fun _ => ⟨n, inferInstance⟩))
       (fun _ => Iso.refl _)
 
+/-- The single functor `C ⥤ DerivedCategory.Plus C` which sends `X : C` to the
+single cochain complex with `X` sitting in degree `n : ℤ`. -/
 noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C := (singleFunctors C).functor n
 
+/-- The single functors on `DerivedCategory.Plus C` are induced by the
+single functors on `DerivedCategory C`. -/
 noncomputable def singleFunctorιIso (n : ℤ) :
     singleFunctor C n ⋙ Plus.ι ≅ DerivedCategory.singleFunctor C n :=
   Iso.refl _
@@ -147,12 +160,10 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
 
+/-- The homology functor `DerivedCategory.Plus C ⥤ C` in degree `n : ℤ`. -/
 noncomputable def homologyFunctor (n : ℤ) : Plus C ⥤ C :=
-    Plus.ι ⋙ DerivedCategory.homologyFunctor C n
-
-instance (n : ℤ) : (homologyFunctor C n).IsHomological := by
-  dsimp [homologyFunctor]
-  infer_instance
+  Plus.ι ⋙ DerivedCategory.homologyFunctor C n
+deriving Functor.IsHomological
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _
@@ -160,21 +171,27 @@ instance : (Qh (C := C)).mapArrow.EssSurj :=
 
 variable {C}
 
+/-- The canonical t-structure on `DerivedCategory.Plus C`. -/
 noncomputable abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
   (DerivedCategory.TStructure.t (C := C)).plus.tStructure DerivedCategory.TStructure.t
 
+/-- Given `X : DerivedCategory.Plus C` and `n : ℤ`, this property means
+that `X` is `≥ n` for the canonical t-structure. -/
 abbrev IsGE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsGE X n
+
+/-- Given `X : DerivedCategory.Plus C` and `n : ℤ`, this property means
+that `X` is `≤ n` for the canonical t-structure. -/
 abbrev IsLE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsLE X n
 
 lemma isGE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
     (ι.obj X).IsGE n ↔ X.IsGE n := by
   constructor
-  all_goals exact fun h => ⟨h.1⟩
+  all_goals exact fun h ↦ ⟨h.1⟩
 
 lemma isLE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
     (ι.obj X).IsLE n ↔ X.IsLE n := by
   constructor
-  all_goals exact fun h => ⟨h.1⟩
+  all_goals exact fun h ↦ ⟨h.1⟩
 
 instance (X : Plus C) (n : ℤ) [X.IsGE n] : (ι.obj X).IsGE n := by
   rw [isGE_ι_obj_iff]
@@ -209,17 +226,15 @@ lemma isZero_homology_of_isLE
 
 lemma isIso_iff {X Y : DerivedCategory.Plus C} (f : X ⟶ Y) :
     IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
-  constructor
-  · intro _ n
-    infer_instance
-  · intro h
-    have : IsIso (ι.map f) := by
-      rw [DerivedCategory.isIso_iff]
-      exact h
-    apply isIso_of_fully_faithful ι
+  refine ⟨fun _ _ ↦ inferInstance, fun _ ↦ ?_⟩
+  have : IsIso (ι.map f) := by rwa [DerivedCategory.isIso_iff]
+  exact isIso_of_fully_faithful ι _
 
+/-- The localization functor `CochainComplex.Plus C ⥤ DerivedCategory.Plus C`. -/
 noncomputable def Q : CochainComplex.Plus C ⥤ DerivedCategory.Plus C :=
   HomotopyCategory.Plus.quotient C ⋙ Qh
+
+-- TODO: show that `Q` is indeed a localization functor with respect to quasi-isomorphisms
 
 end Plus
 
