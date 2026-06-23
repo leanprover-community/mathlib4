@@ -6673,6 +6673,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 public import Mathlib.RingTheory.IntegralDomain
 public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.Invariant.Defs
+public import Mathlib.RingTheory.Invariant.Galois
 public import Mathlib.RingTheory.Invariant.Profinite
 public import Mathlib.RingTheory.IsAdjoinRoot
 public import Mathlib.RingTheory.IsPrimary
