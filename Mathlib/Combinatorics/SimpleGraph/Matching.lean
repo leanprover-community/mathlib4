@@ -250,8 +250,9 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
 
 /-- Twice the number of edges of a matching is at most the number of vertices: each edge
 contributes two distinct vertices, and the edges of a matching are pairwise vertex-disjoint. -/
-theorem IsMatching.two_mul_card_edgeSet_le [Fintype V] [DecidableEq V] [Fintype ↥M.edgeSet]
+theorem IsMatching.two_mul_card_edgeSet_le [Fintype V] [Fintype ↥M.edgeSet]
     (h : M.IsMatching) : 2 * M.edgeSet.toFinset.card ≤ Fintype.card V := by
+  classical
   have hdisj : ∀ e ∈ M.edgeSet.toFinset, ∀ f ∈ M.edgeSet.toFinset, e ≠ f →
       Disjoint e.toFinset f.toFinset := by
     intro e he f hf hef
