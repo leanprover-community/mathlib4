@@ -172,7 +172,7 @@ lemma Homeomorph.isStrictMap_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
     IsStrictMap (f ∘ e) ↔ IsStrictMap f :=
   e.isQuotientMap.isStrictMap_iff.symm
 
-/-- Strict maps are preserved and reflected when postcomposing with a homeomorphism. -/
+/-- Strict maps are preserved when postcomposing with a homeomorphism. -/
 lemma Homeomorph.comp_isStrictMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
     IsStrictMap (e ∘ f) ↔ IsStrictMap f :=
   e.isEmbedding.isStrictMap_iff.symm
