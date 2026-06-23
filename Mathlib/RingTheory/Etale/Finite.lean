@@ -161,7 +161,7 @@ anti-equivalent to `FintypeCat`. -/
 noncomputable def FiniteEtale.equivOfIsSepClosed (Ω : Type u) [Field Ω] [IsSepClosed Ω] :
     (FiniteEtale.{u} Ω)ᵒᵖ ≌ FintypeCat.{u} := .symm
   { functor.obj X := .op (.of _ (X → Ω))
-    functor.map {X Y} f := .op (FiniteEtale.ofHom <| Pi.algHom _ _ fun i ↦ Pi.evalAlgHom _ _ (f i))
+    functor.map {X Y} f := .op (FiniteEtale.ofHom <| AlgHom.pi fun i ↦ Pi.evalAlgHom _ _ (f i))
     inverse := FiniteEtale.finiteSpec Ω
     counitIso :=
       NatIso.ofComponents
