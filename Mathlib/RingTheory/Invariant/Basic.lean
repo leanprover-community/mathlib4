@@ -474,6 +474,73 @@ lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
 
 end normal
 
+section quotient
+
+variable {R S G G' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G] [Group G']
+  [MulSemiringAction G S] [MulSemiringAction G' R]
+  (f : G →* G') (H : Subgroup G) [Finite H] [Algebra.IsInvariant R S H] [SMulCommClass H R S]
+  (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime]
+
+include H in
+theorem Ideal.inertia_quotient' (hf_surj : Function.Surjective f) (hf_ker : H ≤ f.ker)
+    (hf : ∀ (g : G) (x : R), algebraMap R S (f g • x) = g • algebraMap R S x) :
+    p.inertia G' = (q.inertia G).map f := by
+  replace hf_ker (h : H) : f h = 1 := hf_ker h.2
+  apply le_antisymm
+  · -- let `g : G ⧸ H` be an element of the inertia subgroup of `p`
+    intro g hg
+    -- first we will find a lift in the decomposition subgroup of `q`
+    have mem_decomposition : ∃ g' : MulAction.stabilizer G q, f g' = g := by
+      replace hg := Ideal.inertia_le_stabilizer p hg
+      obtain ⟨g, rfl⟩ := hf_surj g
+      -- rw [MulAction.mem_stabilizer_iff, hf'] at hg
+      have : (g • q).under R = q.under R := by
+        ext x
+        rw [Ideal.mem_under, mem_pointwise_smul_iff_inv_smul_mem, ← hf,
+          ← Ideal.mem_under, ← Ideal.over_def q p, map_inv,
+          ← mem_pointwise_smul_iff_inv_smul_mem, hg]
+      obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq R S H (g • q) q this
+      exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp [hf_ker]⟩
+    -- and now a further modification will give a lift in the inertia subgroup of `q`
+    obtain ⟨g, rfl⟩ := mem_decomposition
+    let φ : (S ⧸ q) ≃ₐ[R ⧸ p] (S ⧸ q) :=
+    { __ := Ideal.Quotient.stabilizerHom q (q.under ℤ) G g
+      commutes' x := by
+        obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+        specialize hg x
+        rw [Submodule.mem_toAddSubgroup, Ideal.over_def q p, Ideal.mem_under, map_sub, hf] at hg
+        rwa [AlgEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+          Ideal.Quotient.algebraMap_mk_of_liesOver, Ideal.Quotient.mk_algebraMap,
+          IsScalarTower.algebraMap_apply R S (S ⧸ q), Ideal.Quotient.algebraMap_eq,
+          Ideal.Quotient.stabilizerHom_apply, Ideal.Quotient.eq] }
+    obtain ⟨g', hg'⟩ := Ideal.Quotient.stabilizerHom_surjective H p q φ
+    let v := ⟨g', g'.2⟩⁻¹ * g
+    refine ⟨v, ?_, by simp [v, hf_ker]⟩
+    rw [SetLike.mem_coe, Ideal.coe_mem_inertia, ← Ideal.Quotient.ker_stabilizerHom q (q.under ℤ) G,
+      MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one]
+    rwa [AlgEquiv.ext_iff] at hg' ⊢
+  · rintro - ⟨g, hg, rfl⟩ x
+    specialize hg (algebraMap R S x)
+    rwa [AddSubgroup.mem_mk, Submodule.mem_toAddSubmonoid, Ideal.over_def q p, Ideal.mem_under,
+      map_sub, hf]
+
+end quotient
+
+section quotient
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+  {G : Type*} [Group G] [MulSemiringAction G R] [MulSemiringAction G S] [SMulDistribClass G R S]
+  (H : Subgroup G) [H.Normal] [Finite H] [Algebra.IsInvariant R S H] [SMulCommClass H R S]
+  [MulSemiringAction (G ⧸ H) R] [IsScalarTower G (G ⧸ H) R]
+  (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime]
+
+-- can we drop assumptions at all? (e.g., IsScalarTower?)
+theorem Ideal.inertia_quotient : p.inertia (G ⧸ H) = (q.inertia G).map (QuotientGroup.mk' H) :=
+  Ideal.inertia_quotient' (QuotientGroup.mk' H) H p q (QuotientGroup.mk'_surjective H)
+    (QuotientGroup.ker_mk' H).ge (by simp [algebraMap.coe_smul'])
+
+end quotient
+
 namespace IsFractionRing
 
 variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [Algebra A B] [Field K] [Field L]
