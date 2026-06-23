@@ -429,6 +429,29 @@ instance : IsCardinalAccessibleCategory (CardinalFilteredPoset κ) κ where
     ⟨hasCardinalLTWithTerminal κ, inferInstance,
       isCardinalFilteredGenerator_hasCardinalLTWithTerminal κ⟩
 
+variable (κ) (X : Type u)
+
+/-- Given a cardinal `κ` and a type `X`, this is the subtype of `Set X`
+consisting of subsets of `X` of cardinality `< κ`. -/
+abbrev SetCardinalLT := Subtype (fun (S : Set X) ↦ HasCardinalLT S κ)
+
+variable {X} in
+abbrev SetCardinalLT.singleton (x : X) : SetCardinalLT κ X :=
+  ⟨{x}, hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out)⟩
+
+instance : IsCardinalFiltered (SetCardinalLT κ X) κ :=
+  isCardinalFiltered_preorder _ _
+    (fun K f hK ↦
+      ⟨⟨⋃ (k : K), (f k).val, hasCardinalLT_iUnion _
+        (by rwa [hasCardinalLT_iff_cardinal_mk_lt]) (fun k ↦ (f k).prop)⟩,
+      Set.subset_iUnion (fun k ↦ (f k).val)⟩)
+
+/-- Given a regular cardinal `κ` and a type `X`, this is the `κ`-filtered
+partially ordered type of subsets of `X` of cardinality `< κ`,
+as an object of the category `CardinalFilteredPoset κ`. -/
+abbrev setCardinalLT : CardinalFilteredPoset κ :=
+  .of (PartOrdEmb.of (SetCardinalLT κ X))
+
 end CardinalFilteredPoset
 
 end CategoryTheory
