@@ -735,9 +735,7 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
   · simp_all
   simp only [NormedAddGroup.tendsto_nhds_zero, eventually_atTop, ge_iff_le]
   intro ε hε
-  have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by
-    simp only [one_div, inv_pos, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
-    exact div_pos hε (abs_sub_pos.mpr hne.symm)
+  have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by linarith [div_pos hε (abs_sub_pos.mpr hne.symm)]
   obtain ⟨pa, hpa, pb, hpb, hp⟩ :=
     eventually_prod_iff.mp <| Metric.tendstoUniformlyOnFilter_iff.mp htendsto _ hε'
   obtain ⟨M₁, hM₁⟩ := eventually_atTop.mp hpa
