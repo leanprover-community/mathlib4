@@ -5261,7 +5261,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
-public import Mathlib.LinearAlgebra.TensorProduct.YangBaxter
 public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.Transvection
 public import Mathlib.LinearAlgebra.Transvection.Basic
