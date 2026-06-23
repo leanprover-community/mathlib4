@@ -435,7 +435,7 @@ theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X
     rw [nhds_prod_eq]
     exact (continuous_abs.tendsto' _ _ abs_zero).comp (this.comp tendsto_snd)
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
     ContinuousOn (fun x => ∫ t in Ioc a x, f t ∂μ) (Icc a b) := by
@@ -636,8 +636,8 @@ theorem continuousWithinAt_Ici_primitive_Ioi {a₀ : ℝ} (hf : IntegrableOn f (
     · filter_upwards [mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hx)] with a ha using by grind
     · filter_upwards [self_mem_nhdsWithin] with a ha using by grind
 
-theorem continuousOn_Ici_primitive_Ioi [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Ioi a₀) μ) :
-    ContinuousOn (fun b ↦ ∫ x in Ioi b, f x ∂μ) (Ici a₀) := by
+theorem continuousOn_Ici_primitive_Ioi [NullSingletonClass μ] {a₀ : ℝ}
+    (hf : IntegrableOn f (Ioi a₀) μ) : ContinuousOn (fun b ↦ ∫ x in Ioi b, f x ∂μ) (Ici a₀) := by
   intro a (ha : a₀ ≤ a)
   rw [continuousWithinAt_iff_continuous_left_right]
   constructor
@@ -671,8 +671,8 @@ theorem continuousWithinAt_Iic_primitive_Iio {a₀ : ℝ} (hf : IntegrableOn f (
     · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioi_mem_nhds hx)] with a ha using by grind
     · filter_upwards [self_mem_nhdsWithin] with a ha using by grind
 
-theorem continuousOn_Iic_primitive_Iio [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Iio a₀) μ) :
-    ContinuousOn (fun b ↦ ∫ x in Iio b, f x ∂μ) (Iic a₀) := by
+theorem continuousOn_Iic_primitive_Iio [NullSingletonClass μ] {a₀ : ℝ}
+    (hf : IntegrableOn f (Iio a₀) μ) : ContinuousOn (fun b ↦ ∫ x in Iio b, f x ∂μ) (Iic a₀) := by
   intro a (ha : a ≤ a₀)
   rw [continuousWithinAt_iff_continuous_left_right]
   constructor
@@ -688,13 +688,13 @@ theorem continuousOn_Iic_primitive_Iio [NoAtoms μ] {a₀ : ℝ} (hf : Integrabl
       continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
     exact (continuousWithinAt_const.add h_cwa).congr h_split (h_split a (left_mem_Icc.2 ha))
 
-theorem continuousOn_Ici_primitive_Ici [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Ici a₀) μ) :
-    ContinuousOn (fun b ↦ ∫ x in Ici b, f x ∂μ) (Ici a₀) := by
+theorem continuousOn_Ici_primitive_Ici [NullSingletonClass μ] {a₀ : ℝ}
+    (hf : IntegrableOn f (Ici a₀) μ) : ContinuousOn (fun b ↦ ∫ x in Ici b, f x ∂μ) (Ici a₀) := by
   simp_rw [integral_Ici_eq_integral_Ioi]
   exact (hf.mono_set Ioi_subset_Ici_self).continuousOn_Ici_primitive_Ioi
 
-theorem continuousOn_Iic_primitive_Iic [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Iic a₀) μ) :
-    ContinuousOn (fun b ↦ ∫ x in Iic b, f x ∂μ) (Iic a₀) := by
+theorem continuousOn_Iic_primitive_Iic [NullSingletonClass μ] {a₀ : ℝ}
+    (hf : IntegrableOn f (Iic a₀) μ) : ContinuousOn (fun b ↦ ∫ x in Iic b, f x ∂μ) (Iic a₀) := by
   simp_rw [integral_Iic_eq_integral_Iio]
   exact (hf.mono_set Iio_subset_Iic_self).continuousOn_Iic_primitive_Iio
 
