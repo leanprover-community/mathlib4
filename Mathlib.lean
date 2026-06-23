@@ -6676,8 +6676,8 @@ public import Mathlib.RingTheory.Invariant.Defs
 public import Mathlib.RingTheory.Invariant.Galois
 public import Mathlib.RingTheory.Invariant.Profinite
 public import Mathlib.RingTheory.IsAdjoinRoot
-public import Mathlib.RingTheory.IsGaloisGroup.Defs
 public import Mathlib.RingTheory.IsGaloisGroup.Basic
+public import Mathlib.RingTheory.IsGaloisGroup.Defs
 public import Mathlib.RingTheory.IsPrimary
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.Jacobson.Artinian
