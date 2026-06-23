@@ -238,10 +238,10 @@ that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducib
 a `SubNegMonoid`. This version takes custom `nsmul` and `zsmul` as `[SMul ℕ M₁]` and `[SMul ℤ M₁]`
 arguments. -/]
 protected abbrev divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
-  (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-  (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₁ :=
+    (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    DivInvMonoid M₁ :=
   { hf.monoid f one mul ppow npow with
     zpow := fun n x => x ^ n,
     zpow_zero' := fun x => hf <| by rw [zpow, zpow_zero, one],
@@ -262,7 +262,7 @@ protected abbrev divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf 
     (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvOneMonoid M₁ :=
-  { hf.divInvMonoid f one mul inv ppow div npow zpow, hf.invOneClass f one inv with }
+  { hf.divInvMonoid f one mul inv div ppow npow zpow, hf.invOneClass f one inv with }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivisionMonoid` if it admits an injective map
 that preserves `1`, `*`, `⁻¹`, and `/` to a `DivisionMonoid`. See note [reducible non-instances] -/
@@ -273,10 +273,10 @@ binary `-` to a `SubtractionMonoid`. This version takes custom `nsmul` and `zsmu
 and `[SMul ℤ M₁]` arguments. -/]
 protected abbrev divisionMonoid [DivisionMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionMonoid M₁ :=
-  { hf.divInvMonoid f one mul inv ppow div npow zpow, hf.involutiveInv f inv with
+    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    DivisionMonoid M₁ :=
+  { hf.divInvMonoid f one mul inv div ppow npow zpow, hf.involutiveInv f inv with
     mul_inv_rev := fun x y => hf <| by rw [inv, mul, mul_inv_rev, mul, inv, inv],
     inv_eq_of_mul := fun x y h => hf <| by
       rw [inv, inv_eq_of_mul_eq_one_right (by rw [← mul, h, one])] }
@@ -291,10 +291,10 @@ and binary `-` to a `SubtractionCommMonoid`. This version takes custom `nsmul` a
 `[SMul ℕ M₁]` and `[SMul ℤ M₁]` arguments. -/]
 protected abbrev divisionCommMonoid [DivisionCommMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionCommMonoid M₁ :=
-  { hf.divisionMonoid f one mul inv ppow div npow zpow, hf.commSemigroup f mul ppow with }
+    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    DivisionCommMonoid M₁ :=
+  { hf.divisionMonoid f one mul inv div ppow npow zpow, hf.commSemigroup f mul ppow with }
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a group, if it admits an injective map that preserves
 `1`, `*` and `⁻¹` to a group. See note [reducible non-instances]. -/
@@ -306,7 +306,7 @@ protected abbrev group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one 
     (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
     Group M₁ :=
-  { hf.divInvMonoid f one mul inv ppow div npow zpow with
+  { hf.divInvMonoid f one mul inv div ppow npow zpow with
     inv_mul_cancel := fun x => hf <| by rw [mul, inv, inv_mul_cancel, one] }
 
 
