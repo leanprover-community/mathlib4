@@ -334,6 +334,8 @@ theorem card_eq_finrank' [FaithfulSMul A B] : Nat.card G = Module.finrank A B :=
     Algebra.IsAlgebraic.finrank_of_isFractionRing A (FractionRing A) B (FractionRing B)]
 
 attribute [local instance] FractionRing.liftAlgebra in
+attribute [-instance] Algebra.ofSubring in
+-- attribute [-instance] Algebra.ofSubSemiring in
 /-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
   MulEquiv.ofBijective (MulSemiringAction.toAlgAut G A B) (by
@@ -345,7 +347,6 @@ attribute [local instance] FractionRing.liftAlgebra in
     letI K := FractionRing A
     letI L := FractionRing B
     letI := IsFractionRing.mulSemiringAction G B L
-    have : IsGaloisGroup G K L := .to_isFractionRing G A B K L
     have := isGalois G K L
     have := finiteDimensional G K L
     refine .of_comp_left ?_ (IsFractionRing.fieldEquivOfAlgEquivHom_injective A B K L)
@@ -555,6 +556,7 @@ theorem fixingSubgroup_range_algebraMap' [Finite G] (B : Type*) [CommSemiring B]
   rw [← fixedPoints_eq_range_algebraMap G K L H, fixingSubgroup_fixedPoints]
 
 attribute [local instance] FractionRing.liftAlgebra in
+attribute [-instance] Algebra.ofSubring in
 /-- If `G` acts on a domain `C` with `IsGaloisGroup G A C`, and a subgroup `H` acts on `C` with
 `IsGaloisGroup H B C`, then the fixing subgroup of `algebraMap B C` equals `H`. -/
 theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) (H : Subgroup G)
@@ -569,8 +571,6 @@ theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) (H : Subgroup
   let K := FractionRing A
   let L := FractionRing C
   let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G C L
-  have : IsGaloisGroup H (FractionRing B) L := IsGaloisGroup.to_isFractionRing H B C _ _
-  have : IsGaloisGroup G K L := IsGaloisGroup.to_isFractionRing G A C _ _
   rw [← fixingSubgroup_range_algebraMap' G K L H (FractionRing B)]
   ext g
   simp only [mem_fixingSubgroup_iff, Set.mem_range]
@@ -747,9 +747,8 @@ theorem algebraMap_quotientMulEquiv_smul [Finite G] [Finite G'] (N : Subgroup G)
   congr
   apply mulEquivCongr_apply_smul
 
--- variable [FaithfulSMul A B]
-
 attribute [local instance] FractionRing.liftAlgebra in
+attribute [-instance] Algebra.ofSubring in
 /-- The restriction homomorphism from the Galois group of `C/A` to the Galois group of `B/A` where
 `C/B/A` is a tower of domains with `C/A` and `B/A` Galois. -/
 noncomputable def restrictHom [Finite G] [Finite G'] [MulSemiringAction G C] [IsGaloisGroup G A C]
@@ -760,14 +759,10 @@ noncomputable def restrictHom [Finite G] [Finite G'] [MulSemiringAction G C] [Is
   letI : MulSemiringAction G (FractionRing C) :=
     IsFractionRing.mulSemiringAction G C (FractionRing C)
   letI N := fixingSubgroup G (Set.range (algebraMap (FractionRing B) (FractionRing C)))
-  haveI : IsGaloisGroup G (FractionRing A) (FractionRing C) :=
-    .to_isFractionRing G A C _ _
   haveI : IsGaloisGroup N (FractionRing B) (FractionRing C) :=
     of_isScalarTower G (FractionRing A) (FractionRing C) (FractionRing B)
   letI : MulSemiringAction G' (FractionRing B) :=
     IsFractionRing.mulSemiringAction G' B (FractionRing B)
-  haveI : IsGaloisGroup G' (FractionRing ↥A) (FractionRing B) :=
-    .to_isFractionRing G' A B _ _
   haveI := isGalois G' (FractionRing A) (FractionRing B)
   haveI : N.Normal := normal_of_isGalois G (FractionRing A) (FractionRing C) N (FractionRing B)
   (quotientMulEquiv G G' (FractionRing A) (FractionRing B) (FractionRing C) N).toMonoidHom.comp
