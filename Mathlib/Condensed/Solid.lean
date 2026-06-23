@@ -99,8 +99,8 @@ lemma sol_map_counit (T : FintypeCat.{u}) (X : Profinite.{u})
     (finFreeIsoSolid R T).hom = (profiniteFree R).map psi := by
   rw [show (finFreeIsoSolid R T).hom = (profiniteSolidCounit R).app T from rfl,
       ← Category.assoc, ← (profiniteSolidification R).naturality psi,
-      Category.assoc, profiniteSolidification_comp_counit R T]
-  exact Category.comp_id _
+      Category.assoc]
+  simp [profiniteSolidification_comp_counit R T]
 
 axiom surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
     (h : (profiniteFree R).obj X ⟶ (finFree R).obj T) :
