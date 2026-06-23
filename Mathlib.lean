@@ -5681,6 +5681,7 @@ public import Mathlib.NumberTheory.Basic
 public import Mathlib.NumberTheory.Bernoulli
 public import Mathlib.NumberTheory.BernoulliPolynomials
 public import Mathlib.NumberTheory.Bertrand
+public import Mathlib.NumberTheory.BombieriVinogradov
 public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
@@ -5865,6 +5866,7 @@ public import Mathlib.NumberTheory.Padics.ProperSpace
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.NumberTheory.Padics.ValuativeRel
 public import Mathlib.NumberTheory.Padics.WithVal
+public import Mathlib.NumberTheory.ParityObstruction
 public import Mathlib.NumberTheory.Pell
 public import Mathlib.NumberTheory.PellMatiyasevic
 public import Mathlib.NumberTheory.PowModTotient
