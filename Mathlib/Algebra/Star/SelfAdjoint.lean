@@ -187,6 +187,16 @@ variable (R)
 
 end MulOneClass
 
+section Semigroup
+
+variable [Semigroup R] [StarMul R]
+
+@[aesop safe apply]
+theorem ppow {x : R} (hx : IsSelfAdjoint x) (n : ℕ+) : IsSelfAdjoint (x ^ n) := by
+  simp only [isSelfAdjoint_iff, star_ppow, hx.star_eq]
+
+end Semigroup
+
 section Monoid
 
 variable [Monoid R] [StarMul R]
@@ -412,6 +422,13 @@ instance : NatCast (selfAdjoint R) where
 instance : IntCast (selfAdjoint R) where
   intCast n := ⟨n, .intCast _⟩
 
+instance : Pow (selfAdjoint R) ℕ+ where
+  pow x n := ⟨(x : R) ^ n, x.prop.ppow n⟩
+
+@[simp, norm_cast]
+theorem val_ppow (x : selfAdjoint R) (n : ℕ+) : ↑(x ^ n) = (x : R) ^ n :=
+  rfl
+
 instance : Pow (selfAdjoint R) ℕ where
   pow x n := ⟨(x : R) ^ n, x.prop.pow n⟩
 
@@ -441,7 +458,7 @@ variable [CommRing R] [StarRing R]
 instance : CommRing (selfAdjoint R) :=
   Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
-    (by intros; rfl) (by intros; rfl) val_pow
+    (by intros; rfl) (by intros; rfl) (fun _ _ => rfl) val_ppow val_pow
     (fun _ => rfl) fun _ => rfl
 
 end CommRing
@@ -492,8 +509,9 @@ instance instSMulRat : SMul ℚ (selfAdjoint R) where
 instance instField : Field (selfAdjoint R) :=
   Subtype.coe_injective.field _ (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
-    val_inv val_div (swap (selfAdjoint R).coe_nsmul) (by intros; rfl) val_nnqsmul
-    val_qsmul val_pow val_zpow (fun _ => rfl) (fun _ => rfl) val_nnratCast val_ratCast
+    val_inv val_div (swap (selfAdjoint R).coe_psmul) (swap (selfAdjoint R).coe_nsmul)
+    (by intros; rfl) val_nnqsmul val_qsmul val_ppow val_pow val_zpow (fun _ => rfl) (fun _ => rfl)
+    val_nnratCast val_ratCast
 
 end Field
 

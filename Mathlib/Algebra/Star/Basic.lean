@@ -190,6 +190,11 @@ lemma Pi.star_mulSingle {ι : Type*} {R : ι → Type*} [DecidableEq ι] [∀ i,
   ext; exact apply_mulSingle (fun _ ↦ star) (fun _ ↦ star_one _) ..
 
 @[simp]
+theorem star_ppow [Semigroup R] [StarMul R] (x : R) (n : ℕ+) : star (x ^ n) = star x ^ n :=
+  op_injective <|
+    ((starMulEquiv : R ≃* Rᵐᵒᵖ).toMulHom.map_ppow x n).trans (op_ppow (star x) n).symm
+
+@[simp]
 theorem star_pow [Monoid R] [StarMul R] (x : R) (n : ℕ) : star (x ^ n) = star x ^ n :=
   op_injective <|
     ((starMulEquiv : R ≃* Rᵐᵒᵖ).toMonoidHom.map_pow x n).trans (op_pow (star x) n).symm
