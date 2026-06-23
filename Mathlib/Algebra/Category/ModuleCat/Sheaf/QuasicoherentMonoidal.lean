@@ -105,7 +105,7 @@ variable (R) in
 noncomputable abbrev overPullbackOfCommRing {X Y : C} (f : X ⟶ Y) :
     SheafOfModules.{w} (((sheafCompose (J.over Y) (forget₂ _ RingCat)).obj (R.over Y))) ⥤
       SheafOfModules.{w} (((sheafCompose (J.over X) (forget₂ _ RingCat)).obj (R.over X))) :=
-  pushforward (F := Over.map f) (𝟙 _)
+  SheafOfModules.pushforward (F := Over.map f) (𝟙 _)
 
 instance {X Y : C} (f : X ⟶ Y) :
     PreservesColimitsOfSize.{w, w} (overPullbackOfCommRing R f) := sorry
