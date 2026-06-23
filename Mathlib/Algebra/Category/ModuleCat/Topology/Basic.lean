@@ -70,7 +70,7 @@ structure Hom (X Y : TopModuleCat.{v} R) where
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance : Category (TopModuleCat R) where
+instance : Category (TopModuleCat.{v} R) where
   Hom := Hom
   id M := ⟨ContinuousLinearMap.id R M⟩
   comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
@@ -78,14 +78,14 @@ instance : Category (TopModuleCat R) where
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
+instance : ConcreteCategory (TopModuleCat.{v} R) (· →L[R] ·) where
   hom   := Hom.hom'
   ofHom := Hom.ofHom'
 
 variable {R} in
 /-- Cast a hom in `TopModuleCat` into a continuous linear map. -/
-abbrev Hom.hom {X Y : TopModuleCat R} (f : X.Hom Y) : X →L[R] Y :=
-  ConcreteCategory.hom (C := TopModuleCat R) f
+abbrev Hom.hom {X Y : TopModuleCat.{v} R} (f : X.Hom Y) : X →L[R] Y :=
+  ConcreteCategory.hom (C := TopModuleCat.{v} R) f
 
 variable {R} in
 /-- Construct a hom in `TopModuleCat` from a continuous linear map. -/
@@ -101,12 +101,12 @@ abbrev ofHom {X Y : Type v}
     (f : X →L[R] Y) :
     (ofHom f).hom = f := rfl
 
-@[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) : ofHom f.hom = f := rfl
+@[simp] lemma ofHom_hom {X Y : TopModuleCat.{v} R} (f : X.Hom Y) : ofHom f.hom = f := rfl
 
-@[simp] lemma hom_comp {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) :
+@[simp] lemma hom_comp {X Y Z : TopModuleCat.{v} R} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-@[simp] lemma hom_id (X : TopModuleCat R) : hom (𝟙 X) = .id _ _ := rfl
+@[simp] lemma hom_id (X : TopModuleCat.{v} R) : hom (𝟙 X) = .id _ _ := rfl
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (A B : TopModuleCat.{v} R) (f : A.Hom B) :=
@@ -116,31 +116,31 @@ initialize_simps_projections Hom (hom' → hom)
 
 variable {R} in
 /-- Construct an iso in `TopModuleCat` from a continuous linear equiv. -/
-def ofIso {X Y : TopModuleCat R} (e : X ≃L[R] Y) : X ≅ Y :=
+def ofIso {X Y : TopModuleCat.{v} R} (e : X ≃L[R] Y) : X ≅ Y :=
   ⟨ofHom e.toContinuousLinearMap, ofHom e.symm.toContinuousLinearMap,
     by ext; exact e.symm_apply_apply _, by ext; exact e.apply_symm_apply _⟩
 
 variable {R} in
 /-- Cast an iso in `TopModuleCat` into a continuous linear equiv. -/
 def _root_.CategoryTheory.Iso.toContinuousLinearEquiv
-    {X Y : TopModuleCat R} (e : X ≅ Y) : X ≃L[R] Y where
+    {X Y : TopModuleCat.{v} R} (e : X ≅ Y) : X ≃L[R] Y where
   __ := e.hom.hom
   invFun := e.inv.hom
   left_inv x := by cat_disch
   right_inv x := by cat_disch
 
-instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
+instance {X Y : TopModuleCat.{v} R} : AddCommGroup (X ⟶ Y) where
   add f g := ofHom (f.hom + g.hom)
   zero := ofHom 0
   __ := Equiv.addCommGroup CategoryTheory.ConcreteCategory.homEquiv
 
-instance : Preadditive (TopModuleCat R) where
+instance : Preadditive (TopModuleCat.{v} R) where
   add_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
   comp_add _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
 
 section
 
-variable {M₁ M₂ : TopModuleCat R}
+variable {M₁ M₂ : TopModuleCat.{v} R}
 
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
 lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
@@ -154,47 +154,51 @@ end
 
 section CommRing
 
-variable {S : Type*} [CommRing S] [TopologicalSpace S]
+universe u'
+variable {S : Type u'} [CommRing S] [TopologicalSpace S]
 
-instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
+instance {X Y : TopModuleCat.{u'} S} : Module S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
   __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
 
-instance : Linear S (TopModuleCat S) where
+instance : Linear S (TopModuleCat.{u'} S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
   comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
 
 @[simp]
-lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) : (s • φ).hom = s • φ.hom := rfl
+lemma hom_smul {M₁ M₂ : TopModuleCat.{u'} S} (s : S) (φ : M₁ ⟶ M₂) : (s • φ).hom = s • φ.hom := rfl
 
 end CommRing
 
-instance (M : TopModuleCat R) : TopologicalSpace M := M.2
-instance (M : TopModuleCat R) : IsTopologicalAddGroup M := M.3
+instance (M : TopModuleCat.{v} R) : TopologicalSpace M := M.2
+instance (M : TopModuleCat.{v} R) : IsTopologicalAddGroup M := M.3
 
-instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
+instance : HasForget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
   { obj M := ModuleCat.of R M
     map φ := ModuleCat.ofHom φ.hom }
 
-instance : HasForget₂ (TopModuleCat R) TopCat where
+instance : HasForget₂ (TopModuleCat.{v} R) TopCat.{v} where
   forget₂ :=
   { obj M := .of M
     map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
 
-instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
+instance : (forget₂ (TopModuleCat.{u} R) TopCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
-    let e : X ≃L[R] Y :=
-      { __ := f.hom, __ := TopCat.homeoOfIso (asIso ((forget₂ (TopModuleCat R) TopCat).map f)) }
+    let e : X ≃L[R] Y := {
+       __ := f.hom
+       __ :=
+        TopCat.homeoOfIso (asIso ((forget₂ (TopModuleCat.{u} R) TopCat.{u}).map f)) }
     change IsIso (ofIso e).hom
     infer_instance
 
 @[simp]
-lemma hom_forget₂_TopCat_map {X Y : TopModuleCat R} (f : X ⟶ Y) :
-    ((forget₂ _ TopCat).map f).hom = f.hom := rfl
+lemma hom_forget₂_TopCat_map {X Y : TopModuleCat.{v} R} (f : X ⟶ Y) :
+    ((forget₂ _ TopCat.{v}).map f).hom = f.hom := rfl
 
 @[simp]
-lemma forget₂_TopCat_obj {X : TopModuleCat R} : ((forget₂ _ TopCat).obj X : Type _) = X := rfl
+lemma forget₂_TopCat_obj {X : TopModuleCat.{v} R} : ((forget₂ _ TopCat.{v}).obj X : Type _) = X :=
+  rfl
 
 open Limits
 
@@ -202,11 +206,12 @@ section Colimit
 
 variable {R}
 
-variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, (X i).toModuleCat ⟶ M)
+variable {M : ModuleCat.{v} R} {I : Type*} {X : I → TopModuleCat.{v} R}
+  (f : ∀ i, (X i).toModuleCat ⟶ M)
 
 /-- The coinduced topology on `M` from a family of continuous linear maps into `M`, which is the
 finest topology that makes it into a topological module and makes every map continuous. -/
-def coinduced : TopModuleCat R :=
+def coinduced : TopModuleCat.{v} R :=
   letI : TopologicalSpace M := sInf { t | @ContinuousSMul R M _ _ t ∧ @ContinuousAdd M t _ ∧
       ∀ i, (X i).topologicalSpace.coinduced (f i) ≤ t }
   have : ContinuousAdd M := continuousAdd_sInf fun _ hs ↦ hs.2.1
@@ -221,8 +226,8 @@ def toCoinduced (i) : X i ⟶ coinduced f :=
 
 /-- The cocone of topological modules associated to a cocone over the underlying modules, where
 the cocone point is given the coinduced topology. This is colimiting when the given cocone is. -/
-def ofCocone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
-    (c : Cocone (F ⋙ forget₂ _ (ModuleCat R))) : Cocone F where
+def ofCocone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
+    (c : Cocone (F ⋙ forget₂ _ (ModuleCat.{v} R))) : Cocone F where
   pt := coinduced c.ι.app
   ι :=
   { app := toCoinduced c.ι.app,
@@ -231,8 +236,8 @@ def ofCocone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a colimit cocone over the underlying modules, equipping the cocone point with
 the coinduced topology gives a colimit cocone in `TopModuleCat R`. -/
-def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
-    {c : Cocone (F ⋙ forget₂ _ (ModuleCat R))} (hc : IsColimit c) :
+def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
+    {c : Cocone (F ⋙ forget₂ _ (ModuleCat.{v} R))} (hc : IsColimit c) :
     IsColimit (ofCocone c) where
   desc s := ofHom (X := (ofCocone c).pt) ⟨(hc.desc ((forget₂ _ _).mapCocone s)).hom, by
     rw [continuous_iff_le_induced]
@@ -240,7 +245,7 @@ def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
       continuousAdd_induced (N := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom, fun i ↦ ?_⟩
     rw [coinduced_le_iff_le_induced, induced_compose, ← continuous_iff_le_induced]
     change Continuous (X := F.obj i) (Y := s.pt)
-      (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat R)).mapCocone s)).hom
+      (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat.{v} R)).mapCocone s)).hom
     rw [hc.fac]
     exact (s.ι.app i).hom.2⟩
   fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCocone s) i).hom x)
@@ -250,8 +255,8 @@ def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     ext y
     exact congr($(H j).hom y)
 
-instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
-    [HasColimit (F ⋙ forget₂ _ (ModuleCat R))] : HasColimit F :=
+instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
+    [HasColimit (F ⋙ forget₂ _ (ModuleCat.{v} R))] : HasColimit F :=
   ⟨_, isColimit (colimit.isColimit _)⟩
 
 instance {J : Type*} [Category* J] [HasColimitsOfShape J (ModuleCat.{v} R)] :
@@ -265,11 +270,12 @@ section Limit
 
 variable {R}
 
-variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, M ⟶ (X i).toModuleCat)
+variable {M : ModuleCat.{v} R} {I : Type*} {X : I → TopModuleCat.{v} R}
+  (f : ∀ i, M ⟶ (X i).toModuleCat)
 
 /-- The induced topology on `M` from a family of continuous linear maps from `M`, which is the
 coarsest topology that makes every map continuous. -/
-def induced : TopModuleCat R :=
+def induced : TopModuleCat.{v} R :=
   letI : TopologicalSpace M := ⨅ i, (X i).topologicalSpace.induced (f i)
   have : ContinuousAdd M := continuousAdd_iInf fun _ ↦ continuousAdd_induced _
   have : ContinuousSMul R M := continuousSMul_iInf fun _ ↦ continuousSMul_induced _
@@ -284,8 +290,8 @@ open Limits
 
 /-- The cone of topological modules associated to a cone over the underlying modules, where
 the cone point is given the induced topology. This is limiting when the given cone is. -/
-def ofCone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
-    (c : Cone (F ⋙ forget₂ _ (ModuleCat R))) : Cone F where
+def ofCone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
+    (c : Cone (F ⋙ forget₂ _ (ModuleCat.{v} R))) : Cone F where
   pt := induced c.π.app
   π :=
   { app := fromInduced c.π.app,
@@ -294,15 +300,15 @@ def ofCone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a limit cone over the underlying modules, equipping the cone point with
 the induced topology gives a limit cone in `TopModuleCat R`. -/
-def isLimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
-    {c : Cone (F ⋙ forget₂ _ (ModuleCat R))} (hc : IsLimit c) :
+def isLimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
+    {c : Cone (F ⋙ forget₂ _ (ModuleCat.{v} R))} (hc : IsLimit c) :
     IsLimit (ofCone c) where
   lift s := ofHom (Y := (ofCone c).pt) ⟨(hc.lift ((forget₂ _ _).mapCone s)).hom, by
     rw [continuous_iff_coinduced_le]
     refine le_iInf fun i ↦ ?_
     rw [coinduced_le_iff_le_induced, induced_compose, ← continuous_iff_le_induced]
     change Continuous (X := s.pt) (Y := F.obj i)
-      (hc.lift ((forget₂ _ (ModuleCat R)).mapCone s) ≫ c.π.app i).hom
+      (hc.lift ((forget₂ _ (ModuleCat.{v} R)).mapCone s) ≫ c.π.app i).hom
     rw [hc.fac]
     exact (s.π.app i).hom.2⟩
   fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCone s) i).hom x)
@@ -326,16 +332,16 @@ instance : HasLimits (TopModuleCat.{v} R) where
 instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     [HasLimit (F ⋙ forget₂ _ (ModuleCat.{v} R))]
     [PreservesLimit (F ⋙ forget₂ _ (ModuleCat.{v} R)) (forget _)] :
-    PreservesLimit F (forget₂ _ TopCat) :=
+    PreservesLimit F (forget₂ _ TopCat.{v}) :=
   preservesLimit_of_preserves_limit_cone (isLimit (limit.isLimit _))
-    (TopCat.isLimitConeOfForget (F := F ⋙ forget₂ _ TopCat)
+    (TopCat.isLimitConeOfForget (F := F ⋙ forget₂ _ TopCat.{v})
       ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1 :)
-      (isLimitOfPreserves (forget (ModuleCat R)) (limit.isLimit _)))
+      (isLimitOfPreserves (forget (ModuleCat.{v} R)) (limit.isLimit _)))
 
 instance {J : Type*} [Category* J]
     [HasLimitsOfShape J (ModuleCat.{v} R)]
     [PreservesLimitsOfShape J (forget (ModuleCat.{v} R))] :
-    PreservesLimitsOfShape J (forget₂ (TopModuleCat.{v} R) TopCat) where
+    PreservesLimitsOfShape J (forget₂ (TopModuleCat.{v} R) TopCat.{v}) where
 
 instance : PreservesLimits (forget₂ (TopModuleCat.{v} R) TopCat.{v}) where
 
@@ -347,7 +353,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The functor equipping a module over a topological ring with the finest possible
 topology making it into a topological module. This is left adjoint to the forgetful functor. -/
-def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
+def withModuleTopology : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
   obj X :=
     letI := moduleTopology R X
     letI := IsModuleTopology.topologicalAddGroup R X
@@ -360,14 +366,16 @@ def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between `withModuleTopology` and the forgetful functor. -/
-def withModuleTopologyAdj : withModuleTopology R ⊣ forget₂ (TopModuleCat R) (ModuleCat R) where
+def withModuleTopologyAdj :
+    withModuleTopology.{v} R ⊣ forget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R) where
   unit := 𝟙 _
   counit :=
-  { app X := ofHom (X := (withModuleTopology R).obj (.of R X))
+  { app X := ofHom (X := (withModuleTopology.{v} R).obj (.of R X))
       ⟨.id, IsModuleTopology.continuous_of_linearMap _⟩ }
 
-instance : (forget₂ (TopModuleCat R) (ModuleCat R)).IsRightAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
-instance : (withModuleTopology R).IsLeftAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
+instance : (forget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R)).IsRightAdjoint :=
+  ⟨_, ⟨withModuleTopologyAdj R⟩⟩
+instance : (withModuleTopology.{v} R).IsLeftAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
 
 /-- The functor equipping a module with the indiscrete topology.
 This is right adjoint to the forgetful functor. -/
@@ -380,13 +388,13 @@ def indiscrete : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
   map {X Y} f :=
     letI : TopologicalSpace X := ⊤
     letI : TopologicalSpace Y := ⊤
-    ConcreteCategory.ofHom (C := TopModuleCat R)
+    ConcreteCategory.ofHom (C := TopModuleCat.{v} R)
       ⟨f.hom, by rw [continuous_iff_coinduced_le]; exact le_top⟩
 
 /-- The adjunction between the forgetful functor and the indiscrete topology functor. -/
 def indiscreteAdj : forget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R) ⊣ indiscrete.{v} R where
   counit := 𝟙 _
-  unit := { app X := ConcreteCategory.ofHom (C := TopModuleCat R)
+  unit := { app X := ConcreteCategory.ofHom (C := TopModuleCat.{v} R)
               ⟨.id, by rw [continuous_iff_coinduced_le]; exact le_top⟩ }
 
 instance : (forget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R)).IsLeftAdjoint := ⟨_, ⟨indiscreteAdj R⟩⟩
@@ -443,7 +451,7 @@ def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{
       continuous_iff_coinduced_le.mpr (le_sInf fun _ h ↦ h.2.2)⟩,
     naturality {X Y} f := by ext x; simp [freeMap_map] }
   counit :=
-  { app X := ConcreteCategory.ofHom (C := TopModuleCat R) ⟨Finsupp.lift _ R X id, by
+  { app X := ConcreteCategory.ofHom (C := TopModuleCat.{max v u} R) ⟨Finsupp.lift _ R X id, by
       rw [continuous_iff_le_induced]
       refine sInf_le ⟨continuousSMul_induced (Finsupp.lift _ R X id),
         continuousAdd_induced (Finsupp.lift _ R X id), ?_⟩
@@ -466,7 +474,7 @@ def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{
     ext
     simp [freeObj]
 
-instance : (forget₂ (TopModuleCat.{max v u} R) TopCat).IsRightAdjoint := ⟨_, ⟨freeAdj R⟩⟩
+instance : (forget₂ (TopModuleCat.{max v u} R) TopCat.{max u v}).IsRightAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 
 end Adjunction
@@ -475,7 +483,7 @@ variable {R} in
 /-- The ring isomorphism between the endomorphisms of an object `M` in `TopModuleCat R` and the
 continuous `R`-linear endomorphisms of `M`. -/
 @[simps]
-def endRingEquiv (M : TopModuleCat R) :
+def endRingEquiv (M : TopModuleCat.{v} R) :
     End M ≃+* (M →L[R] M) where
   toFun := TopModuleCat.Hom.hom
   invFun := TopModuleCat.ofHom
