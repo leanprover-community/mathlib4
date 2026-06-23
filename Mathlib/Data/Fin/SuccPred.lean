@@ -134,12 +134,15 @@ theorem cast_le_cast (eq : n = m) {a b : Fin n} : a.cast eq ≤ b.cast eq ↔ a 
   Iff.rfl
 
 /-- The 'identity' equivalence between `Fin m` and `Fin n` when `m = n`. -/
-@[simps]
+@[simps apply]
 def _root_.finCongr (eq : n = m) : Fin n ≃ Fin m where
   toFun := Fin.cast eq
   invFun := Fin.cast eq.symm
   left_inv := leftInverse_cast eq
   right_inv := rightInverse_cast eq
+
+theorem _root_.finCongr_symm_apply (eq : n = m) (a : Fin m) :
+    (finCongr eq).symm a = a.cast eq.symm := rfl
 
 @[simp] lemma _root_.finCongr_apply_mk (h : m = n) (k : ℕ) (hk : k < m) :
     finCongr h ⟨k, hk⟩ = ⟨k, h ▸ hk⟩ := rfl
@@ -260,6 +263,13 @@ theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
   exacts [Fin.ext (congr_arg Fin.val h :), rfl]
 
 theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
+
+theorem sub_castAdd_eq_castAdd_sub_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
+    a.castAdd m - b.castAdd m = (a - b).castAdd m := by
+  grind [Fin.sub_val_of_le]
+
+theorem sub_castSucc_eq_castSucc_sub_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
+    a.castSucc - b.castSucc = (a - b).castSucc := sub_castAdd_eq_castAdd_sub_of_le h
 
 end Succ
 
@@ -453,6 +463,42 @@ theorem pred_lt_castPred_iff {a b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ last
 theorem pred_lt_castPred {a : Fin (n + 1)} (h₁ : a ≠ 0) (h₂ : a ≠ last n) :
     pred a h₁ < castPred a h₂ := by
   rw [pred_lt_castPred_iff, le_def]
+
+theorem val_sub_castLT_of_le {a b : Fin m} (ha : a.val < n) (h : b ≤ a) :
+    (a.castLT ha - b.castLT (lt_of_le_of_lt h ha)).val = (a - b).val := by
+  have : b.castLT (lt_of_le_of_lt h ha) ≤ a.castLT ha := by simpa [← val_fin_le] using h
+  simp [sub_val_of_le, h, this]
+
+theorem sub_castLT_eq_castLT_sub_of_le {a b : Fin m} (ha : a.val < n) (h : b ≤ a) :
+    a.castLT ha - b.castLT (lt_of_le_of_lt h ha) =
+      (a - b).castLT (val_sub_lt_of_lt_of_le ha h) := by
+  rw [Fin.ext_iff]
+  exact val_sub_castLT_of_le ha h
+
+theorem val_sub_castLT_of_lt {a b : Fin m} (hb : b < n) (h : a < b) :
+    (a.castLT (lt_trans h hb) - b.castLT hb).val = (a - b).val + n - m := by
+  simp only [val_sub, val_castLT]
+  repeat rw [Nat.mod_eq_of_lt (by omega)]
+  have h' : a.val < b.val := h
+  omega
+
+theorem val_sub_castPred_of_le {a b : Fin (n + 1)} (ha : a ≠ last n)
+    (h : b ≤ a) :
+    (a.castPred ha - b.castPred (ne_last_of_ne_last_of_le ha h)).val = (a - b).val :=
+  val_sub_castLT_of_le (lt_last_iff_ne_last.mpr ha) h
+
+theorem sub_castPred_eq_castPred_sub_of_le {a b : Fin (n + 1)} (ha : a ≠ last n)
+    (h : b ≤ a) :
+    a.castPred ha - b.castPred (ne_last_of_ne_last_of_le ha h) =
+      (a - b).castPred (sub_ne_last_of_ne_last_of_le ha h) :=
+  sub_castLT_eq_castLT_sub_of_le (lt_last_iff_ne_last.mpr ha) h
+
+theorem val_sub_castPred_of_ge {a b : Fin (n + 1)} (hb : b ≠ last n)
+    (h : a ≤ b) :
+    (a.castPred (ne_last_of_ne_last_of_le hb h) - b.castPred hb).val = (a - b).val - 1 := by
+  obtain (rfl | h') := Fin.eq_or_lt_of_le h
+  · simp [val_sub, Nat.sub_add_cancel a.is_le]
+  grind [castPred, val_sub_castLT_of_lt]
 
 end CastPred
 

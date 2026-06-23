@@ -68,6 +68,7 @@ theorem decomposition_id (Δ : SimplexCategoryᵒᵖ) :
     rw [s.cofan_inj_πSummand_eq_zero_assoc _ _ h₂, zero_comp]
   · simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
@@ -180,6 +181,7 @@ noncomputable def nondegComplex : ChainComplex C ℕ where
       simp only [assoc, ιSummand_comp_d_comp_πSummand_eq_zero _ _ _ _ hA, comp_zero]
     rw [eq, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The chain complex `s.nondegComplex` attached to a splitting of a simplicial object `X`
 becomes isomorphic to the normalized Moore complex `N₁.obj X` defined as a formal direct
@@ -224,12 +226,14 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
     simp only [πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty, Karoubi.comp_f,
       HomologicalComplex.comp_f, N₁_obj_p, Karoubi.id_f]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma toKaroubiNondegComplexIsoN₁_hom_f_PInfty :
     dsimp% s.toKaroubiNondegComplexIsoN₁.hom.f ≫ PInfty =
       s.toKaroubiNondegComplexIsoN₁.hom.f := by
   simpa using s.toKaroubiNondegComplexIsoN₁.hom.comm
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma toKaroubiNondegComplexIsoN₁_hom_inv_id_f :
     dsimp% s.toKaroubiNondegComplexIsoN₁.hom.f ≫ s.toKaroubiNondegComplexIsoN₁.inv.f = 𝟙 _ := by
@@ -237,6 +241,7 @@ lemma toKaroubiNondegComplexIsoN₁_hom_inv_id_f :
     s.toKaroubiNondegComplexIsoN₁.inv, Iso.hom_inv_id]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
 this is the split epimorphism from the alternating face map complex of `X` to the chain
 complex `s.nondegComplex`. -/
@@ -245,6 +250,7 @@ noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
   (fullyFaithfulToKaroubi _).preimage
     ({ f := by exact PInfty } ≫ s.toKaroubiNondegComplexIsoN₁.inv)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
 this is the split monomormphism from the chain complex `s.nondegComplex` to
 the alternating face map complex fo `X`. -/
@@ -253,20 +259,24 @@ noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=
   (fullyFaithfulToKaroubi _).preimage
     (s.toKaroubiNondegComplexIsoN₁.hom ≫ { f := PInfty })
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma PInfty_toNondegComplex : PInfty ≫ s.toNondegComplex = s.toNondegComplex :=
   (toKaroubi _).map_injective (by simp [toNondegComplex])
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma fromNondegComplex_toNondegComplex :
     s.fromNondegComplex ≫ s.toNondegComplex = 𝟙 _ :=
   (toKaroubi _).map_injective (by simp [toNondegComplex, fromNondegComplex])
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma toNondegComplex_f (n : ℕ) :
     s.toNondegComplex.f n = PInfty.f n ≫ s.toKaroubiNondegComplexIsoN₁.inv.f.f n := by
   simp [toNondegComplex, fullyFaithfulToKaroubi]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma fromNondegComplex_f (n : ℕ) :
     s.fromNondegComplex.f n = s.ι n ≫ PInfty.f n := by
@@ -279,6 +289,7 @@ instance isSplitEpi_toNondegComplex : IsSplitEpi s.toNondegComplex where
 instance isSplitMono_fromNondegComplex : IsSplitMono s.fromNondegComplex where
   exists_splitMono := ⟨⟨s.toNondegComplex, by simp⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma toNondegComplex_fromNondegComplex :
     s.toNondegComplex ≫ s.fromNondegComplex = PInfty :=
@@ -301,6 +312,7 @@ namespace Split
 
 variable {C : Type*} [Category* C] [Preadditive C] [HasFiniteCoproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends a split simplicial object in a preadditive category to
 the chain complex which consists of nondegenerate simplices. -/
@@ -328,6 +340,7 @@ noncomputable def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ where
         · rw [S₁.s.cofan_inj_πSummand_eq_zero_assoc _ _ (Ne.symm h),
             S₂.s.cofan_inj_πSummand_eq_zero _ _ (Ne.symm h), zero_comp, comp_zero] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism (in `Karoubi (ChainComplex C ℕ)`) between the chain complex
 of nondegenerate simplices of a split simplicial object and the normalized Moore complex

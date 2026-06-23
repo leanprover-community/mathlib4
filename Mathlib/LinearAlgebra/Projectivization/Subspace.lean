@@ -55,7 +55,7 @@ variable {K V}
 
 instance : SetLike (Subspace K V) (ℙ K V) where
   coe := carrier
-  coe_injective' A B := by
+  coe_injective A B := by
     cases A
     cases B
     simp
@@ -246,6 +246,13 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
 theorem mem_submodule_iff (s : Projectivization.Subspace K V) {v : V} (hv : v ≠ 0) :
     v ∈ submodule s ↔ Projectivization.mk K v hv ∈ s :=
   ⟨fun h => h hv, fun h _ => h⟩
+
+@[simp]
+lemma bot_coe : ((⊥ : Subspace K V) : Set (Projectivization K V)) = ∅ := by
+  ext x
+  simp only [SetLike.mem_coe, Set.mem_empty_iff_false, iff_false]
+  induction x using ind with | h v hv =>
+  rwa [← Subspace.mem_submodule_iff _ hv, Subspace.submodule.map_bot, Submodule.mem_bot]
 
 end Subspace
 

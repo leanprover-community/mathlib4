@@ -66,7 +66,6 @@ def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
     Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
 
-set_option linter.deprecated false in
 @[deprecated "`Module.dualPairing` has been deprecated" (since := "2026-04-02")]
 theorem dualPairing_apply (v x) : dualPairing R M v x = v x := rfl
 
@@ -264,7 +263,7 @@ lemma dualMap_dualMap_eq_iff_of_injective
 
 /-- The dual of a reflexive module is reflexive. -/
 instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
-  ⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
+  ⟨by simpa only [← symm_dualMap_evalEquiv] using! (evalEquiv R M).dualMap.symm.bijective⟩
 
 variable {R M N} in
 /-- A direct summand of a reflexive module is reflexive. -/
