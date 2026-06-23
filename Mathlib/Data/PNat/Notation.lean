@@ -38,6 +38,8 @@ instance : One ℕ+ :=
 instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
   ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
 
+namespace PNat
+
 @[simp]
 lemma mk_one : PNat.mk 1 Nat.zero_lt_one = (1 : ℕ+) :=
   rfl
@@ -50,3 +52,5 @@ lemma val_one : (1 : ℕ+).val = 1 :=
 @[simp]
 theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
+
+end PNat

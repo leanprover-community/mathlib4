@@ -17,6 +17,8 @@ requiring instances on `ℕ+`, which are usually inferred via inheriting from `�
 
 public section
 
+open PNat
+
 variable {M : Type*}
 
 instance Semigroup.instPow [Semigroup M] : Pow M ℕ+ where

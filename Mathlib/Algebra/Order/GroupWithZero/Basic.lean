@@ -559,7 +559,7 @@ lemma pow_left_strictMonoOn₀ [MulPosMono M₀] (hn : n ≠ 0) :
 
 @[simp] lemma ppow_pos (ha : 0 < a) (n : ℕ+) : 0 < a ^ n := by
   rcases n with ⟨n, h⟩
-  rw [← npow_val_eq_ppow, mk_coe]
+  rw [← npow_val_eq_ppow, PNat.mk_coe]
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
   exact pow_succ_pos ha n
 
