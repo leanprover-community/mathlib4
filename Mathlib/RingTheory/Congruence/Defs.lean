@@ -401,76 +401,81 @@ end Mul
 instance [NonUnitalNonAssocSemiring R] (c : RingCon R) :
     NonUnitalNonAssocSemiring c.Quotient := fast_instance%
   Function.Surjective.nonUnitalNonAssocSemiring _ Quotient.mk''_surjective rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance [NonUnitalNonAssocCommSemiring R] (c : RingCon R) :
     NonUnitalNonAssocCommSemiring c.Quotient := fast_instance%
   Function.Surjective.nonUnitalNonAssocCommSemiring _ Quotient.mk''_surjective rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance [NonAssocSemiring R] (c : RingCon R) : NonAssocSemiring c.Quotient := fast_instance%
   Function.Surjective.nonAssocSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 instance [NonAssocCommSemiring R] (c : RingCon R) :
     NonAssocCommSemiring c.Quotient := fast_instance%
   Function.Surjective.nonAssocCommSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 instance [NonUnitalSemiring R] (c : RingCon R) : NonUnitalSemiring c.Quotient := fast_instance%
   Function.Surjective.nonUnitalSemiring _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance [NonUnitalCommSemiring R] (c : RingCon R) :
     NonUnitalCommSemiring c.Quotient := fast_instance%
   Function.Surjective.nonUnitalCommSemiring _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance [Semiring R] (c : RingCon R) : Semiring c.Quotient := fast_instance%
-  Function.Surjective.semiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Function.Surjective.semiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 instance [CommSemiring R] (c : RingCon R) : CommSemiring c.Quotient := fast_instance%
   Function.Surjective.commSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    fun _ => rfl
 
 instance [NonUnitalNonAssocRing R] (c : RingCon R) :
     NonUnitalNonAssocRing c.Quotient := fast_instance%
   Function.Surjective.nonUnitalNonAssocRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 instance [NonUnitalNonAssocCommRing R] (c : RingCon R) :
     NonUnitalNonAssocCommRing c.Quotient := fast_instance%
   Function.Surjective.nonUnitalNonAssocCommRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 instance [NonAssocRing R] (c : RingCon R) : NonAssocRing c.Quotient := fast_instance%
   Function.Surjective.nonAssocRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 instance [NonAssocCommRing R] (c : RingCon R) : NonAssocCommRing c.Quotient := fast_instance%
   Function.Surjective.nonAssocCommRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 instance [NonUnitalRing R] (c : RingCon R) : NonUnitalRing c.Quotient := fast_instance%
   Function.Surjective.nonUnitalRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 instance [NonUnitalCommRing R] (c : RingCon R) : NonUnitalCommRing c.Quotient := fast_instance%
   Function.Surjective.nonUnitalCommRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 instance [Ring R] (c : RingCon R) : Ring c.Quotient := fast_instance%
   Function.Surjective.ring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 instance [CommRing R] (c : RingCon R) : CommRing c.Quotient := fast_instance%
   Function.Surjective.commRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 end Algebraic
 
