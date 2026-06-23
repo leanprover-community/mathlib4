@@ -208,8 +208,7 @@ theorem associated_zeta_sub_one_pow_prime :
   simp only [eval_sub, eval_X, eval_C]
   rw [← Nat.totient_prime hp.out, ← hζ.toInteger_isPrimitiveRoot.card_primitiveRoots,
     ← Finset.prod_const]
-  apply Associated.prod
-  intro η hη
+  refine Associated.prod _ _ _ fun η hη ↦ ?_
   have hη' : IsPrimitiveRoot (η : K) p :=
     (isPrimitiveRoot_of_mem_primitiveRoots hη).map_of_injective RingOfIntegers.coe_injective
   have hηtoInteger : hη'.toInteger = η := RingOfIntegers.ext rfl
