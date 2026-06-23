@@ -114,11 +114,9 @@ theorem point_has_two_manifoldOrientations :
       (by decide)
   · intro o
     have hval : ∀ a : ZMod 2, a = 0 ∨ a = 1 := by decide
-    rcases hval (o.chartSign default default) with h | h
-    · exact Or.inl (ManifoldOrientation.ext (funext fun x => funext fun z => by
-        rw [Subsingleton.elim x default, Subsingleton.elim z default]; exact h))
-    · exact Or.inr (ManifoldOrientation.ext (funext fun x => funext fun z => by
-        rw [Subsingleton.elim x default, Subsingleton.elim z default]; exact h))
+    refine (hval (o.chartSign default default)).imp (fun h => ?_) (fun h => ?_) <;>
+      exact ManifoldOrientation.ext (funext fun x => funext fun z => by
+        rw [Subsingleton.elim x default, Subsingleton.elim z default]; exact h)
 
 section Cardinality
 
