@@ -758,7 +758,7 @@ $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
     (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) :=
-  tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero (g := fun _ => f) <|
+  tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero (g := fun _ ↦ f) <|
     tendstoUniformlyOnFilter_iff_tendsto.mpr <|
       tendsto_left_nhds_uniformity.comp (htendsto.comp tendsto_snd)
 
