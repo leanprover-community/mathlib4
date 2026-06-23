@@ -29,28 +29,28 @@ theorem mk_fiber (a b : α) : Sym2.mk.uncurry ⁻¹' {s(a, b)} = {(a, b), (b, a)
 
 theorem finite_mk_fiber (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).Finite := by
   cases z
-  simp [Sym2.mk_fiber]
+  simp [mk_fiber]
 
 theorem ncard_mk_fiber_of_isDiag {z : Sym2 α} (hz : z.IsDiag) :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = 1 := by
   cases z
   cases hz
-  simp [Sym2.mk_fiber]
+  simp [mk_fiber]
 
 theorem ncard_mk_fiber_of_not_isDiag {z : Sym2 α} (hz : ¬z.IsDiag) :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = 2 := by
   cases z
-  simp [Sym2.mk_fiber, Sym2.mk_isDiag_iff.not.mp hz]
+  simp [mk_fiber, mk_isDiag_iff.not.mp hz]
 
 theorem ncard_mk_fiber [DecidableEq α] (z : Sym2 α) :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = if z.IsDiag then 1 else 2 := by
   split_ifs with h
-  · rw [Sym2.ncard_mk_fiber_of_isDiag h]
-  · rw [Sym2.ncard_mk_fiber_of_not_isDiag h]
+  · rw [ncard_mk_fiber_of_isDiag h]
+  · rw [ncard_mk_fiber_of_not_isDiag h]
 
 theorem ncard_mk_fiber_eq_card_toFinset [DecidableEq α] {z : Sym2 α} :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = z.toFinset.card := by
-  rw [Sym2.ncard_mk_fiber, Sym2.card_toFinset]
+  rw [ncard_mk_fiber, card_toFinset]
 
 theorem encard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard ≤ 2 := by
   classical
@@ -63,7 +63,7 @@ theorem cardinalMk_prod_le (α : Type*) : #(α × α) ≤ 2 * #(Sym2 α) := by
   apply mul_le_mul_right <| ciSup_le' fun z ↦ ?_
   rw [← Set.coe_setOf, ← Set.preimage_singleton]
   cases z
-  grw [Sym2.mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
+  grw [mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
     simp
 
 section fromRel
@@ -71,25 +71,25 @@ section fromRel
 variable {r : α → α → Prop} (sym : Std.Symm r)
 
 theorem cardinalMk_prod_le_two_mul_cardinalMk_fromRel :
-    #{ p : α × α // r p.fst p.snd } ≤ 2 * #(Sym2.fromRel sym) := by
-  rw [← Equiv.sigmaSubtypeFiberEquivSubtype Sym2.mk.uncurry (q := (· ∈ Sym2.fromRel sym)) (by simp)
+    #{ p : α × α // r p.fst p.snd } ≤ 2 * #(fromRel sym) := by
+  rw [← Equiv.sigmaSubtypeFiberEquivSubtype Sym2.mk.uncurry (q := (· ∈ fromRel sym)) (by simp)
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm]
   grw [Cardinal.sum_le_mk_mul_iSup]
   apply mul_le_mul_right <| ciSup_le' fun z ↦ ?_
   rw [← Set.coe_setOf, ← Set.preimage_singleton]
   rcases z with ⟨⟨⟩⟩
-  grw [Sym2.mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
+  grw [mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
     simp
 
 theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel [Std.Irrefl r] :
-    #{ p : α × α // r p.fst p.snd } = 2 * #(Sym2.fromRel sym) := by
-  rw [← Equiv.sigmaSubtypeFiberEquivSubtype Sym2.mk.uncurry (q := (· ∈ Sym2.fromRel sym)) (by simp)
+    #{ p : α × α // r p.fst p.snd } = 2 * #(fromRel sym) := by
+  rw [← Equiv.sigmaSubtypeFiberEquivSubtype Sym2.mk.uncurry (q := (· ∈ fromRel sym)) (by simp)
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm, ← Cardinal.sum_const']
   congr
   ext ⟨z, hz⟩
   rw [← Set.coe_setOf, ← Set.preimage_singleton, ← Set.cast_ncard z.finite_mk_fiber,
     z.ncard_mk_fiber_of_not_isDiag, Nat.cast_two]
-  exact Sym2.fromRel_irrefl.mp ‹_› hz
+  exact fromRel_irrefl.mp ‹_› hz
 
 end fromRel
 
