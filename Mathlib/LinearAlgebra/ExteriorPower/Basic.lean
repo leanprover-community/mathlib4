@@ -405,6 +405,34 @@ lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
 
 end ιMulti_family
 
+lemma span_ιMulti_orderEmbedding_of_span_eq_top {ι : Type*} [LinearOrder ι] {g : ι → M}
+    (hg : Submodule.span R (Set.range g) = ⊤) (n : ℕ) :
+    Submodule.span R (Set.range (fun (x : Fin n ↪o ι) ↦ ιMulti R _ (g ∘ x))) = ⊤ := by
+  -- Route correction: reuse mathlib's spanning theorem and only reindex the family.
+  have hspan := ιMulti_family_span_of_span (R := R) (n := n) hg
+  have hrange : Set.range (ιMulti_family R n g) =
+      Set.range (fun x : Fin n ↪o ι ↦ ιMulti R n (g ∘ x)) := by
+    ext y
+    constructor
+    · rintro ⟨s, rfl⟩
+      exact ⟨Set.powersetCard.ofFinEmbEquiv.symm s, by simp [ιMulti_family]⟩
+    · rintro ⟨x, rfl⟩
+      exact ⟨Set.powersetCard.ofFinEmbEquiv x, by simp [ιMulti_family]⟩
+  simpa [hrange] using hspan
+
+lemma subsingleton_of_card_generators_le {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+    (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
+    Subsingleton (⋀[R]^i M) := by
+  letI : Fintype ι := Fintype.ofFinite ι
+  have hcard : Fintype.card ι < i := by simpa [Nat.card_eq_fintype_card] using hi
+  have hbotTop : (⊥ : Submodule R (⋀[R]^i M)) = ⊤ := by
+    rw [← exteriorPower.span_ιMulti_orderEmbedding_of_span_eq_top (R := R) (M := M) hg i]
+    convert Submodule.span_empty.symm
+    refine Set.range_eq_empty_iff.mpr ⟨fun f ↦ ?_⟩
+    absurd hcard
+    simpa using Fintype.card_le_of_injective f f.injective
+  exact (Submodule.subsingleton_iff R).mp <| (subsingleton_iff_bot_eq_top).mp hbotTop
+
 /-! Linear equivalences in degrees 0 and 1. -/
 
 variable (R M) in
