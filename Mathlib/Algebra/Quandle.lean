@@ -324,7 +324,7 @@ variable {S₁ : Type*} {S₂ : Type*} {S₃ : Type*} [Shelf S₁] [Shelf S₂] 
 
 instance : FunLike (S₁ →◃ S₂) S₁ S₂ where
   coe := toFun
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+  coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 @[simp] theorem toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f := rfl
 
@@ -422,7 +422,6 @@ theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAc
   dsimp only [dihedralAct]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Quandle (Dihedral n) where
   act := dihedralAct n
   self_distrib := by

@@ -154,15 +154,22 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check (T% (T% X)) x
 
+section
+-- Check minimal assumptions to find a model fiber.
+
+variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] (σ : (b : B) → E b)
+/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
+#guard_msgs in
+#check T% σ
+
+end
 -- Error message when missing typeclass assumptions for sections of a fiber bundle.
 -- This used to silently do nothing; now there is a helpful error.
 section
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
-  (e : Trivialization F (π F E)) [(x : B) → Zero (E x)]
-
-variable (σ : (b : B) → E b) in
+  {E : B → Type*} (σ : (b : B) → E b)
 /--
 error: could not find a `FiberBundle` instance on `E`:
 `σ` is a function into `E`
@@ -174,7 +181,7 @@ hint: you may be missing suitable typeclass assumptions
 
 /-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
 #guard_msgs in
-variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] (σ : (b : B) → E b) in
+variable [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
 #check T% σ
 
 end
@@ -521,6 +528,71 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 end
 
 end differentiability
+
+/-! Tests for the elaborators for `UniqueMDiff{WithinAt,On}`. -/
+section UniqueMDiff
+
+variable {s : Set M} {m : M}
+
+/-- info: UniqueMDiffOn I s : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/-- info: UniqueMDiffOn (modelWithCornersSelf Real Real) (Set.Icc 0 1) : Prop -/
+#guard_msgs in
+#check UniqueMDiff[(Set.Icc 0 1 : Set ℝ)]
+
+/-- error: `Real` has type `Type` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[ℝ]
+
+/-- info: UniqueMDiffWithinAt I s : M → Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s]
+
+/-- info: UniqueMDiffWithinAt I s m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s] m
+
+/-- info: UniqueMDiffWithinAt I Set.univ m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[(Set.univ : Set M)] m
+
+-- In the future, the elaborators should take the type of `m` into account.
+/--
+error: Could not find a model with corners for `?_`.
+
+Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+#check UniqueMDiffAt[Set.univ] m
+
+variable {s : TopologicalSpace.Opens M}
+
+/-- info: UniqueMDiffOn I s.carrier : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s.carrier]
+
+/-- error: `s` has type `TopologicalSpace.Opens M` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/--
+error: Application type mismatch: The argument
+  s
+has type
+  TopologicalSpace.Opens M
+but is expected to have type
+  Set ?_
+in the application
+  UniqueMDiffOn I s
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+#check UniqueMDiffOn I s
+
+end UniqueMDiff
 
 /-! Tests for the custom elaborators for `ContMDiff{WithinAt,At,On}` -/
 section smoothness
@@ -924,7 +996,7 @@ info: ContMDiffWithinAt (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜
 
 end smoothness
 
--- Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators.
+/-! Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators. -/
 section
 
 variable {EM' : Type*} [NormedAddCommGroup EM']
@@ -960,6 +1032,70 @@ open ContDiff in -- for the ∞ notation
 /-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
+
+end
+
+/-! Inferring a model with corners on a normed space, for an `IsManifold` hypothesis -/
+section
+
+open scoped ContDiff
+
+variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X] [IsManifold 𝓘(ℝ) ω X]
+  [TopologicalSpace Y] [ChartedSpace ℝ Y] [IsManifold 𝓘(ℝ) ω Y] {f : X → Y}
+
+/--
+info: ContMDiff (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) Top.top f : Prop
+-/
+#guard_msgs in
+#check CMDiff ω f
+
+variable {f : X → ℝ} in /--
+info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in #check MDiff f
+
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] [IsManifold 𝓘(𝕜, F) ω X] {f : X → 𝕜} in
+/-- info: MDifferentiable (modelWithCornersSelf 𝕜 F) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+-- This test is expected to fail: it passing would amount to guessing a model with corners on
+-- a product of two normed spaces (which is ambiguous).
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
+/--
+error: Could not find a model with corners for `X`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+#check MDiff f
+
+end
+
+/-! Tests for the elaborators for `tangentMap(Within)` and `TangentSpace` -/
+section
+
+variable {f : M → M} {s : Set M} {x : M} {X : TangentSpace% x}
+
+/-- info: TangentSpace I x : Type u_2 -/
+#guard_msgs in
+#check TangentSpace% x
+
+/-- info: tangentMap I I f : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f
+
+/-- info: tangentMapWithin I I f s : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f
+
+/-- info: tangentMap I I f { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f X
+
+/-- info: tangentMapWithin I I f s { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f X
 
 end
 
@@ -1298,47 +1434,47 @@ variable {f : Unit → Unit}
 error: Could not find a model with corners for `Unit`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `Unit` among local instances.
-[Elab.DiffGeo.MDiff] ❌️ Manifold
+[Elab.DiffGeo.MDiff] 💥️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ChartedSpace` structure on `Unit` among local instances, and `Unit` is not the charted space of some type in the local context either.
-[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+[Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a space of continuous linear maps
-[Elab.DiffGeo.MDiff] ❌️ RealInterval
+[Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+[Elab.DiffGeo.MDiff] 💥️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a Euclidean space, half-space or quadrant
-[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+[Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex upper half plane
-[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+[Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a set of units, in particular not of a complete normed algebra
-[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+[Elab.DiffGeo.MDiff] 💥️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex unit circle
-[Elab.DiffGeo.MDiff] ❌️ Sphere
+[Elab.DiffGeo.MDiff] 💥️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ NormedField
+[Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
         NontriviallyNormedField Unit
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
-[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+[Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `Unit` among local instances.
 -/

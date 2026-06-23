@@ -28,7 +28,6 @@ open CategoryTheory MonoidalCategory TensorProduct
 
 variable (R : Type u) [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps] noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (HopfAlgCat R) where
   tensorObj X Y := of R (X ⊗[R] Y)

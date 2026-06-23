@@ -58,7 +58,7 @@ def toRingSeminorm' (f : AlgebraNorm R S) : RingSeminorm S :=
 
 instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h := by
+  coe_injective f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe] at h
     cases f; cases f'; congr
     simp only at h
@@ -89,7 +89,6 @@ theorem extends_norm' (hf1 : f 1 = 1) (a : R) : f (a • (1 : S)) = ‖a‖ := b
 theorem extends_norm (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ := by
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' hf1 _
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The restriction of an algebra norm to a subalgebra. -/
 def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A where
@@ -151,7 +150,7 @@ variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
 
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h := by
+  coe_injective f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 

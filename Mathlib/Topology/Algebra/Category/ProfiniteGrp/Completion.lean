@@ -5,7 +5,8 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.GroupTheory.FiniteIndexNormalSubgroup
+public import Mathlib.Algebra.Category.Grp.EpiMono
+public import Mathlib.GroupTheory.ResiduallyFinite
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 
 /-!
@@ -55,6 +56,7 @@ namespace ProfiniteCompletion
 variable (G : GrpCat.{u})
 
 /-- The diagram of finite quotients indexed by finite-index normal subgroups of `G`. -/
+@[to_additive /-- The diagram of finite quotients indexed by finite-index normal subgroups. -/]
 def finiteGrpDiagram : FiniteIndexNormalSubgroup G ⥤ FiniteGrp.{u} where
   obj H := FiniteGrp.of <| G ⧸ H.toSubgroup
   map f := FiniteGrp.ofHom <| QuotientGroup.map _ _ (MonoidHom.id _) f.le
@@ -62,16 +64,20 @@ def finiteGrpDiagram : FiniteIndexNormalSubgroup G ⥤ FiniteGrp.{u} where
   map_comp f g := by ext ⟨x⟩; rfl
 
 /-- The finite-quotient diagram viewed in `ProfiniteGrp`. -/
+@[to_additive /-- The finite-quotient diagram viewed in `ProfiniteAddGrp`. -/]
 def diagram : FiniteIndexNormalSubgroup G ⥤ ProfiniteGrp.{u} :=
   finiteGrpDiagram _ ⋙ forget₂ _ _
 
 /-- The profinite completion of `G` as a projective limit. -/
+@[to_additive /-- The profinite completion of `G` as a projective limit. -/]
 def completion : ProfiniteGrp.{u} := limit (diagram G)
 
 /-- The canonical map from `G` to its profinite completion, as a function. -/
+@[to_additive /-- The canonical map from `G` to its profinite completion, as a function. -/]
 def etaFn (x : G) : completion G := ⟨fun _ => QuotientGroup.mk x, fun _ _ _ => rfl⟩
 
 /-- The canonical morphism from `G` to its profinite completion. -/
+@[to_additive /-- The canonical morphism from `G` to its profinite completion. -/]
 def eta : G ⟶ GrpCat.of (completion G) := GrpCat.ofHom {
   toFun := etaFn G
   map_one' := rfl
@@ -79,6 +85,21 @@ def eta : G ⟶ GrpCat.of (completion G) := GrpCat.ofHom {
 }
 
 set_option backward.isDefEq.respectTransparency false in
+@[to_additive]
+theorem mono_eta_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFinite G := by
+  rw [GrpCat.mono_iff_injective, injective_iff_map_eq_one,
+    Group.residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
+  refine forall_congr' fun g ↦ imp_congr_left ?_
+  rw [Subtype.ext_iff, funext_iff]
+  exact forall_congr' fun H ↦ QuotientGroup.eq_one_iff g
+
+@[to_additive]
+theorem etaFn_injective_iff_residuallyFinite :
+    Function.Injective (etaFn G) ↔ Group.ResiduallyFinite G :=
+  (GrpCat.mono_iff_injective (eta G)).symm.trans (mono_eta_iff_residuallyFinite G)
+
+set_option backward.isDefEq.respectTransparency false in
+@[to_additive]
 lemma denseRange : DenseRange (etaFn G) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
@@ -106,14 +127,17 @@ variable {G}
 variable {P : ProfiniteGrp.{u}}
 
 /-- The preimage of an open normal subgroup under a morphism to a profinite group. -/
+@[to_additive /-- The preimage of an open normal subgroup under a morphism to a profinite group. -/]
 def preimage (f : G ⟶ GrpCat.of P) (H : OpenNormalSubgroup P) : FiniteIndexNormalSubgroup G :=
   H.toFiniteIndexNormalSubgroup.comap f.hom
 
+@[to_additive]
 lemma preimage_le {f : G ⟶ GrpCat.of P} {H K : OpenNormalSubgroup P}
     (h : H ≤ K) : preimage f H ≤ preimage f K :=
   FiniteIndexNormalSubgroup.comap_mono _ h
 
 /-- The induced map on finite quotients coming from a morphism to `P`. -/
+@[to_additive /-- The induced map on finite quotients coming from a morphism to `P`. -/]
 def quotientMap (f : G ⟶ GrpCat.of P) (H : OpenNormalSubgroup P) :
     FiniteGrp.of (G ⧸ (preimage f H).toSubgroup) ⟶ FiniteGrp.of (P ⧸ H.toSubgroup) :=
   FiniteGrp.ofHom <| QuotientGroup.map _ _ f.hom <| fun _ h => h
@@ -139,6 +163,7 @@ def lift (f : G ⟶ GrpCat.of P) : completion G ⟶ P :=
       exact this
   }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma lift_eta (f : G ⟶ GrpCat.of P) : eta G ≫ (forget₂ _ _).map (lift f) = f := by
   let e := isoLimittoFiniteQuotientFunctor P
@@ -149,13 +174,14 @@ lemma lift_eta (f : G ⟶ GrpCat.of P) : eta G ≫ (forget₂ _ _).map (lift f) 
   simp only [Category.assoc, Iso.inv_hom_id]
   rfl
 
+@[to_additive]
 lemma lift_unique (f g : completion G ⟶ P)
     (h : eta G ≫ (forget₂ _ _).map f = eta G ≫ (forget₂ _ _).map g) : f = g := by
   ext x
   apply congrFun
   refine (denseRange (G := G)).equalizer f.hom.continuous_toFun g.hom.continuous_toFun ?_
   funext y
-  simpa [GrpCat.comp_apply] using (ConcreteCategory.congr_hom h y)
+  simpa [GrpCat.comp_apply] using! (ConcreteCategory.congr_hom h y)
 
 end ProfiniteCompletion
 

@@ -153,19 +153,19 @@ namespace IndepMatroid
     exact ⟨B, hB.1⟩
   isBase_exchange B B' hB hB' e he := by
     have hnotmax : ¬ Maximal M.Indep (B \ {e}) :=
-      fun h ↦ h.not_prop_of_ssuperset (diff_singleton_ssubset.2 he.1) hB.prop
-    obtain ⟨f, hf, hfB⟩ := M.indep_aug (M.indep_subset hB.prop diff_subset) hnotmax hB'
+      fun h ↦ h.not_prop_of_ssuperset (sdiff_singleton_ssubset.2 he.1) hB.prop
+    obtain ⟨f, hf, hfB⟩ := M.indep_aug (M.indep_subset hB.prop sdiff_subset) hnotmax hB'
     replace hf := show f ∈ B' \ B by simpa [show f ≠ e by rintro rfl; exact he.2 hf.1] using hf
     refine ⟨f, hf, by_contra fun hnot ↦ ?_⟩
     obtain ⟨x, hxB, hind⟩ := M.indep_aug hfB hnot hB
     obtain ⟨-, rfl⟩ : _ ∧ x = e := by simpa [hxB.1] using hxB
     refine hB.not_prop_of_ssuperset ?_ hind
-    rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1]
+    rw [insert_comm, insert_sdiff_singleton, insert_eq_of_mem he.1]
     exact ssubset_insert hf.2
   maximality := M.indep_maximal
   subset_ground B hB := M.subset_ground B hB.1
 
-@[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
+theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
     M.matroid.Indep I ↔ M.Indep I := Iff.rfl
 
 /-- If `Indep` has the 'compactness' property that each set `I` satisfies `Indep I` if and only if
@@ -230,7 +230,7 @@ provided independence is determined by its behaviour on finite sets. -/
         ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ¬ Indep (insert e I₀) := by
         by_contra! ⟨I, e, -, hIe, h⟩
         refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
-        exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) hJfin.diff) (by simp)
+        exact indep_subset (h (J \ {e}) (by rwa [sdiff_subset_iff]) hJfin.sdiff) (by simp)
       intro I B hI hImax hBmax
       obtain ⟨e, heI, hins⟩ := exists_insert_of_not_maximal indep_subset hI hImax
       by_cases heB : e ∈ B
@@ -245,7 +245,7 @@ provided independence is determined by its behaviour on finite sets. -/
         have hch : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib) := by
           rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
         choose! f hf using hch
-        have : Finite ↑(B₀ \ I) := hB₀fin.diff.to_subtype
+        have : Finite ↑(B₀ \ I) := hB₀fin.sdiff.to_subtype
         refine ⟨iUnion f ∪ (B₀ ∩ I),
           union_subset (iUnion_subset (fun i ↦ (hf i).1)) inter_subset_right,
           (finite_iUnion fun i ↦ (hf i).2.1).union (hB₀fin.subset inter_subset_left),
@@ -383,7 +383,6 @@ instance ofBddAugment_rankFinite (E : Set α) Indep indep_empty indep_subset ind
   rw [IndepMatroid.ofBddAugment]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is finite, then any collection of subsets of `E` satisfying
   the usual independence axioms determines a matroid -/
 protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)

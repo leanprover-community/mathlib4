@@ -35,10 +35,11 @@ variable {a b : α}
 
 @[to_dual]
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
-  Option.nontrivial
+  inferInstanceAs <| Nontrivial (Option α)
 
 @[to_dual]
-instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+instance [IsEmpty α] : Unique (WithBot α) :=
+  inferInstanceAs <| Unique (Option α)
 
 open Function
 
@@ -240,6 +241,11 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   induction b
   · simpa using h rfl
   · simp
+
+@[to_dual]
+theorem unbot_inj {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) :
+    a.unbot ha = b.unbot hb ↔ a = b := by
+  rw [unbot_eq_iff, coe_unbot]
 
 /-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
 @[to_dual (attr := simps)
@@ -586,7 +592,7 @@ lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := 
 @[to_dual forall_le_coe_iff_le]
 lemma forall_coe_le_iff_le [NoBotOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
   obtain _ | a := x
-  · simpa [WithBot.none_eq_bot, eq_bot_iff_forall_le] using fun a ha ↦ (not_isBot _ ha).elim
+  · simpa [WithBot.none_eq_bot, eq_bot_iff_forall_le] using! fun a ha ↦ (not_isBot _ ha).elim
   · exact ⟨fun h ↦ h _ le_rfl, fun hay b ↦ hay.trans'⟩
 
 @[to_dual forall_coe_le_iff_le]
@@ -803,11 +809,13 @@ instance _root_.WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] 
 
 instance trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
     @Std.Trichotomous (WithBot α) (· > ·) :=
-  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
+  have : @Std.Trichotomous α (· < ·) := inferInstanceAs <| Std.Trichotomous <| Function.swap _
+  inferInstance
 
 instance _root_.WithTop.trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
     @Std.Trichotomous (WithTop α) (· > ·) :=
-  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
+  have : @Std.Trichotomous α (· < ·) := inferInstanceAs <| Std.Trichotomous <| Function.swap _
+  inferInstance
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
 instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :

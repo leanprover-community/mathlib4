@@ -26,14 +26,14 @@ some results about some extension `E` above `p.SplittingField`.
 - `Polynomial.Gal.galActionHom_injective`: `gal p` acting on the roots of `p` in `E` is faithful.
 - `Polynomial.Gal.restrictProd_injective`: `gal (p * q)` embeds as a subgroup of `gal p × gal q`.
 - `Polynomial.Gal.card_of_separable`: For a separable polynomial, its Galois group has cardinality
-equal to the dimension of its splitting field over `F`.
+  equal to the dimension of its splitting field over `F`.
 - `Polynomial.Gal.galActionHom_bijective_of_prime_degree`:
-An irreducible polynomial of prime degree with two non-real roots has full Galois group.
+  An irreducible polynomial of prime degree with two non-real roots has full Galois group.
 
 ## Other results
 - `Polynomial.Gal.card_complex_roots_eq_card_real_add_card_not_gal_inv`: The number of complex roots
-equals the number of real roots plus the number of roots not fixed by complex conjugation
-(i.e. with some imaginary component).
+  equals the number of real roots plus the number of roots not fixed by complex conjugation
+  (i.e. with some imaginary component).
 
 -/
 
@@ -54,12 +54,9 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
-deriving Group, Fintype, EquivLike, AlgEquivClass
+deriving Group, Fintype, EquivLike, AlgEquivClass, MulSemiringAction _ p.SplittingField
 
 namespace Gal
-
-instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
-  AlgEquiv.applyMulSemiringAction
 
 @[ext]
 theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ x) : σ = τ := by
@@ -235,7 +232,7 @@ theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
   classical
   haveI := Fact.mk <|
     (SplittingField.splits q).of_dvd (map_ne_zero hq) ((map_dvd_map' _).mpr hpq)
-  simpa only [restrictDvd_def, dif_neg hq] using restrict_surjective _ _
+  simpa only [restrictDvd_def, dif_neg hq] using! restrict_surjective _ _
 
 variable (p q)
 
@@ -340,20 +337,18 @@ theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
     Function.Surjective (restrictComp p q hq) := by
   haveI : Fact (Splits (p.map (algebraMap F (SplittingField (comp p q))))) :=
     ⟨splits_in_splittingField_of_comp p q hq⟩
-  simpa only [restrictComp] using restrict_surjective _ _
+  simpa only [restrictComp] using! restrict_surjective _ _
 
 variable {p q}
 
 open scoped IntermediateField
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a separable polynomial, its Galois group has cardinality
 equal to the dimension of its splitting field over `F`. -/
 theorem card_of_separable (hp : p.Separable) : Nat.card p.Gal = finrank F p.SplittingField :=
   haveI : IsGalois F p.SplittingField := IsGalois.of_separable_splitting_field hp
   IsGalois.card_aut_eq_finrank F p.SplittingField
 
-set_option backward.isDefEq.respectTransparency false in
 theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.natDegree.Prime) :
     p.natDegree ∣ Nat.card p.Gal := by
   rw [Gal.card_of_separable p_irr.separable]

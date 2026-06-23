@@ -124,7 +124,7 @@ instance : EquivLike (A ≃ₐc[R] B) A B where
 
 instance : FunLike (A ≃ₐc[R] B) A B where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   map_add := (·.map_add')
@@ -132,6 +132,8 @@ instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   counit_comp := (·.counit_comp)
   map_comp_comul := (·.map_comp_comul)
   map_mul := (·.map_mul')
+
+instance : CoeOut (A ≃ₐc[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
 @[simp, norm_cast]
 theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B) = e₂ ↔ e₁ = e₂ :=
@@ -160,7 +162,7 @@ theorem toCoalgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toCoalgEquiv = f :=
 theorem toBialgHom_eq_coe (f : A ≃ₐc[R] B) : f.toBialgHom = f :=
   rfl
 
-@[simp]
+@[deprecated "Now a syntactic tautology" (since := "2026-04-09"), nolint synTaut]
 theorem toAlgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toAlgEquiv = f :=
   rfl
 
@@ -179,6 +181,7 @@ theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
 theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
   rfl
 
+@[deprecated "Now a syntactic equality" (since := "2026-04-30"), nolint synTaut]
 theorem toBialgHom_toAlgHom : ((e : A →ₐc[R] B) : A →ₐ[R] B) = e := rfl
 
 section
@@ -214,7 +217,7 @@ initialize_simps_projections BialgEquiv (toFun → apply, invFun → symm_apply)
 
 variable (A R) in
 /-- The identity map is a bialgebra equivalence. -/
-@[refl, simps!]
+@[refl, simps! apply]
 def refl : A ≃ₐc[R] A :=
   { CoalgEquiv.refl R A, BialgHom.id R A with }
 
@@ -254,7 +257,7 @@ theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm :=
 variable {e₁₂ : A ≃ₐc[R] B} {e₂₃ : B ≃ₐc[R] C}
 
 /-- Bialgebra equivalences are transitive. -/
-@[trans, simps!]
+@[trans, simps! apply]
 def trans (e₁₂ : A ≃ₐc[R] B) (e₂₃ : B ≃ₐc[R] C) : A ≃ₐc[R] C :=
   { (e₁₂ : A ≃ₗc[R] B).trans (e₂₃ : B ≃ₗc[R] C), (e₁₂ : A ≃* B).trans (e₂₃ : B ≃* C) with }
 

@@ -10,16 +10,39 @@ public import Mathlib.Data.Bracket
 
 /-!
 # The bracket on a group given by commutator.
+
+## Notation
+
+After `open scoped commutatorElement`, `⁅g₁, g₂⁆` is syntax for `g₁ * g₂ * g₁⁻¹ * g₂⁻¹`.
+
 -/
 
 @[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-/-- The commutator of two elements `g₁` and `g₂`. -/
-instance commutatorElement {G : Type*} [Group G] : Bracket G G :=
+/-- The commutator of two elements `g₁` and `g₂`. This is a scoped instance in the
+`commutatorElement` namespace to avoid clashing with other brackets. -/
+@[to_additive (attr := reducible) /-- The additive commutator of two elements `g₁` and `g₂`. This
+is a scoped instance in the `commutatorElement` namespace to avoid clashing with other brackets -/]
+def commutatorElement {G : Type*} [Group G] : Bracket G G :=
   ⟨fun g₁ g₂ ↦ g₁ * g₂ * g₁⁻¹ * g₂⁻¹⟩
 
+namespace commutatorElement
+
+attribute [scoped instance] commutatorElement
+
+end commutatorElement
+
+namespace addCommutatorElement
+
+attribute [scoped instance] addCommutatorElement
+
+end addCommutatorElement
+
+open scoped commutatorElement
+
+@[to_additive]
 theorem commutatorElement_def {G : Type*} [Group G] (g₁ g₂ : G) :
     ⁅g₁, g₂⁆ = g₁ * g₂ * g₁⁻¹ * g₂⁻¹ :=
   rfl

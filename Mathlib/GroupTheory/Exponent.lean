@@ -141,7 +141,7 @@ theorem exponent_eq_sInf :
 `n • g ≠ 0`. -/]
 theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g ^ n ≠ 1 := by
   rw [exponent_eq_zero_iff, ExponentExists]
-  push_neg
+  push Not
   rfl
 
 @[to_additive exponent_nsmul_eq_zero]
@@ -562,7 +562,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
   classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
-  push_neg at hj ⊢
+  push Not at hj ⊢
   peel hj with n hn _
   obtain ⟨m, hm⟩ := this
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩

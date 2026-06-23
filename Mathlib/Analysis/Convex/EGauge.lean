@@ -125,7 +125,7 @@ lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ ‖c‖ₑ
 
 lemma mem_smul_of_egauge_lt (hs : Balanced 𝕜 s) (hc : egauge 𝕜 s x < ‖c‖ₑ) : x ∈ c • s :=
   let ⟨a, hxa, ha⟩ := egauge_lt_iff.1 hc
-  hs.smul_mono (by simpa [enorm] using ha.le) hxa
+  hs.smul_mono (by simpa [enorm] using! ha.le) hxa
 
 lemma mem_of_egauge_lt_one (hs : Balanced 𝕜 s) (hx : egauge 𝕜 s x < 1) : x ∈ s :=
   one_smul 𝕜 s ▸ mem_smul_of_egauge_lt hs (by simpa)
@@ -190,7 +190,6 @@ lemma egauge_smul_left (hc : c ≠ 0) (s : Set E) (x : E) :
     _ ≤ egauge 𝕜 (c⁻¹ • c • s) x := le_egauge_smul_left _ _ _
     _ = egauge 𝕜 s x := by rw [inv_smul_smul₀ hc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_egauge_smul_right (c : 𝕜) (s : Set E) (x : E) :
     ‖c‖ₑ * egauge 𝕜 s x ≤ egauge 𝕜 s (c • x) := by
   rw [le_egauge_iff]
@@ -212,7 +211,6 @@ lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     refine (le_egauge_smul_right _ _ _).trans_eq ?_
     rw [inv_smul_smul₀ hc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The extended gauge of a point `(a, b)` with respect to the product of balanced sets `U` and `V`
 is equal to the maximum of the extended gauges of `a` with respect to `U`
 and `b` with respect to `V`.
@@ -271,7 +269,7 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
     · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
         exists_max_image _ (‖c ·‖ₑ) hI hIne
       by_cases! H : c i₀ ≠ 0 ∨ I = univ
-      · exact ⟨c i₀, H, fun i hi ↦ by simpa [enorm] using hc_max hi, hcr _ hi₀I⟩
+      · exact ⟨c i₀, H, fun i hi ↦ by simpa [enorm] using! hc_max hi, hcr _ hi₀I⟩
       · have hc0 (i : ι) (hi : i ∈ I) : c i = 0 := by simpa [H] using hc_max hi
         have heg0 (i : ι) (hi : i ∈ I) : x i = 0 :=
           zero_smul_set_subset (α := 𝕜) (U i) (hc0 i hi ▸ hc i hi)
@@ -335,11 +333,10 @@ lemma le_egauge_ball_one (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (ball 0 1) x := by
 variable {𝕜}
 variable {c : 𝕜} {x : E} {r : ℝ≥0}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖ₑ * ‖x‖ₑ / r := by
   letI : NontriviallyNormedField 𝕜 := ⟨c, hc⟩
-  rcases (zero_le r).eq_or_lt with rfl | hr
+  rcases eq_zero_or_pos r with rfl | hr
   · rw [ENNReal.coe_zero, ENNReal.div_zero (mul_ne_zero _ _)]
     · apply le_top
     · simpa using one_pos.trans hc

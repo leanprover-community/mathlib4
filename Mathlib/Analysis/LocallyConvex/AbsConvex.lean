@@ -201,37 +201,6 @@ theorem closedAbsConvexHull_eq_closure_absConvexHull {s : Set E} :
 
 end NormedField
 
-section NontriviallyNormedField
-
-variable (𝕜 E)
-variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] [ContinuousSMul 𝕜 E]
-
-theorem nhds_hasBasis_absConvex :
-    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
-  refine
-    (LocallyConvexSpace.convex_basis_zero 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs =>
-      ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
-  refine ⟨convexHull 𝕜 (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
-  refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull 𝕜 _), ?_⟩
-  refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
-  exact convex_convexHull 𝕜 (balancedCore 𝕜 s)
-
-variable [IsTopologicalAddGroup E]
-
-theorem nhds_hasBasis_absConvex_open [ZeroLEOneClass 𝕜] :
-    (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
-  refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
-  · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
-    refine ⟨interior s, ?_, interior_subset⟩
-    exact
-      ⟨mem_interior_iff_mem_nhds.mpr hs_nhds, isOpen_interior,
-        hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
-  rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
-  exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
-
-end NontriviallyNormedField
-
 section
 
 variable (𝕜) [NontriviallyNormedField 𝕜] [PartialOrder 𝕜]
@@ -252,18 +221,106 @@ theorem absConvexHull_eq_convexHull_balancedHull {s : Set E} :
       convex_absConvexHull)
 
 /-- In general, equality doesn't hold here - e.g. consider `s := {(-1, 1), (1, 1)}` in `ℝ²`. -/
-theorem balancedHull_convexHull_subseteq_absConvexHull {s : Set E} :
+theorem balancedHull_convexHull_subset_absConvexHull {s : Set E} :
     balancedHull 𝕜 (convexHull 𝕜 s) ⊆ absConvexHull 𝕜 s :=
   balanced_absConvexHull.balancedHull_subset_of_subset
     (convexHull_min subset_absConvexHull convex_absConvexHull)
 
+@[deprecated balancedHull_convexHull_subset_absConvexHull (since := "2026-05-23")]
+alias balancedHull_convexHull_subseteq_absConvexHull := balancedHull_convexHull_subset_absConvexHull
+
+variable [ZeroLEOneClass 𝕜] [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] [IsTopologicalAddGroup E]
+
+theorem IsOpen.absConvexHull {s : Set E} (hs : IsOpen s) (hzero : 0 ∈ s) :
+    IsOpen (absConvexHull 𝕜 s) := by
+  rw [absConvexHull_eq_convexHull_balancedHull]
+  exact hs.balancedHull hzero |>.convexHull
+
 end
+
+section NontriviallyNormedField
+
+variable (𝕜 E)
+variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] [ContinuousSMul 𝕜 E]
+
+theorem nhds_hasBasis_absConvex :
+    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
+  refine
+    (LocallyConvexSpace.convex_basis_zero 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs =>
+      ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
+  refine ⟨convexHull 𝕜 (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
+  refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull 𝕜 _), ?_⟩
+  refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
+  exact convex_convexHull 𝕜 (balancedCore 𝕜 s)
+
+variable [IsTopologicalAddGroup E] [ZeroLEOneClass 𝕜]
+
+theorem nhds_hasBasis_absConvex_open :
+    (𝓝 (0 : E)).HasBasis (fun s ↦ (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
+  refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
+  · intro s ⟨hs_nhds, hs_balanced, hs_convex⟩
+    refine ⟨interior s, ?_, interior_subset⟩
+    exact
+      ⟨mem_interior_iff_mem_nhds.mpr hs_nhds, isOpen_interior,
+        hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
+  intro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
+  exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
+
+theorem nhds_hasBasis_absConvex_closed :
+    (𝓝 (0 : E)).HasBasis (fun s ↦ s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ AbsConvex 𝕜 s) id := by
+  refine (nhds_basis_opens 0).to_hasBasis ?_
+    fun s ⟨hs_nhds, _, _⟩ ↦ ⟨interior s,
+      by simp [interior_subset, mem_interior_iff_mem_nhds.mpr hs_nhds]⟩
+  intro s ⟨hs_zero, hs_open⟩
+  obtain ⟨W, hW_open, hW_zero, hW_add⟩ :=
+    exists_open_nhds_zero_add_subset (hs_open.mem_nhds hs_zero)
+  obtain ⟨V, ⟨hV_zero, hV_open, hV_abs⟩, hVW⟩ :=
+    (nhds_hasBasis_absConvex_open 𝕜 E).mem_iff.mp (hW_open.mem_nhds hW_zero)
+  exact ⟨closure V,
+    ⟨Filter.mem_of_superset (hV_open.mem_nhds hV_zero) subset_closure, isClosed_closure,
+     hV_abs.closure⟩,
+    (closure_subset_add_self_of_mem_nhds_zero (hV_open.mem_nhds hV_zero)).trans
+      ((add_subset_add hVW hVW).trans hW_add)⟩
+
+theorem exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset [FirstCountableTopology E] :
+    ∃ x : ℕ → Set E, (𝓝 (0 : E)).HasAntitoneBasis x ∧
+      ∀ n, IsOpen (x n) ∧ AbsConvex 𝕜 (x n) ∧ x (n + 1) + x (n + 1) ⊆ x n ∧
+        closure (x (n + 1)) ⊆ x n := by
+  obtain ⟨u, hu_basis, -⟩ := IsTopologicalAddGroup.exists_antitone_basis_nhds_zero E
+  have hu_zero (n : ℕ) : 0 ∈ interior (u n) :=
+    mem_interior_iff_mem_nhds.mpr (hu_basis.mem_of_mem trivial)
+  let v (n : ℕ) := absConvexHull 𝕜 (interior (u n))
+  have hv_open (n : ℕ) : IsOpen (v n) := isOpen_interior.absConvexHull 𝕜 (hu_zero n)
+  have hv_nhds (n : ℕ) : v n ∈ 𝓝 0 := (hv_open n).mem_nhds (subset_absConvexHull (hu_zero n))
+  have hv_basis : (𝓝 0).HasAntitoneBasis v := by
+    refine ⟨hu_basis.to_hasBasis ?_ ?_,
+      fun _ _ hij ↦ absConvexHull_mono (interior_mono (hu_basis.antitone hij))⟩
+    · intro n _
+      obtain ⟨W, ⟨hW_nhds, hW_abs⟩, hWn⟩ :=
+        (nhds_hasBasis_absConvex 𝕜 E).mem_iff.mp (hu_basis.mem_of_mem trivial)
+      obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp hW_nhds
+      exact ⟨m, trivial, (absConvexHull_min (interior_subset.trans hm) hW_abs).trans hWn⟩
+    · intro n _
+      obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp (isOpen_interior.mem_nhds (hu_zero n))
+      exact ⟨m, trivial, hm.trans subset_absConvexHull⟩
+  obtain ⟨φ, -, hφ_add, hφ_basis⟩ := hv_basis.subbasis_with_rel
+    (r := fun i j ↦ v j + v j ⊆ v i) fun m ↦ by
+      obtain ⟨W, hW_open, hW_zero, hW_add⟩ := exists_open_nhds_zero_add_subset (hv_nhds m)
+      obtain ⟨N, hN⟩ := hv_basis.mem_iff.mp (hW_open.mem_nhds hW_zero)
+      filter_upwards [Filter.eventually_ge_atTop N] with M hM
+      exact (add_subset_add ((hv_basis.antitone hM).trans hN)
+        ((hv_basis.antitone hM).trans hN)).trans hW_add
+  exact ⟨v ∘ φ, hφ_basis, fun n ↦ ⟨hv_open (φ n), absConvex_absConvexHull, hφ_add (by simp),
+    (closure_subset_add_self_of_mem_nhds_zero (hv_nhds (φ (n + 1)))).trans
+        (hφ_add n.lt_succ_self)⟩⟩
+
+end NontriviallyNormedField
 
 section
 
 variable [AddCommGroup E] [Module ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
     balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
   intro a ha

@@ -244,12 +244,12 @@ section Lim
 
 
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
-noncomputable def lim [Nonempty X] (f : Filter X) : X :=
+noncomputable def Filter.lim [Nonempty X] (f : Filter X) : X :=
   Classical.epsilon fun x => f ≤ 𝓝 x
 
-/-- If `f` is a filter in `α` and `g : α → X` is a function, then `limUnder f g` is a limit of `g`
-at `f`, if it exists. -/
-noncomputable def limUnder {α : Type*} [Nonempty X] (f : Filter α) (g : α → X) : X :=
+/-- If `f` is a filter in `α` and `g : α → X` is a function, then `Filter.limUnder f g` is a limit
+of `g` at `f`, if it exists. -/
+noncomputable def Filter.limUnder {α : Type*} [Nonempty X] (f : Filter α) (g : α → X) : X :=
   lim (f.map g)
 
 end Lim
@@ -279,6 +279,7 @@ def IsCompact (s : Set X) :=
 variable (X) in
 /-- Type class for compact spaces. Separation is sometimes included in the definition, especially
 in the French literature, but we do not include it here. -/
+@[wikidata Q381892]
 class CompactSpace : Prop where
   /-- In a compact space, `Set.univ` is a compact set. -/
   isCompact_univ : IsCompact (Set.univ : Set X)

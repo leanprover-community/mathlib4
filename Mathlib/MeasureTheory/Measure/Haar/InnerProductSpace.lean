@@ -100,11 +100,10 @@ equivalence between the space and the Euclidean space of the same dimension. -/
 noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     F ≃ᵐ EuclideanSpace ℝ ι := b.repr.toHomeomorph.toMeasurableEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
 theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.measurableEquiv volume volume := by
-  convert (b.measurableEquiv.symm.measurable.measurePreserving _).symm
+  convert! (b.measurableEquiv.symm.measurable.measurePreserving _).symm
   rw [← (EuclideanSpace.basisFun ι ℝ).addHaar_eq_volume]
   erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
   exact b.addHaar_eq_volume.symm
@@ -119,33 +118,13 @@ section PiLp
 
 variable (ι : Type*)
 
-/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
-@[deprecated MeasurableEquiv.toLp (since := "2025-11-02")]
-protected def EuclideanSpace.measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) :=
-  (MeasurableEquiv.toLp 2 (ι → ℝ)).symm
-
-set_option linter.deprecated false in
-@[deprecated MeasurableEquiv.coe_toLp (since := "2025-11-02")]
-theorem EuclideanSpace.measurableEquiv_toEquiv :
-    (EuclideanSpace.measurableEquiv ι).toEquiv = WithLp.equiv 2 (ι → ℝ) := rfl
-
-set_option linter.deprecated false in
-@[deprecated MeasurableEquiv.coe_toLp (since := "2025-11-02")]
-theorem EuclideanSpace.coe_measurableEquiv :
-    ⇑(EuclideanSpace.measurableEquiv ι) = ofLp := rfl
-
-set_option linter.deprecated false in
-@[deprecated MeasurableEquiv.coe_toLp_symm (since := "2025-11-02")]
-theorem EuclideanSpace.coe_measurableEquiv_symm :
-    ⇑(EuclideanSpace.measurableEquiv ι).symm = toLp 2 := rfl
-
 variable [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
 theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
     MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
   suffices volume = map (MeasurableEquiv.toLp 2 (ι → ℝ)) volume by
-    convert ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
+    convert! ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
     MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
@@ -210,7 +189,7 @@ private noncomputable def volumePreservingSymmMeasurableEquivToLpProdAux :
 theorem WithLp.volume_preserving_symm_measurableEquiv_toLp_prod :
     MeasurePreserving (MeasurableEquiv.toLp 2 (U × V)).symm := by
   suffices MeasurePreserving (volumePreservingSymmMeasurableEquivToLpProdAux U V) by
-    convert this
+    convert! this
     ext uv
     <;> simp [volumePreservingSymmMeasurableEquivToLpProdAux, MeasurableEquiv.coe_sumPiEquivProdPi,
       LinearEquiv.prodCongr_symm, MeasurableEquiv.prodCongr]
@@ -233,3 +212,21 @@ theorem WithLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (U × V)) :=
   (volume_preserving_symm_measurableEquiv_toLp_prod U V).symm
 
 end Prod
+
+/-- Volume on a 1-dimensional real vector space is equivalent to a scaled volume on ℝ. -/
+theorem MeasureTheory.volume_eq_of_finrank_eq_one (h : Module.finrank ℝ E = 1) {v : E}
+    (hv : v ≠ 0) : (volume : Measure E) = ‖v‖ₑ • (volume : Measure ℝ).map (· • v) := calc
+  volume = ((volume : Measure ℝ).map (‖v‖⁻¹ • ·)).map (· • v) := by
+    have hv' : Submodule.span ℝ {‖v‖⁻¹ • v} = ⊤ := by
+      rw [Submodule.span_singleton_eq_top_iff]
+      apply exists_smul_eq_of_finrank_eq_one h
+      simpa
+    let f : ℝ ≃ₗᵢ[ℝ] E := (LinearIsometryEquiv.toSpanUnitSingleton (‖v‖⁻¹ • v)
+      (by simp [norm_smul, hv])).trans (LinearIsometryEquiv.ofTop E _ hv')
+    rw [map_map (by fun_prop) (by fun_prop)]
+    convert! f.measurePreserving.map_eq.symm
+    ext x
+    simp [f, mul_comm, smul_smul]
+  _ = ‖v‖ₑ • (volume : Measure ℝ).map (· • v) := by
+    rw [map_addHaar_smul _ (by simpa using hv)]
+    simp

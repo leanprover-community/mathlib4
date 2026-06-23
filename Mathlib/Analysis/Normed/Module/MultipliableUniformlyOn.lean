@@ -82,7 +82,6 @@ namespace Summable
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] [TopologicalSpace α]
   {f : ι → α → R}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a sequence of continuous functions `f i x` on an open compact `K` have norms eventually
 bounded by a summable function, then `∏' i, (1 + f i x)` is uniformly convergent on `K`. -/
 lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
@@ -100,7 +99,7 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
       filter_upwards [h] with i hi using fun x ↦ hi x x.2
     have hM : Multipliable fun i ↦ 1 + f' i :=
       multipliable_one_add_of_summable (hu.of_norm_bounded_eventually (by simpa using hf'_bd))
-    convert ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
+    convert! ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
     · simp [f']
     · exact funext fun k ↦ ContinuousMap.tprod_apply hM k
 

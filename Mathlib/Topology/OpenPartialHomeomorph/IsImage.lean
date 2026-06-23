@@ -171,7 +171,7 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
     h.preimage_eq' ▸ e.isOpen_inter_preimage hs⟩
 
 /-- Restrict an `OpenPartialHomeomorph` to a pair of corresponding open sets. -/
-@[simps! -fullyApplied apply symm_apply toPartialEquiv]
+@[simps! -fullyApplied apply symm_apply toPartialHomeomorph]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : OpenPartialHomeomorph X Y where
   toPartialEquiv := h.toPartialEquiv.restr
   open_source := hs
@@ -315,7 +315,8 @@ theorem eqOnSource_iff (e e' : OpenPartialHomeomorph X Y) :
 
 /-- `EqOnSource` is an equivalence relation. -/
 instance eqOnSourceSetoid : Setoid (OpenPartialHomeomorph X Y) :=
-  { PartialEquiv.eqOnSourceSetoid.comap toPartialEquiv with r := EqOnSource }
+  { PartialEquiv.eqOnSourceSetoid.comap
+    (fun x ↦ (toPartialHomeomorph x).toPartialEquiv) with r := EqOnSource }
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _
 
@@ -383,20 +384,15 @@ variable (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
 
 /- Register as simp lemmas that the fields of an open partial homeomorphism built from a
 homeomorphism correspond to the fields of the original homeomorphism. -/
+
 @[simp, mfld_simps]
 theorem refl_toOpenPartialHomeomorph :
     (Homeomorph.refl X).toOpenPartialHomeomorph = OpenPartialHomeomorph.refl X :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  refl_toPartialHomeomorph := refl_toOpenPartialHomeomorph
-
 @[simp, mfld_simps]
 theorem symm_toOpenPartialHomeomorph :
     e.symm.toOpenPartialHomeomorph = e.toOpenPartialHomeomorph.symm :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  symm_toPartialHomeomorph := symm_toOpenPartialHomeomorph
 
 end Homeomorph

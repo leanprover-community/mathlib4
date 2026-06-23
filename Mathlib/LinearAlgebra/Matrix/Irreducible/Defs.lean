@@ -46,7 +46,7 @@ matrix (like powers) into graph-theoretic properties of its quiver (like the exi
 
 ## Implementation notes
 
-Throughout we work over a `LinearOrderedRing R`. Some results require stronger assumptions,
+Throughout we work over a linearly ordered ring `R`. Some results require stronger assumptions,
 like `PosMulStrictMono R` or `Nontrivial R`. Some statements expand matrix powers and thus require
 `[DecidableEq n]` to reason about finite sums.
 
@@ -123,7 +123,7 @@ theorem pow_apply_pos_iff_nonempty_path
     refine ⟨fun h_pos ↦ ?_, fun ⟨p, hp⟩ ↦ ?_⟩
     · rcases eq_or_ne i j with rfl | h_eq
       · exact ⟨⟨Quiver.Path.nil, rfl⟩⟩
-      · simp_all only [pow_zero, ne_eq, not_false_eq_true, one_apply_ne, lt_self_iff_false]
+      · simp_all
     · simp [Quiver.Path.eq_of_length_zero p hp]
   | succ m ih =>
     rw [pow_succ, mul_apply]

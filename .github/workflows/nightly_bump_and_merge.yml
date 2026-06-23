@@ -13,6 +13,12 @@ on:
     # and 15 minutes after batteries `nightly-testing` branch bumps its toolchain.
   workflow_dispatch:
 
+# Serialize runs so an overlapping scheduled run can't race the toolchain commit/push.
+# Never cancel an in-flight run: it may be mid-push of the bump or a pr-testing merge.
+concurrency:
+  group: nightly-bump-and-merge
+  cancel-in-progress: false
+
 jobs:
   bump-and-merge:
     runs-on: ubuntu-latest
@@ -33,14 +39,14 @@ jobs:
     # This token is masked by the token minting action and will not be logged accidentally.
 
     - name: Checkout nightly-testing branch
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         ref: nightly-testing
         fetch-depth: 0  # Fetch all branches and history
         token: ${{ steps.app-token.outputs.token }}
 
     - name: Checkout local actions
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         ref: ${{ github.workflow_sha }}
         fetch-depth: 1
@@ -56,7 +62,7 @@ jobs:
         git config --global user.email "mathlib-nightly-testing[bot]@users.noreply.github.com"
 
     - name: Configure Lean
-      uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+      uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
       with:
         auto-config: false
         use-github-cache: false
@@ -131,8 +137,18 @@ jobs:
         # Navigate to the cloned repository
         cd lean4-nightly || exit 1
 
-        # Fetch the $OLD tag
-        git fetch --depth=1 origin tag "$OLD" --no-tags
+        # Fetch the $OLD tag.
+        # If $OLD is not a tag in lean4-nightly (e.g. nightly-testing is currently on an
+        # rc or stable toolchain like `v4.31.0-rc1`, which only exists in leanprover/lean4),
+        # we can't compute the PR delta. Skip lean-pr-testing adaptation discovery for this
+        # bump rather than failing: the toolchain bump itself has already been committed and
+        # must still be pushed (see the `Push all changes` step), otherwise nightly-testing
+        # would be stuck on the rc/stable toolchain forever.
+        if ! git fetch --depth=1 origin tag "$OLD" --no-tags 2>/dev/null; then
+          echo "::notice::OLD toolchain '$OLD' is not a tag in lean4-nightly (rc/stable?). Skipping lean-pr-testing adaptation discovery for this bump."
+          printf 'prs<<EOF\n\nEOF\n' >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
         # Fetch the $NEW tag
         git fetch origin tag "$NEW" --no-tags
 
@@ -337,10 +353,13 @@ jobs:
             IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
             MESSAGE+="- [lean-pr-testing-${PR_NUMBER}](${GITHUB_DIFF}) (adaptations for lean#${PR_NUMBER})"$'\n\n'
             MESSAGE+=$'```bash\n'
-            MESSAGE+=$'tmp=$(mktemp)\n'
-            MESSAGE+=$'wget -qO "$tmp" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/merge-lean-testing-pr.sh\n'
-            MESSAGE+=$'chmod +x "$tmp"\n'
-            MESSAGE+="\"\$tmp\" ${PR_NUMBER}"$'\n'
+            MESSAGE+=$'tmpscript=$(mktemp)\n'
+            MESSAGE+=$'wget -qO "$tmpscript" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/merge-lean-testing-pr.sh\n'
+            MESSAGE+=$'chmod +x "$tmpscript"\n'
+            MESSAGE+=$'tmpdir=$(mktemp -d)\n'
+            MESSAGE+=$'git clone --depth=1 --filter=blob:none https://github.com/leanprover-community/mathlib4 "$tmpdir"\n'
+            MESSAGE+=$'cd "$tmpdir"\n'
+            MESSAGE+="\"\$tmpscript\" ${PR_NUMBER}"$'\n'
             MESSAGE+=$'```\n\n'
           done
         else
@@ -352,12 +371,12 @@ jobs:
 
     - name: Send message on Zulip
       if: steps.commit-bump.outputs.bumped == 'true' && env.branches_exist == 'true'
-      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'nightly-testing'
+        to: 'nightly-testing-mathlib'
         type: 'stream'
         topic: 'Mergeable lean testing PRs'
         content: |

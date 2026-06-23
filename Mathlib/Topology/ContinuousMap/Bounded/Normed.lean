@@ -86,7 +86,7 @@ variable {f}
 
 /-- The norm of a function is controlled by the supremum of the pointwise norms. -/
 theorem norm_le (C0 : (0 : ℝ) ≤ C) : ‖f‖ ≤ C ↔ ∀ x : α, ‖f x‖ ≤ C := by
-  simpa using @dist_le _ _ _ _ f 0 _ C0
+  simpa using! @dist_le _ _ _ _ f 0 _ C0
 
 theorem norm_le_of_nonempty [Nonempty α] {f : α →ᵇ β} {M : ℝ} : ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M := by
   simp_rw [norm_def, ← dist_zero_right]
@@ -230,11 +230,13 @@ theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
   Subtype.ext <| (norm_eq_iSup_norm f).trans <| by simp_rw [val_eq_coe, NNReal.coe_iSup, coe_nnnorm]
 
 theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ := by
-  simpa only [← edist_zero_right] using edist_eq_iSup
+  simpa only [← edist_zero_right] using! edist_eq_iSup
 
-theorem abs_diff_coe_le_dist : ‖f x - g x‖ ≤ dist f g := by
+theorem abs_sub_coe_le_dist : ‖f x - g x‖ ≤ dist f g := by
   rw [dist_eq_norm]
   exact (f - g).norm_coe_le_norm x
+
+@[deprecated (since := "2026-06-03")] alias abs_diff_coe_le_dist := abs_sub_coe_le_dist
 
 theorem coe_le_coe_add_dist {f g : α →ᵇ ℝ} : f x ≤ g x + dist f g :=
   sub_le_iff_le_add'.1 <| (abs_le.1 <| @dist_coe_le_dist _ _ _ _ f g x).2
@@ -303,6 +305,43 @@ instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) whe
   norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
     (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
       (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
+
+/-- If the product of bounded continuous functions is zero, then the norm of their sum is the
+maximum of their norms. -/
+lemma norm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+    ‖f + g‖ = max ‖f‖ ‖g‖ := by
+  have hfg : ∀ x, f x = 0 ∨ g x = 0 := by simpa [DFunLike.ext_iff, mul_eq_zero] using h
+  have hfg' x : ‖(f + g) x‖ = max ‖f x‖ ‖g x‖ := by obtain (h | h) := hfg x <;> simp [h]
+  have key (c : ℝ) (hc : 0 ≤ c) : ‖f + g‖ ≤ c ↔ max ‖f‖ ‖g‖ ≤ c := by
+    simp_rw [norm_le hc, hfg', max_le_iff, norm_le hc, forall_and]
+  exact le_antisymm (by rw [key]; positivity) (by rw [← key]; positivity)
+
+/-- If the product of bounded continuous functions is zero, then the norm of their sum is the
+maximum of their norms. -/
+lemma nnnorm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+    ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_add_eq_max h
+
+lemma norm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+    ‖f - g‖ = max ‖f‖ ‖g‖ := by
+  simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
+
+lemma nnnorm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+    ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_sub_eq_max h
+
+open scoped Function in
+/-- If the pairwise products of bounded continuous functions are all zero, then the norm of their
+sum is the maximum of their norms. -/
+lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ R)} (s : Finset ι)
+    (h : Pairwise ((· * · = 0) on f)) :
+    ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert j s hj ih =>
+    suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnnorm_add_eq_max this
+    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
 
 end Seminormed
 

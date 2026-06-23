@@ -220,7 +220,7 @@ theorem MemLp.integral_indicator_norm_ge_le (hf : MemLp f 1 μ) (hmeas : Strongl
   obtain ⟨M, hM⟩ := this (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
   simp only [sub_zero] at hM
   refine ⟨M, ?_⟩
-  convert hM M le_rfl
+  convert! hM M le_rfl
   simp only [coe_nnnorm, ENNReal.ofReal_eq_coe_nnreal (norm_nonneg _)]
   rfl
 
@@ -267,7 +267,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
     rw [this, eLpNormEssSup_measure_zero]
   exact measurableSet_le measurable_const hmeas.nnnorm.measurable.subtype_coe
 
-/- This lemma is slightly weaker than `MeasureTheory.MemLp.eLpNorm_indicator_norm_ge_pos_le` as the
+/-- This lemma is slightly weaker than `MeasureTheory.MemLp.eLpNorm_indicator_norm_ge_pos_le` as the
 latter provides `0 < M`. -/
 theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : StronglyMeasurable f) {ε : ℝ}
     (hε : 0 < ε) : ∃ M : ℝ, eLpNorm ({ x | M ≤ ‖f x‖₊ }.indicator f) p μ ≤ ENNReal.ofReal ε := by
@@ -283,14 +283,14 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
   refine ⟨M ^ (1 / p.toReal), ?_⟩
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top, ← ENNReal.rpow_one (.ofReal ε)]
   conv_rhs => rw [← mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm]
-  rw [ENNReal.rpow_mul,
-    ENNReal.rpow_le_rpow_iff (one_div_pos.2 <| ENNReal.toReal_pos hp_ne_zero hp_ne_top),
-    ENNReal.ofReal_rpow_of_pos hε]
-  convert hM using 3 with x
+  rw [ENNReal.rpow_mul]
+  gcongr
+  rw [ENNReal.ofReal_rpow_of_pos hε]
+  convert! hM using 3 with x
   rw [enorm_indicator_eq_indicator_enorm, enorm_indicator_eq_indicator_enorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
     rw [coe_nnnorm, coe_nnnorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
-      ← Real.rpow_le_rpow_iff hM' (Real.rpow_nonneg (norm_nonneg _) _)
+      ← Real.rpow_le_rpow_iff hM' (by positivity)
         (one_div_pos.2 <| ENNReal.toReal_pos hp_ne_zero hp_ne_top), ← Real.rpow_mul (norm_nonneg _),
       mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm, Real.rpow_one]
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
@@ -338,8 +338,9 @@ theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε :
     ← ENNReal.le_div_iff_mul_le (Or.inl _) (Or.inl ENNReal.ofReal_ne_top)]
   · rw [ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hp hp_top)]
     refine le_trans hμ ?_
-    rw [← ENNReal.ofReal_rpow_of_pos (div_pos hε hM),
-      ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp hp_top), ENNReal.ofReal_div_of_pos hM]
+    rw [← ENNReal.ofReal_rpow_of_pos (div_pos hε hM)]
+    gcongr
+    rw [ENNReal.ofReal_div_of_pos hM]
   · simpa only [ENNReal.ofReal_eq_zero, not_le, Ne]
 
 section
@@ -396,7 +397,7 @@ theorem MemLp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf :
   obtain ⟨⟨f', hf', heq⟩, _⟩ := hf
   obtain ⟨δ, hδpos, hδ⟩ := (hℒp.ae_eq heq).eLpNorm_indicator_le_of_meas hp_one hp_top hf' hε
   refine ⟨δ, hδpos, fun s hs hμs => ?_⟩
-  convert hδ s hs hμs using 1
+  convert! hδ s hs hμs using 1
   rw [eLpNorm_indicator_eq_eLpNorm_restrict hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
   exact eLpNorm_congr_ae heq.restrict
 
@@ -415,7 +416,7 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
   · obtain ⟨i⟩ := hι
     obtain ⟨δ, hδpos, hδ⟩ := (hf i).eLpNorm_indicator_le hp_one hp_top hε
     refine ⟨δ, hδpos, fun j s hs hμs => ?_⟩
-    convert hδ s hs hμs
+    convert! hδ s hs hμs
   · exact ⟨1, zero_lt_one, fun i => False.elim <| hι <| Nonempty.intro i⟩
 
 /-- This lemma is less general than `MeasureTheory.unifIntegrable_finite` which applies to
@@ -501,8 +502,8 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
       ENNReal.ofReal_rpow_of_nonneg ENNReal.toReal_nonneg hdivp, ← ENNReal.ofReal_mul, mul_assoc]
     · refine ENNReal.ofReal_le_ofReal (mul_le_of_le_one_right hε'.le ?_)
       rw [mul_comm, mul_one_div, div_le_one]
-      · refine Real.rpow_le_rpow ENNReal.toReal_nonneg
-          (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le ?_) hdivp
+      · gcongr
+        refine (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le ?_)
         rw [ENNReal.ofReal_coe_nnreal, coe_measureUnivNNReal]
         exact measure_mono (Set.subset_univ _)
       · exact Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
@@ -529,7 +530,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
     exact fun n => (hf n).ae_eq_mk
   filter_upwards [hfg, h_ae_forall_eq, hg.1.ae_eq_mk] with x hx_tendsto hxf_eq hxg_eq
   rw [← hxg_eq]
-  convert hx_tendsto using 1
+  convert! hx_tendsto using 1
   ext1 n
   exact (hxf_eq n).symm
 
@@ -649,7 +650,6 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
     _ ≤ ENNReal.ofReal ε := by
       rw [← ENNReal.ofReal_add (half_pos hε).le (half_pos hε).le, add_halves]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β}
     (hf : ∀ i, AEStronglyMeasurable (f i) μ)
     (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
@@ -823,7 +823,6 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
   · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
     rwa [Set.mem_setOf, hx] at hfx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma is superseded by `UniformIntegrable.spec` which does not require measurability. -/
 theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
     (hfu : UniformIntegrable f p μ) {ε : ℝ} (hε : 0 < ε) :
@@ -918,7 +917,7 @@ theorem uniformIntegrable_average
 /-- The averaging of a uniformly integrable real-valued sequence is also uniformly integrable. -/
 theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : UniformIntegrable f p μ) :
     UniformIntegrable (fun n => (∑ i ∈ Finset.range n, f i) / (n : α → ℝ)) p μ := by
-  convert uniformIntegrable_average hp hf using 2 with n
+  convert! uniformIntegrable_average hp hf using 2 with n
   ext x
   simp [div_eq_inv_mul]
 

@@ -33,7 +33,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
     (h : μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ ν univ = c}) : Ergodic f μ := by
   have hf : MeasurePreserving f μ μ := h.1.1
   rcases eq_or_ne c 0 with rfl | hc₀
-  · convert zero_measure hf.measurable
+  · convert! zero_measure hf.measurable
     rw [← measure_univ_eq_zero, h.1.2]
   · refine ⟨hf, ⟨?_⟩⟩
     have : IsFiniteMeasure μ := by
@@ -43,13 +43,13 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
     have {s : Set X} (hsm : MeasurableSet s) (hfs : f ⁻¹' s = s) (hμs : μ s ≠ 0) :
         c • μ[|s] ∈ S := by
       refine ⟨.smul_measure (.smul_measure ?_ _) c, ?_⟩
-      · convert hf.restrict_preimage hsm
+      · convert! hf.restrict_preimage hsm
         exact hfs.symm
       · rw [Measure.smul_apply, (cond_isProbabilityMeasure hμs).1, smul_eq_mul, mul_one]
     intro s hsm hfs
     by_contra H
     obtain ⟨hs, hs'⟩ : μ s ≠ 0 ∧ μ sᶜ ≠ 0 := by
-      simpa [eventuallyConst_set, ae_iff, and_comm] using H
+      simpa [eventuallyConst_set, ae_iff, and_comm] using! H
     have hcond : c • μ[|s] = μ := by
       apply h.2 (this hsm hfs hs) (this hsm.compl (by rw [preimage_compl, hfs]) hs')
       refine ⟨μ s / c, μ sᶜ / c, ENNReal.div_pos hs hc, ENNReal.div_pos hs' hc, ?_, ?_⟩

@@ -63,7 +63,7 @@ structure Path (x y : X) extends C(I, X) where
 
 instance Path.instFunLike : FunLike (Path x y) I X where
   coe γ := ⇑γ.toContinuousMap
-  coe_injective' γ₁ γ₂ h := by
+  coe_injective γ₁ γ₂ h := by
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 
@@ -215,9 +215,6 @@ theorem extend_apply {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ∈ (Icc 0 1 : Set ℝ)) : γ.extend t = γ ⟨t, ht⟩ :=
   IccExtend_of_mem _ γ ht
 
-@[deprecated (since := "2025-11-05")]
-alias extend_extends := extend_apply
-
 theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
@@ -271,7 +268,6 @@ theorem ofLine_extend (γ : Path x y) : ofLine (by fun_prop) (extend_zero γ) (e
 
 attribute [local simp] Iic_def
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
@@ -292,7 +288,6 @@ theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
       else γ' ⟨2 * t - 1, two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t.2.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> rw [extend_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.symm.trans γ.symm := by
   ext t
@@ -327,7 +322,6 @@ theorem refl_trans_refl {a : X} :
   ext
   simp [Path.trans]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
     range (γ₁.trans γ₂) = range γ₁ ∪ range γ₂ := by
   rw [← extend_range, ← image_univ, ← Iic_union_Ici (a := 1 / 2), image_union,
@@ -392,21 +386,10 @@ theorem cast_symm {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a
     (γ.symm).cast hb ha = (γ.cast ha hb).symm :=
   rfl
 
-@[deprecated cast_symm (since := "2025-11-13")]
-theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
-    (γ.cast ha hb).symm = γ.symm.cast hb ha :=
-  rfl
-
 @[simp]
 theorem cast_trans {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.trans γ').cast ha hc = (γ.cast ha hb).trans (γ'.cast hb hc) :=
-  rfl
-
-@[deprecated cast_trans (since := "2025-11-13")]
-theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
-    (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
-    (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
   rfl
 
 @[simp]
@@ -602,11 +585,11 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
 
 theorem truncate_zero_zero {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
-  convert γ.truncate_self 0
+  convert! γ.truncate_self 0
 
 theorem truncate_one_one {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
-  convert γ.truncate_self 1
+  convert! γ.truncate_self 1
 
 @[simp]
 theorem truncate_zero_one {a b : X} (γ : Path a b) :

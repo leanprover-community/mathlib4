@@ -50,7 +50,7 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
 theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ := by
   simpa only [lintegral_zero, zero_add] using
-    lintegral_add_mul_meas_add_le_le_lintegral (ae_of_all _ fun x => zero_le (f x)) hf ε
+    lintegral_add_mul_meas_add_le_le_lintegral (ae_of_all _ fun x => zero_le) hf ε
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. For a version assuming
 `AEMeasurable`, see `mul_meas_ge_le_lintegral₀`. -/

@@ -93,7 +93,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     rw [inv_mul_cancel_left₀ (norm_ne_zero_iff.mpr h)]
     specialize smul_le r⁻¹ (r • x)
     rw [norm_inv] at smul_le
-    convert smul_le
+    convert! smul_le
     simp [h]
 
 end Of
@@ -114,7 +114,7 @@ variable [SMul 𝕜 E]
 
 instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨_⟩⟩
     rcases g with ⟨⟨_⟩⟩
     congr
@@ -182,7 +182,6 @@ theorem coe_add (p q : Seminorm 𝕜 E) : ⇑(p + q) = p + q :=
 theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
@@ -343,7 +342,7 @@ theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (ha
   exact mul_le_mul hab (hpq x) (apply_nonneg p x) (NNReal.coe_nonneg b)
 
 theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
-    s.sup p x = ↑(s.sup fun i => ⟨p i x, apply_nonneg (p i) x⟩ : ℝ≥0) := by
+    s.sup p x = ↑(s.sup fun i => NNReal.mk (p i x) (apply_nonneg (p i) x)) := by
   induction s using Finset.cons_induction_on with
   | empty =>
     rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
@@ -374,7 +373,7 @@ theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p
   classical
   refine Finset.sup_le_iff.mpr ?_
   intro i hi
-  rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
+  rw [Finset.sum_eq_sum_sdiff_singleton_add hi, le_add_iff_nonneg_left]
   exact bot_le
 
 theorem finset_sup_apply_le {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 ≤ a)
@@ -387,7 +386,6 @@ theorem le_finset_sup_apply {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E}
     (hi : i ∈ s) : p i x ≤ s.sup p x :=
   (Finset.le_sup hi : p i ≤ s.sup p) x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finset_sup_apply_lt {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 < a)
     (h : ∀ i, i ∈ s → p i x < a) : s.sup p x < a := by
   lift a to ℝ≥0 using ha.le
@@ -691,9 +689,11 @@ theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H :
   | cons _ _ _ hs ih =>
     simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, inf_eq_inter, ih]
 
+@[gcongr]
 theorem ball_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : p.ball x r₁ ⊆ p.ball x r₂ :=
   fun _ (hx : _ < _) => hx.trans_le h
 
+@[gcongr]
 theorem closedBall_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) :
     p.closedBall x r₁ ⊆ p.closedBall x r₂ := fun _ (hx : _ ≤ _) => hx.trans h
 
@@ -807,14 +807,12 @@ theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) :=
     _ ≤ p y := mul_le_of_le_one_left (apply_nonneg p _) ha
     _ ≤ r := by rwa [mem_closedBall_zero] at hy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 < r) : ball (s.sup p) x r = ⋂ i ∈ s, ball (p i) x r := by
   lift r to NNReal using hr.le
   simp_rw [ball, iInter_setOf, finset_sup_apply, NNReal.coe_lt_coe,
     Finset.sup_lt_iff (show ⊥ < r from hr), ← NNReal.coe_lt_coe, NNReal.coe_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 ≤ r) : closedBall (s.sup p) x r = ⋂ i ∈ s, closedBall (p i) x r := by
   lift r to NNReal using hr
@@ -1017,7 +1015,7 @@ variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E)
 
 /-- Seminorm-balls are convex. -/
 theorem convex_ball : Convex ℝ (ball p x r) := by
-  convert (p.convexOn.translate_left (-x)).convex_lt r
+  convert! (p.convexOn.translate_left (-x)).convex_lt r
   ext y
   rw [preimage_univ, sep_univ, p.mem_ball, sub_eq_add_neg]
   rfl
@@ -1081,8 +1079,8 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
     rcases le_or_gt r 0 with hr | hr
     · use 1; simpa using hr.trans_lt hε
     · simpa [lt_div_iff₀ hr] using exists_norm_lt 𝕜 (div_pos hε hr)
-  rw [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp
-  exact mem_of_superset hp <| p.closedBall_mono hk.le
+  grw [← hk]
+  rwa [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp
 
 /-- A seminorm is continuous at `0` if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
@@ -1176,10 +1174,24 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   rw [ball_zero_eq]
   exact isOpen_lt hq continuous_const
 
+/-- The sum over a finite set of continuous seminorms is continuous. -/
+theorem continuous_finsetSum [TopologicalSpace E] [IsTopologicalAddGroup E]
+    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
+    Continuous ((∑ i ∈ s, p i : Seminorm 𝕝 E) : E → ℝ) := by
+  change Continuous (fun x ↦ coeFnAddMonoidHom _ _ (∑ i ∈ s, p i) x)
+  simp_rw [map_sum, Finset.sum_apply]
+  exact _root_.continuous_finsetSum s hp
+
+/-- The supremum over a finite set of continuous seminorms is continuous. -/
+theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
+    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
+    Continuous ((s.sup p : Seminorm 𝕝 E) : E → ℝ) := by
+  exact continuous_of_le (continuous_finsetSum hp) (finset_sup_le_sum p s)
+
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
   have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
-  simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
+  simpa only [p.ball_zero_eq] using! this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
@@ -1195,7 +1207,7 @@ lemma uniformSpace_eq_of_hasBasis
     exact p.continuous' hr
   · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
       p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
-    simpa only [subset_def, mem_ball_zero] using h₂
+    simpa only [subset_def, mem_ball_zero] using! h₂
 
 lemma uniformity_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
@@ -1238,7 +1250,7 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
     have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring
     rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one, this,
         ← div_eq_inv_mul]
-    exact mul_le_mul_of_nonneg_right hn.1 (norm_nonneg _)
+    gcongr; exact hn.1
 
 /-- Let `p` be a seminorm on a vector space over a `NormedField`.
 If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` can be

@@ -136,7 +136,8 @@ instance [Injective X] : HasInjectiveDimensionLT X 1 := by
   · simp at hi
   · exact e.eq_zero_of_injective
 
-lemma injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
+variable {X} in
+lemma injective_iff_subsingleton_ext_one [HasExt.{w} C] :
     Injective X ↔ ∀ ⦃Y : C⦄, Subsingleton (Ext Y X 1) := by
   refine ⟨fun h ↦ HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl),
     fun h ↦ ⟨fun f g _ ↦ ?_⟩⟩
@@ -145,11 +146,15 @@ lemma injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
   obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
   exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
 
-lemma injective_iff_hasInjectiveDimensionLT_one (X : C) :
+variable {X} in
+lemma injective_iff_hasInjectiveDimensionLT_one :
     Injective X ↔ HasInjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ injective_iff_subsingleton_ext_one.2
     (HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
+
+instance (priority := low) [HasInjectiveDimensionLT X 1] : Injective X :=
+  injective_iff_hasInjectiveDimensionLT_one.mpr ‹_›
 
 end
 
@@ -271,7 +276,6 @@ lemma Retract.injectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasInjectiveDimensionLT i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
     injectiveDimension X < n ↔ HasInjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
@@ -313,7 +317,7 @@ lemma injectiveDimension_ne_top_iff (X : C) :
       exact ENat.coe_ne_top _ ((WithBot.coe_eq_coe).1 hn)
     | coe d =>
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
-      exact ⟨d, by simpa only [← injectiveDimension_le_iff] using hd.le⟩
+      exact ⟨d, by simpa only [← injectiveDimension_le_iff] using! hd.le⟩
 
 end CategoryTheory
 

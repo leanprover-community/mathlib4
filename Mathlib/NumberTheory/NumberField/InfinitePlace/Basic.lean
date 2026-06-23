@@ -79,7 +79,7 @@ namespace InfinitePlace
 
 instance : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
 
 lemma coe_apply (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
@@ -140,7 +140,6 @@ theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ �
 
 theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
   constructor
@@ -202,7 +201,7 @@ theorem isComplex_iff {w : InfinitePlace K} :
     IsComplex w ↔ ¬ComplexEmbedding.IsReal (embedding w) := by
   refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
-  contrapose! hφ
+  contrapose hφ
   cases mk_eq_iff.mp (mk_embedding (mk φ)) with
   | inl h => rwa [h] at hφ
   | inr h => rwa [← ComplexEmbedding.isReal_conjugate_iff, h] at hφ
@@ -247,7 +246,7 @@ theorem norm_embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : K) :
 @[simp]
 theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
     ComplexEmbedding.IsReal φ := by
-  contrapose! h
+  contrapose h
   rw [not_isReal_iff_isComplex]
   exact ⟨φ, h, rfl⟩
 
@@ -307,8 +306,11 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
 open scoped Classical in
-noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
+protected noncomputable instance fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
+
+@[deprecated (since := "2026-05-24")]
+alias NumberField.InfinitePlace.fintype := InfinitePlace.fintype
 
 open scoped Classical in
 @[to_additive]
@@ -354,7 +356,7 @@ variable [NumberField K]
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
-  convert (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
+  convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
   · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
@@ -363,7 +365,6 @@ theorem prod_eq_abs_norm (x : K) :
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
   · rw [eq_ratCast, Rat.cast_abs, ← Real.norm_eq_abs, ← Complex.norm_real, Complex.ofReal_ratCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
     (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
   suffices (1 : ℝ) ≤ |Algebra.norm ℚ (a : K)| by
@@ -432,8 +433,9 @@ theorem card_real_embeddings :
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
     Fintype.card (InfinitePlace K) = nrRealPlaces K + nrComplexPlaces K := by
   classical
-  convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
-    (disjoint_isReal_isComplex K) using 1
+  convert!
+    Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
+      (disjoint_isReal_isComplex K) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 open scoped Classical in
@@ -445,7 +447,7 @@ theorem card_complex_embeddings :
     simp_rw [Finset.sum_const, this, smul_eq_mul, mul_one, Fintype.card, Finset.card_eq_sum_ones,
       Finset.mul_sum, Finset.sum_const, smul_eq_mul, mul_one]
   rintro ⟨w, hw⟩
-  convert card_filter_mk_eq w
+  convert! card_filter_mk_eq w
   · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
     refine Fintype.card_congr (Equiv.ofBijective ?_ ⟨fun _ _ h => ?_, fun ⟨φ, hφ⟩ => ?_⟩)
     · exact fun ⟨φ, hφ⟩ => ⟨φ.val, by rwa [Subtype.ext_iff] at hφ⟩
@@ -544,6 +546,9 @@ lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
 instance : Subsingleton (InfinitePlace ℚ) where
   allEq a b := by ext; simp
 
+noncomputable instance : Unique (InfinitePlace ℚ) :=
+  ⟨⟨infinitePlace⟩, fun _ ↦ Subsingleton.elim _ infinitePlace⟩
+
 lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
   ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
 
@@ -590,7 +595,6 @@ theorem isNontrivial : v.1.IsNontrivial := by
 
 variable {v} (K)
 
-set_option backward.isDefEq.respectTransparency false in
 open Filter in
 /--
 *Weak approximation for infinite places*
@@ -616,7 +620,7 @@ theorem denseRange_algebraMap_pi [NumberField K] :
     -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
     refine tendsto_pi_nhds.mpr fun u ↦ ?_
     simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
-    refine tendsto_finset_sum _ fun w _ ↦ ?_
+    refine tendsto_finsetSum _ fun w _ ↦ ?_
     by_cases hw : u = w
     · -- Because `1 / (1 + aᵤ⁻ⁿ) → 1` in `WithAbs u.1`.
       rw [← hw, Pi.single_eq_same]

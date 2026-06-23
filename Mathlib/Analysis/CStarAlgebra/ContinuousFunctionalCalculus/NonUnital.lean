@@ -195,8 +195,7 @@ section cfcₙL
 noncomputable def cfcₙL {a : A} (ha : p a) : C(σₙ R a, R)₀ →L[R] A :=
   { cfcₙHom ha with
     toFun := cfcₙHom ha
-    map_smul' := map_smul _
-    cont := by fun_prop }
+    map_smul' := map_smul _ }
 
 end cfcₙL
 
@@ -393,7 +392,7 @@ lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
       rw [sum_coe_sort s, hsum]
-      exact continuousOn_finset_sum s fun i hi => hf i hi
+      exact continuousOn_finsetSum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
     rw [cfcₙ_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfcₙ_apply _ a hf']
     congr 1
@@ -476,7 +475,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
     ext
     simp
   rw [cfcₙ_apply .., cfcₙ_apply f a,
-    cfcₙ_apply _ _ (by convert hg) (ha := cfcₙHom_predicate (show p a from ha) _),
+    cfcₙ_apply _ _ (by convert! hg) (ha := cfcₙHom_predicate (show p a from ha) _),
     ← cfcₙHom_comp _ _]
   swap
   · exact ⟨.mk _ <| hf.restrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp, Subtype.ext hf0⟩
@@ -581,9 +580,11 @@ lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
     obtain (ha | hf | h0) := h
     · simp [cfcₙ_apply_of_not_predicate a ha]
     · rw [cfcₙ_apply_of_not_continuousOn a hf, cfcₙ_apply_of_not_continuousOn, neg_zero]
-      exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
+      exact fun hf_neg ↦ hf <| by simpa using hf_neg.fun_neg
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero, neg_zero]
       exact (h0 <| neg_eq_zero.mp ·)
+
+lemma cfcₙ_neg' : cfcₙ (-f) = (-cfcₙ f : A → A) := by ext1 a; exact (cfcₙ_neg f a)
 
 lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
     cfcₙ (- · : R → R) a = -a := by
@@ -821,7 +822,6 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum [ContinuousFunctionalCalculus R A p]
 -- gives access to the `ContinuousFunctionalCalculus.compactSpace_spectrum` instance
 open scoped ContinuousFunctionalCalculus
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctionalCalculus R A p]
     [CompleteSpace R] {a : A} (ha : p a) :
     IsClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
@@ -835,12 +835,12 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctional
         ContinuousMap.coe_zero, range_zero, image_union, image_singleton,
         quasispectrum.coe_zero, ← range_comp, val_comp_inclusion, image_univ, Subtype.range_coe,
         quasispectrum_eq_spectrum_union_zero]
-  simp_rw +instances [ContinuousMapZero.instUniformSpace, this, uniformity_comap,
+  simp_rw +instances [← isUniformEmbedding_toContinuousMap.comap_uniformity, this,
     @inf_uniformity _ (.comap _ _) (.comap _ _), uniformity_comap, Filter.comap_inf,
     Filter.comap_comap]
   refine .symm <| inf_eq_left.mpr <| le_top.trans <| eq_top_iff.mp ?_
   have : ∀ U ∈ 𝓤 (C(Unit, R)), (0, 0) ∈ U := fun U hU ↦ refl_mem_uniformity hU
-  convert Filter.comap_const_of_mem this with ⟨u, v⟩ <;>
+  convert! Filter.comap_const_of_mem this with ⟨u, v⟩ <;>
   ext ⟨x, rfl⟩ <;> [exact map_zero u; exact map_zero v]
 
 instance ContinuousFunctionalCalculus.toNonUnital [ContinuousFunctionalCalculus R A p] :
@@ -863,7 +863,7 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p]
     [ContinuousMapZero.UniqueHom R A] {a : A} (ha : p a) :
     cfcₙHom ha = cfcₙHom_of_cfcHom R ha :=
   cfcₙHom_eq_of_continuous_of_map_id ha _ (continuous_cfcₙHom_of_cfcHom ha) <| by
-    simpa only [cfcₙHom_id ha] using cfcHom_id ha
+    simpa only [cfcₙHom_id ha] using! cfcHom_id ha
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
 `cfcₙ`. -/
@@ -873,7 +873,7 @@ lemma cfcₙ_eq_cfc [ContinuousFunctionalCalculus R A p] [ContinuousMapZero.Uniq
   by_cases ha : p a
   · have hf' := hf.mono <| spectrum_subset_quasispectrum R a
     rw [cfc_apply f a ha hf', cfcₙ_apply f a hf, cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
-    dsimp only [NonUnitalStarAlgHom.comp_apply, toContinuousMapHom_apply,
+    dsimp only [NonUnitalStarAlgHom.comp_apply,
       NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
     congr
   · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate (R := R) a ha]

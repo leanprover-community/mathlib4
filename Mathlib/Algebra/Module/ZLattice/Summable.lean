@@ -35,7 +35,6 @@ variable {ι : Type*} (b : Basis ι ℤ L)
 
 namespace ZLattice
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_forall_abs_repr_le_norm :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L), ∀ i, ε * |b.repr x i| ≤ ‖x‖ := by
   wlog H : IsZLattice ℝ L
@@ -48,7 +47,7 @@ lemma exists_forall_abs_repr_le_norm :
     have inst : IsZLattice ℝ L' :=
       ⟨Submodule.map_injective_of_injective E'.subtype_injective (by simp [E', L'])⟩
     obtain ⟨ε, hε, H⟩ := this (b.map e.symm) inst
-    exact ⟨ε, hε, fun x i ↦ by simpa using H ⟨⟨x.1, Submodule.subset_span x.2⟩, x.2⟩ i⟩
+    exact ⟨ε, hε, fun x i ↦ by simpa using! H ⟨⟨x.1, Submodule.subset_span x.2⟩, x.2⟩ i⟩
   have : Finite ι := Module.Finite.finite_basis b
   let b' : Basis ι ℝ E := Basis.ofZLatticeBasis ℝ L b
   let e := ((b'.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _).toContinuousLinearEquiv (𝕜 := ℝ))
@@ -60,7 +59,7 @@ lemma exists_forall_abs_repr_le_norm :
   · simp [hx]
   have hx : ‖x.1‖ ≠ 0 := by simpa
   have : |ε / 2 * (‖↑x‖⁻¹ * (b.repr x) i)| < 1 := by
-    simpa [e, b', ← abs_lt] using @hε' ((ε / 2) • ‖x‖⁻¹ • x)
+    simpa [e, b', ← abs_lt] using! @hε' ((ε / 2) • ‖x‖⁻¹ • x)
       (by simpa [norm_smul, inv_mul_cancel₀ hx, abs_eq_self.mpr hε.le]) i trivial
   rw [abs_mul, abs_mul, abs_inv, mul_left_comm, abs_norm, inv_mul_lt_iff₀ (by positivity),
     mul_one, abs_eq_self.mpr (by positivity), ← Int.cast_abs] at this
@@ -148,9 +147,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
         rw [← Real.rpow_natCast, ← Real.rpow_add (by positivity), Nat.cast_sub hd]
         norm_cast
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range (n + 1), (k : ℝ) ^ (d - 1 + r) := by
-        gcongr
-        rw [Finset.sum_range_succ', le_add_iff_nonneg_right]
-        positivity
+        grw [Finset.sum_range_succ', Nat.cast_zero, ← Real.rpow_nonneg le_rfl, add_zero]
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑' k : ℕ, (k : ℝ) ^ (d - 1 + r) := by
         gcongr
         refine Summable.sum_le_tsum _ (fun _ _ ↦ by positivity) (Real.summable_nat_rpow.mpr ?_)
@@ -158,7 +155,6 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 variable (L)
 
-set_option linter.flexible false in -- simp followed by positivity
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
@@ -188,15 +184,14 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     obtain ⟨n, hn⟩ : ∃ n : ℕ, u ⊆ Fintype.piFinset fun _ : I ↦ Finset.Icc (-n : ℤ) n := by
       obtain ⟨r, hr, hr'⟩ := u.finite_toSet.isCompact.isBounded.subset_closedBall_lt 0 0
       refine ⟨⌊r⌋.toNat, fun x hx ↦ ?_⟩
-      have hr'' : ⌊r⌋ ⊔ 0 = ⌊r⌋ := by simp; positivity
+      have hr'' : ⌊r⌋ ⊔ 0 = ⌊r⌋ := by rw [sup_eq_left]; positivity
       have := hr' hx
       simp only [Metric.mem_closedBall, dist_zero_right, pi_norm_le_iff_of_nonneg hr.le,
         Int.norm_eq_abs, ← Int.cast_abs, ← Int.le_floor] at this
       simpa only [Int.ofNat_toNat, Fintype.mem_piFinset, Finset.mem_Icc, ← abs_le, hr'']
     refine (Finset.sum_le_sum_of_subset_of_nonneg hn (by intros; positivity)).trans ?_
-    dsimp
     simp only [Submodule.norm_coe]
-    convert sum_piFinset_Icc_rpow_le b rfl n r hr with x
+    convert! sum_piFinset_Icc_rpow_le b rfl n r hr with x
     simp [e, Finsupp.linearCombination]
   by_cases hA' : A ≤ 1
   · refine ⟨B, hB, fun r hr s ↦ (H r hr s).trans ?_⟩
@@ -204,7 +199,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     exact mul_le_of_le_one_left (mul_nonneg (by positivity) (by positivity)) hA'
   · refine ⟨A⁻¹ * B, mul_pos (inv_pos.mpr hA) hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [Real.mul_rpow (inv_pos.mpr hA).le hB.le, mul_assoc, mul_assoc]
-    refine mul_le_mul_of_nonneg_right ?_ (mul_nonneg (by positivity) (by positivity))
+    gcongr
     rw [← Real.rpow_neg_one, ← Real.rpow_mul hA.le]
     refine Real.self_le_rpow_of_one_le (not_le.mp hA').le ?_
     simp only [neg_mul, one_mul, le_neg (b := r)]
