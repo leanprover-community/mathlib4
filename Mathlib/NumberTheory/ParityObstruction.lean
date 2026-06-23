@@ -112,5 +112,3 @@ theorem parity_overcount_exact :
 /-- The independently verified Tao-shadow total below `1000`. -/
 theorem tao_shadow_total_sum_verified :
     taoShadowTotalBelow1000 = 986 := rfl
-
-#lint

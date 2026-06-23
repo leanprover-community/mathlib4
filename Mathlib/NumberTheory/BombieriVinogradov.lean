@@ -167,5 +167,3 @@ theorem max_prime_gap_below_1000 :
 theorem all_gaps_below_polymath8 :
     maxPrimeGapBelow1000 ≤ polymath8Bound := by
   decide
-
-#lint
