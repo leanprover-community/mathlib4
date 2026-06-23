@@ -3,11 +3,13 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Thomas Riepe
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Condensed.Functors
-import Mathlib.Condensed.Limits
-import Mathlib.Topology.Category.Profinite.AsLimit
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Condensed.Functors
+public import Mathlib.Condensed.Limits
+public import Mathlib.Topology.Category.Profinite.AsLimit
 /-!
 # Solid modules
 
@@ -21,6 +23,8 @@ modulo two axioms (`surj_factor`, `sol_leftCancel`).
   Condensed Mathematics Theorem 5.8. Not formalizable in Lean
   without the CompHaus <-> TopMod equivalence.
 -/
+
+@[expose] public section
 
 universe u
 variable (R : Type (u + 1)) [Ring R]
