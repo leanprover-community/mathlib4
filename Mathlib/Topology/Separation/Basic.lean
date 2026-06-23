@@ -1073,12 +1073,12 @@ protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=
   .sInf <| forall_mem_range.2 ht
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (h₁ : @R1Space X t₁) (h₂ : @R1Space X t₂) : @R1Space X (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
   apply R1Space.iInf
-  simp [*]
+  rw [Bool.forall_bool, cond_false, cond_true]
+  exact ⟨h₂, h₁⟩
 
 instance [TopologicalSpace Y] [R1Space Y] : R1Space (X × Y) :=
   .inf (.induced _) (.induced _)
