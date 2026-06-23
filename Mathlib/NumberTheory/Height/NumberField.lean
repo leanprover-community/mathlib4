@@ -297,8 +297,8 @@ lemma exists_nat_le_mulHeight₁ (x : K) :
   refine le_of_mul_le_mul_left ?_ (show (0 : ℝ) < n ^ (totalWeight K - 1) by positivity)
   have : n ^ (totalWeight K - 1) * ∏ᶠ (v : FinitePlace K), ⨆ i, v (![(a : K), n] i) = 1 := by
     simpa [ha₂, hv] using absNorm_mul_finprod_finitePlace_eq_one (show ![a, n] ≠ 0 by simp [hn])
-  rw [pow_sub_one_mul (totalWeight_pos K).ne', mul_left_comm, this, mul_left_comm, this,
-    mul_one, totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum univ]
+  rw [pow_sub_one_mul (totalWeight_pos K).ne', mul_left_comm, this, mul_one,
+    totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum univ]
   refine prod_le_prod (fun _ _ ↦ by positivity) fun v _ ↦ ?_
   gcongr
   exact Finite.le_ciSup_of_le 1 <| by simp
