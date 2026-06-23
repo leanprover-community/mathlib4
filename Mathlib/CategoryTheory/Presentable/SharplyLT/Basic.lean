@@ -5,10 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 public import Mathlib.CategoryTheory.Presentable.Dense
-public import Mathlib.CategoryTheory.Presentable.Directed
 public import Mathlib.Order.TransfiniteIteration
 
 /-!
