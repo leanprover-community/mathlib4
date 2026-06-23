@@ -315,7 +315,7 @@ theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
 @[simp]
 theorem equivCongrLeft_of [DecidableEq ι] [DecidableEq κ] (h : ι ≃ κ) (k : κ) (x : β (h.symm k)) :
     equivCongrLeft h (of β (h.symm k) x) = of (fun k ↦ β (h.symm k)) k x :=
-  DFinsupp.comapDomain'_single (⇑h.symm) h.right_inv _ _
+  DFinsupp.comapDomain'_single h.symm h.right_inv _ _
 
 end CongrLeft
 
