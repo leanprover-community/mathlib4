@@ -725,9 +725,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} 
 section Tendsto_Zero
 
 /-- If a family of functions `g m` tends to zero uniformly along the product filter
-  `atTop ×ˢ comap im atTop` (i.e., as `m → ∞` and the imaginary part of the input → ∞ jointly),
-  then $\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
-  `tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
+`atTop ×ˢ comap im atTop` (i.e., as `m → ∞` and the imaginary part of the input → ∞ jointly),
+then $\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
+`tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
     {g : ℝ → ℂ → E} (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop)) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
