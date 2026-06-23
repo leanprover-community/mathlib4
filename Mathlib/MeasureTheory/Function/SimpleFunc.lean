@@ -998,7 +998,7 @@ def lintegralₗ {m : MeasurableSpace α} : (α →ₛ ℝ≥0∞) →ₗ[ℝ≥
   toFun f :=
     { toFun := lintegral f
       map_add' := by simp [lintegral, mul_add, Finset.sum_add_distrib]
-      map_smul' := by intros; simp [lintegral, mul_left_comm, Finset.mul_sum] }
+      map_smul' := by simp [lintegral, mul_left_comm, Finset.mul_sum] }
   map_add' f g := LinearMap.ext fun _ => add_lintegral f g
   map_smul' c f := LinearMap.ext fun _ => const_mul_lintegral f c
 
