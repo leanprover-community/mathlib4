@@ -307,30 +307,15 @@ variable {κ : Type*}
 def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
   { DFinsupp.equivCongrLeft h with map_add' := DFinsupp.comapDomain'_add _ h.right_inv }
 
-/-- Reindexing terms of a direct sum: change indexing type from `ι` to `κ` along an equivalence
-    `h : κ ≃ ι`. -/
-def equivCongrLeft' (h : κ ≃ ι) : (⨁ i, β i) ≃+ ⨁ k, β (h k) :=
-  equivCongrLeft h.symm
-
 @[simp]
 theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
     equivCongrLeft h f k = f (h.symm k) := by
   exact DFinsupp.comapDomain'_apply _ h.right_inv _ _
 
 @[simp]
-theorem equivCongrLeft'_apply (h : κ ≃ ι) (f : ⨁ i, β i) (k : κ) :
-    equivCongrLeft' h f k = f (h k) := by
-  exact DFinsupp.comapDomain'_apply _ h.left_inv _ _
-
-@[simp]
 theorem equivCongrLeft_of [DecidableEq ι] [DecidableEq κ] (h : ι ≃ κ) (k : κ) (x : β (h.symm k)) :
     equivCongrLeft h (of β (h.symm k) x) = of (fun k ↦ β (h.symm k)) k x := by
   exact DFinsupp.comapDomain'_single (⇑h.symm) h.right_inv _ _
-
-@[simp]
-theorem equivCongrLeft'_of [DecidableEq ι] [DecidableEq κ] (h : κ ≃ ι) (k : κ) (m : β (h k)) :
-    equivCongrLeft' h (of β (h k) m) = of (fun k ↦ β (h k)) k m := by
-  exact DFinsupp.comapDomain'_single _ h.left_inv' _ _
 
 end CongrLeft
 
@@ -393,11 +378,11 @@ variable {β : ι₁ → Type w} [∀ i : ι₁, AddCommMonoid (β i)]
     double sum indexed by a type `ι₂` and the fibres of a map `f : ι₁ → ι₂`. -/
 def sigmaFiberAddEquiv [DecidableEq ι₂] :
     (⨁ i, β i) ≃+ ⨁ (j : ι₂) (i : { i : ι₁ // f i = j}), β ↑i :=
-  (equivCongrLeft' (Equiv.sigmaFiberEquiv f)).trans
+  (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm).trans
     (sigmaCurryEquiv (δ := fun j ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i)))
 
 theorem sigmaFiberAddEquiv_apply' (x : ⨁ i, β i) :
-    sigmaFiberAddEquiv f x = sigmaCurry (equivCongrLeft' (Equiv.sigmaFiberEquiv f) x) := by
+    sigmaFiberAddEquiv f x = sigmaCurry (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm x) := by
   simp only [DirectSum.sigmaFiberAddEquiv,AddEquiv.trans_apply]
   rfl
 
@@ -413,12 +398,11 @@ theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
   let h := Equiv.sigmaFiberEquiv f
   let k : (j : ι₂) × {i₁ : ι₁ // f i₁ = j} := ⟨f i, ⟨i, rfl⟩⟩
   calc sigmaFiberAddEquiv f (of β (h k) x)
-  _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β (h k)) k x) := by
-      simp only [sigmaFiberAddEquiv_apply',h,equivCongrLeft'_of]
   _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β k.2) k x) := by
-      rfl
+      rw [sigmaFiberAddEquiv_apply']
+      exact congrArg sigmaCurry (equivCongrLeft_of (h := h.symm) _ _)
   _ = of _ k.1 (of _ k.2 x) := by
-      simp only [sigmaCurry_of]
+      rw [sigmaCurry_of]
 
 end SigmaFiber
 
