@@ -49,6 +49,8 @@ repository verification scripts and by CI/HF validation jobs.
 parity problem, Liouville function, sieve theory, finite verification
 -/
 
+@[expose] public section
+
 open BigOperators
 open Finset
 open Nat

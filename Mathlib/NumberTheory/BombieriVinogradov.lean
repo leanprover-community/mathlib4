@@ -51,6 +51,8 @@ Bombieri-Vinogradov, Elliott-Halberstam, primes in arithmetic progressions,
 prime gaps, finite verification
 -/
 
+@[expose] public section
+
 open BigOperators
 open Finset
 open Nat
@@ -71,7 +73,8 @@ noncomputable def errorPrimesInAP (x a q : ℕ) : ℝ :=
 noncomputable def maxErrorOverAP (x q : ℕ) : ℝ :=
   let coprimeResidues := (range q).filter (fun a => Nat.Coprime a q)
   if h : coprimeResidues.Nonempty then
-    Finset.sup' coprimeResidues h (fun a => |errorPrimesInAP x a q|)
+    have hResidues : coprimeResidues.Nonempty := h
+    Finset.sup' coprimeResidues hResidues (fun a => |errorPrimesInAP x a q|)
   else 0
 
 /-- The average maximum error over moduli `2 ≤ q ≤ Q`. -/
