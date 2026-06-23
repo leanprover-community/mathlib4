@@ -100,7 +100,7 @@ lemma exists_injective_resolution [EnoughInjectives C]
     ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n)
       (i : K ⟶ (InjectiveObject.ι C).mapCochainComplexPlus.obj L),
         quasiIso C i := by
-  obtain ⟨L, i, _, _, _⟩ := modelCategoryQuillen.exists_injective_resolution K.obj n
+  obtain ⟨L, i, _, _, _⟩ := modelCategoryQuillen.exists_quasiIso_injective K.obj n
   let L' : CochainComplex (InjectiveObject C) ℤ :=
     HomologicalComplex.liftObjectProperty _ L inferInstance
   have hL' : L'.IsStrictlyGE n := by
