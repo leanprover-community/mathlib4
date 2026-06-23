@@ -73,26 +73,13 @@ variable
 
 open scoped RealInnerProductSpace
 
--- move this, and think whether it could be more general
--- Note that Mathlib/Topology/FiberBundle/Basic.lean has a lot of similar lemmas but far from enough
--- imports.
-lemma VectorBundle.completeSpace (R : Type*) [NontriviallyNormedField R]
-    {B : Type*} [TopologicalSpace B]
-    (E : B → Type*) [(x : B) → AddCommGroup (E x)] [(x : B) → Module R (E x)]
-    (F : Type*) [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
-    [TopologicalSpace (TotalSpace F E)] [(x : B) → UniformSpace (E x)]
-    [(x : B) → IsUniformAddGroup (E x)] [FiberBundle F E] [VectorBundle R F E] (b : B) :
-    CompleteSpace (E b) := by
-  let e := VectorBundle.continuousLinearEquivAt R F E b
-  rwa [completeSpace_congr (e := e.toEquiv) e.isUniformEmbedding]
-
 -- move this, also perhaps generalize to general Riemannian vector bundles,
 -- and write a variant for `CMDiffAt n`
 lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
-  have := VectorBundle.completeSpace ℝ (TangentSpace I (M := M)) E
+  have := VectorBundle.completeSpace ℝ E (TangentSpace I (M := M))
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
   exact (injective_eval_mdifferentiableAt_vectorField I ℝ x).comp Φ.injective
 
