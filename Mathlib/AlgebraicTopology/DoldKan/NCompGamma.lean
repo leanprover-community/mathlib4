@@ -222,7 +222,7 @@ theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
   ext P : 2
-  dsimp only [NatTrans.comp_app, NatTrans.hcomp_app, Functor.comp_map, Functor.associator,
+  simp only [NatTrans.comp_app, NatTrans.hcomp_app, Functor.comp_map, Functor.associator,
     NatTrans.id_app, Functor.comp_obj]
   rw [Γ₂.map_id, N₂.map_id, comp_id, id_comp, id_comp, identity_N₂_objectwise P]
 

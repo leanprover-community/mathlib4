@@ -114,18 +114,20 @@ lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
   exact (α.naturality (β.app X)).symm
 
 /-- `hcomp α β` is the horizontal composition of natural transformations. -/
-@[simps (attr := grind =), to_dual self]
+@[no_expose, to_dual self]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
   app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
 
--- Horizontal composition has two possible definitions that are dual to each other,
--- and we need to prove to `to_dual` that these are equivalent.
-set_option linter.auxLemma false in
-attribute [to_dual none] hcomp._proof_2 hcomp._proof_3
-to_dual_insert_cast hcomp := by ext x; exact β.naturality' (α.app x)
-
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
+
+@[simp, grind =]
+theorem hcomp_app {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
+    (α ◫ β).app X = β.app (F.obj X) ≫ I.map (α.app X) := (rfl)
+
+@[to_dual existing hcomp_app]
+theorem hcomp_app' {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
+    (α ◫ β).app X = H.map (α.app X) ≫ β.app (G.obj X) := by simp
 
 set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]

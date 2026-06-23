@@ -70,7 +70,7 @@ attribute [local instance] endofunctorMonoidalCategory
 
 @[simp] theorem endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
-    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
+    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := NatTrans.hcomp_app _ _ _
 
 @[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
     {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
