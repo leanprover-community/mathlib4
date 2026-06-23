@@ -1100,7 +1100,6 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       convert! B
       ext v
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
-        ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.add_apply,
         FormalMultilinearSeries.compAlongOrderedFinpartition_apply, sum_apply, add_apply]
     rw [Finset.sum_sigma']
     exact Fintype.sum_equiv (OrderedFinpartition.extendEquiv m) _ _ (fun p ↦ rfl)

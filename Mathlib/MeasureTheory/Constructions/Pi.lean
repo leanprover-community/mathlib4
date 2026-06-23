@@ -410,11 +410,12 @@ lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (
   rw [Measure.pi_map_eval, Finset.prod_eq_one, one_smul]
   exact fun _ _ ↦ measure_univ
 
-theorem pi_hyperplane (i : ι) [NoAtoms (μ i)] (x : α i) :
+theorem pi_hyperplane (i : ι) [NullSingletonClass (μ i)] (x : α i) :
     Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
   show Measure.pi μ (eval i ⁻¹' {x}) = 0 from pi_eval_preimage_null _ (measure_singleton x)
 
-theorem ae_eval_ne (i : ι) [NoAtoms (μ i)] (x : α i) : ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
+theorem ae_eval_ne (i : ι) [NullSingletonClass (μ i)] (x : α i) :
+    ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
   compl_mem_ae_iff.2 (pi_hyperplane μ i x)
 
 theorem restrict_pi_pi (s : (i : ι) → Set (α i)) :
@@ -467,7 +468,7 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
 
 section Intervals
 
-variable [∀ i, PartialOrder (α i)] [∀ i, NoAtoms (μ i)]
+variable [∀ i, PartialOrder (α i)] [∀ i, NullSingletonClass (μ i)]
 
 theorem pi_Iio_ae_eq_pi_Iic {s : Set ι} {f : ∀ i, α i} :
     (pi s fun i => Iio (f i)) =ᵐ[Measure.pi μ] pi s fun i => Iic (f i) :=
@@ -515,18 +516,27 @@ theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
 
 end Intervals
 
-/-- If one of the measures `μ i` has no atoms, them `Measure.pi µ`
-has no atoms. The instance below assumes that all `μ i` have no atoms. -/
-theorem pi_noAtoms (i : ι) [NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
+/-- If one of the measures `μ i` has value zero on singeltons, them `Measure.pi µ`
+has value zero on singletons. The instance below assumes that all `μ i` have value zero on
+singletons. -/
+theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :
+    NullSingletonClass (Measure.pi μ) :=
   ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
 
-instance pi_noAtoms' [h : Nonempty ι] [∀ i, NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
-  h.elim fun i => pi_noAtoms i
+@[deprecated (since := "2026-06-09")]
+alias pi_noAtoms := pi_nullSingletonClass
+
+instance pi_nullSingletonClass' [h : Nonempty ι] [∀ i, NullSingletonClass (μ i)] :
+    NullSingletonClass (Measure.pi μ) :=
+  h.elim fun i => pi_nullSingletonClass i
+
+@[deprecated (since := "2026-06-09")]
+alias pi_noAtoms' := pi_nullSingletonClass'
 
 instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
-    [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NoAtoms (volume : Measure (α i))] :
-    NoAtoms (volume : Measure (∀ i, α i)) :=
-  pi_noAtoms'
+    [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NullSingletonClass (volume : Measure (α i))] :
+    NullSingletonClass (volume : Measure (∀ i, α i)) :=
+  pi_nullSingletonClass'
 
 instance pi.isLocallyFiniteMeasure
     [∀ i, TopologicalSpace (α i)] [∀ i, IsLocallyFiniteMeasure (μ i)] :
