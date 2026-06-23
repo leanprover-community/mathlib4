@@ -183,12 +183,12 @@ instance : HasForget₂ (TopModuleCat.{v} R) TopCat.{v} where
   { obj M := .of M
     map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
 
-instance : (forget₂ (TopModuleCat.{u} R) TopCat.{u}).ReflectsIsomorphisms where
+instance : (forget₂ (TopModuleCat.{v} R) TopCat.{v}).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
     let e : X ≃L[R] Y := {
        __ := f.hom
        __ :=
-        TopCat.homeoOfIso (asIso ((forget₂ (TopModuleCat.{u} R) TopCat.{u}).map f)) }
+        TopCat.homeoOfIso (asIso ((forget₂ (TopModuleCat.{v} R) TopCat.{v}).map f)) }
     change IsIso (ofIso e).hom
     infer_instance
 
