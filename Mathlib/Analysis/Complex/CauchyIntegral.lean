@@ -740,7 +740,7 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
     eventually_prod_iff.mp <| Metric.tendstoUniformlyOnFilter_iff.mp htendsto _ hε'
   obtain ⟨M₁, hM₁⟩ := eventually_atTop.mp hpa
   obtain ⟨K, hK⟩ := eventually_atTop.mp (eventually_comap.mp hpb)
-  refine ⟨max M₁ K, fun m hm => ?_⟩
+  refine ⟨max M₁ K, fun m hm ↦ ?_⟩
   calc ‖∫ (x : ℝ) in x₁..x₂, g m (↑x + ↑m * I)‖
   _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| := by
       refine intervalIntegral.norm_integral_le_of_norm_le_const fun x _ => ?_
