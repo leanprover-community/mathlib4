@@ -39,7 +39,7 @@ attribute [to_dual self (reorder := isIso_of_mono_of_epi (X Y, 4 5))] Balanced.m
 theorem isIso_of_mono_of_epi [Balanced C] {X Y : C} (f : X ⟶ Y) [Mono f] [Epi f] : IsIso f :=
   Balanced.isIso_of_mono_of_epi _
 
-@[to_dual]
+@[to_dual isIso_iff_epi_and_mono]
 theorem isIso_iff_mono_and_epi [Balanced C] {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Mono f ∧ Epi f :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => isIso_of_mono_of_epi _⟩
 
