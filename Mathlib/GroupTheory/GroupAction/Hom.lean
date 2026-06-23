@@ -555,7 +555,7 @@ variable (C : Type*) [Monoid C] [MulDistribMulAction P C]
 variable (A' : Type*) [Group A'] [MulDistribMulAction M A']
 variable (B' : Type*) [Group B'] [MulDistribMulAction N B']
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_additive existing (dont_translate := M) DistribMulAction]
   MulDistribMulAction
 

@@ -189,10 +189,10 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_dual existing ofComponents'_inv_app] ofComponents_hom_app
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_dual existing ofComponents'_hom_app] ofComponents_inv_app
 
 @[to_dual (attr := simp)]

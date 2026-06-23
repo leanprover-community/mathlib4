@@ -238,7 +238,7 @@ class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 /-- `IsIso.mk'` is the dual of `IsIso.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
 @[to_dual existing mk]
