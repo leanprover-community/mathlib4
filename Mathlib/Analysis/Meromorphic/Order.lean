@@ -905,10 +905,7 @@ where the order of the derivative can rise to a larger integer. -/
 lemma meromorphicOrderAt_deriv_eq_sub_one [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
     (hn : (n : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑n) :
     meromorphicOrderAt (deriv f) x = ↑(n - 1) := by
-  have hmero : MeromorphicAt f x := by
-    refine meromorphicAt_of_meromorphicOrderAt_ne_zero fun h ↦ ?_
-    rw [hf, WithTop.coe_eq_zero] at h
-    simp [h] at hn
+  have hmero : MeromorphicAt f x := meromorphicAt_of_meromorphicOrderAt_ne_zero (by aesop)
   rw [meromorphicOrderAt_eq_int_iff hmero] at hf
   rw [meromorphicOrderAt_eq_int_iff hmero.deriv]
   obtain ⟨g, hga, hg0, hg⟩ := hf
