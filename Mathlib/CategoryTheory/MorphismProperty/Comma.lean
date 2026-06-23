@@ -168,7 +168,7 @@ structure Hom (X Y : P.Comma L R Q W) extends CommaMorphism X.toComma Y.toComma 
 abbrev Hom.hom {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : X.toComma ⟶ Y.toComma :=
   f.toCommaMorphism
 
-@[simp, nolint simpVarHead]
+@[simp]
 lemma Hom.hom_mk {X Y : P.Comma L R Q W} (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
     Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
 

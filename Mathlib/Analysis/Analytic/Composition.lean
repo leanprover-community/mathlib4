@@ -277,7 +277,7 @@ theorem removeZero_comp_of_pos (q : FormalMultilinearSeries 𝕜 F G)
     q.removeZero.comp p n = q.comp p n := by
   ext v
   simp only [FormalMultilinearSeries.comp, compAlongComposition,
-    ContinuousMultilinearMap.compAlongComposition_apply, ContinuousMultilinearMap.sum_apply]
+    ContinuousMultilinearMap.compAlongComposition_apply, sum_apply]
   refine Finset.sum_congr rfl fun c _hc => ?_
   rw [removeZero_of_pos _ (c.length_pos_of_pos hn)]
 
@@ -395,10 +395,10 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     let j : Fin b.length := ⟨i.val, b.blocks_length ▸ i.prop⟩
     have A : 1 < b.blocksFun j := by convert! lt_k
     ext v
-    rw [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
+    rw [compAlongComposition_apply, _root_.zero_apply]
     apply ContinuousMultilinearMap.map_coord_zero _ j
     dsimp [applyComposition]
-    rw [id_apply_of_one_lt _ _ _ A, ContinuousMultilinearMap.zero_apply]
+    rw [id_apply_of_one_lt _ _ _ A, _root_.zero_apply]
   · simp
 
 @[simp]
@@ -427,8 +427,8 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
         have : 0 < b.length := Composition.length_pos_of_pos b n_pos
         lia
       ext v
-      rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A,
-        ContinuousMultilinearMap.zero_apply, ContinuousMultilinearMap.zero_apply]
+      rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A, _root_.zero_apply,
+        _root_.zero_apply]
     · simp
 
 /-- Variant of `id_comp` in which the zero coefficient is given by an equality hypothesis instead
@@ -813,8 +813,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   have E : HasSum (fun n => (q.comp p) n fun _j => y) (g (f (x + y))) := by
     apply D.sigma
     intro n
-    simp only [compAlongComposition_apply, FormalMultilinearSeries.comp,
-      ContinuousMultilinearMap.sum_apply]
+    simp only [compAlongComposition_apply, FormalMultilinearSeries.comp, sum_apply]
     exact hasSum_fintype _
   rw [Function.comp_apply]
   exact E
@@ -910,7 +909,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
   apply Finset.sum_eq_zero
   rintro c -
   ext v
-  simp only [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
+  simp only [compAlongComposition_apply, _root_.zero_apply]
   rcases le_or_gt m c.length with hc | hc
   · simp [hg.finite _ hc]
   obtain ⟨j, hj⟩ : ∃ j, n ≤ c.blocksFun j := by
@@ -1252,9 +1251,9 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     r c.1.length fun i : Fin c.1.length =>
       q (c.2 i).length (applyComposition p (c.2 i) (v ∘ c.1.embedding i))
   suffices ∑ c, f c = ∑ c, g c by
-    simpa +unfoldPartialApp only [FormalMultilinearSeries.comp,
-      ContinuousMultilinearMap.sum_apply, compAlongComposition_apply, Finset.sum_sigma',
-      applyComposition, ContinuousMultilinearMap.map_sum]
+    simpa +unfoldPartialApp only [FormalMultilinearSeries.comp, sum_apply,
+      compAlongComposition_apply, Finset.sum_sigma', applyComposition,
+      ContinuousMultilinearMap.map_sum]
   /- Now, we use `Composition.sigmaEquivSigmaPi n` to change
     variables in the second sum, and check that we get exactly the same sums. -/
   rw [← (sigmaEquivSigmaPi n).sum_comp]
