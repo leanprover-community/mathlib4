@@ -8,7 +8,6 @@ module
 
 import Mathlib.Init
 import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
-import Std.Internal.Parsec.String
 
 /-!
 # Checker for well-formed title and labels
@@ -70,6 +69,12 @@ def prTitle : Parser (String × Option String × String) := do
 #guard_msgs in
 #eval Parser.run prTitle "chore: test"
 
+/--
+Check if `word` looks like an abbreviation, like `JSON` or `E2` or `W3C`.
+-/
+def isAbbreviation (word : String.Slice) : Bool :=
+  word.all (fun c => c.isUpper || c.isDigit) && word.chars.length != 1
+
 open Mathlib.Linter.TextBased in
 /--
 Check if `title` matches the mathlib conventions for PR titles
@@ -116,7 +121,7 @@ public def validateTitle (title : String) : Array String := Id.run do
     -- Titles should be lower-cased (but we allow abbreviations).
     if subject.front.toLower != subject.front then
       let firstWord := subject.takeWhile (!·.isWhitespace)
-      if !(firstWord.all (·.isUpper)) then
+      if !isAbbreviation firstWord then
         errors := errors.push "error: the PR subject should be lowercased"
     if subject.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
