@@ -754,7 +754,7 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
     _ < ε := by linarith
 
 /-- If $f(z) \to 0$ as $\Im(z) \to \infty$, then
-  $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
+$\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
     (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) :=
