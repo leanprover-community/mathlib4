@@ -3230,6 +3230,7 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.CommGrp_
+public import Mathlib.CategoryTheory.Preadditive.Comma
 public import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 public import Mathlib.CategoryTheory.Preadditive.EndoFunctor
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
@@ -5171,6 +5172,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Cardinality
 public import Mathlib.LinearAlgebra.Projectivization.Collinear
 public import Mathlib.LinearAlgebra.Projectivization.Constructions
 public import Mathlib.LinearAlgebra.Projectivization.Independence
+public import Mathlib.LinearAlgebra.Projectivization.PSL.PSL2
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 public import Mathlib.LinearAlgebra.Projectivization.Subspace
 public import Mathlib.LinearAlgebra.QuadraticForm.AlgClosed
@@ -8107,6 +8109,7 @@ public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.LocalPredicate
 public import Mathlib.Topology.Sheaves.LocallySurjective
 public import Mathlib.Topology.Sheaves.MayerVietoris
+public import Mathlib.Topology.Sheaves.Module
 public import Mathlib.Topology.Sheaves.Over
 public import Mathlib.Topology.Sheaves.PUnit
 public import Mathlib.Topology.Sheaves.Points

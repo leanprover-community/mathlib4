@@ -295,7 +295,7 @@ def mapHomotopyCategoryPlusCompIso {E : Type*} [Category E] [Preadditive E] [Has
     [HasBinaryBiproducts E]
     {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] :
-    H.mapHomotopyCategoryPlus ≅ F.mapHomotopyCategoryPlus ⋙ G.mapHomotopyCategoryPlus :=
+    F.mapHomotopyCategoryPlus ⋙ G.mapHomotopyCategoryPlus ≅ H.mapHomotopyCategoryPlus :=
   ((HomotopyCategory.plus _).fullyFaithfulι.whiskeringRight _).preimageIso
     (isoWhiskerLeft (HomotopyCategory.Plus.ι C)
       (mapHomotopyCategoryCompIso e (.up ℤ)))

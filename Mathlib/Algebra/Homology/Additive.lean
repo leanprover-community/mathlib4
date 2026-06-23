@@ -144,9 +144,8 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] :
     (F.mapHomologicalComplex c).Faithful where
   map_injective {K L} f₁ f₂ h := by
-    ext n
-    apply F.map_injective
-    exact (HomologicalComplex.eval W c n).congr_map h
+    ext
+    exact F.map_injective ((HomologicalComplex.eval W c _).congr_map h)
 
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] [F.Full] :
     (F.mapHomologicalComplex c).Full where
@@ -204,12 +203,15 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
+/-- If additive functors are related by an isomorphism `F ⋙ G ≅ H`, this is
+the corresponding isomorphism for the induced functors on categories
+of homological complexes. -/
 @[simps!]
 def Functor.mapHomologicalComplexCompIso {W' : Type*} [Category W'] [Preadditive W']
     {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
-    H.mapHomologicalComplex c ≅ F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c :=
-  NatIso.mapHomologicalComplex e.symm c
+    F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c ≅ H.mapHomologicalComplex c :=
+  NatIso.mapHomologicalComplex e c
 
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalences between the respective categories

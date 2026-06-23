@@ -285,29 +285,29 @@ instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Linear R V] [Linear R
   have := Functor.linear_of_iso R (F.mapHomotopyCategoryFactors c).symm
   (HomotopyCategory.quotient V c).linear_of_full_essSurj_comp (F.mapHomotopyCategory c)
 
+/-- If additive functors are related by an isomorphism `F ⋙ G ≅ H`, this is
+the corresponding isomorphism for the induced functors on homotopy categories
+of homological complexes. -/
 def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W']
     {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
-    H.mapHomotopyCategory c ≅ F.mapHomotopyCategory c ⋙ G.mapHomotopyCategory c :=
+    F.mapHomotopyCategory c ⋙ G.mapHomotopyCategory c ≅ H.mapHomotopyCategory c :=
   Quotient.natIsoLift _ (isoWhiskerRight (Functor.mapHomologicalComplexCompIso e c)
     (HomotopyCategory.quotient W' c))
 
 variable {c} in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+/-- The preimage by a fully faithful functor of a homotopy between morphisms
+of homological complexes. -/
 def Functor.preimageHomotopy
     (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful]
     {K L : HomologicalComplex V c} {f₁ f₂ : K ⟶ L}
     (H : Homotopy ((F.mapHomologicalComplex c).map f₁) ((F.mapHomologicalComplex c).map f₂)) :
-    Homotopy f₁ f₂ :=
-      { hom := fun i j => F.preimage (H.hom i j)
-        zero := fun i j hij => F.map_injective (by
-          simp only [map_preimage, Functor.map_zero]
-          rw [H.zero i j hij])
-        comm := fun i => F.map_injective (by
-          refine (H.comm i).trans ?_
-          dsimp
-          rw [F.map_add, F.map_add]
-          simp [fromNext, toPrev]) }
+    Homotopy f₁ f₂ where
+  hom i j := F.preimage (H.hom i j)
+  zero i j hij := F.map_injective (by simp only [map_preimage, Functor.map_zero, H.zero i j hij])
+  comm i := F.map_injective (by simp [dsimp% H.comm i, dNext, prevD])
 
 instance (F : V ⥤ W) [F.Full] [F.Faithful] [F.Additive] :
     (F.mapHomotopyCategory c).Faithful where
