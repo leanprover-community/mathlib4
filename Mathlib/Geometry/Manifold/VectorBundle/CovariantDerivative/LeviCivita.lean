@@ -146,7 +146,7 @@ if it is torsion-free and compatible with `g`.
 Note that the bundle metric on `TM` is implicitly hidden in this definition.
 -/
 @[expose] public def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop :=
-  cov.IsCompatible ∧ cov.torsion = 0
+  cov.IsMetricCompatible (M := M) (V := TangentSpace I) ∧ cov.torsion = 0
 
 section uniqueness
 
@@ -321,9 +321,9 @@ public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M
   rw [real_inner_comm]
   exact lcAux_apply _ hZ hY hX
 
-public lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
-    (leviCivitaConnection I M).IsCompatible := by
-  rw [isCompatible_iff]
+public lemma leviCivitaConnection_isMetricCompatible [FiniteDimensional ℝ E] :
+    (leviCivitaConnection I M).IsMetricCompatible (M := M) (V := TangentSpace I) := by
+  rw [isMetricCompatible_iff]
   intro x X Y Z hX hY hZ
   -- Normalise the expressions by swapping arguments for inner product and mlieBracket,
   -- until the swappable arguments are in order X < Y < Z.
@@ -348,7 +348,7 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
 /-- `leviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free) -/
 public lemma leviCivitaConnection_isLeviCivitaConnection [FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).IsLeviCivitaConnection :=
-  ⟨leviCivitaConnection_isCompatible I, leviCivitaConnection_torsion_eq_zero I⟩
+  ⟨leviCivitaConnection_isMetricCompatible I, leviCivitaConnection_torsion_eq_zero I⟩
 
 end existence
 
