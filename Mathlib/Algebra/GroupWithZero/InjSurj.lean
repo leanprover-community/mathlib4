@@ -125,35 +125,31 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.monoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
     [Pow M₀' ℕ+] [MonoidWithZero M₀] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    MonoidWithZero M₀' :=
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : MonoidWithZero M₀' :=
   { hf.monoid f one mul ppow npow, hf.mulZeroClass f zero mul with }
 
 /-- Push forward a `MonoidWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.monoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
     [Pow M₀' ℕ+] [MonoidWithZero M₀] (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0)
-    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    MonoidWithZero M₀' :=
+    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : MonoidWithZero M₀' :=
   { hf.monoid f one mul ppow npow, hf.mulZeroClass f zero mul with }
 
 /-- Pull back a `CommMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
     [Pow M₀' ℕ+] [CommMonoidWithZero M₀] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0)
-    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CommMonoidWithZero M₀' :=
+    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : CommMonoidWithZero M₀' :=
   { hf.commMonoid f one mul ppow npow, hf.mulZeroClass f zero mul with }
 
 /-- Push forward a `CommMonoidWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
     [Pow M₀' ℕ+] [CommMonoidWithZero M₀] (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0)
-    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CommMonoidWithZero M₀' :=
+    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : CommMonoidWithZero M₀' :=
   { hf.commMonoid f one mul ppow npow, hf.mulZeroClass f zero mul with }
 
 end MonoidWithZero
@@ -166,13 +162,12 @@ variable [GroupWithZero G₀]
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀'] [Div G₀']
     [Pow G₀' ℕ] [Pow G₀' ℕ+] [Pow G₀' ℤ] (f : G₀' → G₀) (hf : Injective f) (zero : f 0 = 0)
-    (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : GroupWithZero G₀' :=
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    GroupWithZero G₀' :=
   { hf.monoidWithZero f zero one mul ppow npow,
-    hf.divInvMonoid f one mul inv ppow div npow zpow,
+    hf.divInvMonoid f one mul inv div ppow npow zpow,
     domain_nontrivial f zero one with
     inv_zero := hf <| by rw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
@@ -182,12 +177,10 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
     [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℕ+] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀')
-    (hf : Surjective f)
-    (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
+    (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
-    GroupWithZero G₀' :=
+    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : GroupWithZero G₀' :=
   { hf.monoidWithZero f zero one mul ppow npow,
     hf.divInvMonoid f one mul inv ppow div npow zpow with
     inv_zero := by rw [← zero, ← inv, inv_zero],
@@ -205,10 +198,9 @@ variable [CommGroupWithZero G₀]
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
     [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℕ+] [Pow G₀' ℤ] (f : G₀' → G₀) (hf : Injective f)
-    (zero : f 0 = 0)
-    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
+    (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
+    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroupWithZero G₀' :=
   { hf.groupWithZero f zero one mul inv div ppow npow zpow, hf.commSemigroup f mul ppow with }
 
@@ -217,12 +209,10 @@ See note [reducible non-instances]. -/
 @[implicit_reducible]
 protected def Function.Surjective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
     [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℕ+] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀')
-    (hf : Surjective f)
-    (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
+    (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
-    CommGroupWithZero G₀' :=
+    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroupWithZero G₀' :=
   { hf.groupWithZero h01 f zero one mul inv div ppow npow zpow,
     hf.commSemigroup f mul ppow with }
 
