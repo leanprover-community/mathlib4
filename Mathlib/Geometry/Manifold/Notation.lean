@@ -1102,7 +1102,25 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withAppArg delab
     `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
--- TODO: add a delaborator for mfderivWithin (with a test)
+/-- Delaborator for `mfderivWithin` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab mfderivWithin] meta def delabMFDerivWithin : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let ss ← withAppArg delab
+  try
+    let fe := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `(T% $σs) >>= annotateGoToSyntaxDef
+    `(mfderiv[$ss] ($Tσs)) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(mfderiv[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `MDifferentiable` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
@@ -1182,6 +1200,53 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
+/-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab HasMFDerivWithinAt] meta def delabHasMFDerivWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 24 do
+  let ss ← withNaryArg 21 delab
+  let xs ← withNaryArg 22 delab
+  let f' ← withNaryArg 23 delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(HasMFDerivAt[$ss] $Tσs $xs $f') >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(HasMFDerivAt[$ss] $fs $xs $f') >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab HasMFDerivAt] meta def delabHasMFDerivAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 23 do
+  let xs ← withNaryArg 21 delab
+  let f' ← withNaryArg 22 delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(HasMFDerivAt% $Tσs $xs $f') >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(HasMFDerivAt% $fs $xs $f') >>= annotateGoToSyntaxDef
+
 /-- Delaborator for `UniqueMDiffOn` using the custom elaborator. -/
 @[app_delab UniqueMDiffOn] meta def delabUniqueMDiffOn : Delab := do
   whenPPOption getPPNotation do
@@ -1197,7 +1262,7 @@ arguments that can use the `T%` elaborator. -/
   `(UniqueMDiffAt[$ss]) >>= annotateGoToSyntaxDef
 
 -- TODO: add more delaborators (and tests) for
--- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
+-- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt
 
 -- TODO: when adding more elaborators, also add the corresponding delaborators
 
