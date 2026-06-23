@@ -36,16 +36,11 @@ set_option backward.defeqAttrib.useBackward true in
 def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
     StructuredArrow X (Comma.map α β) ⥤ Comma (map₂ (𝟙 _) α) (map₂ X.hom (inv β)) where
   obj Y := ⟨mk Y.hom.left, mk Y.hom.right,
-    homMk Y.right.hom
-      (by simpa only [Functor.const_obj_obj, map₂_obj_left, mk_left, map₂_obj_right, mk_right,
-        map₂_obj_hom, mk_hom_eq_self, Category.id_comp, Category.assoc, NatIso.isIso_inv_app,
-        Functor.comp_obj, Comma.map_obj_right, Comma.map_obj_left, Comma.map_obj_hom,
-        IsIso.hom_inv_id, Category.comp_id] using
-        congrFun (congrArg CategoryStruct.comp Y.hom.w) (inv (β.app Y.right.right) :))⟩
+    homMk Y.right.hom (by
+      simpa using congrFun (congrArg CategoryStruct.comp Y.hom.w) (inv (β.app Y.right.right) :))⟩
   map {Y Z} f := ⟨homMk f.right.left (congrArg CommaMorphism.left (StructuredArrow.w f)),
     homMk f.right.right (congrArg CommaMorphism.right (StructuredArrow.w f)),
-    by simp only [map₂_obj_right, mk_right, hom_eq_iff, comp_right,
-      map₂_map_right, homMk_right, CommaMorphism.w] ⟩
+     by simp ⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
