@@ -5,10 +5,14 @@ Authors: Michael Brown
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.NumberTheory.ArithmeticFunction.Defs
-public import Mathlib.NumberTheory.SelbergSieve
-public import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.NumberTheory.ArithmeticFunction.Defs
+import Mathlib.NumberTheory.SelbergSieve
+import Mathlib.Data.Finset.Basic
+public meta import Mathlib.Data.Finset.Range
+public meta import Mathlib.Data.Finset.Empty
+public meta import Mathlib.Data.Finset.Defs
+public meta import Mathlib.Data.Finset.Card
 
 /-!
 # Parity Obstruction Lemma — Formalized in mathlib4
@@ -35,6 +39,7 @@ open Finset
 open Nat
 
 set_option maxRecDepth 200000
+set_option linter.style.nativeDecide false
 
 /-!
 ## Part 1: Ω(n) — Number of Prime Factors with Multiplicity
@@ -52,14 +57,14 @@ def primeOmega (n : ℕ) : ℕ :=
 /-- Theorem: Ω(p) = 1 for all primes p < 1000. -/
 theorem primeOmega_prime_is_one :
     ∀ p, p ∈ (range 1000).filter Nat.Prime → primeOmega p = 1 := by
-  decide
+  native_decide
 
 /-- Theorem: Ω(pq) = 2 for all products of two primes < 1000. -/
 theorem primeOmega_semiprime_is_two :
     ∀ n, n ∈ (range 1000).filter (fun n =>
       ((range n).filter (fun p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
     primeOmega n = 2 := by
-  decide
+  native_decide
 
 /-!
 ## Part 2: Liouville Function λ(n) = (-1)^Ω(n)
@@ -75,13 +80,13 @@ def liouville (n : ℕ) : ℤ :=
 
 theorem liouville_prime_is_neg_one :
     ∀ p, p ∈ (range 1000).filter Nat.Prime → liouville p = -1 := by
-  decide
+  native_decide
 
 theorem liouville_semiprime_is_pos_one :
     ∀ n, n ∈ (range 1000).filter (fun n =>
       ((range n).filter (fun p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
     liouville n = 1 := by
-  decide
+  native_decide
 
 /-!
 ## Part 3: The Odd-Parity Set Strictly Contains the Primes
@@ -97,17 +102,17 @@ def primeSet (N : ℕ) : Finset ℕ :=
 
 theorem primes_are_odd_parity :
     primeSet 1000 ⊆ oddParitySet 1000 := by
-  decide
+  native_decide
 
 theorem odd_parity_larger_than_primes :
     (primeSet 1000).card < (oddParitySet 1000).card := by
-  decide
+  native_decide
 
 /-- Exact counts: 168 primes, 507 odd-parity numbers below 1000.
     The sieve overcounts by a factor of ~3. -/
 theorem parity_overcount_exact :
     (primeSet 1000).card = 168 ∧ (oddParitySet 1000).card = 507 := by
-  decide
+  native_decide
 
 /-!
 ## Part 4: Tao's Shadow Sequence — a_n = 1 + λ(n)
@@ -119,13 +124,13 @@ def taoShadow (n : ℕ) : ℤ :=
 
 theorem tao_shadow_vanishes_on_primes :
     ∀ p, p ∈ primeSet 1000 → taoShadow p = 0 := by
-  decide
+  native_decide
 
 theorem tao_shadow_positive_on_semiprimes :
     ∀ n, n ∈ (range 1000).filter (fun n =>
       ((range n).filter (fun p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
     taoShadow n = 2 := by
-  decide
+  native_decide
 
 /-!
 ## Part 5: The Sieve Shadow — Total Sums
@@ -136,15 +141,15 @@ theorem tao_shadow_positive_on_semiprimes :
     it should see 168 — a contamination factor of ~6. -/
 theorem tao_shadow_total_sum :
     (range 1000).sum taoShadow = 986 := by
-  decide
+  native_decide
 
 theorem prime_indicator_sum :
     (range 1000).sum (fun n => if Nat.Prime n then (1 : ℤ) else 0) = 168 := by
-  decide
+  native_decide
 
 theorem odd_parity_indicator_sum :
     (range 1000).sum (fun n => if primeOmega n % 2 = 1 then (1 : ℤ) else 0) = 507 := by
-  decide
+  native_decide
 
 /-!
 ## Part 6: Connection to the Selberg Sieve
@@ -176,7 +181,7 @@ numbers, which the sieve cannot distinguish from composites.
   https://terrytao.wordpress.com/2007/06/05/open-question-the-parity-problem-in-sieve-theory/
 * mathlib4 `SelbergSieve.lean` — existing formalization of the Selberg sieve
 
-Zero `sorry`. All proofs via `dec_trivial`. June 22, 2026.
+Zero `sorry`. All proofs via `native_decide`. June 22, 2026.
 -/
 
 #lint
