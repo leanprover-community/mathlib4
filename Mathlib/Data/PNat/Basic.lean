@@ -21,7 +21,7 @@ that `Data.PNat.Defs` can have very few imports.
 
 @[expose] public section
 
-deriving instance Add, Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
+deriving instance Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
   AddCommSemigroup, CommMonoid, IsOrderedCancelMonoid, WellFoundedLT, AddLeftMono,
   AddLeftStrictMono, AddLeftReflectLE, AddLeftReflectLT for PNat
 
@@ -155,28 +155,6 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
   rcases k with - | k
   · exact hz
   exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
-
-/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
-not only to `Prop`. -/
-@[elab_as_elim, induction_eliminator]
-def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
-  rcases n with ⟨n, h⟩
-  induction n with
-  | zero => exact absurd h (by decide)
-  | succ n IH =>
-    rcases n with - | n
-    · exact one
-    · exact succ _ (IH n.succ_pos)
-
-@[simp]
-theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
-  rfl
-
-@[simp]
-theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
-    @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
-  obtain ⟨n, h⟩ := n
-  cases n <;> [exact absurd h (by decide); rfl]
 
 @[simp]
 theorem ofNat_le_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
