@@ -289,7 +289,7 @@ lemma exists_open_nhds_sub_compact_nhds {K : Compacts α} (L : K.compactNhds) :
   exact ⟨⟨U, openU⟩, KsubU, UsubL⟩
 
 /-- The compact neigbourhood induced by the existence of an open subset between two compacts -/
-def compactNhds_of_existsOpenSubsetBetween {K : Compacts α} (L : Compacts α) (U : Opens α)
+def compactNhdsOfExistsOpenSubsetBetween {K : Compacts α} (L : Compacts α) (U : Opens α)
     (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
     K.compactNhds :=
   ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
@@ -333,14 +333,17 @@ lemma is_compactNhds_of_isOpenRcNhds {K : Compacts α} {U : Opens α} (h : U ∈
 
 /-- The converting map from relatively compact opens
 neighbourhood of a compact subset to its opens neighbourhoods -/
-def oRcNhds_to_openNhds (K : Compacts α) : K.openRcNhds → K.openNhds := fun U ↦ ⟨_, U.property.2⟩
+def oRcNhdsToOpenNhds (K : Compacts α) : K.openRcNhds → K.openNhds := fun U ↦ ⟨_, U.property.2⟩
 
-lemma mono_oRcNhds_to_openNhds (K : Compacts α) : Monotone K.oRcNhds_to_openNhds := fun _ _ h ↦ h
+lemma mono_oRcNhds_to_openNhds (K : Compacts α) : Monotone K.oRcNhdsToOpenNhds := fun _ _ h ↦ h
 
-def oRcNhds_to_compactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :=
+/--
+An open relatively compact neighbourhood of `K`induces a compact neighbourhood by takin the closure
+-/
+def oRcNhdsToCompactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :=
   fun U ↦ ⟨_,is_compactNhds_of_isOpenRcNhds (Subtype.coe_prop U)⟩
 
-lemma mono_oRcNhds_to_compactNhds (K : Compacts α) : Monotone K.oRcNhds_to_compactNhds :=
+lemma mono_oRcNhds_to_compactNhds (K : Compacts α) : Monotone K.oRcNhdsToCompactNhds :=
   fun _ _ h ↦ closure_mono h
 
 instance [T2Space α] (K : Compacts α) : IsCodirectedOrder K.openRcNhds where
