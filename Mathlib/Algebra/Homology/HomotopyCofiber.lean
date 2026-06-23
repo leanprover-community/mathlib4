@@ -533,7 +533,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma inr_mapHomologicalComplexObjIso_hom :
     (H.mapHomologicalComplex c).map (inr φ) ≫
       (mapHomologicalComplexObjIso φ H).hom = inr _ := by
-  ext i
+  ext
   simp [mapHomologicalComplexObjIso]
 
 end
