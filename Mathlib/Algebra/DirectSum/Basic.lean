@@ -385,7 +385,7 @@ theorem sigmaFiberAddEquiv_apply' (x : ⨁ i, β i) :
 
 @[simp]
 theorem sigmaFiberAddEquiv_apply (x : ⨁ i, β i) (j : ι₂) (i' : { i : ι₁ // f i = j}) :
-    sigmaFiberAddEquiv f x j i'=  x i' := rfl
+    sigmaFiberAddEquiv f x j i' =  x i' := rfl
 
 @[simp]
 theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
