@@ -78,9 +78,7 @@ def restrictScalars' :
   root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
   coroot := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
   root_coroot_two i := by
-    have : algebraMap K L 2 = 2 := by
-      rw [← Int.cast_two (R := K), ← Int.cast_two (R := L), map_intCast]
-    exact FaithfulSMul.algebraMap_injective K L <| by simp [this]
+    exact FaithfulSMul.algebraMap_injective K L <| by simp
   reflectionPerm := P.reflectionPerm
   reflectionPerm_root i j := by
     ext; simpa [algebra_compatible_smul L] using P.reflectionPerm_root i j
