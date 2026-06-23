@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.RingQuot
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
@@ -57,11 +56,13 @@ so that our construction needs only the semiring structure of the tensor algebra
 inductive Rel : TensorAlgebra R L → TensorAlgebra R L → Prop
   | lie_compat (x y : L) : Rel (ιₜ ⁅x, y⁆ + ιₜ y * ιₜ x) (ιₜ x * ιₜ y)
 
+/-- `Rel` as a ring congruence, used to build the quotient. -/
+@[no_expose] def ringCon : RingCon (TensorAlgebra R L) := ringConGen (Rel R L)
+
 end UniversalEnvelopingAlgebra
 
 /-- The universal enveloping algebra of a Lie algebra. -/
-def UniversalEnvelopingAlgebra :=
-  RingQuot (UniversalEnvelopingAlgebra.Rel R L)
+def UniversalEnvelopingAlgebra := (UniversalEnvelopingAlgebra.ringCon R L).Quotient
 deriving Inhabited, Ring, Algebra R
 
 namespace UniversalEnvelopingAlgebra
@@ -69,7 +70,7 @@ namespace UniversalEnvelopingAlgebra
 /-- The quotient map from the tensor algebra to the universal enveloping algebra as a morphism of
 associative algebras. -/
 def mkAlgHom : TensorAlgebra R L →ₐ[R] UniversalEnvelopingAlgebra R L :=
-  RingQuot.mkAlgHom R (Rel R L)
+  RingCon.mkₐ R _
 
 variable {L}
 attribute [local instance 100] LieRing.ofAssociativeRing
@@ -82,7 +83,7 @@ def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
     map_lie' := fun {x y} => by
       suffices mkAlgHom R L (ιₜ ⁅x, y⁆ + ιₜ y * ιₜ x) = mkAlgHom R L (ιₜ x * ιₜ y) by
         rw [map_mul] at this; simp [LieRing.of_associative_ring_bracket, ← this]
-      exact RingQuot.mkAlgHom_rel _ (Rel.lie_compat x y) }
+      exact Quotient.sound <| RingCon.le_ringConGen _ _ (Rel.lie_compat x y) }
 
 variable {A : Type u₃} [Ring A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
 
@@ -91,11 +92,11 @@ set_option backward.isDefEq.respectTransparency false in
 associative algebras lift to associative algebra morphisms from the universal enveloping algebra. -/
 def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) where
   toFun f :=
-    RingQuot.liftAlgHom R
-      ⟨TensorAlgebra.lift R (f : L →ₗ[R] A), by
+    RingCon.liftₐ _
+      (TensorAlgebra.lift R (f : L →ₗ[R] A)) <| by
+        grw [ringCon, RingCon.ringConGen_le]
         intro a b h; induction h
-        simp only [LieRing.of_associative_ring_bracket, map_add, TensorAlgebra.lift_ι_apply,
-          LieHom.coe_toLinearMap, LieHom.map_lie, map_mul, sub_add_cancel]⟩
+        simp [LieRing.of_associative_ring_bracket]
   invFun F := (F : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R)
   left_inv f := by
     ext
@@ -106,10 +107,9 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [LieHom.coe_comp, Function.comp_apply, AlgHom.coe_toLieHom,
       UniversalEnvelopingAlgebra.ι_apply, mkAlgHom]
-    simp only [UniversalEnvelopingAlgebra, RingQuot.liftAlgHom_mkAlgHom_apply,
-      TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
+    simp [UniversalEnvelopingAlgebra]
   right_inv F := by
-    apply RingQuot.ringQuot_ext'
+    apply RingCon.Quotient.hom_extₐ
     ext
     -- Porting note: was
     -- simp only [ι, mkAlgHom, TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap,
