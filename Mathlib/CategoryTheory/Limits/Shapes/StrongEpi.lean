@@ -66,7 +66,7 @@ class StrongMono (f : P ⟶ Q) : Prop where
 
 attribute [to_dual existing] StrongEpi.llp StrongEpi.mk
 
-@[to_dual (reorder := hf (X Y))]
+@[to_dual (reorder := hf (X Y, u v))]
 theorem StrongEpi.mk' {f : P ⟶ Q} [Epi f]
     (hf : ∀ (X Y : C) (z : X ⟶ Y) (_ : Mono z) (u : P ⟶ X)
       (v : Q ⟶ Y) (sq : CommSq u f z v), sq.HasLift) : StrongEpi f where
