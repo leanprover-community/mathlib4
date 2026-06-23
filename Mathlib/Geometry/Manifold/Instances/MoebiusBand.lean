@@ -1174,10 +1174,6 @@ theorem not_orientable :
   -- Get points where the tangent coordChange has opposite determinant signs.
   obtain ⟨p, q, zU, zL, hzU, hzL, hdet_pos, hdet_neg, hpc_p, hpc_q⟩ :=
     exists_tangentCoordChangeL_neg_det
-  -- The compatibility condition at zU and zL:
-  have hcompU := orient.compatible p q zU hzU
-  have hcompL := orient.compatible p q zL hzL
-  -- The determinants have opposite signs, so Orientation.map gives different results.
   have hcard : Fintype.card (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1) × ℝ))) =
       Module.finrank ℝ (EuclideanSpace ℝ (Fin 1) × ℝ) := by simp
   set I := (𝓡 1).prod 𝓘(ℝ, ℝ)
@@ -1185,38 +1181,42 @@ theorem not_orientable :
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ) (TangentSpace I) q) zU
   set eL := (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ) (TangentSpace I) p).coordChangeL ℝ
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ) (TangentSpace I) q) zL
-  set σU := Manifold.signedOrientation (orient.chartSign p ⟨zU, hzU.1⟩)
+  set σU := Manifold.signedOrientation (orient.sign zU + Manifold.transSign I p zU)
     (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1) × ℝ))
-  set σL := Manifold.signedOrientation (orient.chartSign p ⟨zL, hzL.1⟩)
+  set σL := Manifold.signedOrientation (orient.sign zL + Manifold.transSign I p zL)
     (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1) × ℝ))
-  set τU := Manifold.signedOrientation (orient.chartSign q ⟨zU, hzU.2⟩)
+  set τU := Manifold.signedOrientation (orient.sign zU + Manifold.transSign I q zU)
     (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1) × ℝ))
-  set τL := Manifold.signedOrientation (orient.chartSign q ⟨zL, hzL.2⟩)
+  set τL := Manifold.signedOrientation (orient.sign zL + Manifold.transSign I q zL)
     (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1) × ℝ))
-  -- Positive det: CL zU preserves orientation
+  -- The chart-sign cocycle at zU and zL:
+  have hcompU : Orientation.map _ eU.toLinearEquiv σU = τU := orient.compatible I hzU.1 hzU.2
+  have hcompL : Orientation.map _ eL.toLinearEquiv σL = τL := orient.compatible I hzL.1 hzL.2
+  -- Positive det: eU preserves orientation; negative det: eL reverses it.
   have hU : Orientation.map _ eU.toLinearEquiv σU = σU :=
       (Orientation.map_eq_iff_det_pos σU _ hcard).mpr hdet_pos
-  -- Negative det: CL zL reverses orientation
   have hL : Orientation.map _ eL.toLinearEquiv σL = -σL :=
       (Orientation.map_eq_neg_iff_det_neg σL _ hcard).mpr hdet_neg
-  -- From hcompU and hU: σU = τU
+  -- From hcompU and hU: σU = τU;  from hcompL and hL: -σL = τL.
   rw [hU] at hcompU
-  -- From hcompL and hL: -σL = τL
   rw [hL] at hcompL
+  -- `sign + transSign ·` is locally constant on each (preconnected) chart domain.
   have hsignP : σU = σL := by
     simp only [σU, σL]
     congr 1
-    exact (orient.chartSign p).apply_eq_of_isPreconnected hpc_p (mem_univ _) (mem_univ _)
+    exact ((IsLocallyConstant.iff_continuous _).mpr (orient.continuousOn_sign p).restrict
+      |>.apply_eq_of_isPreconnected hpc_p (mem_univ ⟨zU, hzU.1⟩) (mem_univ ⟨zL, hzL.1⟩))
   have hsignQ : τU = τL := by
     simp only [τU, τL]
     congr 1
-    exact (orient.chartSign q).apply_eq_of_isPreconnected hpc_q (mem_univ _) (mem_univ _)
+    exact ((IsLocallyConstant.iff_continuous _).mpr (orient.continuousOn_sign q).restrict
+      |>.apply_eq_of_isPreconnected hpc_q (mem_univ ⟨zU, hzU.2⟩) (mem_univ ⟨zL, hzL.2⟩))
   have hcontra : σU = -σU := by
     calc
       σU = τU := hcompU
       _ = τL := hsignQ
       _ = -σL := hcompL.symm
-      _ = -σU := by simp [hsignP]
+      _ = -σU := by rw [hsignP]
   exact Module.Ray.ne_neg_self σU hcontra
 
 end MoebiusBand
