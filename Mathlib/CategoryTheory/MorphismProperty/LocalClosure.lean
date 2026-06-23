@@ -119,6 +119,7 @@ instance [P.IsStableUnderBaseChange] [K.IsStableUnderBaseChange] [HasPullbacks C
       intro U v ⟨Z, u, hu⟩
       exact ih _ _ hu _ g (pullback.fst _ _) _ (.paste_vert (.of_hasPullback _ _) h)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma sourceLocalClosure_iff_of_respectsLeft [P.RespectsIso] [P.RespectsLeft K.morphismProperty]
     [K.HasIsos] [K.IsStableUnderBaseChange] [K.IsStableUnderComposition] [K.HasPullbacks] {X Y : C}
