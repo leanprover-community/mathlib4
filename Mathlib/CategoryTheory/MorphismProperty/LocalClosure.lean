@@ -23,12 +23,7 @@ open CategoryTheory Limits MorphismProperty
 
 variable {C : Type u} [Category.{v} C]
 
-namespace CategoryTheory
-
-instance (K : Precoverage C) : Precoverage.Small.{max u v} K where
-  zeroHypercoverSmall := inferInstance
-
-namespace MorphismProperty
+namespace CategoryTheory.MorphismProperty
 
 variable {K : Precoverage C}
 
@@ -71,30 +66,6 @@ lemma le_of_isLocalAtSource (h : P ≤ Q) [Q.IsLocalAtSource K] : sourceLocalClo
 
 instance [P.ContainsIdentities] : ContainsIdentities (sourceLocalClosure K P) where
   id_mem _ := le _ (P.id_mem _)
-
-instance {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) {X' : C} (i : X' ⟶ X) [IsIso i] [HasPullback f g] :
-    HasPullback (i ≫ f) g :=
-  IsPullback.paste_vert
-    (IsPullback.of_vert_isIso_mono (fst := pullback.fst _ _ ≫ inv i) (snd := 𝟙 (pullback f g)) <|
-      ⟨by simp⟩) (.of_hasPullback f g) |>.hasPullback
-
-@[simp]
-lemma _root_.CategoryTheory.Limits.HasPullback.comp_left_left_iff_of_isIso
-    {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {X' : C} (i : X' ⟶ X) [IsIso i] :
-    HasPullback (i ≫ f) g ↔ HasPullback f g := by
-  refine ⟨?_, fun _ ↦ inferInstance⟩
-  intro h
-  rw [← IsIso.inv_hom_id_assoc i f]
-  infer_instance
-
-instance {X Y Z Z' : C} {f : X ⟶ Z} {g : Y ⟶ Z'} (i : Z ⟶ Z') [IsIso i] [HasPullback (f ≫ i) g] :
-    HasPullback f (g ≫ inv i) := by
-  simpa using hasPullback_of_comp_mono (f ≫ i) g (inv i)
-
-lemma _root_.CategoryTheory.Limits.HasPullback.comp_left_right_iff_of_isIso
-    {X Y Z Z' : C} {f : X ⟶ Z} {g : Y ⟶ Z'} (i : Z ⟶ Z') [IsIso i] :
-    HasPullback (f ≫ i) g ↔ HasPullback f (g ≫ inv i) :=
-  ⟨fun h ↦ inferInstance, fun h ↦ by simpa using hasPullback_of_comp_mono f (g ≫ inv i) i⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance [P.IsStableUnderBaseChange] [K.IsStableUnderBaseChange] [HasPullbacks C] :
