@@ -189,6 +189,17 @@ theorem two_not_mem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.
   rw [← pow_one p] at hK hζ
   exact hζ.toInteger_sub_one_not_dvd_two h.ne'
 
+omit hp hK [NumberField K] in
+lemma associated_one_sub_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimitiveRoot η p) :
+    Associated (1 - hζ.toInteger) (1 - hη.toInteger) := by
+  obtain ⟨i, -, hi, hζη⟩ := hζ.isPrimitiveRoot_iff.mp hη
+  have htoInteger : hη.toInteger = hζ.toInteger ^ i := by
+    apply RingOfIntegers.ext
+    exact hζη.symm
+  rw [htoInteger]
+  simpa only [neg_sub] using
+    (hζ.toInteger_isPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime hi).neg_left.neg_right
+
 omit [NumberField K] hK in
 open Polynomial in
 /-- `(ζ - 1) ^ (p - 1)` is associated to `p`, where `ζ` is a primitive `p`-th root of unity and
@@ -202,10 +213,11 @@ theorem associated_zeta_sub_one_pow_prime :
     ← Finset.prod_const]
   apply Associated.prod
   intro η hη
-  refine hζ.toInteger_isPrimitiveRoot.ntRootsFinset_pairwise_associated_sub_one_sub_of_prime
-    hp.out (one_mem_nthRootsFinset hp.out.pos) ?_ ?_
-  · exact (isPrimitiveRoot_of_mem_primitiveRoots hη).mem_nthRootsFinset hp.out.pos
-  · exact ((isPrimitiveRoot_of_mem_primitiveRoots hη).ne_one hp.out.one_lt).symm
+  have hη' : IsPrimitiveRoot (η : K) p :=
+    (isPrimitiveRoot_of_mem_primitiveRoots hη).map_of_injective RingOfIntegers.coe_injective
+  have hηtoInteger : hη'.toInteger = η := RingOfIntegers.ext rfl
+  simpa only [hηtoInteger, neg_sub] using
+    (associated_one_sub_of_isPrimitiveRoot p hζ hη').neg_left
 
 /-- If `ζ - 1` does not divide `x`, then `p` and `x` are coprime, where `ζ` is a primitive `p`-th
 root of unity and `p` is prime. -/
