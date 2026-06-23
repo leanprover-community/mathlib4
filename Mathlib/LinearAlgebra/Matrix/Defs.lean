@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Matrices
@@ -50,6 +51,7 @@ universe u u' v w
 
 /-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are indexed by `m`
 and whose columns are indexed by `n`. -/
+@[wikidata Q44337]
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 
@@ -219,6 +221,39 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   inferInstanceAs <| Module R (m → n → α)
+
+instance [Add α] [IsAddCommutative α] : IsAddCommutative <| Matrix m n α :=
+  inferInstanceAs <| IsAddCommutative <| m → n → α
+
+instance [AddCommMagma α] : AddCommMagma <| Matrix m n α :=
+  inferInstanceAs <| AddCommMagma <| m → n → α
+
+instance [Add α] [IsLeftCancelAdd α] : IsLeftCancelAdd <| Matrix m n α :=
+  inferInstanceAs <| IsLeftCancelAdd <| m → n → α
+
+instance [Add α] [IsRightCancelAdd α] : IsRightCancelAdd <| Matrix m n α :=
+  inferInstanceAs <| IsRightCancelAdd <| m → n → α
+
+instance [Add α] [IsCancelAdd α] : IsCancelAdd <| Matrix m n α :=
+  inferInstanceAs <| IsCancelAdd <| m → n → α
+
+instance [AddLeftCancelSemigroup α] : AddLeftCancelSemigroup <| Matrix m n α :=
+  inferInstanceAs <| AddLeftCancelSemigroup <| m → n → α
+
+instance [AddRightCancelSemigroup α] : AddRightCancelSemigroup <| Matrix m n α :=
+  inferInstanceAs <| AddRightCancelSemigroup <| m → n → α
+
+instance [AddLeftCancelMonoid α] : AddLeftCancelMonoid <| Matrix m n α :=
+  inferInstanceAs <| AddLeftCancelMonoid <| m → n → α
+
+instance [AddRightCancelMonoid α] : AddRightCancelMonoid <| Matrix m n α :=
+  inferInstanceAs <| AddRightCancelMonoid <| m → n → α
+
+instance [AddCancelMonoid α] : AddCancelMonoid <| Matrix m n α :=
+  inferInstanceAs <| AddCancelMonoid <| m → n → α
+
+instance [AddCancelCommMonoid α] : AddCancelCommMonoid <| Matrix m n α :=
+  inferInstanceAs <| AddCancelCommMonoid <| m → n → α
 
 section
 

@@ -220,9 +220,9 @@ variable {R : Type*} [CommRing R]
   rintro g (hg | hg)
   · exact HasDetPlusMinusOne.det_eq hg
   · by_cases hn : Even (Fintype.card n)
-    · convert HasDetPlusMinusOne.det_eq hg using 1 <;>
+    · convert! HasDetPlusMinusOne.det_eq hg using 1 <;>
         simp [Units.ext_iff, det_neg, hn]
-    · convert (HasDetPlusMinusOne.det_eq hg).symm using 1 <;>
+    · convert! (HasDetPlusMinusOne.det_eq hg).symm using 1 <;>
         simp [Units.ext_iff, det_neg, Nat.not_even_iff_odd.mp hn, neg_eq_iff_eq_neg]
 
 lemma Subgroup.hasDetOne_adjoinNegOne_iff {𝒢 : Subgroup (GL n R)} (hn : Even (Fintype.card n)) :
