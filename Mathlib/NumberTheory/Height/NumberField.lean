@@ -299,7 +299,6 @@ lemma exists_nat_le_mulHeight₁ (x : K) :
     simpa [ha₂, hv] using absNorm_mul_finprod_finitePlace_eq_one (show ![a, n] ≠ 0 by simp [hn])
   rw [pow_sub_one_mul (totalWeight_pos K).ne', mul_left_comm, this, mul_one,
     totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum univ]
-  refine prod_le_prod (fun _ _ ↦ by positivity) fun v _ ↦ ?_
   gcongr
   exact Finite.le_ciSup_of_le 1 <| by simp
 
@@ -316,7 +315,7 @@ private lemma infinitePlace_apply_le_of_prod_le {n : ℕ} (hn : n ≠ 0) (B : �
          (⨆ i, v (![↑x, ↑n] i)) ^ (v.mult - 1) * ⨆ i, v (![(x : K), n] i) := by
       gcongr
       · exact Real.iSup_nonneg_of_nonnegHomClass ..
-      · refine mul_le_mul_iff_left₀ ((Nat.cast_pos (α := ℝ)).mpr hn.pos) |>.mp ?_
+      · refine mul_le_mul_iff_left₀ (a := (n : ℝ)) (mod_cast hn.pos) |>.mp ?_
         rw [pow_sub_one_mul (totalWeight_pos K).ne', totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum,
           ← prod_erase_mul _ _ (mem_univ v), ← pow_sub_one_mul v.mult_ne_zero, ← mul_assoc]
         gcongr
