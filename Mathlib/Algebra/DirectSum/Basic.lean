@@ -397,10 +397,10 @@ theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
   let h := Equiv.sigmaFiberEquiv f
   let k : (j : ι₂) × {i₁ : ι₁ // f i₁ = j} := ⟨f i, ⟨i, rfl⟩⟩
   calc sigmaFiberAddEquiv f (of β (h k) x)
-  _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β k.2) k x) := by
+    _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β k.2) k x) := by
       rw [sigmaFiberAddEquiv_apply']
       exact congrArg sigmaCurry (equivCongrLeft_of (h := h.symm) _ _)
-  _ = of _ k.1 (of _ k.2 x) := by
+    _ = of _ k.1 (of _ k.2 x) := by
       rw [sigmaCurry_of]
 
 end SigmaFiber
