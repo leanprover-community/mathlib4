@@ -248,6 +248,35 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
   rw [← two_mul, ← M.coe.sum_degrees_eq_twice_card_edges]
   simp [h, Finset.card_univ]
 
+/-- Twice the number of edges of a matching is at most the number of vertices: each edge
+contributes two distinct vertices, and the edges of a matching are pairwise vertex-disjoint. -/
+theorem IsMatching.two_mul_card_edgeSet_le [Fintype V] [DecidableEq V] [Fintype ↥M.edgeSet]
+    (h : M.IsMatching) : 2 * M.edgeSet.toFinset.card ≤ Fintype.card V := by
+  have hdisj : ∀ e ∈ M.edgeSet.toFinset, ∀ f ∈ M.edgeSet.toFinset, e ≠ f →
+      Disjoint e.toFinset f.toFinset := by
+    intro e he f hf hef
+    rw [Set.mem_toFinset] at he hf
+    rw [Finset.disjoint_left]
+    intro x hxe hxf
+    rw [Sym2.mem_toFinset] at hxe hxf
+    obtain ⟨y, rfl⟩ := Sym2.mem_iff_exists.mp hxe
+    obtain ⟨z, rfl⟩ := Sym2.mem_iff_exists.mp hxf
+    rw [Subgraph.mem_edgeSet] at he hf
+    apply hef
+    rw [h.eq_of_adj_left he hf]
+  have hcard2 : ∀ e ∈ M.edgeSet.toFinset, e.toFinset.card = 2 := by
+    intro e he
+    rw [Set.mem_toFinset] at he
+    exact Sym2.card_toFinset_of_not_isDiag e (G.not_isDiag_of_mem_edgeSet (M.edgeSet_subset he))
+  calc 2 * M.edgeSet.toFinset.card
+      = ∑ e ∈ M.edgeSet.toFinset, e.toFinset.card := by
+        rw [Finset.sum_congr rfl hcard2, Finset.sum_const, smul_eq_mul]; omega
+    _ = (M.edgeSet.toFinset.biUnion Sym2.toFinset).card := (Finset.card_biUnion hdisj).symm
+    _ ≤ Fintype.card V := by
+        rw [← Finset.card_univ]; exact Finset.card_le_card (Finset.subset_univ _)
+
+
+
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
   refine ⟨?_, fun hm => ⟨fun v _ => hm v, fun v => ?_⟩⟩
   · rintro ⟨hm, hs⟩ v
