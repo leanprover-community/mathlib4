@@ -759,6 +759,10 @@ lemma length_dropLast_add_one {p : G.Walk u v} (hp : ¬p.Nil) :
 lemma length_dropLast (p : G.Walk u v) : p.dropLast.length = p.length - 1 := by
   cases p <;> simp [← length_dropLast_add_one not_nil_cons]
 
+lemma snd_dropLast (p : G.Walk u v) (h : p.length ≠ 1) : p.dropLast.snd = p.snd := by
+  match p with
+  | nil => rfl | cons _ nil => simp at h | cons _ (cons ..) => simp
+
 protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by
   cases p <;> simp at hp ⊢
 
