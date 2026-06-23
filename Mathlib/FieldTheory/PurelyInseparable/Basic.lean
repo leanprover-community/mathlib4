@@ -6,7 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.CharP.IntermediateField
-public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
@@ -440,6 +440,14 @@ theorem isPurelyInseparable_iff_finSepDegree_eq_one :
     IsPurelyInseparable F E ↔ finSepDegree F E = 1 :=
   ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,
     fun h ↦ isPurelyInseparable_of_finSepDegree_eq_one h⟩
+
+/-- An extension `E / F` is purely inseparable if and only there is at most one
+  embedding `E →ₐ[F] AlgebraicClosure E` -/
+theorem isPurelyInseparable_iff_subsingleton_emb :
+    IsPurelyInseparable F E ↔ Subsingleton (Field.Emb F E) := by
+  rw [isPurelyInseparable_iff_finSepDegree_eq_one, Field.finSepDegree, Nat.card_eq_one_iff_unique,
+    and_iff_left_iff_imp]
+  infer_instance
 
 lemma isSeparable_iff_finInsepDegree_eq_one :
     Algebra.IsSeparable F K ↔ finInsepDegree F K = 1 := by

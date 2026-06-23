@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
@@ -122,6 +122,8 @@ theorem _root_.MeasureTheory.ext_iff_measureReal_singleton [Countable α]
   congr! with x
   rw [measureReal_def, measureReal_def, ENNReal.toReal_eq_toReal_iff]
   simp [measure_singleton_lt_top, ne_of_lt]
+
+alias ⟨_, ext_of_measureReal_singleton⟩ := MeasureTheory.ext_iff_measureReal_singleton
 
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
@@ -276,7 +278,8 @@ theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
     rwa [ae_dirac_eq]
   · rw [restrict_eq_zero, dirac_apply, indicator_of_notMem has]
 
-lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NoAtoms μ] :
+lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α)
+    [NullSingletonClass μ] :
     Measure.dirac x ⟂ₘ μ :=
   ⟨{x}ᶜ, (MeasurableSet.singleton x).compl, by simp, by simp⟩
 
@@ -349,10 +352,10 @@ variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a} • .dirac a where
   mp hμ := by
     ext t ht
-    rw [← measure_diff_null (s := t) hμ]
+    rw [← measure_sdiff_null (s := t) hμ]
     dsimp
     classical
-    rw [Set.diff_compl, ← (s : Set α).biUnion_of_singleton]
+    rw [Set.sdiff_compl, ← (s : Set α).biUnion_of_singleton]
     simp_rw [Finset.mem_coe, Set.inter_iUnion]
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
       (by measurability)]
