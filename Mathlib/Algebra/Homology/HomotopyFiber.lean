@@ -179,6 +179,8 @@ variable
 
 variable (hc : ∀ (i : α), ∃ j, c.Rel i j)
 
+/-- The isomorphism expressing the commutation between taking
+the path object of a homological complex and applying an additive functor. -/
 @[no_expose]
 noncomputable def mapHomologicalComplexObjIso :
     (H.mapHomologicalComplex c).obj (K.pathObject) ≅
@@ -199,7 +201,6 @@ lemma mapHomologicalComplexObjIso_hom_map_π₁ :
   Quiver.Hom.op_inj ((opFunctor _ _).map_injective
     (cylinder.map_ι₁_mapHomologicalComplexObjIso_hom K.op H.op hc))
 end
-
 
 end pathObject
 
