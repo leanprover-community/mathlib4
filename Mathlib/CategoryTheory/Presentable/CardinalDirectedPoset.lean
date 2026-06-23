@@ -436,6 +436,8 @@ consisting of subsets of `X` of cardinality `< κ`. -/
 abbrev SetCardinalLT := Subtype (fun (S : Set X) ↦ HasCardinalLT S κ)
 
 variable {X} in
+/-- Given a regular cardinal `κ` and `x : X`, this is the singleton `{x}`,
+considered as a subset of `X` of cardinality `< κ`. -/
 abbrev SetCardinalLT.singleton (x : X) : SetCardinalLT κ X :=
   ⟨{x}, hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out)⟩
 
