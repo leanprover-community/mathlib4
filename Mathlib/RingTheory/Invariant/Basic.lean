@@ -41,7 +41,9 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
 
 @[expose] public section
 
-assert_not_exists IsGalois
+-- this file should not import any field theory beyond the contents of `FieldTheory/Fixed.lean`
+-- material involving Galois theory should be placed in `RingTheory/Invariant/Galois.lean`
+assert_not_exists IntermediateField.adjoin
 
 open scoped Pointwise
 
