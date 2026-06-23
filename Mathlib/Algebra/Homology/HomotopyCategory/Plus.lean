@@ -284,12 +284,12 @@ instance [HasZeroObject C] [HasBinaryBiproducts C] [HasZeroObject D] [HasBinaryB
 instance [Full F] [Faithful F] : Full F.mapHomotopyCategoryPlus where
   map_surjective f :=
     ⟨ObjectProperty.homMk ((F.mapHomotopyCategory _).preimage f.hom), by
-      ext : 1
+      ext
       exact (F.mapHomotopyCategory _).map_preimage f.hom⟩
 
 instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
   map_injective h := by
-    ext : 1
+    ext
     exact (F.mapHomotopyCategory _).map_injective ((ObjectProperty.ι _).congr_map h)
 
 /-- Given additive functors that are related by an isomorphism `F ⋙ G ≅ H`, this is
