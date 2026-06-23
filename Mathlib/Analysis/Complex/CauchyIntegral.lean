@@ -778,23 +778,9 @@ private lemma hzero (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s :
       simp
   _ = 0 := by
       refine Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable
-        f (x₁ + y * I) (x₂ + m * I) s hs ?_ ?_ <;>
-      simp only [re_of_real_add_real_mul_I x₁ y, re_of_real_add_real_mul_I x₂ m,
-                im_of_real_add_real_mul_I x₁ y, im_of_real_add_real_mul_I x₂ m]
-      · apply hcont.mono
-        rw [reProdIm_subset_iff]
-        gcongr
-        rw [uIcc_of_le hm]
-        exact Icc_subset_Ici_self
-      · intro z hz
-        apply hdiff z
-        obtain ⟨hz₁, hz₂⟩ := hz
-        refine ⟨?_, hz₂⟩
-        rw [mem_reProdIm] at hz₁ ⊢
-        refine ⟨hz₁.1, ?_⟩
-        rw [mem_Ioi]
-        rw [inf_eq_left.2 hm] at hz₁
-        exact hz₁.2.1
+        f (x₁ + y * I) (x₂ + m * I) s hs ?_ ?_ <;> simp
+      · grind [hcont.mono, reProdIm_subset_iff, uIcc_of_le]
+      · grind [mem_reProdIm]
 
 /-- A direct consequence of the **Cauchy-Goursat Theorem for rectangles**: given the conditions of
 the Cauchy-Goursat Theorem between two vertical lines in the Complex plane, fixing some `y`, the
