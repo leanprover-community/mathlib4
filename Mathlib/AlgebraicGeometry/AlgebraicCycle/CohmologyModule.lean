@@ -40,9 +40,19 @@ noncomputable instance {U : X.Opens} : Module R Γ(F, U) :=
 
 lemma smul_presheaf_map {U V : X.Opens} (i : U ⟶ V) (r : R) (x : Γ(F, V)) :
     F.presheaf.map i.op (r • x) = r • F.presheaf.map i.op x := by
-  show F.presheaf.map i.op (structureRingHom V r • x)
+  change F.presheaf.map i.op (structureRingHom V r • x)
     = structureRingHom U r • F.presheaf.map i.op x
   rw [Scheme.Modules.map_smul, structureRingHom_naturality]
+
+open CategoryTheory.Abelian in
+@[simp]
+lemma boobo {C : Type*} [Category* C] [Abelian C] [HasExt C] {X Y : C}
+  [HasDerivedCategory C] {n : ℕ} :
+  (Ext.homEquiv (C := C) (X := X) (Y := Y) (n := n)).symm Zero.zero = 0 := by
+  ext : 1
+  simp_all only [Equiv.apply_symm_apply, Ext.zero_hom]
+  rfl
+
 
 open CategoryTheory.Abelian in
 /-- Given a ring homomorphism `φ : R →+* End G` into the endomorphism ring of an object `G`
@@ -54,29 +64,29 @@ noncomputable def extModuleOfRingHom {𝒜 : Type*} [Category 𝒜] [Abelian �
     Module R (Ext A G n) where
   smul r x := x.comp (Ext.mk₀ (φ r)) (add_zero n)
   one_smul x := by
-    show x.comp (Ext.mk₀ (φ 1)) (add_zero n) = x
+    change x.comp (Ext.mk₀ (φ 1)) (add_zero n) = x
     rw [map_one, End.one_def, Ext.comp_mk₀_id]
   mul_smul r s x := by
-    show x.comp (Ext.mk₀ (φ (r * s))) (add_zero n) =
+    change x.comp (Ext.mk₀ (φ (r * s))) (add_zero n) =
       (x.comp (Ext.mk₀ (φ s)) (add_zero n)).comp (Ext.mk₀ (φ r)) (add_zero n)
     rw [map_mul, End.mul_def, ← Ext.mk₀_comp_mk₀, Ext.comp_assoc_of_third_deg_zero]
   smul_zero r := by
-    show (0 : Ext A G n).comp (Ext.mk₀ (φ r)) (add_zero n) = 0
-    rw [Ext.zero_comp]
+    unfold_projs
+    simp
   zero_smul x := by
-    show x.comp (Ext.mk₀ (φ 0)) (add_zero n) = 0
+    change x.comp (Ext.mk₀ (φ 0)) (add_zero n) = 0
     rw [map_zero]
-    show x.comp (Ext.mk₀ (0 : G ⟶ G)) (add_zero n) = 0
+    change x.comp (Ext.mk₀ (0 : G ⟶ G)) (add_zero n) = 0
     rw [Ext.mk₀_zero, Ext.comp_zero]
   smul_add r x y := by
-    show (x + y).comp (Ext.mk₀ (φ r)) (add_zero n) =
+    change (x + y).comp (Ext.mk₀ (φ r)) (add_zero n) =
       x.comp (Ext.mk₀ (φ r)) (add_zero n) + y.comp (Ext.mk₀ (φ r)) (add_zero n)
     rw [Ext.add_comp]
   add_smul r s x := by
     have h : ∀ g₁ g₂ : G ⟶ G, x.comp (Ext.mk₀ (g₁ + g₂)) (add_zero n) =
         x.comp (Ext.mk₀ g₁) (add_zero n) + x.comp (Ext.mk₀ g₂) (add_zero n) := by
       intro g₁ g₂; rw [Ext.mk₀_add, Ext.comp_add]
-    show x.comp (Ext.mk₀ (φ (r + s))) (add_zero n) =
+    change x.comp (Ext.mk₀ (φ (r + s))) (add_zero n) =
       x.comp (Ext.mk₀ (φ r)) (add_zero n) + x.comp (Ext.mk₀ (φ s)) (add_zero n)
     rw [map_add]
     exact h (φ r) (φ s)
@@ -98,14 +108,12 @@ noncomputable def smulEnd :
   toFun r := Sheaf.homEquiv.symm (smulNatTrans F r)
   map_one' := by
     apply Sheaf.hom_ext
-    show smulNatTrans F 1 = 𝟙 _
     refine NatTrans.ext (funext fun U => ?_)
     have key : DistribSMul.toAddMonoidHom Γ(F, U.unop) (1 : R) = AddMonoidHom.id _ := by
       ext y; exact one_smul R y
     exact congrArg AddCommGrpCat.ofHom key
   map_mul' r s := by
     apply Sheaf.hom_ext
-    show smulNatTrans F (r * s) = smulNatTrans F s ≫ smulNatTrans F r
     refine NatTrans.ext (funext fun U => ?_)
     have key : DistribSMul.toAddMonoidHom Γ(F, U.unop) (r * s) =
         (DistribSMul.toAddMonoidHom Γ(F, U.unop) r).comp
@@ -114,14 +122,12 @@ noncomputable def smulEnd :
     exact congrArg AddCommGrpCat.ofHom key
   map_zero' := by
     apply Sheaf.hom_ext
-    show smulNatTrans F 0 = 0
     refine NatTrans.ext (funext fun U => ?_)
     have key : DistribSMul.toAddMonoidHom Γ(F, U.unop) (0 : R) = 0 := by
       ext y; exact zero_smul R y
     exact congrArg AddCommGrpCat.ofHom key
   map_add' r s := by
     apply Sheaf.hom_ext
-    show smulNatTrans F (r + s) = smulNatTrans F r + smulNatTrans F s
     refine NatTrans.ext (funext fun U => ?_)
     have key : DistribSMul.toAddMonoidHom Γ(F, U.unop) (r + s) =
         DistribSMul.toAddMonoidHom Γ(F, U.unop) r +

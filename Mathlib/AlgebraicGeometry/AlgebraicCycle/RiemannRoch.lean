@@ -46,6 +46,8 @@ where the set `s` is the set of codimension one points.
 
 Note: I can't currently think of a good generalization beyond the case of the integers, but I
 imagine one might exist.
+
+TODO: Clean up this silly proof
  -/
 @[elab_as_elim]
 theorem inductionOn [CompactSpace X]
@@ -96,8 +98,8 @@ theorem inductionOn [CompactSpace X]
       have hE'_apply : ∀ x, E' x = if x = p then 0 else E x := by
         intro x
         by_cases hxp : x = p
-        · subst hxp; simp [hE'_def, single_apply]
-        · simp [hE'_def, single_apply, hxp]
+        · subst hxp; simp [hE'_def]
+        · simp [hE'_def, hxp]
       have hsub : E'.support ⊆ E.support := by
         intro x hx
         have hx' : E' x ≠ 0 := hx
@@ -160,7 +162,6 @@ lemma degree_sum (D D' : AlgebraicCycle X ℤ) [CompactSpace X]
       Function.HasFiniteSupport, Function.support_mul] at this ⊢
     exact Set.Finite.inter_of_left this _
 
-
 @[simp]
 lemma degree_neg (D : AlgebraicCycle X ℤ)
     : degree k (-D) = - degree k D := by simp [degree, finsum_neg_distrib]
@@ -197,33 +198,109 @@ depends on the codimension one part (more or less).
 I.e. if D is not effective outside of codimension one, then the sheaf has no sections anywhere.
 Otherwise, it is isomorphic to Oₓ(D') for D' the codimension one part of D.
 
-Note: these should probably be typeclasses
+Note: these should probably be typeclasses, and presumably we should just have this hf₁ be ∃ N, ...
+
+Another note: Joel is going to put in some stuff on Cech cohomology, so we should put this stuff
+in a form that is a bit more sensible.
+
+Namely, I think it's much more sensible to work with finiteness of H^0 as opposed to directly
+using the LES like this.
+
+It's also probably better to only have these hypotheses for O_X, though right now we do not have
+what's required to show that O_X is O_X(0) on a normal scheme. I'm not sure if these assumptions
+will ever be useful being directly applied to O_X(0).
+
+We can of course sorry away some things - i.e. we should always have a map from O_X to O_X(0) and
+we can just sorry that this thing is an isomorphism in the cases we care about
 -/
 variable {N : ℕ}
-    (hf₁ : ∀ (D : AlgebraicCycle X ℤ),
-        ∀ n, Module.Finite k (lesH (CommRingCat.of k) D.sheaf n))
-    (hb₁ : ∀ (D : AlgebraicCycle X ℤ),
-        ∀ n, N < n → IsZero (lesH (CommRingCat.of k) D.sheaf n))
+    (hf₁ : ∀ (D : AlgebraicCycle X ℤ), ∀ n, Module.Finite k (D.sheaf.H k n))
+    (hb₁ : ∀ (D : AlgebraicCycle X ℤ), ∀ n, N < n → Subsingleton (D.sheaf.H k n))
 
 /-
 This is a funny way of spelling that X is a curve (i.e. it's a scheme where all codimension one
 points are closed)
 -/
-variable (hX : ∀ x : X, coheight x = 1 → ∀ p, x ≤ p → x = p)
+--variable (hX : ∀ x : X, coheight x = 1 → ∀ p, x ≤ p → x = p)
 
+/--
+`X` has Krull dimension at most `n` if and only if every point of coheight at least `n` is minimal
+in the specialization order. Geometrically, this says that the codimension-`n` points are closed.
+-/
+lemma krullDimLE_iff_coheight_le_implies_eq {X : Type*} [PartialOrder X] {n : ℕ} :
+    Order.KrullDimLE n X ↔ (∀ x : X, n ≤ coheight x → ∀ y, y ≤ x → y = x) := by
+  rw [Order.krullDimLE_iff]
+  constructor
+  · -- If `krullDim X ≤ n` and `coheight x ≥ n`, then `x` is minimal: a strict predecessor `y < x`
+    -- would extend any chain above `x`, giving `coheight y ≥ coheight x + 1 ≥ n + 1` and hence
+    -- `krullDim X ≥ n + 1`, contradicting `krullDim X ≤ n`.
+    intro h x hx y hy
+    by_contra hne
+    -- The specialization order on a scheme is a `Preorder`; it is antisymmetric since schemes are
+    -- `T0`, so `y ≤ x` with `y ≠ x` upgrades to `y < x`.
+    have hlt : y < x := by
+      refine lt_of_le_not_ge hy fun hxy => hne ?_
+      --rw [Scheme.le_iff_specializes] at hy hxy
+      exact (hy.antisymm hxy)--.eq.symm
+    have h2 : ((n + 1 : ℕ) : ℕ∞) ≤ coheight y := by
+      have hstep : (n : ℕ∞) + 1 ≤ coheight x + 1 := by gcongr
+      rw [Nat.cast_add, Nat.cast_one]
+      exact hstep.trans (coheight_add_one_le hlt)
+    have h3 : ((n + 1 : ℕ) : WithBot ℕ∞) ≤ (n : WithBot ℕ∞) :=
+      le_trans (le_trans (by exact_mod_cast h2) (coheight_le_krullDim y)) h
+    have : n + 1 ≤ n := by exact_mod_cast h3
+    omega
+  · -- Conversely, if `krullDim X > n`, take a chain of length `n + 1`. Its second point `l 1` has a
+    -- chain of length `n` above it, so `coheight (l 1) ≥ n`, yet its predecessor `l 0` lies strictly
+    -- below it, so `l 1` is not minimal — contradicting the hypothesis.
+    intro h
+    by_contra hcon
+    rw [not_le] at hcon
+    have hn1 : ((n + 1 : ℕ) : WithBot ℕ∞) ≤ krullDim X := by
+      rw [Nat.cast_add, Nat.cast_one]
+      exact ENat.WithBot.add_one_le_iff.mpr hcon
+    obtain ⟨l, hl⟩ := le_krullDim_iff.mp hn1
+    have hidx : 1 < l.length + 1 := by omega
+    have hcoh : (n : ℕ∞) ≤ coheight (l ⟨1, hidx⟩) := by
+      have hrev := rev_index_le_coheight l ⟨1, hidx⟩
+      have hval : ((⟨1, hidx⟩ : Fin (l.length + 1)).rev : ℕ) = n := by
+        simp only [Fin.val_rev]; omega
+      calc (n : ℕ∞) = (((⟨1, hidx⟩ : Fin (l.length + 1)).rev : ℕ) : ℕ∞) := by rw [hval]
+        _ ≤ coheight (l ⟨1, hidx⟩) := by exact_mod_cast hrev
+    have h0lt : l ⟨0, by omega⟩ < l ⟨1, hidx⟩ := l.strictMono (by simp [Fin.lt_def])
+    exact absurd (h _ hcoh _ h0lt.le) (ne_of_lt h0lt)
 
---set_option maxHeartbeats 0 in
+/--
+Dual form of `krullDimLE_iff_coheight_le_implies_eq`: `X` has Krull dimension at most `n` if and only
+if every point of height at least `n` is maximal. Obtained by running the previous lemma on the
+order dual `Xᵒᵈ`, where height/coheight and minimal/maximal swap roles.
+-/
+lemma krullDimLE_iff_height_le_implies_eq {X : Type*} [PartialOrder X] {n : ℕ} :
+    Order.KrullDimLE n X ↔ (∀ x : X, n ≤ height x → ∀ y, x ≤ y → y = x) := by
+  have : Order.KrullDimLE n X ↔ Order.KrullDimLE n Xᵒᵈ := by
+        rw [Order.krullDimLE_iff, Order.krullDimLE_iff, krullDim_orderDual]
+  rw [this]
+  exact krullDimLE_iff_coheight_le_implies_eq
+
 open AlgebraicCycle.Sheaf Function.locallyFinsuppWithin in
 theorem riemann_roch {N : ℕ}
     (hf₁ : ∀ (D : AlgebraicCycle X ℤ), ∀ n, Module.Finite k (lesH (CommRingCat.of k) D.sheaf n))
     (hb₁ : ∀ (D : AlgebraicCycle X ℤ), ∀ n, N < n → IsZero (lesH (CommRingCat.of k) D.sheaf n))
-    (hD : D.support ⊆ {x | coheight x = 1}) : D.sheaf.eulerChar k =
+    (hD : D.support ⊆ {x | coheight x = 1})
+    (hX : ∀ x : X, coheight x = 1 → ∀ y, y ≤ x → y = x) : D.sheaf.eulerChar k =
     D.degree k + (0 : AlgebraicCycle X ℤ).sheaf.eulerChar k := by
   classical
   have sfin : ∀ p : X, ∀ n, Module.Finite k (lesH (CommRingCat.of k)
-      (skyscraperSheafOfModules p (X.ringCatSheaf) (X.residueField p)) n) := sorry
+      (skyscraperSheafOfModules p (X.ringCatSheaf) (X.residueField p)) n) := by
+    sorry
   have svan : ∀ p : X, ∀ n, 0 < n → IsZero (lesH (CommRingCat.of k)
-      (skyscraperSheafOfModules p (X.ringCatSheaf) (X.residueField p)) n) := sorry
+      (skyscraperSheafOfModules p (X.ringCatSheaf) (X.residueField p)) n) := by
+    have := skyscraper_h (X := X) k
+    intro p n h
+    specialize this p h
+
+
+    sorry
   induction D, hD using Function.locallyFinsupp.inductionOn with
   | zero => simp [degree]
   | add E hE ih p hp =>
@@ -234,12 +311,7 @@ theorem riemann_roch {N : ℕ}
       obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible (X.presheaf.stalk p)
       have : (E + single p 1) - E = single p 1 := by simp
       let o := twistedClosedSubschemeComplex₂ p hE ϖ hϖ hp this
-      have o_exact : o.ShortExact := by
-        /-
-        This is known, but because I'm using a form of the exact sequence which I think will be
-        easier for this proof, I'm not filling it in for now
-        -/
-        sorry
+      have o_exact : o.ShortExact := twistedClosedSubschemeComplex₂_shortExact _ _ _ _ _ _ (hX p hp)
       have : o.X₂.eulerChar k = o.X₁.eulerChar k + o.X₃.eulerChar k := by
         apply eulerChar_additive k o o_exact
         · exact hf₁ E
@@ -251,6 +323,11 @@ theorem riemann_roch {N : ℕ}
           sorry
       convert this
       rw [← eulerChar_skyscraper k p]
+      /-
+      Probably bad?
+
+      TODO: Think of a way of making this rfl automatic.
+      -/
       rfl
     simp [this, ih]
     ring
@@ -263,7 +340,7 @@ theorem riemann_roch {N : ℕ}
       obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible (X.presheaf.stalk p)
       let o := twistedClosedSubschemeComplex₁ p hE ϖ hϖ hp
         (by simp : E - (E - single p 1) = single p 1)
-      have o_exact : o.ShortExact := by sorry
+      have o_exact : o.ShortExact := twistedClosedSubschemeComplex₁_shortExact _ _ _ _ _ _ (hX p hp)
       have : o.X₂.eulerChar k = o.X₁.eulerChar k + o.X₃.eulerChar k := by
         apply eulerChar_additive k o o_exact
         · exact hf₁ (E - single p 1)

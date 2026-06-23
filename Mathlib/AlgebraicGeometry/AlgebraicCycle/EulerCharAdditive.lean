@@ -32,12 +32,12 @@ variable {X : Scheme.{u}} {R : CommRingCat.{u}} [X.Over (Spec R)]
 The forgetful functor `𝒪ₓ-modules ⥤ abelian sheaves`, with its codomain pinned to
 `Sheaf (Opens.grothendieckTopology X) AddCommGrpCat`.
 
-This ascription is **load-bearing**: `Sheaf J AddCommGrpCat` carries two definitionally equal but
+Note: `Sheaf J AddCommGrpCat` carries two definitionally equal but
 syntactically distinct `HasZeroMorphisms` instances (one via `Preadditive`, one via the
 full-subcategory-of-presheaves structure that `ShortComplex.map` uses). Writing
 `SheafOfModules.toSheaf X.ringCatSheaf` directly lets the two leak into different use sites, so the
 `PreservesZeroMorphisms` instance found at a declaration fails to match the one required at a
-`S.map …` site. Routing every `S.map` through this single pinned functor keeps them consistent.
+`S.map …` site. Routing every `S.map` through this functor keeps them consistent.
 -/
 noncomputable abbrev Modules.toSheafAb (X : Scheme.{u}) :
     X.Modules ⥤ Sheaf (Opens.grothendieckTopology ↑X.toPresheafedSpace) AddCommGrpCat.{u} :=
@@ -58,10 +58,8 @@ noncomputable instance toSheaf_preservesFiniteColimits {C : Type*} [Category C]
     {J : GrothendieckTopology C} (R : Sheaf J RingCat.{u}) [HasWeakSheafify J AddCommGrpCat.{u}]
     [HasSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}] :
     Limits.PreservesFiniteColimits (SheafOfModules.toSheaf.{u} R) := by
-  have adj := PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)
-  haveI hcounit : IsIso adj.counit := inferInstance
-  have ε := asIso adj.counit
-  haveI : Limits.PreservesFiniteColimits
+  let ε := asIso (PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)).counit
+  have : Limits.PreservesFiniteColimits
       (PresheafOfModules.sheafification (𝟙 R.obj) ⋙ SheafOfModules.toSheaf R) :=
     Limits.preservesFiniteColimits_of_natIso
       (PresheafOfModules.sheafificationCompToSheaf (𝟙 R.obj)).symm
@@ -72,7 +70,7 @@ noncomputable instance toSheaf_preservesFiniteColimits {C : Type*} [Category C]
   have hiso : (D ⋙ SheafOfModules.forget R) ⋙ PresheafOfModules.sheafification (𝟙 R.obj) ≅ D :=
     Functor.associator D (SheafOfModules.forget R) (PresheafOfModules.sheafification (𝟙 R.obj)) ≪≫
       Functor.isoWhiskerLeft D ε ≪≫ D.rightUnitor
-  haveI : Limits.PreservesColimit
+  have : Limits.PreservesColimit
       ((D ⋙ SheafOfModules.forget R) ⋙ PresheafOfModules.sheafification (𝟙 R.obj))
       (SheafOfModules.toSheaf R) := by
     apply Limits.preservesColimit_of_preserves_colimit_cocone
@@ -254,12 +252,10 @@ noncomputable def lesComplex : CochainComplex (ModuleCat R) ℕ where
   X := lesX R S
   d := lesD R S hS
   shape i j hij := by
-    show lesD R S hS i j = 0
     rw [lesD, dif_neg]
     intro h
     exact hij (by rw [ComplexShape.up_Rel]; omega)
   d_comp_d' i j l hij hjl := by
-    show lesD R S hS i j ≫ lesD R S hS j l = 0
     rw [lesD, lesD]
     split_ifs with h1 h2
     · subst h1; subst h2; exact dAux_comp R S hS 0 i
@@ -392,12 +388,23 @@ open Finset
 variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k))]
   (S : ShortComplex X.Modules)
 
-/-- `dim_k Hⁿ(F)`, accessed through the spliced complex object `lesH` (a `ModuleCat`, so its
+/-- `Hⁿ(F)`: the `n`-th cohomology of the underlying abelian sheaf `(SheafOfModules.toSheaf _).obj F`
+of the `𝒪_X`-module `F`, bundled as a `k`-vector space (an object of `ModuleCat`). Its carrier is
+exactly the cohomology type `((SheafOfModules.toSheaf _).obj F).H n`; the `ModuleCat` bundling is
+what carries the `k`-module structure (the bare cohomology type has no synthesizable `k`-action in
+this `k`-specialised context). The dimensions of these spaces define `eulerChar`. -/
+noncomputable abbrev AlgebraicGeometry.Scheme.Modules.H (F : X.Modules) (n : ℕ) :
+    ModuleCat (CommRingCat.of k) :=
+  lesH (CommRingCat.of k) F n
+
+/-- `dim_k Hⁿ(F)`, accessed through the bundled cohomology object `cohomology` (a `ModuleCat`, so its
 `k`-module structure is structural and finrank is well-behaved). -/
 noncomputable def AlgebraicGeometry.Scheme.Modules.h (F : X.Modules) (n : ℕ) : ℕ :=
-  Module.finrank k (lesH (CommRingCat.of k) F n)
+  Module.finrank k (F.H k n)
 
-/-- The **Euler characteristic** of a sheaf of modules: `χ(F) = ∑ₙ (-1)ⁿ dim_k Hⁿ(F)`. -/
+/-- The Euler characteristic of a sheaf of modules: `χ(F) = ∑ₙ (-1)ⁿ dim_k Hⁿ(F)`. Note that
+this is implemented using `finsum`, and so produces a junk value of `0` if this sum is not finite.
+-/
 noncomputable def AlgebraicGeometry.Scheme.Modules.eulerChar (F : X.Modules) : ℤ :=
   ∑ᶠ n : ℕ, (-1 : ℤ) ^ n * (F.h k n : ℤ)
 
@@ -540,15 +547,19 @@ omit hS in
 `0 → X₁ → X₂ → X₃ → 0` of sheaves of modules over a field `k`, with finite-dimensional cohomology
 vanishing above some degree `N`, the Euler characteristics satisfy `χ(X₂) = χ(X₁) + χ(X₃)`.
 
+The hypotheses are phrased in terms of `S.Xᵢ.cohomology k n`, i.e. the cohomology `Hⁿ` of the
+underlying abelian sheaf bundled as a `k`-vector space: finite-dimensionality of each, and its
+vanishing (`IsZero`) above `N`.
+
 The proof splices the long exact cohomology sequence into one bounded exact `ℕ`-indexed cochain
 complex of `k`-vector spaces and applies the Euler–Poincaré formula. -/
 theorem eulerChar_additive (hSE : S.ShortExact)
-    (hf₁ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₁ n))
-    (hf₂ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₂ n))
-    (hf₃ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₃ n))
-    (hb₁ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₁ n))
-    (hb₂ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₂ n))
-    (hb₃ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₃ n)) :
+    (hf₁ : ∀ n, Module.Finite k (S.X₁.H k n))
+    (hf₂ : ∀ n, Module.Finite k (S.X₂.H k n))
+    (hf₃ : ∀ n, Module.Finite k (S.X₃.H k n))
+    (hb₁ : ∀ n, N < n → IsZero (S.X₁.H k n))
+    (hb₂ : ∀ n, N < n → IsZero (S.X₂.H k n))
+    (hb₃ : ∀ n, N < n → IsZero (S.X₃.H k n)) :
     S.X₂.eulerChar k = S.X₁.eulerChar k + S.X₃.eulerChar k := by
   -- `toSheaf` is exact, so the short exact sequence of sheaves of modules maps to one of abelian
   -- sheaves, which is what the long exact cohomology sequence is built from.
@@ -577,7 +588,7 @@ theorem eulerChar_additive (hSE : S.ShortExact)
   have heB := eulerChar_finsum_eq (AlgebraicGeometry.Scheme.Modules.h k S.X₂) hbB
   have heC := eulerChar_finsum_eq (AlgebraicGeometry.Scheme.Modules.h k S.X₃) hbC
   have key : (lesComplex (CommRingCat.of k) S hS).eulerChar =
-      AlgebraicGeometry.Scheme.Modules.eulerChar k S.X₁ - AlgebraicGeometry.Scheme.Modules.eulerChar k S.X₂ + AlgebraicGeometry.Scheme.Modules.eulerChar k S.X₃ := by
+      S.X₁.eulerChar k - S.X₂.eulerChar k + S.X₃.eulerChar k := by
     rw [HomologicalComplex.eulerChar_eq_sum_finSet_of_finrankSupport_subset _ _
       (finrankSupport_subset k S hS hb₁ hb₂ hb₃),
       Finset.sum_image (by

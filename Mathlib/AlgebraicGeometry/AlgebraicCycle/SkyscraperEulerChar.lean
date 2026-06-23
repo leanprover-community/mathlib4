@@ -116,7 +116,7 @@ lemma skyscraper_h_zero :
   rw [Scheme.Modules.h]
   refine LinearEquiv.finrank_eq (AddEquiv.toLinearEquiv (e₀.trans c) (fun r x => ?_))
   -- `r • x` is by definition `H.map (smulEnd r) 0 x`.
-  show c (e₀ (CategoryTheory.Sheaf.H.map (smulEnd (R := CommRingCat.of k) F r) 0 x)) = r • c (e₀ x)
+  --change c (e₀ (CategoryTheory.Sheaf.H.map (smulEnd (R := CommRingCat.of k) F r) 0 x)) = r • c (e₀ x)
   exact key r x
 
 /-- The Euler characteristic of the skyscraper sheaf at `p` equals the dimension of the residue
@@ -125,7 +125,6 @@ lemma eulerChar_skyscraper : Scheme.Modules.eulerChar k
     (skyscraperSheafOfModules p X.ringCatSheaf (X.residueField p)) =
     Module.finrank k (X.residueField p) := by
   rw [Scheme.Modules.eulerChar,
-    finsum_eq_single _ 0 (fun n hn => by
-      rw [skyscraper_h k p (Nat.pos_of_ne_zero hn)]; simp)]
+    finsum_eq_single _ 0 (fun n hn => by simp [skyscraper_h k p (Nat.pos_of_ne_zero hn)])]
   simp only [pow_zero, one_mul]
   rw [skyscraper_h_zero]

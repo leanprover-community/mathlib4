@@ -7,20 +7,26 @@ import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.Topology.Sheaves.LocallySurjective
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
---set_option backward.isDefEq.respectTransparency false
-
 /-!
 # Twisted closed subscheme exact sequence
 
 In this file we define the following exact sequence on a curve:
 `0 → 𝒪ₓ(D - P) → 𝒪ₓ(D) → k(P) → 0` where `k(P)` is the skyscraper
 at `P` for some closed point `P`.
+
+Notes: the way this is constructed is mildly idiosyncratic, mainly for the purposes of avoiding
+tensor products of sheaves of modules like the plague. Nevertheless, this has some "practical"
+implications. Namely, nowhere do we ever assume here that the variety we're working on is a curve,
+which means regular in codimension one does not necessarily imply regular. In particular we do not
+assume that `𝒪ₓ(D)` is invertible, and so we cannot assume tensoring by `𝒪ₓ(D)` is exact.
+So, technically speaking this is a more general exact sequence than the one constructed
+in, say, Hartshorne by tensoring the closed subscheme exact sequence with `𝒪ₓ(D)`.
 -/
 universe u
 
 open Function.locallyFinsuppWithin
 
-open AlgebraicGeometry AlgebraicCycle Sheaf Opposite Order
+open AlgebraicGeometry AlgebraicCycle Sheaf Opposite Order CategoryTheory
 
 variable {X : Scheme.{u}} [IsIntegral X] [IsLocallyNoetherian X]
 variable (p : X)
@@ -28,74 +34,7 @@ variable (p : X)
 namespace AlgebraicCycle
 namespace Sheaf
 
-/-
-If `f` is a section of `𝒪ₓ(D)`, then it is also a section of `𝒪ₓ(D + D')` for effective `D'`.
--/
-lemma extend_prop {D D' : AlgebraicCycle X ℤ} (h : D' ≥ 0) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ)
-    {f : X.functionField} (hf : f ∈ carrier D U.unop) : f ∈ carrier (D + D') U.unop := by
-  simp only [carrier, ne_eq, Scheme.Opens.nonempty_iff, ge_iff_le, Set.mem_setOf_eq] at hf ⊢
-  intro fnez
-  specialize hf fnez
-  constructor
-  · exact hf.1
-  intro hx
-  apply le_trans hf.2
-  simp only [add_le_add_iff_left]
-  intro z
-  simp [restrict_apply]
-  split_ifs
-  · simpa using h z
-  · rfl
-
-variable [IsRegularInCodimensionOne X]
-
-/--
-The inclusion mapping `𝒪ₓ(D) ⟶ 𝒪ₓ(D + D')`, defined by `h ↦ h`.
--/
-noncomputable
-def extend (D D' : AlgebraicCycle X ℤ) (h : D' ≥ 0) :
-    D.sheaf ⟶ (D + D').sheaf where
-  val := {
-    app U :=
-      ModuleCat.ofHom
-        {
-          toFun := fun m ↦ ⟨m.val, extend_prop h U m.prop⟩
-          map_add' _ _ := rfl
-          map_smul' _ _ := rfl
-        }
-    naturality {U V} f := by
-      apply ModuleCat.hom_ext
-      ext ⟨v, hv⟩
-      apply Subtype.ext
-      -- Both paths (extend then restrict, and restrict then extend) preserve the
-      -- underlying function field element.
-      change (mapFun D f.unop.le ⟨v, hv⟩).1 =
-        (mapFun (D + D') f.unop.le ⟨v, extend_prop h U hv⟩).1
-      simp only [mapFun]
-      split_ifs <;> rfl
-  }
-
-open CategoryTheory
-
-/--
-The inclusion morphism `𝒪ₓ(D) ⟶ 𝒪ₓ(D + D')` is a monomorphism
--/
-lemma extend_mono (D D' : AlgebraicCycle X ℤ) (h : D' ≥ 0) :
-    Mono <| extend D D' h := by
-  suffices ∀ (U : (TopologicalSpace.Opens ↥X)ᵒᵖ), Function.Injective <|
-    (extend D D' h).val.app U by
-    suffices Mono <| (SheafOfModules.toSheaf X.ringCatSheaf).map <|
-      extend D D' h by cat_disch
-    exact
-      Sheaf.mono_of_injective
-        ((SheafOfModules.toSheaf X.ringCatSheaf).map (extend D D' h)) this
-  intro U a b hab
-  -- The component of `extend` is `f ↦ ⟨f.1, _⟩`, so equal images have equal values.
-  have hval := Subtype.ext_iff.mp hab
-  exact Subtype.ext hval
-
 open Function.locallyFinsuppWithin
-omit [IsRegularInCodimensionOne X] in
 open Classical in
 /--
 A cycle supported at a single point with a positive coefficient is effective.
@@ -107,30 +46,7 @@ lemma _root_.AlgebraicCycle.single_effective (x : X) (c : ℤ) (hc : c ≥ 0) : 
   all_goals grind
 
 
-variable (D : AlgebraicCycle X ℤ)
-open Classical in
-/--
-On open sets away from a point `P`, `extend` is surjective (and hence bijective, and hence
-an isomorphism of modules)
--/
-lemma extend_surjective (U : X.Opensᵒᵖ) (hU : p ∉ U.1) :
-    Function.Surjective <| ((extend (D - single p 1) (single p 1)
-    (single_effective p 1 (by simp))).val.app U).hom := by
-  intro ⟨f, hf⟩
-  refine ⟨⟨f, ?_⟩, ?_⟩
-  · simp only [carrier] at hf ⊢
-    intro fnez
-    specialize hf fnez
-    refine ⟨hf.1, ?_⟩
-    apply le_trans hf.2
-    intro z
-    simp [restrict_apply]
-    split_ifs with hz
-    · have hzp : z ≠ p := fun h => hU (h ▸ hz)
-      simp [hzp]
-    · rfl
-  · apply Subtype.ext
-    rfl
+variable (D : AlgebraicCycle X ℤ) [IsRegularInCodimensionOne X]
 
 noncomputable
 def toSkyscraperFun {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
@@ -318,13 +234,10 @@ lemma toSkyscraperFun_isLocallySurjective (hD : support D ⊆ {x | coheight x = 
   have hpV : p ∈ V := ⟨hUh2, hUD2⟩
   have spec_eq : ∀ (z : X), coheight z = 1 → z ⤳ p → z = p := by
     intro z hz hspec
-    letI : Preorder X := specializationPreorder X
     have hxz : p ≤ z := hspec
     by_cases hzx : z ≤ p
     · exact (Specializes.antisymm hspec (hzx : p ⤳ z)).eq
-    · exfalso
-      have hlt : p < z := lt_of_le_not_ge hxz hzx
-      have hbound := Order.coheight_add_one_le hlt
+    · have hbound := Order.coheight_add_one_le <| lt_of_le_not_ge hxz hzx
       rw [hz, hp] at hbound
       norm_num at hbound
   -- `h` is a section of `𝒪ₓ(D)` over `V`.
@@ -488,6 +401,10 @@ def toSkyscraperHom (hD : support D ⊆ {x | coheight x = 1})
   }
 
 open Classical in
+/--
+TODO: Make this proof a bit more sensible - namely, this should really just be a wrapper around
+`toSkyscraperFun_isLocallySurjective`
+-/
 lemma toSkyscraperHom_isLocallySurjective (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ)
     (hp : coheight p = 1) (pClosed : ∀ x : X, x ≤ p → x = p) :
@@ -589,39 +506,6 @@ def extendLe {D₁ D₂ : AlgebraicCycle X ℤ} (h : D₁ ≤ D₂) :
       simp only [mapFun]
       split_ifs <;> rfl
   }
-
-open Classical in
-noncomputable
-def twistedClosedSubschemeComplex₁
-    {D D' : AlgebraicCycle X ℤ}
-    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p)
-    (hϖ : Irreducible ϖ) (hp : coheight p = 1)
-    (hD' : D - D' = single p 1)
-    : ShortComplex X.Modules where
-  X₁ := D'.sheaf
-  X₂ := D.sheaf
-  X₃ := skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)
-  f := extendLe (by sorry)
-  g := toSkyscraperHom p D hD ϖ hϖ hp
-  zero := sorry
-
-open Classical in
-noncomputable
-def twistedClosedSubschemeComplex₂
-    {D D' : AlgebraicCycle X ℤ}
-    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p)
-    (hϖ : Irreducible ϖ) (hp : coheight p = 1)
-    (hD' : D' - D = single p 1)
-    : ShortComplex X.Modules where
-  X₁ := D.sheaf
-  X₂ := D'.sheaf
-  X₃ := skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)
-  f := extendLe (by sorry)
-  g :=
-    have : support D' ⊆ {x | coheight x = 1} := sorry
-    toSkyscraperHom p D' this ϖ hϖ hp
-  zero := sorry
-
 
 open Classical in
 noncomputable
@@ -806,6 +690,107 @@ lemma twistedClosedSubschemeComplex_shortExact (hD : support D ⊆ {x | coheight
         (toSkyscraperHom p D hD ϖ hϖ hp))).mp
         (toSkyscraperHom_isLocallySurjective p D hD ϖ hϖ hp pClosed)
     exact (SheafOfModules.toSheaf X.ringCatSheaf).epi_of_epi_map h
+
+/-
+Two reparametrisations of `twistedClosedSubschemeComplex`. Rather than writing the smaller divisor
+literally as `D - single p 1`, these take it as a free variable (`D'`/`D`) related to the larger
+one by a hypothesis. This keeps `X₁`/`X₂` definitionally equal to the sheaves one actually wants in
+applications (e.g. `E.sheaf` rather than `((E + single p 1) - single p 1).sheaf`), avoiding casts.
+Both are definitionally equal to `twistedClosedSubschemeComplex` applied to the larger divisor, so
+their structure (in particular the `zero`/exactness proofs) is inherited from it.
+-/
+
+open Classical in
+/-- `0 ⟶ 𝒪ₓ(D') ⟶ 𝒪ₓ(D) ⟶ k(p)` where `D - D' = single p 1`; the skyscraper sits on the larger
+divisor `D`. Definitionally `twistedClosedSubschemeComplex` at `D`. -/
+noncomputable
+def twistedClosedSubschemeComplex₁
+    {D D' : AlgebraicCycle X ℤ}
+    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p)
+    (hϖ : Irreducible ϖ) (hp : coheight p = 1)
+    (hD' : D - D' = single p 1)
+    : ShortComplex X.Modules where
+  X₁ := D'.sheaf
+  X₂ := D.sheaf
+  X₃ := skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)
+  f := extendLe (by rw [← sub_nonneg, hD']; exact single_effective p 1 (by simp))
+  g := toSkyscraperHom p D hD ϖ hϖ hp
+  zero := by
+    obtain rfl : D' = D - single p 1 := by rw [← hD']; abel
+    exact (twistedClosedSubschemeComplex p D hD ϖ hϖ hp).zero
+
+open Classical in
+/-- `twistedClosedSubschemeComplex₁` is short exact, inherited from
+`twistedClosedSubschemeComplex_shortExact`. -/
+lemma twistedClosedSubschemeComplex₁_shortExact
+    {D D' : AlgebraicCycle X ℤ}
+    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p)
+    (hϖ : Irreducible ϖ) (hp : coheight p = 1)
+    (hD' : D - D' = single p 1)
+    (pClosed : ∀ x : X, x ≤ p → x = p) :
+    (twistedClosedSubschemeComplex₁ p hD ϖ hϖ hp hD').ShortExact := by
+  obtain rfl : D' = D - single p 1 := by rw [← hD']; abel
+  exact twistedClosedSubschemeComplex_shortExact p D hD ϖ hϖ hp pClosed
+
+open Classical in
+/-- `0 ⟶ 𝒪ₓ(D) ⟶ 𝒪ₓ(D') ⟶ k(p)` where `D' - D = single p 1`; the skyscraper sits on the larger
+divisor `D'`. Definitionally `twistedClosedSubschemeComplex` at `D'`. -/
+noncomputable
+def twistedClosedSubschemeComplex₂
+    {D D' : AlgebraicCycle X ℤ}
+    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p)
+    (hϖ : Irreducible ϖ) (hp : coheight p = 1)
+    (hD' : D' - D = single p 1)
+    : ShortComplex X.Modules where
+  X₁ := D.sheaf
+  X₂ := D'.sheaf
+  X₃ := skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)
+  f := extendLe (by rw [← sub_nonneg, hD']; exact single_effective p 1 (by simp))
+  g :=
+    have hsupp : support D' ⊆ {x | coheight x = 1} := by
+      intro x hx
+      by_cases hxp : x = p
+      · exact hxp ▸ hp
+      · refine hD ?_
+        have heq : D' = D + single p 1 := by rw [← hD']; abel
+        have hx' : D'.toFun x ≠ 0 := hx
+        rw [heq] at hx'
+        simpa [Function.mem_support, single_apply, hxp] using hx'
+    toSkyscraperHom p D' hsupp ϖ hϖ hp
+  zero := by
+    have hsupp : support D' ⊆ {x | coheight x = 1} := by
+      intro x hx
+      by_cases hxp : x = p
+      · exact hxp ▸ hp
+      · refine hD ?_
+        have heq : D' = D + single p 1 := by rw [← hD']; abel
+        have hx' : D'.toFun x ≠ 0 := hx
+        rw [heq] at hx'
+        simpa [Function.mem_support, single_apply, hxp] using hx'
+    obtain rfl : D = D' - single p 1 := by rw [← hD']; abel
+    exact (twistedClosedSubschemeComplex p D' hsupp ϖ hϖ hp).zero
+
+open Classical in
+/-- `twistedClosedSubschemeComplex₂` is short exact, inherited from
+`twistedClosedSubschemeComplex_shortExact`. -/
+lemma twistedClosedSubschemeComplex₂_shortExact
+    {D D' : AlgebraicCycle X ℤ}
+    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p)
+    (hϖ : Irreducible ϖ) (hp : coheight p = 1)
+    (hD' : D' - D = single p 1)
+    (pClosed : ∀ x : X, x ≤ p → x = p) :
+    (twistedClosedSubschemeComplex₂ p hD ϖ hϖ hp hD').ShortExact := by
+  have hsupp : support D' ⊆ {x | coheight x = 1} := by
+    intro x hx
+    by_cases hxp : x = p
+    · exact hxp ▸ hp
+    · refine hD ?_
+      have heq : D' = D + single p 1 := by rw [← hD']; abel
+      have hx' : D'.toFun x ≠ 0 := hx
+      rw [heq] at hx'
+      simpa [Function.mem_support, single_apply, hxp] using hx'
+  obtain rfl : D = D' - single p 1 := by rw [← hD']; abel
+  exact twistedClosedSubschemeComplex_shortExact p D' hsupp ϖ hϖ hp pClosed
 
 end Sheaf
 end AlgebraicCycle

@@ -18,15 +18,10 @@ cycle purely of codimension `1`. In this file, we actually don't place any restr
 just taking it to be any cycle with coefficients in `ℤ`, just because the actual definitions do
 not require this anywhere.
 
-This definition gives good results on locally Noetherian, integral schemes which are
-regular in codimension 1. In particular this is useful for working with normal varieties,
-where the map from Cartier divisors to Weil divisors is injective. Note that when applied to Weil
-divisors which are not Cartier, this sheaf will not necessarily be invertible.
-
 Note that we can extend the construction here to schemes which are not necessarily irreducible with
 some extra bookkeeping. That said, in my opinion the most sensible way to do this goes via the
 construction on integral schemes, and in any case the construction for integral schemes comes up the
-most in applications, hence our decision to formalize the version for integral schemes  .
+most in applications, hence our decision to formalize the version for integral schemes.
 
 Note: This is currently written in a somewhat suboptimal way, both in the sense that the code is
 messy and in the sense that the mathematical strategy uses a bit of a hack. Namely, later on in the
@@ -437,8 +432,7 @@ def map_comp (D : AlgebraicCycle X ℤ)
   · have hV : Nonempty V.unop :=
       (Opens.nonempty_iff (unop V)).mpr <| Exists.imp (leOfHom g.unop) (nonempty_subtype.mp h)
     apply Subtype.ext
-    simp only [mapFunApplyNonempty, op_unop, sheafCompose_obj_obj, Functor.comp_obj,
-      CommRingCat.forgetToRingCat_obj, Functor.comp_map, CommRingCat.forgetToRingCat_map_hom]
+    simp only [mapFunApplyNonempty, op_unop]
     /-
     TODO: Make into a (sane) simp lemma
     -/
