@@ -920,7 +920,7 @@ lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj ni
   grind [bypass, support_nil, SimpleGraph.irrefl]
 
 @[simp]
-lemma bypass_eq_nil (p : G.Walk u u) : p.bypass = nil := by
+lemma nil_bypass (p : G.Walk u u) : p.bypass.Nil := by
   grind [p.bypass_isPath, isPath_iff_nil, Nil]
 
 @[grind →]
