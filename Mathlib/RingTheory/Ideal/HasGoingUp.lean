@@ -7,7 +7,6 @@ Authors: Robert Shlyakhtenko
 module
 
 public import Mathlib.Order.RelSeries
-public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
