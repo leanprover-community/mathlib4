@@ -1080,6 +1080,37 @@ protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
 
 end Walk
 
+/-! ### Inducing -/
+
+namespace Walk
+
+variable {V : Type*} {G : SimpleGraph V} {u v : V} {s : Set V}
+
+lemma isTrail_induce {w : G.Walk u v} (hw : ∀ x ∈ w.support, x ∈ s) :
+    (w.induce s hw).IsTrail ↔ w.IsTrail := by
+  rw [isTrail_def, isTrail_def, edges_induce, List.nodup_map_iff ?_, List.nodup_attach]
+  intro a b h
+  apply Subtype.val_injective
+  have := a.val.attachWith_map_subtypeVal fun x hx ↦ hw x (mem_support_of_mem_edges a.prop hx)
+  have := b.val.attachWith_map_subtypeVal fun x hx ↦ hw x (mem_support_of_mem_edges b.prop hx)
+  simp_all
+
+lemma isPath_induce {p : G.Walk u v} (hw : ∀ x ∈ p.support, x ∈ s) :
+    (p.induce s hw).IsPath ↔ p.IsPath := by
+  rw [isPath_def, isPath_def, support_induce, List.nodup_attachWith]
+
+lemma isCircuit_induce {c : G.Walk v v} (hc : ∀ x ∈ c.support, x ∈ s) :
+    (c.induce s hc).IsCircuit ↔ c.IsCircuit := by
+  iterate 2 rw [isCircuit_def, Ne, eq_nil_iff_nil]
+  rw [isTrail_induce, nil_induce]
+
+lemma isCycle_induce {c : G.Walk v v} (hc : ∀ x ∈ c.support, x ∈ s) :
+    (c.induce s hc).IsCycle ↔ c.IsCycle := by
+  iterate 2 rw [isCycle_def, Ne, eq_nil_iff_nil]
+  rw [isTrail_induce, nil_induce, support_induce, List.tail_attachWith, List.nodup_attachWith]
+
+end Walk
+
 /-! ## Deleting edges -/
 
 namespace Walk
