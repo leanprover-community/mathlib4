@@ -80,7 +80,7 @@ diagram `J ⥤ C` to limit cones, where `J : Type u` with `[Category.{v} J]`. -/
 -- `PreservesLimitsOfSize`, `PreservesColimitsOfSize`, `ReflectsLimitsOfSize`, and
 -- `ReflectsColimitsOfSize` would default to universe output parameters.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesLimitsOfSize (F : C ⥤ D) : Prop where
   preservesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesLimitsOfShape J F := by
     infer_instance
@@ -93,7 +93,7 @@ abbrev PreservesLimits (F : C ⥤ D) :=
 -- This should be used with explicit universe variables.
 /-- `PreservesColimitsOfSize.{v u} F` means that `F` sends all colimit cocones over any
 diagram `J ⥤ C` to colimit cocones, where `J : Type u` with `[Category.{v} J]`. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesColimitsOfSize (F : C ⥤ D) : Prop where
   preservesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesColimitsOfShape J F := by
     infer_instance
@@ -415,7 +415,7 @@ whenever the image of a cone over some `K : J ⥤ C` under `F` is a limit cone i
 the cone was already a limit cone in `C`.
 Note that we do not assume a priori that `D` actually has any limits.
 -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsLimitsOfSize (F : C ⥤ D) : Prop where
   reflectsLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsLimitsOfShape J F := by
     infer_instance
@@ -434,7 +434,7 @@ whenever the image of a cocone over some `K : J ⥤ C` under `F` is a colimit co
 the cocone was already a colimit cocone in `C`.
 Note that we do not assume a priori that `D` actually has any colimits.
 -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsColimitsOfSize (F : C ⥤ D) : Prop where
   reflectsColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsColimitsOfShape J F := by
     infer_instance
