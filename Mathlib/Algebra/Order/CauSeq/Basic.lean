@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Data.FunLike.Group
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Tactic.GCongr
@@ -166,11 +167,12 @@ section Ring
 
 variable [Ring β] {abv : β → α}
 
-instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
-  ⟨Subtype.val⟩
+instance : FunLike (CauSeq β abv) ℕ β where
+  coe := Subtype.val
+  coe_injective := Subtype.val_injective
 
 @[ext]
-theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.ext (funext h)
+theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := DFunLike.ext f g h
 
 theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
   f.2
@@ -198,13 +200,12 @@ theorem bounded' (f : CauSeq β abv) (x : α) : ∃ r > x, ∀ i, abv (f i) < r 
 instance : Add (CauSeq β abv) :=
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
-@[simp, norm_cast]
-theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = (f : ℕ → β) + g :=
-  rfl
+instance : IsAddApply (CauSeq β abv) ℕ β where
+  add_apply _ _ _ := rfl
 
-@[simp, norm_cast]
-theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
-  rfl
+@[deprecated (since := "2026-06-23")] alias coe_add := FunLike.coe_add
+
+@[deprecated (since := "2026-06-23")] protected alias add_apply := add_apply
 
 variable (abv) in
 /-- The constant Cauchy sequence. -/
@@ -227,27 +228,25 @@ theorem const_inj {x y : β} : (const x : CauSeq β abv) = const y ↔ x = y :=
 instance : Zero (CauSeq β abv) :=
   ⟨const 0⟩
 
+instance : IsZeroApply (CauSeq β abv) ℕ β where
+  zero_apply _ := rfl
+
 instance : One (CauSeq β abv) :=
   ⟨const 1⟩
+
+instance : IsOneApply (CauSeq β abv) ℕ β where
+  one_apply _ := rfl
 
 instance : Inhabited (CauSeq β abv) :=
   ⟨0⟩
 
-@[simp, norm_cast]
-theorem coe_zero : ⇑(0 : CauSeq β abv) = 0 :=
-  rfl
+@[deprecated (since := "2026-06-23")] alias coe_zero := FunLike.coe_zero
 
-@[simp, norm_cast]
-theorem coe_one : ⇑(1 : CauSeq β abv) = 1 :=
-  rfl
+@[deprecated (since := "2026-06-23")] alias coe_one := FunLike.coe_one
 
-@[simp, norm_cast]
-theorem zero_apply (i) : (0 : CauSeq β abv) i = 0 :=
-  rfl
+@[deprecated (since := "2026-06-23")] protected alias zero_apply := zero_apply
 
-@[simp, norm_cast]
-theorem one_apply (i) : (1 : CauSeq β abv) i = 1 :=
-  rfl
+@[deprecated (since := "2026-06-23")] protected alias one_apply := one_apply
 
 @[simp]
 theorem const_zero : const 0 = 0 :=
@@ -262,26 +261,24 @@ theorem const_add (x y : β) : const (x + y) = const x + const y :=
 
 instance : Mul (CauSeq β abv) := ⟨fun f g ↦ ⟨f * g, f.2.mul g.2⟩⟩
 
-@[simp, norm_cast]
-theorem coe_mul (f g : CauSeq β abv) : ⇑(f * g) = (f : ℕ → β) * g :=
-  rfl
+instance : IsMulApply (CauSeq β abv) ℕ β where
+  mul_apply _ _ _ := rfl
 
-@[simp, norm_cast]
-theorem mul_apply (f g : CauSeq β abv) (i : ℕ) : (f * g) i = f i * g i :=
-  rfl
+@[deprecated (since := "2026-06-23")] alias coe_mul := FunLike.coe_mul
+
+@[deprecated (since := "2026-06-23")] protected alias mul_apply := mul_apply
 
 theorem const_mul (x y : β) : const (x * y) = const x * const y :=
   rfl
 
 instance : Neg (CauSeq β abv) := ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
 
-@[simp, norm_cast]
-theorem coe_neg (f : CauSeq β abv) : ⇑(-f) = -f :=
-  rfl
+instance : IsNegApply (CauSeq β abv) ℕ β where
+  neg_apply _ _ := rfl
 
-@[simp, norm_cast]
-theorem neg_apply (f : CauSeq β abv) (i) : (-f) i = -f i :=
-  rfl
+@[deprecated (since := "2026-06-23")] alias coe_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-06-23")] protected alias neg_apply := neg_apply
 
 theorem const_neg (x : β) : const (-x) = -const x :=
   rfl
@@ -289,13 +286,12 @@ theorem const_neg (x : β) : const (-x) = -const x :=
 instance : Sub (CauSeq β abv) :=
   ⟨fun f g => ofEq (f + -g) (fun x => f x - g x) fun i => by simp [sub_eq_add_neg]⟩
 
-@[simp, norm_cast]
-theorem coe_sub (f g : CauSeq β abv) : ⇑(f - g) = (f : ℕ → β) - g :=
-  rfl
+instance : IsSubApply (CauSeq β abv) ℕ β where
+  sub_apply _ _ _ := rfl
 
-@[simp, norm_cast]
-theorem sub_apply (f g : CauSeq β abv) (i : ℕ) : (f - g) i = f i - g i :=
-  rfl
+@[deprecated (since := "2026-06-23")] alias coe_sub := FunLike.coe_sub
+
+@[deprecated (since := "2026-06-23")] protected alias sub_apply := sub_apply
 
 theorem const_sub (x y : β) : const (x - y) = const x - const y :=
   rfl
@@ -307,13 +303,12 @@ variable {G : Type*} [SMul G β] [IsScalarTower G β β]
 instance : SMul G (CauSeq β abv) :=
   ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
 
-@[simp, norm_cast]
-theorem coe_smul (a : G) (f : CauSeq β abv) : ⇑(a • f) = a • (f : ℕ → β) :=
-  rfl
+instance : IsSMulApply G (CauSeq β abv) ℕ β where
+  smul_apply _ _ _ := rfl
 
-@[simp, norm_cast]
-theorem smul_apply (a : G) (f : CauSeq β abv) (i : ℕ) : (a • f) i = a • f i :=
-  rfl
+@[deprecated (since := "2026-06-23")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-06-23")] protected alias smul_apply := smul_apply
 
 theorem const_smul (a : G) (x : β) : const (a • x) = a • const x :=
   rfl
@@ -323,15 +318,13 @@ instance : IsScalarTower G (CauSeq β abv) (CauSeq β abv) :=
 
 end SMul
 
-instance addGroup : AddGroup (CauSeq β abv) :=
-  Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+instance addGroup : AddGroup (CauSeq β abv) := fast_instance% FunLike.addGroup
 
 instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
 
 instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
 
-instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
+instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) := fast_instance%
   Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
   coe_add coe_neg coe_sub
   (by intros; rfl)
@@ -354,7 +347,7 @@ theorem pow_apply (f : CauSeq β abv) (n i : ℕ) : (f ^ n) i = f i ^ n :=
 theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 
-instance ring : Ring (CauSeq β abv) :=
+instance ring : Ring (CauSeq β abv) := fast_instance%
   Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
 
