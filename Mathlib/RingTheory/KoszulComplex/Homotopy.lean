@@ -82,9 +82,10 @@ lemma contraction_wedge_cartan_formula (x : M) (φ : M →ₗ[R] R) (n : ℕ) :
 
 lemma koszulCocomplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
     (((φ x) • (𝟙 (koszulCocomplex R x))).f 0) =
-      dNext 0 (fun i j => if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) +
-        prevD 0
-          (fun i j => if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) := by
+      dNext 0 (fun i j =>
+        if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) +
+          prevD 0 (fun i j =>
+            if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) := by
   -- In degree `0`, only the `δ_φ d_x` term survives.
   rw [Homotopy.dNext_cochainComplex, Homotopy.prevD_zero_cochainComplex]
   simp only [↓reduceDIte, HomologicalComplex.smul_f_apply, HomologicalComplex.id_f, Nat.reduceAdd,
@@ -93,10 +94,9 @@ lemma koszulCocomplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
 
 lemma koszulComplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
     (((φ x) • 𝟙 (koszulComplex φ)).f 0) =
-      dNext 0
-        (fun i j => if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) +
-        prevD 0
-          (fun i j =>
+      dNext 0 (fun i j =>
+        if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) +
+          prevD 0 (fun i j =>
             if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) := by
   -- In degree `0`, only the `d_x δ_φ` term survives.
   rw [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex]
@@ -106,10 +106,10 @@ lemma koszulComplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
 
 lemma koszulCocomplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) :
     (((φ x) • 𝟙 (koszulCocomplex R x)).f (i + 1)) =
-      dNext (i + 1)
-          (fun i j => if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) +
-        prevD (i + 1)
-          (fun i j => if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) := by
+      dNext (i + 1) (fun i j =>
+        if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) +
+          prevD (i + 1) (fun i j =>
+            if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0) := by
   -- In positive degrees, the homotopy relation is exactly the Cartan formula.
   rw [Homotopy.dNext_cochainComplex, Homotopy.prevD_succ_cochainComplex]
   simp only [↓reduceDIte, HomologicalComplex.smul_f_apply, HomologicalComplex.id_f, d_eq_aux]
@@ -121,11 +121,9 @@ lemma koszulCocomplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ
 
 lemma koszulComplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) :
     (((φ x) • 𝟙 (koszulComplex φ)).f (i + 1)) =
-      dNext (i + 1)
-          (fun i j =>
-            if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) +
-        prevD (i + 1)
-          (fun i j =>
+      dNext (i + 1) (fun i j =>
+        if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) +
+          prevD (i + 1) (fun i j =>
             if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0) := by
   -- In positive degrees, the homotopy relation is exactly the Cartan formula.
   rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex]
@@ -138,15 +136,14 @@ defined by `x`. -/
 noncomputable def koszulCocomplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) :
     Homotopy ((φ x) • 𝟙 (koszulCocomplex R x))
       (0 : koszulCocomplex R x ⟶ koszulCocomplex R x) where
-  hom := fun i j =>
-    if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0
+  hom i j := if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplexAux φ j) else 0
   zero i j hij := by
     simp only [ComplexShape.up_Rel] at hij
     simp [hij]
   comm i := by
     cases i with
     | zero => simpa using! scalar_homotopy_comm_zero x φ
-    | succ i => simpa using! koszulCocomplex.scalar_homotopy_comm x φ i
+    | succ i => simpa using! scalar_homotopy_comm x φ i
 
 /-- Given `x : M`, `φ x` times identity is homotopic to zero for Koszul complex defined by `φ`. -/
 noncomputable def koszulComplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) :
