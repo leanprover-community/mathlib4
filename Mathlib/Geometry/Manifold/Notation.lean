@@ -331,6 +331,29 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
     s.restore true
     return none
 
+/-- Given an `Expr`ession `e`, try to find a `NormedSpace` instance on `e` and return the
+underlying base field. Search local instances, before recursing into product and bundled
+continuous linear maps. -/
+partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr := do
+  if let some k ← findFromLocalInstance e then return k
+  match_expr e with
+  | Prod E _F =>
+    guessBaseFieldForNormedSpace E
+  | _ =>
+    try
+      let (_k, E, _F) ← isCLMReduciblyDefeqCoefficients e
+      guessBaseFieldForNormedSpace E
+    catch _e =>
+      findFromLocalInstance e
+where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
+  findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
+    match_expr type with
+    | NormedSpace K E _ _ =>
+      if ← withReducible (pureIsDefEq E e) then
+        trace[Elab.DiffGeo.MDiff] "`{e}` is a normed field over `{K}`"; return some K
+      else return none
+    | _ => pure none
+
 set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
@@ -355,11 +378,6 @@ Return an expression describing the found model with corners, together with info
 whether the model is the trivial model with corners on a normed space. (This is important for
 forming products of models.)
 
-`baseInfo` is only used for the first case, a model with corners on the total space of the vector
-bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
-and the model with corners on the base: these are required to construct the right model with
-corners.
-
 Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
 `TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
 `findModel` on it.
@@ -368,8 +386,7 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
-def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-    TermElabM (Option FindModelResult) := do
+partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "TotalSpace"          fromTotalSpace      then return some m
   if let some m ← tryStrategy "TangentBundle"       fromTangentBundle   then return some m
   if let some m ← tryStrategy "NormedSpace"         fromNormedSpace     then return some m
@@ -389,34 +406,36 @@ def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
-  /-- Attempt to find a model from a `TotalSpace` first by attempting to use any provided
-  `baseInfo`, then by seeing if it is the total space of a tangent bundle. -/
+  /-- Attempt to find a model from a `TotalSpace` first by seeing if it is the total space of a
+  tangent bundle, and otherwise by finding a model with corners on its base. -/
   fromTotalSpace : TermElabM FindModelResult := do
     match_expr e with
     | Bundle.TotalSpace _ F V => do
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
-      if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
-      throwError "Having a TotalSpace as source is not yet supported"
+      trace[Elab.DiffGeo.MDiff]
+        "{e} is the total space of a fiber bundle: trying to find a model on the base of `{V}`"
+      -- `V` should be of type `B → Type*`, where `B` is the base of the vector bundle.
+      -- Then, the desired model with corners is `I.prod (𝓘(𝕜, F))`, where `I` is the model on `B`
+      -- and `𝕜` is the base field for `F`.
+      let vtype ← whnf <| ← instantiateMVars <| ← inferType V
+      trace[Elab.DiffGeo.MDiff] "`{V}` has type `{vtype}`"
+      match vtype with
+      | .forallE _x base _tgt _ =>
+        let baseModel ← withTraceNode `Elab.DiffGeo.MDiff
+            (fun _ ↦ pure m!"searching for a model with corners on the base `{base}`") do
+          let some baseI ← findModelInner base
+            | throwError m!"found no model with corners on the base {base} of `TotalSpace {F} {V}`"
+          return baseI.model
+        -- Very likely, `F` is a normed space over some field: let's see if `F` is a normed space
+        -- on the nose.
+        let some K ← guessBaseFieldForNormedSpace F
+          | throwError "Couldn't find a `NormedSpace` structure on `{F}`"
+        let tgtMod ← mkAppOptM ``modelWithCornersSelf #[K, none, F, none, none]
+        mkAppM ``ModelWithCorners.prod  #[baseModel, tgtMod]
+      | _ =>
+        throwError s!"{e} is a TotalSpace {F} {V}, but {V} is not a pi type --- \
+          could not infer base of the bundle"
     | _ => throwError "`{e}` is not a `Bundle.TotalSpace`."
-  /-- Attempt to use the provided `baseInfo` to find a model. -/
-  fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
-    if let some (src, srcI) := baseInfo then
-      trace[Elab.DiffGeo.MDiff] "Using base info `{src}`, `{srcI}`"
-      let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
-          match_expr type with
-          | NormedSpace K E _ _ =>
-            if ← withReducible (pureIsDefEq E F) then
-              trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"; return some K
-            else return none
-          | _ => return none
-        | throwError "Couldn't find a `NormedSpace` structure on `{F}` among local instances."
-      let kT : Term ← Term.exprToSyntax K
-      let srcIT : Term ← Term.exprToSyntax srcI
-      let FT : Term ← Term.exprToSyntax F
-      let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
-      Term.elabTerm iTerm none
-    else
-      throwError "No `baseInfo` provided"
   /-- Attempt to find a model from the total space of a tangent bundle. -/
   fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
     match_expr V with
@@ -719,11 +738,6 @@ Further cases can be added as necessary.
 
 Return an expression describing the found model with corners.
 
-`baseInfo` is only used for the first case, a model with corners on the total space of the vector
-bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
-and the model with corners on the base: these are required to construct the right model with
-corners.
-
 Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
 `TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
 `findModel` on it.
@@ -737,9 +751,9 @@ This implementation is not maximally robust yet.
 -- This should not be an issue in practice.
 -- FIXME: can one prove this terminates w.r.t. a suitable measure? This is only recursing into
 -- subexpressions (at least, after match_expr), right?
-partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
+partial def findModel (e : Expr) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model with corners for: `{e}`"
-  if let some { model .. } ← go e baseInfo then
+  if let some { model .. } ← go e then
     return model
   else
     let tracing := (← isTracingEnabledFor `Elab.DiffGeo.MDiff)
@@ -751,9 +765,9 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
           command `set_option trace.Elab.DiffGeo.MDiff true`."
     throwError "Could not find a model with corners for `{e}`.{hint}"
 where
-  go (e : Expr) (baseInfo : Option (Expr × Expr)) : TermElabM (Option FindModelResult) := do
+  go (e : Expr)  : TermElabM (Option FindModelResult) := do
     -- At first, try finding a model with corners on the space itself.
-    if let some m ← findModelInner e baseInfo then return some m
+    if let some m ← findModelInner e then return some m
     -- Otherwise, we recurse into the expression,
     -- depending whether we have an open subset of a space, a product, or a direct sum of spaces.
     match_expr e with
@@ -774,16 +788,16 @@ where
               trace[Elab.DiffGeo.MDiff] "`{e}` is an open set of `{M}`, finding a model on `{M}`"
               -- `M` is not a open set of another manifold, as `Opens X` is (currently) not a
               -- topological space (and this would be strange). Therefore, do not recurse into `M`.
-              go M baseInfo
+              go M
             | _ => return none
           | _ => return none
         | _ => return none
       | _ => return none
     | Prod E F =>
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a product, recursing into each factor"
-      let some { model := srcE, normedSpaceInfo? := normedSpaceE } ← go E baseInfo
+      let some { model := srcE, normedSpaceInfo? := normedSpaceE } ← go E
         | throwError "Found no model with corners on first factor `{E}`"
-      let some { model := srcF, normedSpaceInfo? := normedSpaceF } ← go F baseInfo
+      let some { model := srcF, normedSpaceInfo? := normedSpaceF } ← go F
         | throwError "Found no model with corners on second factor `{F}`"
       -- If both E and F are normed spaces, we have ambiguity: warn and exit.
       if normedSpaceE.isSome && normedSpaceF.isSome then
@@ -797,7 +811,7 @@ where
     | Sum E F =>
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
         We assume the models match, and only look into the first summand"
-      go E baseInfo
+      go E
     | _ => return none
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
@@ -823,7 +837,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       if !(← isDefEq estype <| ← mkAppM ``Set #[src]) then
         throwError "The domain `{src}` of `{e}` is not definitionally equal to the carrier type of \
           the set `{es}` : `{estype}`"
-    let tgtI ← findModel tgt (src, srcI)
+    let tgtI ← findModel tgt
     return (srcI, tgtI)
   | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
@@ -1088,7 +1102,25 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withAppArg delab
     `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
--- TODO: add a delaborator for mfderivWithin (with a test)
+/-- Delaborator for `mfderivWithin` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab mfderivWithin] meta def delabMFDerivWithin : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let ss ← withAppArg delab
+  try
+    let fe := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `(T% $σs) >>= annotateGoToSyntaxDef
+    `(mfderiv[$ss] ($Tσs)) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(mfderiv[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `MDifferentiable` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
@@ -1168,6 +1200,53 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
+/-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab HasMFDerivWithinAt] meta def delabHasMFDerivWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 24 do
+  let ss ← withNaryArg 21 delab
+  let xs ← withNaryArg 22 delab
+  let f' ← withNaryArg 23 delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(HasMFDerivAt[$ss] $Tσs $xs $f') >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(HasMFDerivAt[$ss] $fs $xs $f') >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab HasMFDerivAt] meta def delabHasMFDerivAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 23 do
+  let xs ← withNaryArg 21 delab
+  let f' ← withNaryArg 22 delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(HasMFDerivAt% $Tσs $xs $f') >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(HasMFDerivAt% $fs $xs $f') >>= annotateGoToSyntaxDef
+
 /-- Delaborator for `UniqueMDiffOn` using the custom elaborator. -/
 @[app_delab UniqueMDiffOn] meta def delabUniqueMDiffOn : Delab := do
   whenPPOption getPPNotation do
@@ -1183,7 +1262,7 @@ arguments that can use the `T%` elaborator. -/
   `(UniqueMDiffAt[$ss]) >>= annotateGoToSyntaxDef
 
 -- TODO: add more delaborators (and tests) for
--- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
+-- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt
 
 -- TODO: when adding more elaborators, also add the corresponding delaborators
 
