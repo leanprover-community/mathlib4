@@ -475,23 +475,33 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
   · simpa only [log_of_left_le_one hb, zero_add] using le_rfl
 
-theorem omega0_opow_mul_nat_lt {a b : Ordinal} (h : a < b) (n : ℕ) : ω ^ a * n < ω ^ b := by
-  apply lt_of_lt_of_le _ (opow_le_opow_right omega0_pos (succ_le_of_lt h))
-  rw [opow_succ]
-  gcongr
-  exacts [opow_pos a omega0_pos, natCast_lt_omega0 n]
+@[deprecated opow_mul_lt_opow (since := "2026-06-01")]
+theorem omega0_opow_mul_nat_lt {a b : Ordinal} (h : a < b) (n : ℕ) : ω ^ a * n < ω ^ b :=
+  opow_mul_lt_opow (natCast_lt_omega0 n) h
+
+theorem sub_omega0_opow_log_lt {a : Ordinal} (ha : a ≠ 0) : a - ω ^ log ω a < a := by
+  obtain ⟨n, hn⟩ := lt_omega0.1 <| div_opow_log_lt a one_lt_omega0
+  conv_lhs => left; rw [← div_add_mod a (ω ^ log ω a), hn]
+  cases n with
+  | zero =>
+    simpa using ((div_pos (opow_ne_zero _ omega0_ne_zero)).2 (opow_log_le_self _ ha)).trans_eq hn
+  | succ n =>
+    rw [add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, add_assoc, Ordinal.add_sub_cancel]
+    apply (opow_mul_add_lt_opow_mul _ (lt_add_one _)).trans_le
+    · rw [Ordinal.mul_le_iff_le_div, hn] <;> simp
+    · exact mod_lt _ (opow_ne_zero _ omega0_ne_zero)
 
 theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
     a < ω ^ b ↔ ∃ c < b, ∃ n : ℕ, a < ω ^ c * n := by
   refine ⟨fun ha ↦ ⟨_, lt_log_of_lt_opow hb ha, ?_⟩,
-    fun ⟨c, hc, n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt hc n)⟩
+    fun ⟨c, hc, n, hn⟩ ↦ hn.trans (opow_mul_lt_opow (natCast_lt_omega0 n) hc)⟩
   obtain ⟨n, hn⟩ := lt_omega0.1 (div_opow_log_lt a one_lt_omega0)
   use n + 1
   rw [Nat.cast_add_one, ← hn]
   exact lt_mul_succ_div a (opow_ne_zero _ omega0_ne_zero)
 
 theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a < ω ^ b * n := by
-  refine ⟨fun ha ↦ ?_, fun ⟨n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt (lt_succ b) n)⟩
+  refine ⟨fun ha ↦ ?_, fun ⟨n, hn⟩ ↦ hn.trans (opow_mul_lt_opow (natCast_lt_omega0 n) (lt_succ b))⟩
   obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (add_pos_of_right zero_lt_one b).ne').1 ha
   refine ⟨n, hn.trans_le ?_⟩
   grw [lt_succ_iff.1 hc]

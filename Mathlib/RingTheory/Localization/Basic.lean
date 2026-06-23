@@ -688,8 +688,8 @@ theorem IsLocalization.algHom_ext {R A L B : Type*}
 
 section extend
 
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
-  (S : Type*) [CommRing S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+  (S : Type*) [CommSemiring S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
   [Algebra R A] [Algebra S A] [IsScalarTower R S A]
   [Algebra R B] [Algebra S B] [IsScalarTower R S B]
 
