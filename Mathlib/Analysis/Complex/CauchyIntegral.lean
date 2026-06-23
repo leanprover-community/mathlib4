@@ -835,8 +835,8 @@ theorem tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_t
   have heventually : (fun (m : ℝ) ↦
       (∫ (x : ℝ) in x₁..x₂, f (x + y * I))
         - (∫ (x : ℝ) in x₁..x₂, f (x + m * I))
-        + (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)))
-      =ᶠ[atTop] (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) := by
+        + (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I))) =ᶠ[atTop]
+      (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) := by
     filter_upwards [eventually_ge_atTop y] with m hm
     rw [← sub_eq_zero, ← (hzero y hcont s hs hdiff m hm)]
   rw [tendsto_congr' heventually.symm, ← sub_zero (∫ (t : ℝ) in x₁..x₂, f (↑t + ↑y * I))]
