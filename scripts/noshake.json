@@ -14,7 +14,7 @@
   "Batteries.Tactic.HaveI",
   "Batteries.Tactic.LeftRight",
   "Batteries.Tactic.Lint",
-  "Batteries.Tactic.Lint.Misc",
+  "Batteries.Linter.Misc",
   "Batteries.Tactic.NoMatch",
   "Batteries.Tactic.NormCast",
   "Batteries.Tactic.NormCast.Lemmas",
