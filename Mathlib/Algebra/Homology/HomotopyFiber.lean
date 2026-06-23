@@ -195,7 +195,7 @@ lemma mapHomologicalComplexObjIso_hom_map_π₀ :
     (cylinder.map_ι₀_mapHomologicalComplexObjIso_hom K.op H.op hc))
 
 @[reassoc (attr := simp)]
-lemma mapHomologicalComplexObjIso_hom_map_π₁ :
+lemma mapHomologicalComplexObjIso_inv_map_π₁ :
     (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₁ K) =
       π₁ _ :=
   Quiver.Hom.op_inj ((opFunctor _ _).map_injective
