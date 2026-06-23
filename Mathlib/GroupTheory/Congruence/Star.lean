@@ -3,14 +3,18 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Helpers for working with star operators on quotients.
 
 TODO: consider defining `Star` versions of `Con` and `AddCon`.
 -/
+
+@[expose] public section
 
 section Mul
 variable {M : Type*} [Mul M] [StarMul M] {r : M → M → Prop}

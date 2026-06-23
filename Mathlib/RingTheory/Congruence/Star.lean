@@ -3,14 +3,18 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Helpers for working with star operators on quotients.
 
 TODO: consider defining `Star` versions of `RingCon`.
 -/
+
+@[expose] public section
 
 section Ring
 variable {R : Type*} [NonUnitalNonAssocSemiring R] [StarRing R] {r : R → R → Prop}
