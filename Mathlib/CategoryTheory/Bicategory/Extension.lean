@@ -143,11 +143,11 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
 def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
     s.whisker h ≅ t.whisker h :=
   Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
-    (StructuredArrow.hom_ext _ _ <|
+    (StructuredArrow.ext _ _ <|
       calc
         _ = (i.hom ≫ i.inv).right ▷ h := by simp [-Iso.hom_inv_id]
         _ = 𝟙 _ := by simp [Iso.hom_inv_id])
-    (StructuredArrow.hom_ext _ _ <|
+    (StructuredArrow.ext _ _ <|
       calc
         _ = (i.inv ≫ i.hom).right ▷ h := by simp [-Iso.inv_hom_id]
         _ = 𝟙 _ := by simp [Iso.inv_hom_id])
@@ -266,11 +266,11 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
 def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
     s.whisker h ≅ t.whisker h :=
   Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
-    (StructuredArrow.hom_ext _ _ <|
+    (StructuredArrow.ext _ _ <|
       calc
         _ = h ◁ (i.hom ≫ i.inv).right := by simp [-Iso.hom_inv_id]
         _ = 𝟙 _ := by simp [Iso.hom_inv_id])
-    (StructuredArrow.hom_ext _ _ <|
+    (StructuredArrow.ext _ _ <|
       calc
         _ = h ◁ (i.inv ≫ i.hom).right := by simp [-Iso.inv_hom_id]
         _ = 𝟙 _ := by simp [Iso.inv_hom_id])
@@ -434,11 +434,11 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
 def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
     s.whisker h ≅ t.whisker h :=
   Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
-    (CostructuredArrow.hom_ext _ _ <|
+    (CostructuredArrow.ext _ _ <|
       calc
         _ = h ◁ (i.hom ≫ i.inv).left := by simp [-Iso.hom_inv_id]
         _ = 𝟙 _ := by simp [Iso.hom_inv_id])
-    (CostructuredArrow.hom_ext _ _ <|
+    (CostructuredArrow.ext _ _ <|
       calc
         _ = h ◁ (i.inv ≫ i.hom).left := by simp [-Iso.inv_hom_id]
         _ = 𝟙 _ := by simp [Iso.inv_hom_id])

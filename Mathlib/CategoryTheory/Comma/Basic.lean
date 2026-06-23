@@ -99,6 +99,7 @@ structure CommaMorphism (X Y : Comma L R) where
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
 
 attribute [to_dual existing right] CommaMorphism.left
+attribute [to_dual self (reorder := A B, 2 4, L R, X Y, 13 14)] CommaMorphism.ext
 
 to_dual_name_hint Left Right, Fst Snd, L R, L₁ R₁, L₂ R₂, A B, F₁ F₂
 
