@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2026 Terence Tao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alastair Irving, Pietro Monticone, Terence Tao, Yi Yuan
+Authors: Alastair Irving, Pietro Monticone, Robby Sneiderman, Guiseppe Sorge, Terence Tao,
+Yan Yablonovskiy, Yi Yuan
 -/
 module
 
@@ -43,7 +44,7 @@ Explicit constants are available in all cases.
 
 - Establish that the Meissel--Mertens constant for the von Mangoldt function is equal to the
 Euler--Mascheroni constant.
-- Establish Mertens' third theorems.
+- Establish Mertens' third theorem.
 
 ## References
 
@@ -289,7 +290,7 @@ lemma sum_div_log_eq' : ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n = log (lo
 lemma sum_div_log_eq : ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n = log (log x) + M + E₂ x := by
   simpa [← add_sum_Ioc_eq_sum_Icc, map_zero] using sum_div_log_eq' x
 
-lemma E₁_div_integrable {x : ℝ} (hx : 2 ≤ x) :
+lemma integrable_mul_E₁ {x : ℝ} (hx : 2 ≤ x) :
     IntegrableOn (fun t ↦ (t⁻¹ / (log t)^2) * E₁ t) (.Ioi x) volume := by
   apply Integrable.mono (integrable_const_div_mul_log_sq C₁ hx)
   · exact Measurable.aestronglyMeasurable (by unfold E₁; fun_prop)
@@ -303,7 +304,7 @@ theorem M_bounds :
     M ≤ upperBound / log 2 + 1 - log (log 2) ∧ lowerBound / log 2 + 1 - log (log 2) ≤ M := by
   unfold M
   rw [← integ_div_mul_log_sq _ (by rfl), ← integ_div_mul_log_sq _ (by rfl)]
-  have := E₁_div_integrable (by rfl)
+  have := integrable_mul_E₁ (by rfl)
   have : NullMeasurableSet (.Ioi (2 : ℝ)) volume := by measurability
   constructor <;> gcongr with t ht
   exacts [integrable_const_div_mul_log_sq _ (by rfl),
@@ -313,14 +314,15 @@ theorem M_bounds :
 
 theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
     E₂ x = (log x)⁻¹ * E₁ x - ∫ t in .Ioi x, (t⁻¹ / (log t)^2) * E₁ t := by
+  -- a weird bug - if I move `hcont` too far into the proof, the proof breaks.  Have not
+  -- identified the cause yet.
   have hcont : ContinuousOn (fun t ↦  -t⁻¹ / log t ^ 2) (.Icc 2 x) := by
     fun_prop (disch := grind [log_ne_zero])
   have : 0 < log x := log_pos (by linarith)
   suffices ∫ t in 2..x, (t⁻¹ / (log t)^2) * E₁ t = ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n -
     (log x)⁻¹ * (∑ n ∈ Icc 0 ⌊x⌋₊, f n) - log (log x) + log (log 2) by
-    have : (∫ t in 2..x, (t⁻¹ / (log t)^2) * E₁ t) + ∫ t in .Ioi x, (t⁻¹ / (log t)^2) * E₁ t
-      = ∫ t in .Ioi 2, (t⁻¹ / (log t)^2) * E₁ t := integral_interval_add_Ioi
-        (E₁_div_integrable (by rfl)) (E₁_div_integrable hx)
+    have : (∫ t in 2..x, _) + ∫ t in .Ioi x, _ = ∫ t in .Ioi 2, (t⁻¹ / (log t)^2) * E₁ t :=
+      integral_interval_add_Ioi (integrable_mul_E₁ (by rfl)) (integrable_mul_E₁ hx)
     have : (log x)⁻¹ * E₁ x = (log x)⁻¹ * (∑ n ∈ Icc 0 ⌊x⌋₊, f n) - 1 := by
       rw [sum_eq']; field_simp; abel
     unfold E₂ M; linarith
@@ -337,8 +339,7 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
       fun_prop (disch := grind)
     · exact Measurable.aestronglyMeasurable (by unfold E₁; fun_prop)
     filter_upwards [ae_restrict_mem (by measurability)] with t ht
-    simp [Set.mem_Ioc] at ht
-    simp only [norm_mul, norm_eq_abs]
+    simp only [norm_mul, norm_eq_abs, Set.mem_Ioc] at ht ⊢
     grw [f.first_theorem' (by linarith), le_abs_self f.C₁]
     have : 0 < t := by linarith
     gcongr; order
@@ -349,23 +350,19 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
   · suffices ∫ t in .Ioc 2 x, deriv (fun t ↦ (log t)⁻¹) t * ∑ k ∈ Icc 0 ⌊t⌋₊, f k =
         - ∫ t in 2..x, (t⁻¹ / (log t)^2) * ∑ n ∈ Icc 0 ⌊t⌋₊, f n by linarith
     rw [← intervalIntegral.integral_neg, intervalIntegral.integral_of_le hx]
-    apply setIntegral_congr_fun (by measurability)
-    intro t _
-    simp [field]
+    exact setIntegral_congr_fun (by measurability) (fun _ _ ↦ by simp [field])
   · intro t _
     have : log t ≠ 0 := log_ne_zero.mpr (by grind)
     fun_prop (disch := grind)
-  · have : ContinuousOn (fun t ↦  -t⁻¹ / log t ^ 2) (.Icc 2 x) := by
-      fun_prop (disch := grind [log_ne_zero])
-    apply ContinuousOn.integrableOn_Icc
-    simpa using this
+  · apply ContinuousOn.integrableOn_Icc
+    simpa using hcont
 
 /-- The abstract Mertens second theorem. -/
 theorem second_theorem' {x : ℝ} (hx : 2 ≤ x) :
     |f.E₂ x| ≤ C₂ / log x := by
   have hx' : 1 < x := by linarith
   have : 0 < log x := log_pos hx'
-  have := f.E₁_div_integrable hx
+  have := f.integrable_mul_E₁ hx
   have : NullMeasurableSet (.Ioi x) volume := by measurability
   rw [f.E₂_eq hx, abs_le, C₂]
   constructor
@@ -539,6 +536,8 @@ theorem e₁_summable : Summable e₁ := by
     grind
   · positivity
 
+theorem E₁_nonneg : 0 ≤ E₁ := tsum_nonneg e₁_nonneg
+
 /-- An upper bound for `E₁`. -/
 theorem E₁_le : E₁ ≤ 1 := by
   refine e₁_summable.tsum_le_of_sum_range_le (fun N ↦ ?_)
@@ -612,8 +611,6 @@ theorem E₁_le : E₁ ≤ 1 := by
       (by fun_prop) _).intervalIntegrable
     simp; grind
   linarith [log_two_lt_d9, log_three_lt_d9]
-
-theorem E₁_nonneg : 0 ≤ E₁ := tsum_nonneg e₁_nonneg
 
 theorem sum_vonMangoldt_le_sum_prime_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
     ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d / d ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p / p + E₁ := by
