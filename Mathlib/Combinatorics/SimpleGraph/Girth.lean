@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
-public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 
 /-!
 # Girth of a simple graph
@@ -77,6 +77,23 @@ lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
 @[gcongr only]
 lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
   le_antisymm f.isContained'.egirth_le f.isContained.egirth_le
+
+lemma egirth_le_two_ediam_plus_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
+  obtain ⟨u, w, hw, hwl⟩ := exists_egirth_eq_length.mpr h
+  have half_g_le_edist : ↑(w.length / 2) ≤ G.edist u (w.getVert (w.length / 2)) := by
+    have ⟨p,_⟩ := ((w.take (w.length / 2)).reachable).exists_walk_length_eq_edist
+    by_contra! hlt; classical
+    have ⟨x,_,_,c,c_cycle,c_len⟩ := Walk.IsPath.exists_isCycle_length_le_add_of_ne
+      p.bypass_isPath (w.drop (w.length / 2)).reverse.bypass_isPath (by grind [ENat.coe_lt_coe,
+      Walk.length_reverse, Walk.length_append, Walk.length_bypass_le_length, Walk.take_length,
+      Walk.IsPath.bypass_eq_self, Walk.IsCycle.three_le_length, Walk.length_eq_zero_iff,
+      Walk.append_take_drop_eq, Walk.IsCycle.isPath_of_append_right, Walk.IsPath.reverse])
+    grind [ENat.coe_lt_coe, Walk.length_bypass_le_length, Walk.length_reverse, egirth_le_length,
+    ENat.coe_le_coe, Walk.length_append, Walk.IsCycle.three_le_length, Walk.length_eq_zero_iff,
+    Walk.take_length, Walk.append_take_drop_eq, Walk.IsCycle.isPath_of_append_right]
+  calc
+    G.egirth ≤ 2 * ↑(w.length / 2) + 1 := by rw [hwl]; norm_cast; grind
+    _  ≤ 2 * G.ediam + 1 := by gcongr; grind [edist_le_ediam]
 
 end egirth
 
