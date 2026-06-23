@@ -183,6 +183,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
+  (`Mathlib.Lean, `Batteries.Linter),
   (`Mathlib.Lean, `Batteries.CodeAction),
   -- TODO: should this be minimised further?
   (`Mathlib.Lean.Meta.CongrTheorems, `Batteries),
