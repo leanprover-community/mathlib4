@@ -99,7 +99,7 @@ protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ+ S] [SMu
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : AddGroupWithOne S :=
-  { hf.addGroup f zero add neg psmul sub (swap nsmul) (swap zsmul),
+  { hf.addGroup f zero add neg sub psmul (swap nsmul) (swap zsmul),
     hf.addMonoidWithOne f zero one add psmul nsmul natCast with
     intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
@@ -171,7 +171,7 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (f : S → R)
     (psmul : ∀ (x) (n : ℕ+), f (n • x) = n • f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) : NonUnitalNonAssocRing S where
-  toAddCommGroup := hf.addCommGroup f zero add neg psmul sub (swap nsmul) (swap zsmul)
+  toAddCommGroup := hf.addCommGroup f zero add neg sub psmul (swap nsmul) (swap zsmul)
   __ := hf.nonUnitalNonAssocSemiring f zero add mul psmul nsmul
 
 /-- Pullback a `NonUnitalRing` instance along an injective function. -/
@@ -203,8 +203,8 @@ protected abbrev nonAssocRing [NonAssocRing R]
 -- See note [reducible non-instances]
 protected abbrev ring [Ring R] (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
-    (neg : ∀ x, f (-x) = -f x) (psmul : ∀ (x) (n : ℕ+), f (n • x) = n • f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
+    (psmul : ∀ (x) (n : ℕ+), f (n • x) = n • f x) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : Ring S where
@@ -212,7 +212,7 @@ protected abbrev ring [Ring R] (zero : f 0 = 0)
   -- zsmul included here explicitly to make sure it's picked correctly by `fast_instance%`.
   zsmul := fun n x ↦ n • x
   __ := hf.addGroupWithOne f zero one add neg psmul sub nsmul zsmul natCast intCast
-  __ := hf.addCommGroup f zero add neg psmul sub (swap nsmul) (swap zsmul)
+  __ := hf.addCommGroup f zero add neg sub psmul (swap nsmul) (swap zsmul)
 
 /-- Pullback a `NonUnitalNonAssocCommSemiring` instance along an injective function. -/
 -- See note [reducible non-instances]
@@ -297,12 +297,12 @@ protected abbrev nonAssocCommRing [NonAssocCommRing R] (f : S → R)
 protected abbrev commRing [CommRing R]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
-    (psmul : ∀ (x) (n : ℕ+), f (n • x) = n • f x) (sub : ∀ x y, f (x - y) = f x - f y)
+    (sub : ∀ x y, f (x - y) = f x - f y) (psmul : ∀ (x) (n : ℕ+), f (n • x) = n • f x)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : CommRing S where
-  toRing := hf.ring f zero one add mul neg psmul sub nsmul zsmul ppow npow natCast intCast
+  toRing := hf.ring f zero one add mul neg sub psmul nsmul zsmul ppow npow natCast intCast
   __ := hf.commMonoid f one mul ppow npow
 
 end Function.Injective

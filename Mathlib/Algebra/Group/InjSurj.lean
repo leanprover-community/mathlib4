@@ -303,9 +303,9 @@ protected abbrev divisionCommMonoid [DivisionCommMonoid M₂] (f : M₁ → M₂
 injective map that preserves `0` and `+` to an additive group. -/]
 protected abbrev group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₁ :=
+    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    Group M₁ :=
   { hf.divInvMonoid f one mul inv ppow div npow zpow with
     inv_mul_cancel := fun x => hf <| by rw [mul, inv, inv_mul_cancel, one] }
 
@@ -317,10 +317,10 @@ preserves `1`, `*` and `⁻¹` to a commutative group. See note [reducible non-i
 admits an injective map that preserves `0` and `+` to an additive commutative group. -/]
 protected abbrev commGroup [CommGroup M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₁ :=
-  { hf.group f one mul inv ppow div npow zpow, hf.commMonoid f one mul ppow npow with }
+    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    CommGroup M₁ :=
+  { hf.group f one mul inv div ppow npow zpow, hf.commMonoid f one mul ppow npow with }
 
 end Injective
 

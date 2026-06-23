@@ -281,12 +281,12 @@ theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b
   rfl
 
 instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
-  fast_instance% DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg
-    (fun _ _ => coe_psmul _ _) coe_sub (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
+  fast_instance% DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub
+    (fun _ _ => coe_psmul _ _) (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
-  fast_instance% DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg
-    (fun _ _ => coe_psmul _ _) coe_sub (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
+  fast_instance% DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
+    (fun _ _ => coe_psmul _ _) (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 end Algebra
 
