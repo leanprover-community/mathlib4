@@ -555,115 +555,69 @@ private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
     simpa [neg_apply] using
       congrArg (fun L : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1) ↦ L v) hderiv
 
-/-- If `f` acts as `v ↦ -v` on `EuclideanSpace ℝ (Fin 1)`, it flips `baseOrientation`. -/
-private theorem Icc_map_neg_orientation
-    (f : EuclideanSpace ℝ (Fin 1) ≃ₗ[ℝ] EuclideanSpace ℝ (Fin 1))
-    (hf : ∀ v, f v = -v) :
-    Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1)))) f
-      (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
-      -Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) := by
-  rw [(Orientation.map_eq_neg_iff_det_neg _ _ (by simp [finrank_euclideanSpace])).mpr]
-  have : f.toLinearMap = (-1 : ℝ) • LinearMap.id := by
-    ext v
-    simp [hf v]
-  simp only [this, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace,
-    Fintype.card_fin]
-  norm_num
-
-/-- Right-to-left chart transition case for interval orientation compatibility. -/
-private theorem Icc_signedOrientation_compatible_right_left (p q r : Set.Icc x y)
-    (hr : r ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet)
-    (hp : ¬p.1 < y) (hq : q.1 < y) :
-    (Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
-        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).linearEquivAt ℝ r
-              hr.1).symm ≪≫ₗ
-          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).linearEquivAt ℝ r
-              hr.2))
-    (Manifold.signedOrientation (E := EuclideanSpace ℝ (Fin 1)) (if p.1 < y then 0 else 1)
-        (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)))) =
-    Manifold.signedOrientation (E := EuclideanSpace ℝ (Fin 1)) (if q.1 < y then 0 else 1)
-      (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) := by
-  have hneg : Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
-      (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r).toLinearEquiv)
-      (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
-      -Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) :=
-    Icc_map_neg_orientation _ (fun v ↦ Icc_coordChangeL_neg p q r hr (by simp [hp, hq]) v)
-  rw [← Bundle.Trivialization.coe_coordChangeL' _ _ hr,
-    show (if p.1 < y then (0 : ZMod 2) else 1) = 1 from by simp [hp],
-    show (if q.1 < y then (0 : ZMod 2) else 1) = 0 from by simp [hq],
-    Manifold.signedOrientation_one, Manifold.signedOrientation_zero, Orientation.map_neg, hneg,
-    neg_neg]
-
-/-- Compatibility equation for the interval orientation with a chart-sign cocycle. -/
-theorem Icc_signedOrientation_compatible (p q r : Set.Icc x y)
+/-- The interval tangent coordinate change from the chart at `p` to the chart at `q`, evaluated at
+`r`, has positive Jacobian determinant exactly when `p` and `q` use the same chart (both `< y` or
+both `≥ y`). -/
+private theorem Icc_zero_lt_det_coordChangeL_iff (p q r : Set.Icc x y)
     (hr : r ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).baseSet ∩
       (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet) :
-    (Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
+    0 < LinearMap.det
         (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-            (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r).toLinearEquiv))
-    (Manifold.signedOrientation (E := EuclideanSpace ℝ (Fin 1)) (if p.1 < y then 0 else 1)
-        (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)))) =
-    Manifold.signedOrientation (E := EuclideanSpace ℝ (Fin 1)) (if q.1 < y then 0 else 1)
-      (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) := by
-  have coordChangeL_neg (hp : ¬((p : ℝ) < y ↔ (q : ℝ) < y))
-      (v : EuclideanSpace ℝ (Fin 1)) :
-      (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-        (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r v = -v :=
-    Icc_coordChangeL_neg p q r hr hp v
-  have map_neg_orientation (f : EuclideanSpace ℝ (Fin 1) ≃ₗ[ℝ] EuclideanSpace ℝ (Fin 1))
-      (hf : ∀ v, f v = -v) :
-      Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1)))) f
-        (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
-        -Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) :=
-    Icc_map_neg_orientation f hf
-  -- Main case split on which charts p and q use (left chart when p.1 < y, right otherwise)
-  rw [Bundle.Trivialization.coe_coordChangeL' _ _ hr]
-  by_cases hp : p.1 < y
-  · by_cases hq : q.1 < y
-    · -- Same chart (both left): coordChange = id, orientation preserved
-      simp only [Manifold.signedOrientation, hp, hq, ↓reduceIte,
-        TangentBundle.trivializationAt_eq_localTriv, achart_def, Icc_chartedSpaceChartAt,
-        LinearEquiv.symm_trans_self, Orientation.map_refl, Equiv.refl_apply]
-    · -- Cross chart (left → right): coordChange negates, orientation flips
-      simp only [Manifold.signedOrientation, hp, hq, ↓reduceIte]
-      exact map_neg_orientation _ (fun v ↦ by
-        have := coordChangeL_neg (by simp [hp, hq]) v
-        rwa [Bundle.Trivialization.coe_coordChangeL _ _ hr] at this)
-  · by_cases hq : q.1 < y
-    · -- Cross chart (right → left): coordChange negates, map(-baseOri) = baseOri
-      exact Icc_signedOrientation_compatible_right_left p q r hr hp hq
-    · -- Same chart (both right): coordChange = id, orientation preserved
-      simp only [Manifold.signedOrientation, hp, hq, ↓reduceIte,
-        TangentBundle.trivializationAt_eq_localTriv, achart_def, Icc_chartedSpaceChartAt,
-        LinearEquiv.symm_trans_self, Orientation.map_refl, Equiv.refl_apply]
+          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
+            q) r).toLinearEquiv.toLinearMap) ↔
+      ((p : ℝ) < y ↔ (q : ℝ) < y) := by
+  -- Within a chart the transition is the identity (determinant `1`); across charts it is `v ↦ -v`
+  -- (determinant `-1`).
+  have hid : ((p : ℝ) < y ↔ (q : ℝ) < y) →
+      0 < LinearMap.det
+        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
+          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
+            q) r).toLinearEquiv.toLinearMap) := by
+    intro hpq
+    have hrefl :
+        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
+          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r).toLinearEquiv)
+          = LinearEquiv.refl ℝ (EuclideanSpace ℝ (Fin 1)) := by
+      rw [Bundle.Trivialization.coe_coordChangeL' _ _ hr]
+      by_cases hp : (p : ℝ) < y
+      · have hq : (q : ℝ) < y := hpq.mp hp
+        simp only [TangentBundle.trivializationAt_eq_localTriv, achart_def, Icc_chartedSpaceChartAt,
+          hp, hq, ↓reduceIte, LinearEquiv.symm_trans_self]
+      · have hq : ¬(q : ℝ) < y := fun h => hp (hpq.mpr h)
+        simp only [TangentBundle.trivializationAt_eq_localTriv, achart_def, Icc_chartedSpaceChartAt,
+          hp, hq, ↓reduceIte, LinearEquiv.symm_trans_self]
+    rw [hrefl, LinearEquiv.refl_toLinearMap, LinearMap.det_id]
+    exact one_pos
+  have hneg : ¬((p : ℝ) < y ↔ (q : ℝ) < y) →
+      LinearMap.det
+        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
+          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
+            q) r).toLinearEquiv.toLinearMap) < 0 := by
+    intro hpq
+    have hmap :
+        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
+          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
+            q) r).toLinearEquiv.toLinearMap) = (-1 : ℝ) • LinearMap.id := by
+      ext v
+      simp [Icc_coordChangeL_neg p q r hr hpq v]
+    rw [hmap, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace, Fintype.card_fin]
+    norm_num
+  by_cases hpq : ((p : ℝ) < y ↔ (q : ℝ) < y)
+  · exact iff_of_true (hid hpq) hpq
+  · exact iff_of_false (not_lt.mpr (hneg hpq).le) hpq
 
+open Classical in
 instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
   manifoldOrientation :=
-    { sign := fun p => if (p : ℝ) < y then 0 else 1
-      continuousOn_sign := fun q => by
-        -- After correcting by the chart transition, the sign is *constant* (`= sign q`) on the
-        -- chart domain, hence continuous there.
-        have heq : ∀ z ∈ (chartAt (EuclideanHalfSpace 1) q).source,
-            (if (z : ℝ) < y then (0 : ZMod 2) else 1) + Manifold.transSign (𝓡∂ 1) q z =
-              if (q : ℝ) < y then (0 : ZMod 2) else 1 := by
-          intro z hz
-          have hr : z ∈
-              (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) z).baseSet ∩
-                (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet :=
-            ⟨mem_baseSet_trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) z, hz⟩
-          refine Manifold.signedOrientation_injective
-            (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) (show
-            Manifold.signedOrientation
-                ((if (z : ℝ) < y then (0 : ZMod 2) else 1) + Manifold.transSign (𝓡∂ 1) q z)
-                (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
-              Manifold.signedOrientation (if (q : ℝ) < y then (0 : ZMod 2) else 1)
-                (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) from ?_)
-          rw [Manifold.signedOrientation_add, ← Manifold.transSign_baseOrientation_eq,
-            ← Manifold.Orientation.map_signedOrientation]
-          exact Icc_signedOrientation_compatible z q z hr
-        exact ContinuousOn.congr continuousOn_const heq }
+    { chartSign := fun p z =>
+        if z ∈ (chartAt (EuclideanHalfSpace 1) p).source then (if (p : ℝ) < y then 0 else 1) else 1
+      continuousOn_chartSign := fun p =>
+        ContinuousOn.congr (continuousOn_const (c := if (p : ℝ) < y then (0 : ZMod 2) else 1))
+          (fun z hz => by simp only [if_pos hz])
+      chartSign_eq_one_of_not_mem := fun p z hz => if_neg hz
+      compatible := fun p q z hzp hzq => by
+        simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_coordChangeL_iff p q z ⟨hzp, hzq⟩]
+        by_cases hp : (p : ℝ) < y <;> by_cases hq : (q : ℝ) < y <;> simp [hp, hq] }
 
 instance instOrientableIcc : Manifold.Orientable (𝓡∂ 1) (Set.Icc x y) := by infer_instance
 
