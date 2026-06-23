@@ -137,7 +137,7 @@ noncomputable def XZeroLinearEquivRing (x : M) : (koszulCocomplex R x).X 0 ≃�
 
 /-- The top-cardinality subset type consists only of the full finite set. -/
 @[reducible]
-noncomputable instance nonempty_unique_top_powersetCard {ι : Type*} [Finite ι] :
+noncomputable instance uniquePowersetCardCard {ι : Type*} [Finite ι] :
     (Unique (Set.powersetCard ι (Nat.card ι))) where
   default :=
     letI : Fintype ι := Fintype.ofFinite ι
@@ -172,3 +172,4 @@ lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
 end specialX
 
 end koszulCocomplex
+#lint
