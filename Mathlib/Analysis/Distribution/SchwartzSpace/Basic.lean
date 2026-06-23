@@ -1199,7 +1199,7 @@ def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
     (⟨{0}, 1, zero_le_one, by
       simpa [BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
 
-theorem injective_toBoundedContinuousFunctionCLM  :
+theorem injective_toBoundedContinuousFunctionCLM :
     Function.Injective (toBoundedContinuousFunctionCLM ..: 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
   fun f g h ↦ by
     ext x; simpa using DFunLike.congr_fun h x
