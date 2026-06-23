@@ -10,6 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
+public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
@@ -365,6 +366,31 @@ theorem integral_div_sq_add_sq {c : ℝ} :
     · simp [hc]
     · rw [integral_const_mul, integral_inv_sq_add_sq hc]
       field_simp
+
+@[simp]
+theorem integral_inv_div_log (ha : 1 < a) (hb : 1 < b) :
+    ∫ t in a..b, t⁻¹ / log t = log (log b) - log (log a) := by
+  have (t : ℝ) (ht: t ∈ Set.uIcc a b) : deriv (fun t ↦ log (log t)) t = t⁻¹ / log t
+    := deriv_log_log (by grind [Set.uIcc])
+  rw [← intervalIntegral.integral_congr this]
+  refine integral_deriv_eq_sub (fun _ _ ↦ ?_) ?_
+  · exact differentiableOn_log_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
+  refine (?_ : ContinuousOn _ _).congr this |>.intervalIntegrable
+  fun_prop (disch := grind [log_pos, Set.uIcc])
+
+@[simp]
+theorem integral_inv_div_log_sq (ha : 1 < a) (hb : 1 < b) :
+    ∫ t in a..b, t⁻¹ / log t ^ 2 = (log a)⁻¹ - (log b)⁻¹ := by
+  suffices ∫ t in a..b, deriv (fun t ↦ (log t)⁻¹) t = (log b)⁻¹ - (log a)⁻¹ by
+    simp_rw [deriv_inv_log, neg_div, intervalIntegral.integral_neg] at this
+    linarith
+  refine integral_deriv_eq_sub (fun _ _ ↦ ?_) (ContinuousOn.intervalIntegrable ?_)
+  · exact differentiableOn_inv_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
+  suffices ContinuousOn (fun x ↦ (-x⁻¹) * ((log x)⁻¹)^2) (Set.uIcc a b) by
+    convert this using 2 with x
+    simp [field]
+  fun_prop (disch := grind [log_pos, Set.uIcc])
+
 
 section RpowCpow
 
