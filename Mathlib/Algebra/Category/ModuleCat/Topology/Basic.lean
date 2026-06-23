@@ -157,16 +157,16 @@ section CommRing
 universe u'
 variable {S : Type u'} [CommRing S] [TopologicalSpace S]
 
-instance {X Y : TopModuleCat.{u'} S} : Module S (X ⟶ Y) where
+instance {X Y : TopModuleCat.{v} S} : Module S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
   __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
 
-instance : Linear S (TopModuleCat.{u'} S) where
+instance : Linear S (TopModuleCat.{v} S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
   comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
 
 @[simp]
-lemma hom_smul {M₁ M₂ : TopModuleCat.{u'} S} (s : S) (φ : M₁ ⟶ M₂) : (s • φ).hom = s • φ.hom := rfl
+lemma hom_smul {M₁ M₂ : TopModuleCat.{v} S} (s : S) (φ : M₁ ⟶ M₂) : (s • φ).hom = s • φ.hom := rfl
 
 end CommRing
 
