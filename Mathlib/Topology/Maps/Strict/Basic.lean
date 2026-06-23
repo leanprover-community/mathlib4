@@ -45,7 +45,8 @@ important properties of a strict group homomorphisms `f` :
 
 * `isStrictMap_iff_isOpenQuotientMap_rangeRestrict`: `f` is a strict group homomorphism if
   and only if the `rangeRestrict` of `f` is an open quotient map.
-* `isStrictMap_prodMap`: The product (in the sense of Prod.map) of group homomorphisms is strict
+* `isStrictMap_prodMap`: The product (in the sense of Prod.map) of strict group homomorphisms
+is strict.
 -/
 
 @[expose] public section
