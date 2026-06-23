@@ -179,10 +179,10 @@ instance : CategoryTheory.Linear k (TopRep k G) where
 end Linear
 
 section equivAction
-
+set_option pp.universes true
 /-- The functor sending a topological representation to the corresponding object in
 `Action (TopModuleCat k) G`. -/
-def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where
+def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat.{w} k) G where
   obj X := ⟨.of k X.V, (TopModuleCat.endRingEquiv (.of k X.V)).symm.toMonoidHom.comp X.ρ⟩
   map f := ⟨f.toTopModuleCatHom, fun g => by ext1; simp [TopModuleCat.endRingEquiv, f.hom.2 g]⟩
 

@@ -69,7 +69,7 @@ abbrev Iobj (rep : Action (TopModuleCat.{w} R) G) : Action (TopModuleCat.{max w 
     map_one' := ConcreteCategory.ext (by ext; simp)
     map_mul' _ _ := ConcreteCategory.ext (by ext; simp [mul_assoc]) }
 
-lemma Iobj_ρ_apply (rep : Action (TopModuleCat R) G) (g f x) :
+lemma Iobj_ρ_apply (rep : Action (TopModuleCat.{max v w} R) G) (g f x) :
     ((Iobj rep).ρ g).hom f x = (rep.ρ g).hom (f (g⁻¹ * x)) := rfl
 
 /-- The functor taking a representation `rep` to the representation `C(G, rep)`. -/
@@ -169,7 +169,7 @@ def _root_.continuousCohomology (n : ℕ) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
 def kerHomogeneousCochainsZeroEquiv
-    (X : Action (TopModuleCat R) G) (n : ℕ) (hn : n = 1) :
+    (X : Action (TopModuleCat.{max v w} R) G) (n : ℕ) (hn : n = 1) :
     (((homogeneousCochains R G).obj X).d 0 n).hom.ker ≃L[R] (invariants R G).obj X where
   toFun x :=
   { val := DFunLike.coe (F := C(G, _)) x.1.1 1
