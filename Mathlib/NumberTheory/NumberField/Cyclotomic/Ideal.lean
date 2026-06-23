@@ -211,9 +211,7 @@ theorem associated_zeta_sub_one_pow_prime :
   refine Associated.prod _ _ _ fun η hη ↦ ?_
   have hη' : IsPrimitiveRoot (η : K) p :=
     (isPrimitiveRoot_of_mem_primitiveRoots hη).map_of_injective RingOfIntegers.coe_injective
-  have hηtoInteger : hη'.toInteger = η := RingOfIntegers.ext rfl
-  simpa only [hηtoInteger, neg_sub] using
-    (associated_one_sub_of_isPrimitiveRoot p hζ hη').neg_left
+  simpa using (associated_one_sub_of_isPrimitiveRoot p hζ hη').neg_left
 
 /-- If `ζ - 1` does not divide `x`, then `p` and `x` are coprime, where `ζ` is a primitive `p`-th
 root of unity and `p` is prime. -/
