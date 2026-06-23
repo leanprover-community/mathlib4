@@ -303,7 +303,7 @@ section CongrLeft
 variable {κ : Type*}
 
 /-- Reindexing terms of a direct sum: change indexing type from `ι` to `κ` along an equivalence
-    `h : ι ≃ κ`. -/
+`h : ι ≃ κ`. -/
 def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
   { DFinsupp.equivCongrLeft h with map_add' := DFinsupp.comapDomain'_add _ h.right_inv }
 
