@@ -25,6 +25,7 @@ lemmas that do not immediately follow from the typeclass specifications.
 -/
 
 public section
+set_option linter.style.longFile 1600 -- FIXME
 
 open Function
 
