@@ -353,10 +353,8 @@ def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit
   inv_hom_id := Q.hom_ext (by simp)
 
 set_option linter.translateOverwrite false in
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing IsColimit.coconePointsIsoOfNatIso_inv] conePointsIsoOfNatIso_hom
 set_option linter.translateOverwrite false in
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing IsColimit.coconePointsIsoOfNatIso_hom] conePointsIsoOfNatIso_inv
 
 @[to_dual (attr := reassoc) comp_coconePointsIsoOfNatIso_inv]
@@ -471,11 +469,9 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
       cat_disch }
 
 set_option linter.translateOverwrite false in
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing IsColimit.coconePointsIsoOfEquivalence_inv]
   conePointsIsoOfEquivalence_hom
 set_option linter.translateOverwrite false in
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing IsColimit.coconePointsIsoOfEquivalence_hom]
   conePointsIsoOfEquivalence_inv
 
