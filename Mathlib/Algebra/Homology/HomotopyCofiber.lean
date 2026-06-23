@@ -424,9 +424,7 @@ noncomputable def mapArrowHom (α : Arrow.mk φ ⟶ Arrow.mk φ') :
     homotopyCofiber φ ⟶ homotopyCofiber φ' :=
   desc _ (α.right ≫ homotopyCofiber.inr φ')
     ((Homotopy.ofEq (by
-        have := α.w
-        dsimp at this
-        simp [reassoc_of% this])).trans (((inrCompHomotopy φ' H).compLeft α.left).trans
+        simp [reassoc_of% dsimp% α.w])).trans (((inrCompHomotopy φ' H).compLeft α.left).trans
       (Homotopy.ofEq (by simp))))
 
 set_option backward.defeqAttrib.useBackward true in
