@@ -52,6 +52,11 @@ theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofin
   obtain ⟨b, hb, hb'⟩ := hs a
   exact ⟨b, h hb, hb'⟩
 
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (h : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  obtain ⟨x, hx, _⟩ := h default
+  exact ⟨x, hx⟩
+
 end LE
 
 section Preorder

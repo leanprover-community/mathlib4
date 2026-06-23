@@ -1098,8 +1098,8 @@ theorem integral_le_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
     (hφg : ∀ x ∈ Ioo a b, φ x ≤ g' x) : (∫ y in a..b, φ y) ≤ g b - g a := by
   rw [← neg_le_neg_iff]
   convert!
-    sub_le_integral_of_hasDeriv_right_of_le hab hcont.neg (fun x hx => (hderiv x hx).neg) φint.neg
-      fun x hx => neg_le_neg (hφg x hx) using 1
+    sub_le_integral_of_hasDeriv_right_of_le hab hcont.fun_neg (fun x hx => (hderiv x hx).neg)
+      φint.neg fun x hx => neg_le_neg (hφg x hx) using 1
   · abel
   · simp only [← integral_neg]; rfl
 
