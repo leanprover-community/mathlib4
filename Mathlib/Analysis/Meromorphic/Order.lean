@@ -902,8 +902,8 @@ section deriv
 /-- The meromorphic order of the derivative is one less than the order of the original function.
 This however is not true if the characteristic of the domain field divides the original order,
 where the order of the derivative can rise to a larger integer. -/
-lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ} (hn : (n : 𝕜) ≠ 0)
-    (hf : meromorphicOrderAt f x = ↑n) :
+lemma meromorphicOrderAt_deriv_eq_sub_one [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
+    (hn : (n : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑n) :
     meromorphicOrderAt (deriv f) x = ↑(n - 1) := by
   have hmero : MeromorphicAt f x := by
     refine meromorphicAt_of_meromorphicOrderAt_ne_zero fun h ↦ ?_
@@ -924,5 +924,12 @@ lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n 
   suffices deriv ((· ^ n) ∘ (· - x)) z = n * (z - x) ^ (n - 1) by simpa
   rw [deriv_comp _ (DifferentiableAt.zpow (by fun_prop) (Or.inl (by exact hzx))) (by fun_prop)]
   simp [deriv_zpow]
+
+/-- Equivalent to `meromorphicOrderAt_deriv_eq_sub_one` with a slightly different statement so the
+conclusion matches more targets -/
+lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
+    (hn : (↑(n + 1) : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑(n + 1)) :
+    meromorphicOrderAt (deriv f) x = ↑n := by
+  simpa using meromorphicOrderAt_deriv_eq_sub_one hn hf
 
 end deriv
