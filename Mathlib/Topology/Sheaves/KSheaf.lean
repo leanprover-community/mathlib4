@@ -10,6 +10,8 @@ public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Category.TopCat.BaseChangeNhds
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Ksheaves
@@ -55,6 +57,10 @@ lemma ext (P Q : KPresheaf A X) (f g : P ⟶ Q) (w : ∀ K : Compacts X, f.app (
   ext K
   induction K with | _ K => ?_
   apply w
+
+def pushforward {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') (F : KPresheaf A X) :
+    (KPresheaf A Y) := ((Functor.whiskeringLeft _ _ _ ).obj
+  (Compacts.properPreimage_mono pf).functor.op).obj F
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
@@ -141,6 +147,25 @@ lemma hom_K_ext (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op 
     ((Functor.Final.isColimitWhiskerEquiv _ _).invFun
     (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
 
+open Compacts
+
+def pushforward {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
+    (pf : IsProperMap f.hom') (F : KSheaf A X) : (KSheaf A Y) where
+  obj := F.obj.pushforward pf
+  property.nonempty_isTerminal := by
+    exact F.property.nonempty_isTerminal
+  property.isPullback h:= by
+    apply F.property.isPullback
+    sorry
+
+  property.nonempty_isColimit_coconeOfCompacts K :=
+    Nonempty.intro <|
+    (Functor.Final.isColimitWhiskerEquiv ((nhdsMap_mono pf K).functor.op)
+      _ ).invFun
+    (Classical.choice (F.property.nonempty_isColimit_coconeOfCompacts (properPreimage pf K)))
+
+
 end KSheaf
+
 
 end TopCat
