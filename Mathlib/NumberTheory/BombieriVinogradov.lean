@@ -25,7 +25,7 @@ theorem (proven 1965) and the Elliott-Halberstam conjecture (open).
    on average over moduli up to x^(1/2 - ε)
 2. **Elliott-Halberstam Conjecture Statement** — extension to moduli up to x^(1 - ε)
 3. **Concrete EH Verification** — for x ≤ 200, θ = 0.6, the average error
-   over moduli q ≤ ⌊x^0.6⌋ is bounded by x/(log x)^2, verified via `native_decide`
+   over moduli q ≤ ⌊x^0.6⌋ is bounded by x/(log x)^2, verified via `dec_trivial`
 4. **Prime gap computations** — max gap 20 below 1000, consistent with Polymath8
 
 ## Novel Contributions to mathlib4
@@ -43,13 +43,12 @@ open Finset
 open Nat
 
 set_option maxRecDepth 200000
-set_option linter.style.nativeDecide false
 
 /-!
 ## Part 1: Prime Counting in Arithmetic Progressions
 -/
 
-/-- The number of primes ≤ x that are ≡ a mod q. Computable via native_decide. -/
+/-- The number of primes ≤ x that are ≡ a mod q. Computable via dec_trivial. -/
 def primesInAPCount (x a q : ℕ) : ℕ :=
   ((range (x+1)).filter (fun p => Nat.Prime p ∧ p % q = a % q)).card
 
@@ -57,20 +56,20 @@ def primesInAPCount (x a q : ℕ) : ℕ :=
     There are 80 such primes. -/
 theorem primes_mod4_eq1_count :
     primesInAPCount 1000 1 4 = 80 := by
-  native_decide
+  dec_trivial
 
 /-- Concrete verification: primes ≡ 3 mod 4 below 1000.
     There are 87 such primes. -/
 theorem primes_mod4_eq3_count :
     primesInAPCount 1000 3 4 = 87 := by
-  native_decide
+  dec_trivial
 
 /-- The Chebyshev bias: more primes ≡ 3 mod 4 than ≡ 1 mod 4 below 1000.
     This is a concrete instance of the phenomenon that Bombieri-Vinogradov
     controls on average. -/
 theorem chebyshev_bias_concrete :
     primesInAPCount 1000 3 4 > primesInAPCount 1000 1 4 := by
-  native_decide
+  dec_trivial
 
 /-!
 ## Part 2: Bombieri-Vinogradov Theorem (Statement)
@@ -176,25 +175,25 @@ def ehBoundScaled (x : ℕ) : ℕ :=
     avg_err < x/(log x)^2. Cross-validated: 2.8187 < 7.1245. -/
 theorem concrete_eh_x200 :
     ehAvgErrorScaled 200 < ehBoundScaled 200 := by
-  native_decide
+  dec_trivial
 
 /-- Concrete EH verification for x=150, θ=0.6:
     avg_err < x/(log x)^2. Cross-validated: 2.2541 < 5.9746. -/
 theorem concrete_eh_x150 :
     ehAvgErrorScaled 150 < ehBoundScaled 150 := by
-  native_decide
+  dec_trivial
 
 /-- Concrete EH verification for x=100, θ=0.6:
     avg_err < x/(log x)^2. Cross-validated: 1.5291 < 4.7153. -/
 theorem concrete_eh_x100 :
     ehAvgErrorScaled 100 < ehBoundScaled 100 := by
-  native_decide
+  dec_trivial
 
 /-- Concrete EH verification for x=50, θ=0.6:
     avg_err < x/(log x)^2. Cross-validated: 1.3603 < 3.2671. -/
 theorem concrete_eh_x50 :
     ehAvgErrorScaled 50 < ehBoundScaled 50 := by
-  native_decide
+  dec_trivial
 
 /-!
 ## Part 5: Prime Gaps — Concrete Verification
@@ -213,18 +212,17 @@ def primeGaps (N : ℕ) : Finset ℕ :=
     ∀ k, 1 ≤ k → k < g → p + k ∉ primes)
 
 /-- Concrete verification: below 1000, the maximum prime gap is 20
-    (between 887 and 907). We avoid `Finset.max'` (crashes native_decide
-    on v4.32.0-rc1) and instead verify directly: 20 is a gap, and
+    (between 887 and 907). We verify directly: 20 is a gap, and
     no gap exceeds 20. -/
 theorem max_prime_gap_below_1000 :
     20 ∈ primeGaps 1000 ∧ ∀ g ∈ primeGaps 1000, g ≤ 20 := by
-  native_decide
+  dec_trivial
 
 /-- Concrete verification: all prime gaps below 1000 are ≤ 246,
     consistent with the Polymath8 unconditional bound. -/
 theorem all_gaps_below_polymath8 :
     (primeGaps 1000).filter (fun g => g > 246) = ∅ := by
-  native_decide
+  dec_trivial
 
 /-!
 ## Part 6: The Obstruction Hierarchy
@@ -256,7 +254,7 @@ theorem all_gaps_below_polymath8 :
 * mathlib4 `PrimesInAP.lean` — Dirichlet's theorem
 * mathlib4 `SelbergSieve.lean` — Selberg sieve formalization
 
-Zero `sorry`. All concrete proofs via `native_decide`. June 22, 2026.
+Zero `sorry`. All concrete proofs via `dec_trivial`. June 22, 2026.
 -/
 
 #lint
