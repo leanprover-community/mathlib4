@@ -743,9 +743,7 @@ noncomputable def mapHomologicalComplexObjIso :
   homotopyCofiber.mapHomologicalComplexObjIso _ H ≪≫
     homotopyCofiber.mapArrowIso _ _ hc
       (Arrow.isoMk (Iso.refl _) ((H.mapHomologicalComplex c).mapBiprod F F) (by
-        apply biprod.hom_ext
-        · simp [← Functor.map_comp]
-        · simp [← Functor.map_comp]))
+        apply biprod.hom_ext <;> simp [← Functor.map_comp]))
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
