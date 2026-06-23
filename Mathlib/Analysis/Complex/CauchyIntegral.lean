@@ -742,17 +742,16 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
   obtain ⟨K, hK⟩ := eventually_atTop.mp (eventually_comap.mp hpb)
   refine ⟨max M₁ K, fun m hm ↦ ?_⟩
   calc ‖∫ (x : ℝ) in x₁..x₂, g m (↑x + ↑m * I)‖
-  _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| := by
-      refine intervalIntegral.norm_integral_le_of_norm_le_const fun x _ => ?_
+    _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| := by
+      refine intervalIntegral.norm_integral_le_of_norm_le_const fun x _ ↦ ?_
       have hbd := hp (hM₁ m (le_of_max_le_left hm))
-        (hK m (le_of_max_le_right hm) (x + m * I) (im_of_real_add_real_mul_I x m))
+        (hK m (le_of_max_le_right hm) (x + m * I) (by simp))
       simp only [Pi.zero_apply, dist_zero_left] at hbd
       exact hbd.le
-  _ = (1 / 2) * ε := by
-      rw [mul_assoc]
-      have : 0 ≠ |x₂ - x₁| := ne_of_lt (abs_sub_pos.mpr hne.symm)
-      field_simp [this]
-  _ < ε := by linarith
+    _ = (1 / 2) * ε := by
+      have : 0 ≠ |x₂ - x₁| := (abs_sub_pos.mpr hne.symm).ne
+      field_simp
+    _ < ε := by linarith
 
 /-- If $f(z) \to 0$ as $\Im(z) \to \infty$, then
   $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
