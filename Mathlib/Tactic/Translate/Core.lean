@@ -1093,7 +1093,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (reorder := $reorder)) =>
         if reorder?.isSome then
           throwErrorAt opt "cannot specify `reorder` multiple times"
-        reorder? ← elabReorder reorder argNames xs (.ofConstName declName)
+        reorder? ← some <$> elabReorder reorder argNames xs (.ofConstName declName)
       | `(bracketedOption| (relevant_arg := $n)) =>
         if relevantArg?.isSome then
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
@@ -1158,8 +1158,8 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
-  -- Warn users if the original declaration has an attributee
-  if !cfg.self && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
+  -- Warn users if the original declaration has an attribute
+  if !cfg.existing && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)

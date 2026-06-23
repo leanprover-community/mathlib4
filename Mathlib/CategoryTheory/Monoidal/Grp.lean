@@ -57,7 +57,6 @@ namespace GrpObj
 
 attribute [reassoc (attr := simp)] left_inv right_inv
 attribute [reassoc (attr := simp)] AddGrpObj.left_neg AddGrpObj.right_neg
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] left_inv_assoc right_inv_assoc
 
 @[to_additive]

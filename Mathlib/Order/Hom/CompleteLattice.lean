@@ -208,7 +208,7 @@ variable [SupSet β] [SupSet γ] [SupSet δ]
 @[to_dual]
 instance : FunLike (sSupHom α β) α β where
   coe := sSupHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_dual]
 instance : sSupHomClass (sSupHom α β) α β where
@@ -337,7 +337,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [Complet
 
 instance : FunLike (FrameHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
@@ -441,7 +441,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [Complet
 
 instance : FunLike (CompleteLatticeHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β where
   map_sSup f := f.map_sSup'

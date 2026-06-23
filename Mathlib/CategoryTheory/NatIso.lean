@@ -55,7 +55,6 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
   hom := α.hom.app X
   inv := α.inv.app X
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing app_inv] app_hom
 
 @[reassoc +to_dual (attr := simp), grind =]
@@ -191,10 +190,8 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing ofComponents'_inv_app] ofComponents_hom_app
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing ofComponents'_hom_app] ofComponents_inv_app
 
 @[to_dual (attr := simp)]
@@ -213,7 +210,6 @@ def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ 
   hom := α.hom ◫ β.hom
   inv := α.inv ◫ β.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing hcomp_inv] hcomp_hom
 
 @[to_dual self]

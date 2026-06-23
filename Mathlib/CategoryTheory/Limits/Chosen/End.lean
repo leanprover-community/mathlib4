@@ -30,8 +30,9 @@ class ChosenCoendsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] wh
   /-- The chosen cowedge is colimiting. -/
   isCoend (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
 
+set_option linter.checkUnivs false in
 /-- The data of chosen coends in `C`. -/
-@[nolint checkUnivs, pp_with_univ]
+@[pp_with_univ]
 abbrev ChosenCoends (C : Type*) [Category* C] :=
   ∀ {J : Type u} [Category.{v} J], ChosenCoendsOfShape J C
 
@@ -104,8 +105,9 @@ class ChosenEndsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] wher
   /-- The chosen wedge is limiting. -/
   isEnd (F : Jᵒᵖ ⥤ J ⥤ C) : IsLimit (wedge F)
 
+set_option linter.checkUnivs false in
 /-- The data of chosen ends in `C`. -/
-@[nolint checkUnivs, pp_with_univ]
+@[pp_with_univ]
 abbrev ChosenEnds (C : Type*) [Category* C] :=
   ∀ {J : Type u} [Category.{v} J], ChosenEndsOfShape J C
 
