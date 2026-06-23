@@ -200,6 +200,7 @@ lemma mapHomologicalComplexObjIso_hom_map_π₁ :
       π₁ _ :=
   Quiver.Hom.op_inj ((opFunctor _ _).map_injective
     (cylinder.map_ι₁_mapHomologicalComplexObjIso_hom K.op H.op hc))
+
 end
 
 end pathObject
