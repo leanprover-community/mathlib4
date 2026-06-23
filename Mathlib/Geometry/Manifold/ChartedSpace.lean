@@ -595,6 +595,7 @@ def IsLocalHomeomorph.chartedSpace
     ChartedSpace H M' :=
   hf.chartedSpaceOfRightInverse hf'.hasRightInverse.choose_spec
 
+variable (H) in
 /-- Given a homeomorphism `f : M ≃ₜ M'`, endow `M'` with a `ChartedSpace` structure by pushing
 forward the `ChartedSpace` structure from `M`. -/
 @[implicit_reducible]
