@@ -309,13 +309,13 @@ def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
 
 @[simp]
 theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
-    equivCongrLeft h f k = f (h.symm k) := by
-  exact DFinsupp.comapDomain'_apply _ h.right_inv _ _
+    equivCongrLeft h f k = f (h.symm k) :=
+  DFinsupp.comapDomain'_apply _ h.right_inv _ _
 
 @[simp]
 theorem equivCongrLeft_of [DecidableEq ι] [DecidableEq κ] (h : ι ≃ κ) (k : κ) (x : β (h.symm k)) :
-    equivCongrLeft h (of β (h.symm k) x) = of (fun k ↦ β (h.symm k)) k x := by
-  exact DFinsupp.comapDomain'_single (⇑h.symm) h.right_inv _ _
+    equivCongrLeft h (of β (h.symm k) x) = of (fun k ↦ β (h.symm k)) k x :=
+  DFinsupp.comapDomain'_single (⇑h.symm) h.right_inv _ _
 
 end CongrLeft
 
@@ -348,8 +348,8 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
 @[simp]
 theorem sigmaCurry_of [∀ i : ι, DecidableEq (α i)] (k : (i : ι) × α i)(x : δ k.1 k.2) :
     sigmaCurry (of (fun k ↦ δ k.1 k.2) k x) =
-      of (fun i' ↦ ⨁ (j' : α i'), δ i' j') k.1 (of (fun j' ↦ δ k.1 j') k.2 x) := by
-  exact DFinsupp.sigmaCurry_single k x
+      of (fun i' ↦ ⨁ (j' : α i'), δ i' j') k.1 (of (fun j' ↦ δ k.1 j') k.2 x) :=
+  DFinsupp.sigmaCurry_single k x
 
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
