@@ -6,6 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Opposites
@@ -82,6 +83,9 @@ instance instIsLeftCancelMul [Mul α] [IsRightCancelMul α] : IsLeftCancelMul α
 @[to_additive]
 instance instSemigroup [Semigroup α] : Semigroup αᵐᵒᵖ where
   mul_assoc x y z := unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x)
+  ppow n hn a := op <| a.unop ^ PNat.mk n hn
+  ppow_one _ := unop_injective <| Semigroup.ppow_one _
+  ppow_succ _ _ := unop_injective <| Semigroup.ppow_succ' _ _
 
 @[to_additive]
 instance instLeftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup αᵐᵒᵖ where
@@ -166,6 +170,15 @@ instance instGroup [Group α] : Group αᵐᵒᵖ where
 instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where
   toGroup := instGroup
   __ := instCommSemigroup
+
+section Semigroup
+variable [Semigroup α]
+
+@[to_additive (attr := simp)] lemma op_ppow (x : α) (n : ℕ+) : op (x ^ n) = op x ^ n := rfl
+
+@[to_additive (attr := simp)] lemma unop_ppow (x : αᵐᵒᵖ) (n : ℕ+) : unop (x ^ n) = unop x ^ n := rfl
+
+end Semigroup
 
 section Monoid
 variable [Monoid α]
