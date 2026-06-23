@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Field.GeomSum
 public import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.Analysis.SpecialFunctions.Stirling
 public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SumIntegralComparisons
@@ -87,7 +87,7 @@ theorem sum_log_eq_sum_mangoldt {x : ℝ} :
 /-- A crude upper bound on the partial sum of the logarithm. -/
 theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * log x - x + log x + 1
     := by
-  have map_one := floor_le (by linarith : 0 ≤ x)
+  have h1 := floor_le (by linarith : 0 ≤ x)
   have h2 : 1 ≤ ⌊x⌋₊ := by simpa
   calc
     _ = ∑ n ∈ Icc 1 ⌊x⌋₊, log n := by rfl
@@ -97,8 +97,8 @@ theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n 
       exact (strictMonoOn_log.monotoneOn.mono (by grind)).sum_le_integral_Ico (f := log) h2
     _ ≤ (∫ t in 1..x, log t) + log x := by
       norm_cast; gcongr
-      apply integral_mono_interval (by rfl) (mod_cast h2) map_one _ intervalIntegrable_log'
-      exact ae_restrict_of_forall_mem (by measurability) (fun _ _ ↦ (Real.log_pos (by grind)).le)
+      apply integral_mono_interval (by rfl) (mod_cast h2) h1 _ intervalIntegrable_log'
+      exact ae_restrict_of_forall_mem (by measurability) (fun _ _ ↦ (log_pos (by grind)).le)
     _ = _ := by simp; ring
 
 /-- An even cruder upper bound on the partial sum of the logarithm. -/
@@ -168,31 +168,19 @@ the Mertens weight to allow for constant multiples in front of the logarithmic f
 -/
 
 
-private lemma inv_mul_sq_nonneg {x t : ℝ} (ht : t ∈ Set.Ioi x) (hx : 1 < x)
-    : 0 ≤ (t * log t ^ 2)⁻¹ := by
+private lemma inv_div_log_sq_nonneg {x t : ℝ} (ht : t ∈ Set.Ioi x) (hx : 1 < x)
+    : 0 ≤ t⁻¹ / (log t)^2 := by
   have : 0 < t := by grind
   positivity
 
 private lemma integrable_const_div_mul_log_sq {x : ℝ} (c : ℝ) (hx : 2 ≤ x) :
-    IntegrableOn (fun t ↦ c * (t * log t ^ 2)⁻¹) (.Ioi x) volume := by
-  apply integrableOn_Ioi_deriv_of_nonneg' _ _ tendsto_log_atTop.inv_tendsto_atTop.neg |>.const_mul
-  · intro t _
-    convert! (hasDerivAt_inv_log (by grind : 0 < t) (by grind)).neg using 1
-    simp [field]
-  · grind [inv_mul_sq_nonneg]
+    IntegrableOn (fun t ↦ c * (t⁻¹ / (log t)^2)) (.Ioi x) volume :=
+  (integrableOn_Ioi_inv_div_log_sq (by linarith)).const_mul _
 
 private lemma integ_div_mul_log_sq {x : ℝ} (C : ℝ) (hx : 2 ≤ x) :
-    ∫ (t : ℝ) in .Ioi x, (t * log t ^ 2)⁻¹ * C = C / log x := by
-  convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := (- C / log ·)) ?_
-    (integrable_const_div_mul_log_sq C hx) ?_ using 1
-  · grind
-  · field
-  · intro t ht; simp at ht
-    convert! (hasDerivAt_const _ (-C)).fun_div (hasDerivAt_log (by linarith)) ?_ using 1
-    · grind
-    simp; grind
-  convert! tendsto_log_atTop.inv_tendsto_atTop.const_mul _ using 1
-  simp
+    ∫ (t : ℝ) in .Ioi x, (t⁻¹ / (log t)^2) * C = C / log x := by
+  rw [MeasureTheory.integral_mul_const, integral_Ioi_inv_divlog_sq (by linarith)]
+  field
 
 /-- A weight `f` is a bundled function `f : ℕ → ℝ` for which the quantity
 `∑ n ∈ Icc 0 ⌊x⌋₊, f n - log x` is bounded above and below for `x ≥ 1`, and which vanishes
@@ -287,9 +275,9 @@ theorem first_theorem_asymp_nat : (∑ n ∈ Ioc 0 ·, f n) ~[atTop] (log ↑·)
   simp
 
 /-- The Meissel--Mertens constant associated to a weight `f` is defined as
-`M = (∫ t in .Ioi 2, (t * log t^2)⁻¹ * E₁ t) + 1 - log (log 2)`.
+`M = (∫ t in .Ioi 2, (t⁻¹ / (log t)^2) * E₁ t) + 1 - log (log 2)`.
 -/
-noncomputable def M := (∫ t in .Ioi 2, (t * log t^2)⁻¹ * E₁ t) + 1 - log (log 2)
+noncomputable def M := (∫ t in .Ioi 2, (t⁻¹ / (log t)^2) * E₁ t) + 1 - log (log 2)
 
 /- The second Mertens error for a weight `f` is defined as
 `E₂ x = ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M`. -/
@@ -302,50 +290,52 @@ lemma sum_div_log_eq : ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n = log (log
   simpa [← add_sum_Ioc_eq_sum_Icc, map_zero] using sum_div_log_eq' x
 
 theorem E₁_div_integrable {x : ℝ} (hx : 2 ≤ x) :
-    IntegrableOn (fun t ↦ (t * log t^2)⁻¹ * E₁ t) (.Ioi x) volume := by
+    IntegrableOn (fun t ↦ (t⁻¹ / (log t)^2) * E₁ t) (.Ioi x) volume := by
   apply Integrable.mono (integrable_const_div_mul_log_sq C₁ hx)
   · exact Measurable.aestronglyMeasurable (by unfold Weight.E₁; fun_prop)
   filter_upwards [ae_restrict_mem (by measurability)] with t ht
-  simp only [Set.mem_Ioi, mul_inv_rev, norm_mul, norm_inv, norm_pow, norm_eq_abs, sq_abs] at ht ⊢
+  simp only [Set.mem_Ioi, norm_mul, norm_eq_abs] at ht ⊢
   have : 0 < log t := log_pos (by linarith)
   grw [f.first_theorem' (by linarith), le_abs_self f.C₁]
   simp [field]
 
 theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
-    E₂ x = (log x)⁻¹ * E₁ x - ∫ t in .Ioi x, (t * log t^2)⁻¹ * E₁ t := by
+    E₂ x = (log x)⁻¹ * E₁ x - ∫ t in .Ioi x, (t⁻¹ / (log t)^2) * E₁ t := by
   have hcont : ContinuousOn (fun t ↦  -t⁻¹ / log t ^ 2) (.Icc 2 x) := by
     fun_prop (disch := grind [log_ne_zero])
   have : 0 < log x := log_pos (by linarith)
-  suffices ∫ t in 2..x, (t * log t^2)⁻¹ * E₁ t = ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n -
+  suffices ∫ t in 2..x, (t⁻¹ / (log t)^2) * E₁ t = ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n -
     (log x)⁻¹ * (∑ n ∈ Icc 0 ⌊x⌋₊, f n) - log (log x) + log (log 2) by
-    have : (∫ t in 2..x, (t * log t^2)⁻¹ * E₁ t) + ∫ t in .Ioi x, (t * log t ^ 2)⁻¹ * E₁ t
-      = ∫ t in .Ioi 2, (t * log t^2)⁻¹ * E₁ t := integral_interval_add_Ioi
+    have : (∫ t in 2..x, (t⁻¹ / (log t)^2) * E₁ t) + ∫ t in .Ioi x, (t⁻¹ / (log t)^2) * E₁ t
+      = ∫ t in .Ioi 2, (t⁻¹ / (log t)^2) * E₁ t := integral_interval_add_Ioi
         (E₁_div_integrable (by rfl)) (E₁_div_integrable hx)
     have : (log x)⁻¹ * E₁ x = (log x)⁻¹ * (∑ n ∈ Icc 0 ⌊x⌋₊, f n) - 1 := by
       rw [sum_eq']; field_simp; abel
     unfold Weight.E₂ Weight.M; linarith
-  have : ∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * ∑ n ∈ Icc 0 ⌊t⌋₊, f n =
-      (∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * log t)
-      + ∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * E₁ t := by
-    simp only [mul_inv_rev, sum_eq', mul_add]
+  have : ∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * ∑ n ∈ Icc 0 ⌊t⌋₊, f n =
+      (∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * log t)
+      + ∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * E₁ t := by
+    simp only [sum_eq', mul_add]
     apply intervalIntegral.integral_add
     <;> rw [intervalIntegrable_iff, Set.uIoc_of_le hx]
     · apply (ContinuousOn.integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
       fun_prop (disch := grind [log_ne_zero])
-    apply Integrable.mono (g := fun t ↦ (log 2 ^ 2)⁻¹ * t⁻¹ * C₁)
+    apply Integrable.mono (g := fun t ↦ t⁻¹ / (log 2 ^ 2) * C₁)
     · apply (ContinuousOn.integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
       fun_prop (disch := grind)
     · exact Measurable.aestronglyMeasurable (by unfold E₁; fun_prop)
     filter_upwards [ae_restrict_mem (by measurability)] with t ht
     simp [Set.mem_Ioc] at ht
-    simp only [norm_mul, norm_inv, norm_pow, norm_eq_abs, sq_abs]
-    grw [f.first_theorem' (by linarith), le_abs_self f.C₁]; gcongr; order
-  have : ∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * log t = log (log x) - log (log 2) := by
+    simp only [norm_mul, norm_eq_abs]
+    grw [f.first_theorem' (by linarith), le_abs_self f.C₁]
+    have : 0 < t := by linarith
+    gcongr; order
+  have : ∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * log t = log (log x) - log (log 2) := by
     rw [← integral_inv_div_log (by norm_num) (by linarith)]
     exact intervalIntegral.integral_congr fun _ _ ↦ by grind [Set.uIcc_of_le, log_pos]
   rw [sum_mul_eq_sub_integral_mul₁ _ f.map_zero f.map_one x (f := fun t ↦ (log t)⁻¹)]
   · suffices ∫ t in .Ioc 2 x, deriv (fun t ↦ (log t)⁻¹) t * ∑ k ∈ Icc 0 ⌊t⌋₊, f k =
-        - ∫ t in 2..x, (t * log t ^ 2)⁻¹ * ∑ n ∈ Icc 0 ⌊t⌋₊, f n by linarith
+        - ∫ t in 2..x, (t⁻¹ / (log t)^2) * ∑ n ∈ Icc 0 ⌊t⌋₊, f n by linarith
     rw [← intervalIntegral.integral_neg, intervalIntegral.integral_of_le hx]
     apply setIntegral_congr_fun (by measurability)
     intro t ht
@@ -361,12 +351,12 @@ theorem M_bounds :
   unfold M
   rw [← integ_div_mul_log_sq upperBound (by rfl), ← integ_div_mul_log_sq lowerBound (by rfl)]
   have := E₁_div_integrable (by rfl)
-  have hinteg (C : ℝ) : IntegrableOn (fun t ↦ (t * log t ^ 2)⁻¹ * C) (.Ioi 2) volume := by
+  have hinteg (C : ℝ) : IntegrableOn (fun t ↦ (t⁻¹ / (log t)^2) * C) (.Ioi 2) volume := by
     convert integrable_const_div_mul_log_sq C (by rfl) using 2 with x; grind
   have : NullMeasurableSet (.Ioi (2 : ℝ)) volume := by measurability
   constructor <;> gcongr with t ht
-  exacts [hinteg upperBound, inv_mul_sq_nonneg ht (by norm_num), first_le (by grind),
-          hinteg lowerBound, inv_mul_sq_nonneg ht (by norm_num), le_first (by grind)]
+  exacts [hinteg upperBound, inv_div_log_sq_nonneg ht (by norm_num), first_le (by grind),
+          hinteg lowerBound, inv_div_log_sq_nonneg ht (by norm_num), le_first (by grind)]
 
 /-- The abstract Mertens second theorem. -/
 theorem second_theorem' {x : ℝ} (hx : 2 ≤ x) :
@@ -374,20 +364,22 @@ theorem second_theorem' {x : ℝ} (hx : 2 ≤ x) :
   have hx' : 1 < x := by linarith
   have : 0 < log x := log_pos hx'
   have := f.E₁_div_integrable hx
-  have hinteg (C : ℝ) : IntegrableOn (fun t ↦ (t * log t ^ 2)⁻¹ * C) (.Ioi x) volume := by
+  have hinteg (C : ℝ) : IntegrableOn (fun t ↦ (t⁻¹ / (log t)^2) * C) (.Ioi x) volume := by
     convert integrable_const_div_mul_log_sq C hx using 2 with x; grind
   have : NullMeasurableSet (.Ioi x) volume := by measurability
   rw [f.E₂_eq hx, abs_le, C₂]
   constructor
   · calc
-      _ ≥ (log x)⁻¹ * lowerBound - ∫ t in .Ioi x, (t * log t ^ 2)⁻¹ * upperBound := by
+      _ ≥ (log x)⁻¹ * lowerBound - ∫ t in .Ioi x, (t⁻¹ / (log t)^2) * upperBound := by
         gcongr with t ht
-        exacts [le_first hx'.le, hinteg upperBound, inv_mul_sq_nonneg ht hx', first_le (by grind)]
+        exacts [le_first hx'.le, hinteg upperBound,
+          inv_div_log_sq_nonneg ht hx', first_le (by grind)]
       _ = _ := by rw [integ_div_mul_log_sq upperBound hx]; simp [field]
   · calc
-      _ ≤ (log x)⁻¹ * upperBound - ∫ t in .Ioi x, (t * log t ^ 2)⁻¹ * lowerBound := by
+      _ ≤ (log x)⁻¹ * upperBound - ∫ t in .Ioi x, (t⁻¹ / (log t)^2) * lowerBound := by
         gcongr with t ht
-        exacts [first_le hx'.le, hinteg lowerBound, inv_mul_sq_nonneg ht hx', le_first (by grind)]
+        exacts [first_le hx'.le, hinteg lowerBound,
+          inv_div_log_sq_nonneg ht hx', le_first (by grind)]
       _ = _ := by rw [integ_div_mul_log_sq lowerBound hx]; simp [field]
 
 theorem second_theorem {x : ℝ} (hx : 2 ≤ x) :

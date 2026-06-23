@@ -288,3 +288,26 @@ theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
   (by ring : π = (π / 2) - (-(π / 2))) ▸ integral_of_hasDerivAt_of_tendsto hasDerivAt_arctan'
     integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
     (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)
+
+@[simp]
+theorem integrableOn_Ioi_inv_div_log_sq {c : ℝ} (hc : 1 < c) :
+    IntegrableOn (fun t ↦ t⁻¹ / (log t)^2) (.Ioi c) volume := by
+  apply integrableOn_Ioi_deriv_of_nonneg' _ _ tendsto_log_atTop.inv_tendsto_atTop.neg
+  · intro t _
+    convert! (hasDerivAt_inv_log (by grind : 0 < t) (by grind)).neg using 1
+    field
+  · intro t _
+    have : 0 < t := by grind
+    positivity
+
+@[simp]
+theorem integral_Ioi_inv_divlog_sq {c : ℝ} (hc : 1 < c) :
+    ∫ (t : ℝ) in .Ioi c, t⁻¹ / (log t)^2 = (log c)⁻¹ := by
+  convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
+    (integrableOn_Ioi_inv_div_log_sq hc) ?_ using 1
+  · simp
+  · intro t _
+    convert! (hasDerivAt_inv_log (by grind : 0 < t) (by grind)).neg using 1
+    field
+  convert! tendsto_log_atTop.inv_tendsto_atTop.neg using 1
+  simp
