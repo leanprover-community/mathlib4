@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Nat.Cast.Pi
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -201,7 +202,3 @@ lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (OfNat.ofNat n : ∀ a, π a
 end OfNat
 
 end Pi
-
-theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
-    Sum.elim (n : α → γ) (n : β → γ) = n :=
-  Sum.elim_lam_const_lam_const (γ := γ) n

@@ -3989,6 +3989,7 @@ public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.FunLike.Fintype
 public import Mathlib.Data.FunLike.Graded
 public import Mathlib.Data.FunLike.Group
+public import Mathlib.Data.FunLike.GroupWithZero
 public import Mathlib.Data.FunLike.IsApply
 public import Mathlib.Data.FunLike.Module
 public import Mathlib.Data.FunLike.Ring
@@ -4160,6 +4161,7 @@ public import Mathlib.Data.Nat.Cast.NeZero
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.Cast.Order.Field
 public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Prod
 public import Mathlib.Data.Nat.Cast.SetInterval
 public import Mathlib.Data.Nat.Cast.Synonym

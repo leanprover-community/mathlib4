@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Data.Nat.Cast.Pi
+public import Mathlib.Data.Int.Cast.Pi
 
 /-! # Typeclasses for `FunLike` and algebraic operations
 In this file we provide typeclasses for the compatibility of algebraic structures and `FunLike`
