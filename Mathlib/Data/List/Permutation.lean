@@ -314,6 +314,17 @@ theorem mem_permutationsAux_of_perm :
 theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
 
+/-- A list is a permutation of the pair `[a, b]` if and only if it is equal to `[a, b]` or to
+`[b, a]`. -/
+theorem perm_pair {a b : α} {l : List α} : l ~ [a, b] ↔ l = [a, b] ∨ l = [b, a] := by
+  have : [a, b].permutations = [[a, b], [b, a]] := by cbv
+  grind [=_ mem_permutations]
+
+/-- The pair `[a, b]` is a permutation of a list if and only if that list is equal to `[a, b]` or
+to `[b, a]`. -/
+theorem pair_perm {a b : α} {l : List α} : [a, b] ~ l ↔ l = [a, b] ∨ l = [b, a] :=
+  perm_comm.trans perm_pair
+
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).flatMap (permutations'Aux b) ~
       (permutations'Aux b l).flatMap (permutations'Aux a) := by

@@ -195,63 +195,70 @@ theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
 
 section AddCommGroup
 
-@[simps -fullyApplied]
 instance : Zero 𝓓^{n}_{K}(E, F) where
   zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
-@[simps -fullyApplied]
+instance : IsZeroApply 𝓓^{n}_{K}(E, F) E F where
+  zero_apply _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
+
 instance : Add 𝓓^{n}_{K}(E, F) where
   add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-@[simps -fullyApplied]
+instance : IsAddApply 𝓓^{n}_{K}(E, F) E F where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
+
 instance : Neg 𝓓^{n}_{K}(E, F) where
   neg f := .mk (-f) (f.contDiff.neg) <| by
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
-@[simps -fullyApplied]
+instance : IsNegApply 𝓓^{n}_{K}(E, F) E F where
+  neg_apply _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
+
 instance instSub : Sub 𝓓^{n}_{K}(E, F) where
   sub f g := .mk (f - g) (f.contDiff.sub g.contDiff) <| by
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-@[simps -fullyApplied]
+instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
+  sub_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
+
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
    SMul R 𝓓^{n}_{K}(E, F) where
   smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
-instance : AddCommGroup 𝓓^{n}_{K}(E, F) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    IsSMulApply R 𝓓^{n}_{K}(E, F) E F where
+  smul_apply _ _ _ := rfl
 
-variable (E F K n)
+@[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 
-/-- Coercion as an additive homomorphism. -/
-def coeHom : 𝓓^{n}_{K}(E, F) →+ E → F where
-  toFun f := f
-  map_zero' := coe_zero
-  map_add' _ _ := rfl
+instance : AddCommGroup 𝓓^{n}_{K}(E, F) := fast_instance% FunLike.addCommGroup
 
-variable {E F}
+@[deprecated (since := "2026-06-15")] alias coeHom := FunLike.coeAddMonoidHom
 
-theorem coe_coeHom : (coeHom E F n K : 𝓓^{n}_{K}(E, F) → E → F) = DFunLike.coe :=
-  rfl
+@[deprecated (since := "2026-06-15")] alias coe_coeHom := FunLike.coe_coeAddMonoidHom
 
-theorem coeHom_injective : Function.Injective (coeHom E F n K) := by
-  rw [coe_coeHom]
-  exact DFunLike.coe_injective
+@[deprecated (since := "2026-06-15")] alias coeHom_injective := FunLike.coeAddMonoidHom_injective
 
 end AddCommGroup
 
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}_{K}(E, F) := fast_instance%
-  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
+    Module R 𝓓^{n}_{K}(E, F) := fast_instance% FunLike.module
 
 end Module
 
@@ -384,13 +391,14 @@ noncomputable def fderivLM :
     · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
       simp [fderiv_add (f.contDiff.differentiable hk'.ne').differentiableAt
-                       (g.contDiff.differentiable hk'.ne').differentiableAt]
+                       (g.contDiff.differentiable hk'.ne').differentiableAt, FunLike.coe_add]
     · simp
   map_smul' c f := by
     split_ifs with hk
     · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
-      simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt]
+      simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt,
+        FunLike.coe_smul]
     · simp
 
 @[simp]
@@ -440,13 +448,13 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
     split_ifs with hi
     · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
-      simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
+      simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi'), FunLike.coe_add]
     · simp
   map_smul' c f := by
     split_ifs with hi
     · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
-      simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
+      simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt, FunLike.coe_smul]
     · simp
 
 @[simp]
@@ -919,12 +927,12 @@ noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F�
     if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0
   map_add' f g := by
     split_ifs with hφ
-    · simp_rw [coe_add, Pi.add_apply, map_add, add_apply,
+    · simp_rw [add_apply, map_add, add_apply,
         integral_add (f.integrable_bilin B hφ) (g.integrable_bilin B hφ)]
     · simp
   map_smul' c f := by
     split_ifs with hφ
-    · simp_rw [coe_smul, Pi.smul_apply, map_smul, smul_apply, integral_smul c, RingHom.id_apply]
+    · simp_rw [smul_apply, map_smul, smul_apply, integral_smul c, RingHom.id_apply]
     · simp
 
 @[simp]

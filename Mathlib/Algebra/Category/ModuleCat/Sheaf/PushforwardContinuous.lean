@@ -292,6 +292,23 @@ lemma pushforwardPushforwardAdj_counit_app_val_app (M U x) :
     ((pushforwardPushforwardAdj adj φ ψ H₁ H₂).counit.app M).val.app U x =
       M.val.map (adj.unit.app U.unop).op x := rfl
 
+set_option backward.defeqAttrib.useBackward true in
+instance isLeftAdjoint_pushforward_of_isIso [F.IsCocontinuous J K] [IsIso φ] [F.IsLeftAdjoint] :
+    (pushforward.{u} φ).IsLeftAdjoint := by
+  let adj := Adjunction.ofIsLeftAdjoint F
+  let shAdj := adj.sheafPushforwardContinuous (E := RingCat.{u}) J K
+  let ψ : R ⟶ (F.rightAdjoint.sheafPushforwardContinuous RingCat.{u} K J).obj S :=
+    shAdj.unit.app R ≫ (F.rightAdjoint.sheafPushforwardContinuous _ _ _).map (inv φ)
+  refine (SheafOfModules.pushforwardPushforwardAdj adj φ ψ ?_ ?_).isLeftAdjoint
+  · ext U : 2
+    simp [ψ, shAdj]
+  · ext U : 2
+    have := (inv φ).hom.naturality
+    dsimp at this
+    simp only [ObjectProperty.hom_inv, NatIso.isIso_inv_app, sheafPushforwardContinuous_obj_obj_obj,
+      IsIso.eq_inv_comp] at this
+    simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
+
 noncomputable section
 
 open CategoryTheory Limits
