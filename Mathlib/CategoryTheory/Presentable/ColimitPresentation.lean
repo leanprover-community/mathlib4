@@ -79,7 +79,6 @@ section Small
 variable {J : Type w} {I : J → Type w} [SmallCategory J] [∀ j, SmallCategory (I j)]
   {D : J ⥤ C} {P : ∀ j, ColimitPresentation (I j) (D.obj j)}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Total.exists_hom_of_hom {j j' : J} (i : I j) (u : j ⟶ j')
     [IsFiltered (I j')] [IsFinitelyPresentable.{w} ((P j).diag.obj i)] :
     ∃ (i' : I j') (f : Total.mk P j i ⟶ Total.mk P j' i'), f.base = u := by
@@ -152,7 +151,7 @@ def bind {X : C} (P : ColimitPresentation J X) (Q : ∀ j, ColimitPresentation (
   isColimit.fac := fun c ⟨j, i⟩ ↦ by simp [P.isColimit.fac, (Q j).isColimit.fac]
   isColimit.uniq c m hm := by
     refine P.isColimit.hom_ext fun j ↦ ?_
-    simp only [Functor.const_obj_obj, P.isColimit.fac]
+    simp only [P.isColimit.fac]
     refine (Q j).isColimit.hom_ext fun i ↦ ?_
     simpa [(Q j).isColimit.fac] using hm (.mk _ j i)
 

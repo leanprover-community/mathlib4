@@ -243,7 +243,6 @@ noncomputable def ofFactorizationData : Cylinder A where
   i₁ := coprod.inr ≫ h.i
   π := h.p
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by cat_disch
 

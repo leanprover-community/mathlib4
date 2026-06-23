@@ -83,7 +83,7 @@ lemma rTensor_apply_monomial_tmul (e : σ →₀ ℕ) (s : S) (n : N) (d : σ �
 
 lemma rTensor_apply_X_tmul (s : σ) (n : N) (d : σ →₀ ℕ) :
     rTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then (1 : S) ⊗ₜ[R] n else 0 := by
-  rw [rTensor_apply_tmul_apply, coeff_X', ite_tmul]
+  rw [rTensor_apply_tmul_apply, coeff_X, ite_tmul]
 
 lemma rTensor_apply (t : MvPolynomial σ S ⊗[R] N) (d : σ →₀ ℕ) :
     rTensor t d = ((lcoeff S d).restrictScalars R).rTensor N t :=
@@ -115,7 +115,7 @@ lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d :
 
 lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ) :
     scalarRTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then n else 0 := by
-  rw [scalarRTensor_apply_tmul_apply, coeff_X', ite_smul, one_smul, zero_smul]
+  rw [scalarRTensor_apply_tmul_apply, coeff_X, ite_smul, one_smul, zero_smul]
 
 lemma scalarRTensor_symm_apply_single (d : σ →₀ ℕ) (n : N) :
     scalarRTensor.symm (Finsupp.single d n) = (monomial d 1) ⊗ₜ[R] n :=
