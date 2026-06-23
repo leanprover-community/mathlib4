@@ -19,7 +19,7 @@ modulo two axioms (`surj_factor`, `sol_leftCancel`).
 
 * `surj_factor`, `sol_leftCancel`: proved in Clausen-Scholze,
   Condensed Mathematics Theorem 5.8. Not formalizable in Lean
-  without the CompHaus ↔ TopMod equivalence.
+  without the CompHaus <-> TopMod equivalence.
 -/
 
 universe u
@@ -47,7 +47,7 @@ def profiniteSolidIsPointwiseRightKanExtension :
     (Functor.RightExtension.mk _ (profiniteSolidCounit R)).IsPointwiseRightKanExtension :=
   Functor.isPointwiseRightKanExtensionOfIsRightKanExtension _ _
 
--- α (= counit) is EXPLICIT in liftOfIsRightKanExtension
+-- alpha (= counit) is EXPLICIT in liftOfIsRightKanExtension
 def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
   (profiniteSolid R).liftOfIsRightKanExtension (profiniteSolidCounit R) _ (NatTrans.id _)
 
@@ -91,8 +91,8 @@ noncomputable def finFreeIsoSolid (T : FintypeCat.{u}) :
     (profiniteSolid R).obj (FintypeCat.toProfinite.obj T) ≅ (finFree R).obj T :=
   @asIso _ _ _ _ ((profiniteSolidCounit R).app T) (profiniteSolidCounit_isIso R T)
 
--- FIX v8: use rw [comp_counit] then exact Category.comp_id _ (avoids simp issue)
--- CI log showed: after comp_counit, goal is f ≫ 𝟙 _ = f; simp left it unsolved
+-- NOTE: sol_map_counit uses exact Category.comp_id _ (term mode) to avoid simp issue
+-- where simp cannot close f >> CategoryStruct.id _ = f in Lean 4.32.
 lemma sol_map_counit (T : FintypeCat.{u}) (X : Profinite.{u})
     (psi : X ⟶ FintypeCat.toProfinite.obj T) :
     (profiniteSolidification R).app X ≫ (profiniteSolid R).map psi ≫
@@ -185,27 +185,28 @@ lemma isSolid_of_isLimit_gen {J : Type*} [Category J] {F : J ⥤ CondensedMod.{u
     rw [Category.assoc, hc.fac g_cone j]
     exact hg_j' j
 
--- FIX v8: avoid Function.Bijective / ConcreteCategory.hom mismatch (Lean 4.32 API change).
--- CI showed: key1 has type ConcreteCategory.hom (...) f ≫ e.inv = ...
--- which doesn't match hM.1 expected type (different yoneda object).
--- Fix: stay in IsIso world, decompose via yoneda.mapIso + infer_instance.
+-- finFree_isSolid: injectivity via sol_leftCancel, surjectivity via transfer through e.
+-- Avoids Function.Bijective/ConcreteCategory.hom mismatch (Lean 4.32 API change).
+-- Avoids rw [h_eq] on IsIso goal (caused cannot-import-module error in v8).
 theorem finFree_isSolid (T : FintypeCat.{u}) : ((finFree R).obj T).IsSolid := by
   constructor; intro X
-  -- Goal: IsIso ((yoneda.obj (finFree T)).map sol.op)
-  have hS := (profiniteSolid_fintype_isSolid R T).isIso_solidification_map X
+  apply (isIso_iff_bijective _).mpr
   have e := finFreeIsoSolid R T
-  -- Decompose: yoneda_finFree = e.inv.comp ∘ yoneda_solid ∘ e.hom.comp
-  have h_eq :
-      (yoneda.obj ((finFree R).obj T)).map ((profiniteSolidification R).app X).op =
-      (yoneda.mapIso e).inv.app (op ((profiniteSolid R).obj X)) ≫
-      (yoneda.obj ((profiniteSolid R).obj (FintypeCat.toProfinite.obj T))).map
-        ((profiniteSolidification R).app X).op ≫
-      (yoneda.mapIso e).hom.app (op ((profiniteFree R).obj X)) := by
-    ext g; simp
-  -- Rewrite IsIso goal using the decomposition (no Function.Bijective involved)
-  rw [h_eq]
-  haveI := hS
-  infer_instance
+  constructor
+  · -- Injectivity: sol_leftCancel cancels sol directly
+    -- hfg : sol >> f = sol >> g  (definitionally, via ConcreteCategory.hom)
+    intro f g hfg
+    exact sol_leftCancel R T X f g hfg
+  · -- Surjectivity: transfer through finFreeIsoSolid
+    intro h
+    -- h : profiniteFree X -> finFree T; need g : profiniteSolid X -> finFree T
+    obtain ⟨g', hg'⟩ := surjectivity_from_surj_factor R T X (h ≫ e.inv)
+    -- g' : profiniteSolid X -> profiniteSolid LT, hg' : sol >> g' = h >> e.inv
+    refine ⟨g' ≫ e.hom, ?_⟩
+    -- Goal: sol >> (g' >> e.hom) = h
+    have key := congrArg (· ≫ e.hom) hg'
+    simp only [Category.assoc, e.inv_hom_id, Category.comp_id] at key
+    exact key
 
 theorem profiniteSolid_obj_isSolid (S : Profinite.{u}) :
     ((profiniteSolid R).obj S).IsSolid := by
