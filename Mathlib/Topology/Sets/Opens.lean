@@ -49,6 +49,7 @@ We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `
 
 @[expose] public section
 
+universe u
 
 open Filter Function Order Set
 
@@ -256,6 +257,28 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
 
 instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms frameMinimalAxioms
 
+theorem mem_himp {U V : Opens α} {x : α} : x ∈ U ⇨ V ↔ ∃ W : Opens α, W ⊓ U ≤ V ∧ x ∈ W := by
+  simp [himp_eq_sSup]
+
+theorem himp_def {U V : Opens α} : U ⇨ V = Opens.interior ((U : Set α) ⇨ V) := by
+  ext x
+  simp_rw [BooleanAlgebra.himp_eq, sup_eq_union, coe_interior, _root_.mem_interior,
+    SetLike.mem_coe, mem_himp, ← SetLike.coe_subset_coe, coe_inf, inter_subset]
+  exact ⟨fun ⟨⟨W, hW⟩, hsub, hx⟩ => ⟨W, union_comm _ _ ▸ hsub, hW, hx⟩,
+    fun ⟨W, hsub, hW, hx⟩ => ⟨⟨W, hW⟩, union_comm _ _ ▸ hsub, hx⟩⟩
+
+theorem coe_himp {U V : Opens α} : ↑(U ⇨ V) = interior ((U : Set α) ⇨ V) := by
+  rw [himp_def, coe_interior]
+
+theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Disjoint V U ∧ x ∈ V := by
+  simp [compl_eq_sSup_disjoint]
+
+theorem interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
+  simp [←himp_bot, himp_def]
+
+theorem coe_compl_eq_interior_compl {U : Opens α} : ↑(Uᶜ) = interior (U : Set α)ᶜ := by
+  rw [←interior_compl, coe_interior]
+
 /-- The coercion from open sets to sets as a `FrameHom`. -/
 @[simps] protected def frameHom : FrameHom (Opens α) (Set α) where
   toFun := (·)
@@ -323,6 +346,14 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
     rcases mem_sSup.1 hx with ⟨U, Us, xU⟩
     exact ⟨U, hUs Us, xU, le_sSup Us⟩
 
+lemma IsBasis.exists_iSup_eq {X : Type u} [TopologicalSpace X] {ι : Type*}
+    {U : ι → TopologicalSpace.Opens X} (hU : TopologicalSpace.Opens.IsBasis (Set.range U))
+    (W : TopologicalSpace.Opens X) : ∃ (κ : Type u) (a : κ → ι), W = ⨆ (k : κ), U (a k) := by
+  obtain ⟨Us, hsub, hUs⟩ := Opens.isBasis_iff_cover.mp hU W
+  choose a ha using hsub
+  use Us, fun i ↦ a i.2
+  simp [hUs, ha, sSup_eq_iSup' Us]
+
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
   it is a finite union of some elements in the basis -/
 theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Opens α)
@@ -389,6 +420,7 @@ def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
 theorem comap_id : comap (ContinuousMap.id α) = FrameHom.id _ :=
   FrameHom.ext fun _ => ext rfl
 
+@[gcongr]
 theorem comap_mono (f : C(α, β)) {s t : Opens β} (h : s ≤ t) : comap f s ≤ comap f t :=
   OrderHomClass.mono (comap f) h
 
