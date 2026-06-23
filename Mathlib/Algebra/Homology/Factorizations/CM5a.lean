@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
-public import Mathlib.Algebra.Homology.Refinements
 public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Category.Factorisation
 public import Mathlib.CategoryTheory.Functor.OfSequence
@@ -49,6 +47,7 @@ to take its limit, which shall be the intermediate object in the
 lemma `cm5a_cof`.
 
 -/
+
 
 open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
 
@@ -663,49 +662,33 @@ public lemma exists_injective_resolution' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁
       (_ : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n₀ := by
   have : K.IsStrictlyGE (n₀ + 1) := by rw [h]; infer_instance
   obtain ⟨L, hL, i, p, hi, hi', hp, _⟩ := cm5a (0 : K ⟶ 0) n₀
-  have hp₀ : p = 0 := (isZero_zero _).eq_of_tgt _ _
-  refine ⟨L, i, hi, hi', fun n => Injective.of_iso ?_ ((hp n).2), hL⟩
-  exact
-    { hom := kernel.ι _
-      inv := kernel.lift _ (𝟙 _) (by simp [hp₀])
-      hom_inv_id := by simp [← cancel_mono (kernel.ι _)]
-      inv_hom_id := by simp }
+  exact ⟨L, i, hi, hi', (degreewiseEpiWithInjectiveKernel_iff_of_isZero p
+    (Limits.isZero_zero _)).1 hp, hL⟩
 
 public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
       (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
+  /- The proof proceeds by first applying `exists_injective_resolution'` in order to
+  obtain a monomorphism `K ⟶ L` that is also a quasi-isomorphism
+  with `L` consisting of injective objects and `L` lying in degrees `≥ n - 1`.
+  Then, as it is quasi-isomorphic to `K`, the cochain complex `L` is cohomologically
+  in degrees `≥ n`, so that the composition `K ⟶ L ⟶ L.truncGE n` is a quasi-isomorphism.
+  In order to conclude, one needs to show that `(L.truncGE n).X n` is injective,
+  i.e. that `L.opcycles n` is injective. -/
   have : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
-  obtain ⟨L, i, _, _, hL, _⟩  := exists_injective_resolution' K (n - 1) n (by simp)
+  obtain ⟨L, i, _, _, hL, _⟩ := exists_injective_resolution' K (n - 1) n (by simp)
   have : L.IsGE n := by
     have hK : K.IsGE n := inferInstance
     rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
     exact DerivedCategory.TStructure.t.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
-  have : QuasiIso (L.πTruncGE n) := by
-    rw [L.quasiIso_πTruncGE_iff n]
-    infer_instance
-  have : Injective (L.opcycles n) := by
-    let S : ShortComplex C := ShortComplex.mk (L.d (n-1) n) (L.pOpcycles n) (by simp)
-    have : Mono S.f := by
-      let T := L.sc' (n-2) (n-1) n
-      have hT : T.Exact := by
-        rw [← L.exactAt_iff' (n-2) (n-1) n (by simp; linarith) (by simp),
-          exactAt_iff_isZero_homology]
-        exact L.isZero_of_isGE n (n-1) (by linarith)
-      apply hT.mono_g
-      apply IsZero.eq_of_src
-      exact L.isZero_of_isStrictlyGE (n - 1) _
-    have hS : S.ShortExact :=
-      { exact := S.exact_of_g_is_cokernel (L.opcyclesIsCokernel (n-1) n (by simp)) }
-    exact Retract.injective
-      { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
+  have : QuasiIso (L.πTruncGE n) := (L.quasiIso_πTruncGE_iff n).mpr inferInstance
+  have : Injective (L.opcycles n) :=
+    L.injective_opcycles (n - 1) n (L.exactAt_of_isGE n (n - 1))
   -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
-  refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, ?_, inferInstance⟩
-  intro q
-  by_cases h : q < n
+  refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, fun q ↦ ?_, inferInstance⟩
+  obtain h | rfl | h := lt_trichotomy q n
   · exact (isZero_of_isStrictlyGE _ n _ h).injective
-  · simp only [not_lt] at h
-    obtain (hq | rfl) := h.lt_or_eq
-    · exact Injective.of_iso (L.truncGEXIso n q hq).symm (hL q)
-    · exact Injective.of_iso (L.truncGEXIsoOpcycles n).symm inferInstance
+  · exact Injective.of_iso (L.truncGEXIsoOpcycles q).symm inferInstance
+  · exact Injective.of_iso (L.truncGEXIso n q h).symm (hL q)
 
 end CochainComplex.Plus.modelCategoryQuillen
