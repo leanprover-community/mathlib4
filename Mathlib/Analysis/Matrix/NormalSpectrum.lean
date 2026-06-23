@@ -5,10 +5,10 @@ Authors: Judson Pereira de Moura
 -/
 module
 
-public import Mathlib.Algebra.Star.Module
 public import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Analysis.Matrix.Spectrum
+public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Tactic.NoncommRing
 
 /-! # Spectral theorem for normal matrices
@@ -43,13 +43,12 @@ e.g. a planar rotation — is normal but is not orthogonally diagonalizable over
 
 ## Implementation notes
 
-The proof uses the Cartesian decomposition `M = A + i•B` with `A` the self-adjoint part of `M`
-(`selfAdjointPart ℝ M`, i.e. `(M + Mᴴ)/2`) and `B = −i • skewAdjointPart ℝ M = (M − Mᴴ)/(2i)`. Both
-are Hermitian (`A` by `selfAdjointPart` membership; `B` after the `−i` twist that turns the
-skew-adjoint part into a Hermitian one). Normality of `M` is exactly `Commute A B`, so `A` and `B`
-are *commuting symmetric operators* and the space splits as an internal direct sum of their *joint*
-eigenspaces (`LinearMap.IsSymmetric.directSum_isInternal_of_commute`). An orthonormal basis
-subordinate to that decomposition diagonalizes both `A` and `B` simultaneously, hence `M`.
+The proof uses the decomposition `M = ℜ M + i • ℑ M` into the `realPart` and `imaginaryPart` of `M`,
+both self-adjoint (hence Hermitian as matrices). Normality of `M` is exactly
+`Commute (ℜ M) (ℑ M)` (`isStarNormal_iff_commute_realPart_imaginaryPart`), so they are *commuting
+symmetric operators* and the space splits as an internal direct sum of their *joint* eigenspaces
+(`LinearMap.IsSymmetric.directSum_isInternal_of_commute`). An orthonormal basis subordinate to that
+decomposition diagonalizes both simultaneously, hence `M`.
 
 The bundled API (`normalEigenvectorBasis`/`normalEigenvalues`/`normalEigenvectorUnitary`) mirrors
 the Hermitian API (`Matrix.IsHermitian.eigenvectorBasis`/`eigenvalues`/`eigenvectorUnitary`).
@@ -63,97 +62,52 @@ variable {n : Type*} [Fintype n] [DecidableEq n] (M : Matrix n n ℂ)
 
 open Module.End
 
-/-- Hermitian "real part" of `M`: the self-adjoint part `(M + Mᴴ)/2`. -/
-private noncomputable def reHermPart : Matrix n n ℂ := (selfAdjointPart ℝ M : Matrix n n ℂ)
+private lemma realPart_toEuclideanLin_isSymmetric :
+    (realPart M : Matrix n n ℂ).toEuclideanLin.IsSymmetric :=
+  Matrix.isSymmetric_toEuclideanLin_iff.mpr (selfAdjoint.mem_iff.mp (realPart M).2)
 
-/-- Hermitian "imaginary part" of `M`: `−i` times the skew-adjoint part, i.e. `(M − Mᴴ)/(2i)`. -/
-private noncomputable def imHermPart : Matrix n n ℂ :=
-  (-Complex.I) • (skewAdjointPart ℝ M : Matrix n n ℂ)
+private lemma imaginaryPart_toEuclideanLin_isSymmetric :
+    (imaginaryPart M : Matrix n n ℂ).toEuclideanLin.IsSymmetric :=
+  Matrix.isSymmetric_toEuclideanLin_iff.mpr (selfAdjoint.mem_iff.mp (imaginaryPart M).2)
 
-omit [Fintype n] [DecidableEq n] in
-private lemma reHermPart_isHermitian : (reHermPart M).IsHermitian :=
-  selfAdjoint.mem_iff.mp (selfAdjointPart ℝ M).2
-
-omit [Fintype n] [DecidableEq n] in
-private lemma imHermPart_isHermitian : (imHermPart M).IsHermitian := by
-  have hskew : star (skewAdjointPart ℝ M : Matrix n n ℂ) = -(skewAdjointPart ℝ M : Matrix n n ℂ) :=
-    skewAdjoint.mem_iff.mp (skewAdjointPart ℝ M).2
-  change (imHermPart M)ᴴ = imHermPart M
-  rw [imHermPart, ← Matrix.star_eq_conjTranspose, star_smul, hskew,
-    show star (-Complex.I) = Complex.I by simp, smul_neg, neg_smul]
-
-omit [Fintype n] [DecidableEq n] in
-private lemma reHermPart_add_imHermPart : M = reHermPart M + Complex.I • imHermPart M := by
-  rw [reHermPart, imHermPart, smul_smul,
-    show Complex.I * -Complex.I = 1 by rw [mul_neg, Complex.I_mul_I, neg_neg], one_smul]
-  exact (StarModule.selfAdjointPart_add_skewAdjointPart ℝ M).symm
-
-omit [DecidableEq n] in
-/-- For a normal matrix the Hermitian Cartesian parts commute. -/
-private lemma commute_reHermPart_imHermPart (hM : M * Mᴴ = Mᴴ * M) :
-    Commute (reHermPart M) (imHermPart M) := by
-  have base : Commute (selfAdjointPart ℝ M : Matrix n n ℂ)
-      (skewAdjointPart ℝ M : Matrix n n ℂ) := by
-    rw [selfAdjointPart_apply_coe, skewAdjointPart_apply_coe]
-    refine Commute.smul_left (Commute.smul_right ?_ _) _
-    change (M + Mᴴ) * (M - Mᴴ) = (M - Mᴴ) * (M + Mᴴ)
-    have e : (M + Mᴴ) * (M - Mᴴ) - (M - Mᴴ) * (M + Mᴴ)
-        = (Mᴴ * M - M * Mᴴ) + (Mᴴ * M - M * Mᴴ) := by noncomm_ring
-    rw [← sub_eq_zero, e, hM]; abel
-  rw [reHermPart, imHermPart]
-  exact base.smul_right _
-
-private lemma reHermPart_toEuclideanLin_isSymmetric :
-    (reHermPart M).toEuclideanLin.IsSymmetric :=
-  Matrix.isSymmetric_toEuclideanLin_iff.mpr (reHermPart_isHermitian M)
-
-private lemma imHermPart_toEuclideanLin_isSymmetric :
-    (imHermPart M).toEuclideanLin.IsSymmetric :=
-  Matrix.isSymmetric_toEuclideanLin_iff.mpr (imHermPart_isHermitian M)
-
-private lemma toEuclideanLin_commute {A B : Matrix n n ℂ} (h : A * B = B * A) :
-    Commute A.toEuclideanLin B.toEuclideanLin := by
-  change A.toEuclideanLin * B.toEuclideanLin = B.toEuclideanLin * A.toEuclideanLin
-  refine LinearMap.ext fun v => WithLp.ofLp_injective 2 ?_
-  change A *ᵥ (B *ᵥ WithLp.ofLp v) = B *ᵥ (A *ᵥ WithLp.ofLp v)
-  rw [mulVec_mulVec, mulVec_mulVec, h]
-
-/-- Joint eigenspaces of the Cartesian parts of a normal matrix. -/
+/-- Joint eigenspaces of the real and imaginary parts of a normal matrix; for `M` normal these are
+commuting symmetric operators. -/
 private noncomputable def jointEig (i : ℂ × ℂ) : Submodule ℂ (EuclideanSpace ℂ n) :=
-  eigenspace (reHermPart M).toEuclideanLin i.2 ⊓ eigenspace (imHermPart M).toEuclideanLin i.1
+  eigenspace (realPart M : Matrix n n ℂ).toEuclideanLin i.2
+    ⊓ eigenspace (imaginaryPart M : Matrix n n ℂ).toEuclideanLin i.1
 
-private theorem jointEig_isInternal (hM : M * Mᴴ = Mᴴ * M) :
-    DirectSum.IsInternal (jointEig M) :=
+private theorem jointEig_isInternal [IsStarNormal M] : DirectSum.IsInternal (jointEig M) :=
   LinearMap.IsSymmetric.directSum_isInternal_of_commute
-    (reHermPart_toEuclideanLin_isSymmetric M) (imHermPart_toEuclideanLin_isSymmetric M)
-    (toEuclideanLin_commute (commute_reHermPart_imHermPart M hM).eq)
-
-omit [DecidableEq n] in
-/-- Normality, as the commutation `M * Mᴴ = Mᴴ * M`, from the `IsStarNormal` instance. -/
-private lemma conjTranspose_comm_of_isStarNormal [hM : IsStarNormal M] : M * Mᴴ = Mᴴ * M := by
-  have h : Mᴴ * M = M * Mᴴ := by
-    have := hM.star_comm_self.eq; rwa [Matrix.star_eq_conjTranspose] at this
-  exact h.symm
+    (realPart_toEuclideanLin_isSymmetric M) (imaginaryPart_toEuclideanLin_isSymmetric M)
+    (by
+      have hc := (isStarNormal_iff_commute_realPart_imaginaryPart.mp ‹IsStarNormal M›).eq
+      change (realPart M : Matrix n n ℂ).toEuclideanLin
+          * (imaginaryPart M : Matrix n n ℂ).toEuclideanLin
+          = (imaginaryPart M : Matrix n n ℂ).toEuclideanLin
+          * (realPart M : Matrix n n ℂ).toEuclideanLin
+      refine LinearMap.ext fun v => WithLp.ofLp_injective 2 ?_
+      change (realPart M : Matrix n n ℂ) *ᵥ ((imaginaryPart M : Matrix n n ℂ) *ᵥ WithLp.ofLp v)
+          = (imaginaryPart M : Matrix n n ℂ) *ᵥ ((realPart M : Matrix n n ℂ) *ᵥ WithLp.ofLp v)
+      rw [mulVec_mulVec, mulVec_mulVec, hc])
 
 set_option maxHeartbeats 600000 in
 -- The bump covers the irreducible `whnf` of `subordinateOrthonormalBasis` (the same API
 -- `Matrix.IsHermitian.eigenvectorBasis` is built on). It is near-minimal (500000 does not suffice)
 -- and isolated in this auxiliary def, so none of the public results below need a bump.
 /-- An orthonormal eigenbasis of a normal matrix, its (complex) eigenvalues, and the eigen
-equation, bundled together so the public API projects out consistent components. The Hermitian
-Cartesian parts of `M` are commuting symmetric operators, so their joint eigenspaces give an
+equation, bundled together so the public API projects out consistent components. The real and
+imaginary parts of `M` are commuting symmetric operators, so their joint eigenspaces give an
 internal direct sum; a subordinate orthonormal basis diagonalizes both, hence `M`. The eigenvalue
 is `(real-part eigenvalue) + i•(imaginary-part one)`. -/
 private noncomputable def normalSpectralAux [IsStarNormal M] :
     Σ' (B : OrthonormalBasis n ℂ (EuclideanSpace ℂ n)),
       {μ : n → ℂ // ∀ j, M *ᵥ ⇑(B j) = μ j • ⇑(B j)} := by
   classical
-  have hM : M * Mᴴ = Mᴴ * M := conjTranspose_comm_of_isStarNormal M
-  have hAsym := reHermPart_toEuclideanLin_isSymmetric M
-  have hBsym := imHermPart_toEuclideanLin_isSymmetric M
+  have hAsym := realPart_toEuclideanLin_isSymmetric M
+  have hBsym := imaginaryPart_toEuclideanLin_isSymmetric M
   have hOF : OrthogonalFamily ℂ (fun i => ↥(jointEig M i)) (fun i => (jointEig M i).subtypeₗᵢ) :=
     LinearMap.IsSymmetric.orthogonalFamily_eigenspace_inf_eigenspace hAsym hBsym
-  have hInt : DirectSum.IsInternal (jointEig M) := jointEig_isInternal M hM
+  have hInt : DirectSum.IsInternal (jointEig M) := jointEig_isInternal M
   have hIndep : iSupIndep (jointEig M) :=
     (DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top (jointEig M)).mp hInt |>.1
   have hFinSet : {i | jointEig M i ≠ ⊥}.Finite := WellFoundedGT.finite_ne_bot_of_iSupIndep hIndep
@@ -174,17 +128,18 @@ private noncomputable def normalSpectralAux [IsStarNormal M] :
     intro j
     rw [hB_def, OrthonormalBasis.reindex_apply]
     exact hIntJ.subordinateOrthonormalBasis_subordinate finrank_euclideanSpace (eFin.symm j) hOFJ
-  have hre : ∀ j, reHermPart M *ᵥ ⇑(B j) = (p j).2 • ⇑(B j) := by
+  have hre : ∀ j, (realPart M : Matrix n n ℂ) *ᵥ ⇑(B j) = (p j).2 • ⇑(B j) := by
     intro j
     have h := mem_eigenspace_iff.mp (hmem j).1
     simpa using congrArg (WithLp.ofLp) h
-  have him : ∀ j, imHermPart M *ᵥ ⇑(B j) = (p j).1 • ⇑(B j) := by
+  have him : ∀ j, (imaginaryPart M : Matrix n n ℂ) *ᵥ ⇑(B j) = (p j).1 • ⇑(B j) := by
     intro j
     have h := mem_eigenspace_iff.mp (hmem j).2
     simpa using congrArg (WithLp.ofLp) h
   have hmul : ∀ j, M *ᵥ ⇑(B j) = μ j • ⇑(B j) := by
     intro j
-    rw [reHermPart_add_imHermPart M, add_mulVec, smul_mulVec, hre, him, hμ_def, smul_smul, add_smul]
+    rw [← realPart_add_I_smul_imaginaryPart M, add_mulVec, smul_mulVec, hre, him, hμ_def, smul_smul,
+      add_smul]
   exact ⟨B, μ, hmul⟩
 
 /-- A choice of an orthonormal basis of eigenvectors of a normal matrix. -/
