@@ -381,12 +381,6 @@ theorem mulEquivCongr_mapSubgroup_fixingSubgroup (S : Set B) :
 
 end IsDomain
 
-theorem mulEquivCongr_mapSubgroup_fixingSubgroup (F : Set L) [IsGaloisGroup G K L] [Finite G]
-    [IsGaloisGroup G' K L] [Finite G'] :
-    (fixingSubgroup G F).map (mulEquivCongr G G' K L) = fixingSubgroup G' F := by
-  ext g
-  simp [Subgroup.map_equiv_eq_comap_symm, mem_fixingSubgroup_iff]
-
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
 instance (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]

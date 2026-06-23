@@ -90,26 +90,18 @@ theorem inertiaMapOfLiesOver_ker :
       (restrictHom G H R A B).ker.subgroupOf (inertia G P) := by
   simp [inertiaMapOfLiesOver]
 
-attribute [local instance] Ideal.Quotient.field in
-theorem inertiaMapOfLiesOver_surjective [IsIntegrallyClosed A] [P.IsMaximal] :
+/-- The image of the inertia group of `P` under `restrictHom` is the inertia group of `p`.
+This is a direct application of the general `Ideal.inertia_quotient'`. -/
+theorem inertia_map_restrictHom [IsIntegrallyClosed A] [P.IsPrime] :
+    (inertia G P).map (restrictHom G H R A B) = inertia H p :=
+  .symm <| Ideal.inertia_quotient' (restrictHom G H R A B) (restrictHom G H R A B).ker p P
+    (restrictHom_surjective G H R A B) le_rfl (algebraMap_restrictHom_smul G H R A B)
+
+theorem inertiaMapOfLiesOver_surjective [IsIntegrallyClosed A] [P.IsPrime] :
     Function.Surjective (inertiaMapOfLiesOver G H R P p) := by
-  intro ⟨h, hmem⟩
-  obtain ⟨⟨g, hg⟩, hg'⟩ :=
-    stabilizerMapOfLiesOver_surjective G H R P p ⟨h, inertia_le_stabilizer _ hmem⟩
-  have hgh : (restrictHom G H R A B) g = h := congr_arg Subtype.val hg'
-  have hfix (a : A) : g • algebraMap A B a - algebraMap A B a ∈ P := by
-    rw [← algebraMap_restrictHom_smul G H R A B, ← map_sub, ← Ideal.mem_comap, ← Ideal.under_def,
-      ← (liesOver_iff P p).mp hPp, hgh]
-    exact AddSubgroup.mem_inertia.mp hmem a
-  let σ' := Quotient.stabilizerAlgEquiv P p G ⟨g, hg⟩ hfix
-  obtain ⟨⟨τ, hτ⟩, hτ'⟩ := Quotient.stabilizerHom_surjective (restrictHom G H R A B).ker p P σ'⁻¹
-  have hτx (x : B) : Quotient.mk P ((τ : G) • x) = σ'⁻¹ (Quotient.mk P x) :=
-    hτ' ▸ (Quotient.stabilizerHom_apply P p _ ⟨τ, hτ⟩ x).symm
-  refine ⟨⟨g * τ, fun x ↦ ?_⟩, ?_⟩
-  · rw [Submodule.mem_toAddSubgroup, ← Quotient.mk_eq_mk_iff_sub_mem, mul_smul,
-      ← Quotient.stabilizerAlgEquiv_mk P p G ⟨g, hg⟩ hfix, hτx]
-    exact σ'.apply_symm_apply _
-  · ext
-    simp [hgh, MonoidHom.mem_ker.mp τ.2]
+  rintro ⟨h, hh⟩
+  rw [← inertia_map_restrictHom G H R P] at hh
+  obtain ⟨g, hg, rfl⟩ := hh
+  exact ⟨⟨g, hg⟩, rfl⟩
 
 end Ideal
