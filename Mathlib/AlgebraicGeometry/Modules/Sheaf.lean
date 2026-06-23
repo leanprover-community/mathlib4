@@ -383,20 +383,16 @@ instead. -/
 lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : U ⟶ V) :
     (M.restrict f).presheaf.map i.op = M.presheaf.map (f.opensFunctor.map i).op := rfl
 
-set_option backward.isDefEq.respectTransparency false in
+/-- `Scheme.Modules.restrict` along an open immersion `X ⟶ Y` sends `𝒪_Y` to `𝒪_X`. -/
 def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
     restrict (.unit <| Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
   refine (fullyFaithfulForget _).preimageIso <| PresheafOfModules.isoMk (fun U ↦ ?_) ?_
   · refine ModuleCat.isoMk
       ((forget₂ CommRingCat RingCat ⋙ forget₂ _ Ab).mapIso (f.appIso U.unop)) ?_
-    dsimp [restrict, restrictFunctor, SheafOfModules.pushforward]
-    intro r
-    ext x
-    dsimp
-    change r * _ = (f.appIso U.unop).hom (_ * _)
-    rw [map_mul]
-    congr 1
-    exact (CommRingCat.hom_inv_apply (Hom.appIso f U.unop) r).symm
+    intro (r : Γ(X, U.unop))
+    ext (x : Γ(Y, f ''ᵁ U.unop))
+    change r * (f.appIso U.unop).hom x = (f.appIso U.unop).hom ((f.appIso U.unop).inv r * x)
+    simp
   · intro U V g
     have : Y.presheaf.map (homOfLE (by grw [leOfHom g.unop])).op ≫
         (f.appIso _).hom = (f.appIso U.unop).hom ≫ X.presheaf.map g := by
