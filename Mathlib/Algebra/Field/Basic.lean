@@ -224,20 +224,21 @@ noncomputable abbrev Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit 
 end NoncomputableDefs
 
 namespace Function.Injective
-variable [Zero K] [Add K] [Neg K] [Sub K] [One K] [Mul K] [Inv K] [Div K] [SMul ℕ K] [SMul ℤ K]
-  [SMul ℚ≥0 K] [SMul ℚ K] [Pow K ℕ] [Pow K ℤ] [NatCast K] [IntCast K] [NNRatCast K] [RatCast K]
-  (f : K → L) (hf : Injective f)
+variable [Zero K] [Add K] [Neg K] [Sub K] [One K] [Mul K] [Inv K] [Div K] [SMul ℕ+ K] [SMul ℕ K]
+  [SMul ℤ K] [SMul ℚ≥0 K] [SMul ℚ K] [Pow K ℕ+] [Pow K ℕ] [Pow K ℤ] [NatCast K] [IntCast K]
+  [NNRatCast K] [RatCast K] (f : K → L) (hf : Injective f)
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
 -- See note [reducible non-instances]
 protected abbrev divisionSemiring [DivisionSemiring L] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
+    (psmul : ∀ x (n : ℕ+), f (n • x) = n • f x) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x) (ppow : ∀ (x) (n : ℕ+), f (x ^ n) = f x ^ n)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : DivisionSemiring K where
-  toSemiring := hf.semiring f zero one add mul nsmul npow natCast
-  __ := hf.groupWithZero f zero one mul inv div npow zpow
+  toSemiring := hf.semiring f zero one add mul psmul nsmul ppow npow natCast
+  __ := hf.groupWithZero f zero one mul inv div ppow npow zpow
   nnratCast_def q := hf <| by rw [nnratCast, NNRat.cast_def, div, natCast, natCast]
   nnqsmul := (· • ·)
   nnqsmul_def q a := hf <| by rw [nnqsmul, NNRat.smul_def, mul, nnratCast]
@@ -247,15 +248,17 @@ protected abbrev divisionSemiring [DivisionSemiring L] (zero : f 0 = 0) (one : f
 protected abbrev divisionRing [DivisionRing L] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y)
+    (div : ∀ x y, f (x / y) = f x / f y) (psmul : ∀ x (n : ℕ+), f (n • x) = n • f x)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
+    (ppow : ∀ (x) (n : ℕ+), f (x ^ n) = f x ^ n)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) : DivisionRing K where
-  toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
-  __ := hf.groupWithZero f zero one mul inv div npow zpow
-  __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
+  toRing := hf.ring f zero one add mul neg sub psmul nsmul zsmul ppow npow natCast intCast
+  __ := hf.groupWithZero f zero one mul inv div ppow npow zpow
+  __ := hf.divisionSemiring f zero one add mul inv div psmul nsmul nnqsmul ppow npow zpow natCast
+    nnratCast
   ratCast_def q := hf <| by rw [ratCast, div, intCast, natCast, Rat.cast_def]
   qsmul := (· • ·)
   qsmul_def q a := hf <| by rw [qsmul, mul, Rat.smul_def, ratCast]
@@ -265,28 +268,31 @@ protected abbrev divisionRing [DivisionRing L] (zero : f 0 = 0) (one : f 1 = 1)
 protected abbrev semifield [Semifield L] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
+    (psmul : ∀ x (n : ℕ+), f (n • x) = n • f x) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x) (ppow : ∀ (x) (n : ℕ+), f (x ^ n) = f x ^ n)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : Semifield K where
-  toCommSemiring := hf.commSemiring f zero one add mul nsmul npow natCast
-  __ := hf.commGroupWithZero f zero one mul inv div npow zpow
-  __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
+  toCommSemiring := hf.commSemiring f zero one add mul psmul nsmul ppow npow natCast
+  __ := hf.commGroupWithZero f zero one mul inv div ppow npow zpow
+  __ := hf.divisionSemiring f zero one add mul inv div psmul nsmul nnqsmul ppow npow zpow natCast
+    nnratCast
 
 /-- Pullback a `Field` along an injective function. -/
 -- See note [reducible non-instances]
 protected abbrev field [Field L] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y)
+    (div : ∀ x y, f (x / y) = f x / f y) (psmul : ∀ x (n : ℕ+), f (n • x) = n • f x)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
+    (ppow : ∀ (x) (n : ℕ+), f (x ^ n) = f x ^ n)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) :
     Field K where
-  toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
-  __ := hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow zpow
-    natCast intCast nnratCast ratCast
+  toCommRing := hf.commRing f zero one add mul neg sub psmul nsmul zsmul ppow npow natCast intCast
+  __ := hf.divisionRing f zero one add mul neg sub inv div psmul nsmul zsmul nnqsmul qsmul ppow npow
+    zpow natCast intCast nnratCast ratCast
 
 end Function.Injective
 
