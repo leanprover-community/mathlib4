@@ -220,8 +220,9 @@ root of unity and `p` is prime. -/
 theorem isCoprime_of_not_zeta_sub_one_dvd {x : 𝓞 K} (hx : ¬ hζ.toInteger - 1 ∣ x) :
     IsCoprime (p : 𝓞 K) x := by
   rwa [← isCoprime_span_singleton_iff,  ← span_singleton_eq_span_singleton.mpr
-    (associated_zeta_sub_one_pow_prime p hζ), ← span_singleton_pow, IsCoprime.pow_left_iff
-    (by grind [hp.out.one_lt]), isCoprime_iff_gcd, (prime_span_singleton_iff.mpr
+    (associated_zeta_sub_one_pow_prime p hζ), ← span_singleton_pow,
+    IsCoprime.pow_left_iff (by grind [hp.out.one_lt]), isCoprime_iff_gcd,
+    (prime_span_singleton_iff.mpr
     hζ.zeta_sub_one_prime').irreducible.gcd_eq_one_iff, dvd_span_singleton, mem_span_singleton]
 
 theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
