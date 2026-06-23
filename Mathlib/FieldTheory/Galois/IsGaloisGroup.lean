@@ -335,7 +335,6 @@ theorem card_eq_finrank' [FaithfulSMul A B] : Nat.card G = Module.finrank A B :=
 
 attribute [local instance] FractionRing.liftAlgebra in
 attribute [-instance] Algebra.ofSubring in
--- attribute [-instance] Algebra.ofSubSemiring in
 /-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
   MulEquiv.ofBijective (MulSemiringAction.toAlgAut G A B) (by
