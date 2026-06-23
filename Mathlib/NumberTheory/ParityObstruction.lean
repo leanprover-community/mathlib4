@@ -5,10 +5,10 @@ Authors: Michael Brown
 -/
 module
 
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.NumberTheory.ArithmeticFunction.Defs
-import Mathlib.NumberTheory.SelbergSieve
-import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.SelbergSieve
+public import Mathlib.Data.Finset.Basic
 
 /-!
 # Parity Obstruction Lemma — Formalized in mathlib4

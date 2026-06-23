@@ -5,10 +5,10 @@ Authors: Michael Brown
 -/
 module
 
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.NumberTheory.ArithmeticFunction.Defs
-import Mathlib.NumberTheory.LSeries.PrimesInAP
-import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.LSeries.PrimesInAP
+public import Mathlib.Data.Finset.Basic
 
 /-!
 # Bombieri-Vinogradov Theorem and Elliott-Halberstam — Formalized in mathlib4
