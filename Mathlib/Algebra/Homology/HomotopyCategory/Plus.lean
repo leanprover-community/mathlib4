@@ -270,7 +270,7 @@ def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus 
       exact ⟨n, inferInstanceAs (CochainComplex.IsStrictlyGE
         ((F.mapHomologicalComplex _).obj K) n)⟩)
 
-noncomputable instance [HasZeroObject C] [HasBinaryBiproducts C] :
+noncomputable instance :
     (F.mapHomotopyCategoryPlus).CommShift ℤ :=
   inferInstanceAs (((HomotopyCategory.plus D).lift (HomotopyCategory.Plus.ι C ⋙
     F.mapHomotopyCategory (.up ℤ)) _).CommShift ℤ)
@@ -295,8 +295,7 @@ instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
 /-- Given additive functors that are related by an isomorphism `F ⋙ G ≅ H`, this is
 the corresponding isomorphism on the corresponding functor between
 the bounded below homotopy categories. -/
-def mapHomotopyCategoryPlusCompIso {E : Type*} [Category* E] [Preadditive E] [HasZeroObject E]
-    [HasBinaryBiproducts E]
+def mapHomotopyCategoryPlusCompIso {E : Type*} [Category* E] [Preadditive E]
     {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] :
     F.mapHomotopyCategoryPlus ⋙ G.mapHomotopyCategoryPlus ≅ H.mapHomotopyCategoryPlus :=
