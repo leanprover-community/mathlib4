@@ -38,6 +38,7 @@ abbrev subcategoryAcyclic :
     ObjectProperty (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_eq_subcategoryAcyclic_trW :
     HomotopyCategory.Plus.quasiIso C = (subcategoryAcyclic C).trW := by
   ext K L f
@@ -45,7 +46,7 @@ lemma quasiIso_eq_subcategoryAcyclic_trW :
   have := (HomotopyCategory.subcategoryAcyclic C).trW_iff_of_distinguished _
     ((HomotopyCategory.Plus.ι C).map_distinguished _ mem)
   rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic] at this
-  erw [(subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
+  rw [dsimp% (subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
   exact this
 
 end HomotopyCategory.Plus
