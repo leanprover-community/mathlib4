@@ -35,6 +35,11 @@ e.g. a planar rotation — is normal but is not orthogonally diagonalizable over
 * `Matrix.isStarNormal_of_isUnitary_conj_diagonal`: the converse, a unitarily-diagonalizable
   matrix is normal.
 * `Matrix.isStarNormal_iff_exists_isUnitary_conj_diagonal`: the full `iff`.
+* `Matrix.det_eq_prod_normalEigenvalues` / `trace_eq_sum_normalEigenvalues`: determinant and trace
+  as the product and sum of the eigenvalues.
+* `Matrix.charpoly_eq_prod_normalEigenvalues`: the characteristic polynomial as `∏ (X - μ i)`.
+* `Matrix.spectrum_eq_range_normalEigenvalues`: the spectrum as the range of the eigenvalues.
+* `Matrix.rank_eq_card_normalEigenvalues_ne_zero`: the rank as the count of nonzero eigenvalues.
 
 ## Implementation notes
 
@@ -291,5 +296,64 @@ theorem isStarNormal_iff_exists_isUnitary_conj_diagonal :
       M = (U : Matrix n n ℂ) * Matrix.diagonal μ * star (U : Matrix n n ℂ) :=
   ⟨exists_isUnitary_conj_diagonal_of_isStarNormal M,
     fun ⟨U, μ, hM⟩ => isStarNormal_of_isUnitary_conj_diagonal M U μ hM⟩
+
+/-! ### Consequences: determinant, trace, characteristic polynomial, rank
+
+All follow from `spectral_theorem_of_isStarNormal` (`M = U * diagonal μ * Uᴴ`) and the invariance
+of these quantities under conjugation by the unitary `U`. They mirror the Hermitian-case results in
+`Mathlib/Analysis/Matrix/Spectrum.lean`. -/
+
+/-- The determinant of a normal matrix is the product of its eigenvalues. -/
+theorem det_eq_prod_normalEigenvalues [IsStarNormal M] :
+    M.det = ∏ i, normalEigenvalues M i := by
+  have hUU : (normalEigenvectorUnitary M : Matrix n n ℂ)
+      * star (normalEigenvectorUnitary M : Matrix n n ℂ) = 1 :=
+    Matrix.mem_unitaryGroup_iff.mp (normalEigenvectorUnitary M).2
+  conv_lhs => rw [spectral_theorem_of_isStarNormal M]
+  rw [Matrix.det_mul, Matrix.det_mul, mul_right_comm, ← Matrix.det_mul, hUU, Matrix.det_one,
+    one_mul, Matrix.det_diagonal]
+
+/-- The trace of a normal matrix is the sum of its eigenvalues. -/
+theorem trace_eq_sum_normalEigenvalues [IsStarNormal M] :
+    M.trace = ∑ i, normalEigenvalues M i := by
+  have hUU' : star (normalEigenvectorUnitary M : Matrix n n ℂ)
+      * (normalEigenvectorUnitary M : Matrix n n ℂ) = 1 :=
+    Matrix.mem_unitaryGroup_iff'.mp (normalEigenvectorUnitary M).2
+  conv_lhs => rw [spectral_theorem_of_isStarNormal M]
+  rw [Matrix.trace_mul_comm, ← mul_assoc, hUU', one_mul, Matrix.trace_diagonal]
+
+/-- The characteristic polynomial of a normal matrix splits as `∏ (X - μ i)` over `ℂ`. -/
+theorem charpoly_eq_prod_normalEigenvalues [IsStarNormal M] :
+    M.charpoly = ∏ i, (Polynomial.X - Polynomial.C (normalEigenvalues M i)) := by
+  have hUU' : star (normalEigenvectorUnitary M : Matrix n n ℂ)
+      * (normalEigenvectorUnitary M : Matrix n n ℂ) = 1 :=
+    Matrix.mem_unitaryGroup_iff'.mp (normalEigenvectorUnitary M).2
+  conv_lhs => rw [spectral_theorem_of_isStarNormal M]
+  rw [Matrix.charpoly_mul_comm, ← mul_assoc, hUU', one_mul, Matrix.charpoly_diagonal]
+
+/-- The spectrum of a normal matrix is the range of its eigenvalues. -/
+theorem spectrum_eq_range_normalEigenvalues [IsStarNormal M] :
+    spectrum ℂ M = Set.range (normalEigenvalues M) := by
+  ext r
+  rw [Matrix.mem_spectrum_iff_isRoot_charpoly, charpoly_eq_prod_normalEigenvalues]
+  simp only [Polynomial.isRoot_prod, Finset.mem_univ, true_and, Polynomial.root_X_sub_C,
+    Set.mem_range]
+
+/-- The rank of a normal matrix is the number of nonzero eigenvalues. -/
+theorem rank_eq_card_normalEigenvalues_ne_zero [IsStarNormal M] :
+    M.rank = Fintype.card {i // normalEigenvalues M i ≠ 0} := by
+  have hUU : (normalEigenvectorUnitary M : Matrix n n ℂ)
+      * star (normalEigenvectorUnitary M : Matrix n n ℂ) = 1 :=
+    Matrix.mem_unitaryGroup_iff.mp (normalEigenvectorUnitary M).2
+  have hUU' : star (normalEigenvectorUnitary M : Matrix n n ℂ)
+      * (normalEigenvectorUnitary M : Matrix n n ℂ) = 1 :=
+    Matrix.mem_unitaryGroup_iff'.mp (normalEigenvectorUnitary M).2
+  have hdetU : IsUnit (normalEigenvectorUnitary M : Matrix n n ℂ).det :=
+    Matrix.isUnit_det_of_right_inverse hUU
+  have hdetsU : IsUnit (star (normalEigenvectorUnitary M : Matrix n n ℂ)).det :=
+    Matrix.isUnit_det_of_right_inverse hUU'
+  conv_lhs => rw [spectral_theorem_of_isStarNormal M]
+  rw [Matrix.rank_mul_eq_left_of_isUnit_det _ _ hdetsU,
+    Matrix.rank_mul_eq_right_of_isUnit_det _ _ hdetU, Matrix.rank_diagonal]
 
 end Matrix
