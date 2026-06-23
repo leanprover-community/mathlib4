@@ -259,8 +259,7 @@ lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
     exact_mod_cast ha'.symm
   refine ⟨n, hn, a, ha, mul_left_cancel₀ hn ?_⟩
   nth_rewrite 1 [hndef]
-  rw [absNorm_eq_index, ← pow_succ',
-    show finrank ℚ K - 1 + 1 = finrank ℚ K by grind [finrank_pos], ← RingOfIntegers.rank,
+  rw [absNorm_eq_index, mul_pow_sub_one finrank_pos.ne', ← RingOfIntegers.rank,
     ← absNorm_span_natCast, absNorm_eq_index, ← relIndex_span_span_eq_relIndex_span_span hn hm ha']
   exact relIndex_mul_index <| Submodule.toAddSubgroup_mono <| span_mono <| by grind
 
@@ -268,15 +267,12 @@ open Height in
 private lemma one_le_pow_totalWeight_mul_finprod {n : ℕ} (hn : n ≠ 0) (a : 𝓞 K) :
     1 ≤ (n ^ totalWeight K : ℝ) * ∏ᶠ (v : FinitePlace K), ⨆ i, v (![↑a, ↑n] i) := by
   have Hw : (0 : ℝ) < n ^ totalWeight K := by positivity
-  have := absNorm_mul_finprod_finitePlace_eq_one (show ![a, n] ≠ 0 by simp [hn])
-  have H (i : Fin 2) : (![a, ↑n] i : K) = ![(a : K), n] i := by fin_cases i <;> simp
-  simp_rw [H] at this; clear H
-  rw [← this, ← Nat.cast_pow]; clear this
-  gcongr
-  · -- nonnegativity side goal
-    exact finprod_nonneg fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
   rw_mod_cast [totalWeight_eq_finrank, ← RingOfIntegers.rank, ← absNorm_span_natCast] at Hw ⊢
-  exact Nat.le_of_dvd Hw <| absNorm_dvd_absNorm_of_le <| span_mono <| by simp
+  rw [← absNorm_mul_finprod_finitePlace_eq_one (show ![a, n] ≠ 0 by simp [hn])]
+  gcongr
+  · exact finprod_nonneg fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
+  · exact Nat.le_of_dvd Hw <| absNorm_dvd_absNorm_of_le <| span_mono <| by simp
+  · apply le_of_eq; congr; ext; congr; ext i; fin_cases i <;> simp
 
 end withIdeal
 
@@ -301,7 +297,7 @@ lemma exists_nat_le_mulHeight₁ (x : K) :
   refine le_of_mul_le_mul_left ?_ (show (0 : ℝ) < n ^ (totalWeight K - 1) by positivity)
   have : n ^ (totalWeight K - 1) * ∏ᶠ (v : FinitePlace K), ⨆ i, v (![(a : K), n] i) = 1 := by
     simpa [ha₂, hv] using absNorm_mul_finprod_finitePlace_eq_one (show ![a, n] ≠ 0 by simp [hn])
-  rw [← pow_succ, show totalWeight K - 1 + 1 = totalWeight K by grind, mul_left_comm, this,
+  rw [pow_sub_one_mul (totalWeight_pos K).ne', mul_left_comm, this, mul_left_comm, this,
     mul_one, totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum univ]
   refine prod_le_prod (fun _ _ ↦ by positivity) fun v _ ↦ ?_
   gcongr
