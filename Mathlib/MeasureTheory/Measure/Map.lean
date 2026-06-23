@@ -49,10 +49,10 @@ def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] Oute
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
   map_add' μ₁ μ₂ := ext fun s hs => by
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
-      OuterMeasure.coe_add, hs]
+      FunLike.coe_add, hs]
   map_smul' c μ := ext fun s hs => by
     simp only [map_smulₛₗ, Pi.smul_apply, toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞),
-      OuterMeasure.coe_smul (R := ℝ≥0∞), smul_apply, hs]
+      FunLike.coe_smul, smul_apply, hs]
 
 lemma liftLinear_apply₀ {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β} (hf) {s : Set β}
     (hs : NullMeasurableSet s (liftLinear f hf μ)) : liftLinear f hf μ s = f μ.toOuterMeasure s :=
