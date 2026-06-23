@@ -144,11 +144,16 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluing_nontrivial_types
       (_ : ∀ i : ι, (U i).carrier.Nonempty)
       (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
       IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s := by
+  -- The forwards direction follows by assumption
   refine ⟨fun h _ _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
   have sub {V : Opens X} (hV : V = ⊥) : Subsingleton (ToType (F.obj (op V))) := by rwa [hV]
   have non {V : Opens X} (hV : V = ⊥) : Nonempty (ToType (F.obj (op V))) := by rwa [hV]
   by_cases h1 : ∃ i : ι, (U i).carrier.Nonempty
-  · let ι' := {i : ι | (U i).carrier.Nonempty}
+  · /-
+    To construct our gluing, we need a cover where all the elements are nonempty. So, we simply
+    take our cover `U` and remove all the empty sets.
+    -/
+    let ι' := {i : ι | (U i).carrier.Nonempty}
     let U' : ι' → Opens X := fun i ↦ U i
     have : Nonempty ι' := nonempty_subtype.mpr h1
     have : iSup U' = iSup U := by
@@ -157,6 +162,10 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluing_nontrivial_types
       simp_all [ι']
     have eq := congrArg op this
     obtain ⟨s, hs1, hs2⟩ := h U' (fun i ↦ i.2) (fun i ↦ sf i) (fun a b ↦ com a b)
+    /-
+    `F.map (eqToHom eq)` is the equality (expressed as a map) between sections of `F` on `iSup U`
+    and sections of `F` on `iSup U'`. So this simply says `s` is the gluing.
+    -/
     refine ⟨F.map (eqToHom eq) s, fun j ↦ ?_, fun y hy ↦ ?_⟩
     · by_cases hj : (U j).carrier.Nonempty
       · rw [← ConcreteCategory.comp_apply, ← F.map_comp]
@@ -167,7 +176,10 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluing_nontrivial_types
         rw [← ConcreteCategory.comp_apply, ← F.map_comp]
         exact hy b.1
       simp [← hs2 _ hy', ← ConcreteCategory.comp_apply, ← F.map_comp]
-  · have : iSup U = ⊥ := by simp_all [not_nonempty_iff_eq_bot]
+  · /-
+    If the index type is empty, our gluing is just the unique section of `F` on `⊥`.
+    -/
+    have : iSup U = ⊥ := by simp_all [not_nonempty_iff_eq_bot]
     obtain ⟨t⟩ : Nonempty (ToType (F.obj (op (iSup U)))) := non this
     have : Subsingleton (ToType (F.obj (op (iSup U)))) := sub this
     refine ⟨t, fun j ↦ ?_, fun _ _ ↦ Subsingleton.elim _ _⟩
@@ -209,8 +221,8 @@ unique gluings with covers that are nowhere empty is equivalent to the usual one
 theorem isSheaf_iff_isSheafUniqueGluing_nontrivial [Nonempty (ToType ((F ⋙ forget C).obj (op ⊥)))]
     [Subsingleton (ToType ((F ⋙ forget C).obj (op ⊥)))] :
     F.IsSheaf ↔ ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X) (_ : ∀ i : ι, (U i).carrier.Nonempty)
-    (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
-    IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s :=
+      (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
+      IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s :=
   (isSheaf_iff_isSheaf_comp' (forget C) F).trans
     ((isSheaf_iff_isSheafUniqueGluing_types (F ⋙ forget C)).trans
       (isSheafUniqueGluing_iff_isSheafUniqueGluing_nontrivial_types (F ⋙ forget C)))
