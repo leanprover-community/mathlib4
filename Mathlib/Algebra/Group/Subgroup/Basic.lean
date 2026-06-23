@@ -729,6 +729,11 @@ lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_e
 
 end Ker
 
+@[to_additive (attr := simp) range_prodMap]
+lemma range_prodMap {G' N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G' →* N') :
+    (f.prodMap g).range = f.range.prod g.range :=
+  SetLike.coe_injective Set.range_prodMap
+
 end MonoidHom
 
 namespace Subgroup
