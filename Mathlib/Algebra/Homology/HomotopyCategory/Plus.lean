@@ -265,9 +265,8 @@ def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus 
       rintro ⟨X, hX⟩
       obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective X
       dsimp
-      simp only [HomotopyCategory.plus_quotient_obj_iff] at hX
-      obtain ⟨n, hX⟩ := hX
-      simp only [HomotopyCategory.plus_quotient_obj_iff]
+      simp only [HomotopyCategory.plus_quotient_obj_iff] at hX ⊢
+      obtain ⟨n, _⟩ := hX
       exact ⟨n, inferInstanceAs (CochainComplex.IsStrictlyGE
         ((F.mapHomologicalComplex _).obj K) n)⟩)
 
