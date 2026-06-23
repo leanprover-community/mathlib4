@@ -89,7 +89,7 @@ lemma koszulCocomplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
   rw [Homotopy.dNext_cochainComplex, Homotopy.prevD_zero_cochainComplex]
   simp only [↓reduceDIte, HomologicalComplex.smul_f_apply, HomologicalComplex.id_f, Nat.reduceAdd,
     koszulCocomplex.d_eq_aux, zero_add, add_zero]
-  exact congrArg ModuleCat.ofHom (contraction_wedge_zero_degree (R := R) x φ).symm
+  exact congrArg ModuleCat.ofHom (contraction_wedge_zero_degree x φ).symm
 
 lemma koszulComplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
     (((φ x) • 𝟙 (koszulComplex φ)).f 0) =
@@ -102,7 +102,7 @@ lemma koszulComplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
   rw [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex]
   simp only [↓reduceDIte, koszulComplex.d_eq_aux, zero_add, HomologicalComplex.smul_f_apply,
     HomologicalComplex.id_f, Nat.reduceAdd]
-  exact congrArg ModuleCat.ofHom (contraction_wedge_zero_degree (R := R) x φ).symm
+  exact congrArg ModuleCat.ofHom (contraction_wedge_zero_degree x φ).symm
 
 lemma koszulCocomplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) :
     (((φ x) • 𝟙 (koszulCocomplex R x)).f (i + 1)) =
@@ -116,7 +116,7 @@ lemma koszulCocomplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ
   let A := (koszulCocomplexAux R M x i).comp (koszulComplexAux φ i)
   let B := (koszulComplexAux φ (i + 1)).comp (koszulCocomplexAux R M x (i + 1))
   have hcartan : (φ x) • LinearMap.id = B + A := by
-    simpa [A, B, ← add_comm A B] using (contraction_wedge_cartan_formula (R := R) x φ i).symm
+    simpa [A, B, ← add_comm A B] using (contraction_wedge_cartan_formula x φ i).symm
   exact congrArg ModuleCat.ofHom hcartan
 
 lemma koszulComplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) :
@@ -133,6 +133,8 @@ lemma koszulComplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) 
     HomologicalComplex.id_f]
   exact congrArg ModuleCat.ofHom (contraction_wedge_cartan_formula x φ i).symm
 
+/-- Given `φ : M →ₗ[R] R`, `φ x` times identity is homotopic to zero for Koszul cocomplex
+defined by `x`. -/
 noncomputable def koszulCocomplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) :
     Homotopy ((φ x) • 𝟙 (koszulCocomplex R x))
       (0 : koszulCocomplex R x ⟶ koszulCocomplex R x) where
@@ -146,6 +148,7 @@ noncomputable def koszulCocomplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R
     | zero => simpa using! scalar_homotopy_comm_zero x φ
     | succ i => simpa using! koszulCocomplex.scalar_homotopy_comm x φ i
 
+/-- Given `x : M`, `φ x` times identity is homotopic to zero for Koszul complex defined by `φ`. -/
 noncomputable def koszulComplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) :
     Homotopy ((φ x) • 𝟙 (koszulComplex φ)) (0 : koszulComplex φ ⟶ koszulComplex φ) where
   hom := fun i j =>
@@ -155,8 +158,8 @@ noncomputable def koszulComplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) 
     simp [hij]
   comm i := by
     cases i with
-    | zero => simpa using! scalar_homotopy_comm_zero (R := R) x φ
-    | succ i => simpa using! scalar_homotopy_comm (R := R) x φ i
+    | zero => simpa using! scalar_homotopy_comm_zero x φ
+    | succ i => simpa using! scalar_homotopy_comm x φ i
 
 end homotopy
 
@@ -170,7 +173,7 @@ lemma koszulComplex.mem_annihilator_homology (i : ℕ) :
   have ofht : (HomologicalComplex.homologyMap (φ x • 𝟙 (koszulComplex φ)) i).hom z = 0 := by
     simp [(homotopySMulIdZero x φ).homologyMap_eq i]
   have : (ShortComplex.homologyMap (φ x • ((HomologicalComplex.shortComplexFunctor _ _ i).map
-      (𝟙 (koszulComplex φ))))).hom z = φ x • z := by simp
+    (𝟙 (koszulComplex φ))))).hom z = φ x • z := by simp
   exact this.symm.trans ofht
 
 lemma koszulComplex.range_le_annihilator_homology (i : ℕ) :
@@ -190,17 +193,15 @@ lemma koszulCocomplex.mem_annihilator_homology (i : ℕ) :
   have ofht : (HomologicalComplex.homologyMap (φ x • 𝟙 (koszulCocomplex R x)) i).hom z = 0 := by
     simp [(homotopySMulIdZero x φ).homologyMap_eq i]
   have : (ShortComplex.homologyMap (φ x • ((HomologicalComplex.shortComplexFunctor _ _ i).map
-      (𝟙 (koszulCocomplex R x))))).hom z = φ x • z := by simp
+    (𝟙 (koszulCocomplex R x))))).hom z = φ x • z := by simp
   exact this.symm.trans ofht
 
 lemma koszulCocomplex.ofList_ideal_le_mem_annihilator_homology (l : List R) (i : ℕ) :
     Ideal.ofList l ≤ Module.annihilator R ((koszulCocomplex.ofList R l).homology i) := by
   intro r hr
   have hr' : r ∈ Ideal.span (Set.range l.get) := by simpa only [Set.range_list_get l]
-  rcases (Ideal.mem_span_range_iff_exists_fun (R := R) (x := r) (v := l.get)).1 hr' with ⟨c, hc⟩
-  let φ : (Fin l.length → R) →ₗ[R] R := Fintype.linearCombination R c
-  have hφ : φ l.get = r := by
-    simp only [φ, ← hc, Fintype.linearCombination_apply, mul_comm (c _), smul_eq_mul]
-  exact hφ ▸ mem_annihilator_homology φ l.get i
+  rcases Ideal.mem_span_range_iff_exists_fun.mp hr' with ⟨c, hc⟩
+  convert mem_annihilator_homology (Fintype.linearCombination R c) l.get i
+  simp [← hc, Fintype.linearCombination_apply, mul_comm (c _)]
 
 end homology_annihilator
