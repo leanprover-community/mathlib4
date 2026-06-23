@@ -482,7 +482,7 @@ variable {R S G G' : Type*} [CommRing R] [CommRing S] [Algebra R S]
   (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime]
 
 theorem Ideal.map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H ≤ f.ker)
-    (hf : ∀ (g : G) (x : R), algebraMap R S (f g • x) = g • algebraMap R S x) :
+    (hf : ∀ g x, algebraMap R S (f g • x) = g • algebraMap R S x) :
     (q.inertia G).map f = p.inertia G' := by
   replace hf_ker (h : H) : f h = 1 := hf_ker h.2
   have : SMulCommClass H R S := ⟨fun h x y ↦ by simp [Algebra.smul_def, H.smul_def, ← hf, hf_ker]⟩
