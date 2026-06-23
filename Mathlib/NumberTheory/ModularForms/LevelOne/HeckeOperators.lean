@@ -10,7 +10,7 @@ public import Mathlib.NumberTheory.ModularForms.SlashActions
 /-!
 # Hecke operators on functions on the upper half-plane
 
-This file defines the (level one) Hecke operators `T n` acting on functions `f : ℍ → ℂ`, for a
+This file defines the Hecke operators `T n` acting on functions `f : ℍ → ℂ`, for a
 positive integer `n`, as a weighted sum of weight-`k` slash actions over a set of coset
 representatives of `SL(2, ℤ) ∖ Δ n`, where `Δ n` is the set of integer matrices of determinant `n`.
 
