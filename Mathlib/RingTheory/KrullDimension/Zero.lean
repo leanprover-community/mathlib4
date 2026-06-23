@@ -17,7 +17,7 @@ Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/
 
 -/
 
-@[expose] public section
+public section
 
 section CommSemiring
 
@@ -34,7 +34,8 @@ lemma Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime {I J : Ideal R} [I.IsP
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :
     minimalPrimes R = { I | I.IsPrime } := by
-  ext; simp [minimalPrimes, mem_minimalPrimes_iff]
+  ext
+  exact Ideal.mem_minimalPrimes_iff_isPrime
 
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :
@@ -55,6 +56,19 @@ lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :
   rw [Ring.KrullDimLE, Order.krullDimLE_iff, le_antisymm_iff, ← ringKrullDim, Nat.cast_zero,
     iff_self_and]
   exact fun _ ↦ ringKrullDim_nonneg_of_nontrivial
+
+/-- A quotient `R ⧸ I` has krull dimension at most zero if and only if all minimal primes over `I`
+are maximal. -/
+theorem Ideal.krullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal
+    {R : Type*} [CommRing R] {I : Ideal R} :
+    Ring.KrullDimLE 0 (R ⧸ I) ↔ ∀ J ∈ I.minimalPrimes, J.IsMaximal := by
+  rw [Ring.krullDimLE_zero_iff_forall_minimalPrimes_isMaximal, minimalPrimes_eq_comap,
+    Set.forall_mem_image]
+  refine forall₂_congr fun J hJ ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective
+  · have := map_eq_top_or_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective h
+    rw [map_comap_of_surjective (Quotient.mk I) Quotient.mk_surjective] at this
+    exact this.resolve_left hJ.1.1.ne_top
 
 section IsLocalRing
 

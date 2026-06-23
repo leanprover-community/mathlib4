@@ -16,7 +16,7 @@ ordered field. Reciprocally, such an ordered ring homomorphism exists when the c
 conditionally complete.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

@@ -207,7 +207,7 @@ theorem list_getElem? : Primrec₂ ((·[·]? : List α → ℕ → Option α)) :
       · dsimp [F]
         clear IH
         induction l <;> simp_all
-      · simpa using IH ..
+      · simpa using! IH ..
 
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
   simp only [List.getD_eq_getElem?_getD]
@@ -371,7 +371,7 @@ theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
       (Primrec₂.uncurry.mpr hm)
       (list_map (hl.comp fst snd) (Primrec₂.pair.comp₂ (fst.comp₂ .left) .right))
       (hg.comp₂ (fst.comp₂ .left) (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right))
-      (by simpa using Ord) (by simpa [Function.comp] using H)
+      (by simpa using! Ord) (by simpa [Function.comp] using! H)
 
 /-- `List.drop` is primitive recursive. -/
 theorem list_drop : Primrec₂ (List.drop : ℕ → List α → List α) :=
@@ -516,7 +516,7 @@ variable {α : Type*} [Primcodable α]
 open Primrec
 
 instance vector {n} : Primcodable (List.Vector α n) :=
-  subtype ((@Primrec.eq ℕ _).comp list_length (const _))
+  fast_instance% subtype ((@Primrec.eq ℕ _).comp list_length (const _))
 
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
@@ -529,11 +529,11 @@ variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem vector_toList {n} : Primrec (@List.Vector.toList α n) :=
-  subtype_val
+  subtype_val (hp := (@Primrec.eq ℕ _).comp list_length (const _))
 
 theorem vector_toList_iff {n} {f : α → List.Vector β n} :
     (Primrec fun a => (f a).toList) ↔ Primrec f :=
-  subtype_val_iff
+  subtype_val_iff (hp := (@Primrec.eq ℕ _).comp list_length (const _))
 
 theorem vector_cons {n} : Primrec₂ (@List.Vector.cons α n) :=
   vector_toList_iff.1 <| by simpa using list_cons.comp fst (vector_toList_iff.2 snd)

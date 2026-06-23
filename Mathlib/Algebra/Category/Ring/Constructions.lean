@@ -171,7 +171,7 @@ lemma closure_range_union_range_eq_top_of_isPushout
     (H : IsPushout f g a b) :
     Subring.closure (Set.range a ∪ Set.range b) = ⊤ := by
   algebraize [f.hom, g.hom]
-  let e := ((isPushout_tensorProduct R A B).isoIsPushout _ _ H).commRingCatIsoToRingEquiv
+  let e := ((isPushout_tensorProduct R A B).isoIsPushout A B H).commRingCatIsoToRingEquiv
   rw [← Subring.comap_map_eq_self_of_injective e.symm.injective (.closure _), RingHom.map_closure,
     ← top_le_iff, ← Subring.map_le_iff_le_comap, Set.image_union]
   simp only [AlgHom.toRingHom_eq_coe, ← Set.range_comp, ← RingHom.coe_comp]
@@ -200,6 +200,7 @@ theorem coproductCocone_inl :
 theorem coproductCocone_inr :
     (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]
@@ -278,6 +279,7 @@ variable (A B : CommRingCat.{u})
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
@@ -313,7 +315,7 @@ def piFan : Fan R :=
 The categorical product of rings is the Cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
-  lift s := ofHom <| Pi.ringHom fun i ↦ (s.π.1 ⟨i⟩).hom
+  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.1 ⟨i⟩).hom
   fac s i := by rfl
   uniq _ _ h := hom_ext <| DFunLike.ext _ _ fun x ↦ funext fun i ↦
     DFunLike.congr_fun (congrArg Hom.hom <| h ⟨i⟩) x
@@ -383,6 +385,7 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by

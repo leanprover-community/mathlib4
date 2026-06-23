@@ -219,9 +219,11 @@ lemma multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ≥0) (r : �
   s.prod_hom' (rpowMonoidHom r) _
 
 /-- `rpow` version of `Finset.prod_pow` for `ℝ≥0`. -/
-lemma finset_prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
+lemma finsetProd_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
     (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   multiset_prod_map_rpow _ _ _
+
+@[deprecated (since := "2026-04-08")] alias finset_prod_rpow := finsetProd_rpow
 
 -- note: these don't really belong here, but they're much easier to prove in terms of the above
 
@@ -251,10 +253,12 @@ theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → �
   simpa using Real.list_prod_map_rpow' l f hs r
 
 /-- `rpow` version of `Finset.prod_pow`. -/
-theorem _root_.Real.finset_prod_rpow
+theorem _root_.Real.finsetProd_rpow
     {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
     (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   Real.multiset_prod_map_rpow s.val f hs r
+
+@[deprecated (since := "2026-04-08")] alias _root_.Real.finset_prod_rpow := Real.finsetProd_rpow
 
 end Real
 
@@ -701,7 +705,7 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   rcases eq_or_ne z 0 with (rfl | hz); · simp
   replace hz := hz.lt_or_gt
   wlog hxy : x ≤ y
-  · convert this y x z hz (le_of_not_ge hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
+  · convert! this y x z hz (le_of_not_ge hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
   · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_gt]
   rcases eq_or_ne y 0 with (rfl | hy0)
@@ -1121,18 +1125,20 @@ open Lean Meta Qq
 the base is nonnegative and positive when the base is positive.
 This is the `NNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0) ^ (_ : ℝ)]
-meta def evalNNRealRpow : PositivityExt where eval {u α} _ _ e := do
+meta def evalNNRealRpow : PositivityExt where eval {u α} _ pα? e := do
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute
     pure (.positive q(NNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0), ~q($a ^ ($b : ℝ)) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
-        pure (.positive q(NNReal.rpow_pos $pa))
-    | _ => pure (.nonnegative q(zero_le $e))
+      pure (.positive q(NNReal.rpow_pos $pa))
+    | _ =>
+      pure (.nonnegative q(zero_le (a := $e)))
   | _, _, _ => throwError "not NNReal.rpow"
 
 private meta def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : ℝ≥0∞))) := do
@@ -1149,24 +1155,26 @@ private meta def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : 
 the base is nonnegative and positive when the base is positive.
 This is the `ENNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0∞) ^ (_ : ℝ)]
-meta def evalENNRealRpow : PositivityExt where eval {u α} _ _ e := do
+meta def evalENNRealRpow : PositivityExt where eval {u α} _ pα? e := do
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute
     pure (.positive q(ENNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0∞), ~q($a ^ ($b : ℝ)) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
-    let rb ← catchNone <| core q(inferInstance) q(inferInstance) b
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
+    let rb ← catchNone <| core q(inferInstance) (some q(inferInstance)) b
     match ra, rb with
     | .positive pa, .positive pb =>
-        pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
+      pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
     | .positive pa, .nonnegative pb =>
-        pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
+      pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
     | .positive pa, _ =>
-        let some ha ← isFiniteM? a | pure <| .nonnegative q(zero_le $e)
-        pure <| .positive q(ENNReal.rpow_pos $pa $ha)
-    | _, _ => pure <| .nonnegative q(zero_le $e)
+      let some ha ← isFiniteM? a | pure <| .nonnegative q(zero_le (a := $e))
+      pure <| .positive q(ENNReal.rpow_pos $pa $ha)
+    | _, _ =>
+      pure <| .nonnegative q(zero_le (a := $e))
   | _, _, _ => throwError "not ENNReal.rpow"
 
 end Mathlib.Meta.Positivity
@@ -1183,7 +1191,6 @@ theorem IsNat.nnreal_rpow_eq_nnreal_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a :
     a ^ b = a ^ n := by
   rw [h.1, NNReal.rpow_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsInt.nnreal_rpow_eq_inv_nnreal_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ≥0) :
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, NNReal.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]

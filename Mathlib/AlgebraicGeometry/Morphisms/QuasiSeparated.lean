@@ -31,7 +31,7 @@ and is stable under compositions and base-changes.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -52,9 +52,6 @@ class QuasiSeparated (f : X ⟶ Y) : Prop where
   quasiCompact_diagonal : QuasiCompact (pullback.diagonal f) := by infer_instance
 
 attribute [instance] QuasiSeparated.quasiCompact_diagonal
-
-@[deprecated (since := "2025-10-15")]
-alias QuasiSeparated.diagonalQuasiCompact := QuasiSeparated.quasiCompact_diagonal
 
 theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
@@ -82,9 +79,6 @@ theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
         apply hW.union
         apply H
 
-@[deprecated (since := "2025-10-15")]
-alias quasiSeparatedSpace_iff_affine := quasiSeparatedSpace_iff_forall_affineOpens
-
 theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X ⟶ Y) :
     AffineTargetMorphismProperty.diagonal (fun X _ _ _ ↦ CompactSpace X) f ↔
       QuasiSeparatedSpace X := by
@@ -94,8 +88,8 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X 
   · intro H U V
     let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
     have e := g.isOpenEmbedding.isEmbedding.toHomeomorph
-    rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
-    erw [Subtype.range_coe, Subtype.range_coe] at e
+    rw [IsOpenImmersion.range_pullback_to_base_of_left, Scheme.Opens.range_ι, Scheme.Opens.range_ι]
+      at e
     rw [isCompact_iff_compactSpace]
     exact @Homeomorph.compactSpace _ _ _ _ (H _ _) e
   · introv H h₁ h₂
@@ -174,6 +168,7 @@ theorem IsAffineOpen.isQuasiSeparated {U : X.Opens} (hU : IsAffineOpen U) :
 instance [QuasiSeparatedSpace X] : QuasiSeparated X.toSpecΓ :=
   HasAffineProperty.iff_of_isAffine.mpr ‹_›
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem Scheme.quasiSeparatedSpace_of_isOpenCover
     {I : Type*} (U : I → X.Opens) (hU : IsOpenCover U)
@@ -211,6 +206,7 @@ instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
   constructor
   simpa using QuasiCompact.isCompact_preimage (f := equalizer.ι f g) _ isOpen_univ isCompact_univ
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem QuasiSeparated.of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
@@ -235,9 +231,6 @@ theorem quasiSeparated_iff_quasiSeparatedSpace (f : X ⟶ Y) [QuasiSeparatedSpac
     QuasiSeparated f ↔ QuasiSeparatedSpace X :=
   ⟨fun _ ↦ quasiSeparatedSpace_of_quasiSeparated f, fun _ ↦ inferInstance⟩
 
-@[deprecated (since := "2025-10-15")]
-alias quasiSeparated_over_affine_iff := quasiSeparated_iff_quasiSeparatedSpace
-
 instance : MorphismProperty.HasOfPostcompProperty @QuasiSeparated ⊤ where
   of_postcomp f g _ _ := .of_comp f g
 
@@ -258,18 +251,15 @@ theorem quasiCompact_iff_compactSpace (f : X ⟶ Y) [QuasiSeparatedSpace Y] [Com
     QuasiCompact f ↔ CompactSpace X :=
   ⟨fun _ ↦ QuasiCompact.compactSpace_of_compactSpace f, fun _ ↦ inferInstance⟩
 
-@[deprecated (since := "2025-10-15")]
-alias quasiCompact_over_affine_iff := quasiCompact_iff_compactSpace
-
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
     (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
   have := (hU.isLocalization_basicOpen f).1.2
   obtain ⟨⟨y, _, n, rfl⟩, d⟩ := this x
   use n, y
-  simpa [mul_comm x] using d.symm
+  simpa [mul_comm x] using! d.symm
 
-theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : TopCat}
+theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : TopCat.{u}}
     (F : X.Presheaf CommRingCat) {U₁ U₂ U₃ U₄ U₅ U₆ U₇ : Opens X} {n₁ n₂ : ℕ}
     {y₁ : F.obj (op U₁)} {y₂ : F.obj (op U₂)} {f : F.obj (op <| U₁ ⊔ U₂)}
     {x : F.obj (op U₃)} (h₄₁ : U₄ ≤ U₁) (h₄₂ : U₄ ≤ U₂) (h₅₁ : U₅ ≤ U₁) (h₅₃ : U₅ ≤ U₃)
@@ -408,7 +398,7 @@ theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsComp
   · intro z
     obtain ⟨n, y, e⟩ := exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated X U hU hU' f z
     refine ⟨⟨y, _, n, rfl⟩, ?_⟩
-    simpa only [map_pow, Subtype.coe_mk, RingHom.algebraMap_toAlgebra, mul_comm z] using e.symm
+    simpa only [map_pow, Subtype.coe_mk, RingHom.algebraMap_toAlgebra, mul_comm z] using! e.symm
   · intro x y
     rw [← sub_eq_zero, ← map_sub, RingHom.algebraMap_toAlgebra]
     simp_rw [← @sub_eq_zero _ _ (_ * x) (_ * y), ← mul_sub]
@@ -416,7 +406,7 @@ theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsComp
     intro H
     obtain ⟨n, e⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU _ _ H
     refine ⟨⟨_, n, rfl⟩, ?_⟩
-    simpa [mul_comm z] using e
+    simpa [mul_comm z] using! e
 
 lemma exists_of_res_eq_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
     (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)

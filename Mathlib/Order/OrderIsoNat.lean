@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Relation embeddings from the naturals
@@ -45,7 +45,6 @@ theorem coe_natLT {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(
 
 /-- If `f` is a strictly `r`-decreasing sequence, then this returns `f` as an order embedding. -/
 def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) : ℕ → ℕ → Prop) ↪r r :=
-  haveI := IsStrictOrder.swap r
   RelEmbedding.swap (natLT f H)
 
 @[simp]
@@ -167,7 +166,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
-        convert hn2
+        convert! hn2
         lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
@@ -221,6 +220,15 @@ theorem wellFoundedGT_iff_monotone_chain_condition [PartialOrder α] :
 theorem WellFoundedGT.monotone_chain_condition [PartialOrder α] [h : WellFoundedGT α] (a : ℕ →o α) :
     ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition.1 h a
+
+/-- The **antitone chain** condition: an antitone sequence in a partially-ordered type with
+well-founded `<` is eventually constant.
+
+This is the dual of `WellFoundedGT.monotone_chain_condition`. It is provided for convenience,
+since it unbundles the antitone property from the order homomorphism. -/
+theorem WellFoundedLT.antitone_chain_condition [PartialOrder α] [WellFoundedLT α]
+    {f : ℕ → α} (hf : Antitone f) : ∃ n, ∀ m, n ≤ m → f n = f m :=
+  WellFoundedGT.monotone_chain_condition ⟨OrderDual.toDual ∘ f, hf⟩
 
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
 type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which `aₙ` reaches the

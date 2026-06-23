@@ -61,9 +61,9 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
 
 theorem coeff_bernoulli (n i : ℕ) :
     (bernoulli n).coeff i = if i ≤ n then (_root_.bernoulli (n - i) * choose n i) else 0 := by
-  simp only [bernoulli, finset_sum_coeff, coeff_monomial]
+  simp only [bernoulli, finsetSum_coeff, coeff_monomial]
   split_ifs with h
-  · convert sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
+  · convert! sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
   · exact Finset.sum_eq_zero <| by grind
 
 /-
@@ -80,16 +80,12 @@ theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
 
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
-  rw [bernoulli, eval_finset_sum, sum_range_succ]
-  have : ∑ x ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
-    apply sum_eq_zero fun x hx => _
-    intro x hx
-    simp [tsub_eq_zero_iff_le, mem_range.1 hx]
-  simp [this]
+  rw [← coeff_zero_eq_eval_zero, coeff_bernoulli, if_pos (Nat.zero_le n), Nat.sub_zero,
+    Nat.choose_zero_right, Nat.cast_one, mul_one]
 
 @[simp]
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
-  simp only [bernoulli, eval_finset_sum]
+  simp only [bernoulli, eval_finsetSum]
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
     (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_monomial, one_mul]
   by_cases h : n = 1
@@ -115,7 +111,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [range_add_one, sum_insert notMem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
-  refine sum_congr (by rfl) fun m _ => ?_
+  refine sum_congr rfl fun m _ => ?_
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_natCast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
@@ -147,15 +143,10 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
     map_add, range_one, mul_one]
-  apply sum_eq_zero fun x hx => _
-  have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by grind
+  refine sum_eq_zero ?_
   intro x hx
-  rw [sum_bernoulli]
-  have g : ite (n + 1 - x = 1) (1 : ℚ) 0 = 0 := by
-    simp only [ite_eq_right_iff, one_ne_zero]
-    intro h₁
-    exact (f x hx) h₁
-  rw [g, zero_smul]
+  have hx1 : n + 1 - x ≠ 1 := by grind
+  simp [_root_.sum_bernoulli, hx1]
 
 /-- Another version of `Polynomial.sum_bernoulli`. -/
 theorem bernoulli_eq_sub_sum (n : ℕ) :
@@ -169,7 +160,7 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     ((p + 1 : ℚ) * ∑ k ∈ range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval (n : ℚ) -
     _root_.bernoulli p.succ := by
-  rw [sum_range_pow, bernoulli_def, eval_finset_sum, ← sum_div, mul_div_cancel₀ _ _]
+  rw [sum_range_pow, bernoulli_def, eval_finsetSum, ← sum_div, mul_div_cancel₀ _ _]
   · simp_rw [eval_monomial]
     symm
     rw [← sum_flip _, sum_range_succ]

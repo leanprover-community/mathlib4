@@ -189,18 +189,20 @@ open Lean.Meta Qq Height
 
 /-- Extension for the `positivity` tactic: `Height.mulHeight₁` is always positive. -/
 @[positivity Height.mulHeight₁ _]
-meta def evalMulHeight₁ : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulHeight₁ : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(mulHeight₁_pos $a))
   | _, _, _ => throwError "not Height.mulHeight₁"
 
 /-- Extension for the `positivity` tactic: `Height.logHeight₁` is always nonnegative. -/
 @[positivity Height.logHeight₁ _]
-meta def evalLogHeight₁ : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogHeight₁ : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(zero_le_logHeight₁ $a))
   | _, _, _ => throwError "not Height.logHeight₁"
@@ -314,7 +316,7 @@ private lemma hasFiniteMulSupport_iSup_nonarchAbsVal {x : ι → K} (hx : x ≠ 
     (fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).HasFiniteMulSupport := by
   have : Nonempty {j // x j ≠ 0} := nonempty_subtype.mpr <| ne_iff.mp hx
   suffices (fun v : nonarchAbsVal ↦ ⨆ i : {j // x j ≠ 0}, v.val (x i)).HasFiniteMulSupport by
-    convert this with v
+    convert! this with v
     obtain ⟨i, hi⟩ : ∃ j, x j ≠ 0 := Function.ne_iff.mp hx
     have : Nonempty ι := .intro i
     refine le_antisymm (ciSup_le fun j ↦ ?_) (ciSup_le fun ⟨j, hj⟩ ↦ Finite.le_ciSup_of_le j le_rfl)
@@ -329,7 +331,7 @@ private lemma hasFiniteMulSupport_max_nonarchAbsVal (x : K) :
     (fun v : nonarchAbsVal ↦ v.val x ⊔ 1).HasFiniteMulSupport := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp [HasFiniteMulSupport]
-  fun_prop (disch := assumption)
+  fun_prop
 
 /-- The multiplicative height of a tuple does not change under scaling. -/
 lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
@@ -340,7 +342,7 @@ lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
   have hcx : c • x ≠ 0 := by simp [hc, hx]
   simp only [mulHeight_eq hx, mulHeight_eq hcx, Pi.smul_apply, smul_eq_mul, map_mul,
     ← mul_iSup_of_nonneg <| AbsoluteValue.nonneg .., Multiset.prod_map_mul]
-  rw [finprod_mul_distrib (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption)),
+  rw [finprod_mul_distrib (by fun_prop) (by fun_prop),
     mul_mul_mul_comm, product_formula hc, one_mul]
 
 lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
@@ -437,7 +439,7 @@ lemma mulHeight_eq_one_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι �
   obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
   have : Nonempty ι := .intro i
   rw [← mulHeight_smul_eq_mulHeight x (inv_ne_zero hi)]
-  convert mulHeight_one
+  convert! mulHeight_one
   ext1 j
   simpa [Subsingleton.elim j i] using inv_mul_cancel₀ hi
 
@@ -508,9 +510,10 @@ open Lean.Meta Qq Height
 
 /-- Extension for the `positivity` tactic: `Height.mulHeight` is always positive. -/
 @[positivity Height.mulHeight _]
-meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $a) =>
+    let some _ := pα? | pure .none
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
@@ -521,9 +524,10 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for the `positivity` tactic: `Height.logHeight` is always nonnegative. -/
 @[positivity Height.logHeight _]
-meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $a) =>
+    let some _ := pα? | pure .none
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
@@ -667,7 +671,7 @@ lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
     simp_rw [ne_iff, Pi.zero_def] at hx ⊢
     choose f hf using hx
     exact ⟨f, prod_ne_zero_iff.mpr fun a _ ↦ hf a⟩
-  simp_rw [map_prod, Real.iSup_prod_eq_prod_iSup_of_nonnegHomClass]
+  simp_rw [_root_.map_prod, Real.iSup_prod_eq_prod_iSup_of_nonnegHomClass]
   rw [Multiset.prod_map_prod,
     finprod_prod_comm _ _ fun b _ ↦ hasFiniteMulSupport_iSup_nonarchAbsVal (hx b),
     ← prod_mul_distrib]
@@ -840,7 +844,7 @@ lemma max_abv_sum_one_le_of_isNonarchimedean {v : AbsoluteValue R S} (hv : IsNon
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   refine sup_le ?_ <| s.one_le_prod fun _ _ ↦ le_max_right ..
-  grw [hv.apply_sum_le_sup_of_isNonarchimedean hs]
+  grw [hv.apply_sum_le_sup hs]
   exact sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi fun i ↦ v (x i)
 
 end Finset

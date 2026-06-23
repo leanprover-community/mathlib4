@@ -52,7 +52,7 @@ theorem ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔
 
 instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
-  coe_injective' _ _ := ComponentCompl.supp_inj.mp
+  coe_injective _ _ := ComponentCompl.supp_inj.mp
 
 instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
 
@@ -204,7 +204,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
   classical
     constructor
     · rintro Cinf L h
-      obtain ⟨v, ⟨vK, rfl⟩, vL⟩ := Set.Infinite.nonempty (Set.Infinite.diff Cinf L.finite_toSet)
+      obtain ⟨v, ⟨vK, rfl⟩, vL⟩ := Set.Infinite.nonempty (Set.Infinite.sdiff Cinf L.finite_toSet)
       exact ⟨componentComplMk _ vL, rfl⟩
     · rintro h Cfin
       obtain ⟨D, e⟩ := h (K ∪ Cfin.toFinset) Finset.subset_union_left
@@ -257,11 +257,13 @@ The functor assigning, to a finite set in `V`, the set of connected components i
 @[simps]
 def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := G.ComponentCompl K.unop
-  map f := ComponentCompl.hom (le_of_op_hom f)
-  map_id _ := funext fun C => C.hom_refl
-  map_comp {_ Y Z} h h' := funext fun C => by
-    convert C.hom_trans (le_of_op_hom h) (le_of_op_hom _)
-    exact h'
+  map f := ↾(ComponentCompl.hom (le_of_op_hom f))
+  map_id _ := by
+    ext
+    simp [ComponentCompl.hom_refl]
+  map_comp {_ Y Z} h h' := by
+    ext C
+    simp
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=

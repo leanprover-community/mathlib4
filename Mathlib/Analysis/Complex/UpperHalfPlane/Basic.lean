@@ -38,7 +38,7 @@ attribute [coe] UpperHalfPlane.coe
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
 /-- Define `I := √-1` as an element of the upper half plane. -/
-def I : ℍ := ⟨Complex.I, zero_lt_one⟩
+def I : ℍ := ⟨Complex.I, by simp⟩
 
 /-- Define the cube root of unity `ρ := (-1 + √-3) / 2` as an element of the upper half plane. -/
 def ρ : ℍ := ⟨⟨-1 / 2, Real.sqrt 3 / 2⟩, by positivity⟩
@@ -105,10 +105,10 @@ theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
 
 @[simp]
-lemma I_im : I.im = 1 := rfl
+lemma I_im : I.im = 1 := Complex.I_im
 
 @[simp]
-lemma I_re : I.re = 0 := rfl
+lemma I_re : I.re = 0 := Complex.I_re
 
 @[simp, norm_cast]
 lemma coe_I : I = Complex.I := rfl
@@ -148,18 +148,20 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
-meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(@UpperHalfPlane.im_pos $a))
   | _, _, _ => throwError "not UpperHalfPlane.im"
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
-meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
   | _, _, _ => throwError "not UpperHalfPlane.coe"

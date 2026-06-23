@@ -2,14 +2,14 @@
 Copyright (c) 2025 Hang Lu Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
-  Francesco Milizia, Valerio Proietti, Hang Lu Su, Lawrence Wu
+  Francesco Milizia, Valerio Proietti, Hang Lu Su, Lawrence Wu, Javier Gómez Zaragoza
 -/
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Schreier
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
-public import Mathlib.Algebra.Group.PUnit
 
 /-!
 # Finitely Presented Groups
@@ -22,7 +22,7 @@ This file defines finitely presented groups.
 * `IsFinitelyPresented`: defines when a group is finitely presented.
 
 ## Main results
-* `Subgroup.IsNormalClosureFG_map`: Being the normal closure of a finite set is preserved under
+* `Subgroup.IsNormalClosureFG.map`: Being the normal closure of a finite set is preserved under
   surjective homomorphism.
 * `IsFinitelyPresented.equiv`: finitely presented groups are closed under isomorphism.
 
@@ -34,42 +34,105 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
-/--
-`IsNormalClosureFG N` says that the subgroup `N` is the normal closure of a finitely-generated
-subgroup.
--/
+/-- `N.IsNormalClosureFG` says that the subgroup `N` is the normal closure of a finitely-generated
+subgroup. -/
+@[to_additive /-- `N.IsNormalClosureFG` says that the additive subgroup `N` is the normal closure
+of an additive finitely-generated subgroup. -/]
 def Subgroup.IsNormalClosureFG (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
 
 namespace Subgroup.IsNormalClosureFG
 
 /-- Being the normal closure of a finite set is invariant under surjective homomorphism. -/
-protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
+@[to_additive /-- Being the additive normal closure of a finite set is invariant under
+surjective homomorphism. -/]
+protected theorem map {N : Subgroup G} (hN : N.IsNormalClosureFG)
     {f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
+@[to_additive]
+theorem of_FG (N : Subgroup G) [N.Normal] [h : Group.FG N] : N.IsNormalClosureFG := by
+  obtain ⟨S, rfl, hS⟩ := N.fg_iff.mp ((Group.fg_iff_subgroup_fg N).mp h)
+  exact ⟨S, hS, le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure⟩
+
+open Function Set Subgroup in
+/-- The preimage of a finitely generated normal subgroup by a surjective homomorphism with
+a finitely generated kernel is finitely generated. -/
+@[to_additive /-- The preimage of a finitely generated normal subgroup by a surjective additive
+homomorphism with a finitely generated kernel is finitely generated. -/]
+protected theorem comap {N : Subgroup H} (hN : N.IsNormalClosureFG)
+    {f : G →* H} (hf : Surjective f) (hf' : f.ker.IsNormalClosureFG) :
+    (N.comap f).IsNormalClosureFG := by
+  obtain ⟨S, hS_fin, hS⟩ := hN
+  obtain ⟨T, hT_fin, hT⟩ := hf'
+  have : ∃ S', S'.Finite ∧ f '' S' = S :=
+    ⟨surjInv hf '' S, hS_fin.image _, by rw [← image_comp, comp_surjInv, image_id]⟩
+  clear hS_fin
+  obtain ⟨S, hS_fin, rfl⟩ := this
+  refine ⟨S ∪ T, hS_fin.union hT_fin, ?_⟩
+  rw [← hS, ← map_normalClosure S f hf, comap_map_eq, ← hT, normalClosure_union]
+
+/-- The trivial group is the normal closure of a finite set of relations. -/
+@[to_additive /-- The trivial additive group is the normal closure of a finite set of relations. -/]
+protected theorem bot : (⊥ : Subgroup G).IsNormalClosureFG := of_FG _
+
 end Subgroup.IsNormalClosureFG
+
+/-- An additive group is finitely presented if it has a finite generating set such that the kernel
+of the induced map from the free additive group on that set is the normal closure
+of finitely many relations. -/
+class AddGroup.IsFinitelyPresented (G : Type*) [AddGroup G] : Prop where
+  out : ∃ (n : ℕ) (φ : FreeAddGroup (Fin n) →+ G), Function.Surjective φ ∧ φ.ker.IsNormalClosureFG
 
 /-- A group is finitely presented if it has a finite generating set such that the kernel
 of the induced map from the free group on that set is the normal closure of finitely many
 relations. -/
-@[mk_iff]
+@[mk_iff, to_additive existing]
 class Group.IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (φ : FreeGroup (Fin n) →* G), Function.Surjective φ ∧ φ.ker.IsNormalClosureFG
 
 namespace Group.IsFinitelyPresented
 
 /-- Finitely presented groups are closed under isomorphism. -/
+@[to_additive /-- Finitely presented additive groups are closed under additive isomorphism. -/
+]
 theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
   obtain ⟨n, φ, hφsurj, hNC⟩ := h
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
-  rwa [MonoidHom.ker_mulEquiv_comp φ iso]
+  rwa [φ.ker_mulEquiv_comp iso]
+
+theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
+    (hf_surj : Function.Surjective f) (hf_ker : f.ker.IsNormalClosureFG) :
+    IsFinitelyPresented H := by
+  obtain ⟨n, φ, hφ_surj, hφ_ker⟩ := hG.out
+  refine ⟨n, f.comp φ, hf_surj.comp hφ_surj, ?_⟩
+  rw [← MonoidHom.comap_ker]
+  exact hf_ker.comap hφ_surj hφ_ker
+
+/-- A free group with a finite number of generators is finitely presented. -/
+@[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
+]
+instance [Finite α] : IsFinitelyPresented (FreeGroup α) := by
+  have ⟨n, _, f, hf_surj, hf_inj⟩ := Finite.exists_equiv_fin α
+  refine ⟨n, FreeGroup.map f, FreeGroup.map_surjective hf_surj.surjective, ?_⟩
+  · rw [(FreeGroup.map f).ker_eq_bot (FreeGroup.map_injective hf_inj.injective)]
+    exact .bot
+
+/-- `Multiplicative ℤ` is finitely presented. -/
+instance : IsFinitelyPresented (Multiplicative ℤ) :=
+  equiv (FreeGroup.mulEquivIntOfUnique : FreeGroup Unit ≃* Multiplicative ℤ) inferInstance
+
+/-- ℤ is finitely presented -/
+instance : AddGroup.IsFinitelyPresented ℤ :=
+  AddGroup.IsFinitelyPresented.equiv
+    (FreeAddGroup.addEquivIntOfUnique : FreeAddGroup Unit ≃+ ℤ) inferInstance
+
+variable (G)
+
+/-- Any finite group is finitely presented. -/
+instance [Finite G] : IsFinitelyPresented G :=
+  of_surjective FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 
 end Group.IsFinitelyPresented
-
-open Group
-
-instance : IsFinitelyPresented Unit :=
-  sorry

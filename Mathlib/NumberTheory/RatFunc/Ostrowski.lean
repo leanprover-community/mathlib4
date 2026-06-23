@@ -32,7 +32,7 @@ namespace RatFunc
 
 section Infinity
 
-open FunctionField Polynomial Valuation
+open Polynomial Valuation
 
 lemma valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X {f : RatFunc K}
     [v.IsTrivialOn K] (hlt : 1 < v X) (hf : f ≠ 0) : v f = v RatFunc.X ^ f.intDegree := by
@@ -58,7 +58,7 @@ lemma valuation_isEquiv_inftyValuation_of_one_lt_valuation_X [v.IsTrivialOn K] (
 
 end Infinity
 
-open IsDedekindDomain HeightOneSpectrum Set Valuation FunctionField Polynomial
+open IsDedekindDomain HeightOneSpectrum Set Valuation Polynomial
 
 lemma setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty [v.IsNontrivial] [v.IsTrivialOn K]
     (hle : v RatFunc.X ≤ 1) : {p : K[X] | v p < 1 ∧ p ≠ 0}.Nonempty := by
@@ -119,7 +119,7 @@ lemma uniformizingPolynomial_ne_zero : πᵥ ≠ 0 := by
   simp_all [uniformizingPolynomial]
 
 lemma valuation_uniformizingPolynomial_lt_one : v πᵥ < 1 := by
-  simpa using (degree_lt_wf.min_mem _
+  simpa using! (degree_lt_wf.min_mem _
     (setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty hle)).1
 
 open Ideal in
@@ -181,7 +181,6 @@ lemma exists_zpow_uniformizingPolynomial {f : RatFunc K} (hf : f ≠ 0) :
       valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle
         (p := p) (by aesop)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
     v.IsUniformizer πᵥ := by
   have h0 : v πᵥ ≠ 0 := by simpa using uniformizingPolynomial_ne_zero hle
@@ -194,15 +193,14 @@ lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
       map_eq_zero, Subgroup.mem_zpowers_iff]
     refine ⟨fun ⟨k, hk⟩ ↦ ?_, fun ⟨a, ha, b, hab⟩ ↦ ?_⟩
     · use 1, one_ne_zero, πᵥ ^ k
-      simp only [← Units.val_inj, Units.val_zpow_eq_zpow_val, h0.isUnit.unit_spec] at hk
+      simp only [← Units.val_inj, Units.val_zpow_eq_zpow_val] at hk
       simp [← hk]
     · obtain ⟨ka, hka⟩ := exists_zpow_uniformizingPolynomial hle ha
       obtain ⟨kb, hkb⟩ := exists_zpow_uniformizingPolynomial hle (f := b) (by aesop)
-      rw [hka, hkb] at hab
+      rw [MonoidWithZeroHom.coe_ofClass, hka, hkb] at hab
       use kb - ka
       have : v ↑πᵥ ^ ka ≠ 0 := zpow_ne_zero _ h0
-      simp only [zpow_sub, ← Units.val_inj, Units.val_mul, Units.val_zpow_eq_zpow_val,
-        h0.isUnit.unit_spec, Units.val_inv_eq_inv_val, ← hab, field]
+      simp [zpow_sub, ← Units.val_inj, ← coePolynomial_eq_algebraMap, field, ← hab]
 
 lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDiscrete v] :
     v.IsEquiv ((Pᵥ).valuation (RatFunc K)) := by
@@ -257,7 +255,7 @@ lemma valuation_isEquiv_adic_of_valuation_X_le_one (hle : v X ≤ 1) :
 A discrete valuation of rank 1 that is trivial on `K` is equivalent either to the valuation
 at infinity or to the `p`-adic valuation for a unique maximal ideal `p` of `K[X]`. -/
 theorem valuation_isEquiv_infty_or_adic [DecidableEq (RatFunc K)] :
-    Xor' (v.IsEquiv (FunctionField.inftyValuation K))
+    Xor (v.IsEquiv (RatFunc.inftyValuation K))
       (∃! (u : HeightOneSpectrum K[X]), v.IsEquiv (u.valuation _)) := by
   rcases lt_or_ge 1 (v X) with hlt | hge
   /- Infinity case -/
@@ -272,7 +270,7 @@ theorem valuation_isEquiv_infty_or_adic [DecidableEq (RatFunc K)] :
       fun hv ↦ absurd (hw.symm.trans hv) (adicValuation_not_isEquiv_infty_valuation pw)⟩
 
 lemma valuation_isEquiv_adic_of_not_isEquiv_infty [DecidableEq (RatFunc K)]
-    (hni : ¬ v.IsEquiv (FunctionField.inftyValuation K)) :
+    (hni : ¬ v.IsEquiv (RatFunc.inftyValuation K)) :
     ∃! (u : HeightOneSpectrum K[X]), v.IsEquiv (u.valuation _) :=
   valuation_isEquiv_infty_or_adic.or.resolve_left hni
 
