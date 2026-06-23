@@ -74,7 +74,6 @@ variable
 open scoped RealInnerProductSpace
 
 -- move this, also perhaps generalize to general Riemannian vector bundles,
--- and write a variant for `CMDiffAt n`
 lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
@@ -82,6 +81,14 @@ lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
   have := VectorBundle.completeSpace ℝ E (TangentSpace I (M := M))
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
   exact (injective_eval_mdifferentiableAt_vectorField I ℝ x).comp Φ.injective
+
+lemma injective_inner_contMDiffAt_vectorField {n : ℕ∞ω} [CompleteSpace E] (x : M) :
+    Function.Injective
+      (fun X₀ : TangentSpace I x ↦
+        fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
+  have := VectorBundle.completeSpace ℝ E (TangentSpace I (M := M))
+  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
+  exact (injective_eval_contMDiffAt_vectorField I ℝ x).comp Φ.injective
 
 -- Let `cov` and `cov'` be covariant derivatives on `TM`.
 variable (cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _))

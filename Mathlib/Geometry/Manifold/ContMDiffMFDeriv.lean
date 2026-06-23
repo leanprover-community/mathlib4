@@ -534,3 +534,13 @@ lemma injective_eval_mdifferentiableAt_vectorField [IsManifold I 1 M]
       (fun A : TangentSpace% x →L[𝕜] V ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
   VectorBundle.injective_eval_mdifferentiableAt_sec ..
+
+variable (I) in
+/-- A version of `VectorField.injective_eval_contMDiffAt_sec`
+specialized to vector fields on a `C¹` manifold `M` -/
+lemma injective_eval_contMDiffAt_vectorField [IsManifold I 1 M]
+    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    Function.Injective
+      (fun A : TangentSpace% x →L[𝕜] V ↦
+        fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) :=
+  VectorBundle.injective_eval_contMDiffAt_sec ..
