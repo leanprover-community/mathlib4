@@ -777,8 +777,7 @@ private lemma hzero (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s :
       - ∫ (t : ℝ) in (x₁ + y * I).re..(x₂ + m * I).re, f (t + (x₂ + m * I).im * I))
       + I • ∫ (t : ℝ) in (x₁ + y * I).im..(x₂ + m * I).im, f ((x₂ + m * I).re + t * I))
       - I • ∫ (t : ℝ) in (x₁ + y * I).im..(x₂ + m * I).im, f ((x₁ + y * I).re + t * I) := by
-      simp only [re_of_real_add_real_mul_I x₁ y, re_of_real_add_real_mul_I x₂ m,
-                 im_of_real_add_real_mul_I x₁ y, im_of_real_add_real_mul_I x₂ m]
+      simp
   _ = 0 := by
       refine Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable
         f (x₁ + y * I) (x₂ + m * I) s hs ?_ ?_ <;>
