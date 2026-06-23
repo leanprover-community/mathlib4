@@ -110,11 +110,37 @@ end Trivial
 section ContMDiff
 
 variable
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace ℝ EM]
-  {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners ℝ EM HM}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace HM M]
-  [h : IsContMDiffRiemannianBundle IB n F E]
-  {b : M → B} {v w : ∀ x, E (b x)} {s : Set M} {x : M}
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
+  {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
+  [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+  [IsContMDiffRiemannianBundle IB n F E]
+  {v w : ∀ x, E x} {s : Set B} {x : B}
+
+lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace F] (x : B) :
+    Function.Injective
+      (fun X₀ : E x ↦
+        fun (Z : Π x, E x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
+  have := VectorBundle.completeSpace ℝ F E
+  --set Φ := InnerProductSpace.toDual ℝ (E x)
+  exact (injective_eval_mdifferentiableAt_vectorField I ℝ x).comp Φ.injective
+
+#exit
+
+lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
+    Function.Injective
+      (fun X₀ : TangentSpace I x ↦
+        fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
+  have := VectorBundle.completeSpace ℝ E (TangentSpace I (M := M))
+  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
+  exact (injective_eval_mdifferentiableAt_vectorField I ℝ x).comp Φ.injective
+
+
+
+#exit
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
