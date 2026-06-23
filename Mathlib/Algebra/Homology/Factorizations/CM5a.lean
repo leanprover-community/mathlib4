@@ -656,7 +656,7 @@ open ZeroObject
 
 variable (K)
 
-public lemma exists_injective_resolution' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia)
+public lemma exists_mono_quasiIso_injective (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia)
     [K.IsStrictlyGE n₁] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi : Mono i) (_hi' : QuasiIso i)
       (_ : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n₀ := by
@@ -665,10 +665,10 @@ public lemma exists_injective_resolution' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁
   exact ⟨L, i, hi, hi', (degreewiseEpiWithInjectiveKernel_iff_of_isZero p
     (Limits.isZero_zero _)).1 hp, hL⟩
 
-public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
+public lemma exists_quasiIso_injective (n : ℤ) [K.IsStrictlyGE n] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
       (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
-  /- The proof proceeds by first applying `exists_injective_resolution'` in order to
+  /- The proof proceeds by first applying `exists_mono_quasiIso_injective` in order to
   obtain a monomorphism `K ⟶ L` that is also a quasi-isomorphism
   with `L` consisting of injective objects and `L` lying in degrees `≥ n - 1`.
   Then, as it is quasi-isomorphic to `K`, the cochain complex `L` is cohomologically
@@ -676,7 +676,7 @@ public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
   In order to conclude, one needs to show that `(L.truncGE n).X n` is injective,
   i.e. that `L.opcycles n` is injective. -/
   have : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
-  obtain ⟨L, i, _, _, hL, _⟩ := exists_injective_resolution' K (n - 1) n (by simp)
+  obtain ⟨L, i, _, _, hL, _⟩ := exists_mono_quasiIso_injective K (n - 1) n (by simp)
   have : L.IsGE n := by
     have hK : K.IsGE n := inferInstance
     rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
