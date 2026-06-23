@@ -244,7 +244,7 @@ instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
     [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] : (pushout f).Faithful := by
   have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by
     rw [mapPushoutAdj_unit_app]
-    apply @mono_homMk _ _ _ _ _ _ ?_ _
+    apply @mono_homMk _ _ _ _ _ _ ?_
     simp only [Functor.id_obj, Functor.comp_obj, pushout_obj, map_obj_right, mk_right]
     infer_instance
   exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
