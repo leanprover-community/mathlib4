@@ -320,14 +320,15 @@ lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
 /--
 This lemma proves that the composition of a local homeomorphism `f : X → Y` with its
 chosen local inverse `IsLocalHomeomorph.localInverseAt` is the identity.
-We have to use `Set.EqOn` here because `localInverseAt` uses choice, which
-means that we can't prove anything about its source.
 -/
 lemma trans_localInverseAt (hf : IsLocalHomeomorph f) (m : X) :
-    Set.EqOn ((hf.localInverseAt m) ∘ f) id (hf.localInverseAt m).target := by
-  intro x hx
-  rw [Function.comp_apply, ← congrFun (hf.localInverseAt_symm m) x, id_eq,
-    OpenPartialHomeomorph.right_inv _ hx]
+    Set.InvOn (hf.localInverseAt m) f (hf.localInverseAt m).target (hf.localInverseAt m).source := by
+  constructor
+  · intro x hx
+    rw [← congrFun (hf.localInverseAt_symm m) x, OpenPartialHomeomorph.right_inv _ hx]
+  · intro x hx
+    exact apply_localInverseAt_of_mem hf hx
+
 
 end IsLocalHomeomorph
 
