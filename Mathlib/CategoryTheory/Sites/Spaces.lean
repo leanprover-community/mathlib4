@@ -102,12 +102,10 @@ lemma coversTop_iff {ι : Type*} (U : ι → Opens T) :
   dsimp [Opens.grothendieckTopology]
   simp only [IsOpenCover, eq_top_iff, SetLike.le_def, exists_and_right, Opens.mem_top,
     Opens.mem_iSup, forall_const]
-  refine ⟨?_, ?_⟩
-  · intro h x
-    obtain ⟨V, ⟨u, ⟨i, ⟨hi⟩⟩⟩, hx⟩ := h x trivial
+  refine ⟨fun h x ↦ ?_, fun hU x hx ↦ ?_⟩
+  · obtain ⟨V, ⟨u, ⟨i, ⟨hi⟩⟩⟩, hx⟩ := h x trivial
     use i, leOfHom hi hx
-  · intro hU x hx
-    obtain ⟨i, hi⟩ := hU (x := x)
+  · obtain ⟨i, hi⟩ := hU (x := x)
     exact ⟨U i, ⟨homOfLE le_top, ⟨i, ⟨𝟙 _⟩⟩⟩, hi⟩
 
 end Opens
