@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Fintype.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
@@ -70,6 +70,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/
+@[wikidata Q438814]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 

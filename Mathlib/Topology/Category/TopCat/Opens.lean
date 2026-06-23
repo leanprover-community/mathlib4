@@ -50,7 +50,7 @@ the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
 
 instance opensHom.instFunLike : FunLike (U ⟶ V) U V where
   coe f := Set.inclusion f.le
-  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
+  coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
 lemma apply_def (f : U ⟶ V) (x : U) : f x = ⟨x, f.le x.2⟩ := rfl
 

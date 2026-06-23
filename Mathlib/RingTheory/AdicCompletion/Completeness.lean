@@ -102,8 +102,8 @@ def ofValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
   val i := ofValEqZeroAux I (Eq.refl (i + n)) hxn
   property {i j} h := by
     obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
-    rw [← (powSMulQuotInclusion_injective I (by rfl) ⊤).eq_iff, ofValEqZeroAux_prop,
-      ← LinearMap.comp_apply, ← factorPow_comp_powSMulQuotInclusion I (by rfl)
+    rw [← (powSMulQuotInclusion_injective I rfl ⊤).eq_iff, ofValEqZeroAux_prop,
+      ← LinearMap.comp_apply, ← factorPow_comp_powSMulQuotInclusion I rfl
       (show i + k + n = k + (i + n) by ring), LinearMap.comp_apply, ofValEqZeroAux_prop]
     exact x.prop (by lia)
 
@@ -112,7 +112,7 @@ theorem ofPowSMul_ofValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n 
     ofPowSMul I M n (ofValEqZero I hxn) = x := by
   ext i; by_cases! h : n ≤ i
   · obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le' h
-    rw [ofPowSMul_val_apply _ (by rfl), ofValEqZero, ofValEqZeroAux_prop]
+    rw [ofPowSMul_val_apply _ rfl, ofValEqZero, ofValEqZeroAux_prop]
   rw [ofPowSMul_val_apply_eq_zero _ h.le, ← x.prop h.le, hxn, _root_.map_zero]
 
 theorem restrictScalars_range_ofPowSMul_eq_ker_eval {n : ℕ} :
@@ -193,6 +193,17 @@ theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
     rw [SModEq.sub_mem, pow_smul_top_eq_ker_eval h]
     simp [L]
 
+lemma ker_evalOneₐ_eq_map (fg : I.FG) :
+    RingHom.ker (evalOneₐ I).toRingHom = I.map (algebraMap R (AdicCompletion I R)) := by
+  ext x
+  trans x ∈ (AdicCompletion.eval I R 1).ker
+  · have eq : I ^ 1 * ⊤ = I := by simp
+    have : Function.Injective (Ideal.Quotient.factor ((le_of_eq eq))) := by
+      simpa [RingHom.injective_iff_ker_eq_bot, Ideal.Quotient.factor_ker]
+        using Ideal.map_mk_eq_bot_of_le (le_of_eq eq.symm)
+    simpa [← factorₐ_evalₐ_one, ← factor_eval_eq_evalₐ] using map_eq_zero_iff _ this
+  · simp [← pow_smul_top_eq_ker_eval fg]
+
 end AdicCompletion
 
 namespace MvPowerSeries
@@ -200,7 +211,7 @@ namespace MvPowerSeries
 instance {σ : Type*} [Finite σ] :
     IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) := by
   have : Ideal.map (toAdicCompletionAlgEquiv σ R).toRingEquiv (Ideal.span (Set.range X)) =
-    (MvPolynomial.idealOfVars σ R).map (algebraMap ..):= by
+    (MvPolynomial.idealOfVars σ R).map (algebraMap ..) := by
     simp_rw [Ideal.map_span, ← Set.range_comp]
     congr 2; ext1
     simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]
