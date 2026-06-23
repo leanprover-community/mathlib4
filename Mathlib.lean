@@ -1604,6 +1604,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesColi
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonsingularColimit
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Path
 public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
