@@ -53,7 +53,7 @@ variable (N N' : LieSubmodule R L M)
 
 instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
-  coe_injective' N O h := by cases N; cases O; congr; exact SetLike.coe_injective' h
+  coe_injective N O h := by cases N; cases O; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
 
