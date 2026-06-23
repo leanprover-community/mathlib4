@@ -20,9 +20,6 @@ One may expect this notion to come from sheaves on a site of compact subset of a
 but there is no coresponding Grothendieck topology on compact subsets, in particular
 because the `nonempty_isColimit_coconeOfCompacts` condition can't be expressed as a
 limit condition.
-
-
-
 -/
 
 @[expose] public section
