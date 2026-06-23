@@ -3,8 +3,6 @@ Copyright (c) 2026 Michael Brown. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Brown
 -/
-module Mathlib.NumberTheory.BombieriVinogradov
-
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Defs
 import Mathlib.NumberTheory.LSeries.PrimesInAP
