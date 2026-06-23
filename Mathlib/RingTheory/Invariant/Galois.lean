@@ -9,33 +9,12 @@ public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
-# Invariant Extensions of Rings
+# Invariant Extensions of Rings and Galois Theory
 
-Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a predicate
-`Algebra.IsInvariant A B G` which states that every fixed point of `B` lies in the image of `A`.
+Given an extension of rings `B/A` and an action of `G` on `B`, the predicate
+`Algebra.IsInvariant A B G` states that every fixed point of `B` lies in the image of `A`.
 
-The main application is in algebraic number theory, where `G := Gal(L/K)` is the Galois group
-of some finite Galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
-integers. This main result in this file implies the existence of Frobenius elements in this setting.
-See `Mathlib/RingTheory/Frobenius.lean`.
-
-## Main statements
-
-Let `G` be a finite group acting on a commutative ring `B` satisfying `Algebra.IsInvariant A B G`.
-
-* `Algebra.IsInvariant.isIntegral`: `B/A` is an integral extension.
-* `Algebra.IsInvariant.exists_smul_of_under_eq`: `G` acts transitivity on the prime ideals of `B`
-  lying above a given prime ideal of `A`.
-
-If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
-
-* `IsFractionRing.stabilizerHom_surjective`:
-  The stabilizer subgroup of `Q` surjects onto `Aut(Frac(B/Q)/Frac(A/P))`.
-* `Ideal.Quotient.stabilizerHom_surjective`:
-  The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`.
-* `Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under`:
-  If `k` is a domain containing `B/Q`, then any `A/P`-algebra automorphism of `k` restricts to
-  an automorphism of `B/Q`.
+This file relates this predicate `Algebra.IsInvariant` to Galois theory.
 -/
 
 @[expose] public section
@@ -94,8 +73,6 @@ section normal
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Finite G] [Group G] [MulSemiringAction G B] [Algebra.IsInvariant A B G]
   (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
-  [CommRing k] [Algebra (A ⧸ P) k] [Algebra (B ⧸ Q) k] [IsScalarTower (A ⧸ P) (B ⧸ Q) k]
-  [IsDomain k] [FaithfulSMul (B ⧸ Q) k]
 
 namespace Ideal.IsFractionRing
 
