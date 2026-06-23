@@ -27,19 +27,19 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-section
-
-variable (C)
-
+variable (C) in
 /-- A category is called balanced if any morphism that is both monic and epic is an isomorphism. -/
 class Balanced : Prop where
   isIso_of_mono_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Mono f] [Epi f], IsIso f
 
-end
+attribute [to_dual self (reorder := X Y, 7 8)] Balanced.isIso_of_mono_of_epi
+attribute [to_dual self (reorder := isIso_of_mono_of_epi (X Y, 4 5))] Balanced.mk
 
+@[to_dual self (reorder := X Y, 7 8)]
 theorem isIso_of_mono_of_epi [Balanced C] {X Y : C} (f : X ⟶ Y) [Mono f] [Epi f] : IsIso f :=
   Balanced.isIso_of_mono_of_epi _
 
+@[to_dual]
 theorem isIso_iff_mono_and_epi [Balanced C] {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Mono f ∧ Epi f :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => isIso_of_mono_of_epi _⟩
 
