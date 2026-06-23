@@ -27,6 +27,8 @@ turning `V` into a complex vector space whose underlying real vector space is th
 
 -/
 
+@[expose] public section
+
 open scoped Complex
 
 variable (V : Type*) [AddCommGroup V] [Module ℝ V]
@@ -46,8 +48,6 @@ variable {V}
 
 instance : CoeFun (ComplexStructure V) (fun _ => V → V) where
   coe J := J.toEnd
-
-@[simp] lemma toEnd_apply (J : ComplexStructure V) (v : V) : J.toEnd v = J v := rfl
 
 theorem apply_apply (J : ComplexStructure V) (v : V) : J (J v) = -v := by
   have : (J.toEnd * J.toEnd) v = (-1 : Module.End ℝ V) v := by rw [J.toEnd_mul_self]
@@ -76,17 +76,17 @@ def equivAlgHom : ComplexStructure V ≃ (ℂ →ₐ[ℝ] Module.End ℝ V) wher
 /-- The complex module structure on `V` induced by a complex structure `J`: multiplication by
 `Complex.I` acts as `J`. This is a `def` rather than an instance to avoid conflict with any
 preexisting complex module on `V`. -/
-def module (J : ComplexStructure V) : Module ℂ V :=
+@[reducible] def module (J : ComplexStructure V) : Module ℂ V :=
   Module.compHom V J.toAlgHom.toRingHom
 
 theorem I_smul (J : ComplexStructure V) (v : V) :
     haveI := J.module; (Complex.I : ℂ) • v = J v := by
-  show J.toAlgHom Complex.I v = J v
+  change J.toAlgHom Complex.I v = J v
   simp
 
 theorem ofReal_smul (J : ComplexStructure V) (r : ℝ) (v : V) :
     haveI := J.module; ((r : ℂ)) • v = r • v := by
-  show J.toAlgHom r v = r • v
+  change J.toAlgHom r v = r • v
   simp [toAlgHom]
 
 end ComplexStructure

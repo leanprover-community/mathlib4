@@ -4972,6 +4972,7 @@ public import Mathlib.LinearAlgebra.Complex.Determinant
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.Complex.Orientation
+public import Mathlib.LinearAlgebra.Complex.Structure
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.ConvexSpace
 public import Mathlib.LinearAlgebra.ConvexSpace.AffineSpace
