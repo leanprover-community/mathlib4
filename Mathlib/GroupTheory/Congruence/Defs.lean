@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.PPow.Basic
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Tactic.FastInstance
@@ -564,6 +565,18 @@ end MulOneClass
 
 section Monoids
 
+/-- Multiplicative congruence relations preserve positive natural powers. -/
+@[to_additive /-- Additive congruence relations preserve positive natural scaling. -/]
+protected theorem ppow {M : Type*} [Semigroup M] (c : Con M) (n : ℕ+) {w x} (h : c w x) :
+    c (w ^ n) (x ^ n) := by
+  induction n
+  · simpa
+  · simpa [ppow_succ] using c.mul ‹_› h
+
+@[to_additive]
+instance {M : Type*} [Semigroup M] (c : Con M) : Pow c.Quotient ℕ+ where
+  pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.ppow n) x
+
 /-- Multiplicative congruence relations preserve natural powers. -/
 @[to_additive /-- Additive congruence relations preserve natural scaling. -/]
 protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
@@ -579,7 +592,7 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 @[to_additive /-- The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`. -/]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
-  Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
+  Function.Surjective.semigroup _ Quotient.mk''_surjective (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The quotient of a commutative magma by a congruence relation is a commutative magma. -/
 @[to_additive /-- The quotient of an `AddCommMagma` by an additive congruence relation is
@@ -591,20 +604,21 @@ instance commMagma {M : Type*} [CommMagma M] (c : Con M) : CommMagma c.Quotient 
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`. -/]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
-  Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl
+  Function.Surjective.commSemigroup _ Quotient.mk''_surjective (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`. -/]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := fast_instance%
-  Function.Surjective.monoid _ Quotient.mk''_surjective rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Surjective.monoid _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 /-- The quotient of a `CommMonoid` by a congruence relation is a `CommMonoid`. -/
 @[to_additive /-- The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`. -/]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient := fast_instance%
   fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
 Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
@@ -676,14 +690,15 @@ instance instZPow : Pow c.Quotient ℤ :=
 an `AddGroup`. -/]
 instance group : Group c.Quotient := fast_instance%
   Function.Surjective.group Quotient.mk'' Quotient.mk''_surjective
-    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      fun _ _ => rfl
 
 /-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
 @[to_additive /-- The quotient of an `AddCommGroup` by an additive congruence
 relation is an `AddCommGroup`. -/]
 instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient := fast_instance%
   Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
-      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 end Groups
 
