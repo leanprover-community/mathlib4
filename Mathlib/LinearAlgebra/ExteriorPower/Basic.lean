@@ -300,7 +300,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
 
 theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
     (Submodule.subtype _) ∘ₗ (map n f) =
-    (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
+      (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
   linearMap_ext <| AlternatingMap.ext fun m ↦ (by simp)
 
 @[simp]
