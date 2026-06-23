@@ -47,9 +47,9 @@ namespace IsCyclotomicExtension.Rat
 open Ideal NumberField RingOfIntegers
 
 variable (n m p k : ℕ) [hp : Fact (Nat.Prime p)] (K : Type*) [Field K] [NumberField K]
-  (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver (Ideal.span {(p : ℤ)})]
+  (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver (span {(p : ℤ)})]
 
-local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
+local notation3 "𝒑" => (span {(p : ℤ)})
 
 section PrimePow
 
@@ -57,7 +57,7 @@ variable {K} [hK : IsCyclotomicExtension {p ^ (k + 1)} ℚ K] {ζ : K}
   (hζ : IsPrimitiveRoot ζ (p ^ (k + 1)))
 
 instance isPrime_span_zeta_sub_one : IsPrime (span {hζ.toInteger - 1}) := by
-  rw [Ideal.span_singleton_prime]
+  rw [span_singleton_prime]
   · exact hζ.zeta_sub_one_prime
   · exact Prime.ne_zero hζ.zeta_sub_one_prime
 
@@ -77,7 +77,7 @@ theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
 
 theorem p_mem_span_zeta_sub_one : (p : 𝓞 K) ∈ span {hζ.toInteger - 1} := by
-  convert! Ideal.absNorm_mem _
+  convert! absNorm_mem _
   exact (absNorm_span_zeta_sub_one ..).symm
 
 theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
@@ -85,7 +85,7 @@ theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
 
 instance liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 := by
   rw [liesOver_iff]
-  refine Ideal.IsMaximal.eq_of_le (Int.ideal_span_isMaximal_of_prime p) IsPrime.ne_top' ?_
+  refine IsMaximal.eq_of_le (Int.ideal_span_isMaximal_of_prime p) IsPrime.ne_top' ?_
   rw [span_singleton_le_iff_mem, mem_comap, algebraMap_int_eq, map_natCast]
   exact p_mem_span_zeta_sub_one p k hζ
 
@@ -185,7 +185,7 @@ instance isPrime_span_zeta_sub_one' : IsPrime (span {hζ.toInteger - 1}) := by
 /-- If `2 < p`, then `2` is not in the ideal `(ζ - 1)`, where `ζ` is a primitive `p`-th root of
 unity. -/
 theorem two_not_mem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.toInteger - 1} := by
-  rw [Ideal.mem_span_singleton]
+  rw [mem_span_singleton]
   rw [← pow_one p] at hK hζ
   exact hζ.toInteger_sub_one_not_dvd_two h.ne'
 
@@ -223,12 +223,10 @@ theorem associated_zeta_sub_one_pow_prime :
 root of unity and `p` is prime. -/
 theorem isCoprime_of_not_zeta_sub_one_dvd {x : 𝓞 K} (hx : ¬ hζ.toInteger - 1 ∣ x) :
     IsCoprime (p : 𝓞 K) x := by
-  rwa [← Ideal.isCoprime_span_singleton_iff,
-    ← Ideal.span_singleton_eq_span_singleton.mpr (associated_zeta_sub_one_pow_prime p hζ),
-    ← Ideal.span_singleton_pow, IsCoprime.pow_left_iff (by grind [hp.out.one_lt]),
-    Ideal.isCoprime_iff_gcd,
-    (Ideal.prime_span_singleton_iff.mpr hζ.zeta_sub_one_prime').irreducible.gcd_eq_one_iff,
-    Ideal.dvd_span_singleton, Ideal.mem_span_singleton]
+  rwa [← isCoprime_span_singleton_iff,  ← span_singleton_eq_span_singleton.mpr
+    (associated_zeta_sub_one_pow_prime p hζ), ← span_singleton_pow, IsCoprime.pow_left_iff
+    (by grind [hp.out.one_lt]), isCoprime_iff_gcd, (prime_span_singleton_iff.mpr
+    hζ.zeta_sub_one_prime').irreducible.gcd_eq_one_iff, dvd_span_singleton, mem_span_singleton]
 
 theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
   rw [← pow_one p] at hK hζ
