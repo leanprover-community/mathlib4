@@ -241,7 +241,7 @@ theorem mdifferentiableWithinAt_totalSpace_iff
     (f : M → TotalSpace F E) {s : Set M} {x₀ : M}
     (he : f x₀ ∈ e.source) :
     MDiffAt[s] f x₀ ↔
-      MDiffAt[s] (fun x => (f x).proj) x₀ ∧ MDiffAt[s] (fun x ↦ (e (f x)).2) x₀ := by
+      MDiffAt[s] (fun x ↦ (f x).proj) x₀ ∧ MDiffAt[s] (fun x ↦ (e (f x)).2) x₀ := by
   rw [mdifferentiableWithinAt_totalSpace]
   apply and_congr_right
   intro hf
@@ -254,7 +254,7 @@ theorem mdifferentiableAt_totalSpace_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (f : M → TotalSpace F E) {x₀ : M}
     (he : f x₀ ∈ e.source) :
-    MDiffAt f x₀ ↔ MDiffAt (fun x => (f x).proj) x₀ ∧ MDiffAt (fun x ↦ (e (f x)).2) x₀ := by
+    MDiffAt f x₀ ↔ MDiffAt (fun x ↦ (f x).proj) x₀ ∧ MDiffAt (fun x ↦ (e (f x)).2) x₀ := by
   rw [mdifferentiableAt_totalSpace]
   apply and_congr_right
   intro hf
