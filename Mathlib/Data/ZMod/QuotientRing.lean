@@ -84,6 +84,17 @@ def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
   quotientInfRingEquivPiQuotient _ this |>.trans <|
   RingEquiv.piCongrRight fun i ↦ Int.quotientSpanNatEquivZMod (a i)
 
+open scoped Function in
+/-- Each coordinate of the Chinese remainder isomorphism `ZMod.prodEquivPi` is the
+canonical reduction `ZMod (∏ i, a i) →+* ZMod (a i)`. -/
+@[simp]
+theorem ZMod.prodEquivPi_apply {ι : Type*} [Fintype ι] (a : ι → ℕ)
+ (coprime : Pairwise (Nat.Coprime on a)) (b : ZMod (∏ i, a i)) (i : ι) :
+   ZMod.prodEquivPi a coprime b i =
+   ZMod.castHom (Finset.dvd_prod_of_mem a (Finset.mem_univ i)) (ZMod (a i)) b :=
+  RingHom.congr_fun (Subsingleton.elim ((Pi.evalRingHom (fun i => ZMod (a i)) i).comp
+  (ZMod.prodEquivPi a coprime).toRingHom) _) b
+
 /-- The **Chinese remainder theorem**, version for `ZMod n`. -/
 def ZMod.equivPi (hn : n ≠ 0) :
     ZMod n ≃+* Π (p : n.primeFactors), ZMod (p ^ (n.factorization p)) :=
