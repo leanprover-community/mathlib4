@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Circulant
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Data.Fin.Parity
@@ -28,18 +28,6 @@ This file defines colorings for some common graphs.
 assert_not_exists Field
 
 namespace SimpleGraph
-
-theorem chromaticNumber_le_two_iff_isBipartite {V : Type*} {G : SimpleGraph V} :
-    G.chromaticNumber ≤ 2 ↔ G.IsBipartite :=
-  chromaticNumber_le_iff_colorable
-
-theorem chromaticNumber_eq_two_iff {V : Type*} {G : SimpleGraph V} :
-    G.chromaticNumber = 2 ↔ G.IsBipartite ∧ G ≠ ⊥ :=
-  ⟨fun h ↦ ⟨chromaticNumber_le_two_iff_isBipartite.mp (by simp [h]),
-            two_le_chromaticNumber_iff_ne_bot.mp (by simp [h])⟩,
-   fun ⟨h₁, h₂⟩ ↦ ENat.eq_of_forall_natCast_le_iff fun _ ↦
-      ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
-       fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
 
 /-- Bicoloring of a path graph -/
 def pathGraph.bicoloring (n : ℕ) :
@@ -127,7 +115,6 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
     | 0 => exact u.elim0
     | 1 => simp at h
     | n + 2 =>
-      simp only
       simp only [cycleGraph_adj] at hadj
       split_ifs with hu hv
       · simp [Fin.eq_mk_iff_val_eq.mpr hu, Fin.eq_mk_iff_val_eq.mpr hv] at hadj

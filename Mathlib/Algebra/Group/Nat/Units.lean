@@ -13,7 +13,7 @@ public import Mathlib.Logic.Unique
 # The unit of the natural numbers
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.Group.Torsor
 public import Mathlib.Topology.MetricSpace.IsometricSMul
 
 /-!
@@ -44,7 +44,7 @@ instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAdd
   NormedAddTorsor.toAddTorsor
 
 variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
+  [SeminormedAddCommGroup W] [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by

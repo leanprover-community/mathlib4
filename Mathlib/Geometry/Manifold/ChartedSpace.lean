@@ -6,7 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Geometry.Manifold.StructureGroupoid
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
+public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 
 /-!
@@ -256,7 +257,7 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
   refine locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
       (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) ?_ ?_
   · intro x
-    simpa only [e, OpenPartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
+    simpa only [e, OpenPartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using!
       ((LocallyConnectedSpace.open_connected_basis (e x x)).restrict_subset
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
@@ -264,7 +265,8 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
 
 /-- If a topological space `M` admits an atlas with locally path-connected charts,
 then `M` itself is locally path-connected. -/
-theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
+theorem ChartedSpace.locallyPathConnectedSpace [LocallyPathConnectedSpace H] :
+    LocallyPathConnectedSpace M := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
   let e := chartAt H x
   let t := s ∩ e.source
@@ -274,10 +276,13 @@ theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathCo
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
   · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
-    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
+    refine e.continuousOn_symm.mono <| subset_trans ?_ e.image_source_subset
     exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
   · exact (image_mono pathComponentIn_subset).trans
       (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
+
+@[deprecated (since := "2026-06-21")]
+alias ChartedSpace.locPathConnectedSpace := ChartedSpace.locallyPathConnectedSpace
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
@@ -312,7 +317,7 @@ theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M 
   apply discreteTopology_iff_isOpen_singleton.2 (fun x ↦ ?_)
   have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
     isOpen_inter_preimage _ (isOpen_discrete _)
-  convert this
+  convert! this
   refine Subset.antisymm (by simp) ?_
   simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
   intro y hy h'y
@@ -565,6 +570,39 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
 
 end sum
 
+section IsLocalHomeomorph
+
+variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
+
+/-- Given a right inverse for a local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace`
+structure by pushing forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def IsLocalHomeomorph.chartedSpaceOfRightInverse
+    {f : M → M'} (hf : IsLocalHomeomorph f) {g : M' → M} (hg : Function.RightInverse g f) :
+    ChartedSpace H M' where
+  atlas := {(hf.localInverseAt (g q)).trans (chartAt H (g q)) | q : M'}
+  chartAt q := (hf.localInverseAt (g q)).trans (chartAt H (g q))
+  mem_chart_source q := by
+    nth_rw 3 [← hg.eq q]
+    simp
+  chart_mem_atlas := by simp
+
+/-- Given a surjective local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace` structure
+by pushing forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def IsLocalHomeomorph.chartedSpace
+    {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
+    ChartedSpace H M' :=
+  hf.chartedSpaceOfRightInverse hf'.hasRightInverse.choose_spec
+
+/-- Given a homeomorphism `f : M ≃ₜ M'`, endow `M'` with a `ChartedSpace` structure by pushing
+forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def Homeomorph.chartedSpace (f : M ≃ₜ M') : ChartedSpace H M' :=
+  f.isLocalHomeomorph.chartedSpace f.surjective
+
+end IsLocalHomeomorph
+
 end Constructions
 
 end ChartedSpace
@@ -616,8 +654,8 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
     @OpenPartialHomeomorph M H c.toTopologicalSpace _ :=
   { __ := c.toTopologicalSpace
     __ := e
-    open_source := by convert c.open_source' he
-    open_target := by convert c.open_target he
+    open_source := by convert! c.open_source' he
+    open_target := by convert! c.open_target he
     continuousOn_toFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]

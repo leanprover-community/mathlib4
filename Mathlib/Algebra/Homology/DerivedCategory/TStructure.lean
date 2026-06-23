@@ -28,6 +28,7 @@ namespace DerivedCategory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical t-structure on `DerivedCategory C`. -/
 noncomputable def TStructure.t : TStructure (DerivedCategory C) where
@@ -75,7 +76,7 @@ noncomputable def TStructure.t : TStructure (DerivedCategory C) where
       rw [id_comp]
       rfl
     · dsimp
-      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE,
+      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE ..,
         Iso.hom_inv_id_assoc]
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
@@ -154,11 +155,13 @@ instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsLE n] :
   rw [isLE_Q_obj_iff]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsGE n := by
   let e := (singleFunctorIsoCompQ C n).app X
   dsimp only [Functor.comp_obj] at e
   exact TStructure.t.isGE_of_iso e.symm n
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   let e := (singleFunctorIsoCompQ C n).app X
   dsimp only [Functor.comp_obj] at e
@@ -189,5 +192,30 @@ lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
   obtain ⟨K, _, _, ⟨e⟩⟩ := exists_iso_Q_obj_of_isGE_of_isLE X n n
   obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
   exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
+
+
+open DerivedCategory.TStructure
+
+variable (C)
+
+/-- The bounded above derived category of an abelian category. -/
+abbrev Minus : Type max u v := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
+
+/-- The bounded below derived category of an abelian category. -/
+abbrev Plus : Type max u v := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
+
+/-- The bounded derived category of an abelian category. -/
+abbrev Bounded : Type max u v := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
+
+variable {C}
+
+/-- The inclusion of the bounded above derived category. -/
+noncomputable abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
+
+/-- The inclusion of the bounded below derived category. -/
+noncomputable abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
+
+/-- The inclusion of the bounded derived category. -/
+noncomputable abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
 
 end DerivedCategory

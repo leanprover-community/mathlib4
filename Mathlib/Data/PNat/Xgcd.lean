@@ -16,6 +16,7 @@ Given `0 < a, b`, it computes the unique `(w, x, y, z, d)` such that the followi
 * `a = (w + x) d`
 * `b = (y + z) d`
 * `w * z = x * y + 1`
+
 `d` is then the gcd of `a` and `b`, and `a' := a / d = w + x` and `b' := b / d = y + z` are coprime.
 
 This story is closely related to the structure of SL₂(ℕ) (as a free monoid on two generators) and
@@ -233,7 +234,9 @@ theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
   have := a.pos
   have := b.pos
-  lia
+  #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+  we need to re-enable model-based theory combination in `lia` for this to go through. -/
+  lia +mbtc
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=

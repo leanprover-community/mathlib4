@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 
 /-!
 # Norm and trace maps
@@ -13,6 +13,7 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne
 Given two subgroups `𝒢, ℋ` of `GL(2, ℝ)` with `𝒢.relindex ℋ ≠ 0` (i.e. `𝒢 ⊓ ℋ` has finite index
 in `ℋ`), we define a trace map from `ModularForm (𝒢 ⊓ ℋ) k` to `ModularForm ℋ k`.
 -/
+
 @[expose] public noncomputable section
 
 open UpperHalfPlane
@@ -58,7 +59,6 @@ protected def trace : SlashInvariantForm ℋ k where
     simpa [SlashAction.sum_slash, quotientFunc_smul f hh]
       using Equiv.sum_comp (MulAction.toPerm (_ : ℋ)) _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The norm of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
 protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.card 𝒬) where
@@ -99,7 +99,7 @@ protected def CuspForm.trace [CuspFormClass F 𝒢 k] : CuspForm ℋ k where
       SlashAction.sum_slash, Finset.sum_fn]
     let := Fintype.ofFinite 𝒬
     rw [show (0 : ℂ) = ∑ c : ℋ ⧸ 𝒢.subgroupOf ℋ, 0 by simp]
-    refine tendsto_finset_sum _ (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ ?_)
+    refine tendsto_finsetSum _ (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ ?_)
     refine (translate f _).zero_at_cusps' ?_ γ rfl
     simpa using h.of_isFiniteRelIndex_conj hr
 

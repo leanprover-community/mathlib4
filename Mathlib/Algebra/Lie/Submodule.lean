@@ -53,7 +53,7 @@ variable (N N' : LieSubmodule R L M)
 
 instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
-  coe_injective' N O h := by cases N; cases O; congr; exact SetLike.coe_injective' h
+  coe_injective N O h := by cases N; cases O; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
 
@@ -72,9 +72,6 @@ instance : Zero (LieSubmodule R L M) :=
 
 instance : Inhabited (LieSubmodule R L M) :=
   ⟨0⟩
-
-instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type w) where
-  coe N := { x : M // x ∈ N }
 
 instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
@@ -977,7 +974,7 @@ lemma map_le_range {M' : Type*}
 @[simp]
 lemma map_incl_lt_iff_lt_top {N' : LieSubmodule R L N} :
     N'.map (LieSubmodule.incl N) < N ↔ N' < ⊤ := by
-  convert (LieSubmodule.mapOrderEmbedding (f := N.incl) Subtype.coe_injective).lt_iff_lt
+  convert! (LieSubmodule.mapOrderEmbedding (f := N.incl) Subtype.coe_injective).lt_iff_lt
   simp
 
 @[simp]

@@ -19,7 +19,7 @@ regular epi category. This is an instance that applies directly when `D` is `Typ
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Functor
 
@@ -27,6 +27,7 @@ open Limits
 
 variable {C D : Type*} [Category C] [Category D]
 
+set_option backward.defeqAttrib.useBackward true in
 instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
     [IsRegularEpiCategory D] :
     IsRegularEpiCategory (C ⥤ D) where
