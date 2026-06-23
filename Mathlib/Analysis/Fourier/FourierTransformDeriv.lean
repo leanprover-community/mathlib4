@@ -310,7 +310,7 @@ lemma fourierPowSMulRight_eq_comp {f : V → E} {v : V} {n : ℕ} :
 lemma _root_.Continuous.fourierPowSMulRight {f : V → E} (hf : Continuous f) (n : ℕ) :
     Continuous (fun v ↦ fourierPowSMulRight L f v n) := by
   simp_rw [fourierPowSMulRight_eq_comp]
-  apply Continuous.const_smul
+  apply Continuous.fun_const_smul
   apply (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).continuous₂.comp₂ _ hf
   exact Continuous.comp (map_continuous _) (continuous_pi (fun _ ↦ L.continuous))
 
