@@ -463,14 +463,14 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     have hat : Subtype.val '' t = s \ {a} := by
       rw [Set.image_preimage_eq_inter_range]
       simp only [Subtype.range_coe_subtype]
-      rw [Set.diff_eq_compl_inter, Set.inter_comm]
+      rw [Set.sdiff_eq_compl_inter, Set.inter_comm]
       congr
     have hat' : s = insert a (Subtype.val '' t) := by
-      rw [hat, Set.insert_diff_singleton, Set.insert_eq_of_mem has]
+      rw [hat, Set.insert_sdiff_singleton, Set.insert_eq_of_mem has]
     have hfs := SubMulAction.fixingSubgroup_of_insert a t
     rw [← hat'] at hfs
     rw [hfs, Subgroup.index_map,
-      (MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
+      MonoidHom.ker_eq_bot (stabilizer G a).subtype
         (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
     simp only [sup_bot_eq, Subgroup.range_subtype]
     have htcard : t.ncard = k := by

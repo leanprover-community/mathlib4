@@ -307,6 +307,19 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
   delta Scheme.homOfLE
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
+lemma Scheme.Hom.appIso_homOfLE_inv {X : Scheme.{u}} {U V : X.Opens} (h : U ≤ V)
+    (W : (U : Scheme.{u}).Opens) :
+    ((X.homOfLE h).appIso W).inv =
+      X.presheaf.map (.op <| homOfLE <| by
+        suffices V.ι ''ᵁ _ ≤ U.ι ''ᵁ W by simpa
+        simp [← Scheme.Hom.comp_image]) := by
+  rw [eq_comm, ← Iso.hom_comp_eq_id]
+  dsimp
+  simp only [appIso_hom, homOfLE_app, homOfLE_leOfHom, eqToHom_op, Opens.toScheme_presheaf_map,
+    eqToHom_unop, ← X.presheaf.map_comp, Category.assoc, ← X.presheaf.map_id]
+  rfl
+
 @[simp]
 lemma Scheme.opensRange_homOfLE {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).opensRange = V.ι ⁻¹ᵁ U :=
@@ -651,6 +664,20 @@ theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V
       ((Set.image_mono e).trans (image_morphismRestrict_preimage f U V).le) := by
   rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.Opens.toScheme_presheaf_map,
     Scheme.Hom.appLE_map]
+
+@[reassoc]
+theorem morphismRestrict_homOfLE_isoImage_ι_hom
+    {X : Scheme.{u}} {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
+    X.homOfLE e ∣_ W ≫ (V.ι.isoImage W).hom =
+      (U.ι.isoImage (X.homOfLE e ⁻¹ᵁ W)).hom ≫ X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) := by
+  simp [← cancel_mono (V.ι ''ᵁ W).ι]
+
+@[reassoc]
+theorem isoImage_ι_inv_morphismRestrict_homOfLE {X : Scheme.{u}} {U V : X.Opens}
+    (e : U ≤ V) (W : Opens V) :
+    (U.ι.isoImage (X.homOfLE e ⁻¹ᵁ W)).inv ≫ X.homOfLE e ∣_ W =
+      X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) ≫ (V.ι.isoImage W).inv := by
+  simp [← cancel_mono (V.ι.isoImage W).hom, morphismRestrict_homOfLE_isoImage_ι_hom]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
