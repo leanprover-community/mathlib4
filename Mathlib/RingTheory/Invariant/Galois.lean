@@ -91,7 +91,7 @@ end Galois
 
 section normal
 
-variable {A B k : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Finite G] [Group G] [MulSemiringAction G B] [Algebra.IsInvariant A B G]
   (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
   [CommRing k] [Algebra (A ⧸ P) k] [Algebra (B ⧸ Q) k] [IsScalarTower (A ⧸ P) (B ⧸ Q) k]
