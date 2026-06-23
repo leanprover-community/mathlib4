@@ -157,7 +157,6 @@ lemma whiskerLeft_μ_comp_μ (X Y Z : C) :
   rw [associativity, Iso.inv_hom_id_assoc]
 
 variable {F} in
---set_option backward.isDefEq.respectTransparency false in
 /-- A functor that is isomorphic to a lax monoidal functor is lax monoidal. -/
 @[implicit_reducible]
 def ofIso {G : C ⥤ D} (e : F ≅ G) : G.LaxMonoidal where
@@ -175,7 +174,23 @@ def ofIso {G : C ⥤ D} (e : F ≅ G) : G.LaxMonoidal where
       ← MonoidalCategory.whiskerLeft_comp_assoc, NatTrans.naturality,
       MonoidalCategory.whiskerLeft_comp_assoc]
   associativity X Y Z := by
-    sorry
+    rw [assoc, assoc, tensorHom_def_assoc,
+      tensorHom_def_assoc, ← comp_whiskerRight_assoc,
+      assoc, assoc, assoc, Iso.hom_inv_id_app, comp_id,
+      comp_whiskerRight_assoc, ← whisker_exchange_assoc,
+      comp_whiskerRight_assoc, ← NatTrans.naturality,
+      associativity_assoc,
+      associator_naturality_middle_assoc,
+      associator_naturality_right_assoc,
+      associator_naturality_left_assoc]
+    simp only [← assoc]; congr 2; simp only [assoc]
+    congr 1
+    rw [tensorHom_def'_assoc, tensorHom_def',
+      ← MonoidalCategory.whiskerLeft_comp_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc,
+      assoc, assoc, assoc, Iso.hom_inv_id_app, comp_id, whisker_exchange,
+      whisker_exchange, whisker_exchange_assoc]
+    simp
   left_unitality X := by
     rw [assoc, assoc, tensorHom_def_assoc, ← comp_whiskerRight_assoc, assoc,
       Iso.hom_inv_id_app, comp_id, ← whisker_exchange_assoc,
