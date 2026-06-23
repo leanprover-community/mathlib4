@@ -32,7 +32,7 @@ In this file, we define:
   noetherian ring, in which case the two notions agree.
   This is an instance in the scope `LinearMap.FiniteRangeSetoid`,
   so opening this scope allows this relation to be denoted by `≈`.
-* `LinearMap.QuasiInverse`: two linear maps `u` and `v` are **quasi-inverses** if we have
+* `LinearMap.IsQuasiInverse`: two linear maps `u` and `v` are **quasi-inverses** if we have
   `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo linear maps with noetherian ranges.
 
 -/
@@ -283,66 +283,66 @@ open scoped LinearMap.FiniteRangeSetoid
 /-- `u` is a **left quasi-inverse** to `v` if `u ∘ₗ v ≈ id` modulo
 linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
 (e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
-def LeftQuasiInverse (u : V →ₗ[K] V₂) (v : V₂ →ₗ[K] V) := u ∘ₗ v ≈ .id
+def IsLeftQuasiInverse (u : V →ₗ[K] V₂) (v : V₂ →ₗ[K] V) := u ∘ₗ v ≈ .id
 
 /-- `u` is a **right quasi-inverse** to `v` if `v ∘ₗ u ≈ id` modulo
 linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
 (e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
-def RightQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) := v ∘ₗ u ≈ .id
+def IsRightQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) := v ∘ₗ u ≈ .id
 
 /-- `u` is a **quasi-inverse** to `v` if `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo
 linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
 (e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
-def QuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) :=
-  u.LeftQuasiInverse v ∧ u.RightQuasiInverse v
+def IsQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) :=
+  u.IsLeftQuasiInverse v ∧ u.IsRightQuasiInverse v
 
-lemma LeftQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    (h : u.LeftQuasiInverse v) : u ∘ₗ v ≈ .id := h
+lemma IsLeftQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    (h : u.IsLeftQuasiInverse v) : u ∘ₗ v ≈ .id := h
 
-lemma RightQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    (h : u.RightQuasiInverse v) : v ∘ₗ u ≈ .id := h
+lemma IsRightQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    (h : u.IsRightQuasiInverse v) : v ∘ₗ u ≈ .id := h
 
 @[symm]
-lemma QuasiInverse.symm {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    (h : u.QuasiInverse v) : v.QuasiInverse u :=
+lemma IsQuasiInverse.symm {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    (h : u.IsQuasiInverse v) : v.IsQuasiInverse u :=
   And.symm h
 
-lemma LeftQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
-    (h : u.LeftQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
-    u'.LeftQuasiInverse v' := by
-  unfold LeftQuasiInverse at *
+lemma IsLeftQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.IsLeftQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
+    u'.IsLeftQuasiInverse v' := by
+  unfold IsLeftQuasiInverse at *
   grw [hu, hv]
   assumption
 
-lemma leftQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+lemma isLeftQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (hu : u' ≈ u) (hv : v' ≈ v) :
-    u.LeftQuasiInverse v ↔ u'.LeftQuasiInverse v' :=
+    u.IsLeftQuasiInverse v ↔ u'.IsLeftQuasiInverse v' :=
   ⟨fun H ↦ H.congr hu hv, fun H ↦ H.congr (Setoid.symm hu) (Setoid.symm hv)⟩
 
-lemma RightQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
-    (h : u.RightQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
-    u'.RightQuasiInverse v' := by
-  unfold RightQuasiInverse at *
+lemma IsRightQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.IsRightQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
+    u'.IsRightQuasiInverse v' := by
+  unfold IsRightQuasiInverse at *
   grw [hu, hv]
   assumption
 
-lemma rightQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+lemma isRightQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (hu : u' ≈ u) (hv : v' ≈ v) :
-    u.RightQuasiInverse v ↔ u'.RightQuasiInverse v' :=
+    u.IsRightQuasiInverse v ↔ u'.IsRightQuasiInverse v' :=
   ⟨fun H ↦ H.congr hu hv, fun H ↦ H.congr (Setoid.symm hu) (Setoid.symm hv)⟩
 
-lemma QuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
-    (h : u.QuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
-    u'.QuasiInverse v' :=
+lemma IsQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.IsQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
+    u'.IsQuasiInverse v' :=
   ⟨h.1.congr hu hv, h.2.congr hu hv⟩
 
-lemma quasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+lemma isQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (hu : u' ≈ u) (hv : v' ≈ v) :
-    u.QuasiInverse v ↔ u'.QuasiInverse v' := by
-  simp [QuasiInverse, leftQuasiInverse_congr hu hv, rightQuasiInverse_congr hu hv]
+    u.IsQuasiInverse v ↔ u'.IsQuasiInverse v' := by
+  simp [IsQuasiInverse, isLeftQuasiInverse_congr hu hv, isRightQuasiInverse_congr hu hv]
 
-lemma QuasiInverse.equiv_of_left {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
-    (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') (hu : u ≈ u') :
+lemma IsQuasiInverse.equiv_of_left {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.IsQuasiInverse v) (h' : u'.IsQuasiInverse v') (hu : u ≈ u') :
     v ≈ v' :=
   calc
     v = v ∘ₗ .id := by simp
@@ -352,41 +352,41 @@ lemma QuasiInverse.equiv_of_left {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →�
     _ ≈ .id ∘ₗ v' := by grw [h.2.equiv]
     _ = v' := by simp
 
-lemma QuasiInverse.equiv_of_right {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
-    (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') (hv : v ≈ v') :
+lemma IsQuasiInverse.equiv_of_right {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.IsQuasiInverse v) (h' : u'.IsQuasiInverse v') (hv : v ≈ v') :
     u ≈ u' :=
   h.symm.equiv_of_left h'.symm hv
 
 /-- Left quasi-inverses compose in the opposite order. -/
-lemma LeftQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
-    {v' : V₃ →ₗ[K] V₂} (hu : u'.LeftQuasiInverse u) (hv : v'.LeftQuasiInverse v) :
-    (u' ∘ₗ v').LeftQuasiInverse (v ∘ₗ u) :=
+lemma IsLeftQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.IsLeftQuasiInverse u) (hv : v'.IsLeftQuasiInverse v) :
+    (u' ∘ₗ v').IsLeftQuasiInverse (v ∘ₗ u) :=
   calc
     _ = u' ∘ₗ (v' ∘ₗ v) ∘ₗ u := rfl
     _ ≈ u' ∘ₗ .id ∘ₗ u := by grw [hv.equiv]
     _ ≈ .id := hu.equiv
 
 /-- Right quasi-inverses compose in the opposite order. -/
-lemma RightQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
-    {v' : V₃ →ₗ[K] V₂} (hu : u'.RightQuasiInverse u) (hv : v'.RightQuasiInverse v) :
-    (u' ∘ₗ v').RightQuasiInverse (v ∘ₗ u) :=
+lemma IsRightQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.IsRightQuasiInverse u) (hv : v'.IsRightQuasiInverse v) :
+    (u' ∘ₗ v').IsRightQuasiInverse (v ∘ₗ u) :=
   calc
     _ = v ∘ₗ (u ∘ₗ u') ∘ₗ v' := rfl
     _ ≈ v ∘ₗ .id ∘ₗ v' := by grw [hu.equiv]
     _ ≈ .id := hv.equiv
 
 /-- Quasi-inverses compose in the opposite order. -/
-lemma QuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
-    {v' : V₃ →ₗ[K] V₂} (hu : u'.QuasiInverse u) (hv : v'.QuasiInverse v) :
-    (u' ∘ₗ v').QuasiInverse (v ∘ₗ u) :=
+lemma IsQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.IsQuasiInverse u) (hv : v'.IsQuasiInverse v) :
+    (u' ∘ₗ v').IsQuasiInverse (v ∘ₗ u) :=
   ⟨hu.1.comp hv.1, hu.2.comp hv.2⟩
 
 /-- If `u'` is a right quasi-inverse of `u` and `w` is a left quasi-inverse of `v ∘ₗ u`,
 then `u ∘ₗ w` is a left quasi-inverse of `v`. -/
-lemma LeftQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.RightQuasiInverse u)
-    (hw : w.LeftQuasiInverse (v ∘ₗ u)) :
-    (u ∘ₗ w).LeftQuasiInverse v := by
+lemma IsLeftQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.IsRightQuasiInverse u)
+    (hw : w.IsLeftQuasiInverse (v ∘ₗ u)) :
+    (u ∘ₗ w).IsLeftQuasiInverse v := by
   calc
     _ = ((u ∘ₗ w) ∘ₗ v) ∘ₗ .id := rfl
     _ ≈ ((u ∘ₗ w) ∘ₗ v) ∘ₗ (u ∘ₗ u') := by grw [hu.equiv]
@@ -396,18 +396,18 @@ lemma LeftQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V
 
 /-- If `u'` is a quasi-inverse of `u` and `w` is a quasi-inverse of `v ∘ₗ u`, then
 `u ∘ₗ w` is a quasi-inverse of `v`. -/
-lemma QuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.QuasiInverse u)
-    (hw : w.QuasiInverse (v ∘ₗ u)) :
-    (u ∘ₗ w).QuasiInverse v :=
-  ⟨LeftQuasiInverse.of_comp_left hu.2 hw.1, hw.2⟩
+lemma IsQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.IsQuasiInverse u)
+    (hw : w.IsQuasiInverse (v ∘ₗ u)) :
+    (u ∘ₗ w).IsQuasiInverse v :=
+  ⟨.of_comp_left hu.2 hw.1, hw.2⟩
 
 /-- If `v'` is a left quasi-inverse of `v` and `w` is a right quasi-inverse of `v ∘ₗ u`,
 then `w ∘ₗ v` is a right quasi-inverse of `u`. -/
-lemma RightQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.LeftQuasiInverse v)
-    (hw : w.RightQuasiInverse (v ∘ₗ u)) :
-    (w ∘ₗ v).RightQuasiInverse u := by
+lemma IsRightQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.IsLeftQuasiInverse v)
+    (hw : w.IsRightQuasiInverse (v ∘ₗ u)) :
+    (w ∘ₗ v).IsRightQuasiInverse u := by
   calc
     _ = .id ∘ₗ (u ∘ₗ (w ∘ₗ v)) := rfl
     _ ≈ (v' ∘ₗ v) ∘ₗ (u ∘ₗ (w ∘ₗ v)) := by grw [hv.equiv]
@@ -417,11 +417,11 @@ lemma RightQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K]
 
 /-- If `v'` is a quasi-inverse of `v` and `w` is a quasi-inverse of `v ∘ₗ u`, then
 `w ∘ₗ v` is a quasi-inverse of `u`. -/
-lemma QuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.QuasiInverse v)
-    (hw : w.QuasiInverse (v ∘ₗ u)) :
-    (w ∘ₗ v).QuasiInverse u :=
-  ⟨hw.1, RightQuasiInverse.of_comp_right hv.1 hw.2⟩
+lemma IsQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.IsQuasiInverse v)
+    (hw : w.IsQuasiInverse (v ∘ₗ u)) :
+    (w ∘ₗ v).IsQuasiInverse u :=
+  ⟨hw.1, IsRightQuasiInverse.of_comp_right hv.1 hw.2⟩
 
 end QuasiInverse
 
