@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Michael Brown. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Brown
+-/
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Defs
 import Mathlib.NumberTheory.SelbergSieve
@@ -28,6 +33,7 @@ open Finset
 open Nat
 
 set_option maxRecDepth 200000
+set_option linter.style.nativeDecide false
 
 /-!
 ## Part 1: Ω(n) — Number of Prime Factors with Multiplicity

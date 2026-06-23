@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Michael Brown. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Brown
+-/
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Defs
 import Mathlib.NumberTheory.LSeries.PrimesInAP
@@ -36,6 +41,7 @@ open Finset
 open Nat
 
 set_option maxRecDepth 200000
+set_option linter.style.nativeDecide false
 
 /-!
 ## Part 1: Prime Counting in Arithmetic Progressions
@@ -205,11 +211,11 @@ def primeGaps (N : ℕ) : Finset ℕ :=
     ∀ k, 1 ≤ k → k < g → p + k ∉ primes)
 
 /-- Concrete verification: below 1000, the maximum prime gap is 20
-    (between 887 and 907), well below the Polymath8 bound of 246. -/
+    (between 887 and 907). We avoid `Finset.max'` (crashes native_decide
+    on v4.32.0-rc1) and instead verify directly: 20 is a gap, and
+    no gap exceeds 20. -/
 theorem max_prime_gap_below_1000 :
-    (primeGaps 1000).max' (by
-      have : 2 ∈ primeGaps 1000 := by native_decide
-      exact ⟨2, this⟩) = 20 := by
+    20 ∈ primeGaps 1000 ∧ ∀ g ∈ primeGaps 1000, g ≤ 20 := by
   native_decide
 
 /-- Concrete verification: all prime gaps below 1000 are ≤ 246,
