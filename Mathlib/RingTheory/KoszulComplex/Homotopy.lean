@@ -194,7 +194,7 @@ lemma koszulCocomplex.mem_annihilator_homology (i : ℕ) :
   exact this.symm.trans ofht
 
 lemma koszulCocomplex.ofList_ideal_le_mem_annihilator_homology (l : List R) (i : ℕ) :
-    Ideal.ofList l ≤ Module.annihilator R ((koszulCocomplex.ofList R l).homology i) := by
+    Ideal.ofList l ≤ Module.annihilator R ((koszulCocomplex.ofList l).homology i) := by
   intro r hr
   have hr' : r ∈ Ideal.span (Set.range l.get) := by simpa only [Set.range_list_get l]
   rcases Ideal.mem_span_range_iff_exists_fun.mp hr' with ⟨c, hc⟩
