@@ -299,6 +299,11 @@ instance (priority := 900) {M A : Type*} [Semigroup M] [SetLike A M] [hA : MulMe
     {S' : A} : Pow S' ℕ+ :=
   ⟨fun x n => ⟨x.1 ^ n, ppow_coe_mem _ _⟩⟩
 
+@[to_additive (attr := simp low, norm_cast)]
+theorem coe_ppow {M A : Type*} [Semigroup M] [SetLike A M] [hA : MulMemClass A M] {S' : A}
+    (x : S') (n : ℕ+) : ((x ^ n : S') : M) = (x : M) ^ n :=
+  rfl
+
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
 @[to_additive
 /-- An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure. -/]

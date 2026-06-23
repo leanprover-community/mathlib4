@@ -537,6 +537,10 @@ theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
+theorem coe_ppow (x : H) (n : ℕ+) : ((x ^ n : H) : G) = (x : G) ^ n :=
+  rfl
+
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
