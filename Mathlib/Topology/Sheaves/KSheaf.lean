@@ -58,9 +58,19 @@ lemma ext (P Q : KPresheaf A X) (f g : P ⟶ Q) (w : ∀ K : Compacts X, f.app (
   induction K with | _ K => ?_
   apply w
 
-def pushforward {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') (F : KPresheaf A X) :
+/--
+The pushforward of a KPresheaf by a proper map -/
+def pushforwardObj {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') (F : KPresheaf A X) :
     (KPresheaf A Y) := ((Functor.whiskeringLeft _ _ _ ).obj
   (Compacts.properPreimage_mono pf).functor.op).obj F
+
+/--
+The pushforward by a proper map as a functor over KPresheaves -/
+def pushforward {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') :
+    KPresheaf A X ⥤ KPresheaf A Y where
+  obj := pushforwardObj pf
+  map := ((Functor.whiskeringLeft _ _ _ ).obj
+  (Compacts.properPreimage_mono pf).functor.op).map
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
@@ -149,23 +159,36 @@ lemma hom_K_ext (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op 
 
 open Compacts
 
-def pushforward {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
-    (pf : IsProperMap f.hom') (F : KSheaf A X) : (KSheaf A Y) where
-  obj := F.obj.pushforward pf
-  property.nonempty_isTerminal := by
+variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
+    (pf : IsProperMap f.hom') (F : KSheaf A X)
+
+lemma isKSheafPushforwardObj : (F.obj.pushforwardObj pf).IsKSheaf where
+  nonempty_isTerminal := by
     exact F.property.nonempty_isTerminal
-  property.isPullback h:=
+  isPullback h:=
     F.property.isPullback <|
     Lattice.BicartSq.pushforward h (properPreimage pf)
     (fun _ _ ↦ Compacts.ext rfl) (fun _ _ ↦ Compacts.ext rfl)
-  property.nonempty_isColimit_coconeOfCompacts K :=
+  nonempty_isColimit_coconeOfCompacts K :=
     Nonempty.intro <|
     (Functor.Final.isColimitWhiskerEquiv ((nhdsMap_mono pf K).functor.op)
       _ ).invFun
     (Classical.choice (F.property.nonempty_isColimit_coconeOfCompacts (properPreimage pf K)))
 
+variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
+    (pf : IsProperMap f.hom')
+
+/--
+The pushforward of a Ksheaf by a proper map as a sheaf -/
+def pushforwardObj (F : KSheaf A X) : (KSheaf A Y) := ⟨_, F.isKSheafPushforwardObj pf⟩
+
+/--
+The pushforward of a KSheaf as a functor -/
+def pushforward : KSheaf A X ⥤ KSheaf A Y :=
+  ObjectProperty.lift _
+  (ObjectProperty.ι KPresheaf.IsKSheaf ⋙ (KPresheaf.pushforward pf))
+  (fun F ↦ F.isKSheafPushforwardObj pf)
 
 end KSheaf
-
 
 end TopCat
