@@ -129,7 +129,8 @@ noncomputable instance symmetricCategory :
     (asIso ((PresheafOfModules.sheafificationAdjunctionOfCommRing.{w} R).counit.app (unit _)))))
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance : (PresheafOfModules.sheafificationOfCommRing.{w} R).Monoidal :=
+noncomputable instance monoidalSheafificationOfCommRing :
+    (PresheafOfModules.sheafificationOfCommRing.{w} R).Monoidal :=
   inferInstanceAs (Localization.Monoidal.toMonoidalCategory
     (PresheafOfModules.sheafificationOfCommRing R) _ _).Monoidal
 
