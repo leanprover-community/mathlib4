@@ -437,7 +437,7 @@ theorem trim_add (m₁ m₂ : OuterMeasure α) : (m₁ + m₂).trim = m₁.trim 
 /-- `trim` respects scalar multiplication. -/
 theorem trim_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R)
     (m : OuterMeasure α) : (c • m).trim = c • m.trim :=
-  ext <| trim_op (smul_apply c m)
+  ext <| trim_op (smul_apply m c)
 
 /-- `trim` sends the supremum of two outer measures to the supremum of the trimmed measures. -/
 theorem trim_sup (m₁ m₂ : OuterMeasure α) : (m₁ ⊔ m₂).trim = m₁.trim ⊔ m₂.trim :=
