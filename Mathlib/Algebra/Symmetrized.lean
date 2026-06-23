@@ -183,12 +183,10 @@ theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)
     sym a * sym b = sym (⅟2 * (a * b + b * a)) :=
   rfl
 
-set_option linter.existingAttributeWarning false in
 @[simp, to_additive existing]
 theorem sym_inv [Inv α] (a : α) : sym a⁻¹ = (sym a)⁻¹ :=
   rfl
 
-set_option linter.existingAttributeWarning false in
 @[simp, to_additive existing]
 theorem unsym_inv [Inv α] (a : αˢʸᵐ) : unsym a⁻¹ = (unsym a)⁻¹ :=
   rfl
