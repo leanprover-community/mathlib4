@@ -39,7 +39,7 @@ variable {P Q : MorphismProperty C}
 /-- This is the precoverage on `C` where covering presieves are those where every
 morphism satisfies `P`. -/
 def precoverage (P : MorphismProperty C) : Precoverage C where
-  coverings X S := ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f
+  coverings X := {S | ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f}
 
 @[simp]
 lemma ofArrows_mem_precoverage {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} :
@@ -59,6 +59,7 @@ instance [P.IsStableUnderComposition] : P.precoverage.IsStableUnderComposition w
     intro ⟨i⟩
     exact P.comp_mem _ _ (hg _ ⟨i.2⟩) (hf ⟨i.1⟩)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Precoverage.Small.{w} P.precoverage where
   zeroHypercoverSmall E := by
     constructor
@@ -133,9 +134,6 @@ variable {P Q : MorphismProperty C}
 
 lemma pretopology_monotone (hPQ : P ≤ Q) : P.pretopology ≤ Q.pretopology :=
   precoverage_monotone hPQ
-
-@[deprecated (since := "2025-08-28")]
-alias pretopology_le := pretopology_monotone
 
 variable (P Q) in
 lemma pretopology_inf : (P ⊓ Q).pretopology = P.pretopology ⊓ Q.pretopology := by

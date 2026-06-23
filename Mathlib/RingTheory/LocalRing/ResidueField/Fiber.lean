@@ -34,16 +34,17 @@ instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
     IsLocalRing (ResidueField R ⊗[R] S) :=
   let eSp : ResidueField R ⊗[R] S ≃ₐ[R] S ⧸ (maximalIdeal R).map (algebraMap R S) :=
     (Algebra.TensorProduct.comm _ _ _).trans
-      ((TensorProduct.quotIdealMapEquivTensorQuot _ _).symm.restrictScalars _)
+      ((TensorProduct.quotIdealMapEquivTensorQuot S (maximalIdeal R)).symm.restrictScalars _)
   have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
     rw [eSp.nontrivial_congr, Ideal.Quotient.nontrivial_iff]
     exact ((((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp inferInstance).trans_lt
-      (inferInstanceAs (maximalIdeal S).IsMaximal).ne_top.lt_top).ne
+      (inferInstance : (maximalIdeal S).IsMaximal).lt_top).ne
   .of_surjective' TensorProduct.includeRight.toRingHom
     (TensorProduct.mk_surjective _ _ _ residue_surjective)
 
-set_option backward.isDefEq.respectTransparency false in
-lemma Ideal.ResidueField.exists_smul_eq_tmul_one
+namespace Ideal
+
+lemma ResidueField.exists_smul_eq_tmul_one
     (x : S ⊗[R] p.ResidueField) : ∃ r ∉ p, ∃ s, r • x = s ⊗ₜ[R] 1 := by
   obtain ⟨t, r, a, hrt, e⟩ := RingHom.SurjectiveOnStalks.exists_mul_eq_tmul
     p.surjectiveOnStalks_residueField x ⊥ isPrime_bot
@@ -62,18 +63,89 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
 and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
-abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S] : Type _ :=
+abbrev Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [AddCommGroup S] [Module R S] : Type _ :=
   p.ResidueField ⊗[R] S
 
-set_option backward.isDefEq.respectTransparency false in
-instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
+instance (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
   .trans _ (⊥ : Ideal p.ResidueField) _
 
-set_option backward.isDefEq.respectTransparency false in
-lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
+/-- If `q` is a prime ideal of `p.Fiber S`,  then the localization `(p.Fiber S)_q` is an algebra
+over the localization `R_p` since `p.Fiber S` is already an `R_p`-algebra. This `R_p`-algebra
+structure on `(p.Fiber S)_q` agrees with the one coming from the fact that `q` lies over `p`. -/
+instance (q : Ideal (p.Fiber S)) [q.IsPrime] : Localization.AtPrime.IsLiesOverAlgebra p q where
+  algebraMap_eq := (Localization.localRingHom_unique p q _ (Ideal.over_def q p) fun _ ↦ rfl).symm
+
+lemma Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
   obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
     (Algebra.TensorProduct.comm _ _ _ x)
   refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def Fiber.algEquivQuotient :
+    letI Rp := Localization p.primeCompl
+    letI pRp := IsLocalRing.maximalIdeal Rp
+    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI pSp := pRp.map (algebraMap Rp Sp)
+    p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
+  (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S _ S _).trans <|
+    { __ := Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
+        rw [← Ideal.map_coe includeRight, Ideal.map_map]
+        congr
+        ext
+        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
+      commutes' := by simp }
+
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def Fiber.algEquivAux₁ :
+    letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
+    letI pS := p.map (algebraMap R S)
+    letI : Algebra S (p.Fiber S) := rightAlgebra
+    p.Fiber S ≃ₐ[S] Sp ⧸ pS.map (algebraMap S Sp) :=
+  letI : Algebra S (p.Fiber S) := rightAlgebra
+  (Fiber.algEquivQuotient p).trans <| quotientEquivAlgOfEq S <| by
+    rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq,
+      IsScalarTower.algebraMap_eq R S, ← map_map]
+
+/-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
+noncomputable def Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime] :
+    letI r := q.comap includeRight
+    letI Sr := Localization.AtPrime r
+    letI pS := p.map (algebraMap R S)
+    Localization.AtPrime q ≃ₐ[R] Sr ⧸ pS.map (algebraMap S Sr) :=
+  letI : Algebra S (p.Fiber S) := rightAlgebra
+  letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
+  letI pS := p.map (algebraMap R S)
+  letI SpS := S ⧸ pS
+  letI r := q.comap includeRight
+  letI Sr := Localization.AtPrime r
+  letI e₁ : p.Fiber S ≃ₐ[S] Sp ⧸ pS.map (algebraMap S Sp) := algEquivAux₁ p
+  letI q' : Ideal (Sp ⧸ pS.map (algebraMap S Sp)) := q.comap e₁.symm
+  haveI : (q'.under SpS).LiesOver r := under_liesOver_of_liesOver SpS q' (q.under S)
+  haveI : algebraMapSubmonoid SpS r.primeCompl = (q'.under SpS).primeCompl :=
+    algebraMapSubmonoid_primeCompl_of_liesOver_surjective (q'.under SpS) r Quotient.mk_surjective
+  haveI : IsLocalization (algebraMapSubmonoid SpS r.primeCompl) (Localization.AtPrime q') := by
+    convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
+      (algebraMapSubmonoid SpS (algebraMapSubmonoid S p.primeCompl)) (Localization.AtPrime q') q'
+  haveI := IsScalarTower.to₁₃₄ R S SpS (Localization.AtPrime q')
+  haveI := IsScalarTower.to₁₃₄ R S SpS (Sr ⧸ pS.map (algebraMap S Sr))
+  ((Localization.localAlgEquiv q' q e₁.symm rfl).symm.restrictScalars R).trans
+    ((IsLocalization.algEquiv (algebraMapSubmonoid SpS r.primeCompl) (Localization.AtPrime q')
+      (Sr ⧸ pS.map (algebraMap S Sr))).restrictScalars R)
+
+/-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
+noncomputable def Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
+    [Localization.AtPrime.IsLiesOverAlgebra p (q.comap includeRight)] :
+    letI r := q.comap includeRight
+    letI Sr := Localization.AtPrime r
+    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=
+  ((algEquivAux₂ p q).extendScalarsOfIsLocalization (Localization.AtPrime p) p.primeCompl).trans
+    (quotientEquivAlgOfEq (Localization.AtPrime p) (map_map _ _))
+
+end Ideal
+
+@[deprecated (since := "2026-05-11")] alias Fiber.algEquivQuotient := Ideal.Fiber.algEquivQuotient
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
@@ -98,12 +170,11 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
       ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
     · simp
     · rw [← Ideal.mem_comap, ← PrimeSpectrum.comap_asIdeal]
-      convert hr
+      convert! hr
       exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩
     · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap,
         -Ideal.ResidueField.map_algebraMap]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- The `OrderIso` between the fiber of `PrimeSpectrum S → PrimeSpectrum R` at a prime
 ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
@@ -115,12 +186,12 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
     constructor
     · obtain ⟨q₁, rfl⟩ := (preimageEquivFiber R S p).symm.surjective q₁
       obtain ⟨q₂, rfl⟩ := (preimageEquivFiber R S p).symm.surjective q₂
-      simpa using Ideal.comap_mono
+      simpa using! Ideal.comap_mono
     · intro H x hx
       obtain ⟨r, hr, s, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ x
       rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
-      · replace hx : s ∈ q₁.1.asIdeal := by simpa using hx
-        simpa using H hx
+      · replace hx : s ∈ q₁.1.asIdeal := by simpa using! hx
+        simpa using! H hx
       · rw [← q₂.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.1.asIdeal.ResidueField]
       · rw [← q₁.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₁.1.asIdeal.ResidueField]
 
@@ -153,11 +224,16 @@ noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing 
   exact
   { __ := preimageOrderIsoFiber R S p
     continuous_toFun := by
-      convert (H.toHomeomorphOfSurjective
-        (preimageOrderIsoFiber R S p).symm.surjective).symm.continuous
+      convert!
+        (H.toHomeomorphOfSurjective (preimageOrderIsoFiber R S p).symm.surjective).symm.continuous
       ext1 x
       obtain ⟨x, rfl⟩ := (H.toHomeomorphOfSurjective
         (preimageOrderIsoFiber R S p).symm.surjective).surjective x
       simp only [Equiv.toFun_as_coe, RelIso.coe_fn_toEquiv, Homeomorph.symm_apply_apply]
       simp
     continuous_invFun := H.continuous }
+
+@[simp]
+theorem PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply (q : PrimeSpectrum (p.Fiber S)) :
+    (primesOverOrderIsoFiber R S p).symm q = q.1.comap Algebra.TensorProduct.includeRight :=
+  rfl

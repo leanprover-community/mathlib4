@@ -18,7 +18,7 @@ This file shows that `ℚ` and `ℚ≥0` are `StarOrderedRing`s. In particular, 
 nonnegative rational number is a sum of squares.
 -/
 
-@[expose] public section
+public section
 
 open AddSubmonoid Set
 open scoped NNRat
@@ -40,7 +40,6 @@ namespace NNRat
 @[simp] lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℚ≥0 ↦ x * x) = ⊤ := by
   simpa only [sq] using addSubmonoid_closure_range_pow two_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 instance instStarOrderedRing : StarOrderedRing ℚ≥0 where
   le_iff a b := by simp [eq_comm, le_iff_exists_nonneg_add (a := a)]
 
@@ -50,7 +49,7 @@ namespace Rat
 
 @[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn₀ : n ≠ 0) (hn : Even n) :
     closure (range fun x : ℚ ↦ x ^ n) = nonneg _ := by
-  convert (AddMonoidHom.map_mclosure NNRat.coeHom <| range fun x ↦ x ^ n).symm
+  convert! (AddMonoidHom.map_mclosure NNRat.coeHom <| range fun x ↦ x ^ n).symm
   · have (x : ℚ) : ∃ y : ℚ≥0, y ^ n = x ^ n := ⟨x.nnabs, by simp [hn.pow_abs]⟩
     simp [subset_antisymm_iff, range_subset_iff, this]
   · ext

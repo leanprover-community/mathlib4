@@ -75,8 +75,10 @@ theorem associated_tmul [Invertible (2 : A)]
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   rw [QuadraticMap.tmul, BilinMap.tmul]
   have : Subsingleton (Invertible (2 : A)) := inferInstance
-  convert associated_left_inverse A (LinearMap.BilinMap.tmul_isSymm
-    (QuadraticMap.associated_isSymm A Q₁) (QuadraticMap.associated_isSymm R Q₂))
+  convert!
+    associated_left_inverse A
+      (LinearMap.BilinMap.tmul_isSymm (QuadraticMap.associated_isSymm A Q₁)
+        (QuadraticMap.associated_isSymm R Q₂))
 
 end QuadraticMap
 
@@ -135,7 +137,6 @@ theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
   rw [associated_tmul (QuadraticMap.sq (R := A)) Q, associated_sq]
   exact rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = BilinForm.baseChange A (polarBilin Q) := by
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
@@ -146,6 +147,7 @@ end QuadraticForm
 
 end InvertibleTwo
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
 In other words, if a base change exists for a quadratic map, it is unique.

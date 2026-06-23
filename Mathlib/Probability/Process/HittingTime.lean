@@ -58,8 +58,6 @@ noncomputable def hittingBtwn (u : ι → Ω → β)
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
     then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 
-@[deprecated (since := "2025-10-25")] alias hitting := hittingBtwn
-
 open scoped Classical in
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hittingAfter u s n` is
 the first time `u` is in `s` after time `n` (if `u` does not hit `s` after time `n` then the
@@ -73,8 +71,6 @@ theorem hittingBtwn_def (u : ι → Ω → β) (s : Set β) (n m : ι) :
     hittingBtwn u s n m =
     fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
   rfl
-
-@[deprecated (since := "2025-10-25")] alias hitting_def := hittingBtwn_def
 
 open scoped Classical in
 lemma hittingAfter_def (u : ι → Ω → β) (s : Set β) (n : ι) :
@@ -115,8 +111,6 @@ variable [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} {s : Set �
 theorem hittingBtwn_of_lt {m : ι} (h : m < n) : hittingBtwn u s n m ω = m := by
   grind [hittingBtwn, not_le, Set.Icc_eq_empty]
 
-@[deprecated (since := "2025-10-25")] alias hitting_of_lt := hittingBtwn_of_lt
-
 theorem hittingBtwn_le {m : ι} (ω : Ω) : hittingBtwn u s n m ω ≤ m := by
   simp only [hittingBtwn]
   split_ifs with h
@@ -124,8 +118,6 @@ theorem hittingBtwn_le {m : ι} (ω : Ω) : hittingBtwn u s n m ω ≤ m := by
     change j ∈ {i | u i ω ∈ s} at hj₂
     exact (csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter hj₁ hj₂)).trans hj₁.2
   · exact le_rfl
-
-@[deprecated (since := "2025-10-25")] alias hitting_le := hittingBtwn_le
 
 theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
@@ -136,9 +128,6 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
   simp_rw [hittingBtwn, if_pos hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hittingBtwn_le _⟩, h⟩
 
-@[deprecated (since := "2025-10-25")] alias notMem_of_lt_hitting := notMem_of_lt_hittingBtwn
-
-set_option backward.isDefEq.respectTransparency false in
 theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   refine fun h ↦ not_le.2 hk₁ ?_
@@ -149,8 +138,6 @@ theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by
   classical
   rw [hittingBtwn, ite_eq_right_iff]
-
-@[deprecated (since := "2025-10-25")] alias hitting_eq_end_iff := hittingBtwn_eq_end_iff
 
 lemma hittingAfter_eq_top_iff : hittingAfter u s n ω = ⊤ ↔ ∀ j, n ≤ j → u j ω ∉ s := by
   simp [hittingAfter]
@@ -165,8 +152,6 @@ theorem hittingBtwn_of_le {m : ι} (hmn : m ≤ n) : hittingBtwn u s n m ω = m 
     exact Set.singleton_subset_iff.2 (le_antisymm hi₂ hi₁ ▸ hi)
   · exact hittingBtwn_of_lt h
 
-@[deprecated (since := "2025-10-25")] alias hitting_of_le := hittingBtwn_of_le
-
 theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u s n m ω := by
   simp only [hittingBtwn]
   split_ifs with h
@@ -177,9 +162,6 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
       exact hb.1.1
   · exact hnm
 
-@[deprecated (since := "2025-10-25")] alias le_hitting := le_hittingBtwn
-
-set_option backward.isDefEq.respectTransparency false in
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
   split_ifs with h
@@ -193,12 +175,8 @@ theorem le_hittingBtwn_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j
   rw [Set.Icc_eq_empty_of_lt (not_le.mp h)] at h_exists
   simp at h_exists
 
-@[deprecated (since := "2025-10-25")] alias le_hitting_of_exists := le_hittingBtwn_of_exists
-
 theorem hittingBtwn_mem_Icc {m : ι} (hnm : n ≤ m) (ω : Ω) : hittingBtwn u s n m ω ∈ Set.Icc n m :=
   ⟨le_hittingBtwn hnm ω, hittingBtwn_le ω⟩
-
-@[deprecated (since := "2025-10-25")] alias hitting_mem_Icc := hittingBtwn_mem_Icc
 
 theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     u (hittingBtwn u s n m ω) ω ∈ s := by
@@ -209,8 +187,6 @@ theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Se
   have h_mem := csInf_mem h_nonempty
   rw [Set.mem_inter_iff] at h_mem
   exact h_mem.2
-
-@[deprecated (since := "2025-10-25")] alias hitting_mem_set := hittingBtwn_mem_set
 
 lemma hittingAfter_mem_set [WellFoundedLT ι] (h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s) :
     u (hittingAfter u s n ω).untopA ω ∈ s := by
@@ -228,9 +204,6 @@ theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}
   · simp_rw [hittingBtwn, if_neg h] at hl
     exact False.elim (hl.ne rfl)
 
-@[deprecated (since := "2025-10-25")] alias hitting_mem_set_of_hitting_lt :=
-  hittingBtwn_mem_set_of_hittingBtwn_lt
-
 lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] (hl : hittingAfter u s n ω ≠ ⊤) :
     u (hittingAfter u s n ω).untopA ω ∈ s := by
   simp only [ne_eq, hittingAfter_eq_top_iff, not_forall, not_not] at hl
@@ -243,9 +216,6 @@ theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u 
   simp_rw [hittingBtwn, if_pos h_exists]
   exact csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter ⟨hin, him⟩ his)
 
-@[deprecated (since := "2025-10-25")] alias hitting_le_of_mem := hittingBtwn_le_of_mem
-
-set_option backward.isDefEq.respectTransparency false in
 lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
@@ -267,10 +237,6 @@ theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
     refine le_trans ?_ (hk₁.2.trans (min_le_right _ _))
     exact hittingBtwn_le_of_mem hk₁.1 (hk₁.2.trans (min_le_left _ _)) hk₂
 
-@[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_exists :=
-  hittingBtwn_le_iff_of_exists
-
-set_option backward.isDefEq.respectTransparency false in
 lemma hittingAfter_le_iff [WellFoundedLT ι] :
     hittingAfter u s n ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s := by
   constructor <;> intro h'
@@ -288,35 +254,48 @@ theorem hittingBtwn_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < 
   by_cases h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s
   · rw [hittingBtwn_le_iff_of_exists h_exists]
   · simp_rw [hittingBtwn, if_neg h_exists]
-    push_neg at h_exists
+    push Not at h_exists
     simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
     exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
 
-@[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_lt := hittingBtwn_le_iff_of_lt
-
-theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
+theorem hittingBtwn_lt_iff {m : ι} (i : ι) (hi : i ≤ m) :
     hittingBtwn u s n m ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h : ∃ j ∈ Set.Icc n m, u j ω ∈ s := by
       by_contra h
       simp_rw [hittingBtwn, if_neg h, ← not_le] at h'
       exact h' hi
-    exact ⟨hittingBtwn u s n m ω, ⟨le_hittingBtwn_of_exists h, h'⟩, hittingBtwn_mem_set h⟩
+    have hni : n < i := (le_hittingBtwn_of_exists h).trans_lt h'
+    have h_le := le_hittingBtwn (u := u) (s := s) (hni.le.trans hi) ω
+    rw [hittingBtwn, if_pos h, csInf_lt_iff] at h'
+    rotate_left
+    · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
+    · exact h
+    simp only [Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq] at h'
+    obtain ⟨j, ⟨⟨hnj, hjm⟩, hj_mem⟩, hji⟩ := h'
+    exact ⟨j, ⟨hnj, hji⟩, hj_mem⟩
   · obtain ⟨k, hk₁, hk₂⟩ := h'
     refine lt_of_le_of_lt ?_ hk₁.2
     exact hittingBtwn_le_of_mem hk₁.1 (hk₁.2.le.trans hi) hk₂
 
-@[deprecated (since := "2025-10-25")] alias hitting_lt_iff := hittingBtwn_lt_iff
-
-set_option backward.isDefEq.respectTransparency false in
-lemma hittingAfter_lt_iff [WellFoundedLT ι] :
+lemma hittingAfter_lt_iff :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
+    have h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s := by
+      rw [ne_eq, hittingAfter_eq_top_iff] at h_top
+      push Not at h_top
+      exact h_top
     have h_le := le_hittingAfter (u := u) (s := s) (n := n) ω
-    refine ⟨(hittingAfter u s n ω).untopA, ?_, hittingAfter_mem_set_of_ne_top h_top⟩
-    lift (hittingAfter u s n ω) to ι using h_top with i'
-    norm_cast at h' h_le
+    rw [hittingAfter, if_pos h_exists] at h'
+    norm_cast at h'
+    rw [csInf_lt_iff] at h'
+    rotate_left
+    · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
+    · exact h_exists
+    simp only [Set.mem_setOf_eq] at h'
+    obtain ⟨j, hj₁, hj₂⟩ := h'
+    exact ⟨j, ⟨hj₁.1, hj₂⟩, hj₁.2⟩
   · obtain ⟨j, hj₁, hj₂⟩ := h'
     refine lt_of_le_of_lt ?_ (mod_cast hj₁.2 : (j : WithTop ι) < i)
     exact hittingAfter_le_of_mem hj₁.1 hj₂
@@ -334,23 +313,19 @@ theorem hittingBtwn_eq_hittingBtwn_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂
       exact ((csInf_le bddBelow_Icc.inter_of_left ⟨hj₁, hj₂⟩).trans hj₁.2).trans (le_of_not_ge hi')
   exact ⟨j, ⟨hj₁.1, hj₁.2.trans h⟩, hj₂⟩
 
-@[deprecated (since := "2025-10-25")] alias hitting_eq_hitting_of_exists :=
-  hittingBtwn_eq_hittingBtwn_of_exists
-
 /-- `hittingBtwn` is nonincreasing with respect to the set. -/
 lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn u · n m) := by
   intro E F hEF ω
   simp only [hittingBtwn_def]
   split_ifs with hF hE hE
   · gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hE, hEF]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hEF]
   · obtain ⟨t, ht⟩ := hF
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · obtain ⟨t, ht⟩ := hE
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `hittingAfter` is nonincreasing with respect to the set. -/
 lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter u · n) := by
   intro E F hEF ω
@@ -358,7 +333,7 @@ lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter
   split_ifs with hF hE hE
   · norm_cast
     gcongr
-    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hE, hEF]
+    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hEF]
   · simp
   · obtain ⟨t, ht⟩ := hE
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
@@ -384,9 +359,6 @@ theorem hittingBtwn_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) :
       exact h ⟨i, ⟨hi₁.1.1, hi₂.le⟩, hi₁.2⟩
     · exact hm
 
-@[deprecated (since := "2025-10-25")] alias hitting_mono := hittingBtwn_mono_right
-@[deprecated (since := "2025-11-12")] alias hittingBtwn_mono := hittingBtwn_mono_right
-
 /-- `hittingBtwn` is monotone with respect to the minimal time. -/
 lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
     Monotone (hittingBtwn u s · m) := by
@@ -394,14 +366,13 @@ lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
   simp only [hittingBtwn]
   split_ifs with h_n h_n' h_n'
   · gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, h_n']
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
   · obtain ⟨t, ht⟩ := h_n
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · have ⟨t, ht⟩ := h_n'
     exact absurd ⟨t, ⟨hnn'.trans ht.1.1, ht.1.2⟩, ht.2⟩ h_n
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `hittingAfter` is monotone with respect to the minimal time. -/
 lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingAfter u s) := by
   intro n m hnm ω
@@ -409,7 +380,7 @@ lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingA
   split_ifs with h_n h_m h_m
   · norm_cast
     gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, h_m]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
   · simp
   · have ⟨t, ht⟩ := h_m
     exact absurd ⟨t, hnm.trans ht.1, ht.2⟩ h_n
@@ -426,7 +397,6 @@ lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
 
 end Inequalities
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A discrete hitting time is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
@@ -441,8 +411,6 @@ theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι]
     simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
-@[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime :=
-  Adapted.isStoppingTime_hittingBtwn
 @[deprecated (since := "2026-01-25")]
 alias hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn
 
@@ -468,9 +436,6 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
     csInf_mem (Set.nonempty_of_mem ⟨hj₁, hj₂⟩)
   exact this.2
 
-@[deprecated (since := "2025-10-25")] alias stoppedValue_hitting_mem := stoppedValue_hittingBtwn_mem
-
-set_option backward.isDefEq.respectTransparency false in
 /-- The hitting time of a discrete process with the starting time indexed by a stopping time
 is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
@@ -505,8 +470,6 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
   simpa using hf.isStoppingTime_hittingBtwn hs n
 
-@[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
-  Adapted.isStoppingTime_hittingBtwn_isStoppingTime
 @[deprecated (since := "2026-01-25")]
 alias isStoppingTime_hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn_isStoppingTime
 
@@ -522,8 +485,6 @@ theorem hittingBtwn_eq_sInf (ω : Ω) : hittingBtwn u s ⊥ ⊤ ω = sInf {i : �
   rw [sInf_eq_top]
   simp only [Set.mem_univ, true_and] at h_notMem_s
   exact fun i hi_mem_s => absurd hi_mem_s (h_notMem_s i)
-
-@[deprecated (since := "2025-10-25")] alias hitting_eq_sInf := hittingBtwn_eq_sInf
 
 lemma hittingAfter_eq_sInf [∀ ω, Decidable (∃ j, u j ω ∈ s)] (ω : Ω) :
     hittingAfter u s ⊥ ω
@@ -546,8 +507,6 @@ theorem hittingBtwn_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j
   · simp only [(hittingBtwn_le ω).trans hi, true_iff]
     obtain ⟨j, hj₁, hj₂⟩ := hx
     exact ⟨j, hj₁.trans hi, hj₂⟩
-
-@[deprecated (since := "2025-10-25")] alias hitting_bot_le_iff := hittingBtwn_bot_le_iff
 
 theorem hittingAfter_bot_le_iff {i : ι} {ω : Ω} :
     hittingAfter u s ⊥ ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s := by

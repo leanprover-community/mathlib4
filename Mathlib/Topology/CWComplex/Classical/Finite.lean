@@ -68,7 +68,7 @@ end CWComplex
 
 /-- If we want to construct a relative CW complex of finite type, we can add the condition
 `finite_cell` and relax the condition `mapsTo`. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def RelCWComplex.mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (D : outParam (Set X))
     (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
@@ -127,7 +127,7 @@ lemma RelCWComplex.finiteType_mkFiniteType.{u} {X : Type u} [TopologicalSpace X]
 
 /-- If we want to construct a CW complex of finite type, we can add the condition `finite_cell` and
 relax the condition `mapsTo`. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def CWComplex.mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (finite_cell : ∀ (n : ℕ), _root_.Finite (cell n))
@@ -179,7 +179,7 @@ lemma CWComplex.finiteType_mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C
 /-- If we want to construct a finite relative CW complex we can add the conditions
 `eventually_isEmpty_cell` and `finite_cell`, relax the condition `mapsTo` and remove the condition
 `closed'`. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (D : outParam (Set X)) (cell : (n : ℕ) → Type u)
     (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
@@ -212,10 +212,10 @@ def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     -- `A = A ∩ C = A ∩ (D ∪ ⋃ n, ⋃ j, closedCell n j)` is closed by assumption since `C` has only
     -- finitely many cells.
     rw [← inter_eq_left.2 asubc]
-    simp_rw [Filter.eventually_atTop, ge_iff_le] at eventually_isEmpty_cell
+    simp_rw [Filter.eventually_atTop] at eventually_isEmpty_cell
     obtain ⟨N, hN⟩ := eventually_isEmpty_cell
     suffices IsClosed (A ∩ (D ∪ ⋃ (n : {n : ℕ // n < N}), ⋃ j, ↑(map n j) '' closedBall 0 1)) by
-      convert this using 2
+      convert! this using 2
       rw [← union', iUnion_subtype]
       congrm D ∪ ⋃ n, ?_
       refine subset_antisymm ?_ (iUnion_subset (fun i ↦ by rfl))
@@ -252,10 +252,9 @@ lemma RelCWComplex.finite_mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Se
   { eventually_isEmpty_cell := eventually_isEmpty_cell
     finite_cell := finite_cell }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If we want to construct a finite CW complex we can add the conditions `eventually_isEmpty_cell`
 and `finite_cell`, relax the condition `mapsTo` and remove the condition `closed'`. -/
-@[simps! -isSimp]
+@[simps! -isSimp, implicit_reducible]
 def CWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (eventually_isEmpty_cell : ∀ᶠ n in Filter.atTop, IsEmpty (cell n))
@@ -309,7 +308,7 @@ variable {X : Type*} [TopologicalSpace X] {C D : Set X} [RelCWComplex C D]
 `C` is finite as a CW complex. -/
 lemma RelCWComplex.finite_of_finite_cells (finite : _root_.Finite (Σ n, cell C n)) : Finite C where
   eventually_isEmpty_cell := by
-    simp only [Filter.eventually_atTop, ge_iff_le]
+    simp only [Filter.eventually_atTop]
     cases isEmpty_or_nonempty (Σ n, cell C n)
     · exact ⟨0, by simp_all⟩
     -- We take the greatest `n` such that there is a `j : cell C n` and show that this fulfills
@@ -335,7 +334,7 @@ lemma RelCWComplex.finite_cells_of_finite [finite : Finite C] : _root_.Finite (�
   -- `Σ (m : {m : ℕ // m < n}), cell C m`.
   have h := finite.eventually_isEmpty_cell
   have _ := finite.finite_cell
-  simp only [Filter.eventually_atTop, ge_iff_le] at h
+  simp only [Filter.eventually_atTop] at h
   rcases h with ⟨n, hn⟩
   have (m) (j : cell C m) : m < n := by
     by_contra h

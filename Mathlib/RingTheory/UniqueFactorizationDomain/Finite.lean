@@ -27,6 +27,7 @@ namespace UniqueFactorizationMonoid
 
 /-- If `y` is a nonzero element of a unique factorization monoid with finitely
 many units (e.g. `ℤ`, `Ideal (ring_of_integers K)`), it has finitely many divisors. -/
+@[implicit_reducible]
 noncomputable def fintypeSubtypeDvd {M : Type*} [CommMonoidWithZero M]
     [UniqueFactorizationMonoid M] [Fintype Mˣ] (y : M) (hy : y ≠ 0) : Fintype { x // x ∣ y } := by
   haveI : Nontrivial M := ⟨⟨y, 0, hy⟩⟩
@@ -36,7 +37,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CommMonoidWithZero M]
   -- We'll show `fun (u : Mˣ) (f ⊆ factors y) ↦ u * Π f` is injective
   -- and has image exactly the divisors of `y`.
   refine
-    Fintype.ofFinset
+    Fintype.subtype
       (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
       fun x => ?_
@@ -44,7 +45,6 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CommMonoidWithZero M]
     Multiset.mem_toFinset, Multiset.mem_powerset]
   constructor
   · rintro ⟨s, hs, rfl⟩
-    change (s.snd : M) * s.fst.prod ∣ y
     rw [(unit_associated_one.mul_right s.fst.prod).dvd_iff_dvd_left, one_mul,
       ← (prod_normalizedFactors hy).dvd_iff_dvd_right]
     exact Multiset.prod_dvd_prod_of_le hs

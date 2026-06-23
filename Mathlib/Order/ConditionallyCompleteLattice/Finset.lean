@@ -179,22 +179,6 @@ end ListMultiset
 
 end ConditionallyCompleteLinearOrder
 
-namespace Finite
-
-variable [Finite ι] [ConditionallyCompleteLattice α] (f : ι → α)
-
-lemma le_ciSup (i : ι) : f i ≤ ⨆ j, f j := by
-  suffices BddAbove (range f) from _root_.le_ciSup this i
-  let : Fintype ι := Fintype.ofFinite ι
-  use Finset.sup' Finset.univ ⟨i, Finset.mem_univ i⟩ f
-  simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-  exact fun j ↦ Finset.le_sup' f <| Finset.mem_univ j
-
-lemma ciInf_le (i : ι) : ⨅ j, f j ≤ f i :=
-  le_ciSup (α := αᵒᵈ) f i
-
-end Finite
-
 /-!
 ### Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
 
@@ -207,7 +191,6 @@ namespace Finset
 section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sup'_eq_csSup_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
     s.sup' H f = sSup (f '' s) :=
   eq_of_forall_ge_iff fun a => by
@@ -228,6 +211,7 @@ variable [Fintype ι] [Nonempty ι]
 lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
   simp [sup'_eq_csSup_image, iSup]
 
+@[to_dual existing]
 lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
   simp [inf'_eq_csInf_image, iInf]
 
@@ -240,6 +224,14 @@ lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :
   le_antisymm
     (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
     (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
+
+theorem ciSup_union [DecidableEq ι] {f : ι → α} {s t : Finset ι} :
+    (⨆ x ∈ s ∪ t, f x) = (⨆ x ∈ s, f x) ⊔ (⨆ x ∈ t, f x) := by
+  suffices ∀ st : Finset ι, BddAbove <| .range fun x ↦ ⨆ (_ : x ∈ st), f x by
+    simp [ciSup_or', ciSup_sup_eq, this]
+  refine fun st ↦ ⟨st.sup f, fun a ⟨i, ha⟩ ↦ ha ▸ ?_⟩
+  by_cases h : i ∈ st <;>
+    simp [h, le_sup]
 
 end ConditionallyCompleteLinearOrderBot
 

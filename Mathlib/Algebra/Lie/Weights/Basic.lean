@@ -110,7 +110,6 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     abel
   rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
-    change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, Module.End.commute_pow_left_of_commute h_comm_square,
       LinearMap.comp_apply, hk, map_zero]
   -- Unpack the information we have about `m₁`, `m₂`.
@@ -215,7 +214,7 @@ namespace Weight
 
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
-  coe_injective' χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
+  coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
 
 @[simp] lemma coe_weight_mk (χ : L → R) (h) :
     (↑(⟨χ, h⟩ : Weight R L M) : L → R) = χ :=
@@ -278,7 +277,7 @@ def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} w
 lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
     genWeightSpaceOf M (χ x) x ≠ ⊥ := by
   have : ⨅ x, genWeightSpaceOf M (χ x) x ≠ ⊥ := χ.genWeightSpace_ne_bot
-  contrapose! this
+  contrapose this
   rw [eq_bot_iff]
   exact le_of_le_of_eq (iInf_le _ _) this
 
@@ -328,7 +327,6 @@ theorem exists_genWeightSpace_zero_le_ker_of_isNoetherian
     ∃ k : ℕ, genWeightSpace M (0 : L → R) ≤ LinearMap.ker (toEnd R L M x ^ k) := by
   simpa using exists_genWeightSpace_le_ker_of_isNoetherian M (0 : L → R) x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_toEnd_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L) :
     _root_.IsNilpotent <| toEnd R L (genWeightSpace M χ) x - algebraMap R _ (χ x) := by
   have : toEnd R L (genWeightSpace M χ) x - algebraMap R _ (χ x) =
@@ -553,7 +551,7 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
   rw [← LieSubmodule.map_comp]
-  convert LieSubmodule.map_id
+  convert! LieSubmodule.map_id
   ext
   simp
 
@@ -586,7 +584,7 @@ lemma isCompl_genWeightSpaceOf_zero_posFittingCompOf (x : L) :
     IsCompl (genWeightSpaceOf M 0 x) (posFittingCompOf R M x) := by
   simpa only [isCompl_iff, codisjoint_iff, disjoint_iff, ← LieSubmodule.toSubmodule_inj,
     LieSubmodule.sup_toSubmodule, LieSubmodule.inf_toSubmodule,
-    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using
+    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using!
     (toEnd R L M x).isCompl_iSup_ker_pow_iInf_range_pow
 
 /-- This lemma exists only to simplify the proof of
@@ -708,10 +706,22 @@ instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizabl
 instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
   maxGenEigenspace_eq_top x := IsTriangularizable.maxGenEigenspace_eq_top (x : L)
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
   maxGenEigenspace_eq_top := by
     rintro ⟨-, x, rfl⟩
     exact IsTriangularizable.maxGenEigenspace_eq_top x
+
+omit [LieRing.IsNilpotent L] in
+lemma IsTriangularizable.exists_hasEigenvalue [Nontrivial M] [IsTriangularizable R L M] (x : L) :
+    ∃ φ, (toEnd R L M x).HasEigenvalue φ := by
+  suffices ∃ φ, (toEnd R L M x).maxGenEigenspace φ ≠ ⊥ by
+    obtain ⟨φ, hφ⟩ := this
+    exact ⟨φ, (Module.End.hasUnifEigenvalue_iff_hasUnifEigenvalue_one ENat.top_pos).mp hφ⟩
+  have := maxGenEigenspace_eq_top (R := R) (L := L) (M := M) x
+  contrapose! this
+  simp [this]
 
 @[simp]
 lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
@@ -764,6 +774,17 @@ lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
   have := iSup_genWeightSpace_eq_top K L M
   erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
   exact this
+
+lemma eq_iSup_inf_genWeightSpace [IsTriangularizable K L M] (N : LieSubmodule K L M) :
+    N = ⨆ χ : Weight K L M, N ⊓ genWeightSpace M χ := by
+  refine le_antisymm ?_ (iSup_le fun χ ↦ inf_le_left)
+  conv_lhs => rw [← N.map_incl_top, ← iSup_genWeightSpace_eq_top' K L N, LieSubmodule.map_iSup]
+  refine iSup_le fun χ_N ↦ ?_
+  have hN := (LieSubmodule.map_mono (le_top : genWeightSpace N χ_N ≤ ⊤)).trans N.map_incl_top.le
+  exact (le_inf hN (map_genWeightSpace_le _)).trans <| by
+    by_cases h : genWeightSpace M (χ_N : L → K) = ⊥
+    · simp [h]
+    · exact le_iSup_of_le ⟨_, h⟩ le_rfl
 
 end field
 

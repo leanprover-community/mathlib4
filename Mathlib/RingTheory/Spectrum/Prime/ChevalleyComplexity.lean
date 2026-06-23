@@ -169,7 +169,6 @@ open InductionObj
 
 universe u
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The structure of the induction in the proof of Chevalley's theorem:
 Consider a property on a vector `e` of polynomials. Suppose that it holds for the following cases:
@@ -204,7 +203,7 @@ private lemma induction_structure (n : ℕ)
     by_cases he0 : e = ⟨0⟩
     · exact he0 ▸ hP₁ R
     cases subsingleton_or_nontrivial R
-    · convert hP₁ R; ext; exact Subsingleton.elim _ _
+    · convert! hP₁ R; ext; exact Subsingleton.elim _ _
     simp only [InductionObj.ext_iff, funext_iff, Pi.zero_apply, not_forall] at he0
     -- Case I : The `e i ≠ 0` with minimal degree has invertible leading coefficient
     by_cases H : (∃ i, (e.1 i).Monic ∧ ∀ j, e.1 j ≠ 0 → (e.1 i).degree ≤ (e.1 j).degree)
@@ -273,7 +272,6 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (large simp set)
 set_option linter.flexible false in
 open IsLocalization in
@@ -359,9 +357,9 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
       _ = ⋃ C ∈ S₁ ∪ S₂, C.toSet := by
         simpa using (Set.biUnion_union (SetLike.coe S₁) S₂ _).symm
     congr 1
-    · convert congr(comap q₁.toRingHom '' $hT₁)
+    · convert! congr(comap q₁.toRingHom '' $hT₁)
       · dsimp only [e₁]
-        rw [Set.preimage_diff, preimage_comap_zeroLocus, preimage_comap_zeroLocus,
+        rw [Set.preimage_sdiff, preimage_comap_zeroLocus, preimage_comap_zeroLocus,
           Set.image_singleton, Pi.smul_def, ← Set.smul_set_range, Set.range_comp]
         congr 1
         refine (PrimeSpectrum.zeroLocus_smul_of_isUnit (.map _ ?_) _).symm
@@ -377,7 +375,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
             basicOpen_mul]
           exact Set.inter_subset_right.trans Set.inter_subset_left
         · exact Set.image_subset_range ..
-        · rw [BasicConstructibleSetData.toSet, BasicConstructibleSetData.toSet, Set.preimage_diff,
+        · rw [BasicConstructibleSetData.toSet, BasicConstructibleSetData.toSet, Set.preimage_sdiff,
             preimage_comap_zeroLocus, preimage_comap_zeroLocus, Set.preimage_image_eq]
           swap; · exact localization_comap_injective _ (.powers c)
           simp only [AlgHom.toLinearMap_apply] at hq₁g₁
@@ -386,8 +384,8 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
             ← pow_succ']
           simp only [← smul_eq_mul, ← Set.smul_set_range, ← Set.smul_set_singleton,
             zeroLocus_smul_of_isUnit ((isUnit_of_invertible (q₁ c)).pow _)]
-    · convert congr(comap q₂.toRingHom '' $hT₂)
-      · rw [Set.preimage_diff, preimage_comap_zeroLocus, preimage_comap_zeroLocus,
+    · convert! congr(comap q₂.toRingHom '' $hT₂)
+      · rw [Set.preimage_sdiff, preimage_comap_zeroLocus, preimage_comap_zeroLocus,
           Set.image_singleton, Set.range_comp, AlgHom.toRingHom_eq_coe]
       · rw [ConstructibleSetData.toSet, Set.image_iUnion₂]
         simp_rw [← Finset.mem_coe, S₂, Finset.coe_image, Set.biUnion_image]
@@ -395,11 +393,11 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         apply Set.injOn_preimage subset_rfl (f := comap q₂.toRingHom)
         · rw [range_comap_of_surjective _ _ q₂_surjective]
           simp only [AlgHom.toRingHom_eq_coe, Ideal.Quotient.mkₐ_ker, zeroLocus_span, q₂]
-          exact Set.diff_subset.trans (zeroLocus_anti_mono (by simp))
+          exact Set.sdiff_subset.trans (zeroLocus_anti_mono (by simp))
         · exact Set.image_subset_range _ _
         · simp only [AlgHom.toLinearMap_apply] at hq₂g₂
           have : q₂ c = 0 := by simp [q₂]
-          simp only [BasicConstructibleSetData.toSet, Set.preimage_diff, preimage_comap_zeroLocus,
+          simp only [BasicConstructibleSetData.toSet, Set.preimage_sdiff, preimage_comap_zeroLocus,
             preimage_comap_zeroLocus,
             Set.preimage_image_eq _ (comap_injective_of_surjective _ q₂_surjective)]
           simp only [Fin.range_cons, Set.image_singleton, Set.image_insert_eq,
@@ -430,7 +428,6 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
       · exact one_le_coeffSubmodule
       · lia
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
 private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
@@ -439,15 +436,15 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
   apply induction_structure
   · intro R _ R₀ _ _ f
     refine ⟨(Finset.range (f.natDegree + 2)).image fun j ↦ ⟨f.coeff j, 0, 0⟩, ?_, ?_⟩
-    · convert image_comap_C_basicOpen f
-      · simp only [basicOpen_eq_zeroLocus_compl, Set.compl_eq_univ_diff]
+    · convert! image_comap_C_basicOpen f
+      · simp only [basicOpen_eq_zeroLocus_compl, Set.compl_eq_univ_sdiff]
         congr 1
         rw [← Set.univ_subset_iff]
         rintro x _ _ ⟨_, rfl⟩
         exact zero_mem x.asIdeal
       · suffices Set.range f.coeff = ⋃ i < f.natDegree + 2, {f.coeff i} by
           simp [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet,
-            ← Set.compl_eq_univ_diff, eq_compl_comm (y := zeroLocus _), ← zeroLocus_iUnion₂, this]
+            ← Set.compl_eq_univ_sdiff, eq_compl_comm (y := zeroLocus _), ← zeroLocus_iUnion₂, this]
         trans f.coeff '' (Set.Iio (f.natDegree + 2))
         · refine ((Set.image_subset_range _ _).antisymm ?_).symm
           rintro _ ⟨i, rfl⟩
@@ -480,7 +477,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
     obtain ⟨S, hS, hS'⟩ := H (R₀ := R₀) f
     refine ⟨S, Eq.trans ?_ hS, ?_⟩
     · rw [← zeroLocus_span (Set.range _), ← zeroLocus_span (Set.range _),
-        idealSpan_range_update_divByMonic hne _ hi]
+        idealSpan_range_update_divByMonic hne]
     · intro C hC
       let c' : InductionObj _ _ := ⟨update c.val j (c.val j %ₘ c.val i)⟩
       have deg_bound₁ : c'.degBound ≤ c.degBound := by
@@ -538,7 +535,8 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
       · intro l m
         rw [update_apply]
         split_ifs with hlj
-        · convert coeff_modByMonic_mem_pow_natDegree_mul _ _ _ (fun _ ↦ coeff_mem_coeffSubmodule)
+        · convert!
+          coeff_modByMonic_mem_pow_natDegree_mul _ _ _ (fun _ ↦ coeff_mem_coeffSubmodule)
             one_mem_coeffSubmodule _ (fun _ ↦ coeff_mem_coeffSubmodule) one_mem_coeffSubmodule _
           rw [← pow_succ, Polynomial.degree_eq_natDegree, WithBot.succ_natCast, Nat.cast_id]
           intro e
@@ -699,7 +697,7 @@ lemma chevalley_mvPolynomialC
   let S' := S.map e.toRingHom
   have hS' : S'.degBound ≤ k * (1 + d.count 0) := by
     apply Finset.sup_le fun x hxS ↦ ?_
-    simp only [ConstructibleSetData.map, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe,
       AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image, BasicConstructibleSetData.map,
       RingHom.coe_coe, S'] at hxS
     obtain ⟨C, hxS, rfl⟩ := hxS
@@ -722,7 +720,7 @@ lemma chevalley_mvPolynomialC
       (coeffsIn _ M ⊓ (degreesLE _ _ B).restrictScalars ℤ)
       (by simpa [MvPolynomial.coeff_one, apply_ite] using hM)
       S' (fun x hxS j k ↦ by
-        simp only [ConstructibleSetData.map, AlgEquiv.toRingEquiv_eq_coe,
+        simp only [ConstructibleSetData.map,
           RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image,
           BasicConstructibleSetData.map, RingHom.coe_coe, S', e] at hxS
         obtain ⟨C, hxS, rfl⟩ := hxS
@@ -799,7 +797,6 @@ end ChevalleyThm
 
 open ChevalleyThm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Chevalley's theorem** with complexity bound.
 
 A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets mapped under
@@ -875,8 +872,8 @@ lemma chevalley_mvPolynomial_mvPolynomial
     simp only [S', BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion₂,
       Finset.set_biUnion_finset_image, ← comp_def (g := finSumFinEquiv.symm), Set.range_comp,
       Equiv.range_eq_univ, Set.image_univ, Set.Sum.elim_range,
-      Set.image_diff (hf := comap_injective_of_surjective g hg'), zeroLocus_union]
-    simp [hg'', ← Set.inter_diff_distrib_right, Set.sdiff_inter_right_comm, s₀]
+      Set.image_sdiff (hf := comap_injective_of_surjective g hg'), zeroLocus_union]
+    simp [hg'', ← Set.inter_sdiff_distrib_right, Set.sdiff_inter_right_comm, s₀]
   obtain ⟨T, hT, hT'⟩ :=
     chevalley_mvPolynomialC
     (M := (degreesLE R (Fin n) Finset.univ.1).restrictScalars ℤ) (by simp) (k + n) d S'
@@ -912,4 +909,4 @@ lemma chevalley_mvPolynomial_mvPolynomial
       Submodule.restrictScalars_mem, mem_degreesLE,
         Multiset.le_iff_count] at this
     simpa only [Multiset.count_nsmul, Multiset.count_univ, mul_one, ← degreeOf_def]
-      using this j
+      using! this j

@@ -264,6 +264,7 @@ theorem Ioo_self : Ioo a a = ∅ :=
 variable {a}
 
 /-- A set with upper and lower bounds in a locally finite order is a fintype -/
+@[implicit_reducible]
 def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds s) : Fintype s :=
   Set.fintypeSubset (Set.Icc a b) fun _ hx => ⟨ha hx, hb hx⟩
@@ -429,6 +430,10 @@ theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
 theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b := by
   simpa [← coe_ssubset] using Set.Iio_ssubset_Iio h
 
+theorem sup_Iic_of_monotone {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
+    (hf : Monotone f) : (Iic a).sup f = f a :=
+  le_antisymm (Finset.sup_le_iff.mpr fun _ h ↦ hf (by simpa using h)) (le_sup (by simp))
+
 variable [LocallyFiniteOrder α]
 
 theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := by
@@ -452,7 +457,6 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_gt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
 def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
@@ -570,7 +574,9 @@ theorem Ico_erase_left (a b : α) : (Ico a b).erase a = Ioo a b := by simp [← 
 theorem Ioc_erase_right (a b : α) : (Ioc a b).erase b = Ioo a b := by simp [← coe_inj]
 
 @[simp]
-theorem Icc_diff_both (a b : α) : Icc a b \ {a, b} = Ioo a b := by simp [← coe_inj]
+theorem Icc_sdiff_both (a b : α) : Icc a b \ {a, b} = Ioo a b := by simp [← coe_inj]
+
+@[deprecated (since := "2026-06-03")] alias Icc_diff_both := Icc_sdiff_both
 
 @[simp]
 theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
@@ -589,19 +595,29 @@ theorem Ioo_insert_right (h : a < b) : insert b (Ioo a b) = Ioc a b := by
   rw [← coe_inj, coe_insert, coe_Ioo, coe_Ioc, Set.insert_eq, Set.union_comm, Set.Ioo_union_right h]
 
 @[simp]
-theorem Icc_diff_Ico_self (h : a ≤ b) : Icc a b \ Ico a b = {b} := by simp [← coe_inj, h]
+theorem Icc_sdiff_Ico_self (h : a ≤ b) : Icc a b \ Ico a b = {b} := by simp [← coe_inj, h]
+
+@[deprecated (since := "2026-06-03")] alias Icc_diff_Ico_self := Icc_sdiff_Ico_self
 
 @[simp]
-theorem Icc_diff_Ioc_self (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by simp [← coe_inj, h]
+theorem Icc_sdiff_Ioc_self (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by simp [← coe_inj, h]
+
+@[deprecated (since := "2026-06-03")] alias Icc_diff_Ioc_self := Icc_sdiff_Ioc_self
 
 @[simp]
-theorem Icc_diff_Ioo_self (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by simp [← coe_inj, h]
+theorem Icc_sdiff_Ioo_self (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by simp [← coe_inj, h]
+
+@[deprecated (since := "2026-06-03")] alias Icc_diff_Ioo_self := Icc_sdiff_Ioo_self
 
 @[simp]
-theorem Ico_diff_Ioo_self (h : a < b) : Ico a b \ Ioo a b = {a} := by simp [← coe_inj, h]
+theorem Ico_sdiff_Ioo_self (h : a < b) : Ico a b \ Ioo a b = {a} := by simp [← coe_inj, h]
+
+@[deprecated (since := "2026-06-03")] alias Ico_diff_Ioo_self := Ico_sdiff_Ioo_self
 
 @[simp]
-theorem Ioc_diff_Ioo_self (h : a < b) : Ioc a b \ Ioo a b = {b} := by simp [← coe_inj, h]
+theorem Ioc_sdiff_Ioo_self (h : a < b) : Ioc a b \ Ioo a b = {b} := by simp [← coe_inj, h]
+
+@[deprecated (since := "2026-06-03")] alias Ioc_diff_Ioo_self := Ioc_sdiff_Ioo_self
 
 @[simp]
 theorem Ico_inter_Ico_consecutive (a b c : α) : Ico a b ∩ Ico b c = ∅ :=
@@ -826,13 +842,14 @@ theorem Ico_subset_Ico_union_Ico {a b c : α} : Ico a c ⊆ Ico a b ∪ Ico b c 
   rw [← coe_subset, coe_union, coe_Ico, coe_Ico, coe_Ico]
   exact Set.Ico_subset_Ico_union_Ico
 
-theorem Ico_union_Ico' {a b c d : α} (hcb : c ≤ b) (had : a ≤ d) :
-    Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
-  rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico' hcb had]
-
 theorem Ico_union_Ico {a b c d : α} (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico h₁ h₂]
+
+/-- This is a special case of `Ico_union_Ico` -/
+theorem Ico_union_Ico' {a b c d : α} (hcb : c ≤ b) (had : a ≤ d) :
+    Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
+  rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico' hcb had]
 
 theorem Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
   rw [← coe_inj, coe_inter, coe_Ico, coe_Ico, coe_Ico, Set.Ico_inter_Ico]
@@ -853,10 +870,14 @@ theorem Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] (a b : α
     {x ∈ Iio a | x < b} = Iio (min a b) := by grind
 
 @[simp]
-theorem Ico_diff_Ico_left (a b c : α) : Ico a b \ Ico a c = Ico (max a c) b := by grind
+theorem Ico_sdiff_Ico_left (a b c : α) : Ico a b \ Ico a c = Ico (max a c) b := by grind
+
+@[deprecated (since := "2026-06-03")] alias Ico_diff_Ico_left := Ico_sdiff_Ico_left
 
 @[simp]
-theorem Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) := by grind
+theorem Ico_sdiff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) := by grind
+
+@[deprecated (since := "2026-06-03")] alias Ico_diff_Ico_right := Ico_sdiff_Ico_right
 
 @[simp]
 theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
@@ -866,11 +887,15 @@ section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
 
-theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+theorem Iic_sdiff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
   grind
 
-theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
-  rw [Iic_diff_Ioc, min_eq_left hab]
+@[deprecated (since := "2026-06-03")] alias Iic_diff_Ioc := Iic_sdiff_Ioc
+
+theorem Iic_sdiff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+  rw [Iic_sdiff_Ioc, min_eq_left hab]
+
+@[deprecated (since := "2026-06-03")] alias Iic_diff_Ioc_self_of_le := Iic_sdiff_Ioc_self_of_le
 
 theorem Iic_union_Ioc_eq_Iic (h : a ≤ b) : Iic a ∪ Ioc a b = Iic b := by
   grind
@@ -1118,16 +1143,14 @@ restricted to pairs satisfying `a ⩿ b`. -/
 lemma monotone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⩿ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [transGen_eq_self (r := (· ≤ · : β → β → Prop)) transitive_le]
-    using TransGen.lift f h <| le_iff_transGen_wcovBy.mp hab
+  simpa [transGen_eq_self] using TransGen.lift f h <| le_iff_transGen_wcovBy.mp hab
 
 /-- A function from a locally finite partial order is monotone if and only if it is monotone when
 restricted to pairs satisfying `a ⋖ b`. -/
 lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [reflTransGen_eq_self (r := (· ≤ · : β → β → Prop)) Std.Refl.reflexive transitive_le]
-    using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
+  simpa [reflTransGen_eq_self] using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
 
 /-- A function from a locally finite preorder is strictly monotone if and only if it is strictly
 monotone when restricted to pairs satisfying `a ⋖ b`. -/
@@ -1135,7 +1158,7 @@ lemma strictMono_iff_forall_covBy [Preorder α] [LocallyFiniteOrder α] [Preorde
     (f : α → β) : StrictMono f ↔ ∀ a b : α, a ⋖ b → f a < f b := by
   refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ ?_⟩
   have := Relation.TransGen.lift f h (a := a) (b := b)
-  rw [← lt_iff_transGen_covBy, transGen_eq_self (@lt_trans β _)] at this
+  rw [← lt_iff_transGen_covBy, transGen_eq_self] at this
   exact this hab
 
 /-- A function from a locally finite preorder is antitone if and only if it is antitone when

@@ -17,26 +17,7 @@ We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 @[expose] public section
 
-open Coalgebra TensorProduct HopfAlgebra
-
-/-- Upgrade a bialgebra to a Hopf algebra by specifying the antipode as an algebra map with
-appropriate conditions. -/
-noncomputable abbrev HopfAlgebra.ofAlgHom {R A : Type*} [CommSemiring R] [CommSemiring A]
-    [Bialgebra R A] (antipode : A →ₐ[R] A)
-    (mul_antipode_rTensor_comul :
-      ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ .all _).comp
-        (Bialgebra.comulAlgHom R A)) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A))
-    (mul_antipode_lTensor_comul :
-      (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ .all _ _).comp
-        (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
-    HopfAlgebra R A where
-  antipode := antipode
-  mul_antipode_rTensor_comul := by
-    rw [← Algebra.TensorProduct.lmul'_comp_map] at mul_antipode_rTensor_comul
-    exact congr(($mul_antipode_rTensor_comul).toLinearMap)
-  mul_antipode_lTensor_comul := by
-    rw [← Algebra.TensorProduct.lmul'_comp_map] at mul_antipode_lTensor_comul
-    exact congr(($mul_antipode_lTensor_comul).toLinearMap)
+open Coalgebra HopfAlgebra
 
 namespace TensorProduct
 
@@ -44,13 +25,13 @@ variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semir
     [Algebra R S] [HopfAlgebra R A] [HopfAlgebra S B] [Algebra R B]
     [IsScalarTower R S B]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 noncomputable
 instance : HopfAlgebra S (B ⊗[R] A) where
   antipode := AlgebraTensorModule.map (HopfAlgebra.antipode S) (HopfAlgebra.antipode R)
   mul_antipode_rTensor_comul := by
     ext x y
-    convert congr($(mul_antipode_rTensor_comul_apply (R := S) x) ⊗ₜ[R]
+    convert! congr($(mul_antipode_rTensor_comul_apply (R := S) x) ⊗ₜ[R]
       $(mul_antipode_rTensor_comul_apply (R := R) y)) using 1
     · dsimp
       hopf_tensor_induction comul (R := S) x with x₁ x₂
@@ -60,7 +41,7 @@ instance : HopfAlgebra S (B ⊗[R] A) where
       simp [Algebra.algebraMap_eq_smul_one, smul_tmul']
   mul_antipode_lTensor_comul := by
     ext x y
-    convert congr($(mul_antipode_lTensor_comul_apply (R := S) x) ⊗ₜ[R]
+    convert! congr($(mul_antipode_lTensor_comul_apply (R := S) x) ⊗ₜ[R]
       $(mul_antipode_lTensor_comul_apply (R := R) y)) using 1
     · dsimp [Algebra.TensorProduct.one_def]
       hopf_tensor_induction comul (R := S) x with x₁ x₂

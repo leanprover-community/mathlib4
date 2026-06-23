@@ -31,6 +31,7 @@ namespace Preadditive
 
 /-- If `D` is a preadditive category, any fully faithful functor `F : C ⥤ D` induces a preadditive
 structure on `C`. -/
+@[implicit_reducible]
 def ofFullyFaithful : Preadditive C where
   homGroup P Q := hF.homEquiv.addCommGroup
   add_comp P Q R f f' g := hF.map_injective (by simp [Equiv.add_def])
@@ -41,7 +42,6 @@ end Preadditive
 open Preadditive
 namespace Functor.FullyFaithful
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The preadditive structure on `C` induced by a fully faithful functor `F : C ⥤ D` makes `F` an
 additive functor. -/
 lemma additive_ofFullyFaithful :

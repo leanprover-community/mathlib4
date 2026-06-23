@@ -65,14 +65,19 @@ theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
 lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
 @[simp] lemma deleteEdges_univ : G.deleteEdges Set.univ = ⊥ := by simp [deleteEdges]
 
+@[simp]
+theorem deleteEdges_le_iff (s : Set (Sym2 V)) (G' : SimpleGraph V) :
+    G.deleteEdges s ≤ G' ↔ G ≤ fromEdgeSet s ⊔ G' := by
+    rw [deleteEdges, sdiff_le_iff]
+
 lemma deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := sdiff_le
 
-lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
+@[gcongr] lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
   sdiff_le_sdiff_left <| fromEdgeSet_mono h
 
+@[gcongr]
 lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma deleteEdges_eq_self : G.deleteEdges s = G ↔ Disjoint G.edgeSet s := by
   rw [deleteEdges, sdiff_eq_left, disjoint_fromEdgeSet]
 
@@ -92,7 +97,6 @@ theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
 theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
   simp [deleteEdges]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
     [Fintype (G.deleteEdges s).edgeSet] :
     (G.deleteEdges s).edgeFinset = G.edgeFinset \ s := by
@@ -104,6 +108,8 @@ set_option backward.isDefEq.respectTransparency false in
 
 @[simp] lemma deleteEdges_fromEdgeSet (s t : Set (Sym2 V)) :
     (fromEdgeSet s).deleteEdges t = fromEdgeSet (s \ t) := by ext; simp +contextual
+
+@[simp] lemma deleteEdges_eq_bot : G.deleteEdges s = ⊥ ↔ G.edgeSet ⊆ s := by simp [deleteEdges]
 
 end DeleteEdges
 
@@ -162,8 +168,8 @@ theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel
   apply card_edgeFinset_induce_of_support_subset
   trans G.support \ {x}
   · exact support_deleteIncidenceSet_subset G x
-  · rw [Set.compl_eq_univ_diff]
-    exact Set.diff_subset_diff_left (Set.subset_univ G.support)
+  · rw [Set.compl_eq_univ_sdiff]
+    exact Set.sdiff_subset_sdiff_left (Set.subset_univ G.support)
 
 /-- The finite edge set of `G.deleteIncidenceSet x` is the finite edge set of the simple graph `G`
 set difference the finite incidence set of the vertex `x`. -/
@@ -199,7 +205,7 @@ theorem card_support_deleteIncidenceSet
     card (G.deleteIncidenceSet x).support ≤ card G.support - 1 := by
   rw [← Set.singleton_subset_iff, ← Set.toFinset_subset_toFinset] at hx
   simp_rw [← Set.card_singleton x, ← Set.toFinset_card, ← card_sdiff_of_subset hx,
-    ← Set.toFinset_diff]
+    ← Set.toFinset_sdiff]
   apply card_le_card
   rw [Set.toFinset_subset_toFinset]
   exact G.support_deleteIncidenceSet_subset x

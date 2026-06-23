@@ -78,9 +78,6 @@ theorem range_one : range 1 = {0} :=
 
 theorem range_add_one : range (n + 1) = insert n (range n) := by grind
 
-@[deprecated range_add_one (since := "2025-09-08")]
-theorem range_succ : range (succ n) = insert n (range n) := range_add_one
-
 theorem notMem_range_self : n ∉ range n := by grind
 
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) := by grind
@@ -94,6 +91,9 @@ theorem subset_range {s n} : s ⊆ range n ↔ ∀ x, x ∈ s → x < n := by gr
 theorem range_subset_range {n m} : range n ⊆ range m ↔ n ≤ m := by grind
 
 theorem range_mono : Monotone range := fun _ _ => range_subset_range.2
+
+theorem strictMono_range : StrictMono range :=
+  strictMono_nat_of_lt_succ fun _ ↦ by simp [ssubset_def]
 
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ range b.succ ↔ a ≤ b := by grind
 
@@ -115,9 +115,6 @@ theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_range_add_one : (range <| n + 1).Nonempty :=
   nonempty_range_iff.2 n.succ_ne_zero
-
-@[deprecated nonempty_range_add_one (since := "2025-09-08")]
-alias nonempty_range_succ := nonempty_range_add_one
 
 lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]

@@ -100,7 +100,7 @@ info: Tests.Reassoc.foo_functor'_assoc.{v₁, v₂, u₁, u₂} {C : Type u₁} 
 #guard_msgs in
 #check foo_functor'_assoc
 
--- Test that the attribute works on publically imported declarations:
+-- Test that the attribute works on publicly imported declarations:
 attribute [reassoc] Iso.hom_inv_id_assoc
 
 /--

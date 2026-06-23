@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.OreLocalization.OreSet
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
 -/
 
-@[expose] public section
+public section
 
 open Cardinal Module nonZeroDivisors
 
@@ -46,7 +46,7 @@ lemma IsLocalizedModule.lift_rank_eq :
   cases subsingleton_or_nontrivial R
   · simp only [rank_subsingleton, lift_one]
   apply le_antisymm <;>
-    rw [Module.rank_def, lift_iSup (bddAbove_range _)] <;>
+    rw [Module.rank_def, lift_iSup bddAbove_of_small] <;>
     apply ciSup_le' <;>
     intro ⟨s, hs⟩
   exacts [(IsLocalizedModule.linearIndependent_lift p f hs).choose_spec.cardinal_lift_le_rank,
@@ -54,7 +54,7 @@ lemma IsLocalizedModule.lift_rank_eq :
       |>.cardinal_lift_le_rank]
 
 lemma IsLocalizedModule.finrank_eq : finrank R N = finrank R M := by
-  simpa using congr_arg toNat (lift_rank_eq p f hp)
+  simpa using! congr_arg toNat (lift_rank_eq p f hp)
 
 end
 
@@ -87,7 +87,6 @@ theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
     IsLocalization.rank_eq (FractionRing R) R⁰ le_rfl,
     IsLocalizedModule.lift_rank_eq R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **rank-nullity theorem** for commutative domains. Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by
@@ -136,7 +135,7 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
     AlgebraTensorModule.congr (.refl ..) ((isLocalizedModule_iff_isBaseChange p S f).mp ‹_›).equiv
 
 theorem finrank_eq_of_le_nonZeroDivisors : finrank T P = finrank R M := by
-  simpa using congr_arg toNat (lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc)
+  simpa using! congr_arg toNat (lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc)
 
 omit bc
 theorem rank_eq_of_le_nonZeroDivisors {P : Type uM} [AddCommGroup P] [Module R P] [Module T P]
@@ -152,7 +151,6 @@ variable {p} {T : Type uT} [CommRing T] [NoZeroDivisors T] [Algebra R T] [Faithf
 
 include bc
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lift_rank_eq :
     Cardinal.lift.{uM} (Module.rank T P) = Cardinal.lift.{uP} (Module.rank R M) := by
   have inj := FaithfulSMul.algebraMap_injective R T
@@ -177,7 +175,7 @@ theorem lift_rank_eq :
     lift_rank_eq_of_le_nonZeroDivisors FR (LocalizedModule.mkLinearMap R⁰ M) le_rfl
       (map_le_nonZeroDivisors_of_injective _ inj le_rfl) this, lift_lift]
 
-theorem finrank_eq : finrank T P = finrank R M := by simpa using congr_arg toNat bc.lift_rank_eq
+theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr_arg toNat bc.lift_rank_eq
 
 omit bc
 theorem rank_eq {P : Type uM} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
@@ -198,7 +196,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     ℵ₀ ≤ Module.rank R R := by
   classical
   rw [← not_nonempty_iff, OreLocalization.nonempty_oreSet_iff_of_noZeroDivisors] at hS
-  push_neg at hS
+  push Not at hS
   obtain ⟨r, s, h⟩ := hS
   refine Cardinal.aleph0_le.mpr fun n ↦ ?_
   suffices LinearIndependent R (fun (i : Fin n) ↦ r * s ^ (i : ℕ)) by
@@ -210,7 +208,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
   induction n generalizing g x i with
-  | zero => exact (hin.not_ge (zero_le i)).elim
+  | zero => contradiction
   | succ n IH =>
     rw [Finset.sum_range_succ'] at hg
     by_cases hg0 : g 0 = 0

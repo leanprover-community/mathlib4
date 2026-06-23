@@ -47,12 +47,7 @@ def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
 
 theorem circleTransformDeriv_periodic (f : ℂ → E) :
     Periodic (circleTransformDeriv R z w f) (2 * π) := by
-  have := periodic_circleMap
-  simp_rw [Periodic] at *
-  intro x
-  simp_rw [circleTransformDeriv, this]
-  congr 2
-  simp [this]
+  simp [circleTransformDeriv, periodic_circleMap z R _, periodic_circleMap 0 R _]
 
 theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
     fun θ => (circleMap z R θ - w)⁻¹ • circleTransform R z w f θ := by
@@ -120,7 +115,6 @@ theorem norm_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 
   have := IsCompact.exists_isMaxOn comp none (cts.mono <| prod_mono_right (subset_univ _))
   simpa [isMaxOn_iff] using this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The derivative of a `circleTransform` is locally bounded. -/
 theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ → ℂ} (hx : x ∈ ball z R)
     (hf : ContinuousOn f (sphere z R)) : ∃ B ε : ℝ, 0 < ε ∧
@@ -138,8 +132,8 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
   have hy2 : y1 ∈ [[0, 2 * π]] := Icc_subset_uIcc <| Ico_subset_Icc_self hy1
   simp only [isMaxOn_iff, mem_sphere_iff_norm] at HX2
   have := mul_le_mul (hab ⟨⟨v, y1⟩, ⟨ball_subset_closedBall (H hv), hy2⟩⟩)
-    (HX2 (circleMap z R y1) (circleMap_mem_sphere z hR.le y1)) (norm_nonneg _)
-    (norm_nonneg _)
+    (HX2 (circleMap z R y1) (mem_sphere_iff_norm.1 (circleMap_mem_sphere z hR.le y1)))
+    (norm_nonneg _) (norm_nonneg _)
   rw [hfun]
   simpa [V, circleTransformBoundingFunction, circleTransformDeriv, mul_assoc] using this
 

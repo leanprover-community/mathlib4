@@ -94,7 +94,7 @@ def adjointDomain : Submodule 𝕜 F where
     exact continuous_zero
   add_mem' hx hy := by rw [Set.mem_setOf_eq, LinearMap.map_add] at *; exact hx.add hy
   smul_mem' a x hx := by
-    rw [Set.mem_setOf_eq, map_smulₛₗ] at *
+    rw [Set.mem_setOf_eq, LinearMap.map_smulₛₗ] at *
     exact hx.const_smul (conj a)
 
 /-- The operator `fun x ↦ ⟪y, T x⟫` considered as a continuous linear operator
@@ -106,14 +106,12 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
     adjointDomainMkCLM T y x = ⟪(y : F), T x⟫ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain)
 
 variable {T}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
     (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
@@ -131,13 +129,13 @@ the assumption that `T.domain` is dense. -/
 def adjointAux : T.adjointDomain →ₗ[𝕜] E where
   toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend T y)
   map_add' x y :=
-    hT.eq_of_inner_left fun _ => by
-      simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toDual_symm_apply,
-        adjointDomainMkCLMExtend_apply hT]
+    hT.eq_of_inner_left 𝕜 fun z zin => by
+      simp [InnerProductSpace.toDual_symm_apply, inner_add_left,
+        adjointDomainMkCLMExtend_apply hT _ ⟨z, zin⟩, inner_add_left]
   map_smul' _ _ :=
-    hT.eq_of_inner_left fun _ => by
-      simp only [inner_smul_left, Submodule.coe_smul_of_tower, RingHom.id_apply,
-        InnerProductSpace.toDual_symm_apply, adjointDomainMkCLMExtend_apply hT]
+    hT.eq_of_inner_left 𝕜 fun z zin => by
+      simp [inner_smul_left, RingHom.id_apply,
+        InnerProductSpace.toDual_symm_apply, adjointDomainMkCLMExtend_apply hT _ ⟨z, zin⟩]
 
 theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
     ⟪adjointAux hT y, x⟫ = ⟪(y : F), T x⟫ := by
@@ -145,7 +143,7 @@ theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
 
 theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
     (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) : adjointAux hT y = x₀ :=
-  hT.eq_of_inner_left fun v => (adjointAux_inner hT _ _).trans (hx₀ v).symm
+  hT.eq_of_inner_left 𝕜 fun v vin => (adjointAux_inner hT _ _).trans (hx₀ ⟨v, vin⟩).symm
 
 variable (T)
 
@@ -168,7 +166,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   obtain ⟨w, hw⟩ := h
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
-  convert this using 1
+  convert! this using 1
   exact funext fun x => (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
@@ -306,8 +304,8 @@ theorem _root_.LinearPMap.adjoint_graph_eq_graph_adjoint (hT : Dense (T.domain :
       rintro ⟨a, ha⟩
       rw [← inner_conj_symm, ← h a ha, inner_conj_symm]
     use hx
-    apply hT.eq_of_inner_right
-    rintro ⟨a, ha⟩
+    apply hT.eq_of_inner_right 𝕜
+    rintro a ha
     rw [← h a ha, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩]
 
 @[simp]
@@ -319,9 +317,8 @@ theorem _root_.LinearPMap.graph_adjoint_toLinearPMap_eq_adjoint (hT : Dense (T.d
   intro x hx hx'
   simp only [mem_adjoint_iff, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left, hx',
     inner_zero_right, zero_sub, neg_eq_zero, forall_exists_index, forall_apply_eq_imp_iff] at hx
-  apply hT.eq_zero_of_inner_right
-  rintro ⟨a, ha⟩
-  exact hx a ha
+  apply hT.eq_zero_of_inner_right 𝕜
+  exact fun a ha ↦ hx a ha
 
 end Submodule
 

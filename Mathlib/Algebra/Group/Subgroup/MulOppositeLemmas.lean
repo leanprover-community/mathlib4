@@ -22,13 +22,13 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {G : Type*} [Group G]
 
 namespace Subgroup
 
-/- We redeclare this instance to get keys
+/-- We redeclare this instance to get keys
 `SMul (@Subtype (MulOpposite _) (@Membership.mem (MulOpposite _)
   (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
 compared to the keys for `Submonoid.smul`
@@ -37,14 +37,12 @@ compared to the keys for `Submonoid.smul`
 
 /-! ### Lattice results -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot
 
 @[to_additive (attr := simp)]
 theorem op_eq_bot {S : Subgroup G} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem unop_bot : (⊥ : Subgroup Gᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 

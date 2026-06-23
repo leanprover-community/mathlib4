@@ -46,7 +46,6 @@ namespace HomologicalComplex₂
 
 variable (C : Type*) [Category* C] [Preadditive C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift on bicomplexes obtained by shifting the first indices (and changing the
 sign of differentials). -/
 abbrev shiftFunctor₁ (x : ℤ) :
@@ -114,10 +113,12 @@ instance : ((shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := fun n =>
       right_inv _ := by simp }
     (fun _ => Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : ((shiftFunctor₂ C y ⋙ shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : ((shiftFunctor₁ C x ⋙ shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := by
   dsimp
   infer_instance
@@ -141,6 +142,7 @@ noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
     dsimp
     simp only [ι_totalDesc_assoc, Category.assoc, ι_totalDesc, XXIsoOfEq_inv_ιTotal, comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x = n₀') (h₁ : n₁ + x = n₁') :
@@ -159,6 +161,7 @@ lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
     grind [up_Rel]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma D₂_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x = n₀') (h₁ : n₁ + x = n₁') :
@@ -192,6 +195,7 @@ noncomputable def totalShift₁Iso :
         Linear.comp_units_smul, K.D₁_totalShift₁XIso_hom x n n' _ _ rfl rfl,
         K.D₂_totalShift₁XIso_hom x n n' _ _ rfl rfl])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : a' = a + x)
@@ -203,7 +207,7 @@ lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : 
   dsimp [totalShift₁Iso, totalShift₁XIso]
   simp only [ι_totalDesc, comp_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
     (ha' : a' + b = n') (hn' : n' = n + x) :
@@ -217,6 +221,7 @@ lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
   dsimp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
   simp only [id_comp, ι_totalDesc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc]
@@ -252,6 +257,7 @@ noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
       Linear.comp_units_smul, XXIsoOfEq_inv_ιTotal, smul_smul, Int.units_mul_self, one_smul,
       comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y = n₀') (h₁ : n₁ + y = n₁') :
@@ -273,6 +279,7 @@ lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
     grind [up_Rel]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y = n₀') (h₁ : n₁ + y = n₁') :
@@ -311,6 +318,7 @@ noncomputable def totalShift₂Iso :
         Linear.comp_units_smul, K.D₁_totalShift₂XIso_hom y n n' _ _ rfl rfl,
         K.D₂_totalShift₂XIso_hom y n n' _ _ rfl rfl])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : b' = b + y)
@@ -323,6 +331,7 @@ lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : 
   dsimp [totalShift₂Iso, totalShift₂XIso]
   simp only [ι_totalDesc, comp_id, id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
     (hb' : a + b' = n') (hn' : n' = n + y) :
@@ -336,6 +345,7 @@ lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
   dsimp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
   simp only [id_comp, ι_totalDesc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc]
@@ -357,6 +367,7 @@ def shiftFunctor₁₂CommIso (x y : ℤ) :
     shiftFunctor₂ C y ⋙ shiftFunctor₁ C x ≅ shiftFunctor₁ C x ⋙ shiftFunctor₂ C y :=
   Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The compatibility isomorphisms of the total complex with the shifts
 in both variables "commute" only up to a sign `(x * y).negOnePow`. -/

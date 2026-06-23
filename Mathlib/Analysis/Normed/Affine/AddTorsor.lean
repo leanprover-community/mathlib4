@@ -132,7 +132,6 @@ section invertibleTwo
 
 variable [Invertible (2 : 𝕜)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_left_midpoint (p₁ p₂ : P) : dist p₁ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖⁻¹ * dist p₁ p₂ := by
   rw [midpoint, dist_comm, dist_lineMap_left, invOf_eq_inv, ← norm_inv]
@@ -176,7 +175,6 @@ theorem dist_left_midpoint_eq_dist_right_midpoint (p₁ p₂ : P) :
     dist p₁ (midpoint 𝕜 p₁ p₂) = dist p₂ (midpoint 𝕜 p₁ p₂) := by
   rw [dist_left_midpoint p₁ p₂, dist_right_midpoint p₁ p₂]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint]

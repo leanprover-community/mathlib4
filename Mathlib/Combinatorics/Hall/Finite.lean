@@ -59,7 +59,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases! he : s'.Nonempty
   · have ha' : #s' < #(s'.biUnion fun x => t x) := by
-      convert ha he fun h => by simpa [← h] using mem_univ x using 2
+      convert! ha he fun h => by simpa [← h] using mem_univ x using 2
       ext x
       simp only [mem_image, mem_biUnion, SetCoe.exists, exists_and_right,
         exists_eq_right]
@@ -126,7 +126,7 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
     #s' ≤ #(s'.biUnion fun a' => t a') := by
   classical
     rw [← card_image_of_injective s' Subtype.coe_injective]
-    convert ht (s'.image fun z => z.1) using 1
+    convert! ht (s'.image fun z => z.1) using 1
     apply congr_arg
     ext y
     simp
@@ -155,7 +155,6 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
   · apply biUnion_subset_biUnion_of_subset_left
     apply subset_union_left
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Second case of the inductive step: assuming that
 `∃ (s : Finset ι), s ≠ univ → #s = #(s.biUnion t)`
 and that the statement of **Hall's Marriage Theorem** is true for all

@@ -7,12 +7,14 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 
+import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
+
 /-! # Conditional expectation
 
 We build the conditional expectation of an integrable function `f` with value in a Banach space
 with respect to a measure `μ` (defined on a measurable space structure `m₀`) and a measurable space
 structure `m` with `hm : m ≤ m₀` (a sub-sigma-algebra). This is an `m`-strongly measurable
-function `μ[f|hm]` which is integrable and verifies `∫ x in s, μ[f|hm] x ∂μ = ∫ x in s, f x ∂μ`
+function `μ[f | m]` which is integrable and verifies `∫ x in s, μ[f | m] x ∂μ = ∫ x in s, f x ∂μ`
 for all `m`-measurable sets `s`. It is unique as an element of `L¹`.
 
 The construction is done in four steps:
@@ -82,7 +84,7 @@ variable {α β E 𝕜 : Type*} [RCLike 𝕜] {m m₀ : MeasurableSpace α} {μ 
   {s : Set α}
 
 section NormedAddCommGroup
-variable [NormedAddCommGroup E] [CompleteSpace E]
+variable [NormedAddCommGroup E]
 
 section NormedSpace
 variable [NormedSpace ℝ E]
@@ -123,7 +125,7 @@ meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f | m] = 0 := by rw [condExp, dif_neg hm_not]
 
 theorem condExp_of_not_sigmaFinite (hm : m ≤ m₀) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
-    μ[f | m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push_neg; exact fun h => absurd h hμm_not
+    μ[f | m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push Not; exact fun h => absurd h hμm_not
 
 open scoped Classical in
 theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
@@ -144,7 +146,8 @@ theorem condExp_const (hm : m ≤ m₀) (c : E) [IsFiniteMeasure μ] :
     μ[fun _ : α ↦ c | m] = fun _ ↦ c :=
   condExp_of_stronglyMeasurable hm stronglyMeasurable_const (integrable_const c)
 
-theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] (f : α → E) :
+theorem condExp_ae_eq_condExpL1 [CompleteSpace E]
+    (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] (f : α → E) :
     μ[f | m] =ᵐ[μ] condExpL1 hm μ f := by
   rw [condExp_of_sigmaFinite hm]
   by_cases hfi : Integrable f μ
@@ -157,7 +160,8 @@ theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim h
   rw [if_neg hfi, condExpL1_undef hfi]
   exact (coeFn_zero _ _ _).symm
 
-theorem condExp_ae_eq_condExpL1CLM (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
+theorem condExp_ae_eq_condExpL1CLM [CompleteSpace E]
+    (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f | m] =ᵐ[μ] condExpL1CLM E hm μ (hf.toL1 f) := by
   refine (condExp_ae_eq_condExpL1 hm f).trans (Eventually.of_forall fun x => ?_)
   rw [condExpL1_eq hf]
@@ -169,7 +173,7 @@ theorem condExp_of_not_integrable (hf : ¬Integrable f μ) : μ[f | m] = 0 := by
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   rw [condExp_of_sigmaFinite, if_neg hf]
 
-@[simp]
+@[to_fun (attr := simp) condExp_fun_zero]
 theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by
   by_cases hm : m ≤ m₀
   swap; · rw [condExp_of_not_le hm]
@@ -177,6 +181,7 @@ theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   exact condExp_of_stronglyMeasurable hm stronglyMeasurable_zero (integrable_zero _ _ _)
 
+@[fun_prop]
 theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f | m]) := by
   by_cases hm : m ≤ m₀
   swap; · rw [condExp_of_not_le hm]; exact stronglyMeasurable_zero
@@ -187,6 +192,8 @@ theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f | m]) := by
   · exact hfm
   · exact aestronglyMeasurable_condExpL1.stronglyMeasurable_mk
   · exact stronglyMeasurable_zero
+
+variable [CompleteSpace E]
 
 @[gcongr]
 theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f | m] =ᵐ[μ] μ[g | m] := by
@@ -275,6 +282,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
   · rw [ae_zero]; exact eventually_bot
   · exact Eventually.of_forall <| congr_fun (condExp_bot' f)
 
+@[simp]
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f | ⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
   rw [probReal_univ, inv_one, one_smul]
@@ -290,7 +298,7 @@ theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : Measurabl
   exact (coeFn_add _ _).trans
     ((condExp_ae_eq_condExpL1 hm _).symm.add (condExp_ae_eq_condExpL1 hm _).symm)
 
-theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
+theorem condExp_finsetSum {ι : Type*} {s : Finset ι} {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) (m : MeasurableSpace α) :
     μ[∑ i ∈ s, f i | m] =ᵐ[μ] ∑ i ∈ s, μ[f i | m] := by
   classical
@@ -299,8 +307,10 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
   | insert i s his heq =>
     rw [Finset.sum_insert his, Finset.sum_insert his]
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
-      (integrable_finset_sum' _ <| Finset.forall_of_forall_insert hf) _).trans
+      (integrable_finsetSum' _ <| Finset.forall_of_forall_insert hf) _).trans
         ((EventuallyEq.refl _ _).add <| heq <| Finset.forall_of_forall_insert hf)
+
+@[deprecated (since := "2026-04-08")] alias condExp_finset_sum := condExp_finsetSum
 
 theorem condExp_smul [NormedSpace 𝕜 E] (c : 𝕜) (f : α → E) (m : MeasurableSpace α) :
     μ[c • f | m] =ᵐ[μ] c • μ[f | m] := by
@@ -393,7 +403,7 @@ end RCLike
 end NormedSpace
 
 section Real
-variable [InnerProductSpace ℝ E]
+variable [InnerProductSpace ℝ E] [CompleteSpace E]
 
 -- TODO: Generalize via the conditional Jensen inequality
 lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
@@ -427,12 +437,12 @@ variable {R : Type*} [NormedRing R] [NormedSpace ℝ R] [CompleteSpace R]
 @[simp]
 lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :
     μ[ofNat(n) * f | m] =ᵐ[μ] ofNat(n) * μ[f | m] := by
-  simpa [Nat.cast_smul_eq_nsmul] using condExp_smul (μ := μ) (m := m) (n : ℝ) f
+  simpa [Nat.cast_smul_eq_nsmul] using! condExp_smul (μ := μ) (m := m) (n : ℝ) f
 
 end NormedRing
 
 section NormedLatticeAddCommGroup
-variable [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
@@ -444,6 +454,29 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
+
+theorem condExp_tsum [CompleteSpace E]
+    {ι : Type*} [Countable ι] {f : ι → α → E} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
+    (hf' : ∑' i, ∫⁻ a, ‖f i a‖ₑ ∂μ ≠ ∞) :
+    μ[fun a ↦ ∑' i, f i a | m] =ᵐ[μ] fun a ↦ ∑' i, μ[f i | m] a := by
+  by_cases hm : m ≤ m₀; swap
+  · simp only [condExp_of_not_le hm, Pi.zero_apply, tsum_zero]
+    exact ae_eq_rfl
+  by_cases hμm : SigmaFinite (μ.trim hm); swap
+  · simp only [condExp_of_not_sigmaFinite hm hμm, Pi.zero_apply, tsum_zero]
+    exact ae_eq_rfl
+  grw [condExp_ae_eq_condExpL1 hm]
+  have A : ∀ᵐ a ∂μ, ∀ i, μ[f i | m] a = condExpL1 hm μ (f i) a :=
+    ae_all_iff.2 (fun i ↦ condExp_ae_eq_condExpL1 hm _)
+  have B : ∑' (n : ι), ‖condExpL1 hm μ (f n)‖ₑ ≠ ∞ := by
+    apply (lt_of_le_of_lt ?_ hf'.lt_top).ne
+    gcongr with i
+    exact (enorm_setToFun_le _ (by simp)).trans_eq (by simp)
+  have C := coeFn_tsum (f := fun i ↦ condExpL1 hm μ (f i)) B
+  filter_upwards [A, C] with a ha h'a
+  simp_all [condExpL1, setToFun_tsum]
+
+variable [CompleteSpace E]
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
 and verify dominated convergence hypotheses, then the conditional expectations of their limits are

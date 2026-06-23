@@ -25,7 +25,7 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -42,7 +42,6 @@ variable (p : ℝ)
 
 instance : NormedAddCommGroup (AddCircle p) := QuotientAddGroup.instNormedAddCommGroup _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ := by
@@ -83,7 +82,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     · simpa [abs_of_nonneg] using hr (fract x)
     · simpa [abs_sub_comm (fract x)] using hr (fract x - 1) (by simp)
   · simpa [zmultiples, QuotientAddGroup.eq, zsmul_eq_mul, mul_one, mem_mk, mem_range, and_imp,
-      forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_swap (α := ℕ)]
+      forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_comm (α := ℕ)]
       using round_le _
 
 theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| := by
@@ -92,7 +91,6 @@ theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ 
     rw [← abs_eq_self.mpr hp.le]
   rw [← abs_mul, mul_sub, mul_inv_cancel_left₀ hp.ne.symm, norm_eq, mul_comm p]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_le_half_period {x : AddCircle p} (hp : p ≠ 0) : ‖x‖ ≤ |p| / 2 := by
   obtain ⟨x⟩ := x
   change ‖(x : AddCircle p)‖ ≤ |p| / 2
@@ -140,7 +138,6 @@ theorem coe_real_preimage_closedBall_period_zero (x ε : ℝ) :
   ext y
   simp [dist_eq_norm, ← QuotientAddGroup.mk_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
     (↑) ⁻¹' closedBall (x : AddCircle p) ε = ⋃ z : ℤ, closedBall (x + z • p) ε := by
   rcases eq_or_ne p 0 with (rfl | hp)
@@ -154,7 +151,6 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
     inv_mul_cancel_left₀ hp] at hn ⊢
   exact (round_le (p⁻¹ * (y - x)) n).trans hn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     (hs : s ⊆ closedBall x (|p| / 2)) :
     (↑) ⁻¹' closedBall (x : AddCircle p) ε ∩ s = if ε < |p| / 2 then closedBall x ε ∩ s else s := by
@@ -193,7 +189,6 @@ section FiniteOrderPoints
 
 variable {p} [hp : Fact (0 < p)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_div_natCast {m n : ℕ} :
     ‖(↑(↑m / ↑n * p) : AddCircle p)‖ = p * (↑(min (m % n) (n - m % n)) / n) := by
   have : p⁻¹ * (↑m / ↑n * p) = ↑m / ↑n := by rw [mul_comm _ p, inv_mul_cancel_left₀ hp.out.ne.symm]
@@ -207,7 +202,6 @@ theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrde
   refine ⟨min (m % n) (n - m % n), ?_⟩
   rw [← hm, norm_div_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u)
     (hu' : u ≠ 0) : p ≤ addOrderOf u • ‖u‖ := by
   obtain ⟨n, hn⟩ := exists_norm_eq_of_isOfFinAddOrder hu
@@ -217,7 +211,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
   conv_lhs => rw [← mul_one p]
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel₀ _ hu,
     mul_le_mul_iff_right₀ hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
-  contrapose! hu'
+  contrapose hu'
   simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn
 
 end FiniteOrderPoints

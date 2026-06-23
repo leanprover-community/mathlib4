@@ -50,7 +50,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
     apply isTopologicalBasis_isClopen
   · rintro i j f V (hV : IsClopen _)
-    refine ⟨hV.1.preimage ?_, hV.2.preimage ?_⟩ <;> continuity
+    refine ⟨hV.1.preimage ?_, hV.2.preimage ?_⟩ <;> fun_prop
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
   obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2
@@ -114,10 +114,11 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   classical
   use j, LocallyConstant.ofIsClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
-  simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
+  simp only [Fin.isValue, LocallyConstant.coe_comap, Set.preimage_comp,
     LocallyConstant.ofIsClopen_fiber_zero]
   exact h
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
@@ -162,7 +163,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
   refine ⟨j, gg.map σ, ?_⟩
   ext x
-  simp only [Functor.const_obj_obj, LocallyConstant.coe_comap, LocallyConstant.map_apply,
+  simp only [LocallyConstant.coe_comap, LocallyConstant.map_apply,
     Function.comp_apply]
   dsimp [σ]
   have h1 : ι (f x) = gg (C.π.app j x) := by
@@ -195,7 +196,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine this.imp fun j hj => ?_
       refine ⟨⟨hj.elim, fun A => ?_⟩, ?_⟩
-      · convert isOpen_empty
+      · convert! isOpen_empty
         ext x
         exact hj.elim x
       · ext x

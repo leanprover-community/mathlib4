@@ -27,7 +27,6 @@ open scoped Topology
 
 variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A base bump function in an inner product space. This construction works in any space with a
 norm smooth away from zero but we do not have a typeclass for this. -/
 noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E where

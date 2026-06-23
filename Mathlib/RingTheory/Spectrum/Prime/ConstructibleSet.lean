@@ -136,7 +136,6 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
     refine ⟨S ∪ T, ?_⟩
     simp only [ConstructibleSetData.toSet, Set.biUnion_union, ← Finset.mem_coe, Finset.coe_union]
 
-set_option backward.isDefEq.respectTransparency false in
 universe u in
 @[stacks 00F8 "without the finite presentation part"]
 -- TODO: show that the constructed `f` is of finite presentation
@@ -156,7 +155,7 @@ lemma exists_range_eq_of_isConstructible {R : Type u} [CommRing R]
   · rw [localization_away_comap_range _ f, ← comap_basicOpen, TopologicalSpace.Opens.coe_comap,
       ContinuousMap.coe_mk, Set.image_preimage_eq_inter_range,
       range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, BasicConstructibleSetData.toSet,
-      Set.diff_eq_compl_inter, basicOpen_eq_zeroLocus_compl, Ideal.mk_ker, zeroLocus_span]
+      Set.sdiff_eq_compl_inter, basicOpen_eq_zeroLocus_compl, Ideal.mk_ker, zeroLocus_span]
 
 @[stacks 00I0 "(1)"]
 lemma isClosed_of_stableUnderSpecialization_of_isConstructible {R : Type*} [CommRing R]

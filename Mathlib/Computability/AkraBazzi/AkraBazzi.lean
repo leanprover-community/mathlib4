@@ -247,7 +247,6 @@ lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (
     calc b i * n ≤ 1 * n := by gcongr; exact le_of_lt <| R.b_lt_one i
                  _ = n := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_p_mul_one_sub_smoothingFn_le :
     ∀ᶠ (n : ℕ) in atTop, ∀ i, (r i n) ^ (p a b) * (1 - ε (r i n))
       ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n) := by
@@ -338,7 +337,6 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
   rw [← h₁, ← sub_le_iff_le_add']
   exact hn
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rpow_p_mul_one_add_smoothingFn_ge :
     ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i) ^ (p a b) * n ^ (p a b) * (1 + ε n)
       ≤ (r i n) ^ (p a b) * (1 + ε (r i n)) := by
@@ -644,16 +642,13 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
     _ = (1 + ε n) * asympBound g a b n + (C - c₁ * (1 + ε n)) * g n := by ring
     _ ≥ (1 + ε n) * asympBound g a b n + 0 := by
       gcongr
-      refine mul_nonneg ?_ g_pos
-      rw [sub_nonneg]
-      calc c₁ * (1 + ε n)
-        _ ≤ c₁ * 2 := by
-          gcongr
-          refine one_add_smoothingFn_le_two ?_
-          calc exp 1 ≤ ⌈exp 1⌉₊ := by exact Nat.le_ceil _
-                    _ ≤ n := by exact_mod_cast h_exp
-        _ = (2 * c₁) := by ring
-        _ ≤ C := hC
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+      the new canonicalizer; a minimization would help. The original proof was:
+      `exact mul_nonneg (by grind +splitIndPred) g_pos` -/
+      have : 1 + ε ↑n < 2 := by grind
+      exact mul_nonneg (by grw [sub_nonneg, this, mul_comm, hC]) g_pos
     _ = ((1 + ε n) * asympBound g a b n) := by ring
 
 /-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/

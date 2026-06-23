@@ -110,10 +110,9 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
   simpa [Finset.sum_range]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem variance {n : ℕ} (hn : n ≠ 0) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
-  convert congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
+  convert! congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
   · simp only [z, bernstein_apply, nsmul_eq_mul, bernsteinPolynomial, Finset.sum_range, map_sum,
       Polynomial.coe_aeval_eq_eval, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_sub,
       Polynomial.eval_natCast, Polynomial.eval_X, Polynomial.eval_one]
@@ -158,12 +157,10 @@ theorem apply (n : ℕ) (f : C(I, E)) (x : I) :
     bernsteinApproximation n f x = ∑ k : Fin (n + 1), bernstein n k x • f k/ₙ := by
   simp [bernsteinApproximation]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem apply_zero (n : ℕ) (f : C(I, E)) : bernsteinApproximation n f 0 = f 0 := by
   simp [apply, Fin.sum_univ_succ, bernstein_apply, z]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem apply_one {n : ℕ} (hn : n ≠ 0) (f : C(I, E)) : bernsteinApproximation n f 1 = f 1 := by
   simp [apply, Fin.sum_univ_castSucc, bernstein_apply, hn, Nat.sub_eq_zero_iff_le]
@@ -172,7 +169,6 @@ end bernsteinApproximation
 
 open bernsteinApproximation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Bernstein approximations
 ```
 ∑ k : Fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
@@ -201,11 +197,11 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
   /- Choose a constant `C` such that `‖f x - f y‖_U ≤ C` for all `x`, `y`.
   For a normed space, this would be twice the norm of `f`. -/
   obtain ⟨C, hC⟩ : ∃ C, ∀ x y, gauge U (f x - f y) ≤ C := by
-    have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop (disch := assumption)
+    have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop
     simpa only [BddAbove, Set.Nonempty, mem_upperBounds, Set.forall_mem_range, Prod.forall]
       using isCompact_range this |>.bddAbove
   have hC₀ : 0 ≤ C := le_trans (gauge_nonneg _) (hC 0 0)
-  /- Use uniform continuity of `f` to hcoose `δ > 0` such that `‖f x - f y‖_U < 1 / 2`
+  /- Use uniform continuity of `f` to choose `δ > 0` such that `‖f x - f y‖_U < 1 / 2`
   whenever `dist x y < δ`. -/
   obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > 0, ∀ x y : I, dist x y < δ → gauge U (f x - f y) < 1 / 2 := by
     have := CompactSpace.uniformContinuous_of_continuous (map_continuous f)
@@ -260,7 +256,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
         conv_lhs => rw [← one_mul (bernstein _ _ _)]
         gcongr
         simpa [one_le_div₀, hδ₀, sq_le_sq, S, abs_of_pos, ← Real.dist_eq, dist_comm (x : ℝ)]
-          using hk
+          using! hk
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ C * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 / δ ^ 2 * bernstein n k x := by
         gcongr; exact Sᶜ.subset_univ

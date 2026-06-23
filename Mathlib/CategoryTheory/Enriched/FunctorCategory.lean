@@ -28,6 +28,8 @@ The definition `isLimitConeFunctorEnrichedHom` shows that
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -80,6 +82,7 @@ lemma enrichedHom_condition' {i j : J} (f : i ⟶ j) :
 
 variable {F₁ F₂}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a `V`-enriched ordinary category,
 this is the bijection `(F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁ F₂)`. -/
@@ -233,6 +236,7 @@ variable (J C)
 
 /-- If `C` is a `V`-enriched ordinary category, and `C` has suitable limits,
 then `J ⥤ C` is also a `V`-enriched ordinary category. -/
+@[implicit_reducible]
 noncomputable def enrichedOrdinaryCategory [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom V F₁ F₂] :
     EnrichedOrdinaryCategory V (J ⥤ C) where
   Hom F₁ F₂ := enrichedHom V F₁ F₂

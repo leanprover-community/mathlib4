@@ -86,7 +86,6 @@ instance groupoid : Groupoid (SingleObj G) where
   inv_comp := mul_inv_cancel
   comp_inv := inv_mul_cancel
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inv_as_inv {x y : SingleObj G} (f : x ⟶ y) : inv f = f⁻¹ := by
   apply IsIso.inv_eq_of_hom_inv_id
   rw [comp_as_mul, inv_mul_cancel, id_as_one]
@@ -134,7 +133,6 @@ theorem mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
 
 variable {C : Type v} [Category.{w} C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a function `f : C → G` from a category to a group, we get a functor
 `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]

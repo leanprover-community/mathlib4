@@ -147,7 +147,7 @@ theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
   cases w
   simp
 
-/-- Reducible form of congrArg_mpr_hom_left -/
+/-- Reducible form of `congrArg_mpr_hom_left` -/
 @[simp]
 theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
     cast (congrArg (fun W : C => W ⟶ Z) p.symm) q = eqToHom p ≫ q := by
@@ -361,6 +361,7 @@ lemma ObjectProperty.eqToHom_hom {C : Type*} [Category C] {P : ObjectProperty C}
   subst h
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `T ≃ D` is a bijection and `D` is a category, then
 `InducedCategory D e` is equivalent to `D`. -/
 @[simps]

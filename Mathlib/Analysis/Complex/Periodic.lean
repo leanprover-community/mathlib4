@@ -69,7 +69,6 @@ theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
   refine ⟨m, by rw [hm, mul_div_assoc, mul_comm (m : ℂ), ← mul_add, ← mul_assoc,
     div_mul_cancel₀ _ two_pi_I_ne_zero, mul_add, mul_div_cancel₀ _ (mod_cast hh), mul_comm]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
     ‖qParam h z‖ < Real.exp (-2 * π * A / h) ↔ A < im z := by
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
@@ -93,7 +92,6 @@ lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
   unfold qParam
   fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_
     (.of_forall fun q ↦ exp_ne_zero _)
@@ -158,7 +156,7 @@ theorem differentiableAt_cuspFunction (hh : h ≠ 0) (hf : Periodic f h)
     DifferentiableAt ℂ (cuspFunction h f) (𝕢 h z) := by
   let q := 𝕢 h z
   have qdiff : HasStrictDerivAt (𝕢 h) (q * (2 * π * I / h)) z := by
-    simpa only [id_eq, mul_one] using (((hasStrictDerivAt_id z).const_mul _).div_const _).cexp
+    simpa only [id_eq, mul_one] using! (((hasStrictDerivAt_id z).const_mul _).div_const _).cexp
   -- Now show that the q-map has a differentiable local inverse at z, say L : ℂ → ℂ with L q = z.
   have diff_ne : q * (2 * π * I / h) ≠ 0 :=
     mul_ne_zero (exp_ne_zero _) (div_ne_zero two_pi_I_ne_zero <| mod_cast hh)
@@ -168,7 +166,7 @@ theorem differentiableAt_cuspFunction (hh : h ≠ 0) (hf : Periodic f h)
   have hL : 𝕢 h ∘ L =ᶠ[𝓝 q] (id : ℂ → ℂ) :=
     (qdiff.hasStrictFDerivAt_equiv diff_ne).eventually_right_inverse
   -- Thus, if F = cuspFunction h f, we have F q' = f (L q') for q' near q.
-  -- Since L is differentiable at q, and f is diff'ble at L q [ = z], we conclude
+  -- Since L is differentiable at q, and f is differentiable at L q [ = z], we conclude
   -- that F is differentiable at q.
   have hF := hL.fun_comp (cuspFunction h f)
   have : cuspFunction h f ∘ 𝕢 h ∘ L = f ∘ L := funext fun z ↦ eq_cuspFunction hh hf (L z)
@@ -212,9 +210,9 @@ theorem differentiableAt_cuspFunction_zero (hh : 0 < h) (hf : Periodic f h)
     fun x hx ↦ (hS1 x hx.1 hx.2).1.differentiableWithinAt
   have hF_bd : BddAbove (norm ∘ cuspFunction h f '' (S \ {0})) := by
     use c
-    simp only [mem_upperBounds, Set.mem_image, Set.mem_diff, forall_exists_index, and_imp]
+    simp only [mem_upperBounds, Set.mem_image, Set.mem_sdiff, forall_exists_index, and_imp]
     intro y q hq hq2 hy
-    simpa only [← hy, norm_one, mul_one] using (hS1 q hq hq2).2
+    simpa only [← hy, norm_one, mul_one] using! (hS1 q hq hq2).2
   have := differentiableOn_update_limUnder_of_bddAbove (IsOpen.mem_nhds hS2 hS3) h_diff hF_bd
   rw [← cuspFunction_zero_eq_limUnder_nhds_ne, update_eq_self] at this
   exact this.differentiableAt (IsOpen.mem_nhds hS2 hS3)
@@ -261,7 +259,7 @@ lemma cuspFunction_smul {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunctio
   simp only [cuspFunction] at *
   ext y
   obtain rfl | hy := eq_or_ne y 0
-  · simpa using (Tendsto.const_mul _ (by simpa using hfcts)).limUnder_eq
+  · simpa using! (Tendsto.const_mul _ (by simpa using! hfcts)).limUnder_eq
   · simp [hy]
 
 lemma cuspFunction_neg {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) :
@@ -275,7 +273,7 @@ lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFuncti
   ext y
   obtain hy | rfl := ne_or_eq y 0
   · simp [hy]
-  ·  simpa using (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
+  · simpa using! (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
       (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hgcts⟩) |>.limUnder_eq
 
 lemma cuspFunction_sub {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)

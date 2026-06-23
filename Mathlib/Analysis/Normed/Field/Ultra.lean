@@ -68,7 +68,6 @@ lemma isUltrametricDist_of_forall_norm_sub_one_of_norm_le_one
     simpa only [← neg_add', norm_neg] using h (-x) (norm_neg x ▸ hx)
   exact isUltrametricDist_of_forall_norm_add_one_of_norm_le_one this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This technical lemma is used in the proof of
 `isUltrametricDist_of_forall_norm_natCast_le_one`. -/
 lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm

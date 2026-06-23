@@ -168,7 +168,6 @@ theorem Valid'.node4L_lemma₄ {a b c d : ℕ} (lr₁ : 3 * a ≤ b + c + 1 + d)
 theorem Valid'.node4L_lemma₅ {a b c d : ℕ} (lr₂ : 3 * (b + c + 1 + d) ≤ 16 * a + 9)
     (mr₁ : 2 * d ≤ b + c + 1) (mm₂ : c ≤ 3 * b) : c + d + 1 ≤ 3 * (a + b + 1) := by lia
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hm : Valid' x m y)
     (hr : Valid' (↑y) r o₂) (Hm : 0 < size m)
     (H : size l = 0 ∧ size m = 1 ∧ size r ≤ 1 ∨
@@ -215,7 +214,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     · refine (mul_le_mul_iff_right₀ (by decide)).1 (le_trans this ?_)
       rw [two_mul, Nat.succ_le_iff]
       refine add_lt_add_of_lt_of_le ?_ mm₂
-      simpa using mul_lt_mul_of_pos_right (by decide : 1 < 3) ml0
+      simpa using! mul_lt_mul_of_pos_right (by decide : 1 < 3) ml0
     · exact Nat.le_of_lt_succ (Valid'.node4L_lemma₁ lr₂ mr₂ mm₁)
     · exact Valid'.node4L_lemma₂ mr₂
     · exact Valid'.node4L_lemma₃ mr₁ mm₁

@@ -33,7 +33,7 @@ Instead of defining a new notion of topological entropy, we prove that
 - `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
 - `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
-defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
+  defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
@@ -42,7 +42,7 @@ we chose the `limsup` definition as the default.
 
 ## Main results
 - `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
-defined with covers and with nets. Has a variant for `coverEntropyInf`.
+  defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
 net, entropy
@@ -87,7 +87,7 @@ lemma IsDynNetIn.card_le_card_of_isDynCoverOf {s t : Finset X}
     (hs : IsDynNetIn T F U n s) (ht : IsDynCoverOf T F U n t) :
     s.card ≤ t.card := by
   have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, z ∈ ball x (dynEntourage T U n) := by
-    simpa using ht (hs.1 x_s)
+    simpa using! ht (hs.1 x_s)
   choose! F s_t using this
   apply Finset.card_le_card_of_injOn F fun x x_s ↦ (s_t x x_s).1
   exact fun x x_s y y_s Fx_Fy ↦
@@ -123,7 +123,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
     -- The criterion we want to use is `Nat.sSup_mem`. We rewrite `netMaxcard` with an `sSup`,
     -- then check its `BddAbove` and `Nonempty` hypotheses.
     have : netMaxcard T F U n
-      = sSup (WithTop.some '' (Finset.card '' {s : Finset X | IsDynNetIn T F U n s})) := by
+      = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
       simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
     rw [this] at k_max
@@ -169,7 +169,7 @@ lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ
 
 lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ netMaxcard T F U n ↔ F.Nonempty := by
-  rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty]
+  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty]
   exact not_iff_not.2 (netMaxcard_eq_zero_iff T F U n)
 
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by

@@ -198,7 +198,7 @@ theorem iUnion_def' : π.iUnion = ⋃ J ∈ π.boxes, ↑J := rfl
 
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
-  convert Set.mem_iUnion₂
+  convert! Set.mem_iUnion₂
   rw [Box.mem_coe, exists_prop]
 
 @[simp]
@@ -221,7 +221,7 @@ theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
 theorem iUnion_subset : π.iUnion ⊆ I :=
   iUnion₂_subset π.le_of_mem'
 
-@[mono]
+@[gcongr, mono]
 theorem iUnion_mono (h : π₁ ≤ π₂) : π₁.iUnion ⊆ π₂.iUnion := fun _ hx =>
   let ⟨_, hJ₁, hx⟩ := π₁.mem_iUnion.1 hx
   let ⟨J₂, hJ₂, hle⟩ := h hJ₁
@@ -252,7 +252,6 @@ theorem eq_of_boxes_subset_iUnion_superset (h₁ : π₁.boxes ⊆ π₂.boxes) 
       ⟨fun _ hJ₁ _ hJ₂ Hne =>
         (π₂.eq_of_mem_of_mem hJ₁ (h₁ hJ₂) Hne.choose_spec.1 Hne.choose_spec.2).le, h₂⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a prepartition `π` of a box `I` and a collection of prepartitions `πi J` of all boxes
 `J ∈ π`, returns the prepartition of `I` into the union of the boxes of all `πi J`.
@@ -330,7 +329,7 @@ theorem biUnionIndex_le (πi : ∀ J, Prepartition J) (J : Box ι) : π.biUnionI
   · rw [biUnionIndex, dif_neg hJ]
 
 theorem mem_biUnionIndex (hJ : J ∈ π.biUnion πi) : J ∈ πi (π.biUnionIndex πi J) := by
-  convert (π.mem_biUnion.1 hJ).choose_spec.2 <;> exact dif_pos hJ
+  convert! (π.mem_biUnion.1 hJ).choose_spec.2 <;> exact dif_pos hJ
 
 theorem le_biUnionIndex (hJ : J ∈ π.biUnion πi) : J ≤ π.biUnionIndex πi J :=
   le_of_mem _ (π.mem_biUnionIndex hJ)
@@ -439,7 +438,7 @@ theorem mem_restrict : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : WithBot
 theorem mem_restrict' : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : Set (ι → ℝ)) = ↑J ∩ ↑J' := by
   simp only [mem_restrict, ← Box.withBotCoe_inj, Box.coe_inf, Box.coe_coe]
 
-@[mono]
+@[gcongr, mono]
 theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : π₁.restrict J ≤ π₂.restrict J := by
   classical
   refine ofWithBot_mono fun J₁ hJ₁ hne => ?_
@@ -545,16 +544,15 @@ theorem filter_of_true {p : Box ι → Prop} (hp : ∀ J ∈ π, p J) : π.filte
 theorem filter_true : (π.filter fun _ => True) = π :=
   π.filter_of_true fun _ _ => trivial
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by
   simp only [Prepartition.iUnion]
-  convert
-    (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
+  convert!
+    (@Set.biUnion_sdiff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
   · simp +contextual
   · rw [Set.PairwiseDisjoint]
-    convert π.pairwiseDisjoint
+    convert! π.pairwiseDisjoint
     rw [Set.union_eq_left, filter_boxes, coe_filter]
     exact fun _ ⟨h, _⟩ => h
 
@@ -562,7 +560,7 @@ open scoped Classical in
 theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
     (∑ y ∈ π.boxes.image f, ∑ J ∈ (π.filter fun J => f J = y).boxes, g J) =
       ∑ J ∈ π.boxes, g J := by
-  convert sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
+  convert! sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
 
 open scoped Classical in
 /-- Union of two disjoint prepartitions. -/
@@ -572,7 +570,7 @@ def disjUnion (π₁ π₂ : Prepartition I) (h : Disjoint π₁.iUnion π₂.iU
   le_of_mem' _ hJ := (Finset.mem_union.1 hJ).elim π₁.le_of_mem π₂.le_of_mem
   pairwiseDisjoint :=
     suffices ∀ J₁ ∈ π₁, ∀ J₂ ∈ π₂, J₁ ≠ J₂ → Disjoint (J₁ : Set (ι → ℝ)) J₂ by
-      simpa [pairwise_union_of_symmetric (symmetric_disjoint.comap _), pairwiseDisjoint]
+      simpa [pairwise_union_of_symm, pairwiseDisjoint]
     fun _ h₁ _ h₂ _ => h.mono (π₁.subset_iUnion h₁) (π₂.subset_iUnion h₂)
 
 @[simp]

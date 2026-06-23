@@ -21,7 +21,6 @@ namespace NormNum
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nat_sqrt_helper {x y r : ℕ} (hr : y * y + r = x) (hle : Nat.ble r (2 * y)) :
     Nat.sqrt x = y := by
   rw [← hr, ← pow_two]

@@ -83,7 +83,8 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
     exact ha hn
   exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
   then for every element `a` of `D \ k`, there exists a natural number `m`
   greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for
@@ -131,7 +132,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
     by_cases! h_pos : 0 < t
-    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
+    · convert! (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
       lia
     · suffices h_find : Nat.find h_exist = 1 by
         rwa [h_find]

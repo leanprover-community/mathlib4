@@ -24,7 +24,7 @@ First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself s
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
 Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
 different monomials of `f` to polynomials with different degrees in `X_0`.
-See `degreeOf_t_neq_of_neq`.
+See `degreeOf_t_ne_of_ne`.
 
 Secondly, we construct the following maps: let `I` be an ideal containing `f` and
 let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
@@ -82,20 +82,19 @@ private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _
   ext i v
   cases i using Fin.cases <;> simp
 
-/- `T1 f 1` leads to an algebra equiv `T f`. -/
+/-- `T1 f 1` leads to an algebra equiv `T f`. -/
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
 
-private lemma sum_r_mul_neq (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq : v ≠ w) :
+private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne : v ≠ w) :
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
   intro h
-  refine neq <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
+  refine ne <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
   apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
     (by simp) (lt_up vlt) (lt_up wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
-    Fin.val_cast, mul_comm, sum_ofFn] using h
+    Fin.val_cast, mul_comm, sum_ofFn] using! h
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
     ∑ i : Fin (n + 1), (r i) * v i := by
   rw [← natDegree_finSuccEquiv, monomial_eq, Finsupp.prod_pow v fun a ↦ X a]
@@ -112,16 +111,15 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     add_right_inj] using Finset.sum_congr rfl (fun i _ ↦ by
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
 
-/- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
-private lemma degreeOf_t_neq_of_neq (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
+/-- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
+private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
-  refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
+  refine sum_r_mul_ne f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
     (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma leadingCoeff_finSuccEquiv_t :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
     algebraMap k _ (coeff v f) := by
@@ -140,8 +138,7 @@ private lemma leadingCoeff_finSuccEquiv_t :
     simp only [this, one_pow, Finset.prod_const_one, mul_one]
   exact fun i ↦ pow_zero _
 
-set_option backward.isDefEq.respectTransparency false in
-/- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
+/-- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
@@ -154,7 +151,7 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     obtain ⟨h1, h2⟩ := Finset.mem_sdiff.mp hx
     apply degree_lt_degree <| lt_of_le_of_ne (vs x h1) ?_
     simpa only [natDegree_finSuccEquiv]
-      using degreeOf_t_neq_of_neq f _ _ h1 vin <| ne_of_not_mem_cons h2
+      using degreeOf_t_ne_of_ne f _ _ h1 vin <| ne_of_not_mem_cons h2
   have coeff : (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
       (finSuccEquiv k n ((T f) (h v))).leadingCoeff := by
     simp only [map_add, map_sum]
@@ -165,7 +162,7 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
       by simpa only [map_eq_zero_iff _ (AlgEquiv.injective _)] using eq
     exact (Finset.sup_lt_iff <| Ne.bot_lt (fun x ↦ h2 <| degree_eq_bot.mp x)).mpr vs
   nth_rw 2 [← f.support_sum_monomial_coeff]
-  rw [Finset.sum_eq_add_sum_diff_singleton vin h]
+  rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem vin h]
   rw [leadingCoeff_finSuccEquiv_t] at coeff
   simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
 
@@ -175,20 +172,20 @@ section intmaps
 
 variable (I : Ideal (MvPolynomial (Fin (n + 1)) k))
 
-/- `hom1` is a homomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]/φ(T(I))`,
+/-- `hom1` is a homomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]/φ(T(I))`,
 where `φ` is the isomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]`. -/
 private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (Fin n) k]
     (MvPolynomial (Fin n) k)[X] ⧸ (I.map <| T f).map (finSuccEquiv k n) :=
   (Quotient.mkₐ (MvPolynomial (Fin n) k) (map (finSuccEquiv k n) (map (T f) I))).comp
   (Algebra.ofId (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
 
-/- `hom1 f I` is integral. -/
+/-- `hom1 f I` is integral. -/
 private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom1 f I).IsIntegral := by
   obtain u := T_leadingcoeff_isUnit f fne
   exact (monic_of_isUnit_leadingCoeff_inv_smul u).quotient_isIntegral <|
     Submodule.smul_of_tower_mem _ u.unit⁻¹.val <| mem_map_of_mem _ <| mem_map_of_mem _ fi
 
-/- `eqv1` is the isomorphism from `k[X_1,...X_n][X]/φ(T(I))`
+/-- `eqv1` is the isomorphism from `k[X_1,...X_n][X]/φ(T(I))`
 to `k[X_0,...,X_n]/T(I)`, induced by `φ`. -/
 private noncomputable abbrev eqv1 :
     ((MvPolynomial (Fin n) k)[X] ⧸ (I.map (T f)).map (finSuccEquiv k n)) ≃ₐ[k]
@@ -204,7 +201,7 @@ private noncomputable abbrev eqv1 :
       congrFun (congrArg Ideal.map this.symm) (I.map (T f))
     _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
 
-/- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
+/-- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
     (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
@@ -218,11 +215,11 @@ private noncomputable abbrev eqv2 :
       rw [← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
       exact congrArg _ rfl
 
-/- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
+/-- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
   (eqv2 f I).toAlgHom.comp ((eqv1 f I).toAlgHom.comp ((hom1 f I).restrictScalars k))
 
-/- `hom2 f I` is integral. -/
+/-- `hom2 f I` is integral. -/
 private lemma hom2_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom2 f I).IsIntegral :=
   ((hom1_isIntegral f I fne fi).trans _ _ <| isIntegral_of_surjective _ (eqv1 f I).surjective).trans
     _ _ <| isIntegral_of_surjective _ (eqv2 f I).surjective
@@ -244,9 +241,9 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     refine ⟨0, le_rfl, Quotient.mkₐ k I, fun a b hab ↦ ?_,
       isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)⟩
     rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
-    by_contra neq
+    by_contra ne
     have eq := eq_C_of_isEmpty (a - b)
-    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne neq <| map_zero _
+    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
     obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
     have one : c • (a - b) = 1 := by
       rw [MvPolynomial.smul_eq_C_mul, eq, ← map_mul, eqr, MvPolynomial.C_1]
@@ -281,8 +278,8 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-    EmbeddingLike.comp_injective, AlgHom.toRingHom_eq_coe]
+  simp only [AlgHom.coe_comp, AlgEquiv.coe_algHom, EmbeddingLike.comp_injective,
+    AlgHom.toRingHom_eq_coe]
   exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
 
 /-- For a finitely generated algebra `A` over a field `k`,

@@ -156,7 +156,7 @@ theorem toSignedMeasure_zero : (0 : JordanDecomposition α).toSignedMeasure = 0 
 
 theorem toSignedMeasure_neg : (-j).toSignedMeasure = -j.toSignedMeasure := by
   ext1 i hi
-  rw [neg_apply, toSignedMeasure, toSignedMeasure, toSignedMeasure_sub_apply hi,
+  rw [VectorMeasure.neg_apply, toSignedMeasure, toSignedMeasure, toSignedMeasure_sub_apply hi,
     toSignedMeasure_sub_apply hi, neg_sub, neg_posPart, neg_negPart]
 
 theorem toSignedMeasure_smul (r : ℝ≥0) : (r • j).toSignedMeasure = r • j.toSignedMeasure := by
@@ -177,7 +177,7 @@ theorem exists_compl_positive_negative :
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def,
       show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.toReal_zero,
-      zero_sub, neg_le, zero_apply, neg_zero]
+      zero_sub, neg_le, VectorMeasure.zero_apply, neg_zero]
     exact ENNReal.toReal_nonneg
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def (μ := j.negPart),
@@ -193,7 +193,6 @@ open JordanDecomposition Measure Set VectorMeasure
 
 variable {s : SignedMeasure α}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a signed measure `s`, `s.toJordanDecomposition` is the Jordan decomposition `j`,
 such that `s = j.toSignedMeasure`. This property is known as the Jordan decomposition
 theorem, and is shown by
@@ -248,12 +247,12 @@ theorem subset_positive_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : 0 ≤[u] s) (hw₁ : s w = 0) (hw₂ : w ⊆ u) (hwt : v ⊆ w) :
     s v = 0 := by
   have : s v + s (w \ v) = 0 := by
-    rw [← hw₁, ← of_union Set.disjoint_sdiff_right hv (hw.diff hv), Set.union_diff_self,
+    rw [← hw₁, ← of_union Set.disjoint_sdiff_right hv (hw.diff hv), Set.union_sdiff_self,
       Set.union_eq_self_of_subset_left hwt]
   have h₁ := nonneg_of_zero_le_restrict _ (restrict_le_restrict_subset _ _ hu hsu (hwt.trans hw₂))
   have h₂ : 0 ≤ s (w \ v) :=
     nonneg_of_zero_le_restrict _
-      (restrict_le_restrict_subset _ _ hu hsu (diff_subset.trans hw₂))
+      (restrict_le_restrict_subset _ _ hu hsu (sdiff_subset.trans hw₂))
   linarith
 
 /-- A subset `v` of a null-set `w` has zero measure if `w` is a subset of a negative set `u`. -/
@@ -269,31 +268,37 @@ open scoped symmDiff
 
 /-- If the symmetric difference of two positive sets is a null-set, then so are the differences
 between the two sets. -/
-theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)
+theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hsu : 0 ≤[u] s) (hsv : 0 ≤[v] s) (hs : s (u ∆ v) = 0) : s (u \ v) = 0 ∧ s (v \ u) = 0 := by
   rw [restrict_le_restrict_iff] at hsu hsv
   on_goal 1 =>
-    have a := hsu (hu.diff hv) diff_subset
-    have b := hsv (hv.diff hu) diff_subset
+    have a := hsu (hu.diff hv) sdiff_subset
+    have b := hsv (hv.diff hu) sdiff_subset
     rw [Set.symmDiff_def,
-      of_union (v := s) (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
+      of_union (v := s) (Set.disjoint_of_subset_left sdiff_subset disjoint_sdiff_self_right)
         (hu.diff hv) (hv.diff hu)] at hs
-    rw [zero_apply] at a b
+    rw [VectorMeasure.zero_apply] at a b
     constructor
   · linarith
   · linarith
   · assumption
   · assumption
 
+@[deprecated (since := "2026-06-03")]
+alias of_diff_eq_zero_of_symmDiff_eq_zero_positive := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive
+
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
 between the two sets. -/
-theorem of_diff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
+theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hsu : s ≤[u] 0) (hsv : s ≤[v] 0) (hs : s (u ∆ v) = 0) : s (u \ v) = 0 ∧ s (v \ u) = 0 := by
   rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
   rw [← s.neg_le_neg_iff _ hv, neg_zero] at hsv
-  have := of_diff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
+  have := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
   simp only [Pi.neg_apply, neg_eq_zero, coe_neg] at this
   exact this hs
+
+@[deprecated (since := "2026-06-03")]
+alias of_diff_eq_zero_of_symmDiff_eq_zero_negative := of_sdiff_eq_zero_of_symmDiff_eq_zero_negative
 
 theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : 0 ≤[u] s) (hsv : 0 ≤[v] s) (hs : s (u ∆ v) = 0) :
@@ -306,10 +311,10 @@ theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : Me
     rw [← Set.inter_symmDiff_distrib_left]
     exact Set.inter_subset_right
   obtain ⟨huv, hvu⟩ :=
-    of_diff_eq_zero_of_symmDiff_eq_zero_positive (hw.inter hu) (hw.inter hv)
+    of_sdiff_eq_zero_of_symmDiff_eq_zero_positive (hw.inter hu) (hw.inter hv)
       (restrict_le_restrict_subset _ _ hu hsu (w.inter_subset_right))
       (restrict_le_restrict_subset _ _ hv hsv (w.inter_subset_right)) hwuv
-  rw [← of_diff_of_diff_eq_zero (hw.inter hu) (hw.inter hv) hvu, huv, zero_add]
+  rw [← of_sdiff_of_sdiff_eq_zero (hw.inter hu) (hw.inter hv) hvu, huv, zero_add]
 
 theorem of_inter_eq_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : s ≤[u] 0) (hsv : s ≤[v] 0) (hs : s (u ∆ v) = 0) :
@@ -470,7 +475,6 @@ theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
   · simp [hs.1, hs.2, measureReal_def]
   · simp [if_neg hi]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     s ≪ᵥ μ ↔ s.totalVariation ≪ μ.ennrealToMeasure := by
   constructor <;> intro h
@@ -498,7 +502,6 @@ theorem totalVariation_absolutelyContinuous_iff (s : SignedMeasure α) (μ : Mea
   · refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
     rw [totalVariation, Measure.add_apply, h.1 hS₂, h.2 hS₂, add_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalize to vector measures once total variation on vector measures is defined
 theorem mutuallySingular_iff (s t : SignedMeasure α) :
     s ⟂ᵥ t ↔ s.totalVariation ⟂ₘ t.totalVariation := by
@@ -519,7 +522,6 @@ theorem mutuallySingular_iff (s t : SignedMeasure α) :
       ⟨u, hmeas, fun t htu => null_of_totalVariation_zero _ (measure_mono_null htu hu₁),
         fun t htv => null_of_totalVariation_zero _ (measure_mono_null htv hu₂)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mutuallySingular_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     s ⟂ᵥ μ ↔ s.totalVariation ⟂ₘ μ.ennrealToMeasure := by
   constructor

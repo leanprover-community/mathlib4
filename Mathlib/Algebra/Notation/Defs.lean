@@ -5,8 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.ToAdditive
 
 /-!
@@ -32,7 +31,7 @@ Note `Zero` has already been defined in core Lean.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Function.Bijective
 
@@ -64,27 +63,27 @@ class VSub (G : outParam Type*) (P : Type*) where
   type-dependent, but it is intended to be used for additive torsors. -/
   vsub : P → P → G
 
-attribute [to_additive] SMul
+/-- Type class for the `/ₛ` notation. -/
+@[to_additive (attr := ext)]
+class SDiv (G : outParam Type*) (P : Type*) where
+  /-- `a /ₛ b` computes the quotient of `a` and `b`. The meaning of this notation is
+  type-dependent, but it is intended to be used for multiplicative torsors. -/
+  sdiv : P → P → G
+
+attribute [to_additive existing] SMul HSMul
+attribute [to_additive (attr := default_instance)] instHSMul
+
 attribute [ext] SMul VAdd
 
 @[inherit_doc] infixr:65 " +ᵥ " => HVAdd.hVAdd
 @[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
+@[inherit_doc] infixl:65 " /ₛ " => SDiv.sdiv
 
 recommended_spelling "vadd" for "+ᵥ" in [HVAdd.hVAdd, «term_+ᵥ_»]
 recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
-
-attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
-attribute [to_additive (reorder := 1 2) SMul] Pow
-attribute [to_additive (reorder := 1 2)] HPow
-attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
-attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
-
-attribute [to_additive (attr := default_instance)] instHSMul
-attribute [to_additive existing] instHPow
+recommended_spelling "sdiv" for "/ₛ" in [SDiv.sdiv, «term_/ₛ_»]
 
 variable {G : Type*}
-
-attribute [to_additive, notation_class] Inv
 
 section Star
 
@@ -138,6 +137,9 @@ lemma ite_mul_ite (a b c d : α) :
     ((if P then a else b) * if P then c else d) = if P then a * c else b * d := by split <;> rfl
 
 end Mul
+
+lemma neg_ite {α : Type*} (P : Prop) [Decidable P] [Neg α] (b : α) (c : α) :
+    -(if P then b else c) = if P then -b else -c := by split <;> rfl
 
 section Div
 variable [Div α]

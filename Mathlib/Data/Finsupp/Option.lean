@@ -159,14 +159,14 @@ theorem optionElim_zero (y : M) : (0 : α →₀ M).optionElim y = single none y
   · simp
 
 theorem optionElim_ne_zero_of_left (y : M) (f : α →₀ M) (h : y ≠ 0) : f.optionElim y ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   have : f.optionElim y none = (0 : Option α →₀ M) none := by
     rw [c]
   simp only [optionElim_apply_eq_elim, Option.elim_none, coe_zero, Pi.zero_apply] at this
   exact this
 
 theorem optionElim_ne_zero_of_right (y : M) (f : α →₀ M) (h : f ≠ 0) : f.optionElim y ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   ext a
   have : f.optionElim y (Option.some a) = (0 : Option α →₀ M) (Option.some a) := by
     rw [c]
@@ -210,6 +210,11 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
+
+@[simp]
+lemma optionElim_add [AddZeroClass M] (a b : α →₀ M) (i j : M) :
+    (a + b).optionElim (i + j) = a.optionElim i + b.optionElim j := by
+  ext x; cases x <;> simp
 
 end Option
 

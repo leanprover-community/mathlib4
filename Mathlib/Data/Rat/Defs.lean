@@ -53,16 +53,9 @@ lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ cong
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
 
-@[deprecated (since := "2025-10-24")] alias intCast_eq_zero := intCast_eq_zero_iff
-@[deprecated (since := "2025-10-24")] alias natCast_eq_zero := natCast_eq_zero_iff
-
 @[simp high, norm_cast] lemma intCast_eq_one_iff {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
 
-@[deprecated (since := "2025-10-24")] alias intCast_eq_one := intCast_eq_one_iff
-
 @[simp high, norm_cast] lemma natCast_eq_one_iff {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
-
-@[deprecated (since := "2025-10-24")] alias natCast_eq_one := natCast_eq_one_iff
 
 lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 
@@ -115,8 +108,6 @@ lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂
 lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
 
-@[deprecated (since := "2025-08-25")] alias divInt_eq_divInt := divInt_eq_divInt_iff
-
 lemma pow_eq_mkRat (q : ℚ) (n : ℕ) : q ^ n = mkRat (q.num ^ n) (q.den ^ n) := by
   rw [pow_def, mk_eq_mkRat]
 
@@ -127,12 +118,8 @@ lemma pow_eq_divInt (q : ℚ) (n : ℕ) : q ^ n = q.num ^ n /. q.den ^ n := by
     mk' num den hd hdn ^ n = mk' (num ^ n) (den ^ n)
       (by simp [Nat.pow_eq_zero, hd]) (by rw [Int.natAbs_pow]; exact hdn.pow _ _) := rfl
 
-@[deprecated (since := "2025-08-25")] alias inv_divInt' := inv_divInt
-
 @[simp] lemma inv_mkRat (a : ℤ) (b : ℕ) : (mkRat a b)⁻¹ = b /. a := by
   rw [mkRat_eq_divInt, inv_divInt]
-
-@[deprecated (since := "2025-08-25")] alias inv_def' := inv_def
 
 @[simp] lemma divInt_div_divInt (n₁ d₁ n₂ d₂) :
     (n₁ /. d₁) / (n₂ /. d₂) = (n₁ * d₂) /. (d₁ * n₂) := by

@@ -62,7 +62,7 @@ theorem eventually_nhds_zero_forall_closedEBall_subset (hK : ∀ i, IsClosed (K 
     _ ≤ p.1 + (R - p.1) := add_le_add hz <| le_trans hp.2 <| tsub_le_tsub_left hp.1.out.le _
     _ = R := add_tsub_cancel_of_le (lt_trans (by exact hp.1) hrR).le
 
-/-- Auxuliary lemma for `exists_continuous_real_forall_closedEBall_subset`
+/-- Auxiliary lemma for `exists_continuous_real_forall_closedEBall_subset`
 and its smooth counterpart. -/
 theorem exists_forall_closedEBall_subset_aux₁ (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
@@ -74,7 +74,7 @@ theorem exists_forall_closedEBall_subset_aux₁ (hK : ∀ i, IsClosed (K i))
   refine ⟨r, hr.mono fun y hy => ⟨hr0, ?_⟩⟩
   rwa [mem_preimage, mem_iInter₂]
 
-/-- Auxuliary lemma for `exists_continuous_real_forall_closedEBall_subset`
+/-- Auxiliary lemma for `exists_continuous_real_forall_closedEBall_subset`
 and its smooth counterpart. -/
 theorem exists_forall_closedEBall_subset_aux₂ (y : X) :
     Convex ℝ
@@ -91,7 +91,7 @@ theorem exists_continuous_real_forall_closedEBall_subset (hK : ∀ i, IsClosed (
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧
       ∀ (i), ∀ x ∈ K i, closedEBall x (ENNReal.ofReal <| δ x) ⊆ U i := by
-  simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_swap ι X] using
+  simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_comm ι X] using!
     exists_continuous_forall_mem_convex_of_local_const exists_forall_closedEBall_subset_aux₂
       (exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
 
@@ -105,7 +105,7 @@ theorem exists_continuous_nnreal_forall_closedEBall_subset (hK : ∀ i, IsClosed
   rcases exists_continuous_real_forall_closedEBall_subset hK hU hKU hfin with ⟨δ, hδ₀, hδ⟩
   lift δ to C(X, ℝ≥0) using fun x => (hδ₀ x).le
   refine ⟨δ, hδ₀, fun i x hi => ?_⟩
-  simpa only [← ENNReal.ofReal_coe_nnreal] using hδ i x hi
+  simpa only [← ENNReal.ofReal_coe_nnreal] using! hδ i x hi
 
 /-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there

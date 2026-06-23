@@ -41,7 +41,7 @@ if `M` has a trivial group of units. -/
 theorem factors_eq_normalizedFactors {M : Type*} [CommMonoidWithZero M]
     [UniqueFactorizationMonoid M] [Subsingleton Mˣ] (x : M) : factors x = normalizedFactors x := by
   unfold normalizedFactors
-  convert (Multiset.map_id (factors x)).symm
+  convert! (Multiset.map_id (factors x)).symm
   ext p
   exact normalize_eq p
 
@@ -87,15 +87,16 @@ theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
   have p_mem : p ∈ normalizedFactors a := by
     rw [hp]
     exact Multiset.mem_singleton_self _
-  convert hp
+  convert! hp
   rwa [← normalize_normalized_factor p p_mem, normalize_eq_normalize_iff, dvd_dvd_iff_associated]
 
 theorem normalizedFactors_eq_of_dvd (a : α) :
     ∀ᵉ (p ∈ normalizedFactors a) (q ∈ normalizedFactors a), p ∣ q → p = q := by
   intro p hp q hq hdvd
-  convert normalize_eq_normalize hdvd
-          ((prime_of_normalized_factor _ hp).irreducible.dvd_symm
-            (prime_of_normalized_factor _ hq).irreducible hdvd) <;>
+  convert!
+    normalize_eq_normalize hdvd
+      ((prime_of_normalized_factor _ hp).irreducible.dvd_symm
+        (prime_of_normalized_factor _ hq).irreducible hdvd) <;>
     apply (normalize_normalized_factor _ ‹_›).symm
 
 theorem exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
@@ -225,9 +226,6 @@ theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) 
   · rw [hcases]
     exact dvd_zero p
   · exact dvd_trans (Multiset.dvd_prod H) (Associated.dvd (prod_normalizedFactors hcases))
-@[deprecated (since := "2025-08-26")]
-alias dvd_of_normalized_factor := dvd_of_mem_normalizedFactors
-
 theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Prime p ∧ p ∣ x := by
   constructor
@@ -328,7 +326,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
   · obtain rfl : s = 0 := by
       apply Multiset.eq_zero_of_forall_notMem
       intro _
-      convert hs
+      convert! hs
     simp
   induction s using Multiset.induction with
   | empty => simp
@@ -375,6 +373,7 @@ variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 open scoped Classical in
 /-- Noncomputably defines a `normalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/
+@[implicit_reducible]
 protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
   normalizationMonoidOfMonoidHomRightInverse
     { toFun := fun a : Associates α =>
@@ -403,5 +402,34 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
       rw [if_neg hx, ← mkMonoidHom_apply, MonoidHom.map_multiset_prod, map_map, h, map_id, ←
         associated_iff_eq]
       apply prod_normalizedFactors hx)
+
+end UniqueFactorizationMonoid
+
+namespace UniqueFactorizationMonoid
+
+open Multiset
+
+variable {α : Type*} [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+
+lemma normalizedFactors_prod_eq_self_of_subset [Subsingleton αˣ] {a : α} {m : Multiset α}
+    (hm : m ⊆ normalizedFactors a) :
+    normalizedFactors m.prod = m :=
+  normalizedFactors_prod_of_prime fun _ h ↦ prime_of_normalized_factor _ (mem_of_subset hm h)
+
+lemma prod_ne_zero_of_subset_normalizedFactors [NormalizationMonoid α] [Nontrivial α] {a : α}
+    {m : Multiset α} (hm : m ⊆ normalizedFactors a) :
+    m.prod ≠ 0 :=
+  prod_ne_zero_of_prime _ fun _ h ↦ prime_of_normalized_factor _ (mem_of_subset hm h)
+
+variable [DecidableEq α]
+
+lemma normalizedFactors_prod_inter_eq_inter [Subsingleton αˣ] (a b : α) :
+    normalizedFactors (normalizedFactors a ∩ normalizedFactors b).prod =
+      normalizedFactors a ∩ normalizedFactors b :=
+  normalizedFactors_prod_eq_self_of_subset fun _ h ↦ (mem_inter.mp h).left
+
+lemma prod_inter_normalizedFactors_ne_zero [NormalizationMonoid α] [Nontrivial α] (a b : α) :
+    (normalizedFactors a ∩ normalizedFactors b).prod ≠ 0 :=
+  prod_ne_zero_of_subset_normalizedFactors fun _ h ↦ (mem_inter.mp h).left
 
 end UniqueFactorizationMonoid

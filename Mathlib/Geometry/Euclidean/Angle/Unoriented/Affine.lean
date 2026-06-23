@@ -167,7 +167,7 @@ theorem angle_eq_angle_of_angle_eq_pi (p₁ : P) {p₂ p₃ p₄ : P} (h : ∠ p
   unfold angle at *
   rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, hpr⟩⟩⟩
   rw [eq_comm]
-  convert angle_smul_right_of_pos (p₁ -ᵥ p₂) (p₃ -ᵥ p₂) (add_pos (neg_pos_of_neg hr) zero_lt_one)
+  convert! angle_smul_right_of_pos (p₁ -ᵥ p₂) (p₃ -ᵥ p₂) (add_pos (neg_pos_of_neg hr) zero_lt_one)
   rw [add_smul, ← neg_vsub_eq_vsub_rev p₂ p₃, smul_neg, neg_smul, ← hpr]
   simp
 
@@ -225,7 +225,6 @@ theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p₁ p₂ p₃ : P} (hp₁p₂ :
     norm_sub_eq_abs_sub_norm_iff_angle_eq_zero (fun he => hp₁p₂ (vsub_eq_zero_iff_eq.1 he))
       fun he => hp₃p₂ (vsub_eq_zero_iff_eq.1 he)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
 theorem angle_midpoint_eq_pi (p₁ p₂ : P) (hp₁p₂ : p₁ ≠ p₂) : ∠ p₁ (midpoint ℝ p₁ p₂) p₂ = π := by
   simp only [angle, left_vsub_midpoint, invOf_eq_inv, right_vsub_midpoint, inv_pos, zero_lt_two,
@@ -289,7 +288,7 @@ theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ 
   · rw [← eq_vadd_iff_vsub_eq] at hp₃p₂
     rw [AffineMap.lineMap_apply, hp₃p₂, vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev p₂ p₁, smul_neg, ←
       neg_smul, smul_add, smul_smul, ← add_smul, eq_comm, eq_vadd_iff_vsub_eq]
-    convert (one_smul ℝ (p₂ -ᵥ p₁)).symm
+    convert! (one_smul ℝ (p₂ -ᵥ p₁)).symm
     field [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
   · rw [ne_comm, ← @vsub_ne_zero V, hp₃p₂, smul_ne_zero_iff]
     exact ⟨hr.ne, hp₁p₂⟩
@@ -398,6 +397,15 @@ same ray. -/
 theorem _root_.Wbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Wbtw ℝ p₂ p₁ p) (hp₁p₂ : p₁ ≠ p₂) :
     ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
   simpa only [angle_comm] using h.angle_eq_right p₃ hp₁p₂
+
+lemma angle_pointReflection_right {p₁ p₂ p₃ : P} :
+    ∠ p₁ p₂ (AffineEquiv.pointReflection ℝ p₂ p₃) = π - ∠ p₁ p₂ p₃ := by
+  by_cases! h₃₂ : p₃ = p₂
+  · simp [h₃₂]
+    field
+  rw [eq_sub_iff_add_eq]
+  apply EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
+  exact Sbtw.angle₁₂₃_eq_pi <| (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
 
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/

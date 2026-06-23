@@ -85,7 +85,6 @@ theorem map_snd_prod (I : Ideal R) (J : Ideal S) : map (RingHom.snd R S) (prod I
       rintro ⟨x, ⟨h, rfl⟩⟩
       exact h.2, fun h => ⟨⟨0, x⟩, ⟨⟨Ideal.zero_mem _, h⟩, rfl⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_prodComm_prod :
     map ((RingEquiv.prodComm : R × S ≃+* S × R) : R × S →+* S × R) (prod I J) = prod J I := by
@@ -147,7 +146,7 @@ theorem prod_eq_top_iff {I : Ideal R} {J : Ideal S} :
 theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Ideal S)).IsPrime) :
     I.IsPrime := by
   constructor
-  · contrapose! h
+  · contrapose h
     rw [h, prod_top_top, isPrime_iff]
     simp
   · intro x y hxy

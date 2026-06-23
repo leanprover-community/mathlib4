@@ -12,35 +12,36 @@ run_cmd
   if `TestingAttributes != nm.eraseMacroScopes then
     Lean.logWarning "Possible misparsing of declaration modifiers!"
 
-/-- info: import Mathlib.Tactic.FunProp.Attr -/
+/-- info: public import Mathlib.Tactic.FunProp.Attr -/
 #guard_msgs in
 #min_imports in (← `(declModifiers|@[fun_prop]))
 
 -- check that `scoped` attributes do not cause elaboration problems
-/-- info: import Lean.Parser.Command -/
+/-- info: public import Lean.Parser.Command -/
 #guard_msgs in
 #min_imports in
 @[scoped simp] theorem XX.YY : 0 = 0 := rfl
 
 namespace X
-/-- info: import Mathlib.Algebra.Ring.Nat -/
+/-- info: public import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
+set_option warn.classDefReducibility false in
 protected def xxx : Semiring Nat := inferInstance
 end X
 
-/-- info: import Mathlib.Algebra.Ring.Nat -/
+/-- info: public import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
 -- If `#min_imports` were parsing just the syntax, the imports would be `Mathlib/Algebra/Ring/Defs.lean`.
 instance : Semiring Nat := inferInstance
 
-/-- info: import Mathlib.Algebra.Ring.Nat -/
+/-- info: public import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
 instance withName : Semiring Nat := inferInstance
 
-/-- info: import Mathlib.Algebra.Ring.Nat -/
+/-- info: public import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
 noncomputable instance : Semiring Nat := inferInstance
@@ -48,36 +49,34 @@ noncomputable instance : Semiring Nat := inferInstance
 /--
 info: ℤ : Type
 ---
-info: import Mathlib.Data.Int.Notation
+info: public import Mathlib.Data.Int.Notation
 -/
 #guard_msgs in
 #min_imports in #check ℤ
 
-/-- info: import Mathlib.Data.Int.Notation -/
+/-- info: public import Mathlib.Data.Int.Notation -/
 #guard_msgs in
 #min_imports in ℤ
 
 /--
-info:
-import Batteries.Tactic.Init
-import Batteries.Tactic.PermuteGoals
-import Mathlib.Tactic.ExtractGoal
+info: public import Batteries.Tactic.Init
+public import Batteries.Tactic.PermuteGoals
+public import Mathlib.Tactic.ExtractGoal
 -/
 #guard_msgs in
 #min_imports in (← `(tactic| extract_goal; on_goal 1 => _))
 
-/-- info: import Mathlib.Tactic.NormNum.Basic -/
+/-- info: public import Mathlib.Tactic.NormNum.Basic -/
 #guard_msgs in
 #min_imports in
 lemma uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
 
-/-- info: import Mathlib.Tactic.NormNum.Basic -/
+/-- info: public import Mathlib.Tactic.NormNum.Basic -/
 #guard_msgs in
 #min_imports in uses_norm_num
 
 /--
-info: import Mathlib.Tactic.Lemma
-import Mathlib.Data.Nat.Notation
+info: public import Mathlib.Data.Nat.Notation
 ---
 info: theorem hi.extracted_1_1 (n : ℕ) : n = n := sorry
 -/
@@ -87,7 +86,7 @@ lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
 section Variables
 
-/-- info: import Mathlib.Data.Nat.Notation -/
+/-- info: public import Mathlib.Data.Nat.Notation -/
 #guard_msgs in
 #min_imports in
 def confusableName : (1 : ℕ) = 1 := rfl
@@ -103,7 +102,7 @@ namespace Namespace
 -- We find it by looking up the declaration by name and checking the term,
 -- which used to get confused if running in a namespace.
 
-/-- info: import Mathlib.Algebra.Ring.Defs -/
+/-- info: public import Mathlib.Algebra.Ring.Defs -/
 #guard_msgs in
 #min_imports in
 protected def confusableName : (1 : R) = 1 := rfl

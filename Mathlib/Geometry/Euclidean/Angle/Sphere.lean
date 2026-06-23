@@ -239,7 +239,6 @@ theorem abs_oangle_center_right_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ :
   abs_oangle_left_toReal_lt_pi_div_two_of_dist_eq
     (dist_center_eq_dist_center_of_mem_sphere' hp₂ hp₁)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two points on a circle, the center of that circle may be expressed explicitly as a
 multiple (by half the tangent of the angle between the chord and the radius at one of those
 points) of a `π / 2` rotation of the vector between those points, plus the midpoint of those
@@ -264,12 +263,11 @@ theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sp
     (hp₂p₃ : p₂ ≠ p₃) :
     ((Real.Angle.tan (∡ p₁ p₂ p₃))⁻¹ / 2) • o.rotation (π / 2 : ℝ) (p₃ -ᵥ p₁) +ᵥ midpoint ℝ p₁ p₃ =
       s.center := by
-  convert tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center hp₁ hp₃ hp₁p₃
-  convert (Real.Angle.tan_eq_inv_of_two_zsmul_add_two_zsmul_eq_pi _).symm
+  convert! tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center hp₁ hp₃ hp₁p₃
+  convert! (Real.Angle.tan_eq_inv_of_two_zsmul_add_two_zsmul_eq_pi _).symm
   rw [add_comm,
     two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi hp₁ hp₂ hp₃ hp₁p₂.symm hp₂p₃ hp₁p₃]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two points on a circle, the radius of that circle may be expressed explicitly as half
 the distance between those two points divided by the cosine of the angle between the chord and
 the radius at one of those points. -/
@@ -309,7 +307,7 @@ at the third point (a version of the law of sines or sine rule). -/
 theorem dist_div_sin_oangle_div_two_eq_radius {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₁p₂ : p₁ ≠ p₂) (hp₁p₃ : p₁ ≠ p₃) (hp₂p₃ : p₂ ≠ p₃) :
     dist p₁ p₃ / |Real.Angle.sin (∡ p₁ p₂ p₃)| / 2 = s.radius := by
-  convert dist_div_cos_oangle_center_div_two_eq_radius hp₁ hp₃ hp₁p₃
+  convert! dist_div_cos_oangle_center_div_two_eq_radius hp₁ hp₃ hp₁p₃
   rw [← Real.Angle.abs_cos_eq_abs_sin_of_two_zsmul_add_two_zsmul_eq_pi
     (two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi hp₁ hp₂ hp₃ hp₁p₂.symm hp₂p₃ hp₁p₃),
     abs_of_nonneg (Real.Angle.cos_nonneg_iff_abs_toReal_le_pi_div_two.2 _)]
@@ -427,7 +425,6 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
 
 end Oriented
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The circumradius of a triangle may be expressed explicitly as half the length of a side
 divided by the sine of the angle at the third point (a version of the law of sines or sine rule). -/
 theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
@@ -441,7 +438,7 @@ theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i�
     simp⟩
   have : Module.Oriented ℝ S.direction (Fin 2) :=
     ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
-  convert t'.dist_div_sin_oangle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃ using 3
+  convert! t'.dist_div_sin_oangle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃ using 3
   · rw [← Real.Angle.sin_toReal,
       Real.abs_sin_eq_sin_abs_of_abs_le_pi (Real.Angle.abs_toReal_le_pi _),
       ← angle_eq_abs_oangle_toReal (t'.independent.injective.ne h₁₂)

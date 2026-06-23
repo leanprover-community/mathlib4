@@ -52,7 +52,6 @@ namespace Subalgebra
 
 variable (A : Subalgebra R S)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `i(R) ⊗[R] A` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `Algebra.TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`.
@@ -65,11 +64,9 @@ def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
     obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
     replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
-    rw [← hx, ← hy, ← map_mul]
-    erw [(toSubmodule A).lTensorOne_tmul x' a,
-      (toSubmodule A).lTensorOne_tmul y' b,
-      (toSubmodule A).lTensorOne_tmul (x' * y') (a * b)]
-    rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
+    rw [← hx, ← hy, ← map_mul, (toSubmodule A).lTensorOne_tmul x' a,
+      (toSubmodule A).lTensorOne_tmul y' b, (toSubmodule A).lTensorOne_tmul (x' * y') (a * b),
+      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
   · exact Submodule.lTensorOne_one_tmul _
 
 variable {A}
@@ -82,11 +79,9 @@ theorem lTensorBot_tmul (x : R) (a : A) : A.lTensorBot (algebraMap R _ x ⊗ₜ[
 theorem lTensorBot_one_tmul (a : A) : A.lTensorBot (1 ⊗ₜ[R] a) = a :=
   (toSubmodule A).lTensorOne_one_tmul a
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lTensorBot_symm_apply (a : A) : A.lTensorBot.symm a = 1 ⊗ₜ[R] a := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `A ⊗[R] i(R)` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
@@ -100,11 +95,9 @@ def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
     obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
     replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
-    rw [← hx, ← hy, ← map_mul]
-    erw [(toSubmodule A).rTensorOne_tmul x' a,
-      (toSubmodule A).rTensorOne_tmul y' b,
-      (toSubmodule A).rTensorOne_tmul (x' * y') (a * b)]
-    rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
+    rw [← hx, ← hy, ← map_mul, (toSubmodule A).rTensorOne_tmul x' a,
+      (toSubmodule A).rTensorOne_tmul y' b, (toSubmodule A).rTensorOne_tmul (x' * y') (a * b),
+      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
   · exact Submodule.rTensorOne_tmul_one _
 
 @[simp]
@@ -115,7 +108,6 @@ theorem rTensorBot_tmul (x : R) (a : A) : A.rTensorBot (a ⊗ₜ[R] algebraMap R
 theorem rTensorBot_tmul_one (a : A) : A.rTensorBot (a ⊗ₜ[R] 1) = a :=
   (toSubmodule A).rTensorOne_tmul_one a
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rTensorBot_symm_apply (a : A) : A.rTensorBot.symm a = a ⊗ₜ[R] 1 := rfl
 
@@ -177,7 +169,6 @@ theorem linearEquivIncludeRange_tmul (x y) :
 theorem linearEquivIncludeRange_symm_tmul (x y) :
     (linearEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `R`-algebras `S,T`, there is a natural `R`-algebra isomorphism from `S ⊗[R] T` to
 `S' ⊗[R] T'` where `S',T'` are the images of `S,T` in `S ⊗[R] T` respectively. -/
 def algEquivIncludeRange :
@@ -185,7 +176,6 @@ def algEquivIncludeRange :
       (includeRight : T →ₐ[R] S ⊗[R] T).range :=
   algEquivOfLinearEquivTensorProduct (linearEquivIncludeRange R S T) (by simp) rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem algEquivIncludeRange_toAlgHom :
     (algEquivIncludeRange R S T).toAlgHom =
       map includeLeft.rangeRestrict includeRight.rangeRestrict := rfl
@@ -196,7 +186,6 @@ theorem algEquivIncludeRange_tmul (x y) :
       ((includeLeft : S →ₐ[R] S ⊗[R] T).rangeRestrict x) ⊗ₜ[R]
         ((includeRight : T →ₐ[R] S ⊗[R] T).rangeRestrict y) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algEquivIncludeRange_symm_tmul (x y) :
     (algEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
@@ -211,13 +200,11 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring T] [Algeb
 
 variable (A B : Subalgebra R S)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`,
 there is the natural `R`-algebra homomorphism
 `A ⊗[R] B →ₐ[R] S` induced by multiplication in `S`. -/
 def Subalgebra.mulMap : A ⊗[R] B →ₐ[R] S := Algebra.TensorProduct.productMap A.val B.val
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R S T) in
 theorem Algebra.TensorProduct.algEquivIncludeRange_symm_toAlgHom :
     (algEquivIncludeRange R S T).symm.toAlgHom =
@@ -228,34 +215,27 @@ namespace Subalgebra
 @[simp]
 theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.1 * b.1 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mulMap_map_comp_eq (f : S →ₐ[R] T) :
     (mulMap (A.map f) (B.map f)).comp
       (Algebra.TensorProduct.map (f.subalgebraMap A) (f.subalgebraMap B))
         = f.comp (mulMap A B) := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mulMap_toLinearMap : (A.mulMap B).toLinearMap = (toSubmodule A).mulMap (toSubmodule B) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mulMap_comm : mulMap B A = (mulMap A B).comp (Algebra.TensorProduct.comm R B A) := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mulMap_range : (A.mulMap B).range = A ⊔ B := by
   simp_rw [mulMap, Algebra.TensorProduct.productMap_range, Subalgebra.range_val]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mulMap_bot_left_eq : mulMap ⊥ A = A.val.comp A.lTensorBot.toAlgHom :=
   AlgHom.toLinearMap_injective (toSubmodule A).mulMap_one_left_eq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mulMap_bot_right_eq : mulMap A ⊥ = A.val.comp A.rTensorBot.toAlgHom :=
   AlgHom.toLinearMap_injective (toSubmodule A).mulMap_one_right_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`,
 there is the natural `R`-algebra homomorphism
 `A ⊗[R] B →ₐ[R] A ⊔ B` induced by multiplication in `S`,
@@ -268,7 +248,7 @@ variable {A B} in
 theorem val_mulMap'_tmul (a : A) (b : B) : (mulMap' A B (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
 theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
-  simp_rw [mulMap', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+  simp_rw [mulMap', AlgHom.coe_comp, AlgEquiv.coe_algHom,
     EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
 
 end Subalgebra

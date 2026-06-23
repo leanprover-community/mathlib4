@@ -5,8 +5,12 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Geometry.Manifold.SmoothApprox
-public import Mathlib.MeasureTheory.Function.ContinuousMapDense
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+
+import Mathlib.Geometry.Manifold.SmoothApprox
+import Mathlib.MeasureTheory.Function.ContinuousMapDense
 
 /-!
 
@@ -29,19 +33,23 @@ namespace HasCompactSupport
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
   [NormedSpace ℝ F]
-  (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ]
 
-set_option backward.privateInPublic true in
 /-- For every continuous compactly supported function `f` there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
-theorem exist_eLpNorm_sub_le_of_continuous {p : ℝ≥0∞} (hp : p ≠ ⊤) {ε : ℝ} (hε : 0 < ε) {f : E → F}
+theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
+    [IsFiniteMeasureOnCompacts μ] {p : ℝ≥0∞} {ε : ℝ} (hε : 0 < ε) {f : E → F}
     (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
     eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
+  rcases eq_or_ne p ∞ with rfl | hp
+  · obtain ⟨g, hg₁, hg₂, hg₃⟩ := h₂.exists_contDiff_approx ⊤ (ε := fun _ ↦ ε) (by fun_prop)
+      (by intro; positivity)
+    refine ⟨g, h₁.mono hg₃, hg₁, eLpNormEssSup_le_of_ae_bound (.of_forall fun x ↦ ?_)⟩
+    simpa [← dist_eq_norm_sub'] using (hg₂ x).le
   by_cases hf : f =ᵐ[μ] 0
   -- We will need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
-    simpa [HasCompactSupport.zero, eLpNorm_congr_ae hf] using contDiff_const
+    simpa [HasCompactSupport.zero, eLpNorm_congr_ae hf] using! contDiff_const
   have hs₁ : μ (tsupport f) ≠ ⊤ := h₁.measure_lt_top.ne
   have hs₂ : 0 < (μ <| tsupport f).toReal := by
     -- Since `f` is not the zero function `tsupport f` has positive measure
@@ -79,7 +87,7 @@ theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
   have hε₂ : 0 < ε / 2 := by positivity
   have hε₂' : 0 < ENNReal.ofReal (ε / 2) := by positivity
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := hf.exists_hasCompactSupport_eLpNorm_sub_le hp hε₂'.ne'
-  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_eLpNorm_sub_le_of_continuous μ hp hε₂ hg₃
+  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_eLpNorm_sub_le_of_continuous μ hε₂ hg₃
   refine ⟨g', hg'₁, hg'₂, ?_⟩
   have : f - g' = (f - g) - (g' - g) := by simp
   grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
@@ -97,7 +105,7 @@ theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞
   use ⟨g, hg₄.coeFn_toLp, hg₁, hg₂⟩
   rw [Metric.mem_closedBall, dist_comm, Lp.dist_def,
     ← le_ofReal_iff_toReal_le ((Lp.memLp f).sub (Lp.memLp hg₄.toLp)).eLpNorm_ne_top hε.le]
-  convert hg₃ using 1
+  convert! hg₃ using 1
   apply eLpNorm_congr_ae
   gcongr
   exact hg₄.coeFn_toLp

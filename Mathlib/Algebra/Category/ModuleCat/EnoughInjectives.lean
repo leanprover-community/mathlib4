@@ -16,7 +16,7 @@ We lift enough injectives of abelian groups to arbitrary $R$-modules by adjoint 
 `restrictScalars ⊣ coextendScalars`
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

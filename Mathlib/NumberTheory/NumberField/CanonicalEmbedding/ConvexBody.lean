@@ -59,15 +59,13 @@ abbrev convexBodyLT : Set (mixedSpace K) :=
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsReal w } => ball 0 (f w))) ×ˢ
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsComplex w } => ball 0 (f w)))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem convexBodyLT_mem {x : K} :
     mixedEmbedding K x ∈ (convexBodyLT K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
-    forall_true_left, mem_ball_zero_iff, Pi.ringHom_apply, ← Complex.norm_real,
+    forall_true_left, mem_ball_zero_iff, RingHom.pi_apply, ← Complex.norm_real,
     embedding_of_isReal_apply, Subtype.forall, ← forall₂_or_left, ← not_isReal_iff_isComplex, em,
     forall_true_left, norm_embedding_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem convexBodyLT_neg_mem (x : mixedSpace K) (hx : x ∈ (convexBodyLT K f)) :
     -x ∈ (convexBodyLT K f) := by
   simp only [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
@@ -92,7 +90,6 @@ theorem convexBodyLTFactor_ne_zero : convexBodyLTFactor K ≠ 0 :=
 theorem one_le_convexBodyLTFactor : 1 ≤ convexBodyLTFactor K :=
   one_le_mul (one_le_pow₀ one_le_two) (one_le_pow₀ (one_le_two.trans Real.two_le_pi))
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The volume of `(ConvexBodyLt K f)` where `convexBodyLT K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
@@ -113,12 +110,11 @@ theorem convexBodyLT_volume :
       simp_rw [convexBodyLTFactor, coe_mul, ENNReal.coe_pow]
       ring
     _ = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finset_prod, mult_isReal, mult_isComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, ofNNReal_finsetProd, mult_isReal, mult_isComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal]
 
 variable {f}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a technical result: quite often, we want to impose conditions at all infinite places
 but one and choose the value at the remaining place so that we can apply
 `exists_ne_zero_mem_ringOfIntegers_lt`. -/
@@ -154,13 +150,12 @@ abbrev convexBodyLT' : Set (mixedSpace K) :=
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsComplex w } ↦
     if w = w₀ then {x | |x.re| < 1 ∧ |x.im| < (f w : ℝ) ^ 2} else ball 0 (f w)))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem convexBodyLT'_mem {x : K} :
     mixedEmbedding K x ∈ convexBodyLT' K f w₀ ↔
       (∀ w : InfinitePlace K, w ≠ w₀ → w x < f w) ∧
       |(w₀.val.embedding x).re| < 1 ∧ |(w₀.val.embedding x).im| < (f w₀ : ℝ) ^ 2 := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
-    forall_true_left, Pi.ringHom_apply, mem_ball_zero_iff, ← Complex.norm_real,
+    forall_true_left, RingHom.pi_apply, mem_ball_zero_iff, ← Complex.norm_real,
     embedding_of_isReal_apply, norm_embedding_eq, Subtype.forall]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨fun w h_ne ↦ ?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ⟨fun w hw ↦ ?_, fun w hw ↦ ?_⟩⟩
   · by_cases hw : IsReal w
@@ -177,12 +172,11 @@ theorem convexBodyLT'_mem {x : K} :
       rw [mem_ball_zero_iff, norm_embedding_eq]
       exact h₁ w h_ne
 
-set_option backward.isDefEq.respectTransparency false in
 theorem convexBodyLT'_neg_mem (x : mixedSpace K) (hx : x ∈ convexBodyLT' K f w₀) :
     -x ∈ convexBodyLT' K f w₀ := by
   simp only [Set.mem_prod, Set.mem_pi, Set.mem_univ, mem_ball, dist_zero_right, Real.norm_eq_abs,
     true_implies, Subtype.forall, Prod.fst_neg, Pi.neg_apply, norm_neg, Prod.snd_neg] at hx ⊢
-  convert hx using 3
+  convert! hx using 3
   split_ifs <;> simp
 
 theorem convexBodyLT'_convex : Convex ℝ (convexBodyLT' K f w₀) := by
@@ -207,7 +201,6 @@ theorem convexBodyLT'Factor_ne_zero : convexBodyLT'Factor K ≠ 0 :=
 theorem one_le_convexBodyLT'Factor : 1 ≤ convexBodyLT'Factor K :=
   one_le_mul (one_le_pow₀ one_le_two) (one_le_pow₀ (one_le_two.trans Real.two_le_pi))
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem convexBodyLT'_volume :
     volume (convexBodyLT' K f w₀) = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
@@ -248,7 +241,7 @@ theorem convexBodyLT'_volume :
       simp_rw [coe_mul, ENNReal.coe_pow]
       ring
     _ = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finset_prod, mult_isReal, mult_isComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, ofNNReal_finsetProd, mult_isReal, mult_isComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal, mul_assoc]
 
 end convexBodyLT'
@@ -298,11 +291,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
     convexBodySumFun x = 0 ↔ x = 0 := by
   rw [← forall_normAtPlace_eq_zero_iff, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg
     fun _ _ ↦ mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
-  conv =>
-    enter [1, w, hw]
-    rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (mem_nonZeroDivisors_iff_ne_zero.mpr mult_coe_ne_zero)]
-  simp_rw [Finset.mem_univ, true_implies]
+  simp
 
 open scoped Classical in
 theorem norm_le_convexBodySumFun (x : mixedSpace K) : ‖x‖ ≤ convexBodySumFun x := by
@@ -324,7 +313,6 @@ theorem convexBodySumFun_continuous :
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
 abbrev convexBodySum : Set (mixedSpace K) := { x | convexBodySumFun x ≤ B }
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :
     volume (convexBodySum K B) = 0 := by
@@ -352,12 +340,13 @@ theorem convexBodySum_neg_mem {x : mixedSpace K} (hx : x ∈ (convexBodySum K B)
 
 theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
   refine Convex_subadditive_le (fun _ _ => convexBodySumFun_add_le _ _) (fun c x h => ?_) B
-  convert le_of_eq (convexBodySumFun_smul c x)
+  convert! le_of_eq (convexBodySumFun_smul c x)
   exact (abs_eq_self.mpr h).symm
 
 theorem convexBodySum_isBounded : Bornology.IsBounded (convexBodySum K B) := by
   classical
   refine Metric.isBounded_iff.mpr ⟨B + B, fun x hx y hy => ?_⟩
+  simp_rw [dist_eq_norm]
   refine le_trans (norm_sub_le x y) (add_le_add ?_ ?_)
   · exact le_trans (norm_le_convexBodySumFun x) hx
   · exact le_trans (norm_le_convexBodySumFun y) hy
@@ -366,7 +355,7 @@ theorem convexBodySum_compact : IsCompact (convexBodySum K B) := by
   classical
   rw [Metric.isCompact_iff_isClosed_bounded]
   refine ⟨?_, convexBodySum_isBounded K B⟩
-  convert IsClosed.preimage (convexBodySumFun_continuous K) (isClosed_Icc : IsClosed (Set.Icc 0 B))
+  convert! IsClosed.preimage (convexBodySumFun_continuous K) (isClosed_Icc : IsClosed (Set.Icc 0 B))
   ext
   simp [convexBodySumFun_nonneg]
 
@@ -379,7 +368,6 @@ theorem convexBodySumFactor_ne_zero : convexBodySumFactor K ≠ 0 := by
   exact mul_ne_zero (pow_ne_zero _ two_ne_zero)
     (pow_ne_zero _ (div_ne_zero NNReal.pi_ne_zero two_ne_zero))
 
-set_option backward.isDefEq.respectTransparency false in
 open MeasureTheory MeasureTheory.Measure Real in
 open scoped Classical in
 theorem convexBodySum_volume :
@@ -389,7 +377,7 @@ theorem convexBodySum_volume :
     exact finrank_pos.ne'
   · suffices volume (convexBodySum K 1) = (convexBodySumFactor K) by
       rw [mul_comm]
-      convert addHaar_smul volume B (convexBodySum K 1)
+      convert! addHaar_smul volume B (convexBodySum K 1)
       · simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hB), Set.preimage_setOf_eq, convexBodySumFun,
         normAtPlace_smul, abs_inv, abs_eq_self.mpr (le_of_lt hB), ← mul_assoc, mul_comm, mul_assoc,
         ← Finset.mul_sum, inv_mul_le_iff₀ hB, mul_one]
@@ -443,7 +431,6 @@ open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 
 variable [NumberField K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The bound that appears in **Minkowski Convex Body theorem**, see
 `MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. See
@@ -454,7 +441,6 @@ noncomputable def minkowskiBound : ℝ≥0∞ :=
   volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) *
     (2 : ℝ≥0∞) ^ (finrank ℝ (mixedSpace K))
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
     volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) =
@@ -483,7 +469,6 @@ theorem minkowskiBound_pos : 0 < minkowskiBound K I :=
 
 variable {f : InfinitePlace K → ℝ≥0} (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Let `I` be a fractional ideal of `K`. Assume that `f : InfinitePlace K → ℝ≥0` is such that
 `minkowskiBound K I < volume (convexBodyLT K f)` where `convexBodyLT K f` is the set of
@@ -502,7 +487,6 @@ theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBody
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT_mem K f).mp h_mem⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- A version of `exists_ne_zero_mem_ideal_lt` where the absolute value of the real part of `a` is
 smaller than `1` at some fixed complex place. This is useful to ensure that `a` is not real. -/
@@ -520,7 +504,6 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT'_mem K f w₀).mp h_mem⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ↑1 < volume (convexBodyLT K f)) :
@@ -529,7 +512,6 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ↑1 < volume
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, RingOfIntegers.coe_ne_zero_iff.mp h_nz, h_bd⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- A version of `exists_ne_zero_mem_ideal_lt'` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // IsComplex w})
@@ -540,7 +522,6 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // Is
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, RingOfIntegers.coe_ne_zero_iff.mp h_nz, h_bd⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : IsReal w₀) {B : ℝ≥0}
     (hB : minkowskiBound K ↑1 < convexBodyLTFactor K * B) :
     ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
@@ -555,10 +536,9 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
   obtain ⟨a, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
   refine ⟨a, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
   · exact is_primitive_element_of_infinitePlace_lt h_nz
-      (fun w h_ne ↦ by convert (if_neg h_ne) ▸ h_le w) (Or.inl hw₀)
+      (fun w h_ne ↦ by convert! (if_neg h_ne) ▸ h_le w) (Or.inl hw₀)
   · split_ifs <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀ : IsComplex w₀)
     {B : ℝ≥0} (hB : minkowskiBound K ↑1 < convexBodyLT'Factor K * B) :
     ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
@@ -575,7 +555,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
   obtain ⟨a, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this
   refine ⟨a, ?_, fun w ↦ ?_⟩
   · exact is_primitive_element_of_infinitePlace_lt h_nz
-      (fun w h_ne ↦ by convert if_neg h_ne ▸ h_le w h_ne) (Or.inr h_le₀.1)
+      (fun w h_ne ↦ by convert! if_neg h_ne ▸ h_le w h_ne) (Or.inr h_le₀.1)
   · by_cases h_eq : w = w₀
     · rw [if_pos rfl] at h_le₀
       dsimp only at h_le₀
@@ -590,7 +570,6 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
       rw [NNReal.coe_one, Real.le_sqrt' zero_lt_one, one_pow]
       norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Let `I` be a fractional ideal of `K`. Assume that `B : ℝ` is such that
 `minkowskiBound K I < volume (convexBodySum K B)` where `convexBodySum K B` is the set of points
@@ -630,7 +609,6 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
     exact finrank_pos
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K ↑1) ≤ volume (convexBodySum K B)) :

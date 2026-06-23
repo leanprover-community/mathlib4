@@ -51,8 +51,6 @@ theorem floor_eq_iff (ha : 0 ≤ a) : ⌊a⌋₊ = n ↔ ↑n ≤ a ∧ a < ↑n
   rw [← le_floor_iff ha, ← Nat.cast_one, ← Nat.cast_add, ← floor_lt ha, Nat.lt_add_one_iff,
     le_antisymm_iff, and_comm]
 
-variable [IsStrictOrderedRing R]
-
 theorem lt_of_floor_lt (h : ⌊a⌋₊ < n) : a < n :=
   lt_of_not_ge fun h' => (le_floor h').not_gt h
 
@@ -63,6 +61,8 @@ theorem lt_succ_floor (a : R) : a < ⌊a⌋₊.succ :=
 
 @[bound]
 theorem lt_floor_add_one (a : R) : a < ⌊a⌋₊ + 1 := by simpa using lt_succ_floor a
+
+variable [IsStrictOrderedRing R]
 
 @[simp]
 theorem floor_natCast (n : ℕ) : ⌊(n : R)⌋₊ = n :=
@@ -157,10 +157,9 @@ theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋
   rw [le_div_iff_mul_le (zero_lt_of_ne_zero hn), le_floor_iff (mul_nonneg ha (cast_nonneg' n)),
     le_floor_iff ha, cast_mul, mul_le_mul_iff_of_pos_right (cast_pos'.mpr (zero_lt_of_ne_zero hn))]
 
-theorem cast_mul_floor_div_cancel {R : Type*} [CommSemiring R] [LinearOrder R]
-    [IsStrictOrderedRing R] [FloorSemiring R] {n : ℕ} (hn : n ≠ 0) (a : R) :
+theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) :
     ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
-  rw [mul_comm, mul_cast_floor_div_cancel hn]
+  rw [Nat.cast_comm, mul_cast_floor_div_cancel hn]
 
 end floor
 
@@ -199,20 +198,20 @@ theorem preimage_ceil_zero : (Nat.ceil : R → ℕ) ⁻¹' {0} = Iic 0 :=
 theorem preimage_ceil_of_ne_zero (hn : n ≠ 0) : (Nat.ceil : R → ℕ) ⁻¹' {n} = Ioc (↑(n - 1) : R) n :=
   ext fun _ => ceil_eq_iff hn
 
-variable [IsStrictOrderedRing R]
-
 @[bound]
 theorem ceil_le_floor_add_one (a : R) : ⌈a⌉₊ ≤ ⌊a⌋₊ + 1 := by
   rw [ceil_le, Nat.cast_add, Nat.cast_one]
   exact (lt_floor_add_one a).le
 
 @[simp]
-theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R]
     [FloorSemiring R] (z : ℤ) :
     ⌈(z : R)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by
     simp only [ceil_le, Int.toNat_le]
     norm_cast
+
+variable [IsStrictOrderedRing R]
 
 @[simp]
 theorem ceil_natCast (n : ℕ) : ⌈(n : R)⌉₊ = n :=
@@ -293,6 +292,7 @@ theorem preimage_Iic {a : R} (ha : 0 ≤ a) : (Nat.cast : ℕ → R) ⁻¹' Set.
   ext
   simp [le_floor_iff, ha]
 
+@[push]
 theorem floor_add_natCast [IsStrictOrderedRing R] (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n :=
   eq_of_forall_le_iff fun b => by
     rw [le_floor_iff (add_nonneg ha n.cast_nonneg)]
@@ -307,14 +307,15 @@ theorem floor_add_natCast [IsStrictOrderedRing R] (ha : 0 ≤ a) (n : ℕ) : ⌊
 
 variable [IsStrictOrderedRing R]
 
+@[push]
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rw [← cast_one, floor_add_natCast ha 1]
 
+@[push]
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem floor_sub_natCast [Sub R] [OrderedSub R] [ExistsAddOfLE R] (a : R) (n : ℕ) :
     ⌊a - n⌋₊ = ⌊a⌋₊ - n := by
@@ -363,7 +364,6 @@ theorem ceil_add_le (a b : R) : ⌈a + b⌉₊ ≤ ⌈a⌉₊ + ⌈b⌉₊ := by
 
 variable [Sub R] [OrderedSub R] [ExistsAddOfLE R]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceil_sub_natCast (a : R) (n : ℕ) : ⌈a - n⌉₊ = ⌈a⌉₊ - n := by
   obtain han | hna := le_total a n
   · rwa [ceil_eq_zero.2 (tsub_nonpos_of_le han), eq_comm, tsub_eq_zero_iff_le, Nat.ceil_le]
@@ -385,6 +385,12 @@ variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
 @[bound]
 theorem sub_one_lt_floor (a : R) : a - 1 < ⌊a⌋₊ :=
   sub_lt_iff_lt_add.2 <| lt_floor_add_one a
+
+lemma self_sub_floor_lt_one (a : R) : a - ⌊a⌋₊ < 1 :=
+  sub_lt_iff_lt_add'.mpr <| lt_floor_add_one a
+
+lemma zero_le_self_sub_floor {a : R} (ha : 0 ≤ a) : 0 ≤ a - ⌊a⌋₊ :=
+  sub_nonneg.mpr <| Nat.floor_le ha
 
 lemma abs_sub_floor_le {a : R} (ha : 0 ≤ a) : |a - ⌊a⌋₊| ≤ 1 := by
   refine abs_le.mpr ⟨?_, ?_⟩

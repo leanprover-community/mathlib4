@@ -59,7 +59,6 @@ theorem log_exp_eq_re_add_toIocMod (x : ℂ) :
     log (exp x) = x.re + (toIocMod Real.two_pi_pos (-π) x.im) * I := by
   rw [log, norm_exp, Real.log_exp, arg_exp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem log_exp_eq_sub_toIocDiv (x : ℂ) :
     log (exp x) = x - (toIocDiv Real.two_pi_pos (-π) x.im) * (2 * π * I) := by
   rw [log_exp_eq_re_add_toIocMod, toIocMod, ofReal_sub, sub_mul, ← add_sub_assoc]
@@ -139,7 +138,6 @@ theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [lo
 
 theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by simp [Real.pi_ne_zero, I_ne_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * I) := by
   constructor
   · intro h
@@ -151,11 +149,32 @@ theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * 
   · rintro ⟨n, rfl⟩
     exact (exp_periodic.int_mul n).eq.trans exp_zero
 
+theorem exp_eq_one_iff_of_im_nonneg {x : ℂ} (hx : 0 ≤ x.im) :
+    exp x = 1 ↔ ∃ n : ℕ, x = n * (2 * π * I) := by
+  rw [exp_eq_one_iff]
+  refine ⟨fun ⟨n, hn⟩ ↦ ?_, fun ⟨n, hn⟩ ↦ ⟨n, by rw [hn]; norm_cast⟩⟩
+  have : 0 ≤ n * (2 * π) := by simpa [hn] using hx
+  lift n to ℕ using by exact_mod_cast nonneg_of_mul_nonneg_left this (by positivity)
+  exact ⟨n, hn⟩
+
+theorem exp_two_pi_mul_I_mul_div_eq_one_iff {k N : ℕ} (hN : N ≠ 0) :
+    exp (2 * π * I * k / N) = 1 ↔ N ∣ k := by
+  rw [exp_eq_one_iff]
+  conv in _ = _ => rw [← mul_comm (2 * π * I), mul_div_assoc, mul_right_inj' (by simp)]
+  field_simp [Nat.cast_ne_zero.mpr hN]
+  norm_cast
+  simp [← dvd_def, Int.ofNat_dvd]
+
 theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y) = 1 := by
   rw [exp_sub, div_eq_one_iff_eq (exp_ne_zero _)]
 
 theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
   simp only [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
+
+@[grind .] lemma re_eq_re_of_cexp_eq_cexp {x y : ℂ} (h : cexp x = cexp y) :
+    x.re = y.re := by
+  obtain ⟨n, hn⟩ := exp_eq_exp_iff_exists_int.1 h
+  simp [hn]
 
 theorem log_exp_exists (z : ℂ) :
     ∃ n : ℤ, log (exp z) = z + n * (2 * π * I) := by
@@ -166,8 +185,8 @@ theorem log_exp_exists (z : ℂ) :
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine ⟨fun hs => ?_, fun hs => ?_⟩
   · refine ((hs.image exp).insert 0).mono ?_
-    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
-        Set.diff_union_self]
+    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.sdiff_eq, ← Set.union_singleton,
+        Set.sdiff_union_self]
     exact Set.subset_union_left
   · rw [← Set.biUnion_preimage_singleton]
     refine hs.biUnion fun z hz => ?_
@@ -181,9 +200,9 @@ alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 <| Real.log ‖z‖ - π * I) := by
-  convert
+  convert!
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
-            (continuous_norm.continuousWithinAt.log _)).tendsto.add
+          (continuous_norm.continuousWithinAt.log _)).tendsto.add
       (((continuous_ofReal.tendsto _).comp <|
             tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1
@@ -193,9 +212,9 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
 
 theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
-  convert
+  convert!
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
-            (continuous_norm.continuousWithinAt.log _)).tendsto.add
+          (continuous_norm.continuousWithinAt.log _)).tendsto.add
       ((continuous_ofReal.continuousAt.comp_continuousWithinAt <|
             continuousWithinAt_arg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1

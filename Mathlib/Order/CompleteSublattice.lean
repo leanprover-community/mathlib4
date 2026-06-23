@@ -62,13 +62,13 @@ variable {L : CompleteSublattice α}
 
 instance instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
-  coe_injective' L M h := by cases L; cases M; congr; exact SetLike.coe_injective' h
+  coe_injective L M h := by cases L; cases M; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (CompleteSublattice α) := .ofSetLike (CompleteSublattice α) α
 
-theorem top_mem : ⊤ ∈ L := by simpa using L.sInfClosed' <| empty_subset _
+theorem top_mem : ⊤ ∈ L := by simpa using! L.sInfClosed' <| empty_subset _
 
-theorem bot_mem : ⊥ ∈ L := by simpa using L.sSupClosed' <| empty_subset _
+theorem bot_mem : ⊥ ∈ L := by simpa using! L.sSupClosed' <| empty_subset _
 
 instance instBot : Bot L where
   bot := ⟨⊥, bot_mem⟩
@@ -157,13 +157,11 @@ sublattice. -/
 
 @[simp] theorem mem_comap {L : CompleteSublattice β} {a : α} : a ∈ L.comap f ↔ f a ∈ L := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma disjoint_iff {a b : L} :
     Disjoint a b ↔ Disjoint (a : α) (b : α) := by
   rw [disjoint_iff, disjoint_iff, ← Sublattice.coe_inf, ← coe_bot (L := L),
     Subtype.coe_injective.eq_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma codisjoint_iff {a b : L} :
     Codisjoint a b ↔ Codisjoint (a : α) (b : α) := by
   rw [codisjoint_iff, codisjoint_iff, ← Sublattice.coe_sup, ← coe_top (L := L),

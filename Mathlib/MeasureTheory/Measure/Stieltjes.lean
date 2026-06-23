@@ -81,11 +81,12 @@ open scoped Classical in
 /-- `botSet` is the set of all bottom elements. -/
 def botSet : Set R := {x | IsBot x}
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma Ioc_diff_botSet (a b : R) : Ioc a b \ botSet = Ioc a b := by
+@[simp] lemma Ioc_sdiff_botSet (a b : R) : Ioc a b \ botSet = Ioc a b := by
   rw [sdiff_eq_left, disjoint_iff_forall_ne]
   rintro c ⟨hc, _⟩ _ hc' rfl
   exact (hc' a).not_gt hc
+
+@[deprecated (since := "2026-06-03")] alias Ioc_diff_botSet := Ioc_sdiff_botSet
 
 lemma notMem_botSet_of_lt {x y : R} (h : x < y) : y ∉ botSet := by
   contrapose! h
@@ -296,12 +297,12 @@ theorem length_Ioc (a b : R) : f.length (Ioc a b) = ofReal (f b - f a) := by
   have : Nonempty R := ⟨a⟩
   rw [length_eq]
   refine
-    le_antisymm (iInf_le_of_le a <| iInf₂_le b diff_subset)
+    le_antisymm (iInf_le_of_le a <| iInf₂_le b sdiff_subset)
       (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 ?_)
   rcases le_or_gt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
-  simp only [Ioc_diff_botSet] at h
+  simp only [Ioc_sdiff_botSet] at h
   obtain ⟨h₁, h₂⟩ := (Ioc_subset_Ioc_iff ab).1 h
   exact Real.toNNReal_le_toNNReal (sub_le_sub (f.mono h₁) (f.mono h₂))
 
@@ -309,14 +310,16 @@ theorem length_mono {s₁ s₂ : Set R} (h : s₁ ⊆ s₂) : f.length s₁ ≤ 
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
   simp only [length_eq]
-  exact iInf_mono fun a => biInf_mono fun b h' => (diff_subset_diff_left h).trans h'
+  exact iInf_mono fun a => biInf_mono fun b h' => (sdiff_subset_sdiff_left h).trans h'
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-theorem length_diff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
+theorem length_sdiff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
   · simp [length_eq]
+
+@[deprecated (since := "2026-06-03")] alias length_diff_botSet := length_sdiff_botSet
 
 open MeasureTheory
 
@@ -356,7 +359,7 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
   refine fun s => Finset.strongInductionOn s fun s IH b cv => ?_
   rcases le_total b a with ab | ab
   · rw [ENNReal.ofReal_eq_zero.2 (sub_nonpos.2 (f.mono ab))]
-    exact zero_le _
+    exact zero_le
   obtain ⟨i, is, bcd⟩ : ∃ i ∈ s, b ∈ Iotop (c i) (d i) := by
     simpa only [SetLike.mem_coe, mem_iUnion, exists_prop] using cv ⟨ab, le_rfl⟩
   rw [← Finset.insert_erase is] at cv ⊢
@@ -450,7 +453,6 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [OrderTopology R] [CompactIccSpace R] in
 theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
@@ -458,25 +460,24 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
   simp only [length_eq]
   refine le_iInf fun a => le_iInf fun b => le_iInf fun h => ?_
   simp only [← length_eq]
-  rw [← length_diff_botSet, inter_diff_right_comm, ← length_diff_botSet (s := t \ Ioi c),
-    diff_diff_comm]
+  rw [← length_sdiff_botSet, inter_sdiff_right_comm, ← length_sdiff_botSet (s := t \ Ioi c),
+    sdiff_sdiff_comm]
   refine
     le_trans
       (add_le_add (f.length_mono <| inter_subset_inter_left _ h)
-        (f.length_mono <| diff_subset_diff_left h)) ?_
+        (f.length_mono <| sdiff_subset_sdiff_left h)) ?_
   rcases le_total a c with hac | hac <;> rcases le_total b c with hbc | hbc
   · simp only [Ioc_inter_Ioi, f.length_Ioc, hac, hbc, le_refl, Ioc_eq_empty,
-      max_eq_right, min_eq_left, Ioc_diff_Ioi, f.length_empty, zero_add, not_lt]
-  · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_diff_Ioi, f.length_Ioc, min_eq_right,
+      max_eq_right, min_eq_left, Ioc_sdiff_Ioi, f.length_empty, zero_add, not_lt]
+  · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_sdiff_Ioi, f.length_Ioc, min_eq_right,
       ← ENNReal.ofReal_add, f.mono hac, f.mono hbc, sub_nonneg,
       sub_add_sub_cancel, le_refl,
       max_eq_right]
-  · simp only [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_diff_Ioi, f.length_empty,
-      zero_add, or_true, le_sup_iff, f.length_Ioc, not_lt]
-  · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_diff_Ioi, f.length_Ioc, min_eq_right,
+  · simp only [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_sdiff_Ioi,
+      f.length_empty, zero_add, or_true, le_sup_iff, f.length_Ioc, not_lt]
+  · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_sdiff_Ioi, f.length_Ioc, min_eq_right,
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
     f.outer.trim = f.outer := by
   refine le_antisymm (fun s => ?_) (OuterMeasure.le_trim _)
@@ -499,14 +500,14 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
       simp only [iInf_lt_iff] at hl
       rcases hl with ⟨a, b, h₁, h₂⟩
       rw [← f.outer_Ioc] at h₂
-      rw [diff_subset_iff] at h₁
+      rw [sdiff_subset_iff] at h₁
       refine ⟨_, h₁, measurableSet_botSet.union measurableSet_Ioc, le_of_lt ?_⟩
       calc f.outer (botSet ∪ Ioc a b)
       _ ≤ f.outer botSet + f.outer (Ioc a b) := measure_union_le _ _
       _ ≤ f.length botSet + f.outer (Ioc a b) := by gcongr; apply outer_le_length
       _ = 0 + f.outer (Ioc a b) := by
-        simp only [← length_diff_botSet, sdiff_self, bot_eq_empty, empty_diff, outer_Ioc, zero_add]
-        simp [empty_diff]
+        simp only [← length_sdiff_botSet, sdiff_self, empty_sdiff, outer_Ioc, zero_add]
+        simp [empty_sdiff]
       _ = f.outer (Ioc a b) := by simp
       _ < f.length (t i) + ofReal ↑(ε' i) := by simpa using h₂
   simp only [ofReal_coe_nnreal] at hg
@@ -540,7 +541,6 @@ theorem measure_Ioc (a b : R) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   rw [StieltjesFunction.measure]
   exact f.outer_Ioc a b
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) := by
   by_cases ha : IsBot a
@@ -551,7 +551,7 @@ theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) :
     apply eq_bot_iff.2
     rw [StieltjesFunction.measure]
     apply (outer_le_length _ _).trans
-    rw [← length_diff_botSet]
+    rw [← length_sdiff_botSet]
     simp [subsingleton_botSet.eq_singleton_of_mem ha]
   obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
@@ -580,7 +580,6 @@ theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) :
     exact ENNReal.continuous_ofReal.continuousAt.tendsto.comp (tendsto_const_nhds.sub this)
   exact tendsto_nhds_unique L1 L2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_Icc (a b : R) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
   rcases le_or_gt a b with (hab | hab)
@@ -591,7 +590,6 @@ theorem measure_Icc (a b : R) : f.measure (Icc a b) = ofReal (f b - leftLim f a)
     symm
     simp [ENNReal.ofReal_eq_zero, f.mono.le_leftLim hab]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_Ioo {a b : R} : f.measure (Ioo a b) = ofReal (leftLim f b - f a) := by
   rcases le_or_gt b a with (hab | hab)
@@ -608,7 +606,6 @@ theorem measure_Ioo {a b : R} : f.measure (Ioo a b) = ofReal (leftLim f b - f a)
     · simp only [f.mono.leftLim_le le_rfl, sub_nonneg]
     · simp only [f.mono.le_leftLim hab, sub_nonneg]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by
   rcases le_or_gt b a with (hab | hab)
@@ -641,7 +638,7 @@ theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
 lemma measure_Iio {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iio x) = ofReal (leftLim f x - l) := by
   have : Nonempty R := ⟨x⟩
-  rw [← Iic_diff_right, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
+  rw [← Iic_sdiff_right, measure_sdiff _ (nullMeasurableSet_singleton x), measure_singleton,
     f.measure_Iic hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
     <;> simp
 
@@ -655,20 +652,11 @@ theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
   have : NoMaxOrder R := NoTopOrder.to_noMaxOrder R
   refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
   simp_rw [measure_Ico]
-  refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
-  apply tendsto_order.2 ⟨fun m hm ↦ ?_, fun M hM ↦ ?_⟩
-  · obtain ⟨a, ha⟩ : ∃ a, ∀ (b : R), a ≤ b → m < f b := by simpa using (tendsto_order.1 hf).1 m hm
-    obtain ⟨a', ha'⟩ : ∃ a', a < a' := exists_gt a
-    simp only [eventually_atTop]
-    refine ⟨a', fun b hb ↦ ?_⟩
-    apply (ha _ le_rfl).trans_le
-    exact f.mono.le_leftLim (ha'.trans_le hb)
-  · filter_upwards [(tendsto_order.1 hf).2 M hM] with a ha
-    exact (f.mono.leftLim_le le_rfl).trans_lt ha
+  exact ENNReal.tendsto_ofReal (Tendsto.sub_const (tendsto_leftLim_atTop_of_tendsto hf) _)
 
 lemma measure_Ioi {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     f.measure (Ioi x) = ofReal (l - f x) := by
-  rw [← Ici_diff_left, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
+  rw [← Ici_sdiff_left, measure_sdiff _ (nullMeasurableSet_singleton x), measure_singleton,
     f.measure_Ici hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
     <;> simp
 
@@ -757,7 +745,6 @@ instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure := by
     exists_Icc_mem_subset_of_mem_nhds (by simp)
   exact ⟨Icc b c, h, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction R) {l : ℝ}
     (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
     f = g := by
@@ -770,7 +757,6 @@ lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction R) {l : ℝ}
   · rw [sub_nonneg]
     exact Monotone.le_of_tendsto f.mono hfl x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_of_measure_of_eq (g : StieltjesFunction R) {y : R}
     (hfg : f.measure = g.measure) (hy : f y = g y) :
     f = g := by

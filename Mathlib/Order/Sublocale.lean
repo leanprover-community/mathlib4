@@ -54,7 +54,7 @@ variable {ι : Sort*} {S T : Sublocale X} {s : Set X} {f : ι → X} {a b : X}
 
 instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
-  coe_injective' s1 s2 h := by cases s1; congr
+  coe_injective s1 s2 h := by cases s1; congr
 
 instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
 
@@ -121,7 +121,6 @@ private def restrictAux (S : Sublocale X) (a : X) : S := sInf {s : S | a ≤ s}
 
 private lemma le_restrictAux : a ≤ S.restrictAux a := by simp +contextual [restrictAux]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- See `Sublocale.giRestrict` for the public-facing version. -/
 private def giAux (S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where

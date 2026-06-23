@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
+public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.LocallyConvex.StrongTopology
 
@@ -39,7 +39,7 @@ all `x : E`. -/
 protected def seminorm (x : E) : Seminorm 𝕜₂ (E →SLₚₜ[σ] F) where
   toFun A := ‖A x‖
   map_zero' := by simp
-  add_le' A B := by simpa only using norm_add_le _ _
+  add_le' A B := by simpa only using! norm_add_le _ _
   neg' A := by simp
   smul' r A := by simp [norm_smul]
 
@@ -101,7 +101,7 @@ def mkCLM (A : (E →SL[σ] F) →ₗ[𝕜₂] D →SL[τ] G) (hbound : ∀ (f :
   __ := (toUniformConvergenceCLM _ _ _).toLinearMap.comp
     (A.comp (toUniformConvergenceCLM _ _ _).symm.toLinearMap)
   cont := by
-    apply Seminorm.continuous_from_bounded PointwiseConvergenceCLM.withSeminorms
+    apply PointwiseConvergenceCLM.withSeminorms.continuous_of_isBounded
       PointwiseConvergenceCLM.withSeminorms A
     intro f
     obtain ⟨s, C, h⟩ := hbound f

@@ -30,6 +30,7 @@ namespace Subgroup
 section SchurZassenhausAbelian
 
 open MulOpposite MulAction Subgroup.leftTransversals
+open scoped IsMulCommutative
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)
@@ -222,8 +223,7 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
     rhs
     rhs
     rw [← N.range_subtype, N.subtype.range_eq_map]
-  have inj := map_injective N.subtype_injective
-  rwa [inj.eq_iff, inj.eq_iff] at key
+  rwa [map_subtype_inj, map_subtype_inj] at key
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step4 : (Nat.card N).minFac.Prime :=
@@ -242,10 +242,9 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
   haveI : (P.1.map N.subtype).Normal :=
-    normalizer_eq_top_iff.mp (step1 h1 h2 h3 (P.map N.subtype).normalizer P.normalizer_sup_eq_top)
+    normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
-set_option backward.isDefEq.respectTransparency false in
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 theorem step7 : IsMulCommutative N := by

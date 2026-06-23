@@ -30,7 +30,7 @@ topology.
 normed, lattice, ordered, group
 -/
 
-@[expose] public section
+public section
 
 
 /-!
@@ -132,8 +132,9 @@ instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
   refine squeeze_zero (fun e => norm_nonneg _) this ?_
-  convert ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
-    ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
+  convert!
+    ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
+      ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -166,7 +167,7 @@ lemma lipschitzWith_posPart : LipschitzWith 1 (posPart : α → α) :=
   lipschitzWith_sup_right 0
 
 lemma lipschitzWith_negPart : LipschitzWith 1 (negPart : α → α) := by
-  simpa [Function.comp] using lipschitzWith_posPart.comp LipschitzWith.id.neg
+  simpa [Function.comp] using! lipschitzWith_posPart.comp LipschitzWith.id.neg
 
 @[fun_prop]
 lemma continuous_posPart : Continuous (posPart : α → α) := lipschitzWith_posPart.continuous

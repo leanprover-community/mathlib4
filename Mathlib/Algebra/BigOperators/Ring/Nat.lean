@@ -34,7 +34,6 @@ lemma odd_sum_iff_odd_card_odd {s : Finset ι} (f : ι → ℕ) :
     Odd (∑ i ∈ s, f i) ↔ Odd #{x ∈ s | Odd (f x)} := by
   simp only [← Nat.not_even_iff_odd, even_sum_iff_even_card_odd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_preimage_eq_sum_card_image_eq {M : Type*} {f : ι → M} {s : Finset M}
     (hb : ∀ b ∈ s, Set.Finite {a | f a = b}) :
     Nat.card (f ⁻¹' s) = ∑ b ∈ s, Nat.card {a // f a = b} := by
@@ -52,6 +51,6 @@ theorem card_preimage_eq_sum_card_image_eq {M : Type*} {f : ι → M} {s : Finse
     suffices {a | f a = m} ⊆ ht.toFinset from
       congr_arg (Finset.card ·) (Finset.ext_iff.mpr fun a ↦ by simpa using fun h ↦ this h)
     intro _ h
-    simpa using by rwa [h]
+    simp_all
 
 end Finset

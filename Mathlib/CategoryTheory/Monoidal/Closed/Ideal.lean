@@ -76,7 +76,7 @@ instance : ExponentialIdeal (subterminalInclusion C) := by
   refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
   exact uncurry_injective (B.2 (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
 the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
 `(A ⟹ iB) ≅ i L (A ⟹ iB)`, naturally in `B`.
@@ -109,7 +109,7 @@ variable (i : D ⥤ C)
 
 /- This cannot be a local instance since it has free variables,
 it can instead be used as a have when needed.
-We assume HasFiniteProducts D as a hypothesis below, to avoid making this a local instance.
+We assume `HasFiniteProducts D` as a hypothesis below, to avoid making this a local instance.
 -/
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
@@ -154,14 +154,15 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
             refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
               (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) |>.symm
-        · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.fst, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc]
-        · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.snd, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
 variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
   [CartesianMonoidalCategory D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
@@ -191,6 +192,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
 
 variable [ExponentialIdeal i]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself Cartesian closed.
 
@@ -199,6 +201,7 @@ takes in an explicit choice of lift of the essential image of `i` to `D`, in the
 `l : i.EssImageSubcategory ⥤ D` and natural isomorphism `φ : l ⋙ i ≅ i.essImage.ι`. When
 `l ⋙ i` is defeq to `i.essImage.ι`, images of exponential objects in `D` under `i` will be defeq
 to the respective exponential objects in `C`. -/
+@[implicit_reducible]
 def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
     MonoidalClosed D where
   closed := fun B =>
@@ -217,6 +220,7 @@ def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i
         · exact (i.essImage.liftCompιIso _ _).symm.trans <|
             (Functor.isoWhiskerLeft _ φ.symm).trans (Functor.associator _ _ _).symm }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself Cartesian closed.
 
@@ -224,6 +228,7 @@ Unlike `cartesianClosedOfReflective'` this construction lifts exponential object
 exponential objects in `D` by applying the reflector to them, even though they already lie in the
 essential image of `i`; if you need better control over definitional equality, use
 `cartesianClosedOfReflective'` instead. -/
+@[implicit_reducible]
 def cartesianClosedOfReflective : MonoidalClosed D :=
   cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
     (NatIso.ofComponents (fun X ↦
@@ -264,7 +269,7 @@ noncomputable def bijection (A B : C) (X : D) :
     _ ≃ ((reflector i).obj A ⊗ (reflector i).obj B ⟶ X) :=
       i.fullyFaithfulOfReflective.homEquiv.symm
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
   simp only [bijection, Equiv.trans_def, curriedTensor_obj_obj, Equiv.symm_trans_apply,
@@ -286,6 +291,7 @@ theorem bijection_symm_apply_id (A B : C) :
     prodComparison_snd]
     apply (reflectorAdjunction i).unit.naturality
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⊗ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by

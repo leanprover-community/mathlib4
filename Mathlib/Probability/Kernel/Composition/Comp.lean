@@ -106,7 +106,7 @@ theorem ae_null_of_comp_null (h : (η ∘ₖ κ) a s = 0) : (η · s) =ᵐ[κ a]
   simp_rw [comp_null a mt] at ht
   rw [Filter.eventuallyLE_antisymm_iff]
   exact ⟨Filter.EventuallyLE.trans_eq (ae_of_all _ fun _ ↦ measure_mono hst) ht,
-    ae_of_all _ fun _ ↦ zero_le _⟩
+    ae_of_all _ fun _ ↦ zero_le⟩
 
 variable {p : γ → Prop}
 
@@ -147,7 +147,7 @@ theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
 
 lemma comp_discard' (κ : Kernel α β) :
     discard β ∘ₖ κ =
-      { toFun a := κ a .univ • Measure.dirac ()
+      { toFun a := κ a .univ • Measure.dirac PUnit.unit
         measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
   ext a s hs
   simp [comp_apply' _ _ _ hs, mul_comm]
@@ -196,6 +196,16 @@ lemma comp_sum_left {ι : Type*} [Countable ι] (κ : Kernel α β) (η : ι →
     comp_apply' _ _ _ hs]
   rw [lintegral_tsum]
   exact fun _ ↦ (Kernel.measurable_coe _ hs).aemeasurable
+
+lemma copy_comp_apply_prod (κ : Kernel α β) (a : α) {s t : Set β} (hs : MeasurableSet s)
+    (ht : MeasurableSet t) : (copy β ∘ₖ κ) a (s ×ˢ t) = κ a (s ∩ t) := by
+  rw [comp_apply' _ _ _ <| hs.prod ht]
+  simp_rw [copy_apply, Measure.dirac_apply' _ <| hs.prod ht, Set.indicator_prod_one]
+  calc
+  _ = ∫⁻ b, (s ∩ t).indicator 1 b ∂κ a := by
+    congr with b
+    simp [Set.inter_indicator_one]
+  _ = κ a (s ∩ t) := lintegral_indicator_one <| hs.inter ht
 
 instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kernel α β)
     [IsMarkovKernel κ] : IsMarkovKernel (η ∘ₖ κ) where

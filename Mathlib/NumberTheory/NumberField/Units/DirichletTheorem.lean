@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Torsion.Basic
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Units.Basic
@@ -131,7 +132,6 @@ theorem map_logEmbedding_sup_torsion (s : AddSubgroup (Additive (𝓞 K)ˣ)) :
     (s ⊔ (torsion K).toAddSubgroup).map (logEmbedding K) = s.map (logEmbedding K) := by
   rw [← logEmbedding_ker, AddSubgroup.map_eq_map_iff, sup_right_idem]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
     (w : {w : InfinitePlace K // w ≠ w₀}) : |logEmbedding K (Additive.ofMul x) w| ≤ r := by
@@ -173,12 +173,11 @@ noncomputable def _root_.NumberField.Units.unitLattice :
     Submodule ℤ (logSpace K) :=
   Submodule.map (logEmbedding K).toIntLinearMap ⊤
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set (logSpace K)) ∩ Metric.closedBall 0 r).Finite := by
   obtain hr | hr := lt_or_ge r 0
-  · convert Set.finite_empty
+  · convert! Set.finite_empty
     rw [Metric.closedBall_eq_empty.mpr hr]
     exact Set.inter_empty _
   · suffices {x : (𝓞 K)ˣ | IsIntegral ℤ (x : K) ∧
@@ -228,7 +227,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt K (f := g)
-      (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
+      (by rw [convexBodyLT_volume]; convert! hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw ↦ (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
@@ -362,7 +361,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
   · exact Metric.closedBall_mem_nhds _ (by simp)
   · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective)
-    convert unitLattice_inter_ball_finite K 1
+    convert! unitLattice_inter_ball_finite K 1
     ext x
     refine ⟨?_, fun ⟨hx1, hx2⟩ ↦ ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
     rintro ⟨x, hx, rfl⟩
@@ -379,7 +378,6 @@ protected theorem finrank_eq_rank :
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
@@ -409,7 +407,6 @@ theorem logEmbeddingQuot_injective :
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
 def logEmbeddingEquiv :
@@ -420,7 +417,7 @@ def logEmbeddingEquiv :
     ⟨fun _ _ ↦ by
       rw [AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.codRestrict_apply,
         AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
-      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using ha⟩⟩
+      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using! ha⟩⟩
 
 @[simp]
 theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :
@@ -453,14 +450,18 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
-theorem rank_modTorsion :
-    Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
+
+@[deprecated (since := "2026-06-05")] alias rank_modTorsion := finrank_modTorsion
+
+theorem finrank_eq : finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
+  simpa [← finrank_modTorsion] using! finrank_quotient_torsion_eq.symm
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
-    rw [← Module.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
+    rw [← Module.finrank_eq_card_chooseBasisIndex, finrank_modTorsion, Fintype.card_fin])
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
 def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
@@ -476,7 +477,6 @@ theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by
   simp_rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem logEmbedding_fundSystem (i : Fin (rank K)) :
     logEmbedding K (Additive.ofMul (fundSystem K i)) = basisUnitLattice K i := by
   rw [basisUnitLattice, Basis.map_apply, ← fundSystem_mk, logEmbeddingEquiv_apply]

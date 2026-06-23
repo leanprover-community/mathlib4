@@ -20,7 +20,7 @@ Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or 
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
@@ -59,17 +59,18 @@ theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup
 theorem uIcc_eq_range' :
     uIcc a b = ⟨List.range' (min a b) (max a b + 1 - min a b), List.nodup_range'⟩ := rfl
 
-theorem Iio_eq_range : Iio = range := by
+theorem Iio_eq_range : Iio a = range a := by
   grind
 
 @[simp]
-theorem Ico_zero_eq_range : Ico 0 = range := by rw [← Nat.bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
+theorem Ico_zero_eq_range : Ico 0 a = range a := by
+  rw [← Nat.bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
 
 lemma range_eq_Icc_zero_sub_one (n : ℕ) (hn : n ≠ 0) : range n = Icc 0 (n - 1) := by
   grind
 
-theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
-  Ico_zero_eq_range.symm
+theorem _root_.Finset.range_eq_Ico : range a = Ico 0 a :=
+  (Ico_zero_eq_range a).symm
 
 theorem range_succ_eq_Icc_zero (n : ℕ) : range (n + 1) = Icc 0 n := by
   rw [range_eq_Icc_zero_sub_one _ (Nat.add_one_ne_zero _), Nat.add_sub_cancel_right]
@@ -140,7 +141,6 @@ theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a b.succ = insert b (Ic
   simp_rw [mem_insert, mem_Ico]
   lia
 
-set_option linter.deprecated false in
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction n with
   | zero =>
@@ -196,7 +196,7 @@ open Multiset
 
 theorem multiset_Ico_map_mod (n a : ℕ) :
     (Multiset.Ico n (n + a)).map (· % a) = Multiset.range a := by
-  convert congr_arg Finset.val (image_Ico_mod n a)
+  convert! congr_arg Finset.val (image_Ico_mod n a)
   refine ((nodup_map_iff_inj_on (Finset.Ico _ _).nodup).2 <| ?_).dedup.symm
   exact mod_injOn_Ico _ _
 
@@ -230,8 +230,8 @@ theorem range_image_pred_top_sub (n : ℕ) :
     simp_rw [succ_sub_succ, Nat.sub_zero, Nat.sub_self]
 
 theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
-  rw [Finset.range_eq_Ico, map_eq_image]
-  convert (Ico_union_Ico_eq_Ico a.zero_le (a.le_add_right b)).symm
+  simp_rw [Finset.range_eq_Ico, map_eq_image]
+  convert! (Ico_union_Ico_eq_Ico a.zero_le (a.le_add_right b)).symm
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
   constructor
@@ -283,7 +283,7 @@ theorem Nat.cauchy_induction_mul (h : ∀ (n : ℕ), P (n + 1) → P n) (k seed 
     (hs : P seed.succ) (hm : ∀ x, seed < x → P x → P (k * x)) (n : ℕ) : P n := by
   apply Nat.cauchy_induction h _ hs (k * ·) fun x hl hP => ⟨_, hm x hl hP⟩
   intro _ hl _
-  convert (Nat.mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
+  convert! (Nat.mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
   rw [one_mul]
 
 theorem Nat.cauchy_induction_two_mul (h : ∀ n, P (n + 1) → P n) (seed : ℕ) (hs : P seed.succ)

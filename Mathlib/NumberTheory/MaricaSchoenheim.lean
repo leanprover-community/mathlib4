@@ -34,7 +34,6 @@ $\max_{i, j} \frac{a_i}{\gcd(a_i, a_j)} \ge n$. -/
 def GrahamConjecture (n : ℕ) (f : ℕ → ℕ) : Prop :=
   n ≠ 0 → StrictMonoOn f (Set.Iio n) → ∃ i < n, ∃ j < n, (f i).gcd (f j) * n ≤ f i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The special case of Graham's conjecture where all numbers are squarefree. -/
 lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < n, Squarefree (f k)) :
     GrahamConjecture n f := by
@@ -51,7 +50,7 @@ lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < 
     _ = n - 1 := by rw [card_Ioo, tsub_zero]
     _ < n := tsub_lt_self hn.bot_lt zero_lt_one
   · rw [Finset.card_image_of_injOn, card_Iio]
-    simpa using prod_primeFactors_invOn_squarefree.2.injOn.comp hf.injOn hf'
+    simpa using! prod_primeFactors_invOn_squarefree.2.injOn.comp hf.injOn hf'
   · simp only [𝒜, forall_mem_diffs, forall_mem_image, mem_Ioo, mem_Iio, Set.MapsTo, mem_coe]
     rintro i hi j hj
     rw [← primeFactors_div_gcd (hf' _ hi) (hf' _ hj).ne_zero,

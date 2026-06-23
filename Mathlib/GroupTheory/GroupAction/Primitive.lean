@@ -69,9 +69,9 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 -/
 
-@[expose] public section
+public section
 
-open Pointwise
+open scoped Pointwise
 
 namespace MulAction
 
@@ -182,7 +182,6 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
 @[to_additive
@@ -256,7 +255,6 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
     | inr h =>
       simp [BlockMem.coe_top, h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitive action is preprimitive
 iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
 @[to_additive
@@ -268,7 +266,6 @@ theorem isCoatom_stabilizer_iff_preprimitive [IsPretransitive G X] [Nontrivial X
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a preprimitive action, stabilizers are maximal subgroups -/
 @[to_additive /-- In a preprimitive action, stabilizers are maximal subgroups. -/]
 theorem IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
@@ -335,7 +332,7 @@ theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
   -- we need Set.Subsingleton B ↔ Set.ncard B ≤ 1
   suffices Set.ncard B < 2 by simpa [Nat.lt_succ_iff] using this
   -- We reduce to proving that (Set.range f).ncard ≤ (orbit N B).ncard
-  apply lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (zero_le _)
+  apply lt_of_mul_lt_mul_right' (hf'.trans_le' _)
   simp only [← hB.ncard_block_mul_ncard_orbit_eq hB']
   apply Nat.mul_le_mul_left
   -- We reduce to proving that (Set.range f ∩ g • B).ncard ≤ 1 for every g

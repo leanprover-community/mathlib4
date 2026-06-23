@@ -56,14 +56,8 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
 variable {K L n} in
 lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
     α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
-  simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
-    AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
-  constructor
-  · rintro ⟨m', hm', β, hβ⟩
-    obtain rfl : m = m' := by lia
-    exact ⟨β, hβ⟩
-  · rintro ⟨β, hβ⟩
-    exact ⟨m, hm, β, hβ⟩
+  simp only [coboundaries, AddSubgroup.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk]
+  grind
 
 /-- The type of cohomology classes of degree `n` in the complex of morphisms
 from `K` to `L`. -/
@@ -179,6 +173,7 @@ noncomputable def homAddEquiv :
 
 end CohomologyClass
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
@@ -202,12 +197,12 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
         (by
           rintro ⟨_, _⟩ ⟨q, hq, y, rfl⟩
           obtain rfl : n = q := by lia
-          simpa only [zero_comp] using ConcreteCategory.congr_hom s.condition y)))
+          simpa only [zero_comp] using! ConcreteCategory.congr_hom s.condition y)))
       (fun s ↦ rfl)
       (fun s l hl ↦ by
         ext x
         obtain ⟨y, rfl⟩ := x.mk_surjective
-        simpa using ConcreteCategory.congr_hom hl y)
+        simpa using! ConcreteCategory.congr_hom hl y)
 
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/

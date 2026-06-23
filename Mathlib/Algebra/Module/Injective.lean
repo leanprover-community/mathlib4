@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Small.Basic
-public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Injective modules
@@ -79,10 +79,22 @@ lemma of_equiv (e : Q ≃ₗ[R] M) (h : Module.Baer R Q) : Module.Baer R M := fu
 
 lemma congr (e : Q ≃ₗ[R] M) : Module.Baer R Q ↔ Module.Baer R M := ⟨of_equiv e, of_equiv e.symm⟩
 
+lemma iff_surjective {R : Type u} [CommRing R] [Module R M] : Module.Baer R M ↔
+    ∀ (I : Ideal R), Function.Surjective (LinearMap.lcomp R M I.subtype) := by
+  refine ⟨fun h I g ↦ ?_, fun h I g ↦ ?_⟩
+  · rcases h I g with ⟨g', hg'⟩
+    use g'
+    ext x
+    simp [hg']
+  · rcases h I g with ⟨g', hg'⟩
+    use g'
+    intro x hx
+    simp [← hg']
+
 /-- If we view `M` as a submodule of `N` via the injective linear map `i : M ↪ N`, then a submodule
 between `M` and `N` is a submodule `N'` of `N`. To prove Baer's criterion, we need to consider
 pairs of `(N', f')` such that `M ≤ N' ≤ N` and `f'` extends `f`. -/
-structure ExtensionOf extends LinearPMap R N Q where
+structure ExtensionOf extends N →ₗ.[R] Q where
   le : LinearMap.range i ≤ domain
   is_extension : ∀ m : M, f m = toLinearPMap ⟨i m, le ⟨m, rfl⟩⟩
 
@@ -141,8 +153,8 @@ variable {i f}
 theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
     (hchain : IsChain (· ≤ ·) c) :
     IsChain (· ≤ ·) <| (fun x : ExtensionOf i f => x.toLinearPMap) '' c := by
-  rintro _ ⟨a, a_mem, rfl⟩ _ ⟨b, b_mem, rfl⟩ neq
-  exact hchain a_mem b_mem (ne_of_apply_ne _ neq)
+  rintro _ ⟨a, a_mem, rfl⟩ _ ⟨b, b_mem, rfl⟩ ne
+  exact hchain a_mem b_mem (ne_of_apply_ne _ ne)
 
 /-- The maximal element of every nonempty chain of `extension_of i f`. -/
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
@@ -169,7 +181,6 @@ theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤
 
 variable (i f) [Fact <| Function.Injective i]
 
-set_option backward.isDefEq.respectTransparency false in
 instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
@@ -281,7 +292,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     ExtensionOfMaxAdjoin.extendIdealTo i f h y r' := by
   rw [← sub_eq_zero, ← map_sub]
-  convert ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
+  convert! ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
   rw [sub_smul, sub_eq_zero, eq1]
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
@@ -364,7 +375,6 @@ theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
   refine Submodule.eq_top_iff'.mpr fun y => ?_
-  dsimp
   rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
     Submodule.mem_sup]
   exact ⟨0, Submodule.zero_mem _, y, Submodule.mem_span_singleton_self _, zero_add _⟩
@@ -391,7 +401,6 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
     exact ⟨h, DFunLike.congr_fun H⟩
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
   let eI := Shrink.linearEquiv R I
@@ -463,3 +472,17 @@ instance Module.Injective.pi
     refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
     ext i
     exact DFunLike.congr_fun (hl i) x⟩
+
+universe u' in
+attribute [local instance] RingHomInvPair.of_ringEquiv in
+theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] [Small.{v} R] {S : Type u'} [Ring S]
+    {M : Type v} {N : Type v'} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module S N]
+    (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
+    [inj : Module.Injective R M] : Module.Injective S N := by
+  apply Module.Baer.injective (fun I g ↦ ?_)
+  let I' := Submodule.map e₁.symm.toSemilinearEquiv.toLinearMap I
+  let e : I' ≃ₛₗ[RingHomClass.toRingHom e₁] I := (e₁.symm.toSemilinearEquiv.submoduleMap I).symm
+  let f : I' →ₗ[R] M := e₂.symm.toLinearMap.comp (g.comp e.toLinearMap)
+  have hf (x) (hx : x ∈ I') : f ⟨x, hx⟩ = e₂.symm (g ⟨e₁ x, by simp_all [I']⟩) := rfl
+  obtain ⟨f', hf'⟩ := Module.Baer.of_injective ‹_› I' f
+  exact ⟨e₂.toLinearMap ∘ₛₗ f' ∘ₛₗ e₁.toSemilinearEquiv.symm.toLinearMap, by simp_all [I']⟩

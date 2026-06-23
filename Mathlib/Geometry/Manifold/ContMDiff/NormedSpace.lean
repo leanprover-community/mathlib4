@@ -13,7 +13,10 @@ public import Mathlib.Analysis.Normed.Operator.Prod
 * `contMDiff_iff_contDiff`: for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
 * `ContinuousLinearMap.contMDiff`: continuous linear maps between normed spaces are smooth
-* `smooth_smul`: multiplication by scalars is a smooth operation
+
+Smoothness of addition and scalar multiplication in normed spaces is proven not here but in
+`Mathlib/Geometry/Manifold/Algebra/LieGroup.lean` and `Mathlib/Geometry/Manifold/Algebra/SMul.lean`
+in the form of `LieAddGroup` and `ContMDiffSMul` instances.
 
 -/
 
@@ -39,7 +42,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Module
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffWithinAt_iff_contDiffWithinAt {f : E → E'} {s : Set E} {x : E} :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') n f s x ↔ ContDiffWithinAt 𝕜 n f s x := by
   simp +contextual only [ContMDiffWithinAt, liftPropWithinAt_iff',
@@ -260,29 +262,3 @@ theorem ContMDiff.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ �
     (hg : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g) (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₄) n f) :
     ContMDiff I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) n fun x => (g x).prodMap (f x) := fun x =>
   (hg x).clm_prodMap (hf x)
-
-/-! ### Smoothness of scalar multiplication -/
-
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-
-/-- On any vector space, multiplication by a scalar is a smooth operation. -/
-theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
-  contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
-
-set_option backward.isDefEq.respectTransparency false in
-theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
-    (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, V) n (fun p => f p • g p) s x :=
-  (contMDiff_smul.of_le le_top).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
-
-nonrec theorem ContMDiffAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffAt I 𝓘(𝕜) n f x)
-    (hg : ContMDiffAt I 𝓘(𝕜, V) n g x) : ContMDiffAt I 𝓘(𝕜, V) n (fun p => f p • g p) x :=
-  hf.smul hg
-
-theorem ContMDiffOn.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffOn I 𝓘(𝕜) n f s)
-    (hg : ContMDiffOn I 𝓘(𝕜, V) n g s) : ContMDiffOn I 𝓘(𝕜, V) n (fun p => f p • g p) s :=
-  fun x hx => (hf x hx).smul (hg x hx)
-
-theorem ContMDiff.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiff I 𝓘(𝕜) n f)
-    (hg : ContMDiff I 𝓘(𝕜, V) n g) : ContMDiff I 𝓘(𝕜, V) n fun p => f p • g p := fun x =>
-  (hf x).smul (hg x)

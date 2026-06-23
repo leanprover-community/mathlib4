@@ -47,7 +47,6 @@ variable {ι R M N : Type*} [CommRing R] [IsDomain R] [CharZero R]
   {P : RootPairing ι R M N} [P.IsCrystallographic] [P.IsReduced] {b : P.Base}
   [Fintype ι] [DecidableEq ι] (i : b.support)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma en route to `RootPairing.GeckConstruction.isNilpotent_e`. -/
 private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j ≠ -i) :
     (e i ^ n).col (.inr j) = 0 ∨
@@ -96,7 +95,6 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
           fun contra ↦ hij ⟨l, by rw [contra, hk₁]; module⟩
         simp [e, -indexNeg_neg, hij]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_e :
     IsNilpotent (e i) := by
   classical
@@ -131,15 +129,14 @@ lemma isNilpotent_e :
       apply IsReduced.linearIndependent P ?_ ?_
       · rintro rfl
         apply P.nsmul_notMem_range_root (n := P.chainTopCoeff i i + 2) (i := i)
-        convert hk₁ using 1
+        convert! hk₁ using 1
         module
-      · contrapose! hij
+      · contrapose hij
         rw [root_eq_neg_iff] at hij
         rw [hij, ← indexNeg_neg, neg_neg]
     rw [root_add_nsmul_mem_range_iff_le_chainTopCoeff hij'] at hk₁
     lia
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_f :
     IsNilpotent (f i) := by
   obtain ⟨n, hn⟩ := isNilpotent_e i
@@ -163,6 +160,8 @@ omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
     eq_zero_of_neg_eq <| by simpa using this
   let σ : ι ≃ ι := Function.Involutive.toPerm _ neg_involutive
   exact σ.sum_comp (P.pairingIn ℤ · i)
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 open LinearMap LieModule in
 /-- This is the main result of lemma 4.1 from [Geck](Geck2017). -/
@@ -188,14 +187,13 @@ open LieModule Matrix
 
 local notation "H" => cartanSubalgebra' b
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι → K)}
     (χ : H → K) (hχ : χ ≠ 0) (hχ' : genWeightSpace U χ ≠ ⊥) :
     ∃ i, v b i ∈ (genWeightSpace U χ).map U.incl := by
   suffices ∀ {w : b.support ⊕ ι → K} (hw₀ : w ≠ 0) (hw : w ∈ genWeightSpace (b.support ⊕ ι → K) χ),
       ∃ (i : ι) (t : K), t • w = v b i by
     obtain ⟨w, hw, hw₀⟩ : ∃ w ∈ genWeightSpace U χ, w ≠ 0 := by
-      simpa only [ne_eq, LieSubmodule.eq_bot_iff, not_forall, exists_prop] using hχ'
+      simpa only [ne_eq, LieSubmodule.eq_bot_iff, not_forall, exists_prop] using! hχ'
     replace hw : U.incl w ∈ genWeightSpace (b.support ⊕ ι → K) χ :=
       map_genWeightSpace_le (f := U.incl) <| by simpa
     obtain ⟨i, t, hi : t • w = v b i⟩ := this (by simpa) hw
@@ -210,7 +208,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
         ∃ k, diagonal ((d - χ x • 1) ^ k) *ᵥ w = 0 := by
     set μ := χ x
     obtain ⟨⟨x, hx⟩, hx'⟩ := x
-    replace hdx : x = diagonal d := by simpa using hdx
+    replace hdx : x = diagonal d := by simpa using! hdx
     have this (d : b.support ⊕ ι → K) (μ : K) :
         (diagonal d).toLin' - μ • 1 = (diagonal (d - μ • 1)).toLin' := by
       aesop (add simp Pi.single_apply)
@@ -220,7 +218,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
       replace hw₀ : genWeightSpace (b.support ⊕ ι → K) χ ≠ ⊥ := by
         contrapose hw₀; rw [LieSubmodule.eq_bot_iff] at hw₀; exact hw₀ _ hw
       let χ' : H →ₗ[K] K := (Weight.mk χ hw₀).toLinear
-      replace hχ : χ' ≠ 0 := by contrapose hχ; ext x; simpa using LinearMap.congr_fun hχ x
+      replace hχ : χ' ≠ 0 := by contrapose hχ; ext x; simpa using! LinearMap.congr_fun hχ x
       contrapose! hχ
       apply LinearMap.ext_on (span_range_h'_eq_top b)
       rintro - ⟨l, rfl⟩
@@ -231,7 +229,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     replace hw := genWeightSpace_le_genWeightSpaceOf (b.support ⊕ ι → K) (h' l) χ hw
     rw [aux (Sum.elim 0 (P.pairingIn ℤ · l)) (h' l) (h_eq_diagonal l)] at hw
     obtain ⟨k, hk⟩ := hw
-    simpa [mulVec_eq_sum, diagonal_apply, hl] using congr_fun hk (Sum.inl i)
+    simpa [mulVec_eq_sum, diagonal_apply, hl] using! congr_fun hk (Sum.inl i)
   refine ⟨i, (w (Sum.inr i))⁻¹, ?_⟩
   suffices ∃ d : ι → K, (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) ∧
       diagonal (Sum.elim 0 d) ∈ cartanSubalgebra b by
@@ -241,14 +239,14 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     rw [aux (Sum.elim 0 d) x rfl] at hw
     obtain ⟨k, hk⟩ := hw
     obtain ⟨hχx, hk₀⟩ : d i = χ x ∧ k ≠ 0 := by
-      simpa [hi, mulVec_eq_sum, diagonal_apply, sub_eq_zero] using congr_fun hk (Sum.inr i)
+      simpa [hi, mulVec_eq_sum, diagonal_apply, sub_eq_zero] using! congr_fun hk (Sum.inr i)
     ext (j | j)
     · have : χ x ≠ 0 := hχx ▸ hd₀ i
-      simpa [hi, mulVec_eq_sum, diagonal_apply, hk₀, this] using congr_fun hk (Sum.inl j)
+      simpa [hi, mulVec_eq_sum, diagonal_apply, hk₀, this] using! congr_fun hk (Sum.inl j)
     · rcases eq_or_ne i j with rfl | hij
       · simp [hi]
       · suffices d j ≠ χ x by
-          simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero, this, hij, hi] using
+          simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero, this, hij, hi] using!
             congr_fun hk (Sum.inr j)
         rw [← hχx]
         exact hd₁ <| by simp [hij.symm]
@@ -268,7 +266,6 @@ private lemma instIsIrreducible_aux₁ (U : LieSubmodule K H (b.support ⊕ ι �
   have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ := biSup_const ⟨1, one_ne_zero⟩
   rw [← iSup_genWeightSpace_eq_top K H U, iSup_split_single _ 0, biSup_congr hU, this, sup_bot_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [P.IsRootSystem] in
 private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι} (hi : v b i ∈ U) :
@@ -283,7 +280,7 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     · intro i h U hi
       replace hi : v b i ∈ ωConjLieSubmodule U := by simpa [hωv]
       obtain ⟨j, hj⟩ := h hi
-      exact ⟨j, by simpa [hωu] using hj⟩
+      exact ⟨j, by simpa [hωu] using! hj⟩
     · intro j hj U hj'
       let f' : lieAlgebra b := ⟨f ⟨j, hj⟩, f_mem_lieAlgebra _⟩
       have : ⁅f', v b j⁆ = u ⟨j, hj⟩ := f_lie_v_same ⟨j, hj⟩
@@ -317,11 +314,11 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
   revert U
   apply b.induction_add j
   · intro j h U hU
-    suffices v b j ∈ ωConjLieSubmodule U by simpa [hωv] using this
+    suffices v b j ∈ ωConjLieSubmodule U by simpa [hωv] using! this
     exact h fun k ↦ by simp [hωu, hU]
   · intro k hk U aux
     have : ⁅e ⟨k, hk⟩, u ⟨k, hk⟩⁆ = (2 : K) • v b k := by
-      simpa [-lie_apply] using e_lie_u ⟨k, hk⟩ ⟨k, hk⟩
+      simpa [-lie_apply] using! e_lie_u ⟨k, hk⟩ ⟨k, hk⟩
     let e' : lieAlgebra b := ⟨e ⟨k, hk⟩, e_mem_lieAlgebra ⟨k, hk⟩⟩
     change ⁅e', u ⟨k, hk⟩⁆ = _ at this
     replace aux := U.lie_mem (x := e') <| aux ⟨k, hk⟩
@@ -359,7 +356,6 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
 -- See https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Eigenvalues.20of.20Cartan.20matrices/near/516844801
 variable [Fact ((4 - b.cartanMatrix).det ≠ 0)] [P.IsReduced] [P.IsIrreducible]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 4.2 from [Geck](Geck2017). -/
 instance instIsIrreducible [Nonempty ι] :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
@@ -367,7 +363,7 @@ instance instIsIrreducible [Nonempty ι] :
   suffices ∃ i, v b i ∈ U by obtain ⟨i, hi⟩ := this; exact instIsIrreducible_aux₂ hi
   let U' : LieSubmodule K H (b.support ⊕ ι → K) := { U with lie_mem := U.lie_mem }
   apply instIsIrreducible_aux₁ U'
-  contrapose! hU
+  contrapose hU
   replace hU : U ≤ span K (range (u (b := b))) := by rwa [← coe_genWeightSpace_zero_eq_span_range_u]
   refine (LieSubmodule.eq_bot_iff _).mpr fun x hx ↦ ?_
   obtain ⟨c, hc⟩ : ∃ c : b.support → K, ∑ i, c i • u i = x :=
@@ -392,7 +388,6 @@ instance instIsIrreducible [Nonempty ι] :
   have : v b j ∉ U := fun hj ↦ by simpa [v] using apply_inr_eq_zero_of_mem_span_range_u b j (hU hj)
   contradiction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 4.3 from [Geck](Geck2017). -/
 instance instHasTrivialRadical [IsAlgClosed K] : LieAlgebra.HasTrivialRadical K (lieAlgebra b) := by
   cases isEmpty_or_nonempty ι

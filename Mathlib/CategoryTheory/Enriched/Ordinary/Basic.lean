@@ -197,6 +197,7 @@ def ForgetEnrichment.equivFunctor (D : Type u'') [Category.{v''} D] [EnrichedOrd
     (eHomEquiv V (X := ForgetEnrichment.to V X) (Y := ForgetEnrichment.to V Z))
     (by simp [eHomEquiv_comp])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is already an enriched ordinary category, it is equivalent to `ForgetEnrichment V D`. -/
 @[simps]
@@ -232,12 +233,13 @@ set_option backward.isDefEq.respectTransparency false in
 `(𝟙_ V ⟶ v) → (𝟙_ W ⟶ F.obj v)` is bijective, and `C` is an enriched ordinary category on `V`,
 then `F` induces the structure of a `W`-enriched ordinary category on `TransportEnrichment F C`,
 i.e. on the same underlying category `C`. -/
+@[implicit_reducible]
 def TransportEnrichment.enrichedOrdinaryCategory
     (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
     (h : ∀ v : V, ∀ f : 𝟙_ V ⟶ v, e v f = Functor.LaxMonoidal.ε F ≫ F.map f) :
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans (e (Hom (C := C) X Y))
-  homEquiv_id {X} := by simpa using h _ (eId V _)
+  homEquiv_id {X} := by simpa using! h _ (eId V _)
   homEquiv_comp f g := by
     dsimp +instances [instEnrichedCategoryTransportEnrichment]
     rw [h, h, h, ← tensorHom_comp_tensorHom_assoc, eComp_eq, tensorHom_def_assoc,
@@ -298,6 +300,7 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
         tensorHom_comp_tensorHom_assoc]
     simp [← h]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is a `V`-enriched category, then forgetting the enrichment and transporting the resulting
 enriched ordinary category along a functor `F : V ⥤ W`, for which

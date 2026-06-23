@@ -75,7 +75,7 @@ lemma not_mulDissociated_iff_exists_disjoint :
     ⟨?_, fun ⟨t, u, ht, hu, _, htune, htusum⟩ ↦ ⟨t, ht, u, hu, htune, htusum⟩⟩
   rintro ⟨t, ht, u, hu, htu, h⟩
   refine ⟨t \ u, u \ t, ?_, ?_, disjoint_sdiff_sdiff, sdiff_ne_sdiff_iff.2 htu,
-    Finset.prod_sdiff_eq_prod_sdiff_iff.2 h⟩ <;> push_cast <;> exact diff_subset.trans ‹_›
+    Finset.prod_sdiff_eq_prod_sdiff_iff.2 h⟩ <;> push_cast <;> exact sdiff_subset.trans ‹_›
 
 @[to_additive (attr := simp)] lemma MulEquiv.mulDissociated_preimage (e : β ≃* α) :
     MulDissociated (e ⁻¹' s) ↔ MulDissociated s := by
@@ -115,7 +115,6 @@ lemma subset_mulSpan : s ⊆ mulSpan s := fun a ha ↦
   mem_mulSpan.2 ⟨Pi.single a 1, fun b ↦ by obtain rfl | hab := eq_or_ne a b <;> simp [*], by
     simp [Pi.single, Function.update, pow_ite, ha]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma prod_div_prod_mem_mulSpan (ht : t ⊆ s) (hu : u ⊆ s) :
     (∏ a ∈ t, a) / ∏ a ∈ u, a ∈ mulSpan s :=

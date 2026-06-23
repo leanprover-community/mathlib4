@@ -68,7 +68,7 @@ def geometricFiber (Ω : Type u) [Field Ω] [IsSepClosed Ω] : etaleTopology.Poi
     rw [mem_grothendieckTopology_iff] at hR
     obtain ⟨𝒰, hle⟩ := hR
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq x
-    refine ⟨𝒰.X i, 𝒰.f i, hle _ ⟨i⟩, ?_⟩
+    refine ⟨𝒰.X i, 𝒰.f i, hle _ _ ⟨i⟩, ?_⟩
     let k := (𝒰.X i).residueField y
     let m : S.residueField (𝒰.f i y) ⟶ (𝒰.X i).residueField y :=
       (𝒰.f i).residueFieldMap y
