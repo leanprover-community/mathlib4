@@ -5,6 +5,7 @@ Authors: Yongle Hu, Jiedong Jiang
 -/
 module
 
+public import Mathlib.RingTheory.Invariant.Galois
 public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
@@ -279,8 +280,6 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
     Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) * P.inertiaDeg' R := by
   let := Localization.AtPrime.algebraOfLiesOver p P
-  let : Algebra (R ⧸ p) p.ResidueField := inferInstance
-  let : Algebra (S ⧸ P) P.ResidueField := inferInstance
   have heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
       (algebraMap p.ResidueField P.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField) := by
     ext

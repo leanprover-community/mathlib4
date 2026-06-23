@@ -74,7 +74,7 @@ instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
 
 @[simp] lemma symmₗ_trivialization (x : B) :
     (trivialization B F).symmₗ 𝕜 x = LinearMap.id := by
-  ext; simp [Trivialization.coe_symmₗ, trivialization_symm_apply B F]
+  ext; simp [trivialization_symm_apply B F]
 
 @[simp] lemma symmL_trivialization (x : B) :
     (trivialization B F).symmL 𝕜 x = ContinuousLinearMap.id 𝕜 F := by
