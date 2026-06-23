@@ -732,8 +732,7 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
     {g : ℝ → ℂ → E} (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop)) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
   wlog hne : x₁ ≠ x₂
-  · rw [ne_eq, Decidable.not_not] at hne
-    simp only [hne, integral_same, tendsto_const_nhds_iff]
+  · simp_all
   simp only [NormedAddGroup.tendsto_nhds_zero, eventually_atTop, ge_iff_le]
   intro ε hε
   have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by
