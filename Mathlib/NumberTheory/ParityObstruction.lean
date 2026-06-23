@@ -7,8 +7,6 @@ import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Defs
 import Mathlib.NumberTheory.SelbergSieve
 import Mathlib.Data.Finset.Basic
-import Mathlib.Tactic
-open BigOperators
 
 /-!
 # Parity obstruction in sieve theory
@@ -34,7 +32,7 @@ core using mathlib4's existing `SelbergSieve` infrastructure and `Nat.factorizat
 
 ## Implementation notes
 
-All proofs use `native_decide` on finite `Finset` computations with bound N = 1000.
+All proofs use `dec_trivial` on finite `Finset` computations with bound N = 1000.
 The definitions `primeOmega` and `liouville` are computable via `Nat.factorization`.
 The connection to `SelbergSieve` is documented but not computationally linked
 (the sieve structure is noncomputable due to `ℝ`).
@@ -61,19 +59,19 @@ open Nat
 Ω(0) = 0, Ω(1) = 0. For n ≥ 2, Ω(n) = sum of exponents in `Nat.factorization n`. -/
 def primeOmega (n : ℕ) : ℕ :=
   if n ≤ 1 then 0
-  else (Nat.factorization n).sum (λ _ e => e)
+  else (Nat.factorization n).sum (fun _ e => e)
 
 /-- Ω(p) = 1 for all primes `p < 1000`. -/
 theorem primeOmega_prime_is_one :
     ∀ p, p ∈ (range 1000).filter Nat.Prime → primeOmega p = 1 := by
-  native_decide
+  decide
 
 /-- Ω(pq) = 2 for all products of two primes `pq < 1000`. -/
 theorem primeOmega_semiprime_is_two :
-    ∀ n, n ∈ (range 1000).filter (λ n =>
-      ((range n).filter (λ p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
+    ∀ n, n ∈ (range 1000).filter (fun n =>
+      ((range n).filter (fun p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
     primeOmega n = 2 := by
-  native_decide
+  decide
 
 /-! ### Liouville function λ(n) = (-1)^Ω(n) -/
 
@@ -85,20 +83,20 @@ def liouville (n : ℕ) : ℤ :=
 /-- λ(p) = -1 for all primes `p < 1000`. -/
 theorem liouville_prime_is_neg_one :
     ∀ p, p ∈ (range 1000).filter Nat.Prime → liouville p = -1 := by
-  native_decide
+  decide
 
 /-- λ(pq) = +1 for all 2-almost-primes `pq < 1000`. -/
 theorem liouville_semiprime_is_pos_one :
-    ∀ n, n ∈ (range 1000).filter (λ n =>
-      ((range n).filter (λ p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
+    ∀ n, n ∈ (range 1000).filter (fun n =>
+      ((range n).filter (fun p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
     liouville n = 1 := by
-  native_decide
+  decide
 
 /-! ### The odd-parity set strictly contains the primes -/
 
 /-- The set of `n < N` with odd Ω(n) (odd number of prime factors). -/
 def oddParitySet (N : ℕ) : Finset ℕ :=
-  (range N).filter (λ n => primeOmega n % 2 = 1)
+  (range N).filter (fun n => primeOmega n % 2 = 1)
 
 /-- The set of primes below `N`. -/
 def primeSet (N : ℕ) : Finset ℕ :=
@@ -107,19 +105,19 @@ def primeSet (N : ℕ) : Finset ℕ :=
 /-- Every prime has odd Ω, so `primeSet 1000 ⊆ oddParitySet 1000`. -/
 theorem primes_are_odd_parity :
     primeSet 1000 ⊆ oddParitySet 1000 := by
-  native_decide
+  decide
 
 /-- The odd-parity set is strictly larger than the prime set:
     |oddParitySet 1000| > |primeSet 1000|. -/
 theorem odd_parity_larger_than_primes :
     (primeSet 1000).card < (oddParitySet 1000).card := by
-  native_decide
+  decide
 
 /-- Exact counts: 168 primes, 507 odd-parity numbers below 1000.
 The sieve overcounts by a factor of ~3. -/
 theorem parity_overcount_exact :
     (primeSet 1000).card = 168 ∧ (oddParitySet 1000).card = 507 := by
-  native_decide
+  decide
 
 /-! ### Tao's shadow sequence a_n = 1 + λ(n) -/
 
@@ -131,14 +129,14 @@ def taoShadow (n : ℕ) : ℤ :=
 /-- a_p = 0 for all primes `p < 1000`. The sieve sees zero signal from primes. -/
 theorem tao_shadow_vanishes_on_primes :
     ∀ p, p ∈ primeSet 1000 → taoShadow p = 0 := by
-  native_decide
+  decide
 
 /-- a_{pq} = 2 for all 2-almost-primes `pq < 1000`. -/
 theorem tao_shadow_positive_on_semiprimes :
-    ∀ n, n ∈ (range 1000).filter (λ n =>
-      ((range n).filter (λ p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
+    ∀ n, n ∈ (range 1000).filter (fun n =>
+      ((range n).filter (fun p => Nat.Prime p ∧ n % p = 0 ∧ Nat.Prime (n / p))).Nonempty) →
     taoShadow n = 2 := by
-  native_decide
+  decide
 
 /-! ### The sieve shadow — total sums -/
 
@@ -147,16 +145,14 @@ The prime indicator sum is 168. The sieve sees 986 where
 it should see 168 — a contamination factor of ~6. -/
 theorem tao_shadow_total_sum :
     (range 1000).sum taoShadow = 986 := by
-  native_decide
+  decide
 
 /-- The sum of the prime indicator over `[0, 1000)` is 168. -/
 theorem prime_indicator_sum :
-    (range 1000).sum (λ n => if Nat.Prime n then (1 : ℤ) else 0) = 168 := by
-  native_decide
+    (range 1000).sum (fun n => if Nat.Prime n then (1 : ℤ) else 0) = 168 := by
+  decide
 
 /-- The sum of the odd-parity indicator over `[0, 1000)` is 507. -/
 theorem odd_parity_indicator_sum :
-    (range 1000).sum (λ n => if primeOmega n % 2 = 1 then (1 : ℤ) else 0) = 507 := by
-  native_decide
-
-#lint
+    (range 1000).sum (fun n => if primeOmega n % 2 = 1 then (1 : ℤ) else 0) = 507 := by
+  decide

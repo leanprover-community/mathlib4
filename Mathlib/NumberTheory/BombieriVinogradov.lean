@@ -7,8 +7,6 @@ import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Defs
 import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.Data.Finset.Basic
-import Mathlib.Tactic
-open BigOperators
 
 /-!
 # Bombieri-Vinogradov theorem and Elliott-Halberstam conjecture
@@ -38,7 +36,7 @@ statements of both in mathlib4, building on `PrimesInAP` (Dirichlet's theorem).
 ## Implementation notes
 
 The BV and EH statements are `Prop`-valued (nonconstructive) because they involve
-`Real.log` and asymptotic bounds. Concrete verifications use `native_decide` on
+`Real.log` and asymptotic bounds. Concrete verifications use `dec_trivial` on
 finite `Finset` computations. The `primeGaps` definition uses a `∃` quantifier
 over consecutive primes, which is decidable for finite `N`.
 
@@ -65,26 +63,26 @@ open Nat
 
 /-! ### Prime counting in arithmetic progressions -/
 
-/-- The number of primes ≤ `x` that are ≡ `a` mod `q`. Computable via `native_decide`. -/
+/-- The number of primes ≤ `x` that are ≡ `a` mod `q`. Computable via `dec_trivial`. -/
 def primesInAPCount (x a q : ℕ) : ℕ :=
-  ((range (x+1)).filter (λ p => Nat.Prime p ∧ p % q = a % q)).card
+  ((range (x+1)).filter (fun p => Nat.Prime p ∧ p % q = a % q)).card
 
 /-- There are 80 primes ≡ 1 mod 4 below 1000. -/
 theorem primes_mod4_eq1_count :
     primesInAPCount 1000 1 4 = 80 := by
-  native_decide
+  decide
 
 /-- There are 87 primes ≡ 3 mod 4 below 1000. -/
 theorem primes_mod4_eq3_count :
     primesInAPCount 1000 3 4 = 87 := by
-  native_decide
+  decide
 
 /-- The Chebyshev bias: more primes ≡ 3 mod 4 than ≡ 1 mod 4 below 1000.
 This is a concrete instance of the phenomenon that Bombieri-Vinogradov
 controls on average. -/
 theorem chebyshev_bias_concrete :
     primesInAPCount 1000 3 4 > primesInAPCount 1000 1 4 := by
-  native_decide
+  decide
 
 /-! ### Bombieri-Vinogradov theorem (statement) -/
 
@@ -99,16 +97,16 @@ noncomputable def errorPrimesInAP (x a q : ℕ) : ℝ :=
 
 /-- The maximum error over all `a` coprime to `q`. -/
 noncomputable def maxErrorOverAP (x q : ℕ) : ℝ :=
-  let coprime_a := ((range q).filter (λ a => Nat.Coprime a q))
+  let coprime_a := ((range q).filter (fun a => Nat.Coprime a q))
   if h : coprime_a.Nonempty then
-    Finset.sup' coprime_a h (λ a => |errorPrimesInAP x a q|)
+    Finset.sup' coprime_a h (fun a => |errorPrimesInAP x a q|)
   else 0
 
 /-- The average error over moduli `q ≤ Q`. -/
 noncomputable def avgErrorBV (x Q : ℕ) : ℝ :=
-  let moduli := (range (Q+1)).filter (λ q => q ≥ 2)
+  let moduli := (range (Q+1)).filter (fun q => q ≥ 2)
   if h : moduli.Nonempty then
-    (moduli.sum (λ q => maxErrorOverAP x q)) / (moduli.card : ℝ)
+    (moduli.sum (fun q => maxErrorOverAP x q)) / (moduli.card : ℝ)
   else 0
 
 /-- **Bombieri-Vinogradov theorem** (proven 1965): for any `A > 0` and `ε > 0`,
@@ -148,7 +146,7 @@ def polymath8Bound : ℕ := 246
 consecutive primes `p`, `p+g` with no primes between them. -/
 def primeGaps (N : ℕ) : Finset ℕ :=
   let primes := (range N).filter Nat.Prime
-  (range N).filter (λ g =>
+  (range N).filter (fun g =>
     ∃ p ∈ primes, p + g ∈ primes ∧
     ∀ k, 1 ≤ k → k < g → p + k ∉ primes)
 
@@ -156,14 +154,12 @@ def primeGaps (N : ℕ) : Finset ℕ :=
 well below the Polymath8 bound of 246. -/
 theorem max_prime_gap_below_1000 :
     (primeGaps 1000).max' (by
-      have : 2 ∈ primeGaps 1000 := by native_decide
+      have : 2 ∈ primeGaps 1000 := by decide
       exact ⟨2, this⟩) = 20 := by
-  native_decide
+  decide
 
 /-- All prime gaps below 1000 are ≤ 246, consistent with the
 Polymath8 unconditional bound. -/
 theorem all_gaps_below_polymath8 :
-    (primeGaps 1000).filter (λ g => g > 246) = ∅ := by
-  native_decide
-
-#lint
+    (primeGaps 1000).filter (fun g => g > 246) = ∅ := by
+  decide
