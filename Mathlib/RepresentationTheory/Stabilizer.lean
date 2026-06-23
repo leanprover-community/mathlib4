@@ -91,7 +91,7 @@ lemma stabilizer_intertwining (ρ : Representation k G V) (v : V) (ρ' : Represe
 
 /-- The stabilizer of `ρ g v` is the conjugate of the stabilizer of `v`. -/
 lemma stabilizer_conj (ρ : Representation k G V) (g : G) (v : V) :
-    ρ.stabilizer (ρ g v) = Subgroup.map (↑(MulAut.conj g)) (stabilizer ρ v) := by
+    ρ.stabilizer (ρ g v) = (stabilizer ρ v).map (MulAut.conj g) := by
   ext x
   simp only [mem_stabilizer, Subgroup.mem_map, MonoidHom.coe_coe, MulAut.conj_apply]
   constructor
