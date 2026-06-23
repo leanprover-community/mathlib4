@@ -1090,7 +1090,7 @@ end ConjClasses
 
 namespace AddSubgroup
 
-variable {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
+variable {M : Type*} [AddGroup M] (I J : AddSubgroup M) (G : Type*)
     [Group G] [MulAction G M]
 
 /-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
@@ -1112,6 +1112,10 @@ lemma subgroupOf_inertia (H : Subgroup G) : (I.inertia G).subgroupOf H = I.inert
 
 variable {I G} in
 lemma coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H := .rfl
+
+variable {I J} in
+lemma inertia_mono (h : I ≤ J) : I.inertia G ≤ J.inertia G :=
+  fun _ hx x ↦ h (hx x)
 
 variable {G} in
 @[simp]
