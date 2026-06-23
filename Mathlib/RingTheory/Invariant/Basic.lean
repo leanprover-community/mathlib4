@@ -481,14 +481,14 @@ variable {R S G G' : Type*} [CommRing R] [CommRing S] [Algebra R S]
   (f : G →* G') (H : Subgroup G) [Finite H] [Algebra.IsInvariant R S H]
   (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime]
 
-include H in
 theorem Ideal.map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H ≤ f.ker)
     (hf : ∀ (g : G) (x : R), algebraMap R S (f g • x) = g • algebraMap R S x) :
     (q.inertia G).map f = p.inertia G' := by
   replace hf_ker (h : H) : f h = 1 := hf_ker h.2
   have : SMulCommClass H R S := ⟨fun h x y ↦ by simp [Algebra.smul_def, H.smul_def, ← hf, hf_ker]⟩
   apply le_antisymm
-  · rintro - ⟨g, hg, rfl⟩ x
+  · -- the easy direction: the inertia subgroup of `q` is mapped to the inertia subgroup of `p`
+    rintro - ⟨g, hg, rfl⟩ x
     simpa [over_def q p, map_sub, hf] using hg (algebraMap R S x)
   · -- let `g : G ⧸ H` be an element of the inertia subgroup of `p`
     intro g hg
