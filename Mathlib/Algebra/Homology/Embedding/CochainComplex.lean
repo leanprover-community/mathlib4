@@ -289,6 +289,7 @@ instance [K.IsLE n] : QuasiIso (K.ιTruncLE n) := by
 
 variable {K L}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncGEMap_iff]
@@ -299,6 +300,7 @@ lemma quasiIso_truncGEMap_iff :
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncLEMap_iff]
@@ -359,6 +361,63 @@ end
 
 end Preadditive
 
+section HasZeroMorphisms
+
+variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+  (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
+  [∀ (i : ℤ), K.HasHomology i] [∀ (i : ℤ), L.HasHomology i] (n : ℤ)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- When `K` is a cochain complex indexed by `ℤ` and `n < i`, this is
+the isomorphism `(K.truncGE n).X i ≅ K.X i`. -/
+noncomputable def truncGEXIso (n i : ℤ) (hi : n < i := by lia) :
+    (K.truncGE n).X i ≅ K.X i :=
+  HomologicalComplex.truncGEXIso K (embeddingUpIntGE n) (i := (i - n).natAbs) (by
+      dsimp
+      rw [Int.natAbs_of_nonneg (by lia), add_sub_cancel])
+    (fun h ↦ by
+      rw [boundaryGE_embeddingUpIntGE_iff, Int.natAbs_eq_zero] at h
+      lia)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- When `K` is a cochain complex indexed by `ℤ` and `i < n`, this is
+the isomorphism `(K.truncLE n).X i ≅ K.X i`. -/
+noncomputable def truncLEXIso (n i : ℤ) (hi : i < n := by lia) :
+    (K.truncLE n).X i ≅ K.X i :=
+  HomologicalComplex.truncLEXIso K (embeddingUpIntLE n) (i := (n - i).natAbs) (by
+      dsimp
+      rw [Int.natAbs_of_nonneg (by lia), sub_sub_cancel])
+    (fun h ↦ by
+      rw [boundaryLE_embeddingUpIntLE_iff, Int.natAbs_eq_zero] at h
+      lia)
+
+/-- When `K` is a cochain complex indexed by `ℤ`, this is the isomorphism
+`(K.truncGE n).X n ≅ K.opcycles n`. -/
+noncomputable def truncGEXIsoOpcycles (n : ℤ) :
+    (K.truncGE n).X n ≅ K.opcycles n :=
+  HomologicalComplex.truncGEXIsoOpcycles K (embeddingUpIntGE n) (i := 0) (by simp)
+    (by rw [boundaryGE_embeddingUpIntGE_iff])
+
+/-- When `K` is a cochain complex indexed by `ℤ`, this is the isomorphism
+`(K.truncLE n).X n ≅ K.cycles n`. -/
+noncomputable def truncLEXIsoCycles (n : ℤ) :
+    (K.truncLE n).X n ≅ K.cycles n :=
+  HomologicalComplex.truncLEXIsoCycles K (embeddingUpIntLE n) (i := 0) (by simp)
+    (by rw [boundaryLE_embeddingUpIntLE_iff])
+
+lemma acyclic_truncGE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
+    (K.truncGE n₁).Acyclic ↔ K.IsLE n₀ := by
+  dsimp [truncGE]
+  rw [acyclic_truncGE_iff_isSupportedOutside,
+    (Embedding.embeddingUpInt_areComplementary n₀ n₁ h).isSupportedOutside₂_iff]
+
+lemma acyclic_truncLE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
+    (K.truncLE n₀).Acyclic ↔ K.IsGE n₁ := by
+  dsimp [truncLE]
+  rw [acyclic_truncLE_iff_isSupportedOutside,
+    (Embedding.embeddingUpInt_areComplementary n₀ n₁ h).isSupportedOutside₁_iff]
+
+end HasZeroMorphisms
 
 section Abelian
 

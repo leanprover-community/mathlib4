@@ -41,10 +41,8 @@ variable {τ₁₂ : R →+* R₂}
 
 section
 
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
-
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
-def eqLocus (f g : F) : Submodule R M :=
+def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
@@ -52,26 +50,31 @@ def eqLocus (f g : F) : Submodule R M :=
       simpa only [map_smulₛₗ _] using congr_arg (τ₁₂ r • ·) hx }
 
 @[simp]
-theorem mem_eqLocus {x : M} {f g : F} : x ∈ eqLocus f g ↔ f x = g x :=
+theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ eqLocus f g ↔ f x = g x :=
   Iff.rfl
 
-theorem eqLocus_toAddSubmonoid (f g : F) :
+theorem eqLocus_toAddSubmonoid (f g : M →ₛₗ[τ₁₂] M₂) :
     (eqLocus f g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
   rfl
 
 @[simp]
-theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
+theorem eqLocus_eq_top {f g : M →ₛₗ[τ₁₂] M₂} : eqLocus f g = ⊤ ↔ f = g := by
   simp [SetLike.ext_iff, DFunLike.ext_iff]
 
 @[simp]
-theorem eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
+theorem eqLocus_same (f : M →ₛₗ[τ₁₂] M₂) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
 
-theorem le_eqLocus {f g : F} {S : Submodule R M} : S ≤ eqLocus f g ↔ Set.EqOn f g S := Iff.rfl
+theorem le_eqLocus {f g : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
+    S ≤ eqLocus f g ↔ Set.EqOn f g S :=
+  Iff.rfl
+
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 include τ₁₂ in
-theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
+theorem eqOn_sup {f g : F} {S T : Submodule R M}
+    (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
     Set.EqOn f g ↑(S ⊔ T) := by
-  rw [← le_eqLocus] at hS hT ⊢
+  rw [← LinearMap.coe_coe (f := f), ← LinearMap.coe_coe (f := g), ← le_eqLocus] at hS hT ⊢
   exact sup_le hS hT
 
 include τ₁₂ in

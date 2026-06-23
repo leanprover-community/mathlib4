@@ -88,7 +88,7 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     convert! (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prodMap h₁ h₂))
     ext s
     simp
-  simpa [Tendsto, ← Filter.map_map] using this
+  simpa [Tendsto, ← Filter.map_map] using! this
 
 @[to_additive /-- For the statement that `tsum` commutes with `Finset.sum`,
   see `Summable.tsum_finsetSum`. -/]
@@ -194,7 +194,7 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
     HasProd f a := by
   classical
   apply le_nhds_of_cauchy_adhp h
-  simp only [← mapClusterPt_def, mapClusterPt_iff_frequently, frequently_atTop, ge_iff_le,
+  simp only [← mapClusterPt_def, mapClusterPt_iff_frequently, frequently_atTop,
     le_eq_subset]
   intro u hu s
   rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
@@ -269,7 +269,7 @@ end CompleteSpace
 section Pi
 
 variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, TopologicalSpace (X x)]
-{L : SummationFilter ι}
+  {L : SummationFilter ι}
 
 @[to_additive]
 theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :
@@ -342,7 +342,7 @@ variable [AddCommMonoid α] [TopologicalSpace α] [StarAddMonoid α] [Continuous
   {a : α}
 
 theorem HasSum.star (h : HasSum f a L) : HasSum (fun b ↦ star (f b)) (star a) L := by
-  simpa only using h.map (starAddEquiv : α ≃+ α) continuous_star
+  simpa only using! h.map (starAddEquiv : α ≃+ α) continuous_star
 
 theorem Summable.star (hf : Summable f L) : Summable (fun b ↦ star (f b)) L :=
   hf.hasSum.star.summable

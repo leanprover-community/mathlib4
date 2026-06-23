@@ -290,6 +290,6 @@ lemma MulAction.properSMul_of_proper_orbitMap
   have hfsurj : f.Surjective := Function.surjective_id.prodMap (surjective_smul G x)
   refine isProperMap_of_comp_of_surj (by fun_prop) (by fun_prop) ?_ hfsurj
   simpa [Function.comp_def, Prod.map_apply, mul_smul]
-    using (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
+    using! (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
 
 end

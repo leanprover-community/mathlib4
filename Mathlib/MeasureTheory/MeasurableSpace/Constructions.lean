@@ -586,6 +586,12 @@ theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun
     Measurable f :=
   measurable_pi_iff.mpr hf
 
+lemma MeasurableSpace.comap_process_pi (X : (a : δ) → β → X a) :
+    MeasurableSpace.comap (fun b a ↦ X a b) inferInstance =
+      ⨆ a, MeasurableSpace.comap (X a) inferInstance := by
+  simp_rw [MeasurableSpace.pi, MeasurableSpace.comap_iSup, MeasurableSpace.comap_comp]
+  rfl
+
 /-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
 @[fun_prop]
 theorem measurable_update' {a : δ} [DecidableEq δ] :
@@ -687,7 +693,7 @@ theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (Equiv.piCongrLeft 
   exact Measurable.eq_mp X (f.apply_symm_apply i) <| measurable_pi_apply <| f.symm i
 
 /- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
-  lemmas, like `MeasurableSet.prod`. -/
+lemmas, like `MeasurableSet.prod`. -/
 @[measurability]
 protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (X i)} (hs : s.Countable)
     (ht : ∀ i ∈ s, MeasurableSet (t i)) : MeasurableSet (s.pi t) := by

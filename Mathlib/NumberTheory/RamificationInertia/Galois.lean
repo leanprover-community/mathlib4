@@ -5,8 +5,7 @@ Authors: Yongle Hu, Jiedong Jiang
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.IsGaloisGroup
-public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
 # Ramification theory in Galois extensions of Dedekind domains
@@ -58,7 +57,7 @@ open scoped Classical in
   maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
 noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
-  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.ramificationIdx h.choose
+  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.ramificationIdx' A
   else 0
 
 open scoped Classical in
@@ -67,7 +66,7 @@ open scoped Classical in
   maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`. -/
 noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
-  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.inertiaDeg h.choose else 0
+  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.inertiaDeg' A else 0
 
 section MulAction
 
@@ -97,7 +96,7 @@ noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
   one_smul Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = Q.1
-    simpa only [map_one] using map_id Q.1
+    simpa only [map_one] using! map_id Q.1
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = map _ (map _ Q.1)
@@ -135,90 +134,78 @@ instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesO
     rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, hs⟩
     exact ⟨σ, Subtype.val_inj.mp hs⟩
 
-include G in
+include p G in
 /-- All the `Ideal.ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
-    ramificationIdx p P = ramificationIdx p Q := by
+    P.ramificationIdx' A = Q.ramificationIdx' A := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
-  exact (ramificationIdx_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
+  rw [ramificationIdx'_smul]
 
-include G in
+include p G in
 /-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
 theorem inertiaDeg_eq_of_isGaloisGroup :
-    inertiaDeg p P = inertiaDeg p Q := by
+    P.inertiaDeg' A = Q.inertiaDeg' A := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
-  exact (inertiaDeg_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
+  rw [inertiaDeg'_smul]
 
-include G in
+include p G in
 /-- The `ramificationIdxIn` is equal to any ramification index over the same ideal. -/
 theorem ramificationIdxIn_eq_ramificationIdx :
-    ramificationIdxIn p B = ramificationIdx p P := by
+    ramificationIdxIn p B = P.ramificationIdx' A := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
   rw [ramificationIdxIn, dif_pos h]
   exact ramificationIdx_eq_of_isGaloisGroup p h.choose P G
 
 include G in
-theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime] (hp : p ≠ ⊥)
-    [IsDomain A] [IsTorsionFree A B] : p.ramificationIdxIn B ≠ 0 := by
-  have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
+theorem ramificationIdxIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Ideal A} [p.IsPrime] :
+    p.ramificationIdxIn B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [ramificationIdxIn_eq_ramificationIdx p P G]
-  exact IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P.1 hp
+  exact (P.1.ramificationIdx'_pos A).ne'
 
 include G in
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
 theorem inertiaDegIn_eq_inertiaDeg :
-    inertiaDegIn p B = inertiaDeg p P := by
+    inertiaDegIn p B = P.inertiaDeg' A := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
   rw [inertiaDegIn, dif_pos h]
   exact inertiaDeg_eq_of_isGaloisGroup p h.choose P G
 
 include G in
-theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [IsDomain A] [IsTorsionFree A B]
-    [Module.Finite A B] [Nontrivial B] :
+theorem inertiaDegIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Ideal A} [p.IsPrime] :
     inertiaDegIn p B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [inertiaDegIn_eq_inertiaDeg p P G]
-  exact inertiaDeg_ne_zero _ _
+  exact (P.1.inertiaDeg'_pos A).ne'
 
 section tower
 
-variable (C : Type*) [CommRing C] [IsDomain C] [Algebra A C] [Algebra B C] [Module.Finite B C]
-  [IsDomain B] [IsTorsionFree B C] [IsScalarTower A B C]
+variable (C : Type*) [CommRing C] [Algebra A C] [Algebra B C]
+  [Nonempty (P.primesOver C)] [IsScalarTower A B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
   (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
 
 include G GAC GBC in
-theorem inertiaDegIn_mul_inertiaDegIn [p.IsMaximal] [P.IsMaximal] :
+theorem inertiaDegIn_mul_inertiaDegIn :
     p.inertiaDegIn B * P.inertiaDegIn C = p.inertiaDegIn C := by
-  obtain ⟨⟨Q, _, _⟩⟩ := P.nonempty_primesOver (S := C)
+  obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q GAC,
-    inertiaDegIn_eq_inertiaDeg P Q GBC, inertiaDeg_algebra_tower p P Q]
+    inertiaDegIn_eq_inertiaDeg P Q GBC, ← inertiaDeg'_tower P Q]
 
 variable {p} in
 include G GAC GBC in
-theorem ramificationIdxIn_mul_ramificationIdxIn [IsDedekindDomain B] [IsDedekindDomain C]
-    (hp : map (algebraMap A C) p ≠ ⊥) (hP : map (algebraMap B C) P ≠ ⊥) :
+theorem ramificationIdxIn_mul_ramificationIdxIn [Flat B C] :
     p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
-  obtain ⟨⟨Q, _, hQ⟩⟩ := P.nonempty_primesOver (S := C)
+  obtain ⟨⟨Q, _, hQ⟩⟩ := (inferInstance : Nonempty (primesOver P C))
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
-    ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower hP hp]
-  exact over_def Q P ▸ map_comap_le
+    ramificationIdxIn_eq_ramificationIdx P Q GBC, ← ramificationIdx'_tower P Q]
 
-variable {p} in
-omit hp in
-include G GAC GBC in
-theorem ramificationIdxIn_mul_ramificationIdxIn' [IsDomain A] [IsTorsionFree A B]
-    [IsDedekindDomain B] [IsDedekindDomain C] [P.LiesOver p] :
-    p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
-  obtain ⟨⟨Q, _, hQ⟩⟩ := P.nonempty_primesOver (S := C)
-  have : Q.LiesOver p := LiesOver.trans Q P p
-  rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
-    ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower' p P Q]
+@[deprecated (since := "2026-06-18")] alias ramificationIdxIn_mul_ramificationIdxIn' :=
+  ramificationIdxIn_mul_ramificationIdxIn
 
 end tower
 
@@ -226,59 +213,52 @@ end RamificationInertia
 
 section fundamental_identity
 
-variable {A : Type*} [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
-  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
-  [IsTorsionFree A B]
+variable {A : Type*} [CommRing A] [IsDomain A] (p : Ideal A) [p.IsPrime]
+  (B : Type*) [CommRing B] [IsDomain B] [Algebra A B] [Module.Finite A B] [Flat A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
-include hpb in
 /-- The form of the **fundamental identity** in the case of Galois extension. -/
 theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Nat.card G := by
-  let K := FractionRing A
-  let L := FractionRing B
-  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
-  rw [← smul_eq_mul, ← IsDedekindDomain.coe_primesOverFinset hpb B, Set.ncard_coe_finset,
-    ← Finset.sum_const]
-  rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank, ← sum_ramification_inertia B K L hpb]
+  have : Fintype (primesOver p B) := (QuasiFinite.finite_primesOver p).fintype
+  rw [← smul_eq_mul, ← Set.fintypeCard_eq_ncard, ← Finset.card_univ, ← Finset.sum_const,
+    ← sum_ramification_inertia_eq_card p B]
   apply Finset.sum_congr rfl
   intro P hp
-  rw [← Finset.mem_coe, IsDedekindDomain.coe_primesOverFinset hpb B] at hp
-  obtain ⟨_, _⟩ := hp
   rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G]
 
 end fundamental_identity
 
 section tower
 
-variable {A B : Type*} [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B]
-  [Algebra A B] [IsTorsionFree A B] {p : Ideal A} (P : Ideal B) [p.IsMaximal]
-  [P.IsMaximal] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
-  [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDedekindDomain C] [Algebra A C] [Algebra B C]
-  [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [IsTorsionFree A C]
-  [IsTorsionFree B C] [IsScalarTower A B C]
+variable {A B : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
+  [Algebra A B] [Flat A B] {p : Ideal A} (P : Ideal B) [p.IsPrime]
+  [P.IsPrime] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
+  [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDomain C] [Algebra A C]
+  [Algebra B C] [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [Flat A C]
+  [Flat B C] [IsScalarTower A B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
   (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
 
+-- todo: use transitivity to prove this under much weaker assumptions
 include G GAC GBC in
-theorem ncard_primesOver_mul_ncard_primesOver (hp : p ≠ ⊥) :
+theorem ncard_primesOver_mul_ncard_primesOver :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
-  have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp P
-  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
-  let := IsFractionRing.mulSemiringAction GAC A C (FractionRing A) (FractionRing C)
-  let := IsFractionRing.mulSemiringAction GBC B C (FractionRing B) (FractionRing C)
+  let := IsFractionRing.mulSemiringAction G B (FractionRing B)
+  let := IsFractionRing.mulSemiringAction GAC C (FractionRing C)
+  let := IsFractionRing.mulSemiringAction GBC C (FractionRing C)
   have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
-    mul_ne_zero (ramificationIdxIn_ne_zero GAC hp) (inertiaDegIn_ne_zero GAC)
-  rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp C GAC]
+    mul_ne_zero (ramificationIdxIn_ne_zero GAC) (inertiaDegIn_ne_zero GAC)
+  rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p C GAC]
   calc
     _ = ((p.primesOver B).ncard * (p.ramificationIdxIn B * p.inertiaDegIn B)) *
           ((P.primesOver C).ncard * (P.ramificationIdxIn C * P.inertiaDegIn C)) := by
       rw [← inertiaDegIn_mul_inertiaDegIn p P G C GAC GBC,
-        ← ramificationIdxIn_mul_ramificationIdxIn' P G C GAC GBC]
+        ← ramificationIdxIn_mul_ramificationIdxIn P G C GAC GBC]
       ring
     _ = Nat.card GAC := by
-      rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B G,
-        ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hP C GBC,
+      rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G,
+        ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn P C GBC,
         (IsGaloisGroup.toFractionRing G A B).card_eq_finrank,
         (IsGaloisGroup.toFractionRing GAC A C).card_eq_finrank,
         (IsGaloisGroup.toFractionRing GBC B C).card_eq_finrank, Module.finrank_mul_finrank]
@@ -295,51 +275,55 @@ open scoped Pointwise
 open Algebra
 
 attribute [local instance] Ideal.Quotient.field in
-theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
-    (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
-    Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) *
-      Module.finrank (R ⧸ p) (S ⧸ P) := by
-  have : IsGalois (R ⧸ p) (S ⧸ P) := { __ := Ideal.Quotient.normal (A := R) G p P }
-  have := Ideal.Quotient.finite_of_isInvariant G p P
+theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
+    (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
+    Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) * P.inertiaDeg' R := by
+  let := Localization.AtPrime.algebraOfLiesOver p P
+  have heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
+      (algebraMap p.ResidueField P.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField) := by
+    ext
+    simp [← IsScalarTower.algebraMap_apply]
+  let := ((algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P))).toAlgebra
+  have : IsScalarTower (R ⧸ p) (S ⧸ P) P.ResidueField := .of_algebraMap_eq' rfl
+  have : IsScalarTower (R ⧸ p) p.ResidueField P.ResidueField := .of_algebraMap_eq' heq
+  have : IsGalois p.ResidueField P.ResidueField :=
+    { __ := Ideal.IsFractionRing.normal G p P p.ResidueField P.ResidueField }
+  have : Module.Finite p.ResidueField P.ResidueField :=
+    Ideal.IsFractionRing.finite_of_isInvariant G p P p.ResidueField P.ResidueField
   have : Subgroup.index _ = _ := Nat.card_congr
-    (Quotient.stabilizerQuotientInertiaEquiv G p P).toEquiv
-  rw [← IsGalois.card_aut_eq_finrank, ← this,
+    (IsFractionRing.stabilizerQuotientInertiaEquiv G p P p.ResidueField P.ResidueField).toEquiv
+  rw [inertiaDeg'_eq p P, ← IsGalois.card_aut_eq_finrank p.ResidueField P.ResidueField, ← this,
     ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
-    Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv]
+    Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv,
+    AddSubgroup.subgroupOf_inertia]
 
-lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
-    (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
-    (p.primesOver S).ncard * Nat.card (P.inertia G) *
-      Module.finrank (R ⧸ p) (S ⧸ P) = Nat.card G := by
-  rw [mul_assoc, ← card_stabilizer_eq_card_inertia_mul_finrank,
+lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
+    (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
+    (p.primesOver S).ncard * Nat.card (P.inertia G) * P.inertiaDeg' R = Nat.card G := by
+  rw [mul_assoc, ← card_stabilizer_eq_card_inertia_mul_finrank p P,
     ← IsInvariant.orbit_eq_primesOver R S G p P]
   simpa using Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup G P)
 
 /-- The cardinality of the inertia group is equal to the ramification index. -/
-lemma card_inertia_eq_ramificationIdxIn
-    [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S]
-    [IsTorsionFree R S]
-    (p : Ideal R) (hp : p ≠ ⊥)
-    (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
+lemma card_inertia_eq_ramificationIdxIn [IsDomain R] [IsDomain S] [Module.Finite R S] [Flat R S]
+    (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
+    [PerfectField p.ResidueField] :
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
-  have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
-  refine mul_right_injective₀ (IsDedekindDomain.primesOver_ncard_ne_zero p S) ?_
-  refine mul_left_injective₀ (b := Module.finrank (R ⧸ p) (S ⧸ P)) ?_ ?_
-  · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
-  dsimp only
-  rw [H, mul_assoc, ← inertiaDeg_algebraMap, ← inertiaDegIn_eq_inertiaDeg p P G,
-    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G]
+  rw [← inertiaDegIn_eq_inertiaDeg p P G] at H
+  have h1 : (p.primesOver S).ncard ≠ 0 := by grind [Nat.card_pos]
+  have h2 : p.inertiaDegIn S ≠ 0 := by grind [Nat.card_pos]
+  rwa [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p S G,
+    mul_assoc, mul_right_inj' h1, mul_left_inj' h2] at H
 
 /-- The cardinality of the decomposition group is equal to the ramification index times the
 inertia degree. -/
-lemma card_stabilizer_eq [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S]
-    [IsTorsionFree R S] (p : Ideal R) (hp : p ≠ ⊥) (P : Ideal S) [P.LiesOver p] [P.IsMaximal]
-    [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
+lemma card_stabilizer_eq [IsDomain R] [IsDomain S] [Module.Finite R S] [Flat R S]
+    (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
+    [PerfectField p.ResidueField] :
     Nat.card (MulAction.stabilizer G P) = p.ramificationIdxIn S * p.inertiaDegIn S := by
-  have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
-  rw [card_stabilizer_eq_card_inertia_mul_finrank p P, card_inertia_eq_ramificationIdxIn p hp,
-    inertiaDegIn_eq_inertiaDeg p P G, inertiaDeg_algebraMap]
+  rw [card_stabilizer_eq_card_inertia_mul_finrank p P, card_inertia_eq_ramificationIdxIn p,
+    inertiaDegIn_eq_inertiaDeg p P G]
 
 end inertia
 
