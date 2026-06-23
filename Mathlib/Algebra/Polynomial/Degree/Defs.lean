@@ -204,7 +204,7 @@ theorem degree_C_mul_X_pow_le (n : ℕ) (a : R) : degree (C a * X ^ n) ≤ n := 
   apply degree_monomial_le
 
 theorem degree_C_mul_X_le (a : R) : degree (C a * X) ≤ 1 := by
-   simpa only [pow_one] using! degree_C_mul_X_pow_le 1 a
+  simpa only [pow_one] using! degree_C_mul_X_pow_le 1 a
 
 @[simp]
 theorem natDegree_C_mul_X_pow (n : ℕ) (a : R) (ha : a ≠ 0) : natDegree (C a * X ^ n) = n :=
