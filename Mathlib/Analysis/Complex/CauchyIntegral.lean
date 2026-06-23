@@ -856,10 +856,9 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂ - C₁ = 0 := by
   rw [sub_eq_zero]
-  symm
-  exact tendsto_nhds_unique hC₁ <|
+  exact (tendsto_nhds_unique hC₁ <|
     tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides
-      y hcont s hs hdiff hC₂ htendsto
+      y hcont s hs hdiff hC₂ htendsto).symm
 
 /-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
 that a function satisfies Cauchy-Goursat conditions between them, the limit of interval integrals
