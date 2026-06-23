@@ -39,7 +39,7 @@ so that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
 for some `R : CommRingCat`.
 -/
-structure Scheme extends LocallyRingedSpace where
+structure Scheme.{u'} extends LocallyRingedSpace.{u'} where
   local_affine :
     ∀ x : toLocallyRingedSpace,
       ∃ (U : OpenNhds x) (R : CommRingCat),
@@ -88,7 +88,7 @@ initialize_simps_projections Hom (toLRSHom' → toLRSHom)
 
 /-- Schemes are a full subcategory of locally ringed spaces.
 -/
-instance : Category Scheme where
+instance : Category Scheme.{u} where
   Hom := Hom
   id X := Hom.mk (𝟙 X.toLocallyRingedSpace)
   comp f g := Hom.mk (f.toLRSHom ≫ g.toLRSHom)
@@ -280,7 +280,7 @@ end Hom
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
-def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace where
+def forgetToLocallyRingedSpace : Scheme.{u} ⥤ LocallyRingedSpace.{u} where
   obj := toLocallyRingedSpace
   map := Hom.toLRSHom
 
@@ -298,7 +298,7 @@ instance : forgetToLocallyRingedSpace.Faithful :=
 
 /-- The forgetful functor from `Scheme` to `TopCat`. -/
 @[simps!]
-def forgetToTop : Scheme ⥤ TopCat :=
+def forgetToTop : Scheme.{u} ⥤ TopCat.{u} :=
   Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToTop
 
 /-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
@@ -331,11 +331,11 @@ noncomputable def Hom.homeomorph {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso (C := S
 lemma Hom.homeomorph_apply {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso (C := Scheme) f] (x) :
     f.homeomorph x = f x := rfl
 
-instance hasCoeToTopCat : CoeOut Scheme TopCat where
+instance hasCoeToTopCat : CoeOut Scheme.{u} TopCat.{u} where
   coe X := X.carrier
 
 /-- forgetful functor to `TopCat` is the same as coercion -/
-unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢ forgetToTop.obj X ≟ (X : TopCat)
+unif_hint forgetToTop_obj_eq_coe (X : Scheme.{u}) where ⊢ forgetToTop.obj X ≟ (X : TopCat)
 
 /-- The forgetful functor from `Scheme` to `Type`. -/
 nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
@@ -355,11 +355,11 @@ lemma forget_map' {X Y} (f : X ⟶ Y) : (forget.map f : _ → _) = f := rfl
 namespace Hom
 
 @[simp]
-theorem id_base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
+theorem id_base (X : Scheme.{u}) : (𝟙 X :).base = 𝟙 _ :=
   rfl
 
 @[simp]
-theorem id_app {X : Scheme} (U : X.Opens) :
+theorem id_app {X : Scheme.{u}} (U : X.Opens) :
     (𝟙 X :).app U = 𝟙 _ := rfl
 
 @[simp]
@@ -479,7 +479,7 @@ open scoped SpecOfNotation
 #check Spec(R)
 ```
 -/
-def Spec (R : CommRingCat) : Scheme where
+def Spec (R : CommRingCat.{u}) : Scheme.{u} where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 
@@ -491,16 +491,16 @@ WARNING: If `R` is already an element of `CommRingCat`, you should use `Spec R` 
 `Spec(R)`, which is secretly `Spec(↑R)`. -/
 scoped[SpecOfNotation] notation3 "Spec("R")" => AlgebraicGeometry.Spec <| .of R
 
-theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
+theorem Spec_toLocallyRingedSpace (R : CommRingCat.{u}) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of schemes. -/
-def Spec.map {R S : CommRingCat} (f : R ⟶ S) : Spec S ⟶ Spec R :=
+def Spec.map {R S : CommRingCat.{u}} (f : R ⟶ S) : Spec S ⟶ Spec R :=
   ⟨Spec.locallyRingedSpaceMap f⟩
 
 @[simp]
-theorem Spec.map_id (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) :=
+theorem Spec.map_id (R : CommRingCat.{u}) : Spec.map (𝟙 R) = 𝟙 (Spec R) :=
   Scheme.Hom.ext' <| Spec.locallyRingedSpaceMap_id R
 
 @[reassoc, simp]
@@ -510,21 +510,21 @@ theorem Spec.map_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes. -/
 @[simps]
-protected def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
+protected def Scheme.Spec : CommRingCat.{u}ᵒᵖ ⥤ Scheme.{u} where
   obj R := Spec (unop R)
   map f := Spec.map f.unop
   map_id R := by simp
   map_comp f g := by simp
 
-lemma Spec.map_eqToHom {R S : CommRingCat} (e : R = S) :
+lemma Spec.map_eqToHom {R S : CommRingCat.{u}} (e : R = S) :
     Spec.map (eqToHom e) = eqToHom (e ▸ rfl) := by
   subst e; exact Spec.map_id _
 
-instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
+instance {R S : CommRingCat.{u}} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
   inferInstanceAs (IsIso <| Scheme.Spec.map f.op)
 
 @[simp]
-lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
+lemma Spec.map_inv {R S : CommRingCat.{u}} (f : R ⟶ S) [IsIso f] :
     Spec.map (inv f) = inv (Spec.map f) := by
   change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
@@ -532,7 +532,7 @@ lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
 /-- `Spec R` with the specialization order is order isomorphic to the dual of the prime
 spectrum of `R`. -/
 @[simps]
-def specOrderIsoPrimeSpectrum (R : CommRingCat) : Spec R ≃o (PrimeSpectrum R)ᵒᵈ where
+def specOrderIsoPrimeSpectrum (R : CommRingCat.{u}) : Spec R ≃o (PrimeSpectrum R)ᵒᵈ where
   toFun x := .toDual x
   invFun x := OrderDual.ofDual x
   map_rel_iff' {a b} := PrimeSpectrum.le_iff_specializes b a
@@ -562,7 +562,7 @@ lemma Spec.map_app (U) :
 lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = CommRingCat.ofHom (StructureSheaf.comap f.hom V U e) := rfl
 
-instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+instance {A : CommRingCat.{u}} [Nontrivial A] : Nonempty (Spec A) :=
   inferInstanceAs <| Nonempty (PrimeSpectrum A)
 
 end
@@ -577,35 +577,35 @@ theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
 
 /-- The empty scheme. -/
 @[simps]
-def empty : Scheme where
+def empty : Scheme.{u} where
   carrier := TopCat.of PEmpty
   presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
   isLocalRing x := PEmpty.elim x
   local_affine x := PEmpty.elim x
 
-instance : EmptyCollection Scheme :=
+instance : EmptyCollection Scheme.{u} :=
   ⟨empty⟩
 
 /-- The global sections as a functor. For the global section themselves, use `Γ(X, ⊤)` instead. -/
-def Γ : Schemeᵒᵖ ⥤ CommRingCat :=
+def Γ : Scheme.{u}ᵒᵖ ⥤ CommRingCat.{u} :=
   Scheme.forgetToLocallyRingedSpace.op ⋙ LocallyRingedSpace.Γ
 
 theorem Γ_def : Γ = Scheme.forgetToLocallyRingedSpace.op ⋙ LocallyRingedSpace.Γ :=
   rfl
 
 @[simp]
-theorem Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = Γ(unop X, ⊤) :=
+theorem Γ_obj (X : Scheme.{u}ᵒᵖ) : Γ.obj X = Γ(unop X, ⊤) :=
   rfl
 
-theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = Γ(X, ⊤) :=
+theorem Γ_obj_op (X : Scheme.{u}) : Γ.obj (op X) = Γ(X, ⊤) :=
   rfl
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop :=
+theorem Γ_map {X Y : Scheme.{u}ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop :=
   rfl
 
-theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
+theorem Γ_map_op {X Y : Scheme.{u}} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
   rfl
 
 /--
