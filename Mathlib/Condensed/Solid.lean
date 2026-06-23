@@ -51,7 +51,7 @@ def profiniteSolidIsPointwiseRightKanExtension :
     (Functor.RightExtension.mk _ (profiniteSolidCounit R)).IsPointwiseRightKanExtension :=
   Functor.isPointwiseRightKanExtensionOfIsRightKanExtension _ _
 
--- Note: 𝟙 below is CategoryTheory.id (identity MORPHISM, U+1D7D9),
+-- Note: 𝟙 below is CategoryStruct.id (identity MORPHISM, U+1D7D9),
 -- NOT Functor.id (𝟭, U+1D7ED). Written as NatTrans.id to avoid Unicode issues.
 def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
   (profiniteSolid R).liftOfIsRightKanExtension (profiniteSolidCounit R) _
@@ -75,7 +75,7 @@ lemma profiniteSolidCounit_isIso (T : FintypeCat.{u}) :
 
 lemma profiniteSolidification_comp_counit (T : FintypeCat.{u}) :
     (profiniteSolidification R).app (FintypeCat.toProfinite.obj T) ≫
-    (profiniteSolidCounit R).app T = CategoryTheory.id _ := by
+    (profiniteSolidCounit R).app T = CategoryStruct.id _ := by
   simp only [profiniteSolidification]
   exact (profiniteSolid R).liftOfIsRightKanExtension_fac_app
           (profiniteSolidCounit R) (profiniteFree R) (NatTrans.id _) T
@@ -127,34 +127,34 @@ private noncomputable def finFree_isColimit_at' (T : FintypeCat.{u}) (S : Profin
 private abbrev cH' (Z : Profinite.{u}) := profiniteToCompHaus.obj Z
 
 private noncomputable def buildEta (Y : Profinite.{u}) (F : CondensedSet.{u})
-    (x : F.obj.obj (.op (cH' Y))) : profiniteToCondensed.obj Y ⟶ F := by
-  refine ⟨⟨fun S s => cast (congrArg F.obj.obj (Opposite.op_unop S))
-      (F.obj.map s.down.op x), ?_⟩⟩
+    (x : F.val.obj (.op (cH' Y))) : profiniteToCondensed.obj Y ⟶ F := by
+  refine ⟨⟨fun S s => cast (congrArg F.val.obj (Opposite.op_unop S))
+      (F.val.map s.down.op x), ?_⟩⟩
   intro S S' f; funext s
   simp only [Function.comp, cast_eq]
-  show F.obj.map (s.down.op ≫ f) x = F.obj.map f (F.obj.map s.down.op x)
-  rw [F.obj.map_comp]; rfl
+  show F.val.map (s.down.op ≫ f) x = F.val.map f (F.val.map s.down.op x)
+  rw [F.val.map_comp]; rfl
 
--- pTC_inj: uses CategoryTheory.id (written as id_) to avoid Unicode 𝟙 vs 𝟭 confusion
+-- pTC_inj: uses CategoryStruct.id (written as id_) to avoid Unicode 𝟙 vs 𝟭 confusion
 private lemma pTC_inj (Y : Profinite.{u}) (F : CondensedSet.{u})
     (e1 e2 : profiniteToCondensed.obj Y ⟶ F)
-    (h : e1.hom.app (.op (cH' Y)) (ULift.up (CategoryTheory.id (cH' Y))) =
-         e2.hom.app (.op (cH' Y)) (ULift.up (CategoryTheory.id (cH' Y)))) : e1 = e2 := by
+    (h : e1.hom.app (.op (cH' Y)) (ULift.up (CategoryStruct.id (cH' Y))) =
+         e2.hom.app (.op (cH' Y)) (ULift.up (CategoryStruct.id (cH' Y)))) : e1 = e2 := by
   ext S s
   have key : ∀ e : profiniteToCondensed.obj Y ⟶ F,
       e.hom.app S s =
-        F.obj.map s.down.op
-          (e.hom.app (.op (cH' Y)) (ULift.up (CategoryTheory.id (cH' Y)))) := by
+        F.val.map s.down.op
+          (e.hom.app (.op (cH' Y)) (ULift.up (CategoryStruct.id (cH' Y)))) := by
     intro e
     have nat := e.hom.naturality s.down.op
     simp only [Opposite.op_unop] at nat
-    rw [show s = (profiniteToCondensed.obj Y).obj.map s.down.op
-          (ULift.up (CategoryTheory.id (cH' Y))) from rfl,
+    rw [show s = (profiniteToCondensed.obj Y).val.obj.map s.down.op
+          (ULift.up (CategoryStruct.id (cH' Y))) from rfl,
         show e.hom.app S
-               ((profiniteToCondensed.obj Y).obj.map s.down.op
-                 (ULift.up (CategoryTheory.id (cH' Y)))) =
-             ((profiniteToCondensed.obj Y).obj.map s.down.op ≫ e.hom.app S)
-               (ULift.up (CategoryTheory.id (cH' Y))) from rfl,
+               ((profiniteToCondensed.obj Y).val.obj.map s.down.op
+                 (ULift.up (CategoryStruct.id (cH' Y)))) =
+             ((profiniteToCondensed.obj Y).val.obj.map s.down.op ≫ e.hom.app S)
+               (ULift.up (CategoryStruct.id (cH' Y))) from rfl,
         nat]; rfl
   rw [key e1, key e2, h]
 
@@ -171,8 +171,8 @@ lemma surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
     exact isColimitOfPreserves (forget (ModuleCat R)) (finFree_isColimit_at' R T X)
   let F_set := (Condensed.forget R).obj ((finFree R).obj T)
   let eta_adj := (Condensed.freeForgetAdjunction R).homEquiv _ _ h
-  let elem : F_set.obj.obj (.op (cH' X)) :=
-    eta_adj.hom.app (.op (cH' X)) (ULift.up (CategoryTheory.id (cH' X)))
+  let elem : F_set.val.obj (.op (cH' X)) :=
+    eta_adj.hom.app (.op (cH' X)) (ULift.up (CategoryStruct.id (cH' X)))
   obtain ⟨⟨j⟩, elem₀, hj⟩ := Types.jointly_surjective_of_isColimit h_type elem
   let q_j := X.asLimitCone.π.app j
   let eta0 := buildEta (X.diagram.obj j) F_set elem₀
@@ -184,15 +184,15 @@ lemma surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
     pTC_inj _ _ _ _ <| by
       have lhs :
           (ConcreteCategory.hom (eta_adj.hom.app (.op (cH' X))))
-            { down := CategoryTheory.id (cH' X) } = elem := rfl
+            { down := CategoryStruct.id (cH' X) } = elem := rfl
       have rhs :
           (ConcreteCategory.hom
               ((profiniteToCondensed.map q_j ≫ eta0).hom.app (.op (cH' X))))
-            { down := CategoryTheory.id (cH' X) } = elem :=
+            { down := CategoryStruct.id (cH' X) } = elem :=
         (show (ConcreteCategory.hom
                 ((profiniteToCondensed.map q_j ≫ eta0).hom.app (.op (cH' X))))
-              { down := CategoryTheory.id (cH' X) } =
-              F_set.obj.map (profiniteToCompHaus.map q_j).op elem₀ from rfl).trans hj
+              { down := CategoryStruct.id (cH' X) } =
+              F_set.val.map (profiniteToCompHaus.map q_j).op elem₀ from rfl).trans hj
       exact lhs.trans rhs.symm
   rw [h_eq, eta_eq]
   exact (Condensed.freeForgetAdjunction R).homEquiv_naturality_left_symm
