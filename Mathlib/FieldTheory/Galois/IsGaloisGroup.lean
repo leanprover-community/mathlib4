@@ -784,20 +784,6 @@ theorem algebraMap_restrictHom_smul [Finite G] [Finite G'] [MulSemiringAction G 
   rw [algebraMap.smul', algebraMap_quotientMulEquiv_smul, ← IsScalarTower.algebraMap_apply,
     algebraMap.smul', ← IsScalarTower.algebraMap_apply]
 
-/-- The kernel of `restrictHom G G' A B C : G →* G'` is the subgroup of `G` fixing the image of
-`B` in `C`. -/
-theorem restrictHom_ker [Finite G] [Finite G'] [MulSemiringAction G C]
-    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
-    (restrictHom G G' A B C).ker = fixingSubgroup G (Set.range (algebraMap B C)) := by
-  sorry
-
-/-- If `C/B/A` is a tower of domains with `C/A` Galois, `C/B` integral and `B` integrally closed,
-then the kernel of `restrictHom G G' A B C` is a Galois group for `C/B`. -/
-instance isGaloisGroup_restrictHom_ker [Finite G] [Finite G'] [MulSemiringAction G C]
-    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] [IsIntegrallyClosed B] :
-    IsGaloisGroup (restrictHom G G' A B C).ker B C := by
-  sorry
-
 attribute [local instance] FractionRing.liftAlgebra in
 theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
@@ -805,20 +791,6 @@ theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
   simpa [restrictHom] using QuotientGroup.mk_surjective
 
 end Domain
-
-section Foo
-
-variable (G H : Type*) [Group G] [Group H] [Finite G] [Finite H] (R : Type*) {A B : Type*}
-  [CommRing R] [CommRing A] [CommRing B] [IsDomain B] [Algebra R A] [Algebra A B] [Algebra R B]
-  [IsScalarTower R A B] [FaithfulSMul R A] [FaithfulSMul A B] [MulSemiringAction G B]
-  [IsGaloisGroup G R B] [MulSemiringAction H A] [IsGaloisGroup H R A]
-  (P : Ideal B) (p : Ideal A) [hPp : P.LiesOver p]
-
-example [P.IsPrime] [IsIntegrallyClosed A] : (P.inertia G).map (restrictHom G H R A B) = p.inertia H :=
-  .symm <| Ideal.inertia_quotient' (restrictHom G H R A B) (restrictHom G H R A B).ker p P
-    (restrictHom_surjective G H R A B) le_rfl (algebraMap_restrictHom_smul G H R A B)
-
-end Foo
 
 noncomputable section IntermediateField
 
