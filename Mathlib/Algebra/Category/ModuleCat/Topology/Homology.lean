@@ -61,7 +61,7 @@ end kernel
 section cokernel
 
 /-- Cokernel in `TopModuleCat R` is the cokernel of the linear map with the quotient topology. -/
-abbrev coker : TopModuleCat R := .of R (N ⧸ φ.hom.range)
+abbrev coker : TopModuleCat.{v} R := .of R (N ⧸ φ.hom.range)
 
 /-- The projection map to the cokernel in `TopModuleCat R`. -/
 def cokerπ : N ⟶ coker φ := ofHom <| ⟨Submodule.mkQ _, by tauto⟩
@@ -93,7 +93,7 @@ def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ �
 end cokernel
 
 set_option backward.isDefEq.respectTransparency false in
-instance : CategoryWithHomology (TopModuleCat R) := by
+instance : CategoryWithHomology (TopModuleCat.{v} R) := by
   constructor
   intro S
   let D₁ : S.LeftHomologyData := ⟨_, _, _, _, _, isLimitKer _, by simp, isColimitCoker _⟩
