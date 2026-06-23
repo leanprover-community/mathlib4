@@ -56,20 +56,20 @@ def primesInAPCount (x a q : ℕ) : ℕ :=
     There are 80 such primes. -/
 theorem primes_mod4_eq1_count :
     primesInAPCount 1000 1 4 = 80 := by
-  dec_trivial
+  decide
 
 /-- Concrete verification: primes ≡ 3 mod 4 below 1000.
     There are 87 such primes. -/
 theorem primes_mod4_eq3_count :
     primesInAPCount 1000 3 4 = 87 := by
-  dec_trivial
+  decide
 
 /-- The Chebyshev bias: more primes ≡ 3 mod 4 than ≡ 1 mod 4 below 1000.
     This is a concrete instance of the phenomenon that Bombieri-Vinogradov
     controls on average. -/
 theorem chebyshev_bias_concrete :
     primesInAPCount 1000 3 4 > primesInAPCount 1000 1 4 := by
-  dec_trivial
+  decide
 
 /-!
 ## Part 2: Bombieri-Vinogradov Theorem (Statement)
@@ -175,25 +175,25 @@ def ehBoundScaled (x : ℕ) : ℕ :=
     avg_err < x/(log x)^2. Cross-validated: 2.8187 < 7.1245. -/
 theorem concrete_eh_x200 :
     ehAvgErrorScaled 200 < ehBoundScaled 200 := by
-  dec_trivial
+  decide
 
 /-- Concrete EH verification for x=150, θ=0.6:
     avg_err < x/(log x)^2. Cross-validated: 2.2541 < 5.9746. -/
 theorem concrete_eh_x150 :
     ehAvgErrorScaled 150 < ehBoundScaled 150 := by
-  dec_trivial
+  decide
 
 /-- Concrete EH verification for x=100, θ=0.6:
     avg_err < x/(log x)^2. Cross-validated: 1.5291 < 4.7153. -/
 theorem concrete_eh_x100 :
     ehAvgErrorScaled 100 < ehBoundScaled 100 := by
-  dec_trivial
+  decide
 
 /-- Concrete EH verification for x=50, θ=0.6:
     avg_err < x/(log x)^2. Cross-validated: 1.3603 < 3.2671. -/
 theorem concrete_eh_x50 :
     ehAvgErrorScaled 50 < ehBoundScaled 50 := by
-  dec_trivial
+  decide
 
 /-!
 ## Part 5: Prime Gaps — Concrete Verification
@@ -216,13 +216,13 @@ def primeGaps (N : ℕ) : Finset ℕ :=
     no gap exceeds 20. -/
 theorem max_prime_gap_below_1000 :
     20 ∈ primeGaps 1000 ∧ ∀ g ∈ primeGaps 1000, g ≤ 20 := by
-  dec_trivial
+  decide
 
 /-- Concrete verification: all prime gaps below 1000 are ≤ 246,
     consistent with the Polymath8 unconditional bound. -/
 theorem all_gaps_below_polymath8 :
     (primeGaps 1000).filter (fun g => g > 246) = ∅ := by
-  dec_trivial
+  decide
 
 /-!
 ## Part 6: The Obstruction Hierarchy
