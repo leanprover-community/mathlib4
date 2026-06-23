@@ -138,8 +138,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma hom_K_ext (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op K) ⟶ W}
     (w : ∀ V, (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f =
     (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f') : f = f' :=
-    ((Functor.Final.isColimitWhiskerEquiv _ _).invFun
-    (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
+  ((Functor.Final.isColimitWhiskerEquiv _ _).invFun
+  (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
 
 end KSheaf
 
