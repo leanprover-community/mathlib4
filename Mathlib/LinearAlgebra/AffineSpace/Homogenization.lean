@@ -5,6 +5,7 @@ Authors: Attila Gáspár
 -/
 module
 
+public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.RingTheory.Finiteness.Defs
 
@@ -65,49 +66,26 @@ variable
 
 namespace Homogenization
 
-deriving instance AddCommSemigroup, Zero, Neg, Sub for Homogenization
+/-- Auxiliary definition used for defining the module structure on `Homogenization`. -/
+def equivProdAux : Homogenization k P ≃ V × k :=
+  .refl _
+
+instance : AddCommGroup (Homogenization k P) :=
+  equivProdAux.addCommGroup
 
 section SMul
 
 /- The `[IsScalarTower R k V]` assumption implies that this instance does not depend on the
 arbitrary choice made in the definition of `Homogenization`. -/
-@[nolint unusedArguments, no_expose]
-instance instSMul {R : Type*} [Semiring R] [Module R k] [Module R V] [IsScalarTower R k V] :
-    SMul R (Homogenization k P) :=
-  inferInstanceAs (SMul R (V × k))
+@[nolint unusedArguments]
+instance instModule {R : Type*} [Semiring R] [Module R k] [Module R V] [IsScalarTower R k V] :
+    Module R (Homogenization k P) :=
+  equivProdAux.module R
 
 variable
   {R : Type*} [Semiring R] [Module R k] [Module R V] [IsScalarTower R k V]
   {S : Type*} [Semiring S] [Module S k] [Module S V] [IsScalarTower S k V]
   [SMul R S] [IsScalarTower R S k] [IsScalarTower R S V]
-
-@[implicit_reducible]
-private def instAddCommGroupAux : AddCommGroup (Homogenization k P) :=
-  inferInstanceAs (AddCommGroup (V × k))
-
-instance instAddCommGroup : AddCommGroup (Homogenization k P) where
-  zero_add := by exact instAddCommGroupAux.zero_add
-  add_zero := by exact instAddCommGroupAux.add_zero
-  neg_add_cancel := by exact instAddCommGroupAux.neg_add_cancel
-  sub_eq_add_neg := by exact instAddCommGroupAux.sub_eq_add_neg
-  nsmul := instSMul.smul
-  nsmul_zero := by exact instAddCommGroupAux.nsmul_zero
-  nsmul_succ := by exact instAddCommGroupAux.nsmul_succ
-  zsmul := instSMul.smul
-  zsmul_zero' := by exact instAddCommGroupAux.zsmul_zero'
-  zsmul_succ' := by exact instAddCommGroupAux.zsmul_succ'
-  zsmul_neg' := by exact instAddCommGroupAux.zsmul_neg'
-
-@[implicit_reducible]
-private def instModuleAux : Module R (Homogenization k P) := inferInstanceAs (Module R (V × k))
-
-instance : Module R (Homogenization k P) where
-  zero_smul := by exact instModuleAux.zero_smul
-  one_smul := by exact instModuleAux.one_smul
-  add_smul := by exact instModuleAux.add_smul
-  mul_smul := by exact instModuleAux.mul_smul
-  smul_zero := by exact instModuleAux.smul_zero
-  smul_add := by exact instModuleAux.smul_add
 
 instance : IsScalarTower R S (Homogenization k P) :=
   inferInstanceAs (IsScalarTower R S (V × k))
