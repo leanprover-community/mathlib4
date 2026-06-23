@@ -225,10 +225,10 @@ theorem isCoprime_of_not_zeta_sub_one_dvd {x : 𝓞 K} (hx : ¬ hζ.toInteger - 
     IsCoprime (p : 𝓞 K) x := by
   rwa [← Ideal.isCoprime_span_singleton_iff,
     ← Ideal.span_singleton_eq_span_singleton.mpr (associated_zeta_sub_one_pow_prime p hζ),
-    ← Ideal.span_singleton_pow, IsCoprime.pow_left_iff, Ideal.isCoprime_iff_gcd,
+    ← Ideal.span_singleton_pow, IsCoprime.pow_left_iff (by grind [hp.out.one_lt]),
+    Ideal.isCoprime_iff_gcd,
     (Ideal.prime_span_singleton_iff.mpr hζ.zeta_sub_one_prime').irreducible.gcd_eq_one_iff,
     Ideal.dvd_span_singleton, Ideal.mem_span_singleton]
-  · simpa only [ge_iff_le, tsub_pos_iff_lt] using hp.out.one_lt
 
 theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
   rw [← pow_one p] at hK hζ
