@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Fintype.Defs
@@ -262,6 +263,7 @@ section Preorder
 variable [Zero α] [Preorder α] [DecidableLT α] {a : α}
 
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
+@[wikidata Q1193832]
 def SignType.sign : α →o SignType :=
   ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
     dsimp

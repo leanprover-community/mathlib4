@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.L1
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Bochner integral
@@ -157,6 +158,7 @@ variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
 
 open Classical in
 /-- The Bochner integral -/
+@[wikidata Q200125]
 irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then
     if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0

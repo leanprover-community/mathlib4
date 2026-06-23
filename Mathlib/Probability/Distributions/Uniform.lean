@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Uniform distributions and probability mass functions
@@ -60,6 +61,7 @@ variable {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
 
 /-- A random variable `X` has uniform distribution on `s` if its push-forward measure is
 `(μ s)⁻¹ • μ.restrict s`. -/
+@[wikidata Q274506]
 def IsUniform (X : Ω → E) (s : Set E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :=
   map X ℙ = ProbabilityTheory.cond μ s
 

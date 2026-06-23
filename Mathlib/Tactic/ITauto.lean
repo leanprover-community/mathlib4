@@ -10,6 +10,7 @@ public meta import Mathlib.Util.AtomM
 public meta import Qq
 public import Batteries.Tactic.Exact
 public import Batteries.Tactic.Init
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.AtomM
 
 /-!
@@ -97,6 +98,7 @@ inductive AndKind | and | iff | eq
 instance : Inhabited AndKind := ⟨AndKind.and⟩
 
 /-- A reified inductive type for propositional logic. -/
+@[wikidata Q200694]
 inductive IProp : Type
   | var : Nat → IProp            -- propositional atoms P_i
   | true : IProp                 -- ⊤

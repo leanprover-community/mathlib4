@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Derivation
 public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Partial derivatives of polynomials
@@ -58,6 +59,7 @@ section PDeriv
 variable [CommSemiring R]
 
 /-- `pderiv i p` is the partial derivative of `p` with respect to `i` -/
+@[wikidata Q186475]
 def pderiv (i : σ) : Derivation R (MvPolynomial σ R) (MvPolynomial σ R) :=
   letI := Classical.decEq σ
   mkDerivation R <| Pi.single i 1

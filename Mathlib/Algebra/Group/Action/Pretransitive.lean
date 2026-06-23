@@ -6,6 +6,7 @@ Authors: Chris Hughes, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.TypeTags
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Pretransitive group actions
@@ -56,7 +57,7 @@ class AddAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y`.
   A transitive action should furthermore have `α` nonempty. -/
-@[to_additive (attr := mk_iff)]
+@[to_additive (attr := mk_iff, wikidata Q1324364)]
 class MulAction.IsPretransitive (M α : Type*) [SMul M α] : Prop where
   /-- There is `g` such that `g • x = y`. -/
   exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y

@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Exterior derivative of a differential form on a normed space
@@ -70,6 +71,7 @@ $$
 
 where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeriv_apply`.
 -/
+@[wikidata Q1047080]
 noncomputable def extDeriv (ω : E → E [⋀^Fin n]→L[𝕜] F) (x : E) : E [⋀^Fin (n + 1)]→L[𝕜] F :=
   .alternatizeUncurryFin (fderiv 𝕜 ω x)
 
