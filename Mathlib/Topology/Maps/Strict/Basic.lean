@@ -197,7 +197,7 @@ of the morphisms is strict. -/
     IsStrictMap (f.prodMap g) ↔ IsStrictMap f ∧ IsStrictMap g := by
   simp_rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
   let Φ : (f.prodMap g).range ≃ₜ f.range × g.range :=
-    (Homeomorph.setCongr (by simp)).trans (Homeomorph.Set.prod _ _)
+    (Homeomorph.setCongr (by simp [Subgroup.coe_prod])).trans (Homeomorph.Set.prod _ _)
   have eq : Φ ∘ (f.prodMap g).rangeRestrict = f.rangeRestrict.prodMap g.rangeRestrict := rfl
   rw [← Φ.comp_isOpenQuotientMap_iff, eq, MonoidHom.coe_prodMap, isOpenQuotientMap_prodMap_iff]
 
