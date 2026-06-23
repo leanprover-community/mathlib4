@@ -481,38 +481,47 @@ variable {R S G G' : Type*} [CommRing R] [CommRing S] [Algebra R S]
   (f : G →* G') (H : Subgroup G) [Finite H] [Algebra.IsInvariant R S H]
   (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime]
 
-theorem Ideal.map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H ≤ f.ker)
+theorem Ideal.map_stabilizer_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H ≤ f.ker)
     (hf : ∀ g x, algebraMap R S (f g • x) = g • algebraMap R S x) :
-    (q.inertia G).map f = p.inertia G' := by
+    (MulAction.stabilizer G q).map f = MulAction.stabilizer G' p := by
   replace hf_ker (h : H) : f h = 1 := hf_ker h.2
   have : SMulCommClass H R S := ⟨fun h x y ↦ by simp [Algebra.smul_def, H.smul_def, ← hf, hf_ker]⟩
   apply le_antisymm
-  · -- the easy direction: the inertia subgroup of `q` is mapped to the inertia subgroup of `p`
-    rintro - ⟨g, hg, rfl⟩ x
+  · rintro - ⟨g, hg, rfl⟩
+    ext x
+    rw [SetLike.mem_coe, MulAction.mem_stabilizer_iff] at hg
+    simp_rw [mem_pointwise_smul_iff_inv_smul_mem, over_def q p, mem_under, ← map_inv, hf,
+      ← mem_pointwise_smul_iff_inv_smul_mem, hg]
+  · intro g hg
+    obtain ⟨g, rfl⟩ := hf_surj g
+    have : (g • q).under R = q.under R := by
+      ext x
+      rw [mem_under, mem_pointwise_smul_iff_inv_smul_mem, ← hf, ← mem_under, ← over_def q p,
+        map_inv, ← mem_pointwise_smul_iff_inv_smul_mem, hg]
+    obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq R S H (g • q) q this
+    exact ⟨g' * g, by simpa [mul_smul, eq_comm], by simp [hf_ker]⟩
+
+theorem Ideal.map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H ≤ f.ker)
+    (hf : ∀ g x, algebraMap R S (f g • x) = g • algebraMap R S x) :
+    (q.inertia G).map f = p.inertia G' := by
+  have h_stab := (map_stabilizer_of_surjective f H p q hf_surj hf_ker hf).ge
+  replace hf_ker (h : H) : f h = 1 := hf_ker h.2
+  have : SMulCommClass H R S := ⟨fun h x y ↦ by simp [Algebra.smul_def, H.smul_def, ← hf, hf_ker]⟩
+  apply le_antisymm
+  · rintro - ⟨g, hg, rfl⟩ x
     simpa [over_def q p, map_sub, hf] using hg (algebraMap R S x)
-  · -- let `g : G ⧸ H` be an element of the inertia subgroup of `p`
-    intro g hg
-    -- first we will find a lift in the decomposition subgroup of `q`
-    have mem_decomposition : ∃ g' : MulAction.stabilizer G q, f g' = g := by
-      replace hg := p.inertia_le_stabilizer hg
-      obtain ⟨g, rfl⟩ := hf_surj g
-      have : (g • q).under R = q.under R := by
-        ext x
-        rw [mem_under, mem_pointwise_smul_iff_inv_smul_mem, ← hf, ← mem_under, ← over_def q p,
-          map_inv, ← mem_pointwise_smul_iff_inv_smul_mem, hg]
-      obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq R S H (g • q) q this
-      exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp [hf_ker]⟩
-    -- and now a further modification will give a lift in the inertia subgroup of `q`
-    obtain ⟨g, rfl⟩ := mem_decomposition
+  · intro g hg
+    obtain ⟨g, rfl⟩ : ∃ g' : MulAction.stabilizer G q, f g' = g := by
+      simpa using h_stab.ge (p.inertia_le_stabilizer hg)
     let φ : (S ⧸ q) ≃ₐ[R ⧸ p] (S ⧸ q) :=
-    { __ := Ideal.Quotient.stabilizerHom q (q.under ℤ) G g
+    { __ := Quotient.stabilizerHom q (q.under ℤ) G g
       commutes' x := by
         obtain ⟨x, rfl⟩ := Quotient.mk_surjective x
         specialize hg x
         rw [Submodule.mem_toAddSubgroup, over_def q p, mem_under, map_sub, hf, ← Quotient.eq] at hg
         simpa }
     obtain ⟨g', hg'⟩ := Quotient.stabilizerHom_surjective H p q φ
-    let v := ⟨g', g'.2⟩⁻¹ * g
+    let v : MulAction.stabilizer G q := ⟨g', g'.2⟩⁻¹ * g
     refine ⟨v, ?_, by simp [v, hf_ker]⟩
     rw [SetLike.mem_coe, coe_mem_inertia, ← Quotient.ker_stabilizerHom q (q.under ℤ) G,
       MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one]
