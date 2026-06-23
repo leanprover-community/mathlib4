@@ -141,9 +141,9 @@ nonempty.
 lemma isSheafUniqueGluing_iff_isSheafUniqueGluing_nontrivial_types
     [Nonempty (ToType (F.obj (op ⊥)))] [Subsingleton (ToType (F.obj (op ⊥)))] :
     IsSheafUniqueGluing F ↔ ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X)
-    (_ : ∀ i : ι, (U i).carrier.Nonempty)
-    (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
-    IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s := by
+      (_ : ∀ i : ι, (U i).carrier.Nonempty)
+      (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
+      IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s := by
   refine ⟨fun h _ _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
   have sub {V : Opens X} (hV : V = ⊥) : Subsingleton (ToType (F.obj (op V))) := by rwa [hV]
   have non {V : Opens X} (hV : V = ⊥) : Nonempty (ToType (F.obj (op V))) := by rwa [hV]
