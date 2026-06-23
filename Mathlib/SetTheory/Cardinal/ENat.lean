@@ -246,7 +246,7 @@ lemma ofENat_toENat_eq_self {a : Cardinal} : toENat a = a ↔ a ≤ ℵ₀ := by
 
 lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
 
-@[simp] lemma toENat_ofNat (n : ℕ) [n.AtLeastTwo] : toENat ofNat(n) = ofNat(n) := toENat_nat _
+lemma toENat_ofNat (n : ℕ) [n.AtLeastTwo] : toENat ofNat(n) = ofNat(n) := toENat_nat _
 
 variable {c c' : Cardinal.{u}} {n : ℕ}
 
