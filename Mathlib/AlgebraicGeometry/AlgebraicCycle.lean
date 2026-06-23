@@ -71,12 +71,6 @@ noncomputable
 def mapAux {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N) (wy : Y → N) (x : X) :
     ℕ := if wx x = wy (f.base x) then f.degree x else 0
 
-open Function locallyFinsupp
-lemma _root_.AlgebraicGeometry.Scheme.Hom.preimageSupportFinite [QuasiCompact f] :
-    PreimageSupportFinite c f :=
-  fun z ↦ LocallyFiniteSupport.finite_inter_support_of_isCompact c.locallyFiniteSupport <|
-    AlgebraicGeometry.Scheme.Hom.isCompact_preimage_singleton f z
-
 /--
 The pushforward of algebraic cycles with respect to a quasicompact morphism of schemes. The
 arguments `wx` and `wy` are certain weight functions used to calculate how the weights of the
@@ -89,7 +83,6 @@ equidimensionality hypotheses cannot be assumed.
 noncomputable
 def pushforward [QuasiCompact f] {N : Type*} [DecidableEq N] (c : AlgebraicCycle X R)
     (wx : X → N) (wy : Y → N) : AlgebraicCycle Y R :=
-  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) c
-  f.isSpectralMap (f.preimageSupportFinite c)
+  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) f.isSpectralMap c
 
 end AlgebraicCycle
