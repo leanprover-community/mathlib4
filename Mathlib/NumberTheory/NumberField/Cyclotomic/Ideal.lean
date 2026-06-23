@@ -193,10 +193,7 @@ omit hp hK [NumberField K] in
 lemma associated_one_sub_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimitiveRoot η p) :
     Associated (1 - hζ.toInteger) (1 - hη.toInteger) := by
   obtain ⟨i, -, hi, hζη⟩ := hζ.isPrimitiveRoot_iff.mp hη
-  have htoInteger : hη.toInteger = hζ.toInteger ^ i := by
-    apply RingOfIntegers.ext
-    exact hζη.symm
-  rw [htoInteger]
+  rw [show hη.toInteger = hζ.toInteger ^ i from RingOfIntegers.ext hζη.symm]
   simpa only [neg_sub] using
     (hζ.toInteger_isPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime hi).neg_left.neg_right
 
