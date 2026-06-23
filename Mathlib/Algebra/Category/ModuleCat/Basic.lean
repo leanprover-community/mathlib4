@@ -585,6 +585,8 @@ def homMk : M ⟶ N where
 lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGrpCat).map (homMk φ hφ) = φ := rfl
 
+/-- Constructor for isomorphisms in `ModuleCat R` taking an isomorphism in `AddCommGrpCat`
+and a compatibility condition. -/
 def isoMk (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
     (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
     M ≅ N :=
