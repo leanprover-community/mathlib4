@@ -376,8 +376,7 @@ variable {β : ι₁ → Type w} [∀ i : ι₁, AddCommMonoid (β i)]
 
 /-- The equivalence between a direct sum indexed by a type `ι₁` and the
     double sum indexed by a type `ι₂` and the fibres of a map `f : ι₁ → ι₂`. -/
-def sigmaFiberAddEquiv [DecidableEq ι₂] :
-    (⨁ i, β i) ≃+ ⨁ (j : ι₂) (i : { i : ι₁ // f i = j}), β ↑i :=
+def sigmaFiberAddEquiv : (⨁ i, β i) ≃+ ⨁ (j : ι₂) (i : { i : ι₁ // f i = j}), β ↑i :=
   (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm).trans
     (sigmaCurryEquiv (δ := fun j ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i)))
 
