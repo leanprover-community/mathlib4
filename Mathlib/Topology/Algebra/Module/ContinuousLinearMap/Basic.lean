@@ -606,7 +606,7 @@ theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ
 @[deprecated (since := "2026-05-20")] protected alias mul_apply := mul_apply_eq_comp
 
 instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) :=
-  fast_instance% FunLike.monoidWithZero
+  fast_instance% FunLike.compMonoidWithZero
 
 @[simp, norm_cast]
 theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
@@ -619,11 +619,11 @@ theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ
 instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
 
-instance instIsNatCastApply [ContinuousAdd M₁] : IsNatCastApply (M₁ →L[R₁] M₁) M₁ where
-  natCast_apply _ _ := rfl
+instance instIsNatCastApply [ContinuousAdd M₁] : IsNatCastApplyEqSMul (M₁ →L[R₁] M₁) M₁ where
+  natCast_apply_eq_smul _ _ := rfl
 
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
-  fast_instance% FunLike.semiring
+  fast_instance% FunLike.compSemiring
 
 /-- `ContinuousLinearMap.toLinearMap` as a `RingHom`. -/
 @[simps]
@@ -934,12 +934,12 @@ theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAd
 instance [IsTopologicalAddGroup M] : IntCast (M →L[R] M) where
   intCast z := z • (1 : M →L[R] M)
 
-instance instIsIntCastApply [IsTopologicalAddGroup M] : IsIntCastApply (M →L[R] M) M where
-  intCast_apply _ _ := rfl
+instance instIsIntCastApply [IsTopologicalAddGroup M] : IsIntCastApplyEqSMul (M →L[R] M) M where
+  intCast_apply_eq_smul _ _ := rfl
 
-@[deprecated (since := "2026-05-20")] alias intCast_apply := _root_.intCast_apply
+@[deprecated (since := "2026-05-20")] alias intCast_apply := _root_.intCast_apply_eq_smul
 
-instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) := fast_instance% FunLike.ring
+instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) := fast_instance% FunLike.compRing
 
 theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
     toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) := by
