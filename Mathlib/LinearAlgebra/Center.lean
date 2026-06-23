@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.LinearAlgebra.Transvection.Basic
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Center of the algebra of linear endomorphisms
@@ -53,6 +54,16 @@ open Module LinearMap LinearEquiv Set Finsupp
 namespace LinearMap
 
 variable {R V : Type*}
+
+theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
+    [Module R V] {f : V →ₗ[R] V} {a : R}
+    (hf : ∀ x, f x = a • x) :
+    f ∈ center (End R V) := by
+  simp only [mem_center_iff, isMulCentral_iff, mul_assoc,
+    implies_true, and_self, and_true, commute_iff_eq]
+  intro g
+  ext x
+  simp [hf]
 
 /-- A linear endomorphism of a free module of rank at least 2
 that commutes with transvections consists of homotheties with central ratio. -/
