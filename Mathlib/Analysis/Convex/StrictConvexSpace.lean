@@ -54,7 +54,7 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
-@[expose] public section
+public section
 
 open Convex Pointwise Set Metric
 
@@ -95,7 +95,7 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
   refine
     StrictConvexSpace.of_strictConvex_unitClosedBall ℝ
       ((convex_closedBall _ _).strictConvex' fun x hx y hy hne => ?_)
-  rw [interior_closedBall (0 : E) one_ne_zero, closedBall_diff_ball,
+  rw [interior_closedBall (0 : E) one_ne_zero, closedBall_sdiff_ball,
     mem_sphere_zero_iff_norm] at hx hy
   rcases h x y hx hy hne with ⟨a, b, hab, hlt⟩
   use b
@@ -109,7 +109,7 @@ theorem StrictConvexSpace.of_norm_combo_ne_one
     StrictConvexSpace ℝ E := by
   refine StrictConvexSpace.of_strictConvex_unitClosedBall ℝ
     ((convex_closedBall _ _).strictConvex ?_)
-  simp only [interior_closedBall _ one_ne_zero, closedBall_diff_ball, Set.Pairwise,
+  simp only [interior_closedBall _ one_ne_zero, closedBall_sdiff_ball, Set.Pairwise,
     frontier_closedBall _ one_ne_zero, mem_sphere_zero_iff_norm]
   intro x hx y hy hne
   rcases h x y hx hy hne with ⟨a, b, ha, hb, hab, hne'⟩

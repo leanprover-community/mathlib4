@@ -138,9 +138,9 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
   obtain ⟨⟨n⟩, hn⟩ := n
   match n with
-  | 0 => exact TypeCat.ofHom f₀
-  | 1 => exact TypeCat.ofHom f₁
-  | 2 => exact TypeCat.ofHom (f₂ f₀ f₁ hδ₁ hδ₀ hY)
+  | 0 => exact ↾f₀
+  | 1 => exact ↾f₁
+  | 2 => exact ↾(f₂ f₀ f₁ hδ₁ hδ₀ hY)
 
 /-- The property of morphisms in `SimplexCategory.Truncated 2` for
 which `liftOfStrictSegal.app` is natural. -/
@@ -182,11 +182,11 @@ def liftOfStrictSegal : X ⟶ Y where
 
 @[simp]
 lemma liftOfStrictSegal_app_0 :
-    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = TypeCat.ofHom f₀ := rfl
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = ↾f₀ := rfl
 
 @[simp]
 lemma liftOfStrictSegal_app_1 :
-    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = TypeCat.ofHom f₁ := rfl
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = ↾f₁ := rfl
 
 end liftOfStrictSegal
 
@@ -200,7 +200,7 @@ a morphism `X ⟶ (truncation 2).obj (nerve C)`. -/
 def descOfTruncation (φ : X ⟶ (truncation 2).obj (nerve C)) :
     X.HomotopyCategory ⥤ C :=
   lift (fun x ↦ nerveEquiv (φ.app _ x)) (fun e ↦ nerve.homEquiv (e.map φ))
-    (fun x ↦ by simpa using nerve.homEquiv_id (φ.app _ x))
+    (fun x ↦ by simpa using! nerve.homEquiv_id (φ.app _ x))
       (fun h ↦ nerve.homEquiv_comp (h.map φ))
 
 @[simp]
@@ -213,11 +213,13 @@ lemma descOfTruncation_map_homMk (φ : X ⟶ (truncation 2).obj (nerve C))
     (descOfTruncation φ).map (homMk e) = nerve.homEquiv (e.map φ) :=
   Category.id_comp _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
     (φ : X' ⟶ (truncation 2).obj (nerve C)) :
     descOfTruncation (ψ ≫ φ) = mapHomotopyCategory ψ ⋙ descOfTruncation φ :=
   functor_ext (fun _ ↦ by simp) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the morphism `X ⟶ (truncation 2).obj (nerve C)` corresponding
 to a functor `X.HomotopyCategory ⥤ C`. -/
@@ -271,6 +273,7 @@ lemma homToNerveMk_app_edge (F : X.HomotopyCategory ⥤ C) {x y : X _⦋0⦌₂}
   exact ComposableArrows.arrowEquiv.injective
     (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the bijection between morphism `X.HomotopyCategory ⥤ C`
@@ -308,7 +311,7 @@ lemma homToNerveMk_comp {D : Type u} [SmallCategory D]
   IsStrictSegal.hom_ext (fun s ↦ by
     obtain ⟨x₀, x₁, f, rfl⟩ := Edge.exists_of_simplex s
     dsimp
-    simp only [homToNerveMk_app_edge, Functor.comp_obj, Functor.comp_map]
+    simp only [homToNerveMk_app_edge, Functor.comp_map]
     exact ComposableArrows.ext₁ rfl rfl (by aesop))
 
 end HomotopyCategory

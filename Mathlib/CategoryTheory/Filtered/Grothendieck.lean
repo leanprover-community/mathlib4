@@ -15,7 +15,7 @@ We show that if `F : C ⥤ Cat` is such that `C` is filtered and `F.obj c` is fi
 `c : C`, then `Grothendieck F` is filtered.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

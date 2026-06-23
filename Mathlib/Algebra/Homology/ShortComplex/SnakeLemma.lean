@@ -98,6 +98,7 @@ attribute [instance] mono_L₂_f
 variable {C}
 variable (S : SnakeInput C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The snake input in the opposite category that is deduced from a snake input. -/
 @[simps]
 noncomputable def op : SnakeInput Cᵒᵖ where
@@ -307,15 +308,11 @@ lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
 
 set_option backward.isDefEq.respectTransparency false in
 lemma L₀_g_δ : S.L₀.g ≫ S.δ = 0 := by
-  rw [← L₀X₂ToP_comp_pullback_snd, assoc]
-  erw [S.L₀'_exact.g_desc]
-  rw [L₀X₂ToP_comp_φ₁_assoc, zero_comp]
+  rw [← L₀X₂ToP_comp_pullback_snd, assoc, S.snd_δ, L₀X₂ToP_comp_φ₁_assoc, zero_comp]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_L₃_f : S.δ ≫ S.L₃.f = 0 := by
-  rw [← cancel_epi S.L₀'.g]
-  erw [S.L₀'_exact.g_desc_assoc]
-  simp [S.v₂₃.comm₁₂, φ₂]
+  simp [← cancel_epi S.L₀'.g, δ, S.v₂₃.comm₁₂, φ₂]
 
 /-- The short complex `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 @[simps]
@@ -325,6 +322,7 @@ noncomputable def L₁' : ShortComplex C := ShortComplex.mk _ _ S.L₀_g_δ
 @[simps]
 noncomputable def L₂' : ShortComplex C := ShortComplex.mk _ _ S.δ_L₃_f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Exactness of `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 lemma L₁'_exact : S.L₁'.Exact := by
@@ -363,8 +361,9 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
     pushoutIsoUnopPullback_inr_hom, pullbackIsoUnopPushout_inv_snd_assoc,
     pushoutIsoUnopPullback_inl_hom, pullbackIsoUnopPushout_inv_fst_assoc]
   apply Quiver.Hom.op_inj
-  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using S.op.snd_δ_inr)
+  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using! S.op.snd_δ_inr)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
   ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
@@ -516,6 +515,7 @@ noncomputable def functorP : SnakeInput C ⥤ C where
   map_id _ := by dsimp [P]; simp
   map_comp _ _ := by dsimp [P]; cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by

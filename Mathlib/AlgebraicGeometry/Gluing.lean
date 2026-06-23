@@ -77,6 +77,7 @@ namespace Scheme
   limits library easier.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -351,7 +352,7 @@ def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
   · exact fun x => 𝒰.f x
   rintro ⟨x, y⟩
   change pullback.fst _ _ ≫ _ = ((pullbackSymmetry _ _).hom ≫ pullback.fst _ _) ≫ _
-  simpa using pullback.condition
+  simpa using! pullback.condition
 
 @[simp, reassoc]
 theorem ι_fromGlued (x : 𝒰.I₀) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = 𝒰.f x :=
@@ -386,6 +387,7 @@ instance (x : 𝒰.gluedCover.glued.carrier) :
   rw [this]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
   intro U hU
   rw [isOpen_iff_forall_mem_open]
@@ -396,7 +398,7 @@ theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
     apply (𝒰.f (𝒰.idx x)).isOpenEmbedding.isOpenMap
-    convert hU (𝒰.idx x) using 1
+    convert! hU (𝒰.idx x) using 1
     simp only [← ι_fromGlued, gluedCover_U, Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp,
       Set.preimage_comp]
     congr! 1
@@ -426,6 +428,7 @@ instance : IsIso 𝒰.fromGlued :=
     apply PresheafedSpace.IsOpenImmersion.to_iso
   isIso_of_reflects_iso _ F
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given an open cover of `X`, and a morphism `𝒰.X x ⟶ Y` for each open subscheme in the cover,
 such that these morphisms are compatible in the intersection (pullback), we may glue the morphisms
 together into a morphism `X ⟶ Y`.
@@ -453,6 +456,7 @@ theorem hom_ext (𝒰 : OpenCover.{v} X) {Y : Scheme} (f₁ f₂ : X ⟶ Y)
   rw [fromGlued, Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
   exact h _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.X x ⟶ Y)
@@ -477,6 +481,7 @@ lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
       refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
   exact 𝒰.hom_ext _ _ hU
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to covers in subcanonical topologies
 open pullback in
@@ -500,6 +505,7 @@ For such a diagram, we can glue them directly since the gluing conditions are al
 The intended usage is to provide the following instances:
 - `∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)`
 - `(F ⋙ forget).IsLocallyDirected`
+
 and to directly use the `colimit` API.
 Also see `AlgebraicGeometry.Scheme.IsLocallyDirected.openCover` for the open cover of the `colimit`.
 
@@ -550,7 +556,7 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
   have : IsOpenImmersion α := by
     apply +allowSynthFailures IsOpenImmersion.of_comp
     · exact (inferInstance : IsOpenImmersion (pullback.fst (V F i j).ι (V F i k).ι))
-    · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, α]
+    · simp only [limit.lift_π, PullbackCone.mk_π_app, α]
       infer_instance
   have : α z = x := by
     apply (pullback.fst (C := Scheme) _ _).isOpenEmbedding.injective
@@ -561,6 +567,7 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
 
 variable [Quiver.IsThin J]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma fst_inv_eq_snd_inv
     {i j : J} (k₁ k₂ : (k : J) × (k ⟶ i) × (k ⟶ j)) {U : (F.obj i).Opens}
@@ -668,10 +675,10 @@ def glueData : Scheme.GlueData where
     obtain ⟨l, fi, fj, fk, α, z, hα, hα₁, hα₂, e⟩ := this -- doing them in the same step times out.
     refine ⟨α.opensRange, ⟨_, e⟩, ?_⟩
     rw [← cancel_mono (pullback.snd _ _), ← cancel_mono (Scheme.Opens.ι _)]
-    simp only [t, Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+    simp only [t, Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
       limit.lift_π_assoc, cospan_left, IsOpenImmersion.lift_fac, Category.id_comp]
     rw [IsOpenImmersion.comp_lift_assoc]
-    simp only [limit.lift_π_assoc, PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app]
+    simp only [limit.lift_π_assoc, cospan_left, PullbackCone.mk_π_app]
     rw [← cancel_epi α.isoOpensRange.hom]
     simp_rw [Scheme.Hom.isoOpensRange_hom_ι_assoc, IsOpenImmersion.comp_lift_assoc]
     simp only [reassoc_of% hα₁, homOfLE_tAux F _ _ fi fj, Iso.hom_inv_id_assoc, reassoc_of% hα₂]
@@ -704,9 +711,10 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
   rw [← cancel_epi (V F ↓i ↓j).ι, ← this, ← Category.assoc,
     ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 _) f),
     ← Category.assoc, ← Category.assoc, Category.assoc]
-  convert Category.id_comp _
+  convert! Category.id_comp _
   simp [← cancel_mono (Opens.ι _), V]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram.
 
@@ -719,6 +727,7 @@ def cocone : Cocone F where
     simp only [← IsIso.inv_comp_eq, ← Functor.map_inv, ← Functor.map_comp_assoc,
       glueDataι_naturality, Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram is a colimit.
@@ -743,6 +752,7 @@ def isColimit : IsColimit (cocone F) where
     simp [← hm ↓i, cocone, reassoc_of% glueDataι_naturality]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram is a colimit as locally ringed spaces.
@@ -788,6 +798,7 @@ instance : PreservesColimit F Scheme.forgetToLocallyRingedSpace :=
 instance : CreatesColimit F Scheme.forgetToLocallyRingedSpace :=
   CategoryTheory.createsColimitOfReflectsIsomorphismsOfPreserves
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The open cover of the colimit of a locally directed diagram by the components. -/
 @[simps! I₀ X f]
@@ -838,7 +849,7 @@ lemma ι_jointly_surjective (x : ↑(colimit F)) :
   congr 5
   have := eqToHom_naturality (fun j ↦ (glueData F).ι j)
     (show i = ((equivShrink J) ((equivShrink J).symm i)) by simp)
-  simp [cocone, Functor.const_obj_obj, eqToHom_map, ← this]
+  simp [cocone, eqToHom_map, ← this]
 
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=

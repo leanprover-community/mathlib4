@@ -144,12 +144,13 @@ section Specialized
 
 variable (F : C ⥤ FintypeCat.{u₂})
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
 This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
   pt := F ⋙ FintypeCat.incl
   ι := {
-    app := fun ⟨A, a, _⟩ ↦ { app X := TypeCat.ofHom (fun (f : (A : C) ⟶ X) ↦ F.map f a) }
+    app := fun ⟨A, a, _⟩ ↦ { app X := ↾fun (f : (A : C) ⟶ X) ↦ F.map f a }
     naturality := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, (hf : F.map f b = a)⟩ ↦ by
       ext Y (g : (A : C) ⟶ Y)
       suffices h : F.map g (F.map f b) = F.map g a by simpa
@@ -158,7 +159,7 @@ def cocone : Cocone ((incl F).op ⋙ coyoneda) where
 
 @[simp]
 lemma cocone_app (A : PointedGaloisObject F) (B : C) :
-    ((cocone F).ι.app ⟨A⟩).app B = TypeCat.ofHom (fun (f : (A : C) ⟶ B) ↦ F.map f A.pt) :=
+    ((cocone F).ι.app ⟨A⟩).app B = ↾fun (f : (A : C) ⟶ B) ↦ F.map f A.pt :=
   rfl
 
 variable [FiberFunctor F]
@@ -322,6 +323,7 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
   simp
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
 noncomputable def autIsoFibers :
@@ -342,6 +344,7 @@ noncomputable def endEquivAutGalois : End F ≃ AutGalois F :=
   let e2 := ((Functor.sectionsFunctor _).mapIso (autIsoFibers F).symm).toEquiv
   e1.trans e2
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
     F.map (AutGalois.π F A (endEquivAutGalois F f)).hom A.pt = f.app A A.pt := by
@@ -395,6 +398,7 @@ noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
     exact (MulEquiv.eq_symm_apply (endMulEquivAutGalois F)).mp rfl
   map_mul' := by simp [map_mul]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
     F.map (AutGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a =
       f.hom.app A a := by

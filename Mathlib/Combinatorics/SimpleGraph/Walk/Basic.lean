@@ -101,7 +101,6 @@ theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → 
 theorem adj_of_length_eq_one {u v : V} : ∀ {p : G.Walk u v}, p.length = 1 → G.Adj u v
   | cons h nil, _ => h
 
-@[simp]
 theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0) ↔ u = v :=
   ⟨fun ⟨_, h⟩ ↦ (eq_of_length_eq_zero h), (· ▸ ⟨nil, rfl⟩)⟩
 
@@ -109,8 +108,8 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
 lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v :=
   ⟨fun ⟨_, hp⟩ ↦ adj_of_length_eq_one hp, (⟨·.toWalk, by simp⟩)⟩
 
-@[simp]
-theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
+theorem eq_of_length_le_one {p q : G.Walk u v} (hp : p.length ≤ 1) (hq : q.length ≤ 1) : p = q := by
+  grind [cases Walk, length_cons, Adj.ne]
 
 /-- The `support` of a walk is the list of vertices it visits in order. -/
 def support {u v : V} : G.Walk u v → List V
@@ -173,6 +172,10 @@ theorem end_mem_tail_support_of_ne {u v : V} (h : u ≠ v) (p : G.Walk u v) : v 
   obtain ⟨_, _, _, rfl⟩ := exists_eq_cons_of_ne h p
   simp
 
+theorem support_suffix_support_cons (p : G.Walk v w) (hadj : G.Adj u v) :
+    p.support <:+ (p.cons hadj).support := by
+  simp
+
 theorem support_subset_support_cons {u v w : V} (p : G.Walk v w) (hadj : G.Adj u v) :
     p.support ⊆ (p.cons hadj).support := by
   simp
@@ -230,7 +233,7 @@ theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
   induction p <;> simp [*]
 
 theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
-  simpa! using congr_arg List.dropLast (map_fst_darts_append p)
+  simpa! using! congr_arg List.dropLast (map_fst_darts_append p)
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
@@ -274,7 +277,7 @@ theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
     exact ⟨i, by grind, fun j hj ↦ by grind [fst_darts_getElem, snd_darts_getElem]⟩
   · have := h 0
     have := h 1
-    convert p.darts.getElem_mem (n := i) (by grind)
+    convert! p.darts.getElem_mem (n := i) (by grind)
       <;> grind [fst_darts_getElem, snd_darts_getElem]
 
 theorem mem_darts_iff_fst_snd_infix_support {p : G.Walk u v} {d : G.Dart} :
@@ -312,8 +315,7 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
   | .nil, .cons _ _, h => by simp at h
   | .cons _ _, .nil, h => by simp at h
   | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
-    have h₃ : u ≠ v' := by rintro rfl; exact G.loopless.irrefl _ h₂
-    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
+    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₂.ne] using h
     rw [edges_injective h₃]
 
 theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
@@ -367,8 +369,15 @@ lemma darts_eq_nil {p : G.Walk v w} : p.darts = [] ↔ p.Nil := by
 lemma edges_eq_nil {p : G.Walk v w} : p.edges = [] ↔ p.Nil := by
   cases p <;> simp
 
-lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 := by
+@[simp]
+theorem length_eq_zero_iff {p : G.Walk u v} : p.length = 0 ↔ p.Nil := by
   cases p <;> simp
+
+alias ⟨_, Nil.length_eq_zero⟩ := length_eq_zero_iff
+
+@[deprecated length_eq_zero_iff (since := "2026-05-11")]
+lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 :=
+  length_eq_zero_iff.symm
 
 lemma not_nil_iff_lt_length {p : G.Walk v w} : ¬ p.Nil ↔ 0 < p.length := by
   cases p <;> simp
@@ -378,15 +387,24 @@ lemma not_nil_iff {p : G.Walk v w} :
   cases p <;> simp [*]
 
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
-lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
-  | .nil | .cons _ _ => by simp
+@[simp]
+theorem eq_nil_iff_nil {p : G.Walk v v} : p = nil ↔ p.Nil := by
+  cases p <;> simp
 
-alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
+alias ⟨_, Nil.eq_nil⟩ := eq_nil_iff_nil
+
+@[deprecated eq_nil_iff_nil (since := "2026-05-11")]
+lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil :=
+  eq_nil_iff_nil.symm
 
 lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=
   match p with
   | nil => Nil.nil
   | cons h w => Unique.eq_default G ▸ h |>.elim
+
+@[simp]
+theorem exists_nil_iff {u v : V} : (∃ p : G.Walk u v, p.Nil) ↔ u = v :=
+  ⟨fun ⟨_, h⟩ ↦ h.eq, (· ▸ ⟨nil, .nil⟩)⟩
 
 /-- The recursion principle for nonempty walks -/
 @[elab_as_elim]

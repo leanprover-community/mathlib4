@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 # Meta properties of essentially of finite type ring homomorphisms
 -/
 
-@[expose] public section
+public section
 
 namespace RingHom.EssFiniteType
 

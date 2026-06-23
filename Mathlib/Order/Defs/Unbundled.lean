@@ -97,11 +97,24 @@ that is, `Std.Trichotomous lt` and `IsStrictOrder X lt`. -/
 class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
     extends Std.Trichotomous lt, IsStrictOrder α lt
 
+theorem Equivalence.of_isEquiv {α : Sort*} (lt : α → α → Prop) [IsEquiv α lt] : Equivalence lt where
+  refl := Std.Refl.refl; symm := Std.Symm.symm _ _; trans := IsTrans.trans _ _ _
+
+theorem IsEquiv.of_equivalence {α : Sort*} {lt : α → α → Prop} (h : Equivalence lt) :
+    IsEquiv α lt where
+  refl := h.refl; symm _ _ := h.symm; trans _ _ _ := h.trans
+
+theorem equivalence_iff_isEquiv {α : Sort*} (lt : α → α → Prop) : Equivalence lt ↔ IsEquiv α lt :=
+  ⟨.of_equivalence, fun _ => .of_isEquiv lt⟩
+
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
   trans := @Eq.trans _
   refl := Eq.refl
+
+instance (α : Sort*) : Std.Symm (α := α) Ne where
+  symm _ _ := Ne.symm
 
 /-- `Iff` is an equivalence relation. -/
 instance iff_isEquiv : IsEquiv Prop Iff where
@@ -206,6 +219,7 @@ section
 def Reflexive := ∀ x, x ≺ x
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Symm (since := "2026-06-10")]
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
@@ -229,13 +243,21 @@ theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
 
 @[deprecated (since := "2026-03-27")] alias Equivalence.reflexive := Equivalence.stdRefl
 
-theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
-  fun _ _ ↦ h.symm
+theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
+  symm _ _ := h.symm
+
+@[deprecated (since := "2026-06-10")] alias Equivalence.symmetric := Equivalence.stdSymm
 
 theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
   ⟨fun _ _ _ ↦ h.trans⟩
 
 @[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
+
+theorem Equivalence.isEquiv (h : Equivalence r) : IsEquiv α r :=
+  have := h.stdRefl
+  have := h.stdSymm
+  have := h.isTrans
+  {}
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
@@ -345,7 +367,7 @@ structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
 
 extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
 
-variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
+variable {α β : Sort*} {r : α → α → Prop} {s : β → β → Prop}
 
 theorem of_eq [Std.Refl r] : ∀ {a b}, a = b → r a b
   | _, _, .refl _ => refl _
@@ -444,7 +466,6 @@ theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α
   · exact h₁
   · exact absurd h₃ h₂
 
-set_option linter.deprecated false in
 @[deprecated IsTrans.trans (since := "2026-02-20")]
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 

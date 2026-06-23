@@ -21,7 +21,7 @@ The `itauto` tactic will prove any intuitionistic tautology. It implements the w
 [Dyckhoff, *Contraction-free sequent calculi for intuitionistic logic*][dyckhoff_1992].
 
 All built in propositional connectives are supported: `True`, `False`, `And`, `Or`, `→`,
-`Not`, `Iff`, `Xor'`, as well as `Eq` and `Ne` on propositions. Anything else, including definitions
+`Not`, `Iff`, `Xor`, as well as `Eq` and `Ne` on propositions. Anything else, including definitions
 and predicate logical connectives (`∀` and `∃`), are not supported, and will have to be
 simplified or instantiated before calling this tactic.
 
@@ -73,8 +73,8 @@ The intuitionistic logic rules are separated into three groups:
 This covers the core algorithm, which only handles `True`, `False`, `And`, `Or`, and `→`.
 For `Iff` and `Eq`, we treat them essentially the same as `(p → q) ∧ (q → p)`, although we use
 a different `IProp` representation because we have to remember to apply different theorems during
-replay. For definitions like `Not` and `Xor'`, we just eagerly unfold them. (This could potentially
-cause a blowup issue for `Xor'`, but it isn't used very often anyway. We could add it to the `IProp`
+replay. For definitions like `Not` and `Xor`, we just eagerly unfold them. (This could potentially
+cause a blowup issue for `Xor`, but it isn't used very often anyway. We could add it to the `IProp`
 grammar if it matters.)
 
 ## Tags
@@ -487,7 +487,7 @@ partial def reify (e : Q(Prop)) : AtomM IProp :=
   | ~q($a ∧ $b) => return .and (← reify a) (← reify b)
   | ~q($a ∨ $b) => return .or (← reify a) (← reify b)
   | ~q($a ↔ $b) => return .iff (← reify a) (← reify b)
-  | ~q(Xor' $a $b) => return .xor (← reify a) (← reify b)
+  | ~q(Xor $a $b) => return .xor (← reify a) (← reify b)
   | ~q(@Eq Prop $a $b) => return .eq (← reify a) (← reify b)
   | ~q(@Ne Prop $a $b) => return .not (.eq (← reify a) (← reify b))
   | e =>

@@ -295,6 +295,82 @@ lemma bindOfArrows_ofArrows {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) �
   rintro W u ⟨i, v, ⟨j⟩⟩
   exact ⟨Sigma.mk i j⟩
 
+/-- Compose a presieve on the right with a morphism. -/
+def pushforward {X Y : C} (f : X ⟶ Y) (R : Presieve X) : Presieve Y :=
+  fun Z fg ↦ ∃ (g : Z ⟶ X), g ≫ f = fg ∧ R g
+
+@[grind .]
+lemma pushforward_apply_comp {X Y Z : C} {f : X ⟶ Y} {R : Presieve X} {g : Z ⟶ X} (hg : R g) :
+    R.pushforward f (g ≫ f) :=
+  ⟨g, rfl, hg⟩
+
+lemma pushforward_ofArrows {ι : Type*} {U : ι → C} {X Y : C} (g : ∀ i, U i ⟶ X)
+    (f : X ⟶ Y) : (ofArrows _ g).pushforward f = ofArrows _ (g · ≫ f) := by
+  refine le_antisymm ?_ ?_
+  · rintro _ _ ⟨u, rfl, ⟨i⟩⟩
+    exact ⟨i⟩
+  · rw [ofArrows_le_iff]
+    intro i
+    use g i, rfl
+    exact ⟨i⟩
+
+lemma pushforward_singleton {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (singleton f).pushforward g = .singleton (f ≫ g) := by
+  rw [← ofArrows_pUnit.{_, _, 0}, pushforward_ofArrows, ofArrows_pUnit.{_, _, 0}]
+
+/-- The pullback of a presieve `R` on `Y` along a morphism `f : X ⟶ Y` is the presieve on `X`
+given by all morphisms `g : Z ⟶ X` such that `f ≫ g` is in `R`. -/
+def pullback {X Y : C} (f : X ⟶ Y) (R : Presieve Y) : Presieve X :=
+  fun _ g ↦ R (g ≫ f)
+
+variable {f} in
+@[simp, grind =]
+lemma pullback_iff {R : Presieve X} {Z : C} {g : Z ⟶ Y} :
+    R.pullback f g ↔ R (g ≫ f) :=
+  .rfl
+
+lemma pushforward_le_iff_le_pullback (R : Presieve Y) (T : Presieve X) :
+    R.pushforward f ≤ T ↔ R ≤ T.pullback f := by
+  refine ⟨fun hle Z g hg ↦ hle _ _ (pushforward_apply_comp hg), ?_⟩
+  rintro hle Z - ⟨g, rfl, hg⟩
+  exact hle _ _ hg
+
+lemma galoisConnection_pushforward_pullback :
+    GaloisConnection (pushforward f) (pullback f) :=
+  pushforward_le_iff_le_pullback f
+
+lemma monotone_pushforward : Monotone (pushforward f) :=
+  (galoisConnection_pushforward_pullback f).monotone_l
+
+lemma monotone_pullback : Monotone (pullback f) :=
+  (galoisConnection_pushforward_pullback f).monotone_u
+
+lemma pushforward_pullback_le (R : Presieve X) : (R.pullback f).pushforward f ≤ R :=
+  (galoisConnection_pushforward_pullback f).l_u_le _
+
+lemma le_pullback_pushforward (R : Presieve Y) : R ≤ (R.pushforward f).pullback f :=
+  (galoisConnection_pushforward_pullback f).le_u_l _
+
+@[simp]
+lemma pullback_id (R : Presieve X) : R.pullback (𝟙 X) = R := by
+  funext
+  simp
+
+lemma pullback_comp (R : Presieve Z) (g : X ⟶ Z) :
+    R.pullback (f ≫ g) = (R.pullback g).pullback f := by
+  funext
+  simp
+
+@[simp]
+lemma pushforward_id (R : Presieve X) : R.pushforward (𝟙 X) = R := by
+  funext
+  simp [pushforward]
+
+lemma pushforward_comp (R : Presieve Y) (g : X ⟶ Z) :
+    R.pushforward (f ≫ g) = (R.pushforward f).pushforward g := by
+  funext
+  simp [pushforward]
+
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
 def functorPullback (R : Presieve (F.obj X)) : Presieve X := fun _ f => R (F.map f)
 
@@ -354,6 +430,7 @@ noncomputable def getFunctorPushforwardStructure {F : C ⥤ D} {S : Presieve X} 
   choose Z f' g h₁ h using h
   exact ⟨Z, f', g, h₁, h⟩
 
+set_option backward.defeqAttrib.useBackward true in
 theorem functorPushforward_comp (R : Presieve X) :
     R.functorPushforward (F ⋙ G) = (R.functorPushforward F).functorPushforward G := by
   funext x
@@ -429,11 +506,17 @@ lemma functorPullback_map_functorPullback {X : C} (R : Presieve (F.obj X)) :
 lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
   le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
 
+@[gcongr]
 lemma map_monotone : Monotone (map (X := X) F) :=
   (galoisConnection_map_functorPullback _ _).monotone_l
 
+@[gcongr]
 lemma functorPullback_monotone {X : C} : Monotone (Presieve.functorPullback (X := X) F) :=
-  (Presieve.galoisConnection_map_functorPullback F X).monotone_u
+  (galoisConnection_map_functorPullback F X).monotone_u
+
+@[simp]
+lemma map_bot : map F (⊥ : Presieve X) = ⊥ :=
+  (galoisConnection_map_functorPullback _ _).l_bot
 
 end
 
@@ -455,7 +538,8 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
     obtain ⟨rfl, h⟩ := h; subst h; constructor
 
 @[simp] theorem uncurry_pullbackArrows [HasPullbacks C] {B : C} (b : B ⟶ X) :
-    (pullbackArrows b s).uncurry = (fun f ↦ ⟨pullback f.2 b, pullback.snd _ _⟩) '' s.uncurry := by
+    (pullbackArrows b s).uncurry =
+      (fun f ↦ ⟨Limits.pullback f.2 b, pullback.snd _ _⟩) '' s.uncurry := by
   ext ⟨Z, v⟩; constructor
   · rintro ⟨Y, u, hu⟩; exact ⟨⟨Y, u⟩, hu, rfl⟩
   · rintro ⟨⟨Y, u⟩, hu, h⟩
@@ -707,7 +791,7 @@ lemma generate_eq_bot_iff (R : Presieve X) : generate R = ⊥ ↔ R = ⊥ := by
 lemma comp_mem_iff (i : X ⟶ Y) (f : Y ⟶ Z) [IsIso i] (S : Sieve Z) :
     S (i ≫ f) ↔ S f := by
   refine ⟨fun H ↦ ?_, fun H ↦ S.downward_closed H _⟩
-  convert S.downward_closed H (inv i)
+  convert! S.downward_closed H (inv i)
   simp
 
 section
@@ -860,6 +944,10 @@ lemma pullback_ofObjects {I : Type*} (X : I → C) {Y Z : C} (f : Z ⟶ Y) :
   ext
   simp [Sieve.ofObjects]
 
+@[simp]
+lemma ofObjects_id (X : C) : Sieve.ofObjects id X = ⊤ :=
+  Sieve.pullback_ofObjects_eq_top _ (𝟙 _)
+
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`
 factors through some `g : Z ⟶ Y` which is in `R`.
 -/
@@ -945,6 +1033,19 @@ theorem pullbackArrows_comm {X Y : C} (f : Y ⟶ X) (R : Presieve X) [R.HasPullb
     have := R.hasPullback f hk
     exact ⟨_, _, _, Presieve.pullbackArrows.mk _ _ hk, pullback.lift_snd _ _ comm⟩
 
+lemma pullback_arrows {X Y : C} (f : X ⟶ Y) (S : Sieve Y) :
+    (S.pullback f).arrows = S.arrows.pullback f :=
+  rfl
+
+lemma pushforward_arrows {X Y : C} (f : X ⟶ Y) (S : Sieve X) :
+    (S.pushforward f).arrows = S.arrows.pushforward f :=
+  rfl
+
+lemma generate_pushforward {X Y : C} (f : X ⟶ Y) (R : Presieve X) :
+    generate (R.pushforward f) = (generate R).pushforward f := by
+  ext
+  grind [generate_apply, Presieve.pushforward, pushforward_apply]
+
 section Functor
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
@@ -1011,6 +1112,10 @@ theorem generate_map_eq_functorPushforward {s : Presieve X} :
   ext
   rw [arrows_generate_map_eq_functorPushforward]
   simp [functorPushforward_extend_eq]
+
+lemma functorPushforward_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
+    functorPushforward F (ofArrows Y f) = ofArrows _ fun i : ι ↦ F.map (f i) := by
+  rw [← generate_map_eq_functorPushforward, Presieve.map_ofArrows]
 
 @[simp]
 theorem functorPushforward_id (R : Sieve X) : R.functorPushforward (𝟭 _) = R := by
@@ -1123,6 +1228,7 @@ lemma functorPullback_functorPushforward_eq {X : C} {S : Sieve X} [F.Full] [F.Fa
     Sieve.functorPullback F (Sieve.functorPushforward F S) = S :=
   (Sieve.fullyFaithfulFunctorGaloisCoinsertion _ _).u_l_eq _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma functorPushforward_functor (S : Sieve X) (e : C ≌ D) :
     S.functorPushforward e.functor = (S.pullback (e.unitInv.app X)).functorPullback e.inverse := by
   ext Y iYX
@@ -1187,25 +1293,25 @@ end Functor
 @[simps obj map]
 def functor (S : Sieve X) : Cᵒᵖ ⥤ Type v₁ where
   obj Y := { g : Y.unop ⟶ X // S g }
-  map f := TypeCat.ofHom fun g ↦ ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩
+  map f := ↾fun g ↦ ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩
 
 /-- If a sieve S is contained in a sieve T, then we have a morphism of presheaves on their induced
 presheaves.
 -/
 @[simps]
 def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where
-  app _ := TypeCat.ofHom fun f ↦ ⟨f.1, h _ f.2⟩
+  app _ := ↾fun f ↦ ⟨f.1, h _ f.2⟩
 
 /-- The natural inclusion from the functor induced by a sieve to the yoneda embedding. -/
 @[simps]
 def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where
-  app _ := TypeCat.ofHom (fun f ↦ f.1)
+  app _ := ↾fun f ↦ f.1
 
 /-- Any component `f : Y ⟶ X` of the sieve `S` induces a natural transformation from `yoneda.obj Y`
 to the presheaf induced by `S`. -/
 @[simps]
 def toFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) : yoneda.obj Y ⟶ S.functor where
-  app Z := TypeCat.ofHom fun g ↦ ⟨g ≫ f, S.downward_closed hf g⟩
+  app Z := ↾fun g ↦ ⟨g ≫ f, S.downward_closed hf g⟩
 
 theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     natTransOfLe h ≫ functorInclusion _ = functorInclusion _ :=
@@ -1213,6 +1319,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 
 open ConcreteCategory
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
@@ -1241,7 +1348,7 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
     exact ⟨⟨_, hf⟩, rfl⟩
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
-  ⟨⟨{ app := fun _ => TypeCat.ofHom fun a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app := fun _ => ↾fun a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 /-- A variant of `Sieve.functor` with universe lifting. -/
 abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
@@ -1251,24 +1358,25 @@ abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
 @[simps]
 def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
     Sieve.uliftFunctor.{w} S ⟶ Sieve.uliftFunctor.{w} T where
-  app _ := TypeCat.ofHom fun f ↦ ⟨f.down.1, h _ f.down.2⟩
+  app _ := ↾fun f ↦ ⟨f.down.1, h _ f.down.2⟩
 
 /-- A variant of `Sieve.functorInclusion` with universe lifting. -/
 @[simps! app]
 def uliftFunctorInclusion (S : Sieve X) :
-    S.uliftFunctor ⟶ uliftYoneda.obj.{w} X :=
+    S.uliftFunctor ⟶ uliftYoneda.{w}.obj X :=
   Functor.whiskerRight S.functorInclusion CategoryTheory.uliftFunctor
 
 /-- A variant of `Sieve.toFunctor` with universe lifting. -/
 @[simps]
 def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
-    uliftYoneda.obj.{w} Y ⟶ Sieve.uliftFunctor.{w} S where
-  app Z := TypeCat.ofHom fun g ↦ ⟨g.down ≫ f, S.downward_closed hf g.down⟩
+    uliftYoneda.{w}.obj Y ⟶ Sieve.uliftFunctor.{w} S where
+  app Z := ↾fun g ↦ ⟨g.down ≫ f, S.downward_closed hf g.down⟩
 
 theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
 instance uliftFunctorInclusion_is_mono (S : Sieve X) :
     Mono (Sieve.uliftFunctorInclusion.{w} S) :=
@@ -1279,7 +1387,7 @@ instance uliftFunctorInclusion_is_mono (S : Sieve X) :
 
 /-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
 @[simps]
-def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type (max w v₁)} (f : R ⟶ uliftYoneda.obj.{w} X) :
+def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYoneda.{w}.obj X) :
     Sieve X where
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
   downward_closed := by
@@ -1287,13 +1395,14 @@ def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type (max w v₁)} (f : R ⟶ uliftY
     refine ⟨R.map g.op t, ?_⟩
     simp [ht]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
     Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
   cat_disch
 
 instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
-  ⟨⟨{ app := fun _ ↦ TypeCat.ofHom fun a ↦ ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app := fun _ ↦ ↾fun a ↦ ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
     {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}
@@ -1316,6 +1425,7 @@ def shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
   map {Y Z} g f hf := by
     simpa [shrinkYonedaObjObjEquiv_obj_map] using S.downward_closed hf _
 
+set_option backward.defeqAttrib.useBackward true in
 variable (S) in
 /-- `Sieve.shrinkFunctor` is compatible with universe lifting. -/
 noncomputable
@@ -1342,6 +1452,7 @@ lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{ma
       shrinkYonedaUliftFunctorIso.{w, w'}.inv.app X :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable (S) in
 /-- Shrinking does nothing for the same universe level. -/
 @[simps! hom_app inv_app]
