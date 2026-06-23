@@ -913,13 +913,16 @@ lemma meromorphicOrderAt_deriv_eq_sub_one [CompleteSpace E] {f : 𝕜 → E} {x 
   filter_upwards [hga.eventually_analyticAt.filter_mono (nhdsWithin_le_nhds),
     eventually_mem_nhdsWithin, hg.nhdsNE_deriv] with z hgz hmem hz
   have hzx : z - x ≠ 0 := by simpa [sub_eq_zero] using hmem
-  rw [hz, deriv_fun_smul (DifferentiableAt.zpow (by fun_prop) (Or.inl (by exact hzx)))
-    hgz.differentiableAt, smul_add, smul_smul, smul_smul, ← zpow_add_one₀ hzx, sub_add_cancel,
-    add_comm, mul_comm]
-  congr
-  suffices deriv ((· ^ n) ∘ (· - x)) z = n * (z - x) ^ (n - 1) by simpa
-  rw [deriv_comp _ (DifferentiableAt.zpow (by fun_prop) (Or.inl (by exact hzx))) (by fun_prop)]
-  simp [deriv_zpow]
+  calc
+    deriv f z = deriv (fun z ↦ (z - x) ^ n • g z) z :=
+      hz
+    _ = (z - x) ^ n • deriv g z + deriv ((· ^ n) ∘ (· - x)) z • g z :=
+      deriv_fun_smul (by fun_prop (disch := grind)) hgz.differentiableAt
+    _ = (z - x) ^ n • deriv g z + (n * (z - x) ^ (n - 1)) • g z := by
+      rw [deriv_comp _ (by fun_prop (disch := grind)) (by fun_prop)]
+      simp [deriv_zpow]
+    _ = (z - x) ^ (n - 1) • ((n : 𝕜) • g z + (z - x) • deriv g z) := by
+      simp [smul_smul, ← zpow_add_one₀ hzx, add_comm, mul_comm]
 
 /-- Equivalent to `meromorphicOrderAt_deriv_eq_sub_one` with a slightly different statement so the
 conclusion matches more targets -/

@@ -168,17 +168,21 @@ theorem iter_deriv_inv_linear_sub (k : ℕ) (c d : 𝕜) :
 
 variable {f : E → 𝕜} {t : Set E} {a : E}
 
+@[fun_prop]
 theorem DifferentiableWithinAt.zpow (hf : DifferentiableWithinAt 𝕜 f t a) (h : f a ≠ 0 ∨ 0 ≤ m) :
     DifferentiableWithinAt 𝕜 (fun x => f x ^ m) t a :=
   (differentiableAt_zpow.2 h).comp_differentiableWithinAt a hf
 
+@[fun_prop]
 theorem DifferentiableAt.zpow (hf : DifferentiableAt 𝕜 f a) (h : f a ≠ 0 ∨ 0 ≤ m) :
     DifferentiableAt 𝕜 (fun x => f x ^ m) a :=
   (differentiableAt_zpow.2 h).comp a hf
 
+@[fun_prop]
 theorem DifferentiableOn.zpow (hf : DifferentiableOn 𝕜 f t) (h : (∀ x ∈ t, f x ≠ 0) ∨ 0 ≤ m) :
     DifferentiableOn 𝕜 (fun x => f x ^ m) t := fun x hx =>
   (hf x hx).zpow <| h.imp_left fun h => h x hx
 
+@[fun_prop]
 theorem Differentiable.zpow (hf : Differentiable 𝕜 f) (h : (∀ x, f x ≠ 0) ∨ 0 ≤ m) :
     Differentiable 𝕜 fun x => f x ^ m := fun x => (hf x).zpow <| h.imp_left fun h => h x
