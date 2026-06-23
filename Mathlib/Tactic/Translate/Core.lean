@@ -988,13 +988,15 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
 /-- A version of `insertTranslation` that checks whether the translation is valid, and only
 inserts the translation if it is valid. -/
 def insertTranslationChecked (t : TranslateData) (src tgt : Name) (cfg : Config) : CoreM Unit := do
-  try
-    let (reorder, relevantArg) ← MetaM.run' <| checkExistingType t src tgt cfg (lint := false)
-    insertTranslation t src tgt reorder relevantArg cfg.ref
-  catch ex =>
-    Linter.logLintIf linter.translate.warnInvalid cfg.ref m!"\
-      @[{t.attrName}] failed to add a translation from `{.ofConstName src}` to \
-      `{.ofConstName tgt}`. Please add a translation manually. Error:\n\n{ex.toMessageData}"
+  let (reorder, relevantArg) ←
+    try
+      checkExistingType t src tgt cfg (lint := false) |>.run'
+    catch ex =>
+      Linter.logLintIf linter.translate.warnInvalid cfg.ref m!"\
+        @[{t.attrName}] failed to add a translation from `{.ofConstName src}` to \
+        `{.ofConstName tgt}`. Please add a translation manually. Error:\n\n{ex.toMessageData}"
+      return
+  insertTranslation t src tgt reorder relevantArg cfg.ref
 
 /-- `translateLemmas` runs `runAttr` on all elements of `names` and adds translations between
 the generated lemmas (the output of `t`).  `names` must be non-empty. -/
