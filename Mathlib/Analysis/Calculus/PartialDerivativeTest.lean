@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Bjørn Kjos-Hanssen. All rights reserved.
+Copyright (c) 2026 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Analytic.IteratedFDeriv
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+
 /-!
 # The Second Partial Derivatives Test
 
@@ -52,12 +53,11 @@ noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
     (fun _ _ _ ↦ by
         simp_rw [Matrix.vecCons, succ_eq_add_one, reduceAdd, ← curryLeft_apply,
           map_add]
-        simp only [curryLeft_apply, succ_eq_add_one, reduceAdd, Matrix.Fin.cons_vecEmpty,
-          ContinuousMultilinearMap.add_apply, Matrix.Fin.cons_vecCons]
+        simp
         abel) (by
         simp_rw [Matrix.vecCons, ← curryLeft_apply]
-        simp only [map_smul, curryLeft_apply, succ_eq_add_one, reduceAdd, Matrix.Fin.cons_vecEmpty,
-          ContinuousMultilinearMap.smul_apply, Matrix.Fin.cons_vecCons, smul_eq_mul]
+        simp only [map_smul, curryLeft_apply, succ_eq_add_one, reduceAdd,
+          ContinuousMultilinearMap.smul_apply, smul_eq_mul]
         ring_nf
         simp) (fun _ _ _ ↦ by
         simp_rw [Matrix.vecCons, succ_eq_add_one, reduceAdd, ← curryLeft_apply,
@@ -66,7 +66,7 @@ noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
         abel) (by
         simp_rw [Matrix.vecCons, ← curryLeft_apply]
         simp only [map_smul, ContinuousMultilinearMap.smul_apply, curryLeft_apply, succ_eq_add_one,
-          reduceAdd, Matrix.Fin.cons_vecEmpty, Matrix.Fin.cons_vecCons, smul_eq_mul]
+          reduceAdd, smul_eq_mul]
         simp_rw [← mul_add]
         simp)
 
@@ -156,7 +156,7 @@ theorem QuadraticMap.toMultilinearMap_continuous {V : Type*}
   have h_bilinear : ∃ B : V →ₗ[ℝ] V →L[ℝ] ℝ, ∀ x y, B x y = Q.toMultilinearMap ![x, y] := by
     have h_bilinear : ∃ B : V →ₗ[ℝ] V →L[ℝ] ℝ, ∀ x y, B x y = Q.polarBilin x y := by
       have h_bilinear : ∀ x : V, ∃ Bx : V →L[ℝ] ℝ, ∀ y : V, Bx y = Q.polarBilin x y := by
-        exact fun x => ⟨ ContinuousLinearMap.mk ( Q.polarBilin x ), fun y => rfl ⟩
+        exact fun x => ⟨ ContinuousLinearMap.mk (Q.polarBilin x), fun y => rfl ⟩
       choose B hB using h_bilinear;
       refine ⟨ { toFun := B, map_add' := ?_, map_smul' := ?_ }, hB ⟩ <;> aesop;
     aesop;
@@ -164,7 +164,7 @@ theorem QuadraticMap.toMultilinearMap_continuous {V : Type*}
   obtain ⟨B, hB⟩ := h_bilinear;
   have hB_cont : Continuous B := by
     exact B.continuous_of_finiteDimensional;
-  convert hB_cont.comp ( show Continuous fun v : Fin 2 → V => v 0 from continuous_apply 0 ) |>
+  convert hB_cont.comp (show Continuous fun v : Fin 2 → V => v 0 from continuous_apply 0) |>
     Continuous.clm_apply <|
       show Continuous fun v : Fin 2 → V => v 1 from continuous_apply 1 using 1; aesop
 
@@ -200,14 +200,17 @@ theorem QuadraticMap.toMultilinearMapHalfPolarBilin_continuous {V : Type*}
         simp_all only [one_div, polarBilin_apply_apply]
         ext i
         rw [hB (x+y) i]
-        simp only [polar_add_left, _root_.add_apply]
+        simp only [polar_add_left]
+        rw [_root_.add_apply]
         rw [hB x i, hB y i]
         linarith
       intro m x
       ext y
       rw [hB (m • x)]
       simp only [one_div, map_smul, LinearMap.smul_apply, polarBilin_apply_apply, smul_eq_mul,
-        RingHom.id_apply, FunLike.coe_smul', Pi.smul_apply]
+        RingHom.id_apply]
+      rw [FunLike.coe_smul]
+      simp only [Pi.smul_apply]
       rw [hB]
       simp
       linarith
@@ -221,7 +224,7 @@ theorem QuadraticMap.toMultilinearMapHalfPolarBilin_continuous {V : Type*}
   obtain ⟨B, hB⟩ := h_bilinear;
   have hB_cont : Continuous B := by
     exact B.continuous_of_finiteDimensional;
-  convert hB_cont.comp ( show Continuous fun v : Fin 2 → V => v 0 from continuous_apply 0 ) |>
+  convert hB_cont.comp (show Continuous fun v : Fin 2 → V => v 0 from continuous_apply 0) |>
     Continuous.clm_apply <|
       show Continuous fun v : Fin 2 → V => v 1 from continuous_apply 1 using 1; aesop
 
@@ -256,6 +259,15 @@ theorem QuadraticMap.toContinuousMultilinearMap_applyHalf {V : Type*} [NormedAdd
     rfl
 
 
+/-- On a subsingleton space every continuous bilinear map is coercive (vacuously). -/
+@[nontriviality]
+lemma isCoercive_of_subsingleton {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [Subsingleton V] (B : V →L[ℝ] V →L[ℝ] ℝ) : IsCoercive B := by
+  refine ⟨1, one_pos, fun u => ?_⟩
+  have : u = 0 := Subsingleton.elim _ _
+  subst this
+  simp
+
 /-- . -/
 lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {F : QuadraticMap ℝ V ℝ}
@@ -270,7 +282,8 @@ lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
     obtain ⟨x,hx⟩ := IsCompact.exists_isMinOn
       (f := (fun y => F.toContinuousMultilinearMapHalfPolarBilin ![y, y]))
       (isCompact_sphere (0:V) 1) (NormedSpace.sphere_nonempty.mpr (by simp))
-      (Continuous.continuousOn <| by fun_prop)
+      (Continuous.continuousOn <| F.toContinuousMultilinearMapHalfPolarBilin.cont.comp'
+        (continuous_id'.matrixVecCons (continuous_id'.matrixVecCons continuous_const)))
     use ⟨x,hx.1⟩
     intro y
     simp only [mem_sphere_iff_norm, sub_zero, IsMinOn, IsMinFilter,
@@ -333,9 +346,9 @@ lemma polarBilin_iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V] [
     (iteratedFDerivQuadraticMap f x₀).polarBilin x y
       = iteratedFDeriv ℝ 2 f x₀ ![x, y] + iteratedFDeriv ℝ 2 f x₀ ![y, x] := by
   unfold iteratedFDerivQuadraticMap;
-  simp +decide [ QuadraticMap.polarBilin, QuadraticMap.polar ];
-  simp +decide [ iteratedFDeriv_succ_apply_right, sub_eq_iff_eq_add ];
-  simp +decide [ Fin.init ];
+  simp +decide [QuadraticMap.polarBilin, QuadraticMap.polar];
+  simp +decide [iteratedFDeriv_succ_apply_right, sub_eq_iff_eq_add];
+  simp +decide [Fin.init];
   ring
 
 /--
@@ -345,11 +358,11 @@ lemma iteratedFDeriv_two_swap {V : Type*} [NormedAddCommGroup V] [NormedSpace �
     {f : V → ℝ} {x₀ : V} (hf : ContDiffAt ℝ ⊤ f x₀) (x y : V) :
     iteratedFDeriv ℝ 2 f x₀ ![y, x] = iteratedFDeriv ℝ 2 f x₀ ![x, y] := by
   convert hf.isSymmSndFDerivAt le_top using 1;
-  rw [ isSymmSndFDerivAt_iff_iteratedFDeriv ];
+  rw [isSymmSndFDerivAt_iff_iteratedFDeriv];
   constructor <;> intro h;
   · convert hf.isSymmSndFDerivAt le_top using 1;
-    rw [ isSymmSndFDerivAt_iff_iteratedFDeriv ];
-  · convert congr_arg ( fun g => g ![y, x] ) h.symm using 1;
+    rw [isSymmSndFDerivAt_iff_iteratedFDeriv];
+  · convert congr_arg (fun g => g ![y, x]) h.symm using 1;
     simp only [domDomCongr_apply, Fin.revPerm_apply]
     exact congr_arg _ (by ext i; fin_cases i <;> rfl)
 
@@ -392,7 +405,8 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
       y.1 := by
     obtain ⟨x,hx⟩ := IsCompact.exists_isMinOn (f := (fun y => (iteratedFDeriv ℝ 2 f x₀) ![y, y]))
       (isCompact_sphere (0:V) 1) (NormedSpace.sphere_nonempty.mpr (by simp))
-      (Continuous.continuousOn <| by fun_prop)
+      (Continuous.continuousOn <| (iteratedFDeriv ℝ 2 f x₀).cont.comp'
+        (continuous_id'.matrixVecCons (continuous_id'.matrixVecCons continuous_const)))
     use ⟨x,hx.1⟩
     intro y
     simp only [mem_sphere_iff_norm, sub_zero, IsMinOn, IsMinFilter,
@@ -510,3 +524,176 @@ theorem second_derivative_test {V : Type*} [NormedAddCommGroup V] [InnerProductS
   have h₄ (x : V) := congrArg (HSub.hSub (f x)) (h₃ x)
   exact isLocalMin_of_posDef_of_littleo (funext_iff.mpr h₄ ▸ littleO_of_powerseries h₁) h₀
     h₁.analyticAt.contDiffAt hf
+
+/--
+A more convenient form of the second partial derivative test: it suffices that `f`
+is analytic at `x₀` (so that an explicit power series need not be produced by hand).
+-/
+theorem second_derivative_test_analyticAt {V : Type*} [NormedAddCommGroup V]
+    [InnerProductSpace ℝ V] [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
+    (h₀ : gradient f x₀ = 0) (han : AnalyticAt ℝ f x₀)
+    (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
+  obtain ⟨p, r, hr⟩ := han
+  obtain ⟨r', hr'0, hr'lt⟩ := ENNReal.lt_iff_exists_nnreal_btwn.mp hr.r_pos
+  exact second_derivative_test h₀ (hr.mono (by exact_mod_cast hr'0) hr'lt.le) hf
+
+/-
+The order-`≤ 2` Taylor sum of `f` at `x₀`, evaluated on the diagonal `x - x₀`,
+written out explicitly in terms of the first and second Fréchet derivatives.
+-/
+lemma taylorSum_three_eq {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    (f : V → ℝ) (x₀ x : V) :
+    ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ (fun _ => x - x₀)
+      = f x₀ + fderiv ℝ f x₀ (x - x₀)
+        + (1 / 2) * (fderiv ℝ (fderiv ℝ f) x₀ (x - x₀)) (x - x₀) := by
+  norm_num [Finset.sum_range_succ, Nat.factorial];
+  rw [iteratedFDeriv_succ_apply_right]; ring_nf;
+  rw [iteratedFDeriv_succ_apply_right]; simp +decide [Fin.init]; ring!;
+
+/-
+A `C²` function is differentiable in a neighbourhood of `x₀`.
+-/
+lemma eventually_differentiableAt_of_contDiffAt {V : Type*} [NormedAddCommGroup V]
+    [NormedSpace ℝ V] {f : V → ℝ} {x₀ : V} (hf : ContDiffAt ℝ 2 f x₀) :
+    ∀ᶠ y in nhds x₀, DifferentiableAt ℝ f y := by
+  obtain ⟨U, hU⟩ : ∃ U : Set V, IsOpen U ∧ x₀ ∈ U ∧ ∀ y ∈ U, ContDiffAt ℝ 2 f y := by
+    have h_cont_diff : ContDiffAt ℝ 2 f x₀ := hf
+    have := h_cont_diff.eventually;
+    exact Exists.imp (by tauto) (mem_nhds_iff.mp (this (by decide)));
+  filter_upwards [hU.1.mem_nhds hU.2.1] with y hy using (hU.2.2 y hy
+    |> ContDiffAt.differentiableAt) (by norm_num)
+
+/-
+For a `C²` function the first derivative `fderiv ℝ f` is differentiable at `x₀`,
+with derivative the second Fréchet derivative `fderiv ℝ (fderiv ℝ f) x₀`.
+-/
+lemma hasFDerivAt_fderiv_of_contDiffAt {V : Type*} [NormedAddCommGroup V]
+    [NormedSpace ℝ V] {f : V → ℝ} {x₀ : V} (hf : ContDiffAt ℝ 2 f x₀) :
+    HasFDerivAt (fderiv ℝ f) (fderiv ℝ (fderiv ℝ f) x₀) x₀ := by
+  have h_diff : ContDiffAt ℝ 1 (fderiv ℝ f) x₀ := by
+    exact hf.fderiv_right (by norm_num);
+  convert h_diff.differentiableAt (by norm_num) |> DifferentiableAt.hasFDerivAt using 1
+
+/-
+Symmetry (Schwarz) of the second Fréchet derivative for `C²` functions.
+-/
+lemma fderiv_fderiv_symm_of_contDiffAt {V : Type*} [NormedAddCommGroup V]
+    [NormedSpace ℝ V] {f : V → ℝ} {x₀ : V} (hf : ContDiffAt ℝ 2 f x₀) (a b : V) :
+    (fderiv ℝ (fderiv ℝ f) x₀ a) b = (fderiv ℝ (fderiv ℝ f) x₀ b) a := by
+  -- Apply the fact that the second derivative is symmetric for C² functions.
+  apply (hf.isSymmSndFDerivAt (by norm_num)).eq
+
+/-
+The Fréchet derivative of the quadratic form `z ↦ (1/2) B (z - x₀) (z - x₀)`
+associated to a symmetric continuous bilinear map `B`, at the point `y`, is `B (y - x₀)`.
+-/
+lemma hasFDerivAt_quadratic_symm {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    (B : V →L[ℝ] V →L[ℝ] ℝ) (hB : ∀ a b, (B a) b = (B b) a) (x₀ y : V) :
+    HasFDerivAt (fun z : V => (1 / 2 : ℝ) * (B (z - x₀)) (z - x₀)) (B (y - x₀)) y := by
+  convert HasFDerivAt.const_mul (HasFDerivAt.clm_apply (B.hasFDerivAt.comp y (hasFDerivAt_id y
+    |> HasFDerivAt.sub <| hasFDerivAt_const x₀ y)) (hasFDerivAt_id y |> HasFDerivAt.sub
+    <| hasFDerivAt_const x₀ y)) _ using 1;
+  all_goals try rfl
+  ext; simp +decide [hB]; ring
+
+/-
+Mean-value estimate: if `g x₀ = 0`, `g` has derivative `g' y` at every point `y` in a
+neighbourhood of `x₀`, and `g'` is `o(‖· - x₀‖)`, then `g` itself is `o(‖· - x₀‖²)`.
+-/
+lemma isLittleO_sq_of_hasFDerivAt {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {g : V → ℝ} {g' : V → V →L[ℝ] ℝ} {x₀ : V} (hg0 : g x₀ = 0)
+    (hg : ∀ᶠ y in nhds x₀, HasFDerivAt g (g' y) y)
+    (hd : g' =o[nhds x₀] fun y => ‖y - x₀‖) :
+    (fun x => g x) =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2 := by
+  rw [Asymptotics.isLittleO_iff] at *;
+  intro c hc
+  obtain ⟨δ, hδ_pos, hδ⟩ :
+    ∃ δ > 0, ∀ x, ‖x - x₀‖ < δ → ‖g' x‖ ≤ c * ‖x - x₀‖ ∧ HasFDerivAt g (g' x) x := by
+    obtain ⟨ δ, hδ ⟩ := Metric.mem_nhds_iff.mp (hg.and (hd hc));
+    exact ⟨ δ, hδ.1, fun x hx => ⟨ by simpa using hδ.2 (mem_ball_iff_norm.mpr hx)
+      |>.2, hδ.2 (mem_ball_iff_norm.mpr hx) |>.1 ⟩ ⟩;
+  filter_upwards [Metric.ball_mem_nhds x₀ hδ_pos] with x hx;
+  have h_segment : ∀ z ∈ segment ℝ x₀ x, ‖g' z‖ ≤ c * ‖x - x₀‖ ∧ HasFDerivAt g (g' z) z := by
+    intro z hz
+    have hz_norm : ‖z - x₀‖ ≤ ‖x - x₀‖ := by
+      rw [segment_eq_image] at hz;
+      rcases hz with ⟨ θ, ⟨ hθ₀, hθ₁ ⟩, rfl ⟩;
+      rw [
+          show (1 - θ) • x₀ + θ • x - x₀ = θ • (x - x₀) by
+            simp only [sub_smul, one_smul, smul_sub]; abel1]
+      rw [norm_smul, Real.norm_of_nonneg hθ₀]; exact mul_le_of_le_one_left (norm_nonneg _) hθ₁
+    have hz_ball : ‖z - x₀‖ < δ := by
+      exact lt_of_le_of_lt hz_norm (by simpa [dist_eq_norm] using hx)
+    exact ⟨by
+    exact le_trans (hδ z hz_ball |>.1)
+      (mul_le_mul_of_nonneg_left hz_norm hc.le), hδ z hz_ball |>.2⟩;
+  have := @Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le;
+  specialize this (fun z hz => HasFDerivAt.hasFDerivWithinAt (h_segment z hz |>.2))
+    (fun z hz => h_segment z hz |>.1) (convex_segment x₀ x)
+      (left_mem_segment _ _ _) (right_mem_segment _ _ _); simp_all +decide [norm_pow];
+  linarith
+
+/-
+Second-order Taylor approximation with `o(‖· - x₀‖²)` remainder, assuming only that `f`
+is `C²` at `x₀`.
+-/
+lemma littleO_of_contDiffAt {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {f : V → ℝ} {x₀ : V} (hf : ContDiffAt ℝ 2 f x₀) :
+    (fun x => f x - ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀)
+      =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2 := by
+  have h_simp : (fun x => f x - (f x₀ + (fderiv ℝ f x₀) (x - x₀)
+    + (1 / 2) * (fderiv ℝ (fderiv ℝ f) x₀ (x - x₀)) (x - x₀)))
+      =o[nhds x₀] (fun x => ‖x - x₀‖ ^ 2) := by
+    apply_rules [isLittleO_sq_of_hasFDerivAt];
+    · grind
+    any_goals exact fun y => fderiv ℝ f y - fderiv ℝ f x₀ - (fderiv ℝ (fderiv ℝ f) x₀) (y - x₀);
+    · have h_diff : ∀ᶠ y in nhds x₀, DifferentiableAt ℝ f y :=
+        eventually_differentiableAt_of_contDiffAt hf
+      filter_upwards [h_diff] with y hy;
+      convert HasFDerivAt.sub (hy.hasFDerivAt) (HasFDerivAt.add
+        (HasFDerivAt.add (hasFDerivAt_const _ y) (HasFDerivAt.comp y (fderiv ℝ f x₀ |>
+          ContinuousLinearMap.hasFDerivAt) (hasFDerivAt_id y |> HasFDerivAt.sub
+            <| hasFDerivAt_const x₀ y))) (HasFDerivAt.const_mul (HasFDerivAt.comp y
+              (ContinuousLinearMap.hasFDerivAt _) (hasFDerivAt_id y |> HasFDerivAt.sub
+                <| hasFDerivAt_const x₀ y) |> HasFDerivAt.clm_apply <| hasFDerivAt_id y
+                  |> HasFDerivAt.sub <| hasFDerivAt_const x₀ y) _)) using 1
+      all_goals try rfl
+      ring_nf!;
+      ext; simp +decide [fderiv_fderiv_symm_of_contDiffAt hf]; ring;
+    · have h₀ := hasFDerivAt_fderiv_of_contDiffAt hf
+      rw [Asymptotics.isLittleO_norm_right]
+      have h₁ := hasFDerivAtFilter_iff_isLittleO.mp h₀
+      simp only [Filter.prod_pure, map_sub, Asymptotics.isLittleO_map] at h₁
+      convert h₁
+      any_goals try rfl
+      simp
+  grind +suggestions
+
+/-- Variant of `isLocalMin_of_posDef_of_littleo` that does not require any global
+differentiability of `f` (only the little-`o` quadratic approximation). -/
+lemma isLocalMin_of_posDef_of_littleo_c2 {V : Type*} [NormedAddCommGroup V]
+    [InnerProductSpace ℝ V] [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
+    (h : (fun x => f x - ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀)
+      =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2) (h₀ : gradient f x₀ = 0)
+    (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
+  have ⟨C, hC⟩ := coercive_of_posdef hf
+  simp only [Asymptotics.IsLittleO, Asymptotics.IsBigOWith] at h
+  apply (h (half_pos hC.1)).mono
+  intro x
+  have hx := hC.2 (x - x₀)
+  simp only [continuousBilinearMapOfContinuousMultilinearMap, MultilinearMap.toFun_eq_coe,
+    coe_coe, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
+    AddHom.coe_mk] at hx
+  rw [mul_assoc, show ![x - x₀, x - x₀] = fun _ => x - x₀ by
+    ext i; fin_cases i <;> simp] at hx
+  have hx₀ : inner ℝ (gradient f x₀) (x - x₀) = fderiv ℝ f x₀ (x - x₀) := by simp [gradient]
+  simp only [h₀, inner_zero_left, map_sub] at hx₀
+  simp only [norm_pow, norm_norm]
+  rw [← pow_two] at hx
+  exact le_of_littleO hx <| sub_eq_zero.mp hx₀.symm
+
+theorem second_derivative_test_contDiffAt {V : Type*} [NormedAddCommGroup V]
+    [InnerProductSpace ℝ V] [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
+    (h₀ : gradient f x₀ = 0) (han : ContDiffAt ℝ 2 f x₀)
+    (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ :=
+  isLocalMin_of_posDef_of_littleo_c2 (littleO_of_contDiffAt han) h₀ hf
