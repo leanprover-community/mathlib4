@@ -499,6 +499,23 @@ theorem ofLinearMap_symm {h₁ h₂} :
 @[simp]
 theorem toLinearMap_ofLinearMap {h₁ h₂} : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
+@[deprecated coe_ofLinearMap (since := "2026-06-23")]
+theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
+  rfl
+
+@[deprecated "Follows from simp lemmas `ofLinearMap_symm` and `coe_ofLinearMap`"
+  (since := "2026-06-23")]
+theorem ofLinear_symm_apply {h₁ h₂} (x : M₂) :
+    (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm x = g x :=
+  rfl
+
+@[deprecated "Follows from simp lemmas `ofLinearMap_symm` and `toLinearMap_ofLinearMap`"
+  (since := "2026-06-23")]
+theorem ofLinear_symm_toLinearMap {h₁ h₂} : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = g := rfl
+
+@[deprecated toLinearMap_ofLinearMap (since := "2026-06-23")]
+theorem ofLinear_toLinearMap {h₁ h₂} : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
+
 end
 
 end AddCommMonoid
