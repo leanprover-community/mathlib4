@@ -143,9 +143,12 @@ noncomputable def natTransPInfty : alternatingFaceMapComplex C ⟶ alternatingFa
     exact PInfty_f_naturality n f
 
 /-- The natural transformation in each degree that is induced by `natTransPInfty`. -/
-@[simps!]
 noncomputable def natTransPInfty_f (n : ℕ) :=
   natTransPInfty C ◫ 𝟙 (HomologicalComplex.eval _ _ n)
+
+@[simp]
+lemma natTransPInfty_f_app (n : ℕ) : (natTransPInfty_f C n).app X = PInfty.f n := by
+  simp [natTransPInfty_f]
 
 variable {C}
 
