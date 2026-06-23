@@ -184,7 +184,7 @@ theorem commutator_comm : ⁅H₁, H₂⁆ = ⁅H₂, H₁⁆ :=
   le_antisymm (commutator_comm_le H₁ H₂) (commutator_comm_le H₂ H₁)
 
 @[to_additive]
-theorem commutator_self_eq_bot : ⁅H, H⁆ = ⊥ ↔ IsMulCommutative H := by
+theorem commutator_self_eq_bot_iff : ⁅H, H⁆ = ⊥ ↔ IsMulCommutative H := by
   rw [commutator_eq_bot_iff_le_centralizer, le_centralizer_iff_isMulCommutative]
 
 @[to_additive (attr := simp)]

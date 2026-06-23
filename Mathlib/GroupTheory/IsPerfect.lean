@@ -123,7 +123,7 @@ theorem lowerCentralSeries_eq_top (H : Subgroup G) [IsPerfect H] (n : ℕ) :
 variable (G) in
 @[simp]
 theorem upperCentralSeries_eq_center [IsPerfect G] {n : ℕ} (hn : n ≠ 0) :
-    .upperCentralSeries G n = center G := by
+    Subgroup.upperCentralSeries G n = center G := by
   rw [← Subgroup.upperCentralSeries_one, eq_comm]
   apply Subgroup.upperCentralSeries.eq_ge_of_eq_succ <| by lia
   apply le_antisymm <| Subgroup.upperCentralSeries_mono G one_le_two
