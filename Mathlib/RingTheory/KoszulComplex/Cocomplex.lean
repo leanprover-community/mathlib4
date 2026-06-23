@@ -160,7 +160,8 @@ noncomputable def topXLinearEquivOfBasisOfList (l : List R) :
 lemma X_isZero_of_card_generators_le (x : M) {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulCocomplex R x).X i) :=
-  ModuleCat.isZero_of_iff_subsingleton.mpr (subsingleton_of_card_generators_le R M g hg i hi)
+  ModuleCat.isZero_of_iff_subsingleton.mpr
+    (exteriorPower.subsingleton_of_card_generators_le g hg i hi)
 
 lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((koszulCocomplex.ofList R l).X i) :=
