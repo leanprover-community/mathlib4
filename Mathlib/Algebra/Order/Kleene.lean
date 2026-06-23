@@ -320,43 +320,46 @@ namespace Function.Injective
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemSemiring` instance along an injective function. -/
-protected abbrev idemSemiring [IdemSemiring α] [LE β] [LT β] [Zero β] [One β]
-    [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α)
+protected abbrev idemSemiring [IdemSemiring α] [LE β] [LT β] [Zero β] [One β] [Add β] [Mul β]
+    [Pow β ℕ+] [Pow β ℕ] [SMul ℕ+ β] [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α)
     (hf : Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (ppow : ∀ (x) (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
     IdemSemiring β where
-  __ := hf.semiring f zero one add mul nsmul npow natCast
+  __ := hf.semiring f zero one add mul psmul nsmul ppow npow natCast
   __ := hf.semilatticeSup f le lt sup
   add_eq_sup a b := hf <| by rw [sup, add, add_eq_sup]
   bot_le a := le.1 <| bot.trans_le bot_le
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
-protected abbrev idemCommSemiring [IdemCommSemiring α] [LE β] [LT β] [Zero β] [One β]
-    [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α)
+protected abbrev idemCommSemiring [IdemCommSemiring α] [LE β] [LT β] [Zero β] [One β] [Add β]
+    [Mul β] [Pow β ℕ+] [Pow β ℕ] [SMul ℕ+ β] [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α)
     (hf : Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (ppow : ∀ (x) (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
     IdemCommSemiring β where
-  __ := hf.commSemiring f zero one add mul nsmul npow natCast
-  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup bot
+  __ := hf.commSemiring f zero one add mul psmul nsmul ppow npow natCast
+  __ := hf.idemSemiring f le lt zero one add mul psmul nsmul ppow npow natCast sup bot
 
 -- See note [reducible non-instances]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
-protected abbrev kleeneAlgebra [KleeneAlgebra α] [LE β] [LT β] [Zero β] [One β]
-    [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Max β] [Bot β] [KStar β] (f : β → α)
+protected abbrev kleeneAlgebra [KleeneAlgebra α] [LE β] [LT β] [Zero β] [One β] [Add β] [Mul β]
+    [Pow β ℕ+] [Pow β ℕ] [SMul ℕ+ β] [SMul ℕ β] [NatCast β] [Max β] [Bot β] [KStar β] (f : β → α)
     (hf : Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (ppow : ∀ (x) (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
     (kstar : ∀ a, f a∗ = (f a)∗) : KleeneAlgebra β where
-  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup bot
+  __ := hf.idemSemiring f le lt zero one add mul psmul nsmul ppow npow natCast sup bot
   one_le_kstar a := by
     rw [← le, one, kstar]
     exact one_le_kstar
