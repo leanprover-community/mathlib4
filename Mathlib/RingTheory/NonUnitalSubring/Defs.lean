@@ -68,14 +68,14 @@ namespace NonUnitalSubringClass
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance (priority := 75) toNonUnitalNonAssocRing : NonUnitalNonAssocRing s := fast_instance%
   Subtype.val_injective.nonUnitalNonAssocRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance (priority := 75) toNonUnitalRing {R : Type*} [NonUnitalRing R] [SetLike S R]
     [NonUnitalSubringClass S R] (s : S) : NonUnitalRing s := fast_instance%
   Subtype.val_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a `NonUnitalNonAssocCommRing` is a `NonUnitalNonAssocCommRing`. -/
@@ -83,14 +83,14 @@ instance (priority := 75) toNonUnitalNonAssocCommRing {R} [NonUnitalNonAssocComm
     [SetLike S R] [NonUnitalSubringClass S R] (s : S) :
     NonUnitalNonAssocCommRing s := fast_instance%
   Subtype.val_injective.nonUnitalNonAssocCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance (priority := 75) toNonUnitalCommRing {R} [NonUnitalCommRing R] [SetLike S R]
     [NonUnitalSubringClass S R] : NonUnitalCommRing s := fast_instance%
   Subtype.val_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural non-unital ring hom from a non-unital subring of a non-unital ring `R` to `R`. -/
 def subtype (s : S) : s →ₙ+* R :=
