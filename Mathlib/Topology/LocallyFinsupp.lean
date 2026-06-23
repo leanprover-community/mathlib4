@@ -657,6 +657,21 @@ Present a function with with finite support as a finsum of singleton indicator f
   · aesop
   · aesop
 
+/--
+Present a function with with finite support on univ as a finsum of singleton indicator functions.
+-/
+@[simp] lemma sum_apply_smul_single_eq_self_on_univ [DecidableEq X] [AddCommMonoid X]
+    {D : locallyFinsupp X ℤ} (h : D.support.Finite) :
+    ∑ z ∈ h.toFinset, single z (D z) = D := by
+  ext w
+  simp only [coe_sum, Finset.sum_apply, single_apply, Finset.sum_ite_eq]
+  set s := h.toFinset with hs
+  by_cases hw : w ∈ s
+  · simp [hw]
+  · simp only [hw, if_false]
+    have : w ∉ support D := by simpa only [hs, Set.Finite.mem_toFinset] using hw
+    exact (notMem_support.mp this).symm
+
 /-- Restriction as a lattice morphism -/
 noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h : V ⊆ U) :
     LatticeHom (locallyFinsuppWithin U Y) (locallyFinsuppWithin V Y) where

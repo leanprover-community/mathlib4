@@ -1407,7 +1407,7 @@ section Sum
 
 variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 
-theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
+theorem IsBigOWith.fun_sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
     IsBigOWith (∑ i ∈ s, C i) l (fun x => ∑ i ∈ s, A i x) g := by
   induction s using Finset.cons_induction with
   | empty => simp only [isBigOWith_zero', Finset.sum_empty]
@@ -1415,14 +1415,27 @@ theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
     simp only [Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
     exact h.1.add (IH h.2)
 
-theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x) =O[l] g := by
+theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
+    IsBigOWith (∑ i ∈ s, C i) l (∑ i ∈ s, A i) g := by
+  convert IsBigOWith.fun_sum h
+  rw [Finset.sum_apply]
+
+theorem IsBigO.fun_sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x) =O[l] g := by
   simp only [IsBigO_def] at *
   choose! C hC using h
-  exact ⟨_, IsBigOWith.sum hC⟩
+  exact ⟨_, IsBigOWith.fun_sum hC⟩
 
-theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A i x) =o[l] g' := by
+theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (∑ i ∈ s, A i) =O[l] g := by
+  convert Asymptotics.IsBigO.fun_sum h
+  rw [Finset.sum_apply]
+
+theorem IsLittleO.fun_sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A i x) =o[l] g' := by
   simp only [← Finset.sum_apply]
   exact Finset.sum_induction A (· =o[l] g') (fun _ _ ↦ .add) (isLittleO_zero ..) h
+
+theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (∑ i ∈ s, A i) =o[l] g' := by
+  convert fun_sum h
+  rw [Finset.sum_apply]
 
 variable {B : ι → α → ℝ}
 
