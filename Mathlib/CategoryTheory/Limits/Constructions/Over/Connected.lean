@@ -37,6 +37,7 @@ namespace CategoryTheory.CostructuredArrow
 
 namespace CreatesConnected
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation) Given a diagram in `CostructuredArrow K B`, produce a natural transformation
 from the diagram legs to the specific object.
 -/
@@ -45,6 +46,7 @@ def natTransInCostructuredArrow {B : D} (F : J ⥤ CostructuredArrow K B) :
     F ⋙ CostructuredArrow.proj K B ⋙ K ⟶ (CategoryTheory.Functor.const J).obj B where
   app j := (F.obj j).hom
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation) Given a cone in the base category, raise it to a cone in
 `CostructuredArrow K B`. Note this is where the connected assumption is used.
 -/
@@ -58,7 +60,7 @@ def raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
     let z : (Functor.const J).obj (K.obj c.pt) ⟶ _ :=
       (CategoryTheory.Functor.constComp J c.pt K).inv ≫ Functor.whiskerRight c.π K ≫
         natTransInCostructuredArrow F
-    convert (nat_trans_from_is_connected z j (Classical.arbitrary J)) <;> simp [z]
+    convert! (nat_trans_from_is_connected z j (Classical.arbitrary J)) <;> simp [z]
   π.naturality X Y f := by
     apply CommaMorphism.ext
     · simpa using (c.w f).symm
@@ -68,6 +70,7 @@ theorem mapCone_raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K
     (c : Cone (F ⋙ CostructuredArrow.proj K B)) :
     (CostructuredArrow.proj K B).mapCone (raiseCone c) = c := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Show that the raised cone is a limit. -/
 def isLimitRaiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
@@ -92,6 +95,7 @@ instance [IsConnected J] {B : D} : CreatesLimitsOfShape J (CostructuredArrow.pro
         validLift := eqToIso (CreatesConnected.mapCone_raiseCone c)
         makesLimit := CreatesConnected.isLimitRaiseCone t }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `CostructuredArrow K B` preserves any connected limit. -/
 instance [IsConnected J] {B : D} : PreservesLimitsOfShape J (CostructuredArrow.proj K B) where
@@ -153,6 +157,7 @@ instance hasLimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasLimitsOfSha
     HasLimitsOfShape J (Over B) where
   has_limit F := hasLimit_of_created F (forget B)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`.
 This takes limit cones to limit cones when `J` is cofiltered. See `isLimitConePost` -/
 @[simps]

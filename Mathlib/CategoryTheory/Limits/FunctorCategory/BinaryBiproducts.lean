@@ -37,6 +37,7 @@ def pointwiseBinaryBicone : BinaryBicone F G where
   inl := { app X := biprod.inl }
   inr := { app X := biprod.inr }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The bicone associated with `F` and `G` is a bilimit bicone. -/
 @[simps]
 def pointwiseBinaryBicone.isBilimit : (pointwiseBinaryBicone F G).IsBilimit where

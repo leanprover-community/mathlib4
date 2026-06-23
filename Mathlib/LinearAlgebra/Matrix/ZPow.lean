@@ -97,7 +97,7 @@ theorem inv_zpow (A : M) : ∀ n : ℤ, A⁻¹ ^ n = (A ^ n)⁻¹
 
 @[simp]
 theorem zpow_neg_one (A : M) : A ^ (-1 : ℤ) = A⁻¹ := by
-  convert DivInvMonoid.zpow_neg' 0 A
+  convert! DivInvMonoid.zpow_neg' 0 A
   simp only [zpow_one, Int.ofNat_zero, Int.natCast_succ, zpow_eq_pow, zero_add]
 
 @[simp]
@@ -250,7 +250,7 @@ theorem zpow_ne_zero_of_isUnit_det [Nonempty n'] [Nontrivial R] {A : M} (ha : Is
     (z : ℤ) : A ^ z ≠ 0 := by
   have := ha.det_zpow z
   contrapose this
-  rw [this, det_zero ‹_›]
+  rw [this, det_zero]
   exact not_isUnit_zero
 
 theorem zpow_sub {A : M} (ha : IsUnit A.det) (z1 z2 : ℤ) : A ^ (z1 - z2) = A ^ z1 / A ^ z2 := by

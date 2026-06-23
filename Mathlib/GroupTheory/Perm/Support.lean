@@ -51,10 +51,10 @@ variable {f g h : Perm α}
 @[symm]
 theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint, or_comm, imp_self]
 
-theorem Disjoint.symmetric : Symmetric (@Disjoint α) := fun _ _ => Disjoint.symm
+instance Disjoint.stdSymm : Std.Symm (α := Perm α) Disjoint where
+  symm _ _ := Disjoint.symm
 
-instance : Std.Symm (α := Perm α) Disjoint :=
-  ⟨Disjoint.symmetric⟩
+@[deprecated (since := "2026-06-10")] alias Disjoint.symmetric := Disjoint.stdSymm
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=
   ⟨Disjoint.symm, Disjoint.symm⟩
@@ -95,7 +95,7 @@ theorem Disjoint.inv_right (h : Disjoint f g) : Disjoint f g⁻¹ :=
 @[simp]
 theorem disjoint_inv_left_iff : Disjoint f⁻¹ g ↔ Disjoint f g := by
   refine ⟨fun h => ?_, Disjoint.inv_left⟩
-  convert h.inv_left
+  convert! h.inv_left
 
 @[simp]
 theorem disjoint_inv_right_iff : Disjoint f g⁻¹ ↔ Disjoint f g := by
@@ -194,16 +194,8 @@ def IsSwap (f : Perm α) : Prop :=
 
 @[simp]
 theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
-    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y :=
-  Equiv.ext fun z => by
-    by_cases hz : p z
-    · rw [swap_apply_def, ofSubtype_apply_of_mem _ hz]
-      split_ifs with hzx hzy
-      · simp_rw [hzx, Subtype.coe_eta, swap_apply_left]
-      · simp_rw [hzy, Subtype.coe_eta, swap_apply_right]
-      · rw [swap_apply_of_ne_of_ne] <;>
-        simp [Subtype.ext_iff, *]
-    · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne] <;> grind
+    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y := by
+  grind [ofSubtype_apply_of_mem, ofSubtype_apply_of_not_mem]
 
 theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
     (h : f.IsSwap) : (ofSubtype f).IsSwap :=
@@ -459,7 +451,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     and_self_iff, List.nodup_nil] at h
   push Not at h
   apply le_antisymm
-  · convert support_mul_le (swap x y) (swap y z) using 1
+  · convert! support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
     simp [-Finset.union_singleton]
   · intro
@@ -468,7 +460,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
       simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
         h.left.right.left.symm, h.right.left.symm]
 
-theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
+theorem support_swap_mul_ge_support_sdiff (f : Perm α) (x y : α) :
     f.support \ {x, y} ≤ (swap x y * f).support := by
   intro
   simp only [and_imp, Perm.coe_mul, Function.comp_apply, Ne, mem_support, mem_insert, mem_sdiff,
@@ -477,6 +469,9 @@ theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
   rintro ha ⟨hx, hy⟩ H
   rw [swap_apply_eq_iff, swap_apply_of_ne_of_ne hx hy] at H
   exact ha H
+
+@[deprecated (since := "2026-06-03")]
+alias support_swap_mul_ge_support_diff := support_swap_mul_ge_support_sdiff
 
 theorem support_swap_mul_eq (f : Perm α) (x : α) (h : f (f x) ≠ x) :
     (swap x (f x) * f).support = f.support \ {x} := by

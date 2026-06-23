@@ -25,8 +25,6 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 public section
 
-assert_not_exists Finset
-
 variable (R : Type*) [NonUnitalNonAssocRing R]
 
 namespace IsSimpleRing
