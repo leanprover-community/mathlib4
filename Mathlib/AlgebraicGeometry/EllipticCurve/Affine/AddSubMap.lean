@@ -5,8 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
-public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.Tactic.Ring.NamePolyVars
 
@@ -128,5 +127,59 @@ lemma addSubMap_ne_zero [IsReduced R] {x : Fin 3 → R} (hx : x ≠ 0) :
   simpa [congrFun hx] using (addSubMapCoeff_condition W x i).symm
 
 end WeierstrassCurve
+
+/-!
+### The symmetric square of the x-coordinate map
+
+We define `Weierstrass.Affine.Point.sym2x`, which sends a pair `P`, `Q` of nonsingular points in
+affine coordinates on a Weierstrass curve to a triple projectively equal to
+`(x(P)*x(Q), x(P)+x(Q), 1)`, and provide some API.
+-/
+
+namespace WeierstrassCurve.Affine.Point
+
+variable {R : Type*} [CommRing R] {W' : Affine R}
+
+/-- This map sends a pair `P`, `Q` of nonsingular points in affine coordinates on `W`
+to a triple projectively equivalent to `![x(P) * x(Q), x(P) + x(Q), 1]`.
+
+In more geometric terms, this is the map `Sym² W → Sym² ℙ¹ ≃ ℙ²` induced by `x : W → ℙ¹`. -/
+noncomputable def sym2x (P Q : W'.Point) : Fin 3 → R :=
+  letI Px := P.xRep
+  letI Qx := Q.xRep
+  ![Px 0 * Qx 0, Px 0 * Qx 1 + Px 1 * Qx 0, Px 1 * Qx 1]
+
+@[simp]
+lemma sym2x_zero_zero : (0 : W'.Point).sym2x 0 = ![1, 0, 0] := by
+  simp [sym2x]
+
+@[simp]
+lemma sym2x_zero_some {x y : R} (h : W'.Nonsingular x y) :
+    (0 : W'.Point).sym2x (some x y h) = ![x, 1, 0] := by
+  simp [sym2x]
+
+@[simp]
+lemma sym2x_some_zero {x y : R} (h : W'.Nonsingular x y) :
+    (some x y h).sym2x 0 = ![x, 1, 0] := by
+  simp [sym2x]
+
+@[simp]
+lemma sym2x_some_some {x y x' y' : R} (h : W'.Nonsingular x y) (h' : W'.Nonsingular x' y') :
+    (some x y h).sym2x (some x' y' h') = ![x * x', x + x', 1] := by
+  simp [sym2x]
+
+lemma sym2x_ne_zero [Nontrivial R] (P Q : W'.Point) : P.sym2x Q ≠ 0 := by
+  cases P <;> cases Q <;> simp [sym2x, xRep]
+
+lemma sym2x_comm (P Q : W'.Point) : P.sym2x Q = Q.sym2x P := by
+  cases P <;> cases Q <;> simp [← zero_def, mul_comm, add_comm]
+
+lemma sym2x_neg_left (P Q : W'.Point) : (-P).sym2x Q = P.sym2x Q := by
+  simp [sym2x]
+
+lemma sym2x_neg_right (P Q : W'.Point) : P.sym2x (-Q) = P.sym2x Q := by
+  simp [sym2x]
+
+end WeierstrassCurve.Affine.Point
 
 end
