@@ -90,4 +90,4 @@ theorem pow_mul_comm'' [Monoid M] (a : M) (n : ℕ+) : a ^ n * a = a * a ^ n := 
 @[to_additive]
 lemma map_ppow {F M N : Type _} [Semigroup M] [Semigroup N] [FunLike F M N] [MulHomClass F M N]
     (f : F) (x : M) (n : ℕ+) : f (x ^ n) = f x ^ n :=
-  n.recOn (by simp) fun k hk => by simp [ppow_succ, hk]
+  MulHom.map_ppow (MulHomClass.toMulHom f) _ _
