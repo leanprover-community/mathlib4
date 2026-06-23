@@ -48,6 +48,7 @@ lemma `cm5a_cof`.
 
 -/
 
+
 open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
 
 variable {C : Type*} [Category* C] [Abelian C]
@@ -681,19 +682,8 @@ public lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
     rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
     exact DerivedCategory.TStructure.t.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
   have : QuasiIso (L.πTruncGE n) := (L.quasiIso_πTruncGE_iff n).mpr inferInstance
-  have : Injective (L.opcycles n) := by
-    let S : ShortComplex C := ShortComplex.mk (L.d (n - 1) n) (L.pOpcycles n) (by simp)
-    have : Mono S.f := by
-      let T := L.sc' (n - 2) (n - 1) n
-      have hT : T.Exact := by
-        rw [← L.exactAt_iff' (n - 2) (n - 1) n (by simp; lia) (by simp),
-          exactAt_iff_isZero_homology]
-        exact L.isZero_of_isGE n (n-1) (by linarith)
-      exact hT.mono_g ((L.isZero_of_isStrictlyGE (n - 1) _).eq_of_src ..)
-    have hS : S.ShortExact :=
-      { exact := S.exact_of_g_is_cokernel (L.opcyclesIsCokernel (n-1) n (by simp)) }
-    exact Retract.injective
-      { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
+  have : Injective (L.opcycles n) :=
+    L.injective_opcycles (n - 1) n (L.exactAt_of_isGE n (n - 1))
   -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
   refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, fun q ↦ ?_, inferInstance⟩
   obtain h | rfl | h := lt_trichotomy q n

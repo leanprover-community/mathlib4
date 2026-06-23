@@ -431,18 +431,34 @@ lemma shortComplexTruncLE_shortExact (n : ℤ) :
     (K.shortComplexTruncLE n).ShortExact := by
   apply HomologicalComplex.shortComplexTruncLE_shortExact
 
-variable (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+variable (n₀ n₁ : ℤ)
 
 /-- The canonical morphism `(K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁`. -/
-noncomputable abbrev shortComplexTruncLEX₃ToTruncGE :
+noncomputable abbrev shortComplexTruncLEX₃ToTruncGE (h : n₀ + 1 = n₁ := by lia) :
     (K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁ :=
   HomologicalComplex.shortComplexTruncLEX₃ToTruncGE K
     (Embedding.embeddingUpInt_areComplementary n₀ n₁ h)
 
 @[reassoc]
-lemma g_shortComplexTruncLEX₃ToTruncGE :
+lemma g_shortComplexTruncLEX₃ToTruncGE (h : n₀ + 1 = n₁ := by lia) :
     (K.shortComplexTruncLE n₀).g ≫ K.shortComplexTruncLEX₃ToTruncGE n₀ n₁ h = K.πTruncGE n₁ := by
   apply HomologicalComplex.g_shortComplexTruncLEX₃ToTruncGE
+
+lemma injective_opcycles [Injective (K.X n₀)] [Injective (K.X n₁)]
+    [K.IsStrictlyGE n₀] (hK : K.ExactAt n₀) (h : n₀ + 1 = n₁ := by lia) :
+    Injective (K.opcycles n₁) := by
+  let S : ShortComplex C := ShortComplex.mk (K.d n₀ n₁) (K.pOpcycles n₁) (by simp)
+  have : Mono S.f := by
+    let T := K.sc' (n₀ - 1) n₀ n₁
+    have hT : T.Exact := by
+      rw [← K.exactAt_iff' (n₀ - 1) n₀ n₁ (by simp) (by simpa),
+        exactAt_iff_isZero_homology]
+      exact hK.isZero_homology
+    exact hT.mono_g ((K.isZero_of_isStrictlyGE n₀ _).eq_of_src ..)
+  have hS : S.ShortExact :=
+    { exact := S.exact_of_g_is_cokernel (K.opcyclesIsCokernel n₀ n₁ (by simp [← h])) }
+  exact Retract.injective
+    { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
 
 end Abelian
 

@@ -76,7 +76,7 @@ noncomputable def TStructure.t : TStructure (DerivedCategory C) where
       rw [id_comp]
       rfl
     · dsimp
-      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE,
+      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE ..,
         Iso.hom_inv_id_assoc]
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
