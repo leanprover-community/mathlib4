@@ -67,9 +67,9 @@ instance : IsScalarTower R S (ExteriorAlgebra S (S ⊗[R] M)) :=
 
 lemma baseChangeGenerator_map_update_add (i : ℕ) [DecidableEq (Fin i)] (m : Fin i → M)
     (j : Fin i) (x y : M) :
-    (ExteriorAlgebra.ιMulti S i) (((mk R S M) 1) ∘ Function.update m j (x + y)) =
-      (ExteriorAlgebra.ιMulti S i) (((mk R S M) 1) ∘ Function.update m j x) +
-        (ExteriorAlgebra.ιMulti S i) (((mk R S M) 1) ∘ Function.update m j y) := by
+    (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j (x + y)) =
+      (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j x) +
+        (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j y) := by
   have hz (z : M) : ((TensorProduct.mk R S M 1) ∘ Function.update m j z) =
     Function.update (((TensorProduct.mk R S M 1) ∘ m)) j ((TensorProduct.mk R S M 1) z) := by
     funext a
@@ -80,8 +80,8 @@ lemma baseChangeGenerator_map_update_add (i : ℕ) [DecidableEq (Fin i)] (m : Fi
 
 lemma baseChangeGenerator_map_update_smul (i : ℕ) [DecidableEq (Fin i)] (m : Fin i → M)
     (j : Fin i) (r : R) (x : M) :
-    (ExteriorAlgebra.ιMulti S i) (((mk R S M) 1) ∘ Function.update m j (r • x)) =
-      r • (ExteriorAlgebra.ιMulti S i) (((mk R S M) 1) ∘ Function.update m j x) := by
+    (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j (r • x)) =
+      r • (ExteriorAlgebra.ιMulti S i) ((TensorProduct.mk R S M 1) ∘ Function.update m j x) := by
   have hz (z : M) : ((TensorProduct.mk R S M 1) ∘ Function.update m j z) =
     Function.update (((TensorProduct.mk R S M 1) ∘ m)) j ((TensorProduct.mk R S M 1) z) := by
     funext a
@@ -90,32 +90,28 @@ lemma baseChangeGenerator_map_update_smul (i : ℕ) [DecidableEq (Fin i)] (m : F
     · simp [Function.update, ne]
   rw [hz (r • x), hz x]
   simpa using (ExteriorAlgebra.ιMulti S i).map_update_smul
-    (((TensorProduct.mk R S M 1) ∘ m)) j (algebraMap R S r) ((TensorProduct.mk R S M 1) x)
+    (((TensorProduct.mk R S M 1) ∘ m)) j (algebraMap R S r) (TensorProduct.mk R S M 1 x)
 
 /-- The alternating map obtained from `ExteriorAlgebra.ιMulti` on compositing with
 `TensorProduct.mk R S M 1`. -/
-noncomputable def baseChangeGenerator (i : ℕ) :
-    M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
+noncomputable def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
   toFun m := ExteriorAlgebra.ιMulti S i ((TensorProduct.mk R S M 1) ∘ m)
   map_update_add' := baseChangeGenerator_map_update_add R M S i
   map_update_smul' := baseChangeGenerator_map_update_smul R M S i
   map_eq_zero_of_eq' m j k hjk hjk_ne := by
-    have : (((mk R S M) 1) ∘ m) j = (((mk R S M) 1) ∘ m) k := by
-      simpa [Function.comp] using congrArg ((TensorProduct.mk R S M 1)) hjk
-    -- Equal coordinates after applying `1 ⊗ -` force the alternating expression to vanish.
-    simpa [Function.comp] using (ExteriorAlgebra.ιMulti S i).map_eq_zero_of_eq
-      (((TensorProduct.mk R S M 1) ∘ m)) this hjk_ne
+    have : ((mk R S M 1) ∘ m) j = ((mk R S M 1) ∘ m) k := by
+      simpa using congrArg (TensorProduct.mk R S M 1) hjk
+    simpa using
+      (ExteriorAlgebra.ιMulti S i).map_eq_zero_of_eq (((TensorProduct.mk R S M 1) ∘ m)) this hjk_ne
 
 /-- Auxiliary alternating map for `exteriorPower.baseChangeIsoForward`. -/
-noncomputable def baseChangeIsoForwardAux (i : ℕ) :
-    M [⋀^Fin i]→ₗ[R] (⋀[S]^i (S ⊗[R] M)) :=
-  (baseChangeGenerator R M S i).codRestrict (((⋀[S]^i (S ⊗[R] M)).restrictScalars R)) (fun m =>
+noncomputable def baseChangeIsoForwardAux (i : ℕ) : M [⋀^Fin i]→ₗ[R] (⋀[S]^i (S ⊗[R] M)) :=
+  (baseChangeGenerator R M S i).codRestrict ((⋀[S]^i (S ⊗[R] M)).restrictScalars R) (fun m =>
     ExteriorAlgebra.ιMulti_range S i (Set.mem_range_self ((TensorProduct.mk R S M 1) ∘ m)))
 
 /-- Forward function of `exteriorPower.baseChangeIso`, lift from the map
 `(⋀[R]^i M) →ₗ[R] ⋀[S]^i (S ⊗[R] M)` corresponding to `exteriorPower.baseChangeIsoForwardAux`. -/
-noncomputable def baseChangeIsoForward (i : ℕ) :
-    S ⊗[R] (⋀[R]^i M) →ₗ[S] (⋀[S]^i (S ⊗[R] M)) :=
+noncomputable def baseChangeIsoForward (i : ℕ) : S ⊗[R] (⋀[R]^i M) →ₗ[S] (⋀[S]^i (S ⊗[R] M)) :=
   TensorProduct.AlgebraTensorModule.lift {
     toFun s := s • exteriorPower.alternatingMapLinearEquiv (baseChangeIsoForwardAux R M S i)
     map_add' s t := by simp [add_smul]
@@ -131,12 +127,10 @@ lemma baseChangeIsoForward_apply_one_tmul_ιMulti (i : ℕ) (m : Fin i → M) :
 
 /-- Projection from `ExteriorAlgebra` to exterior power. -/
 noncomputable def degreeProjection (i : ℕ) : ExteriorAlgebra R M →ₗ[R] (⋀[R]^i M) :=
-  ExteriorAlgebra.liftAlternating (R := R) (M := M) (N := (⋀[R]^i M))
-    (Function.update 0 i (exteriorPower.ιMulti R i))
+  ExteriorAlgebra.liftAlternating (Function.update 0 i (exteriorPower.ιMulti R i))
 
 lemma degreeProjection_apply_ιMulti (i : ℕ) (m : Fin i → M) :
     degreeProjection R M i (ExteriorAlgebra.ιMulti R i m) = ιMulti R i m := by
-  -- `liftAlternating` returns the updated family on the matching degree.
   rw [exteriorPower.degreeProjection]
   simp
 
@@ -150,7 +144,6 @@ noncomputable def baseChangeInverseAlternating (i : ℕ) :
 lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
     baseChangeInverseAlternating R M S i (fun j ↦ s j ⊗ₜ[R] m j) =
       (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] exteriorPower.ιMulti R i m := by
-  -- Expand the ambient `ιMulti`, evaluate the lift on generators, and then project to degree `i`.
   simp only [baseChangeInverseAlternating, LinearMap.comp_apply,
     LinearMap.compAlternatingMap_apply, AlgHom.toLinearMap_apply, ExteriorAlgebra.ιMulti_apply]
   have hprod : (List.ofFn fun j ↦ s j ⊗ₜ[R] ExteriorAlgebra.ι R (m j)).prod =
@@ -183,7 +176,7 @@ lemma baseChangeIsoInverse_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i →
 lemma baseChange_left_inverse (i : ℕ) :
     (baseChangeIsoInverse R M S i).comp (baseChangeIsoForward R M S i) = LinearMap.id := by
   ext m
-  have : ((mk R S M) 1) ∘ m = fun j ↦ 1 ⊗ₜ[R] m j := rfl
+  have : (TensorProduct.mk R S M 1) ∘ m = fun j ↦ 1 ⊗ₜ[R] m j := rfl
   simp [baseChangeIsoForward_apply_one_tmul_ιMulti, baseChangeIsoInverse, this,
     baseChangeInverseAlternating_apply_tmul R M S i (fun _ ↦ 1) m]
 
@@ -210,8 +203,7 @@ lemma baseChange_right_inverse (i : ℕ) :
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
   rw [← LinearMap.comp_apply _ _ y, exteriorPower.baseChange_left_inverse, LinearMap.id_coe, id_eq]
 
-noncomputable def baseChangeIso (i : ℕ) :
-    S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
+noncomputable def baseChangeIso (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
   __ := baseChangeIsoForward R M S i
   invFun := baseChangeIsoInverse R M S i
   left_inv x := LinearMap.congr_fun (exteriorPower.baseChange_left_inverse R M S i) x
@@ -219,12 +211,12 @@ noncomputable def baseChangeIso (i : ℕ) :
 
 lemma baseChangeIso_apply_tmul (i : ℕ) (m : Fin i → M) :
     baseChangeIso R M S i (1 ⊗ₜ[R] (ιMulti R i m)) =
-    ιMulti S i ((TensorProduct.mk R S M 1) ∘ m) := by
+      ιMulti S i ((TensorProduct.mk R S M 1) ∘ m) := by
   simp [exteriorPower.baseChangeIso, baseChangeIsoForward_apply_one_tmul_ιMulti]
 
 lemma baseChangeIso_symm_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
     (baseChangeIso R M S i).symm (ιMulti S i (fun j ↦ s j ⊗ₜ[R] m j)) =
-    (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ιMulti R i m := by
+      (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ιMulti R i m := by
   simp [exteriorPower.baseChangeIso, exteriorPower.baseChangeIsoInverse_apply_tmul]
 
 end exteriorPower
