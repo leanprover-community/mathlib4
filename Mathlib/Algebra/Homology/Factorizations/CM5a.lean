@@ -668,7 +668,7 @@ public lemma exists_mono_quasiIso_injective (n₀ n₁ : ℤ) (h : n₀ + 1 = n�
 public lemma exists_quasiIso_injective (n : ℤ) [K.IsStrictlyGE n] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
       (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
-  /- The proof proceeds by first applying `exists_injective_resolution'` in order to
+  /- The proof proceeds by first applying `exists_mono_quasiIso_injective` in order to
   obtain a monomorphism `K ⟶ L` that is also a quasi-isomorphism
   with `L` consisting of injective objects and `L` lying in degrees `≥ n - 1`.
   Then, as it is quasi-isomorphic to `K`, the cochain complex `L` is cohomologically
