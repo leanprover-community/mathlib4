@@ -101,7 +101,7 @@ instance : CategoryWithHomology (TopModuleCat.{v} R) := by
   let F := ShortComplex.leftRightHomologyComparison' D₁ D₂
   suffices IsIso F from ⟨⟨.ofIsIsoLeftRightHomologyComparison' D₁ D₂⟩⟩
   have hF : Function.Bijective F := by
-    change Function.Bijective ((forget₂ _ (ModuleCat R)).map F)
+    change Function.Bijective ((forget₂ _ (ModuleCat.{v} R)).map F)
     rw [← ConcreteCategory.isIso_iff_bijective, ShortComplex.map_leftRightHomologyComparison']
     infer_instance
   have hF' : Topology.IsEmbedding F := by
@@ -121,7 +121,7 @@ instance : CategoryWithHomology (TopModuleCat.{v} R) := by
       obtain ⟨z, hz⟩ := (Submodule.Quotient.eq _).mp e
       obtain rfl := eq_sub_iff_add_eq.mp hz
       simpa [show S.g (S.f z) = 0 from ConcreteCategory.congr_hom S.zero z] using hy
-  rw [← isIso_iff_of_reflects_iso _ (forget₂ (TopModuleCat R) TopCat),
+  rw [← isIso_iff_of_reflects_iso _ (forget₂ (TopModuleCat.{v} R) TopCat),
     TopCat.isIso_iff_isHomeomorph, isHomeomorph_iff_isEmbedding_surjective]
   exact ⟨hF', hF.2⟩
 
