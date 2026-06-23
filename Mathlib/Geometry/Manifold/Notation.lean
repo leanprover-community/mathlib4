@@ -40,6 +40,8 @@ including inference of the model with corners.
 | `TangentSpace% x`        | `TangentSpace I x`                  |
 | `tangentMap[s] f`        | `tangentMapWithin I J f s`          |
 | `tangentMap% f`          | `tangentMap I J f`                  |
+| `UniqueMDiff[s]`         | `UniqueMDiffOn I s`                 |
+| `UniqueMDiffAt[s] x`     | `UniqueMDiffWithinAt I s x`         |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
@@ -392,8 +394,8 @@ where
   fromTotalSpace : TermElabM FindModelResult := do
     match_expr e with
     | Bundle.TotalSpace _ F V => do
-      if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
+      if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
       throwError "Having a TotalSpace as source is not yet supported"
     | _ => throwError "`{e}` is not a `Bundle.TotalSpace`."
   /-- Attempt to use the provided `baseInfo` to find a model. -/
@@ -421,7 +423,7 @@ where
     | TangentSpace _k _ _E _ _ _H _ I M _ _ => do
       trace[Elab.DiffGeo.MDiff] "`{V}` is the total space of the `TangentBundle` of `{M}`"
       let srcIT : Term ← Term.exprToSyntax I
-      let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
+      let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
       Term.elabTerm resTerm none
     | _ => throwError "`{V}` is not a `TangentSpace`"
   /-- Attempt to find a model on a `TangentBundle` -/
@@ -474,8 +476,8 @@ where
         | ChartedSpace H _ M _ =>
           if ← withReducible (pureIsDefEq M e) then
             trace[Elab.DiffGeo.MDiff] "`{e}` is a charted space over `{H}` via `{inst}`"
-            return some H else
-          if ← withReducible (pureIsDefEq H e) then
+            return some H
+          else if ← withReducible (pureIsDefEq H e) then
             trace[Elab.DiffGeo.MDiff] "`{e}` is the charted space of `{M}` via `{inst}`"
             return some H else return none
         | _ => return none
@@ -486,7 +488,24 @@ where
         | ModelWithCorners _ _ _ _ _ H' _ => do
           if ← withReducible (pureIsDefEq H' H) then return some fvar else return none
         | _ => return none
-      | throwError "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
+      | trace[Elab.DiffGeo.MDiff]
+          "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
+        -- Try a normed space, and a normed field as last alternatives.
+        let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+          match_expr type with
+          | NormedSpace K E _ _ =>
+            if ← withReducible (pureIsDefEq E H) then return some (inst, K)
+            else return none
+          | _ => return none
+        if let some (inst, K) := a then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
+          return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
+        trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
+          assuming it is a non-trivially normed field"
+        -- Return the trivial model with corners: this will work if `H` is a normed field.
+        let eT : Term ← Term.exprToSyntax H
+        let iTerm : Term ← ``(𝓘($eT))
+        Term.elabTerm iTerm none
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
@@ -727,8 +746,8 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
     let hint : MessageData := if e.hasExprMVar then
       .hint' "the expected type contains metavariables, \
         maybe you need to provide an implicit argument"
-      else if tracing then m!"" else
-        .hint' "failures to find a model with corners can be debugged with the \
+      else if tracing then m!""
+      else .hint' "failures to find a model with corners can be debugged with the \
           command `set_option trace.Elab.DiffGeo.MDiff true`."
     throwError "Could not find a model with corners for `{e}`.{hint}"
 where
@@ -967,6 +986,29 @@ scoped elab:max "tangentMap%" ppSpace f:term:arg : term => do
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``tangentMap #[srcI, tgtI, ef]
 
+/-- `UniqueMDiff[s]` elaborates to `UniqueMDiffOn I s`,
+trying to determine `I` from the local context. -/
+scoped elab:max "UniqueMDiff[" s:term "]" : term => do
+  let es ← Term.elabTerm s none
+  let estype : Expr ← inferType es
+  match_expr estype with
+  | Set α =>
+    let I ← findModel α
+    mkAppM ``UniqueMDiffOn #[I, es]
+  | _ => throwError "`{es}` has type `{estype}` which is not of the form `Set α` for some `α`."
+
+/-- `UniqueMDiffAt[s] x` elaborates to `UniqueMDiffWithinAt I s x`
+trying to determine `I` from the local context.
+The argument `x` can be omitted. -/
+scoped elab:max "UniqueMDiffAt[" s:term "]" : term => do
+  let es ← Term.elabTerm s none
+  let estype : Expr ← inferType es
+  match_expr estype with
+  | Set α =>
+    let I ← findModel α
+    mkAppM ``UniqueMDiffWithinAt #[I, es]
+  | _ => throwError "`{es}` has type `{estype}` which is not of the form `Set α` for some `α`."
+
 end Manifold
 
 section trace
@@ -1125,6 +1167,20 @@ arguments that can use the `T%` elaborator. -/
   catch _ =>
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `UniqueMDiffOn` using the custom elaborator. -/
+@[app_delab UniqueMDiffOn] meta def delabUniqueMDiffOn : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 12 do
+  let ss ← withAppArg delab
+  `(UniqueMDiff[$ss]) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `UniqueMDiffWithinAt` using the custom elaborator. -/
+@[app_delab UniqueMDiffWithinAt] meta def delabUniqueMDiffWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 12 do
+  let ss ← withAppArg delab
+  `(UniqueMDiffAt[$ss]) >>= annotateGoToSyntaxDef
 
 -- TODO: add more delaborators (and tests) for
 -- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
