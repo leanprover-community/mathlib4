@@ -257,6 +257,8 @@ variable {C D}
 variable (F : C ⥤ D) [F.Additive]
 
 set_option backward.defeqAttrib.useBackward true in
+/-- The functor between bounded below homotopy categories that is induced
+by an additive functor. -/
 def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D :=
   (HomotopyCategory.plus D).lift
     (HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
@@ -270,9 +272,9 @@ def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus 
         ((F.mapHomologicalComplex _).obj K) n)⟩)
 
 noncomputable instance [HasZeroObject C] [HasBinaryBiproducts C] :
-    (F.mapHomotopyCategoryPlus).CommShift ℤ := by
-  dsimp only [mapHomotopyCategoryPlus]
-  infer_instance
+    (F.mapHomotopyCategoryPlus).CommShift ℤ :=
+  inferInstanceAs (((HomotopyCategory.plus D).lift (HomotopyCategory.Plus.ι C ⋙
+    F.mapHomotopyCategory (.up ℤ)) _).CommShift ℤ)
 
 set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] [HasZeroObject D] [HasBinaryBiproducts D] :
@@ -291,7 +293,10 @@ instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
     ext : 1
     exact (F.mapHomotopyCategory _).map_injective ((ObjectProperty.ι _).congr_map h)
 
-def mapHomotopyCategoryPlusCompIso {E : Type*} [Category E] [Preadditive E] [HasZeroObject E]
+/-- Given additive functors that are related by an isomorphism `F ⋙ G ≅ H`, this is
+the corresponding isomorphism on the corresponding functor between
+the bounded below homotopy categories. -/
+def mapHomotopyCategoryPlusCompIso {E : Type*} [Category* E] [Preadditive E] [HasZeroObject E]
     [HasBinaryBiproducts E]
     {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] :
