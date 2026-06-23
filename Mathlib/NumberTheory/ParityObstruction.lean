@@ -28,7 +28,6 @@ open Finset
 open Nat
 
 set_option maxRecDepth 200000
-set_option maxHeartbeats 400000
 
 /-!
 ## Part 1: Ω(n) — Number of Prime Factors with Multiplicity
