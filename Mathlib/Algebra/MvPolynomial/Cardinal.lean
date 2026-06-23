@@ -3,9 +3,12 @@ Copyright (c) 2021 Chris Hughes, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.SetTheory.Cardinal.Finsupp
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Cardinality of Multivariate Polynomial Ring
@@ -14,6 +17,8 @@ The main result in this file is `MvPolynomial.cardinalMk_le_max`, which says tha
 the cardinality of `MvPolynomial σ R` is bounded above by the maximum of `#R`, `#σ`
 and `ℵ₀`.
 -/
+
+public section
 
 
 universe u v
@@ -26,49 +31,41 @@ section TwoUniverses
 
 variable {σ : Type u} {R : Type v} [CommSemiring R]
 
-@[simp]
+-- We want this to have higher priority than `AddMonoidAlgebra.cardinalMk_eq_max_lift_of_infinite`.
+@[simp high]
 theorem cardinalMk_eq_max_lift [Nonempty σ] [Nontrivial R] :
-    #(MvPolynomial σ R) = max (max (Cardinal.lift.{u} #R) <| Cardinal.lift.{v} #σ) ℵ₀ :=
-  (mk_finsupp_lift_of_infinite _ R).trans <| by
-    rw [mk_finsupp_nat, max_assoc, lift_max, lift_aleph0, max_comm]
+    #(MvPolynomial σ R) = lift.{u} #R ⊔ lift.{v} #σ ⊔ ℵ₀ := by simp [sup_assoc]
 
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_max_lift := cardinalMk_eq_max_lift
-
-@[simp]
-theorem cardinalMk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = Cardinal.lift.{u} #R :=
-  ((isEmptyRingEquiv R σ).toEquiv.trans Equiv.ulift.{u}.symm).cardinal_eq
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_lift := cardinalMk_eq_lift
+-- We want this to have higher priority than `AddMonoidAlgebra.cardinalMk_eq_lift_of_fintype`.
+@[simp high]
+theorem cardinalMk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = lift.{u} #R := by simp
 
 @[nontriviality]
 theorem cardinalMk_eq_one [Subsingleton R] : #(MvPolynomial σ R) = 1 := mk_eq_one _
 
-theorem cardinalMk_le_max_lift {σ : Type u} {R : Type v} [CommSemiring R] : #(MvPolynomial σ R) ≤
-    max (max (Cardinal.lift.{u} #R) <| Cardinal.lift.{v} #σ) ℵ₀ := by
-  cases subsingleton_or_nontrivial R
-  · exact (mk_eq_one _).trans_le (le_max_of_le_right one_le_aleph0)
-  cases isEmpty_or_nonempty σ
-  · exact cardinalMk_eq_lift.trans_le (le_max_of_le_left <| le_max_left _ _)
-  · exact cardinalMk_eq_max_lift.le
 
-@[deprecated (since := "2024-11-21")] alias cardinal_lift_mk_le_max := cardinalMk_le_max_lift
+/-- The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
+of `#R`, `#σ` and `ℵ₀`.
+
+See `cardinalMk_le_max` for the universe monomorphic version. -/
+theorem cardinalMk_le_max_lift {σ : Type u} {R : Type v} [CommSemiring R] :
+    #(MvPolynomial σ R) ≤ lift.{u} #R ⊔ lift.{v} #σ ⊔ ℵ₀ := by
+  nontriviality R; cases isEmpty_or_nonempty σ <;> simp
 
 end TwoUniverses
 
 variable {σ R : Type u} [CommSemiring R]
 
-theorem cardinalMk_eq_max [Nonempty σ] [Nontrivial R] :
-    #(MvPolynomial σ R) = max (max #R #σ) ℵ₀ := by simp
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_eq_max := cardinalMk_eq_max
+theorem cardinalMk_eq_max [Nonempty σ] [Nontrivial R] : #(MvPolynomial σ R) = #R ⊔ #σ ⊔ ℵ₀ := by
+  simp [sup_assoc]
 
 theorem cardinalMk_eq [IsEmpty σ] : #(MvPolynomial σ R) = #R := by simp
 
 /-- The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
-of `#R`, `#σ` and `ℵ₀` -/
-theorem cardinalMk_le_max : #(MvPolynomial σ R) ≤ max (max #R #σ) ℵ₀ :=
-  cardinalMk_le_max_lift.trans <| by rw [lift_id, lift_id]
+of `#R`, `#σ` and `ℵ₀`.
 
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
+See `cardinalMk_le_max_lift` for the universe polymorphic version. -/
+theorem cardinalMk_le_max : #(MvPolynomial σ R) ≤ #R ⊔ #σ ⊔ ℵ₀ :=
+  cardinalMk_le_max_lift.trans <| by rw [lift_id, lift_id]
 
 end MvPolynomial

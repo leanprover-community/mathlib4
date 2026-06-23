@@ -3,10 +3,13 @@ Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ImageToKernel
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
@@ -26,6 +29,8 @@ It is convenient to define both `op` and `opSymm`; this is because given a compl
 opposite, chain complex, cochain complex, homology, cohomology, homological complex
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -33,7 +38,7 @@ open Opposite CategoryTheory CategoryTheory.Limits
 
 section
 
-variable {V : Type*} [Category V] [Abelian V]
+variable {V : Type*} [Category* V] [Abelian V]
 
 theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.op f.op (by rw [← op_comp, w, op_zero]) =
@@ -63,7 +68,7 @@ end
 
 namespace HomologicalComplex
 
-variable {ι V : Type*} [Category V] {c : ComplexShape ι}
+variable {ι V : Type*} [Category* V] {c : ComplexShape ι}
 
 section
 
@@ -74,7 +79,7 @@ variable [HasZeroMorphisms V]
 protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.symm where
   X i := op (X.X i)
   d i j := (X.d j i).op
-  shape i j hij := by simp only; rw [X.shape j i hij, op_zero]
+  shape i j hij := by rw [X.shape j i hij, op_zero]
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
@@ -82,7 +87,7 @@ protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.sym
 protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒᵖ c where
   X i := op (X.X i)
   d i j := (X.d j i).op
-  shape i j hij := by simp only; rw [X.shape j i hij, op_zero]
+  shape i j hij := by rw [X.shape j i hij, op_zero]
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
@@ -90,7 +95,7 @@ protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒ
 protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.symm where
   X i := unop (X.X i)
   d i j := (X.d j i).unop
-  shape i j hij := by simp only; rw [X.shape j i hij, unop_zero]
+  shape i j hij := by rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
@@ -98,11 +103,12 @@ protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.s
 protected def unopSymm (X : HomologicalComplex Vᵒᵖ c.symm) : HomologicalComplex V c where
   X i := unop (X.X i)
   d i j := (X.d j i).unop
-  shape i j hij := by simp only; rw [X.shape j i hij, unop_zero]
+  shape i j hij := by rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
 variable (V c)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 @[simps]
 def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.symm where
@@ -111,6 +117,7 @@ def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.
     { f := fun i => (f.unop.f i).op
       comm' := fun i j _ => by simp only [op_d, ← op_comp, f.unop.comm] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 @[simps]
 def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)ᵒᵖ where
@@ -119,6 +126,8 @@ def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)�
     { f := fun i => (f.f i).unop
       comm' := fun i j _ => by simp only [unopSymm_d, ← unop_comp, f.comm] }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
   NatIso.ofComponents
@@ -131,10 +140,9 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
       intro X Y f
       refine Quiver.Hom.unop_inj ?_
       ext x
-      simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
-        comp_f, Hom.isoOfComponents_hom_f]
-      erw [Category.id_comp, Category.comp_id (f.unop.f x)])
+      simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
   NatIso.ofComponents
@@ -151,9 +159,13 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
   functor_unitIso_comp X := by
     ext
     simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
-      opFunctor_map_f, Quiver.Hom.unop_op, Hom.isoOfComponents_hom_f]
+      opFunctor_map_f, Hom.isoOfComponents_hom_f]
     exact Category.comp_id _
 
+instance : (opFunctor V c).IsEquivalence := (opEquivalence V c).isEquivalence_functor
+instance : (opInverse V c).IsEquivalence := (opEquivalence V c).isEquivalence_inverse
+
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[simps]
 def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V c.symm where
@@ -162,6 +174,7 @@ def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V 
     { f := fun i => (f.unop.f i).unop
       comm' := fun i j _ => by simp only [unop_d, ← unop_comp, f.unop.comm] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[simps]
 def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)ᵒᵖ where
@@ -170,6 +183,8 @@ def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)
     { f := fun i => (f.f i).op
       comm' := fun i j _ => by simp only [opSymm_d, ← op_comp, f.comm] }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=
   NatIso.ofComponents
@@ -182,10 +197,9 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
       intro X Y f
       refine Quiver.Hom.unop_inj ?_
       ext x
-      simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
-        comp_f, Hom.isoOfComponents_hom_f]
-      erw [Category.id_comp, Category.comp_id (f.unop.f x)])
+      simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
   NatIso.ofComponents
@@ -201,29 +215,113 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
   counitIso := unopCounitIso V c
   functor_unitIso_comp X := by
     ext
-    simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
-      opFunctor_map_f, Quiver.Hom.unop_op, Hom.isoOfComponents_hom_f]
+    simp only [comp_f]
     exact Category.comp_id _
+
+instance : (unopFunctor V c).IsEquivalence := (unopEquivalence V c).isEquivalence_functor
+instance : (unopInverse V c).IsEquivalence := (unopEquivalence V c).isEquivalence_inverse
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.HasHomology i :=
-  (inferInstance : (K.sc i).op.HasHomology)
+  inferInstanceAs <| (K.sc i).op.HasHomology
 
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
-  (inferInstance : (K.sc i).unop.HasHomology)
+  inferInstanceAs <| (K.sc i).unop.HasHomology
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     ((opFunctor _ _).obj (op K)).HasHomology i := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     ((unopFunctor _ _).obj (op K)).HasHomology i := by
   dsimp
   infer_instance
 
 variable {V c}
+
+@[simp]
+lemma quasiIsoAt_opFunctor_map_iff
+    {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] :
+    QuasiIsoAt ((opFunctor _ _).map φ.op) i ↔ QuasiIsoAt φ i := by
+  simp only [quasiIsoAt_iff]
+  exact ShortComplex.quasiIso_opMap_iff ((shortComplexFunctor V c i).map φ)
+
+@[simp]
+lemma quasiIsoAt_unopFunctor_map_iff
+    {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] :
+    QuasiIsoAt ((unopFunctor _ _).map φ.op) i ↔ QuasiIsoAt φ i := by
+  rw [← quasiIsoAt_opFunctor_map_iff]
+  rfl
+
+instance {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt φ i] :
+    QuasiIsoAt ((opFunctor _ _).map φ.op) i := by
+  rw [quasiIsoAt_opFunctor_map_iff]
+  infer_instance
+
+instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt φ i] :
+    QuasiIsoAt ((unopFunctor _ _).map φ.op) i := by
+  rw [quasiIsoAt_unopFunctor_map_iff]
+  infer_instance
+
+@[simp]
+lemma quasiIso_opFunctor_map_iff
+    {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
+    QuasiIso ((opFunctor _ _).map φ.op) ↔ QuasiIso φ := by
+  simp only [quasiIso_iff, quasiIsoAt_opFunctor_map_iff]
+
+@[simp]
+lemma quasiIso_unopFunctor_map_iff
+    {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
+    QuasiIso ((unopFunctor _ _).map φ.op) ↔ QuasiIso φ := by
+  simp only [quasiIso_iff, quasiIsoAt_unopFunctor_map_iff]
+
+instance {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] [QuasiIso φ] :
+    QuasiIso ((opFunctor _ _).map φ.op) := by
+  rw [quasiIso_opFunctor_map_iff]
+  infer_instance
+
+instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] [QuasiIso φ] :
+    QuasiIso ((unopFunctor _ _).map φ.op) := by
+  rw [quasiIso_unopFunctor_map_iff]
+  infer_instance
+
+lemma ExactAt.op {K : HomologicalComplex V c} {i : ι} (h : K.ExactAt i) :
+    K.op.ExactAt i :=
+  ShortComplex.Exact.op h
+
+lemma ExactAt.unop {K : HomologicalComplex Vᵒᵖ c} {i : ι} (h : K.ExactAt i) :
+    K.unop.ExactAt i :=
+  ShortComplex.Exact.unop h
+
+@[simp]
+lemma exactAt_op_iff (K : HomologicalComplex V c) {i : ι} :
+    K.op.ExactAt i ↔ K.ExactAt i :=
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
+
+lemma Acyclic.op {K : HomologicalComplex V c} (h : K.Acyclic) :
+    K.op.Acyclic :=
+  fun i ↦ (h i).op
+
+lemma Acyclic.unop {K : HomologicalComplex Vᵒᵖ c} (h : K.Acyclic) :
+    K.unop.Acyclic :=
+  fun i ↦ (h i).unop
+
+@[simp]
+lemma acyclic_op_iff (K : HomologicalComplex V c) :
+    K.op.Acyclic ↔ K.Acyclic :=
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/
@@ -251,6 +349,7 @@ def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
 
 variable (j : ι)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opcyclesOpIso_hom_toCycles_op :
     (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := by
@@ -259,6 +358,7 @@ lemma opcyclesOpIso_hom_toCycles_op :
     exact (K.sc i).opcyclesOpIso_hom_toCycles_op
   · rw [K.toCycles_eq_zero hij, K.op.fromOpcycles_eq_zero hij, op_zero, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma fromOpcycles_op_cyclesOpIso_inv :
     (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := by
@@ -286,6 +386,7 @@ lemma opcyclesOpIso_hom_naturality :
       (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
   ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed in Algebra/Homology/Embedding/TruncLE.lean
 @[reassoc]
 lemma opcyclesOpIso_inv_naturality :
     (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
@@ -337,6 +438,8 @@ section
 
 variable [Preadditive V]
 
+example : Preadditive (HomologicalComplex Vᵒᵖ c) := inferInstance
+
 instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
 
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
@@ -344,3 +447,38 @@ instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 end
 
 end HomologicalComplex
+
+namespace Homotopy
+
+open HomologicalComplex
+
+variable {V : Type*} [Category* V] {ι : Type*} {c : ComplexShape ι} [Preadditive V]
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The opposite of a homotopy between morphisms of homological complexes. -/
+@[simps]
+def op {F G : HomologicalComplex V c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    Homotopy ((opFunctor V c).map φ₁.op) ((opFunctor V c).map φ₂.op) where
+  hom i j := (h.hom j i).op
+  zero i j hij := Quiver.Hom.unop_inj (h.zero _ _ hij)
+  comm n := Quiver.Hom.unop_inj (by
+    dsimp
+    rw [h.comm n]
+    nth_rw 2 [add_comm]
+    rfl)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The homotopy between morphisms of homological complexes that is deduced
+from a homotopy in the opposite category. -/
+@[simps]
+def unop {F G : HomologicalComplex Vᵒᵖ c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    Homotopy ((unopFunctor V c).map φ₁.op) ((unopFunctor V c).map φ₂.op) where
+  hom i j := (h.hom j i).unop
+  zero i j hij := Quiver.Hom.op_inj (h.zero _ _ hij)
+  comm n := Quiver.Hom.op_inj (by
+    dsimp
+    rw [h.comm n]
+    nth_rw 2 [add_comm]
+    rfl)
+
+end Homotopy

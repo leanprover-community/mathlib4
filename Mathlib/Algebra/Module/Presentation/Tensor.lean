@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Presentation of the tensor product of two modules
@@ -12,6 +14,8 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 Given presentations of two `A`-modules `M₁` and `M₂`, we obtain a presentation of `M₁ ⊗[A] M₂`.
 
 -/
+
+@[expose] public section
 
 universe w w₁₀ w₁₁ w₂₀ w₂₁ u v₁ v₂
 
@@ -32,7 +36,7 @@ noncomputable def tensor :
     Relations A where
   G := relations₁.G × relations₂.G
   R := Sum (relations₁.R × relations₂.G) (relations₁.G × relations₂.R)
-  relation r := match r with
+  relation
     | .inl ⟨r₁, g₂⟩ => Finsupp.embDomain (Function.Embedding.sectL relations₁.G g₂)
         (relations₁.relation r₁)
     | .inr ⟨g₁, r₂⟩ => Finsupp.embDomain (Function.Embedding.sectR g₁ relations₂.G)
@@ -43,6 +47,8 @@ namespace Solution
 variable {relations₁ relations₂} (solution₁ : relations₁.Solution M₁)
   (solution₂ : relations₂.Solution M₂)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given solutions in `M₁` and `M₂` to systems of linear equations, this is the obvious
 solution to the tensor product of these systems in `M₁ ⊗[A] M₂`. -/
 @[simps]
@@ -60,6 +66,8 @@ noncomputable def tensor : (relations₁.tensor relations₂).Solution (M₁ ⊗
 
 variable {solution₁ solution₂} (h₁ : solution₁.IsPresentation) (h₂ : solution₂.IsPresentation)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two modules admits a presentation by generators and relations. -/
 noncomputable def isPresentationCoreTensor :
     Solution.IsPresentationCore.{w} (solution₁.tensor solution₂) where
@@ -76,7 +84,7 @@ noncomputable def isPresentationCoreTensor :
         erw [Finsupp.apply_linearCombination A (LinearMap.applyₗ (solution₂.var g₂))]
         have := s.linearCombination_var_relation (.inl ⟨r₁, g₂⟩)
         erw [Finsupp.linearCombination_embDomain] at this
-        convert this
+        convert! this
         ext g₁
         simp) })
   postcomp_desc _ := by aesop
@@ -102,6 +110,9 @@ variable (pres₁ : Presentation.{w₁₀, w₁₁} A M₁) (pres₂ : Presentat
 a presentation of `M₁` and a presentation of `M₂`. -/
 @[simps!]
 noncomputable def tensor : Presentation A (M₁ ⊗[A] M₂) where
+  G := _
+  R := _
+  relation := _
   toSolution := pres₁.toSolution.tensor pres₂.toSolution
   toIsPresentation := pres₁.toIsPresentation.tensor pres₂.toIsPresentation
 

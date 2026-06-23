@@ -3,9 +3,13 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.GroupTheory.Nilpotent
-import Mathlib.GroupTheory.Transfer
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.GroupTheory.Abelianization.Finite
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.GroupTheory.SchurZassenhaus
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Z-Groups
@@ -19,11 +23,15 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 ## Main results
 
 * `IsZGroup.isCyclic_abelianization`: a finite Z-group has cyclic abelianization.
-
-TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' ⋊ G/G'` where `G'`
-and `G/G'` are cyclic of coprime orders.
+* `IsZGroup.isCyclic_commutator`: a finite Z-group has cyclic commutator subgroup.
+* `IsZGroup.coprime_commutator_index`: the commutator subgroup of a finite Z-group is a
+  Hall-subgroup (the commutator subgroup has cardinality coprime to its index).
+* `isZGroup_iff_exists_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic
+  to a semidirect product of two cyclic subgroups of coprime order.
 
 -/
+
+public section
 
 variable (G G' G'' : Type*) [Group G] [Group G'] [Group G''] (f : G →* G') (f' : G' →* G'')
 
@@ -34,6 +42,9 @@ variable (G G' G'' : Type*) [Group G] [Group G'] [Group G''] (f : G →* G') (f'
 variable {G G' G'' f f'}
 
 namespace IsZGroup
+
+instance [IsCyclic G] : IsZGroup G :=
+  ⟨inferInstance⟩
 
 instance [IsZGroup G] {p : ℕ} [Fact p.Prime] (P : Sylow p G) : IsCyclic P :=
   isZGroup p Fact.out P
@@ -74,6 +85,7 @@ instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H
 
 section Solvable
 
+open scoped IsMulCommutative in
 variable (G) in
 theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < ⊤ := by
   let p := (Nat.card G).minFac
@@ -84,7 +96,7 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   let f := MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)
   refine lt_of_le_of_lt (Abelianization.commutator_subset_ker f) ?_
   have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
-  contrapose! h
+  contrapose h
   rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
   exact hP.isComplement' rfl
 
@@ -111,10 +123,11 @@ theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card 
       ← P.card_eq_multiplicity, ← (isZGroup p hp P).exponent_eq_card]
   exact Monoid.exponent_dvd_of_monoidHom P.1.subtype P.1.subtype_injective
 
+open scoped IsMulCommutative in
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
     ⟨Nat.prime_of_mem_primeFactors p.2⟩
-  obtain ⟨ϕ⟩ := ((isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
+  obtain ⟨ϕ⟩ := ((Group.isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
   let _ : CommGroup G :=
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
   exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
@@ -125,6 +138,159 @@ instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Abelianizat
   inferInstance
 
 end Nilpotent
+
+section Commutator
+
+variable (G) in
+/-- A finite Z-group has cyclic commutator subgroup. -/
+theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
+  rw [commutator_def]
+  induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
+  rcases eq_or_ne H ⊥ with rfl | h
+  · rw [Subgroup.commutator_bot_left]
+    infer_instance
+  · specialize hH ⁅H, H⁆ (IsSolvable.commutator_lt_of_ne_bot h)
+    replace hH : IsCyclic (⁅commutator H, commutator H⁆ : Subgroup H) := by
+      let f := Subgroup.equivMapOfInjective ⁅commutator H, commutator H⁆ _ H.subtype_injective
+      rw [Subgroup.map_commutator, Subgroup.map_subtype_commutator] at f
+      exact isCyclic_of_surjective f.symm f.symm.surjective
+    suffices IsCyclic (commutator H) by
+      let f := Subgroup.equivMapOfInjective (commutator H) _ H.subtype_injective
+      rw [Subgroup.map_subtype_commutator] at f
+      exact isCyclic_of_surjective f f.surjective
+    suffices h : commutator (commutator H) ≤ Subgroup.center (commutator H) by
+      rw [← Abelianization.ker_of (commutator H)] at h
+      let _ := commGroupOfCyclicCenterQuotient Abelianization.of h
+      infer_instance
+    suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
+        Subgroup.centralizer (commutator H) by
+      simpa [SetLike.le_def, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
+    rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
+    let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
+    have h := Abelianization.commutator_subset_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
+    rwa [Subgroup.normalizerMonoidHom_ker, Subgroup.normalizer_eq_top,
+      ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,
+        Subgroup.map_subgroupOf_eq_of_le le_top] at h
+
+end Commutator
+
+end IsZGroup
+
+section Hall
+
+variable {p : ℕ} [Fact p.Prime]
+
+namespace IsPGroup
+
+/-- If a group `K` acts on a cyclic `p`-group `G` of coprime order, then the map `K × G → G`
+  defined by `(k, g) ↦ k • g * g⁻¹` is either trivial or surjective. -/
+theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
+    {K : Type*} [Group K] [MulDistribMulAction K G] (hGK : (Nat.card G).Coprime (Nat.card K)) :
+    (∀ g : G, ∀ k : K, k • g * g⁻¹ = 1) ∨ (∀ g : G, ∃ k : K, ∃ q : G, k • q * q⁻¹ = g) := by
+  by_cases hc : Nat.card G = 0
+  · rw [hc, Nat.coprime_zero_left, Nat.card_eq_one_iff_unique] at hGK
+    simp [← hGK.1.elim 1]
+  have := Nat.finite_of_card_ne_zero hc
+  let ϕ := MulDistribMulAction.toMonoidHomZModOfIsCyclic G K rfl
+  have h (g : G) (k : K) (n : ℤ) (h : ϕ k - 1 = n) : k • g * g⁻¹ = g ^ n := by
+    rw [sub_eq_iff_eq_add, ← Int.cast_one, ← Int.cast_add] at h
+    rw [MulDistribMulAction.toMonoidHomZModOfIsCyclic_apply rfl k g (n + 1) h,
+      zpow_add_one, mul_inv_cancel_right]
+  replace hG k : ϕ k = 1 ∨ IsUnit (ϕ k - 1) := by
+    obtain ⟨n, hn⟩ := hG.exists_card_eq
+    exact ZMod.eq_one_or_isUnit_sub_one hn (ϕ k)
+      (hGK.symm.coprime_dvd_left ((orderOf_map_dvd ϕ k).trans (orderOf_dvd_natCard k)))
+  rcases forall_or_exists_not (fun k : K ↦ ϕ k = 1) with hϕ | ⟨k, hk⟩
+  · exact Or.inl fun p k ↦ by rw [h p k 0 (by rw [hϕ, sub_self, Int.cast_zero]), zpow_zero]
+  · obtain ⟨⟨u, v, -, hvu⟩, hu : u = ϕ k - 1⟩ := (hG k).resolve_left hk
+    rw [← u.intCast_zmod_cast] at hu hvu
+    rw [← v.intCast_zmod_cast, ← Int.cast_mul, ← Int.cast_one, ZMod.intCast_eq_intCast_iff] at hvu
+    refine Or.inr fun p ↦ zpow_one p ▸ ⟨k, p ^ (v.cast : ℤ), ?_⟩
+    rw [h (p ^ v.cast) k u.cast hu.symm, ← zpow_mul, zpow_eq_zpow_iff_modEq]
+    exact hvu.of_dvd (Int.natCast_dvd_natCast.mpr (orderOf_dvd_natCard p))
+
+/-- If a cyclic `p`-subgroup `P` acts by conjugation on a subgroup `K` of coprime order, then
+  either `⁅K, P⁆ = ⊥` or `⁅K, P⁆ = P`. -/
+theorem commutator_eq_bot_or_commutator_eq_self {P K : Subgroup G} [IsCyclic P]
+    (hP : IsPGroup p P) (hKP : K ≤ Subgroup.normalizer P)
+    (hPK : (Nat.card P).Coprime (Nat.card K)) : ⁅K, P⁆ = ⊥ ∨ ⁅K, P⁆ = P := by
+  let _ := MulDistribMulAction.compHom P (P.normalizerMonoidHom.comp (Subgroup.inclusion hKP))
+  refine (smul_mul_inv_trivial_or_surjective hP hPK).imp (fun h ↦ ?_) fun h ↦ ?_
+  · rw [eq_bot_iff, Subgroup.commutator_le]
+    exact fun k hk g hg ↦ Subtype.ext_iff.mp (h ⟨g, hg⟩ ⟨k, hk⟩)
+  · rw [le_antisymm_iff, Subgroup.commutator_le]
+    refine ⟨fun k hk g hg ↦ P.mul_mem ((hKP hk g).mp hg) (P.inv_mem hg), fun g hg ↦ ?_⟩
+    obtain ⟨k, q, hkq⟩ := h ⟨g, hg⟩
+    rw [← Subtype.coe_mk g hg, ← hkq]
+    exact Subgroup.commutator_mem_commutator k.2 q.2
+
+end IsPGroup
+
+namespace Sylow
+
+variable [Finite G] (P : Sylow p G) [IsCyclic P]
+
+/-- If a normal cyclic Sylow `p`-subgroup `P` has a complement `K`, then either `⁅K, P⁆ = ⊥` or
+  `⁅K, P⁆ = P`. -/
+theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
+    (h : K.IsComplement' P) : ⁅K, P.1⁆ = ⊥ ∨ ⁅K, P.1⁆ = P :=
+  P.2.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
+    (h.index_eq_card ▸ P.card_coprime_index)
+
+/-- A normal cyclic Sylow subgroup is either central or contained in the commutator subgroup. -/
+theorem le_center_or_le_commutator [P.Normal] : P ≤ Subgroup.center G ∨ P ≤ commutator G := by
+  obtain ⟨K, hK⟩ := Subgroup.exists_left_complement'_of_coprime P.card_coprime_index
+  refine (commutator_eq_bot_or_commutator_eq_self P hK).imp (fun h ↦ ?_) (fun h ↦ ?_)
+  · replace h := sup_le (Subgroup.commutator_eq_bot_iff_le_centralizer.mp h) P.le_centralizer
+    rwa [hK.sup_eq_top, top_le_iff, Subgroup.centralizer_eq_top_iff_subset] at h
+  · rw [← h, commutator_def]
+    exact Subgroup.commutator_mono le_top le_top
+
+/-- A cyclic Sylow subgroup is either central in its normalizer or contained in the commutator
+  subgroup. -/
+theorem normalizer_le_centralizer_or_le_commutator :
+    Subgroup.normalizer P ≤ Subgroup.centralizer (P : Set G) ∨ P ≤ commutator G := by
+  let Q : Sylow p (Subgroup.normalizer P) := P.subtype P.le_normalizer
+  have : Q.Normal := P.normal_in_normalizer
+  have : IsCyclic Q :=
+    isCyclic_of_surjective _ (Subgroup.subgroupOfEquivOfLe P.le_normalizer).symm.surjective
+  refine (le_center_or_le_commutator Q).imp (fun h ↦ ?_) (fun h ↦ ?_)
+  · rw [← SetLike.coe_subset_coe, ← Subgroup.centralizer_eq_top_iff_subset, eq_top_iff,
+      ← Subgroup.map_subtype_le_map_subtype, ← MonoidHom.range_eq_map,
+      (Subgroup.normalizer (P : Set G)).range_subtype] at h
+    replace h := h.trans (Subgroup.map_centralizer_le_centralizer_image _ _)
+    rwa [← Subgroup.coe_map, P.coe_subtype, ← P.coe_coe,
+      Subgroup.map_subgroupOf_eq_of_le P.le_normalizer] at h
+  · rw [P.coe_subtype, ← Subgroup.map_subtype_le_map_subtype, ← P.coe_coe,
+      Subgroup.map_subgroupOf_eq_of_le P.le_normalizer, Subgroup.map_subtype_commutator] at h
+    exact h.trans (Subgroup.commutator_mono le_top le_top)
+
+open scoped IsMulCommutative in
+include P in
+/-- If `G` has a cyclic Sylow `p`-subgroup, then the cardinality and index of the commutator
+  subgroup of `G` cannot both be divisible by `p`. -/
+theorem not_dvd_card_commutator_or_not_dvd_index_commutator :
+    ¬ p ∣ Nat.card (commutator G) ∨ ¬ p ∣ (commutator G).index := by
+  refine (normalizer_le_centralizer_or_le_commutator P).imp ?_ ?_ <;>
+      refine fun hP h ↦ P.not_dvd_index (h.trans ?_)
+  · rw [(MonoidHom.ker_transferSylow_isComplement' P hP).index_eq_card]
+    exact Subgroup.card_dvd_of_le (Abelianization.commutator_subset_ker _)
+  · exact Subgroup.index_dvd_of_le hP
+
+end Sylow
+
+variable (G) in
+/-- If `G` is a finite Z-group, then `commutator G` is a Hall subgroup of `G`. -/
+theorem IsZGroup.coprime_commutator_index [Finite G] [IsZGroup G] :
+    (Nat.card (commutator G)).Coprime (commutator G).index := by
+  suffices h : ∀ p, p.Prime → (¬ p ∣ Nat.card (commutator G) ∨ ¬ p ∣ (commutator G).index) by
+    contrapose! h
+    exact Nat.Prime.not_coprime_iff_dvd.mp h
+  intro p hp
+  have := Fact.mk hp
+  exact Sylow.not_dvd_card_commutator_or_not_dvd_index_commutator default
+
+end Hall
 
 section Classification
 
@@ -148,6 +314,20 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
     apply isCyclic_of_injective (f'.subgroupMap P)
     rwa [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot]
 
-end Classification
+/-- A finite group `G` is a Z-group if and only if `G` is isomorphic to a semidirect product of two
+  cyclic subgroups of coprime order. -/
+theorem isZGroup_iff_exists_mulEquiv [Finite G] :
+    IsZGroup G ↔ ∃ (N H : Subgroup G) (φ : H →* MulAut N) (_ : G ≃* N ⋊[φ] H),
+      IsCyclic H ∧ IsCyclic N ∧ (Nat.card N).Coprime (Nat.card H) := by
+  refine ⟨fun hG ↦ ?_, ?_⟩
+  · obtain ⟨H, hH⟩ := Subgroup.exists_right_complement'_of_coprime hG.coprime_commutator_index
+    have h1 : Abelianization G ≃* H := hH.symm.QuotientMulEquiv
+    refine ⟨commutator G, H, _, (SemidirectProduct.mulEquivSubgroup hH).symm,
+      isCyclic_of_surjective _ h1.surjective, hG.isCyclic_commutator, ?_⟩
+    exact Nat.card_congr h1.toEquiv ▸ hG.coprime_commutator_index
+  · rintro ⟨N, H, φ, e, hH, hN, hHN⟩
+    have : IsZGroup (N ⋊[φ] H) :=
+      isZGroup_of_coprime SemidirectProduct.range_inl_eq_ker_rightHom.ge hHN
+    exact IsZGroup.of_injective (f := e.toMonoidHom) e.injective
 
-end IsZGroup
+end Classification

@@ -3,8 +3,10 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.FieldTheory.Separable
 
 /-!
 
@@ -15,7 +17,7 @@ This file contains basics about the separable degree of a polynomial.
 ## Main results
 
 - `IsSeparableContraction`: is the condition that, for `g` a separable polynomial, we have that
-   `g(x^(q^m)) = f(x)` for some `m : ℕ`.
+  `g(x^(q^m)) = f(x)` for some `m : ℕ`.
 - `HasSeparableContraction`: the condition of having a separable contraction
 - `HasSeparableContraction.degree`: the separable degree, defined as the degree of some
   separable contraction
@@ -33,11 +35,12 @@ This file contains basics about the separable degree of a polynomial.
 separable degree, degree, polynomial
 -/
 
+@[expose] public section
+
 noncomputable section
 
 namespace Polynomial
 
-open scoped Classical
 open Polynomial
 
 section CommSemiring
@@ -110,7 +113,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
     (h_expand : expand F (q ^ m) g = expand F (q ^ m') g') (hg : g.Separable) (hg' : g'.Separable) :
     g.natDegree = g'.natDegree := by
   wlog hm : m ≤ m'
-  · exact (this q g' g m' m h_expand.symm hg' hg (le_of_not_le hm)).symm
+  · exact (this q g' g m' m h_expand.symm hg' hg (le_of_not_ge hm)).symm
   obtain ⟨s, rfl⟩ := exists_add_of_le hm
   rw [pow_add, expand_mul, expand_inj (pow_pos (NeZero.pos q) m)] at h_expand
   subst h_expand

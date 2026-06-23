@@ -3,10 +3,12 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.Order.LocalExtr
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Minima and maxima of convex functions
@@ -15,14 +17,14 @@ We show that if a function `f : E → β` is convex, then a local minimum is als
 a global minimum, and likewise for concave functions.
 -/
 
+public section
 
-variable {E β : Type*} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [TopologicalAddGroup E]
-  [ContinuousSMul ℝ E] [OrderedAddCommGroup β] [Module ℝ β] [OrderedSMul ℝ β] {s : Set E}
 
-open Set Filter Function
+variable {E β : Type*} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [IsTopologicalAddGroup E]
+  [ContinuousSMul ℝ E] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [Module ℝ β] [IsOrderedModule ℝ β] [PosSMulReflectLE ℝ β] {s : Set E}
 
-open scoped Classical
-open Topology
+open Set Filter Function Topology
 
 /-- Helper lemma for the more general case: `IsMinOn.of_isLocalMinOn_of_convexOn`.
 -/
@@ -56,7 +58,8 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn {f : E → β} {a : E} (a_in_s : a �
   have hg1 : g 1 = x := AffineMap.lineMap_apply_one a x
   have hgc : Continuous g := AffineMap.lineMap_continuous
   have h_maps : MapsTo g (Icc 0 1) s := by
-    simpa only [g, mapsTo', ← segment_eq_image_lineMap] using h_conv.1.segment_subset a_in_s x_in_s
+    simpa only [g, mapsTo_iff_image_subset, ← segment_eq_image_lineMap]
+      using h_conv.1.segment_subset a_in_s x_in_s
   have fg_local_min_on : IsLocalMinOn (f ∘ g) (Icc 0 1) 0 := by
     rw [← hg0] at h_localmin
     exact h_localmin.comp_continuousOn h_maps hgc.continuousOn (left_mem_Icc.2 zero_le_one)

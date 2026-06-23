@@ -3,10 +3,11 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Data.Fintype.Perm
-import Mathlib.GroupTheory.Perm.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Data.Fintype.Perm
 
 /-!
 # Lemmas about subgroups within the permutations (self-equivalences) of a type `α`
@@ -19,8 +20,14 @@ It also provides decidable instances on membership in these subgroups, since
 `MonoidHom.decidableMemRange` cannot be inferred without the help of a lambda.
 The presence of these instances induces a `Fintype` instance on the `QuotientGroup.Quotient` of
 these subgroups.
+
+In particular, we prove **Cayley's theorem** in `Equiv.Perm.subgroupOfMulAction`:
+every group `G` is isomorphic to a subgroup of the symmetric group acting on `G`.
 -/
 
+@[expose] public section
+
+assert_not_exists Field
 
 namespace Equiv
 
@@ -61,6 +68,7 @@ theorem subtypeCongrHom.card_range {α : Type*} (p : α → Prop) [DecidablePred
 /-- **Cayley's theorem**: Every group G is isomorphic to a subgroup of the symmetric group acting on
 `G`. Note that we generalize this to an arbitrary "faithful" group action by `G`. Setting `H = G`
 recovers the usual statement of Cayley's theorem via `RightCancelMonoid.faithfulSMul` -/
+@[wikidata Q179208]
 noncomputable def subgroupOfMulAction (G H : Type*) [Group G] [MulAction G H] [FaithfulSMul G H] :
     G ≃* (MulAction.toPermHom G H).range :=
   MulEquiv.ofLeftInverse' _ (Classical.choose_spec MulAction.toPerm_injective.hasLeftInverse)

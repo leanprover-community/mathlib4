@@ -3,7 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Functor.TwoSquare
 
 /-!
 # Guitart exact squares
@@ -35,8 +38,8 @@ derived functors.
 ## TODO
 
 * Define the notion of derivability structure from
-[the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
-and construct (pointwise) derived functors using this notion
+  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
+  and construct (pointwise) derived functors using this notion
 
 ## References
 * https://ncatlab.org/nlab/show/exact+square
@@ -44,6 +47,10 @@ and construct (pointwise) derived functors using this notion
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+set_option backward.defeqAttrib.useBackward true
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -55,24 +62,9 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
 
-/-- A `2`-square consists of a natural transformation `T ⋙ R ⟶ L ⋙ B`
-involving fours functors `T`, `L`, `R`, `B` that are on the
-top/left/right/bottom sides of a square of categories. -/
-def TwoSquare := T ⋙ R ⟶ L ⋙ B
-
 namespace TwoSquare
 
-/-- Constructor for `TwoSquare`. -/
-abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
-
-variable {T L R B}
-
-@[ext]
-lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) :
-    w = w' :=
-  NatTrans.ext (funext h)
-
-variable (w : TwoSquare T L R B)
+variable {T L R B} (w : TwoSquare T L R B)
 
 /-- Given `w : TwoSquare T L R B` and `X₃ : C₃`, this is the obvious functor
 `CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃)`. -/
@@ -251,6 +243,14 @@ instance [hw : w.GuitartExact] {X₂ : C₂} (g : StructuredArrow (R.obj X₂) B
   rw [guitartExact_iff_isConnected_downwards] at hw
   apply hw
 
+lemma costructuredArrowRightwards_final_iff_of_iso {X₃ X₃' : C₃} (e : X₃ ≅ X₃') :
+    (w.costructuredArrowRightwards X₃).Final ↔
+      (w.costructuredArrowRightwards X₃').Final := by
+  rw [Functor.final_iff_comp_equivalence _ (CostructuredArrow.mapIso (B.mapIso e)).functor,
+    Functor.final_iff_equivalence_comp (CostructuredArrow.mapIso e).functor]
+  exact Functor.final_natIso_iff
+    (NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk (Iso.refl _)))
+
 lemma guitartExact_iff_final :
     w.GuitartExact ↔ ∀ (X₃ : C₃), (w.costructuredArrowRightwards X₃).Final :=
   ⟨fun _ _ => ⟨fun _ => inferInstance⟩, fun _ => ⟨fun _ => inferInstance⟩⟩
@@ -259,6 +259,14 @@ instance [hw : w.GuitartExact] (X₃ : C₃) :
     (w.costructuredArrowRightwards X₃).Final := by
   rw [guitartExact_iff_final] at hw
   apply hw
+
+lemma structuredArrowDownwards_initial_iff_of_iso {X₂ X₂' : C₂} (e : X₂ ≅ X₂') :
+    (w.structuredArrowDownwards X₂).Initial ↔
+      (w.structuredArrowDownwards X₂').Initial := by
+  rw [Functor.initial_iff_comp_equivalence _ (StructuredArrow.mapIso (R.mapIso e)).functor,
+    Functor.initial_iff_equivalence_comp (StructuredArrow.mapIso e).functor]
+  exact Functor.initial_natIso_iff
+    (NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk (Iso.refl _)))
 
 lemma guitartExact_iff_initial :
     w.GuitartExact ↔ ∀ (X₂ : C₂), (w.structuredArrowDownwards X₂).Initial :=
@@ -272,10 +280,11 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
   rw [guitartExact_iff_initial] at hw
   apply hw
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the left and right functors of a 2-square are equivalences, and the natural
 transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
 instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
-    [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
+    [L.IsEquivalence] [R.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
   rw [guitartExact_iff_initial]
   intro X₂
   have := StructuredArrow.isEquivalence_post X₂ T R
@@ -285,6 +294,7 @@ instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
   dsimp only [structuredArrowDownwards]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance guitartExact_id (F : C₁ ⥤ C₂) :
     GuitartExact (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) := by
   rw [guitartExact_iff_isConnected_rightwards]
@@ -293,7 +303,7 @@ instance guitartExact_id (F : C₁ ⥤ C₂) :
   let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
   have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
     StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
-      (by simpa using CostructuredArrow.w X.hom))
+      (by simpa using! CostructuredArrow.w X.hom))
   have : Nonempty Z := ⟨X₀⟩
   apply zigzag_isConnected
   intro X Y

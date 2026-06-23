@@ -3,26 +3,32 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Control.Monad.Writer
-import Mathlib.Control.Lawful
-import Batteries.Tactic.Congr
-import Batteries.Lean.Except
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Control.Monad.Writer
+public import Mathlib.Control.Lawful
+public import Batteries.Tactic.Congr
+public import Batteries.Lean.Except
+import all Init.Control.Option  -- for unfolding `Option.lift`
 
 /-!
 # Continuation Monad
 
 Monad encapsulating continuation passing programming style, similar to
 Haskell's `Cont`, `ContT` and `MonadCont`:
-<http://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
+<https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
+<https://hackage.haskell.org/package/transformers-0.6.2.0/docs/Control-Monad-Trans-Cont.html>
 -/
+
+@[expose] public section
 
 universe u v w u₀ u₁ v₀ v₁
 
 structure MonadCont.Label (α : Type w) (m : Type u → Type v) (β : Type u) where
   apply : α → m β
 
-def MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
+abbrev MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
   f.apply x
 
 class MonadCont (m : Type u → Type v) where
@@ -30,8 +36,8 @@ class MonadCont (m : Type u → Type v) where
 
 open MonadCont
 
-class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m]
-    extends LawfulMonad m : Prop where
+class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] : Prop
+    extends LawfulMonad m where
   callCC_bind_right {α ω γ} (cmd : m α) (next : Label ω m γ → α → m ω) :
     (callCC fun f => cmd >>= next f) = cmd >>= fun x => callCC fun f => next f x
   callCC_bind_left {α} (β) (x : α) (dead : Label α m β → β → m α) :
@@ -44,7 +50,7 @@ def ContT (r : Type u) (m : Type u → Type v) (α : Type w) :=
   (α → m r) → m r
 
 abbrev Cont (r : Type u) (α : Type w) :=
-  ContT r id α
+  ContT r Id α
 
 namespace ContT
 
@@ -52,8 +58,11 @@ export MonadCont (Label goto)
 
 variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
-def run : ContT r m α → (α → m r) → m r :=
-  id
+/-- Build a `ContT` from a function taking a continuation callback. -/
+def mk (f : (α → m r) → m r) : ContT r m α := f
+
+/-- Run a `ContT` with a provided callback. -/
+def run (x : ContT r m α) : (α → m r) → m r := x
 
 def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
   f ∘ x
@@ -75,33 +84,89 @@ instance : Monad (ContT r m) where
   pure x f := f x
   bind x f g := x fun i => f i g
 
+@[simp]
+theorem run_mk (f : (α → m r) → m r) (k : α → m r) : (.mk f : ContT r m α).run k = f k := rfl
+
+@[simp]
+theorem run_pure (a : α) (k : α → m r) : (pure a : ContT r m α).run k = k a := rfl
+
+@[simp]
+theorem run_bind (x : ContT r m α) (f : α → ContT r m β) (k : β → m r) :
+    (x >>= f).run k = x.run fun x => (f x).run k := rfl
+
+@[simp]
+theorem run_map (f : α → β) (x : ContT r m α) (k : β → m r) :
+    (f <$> x).run k = x.run (k ∘ f) := rfl
+
+@[simp]
+theorem run_seq (f : ContT r m (α → β)) (x : ContT r m α) (k : β → m r) :
+    (f <*> x).run k = f.run fun f => x.run (k ∘ f) := rfl
+
+@[simp]
+theorem run_seqLeft (x : ContT r m α) (y : ContT r m β) (k : α → m r) :
+    (x <* y).run k = x.run fun x => y.run fun _ => k x := rfl
+
+@[simp]
+theorem run_seqRight (x : ContT r m α) (y : ContT r m β) (k : β → m r) :
+    (x *> y).run k = x.run fun _ => y.run k := rfl
+
 instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
   (id_map := by intros; rfl)
   (pure_bind := by intros; ext; rfl)
   (bind_assoc := by intros; ext; rfl)
 
-def monadLift [Monad m] {α} : m α → ContT r m α := fun x f => x >>= f
-
 instance [Monad m] : MonadLift m (ContT r m) where
-  monadLift := ContT.monadLift
+  monadLift x := .mk fun k => x >>= k
+
+@[simp]
+theorem run_monadLift [Monad m] {α} (x : m α) (k : α → m r) :
+    (monadLift x : ContT r m α).run k = x >>= k := rfl
 
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
-  simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
-    ContT.monadLift]
+  simp only [bind_assoc, run_bind, run_monadLift, Function.comp_apply]
 
 instance : MonadCont (ContT r m) where
-  callCC f g := f ⟨fun x _ => g x⟩ g
+  callCC f := .mk fun k => f ⟨fun x => .mk fun _ => k x⟩ k
+
+@[simp]
+theorem run_callCC (f : Label α (ContT r m) β → ContT r m α) (k : α → m r) :
+    (callCC f).run k = (f ⟨fun x => .mk fun _ => k x⟩).run k := rfl
 
 instance : LawfulMonadCont (ContT r m) where
   callCC_bind_right := by intros; ext; rfl
   callCC_bind_left := by intros; ext; rfl
   callCC_dummy := by intros; ext; rfl
 
-instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
-  throw e _ := throw e
-  tryCatch act h f := tryCatch (act f) fun e => h e f
+/-- Note that `tryCatch` does not have correct behavior in this monad:
+```
+def foo : ContT Bool (Except String) Bool := do
+  let x ← try
+    pure true
+  catch _ =>
+    return false
+  throw s!"oh no {x}"
+#eval foo.run pure
+-- `Except.ok false`, no error
+```
+Here, the `throwError` is being run inside the `try`.
+See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/MonadExcept.20in.20the.20ContT.20monad/near/375341221)
+for further discussion.
+-/
+instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (ContT r m) where
+  throw e := .mk fun _ => throw e
+  tryCatch act h := .mk fun k => tryCatch (act.run k) fun e => (h e).run k
+
+@[simp]
+theorem run_throw {ε} [MonadExceptOf ε m]
+    (e : ε) (f : α → m r) :
+    (throw e : ContT r m α).run f = throw e := rfl
+
+@[simp]
+theorem run_tryCatch {ε} [MonadExceptOf ε m]
+    (act : ContT r m α) (h : ε → ContT r m α) (f : α → m r) :
+    (tryCatch act h : ContT r m α).run f = tryCatch (act.run f) fun e => (h e).run f := rfl
 
 end ContT
 
@@ -128,7 +193,7 @@ instance {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m)
   callCC_bind_right := by
     intros; simp only [callCC, ExceptT.callCC, ExceptT.run_bind, callCC_bind_right]; ext
     dsimp
-    congr with ⟨⟩ <;> simp [ExceptT.bindCont, @callCC_dummy m _]
+    congr with ⟨⟩ <;> simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
     simp only [callCC, ExceptT.callCC, ExceptT.goto_mkLabel, map_eq_bind_pure_comp, Function.comp,
@@ -141,30 +206,29 @@ def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m
 
 theorem OptionT.goto_mkLabel {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
     goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a => pure (some a)) :=
-  rfl
+  (rfl)
 
 nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
     OptionT m α :=
   OptionT.mk (callCC fun x : Label _ m β => OptionT.run <| f (OptionT.mkLabel x) : m (Option α))
+
+@[simp]
+lemma run_callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
+    (OptionT.callCC f).run = (callCC fun x => OptionT.run <| f (OptionT.mkLabel x)) := (rfl)
 
 instance [MonadCont m] : MonadCont (OptionT m) where
   callCC := OptionT.callCC
 
 instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_right := by
-    intros; simp only [callCC, OptionT.callCC, OptionT.run_bind, callCC_bind_right]; ext
-    dsimp
-    congr with ⟨⟩ <;> simp [@callCC_dummy m _]
+    refine fun _ _ => OptionT.ext ?_
+    simpa [callCC, Option.elimM, callCC_bind_right] using
+      bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
-    simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, OptionT.run_bind, OptionT.run_mk,
-      bind_assoc, pure_bind, @callCC_bind_left m _]
-    ext; rfl
-  callCC_dummy := by intros; simp only [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
-
-/- Porting note: In Lean 3, `One ω` is required for `MonadLift (WriterT ω m)`. In Lean 4,
-                 `EmptyCollection ω` or `Monoid ω` is required. So we give definitions for the both
-                 instances. -/
+    ext
+    simp [callCC, OptionT.goto_mkLabel, @callCC_bind_left m _]
+  callCC_dummy := by intros; ext; simp [callCC, OptionT.callCC, @callCC_dummy m _]
 
 def WriterT.mkLabel {α β ω} [EmptyCollection ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, ∅)⟩

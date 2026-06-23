@@ -1,15 +1,13 @@
 /-
-Copyright (c) 2021 . All rights reserved.
+Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Subgroup.Centralizer
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Conjugation action of a group on itself
@@ -35,8 +33,11 @@ is that some theorems about the group actions will not apply when since this
 
 -/
 
+@[expose] public section
 
-variable (α M G G₀ R K : Type*)
+assert_not_exists MonoidWithZero
+
+variable (α M G : Type*)
 
 /-- A type alias for a group `G`. `ConjAct G` acts on `G` by conjugation -/
 def ConjAct : Type _ :=
@@ -46,15 +47,13 @@ namespace ConjAct
 
 open MulAction Subgroup
 
-variable {M G G₀ R K}
+variable {M G}
 
-instance [Group G] : Group (ConjAct G) := ‹Group G›
+instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := inferInstanceAs <| DivInvMonoid G
 
-instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
+instance [Group G] : Group (ConjAct G) := inferInstanceAs <| Group G
 
-instance [GroupWithZero G] : GroupWithZero (ConjAct G) := ‹GroupWithZero G›
-
-instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
+instance [Fintype G] : Fintype (ConjAct G) := inferInstanceAs <| Fintype G
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
@@ -71,8 +70,6 @@ instance : Inhabited (ConjAct G) :=
 def ofConjAct : ConjAct G ≃* G where
   toFun := id
   invFun := id
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
   map_mul' := fun _ _ => rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/
@@ -104,11 +101,11 @@ theorem toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
 theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 
@@ -120,11 +117,11 @@ theorem ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
 theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 
@@ -167,58 +164,16 @@ instance unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower �
 
 end Monoid
 
-section Semiring
-
-variable [Semiring R]
-
-instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
-  { ConjAct.unitsMulDistribMulAction with
-    smul_zero := by simp [units_smul_def]
-    smul_add := by simp [units_smul_def, mul_add, add_mul] }
-
-end Semiring
-
 end Units
 
-section GroupWithZero
-
-variable [GroupWithZero G₀]
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
-  rfl
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
-  rfl
-
-instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
-  one_smul := by simp [smul_def]
-  mul_smul := by simp [smul_def, mul_assoc]
-
-instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
-    SMulCommClass α (ConjAct G₀) G₀ where
-  smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
-
-instance smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
-    SMulCommClass (ConjAct G₀) α G₀ :=
-  haveI := SMulCommClass.symm G₀ α G₀
-  SMulCommClass.symm _ _ _
-
-end GroupWithZero
-
-section DivisionRing
-
-variable [DivisionRing K]
-
-instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
-  { ConjAct.mulAction₀ with
-    smul_zero := by simp [smul_def]
-    smul_add := by simp [smul_def, mul_add, add_mul] }
-
-end DivisionRing
-
 variable [Group G]
+
+theorem coe_smul {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
+    (ConjAct.toConjAct g • h).1 = ConjAct.toConjAct g.1 • h.1 := by
+  rfl
+
+theorem toConjAct_inv_smul (g h : G) : toConjAct g⁻¹ • h = g⁻¹ * h * g := by
+  rw [toConjAct_smul, inv_inv]
 
 -- todo: this file is not in good order; I will refactor this after the PR
 
@@ -240,6 +195,9 @@ instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G
 theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
   rfl
 
+theorem toConjAct_smul_eq_mulAut_conj (g h : G) : ConjAct.toConjAct g • h = MulAut.conj g h :=
+  rfl
+
 /-- The set of fixed points of the conjugation action of `G` on itself is the center of `G`. -/
 theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
   ext x
@@ -258,9 +216,9 @@ theorem orbit_eq_carrier_conjClasses (g : G) :
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
 theorem stabilizer_eq_centralizer (g : G) :
-    stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
-  le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
-    mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
+    stabilizer (ConjAct G) g = centralizer {toConjAct g} :=
+  le_antisymm (fun _ hg _ h ↦ h ▸ eq_mul_inv_iff_mul_eq.mp hg.symm) fun _ h =>
+    mul_inv_eq_of_eq_mul (h g rfl).symm
 
 theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
     Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
@@ -268,7 +226,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
   ext k
 -- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
 -- with the equality in the other direction
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
   rw [eq_comm]
   exact Iff.symm mul_inv_eq_iff_eq_mul
 
@@ -297,11 +255,10 @@ theorem _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : 
 @[simp]
 theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by
-  change _ * _⁻¹⁻¹ = _
+  change _ * g⁻¹⁻¹ = _
   rw [inv_inv]
   rfl
 
-@[simp]
 theorem _root_.MulAut.conjNormal_inv_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g)⁻¹ h) = g⁻¹ * h * g :=
   MulAut.conjNormal_symm_apply g h
@@ -341,8 +298,6 @@ def unitsCentralizerEquiv (x : Mˣ) :
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
       exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
-    left_inv := fun _ ↦ by ext; rfl
-    right_inv := fun _ ↦ by ext; rfl
     map_mul' := map_mul _ }
 
 end Units

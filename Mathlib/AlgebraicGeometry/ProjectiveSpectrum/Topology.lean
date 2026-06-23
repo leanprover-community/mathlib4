@@ -3,10 +3,12 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Johan Commelin
 -/
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Projective spectrum of a graded ring
@@ -16,9 +18,9 @@ are prime and do not contain the irrelevant ideal.
 It is naturally endowed with a topology: the Zariski topology.
 
 ## Notation
-- `R` is a commutative semiring;
-- `A` is a commutative ring and an `R`-algebra;
-- `𝒜 : ℕ → Submodule R A` is the grading of `A`;
+- `A` is a commutative ring
+- `σ` is a class of additive submonoids of `A`
+- `𝒜 : ℕ → σ` is the grading of `A`;
 
 ## Main definitions
 
@@ -35,16 +37,17 @@ It is naturally endowed with a topology: the Zariski topology.
   Zariski topology.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open DirectSum Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
-variable {R A : Type*}
-variable [CommSemiring R] [CommRing A] [Algebra R A]
-variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+variable {A σ : Type*}
+variable [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+variable (𝒜 : ℕ → σ) [GradedRing 𝒜]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The projective spectrum of a graded commutative ring is the subtype of all homogeneous ideals
 that are prime and do not contain the irrelevant ideal. -/
 @[ext]
@@ -56,6 +59,8 @@ structure ProjectiveSpectrum where
 attribute [instance] ProjectiveSpectrum.isPrime
 
 namespace ProjectiveSpectrum
+
+instance (x : ProjectiveSpectrum 𝒜) : Ideal.IsPrime x.asHomogeneousIdeal.toIdeal := x.isPrime
 
 /-- The zero locus of a set `s` of elements of a commutative ring `A` is the set of all relevant
 homogeneous prime ideals of the ring that contain the set `s`.
@@ -115,13 +120,13 @@ theorem subset_zeroLocus_iff_le_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜
 
 variable (𝒜)
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_ideal :
     @GaloisConnection (Ideal A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun s => zeroLocus 𝒜 s) fun t => vanishingIdeal t := by
@@ -132,7 +137,7 @@ theorem gc_homogeneousIdeal :
     @GaloisConnection (HomogeneousIdeal 𝒜) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun I => zeroLocus 𝒜 I) fun t => vanishingIdeal t :=
   fun I t => by
-  simpa [show I.toIdeal ≤ (vanishingIdeal t).toIdeal ↔ I ≤ vanishingIdeal t from Iff.rfl] using
+  simpa [show I.toIdeal ≤ (vanishingIdeal t).toIdeal ↔ I ≤ vanishingIdeal t from Iff.rfl] using!
     subset_zeroLocus_iff_le_vanishingIdeal t I.toIdeal
 
 theorem subset_zeroLocus_iff_subset_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) (s : Set A) :
@@ -182,10 +187,10 @@ theorem zeroLocus_empty : zeroLocus 𝒜 (∅ : Set A) = Set.univ :=
 
 @[simp]
 theorem vanishingIdeal_univ : vanishingIdeal (∅ : Set (ProjectiveSpectrum 𝒜)) = ⊤ := by
-  simpa using (gc_ideal _).u_top
+  simpa using! (gc_ideal _).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set A} (h : (1 : A) ∈ s) : zeroLocus 𝒜 s = ∅ :=
-  Set.eq_empty_iff_forall_not_mem.mpr fun x hx =>
+  Set.eq_empty_iff_forall_notMem.mpr fun x hx =>
     (inferInstance : x.asHomogeneousIdeal.toIdeal.IsPrime).ne_top <|
       x.asHomogeneousIdeal.toIdeal.eq_top_iff_one.mpr <| hx h
 
@@ -231,7 +236,7 @@ theorem zeroLocus_bUnion (s : Set (Set A)) :
 theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=
   HomogeneousIdeal.toIdeal_injective <| by
-    convert (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
+    convert! (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
 
 theorem zeroLocus_inf (I J : Ideal A) :
     zeroLocus 𝒜 ((I ⊓ J : Ideal A) : Set A) = zeroLocus 𝒜 I ∪ zeroLocus 𝒜 J :=
@@ -265,10 +270,10 @@ theorem sup_vanishingIdeal_le (t t' : Set (ProjectiveSpectrum 𝒜)) :
   rw [← HomogeneousIdeal.mem_iff, HomogeneousIdeal.toIdeal_sup, mem_vanishingIdeal,
     Submodule.mem_sup]
   rintro ⟨f, hf, g, hg, rfl⟩ x ⟨hxt, hxt'⟩
-  erw [mem_vanishingIdeal] at hf hg
+  rw [HomogeneousIdeal.mem_iff, mem_vanishingIdeal] at hf hg
   apply Submodule.add_mem <;> solve_by_elim
 
-theorem mem_compl_zeroLocus_iff_not_mem {f : A} {I : ProjectiveSpectrum 𝒜} :
+theorem mem_compl_zeroLocus_iff_notMem {f : A} {I : ProjectiveSpectrum 𝒜} :
     I ∈ (zeroLocus 𝒜 {f} : Set (ProjectiveSpectrum 𝒜))ᶜ ↔ f ∉ I.asHomogeneousIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
@@ -282,7 +287,7 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
       let f : Zs → Set _ := fun i => Classical.choose (h i.2)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
-      convert H using 2
+      convert! H using 2
       funext i
       exact (Classical.choose_spec (h i.2)).symm)
     (by
@@ -315,9 +320,9 @@ theorem zeroLocus_vanishingIdeal_eq_closure (t : Set (ProjectiveSpectrum 𝒜)) 
 
 theorem vanishingIdeal_closure (t : Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (closure t) = vanishingIdeal t := by
-  have := (gc_ideal 𝒜).u_l_u_eq_u t
+  have : (vanishingIdeal (zeroLocus 𝒜 (vanishingIdeal t))).toIdeal = _ := (gc_ideal 𝒜).u_l_u_eq_u t
   ext1
-  erw [zeroLocus_vanishingIdeal_eq_closure 𝒜 t] at this
+  rw [zeroLocus_vanishingIdeal_eq_closure 𝒜 t] at this
   exact this
 
 section BasicOpen
@@ -368,17 +373,17 @@ theorem basicOpen_pow (f : A) (n : ℕ) (hn : 0 < n) : basicOpen 𝒜 (f ^ n) = 
   TopologicalSpace.Opens.ext <| by simpa using zeroLocus_singleton_pow 𝒜 f n hn
 
 theorem basicOpen_eq_union_of_projection (f : A) :
-    basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f) :=
+    basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedRing.proj 𝒜 i f) :=
   TopologicalSpace.Opens.ext <|
     Set.ext fun z => by
-      erw [mem_coe_basicOpen, TopologicalSpace.Opens.mem_sSup]
+      rw [mem_coe_basicOpen, mem_coe, iSup, TopologicalSpace.Opens.mem_sSup]
       constructor <;> intro hz
-      · rcases show ∃ i, GradedAlgebra.proj 𝒜 i f ∉ z.asHomogeneousIdeal by
+      · rcases show ∃ i, GradedRing.proj 𝒜 i f ∉ z.asHomogeneousIdeal by
           contrapose! hz with H
           classical
           rw [← DirectSum.sum_support_decompose 𝒜 f]
           apply Ideal.sum_mem _ fun i _ => H i with ⟨i, hi⟩
-        exact ⟨basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
+        exact ⟨basicOpen 𝒜 (GradedRing.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
       · obtain ⟨_, ⟨i, rfl⟩, hz⟩ := hz
         exact fun rid => hz (z.1.2 i rid)
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler, Michael Stoll
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.Positivity
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.LSeries.Deriv
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.Positivity
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.LSeries.Deriv
 
 /-!
 # Positivity of values of L-series
@@ -17,11 +19,13 @@ The main results of this file are as follows.
   when `x : ℝ` is in the open half-plane of absolute convergence; see
   `LSeries.positive` and `ArithmeticFunction.LSeries_positive`.
 
-* If in addition the L_series of `a` agrees on some open right half-plane where it
+* If in addition the L-series of `a` agrees on some open right half-plane where it
   converges with an entire function `f`, then `f` is positive on the real axis;
   see `LSeries.positive_of_eq_differentiable` and
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.
 -/
+
+public section
 
 open scoped ComplexOrder
 
@@ -44,7 +48,7 @@ lemma iteratedDeriv_alternating {a : ℕ → ℂ} (hn : 0 ≤ a) {x : ℝ}
   · exact le_rfl
   · refine mul_nonneg ?_ <| (inv_natCast_cpow_ofReal_pos (by assumption) x).le
     induction n with
-    | zero => simpa only [Function.iterate_zero, id_eq] using hn k
+    | zero => simpa only [Function.iterate_zero, id_eq] using! hn k
     | succ n IH =>
         rw [Function.iterate_succ_apply']
         refine mul_nonneg ?_ IH
@@ -55,7 +59,7 @@ then `L a x` is positive real for all real `x` larger than `abscissaOfAbsConv a`
 lemma positive {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {x : ℝ} (hx : abscissaOfAbsConv a < x) :
     0 < LSeries a x := by
   rw [LSeries]
-  refine tsum_pos ?_ (fun n ↦ term_nonneg (ha₀ n) x) 1 <| term_pos one_ne_zero ha₁ x
+  refine Summable.tsum_pos ?_ (fun n ↦ term_nonneg (ha₀ n) x) 1 <| term_pos one_ne_zero ha₁ x
   exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simpa only [ofReal_re] using hx
 
 /-- If all values of `a : ℕ → ℂ` are nonnegative reals and `a 1`

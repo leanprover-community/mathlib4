@@ -3,8 +3,10 @@ Copyright (c) 2024 Miguel Marco. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miguel Marco
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Sets in subtypes
@@ -24,7 +26,7 @@ Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set A` a set in 
 - `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
 
 This notation, (together with the `↑` notation for `Set.CoeHead`)
-is defined in `Mathlib.Data.Set.Notation` and is scoped to the `Set.Notation` namespace.
+is defined in `Mathlib/Data/Set/Notation.lean` and is scoped to the `Set.Notation` namespace.
 To enable it, use `open Set.Notation`.
 
 
@@ -36,6 +38,8 @@ Theorem names refer to `↓∩` as `preimage_val`.
 
 subsets
 -/
+
+public section
 
 open Set
 
@@ -51,14 +55,14 @@ lemma preimage_val_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   exact h
 
 lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
-  erw [sUnion_image]
+  rw [← Set.image, sUnion_image]
   simp_rw [sUnion_eq_biUnion, preimage_iUnion]
 
 @[simp]
 lemma preimage_val_iInter : A ↓∩ (⋂ i, s i) = ⋂ i, A ↓∩ s i := preimage_iInter
 
 lemma preimage_val_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
-  erw [sInter_image]
+  rw [← Set.image, sInter_image]
   simp_rw [sInter_eq_biInter, preimage_iInter]
 
 lemma preimage_val_sInter_eq_sInter : A ↓∩ (⋂₀ S) = ⋂₀ ((A ↓∩ ·) '' S) := by
@@ -81,11 +85,13 @@ lemma image_val_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := image_union _
 lemma image_val_inter : (↑(D ∩ E) : Set α) = ↑D ∩ ↑E := image_inter Subtype.val_injective
 
 @[simp]
-lemma image_val_diff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_diff Subtype.val_injective _ _
+lemma image_val_sdiff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_sdiff Subtype.val_injective _ _
+
+@[deprecated (since := "2026-06-03")] alias image_val_diff := image_val_sdiff
 
 @[simp]
 lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
-  rw [compl_eq_univ_diff, image_val_diff, image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [compl_eq_univ_sdiff, image_val_sdiff, image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
 
 @[simp]
 lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
@@ -96,8 +102,7 @@ lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
 
 @[simp]
 lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
-  erw [sInter_image]
-  rw [sInter_eq_biInter, Subtype.val_injective.injOn.image_biInter_eq hT]
+  rw [← Set.image, sInter_image, sInter_eq_biInter, Subtype.val_injective.injOn.image_biInter_eq hT]
 
 @[simp]
 lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
@@ -114,8 +119,6 @@ lemma image_val_union_self_left_eq : ↑D ∪ A = A :=
 @[simp]
 lemma image_val_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
   inter_eq_right.2 image_val_subset
-@[deprecated (since := "2024-10-25")]
-alias cou_inter_self_right_eq_coe := image_val_inter_self_right_eq_coe
 
 @[simp]
 lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D :=
@@ -133,7 +136,7 @@ lemma image_val_injective : Function.Injective ((↑) : Set A → Set α) :=
 lemma subset_of_image_val_subset_image_val (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E :=
   (image_subset_image_iff Subtype.val_injective).1 h
 
-@[mono]
+@[gcongr, mono]
 lemma image_val_mono (h : D ⊆ E) : (↑D : Set α) ⊆ ↑E :=
   (image_subset_image_iff Subtype.val_injective).2 h
 

@@ -3,12 +3,14 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.List.Prime
-import Mathlib.Data.List.Sort
-import Mathlib.Data.List.Perm.Subperm
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.List.Prime
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.List.Perm.Subperm
 
 /-!
 # Prime numbers
@@ -17,10 +19,12 @@ This file deals with the factors of natural numbers.
 
 ## Important declarations
 
-- `Nat.factors n`: the prime factorization of `n`
-- `Nat.factors_unique`: uniqueness of the prime factorisation
+- `Nat.primeFactorsList n`: the prime factorization of `n`
+- `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
 
 -/
+
+@[expose] public section
 
 assert_not_exists Multiset
 
@@ -38,8 +42,6 @@ def primeFactorsList : ℕ → List ℕ
     let m := minFac (k + 2)
     m :: primeFactorsList ((k + 2) / m)
 decreasing_by exact factors_lemma
-
-@[deprecated (since := "2024-06-14")] alias factors := primeFactorsList
 
 @[simp]
 theorem primeFactorsList_zero : primeFactorsList 0 = [] := by rw [primeFactorsList]
@@ -85,8 +87,8 @@ theorem primeFactorsList_prime {p : ℕ} (hp : Nat.Prime p) : p.primeFactorsList
   have : Nat.minFac p = p := (Nat.prime_def_minFac.mp hp).2
   simp only [this, primeFactorsList, Nat.div_self (Nat.Prime.pos hp)]
 
-theorem primeFactorsList_chain {n : ℕ} :
-    ∀ {a}, (∀ p, Prime p → p ∣ n → a ≤ p) → List.Chain (· ≤ ·) a (primeFactorsList n) := by
+theorem isChain_cons_primeFactorsList {n : ℕ} :
+    ∀ {a}, (∀ p, Prime p → p ∣ n → a ≤ p) → List.IsChain (· ≤ ·) (a :: primeFactorsList n) := by
   match n with
   | 0 => simp
   | 1 => simp
@@ -95,17 +97,18 @@ theorem primeFactorsList_chain {n : ℕ} :
       let m := minFac (k + 2)
       have : (k + 2) / m < (k + 2) := factors_lemma
       rw [primeFactorsList]
-      refine List.Chain.cons ((le_minFac.2 h).resolve_left (by simp)) (primeFactorsList_chain ?_)
+      refine List.IsChain.cons_cons
+        ((le_minFac.2 h).resolve_left (by simp)) (isChain_cons_primeFactorsList ?_)
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 
-theorem primeFactorsList_chain_2 (n) : List.Chain (· ≤ ·) 2 (primeFactorsList n) :=
-  primeFactorsList_chain fun _ pp _ => pp.two_le
+theorem isChain_two_cons_primeFactorsList (n) : List.IsChain (· ≤ ·) (2 :: primeFactorsList n) :=
+  isChain_cons_primeFactorsList fun _ pp _ => pp.two_le
 
-theorem primeFactorsList_chain' (n) : List.Chain' (· ≤ ·) (primeFactorsList n) :=
-  @List.Chain'.tail _ _ (_ :: _) (primeFactorsList_chain_2 _)
+theorem isChain_primeFactorsList (n) : List.IsChain (· ≤ ·) (primeFactorsList n) :=
+  (isChain_two_cons_primeFactorsList _).tail
 
-theorem primeFactorsList_sorted (n : ℕ) : List.Sorted (· ≤ ·) (primeFactorsList n) :=
-  List.chain'_iff_pairwise.1 (primeFactorsList_chain' _)
+theorem primeFactorsList_sorted (n : ℕ) : List.SortedLE (primeFactorsList n) :=
+  (isChain_primeFactorsList _).sortedLE
 
 /-- `primeFactorsList` can be constructed inductively by extracting `minFac`, for sufficiently
 large `n`. -/
@@ -124,6 +127,9 @@ theorem primeFactorsList_eq_nil (n : ℕ) : n.primeFactorsList = [] ↔ n = 0 �
   · rcases h with (rfl | rfl)
     · exact primeFactorsList_zero
     · exact primeFactorsList_one
+
+theorem primeFactorsList_ne_nil (n : ℕ) : n.primeFactorsList ≠ [] ↔ 1 < n := by
+  simp [primeFactorsList_eq_nil n, one_lt_iff_ne_zero_and_ne_one]
 
 open scoped List in
 theorem eq_of_perm_primeFactorsList {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
@@ -158,7 +164,7 @@ theorem le_of_mem_primeFactorsList {n p : ℕ} (h : p ∈ n.primeFactorsList) : 
     cases h
   · exact le_of_dvd hn (dvd_of_mem_primeFactorsList h)
 
-/-- **Fundamental theorem of arithmetic**-/
+/-- **Fundamental theorem of arithmetic** -/
 theorem primeFactorsList_unique {n : ℕ} {l : List ℕ} (h₁ : prod l = n) (h₂ : ∀ p ∈ l, Prime p) :
     l ~ primeFactorsList n := by
   refine perm_of_prod_eq_prod ?_ ?_ ?_
@@ -193,7 +199,7 @@ theorem perm_primeFactorsList_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   · rw [List.prod_append, prod_primeFactorsList ha, prod_primeFactorsList hb]
   · intro p hp
     rw [List.mem_append] at hp
-    cases' hp with hp' hp' <;> exact prime_of_mem_primeFactorsList hp'
+    rcases hp with hp' | hp' <;> exact prime_of_mem_primeFactorsList hp'
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
 theorem perm_primeFactorsList_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
@@ -206,9 +212,10 @@ theorem perm_primeFactorsList_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
 
 theorem primeFactorsList_sublist_right {n k : ℕ} (h : k ≠ 0) :
     n.primeFactorsList <+ (n * k).primeFactorsList := by
-  cases' n with hn
+  rcases n with - | hn
   · simp [zero_mul]
-  apply sublist_of_subperm_of_sorted _ (primeFactorsList_sorted _) (primeFactorsList_sorted _)
+  apply sublist_of_subperm_of_pairwise _
+    (primeFactorsList_sorted _).pairwise (primeFactorsList_sorted _).pairwise
   simp only [(perm_primeFactorsList_mul (Nat.succ_ne_zero _) h).subperm_left]
   exact (sublist_append_left _ _).subperm
 
@@ -232,9 +239,7 @@ theorem dvd_of_primeFactorsList_subperm {a b : ℕ} (ha : a ≠ 0)
   rcases a with (_ | _ | a)
   · exact (ha rfl).elim
   · exact one_dvd _
-  -- Porting note: previous proof
-  --use (b.primeFactorsList.diff a.succ.succ.primeFactorsList).prod
-  use (@List.diff _ instBEqOfDecidableEq b.primeFactorsList a.succ.succ.primeFactorsList).prod
+  use (b.primeFactorsList.diff a.succ.succ.primeFactorsList).prod
   nth_rw 1 [← Nat.prod_primeFactorsList ha]
   rw [← List.prod_append,
     List.Perm.prod_eq <| List.subperm_append_diff_self_of_count_le <| List.subperm_ext_iff.mp h,

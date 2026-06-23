@@ -3,10 +3,12 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Utensil Song
 -/
-import Mathlib.Algebra.RingQuot
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.Isometry
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+module
+
+public import Mathlib.RingTheory.Congruence.Hom
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!
 # Clifford Algebras
@@ -42,6 +44,8 @@ The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, 
 This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.lean`.
 -/
 
+@[expose] public section
+
 
 variable {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
@@ -58,24 +62,23 @@ The Clifford algebra of `M` is defined as the quotient modulo this relation.
 inductive Rel : TensorAlgebra R M → TensorAlgebra R M → Prop
   | of (m : M) : Rel (ι R m * ι R m) (algebraMap R _ (Q m))
 
+/-- `Rel` as a ring congruence, used to build the quotient. -/
+@[no_expose] def ringCon : RingCon (TensorAlgebra R M) := ringConGen (Rel Q)
+
 end CliffordAlgebra
 
-/-- The Clifford algebra of an `R`-module `M` equipped with a quadratic_form `Q`.
+/-- The Clifford algebra of an `R`-module `M` equipped with a `QuadraticForm` `Q`.
 -/
-def CliffordAlgebra :=
-  RingQuot (CliffordAlgebra.Rel Q)
+def CliffordAlgebra := CliffordAlgebra.ringCon Q |>.Quotient
+deriving Inhabited, Ring, Algebra R
 
 namespace CliffordAlgebra
-
--- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited _
-instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
-  RingQuot.instAlgebra _
+  inferInstanceAs <| Algebra R (RingCon.Quotient _)
 
 -- verify there are no diamonds
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
@@ -83,34 +86,29 @@ example : (Semiring.toNatAlgebra : Algebra ℕ (CliffordAlgebra Q)) = instAlgebr
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Ring.toIntAlgebra _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
--- shortcut instance, as the other instance is slow
-instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
-
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (CliffordAlgebra Q) :=
-  RingQuot.instSMulCommClass _
+  RingCon.instSMulCommClassQuotient _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] (Q : QuadraticForm A M) :
     IsScalarTower R S (CliffordAlgebra Q) :=
-  RingQuot.instIsScalarTower _
+  RingCon.instIsScalarTowerQuotient _
 
-/-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
--/
+/-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
 def ι : M →ₗ[R] CliffordAlgebra Q :=
-  (RingQuot.mkAlgHom R _).toLinearMap.comp (TensorAlgebra.ι R)
+  (RingCon.mkₐ R _).toLinearMap.comp (TensorAlgebra.ι R)
+
+private theorem ι_apply (m : M) :
+    ι Q m = (TensorAlgebra.ι R m : CliffordAlgebra.ringCon Q |>.Quotient) := rfl
 
 /-- As well as being linear, `ι Q` squares to the quadratic form -/
 @[simp]
-theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
-  rw [ι]
-  erw [LinearMap.comp_apply]
-  rw [AlgHom.toLinearMap_apply, ← map_mul (RingQuot.mkAlgHom R (Rel Q)),
-    RingQuot.mkAlgHom_rel R (Rel.of m), AlgHom.commutes]
-  rfl
+theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) :=
+  Quotient.sound <| RingCon.le_ringConGen _ _ (Rel.of m)
 
 variable {Q} {A : Type*} [Semiring A] [Algebra R A]
 
@@ -119,8 +117,7 @@ theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :
     g (ι Q m) * g (ι Q m) = algebraMap _ _ (Q m) := by
   rw [← map_mul, ι_sq_scalar, AlgHom.commutes]
 
-variable (Q)
-
+variable (Q) in
 /-- Given a linear map `f : M →ₗ[R] A` into an `R`-algebra `A`, which satisfies the condition:
 `cond : ∀ m : M, f m * f m = Q(m)`, this is the canonical lift of `f` to a morphism of `R`-algebras
 from `CliffordAlgebra Q` to `A`.
@@ -129,26 +126,25 @@ from `CliffordAlgebra Q` to `A`.
 def lift :
     { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ (CliffordAlgebra Q →ₐ[R] A) where
   toFun f :=
-    RingQuot.liftAlgHom R
-      ⟨TensorAlgebra.lift R (f : M →ₗ[R] A), fun x y (h : Rel Q x y) => by
-        induction h
-        rw [AlgHom.commutes, map_mul, TensorAlgebra.lift_ι_apply, f.prop]⟩
+    RingCon.liftₐ (CliffordAlgebra.ringCon Q)
+      (TensorAlgebra.lift R (f : M →ₗ[R] A))
+      (by
+        exact RingCon.ringConGen_le.2 fun x y (h : Rel Q x y) => by
+          induction h
+          simp [f.prop])
   invFun F :=
     ⟨F.toLinearMap.comp (ι Q), fun m => by
       rw [LinearMap.comp_apply, AlgHom.toLinearMap_apply, comp_ι_sq_scalar]⟩
   left_inv f := by
     ext x
-    -- Porting note: removed `simp only` proof which gets stuck simplifying `LinearMap.comp_apply`
-    exact (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (TensorAlgebra.lift_ι_apply _ x)
+    dsimp
+    exact (RingCon.liftₐ_mk _ _ _ _).trans (TensorAlgebra.lift_ι_apply _ x)
   right_inv F :=
-    -- Porting note: replaced with proof derived from the one for `TensorAlgebra`
-    RingQuot.ringQuot_ext' _ _ _ <|
+    RingCon.Quotient.hom_extₐ <|
       TensorAlgebra.hom_ext <|
-        LinearMap.ext fun x => by
-          exact
-            (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (TensorAlgebra.lift_ι_apply _ _)
-
-variable {Q}
+        LinearMap.ext fun x ↦ by
+          dsimp
+          exact (RingCon.liftₐ_mk _ _ _ _).trans (TensorAlgebra.lift_ι_apply _ _)
 
 @[simp]
 theorem ι_comp_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap _ _ (Q m)) :
@@ -163,14 +159,12 @@ theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap 
 @[simp]
 theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m : M, f m * f m = algebraMap _ _ (Q m))
     (g : CliffordAlgebra Q →ₐ[R] A) : g.toLinearMap.comp (ι Q) = f ↔ g = lift Q ⟨f, cond⟩ := by
-  convert (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).symm_apply_eq
-  -- Porting note: added `Subtype.mk_eq_mk`
+  convert! (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).symm_apply_eq
   rw [lift_symm_apply, Subtype.mk_eq_mk]
 
 @[simp]
 theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
     lift Q ⟨g.toLinearMap.comp (ι Q), comp_ι_sq_scalar _⟩ = g := by
-  -- Porting note: removed `rw [lift_symm_apply]; rfl`, changed `convert` to `exact`
   exact (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).apply_symm_apply g
 
 /-- See note [partially-applied ext lemmas]. -/
@@ -182,6 +176,8 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
   rw [lift_symm_apply, lift_symm_apply]
   simp only [h]
 
+-- TODO: fix non-terminal simp (related to the porting note)
+set_option linter.flexible false in
 -- This proof closely follows `TensorAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `CliffordAlgebra Q`.
@@ -199,21 +195,35 @@ theorem induction {C : CliffordAlgebra Q → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  -- Porting note: Added `h`. `h` is needed for `of`.
-  letI h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
-  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
+  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = Algebra.algebraMap _ _ (Q m) } :=
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
-      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+      fun m => Subtype.ext <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
-  have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
-    ext
-    simp [of, h]
-    -- Porting note: `simp` can't apply this
-    erw [LinearMap.codRestrict_apply]
+  have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
+    ext x
+    simpa [of, -LinearMap.codRestrict_apply]
+      -- This `@[simp]` lemma applies to `coeSort s.subModule`, but the goal contains
+      -- a plain `coeSort s`. So we remove it from the `simp` arguments, and add it to
+      -- the term that `simpa` will simplify before applying.
+      using LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
   -- finding a proof is finding an element of the subalgebra
-  -- Porting note: was `convert Subtype.prop (lift Q of a); exact AlgHom.congr_fun of_id a`
-  rw [← AlgHom.id_apply (R := R) a, of_id]
-  exact Subtype.prop (lift Q of a)
+  rw [← AlgHom.id_apply (R := R) a, ← of_id]
+  exact (lift Q of a).prop
+
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι Q)) = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using induction with
+  | algebraMap => exact algebraMap_mem _ _
+  | add x y hx hy => exact add_mem hx hy
+  | mul x y hx hy => exact mul_mem hx hy
+  | ι x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+
+@[simp]
+theorem range_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap _ _ (Q m)) :
+    (lift Q ⟨f, cond⟩).range = Algebra.adjoin R (Set.range f) := by
+  simp_rw [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    Function.comp_def, lift_ι_apply]
 
 theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :
@@ -223,7 +233,7 @@ theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebr
       rw [f.map_add, mul_add, add_mul, add_mul]; abel
     _ = algebraMap R _ (Q (a + b)) - algebraMap R _ (Q a) - algebraMap R _ (Q b) := by
       rw [hf, hf, hf]
-    _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
+    _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← map_sub, ← map_sub]
     _ = algebraMap R _ (QuadraticMap.polar Q a b) := rfl
 
 /-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
@@ -250,6 +260,13 @@ theorem ι_mul_ι_comm (a b : M) :
     ι Q a * ι Q b = algebraMap R _ (QuadraticMap.polar Q a b) - ι Q b * ι Q a :=
   eq_sub_of_add_eq (ι_mul_ι_add_swap a b)
 
+/-- A version of `mul_mul_mul_comm` for `ι`. -/
+theorem mul_ι_mul_ι_mul_comm (x : CliffordAlgebra Q) (a b : M) (y : CliffordAlgebra Q) :
+    (x * ι Q a) * (ι Q b * y) =
+      algebraMap R _ (QuadraticMap.polar Q a b) * (x * y) - (x * ι Q b) * (ι Q a * y) := by
+  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm, mul_assoc,
+    mul_assoc]
+
 section isOrtho
 
 @[simp] theorem ι_mul_ι_add_swap_of_isOrtho {a b : M} (h : Q.IsOrtho a b) :
@@ -269,6 +286,11 @@ theorem ι_mul_ι_mul_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrth
     ι Q a * (ι Q b * x) = -(ι Q b * (ι Q a * x)) := by
   rw [← mul_assoc, ι_mul_ι_comm_of_isOrtho h, neg_mul, mul_assoc]
 
+theorem mul_ι_mul_ι_mul_comm_of_isOrtho
+    (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) (y : CliffordAlgebra Q) :
+    (x * ι Q a) * (ι Q b * y) = - ((x * ι Q b) * (ι Q a * y)) := by
+  rw [mul_ι_mul_ι_mul_comm, h.polar_eq_zero, map_zero, zero_mul, zero_sub]
+
 end isOrtho
 
 /-- $aba$ is a vector. -/
@@ -279,7 +301,7 @@ theorem ι_mul_ι_mul_ι (a b : M) :
 
 @[simp]
 theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap _ _ (Q m)) :
-    (ι Q).range.map (lift Q ⟨f, cond⟩).toLinearMap = LinearMap.range f := by
+    (LinearMap.range (ι Q)).map (lift Q ⟨f, cond⟩).toLinearMap = LinearMap.range f := by
   rw [← LinearMap.range_comp, ι_comp_lift]
 
 section Map
@@ -320,7 +342,7 @@ theorem map_comp_map (f : Q₂ →qᵢ Q₃) (g : Q₁ →qᵢ Q₂) :
 
 @[simp]
 theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
-    (ι Q₁).range.map (map f).toLinearMap = f.range.map (ι Q₂) :=
+    (LinearMap.range (ι Q₁)).map (map f).toLinearMap = f.range.map (ι Q₂) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 
 open Function in
@@ -329,7 +351,7 @@ a linear retraction `g` that also preserves the quadratic forms, then `CliffordA
 is a retraction of `CliffordAlgebra.map f`. -/
 lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (f : Q₁ →qᵢ Q₂) (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
-  refine fun x => ?_
+  intro x
   replace h : g.comp f = QuadraticMap.Isometry.id Q₁ := DFunLike.ext _ _ h
   rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
 
@@ -349,11 +371,11 @@ equivalent. -/
 def equivOfIsometry (e : Q₁.IsometryEquiv Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
   AlgEquiv.ofAlgHom (map e.toIsometry) (map e.symm.toIsometry)
     ((map_comp_map _ _).trans <| by
-      convert map_id Q₂ using 2  -- Porting note: replaced `_` with `Q₂`
+      convert! map_id Q₂ using 2
       ext m
       exact e.toLinearEquiv.apply_symm_apply m)
     ((map_comp_map _ _).trans <| by
-      convert map_id Q₁ using 2  -- Porting note: replaced `_` with `Q₁`
+      convert! map_id Q₁ using 2
       ext m
       exact e.toLinearEquiv.symm_apply_apply m)
 

@@ -3,12 +3,17 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # If colimits of shape `K` commute with finite limits, then `K` is filtered.
 -/
+
+public section
 
 universe v u
 
@@ -18,7 +23,7 @@ variable {K : Type v} [SmallCategory K]
 
 open Limits
 
-/-- A converse to `colimitLimitIsoLimitColimit`: if colimits of shape `K` commute with finite
+/-- A converse to `colimitLimitIso`: if colimits of shape `K` commute with finite
 limits, then `K` is filtered. -/
 theorem isFiltered_of_nonempty_limit_colimit_to_colimit_limit
     (h : ∀ {J : Type v} [SmallCategory J] [FinCategory J] (F : J ⥤ K ⥤ Type v),

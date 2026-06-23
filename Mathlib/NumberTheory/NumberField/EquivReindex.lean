@@ -3,7 +3,9 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 /-!
 
@@ -16,6 +18,8 @@ index set of the chosen basis of the ring of integers of `K`.
 house, number field, algebraic number
 -/
 
+public section
+
 variable (K : Type*) [Field K] [NumberField K]
 
 namespace NumberField
@@ -26,9 +30,9 @@ open Module.Free Module canonicalEmbedding Matrix Finset
 
 /-- An equivalence between the set of embeddings of `K` into `ℂ` and the
   index set of the chosen basis of the ring of integers of `K`. -/
-abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) :=
-    Fintype.equivOfCardEq <|
-  by rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
+abbrev equivReindex : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) :=
+  Fintype.equivOfCardEq <| by
+    rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
 
 /-- The basis matrix for the embeddings of `K` into `ℂ`. This matrix is formed by
   taking the lattice basis vectors of `K` and reindexing them according to the
@@ -36,18 +40,25 @@ abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) :=
 abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
   (Matrix.of fun i ↦ latticeBasis K (equivReindex K i))
 
+theorem basisMatrix_eq_embeddingsMatrixReindex :
+    basisMatrix K = Algebra.embeddingsMatrixReindex ℚ ℂ
+      (integralBasis K ∘ (equivReindex K)) RingHom.equivRatAlgHom := by
+  ext; simp [Algebra.embeddingsMatrixReindex]
+
+open ComplexConjugate in
+theorem conj_basisMatrix :
+    (basisMatrix K).map conj = (basisMatrix K).reindex (Equiv.refl _)
+      (ComplexEmbedding.involutive_conjugate K).toPerm := by
+  ext; simp
+
 theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K).det ≠ 0 := by
-  let e : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) := equivReindex K
-  let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
-    RingHom.equivRatAlgHom
-  rw [show (basisMatrix K) = N by
-    ext:2; simp only [N, transpose_apply, latticeBasis_apply, integralBasis_apply,
-    of_apply, apply_at]; rfl, ← pow_ne_zero_iff two_ne_zero]
-  convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
-    (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
-  rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
+  rw [basisMatrix_eq_embeddingsMatrixReindex, ← pow_ne_zero_iff two_ne_zero]
+  convert!
+    (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
+      (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
+  rw [← Algebra.discr_reindex ℚ (integralBasis K) (equivReindex K).symm]
   exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-    (fun _ => integralBasis K (e _)) RingHom.equivRatAlgHom).symm
+    (integralBasis K ∘ (equivReindex K)) RingHom.equivRatAlgHom).symm
 
 instance [DecidableEq (K →+* ℂ)] : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
     (Ne.isUnit (det_of_basisMatrix_non_zero K))

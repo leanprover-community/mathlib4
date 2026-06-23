@@ -3,12 +3,13 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Algebra.Order.Monoid.Submonoid
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.NNRat.Order
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`
@@ -16,6 +17,8 @@ import Mathlib.Tactic.FieldSimp
 This file shows that `ℚ` and `ℚ≥0` are `StarOrderedRing`s. In particular, this means that every
 nonnegative rational number is a sum of squares.
 -/
+
+public section
 
 open AddSubmonoid Set
 open scoped NNRat
@@ -46,7 +49,7 @@ namespace Rat
 
 @[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn₀ : n ≠ 0) (hn : Even n) :
     closure (range fun x : ℚ ↦ x ^ n) = nonneg _ := by
-  convert (AddMonoidHom.map_mclosure NNRat.coeHom <| range fun x ↦ x ^ n).symm
+  convert! (AddMonoidHom.map_mclosure NNRat.coeHom <| range fun x ↦ x ^ n).symm
   · have (x : ℚ) : ∃ y : ℚ≥0, y ^ n = x ^ n := ⟨x.nnabs, by simp [hn.pow_abs]⟩
     simp [subset_antisymm_iff, range_subset_iff, this]
   · ext

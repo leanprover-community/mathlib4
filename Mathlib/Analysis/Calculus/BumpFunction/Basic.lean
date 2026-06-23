@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Normed.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Infinitely smooth "bump" functions
@@ -18,7 +20,7 @@ These functions have many uses in real analysis. E.g.,
 - they can be used to approximate a continuous function by infinitely smooth functions.
 
 There are two classes of spaces where bump functions are guaranteed to exist:
-inner product spaces and finite dimensional spaces.
+inner product spaces and finite-dimensional spaces.
 
 In this file we define a typeclass `HasContDiffBump`
 saying that a normed space has a family of smooth bump functions with certain properties.
@@ -39,13 +41,15 @@ such that
   that can be used to construct coercion of a `ContDiffBump (c : E)`
   to a function.
 - `HasContDiffBump (E : Type*)`: a typeclass saying that `E` has a `ContDiffBumpBase`.
-  Two instances of this typeclass (for inner product spaces and for finite dimensional spaces)
+  Two instances of this typeclass (for inner product spaces and for finite-dimensional spaces)
   are provided elsewhere.
 
 ## Keywords
 
 smooth function, smooth bump function
 -/
+
+@[expose] public section
 noncomputable section
 
 open Function Set Filter
@@ -71,10 +75,9 @@ structure ContDiffBump (c : E) where
 
 /-- The base function from which one will construct a family of bump functions. One could
 add more properties if they are useful and satisfied in the examples of inner product spaces
-and finite dimensional vector spaces, notably derivative norm control in terms of `R - 1`.
+and finite-dimensional vector spaces, notably derivative norm control in terms of `R - 1`.
 
 TODO: do we ever need `f x = 1 ↔ ‖x‖ ≤ 1`? -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported; was @[nolint has_nonempty_instance]
 structure ContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
   /-- The function underlying this family of bump functions -/
   toFun : ℝ → E → ℝ
@@ -158,7 +161,7 @@ theorem pos_of_mem_ball (hx : x ∈ ball c f.rOut) : 0 < f x :=
   f.nonneg.lt_of_ne' <| by rwa [← support_eq, mem_support] at hx
 
 theorem zero_of_le_dist (hx : f.rOut ≤ dist x c) : f x = 0 := by
-  rwa [← nmem_support, support_eq, mem_ball, not_lt]
+  rwa [← notMem_support, support_eq, mem_ball, not_lt]
 
 protected theorem hasCompactSupport [FiniteDimensional ℝ E] : HasCompactSupport f := by
   simp_rw [HasCompactSupport, f.tsupport_eq, isCompact_closedBall]
@@ -181,7 +184,7 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
   refine (((someContDiffBumpBase E).smooth.contDiffAt ?_).of_le
     (mod_cast le_top)).comp_contDiffWithinAt x ?_
   · exact prod_mem_nhds (Ioi_mem_nhds (f x).one_lt_rOut_div_rIn) univ_mem
-  · exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
+  · exact (hR.div hr (f x).rIn_pos.ne').prodMk ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
 
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected nonrec theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}

@@ -3,10 +3,11 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Set
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition of the `Finite` typeclass
@@ -58,9 +59,9 @@ instances since they do not compute anything.
 finite, fintype, finite sets
 -/
 
-assert_not_exists Finset
-assert_not_exists MonoidWithZero
-assert_not_exists OrderedRing
+@[expose] public section
+
+assert_not_exists Finset MonoidWithZero IsOrderedRing
 
 universe u v
 
@@ -131,14 +132,14 @@ instance {α : Type v} [Finite α] : Finite (ULift.{u} α) :=
 /-- A type is said to be infinite if it is not finite. Note that `Infinite α` is equivalent to
 `IsEmpty (Fintype α)` or `IsEmpty (Finite α)`. -/
 class Infinite (α : Sort*) : Prop where
-  /-- assertion that `α` is `¬Finite`-/
+  /-- assertion that `α` is `¬Finite` -/
   not_finite : ¬Finite α
 
-@[simp]
+@[simp, push]
 theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
   ⟨Infinite.mk, fun h => h.1⟩
 
-@[simp]
+@[simp, push]
 theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
   not_finite_iff_infinite.not_right.symm
 
@@ -154,7 +155,7 @@ instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) :=
 theorem finite_or_infinite (α : Sort*) : Finite α ∨ Infinite α :=
   or_iff_not_imp_left.2 not_finite_iff_infinite.1
 
-/-- `Infinite α` is not `Finite`-/
+/-- `Infinite α` is not `Finite` -/
 theorem not_finite (α : Sort*) [Infinite α] [Finite α] : False :=
   @Infinite.not_finite α ‹_› ‹_›
 
@@ -174,8 +175,6 @@ section Set
 /-!
 ### Finite sets
 -/
-
-open Set Function
 
 variable {α : Type u} {β : Type v}
 
@@ -206,11 +205,16 @@ This is protected so that it does not conflict with global `Infinite`. -/
 protected def Infinite (s : Set α) : Prop :=
   ¬s.Finite
 
-@[simp]
+@[simp, push]
+theorem not_finite {s : Set α} : ¬s.Finite ↔ s.Infinite := .rfl
+
+@[simp, push]
 theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
   not_not
 
 alias ⟨_, Finite.not_infinite⟩ := not_infinite
+
+@[simp] lemma Infinite.not_finite {s : Set α} (hs : s.Infinite) : ¬ s.Finite := hs
 
 attribute [simp] Finite.not_infinite
 
@@ -235,7 +239,6 @@ variable {s t : Set α}
 theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
   not_finite_iff_infinite.symm.trans finite_coe_iff.not
 
--- Porting note: something weird happened here
 alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 
 end Set

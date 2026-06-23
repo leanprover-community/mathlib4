@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Order.CompactlyGenerated.Basic
-import Mathlib.Order.Copy
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.Copy
 
 /-!
 # Open sets
@@ -46,6 +47,8 @@ We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `
 - Port the `auto_cases` tactic version (as a plugin if the ported `auto_cases` will allow plugins).
 -/
 
+@[expose] public section
+
 
 open Filter Function Order Set
 
@@ -55,8 +58,7 @@ variable {ι α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topo
 
 namespace TopologicalSpace
 
-variable (α)
-
+variable (α) in
 /-- The type of open subsets of a topological space. -/
 structure Opens where
   /-- The underlying set of a bundled `TopologicalSpace.Opens` object. -/
@@ -64,13 +66,13 @@ structure Opens where
   /-- The `TopologicalSpace.Opens.carrier _` is an open set. -/
   is_open' : IsOpen carrier
 
-variable {α}
-
 namespace Opens
 
 instance : SetLike (Opens α) α where
   coe := Opens.carrier
-  coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
+  coe_injective := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
+
+instance : PartialOrder (Opens α) := fast_instance% .ofSetLike (Opens α) α
 
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
@@ -91,7 +93,6 @@ theorem coe_mk {U : Set α} {hU : IsOpen U} : ↑(⟨U, hU⟩ : Opens α) = U :=
 @[simp]
 theorem mem_mk {x : α} {U : Set α} {h : IsOpen U} : x ∈ mk U h ↔ x ∈ U := Iff.rfl
 
--- Porting note: removed @[simp] because LHS simplifies to `∃ x, x ∈ U`
 protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).Nonempty :=
   Set.nonempty_coe_sort
 
@@ -99,11 +100,10 @@ protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).
 protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x, x ∈ U :=
   Iff.rfl
 
-@[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: replace with `∀ x, x ∈ U ↔ x ∈ V`
+@[ext] -- TODO: replace with `∀ x, x ∈ U ↔ x ∈ V`?
 theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
   SetLike.coe_injective h
 
--- Porting note: removed @[simp], simp can prove it
 theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
   SetLike.ext'_iff.symm
 
@@ -118,7 +118,7 @@ protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
 /-- See Note [custom simps projection]. -/
 def Simps.coe (U : Opens α) : Set α := U
 
-initialize_simps_projections Opens (carrier → coe)
+initialize_simps_projections Opens (carrier → coe, as_prefix coe)
 
 /-- The interior of a set, as an element of `Opens`. -/
 @[simps]
@@ -131,7 +131,7 @@ theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _r
 theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
   ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
 
-/-- The galois coinsertion between sets and opens. -/
+/-- The Galois coinsertion between sets and opens. -/
 def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice s hs := ⟨s, interior_eq_iff_isOpen.mp <| le_antisymm interior_subset hs⟩
   gc := gc
@@ -139,7 +139,7 @@ def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice_eq _s hs := le_antisymm hs interior_subset
 
 instance : CompleteLattice (Opens α) :=
-  CompleteLattice.copy (GaloisCoinsertion.liftCompleteLattice gi)
+  fast_instance% CompleteLattice.copy (GaloisCoinsertion.liftCompleteLattice gi)
     -- le
     (fun U V => (U : Set α) ⊆ V) rfl
     -- top
@@ -166,13 +166,23 @@ theorem mk_inf_mk {U V : Set α} {hU : IsOpen U} {hV : IsOpen V} :
 theorem coe_inf (s t : Opens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 
+@[simp]
+lemma mem_inf {s t : Opens α} {x : α} : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := Iff.rfl
+
 @[simp, norm_cast]
 theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
 
+@[simp]
+theorem mem_sup {s t : Opens α} {x : α} : x ∈ (s ⊔ t) ↔ x ∈ s ∨ x ∈ t :=
+  .rfl
+
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
+
+@[simp]
+lemma mem_bot {x : α} : x ∈ (⊥ : Opens α) ↔ False := Iff.rfl
 
 @[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
 
@@ -205,13 +215,15 @@ theorem coe_finset_sup (f : ι → Opens α) (s : Finset ι) : (↑(s.sup f) : S
 theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Opens α) (Set α)) _ _
 
+@[simp, norm_cast]
+lemma coe_disjoint {s t : Opens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
+  simp [disjoint_iff, ← SetLike.coe_set_eq]
+
 instance : Inhabited (Opens α) := ⟨⊥⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance [IsEmpty α] : Unique (Opens α) where
   uniq _ := ext <| Subsingleton.elim _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance [Nonempty α] : Nontrivial (Opens α) where
   exists_pair_ne := ⟨⊥, ⊤, mt coe_inj.2 empty_ne_univ⟩
 
@@ -237,17 +249,44 @@ theorem mem_sSup {Us : Set (Opens α)} {x : α} : x ∈ sSup Us ↔ ∃ u ∈ Us
   simp_rw [sSup_eq_iSup, mem_iSup, exists_prop]
 
 /-- Open sets in a topological space form a frame. -/
+@[implicit_reducible]
 def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
   inf_sSup_le_iSup_inf a s :=
     (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le
 
-instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
+instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms frameMinimalAxioms
+
+theorem mem_himp {U V : Opens α} {x : α} : x ∈ U ⇨ V ↔ ∃ W : Opens α, W ⊓ U ≤ V ∧ x ∈ W := by
+  simp [himp_eq_sSup]
+
+theorem himp_def {U V : Opens α} : U ⇨ V = Opens.interior ((U : Set α) ⇨ V) := by
+  ext x
+  simp_rw [BooleanAlgebra.himp_eq, sup_eq_union, coe_interior, _root_.mem_interior,
+    SetLike.mem_coe, mem_himp, ← SetLike.coe_subset_coe, coe_inf, inter_subset]
+  exact ⟨fun ⟨⟨W, hW⟩, hsub, hx⟩ => ⟨W, union_comm _ _ ▸ hsub, hW, hx⟩,
+    fun ⟨W, hsub, hW, hx⟩ => ⟨⟨W, hW⟩, union_comm _ _ ▸ hsub, hx⟩⟩
+
+theorem coe_himp {U V : Opens α} : ↑(U ⇨ V) = interior ((U : Set α) ⇨ V) := by
+  rw [himp_def, coe_interior]
+
+theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Disjoint V U ∧ x ∈ V := by
+  simp [compl_eq_sSup_disjoint]
+
+theorem interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
+  simp [←himp_bot, himp_def]
+
+theorem coe_compl_eq_interior_compl {U : Opens α} : ↑(Uᶜ) = interior (U : Set α)ᶜ := by
+  rw [←interior_compl, coe_interior]
+
+/-- The coercion from open sets to sets as a `FrameHom`. -/
+@[simps] protected def frameHom : FrameHom (Opens α) (Set α) where
+  toFun := (·)
+  map_inf' _ _ := rfl
+  map_top' := rfl
+  map_sSup' _ := by simp
 
 theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
   U.isOpen.isOpenEmbedding_subtypeVal
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding' := isOpenEmbedding'
 
 theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) where
@@ -256,24 +295,19 @@ theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     rw [Set.range_inclusion i]
     exact U.isOpen.preimage continuous_subtype_val
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_le := isOpenEmbedding_of_le
-
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
 
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
   rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 
-/-- An open set in the indiscrete topology is either empty or the whole space. -/
-theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α) : U = ⊥ ∨ U = ⊤ := by
-  subst h; letI : TopologicalSpace α := ⊤
-  rw [← coe_eq_empty, ← coe_eq_univ, ← isOpen_top_iff]
+theorem eq_bot_or_top [IndiscreteTopology α] (U : Opens α) :
+    U = ⊥ ∨ U = ⊤ := by
+  rw [← coe_eq_empty, ← coe_eq_univ, ← IndiscreteTopology.isOpen_iff]
   exact U.2
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
-instance [Nonempty α] [Subsingleton α] : IsSimpleOrder (Opens α) where
-  eq_bot_or_eq_top := eq_bot_or_top <| Subsingleton.elim _ _
+instance [Nonempty α] [IndiscreteTopology α] : IsSimpleOrder (Opens α) where
+  eq_bot_or_eq_top := eq_bot_or_top
 
 /-- A set of `opens α` is a basis if the set of corresponding sets is a topological basis. -/
 def IsBasis (B : Set (Opens α)) : Prop :=
@@ -317,10 +351,18 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1
-  · convert (config := {transparency := .default}) hb
+  · convert! (config := { transparency := .default }) hb
     ext
     simp
   · exact hb'
+
+lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {U : Opens α}
+    (hU : IsCompact U.1) : ∃ Us ⊆ B, Us.Finite ∧ U = sSup Us := by
+  classical
+  obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.2) (by simp [hsup])
+  refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
+  exact le_antisymm (subset_trans ht (by simp)) (le_trans (sSup_le_sSup (by simp)) hsup.ge)
 
 lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
     {Us : Set (Opens α)} (hUs : @IsBasis α t₂ Us) :
@@ -328,10 +370,23 @@ lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
   conv_lhs => rw [hUs.eq_generateFrom]
   simp [Set.subset_def, le_generateFrom_iff_subset_isOpen]
 
+lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
+    {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
+    IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
+  convert! TopologicalSpace.IsTopologicalBasis.sigma hB
+  simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
+  simp
+
+lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
+    IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
+  simp only [IsBasis] at H ⊢
+  convert! H.isInducing h
+  ext; simp
+
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
-    CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by
-  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff]
+    IsCompactElement s ↔ IsCompact (s : Set α) := by
+  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff_exists_le_iSup_of_le_iSup]
   refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
@@ -342,7 +397,7 @@ theorem isCompactElement_iff (s : Opens α) :
       H (fun i => U i) (fun i => (U i).isOpen) (by simpa using show (s : Set α) ⊆ ↑(iSup U) from hU)
     refine ⟨t, Set.Subset.trans ht ?_⟩
     simp only [Set.iUnion_subset_iff]
-    show ∀ i ∈ t, U i ≤ t.sup U
+    change ∀ i ∈ t, U i ≤ t.sup U
     exact fun i => Finset.le_sup
 
 /-- The preimage of an open set, as an open set. -/
@@ -356,6 +411,7 @@ def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
 theorem comap_id : comap (ContinuousMap.id α) = FrameHom.id _ :=
   FrameHom.ext fun _ => ext rfl
 
+@[gcongr]
 theorem comap_mono (f : C(α, β)) {s t : Opens β} (h : s ≤ t) : comap f s ≤ comap f t :=
   OrderHomClass.mono (comap f) h
 
@@ -383,7 +439,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
   toFun := Opens.comap (f.symm : C(β, α))
   invFun := Opens.comap (f : C(α, β))
@@ -415,7 +471,9 @@ theorem toOpens_injective : Injective (toOpens : OpenNhdsOf x → Opens α)
 
 instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
-  coe_injective' := SetLike.coe_injective.comp toOpens_injective
+  coe_injective := SetLike.coe_injective.comp toOpens_injective
+
+instance : PartialOrder (OpenNhdsOf x) := fast_instance% .ofSetLike (OpenNhdsOf x) α
 
 instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩
@@ -434,12 +492,11 @@ instance : Inhabited (OpenNhdsOf x) := ⟨⊤⟩
 instance : Min (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
 instance : Max (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance [Subsingleton α] : Unique (OpenNhdsOf x) where
   uniq U := SetLike.ext' <| Subsingleton.eq_univ_of_nonempty ⟨x, U.mem⟩
 
-instance : DistribLattice (OpenNhdsOf x) :=
-  toOpens_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+instance : DistribLattice (OpenNhdsOf x) := fast_instance%
+  toOpens_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 theorem basis_nhds : (𝓝 x).HasBasis (fun _ : OpenNhdsOf x => True) (↑) :=
   (nhds_basis_opens x).to_hasBasis (fun U hU => ⟨⟨⟨U, hU.2⟩, hU.1⟩, trivial, Subset.rfl⟩) fun U _ =>

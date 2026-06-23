@@ -1,44 +1,401 @@
 /-
 Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Marcelo Lynch
 -/
-import Lean.Data.Json.Parser
+
 import Cache.Hashing
+import Cache.Infra
+import Lake.Load.Manifest
 
 namespace Cache.Requests
-
--- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
-def useFROCache : Bool := false
-
-/-- Public URL for mathlib cache -/
-def URL : String :=
-  if useFROCache then
-    "https://mathlib4.lean-cache.cloud"
-  else
-    "https://lakecache.blob.core.windows.net/mathlib4"
-
-/-- Retrieves the azure token from the environment -/
-def getToken : IO String := do
-  let envVar := if useFROCache then "MATHLIB_CACHE_S3_TOKEN" else "MATHLIB_CACHE_SAS"
-  let some token ← IO.getEnv envVar
-    | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
-  return token
 
 open System (FilePath)
 
 /--
-Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server.
-
-The `f/` prefix means that it's a common file for caching.
+Resolved repository identity for cache lookups.
 -/
-def mkFileURL (URL fileName : String) : String :=
-  s!"{URL}/f/{fileName}"
+structure RepoInfo where
+  repo : String
+  deriving Repr, BEq
+
+/--
+Helper function to extract repository name from a git remote URL
+-/
+def extractRepoFromUrl (url : String) : Option String := do
+  let url := url.dropSuffix ".git"
+  let pos ← url.revFind? (· == '/')
+  let pos ← (url.sliceTo pos).revFind? (fun c => c == '/' || c == ':')
+  return url.sliceFrom (String.Slice.Pos.ofSliceTo pos).next! |>.copy
+
+/-- Spot check if a URL is valid for a git remote -/
+def isRemoteURL (url : String) : Bool :=
+  "https://".isPrefixOf url || "http://".isPrefixOf url || "git@github.com:".isPrefixOf url
+
+/--
+Helper function to get repository from a remote name
+-/
+def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO (Option String) := do
+  -- If the remote is already a valid URL, attempt to extract the repo from it. This happens with `gh pr checkout`
+  if isRemoteURL remoteName then
+    repoFromURL remoteName
+  else
+  -- If not, we use `git remote get-url` to find the URL of the remote. This assumes the remote has a
+  -- standard name like `origin` or `upstream` or it errors out.
+  let out ← IO.Process.output
+    {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
+  -- If `git remote get-url` fails then return none.
+  let output := out.stdout.trimAscii
+  unless out.exitCode == 0 do
+    IO.println s!"\
+      Warning: failed to run Git to determine Mathlib's repository from {remoteName} remote\n\
+      {errorContext}\n\
+      Continuing to fetch the cache from {MATHLIBREPO}."
+    return none
+  -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
+  repoFromURL output.copy
+where repoFromURL (url : String) : IO (Option String) := do
+    if let some repo := extractRepoFromUrl url then
+      return some repo
+    else
+      IO.println s!"\
+        Warning: Failed to extract repository from remote URL: {url}.\n\
+        {errorContext}\n\
+        Continuing to fetch the cache from {MATHLIBREPO}."
+      return none
+
+/--
+Finds the remote name that points to `leanprover-community/mathlib4` repository.
+Returns the remote name and prints warnings if the setup doesn't follow conventions.
+-/
+def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
+  let remotesInfo ← IO.Process.output
+    {cmd := "git", args := #["remote", "-v"], cwd := mathlibDepPath}
+
+  unless remotesInfo.exitCode == 0 do
+    throw <| IO.userError s!"\
+      Failed to run Git to list remotes (exit code: {remotesInfo.exitCode}).\n\
+      Ensure Git is installed.\n\
+      Stdout:\n{remotesInfo.stdout.trimAscii}\nStderr:\n{remotesInfo.stderr.trimAscii}\n"
+
+  let remoteLines := remotesInfo.stdout.splitToList (· == '\n')
+  let mut mathlibRemote : Option String := none
+  let mut originPointsToMathlib : Bool := false
+
+  for line in remoteLines do
+    let parts := line.trimAscii.copy.splitToList (· == '\t')
+    if parts.length >= 2 then
+      let remoteName := parts[0]!
+      let remoteUrl := parts[1]!.takeWhile (· != ' ') |>.copy -- Remove (fetch) or (push) suffix
+
+      -- Check if this remote points to leanprover-community/mathlib4
+      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4"
+
+      if isMathlibRepo then
+        if remoteName == "origin" then
+          originPointsToMathlib := true
+        mathlibRemote := some remoteName
+
+  match mathlibRemote with
+  | none =>
+    throw <| IO.userError "Could not find a remote pointing to leanprover-community/mathlib4"
+  | some remoteName =>
+    if remoteName != "upstream" then
+      let mut warning := s!"Some Mathlib ecosystem tools assume that the git remote for `leanprover-community/mathlib4` is named `upstream`. You have named it `{remoteName}` instead. We recommend changing the name to `upstream`."
+      if originPointsToMathlib then
+        warning := warning ++ " Moreover, `origin` should point to your own fork of the mathlib4 repository."
+      warning := warning ++ " You can set this up with `git remote add upstream https://github.com/leanprover-community/mathlib4.git`."
+      IO.println s!"Warning: {warning}"
+    return remoteName
+
+/--
+Extracts PR number from a git ref like "refs/remotes/upstream/pr/1234"
+-/
+def extractPRNumber (ref : String) : Option Nat := do
+  let parts := ref.splitToList (· == '/')
+  if parts.length >= 2 && parts[parts.length - 2]! == "pr" then
+    let prStr := parts[parts.length - 1]!
+    prStr.toNat?
+  else
+    none
+
+/-- Check if we're in a detached HEAD state at a nightly-testing tag -/
+def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
+  -- Get the current commit hash and check if it's a nightly-testing tag
+  let currentCommit ← IO.Process.output
+    {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+  if currentCommit.exitCode == 0 then
+    let commitHash := currentCommit.stdout.trimAscii.copy
+    let tagInfo ← IO.Process.output
+      {cmd := "git", args := #["name-rev", "--tags", commitHash], cwd := mathlibDepPath}
+    if tagInfo.exitCode == 0 then
+      let parts := tagInfo.stdout.trimAscii.copy.splitOn " "
+      -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash undefined" if no tag
+      if parts.length >= 2 && parts[1]!.startsWith "tags/" then
+        let tagName := parts[1]!.drop 5  -- Remove "tags/" prefix
+        return tagName.startsWith "nightly-testing-"
+      else
+        return false
+    else
+      return false
+  else
+    return false
+
+/--
+Inner implementation: may throw if git is unavailable or the directory has no
+git checkout. Callers should use `getRemoteRepo` instead.
+-/
+private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
+
+  -- Since currently we need to push a PR to `leanprover-community/mathlib` build a user cache,
+  -- we check if we are a special branch or a branch with PR. This leaves out non-PRed fork
+  -- branches. These should be covered if we ever change how the cache is uploaded from forks
+  -- to obviate the need for a PR.
+  let currentBranch ← IO.Process.output
+    {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
+
+  if currentBranch.exitCode == 0 then
+    let branchName := currentBranch.stdout.trimAscii.dropPrefix "heads/"
+    IO.println s!"Current branch: {branchName}"
+
+    -- Check if we're in a detached HEAD state at a nightly-testing tag
+    let isDetachedAtNightlyTesting ← if branchName == "HEAD".toSlice then
+      isDetachedAtNightlyTesting mathlibDepPath
+    else
+      pure false
+
+    -- Check if we're on a branch that should use nightly-testing remote
+    let shouldUseNightlyTesting := branchName == "nightly-testing".toSlice ||
+                                  branchName.startsWith "lean-pr-testing-" ||
+                                  branchName.startsWith "batteries-pr-testing-" ||
+                                  branchName.startsWith "bump/" ||
+                                  isDetachedAtNightlyTesting
+
+    if shouldUseNightlyTesting then
+      let repo := "leanprover-community/mathlib4-nightly-testing"
+      IO.println s!"Using cache from nightly-testing remote: {repo}"
+      return some {repo := repo}
+
+    -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
+    -- let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
+    --                       branchName.startsWith "nightly-testing"
+
+    -- TODO: this code is currently broken in two ways: 1. you need to write `%(refname)` in quotes and
+    -- 2. it is looking in the wrong place when in detached HEAD state.
+    -- We comment it out for now, but we should fix it later.
+    -- Check if the current commit coincides with any PR ref
+    -- if !isSpecialBranch then
+    --   let mathlibRemoteName ← findMathlibRemote mathlibDepPath
+    --   let currentCommit ← IO.Process.output
+    --     {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+    --
+    --   if currentCommit.exitCode == 0 then
+    --     let commit := currentCommit.stdout.trim
+    --     -- Get all PR refs that contain this commit
+    --     let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
+    --     let refsInfo ← IO.Process.output
+    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
+    --     -- The code below is for debugging purposes currently
+    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
+    --     {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
+    --     let refsInfo' ← IO.Process.output
+    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
+    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
+    --     {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
+    --
+    --     if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
+    --       let prRefs := refsInfo.stdout.trim.split (· == '\n')
+    --       -- Extract PR numbers from refs like "refs/remotes/upstream/pr/1234"
+    --       for prRef in prRefs do
+    --         if let some prNumber := extractPRNumber prRef then
+    --           -- Get PR details using gh
+    --           let prInfo ← IO.Process.output
+    --             {cmd := "gh", args := #["pr", "view", toString prNumber, "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
+    --           if prInfo.exitCode == 0 then
+    --             if let .ok json := Lean.Json.parse prInfo.stdout.trim then
+    --               if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
+    --                 if let .ok login := owner.getObjValAs? String "login" then
+    --                   if let .ok repoName := json.getObjValAs? String "headRefName" then
+    --                     if let .ok prNum := json.getObjValAs? Nat "number" then
+    --                       let repo := s!"{login}/mathlib4"
+    --                       IO.println s!"Using cache from PR #{prNum} source: {login}/{repoName} (commit {commit.take 8} found in PR ref)"
+    --                       let useFirst := if login != "leanprover-community" then true else false
+    --                       return {repo := repo, useFirst := useFirst}
+
+  -- Fall back to using the remote that the current branch is tracking
+  let trackingRemote ← IO.Process.output
+    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trimAscii}.remote"], cwd := mathlibDepPath}
+
+  let remoteName := if trackingRemote.exitCode == 0 then
+    trackingRemote.stdout.trimAscii.copy
+  else
+    -- If no tracking remote is configured, fall back to origin
+    "origin"
+
+  let repo? ← getRepoFromRemote mathlibDepPath remoteName
+    s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
+  match repo? with
+  | some repo =>
+    IO.println s!"Using cache from {remoteName}: {repo?}"
+    return some {repo := repo}
+  | none =>
+    IO.println s!"Using cache from {MATHLIBREPO}."
+    return none
+
+/--
+Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
+If the current commit coincides with a PR ref, it will determine the source fork
+of that PR rather than just using the origin remote.
+
+Returns `none` if git is unavailable, the path is not inside a git checkout, or
+the remote cannot be resolved. This is the expected outcome when `cache get` is
+invoked on a dependency that was fetched as an archive rather than a git clone;
+callers fall back to `MATHLIBREPO` and the master container.
+-/
+def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
+  try
+    return (← getRemoteRepoImpl mathlibDepPath)
+  catch _ =>
+    return none
+
+/--
+Resolve the GitHub repo for cache reads from a single `getRemoteRepo` probe.
+
+Returns `(detectedRepo?, resolvedRepo)`:
+* `detectedRepo?` is what the git remote reports (`none` if it can't be
+  determined); the warning path compares it against an explicit `--repo=` to
+  tell whether the user is overriding the checkout's repo.
+* `resolvedRepo` applies the override precedence `--repo=` > git remote >
+  `MATHLIBREPO`, and is what the read path uses.
+
+`getRemoteRepo` shells out to git and prints branch/remote diagnostics;
+resolving here lets the read path, the warning, and the HEAD hint share a
+single probe keyed on `mathlibDepPath`.
+-/
+def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) :
+    IO (Option String × String) := do
+  let detected? := (← getRemoteRepo mathlibDepPath).map (·.repo)
+  return (detected?, repo?.getD (detected?.getD MATHLIBREPO))
+
+/--
+Process-wide override for the container fallback list, set by the `--cache-from`
+CLI flag. When `none`, downloads use `defaultContainersForRepo`; when `some cs`,
+all repos use `cs` instead.
+-/
+initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
+
+/--
+Compute the trust-ordered list of container base URLs to try when downloading
+files for a given GitHub repo.
+
+Precedence (most specific wins):
+1. `MATHLIB_CACHE_GET_URL` env var: a single anonymous URL that bypasses the
+   container logic entirely.
+2. `--cache-from` CLI override (via `cacheFromOverride`).
+3. `MATHLIB_CACHE_FROM` env var (same comma-separated shape as `--cache-from`):
+   how CI widens the lookup chain to match its write target without touching
+   each `cache get` call. The (repo, branch) → chain mapping lives in CI config,
+   not here.
+4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
+   overrides it.
+-/
+def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
+  if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
+    return [(none, url)]
+  if let some cliOverride ← cacheFromOverride.get then
+    return cliOverride.map fun c => (some c, c.azureURL)
+  let envOverride? ← do
+    match (← IO.getEnv "MATHLIB_CACHE_FROM") with
+    | none => pure none
+    | some s =>
+      match parseCacheFromList s with
+      | some cs => pure (some cs)
+      | none =>
+        IO.eprintln s!"Warning: ignoring MATHLIB_CACHE_FROM={s} \
+          (unrecognized container name). Known containers: \
+          {", ".intercalate (Container.all.map Container.name)}."
+        pure none
+  let containers := envOverride?.getD (defaultContainersForRepo repo)
+  return containers.map fun c => (some c, c.azureURL)
+
+/-- Authentication method used for cache upload operations. -/
+inductive UploadAuth where
+  | azureSas (token : String)
+  | azureBearer (token : String)
+
+/-- Retrieves upload credentials from the environment. -/
+def getUploadAuth : IO UploadAuth := do
+  if let some token ← IO.getEnv "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
+    let token := token.trimAscii.copy
+    if !token.isEmpty then
+      return .azureBearer token
+  if let some token ← IO.getEnv "MATHLIB_CACHE_SAS" then
+    let token := token.trimAscii.copy
+    if !token.isEmpty then
+      return .azureSas token
+  throw <| IO.userError
+    "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
+
+/--
+Construct the URL for the cache file `fileName` in repo `repo`, against the
+container reachable at `containerURL`.
+
+The `f/` prefix marks files (commits use `c/`). Whether the rest of the path is
+flat (`/f/<fileName>`) or repo-namespaced (`/f/<repo>/<fileName>`) follows the
+container (see `Container.flatPath`), not the repo: the same hash under
+`repo = MATHLIBREPO` lands flat in `master` and prefixed in `forks`.
+
+`container` is `none` for the user-supplied `MATHLIB_CACHE_GET_URL` /
+`MATHLIB_CACHE_PUT_URL` URLs, where no container policy applies; the path then
+follows the repo directly — flat for `MATHLIBREPO`, prefixed otherwise.
+
+`repo` is lowercased via `normalizeRepo` so the repo-namespaced path is
+case-insensitive in the GitHub owner/repo name.
+-/
+def mkFileURL (container : Option Container) (repo containerURL fileName : String)
+    (repoScope : Option String := none) : String :=
+  let repo := normalizeRepo repo
+  let flat := match container with
+    | some c => c.flatPath repo
+    | none => repo == MATHLIBREPO
+  let pre := if flat then ""
+    else match repoScope with
+      | some s => s!"{repo}/{s}/"
+      | none => s!"{repo}/"
+  s!"{containerURL}/f/{pre}{fileName}"
+
+/--
+Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
+When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`.
+-/
+initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
+
+/--
+Resolved repo-scope SHA. Precedence: `--scope=` flag > `MATHLIB_CACHE_REPO_SCOPE`
+env var > `none`. Both sources mean "the user has explicitly opted into a
+SHA-scoped read"; the non-default-scope warning fires for either.
+-/
+def getRepoScope : IO (Option String) := do
+  if let some s ← scopeOverride.get then
+    return some s
+  let s? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
+  match s? with
+  | some s =>
+    let trimmed := s.trimAscii.toString
+    pure (if trimmed.isEmpty then none else some trimmed)
+  | none => pure none
+
+def getGitCommitHash : IO String :=
+  return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
 
 section Get
 
-/-- Formats the config file for `curl`, containing the list of files to be downloaded -/
-def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
+/-- Formats the config file for `curl`, containing the list of files to be downloaded
+from a single container's base URL. `scope?` is the per-round SHA scope (see
+`mkFileURL`); it is the resolved `getRepoScope` for a normal read and an
+individual walked SHA for an `--unsafe` forks round. -/
+def mkGetConfigContent (container : Option Container) (repo containerURL : String)
+    (hashMap : IO.ModuleHashMap) (scope? : Option String) : IO String := do
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
@@ -54,100 +411,463 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
 
     -- Note we append a '.part' to the filenames here,
     -- which `downloadFiles` then removes when the download is successful.
-    pure <| acc ++ s!"url = {mkFileURL URL fileName}\n\
+    pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName scope?}\n\
       -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
-/-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
-def downloadFile (hash : UInt64) : IO Bool := do
+/--
+Whether an HTTP status returned for a single-file read should be treated as a
+cache miss (fall through to the next container in the chain) rather than a
+transfer failure worth reporting.
+
+`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
+set, which callers do for the `legacy` container: when its public read access is
+revoked ahead of retirement it answers reads with `403`, and old clients whose
+chain still lists `legacy` should fall through quietly instead of printing a
+per-file transfer failure. Any other status is a real failure.
+-/
+def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
+  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
+
+/-- Outcome of a single serial download: the file arrived (`served`), the server
+returned a cache miss that should fall through to the next container (`miss`), or
+the transfer failed for another reason that should drive the exit code
+(`failed`). The parallel path draws the same distinction through
+`TransferState.failed` and `isCacheMissStatus`. -/
+inductive DownloadOutcome
+  | served
+  | miss
+  | failed
+
+/-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
+(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`).
+`treatForbiddenAsMiss` mirrors the parallel path: a `legacy` `403` (public read
+access revoked ahead of retirement) is a miss, not a failure. -/
+def downloadFile (container : Option Container) (repo containerURL : String)
+    (hash : UInt64) (scope? : Option String) (treatForbiddenAsMiss : Bool := false) :
+    IO DownloadOutcome := do
   let fileName := hash.asLTar
-  let url := mkFileURL URL fileName
+  let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
   let partFileName := fileName ++ ".part"
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
-    { cmd := (← IO.getCurl), args := #[url, "--fail", "--silent", "-o", partPath.toString] }
+    { cmd := (← IO.getCurl),
+      args := #[url, "--fail", "--silent", "--write-out", "%{http_code}",
+        "-o", partPath.toString] }
   if out.exitCode = 0 then
     IO.FS.rename partPath path
-    pure true
+    return .served
+  IO.FS.removeFile partPath
+  -- `--fail` exits nonzero on any HTTP error; the written-out status tells a 404
+  -- miss apart from a real transfer failure (a connection error reports `000`).
+  let httpCode := out.stdout.trimAscii.toNat?.getD 0
+  return if isCacheMissStatus httpCode treatForbiddenAsMiss then .miss else .failed
+
+/-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
+    Handles both `.ltar` and `.ltar.part` files using `FilePath.fileStem`. -/
+def hashFromFileName (path : FilePath) : Option UInt64 := do
+  let some stem := path.fileStem | .none
+  -- For .ltar.part files, fileStem gives "hash.ltar"; apply fileStem again to strip .ltar
+  let stem := (FilePath.mk (toString stem)).fileStem.getD stem
+  (toString stem).parseHexToUInt64?
+
+/-- Decompress a batch of files using a single leantar invocation -/
+def decompressBatch (files : Array (FilePath × Lean.Name))
+    (force : Bool) (isMathlibRoot : Bool) (mathlibDepPath : FilePath) :
+    IO Unit := do
+  if files.isEmpty then return
+
+  -- Build JSON config for all files in batch (similar to unpackCache logic)
+  let config := files.map fun (path, mod) =>
+    if isMathlibRoot || !IO.isFromMathlib mod then
+      .str path.toString
+    else
+      .mkObj [("file", path.toString), ("base", mathlibDepPath.toString)]
+
+  -- Spawn leantar for this batch
+  let exitCode ← IO.spawnLeanTarDecompress config force
+  if exitCode != 0 then
+    let fileList := files.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
+    let firstFew := if files.size ≤ 3 then fileList else
+      let preview := files.extract 0 3 |>.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
+      s!"{preview}, ... and {files.size - 3} more"
+    throw <| IO.userError s!"leantar exited with code {exitCode} on batch of {files.size} files: {firstFew}"
+
+/-- Configuration for decompression during download -/
+structure DecompConfig where
+  hashToMod : Std.HashMap UInt64 Lean.Name  -- filename hash → module name
+  force : Bool
+  isMathlibRoot : Bool
+  mathlibDepPath : FilePath
+
+private structure TransferState where
+  last : Nat
+  success : Nat
+  failed : Nat
+  done : Nat
+  speed : Nat
+  -- Decompression state (only used when decompConfig is set)
+  pending : Array (FilePath × Lean.Name)           -- files waiting to be decompressed
+  currentTask : Option (Task (Except IO.Error Unit))  -- current leantar task
+  lastBatchSize : Nat                              -- size of the last dispatched batch
+  decompressed : Nat                               -- total files decompressed
+  decompFailed : Nat                               -- total decompression failures
+
+/-- Harvest the result of a completed decompression task, updating counters.
+    Returns `(successful, failed, error?)`. -/
+def harvestDecompTask (task : Task (Except IO.Error Unit)) (batchSize : Nat)
+    (decompressed decompFailed : Nat) : Nat × Nat × Option IO.Error :=
+  match task.get with
+  | .ok () => (decompressed + batchSize, decompFailed, none)
+  | .error e => (decompressed, decompFailed + batchSize, some e)
+
+/-- Dispatch a new decompression batch if there are pending files -/
+def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : DecompConfig)
+    : IO (Option (Task (Except IO.Error Unit))) := do
+  if pending.isEmpty then return none
+  let task ← IO.asTask (decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath)
+  return some task
+
+/--
+Whether an HTTP status is the one Azure returns for a blob that already exists,
+which a non-overwrite `put` (`If-None-Match: *`) hits when it declines to
+overwrite. Azure reports it as 409 (the `BlobAlreadyExists` error, what it
+returns in practice) or 412 (the conditional-header spec's code for an unmet
+`If-None-Match`), so we accept both. Whether that's benign is the caller's call:
+the upload path skips it, reads don't.
+-/
+def isAlreadyPresentStatus (httpCode : Nat) : Bool :=
+  httpCode == 409 || httpCode == 412
+
+def monitorCurl (args : Array String) (size : Nat)
+    (caption : String) (speedVar : String) (removeOnError := false)
+    (decompConfig : Option DecompConfig := none)
+    (treatForbiddenAsMiss : Bool := false)
+    (treatExistsAsSkip : Bool := false) : IO (TransferState × Std.HashSet UInt64) := do
+  let useAnsi := (← IO.getEnv "TERM").isSome
+  -- Hashes of the files this pass fetched, used to decide what the next
+  -- container in the chain still needs to retry.
+  let servedRef ← IO.mkRef (∅ : Std.HashSet UInt64)
+  let mkStatus (s : TransferState) : String := Id.run do
+    let speedStr :=
+      if s.speed != 0 then
+        s!", {s.speed / 1000} KB/s"
+      else ""
+    let mut msg := s!"\r{caption}: {s.success} file(s) [attempted {s.done}/{size} = {100*s.done/size}%{speedStr}]"
+    -- Add decompression progress if enabled
+    if decompConfig.isSome then
+      msg := msg ++ s!", Decompressed: {s.decompressed}"
+      if s.decompFailed != 0 then
+        msg := msg ++ s!" ({s.decompFailed} failed)"
+    if s.failed != 0 then
+      msg := msg ++ s!", {s.failed} download failed"
+    -- Clear to end of line to avoid remnants from longer previous messages
+    if useAnsi then
+      msg := msg ++ "\x1b[K"
+    return msg
+  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  let s ← IO.runCurlStreaming args init fun a line => do
+    let mut {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed} := a
+    -- output errors other than 404 and remove corresponding partial downloads
+    let line := line.trimAscii
+    if !line.isEmpty then
+      match Lean.Json.parse line.copy with
+      | .ok result =>
+        match result.getObjValAs? Nat "http_code" with
+        | .ok 200
+        | .ok 201 =>
+          if let .ok fn := result.getObjValAs? String "filename_effective" then
+            if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
+              let finalPath := (fn.dropEnd 5).copy
+              IO.FS.rename fn finalPath
+              let hash? := hashFromFileName finalPath
+              if let some hash := hash? then servedRef.modify (·.insert hash)
+              -- Add to decompression queue if enabled
+              if let some config := decompConfig then
+                let some hash := hash? | do
+                  IO.eprintln s!"Warning: Failed to extract hash from filename: {finalPath}"
+                  decompFailed := decompFailed + 1
+                let some mod := config.hashToMod[hash]? | do
+                  IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {finalPath})"
+                  decompFailed := decompFailed + 1
+                pending := pending.push (finalPath, mod)
+                -- Check if we should dispatch a batch
+                match currentTask with
+                | some task =>
+                  if (← IO.hasFinished task) then
+                    -- Harvest completed task
+                    let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
+                    decompressed := d
+                    decompFailed := f
+                    if let some e := err? then
+                      IO.eprintln s!"Decompression error: {e}"
+                    -- Dispatch new batch with all pending files
+                    lastBatchSize := pending.size
+                    currentTask ← dispatchDecompBatch pending config
+                    pending := #[]
+                  -- else: task still running, just accumulate
+                | none =>
+                  -- No task running, dispatch immediately
+                  lastBatchSize := pending.size
+                  currentTask ← dispatchDecompBatch pending config
+                  pending := #[]
+          success := success + 1
+        -- A cache miss (404, or 403 from a retiring `legacy`) just falls through
+        -- to the next container; a blob already on the server (409/412 from a
+        -- non-overwrite put) is expected, not a failure; anything else fails.
+        | code? =>
+          let alreadyPresent := match code? with
+            | .ok c     => isAlreadyPresentStatus c
+            | .error _  => false
+          let isMiss := match code? with
+            | .ok c     => isCacheMissStatus c treatForbiddenAsMiss
+            | .error _  => false
+          unless isMiss || (treatExistsAsSkip && alreadyPresent) do
+            failed := failed + 1
+            let mkFailureMsg code? fn? msg? : String := Id.run do
+              let mut msg := "Transfer failed"
+              if let .ok fn := fn? then
+                msg := s!"{fn}: {msg}"
+              if let .ok code := code? then
+                msg := s!"{msg} (error code: {code})"
+              if let .ok errMsg := msg? then
+                msg := s!"{msg}: {errMsg}"
+              return msg
+            let msg? := result.getObjValAs? String "errormsg"
+            let fn? :=  result.getObjValAs? String "filename_effective"
+            IO.println (mkFailureMsg code? fn? msg?)
+            if let .ok fn := fn? then
+              if removeOnError then
+                -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
+                if (← System.FilePath.pathExists fn) then
+                  IO.FS.removeFile fn
+        done := done + 1
+        let now ← IO.monoMsNow
+        if now - last ≥ 100 then -- max 10/s update rate
+          speed := match result.getObjValAs? Nat speedVar with
+            | .ok speed => speed | .error _ => speed
+          IO.eprint (mkStatus {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed})
+          last := now
+       | .error e =>
+        IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
+    pure {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed}
+  if s.done > 0 then
+    -- to avoid confusingly moving on without finishing the count
+    IO.eprintln (mkStatus s)
+  return (s, ← servedRef.get)
+
+/-- Run one container's download pass for the given hash map. Returns the
+`TransferState` from `monitorCurl` (synthesized in serial mode, where it carries
+only the transfer-failure count) and the set of hashes it fetched, so the caller
+can carry the rest to the next container. Side effect: any files successfully
+fetched are written to `CACHEDIR` with their final names. -/
+private def downloadFilesFromContainer
+    (container : Option Container) (repo containerURL : String)
+    (hashMap : IO.ModuleHashMap)
+    (parallel : Bool) (decompConfig : Option DecompConfig)
+    (scope? : Option String) :
+    IO (TransferState × Std.HashSet UInt64) := do
+  let size := hashMap.size
+  if parallel then
+    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
+    let args := #["--request", "GET", "--parallel",
+        -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
+        "--silent",
+        "--retry", "5", -- there seem to be some intermittent failures
+        "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+    -- `legacy` answers reads with 403 once its public access is revoked ahead
+    -- of retirement; treat that as a miss so the chain stays quiet for clients
+    -- whose chain still lists it.
+    let treatForbiddenAsMiss := container == some Container.legacy
+    let (s, served) ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+      decompConfig (treatForbiddenAsMiss := treatForbiddenAsMiss)
+    IO.FS.removeFile IO.CURLCFG
+    return (s, served)
   else
-    IO.FS.removeFile partPath
-    pure false
+    -- Mirror the parallel path's miss/failure split: a `legacy` 403 is a miss.
+    let treatForbiddenAsMiss := container == some Container.legacy
+    let r ← hashMap.foldM (init := []) fun acc _ hash => do
+      pure <| (hash, ← IO.asTask do
+        downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
+    -- Served hashes carry the remaining files to the next container; hard
+    -- failures (anything but a 404/legacy-403 miss, including a task that threw)
+    -- feed `TransferState.failed`, so they drive the exit code exactly as the
+    -- parallel path threads its own `failed` count.
+    let (served, failed) := r.foldl (init := ((∅ : Std.HashSet UInt64), 0))
+      fun (served, failed) (hash, t) =>
+        match t.get with
+        | .ok .served => (served.insert hash, failed)
+        | .ok .miss => (served, failed)
+        | _ => (served, failed + 1)
+    return (⟨0, 0, failed, 0, 0, #[], none, 0, 0, 0⟩, served)
+
+/-- Expand the trust-ordered container list into the concrete download rounds to
+run, each carrying the SHA scope to read at. A round is
+`(container?, url, scope?)`.
+
+Without `--unsafe` (`unsafeScopes` empty) every round uses the single resolved
+`scope?`: one round per container, all at the same scope. When no explicit
+scope is given, `headScope?` (the checked-out HEAD, resolved by the caller)
+applies to the `forks` round only: fork uploads live under the per-commit
+namespace, so this is what lets a plain `cache get` retrieve what CI built for
+exactly the commit the reader has checked out. The other containers' layouts
+are not SHA-scoped, so `headScope?` must not leak into their rounds.
+
+With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
+SHA-scoped container, whose markers the walk probed — is expanded into one round
+per discovered SHA, most recent first. Every other container reads unscoped
+(`master` is flat and serves the bulk of files by hash; `legacy` has no walked
+markers), so the base `scope?` is intentionally dropped here. -/
+def expandDownloadRounds (containerURLs : List (Option Container × String))
+    (scope? : Option String) (unsafeScopes : List String)
+    (headScope? : Option String := none) :
+    List (Option Container × String × Option String) :=
+  if unsafeScopes.isEmpty then
+    containerURLs.map fun (c, url) =>
+      if c == some Container.forks then (c, url, scope? <|> headScope?)
+      else (c, url, scope?)
+  else
+    containerURLs.flatMap fun (c, url) =>
+      if c == some Container.forks then
+        unsafeScopes.map fun sha => (c, url, some sha)
+      else
+        [(c, url, none)]
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Exit the process with exit code 1 if any files failed to download. -/
-def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
+Return the number of files which failed to download.
+If `decompress` is true, decompresses files as they're downloaded (pipelined).
+
+For each repo, the tool tries the trust-ordered container list returned by
+`effectiveGetURLs`. After each container round, files that were successfully
+fetched are filtered out so the next container only retries genuine misses.
+
+`unsafeScopes` is the list of SHA scopes discovered by `cache get --unsafe`
+(empty for a normal read); see `expandDownloadRounds`. -/
+def downloadFiles
+    (repo : String) (hashMap : IO.ModuleHashMap)
+    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
+    (decompress : Bool := false) (forceUnpack : Bool := false)
+    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
+    (unsafeScopes : List String := []) : IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
-  let size := hashMap.size
-  if size > 0 then
-    IO.mkDir IO.CACHEDIR
-    IO.println s!"Attempting to download {size} file(s)"
-    let failed ← if parallel then
-      IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
-      let args := #["--request", "GET", "--parallel", "--fail", "--silent",
-          "--retry", "5", -- there seem to be some intermittent failures
-          "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let (_, success, failed, done) ←
-          IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
-        let mut (last, success, failed, done) := a
-        -- output errors other than 404 and remove corresponding partial downloads
-        let line := line.trim
-        if !line.isEmpty then
-          let result ← IO.ofExcept <| Lean.Json.parse line
-          match result.getObjValAs? Nat "http_code" with
-          | .ok 200 =>
-            if let .ok fn := result.getObjValAs? String "filename_effective" then
-              if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-                IO.FS.rename fn (fn.dropRight 5)
-            success := success + 1
-          | .ok 404 => pure ()
-          | _ =>
-            failed := failed + 1
-            if let .ok e := result.getObjValAs? String "errormsg" then
-              IO.println e
-            -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
-            if let .ok fn := result.getObjValAs? String "filename_effective" then
-              if (← System.FilePath.pathExists fn) then
-                IO.FS.removeFile fn
-          done := done + 1
-          let now ← IO.monoMsNow
-          if now - last ≥ 100 then -- max 10/s update rate
-            let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%]"
-            if failed != 0 then
-              msg := msg ++ s!", {failed} failed"
-            IO.eprint msg
-            last := now
-        pure (last, success, failed, done)
-      if done > 0 then
-        -- to avoid confusingly moving on without finishing the count
-        let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%] ({100*success/done}% success)"
-        if failed != 0 then
-          msg := msg ++ s!", {failed} failed"
-        IO.eprintln msg
-      IO.FS.removeFile IO.CURLCFG
-      if success + failed < done then
-        IO.eprintln "Warning: some files were not found in the cache."
-        IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-        IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
-      pure failed
+  if hashMap.isEmpty then IO.println "No files to download"; return 0
+  IO.FS.createDirAll IO.CACHEDIR
+
+  let containerURLs ← effectiveGetURLs repo
+  if containerURLs.isEmpty then
+    IO.eprintln "No container URLs configured for download"
+    return hashMap.size
+
+  -- Set up decompression config if enabled. We keep one config across all
+  -- container rounds so pipelined decompression continues across them.
+  let decompConfig ← if decompress then
+    let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
+      acc.insert hash mod
+    pure (some { hashToMod, force := forceUnpack, isMathlibRoot, mathlibDepPath : DecompConfig })
+  else
+    pure none
+
+  -- Walk container URLs in trust order. After each round, drop files that
+  -- succeeded so the next round only retries genuine misses. With `--unsafe`
+  -- the `forks` container is expanded into one round per discovered SHA scope.
+  let scope? ← getRepoScope
+  -- With no explicit scope, the forks round defaults to HEAD: `cache get` on a
+  -- checked-out commit retrieves what CI built for exactly that commit, fork
+  -- included. This adds no trust over an unscoped forks read — the namespace
+  -- can only hold artifacts built from the commit the reader already has.
+  let headScope? ← if scope?.isNone && unsafeScopes.isEmpty then
+      try pure (some (← getGitCommitHash)) catch _ => pure none
+    else pure none
+  let rounds := expandDownloadRounds containerURLs scope? unsafeScopes headScope?
+  let unsafeMode := !unsafeScopes.isEmpty
+  let mut remaining := hashMap
+  let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  -- Hard transfer failures (not 404 misses) drive the exit code; misses are
+  -- normal and instead surface as the "not found" hint keyed on `remaining`.
+  let mut downloadFailed := 0
+  -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
+  -- attributed by the drop in `remaining` across that round.
+  let mut scopeServed : Array (String × Nat) := #[]
+  for (container?, url, roundScope?) in rounds do
+    if remaining.isEmpty then break
+    let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
+    IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
+    let before := remaining.size
+    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
+    -- Keep the latest round's pipeline state and transfer-failure count for the
+    -- finalization and exit-code logic below. Drop the files this round served so
+    -- the next container only retries genuine misses, regardless of what is
+    -- already on disk.
+    finalState := s
+    downloadFailed := s.failed
+    remaining := remaining.filter fun _ hash => !served.contains hash
+    if unsafeMode then
+      if let some sha := roundScope? then
+        scopeServed := scopeServed.push (sha, before - remaining.size)
+
+  -- `--unsafe`: report which fork commits actually contributed files, so the
+  -- user knows whose artifacts they ended up trusting.
+  if unsafeMode then
+    if scopeServed.isEmpty then
+      IO.eprintln "--unsafe: no fork scopes were needed; \
+        all files were served by higher-trust containers."
     else
-      let r ← hashMap.foldM (init := []) fun acc _ hash => do
-        pure <| (← IO.asTask do downloadFile hash) :: acc
-      pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
-    if failed > 0 then
-      IO.println s!"{failed} download(s) failed"
+      IO.eprintln s!"--unsafe: cache served from {scopeServed.size} fork commit scope(s):"
+      for (sha, n) in scopeServed do
+        IO.eprintln s!"  {sha} → {n} file(s)"
+      if remaining.size > 0 then
+        IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
+
+  if warnOnMissing && !remaining.isEmpty then
+    IO.eprintln "Warning: some files were not found in the cache."
+    IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
+    IO.eprintln ""
+    IO.eprintln "  * If you push your commits to a PR to the mathlib4 repository"
+    IO.eprintln "    (use a draft PR if it is not ready for review),"
+    IO.eprintln "    then CI will build the oleans and they will be available later."
+    IO.eprintln "  * If you have already opened a PR, this may mean"
+    IO.eprintln "    the CI build has failed part-way through building."
+
+  -- Finalize decompression: wait for current task and process any remaining files
+  if let some config := decompConfig then
+    let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed, ..} := finalState
+
+    -- Wait for current task to complete if any
+    if let some task := currentTask then
+      let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
+      decompressed := d
+      decompFailed := f
+      if let some e := err? then
+        IO.eprintln s!"Decompression error: {e}"
+
+    -- Process any remaining pending files
+    if !pending.isEmpty then
+      try
+        decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
+        decompressed := decompressed + pending.size
+      catch e =>
+        IO.eprintln s!"Decompression error: {e}"
+        decompFailed := decompFailed + pending.size
+
+    IO.println s!"Decompressed {decompressed} file(s)"
+    if decompFailed > 0 then
+      IO.println s!"{decompFailed} decompression(s) failed"
       IO.Process.exit 1
-  else IO.println "No files to download"
+
+  if downloadFailed > 0 then
+    IO.println s!"{downloadFailed} download(s) failed"
+  return downloadFailed
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
 def checkForToolchainMismatch : IO.CacheM Unit := do
-  let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
+  let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
-  if !(mathlibToolchain.trim = downstreamToolchain.trim) then
+  if !(mathlibToolchain.trimAscii == downstreamToolchain.trimAscii) then
     IO.println "Dependency Mathlib uses a different lean-toolchain"
-    IO.println s!"  Project uses {downstreamToolchain.trim}"
-    IO.println s!"  Mathlib uses {mathlibToolchain.trim}"
+    IO.println s!"  Project uses {downstreamToolchain.trimAscii}"
+    IO.println s!"  Mathlib uses {mathlibToolchain.trimAscii}"
     IO.println "\nThe cache will not work unless your project's toolchain matches Mathlib's toolchain"
     IO.println s!"This can be achieved by copying the contents of the file `{mathlibToolchainFile}`
 into the `lean-toolchain` file at the root directory of your project"
@@ -159,39 +879,122 @@ into the `lean-toolchain` file at the root directory of your project"
     IO.Process.exit 1
   return ()
 
-/-- Fetches the ProofWidgets cloud release and prunes non-JS files. -/
-def getProofWidgets (buildDir : FilePath) : IO Unit := do
-  if (← buildDir.pathExists) then
-    -- Check if the ProofWidgets build is out-of-date via `lake`.
-    -- This is done through Lake as cache has no simple heuristic
-    -- to determine whether the ProofWidgets JS is out-of-date.
-    let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "--no-build", "proofwidgets:release"]}).wait
-    if exitCode == 0 then -- up-to-date
-      return
-    else if exitCode == 3 then -- needs fetch (`--no-build` triggered)
-      pure ()
-    else
-      throw <| IO.userError s!"Failed to validate ProofWidgets cloud release: lake failed with error code {exitCode}"
-  -- Download and unpack the ProofWidgets cloud release (for its `.js` files)
-  let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "proofwidgets:release"]}).wait
-  if exitCode != 0 then
-    throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: lake failed with error code {exitCode}"
-  -- Prune non-JS ProofWidgets files (e.g., `olean`, `.c`)
-  try
-    IO.FS.removeDirAll (buildDir / "lib")
-    IO.FS.removeDirAll (buildDir / "ir")
-  catch e =>
-    throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
+/-- A human-readable description of a manifest package entry's source. -/
+def packageEntrySrcDesc (entry : Lake.PackageEntry) : String :=
+  match entry.src with
+  | .git _ rev _ _ => (rev.take 12).toString
+  | .path dir => s!"path:{dir}"
 
-/-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
-    IO.CacheM Unit := do
+/-- Check whether two manifest package entries refer to the same source. -/
+def packageEntrySrcMatch (a b : Lake.PackageEntry) : Bool :=
+  match a.src, b.src with
+  | .git urlA revA _ subDirA, .git urlB revB _ subDirB =>
+    urlA == urlB && revA == revB && subDirA == subDirB
+  | .path dirA, .path dirB => dirA == dirB
+  | _, _ => false
+
+/-- Check if the project's `lake-manifest.json` pins shared dependencies at different versions
+than mathlib's `lake-manifest.json`. Print a warning and exit if so, since the cache will compute
+wrong hashes. -/
+def checkForManifestMismatch : IO.CacheM Unit := do
+  let mathlibDepPath := (← read).mathlibDepPath
+  let downstreamEntries ← Lake.Manifest.tryLoadEntries "lake-manifest.json"
+  let mathlibEntries ← Lake.Manifest.tryLoadEntries (mathlibDepPath / "lake-manifest.json")
+  let downstreamByName : Std.HashMap Lean.Name Lake.PackageEntry :=
+    downstreamEntries.foldl (init := ∅) fun m e => m.insert e.name e
+  let mut directMismatches : Array (String × String × String) := #[]
+  let mut inheritedMismatches : Array (String × String × String) := #[]
+  for mathlibEntry in mathlibEntries do
+    if let some downstreamEntry := downstreamByName[mathlibEntry.name]? then
+      unless packageEntrySrcMatch mathlibEntry downstreamEntry do
+        let name := mathlibEntry.name.toString
+        let downstreamDesc := packageEntrySrcDesc downstreamEntry
+        let mathlibDesc := packageEntrySrcDesc mathlibEntry
+        if downstreamEntry.inherited then
+          inheritedMismatches := inheritedMismatches.push (name, downstreamDesc, mathlibDesc)
+        else
+          directMismatches := directMismatches.push (name, downstreamDesc, mathlibDesc)
+  let allMismatches := directMismatches ++ inheritedMismatches
+  unless allMismatches.isEmpty do
+    IO.println "Warning: your project pins different versions of some dependencies than Mathlib."
+    IO.println "This will cause `lake exe cache get` to compute wrong hashes.\n"
+    for (name, downstreamDesc, mathlibDesc) in allMismatches do
+      IO.println s!"  {name}:"
+      IO.println s!"    project: {downstreamDesc}"
+      IO.println s!"    mathlib: {mathlibDesc}"
+    if !directMismatches.isEmpty then
+      IO.println "\nRemove these dependencies from your lakefile and let them come \
+        transitively from Mathlib."
+    if !inheritedMismatches.isEmpty then
+      IO.println "\nSome mismatched dependencies come transitively from other packages \
+        in your lakefile. \
+        Try putting `require mathlib` last in your lakefile so that Mathlib's versions take \
+        precedence, then run `lake update`."
+    IO.Process.exit 1
+
+/-- Downloads missing files, and unpacks files.
+
+`repo` is the already-resolved GitHub repo (see `resolveRepo`); its
+trust-ordered container list from `defaultContainersForRepo` is the single
+source of truth for what gets tried — there's no separate outer-loop
+iteration. Master's cache reaches fork builds via `master` being in the fork
+chain (the highest-trust source, holding the bulk of any fork's deps). -/
+def getFiles
+    (repo : String) (hashMap : IO.ModuleHashMap)
+    (forceDownload forceUnpack parallel decompress : Bool)
+    (unsafeScopes : List String := [])
+    : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
-  unless isMathlibRoot do checkForToolchainMismatch
-  getProofWidgets (← read).proofWidgetsBuildDir
-  downloadFiles hashMap forceDownload parallel
+  unless isMathlibRoot do
+    checkForToolchainMismatch
+    checkForManifestMismatch
+
+  let mathlibDepPath := (← read).mathlibDepPath
+  let startTime ← IO.monoMsNow
+
+  -- Start background decompression of already-cached files before downloading.
+  -- Skip when forceDownload is set, since downloadFiles will re-download (and pipeline-decompress)
+  -- all files including already-cached ones, which would race with this background task.
+  let bgDecomp ← if decompress && !forceDownload then
+    if let some plan ← IO.prepareDecompConfig hashMap forceUnpack then
+      if plan.alreadyDecompressed > 0 then
+        IO.println s!"Decompressing {plan.needsDecomp} already-cached file(s) \
+          ({plan.alreadyDecompressed} already decompressed)"
+      else
+        IO.println s!"Decompressing {plan.needsDecomp} already-cached file(s)"
+      let task ← IO.asTask (IO.spawnLeanTarDecompress plan.config forceUnpack)
+      pure (some (task, plan.needsDecomp))
+    else pure none
+  else pure none
+
+  let failed ← downloadFiles repo hashMap forceDownload parallel
+    (warnOnMissing := true)
+    (decompress := decompress) (forceUnpack := forceUnpack)
+    isMathlibRoot mathlibDepPath (unsafeScopes := unsafeScopes)
+  if failed > 0 then
+    IO.println s!"Downloading {failed} files failed"
+    IO.Process.exit 1
+
+  -- Wait for decompression of already-cached files to complete
+  if let some (task, size) := bgDecomp then
+    match task.get with
+    | .ok exitCode =>
+      if exitCode != 0 then
+        IO.eprintln s!"Decompression of already-cached files failed (exit code {exitCode})"
+        IO.Process.exit 1
+      IO.println s!"Decompressed {size} already-cached file(s)"
+    | .error e =>
+      IO.eprintln s!"Decompression of already-cached files error: {e}"
+      IO.Process.exit 1
+
+  let elapsed := (← IO.monoMsNow) - startTime
   if decompress then
-    IO.unpackCache hashMap forceUnpack
+    if bgDecomp.isSome && parallel then
+      -- Background task handled pre-cached files, download pipeline handled new files
+      IO.println s!"Completed successfully in {elapsed} ms!"
+    else
+      -- Either no background decompression ran, or non-parallel mode needs final sweep
+      IO.unpackCache hashMap forceUnpack
   else
     IO.println "Downloaded all files successfully!"
 
@@ -199,71 +1002,186 @@ end Get
 
 section Put
 
-/-- FRO cache S3 URL -/
-def UPLOAD_URL : String :=
-  if useFROCache then
-    "https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4"
-  else
-    URL
+/--
+Resolve the upload base URL.
 
-/-- Formats the config file for `curl`, containing the list of files to be uploaded -/
-def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
-  let token := if useFROCache then "" else s!"?{token}" -- the FRO cache doesn't pass the token here
-  let l ← fileNames.toList.mapM fun fileName : String => do
-    pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {mkFileURL UPLOAD_URL fileName}{token}"
+Precedence:
+1. `MATHLIB_CACHE_PUT_URL` env var, if set.
+2. The Azure URL for the explicitly chosen `container`.
+3. With neither set, fall back to `Container.legacy` (the bare `mathlib4`
+   container) and warn. RBAC still scopes each identity to its own container,
+   so the fallback cannot reach a trust-level container it isn't entitled to;
+   the warning steers workflows toward passing `--container=NAME`.
+-/
+def effectiveUploadURL (container : Option Container) :
+    IO (Option Container × String) := do
+  if let some url ← IO.getEnv "MATHLIB_CACHE_PUT_URL" then
+    -- A user-supplied URL carries no container policy, so signal `none` and let
+    -- `mkFileURL` choose the path from the repo alone.
+    return (none, url)
+  match container with
+  | none =>
+    IO.eprintln <|
+      "Warning: cache upload without --container=NAME; defaulting to the\n" ++
+      "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
+      "         explicitly to choose a trust-level container."
+    return (some Container.legacy, Container.legacy.azureURL)
+  | some c => return (some c, c.azureURL)
+
+def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
+
+def getAzureDateHeader : IO String := do
+  let out ← IO.Process.output
+    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
+  unless out.exitCode == 0 do
+    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
+  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
+
+/-- Formats the config file for `curl`, containing the list of files to be uploaded.
+The destination base URL is the explicit `uploadURL` argument. `container` is
+threaded through to `mkFileURL` so the per-container URL-shape policy applies;
+it is `none` only when `MATHLIB_CACHE_PUT_URL` is overriding the endpoint. -/
+def mkPutConfigContent (container : Option Container) (repo uploadURL : String)
+    (files : Array FilePath) (auth : UploadAuth) : IO String := do
+  let scope? ← getRepoScope
+  let token := match auth with
+    | .azureSas token => s!"?{token}"
+    | _ => ""
+  let l ← files.toList.mapM fun file : FilePath => do
+    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get! scope?}{token}"
   return "\n".intercalate l
 
-/-- Calls `curl` to send a set of cached files to the server -/
-def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO Unit := do
+/-- Calls `curl` to send a set of files to the server. The destination container
+is selected by `container`; pass `none` to require `MATHLIB_CACHE_PUT_URL` to
+be set instead (otherwise this errors). -/
+def putFilesAbsolute
+  (repo : String) (container : Option Container)
+  (files : Array FilePath) (tempConfigFilePath : FilePath)
+  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
-  let _ := overwrite
-  let size := fileNames.size
+  let size := files.size
   if size > 0 then
-    IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
-    IO.println s!"Attempting to upload {size} file(s)"
-    let args := if useFROCache then
-      -- TODO: reimplement using HEAD requests?
-      let _ := overwrite
-      #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
-    else if overwrite then
-      #["-H", "x-ms-blob-type: BlockBlob"]
-    else
-      #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    _ ← IO.runCurl (stderrAsErr := false) (args ++ #[
+    let (urlContainer?, uploadURL) ← effectiveUploadURL container
+    IO.FS.writeFile tempConfigFilePath
+      (← mkPutConfigContent urlContainer? repo uploadURL files auth)
+    let target := container.map Container.name |>.getD "(env override)"
+    IO.println s!"Attempting to upload {size} file(s) to {repo} cache (container: {target})"
+    let azureDateHeader ← getAzureDateHeader
+    let args := match auth with
+      | .azureSas _ =>
+        if overwrite then
+          #["-H", "x-ms-blob-type: BlockBlob"]
+        else
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+      | .azureBearer token =>
+        if overwrite then
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
+            azureDateHeader,
+            "--oauth2-bearer", token]
+        else
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
+            azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
+    let args := args ++ #[
+      "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
-      "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
-    IO.FS.removeFile IO.CURLCFG
+      "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
+    let (s, _) ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
+      (decompConfig := none) (treatExistsAsSkip := !overwrite)
+    IO.FS.removeFile tempConfigFilePath
+    -- Surface genuine upload failures. Already-present blobs (409/412 on a
+    -- non-overwrite put) are excused in `monitorCurl`, so this won't trip on a
+    -- re-upload of files the server already has.
+    if s.failed > 0 then
+      IO.eprintln s!"Uploading {s.failed} file(s) failed"
+      IO.Process.exit 1
   else IO.println "No files to upload"
 
+/-- Calls `curl` to send a set of cached files to the server. -/
+def putFiles
+  (repo : String) (container : Option Container) (fileNames : Array String)
+  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
+  -- TODO: reimplement using HEAD requests?
+  let files : Array FilePath := fileNames.map (fun (f : String) => (IO.CACHEDIR / f))
+  putFilesAbsolute repo container files IO.CURLCFG overwrite auth
 end Put
+
+section Stage
+
+def copyCmd : String := if System.Platform.isWindows then "COPY" else "cp"
+
+/-- Copies cached files to a directory, intended for 'staging' -/
+def stageFiles
+    (destinationPath : FilePath) (fileNames : Array String) : IO Unit := do
+  let size := fileNames.size
+  if size > 0 then
+    IO.FS.createDirAll destinationPath
+    let paths := fileNames.map (s!"{IO.CACHEDIR / ↑·}")
+    let args := paths.push destinationPath.toString
+    IO.println s!"Copying {size} file(s) to {destinationPath}"
+    discard <| IO.runCmd copyCmd args
+  else IO.println "No files to stage"
+
+/-- Copies staged files into the local cache directory. -/
+def unstageFiles (stagingDir : FilePath) (overwrite : Bool) : IO Unit := do
+  unless (← stagingDir.isDir) do
+    IO.println "--staging-dir must be a directory"
+    return
+  let files ← IO.getFilesWithExtension stagingDir "ltar"
+  let enumerationSize := files.size
+  IO.println s!"{enumerationSize} files found in staging directory"
+  let files ← if overwrite then pure files else
+    files.filterM fun file => do
+      let dest := IO.CACHEDIR / file.fileName.get!
+      return !(← dest.pathExists)
+  let size := files.size
+  if !overwrite then
+    IO.println s!"{enumerationSize -  size} files will be skipped because they exist in the cache"
+
+  if size > 0 then
+    IO.FS.createDirAll IO.CACHEDIR
+    let args := files.map (·.toString) ++ #[IO.CACHEDIR.toString]
+    IO.println s!"Placing {size} file(s) from {stagingDir} into {IO.CACHEDIR}"
+    discard <| IO.runCmd copyCmd args
+  else
+    IO.println "No files to unstage"
+
+end Stage
 
 section Commit
 
 def isGitStatusClean : IO Bool :=
   return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
 
-def getGitCommitHash : IO String := return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimRight
-
 /--
 Sends a commit file to the server, containing the hashes of the respective committed files.
 
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
+The destination container follows the same rules as `putFiles`.
 -/
-def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
+def commit (container : Option Container) (hashMap : IO.ModuleHashMap) (overwrite : Bool)
+    (auth : UploadAuth) : IO Unit := do
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
-  IO.mkDir IO.CACHEDIR
+  IO.FS.createDirAll IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
-  if useFROCache then
-    -- TODO: reimplement using HEAD requests?
-    let _ := overwrite
-    discard <| IO.runCurl #["-T", path.toString,
-      "--aws-sigv4", "aws:amz:auto:s3", "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
-  else
+  let azureDateHeader ← getAzureDateHeader
+  -- Commit files are never namespaced by repo (they always live at `/c/<hash>`),
+  -- so we only need the URL from `effectiveUploadURL`, not the URL-shape container.
+  let (_, uploadURL) ← effectiveUploadURL container
+  match auth with
+  | .azureSas token =>
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
       else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}?{token}"]
+  | .azureBearer token =>
+    let params := if overwrite
+      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
+        "-H", azureDateHeader,
+        "--oauth2-bearer", token]
+      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
+        azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
+    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}"]
   IO.FS.removeFile path
 
 end Commit
@@ -276,7 +1194,7 @@ inductive QueryType
 def QueryType.prefix : QueryType → String
   | files   => "&prefix=f/"
   | commits => "&prefix=c/"
-  | all     => default
+  | all     => ""
 
 def formatError {α : Type} : IO α :=
   throw <| IO.userError "Invalid format for curl return"
@@ -292,13 +1210,12 @@ Retrieves metadata about hosted files: their names and the timestamps of last mo
 Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
 -/
 def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
-  if useFROCache then
-    throw <| .userError "FIXME: getFilesInfo is not adapted to FRO cache yet"
   IO.println s!"Downloading info list of {q.desc}"
-  let ret ← IO.runCurl #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
+  let ret ← IO.runCurl
+    #["-X", "GET", s!"{Container.master.azureURL}?comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with
   | [] => formatError
-  | [_] => return default
+  | [_] => return []
   | _ :: parts =>
     parts.mapM fun part => match part.splitOn "</Name>" with
       | [name, rest] => match rest.splitOn "<Last-Modified>" with

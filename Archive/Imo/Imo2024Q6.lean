@@ -55,10 +55,9 @@ lemma Aquaesulian.injective : Function.Injective f := by
   · exact (h.eq_of_apply_eq_inl he.symm hc).symm
   · exact h.eq_of_apply_eq_inl he hc
 
-@[simp]
 lemma Aquaesulian.apply_zero : f 0 = 0 := by
   refine h.injective ?_
-  convert h.apply_apply_add 0 using 1 <;> simp
+  convert h.apply_apply_add 0 <;> simp
 
 @[simp]
 lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
@@ -68,13 +67,12 @@ lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
   · rw [add_neg_cancel, h.apply_zero] at hc
     exact hc.symm
 
-@[simp]
 lemma Aquaesulian.apply_neg_apply (x : G) : f (-(f x)) = -x := by
   rw [← add_eq_zero_iff_eq_neg]
   exact h.apply_neg_apply_add x
 
 lemma Aquaesulian.apply_neg_apply_neg (x : G) : f (-(f (-x))) = x := by
-  simp [h]
+  simp [h.apply_neg_apply]
 
 lemma Aquaesulian.apply_neg_of_apply_eq {x₁ x₂ : G} (hx : f x₁ = x₂) : f (-x₂) = -x₁ := by
   rw [← hx]
@@ -97,14 +95,14 @@ lemma Aquaesulian.g_two {x y u v : G} (huv : u ≠ v) (hx : f x + f (-x) = u)
     f (x + y) = -(f (-x)) + -(f (-y)) + v ∨ f (x + y) = -(f (-x)) + -(f (-y)) + u := by
   refine h.pair_lemma ?_ ?_ ?_
   · simp [huv]
-  · convert h x (-(f (-y))) using 2
+  · convert! h x (-(f (-y))) using 2
     · rw [h.apply_neg_apply_neg, add_comm]
     · rw [← hx]
       abel
     · rw [← hx]
       abel_nf
     · rw [h.apply_neg_apply_neg, add_comm]
-  · convert h y (-(f (-x))) using 2
+  · convert! h y (-(f (-x))) using 2
     · rw [h.apply_neg_apply_neg]
     · rw [← hy]
       abel
@@ -135,10 +133,9 @@ lemma Aquaesulian.u_eq_zero_or_v_eq_zero {x y u v : G} (huv : u ≠ v) (hx : f x
 
 lemma Aquaesulian.card_le_two : #(Set.range (fun x ↦ f x + f (-x))) ≤ 2 := by
   classical
-  by_cases hf : ∀ x, f x + f (-x) = 0
+  by_cases! hf : ∀ x, f x + f (-x) = 0
   · simp [hf]
-  · rw [not_forall] at hf
-    rcases hf with ⟨x, hx⟩
+  · rcases hf with ⟨x, hx⟩
     suffices #(Set.range (fun x ↦ f x + f (-x))) ≤ (2 : ℕ) from mod_cast this
     rw [Cardinal.mk_le_iff_forall_finset_subset_card_le]
     intro s hs
@@ -184,8 +181,8 @@ lemma add_fExample (x y : ℚ) : x + fExample y = ⌊x⌋ + ⌊y⌋ + (Int.fract
   rw [add_comm, fExample_add]
   abel
 
-lemma fExample_int_add (x : ℤ) (y : ℚ) : fExample (x + y) = x + fExample y := by
-  simp_rw [fExample, Int.floor_int_add, Int.fract_int_add, ← add_sub_assoc]
+lemma fExample_intCast_add (x : ℤ) (y : ℚ) : fExample (x + y) = x + fExample y := by
+  simp_rw [fExample, Int.floor_intCast_add, Int.fract_intCast_add, ← add_sub_assoc]
   exact_mod_cast rfl
 
 lemma fExample_of_mem_Ico {x : ℚ} (h : x ∈ Set.Ico 0 1) : fExample x = -x := by
@@ -197,13 +194,13 @@ lemma apply_fExample_add_apply_of_fract_le {x y : ℚ} (h : Int.fract y ≤ Int.
   rw [← sub_nonneg] at h
   have h₁ : Int.fract x - Int.fract y < 1 :=
     (sub_le_self (Int.fract x) (Int.fract_nonneg y)).trans_lt (Int.fract_lt_one x)
-  rw [fExample_add, add_fExample, add_assoc, fExample_int_add, fExample_int_add,
+  rw [fExample_add, add_fExample, add_assoc, fExample_intCast_add, fExample_intCast_add,
       fExample_of_mem_Ico ⟨h, h₁⟩]
   abel
 
 lemma aquaesulian_fExample : Aquaesulian fExample := by
   intro x y
-  rcases lt_or_le (Int.fract x) (Int.fract y) with h | h
+  rcases lt_or_ge (Int.fract x) (Int.fract y) with h | h
   · rw [add_comm (fExample x), add_comm x]
     exact .inr (apply_fExample_add_apply_of_fract_le h.le)
   · exact .inl (apply_fExample_add_apply_of_fract_le h)
@@ -220,7 +217,7 @@ lemma floor_fExample (x : ℚ) :
   · simp only [h, if_true, fExample, sub_zero, Int.floor_intCast]
     rw [Int.fract, sub_eq_zero] at h
     exact h.symm
-  · simp only [h, if_false, fExample, sub_eq_add_neg, Int.floor_int_add, Int.cast_add,
+  · simp only [h, if_false, fExample, sub_eq_add_neg, Int.floor_intCast_add, Int.cast_add,
                add_right_inj]
     suffices ⌊-Int.fract x⌋ = -1 from mod_cast this
     rw [Int.floor_eq_iff]
@@ -245,8 +242,8 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
     · rcases h with rfl | rfl
       · refine ⟨0, by simp [fExample]⟩
       · refine ⟨1 / 2, ?_⟩
-        rw [(by norm_num : (-(1 / 2) : ℚ) = (-1 : ℤ) + (1 / 2 : ℚ)), fExample_int_add,
-            fExample_of_mem_Ico ⟨by norm_num, by norm_num⟩]
+        rw [(by norm_num : (-(1 / 2) : ℚ) = (-1 : ℤ) + (1 / 2 : ℚ)), fExample_intCast_add,
+            fExample_of_mem_Ico ⟨by simp, by norm_num⟩]
         norm_num
   rw [h]
   simp

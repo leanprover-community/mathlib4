@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.FreimanHom
+module
+
+public import Mathlib.Combinatorics.Additive.FreimanHom
 
 /-!
 # Corners
@@ -16,6 +18,10 @@ property of being corner-free.
 * [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 * [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
+
+@[expose] public section
+
+assert_not_exists Field Ideal TwoSidedIdeal
 
 open Set
 
@@ -65,14 +71,14 @@ lemma IsCornerFree.mono (hAB : A ⊆ B) (hB : IsCornerFree B) : IsCornerFree A :
 lemma isCornerFree_empty : IsCornerFree (∅ : Set (G × G)) := subsingleton_empty.isCornerFree
 lemma isCornerFree_singleton (x : G × G) : IsCornerFree {x} := subsingleton_singleton.isCornerFree
 
-/-- Corners are preserved under `2`-Freiman homomorphisms. --/
+/-- Corners are preserved under `2`-Freiman homomorphisms. -/
 lemma IsCorner.image (hf : IsAddFreimanHom 2 s t f) (hAs : (A : Set (G × G)) ⊆ s ×ˢ s)
     (hA : IsCorner A x₁ y₁ x₂ y₂) : IsCorner (Prod.map f f '' A) (f x₁) (f y₁) (f x₂) (f y₂) := by
   obtain ⟨hx₁y₁, hx₁y₂, hx₂y₁, hxy⟩ := hA
   exact ⟨mem_image_of_mem _ hx₁y₁, mem_image_of_mem _ hx₁y₂, mem_image_of_mem _ hx₂y₁,
     hf.add_eq_add (hAs hx₁y₁).1 (hAs hx₁y₂).2 (hAs hx₂y₁).1 (hAs hx₁y₁).2 hxy⟩
 
-/-- Corners are preserved under `2`-Freiman homomorphisms. --/
+/-- Corners are preserved under `2`-Freiman homomorphisms. -/
 lemma IsCornerFree.of_image (hf : IsAddFreimanHom 2 s t f) (hf' : s.InjOn f)
     (hAs : (A : Set (G × G)) ⊆ s ×ˢ s) (hA : IsCornerFree (Prod.map f f '' A)) : IsCornerFree A :=
   fun _x₁ _y₁ _x₂ _y₂ hxy ↦

@@ -3,12 +3,14 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Meta.Tactic.TryThis
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Tactic.Lemma
+module
+
+public meta import Std.Time.Format
+public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
-#  `deprecate to` -- a deprecation tool
+# `deprecate to` -- a deprecation tool
 
 Writing
 ```lean
@@ -36,6 +38,8 @@ TODO:
 * preserve formatting of existing command?
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.DeprecateTo
 
 open Lean Elab Term Command
@@ -43,10 +47,11 @@ open Lean Elab Term Command
 /-- Produce the syntax for the command `@[deprecated (since := "YYYY-MM-DD")] alias n := id`. -/
 def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := none) :
     CommandElabM (TSyntax `command) := do
-  let dat := ← match dat with
-                | none => IO.Process.run { cmd := "date", args := #["-I"] }
-                | some s => return s
-  let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimRight ++ "\"")]
+  let dat ← match dat with
+    | none => do
+      pure s!"{← Std.Time.PlainDate.now}"
+    | some s => pure s
+  let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimAsciiEnd ++ "\"")]
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 
 /-- Returns the array of names that are in `new` but not in `old`. -/
@@ -123,7 +128,7 @@ elab tk:"deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command
       for i in id.toList.drop news.size do logErrorAt i ""
       warn := warn.push s!"Unused names: {id.toList.drop news.size}"
     let (oldId, newCmd) := renameTheorem id[0]! cmd
-    let oldNames := ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
+    let oldNames ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
     let fil := news.filter fun n => n.toString.endsWith oldNames[0]!.1.toString
     if fil.size != 1 && oldId != default then
       logError m!"Expected to find one declaration called {oldNames[0]!.1}, found {fil.size}"

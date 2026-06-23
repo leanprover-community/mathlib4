@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Polynomial.Eval.Irreducible
-import Mathlib.RingTheory.Polynomial.Nilpotent
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Irreducible
+public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 
@@ -25,7 +27,7 @@ polynomial, irreducible ring, nilradical, prime ideal
 
 -/
 
-open scoped Classical Polynomial
+public section
 
 open Polynomial
 
@@ -46,11 +48,11 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   refine ⟨fun h ↦ hi.1 <| (mapRingHom ι).isUnit_map h, fun a b h ↦ ?_⟩
   wlog hb : IsUnit (b.map ι) generalizing a b
   · exact (this b a (mul_comm a b ▸ h)
-      (hi.2 _ _ (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
+      (hi.2 (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
   have hn (i : ℕ) (hi : i ≠ 0) : IsNilpotent (b.coeff i) := by
     obtain ⟨_, _, h⟩ := Polynomial.isUnit_iff.1 hb
     simpa only [coeff_map, coeff_C, hi, ite_false, ← RingHom.mem_ker,
-      show RingHom.ker ι = nilradical R from Ideal.mk_ker] using congr(coeff $(h.symm) i)
+      show RingHom.ker ι = nilradical R from Ideal.mk_ker] using! congr(coeff $(h.symm) i)
   refine .inr <| isUnit_of_coeff_isUnit_isNilpotent (isUnit_of_mul_isUnit_right
     (x := a.coeff f.natDegree) <| (IsUnit.neg_iff _).1 ?_) hn
   have hc : f.leadingCoeff = _ := congr(coeff $h f.natDegree)

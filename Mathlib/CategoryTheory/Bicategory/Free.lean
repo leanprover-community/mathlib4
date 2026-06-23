@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Free bicategories
@@ -19,6 +21,8 @@ axioms of a bicategory.
 * `FreeBicategory.lift F`: the pseudofunctor from `FreeBicategory B` to `C` associated with a
   prefunctor `F` from `B` to `C`.
 -/
+
+@[expose] public section
 
 
 universe w w₁ w₂ v v₁ v₂ u u₁ u₂
@@ -41,7 +45,7 @@ namespace FreeBicategory
 
 section
 
-variable {B : Type u} [Quiver.{v + 1} B]
+variable {B : Type u} [Quiver.{v} B]
 
 /-- 1-morphisms in the free bicategory. -/
 inductive Hom : B → B → Type max u v
@@ -52,21 +56,20 @@ inductive Hom : B → B → Type max u v
 instance (a b : B) [Inhabited (a ⟶ b)] : Inhabited (Hom a b) :=
   ⟨Hom.of default⟩
 
-instance quiver : Quiver.{max u v + 1} (FreeBicategory B) where
+instance quiver : Quiver.{max u v} (FreeBicategory B) where
   Hom := fun a b : B => Hom a b
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
   id   := fun a : B => Hom.id a
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Type max u v
   | id {a b} (f : a ⟶ b) : Hom₂ f f
   | vcomp {a b} {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) : Hom₂ f h
   | whisker_left {a b c} (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
-      Hom₂ (f ≫ g) (f ≫ h)-- `η` cannot be earlier than `h` since it is a recursive argument.
+      Hom₂ (f ≫ g) (f ≫ h) -- `η` cannot be earlier than `h` since it is a recursive argument.
   | whisker_right {a b c} {f g : a ⟶ b} (h : b ⟶ c) (η : Hom₂ f g) : Hom₂ (f.comp h) (g.comp h)
   | associator {a b c d} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
       Hom₂ ((f ≫ g) ≫ h) (f ≫ (g ≫ h))
@@ -210,6 +213,7 @@ instance bicategory : Bicategory (FreeBicategory B) where
 
 variable {a b c d : FreeBicategory B}
 
+/-- `Hom₂.mk η` is an abbreviation for `Quot.mk Rel η`. -/
 abbrev Hom₂.mk {f g : a ⟶ b} (η : Hom₂ f g) : f ⟶ g :=
   Quot.mk Rel η
 
@@ -230,9 +234,8 @@ theorem mk_whisker_right {f g : a ⟶ b} (η : Hom₂ f g) (h : b ⟶ c) :
 
 variable (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 
--- Porting note: I can not get this to typecheck, and I don't understand why.
--- theorem id_def : Hom.id a = 𝟙 a :=
---   rfl
+theorem id_def : Hom.id (B := B) a = 𝟙 a :=
+  rfl
 
 theorem comp_def : Hom.comp f g = f ≫ g :=
   rfl
@@ -275,7 +278,7 @@ end
 
 section
 
-variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [CategoryStruct.{v₂} C]
+variable {B : Type u₁} [Quiver.{v₁} B] {C : Type u₂} [CategoryStruct.{v₂} C]
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
@@ -298,11 +301,10 @@ end
 
 section
 
-variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
+variable {B : Type u₁} [Quiver.{v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
--- @[simp] -- Porting note: adding `@[simp]` causes a PANIC.
 def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (liftHom F f ⟶ liftHom F g)
   | _, _, _, _, Hom₂.id _ => 𝟙 _
   | _, _, _, _, Hom₂.associator _ _ _ => (α_ _ _ _).hom
@@ -315,16 +317,15 @@ def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (l
   | _, _, _, _, Hom₂.whisker_left f η => liftHom F f ◁ liftHom₂ η
   | _, _, _, _, Hom₂.whisker_right h η => liftHom₂ η ▷ liftHom F h
 
-attribute [local simp] whisker_exchange
-
+attribute [local simp] whisker_exchange in
 theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom₂ f g} (H : Rel η θ) :
-    liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; aesop_cat)
+    liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; cat_disch)
 
 /-- A prefunctor from a quiver `B` to a bicategory `C` can be lifted to a pseudofunctor from
 `free_bicategory B` to `C`.
 -/
 @[simps]
-def lift : Pseudofunctor (FreeBicategory B) C where
+def lift : FreeBicategory B ⥤ᵖ C where
   obj := F.obj
   map := liftHom F
   mapId _ := Iso.refl _
@@ -333,17 +334,16 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   -- Porting note: We'd really prefer not to be doing this by hand.
   -- in mathlib3 `tidy` did these inductions for us.
   map₂_comp := by
-    intros a b f g h η θ
+    intro a b f g h η θ
     induction η using Quot.rec
     · induction θ using Quot.rec <;> rfl
     · rfl
-  -- Porting note: still borked from here. The infoview doesn't update properly for me.
   map₂_whisker_left := by
     intro a b c f g h η
     induction η using Quot.rec
-    · aesop_cat
+    · cat_disch
     · rfl
-  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; induction η using Quot.rec <;> aesop_cat
+  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; induction η using Quot.rec <;> cat_disch
 
 end
 

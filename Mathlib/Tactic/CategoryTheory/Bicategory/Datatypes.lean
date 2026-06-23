@@ -3,8 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
-import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!
 # Expressions for bicategories
@@ -14,6 +17,8 @@ or `Mor` terms. The converted expressions are used in the coherence tactics and 
 widgets.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike Bicategory
@@ -72,7 +77,7 @@ def mkContext? (e : Expr) : MetaM (Option Context) := do
       let .succ level₀ ← getLevel B | return none
       let .succ level₁ ← getLevel fType | return none
       let .succ level₂ ← getLevel type | return none
-      let .some instBicategory ← synthInstance?
+      let some instBicategory ← synthInstance?
         (mkAppN (.const ``Bicategory [level₂, level₁, level₀]) #[B]) | return none
       return some ⟨level₂, level₁, level₀, B, instBicategory⟩
     | _ => return none
@@ -116,12 +121,12 @@ theorem structuralIsoOfExpr_comp {f g h : a ⟶ b}
   simp [ih_η, ih_θ]
 
 theorem structuralIsoOfExpr_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c}
-    (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η)  :
+    (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η) :
     (whiskerLeftIso f η').hom = f ◁ η := by
   simp [ih_η]
 
 theorem structuralIsoOfExpr_whiskerRight {f g : a ⟶ b} (h : b ⟶ c)
-    (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η)  :
+    (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η) :
     (whiskerRightIso η' h).hom = η ▷ h := by
   simp [ih_η]
 
@@ -331,7 +336,7 @@ instance : MonadMor₂ BicategoryM where
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         have θ_iso_eq : Q(Iso.hom $θ_iso_e = $θ_e) := θ_iso.eq
         let eq := q(structuralIsoOfExpr_comp _ _ $η_iso_eq _ _ $θ_iso_eq)
-        return .some ⟨← comp₂M η_iso.e θ_iso.e, eq⟩
+        return some ⟨← comp₂M η_iso.e θ_iso.e, eq⟩
       | _ => return none)
     let e : Q($f_e ⟶ $h_e) := q($η_e ≫ $θ_e)
     return .comp e iso_lift? f g h η θ
@@ -352,7 +357,7 @@ instance : MonadMor₂ BicategoryM where
         have η_iso_e : Q($g_e ≅ $h_e) := η_iso.e.e
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         let eq := q(structuralIsoOfExpr_whiskerLeft $f_e _ _ $η_iso_eq)
-        return .some ⟨← whiskerLeftM f η_iso.e, eq⟩
+        return some ⟨← whiskerLeftM f η_iso.e, eq⟩
       | _ => return none)
     let e : Q($f_e ≫ $g_e ⟶ $f_e ≫ $h_e) := q($f_e ◁ $η_e)
     return .whiskerLeft e iso_lift? f g h η
@@ -373,7 +378,7 @@ instance : MonadMor₂ BicategoryM where
         have η_iso_e : Q($f_e ≅ $g_e) := η_iso.e.e
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         let eq := q(structuralIsoOfExpr_whiskerRight $h_e _ _ $η_iso_eq)
-        return .some ⟨← whiskerRightM η_iso.e h, eq⟩
+        return some ⟨← whiskerRightM η_iso.e h, eq⟩
       | _ => return none)
     let e : Q($f_e ≫ $h_e ⟶ $g_e ≫ $h_e) := q($η_e ▷ $h_e)
     return .whiskerRight e iso_lift? f g η h
@@ -401,7 +406,7 @@ instance : MonadMor₂ BicategoryM where
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         have θ_iso_eq : Q(Iso.hom $θ_iso_e = $θ_e) := θ_iso.eq
         let eq := q(StructuralOfExpr_bicategoricalComp _ _ $η_iso_eq _ _ $θ_iso_eq)
-        return .some ⟨← coherenceCompM α η_iso.e θ_iso.e, eq⟩
+        return some ⟨← coherenceCompM α η_iso.e θ_iso.e, eq⟩
       | _ => return none)
     let e : Q($f_e ⟶ $i_e) := q($η_e ⊗≫ $θ_e)
     return .coherenceComp e iso_lift? f g h i α η θ
@@ -412,7 +417,7 @@ def id₁? (e : Expr) : BicategoryM (Option Obj) := do
   let _bicat := ctx.instBicategory
   let a : Q($ctx.B) ← mkFreshExprMVar ctx.B
   if ← withDefault <| isDefEq e q(𝟙 $a) then
-    return .some ⟨← instantiateMVars a⟩
+    return some ⟨← instantiateMVars a⟩
   else
     return none
 
@@ -437,6 +442,9 @@ def comp? (e : Expr) : BicategoryM (Option (Mor₁ × Mor₁)) := do
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : BicategoryM Mor₁ := do
+  let e ← instantiateMVars e
+  if e.hasExprMVar then
+    throwError m!"expression contains metavariables:\n{e}"
   if let some f := (← get).cache.find? e then
     return f
   let f ←

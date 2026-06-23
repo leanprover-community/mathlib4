@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Preserving pullbacks
@@ -25,12 +27,13 @@ The dual is also given.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 universe v₁ v₂ u₁ u₂
 
--- Porting note: need Functor namespace for mapCone
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 namespace CategoryTheory.Limits
@@ -49,6 +52,7 @@ abbrev map : PullbackCone (G.map f) (G.map g) :=
   PullbackCone.mk (G.map c.fst) (G.map c.snd)
     (by simpa using G.congr_map c.condition)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cone) of a pullback cone is limit iff
 the map (as a pullback cone) is limit. -/
 def isLimitMapConeEquiv :
@@ -78,14 +82,14 @@ def isLimitMapConePullbackConeEquiv :
 /-- The property of preserving pullbacks expressed in terms of binary fans. -/
 def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
-    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp,comm]
+    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp, comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
   (PullbackCone.isLimitMapConeEquiv _ G).1 (isLimitOfPreserves G l)
 
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
-    from by simp only [← G.map_comp,comm]))) : IsLimit (PullbackCone.mk h k comm) :=
+    from by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   isLimitOfReflects G
     ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).2 l)
 
@@ -114,7 +118,7 @@ lemma preservesPullback_symmetry : PreservesLimit (cospan g f) G where
         infer_instance
     · exact
         (c.π.naturality WalkingCospan.Hom.inr).symm.trans
-          (c.π.naturality WalkingCospan.Hom.inl : _)⟩
+          (c.π.naturality WalkingCospan.Hom.inl :)⟩
 
 theorem hasPullback_of_preservesPullback [HasPullback f g] : HasPullback (G.map f) (G.map g) :=
   ⟨⟨⟨_, isLimitPullbackConeMapOfIsLimit G _ (pullbackIsPullback _ _)⟩⟩⟩
@@ -130,27 +134,31 @@ def PreservesPullback.iso : G.obj (pullback f g) ≅ pullback (G.map f) (G.map g
 theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).hom = pullbackComparison G f g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem PreservesPullback.iso_hom_fst :
     (PreservesPullback.iso G f g).hom ≫ pullback.fst _ _ = G.map (pullback.fst f g) := by
   simp [PreservesPullback.iso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem PreservesPullback.iso_hom_snd :
     (PreservesPullback.iso G f g).hom ≫ pullback.snd _ _ = G.map (pullback.snd f g) := by
   simp [PreservesPullback.iso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_fst :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.fst f g) = pullback.fst _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_snd :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.snd f g) = pullback.snd _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 
-/-- A pullback cone in `C` is limit iff if it is so after the application
+/-- A pullback cone in `C` is a limit iff it is so after the application
 of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
 def PullbackCone.isLimitCoyonedaEquiv (c : PullbackCone f g) :
     IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit (c.map (coyoneda.obj X)) :=
@@ -172,6 +180,7 @@ variable {W X Y : C} {f : W ⟶ X} {g : W ⟶ Y} (c : PushoutCocone f g) (G : C 
 abbrev map : PushoutCocone (G.map f) (G.map g) :=
   PushoutCocone.mk (G.map c.inl) (G.map c.inr) (by simpa using G.congr_map c.condition)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cocone) of a pushout cocone is colimit iff
 the map (as a pushout cocone) is limit. -/
 def isColimitMapCoconeEquiv :
@@ -189,6 +198,7 @@ end PushoutCocone
 variable (G : C ⥤ D)
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a pushout cocone is a colimit iff the cofork consisting of the mapped morphisms is a
 colimit. This essentially lets us commute `PushoutCocone.mk` with `Functor.mapCocone`. -/
 def isColimitMapCoconePushoutCoconeEquiv :
@@ -198,7 +208,7 @@ def isColimitMapCoconePushoutCoconeEquiv :
           PushoutCocone (G.map f) (G.map g)) :=
   (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).symm.trans <|
     IsColimit.equivIsoColimit <|
-      Cocones.ext (Iso.refl _) <| by
+      Cocone.ext (Iso.refl _) <| by
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [Category.comp_id, Category.id_comp, ← G.map_comp]
 
@@ -206,13 +216,13 @@ def isColimitMapCoconePushoutCoconeEquiv :
 def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk h k comm)) :
     IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h = G.map g ≫ G.map k
-      from by simp only [← G.map_comp,comm] )) :=
+      by simp only [← G.map_comp, comm])) :=
   isColimitMapCoconePushoutCoconeEquiv G comm (isColimitOfPreserves G l)
 
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
 def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h =
-      G.map g ≫ G.map k from by simp only [← G.map_comp,comm]))) :
+      G.map g ≫ G.map k from by simp only [← G.map_comp, comm]))) :
     IsColimit (PushoutCocone.mk h k comm) :=
   isColimitOfReflects G ((isColimitMapCoconePushoutCoconeEquiv G comm).symm l)
 
@@ -226,6 +236,7 @@ def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
       simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
 lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
   preserves {c} hc := ⟨by
@@ -233,10 +244,9 @@ lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
     apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _).symm
     apply PushoutCocone.isColimitOfFlip
     apply (isColimitMapCoconePushoutCoconeEquiv _ _).toFun
-    · refine @isColimitOfPreserves _ _ _ _ _ _ _ _ _ ?_ ?_ -- Porting note: more TC coddling
-      · exact PushoutCocone.flipIsColimit hc
-      · dsimp
-        infer_instance⟩
+    · -- Need to unfold these to allow the `PreservesColimit` instance to be found.
+      dsimp only [span_map_fst, span_map_snd]
+      exact isColimitOfPreserves _ (PushoutCocone.flipIsColimit hc)⟩
 
 theorem hasPushout_of_preservesPushout [HasPushout f g] : HasPushout (G.map f) (G.map g) :=
   ⟨⟨⟨_, isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout _ _)⟩⟩⟩
@@ -256,20 +266,20 @@ theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).hom = pushoutCom
 @[reassoc]
 theorem PreservesPushout.inl_iso_hom :
     pushout.inl _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inl _ _) := by
-  delta PreservesPushout.iso
   simp
 
 @[reassoc]
 theorem PreservesPushout.inr_iso_hom :
     pushout.inr _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inr _ _) := by
-  delta PreservesPushout.iso
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPushout.inl_iso_inv :
     G.map (pushout.inl _ _) ≫ (PreservesPushout.iso G f g).inv = pushout.inl _ _ := by
   simp [PreservesPushout.iso, Iso.comp_inv_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPushout.inr_iso_inv :
     G.map (pushout.inr _ _) ≫ (PreservesPushout.iso G f g).inv = pushout.inr _ _ := by
@@ -315,8 +325,7 @@ lemma PreservesPushout.of_iso_comparison [i : IsIso (pushoutComparison G f g)] :
     PreservesColimit (span f g) G := by
   apply preservesColimit_of_preserves_colimit_cocone (pushoutIsPushout f g)
   apply (isColimitMapCoconePushoutCoconeEquiv _ _).symm _
-  -- Porting note: apply no longer creates goals for instances
-  exact @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (span (G.map f) (G.map g))) i
+  exact IsColimit.ofPointIso _ (i := i)
 
 variable [PreservesColimit (span f g) G]
 
@@ -324,6 +333,7 @@ instance : IsIso (pushoutComparison G f g) := by
   rw [← PreservesPushout.iso_hom]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A pushout cocone in `C` is colimit iff it becomes limit
 after the application of `yoneda.obj X` for all `X : C`. -/
 def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
@@ -334,7 +344,7 @@ def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
         ((IsLimit.postcomposeHomEquiv
           (isoWhiskerRight (cospanOp f g).symm (yoneda.obj X)) _).symm.trans
             (Equiv.trans (IsLimit.equivIsoLimit
-              (by exact Cones.ext (Iso.refl _) (by rintro (_|_|_) <;> simp)))
+              (by exact Cone.ext (Iso.refl _) (by rintro (_ | _ | _) <;> cat_disch)))
                 (c.op.isLimitMapConeEquiv (yoneda.obj X))))))
 
 end Pushout

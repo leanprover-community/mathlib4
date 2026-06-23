@@ -3,8 +3,10 @@ Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
 
 /-!
 # 'Try this' tactic macro
@@ -13,6 +15,8 @@ This is a convenient shorthand intended for macro authors to be able to generate
 recommendations. (It is not the main implementation of 'Try this',
 which is implemented in Lean core, see `Lean.Meta.Tactic.TryThis`.)
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean

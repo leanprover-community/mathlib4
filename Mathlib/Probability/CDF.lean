@@ -3,7 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration.CondCDF
+module
+
+public import Mathlib.Probability.Kernel.Disintegration.CondCDF
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Cumulative distribution function of a real probability measure
@@ -18,7 +21,7 @@ Two probability measures are equal if and only if they have the same cdf.
   conditional cdf (`ProbabilityTheory.condCDF`) of the product measure
   `(Measure.dirac Unit.unit).prod μ` evaluated at `Unit.unit`.
 
-The definition could be replaced by the more elementary `cdf μ x = (μ (Iic x)).toReal`, but using
+The definition could be replaced by the more elementary `cdf μ x = μ.real (Iic x)`, but using
 `condCDF` gives us access to its API, from which most properties of the cdf follow directly.
 
 ## Main statements
@@ -38,18 +41,21 @@ The definition could be extended to `ℝⁿ`, either by extending the definition
 using another construction here.
 -/
 
-open MeasureTheory Set Filter
+@[expose] public section
+
+open MeasureTheory Measure Set Filter
 
 open scoped Topology
 
 namespace ProbabilityTheory
 
 /-- Cumulative distribution function of a real measure. The definition currently makes sense only
-for probability measures. In that case, it satisfies `cdf μ x = (μ (Iic x)).toReal` (see
-`ProbabilityTheory.cdf_eq_toReal`). -/
+for probability measures. In that case, it satisfies `cdf μ x = μ.real (Iic x)` (see
+`ProbabilityTheory.cdf_eq_real`). -/
+@[wikidata Q386228]
 noncomputable
-def cdf (μ : Measure ℝ) : StieltjesFunction :=
-  condCDF ((Measure.dirac Unit.unit).prod μ) Unit.unit
+def cdf (μ : Measure ℝ) : StieltjesFunction ℝ :=
+  condCDF ((dirac Unit.unit).prod μ) Unit.unit
 
 section ExplicitMeasureArg
 variable (μ : Measure ℝ)
@@ -70,12 +76,11 @@ lemma tendsto_cdf_atBot : Tendsto (cdf μ) atBot (𝓝 0) := tendsto_condCDF_atB
 lemma tendsto_cdf_atTop : Tendsto (cdf μ) atTop (𝓝 1) := tendsto_condCDF_atTop _ _
 
 lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x) = μ (Iic x) := by
-  have h := lintegral_condCDF ((Measure.dirac Unit.unit).prod μ) x
-  simpa only [MeasureTheory.Measure.fst_prod, Measure.prod_prod, measure_univ, one_mul,
-    lintegral_dirac] using h
+  have h := lintegral_condCDF ((dirac Unit.unit).prod μ) x
+  simpa only [fst_prod, prod_prod, measure_univ, one_mul, lintegral_dirac] using! h
 
-lemma cdf_eq_toReal [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = (μ (Iic x)).toReal := by
-  rw [← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
+lemma cdf_eq_real [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = μ.real (Iic x) := by
+  rw [measureReal_def, ← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
 
 instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := by
   constructor
@@ -84,18 +89,25 @@ instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := 
 
 /-- The measure associated to the cdf of a probability measure is the same probability measure. -/
 lemma measure_cdf [IsProbabilityMeasure μ] : (cdf μ).measure = μ := by
-  refine Measure.ext_of_Iic (cdf μ).measure μ (fun a ↦ ?_)
+  refine ext_of_Iic (cdf μ).measure μ (fun a ↦ ?_)
   rw [StieltjesFunction.measure_Iic _ (tendsto_cdf_atBot μ), sub_zero, ofReal_cdf]
 
 end ExplicitMeasureArg
 
-lemma cdf_measure_stieltjesFunction (f : StieltjesFunction) (hf0 : Tendsto f atBot (𝓝 0))
+lemma cdf_measure_stieltjesFunction (f : StieltjesFunction ℝ) (hf0 : Tendsto f atBot (𝓝 0))
     (hf1 : Tendsto f atTop (𝓝 1)) :
     cdf f.measure = f := by
   refine (cdf f.measure).eq_of_measure_of_tendsto_atBot f ?_ (tendsto_cdf_atBot _) hf0
   have h_prob : IsProbabilityMeasure f.measure :=
     ⟨by rw [f.measure_univ hf0 hf1, sub_zero, ENNReal.ofReal_one]⟩
   exact measure_cdf f.measure
+
+open unitInterval in
+lemma unitInterval.cdf_eq_real (μ : Measure I) [IsProbabilityMeasure μ] (x : I) :
+    cdf (μ.map Subtype.val) x.1 = μ.real (Icc 0 x) := by
+  haveI : IsProbabilityMeasure (μ.map Subtype.val) := isProbabilityMeasure_map (by fun_prop)
+  rw [ProbabilityTheory.cdf_eq_real,
+    map_measureReal_apply measurable_subtype_coe measurableSet_Iic, subtype_Iic_eq_Icc]
 
 end ProbabilityTheory
 
@@ -109,4 +121,4 @@ lemma MeasureTheory.Measure.eq_of_cdf (μ ν : Measure ℝ) [IsProbabilityMeasur
 @[simp] lemma MeasureTheory.Measure.cdf_eq_iff (μ ν : Measure ℝ) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] :
     cdf μ = cdf ν ↔ μ = ν :=
-⟨MeasureTheory.Measure.eq_of_cdf μ ν, fun h ↦ by rw [h]⟩
+⟨eq_of_cdf μ ν, fun h ↦ by rw [h]⟩

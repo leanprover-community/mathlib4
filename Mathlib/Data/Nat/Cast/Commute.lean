@@ -3,19 +3,41 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Ring.Commute
+module
+
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.Ring.Commute
 
 /-!
 # Cast of natural numbers: lemmas about `Commute`
 
 -/
 
+public section
+
 variable {α : Type*}
 
 namespace Nat
 
-section Commute
+section AddCommute
+
+variable [AddMonoidWithOne α]
+
+theorem addCommute_cast (m n : ℕ) : AddCommute (m : α) (n : α) := by
+  rw [addCommute_iff_eq, ← Nat.cast_add, ← Nat.cast_add, m.add_comm]
+
+theorem addCommute_cast_one (n : ℕ) : AddCommute (n : α) 1 :=
+  mod_cast addCommute_cast n 1
+
+theorem cast_add_comm (m n : ℕ) : (m : α) + n = n + m :=
+  addCommute_cast m n
+
+theorem cast_add_one_comm (n : ℕ) : (n : α) + 1 = 1 + n :=
+  addCommute_cast_one n
+
+end AddCommute
+
+section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
@@ -36,7 +58,7 @@ theorem commute_cast (x : α) (n : ℕ) : Commute x n :=
 theorem _root_.Commute.ofNat_right (x : α) (n : ℕ) [n.AtLeastTwo] : Commute x (OfNat.ofNat n) :=
   n.commute_cast x
 
-end Commute
+end NonAssocSemiring
 end Nat
 
 namespace SemiconjBy
@@ -50,10 +72,9 @@ lemma natCast_mul_right (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (n * x) 
 lemma natCast_mul_left (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy (n * a) x y :=
   SemiconjBy.mul_left (Nat.cast_commute _ _) h
 
-@[simp]
 lemma natCast_mul_natCast_mul (h : SemiconjBy a x y) (m n : ℕ) :
-    SemiconjBy (m * a) (n * x) (n * y) :=
-  (h.natCast_mul_left m).natCast_mul_right n
+    SemiconjBy (m * a) (n * x) (n * y) := by
+  simp [h]
 
 end SemiconjBy
 
@@ -66,8 +87,8 @@ variable [Semiring α] {a b : α}
 @[simp] lemma natCast_mul_left (h : Commute a b) (n : ℕ) : Commute (n * a) b :=
   SemiconjBy.natCast_mul_left h n
 
-@[simp] lemma natCast_mul_natCast_mul (h : Commute a b) (m n : ℕ) : Commute (m * a) (n * b) :=
-  SemiconjBy.natCast_mul_natCast_mul h m n
+lemma natCast_mul_natCast_mul (h : Commute a b) (m n : ℕ) : Commute (m * a) (n * b) := by
+  simp [h]
 
 variable (a) (m n : ℕ)
 
@@ -77,13 +98,5 @@ lemma natCast_mul_self : Commute (n * a) a := (Commute.refl a).natCast_mul_left 
 
 lemma self_natCast_mul_natCast_mul : Commute (m * a) (n * a) :=
   (Commute.refl a).natCast_mul_natCast_mul m n
-
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_right := natCast_mul_right
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_left := natCast_mul_left
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_cast_nat_mul := natCast_mul_natCast_mul
-@[deprecated (since := "2024-05-27")] alias self_cast_nat_mul := self_natCast_mul
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_self := natCast_mul_self
-@[deprecated (since := "2024-05-27")]
-alias self_cast_nat_mul_cast_nat_mul := self_natCast_mul_natCast_mul
 
 end Commute

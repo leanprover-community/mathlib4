@@ -3,9 +3,11 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
+
+public import Mathlib.Analysis.Fourier.PoissonSummation
 
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-import Mathlib.Analysis.Fourier.PoissonSummation
 
 /-!
 # Poisson summation applied to the Gaussian
@@ -19,11 +21,13 @@ for positive real `a`, or complex `a` with positive real part. (See also
 `NumberTheory.ModularForms.JacobiTheta`.)
 -/
 
+public section
+
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
 open scoped Real Topology FourierTransform RealInnerProductSpace
 
-open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
+open Complex hiding exp continuous_exp
 
 noncomputable section
 
@@ -40,14 +44,14 @@ lemma rexp_neg_quadratic_isLittleO_rpow_atTop {a : ℝ} (ha : a < 0) (b s : ℝ)
   have : (fun x ↦ -x - (a * x ^ 2 + b * x)) = fun x ↦ x * (-a * x - (b + 1)) := by
     ext1 x; ring_nf
   rw [this]
-  exact tendsto_id.atTop_mul_atTop <|
-    Filter.tendsto_atTop_add_const_right _ _ <| tendsto_id.const_mul_atTop (neg_pos.mpr ha)
+  exact tendsto_id.atTop_mul_atTop₀ <| tendsto_atTop_add_const_right _ _ <|
+    tendsto_id.const_mul_atTop (neg_pos.mpr ha)
 
 lemma cexp_neg_quadratic_isLittleO_rpow_atTop {a : ℂ} (ha : a.re < 0) (b : ℂ) (s : ℝ) :
     (fun x : ℝ ↦ cexp (a * x ^ 2 + b * x)) =o[atTop] (· ^ s) := by
   apply Asymptotics.IsLittleO.of_norm_left
-  convert rexp_neg_quadratic_isLittleO_rpow_atTop ha b.re s with x
-  simp_rw [Complex.norm_eq_abs, Complex.abs_exp, add_re, ← ofReal_pow, mul_comm (_ : ℂ) ↑(_ : ℝ),
+  convert! rexp_neg_quadratic_isLittleO_rpow_atTop ha b.re s with x
+  simp_rw [Complex.norm_exp, add_re, ← ofReal_pow, mul_comm (_ : ℂ) ↑(_ : ℝ),
       re_ofReal_mul, mul_comm _ (re _)]
 
 lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) (b : ℂ) (s : ℝ) :
@@ -55,8 +59,7 @@ lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) 
   rw [cocompact_eq_atBot_atTop, isLittleO_sup]
   constructor
   · refine ((cexp_neg_quadratic_isLittleO_rpow_atTop ha (-b) s).comp_tendsto
-      Filter.tendsto_neg_atBot_atTop).congr' (Eventually.of_forall fun x ↦ ?_) ?_
-    · simp only [neg_mul, Function.comp_apply, ofReal_neg, neg_sq, mul_neg, neg_neg]
+      Filter.tendsto_neg_atBot_atTop).congr' (Eventually.of_forall fun x ↦ by simp) ?_
     · refine (eventually_lt_atBot 0).mp (Eventually.of_forall fun x hx ↦ ?_)
       simp only [Function.comp_apply, abs_of_neg hx]
   · refine (cexp_neg_quadratic_isLittleO_rpow_atTop ha b s).congr' EventuallyEq.rfl ?_
@@ -66,8 +69,8 @@ lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) 
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :
     Tendsto (fun x : ℝ => |x| ^ s * rexp (-a * x ^ 2)) (cocompact ℝ) (𝓝 0) := by
   conv in rexp _ => rw [← sq_abs]
-  erw [cocompact_eq_atBot_atTop, ← comap_abs_atTop,
-    @tendsto_comap'_iff _ _ _ (fun y => y ^ s * rexp (-a * y ^ 2)) _ _ _
+  rw [cocompact_eq_atBot_atTop, ← comap_abs_atTop]
+  erw [tendsto_comap'_iff (m := fun y => y ^ s * rexp (-a * y ^ 2))
       (mem_atTop_sets.mpr ⟨0, fun b hb => ⟨b, abs_of_nonneg hb⟩⟩)]
   exact
     (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg ha s).tendsto_zero_of_tendsto
@@ -75,7 +78,7 @@ theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s 
 
 theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
     (fun x : ℝ => Complex.exp (-a * x ^ 2)) =o[cocompact ℝ] fun x : ℝ => |x| ^ s := by
-  convert cexp_neg_quadratic_isLittleO_abs_rpow_cocompact (?_ : (-a).re < 0) 0 s using 1
+  convert! cexp_neg_quadratic_isLittleO_abs_rpow_cocompact (?_ : (-a).re < 0) 0 s using 1
   · simp_rw [zero_mul, add_zero]
   · rwa [neg_re, neg_lt_zero]
 
@@ -85,37 +88,32 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     (∑' n : ℤ, cexp (-π * a * n ^ 2 + 2 * π * b * n)) =
       1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n + I * b) ^ 2) := by
   let f : ℝ → ℂ := fun x ↦ cexp (-π * a * x ^ 2 + 2 * π * b * x)
-  have hCf : Continuous f := by
-    refine Complex.continuous_exp.comp (Continuous.add ?_ ?_)
-    · exact continuous_const.mul (Complex.continuous_ofReal.pow 2)
-    · exact continuous_const.mul Complex.continuous_ofReal
   have hFf : 𝓕 f = fun x : ℝ ↦ 1 / a ^ (1 / 2 : ℂ) * cexp (-π / a * (x + I * b) ^ 2) :=
-    fourierIntegral_gaussian_pi' ha b
-  have h1 : 0 < (↑π * a).re := by
+    fourier_gaussian_pi' ha b
+  have h1 : 0 < (π * a).re := by
     rw [re_ofReal_mul]
     exact mul_pos pi_pos ha
-  have h2 : 0 < (↑π / a).re := by
+  have h2 : 0 < (π / a).re := by
     rw [div_eq_mul_inv, re_ofReal_mul, inv_re]
     refine mul_pos pi_pos (div_pos ha <| normSq_pos.mpr ?_)
     contrapose! ha
     rw [ha, zero_re]
   have f_bd : f =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
-    convert (cexp_neg_quadratic_isLittleO_abs_rpow_cocompact ?_ _ (-2)).isBigO
+    convert! (cexp_neg_quadratic_isLittleO_abs_rpow_cocompact ?_ _ (-2)).isBigO
     rwa [neg_mul, neg_re, neg_lt_zero]
   have Ff_bd : (𝓕 f) =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
     rw [hFf]
-    have : ∀ (x : ℝ), -↑π / a * (↑x + I * b) ^ 2 =
-        -↑π / a * x ^ 2 + (-2 * π * I * b) / a * x + π * b ^ 2 / a := by
+    have : ∀ (x : ℝ), -π / a * (x + I * b) ^ 2 =
+        -π / a * x ^ 2 + (-2 * π * I * b) / a * x + π * b ^ 2 / a := by
       intro x; ring_nf; rw [I_sq]; ring
     simp_rw [this]
     conv => enter [2, x]; rw [Complex.exp_add, ← mul_assoc _ _ (Complex.exp _), mul_comm]
     refine ((cexp_neg_quadratic_isLittleO_abs_rpow_cocompact
-      (?_) (-2 * ↑π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
+      ?_ (-2 * π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
     rwa [neg_div, neg_re, neg_lt_zero]
-  convert Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay hCf one_lt_two f_bd Ff_bd 0 using 1
+  convert! Real.tsum_eq_tsum_fourier_of_rpow_decay (by fun_prop) one_lt_two f_bd Ff_bd 0 using 1
   · simp only [f, zero_add, ofReal_intCast]
-  · rw [← tsum_mul_left]
-    simp only [QuotientAddGroup.mk_zero, fourier_eval_zero, mul_one, hFf, ofReal_intCast]
+  · simp [← tsum_mul_left, hFf]
 
 theorem Complex.tsum_exp_neg_mul_int_sq {a : ℂ} (ha : 0 < a.re) :
     (∑' n : ℤ, cexp (-π * a * (n : ℂ) ^ 2)) =

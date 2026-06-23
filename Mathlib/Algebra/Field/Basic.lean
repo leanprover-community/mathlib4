@@ -3,15 +3,25 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Algebra.Ring.Invertible
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Algebra.Ring.Invertible
+public import Mathlib.Order.OrderDual
+public import Mathlib.Order.Lex
+public import Mathlib.Algebra.Order.Ring.Synonym
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
+
+import Mathlib.Tactic.Tauto
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
 
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 
@@ -24,10 +34,6 @@ section DivisionSemiring
 variable [DivisionSemiring K] {a b c d : K}
 
 theorem add_div (a b c : K) : (a + b) / c = a / c + b / c := by simp_rw [div_eq_mul_inv, add_mul]
-
-@[field_simps]
-theorem div_add_div_same (a b c : K) : a / c + b / c = (a + b) / c :=
-  (add_div _ _ _).symm
 
 theorem same_add_div (h : b ≠ 0) : (b + a) / b = 1 + a / b := by rw [← div_self h, add_div]
 
@@ -51,11 +57,9 @@ theorem one_div_mul_add_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
 theorem add_div_eq_mul_add_div (a b : K) (hc : c ≠ 0) : a + b / c = (a * c + b) / c :=
   (eq_div_iff_mul_eq hc).2 <| by rw [right_distrib, div_mul_cancel₀ _ hc]
 
-@[field_simps]
 theorem add_div' (a b c : K) (hc : c ≠ 0) : b + a / c = (b * c + a) / c := by
   rw [add_div, mul_div_cancel_right₀ _ hc]
 
-@[field_simps]
 theorem div_add' (a b c : K) (hc : c ≠ 0) : a / c + b = (a + b * c) / c := by
   rwa [add_comm, add_div', add_comm]
 
@@ -71,48 +75,14 @@ protected theorem Commute.inv_add_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b
     a⁻¹ + b⁻¹ = (a + b) / (a * b) := by
   rw [inv_eq_one_div, inv_eq_one_div, hab.one_div_add_one_div ha hb]
 
+variable [NeZero (2 : K)]
+
+@[simp] lemma add_self_div_two (a : K) : (a + a) / 2 = a := by
+  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
+
+@[simp] lemma add_halves (a : K) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
+
 end DivisionSemiring
-
-section DivisionMonoid
-
-variable [DivisionMonoid K] [HasDistribNeg K] {a b : K}
-
-theorem one_div_neg_one_eq_neg_one : (1 : K) / -1 = -1 :=
-  have : -1 * -1 = (1 : K) := by rw [neg_mul_neg, one_mul]
-  Eq.symm (eq_one_div_of_mul_eq_one_right this)
-
-theorem one_div_neg_eq_neg_one_div (a : K) : 1 / -a = -(1 / a) :=
-  calc
-    1 / -a = 1 / (-1 * a) := by rw [neg_eq_neg_one_mul]
-    _ = 1 / a * (1 / -1) := by rw [one_div_mul_one_div_rev]
-    _ = 1 / a * -1 := by rw [one_div_neg_one_eq_neg_one]
-    _ = -(1 / a) := by rw [mul_neg, mul_one]
-
-theorem div_neg_eq_neg_div (a b : K) : b / -a = -(b / a) :=
-  calc
-    b / -a = b * (1 / -a) := by rw [← inv_eq_one_div, division_def]
-    _ = b * -(1 / a) := by rw [one_div_neg_eq_neg_one_div]
-    _ = -(b * (1 / a)) := by rw [neg_mul_eq_mul_neg]
-    _ = -(b / a) := by rw [mul_one_div]
-
-theorem neg_div (a b : K) : -b / a = -(b / a) := by
-  rw [neg_eq_neg_one_mul, mul_div_assoc, ← neg_eq_neg_one_mul]
-
-@[field_simps]
-theorem neg_div' (a b : K) : -(b / a) = -b / a := by simp [neg_div]
-
-@[simp]
-theorem neg_div_neg_eq (a b : K) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
-
-theorem neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
-
-theorem div_neg (a : K) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
-
-theorem inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
-
-theorem inv_neg_one : (-1 : K)⁻¹ = -1 := by rw [← neg_inv, inv_one]
-
-end DivisionMonoid
 
 section DivisionRing
 
@@ -125,7 +95,7 @@ theorem div_neg_self {a : K} (h : a ≠ 0) : a / -a = -1 := by rw [div_neg_eq_ne
 theorem neg_div_self {a : K} (h : a ≠ 0) : -a / a = -1 := by rw [neg_div, div_self h]
 
 theorem div_sub_div_same (a b c : K) : a / c - b / c = (a - b) / c := by
-  rw [sub_eq_add_neg, ← neg_div, div_add_div_same, sub_eq_add_neg]
+  rw [sub_eq_add_neg, ← neg_div, ← add_div, sub_eq_add_neg]
 
 theorem same_sub_div {a b : K} (h : b ≠ 0) : (b - a) / b = 1 - a / b := by
   simpa only [← @div_self _ _ b h] using (div_sub_div_same b a b).symm
@@ -150,6 +120,14 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
     1 / a * (b - a) * (1 / b) = 1 / a - 1 / b := by
   simpa only [one_div] using (inv_sub_inv' ha hb).symm
 
+theorem inv_eq_self₀ {a : K} : a⁻¹ = a ↔ a = -1 ∨ a = 0 ∨ a = 1 := by
+  obtain rfl | ha := eq_or_ne a 0; · simp
+  rw [← mul_eq_one_iff_inv_eq₀ ha, ← pow_two, sq_eq_one_iff]
+  tauto
+
+theorem self_eq_inv₀ {a : K} : a = a⁻¹ ↔ a = -1 ∨ a = 0 ∨ a = 1 := by
+  rw [eq_comm, inv_eq_self₀]
+
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
   NoZeroDivisors.to_isDomain _
@@ -161,6 +139,11 @@ protected theorem Commute.div_sub_div (hbc : Commute b c) (hbd : Commute b d) (h
 protected theorem Commute.inv_sub_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b ≠ 0) :
     a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
   simp only [inv_eq_one_div, (Commute.one_right a).div_sub_div hab ha hb, one_mul, mul_one]
+
+variable [NeZero (2 : K)]
+
+lemma sub_half (a : K) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves]
+lemma half_sub (a : K) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]
 
 end DivisionRing
 
@@ -184,9 +167,19 @@ section Field
 
 variable [Field K]
 
+instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
+  { CommRing.toGrindCommRing K, ‹Field K› with
+    zpow := ⟨fun a n => a^n⟩
+    zpow_zero a := by simp
+    zpow_succ a n := by
+      by_cases h : a = 0
+      · rw [← Int.natCast_add_one, zpow_natCast, zpow_natCast, pow_succ]
+      · rw [zpow_add_one₀ h]
+    zpow_neg a n := by simp
+    zero_ne_one := zero_ne_one }
+
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 
-@[field_simps]
 theorem div_sub_div (a : K) {b : K} (c : K) {d : K} (hb : b ≠ 0) (hd : d ≠ 0) :
     a / b - c / d = (a * d - b * c) / (b * d) :=
   (Commute.all b _).div_sub_div (Commute.all _ _) hb hd
@@ -194,12 +187,10 @@ theorem div_sub_div (a : K) {b : K} (c : K) {d : K} (hb : b ≠ 0) (hd : d ≠ 0
 theorem inv_sub_inv {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
   rw [inv_eq_one_div, inv_eq_one_div, div_sub_div _ _ ha hb, one_mul, mul_one]
 
-@[field_simps]
-theorem sub_div' (a b c : K) (hc : c ≠ 0) : b - a / c = (b * c - a) / c := by
+theorem sub_div' {a b c : K} (hc : c ≠ 0) : b - a / c = (b * c - a) / c := by
   simpa using div_sub_div b a one_ne_zero hc
 
-@[field_simps]
-theorem div_sub' (a b c : K) (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
+theorem div_sub' {a b c : K} (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
   simpa using div_sub_div a b hc one_ne_zero
 
 -- see Note [lower instance priority]
@@ -303,11 +294,12 @@ end Function.Injective
 
 namespace OrderDual
 
-instance instRatCast [RatCast K] : RatCast Kᵒᵈ := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ := ‹_›
-instance instSemifield [Semifield K] : Semifield Kᵒᵈ := ‹_›
-instance instField [Field K] : Field Kᵒᵈ := ‹_›
+instance [RatCast K] : RatCast Kᵒᵈ := inferInstanceAs <| RatCast K
+instance [NNRatCast K] : NNRatCast Kᵒᵈ := inferInstanceAs <| NNRatCast K
+instance [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := inferInstanceAs <| DivisionSemiring K
+instance [DivisionRing K] : DivisionRing Kᵒᵈ := inferInstanceAs <| DivisionRing K
+instance [Semifield K] : Semifield Kᵒᵈ := inferInstanceAs <| Semifield K
+instance [Field K] : Field Kᵒᵈ := inferInstanceAs <| Field K
 
 end OrderDual
 
@@ -319,11 +311,11 @@ end OrderDual
 
 namespace Lex
 
-instance instRatCast [RatCast K] : RatCast (Lex K) := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring (Lex K) := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing (Lex K) := ‹_›
-instance instSemifield [Semifield K] : Semifield (Lex K) := ‹_›
-instance instField [Field K] : Field (Lex K) := ‹_›
+instance [RatCast K] : RatCast (Lex K) := inferInstanceAs <| RatCast K
+instance [DivisionSemiring K] : DivisionSemiring (Lex K) := inferInstanceAs <| DivisionSemiring K
+instance [DivisionRing K] : DivisionRing (Lex K) := inferInstanceAs <| DivisionRing K
+instance [Semifield K] : Semifield (Lex K) := inferInstanceAs <| Semifield K
+instance [Field K] : Field (Lex K) := inferInstanceAs <| Field K
 
 end Lex
 

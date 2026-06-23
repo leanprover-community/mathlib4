@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of monoids has all colimits.
@@ -46,12 +48,13 @@ Monoid.mk : {M : Type u} →
 ```
 -/
 
+@[expose] public section
 
-universe v
+assert_not_exists MonoidWithZero
 
-open CategoryTheory
+universe v u
 
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 namespace MonCat.Colimits
 
@@ -63,7 +66,7 @@ and the identifications given by the morphisms in the diagram.
 -/
 
 
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{v})
+variable {J : Type v} [Category.{u} J] (F : J ⥤ MonCat.{v})
 
 /-- An inductive type representing all monoid expressions (without relations)
 on a collection of types indexed by the objects of `J`.
@@ -84,18 +87,18 @@ open Prequotient
 because of the monoid laws, or
 because one element is mapped to another by a morphism in the diagram.
 -/
-inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equivalence relation:
+inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equivalence relation:
   | refl : ∀ x, Relation x x
   | symm : ∀ (x y) (_ : Relation x y), Relation y x
   | trans : ∀ (x y z) (_ : Relation x y) (_ : Relation y z),
-      Relation x z-- There's always a `map` relation
+      Relation x z -- There's always a `map` relation
   | map :
     ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j),
-      Relation (Prequotient.of j' ((F.map f) x))
-        (Prequotient.of j x)-- Then one relation per operation, describing the interaction with `of`
+      -- Then one relation per operation, describing the interaction with `of`
+      Relation (Prequotient.of j' ((F.map f) x)) (Prequotient.of j x)
   | mul : ∀ (j) (x y : F.obj j), Relation (Prequotient.of j (x * y))
       (mul (Prequotient.of j x) (Prequotient.of j y))
-  | one : ∀ j, Relation (Prequotient.of j 1) one-- Then one relation per argument of each operation
+  | one : ∀ j, Relation (Prequotient.of j 1) one -- Then one relation per argument of each operation
   | mul_1 : ∀ (x x' y) (_ : Relation x x'), Relation (mul x y) (mul x' y)
   | mul_2 : ∀ (x y y') (_ : Relation y y'), Relation (mul x y) (mul x y')
     -- And one relation per axiom
@@ -105,20 +108,15 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
 
 /-- The setoid corresponding to monoid expressions modulo monoid relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `MonCat`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
-
-instance : Inhabited (ColimitType F) := by
-  dsimp [ColimitType]
-  infer_instance
+deriving Inhabited
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
@@ -141,17 +139,18 @@ theorem quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
 
 /-- The bundled monoid giving the colimit of a diagram. -/
 def colimit : MonCat :=
-  ⟨ColimitType F, by infer_instance⟩
+  of (ColimitType F)
 
 /-- The function from a given monoid in the diagram to the colimit monoid. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
   Quot.mk _ (Prequotient.of j x)
 
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
-  toFun := coconeFun F j
-  map_one' := Quot.sound (Relation.one _)
-  map_mul' _ _ := Quot.sound (Relation.mul _ _ _)
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
+  ofHom
+  { toFun := coconeFun F j
+    map_one' := Quot.sound (Relation.one _)
+    map_mul' _ _ := Quot.sound (Relation.mul _ _ _) }
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
@@ -166,6 +165,7 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
   rw [← cocone_naturality F f]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit monoid. -/
 def colimitCocone : Cocone F where
   pt := colimit F
@@ -188,8 +188,8 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | symm x y _ h => exact h.symm
     | trans x y z _ _ h₁ h₂ => exact h₁.trans h₂
     | map j j' f x => exact s.w_apply f x
-    | mul j x y => exact map_mul (s.ι.app j) x y
-    | one j => exact map_one (s.ι.app j)
+    | mul j x y => exact map_mul (s.ι.app j).hom x y
+    | one j => exact map_one (s.ι.app j).hom
     | mul_1 x x' y _ h => exact congr_arg (· * _) h
     | mul_2 x y y' _ h => exact congr_arg (_ * ·) h
     | mul_assoc x y z => exact mul_assoc _ _ _
@@ -197,16 +197,16 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | mul_one x => exact mul_one _
 
 /-- The monoid homomorphism from the colimit monoid to the cone point of any other cocone. -/
-def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
-  toFun := descFun F s
-  map_one' := rfl
-  map_mul' x y := by
-    induction x using Quot.inductionOn
-    induction y using Quot.inductionOn
-    dsimp [descFun]
-    rw [← quot_mul]
-    simp only [descFunLift]
+def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
+  ofHom
+  { toFun := descFun F s
+    map_one' := rfl
+    map_mul' x y := by
+      induction x using Quot.inductionOn
+      induction y using Quot.inductionOn
+      solve_by_elim }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
@@ -223,8 +223,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
       rfl
     | mul x y hx hy =>
       rw [quot_mul, map_mul, hx, hy]
-      dsimp [descMorphism, DFunLike.coe, descFun]
-      simp only [← quot_mul, descFunLift]
+      solve_by_elim
 
 instance hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=

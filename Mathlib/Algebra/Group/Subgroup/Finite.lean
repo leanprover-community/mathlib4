@@ -3,10 +3,13 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Finite.Range
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Group.Submonoid.Finite
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Subgroups
@@ -16,6 +19,10 @@ This file provides some result on multiplicative and additive subgroups in the f
 ## Tags
 subgroup, subgroups
 -/
+
+public section
+
+assert_not_exists Field
 
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
@@ -42,13 +49,13 @@ namespace Subgroup
 variable (H K : Subgroup G)
 
 /-- Product of a list of elements in a subgroup is in the subgroup. -/
-@[to_additive "Sum of a list of elements in an `AddSubgroup` is in the `AddSubgroup`."]
+@[to_additive /-- Sum of a list of elements in an `AddSubgroup` is in the `AddSubgroup`. -/]
 protected theorem list_prod_mem {l : List G} : (∀ x ∈ l, x ∈ K) → l.prod ∈ K :=
   list_prod_mem
 
 /-- Product of a multiset of elements in a subgroup of a `CommGroup` is in the subgroup. -/
-@[to_additive "Sum of a multiset of elements in an `AddSubgroup` of an `AddCommGroup` is in
- the `AddSubgroup`."]
+@[to_additive /-- Sum of a multiset of elements in an `AddSubgroup` of an `AddCommGroup` is in
+the `AddSubgroup`. -/]
 protected theorem multiset_prod_mem {G} [CommGroup G] (K : Subgroup G) (g : Multiset G) :
     (∀ a ∈ g, a ∈ K) → g.prod ∈ K :=
   multiset_prod_mem g
@@ -60,8 +67,8 @@ theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
 
 /-- Product of elements of a subgroup of a `CommGroup` indexed by a `Finset` is in the
     subgroup. -/
-@[to_additive "Sum of elements in an `AddSubgroup` of an `AddCommGroup` indexed by a `Finset`
- is in the `AddSubgroup`."]
+@[to_additive /-- Sum of elements in an `AddSubgroup` of an `AddCommGroup` indexed by a `Finset`
+is in the `AddSubgroup`. -/]
 protected theorem prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type*} {t : Finset ι}
     {f : ι → G} (h : ∀ c ∈ t, f c ∈ K) : (∏ c ∈ t, f c) ∈ K :=
   prod_mem h
@@ -71,22 +78,25 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι �
     (∀ c ∈ t, f c ∈ K) → t.noncommProd f comm ∈ K :=
   K.toSubmonoid.noncommProd_mem t f comm
 
--- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 
--- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
   SubmonoidClass.coe_multiset_prod m
 
--- Porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
+theorem val_finsetProd {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
-  SubmonoidClass.coe_finset_prod f s
+  SubmonoidClass.coe_finsetProd f s
+
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubgroup.val_finset_sum := _root_.AddSubgroup.val_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias val_finset_prod := val_finsetProd
 
 @[to_additive]
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
@@ -94,9 +104,8 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
     rintro ⟨x, ⟨hx⟩⟩
     exact Finset.mem_singleton_self _⟩
 
-@[to_additive] -- Porting note: removed `simp` because `simpNF` says it can prove it.
-theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 :=
-  Nat.card_unique
+@[to_additive]
+theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 := by simp
 
 @[to_additive]
 theorem card_top : Nat.card (⊤ : Subgroup G) = Nat.card G :=
@@ -140,7 +149,7 @@ theorem card_le_one_iff_eq_bot [Finite H] : Nat.card H ≤ 1 ↔ H = ⊥ :=
 
 @[to_additive one_lt_card_iff_ne_bot]
 theorem one_lt_card_iff_ne_bot [Finite H] : 1 < Nat.card H ↔ H ≠ ⊥ :=
-  lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
+  lt_iff_not_ge.trans H.card_le_one_iff_eq_bot.not
 
 @[to_additive]
 theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
@@ -149,6 +158,22 @@ theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
 @[to_additive]
 theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H ≤ Nat.card K :=
   Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
+
+@[to_additive]
+theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
+    (hf : Function.Injective f) :
+    Nat.card (map f K) = Nat.card K := by
+  apply Nat.card_image_of_injective hf
+
+@[to_additive]
+theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
+    Nat.card (map K.subtype L) = Nat.card L :=
+  card_map_of_injective K.subtype_injective
+
+@[to_additive]
+theorem card_mapSubgroup {G' : Type*} [Group G'] (e : G ≃* G') :
+    Nat.card (e.mapSubgroup H) = Nat.card H :=
+  Subgroup.card_map_of_injective e.injective
 
 end Subgroup
 
@@ -161,71 +186,38 @@ open Set
 variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
 
 @[to_additive]
-theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
-    (x : ∀ i, f i) (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
-    x ∈ H := by
-  induction I using Finset.induction_on generalizing x with
-  | empty =>
-    have : x = 1 := by
-      ext i
-      exact h1 i (Finset.not_mem_empty i)
-    rw [this]
-    exact one_mem H
-  | insert hnmem ih =>
-    rename_i i I
-    have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
-      ext j
-      by_cases heq : j = i
-      · subst heq
-        simp
-      · simp [heq]
-    rw [this]
-    clear this
-    apply mul_mem
-    · apply ih <;> clear ih
-      · intro j hj
-        by_cases heq : j = i
-        · subst heq
-          simp
-        · simpa [heq] using h1 j (by simpa [heq] using hj)
-      · intro j hj
-        have : j ≠ i := by
-          rintro rfl
-          contradiction
-        simp only [ne_eq, this, not_false_eq_true, Function.update_noteq]
-        exact h2 _ (Finset.mem_insert_of_mem hj)
-    · apply h2
-      simp
-
-@[to_additive]
 theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : Subgroup (∀ i, f i)} (x : ∀ i, f i)
-    (h : ∀ i, Pi.mulSingle i (x i) ∈ H) : x ∈ H := by
-  cases nonempty_fintype η
-  exact pi_mem_of_mulSingle_mem_aux Finset.univ x (by simp) fun i _ => h i
+    (h : ∀ i, Pi.mulSingle i (x i) ∈ H) : x ∈ H :=
+  Submonoid.pi_mem_of_mulSingle_mem x h
 
 /-- For finite index types, the `Subgroup.pi` is generated by the embeddings of the groups. -/
-@[to_additive "For finite index types, the `Subgroup.pi` is generated by the embeddings of the
- additive groups."]
+@[to_additive /-- For finite index types, the `Subgroup.pi` is generated by the embeddings of the
+additive groups. -/]
 theorem pi_le_iff [DecidableEq η] [Finite η] {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i, f i)} :
-    pi univ H ≤ J ↔ ∀ i : η, map (MonoidHom.mulSingle f i) (H i) ≤ J := by
-  constructor
-  · rintro h i _ ⟨x, hx, rfl⟩
-    apply h
-    simpa using hx
-  · exact fun h x hx => pi_mem_of_mulSingle_mem x fun i => h i (mem_map_of_mem _ (hx i trivial))
+    pi univ H ≤ J ↔ ∀ i : η, map (MonoidHom.mulSingle f i) (H i) ≤ J :=
+  Submonoid.pi_le_iff
+
+@[to_additive]
+theorem closure_pi [Finite η] {s : Π i, Set (f i)} (hs : ∀ i, 1 ∈ s i) :
+    closure (univ.pi fun i => s i) = pi univ fun i => closure (s i) :=
+  le_antisymm
+    ((closure_le _).2 <| pi_subset_pi_iff.2 <| .inl fun _ _ => subset_closure)
+    (by
+      classical
+      exact pi_le_iff.mpr fun i => (gc_map_comap _).l_le <| (closure_le _).2 fun _x hx =>
+          subset_closure <| mem_univ_pi.mpr fun j => by
+        by_cases H : j = i
+        · subst H
+          simpa
+        · simpa [H] using hs _)
 
 end Pi
-
-end Subgroup
-
-namespace Subgroup
 
 section Normalizer
 
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
-    x ∈ Subgroup.setNormalizer S := by
+    x ∈ Subgroup.normalizer S := by
   haveI := Classical.propDecidable; cases nonempty_fintype S
-  haveI := Set.fintypeImage S fun n => x * n * x⁻¹
   exact fun n =>
     ⟨h n, fun h₁ =>
       have heq : (fun n => x * n * x⁻¹) '' S = S :=
@@ -254,11 +246,11 @@ instance decidableMemRange (f : G →* N) [Fintype G] [DecidableEq N] : Decidabl
 /-- The range of a finite monoid under a monoid homomorphism is finite.
 Note: this instance can form a diamond with `Subtype.fintype` in the
 presence of `Fintype N`. -/
-@[to_additive "The range of a finite additive monoid under an additive monoid homomorphism is
- finite.
+@[to_additive /-- The range of a finite additive monoid under an additive monoid homomorphism is
+finite.
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the presence
-of `Fintype N`."]
+of `Fintype N`. -/]
 instance fintypeMrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M] [DecidableEq N]
     (f : M →* N) : Fintype (mrange f) :=
   Set.fintypeRange f
@@ -267,11 +259,22 @@ instance fintypeMrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M] [Decidabl
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the
 presence of `Fintype N`. -/
-@[to_additive "The range of a finite additive group under an additive group homomorphism is finite.
+@[to_additive
+/-- The range of a finite additive group under an additive group homomorphism is finite.
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the
- presence of `Fintype N`."]
+presence of `Fintype N`. -/]
 instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (range f) :=
   Set.fintypeRange f
+
+lemma _root_.Fintype.card_coeSort_mrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M]
+    [DecidableEq N] {f : M →* N} (hf : Function.Injective f) :
+    Fintype.card (mrange f) = Fintype.card M :=
+  Set.card_range_of_injective hf
+
+lemma _root_.Fintype.card_coeSort_range [Fintype G] [DecidableEq N] {f : G →* N}
+    (hf : Function.Injective f) :
+    Fintype.card (range f) = Fintype.card G :=
+  Set.card_range_of_injective hf
 
 end MonoidHom

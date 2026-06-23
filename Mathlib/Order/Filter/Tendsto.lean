@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Basic
+module
+
+public import Mathlib.Order.Filter.Basic
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Convergence in terms of filters
@@ -16,6 +19,8 @@ some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the 
 `M`" is formalized as: `Tendsto u atTop (𝓝 x) → (∀ᶠ n in atTop, u n ∈ M) → x ∈ closure M`,
 which is a special case of `mem_closure_of_tendsto` from `Topology/Basic`.
 -/
+
+public section
 
 open Set Filter
 
@@ -43,7 +48,7 @@ theorem Tendsto.eventually {f : α → β} {l₁ : Filter α} {l₂ : Filter β}
     (hf : Tendsto f l₁ l₂) (h : ∀ᶠ y in l₂, p y) : ∀ᶠ x in l₁, p (f x) :=
   hf h
 
-theorem not_tendsto_iff_exists_frequently_nmem {f : α → β} {l₁ : Filter α} {l₂ : Filter β} :
+theorem not_tendsto_iff_exists_frequently_notMem {f : α → β} {l₁ : Filter α} {l₂ : Filter β} :
     ¬Tendsto f l₁ l₂ ↔ ∃ s ∈ l₂, ∃ᶠ x in l₁, f x ∉ s := by
   simp only [tendsto_iff_forall_eventually_mem, not_forall, exists_prop, not_eventually]
 
@@ -58,6 +63,10 @@ theorem Tendsto.frequently_map {l₁ : Filter α} {l₂ : Filter β} {p : α →
 
 @[simp]
 theorem tendsto_bot {f : α → β} {l : Filter β} : Tendsto f ⊥ l := by simp [Tendsto]
+
+@[simp]
+theorem tendsto_bot_right_iff {f : α → β} {l : Filter α} : Tendsto f l ⊥ ↔ l = ⊥  := by
+  simp [Tendsto]
 
 theorem Tendsto.of_neBot_imp {f : α → β} {la : Filter α} {lb : Filter β}
     (h : NeBot la → Tendsto f la lb) : Tendsto f la lb := by
@@ -224,10 +233,9 @@ theorem tendsto_iSup_iSup {f : α → β} {x : ι → Filter α} {y : ι → Fil
     Tendsto f l (𝓟 s) ↔ ∀ᶠ a in l, f a ∈ s := by
   simp only [Tendsto, le_principal_iff, mem_map', Filter.Eventually]
 
--- Porting note: was a `simp` lemma
 theorem tendsto_principal_principal {f : α → β} {s : Set α} {t : Set β} :
     Tendsto f (𝓟 s) (𝓟 t) ↔ ∀ a ∈ s, f a ∈ t := by
-  simp only [tendsto_principal, eventually_principal]
+  simp
 
 @[simp] theorem tendsto_pure {f : α → β} {a : Filter α} {b : β} :
     Tendsto f a (pure b) ↔ ∀ᶠ x in a, f x = b := by
@@ -293,7 +301,7 @@ variable {F : Filter α} {G : Filter β}
 
 theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
     MapsTo (map m) (Iic F) (Iic G) ↔ Tendsto m F G :=
-  ⟨fun hm ↦ hm right_mem_Iic, fun hm _ ↦ hm.mono_left⟩
+  ⟨fun hm ↦ hm self_mem_Iic, fun hm _ ↦ hm.mono_left⟩
 
 alias ⟨_, Filter.Tendsto.map_mapsTo_Iic⟩ := Filter.map_mapsTo_Iic_iff_tendsto
 

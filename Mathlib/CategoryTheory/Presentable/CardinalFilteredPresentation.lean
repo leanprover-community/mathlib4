@@ -1,135 +1,180 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Presentable.Limits
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Presentable.Limits
+public import Mathlib.CategoryTheory.Presentable.Retracts
+public import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Presentable generators
 
+Let `C` be a category, a regular cardinal `κ` and `P : ObjectProperty C`.
+We define a predicate `P.IsCardinalFilteredGenerator κ` saying that
+`P` consists of `κ`-presentable objects and that any object in `C`
+is a `κ`-filtered colimit of objects satisfying `P`.
+We show that if this condition is satisfied, then `P` is a strong generator
+(see `IsCardinalFilteredGenerator.isStrongGenerator`). Moreover,
+if `C` is locally small, we show that any object in `C` is presentable
+(see `IsCardinalFilteredGenerator.presentable`).
+
+Finally, we define a typeclass `HasCardinalFilteredGenerator C κ` saying
+that `C` is locally `w`-small and that there exists an (essentially) small `P`
+such that `P.IsCardinalFilteredGenerator κ` holds.
+
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
+
 -/
 
-universe w v u v' u'
+public section
+
+universe w v u
 
 namespace CategoryTheory
 
-open Limits
-
 variable {C : Type u} [Category.{v} C]
 
-structure CardinalFilteredPresentation (X : C) (κ : Cardinal.{w}) [Fact κ.IsRegular] where
-  J : Type w
-  category : Category.{w} J := by infer_instance
-  isCardinalFiltered : IsCardinalFiltered J κ := by infer_instance
-  F : J ⥤ C
-  ι : F ⟶ (Functor.const _).obj X
-  isColimit : IsColimit (Cocone.mk _ ι)
+namespace Limits.ColimitPresentation
 
-namespace CardinalFilteredPresentation
-
-attribute [instance] category isCardinalFiltered
-
-section
-
-variable {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular]
-
-variable (p : CardinalFilteredPresentation X κ)
-
-instance isFiltered : IsFiltered p.J := by
-  apply isFiltered_of_isCardinalDirected _ κ
-
-lemma isCardinalPresentable_pt (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j) κ)
-    [LocallySmall.{w} C]
+lemma isCardinalPresentable {X : C} {J : Type w} [SmallCategory J]
+    (p : ColimitPresentation J X) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (h : ∀ (j : J), IsCardinalPresentable (p.diag.obj j) κ) [LocallySmall.{w} C]
     (κ' : Cardinal.{w}) [Fact κ'.IsRegular] (h : κ ≤ κ')
-    (hJ : HasCardinalLT (Arrow p.J) κ') :
-    IsCardinalPresentable X κ' := by
-  have : ∀ (k : p.J), IsCardinalPresentable (p.F.obj k) κ' :=
-    fun _ ↦ isCardinalPresentable_of_le _ h
-  exact isCardinalPresentable_of_isColimit _ p.isColimit κ' hJ
+    (hJ : HasCardinalLT (Arrow J) κ') :
+    IsCardinalPresentable X κ' :=
+  have (k : J) : IsCardinalPresentable (p.diag.obj k) κ' := isCardinalPresentable_of_le _ h
+  isCardinalPresentable_of_isColimit _ p.isColimit κ' hJ
 
-end
+end Limits.ColimitPresentation
 
-@[simps J F ι isColimit]
-def ofIsColimit {J : Type w} [Category.{w} J]
-    {F : J ⥤ C} (c : Cocone F) (hc : IsColimit c)
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [IsCardinalFiltered J κ] :
-    CardinalFilteredPresentation c.pt κ where
-  J := J
-  F := F
-  ι := c.ι
-  isColimit := hc
+open Limits
 
-variable {J : Type u'} [Category.{v'} J] [EssentiallySmall.{w} J]
-  {F : J ⥤ C} (c : Cocone F) (hc : IsColimit c)
-  (κ : Cardinal.{w}) [Fact κ.IsRegular]
-  [IsCardinalFiltered J κ]
+namespace ObjectProperty
 
-noncomputable def ofIsColimitOfEssentiallySmall :
-    CardinalFilteredPresentation c.pt κ where
-  isCardinalFiltered := IsCardinalFiltered.of_equivalence κ (equivSmallModel J)
-  J := SmallModel J
-  F := (equivSmallModel J).inverse ⋙ F
-  ι := whiskerLeft (equivSmallModel J).inverse c.ι
-  isColimit :=
-    (IsColimit.whiskerEquivalenceEquiv (equivSmallModel J).symm).1 hc
+variable {P : ObjectProperty C}
 
-lemma ofIsColimitOfEssentiallySmall_exists_f_obj_iso
-    (j : (ofIsColimitOfEssentiallySmall c hc κ).J) :
-    ∃ (j₀ : J), Nonempty ((ofIsColimitOfEssentiallySmall c hc κ).F.obj j ≅
-      F.obj j₀) :=
-  ⟨_, ⟨Iso.refl _⟩⟩
+lemma ColimitOfShape.isCardinalPresentable {X : C} {J : Type w} [SmallCategory J]
+    (p : P.ColimitOfShape J X) {κ : Cardinal.{w}} [Fact κ.IsRegular]
+    (hP : P ≤ isCardinalPresentable C κ) [LocallySmall.{w} C]
+    (κ' : Cardinal.{w}) [Fact κ'.IsRegular] (h : κ ≤ κ')
+    (hJ : HasCardinalLT (Arrow J) κ') :
+    IsCardinalPresentable X κ' :=
+  p.toColimitPresentation.isCardinalPresentable κ
+    (fun j ↦ hP _ (p.prop_diag_obj j)) _ h hJ
 
-end CardinalFilteredPresentation
+variable {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
+variable (P κ) in
+/-- The condition that `P : ObjectProperty C` consists of `κ`-presentable objects
+and that any object of `C` is a `κ`-filtered colimit of objects satisfying `P`.
+(This notion is particularly relevant when `C` is locally `w`-small and `P` is
+essentially `w`-small, see `HasCardinalFilteredGenerators`, which appears in
+the definitions of locally presentable and accessible categories.) -/
+structure IsCardinalFilteredGenerator : Prop where
+  le_isCardinalPresentable : P ≤ isCardinalPresentable C κ
+  exists_colimitsOfShape (X : C) :
+    ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ),
+      P.colimitsOfShape J X
 
-variable {ι : Type w} (G : ι → C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+namespace IsCardinalFilteredGenerator
 
-structure AreCardinalFilteredGenerators : Prop where
-  isCardinalPresentable (i : ι) : IsCardinalPresentable (G i) κ
-  exists_cardinalFilteredPresentation (X : C) :
-      ∃ (p : CardinalFilteredPresentation X κ),
-        ∀ (j : p.J), ∃ (i : ι), Nonempty (p.F.obj j ≅ G i)
-
-namespace AreCardinalFilteredGenerators
-
-variable {G κ} (h : AreCardinalFilteredGenerators G κ) (X : C)
-
-noncomputable def presentation : CardinalFilteredPresentation X κ :=
-  (h.exists_cardinalFilteredPresentation X).choose
-
-lemma exists_presentation_obj_iso (j : (h.presentation X).J) :
-    ∃ (i : ι), Nonempty ((h.presentation X).F.obj j ≅ G i) :=
-  (h.exists_cardinalFilteredPresentation X).choose_spec j
-
-instance (j : (h.presentation X).J) :
-    IsCardinalPresentable.{w} ((h.presentation X).F.obj j) κ := by
-  obtain ⟨i, ⟨e⟩⟩ := h.exists_presentation_obj_iso X j
-  have := h.isCardinalPresentable
-  exact isCardinalPresentable_of_iso e.symm κ
+variable (h : P.IsCardinalFilteredGenerator κ) (X : C)
 
 include h in
-lemma isPresentable (i : ι) : IsPresentable.{w} (G i) := by
-  have := h.isCardinalPresentable
-  exact isPresentable_of_isCardinalPresentable _ κ
-
-instance (j : (h.presentation X).J) : IsPresentable.{w} ((h.presentation X).F.obj j) :=
-  isPresentable_of_isCardinalPresentable _ κ
+lemma of_le_isoClosure {P' : ObjectProperty C} (h₁ : P ≤ P'.isoClosure)
+    (h₂ : P' ≤ isCardinalPresentable C κ) :
+    P'.IsCardinalFilteredGenerator κ where
+  le_isCardinalPresentable := h₂
+  exists_colimitsOfShape X := by
+    obtain ⟨J, _, _, hX⟩ := h.exists_colimitsOfShape X
+    exact ⟨J, inferInstance, inferInstance, by
+      simpa only [colimitsOfShape_isoClosure] using colimitsOfShape_monotone J h₁ _ hX⟩
 
 include h in
-lemma presentable [LocallySmall.{w} C] (X : C) : IsPresentable.{w} X := by
+lemma isoClosure : P.isoClosure.IsCardinalFilteredGenerator κ :=
+  h.of_le_isoClosure (P.le_isoClosure.trans P.isoClosure.le_isoClosure)
+    (by simpa only [ObjectProperty.isoClosure_le_iff] using h.le_isCardinalPresentable)
+
+lemma isoClosure_iff :
+    P.isoClosure.IsCardinalFilteredGenerator κ ↔ P.IsCardinalFilteredGenerator κ :=
+  ⟨fun h ↦ h.of_le_isoClosure (by rfl) (P.le_isoClosure.trans h.le_isCardinalPresentable),
+    isoClosure⟩
+
+include h in
+lemma presentable [LocallySmall.{w} C] (X : C) :
+    IsPresentable.{w} X := by
+  obtain ⟨J, _, _, ⟨hX⟩⟩ := h.exists_colimitsOfShape X
   obtain ⟨κ', _, le, hκ'⟩ : ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ ≤ κ'),
-      HasCardinalLT (Arrow (h.presentation X).J) κ' := by
-    obtain ⟨κ', h₁, h₂⟩ := exists_regular_cardinal'.{w}
-      (Sum.elim (fun (_ : Unit) ↦ Arrow (h.presentation X).J) (fun (_ : Unit) ↦ κ.ord.toType))
+      HasCardinalLT (Arrow J) κ' := by
+    obtain ⟨κ', h₁, h₂⟩ := HasCardinalLT.exists_regular_cardinal_forall.{w}
+      (Sum.elim (fun (_ : Unit) ↦ Arrow J) (fun (_ : Unit) ↦ κ.ord.ToType))
     exact ⟨κ', ⟨h₁⟩,
       le_of_lt (by simpa [hasCardinalLT_iff_cardinal_mk_lt] using h₂ (Sum.inr ⟨⟩)),
       h₂ (Sum.inl ⟨⟩)⟩
-  have := (h.presentation X).isCardinalPresentable_pt (by infer_instance) κ' le hκ'
+  have := hX.isCardinalPresentable h.le_isCardinalPresentable _ le hκ'
   exact isPresentable_of_isCardinalPresentable _ κ'
 
-end AreCardinalFilteredGenerators
+include h in
+lemma isStrongGenerator : P.IsStrongGenerator :=
+  IsStrongGenerator.mk_of_exists_colimitsOfShape.{w} (fun X ↦ by
+    obtain ⟨_, _, _, hX⟩ := h.exists_colimitsOfShape X
+    exact ⟨_, _, hX⟩)
+
+include h in
+lemma isPresentable_eq_retractClosure :
+    isCardinalPresentable C κ = P.retractClosure := by
+  refine le_antisymm (fun X hX ↦ ?_) ?_
+  · rw [isCardinalPresentable_iff] at hX
+    obtain ⟨J, _, _, ⟨p⟩⟩ := h.exists_colimitsOfShape X
+    have := essentiallySmall_of_small_of_locallySmall.{w} J
+    obtain ⟨j, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit (𝟙 X)
+    exact ⟨_, p.prop_diag_obj j, ⟨{ i := _, r := _, retract := hf}⟩⟩
+  · simpa only [ObjectProperty.retractClosure_le_iff] using h.le_isCardinalPresentable
+
+include h in
+lemma essentiallySmall_isPresentable
+    [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
+    ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
+  rw [h.isPresentable_eq_retractClosure]
+  infer_instance
+
+end IsCardinalFilteredGenerator
+
+end ObjectProperty
+
+/-- The property that a category `C` and a regular cardinal `κ`
+satisfy `P.IsCardinalFilteredGenerators κ` for a suitable essentially
+small `P : ObjectProperty C`. -/
+class HasCardinalFilteredGenerator (C : Type u) [hC : Category.{v} C]
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] : Prop extends LocallySmall.{w} C where
+  exists_generator (C κ) [hC] [hκ] :
+    ∃ (P : ObjectProperty C) (_ : ObjectProperty.EssentiallySmall.{w} P),
+      P.IsCardinalFilteredGenerator κ
+
+lemma ObjectProperty.IsCardinalFilteredGenerator.hasCardinalFilteredGenerator
+    {P : ObjectProperty C} [ObjectProperty.EssentiallySmall.{w} P]
+    [LocallySmall.{w} C] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
+    (hP : P.IsCardinalFilteredGenerator κ) :
+    HasCardinalFilteredGenerator C κ where
+  exists_generator := ⟨P, inferInstance, hP⟩
+
+lemma HasCardinalFilteredGenerator.exists_small_generator (C : Type u) [Category.{v} C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredGenerator C κ] :
+    ∃ (P : ObjectProperty C) (_ : ObjectProperty.Small.{w} P),
+      P.IsCardinalFilteredGenerator κ := by
+  obtain ⟨P, _, hP⟩ := HasCardinalFilteredGenerator.exists_generator C κ
+  obtain ⟨Q, _, h₁, h₂⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
+  exact ⟨Q, inferInstance, hP.of_le_isoClosure h₂ (h₁.trans hP.le_isCardinalPresentable)⟩
+
+instance (C : Type u) [Category.{v} C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredGenerator C κ] :
+    ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
+  obtain ⟨P, _, hP⟩ := HasCardinalFilteredGenerator.exists_generator C κ
+  exact hP.essentiallySmall_isPresentable
 
 end CategoryTheory

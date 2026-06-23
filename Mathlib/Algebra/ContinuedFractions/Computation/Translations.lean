@@ -3,8 +3,11 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Basic
-import Mathlib.Algebra.ContinuedFractions.Translations
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
+public import Mathlib.Algebra.ContinuedFractions.Translations
+public import Mathlib.Algebra.Order.Floor.Ring
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
@@ -12,8 +15,8 @@ import Mathlib.Algebra.ContinuedFractions.Translations
 ## Summary
 
 This is a collection of simple lemmas between the different structures used for the computation
-of continued fractions defined in `Algebra.ContinuedFractions.Computation.Basic`. The file consists
-of three sections:
+of continued fractions defined in `Mathlib/Algebra/ContinuedFractions/Computation/Basic.lean`.
+The file consists of three sections:
 1. Recurrences and inversion lemmas for `IntFractPair.stream`: these lemmas give us inversion
    rules and recurrences for the computation of the stream of integer and fractional parts of
    a value.
@@ -27,9 +30,9 @@ of three sections:
 
 ## Main Theorems
 
-- `succ_nth_stream_eq_some_iff` gives as a recurrence to compute the `n + 1`th value of the sequence
+- `succ_nth_stream_eq_some_iff` gives a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of non-termination.
-- `succ_nth_stream_eq_none_iff` gives as a recurrence to compute the `n + 1`th value of the sequence
+- `succ_nth_stream_eq_none_iff` gives a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of termination.
 - `get?_of_eq_some_of_succ_get?_intFractPair_stream` and
   `get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero` show how the entries of the sequence
@@ -37,14 +40,16 @@ of three sections:
   parts.
 -/
 
+public section
+
 assert_not_exists Finset
 
 namespace GenContFract
 
 open GenContFract (of)
 
--- Fix a discrete linear ordered floor field and a value `v`.
-variable {K : Type*} [LinearOrderedField K] [FloorRing K] {v : K}
+-- Fix a discrete linear ordered division ring with `floor` function and a value `v`.
+variable {K : Type*} [DivisionRing K] [LinearOrder K] [FloorRing K] {v : K}
 
 namespace IntFractPair
 
@@ -64,9 +69,7 @@ variable {n : ℕ}
 theorem stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_eq_zero : ifp_n.fr = 0) :
     IntFractPair.stream v (n + 1) = none := by
-  obtain ⟨_, fr⟩ := ifp_n
-  change fr = 0 at nth_fr_eq_zero
-  simp [IntFractPair.stream, stream_nth_eq, nth_fr_eq_zero]
+  grind [IntFractPair.stream]
 
 /-- Gives a recurrence to compute the `n + 1`th value of the sequence of integer and fractional
 parts of a value in case of termination.
@@ -85,7 +88,7 @@ theorem succ_nth_stream_eq_some_iff {ifp_succ_n : IntFractPair K} :
       ∃ ifp_n : IntFractPair K,
         IntFractPair.stream v n = some ifp_n ∧
           ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n := by
-  simp [IntFractPair.stream, ite_eq_iff, Option.bind_eq_some]
+  simp [IntFractPair.stream, ite_eq_iff, Option.bind_eq_some_iff]
 
 /-- An easier to use version of one direction of
 `GenContFract.IntFractPair.succ_nth_stream_eq_some_iff`. -/
@@ -95,7 +98,8 @@ theorem stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = 
 
 /-- The stream of `IntFractPair`s of an integer stops after the first term.
 -/
-theorem stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n + 1) = none := by
+theorem stream_succ_of_int [IsStrictOrderedRing K] (a : ℤ) (n : ℕ) :
+    IntFractPair.stream (a : K) (n + 1) = none := by
   induction n with
   | zero =>
     refine IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) ?_
@@ -152,14 +156,13 @@ process.
 theorem IntFractPair.seq1_fst_eq_of : (IntFractPair.seq1 v).fst = IntFractPair.of v :=
   rfl
 
-theorem of_h_eq_intFractPair_seq1_fst_b : (of v).h = (IntFractPair.seq1 v).fst.b := by
-  cases aux_seq_eq : IntFractPair.seq1 v
-  simp [of, aux_seq_eq]
+theorem of_h_eq_intFractPair_seq1_fst_b : (of v).h = (IntFractPair.seq1 v).fst.b :=
+  rfl
 
 /-- The head term of the gcf of `v` is `⌊v⌋`. -/
 @[simp]
-theorem of_h_eq_floor : (of v).h = ⌊v⌋ := by
-  simp [of_h_eq_intFractPair_seq1_fst_b, IntFractPair.of]
+theorem of_h_eq_floor : (of v).h = ⌊v⌋ :=
+  rfl
 
 end Head
 
@@ -192,7 +195,7 @@ Let's first show how the termination of one sequence implies the termination of 
 
 theorem of_terminatedAt_iff_intFractPair_seq1_terminatedAt :
     (of v).TerminatedAt n ↔ (IntFractPair.seq1 v).snd.TerminatedAt n :=
-  Option.map_eq_none
+  Option.map_eq_none_iff
 
 theorem of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none :
     (of v).TerminatedAt n ↔ IntFractPair.stream v (n + 1) = none := by
@@ -213,11 +216,10 @@ Now let's show how the values of the sequences correspond to one another.
 theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair K}
     (s_nth_eq : (of v).s.get? n = some gp_n) :
     ∃ ifp : IntFractPair K, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b := by
-  obtain ⟨ifp, stream_succ_nth_eq, gp_n_eq⟩ :
-    ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ Pair.mk 1 (ifp.b : K) = gp_n := by
+  obtain ⟨ifp, stream_succ_nth_eq, rfl⟩ :
+      ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ Pair.mk 1 (ifp.b : K) = gp_n := by
     unfold of IntFractPair.seq1 at s_nth_eq
-    simpa [Stream'.Seq.get?_tail, Stream'.Seq.map_get?] using s_nth_eq
-  cases gp_n_eq
+    simpa using s_nth_eq
   simp_all only [Option.some.injEq, exists_eq_left']
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
@@ -227,7 +229,7 @@ theorem get?_of_eq_some_of_succ_get?_intFractPair_stream {ifp_succ_n : IntFractP
     (stream_succ_nth_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) :
     (of v).s.get? n = some ⟨1, ifp_succ_n.b⟩ := by
   unfold of IntFractPair.seq1
-  simp [Stream'.Seq.map_tail, Stream'.Seq.get?_tail, Stream'.Seq.map_get?, stream_succ_nth_eq]
+  simp [stream_succ_nth_eq]
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
 fractional parts of the stream of integer and fractional parts.
@@ -235,12 +237,8 @@ fractional parts of the stream of integer and fractional parts.
 theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_ne_zero : ifp_n.fr ≠ 0) :
     (of v).s.get? n = some ⟨1, (IntFractPair.of ifp_n.fr⁻¹).b⟩ :=
-  have : IntFractPair.stream v (n + 1) = some (IntFractPair.of ifp_n.fr⁻¹) := by
-    cases ifp_n
-    simp only [IntFractPair.stream, Nat.add_eq, add_zero, stream_nth_eq, Option.some_bind,
-      ite_eq_right_iff]
-    intro; contradiction
-  get?_of_eq_some_of_succ_get?_intFractPair_stream this
+  get?_of_eq_some_of_succ_get?_intFractPair_stream <|
+    IntFractPair.stream_succ_of_some stream_nth_eq nth_fr_ne_zero
 
 open Int IntFractPair
 
@@ -248,10 +246,9 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
     { a := 1
       b := p.b }) := by
   rw [of, IntFractPair.seq1]
-  simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
-    Stream'.Seq.get?, Stream'.map]
+  simp only [Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.get?, Stream'.map]
   rw [← Stream'.get_succ, Stream'.get, Option.map.eq_def]
-  split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
+  split <;> simp_all only [Option.bind_some, Option.bind_none, Function.comp_apply]
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.
 -/
@@ -261,6 +258,7 @@ theorem of_s_head (h : fract v ≠ 0) : (of v).s.head = some ⟨1, ⌊(fract v)�
   rfl
 
 variable (K)
+variable [IsStrictOrderedRing K]
 
 /-- If `a` is an integer, then the coefficient sequence of its continued fraction is empty.
 -/
@@ -307,7 +305,7 @@ theorem convs'_of_int (a : ℤ) : (of (a : K)).convs' n = a := by
   induction n with
   | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast]
   | succ =>
-    rw [convs', of_h_eq_floor, floor_intCast, add_right_eq_self]
+    rw [convs', of_h_eq_floor, floor_intCast, add_eq_left]
     exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Stream'.Seq.get?_nil 0) _
 
 variable {K}

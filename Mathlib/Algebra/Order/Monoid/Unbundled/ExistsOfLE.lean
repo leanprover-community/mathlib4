@@ -3,8 +3,10 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.MinMax
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Order.MinMax
 
 /-!
 # Unbundled and weaker forms of canonically ordered monoids
@@ -15,19 +17,21 @@ generalising statements from groups/rings/fields that don't mention negation or 
 monoids/semirings/semifields.
 -/
 
+public section
+
 universe u
 variable {α : Type u}
 
-/-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
+/-- An ordered additive monoid with one-sided 'subtraction' in the sense that
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
-of the condition on canonical orderings defined by `CanonicallyOrderedAddCommMonoid`. -/
+of the condition on canonical orderings defined by `CanonicallyOrderedAdd`. -/
 class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
   /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
   exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a + c
 
-/-- An `OrderedCommMonoid` with one-sided 'division' in the sense that
+/-- An ordered monoid with one-sided 'division' in the sense that
 if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
-of the condition on canonical orderings defined by `CanonicallyOrderedCommMonoid`. -/
+of the condition on canonical orderings defined by `CanonicallyOrderedMul`. -/
 @[to_additive]
 class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
   /-- For `a ≤ b`, `a` left divides `b` -/
@@ -69,7 +73,7 @@ variable [LinearOrder α] [DenselyOrdered α] [Monoid α] [ExistsMulOfLE α]
 
 @[to_additive]
 theorem le_of_forall_one_lt_le_mul (h : ∀ ε : α, 1 < ε → a ≤ b * ε) : a ≤ b :=
-  le_of_forall_le_of_dense fun x hxb => by
+  le_of_forall_gt_imp_ge_of_dense fun x hxb => by
     obtain ⟨ε, rfl⟩ := exists_mul_of_le hxb.le
     exact h _ (one_lt_of_lt_mul_right hxb)
 

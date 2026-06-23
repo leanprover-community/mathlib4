@@ -3,15 +3,19 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.FieldTheory.Tower
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Algebraic.Integral
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.FieldTheory.Tower
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.
 -/
+
+@[expose] public section
 
 open Module
 
@@ -58,11 +62,6 @@ theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :
 
 variable {F} {E}
 
-@[simp]
-theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
-  rw [SetLike.ext_iff, SetLike.ext'_iff, Set.ext_iff]
-  rfl
-
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K] ≤ [F : K]` are finite,
 then `F = E`. -/
 theorem eq_of_le_of_finrank_le [hfin : FiniteDimensional K E] (h_le : F ≤ E)
@@ -75,6 +74,12 @@ then `F = E`. -/
 theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K F = finrank K E) : F = E :=
   eq_of_le_of_finrank_le h_le h_finrank.ge
+
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K]` is finite,
+then `F = E` iff `[F : K] = [E : K]`. -/
+theorem eq_iff_finrank_eq_of_le [FiniteDimensional K E] (h_le : F ≤ E) :
+    F = E ↔ finrank K F = finrank K E :=
+  ⟨fun h ↦ by rw [h], eq_of_le_of_finrank_eq h_le⟩
 
 -- If `F ≤ E` are two intermediate fields of a finite extension `L / K` such that
 -- `[L : F] ≤ [L : E]`, then `F = E`. Marked as private since it's a direct corollary of
@@ -101,6 +106,41 @@ then `F = E`. -/
 theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
+
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[L : F]` is finite,
+then `F = E` iff `[L : F] = [L : E]`. -/
+theorem eq_iff_finrank_eq_of_le' [FiniteDimensional F L] (h_le : F ≤ E) :
+    F = E ↔ finrank F L = finrank E L :=
+  ⟨fun h ↦ by rw [h], eq_of_le_of_finrank_eq' h_le⟩
+
+lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
+    Module.finrank E L < Module.finrank F L := by
+  letI := (IntermediateField.inclusion H.le).toAlgebra
+  have : IsScalarTower F E L := .of_algebraMap_eq' rfl
+  refine lt_of_le_of_ne ?_ ?_
+  · exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
+  · exact .symm (mt (eq_of_le_of_finrank_eq' H.le) H.ne)
+
+theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
+  let _ := (inclusion h).toRingHom.toAlgebra
+  have : IsScalarTower F E L := IsScalarTower.of_algebraMap_eq fun x ↦ rfl
+  exact Dvd.intro_left (finrank F E) (finrank_mul_finrank F E L)
+
+theorem finrank_dvd_of_le_right (h : F ≤ E) : finrank K F ∣ finrank K E := by
+  let _ := (inclusion h).toRingHom.toAlgebra
+  exact Dvd.intro (finrank F E) (finrank_mul_finrank K F E)
+
+theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E L ≤ finrank F L :=
+  Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_left h)
+
+theorem finrank_le_of_le_right [FiniteDimensional K E] (h : F ≤ E) : finrank K F ≤ finrank K E :=
+  Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_right h)
+
+/-- Mapping a finite-dimensional intermediate field along an algebra equivalence gives
+a finite-dimensional intermediate field. -/
+instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
+    FiniteDimensional K (E.map f) :=
+  LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
 
 end FiniteDimensional
 

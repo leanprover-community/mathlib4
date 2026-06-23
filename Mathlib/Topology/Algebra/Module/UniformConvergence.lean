@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.UniformConvergence
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.UniformConvergence
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -23,7 +25,7 @@ space of continuous linear maps between two topological vector spaces.
 
 ## Implementation notes
 
-Like in `Mathlib.Topology.UniformSpace.UniformConvergenceTopology`, we use the type aliases
+Like in `Mathlib/Topology/UniformSpace/UniformConvergenceTopology.lean`, we use the type aliases
 `UniformFun` (denoted `α →ᵤ β`) and `UniformOnFun` (denoted `α →ᵤ[𝔖] β`) for functions from `α`
 to `β` endowed with the structures of uniform convergence and `𝔖`-convergence.
 
@@ -38,13 +40,15 @@ uniform convergence, strong dual
 
 -/
 
+public section
+
 open Filter Topology
 open scoped Pointwise UniformConvergence Uniformity
 
 section Module
 
 variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [UniformAddGroup E]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [IsUniformAddGroup E]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α}
   [FunLike hom H (α → E)] [LinearMapClass hom 𝕜 H (α → E)]
 
@@ -58,7 +62,7 @@ with a topology induced by `UniformFun.ofFun ∘ φ`, where `φ : H →ₗ[𝕜]
 lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     (hφ : IsInducing (ofFun ∘ φ)) (h : ∀ u : H, Bornology.IsVonNBounded 𝕜 (Set.range (φ u))) :
     ContinuousSMul 𝕜 H := by
-  have : TopologicalAddGroup H :=
+  have : IsTopologicalAddGroup H :=
     let ofFun' : (α → E) →+ (α →ᵤ E) := AddMonoidHom.id _
     IsInducing.topologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
   have hb : (𝓝 (0 : H)).HasBasis (· ∈ 𝓝 (0 : E)) fun V ↦ {u | ∀ x, φ u x ∈ V} := by
@@ -77,7 +81,7 @@ lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     have : Tendsto (c • · : E → E) (𝓝 0) (𝓝 0) :=
       (continuous_const_smul c).tendsto' _ _ (smul_zero _)
     refine ⟨_, this hU, fun u hu x ↦ ?_⟩
-    simpa only [map_smul] using hu x
+    simpa only [map_smul] using! hu x
   · intro u U hU
     simp only [Set.mem_setOf_eq, map_smul, Pi.smul_apply]
     simpa only [Set.mapsTo_range_iff] using (h u hU).eventually_nhds_zero (mem_of_mem_nhds hU)
@@ -94,7 +98,7 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
     (h : ∀ u : H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 ((φ u : α → E) '' s)) :
     ContinuousSMul 𝕜 H := by
   obtain rfl := hφ.eq_induced; clear hφ
-  simp only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
+  simp +instances only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
   refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
   letI : TopologicalSpace H :=
     .induced (UniformFun.ofFun ∘ s.restrict ∘ φ) (UniformFun.topologicalSpace s E)
@@ -103,7 +107,7 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
       map_smul' := fun c x ↦ by exact congr_arg s.restrict (map_smul φ c x),
       map_add' := fun x y ↦ by exact congr_arg s.restrict (map_add φ x y) }
   refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
-  simpa only [Set.image_eq_range] using h u s hs
+  simpa only [Set.image_eq_range] using! h u s hs
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,

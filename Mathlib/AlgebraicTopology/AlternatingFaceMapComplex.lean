@@ -3,11 +3,14 @@ Copyright (c) 2021 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Adam Topaz, Johan Commelin
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.AlgebraicTopology.MooreComplex
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.AlgebraicTopology.MooreComplex
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 
@@ -32,6 +35,8 @@ when `A` is an abelian category.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Subobject
 
@@ -52,26 +57,29 @@ namespace AlternatingFaceMapComplex
 -/
 
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 variable (X : SimplicialObject C)
 variable (Y : SimplicialObject C)
 
 /-- The differential on the alternating face map complex is the alternate
 sum of the face maps -/
 @[simp]
-def objD (n : ℕ) : X _[n + 1] ⟶ X _[n] :=
+def objD (n : ℕ) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
   ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i
 
-/-- ## The chain complex relation `d ≫ d`
+/-!
+## The chain complex relation `d ≫ d`
 -/
+
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- we start by expanding d ≫ d as a double sum
   dsimp
   simp only [comp_sum, sum_comp, ← Finset.sum_product']
   -- then, we decompose the index set P into a subset S and its complement Sᶜ
   let P := Fin (n + 2) × Fin (n + 3)
-  let S := Finset.univ.filter fun ij : P => (ij.2 : ℕ) ≤ (ij.1 : ℕ)
-  erw [← Finset.sum_add_sum_compl S, ← eq_neg_iff_add_eq_zero, ← Finset.sum_neg_distrib]
+  let S : Finset P := {ij : P | (ij.2 : ℕ) ≤ (ij.1 : ℕ)}
+  rw [Finset.univ_product_univ, ← Finset.sum_add_sum_compl S, ← eq_neg_iff_add_eq_zero,
+    ← Finset.sum_neg_distrib]
   /- we are reduced to showing that two sums are equal, and this is obtained
     by constructing a bijection φ : S -> Sᶜ, which maps (i,j) to (j,i+1),
     and by comparing the terms -/
@@ -80,23 +88,21 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   apply Finset.sum_bij φ
   · -- φ(S) is contained in Sᶜ
     intro ij hij
-    simp only [S, φ, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and,
-      Fin.val_succ, Fin.coe_castLT] at hij ⊢
-    omega
+    simp_rw [S, φ, Finset.compl_filter, Finset.mem_filter_univ, Fin.val_succ,
+      Fin.val_castLT] at hij ⊢
+    lia
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
-    rw [Prod.mk.inj_iff]
-    exact ⟨by simpa [φ] using congr_arg Prod.snd h,
-      by simpa [φ, Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
+    rw [Prod.mk_inj]
+    exact ⟨by simpa [φ] using! congr_arg Prod.snd h,
+      by simpa [φ, Fin.castSucc_castLT] using! congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
-    simp only [S, Finset.mem_univ, forall_true_left, Prod.forall, Finset.compl_filter,
-      not_le, Finset.mem_filter, true_and] at hij'
+    simp_rw [S, Finset.compl_filter, Finset.mem_filter_univ, not_le] at hij'
     refine ⟨(j'.pred <| ?_, Fin.castSucc i'), ?_, ?_⟩
     · rintro rfl
-      simp only [Fin.val_zero, not_lt_zero'] at hij'
-    · simpa only [S, Finset.mem_univ, forall_true_left, Prod.forall, Finset.mem_filter,
-        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_sub_one_of_lt hij'
+      simp only [Fin.val_zero, not_lt_zero] at hij'
+    · simpa [S] using! Nat.le_sub_one_of_lt hij'
     · simp only [φ, Fin.castLT_castSucc, Fin.succ_pred]
   · -- identification of corresponding terms in both sums
     rintro ⟨i, j⟩ hij
@@ -106,7 +112,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     · simp only [φ, Fin.val_succ, pow_add, pow_one, mul_neg, neg_neg, mul_one]
       apply mul_comm
     · rw [CategoryTheory.SimplicialObject.δ_comp_δ'']
-      simpa [S] using hij
+      simpa [S] using! hij
 
 /-!
 ## Construction of the alternating face map complex functor
@@ -115,24 +121,24 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 
 /-- The alternating face map complex, on objects -/
 def obj : ChainComplex C ℕ :=
-  ChainComplex.of (fun n => X _[n]) (objD X) (d_squared X)
+  ChainComplex.of (fun n => X _⦋n⦌) (objD X) (d_squared X)
 
 @[simp]
-theorem obj_X (X : SimplicialObject C) (n : ℕ) : (AlternatingFaceMapComplex.obj X).X n = X _[n] :=
+theorem obj_X (X : SimplicialObject C) (n : ℕ) : (AlternatingFaceMapComplex.obj X).X n = X _⦋n⦌ :=
   rfl
 
 @[simp]
 theorem obj_d_eq (X : SimplicialObject C) (n : ℕ) :
     (AlternatingFaceMapComplex.obj X).d (n + 1) n
       = ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i := by
-  apply ChainComplex.of_d
+  simp [obj]
 
 variable {X} {Y}
 
 /-- The alternating face map complex, on morphisms -/
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op [n])) fun n => by
-    dsimp
+  ChainComplex.ofHom (fun n => f.app (op ⦋n⦌)) fun n => by
+    simp only [obj, ChainComplex.of_d, objD, Int.reduceNeg]
     rw [comp_sum, sum_comp]
     refine Finset.sum_congr rfl fun _ _ => ?_
     rw [comp_zsmul, zsmul_comp]
@@ -141,12 +147,12 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
     apply f.naturality
 
 @[simp]
-theorem map_f (f : X ⟶ Y) (n : ℕ) : (map f).f n = f.app (op [n]) :=
+theorem map_f (f : X ⟶ Y) (n : ℕ) : (map f).f n = f.app (op ⦋n⦌) :=
   rfl
 
 end AlternatingFaceMapComplex
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The alternating face map complex, as a functor -/
 def alternatingFaceMapComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
@@ -157,21 +163,22 @@ variable {C}
 
 @[simp]
 theorem alternatingFaceMapComplex_obj_X (X : SimplicialObject C) (n : ℕ) :
-    ((alternatingFaceMapComplex C).obj X).X n = X _[n] :=
+    ((alternatingFaceMapComplex C).obj X).X n = X _⦋n⦌ :=
   rfl
 
 @[simp]
 theorem alternatingFaceMapComplex_obj_d (X : SimplicialObject C) (n : ℕ) :
     ((alternatingFaceMapComplex C).obj X).d (n + 1) n = AlternatingFaceMapComplex.objD X n := by
- dsimp only [alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
- apply ChainComplex.of_d
+  simp [alternatingFaceMapComplex]
 
 @[simp]
 theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y) (n : ℕ) :
-    ((alternatingFaceMapComplex C).map f).f n = f.app (op [n]) :=
+    ((alternatingFaceMapComplex C).map f).f n = f.app (op ⦋n⦌) :=
   rfl
 
-theorem map_alternatingFaceMapComplex {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D)
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
       (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D := by
@@ -192,9 +199,14 @@ theorem map_alternatingFaceMapComplex {D : Type*} [Category D] [Preadditive D] (
     · ext n
       rfl
 
+instance : (alternatingFaceMapComplex C).Additive where
+
+instance [Limits.HasPullbacks C] : (alternatingFaceMapComplex C).PreservesMonomorphisms where
+  preserves _ _ := HomologicalComplex.mono_of_mono_f _ fun _ ↦ by dsimp; infer_instance
+
 theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (n : ℕ) :
     ((AlternatingFaceMapComplex.obj (KaroubiFunctorCategoryEmbedding.obj P)).d (n + 1) n).f =
-      P.p.app (op [n + 1]) ≫ (AlternatingFaceMapComplex.obj P.X).d (n + 1) n := by
+      P.p.app (op ⦋n + 1⦌) ≫ (AlternatingFaceMapComplex.obj P.X).d (n + 1) n := by
   dsimp
   simp only [AlternatingFaceMapComplex.obj_d_eq, Karoubi.sum_hom, Preadditive.comp_sum,
     Karoubi.zsmul_hom, Preadditive.comp_zsmul]
@@ -202,6 +214,8 @@ theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (
 
 namespace AlternatingFaceMapComplex
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation which gives the augmentation of the alternating face map
 complex attached to an augmented simplicial object. -/
 def ε [Limits.HasZeroObject C] :
@@ -209,7 +223,7 @@ def ε [Limits.HasZeroObject C] :
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
     refine (ChainComplex.toSingle₀Equiv _ _).symm ?_
-    refine ⟨X.hom.app (op [0]), ?_⟩
+    refine ⟨X.hom.app (op ⦋0⦌), ?_⟩
     dsimp
     rw [alternatingFaceMapComplex_obj_d, objD, Fin.sum_univ_two, Fin.val_zero,
       pow_zero, one_smul, Fin.val_one, pow_one, neg_smul, one_smul, add_comp,
@@ -217,15 +231,22 @@ def ε [Limits.HasZeroObject C] :
     apply add_neg_cancel
   naturality X Y f := by
     apply HomologicalComplex.to_single_hom_ext
+    #adaptation_note /-- This proof broke at nightly-2026-04-28. It used to be:
+    ```
     dsimp
-    erw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
-      ChainComplex.toSingle₀Equiv_symm_apply_f_zero]
-    simp only [ChainComplex.single₀_map_f_zero]
-    exact congr_app f.w _
+    simp [ChainComplex.toSingle₀Equiv, SimplicialObject.Augmented.w₀]
+    ```
+    The proof below is an emergency repair, and I've asked the authors of this file to review.
+    -/
+    change f.left.app _ ≫ _ = _ ≫ ((ChainComplex.single₀ _).map f.right).f 0
+    rw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
+      ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
+      ChainComplex.single₀_map_f_zero]
+    exact SimplicialObject.Augmented.w₀ f
 
 @[simp]
 lemma ε_app_f_zero [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) :
-    (ε.app X).f 0 = X.hom.app (op [0]) :=
+    (ε.app X).f 0 = X.hom.app (op ⦋0⦌) :=
   ChainComplex.toSingle₀Equiv_symm_apply_f_zero _ _
 
 @[simp]
@@ -238,20 +259,18 @@ end AlternatingFaceMapComplex
 ## Construction of the natural inclusion of the normalized Moore complex
 -/
 
-variable {A : Type*} [Category A] [Abelian A]
+variable {A : Type*} [Category* A] [Abelian A]
 
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
 def inclusionOfMooreComplexMap (X : SimplicialObject A) :
-    (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X := by
-  dsimp only [normalizedMooreComplex, NormalizedMooreComplex.obj,
-    alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
-  apply ChainComplex.ofHom _ _ _ _ _ _ (fun n => (NormalizedMooreComplex.objX X n).arrow)
+    (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X :=
+  ChainComplex.ofHom (fun n => (NormalizedMooreComplex.objX X n).arrow) <| fun i ↦ by
   /- we have to show the compatibility of the differentials on the alternating
            face map complex with those defined on the normalized Moore complex:
            we first get rid of the terms of the alternating sum that are obviously
            zero on the normalized_Moore_complex -/
-  intro i
-  simp only [AlternatingFaceMapComplex.objD, comp_sum]
+  simp only [normalizedMooreComplex, NormalizedMooreComplex.obj, alternatingFaceMapComplex,
+    AlternatingFaceMapComplex.obj, ChainComplex.of_d, AlternatingFaceMapComplex.objD, comp_sum]
   rw [Fin.sum_univ_succ, Fintype.sum_eq_zero]
   swap
   · intro j
@@ -266,11 +285,11 @@ def inclusionOfMooreComplexMap (X : SimplicialObject A) :
 @[simp]
 theorem inclusionOfMooreComplexMap_f (X : SimplicialObject A) (n : ℕ) :
     (inclusionOfMooreComplexMap X).f n = (NormalizedMooreComplex.objX X n).arrow := by
-  dsimp only [inclusionOfMooreComplexMap]
-  exact ChainComplex.ofHom_f _ _ _ _ _ _ _ _ n
+  dsimp [inclusionOfMooreComplexMap]
 
 variable (A)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion map of the Moore complex in the alternating face map complex,
 as a natural transformation -/
 @[simps]
@@ -284,7 +303,7 @@ variable (X Y : CosimplicialObject C)
 /-- The differential on the alternating coface map complex is the alternate
 sum of the coface maps -/
 @[simp]
-def objD (n : ℕ) : X.obj [n] ⟶ X.obj [n + 1] :=
+def objD (n : ℕ) : X.obj ⦋n⦌ ⟶ X.obj ⦋n + 1⦌ :=
   ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i
 
 theorem d_eq_unop_d (n : ℕ) :
@@ -294,20 +313,21 @@ theorem d_eq_unop_d (n : ℕ) :
   simp only [objD, AlternatingFaceMapComplex.objD, unop_sum, unop_zsmul]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X n ≫ objD X (n + 1) = 0 := by
   simp only [d_eq_unop_d, ← unop_comp, AlternatingFaceMapComplex.d_squared, unop_zero]
 
 /-- The alternating coface map complex, on objects -/
 def obj : CochainComplex C ℕ :=
-  CochainComplex.of (fun n => X.obj [n]) (objD X) (d_squared X)
+  CochainComplex.of (fun n => X.obj ⦋n⦌) (objD X) (d_squared X)
 
 variable {X} {Y}
 
 /-- The alternating face map complex, on morphisms -/
 @[simp]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app [n]) fun n => by
-    dsimp
+  CochainComplex.ofHom (fun n => f.app ⦋n⦌) fun n => by
+    simp only [obj, CochainComplex.of_d, objD, Int.reduceNeg]
     rw [comp_sum, sum_comp]
     refine Finset.sum_congr rfl fun x _ => ?_
     rw [comp_zsmul, zsmul_comp]

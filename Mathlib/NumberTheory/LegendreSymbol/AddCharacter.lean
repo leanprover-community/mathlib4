@@ -3,11 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.FieldTheory.Finite.Trace
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Data.ZMod.Units
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.FieldTheory.Finite.Trace
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Data.ZMod.Units
 
 /-!
 # Additive characters of finite rings and fields
@@ -36,6 +37,9 @@ is nontrivial (and the target is a domain); see `AddChar.sum_eq_zero_of_isNontri
 additive character
 -/
 
+@[expose] public section
+
+assert_not_exists MeasureTheory.integral
 
 universe u v
 
@@ -56,7 +60,7 @@ lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
 elements are nontrivial. -/
 def IsPrimitive (ψ : AddChar R R') : Prop := ∀ ⦃a : R⦄, a ≠ 0 → mulShift ψ a ≠ 1
 
-/-- The composition of a primitive additive character with an injective mooid homomorphism
+/-- The composition of a primitive additive character with an injective monoid homomorphism
 is also primitive. -/
 lemma IsPrimitive.compMulHom_of_isPrimitive {R'' : Type*} [CommMonoid R''] {φ : AddChar R R'}
     {f : R' →* R''} (hφ : φ.IsPrimitive) (hf : Function.Injective f) :
@@ -69,7 +73,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
     Function.Injective ψ.mulShift := by
   intro a b h
   apply_fun fun x => x * mulShift ψ (-b) at h
-  simp only [mulShift_mul, mulShift_zero, add_neg_cancel, mulShift_apply] at h
+  simp only [mulShift_mul, mulShift_zero, add_neg_cancel] at h
   simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ · h)
 
 -- `AddCommGroup.equiv_direct_sum_zmod_of_fintype`
@@ -79,22 +83,20 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
 /-- When `R` is a field `F`, then a nontrivial additive character is primitive -/
 theorem IsPrimitive.of_ne_one {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : ψ ≠ 1) :
     IsPrimitive ψ :=
-  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using congr_arg (mulShift · a⁻¹) h
+  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using! congr_arg (mulShift · a⁻¹) h
 
 /-- If `r` is not a unit, then `e.mulShift r` is not primitive. -/
 lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
     (hr : ¬ IsUnit r) : ¬ IsPrimitive (e.mulShift r) := by
   simp only [IsPrimitive, not_forall]
-  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite, mem_nonZeroDivisors_iff, not_forall] at hr
+  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite,
+    mem_nonZeroDivisors_iff_right, not_forall] at hr
   rcases hr with ⟨x, h, h'⟩
   exact ⟨x, h', by simp only [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff]⟩
 
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- can't prove that they always exist (referring to providing an `Inhabited` instance)
--- @[nolint has_nonempty_instance]
 structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] where
   /-- The first projection from `PrimitiveAddChar`, giving the cyclotomic field. -/
   n : ℕ+
@@ -146,7 +148,7 @@ theorem zmodChar_apply {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ZMo
 
 theorem zmodChar_apply' {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
-  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
+  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast]
 
 end ZModCharDef
 
@@ -171,7 +173,7 @@ theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ) [NeZero n]
 then it is primitive. -/
 theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod n) C)
     (hψ : ∀ a, ψ a = 1 → a = 0) : IsPrimitive ψ := by
-  refine fun a ha hf => ?_
+  intro a ha hf
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
   rw [mulShift_apply, mul_one] at h; norm_cast at h
@@ -213,7 +215,7 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
   let pp := p.toPNat hp.1.pos
   have hp₂ : ¬ringChar F' ∣ p := by
-    cases' CharP.char_is_prime_or_zero F' (ringChar F') with hq hq
+    rcases CharP.char_is_prime_or_zero F' (ringChar F') with hq | hq
     · exact mt (Nat.Prime.dvd_iff_eq hp.1 (Nat.Prime.ne_one hq)).mp h.symm
     · rw [hq]
       exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
@@ -226,8 +228,6 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
     exact ne_one_iff.2
       ⟨a, fun hf => ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
   exact ⟨ψ.n, ψ', IsPrimitive.of_ne_one hψ'⟩
-@[deprecated (since := "2024-05-30")] alias primitiveCharFiniteField := FiniteField.primitiveChar
-
 /-!
 ### The sum of all character values
 -/
@@ -290,25 +290,5 @@ lemma starComp_apply (hR : 0 < ringChar R) {φ : AddChar R ℂ} (a : R) :
   rfl
 
 end Ring
-
-section Field
-
-variable (F : Type*) [Field F] [Finite F]
-
-private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
-  simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
-
-/--  A primitive additive character on the finite field `F` with values in `ℂ`. -/
-noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
-  refine MonoidHom.compAddChar ?_ (primitiveChar F ℂ <| ringChar_ne F).char
-  exact (IsCyclotomicExtension.algEquiv ?n ℂ (CyclotomicField ?n ℂ) ℂ : CyclotomicField ?n ℂ →* ℂ)
-
-lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
-    (primitiveChar_to_Complex F).IsPrimitive := by
-  refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_
-  let nn := (primitiveChar F ℂ <| ringChar_ne F).n
-  exact (IsCyclotomicExtension.algEquiv nn ℂ (CyclotomicField nn ℂ) ℂ).injective
-
-end Field
 
 end AddChar

@@ -3,15 +3,19 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, David Swinarski
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.RingTheory.Localization.AtPrime
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Local properties of modules and submodules
 
 In this file, we show that several conditions on submodules can be checked on stalks.
 -/
+
+public section
 
 open scoped nonZeroDivisors
 
@@ -144,7 +148,7 @@ variable
   [∀ r : s, Module (Rₚ r) (Mₚ r)]
   [∀ r : s, IsScalarTower R (Rₚ r) (Mₚ r)]
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (f r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
 
 theorem Module.eq_of_isLocalized_span (x y : M) (h : ∀ r : s, f r x = f r y) : x = y := by
   suffices Module.eqIdeal R x y = ⊤ by simpa [Module.eqIdeal] using (eq_top_iff_one _).mp this

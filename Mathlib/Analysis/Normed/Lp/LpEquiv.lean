@@ -3,16 +3,19 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Lp.lpSpace
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.Analysis.Normed.Lp.lpSpace
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Equivalences among $L^p$ spaces
 
 In this file we collect a variety of equivalences among various $L^p$ spaces.  In particular,
-when `α` is a `Fintype`, given `E : α → Type u` and `p : ℝ≥0∞`, there is a natural linear isometric
-equivalence `lpPiLpₗᵢₓ : lp E p ≃ₗᵢ PiLp p E`. In addition, when `α` is a discrete topological
+when `α` is a `Fintype`, given `E : α → Type u` and `p : ℝ≥0∞`, if all `E i` for `i : α` are
+normed, additive commutative groups, there is a natural linear isometric
+equivalence `lpPiLpₗᵢ : lp E p ≃ₗᵢ PiLp p E`. In addition, when `α` is a discrete topological
 space, the bounded continuous functions `α →ᵇ β` correspond exactly to `lp (fun _ ↦ β) ∞`.
 Here there can be more structure, including ring and algebra structures,
 and we implement these equivalences accordingly as well.
@@ -35,6 +38,9 @@ the subtype of `PreLp` satisfying `Memℓp`.
 
 -/
 
+@[expose] public section
+
+open WithLp
 
 open scoped ENNReal
 
@@ -47,19 +53,10 @@ section Finite
 
 variable [Finite α]
 
-/-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
-theorem Memℓp.all (f : ∀ i, E i) : Memℓp f p := by
-  rcases p.trichotomy with (rfl | rfl | _h)
-  · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
-  · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α ↦ ‖f i‖).toFinite)
-  · cases nonempty_fintype α; exact memℓp_gen ⟨Finset.univ.sum _, hasSum_fintype _⟩
-
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
-  toFun f := ⇑f
-  invFun f := ⟨f, Memℓp.all f⟩
-  left_inv _f := rfl
-  right_inv _f := rfl
+  toFun f := toLp p ⇑f
+  invFun f := ⟨ofLp f, Memℓp.all f⟩
 
 theorem coe_equiv_lpPiLp (f : lp E p) : Equiv.lpPiLp f = ⇑f :=
   rfl
@@ -68,7 +65,7 @@ theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i
   rfl
 
 /-- The canonical `AddEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u` with
-`[Fintype α]`. -/
+`[Finite α]`. -/
 def AddEquiv.lpPiLp : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g ↦ rfl }
 
@@ -101,7 +98,7 @@ noncomputable def lpPiLpₗᵢ [Fact (1 ≤ p)] : lp E p ≃ₗᵢ[𝕜] PiLp p 
 
 variable {𝕜 E}
 
-theorem coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f : ∀ i, E i) = ⇑f :=
+theorem coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f : ∀ i, E i) = f :=
   rfl
 
 theorem coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
@@ -118,8 +115,7 @@ open scoped BoundedContinuousFunction
 
 open BoundedContinuousFunction
 
--- note: `R` and `A` are explicit because otherwise Lean has elaboration problems
-variable {α E : Type*} (R A 𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
+variable {α E R A : Type*} (𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
 variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 
@@ -129,11 +125,8 @@ section NormedAddCommGroup
 noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
   invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
-  left_inv _f := lp.ext rfl
-  right_inv _f := rfl
   map_add' _f _g := rfl
 
-@[deprecated (since := "2024-03-16")] alias AddEquiv.lpBcf := AddEquiv.lpBCF
 
 theorem coe_addEquiv_lpBCF (f : lp (fun _ : α ↦ E) ∞) : (AddEquiv.lpBCF f : α → E) = f :=
   rfl
@@ -149,7 +142,6 @@ noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →
     map_smul' := fun _ _ ↦ rfl
     norm_map' := fun f ↦ by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
 
-@[deprecated (since := "2024-03-16")] alias lpBcfₗᵢ := lpBCFₗᵢ
 
 variable {𝕜 E}
 
@@ -168,14 +160,10 @@ noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R
   { @AddEquiv.lpBCF _ R _ _ _ with
     map_mul' := fun _f _g => rfl }
 
-@[deprecated (since := "2024-03-16")] alias RingEquiv.lpBcf := RingEquiv.lpBCF
-
-variable {R}
-
-theorem coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF R f : α → R) = f :=
+theorem coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF f : α → R) = f :=
   rfl
 
-theorem coe_ringEquiv_lpBCF_symm (f : α →ᵇ R) : ((RingEquiv.lpBCF R).symm f : α → R) = f :=
+theorem coe_ringEquiv_lpBCF_symm (f : α →ᵇ R) : (RingEquiv.lpBCF.symm f : α → R) = f :=
   rfl
 
 variable (α)
@@ -185,16 +173,15 @@ variable (α)
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
 /-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
-  { RingEquiv.lpBCF A with commutes' := fun _k ↦ rfl }
+  { RingEquiv.lpBCF with commutes' := fun _k ↦ rfl }
 
-@[deprecated (since := "2024-03-16")] alias AlgEquiv.lpBcf := AlgEquiv.lpBCF
 
-variable {α A 𝕜}
+variable {α 𝕜}
 
-theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) : (AlgEquiv.lpBCF α A 𝕜 f : α → A) = f :=
+theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) : (AlgEquiv.lpBCF α 𝕜 f : α → A) = f :=
   rfl
 
-theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α A 𝕜).symm f : α → A) = f :=
+theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α 𝕜).symm f : α → A) = f :=
   rfl
 
 end RingAlgebra

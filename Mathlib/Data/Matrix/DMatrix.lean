@@ -3,11 +3,16 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 # Dependent-typed matrices
 -/
+
+@[expose] public section
 
 
 universe u u' v w z
@@ -105,12 +110,7 @@ instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
   inferInstanceAs <| Subsingleton <| ∀ i j, α i j
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply [∀ i j, Zero (α i j)] (i j) : (0 : DMatrix m n α) i j = 0 := rfl
 
 @[simp]
