@@ -206,6 +206,8 @@ variable (𝕜 E)
 
 @[deprecated (since := "2026-06-22")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
 
+@[deprecated (since := "2026-06-22")] alias coeFnAddMonoidHom_apply := FunLike.coeAddMonoidHom_apply
+
 @[deprecated (since := "2026-06-22")] alias coeFnAddMonoidHom_injective :=
   FunLike.coeAddMonoidHom_injective
 
