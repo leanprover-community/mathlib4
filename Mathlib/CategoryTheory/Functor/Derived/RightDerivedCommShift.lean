@@ -84,11 +84,16 @@ noncomputable def commShift : RF.CommShift A where
     ext : 1
     apply rightDerived_ext _ (precomposeShiftNatTrans RF α (a + b)) W
     ext X
-    have ha := (shiftFunctor D b).congr_map (rightDerivedNatTrans_app _ _
-      (precomposeShiftNatTrans RF α a) (postcomposeShiftNatTrans RF α _) W
-      (F.commShiftIso _).hom X)
-    rw [precomposeShiftNatTrans_app, postcomposeShiftNatTrans_app,
-      map_comp, map_comp, map_comp, Category.assoc] at ha
+    have ha :
+        (α.app (X⟦a⟧))⟦b⟧' ≫ (RF.map ((L.commShiftIso a).hom.app X))⟦b⟧' ≫
+        (((shiftFunctor H a ⋙ RF).rightDerivedNatTrans
+            (RF ⋙ shiftFunctor D a) (precomposeShiftNatTrans RF α a)
+              (postcomposeShiftNatTrans RF α a) W (commShiftIso F a).hom).app (L.obj X))⟦b⟧' =
+        ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (α.app X)⟦a⟧'⟦b⟧' := by
+      simp only [← (shiftFunctor D b).map_comp]
+      congr 1
+      simpa using rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α a)
+        (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom X
     have hb := rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α b)
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom (X⟦a⟧) =≫
         (RF.map ((L.commShiftIso a).hom.app X))⟦b⟧'
@@ -96,7 +101,7 @@ noncomputable def commShift : RF.CommShift A where
       ← dsimp% (rightDerivedNatTrans _ _ (precomposeShiftNatTrans RF α b)
         (postcomposeShiftNatTrans RF α b) W (commShiftIso F b).hom).naturality
         ((L.commShiftIso a).hom.app X), precomposeShiftNatTrans_app] at hb
-    dsimp at ha hb ⊢
+    dsimp at hb ⊢
     rw [dsimp% rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α (a + b))
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom X]
     -- `simp? [L.commShiftIso_add a b, ← RF.map_comp_assoc, -map_comp]` says
