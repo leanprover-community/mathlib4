@@ -1003,7 +1003,7 @@ variable {𝕜 E H M N : Type*} [NontriviallyNormedField 𝕜]
 
 open IsManifold OpenPartialHomeomorph in
 lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N)
-    (e : OpenPartialHomeomorph N H) (he : letI := φ.chartedSpace H; e ∈ atlas H N) :
+    (e : OpenPartialHomeomorph N H) (he : letI := φ.chartedSpace (H := H); e ∈ atlas H N) :
     φ.transOpenPartialHomeomorph e ∈ maximalAtlas I n M := by
   rcases he with ⟨q, he⟩
   rw [← he, transOpenPartialHomeomorph_eq_trans, ← OpenPartialHomeomorph.trans_assoc]

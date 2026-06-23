@@ -326,9 +326,7 @@ lemma trans_localInverseAt (hf : IsLocalHomeomorph f) (m : X) :
   constructor
   · intro x hx
     rw [← congrFun (hf.localInverseAt_symm m) x, OpenPartialHomeomorph.right_inv _ hx]
-  · intro x hx
-    exact apply_localInverseAt_of_mem hf hx
-
+  · exact fun _ hx ↦ apply_localInverseAt_of_mem hf hx
 
 end IsLocalHomeomorph
 
@@ -343,7 +341,7 @@ means that we can't prove anything about its source.
 lemma toOpenPartialHomeomorph_trans_localInverseAt (φ : X ≃ₜ Y) (m : X) :
     (φ.toOpenPartialHomeomorph.trans (φ.isLocalHomeomorph.localInverseAt m)).EqOnSource
       <| .ofSet (φ ⁻¹' (φ.isLocalHomeomorph.localInverseAt m).source) (by simp [open_source]) := by
-  simpa [EqOnSource, Set.EqOn, open_source]
+  simpa [EqOnSource, Set.EqOn]
     using fun _ hx ↦ φ.bijective.injective <| IsLocalHomeomorph.apply_localInverseAt_of_mem _ hx
 
 end Homeomorph
