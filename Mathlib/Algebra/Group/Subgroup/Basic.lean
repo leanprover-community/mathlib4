@@ -729,6 +729,11 @@ lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_e
 
 end Ker
 
+@[to_additive (attr := simp) range_prodMap]
+lemma range_prodMap {G' N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G' →* N') :
+    (f.prodMap g).range = f.range.prod g.range :=
+  SetLike.coe_injective Set.range_prodMap
+
 end MonoidHom
 
 namespace Subgroup
@@ -938,6 +943,15 @@ lemma Normal.of_map_injective {G H : Type*} [Group G] [Group H] {φ : G →* H}
 theorem Normal.of_map_subtype {K : Subgroup G} {L : Subgroup K}
     (n : (Subgroup.map K.subtype L).Normal) : L.Normal :=
   n.of_map_injective K.subtype_injective
+
+theorem normal_comap_iff_of_surjective {f : G →* N} (hf : Function.Surjective f) {H : Subgroup N} :
+    (H.comap f).Normal ↔ H.Normal := by
+  rw [← normalizer_eq_top_iff, ← comap_normalizer_eq_of_surjective H hf, ← comap_top f,
+    (comap_injective hf).eq_iff, normalizer_eq_top_iff]
+
+theorem _root_.MulEquiv.normal_map_iff {f : G ≃* G'} {H : Subgroup G} :
+    (H.map (f : G →* G')).Normal ↔ H.Normal := by
+  rw [map_equiv_eq_comap_symm, normal_comap_iff_of_surjective f.symm.surjective]
 
 section SubgroupNormal
 
