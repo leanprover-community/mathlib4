@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 In this file we define a predicate `Algebra.HasGoingUp`: An `R`-algebra `S` satisfies
 `Algebra.HasGoingUp R S` if for every pair of prime ideals `p ≤ q` of `R` with
-`P` a prime of `S` lying above `p`, there exists a prime `Q ≥ P` of `S` lying above `q`.
+`P` a prime of `S` lying above `p`, there exists a prime `P ≤ Q` of `S` lying above `q`.
 
 This file closely mirrors `Mathlib.RingTheory.Ideal.GoingDown`.
 
@@ -31,7 +31,7 @@ This file closely mirrors `Mathlib.RingTheory.Ideal.GoingDown`.
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingUp R S` if for every pair of
 prime ideals `p ≤ q` of `R` with `P` a prime of `S` lying above `p`, there exists a
-prime `Q ≥ P` of `S` lying above `q`.
+prime `P ≤ Q` of `S` lying above `q`.
 
 The condition only asks for `<` which is easier to prove, use
 `Ideal.exists_ideal_ge_liesOver_of_le` for applying it. -/
@@ -39,7 +39,7 @@ The condition only asks for `<` which is easier to prove, use
 class Algebra.HasGoingUp
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] : Prop where
   exists_ideal_ge_liesOver_of_lt {q : Ideal R} [q.IsPrime] (P : Ideal S) [P.IsPrime] :
-    P.under R < q → ∃ Q ≥ P, Q.IsPrime ∧ Q.LiesOver q
+    P.under R < q → ∃ P ≤ Q, Q.IsPrime ∧ Q.LiesOver q
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
