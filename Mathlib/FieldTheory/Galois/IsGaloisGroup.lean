@@ -812,7 +812,6 @@ instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
   letI := smulOfNormal G F L N
   haveI := smulDistribClass_smulOfNormal G F L N
   letI := mulSemiringActionOfSmulDistribClass F L G
-  haveI := isScalarTower_mulSemiringActionQuotient G F L N
   quotient G K F L N
 
 variable (E : IntermediateField K L) [hE : IsGaloisGroup H E L]
@@ -828,7 +827,6 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
   have : SMulDistribClass G F L := smulDistribClass_smulOfNormal G F L N
   let := mulSemiringActionOfSmulDistribClass F L G
   have : IsScalarTower E F L := IsScalarTower.of_algebraMap_eq' rfl
-  have := isScalarTower_mulSemiringActionQuotient G F L N
   { faithful := have := (inferInstance : IsGaloisGroup (G ⧸ N) K F).faithful; inferInstance
     commutes := ⟨by
       intro ⟨_, g, hg, rfl⟩ x y
