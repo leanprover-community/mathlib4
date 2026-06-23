@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Scheme
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Limits.Preorder
 
 /-!
 # Open immersions of schemes
@@ -105,6 +106,27 @@ instance : f.opensFunctor.Full :=
 lemma coverPreserving_opensFunctor :
     CoverPreserving (Opens.grothendieckTopology _) (Opens.grothendieckTopology _) f.opensFunctor :=
   f.isOpenEmbedding.isOpenMap.coverPreserving
+
+instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι : Type*}
+    [Nonempty ι] [Finite ι] :
+    PreservesLimitsOfShape (Discrete ι) hf.functor := by
+  apply +allowSynthFailures Limits.preservesLimitsOfShape_of_discrete
+  intro g
+  refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
+  refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
+  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_iInf]
+  apply isGLB_iInf
+
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    PreservesLimitsOfShape WalkingCospan (Scheme.Hom.opensFunctor f) := by
+  dsimp [Scheme.Hom.opensFunctor]
+  infer_instance
+
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    f.opensFunctor.PreservesOneHypercovers (Opens.grothendieckTopology _)
+      (Opens.grothendieckTopology _) := by
+  refine Functor.PreservesOneHypercovers.of_coverPreserving ?_
+  exact Scheme.Hom.coverPreserving_opensFunctor f
 
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`.
 The preferred name in lemmas is `image` and it should be treated as an infix. -/

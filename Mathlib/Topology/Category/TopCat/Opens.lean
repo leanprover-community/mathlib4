@@ -341,6 +341,15 @@ lemma Topology.IsOpenEmbedding.functor_obj_injective {X Y : TopCat.{u}} {f : X �
     (hf : IsOpenEmbedding f) : Function.Injective hf.functor.obj :=
   fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.injective (congr_arg (↑· : Opens Y → Set Y) e))
 
+lemma Topology.IsOpenEmbedding.functor_iInf {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hf : Topology.IsOpenEmbedding f) {ι : Type*} [Nonempty ι] [Finite ι]
+    (g : ι → TopologicalSpace.Opens X) :
+    hf.functor.obj (⨅ i, g i) = ⨅ i, hf.functor.obj (g i) := by
+  ext : 1
+  simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.coe_iInf]
+  rw [Set.InjOn.image_iInter_eq]
+  exact hf.injective.injOn
+
 namespace Topology.IsInducing
 
 /-- Given an inducing map `X ⟶ Y` and some `U : Opens X`, this is the union of all open sets

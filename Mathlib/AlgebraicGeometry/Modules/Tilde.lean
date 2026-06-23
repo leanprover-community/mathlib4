@@ -557,110 +557,10 @@ theorem isIso_fromTildeΓ_pushforward (M : (Spec S).Modules) [h : IsIso M.fromTi
 
 end IsLocalizing
 
-end IsQuasicoherent
-
-open CategoryTheory TopologicalSpace
-
-variable {X : Scheme.{u}} (M : X.Modules) [M.IsQuasicoherent]
-
-open Limits
-set_option backward.defeqAttrib.useBackward true in
-lemma _root_.CategoryTheory.Limits.preservesLimit_walkingParallelPair_of_eq
-    {C D : Type*} [Category* C] [Category* D] {K : WalkingParallelPair ⥤ C}
-    (heq : K.map .left = K.map .right) (F : C ⥤ D) :
-    PreservesLimit K F := by
-  suffices h : ∀ {X Y : C} {f g : X ⟶ Y} (hfg : f = g), PreservesLimit (parallelPair f g) F by
-    have := h heq
-    exact preservesLimit_of_iso_diagram _ (diagramIsoParallelPair _).symm
-  rintro X Y f g rfl
-  refine preservesLimit_of_preserves_limit_cone (isLimitIdFork rfl) ?_
-  exact (isLimitMapConeForkEquiv F _).symm (by simpa using! isLimitIdFork rfl)
-
-instance {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
-    PreservesLimit (parallelPair f f) F :=
-  Limits.preservesLimit_walkingParallelPair_of_eq rfl _
-
-instance (priority := low) {C D : Type*} [Category* C] [Category* D] [Quiver.IsThin C] (F : C ⥤ D) :
-    Limits.PreservesLimitsOfShape Limits.WalkingParallelPair F := by
-  constructor
-  intro K
-  exact Limits.preservesLimit_walkingParallelPair_of_eq (Subsingleton.elim _ _) _
-
-def _root_.CategoryTheory.Limits.isLimitEquivFanOfIsThin {C : Type*} [Category* C]
-    [Quiver.IsThin C] {J : Type*} [Category* J] {K : J ⥤ C} (c : Cone K) :
-    IsLimit c ≃ IsLimit (Fan.mk c.pt c.π.app) where
-  toFun hc := Fan.IsLimit.mk _ (fun s ↦ hc.lift { pt := s.pt, π.app j := s.proj j })
-    (by subsingleton) (by subsingleton)
-  invFun h := { lift s := Fan.IsLimit.lift h s.π.app }
-
-def _root_.CategoryTheory.isPullback_iff_isLimit_binaryFan_of_isThin {C : Type*} [Category* C]
-    [Quiver.IsThin C] {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} :
-    IsPullback fst snd f g ↔ Nonempty (IsLimit (BinaryFan.mk fst snd)) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · exact ⟨BinaryFan.IsLimit.mk _ (fun u v ↦ h.lift u v (by subsingleton))
-      (by subsingleton) (by subsingleton) (by subsingleton)⟩
-  · exact ⟨⟨by subsingleton⟩,
-      ⟨PullbackCone.IsLimit.mk _ (fun s ↦ BinaryFan.IsLimit.lift h.some s.fst s.snd)
-      (by subsingleton) (by subsingleton) (by subsingleton)⟩⟩
-
-instance (priority := low) {C D : Type*} [Category* C] [Category* D] [Quiver.IsThin C]
-    [Quiver.IsThin D] (F : C ⥤ D)
-    [PreservesLimitsOfShape (Discrete WalkingPair) F] :
-    PreservesLimitsOfShape WalkingCospan F := by
-  apply preservesLimitsOfShape_walkingCospan_of_forall_isPullback
-  intro X Y Z f g hfg
-  use pullback f g, pullback.fst f g, pullback.snd f g, .of_hasPullback f g
-  rw [isPullback_iff_isLimit_binaryFan_of_isThin]
-  constructor
-  refine (BinaryFan.mk (pullback.fst f g) (pullback.snd f g)).isLimitMapConeEquiv ?_
-  apply isLimitOfPreserves
-  apply Nonempty.some
-  rw [← CategoryTheory.isPullback_iff_isLimit_binaryFan_of_isThin (f := f) (g := g)]
-  exact .of_hasPullback f g
-
-lemma TopologicalSpace.Opens.coe_iInf {X : Type*} [TopologicalSpace X] {ι : Type*} [Finite ι]
-    (U : ι → TopologicalSpace.Opens X) :
-    (((⨅ i, U i) : Opens X) : Set X) = ⋂ i, U i := by
-  induction ι using Finite.induction_empty_option with
-  | of_equiv e ih => rw [← e.iInf_comp, ← e.surjective.iInter_comp, ih]
-  | h_empty => simp
-  | h_option ih => rw [iInf_option, Set.iInter_option, Opens.coe_inf, ih]
-
-instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι : Type*} [Nonempty ι]
-    [Finite ι] :
-    PreservesLimitsOfShape (Discrete ι) hf.functor := by
-  apply +allowSynthFailures Limits.preservesLimitsOfShape_of_discrete
-  intro g
-  refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
-  refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
-  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt]
-  have : hf.functor.obj (⨅ i, g i) = ⨅ i, hf.functor.obj (g i) := by
-    ext : 1
-    simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.coe_iInf]
-    rw [Set.InjOn.image_iInter_eq]
-    exact hf.injective.injOn
-  rw [this]
-  apply isGLB_iInf
-
-instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) :
-    PreservesLimitsOfShape WalkingCospan hf.functor := by
-  infer_instance
-
-instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
-    PreservesLimitsOfShape WalkingCospan (Scheme.Hom.opensFunctor f) := by
-  dsimp [Scheme.Hom.opensFunctor]
-  infer_instance
-
-instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
-    Functor.PreservesOneHypercovers f.opensFunctor (Opens.grothendieckTopology _)
-      (Opens.grothendieckTopology _) := by
-  refine Functor.PreservesOneHypercovers.of_coverPreserving ?_
-  exact Scheme.Hom.coverPreserving_opensFunctor f
-
 set_option backward.isDefEq.respectTransparency false in
-lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
+instance Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
     [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
-    ((Scheme.Modules.restrictFunctor f).obj M).IsQuasicoherent := by
+    ((restrictFunctor f).obj M).IsQuasicoherent := by
   letI α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
   have hα : IsIso α := NatIso.isIso_of_isIso_app _
   dsimp [restrictFunctor]
@@ -679,6 +579,8 @@ lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X �
       infer_instance
     · infer_instance
   · infer_instance
+
+end IsQuasicoherent
 
 end AlgebraicGeometry
 
