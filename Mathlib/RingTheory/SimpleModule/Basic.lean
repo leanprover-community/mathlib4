@@ -6,7 +6,6 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Data.Finite.Card
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.Isomorphisms
@@ -16,6 +15,7 @@ public import Mathlib.Order.CompactlyGenerated.Intervals
 public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
@@ -170,7 +170,7 @@ theorem isSimpleModule_iff_quot_maximal :
     have ⟨m, hm⟩ := exists_ne (0 : M)
     exact ⟨_, ker_toSpanSingleton_isMaximal R hm,
       ⟨(LinearMap.quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm).symm⟩⟩
-  · convert congr equiv; rwa [isSimpleModule_iff_isCoatom]
+  · convert! congr equiv; rwa [isSimpleModule_iff_isCoatom]
 
 /-- In general, the annihilator of a simple module is called a primitive ideal, and it is
 always a two-sided prime ideal, but mathlib's `Ideal.IsPrime` is not the correct definition
@@ -224,7 +224,7 @@ variable [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
   [IsScalarTower R₀ R M] [Module.Finite R₀ (P →ₗ[R] M)]
 
 theorem of_isComplemented_codomain (h : IsComplemented m) : Module.Finite R₀ (P →ₗ[R] m) :=
-  .of_surjective (.compRight ..) (LinearMap.surjective_comp_linearProjOfIsCompl h.choose_spec)
+  .of_surjective (.compRight ..) (LinearMap.surjective_comp_projectionOnto h.choose_spec)
 
 instance [IsSemisimpleModule R M] : Module.Finite R₀ (P →ₗ[R] m) :=
   .of_isComplemented_codomain _ _ (exists_isCompl m)
@@ -568,7 +568,7 @@ end JordanHolderModule
 section jacobson_density
 
 open Module (End)
-open Submodule IsCompl
+open Submodule
 
 variable [IsSemisimpleModule R M]
 
@@ -577,12 +577,12 @@ theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
     ∃ r : R, ∀ m ∈ s, f m = r • m :=
   let x := Finsupp.equivFunOnFinite.symm (·.1 : s → M)
   have ⟨_, h⟩ := exists_isCompl (R ∙ x)
-  let p := projection h
+  let p := projection _ _ h
   let f := End.ringHomEndFinsupp s f
   have : f (p • x) = f x := congr(f $(projection_apply_left h ⟨x, mem_span_singleton_self x⟩))
   have : f x ∈ R ∙ x := by rw [← this, map_smul, End.smul_def]; apply projection_apply_mem
   have ⟨r, hr⟩ := mem_span_singleton.mp this
-  ⟨r, fun m hm ↦ by simpa [x] using congr($hr ⟨m, hm⟩).symm⟩
+  ⟨r, fun m hm ↦ by simpa [x] using! congr($hr ⟨m, hm⟩).symm⟩
 
 /-- The Jacobson density theorem for a module finite over its endomorphism ring. -/
 protected theorem Module.Finite.toModuleEnd_moduleEnd_surjective [Module.Finite (End R M) M] :

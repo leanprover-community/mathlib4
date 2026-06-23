@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
@@ -25,7 +24,6 @@ its carrier type.
 
 @[expose] public section
 
-
 universe v u
 
 namespace CategoryTheory
@@ -33,8 +31,8 @@ namespace CategoryTheory
 open Bicategory Functor
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- Category of categories. -/
-@[nolint checkUnivs]
 def Cat :=
   Bundled Category.{v, u}
 
@@ -212,6 +210,7 @@ end Hom
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Bicategory structure on `Cat` -/
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
@@ -250,7 +249,6 @@ theorem Hom.id_map {C : Cat.{v, u}} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⟶ C)
 lemma Hom.comp_toFunctor {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) :
   (F ≫ G).toFunctor = F.toFunctor ⋙ G.toFunctor := rfl
 
-@[simp]
 theorem Hom.comp_obj {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) (X : C) :
     (F ≫ G).toFunctor.obj X = G.toFunctor.obj (F.toFunctor.obj X) := by
   simp
@@ -281,7 +279,6 @@ theorem eqToHom_app {C D : Cat.{v, u}} (F G : C ⟶ D) (h : F = G) (X : C) :
 lemma whiskerLeft_toNatTrans {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) :
   (F ◁ η).toNatTrans = F.toFunctor.whiskerLeft η.toNatTrans := rfl
 
-@[simp]
 lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).toNatTrans.app X = η.toNatTrans.app (F.toFunctor.obj X) := by simp
 
@@ -289,7 +286,6 @@ lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G
 lemma whiskerRight_toNatTrans {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) :
     (η ▷ H).toNatTrans = Functor.whiskerRight η.toNatTrans H.toFunctor := rfl
 
-@[simp]
 lemma whiskerRight_app {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).toNatTrans.app X = H.toFunctor.map (η.toNatTrans.app X) := by simp
 
@@ -305,9 +301,11 @@ lemma leftUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
 lemma leftUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (λ_ F).inv.toNatTrans = (F.toFunctor.leftUnitor).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) :
     (λ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) :
     (λ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -323,9 +321,11 @@ lemma rightUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
 lemma rightUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (ρ_ F).inv.toNatTrans = (F.toFunctor.rightUnitor).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma rightUnitor_hom_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
     (ρ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma rightUnitor_inv_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
     (ρ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -341,9 +341,11 @@ lemma associator_hom_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ 
 lemma associator_inv_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
     (α_ F G H).inv.toNatTrans = (Functor.associator F.toFunctor G.toFunctor H.toFunctor).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -362,7 +364,7 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ Type u where
   obj C := C
-  map F := TypeCat.ofHom F.toFunctor.obj
+  map F := ↾F.toFunctor.obj
 
 /-- See through the defeq `objects.obj X = X`. -/
 instance (X : Cat.{v, u}) : Category (objects.obj X) := inferInstanceAs <| Category X
@@ -371,6 +373,7 @@ section
 
 attribute [local simp] eqToHom_map
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Any isomorphism in `Cat` induces an equivalence of the underlying categories. -/
 def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   functor := γ.hom.toFunctor
@@ -426,7 +429,7 @@ instance : Functor.Faithful typeToCat.{u} where
     exact congrArg Discrete.as (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
-  map_surjective F := ⟨TypeCat.ofHom (Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
+  map_surjective F := ⟨↾(Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
     ext
     refine Functor.ext (by cat_disch) ?_
     intro x y f

@@ -58,6 +58,8 @@ We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bu
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -212,7 +214,6 @@ def mkIso {e f : C ≌ D} (η : e.functor ≅ f.functor) : e ≅ f where
   hom := mkHom η.hom
   inv := mkHom η.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing mkIso_inv] mkIso_hom
 
 variable (C D) in
@@ -224,8 +225,9 @@ def functorFunctor : (C ≌ D) ⥤ C ⥤ D where
 
 end CategoryStructure
 
-/- While these abbreviations are convenient, they also cause some trouble,
+/-! While these abbreviations are convenient, they also cause some trouble,
 preventing structure projections from unfolding. -/
+
 @[simp, to_dual none]
 theorem Equivalence_mk'_unit (functor inverse unit_iso counit_iso f) :
     (⟨functor, inverse, unit_iso, counit_iso, f⟩ : C ≌ D).unit = unit_iso.hom :=
@@ -641,7 +643,8 @@ noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a functor that is an equivalence as an equivalence. -/
-@[simps functor, stacks 02C3]
+@[simps functor, simps -isSimp inverse, simps! -isSimp unitIso_hom_app unitIso_inv_app
+  counitIso_hom_app counitIso_inv_app, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   functor := F
   inverse := F.inv
@@ -675,12 +678,12 @@ namespace Functor
 @[simp]
 theorem fun_inv_map (F : C ⥤ D) [IsEquivalence F] (X Y : D) (f : X ⟶ Y) :
     F.map (F.inv.map f) = F.asEquivalence.counit.app X ≫ f ≫ F.asEquivalence.counitInv.app Y := by
-  simpa using (NatIso.naturality_2 (α := F.asEquivalence.counitIso) (f := f)).symm
+  simpa using! (NatIso.naturality_2 (α := F.asEquivalence.counitIso) (f := f)).symm
 
 @[simp]
 theorem inv_fun_map (F : C ⥤ D) [IsEquivalence F] (X Y : C) (f : X ⟶ Y) :
     F.inv.map (F.map f) = F.asEquivalence.unitInv.app X ≫ f ≫ F.asEquivalence.unit.app Y := by
-  simpa using (NatIso.naturality_1 (α := F.asEquivalence.unitIso) (f := f)).symm
+  simpa using! (NatIso.naturality_1 (α := F.asEquivalence.unitIso) (f := f)).symm
 
 lemma isEquivalence_of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsEquivalence] : G.IsEquivalence :=
   ((asEquivalence F).changeFunctor e).isEquivalence_functor

@@ -182,7 +182,7 @@ theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y �
   have us : ∀ i, u i ∈ s := fun
   | 0 => hy
   | (_ + 1) => hx
-  simpa only [Finset.sum_range_one] using sum_le (n := 1) hu us
+  simpa only [Finset.sum_range_one] using! sum_le (n := 1) hu us
 
 theorem eq_zero_iff (f : α → E) {s : Set α} :
     eVariationOn f s = 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
@@ -228,7 +228,7 @@ protected theorem lowerSemicontinuous (s : Set α) :
     LowerSemicontinuous fun f : α →ᵤ[s.image singleton] E => eVariationOn f s := fun f ↦ by
   apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α E (s.image singleton)) id (𝓝 f) f s _
   simpa only [UniformOnFun.tendsto_iff_tendstoUniformlyOn, mem_image, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using @tendsto_id _ (𝓝 f)
+    forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using! @tendsto_id _ (𝓝 f)
 
 /-- The map `(eVariationOn · s)` is lower semicontinuous for uniform convergence on `s`. -/
 theorem lowerSemicontinuous_uniformOn (s : Set α) :
@@ -281,7 +281,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       grind
     · grind [Monotone]
   refine ⟨w, n + 1, hw, by grind, (mem_image _ _ _).2 ⟨N, by grind⟩, ?_⟩
-  rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
+  rcases eq_zero_or_pos N with (Npos | Npos)
   · calc
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
           ∑ i ∈ Finset.range n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by grind
@@ -358,8 +358,9 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           ∑ i ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       congr 1
       rw [Finset.range_eq_Ico]
-      convert Finset.sum_Ico_add (fun i : ℕ => edist (f (w (i + 1))) (f (w i))) 0 m (n + 1)
-        using 3 <;> abel
+      convert!
+          Finset.sum_Ico_add (fun i : ℕ => edist (f (w (i + 1))) (f (w i))) 0 m (n + 1) using 3 <;>
+        abel
     _ ≤ ∑ i ∈ Finset.range (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       rw [← Finset.sum_union]
       · gcongr; grind
@@ -370,41 +371,15 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
 the variation of `f` along `s ∪ t` is the sum of the variations. -/
 theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht : IsLeast t x) :
     eVariationOn f (s ∪ t) = eVariationOn f s + eVariationOn f t := by
-  classical
-  apply le_antisymm _ (eVariationOn.add_le_union f fun a ha b hb => le_trans (hs.2 ha) (ht.2 hb))
-  apply iSup_le _
-  rintro ⟨n, ⟨u, hu, ust⟩⟩
-  obtain ⟨v, m, hv, vst, xv, huv⟩ : ∃ (v : ℕ → α) (m : ℕ),
-    Monotone v ∧ (∀ i, v i ∈ s ∪ t) ∧ x ∈ v '' Iio m ∧
-      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
-        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
+  apply (eVariationOn.add_le_union f fun a ha b hb ↦ (hs.2 ha).trans (ht.2 hb)).antisymm'
+  refine iSup_le fun ⟨n, ⟨u, hu, ust⟩⟩ ↦ ?_
+  obtain ⟨v, m, hv, vst, ⟨N, hN, rfl⟩, huv⟩ :=
     eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
-  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x := xv
-  calc
-    (∑ j ∈ Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
-        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
-      huv
-    _ = (∑ j ∈ Finset.Ico 0 N, edist (f (v (j + 1))) (f (v j))) +
-          ∑ j ∈ Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) := by
-      rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
-    _ ≤ eVariationOn f s + eVariationOn f t := by
-      refine add_le_add ?_ ?_
-      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
-        rcases vst i with (h | h); · exact h
-        have : v i = x := by
-          apply le_antisymm
-          · rw [← Nx]; exact hv hi.2
-          · exact ht.2 h
-        rw [this]
-        exact hs.1
-      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
-        rcases vst i with (h | h); swap; · exact h
-        have : v i = x := by
-          apply le_antisymm
-          · exact hs.2 h
-          · rw [← Nx]; exact hv hi.1
-        rw [this]
-        exact ht.1
+  apply huv.trans
+  rw [Finset.range_eq_Ico, ← Finset.sum_Ico_consecutive _ zero_le hN.le]
+  apply add_le_add <;> refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ ?_
+  · exact (vst i).elim id (fun h ↦ (hv hi.2).antisymm (ht.2 h) ▸ hs.1)
+  · exact (vst i).elim (fun h ↦ (hs.2 h).antisymm (hv hi.1) ▸ ht.1) id
 
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) + eVariationOn f (s ∩ Icc b c) = eVariationOn f (s ∩ Icc a c) := by
@@ -432,8 +407,10 @@ theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : 
 theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     ∑ i ∈ Finset.range n, eVariationOn f (Icc (I i) (I (i + 1)))
      = eVariationOn f (Icc (I 0) (I n)) := by
-  convert sum f hI (s := Icc (I 0) (I n)) (n := n)
-    (hn := by intros; rw [mem_Icc]; constructor <;> (apply hI; lia)) with i hi
+  convert!
+      sum f hI (s := Icc (I 0) (I n)) (n := n)
+        (hn := by intros; rw [mem_Icc]; constructor <;> (apply hI; lia))
+    with i hi
   · simp only [right_eq_inter]
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
   · simp
@@ -467,9 +444,7 @@ theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
     eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
   apply le_antisymm (comp_le_of_monotoneOn f φ hφ (mapsTo_image φ t))
   cases isEmpty_or_nonempty β
-  · convert zero_le (_ : ℝ≥0∞)
-    exact eVariationOn.subsingleton f <|
-      (subsingleton_of_subsingleton.image _).anti (surjOn_image φ t)
+  · simp [Set.eq_empty_of_isEmpty]
   let ψ := φ.invFunOn t
   have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
   have ψts : MapsTo ψ (φ '' t) t := (surjOn_image φ t).mapsTo_invFunOn
@@ -482,7 +457,7 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
     {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
     eVariationOn (f ∘ φ) (t ∩ Icc x y) = eVariationOn f (φ '' t ∩ Icc (φ x) (φ y)) := by
   rcases le_total x y with (h | h)
-  · convert comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
+  · convert! comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
     apply le_antisymm
     · rintro _ ⟨⟨u, us, rfl⟩, vφx, vφy⟩
       rcases le_total x u with (xu | ux)
@@ -502,9 +477,7 @@ theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
     eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
   apply le_antisymm (comp_le_of_antitoneOn f φ hφ (mapsTo_image φ t))
   cases isEmpty_or_nonempty β
-  · convert zero_le (_ : ℝ≥0∞)
-    exact eVariationOn.subsingleton f <| (subsingleton_of_subsingleton.image _).anti
-      (surjOn_image φ t)
+  · simp [Set.eq_empty_of_isEmpty]
   let ψ := φ.invFunOn t
   have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
   have ψts := (surjOn_image φ t).mapsTo_invFunOn
@@ -517,7 +490,7 @@ open OrderDual
 
 @[simp] theorem comp_ofDual (f : α → E) (s : Set α) :
     eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s := by
-  convert comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
+  convert! comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
   simp only [Equiv.image_preimage]
 
 lemma _root_.BoundedVariationOn.ofDual {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
@@ -729,7 +702,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
       grind [Set.Subsingleton]
   have W := eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt (f := f)
     (s := s ∩ Icc y x) (a := x) ?_ ?_
-  · convert W using 2 <;> grind
+  · convert! W using 2 <;> grind
   · rwa [show s ∩ Icc y x ∩ Iio x = (s ∩ Iio x) ∩ Ici y by grind, nhdsWithin_inter_of_mem']
     apply mem_nhdsWithin_of_mem_nhds
     exact Ici_mem_nhds hy
@@ -769,7 +742,7 @@ theorem _root_.BoundedVariationOn.tendsto_leftLim [CompleteSpace E] [Topological
     [OrderTopology α] {f : α → E} (hf : BoundedVariationOn f univ) (x : α) :
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) := by
   apply tendsto_leftLim_of_tendsto
-  convert hf.exists_tendsto_left x
+  convert! hf.exists_tendsto_left x
   simp
 
 /-- A bounded variation function tends to its right-limit on its right. -/
@@ -1002,8 +975,7 @@ protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
   · rw [edist_comm]
     apply this hf hb ha _ (le_of_not_ge h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
-  · apply le_antisymm _ (zero_le _)
-    rw [← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
+  · rw [← nonpos_iff_eq_zero, ← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
       ENNReal.ofReal_toReal (hf a b ha hb)]
     apply eVariationOn.edist_le
     exacts [⟨ha, ⟨le_rfl, h'⟩⟩, ⟨hb, ⟨h', le_rfl⟩⟩]
@@ -1052,20 +1024,33 @@ protected theorem antitoneOn (hf : LocallyBoundedVariationOn f s) {b : α} (bs :
   rw [← variationOnFromTo.add hf as cs bs]
   exact le_add_of_nonneg_left (variationOnFromTo.nonneg_of_le f s ac)
 
+lemma abs_sub_le_sub_of_le {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVariationOn f s)
+    {a b c : α} (as : a ∈ s) (bs : b ∈ s) (cs : c ∈ s) (bc : b ≤ c) :
+    |f c - f b| ≤ variationOnFromTo f s a c - variationOnFromTo f s a b := calc
+  _ = dist (f b) (f c) := by rw [dist_comm, Real.dist_eq]
+  _ ≤ variationOnFromTo f s b c := by
+    rw [variationOnFromTo.eq_of_le f s bc, dist_edist]
+    apply ENNReal.toReal_mono (hf b c bs cs)
+    apply eVariationOn.edist_le f
+    exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
+  _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
+    rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
+
+protected theorem add_self_monotoneOn {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVariationOn f s)
+    {a : α} (as : a ∈ s) : MonotoneOn (variationOnFromTo f s a + f) s := by
+  rintro b bs c cs bc
+  suffices f b - f c ≤ variationOnFromTo f s a c - variationOnFromTo f s a b by simp; linarith
+  calc
+    f b - f c ≤ |f c - f b| := by grw [le_abs_self (f b - f c), abs_sub_comm (f b) (f c)]
+    _ ≤ variationOnFromTo f s a c - variationOnFromTo f s a b := abs_sub_le_sub_of_le hf as bs cs bc
+
 protected theorem sub_self_monotoneOn {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a : α} (as : a ∈ s) : MonotoneOn (variationOnFromTo f s a - f) s := by
   rintro b bs c cs bc
   rw [Pi.sub_apply, Pi.sub_apply, le_sub_iff_add_le, add_comm_sub, ← le_sub_iff_add_le']
   calc
     f c - f b ≤ |f c - f b| := le_abs_self _
-    _ = dist (f b) (f c) := by rw [dist_comm, Real.dist_eq]
-    _ ≤ variationOnFromTo f s b c := by
-      rw [variationOnFromTo.eq_of_le f s bc, dist_edist]
-      apply ENNReal.toReal_mono (hf b c bs cs)
-      apply eVariationOn.edist_le f
-      exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
-    _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
-      rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
+    _ ≤ variationOnFromTo f s a c - variationOnFromTo f s a b := abs_sub_le_sub_of_le hf as bs cs bc
 
 protected theorem comp_eq_of_monotoneOn {β : Type*} [LinearOrder β] (f : α → E) {t : Set β}
     (φ : β → α) (hφ : MonotoneOn φ t) {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
@@ -1103,15 +1088,39 @@ theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_rightLim_
 end variationOnFromTo
 
 /-- If a real-valued function has bounded variation on a set, then it is a difference of monotone
+functions there. Moreover, one can make sure that the two monotone functions add up to the
+variation of `f`. -/
+theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn' {f : α → ℝ} {s : Set α}
+    (h : LocallyBoundedVariationOn f s) :
+    ∃ p q : α → ℝ, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q ∧
+      ∀ x ∈ s, ∀ y ∈ s, (p y - p x) + (q y - q x) = variationOnFromTo f s x y := by
+  rcases eq_empty_or_nonempty s with (rfl | ⟨c, cs⟩)
+  · refine ⟨f, 0, subsingleton_empty.monotoneOn _, subsingleton_empty.monotoneOn _,
+      (sub_zero f).symm, fun x hx y hy ↦ by simp at hx⟩
+  refine ⟨fun x ↦ (variationOnFromTo f s c x + f x) / 2,
+    fun x ↦ (variationOnFromTo f s c x - f x) / 2, ?_, ?_, ?_, ?_⟩
+  · intro x hx y hy hxy
+    dsimp
+    gcongr 1
+    simpa using variationOnFromTo.add_self_monotoneOn h cs hx hy hxy
+  · intro x hx y hy hxy
+    dsimp
+    gcongr 1
+    simpa using variationOnFromTo.sub_self_monotoneOn h cs hx hy hxy
+  · ext
+    simp
+    ring
+  · intro x hx y hy
+    rw [← variationOnFromTo.add h hx cs hy, variationOnFromTo.eq_neg_swap]
+    ring
+
+/-- If a real-valued function has bounded variation on a set, then it is a difference of monotone
 functions there. -/
 theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn {f : α → ℝ} {s : Set α}
     (h : LocallyBoundedVariationOn f s) :
     ∃ p q : α → ℝ, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q := by
-  rcases eq_empty_or_nonempty s with (rfl | ⟨c, cs⟩)
-  · exact ⟨f, 0, subsingleton_empty.monotoneOn _, subsingleton_empty.monotoneOn _,
-      (sub_zero f).symm⟩
-  · exact ⟨_, _, variationOnFromTo.monotoneOn h cs, variationOnFromTo.sub_self_monotoneOn h cs,
-      (sub_sub_cancel _ _).symm⟩
+  rcases h.exists_monotoneOn_sub_monotoneOn' with ⟨p, q, hp, hq, h'f, -⟩
+  exact ⟨p, q, hp, hq, h'f⟩
 
 /-! ### Lipschitz functions and bounded variation -/
 

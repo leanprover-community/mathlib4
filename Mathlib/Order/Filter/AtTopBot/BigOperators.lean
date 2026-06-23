@@ -39,9 +39,12 @@ theorem Filter.map_atTop_finsetProd_le_of_prod_eq {f : α → M} {g : β → M}
     refine ((atTop_basis.map _).le_basis_iff (atTop_basis.map _)).2 fun b _ => ?_
     let ⟨v, hv⟩ := h_eq b
     refine ⟨v, trivial, ?_⟩
-    simpa [Finset.image_subset_iff] using hv
+    simpa [Finset.image_subset_iff] using! hv
 
 @[deprecated (since := "2026-04-08")]
+alias Filter.map_atTop_finset_sum_le_of_sum_eq := Filter.map_atTop_finsetSum_le_of_sum_eq
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias Filter.map_atTop_finset_prod_le_of_prod_eq := Filter.map_atTop_finsetProd_le_of_prod_eq
 
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
@@ -69,6 +72,9 @@ theorem Function.Injective.map_atTop_finsetProd_eq {g : α → β}
     exact ⟨_, (image_subset_iff_subset_preimage _).1 ht, rfl⟩
 
 @[deprecated (since := "2026-04-08")]
+alias Function.Injective.map_atTop_finset_sum_eq := Function.Injective.map_atTop_finsetSum_eq
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias Function.Injective.map_atTop_finset_prod_eq := Function.Injective.map_atTop_finsetProd_eq
 
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`

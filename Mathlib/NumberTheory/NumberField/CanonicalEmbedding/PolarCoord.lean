@@ -363,7 +363,7 @@ theorem normAtComplexPlaces_polarSpaceCoord_symm [NumberField K] (x : polarSpace
 
 open scoped ComplexOrder Classical in
 private theorem volume_eq_two_pi_pow_mul_integral_aux
-    (hA : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = A) :
+    (hA : normAtComplexPlaces ⁻¹' normAtComplexPlaces '' A = A) :
     normAtComplexPlaces '' A =
       (mixedSpaceOfRealSpace ⁻¹' A) ∩
         Set.univ.pi fun w ↦ if w.IsReal then Set.univ else Set.Ici 0 := by
@@ -388,7 +388,7 @@ If the measurable set `A` is norm-stable at complex places in the sense that
 integral over `normAtComplexPlaces '' A`.
 -/
 theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
-    (hA : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = A) (hm : MeasurableSet A) :
+    (hA : normAtComplexPlaces ⁻¹' normAtComplexPlaces '' A = A) (hm : MeasurableSet A) :
     volume A = .ofReal (2 * π) ^ nrComplexPlaces K *
       ∫⁻ x in normAtComplexPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
   have hA' {x} : (A.indicator 1 x : ℝ≥0∞) =
@@ -401,7 +401,7 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
       ← two_mul, Finset.prod_const, Finset.card_univ, ← Set.indicator_const_mul,
       ← Set.indicator_comp_right, Function.comp_def, Pi.one_apply, mul_one]
     rw [lintegral_mul_const' _ _ (ne_of_beq_false rfl).symm, mul_comm]
-    erw [setLIntegral_indicator (by convert hm.preimage mixedSpaceOfRealSpace.measurable)]
+    erw [setLIntegral_indicator (by convert! hm.preimage mixedSpaceOfRealSpace.measurable)]
     rw [hA, volume_eq_two_pi_pow_mul_integral_aux hA]
     congr 1
     refine setLIntegral_congr (ae_eq_set_inter (by rfl) (Measure.ae_eq_set_pi fun w _ ↦ ?_))
@@ -411,7 +411,7 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
       <| measurable_const.indicator <| hm.preimage (measurable_polarSpaceCoord_symm K)).aemeasurable
 
 private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
-    (hA : normAtAllPlaces ⁻¹' (normAtAllPlaces '' A) = A) :
+    (hA : normAtAllPlaces ⁻¹' normAtAllPlaces '' A = A) :
     normAtAllPlaces '' A ∩ (⋂ w : {w // IsReal w}, {x | x w.1 ≠ 0}) =
       normAtComplexPlaces '' plusPart A := by
   ext x
@@ -439,13 +439,13 @@ If the measurable set `A` is norm-stable in the sense that
 over `normAtAllPlaces '' A`.
 -/
 theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
-    (hA : normAtAllPlaces ⁻¹' (normAtAllPlaces '' A) = A) (hm : MeasurableSet A) :
+    (hA : normAtAllPlaces ⁻¹' normAtAllPlaces '' A = A) (hm : MeasurableSet A) :
     volume A = 2 ^ nrRealPlaces K * .ofReal (2 * π) ^ nrComplexPlaces K *
       ∫⁻ x in normAtAllPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
   have hA₁ (x : mixedSpace K) : x ∈ A ↔ (fun w ↦ ‖x.1 w‖, x.2) ∈ A := by
     rw [← hA]
     simp_rw [Set.mem_preimage, Set.mem_image, normAtAllPlaces_norm_at_real_places]
-  have hA₃ : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' (plusPart A)) = plusPart A := by
+  have hA₃ : normAtComplexPlaces ⁻¹' normAtComplexPlaces '' plusPart A = plusPart A := by
     refine subset_antisymm (fun x ⟨a, ha₁, ha₂⟩ ↦ ⟨?_, fun w ↦ ?_⟩) (Set.subset_preimage_image _ _)
     · rw [← hA, Set.mem_preimage, ← normAtAllPlaces_eq_of_normAtComplexPlaces_eq ha₂]
       exact Set.mem_image_of_mem normAtAllPlaces (Set.inter_subset_left ha₁)

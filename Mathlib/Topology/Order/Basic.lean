@@ -491,6 +491,7 @@ theorem dense_iff_exists_between [DenselyOrdered α] [Nontrivial α] {s : Set α
 
 /-- A set is a neighborhood of `a` if and only if it contains an interval `(l, u)` containing `a`,
 provided `a` is neither a bottom element nor a top element. -/
+@[to_dual none]
 theorem mem_nhds_iff_exists_Ioo_subset' {a : α} {s : Set α} (hl : ∃ l, l < a)
     (hu : ∃ u, a < u) : s ∈ 𝓝 a ↔ ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ s := by
   constructor
@@ -580,7 +581,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     exact isOpen_of_mem_countableBasis ha
   intro a ha
   suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x } from
-    H.of_diff (subsingleton_isBot α).countable
+    H.of_sdiff (subsingleton_isBot α).countable
   simp only [and_assoc]
   let t := { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
   have : ∀ x ∈ t, ∃ z < x, Ioc z x ⊆ a := by
@@ -619,9 +620,9 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α]
     {y : α → α} {s : Set α} (h : PairwiseDisjoint s fun x => Ioo x (y x))
     (h' : ∀ x ∈ s, x < y x) : s.Countable :=
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
-    (h.subset diff_subset).countable_of_isOpen (fun _ _ ↦ isOpen_Ioo) fun x hx ↦
+    (h.subset sdiff_subset).countable_of_isOpen (fun _ _ ↦ isOpen_Ioo) fun x hx ↦
       (not_covBy_iff_exists_mem_Ioo (h' _ hx.1)).1 <| mt (Exists.intro (y x)) hx.2
-  this.of_diff countable_setOf_covBy_right
+  this.of_sdiff countable_setOf_covBy_right
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. We give

@@ -53,7 +53,7 @@ General algebra:
     permutation group of a type: 'Equiv.Perm'
     Cayley's theorem: 'Equiv.Perm.subgroupOfMulAction'
     alternating group: 'alternatingGroup'
-    A5 is simple: 'alternatingGroup.isSimpleGroup_five'
+    alternating groups on 5 letters or more are simple: 'alternatingGroup.isSimpleGroup'
     classification of abelian simple groups: CommGroup.is_simple_iff_prime_card
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
     Lagrange's theorem: 'Subgroup.card_subgroup_dvd_card'
@@ -69,7 +69,7 @@ General algebra:
     localization: 'Localization'
     local ring: 'IsLocalRing'
     Noetherian ring: 'IsNoetherianRing'
-    # ordered ring: 'OrderedRing'
+    ordered ring: 'IsOrderedRing'
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
@@ -295,7 +295,7 @@ Analysis:
     Cauchy-Schwarz inequality: 'inner_mul_inner_self_le'
     adjoint operator: 'LinearPMap.adjoint'
     self-adjoint operator: 'IsSelfAdjoint'
-    orthogonal projection: 'Submodule.orthogonalProjection'
+    orthogonal projection: 'Submodule.orthogonalProjectionOnto'
     reflection: 'Submodule.reflection'
     orthogonal complement: 'Submodule.orthogonal'
     existence of Hilbert basis: 'exists_hilbertBasis'
@@ -403,7 +403,7 @@ Probability Theory:
     Kolmogorov's $0$-$1$ law: 'ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop'
     mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_eq_mul_integral'
     moment of a random variable: 'ProbabilityTheory.moment'
-    Bernoulli law: 'PMF.bernoulli'
+    Bernoulli law: 'ProbabilityTheory.bernoulliMeasure'
     binomial law: 'ProbabilityTheory.binomial'
     geometric law: 'ProbabilityTheory.geometricMeasure'
     Poisson law: 'ProbabilityTheory.poissonMeasure'
@@ -583,14 +583,16 @@ Data structures:
 
   Maps:
     key-value map: 'AList'
-    red-black map: 'Batteries.RBMap'
+    # deprecated in https://github.com/leanprover-community/batteries/pull/1792
+    # red-black map: 'Batteries.RBMap'
     hash map: 'Std.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 
   Trees:
-    tree: 'Tree'
-    red-black tree: 'Batteries.RBSet'
+    tree: 'BinaryTree'
+    # deprecated in https://github.com/leanprover-community/batteries/pull/1792
+    # red-black tree: 'Batteries.RBSet'
     size-balanced binary search tree: 'Ordnode'
     W type: 'WType'
 
@@ -618,8 +620,17 @@ Logic and computation:
     context-free language: 'Language.IsContextFree'
     context-free grammar: 'ContextFreeGrammar'
   Set theory:
-    ordinal: 'Ordinal'
-    cardinal: 'Cardinal'
+    Ordinals:
+      ordinal: 'Ordinal'
+      Cantor normal form: 'Ordinal.CNF'
+      fundamental sequences: 'Ordinal.IsFundamentalSeq'
+      epsilon numbers: 'Ordinal.epsilon'
+      gamma numbers: 'Ordinal.gamma'
+    Cardinals:
+      cardinal: 'Cardinal'
+      aleph numbers: 'Cardinal.aleph'
+      beth numbers: 'Cardinal.beth'
+      cofinality: 'Order.cof'
     model of ZFC: 'ZFSet'
   Model theory:
     first-order structure: 'FirstOrder.Language.Structure'

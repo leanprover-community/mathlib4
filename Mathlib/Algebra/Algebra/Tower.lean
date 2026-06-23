@@ -76,6 +76,10 @@ def lsmul : A →ₐ[R] Module.End B M where
 @[simp]
 theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (a • ·) := rfl
 
+lemma lsmul_apply (a : A) (m : M) : lsmul R B M a m = a • m := rfl
+
+lemma lsmul_eq_smul_one (a : A) : lsmul R R M a = a • 1 := rfl
+
 end Algebra
 
 namespace IsScalarTower
@@ -133,20 +137,6 @@ theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 
   Algebra.algebra_ext _ _ fun r => by
     simpa only [@Algebra.smul_def _ _ _ _ h1, @Algebra.smul_def _ _ _ _ h2, mul_one] using h r 1
 
-/-- In a tower, the canonical map from the middle element to the top element is an
-algebra homomorphism over the bottom element. -/
-def toAlgHom : S →ₐ[R] A :=
-  { algebraMap S A with commutes' := fun _ => (algebraMap_apply _ _ _ _).symm }
-
-theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
-
-@[simp]
-theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
-  RingHom.ext fun _ => rfl
-
-@[simp]
-theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
-
 variable {R S A B}
 
 @[simp]
@@ -197,6 +187,9 @@ def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
 
 theorem restrictScalars_apply (f : A →ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
+@[simp] lemma toLinearMap_restrictScalars (f : A →ₐ[S] B) :
+    (f.restrictScalars R).toLinearMap = f.toLinearMap.restrictScalars R := rfl
+
 @[simp]
 theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R : A →+* B) = f := rfl
 
@@ -238,6 +231,12 @@ def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
       exact f.commutes (algebraMap R S r) }
 
 theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
+
+@[simp] lemma toAlgHom_restrictScalars (f : A ≃ₐ[S] B) :
+    (f.restrictScalars R).toAlgHom = f.toAlgHom.restrictScalars R := rfl
+
+@[simp] lemma toLinearEquiv_restrictScalars (f : A ≃ₐ[S] B) :
+    (f.restrictScalars R).toLinearEquiv = f.toLinearEquiv.restrictScalars R := rfl
 
 @[simp]
 theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
@@ -419,7 +418,7 @@ section Algebra.algebraMapSubmonoid
 
 @[simp]
 theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [CommSemiring A]
-    [Algebra R A] (M : Submonoid R) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
+    [Algebra R A] (M : Submonoid R) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
     algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
   algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
 
