@@ -34,7 +34,7 @@ in the category of types.
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory Limits
 
@@ -72,6 +72,12 @@ lemma le₃₄ : x₃ ≤ x₄ := by grind
 /-- The commutative square associated to a bi-Cartesian square in a lattice. -/
 lemma commSq : CommSq (homOfLE sq.le₁₂) (homOfLE sq.le₁₃)
     (homOfLE sq.le₂₄) (homOfLE sq.le₃₄) := ⟨rfl⟩
+
+lemma pushforward {S : Type v} [Lattice S] (f : T → S)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
+    BicartSq (f x₁) (f x₂) (f x₃) (f x₄) where
+  sup_eq := by rw [← map_sup, sq.sup_eq]
+  inf_eq := by rw [← map_inf, sq.inf_eq]
 
 end BicartSq
 
@@ -115,6 +121,15 @@ of the obvious functor `Set X ⥤ Type _`.) -/
 def multicofork : Multicofork d.multispanIndex :=
   Multicofork.ofπ _ x (fun i ↦ homOfLE (by grind [multispanIndex_right, le_iSup_iff]))
     (fun _ ↦ rfl)
+
+include d
+lemma pushforward {S : Type v} [CompleteLattice S] (f : T → S)
+    (map_sup : ∀ {ι : Type u_1} (u : ι → T), ⨆ i, f (u i) = f (⨆ i, u i))
+    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+  : MulticoequalizerDiagram (f x) ( fun i ↦ f (u i)) (fun i j ↦ f (v i j))
+    where
+  iSup_eq := by rw [map_sup u ,d.iSup_eq]
+  eq_inf _ _ := by rw [← map_inf ,d.eq_inf]
 
 end MulticoequalizerDiagram
 

@@ -154,10 +154,10 @@ def pushforward {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ 
   obj := F.obj.pushforward pf
   property.nonempty_isTerminal := by
     exact F.property.nonempty_isTerminal
-  property.isPullback h:= by
-    apply F.property.isPullback
-    sorry
-
+  property.isPullback h:=
+    F.property.isPullback <|
+    Lattice.BicartSq.pushforward h (properPreimage pf)
+    (fun _ _ ↦ Compacts.ext rfl) (fun _ _ ↦ Compacts.ext rfl)
   property.nonempty_isColimit_coconeOfCompacts K :=
     Nonempty.intro <|
     (Functor.Final.isColimitWhiskerEquiv ((nhdsMap_mono pf K).functor.op)
