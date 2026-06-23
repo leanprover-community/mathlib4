@@ -68,7 +68,7 @@ theorem cardinalMk_prod_le (α : Type*) : #(α × α) ≤ 2 * #(Sym2 α) := by
 
 section fromRel
 
-variable {r : α → α → Prop} (sym : Symmetric r)
+variable {r : α → α → Prop} (sym : Std.Symm r)
 
 theorem cardinalMk_prod_le_two_mul_cardinalMk_fromRel :
     #{ p : α × α // r p.fst p.snd } ≤ 2 * #(Sym2.fromRel sym) := by
