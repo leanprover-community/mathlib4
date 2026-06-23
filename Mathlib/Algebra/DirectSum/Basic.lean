@@ -381,9 +381,7 @@ def sigmaFiberAddEquiv : (⨁ i, β i) ≃+ ⨁ (j : ι₂) (i : { i : ι₁ // 
     (sigmaCurryEquiv (δ := fun j ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i)))
 
 theorem sigmaFiberAddEquiv_apply' (x : ⨁ i, β i) :
-    sigmaFiberAddEquiv f x = sigmaCurry (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm x) := by
-  simp only [DirectSum.sigmaFiberAddEquiv,AddEquiv.trans_apply]
-  rfl
+    sigmaFiberAddEquiv f x = sigmaCurry (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm x) := rfl
 
 @[simp]
 theorem sigmaFiberAddEquiv_apply (x : ⨁ i, β i) (j : ι₂) (i' : { i : ι₁ // f i = j}) :
