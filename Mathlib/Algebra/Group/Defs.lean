@@ -229,6 +229,12 @@ variable [Semigroup G]
 theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
 
+@[to_additive Semigroup.succ_psmul']
+lemma Semigroup.ppow_succ' (a : G) : ∀ n : ℕ,
+    Semigroup.ppow (n + 2) (Nat.succ_pos (n + 1)) a = Semigroup.ppow (n + 1) (Nat.succ_pos n) a * a
+  | .zero => by rw [Semigroup.ppow_succ, Semigroup.ppow_one]
+  | .succ n => by rw [Semigroup.ppow_succ _ n, Semigroup.ppow_succ, Semigroup.ppow_succ', mul_assoc]
+
 end Semigroup
 
 section IsCommutative
