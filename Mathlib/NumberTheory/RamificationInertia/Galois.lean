@@ -5,6 +5,7 @@ Authors: Yongle Hu, Jiedong Jiang
 -/
 module
 
+public import Mathlib.RingTheory.Invariant.Galois
 public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
