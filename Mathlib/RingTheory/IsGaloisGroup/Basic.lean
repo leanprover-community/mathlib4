@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.IsGaloisGroup.Defs
 # Galois Groups of Rings
 
 Given an action of a group `G` on an extension of rings `B/A`, the predicate `IsGaloisGroup G A B`
-states that `G` acts faithfully on `B` with fixed field `A`. This file develops some of the theory
+states that `G` acts faithfully on `B` with fixed ring `A`. This file develops some of the theory
 of this predicate without assuming Galois theory for fields.
 -/
 
