@@ -501,6 +501,7 @@ public register_option linter.style.nameCheck : Bool := {
 
 namespace Style.nameCheck
 
+-- TODO: need to rename this linter, etc... merge into the uppercase components linter!
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
     unless getLinterValue linter.style.nameCheck (← getLinterOptions) do
@@ -518,8 +519,17 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
         -- Check whether the declaration name contains "__".
         if 1 < (declName.toString.splitOn "__").length then
           Linter.logLint linter.style.nameCheck id
-            m!"The declaration '{id}' contains '__', which does not follow the mathlib naming \
+            m!"The declaration `{id}` contains '__', which does not follow the mathlib naming \
               conventions. Consider using single underscores instead."
+        -- If the last component of a lemma is uppercase, this is are definitely an error.
+        let nameIsUpper := declName.components.getLast!.toString.toList.head!.isUpper
+        if nameIsUpper && ((← getEnv).find? declName).get!.isTheorem then
+          Linter.logLint linter.style.nameCheck id m!"The theorem `{id}` has an upper-case name: \
+          this certainly violates the naming convention: please fix"
+
+-- tests to add
+-- Foo.my_lemma_name is fine (even though *first* component is capitalized)
+-- should fire on Foo.My_lemma_name and MyConcept_some_lemma
 
 initialize addLinter doubleUnderscore
 
