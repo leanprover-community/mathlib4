@@ -491,12 +491,12 @@ def ofLinearMap (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ
 theorem coe_ofLinearMap (h₁ h₂) : ⇑(ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
 @[simp]
-theorem ofLinearMap_symm {h₁ h₂} :
+theorem ofLinearMap_symm (h₁ h₂) :
     (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = (ofLinearMap g f h₂ h₁) :=
   rfl
 
 @[simp]
-theorem toLinearMap_ofLinearMap {h₁ h₂} : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
+theorem toLinearMap_ofLinearMap (h₁ h₂) : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
 @[deprecated ofLinearMap (since := "2026-06-23")]
 abbrev ofLinear (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁₂] M₂ := ofLinearMap f g h₁ h₂
