@@ -80,7 +80,7 @@ noncomputable def maxErrorOverAP (x q : ℕ) : ℝ :=
 /-- The average maximum error over moduli `2 ≤ q ≤ Q`. -/
 noncomputable def avgErrorBV (x Q : ℕ) : ℝ :=
   let moduli := (range (Q + 1)).filter (fun q => q ≥ 2)
-  if h : moduli.Nonempty then
+  if moduli.Nonempty then
     (moduli.sum (fun q => maxErrorOverAP x q)) / (moduli.card : ℝ)
   else 0
 
