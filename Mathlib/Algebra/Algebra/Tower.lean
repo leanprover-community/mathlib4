@@ -273,7 +273,7 @@ variable {R}
 
 /-- Any `f : A ≃ₐ[R] B` is also an `S`-algebra isomorphism if the `R`-algebra structure on
 `A` and `B` factors via a surjective ring homomorphism `R →+* S`. -/
-@[simps! apply]
+@[simps! apply symm_apply left_inv right_inv]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S)) :
     (A ≃ₐ[R] B) ≃ A ≃ₐ[S] B where
   toFun f := { f with commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes' }
@@ -294,7 +294,7 @@ lemma extendScalarsOfSurjective_symm (h : Function.Surjective (algebraMap R S))
 
 /-- Any `f : A ≃ₐ[R] B` is also an `S`-algebra isomorphism if the `R`-algebra structure on
 `A` and `B` factors via a surjective ring homomorphism `R →+* S`. -/
-@[simps! apply]
+@[simps! apply symm_apply left_inv right_inv]
 def extendScalarsHomOfSurjective (h : Function.Surjective ⇑(algebraMap R S)) :
     (A ≃ₐ[R] A) ≃* (A ≃ₐ[S] A) where
   __ := extendScalarsOfSurjective h
