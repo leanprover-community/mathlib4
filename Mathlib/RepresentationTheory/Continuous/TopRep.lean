@@ -179,7 +179,7 @@ instance : CategoryTheory.Linear k (TopRep k G) where
 end Linear
 
 section equivAction
-set_option pp.universes true
+
 /-- The functor sending a topological representation to the corresponding object in
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat.{w} k) G where

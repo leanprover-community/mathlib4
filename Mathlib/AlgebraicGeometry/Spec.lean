@@ -45,21 +45,15 @@ universe u v
 
 namespace AlgebraicGeometry
 
-open Opposite
-
-open CategoryTheory
-
-open StructureSheaf
-
+open Opposite CategoryTheory StructureSheaf
 open Spec (structureSheaf)
 
-/-- The spectrum of a commutative ring, as a topological space.
--/
+/-- The spectrum of a commutative ring, as a topological space. -/
 def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
   TopCat.of (PrimeSpectrum R)
 
-@[simp] theorem Spec.topObj_forget {R} : ToType (Spec.topObj R) = PrimeSpectrum R :=
-  rfl
+@[simp] theorem Spec.topObj_forget {R : CommRingCat.{v}} :
+  ToType (Spec.topObj R) = PrimeSpectrum R := rfl
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of topological spaces.
 -/
@@ -80,14 +74,14 @@ theorem Spec.topMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
 /-- The spectrum, as a contravariant functor from commutative rings to topological spaces.
 -/
 @[simps!]
-def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat where
+def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat.{u} where
   obj R := Spec.topObj (unop R)
   map {_ _} f := Spec.topMap f.unop
 
 /-- The spectrum of a commutative ring, as a `SheafedSpace`.
 -/
 @[simps]
-def Spec.sheafedSpaceObj (R : CommRingCat.{u}) : SheafedSpace CommRingCat where
+def Spec.sheafedSpaceObj (R : CommRingCat.{u}) : SheafedSpace CommRingCat.{u} where
   carrier := Spec.topObj R
   presheaf := (structureSheaf R).1
   IsSheaf := (structureSheaf R).2
@@ -133,14 +127,14 @@ theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S
 /-- Spec, as a contravariant functor from commutative rings to sheafed spaces.
 -/
 @[simps]
-def Spec.toSheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ SheafedSpace CommRingCat where
+def Spec.toSheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ SheafedSpace CommRingCat.{u} where
   obj R := Spec.sheafedSpaceObj (unop R)
   map f := Spec.sheafedSpaceMap f.unop
   map_comp f g := by simp [Spec.sheafedSpaceMap_comp]
 
 /-- Spec, as a contravariant functor from commutative rings to presheafed spaces.
 -/
-def Spec.toPresheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ PresheafedSpace CommRingCat :=
+def Spec.toPresheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ PresheafedSpace CommRingCat.{u} :=
   Spec.toSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace
 
 @[simp]
@@ -181,7 +175,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
 -- if more is needed, add them here
 /-- The spectrum of a commutative ring, as a `LocallyRingedSpace`. -/
 @[simps! toSheafedSpace presheaf]
-def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace where
+def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace.{u} where
   __ := Spec.sheafedSpaceObj R
   isLocalRing x := (stalkIso R x).toRingEquiv.isLocalRing
 
@@ -262,7 +256,7 @@ theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) 
 /-- Spec, as a contravariant functor from commutative rings to locally ringed spaces.
 -/
 @[simps]
-def Spec.toLocallyRingedSpace : CommRingCat.{u}ᵒᵖ ⥤ LocallyRingedSpace where
+def Spec.toLocallyRingedSpace : CommRingCat.{u}ᵒᵖ ⥤ LocallyRingedSpace.{u} where
   obj R := Spec.locallyRingedSpaceObj (unop R)
   map f := Spec.locallyRingedSpaceMap f.unop
   map_id R := by dsimp; rw [Spec.locallyRingedSpaceMap_id]
