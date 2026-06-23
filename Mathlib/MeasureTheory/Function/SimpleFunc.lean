@@ -370,6 +370,10 @@ instance instOne [One β] : One (α →ₛ β) :=
   ⟨const α 1⟩
 
 @[to_additive]
+instance [One β] : IsOneApply (α →ₛ β) α β where
+  one_apply _ := rfl
+
+@[to_additive]
 instance instMul [Mul β] : Mul (α →ₛ β) :=
   ⟨fun f g => (f.map (· * ·)).seq g⟩
 
