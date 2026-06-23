@@ -9,7 +9,7 @@ public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Push.Attr
 
 /-!
-# Cast of integers to function types
+# Cast of natural numbers to function types
 
 This file provides a (pointwise) cast from `ℕ` to function types.
 
