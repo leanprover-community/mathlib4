@@ -307,6 +307,19 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
   delta Scheme.homOfLE
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
+lemma Scheme.Hom.appIso_homOfLE_inv {X : Scheme.{u}} {U V : X.Opens} (h : U ≤ V)
+    (W : (U : Scheme.{u}).Opens) :
+    ((X.homOfLE h).appIso W).inv =
+      X.presheaf.map (.op <| homOfLE <| by
+        suffices V.ι ''ᵁ _ ≤ U.ι ''ᵁ W by simpa
+        simp [← Scheme.Hom.comp_image]) := by
+  rw [eq_comm, ← Iso.hom_comp_eq_id]
+  dsimp
+  simp only [appIso_hom, homOfLE_app, homOfLE_leOfHom, eqToHom_op, Opens.toScheme_presheaf_map,
+    eqToHom_unop, ← X.presheaf.map_comp, Category.assoc, ← X.presheaf.map_id]
+  rfl
+
 @[simp]
 lemma Scheme.opensRange_homOfLE {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).opensRange = V.ι ⁻¹ᵁ U :=

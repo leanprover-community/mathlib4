@@ -374,6 +374,11 @@ theorem mulEquivCongr_symm_apply_smul (g : G') (x : B) :
 @[deprecated (since := "2026-06-19")] alias mulEquivCongr' := mulEquivCongr
 @[deprecated (since := "2026-06-19")] alias mulEquivCongr'_apply_smul := mulEquivCongr_apply_smul
 
+theorem mulEquivCongr_mapSubgroup_fixingSubgroup (S : Set B) :
+    (fixingSubgroup G S).map (mulEquivCongr G G' A B) = fixingSubgroup G' S := by
+  ext g
+  simp [Subgroup.map_equiv_eq_comap_symm, mem_fixingSubgroup_iff]
+
 end IsDomain
 
 theorem mulEquivCongr_mapSubgroup_fixingSubgroup (F : Set L) [IsGaloisGroup G K L] [Finite G]
@@ -615,7 +620,7 @@ theorem normal_of_isGalois (E : Type*) [Field E] [Algebra K E] [Algebra E L] [Is
   have := isGalois G K L
   have : Finite Gal(L/K) := Finite.of_equiv _ (mulEquivAlgEquiv G K L).toEquiv
   rw [← fixingSubgroup_fixedPoints G K L H, subgroup_iff.mp hFL,
-    ← mulEquivCongr_mapSubgroup_fixingSubgroup Gal(L/K) G K, MulEquiv.normal_map_iff ]
+    ← mulEquivCongr_mapSubgroup_fixingSubgroup Gal(L/K) G K, MulEquiv.normal_map_iff]
   exact IsGalois.fixingSubgroup_normal_of_isGalois F
 
 end IsGaloisGroup
