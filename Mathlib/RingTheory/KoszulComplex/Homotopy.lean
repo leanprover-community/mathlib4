@@ -133,7 +133,7 @@ lemma koszulComplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) 
     HomologicalComplex.id_f]
   exact congrArg ModuleCat.ofHom (contraction_wedge_cartan_formula x φ i).symm
 
-noncomputable def koszulCocomplex.smul_id_homotopicToZero (x : M) (φ : M →ₗ[R] R) :
+noncomputable def koszulCocomplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) :
     Homotopy ((φ x) • 𝟙 (koszulCocomplex R x))
       (0 : koszulCocomplex R x ⟶ koszulCocomplex R x) where
   hom := fun i j =>
@@ -146,7 +146,7 @@ noncomputable def koszulCocomplex.smul_id_homotopicToZero (x : M) (φ : M →ₗ
     | zero => simpa using! scalar_homotopy_comm_zero x φ
     | succ i => simpa using! koszulCocomplex.scalar_homotopy_comm x φ i
 
-noncomputable def koszulComplex.smul_id_homotopicToZero (x : M) (φ : M →ₗ[R] R) :
+noncomputable def koszulComplex.homotopySMulIdZero (x : M) (φ : M →ₗ[R] R) :
     Homotopy ((φ x) • 𝟙 (koszulComplex φ)) (0 : koszulComplex φ ⟶ koszulComplex φ) where
   hom := fun i j =>
     if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplexAux R M x i) else 0
@@ -168,7 +168,7 @@ lemma koszulComplex.mem_annihilator_homology (i : ℕ) :
   rw [Module.mem_annihilator]
   intro z
   have ofht : (HomologicalComplex.homologyMap (φ x • 𝟙 (koszulComplex φ)) i).hom z = 0 := by
-    simp [(smul_id_homotopicToZero x φ).homologyMap_eq i]
+    simp [(homotopySMulIdZero x φ).homologyMap_eq i]
   have : (ShortComplex.homologyMap (φ x • ((HomologicalComplex.shortComplexFunctor _ _ i).map
       (𝟙 (koszulComplex φ))))).hom z = φ x • z := by simp
   exact this.symm.trans ofht
@@ -188,7 +188,7 @@ lemma koszulCocomplex.mem_annihilator_homology (i : ℕ) :
   rw [Module.mem_annihilator]
   intro z
   have ofht : (HomologicalComplex.homologyMap (φ x • 𝟙 (koszulCocomplex R x)) i).hom z = 0 := by
-    simp [(smul_id_homotopicToZero x φ).homologyMap_eq i]
+    simp [(homotopySMulIdZero x φ).homologyMap_eq i]
   have : (ShortComplex.homologyMap (φ x • ((HomologicalComplex.shortComplexFunctor _ _ i).map
       (𝟙 (koszulCocomplex R x))))).hom z = φ x • z := by simp
   exact this.symm.trans ofht
