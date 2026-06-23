@@ -474,7 +474,7 @@ noncomputable def mapHomologicalComplexObjXIso (i : ι) :
       (homotopyCofiber ((H.mapHomologicalComplex c).map φ)).X i :=
   if hi : c.Rel i (c.next i)
   then by
-    have := preservesBinaryBiproducts_of_preservesBiproducts H
+    haveI := preservesBinaryBiproducts_of_preservesBiproducts H
     haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hi
     haveI := HasHomotopyCofiber.hasBinaryBiproduct ((H.mapHomologicalComplex c).map φ) _ _ hi
     exact H.mapIso (homotopyCofiber.XIsoBiprod φ _ _ hi) ≪≫ H.mapBiprod _ _ ≪≫
