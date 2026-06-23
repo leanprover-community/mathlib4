@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Monotonicity.Attr
 
@@ -32,6 +33,28 @@ namespace Left
 
 variable [MulLeftMono M] {a : M}
 
+@[to_additive Left.psmul_nonneg]
+theorem one_le_ppow_of_le (ha : 1 ≤ a) (n : ℕ+) : 1 ≤ a ^ n := by
+  rcases n with ⟨n, hn⟩
+  simp only [← Semigroup.ppow_eq_pow, PNat.mk_coe]
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'
+  induction k with
+  | zero => simp [Semigroup.ppow_one, ha]
+  | succ k IH =>
+    rw [Semigroup.ppow_succ]
+    exact one_le_mul ha (IH Nat.succ_pos')
+
+@[to_additive psmul_nonpos]
+theorem ppow_le_one_of_le (ha : a ≤ 1) (n : ℕ+) : a ^ n ≤ 1 := one_le_ppow_of_le (M := Mᵒᵈ) ha n
+
+@[to_additive psmul_neg]
+theorem ppow_lt_one_of_lt {a : M} (n : ℕ+) (h : a < 1) : a ^ n < 1 := by
+  rcases n with ⟨n, hn⟩
+  obtain ⟨_|k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'
+  · simp [h]
+  · simp only [Nat.succ_eq_add_one, ← Semigroup.ppow_eq_pow, PNat.mk_coe, Semigroup.ppow_succ]
+    refine mul_lt_one_of_lt_of_le h (ppow_le_one_of_le h.le ⟨k + 1, Nat.succ_pos k⟩)
+
 @[to_additive Left.nsmul_nonneg]
 theorem one_le_pow_of_le (ha : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
   | 0 => by simp
@@ -50,6 +73,9 @@ theorem pow_lt_one_of_lt {a : M} {n : ℕ} (h : a < 1) (hn : n ≠ 0) : a ^ n < 
 
 end Left
 
+@[to_additive psmul_nonneg] alias one_le_ppow_of_one_le' := Left.one_le_ppow_of_le
+@[to_additive psmul_nonpos] alias ppow_le_one' := Left.ppow_le_one_of_le
+@[to_additive psmul_neg] alias ppow_lt_one' := Left.ppow_lt_one_of_lt
 @[to_additive nsmul_nonneg] alias one_le_pow_of_one_le' := Left.one_le_pow_of_le
 @[to_additive nsmul_nonpos] alias pow_le_one' := Left.pow_le_one_of_le
 @[to_additive nsmul_neg] alias pow_lt_one' := Left.pow_lt_one_of_lt
