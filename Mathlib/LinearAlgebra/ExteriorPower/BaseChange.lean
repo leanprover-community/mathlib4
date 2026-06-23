@@ -203,6 +203,7 @@ lemma baseChange_right_inverse (i : ℕ) :
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
   rw [← LinearMap.comp_apply _ _ y, exteriorPower.baseChange_left_inverse, LinearMap.id_coe, id_eq]
 
+/-- The commute of exterior power and base change. -/
 noncomputable def baseChangeIso (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
   __ := baseChangeIsoForward R M S i
   invFun := baseChangeIsoInverse R M S i
