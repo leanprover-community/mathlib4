@@ -451,9 +451,7 @@ lemma injective_opcycles [Injective (K.X n₀)] [Injective (K.X n₁)]
   have : Mono S.f := by
     let T := K.sc' (n₀ - 1) n₀ n₁
     have hT : T.Exact := by
-      rw [← K.exactAt_iff' (n₀ - 1) n₀ n₁ (by simp) (by simpa),
-        exactAt_iff_isZero_homology]
-      exact hK.isZero_homology
+      rwa [← K.exactAt_iff' (n₀ - 1) n₀ n₁ (by simp) (by simpa)]
     exact hT.mono_g ((K.isZero_of_isStrictlyGE n₀ _).eq_of_src ..)
   have hS : S.ShortExact :=
     { exact := S.exact_of_g_is_cokernel (K.opcyclesIsCokernel n₀ n₁ (by simp [← h])) }
