@@ -10,11 +10,11 @@ public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Basic
 
 /-!
-# Predicate for Galois Groups
+# Galois Groups of Fields
 
-Given an action of a group `G` on an extension of fields `L/K`, we introduce a predicate
-`IsGaloisGroup G K L` saying that `G` acts faithfully on `L` with fixed field `K`. In particular,
-we do not assume that `L` is an algebraic extension of `K`.
+Given an action of a group `G` on an extension of fields `L/K`, the predicate `IsGaloisGroup G K L`
+states that `G` acts faithfully on `L` with fixed field `K`. In particular, we do not assume that
+`L` is an algebraic extension of `K`.
 
 ## Implementation notes
 
@@ -172,13 +172,6 @@ theorem mulEquivCongr_mapSubgroup_fixingSubgroup (S : Set B) :
 end IsDomain
 
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
-
-instance (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [MulSemiringAction G S] [hGKL : IsGaloisGroup G R S] :
-    IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
-  faithful := have := hGKL.faithful; inferInstance
-  commutes := inferInstance
-  isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
 instance subgroup [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L :=

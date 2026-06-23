@@ -10,30 +10,11 @@ public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Defs
 
 /-!
-# Predicate for Galois Groups
+# Galois Groups of Rings
 
-Given an action of a group `G` on an extension of fields `L/K`, we introduce a predicate
-`IsGaloisGroup G K L` saying that `G` acts faithfully on `L` with fixed field `K`. In particular,
-we do not assume that `L` is an algebraic extension of `K`.
-
-## Implementation notes
-
-We actually define `IsGaloisGroup G A B` for extensions of rings `B/A`, with the same definition
-(faithful action on `B` with fixed ring `A`). This definition turns out to axiomatize a common
-setup in algebraic number theory where a Galois group `Gal(L/K)` acts on an extension of subrings
-`B/A` (e.g., rings of integers). In particular, there are theorems in algebraic number theory that
-naturally assume `[IsGaloisGroup G A B]` and whose statements would otherwise require assuming
-`(K L : Type*) [Field K] [Field L] [Algebra K L] [IsGalois K L]` (along with predicates relating
-`K` and `L` to the rings `A` and `B`) despite `K` and `L` not appearing in the conclusion.
-
-Unfortunately, this definition of `IsGaloisGroup G A B` for extensions of rings `B/A` is
-nonstandard and clashes with other notions such as the étale fundamental group. In particular, if
-`G` is finite and `A` is integrally closed, then  `IsGaloisGroup G A B` is equivalent to `B/A`
-being integral and the fields of fractions `Frac(B)/Frac(A)` being Galois with Galois group `G`
-(see `IsGaloisGroup.iff_isFractionRing`), rather than `B/A` being étale for instance.
-
-But in the absence of a more suitable name, the utility of the predicate `IsGaloisGroup G A B` for
-extensions of rings `B/A` seems to outweigh these terminological issues.
+Given an action of a group `G` on an extension of rings `B/A`, the predicate `IsGaloisGroup G A B`
+states that `G` acts faithfully on `B` with fixed field `A`. This file develops some of the theory
+of this predicate without assuming Galois theory for fields.
 -/
 
 @[expose] public section
