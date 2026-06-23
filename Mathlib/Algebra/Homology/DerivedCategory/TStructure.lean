@@ -193,4 +193,29 @@ lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
   obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
   exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
 
+
+open DerivedCategory.TStructure
+
+variable (C)
+
+/-- The bounded above derived category of an abelian category. -/
+abbrev Minus := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
+
+/-- The bounded below derived category of an abelian category. -/
+abbrev Plus := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
+
+/-- The bounded derived category of an abelian category. -/
+abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
+
+variable {C}
+
+/-- The inclusion of the bounded above derived category. -/
+noncomputable abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
+
+/-- The inclusion of the bounded below derived category. -/
+noncomputable abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
+
+/-- The inclusion of the bounded derived category. -/
+noncomputable abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
+
 end DerivedCategory
