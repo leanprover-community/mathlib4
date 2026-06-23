@@ -131,7 +131,7 @@ instance : Add (M [Σ^ι]→ₗ[R] N) :=
 
 @[simp] theorem add_coe : ⇑(f + g) = f + g := rfl
 
-@[norm_cast] theorem coe_add : (f + g : M [Σ^ι]→ₗ[R] N).1 = f + g := rfl
+@[simp, norm_cast] theorem toMultilinearMap_add : (f + g : M [Σ^ι]→ₗ[R] N).1 = f + g := rfl
 
 instance : Zero (M [Σ^ι]→ₗ[R] N) :=
   ⟨⟨0, fun _ _ ↦ rfl⟩⟩
@@ -152,7 +152,7 @@ instance : SMul S (M [Σ^ι]→ₗ[R] N) :=
 @[simp] theorem smul_coe (c : S) : ⇑(c • f) = c • f :=
   rfl
 
-@[norm_cast] theorem coe_smul (c : S) : ↑(c • f) = c • f.1 :=
+@[simp, norm_cast] theorem toMultilinearMap_smul (c : S) : ↑(c • f) = c • f.1 :=
   rfl
 
 theorem coeFn_smul (c : S) (f : M [Σ^ι]→ₗ[R] N) : ⇑(c • f) = c • ⇑f :=
@@ -205,6 +205,7 @@ def toMultilinearMapLM : (M [Σ^ι]→ₗ[R] N) →ₗ[S] MultilinearMap R (fun 
   toFun := toMultilinearMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
 
 end Module
 

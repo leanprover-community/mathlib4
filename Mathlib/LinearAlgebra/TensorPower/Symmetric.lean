@@ -183,6 +183,7 @@ theorem span_tprod_eq_top : Submodule.span R (Set.range (tprod R (ι := ι) (M :
 
 def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     (M [Σ^ι]→ₗ[R] N) ≃ₗ[R] ((Sym[R] ι M) →ₗ[R] N) :=
+    
   let liftFun : (M [Σ^ι]→ₗ[R] N) → (Sym[R] ι M →ₗ[R] N) := fun f =>
     ModuleCon.lift (SymmetricCon R ι M) (PiTensorProduct.lift f.toMultilinearMap) (by
       intro a b rel
@@ -195,6 +196,7 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
       | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
       | add _ _ ih₁ ih₂ => simp [map_add, ih₁, ih₂]
       | smul s _ ih => simp [map_smul, ih])
+      
   let inv : (Sym[R] ι M →ₗ[R] N) → (M [Σ^ι]→ₗ[R] N) := fun g => by
     let φ : (⨂[R] (_ : ι), M) →ₗ[R] N := g ∘ₗ (SymmetricCon R ι M).mk'
     let Gm := φ.compMultilinearMap (PiTensorProduct.tprod R)
@@ -204,11 +206,41 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
        = (g ∘ₗ (SymmetricCon R ι M).mk') (PiTensorProduct.tprod R v)
     simp only [LinearMap.comp_apply]
     congr 1
-
     exact ModuleCon.eq.mpr (ModuleConGen.Rel.of (SymmetricPower.Rel.perm e v)).symm
+    
   { toFun := liftFun
-    map_add' := fun f g => sorry
-    map_smul' := fun r f => sorry
+
+    map_add' := fun f g => by
+      apply LinearMap.ext
+      intro x
+      obtain ⟨y, rfl⟩ := (SymmetricCon R ι M).mk'_surjective x
+      simp only [liftFun, LinearMap.add_apply]
+      have key : PiTensorProduct.lift (f + g).toMultilinearMap
+           = PiTensorProduct.lift f.toMultilinearMap + PiTensorProduct.lift g.toMultilinearMap := by
+        rw [SymmetricMap.toMultilinearMap_add]
+        exact LinearEquiv.map_add PiTensorProduct.lift f.toMultilinearMap g.toMultilinearMap
+      
+      have h1 : PiTensorProduct.lift (f + g).toMultilinearMap y
+           = PiTensorProduct.lift f.toMultilinearMap y 
+             + PiTensorProduct.lift g.toMultilinearMap y :=
+        LinearMap.congr_fun key y
+      
+      exact h1
+
+    map_smul' := fun r f => by
+      apply LinearMap.ext
+      intro x
+      obtain ⟨y, rfl⟩ := (SymmetricCon R ι M).mk'_surjective x
+      simp only [liftFun, LinearMap.smul_apply]
+      have key : PiTensorProduct.lift (r • f).toMultilinearMap
+          = r • PiTensorProduct.lift f.toMultilinearMap := by
+        rw [SymmetricMap.toMultilinearMap_smul]
+        exact LinearEquiv.map_smul PiTensorProduct.lift r f.toMultilinearMap
+      have h1 : PiTensorProduct.lift (r • f).toMultilinearMap y
+          = r • PiTensorProduct.lift f.toMultilinearMap y :=
+        LinearMap.congr_fun key y
+      exact h1      
+
     invFun := inv
     
     left_inv := fun f => by
@@ -239,8 +271,6 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
       exact h1
 
       }
-
-#check PiTensorProduct.tprod
 
 example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
   : (⨂[R] (_:ι), M) →ₗ[R] N  := by
