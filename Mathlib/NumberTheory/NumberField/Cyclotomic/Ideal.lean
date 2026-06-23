@@ -190,12 +190,16 @@ theorem two_not_mem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.
   exact hζ.toInteger_sub_one_not_dvd_two h.ne'
 
 omit hp hK [NumberField K] in
-lemma associated_one_sub_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimitiveRoot η p) :
-    Associated (1 - hζ.toInteger) (1 - hη.toInteger) := by
+lemma associated_sub_one_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimitiveRoot η p) :
+    Associated (hζ.toInteger - 1) (hη.toInteger - 1) := by
   obtain ⟨i, -, hi, hζη⟩ := hζ.isPrimitiveRoot_iff.mp hη
   rw [show hη.toInteger = hζ.toInteger ^ i from RingOfIntegers.ext hζη.symm]
-  simpa only [neg_sub] using
-    (hζ.toInteger_isPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime hi).neg_left.neg_right
+  exact hζ.toInteger_isPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime hi
+
+@[deprecated "The statement has been changed to use the `ζ - 1` spelling rather than `1 - ζ`, \
+for consistency with the rest of the API, so the type is now different. \
+Use `associated_sub_one_of_isPrimitiveRoot` instead." (since := "2026-06-23")]
+alias associated_one_sub_of_isPrimitiveRoot := associated_sub_one_of_isPrimitiveRoot
 
 omit [NumberField K] hK in
 open Polynomial in
@@ -211,7 +215,7 @@ theorem associated_zeta_sub_one_pow_prime :
   refine Associated.prod _ _ _ fun η hη ↦ ?_
   have hη' : IsPrimitiveRoot (η : K) p :=
     (isPrimitiveRoot_of_mem_primitiveRoots hη).map_of_injective RingOfIntegers.coe_injective
-  simpa using (associated_one_sub_of_isPrimitiveRoot p hζ hη').neg_left
+  simpa using (associated_sub_one_of_isPrimitiveRoot p hζ hη').neg_right
 
 /-- If `ζ - 1` does not divide `x`, then `p` and `x` are coprime, where `ζ` is a primitive `p`-th
 root of unity and `p` is prime. -/
