@@ -233,8 +233,6 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     }
   }
 
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- simp followed by infer_instance
 /-- The pushout along a mono that's preserved under pushouts is faithful.
 
 This "preserved under pushouts" condition is automatically satisfied in abelian categories:
@@ -244,7 +242,11 @@ example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
 -/
 instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
     [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] : (pushout f).Faithful := by
-  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by simp; infer_instance
+  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by
+    rw [mapPushoutAdj_unit_app]
+    apply @mono_homMk _ _ _ _ _ _ ?_ _
+    simp only [Functor.id_obj, Functor.comp_obj, pushout_obj, map_obj_right, mk_right]
+    infer_instance
   exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
