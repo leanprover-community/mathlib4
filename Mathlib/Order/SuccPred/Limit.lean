@@ -123,7 +123,6 @@ theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit
 theorem not_isPredLimit_of_not_isPredPrelimit : ¬ IsPredPrelimit a → ¬ IsPredLimit a :=
   mt IsPredLimit.isPredPrelimit
 
-set_option linter.existingAttributeWarning false in
 @[to_dual, deprecated IsSuccLimit.mk (since := "2026-04-19")]
 theorem IsSuccPrelimit.isSuccLimit_of_not_isMin (h : IsSuccPrelimit a) (ha : ¬ IsMin a) :
     IsSuccLimit a :=
@@ -266,7 +265,6 @@ protected theorem IsSuccPrelimit.isMax (h : IsSuccPrelimit (succ a)) : IsMax a :
 protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a :=
   h.isSuccPrelimit.isMax
 
-set_option linter.existingAttributeWarning false in
 @[to_dual, deprecated IsSuccPrelimit.isMax (since := "2026-03-31")]
 theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelimit (succ a) :=
   mt IsSuccPrelimit.isMax ha
@@ -274,7 +272,6 @@ theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelim
 attribute [deprecated IsPredPrelimit.isMin (since := "2026-03-31")]
 not_isPredPrelimit_pred_of_not_isMin
 
-set_option linter.existingAttributeWarning false in
 @[to_dual, deprecated IsSuccLimit.isMax (since := "2026-03-31")]
 theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
   mt IsSuccLimit.isMax ha

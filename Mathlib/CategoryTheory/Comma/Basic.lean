@@ -155,6 +155,7 @@ end
 
 variable (L) (R)
 
+set_option linter.translate.warnInvalid false in
 /-- The functor sending an object `X` in the comma category to `X.left`. -/
 @[to_dual (reorder := L R) (attr := simps)
 /-- The functor sending an object `X` in the comma category to `X.right`. -/]
@@ -162,7 +163,6 @@ def fst : Comma L R ⥤ A where
   obj X := X.left
   map f := f.left
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing] fst_map
 
 set_option backward.defeqAttrib.useBackward true in
@@ -239,6 +239,7 @@ variable {L' : A' ⥤ T'} {R' : B' ⥤ T'}
   (α : F₁ ⋙ L' ⟶ L ⋙ F) (β : R ⋙ F ⟶ F₂ ⋙ R')
 
 set_option backward.isDefEq.respectTransparency false in
+set_option linter.translate.warnInvalid false in
 /-- The functor `Comma L R ⥤ Comma L' R'` induced by three functors `F₁`, `F₂`, `F`
 and two natural transformations `F₁ ⋙ L' ⟶ L ⋙ F` and `R ⋙ F ⟶ F₂ ⋙ R'`. -/
 @[simps, to_dual self (reorder := A B, 2 4, A' B', 8 10, L R, L' R', F₁ F₂, α β)]
@@ -257,7 +258,6 @@ def map : Comma L R ⥤ Comma L' R' where
         dsimp
         rw [← F.map_comp_assoc, ← F.map_comp_assoc, φ.w] }
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing] map_obj_left
 
 set_option backward.isDefEq.respectTransparency false in
@@ -327,6 +327,7 @@ def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
 
 end
 
+set_option linter.translate.warnInvalid false in
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `Comma L₂ R ⥤ Comma L₁ R`. -/
 @[to_dual (attr := simps)
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `Comma L R₁ ⥤ Comma L R₂`. -/]
@@ -339,8 +340,6 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
     { left := f.left
       right := f.right }
 
-set_option linter.existingAttributeWarning false
-set_option linter.translateGenerateName false
 attribute [to_dual existing mapRight_map_right] mapLeft_map_left
 attribute [to_dual existing mapRight_map_left] mapLeft_map_right
 
@@ -431,6 +430,7 @@ instance isEquivalence_preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEq
     (preLeft F L R).IsEquivalence where
 
 set_option backward.isDefEq.respectTransparency false in
+set_option linter.translate.warnInvalid false in
 /-- The functor `(L, R) ⥤ (L ⋙ F, R ⋙ F)` -/
 @[to_dual self, simps]
 def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ F) (R ⋙ F) where
@@ -443,7 +443,6 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
       right := f.right
       w := by simp only [Functor.comp_map, ← F.map_comp, f.w] }
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing] post_obj_left
 attribute [to_dual self] post_obj_hom
 

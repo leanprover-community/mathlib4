@@ -302,8 +302,6 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     { hom := φ.inv
       w := fun j => φ.inv_comp_eq.mpr (w j) }
 
-set_option linter.existingAttributeWarning false
-
 attribute [to_dual existing extInv_inv_hom] ext_hom_hom
 attribute [to_dual existing extInv_hom_hom] ext_inv_hom
 
@@ -623,8 +621,6 @@ set_option linter.translate.warnInvalid false in
 noncomputable def mapConeMapCone {F : J ⥤ C} {H : C ⥤ D} {H' : D ⥤ E} (c : Cone F) :
     H'.mapCone (H.mapCone c) ≅ (H ⋙ H').mapCone c := Cone.ext (Iso.refl _)
 
-set_option linter.existingAttributeWarning false
-
 attribute [to_dual existing mapCoconeMapCocone_inv_hom] mapConeMapCone_hom_hom
 attribute [to_dual existing mapCoconeMapCocone_hom_hom] mapConeMapCone_inv_hom
 
@@ -901,8 +897,6 @@ set_option linter.translate.warnInvalid false in
 /-- The opposite cone of the image of a cocone is the image of the opposite cone. -/]
 def mapConeOp (t : Cone F) : (mapCone G t).op ≅ mapCocone G.op t.op :=
   Cocone.ext (Iso.refl _)
-
-set_option linter.existingAttributeWarning false
 
 attribute [to_dual existing mapCoconeOp_inv_hom] mapConeOp_hom_hom
 attribute [to_dual existing mapCoconeOp_hom_hom] mapConeOp_inv_hom
