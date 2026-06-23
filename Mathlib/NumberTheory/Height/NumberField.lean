@@ -307,20 +307,23 @@ private lemma infinitePlace_apply_le_of_prod_le {n : ℕ} (hn : n ≠ 0) (B : �
     (h : ∏ v : InfinitePlace K, (⨆ i, v (![(x : K), n] i)) ^ v.mult ≤ B) (v : InfinitePlace K) :
     v x ≤ B / n ^ (totalWeight K - 1) := by
   classical
-  have hvm : v.mult = v.mult - 1 + 1 := by have := v.mult_pos; lia
+  rw [le_div_iff₀' (by positivity)]
   have hv (v : InfinitePlace K) : n ≤ ⨆ i, v (![(x : K), n] i) := Finite.le_ciSup_of_le 1 <| by simp
-  rw [← prod_erase_mul _ _ (mem_univ v), hvm, pow_succ, ← mul_assoc] at h
-  have : v x ≤ ⨆ i, v (![(x : K), n] i) := Finite.le_ciSup_of_le 0 le_rfl
-  grw [this, le_div_iff₀' (by positivity)]; clear this
-  refine (mul_le_mul_of_nonneg_right ?_ (Real.iSup_nonneg_of_nonnegHomClass ..)).trans h
-  have := prod_le_prod (s := univ.erase v) (f := fun v ↦ (n : ℝ) ^ v.mult)
-      (g := fun v ↦ _ ^ v.mult) (by simp) (fun v _ ↦ by grw [hv v])
-  grw [← this, ← hv v]
-  · refine (mul_le_mul_iff_left₀ (show 0 < (n : ℝ) from mod_cast hn.pos)).mp ?_
-    rw [← pow_succ, show totalWeight K - 1 + 1 = totalWeight K by grind, mul_assoc, ← pow_succ,
-      ← hvm, prod_erase_mul _ _ (mem_univ v), prod_pow_eq_pow_sum, totalWeight_eq_sum_mult]
-  · -- nonnegativity side goal
-    exact pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass ..) _
+  calc
+    _ ≤ n ^ (totalWeight K - 1) * ⨆ i, v (![(x : K), n] i) := by
+      gcongr; exact Finite.le_ciSup_of_le 0 le_rfl
+    _ ≤ (∏ v' ∈ univ.erase v, (⨆ i, v' (![↑x, ↑n] i)) ^ v'.mult) *
+         (⨆ i, v (![↑x, ↑n] i)) ^ (v.mult - 1) * ⨆ i, v (![(x : K), n] i) := by
+      gcongr
+      · exact Real.iSup_nonneg_of_nonnegHomClass ..
+      · refine mul_le_mul_iff_left₀ ((Nat.cast_pos (α := ℝ)).mpr hn.pos) |>.mp ?_
+        rw [pow_sub_one_mul (totalWeight_pos K).ne', totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum,
+          ← prod_erase_mul _ _ (mem_univ v), ← pow_sub_one_mul v.mult_ne_zero, ← mul_assoc]
+        gcongr
+        · exact prod_nonneg fun _ _ ↦ pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass ..) _
+        all_goals exact hv _
+    _ ≤ B := by
+      rwa [mul_assoc, pow_sub_one_mul v.mult_ne_zero, prod_erase_mul _ _ (mem_univ v)]
 
 end withFinset
 
