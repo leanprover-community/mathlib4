@@ -304,7 +304,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
 end
 
 /-- More general going-up theorem than `exists_ideal_over_prime_of_isIntegral_of_isDomain`.
-Generalized to arbitrary length chains in exists_ltSeries_of_hasGoingUp. -/
+Generalized to arbitrary length chains in `Ideal.exists_ltSeries_of_hasGoingUp`. -/
 theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
     [Algebra.IsIntegral R S] (P : Ideal R) [IsPrime P]
     (I : Ideal S) [IsPrime I] (hIP : I.comap (algebraMap R S) ≤ P) :
