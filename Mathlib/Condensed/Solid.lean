@@ -47,7 +47,7 @@ def profiniteSolidIsPointwiseRightKanExtension :
     (Functor.RightExtension.mk _ (profiniteSolidCounit R)).IsPointwiseRightKanExtension :=
   Functor.isPointwiseRightKanExtensionOfIsRightKanExtension _ _
 
--- α (= counit) is EXPLICIT: F'.liftOfIsRightKanExtension α G β
+-- α (= counit) is EXPLICIT in liftOfIsRightKanExtension
 def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
   (profiniteSolid R).liftOfIsRightKanExtension (profiniteSolidCounit R) _ (NatTrans.id _)
 
@@ -67,7 +67,6 @@ lemma profiniteSolidCounit_isIso (T : FintypeCat.{u}) :
     (profiniteSolidIsPointwiseRightKanExtension R).isIso_hom
   infer_instance
 
--- F'.liftOfIsRightKanExtension_fac_app α G β X (α = counit, explicit)
 lemma profiniteSolidification_comp_counit (T : FintypeCat.{u}) :
     (profiniteSolidification R).app (FintypeCat.toProfinite.obj T) ≫
     (profiniteSolidCounit R).app T = CategoryStruct.id _ := by
@@ -92,26 +91,16 @@ noncomputable def finFreeIsoSolid (T : FintypeCat.{u}) :
     (profiniteSolid R).obj (FintypeCat.toProfinite.obj T) ≅ (finFree R).obj T :=
   @asIso _ _ _ _ ((profiniteSolidCounit R).app T) (profiniteSolidCounit_isIso R T)
 
--- iso_counit_sol: finFreeIsoSolid.hom ≫ solidification.app LT = 𝟙
-lemma iso_counit_sol (T : FintypeCat.{u}) :
-    (finFreeIsoSolid R T).hom ≫
-    (profiniteSolidification R).app (FintypeCat.toProfinite.obj T) =
-    CategoryStruct.id _ := by
-  haveI hiso := profiniteSolidCounit_isIso R T
-  have h_inv : (profiniteSolidification R).app (FintypeCat.toProfinite.obj T) =
-      CategoryTheory.inv ((profiniteSolidCounit R).app T) := by
-    apply (cancel_mono ((profiniteSolidCounit R).app T)).mp
-    rw [IsIso.inv_hom_id, profiniteSolidification_comp_counit R T]
-  rw [show (finFreeIsoSolid R T).hom = (profiniteSolidCounit R).app T from rfl,
-      h_inv, IsIso.hom_inv_id]
-
+-- FIX v7: avoid rw-chain ending in Category.comp_id on CategoryStruct.id goal.
+-- Use simp [profiniteSolidification_comp_counit R T] which handles the notation.
 lemma sol_map_counit (T : FintypeCat.{u}) (X : Profinite.{u})
     (psi : X ⟶ FintypeCat.toProfinite.obj T) :
     (profiniteSolidification R).app X ≫ (profiniteSolid R).map psi ≫
     (finFreeIsoSolid R T).hom = (profiniteFree R).map psi := by
   rw [show (finFreeIsoSolid R T).hom = (profiniteSolidCounit R).app T from rfl,
       ← Category.assoc, ← (profiniteSolidification R).naturality psi,
-      Category.assoc, profiniteSolidification_comp_counit, Category.comp_id]
+      Category.assoc]
+  simp [profiniteSolidification_comp_counit R T]
 
 axiom surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
     (h : (profiniteFree R).obj X ⟶ (finFree R).obj T) :
@@ -124,7 +113,7 @@ axiom sol_leftCancel (T : FintypeCat.{u}) (X : Profinite.{u})
     (h : (profiniteSolidification R).app X ≫ f =
          (profiniteSolidification R).app X ≫ g) : f = g
 
--- Surjectivity helper: handles right-associativity via step1 + simp [Category.assoc]
+-- Surjectivity helper with explicit step1 to handle right-associativity
 private theorem surjectivity_from_surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
     (h : (profiniteFree R).obj X ⟶
          (profiniteSolid R).obj (FintypeCat.toProfinite.obj T)) :
@@ -145,50 +134,38 @@ private theorem surjectivity_from_surj_factor (T : FintypeCat.{u}) (X : Profinit
   change ((profiniteFree R).map q₀ ≫ h₀) ≫ (finFreeIsoSolid R T).inv = h
   rw [hfactor.symm, Category.assoc, (finFreeIsoSolid R T).hom_inv_id, Category.comp_id]
 
+-- FIX v7: use congrArg + simp (no calc or iso_counit_sol) for injectivity
 theorem profiniteSolid_fintype_isSolid (T : FintypeCat.{u}) :
     ((profiniteSolid R).obj (FintypeCat.toProfinite.obj T)).IsSolid := by
   constructor; intro X
-  -- FIX v6: apply .mpr instead of rw (isIso_iff_bijective has explicit arg)
   apply (isIso_iff_bijective _).mpr
   set sol_X := (profiniteSolidification R).app X
-  have hcoinv := iso_counit_sol R T
   constructor
-  · -- Injectivity: calc via iso_counit_sol
-    intro g g' hgg'
-    have hgg_comp : sol_X ≫ g = sol_X ≫ g' := hgg'
+  · intro g g' hgg'
     have h_inner : sol_X ≫ g ≫ (finFreeIsoSolid R T).hom =
         sol_X ≫ g' ≫ (finFreeIsoSolid R T).hom :=
-      congrArg (· ≫ (finFreeIsoSolid R T).hom) hgg_comp |>.trans
+      congrArg (· ≫ (finFreeIsoSolid R T).hom) hgg' |>.trans
         (by simp [Category.assoc]) |>.symm.trans (by simp [Category.assoc]) |>.symm
-    have h_inj : g ≫ (finFreeIsoSolid R T).hom = g' ≫ (finFreeIsoSolid R T).hom :=
-      sol_leftCancel R T X _ _ h_inner
-    -- iso_counit_sol: finFreeIsoSolid.hom ≫ sol.app LT = id
-    calc g = g ≫ CategoryStruct.id _ := (Category.comp_id _).symm
-      _ = g ≫ (finFreeIsoSolid R T).hom ≫
-              (profiniteSolidification R).app (FintypeCat.toProfinite.obj T) := by
-            rw [hcoinv]
-      _ = g' ≫ (finFreeIsoSolid R T).hom ≫
-              (profiniteSolidification R).app (FintypeCat.toProfinite.obj T) := by
-            simp only [← Category.assoc, h_inj]
-      _ = g' ≫ CategoryStruct.id _ := by rw [← hcoinv]
-      _ = g' := Category.comp_id _
+    have h_inj := sol_leftCancel R T X _ _ h_inner
+    have key := congrArg (· ≫ (finFreeIsoSolid R T).inv) h_inj
+    simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id] at key
+    exact key
   · intro h
     exact surjectivity_from_surj_factor R T X h
 
 lemma isSolid_of_isLimit_gen {J : Type*} [Category J] {F : J ⥤ CondensedMod.{u} R}
     (c : Cone F) (hc : IsLimit c) (hj : ∀ j, (F.obj j).IsSolid) : c.pt.IsSolid := by
   refine ⟨fun X => ?_⟩
-  -- FIX v6: apply .mpr instead of rw (isIso_iff_bijective has explicit arg)
   apply (isIso_iff_bijective _).mpr
   set sol := (profiniteSolidification R).app X
-  -- FIX v6: (isIso_iff_bijective _).mp instead of isIso_iff_bijective.mp
   have bijFun : ∀ j, Function.Bijective ((yoneda.obj (F.obj j)).map sol.op) :=
     fun j => (isIso_iff_bijective _).mp ((hj j).isIso_solidification_map X)
   constructor
   · intro f g hfg
     have hfg' : sol ≫ f = sol ≫ g := hfg
     apply hc.hom_ext; intro j; apply (bijFun j).1
-    show sol ≫ f ≫ c.π.app j = sol ≫ g ≫ c.π.app j
+    -- FIX v7: change instead of show (show flagged by Mathlib linter)
+    change sol ≫ f ≫ c.π.app j = sol ≫ g ≫ c.π.app j
     simp only [← Category.assoc, hfg']
   · intro h_map
     choose g_j hg_j using fun j => (bijFun j).2 (h_map ≫ c.π.app j)
@@ -206,28 +183,32 @@ lemma isSolid_of_isLimit_gen {J : Type*} [Category J] {F : J ⥤ CondensedMod.{u
                   simp only [Category.id_comp]
                   exact (compat phi).symm } }
     refine ⟨hc.lift g_cone, ?_⟩
-    show sol ≫ hc.lift g_cone = h_map
+    -- FIX v7: change instead of show (linter fix)
+    change sol ≫ hc.lift g_cone = h_map
     apply hc.hom_ext; intro j
     rw [Category.assoc, hc.fac g_cone j]
     exact hg_j' j
 
--- finFree_isSolid via yoneda.mapIso decomposition
+-- FIX v7: explicit bijection for finFree_isSolid (avoids yoneda.mapIso rw issues)
 theorem finFree_isSolid (T : FintypeCat.{u}) : ((finFree R).obj T).IsSolid := by
   constructor; intro X
-  have hS := (profiniteSolid_fintype_isSolid R T).isIso_solidification_map X
+  apply (isIso_iff_bijective _).mpr
+  have hM := (isIso_iff_bijective _).mp
+    ((profiniteSolid_fintype_isSolid R T).isIso_solidification_map X)
   have e := finFreeIsoSolid R T
-  -- FIX v6: use have + rw instead of rw [show A = B from ?_]
-  -- Decompose yoneda map via iso e: f = e.inv ∘ f_solid ∘ e.hom
-  have h_decomp :
-      (yoneda.obj ((finFree R).obj T)).map ((profiniteSolidification R).app X).op =
-      (yoneda.mapIso e).inv.app (op ((profiniteSolid R).obj X)) ≫
-      (yoneda.obj ((profiniteSolid R).obj (FintypeCat.toProfinite.obj T))).map
-        ((profiniteSolidification R).app X).op ≫
-      (yoneda.mapIso e).hom.app (op ((profiniteFree R).obj X)) := by
-    ext g; simp
-  rw [h_decomp]
-  haveI := hS
-  infer_instance
+  constructor
+  · intro f g hfg
+    have key1 := congrArg (· ≫ e.inv) hfg
+    simp only [Category.assoc] at key1
+    have key2 := congrArg (· ≫ e.hom) (hM.1 key1)
+    simp only [Category.assoc, e.inv_hom_id, Category.comp_id] at key2
+    exact key2
+  · intro h
+    obtain ⟨f', hf'⟩ := hM.2 (h ≫ e.inv)
+    exact ⟨f' ≫ e.hom, by
+      have key3 := congrArg (· ≫ e.hom) hf'
+      simp only [Category.assoc, e.inv_hom_id, Category.comp_id] at key3
+      exact key3⟩
 
 theorem profiniteSolid_obj_isSolid (S : Profinite.{u}) :
     ((profiniteSolid R).obj S).IsSolid := by
