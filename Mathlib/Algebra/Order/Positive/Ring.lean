@@ -40,7 +40,7 @@ theorem coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
 instance : SMul ℕ+ { x : M // 0 < x } :=
   ⟨fun n x => ⟨n • (x : M), by
     rcases n with ⟨n, h⟩
-    simp only [← nsmul_val_eq_psmul, mk_coe]
+    simp only [← nsmul_val_eq_psmul, PNat.mk_coe]
     induction n with
     | zero => exact absurd h (by decide)
     | succ n IH =>
