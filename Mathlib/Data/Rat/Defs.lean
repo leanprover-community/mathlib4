@@ -152,8 +152,15 @@ instance addCommGroup : AddCommGroup ℚ where
   add_assoc := Rat.add_assoc
   neg_add_cancel := Rat.neg_add_cancel
   sub_eq_add_neg := Rat.sub_eq_add_neg
+  psmul n hn q := n * q
   nsmul := (· * ·)
   zsmul := (· * ·)
+  psmul_one := Rat.one_mul
+  psmul_succ q n := by
+    change ((n + 2 : Int) : Rat) * q = q + ((n + 1 : Int) : Rat) * q
+    rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_add, Rat.add_mul, Rat.add_comm q, Rat.add_assoc,
+        show (2 : Int) = 1 + 1 by rfl, Rat.intCast_add, Rat.add_mul]
+    simp
   nsmul_zero := Rat.zero_mul
   nsmul_succ n q := by
     change ((n + 1 : Int) : Rat) * q = _
@@ -182,6 +189,9 @@ instance commMonoid : CommMonoid ℚ where
   one_mul := Rat.one_mul
   mul_comm := Rat.mul_comm
   mul_assoc := Rat.mul_assoc
+  ppow n hn q := q ^ n
+  ppow_one := Rat.pow_one
+  ppow_succ q n := by rw [Rat.pow_succ, Rat.mul_comm]
   npow n q := q ^ n
   npow_zero := Rat.pow_zero
   npow_succ n q := Rat.pow_succ q n
