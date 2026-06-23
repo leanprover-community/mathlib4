@@ -908,9 +908,8 @@ lemma meromorphicOrderAt_deriv_eq_sub_one [CompleteSpace E] {f : 𝕜 → E} {x 
   have hmero : MeromorphicAt f x := meromorphicAt_of_meromorphicOrderAt_ne_zero (by aesop)
   rw [meromorphicOrderAt_eq_int_iff hmero] at hf
   rw [meromorphicOrderAt_eq_int_iff hmero.deriv]
-  obtain ⟨g, hga, hg0, hg⟩ := hf
+  obtain ⟨g, hga, hg0, (hg : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z)⟩ := hf
   refine ⟨fun z ↦ (n : 𝕜) • g z + (z - x) • deriv g z, by fun_prop, by simpa using ⟨hn, hg0⟩, ?_⟩
-  have hg : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z := hg
   filter_upwards [hga.eventually_analyticAt.filter_mono (nhdsWithin_le_nhds),
     eventually_mem_nhdsWithin, hg.nhdsNE_deriv] with z hgz hmem hz
   have hzx : z - x ≠ 0 := by simpa [sub_eq_zero] using hmem
