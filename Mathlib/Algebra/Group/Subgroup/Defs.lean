@@ -206,7 +206,7 @@ variable (H)
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an `AddGroup` structure. -/]
 instance (priority := 75) toGroup : Group H := fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `CommGroup` over subclasses of `SubgroupClass`.
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
@@ -214,7 +214,7 @@ instance (priority := 75) toGroup : Group H := fast_instance%
 instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
