@@ -85,7 +85,7 @@ theorem I_smul (J : ComplexStructure V) (v : V) :
   simp
 
 theorem ofReal_smul (J : ComplexStructure V) (r : ℝ) (v : V) :
-    haveI := J.module; ((r : ℂ)) • v = r • v := by
+    haveI := J.module; (r : ℂ) • v = r • v := by
   change J.toAlgHom r v = r • v
   simp [toAlgHom]
 
