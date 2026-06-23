@@ -172,4 +172,3 @@ lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
 end specialX
 
 end koszulCocomplex
-#lint
