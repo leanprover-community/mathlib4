@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.Geometry.Manifold.Attr
 
 /-!
 # Elaborators for differential geometry
@@ -262,41 +263,6 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
       which is not the identity"
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
-/--
-Captures information when a model with corners is the trivial model on a normed space
-(or on an inner product space, which is also a normed space):
-contains the expressions describing the normed space and its base field.
-
-Searching for a model with corners will return an `Option NormedSpaceInfo`,
-which is `some` if and only if the trivial model on a normed space was found.
--/
-structure NormedSpaceInfo where
-  /-- The expression for the normed space itself. -/
-  normedSpace : Expr
-  /-- The expression for the normed space's base field. -/
-  baseField   : Expr
-deriving Inhabited
-
-/--
-Information about a model with corners found through `findModelInner`.
-It includes the model with corners found, and, if this model is the trivial model with corners on a
-normed space, information about that normed space. (Knowing this is important for forming products
-of models.)
-
-Most search results are not a model with corners for a normed space, so an `Expr` representing the
-model with corners may be coerced directly to this type.
--/
-structure FindModelResult where
-  /-- Expression describing the model with corners found. -/
-  model : Expr
-  /-- Information on the underlying normed space,
-  if this model is the trivial model with corners on a normed space. -/
-  normedSpaceInfo? : Option NormedSpaceInfo := none
-deriving Inhabited
-
-instance : Coe Expr FindModelResult where
-  coe model := { model }
-
 /-- Try a strategy `x : TermElabM` which either successfully finds a `ModelWithCorners` or fails.
 On failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
 successfully returned.
@@ -330,6 +296,34 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
     -- Note that this does not break tracing, which saves each trace message's context.
     s.restore true
     return none
+
+@[find_model "NormedSpace"]
+def fromNormedSpace : FindModelStrategy := fun e => do
+    let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+        match_expr type with
+        | NormedSpace K E _ _ =>
+          if ← withReducible (pureIsDefEq E e) then return some (inst, K)
+          else return none
+        | _ => return none
+      | throwError "Couldn't find a `NormedSpace` structure on `{e}` among local instances."
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over the field `{K}`"
+    return {
+      model := ← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+      normedSpaceInfo? := some { normedSpace := e, baseField := K }
+    }
+
+--run_cmd do
+--  let (strats, e) := findModelExt.getState (← getEnv)
+--  logInfo m!"state := {strats.map (·.2)}, entries := {e}"
+
+--set_option linter.unusedVariables false in
+def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+    TermElabM (Option FindModelResult) := do
+  let (strats, _) := findModelExt.getState (← getEnv)
+  for (strat, descr) in strats do
+    let some m ← tryStrategy descr (strat e) | continue
+    return m
+  return none
 
 set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
@@ -368,7 +362,7 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
-def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+def findModelInner' (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
     TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "TotalSpace"          fromTotalSpace      then return some m
   if let some m ← tryStrategy "TangentBundle"       fromTangentBundle   then return some m
