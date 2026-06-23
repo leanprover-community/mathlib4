@@ -815,8 +815,7 @@ lemma integral_boundary_rect_eq_zero_eventually_atTop_of_differentiable_on_off_c
         + (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I))
         - (I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)))
     =ᶠ[atTop] (fun (_ : ℝ) ↦ 0) := by
-  filter_upwards [eventually_ge_atTop y] with m hm
-  exact hzero y hcont s hs hdiff m hm
+  filter_upwards [eventually_ge_atTop y] with m hm using hzero y hcont s hs hdiff m hm
 
 end Eventually_Eq_Zero
 
