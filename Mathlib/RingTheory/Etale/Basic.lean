@@ -73,8 +73,6 @@ theorem of_formallyUnramified_and_formallySmooth [FormallyUnramified R A]
 
 instance : FormallyEtale R R := of_formallyUnramified_and_formallySmooth
 
-instance : FormallyEtale R R := of_formallyUnramified_and_formallySmooth
-
 variable (R A) in
 lemma comp_bijective [FormallyEtale R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
     Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
