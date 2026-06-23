@@ -45,7 +45,7 @@ namespace CategoryTheory
 variable {C : Type u} [Category.{v} C]
 variable {P Q : C}
 
-to_dual_name_hint Epi Mono, LLP RLP
+to_dual_name_hint Epi Mono
 
 /-- A strong epimorphism `f` is an epimorphism which has the left lifting property
 with respect to monomorphisms. -/
@@ -128,7 +128,7 @@ end
 
 /-- A strong epimorphism that is a monomorphism is an isomorphism. -/
 @[to_dual /-- A strong monomorphism that is an epimorphism is an isomorphism. -/]
-theorem isIso_of_mono_of_strongEpi (f : P ⟶ Q) [StrongEpi f] [Mono f] : IsIso f :=
+theorem isIso_of_mono_of_strongEpi (f : P ⟶ Q) [Mono f] [StrongEpi f] : IsIso f :=
   ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by simp⟩⟩
 
 section
