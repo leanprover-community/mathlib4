@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.GroupTheory.Congruence.Hom
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
@@ -70,6 +69,25 @@ theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f
 theorem strictMono_comap_prod_map :
     StrictMono fun H : Subgroup G ↦ (H.comap N.subtype, H.map (mk' N)) :=
   strictMono_comap_prod_image N
+
+/-- `(G × H) / (A × B)` is in bijection with `G / A × H / B`. -/
+@[to_additive (attr := simps) QuotientAddGroup.prodEquiv
+/-- `(G × H) / (A × B)` is in bijection with `G / A × H / B`. -/]
+def prodEquiv (A : Subgroup G) (B : Subgroup H) : (G × H) ⧸ (A.prod B) ≃ (G ⧸ A) × H ⧸ B where
+  toFun q := q.liftOn' (fun (g, h) ↦ (g, h))
+      (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq])
+  invFun q := q.1.liftOn₂' q.2 (fun g h ↦ (g, h))
+    (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq, ← and_imp])
+  left_inv q := q.inductionOn' (by simp)
+  right_inv := fun (q₁, q₂) ↦ Quotient.inductionOn₂' q₁ q₂ (by simp)
+
+/-- `(G × H) / (A × B)` is isomorphic to `G / A × H / B`. -/
+@[to_additive (attr := simps!) QuotientAddGroup.prodAddEquiv
+/-- `(G × H) / (A × B)` is isomorphic to `G / A × H / B`. -/]
+def prodMulEquiv (A : Subgroup G) (B : Subgroup H) [A.Normal] [B.Normal] :
+    (G × H) ⧸ (A.prod B) ≃* (G ⧸ A) × H ⧸ B where
+  __ := prodEquiv A B
+  map_mul' q₁ q₂ := Quotient.inductionOn₂' q₁ q₂ (fun _ _ ↦ rfl)
 
 variable (φ : G →* H)
 
@@ -405,7 +423,7 @@ of type `G →+ A` and the group of homomorphisms `G ⧸ H →+ A`.
 def _root_.MonoidHom.restrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
     (MonoidHom.restrictHom H A).ker ≃* (G ⧸ H →* A) where
   toFun := fun ⟨f, hf⟩ ↦ QuotientGroup.lift _ f
-    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using hf)
+    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using! hf)
   invFun f := ⟨f.comp (QuotientGroup.mk' H), restrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
   map_mul' _ _ := by ext; simp
   left_inv _ := by simp

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation
@@ -68,6 +69,7 @@ universe u v
 open Set
 
 /-- A topology on `X`. -/
+@[to_dual_dont_translate]
 class TopologicalSpace (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop
@@ -89,6 +91,7 @@ section Defs
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 /-- `IsOpen s` means that `s` is open in the ambient topological space on `X` -/
+@[wikidata Q213363]
 def IsOpen : Set X → Prop := TopologicalSpace.IsOpen
 
 @[simp] theorem isOpen_univ : IsOpen (univ : Set X) := TopologicalSpace.isOpen_univ
@@ -147,7 +150,7 @@ def DenseRange {α : Type*} (f : α → X) := Dense (range f)
 
 /-- A function between topological spaces is continuous if the preimage
   of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
-@[fun_prop]
+@[fun_prop, wikidata Q170058]
 structure Continuous (f : X → Y) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
   instead. -/
@@ -227,3 +230,22 @@ Formulated here when the source space is ℕ.
 Use `dense_iInter_of_isOpen` which works for any countable index type instead. -/
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
+
+/-- A one-field structure wrapper for `X` with the topology coinduced from `t`. -/
+@[ext]
+structure WithTopology (X : Type*) (t : TopologicalSpace X) where
+  /-- Converts an element of `X` to an element of `WithTopology X t`. -/
+  toTopology (t) ::
+  /-- Converts an element of `WithTopology X t` to an element of `X`. -/
+  ofTopology : X
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `toTopology t x` being printed as `{ ofTopology := x }`
+by `delabStructureInstance`. -/
+@[app_delab WithTopology.toTopology]
+meta def WithTopology.delabToTopology : Delab := delabApp
+
+end Notation

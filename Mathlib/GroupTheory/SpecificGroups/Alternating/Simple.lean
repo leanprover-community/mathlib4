@@ -75,7 +75,7 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     have : IsMulCommutative (Perm s) := isMulCommutative_iff_card_le_two.mpr (by simp)
     infer_instance
   is_conj g s := by
-    convert (conj_smul_range_ofSubtype g s).symm
+    convert! (conj_smul_range_ofSubtype g s).symm
   is_generator := by
     rw [eq_top_iff, ← Equiv.Perm.closure_isSwap, Subgroup.closure_le]
     rintro g ⟨a, b, hab, rfl⟩

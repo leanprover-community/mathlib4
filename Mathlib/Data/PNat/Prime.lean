@@ -86,10 +86,11 @@ theorem lcm_dvd {m n k : ℕ+} (hm : m ∣ k) (hn : n ∣ k) : lcm m n ∣ k :=
 theorem gcd_mul_lcm (n m : ℕ+) : gcd n m * lcm n m = n * m :=
   Subtype.ext (Nat.gcd_mul_lcm (n : ℕ) (m : ℕ))
 
+-- TODO: this is an iff, and should be moved to an earlier file.
 theorem eq_one_of_lt_two {n : ℕ+} : n < 2 → n = 1 := by
-  intro h; apply le_antisymm; swap
-  · apply PNat.one_le
-  · exact PNat.lt_add_one_iff.1 h
+  change n < 1 + 1 → _
+  rw [lt_add_one_iff, le_one_iff_eq_one]
+  exact id
 
 section Prime
 
