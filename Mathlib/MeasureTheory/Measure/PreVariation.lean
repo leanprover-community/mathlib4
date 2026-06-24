@@ -109,7 +109,7 @@ lemma exists_Finpartition_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0
   simp_all [preVariationFun, lt_iSup_iff]
 
 lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
-    (h : preVariationFun f s ≠ ⊤) :
+    (h : preVariationFun f s ≠ ∞) :
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
     preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
   let ε' := min ε (preVariationFun f s).toNNReal
@@ -129,6 +129,15 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
         exact (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP)
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
+
+lemma exists_Finpartition_sum_ge' {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε : 0 < ε)
+    (h : preVariationFun f s ≠ ∞) :
+    ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
+    preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
+  rcases eq_top_or_lt_top ε with rfl | h'ε
+  · simp
+  lift ε to NNReal using h'ε.ne
+  exact exists_Finpartition_sum_ge _ hs (by simpa using hε) h
 
 lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s))
