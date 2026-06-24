@@ -50,7 +50,8 @@ lemma alexandrovDiscrete_iff_isClosed :
     simp_rw +singlePass [alexandrovDiscrete_iff, compl_surjective.image_surjective.forall,
       forall_mem_image, ← compl_sUnion, isOpen_compl_iff]
 
-instance HasIndiscreteTopology.toAlexandrovDiscrete [HasIndiscreteTopology α] : AlexandrovDiscrete α where
+instance HasIndiscreteTopology.toAlexandrovDiscrete [HasIndiscreteTopology α] :
+    AlexandrovDiscrete α where
   isOpen_sInter := by grind [isOpen_iff]
 
 instance DiscreteTopology.toAlexandrovDiscrete [DiscreteTopology α] : AlexandrovDiscrete α where
