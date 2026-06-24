@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -38,6 +38,7 @@ abbrev subcategoryAcyclic :
     ObjectProperty (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_eq_subcategoryAcyclic_trW :
     HomotopyCategory.Plus.quasiIso C = (subcategoryAcyclic C).trW := by
   ext K L f
@@ -45,8 +46,7 @@ lemma quasiIso_eq_subcategoryAcyclic_trW :
   have := (HomotopyCategory.subcategoryAcyclic C).trW_iff_of_distinguished _
     ((HomotopyCategory.Plus.ι C).map_distinguished _ mem)
   rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic] at this
-  erw [(subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
-  exact this
+  rwa [dsimp% (subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
 
 end HomotopyCategory.Plus
 
@@ -63,8 +63,7 @@ noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
   t.plus.lift (HomotopyCategory.Plus.ι _ ⋙ DerivedCategory.Qh) (by
     rintro ⟨K, hK⟩
     obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
-    simp only [HomotopyCategory.plus_quotient_obj_iff] at hK
-    obtain ⟨n, hn⟩ := hK
+    obtain ⟨n, _⟩ := (HomotopyCategory.plus_quotient_obj_iff _).mp hK
     exact ⟨n, t.isGE_of_iso ((quotientCompQhIso C).symm.app K) n⟩)
 
 noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ := by
@@ -90,7 +89,7 @@ instance : (HomotopyCategory.plus C).IsVerdierRightLocalizing
     obtain ⟨K : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
     obtain ⟨L : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective L
     simp only [HomotopyCategory.plus_quotient_obj_iff] at hL
-    obtain ⟨n, hn : L.IsStrictlyGE n⟩ := hL
+    obtain ⟨n, hn⟩ := hL
     obtain ⟨φ, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective φ
     rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
     refine ⟨(HomotopyCategory.quotient _ _).obj (K.truncGE n),
@@ -109,21 +108,13 @@ is induced by `DerivedCategory.Qh : HomotopyCategory C (.up ℤ) ⥤ DerivedCate
 noncomputable def QhCompιIsoιCompQh :
     Qh ⋙ Plus.ι ≅ HomotopyCategory.Plus.ι C ⋙ DerivedCategory.Qh := Iso.refl _
 
-instance : (Qh (C := C)).EssSurj := by
-  suffices ∀ (X : DerivedCategory C) (n : ℤ) (_ : X.IsGE n),
-    ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n),
-      Nonempty (DerivedCategory.Q.obj K ≅ X) from ⟨by
-        intro ⟨X, n, K, e, h⟩
-        refine ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, ?_⟩,
-          ⟨Plus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩
-        · simp only [HomotopyCategory.plus_quotient_obj_iff]
-          exact ⟨n, h⟩⟩
-  intro X n hn
-  have : (Q.objPreimage X).IsGE n := by
-    rw [← isGE_Q_obj_iff]
-    apply t.isGE_of_iso (Q.objObjPreimageIso X).symm
-  exact ⟨(Q.objPreimage X).truncGE n, inferInstance,
-    ⟨(asIso (Q.map ((Q.objPreimage X).πTruncGE n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
+instance : (Qh (C := C)).EssSurj where
+  mem_essImage := by
+    intro ⟨X, n, K, e, h⟩
+    refine ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, ?_⟩,
+      ⟨Plus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩
+    simp only [HomotopyCategory.plus_quotient_obj_iff]
+    exact ⟨n, h⟩
 
 instance : Qh.IsLocalization (HomotopyCategory.Plus.subcategoryAcyclic C).trW :=
   ((HomotopyCategory.plus C).triangulatedLocalizerMorphism
@@ -179,12 +170,12 @@ abbrev IsGE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsGE X n
 that `X` is `≤ n` for the canonical t-structure. -/
 abbrev IsLE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsLE X n
 
-lemma isGE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
+lemma isGE_ι_obj_iff (X : Plus C) (n : ℤ) :
     (ι.obj X).IsGE n ↔ X.IsGE n := by
   constructor
   all_goals exact fun h ↦ ⟨h.1⟩
 
-lemma isLE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
+lemma isLE_ι_obj_iff (X : Plus C) (n : ℤ) :
     (ι.obj X).IsLE n ↔ X.IsLE n := by
   constructor
   all_goals exact fun h ↦ ⟨h.1⟩
@@ -211,16 +202,16 @@ instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   infer_instance
 
 lemma isZero_homology_of_isGE
-    (X : DerivedCategory.Plus C) (n : ℤ) [X.IsGE n] (i : ℤ) (hi : i < n) :
+    (X : Plus C) (n : ℤ) [X.IsGE n] (i : ℤ) (hi : i < n) :
     IsZero ((homologyFunctor C i).obj X) :=
   (ι.obj X).isZero_of_isGE n i hi
 
 lemma isZero_homology_of_isLE
-    (X : DerivedCategory.Plus C) (n : ℤ) [X.IsLE n] (i : ℤ) (hi : n < i) :
+    (X : Plus C) (n : ℤ) [X.IsLE n] (i : ℤ) (hi : n < i) :
     IsZero ((homologyFunctor C i).obj X) :=
   (ι.obj X).isZero_of_isLE n i hi
 
-lemma isIso_iff {X Y : DerivedCategory.Plus C} (f : X ⟶ Y) :
+lemma isIso_iff {X Y : Plus C} (f : X ⟶ Y) :
     IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
   refine ⟨fun _ _ ↦ inferInstance, fun _ ↦ ?_⟩
   have : IsIso (ι.map f) := by rwa [DerivedCategory.isIso_iff]

@@ -88,9 +88,9 @@ lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X �
 lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
     IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
   refine ⟨fun hf n ↦ inferInstance, fun hf ↦ ?_⟩
-  let g := Qh.mapArrow.objPreimage (Arrow.mk f)
   refine ((MorphismProperty.isomorphisms (DerivedCategory C)).arrow_iso_iff
     (Qh.mapArrow.objObjPreimageIso (Arrow.mk f))).1 ?_
+  let g := Qh.mapArrow.objPreimage (Arrow.mk f)
   change IsIso (Qh.map g.hom)
   rw [isIso_Qh_map_iff, HomotopyCategory.mem_quasiIso_iff]
   intro n
