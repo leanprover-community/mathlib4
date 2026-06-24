@@ -358,7 +358,7 @@ theorem coeff_C_of_ne_zero {n : σ →₀ ℕ} (h : n ≠ 0) (a : R) : coeff n (
 @[simp]
 theorem coeff_add_single_C {m : ℕ} [NeZero m] {n : σ →₀ ℕ} (a : R) (i : σ) :
     coeff (n + single i m) (C a) = 0 :=
-  coeff_C_of_ne_zero <| fun H ↦ by simpa [NeZero.ne] using congr($(H) i)
+  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($(H) i)) a
 
 @[grind inj]
 theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by

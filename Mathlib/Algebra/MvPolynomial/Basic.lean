@@ -600,7 +600,7 @@ theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) (a : R) : coeff m (
 @[simp]
 theorem coeff_add_single_C {n : ℕ} [NeZero n] {m : σ →₀ ℕ} (a : R) (i : σ) :
     coeff (m + Finsupp.single i n) (C a) = 0 :=
-  coeff_C_of_ne_zero <| fun H ↦ by simpa [NeZero.ne] using congr($(H) i)
+  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($(H) i)) a
 
 lemma eq_C_of_isEmpty [IsEmpty σ] (p : MvPolynomial σ R) :
     p = C (p.coeff 0) := by
