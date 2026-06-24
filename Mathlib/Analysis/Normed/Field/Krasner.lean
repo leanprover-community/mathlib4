@@ -40,7 +40,7 @@ For the classical statement of Krasner's lemma, please see the
 Krasner's lemma, normed field
 -/
 
-@[expose] public section
+public section
 
 open IntermediateField
 
@@ -55,7 +55,7 @@ of the conclusion of Krasner's lemma. That is, `IsKrasner K L` means that given 
 -/
 class IsKrasner [Field K] [Algebra K L] : Prop where
   krasner' {x y : L} : IsSeparable K x → ((minpoly K x).map (algebraMap K L)).Splits →
-    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → ‖x - y‖ < ‖x - x'‖) → x ∈ K⟮y⟯
+    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' → x ≠ x' → ‖x - y‖ < ‖x - x'‖) → x ∈ K⟮y⟯
 
 namespace IsKrasner
 
@@ -67,7 +67,7 @@ theorem krasner [Field K] [Algebra K L]
   IsKrasner.krasner' hx sp hy h
 
 variable [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
-    [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
+    [NormedAlgebra K L]
 
 /-- Krasner's lemma assuming `Normal K L`. -/
 theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
@@ -109,13 +109,12 @@ theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
         _ = ‖z - z'‖ := by congr 1; ring
     simp [lt_self_iff_false] at this
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `K` is a complete nontrivially normed field and `L` is an algebraic extension of `K`
 such that the norm of `L` extends the norm on `K`, then `IsKrasner K L` holds.
 This corresponds to the classical Krasner's lemma.
 -/
-instance of_completeSpace : IsKrasner K L where
+instance of_completeSpace [Algebra.IsAlgebraic K L] : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
     -- Reduce to the case `L = algebraic closure of K` to apply the previous lemma.
     let C := AlgebraicClosure K
@@ -129,11 +128,11 @@ instance of_completeSpace : IsKrasner K L where
     -- this gives the result.
     have norm_iL (x : L) : ‖iL x‖ = ‖x‖ := norm_algebraMap' _ _
     suffices this : iL x ∈ K⟮iL y⟯ by
-      simpa [← Set.image_singleton, ← IntermediateField.adjoin_map] using this
+      simpa [← Set.image_singleton, ← IntermediateField.adjoin_map] using! this
     refine IsKrasner.krasner ((xsep.map _ iL.injective).of_dvd dvd_rfl) ?_ (yint.map iL) ?_
     · exact Polynomial.Splits.of_dvd (sp.of_isScalarTower C)
         (Polynomial.map_ne_zero (minpoly.ne_zero xsep.isIntegral))
-        (Polynomial.map_dvd _ (by simpa using minpoly.dvd_map_of_isScalarTower' K K C x))
+        (Polynomial.map_dvd _ (by simpa using! minpoly.dvd_map_of_isScalarTower' K K C x))
     · intros xC' hx' hne
       have : xC' ∈ (minpoly K x).rootSet C := by
         rwa [isConjRoot_iff_mem_minpoly_rootSet (xsep.isIntegral.map _),
@@ -141,6 +140,6 @@ instance of_completeSpace : IsKrasner K L where
       simp only [← sp.image_rootSet iL, Set.mem_image] at this
       obtain ⟨c, hc, rfl⟩ := this
       rw [← isConjRoot_iff_mem_minpoly_rootSet xsep.isIntegral] at hc
-      simpa [norm_iL, ← map_sub] using kr c hc (fun h ↦ (iff_false_intro hne).mp (congrArg iL h))
+      simpa [norm_iL, ← map_sub] using! kr c hc (fun h ↦ (iff_false_intro hne).mp (congrArg iL h))
 
 end IsKrasner

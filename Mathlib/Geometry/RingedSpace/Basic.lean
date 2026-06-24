@@ -38,6 +38,7 @@ open TopCat.Presheaf
 
 namespace AlgebraicGeometry
 
+set_option linter.checkUnivs false in
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
 @[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
 abbrev RingedSpace : Type max (u + 1) (v + 1) :=
@@ -76,7 +77,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
     (h : IsUnit (X.presheaf.germ U x hx f)) :
     ∃ (V : Opens X) (i : V ⟶ U) (_ : x ∈ V), IsUnit (X.presheaf.map i.op f) := by
   obtain ⟨g', heq⟩ := h.exists_right_inv
-  obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.germ_exist x g'
+  obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.exists_germ_eq g'
   let W := U ⊓ V
   have hxW : x ∈ W := ⟨hx, hxV⟩
   replace heq : (X.presheaf.germ _ x hxW) ((X.presheaf.map (U.infLELeft V).op) f *
@@ -136,7 +137,7 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     refine ⟨?_, V.2, hxV⟩
     intro y hy
     use i.le hy
-    convert RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
+    convert! RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
     exact (X.presheaf.germ_res_apply i y hy f).symm
 
 theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : X) (hx : x ∈ U) :
@@ -162,7 +163,7 @@ theorem isUnit_res_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) :
     IsUnit (X.presheaf.map (@homOfLE (Opens X) _ _ _ (X.basicOpen_le f)).op f) := by
   apply isUnit_of_isUnit_germ
   rintro x ⟨hxU, hx⟩
-  convert hx
+  convert! hx
   exact X.presheaf.germ_res_apply _ _ _ _
 
 @[simp]
@@ -197,7 +198,6 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
   · simp [mem_basicOpen (hx := hx)]
   · simp [mt (basicOpen_le X _ ·) hx]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basicOpen_pow {U : Opens X} (f : X.presheaf.obj (op U)) (n : ℕ) (h : 0 < n) :
     X.basicOpen (f ^ n) = X.basicOpen f := by

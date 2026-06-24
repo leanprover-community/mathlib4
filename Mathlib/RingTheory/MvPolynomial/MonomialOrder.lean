@@ -95,7 +95,7 @@ namespace MonomialOrder
 
 open MvPolynomial
 
-open scoped MonomialOrder
+open scoped MonomialOrder nonZeroDivisors
 
 variable {σ : Type*} {m : MonomialOrder σ}
 
@@ -218,8 +218,11 @@ theorem leadingCoeff_X {s : σ} :
 theorem leadingCoeff_one : m.leadingCoeff (1 : MvPolynomial σ R) = 1 :=
   m.leadingCoeff_monomial 1
 
-theorem monic_one : m.Monic (C 1 : MvPolynomial σ R) :=
+theorem monic_C_one : m.Monic (C 1 : MvPolynomial σ R) :=
   monic_monomial_one
+
+@[simp]
+lemma monic_one : m.Monic (1 : MvPolynomial σ R) := monic_monomial_one
 
 theorem degree_le_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} :
     m.degree f ≼[m] d ↔ ∀ c ∈ f.support, c ≼[m] d := by
@@ -458,14 +461,18 @@ theorem degree_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
   add_comm (m.degree f) (m.degree g) ▸ mul_comm f g ▸ degree_mul_of_left_mem_nonZeroDivisors hg hf
 
 theorem leadingCoeff_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
-    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) (hg : g ≠ 0) :
+    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
-  simp only [leadingCoeff, degree_mul_of_left_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
+  by_cases hg : g = 0
+  · simp [hg]
+  · simp only [leadingCoeff, degree_mul_of_left_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
 
 theorem leadingCoeff_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
-    (hf : f ≠ 0) (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
+    (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
-  simp only [leadingCoeff, degree_mul_of_right_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
+  by_cases hf : f = 0
+  · simp [hf]
+  · simp only [leadingCoeff, degree_mul_of_right_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
 
 /-- Monomial degree of product -/
 theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
@@ -478,9 +485,11 @@ theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
 
 /-- Multiplicativity of leading coefficients -/
 theorem leadingCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
-    (hf : IsRegular (m.leadingCoeff f)) (hg : g ≠ 0) :
+    (hf : IsRegular (m.leadingCoeff f)) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
-  simp only [leadingCoeff, degree_mul_of_isRegular_left hf hg, coeff_mul_of_degree_add]
+  by_cases hg : g = 0
+  · simp [hg]
+  · simp only [leadingCoeff, degree_mul_of_isRegular_left hf hg, coeff_mul_of_degree_add]
 
 /-- Monomial degree of product -/
 theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
@@ -490,9 +499,11 @@ theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
 
 /-- Multiplicativity of leading coefficients -/
 theorem leadingCoeff_mul_of_isRegular_right {f g : MvPolynomial σ R}
-    (hf : f ≠ 0) (hg : IsRegular (m.leadingCoeff g)) :
+    (hg : IsRegular (m.leadingCoeff g)) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
-  simp only [leadingCoeff, degree_mul_of_isRegular_right hf hg, coeff_mul_of_degree_add]
+  by_cases hf : f = 0
+  · simp [hf]
+  · simp only [leadingCoeff, degree_mul_of_isRegular_right hf hg, coeff_mul_of_degree_add]
 
 theorem Monic.mul {f g : MvPolynomial σ R} (hf : m.Monic f) (hg : m.Monic g) :
     m.Monic (f * g) := by
@@ -775,6 +786,58 @@ lemma degree_mul_lt_iff_left_lt_of_ne_zero [NoZeroDivisors R] {p p' q : MvPolyno
   intro h
   simpa [m.degree_mul hp hq, m.degree_mul (show p' ≠ 0 by contrapose! h; simp [h]) hq] using h
 
+@[simp]
+lemma monic_leadingTerm (p : MvPolynomial σ R) :
+    m.Monic (m.leadingTerm p) ↔ m.Monic p := by simp [leadingTerm, Monic]
+
+lemma support_leadingTerm (p : MvPolynomial σ R) [Decidable (p = 0)] :
+    support (m.leadingTerm p) = if p = 0 then ∅ else {m.degree p} := by
+  classical
+  simp [leadingTerm, support_monomial]
+
+lemma support_leadingTerm' {p : MvPolynomial σ R} (hp : p ≠ 0) :
+    support (m.leadingTerm p) = {m.degree p} := by
+  classical
+  simp [leadingTerm, support_monomial, hp]
+
+lemma le_degree_of_mem_support {p : MvPolynomial σ R} {a : σ →₀ ℕ}
+    (ha : a ∈ p.support) : a ≼[m] m.degree p := by
+  simp [degree, Finset.le_sup ha]
+
+lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
+    m.leadingTerm p = m.leadingTerm q ↔
+    m.leadingCoeff p = m.leadingCoeff q ∧ m.degree p = m.degree q := by
+  rw [leadingTerm, leadingTerm, monomial_eq_monomial_iff]
+  aesop
+
+@[simp]
+theorem leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
+    m.leadingTerm (p * q) = m.leadingTerm p * m.leadingTerm q := by
+  by_cases! h0 : p * q = 0
+  · simp [h0, zero_eq_mul.mp]
+  simp [leadingTerm, m.degree_mul' h0]
+
+@[simp, nontriviality]
+lemma monic_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) :
+    m.Monic p := by
+  simp [Subsingleton.eq_one (α := MvPolynomial σ R)]
+
+lemma degree_le_degree_of_support_subset {p q : MvPolynomial σ R} (h : p.support ⊆ q.support) :
+    m.degree p ≼[m] m.degree q := by
+  simp_rw [degree, m.toSyn.apply_symm_apply]
+  exact Finset.sup_mono h
+
+theorem toSyn_degree_mul_le {f g : MvPolynomial σ R} :
+    m.toSyn (m.degree (f * g)) ≤ m.toSyn (m.degree f) + m.toSyn (m.degree g) :=
+  map_add m.toSyn _ _ ▸ degree_mul_le
+
+lemma mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors
+    {f : MvPolynomial σ R} (hf : m.leadingCoeff f ∈ R⁰) : f ∈ (MvPolynomial σ R)⁰ := by
+  rw [← nonZeroDivisorsLeft_eq_nonZeroDivisors, mem_nonZeroDivisorsLeft_iff]
+  intro g
+  simp [← m.leadingCoeff_eq_zero_iff (f := f * g),
+    m.leadingCoeff_mul_of_left_mem_nonZeroDivisors hf, mul_left_mem_nonZeroDivisors_eq_zero_iff hf]
+
 end Semiring
 
 section Ring
@@ -822,7 +885,7 @@ lemma sPolynomial_def (f g : MvPolynomial σ R) :
 
 lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
     (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
-  contrapose! h
+  contrapose h
   rw [m.degree_eq_zero_iff.mp h, leadingTerm_C, sub_eq_zero]
 
 @[simp]
@@ -926,7 +989,7 @@ lemma degree_sPolynomial (f g : MvPolynomial σ R) :
     intro hs
     apply (m.degree_sPolynomial_le f g).lt_of_ne
     apply m.toSyn.injective.ne
-    contrapose! hs
+    contrapose hs
     rw [← m.coeff_degree_eq_zero_iff, hs, m.coeff_sPolynomial_sup_eq_zero]
 
 lemma degree_sPolynomial_lt_sup_degree {f g : MvPolynomial σ R} (h : m.sPolynomial f g ≠ 0) :

@@ -5,6 +5,7 @@ Authors: Praneeth Kolichala
 -/
 module
 
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.CategoryTheory.PUnit
@@ -65,6 +66,9 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 
+instance (x : X) : Subsingleton (FundamentalGroup X x) :=
+  inferInstanceAs <| Subsingleton (Path.Homotopic.Quotient x x)
+
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
   { nonempty := unique_homotopic.1
@@ -94,7 +98,7 @@ theorem simply_connected_iff_paths_homotopic :
 theorem simply_connected_iff_paths_homotopic' :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
-  convert simply_connected_iff_paths_homotopic (Y := Y)
+  convert! simply_connected_iff_paths_homotopic (Y := Y)
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
 
 set_option backward.isDefEq.respectTransparency false in

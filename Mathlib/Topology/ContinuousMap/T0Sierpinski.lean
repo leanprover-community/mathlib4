@@ -28,7 +28,6 @@ noncomputable section
 
 namespace TopologicalSpace
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
@@ -50,7 +49,7 @@ def productOfMemOpens : C(X, Opens X → Prop) where
   continuous_toFun := continuous_pi_iff.2 fun u => continuous_Prop.2 u.isOpen
 
 theorem productOfMemOpens_isInducing : IsInducing (productOfMemOpens X) := by
-  convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
+  convert! inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
 
 theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by

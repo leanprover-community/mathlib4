@@ -69,7 +69,7 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
          _ = ‖S - ∑ b ∈ T, bound b‖           := congrArg _ ?_
          _ < ε / 3                            := by rwa [dist_eq_norm, norm_sub_rev] at hT
     simpa only [h_sum.sum_add_tsum_compl, eq_sub_iff_add_eq'] using hS.tsum_eq
-  have h2 : Tendsto (∑ k ∈ T, f · k) 𝓕 (𝓝 (T.sum g)) := tendsto_finset_sum _ (fun i _ ↦ hab i)
+  have h2 : Tendsto (∑ k ∈ T, f · k) 𝓕 (𝓝 (T.sum g)) := tendsto_finsetSum _ (fun i _ ↦ hab i)
   rw [Metric.tendsto_nhds] at h2
   filter_upwards [h2 (ε / 3) (by positivity), h_suma, h_bound] with n hn h_suma h_bound
   rw [dist_eq_norm, ← h_suma.of_norm.tsum_sub h_sumg.of_norm,

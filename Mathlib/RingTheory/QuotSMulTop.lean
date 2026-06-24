@@ -144,7 +144,6 @@ noncomputable def algebraMapTensorEquivTensorQuotSMulTop (S : Type*) [CommRing S
     tensorQuotMapSMulEquivTensorQuot M S (Ideal.span {r}) ≪≫ₗ
       (Submodule.quotEquivOfEq _ _ (ideal_span_singleton_smul r _)).baseChange R S _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_annihilator (x : R) : x ∈ Module.annihilator R (QuotSMulTop x M) := by
   refine Module.mem_annihilator.mpr (fun m ↦ ?_)
   rcases Submodule.Quotient.mk_surjective _ m with ⟨m', hm'⟩

@@ -47,7 +47,7 @@ def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (v 0).gcd (v 1) = r}
 open scoped Function in -- required for scoped `on` notation
 lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N r) := by
   refine fun u v huv ↦ ?_
-  contrapose! huv
+  contrapose huv
   obtain ⟨f, hf⟩ := Set.not_disjoint_iff.mp huv
   exact hf.1.1.symm.trans hf.2.1
 
@@ -191,7 +191,7 @@ theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z
   simp only [eisSummand, vecMul, vec2_dotProduct, denom, UpperHalfPlane.specialLinearGroup_apply]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : (u * ((a * z + b) / (c * z + d)) + v) ^ (-k) =
       (c * z + d) ^ k * ((u * a + v * c) * z + (u * b + v * d)) ^ (-k) := by
-    replace hc : z * c + d ≠ 0 := by convert hc using 1; ring
+    replace hc : z * c + d ≠ 0 := by convert! hc using 1; ring
     field_simp
     simp [div_zpow]
     ring_nf

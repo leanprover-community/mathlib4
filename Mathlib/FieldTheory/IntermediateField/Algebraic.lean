@@ -75,6 +75,12 @@ theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K F = finrank K E) : F = E :=
   eq_of_le_of_finrank_le h_le h_finrank.ge
 
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K]` is finite,
+then `F = E` iff `[F : K] = [E : K]`. -/
+theorem eq_iff_finrank_eq_of_le [FiniteDimensional K E] (h_le : F ≤ E) :
+    F = E ↔ finrank K F = finrank K E :=
+  ⟨fun h ↦ by rw [h], eq_of_le_of_finrank_eq h_le⟩
+
 -- If `F ≤ E` are two intermediate fields of a finite extension `L / K` such that
 -- `[L : F] ≤ [L : E]`, then `F = E`. Marked as private since it's a direct corollary of
 -- `eq_of_le_of_finrank_le'` (the `FiniteDimensional K L` implies `FiniteDimensional F L`
@@ -101,21 +107,11 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
-/-- If `F ≤ E` are two intermediate fields of a finite extension `L / K`,
-then `F = E` iff [F : K] = [E : K]`. -/
-theorem eq_of_le_iff_finrank_eq [FiniteDimensional K L] (h_le : F ≤ E) :
-    F = E ↔ finrank K F = finrank K E := by
-  refine ⟨fun h ↦ ?_, fun h ↦ eq_of_le_of_finrank_eq h_le h⟩
-  have := (finrank_mul_finrank K F L).trans (finrank_mul_finrank K E L).symm
-  rwa [show finrank F L = finrank E L by rw [h], mul_left_inj' finrank_pos.ne'] at this
-
-/-- If `F ≤ E` are two intermediate fields of a finite extension `L / K`,
-then `F = E` iff [L : F] = [L : E]`. -/
-theorem eq_of_le_iff_finrank_eq' [FiniteDimensional K L] (h_le : F ≤ E) :
-    F = E ↔ finrank F L = finrank E L := by
-  refine ⟨fun h ↦ ?_, fun h ↦ eq_of_le_of_finrank_eq' h_le h⟩
-  have := (finrank_mul_finrank K F L).trans (finrank_mul_finrank K E L).symm
-  rwa [show finrank K F = finrank K E by rw [h], mul_right_inj' finrank_pos.ne'] at this
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[L : F]` is finite,
+then `F = E` iff `[L : F] = [L : E]`. -/
+theorem eq_iff_finrank_eq_of_le' [FiniteDimensional F L] (h_le : F ≤ E) :
+    F = E ↔ finrank F L = finrank E L :=
+  ⟨fun h ↦ by rw [h], eq_of_le_of_finrank_eq' h_le⟩
 
 lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
     Module.finrank E L < Module.finrank F L := by

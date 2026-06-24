@@ -26,7 +26,7 @@ We now set up the partial order and lattice structure (given by pointwise min an
 on continuous functions.
 -/
 
-instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
+instance partialOrder [PartialOrder β] : PartialOrder C(α, β) := fast_instance%
   PartialOrder.lift (fun f => f.toFun) (fun f g _ => by aesop)
 
 theorem le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
@@ -44,12 +44,12 @@ instance sup : Max C(α, β) where max f g := { toFun := fun a ↦ f a ⊔ g a }
 
 @[simp] lemma sup_apply (f g : C(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
 
-instance semilatticeSup : SemilatticeSup C(α, β) :=
+instance semilatticeSup : SemilatticeSup C(α, β) := fast_instance%
   DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
-  Finset.comp_sup'_eq_sup'_comp H (fun g : C(α, β) ↦ g a) fun _ _ ↦ rfl
+  Finset.apply_sup'_eq_sup'_comp H (fun g : C(α, β) ↦ g a) fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma coe_sup' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) :
@@ -66,12 +66,12 @@ instance inf : Min C(α, β) where min f g := { toFun := fun a ↦ f a ⊓ g a }
 
 @[simp] lemma inf_apply (f g : C(α, β)) (a : α) : (f ⊓ g) a = f a ⊓ g a := rfl
 
-instance semilatticeInf : SemilatticeInf C(α, β) :=
+instance semilatticeInf : SemilatticeInf C(α, β) := fast_instance%
   DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 lemma inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
     s.inf' H f a = s.inf' H fun i ↦ f i a :=
-  Finset.comp_inf'_eq_inf'_comp H (fun g : C(α, β) ↦ g a) fun _ _ ↦ rfl
+  Finset.apply_inf'_eq_inf'_comp H (fun g : C(α, β) ↦ g a) fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma coe_inf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) :

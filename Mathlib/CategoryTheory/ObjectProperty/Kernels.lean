@@ -39,7 +39,11 @@ inductive kernels : ObjectProperty C
   | of_isLimit {X₁ X₂ : C} (f : X₁ ⟶ X₂) (k : KernelFork f) (hk : IsLimit k)
     (hf : W f) : kernels k.pt
 
-set_option backward.isDefEq.respectTransparency false in
+lemma nonempty_kernels {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) [HasKernel f] :
+    W.kernels.Nonempty :=
+  ObjectProperty.nonempty_of_prop (kernels.of_isLimit f _ (kernelIsKernel f) hf)
+
+set_option backward.defeqAttrib.useBackward true in
 instance : W.kernels.IsClosedUnderIsomorphisms where
   of_iso := by
     rintro _ _ i ⟨f, k, hk, hf⟩
@@ -51,7 +55,10 @@ inductive cokernels : ObjectProperty C
   | of_isColimit {X₁ X₂ : C} (f : X₁ ⟶ X₂) (k : CokernelCofork f) (hk : IsColimit k)
     (hf : W f) : cokernels k.pt
 
-set_option backward.isDefEq.respectTransparency false in
+lemma nonempty_cokernels {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) [HasCokernel f] :
+    W.cokernels.Nonempty :=
+  ObjectProperty.nonempty_of_prop (cokernels.of_isColimit f _ (cokernelIsCokernel f) hf)
+
 instance : W.cokernels.IsClosedUnderIsomorphisms where
   of_iso := by
     rintro _ _ i ⟨f, k, hk, hf⟩
@@ -78,7 +85,6 @@ lemma prop_kernel [P.IsClosedUnderKernels] {X Y : C} (f : X ⟶ Y) [HasKernel f]
     (hY : P Y) : P (kernel f) :=
   (P.prop_of_isLimit_kernelFork (kernelIsKernel f) hX hY :)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsClosedUnderSubobjects] : P.IsClosedUnderKernels where
   kernels_le := by
     intro _ ⟨_, k, hk, hf⟩
@@ -89,6 +95,7 @@ lemma hasLimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [Has
     HasLimit (parallelPair f 0 ⋙ P.ι) :=
   hasLimit_of_iso (F := parallelPair f.hom 0) (Iso.symm (diagramIsoParallelPair _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If an object property `P` is closed under kernels, then `P.ι` creates kernels.
 In particular, this implies `P.ι` preserves kernels. -/
 @[reducible]
@@ -99,6 +106,12 @@ noncomputable def createsKernels [P.IsClosedUnderKernels] {X Y : P.FullSubcatego
       (Fork.ofι (kernel.ι f.hom) (by simp))
   · exact (IsLimit.postcomposeInvEquiv _ _).symm (kernelIsKernel f.hom)
   · exact P.prop_kernel f.hom X.property Y.property
+
+lemma preservesKernels_ι [HasKernels C] [P.IsClosedUnderKernels] ⦃X Y : P.FullSubcategory⦄
+    (f : X ⟶ Y) : PreservesLimit (parallelPair f 0) P.ι := by
+  have := P.createsKernels f
+  have := P.hasLimit_parallelPair_comp_ι f
+  exact preservesLimit_of_createsLimit_and_hasLimit _ _
 
 instance [P.IsClosedUnderKernels] [HasKernels C] : HasKernels P.FullSubcategory where
   has_limit f :=
@@ -120,7 +133,6 @@ lemma prop_cokernel [P.IsClosedUnderCokernels] {X Y : C} (f : X ⟶ Y) [HasCoker
     (hY : P Y) : P (cokernel f) :=
   (P.prop_of_isColimit_cokernelCofork (cokernelIsCokernel f) hX hY :)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsClosedUnderQuotients] : P.IsClosedUnderCokernels where
   cokernels_le := by
     intro _ ⟨_, k, hk, hf⟩
@@ -131,6 +143,7 @@ lemma hasColimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [H
     HasColimit (parallelPair f 0 ⋙ P.ι) :=
   hasColimit_of_iso (F := parallelPair f.hom 0) (diagramIsoParallelPair _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If an object property `P` is closed under cokernels, then `P.ι` creates cokernels.
 In particular, this implies `P.ι` preserves cokernels. -/
 @[reducible]
@@ -141,6 +154,12 @@ noncomputable def createsCokernels [P.IsClosedUnderCokernels] {X Y : P.FullSubca
       (Cofork.ofπ (cokernel.π f.hom) (by simp))
   · exact (IsColimit.precomposeHomEquiv _ _).symm (cokernelIsCokernel f.hom)
   · exact P.prop_cokernel f.hom X.property Y.property
+
+lemma preservesCokernels_ι [HasCokernels C] [P.IsClosedUnderCokernels] ⦃X Y : P.FullSubcategory⦄
+    (f : X ⟶ Y) : PreservesColimit (parallelPair f 0) P.ι := by
+  have := P.createsCokernels f
+  have := P.hasColimit_parallelPair_comp_ι f
+  exact preservesColimit_of_createsColimit_and_hasColimit _ _
 
 instance [P.IsClosedUnderCokernels] [HasCokernels C] : HasCokernels P.FullSubcategory where
   has_colimit f :=

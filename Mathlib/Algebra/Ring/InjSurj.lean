@@ -24,7 +24,7 @@ As a result, we must use `Function.swap` when using additivised transfer definit
 non-additivised ones.
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*}
 

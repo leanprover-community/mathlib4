@@ -44,7 +44,7 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 
 instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
 
@@ -192,6 +192,7 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
   prod_mem h
 
 /-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A where
   __ := S
   smul_mem' r _x hx := S.smul_mem hx r
@@ -208,7 +209,6 @@ lemma toNonUnitalSubalgebra_injective : Function.Injective
     (toNonUnitalSubalgebra : Subalgebra R A → NonUnitalSubalgebra R A) :=
   fun _ _ ↦ by simp [SetLike.ext_iff]
 
-@[simp]
 lemma toNonUnitalSubalgebra_inj {S U : Subalgebra R A} :
     S.toNonUnitalSubalgebra = U.toNonUnitalSubalgebra ↔ S = U :=
   toNonUnitalSubalgebra_injective.eq_iff
@@ -234,7 +234,7 @@ protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [A
   intCast_mem S n
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
-@[simps coe]
+@[reducible]
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
     (S : Subalgebra R A) : AddSubmonoid A :=
   S.toSubsemiring.toAddSubmonoid
@@ -298,8 +298,9 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
       inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
-/- TODO: bundle other forgetful maps between algebraic substructures, e.g.
+/-! TODO: bundle other forgetful maps between algebraic substructures, e.g.
   `toSubsemiring` and `toSubring` in this file. -/
+
 @[simp]
 theorem mem_toSubmodule {x} : x ∈ (toSubmodule S) ↔ x ∈ S := Iff.rfl
 
@@ -316,15 +317,15 @@ section
 
 instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
     Module R' S :=
-  S.toSubmodule.module'
+  inferInstance
 
 instance : Module R S :=
-  S.module'
+  inferInstance
 
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
-  inferInstanceAs (IsScalarTower R' R (toSubmodule S))
+  inferInstance
 
-/- More general form of `Subalgebra.algebra`.
+/-- More general form of `Subalgebra.algebra`.
 
 This instance should have low priority since it is slow to fail:
 before failing, it will cause a search through all `SMul R' R` instances,
@@ -416,6 +417,7 @@ def map (f : A →ₐ[R] B) (S : Subalgebra R A) : Subalgebra R B :=
   { S.toSubsemiring.map (f : A →+* B) with
     algebraMap_mem' := fun r => f.commutes r ▸ Set.mem_image_of_mem _ (S.algebraMap_mem r) }
 
+@[gcongr]
 theorem map_mono {S₁ S₂ : Subalgebra R A} {f : A →ₐ[R] B} : S₁ ≤ S₂ → S₁.map f ≤ S₂.map f :=
   Set.image_mono
 
@@ -725,7 +727,7 @@ scoped instance faithfulSMul :
     letI := (inclusion h).toModule; FaithfulSMul S T :=
   letI := (inclusion h).toModule
   ⟨fun {x y} h ↦ Subtype.ext <| by
-    convert Subtype.ext_iff.mp (h 1) using 1 <;> exact (mul_one _).symm⟩
+    convert! Subtype.ext_iff.mp (h 1) using 1 <;> exact (mul_one _).symm⟩
 
 end inclusion
 
@@ -1012,11 +1014,10 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*}
 
 /-- The equalizer of two R-algebra homomorphisms -/
 @[simps coe toSubsemiring]
-def equalizer (ϕ ψ : F) [FunLike F A B] [AlgHomClass F R A B] : Subalgebra R A where
+def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
   zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
   one_mem' := by simp only [Set.mem_setOf_eq, map_one]
@@ -1027,16 +1028,16 @@ def equalizer (ϕ ψ : F) [FunLike F A B] [AlgHomClass F R A B] : Subalgebra R A
   algebraMap_mem' x := by
     simp only [Set.mem_setOf_eq, AlgHomClass.commutes]
 
-variable [FunLike F A B] [AlgHomClass F R A B]
-
 @[simp]
-theorem mem_equalizer (φ ψ : F) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=
+theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
 
-theorem equalizer_toSubmodule {φ ψ : F} :
-    Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus φ ψ := rfl
+theorem equalizer_toSubmodule {φ ψ : A →ₐ[R] B} :
+    Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus
+      (LinearMapClass.linearMap φ) (LinearMapClass.linearMap ψ) := rfl
 
-theorem le_equalizer {φ ψ : F} {S : Subalgebra R A} : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
+theorem le_equalizer {φ ψ : A →ₐ[R] B} {S : Subalgebra R A} :
+    S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
 
 end AlgHom
 

@@ -144,7 +144,7 @@ run_cmd
     let mut out : List String := []
     for (a, b) in labelNames.zip constants do
       if a != b then
-        out := s!"expexcted {a} got {b}" :: out
+        out := s!"expected {a} got {b}" :: out
     logWarning m!"The available Labels is out of sync with the labels listed in \
     { .ofConstName ``mathlibLabels }.\n\
     Please keep them sorted and in sync!\n{"\n".intercalate out.reverse}"
@@ -191,12 +191,14 @@ def mathlibLabelData : (l : Label) → LabelData l
       dependencies := #[.«t-ring-theory»] }
   | .«t-algebraic-topology» => {}
   | .«t-analysis» => {}
-  | .«t-category-theory» => {}
+  | .«t-category-theory» => {
+    dependencies := #[.«t-data»] }
   | .«t-combinatorics» => {}
   | .«t-computability» => {}
   | .«t-condensed» => {}
   | .«t-convex-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Convex"] }
+    dirs := #["Mathlib" / "Geometry" / "Convex"],
+    dependencies := #[.«t-algebra»] }
   | .«t-data» => {
     dirs := #[
       "Mathlib" / "Control",
@@ -218,6 +220,7 @@ def mathlibLabelData : (l : Label) → LabelData l
   | .«t-linter» => {
     dirs := #[
       "Mathlib" / "Tactic" / "Linter",
+      "MathlibTest" / "Linter",
       "scripts" / "lint-style.lean",
       "scripts" / "lint-style.py",
     ] }
@@ -229,20 +232,23 @@ def mathlibLabelData : (l : Label) → LabelData l
     dirs := #[
       "Mathlib" / "MeasureTheory",
       "Mathlib" / "Probability",
-      "Mathlib" / "InformationTheory"] }
+      "Mathlib" / "InformationTheory"]
+    dependencies := #[.«t-analysis», .«t-algebra»] }
   | .«t-meta» => {
     dirs := #[
       "Mathlib" / "Lean",
-      "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",
-      "Mathlib" / "Util"],
+      "Mathlib" / "Util",
+      "MathlibTest" / "Tactic", ],
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
   | .«t-number-theory» => {}
-  | .«t-order» => {}
+  | .«t-order» => {
+    dependencies := #[.«t-data»] }
   | .«t-ring-theory» => {
     dependencies := #[.«t-algebra», .«t-group-theory»] }
   | .«t-set-theory» => {}
-  | .«t-topology» => {}
+  | .«t-topology» => {
+    dependencies := #[.«t-order», .«t-analysis»] }
   | .«CI» => {
     dirs := #[
       ".github",

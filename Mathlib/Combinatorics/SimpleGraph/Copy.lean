@@ -100,7 +100,7 @@ namespace Copy
 
 instance : FunLike (Copy A B) α β where
   coe f := DFunLike.coe f.toHom
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
 lemma injective (f : Copy A B) : Injective f.toHom := f.injective'
 
@@ -162,6 +162,7 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from a subgraph of `A` to its map under a copy `f : Copy A B`. -/
 noncomputable def isoSubgraphMap (f : Copy A B) (A' : A.Subgraph) :
@@ -313,19 +314,45 @@ alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ 
 
 theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
     [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
-  simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
+  simpa [card_neighborSet_eq_degree] using
+    Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
 
-theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+theorem Copy.maxDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
   cases isEmpty_or_nonempty V
   · simp
   obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
   grind [degree_le_maxDegree H (f v), f.degree_le v]
 
-theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+@[deprecated (since := "2026-05-20")] alias Copy.max_degree_le := Copy.maxDegree_mono
+
+theorem IsContained.maxDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     (h : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
   have ⟨f⟩ := h
-  exact f.max_degree_le
+  exact f.maxDegree_mono
+
+@[deprecated (since := "2026-05-20")] alias IsContained.max_degree_le := IsContained.maxDegree_mono
+
+@[gcongr]
+lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (hle : G ≤ H) : G.maxDegree ≤ H.maxDegree :=
+  IsContained.of_le hle |>.maxDegree_mono
+
+theorem Copy.minDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
+  cases isEmpty_or_nonempty W
+  · simp [Function.isEmpty f]
+  refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
+  obtain ⟨v, rfl⟩ := hf w
+  grw [← f.degree_le, ← minDegree_le_degree]
+
+@[deprecated (since := "2026-05-20")] alias Copy.minDegree_le := Copy.minDegree_mono
+
+theorem Hom.minDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    {f : G →g H} (hf : Function.Bijective f) : G.minDegree ≤ H.minDegree :=
+  Copy.minDegree_mono (f := ⟨f, hf.injective⟩) hf.surjective
+
+@[deprecated (since := "2026-05-20")] alias Hom.minDegree_le := Hom.minDegree_mono
 
 end IsContained
 
@@ -372,16 +399,25 @@ def IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G
 
 @[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
 
-protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ ⟨f.toCopy⟩
+protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
+
+protected lemma Embedding.isIndContained (f : G ↪g H) : G ⊴ H := ⟨f⟩
+
+protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
+
+protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ f.isContained
+
+/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
+
+/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
+protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
 
 /-- If `G` is isomorphic to `H`, then `G` is inducingly contained in `H`. -/
-protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
+protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := e.toEmbedding.isIndContained
 
 /-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
-
-/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
-protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := ⟨e.toCopy⟩
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
     G'.coe ⊴ G :=
@@ -411,7 +447,7 @@ lemma isIndContained_iff_exists_iso_subgraph :
     G ⊴ H ↔ ∃ (H' : H.Subgraph) (_e : G ≃g H'.coe), H'.IsInduced := by
   constructor
   · rintro ⟨f⟩
-    refine ⟨Subgraph.map f.toHom ⊤, f.toCopy.isoToSubgraph, ?_⟩
+    refine ⟨f.toCopy.toSubgraph, f.toCopy.isoToSubgraph, ?_⟩
     simp [Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
   · rintro ⟨H', e, hH'⟩
     exact e.isIndContained.trans hH'.isIndContained
@@ -419,14 +455,32 @@ lemma isIndContained_iff_exists_iso_subgraph :
 alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
   isIndContained_iff_exists_iso_subgraph
 
+theorem isIndContained_iff_exists_iso_induce : G ⊴ H ↔ ∃ s, Nonempty (G ≃g H.induce s) :=
+  ⟨fun ⟨f⟩ ↦ ⟨Set.range f, ⟨f.isoInduceRange⟩⟩, fun ⟨s, ⟨f⟩⟩ ↦ ⟨.comp (.induce s) f⟩⟩
+
 @[simp] lemma top_isIndContained_iff_top_isContained :
     (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
   ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
+
+theorem isContained_top_iff {G : SimpleGraph V} : G ⊑ completeGraph W ↔ Nonempty (V ↪ W) :=
+  ⟨(⟨·.some.toEmbedding⟩), (.trans (.of_le le_top) ⟨Embedding.completeGraph ·.some |>.toCopy⟩)⟩
+
+theorem top_isIndContained_top_iff : completeGraph V ⊴ completeGraph W ↔ Nonempty (V ↪ W) :=
+  ⟨(⟨·.some.toEmbedding⟩), (⟨.completeGraph ·.some⟩)⟩
+
+theorem eq_top_of_isIndContained_top (h : G ⊴ completeGraph W) : G = ⊤ :=
+  h.some.comap_eq ▸ comap_top h.some.injective
 
 @[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
   Embedding.complEquiv.symm.nonempty_congr
 
 protected alias ⟨IsIndContained.of_compl, IsIndContained.compl⟩ := compl_isIndContained_compl
+
+theorem isContained_iff_exists_le_comap : H ⊑ G ↔ ∃ (f : W ↪ V), H ≤ G.comap f :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.toHom.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨⟨f, (h ·)⟩, f.injective⟩⟩
+
+theorem isIndContained_iff_exists_comap_eq : H ⊴ G ↔ ∃ (f : W ↪ V), G.comap f = H :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.comap_eq⟩, fun ⟨f, h⟩ ↦ ⟨f, h ▸ .rfl⟩⟩
 
 /-!
 ### Counting the copies
@@ -447,7 +501,7 @@ noncomputable def labelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : �
 
 @[simp] lemma labelledCopyCount_of_isEmpty [IsEmpty W] (G : SimpleGraph V) (H : SimpleGraph W) :
     G.labelledCopyCount H = 1 := by
-  convert Fintype.card_unique
+  convert! Fintype.card_unique
   exact { default := ⟨default, isEmptyElim⟩, uniq := fun _ ↦ Subsingleton.elim _ _ }
 
 @[simp] lemma labelledCopyCount_eq_zero : G.labelledCopyCount H = 0 ↔ H.Free G := by
@@ -489,11 +543,12 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
 @[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (⊥ : SimpleGraph V) = 1 := by
   classical
   rw [copyCount]
-  convert card_singleton (α := G.Subgraph)
-    { verts := .univ
-      Adj := ⊥
-      adj_sub := False.elim
-      edge_vert := False.elim }
+  convert!
+    card_singleton (α := G.Subgraph)
+      { verts := .univ
+        Adj := ⊥
+        adj_sub := False.elim
+        edge_vert := False.elim }
   simp only [eq_singleton_iff_unique_mem, mem_filter_univ, Nonempty.forall]
   refine ⟨⟨⟨(Equiv.Set.univ _).symm, by simp⟩⟩, fun H' e ↦
     Subgraph.ext ((set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm) ?_⟩
@@ -589,7 +644,7 @@ lemma free_killCopies (hH : H ≠ ⊥) : H.Free (G.killCopies H) := by
   have he' : e' ∈ G'.coe.edgeSet := (Iso.map_mem_edgeSet_iff _).2 he₀
   rw [Subgraph.edgeSet_coe] at he'
   have := Subgraph.edgeSet_subset _ he'
-  simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_diff,
+  simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_sdiff,
     Set.mem_iUnion, not_exists] at this
   refine this.2 (G'.map <| .ofLE sdiff_le) ⟨((Copy.ofLE _ _ _).isoSubgraphMap _).comp hHG'.some⟩ ?_
   rw [Sym2.map_map, Set.mem_singleton_iff, ← he₁]

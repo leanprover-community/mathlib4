@@ -68,7 +68,7 @@ variable [TopologicalSpace R] [ContinuousSMul R E] [ContinuousSMul R F]
 
 /-- An unbounded operator is closable iff the closure of its graph is a graph. -/
 def IsClosable (f : E →ₗ.[R] F) : Prop :=
-  ∃ f' : LinearPMap R E F, f.graph.topologicalClosure = f'.graph
+  ∃ f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph
 
 /-- A closed operator is trivially closable. -/
 theorem IsClosed.isClosable {f : E →ₗ.[R] F} (hf : f.IsClosed) : f.IsClosable :=

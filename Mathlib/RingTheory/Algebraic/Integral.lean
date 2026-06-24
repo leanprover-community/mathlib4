@@ -123,7 +123,7 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
     Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
   refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
   rw [Transcendental] at h ⊢
-  contrapose! h
+  contrapose h
   rw [isAlgebraic_iff_isIntegral] at h ⊢
   exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
 
@@ -150,7 +150,7 @@ namespace IsAlgebraic
 
 theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
   by_cases inj : Function.Injective (algebraMap R A); swap
-  · rw [injective_iff_map_eq_zero] at inj; push_neg at inj
+  · rw [injective_iff_map_eq_zero] at inj; push Not at inj
     have ⟨r, eq, ne⟩ := inj
     exact ⟨r, ne, by simpa [← algebraMap_smul A, eq, zero_smul] using isIntegral_zero⟩
   have ⟨p, p_ne_zero, px⟩ := hz
@@ -174,7 +174,7 @@ theorem _root_.Algebra.IsAlgebraic.exists_integral_multiples [NoZeroDivisors R]
 theorem of_smul_isIntegral {y : R} (hy : ¬ IsNilpotent y)
     (h : IsIntegral R (y • z)) : IsAlgebraic R z := by
   have ⟨p, monic, eval0⟩ := h
-  refine ⟨p.comp (C y * X), fun h ↦ ?_, by simpa [aeval_comp, Algebra.smul_def] using eval0⟩
+  refine ⟨p.comp (C y * X), fun h ↦ ?_, by simpa [aeval_comp, Algebra.smul_def] using! eval0⟩
   apply_fun (coeff · p.natDegree) at h
   have hy0 : y ≠ 0 := by rintro rfl; exact hy .zero
   rw [coeff_zero, ← mul_one p.natDegree, ← natDegree_C_mul_X y hy0,
@@ -191,6 +191,32 @@ theorem iff_exists_smul_integral [IsReduced R] :
     IsAlgebraic R z ↔ ∃ y ≠ (0 : R), IsIntegral R (y • z) :=
   ⟨(exists_integral_multiple ·), fun ⟨_, hy, int⟩ ↦
     of_smul_isIntegral (by rwa [isNilpotent_iff_eq_zero]) int⟩
+
+section integralClosure
+
+variable {K : Type*} [CommRing K] [Algebra S K] [Algebra R K] [IsIntegralClosure S R K]
+
+variable (S)
+
+omit [Algebra R S] in
+/-- If `x : K` is algebraic over some ring `R`, then a nonzero `R`-multiple of it is contained
+in the integral closure of `R` in `K`. -/
+lemma exists_smul_eq {x : K} (hx : IsAlgebraic R x) :
+    ∃ (r : R) (s : S), r ≠ 0 ∧ r • x = algebraMap S K s := by
+  obtain ⟨r, hr, h⟩ := hx.exists_integral_multiple
+  obtain ⟨s, hs⟩ := IsIntegralClosure.isIntegral_iff (A := S) |>.mp h
+  exact ⟨r, s, hr, hs.symm⟩
+
+/-- If `x : K` is algebraic over `ℤ`, then a nonzero `ℕ`-multiple of it is contained in the
+integral closure of `ℤ` in `K`. -/
+lemma exists_nsmul_eq [IsIntegralClosure S ℤ K] {x : K} (hx : IsAlgebraic ℤ x) :
+    ∃ (m : ℕ) (s : S), m ≠ 0 ∧ m • x = algebraMap S K s := by
+  obtain ⟨a, s, ha, h⟩ := hx.exists_smul_eq S
+  obtain ⟨n, rfl | rfl⟩ := a.eq_nat_or_neg
+  · exact ⟨n, s, mod_cast ha, mod_cast h⟩
+  · exact ⟨n, -s, by simpa using ha, by simp [← h]⟩
+
+end integralClosure
 
 section restrictScalars
 
@@ -524,7 +550,7 @@ theorem lift_rank_of_isFractionRing :
     IsLocalizedModule.lift_rank_eq R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl]
 
 theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S := by
-  simpa using congr_arg Cardinal.toNat (lift_rank_of_isFractionRing ..)
+  simpa using! congr_arg Cardinal.toNat (lift_rank_of_isFractionRing ..)
 
 theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algebra S S']
     [Module R' S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S'] :
@@ -551,10 +577,6 @@ variable (R S) [NoZeroDivisors R]
 -- TODO: `PolynomialModule` version
 theorem rank_polynomial_polynomial : Module.rank R[X] S[X] = Module.rank R S :=
   ((Algebra.isPushout_iff ..).mp inferInstance).rank_eq
-
-#adaptation_note /-- Needed after leanprover/lean4#12564 -/
-noncomputable instance (σ : Type u) [Algebra R S] : Module R (MvPolynomial σ S) :=
-  inferInstanceAs <| Module R (AddMonoidAlgebra S (σ →₀ ℕ))
 
 theorem rank_mvPolynomial_mvPolynomial (σ : Type u) :
     Module.rank (MvPolynomial σ R) (MvPolynomial σ S) = Cardinal.lift.{u} (Module.rank R S) := by

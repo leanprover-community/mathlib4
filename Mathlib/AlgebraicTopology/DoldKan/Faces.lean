@@ -80,7 +80,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   · rintro ⟨k, hk⟩
     suffices φ ≫ X.δ (⟨a + 2 + k, by lia⟩ : Fin (n + 2)) = 0 by
       simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
-    convert v ⟨a + k + 1, by lia⟩ (by rw [Fin.val_mk]; lia)
+    convert! v ⟨a + k + 1, by lia⟩ (by rw [Fin.val_mk]; lia)
     dsimp
     lia
   -- cleaning up the second sum
@@ -180,7 +180,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
     rfl
   -- now, we assume j ≠ a (i.e. a < j)
   have haj : a < j := (Ne.le_iff_lt hj₂).mp (by lia)
-  have ham : a ≤ m := by lia
+  have ham : a ≤ m := by grind
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
   · rw [Fin.lt_def]

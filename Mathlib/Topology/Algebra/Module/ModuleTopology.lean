@@ -109,7 +109,7 @@ the module topology.
 
 -/
 
-@[expose] public section
+public section
 
 section basics
 
@@ -252,9 +252,11 @@ We first prove that the module topology on `R` considered as a module over itsel
 is `R`'s topology.
 -/
 
+-- see Note [higher instance priority]
 /-- The topology on a topological semiring `R` agrees with the module topology when considering
 `R` as an `R`-module in the obvious way (i.e., via `Semiring.toModule`). -/
-instance _root_.IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
+instance (priority := 1100) _root_.IsTopologicalSemiring.toIsModuleTopology :
+    IsModuleTopology R R := by
   /- By a previous lemma it suffices to show that the identity from (R,usual) to
   (R, module topology) is continuous. -/
   apply of_continuous_id
@@ -401,7 +403,7 @@ theorem isQuotientMap_of_surjectiveₛₗ [τB : TopologicalSpace B'] [IsModuleT
     letI : TopologicalSpace B' := .coinduced φ inferInstance
     -- With this new topology on `B`, φ is a quotient map by definition,
     -- and hence an open quotient map by a result in the library.
-    have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨hφ, rfl⟩
+    have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨⟨rfl⟩, hφ⟩
     -- We're trying to prove the module topology on B is ≤ the coinduced topology.
     -- But recall that the module topology is the Inf of the topologies on B making addition
     -- and scalar multiplication continuous, so it suffices to prove

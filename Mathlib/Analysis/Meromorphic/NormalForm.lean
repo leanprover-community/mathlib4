@@ -44,6 +44,7 @@ variable (f x) in
 /-- A function is 'meromorphic in normal form' at `x` if it vanishes around `x`
 or if it can locally be written as `fun z ↦ (z - x) ^ n • g` where `g` is
 analytic and does not vanish at `x`. -/
+@[fun_prop]
 def MeromorphicNFAt :=
   f =ᶠ[𝓝 x] 0 ∨
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ f =ᶠ[𝓝 x] (· - x) ^ n • g
@@ -277,11 +278,11 @@ theorem meromorphicNFAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι →
   by_cases h₄f : {σ ∈ s | f σ x = 0} = ∅
   · exact (Finset.analyticAt_prod _ (fun σ hσ ↦ h₃f hσ (by aesop))).meromorphicNFAt
   rw [Finset.filter_eq_empty_iff] at h₄f
-  push_neg at h₄f
+  push Not at h₄f
   obtain ⟨τ, h₁τ, h₂τ⟩ := h₄f
   have {μ : ι} (hμ : μ ∈ s.erase τ) : f μ x ≠ 0 := by
     by_contra
-    have : τ = μ :=  h₂f (by aesop) (by aesop)
+    have : τ = μ := h₂f (by aesop) (by aesop)
     aesop
   rw [← Finset.mul_prod_erase _ _ h₁τ, meromorphicNFAt_mul_iff_left]
   · apply h₁f τ h₁τ
@@ -297,7 +298,7 @@ theorem meromorphicNFAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι
     (h₁f : ∀ i ∈ s, MeromorphicNFAt (f i) x)
     (h₂f : Set.Subsingleton {σ ∈ s | f σ x = 0}) :
     MeromorphicNFAt (fun a ↦ ∏ i ∈ s, f i a) x := by
-  convert meromorphicNFAt_prod h₁f h₂f
+  convert! meromorphicNFAt_prod h₁f h₂f
   exact (Finset.prod_apply _ s f).symm
 
 /--
@@ -356,6 +357,57 @@ A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
 @[simp] theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
   mp hf := inv_inv f ▸ hf.inv
   mpr hf := hf.inv
+
+theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
+    (hg : MeromorphicNFAt g x) (hor : g x ≠ 0 ∨ f x ≠ 0) : MeromorphicNFAt (f / g) x := by
+  rw [div_eq_mul_inv]
+  rcases hor with hgne | hfne
+  · have hf := hf.meromorphicNFAt
+    have hgAnalytic : AnalyticAt 𝕜 g x := by grind [meromorphicNFAt_iff_analyticAt_or]
+    have hgInvAnalytic : AnalyticAt 𝕜 g⁻¹ x := hgAnalytic.inv hgne
+    rwa [← meromorphicNFAt_mul_iff_left hgInvAnalytic (inv_ne_zero hgne)] at hf
+  · grind [meromorphicNFAt_mul_iff_right, hg.inv]
+
+/--
+The composition of a meromorphic function in normal form and an analytic
+function is meromorphic in normal form.
+-/
+@[fun_prop]
+theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
+    MeromorphicNFAt (f ∘ g) x := by
+  rcases hf with hf | ⟨n, q, hq_an, hq_ne, hf⟩
+  · exact Or.inl (hg.continuousAt.tendsto.eventually hf)
+  by_cases hord : analyticOrderAt (g · - g x) x = ⊤
+  · rw [analyticOrderAt_eq_top] at hord
+    by_cases h : f (g x) = 0
+    · apply Or.inl
+      filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+        using by simp_all [sub_eq_zero]
+    · refine Or.inr ⟨0, fun _ ↦ f (g x), by fun_prop, h, ?_⟩
+      filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+        using by simp_all [sub_eq_zero]
+  lift analyticOrderAt (g · - g x) x to ℕ using hord with m hm
+  obtain ⟨p, h₁p, h₂p, h₃p⟩ := (AnalyticAt.analyticOrderAt_eq_natCast (by fun_prop)).1 hm.symm
+  refine Or.inr ⟨n * m, fun z ↦ (p z) ^ n • q (g z), (h₁p.zpow h₂p).smul (by fun_prop), ?_⟩
+  simp_all only [ne_eq, smul_eq_mul, isUnit_iff_ne_zero, zpow_ne_zero n h₂p, not_false_eq_true,
+    IsUnit.smul_eq_zero, true_and]
+  filter_upwards [h₃p, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+    with a h₁a h₂a
+  simp_all only [Pi.smul_apply', Pi.pow_apply, Set.preimage_setOf_eq, Set.mem_setOf_eq,
+    Function.comp_apply, ← smul_assoc, mul_zpow, smul_eq_mul]
+  congr 2
+  rw [mul_comm, zpow_mul, zpow_natCast]
+
+/--
+A function is meromorphic in normal form at a point iff it is meromorphic in normal form after
+composition with an analytic function of nonvanishing derivative, such as translation.
+-/
+theorem meromorphicNFAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero 𝕜] {x : 𝕜}
+    {g : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
+    MeromorphicNFAt (f ∘ g) x ↔ MeromorphicNFAt f (g x) := by
+  simp [meromorphicNFAt_iff_analyticAt_or, analyticAt_comp_iff_of_deriv_ne_zero hg hg',
+    meromorphicAt_comp_iff_of_deriv_ne_zero hg hg',
+    meromorphicOrderAt_comp_of_deriv_ne_zero hg hg']
 
 /-!
 ### Continuous extension and conversion to normal form
@@ -600,7 +652,7 @@ theorem meromorphicNFOn_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 �
     (h₁f : ∀ i ∈ s, MeromorphicNFOn (f i) U)
     (h₂f : ∀ x ∈ U, Set.Subsingleton {σ ∈ s | f σ x = 0}) :
     MeromorphicNFOn (fun x ↦ ∏ i ∈ s, f i x) U := by
-  convert meromorphicNFOn_prod h₁f h₂f
+  convert! meromorphicNFOn_prod h₁f h₂f
   exact (Finset.prod_apply _ s f).symm
 
 /--
@@ -722,7 +774,7 @@ theorem meromorphicNFOn_toMeromorphicNFOn :
   · intro z hz
     rw [meromorphicNFAt_congr (toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds hf hz)]
     exact meromorphicNFAt_toMeromorphicNFAt
-  · simpa [hf] using analyticOnNhd_const.meromorphicNFOn
+  · simpa [hf] using! analyticOnNhd_const.meromorphicNFOn
 
 /--
 If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.

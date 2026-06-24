@@ -130,7 +130,7 @@ protected lemma IsAtom.le_iSup (ha : IsAtom a) : a ≤ iSup f ↔ ∃ i, a ≤ f
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
   change (a ≤ ⨆ i, f i) → _
   refine fun h => of_not_not fun ha' => ?_
-  push_neg at ha'
+  push Not at ha'
   have ha'' : Disjoint a (⨆ i, f i) :=
     disjoint_iSup_iff.2 fun i => fun x hxa hxf => le_bot_iff.2 <| of_not_not fun hx =>
       have hxa : x < a := (le_iff_eq_or_lt.1 hxa).resolve_left (by rintro rfl; exact ha' _ hxf)
@@ -241,7 +241,7 @@ theorem covBy_iff {K L : A} :
 theorem covBy_iff' {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
   refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
-  push_neg
+  push Not
   rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, ne_comm, implies_true]
@@ -270,13 +270,13 @@ variable [PartialOrder α] {a b : α}
 theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b := by
   rw [← bot_covBy_iff]
   refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) ?_).symm
-  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using Set.ordConnected_Ici
+  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using! Set.ordConnected_Ici
 
 @[simp]
 theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
   rw [← covBy_top_iff]
   refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) ?_).symm
-  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using Set.ordConnected_Iic
+  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using! Set.ordConnected_Iic
 
 theorem covBy_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
 
@@ -460,7 +460,8 @@ theorem Set.OrdConnected.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
     rintro ⟨c, hc⟩ ⟨d, hd⟩ hcd
     obtain ⟨x, hcx, hxd⟩ := (Subtype.mk_lt_mk.1 hcd).exists_covby_le
     exact ⟨⟨x, h.out' hc hd ⟨hcx.le, hxd⟩⟩,
-      ⟨by simpa using hcx.lt, fun y hy hy' ↦ hcx.2 (by simpa using hy) (by simpa using hy')⟩, hxd⟩
+      ⟨by simpa
+        using! hcx.lt, fun y hy hy' ↦ hcx.2 (by simpa using! hy) (by simpa using! hy')⟩, hxd⟩
 
 theorem Set.OrdConnected.isStronglyCoatomic [IsStronglyCoatomic α] {s : Set α}
     (h : Set.OrdConnected s) : IsStronglyCoatomic s :=
@@ -1179,7 +1180,7 @@ theorem ComplementedLattice.isStronglyAtomic [IsAtomic α] : IsStronglyAtomic α
     · obtain rfl : a = b := by simpa [codisjoint_bot, ← Subtype.coe_inj] using ha'.codisjoint
       exact False.elim <| hab.ne rfl
     refine ⟨d ⊔ a, IsUpperModularLattice.covBy_sup_of_inf_covBy ?_, sup_le (hd.2.trans ha'b) hab.le⟩
-    convert hd.1.bot_covBy
+    convert! hd.1.bot_covBy
     rw [← le_bot_iff, ← show a ⊓ a' = ⊥ by simpa using Subtype.coe_inj.2 ha'.inf_eq_bot, inf_comm]
     exact inf_le_inf_left _ hd.2
 

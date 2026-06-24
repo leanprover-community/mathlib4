@@ -138,6 +138,6 @@ lemma prod_eq_prod_range_sdiff
   congrm (∏ x ∈ ?_, g x) * ∏ k ∈ range n, ∏ x ∈ s (k + 1) \ ?_, g x
   · simp
   · change (Iic k).sup (s ∘ id) = s k
-    rw [← comp_sup_eq_sup_comp_of_nonempty hs nonempty_Iic, sup_Iic]
+    rw [← apply_sup_eq_sup_comp_of_nonempty hs nonempty_Iic, sup_Iic]
 
 end Finset

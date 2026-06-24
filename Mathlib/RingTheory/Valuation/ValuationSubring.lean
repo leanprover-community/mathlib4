@@ -26,7 +26,6 @@ The order structure on `ValuationSubring K`.
 
 @[expose] public section
 
-
 universe u
 
 noncomputable section
@@ -49,9 +48,9 @@ variable (A : ValuationSubring K)
 
 instance : SetLike (ValuationSubring K) K where
   coe A := A.toSubring
-  coe_injective' := by
+  coe_injective := by
     intro ⟨_, _⟩ ⟨_, _⟩ h
-    replace h := SetLike.coe_injective' h
+    replace h := SetLike.coe_injective h
     congr
 
 instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K
@@ -269,7 +268,7 @@ def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.Va
   map_one' := rfl
   map_mul' := by rintro ⟨⟩ ⟨⟩; rfl
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : Monotone (R.mapOfLE S h) := by
   rintro ⟨⟩ ⟨⟩ ⟨a, ha⟩; exact ⟨R.inclusion S h a, ha⟩
 
@@ -304,7 +303,7 @@ def ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : ValuationSubrin
 
 instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     Algebra A (A.ofPrime P) :=
-  Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
+  inferInstanceAs <| Algebra A (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
@@ -313,10 +312,9 @@ instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime]
     (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    IsLocalization.AtPrime (A.ofPrime P) P := by
-  apply
-    Localization.subalgebra.isLocalization_ofField K P.primeCompl
-      P.primeCompl_le_nonZeroDivisors
+    IsLocalization.AtPrime (A.ofPrime P) P :=
+  Localization.subalgebra.isLocalization_ofField K P.primeCompl
+    P.primeCompl_le_nonZeroDivisors
 
 theorem le_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : A ≤ ofPrime A P :=
   fun a ha => Subalgebra.mem_toSubring.mpr <| Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
@@ -379,6 +377,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   left_inv P := by ext1; simp
   right_inv S := by ext1; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
@@ -555,7 +554,7 @@ section nonunits
 def nonunits : NonUnitalSubring K where
   carrier := {x | A.valuation x < 1}
   mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
-    zero_le' zero_le').trans_eq <| mul_one _
+    zero_le zero_le).trans_eq <| mul_one _
   add_mem' ha hb := (A.valuation.map_add ..).trans_lt (max_lt ha hb)
   zero_mem' := by simp
   neg_mem' h := (A.valuation.map_neg _).trans_lt h
@@ -652,7 +651,7 @@ def principalUnitGroup : Subgroup Kˣ where
       Valuation.map_neg]
 
 theorem principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
-  simpa only [add_sub_cancel] using A.valuation.map_one_add_of_lt h
+  simpa only [add_sub_cancel] using! A.valuation.map_one_add_of_lt h
 
 theorem mem_principalUnitGroup_iff (x : Kˣ) :
     x ∈ A.principalUnitGroup ↔ A.valuation ((x : K) - 1) < 1 :=
@@ -686,12 +685,12 @@ def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒ
   inj' := principalUnitGroup_injective
   map_rel_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
       A.unitGroupMulEquiv x ∈ (Units.map (IsLocalRing.residue A).toMonoidHom).ker := by
   rw [MonoidHom.mem_ker, Units.ext_iff]
-  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A); convert_to _ ↔ π _ = 1
+  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A)
+  convert_to! _ ↔ π _ = 1
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
   simp [mem_principalUnitGroup_iff]
 

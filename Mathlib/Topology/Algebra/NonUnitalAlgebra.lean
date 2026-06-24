@@ -69,7 +69,7 @@ topological closure.
 See note [reducible non-instances]. -/
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  s.toNonUnitalSubsemiring.nonUnitalCommSemiringTopologicalClosure hs
+  fast_instance% s.toNonUnitalSubsemiring.nonUnitalCommSemiringTopologicalClosure hs
 
 variable [TopologicalSpace B] [NonUnitalSemiring B] [Module R B] [IsTopologicalSemiring B]
     [ContinuousConstSMul R B] (s : NonUnitalSubalgebra R A) {φ : A →ₙₐ[R] B}
@@ -154,13 +154,9 @@ theorem le_iff_mem {x : A} {s : NonUnitalSubalgebra R A} (hs : IsClosed (s : Set
 instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
+open scoped IsMulCommutative in
 instance [T2Space A] {x : A} : NonUnitalCommSemiring (elemental R x) :=
-  nonUnitalCommSemiringTopologicalClosure _
-    letI : NonUnitalCommSemiring (adjoin R {x}) :=
-      NonUnitalAlgebra.adjoinNonUnitalCommSemiringOfComm R fun y hy z hz => by
-        rw [Set.mem_singleton_iff] at hy hz
-        rw [hy, hz]
-    fun _ _ => mul_comm _ _
+  fast_instance% nonUnitalCommSemiringTopologicalClosure _ mul_comm
 
 instance {R A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
