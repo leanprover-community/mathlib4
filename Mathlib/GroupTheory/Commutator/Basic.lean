@@ -183,6 +183,28 @@ theorem commutator_comm_le : ⁅H₁, H₂⁆ ≤ ⁅H₂, H₁⁆ :=
 theorem commutator_comm : ⁅H₁, H₂⁆ = ⁅H₂, H₁⁆ :=
   le_antisymm (commutator_comm_le H₁ H₂) (commutator_comm_le H₂ H₁)
 
+@[to_additive]
+theorem commutator_self_eq_bot_iff : ⁅H, H⁆ = ⊥ ↔ IsMulCommutative H := by
+  rw [commutator_eq_bot_iff_le_centralizer, le_centralizer_iff_isMulCommutative]
+
+@[to_additive (attr := simp)]
+theorem commutator_top_right_eq_bot_iff_le_center : ⁅H, (⊤ : Subgroup G)⁆ = ⊥ ↔ H ≤ center G := by
+  rw [commutator_eq_bot_iff_le_centralizer, coe_top, centralizer_univ]
+
+@[to_additive (attr := simp)]
+theorem commutator_top_left_eq_bot_iff_le_center : ⁅(⊤ : Subgroup G), H⁆ = ⊥ ↔ H ≤ center G := by
+  rw [commutator_comm, commutator_top_right_eq_bot_iff_le_center]
+
+variable (H) in
+@[to_additive (attr := simp)]
+theorem commutator_center_right : ⁅H, center G⁆ = ⊥ := by
+  simp [commutator_eq_bot_iff_le_centralizer]
+
+variable (H) in
+@[to_additive (attr := simp)]
+theorem commutator_center_left : ⁅center G, H⁆ = ⊥ :=
+  commutator_eq_bot_iff_le_centralizer.mpr <| center_le_centralizer _
+
 section Normal
 
 @[to_additive]
