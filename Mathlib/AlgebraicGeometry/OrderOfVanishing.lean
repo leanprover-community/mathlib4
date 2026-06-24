@@ -64,13 +64,13 @@ lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.fun
     ord f z = 0 := dif_neg hz
 
 @[simp]
-lemma ord_zero {z : X} : ord 0 z = 0 := by
+lemma ord_zero_apply {z : X} : ord 0 z = 0 := by
   by_cases h : coheight z = 1
   · simp [ord_eq_ordHom_of_coheight_eq_one h]
   · simp [h]
 
 @[simp]
-lemma support_ord_zero : ord (0 : X.functionField) = 0 := by
+lemma ord_zero : ord (0 : X.functionField) = 0 := by
   ext z
   simp
 
