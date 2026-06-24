@@ -354,6 +354,19 @@ lemma IsBasis.exists_iSup_eq {X : Type u} [TopologicalSpace X] {ι : Type*}
   use Us, fun i ↦ a i.2
   simp [hUs, ha, sSup_eq_iSup' Us]
 
+lemma IsBasis.exists_iSup_eq_of_isCompact {X : Type u} [TopologicalSpace X] {ι : Type*}
+    {U : ι → TopologicalSpace.Opens X} (hU : TopologicalSpace.Opens.IsBasis (Set.range U))
+    (W : TopologicalSpace.Opens X) (hW : IsCompact W.1) :
+    ∃ (κ : Type u) (_ : Finite κ) (a : κ → ι), W = ⨆ (k : κ), U (a k) := by
+  obtain ⟨κ, a, heq⟩ := hU.exists_iSup_eq W
+  obtain ⟨s, hs⟩ := hW.elim_finite_subcover _ (fun k : κ ↦ (U (a k)).2) (by simp [heq])
+  use s, s.finite_toSet, a ∘ Subtype.val
+  refine le_antisymm ?_ ?_
+  · simpa [← SetLike.coe_subset_coe, Set.iUnion_subtype]
+  · rw [heq, iSup_le_iff]
+    intro i
+    exact le_iSup_of_le _ le_rfl
+
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
   it is a finite union of some elements in the basis -/
 theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Opens α)
