@@ -43,6 +43,10 @@ local notation x "#" => primorial x
 
 lemma primorial_eq_prod_primesLE (n : ℕ) : n # = ∏ p ∈ primesLE n, p := rfl
 
+lemma primorial_primeFactors (n : ℕ) : primeFactors (n#) = primesLE n := by
+  rw [primorial_eq_prod_primesLE]
+  exact primeFactors_prod fun _ hp ↦ prime_of_mem_primesLE hp
+
 @[simp] theorem primorial_zero : 0 # = 1 := by decide
 
 @[simp] theorem primorial_one : 1 # = 1 := by decide
@@ -51,6 +55,8 @@ lemma primorial_eq_prod_primesLE (n : ℕ) : n # = ∏ p ∈ primesLE n, p := rf
 
 theorem primorial_pos (n : ℕ) : 0 < n# :=
   prod_pos fun _p hp ↦ (mem_filter.1 hp).2.pos
+
+lemma primorial_ne_zero (n : ℕ) : n# ≠ 0 := _root_.ne_of_gt <| primorial_pos n
 
 theorem primorial_mono {m n : ℕ} (h : m ≤ n) : m# ≤ n# :=
   prod_le_prod_of_subset_of_one_le' (by gcongr) (by grind)
@@ -139,3 +145,11 @@ theorem primorial_le_four_pow (n : ℕ) : n# ≤ 4 ^ n := by
   · exact (primorial_lt_four_pow n hn).le
 
 @[deprecated (since := "2026-03-21")] alias primorial_le_4_pow := primorial_le_four_pow
+
+lemma primorial_squarefree (n : ℕ) : Squarefree (n#) := by
+  rw [primorial_eq_prod_primesLE]
+  refine Finset.squarefree_prod_of_pairwise_isCoprime ?_ <|
+    fun _ hp => (prime_of_mem_primesLE hp).squarefree
+  intro _ hp _ hq hpq
+  simp only [← coprime_iff_isRelPrime]
+  exact (coprime_primes (prime_of_mem_primesLE hp) (prime_of_mem_primesLE hq)).mpr hpq
