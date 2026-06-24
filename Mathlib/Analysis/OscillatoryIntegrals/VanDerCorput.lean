@@ -307,16 +307,11 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
   have ⟨had, hdb⟩ : a ≤ d ∧ d ≤ b := by rwa [uIcc_of_le hab.le] at hd
   have hδ : |c₂ - c₁| ≤ 2 * δ := by
     grind [max_le had (sub_le_self d hδ_pos.le), le_min hdb (le_add_of_nonneg_right hδ_pos.le)]
-  have hc₁_mem : c₁ ∈ [[a, b]] :=
-    ⟨le_trans (min_le_left a b) (le_max_left a (d - δ)),
+  have hc₁_mem : c₁ ∈ [[a, b]] := ⟨le_trans (min_le_left a b) (le_max_left a (d - δ)),
      max_le (le_max_left a b) (le_trans (sub_le_self d hδ_pos.le) hd.2)⟩
   have hc₂_mem : c₂ ∈ [[a, b]] :=
     ⟨le_min (min_le_right a b) (le_trans hd.1 (le_add_of_nonneg_right hδ_pos.le)),
      le_trans (min_le_left b (d + δ)) (le_max_right a b)⟩
-  have hac₁ : [[a, c₁]] ⊆ [[a, b]] := uIcc_subset_uIcc left_mem_uIcc hc₁_mem
-  have hc₁b : [[c₁, b]] ⊆ [[a, b]] := uIcc_subset_uIcc hc₁_mem right_mem_uIcc
-  have hc₁c₂ : [[c₁, c₂]] ⊆ [[a, b]] := uIcc_subset_uIcc hc₁_mem hc₂_mem
-  have hc₂b : [[c₂, b]] ⊆ [[a, b]] := uIcc_subset_uIcc hc₂_mem right_mem_uIcc
   have hud := uniqueDiffOn_uIcc hab.ne
   replace hk : 1 ≤ k := by omega
   -- This is the main estimate for the outer two pieces, unified to avoid duplication.
@@ -375,10 +370,12 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     rw [abs_of_nonneg (by linarith only [hδ_pos, hx.1, min_eq_right this.le])]
     linarith only [hδ_pos, hx.1, min_eq_right this.le]
   -- Finally we are ready to put the pieces together
+  have hac₁ := uIcc_subset_uIcc left_mem_uIcc hc₁_mem
+  have hc₂b := uIcc_subset_uIcc hc₂_mem right_mem_uIcc
   rw [← integral_add_adjacent_intervals (hf.mono hac₁ |>.intervalIntegrable)
-      (hf.mono hc₁b |>.intervalIntegrable),
-    ← integral_add_adjacent_intervals (hf.mono hc₁c₂ |>.intervalIntegrable)
-      (hf.mono hc₂b |>.intervalIntegrable)]
+          (hf.mono (uIcc_subset_uIcc hc₁_mem right_mem_uIcc) |>.intervalIntegrable),
+    ← integral_add_adjacent_intervals (hf.mono (uIcc_subset_uIcc hc₁_mem hc₂_mem)
+          |>.intervalIntegrable) (hf.mono hc₂b |>.intervalIntegrable)]
   calc
     _ ≤ ‖∫ x in a..c₁, exp (φ x * I)‖ + ‖∫ x in c₁..c₂, exp (φ x * I)‖ +
         ‖∫ x in c₂..b, exp (φ x * I)‖ := by grind only [add_assoc, norm_add_le]
@@ -430,12 +427,11 @@ private theorem norm_integral_exp_mul_I_smul_le_of_norm_integral_exp_mul_I {A : 
     _ ≤ ‖F b‖ * ‖ψ b‖ + |∫ x in a..b, A * ‖ψ' x‖| := by
       rw [show F a = 0 from integral_same, zero_smul, sub_zero]
       apply le_trans <| norm_sub_le ..
-      apply add_le_add (le_of_eq <| norm_smul ..)
-      apply norm_integral_le_abs_of_norm_le
-      · apply MeasureTheory.ae_restrict_of_forall_mem measurableSet_uIoc
-        intro x hx; rw [norm_smul]; gcongr
-        exact hest _ <| uIoc_subset_uIcc hx
-      · apply ContinuousOn.intervalIntegrable; fun_prop
+      refine add_le_add (le_of_eq <| norm_smul ..) <| norm_integral_le_abs_of_norm_le ?est ?int
+      case int => apply ContinuousOn.intervalIntegrable; fun_prop
+      case est => apply MeasureTheory.ae_restrict_of_forall_mem measurableSet_uIoc
+                  intro x hx; rw [norm_smul]; gcongr
+                  exact hest _ <| uIoc_subset_uIcc hx
     _ ≤ A * ‖ψ b‖ + A * |∫ x in a..b, ‖ψ' x‖| := by
       gcongr
       · exact hest _ right_mem_uIcc
