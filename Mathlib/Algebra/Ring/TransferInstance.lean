@@ -53,6 +53,7 @@ protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] :
   let zero := e.zero
   let add := e.add
   let mul := e.mul
+  let psmul := e.smul ℕ+
   let nsmul := e.smul ℕ
   apply e.injective.nonUnitalNonAssocSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
@@ -61,7 +62,9 @@ protected abbrev nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α
   let zero := e.zero
   let add := e.add
   let mul := e.mul
+  let psmul := e.smul ℕ+
   let nsmul := e.smul ℕ
+  let ppow := e.pow ℕ+
   apply e.injective.nonUnitalSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `AddMonoidWithOne` across an `Equiv` -/
@@ -90,6 +93,7 @@ protected abbrev nonAssocSemiring [NonAssocSemiring β] : NonAssocSemiring α :=
 protected abbrev semiring [Semiring β] : Semiring α := by
   let mul := e.mul
   let add_monoid_with_one := e.addMonoidWithOne
+  let ppow := e.pow ℕ+
   let npow := e.pow ℕ
   apply e.injective.semiring _ <;> intros <;> exact e.apply_symm_apply _
 
@@ -98,13 +102,16 @@ protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring β] : NonUnitalCom
   let zero := e.zero
   let add := e.add
   let mul := e.mul
+  let psmul := e.smul ℕ+
   let nsmul := e.smul ℕ
+  let ppow := e.pow ℕ+
   apply e.injective.nonUnitalCommSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommSemiring` across an `Equiv` -/
 protected abbrev commSemiring [CommSemiring β] : CommSemiring α := by
   let mul := e.mul
   let add_monoid_with_one := e.addMonoidWithOne
+  let ppow := e.pow ℕ+
   let npow := e.pow ℕ
   apply e.injective.commSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
@@ -115,6 +122,7 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing β] : NonUnitalNon
   let mul := e.mul
   let neg := e.Neg
   let sub := e.sub
+  let psmul := e.smul ℕ+
   let nsmul := e.smul ℕ
   let zsmul := e.smul ℤ
   apply e.injective.nonUnitalNonAssocRing _ <;> intros <;> exact e.apply_symm_apply _
@@ -126,8 +134,10 @@ protected abbrev nonUnitalRing [NonUnitalRing β] : NonUnitalRing α := by
   let mul := e.mul
   let neg := e.Neg
   let sub := e.sub
+  let psmul := e.smul ℕ+
   let nsmul := e.smul ℕ
   let zsmul := e.smul ℤ
+  let ppow := e.pow ℕ+
   apply e.injective.nonUnitalRing _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `NonAssocRing` across an `Equiv` -/
@@ -140,6 +150,7 @@ protected abbrev nonAssocRing [NonAssocRing β] : NonAssocRing α := by
 protected abbrev ring [Ring β] : Ring α := by
   let mul := e.mul
   let add_group_with_one := e.addGroupWithOne
+  let ppow := e.pow ℕ+
   let npow := e.pow ℕ
   apply e.injective.ring _ <;> intros <;> exact e.apply_symm_apply _
 
@@ -150,14 +161,17 @@ protected abbrev nonUnitalCommRing [NonUnitalCommRing β] : NonUnitalCommRing α
   let mul := e.mul
   let neg := e.Neg
   let sub := e.sub
+  let psmul := e.smul ℕ+
   let nsmul := e.smul ℕ
   let zsmul := e.smul ℤ
+  let ppow := e.pow ℕ+
   apply e.injective.nonUnitalCommRing _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommRing` across an `Equiv` -/
 protected abbrev commRing [CommRing β] : CommRing α := by
   let mul := e.mul
   let add_group_with_one := e.addGroupWithOne
+  let ppow := e.pow ℕ+
   let npow := e.pow ℕ
   apply e.injective.commRing _ <;> intros <;> exact e.apply_symm_apply _
 
