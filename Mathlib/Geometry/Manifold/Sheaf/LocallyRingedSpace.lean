@@ -10,7 +10,6 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
-public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
 /-! # Smooth manifolds as locally ringed spaces
 
@@ -273,8 +272,7 @@ lemma ofArrows_mem_zariskiPrecoverage_iff {ι : Type*} {X : LocallyRingedSpace.{
     Presieve.ofArrows Y f ∈ zariskiPrecoverage X ↔
       (∀ x, ∃ i, x ∈ Set.range (f i).base) ∧ ∀ i, IsOpenImmersion (f i) := by
   change _ ∧ _ ↔ _
-  simp only [Precoverage.mem_comap_iff, Functor.comp_obj, forgetToTop_obj, Presieve.map_ofArrows,
-    Functor.comp_map, forgetToTop_map, ConcreteCategory.forget_map_eq_coe,
+  simp only [Precoverage.mem_comap_iff, Presieve.map_ofArrows, Functor.comp_map, forgetToTop_map,
     Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, Set.mem_range,
     MorphismProperty.ofArrows_mem_precoverage, and_congr_left_iff]
   intro
@@ -287,6 +285,10 @@ def Hom.isOpenEmbedding {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsOpenImme
 def Hom.opensRange {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     Opens Y :=
   ⟨Set.range f.base, f.isOpenEmbedding.isOpen_range⟩
+
+instance {X : LocallyRingedSpace.{u}} (𝒰 : zariskiPrecoverage.ZeroHypercover X) (i : 𝒰.I₀) :
+    IsOpenImmersion (𝒰.f i) :=
+  𝒰.mem₀.right ⟨i⟩
 
 @[simp]
 lemma range_ofRestrict {U : TopCat.{u}} {X : LocallyRingedSpace.{u}} {f : U ⟶ X.toTopCat}
@@ -319,26 +321,43 @@ isomorphic to open subsets of `HM`. -/
 class LocallyRingedSpace.IsManifold (H : ModelWithCorners 𝕜 EM HM) (X : LocallyRingedSpace.{u}) :
     Prop where
   exists_isOpenImmersion (H) : ∀ x : X, ∃ (U : Opens X) (_ : x ∈ U)
-    (f : X.restrict U.isOpenEmbedding ⟶ IsManifold.locallyRingedSpace H HM),
+    (f : X.restrict U.isOpenEmbedding ⟶ ChartedSpace.locallyRingedSpace H HM),
     LocallyRingedSpace.IsOpenImmersion f
 
 namespace LocallyRingedSpace.IsManifold
 
 variable {H : ModelWithCorners 𝕜 EM HM}
 
+set_option backward.isDefEq.respectTransparency false in
 variable (H) in
 lemma exists_nonempty_iso {X : LocallyRingedSpace.{u}} [X.IsManifold H] (x : X) :
     ∃ (U : Opens X) (_ : x ∈ U) (V : Opens HM),
-      Nonempty (X.restrict U.isOpenEmbedding ≅ IsManifold.locallyRingedSpace H V) := by
+      Nonempty (X.restrict U.isOpenEmbedding ≅ ChartedSpace.locallyRingedSpace H V) := by
   obtain ⟨U, hxU, f, hf⟩ := exists_isOpenImmersion H x
   use U, hxU, f.opensRange
-  refine ⟨IsOpenImmersion.isoRestrict f ≪≫ ?_ ≪≫ IsManifold.restrictLocallyRingedSpaceIso _⟩
+  refine ⟨IsOpenImmersion.isoRestrict f ≪≫ ?_ ≪≫ ChartedSpace.restrictLocallyRingedSpaceIso _⟩
   exact restrictCongr _ _ Subtype.range_coe_subtype.symm
 
+variable (H) in
+def euclideanOpen (X : LocallyRingedSpace.{u}) [X.IsManifold H] (x : X) :
+    Opens HM :=
+  (exists_nonempty_iso H x).choose_spec.choose_spec.choose
+
+variable (H) in
+def euclideanPoint (X : LocallyRingedSpace.{u}) [X.IsManifold H] (x : X) :
+    euclideanOpen H X x :=
+  (exists_nonempty_iso H x).choose_spec.choose_spec.choose_spec.some.hom.base
+    ⟨x, (exists_nonempty_iso H x).choose_spec.choose⟩
+
+instance (X : LocallyRingedSpace.{u}) [X.IsManifold H] (x : X) :
+    Nonempty (euclideanOpen H X x) :=
+  ⟨euclideanPoint H X x⟩
+
+variable (H) in
 def euclideanCover (X : LocallyRingedSpace.{u}) [X.IsManifold H] :
     zariskiPrecoverage.ZeroHypercover X where
   I₀ := X
-  X x := IsManifold.locallyRingedSpace H (exists_nonempty_iso H x).choose_spec.choose_spec.choose
+  X x := ChartedSpace.locallyRingedSpace H (euclideanOpen H X x)
   f x :=
     (exists_nonempty_iso H x).choose_spec.choose_spec.choose_spec.some.inv ≫ (X.ofRestrict _)
   mem₀ := by
@@ -351,12 +370,46 @@ def euclideanCover (X : LocallyRingedSpace.{u}) [X.IsManifold H] :
     · intro i
       infer_instance
 
-def chartedSpace (X : LocallyRingedSpace) [X.IsManifold H] :
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma euclideanCover_f_euclideanPoint (X : LocallyRingedSpace.{u}) [X.IsManifold H] (x : X) :
+    ((euclideanCover H X).f x).base (euclideanPoint H X x) = x := by
+  simp only [euclideanCover, comp_toHom, PresheafedSpace.comp_base, TopCat.hom_comp, euclideanPoint,
+    ContinuousMap.comp_apply]
+  erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
+  simp only [← comp_base, Iso.hom_inv_id_assoc]
+  rfl
+
+variable (H) in
+set_option backward.isDefEq.respectTransparency false in
+def chartAt (X : LocallyRingedSpace.{u}) [X.IsManifold H] (x : X) :
+    OpenPartialHomeomorph X HM :=
+  haveI : Nonempty HM := Nonempty.map (Subtype.val : euclideanOpen H X x → _) inferInstance
+  .lift_openEmbedding
+    (Topology.IsOpenEmbedding.toOpenPartialHomeomorph (Subtype.val : euclideanOpen H X x → _)
+      ((euclideanOpen H X x).isOpen.isOpenEmbedding_subtypeVal))
+    ((euclideanCover H X).f x).isOpenEmbedding
+
+variable (H) in
+abbrev chartedSpace (X : LocallyRingedSpace) [X.IsManifold H] :
     ChartedSpace HM X where
-  atlas := sorry
-  chartAt x := sorry
-  mem_chart_source := sorry
-  chart_mem_atlas := sorry
+  atlas := Set.range (chartAt H X)
+  chartAt x := chartAt H X x
+  mem_chart_source x := ⟨euclideanPoint H X x, by simp, by simp⟩
+  chart_mem_atlas x := ⟨x, rfl⟩
+
+instance (X : LocallyRingedSpace) [X.IsManifold H] :
+    letI := chartedSpace H X
+    _root_.IsManifold H ∞ X := by
+  letI := chartedSpace H X
+  suffices HasGroupoid X (contDiffGroupoid ∞ H) by constructor
+  constructor
+  rintro - - ⟨x, rfl⟩ ⟨y, rfl⟩
+  simp only [contDiffGroupoid, contDiffPregroupoid]
+  apply groupoid_of_pregroupoid_le (PG₁ := contDiffPregroupoid ∞ H)
+  · intro f s hfs
+    sorry
+  · sorry
 
 end LocallyRingedSpace.IsManifold
 
