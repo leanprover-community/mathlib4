@@ -156,12 +156,18 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
   wlog! hab : a ≠ b
   · simp only [hab, integral_same, norm_zero]; positivity
   have hud := uniqueDiffOn_uIcc hab
-  have := hφ.continuousOn
+  /- `φ` is smooth of order `2` on `[[a, b]]`, hence continuous there, and its derivative within
+  `[[a, b]]`, denoted by `φ'`, is continuous on `[[a, b]]`. -/
+  have _ := hφ.continuousOn
   let φ' := fun x ↦ derivWithin φ [[a, b]] x
   have hasDerivAt_φ : ∀ x ∈ [[a, b]], HasDerivWithinAt φ (φ' x) [[a, b]] x := fun x hx ↦
     ((hφ.contDiffWithinAt hx).differentiableWithinAt (by norm_num)).hasDerivWithinAt
   have hφ'_cont := hφ.continuousOn_derivWithin hud (by norm_num)
+  /- Since `[[a, b]]` is connected and `L ≤ |φ'|` on `[[a, b]]`, either `φ' ≥ L` or `φ' ≤ -L`
+  everywhere on this set, so `L ≤ ‖φ' x‖` for all `x ∈ [[a, b]]`. The second derivative of `φ`,
+  denoted `φ''`, is also continuous on `[[a, b]]`. -/
   have h' := isPreconnected_uIcc.forall_le_or_forall_le_of_forall_le_abs hL hφ'_cont h
+  have hφ'_norm {x : ℝ} (hx : x ∈ [[a, b]]) : L ≤ ‖φ' x‖ := by simpa using h x hx
   let φ'' := fun x ↦ derivWithin φ' [[a, b]] x
   have hasDerivAt_φ' : ∀ x ∈ [[a, b]], HasDerivWithinAt φ' (φ'' x) [[a, b]] x :=
     fun x hx ↦ (hφ.contDiffWithinAt hx).derivWithin (m := 1) hud (by norm_num) hx |>
@@ -169,15 +175,18 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
   have hφ''_cont : ContinuousOn φ'' [[a, b]] := by
     simpa [φ'', iteratedDerivWithin_succ, iteratedDerivWithin_one] using
       hφ.continuousOn_iteratedDerivWithin (m := 2) (by norm_num) hud
-  -- The rough idea is just to integrate by parts to gain the factor `L⁻¹`.
+  /- The rough idea is just to integrate by parts to gain the factor `L⁻¹`, where we
+  express the integrand `exp (φ x * I)` as `u * v'` with `u := (φ' x * I)⁻¹` and
+  `v' := φ' x * I * exp (φ x * I)`. -/
   let u := fun x ↦ (φ' x * I)⁻¹
   let v := fun x ↦ exp (φ x * I)
   let u' := fun x ↦ (φ'' x) * I / (φ' x) ^ 2
   let v' := fun x ↦ φ' x * I * exp (φ x * I)
+  /- These help automation to succeed later -/
   have hφ'_nz {x : ℝ} (hx : x ∈ [[a, b]]) : φ' x ≠ 0 := by grind
   have hnz1 {x : ℝ} (hx : x ∈ [[a, b]]) : φ' x * I ≠ 0 := by simp [hφ'_nz hx]
   have hnz2 {x : ℝ} (hx : x ∈ [[a, b]]) : ((φ' x) ^ 2 : ℂ) ≠ 0 := by simp [hφ'_nz hx]
-  have hφ'_norm {x : ℝ} (hx : x ∈ [[a, b]]) : L ≤ ‖φ' x‖ := by simpa using h x hx
+  /- The derivatives of `u` and `v` are `u'` and `v'`, respectively. -/
   have hasDerivAt_u : ∀ x ∈ [[a, b]], HasDerivWithinAt u (u' x) [[a, b]] x := fun x hx ↦ by
     convert! HasDerivWithinAt.inv (.mul (.ofReal_comp <| hasDerivAt_φ' _ hx)
         (hasDerivWithinAt_const _ _ I)) (hnz1 hx) using 1
@@ -190,42 +199,43 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
     suffices h'' : ∀ x ∈ [[a, b]], exp (φ x * I) = u x * v' x by
       rw [integral_congr h'']
       refine integral_mul_deriv_eq_deriv_mul_of_hasDerivWithinAt hasDerivAt_u hasDerivAt_v ?_ ?_
-        <;> exact ContinuousOn.intervalIntegrable (by fun_prop (discharger := assumption))
+        <;> exact ContinuousOn.intervalIntegrable (by fun_prop)
     grind only
   -- The boundary terms are each bounded by `L⁻¹`
   have h2 {x : ℝ} (hx : x ∈ [[a, b]]) : ‖u x * v x‖ ≤ L⁻¹ := by
     simpa [u, v, field, hL.trans_le (h x hx), φ'] using h x hx
-  -- We want to estimate the integral on RHS of `h1` **uniformly** in `a, b`.
-  -- The idea is to use FTC and monotonicity. We require some groundwork first.
+  /- We want to estimate the integral `∫ x in a..b, u' x * v x`. We first recognize that
+  `‖u' x‖` is the derivative of `fun y ↦ -(φ' y)⁻¹` evaluated at `x`. -/
   have hasDerivAt_φ'_int : ∀ x ∈ uIoo a b, HasDerivWithinAt (fun x ↦ -(φ' x)⁻¹)
       (φ'' x / (φ' x) ^ 2) (Ioi x) x := fun x hx ↦ by
     have hx' := uIoo_subset_uIcc_self hx
-    have := ((hasDerivAt_φ' x hx').mono uIoo_subset_uIcc_self).hasDerivAt <| isOpen_Ioo.mem_nhds hx
-    convert! HasDerivWithinAt.neg <| .inv this.hasDerivWithinAt (hφ'_nz hx') using 1
-    field_simp
+    have := hasDerivAt_φ' x hx' |>.mono uIoo_subset_uIcc_self |>.hasDerivAt (isOpen_Ioo.mem_nhds hx)
+    simpa [neg_div] using! this.inv (hφ'_nz hx') |>.neg.hasDerivWithinAt
   have hnorm_u'_eq : ∀ x ∈ [[a, b]], ‖u' x‖ = φ'' x / (φ' x) ^ 2 := fun x hx ↦ by
     simp_all [u', φ'', φ', hφ'_mono.derivWithin_nonneg (x := x)]
-  -- This is the key estimate, independent of `a, b`.
-  have h3 : ‖∫ x in a..b, u' x * v x‖ ≤ L⁻¹ := by
-    apply le_trans norm_integral_le_abs_integral_norm
-    simp_rw [norm_mul, v, norm_exp_ofReal_mul_I, mul_one]
-    -- Discover integral of a derivative and use FTC.
-    rw [integral_congr hnorm_u'_eq, integral_eq_sub_of_hasDeriv_right ?cont hasDerivAt_φ'_int ?int]
-    case int => exact ContinuousOn.intervalIntegrable <| by fun_prop (discharger := grind)
-    case cont => fun_prop (discharger := grind)
-    · -- To get the right constant, want `≤ L⁻¹`, not `2 * L⁻¹` here,
+  /- This is the key estimate, independent of `a, b`. We realize the integrand as the derivative of
+  `fun x ↦ (φ' x)⁻¹` and apply the fundamental theorem of calculus. Since `|φ'| ≥ L > 0` and `φ'`
+  is continuous (therefore always positive or always negative), `|(φ' b)⁻¹ - (φ' a)⁻¹| ≤ L⁻¹`. -/
+  have h3 : ‖∫ x in a..b, u' x * v x‖ ≤ L⁻¹ := calc
+    ‖∫ x in a..b, u' x * v x‖ ≤ |∫ x in a..b, ‖u' x * v x‖| := norm_integral_le_abs_integral_norm
+    _ = |∫ x in a..b, φ'' x / (φ' x) ^ 2| := by simp [v, integral_congr hnorm_u'_eq]
+    _ = |(φ' b)⁻¹ - (φ' a)⁻¹| := by
+      rw [integral_eq_sub_of_hasDeriv_right ?cont hasDerivAt_φ'_int ?int]
+      case int => exact ContinuousOn.intervalIntegrable <| by fun_prop (discharger := grind)
+      case cont => fun_prop (discharger := grind)
+      grind
+    _ ≤ L⁻¹ := by
+      -- To get the right constant, want `≤ L⁻¹`, not `2 * L⁻¹` here,
       -- so we can't just use the triangle inequality.
-      suffices |(φ' b)⁻¹ - (φ' a)⁻¹| ≤ L⁻¹ by grind
-      have hrange : (∀ x ∈ [[a, b]], (φ' x)⁻¹ ≤ L⁻¹ ∧ 0 ≤ (φ' x)⁻¹) ∨
-                (∀ x ∈ [[a, b]], (φ' x)⁻¹ ≤ 0 ∧ -L⁻¹ ≤ (φ' x)⁻¹) := by
-        rcases h' with hpos | hneg
-        · refine Or.inl <| fun x hx ↦ ?_
-          have : 0 < φ' x := by linarith only [hL, hpos x hx]
-          exact ⟨by field_simp; exact hpos x hx, by field_simp; simp⟩
-        · refine Or.inr <| fun x hx ↦ ⟨?_, ?_⟩
-          · exact inv_nonpos.mpr (by linarith only [hneg x hx, hL])
-          · simpa using (neg_le_neg <| one_div_le_one_div_of_le hL <| hneg x hx)
-      rcases hrange with h | h <;> grind [h a left_mem_uIcc, h b right_mem_uIcc]
+      suffices hrange : (∀ x ∈ [[a, b]], (φ' x)⁻¹ ≤ L⁻¹ ∧ 0 ≤ (φ' x)⁻¹) ∨
+          (∀ x ∈ [[a, b]], (φ' x)⁻¹ ≤ 0 ∧ -L⁻¹ ≤ (φ' x)⁻¹) by
+        rcases hrange with h | h <;> grind [h a left_mem_uIcc, h b right_mem_uIcc]
+      refine h'.imp ?_ ?_ <;> refine forall₂_imp fun x hx hφL ↦ ?_
+      · have : 0 < φ' x := by linarith only [hL, hφL]
+        field_simp
+        simpa using hφL
+      · have : (φ' x)⁻¹ < 0 := by rw [inv_neg'']; linarith only [hL, hφL]
+        exact ⟨this.le, by rwa [neg_le, neg_inv, inv_le_inv₀ (by simpa) ‹_›]⟩
   calc
     _ ≤ ‖∫ x in a..b, u' x * v x‖ + ‖u b * v b - u a * v a‖ := by
       rw [h1, sub_eq_neg_add]
@@ -255,15 +265,13 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
   | zero => intro hk; contradiction
   | succ k ih =>
   intro hk hL
-  have hφc' := hφc.continuousOn_iteratedDerivWithin (m := k + 1) (by rfl)
-    (uniqueDiffOn_uIcc hab.ne)
+  have hφc' := hφc.continuousOn_iteratedDerivWithin (m := k + 1) (by rfl) (uniqueDiffOn_uIcc hab.ne)
   wlog hφ' : ∀ x ∈ [[a, b]], L ≤ iteratedDerivWithin (k + 1) φ [[a, b]] x generalizing φ L
   · rcases isPreconnected_uIcc.forall_le_or_forall_le_of_forall_le_abs hL hφc' hφ with _ | hφ'
     · contradiction
     convert! this (φ := -φ) hφc.neg (by simpa) hL ?_
         (fun x hx ↦ by rw [iteratedDerivWithin_neg]; linarith only [hφ' x hx]) using 1
-    · simp_rw [Pi.neg_apply, ofReal_neg, neg_mul, ← conj_exp_ofReal_mul_I,
-        intervalIntegral_conj, norm_conj]
+    · simp [← conj_exp_ofReal_mul_I, intervalIntegral_conj]
     · convert hφc'.neg using 2
       exact iteratedDerivWithin_neg _
   -- Main idea: split the integral into three pieces: `[a, d - δ]`, `[d - δ, d + δ]`, `[d + δ, b]`
@@ -360,12 +368,10 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     rw [abs_of_nonneg (by linarith only [hδ_pos, hx.1, min_eq_right this.le])]
     linarith only [hδ_pos, hx.1, min_eq_right this.le]
   -- Finally we are ready to put the pieces together
-  rw [← integral_add_adjacent_intervals (b := c₁)
-    (ContinuousOn.intervalIntegrable <| .mono hf hac₁)
-    (ContinuousOn.intervalIntegrable <| .mono hf hc₁b),
-    ← integral_add_adjacent_intervals (a := c₁) (b := c₂)
-    (ContinuousOn.intervalIntegrable <| .mono hf hc₁c₂)
-    (ContinuousOn.intervalIntegrable <| .mono hf hc₂b)]
+  rw [← integral_add_adjacent_intervals (hf.mono hac₁ |>.intervalIntegrable)
+      (hf.mono hc₁b |>.intervalIntegrable),
+    ← integral_add_adjacent_intervals (hf.mono hc₁c₂ |>.intervalIntegrable)
+      (hf.mono hc₂b |>.intervalIntegrable)]
   calc
     _ ≤ ‖∫ x in a..c₁, exp (φ x * I)‖ + ‖∫ x in c₁..c₂, exp (φ x * I)‖ +
         ‖∫ x in c₂..b, exp (φ x * I)‖ := by grind only [add_assoc, norm_add_le]
