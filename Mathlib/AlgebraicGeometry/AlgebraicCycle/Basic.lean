@@ -40,7 +40,7 @@ generic points in order to reuse the API in Function.locallyFinsupp, hence the s
 nonstandard definition.
 -/
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
-    Function.locallyFinsupp X R
+  Function.locallyFinsupp X R
 
 variable (f : X ⟶ Y) [Semiring R] (c : AlgebraicCycle X R) (x : X) (z : Y)
 
