@@ -485,8 +485,8 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
 
 /-- In the cross-chart case on `[x,y]`, the tangent coordinate change is `v ↦ -v`. -/
 private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
-    (hr : r ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet)
+    (hr : r ∈ (chartAt (EuclideanHalfSpace 1) p).source ∩
+      (chartAt (EuclideanHalfSpace 1) q).source)
     (hpq : ¬((p : ℝ) < y ↔ (q : ℝ) < y))
     (v : EuclideanSpace ℝ (Fin 1)) :
     (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
@@ -509,9 +509,7 @@ private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
     -- The chart transition agrees with z ↦ c - z on (extChartAt p).target,
     -- which gives fderivWithin = -id since (extChartAt p).target ∈ 𝓝[range I].
     have hr_source : r ∈ (extChartAt (𝓡∂ 1) p).source := by
-      have := hr.1
-      simp only [trivializationAt, TangentBundle.trivializationAt_eq_localTriv] at this
-      rwa [extChartAt_source]
+      rw [extChartAt_source]; exact hr.1
     have hw_mem : extChartAt (𝓡∂ 1) p r ∈ (extChartAt (𝓡∂ 1) p).target :=
       (extChartAt (𝓡∂ 1) p).map_source hr_source
     have hEqOn : Set.EqOn (↑(extChartAt (𝓡∂ 1) q) ∘ ↑(extChartAt (𝓡∂ 1) p).symm)
@@ -559,8 +557,8 @@ private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
 `r`, has positive Jacobian determinant exactly when `p` and `q` use the same chart (both `< y` or
 both `≥ y`). -/
 private theorem Icc_zero_lt_det_coordChangeL_iff (p q r : Set.Icc x y)
-    (hr : r ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet) :
+    (hr : r ∈ (chartAt (EuclideanHalfSpace 1) p).source ∩
+      (chartAt (EuclideanHalfSpace 1) q).source) :
     0 < LinearMap.det
         (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
           (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
@@ -609,13 +607,13 @@ private theorem Icc_zero_lt_det_coordChangeL_iff (p q r : Set.Icc x y)
 open Classical in
 instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
   manifoldOrientation :=
-    { chartSign := fun p z =>
+    { chartSign p z :=
         if z ∈ (chartAt (EuclideanHalfSpace 1) p).source then (if (p : ℝ) < y then 0 else 1) else 1
-      continuousOn_chartSign := fun p =>
+      continuousOn_chartSign p :=
         ContinuousOn.congr (continuousOn_const (c := if (p : ℝ) < y then (0 : ZMod 2) else 1))
           (fun z hz => by simp only [if_pos hz])
-      chartSign_eq_one_of_not_mem := fun p z hz => if_neg hz
-      compatible := fun p q z hzp hzq => by
+      chartSign_eq_one_of_not_mem p z hz := if_neg hz
+      compatible p q z hzp hzq := by
         simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_coordChangeL_iff p q z ⟨hzp, hzq⟩]
         by_cases hp : (p : ℝ) < y <;> by_cases hq : (q : ℝ) < y <;> simp [hp, hq] }
 

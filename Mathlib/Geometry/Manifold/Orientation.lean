@@ -94,18 +94,18 @@ theorem point_has_two_manifoldOrientations :
       oPos ≠ oNeg ∧
       ∀ o : ManifoldOrientation (𝓘(ℝ, EuclideanSpace ℝ (Fin 0)))
         (EuclideanSpace ℝ (Fin 0)), o = oPos ∨ o = oNeg := by
-  refine ⟨{ chartSign := fun _ _ => 0
-            continuousOn_chartSign := fun _ => continuousOn_const
-            chartSign_eq_one_of_not_mem := fun x z hz =>
+  refine ⟨{ chartSign _ _ := 0
+            continuousOn_chartSign _ := continuousOn_const
+            chartSign_eq_one_of_not_mem x z hz :=
               absurd (by rw [Subsingleton.elim z x]; exact mem_chart_source _ x) hz
-            compatible := fun _ _ _ _ _ => iff_of_true
+            compatible _ _ _ _ _ := iff_of_true
               (by rw [LinearMap.det_eq_one_of_finrank_eq_zero (by simp [finrank_euclideanSpace])]
                   exact one_pos) rfl },
-          { chartSign := fun _ _ => 1
-            continuousOn_chartSign := fun _ => continuousOn_const
-            chartSign_eq_one_of_not_mem := fun x z hz =>
+          { chartSign _ _ := 1
+            continuousOn_chartSign _ := continuousOn_const
+            chartSign_eq_one_of_not_mem x z hz :=
               absurd (by rw [Subsingleton.elim z x]; exact mem_chart_source _ x) hz
-            compatible := fun _ _ _ _ _ => iff_of_true
+            compatible _ _ _ _ _ := iff_of_true
               (by rw [LinearMap.det_eq_one_of_finrank_eq_zero (by simp [finrank_euclideanSpace])]
                   exact one_pos) rfl },
           ?_, ?_⟩
