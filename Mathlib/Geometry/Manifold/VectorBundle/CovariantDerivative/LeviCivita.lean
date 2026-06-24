@@ -509,6 +509,41 @@ lemma contMDiff_section_of_subsingleton [Subsingleton F] : CMDiff n (T% s) :=
 
 end
 
+-- This version is true. Does it suffice for our purposes? TODO!
+open Module in
+variable {I} in
+lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+    [IsManifold I (k + 2) M]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] {x : M}
+    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiffAt (k + 1) (T% Z) x),
+      CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
+    CMDiffAt k (T% W) x := by
+  nontriviality E
+  -- Take an orthonormal frame.
+  let b := Basis.ofVectorSpace ℝ E
+  let t := trivializationAt E (TangentSpace I : M → Type _) x
+  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+  -- The linear ordering on the indexing set of `b` is only used in this proof,
+  -- so our choice does not matter.
+  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+    choose r wo using exists_wellFoundedLT _
+    exact r
+  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
+  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  have : IsManifold I (↑k + 1 + 1) M := by sorry -- simpa
+  have : ContMDiffVectorBundle (k + 1) E (fun (x : M) ↦ TangentSpace% x) I :=
+    TangentBundle.contMDiffVectorBundle
+  have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k + 1) t (IB := I)
+  have hs' : IsOrthonormalFrameOn I E k (b.orthonormalFrame t) t.baseSet := sorry -- easy, missing API lemma
+  rw [hs'.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
+  intro i
+  simp_rw [real_inner_comm]
+  exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx)
+
+-- TODO: can I use step2a above to prove this?
+-- or is a variant true, with just C^n at x in the condition?
 variable {I} in
 lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
