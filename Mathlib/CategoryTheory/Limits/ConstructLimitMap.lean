@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Comma.Final
 public import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Limits.Preserves.Coyoneda
+public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
 # Constructing morphisms between (co)filtered (co)limits levelwise

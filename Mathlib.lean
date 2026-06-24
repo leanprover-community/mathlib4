@@ -2867,7 +2867,6 @@ public import Mathlib.CategoryTheory.Limits.Presentation
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Limits.Preserves.BifunctorCokernel
-public import Mathlib.CategoryTheory.Limits.Preserves.Coyoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
