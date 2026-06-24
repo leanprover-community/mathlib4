@@ -593,12 +593,12 @@ theorem coeff_C [DecidableEq σ] (m) (a) :
     coeff m (C a : MvPolynomial σ R) = if 0 = m then a else 0 :=
   Finsupp.single_apply
 
-theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) {a : R} : coeff m (C a) = 0 := by
+theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) (a : R) : coeff m (C a) = 0 := by
   classical rw [coeff_C, if_neg h.symm]
 
 -- The inteded use case of this theorem is for `n = 1` (often useful for `pderiv`).
 @[simp]
-theorem coeff_add_single_C {n : ℕ} [NeZero n] {m : σ →₀ ℕ} {a : R} {i : σ} :
+theorem coeff_add_single_C {n : ℕ} [NeZero n] {m : σ →₀ ℕ} (a : R) (i : σ) :
     coeff (m + Finsupp.single i n) (C a) = 0 :=
   coeff_C_of_ne_zero <| fun H ↦ by simpa [NeZero.ne] using congr($(H) i)
 
