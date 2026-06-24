@@ -551,11 +551,10 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
       · rw [Icc_chartedSpaceChartAt, Icc_chartedSpaceChartAt, if_neg hp,
           if_neg (fun h => hp (hpq.mpr h))]
     have hself : (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = LinearMap.id := by
-      have heq : tangentCoordChange (𝓡∂ 1) p q r = tangentCoordChange (𝓡∂ 1) q q r := by
-        simp only [tangentCoordChange, hach]
       ext v : 1
-      rw [heq]
-      exact tangentCoordChange_self (by rw [extChartAt_source]; exact hr.2)
+      simp only [tangentCoordChange, hach, ContinuousLinearMap.coe_coe, LinearMap.id_coe, id_eq]
+      exact (tangentBundleCore (𝓡∂ 1) (Set.Icc x y)).coordChange_self
+        (achart (EuclideanHalfSpace 1) q) r hr.2 v
     rw [hself, LinearMap.det_id]
     exact one_pos
   · -- Charts differ: the coordinate change is `-id`, with determinant `-1 < 0`.
