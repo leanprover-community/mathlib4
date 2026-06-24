@@ -6,7 +6,6 @@ Authors: Robert Hawkins
 module
 
 public import Mathlib.RingTheory.Bialgebra.Basic
-public import Mathlib.RingTheory.Bialgebra.Primitive
 public import Mathlib.RingTheory.Coalgebra.Graded
 public import Mathlib.RingTheory.GradedAlgebra.Connected
 
@@ -19,8 +18,6 @@ Structural lemmas about graded connected bialgebras.
 
 * `GradedAlgebra.IsConnected.zeroLEquiv`: for a connected graded bialgebra, the counit restricts
   to an isomorphism `𝒜 0 ≃ₗ[R] R`.
-* `Bialgebra.isPrimitiveElem_of_mem_one`: in a connected graded bialgebra, homogeneous elements
-  of degree 1 are primitive.
 * `Bialgebra.comul_sub_tmul_one_mem_lower`: for `x ∈ 𝒜 n`, `Δ(x) - x ⊗ 1` has left tensor
   factors of degree strictly less than `n`.
 
@@ -109,31 +106,6 @@ theorem rTensor_proj_zero_comul (x : A) :
   rw [proj_zero_eq_algebraMap_comp_counit, LinearMap.rTensor_comp_apply,
     Coalgebra.rTensor_counit_comul]
   simp
-
-/-- In a connected graded bialgebra, every homogeneous element of degree 1 is primitive. -/
-theorem isPrimitiveElem_of_mem_one {x : A} (hx : x ∈ 𝒜 1) : IsPrimitiveElem R x where
-  counit_eq_zero := GradedCoalgebra.counit_eq_zero_of_degree_ne_zero one_ne_zero hx
-  comul_eq_tmul_add_tmul := by
-    classical
-    have hL : ((LinearMap.id - LinearMap.lTensor A (GradedAlgebra.proj 𝒜 0) -
-        LinearMap.rTensor A (GradedAlgebra.proj 𝒜 0) :
-        A ⊗[R] A →ₗ[R] A ⊗[R] A)) (comul x) = 0 := by
-      refine (Submodule.mem_bot R).mp <| apply_mem_of_mem_bigradedPart 𝒜 _ ⊥
-        (fun p q hpq a ha b hb => (Submodule.mem_bot R).mpr ?_) (GradedCoalgebra.comul_mem hx)
-      simp only [LinearMap.sub_apply, LinearMap.id_coe, id_eq,
-        LinearMap.lTensor_tmul, LinearMap.rTensor_tmul]
-      obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ : p = 0 ∧ q = 1 ∨ p = 1 ∧ q = 0 := by omega
-      · rw [show GradedAlgebra.proj 𝒜 0 a = a from DirectSum.decompose_of_mem_same _ ha,
-            show GradedAlgebra.proj 𝒜 0 b = 0 from
-              DirectSum.decompose_of_mem_ne _ hb one_ne_zero,
-            TensorProduct.tmul_zero, sub_zero, sub_self]
-      · rw [show GradedAlgebra.proj 𝒜 0 a = 0 from
-              DirectSum.decompose_of_mem_ne _ ha one_ne_zero,
-            show GradedAlgebra.proj 𝒜 0 b = b from DirectSum.decompose_of_mem_same _ hb,
-            TensorProduct.zero_tmul, sub_zero, sub_self]
-    simp only [LinearMap.sub_apply, LinearMap.id_coe, id_eq] at hL
-    rw [sub_sub, sub_eq_zero, lTensor_proj_zero_comul, rTensor_proj_zero_comul] at hL
-    exact hL
 
 /-- For `x ∈ 𝒜 n`, `Δ(x) - x ⊗ 1` lies in the part of `A ⊗ A` whose left tensor factor has degree
 strictly less than `n`. -/

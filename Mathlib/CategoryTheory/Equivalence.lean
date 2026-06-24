@@ -214,7 +214,6 @@ def mkIso {e f : C ≌ D} (η : e.functor ≅ f.functor) : e ≅ f where
   hom := mkHom η.hom
   inv := mkHom η.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing mkIso_inv] mkIso_hom
 
 variable (C D) in
