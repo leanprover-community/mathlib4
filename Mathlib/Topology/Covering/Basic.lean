@@ -497,7 +497,7 @@ variable (f) in
 theorem IsDiscrete.of_openPartialHomeomorph {t : Set E} {x : X}
     (htx : t ⊆ f ⁻¹' {x}) (hf : ∀ e ∈ t, ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
     IsDiscrete t :=
-  isDiscrete_iff_forall_exists_isOpen.mpr fun e he ↦ by
+  isDiscrete_iff_forall_mem_exists_isOpen.mpr fun e he ↦ by
     obtain ⟨φ, hφ, rfl⟩ := hf e he
     exact ⟨_, φ.open_source, subset_antisymm (fun e' he' ↦ φ.injOn he'.1 hφ <|
       (htx he'.2).trans (htx he).symm) <| Set.singleton_subset_iff.mpr ⟨hφ, he⟩⟩
