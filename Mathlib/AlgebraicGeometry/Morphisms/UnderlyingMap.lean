@@ -314,8 +314,8 @@ end SpecializingMap
 section GeneralizingMap
 
 instance : (topologically GeneralizingMap).RespectsIso :=
-  topologically_respectsIso _ (fun f ↦ f.isOpenEmbedding.generalizingMap
-    f.isOpenEmbedding.isOpen_range.stableUnderGeneralization) (fun _ _ hf hg ↦ hf.comp hg)
+  topologically_respectsIso _ (fun f ↦ f.isOpenEmbedding.generalizingMap)
+    (fun _ _ hf hg ↦ hf.comp hg)
 
 instance : IsZariskiLocalAtSource (topologically GeneralizingMap) :=
   topologically_isZariskiLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.generalizingMap_iff_comp
