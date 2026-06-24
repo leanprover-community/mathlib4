@@ -550,6 +550,10 @@ theorem hasIndiscreteTopology_iff_forall_nnnorm_eq_zero' :
     HasIndiscreteTopology E ↔ ∀ x : E, ‖x‖₊ = 0 := by
   simpa using nontrivialTopology_iff_exists_nnnorm_ne_zero' (E := E).not
 
+@[deprecated (since := "2026-06-24")]
+alias indiscreteTopology_iff_forall_nnnorm_eq_zero' :=
+  hasIndiscreteTopology_iff_forall_nnnorm_eq_zero'
+
 variable (E) in
 @[to_additive exists_nnnorm_ne_zero]
 theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ ≠ 0 :=
@@ -558,6 +562,9 @@ theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ �
 @[to_additive (attr := nontriviality) nnnorm_eq_zero]
 theorem HasIndiscreteTopology.nnnorm_eq_zero' [HasIndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
   hasIndiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
+
+@[deprecated (since := "2026-06-24")]
+alias IndiscreteTopology.nnnorm_eq_zero' := HasIndiscreteTopology.nnnorm_eq_zero'
 
 alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_nnnorm_ne_zero'
@@ -583,6 +590,9 @@ theorem hasIndiscreteTopology_iff_forall_norm_eq_zero' :
     HasIndiscreteTopology E ↔ ∀ x : E, ‖x‖ = 0 := by
   simpa using nontrivialTopology_iff_exists_norm_ne_zero' (E := E).not
 
+@[deprecated (since := "2026-06-24")]
+alias indiscreteTopology_iff_forall_norm_eq_zero' := hasIndiscreteTopology_iff_forall_norm_eq_zero'
+
 variable (E) in
 @[to_additive exists_norm_ne_zero]
 theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :=
@@ -591,6 +601,9 @@ theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :
 @[to_additive (attr := nontriviality) HasIndiscreteTopology.norm_eq_zero]
 theorem HasIndiscreteTopology.norm_eq_zero' [HasIndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
   hasIndiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
+
+@[deprecated (since := "2026-06-24")]
+alias IndiscreteTopology.norm_eq_zero' := HasIndiscreteTopology.norm_eq_zero'
 
 alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_norm_ne_zero'

@@ -168,6 +168,9 @@ theorem subsingleton_iff_hasIndiscreteTopology {α} [EMetricSpace α] :
     Subsingleton α ↔ HasIndiscreteTopology α := by
   simpa [not_nontrivial_iff_subsingleton] using nontrivial_iff_nontrivialTopology (α := α).not
 
+@[deprecated (since := "2026-06-24")]
+alias subsingleton_iff_indiscreteTopology := subsingleton_iff_hasIndiscreteTopology
+
 /-- In an (e)metric space, every nontrivial type has a nontrivial topology. -/
 instance (priority := 100) {α} [EMetricSpace α] [Nontrivial α] : NontrivialTopology α :=
   nontrivial_iff_nontrivialTopology.1 ‹_›

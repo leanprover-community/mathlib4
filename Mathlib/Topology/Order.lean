@@ -240,6 +240,8 @@ This can also go by the name "trivial topology" or "codiscrete topology". -/
 class HasIndiscreteTopology (α) [TopologicalSpace α] where
   eq_top (α) : ‹TopologicalSpace α› = ⊤
 
+@[deprecated (since := "2026-06-24")] alias IndiscreteTopology := HasIndiscreteTopology
+
 instance : @HasIndiscreteTopology α ⊤ := @HasIndiscreteTopology.mk _ ⊤ rfl
 
 
@@ -278,12 +280,18 @@ theorem HasIndiscreteTopology.isOpen_iff [HasIndiscreteTopology α] (U : Set α)
   · rintro (rfl | rfl)
     exacts [@isOpen_empty _ ⊤, @isOpen_univ _ ⊤]
 
+@[deprecated (since := "2026-06-24")]
+alias IndiscreteTopology.isOpen_iff := HasIndiscreteTopology.isOpen_iff
+
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
   letI : TopologicalSpace α := ⊤; HasIndiscreteTopology.isOpen_iff _
 
 theorem HasIndiscreteTopology.isClosed_iff [HasIndiscreteTopology α] (C : Set α) :
     IsClosed C ↔ C = ∅ ∨ C = Set.univ := by
   simp [← isOpen_compl_iff, HasIndiscreteTopology.isOpen_iff, Or.comm]
+
+@[deprecated (since := "2026-06-24")]
+alias IndiscreteTopology.isClosed_iff := HasIndiscreteTopology.isClosed_iff
 
 theorem dense_indiscrete [HasIndiscreteTopology α] {s : Set α} (h : s.Nonempty) : Dense s := by
   simp [dense_iff_inter_open, HasIndiscreteTopology.isOpen_iff, h]
@@ -296,6 +304,9 @@ theorem closure_indiscrete [HasIndiscreteTopology α] {s : Set α} (h : s.Nonemp
 theorem continuous_of_hasIndiscreteTopology {β} [TopologicalSpace β] [HasIndiscreteTopology β]
     {f : α → β} : Continuous f where
   isOpen_preimage := by simp [HasIndiscreteTopology.isOpen_iff]
+
+@[deprecated (since := "2026-06-24")]
+alias continuous_of_indiscreteTopology := continuous_of_hasIndiscreteTopology
 
 /-- A topological space is discrete if every set is open, that is,
   its topology equals the discrete topology `⊥`. -/
@@ -722,9 +733,15 @@ theorem HasIndiscreteTopology.nhds_eq [TopologicalSpace α] [HasIndiscreteTopolo
   cases HasIndiscreteTopology.eq_top α
   exact nhds_top
 
+@[deprecated (since := "2026-06-24")]
+alias IndiscreteTopology.nhds_eq := HasIndiscreteTopology.nhds_eq
+
 theorem clusterPt_of_hasIndiscreteTopology [TopologicalSpace α] [HasIndiscreteTopology α]
     {x : α} {f : Filter α} [f.NeBot] : ClusterPt x f := by
   simpa [ClusterPt, HasIndiscreteTopology.nhds_eq]
+
+@[deprecated (since := "2026-06-24")]
+alias clusterPt_of_indiscreteTopology := clusterPt_of_hasIndiscreteTopology
 
 /-- In the indiscrete topology no points are separable.
 
@@ -737,6 +754,9 @@ theorem Inseparable.all [TopologicalSpace α] [HasIndiscreteTopology α] (x y : 
 theorem HasIndiscreteTopology.of_forall_inseparable [TopologicalSpace α]
     (h : ∀ x y : α, Inseparable x y) : HasIndiscreteTopology α where
   eq_top := ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs
+
+@[deprecated (since := "2026-06-24")]
+alias IndiscreteTopology.of_forall_inseparable := HasIndiscreteTopology.of_forall_inseparable
 
 theorem TopologicalSpace.indiscrete_iff_forall_inseparable {t : TopologicalSpace α} :
     HasIndiscreteTopology α ↔ (∀ x y : α, Inseparable x y) where

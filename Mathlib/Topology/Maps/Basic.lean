@@ -179,6 +179,8 @@ theorem hasIndiscreteTopology [HasIndiscreteTopology Y] {f : X → Y} (hf : IsIn
     letI : TopologicalSpace Y := ⊤
     rw [hf.eq_induced, induced_top]
 
+@[deprecated (since := "2026-06-24")] alias indiscreteTopology := hasIndiscreteTopology
+
 theorem nontrivialTopology [NontrivialTopology X] {f : X → Y} (hf : IsInducing f) :
     NontrivialTopology Y :=
   not_imp_not.1
