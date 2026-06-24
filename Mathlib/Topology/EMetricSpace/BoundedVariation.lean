@@ -988,23 +988,27 @@ private lemma eVariationOn_le_of_mapClusterPt
     grind
   exact sum_le_of_monotoneOn_Iic v_mono.monotoneOn (by grind)
 
-lemma eVariationOn_leftLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E} :
-    eVariationOn f.leftLim univ ≤ eVariationOn f univ := by
+lemma eVariationOn_leftLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E}
+    {s : Set α} (hs : IsOpen s) :
+    eVariationOn f.leftLim s ≤ eVariationOn f s := by
   apply eVariationOn_le_of_mapClusterPt (fun x hx ↦ ?_)
-  apply (mapClusterPt_leftLim f x).mono (nhdsWithin_mono _ (subset_univ _))
+  rw [IsOpen.nhdsWithin_eq hs hx]
+  exact (mapClusterPt_leftLim f x).mono nhdsWithin_le_nhds
 
-lemma eVariationOn_rightLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E} :
-    eVariationOn f.rightLim univ ≤ eVariationOn f univ := by
+lemma eVariationOn_rightLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E}
+    {s : Set α} (hs : IsOpen s) :
+    eVariationOn f.rightLim s ≤ eVariationOn f s := by
   apply eVariationOn_le_of_mapClusterPt (fun x hx ↦ ?_)
-  apply (mapClusterPt_rightLim f x).mono (nhdsWithin_mono _ (subset_univ _))
+  rw [IsOpen.nhdsWithin_eq hs hx]
+  exact (mapClusterPt_rightLim f x).mono nhdsWithin_le_nhds
 
 lemma _root_.BoundedVariationOn.leftLim [TopologicalSpace α] [OrderTopology α] {f : α → E}
     (hf : BoundedVariationOn f univ) : BoundedVariationOn f.leftLim univ :=
-  (eVariationOn_leftLim_le.trans_lt hf.lt_top).ne
+  ((eVariationOn_leftLim_le isOpen_univ).trans_lt hf.lt_top).ne
 
 lemma _root_.BoundedVariationOn.rightLim [TopologicalSpace α] [OrderTopology α] {f : α → E}
     (hf : BoundedVariationOn f univ) : BoundedVariationOn f.rightLim univ :=
-  (eVariationOn_rightLim_le.trans_lt hf.lt_top).ne
+  ((eVariationOn_rightLim_le isOpen_univ).trans_lt hf.lt_top).ne
 
 lemma _root_.BoundedVariationOn.continuousWithinAt_leftLim [TopologicalSpace α] [OrderTopology α]
     [CompleteSpace E] [T3Space E] {f : α → E} (hf : BoundedVariationOn f univ) {x : α} :
