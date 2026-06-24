@@ -418,6 +418,7 @@ variable (μ : VectorMeasure X ℝ≥0∞)
 
 /-- For `μ : VectorMeasure X ℝ≥0∞` and measurable `s`, the supremum over Finpartitions of
 `⟨s, hs⟩ : Subtype MeasurableSet` of the sum of `μ` over parts equals `μ s`. -/
+@[simp]
 lemma iSup_sum_finpartition_parts {s : Set X} (hs : MeasurableSet s) :
     ⨆ (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)), ∑ p ∈ P.parts, μ p.val = μ s := by
   simp_rw [μ.sum_finpartition, iSup_const]
