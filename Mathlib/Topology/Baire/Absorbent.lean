@@ -43,8 +43,7 @@ theorem Absorbent.interior_nonempty [BaireSpace E] [Nonempty E]
   have key : ∀ x : E, ∃ n, x ∈ a n • s := fun x => by
     have hx : ∀ᶠ c in cobounded G₀, x ∈ c • s := by
       simpa [Absorbs, singleton_subset_iff] using hs x
-    obtain ⟨n, -, hn⟩ := hB.toHasBasis.mem_iff.mp hx
-    exact ⟨n, hn (ha n).1⟩
+    grind [hB.mem_iff.mp hx]
   have hcover : ⋃ n, closure (a n • s) = univ :=
     eq_univ_of_forall fun x ↦ mem_iUnion.mpr <| (key x).imp fun n hn ↦ subset_closure hn
   -- By Baire some dilation has nonempty interior; transfer back through the homeomorphism.
