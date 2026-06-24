@@ -637,6 +637,11 @@ theorem isDecompositionField_iff [IsFractionRing 𝓞F F] [p.IsMaximal] [P.IsMax
   rw [le_antisymm_iff, le_isDecompositionField_iff A K L P F D 𝓞F 𝓟F hp,
     isDecompositionField_le_iff K L P F D 𝓞F 𝓟F]
 
+/--
+An intermediate field `F` of `L/K` is the inertia field of `P` if and only if the prime `𝓟F` of
+`F` below `P` is unramified over `p`, and `P` is totally ramified over `𝓟F`, that is the
+ramification index of `P` over `𝓞F` equals `[L : F]`.
+-/
 theorem isInertiaField_iff [IsFractionRing 𝓞F F] [P.IsMaximal] (hp : p ≠ ⊥) :
     IsInertiaField K L P F ↔ P.ramificationIdx' 𝓞F = Module.finrank F L
       ∧ 𝓟F.ramificationIdx' A = 1 := by
