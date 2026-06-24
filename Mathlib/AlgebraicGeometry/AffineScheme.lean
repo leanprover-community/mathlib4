@@ -959,8 +959,8 @@ noncomputable def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) 
         f ≫ CommRingCat.ofHom (algebraMap S (Localization.Away (f.hom r))) := by
       ext x
       simp [Localization.awayMap, IsLocalization.Away.map]
-    rw [← cancel_mono (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))))]
-    simp only [basicOpenIsoSpecAway, Arrow.mk_hom, Category.assoc, ← Spec.map_comp]
+    rw [← cancel_mono (Spec.map (CommRingCat.ofHom (algebraMap R _)))]
+    simp only [Arrow.mk_hom, Category.assoc, ← Spec.map_comp]
     simp [hcomp]
 
 lemma stalkMap_injective_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] (x : X)
