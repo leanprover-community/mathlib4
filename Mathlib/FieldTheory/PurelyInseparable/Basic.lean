@@ -6,7 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.CharP.IntermediateField
-public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
