@@ -14,7 +14,7 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 This file is intended to host results about asymptotic estimates of various arithmetic functions.
 -/
 
-@[expose] public section
+public section
 
 open Asymptotics Filter
 
