@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Batteries.Tactic.Lint.Basic
+public meta import Batteries.Linter.Basic
 public meta import Mathlib.Data.Ineq
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Nat.Cast.Order.Ring
