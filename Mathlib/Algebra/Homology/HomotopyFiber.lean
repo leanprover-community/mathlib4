@@ -188,18 +188,19 @@ noncomputable def mapHomologicalComplexObjIso :
   (unopFunctor _ _).mapIso (cylinder.mapHomologicalComplexObjIso K.op H.op hc).op.symm
 
 @[reassoc (attr := simp)]
-lemma mapHomologicalComplexObjIso_hom_map_π₀ :
+lemma mapHomologicalComplexObjIso_inv_map_π₀ :
     (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₀ K) =
       π₀ _ :=
   Quiver.Hom.op_inj ((opFunctor _ _).map_injective
     (cylinder.map_ι₀_mapHomologicalComplexObjIso_hom K.op H.op hc))
 
 @[reassoc (attr := simp)]
-lemma mapHomologicalComplexObjIso_hom_map_π₁ :
+lemma mapHomologicalComplexObjIso_inv_map_π₁ :
     (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₁ K) =
       π₁ _ :=
   Quiver.Hom.op_inj ((opFunctor _ _).map_injective
     (cylinder.map_ι₁_mapHomologicalComplexObjIso_hom K.op H.op hc))
+
 end
 
 end pathObject

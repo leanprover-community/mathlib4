@@ -424,9 +424,7 @@ noncomputable def mapArrowHom (α : Arrow.mk φ ⟶ Arrow.mk φ') :
     homotopyCofiber φ ⟶ homotopyCofiber φ' :=
   desc _ (α.right ≫ homotopyCofiber.inr φ')
     ((Homotopy.ofEq (by
-        have := α.w
-        dsimp at this
-        simp [reassoc_of% this])).trans (((inrCompHomotopy φ' H).compLeft α.left).trans
+        simp [reassoc_of% dsimp% α.w])).trans (((inrCompHomotopy φ' H).compLeft α.left).trans
       (Homotopy.ofEq (by simp))))
 
 set_option backward.defeqAttrib.useBackward true in
@@ -476,7 +474,7 @@ noncomputable def mapHomologicalComplexObjXIso (i : ι) :
       (homotopyCofiber ((H.mapHomologicalComplex c).map φ)).X i :=
   if hi : c.Rel i (c.next i)
   then by
-    have := preservesBinaryBiproducts_of_preservesBiproducts H
+    haveI := preservesBinaryBiproducts_of_preservesBiproducts H
     haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hi
     haveI := HasHomotopyCofiber.hasBinaryBiproduct ((H.mapHomologicalComplex c).map φ) _ _ hi
     exact H.mapIso (homotopyCofiber.XIsoBiprod φ _ _ hi) ≪≫ H.mapBiprod _ _ ≪≫
@@ -533,7 +531,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma inr_mapHomologicalComplexObjIso_hom :
     (H.mapHomologicalComplex c).map (inr φ) ≫
       (mapHomologicalComplexObjIso φ H).hom = inr _ := by
-  ext i
+  ext
   simp [mapHomologicalComplexObjIso]
 
 end
@@ -743,9 +741,7 @@ noncomputable def mapHomologicalComplexObjIso :
   homotopyCofiber.mapHomologicalComplexObjIso _ H ≪≫
     homotopyCofiber.mapArrowIso _ _ hc
       (Arrow.isoMk (Iso.refl _) ((H.mapHomologicalComplex c).mapBiprod F F) (by
-        apply biprod.hom_ext
-        · simp [← Functor.map_comp]
-        · simp [← Functor.map_comp]))
+        apply biprod.hom_ext <;> simp [← Functor.map_comp]))
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
