@@ -26,18 +26,18 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
   [ChartedSpace H M] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [FiniteDimensional 𝕜 F] [IsManifold I 1 M]
-  {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
+  [FiniteDimensional 𝕜 F] --[IsManifold I 1 M]
+  {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
   {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
 
 
 noncomputable
 def IsCovariantDerivativeOn.lift_vec (x : M) (f : F) :
-    TangentSpace I x →L[𝕜] TangentSpace I x × F :=
+    TangentSpace% x →L[𝕜] TangentSpace% x × F :=
   .prod (.id 𝕜 _) (-hcov.one_form x f)
 
 @[simp]
-lemma IsCovariantDerivativeOn.lift_vec_apply (x : M) (f : F) (u : TangentSpace I x) :
+lemma IsCovariantDerivativeOn.lift_vec_apply (x : M) (f : F) (u : TangentSpace% x) :
     hcov.lift_vec x f u = (u , -hcov.one_form x f u) :=
   rfl
 
@@ -53,13 +53,13 @@ lemma IsCovariantDerivativeOn.projection_lift_vec (x : M) (f : F) :
   ext u
   simp
 
-lemma IsCovariantDerivativeOn.lift_vec_mem_horiz (x : M) (f : F) (u : TangentSpace I x) :
+lemma IsCovariantDerivativeOn.lift_vec_mem_horiz (x : M) (f : F) (u : TangentSpace% x) :
     hcov.lift_vec x f u ∈ hcov.horiz x f := by
   rw [horiz]
   simp
 
 lemma IsCovariantDerivativeOn.lift_vec_eq_iff
-  {x : M} {f : F} {u : TangentSpace I x} {w : TangentSpace I x × F} :
+  {x : M} {f : F} {u : TangentSpace% x} {w : TangentSpace% x × F} :
     hcov.lift_vec x f u = w ↔ hcov.projection x f w = 0 ∧ w.1 = u := by
   constructor
   · intro rfl
@@ -81,26 +81,26 @@ variable
   [(x : M) → TopologicalSpace (V x)] [FiberBundle F V]
   [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [FiniteDimensional 𝕜 F]
-  [IsManifold I 1 M] [VectorBundle 𝕜 F V] {cov : CovariantDerivative I F V}
+  [VectorBundle 𝕜 F V] {cov : CovariantDerivative I F V}
   [ContMDiffVectorBundle 1 F V I]
 
 /-- Horizontal lift of a vector tangent to the base at a point in the corresponding fiber. -/
 noncomputable
 def CovariantDerivative.lift_vec (v : TotalSpace F V) :
-    TangentSpace I v.proj →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) v :=
+    TangentSpace% v.proj →L[𝕜] TangentSpace% v :=
   letI t := trivializationAt F V v.proj
   have hcov := cov.isCovariantDerivativeOn_pushCovDer t
   letI tlift := hcov.lift_vec v.proj (t v).2
   t.derivInv I v ∘L tlift
 
-lemma CovariantDerivative.lift_vec_apply {v : TotalSpace F V} (u : TangentSpace I v.proj) :
+lemma CovariantDerivative.lift_vec_apply {v : TotalSpace F V} (u : TangentSpace% v.proj) :
     letI t := trivializationAt F V v.proj
     haveI hcov := cov.isCovariantDerivativeOn_pushCovDer t
     letI tlift := hcov.lift_vec v.proj (t v).2
     cov.lift_vec v u = t.derivInv I v (tlift u) := rfl
 
 @[simp]
-lemma CovariantDerivative.lift_vec_mem_horiz {v : TotalSpace F V} (u : TangentSpace I v.proj) :
+lemma CovariantDerivative.lift_vec_mem_horiz {v : TotalSpace F V} (u : TangentSpace% v.proj) :
     cov.lift_vec v u ∈ cov.horiz v := by
   let t := trivializationAt F V v.proj
   have hcov := cov.isCovariantDerivativeOn_pushCovDer t
@@ -114,22 +114,22 @@ lemma CovariantDerivative.lift_vec_mem_horiz {v : TotalSpace F V} (u : TangentSp
   exact (t.symmL 𝕜 v.proj).map_zero
 
 @[simp]
-lemma CovariantDerivative.proj_lift_vec {v : TotalSpace F V} (u : TangentSpace I v.proj) :
+lemma CovariantDerivative.proj_lift_vec {v : TotalSpace F V} (u : TangentSpace% v.proj) :
     cov.proj v (cov.lift_vec v u) = 0 := by
   rw [← cov.mem_horiz_iff_proj]
   exact lift_vec_mem_horiz u
 
 @[simp]
-lemma CovariantDerivative.mfderiv_proj_lift_vec {v : TotalSpace F V} (u : TangentSpace I v.proj) :
+lemma CovariantDerivative.mfderiv_proj_lift_vec {v : TotalSpace F V} (u : TangentSpace% v.proj) :
     mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v (cov.lift_vec v u) = u := by
   unfold CovariantDerivative.lift_vec
   simp [FiberBundle.mem_baseSet_trivializationAt' v.proj]
 
-lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace I v.proj)
-    (w : TangentSpace (I.prod 𝓘(𝕜, F)) v) :
+lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace% v.proj)
+    (w : TangentSpace% v) :
     cov.lift_vec v u = w  ↔
       cov.proj v w = 0 ∧
-      mfderiv (I.prod 𝓘(𝕜, F)) I (TotalSpace.proj : TotalSpace F V → M) v w = u := by
+      mfderiv% (TotalSpace.proj : TotalSpace F V → M) v w = u := by
   constructor
   · rintro rfl
     simp
@@ -149,20 +149,19 @@ lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace
       simp [h, t.symm_map_zero 𝕜]
     · rw [← h', t.mfderiv_proj_fst_deriv mem]
 
-lemma CovariantDerivative.lift_vec_eq_iff' {v : TotalSpace F V} (u : TangentSpace I v.proj)
-    (w : TangentSpace (I.prod 𝓘(𝕜, F)) v) :
+lemma CovariantDerivative.lift_vec_eq_iff' {v : TotalSpace F V} (u : TangentSpace% v.proj)
+    (w : TangentSpace% v) :
     cov.lift_vec v u = w  ↔
-      w ∈ cov.horiz v ∧
-      mfderiv (I.prod 𝓘(𝕜, F)) I (TotalSpace.proj : TotalSpace F V → M) v w = u := by
+      w ∈ cov.horiz v ∧ mfderiv% (TotalSpace.proj : TotalSpace F V → M) v w = u := by
   simp [CovariantDerivative.lift_vec_eq_iff, horiz]
 
 /-- We can compute `lift_vec v` using any trivialization whose
 base set contains `v.proj`. This is crucial to prove smoothness
 of `lift_vec`. -/
-lemma CovariantDerivative.lift_vec_eq [FiniteDimensional 𝕜 E] {v : TotalSpace F V}
-    {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
+lemma CovariantDerivative.lift_vec_eq [IsManifold I 1 M] [FiniteDimensional 𝕜 E]
+    {v : TotalSpace F V} {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
     (hv : v.proj ∈ e.baseSet)
-    (u : TangentSpace I v.proj) :
+    (u : TangentSpace% v.proj) :
     haveI hcov := cov.isCovariantDerivativeOn_pushCovDer e
     cov.lift_vec v u = e.derivInv I v (hcov.lift_vec v.proj (e v).2 u) := by
   apply (cov.lift_vec_eq_iff' _ _).mpr ⟨?_, ?_⟩

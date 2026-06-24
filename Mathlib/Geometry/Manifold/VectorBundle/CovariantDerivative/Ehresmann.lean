@@ -50,7 +50,7 @@ variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
 
 local notation "TM" => TangentSpace I
 
-variable {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)} {s : Set M}
+variable {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)} {s : Set M}
 
 noncomputable
 def projection (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) : (TM x) × F →L[𝕜] F :=
@@ -92,7 +92,7 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E] (hcov : IsCovariantDerivat
   constructor
   · intro huv
     simp only [horiz, LinearMap.mem_ker, ContinuousLinearMap.coe_coe, projection_apply] at huv
-    let w : TangentSpace 𝓘(𝕜, F) f := v
+    let w : TangentSpace% f := v
     by_cases hu : u = 0
     · subst hu
       replace huv : v = 0 := by simpa using huv
@@ -125,8 +125,8 @@ variable (e : Trivialization F (π F V)) [VectorBundle 𝕜 F V] [MemTrivializat
 
 noncomputable
 def pushCovDer
-    (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)) :
-    (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F) :=
+    (cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)) :
+    (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F) :=
   fun σ x ↦ e.continuousLinearMapAt 𝕜 x ∘L (cov (e.funToSec σ) x)
 
 
@@ -136,9 +136,9 @@ lemma pushCovDer_secToFun -- [CompleteSpace 𝕜]
     [FiniteDimensional 𝕜 F] [IsManifold I 1 M]
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
     [ContMDiffVectorBundle 1 F V I]
-    {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
     (hcov : IsCovariantDerivativeOn F cov e.baseSet)
-    {u : TangentSpace I x} {σ : Π x : M, V x} {x : M}
+    {u : TangentSpace% x} {σ : Π x : M, V x} {x : M}
     (hσ : MDiffAt T%σ x)
     (hx : x ∈ e.baseSet := by assumption) :
 --  e.pushCovDer cov (e.secToFun σ) x = (e.linearEquivAt 𝕜 x hx).toContinuousLinearMap ∘L (cov σ x)
@@ -156,14 +156,14 @@ lemma pushCovDer_funToSec [FiniteDimensional 𝕜 F]
     [IsManifold I 1 M]
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
     [ContMDiffVectorBundle 1 F V I]
-    (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
+    (cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x))
     {x : M} {s : M → F}
     (hx : x ∈ e.baseSet := by assumption) :
     cov (e.funToSec s) x = e.symmL 𝕜 x ∘L (e.pushCovDer cov s x) := by
   ext u
   simp [pushCovDer, hx]
 
-variable {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+variable {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
     -- {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
 
 omit [IsManifold I 1 M] in
@@ -232,7 +232,7 @@ local notation "TM" => TangentSpace I
 
 noncomputable
 def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
-    TangentSpace (I.prod 𝓘(𝕜, F)) v →L[𝕜] V v.proj :=
+    TangentSpace% v →L[𝕜] V v.proj :=
   letI t := trivializationAt F V v.proj
   haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn (u := t.baseSet) subset_rfl
     cov.isCovariantDerivativeOn
@@ -257,11 +257,11 @@ lemma snd_triv_proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) (u : 
   simp [CovariantDerivative.proj, (mem_baseSet_trivializationAt F V v.proj)]
 
 noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
-    Submodule 𝕜 (TangentSpace (I.prod 𝓘(𝕜, F)) v) :=
+    Submodule 𝕜 (TangentSpace% v) :=
   (cov.proj v).ker
 
 lemma mem_horiz_iff_proj {cov : CovariantDerivative I F V} {v : TotalSpace F V}
-    (u : TangentSpace (I.prod 𝓘(𝕜, F)) v) :
+    (u : TangentSpace% v) :
     u ∈ cov.horiz v ↔ cov.proj v u = 0 := by
   simp [horiz]
 
@@ -297,13 +297,11 @@ variable {cov : CovariantDerivative I F V} [IsManifold I 1 M]
 
 lemma proj_mderiv {σ : Π x : M, V x} (x : M)
     (hσ : MDiffAt (T% σ) x) :
-    cov σ x = cov.proj (σ x) ∘L
-      (mfderiv I (I.prod 𝓘(𝕜, F)) (T% σ) x) := by
+    cov σ x = cov.proj (σ x) ∘L (mfderiv% (T% σ) x) := by
   let t := trivializationAt F V x
   let s := t.secToFun σ
   let Tσx := mfderiv% (T% σ) x
-  -- FIXME `mfderiv%` fails in next line
-  let Ttσx := mfderiv (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) t (σ x)
+  let Ttσx := mfderiv% t (σ x)
   ext1 X₀
   have hcov := cov.isCovariantDerivativeOn_pushCovDer t
   have hx := mem_baseSet_trivializationAt F V x
@@ -317,7 +315,7 @@ lemma proj_mderiv {σ : Π x : M, V x} (x : M)
 
 lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
     {cov : CovariantDerivative I F V} {v : TotalSpace F V}
-    (w : TangentSpace (I.prod 𝓘(𝕜, F)) v) :
+    (w : TangentSpace% v) :
     letI u := mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v w
     w ∈ cov.horiz v ↔ ∃ σ : Π x, V x,
                         MDiffAt (T% σ) v.proj ∧

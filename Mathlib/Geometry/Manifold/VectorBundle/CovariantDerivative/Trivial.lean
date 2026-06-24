@@ -49,7 +49,7 @@ lemma trivial :
     simp at hσ
     simp [mvfderiv_smul hg hσ]
 
-lemma of_endomorphism (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F) :
+lemma of_endomorphism (A : (x : M) → F →L[𝕜] TangentSpace% x →L[𝕜] F) :
     IsCovariantDerivativeOn F (fun (s : M → F) x ↦ d% s x + A x (s x)) univ :=
   trivial I M F |>.add_one_form A
 
@@ -137,9 +137,9 @@ variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
 /-- Classification of covariant derivatives over a trivial vector bundle: every connection
 is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
 -/
-lemma exists_one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
+lemma exists_one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
-    ∃ (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F),
+    ∃ (A : (x : M) → F →L[𝕜] TangentSpace% x →L[𝕜] F),
     ∀ σ : M → F, ∀ x ∈ s, MDiffAt (T% σ) x → cov σ x = mvfderiv I σ x + A x (σ x) := by
   use hcov.difference (trivial I M F |>.mono <| subset_univ s)
   intro σ x hx hσ
@@ -147,24 +147,24 @@ lemma exists_one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜
   simp only [mvfderiv]
   module
 
-noncomputable def one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
+noncomputable def one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
-    Π x : M, F →L[𝕜] TangentSpace I x →L[𝕜] F :=
+    Π x : M, F →L[𝕜] TangentSpace% x →L[𝕜] F :=
   hcov.exists_one_form.choose
 
-lemma eq_one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
+lemma eq_one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
     {σ : M → F}
     {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
-    letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
+    letI d : TangentSpace% x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
     cov σ x = d + hcov.one_form x (σ x) :=
   hcov.exists_one_form.choose_spec σ x hx hσ
 
 lemma _root_.CovariantDerivative.exists_one_form
     (cov : CovariantDerivative I F (Bundle.Trivial M F)) :
-    ∃ (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F),
+    ∃ (A : (x : M) → F →L[𝕜] TangentSpace% x →L[𝕜] F),
     ∀ σ : M → F, ∀ x, MDiffAt (T% σ) x →
-    letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
+    letI d : TangentSpace% x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
     cov σ x = d + A x (σ x) := by
   simpa using! cov.isCovariantDerivativeOnUniv.exists_one_form
 

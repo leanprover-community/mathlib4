@@ -60,11 +60,11 @@ lemma exists_contMDiff_of_one_form {k : WithTop ℕ∞}
 -- TODO: move this to `CovariantDerivative.Basic`
 variable {F} in
 lemma ContMDiffCovariantDerivativeOn.contMDiff' [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    {k : WithTop ℕ∞} {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    {k : WithTop ℕ∞} {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
     (hcov : IsCovariantDerivativeOn F cov) [hcov' : ContMDiffCovariantDerivativeOn F k cov univ]
     {σ : Π x : M, V x} (hσ :CMDiffAt (k + 1) (T% σ) x) :
     letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
-    ContMDiffAt I (I.prod 𝓘(𝕜, E →L[𝕜] F)) k covσ x := by
+    CMDiffAt k covσ x := by
   obtain ⟨σ', hσ', heqs, hdiffx⟩ := exists_contMDiff_of_one_form F hσ
   have aux := contMDiffOn_univ.mp (hcov'.contMDiff hσ'.contMDiffOn)
   -- know: ∇ σ and ∇ σ' agree at x
@@ -90,9 +90,9 @@ TODO: generalise this discussion to any vector bundle E
 -/
 namespace IsCovariantDerivativeOn
 
-variable (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
+variable (cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x))
 
-variable {X X' Y : (Π x : M, TangentSpace I x)} (σ : Π x, V x)
+variable {X X' Y : (Π x : M, TangentSpace% x)} (σ : Π x, V x)
 
 /-- Local notation for a covariant derivative on a vector bundle acting on a vector field and a
 section. -/
@@ -105,29 +105,29 @@ example {x} : (∇ X σ) x = cov σ x (X x) := by rfl
 as a bare function. Prefer to use `IsCovariantDerivativeOn.curvatureTensor`
 (which is a (3,1)-tensor) instead. -/
 noncomputable def curvatureTensorAux :
-    (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) →
+    (Π x : M, TangentSpace% x) → (Π x : M, TangentSpace% x) →
       (Π x : M, V x) → (Π x : M, V x) :=
   fun X Y σ ↦ (∇ X (∇ Y σ)) - (∇ Y (∇ X σ)) - ∇ (VectorField.mlieBracket I X Y) σ
 
 variable [IsManifold I 2 M]
-  {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
-  {X X' Y Z : Π x : M, TangentSpace I x}
+  {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
+  {X X' Y Z : Π x : M, TangentSpace% x}
 
 -- TODO: generalise to C^(k + 1) (not just C^2), and move to `CovariantDerivative.Basic`
 lemma temp
-    {cov : ((x : M) → V x) → (x : M) → TangentSpace I x →L[𝕜] V x}
+    {cov : ((x : M) → V x) → (x : M) → TangentSpace% x →L[𝕜] V x}
     (hcov : IsCovariantDerivativeOn F cov)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ] -- is this the right regularity?
-    {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace I x}
+    {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace% x}
     (hσ : CMDiffAt 2 (T% σ) x) (hX : CMDiffAt 1 (T% X) x) :
     CMDiffAt 1 (T% (fun x ↦ (cov σ x) (X x))) x :=
   (hcov'.contMDiff' hcov hσ).clm_bundle_apply hX
 
 lemma temp_mdiff
-    {cov : ((x : M) → V x) → (x : M) → TangentSpace I x →L[𝕜] V x}
+    {cov : ((x : M) → V x) → (x : M) → TangentSpace% x →L[𝕜] V x}
     (hcov : IsCovariantDerivativeOn F cov)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ] -- is this the right regularity?
-    {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace I x}
+    {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace% x}
     (hσ : CMDiffAt 2 (T% σ) x) (hX : MDiffAt (T% X) x) :
     MDiffAt (T% (fun x ↦ (cov σ x) (X x))) x :=
   -- requires adapting `ContMDiffAt.clm_bundle_apply` to `MDifferentiableAt` hypotheses
@@ -135,9 +135,9 @@ lemma temp_mdiff
 
 -- HM: looks false to me
 -- lemma temp' -- I suspect this one will also work!
---     {cov : ((x : M) → V x) → (x : M) → TangentSpace I x →L[𝕜] V x}
+--     {cov : ((x : M) → V x) → (x : M) → TangentSpace% x →L[𝕜] V x}
 --     (hcov : IsCovariantDerivativeOn F cov)
---     {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace I x}
+--     {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace% x}
 --     -- XXX: I suspect σ being C¹ will suffice, and no extra hypotheses on X are necessary
 --     (hσ : CMDiffAt 1 (T% σ) x)
 --     (aux : ContMDiffAt I (I.prod 𝓘(𝕜, E →L[𝕜] F)) 1
@@ -156,7 +156,7 @@ lemma temp_mdiff
 -- HM: don't think this one is needed (or perhaps even true)
 -- lemma aux
 --     (hcov : IsCovariantDerivativeOn F cov) [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
---     {x : M} {Y Z : (x : M) → TangentSpace I x} {τ : Π x, V x}
+--     {x : M} {Y Z : (x : M) → TangentSpace% x} {τ : Π x, V x}
 --     (hτ : CMDiffAt 2 (T% τ) x) :
 --     (MDiffAt (T% (fun x ↦ (cov τ x) (VectorField.mlieBracket I Z Y x)))) x := by
 --   apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
@@ -168,7 +168,7 @@ variable [CompleteSpace E]
 
 theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn F cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
-    (Y : (Π x : M, TangentSpace I x)) (τ : Π x, V x)
+    (Y : (Π x : M, TangentSpace% x)) (τ : Π x, V x)
     (hY : MDiffAt (T% Y) x)
     (hτ : CMDiffAt 2 (T% τ) x) :
     TensorialAt I E (curvatureTensorAux cov · Y τ x) x where
@@ -198,7 +198,7 @@ theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn F cov) (
 -- update hypotheses to match lemma above, once proven!
 theorem curvatureTensorAux_tensorial₂ (hcov : IsCovariantDerivativeOn F cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
-    (X : (Π x : M, TangentSpace I x)) (σ : Π x, V x) :
+    (X : (Π x : M, TangentSpace% x)) (σ : Π x, V x) :
     TensorialAt I E (curvatureTensorAux cov X · σ x) x :=
   -- proof is analogous to the version in X
   sorry
@@ -206,7 +206,7 @@ theorem curvatureTensorAux_tensorial₂ (hcov : IsCovariantDerivativeOn F cov) (
 -- update hypotheses to match lemma above, once proven!
 theorem curvatureTensorAux_tensorial₃ (hcov : IsCovariantDerivativeOn F cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
-    (X Y : (Π x : M, TangentSpace I x)) :
+    (X Y : (Π x : M, TangentSpace% x)) :
     TensorialAt I F (curvatureTensorAux cov X Y · x) x :=
   -- linearity should be "easy" also, scalar multiplication is a different proof
   sorry
@@ -219,7 +219,7 @@ and `Z`, it is defined as `R(X, Y)Z = ∇_X (∇_Y Z) - ∇_Y (∇_X Z) - ∇_[X
 -- TODO: decide if we want this one, and add a comment accordingly!
 def curvatureEndomorphismTensor (hcov : IsCovariantDerivativeOn F cov) (x : M)
     [ContMDiffCovariantDerivativeOn F 1 cov univ] :
-    TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] V x →L[𝕜] V x :=
+    TangentSpace% x →L[𝕜] TangentSpace% x →L[𝕜] V x →L[𝕜] V x :=
   TensorialAt.mkHom₃ (curvatureTensorAux cov · · · x) x
     (fun X τ hX hτ ↦ hcov.curvatureTensorAux_tensorial₁ F x X τ hX sorry)
     -- `hτ` not good enough for the `sorry` above
@@ -235,13 +235,13 @@ variable [ContMDiffCovariantDerivativeOn F 1 cov univ]
 variable (X) in
 @[simp]
 lemma curvatureEndomorphismTensor_self (hcov : IsCovariantDerivativeOn F cov)
-    (X₀ : TangentSpace I x) :
+    (X₀ : TangentSpace% x) :
     hcov.curvatureEndomorphismTensor F x X₀ X₀ = 0 := by
   sorry
 
 variable (X Y) in
 lemma curvatureEndomorphismTensor_swap (hcov : IsCovariantDerivativeOn F cov)
-    (X₀ Y₀ : TangentSpace I x) :
+    (X₀ Y₀ : TangentSpace% x) :
     hcov.curvatureEndomorphismTensor F x X₀ Y₀ = - hcov.curvatureEndomorphismTensor F x Y₀ X₀ := by
   sorry
 
@@ -253,16 +253,16 @@ lemma curvatureEndomorphismTensor_swap (hcov : IsCovariantDerivativeOn F cov)
 -- Levi-Civita connection to get Ricci curvature
 def traceCurvature [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 E]
     (hcov : IsCovariantDerivativeOn F cov) (x : M) :
-    TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] 𝕜 :=
+    TangentSpace% x →L[𝕜] TangentSpace% x →L[𝕜] 𝕜 :=
   have : T2Space (V x) := (VectorBundle.continuousLinearEquivAt 𝕜 F V x).toHomeomorph.symm.t2Space
   have : T2Space (TangentSpace% x) := inferInstanceAs <| T2Space E
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
-  have : FiniteDimensional 𝕜 (TangentSpace I x) :=
+  have : FiniteDimensional 𝕜 (TangentSpace% x) :=
     VectorBundle.finiteDimensional 𝕜 E (TangentSpace I) x
-  let tr : (TangentSpace I x →ₗ[𝕜] V x →L[𝕜] V x) →ₗ[𝕜] TangentSpace I x →ₗ[𝕜] 𝕜 :=
-    LinearMap.llcomp 𝕜 (TangentSpace I x) _ _
+  let tr : (TangentSpace% x →ₗ[𝕜] V x →L[𝕜] V x) →ₗ[𝕜] TangentSpace% x →ₗ[𝕜] 𝕜 :=
+    LinearMap.llcomp 𝕜 (TangentSpace% x) _ _
       (LinearMap.trace 𝕜 (V x) ∘ₗ ContinuousLinearMap.coeLM 𝕜)
-  let Tr : (TangentSpace I x →L[𝕜] V x →L[𝕜] V x) →L[𝕜] TangentSpace I x →L[𝕜] 𝕜 :=
+  let Tr : (TangentSpace% x →L[𝕜] V x →L[𝕜] V x) →L[𝕜] TangentSpace% x →L[𝕜] 𝕜 :=
     (LinearMap.toContinuousLinearMap.toLinearMap ∘ₗ
       (tr ∘ₗ ContinuousLinearMap.coeLM 𝕜)).toContinuousLinearMap
   Tr ∘L curvatureEndomorphismTensor F hcov x

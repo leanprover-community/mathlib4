@@ -39,7 +39,7 @@ lemma IsMIntegralCurveAt.proj_acceleration {X : Π x : M, TangentSpace I x}
 by send any vector `v` to its lift at itself. -/
 noncomputable
 def CovariantDerivative.geodVF (v : TotalSpace E (TangentSpace I : M → Type _)) :
-    TangentSpace (I.prod 𝓘(ℝ, E)) v :=  cov.lift_vec v v.2
+    TangentSpace% v :=  cov.lift_vec v v.2
 
 @[simp]
 lemma CovariantDerivative.geodVF_horiz (v : TotalSpace E (TangentSpace I : M → Type _)) :
