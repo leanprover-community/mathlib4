@@ -182,7 +182,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 
-  (`Mathlib.Lean, `Batteries.Tactic.Lint),
   (`Mathlib.Lean, `Batteries.Linter),
   (`Mathlib.Lean, `Batteries.CodeAction),
   -- TODO: should this be minimised further?

@@ -24,7 +24,7 @@ Perhaps these should be moved to Batteries in the future.
 
 meta section
 
-namespace Batteries.Tactic.Lint
+namespace Batteries.Linter
 open Lean Meta
 
 /--
@@ -56,7 +56,7 @@ Linter that checks whether a structure should be in Prop.
     | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
     | none => return m!"`deprecated` attribute without `since` date"
 
-end Batteries.Tactic.Lint
+end Batteries.Linter
 
 namespace Mathlib.Linter
 

@@ -13,7 +13,7 @@
   "Batteries.Tactic.GuardMsgs",
   "Batteries.Tactic.HaveI",
   "Batteries.Tactic.LeftRight",
-  "Batteries.Tactic.Lint",
+  "Batteries.Linter",
   "Batteries.Linter.Misc",
   "Batteries.Tactic.NoMatch",
   "Batteries.Tactic.NormCast",
