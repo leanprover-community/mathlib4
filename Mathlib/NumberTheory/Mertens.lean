@@ -188,17 +188,20 @@ private lemma integ_div_mul_log_sq {x : ℝ} (C : ℝ) (hx : 2 ≤ x) :
 at `0` and `1`.
 -/
 class Weight where
+  /-- The underlying function -/
   to_fun : ℕ → ℝ
   map_zero' : to_fun 0 = 0
   map_one' : to_fun 1 = 0
+  /-- The lower bound for the first Mertens error. -/
   lowerBound : ℝ
+  /-- The upper bound for the first Mertens error. -/
   upperBound : ℝ
   le_first' : ∀ x ≥ 1, lowerBound ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, to_fun n - log x
   first_le' : ∀ x ≥ 1, ∑ n ∈ Ioc 0 ⌊x⌋₊, to_fun n - log x ≤ upperBound
 
 namespace Weight
 
-noncomputable instance inst_coefn : CoeFun Weight (fun _ ↦ ℕ → ℝ) where
+noncomputable instance instCoefn : CoeFun Weight (fun _ ↦ ℕ → ℝ) where
   coe f := f.to_fun
 
 open intervalIntegral
@@ -280,7 +283,7 @@ theorem first_theorem_asymp_nat : (∑ n ∈ Ioc 0 ·, f n) ~[atTop] (log ↑·)
 -/
 noncomputable def M := (∫ t in .Ioi 2, (t⁻¹ / (log t)^2) * E₁ t) + 1 - log (log 2)
 
-/- The second Mertens error for a weight `f` is defined as
+/-- The second Mertens error for a weight `f` is defined as
 `E₂ x = ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M`. -/
 noncomputable def E₂ := ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M
 
@@ -346,7 +349,7 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
   have : ∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * log t = log (log x) - log (log 2) := by
     rw [← integral_inv_div_log (by norm_num) (by linarith)]
     exact intervalIntegral.integral_congr fun _ _ ↦ by grind [Set.uIcc_of_le, log_pos]
-  rw [sum_mul_eq_sub_integral_mul₁ _ f.map_zero f.map_one x (f := fun t ↦ (log t)⁻¹)]
+  rw [sum_mul_eq_sub_integral_mul₁ _ map_zero map_one x (f := fun t ↦ (log t)⁻¹)]
   · suffices ∫ t in .Ioc 2 x, deriv (fun t ↦ (log t)⁻¹) t * ∑ k ∈ Icc 0 ⌊t⌋₊, f k =
         - ∫ t in 2..x, (t⁻¹ / (log t)^2) * ∑ n ∈ Icc 0 ⌊t⌋₊, f n by linarith
     rw [← intervalIntegral.integral_neg, intervalIntegral.integral_of_le hx]
@@ -469,26 +472,26 @@ this constant between `0` and `1`.
 variable (x : ℝ) (N : ℕ)
 
 /-- The bare form of the von Mangoldt weight.  Should not be directly needed in applications. -/
-noncomputable def vonMangoldt_fun : ℕ → ℝ := fun n ↦ Λ n / n
+noncomputable def vonMangoldtFun : ℕ → ℝ := fun n ↦ Λ n / n
 
 /-- The bare form of the prime weight.  Should not be directly needed in applications. -/
-noncomputable def prime_fun : ℕ → ℝ := fun n ↦ if n.Prime then log n / n else 0
+noncomputable def primeFun : ℕ → ℝ := fun n ↦ if n.Prime then log n / n else 0
 
-private lemma sum_vonMangoldt_eq : ∑ n ∈ Ioc 0 N, vonMangoldt_fun n = ∑ n ∈ Ioc 0 N, Λ n / n :=
+private lemma sum_vonMangoldt_eq : ∑ n ∈ Ioc 0 N, vonMangoldtFun n = ∑ n ∈ Ioc 0 N, Λ n / n :=
   rfl
 
-private lemma sum_prime_eq : ∑ n ∈ Ioc 0 N, prime_fun n = ∑ p ∈ primesLE N, log p / p := by
-  simp [prime_fun, primesLE_eq_filter_Ioc_zero, sum_filter]
+private lemma sum_prime_eq : ∑ n ∈ Ioc 0 N, primeFun n = ∑ p ∈ primesLE N, log p / p := by
+  simp [primeFun, primesLE_eq_filter_Ioc_zero, sum_filter]
 
 private lemma le_mul_sum_vonMangoldt {x : ℝ} (hx : 0 ≤ x) :
-    ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * ∑ n ∈ Ioc 0 ⌊x⌋₊, vonMangoldt_fun n := calc
-  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by simp [mul_sum, vonMangoldt_fun]; ring_nf
+    ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * ∑ n ∈ Ioc 0 ⌊x⌋₊, vonMangoldtFun n := calc
+  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by simp [mul_sum, vonMangoldtFun]; ring_nf
   _ ≥ _ := by
     rw [sum_log_eq_sum_mangoldt]
     gcongr; exacts [vonMangoldt_nonneg, floor_le <| div_nonneg (by linarith) (by linarith)]
 
 private lemma mul_sum_prime_le :
-    x * ∑ n ∈ Ioc 0 ⌊x⌋₊, prime_fun n ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + θ x := calc
+    x * ∑ n ∈ Ioc 0 ⌊x⌋₊, primeFun n ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + θ x := calc
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * (x / p) := by
     rw [sum_prime_eq, mul_sum]; ring_nf
   _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p * (⌊x / p⌋₊ + 1) := by gcongr; exact lt_floor_add_one _|>.le
@@ -503,7 +506,7 @@ private lemma mul_sum_prime_le :
     positivity
 
 private lemma sum_prime_le {x : ℝ} (hx : 1 ≤ x) :
-    ∑ n ∈ Ioc 0 ⌊x⌋₊, prime_fun n ≤ log x + log 4 := by
+    ∑ n ∈ Ioc 0 ⌊x⌋₊, primeFun n ≤ log x + log 4 := by
   apply le_of_mul_le_mul_left _ (by linarith : 0 < x)
   grw [mul_sum_prime_le, theta_le_log4_mul_x (by linarith), sum_log_le' hx]
   ring_nf; rfl
@@ -655,18 +658,18 @@ theorem sum_vonMangoldt_le_sum_prime_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
 /-- The von Mangoldt weight `f : ℕ → ℝ := fun n ↦ Λ n / n`. -/
 @[reducible]
 noncomputable def Weight.vonMangoldt : Weight := {
-  to_fun := vonMangoldt_fun
-  map_zero' := by simp [vonMangoldt_fun]
-  map_one' := by simp [vonMangoldt_fun]
+  to_fun := vonMangoldtFun
+  map_zero' := by simp [vonMangoldtFun]
+  map_one' := by simp [vonMangoldtFun]
   lowerBound := -2
   upperBound := log 4 + 1
   le_first' x hx := by
-    suffices x * (log x - 2) ≤ x * ∑ n ∈ Ioc 0 ⌊x⌋₊, vonMangoldt_fun n by
+    suffices x * (log x - 2) ≤ x * ∑ n ∈ Ioc 0 ⌊x⌋₊, vonMangoldtFun n by
       linarith [le_of_mul_le_mul_left this (by linarith)]
     grw [← le_mul_sum_vonMangoldt (by linarith), ← le_sum_log' hx]
     linarith [log_le_self (by linarith : 0 ≤ x)]
   first_le' x hx := by
-    unfold vonMangoldt_fun
+    unfold vonMangoldtFun
     linarith [sum_prime_le hx, E₁_le, sum_vonMangoldt_le_sum_prime_add_E₁ hx,
       sum_prime_eq ⌊x⌋₊]
 }
@@ -690,9 +693,9 @@ lemma Weight.vonMangoldt_C₂_eq : vonMangoldt.C₂ = log 4 + 3 := by simp [C₂
 /-- The prime weight `f : ℕ → ℝ := fun n ↦ 1 / n` if `n` is prime and `0` otherwise. -/
 @[reducible]
 noncomputable def Weight.prime : Weight := {
-  to_fun := prime_fun
-  map_zero' := by simp [prime_fun]
-  map_one' := by simp [prime_fun]
+  to_fun := primeFun
+  map_zero' := by simp [primeFun]
+  map_one' := by simp [primeFun]
   lowerBound := -3
   upperBound := log 4
   le_first' x hx := by
@@ -738,7 +741,7 @@ theorem le_sum_vonMangoldt_div_sub_nat : - 1 ≤ ∑ n ∈ Ioc 0 N, Λ n / n - l
     simp at this
     linarith [le_of_mul_le_mul_left this (by norm_cast; lia)]
   have := le_mul_sum_vonMangoldt (mod_cast (by lia) : 0 ≤ (N : ℝ))
-  simp only [floor_natCast, Weight.vonMangoldt_apply, vonMangoldt_fun] at this ⊢
+  simp only [floor_natCast, Weight.vonMangoldt_apply, vonMangoldtFun] at this ⊢
   grw [← this, ←le_sum_log_nat]
   ring_nf; rfl
 
