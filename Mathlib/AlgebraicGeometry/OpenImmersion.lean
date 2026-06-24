@@ -241,7 +241,7 @@ theorem appIso_hom' (U) :
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma appIso_hom_naturality {U V : X.Opens} (i : op U ⟶ op V) :
-    Y.presheaf.map (f.opensFunctor.op.map i) ≫ (f.appIso V).hom =
+    dsimp% Y.presheaf.map (f.opensFunctor.op.map i) ≫ (f.appIso V).hom =
       (f.appIso U).hom ≫ X.presheaf.map i := by
   simp [← cancel_mono (f.appIso V).inv]
 
