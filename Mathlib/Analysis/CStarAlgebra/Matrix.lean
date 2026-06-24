@@ -290,64 +290,10 @@ lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
 
-lemma Isometry.postcomp_pi (α : Type*) {β γ : Type*} [Fintype α] [PseudoEMetricSpace β]
-    [PseudoEMetricSpace γ] {g : β → γ} (hg : Isometry g) :
-    Isometry (fun f : α → β ↦ g ∘ f) :=
-  fun _ _ ↦ by simp [edist_pi_def, hg.edist_eq]
-
-@[to_additive pi_norm_comp_le]
-lemma pi_norm_comp_le' {α β γ : Type*} [Fintype α] [Fintype γ]
-    [SeminormedGroup β] (g : α → β) (f : γ → α) :
-    ‖g ∘ f‖ ≤ ‖g‖ := by
-  rw [pi_norm_le_iff_of_nonneg' (by positivity)]
-  exact fun x ↦ norm_le_pi_norm' g (f x)
-
-@[to_additive IsGreatest.pi_norm]
-lemma IsGreatest.pi_norm' {α β : Type*} [Nonempty α] [Fintype α] [SeminormedGroup β]
-    (f : α → β) : IsGreatest (Set.range (‖f ·‖)) ‖f‖ := by
-  constructor
-  · rw [Pi.norm_def' f]
-    obtain ⟨x, -, hx⟩ := (Finset.univ (α := α)).exists_mem_eq_sup (by simp) (‖f ·‖₊)
-    simp [hx]
-  · rintro - ⟨x, rfl⟩
-    exact norm_le_pi_norm' f x
-
-@[to_additive Function.Surjective.pi_norm_comp]
-lemma Function.Surjective.pi_norm_comp' {α β γ : Type*} [Fintype α] [Fintype γ]
-    [SeminormedGroup β] {f : γ → α} (hf : Function.Surjective f) (g : α → β) :
-    ‖g ∘ f‖ = ‖g‖ := by
-  obtain (h | h) := isEmpty_or_nonempty α
-  · have : IsEmpty γ := f.isEmpty
-    simp [Subsingleton.elim g 1]
-  apply le_antisymm (pi_norm_comp_le' g f)
-  obtain ⟨⟨x, h⟩, -⟩ := IsGreatest.pi_norm' g
-  obtain ⟨y, rfl⟩ := hf x
-  exact h ▸ norm_le_pi_norm' (g ∘ f) y
-
-lemma l2_opNorm_eq_pi_norm {A : Matrix n n 𝕜} (hA : A.IsHermitian) (f : C((spectrum ℝ A), ℝ)) :
-    ‖RCLike.ofReal (K := 𝕜) ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩‖
-      = ‖f‖ := by
-  refine le_antisymm ?_ ?_
-  · rw [pi_norm_le_iff_of_nonneg (by positivity)]
-    intro i
-    simp only [Function.comp_apply, norm_algebraMap']
-    exact f.norm_coe_le_norm _
-  · rw [ContinuousMap.norm_le _ (by positivity)]
-    intro x
-    apply Real.toNNReal_le_iff_le_coe.mp
-    obtain ⟨i, hi⟩ : ∃ i, x = ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩ := by
-      have := hA.spectrum_real_eq_range_eigenvalues
-      grind
-    rw [hi]
-    convert Finset.le_sup (b := i) (Finset.mem_univ _)
-    simp only [Real.norm_eq_abs, Real.toNNReal_abs, Function.comp_apply, nnnorm_algebraMap']
-    rfl
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
 given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
-@[instance_reducible]
-def instIsometricContinuousFunctionalCalculus :
+instance instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   isometric A hA := by
     rw [← isHermitian_iff_isSelfAdjoint] at hA
@@ -355,7 +301,13 @@ def instIsometricContinuousFunctionalCalculus :
     intro f
     simp only [IsHermitian.cfcAux_apply, Unitary.conjStarAlgAut_apply, ← Unitary.coe_star,
       CStarRing.norm_mul_coe_unitary, CStarRing.norm_coe_unitary_mul, l2_opNorm_diagonal]
-    exact l2_opNorm_eq_pi_norm hA f
+    rw [((algebraMap_isometry ℝ 𝕜).postcomp_pi).norm_map_of_map_zero (by ext; simp)]
+    let : Fintype (spectrum ℝ A) := .ofFinite _
+    rw [ContinuousMap.norm_eq_norm_coeFn]
+    refine Function.Surjective.pi_norm_comp ?_ _
+    rw [← Function.Surjective.of_comp_iff'
+      (Equiv.setCongr hA.spectrum_real_eq_range_eigenvalues).bijective]
+    exact Set.codRestrict_range_surjective hA.eigenvalues
 
 scoped[Matrix.Norms.L2Operator] attribute [instance]
   Matrix.instIsometricContinuousFunctionalCalculus
