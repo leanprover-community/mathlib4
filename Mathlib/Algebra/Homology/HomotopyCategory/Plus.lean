@@ -23,7 +23,7 @@ of `HomotopyCategory C (.up ℤ)` consisting of bounded below cochain complexes.
 
 open CategoryTheory Limits ZeroObject Pretriangulated HomotopicalAlgebra
 
-variable (C : Type*) [Category* C] [Preadditive C]
+variable (C D : Type*) [Category* C] [Category* D] [Preadditive C] [Preadditive D]
   (A : Type*) [Category* A] [Abelian A]
 
 namespace CochainComplex
@@ -248,3 +248,61 @@ end
 end Plus
 
 end HomotopyCategory
+
+namespace CategoryTheory
+
+namespace Functor
+
+variable {C D}
+variable (F : C ⥤ D) [F.Additive]
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The functor between bounded below homotopy categories that is induced
+by an additive functor. -/
+def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D :=
+  (HomotopyCategory.plus D).lift
+    (HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
+      rintro ⟨X, hX⟩
+      obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective X
+      dsimp
+      simp only [HomotopyCategory.plus_quotient_obj_iff] at hX ⊢
+      obtain ⟨n, _⟩ := hX
+      exact ⟨n, inferInstanceAs (CochainComplex.IsStrictlyGE
+        ((F.mapHomologicalComplex _).obj K) n)⟩)
+
+noncomputable instance :
+    F.mapHomotopyCategoryPlus.CommShift ℤ :=
+  inferInstanceAs (((HomotopyCategory.plus D).lift (HomotopyCategory.Plus.ι C ⋙
+    F.mapHomotopyCategory (.up ℤ)) _).CommShift ℤ)
+
+set_option backward.isDefEq.respectTransparency false in
+instance [HasZeroObject C] [HasBinaryBiproducts C] [HasZeroObject D] [HasBinaryBiproducts D] :
+    (F.mapHomotopyCategoryPlus).IsTriangulated := by
+  dsimp only [mapHomotopyCategoryPlus]
+  infer_instance
+
+instance [Full F] [Faithful F] : Full F.mapHomotopyCategoryPlus where
+  map_surjective f :=
+    ⟨ObjectProperty.homMk ((F.mapHomotopyCategory _).preimage f.hom), by
+      ext
+      exact (F.mapHomotopyCategory _).map_preimage f.hom⟩
+
+instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
+  map_injective h := by
+    ext
+    exact (F.mapHomotopyCategory _).map_injective ((ObjectProperty.ι _).congr_map h)
+
+/-- Given additive functors that are related by an isomorphism `F ⋙ G ≅ H`, this is
+the corresponding isomorphism on the corresponding functor between
+the bounded below homotopy categories. -/
+def mapHomotopyCategoryPlusCompIso {E : Type*} [Category* E] [Preadditive E]
+    {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] :
+    F.mapHomotopyCategoryPlus ⋙ G.mapHomotopyCategoryPlus ≅ H.mapHomotopyCategoryPlus :=
+  ((HomotopyCategory.plus _).fullyFaithfulι.whiskeringRight _).preimageIso
+    (isoWhiskerLeft (HomotopyCategory.Plus.ι C)
+      (mapHomotopyCategoryCompIso e (.up ℤ)))
+
+end Functor
+
+end CategoryTheory
