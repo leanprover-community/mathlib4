@@ -207,7 +207,7 @@ lemma isZero_homology_of_isGE
   (ι.obj X).isZero_of_isGE n i hi
 
 lemma isZero_homology_of_isLE
-    (X : DerivedCategory.Plus C) (n : ℤ) [X.IsLE n] (i : ℤ) (hi : n < i) :
+    (X : Plus C) (n : ℤ) [X.IsLE n] (i : ℤ) (hi : n < i) :
     IsZero ((homologyFunctor C i).obj X) :=
   (ι.obj X).isZero_of_isLE n i hi
 
