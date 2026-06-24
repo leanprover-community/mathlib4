@@ -15,7 +15,7 @@ Results for sheaves of abelian groups on topological spaces.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

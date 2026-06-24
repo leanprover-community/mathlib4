@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Polynomial.Content
 Find all pairs of positive integers $m,n ≥ 3$ for which there exist infinitely many
 positive integers $a$ such that $(a^m+a-1) / (a^n+a^2-1)$ is itself an integer.
 
-# Solution
+## Solution
 
 It suffices to find $(m,n)$ pairs for which $a^n+a^2-1 ∣ a^m+a-1$, where both sides are viewed as
 polynomials in $a$. This automatically gives $n ≤ m$, so we have
@@ -113,6 +113,6 @@ theorem result : {a : ℤ | 0 < a ∧ a ^ n + a ^ 2 - 1 ∣ a ^ m + a - 1}.Infin
   conv =>
     enter [1, 1, a]
     rw [show a ^ 5 + a - 1 = (a ^ 2 - a + 1) * (a ^ 3 + a ^ 2 - 1) by ring]
-  simpa using Set.Ioi_infinite 0
+  simpa using! Set.Ioi_infinite 0
 
 end Imo2002Q3

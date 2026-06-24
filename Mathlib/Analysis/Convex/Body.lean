@@ -31,7 +31,7 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 convex, convex body
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Pointwise Topology NNReal
@@ -59,7 +59,7 @@ variable [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
 
 instance : SetLike (ConvexBody V) V where
   coe := ConvexBody.carrier
-  coe_injective' K L h := by
+  coe_injective K L h := by
     cases K
     cases L
     congr

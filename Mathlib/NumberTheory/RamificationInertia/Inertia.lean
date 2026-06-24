@@ -64,6 +64,8 @@ We do not assume `P` lies over `p` in the definition; we return `0` instead.
 
 See `inertiaDeg_algebraMap` for the common case where `f = algebraMap R S`
 and there is an algebra structure `R / p → S / P`.
+
+Note: This definition of inertia degree will eventually be replaced by `Ideal.inertiaDeg'`.
 -/
 noncomputable def inertiaDeg : ℕ :=
   if hPp : comap f P = p then
@@ -87,6 +89,11 @@ theorem inertiaDeg_algebraMap [P.LiesOver p] :
 theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
   have : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
+
+/-- Variant with a weaker constraint, but on the prime upstairs instead. -/
+theorem inertiaDeg_pos' [P.IsPrime] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
+  have : p.IsPrime := Ideal.over_def P p ▸ inferInstance
+  Module.finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
 
 theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg p P ≠ 0 :=
   (Nat.ne_of_lt (inertiaDeg_pos p P)).symm
@@ -138,7 +145,6 @@ lemma absNorm_eq_pow_inertiaDeg_of_liesOver {S : Type*} [CommRing S] [IsDedekind
   let _ : Field (S ⧸ p) := Quotient.field p
   simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/

@@ -1,8 +1,8 @@
-name: Add "ready-to-merge" and "delegated" label (workflow_run)
+name: Bors merge/delegate follow-up (workflow_run)
 
 on:
   workflow_run:
-    workflows: ['Add "ready-to-merge" and "delegated" label']
+    workflows: ['Bors merge/delegate follow-up']
     types:
       - completed
 
@@ -12,8 +12,8 @@ permissions:
 
 
 jobs:
-  add_ready_to_merge_label:
-    name: Add ready-to-merge or delegated label
+  bors_command_followup:
+    name: Bors merge/delegate follow-up
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
     permissions:
@@ -26,7 +26,7 @@ jobs:
         uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
         with:
           artifact: workflow-data
-          source_workflow: Add "ready-to-merge" and "delegated" label
+          source_workflow: Bors merge/delegate follow-up
           require_event: issue_comment,pull_request_review,pull_request_review_comment
           fail_on_missing: false
           token: ${{ github.token }}
@@ -34,13 +34,12 @@ jobs:
             author=event.comment.user.login|event.review.user.login
             pr_number=meta.pr_number
             bot=outputs.bot
-            removeLabels=outputs.removeLabels
             mOrD=outputs.mOrD
 
       - name: Download legacy artifact (fallback)
         id: download-legacy-artifact
         if: ${{ steps.bridge.outputs.pr_number == '' }}
-        uses: dawidd6/action-download-artifact@8a338493df3d275e4a7a63bcff3b8fe97e51a927 # v19
+        uses: dawidd6/action-download-artifact@b6e2e70617bc3265edd6dab6c906732b2f1ae151 # v21
         with:
           workflow: maintainer_bors.yml
           name: workflow-data
@@ -62,7 +61,6 @@ jobs:
             echo "author=$(jq -r '.author // empty' "${data_file}")"
             echo "pr_number=$(jq -r '.pr_number // empty' "${data_file}")"
             echo "bot=$(jq -r '.bot // empty' "${data_file}")"
-            echo "removeLabels=$(jq -r '.removeLabels // .remove_labels // empty' "${data_file}")"
             echo "mOrD=$(jq -r '.mOrD // .m_or_d // empty' "${data_file}")"
           } | tee -a "$GITHUB_OUTPUT"
 
@@ -73,7 +71,6 @@ jobs:
           INPUT_AUTHOR: ${{ steps.bridge.outputs.author }}${{ steps.legacy.outputs.author }}
           INPUT_PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}${{ steps.legacy.outputs.pr_number }}
           INPUT_BOT: ${{ steps.bridge.outputs.bot }}${{ steps.legacy.outputs.bot }}
-          INPUT_REMOVE_LABELS: ${{ steps.bridge.outputs.removeLabels }}${{ steps.legacy.outputs.removeLabels }}
           INPUT_MORD: ${{ steps.bridge.outputs.mOrD }}${{ steps.legacy.outputs.mOrD }}
           INPUT_SOURCE: ${{ steps.bridge.outputs.pr_number != '' && 'bridge' || (steps.legacy.outputs.pr_number != '' && 'legacy' || 'none') }}
         run: |
@@ -81,7 +78,6 @@ jobs:
             echo "author=${INPUT_AUTHOR}"
             echo "pr_number=${INPUT_PR_NUMBER}"
             echo "bot=${INPUT_BOT}"
-            echo "removeLabels=${INPUT_REMOVE_LABELS}"
             echo "mOrD=${INPUT_MORD}"
             echo "input_source=${INPUT_SOURCE}"
           } | tee -a "$GITHUB_OUTPUT"
@@ -94,7 +90,7 @@ jobs:
 
       - name: Check whether user is a mathlib admin
         id: user_permission
-        if: ${{ ! steps.inputs.outputs.mOrD == '' || ! steps.inputs.outputs.removeLabels == '' }}
+        if: ${{ ! steps.inputs.outputs.mOrD == '' }}
         uses: actions-cool/check-user-permission@c21884f3dda18dafc2f8b402fe807ccc9ec1aa5e # v2.4.0
         with:
           username: ${{ steps.inputs.outputs.author }}
@@ -103,7 +99,7 @@ jobs:
       - name: Generate app token
         id: app-token
         uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
-        if: ${{ ! steps.inputs.outputs.mOrD == '' || ! steps.inputs.outputs.removeLabels == '' }}
+        if: ${{ ! steps.inputs.outputs.mOrD == '' }}
         with:
           app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
@@ -111,23 +107,11 @@ jobs:
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_TRIAGE }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
-      - name: Add ready-to-merge or delegated label
-        id: add_label
-        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.inputs.outputs.bot == 'true' ) }}
-        uses: octokit/request-action@b91aabaa861c777dcdb14e2387e30eddf04619ae # v3.0.0
-        with:
-          route: POST /repos/:repository/issues/:issue_number/labels
-          # Unexpected input warning from the following is expected:
-          # https://github.com/octokit/request-action?tab=readme-ov-file#warnings
-          repository: ${{ github.repository }}
-          issue_number: ${{ steps.inputs.outputs.pr_number }}
-          labels: '["${{ steps.inputs.outputs.mOrD }}"]'
-        env:
-          # This token is masked by the token minting action and will not be logged accidentally
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-
+      # The `ready-to-merge` / `delegated` lifecycle labels are managed by bors
+      # itself (see the `[labels]` table in bors.toml); this workflow no longer
+      # adds or removes them. It still removes the `awaiting-author` and
+      # `maintainer-merge` labels and updates the Zulip emoji on a merge/delegate
+      # command.
       - if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.inputs.outputs.bot == 'true' ) }}
@@ -142,22 +126,11 @@ jobs:
               --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
-      - name: On bors r/d-, remove ready-to-merge or delegated label
-        if: ${{ ! steps.inputs.outputs.removeLabels == '' && steps.user_permission.outputs.require-result == 'true' }}
-        # we use curl rather than octokit/request-action so that the job won't fail
-        # (and send an annoying email) if the labels don't exist
-        run: |
-          for label in ready-to-merge delegated; do
-            curl --request DELETE \
-              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.inputs.outputs.pr_number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
-          done
-
       - name: Checkout local actions
         if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.inputs.outputs.bot == 'true' ) }}
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1

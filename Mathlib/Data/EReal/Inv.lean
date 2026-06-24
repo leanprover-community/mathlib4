@@ -49,7 +49,7 @@ theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
 @[simp]
 theorem abs_eq_zero_iff {x : EReal} : x.abs = 0 ↔ x = 0 := by
   induction x
-  · simp only [abs_bot, ENNReal.top_ne_zero, bot_ne_zero]
+  · simp
   · simp only [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
   · simp only [abs_top, ENNReal.top_ne_zero, top_ne_zero]
 
@@ -551,7 +551,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
 @[positivity (_⁻¹ : EReal)]
-meta def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealInv : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a⁻¹) =>
     assertInstancesCommute
@@ -562,7 +563,8 @@ meta def evalERealInv : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
 @[positivity (_ / _ : EReal)]
-meta def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealDiv : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a / $b) =>
     assertInstancesCommute

@@ -49,7 +49,7 @@ The inverse morphism is bundled.
 
 See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
 the role of morphisms. -/
-@[stacks 0017]
+@[stacks 0017, wikidata Q189112]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The forward direction of an isomorphism. -/
   hom : X ⟶ Y
@@ -117,7 +117,6 @@ def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing refl_inv] refl_hom
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
@@ -133,7 +132,6 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing trans_inv] trans_hom
 
 @[simps]
@@ -473,7 +471,6 @@ def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing mapIso_inv] mapIso_hom
 
 @[simp]
@@ -501,6 +498,15 @@ theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) 
 @[to_dual (attr := reassoc) map_inv_hom]
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
+
+-- The following two lemmas are needed to generate good elementwise lemmas
+@[reassoc]
+theorem map_hom_inv' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
+    F.map f.hom ≫ F.map f.inv = 𝟙 (F.obj X) := by simp
+
+@[reassoc]
+theorem map_inv_hom' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
+    F.map f.inv ≫ F.map f.hom = 𝟙 (F.obj Y) := by simp
 
 end Functor
 
