@@ -5661,6 +5661,7 @@ public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
 public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.AlmostPrime
+public import Mathlib.NumberTheory.ArithmeticFunction.Asymptotics
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
