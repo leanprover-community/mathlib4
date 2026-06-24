@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
 
 /-!
@@ -108,6 +109,7 @@ space use `EuclideanSpace 𝕜 (Fin n)`.
 
 For the case when `n = Fin _`, there is `!₂[x, y, ...]` notation for building elements of this type,
 analogous to `![x, y, ...]` notation. -/
+@[wikidata Q17295]
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
