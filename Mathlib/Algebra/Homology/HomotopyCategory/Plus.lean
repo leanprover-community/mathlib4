@@ -271,7 +271,7 @@ def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus 
         ((F.mapHomologicalComplex _).obj K) n)⟩)
 
 noncomputable instance :
-    (F.mapHomotopyCategoryPlus).CommShift ℤ :=
+    F.mapHomotopyCategoryPlus.CommShift ℤ :=
   inferInstanceAs (((HomotopyCategory.plus D).lift (HomotopyCategory.Plus.ι C ⋙
     F.mapHomotopyCategory (.up ℤ)) _).CommShift ℤ)
 
