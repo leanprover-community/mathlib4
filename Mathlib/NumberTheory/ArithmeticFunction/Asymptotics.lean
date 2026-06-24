@@ -16,7 +16,7 @@ This file is intended to host results about asymptotic estimates of various arit
 
 @[expose] public section
 
-open Asymptotics Filter ArithmeticFunction
+open Asymptotics Filter
 
 namespace ArithmeticFunction
 
