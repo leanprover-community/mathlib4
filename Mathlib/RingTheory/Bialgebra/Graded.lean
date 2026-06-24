@@ -76,7 +76,7 @@ theorem counit_eq_counit_proj_zero (a : A) :
   conv_lhs => rw [← DirectSum.sum_support_decompose 𝒜 a, map_sum]
   exact Finset.sum_eq_single 0
     (fun i _ hi =>
-      GradedCoalgebra.counit_eq_zero_of_degree_ne_zero hi (DirectSum.decompose 𝒜 a i).2)
+      GradedCoalgebra.counit_eq_zero_of_ne_zero hi (DirectSum.decompose 𝒜 a i).2)
     (fun h => by simp [DFinsupp.notMem_support_iff.mp h])
 
 variable [GradedAlgebra.IsConnected 𝒜]
@@ -113,7 +113,6 @@ theorem comul_sub_tmul_one_mem_lower {n : ℕ} {x : A} (hx : x ∈ 𝒜 n) :
     comul x - x ⊗ₜ[R] (1 : A) ∈
       ⨆ (p : ℕ) (q : ℕ) (_ : p + q = n) (_ : p < n),
         Submodule.map₂ (TensorProduct.mk R A A) (𝒜 p) (𝒜 q) := by
-  classical
   have hΔ : comul x - x ⊗ₜ[R] (1 : A) =
       (LinearMap.id - LinearMap.lTensor A (GradedAlgebra.proj 𝒜 0) :
         A ⊗[R] A →ₗ[R] A ⊗[R] A) (comul x) := by
@@ -122,7 +121,7 @@ theorem comul_sub_tmul_one_mem_lower {n : ℕ} {x : A} (hx : x ∈ 𝒜 n) :
   refine apply_mem_of_mem_bigradedPart 𝒜 _ _ (fun p q hpq a ha b hb => ?_)
     (GradedCoalgebra.comul_mem hx)
   simp only [LinearMap.sub_apply, LinearMap.id_coe, id_eq, LinearMap.lTensor_tmul]
-  rcases Nat.eq_zero_or_pos q with rfl | hq
+  obtain rfl | hq := Nat.eq_zero_or_pos q
   · rw [show GradedAlgebra.proj 𝒜 0 b = b from DirectSum.decompose_of_mem_same _ hb, sub_self]
     exact zero_mem _
   · have hqb : GradedAlgebra.proj 𝒜 0 b = 0 :=

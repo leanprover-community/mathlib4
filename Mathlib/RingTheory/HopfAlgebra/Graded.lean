@@ -75,17 +75,15 @@ private lemma convPow_apply_eq_zero_of_lt (g : WithConv (A →ₗ[R] A))
   induction k generalizing m x with
   | zero => omega
   | succ k' ih =>
-    classical
-    rw [pow_succ']
-    change mul' R A ((TensorProduct.map g.ofConv (g^k').ofConv) (comul x)) = 0
+    rw [pow_succ', convMul_apply]
     suffices h : (TensorProduct.map g.ofConv (g^k').ofConv) (comul x) = 0 by
       rw [h, map_zero]
     refine (Submodule.mem_bot R).mp <|
       apply_mem_of_mem_bigradedPart 𝒜 _ ⊥ (fun p q hpq a ha b hb => ?_)
         (GradedCoalgebra.comul_mem hx)
     rw [Submodule.mem_bot, TensorProduct.map_tmul]
-    rcases Nat.eq_zero_or_pos p with hp | hp
-    · subst hp; rw [hg a ha, TensorProduct.zero_tmul]
+    obtain rfl | hp := Nat.eq_zero_or_pos p
+    · rw [hg a ha, TensorProduct.zero_tmul]
     · rw [ih (show q < k' by omega) hb, TensorProduct.tmul_zero]
 
 end LocalNilpotence
@@ -106,12 +104,9 @@ Takeuchi element `id - uε` vanishes on `𝒜 0`. -/
 private lemma neg_takeuchiF_pow_apply_of_mem {m k : ℕ} (hmk : m < k) {x : A} (hx : x ∈ 𝒜 m) :
     ((-takeuchiF (R := R)) ^ k).ofConv x = 0 := by
   refine convPow_apply_eq_zero_of_lt 𝒜 _ (fun x hx => ?_) hmk hx
-  have hF : (takeuchiF (R := R)).ofConv x = 0 := by
-    change x - algebraMap R A (counit x) = 0
-    rw [Algebra.algebraMap_eq_smul_one,
-      ← GradedAlgebra.IsConnected.eq_counit_smul_one (𝒜 := 𝒜) hx, sub_self]
-  change -(takeuchiF (R := R)).ofConv x = 0
-  rw [hF, neg_zero]
+  change -(x - algebraMap R A (counit x)) = 0
+  rw [Algebra.algebraMap_eq_smul_one,
+    ← GradedAlgebra.IsConnected.eq_counit_smul_one (𝒜 := 𝒜) hx, sub_self, neg_zero]
 
 end
 
@@ -128,7 +123,6 @@ noncomputable def takeuchiAntipode : A →ₗ[R] A :=
 /-- On `𝒜 m`, the antipode equals `(takeuchiT m).ofConv`. -/
 lemma takeuchiAntipode_apply_of_mem {m : ℕ} {a : A} (ha : a ∈ 𝒜 m) :
     takeuchiAntipode 𝒜 a = (takeuchiT (R := R) m).ofConv a := by
-  classical
   simp [takeuchiAntipode, decomposeLinearEquiv_apply_coe (ℳ := 𝒜) m ⟨a, ha⟩]
 
 end
@@ -141,8 +135,8 @@ stabilizes once `N ≥ m`, since `(-takeuchiF) ^ k` kills `𝒜 m` for every `k 
 private lemma takeuchiAntipode_apply_eq_takeuchiT_of_le {m N : ℕ} (hmN : m ≤ N)
     {a : A} (ha : a ∈ 𝒜 m) :
     takeuchiAntipode 𝒜 a = (takeuchiT (R := R) N).ofConv a := by
-  rw [takeuchiAntipode_apply_of_mem 𝒜 ha, takeuchiT, WithConv.ofConv_sum, LinearMap.sum_apply,
-    takeuchiT, WithConv.ofConv_sum, LinearMap.sum_apply]
+  simp only [takeuchiAntipode_apply_of_mem 𝒜 ha, takeuchiT, WithConv.ofConv_sum,
+    LinearMap.sum_apply]
   refine Finset.sum_subset (Finset.range_mono (Nat.succ_le_succ hmN)) fun k _ hk => ?_
   rw [Finset.mem_range, not_lt] at hk
   exact neg_takeuchiF_pow_apply_of_mem 𝒜 (Nat.lt_of_succ_le hk) ha
@@ -180,8 +174,7 @@ theorem takeuchiAntipode_mul_rTensor_comul :
     change ((takeuchiT i * toConv LinearMap.id :
       WithConv (A →ₗ[R] A))).ofConv a = algebraMap R A (counit a)
     rw [takeuchiT_mul_id, WithConv.ofConv_sub, LinearMap.sub_apply,
-      neg_takeuchiF_pow_apply_of_mem 𝒜 (Nat.lt_succ_self i) ha, sub_zero]
-    rfl
+      neg_takeuchiF_pow_apply_of_mem 𝒜 (Nat.lt_succ_self i) ha, sub_zero, convOne_apply]
   · intro y₁ y₂ h₁ h₂
     simp only [comp_apply, map_add, h₁, h₂]
 
@@ -197,8 +190,7 @@ theorem takeuchiAntipode_mul_lTensor_comul :
     change ((toConv LinearMap.id * takeuchiT i :
       WithConv (A →ₗ[R] A))).ofConv a = algebraMap R A (counit a)
     rw [id_mul_takeuchiT, WithConv.ofConv_sub, LinearMap.sub_apply,
-      neg_takeuchiF_pow_apply_of_mem 𝒜 (Nat.lt_succ_self i) ha, sub_zero]
-    rfl
+      neg_takeuchiF_pow_apply_of_mem 𝒜 (Nat.lt_succ_self i) ha, sub_zero, convOne_apply]
   · intro y₁ y₂ h₁ h₂
     simp only [comp_apply, map_add, h₁, h₂]
 

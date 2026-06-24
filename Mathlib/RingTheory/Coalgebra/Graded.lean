@@ -53,5 +53,5 @@ class GradedCoalgebra (𝒜 : ι → Submodule R A) : Prop where
     Coalgebra.comul x ∈
       ⨆ (p : ι) (q : ι) (_ : p + q = n), Submodule.map₂ (TensorProduct.mk R A A) (𝒜 p) (𝒜 q)
   /-- The counit vanishes on elements of nonzero degree. -/
-  counit_eq_zero_of_degree_ne_zero : ∀ {n : ι} {x : A}, n ≠ 0 → x ∈ 𝒜 n →
+  counit_eq_zero_of_ne_zero : ∀ {n : ι} {x : A}, n ≠ 0 → x ∈ 𝒜 n →
     Coalgebra.counit (R := R) x = 0
