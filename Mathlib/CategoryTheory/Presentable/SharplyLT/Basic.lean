@@ -90,6 +90,10 @@ open CardinalDirectedPoset
 
 namespace existsIsCardinalFilteredSetOfExistsCofinal
 
+/-! The definitions in this section are part of the proof of the
+lemma `exists_isCardinalFiltered_set_of_exists_cofinal` below.
+-/
+
 variable (h₀ : κ₁ < κ₂)
   {X : Type w} [PartialOrder X]
   (Y : ∀ (B : Set X) (_ : HasCardinalLT B κ₂), Set (SetCardinalLT κ₁ B))
