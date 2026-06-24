@@ -988,7 +988,7 @@ run_cmd
 /-! Deprecated attribute -/
 
 @[deprecated mul_comm (since := "today"), to_additive]
-def old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
+theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
 
 /--
 warning: `old_add_comm` has been deprecated: Use `add_comm` instead
@@ -1009,4 +1009,4 @@ Note: This linter can be disabled with `set_option linter.translate.deprecated f
 -/
 #guard_msgs in
 @[to_additive (attr := deprecated mul_comm (since := "today"))]
-def old_mul_comm' {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
+theorem old_mul_comm' {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
