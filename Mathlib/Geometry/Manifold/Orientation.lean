@@ -167,8 +167,7 @@ noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrient
   invFun δ := twist I o₀ δ
   left_inv o := by
     classical
-    apply ManifoldOrientation.ext
-    funext x z
+    ext x z : 3
     by_cases hz : z ∈ (chartAt H x).source
     · change (if z ∈ (chartAt H x).source then (deltaLC I o₀ o) z * o₀.chartSign x z else 1)
           = o.chartSign x z
@@ -181,7 +180,7 @@ noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrient
       rw [if_neg hz, o.chartSign_eq_one_of_not_mem x z hz]
   right_inv δ := by
     classical
-    refine LocallyConstant.ext fun z => ?_
+    ext z : 1
     change (if z ∈ (chartAt H z).source then δ z * o₀.chartSign z z else 1) * o₀.chartSign z z = δ z
     rw [if_pos (mem_chart_source H z)]
     exact (by decide : ∀ a b : ℤˣ, a * b * b = a) _ _
