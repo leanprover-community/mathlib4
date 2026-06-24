@@ -121,27 +121,23 @@ private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
     z * algebraMap R (S.integer K) x.2 = algebraMap R (S.integer K) x.1 := by
   intro z
   simp only [Prod.exists, Subtype.exists, exists_prop]
-  -- We know that `v(z) ≤ 1` for all `v ∉ S`.
-  have h_outside : ∀ v ∉ S, v.valuation K z ≤ 1 := fun _ h ↦ integer_valuation_le_one S K z h
-  -- Let T be the finite set of places in S that have `v(z) > 1`.
-  let T : Finset (HeightOneSpectrum R) := (Support.finite (R := R) (k := (z : K))).toFinset
+  -- Let T be the finite set of places that have `v(z) > 1`.
+  let T := (Support.finite (R := R) (k := (z : K))).toFinset
   have hT_subset : ∀ v ∈ T, v ∈ S := by
     intro v hv
     contrapose! hv
-    simpa [T, HeightOneSpectrum.Support] using h_outside v hv
-  -- I is the denominator ideal of z.
+    simp [T, HeightOneSpectrum.Support, integer_valuation_le_one S K z hv]
+  -- `I` is the denominator ideal of `z`.
   let I := ∏ v ∈ T, v.asIdeal ^ (WithZero.log (v.valuation K z)).toNat
   have hI_ne_zero : I ≠ 0 := by
-    simpa only [I, Finset.prod_ne_zero_iff, bot_eq_zero] using fun v _ ↦
-      pow_ne_zero _ v.ne_bot
+    grind [Finset.prod_ne_zero_iff, pow_ne_zero, HeightOneSpectrum.ne_bot, bot_eq_zero]
   /- Here we use the fact that the ClassGroup has finite order, so there exist `n > 0` and `α` such
-  that `I ^ n = (α)`. This can be con  -/
-  obtain ⟨n, hn, ⟨α, hα⟩⟩ : ∃ n : ℕ, 0 < n ∧ (I ^ n).IsPrincipal := by
-    let I₀ : (Ideal R)⁰ := ⟨I, mem_nonZeroDivisors_iff_ne_zero.mpr hI_ne_zero⟩
-    obtain ⟨n, hn, _⟩ := isOfFinOrder_iff_pow_eq_one.1
-      ((Fact.out : Monoid.IsTorsion (ClassGroup R)) (ClassGroup.mk0 I₀))
-    refine ⟨n, hn, ?_⟩
-    simp_all [← MonoidHom.map_pow ClassGroup.mk0 I₀ n, ClassGroup.mk0_eq_one_iff, I₀]
+  that `I ^ n = (α)`. -/
+  let I₀ : (Ideal R)⁰ := ⟨I, mem_nonZeroDivisors_iff_ne_zero.mpr hI_ne_zero⟩
+  obtain ⟨n, hn, _⟩ := isOfFinOrder_iff_pow_eq_one.1
+    ((Fact.out : Monoid.IsTorsion (ClassGroup R)) (ClassGroup.mk0 I₀))
+  obtain ⟨α, hα⟩ : (I ^ n).IsPrincipal := by
+    simp_all [← MonoidHom.map_pow, ClassGroup.mk0_eq_one_iff, I₀]
   have hα_mem_pow {v : HeightOneSpectrum R} (hvT : v ∈ T) :
       α ∈ v.asIdeal ^ (WithZero.log (v.valuation K z)).toNat := by
     rw [← Ideal.span_singleton_le_iff_mem]
