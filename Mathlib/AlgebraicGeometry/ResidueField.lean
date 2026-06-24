@@ -124,6 +124,26 @@ def Hom.residueFieldMap (f : X ⟶ Y) (x : X) :
     Y.residueField (f x) ⟶ X.residueField x :=
   CommRingCat.ofHom <| IsLocalRing.ResidueField.map (f.stalkMap x).hom
 
+lemma Hom.residueFieldMap_id (x : X) : ((𝟙 _ : X ⟶ X).residueFieldMap x) = 𝟙 _ := by
+  ext a
+  simp [Hom.residueFieldMap]
+  congr
+
+/--
+Degree of `f` at a point `x` is defined to be the degree of the associated field extension
+from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is either infinite
+or undefined.
+-/
+def Hom.residueDegree (f : X ⟶ Y) (x : X) : ℕ :=
+  letI := (f.residueFieldMap x).hom.toAlgebra
+  Module.finrank (Y.residueField (f x)) (X.residueField x)
+
+@[simp]
+lemma Hom.residueDegree_id (x : X) : (𝟙 _ : X ⟶ X).residueDegree x = 1 := by
+  dsimp [residueDegree]
+  rw [residueFieldMap_id]
+  exact CommSemiring.finrank_self ↑(X.residueField ((𝟙 X) x))
+
 @[reassoc]
 lemma residue_residueFieldMap (x : X) :
     Y.residue (f x) ≫ f.residueFieldMap x = f.stalkMap x ≫ X.residue x := by

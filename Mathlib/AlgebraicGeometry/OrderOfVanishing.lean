@@ -51,26 +51,31 @@ The order of vanishing of an element of the function field of a locally Noetheri
 at a point. This has a junk value of `0` if `f = 0` or if `coheight z ≠ 1`.
 -/
 noncomputable
-def ord (z : X) (f : X.functionField) : ℤ :=
+def ord (f : X.functionField) (z : X) : ℤ :=
   if hz : coheight z = 1
   then Multiplicative.toAdd <| WithZero.recZeroCoe 1 id <| X.ordHom z hz f
   else 0
 
 lemma ord_eq_ordHom_of_coheight_eq_one {z : X} (hz : coheight z = 1) (f : X.functionField) :
-    ord z f = Multiplicative.toAdd (WithZero.recZeroCoe 1 id <| X.ordHom z hz f) := dif_pos hz
+    ord f z = Multiplicative.toAdd (WithZero.recZeroCoe 1 id <| X.ordHom z hz f) := dif_pos hz
 
 @[simp]
 lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.functionField) :
-    ord z f = 0 := dif_neg hz
+    ord f z = 0 := dif_neg hz
 
 @[simp]
-lemma ord_zero {z : X} : ord z 0 = 0 := by
+lemma ord_zero {z : X} : ord 0 z = 0 := by
   by_cases h : coheight z = 1
   · simp [ord_eq_ordHom_of_coheight_eq_one h]
   · simp [h]
 
+@[simp]
+lemma support_ord_zero : ord (0 : X.functionField) = 0 := by
+  ext z
+  simp
+
 lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :
-    ord x f = Multiplicative.toAdd WithZero.unzero (ordHom_ne_zero hx hf) := by
+    ord f x = Multiplicative.toAdd WithZero.unzero (ordHom_ne_zero hx hf) := by
   simp only [ord]
   obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ordHom_ne_zero hx hf
   simp only [← ha1, hx]
@@ -79,13 +84,13 @@ lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (
   exact Eq.symm (coe_unzero (ordHom_ne_zero hx hf))
 
 lemma ord_eq_iff {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) {n : ℤ} :
-    ord z f = n ↔ ordHom z hz f = Multiplicative.ofAdd n := by
+    ord f z = n ↔ ordHom z hz f = Multiplicative.ofAdd n := by
   rw [ord_eq_unzero_ordHom hz hf]
   exact WithZero.toAdd_unzero_eq_iff _ _
 
 @[simp]
 lemma ord_mul {x : X} (hx : coheight x = 1) {f g : X.functionField}
-    (hf : f ≠ 0) (hg : g ≠ 0) : ord x (f*g) = ord x f + ord x g := by
+    (hf : f ≠ 0) (hg : g ≠ 0) : ord (f*g) x = ord f x + ord g x := by
   have : f * g ≠ 0 := (mul_ne_zero_iff_right hg).mpr hf
   rw [ord_eq_iff hx this]
   obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ordHom_ne_zero hx hf
@@ -93,21 +98,29 @@ lemma ord_mul {x : X} (hx : coheight x = 1) {f g : X.functionField}
   simp [ord_eq_ordHom_of_coheight_eq_one hx, ← ha1, ← ha2]
 
 lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X}
-    (hx : coheight x = 1) (hx' : x ∈ U) : ord x (X.germToFunctionField U f) = 0 := by
+    (hx : coheight x = 1) (hx' : x ∈ U) : ord (X.germToFunctionField U f) x = 0 := by
   have hf' : X.germToFunctionField U f ≠ 0 :=
     (map_ne_zero_iff _ (germToFunctionField_injective X U)).mpr <| IsUnit.ne_zero hf
   simp [ord_eq_iff hx hf', ordHom_of_isUnit hf hx hx']
 
 lemma ord_le_ord_iff {x y : X} (hx : coheight x = 1) (hy : coheight y = 1) {f g : X.functionField}
     (hf : f ≠ 0) (hg : g ≠ 0) :
-    ord x f ≤ ord y g ↔ ordHom x hx f ≤ ordHom y hy g := by
+    ord f x ≤ ord g y ↔ ordHom x hx f ≤ ordHom y hy g := by
   rw [ord_eq_unzero_ordHom hx hf, ord_eq_unzero_ordHom hy hg]
   erw [Multiplicative.toAdd_le]
   simp
 
+lemma le_ord_iff {x : X} (hx : coheight x = 1) {f : X.functionField}
+    (hf : f ≠ 0) {n : ℤ} :
+    n ≤ ord f x ↔ ↑(Multiplicative.ofAdd n) ≤ ordHom x hx f := by
+  rw [ord_eq_unzero_ordHom hx hf]
+  change (Multiplicative.toAdd (Multiplicative.ofAdd n)) ≤ _ ↔ _
+  erw [Multiplicative.toAdd_le]
+  rw [le_unzero_iff]
+
 lemma ord_add {x : X} (hx : coheight x = 1) [IsDiscreteValuationRing (X.presheaf.stalk x)]
     {f g : X.functionField} (hfg : f + g ≠ 0) :
-    min (ord x f) (ord x g) ≤ ord x (f + g) := by
+    min (ord f x) (ord g x) ≤ ord (f + g) x := by
   by_cases hf : f = 0
   · simp [hf]
   by_cases hg : g = 0
@@ -120,7 +133,7 @@ lemma ord_add {x : X} (hx : coheight x = 1) [IsDiscreteValuationRing (X.presheaf
     rwa [ord_le_ord_iff hx hx hg hfg]
 
 lemma ord_le_smul {x : X} (hx : coheight x = 1) {U : X.Opens} [Nonempty U] (hxU : x ∈ U)
-    {a : Γ(X, U)} (ha : a ≠ 0) (f : X.functionField) : ord x f ≤ ord x (a • f) := by
+    {a : Γ(X, U)} (ha : a ≠ 0) (f : X.functionField) : ord f x ≤ ord (a • f) x := by
   by_cases hf : f = 0
   · simp [hf]
   have : a • f ≠ 0 := (mul_ne_zero_iff_right hf).mpr <|

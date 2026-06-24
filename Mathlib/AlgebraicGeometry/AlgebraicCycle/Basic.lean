@@ -5,11 +5,10 @@ Authors: Raphael Douglas Giles
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Scheme
-public import Mathlib.Topology.LocallyFinsupp.Pushforward
-public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-public import Mathlib.AlgebraicGeometry.Fiber
+public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.Topology.LocallyFinsupp.Pushforward
+public import Mathlib.AlgebraicGeometry.ResidueField
 
 /-!
 # Algebraic Cycles
@@ -19,14 +18,15 @@ some basic API for working with them. We define an algebraic cycle on a scheme `
 coefficients in a type `R` to be functions `c : X → R` whose support is locally finite.
 
 Here we're making use of the equivalence between irreducible closed subsets of a scheme and their
-generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
+generic points in order to reuse the API in `Function.locallyFinsupp`, hence the slightly
 nonstandard definition.
 -/
 
 @[expose] public section
 
-open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
-  CategoryTheory
+namespace AlgebraicGeometry
+
+open CategoryTheory Set
 
 universe u v
 variable {X Y : Scheme.{u}} {R : Type*}
@@ -39,26 +39,10 @@ Here we're making use of the equivalence between irreducible closed subsets of a
 generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
 nonstandard definition.
 -/
-abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] := Function.locallyFinsupp X R
+abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
+    Function.locallyFinsupp X R
 
 variable (f : X ⟶ Y)
-
-noncomputable
-instance moduleResidueFieldExtension (x : X) :
-    Module (IsLocalRing.ResidueField ↑(Y.presheaf.stalk (f x)))
-    (IsLocalRing.ResidueField ↑(X.presheaf.stalk x)) :=
-  letI := RingHom.toAlgebra (IsLocalRing.ResidueField.map (f.stalkMap x).hom)
-  Algebra.toModule
-
-/--
-Degree of `f` at a point `x` is defined to be the degree of the associated field extension
-from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is either infinite
-or undefined.
--/
-noncomputable
-def _root_.AlgebraicGeometry.Scheme.Hom.degree (x : X) : ℕ := @Module.finrank
-    (IsLocalRing.ResidueField (Y.presheaf.stalk (f.base x)))
-    (IsLocalRing.ResidueField (X.presheaf.stalk x)) _ _ _
 
 namespace AlgebraicCycle
 section restrict
@@ -134,18 +118,12 @@ end restrict
 
 variable [Semiring R] (c : AlgebraicCycle X R)
 /--
-Implementation detail for pushforward: function used to define the coefficient of the pushforward
-of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
+Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the
+pushforward of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
 noncomputable
 def mapAux {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N) (wy : Y → N) (x : X) :
-    ℕ := if wx x = wy (f.base x) then f.degree x else 0
-
-open Function locallyFinsupp
-lemma _root_.AlgebraicGeometry.Scheme.Hom.preimageSupportFinite [QuasiCompact f] :
-    PreimageSupportFinite c f :=
-  fun z ↦ LocallyFiniteSupport.finite_inter_support_of_isCompact c.locallyFiniteSupport <|
-    AlgebraicGeometry.Scheme.Hom.isCompact_preimage_singleton f z
+    ℕ := if wx x = wy (f.base x) then f.residueDegree x else 0
 
 /--
 The pushforward of algebraic cycles with respect to a quasicompact morphism of schemes. The
@@ -157,36 +135,20 @@ more sophisticated notions exist in the literature which are useful when suffici
 equidimensionality hypotheses cannot be assumed.
 -/
 noncomputable
-def pushforward [QuasiCompact f] {N : Type*} [DecidableEq N] (c : AlgebraicCycle X R)
-    (wx : X → N) (wy : Y → N) : AlgebraicCycle Y R :=
-  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) c
-  f.isSpectralMap (f.preimageSupportFinite c)
+def map [QuasiCompact f] {N : Type*} [DecidableEq N]
+    (wx : X → N) (wy : Y → N) (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
+  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) f.isSpectralMap c
 
-lemma homgeneous_ext {R : Type*} [Zero R] {D₁ D₂ : AlgebraicCycle X R}
-    {t : Set X} (hD₁ : D₁.support ⊆ t) (hD₂ : D₂.support ⊆ t)
-    (h : ∀ a ∈ t, D₁ a = D₂ a) : D₁ = D₂ :=
-  have h' : ∀ a, D₁ a = D₂ a := by
-    intro a
-    by_cases o : a ∈ t
-    · exact h a o
-    rw [support_subset_iff] at hD₁ hD₂
-    specialize hD₁ a
-    specialize hD₂ a
-    simp_all
-  DFunLike.ext _ _ h'
+@[simp]
+lemma map_apply [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
+    (c : AlgebraicCycle X R) (y : Y) :
+  map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapAux f wx wy x) := rfl
 
-lemma homogeneous_le_iff {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : AlgebraicCycle X R}
-    {t : Set X} (hD₁ : D₁.support ⊆ t) (hD₂ : ∀ z ∈ tᶜ, D₂ z ≥ 0) :
-    D₁ ≤ D₂ ↔ ∀ z ∈ t, D₁ z ≤ D₂ z := by
-  peel with z
-  refine ⟨by tauto, fun m ↦ ?_⟩
-  by_cases o : z ∈ t
-  · exact m o
-  simp only [support_subset_iff, ne_eq] at hD₁
-  specialize hD₁ z
-  by_cases p : D₁ z = 0
-  · simp_all
-  specialize hD₁ p
-  contradiction
+@[simp]
+lemma map_id [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
+    map (𝟙 _) wx wx c = c := by
+  apply Function.locallyFinsupp.map_id
+  simp [mapAux]
 
 end AlgebraicCycle
+end AlgebraicGeometry

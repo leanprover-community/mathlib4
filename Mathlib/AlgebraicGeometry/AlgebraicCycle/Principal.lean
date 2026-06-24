@@ -30,10 +30,12 @@ open Multiplicative WithZero Scheme
 /--
 A principal divisor on a locally noetherian integral scheme is locally finite (and hence a divisor).
 -/
-lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) (hf : f ≠ 0)
-    (z : X) : ∃ t ∈ 𝓝 z, (t ∩ Function.support fun Z : X ↦ if h : coheight Z = 1
-    then toAdd <| WithZero.unzero (Scheme.ord_ne_zero h hf) else 0).Finite := by
-  obtain ⟨U, f', (hUne : Nonempty U), hgf, hu⟩ := Scheme.exists_isUnit_germ_eq f hf
+lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField)
+    (z : X) : ∃ t ∈ 𝓝 z, (t ∩ Function.support (ord f)).Finite := by
+  by_cases hf : f = 0
+  · use ⊤
+    simp [hf]
+  obtain ⟨U, hU, g, (hUne : Nonempty U), hgf, hg⟩ := exists_isUnit_germ_eq f hf
   obtain ⟨W, hWa, hzW, -⟩ := exists_isAffineOpen_mem_and_subset (x := z) (U := ⊤) (by simp)
   have : IsNoetherianRing Γ(X, W) := IsLocallyNoetherian.component_noetherian ⟨W, hWa⟩
   have : NoetherianSpace W.1 := noetherianSpace_of_isAffineOpen W hWa
@@ -51,11 +53,11 @@ lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionF
   refine ⟨W, W.2.mem_nhds hzW,
     (NoetherianSpace.finite_coheight_one_of_closure_ne_univ hne).subset ?_⟩
   intro x ⟨hxW, hxsup⟩
-  simp only [Function.mem_support, ne_eq, dite_eq_right_iff, toAdd_eq_zero, not_forall] at hxsup
-  obtain ⟨hx1, hxne⟩ := hxsup
-  have : Scheme.ord x hx1 f ≠ 1 := fun h =>
-    hxne <| coe_inj.mp <| by rw [coe_one, coe_unzero, h]
-  exact ⟨⟨hxW, Scheme.not_mem_of_ord_neq_one f hu hgf this⟩, hx1⟩
+  have : coheight x = 1 := by
+    by_contra!
+    have := ord_eq_zero_of_coheight_neq_one this f
+    contradiction
+  refine ⟨⟨hxW, fun a ↦ hxsup (hgf ▸ ord_of_isUnit hg this a)⟩, this⟩
 
 /--
 On an locally Noetherian integral scheme, given `f : X.functionField` and `hf : x ≠ 0`,
