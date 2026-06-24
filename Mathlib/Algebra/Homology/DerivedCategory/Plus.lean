@@ -91,7 +91,7 @@ instance : (HomotopyCategory.plus C).IsVerdierRightLocalizing
     obtain ⟨K : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
     obtain ⟨L : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective L
     simp only [HomotopyCategory.plus_quotient_obj_iff] at hL
-    obtain ⟨n, hn : L.IsStrictlyGE n⟩ := hL
+    obtain ⟨n, hn⟩ := hL
     obtain ⟨φ, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective φ
     rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
     refine ⟨(HomotopyCategory.quotient _ _).obj (K.truncGE n),
