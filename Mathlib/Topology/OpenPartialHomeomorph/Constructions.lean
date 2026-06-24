@@ -86,14 +86,11 @@ def prod (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
   continuousOn_invFun := eX.continuousOn_symm.prodMap eY.continuousOn_symm
   toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
-@[deprecated "This lemma can often be replaced by `OpenPartialHomeomorph.prod_toPartialHomeomorph`."
+@[deprecated "deprecated in favour of `OpenPartialHomeomorph.prod_toPartialHomeomorph`"
   (since := "2026-06-24")]
-lemma prod_toPartialEquiv (eX : OpenPartialHomeomorph X X')
-    (eY : OpenPartialHomeomorph Y Y') :
-    (eX.prod eY).toPartialHomeomorph.toPartialEquiv =
-      eX.toPartialEquiv.prod eY.toPartialEquiv :=
-rfl
-
+lemma prod_toPartialEquiv (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
+    (eX.prod eY).toPartialHomeomorph.toPartialEquiv = eX.toPartialEquiv.prod eY.toPartialEquiv :=
+  rfl
 @[simp, mfld_simps]
 theorem prod_symm (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
     (eX.prod eY).symm = eX.symm.prod eY.symm :=
