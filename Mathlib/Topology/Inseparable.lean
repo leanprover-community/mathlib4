@@ -413,7 +413,7 @@ lemma Topology.IsInducing.generalizingMap (hf : IsInducing f)
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
-lemma IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
+lemma Topology.IsOpenEmbedding.generalizingMap (hf : IsOpenEmbedding f) : GeneralizingMap f :=
   hf.isInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
 
 lemma SpecializingMap.stableUnderSpecialization_range (h : SpecializingMap f) :
