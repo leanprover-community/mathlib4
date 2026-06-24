@@ -17,16 +17,6 @@ to be rational functions such that `(f) + D ≥ 0` on `U`. By Weil divisor we ju
 cycle purely of codimension `1`. In this file, we actually don't place any restrictions on `D`,
 just taking it to be any cycle with coefficients in `ℤ`, just because the actual definitions do
 not require this anywhere.
-
-This definition gives good results on locally Noetherian, integral schemes which are
-regular in codimension 1. In particular this is useful for working with normal varieties,
-where the map from Cartier divisors to Weil divisors is injective. Note that when applied to Weil
-divisors which are not Cartier, this sheaf will not necessarily be invertible.
-
-Note that we can extend the construction here to schemes which are not necessarily irreducible with
-some extra bookkeeping. That said, in my opinion the most sensible way to do this goes via the
-construction on integral schemes, and in any case the construction for integral schemes comes up the
-most in applications, hence our decision to formalize the version for integral schemes  .
 -/
 
 open AlgebraicGeometry Scheme CategoryTheory Order AlgebraicCycle Opposite

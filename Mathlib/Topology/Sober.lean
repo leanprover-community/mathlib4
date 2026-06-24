@@ -9,7 +9,6 @@ public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.NoetherianSpace
 public import Mathlib.Order.KrullDimension
-public import Mathlib.Topology.NoetherianSpace -- This probably shouldn't be here
 
 /-!
 # Sober spaces
