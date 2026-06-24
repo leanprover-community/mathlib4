@@ -69,7 +69,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] 
 lemma injective_eval_mdifferentiableAt_vectorField
     (V : Type*) [AddCommGroup V] [Module ℝ V] [TopologicalSpace V] (x : M) :
     Function.Injective
-      (fun A : TangentSpace I x →L[ℝ] V ↦
+      (fun A : TangentSpace% x →L[ℝ] V ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
   VectorBundle.injective_eval_mdifferentiableAt_sec ..
 
@@ -77,8 +77,8 @@ variable {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
 
 -- From now on, `M` is endowed with a Riemannian metric.
 variable
-  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
-  {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)]
+  {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace% x}
 
 open scoped RealInnerProductSpace
 
@@ -99,10 +99,10 @@ lemma VectorBundle.completeSpace (R : Type*) [NontriviallyNormedField R]
 -- and write a variant for `CMDiffAt n`
 lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
     Function.Injective
-      (fun X₀ : TangentSpace I x ↦
+      (fun X₀ : TangentSpace% x ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
   have := VectorBundle.completeSpace ℝ (TangentSpace I (M := M)) E
-  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
+  set Φ := InnerProductSpace.toDual ℝ (TangentSpace% x)
   exact (injective_eval_mdifferentiableAt_vectorField I ℝ x).comp Φ.injective
 
 -- Let `cov` and `cov'` be covariant derivatives on `TM`.
@@ -116,7 +116,7 @@ local syntax:max "∇'" term:arg term:arg : term
 local macro_rules | `(∇' $X $σ) => `(fun (x : M) ↦ cov' $σ x ($X x))
 
 -- From now on, we assume the Riemannian metric on `M` is `C¹`.
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace% x)]
 
 -- Local notation for pointwise inner products of vector fields.
 -- Note this does not cause ambiguity with the notation obtained
@@ -128,12 +128,12 @@ local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 be fully solved. -/
 
 variable {I} in
-@[fun_prop] lemma _root_.MDifferentiable.inner_bundle' {X Y : Π x : M, TangentSpace I x}
+@[fun_prop] lemma _root_.MDifferentiable.inner_bundle' {X Y : Π x : M, TangentSpace% x}
     (hX : MDiff (T% X)) (hY : MDiff (T% Y)) : MDiff ⟪X, Y⟫ :=
   MDifferentiable.inner_bundle hX hY
 
 variable {I} in
-@[fun_prop] lemma _root_.MDifferentiableAt.inner_bundle' {x : M} {X Y : Π x : M, TangentSpace I x}
+@[fun_prop] lemma _root_.MDifferentiableAt.inner_bundle' {x : M} {X Y : Π x : M, TangentSpace% x}
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     MDiffAt ⟪X, Y⟫ x :=
   MDifferentiableAt.inner_bundle hX hY
@@ -200,7 +200,7 @@ noncomputable def leviCivitaAux (x : M) : ℝ :=
 
 /-- `leviCivitaAux` is tensorial with respect to its first argument. -/
 theorem leviCivitaAux_tensorial₁ [FiniteDimensional ℝ E]
-    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
+    {Y : Π x : M, TangentSpace% x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
     (hZ : MDiffAt (T% Z) x) :
     TensorialAt I E (leviCivitaAux I · Y Z x) x where
   smul hf hX := by
@@ -215,7 +215,7 @@ theorem leviCivitaAux_tensorial₁ [FiniteDimensional ℝ E]
 
 /-- `leviCivitaAux` is tensorial with respect to its second argument. -/
 theorem leviCivitaAux_tensorial₂ [FiniteDimensional ℝ E]
-    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {X : Π x, TangentSpace I x}
+    {Y : Π x : M, TangentSpace% x} (x : M) (hY : MDiffAt (T% Y) x) {X : Π x, TangentSpace I x}
     (hX : MDiffAt (T% X) x) :
     TensorialAt I E (leviCivitaAux I X Y · x) x where
   smul hf hZ := by
@@ -235,12 +235,12 @@ theorem leviCivitaAux_tensorial₂ [FiniteDimensional ℝ E]
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
 applied to non-differentiable vector fields. -/
 noncomputable def lcAux₁ [FiniteDimensional ℝ E]
-    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
-    TangentSpace I x →L[ℝ] TangentSpace I x :=
+    {Y : Π x : M, TangentSpace% x} (x : M) (hY : MDiffAt (T% Y) x) :
+    TangentSpace% x →L[ℝ] TangentSpace% x :=
   -- Use the musical isomorphism to produce a candidate `∇ Y` as a `(1,1)`-tensor
   -- (rather than a `2`-tensor).
-  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
-  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
+  have : FiniteDimensional ℝ (TangentSpace% x) := inferInstanceAs (FiniteDimensional ℝ E)
+  have : CompleteSpace (TangentSpace% x) := FiniteDimensional.complete ℝ _
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
     (TensorialAt.mkHom₂ _ (x := x)
       (fun _Z hZ ↦ leviCivitaAux_tensorial₁ _ _ hY hZ)
@@ -248,9 +248,9 @@ noncomputable def lcAux₁ [FiniteDimensional ℝ E]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
-    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
-    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
-    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    {X : Π x : M, TangentSpace% x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace% x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace% x} (hZ : MDiffAt (T% Z) x) :
     ⟪lcAux₁ I x hY (X x), Z x⟫ = leviCivitaAux I X Y Z x := by
   unfold lcAux₁
   simp [TensorialAt.mkHom₂_apply _ _ hX hZ]
@@ -258,14 +258,14 @@ theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
 open scoped Classical in
 /-- The function underlying our construction of the Levi-Civita connection on `(M,g)` -/
 noncomputable def lcAux [FiniteDimensional ℝ E]
-    (Y : Π x : M, TangentSpace I x) (x : M) :
-    TangentSpace I x →L[ℝ] TangentSpace I x :=
+    (Y : Π x : M, TangentSpace% x) (x : M) :
+    TangentSpace% x →L[ℝ] TangentSpace% x :=
   if hY : MDiffAt (T% Y) x then lcAux₁ I x hY else 0
 
 theorem lcAux_apply [FiniteDimensional ℝ E] {x : M}
-    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
-    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
-    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    {X : Π x : M, TangentSpace% x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace% x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace% x} (hZ : MDiffAt (T% Z) x) :
     ⟪lcAux I Y x (X x), Z x⟫ = leviCivitaAux I X Y Z x := by
   simpa [lcAux, dif_pos hY] using lcAux₁_apply I hX hY hZ
 
@@ -299,9 +299,9 @@ public noncomputable def leviCivitaConnection [FiniteDimensional ℝ E] :
   isCovariantDerivativeOnUniv := isCovariantDerivativeOn_lcAux I
 
 public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
-    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
-    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
-    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    {X : Π x : M, TangentSpace% x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace% x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace% x} (hZ : MDiffAt (T% Z) x) :
     ⟪leviCivitaConnection I M Y x (X x), Z x⟫ =
       (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
       - ⟪Y, VectorField.mlieBracket I X Z⟫ x
@@ -310,9 +310,9 @@ public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
   lcAux_apply _ hX hY hZ
 
 public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M}
-    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
-    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
-    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    {X : Π x : M, TangentSpace% x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace% x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace% x} (hZ : MDiffAt (T% Z) x) :
     ⟪X x, leviCivitaConnection I M Y x (Z x)⟫ =
       (d% ⟪Y, X⟫ x (Z x) + d% ⟪X, Z⟫ x (Y x) - d% ⟪Z, Y⟫ x (X x)
       - ⟪Y ,VectorField.mlieBracket I Z X⟫ x
