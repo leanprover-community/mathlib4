@@ -65,8 +65,9 @@ lemma IsOrthonormalFrameOn.mono (hs : IsOrthonormalFrameOn IB F n s u) (huu' : u
   toIsLocalFrameOn := hs.toIsLocalFrameOn.mono huu'
   orthonormal hx := hs.orthonormal (huu' hx)
 
+omit [IsManifold IB n B] [ContMDiffVectorBundle n F E IB] in
 /-- Applying the Gram-Schmidt procedure to a local frame yields an orthonormal local frame. -/
-def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
+lemma IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
     IsOrthonormalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
   linearIndependent := by
     intro x hx
@@ -80,9 +81,10 @@ def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
   orthonormal hx := (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx))
 
 -- XXX: is this one necessary?
+omit [IsManifold IB n B] [ContMDiffVectorBundle n F E IB] in
 /-- Applying the normalised Gram-Schmidt procedure to an orthonormal local frame yields
 another orthonormal local frame. -/
-def IsOrthonormalFrameOn.gramSchmidtNormed (hs : IsOrthonormalFrameOn IB F n s u) :
+lemma IsOrthonormalFrameOn.gramSchmidtNormed (hs : IsOrthonormalFrameOn IB F n s u) :
     IsOrthonormalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u :=
   hs.toIsLocalFrameOn.gramSchmidtNormed
 
@@ -106,7 +108,7 @@ section smoothness
 namespace IsOrthonormalFrameOn
 
 omit [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
-variable [Fintype ι]
+variable [Finite ι]
 
 variable (hs : IsOrthonormalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
 
@@ -115,6 +117,7 @@ omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
 variable (t) in
 lemma coeff_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : ι) :
     hs.coeff i x (t x) = ⟪s i x, t x⟫ := by
+  have := Fintype.ofFinite ι
   let b := VectorBundle.gramSchmidtOrthonormalBasis (hs.linearIndependent hx) (hs.generating hx)
   have beq (i : ι) : b i = s i x := by
     simp [b, VectorBundle.gramSchmidtNormed_apply_of_orthonormal (hs.orthonormal hx) i]
