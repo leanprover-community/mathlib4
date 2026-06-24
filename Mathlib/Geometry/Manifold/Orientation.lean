@@ -205,7 +205,7 @@ noncomputable def locallyConstantEquivConnectedComponents [LocallyConnectedSpace
     rfl
   right_inv g := by
     funext c
-    rcases ConnectedComponents.surjective_coe c with ⟨x, rfl⟩
+    obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c
     rfl
 
 theorem natCard_manifoldOrientation_eq_two_pow_of_natCard_connectedComponents_eq
