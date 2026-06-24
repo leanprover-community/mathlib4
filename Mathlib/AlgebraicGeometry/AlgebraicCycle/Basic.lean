@@ -26,7 +26,7 @@ nonstandard definition.
 
 namespace AlgebraicGeometry
 
-open CategoryTheory Set
+open CategoryTheory Set Function
 
 universe u v
 variable {X Y : Scheme.{u}} {R : Type*}
@@ -89,24 +89,10 @@ lemma restrict_eqOn_compl : Set.EqOn (D.restrict t) 0 tᶜ := by
 lemma restrict_eq_zero_of_eq_zero {z : X} (hD : D z = 0) : (D.restrict t) z = 0 := by
   by_cases o : z ∈ t <;> simp_all
 
-variable {D t}
-lemma restrict_support_subset_support : (D.restrict t).support ⊆ D.support := by
-  simp_all only [Function.support_subset_iff, ne_eq, Function.mem_support]
-  intro x hx
-  contrapose hx
-  simp_all
-
-lemma restrict_support_subset : (D.restrict t).support ⊆ t := by
-  intro z
-  by_cases o : z ∈ t <;> simp_all
-
-lemma restrict_support_of_subset {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R}
-    {t s : Set X} (h : D.support ⊆ s) : (D.restrict t).support ⊆ s :=
-  Subset.trans restrict_support_subset_support h
-
-lemma restrict_support_subset_inter {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R}
-    {t s : Set X} (h : D.support ⊆ s) : (D.restrict t).support ⊆ s ∩ t :=
-  subset_inter_iff.mpr ⟨Subset.trans restrict_support_subset_support h, restrict_support_subset⟩
+@[simp]
+lemma restrict_support : (D.restrict t).support = D.support ∩ t := by
+  ext z
+  simp [restrict, And.comm]
 
 @[simp]
 lemma restrict_univ {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R} :
@@ -149,6 +135,30 @@ lemma map_id [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (c : Al
     map (𝟙 _) wx wx c = c := by
   apply Function.locallyFinsupp.map_id
   simp [mapAux]
+
+@[ext]
+lemma ext {R : Type*} [Zero R] {D₁ D₂ : AlgebraicCycle X R}
+    (h : ∀ a ∈ D₁.support ∪ D₂.support, D₁ a = D₂ a) : D₁ = D₂ :=
+  have h' : ∀ a, D₁ a = D₂ a := by
+    intro a
+    by_cases o : a ∈ D₁.support ∪ D₂.support
+    · exact h a o
+    simp_all
+  DFunLike.ext _ _ h'
+
+lemma le_iff_of_support_subset {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : AlgebraicCycle X R}
+    {t : Set X} (hD₁ : D₁.support ⊆ t) (hD₂ : ∀ z ∈ tᶜ, D₂ z ≥ 0) :
+    D₁ ≤ D₂ ↔ ∀ z ∈ t, D₁ z ≤ D₂ z := by
+  peel with z
+  refine ⟨by tauto, fun m ↦ ?_⟩
+  by_cases o : z ∈ t
+  · exact m o
+  simp only [support_subset_iff, ne_eq] at hD₁
+  specialize hD₁ z
+  by_cases p : D₁ z = 0
+  · simp_all
+  specialize hD₁ p
+  contradiction
 
 end AlgebraicCycle
 end AlgebraicGeometry
