@@ -976,7 +976,7 @@ noncomputable def ofSurjective (f : α ↪o β) (hf : Function.Surjective f) : �
 
 /-- Surjective order embeddings are equivalent to order isomorphisms. -/
 @[simps apply symm_apply]
-noncomputable def embeddingSurjectiveEquivIso :
+noncomputable def equivEmbeddingSurjective :
     { f : α ↪o β // Function.Surjective f } ≃ (α ≃o β) where
   toFun f := ofSurjective f f.prop
   invFun f := ⟨f, f.surjective⟩
