@@ -99,8 +99,8 @@ lemma Submartingale.predictablePart_nonneg
   filter_upwards [hf.monotone_predictablePart] with ω hω n
   simpa [predictablePart_zero] using hω (Nat.zero_le n)
 
-lemma IsStronglyPredictable.predictablePart_eq [SecondCountableTopology E] [MeasurableSpace E]
-    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
+lemma IsStronglyPredictable.predictablePart_eq [MeasurableSpace E]
+    [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
     (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
     predictablePart f ℱ μ n =ᵐ[μ] f n - f 0 := by
   simp only [predictablePart, ← Finset.sum_range_sub]
