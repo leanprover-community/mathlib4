@@ -249,7 +249,7 @@ theorem zpow_ne_zero_of_isUnit_det [Nonempty n'] [Nontrivial R] {A : M} (ha : Is
     (z : ℤ) : A ^ z ≠ 0 := by
   have := ha.det_zpow z
   contrapose this
-  rw [this, det_zero ‹_›]
+  rw [this, det_zero]
   exact not_isUnit_zero
 
 theorem zpow_sub {A : M} (ha : IsUnit A.det) (z1 z2 : ℤ) : A ^ (z1 - z2) = A ^ z1 / A ^ z2 := by

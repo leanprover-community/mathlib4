@@ -63,7 +63,6 @@ set_option linter.checkUnivs false in
 collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equipped with a
 functors `ι : Fib S ⥤ 𝒳` which map constantly to `S` on the base such that the induced functor
 `Fib S ⥤ Fiber p S` is an equivalence. -/
-@[nolint checkUnivs]
 class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The type of objects of the category `Fib S` for each `S`. -/
   Fib (S : 𝒮) : Type u₃

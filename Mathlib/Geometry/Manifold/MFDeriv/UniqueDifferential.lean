@@ -139,7 +139,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type
 set_option backward.isDefEq.respectTransparency false in
 private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
     (hs : UniqueMDiffAt[s] p.proj) (h's : s ⊆ (trivializationAt F Z p.proj).baseSet) :
-    UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
+    UniqueMDiffAt[π F Z ⁻¹' s] p := by
   suffices ((extChartAt I p.proj).symm ⁻¹' s ∩ range I) ×ˢ univ ⊆
       (extChartAt (I.prod 𝓘(𝕜, F)) p).symm ⁻¹' (TotalSpace.proj ⁻¹' s) ∩ range (I.prod 𝓘(𝕜, F)) by
     let w := (extChartAt (I.prod 𝓘(𝕜, F)) p p).2
@@ -169,27 +169,25 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
 
 /-- In a fiber bundle, the preimage under the projection of a set with unique differentials
 in the base has unique differentials in the bundle. -/
-theorem UniqueMDiffWithinAt.bundle_preimage {p : TotalSpace F Z}
-    (hs : UniqueMDiffAt[s] p.proj) :
-    UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
-  suffices UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F))
-    (π F Z ⁻¹' (s ∩ (trivializationAt F Z p.proj).baseSet)) p from this.mono (by simp)
+theorem UniqueMDiffWithinAt.bundle_preimage {p : TotalSpace F Z} (hs : UniqueMDiffAt[s] p.proj) :
+    UniqueMDiffAt[π F Z ⁻¹' s] p := by
+  suffices UniqueMDiffAt[π F Z ⁻¹' (s ∩ (trivializationAt F Z p.proj).baseSet)] p from
+    this.mono (by simp)
   apply UniqueMDiffWithinAt.bundle_preimage_aux (hs.inter _) inter_subset_right
-  exact IsOpen.mem_nhds (trivializationAt F Z p.proj).open_baseSet
+  exact (trivializationAt F Z p.proj).open_baseSet.mem_nhds
     (FiberBundle.mem_baseSet_trivializationAt' p.proj)
 
 variable (Z)
 
 /-- In a fiber bundle, the preimage under the projection of a set with unique differentials
 in the base has unique differentials in the bundle. Version with a point `⟨b, x⟩`. -/
-theorem UniqueMDiffWithinAt.bundle_preimage' {b : M} (hs : UniqueMDiffAt[s] b)
-    (x : Z b) : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) ⟨b, x⟩ :=
+theorem UniqueMDiffWithinAt.bundle_preimage' {b : M} (hs : UniqueMDiffAt[s] b) (x : Z b) :
+    UniqueMDiffAt[π F Z ⁻¹' s] ⟨b, x⟩ :=
   hs.bundle_preimage (p := ⟨b, x⟩)
 
 /-- In a fiber bundle, the preimage under the projection of a set with unique differentials
 in the base has unique differentials in the bundle. -/
-theorem UniqueMDiffOn.bundle_preimage (hs : UniqueMDiff[s]) :
-    UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) := fun _p hp ↦
-  (hs _ hp).bundle_preimage
+theorem UniqueMDiffOn.bundle_preimage (hs : UniqueMDiff[s]) : UniqueMDiff[π F Z ⁻¹' s] :=
+  fun _p hp ↦ (hs _ hp).bundle_preimage
 
 end UniqueMDiff
