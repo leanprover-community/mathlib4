@@ -200,17 +200,9 @@ theorem AntitoneOn.summable_of_integrable_eventually {N : ℕ} (anti : AntitoneO
     (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
     Summable (fun (n : ℕ) ↦ f n ) := by
   rw [← summable_nat_add_iff (N + 1)]
-  apply summable_of_sum_range_le
-  · exact fun _ ↦ nonneg _ (by simp; grind)
-  · intro M
-    calc
-    _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by
-      rw [Finset.sum_Ico_eq_sum_range]
-      refine Finset.sum_congr (by congr; grind) fun n hn ↦ ?_
-      congr 2
-      ring
-    _ ≤ _ := by
-      exact (anti.mono Icc_subset_Ici_self).sum_Ico_le_integral (by grind) integrable nonneg
+  exact summable_of_sum_range_le (by grind) fun M ↦ calc
+    _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by rw [Finset.sum_Ico_eq_sum_range]; grind
+    _ ≤ _ := (anti.mono Icc_subset_Ici_self).sum_Ico_le_integral (by simp) integrable nonneg
 
 /-- **Integral test**: a nonnegative antitone function is summable if it is integrable. -/
 theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
