@@ -81,7 +81,7 @@ more sophisticated notions exist in the literature which are useful when suffici
 equidimensionality hypotheses cannot be assumed.
 -/
 noncomputable
-def pushforward [QuasiCompact f] {N : Type*} [DecidableEq N] (c : AlgebraicCycle X R)
+def map [QuasiCompact f] {N : Type*} [DecidableEq N] (c : AlgebraicCycle X R)
     (wx : X → N) (wy : Y → N) : AlgebraicCycle Y R :=
   Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) f.isSpectralMap c
 
