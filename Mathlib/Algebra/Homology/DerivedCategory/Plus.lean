@@ -175,7 +175,7 @@ lemma isGE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
   constructor
   all_goals exact fun h ↦ ⟨h.1⟩
 
-lemma isLE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
+lemma isLE_ι_obj_iff (X : Plus C) (n : ℤ) :
     (ι.obj X).IsLE n ↔ X.IsLE n := by
   constructor
   all_goals exact fun h ↦ ⟨h.1⟩
