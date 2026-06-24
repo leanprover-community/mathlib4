@@ -74,7 +74,7 @@ instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
 
 @[simp] lemma symmₗ_trivialization (x : B) :
     (trivialization B F).symmₗ 𝕜 x = LinearMap.id := by
-  ext; simp [Trivialization.coe_symmₗ, trivialization_symm_apply B F]
+  ext; simp [trivialization_symm_apply B F]
 
 @[simp] lemma symmL_trivialization (x : B) :
     (trivialization B F).symmL 𝕜 x = ContinuousLinearMap.id 𝕜 F := by
@@ -180,10 +180,12 @@ section
 
 variable (R 𝕜 : Type*) {B : Type*} (F : Type*) (E : B → Type*) {B' : Type*} (f : B' → B)
 
-instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) := i _
+instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) :=
+  inferInstanceAs <| AddCommMonoid (E (f x))
 
 instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
-    Module R ((f *ᵖ E) x) := i _
+    Module R ((f *ᵖ E) x) :=
+  inferInstanceAs <| Module R (E (f x))
 
 variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
