@@ -5,12 +5,9 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
-public import Mathlib.RingTheory.Flat.TorsionFree
-public import Mathlib.RingTheory.Henselian
-public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
@@ -246,3 +243,4 @@ def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
   map_mul' _ _ := by ext; rfl
 
 end Set
+#min_imports
