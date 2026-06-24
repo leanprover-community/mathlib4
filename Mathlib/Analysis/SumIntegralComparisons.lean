@@ -255,12 +255,28 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
   · congr; ext; congr 2; grind
   · norm_cast
 
+theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici (N : ℝ)))
+    (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
+    ∫ x in Ioi (N : ℝ), f x ≤ ∑' (n : ℕ),  f (n + N : ℕ) := by
+  have := anti.summable_of_integrable_eventually integrable nonneg
+  rw [← summable_nat_add_iff N] at this
+  have lim := this.tendsto_sum_tsum_nat
+  have : Filter.Tendsto (fun (n : ℕ) ↦ (n : ℝ)) Filter.atTop Filter.atTop := by exact tendsto_natCast_atTop_atTop
+  have  : Filter.Tendsto (fun (n : ℕ) ↦ (n + N : ℝ)) Filter.atTop Filter.atTop := by exact Filter.tendsto_atTop_add_const_right Filter.atTop (↑N) this
+  refine le_of_tendsto_of_tendsto (MeasureTheory.intervalIntegral_tendsto_integral_Ioi N integrable this) lim ?_
+  filter_upwards with M
+  calc
+  _ ≤ ∑ n ∈ Finset.Ico N (N + M), f n := by
+    convert!  AntitoneOn.integral_le_sum_Ico _ _ using 2
+    · norm_cast; ring
+    · grind
+    · exact anti.mono (by grind)
+  _ = _ := by
+    rw [Finset.sum_Ico_eq_sum_range]
+    grind
+
 theorem AntitoneOn.integral_le_tsum (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∫ x in Ioi 0, f x ≤ ∑' (n : ℕ),  f n := by
-  have := anti.summable_of_integrable integrable nonneg|>.tendsto_sum_tsum_nat
-  refine le_of_tendsto_of_tendsto (MeasureTheory.intervalIntegral_tendsto_integral_Ioi 0 integrable tendsto_natCast_atTop_atTop) this ?_
-  filter_upwards with N
-  convert! AntitoneOn.integral_le_sum (x₀ := 0) (anti.mono (by grind)) using 2
-  · simp
-  · simp
+  convert! AntitoneOn.integral_le_tsum_comp_add 0 (mod_cast anti) (mod_cast integrable) (mod_cast nonneg)
+  norm_cast
