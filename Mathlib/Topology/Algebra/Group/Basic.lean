@@ -915,7 +915,7 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
         rw [map_mul, hk, mul_one]
 
 @[to_additive]
-lemma MonoidHom.isQuotientMap_iff_isOpenQuotientMap {A : Type*} [Group A]
+lemma MonoidHom.isOpenQuotientMap_iff_isQuotientMap {A : Type*} [Group A]
     [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
     {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F} :
     IsOpenQuotientMap φ ↔ IsQuotientMap φ :=
