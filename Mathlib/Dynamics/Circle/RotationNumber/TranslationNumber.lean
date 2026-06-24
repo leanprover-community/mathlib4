@@ -6,10 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Order.Iterate
 public import Mathlib.Order.SemiconjSup
-public import Mathlib.Topology.Order.MonotoneContinuity
-public import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`
@@ -134,7 +131,7 @@ namespace CircleDeg1Lift
 
 instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
-  coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
+  coe_injective | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
 
 instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
   map_rel f _ _ h := f.monotone' h
@@ -298,7 +295,7 @@ theorem commute_add_nat (n : ℕ) : Function.Commute f (· + n) := by
   simp only [add_comm _ (n : ℝ), f.commute_nat_add n]
 
 theorem commute_sub_nat (n : ℕ) : Function.Commute f (· - n) := by
-  simpa only [sub_eq_add_neg] using
+  simpa only [sub_eq_add_neg] using!
     (f.commute_add_nat n).inverses_right (Equiv.addRight _).right_inv (Equiv.addRight _).left_inv
 
 theorem commute_add_int : ∀ n : ℤ, Function.Commute f (· + n)
@@ -309,7 +306,7 @@ theorem commute_int_add (n : ℤ) : Function.Commute f (n + ·) := by
   simpa only [add_comm _ (n : ℝ)] using f.commute_add_int n
 
 theorem commute_sub_int (n : ℤ) : Function.Commute f (· - n) := by
-  simpa only [sub_eq_add_neg] using
+  simpa only [sub_eq_add_neg] using!
     (f.commute_add_int n).inverses_right (Equiv.addRight _).right_inv (Equiv.addRight _).left_inv
 
 @[simp]

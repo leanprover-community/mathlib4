@@ -444,7 +444,7 @@ variable (e b) in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
     e.localFrame_coeff I b i x (s x) = e.localFrame_coeff I b i x (s' x) := by
-  simpa using (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
+  simpa using! (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
 
 variable {n}
 
@@ -493,7 +493,7 @@ lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% 
     { toFun v := b.repr v i
       map_add' m m' := by simp
       map_smul' m x := by simp }
-  have : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k breprl.toContinuousLinearMap (e ((T% s) x)).2 :=
+  have : CMDiffAt k breprl.toContinuousLinearMap (e ((T% s) x)).2 :=
     contMDiffAt_iff_contDiffAt.mpr <| by fun_prop
   exact this.comp x h₁
 

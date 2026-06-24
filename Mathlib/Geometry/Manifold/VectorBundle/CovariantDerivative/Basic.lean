@@ -239,7 +239,7 @@ theorem smul_const (hcov : IsCovariantDerivativeOn F cov s)
     {σ : Π x : M, V x} {x} (a : 𝕜)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov (a • σ) x = a • cov σ x := by
-  simpa [mvfderiv] using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
+  simpa [mvfderiv] using! hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
 
 end computational_properties
 

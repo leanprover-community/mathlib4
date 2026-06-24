@@ -9,21 +9,33 @@ public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
-/-! ## Equivalence of manifold differentiability with the basic definition for functions between
+/-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
 
 The API in this file is mostly copied from `Mathlib/Geometry/Manifold/ContMDiff/NormedSpace.lean`,
 providing the same statements for higher smoothness. In this file, we do the same for
 differentiability.
 
-In addition to the above, this file provides
-* results about the differentiability of scalar multiplication (`mfderiv_smul` and friends),
-* `mvfderiv`: the exterior derivative of a vector-valued function, as a section of the
-  cotangent bundle; adds notation `d% f` for `mvfderiv I f` via a custom elaborator scoped to the
-  `Manifold` namespace, with a corresponding delaborator, and
-  adds basic lemmas about `mvfderiv` (such as addition, subtraction, multiplication and constants).
-* `mvfderivWithin` with notation `d[s]f` for `mvfderivWithin I f s` in the `Manifold` namespace:
+## Main definitions
+
+In addition to the above, this file provides two important definitions.
+* `mvfderiv I f x` is the manifold Fréchet derivative at `x : M` of a vector-valued function
+  `f : M → V`, but taking values in the target normed space `V` instead of `TangentSpace% (f x) V`.
+  Mathematically, this uses the global trivialization `T V ≅ V × V`, yielding an identification
+  `T_v V ≅ V` for each `v : V`. In Lean, we post-compose the differential `mfderiv% f x` with
+  `NormedSpace.fromTangentSpace`. If `V` is a field, this coincides with the exterior derivative
+  of `f` as a section of the cotangent bundle.
+  There is notation `d% f` for `mvfderiv I f` via a custom elaborator scoped to the
+  `Manifold` namespace, with a corresponding delaborator,
+* `mvfderivWithin` with notation `d[s] f` for `mvfderivWithin I f s` in the `Manifold` namespace:
   the analogous concept within a set, with analogous API lemmas
+
+## Main results
+
+This file contains
+* results about the differentiability of scalar multiplication (`mfderiv_smul` and friends),
+* basic lemmas about `mvfderiv` (such as addition, subtraction, multiplication and constants),
+* analogous lemmas about `mvfderivWithin`.
 
 -/
 
@@ -292,6 +304,7 @@ lemma HasMFDerivWithinAt.smul
   · exact hs.1.smul hg.1
   · simpa using hs.2.smul hg.2
 
+-- TODO: investigate inlining this proof entirely!
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
 at some point `x`, `f` has differential `f' : TangentSpace I x →L[𝕜] 𝕜` and `g` has differential
 `g' : TangentSpace I x →L[𝕜] V` (both phrased using the predicate `HasMFDerivAt`), it follows that
@@ -304,22 +317,22 @@ tangent space can be canonically identified with `V`.
 This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
 canonical identification. (It would also be possible to phrase the formula without this equiv,
 instead using casting and definitional abuse.) -/
-lemma HasMFDerivAt.smul
-    {f' : TangentSpace I x →L[𝕜] 𝕜}
+private lemma HasMFDerivAt.smul
+    {f' : TangentSpace% x →L[𝕜] 𝕜}
     (hs : HasMFDerivAt% f x ((fromTangentSpace (f x)).symm.toContinuousLinearMap ∘L f'))
-    {g' : TangentSpace I x →L[𝕜] V}
+    {g' : TangentSpace% x →L[𝕜] V}
     (hg : HasMFDerivAt% g x ((fromTangentSpace (g x)).symm.toContinuousLinearMap ∘L g')) :
     -- canonically identify `g'` with a linear map into the tangent space at `(f • g) x`
-    letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+    letI g'_ : TangentSpace% x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
     -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
-    letI gx : 𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+    letI gx : 𝕜 →L[𝕜] TangentSpace% ((f • g) x) :=
       toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
     -- now the main statement typechecks
     HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
   constructor
   · exact hs.1.smul hg.1
-  · simpa using hs.2.smul hg.2
+  · simpa using! hs.2.smul hg.2
 
 theorem MDifferentiableWithinAt.smul
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
@@ -338,34 +351,7 @@ theorem MDifferentiableOn.smul (hf : MDiff[s] f)
 theorem MDifferentiable.smul (hf : MDiff f) (hg : MDiff g) : MDiff fun p ↦ f p • g p :=
   fun x ↦ (hf x).smul (hg x)
 
-/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
-formula for the `mfderivWithin` (differential) of their scalar multiplication `f • g` within `s`.
-
-Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, i.e.
-`mfderiv[s] (f • g) x = f x • mfderiv[s] g x + toSpanSingleton 𝕜 (g x) ∘L mfderiv[s] f x`,
-but this doesn't typecheck because `mfderiv[s] (f • g) x` and `mfderiv[s]% g x` take values in
-different tangent spaces --- respectively the tangent spaces to `V` at `(f • g) x` and `g x`.
-Of course, both these tangent spaces can be canonically identified with `V`.
-
-This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
-canonical identification. (It would also be possible to phrase the formula without this equiv,
-instead using casting and definitional abuse.)
-
-It is good practice to use the equiv `NormedSpace.fromTangentSpace` throughout a computation. If
-this is done, typically `mfderiv[s] (f • g) x` will only turn up paired with this equiv (i.e., in an
-expression `(fromTangentSpace _) ∘L mfderiv[s] (f • g) x` or `d[s] (f • g) x`),
-and the more convenient lemma `mvderiv_smul` (see below) can be used instead.
-
-This lemma is private: external users should use `mvfderiv_smul` instead. -/
-private lemma mfderivWithin_smul
-    (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) (hs : UniqueMDiffWithinAt I s x) :
-    mfderiv[s] (f • g) x
-    = f x • (fromTangentSpace _).symm.toContinuousLinearMap ∘L
-      ((fromTangentSpace (g x)).toContinuousLinearMap ∘L mfderiv[s] g x)
-    + toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x)) ∘L
-      ((fromTangentSpace (f x)).toContinuousLinearMap ∘L mfderiv[s] f x) :=
-  (hf.hasMFDerivWithinAt.smul hg.hasMFDerivWithinAt).mfderivWithin hs
-
+-- TODO: deprecate in favour of `mvfderiv_smul`, then delete this lemma
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
 formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
 
@@ -382,9 +368,7 @@ instead using casting and definitional abuse.)
 It is good practice to use the equiv `NormedSpace.fromTangentSpace` throughout a computation. If
 this is done, typically `mfderiv% (f • g) x` will only turn up paired with this equiv (i.e., in an
 expression `(fromTangentSpace _) ∘L mfderiv% (f • g) x`), and the more convenient lemma
-`fromTangentSpace_mfderiv_smul` (see below) can be used instead.
-
-This lemma is private: external users should use `mvfderiv_smul` instead. -/
+`fromTangentSpace_mfderiv_smul` (see below) can be used instead. -/
 private lemma mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
     mfderiv% (f • g) x
     = f x • (fromTangentSpace _).symm.toContinuousLinearMap ∘L
@@ -393,6 +377,7 @@ private lemma mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
       ((fromTangentSpace (f x)).toContinuousLinearMap ∘L mfderiv% f x) :=
   (hf.hasMFDerivAt.smul hg.hasMFDerivAt).mfderiv
 
+-- TODO: investigate inlining the proof: this lemma statement abuses defeq
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
 formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
 
@@ -404,17 +389,15 @@ these tangent spaces can be canonically identified with `V`.
 
 This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
 canonical identification. (It would also be possible to phrase the formula without this equiv,
-instead using casting and definitional abuse.)
-
-This lemma is private: external users should use `mvfderiv_smul` instead. -/
-lemma fromTangentSpace_mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
+instead using casting and definitional abuse.) -/
+private lemma fromTangentSpace_mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
     (fromTangentSpace ((f • g) x)).toContinuousLinearMap ∘L mfderiv% (f • g) x
     = f x • (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% g x
     + toSpanSingleton 𝕜 (g x) ∘L (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% f x := by
   rw [mfderiv_smul hf hg]
   rfl
 
--- now unused, given that we're using mvfderiv instead \o/
+-- TODO: investigate inlining the proof: this lemma statement abuses defeq
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
 formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
 
@@ -425,48 +408,13 @@ different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
 
 This is a defeq variant of the main lemma `fromTangentSpace_mfderiv_smul`, in which we work in the
 tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
-lemma fromTangentSpace_mfderiv_smul' (hf : MDiffAt f x) (hg : MDiffAt g x) :
+private lemma fromTangentSpace_mfderiv_smul' (hf : MDiffAt f x) (hg : MDiffAt g x) :
     (fromTangentSpace (f x • g x)).toContinuousLinearMap ∘L mfderiv% (f • g) x
     = f x • (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% g x
     + toSpanSingleton 𝕜 (g x) ∘L (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% f x :=
   fromTangentSpace_mfderiv_smul hf hg
 
-/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
-formula for the `mfderiv[s]` (differential) of their scalar multiplication `f • g` within `s`
-in the direction of the tangent vector `v`.
-
-Mathematically speaking the formula is `d(f • g)(v) = f • dg(v) + df(v) • g`, but to get it to
-typecheck we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace`
-between the vector space `V` and the tangent space to this vector space at any point. This is
-because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
-
-This lemma is private: use `mvfderivWithin_smul` instead. -/
-private lemma fromTangentSpace_mfderivWithin_smul_apply (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
-    (hs : UniqueMDiffWithinAt I s x) (v : TangentSpace I x) :
-    fromTangentSpace _ (mfderiv[s] (f • g) x v)
-    = f x • fromTangentSpace _ (mfderiv[s] g x v) +
-      fromTangentSpace _ (mfderiv[s] f x v) • g x := by
-  rw [mfderivWithin_smul hf hg hs]
-  rfl
-
--- now unused, given that we're using mvfderiv instead \o/
-/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
-formula for the `mfderiv` (differential) of their scalar multiplication `f • g` within `s`
-in the direction of the tangent vector `v`.
-
-Mathematically speaking the formula is `d(f • g)(v) = f • dg(v) + df(v) • g`, but to get it to
-typecheck we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace`
-between the vector space `V` and the tangent space to this vector space at any point. This is
-because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
-
-This is a defeq variant of the main lemma `fromTangentSpace_mfderivWithin_smul_apply`, in which
-we work in the tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
-private lemma fromTangentSpace_mfderivWithin_smul_apply' (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
-    (hs : UniqueMDiffWithinAt I s x) (v : TangentSpace I x) :
-    fromTangentSpace (f x • g x) (mfderiv[s] (f • g) x v)
-    = f x • fromTangentSpace _ (mfderiv[s] g x v) + fromTangentSpace _ (mfderiv[s] f x v) • g x :=
-  fromTangentSpace_mfderivWithin_smul_apply hf hg hs v
-
+-- TODO: investigate inlining the proof: this lemma statement abuses defeq
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
 formula for the `mfderiv` (differential) of their scalar multiplication `f • g` in the direction of
 the tangent vector `v`.
@@ -474,16 +422,14 @@ the tangent vector `v`.
 Mathematically speaking the formula is `d(f • g)(v) = f • dg(v) + df(v) • g`, but to get it to
 typecheck we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace`
 between the vector space `V` and the tangent space to this vector space at any point. This is
-because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
-
-This lemma is private: use `mvfderiv_smul` instead (or create an applied version if you need). -/
+because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation. -/
 private lemma fromTangentSpace_mfderiv_smul_apply (hf : MDiffAt f x) (hg : MDiffAt g x)
-    (v : TangentSpace I x) :
+    (v : TangentSpace% x) :
     fromTangentSpace _ (mfderiv% (f • g) x v)
     = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x := by
   simpa using congr($(fromTangentSpace_mfderiv_smul hf hg) v)
 
--- now unused, given that we're using mvfderiv instead \o/
+-- TODO: investigate inlining the proof: this lemma statement abuses defeq
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
 formula for the `mfderiv` (differential) of their scalar multiplication `f • g` in the direction of
 the tangent vector `v`.
@@ -496,7 +442,7 @@ because two different tangent spaces (at `(f • g) x` and `g x`) appear in the 
 This is a defeq variant of the main lemma `fromTangentSpace_mfderiv_smul_apply`, in which we work in
 the tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
 private lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
-    (v : TangentSpace I x) :
+    (v : TangentSpace% x) :
     fromTangentSpace (f x • g x) (mfderiv% (f • g) x v)
     = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x :=
   fromTangentSpace_mfderiv_smul_apply hf hg v
@@ -517,14 +463,29 @@ noncomputable def mvfderivWithin (g : M → F) (s : Set M) :
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv[s] g x)
 
 variable (I) in
-/-- The exterior derivative of a vector-valued function on `M`,
-as a section of the cotangent bundle.
+/-- `mvfderivWithin I J f s x` is the `mfderiv` of a vector-valued function `f` on `M` at `x`
+within the set `s`, but taking values in the target normed space directly.
+The difference to `mfderivWithin` is explained in the module-docstring for
+`Mathlib/Geometry/Manifold/MFDeriv/NormedSpace.lean`.
+
+Future: this could be generalised to functions into additive torsors over abelian Lie groups.
+-/
+@[expose]
+noncomputable def mvfderivWithin (g : M → F) (s : Set M) :
+    Π x : M, TangentSpace I x →L[𝕜] F :=
+  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv[s] g x)
+
+variable (I) in
+/-- `mvfderiv I J f x` is the `mfderiv` of a vector-valued function `f` on `M` at `x`,
+but taking values in the target normed space directly.
+The difference to `mfderiv` is explained in the module-docstring for
+`Mathlib/Geometry/Manifold/MFDeriv/NormedSpace.lean`.
 
 Future: this could be generalised to functions into additive torsors over abelian Lie groups.
 -/
 @[expose]
 noncomputable def mvfderiv (g : M → F) :
-    Π x : M, TangentSpace I x →L[𝕜] F :=
+    Π x : M, TangentSpace% x →L[𝕜] F :=
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
 @[deprecated (since := "2026-05-17")] alias extDerivFun := mvfderiv
 
@@ -551,10 +512,10 @@ scoped elab:max "d%" ppSpace t:term:arg : term => do
 open Bundle PrettyPrinter Delaborator SubExpr
 
 /-- Delaborator for `mvfderivWithin`. -/
--- There is no need to special-case any arguments which could use the T% s elaborator:
+-- There is no need to special-case any arguments which could use the `T%` elaborator:
 -- the argument to `mvfderivWithin` is a vector-valued function, which a map to a total space
 -- can never be.
-@[app_delab mvfderivWithin] meta def delab_mvfderivWithin : Delab := do
+@[app_delab mvfderivWithin] meta def delabMVFDerivWithin : Delab := do
   whenPPOption getPPNotation do
   withOverApp 16 do
   let ss ← withAppArg delab
@@ -562,49 +523,14 @@ open Bundle PrettyPrinter Delaborator SubExpr
   `(d[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `mvfderiv`. -/
--- There is no need to special-case any arguments which could use the T% s elaborator:
+-- There is no need to special-case any arguments which could use the `T%` elaborator:
 -- the argument to `mvfderiv` is a vector-valued function, which a map to a total space
 -- can never be.
-@[app_delab mvfderiv] meta def delab_mvfderiv : Delab := do
+@[app_delab mvfderiv] meta def delabMVFDeriv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 15 do
   let fs ← withAppArg delab
   `(d% $fs) >>= annotateGoToSyntaxDef
-
-section tests
-
-variable {f : M → 𝕜}
-
-/-- info: d[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderivWithin I f s
-/-- info: d[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderivWithin I f s x
-
-/-- info: d[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d[s] f
-/-- info: d[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d[s] f x
-
-/-- info: d% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderiv I f
-/-- info: d% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d% f
-
-/-- info: d% f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderiv I f x
-
-/-- info: d% f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d% f x
-
-end tests
 
 end Manifold
 
@@ -617,44 +543,44 @@ lemma mvfderivWithin_const (c : F) {x : M} : d[s] (fun _ : M ↦ c) x = 0 := by
 
 @[simp, to_fun mvfderivWithin_fun_add]
 lemma mvfderivWithin_add {g g' : M → F} {x : M}
-    (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffWithinAt I s x) :
+    (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffAt[s] x) :
     d[s](g + g') x = d[s]g x + d[s]g' x := by
   simp [mvfderivWithin, mfderivWithin_add hg hg' hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_sub]
 lemma mvfderivWithin_sub {g g' : M → F} {x : M}
-    (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffWithinAt I s x) :
+    (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffAt[s] x) :
     d[s](g - g') x = d[s]g x - d[s]g' x := by
   simp [mvfderivWithin, mfderivWithin_sub hg hg' hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_neg]
-lemma mvfderivWithin_neg {g : M → F} {x : M} (hs : UniqueMDiffWithinAt I s x) :
+lemma mvfderivWithin_neg {g : M → F} {x : M} (hs : UniqueMDiffAt[s] x) :
     d[s](-g) x = -d[s]g x := by
   simp [mvfderivWithin, mfderivWithin_neg hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_smul]
 lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (hg : MDiffAt[s] g x)
-    (hs : UniqueMDiffWithinAt I s x) :
+    (hs : UniqueMDiffAt[s] x) :
     d[s](a • g) x =
       a x • d[s] g x + (d[s] a x).smulRight (g x) := by
-  ext v
-  simp [mvfderivWithin, -Pi.smul_apply', -Pi.smul_apply,
-    fromTangentSpace_mfderivWithin_smul_apply ha hg hs]
+  refine HasMFDerivWithinAt.mfderivWithin ⟨ha.1.smul hg.1, ?_⟩ hs
+  convert! ha.hasMFDerivWithinAt.2.smul hg.hasMFDerivWithinAt.2
+  simp
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_mul]
 lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
-    (hs : UniqueMDiffWithinAt I s x) :
+    (hs : UniqueMDiffAt[s] x) :
     d[s](f * g) x = f x • d[s]g x + (g x) • (d[s]f x) := by
+  convert! mvfderivWithin_smul hf hg hs
   ext v
-  simp [mvfderivWithin, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderivWithin_smul hf hg hs]
-  simp [mul_comm _ (g x)]
+  simp [mul_comm]
 
 @[simp]
-lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffWithinAt I s x) :
+lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffAt[s] x) :
     d[s] (0 : M → F) x = 0 := by
   have : d[s] (0 : M → F) x + d[s] (0 : M → F) x = d[s] (0 : M → F) x := by
     rw [← mvfderivWithin_add (by exact mdifferentiableWithinAt_const)

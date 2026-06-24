@@ -39,7 +39,7 @@ variable {α β R : Type*}
 
 namespace Finset
 
-variable {s t : Finset α} {a b : α}
+variable {s t : Finset α} {a b c : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality.
 
@@ -135,8 +135,17 @@ theorem card_insert_eq_ite : #(insert a s) = if a ∈ s then #s else #s + 1 := b
 @[simp]
 theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by grind
 
-theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
-  simp [h]
+/-- A two-element finset `{a, b}` has cardinality `2` iff `a ≠ b`. The reverse direction is
+`Finset.card_pair`. -/
+theorem card_pair_eq_two_iff : #{a, b} = 2 ↔ a ≠ b := by
+  aesop (add simp card_insert_eq_ite)
+
+alias ⟨_, card_pair⟩ := card_pair_eq_two_iff
+
+/-- A three-element finset `{a, b, c}` has cardinality `3` iff `a`, `b`, `c` are pairwise
+distinct. -/
+theorem card_triple_eq_three_iff : #{a, b, c} = 3 ↔ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
+  aesop (add simp card_insert_eq_ite)
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp, grind =]
@@ -214,7 +223,7 @@ theorem length_toList (s : Finset α) : s.toList.length = #s := by
   rw [toList, ← Multiset.coe_card, Multiset.coe_toList, card_def]
 
 theorem card_image_le [DecidableEq β] : #(s.image f) ≤ #s := by
-  simpa only [card_map] using (s.1.map f).toFinset_card_le
+  simpa only [card_map] using! (s.1.map f).toFinset_card_le
 
 grind_pattern card_image_le => #(s.image f)
 grind_pattern card_image_le => s.image f, #s
@@ -378,7 +387,7 @@ The difference with `Finset.card_bij` is that the bijection is a non-dependent f
 being allowed to use membership of the domain. -/
 lemma card_nbij (i : α → β) (hi : Set.MapsTo i s t) (i_inj : (s : Set α).InjOn i)
     (i_surj : (s : Set α).SurjOn i t) : #s = #t :=
-  card_bij (fun a _ ↦ i a) hi i_inj (by simpa using i_surj)
+  card_bij (fun a _ ↦ i a) hi i_inj (by simpa using! i_surj)
 
 /-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
 are equal.

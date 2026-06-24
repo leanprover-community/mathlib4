@@ -238,20 +238,20 @@ theorem AnalyticOnNhd.const_smul (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd �
 
 lemma AnalyticWithinAt.div_const {f : E → 𝕝} (hf : AnalyticWithinAt 𝕜 f s x) {c : 𝕝} :
     AnalyticWithinAt 𝕜 (f · / c) s x := by
-  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
+  simpa [div_eq_mul_inv] using! hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 @[fun_prop]
 lemma AnalyticAt.div_const {f : E → 𝕝} (hf : AnalyticAt 𝕜 f x) {c : 𝕝} :
     AnalyticAt 𝕜 (f · / c) x := by
-  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
+  simpa [div_eq_mul_inv] using! hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 lemma AnalyticOn.div_const {f : E → 𝕝} (hf : AnalyticOn 𝕜 f s) {c : 𝕝} :
     AnalyticOn 𝕜 (f · / c) s := by
-  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
+  simpa [div_eq_mul_inv] using! hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 lemma AnalyticOnNhd.div_const {f : E → 𝕝} (hf : AnalyticOnNhd 𝕜 f s) {c : 𝕝} :
     AnalyticOnNhd 𝕜 (f · / c) s := by
-  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
+  simpa [div_eq_mul_inv] using! hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 end
 
@@ -950,7 +950,7 @@ lemma AnalyticOnNhd.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : Analyti
     AnalyticOnNhd 𝕜 (f ^ n) s :=
   fun z hz ↦ (h₁f z hz).zpow (h₂f z hz)
 
-/- A function is analytic at a point iff it is analytic after scalar
+/-- A function is analytic at a point iff it is analytic after scalar
   multiplication with a non-vanishing analytic function. -/
 theorem analyticAt_iff_analytic_fun_smul [Module 𝕝 F] [IsBoundedSMul 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
     {f : E → 𝕝} {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
@@ -965,14 +965,14 @@ theorem analyticAt_iff_analytic_fun_smul [Module 𝕝 F] [IsBoundedSMul 𝕝 F] 
       rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff] at hy
       simp [hy]
 
-/- A function is analytic at a point iff it is analytic after scalar
+/-- A function is analytic at a point iff it is analytic after scalar
   multiplication with a non-vanishing analytic function. -/
 theorem analyticAt_iff_analytic_smul [Module 𝕝 F] [IsBoundedSMul 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
     {f : E → 𝕝} {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f • g) z :=
   analyticAt_iff_analytic_fun_smul h₁f h₂f
 
-/- A function is analytic at a point iff it is analytic after multiplication
+/-- A function is analytic at a point iff it is analytic after multiplication
 with a non-vanishing analytic function. -/
 @[to_fun analyticAt_iff_analytic_fun_mul]
 theorem analyticAt_iff_analytic_mul {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z)

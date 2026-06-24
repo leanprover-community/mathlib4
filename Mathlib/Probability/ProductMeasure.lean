@@ -240,6 +240,7 @@ open Measure
 variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
   (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product in the sense that it coincides with `piContent μ` over
