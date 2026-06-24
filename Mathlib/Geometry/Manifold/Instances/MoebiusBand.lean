@@ -509,10 +509,8 @@ private theorem fderiv_extChart_transition_eq_prodMap
 
 private theorem det_tangent_coordChangeL_eq_mul
     (p q z : MoebiusBand) (_hp : p.snd = 0) (_hq : q.snd = 0) (hz : z.snd = 0)
-    (hmem : z ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet) :
+    (hmem : z ∈ (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source ∩
+      (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) q).source) :
     LinearMap.det (tangentCoordChange ((𝓡 1).prod 𝓘(ℝ, ℝ)) p q z).toLinearMap =
     LinearMap.det (tangentCoordChange (𝓡 1) p.proj q.proj z.proj :
       EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1)) *
@@ -704,10 +702,10 @@ private theorem extChartAt_one_negI_eq_neg_extChartAt_one_I
 
 private theorem circle_transition_one_to_negOne_odd
     [Fact (Module.finrank ℝ ℂ = 1 + 1)] :
-    ((↑(extChartAt (𝓡 1) Circle.negOne)) ∘ (↑(extChartAt (𝓡 1) (1 : Circle)).symm)) ∘ Neg.neg =
-      Neg.neg ∘ ((↑(extChartAt (𝓡 1) Circle.negOne)) ∘
-        (↑(extChartAt (𝓡 1) (1 : Circle)).symm)) := by
-  set g := (↑(extChartAt (𝓡 1) Circle.negOne)) ∘ (↑(extChartAt (𝓡 1) (1 : Circle)).symm) with hg
+    ((extChartAt (𝓡 1) Circle.negOne) ∘ (extChartAt (𝓡 1) (1 : Circle)).symm) ∘ Neg.neg =
+      Neg.neg ∘ ((extChartAt (𝓡 1) Circle.negOne) ∘
+        (extChartAt (𝓡 1) (1 : Circle)).symm) := by
+  set g := (extChartAt (𝓡 1) Circle.negOne) ∘ (extChartAt (𝓡 1) (1 : Circle)).symm with hg
   change g ∘ Neg.neg = Neg.neg ∘ g
   set v₁ : ↥(Metric.sphere (0 : ℂ) 1) := -(1 : ↥(Metric.sphere (0 : ℂ) 1))
   set v₂ : ↥(Metric.sphere (0 : ℂ) 1) := -v₁
@@ -793,7 +791,7 @@ private theorem circle_tangentCoordChange_eq_at_neg_I :
       (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) := by
   haveI := finrank_real_complex_fact'
   simp only [tangentCoordChange, tangentBundleCore_coordChange_achart]
-  set g := (↑(extChartAt (𝓡 1) Circle.negOne)) ∘ (↑(extChartAt (𝓡 1) (1 : Circle)).symm) with hg
+  set g := (extChartAt (𝓡 1) Circle.negOne) ∘ (extChartAt (𝓡 1) (1 : Circle)).symm with hg
   set t₀ := (extChartAt (𝓡 1) (1 : Circle))
     (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle)
   have ht_neg : (extChartAt (𝓡 1) (1 : Circle))
@@ -842,23 +840,21 @@ private theorem chartAt_negOne_eq_stereographic_posOne
 private theorem mem_tangent_triv_overlap_of_proj_ne_endpoints
     [Fact (Module.finrank ℝ ℂ = 1 + 1)]
     (z : MoebiusBand) (hne_neg : z.proj ≠ Circle.negOne) (hne_one : z.proj ≠ (1 : Circle)) :
-    z ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) (⟨(1 : Circle), (0 : ℝ)⟩ : MoebiusBand)).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) (⟨Circle.negOne, (0 : ℝ)⟩ : MoebiusBand)).baseSet := by
+    z ∈ (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ)
+        (⟨(1 : Circle), (0 : ℝ)⟩ : MoebiusBand)).source ∩
+      (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ)
+        (⟨Circle.negOne, (0 : ℝ)⟩ : MoebiusBand)).source := by
   let p : MoebiusBand := ⟨(1 : Circle), (0 : ℝ)⟩
   let q : MoebiusBand := ⟨Circle.negOne, (0 : ℝ)⟩
-  change z ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet
+  change z ∈ (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source ∩
+      (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) q).source
   have chartAt_p : chartAt (EuclideanSpace ℝ (Fin 1)) p.proj =
       stereographic' 1 (-(1 : ↥(Metric.sphere (0 : ℂ) 1))) := by
     simpa [p] using chartAt_one_eq_stereographic_negOne
   have chartAt_q : chartAt (EuclideanSpace ℝ (Fin 1)) q.proj =
       stereographic' 1 (1 : ↥(Metric.sphere (0 : ℂ) 1)) := by
     simpa [q] using chartAt_negOne_eq_stereographic_posOne
-  simp only [mem_inter_iff, TangentBundle.trivializationAt_baseSet]
+  simp only [mem_inter_iff]
   constructor
   · simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
     have hmem : z.proj ∈ (trivializationAt ℝ moebiusBundleCore.Fiber p.proj).baseSet := by
@@ -884,8 +880,8 @@ private theorem mem_tangent_triv_overlap_of_proj_ne_endpoints
       exact Subtype.ext (congr_arg Subtype.val heq)⟩
 
 private theorem bundle_det_01_at_negI :
-    LinearMap.det (↑(moebiusBundleCore.coordChange 0 1
-      (⟨-Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle)) : ℝ →ₗ[ℝ] ℝ) = -1 := by
+    LinearMap.det (moebiusBundleCore.coordChange 0 1
+      (⟨-Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) : ℝ →ₗ[ℝ] ℝ) = -1 := by
   have : (moebiusBundleCore.coordChange 0 1
       (⟨-Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) : ℝ →L[ℝ] ℝ) =
       -ContinuousLinearMap.id ℝ ℝ := by
@@ -894,8 +890,8 @@ private theorem bundle_det_01_at_negI :
   simp
 
 private theorem bundle_det_01_at_posI :
-    LinearMap.det (↑(moebiusBundleCore.coordChange 0 1
-      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle)) : ℝ →ₗ[ℝ] ℝ) = 1 := by
+    LinearMap.det (moebiusBundleCore.coordChange 0 1
+      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) : ℝ →ₗ[ℝ] ℝ) = 1 := by
   have : (moebiusBundleCore.coordChange 0 1
       (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) : ℝ →L[ℝ] ℝ) =
       ContinuousLinearMap.id ℝ ℝ := by
@@ -939,19 +935,19 @@ private theorem tangentCoordChange_det_ne_zero_at_posI
       intro h
       have := congr_arg (fun z : Circle => (z : ℂ).im) h
       simp at this)
-  have hcomp_eq : (↑(tangentCoordChange (𝓡 1) Circle.negOne (1 : Circle)
-      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle)) :
+  have hcomp_eq : (tangentCoordChange (𝓡 1) Circle.negOne (1 : Circle)
+      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) :
       EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1)).comp
-      (↑(tangentCoordChange (𝓡 1) (1 : Circle) Circle.negOne
-      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle)) :
+      (tangentCoordChange (𝓡 1) (1 : Circle) Circle.negOne
+      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) :
       EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1)) = LinearMap.id :=
     LinearMap.ext (fun v => hcomp v)
   have h1 := LinearMap.det_comp
-    (↑(tangentCoordChange (𝓡 1) Circle.negOne (1 : Circle)
-      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle)) :
+    (tangentCoordChange (𝓡 1) Circle.negOne (1 : Circle)
+      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) :
       EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1))
-    (↑(tangentCoordChange (𝓡 1) (1 : Circle) Circle.negOne
-      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle)) :
+    (tangentCoordChange (𝓡 1) (1 : Circle) Circle.negOne
+      (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) :
       EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1))
   rw [hcomp_eq, LinearMap.det_id] at h1
   rw [hzero, mul_zero] at h1
@@ -963,13 +959,12 @@ private theorem preconnected_univ_tangent_triv_baseSet_of
       (chartAt (EuclideanSpace ℝ (Fin 1)) x).source)
     (he₂t : ((chartAt (EuclideanSpace ℝ (Fin 1)) x).prod
       (OpenPartialHomeomorph.refl ℝ)).target = univ) :
-    IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) (⟨x, (0 : ℝ)⟩ : MoebiusBand)).baseSet) := by
+    IsPreconnected (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ)
+      (⟨x, (0 : ℝ)⟩ : MoebiusBand)).source) := by
   let p : MoebiusBand := ⟨x, (0 : ℝ)⟩
-  change IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-    (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet)
-  rw [← preconnectedSpace_iff_univ, TangentBundle.trivializationAt_baseSet,
-      FiberBundle.chartedSpace_chartAt]
+  change IsPreconnected
+    (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source)
+  rw [← preconnectedSpace_iff_univ, FiberBundle.chartedSpace_chartAt]
   set e := (trivializationAt ℝ moebiusBundleCore.Fiber p.proj).trans
       ((chartAt (EuclideanSpace ℝ (Fin 1)) p.proj).prod (OpenPartialHomeomorph.refl ℝ))
   suffices ht : e.target = univ by
@@ -994,8 +989,8 @@ private theorem preconnected_univ_tangent_triv_baseSet_of
 
 private theorem preconnected_univ_tangent_triv_baseSet_at_one
     [Fact (Module.finrank ℝ ℂ = 1 + 1)] :
-    IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) (⟨(1 : Circle), (0 : ℝ)⟩ : MoebiusBand)).baseSet) := by
+    IsPreconnected (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ)
+      (⟨(1 : Circle), (0 : ℝ)⟩ : MoebiusBand)).source) := by
   have hbs : (trivializationAt ℝ moebiusBundleCore.Fiber (1 : Circle)).baseSet =
       (chartAt (EuclideanSpace ℝ (Fin 1)) (1 : Circle)).source := by
     rw [moebius_triv_baseSet_eq_index_baseSet, chartAt_one_eq_stereographic_negOne,
@@ -1013,8 +1008,8 @@ private theorem preconnected_univ_tangent_triv_baseSet_at_one
 
 private theorem preconnected_univ_tangent_triv_baseSet_at_negOne
     [Fact (Module.finrank ℝ ℂ = 1 + 1)] :
-    IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) (⟨Circle.negOne, (0 : ℝ)⟩ : MoebiusBand)).baseSet) := by
+    IsPreconnected (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ)
+      (⟨Circle.negOne, (0 : ℝ)⟩ : MoebiusBand)).source) := by
   have hbs : (trivializationAt ℝ moebiusBundleCore.Fiber Circle.negOne).baseSet =
       (chartAt (EuclideanSpace ℝ (Fin 1)) Circle.negOne).source := by
     rw [moebius_triv_baseSet_eq_index_baseSet, chartAt_negOne_eq_stereographic_posOne,
@@ -1032,29 +1027,22 @@ private theorem preconnected_univ_tangent_triv_baseSet_at_negOne
 trivializations where the tangent coordinate change has opposite determinant signs. -/
 private theorem exists_tangentCoordChangeL_neg_det :
     ∃ (p q zU zL : MoebiusBand)
-      (_hzU : zU ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
-        (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet)
-      (_hzL : zL ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
-        (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet),
+      (_hzU : zU ∈ (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source ∩
+        (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) q).source)
+      (_hzL : zL ∈ (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source ∩
+        (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) q).source),
   0 < LinearMap.det (tangentCoordChange ((𝓡 1).prod 𝓘(ℝ, ℝ)) p q zU).toLinearMap ∧
     LinearMap.det (tangentCoordChange ((𝓡 1).prod 𝓘(ℝ, ℝ)) p q zL).toLinearMap < 0 ∧
-    IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet) ∧
-    IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet) := by
+    IsPreconnected (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source) ∧
+    IsPreconnected
+      (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) q).source) := by
   let p : MoebiusBand := ⟨(1 : Circle), (0 : ℝ)⟩
   let q : MoebiusBand := ⟨Circle.negOne, (0 : ℝ)⟩
   let z_neg_I : MoebiusBand := ⟨⟨-Complex.I, by simp [Submonoid.unitSphere]⟩, (0 : ℝ)⟩
   let z_pos_I : MoebiusBand := ⟨⟨Complex.I, by simp [Submonoid.unitSphere]⟩, (0 : ℝ)⟩
   haveI := finrank_real_complex_fact'
-  have hmem_neg : z_neg_I ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet := by
+  have hmem_neg : z_neg_I ∈ (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source ∩
+      (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) q).source := by
     simpa [p, q] using mem_tangent_triv_overlap_of_proj_ne_endpoints z_neg_I
       (by
         intro h
@@ -1064,10 +1052,8 @@ private theorem exists_tangentCoordChangeL_neg_det :
         intro h
         have := congr_arg (fun z : Circle => (z : ℂ).im) h
         simp [z_neg_I] at this)
-  have hmem_pos : z_pos_I ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet := by
+  have hmem_pos : z_pos_I ∈ (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source ∩
+      (chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) q).source := by
     simpa [p, q] using mem_tangent_triv_overlap_of_proj_ne_endpoints z_pos_I
       (by
         intro h
@@ -1085,10 +1071,10 @@ private theorem exists_tangentCoordChangeL_neg_det :
   have hfactor_pos := det_tangent_coordChangeL_eq_mul p q z_pos_I rfl rfl rfl hmem_pos
   rw [hidxp, hidxq] at hfactor_neg hfactor_pos
   have hbundle_det_neg :
-      LinearMap.det (↑(moebiusBundleCore.coordChange 0 1 z_neg_I.proj) : ℝ →ₗ[ℝ] ℝ) = -1 := by
+      LinearMap.det (moebiusBundleCore.coordChange 0 1 z_neg_I.proj : ℝ →ₗ[ℝ] ℝ) = -1 := by
     simpa [z_neg_I] using bundle_det_01_at_negI
   have hbundle_det_pos :
-      LinearMap.det (↑(moebiusBundleCore.coordChange 0 1 z_pos_I.proj) : ℝ →ₗ[ℝ] ℝ) = 1 := by
+      LinearMap.det (moebiusBundleCore.coordChange 0 1 z_pos_I.proj : ℝ →ₗ[ℝ] ℝ) = 1 := by
     simpa [z_pos_I] using bundle_det_01_at_posI
   rw [hbundle_det_neg, mul_neg_one] at hfactor_neg
   rw [hbundle_det_pos, mul_one] at hfactor_pos
@@ -1098,22 +1084,22 @@ private theorem exists_tangentCoordChangeL_neg_det :
       LinearMap.det (tangentCoordChange (𝓡 1) p.proj q.proj z_pos_I.proj :
         EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1)) := by
     have h := circle_tangentCoordChange_eq_at_neg_I
-    change LinearMap.det (↑(tangentCoordChange (𝓡 1) (1 : Circle) Circle.negOne
-      ⟨-Complex.I, _⟩) : EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1)) =
-      LinearMap.det (↑(tangentCoordChange (𝓡 1) (1 : Circle) Circle.negOne
-      ⟨Complex.I, _⟩) : EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1))
+    change LinearMap.det (tangentCoordChange (𝓡 1) (1 : Circle) Circle.negOne
+      ⟨-Complex.I, _⟩ : EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1)) =
+      LinearMap.det (tangentCoordChange (𝓡 1) (1 : Circle) Circle.negOne
+      ⟨Complex.I, _⟩ : EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1))
     rw [h]
   rw [hbase_eq] at hfactor_neg
   have hdet_ne : LinearMap.det (tangentCoordChange (𝓡 1) p.proj q.proj z_pos_I.proj :
       EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1)) ≠ 0 := by
     simpa [p, q, z_pos_I] using tangentCoordChange_det_ne_zero_at_posI
-  have hpc_p : IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet) := by
+  have hpc_p : IsPreconnected
+      (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) p).source) := by
     simpa [p] using preconnected_univ_tangent_triv_baseSet_at_one
-  have hpc_q : IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet) := by
+  have hpc_q : IsPreconnected
+      (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) q).source) := by
     simpa [q] using preconnected_univ_tangent_triv_baseSet_at_negOne
-  rcases ne_iff_lt_or_gt.mp hdet_ne with hlt | hgt
+  obtain hlt | hgt := ne_iff_lt_or_gt.mp hdet_ne
   · exact ⟨p, q, z_neg_I, z_pos_I, hmem_neg, hmem_pos,
       by linarith [hfactor_neg, hlt], by linarith [hfactor_pos, hlt], hpc_p, hpc_q⟩
   · exact ⟨p, q, z_pos_I, z_neg_I, hmem_pos, hmem_neg,
