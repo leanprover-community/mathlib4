@@ -1171,7 +1171,7 @@ mutual
 /-- Apply attributes to the original and translated declarations. -/
 partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) (reorder : Reorder)
     (relevantArg : RelevantArg) : TermElabM (Array Name) := do
-  if !cfg.self && !cfg.existing then
+  if !cfg.existing && !cfg.none then
     -- Copy the `instance` attribute, since it is nice to directly tag `instance` declarations.
     copyInstanceAttribute src tgt
     copyAliasAttribute t src tgt
