@@ -130,12 +130,6 @@ def CotangentSpace.compEquiv :
   (Q.comp P).cotangentSpaceBasis.repr.trans
     (Q.cotangentSpaceBasis.prod (P.cotangentSpaceBasis.baseChange T)).repr.symm
 
-section instanceProblem
-
--- Note: these instances are needed to prevent instance search timeouts.
-attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass instAddZeroClassTensorProduct AddZero.toZero
-
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
       LinearMap.inr T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) =
@@ -400,6 +394,11 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
+lemma δ_C {r : S} (hr : C r ∈ Q.ker) :
+    δ Q P ⟨Extension.Cotangent.mk ⟨C r, hr⟩, Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
+      = 1 ⊗ₜ[S] D R S r := by
+  rw [δ_eq_δAux, δAux_C]
+
 lemma δ_eq_δ : δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -442,8 +441,6 @@ lemma exact_map_δ' (f : Hom W Q) :
   exact exact_map_δ Q P
 
 end H1Cotangent
-
-end instanceProblem
 
 end Generators
 
