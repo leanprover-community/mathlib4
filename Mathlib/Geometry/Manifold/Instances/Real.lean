@@ -484,22 +484,13 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-- In the cross-chart case on `[x,y]`, the tangent coordinate change is `v ↦ -v`. -/
-private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
-    (hr : r ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet)
+private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
+    (hr : r ∈ (chartAt (EuclideanHalfSpace 1) p).source ∩
+      (chartAt (EuclideanHalfSpace 1) q).source)
     (hpq : ¬((p : ℝ) < y ↔ (q : ℝ) < y))
     (v : EuclideanSpace ℝ (Fin 1)) :
-    (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-      (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r v = -v := by
-  rw [show (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r v =
-        (tangentBundleCore (𝓡∂ 1) (Set.Icc x y)).coordChange
-          ((tangentBundleCore (𝓡∂ 1) (Set.Icc x y)).indexAt p)
-          ((tangentBundleCore (𝓡∂ 1) (Set.Icc x y)).indexAt q) r v from
-      VectorBundleCore.trivializationAt_coordChange_eq
-        (tangentBundleCore (𝓡∂ 1) (Set.Icc x y)) hr v,
-    tangentBundleCore_indexAt, tangentBundleCore_indexAt,
-    tangentBundleCore_coordChange_achart]
+    tangentCoordChange (𝓡∂ 1) p q r v = -v := by
+  rw [tangentCoordChange_def]
   -- Decompose the cross-chart assumption into the two cases
   obtain ⟨hp', hq'⟩ | ⟨hp', hq'⟩ :
       ((p : ℝ) < y ∧ ¬(q : ℝ) < y) ∨ (¬(p : ℝ) < y ∧ (q : ℝ) < y) := by
@@ -509,9 +500,7 @@ private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
     -- The chart transition agrees with z ↦ c - z on (extChartAt p).target,
     -- which gives fderivWithin = -id since (extChartAt p).target ∈ 𝓝[range I].
     have hr_source : r ∈ (extChartAt (𝓡∂ 1) p).source := by
-      have := hr.1
-      simp only [trivializationAt, TangentBundle.trivializationAt_eq_localTriv] at this
-      rwa [extChartAt_source]
+      rw [extChartAt_source]; exact hr.1
     have hw_mem : extChartAt (𝓡∂ 1) p r ∈ (extChartAt (𝓡∂ 1) p).target :=
       (extChartAt (𝓡∂ 1) p).map_source hr_source
     have hEqOn : Set.EqOn (↑(extChartAt (𝓡∂ 1) q) ∘ ↑(extChartAt (𝓡∂ 1) p).symm)
@@ -558,48 +547,38 @@ private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
 /-- The interval tangent coordinate change from the chart at `p` to the chart at `q`, evaluated at
 `r`, has positive Jacobian determinant exactly when `p` and `q` use the same chart (both `< y` or
 both `≥ y`). -/
-private theorem Icc_zero_lt_det_coordChangeL_iff (p q r : Set.Icc x y)
-    (hr : r ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet) :
-    0 < LinearMap.det
-        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
-            q) r).toLinearEquiv.toLinearMap) ↔
+private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
+    (hr : r ∈ (chartAt (EuclideanHalfSpace 1) p).source ∩
+      (chartAt (EuclideanHalfSpace 1) q).source) :
+    0 < LinearMap.det (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap ↔
       ((p : ℝ) < y ↔ (q : ℝ) < y) := by
   -- Within a chart the transition is the identity (determinant `1`); across charts it is `v ↦ -v`
   -- (determinant `-1`).
   have hid : ((p : ℝ) < y ↔ (q : ℝ) < y) →
-      0 < LinearMap.det
-        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
-            q) r).toLinearEquiv.toLinearMap) := by
+      0 < LinearMap.det (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap := by
     intro hpq
-    have hrefl :
-        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r).toLinearEquiv)
-          = LinearEquiv.refl ℝ (EuclideanSpace ℝ (Fin 1)) := by
-      rw [Bundle.Trivialization.coe_coordChangeL' _ _ hr]
+    have hach : achart (EuclideanHalfSpace 1) p = achart (EuclideanHalfSpace 1) q := by
+      apply Subtype.ext
+      rw [coe_achart, coe_achart]
       by_cases hp : (p : ℝ) < y
-      · have hq : (q : ℝ) < y := hpq.mp hp
-        simp only [TangentBundle.trivializationAt_eq_localTriv, achart_def, Icc_chartedSpaceChartAt,
-          hp, hq, ↓reduceIte, LinearEquiv.symm_trans_self]
-      · have hq : ¬(q : ℝ) < y := fun h => hp (hpq.mpr h)
-        simp only [TangentBundle.trivializationAt_eq_localTriv, achart_def, Icc_chartedSpaceChartAt,
-          hp, hq, ↓reduceIte, LinearEquiv.symm_trans_self]
-    rw [hrefl, LinearEquiv.refl_toLinearMap, LinearMap.det_id]
+      · rw [Icc_chartedSpaceChartAt, Icc_chartedSpaceChartAt, if_pos hp, if_pos (hpq.mp hp)]
+      · rw [Icc_chartedSpaceChartAt, Icc_chartedSpaceChartAt, if_neg hp,
+          if_neg (fun h => hp (hpq.mpr h))]
+    have hself : (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = LinearMap.id := by
+      have heq : tangentCoordChange (𝓡∂ 1) p q r = tangentCoordChange (𝓡∂ 1) q q r := by
+        simp only [tangentCoordChange, hach]
+      refine LinearMap.ext fun v => ?_
+      rw [heq]
+      exact tangentCoordChange_self (by rw [extChartAt_source]; exact hr.2)
+    rw [hself, LinearMap.det_id]
     exact one_pos
   have hneg : ¬((p : ℝ) < y ↔ (q : ℝ) < y) →
-      LinearMap.det
-        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
-            q) r).toLinearEquiv.toLinearMap) < 0 := by
+      LinearMap.det (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap < 0 := by
     intro hpq
-    have hmap :
-        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
-          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1))
-            q) r).toLinearEquiv.toLinearMap) = (-1 : ℝ) • LinearMap.id := by
-      ext v
-      simp [Icc_coordChangeL_neg p q r hr hpq v]
+    have hmap : (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = (-1 : ℝ) • LinearMap.id := by
+      refine LinearMap.ext fun v => ?_
+      rw [ContinuousLinearMap.coe_coe, Icc_tangentCoordChange_neg p q r hr hpq v,
+        LinearMap.smul_apply, LinearMap.id_apply, neg_one_smul]
     rw [hmap, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace, Fintype.card_fin]
     norm_num
   by_cases hpq : ((p : ℝ) < y ↔ (q : ℝ) < y)
@@ -609,14 +588,14 @@ private theorem Icc_zero_lt_det_coordChangeL_iff (p q r : Set.Icc x y)
 open Classical in
 instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
   manifoldOrientation :=
-    { chartSign := fun p z =>
+    { chartSign p z :=
         if z ∈ (chartAt (EuclideanHalfSpace 1) p).source then (if (p : ℝ) < y then 0 else 1) else 1
-      continuousOn_chartSign := fun p =>
+      continuousOn_chartSign p :=
         ContinuousOn.congr (continuousOn_const (c := if (p : ℝ) < y then (0 : ZMod 2) else 1))
           (fun z hz => by simp only [if_pos hz])
-      chartSign_eq_one_of_not_mem := fun p z hz => if_neg hz
-      compatible := fun p q z hzp hzq => by
-        simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_coordChangeL_iff p q z ⟨hzp, hzq⟩]
+      chartSign_eq_one_of_not_mem p z hz := if_neg hz
+      compatible p q z hzp hzq := by
+        simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_tangentCoordChange_iff p q z ⟨hzp, hzq⟩]
         by_cases hp : (p : ℝ) < y <;> by_cases hq : (q : ℝ) < y <;> simp [hp, hq] }
 
 instance instOrientableIcc : Manifold.Orientable (𝓡∂ 1) (Set.Icc x y) := by infer_instance

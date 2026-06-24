@@ -71,8 +71,7 @@ structure ManifoldOrientation (M : Type*) [TopologicalSpace M] [ChartedSpace H M
   /-- The coordinate change from the chart at `x` to the chart at `y`, evaluated at `z`, has
   positive Jacobian determinant exactly when the two chart signs agree at `z`. -/
   compatible : ∀ x y z, z ∈ (chartAt H x).source → z ∈ (chartAt H y).source →
-    (0 < LinearMap.det (((trivializationAt E (TangentSpace I) x).coordChangeL ℝ
-        (trivializationAt E (TangentSpace I) y) z).toLinearEquiv.toLinearMap) ↔
+    (0 < LinearMap.det (tangentCoordChange I x y z).toLinearMap ↔
       chartSign x z = chartSign y z)
 
 /-- A manifold is orientable if it admits a manifold orientation. -/
@@ -94,18 +93,18 @@ theorem point_has_two_manifoldOrientations :
       oPos ≠ oNeg ∧
       ∀ o : ManifoldOrientation (𝓘(ℝ, EuclideanSpace ℝ (Fin 0)))
         (EuclideanSpace ℝ (Fin 0)), o = oPos ∨ o = oNeg := by
-  refine ⟨{ chartSign := fun _ _ => 0
-            continuousOn_chartSign := fun _ => continuousOn_const
-            chartSign_eq_one_of_not_mem := fun x z hz =>
+  refine ⟨{ chartSign _ _ := 0
+            continuousOn_chartSign _ := continuousOn_const
+            chartSign_eq_one_of_not_mem x z hz :=
               absurd (by rw [Subsingleton.elim z x]; exact mem_chart_source _ x) hz
-            compatible := fun _ _ _ _ _ => iff_of_true
+            compatible _ _ _ _ _ := iff_of_true
               (by rw [LinearMap.det_eq_one_of_finrank_eq_zero (by simp [finrank_euclideanSpace])]
                   exact one_pos) rfl },
-          { chartSign := fun _ _ => 1
-            continuousOn_chartSign := fun _ => continuousOn_const
-            chartSign_eq_one_of_not_mem := fun x z hz =>
+          { chartSign _ _ := 1
+            continuousOn_chartSign _ := continuousOn_const
+            chartSign_eq_one_of_not_mem x z hz :=
               absurd (by rw [Subsingleton.elim z x]; exact mem_chart_source _ x) hz
-            compatible := fun _ _ _ _ _ => iff_of_true
+            compatible _ _ _ _ _ := iff_of_true
               (by rw [LinearMap.det_eq_one_of_finrank_eq_zero (by simp [finrank_euclideanSpace])]
                   exact one_pos) rfl },
           ?_, ?_⟩
@@ -114,11 +113,9 @@ theorem point_has_two_manifoldOrientations :
       (by decide)
   · intro o
     have hval : ∀ a : ZMod 2, a = 0 ∨ a = 1 := by decide
-    rcases hval (o.chartSign default default) with h | h
-    · exact Or.inl (ManifoldOrientation.ext (funext fun x => funext fun z => by
-        rw [Subsingleton.elim x default, Subsingleton.elim z default]; exact h))
-    · exact Or.inr (ManifoldOrientation.ext (funext fun x => funext fun z => by
-        rw [Subsingleton.elim x default, Subsingleton.elim z default]; exact h))
+    refine (hval (o.chartSign default default)).imp (fun h => ?_) (fun h => ?_) <;>
+      exact ManifoldOrientation.ext (funext fun x => funext fun z => by
+        rw [Subsingleton.elim x default, Subsingleton.elim z default]; exact h)
 
 section Cardinality
 
