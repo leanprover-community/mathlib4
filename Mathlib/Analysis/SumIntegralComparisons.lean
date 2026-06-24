@@ -218,27 +218,19 @@ theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
     Summable (fun (n : ℕ) ↦ f n ) :=
   summable_of_integrable_eventually (N := 0) (mod_cast anti) (mod_cast integrable) (mod_cast nonneg)
 
+open Filter MeasureTheory Finset in
 theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici (N : ℝ)))
     (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
     ∑' (n : ℕ),  f (n + N + 1 : ℕ) ≤ ∫ x in Ioi (N : ℝ), f x := by
-  apply Summable.tsum_le_of_sum_range_le
-  · apply_mod_cast AntitoneOn.summable_of_integrable (f := (fun t ↦ f (t + N + 1)))
-    · intro _ _ _  _ _
-      apply anti <;> grind
-    · conv => arg 1; ext; rw [add_assoc]
-      exact (measurePreserving_add_right ..).integrableOn_image (measurableEmbedding_addRight _)
-        |>.mp (integrable.mono_set (by grind))
-    · exact fun _ _ ↦ nonneg _ (by grind)
-  · intro M
+  refine tsum_le_of_sum_le' (integral_nonneg_of_ae ?_) fun s ↦ ?_
+  · filter_upwards [ae_restrict_mem measurableSet_Ioi] using nonneg
+  · obtain ⟨t, ht⟩ := tendsto_finset_range.eventually (Ici_mem_atTop s) |>.exists
     calc
-    _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by
-      rw [Finset.sum_Ico_eq_sum_range]
-      refine Finset.sum_congr (by congr; grind) fun n hn ↦ ?_
-      congr 2
-      ring
-    _ ≤ _ := by
-      exact AntitoneOn.sum_Ico_le_integral (by grind) (anti.mono Icc_subset_Ici_self)
-        integrable nonneg
+      ∑ i ∈ s, f ↑(i + N + 1) ≤ ∑ i ∈ range t, f ↑(i + N + 1) :=
+        sum_le_sum_of_subset_of_nonneg ht <| by grind
+      _ = ∑ i ∈ Ico N (N + t), f ↑(i + 1) := by rw [Finset.sum_Ico_eq_sum_range]; grind
+      _ ≤ ∫ (x : ℝ) in Set.Ioi (N : ℝ), f x :=
+        (anti.mono <| by grind).sum_Ico_le_integral (by grind) integrable nonneg
 
 /-- **Integral test**: bounds the sum from 1 by an integral. -/
 theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
