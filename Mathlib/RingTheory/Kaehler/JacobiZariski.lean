@@ -14,21 +14,41 @@ public import Mathlib.RingTheory.Flat.Basic
 
 # The Jacobi-Zariski exact sequence
 
-Given `R → S → T`, the Jacobi-Zariski exact sequence is
-```
-H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0
-```
-The maps are
+Given algebras $R \to S \to T$, the Jacobi-Zariski exact sequence is a long exact sequence
+relating the first homology of the naive cotangent complexes and the Kähler differentials of
+the respective algebras. It takes the form:
+$$
+H_1(L_{T/R}) \to H_1(L_{T/S}) \to T \otimes_S \Omega_{S/R} \to \Omega_{T/R} \to \Omega_{T/S} \to 0
+$$
+The maps in the sequence are
 - `Algebra.H1Cotangent.map`
 - `Algebra.H1Cotangent.δ`
 - `KaehlerDifferential.mapBaseChange`
 - `KaehlerDifferential.map`
 
-and the exactness lemmas are
+The exactness lemmas are
 - `Algebra.H1Cotangent.exact_map_δ`
 - `Algebra.H1Cotangent.exact_δ_mapBaseChange`
 - `KaehlerDifferential.exact_mapBaseChange_map`
 - `KaehlerDifferential.map_surjective`
+
+When $T$ is flat over $S$, the left bottom part of the snake lemma diagram used in
+the construction of the connecting homomorphism `Algebra.Generators.H1Cotangent.δ`
+naturally extends via a base change map. The exactness lemma is
+`Algebra.Generators.H1Cotangent.exact_liftBaseChange_map_of_flat`. Globally, this extends
+the Jacobi-Zariski exact sequence to the left via a natural base change map, taking the form
+$$
+T \otimes_S H_1(L_{S/R}) \to H_1(L_{T/R}) \to H_1(L_{T/S})
+$$
+The exactness lemma is `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`.
+
+# TODO
+
+The flatness assumption in `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`
+is stronger than the `Tor`-vanishing conditions required in the full statement of
+[Stacks Project, 00S2], this should be refactored and generalized once more API
+for `Tor` modules is available.
+
 -/
 
 @[expose] public section
@@ -448,7 +468,7 @@ lemma exact_map_δ' (f : Hom W Q) :
   exact exact_map_δ Q P
 
 open LinearMap in
-lemma range_liftBaseChange_map_le :
+lemma liftBaseChange_range_le :
     (liftBaseChange T (Extension.H1Cotangent.map (Q.toComp P).toExtensionHom)).range ≤
       (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom).ker := by
   rw [range_liftBaseChange, coe_range, Submodule.span_le, Set.range_subset_iff]
@@ -457,7 +477,6 @@ lemma range_liftBaseChange_map_le :
   ext; suffices (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom x) ∈ Q.toExtension.ker ^ 2 by
     simpa [Ideal.toCotangent_eq_zero]
   rw [← Generators.ker, Generators.ker_eq_ker_aeval_val] at x_in
-  change aeval P.val x = 0 at x_in
   rw [toComp_toAlgHom, toAlgHom_ofComp_rename, Generators.algebraMap_eq, RingHom.coe_coe,
     x_in, RingHom.map_zero]
   exact Ideal.zero_mem _
@@ -472,11 +491,14 @@ private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
   | add x y hx hy => simpa using Submodule.add_mem _ hx hy
 
 open LinearMap in
-theorem exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
+/-- When $T$ is flat over $S$, the left bottom part of the snake lemma diagram used in
+the construction of the connecting homomorphism `Algebra.Generators.H1Cotangent.δ`
+naturally extends via a base change map. -/
+theorem exact_liftBaseChange_map_of_flat [Module.Flat S T] :
     Function.Exact ((Extension.H1Cotangent.map (toComp Q P).toExtensionHom).liftBaseChange T)
       (Extension.H1Cotangent.map (ofComp Q P).toExtensionHom) := by
   rw [exact_iff]
-  refine le_antisymm ?_ (range_liftBaseChange_map_le Q P)
+  refine le_antisymm ?_ (liftBaseChange_range_le Q P)
   rintro ⟨x, x_in⟩ hx
   replace hx : Extension.Cotangent.map (Q.ofComp P).toExtensionHom x = 0 := by
     simpa [← Extension.h1Cotangentι_injective.eq_iff] using hx
@@ -492,13 +514,13 @@ theorem exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
   | tmul x y => ext; simp
   | add x y hx hy => ext; simp [hx (auxMemKer Q P x), hy (auxMemKer Q P y)]
 
-/-- A variant of `exact_liftBaseChange_map_map_of_flat` that takes in
+/-- A variant of `exact_liftBaseChange_map_of_flat` that takes in
 arbitrary maps between generators. -/
-theorem exact_liftBaseChange_map_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : Hom P W) :
+theorem exact_liftBaseChange_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : Hom P W) :
     Function.Exact ((Extension.H1Cotangent.map g.toExtensionHom).liftBaseChange T)
       (Extension.H1Cotangent.map f.toExtensionHom) := by
   rw [← LinearEquiv.conj_exact_iff_exact _ _ (H1Cotangent.equiv W (Q.comp P))]
-  convert! exact_liftBaseChange_map_map_of_flat Q P
+  convert! exact_liftBaseChange_map_of_flat Q P
   · change Extension.H1Cotangent.map (W.defaultHom (Q.comp P)).toExtensionHom ∘ₗ _ = _
     rw [LinearMap.liftBaseChange_comp, ← Extension.H1Cotangent.map_comp,
       Extension.H1Cotangent.map_eq]
@@ -521,21 +543,28 @@ noncomputable
 def H1Cotangent.δ : H1Cotangent S T →ₗ[T] T ⊗[S] Ω[S⁄R] :=
   Generators.H1Cotangent.δ (Generators.self S T) (Generators.self R S)
 
-/-- Given algebras `R → S → T`, `H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R]` is exact. -/
+/-- Given algebras $R \to S \to T$, the sequence
+$H_1(L_{T/R}) \to H_1(L_{T/S}) \to T \otimes_S \Omega_{S/R}$
+is exact. -/
+@[stacks 00S2]
 lemma H1Cotangent.exact_map_δ : Function.Exact (map R S T T) (δ R S T) :=
   Generators.H1Cotangent.exact_map_δ' (Generators.self S T)
     (Generators.self R S) (Generators.self R T) (Generators.defaultHom _ _)
 
-/-- Given algebras `R → S → T`, `H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R]` is exact. -/
+/-- Given algebras $R \to S \to T$, the sequence
+$H_1(L_{T/S}) \to T \otimes_S \Omega_{S/R} \to \Omega_{T/R}$
+is exact. -/
+@[stacks 00S2]
 lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseChange R S T) :=
   Generators.H1Cotangent.exact_δ_map (Generators.self S T) (Generators.self R S)
 
-/-- Given algebras `R → S → T` and `T` flat over `S`,
-`T ⊗[S] H₁(L_{S/R}) → H₁(L_{T/R}) → H₁(L_{T/S})` is exact. -/
--- #TODO : Generalize the flatness assumption to vanishings conditions on `Tor` modules
-lemma H1Cotangent.exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
+/-- Given algebras $R \to S \to T$ and $T$ flat over $S$, the sequence
+$T \otimes_S H_1(L_{S/R}) \to H_1(L_{T/R}) \to H_1(L_{T/S})$
+is exact. -/
+@[stacks 00S2]
+lemma H1Cotangent.exact_liftBaseChange_map_of_flat [Module.Flat S T] :
     Function.Exact ((map R R S T).liftBaseChange T) (map R S T T) :=
-  Generators.H1Cotangent.exact_liftBaseChange_map_map_of_flat'
+  Generators.H1Cotangent.exact_liftBaseChange_map_of_flat'
     (Generators.self S T) (Generators.self R S) (Generators.self R T)
     (Generators.defaultHom _ _) (Generators.defaultHom _ _)
 

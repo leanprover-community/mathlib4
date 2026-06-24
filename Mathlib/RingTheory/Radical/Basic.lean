@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -38,10 +39,6 @@ Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radic
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
-## TODO
-
-- Connect this notion with `Ideal.radical`. Particularly, for a principal ideal,
-  `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
 
 @[expose] public noncomputable section
@@ -331,9 +328,52 @@ theorem radical_prod_dvd {ι : Type*} {s : Finset ι} {f : ι → M} :
     simp only [Finset.prod_cons]
     exact radical_mul_dvd.trans (mul_dvd_mul_left _ ih)
 
+theorem radical_mul_of_dvd (h : a ∣ b) : radical (a * b) = radical b := by
+  classical
+  by_cases ha : a = 0; · simp_all
+  by_cases hb : b = 0; · simp_all
+  rw [radical_eq_iff_primeFactors_eq, primeFactors_mul_eq_union ha hb, Finset.union_eq_right,
+    ← radical_dvd_iff_primeFactors_subset hb]
+  exact radical_dvd_self.trans h
+
+theorem exists_self_dvd_pow_radical (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n := by
+  induction a using induction_on_prime with
+  | h₁ => tauto
+  | h₂ x h => simpa [radical_of_isUnit h, ← isUnit_iff_dvd_one]
+  | h₃ b p ne p_prime ih =>
+    rcases ih ne with ⟨c, hc⟩
+    rcases p_prime.irreducible.dvd_or_isRelPrime (n := b) with dvd | coprime
+    · use c + 1; rw [radical_mul_of_dvd dvd, pow_succ']
+      refine mul_dvd_mul ?_ hc
+      rw [(associated_normalize p).dvd_iff_dvd_left, ← radical_of_prime p_prime]
+      exact radical_dvd_radical dvd ne
+    · use c + 1; rw [radical_mul coprime, radical_of_prime p_prime, mul_pow]
+      refine mul_dvd_mul ?_ ?_
+      · rw [pow_succ]
+        exact dvd_mul_of_dvd_right (associated_normalize p).dvd _
+      · rw [pow_succ]
+        exact dvd_mul_of_dvd_left hc _
+
 end UniqueFactorizationMonoid
 
 open UniqueFactorizationMonoid
+
+lemma Ideal.radical_span_singleton_eq_span_radical {S : Type*} [CommSemiring S]
+    [UniqueFactorizationMonoid S] [NormalizationMonoid S] {s : S} (h : s ≠ 0) :
+    (span {s}).radical = span {UniqueFactorizationMonoid.radical s} := by
+  refine le_antisymm (fun t ht ↦ ?_) ?_
+  · by_cases t_eq : t = 0; · simp [t_eq]
+    rcases ht with ⟨n, hn⟩
+    rw [mem_span_singleton] at hn ⊢
+    by_cases n_eq : n = 0
+    · rw [n_eq, pow_zero, ← isUnit_iff_dvd_one] at hn
+      simp [radical_of_isUnit hn]
+    trans UniqueFactorizationMonoid.radical (t ^ n)
+    · exact radical_dvd_radical hn (pow_ne_zero _ t_eq)
+    · rw [UniqueFactorizationMonoid.radical_pow _ n_eq]
+      exact radical_dvd_self
+  · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
+    exact exists_self_dvd_pow_radical h
 
 /-! Theorems for UFDs -/
 namespace UniqueFactorizationDomain
