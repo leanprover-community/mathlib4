@@ -289,8 +289,6 @@ lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
 
-example : Ring (Matrix n n 𝕜) := by exact instRing
-
 end Matrix
 
 end L2OpNorm
