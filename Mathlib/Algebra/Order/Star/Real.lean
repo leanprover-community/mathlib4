@@ -34,3 +34,10 @@ instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
     simp only [star_trivial, mul_self_sqrt]
   · rintro ⟨p, -, rfl⟩
     exact le_self_add
+
+-- for lack of a better place with the necessary imports, we place this here
+-- this exists only to satisfy the trivial instances of this class
+instance {R : Type*} [AddGroup R] [Lattice R] [AddLeftMono R] [Star R] :
+    SelfAdjointDecompose R where
+  exists_nonneg_sub_nonneg {a} _ :=
+    ⟨a⁺, a⁻, posPart_nonneg a, negPart_nonneg a, by simp⟩

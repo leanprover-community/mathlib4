@@ -355,12 +355,14 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
     (by ext : 1; simp) (by ext : 2; simp)
 
 @[simp]
-theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε :=
-  (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
+theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε := by
+  dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
+  exact (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
 
 @[simp]
 theorem equiv_symm_eps :
-    CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 :=
-  DualNumber.lift_apply_eps _
+    CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 := by
+  dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
+  exact DualNumber.lift_apply_eps _
 
 end CliffordAlgebraDualNumber
