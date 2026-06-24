@@ -57,14 +57,24 @@ theorem encard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard �
   rw [← z.finite_mk_fiber.cast_ncard_eq, z.ncard_mk_fiber]
   split_ifs <;> norm_cast
 
-theorem cardinalMk_prod_le (α : Type*) : #(α × α) ≤ 2 * #(Sym2 α) := by
-  rw [← Equiv.sigmaFiberEquiv Sym2.mk.uncurry |>.cardinal_eq, Cardinal.mk_sigma, mul_comm]
-  grw [Cardinal.sum_le_mk_mul_iSup]
-  apply mul_le_mul_right <| ciSup_le' fun z ↦ ?_
-  rw [← Set.coe_setOf, ← Set.preimage_singleton]
-  cases z
-  grw [mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
-    simp
+variable (α) in
+theorem two_mul_cardinalMk_sym2 : 2 * #(Sym2 α) = #α * (#α + 1) := by
+  classical
+  have : Bool × Sym2 α ≃ α × Option α := {
+    toFun
+      | ⟨true, z⟩ => (z.out.fst, some z.out.snd)
+      | ⟨false, z⟩ => (z.out.snd, if z.IsDiag then none else some z.out.fst)
+    invFun
+      | ⟨a, some b⟩ => (s(a, b).out.fst = a, s(a, b))
+      | ⟨a, none⟩ => (false, s(a, a))
+    left_inv := by grind [mk_fst_out_snd_out, mk_isDiag_iff]
+    right_inv _ := by grind [mk_fst_out_snd_out, mk_isDiag_iff]
+  }
+  simpa using this.cardinal_eq
+
+variable (α) in
+theorem cardinalMk_prod_le : #(α × α) ≤ 2 * #(Sym2 α) := by
+  simp [two_mul_cardinalMk_sym2, mul_le_mul_right]
 
 section fromRel
 
