@@ -6,8 +6,9 @@ Authors: Kevin H. Wilson, Alastair Irving
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.Data.Set.Function
+
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Comparing sums and integrals
@@ -39,6 +40,8 @@ These are used to prove a version of the integral test for antitone functions.
   for antitone functions.
 * `AntitoneOn.abs_tsum_sub_sum_range_le_integral`: an error estimate for the difference
     between a sum and its partial sums in terms of an integral.
+  * `AntitoneOn.integrable_of_summable` and `AntitoneOn.integral_le_sum`, the converse to the
+    integral test.
 ## Tags
 
 analysis, comparison, asymptotics
@@ -255,13 +258,49 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
   · congr; ext; congr 2; grind
   · norm_cast
 
+open Filter in
+/-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/
+theorem AntitoneOn.integrable_of_summable_comp_add {N : ℕ} (anti : AntitoneOn f (Ici (N : ℝ)))
+    (summable : Summable (fun (n : ℕ) ↦ f (n + N : ℕ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
+    IntegrableOn f (Ioi (N : ℝ)) := by
+  refine integrableOn_Ioi_of_intervalIntegral_norm_bounded (∑' (n : ℕ), f (n + N : ℕ)) _ ?_
+    (tendsto_atTop_add_const_right atTop (N : ℝ) tendsto_natCast_atTop_atTop) ?_
+  · intro n
+    rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le (by grind)]
+    refine (anti.mono ?_).intervalIntegrable
+    rw [uIcc_of_le (by grind)]
+    grind
+  · filter_upwards [eventually_gt_atTop 0] with M hM
+    calc
+    _ = ∫ x in N..M+N, f x := by
+      refine intervalIntegral.integral_congr_ae ?_
+      filter_upwards with x hx
+      rw [uIoc_of_le (by grind)] at hx
+      exact Real.norm_of_nonneg (nonneg _ (by grind))
+    _ ≤ ∑ n ∈ Finset.range M, f (n + N : ℕ) := by
+      convert! AntitoneOn.integral_le_sum (anti.mono _) using 2 <;> grind
+    _ ≤ _ := by
+      refine summable.sum_le_tsum _ fun n hn ↦ nonneg _ ?_
+      simp at hn ⊢
+      linarith
+
+/-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/
+theorem AntitoneOn.integrable_of_summable (anti : AntitoneOn f (Ici 0))
+    (summable : Summable (fun (n : ℕ) ↦ f n)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
+    IntegrableOn f (Ioi 0) := by
+  convert ! AntitoneOn.integrable_of_summable_comp_add (N := 0) (mod_cast anti) summable
+    (mod_cast nonneg)
+  norm_cast
+
+open Filter in
+/-- The sum of a nonnegative, antitone function is bounded below by its integral. -/
 theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici (N : ℝ)))
-    (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
+    (summable : Summable (fun (n : ℕ) ↦ f n)) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
     ∫ x in Ioi (N : ℝ), f x ≤ ∑' (n : ℕ),  f (n + N : ℕ) := by
-  have := anti.summable_of_integrable_eventually integrable nonneg
-  rw [← summable_nat_add_iff N] at this
-  have lim := this.tendsto_sum_tsum_nat
-  have  := Filter.tendsto_atTop_add_const_right Filter.atTop (N : ℝ) tendsto_natCast_atTop_atTop
+  rw [← summable_nat_add_iff N] at summable
+  have lim := summable.tendsto_sum_tsum_nat
+  have  := tendsto_atTop_add_const_right atTop (N : ℝ) tendsto_natCast_atTop_atTop
+  have integrable := anti.integrable_of_summable_comp_add summable nonneg
   refine le_of_tendsto_of_tendsto (intervalIntegral_tendsto_integral_Ioi N integrable this) lim ?_
   filter_upwards with M
   calc
@@ -274,8 +313,10 @@ theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici
     rw [Finset.sum_Ico_eq_sum_range]
     grind
 
+/-- The sum of a nonnegative, antitone function is bounded below by its integral. -/
 theorem AntitoneOn.integral_le_tsum (anti : AntitoneOn f (Ici 0))
-    (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
+    (summable : Summable (fun (n : ℕ) ↦ f n)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∫ x in Ioi 0, f x ≤ ∑' (n : ℕ),  f n := by
-  convert! AntitoneOn.integral_le_tsum_comp_add 0 (mod_cast anti) (mod_cast integrable) (mod_cast nonneg)
+  convert! AntitoneOn.integral_le_tsum_comp_add 0 (mod_cast anti) (mod_cast summable)
+    (mod_cast nonneg)
   norm_cast
