@@ -328,14 +328,6 @@ theorem radical_prod_dvd {ι : Type*} {s : Finset ι} {f : ι → M} :
     simp only [Finset.prod_cons]
     exact radical_mul_dvd.trans (mul_dvd_mul_left _ ih)
 
-theorem radical_dvd_of_dvd_pow {n : ℕ} (h : a ∣ b ^ n) : radical a ∣ b := by
-  by_cases hb : b = 0; · simp [hb]
-  by_cases hn : n = 0
-  · rw [hn, pow_zero, ← isUnit_iff_dvd_one] at h
-    simp [radical_of_isUnit h]
-  replace h := radical_pow b hn ▸ radical_dvd_radical h (pow_ne_zero n hb)
-  exact h.trans radical_dvd_self
-
 theorem radical_mul_of_dvd (h : a ∣ b) : radical (a * b) = radical b := by
   classical
   by_cases ha : a = 0; · simp_all
@@ -370,9 +362,16 @@ lemma Ideal.radical_span_singleton_eq_span_radical {S : Type*} [CommSemiring S]
     [UniqueFactorizationMonoid S] [NormalizationMonoid S] {s : S} (h : s ≠ 0) :
     (span {s}).radical = span {UniqueFactorizationMonoid.radical s} := by
   refine le_antisymm (fun t ht ↦ ?_) ?_
-  · rcases ht with ⟨n, hn⟩
+  · by_cases t_eq : t = 0; · simp [t_eq]
+    rcases ht with ⟨n, hn⟩
     rw [mem_span_singleton] at hn ⊢
-    exact radical_dvd_of_dvd_pow hn
+    by_cases n_eq : n = 0
+    · rw [n_eq, pow_zero, ← isUnit_iff_dvd_one] at hn
+      simp [radical_of_isUnit hn]
+    trans UniqueFactorizationMonoid.radical (t ^ n)
+    · exact radical_dvd_radical hn (pow_ne_zero _ t_eq)
+    · rw [UniqueFactorizationMonoid.radical_pow _ n_eq]
+      exact radical_dvd_self
   · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
     exact exists_self_dvd_pow_radical h
 
