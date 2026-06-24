@@ -543,11 +543,9 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
       (chartAt (EuclideanHalfSpace 1) q).source) :
     0 < LinearMap.det (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap ↔
       ((p : ℝ) < y ↔ (q : ℝ) < y) := by
-  -- Within a chart the transition is the identity (determinant `1`); across charts it is `v ↦ -v`
-  -- (determinant `-1`).
-  have hid : ((p : ℝ) < y ↔ (q : ℝ) < y) →
-      0 < LinearMap.det (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap := by
-    intro hpq
+  by_cases hpq : ((p : ℝ) < y ↔ (q : ℝ) < y)
+  · -- Charts agree: the coordinate change is the identity, with determinant `1 > 0`.
+    refine iff_of_true ?_ hpq
     have hach : achart (EuclideanHalfSpace 1) p = achart (EuclideanHalfSpace 1) q := by
       apply Subtype.ext
       rw [coe_achart, coe_achart]
@@ -563,18 +561,14 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
       exact tangentCoordChange_self (by rw [extChartAt_source]; exact hr.2)
     rw [hself, LinearMap.det_id]
     exact one_pos
-  have hneg : ¬((p : ℝ) < y ↔ (q : ℝ) < y) →
-      LinearMap.det (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap < 0 := by
-    intro hpq
+  · -- Charts differ: the coordinate change is `-id`, with determinant `-1 < 0`.
+    refine iff_of_false (not_lt.mpr (le_of_lt ?_)) hpq
     have hmap : (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = (-1 : ℝ) • LinearMap.id := by
       ext v : 1
       rw [ContinuousLinearMap.coe_coe, Icc_tangentCoordChange_neg p q r hr hpq v,
         LinearMap.smul_apply, LinearMap.id_apply, neg_one_smul]
     rw [hmap, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace, Fintype.card_fin]
     norm_num
-  by_cases hpq : ((p : ℝ) < y ↔ (q : ℝ) < y)
-  · exact iff_of_true (hid hpq) hpq
-  · exact iff_of_false (not_lt.mpr (hneg hpq).le) hpq
 
 open Classical in
 instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
