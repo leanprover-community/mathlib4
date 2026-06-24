@@ -499,18 +499,14 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
   all_goals
     -- The chart transition agrees with z ↦ c - z on (extChartAt p).target,
     -- which gives fderivWithin = -id since (extChartAt p).target ∈ 𝓝[range I].
-    have hr_source : r ∈ (extChartAt (𝓡∂ 1) p).source := by
-      rw [extChartAt_source]; exact hr.1
     have hw_mem : extChartAt (𝓡∂ 1) p r ∈ (extChartAt (𝓡∂ 1) p).target :=
-      (extChartAt (𝓡∂ 1) p).map_source hr_source
-    have hEqOn : Set.EqOn (↑(extChartAt (𝓡∂ 1) q) ∘ ↑(extChartAt (𝓡∂ 1) p).symm)
+      (extChartAt (𝓡∂ 1) p).map_source (by rw [extChartAt_source]; exact hr.1)
+    have hEqOn : Set.EqOn ((extChartAt (𝓡∂ 1) q) ∘ (extChartAt (𝓡∂ 1) p).symm)
         (fun z ↦ (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x) - z)
         (extChartAt (𝓡∂ 1) p).target := by
+      rw [extChartAt_target]
       intro z hz
-      rw [extChartAt_target] at hz
-      obtain ⟨h_target, h_range⟩ := hz
-      rcases h_range with ⟨h, rfl⟩
-      have hge : 0 ≤ h.1 0 := h.2
+      obtain ⟨h_target, h, rfl⟩ := hz
       have hlt : h.1 0 < y - x := by
         exact (show h.1 0 < y - x ∧ x < y by
           simpa [Icc_chartedSpaceChartAt, hp', IccLeftChart, IccRightChart,
@@ -519,13 +515,11 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
       rw [Subsingleton.elim i 0]
       simp [Function.comp_apply, extChartAt, Icc_chartedSpaceChartAt, hp', hq',
         modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, mfld_simps,
-        max_eq_left hge, min_eq_left (by linarith : h.1 0 + x ≤ y),
+        max_eq_left h.2, min_eq_left (by linarith : h.1 0 + x ≤ y),
         max_eq_left (show x ≤ y - h.1 0 by linarith)]
       ring
     have hw_range : extChartAt (𝓡∂ 1) p r ∈ Set.range (𝓡∂ 1) :=
       extChartAt_target_subset_range (I := 𝓡∂ 1) (x := p) hw_mem
-    have huniq : UniqueDiffWithinAt ℝ (Set.range (𝓡∂ 1)) (extChartAt (𝓡∂ 1) p r) :=
-      hw_range.elim fun h hx ↦ hx ▸ (𝓡∂ 1).uniqueDiffWithinAt_image
     rw [(hEqOn.eventuallyEq_of_mem
       (extChartAt_target_mem_nhdsWithin_of_mem hw_mem)).fderivWithin_eq (hEqOn hw_mem)]
     set c : EuclideanSpace ℝ (Fin 1) :=
@@ -534,13 +528,10 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
         fderivWithin ℝ (fun z : EuclideanSpace ℝ (Fin 1) ↦ c - z)
             (Set.range (𝓡∂ 1)) (extChartAt (𝓡∂ 1) p r) =
           (-(1 : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1))) := by
-      have hfd : HasFDerivAt (fun z : EuclideanSpace ℝ (Fin 1) ↦ c - z)
-          (-(1 : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1)))
-          (extChartAt (𝓡∂ 1) p r) := by
-        have h := (hasFDerivAt_const c (extChartAt (𝓡∂ 1) p r)).sub
-          (hasFDerivAt_id (𝕜 := ℝ) (extChartAt (𝓡∂ 1) p r))
-        rwa [zero_sub] at h
-      exact hfd.hasFDerivWithinAt.fderivWithin huniq
+      have h := ((hasFDerivAt_const c (extChartAt (𝓡∂ 1) p r)).sub
+        (hasFDerivAt_id (𝕜 := ℝ) (extChartAt (𝓡∂ 1) p r))).hasFDerivWithinAt.fderivWithin
+          (hw_range.elim fun h hx ↦ hx ▸ (𝓡∂ 1).uniqueDiffWithinAt_image)
+      rwa [zero_sub] at h
     simpa [neg_apply] using
       congrArg (fun L : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1) ↦ L v) hderiv
 
@@ -567,7 +558,7 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
     have hself : (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = LinearMap.id := by
       have heq : tangentCoordChange (𝓡∂ 1) p q r = tangentCoordChange (𝓡∂ 1) q q r := by
         simp only [tangentCoordChange, hach]
-      refine LinearMap.ext fun v => ?_
+      ext v : 1
       rw [heq]
       exact tangentCoordChange_self (by rw [extChartAt_source]; exact hr.2)
     rw [hself, LinearMap.det_id]
@@ -576,7 +567,7 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
       LinearMap.det (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap < 0 := by
     intro hpq
     have hmap : (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = (-1 : ℝ) • LinearMap.id := by
-      refine LinearMap.ext fun v => ?_
+      ext v : 1
       rw [ContinuousLinearMap.coe_coe, Icc_tangentCoordChange_neg p q r hr hpq v,
         LinearMap.smul_apply, LinearMap.id_apply, neg_one_smul]
     rw [hmap, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace, Fintype.card_fin]
