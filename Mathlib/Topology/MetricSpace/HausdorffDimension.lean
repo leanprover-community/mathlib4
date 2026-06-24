@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.MeasureTheory.Measure.Hausdorff
-public import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Analysis.Convex.Intrinsic
 
 /-!
@@ -95,7 +94,6 @@ open MeasureTheory MeasureTheory.Measure Set TopologicalSpace Module Filter
 variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 
 /-- Hausdorff dimension of a set in an (e)metric space. -/
-@[wikidata Q1412452]
 @[irreducible] noncomputable def dimH (s : Set X) : ℝ≥0∞ := by
   borelize X; exact ⨆ (d : ℝ≥0) (_ : @hausdorffMeasure X _ _ ⟨rfl⟩ d s = ∞), d
 

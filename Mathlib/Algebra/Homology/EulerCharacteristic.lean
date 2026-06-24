@@ -10,7 +10,6 @@ public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Euler characteristic of homological complexes
@@ -116,7 +115,6 @@ lemma finrankSupport_subset_iff (X : CategoryTheory.GradedObject ι (ModuleCat R
 /-- The Euler characteristic of a graded object as a sum over all indices.
 The sign at each index is determined by the `ComplexShape.EulerCharSigns` instance.
 Defaults to 0 if the support of the ranks of the objects of `X` is infinite. -/
-@[wikidata Q852973]
 noncomputable def eulerChar (X : CategoryTheory.GradedObject ι (ModuleCat R)) : ℤ :=
   ∑ᶠ i : ι, (c.χ i : ℤ) * Module.finrank R (X i)
 

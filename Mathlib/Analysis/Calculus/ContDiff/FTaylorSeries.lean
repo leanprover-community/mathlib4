@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Iterated derivatives of a function
@@ -806,7 +805,6 @@ noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E [×n]→L[�
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 
 /-- Formal Taylor series associated to a function. -/
-@[wikidata Q131187]
 def ftaylorSeries (f : E → F) (x : E) : FormalMultilinearSeries 𝕜 E F := fun n =>
   iteratedFDeriv 𝕜 n f x
 

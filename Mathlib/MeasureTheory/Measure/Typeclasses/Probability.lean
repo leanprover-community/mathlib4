@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -62,7 +61,6 @@ end IsZeroOrProbabilityMeasure
 section IsProbabilityMeasure
 
 /-- A measure `μ` is called a probability measure if `μ univ = 1`. -/
-@[wikidata Q623472]
 class IsProbabilityMeasure (μ : Measure α) : Prop where
   measure_univ : μ univ = 1
 

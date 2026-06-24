@@ -6,7 +6,6 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Harmonic Functions
@@ -37,7 +36,6 @@ Let `E` be a real, finite-dimensional, inner product space and `x` be a point of
 on `E` is harmonic at `x` if it is two times continuously `ℝ`-differentiable and if its Laplacian
 vanishes in a neighborhood of `x`.
 -/
-@[wikidata Q599027]
 def HarmonicAt := (ContDiffAt ℝ 2 f x) ∧ (Δ f =ᶠ[𝓝 x] 0)
 
 variable (f s) in
