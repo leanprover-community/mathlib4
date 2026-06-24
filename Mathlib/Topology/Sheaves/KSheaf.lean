@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 public import Mathlib.Topology.Category.TopCat.Basic
-public import Mathlib.Topology.Category.TopCat.BaseChangeNhds
+public import Mathlib.Topology.Sets.BaseChangeNhds
 
 /-!
 # Ksheaves
