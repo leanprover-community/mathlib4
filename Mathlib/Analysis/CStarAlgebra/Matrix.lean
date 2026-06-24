@@ -291,6 +291,40 @@ lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
 
+lemma Isometry.postcomp_pi (α : Type*) {β γ : Type*} [Fintype α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] {g : β → γ} (hg : Isometry g) :
+    Isometry (fun f : α → β ↦ g ∘ f) :=
+  fun _ _ ↦ by simp [edist_pi_def, hg.edist_eq]
+
+@[to_additive pi_norm_comp_le]
+lemma pi_norm_comp_le' {α β γ : Type*} [Fintype α] [Fintype γ]
+    [SeminormedGroup β] (g : α → β) (f : γ → α) :
+    ‖g ∘ f‖ ≤ ‖g‖ := by
+  rw [pi_norm_le_iff_of_nonneg' (by positivity)]
+  exact fun x ↦ norm_le_pi_norm' g (f x)
+
+@[to_additive IsGreatest.pi_norm]
+lemma IsGreatest.pi_norm' {α β : Type*} [Nonempty α] [Fintype α] [SeminormedGroup β]
+    (f : α → β) : IsGreatest (Set.range (‖f ·‖)) ‖f‖ := by
+  constructor
+  · rw [Pi.norm_def' f]
+    obtain ⟨x, -, hx⟩ := (Finset.univ (α := α)).exists_mem_eq_sup (by simp) (‖f ·‖₊)
+    simp [hx]
+  · rintro - ⟨x, rfl⟩
+    exact norm_le_pi_norm' f x
+
+@[to_additive Function.Surjective.pi_norm_comp]
+lemma Function.Surjective.pi_norm_comp' {α β γ : Type*} [Fintype α] [Fintype γ]
+    [SeminormedGroup β] {f : γ → α} (hf : Function.Surjective f) (g : α → β) :
+    ‖g ∘ f‖ = ‖g‖ := by
+  obtain (h | h) := isEmpty_or_nonempty α
+  · have : IsEmpty γ := f.isEmpty
+    simp [Subsingleton.elim g 1]
+  apply le_antisymm (pi_norm_comp_le' g f)
+  obtain ⟨⟨x, h⟩, -⟩ := IsGreatest.pi_norm' g
+  obtain ⟨y, rfl⟩ := hf x
+  exact h ▸ norm_le_pi_norm' (g ∘ f) y
+
 lemma l2_opNorm_eq_pi_norm {A : Matrix n n 𝕜} (hA : A.IsHermitian) (f : C((spectrum ℝ A), ℝ)) :
     ‖RCLike.ofReal (K := 𝕜) ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩‖
       = ‖f‖ := by
