@@ -261,6 +261,7 @@ theorem hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F�
   (lift R).symm.injective h'
 
 variable (R X)
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The universal enveloping algebra of the free Lie algebra is just the free unital associative
 algebra. -/

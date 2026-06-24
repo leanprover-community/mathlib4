@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
-public import Mathlib.NumberTheory.Height.Northcott
+public import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Substitution
@@ -32,7 +32,7 @@ We take the following route from polynomials to L-functions:
 For example, the Riemann zeta function `ζ(s)` corresponds to taking `1 - T` at each prime `p`.
 
 For context, here is a diagram of the possible routes from polynomials to L-functions:
-
+```
                    T=q⁻ˢ                     s ∈ ℂ
 [polynomials in T] ----> [polynomials in q⁻ˢ] ----> [analytic function in s]
           |                           |                           |
@@ -43,6 +43,7 @@ For context, here is a diagram of the possible routes from polynomials to L-func
           | (product)                 | (product)                 | (product)
           v                 T=q⁻ˢ     V               s ∈ ℂ       V
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
+```
 -/
 
 @[expose] public section

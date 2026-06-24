@@ -79,7 +79,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
-  coe_injective' := by rintro ⟨f, hf⟩; congr!
+  coe_injective := by rintro ⟨f, hf⟩; congr!
 
 initialize_simps_projections Chain (toFun → apply)
 
@@ -286,7 +286,7 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
     ωScottContinuous f ↔ ∃ hf : Monotone f, ∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, hf⟩) := by
   refine ⟨fun hf ↦ ⟨hf.monotone, hf.map_ωSup⟩, ?_⟩
   intro hf _ ⟨c, hc⟩ _ _ _ hda
-  convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+  convert! isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
   · simp [← hc, ← (Set.range_comp f ⇑c)]
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]
@@ -303,6 +303,8 @@ lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
 alias ⟨ωScottContinuous.map_ωSup_of_orderHom, ωScottContinuous.of_map_ωSup_of_orderHom⟩ :=
   ωScottContinuous_iff_map_ωSup_of_orderHom
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 attribute [local push] Function.const_def
 
@@ -493,7 +495,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
 
 instance : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h
@@ -578,7 +580,7 @@ lemma ωScottContinuous.bind {β γ} {f : α → Part β} {g : α → β → Par
 
 lemma ωScottContinuous.map {β γ} {f : β → γ} {g : α → Part β} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ f <$> g x := by
-  simpa only [map_eq_bind_pure_comp] using ωScottContinuous.bind hg ωScottContinuous.const
+  simpa only [map_eq_bind_pure_comp] using! ωScottContinuous.bind hg ωScottContinuous.const
 
 lemma ωScottContinuous.seq {β γ} {f : α → Part (β → γ)} {g : α → Part β} (hf : ωScottContinuous f)
     (hg : ωScottContinuous g) : ωScottContinuous fun x ↦ f x <*> g x := by
@@ -672,6 +674,7 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
   OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 @[fun_prop]
 lemma ωScottContinuous_apply
     {f : α → β →𝒄 γ} (hf : ωScottContinuous f) {g : α → β} (hg : ωScottContinuous g) :

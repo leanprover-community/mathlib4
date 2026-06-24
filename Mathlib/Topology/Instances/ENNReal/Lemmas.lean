@@ -464,7 +464,7 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 @[fun_prop]
 protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
-  | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
+  | .negSucc n => by simpa using (ENNReal.continuous_pow _).fun_inv
 
 @[deprecated (since := "2026-01-15")] protected alias tendsto_inv_iff := tendsto_inv_iff
 
@@ -931,4 +931,4 @@ lemma Dense.lipschitzWith_extend {α β : Type*}
     have Ay : hs.extend f y = f ⟨y, hy⟩ := hs.extend_eq hf.continuous ⟨y, hy⟩
     simp only [Set.mem_setOf_eq, Ax, Ay]
     exact hf ⟨x, hx⟩ ⟨y, hy⟩
-  simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using this
+  simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using! this
