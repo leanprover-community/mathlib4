@@ -523,7 +523,6 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by
   exact Nat.le_add_right _ _
 ```
 -/
-
 scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
     (repeat first | rw [← to_nat_inj] | rw [← lt_to_nat] | rw [← le_to_nat] | rw [← psmulRec_to_nat]
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
