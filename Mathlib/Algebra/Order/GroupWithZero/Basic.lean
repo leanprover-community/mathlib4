@@ -374,7 +374,7 @@ variable [Preorder M₀] {a b : M₀}
 @[simp] lemma ppow_nonneg [PosMulMono M₀] (ha : 0 ≤ a) (n : ℕ+) : 0 ≤ a ^ n := by
   induction n using Semigroup.ppow_induction a
   · exact ha
-  · exact mul_nonneg ha ‹_›
+  · exact mul_nonneg ‹_› ha
 
 end SemigroupWithZero
 
@@ -419,7 +419,7 @@ lemma sq_le [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a :=
   pow_le_of_le_one h₀ h₁ two_ne_zero
 
 lemma ppow_le_one₀ [PosMulMono M₀] {n : ℕ+} (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : a ^ n ≤ 1 := by
-  induction n using Semigroup.ppow_induction a with
+  induction n using Semigroup.ppow_induction' a with
   | h1 => exact ha₁
   | hsucc n IH =>
     refine mul_le_of_mul_le_of_nonneg_left ?_ IH ha₀

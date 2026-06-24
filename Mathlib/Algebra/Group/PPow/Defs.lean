@@ -47,7 +47,7 @@ lemma Semigroup.ppow_induction [Semigroup M] {p : ℕ+ → M → Prop} (x : M) (
     (h1 : p 1 x) (hsucc : ∀ n : ℕ,
     p (PNat.mk (n + 1) (Nat.succ_pos n)) (x ^ PNat.mk (n + 1) (Nat.succ_pos n)) →
     p (PNat.mk (n + 2) (Nat.succ_pos (n + 1)))
-      (x * x ^ PNat.mk (n + 1) (Nat.succ_pos n))) :
+      (x ^ PNat.mk (n + 1) (Nat.succ_pos n) * x)) :
     p n (x ^ n) := by
   rcases n with ⟨n, hn⟩
   rcases Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hn) with ⟨k, rfl⟩
@@ -62,10 +62,29 @@ lemma Semigroup.ppow_induction [Semigroup M] {p : ℕ+ → M → Prop} (x : M) (
 
 @[to_additive]
 lemma ppow_mk_add_one [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0 := by exact Nat.succ_ne_zero _) :
-    x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x * x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) := by
+    x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) * x := by
   cases n
   · contradiction
   · simp [← Semigroup.ppow_eq_pow, PNat.mk, Semigroup.ppow_succ]
+
+@[to_additive]
+lemma ppow_mk_add_one' [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0 := by exact Nat.succ_ne_zero _) :
+    x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x * x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) := by
+  cases n
+  · contradiction
+  · simp [← Semigroup.ppow_eq_pow, PNat.mk, Semigroup.ppow_succ']
+
+@[to_additive (attr := elab_as_elim)]
+lemma Semigroup.ppow_induction' [Semigroup M] {p : ℕ+ → M → Prop} (x : M) (n : ℕ+)
+    (h1 : p 1 x) (hsucc : ∀ n : ℕ,
+    p (PNat.mk (n + 1) (Nat.succ_pos n)) (x ^ PNat.mk (n + 1) (Nat.succ_pos n)) →
+    p (PNat.mk (n + 2) (Nat.succ_pos (n + 1)))
+      (x * x ^ PNat.mk (n + 1) (Nat.succ_pos n))) :
+    p n (x ^ n) := by
+  induction n using Semigroup.ppow_induction x
+  · exact h1
+  · rw [← ppow_mk_add_one, ppow_mk_add_one']
+    exact hsucc _ ‹_›
 
 -- not marked as `simp` because in a monoid we probably prefer powers with type `ℕ`
 @[to_additive (attr := norm_cast)]
@@ -74,7 +93,7 @@ theorem npow_val_eq_ppow [Monoid M] (n : ℕ+) (x : M) : x ^ n.val = x ^ n := by
   | h1 => simp
   | hsucc n IH =>
     simp only [mk_coe] at IH
-    simp [pow_succ' _ (n + 1), IH]
+    simp [pow_succ _ (n + 1), IH]
 
 -- This lemma is higher priority than later `smul_zero` so that the `simpNF` is happy
 @[to_additive (attr := simp high) psmul_zero] lemma one_ppow [Monoid M] (n : ℕ+) :
@@ -90,7 +109,7 @@ lemma mul_ppow (x y : M) (n : ℕ+) : (x * y) ^ n = x ^ n * y ^ n := by
   induction n using Semigroup.ppow_induction (x * y) with
   | h1 => simp
   | hsucc n IH =>
-    rw [ppow_mk_add_one x, ppow_mk_add_one y,
-        IH, mul_assoc, mul_comm y, ← mul_assoc, ← mul_assoc, mul_comm y, ← mul_assoc]
+    rw [ppow_mk_add_one x, ppow_mk_add_one y, IH, ← mul_assoc, mul_assoc _ _ x, mul_comm _ x,
+        ← mul_assoc, ← mul_assoc]
 
 end CommSemigroup

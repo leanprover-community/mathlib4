@@ -573,7 +573,7 @@ protected theorem ppow {M : Type*} [Semigroup M] (c : Con M) (n : ℕ+) {w x} (h
   | h1 => simp [h]
   | hsucc n IH =>
     rw [ppow_mk_add_one x]
-    exact c.mul h (IH h)
+    exact c.mul (IH h) h
 
 @[to_additive]
 instance {M : Type*} [Semigroup M] (c : Con M) : Pow c.Quotient ℕ+ where

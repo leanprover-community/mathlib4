@@ -219,7 +219,7 @@ section PPow
 variable [SemigroupWithZero α] [Preorder α] [PosMulMono α]
 
 instance ppow : Pow { x : α // 0 ≤ x } ℕ+ where
-  pow x n := ⟨(x : α) ^ n, ppow_nonneg _ x.2⟩
+  pow x n := ⟨(x : α) ^ n, ppow_nonneg x.2 _⟩
 
 @[simp, norm_cast]
 protected theorem coe_ppow (a : { x : α // 0 ≤ x }) (n : ℕ+) :
@@ -228,7 +228,7 @@ protected theorem coe_ppow (a : { x : α // 0 ≤ x }) (n : ℕ+) :
 
 @[simp]
 theorem mk_ppow {x : α} (hx : 0 ≤ x) (n : ℕ+) :
-    (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, ppow_nonneg _ hx⟩ :=
+    (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, ppow_nonneg hx _⟩ :=
   rfl
 
 end PPow

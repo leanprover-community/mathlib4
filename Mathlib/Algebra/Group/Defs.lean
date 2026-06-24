@@ -188,14 +188,14 @@ Use instead `a ^ n`,  which has better definitional behavior. -/
 def ppowRec {M : Type*} [Mul M] : ∀ n : ℕ, 0 < n → M → M
   | 0, h, _ => (Nat.ne_of_lt h rfl).elim
   | 1, _, a => a
-  | n + 2, _, a => a * ppowRec (n + 1) n.succ_pos a
+  | n + 2, _, a => ppowRec (n + 1) n.succ_pos a * a
 
 /-- The fundamental scalar multipication in an additive semigroup. `psmulRec n a = a+a+...+a` n
 times.  Use instead `a ^ n`,  which has better definitional behavior. -/
 def psmulRec {M : Type*} [Add M] : ∀ n : ℕ, 0 < n → M → M
   | 0, h, _ => (Nat.ne_of_lt h rfl).elim
   | 1, _, a => a
-  | n + 2, _, a => a + psmulRec (n + 1) n.succ_pos a
+  | n + 2, _, a => psmulRec (n + 1) n.succ_pos a + a
 
 attribute [to_additive existing] ppowRec
 
@@ -206,7 +206,7 @@ class Semigroup (G : Type u) extends Mul G where
   /-- Positive integer power operation -/
   ppow : ∀ n : ℕ, 0 < n → G → G := ppowRec
   ppow_one : ∀ g, ppow 1 Nat.one_pos g = g := by intros; rfl
-  ppow_succ : ∀ g n, ppow (n + 2) (n + 1).succ_pos g = g * ppow (n + 1) n.succ_pos g :=
+  ppow_succ : ∀ n g, ppow (n + 2) (n + 1).succ_pos g = ppow (n + 1) n.succ_pos g * g :=
     by intros; rfl
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
@@ -216,7 +216,7 @@ class AddSemigroup (G : Type u) extends Add G where
   /-- Positive integer scalar multiplication -/
   psmul : ∀ n : ℕ, 0 < n → G → G := psmulRec
   psmul_one : ∀ g, psmul 1 Nat.one_pos g = g := by intros; rfl
-  psmul_succ : ∀ g n, psmul (n + 2) (n + 1).succ_pos g = g + psmul (n + 1) n.succ_pos g :=
+  psmul_succ : ∀ n g, psmul (n + 2) (n + 1).succ_pos g = psmul (n + 1) n.succ_pos g + g :=
     by intros; rfl
 
 attribute [to_additive] Semigroup
@@ -230,10 +230,12 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
 
 @[to_additive Semigroup.succ_psmul']
-lemma Semigroup.ppow_succ' (a : G) : ∀ n : ℕ,
-    Semigroup.ppow (n + 2) (Nat.succ_pos (n + 1)) a = Semigroup.ppow (n + 1) (Nat.succ_pos n) a * a
-  | .zero => by rw [Semigroup.ppow_succ, Semigroup.ppow_one]
-  | .succ n => by rw [Semigroup.ppow_succ _ n, Semigroup.ppow_succ, Semigroup.ppow_succ', mul_assoc]
+lemma Semigroup.ppow_succ' (n : ℕ) (a : G) :
+    Semigroup.ppow (n + 2) (Nat.succ_pos (n + 1)) a =
+      a * Semigroup.ppow (n + 1) (Nat.succ_pos n) a := by
+  induction n with
+  | zero => rw [Semigroup.ppow_succ, Semigroup.ppow_one]
+  | succ n IH => rw [Semigroup.ppow_succ n, Semigroup.ppow_succ, IH, mul_assoc]
 
 end Semigroup
 

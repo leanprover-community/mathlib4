@@ -20,28 +20,28 @@ section Semigroup
 
 variable [Semigroup M]
 
-@[to_additive succ_psmul']
+@[to_additive (reorder := x n) succ_psmul']
 lemma ppow_succ' (x : M) (n : ℕ+) : x ^ (n + 1) = x * x ^ n :=
-  n.recOn (Semigroup.ppow_succ x 0) fun k _ => Semigroup.ppow_succ x k
+  n.recOn (Semigroup.ppow_succ' 0 x) fun k _ => Semigroup.ppow_succ' k x
 
-@[to_additive succ_psmul]
+@[to_additive (reorder := x n) succ_psmul]
 lemma ppow_succ (x : M) (n : ℕ+) : x ^ (n + 1) = x ^ n * x :=
-  n.recOn (Semigroup.ppow_succ' x 0) fun k _ => Semigroup.ppow_succ' x k
+  n.recOn (Semigroup.ppow_succ 0 x) fun k _ => Semigroup.ppow_succ k x
 
-@[to_additive add_psmul]
+@[to_additive (reorder := n x m) add_psmul]
 lemma ppow_add (x : M) (n m : ℕ+) : x ^ (n + m) = x ^ n * x ^ m :=
   m.recOn (by simp [ppow_succ]) fun k hk => by
     rw [← add_assoc, ppow_succ, ppow_succ, hk, mul_assoc]
 
-@[to_additive mul_comm_psmul]
+@[to_additive (reorder := n x m) mul_comm_psmul]
 lemma ppow_mul_comm (x : M) (n m : ℕ+) : x ^ n * x ^ m = x ^ m * x ^ n := by
   simp only [← ppow_add, add_comm]
 
-@[to_additive mul_comm_psmul']
+@[to_additive (reorder := n x) rmul_comm_psmul']
 lemma ppow_mul_comm' (x : M) (n : ℕ+) : x ^ n * x = x * x ^ n := by
   simpa only [ppow_one] using ppow_mul_comm x n 1
 
-@[to_additive mul_psmul]
+@[to_additive (reorder := n x m) mul_psmul]
 lemma ppow_mul (x : M) (n m : ℕ+) : x ^ (n * m) = (x ^ n) ^ m :=
   m.recOn (by simp) fun k hk => by simp [mul_add, ppow_add, hk]
 

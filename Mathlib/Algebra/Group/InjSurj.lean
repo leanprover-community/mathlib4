@@ -341,7 +341,7 @@ protected abbrev semigroup [Pow M₂ ℕ+] [Semigroup M₁] (f : M₁ → M₂) 
   mul_assoc := hf.forall₃.2 fun x y z => by simp only [← mul, mul_assoc]
   ppow := fun n hn x => x ^ (PNat.mk n hn : ℕ+)
   ppow_one := hf.forall.2 fun x => by simp [← ppow]
-  ppow_succ := hf.forall.2 fun x n => by
+  ppow_succ n := hf.forall.2 fun n => by
     simp [← ppow, ← mul, ← Semigroup.ppow_eq_pow, Semigroup.ppow_succ]
 
 /-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves

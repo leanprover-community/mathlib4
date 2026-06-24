@@ -37,14 +37,14 @@ variable [MulLeftMono M] {a : M}
 theorem one_le_ppow_of_le (ha : 1 ≤ a) (n : ℕ+) : 1 ≤ a ^ n := by
   induction n using Semigroup.ppow_induction a
   · exact ha
-  · exact one_le_mul ha ‹_›
+  · exact one_le_mul ‹_› ha
 
 @[to_additive psmul_nonpos]
 theorem ppow_le_one_of_le (ha : a ≤ 1) (n : ℕ+) : a ^ n ≤ 1 := one_le_ppow_of_le (M := Mᵒᵈ) ha n
 
 @[to_additive psmul_neg]
 theorem ppow_lt_one_of_lt {a : M} (n : ℕ+) (h : a < 1) : a ^ n < 1 := by
-  induction n using Semigroup.ppow_induction a
+  induction n using Semigroup.ppow_induction' a
   · exact h
   · exact mul_lt_one_of_lt_of_le h (ppow_le_one_of_le h.le _)
 

@@ -156,9 +156,9 @@ instance addCommGroup : AddCommGroup ℚ where
   nsmul := (· * ·)
   zsmul := (· * ·)
   psmul_one := Rat.one_mul
-  psmul_succ q n := by
-    change ((n + 2 : Int) : Rat) * q = q + ((n + 1 : Int) : Rat) * q
-    rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_add, Rat.add_mul, Rat.add_comm q, Rat.add_assoc,
+  psmul_succ n q := by
+    change ((n + 2 : Int) : Rat) * q = ((n + 1 : Int) : Rat) * q + q
+    rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_add, Rat.add_mul, Rat.add_assoc,
         show (2 : Int) = 1 + 1 by rfl, Rat.intCast_add, Rat.add_mul]
     simp
   nsmul_zero := Rat.zero_mul
