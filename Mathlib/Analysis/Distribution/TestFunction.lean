@@ -744,42 +744,57 @@ lemma integralAgainstBilinCLM_ofSupportedIn {B : F₁ →L[𝕜] F₂ →L[𝕜]
 
 end Integral
 
--- section Multiplication
+section Multiplication
 
--- section bilin
+section bilin
 
--- variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G: Type*}
---   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
---   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
---   [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
 
--- variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
+variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [IsScalarTower ℝ 𝕜 F₂] [NormedSpace ℝ F₃]
+  [IsScalarTower ℝ 𝕜 F₃]
 
--- theorem tsupport_bilinLeft (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (g : E → F₂) (f : E → F₁) :
---     tsupport (fun x ↦ B (f x) (g x)) ⊆ tsupport f := by
---   apply closure_mono
---   aesop
+theorem tsupport_bilinLeft (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (g : E → F₂) (f : E → F₁) :
+    tsupport (fun x ↦ B (f x) (g x)) ⊆ tsupport f := by
+  apply closure_mono
+  aesop
 
--- noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g):
---     𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
---   TestFunction.mkCLM 𝕜
---   (fun φ ↦ ⟨fun x ↦ B (φ x) (g x),
---     ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
---     φ.hasCompactSupport.of_isClosed_subset
---       (isClosed_tsupport (fun x ↦ B (φ x) (g x)))
---       (tsupport_bilinLeft _ _ _),
---     le_trans (tsupport_bilinLeft _ _ _) φ.tsupport_subset⟩)
---   (by
---     intro φ ψ
---     simp only [_root_.add_apply, map_add]
---     congr)
---   (by
---     intro c φ
---     simp only [_root_.smul_apply, map_smul]
---     congr)
---   (by
---     intro K hK
---   )
+noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g):
+    𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
+  TestFunction.limitCLM 𝕜
+  (fun (φ : 𝓓^{n}(Ω, F₁)) ↦ ⟨fun x ↦ B (φ x) (g x),
+    ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
+    φ.hasCompactSupport.of_isClosed_subset
+      (isClosed_tsupport (fun x ↦ B (φ x) (g x)))
+      (tsupport_bilinLeft _ _ _),
+    le_trans (tsupport_bilinLeft _ _ _) φ.tsupport_subset⟩)
+  (fun K K_sub_Ω ↦
+    ⟨{
+      toFun Φ := ⟨fun x ↦ B (ofSupportedIn K_sub_Ω Φ x) (g x),
+        ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((Φ.contDiff).prodMk hg)),
+        Φ.hasCompactSupport.of_isClosed_subset
+          (isClosed_tsupport (fun x ↦ B (ofSupportedIn K_sub_Ω Φ x) (g x)))
+          (tsupport_bilinLeft _ _ _),
+        le_trans (tsupport_bilinLeft _ _ _) (ofSupportedIn K_sub_Ω Φ).tsupport_subset⟩
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl
+    }, by ⟩
+
+  )
+  (by sorry)
+  -- (by
+  --   intro φ ψ
+  --   simp only [_root_.add_apply, map_add]
+  --   congr)
+  -- (by
+  --   intro c φ
+  --   simp only [_root_.smul_apply, map_smul]
+  --   congr)
+  -- (by
+  --   intro K hK
+  -- )
 
 
 -- end bilin
