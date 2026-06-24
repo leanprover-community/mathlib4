@@ -17,7 +17,6 @@ This file develops a theorem-oriented interface for row reduction.
 
 * `Matrix.rowScale i c`: the elementary matrix which scales row `i` by `c`
 * `Matrix.RowEquivalent A B`: row-equivalence by left multiplication by an element of `GL`
-* `Matrix.RowIsZero M i`: row `i` of `M` is zero
 * `Matrix.IsPivot M i p`: row `i` has pivot column `p`
 * `Matrix.IsEchelonForm M`: row echelon form
 * `Matrix.IsReducedEchelonForm M`: reduced row echelon form
@@ -204,18 +203,9 @@ section Echelon
 
 variable [Zero R]
 
-/-- Row `i` of `M` is zero. -/
-def RowIsZero (M : Matrix m n R) (i : m) : Prop :=
-  ∀ j, M i j = 0
-
 /-- Row `i` has pivot column `p`. -/
 def IsPivot [LinearOrder n] (M : Matrix m n R) (i : m) (p : n) : Prop :=
   M i p ≠ 0 ∧ ∀ j < p, M i j = 0
-
-lemma RowIsZero.not_isPivot [LinearOrder n] {M : Matrix m n R} {i : m} {p : n}
-    (hzero : RowIsZero M i) : ¬ IsPivot M i p := by
-  intro hp
-  exact hp.1 (hzero p)
 
 lemma IsPivot.eq [LinearOrder n] {M : Matrix m n R} {i : m} {p q : n}
     (hp : IsPivot M i p) (hq : IsPivot M i q) : p = q := by
@@ -225,8 +215,8 @@ lemma IsPivot.eq [LinearOrder n] {M : Matrix m n R} {i : m} {p q : n}
 
 /-- Row echelon form. -/
 structure IsEchelonForm [LinearOrder m] [LinearOrder n] (M : Matrix m n R) : Prop where
-  row_zero_or_pivot : ∀ i, RowIsZero M i ∨ ∃ p, IsPivot M i p
-  zero_rows_bottom : ∀ i j, i < j → RowIsZero M i → RowIsZero M j
+  row_zero_or_pivot : ∀ i, (∀ k, M i k = 0) ∨ ∃ p, IsPivot M i p
+  zero_rows_bottom : ∀ i j, i < j → (∀ k, M i k = 0) → ∀ k, M j k = 0
   pivots_strictly_increasing :
     ∀ i j p q, i < j → IsPivot M i p → IsPivot M j q → p < q
 
