@@ -68,7 +68,7 @@ lemma hasLiftingProperty_mk_iff' [HasPushouts C] [HasPullbacks C]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `(∅ ⟶ B) □ g` lifts against `X ⟶ Y` if and only if `g` lifts against `B ⟹ X ⟶ B ⟹ Y`. -/
-lemma hasLiftingProperty_mk_isInitial_iff [HasPushouts C] [HasPullbacks C]
+lemma hasLiftingProperty_mk_isInitial_iff [HasPushouts C]
     [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     {A B K L X Y : C} {g : K ⟶ L} {h : X ⟶ Y}
     (i : IsInitial A) :

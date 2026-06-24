@@ -643,7 +643,7 @@ theorem closedInterior_face_ssubset_closedInterior [Nontrivial k] [ZeroLEOneClas
   apply (Set.ssubset_iff_of_subset (s.closedInterior_face_subset_closedInterior h)).mpr
   exact ⟨s.points a, s.point_mem_closedInterior a, fun hs ↦ ha (by simpa using hs)⟩
 
-theorem disjoint_interior_closedInterior_face [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
+theorem disjoint_interior_closedInterior_face {n : ℕ}
     (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
     Disjoint s.interior (s.face h).closedInterior := by
   refine Set.disjoint_left.mpr fun p hleft hright ↦ ?_
