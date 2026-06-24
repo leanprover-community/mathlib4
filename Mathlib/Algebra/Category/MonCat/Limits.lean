@@ -180,9 +180,8 @@ noncomputable instance forget_createsLimit :
       simp only [Types.Small.limitCone_pt, Functor.comp_obj, Functor.mapCone_pt,
         Types.Small.limitConeIsLimit_lift, Functor.const_obj_obj, Functor.mapCone_π_app,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, map_mul]
-      congr
-      simp only [Functor.comp_obj, Equiv.symm_apply_apply]
-      rfl
+      reduce
+      simp
   · exact fun _ ↦ rfl
 
 @[to_additive]

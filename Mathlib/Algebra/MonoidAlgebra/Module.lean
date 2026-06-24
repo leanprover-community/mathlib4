@@ -61,10 +61,12 @@ instance module : Module R S[M] := inferInstanceAs <| Module R (M →₀ S)
 
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
-@[to_additive (attr := simps! apply symm_apply)
+@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
-def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S :=
-  coeffEquiv.linearEquiv _
+def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S where
+  __ := coeffEquiv
+  __ := coeffEquiv.addEquiv (β := M →₀ S)
+  map_smul' m x := (coeffEquiv.linearEquiv R (β := M →₀ S) :).map_smul m x
 
 variable (R S s) in
 /-- The `R`-submodule of all elements of `S[M]` supported on a subset `s` of `M`. -/
