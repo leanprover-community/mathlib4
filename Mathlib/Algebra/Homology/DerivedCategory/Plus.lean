@@ -46,8 +46,7 @@ lemma quasiIso_eq_subcategoryAcyclic_trW :
   have := (HomotopyCategory.subcategoryAcyclic C).trW_iff_of_distinguished _
     ((HomotopyCategory.Plus.ι C).map_distinguished _ mem)
   rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic] at this
-  rw [dsimp% (subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
-  exact this
+  rwa [dsimp% (subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
 
 end HomotopyCategory.Plus
 
