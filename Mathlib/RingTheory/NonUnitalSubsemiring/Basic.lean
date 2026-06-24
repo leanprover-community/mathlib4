@@ -223,10 +223,10 @@ variable (R)
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
-def center : NonUnitalSubsemiring R :=
-  { Subsemigroup.center R with
-    zero_mem' := Set.zero_mem_center
-    add_mem' := Set.add_mem_center }
+def center : NonUnitalSubsemiring R where
+  __ := Subsemigroup.center R
+  zero_mem' := Set.zero_mem_center
+  add_mem' := Set.add_mem_center
 
 theorem coe_center : ↑(center R) = Set.center R :=
   rfl
@@ -272,10 +272,22 @@ section NonUnitalSemiring
 
 variable {R : Type*} [NonUnitalSemiring R]
 
+-- The issue is, once `R` becomes associative, then it inherits a pnat pow ...
+example {R} [NonUnitalSemiring R] (x : center R) (n : ℕ+) :
+    (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)).toSemigroup.ppow n n.prop x =
+    x ^ n :=
+  rfl
+
+-- But the underlying center (subsemigroup) uses the pnat pow from the smaller semigroup instance
+example {R} [NonUnitalSemiring R] (x : center R) (n : ℕ+) :
+    ((center.instNonUnitalCommSemiring _).toNonUnitalSemiring).toSemigroup.ppow n n.prop x =
+    x ^ n :=
+  rfl
+
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
-    ((center.instNonUnitalCommSemiring _).toNonUnitalSemiring) =
-      (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)) := by
+    ((center.instNonUnitalCommSemiring _).toNonUnitalSemiring).toSemigroup.ppow =
+      (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)).toSemigroup.ppow := by
   with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
