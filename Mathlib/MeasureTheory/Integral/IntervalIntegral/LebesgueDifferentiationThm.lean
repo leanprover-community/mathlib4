@@ -30,11 +30,12 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 
 open scoped Topology
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+
 /-- The (global) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → E` is
 locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
 `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
-theorem LocallyIntegrable.ae_hasDerivAt_integral {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [CompleteSpace E] {f : ℝ → E} (hf : LocallyIntegrable f volume) :
+theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → E} (hf : LocallyIntegrable f volume) :
     ∀ᵐ x, ∀ c, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
   have hg (x y : ℝ) : IntervalIntegrable f volume x y :=
     intervalIntegrable_iff.mpr <|
@@ -62,8 +63,7 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {E : Type*} [NormedAddCommGroup
 /-- The (local) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → E` is
 interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`, the
 derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
-theorem IntervalIntegrable.ae_hasDerivAt_integral {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [CompleteSpace E] {f : ℝ → E} {a b : ℝ}
+theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → E} {a b : ℝ}
     (hf : IntervalIntegrable f volume a b) :
     ∀ᵐ x, x ∈ uIcc a b → ∀ c ∈ uIcc a b, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
   wlog hab : a ≤ b
