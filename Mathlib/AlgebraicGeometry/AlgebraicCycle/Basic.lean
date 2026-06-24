@@ -18,7 +18,7 @@ some basic API for working with them. We define an algebraic cycle on a scheme `
 coefficients in a type `R` to be functions `c : X → R` whose support is locally finite.
 
 Here we're making use of the equivalence between irreducible closed subsets of a scheme and their
-generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
+generic points in order to reuse the API in `Function.locallyFinsupp`, hence the slightly
 nonstandard definition.
 -/
 
@@ -40,14 +40,14 @@ generic points in order to reuse the API in Function.locallyFinsupp, hence the s
 nonstandard definition.
 -/
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
-    Function.locallyFinsupp X R
+  Function.locallyFinsupp X R
 
 variable (f : X ⟶ Y) [Semiring R] (c : AlgebraicCycle X R) (x : X) (z : Y)
 namespace AlgebraicCycle
 
 /--
-Implementation detail for pushforward: function used to define the coefficient of the pushforward
-of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
+Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the
+pushforward of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
 noncomputable
 def mapAux {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N) (wy : Y → N) (x : X) :
