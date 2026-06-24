@@ -101,7 +101,7 @@ theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
   have := Fintype.ofFinite n
   simp_rw [separatingLeft_def, separatingRight_def, dotProduct_transpose_mulVec]
 
-alias ⟨_, SeparatingRight.transpose⟩ := separatingLeft_transpose_iff
+alias ⟨_, SeparatingRight.separatingLeft_transpose⟩ := separatingLeft_transpose_iff
 
 @[simp]
 theorem separatingRight_transpose_iff [Finite m] [Finite n] :
@@ -110,7 +110,7 @@ theorem separatingRight_transpose_iff [Finite m] [Finite n] :
   have := Fintype.ofFinite n
   simp_rw [separatingRight_def, separatingLeft_def, dotProduct_transpose_mulVec]
 
-alias ⟨_, SeparatingLeft.transpose⟩ := separatingRight_transpose_iff
+alias ⟨_, SeparatingLeft.separatingRight_transpose⟩ := separatingRight_transpose_iff
 
 @[simp]
 theorem nondegenerate_transpose_iff [Finite m] [Finite n] : Mᵀ.Nondegenerate ↔ M.Nondegenerate := by
