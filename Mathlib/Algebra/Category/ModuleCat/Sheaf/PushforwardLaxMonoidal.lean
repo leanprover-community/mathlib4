@@ -42,13 +42,23 @@ noncomputable abbrev pushforwardOfCommRing :
       SheafOfModules.{u} ((sheafCompose J (forget₂ _ _)).obj S) :=
   pushforward ((sheafCompose J (forget₂ _ RingCat)).map φ)
 
+noncomputable def pushforwardOfCommRingCompForgetIso :
+    pushforwardOfCommRing φ ⋙ forget _ ≅
+      forget _ ⋙ PresheafOfModules.pushforwardOfCommRing.{u}
+        ((sheafToPresheaf _ _).map φ) := Iso.refl _
+
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (pushforwardOfCommRing φ).LaxMonoidal := by
   let e :
     forgetOfCommRing _ ⋙ PresheafOfModules.pushforwardOfCommRing.{u}
       ((sheafToPresheaf _ _).map φ) ⋙
         PresheafOfModules.sheafificationOfCommRing.{u} S ≅
-        (pushforwardOfCommRing φ) := sorry
+        (pushforwardOfCommRing φ) :=
+    (Functor.associator _ _ _).symm ≪≫
+      Functor.isoWhiskerRight (pushforwardOfCommRingCompForgetIso φ).symm _ ≪≫
+      Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _
+      (asIso (PresheafOfModules.sheafificationAdjunctionOfCommRing S).counit)  ≪≫
+      Functor.rightUnitor _
   letI := monoidalSheafificationOfCommRing S
   exact Functor.LaxMonoidal.ofIso e
 
