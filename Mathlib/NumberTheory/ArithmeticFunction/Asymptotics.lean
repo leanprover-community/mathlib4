@@ -5,8 +5,7 @@ Authors: Sidharth Hariharan
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
 /-! # Asymptotics of Arithmetic Functions
