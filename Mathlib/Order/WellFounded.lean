@@ -95,14 +95,14 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
         not_imp_not.1 fun hne hx => hne <| ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
       ha
 
-theorem nonempty_not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTotal r := by
+theorem not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTotal r := by
   intro h
   obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty
   obtain ⟨b, hba⟩ := h a
   specialize ha b (Set.mem_univ b)
   contradiction
 
-theorem nonempty_not_leftTotal (wf : WellFounded (Function.swap r)) [Nonempty α] :
+theorem not_leftTotal (wf : WellFounded (Function.swap r)) [Nonempty α] :
     ¬ Relator.LeftTotal r := by
   intro h
   obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty
