@@ -14,7 +14,7 @@ public import Mathlib.Order.TransfiniteIteration
 
 In this file, we introduce the predicate `Cardinal.SharplyLT`. Given two regular
 cardinals `κ₁ < κ₂`, this condition can be described in different ways:
-(i) the category `CardinalFilteredPoset κ₁` (of `κ₁`-directed partially ordered
+(i) the category `CardinalDirectedPoset κ₁` (of `κ₁`-directed partially ordered
   types, with order embeddings as morphisms), is `κ₂`-accessible;
 (ii) any `κ₁`-accessible category is `κ₂`-accessible.
 (iii) for any type `X` of cardinality `< κ₂`, there exists a cofinal set of
@@ -40,33 +40,33 @@ variable {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegul
 
 variable (κ₁ κ₂) in
 /-- If `κ₁ < κ₂` are two regular cardinals, we say that `κ₁` is sharply
-smaller than `κ₂` if the category `CardinalFilteredPoset κ₁`
+smaller than `κ₂` if the category `CardinalDirectedPoset κ₁`
 is `κ₂`-accessible. There are other characterizations (TODO @joelriou),
 including the property that any `κ₁`-accessible category is
 also `κ₂`-accessible. -/
 public structure SharplyLT : Prop where
   lt : κ₁ < κ₂
   isCardinalAccessible_cardinalDirectedPoset :
-    IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂
+    IsCardinalAccessibleCategory (CardinalDirectedPoset κ₁) κ₂
 
 namespace SharplyLT
 
 public lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 
 set_option backward.defeqAttrib.useBackward true in
-open CardinalFilteredPoset in
-public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
-    (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂]
+open CardinalDirectedPoset in
+public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalDirectedPoset
+    (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalDirectedPoset κ₁) κ₂]
     {X : Type w} (hX : HasCardinalLT X κ₂) :
     ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A := by
   obtain ⟨J, _, _, ⟨p⟩⟩ := (isCardinalFilteredGenerator_isCardinalPresentable
-    (CardinalFilteredPoset κ₁) κ₂).exists_colimitsOfShape (setCardinalLT κ₁ X)
+    (CardinalDirectedPoset κ₁) κ₂).exists_colimitsOfShape (setCardinalLT κ₁ X)
   have : IsCardinalFiltered J κ₁ := .of_le _ h
   have hp (j : J) : HasCardinalLT (p.diag.obj j).obj κ₂ := by
-    rw [← CardinalFilteredPoset.isCardinalPresentable_iff _ h]
+    rw [← CardinalDirectedPoset.isCardinalPresentable_iff _ h]
     exact p.prop_diag_obj j
   choose j y hy using fun x ↦ Types.jointly_surjective_of_isColimit
-    (isColimitOfPreserves (forget (CardinalFilteredPoset κ₁)) p.isColimit)
+    (isColimitOfPreserves (forget (CardinalDirectedPoset κ₁)) p.isColimit)
     (SetCardinalLT.singleton κ₁ x)
   dsimp at y hy
   let j' := IsCardinalFiltered.max j hX
@@ -86,7 +86,7 @@ public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPose
 
 section
 
-open CardinalFilteredPoset
+open CardinalDirectedPoset
 
 namespace existsIsCardinalFilteredSetOfExistsCofinal
 
