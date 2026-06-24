@@ -562,32 +562,6 @@ def Scheme.Modules.presentationRestrict {X Y : Scheme.{u}} (f : Y ⟶ X)
     inferInstance
   pres.map (Scheme.Modules.restrictFunctor.{u} f) (Scheme.Modules.restrictUnitIso _).symm
 
-@[reassoc (attr := simp)]
-lemma IsAffineOpeen.isoSpec_hom_fromSpec {X : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) :
-    hU.isoSpec.hom ≫ hU.fromSpec = U.ι := by
-  simp [← cancel_epi hU.isoSpec.inv]
-
-@[simps I₀ X f]
-def Scheme.AffineOpenCover.ofIsOpenCover {X : Scheme.{u}} {ι : Type*} (U : ι → X.Opens)
-    (hU : IsOpenCover U) (hU' : ∀ i, IsAffineOpen (U i)) :
-    AffineOpenCover X where
-  I₀ := ι
-  X i := Γ(X, U i)
-  f i := (hU' i).fromSpec
-  idx x := (hU.exists_mem x).choose
-  covers x :=
-    ⟨(hU' _).isoSpec.hom ⟨_, (hU.exists_mem x).choose_spec⟩, by simp [← Scheme.Hom.comp_apply]⟩
-
-lemma _root_.TopologicalSpace.IsOpenCover.exists_finite_of_compactSpace
-    {X : Type*}
-    [TopologicalSpace X] [CompactSpace X] {ι : Type*} {U : ι → Opens X} (hU : IsOpenCover U) :
-    ∃ (s : Finset ι), IsOpenCover (fun i : s ↦ U i.1) := by
-  rw [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe] at hU
-  obtain ⟨s, hs⟩ := IsCompact.elim_finite_subcover isCompact_univ _ (fun i ↦ (U i).2)
-    (by simpa using hU)
-  use s
-  simpa [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe, Set.iUnion_subtype] using hs
-
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Modules.exists_isOpenCover_presentation {X : Scheme.{u}} (M : X.Modules)
     [M.IsQuasicoherent] :
@@ -612,8 +586,6 @@ lemma Scheme.Modules.exists_isOpenCover_presentation {X : Scheme.{u}} (M : X.Mod
   · intro j
     exact hsub _ j.2.2
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Modules.exists_affineOpenCover_presentation {X : Scheme.{u}} (M : X.Modules)
     [M.IsQuasicoherent] :
     ∃ (𝒰 : Scheme.AffineOpenCover.{u} X),
@@ -654,8 +626,9 @@ private lemma Aux.of_le {M : (Spec R).Modules} {V : (Spec R).Opens} (g : R) (hg 
 
 set_option backward.isDefEq.respectTransparency false in
 /-- [Lemme 1.4.1.1][grothendieck-1971] -/
-private lemma Aux.of_span_eq_top {M : (Spec R).Modules} (V : (Spec R).Opens) {ι : Type*} [Finite ι]
-    (g : ι → R) (hg : V = ⨆ i, basicOpen (g i)) (h₁ : ∀ (i : ι), Aux M (basicOpen (g i))) :
+private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Opens)
+    {ι : Type*} [Finite ι] (g : ι → R) (hg : V = ⨆ i, basicOpen (g i))
+    (h₁ : ∀ (i : ι), Aux M (basicOpen (g i))) :
     Aux M V := by
   have h₂ (i j : ι) : Aux M (basicOpen (g i * g j)) :=
     .of_le _ (basicOpen_mul_le_left _ _) (h₁ i)
@@ -904,7 +877,7 @@ instance Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent (M : (Spec R).Modul
   obtain ⟨s, hs⟩ := hU.exists_finite_of_compactSpace
   choose κ hκ a ha using fun i : s ↦
     PrimeSpectrum.isBasis_basic_opens.exists_iSup_eq_of_isCompact (U i) (hU' i).isCompact
-  refine Aux.of_span_eq_top _ (fun i : Sigma κ ↦ a _ i.2) ?_ ?_
+  refine Aux.of_eq_iSup_basicOpen _ (fun i : Sigma κ ↦ a _ i.2) ?_ ?_
   · rw [IsOpenCover] at hs
     rw [eq_comm, iSup_sigma, ← hs]
     exact iSup_congr fun i ↦ (ha i).symm
