@@ -49,6 +49,15 @@ noncomputable def reps_toGL {n : ℕ+} (A : reps (n : ℤ)) : GL (Fin 2) ℝ :=
     rw [← RingHom.mapMatrix_apply, ← RingHom.map_det, A.1.2, eq_intCast]
     simp
 
+@[simp]
+lemma reps_toGL_coe {n : ℕ+} (A : reps (n : ℤ)) :
+    (reps_toGL A : Matrix (Fin 2) (Fin 2) ℝ) = A.1.1.map (Int.castRingHom ℝ) :=
+  Matrix.GeneralLinearGroup.val_mkOfDetNeZero ..
+
+lemma reps_toGL_det_pos {n : ℕ+} (A : reps (n : ℤ)) : 0 < (reps_toGL A).det.val := by
+  rw [Matrix.GeneralLinearGroup.val_det_apply, reps_toGL_coe, ← RingHom.mapMatrix_apply,
+    ← RingHom.map_det, A.1.2, eq_intCast]
+  exact_mod_cast n.pos
 
 end FixedDetMatrices
 
@@ -58,8 +67,8 @@ open FixedDetMatrices
 
 variable (k : ℤ)
 
-
-/-- The weight-`k` Hecke operator `T n` acting on functions `f : ℍ → ℂ`, as a `ℂ`-linear map.
+/-- The weight-`k` Hecke operator `T n` acting on functions `f : ℍ → ℂ`, as a `ℂ`-linear
+map.
 
 It is the sum of the weight-`k` slash actions over the canonical representatives `reps n` of the
 orbits of `SL(2, ℤ)` on integer matrices of determinant `n`. -/
@@ -70,14 +79,7 @@ noncomputable def heckeOp (n : ℕ+) : (ℍ → ℂ) →ₗ[ℂ] (ℍ → ℂ) w
   map_smul' c f := by
     simp only [RingHom.id_apply, Finset.smul_sum]
     refine Finset.sum_congr rfl fun A _ => ?_
-    have hdet : 0 < (reps_toGL A).det.val := by
-      rw [Matrix.GeneralLinearGroup.val_det_apply]
-      unfold reps_toGL
-      rw [Matrix.GeneralLinearGroup.val_mkOfDetNeZero, ← RingHom.mapMatrix_apply, ← RingHom.map_det,
-        A.1.2, eq_intCast]
-      exact_mod_cast n.pos
-    have hσ : σ (reps_toGL A) c = c := by rw [σ, if_pos hdet]; rfl
-    rw [smul_slash, hσ]
+    rw [smul_slash, σ, if_pos (reps_toGL_det_pos A)]; rfl
 
 lemma heckeOp_apply (n : ℕ+) (f : ℍ → ℂ) :
     heckeOp k n f = ∑ A : reps (n : ℤ), f ∣[k] reps_toGL A :=
