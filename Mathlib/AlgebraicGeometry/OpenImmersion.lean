@@ -88,6 +88,7 @@ theorem mem_opensRange {f : X ⟶ Y} [IsOpenImmersion f] {y : Y} :
 def opensFunctor : X.Opens ⥤ Y.Opens :=
   LocallyRingedSpace.IsOpenImmersion.opensFunctor f.toLRSHom
 
+/-- The adjunction image-preimage adjunction for an open immersion of schemes. -/
 def opensFunctorAdjunction : f.opensFunctor ⊣ TopologicalSpace.Opens.map f.base :=
   IsOpenMap.adjunction ‹IsOpenImmersion f›.base_open.isOpenMap
 
@@ -106,16 +107,6 @@ instance : f.opensFunctor.Full :=
 lemma coverPreserving_opensFunctor :
     CoverPreserving (Opens.grothendieckTopology _) (Opens.grothendieckTopology _) f.opensFunctor :=
   f.isOpenEmbedding.isOpenMap.coverPreserving
-
-instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι : Type*}
-    [Nonempty ι] [Finite ι] :
-    PreservesLimitsOfShape (Discrete ι) hf.functor := by
-  apply +allowSynthFailures Limits.preservesLimitsOfShape_of_discrete
-  intro g
-  refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
-  refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
-  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_iInf]
-  apply isGLB_iInf
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     PreservesLimitsOfShape WalkingCospan (Scheme.Hom.opensFunctor f) := by

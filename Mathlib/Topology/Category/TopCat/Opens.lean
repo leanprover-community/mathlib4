@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Category.GaloisConnection
 public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Limits.Preorder
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Sets.Opens
 
@@ -471,5 +473,16 @@ theorem adjunction_counit_map_functor {X : TopCat.{u}} {U : Opens X} (V : Opens 
     U.isOpenEmbedding.isOpenMap.adjunction.counit.app (U.isOpenEmbedding.functor.obj V) =
       eqToHom (by dsimp; rw [map_functor_eq V]) := by
   subsingleton
+
+open Limits in
+instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι : Type*}
+    [Nonempty ι] [Finite ι] :
+    PreservesLimitsOfShape (Discrete ι) hf.functor := by
+  apply +allowSynthFailures preservesLimitsOfShape_of_discrete
+  intro g
+  refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
+  refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
+  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_iInf]
+  apply isGLB_iInf
 
 end TopologicalSpace.Opens
