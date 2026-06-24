@@ -135,7 +135,16 @@ theorem map_injective {f : α → β} (hf : Function.Injective f) :
 theorem map_involutive {f : α → α} (hf : Function.Involutive f) :
     Function.Involutive fun M : Matrix m n α ↦ M.map f := by intro; simp [hf]
 
-/-- The transpose of a matrix. -/
+/-- The transpose of a matrix.
+
+This is available in bundled forms as:
+* `Matrix.transposeAddEquiv`
+* `Matrix.transposeLinearEquiv`
+* `Matrix.transposeRingEquiv`
+* `Matrix.transposeAlgEquiv`
+* `RingEquiv.mopMatrix`
+* `AlgEquiv.mopMatrix`
+-/
 def transpose (M : Matrix m n α) : Matrix n m α :=
   of fun x y => M y x
 
