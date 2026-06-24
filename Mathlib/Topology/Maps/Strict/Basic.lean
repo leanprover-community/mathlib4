@@ -187,14 +187,14 @@ variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H] (f : G �
 /-- A group homomorphism is strict if and only if its rangeRestrict is an open quotient map. -/
 @[to_additive] lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
     IsStrictMap f ↔ IsOpenQuotientMap f.rangeRestrict := by
-  rw [isQuotientMap_iff_isOpenQuotientMap]
+  rw [isOpenQuotientMap_iff_isQuotientMap]
   rfl
 
 variable {f g} [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
 
 /-- The product (in the sense of `Prod.map`) of strict group homomorphisms is strict -/
-@[to_additive isStrictMap_prodMap] lemma isStrictMap_prodMap (hf : IsStrictMap f) (hg : IsStrictMap g) :
-    IsStrictMap (f.prodMap g) := by
+@[to_additive isStrictMap_prodMap] lemma isStrictMap_prodMap (hf : IsStrictMap f)
+    (hg : IsStrictMap g) :IsStrictMap (f.prodMap g) := by
   rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict] at hf hg ⊢
   let aux : (f.prodMap g).range ≃ₜ f.range × g.range :=
     (Homeomorph.setCongr (by simp [Subgroup.coe_prod])).trans (Homeomorph.Set.prod _ _)
