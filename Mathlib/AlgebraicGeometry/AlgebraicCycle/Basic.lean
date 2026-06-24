@@ -64,7 +64,7 @@ def _root_.AlgebraicGeometry.Scheme.Hom.degree : ℕ := @Module.finrank
 namespace AlgebraicCycle
 
 /--
-Implementation detail for pushforward: function used to define the coefficient of the pushforward
+Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the pushforward
 of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
 noncomputable
