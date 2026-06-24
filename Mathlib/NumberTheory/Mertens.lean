@@ -189,20 +189,20 @@ at `0` and `1`.
 -/
 class Weight where
   /-- The underlying function -/
-  to_fun : ℕ → ℝ
-  map_zero' : to_fun 0 = 0
-  map_one' : to_fun 1 = 0
+  toFun : ℕ → ℝ
+  map_zero' : toFun 0 = 0
+  map_one' : toFun 1 = 0
   /-- The lower bound for the first Mertens error. -/
   lowerBound : ℝ
   /-- The upper bound for the first Mertens error. -/
   upperBound : ℝ
-  le_first' : ∀ x ≥ 1, lowerBound ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, to_fun n - log x
-  first_le' : ∀ x ≥ 1, ∑ n ∈ Ioc 0 ⌊x⌋₊, to_fun n - log x ≤ upperBound
+  le_first' : ∀ x ≥ 1, lowerBound ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, toFun n - log x
+  first_le' : ∀ x ≥ 1, ∑ n ∈ Ioc 0 ⌊x⌋₊, toFun n - log x ≤ upperBound
 
 namespace Weight
 
 noncomputable instance instCoefn : CoeFun Weight (fun _ ↦ ℕ → ℝ) where
-  coe f := f.to_fun
+  coe f := f.toFun
 
 open intervalIntegral
 
@@ -658,7 +658,7 @@ theorem sum_vonMangoldt_le_sum_prime_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
 /-- The von Mangoldt weight `f : ℕ → ℝ := fun n ↦ Λ n / n`. -/
 @[reducible]
 noncomputable def Weight.vonMangoldt : Weight := {
-  to_fun := vonMangoldtFun
+  toFun := vonMangoldtFun
   map_zero' := by simp [vonMangoldtFun]
   map_one' := by simp [vonMangoldtFun]
   lowerBound := -2
@@ -693,7 +693,7 @@ lemma Weight.vonMangoldt_C₂_eq : vonMangoldt.C₂ = log 4 + 3 := by simp [C₂
 /-- The prime weight `f : ℕ → ℝ := fun n ↦ 1 / n` if `n` is prime and `0` otherwise. -/
 @[reducible]
 noncomputable def Weight.prime : Weight := {
-  to_fun := primeFun
+  toFun := primeFun
   map_zero' := by simp [primeFun]
   map_one' := by simp [primeFun]
   lowerBound := -3
