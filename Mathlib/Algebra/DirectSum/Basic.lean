@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.DFinsupp.Sigma
 public import Mathlib.Data.DFinsupp.Submonoid
-
 /-!
 # Direct sum
 
@@ -396,7 +395,7 @@ theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
     _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β k.2) k x) := by
       rw [sigmaFiberAddEquiv_apply']
       exact congrArg sigmaCurry (equivCongrLeft_of (h := h.symm) _ _)
-    _ = of _ k.1 (of _ k.2 x) := sigmaCurry_of _ _
+    _ = of _ k.1 (of _ k.2 x) := by simp
 
 end SigmaFiber
 
