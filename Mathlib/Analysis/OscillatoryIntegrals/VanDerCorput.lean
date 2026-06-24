@@ -145,6 +145,24 @@ private theorem exists_le_abs_of_le_derivWithin
   · rw [abs_of_neg (sub_neg.mpr h), abs_of_nonpos (by linarith only [hmon hx hc' h.le, h, hfc])]
     linarith only [hmvt _ hx _ hc' h.le, hfc]
 
+/-- Auxiliary lemma: If the second derivative is bounded from below,
+  then the first derivative is monotone. -/
+private theorem monotoneOn_derivWithin_of_le_iteratedDerivWithin_two
+    {L : ℝ} (hab : a ≠ b) (hL : 0 < L) (hφc : ContDiffOn ℝ 2 φ [[a, b]])
+    (hφ : ∀ x ∈ [[a, b]], L ≤ iteratedDerivWithin 2 φ [[a, b]] x) :
+    MonotoneOn (derivWithin φ [[a, b]]) [[a, b]] := by
+  have hud := uniqueDiffOn_uIcc hab
+  have hC1 := contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin hud |>.mp hφc |>.2
+  suffices MonotoneOn (iteratedDerivWithin 1 φ [[a, b]]) [[a, b]] from
+    fun x hx y hy hxy ↦ by simpa [iteratedDerivWithin_one] using this hx hy hxy
+  refine monotoneOn_of_deriv_nonneg (convex_uIcc (r := a) (s := b)) hC1.continuousOn
+    ((hC1.differentiableOn (by norm_num)).mono interior_subset) fun x hx ↦ ?_
+  have hx' := interior_subset hx
+  have hda := ((hC1.differentiableOn (by norm_num)) x hx').differentiableAt
+    (Filter.mem_of_superset (isOpen_interior.mem_nhds hx) interior_subset)
+  rw [← hda.derivWithin (hud x hx'), ← iteratedDerivWithin_succ]
+  exact le_trans hL.le <| hφ x hx'
+
 section SpecialCase
 
 /-- **Van der Corput's lemma**. Special case of `norm_integral_exp_mul_I_le_of_order_one`
@@ -273,7 +291,7 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
         (fun x hx ↦ by rw [iteratedDerivWithin_neg]; linarith only [hφ' x hx]) using 1
     · simp [← conj_exp_ofReal_mul_I, intervalIntegral_conj]
     · convert hφc'.neg using 2
-      exact iteratedDerivWithin_neg _
+      exact funext <| fun x ↦ iteratedDerivWithin_neg _
   -- Main idea: split the integral into three pieces: `[a, d - δ]`, `[d - δ, d + δ]`, `[d + δ, b]`
   -- `δ` is small and carefully chosen, `d` is argmin of `|φ^(k) x|`,
   -- so that `δ`-away from `d` we have a good lower bound on `|φ^(k) x|` which allows us
@@ -301,23 +319,11 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
   have hc₂b : [[c₂, b]] ⊆ [[a, b]] := uIcc_subset_uIcc hc₂_mem right_mem_uIcc
   have hud := uniqueDiffOn_uIcc hab.ne
   replace hk : 1 ≤ k := by omega
-  -- If `k = 1` we will need the monotonicity condition of the order one theorem.
-  have hmono_ab (hk : k = 1) : MonotoneOn (derivWithin φ [[a, b]]) [[a, b]] := by
-    subst hk
-    have hC1 := contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin hud |>.mp hφc |>.2
-    suffices MonotoneOn (iteratedDerivWithin 1 φ [[a, b]]) [[a, b]] from
-      fun x hx y hy hxy ↦ by simpa [iteratedDerivWithin_one] using this hx hy hxy
-    refine monotoneOn_of_deriv_nonneg (convex_uIcc (r := a) (s := b)) hC1.continuousOn
-      ((hC1.differentiableOn (by norm_num)).mono interior_subset) fun x hx ↦ ?_
-    have hx' := interior_subset hx
-    have hda := ((hC1.differentiableOn (by norm_num)) x hx').differentiableAt
-      (Filter.mem_of_superset (isOpen_interior.mem_nhds hx) interior_subset)
-    rw [← hda.derivWithin (hud x hx'), ← iteratedDerivWithin_succ]
-    exact le_trans hL.le <| hφ' x hx'
   -- This is the main estimate for the outer two pieces, unified to avoid duplication.
   have haux {α β : ℝ} (hαβ : [[α, β]] ⊆ [[a, b]])
       (hest : α ≠ β → ∀ x ∈ [[α, β]], L * δ ≤ |iteratedDerivWithin k φ [[a, b]] x|) :
       ‖∫ x in α..β, exp (φ x * I)‖ ≤ c k * (L * δ) ^ (-(1 : ℝ) / k) := by
+    clear * - a b hαβ hud hφc hest hk hab hL hφ' ih
     by_cases hαβ' : α = β
     · simp only [hαβ', integral_same, norm_zero]; have := c_pos k; positivity
     have hud_αβ := uniqueDiffOn_uIcc hαβ'
@@ -333,7 +339,8 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
         fun z hz ↦ by simpa only [iteratedDerivWithin_one] using deriv_eq z hz
       have hmono : MonotoneOn (derivWithin φ [[α, β]]) [[α, β]] := fun x hx y hy hxy ↦ by
         rw [deq1 x hx, deq1 y hy]
-        exact hmono_ab rfl (hαβ hx) (hαβ hy) hxy
+        exact monotoneOn_derivWithin_of_le_iteratedDerivWithin_two
+          hab.ne hL hφc hφ' (hαβ hx) (hαβ hy) hxy
       calc _ ≤ c 1 * (L * δ)⁻¹ := norm_integral_exp_mul_I_le_of_order_one'
               (hφc.mono hαβ)
               (fun x hx ↦ by simpa only [iteratedDerivWithin_one] using hψ_bd x hx)
