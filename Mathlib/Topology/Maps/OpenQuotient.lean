@@ -28,8 +28,7 @@ public section
 
 open Filter Function Set Topology
 
-variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  [TopologicalSpace Z] [TopologicalSpace W] {f : X → Y}
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
 
 namespace IsOpenQuotientMap
 
