@@ -24,7 +24,7 @@ section sigma
 
 open scoped sigma
 
-theorem sigma_isBigO_pow_succ (k : ℕ) :
+theorem sigma_isBigO_pow_add_one (k : ℕ) :
     (fun n ↦ (σ k n : ℝ)) =O[atTop] (fun n ↦ (n ^ (k + 1) : ℝ)) := by
   rw [isBigO_iff]
   use 1
