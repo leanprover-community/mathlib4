@@ -307,6 +307,7 @@ lemma IsQuasiInverse.symm {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     (h : u.IsQuasiInverse v) : v.IsQuasiInverse u :=
   And.symm h
 
+@[gcongr]
 lemma IsLeftQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (h : u.IsLeftQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
     u'.IsLeftQuasiInverse v' := by
@@ -314,11 +315,13 @@ lemma IsLeftQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[
   grw [hu, hv]
   assumption
 
+@[gcongr]
 lemma isLeftQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (hu : u' ≈ u) (hv : v' ≈ v) :
     u.IsLeftQuasiInverse v ↔ u'.IsLeftQuasiInverse v' :=
   ⟨fun H ↦ H.congr hu hv, fun H ↦ H.congr (Setoid.symm hu) (Setoid.symm hv)⟩
 
+@[gcongr]
 lemma IsRightQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (h : u.IsRightQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
     u'.IsRightQuasiInverse v' := by
@@ -331,6 +334,7 @@ lemma isRightQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ
     u.IsRightQuasiInverse v ↔ u'.IsRightQuasiInverse v' :=
   ⟨fun H ↦ H.congr hu hv, fun H ↦ H.congr (Setoid.symm hu) (Setoid.symm hv)⟩
 
+@[gcongr]
 lemma IsQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (h : u.IsQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
     u'.IsQuasiInverse v' :=
@@ -343,7 +347,7 @@ lemma isQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V
 
 lemma IsQuasiInverse.equiv_of_left {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (h : u.IsQuasiInverse v) (h' : u'.IsQuasiInverse v') (hu : u ≈ u') :
-    v ≈ v' :=
+    v ≈ v' := by
   calc
     v = v ∘ₗ .id := by simp
     _ ≈ v ∘ₗ (u' ∘ₗ v') := by grw [h'.1.equiv]
