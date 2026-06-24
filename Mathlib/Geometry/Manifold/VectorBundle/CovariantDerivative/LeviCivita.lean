@@ -9,6 +9,7 @@ public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
+public import Mathlib.Tactic.ClickSuggestions
 
 /-!
 # The Levi-Civita connection on a Riemannian manifold
@@ -471,6 +472,43 @@ lemma contMDiff_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimensional ℝ E
     CMDiff k (fun x ↦ ⟪((leviCivitaConnection I M) Y x) (X x), Z x⟫) :=
   (leviCivitaConnection_isLeviCivitaConnection I).contMDiff_apply k hX hY hZ
 
+-- TODO: generalise all this discussion to sections of any smooth bundle!
+
+-- Move: sections into a bundle with subsingleton fiber are smooth
+section
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ∞ω)
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
+  {s : ∀ x, V x} {u : Set M} {x : M}
+
+@[nontriviality]
+lemma contMDiffWithinAt_section_of_subsingleton [Subsingleton F] :
+    CMDiffAt[u] n (T% s) x := by
+  rw [contMDiffWithinAt_section]
+  apply contMDiffWithinAt_const |>.congr
+  · intro y _
+    apply Subsingleton.elim
+  rfl
+
+@[nontriviality]
+lemma contMDiffAt_section_of_subsingleton [Subsingleton F] : CMDiffAt n (T% s) x := by
+  rw [← contMDiffWithinAt_univ]
+  apply contMDiffWithinAt_section_of_subsingleton
+
+@[nontriviality]
+lemma contMDiffOn_section_of_subsingleton [Subsingleton F] : CMDiff[u] n (T% s) :=
+  fun _x _hx ↦ contMDiffWithinAt_section_of_subsingleton ..
+
+@[nontriviality]
+lemma contMDiff_section_of_subsingleton [Subsingleton F] : CMDiff n (T% s) :=
+  fun _x ↦ contMDiffAt_section_of_subsingleton ..
+
+end
+
 variable {I} in
 lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
@@ -481,19 +519,21 @@ lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
   sorry
 
 open Module in
--- Variant of step 2' but pointwise.
--- Has slightly stronger requirements on differentiability, but less on the regularity of the metric.
--- This cannot be applied to the Levi-Civita connection as there is a loss of derivatives there.
+-- Variant of `contMDiffAt_of_inner` --- with slightly stronger requirements on differentiability,
+-- but less on the regularity of the metric. This cannot be applied to the Levi-Civita connection
+-- as there is a loss of derivatives there.
+
 variable {I} in
-lemma step2'_at (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+/-- A vector field on a Riemannian manifold `(M, g)` is `C^n` at `x` if if its pairing
+with any `C^n` vector field at `x` is `C^n` at `x`.
+This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
+lemma contMDiffAt_of_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
     [IsManifold I k M] [IsManifold I (k + 1) M]
     [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] {x : M}
     (hW : ∀ {Z : (x : M) → TangentSpace% x}
       (hZ : CMDiffAt k (T% Z) x), CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
     CMDiffAt k (T% W) x := by
-  obtain (_hE | hE) := subsingleton_or_nontrivial E
-  · have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
-    sorry -- constant functions, nothing to prove
+  nontriviality E
   -- Take an orthonormal frame.
   let b := Basis.ofVectorSpace ℝ E
   let t := trivializationAt E (TangentSpace I : M → Type _) x
@@ -507,54 +547,71 @@ lemma step2'_at (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensiona
   have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
   let frame := b.orthonormalFrame t
-  -- M is a C^{k+1} manifold, so should be obvious!
-  have : ContMDiffVectorBundle k E (fun (x : M) ↦ TangentSpace% x) I := sorry
+  have : ContMDiffVectorBundle k E (fun (x : M) ↦ TangentSpace% x) I :=
+    TangentBundle.contMDiffVectorBundle
   have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k) t (IB := I)
   rw [hs.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
   intro i
   simp_rw [real_inner_comm]
-  let myZ := (b.orthonormalFrame t i)
-  have : CMDiffAt k (T% myZ) x := sorry -- scifi, want a point-wise version anyway!
-  exact hW this
+  exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx)
 
-#exit -- TODO: reprove step' using this!
-open Module in
--- Variant of step 2' with slightly stronger requirements on differentiability,
--- but less on the regularity of the metric.
--- This cannot be applied to the Levi-Civita connection as there is a loss of derivatives there.
 variable {I} in
-lemma step2' (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+/-- A vector field on a Riemannian manifold `(M, g)` is `C^n` at `x` if and only if its pairing
+with any `C^n` vector field at `x` is `C^n` at `x`.
+This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
+lemma contMDiffAt_iff_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+    [IsManifold I k M] [IsManifold I (k + 1) M]
+    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] {x : M} :
+    CMDiffAt k (T% W) x ↔
+      ∀ {Z : (x : M) → TangentSpace% x}
+        (_hZ : CMDiffAt k (T% Z) x), CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x :=
+  ⟨fun hW _Z hZ ↦ hW.inner_bundle' hZ, fun h ↦ contMDiffAt_of_inner k h⟩
+
+variable {I} in
+/-- A vector field on a Riemannian manifold `(M, g)` is `C^n` if if its pairing
+with any `C^n` vector field is `C^n`. This version assumes `M` is a `C^{n+1}`-manifold
+with a `C^n` metric. -/
+lemma contMDiff_of_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
     [IsManifold I k M] [IsManifold I (k + 1) M]
     [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
     (hW : ∀ {Z : (x : M) → TangentSpace% x}
       (hZ : CMDiff k (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
     CMDiff k (T% W) := by
   intro x
-  obtain (_hE | hE) := subsingleton_or_nontrivial E
-  · have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
-    sorry -- constant functions, nothing to prove
-  -- Take an orthonormal frame.
-  let b := Basis.ofVectorSpace ℝ E
-  let t := trivializationAt E (TangentSpace I : M → Type _) x
-  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-  -- The linear ordering on the indexing set of `b` is only used in this proof,
-  -- so our choice does not matter.
-  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-    choose r wo using exists_wellFoundedLT _
-    exact r
-  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
-  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
-  let frame := b.orthonormalFrame t
-  -- M is a C^{k+1} manifold, so should be obvious!
-  have : ContMDiffVectorBundle k E (fun (x : M) ↦ TangentSpace% x) I := sorry
-  have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k) t (IB := I)
-  rw [hs.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
-  intro i
-  simp_rw [real_inner_comm]
-  let myZ := (b.orthonormalFrame t i)
-  have : CMDiff k (T% myZ) := sorry -- scifi, want a point-wise version anyway!
-  exact hW this x
+  apply contMDiffAt_of_inner
+  intro Z₀ hZ₀
+  -- TODO: right now, our extension construction is not strong enough
+  let Z := FiberBundle.extend E (Z₀ x)
+  -- this needs a different argument, to get away with something weaker
+  have scifi : CMDiff k(T% Z) := sorry
+  -- this also needs an upgraded construction
+  have scifi2 : Z₀ =ᶠ[nhds x] Z := sorry
+  apply (hW scifi x).congr_of_eventuallyEq <| scifi2.mono (by grind)
+
+variable {I} in
+/-- A vector field on a Riemannian manifold `(M, g)` is `C^n` if and only if its pairing
+with any `C^n` vector field is `C^n`.
+This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
+lemma contMDiff_iff_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+    [IsManifold I k M] [IsManifold I (k + 1) M]
+    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] :
+    CMDiff k (T% W) ↔
+      ∀ {Z : (x : M) → TangentSpace% x}
+        (_hZ : CMDiff k (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫) :=
+  ⟨fun h _Z hZ ↦ ContMDiff.inner_bundle' h hZ, fun h ↦ contMDiff_of_inner k h⟩
+
+-- Straightforward version, but sufficient in practice??
+variable {I} in
+lemma contMDiff_of_contMDiffAt_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x}
+    [FiniteDimensional ℝ E] [IsManifold I k M] [IsManifold I (k + 1) M]
+    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
+    (hW : ∀ {x : M} {Z : (x : M) → TangentSpace% x}
+      (_hZ : CMDiffAt k (T% Z) x), CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
+    CMDiff k (T% W) := by
+  intro x
+  apply contMDiffAt_of_inner
+  intro Z₀ hZ₀
+  exact hW hZ₀
 
 /-- If `M` is endowed with a `C^k` metric, its Levi-Civita connection is a `C^k` connection. -/
 instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
