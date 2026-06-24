@@ -521,11 +521,22 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
           Linter.logLint linter.style.nameCheck id
             m!"The declaration `{id}` contains '__', which does not follow the mathlib naming \
               conventions. Consider using single underscores instead."
-        -- If the last component of a lemma is uppercase, this is are definitely an error.
-        let nameIsUpper := declName.components.getLast!.toString.toList.head!.isUpper
-        if nameIsUpper && ((← getEnv).find? declName).get!.isTheorem then
-          Linter.logLint linter.style.nameCheck id m!"The theorem `{id}` has an upper-case name: \
-          this certainly violates the naming convention: please fix"
+
+open Batteries.Tactic.Lint in
+/-- Linter that checks for lemmas whose name starts in uppercams:
+such names violate the naming convention. -/
+@[env_linter] public def lemmasUppercase : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "no lemmas with uppercase names found."
+  errorsFound := "FOUND lemmas with uppercase names."
+  test declName := do
+    unless ((← getEnv).find? declName).get!.isTheorem && !(← isAutoDecl declName) do return none
+    if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
+    -- If the last component of a lemma is uppercase, this is are definitely an error.
+    let nameIsUpper := declName.components.getLast!.toString.toList.head!.isUpper
+    if nameIsUpper then
+      return m!"The theorem `{declName}` has an upper-case name: \
+        this certainly violates the naming convention: please fix"
+    else return none
 
 -- tests to add
 -- Foo.my_lemma_name is fine (even though *first* component is capitalized)
