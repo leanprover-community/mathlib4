@@ -732,7 +732,7 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
   wlog hne : x₁ ≠ x₂
   · simp_all
-  simp only [NormedAddGroup.tendsto_nhds_zero, eventually_atTop, ge_iff_le]
+  simp only [NormedAddGroup.tendsto_nhds_zero, eventually_atTop]
   intro ε hε
   have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by linarith [div_pos hε (abs_sub_pos.mpr hne.symm)]
   obtain ⟨pa, hpa, pb, hpb, hp⟩ :=
