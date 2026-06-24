@@ -10,9 +10,11 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
 public import Mathlib.AlgebraicGeometry.OpenImmersion
+public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
+public import Mathlib.Topology.Sheaves.Module
 
 /-!
 # The category of sheaves of modules over a scheme
@@ -30,7 +32,7 @@ open CategoryTheory Limits TopologicalSpace SheafOfModules Bicategory
 
 namespace AlgebraicGeometry.Scheme
 
-variable {X Y Z T : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {X Y Z T : Scheme.{u}}
 
 variable (X) in
 /-- The category of sheaves of modules over a scheme. -/
@@ -95,6 +97,19 @@ variable (M) in
 @[simp] lemma map_smul (i : U ⟶ V) (r : Γ(X, V)) (x : Γ(M, V)) :
     M.presheaf.map i.op (r • x) = X.presheaf.map i.op r • M.presheaf.map i.op x :=
   M.val.map_smul _ _ _
+
+/-- Scalar multiplication as an endomorphism of `Γ(M, U)`. -/
+def smul : Γ(X, U) →+* End Γ(M, U) :=
+  (M.val.obj (.op U)).smul
+
+@[simp]
+lemma smul_apply (r : Γ(X, U)) (x : Γ(M, U)) : (M.smul r).hom x = r • x := rfl
+
+@[reassoc (attr := simp)]
+lemma map_comp_smul (i : U ⟶ V) (r : Γ(X, V)) :
+    M.smul r ≫ M.presheaf.map i.op = M.presheaf.map i.op ≫ M.smul (X.presheaf.map i.op r) := by
+  ext
+  simp
 
 /-- The underlying map between abelian presheaves of a morphism of `𝒪ₓ`-modules. -/
 noncomputable def Hom.mapPresheaf (φ : M ⟶ N) : M.presheaf ⟶ N.presheaf :=
@@ -286,6 +301,7 @@ lemma pseudofunctor_right_unitality :
     congr_arg Iso.hom (SheafOfModules.pullback_comp_id.{u} f.toRingCatSheafHom)
   simp [← this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
@@ -311,13 +327,13 @@ end Functorial
 
 noncomputable section Restriction
 
-variable [IsOpenImmersion f]
+variable (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion f] [IsOpenImmersion g]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction of an `𝒪ₓ`-module along an open immersion.
 This is isomorphic to the pullback functor (see `restrictFunctorIsoPullback`)
 but has better defeqs. -/
-def restrictFunctor :
-    Y.Modules ⥤ X.Modules :=
+def restrictFunctor : Y.Modules ⥤ X.Modules :=
   letI α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
   SheafOfModules.pushforward (F := f.opensFunctor)
     ⟨Functor.whiskerRight α (forget₂ CommRingCat RingCat)⟩
@@ -326,11 +342,63 @@ def restrictFunctor :
 abbrev restrict (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] : X.Modules :=
   (restrictFunctor f).obj M
 
-@[simp] lemma restrict_obj (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] (U) :
+/-- The sections of the restriction of `M` over `U` are isomorphic to `Γ(M, f ''ᵁ U). -/
+def restrictAppIso (M : Y.Modules) (U : X.Opens) : Γ(M.restrict f, U) ≅ Γ(M, f ''ᵁ U) :=
+  Iso.refl _
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+lemma smul_restrictAppIso_hom (M : Y.Modules) (U : X.Opens) (r : Γ(X, U)) :
+    dsimp% (M.restrict f).smul r ≫ (M.restrictAppIso f U).hom =
+      (M.restrictAppIso f U).hom ≫ M.smul ((f.appIso U).inv r) :=
+  rfl
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+lemma smul_restrictAppIso_inv (M : Y.Modules) (U : X.Opens) (r : Γ(Y, f ''ᵁ U)) :
+    M.smul r ≫ (M.restrictAppIso f U).inv =
+      (M.restrictAppIso f U).inv ≫ (M.restrict f).smul ((f.appIso U).hom r) := by
+  simp [← cancel_mono (M.restrictAppIso f U).hom]
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+lemma map_restrictAppIso_hom (M : Y.Modules) {U V : X.Opens}
+    (hUV : Opposite.op V ⟶ .op U) :
+    (M.restrict f).presheaf.map hUV ≫ (M.restrictAppIso f U).hom =
+      (M.restrictAppIso f V).hom ≫
+      M.presheaf.map (.op <| homOfLE <| Scheme.Hom.image_mono _ (leOfHom hUV.unop)) := by
+  rfl
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+lemma restrictAppIso_inv_map (M : Y.Modules) {U V : X.Opens} (hUV : .op V ⟶ .op U) :
+    (M.restrictAppIso f V).inv ≫ (M.restrict f).presheaf.map hUV =
+      M.presheaf.map (.op <| homOfLE <| Scheme.Hom.image_mono _ (leOfHom hUV.unop)) ≫
+      (M.restrictAppIso f U).inv :=
+  rfl
+
+/-- Avoid using this. Use the isomorphism `AlgebraicGeometry.Scheme.Modules.restrictAppIso`
+instead. -/
+lemma restrict_obj (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] (U) :
     Γ(M.restrict f, U) = Γ(M, f ''ᵁ U) := rfl
 
-@[simp] lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : U ⟶ V) :
+/-- Avoid using this. Use the isomorphism `AlgebraicGeometry.Scheme.Modules.restrictAppIso`
+instead. -/
+lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : U ⟶ V) :
     (M.restrict f).presheaf.map i.op = M.presheaf.map (f.opensFunctor.map i).op := rfl
+
+/-- `Scheme.Modules.restrict` along an open immersion `X ⟶ Y` sends `𝒪_Y` to `𝒪_X`. -/
+def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
+    restrict (.unit <| Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
+  refine (fullyFaithfulForget _).preimageIso <| PresheafOfModules.isoMk (fun U ↦ ?_) ?_
+  · refine ModuleCat.isoMk
+      ((forget₂ CommRingCat RingCat ⋙ forget₂ _ Ab).mapIso (f.appIso U.unop)) ?_
+    intro (r : Γ(X, U.unop))
+    ext (x : Γ(Y, f ''ᵁ U.unop))
+    change r * (f.appIso U.unop).hom x = (f.appIso U.unop).hom ((f.appIso U.unop).inv r * x)
+    simp
+  · intro U V g
+    have : Y.presheaf.map (homOfLE (by grw [leOfHom g.unop])).op ≫
+        (f.appIso _).hom = (f.appIso U.unop).hom ≫ X.presheaf.map g := by
+      simp [Hom.appIso_hom']
+    ext x
+    exact congr($(this) x)
 
 /-- The restriction of a module along an open immersion. -/
 def restrictFunctorAdjCounitIso : pushforward f ⋙ restrictFunctor f ≅ 𝟭 _ :=
@@ -372,6 +440,7 @@ lemma restrictAdjunction_counit_app_app (M : X.Modules) (U : X.Opens) :
 def restrictFunctorIsoPullback : restrictFunctor f ≅ pullback f :=
   (restrictAdjunction f).leftAdjointUniq (pullbackPushforwardAdjunction f)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the identity is isomorphic to the identity. -/
 def restrictFunctorId : restrictFunctor (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents (fun _ ↦ eqToIso (by simp))) ≪≫
@@ -389,9 +458,9 @@ lemma restrictFunctorId_inv_app_app :
     (restrictFunctorId.inv.app M).app U =
       M.presheaf.map (eqToHom (show 𝟙 X ''ᵁ U = U by simp)).op := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the composition is isomorphic to the composition of restrictions. -/
-def restrictFunctorComp [IsOpenImmersion f] [IsOpenImmersion g] :
-    restrictFunctor (f ≫ g) ≅ restrictFunctor g ⋙ restrictFunctor f :=
+def restrictFunctorComp : restrictFunctor (f ≫ g) ≅ restrictFunctor g ⋙ restrictFunctor f :=
   have : (f.opensFunctor ⋙ g.opensFunctor).IsContinuous
       (Opens.grothendieckTopology X) (Opens.grothendieckTopology Z) :=
     Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
@@ -400,13 +469,14 @@ def restrictFunctorComp [IsOpenImmersion f] [IsOpenImmersion g] :
     (SheafOfModules.pushforwardComp _ _).symm
 
 @[simp]
-lemma restrictFunctorComp_hom_app_app [IsOpenImmersion g] (M : Z.Modules) :
+lemma restrictFunctorComp_hom_app_app (M : Z.Modules) :
     ((restrictFunctorComp f g).hom.app M).app U = M.presheaf.map (eqToHom (by simp)).op := rfl
 
 @[simp]
-lemma restrictFunctorComp_inv_app_app [IsOpenImmersion g] (M : Z.Modules) :
+lemma restrictFunctorComp_inv_app_app (M : Z.Modules) :
     ((restrictFunctorComp f g).inv.app M).app U = M.presheaf.map (eqToHom (by simp)).op := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along equal morphisms are isomorphic. -/
 def restrictFunctorCongr {f g : X ⟶ Y} (hf : f = g) [IsOpenImmersion f] [IsOpenImmersion g] :
     restrictFunctor f ≅ restrictFunctor g :=
@@ -424,7 +494,7 @@ lemma restrictFunctorCongr_inv_app_app {f g : X ⟶ Y} (hf : f = g) [IsOpenImmer
     ((restrictFunctorCongr hf).inv.app M).app U = M.presheaf.map (eqToHom (by simp [hf])).op := rfl
 
 /-- Restriction along open immersions commutes with taking stalks. -/
-def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
+def restrictStalkNatIso (x : X) :
     restrictFunctor f ⋙ toPresheaf _ ⋙ TopCat.Presheaf.stalkFunctor _ x ≅
     toPresheaf _ ⋙ TopCat.Presheaf.stalkFunctor _ (f x) :=
   haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.adjunctionNhds x)
@@ -433,8 +503,7 @@ def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
       (Functor.Final.colimIso (f.isOpenEmbedding.functorNhds x).op)
 
 @[simp]
-lemma germ_restrictStalkNatIso_hom_app (f : X ⟶ Y) [IsOpenImmersion f]
-    (x : X) (M : Y.Modules) (hxU : x ∈ U) :
+lemma germ_restrictStalkNatIso_hom_app (x : X) (M : Y.Modules) (hxU : x ∈ U) :
     ((restrictFunctor f).obj M).presheaf.germ U _ hxU ≫
       (restrictStalkNatIso f x).hom.app M = M.presheaf.germ _ _ (by simpa) :=
   haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.adjunctionNhds x)
@@ -442,10 +511,10 @@ lemma germ_restrictStalkNatIso_hom_app (f : X ⟶ Y) [IsOpenImmersion f]
     (f.isOpenEmbedding.functorNhds x).op
     ((OpenNhds.inclusion ((ConcreteCategory.hom f.base) x)).op ⋙ M.presheaf) _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma germ_restrictStalkNatIso_inv_app (f : X ⟶ Y) [IsOpenImmersion f]
-    (x : X) (M : Y.Modules) (hxU : x ∈ U) :
+lemma germ_restrictStalkNatIso_inv_app (x : X) (M : Y.Modules) (hxU : x ∈ U) :
     M.presheaf.germ _ _ (by simpa) ≫ (restrictStalkNatIso f x).inv.app M =
       ((restrictFunctor f).obj M).presheaf.germ U _ hxU := by
   rw [← germ_restrictStalkNatIso_hom_app f x M hxU, Category.assoc, ← NatTrans.comp_app,
@@ -453,5 +522,80 @@ lemma germ_restrictStalkNatIso_inv_app (f : X ⟶ Y) [IsOpenImmersion f]
   simp
 
 end Restriction
+
+/-- `sheafCompose` commutes with `pushforward` -/
+noncomputable def sheafComposePushforwardComp {R S : CommRingCat.{u}} (φ : R ⟶ S) :
+    sheafCompose (Opens.grothendieckTopology (Spec S))
+      (ModuleCat.restrictScalars (Spec.map φ).appTop.hom) ⋙
+      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom) ≅
+    sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso S).inv.hom) ⋙
+      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
+  refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
+  · refine NatIso.ofComponents (fun U ↦ ?_) ?_
+    · refine (ModuleCat.restrictScalarsComp'App _ _ _ ?_ _).symm ≪≫
+        (ModuleCat.restrictScalarsComp φ.hom ((Scheme.ΓSpecIso S).inv).hom).app _
+      rw [← CommRingCat.hom_comp, Scheme.ΓSpecIso_inv_naturality, CommRingCat.hom_comp]
+    · cat_disch
+  · cat_disch
+
+/-- Sheaves of modules on `𝒪_X` restricted to `U` are equivalent to sheaves of `𝒪_U`-modules. -/
+noncomputable
+def overEquiv {X : Scheme.{u}} (U : X.Opens) :
+    SheafOfModules (X.ringCatSheaf.over U) ≌ (U : Scheme.{u}).Modules :=
+  TopologicalSpace.Opens.sheafOfModulesEquivOver _ _
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Up to `Scheme.Modules.overEquiv`, `SheafOfModules.overMap` is isomorphic to
+`Scheme.Modules.restrictFunctor`. -/
+noncomputable
+def overMapCompOverEquiv {X : Scheme.{u}} {U V : X.Opens} (f : V ⟶ U) :
+    overMap X.ringCatSheaf f ⋙ (overEquiv V).functor ≅
+      (overEquiv U).functor ⋙ restrictFunctor (X.homOfLE <| leOfHom f) := by
+  haveI : (Hom.opensFunctor (X.homOfLE <| leOfHom f)).IsContinuous
+      (Opens.grothendieckTopology V.toScheme) (Opens.grothendieckTopology U.carrier) :=
+    inferInstanceAs <|
+      (Hom.opensFunctor (X.homOfLE <| leOfHom f)).IsContinuous _
+      (Opens.grothendieckTopology U.toScheme)
+  haveI := U.instIsDenseSubsiteSubtypeMemOverGrothendieckTopologyOverInverseOverEquivalence
+  haveI : (Hom.opensFunctor (X.homOfLE <| leOfHom f)).IsContinuous
+      (Opens.grothendieckTopology ↥V) (Opens.grothendieckTopology U.toScheme) :=
+    inferInstanceAs <| (X.homOfLE <| leOfHom f).opensFunctor.IsContinuous
+      (Opens.grothendieckTopology V.toScheme) (Opens.grothendieckTopology U.toScheme)
+  haveI : ((Opens.overEquivalence V).symm.functor ⋙ Over.map f).IsContinuous
+      (Opens.grothendieckTopology ↥V) ((Opens.grothendieckTopology X).over U) :=
+    Functor.isContinuous_comp _ _ _ (.over (Opens.grothendieckTopology _) _) _
+  haveI : (Opens.overEquivalence U).symm.functor.IsContinuous (Opens.grothendieckTopology U)
+      ((Opens.grothendieckTopology X).over U) :=
+    inferInstanceAs <| U.overEquivalence.inverse.IsContinuous (Opens.grothendieckTopology U.carrier)
+      ((Opens.grothendieckTopology X).over U)
+  haveI : ((X.homOfLE (leOfHom f)).opensFunctor ⋙
+        (Opens.overEquivalence U).symm.functor).IsContinuous (Opens.grothendieckTopology ↥V)
+      ((Opens.grothendieckTopology ↥X).over U) :=
+    Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
+  refine (SheafOfModules.pushforwardComp _ _) ≪≫ ?_ ≪≫ (SheafOfModules.pushforwardComp _ _).symm
+  refine SheafOfModules.pushforwardCongr₂ _ ?_ ?_
+  · refine NatIso.ofComponents (fun W ↦ Over.isoMk (eqToIso ?_) ?_) ?_
+    · suffices U.ι ''ᵁ ((X.homOfLE (leOfHom f)) ''ᵁ W) = V.ι ''ᵁ W by simpa
+      simp [← Scheme.Hom.comp_image]
+    · cat_disch
+    · cat_disch
+  · ext W x
+    suffices X.presheaf.map _ x = ((X.homOfLE <| leOfHom f).appIso _).inv x by simpa
+    rw [Scheme.Hom.appIso_homOfLE_inv]
+    rfl
+
+/-- Up to `Scheme.Modules.overEquiv`, `SheafOfModules.overFunctor` is isomorphic to
+`Scheme.Modules.restrictFunctor`. -/
+noncomputable
+def overFunctorEquiv {X : Scheme.{u}} (U : X.Opens) :
+    overFunctor X.ringCatSheaf U ⋙ (overEquiv U).functor ≅ restrictFunctor U.ι := by
+  have : ((Opens.overEquivalence U).symm.functor ⋙ Over.forget U).IsContinuous
+      (Opens.grothendieckTopology ↥U) (Opens.grothendieckTopology ↥X) :=
+    Functor.isContinuous_comp _ _ _ (.over (Opens.grothendieckTopology _) U) _
+  refine SheafOfModules.pushforwardComp _ _ ≪≫ SheafOfModules.pushforwardCongr ?_
+  simp only [CategoryTheory.Functor.map_id, Opposite.op_unop, Opens.ι_appIso, Iso.refl_inv]
+  rfl
 
 end AlgebraicGeometry.Scheme.Modules

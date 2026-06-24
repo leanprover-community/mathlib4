@@ -189,6 +189,7 @@ end DescentAux
 
 variable (R A B)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
@@ -211,7 +212,7 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     algHom_ext (by simp [hh])
   have (j : _) : Ideal.Quotient.mk (RingHom.ker f ^ 2) (aeval h (P.relation j)) = 0 := by
     suffices ho : σ (aeval P.val (P.relation j)) = 0 by
-      convert ho
+      convert! ho
       exact congr($hdiag _)
     simp
   simp_rw [Ideal.Quotient.eq_zero_iff_mem, hkerf,

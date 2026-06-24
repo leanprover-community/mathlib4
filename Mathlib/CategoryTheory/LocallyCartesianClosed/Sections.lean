@@ -53,7 +53,6 @@ open ChosenPullbacksAlong
 
 variable (I) [ChosenPullbacksAlong (curryRightUnitorHom I)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor mapping an object `X : Over I` to the object of sections of `X` over `I`, defined
 by the following pullback diagram. The functor's mapping of morphisms is induced by `pullbackMap`,
 that is by the universal property of chosen pullbacks.
@@ -88,6 +87,7 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     congr
     simp [braiding_hom_snd])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The uncurrying operation `Hom A (section X) → Hom ((toOver I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
@@ -104,12 +104,14 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     dsimp [uncurry] at *
     rw [Category.assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sectionsCurry_sectionUncurry {X : Over I} {A : C} {v : A ⟶ (sections I).obj X} :
     sectionsCurry (sectionsUncurry v) = v := by
   dsimp [sectionsCurry, sectionsUncurry]
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sectionsUncurry_sectionsCurry {X : Over I} {A : C} {u : (toOver I).obj A ⟶ X} :
     sectionsUncurry (sectionsCurry u) = u := by

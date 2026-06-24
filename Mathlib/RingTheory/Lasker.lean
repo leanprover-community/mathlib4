@@ -263,7 +263,7 @@ namespace Submodule
 
 section Noetherian
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [IsNoetherian R M]
 
@@ -277,7 +277,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
     smul_mem' x y h := by simp [smul_comm _ x, N.smul_mem x h] }
   have hf : Monotone f := by
     intro n m hnm x hx
-    simpa [hnm, smul_smul, ← pow_add] using N.smul_mem (a ^ (m - n)) hx
+    simpa [hnm, smul_smul, ← pow_add] using! N.smul_mem (a ^ (m - n)) hx
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr ‹_› ⟨f, hf⟩
   rcases h with ⟨-, h⟩
   specialize @h (f n) (N + a ^ n • ⊤) ?_
@@ -292,7 +292,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
   replace hn : f n = f (n + 1) := hn (n + 1) n.le_succ
   rw [← h, hn]
   rw [← h] at hab
-  simpa [f, pow_succ, mul_smul] using hab
+  simpa [f, pow_succ, mul_smul] using! hab
 
 variable (R M) in
 /-- The Lasker--Noether theorem: every submodule in a Noetherian module admits a decomposition into

@@ -84,7 +84,7 @@ open Nat
 @[to_additive]
 private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.card α)
     (hpos : 0 < #{a : α | orderOf a = d}) : #{a : α | orderOf a = d} = φ d := by
-  induction d using Nat.strongRec' with | _ d IH
+  induction d using Nat.strong_induction_on with | _ d IH
   rcases Decidable.eq_or_ne d 0 with (rfl | hd0)
   · cases Fintype.card_ne_zero (eq_zero_of_zero_dvd hd)
   rcases Finset.card_pos.1 hpos with ⟨a, ha'⟩
@@ -175,10 +175,11 @@ variable [Group G] [Group G']
 /-- A group is commutative if the quotient by the center is cyclic.
   Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
-      /-- A group is commutative if the quotient by the center is cyclic.
-      Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
-theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
-    (a b : G) : a * b = b * a :=
+/-- A group is commutative if the quotient by the center is cyclic.
+Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
+theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f : G →* G')
+    (hf : f.ker ≤ center G) : IsMulCommutative G := by
+  refine ⟨⟨fun a b ↦ ?_⟩⟩
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
     IsCyclic.exists_generator (α := f.range)
   let ⟨m, hm⟩ := hx ⟨f a, a, rfl⟩
@@ -196,12 +197,31 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
     _ = y ^ m * y ^ n * y ^ (-m) * (y ^ (-n) * b * a) := by rw [mem_center_iff.1 hb]
     _ = b * a := by group
 
+@[deprecated AddMonoidHom.isAddCommutative_of_isAddCyclic_of_ker_le_center (since := "2026-05-26")]
+theorem commutative_of_addCyclic_center_quotient {G G' : Type*} [AddGroup G] [AddGroup G']
+    [IsAddCyclic G'] (f : G →+ G') (hf : f.ker ≤ .center G) (a b : G) : a + b = b + a :=
+  f.isAddCommutative_of_isAddCyclic_of_ker_le_center hf |>.is_comm.comm a b
+
+@[to_additive existing (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
+  (since := "2026-05-26"))]
+theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
+    (a b : G) : a * b = b * a :=
+  f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b
+
 /-- A group is commutative if the quotient by the center is cyclic. -/
 @[to_additive (attr := implicit_reducible)
 /-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G where
-  mul_comm := commutative_of_cyclic_center_quotient f hf
+  mul_comm := f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm
+
+variable (G) in
+/-- If the quotient by the center of a group is cyclic, then the group is commutative. -/
+@[to_additive
+/-- If the quotient by the center of a group is cyclic, then the group is commutative. -/]
+theorem isMulCommutative_of_isCyclic_quotient_center_self [IsCyclic (G ⧸ Subgroup.center G)] :
+    IsMulCommutative G := by
+  simp [(QuotientGroup.mk' <| .center G).isMulCommutative_of_isCyclic_of_ker_le_center]
 
 end QuotientCenter
 
@@ -286,7 +306,7 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     obtain ⟨m, rfl⟩ := hs a
     aesop
   wlog hg' : 0 < g
-  · exact this (g := -g) (by simpa using neg_surjective.comp hs) (by grind) (by grind)
+  · exact this (g := -g) (by simpa using! neg_surjective.comp hs) (by grind) (by grind)
   have hi : (fun n : ℤ ↦ n • g).Injective := injective_zsmul_iff_not_isOfFinAddOrder.mpr
       <| not_isOfFinAddOrder_of_isAddTorsionFree h_ne
   exact ⟨.symm { Equiv.ofBijective _ ⟨hi, hs⟩ with
@@ -573,7 +593,8 @@ variable (G) in
 noncomputable def IsCyclic.mulAutMulEquiv [Group G] [h : IsCyclic G] :
     MulAut G ≃* (ZMod (Nat.card G))ˣ :=
   ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
-    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
+    (MulAutMultiplicative (ZMod (Nat.card G)))).trans
+      (ZMod.AddAutEquivUnits (Nat.card G)).toMultiplicative
 
 variable (G) in
 theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
@@ -666,8 +687,7 @@ lemma monoidHomOfForallMemZpowers_apply_gen :
 
 end monoidHom
 
-include hg
-
+include hg in
 /-- Two group homomorphisms `G →* G'` are equal if and only if they agree on a generator of `G`. -/
 @[to_additive
 /-- Two homomorphisms `G →+ G'` of additive groups are equal if and only if they agree
@@ -678,6 +698,7 @@ lemma MonoidHom.eq_iff_eq_on_generator (f₁ f₂ : G →* G') : f₁ = f₂ ↔
   obtain ⟨n, hn⟩ := mem_zpowers_iff.mp <| hg x
   rw [← hn, map_zpow, map_zpow, H]
 
+include hg in
 /-- Two group isomorphisms `G ≃* G'` are equal if and only if they agree on a generator of `G`. -/
 @[to_additive
 /-- Two isomorphisms `G ≃+ G'` of additive groups are equal if and only if they agree
@@ -690,19 +711,15 @@ section mulEquiv
 
 variable (hg' : ∀ x, x ∈ zpowers g') (h : orderOf g = orderOf g')
 
-set_option backward.proofsInPublic true in
 /-- Given two groups that are generated by elements `g` and `g'` of the same order,
 we obtain an isomorphism sending `g` to `g'`. -/
 @[to_additive
 /-- Given two additive groups that are generated by elements `g` and `g'` of the same order,
 we obtain an isomorphism sending `g` to `g'`. -/]
 noncomputable
-def mulEquivOfOrderOfEq : G ≃* G' := by
-  refine MonoidHom.toMulEquiv (monoidHomOfForallMemZpowers hg h.symm.dvd)
-    (monoidHomOfForallMemZpowers hg' h.dvd) ?_ ?_ <;>
-  refine (MonoidHom.eq_iff_eq_on_generator (by assumption) _ _).mpr ?_ <;>
-  simp only [MonoidHom.coe_comp, Function.comp_apply, monoidHomOfForallMemZpowers_apply_gen,
-    MonoidHom.id_apply]
+def mulEquivOfOrderOfEq : G ≃* G' :=
+  (monoidHomOfForallMemZpowers hg h.symm.dvd).toMulEquiv (monoidHomOfForallMemZpowers hg' h.dvd)
+    (by simp [MonoidHom.eq_iff_eq_on_generator hg]) (by simp [MonoidHom.eq_iff_eq_on_generator hg'])
 
 @[to_additive (attr := simp)]
 lemma mulEquivOfOrderOfEq_apply_gen : mulEquivOfOrderOfEq hg hg' h g = g' :=

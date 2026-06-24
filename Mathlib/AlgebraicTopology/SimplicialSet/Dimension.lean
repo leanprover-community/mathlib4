@@ -16,7 +16,7 @@ i.e. all nondegenerate simplices of `X` are of dimension `< d`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -133,6 +133,6 @@ lemma hasDimensionLT_subcomplex_top_iff (X : SSet.{u}) (d : ℕ) :
 instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT (⊥ : X.Subcomplex) n where
   degenerate_eq_top k hk := by
     ext ⟨x, hx⟩
-    simp at hx
+    tauto
 
 end SSet

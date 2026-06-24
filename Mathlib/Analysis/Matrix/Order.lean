@@ -196,16 +196,9 @@ alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPo
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
 
-@[deprecated IsStrictlyPositive.commute_iff (since := "2025-09-26")]
-theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
-    Commute A B ↔ (A * B).PosDef := by
-  classical
-  rw [hA.isStrictlyPositive.commute_iff hB.isStrictlyPositive, isStrictlyPositive_iff_posDef]
-
-set_option linter.unusedDecidableInType false in
-@[deprecated IsStrictlyPositive.sqrt (since := "2025-09-26")]
-lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    PosDef (CFC.sqrt M) := hM.isStrictlyPositive.sqrt.posDef
+lemma PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
+    A.PosDef ↔ A.det ≠ 0 := by
+  simp [hA.posDef_iff_isUnit, isUnit_iff_isUnit_det]
 
 section kronecker
 
@@ -279,14 +272,6 @@ theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
 
 end hadamard
 
-/--
-A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
--/
-@[deprecated CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self (since := "2025-09-28")]
-lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
-    PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B :=
-  isStrictlyPositive_iff_posDef.symm.trans CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
-
 section tracePositiveLinearMap
 variable (n α 𝕜 : Type*) [Fintype n] [Semiring α] [RCLike 𝕜] [Module α 𝕜]
 
@@ -354,7 +339,4 @@ def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
 
 @[deprecated (since := "2025-11-18")] alias PosDef.matrixNormedAddCommGroup :=
   toMatrixNormedAddCommGroup
-@[deprecated (since := "2025-11-12")] alias PosDef.matrixInnerProductSpace :=
-  toMatrixInnerProductSpace
-
 end Matrix
