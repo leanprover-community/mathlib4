@@ -19,7 +19,7 @@ some basic API for working with them. We define an algebraic cycle on a scheme `
 coefficients in a type `R` to be functions `c : X → R` whose support is locally finite.
 
 Here we're making use of the equivalence between irreducible closed subsets of a scheme and their
-generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
+generic points in order to reuse the API in `Function.locallyFinsupp`, hence the slightly
 nonstandard definition.
 -/
 
