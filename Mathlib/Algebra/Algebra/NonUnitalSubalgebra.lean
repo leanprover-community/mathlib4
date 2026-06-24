@@ -1094,10 +1094,10 @@ theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 
 /-- The center of a non-unital algebra is commutative and associative -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) where
+instance (priority := 75) center.instNonUnitalCommSemiring :
+    NonUnitalCommSemiring (center R A) where
   mul_assoc := Subsemigroup.center.commSemigroup.mul_assoc
   mul_comm := Subsemigroup.center.commSemigroup.mul_comm
-  -- inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center A)
 
 instance center.instNonUnitalCommRing {A : Type*} [NonUnitalNonAssocRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
@@ -1123,8 +1123,15 @@ end NonUnitalNonAssocSemiring
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
   [SMulCommClass R A A]
 
--- no instance diamond, as the `npow` field isn't present in the non-unital case.
-example : center.instNonUnitalCommSemiring.toNonUnitalSemiring =
+/-- When the ambient algebra is associative, use the inherited subsemiring structure so that
+positive powers agree definitionally with the ambient powers. -/
+instance center.instNonUnitalCommSemiringOfNonUnitalSemiring :
+    NonUnitalCommSemiring (center R A) where
+  __ := NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A)
+  mul_comm := Subsemigroup.center.commSemigroup.mul_comm
+
+-- no instance diamond
+example : (inferInstance : NonUnitalCommSemiring (center R A)).toNonUnitalSemiring =
     NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) := by
   with_reducible_and_instances rfl
 

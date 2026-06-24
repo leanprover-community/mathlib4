@@ -237,7 +237,7 @@ theorem center_toSubsemigroup :
   rfl
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) where
+instance (priority := 75) center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) where
   __ := NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R)
   __ := Subsemigroup.center.commSemigroup.toCommMagma
   mul_assoc := Subsemigroup.center.commSemigroup.mul_assoc
@@ -272,21 +272,16 @@ section NonUnitalSemiring
 
 variable {R : Type*} [NonUnitalSemiring R]
 
--- The issue is, once `R` becomes associative, then it inherits a pnat pow ...
-example {R} [NonUnitalSemiring R] (x : center R) (n : ℕ+) :
-    (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)).toSemigroup.ppow n n.prop x =
-    x ^ n :=
-  rfl
-
--- But the underlying center (subsemigroup) uses the pnat pow from the smaller semigroup instance
-example {R} [NonUnitalSemiring R] (x : center R) (n : ℕ+) :
-    ((center.instNonUnitalCommSemiring _).toNonUnitalSemiring).toSemigroup.ppow n n.prop x =
-    x ^ n :=
-  rfl
+/-- When the ambient semiring is associative, use the inherited subsemiring structure so that
+positive powers agree definitionally with the ambient powers. -/
+instance center.instNonUnitalCommSemiringOfNonUnitalSemiring :
+    NonUnitalCommSemiring (center R) where
+  __ := NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)
+  mul_comm := Subsemigroup.center.commSemigroup.mul_comm
 
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
-    ((center.instNonUnitalCommSemiring _).toNonUnitalSemiring).toSemigroup.ppow =
+    ((inferInstance : NonUnitalCommSemiring (center R)).toNonUnitalSemiring).toSemigroup.ppow =
       (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)).toSemigroup.ppow := by
   with_reducible_and_instances rfl
 
