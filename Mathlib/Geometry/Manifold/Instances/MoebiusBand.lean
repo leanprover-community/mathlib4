@@ -216,38 +216,6 @@ private theorem det_fderiv_prodMap {E' F' : Type*}
       (L.hasFDerivAt.comp _ (ContinuousLinearMap.snd ℝ E' F').hasFDerivAt)
   rw [h.fderiv, ContinuousLinearMap.coe_prodMap, LinearMap.det_prodMap]
 
-/-- At a zero-section point of MoebiusBand, the determinant of the tangent coordChangeL
-equals the product of the base tangent coordChange determinant and the bundle coordChange
-determinant. This holds because the Jacobian is block-diagonal at zero-section points. -/
-private theorem det_coordChangeL_eq_det_tangentBundleCore_coordChange
-    (p q z : MoebiusBand)
-    (hmem : z ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-      (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet) :
-    LinearMap.det (Bundle.Trivialization.coordChangeL ℝ
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p)
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q) z).toLinearEquiv.toLinearMap =
-    LinearMap.det ((tangentBundleCore ((𝓡 1).prod 𝓘(ℝ, ℝ)) MoebiusBand).coordChange
-      ((tangentBundleCore ((𝓡 1).prod 𝓘(ℝ, ℝ)) MoebiusBand).indexAt p)
-      ((tangentBundleCore ((𝓡 1).prod 𝓘(ℝ, ℝ)) MoebiusBand).indexAt q) z :
-        (EuclideanSpace ℝ (Fin 1) × ℝ) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1) × ℝ) := by
-  set I := (𝓡 1).prod 𝓘(ℝ, ℝ) with hI
-  set E1 := EuclideanSpace ℝ (Fin 1) with hE1
-  set Z := tangentBundleCore I MoebiusBand
-  haveI : IsManifold I 1 MoebiusBand := IsManifold.of_le (n := ⊤) le_top
-  change LinearMap.det (Bundle.Trivialization.coordChangeL ℝ
-    (trivializationAt (E1 × ℝ) (TangentSpace I) p)
-    (trivializationAt (E1 × ℝ) (TangentSpace I) q) z).toLinearEquiv.toLinearMap =
-    LinearMap.det (Z.coordChange (Z.indexAt p) (Z.indexAt q) z : (E1 × ℝ) →ₗ[ℝ] E1 × ℝ)
-  congr 1
-  apply LinearMap.ext
-  intro v
-  change (Bundle.Trivialization.coordChangeL ℝ _ _ z) v = Z.coordChange _ _ z v
-  exact Z.trivializationAt_coordChange_eq hmem v
-
 private theorem extChartAt_zeroSection_eq
     (p z : MoebiusBand) (hz : z.snd = 0) :
     extChartAt ((𝓡 1).prod 𝓘(ℝ, ℝ)) p z =
@@ -545,10 +513,7 @@ private theorem det_tangent_coordChangeL_eq_mul
       (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
       (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet) :
-    LinearMap.det (Bundle.Trivialization.coordChangeL ℝ
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ) (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p)
-      (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ) (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q)
-      z).toLinearEquiv.toLinearMap =
+    LinearMap.det (tangentCoordChange ((𝓡 1).prod 𝓘(ℝ, ℝ)) p q z).toLinearMap =
     LinearMap.det (tangentCoordChange (𝓡 1) p.proj q.proj z.proj :
       EuclideanSpace ℝ (Fin 1) →ₗ[ℝ] EuclideanSpace ℝ (Fin 1)) *
     LinearMap.det (moebiusBundleCore.coordChange (moebiusBundleCore.indexAt p.proj)
@@ -563,11 +528,9 @@ private theorem det_tangent_coordChangeL_eq_mul
             (moebiusBundleCore.indexAt q.proj) z.proj) := by
     simpa [I] using fderiv_extChart_transition_eq_prodMap p q z hz hmem.1 hmem.2
   have hcl_det :
-      LinearMap.det (Bundle.Trivialization.coordChangeL ℝ
-        (trivializationAt (E1 × ℝ) (TangentSpace I) p)
-        (trivializationAt (E1 × ℝ) (TangentSpace I) q) z).toLinearEquiv.toLinearMap =
+      LinearMap.det (tangentCoordChange I p q z).toLinearMap =
       LinearMap.det (Z.coordChange (Z.indexAt p) (Z.indexAt q) z : (E1 × ℝ) →ₗ[ℝ] E1 × ℝ) := by
-    simpa [I, Z] using det_coordChangeL_eq_det_tangentBundleCore_coordChange p q z hmem
+    simp only [hZ, tangentCoordChange, tangentBundleCore_indexAt]
   rw [hcl_det]
   have hZ_eq : (Z.coordChange (Z.indexAt p) (Z.indexAt q) z : (E1 × ℝ) →L[ℝ] E1 × ℝ) =
       (tangentCoordChange (𝓡 1) p.proj q.proj z.proj).prodMap
@@ -1077,14 +1040,8 @@ private theorem exists_tangentCoordChangeL_neg_det :
         (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
         (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
         (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet),
-  0 < LinearMap.det ((trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).coordChangeL ℝ
-        (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q) zU).toLinearEquiv.toLinearMap ∧
-    LinearMap.det ((trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).coordChangeL ℝ
-        (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
-        (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q) zL).toLinearEquiv.toLinearMap < 0 ∧
+  0 < LinearMap.det (tangentCoordChange ((𝓡 1).prod 𝓘(ℝ, ℝ)) p q zU).toLinearMap ∧
+    LinearMap.det (tangentCoordChange ((𝓡 1).prod 𝓘(ℝ, ℝ)) p q zL).toLinearMap < 0 ∧
     IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
         (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet) ∧
     IsPreconnected (Set.univ : Set ↥(trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
