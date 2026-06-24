@@ -390,7 +390,7 @@ variable (F : HomotopyCategory.Plus C ⥤ H)
 variable {C} in
 omit [EnoughInjectives C] in
 lemma localizerMorphism_derives : (localizerMorphism C).Derives F :=
-  MorphismProperty.isomorphisms_isInvertedBy _
+  MorphismProperty.isInvertedBy_isomorphisms _
 
 /-- Any functor from the homotopy category `K^+` has a right derived functor
 with respect to quasi-isomorphisms. -/
