@@ -202,7 +202,7 @@ instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   infer_instance
 
 lemma isZero_homology_of_isGE
-    (X : DerivedCategory.Plus C) (n : ℤ) [X.IsGE n] (i : ℤ) (hi : i < n) :
+    (X : Plus C) (n : ℤ) [X.IsGE n] (i : ℤ) (hi : i < n) :
     IsZero ((homologyFunctor C i).obj X) :=
   (ι.obj X).isZero_of_isGE n i hi
 
