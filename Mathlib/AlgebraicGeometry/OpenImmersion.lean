@@ -241,7 +241,7 @@ theorem appIso_hom' (U) :
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma appIso_hom_naturality {U V : X.Opens} (i : op U ⟶ op V) :
-    Y.presheaf.map (f.opensFunctor.op.map i) ≫ (f.appIso V).hom =
+    dsimp% Y.presheaf.map (f.opensFunctor.op.map i) ≫ (f.appIso V).hom =
       (f.appIso U).hom ≫ X.presheaf.map i := by
   simp [← cancel_mono (f.appIso V).inv]
 
@@ -326,6 +326,13 @@ instance isOpenImmersion_SpecMap_localizationAway {R : CommRingCat.{u}} (f : R) 
 instance {R} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
   isOpenImmersion_SpecMap_localizationAway (R := .of R) f
+
+@[simp]
+lemma Hom.opensRange_localizationAway {R : CommRingCat.{u}} (g : R) :
+    (Spec.map <| CommRingCat.ofHom <| algebraMap R (Localization.Away g)).opensRange =
+      PrimeSpectrum.basicOpen g := by
+  rw [SetLike.ext'_iff]
+  exact PrimeSpectrum.localization_away_comap_range _ g
 
 lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing R] [CommRing S]
     [Algebra R S] (f : R) [IsLocalization.Away f S] :

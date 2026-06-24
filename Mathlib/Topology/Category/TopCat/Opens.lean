@@ -343,7 +343,7 @@ lemma Topology.IsOpenEmbedding.functor_obj_injective {X Y : TopCat.{u}} {f : X �
     (hf : IsOpenEmbedding f) : Function.Injective hf.functor.obj :=
   fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.injective (congr_arg (↑· : Opens Y → Set Y) e))
 
-lemma Topology.IsOpenEmbedding.functor_iInf {X Y : TopCat.{u}} (f : X ⟶ Y)
+lemma Topology.IsOpenEmbedding.functor_obj_iInf {X Y : TopCat.{u}} (f : X ⟶ Y)
     (hf : Topology.IsOpenEmbedding f) {ι : Type*} [Nonempty ι] [Finite ι]
     (g : ι → TopologicalSpace.Opens X) :
     hf.functor.obj (⨅ i, g i) = ⨅ i, hf.functor.obj (g i) := by
@@ -482,7 +482,7 @@ instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι 
   intro g
   refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
   refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
-  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_iInf]
+  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_obj_iInf]
   apply isGLB_iInf
 
 end TopologicalSpace.Opens
