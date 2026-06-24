@@ -211,7 +211,7 @@ theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
     Summable (fun (n : ℕ) ↦ f n ) :=
   summable_of_integrable_eventually (N := 0) (mod_cast anti) (mod_cast integrable) (mod_cast nonneg)
 
-open Filter MeasureTheory Finset in
+open Filter Finset in
 theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici (N : ℝ)))
     (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
     ∑' (n : ℕ),  f (n + N + 1 : ℕ) ≤ ∫ x in Ioi (N : ℝ), f x := by
