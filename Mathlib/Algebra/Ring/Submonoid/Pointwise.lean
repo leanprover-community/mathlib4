@@ -262,6 +262,18 @@ protected def semigroup : Semigroup (AddSubmonoid R) where
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.semigroup
 
+lemma closure_ppow (s : Set R) (n : ℕ+) : closure s ^ n = closure (s ^ n) := by
+  induction n using Semigroup.ppow_induction s with
+  | h1 => rw [ppow_one]
+  | hsucc n IH => rw [ppow_mk_add_one, IH, closure_mul_closure]
+
+lemma ppow_eq_closure_ppow_set (s : AddSubmonoid R) (n : ℕ+) :
+    s ^ n = closure ((s : Set R) ^ n) := by
+  rw [← closure_ppow, closure_eq]
+
+lemma ppow_subset_ppow {s : AddSubmonoid R} {n : ℕ+} : (↑s : Set R) ^ n ⊆ ↑(s ^ n) :=
+  (ppow_eq_closure_ppow_set s n).symm ▸ subset_closure
+
 end NonUnitalSemiring
 
 section Semiring

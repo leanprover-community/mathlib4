@@ -300,9 +300,28 @@ theorem iSup_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) *
 theorem mul_iSup (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
   smul_iSup
 
+instance : Pow (Submodule R A) ℕ+ where
+  pow s n := ppowRec n n.prop s -- as opposed to `s.toAddSubmonoid ^ n`
+
+@[simp]
+protected theorem ppow_zero : M ^ (1 : ℕ+) = M := rfl
+
+protected theorem ppow_succ {n : ℕ+} : M ^ (n + 1) = M ^ n * M := by
+  rcases n with ⟨_|n, hn⟩
+  · contradiction
+  · rfl
+
+private protected theorem ppow_mk_add_two (n : ℕ) :
+    M ^ (PNat.mk (n + 2) (Nat.succ_pos _)) = M ^ (PNat.mk (n + 1) (Nat.succ_pos _)) * M :=
+  rfl
+
 /-- Sub-`R`-modules of an `R`-module form an idempotent semiring. -/
 instance : NonUnitalSemiring (Submodule R A) where
   __ := toAddSubmonoid_injective.semigroup _ mul_toAddSubmonoid
+    (fun x n => by
+      induction n using Semigroup.ppow_induction x.toAddSubmonoid with
+      | h1 => simp
+      | hsucc n IH => rw [Submodule.ppow_mk_add_two, mul_toAddSubmonoid, IH])
   zero_mul := bot_mul
   mul_zero := mul_bot
   left_distrib := mul_sup
