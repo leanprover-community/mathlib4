@@ -682,12 +682,9 @@ protected theorem MulHom.map_mul [Mul M] [Mul N] (f : M →ₙ* N) (a b : M) : f
 @[to_additive]
 protected theorem MulHom.map_ppow {M N : Type*} [Semigroup M] [Semigroup N] (f : M →ₙ* N) (a : M)
     (n : ℕ+) : f (a ^ n) = f a ^ n := by
-  rcases n with ⟨n, hn⟩
-  simp only [← Semigroup.ppow_eq_pow, PNat.mk_coe]
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.pos_iff_ne_zero.1 hn)
-  induction k with
-  | zero => simp only [Semigroup.ppow_one]
-  | succ k IH => simp only [Semigroup.ppow_succ, MulHom.map_mul, IH (Nat.succ_pos _)]
+  induction n using Semigroup.ppow_induction a
+  · simp
+  · simp [ppow_mk_add_one _ (Nat.succ_ne_zero _), *]
 
 /-- If `f` is a monoid homomorphism then `f (a * b) = f a * f b`. -/
 @[to_additive /-- If `f` is an additive monoid homomorphism then `f (a + b) = f a + f b`. -/]

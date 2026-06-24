@@ -372,14 +372,9 @@ variable [SemigroupWithZero M₀]
 variable [Preorder M₀] {a b : M₀}
 
 @[simp] lemma ppow_nonneg [PosMulMono M₀] (n : ℕ+) (ha : 0 ≤ a) : 0 ≤ a ^ n := by
-  rcases n with ⟨n, hn⟩
-  simp only [← Semigroup.ppow_eq_pow, PNat.mk_coe]
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'
-  induction k with
-  | zero => simp [Semigroup.ppow_one, ha]
-  | succ k IH =>
-    rw [Semigroup.ppow_succ]
-    exact mul_nonneg ha (IH Nat.succ_pos')
+  induction n using Semigroup.ppow_induction a
+  · exact ha
+  · exact mul_nonneg ha ‹_›
 
 end SemigroupWithZero
 

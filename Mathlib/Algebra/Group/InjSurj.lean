@@ -55,10 +55,7 @@ protected abbrev semigroup [Pow M₁ ℕ+] [Semigroup M₂] (f : M₁ → M₂) 
   ppow := fun n hn x => (x ^ (PNat.mk n hn : ℕ+))
   ppow_one := fun x => hf <| by simp [ppow, ppow_one]
   ppow_succ := fun n x => hf <| by
-    rw [ppow, mul, ppow]
-    change Semigroup.ppow (x + 2) _ _ = _
-    rw [Semigroup.ppow_succ]
-    rfl
+    simp [ppow, mul, ← Semigroup.ppow_eq_pow, Semigroup.ppow_succ]
 
 /-- A type endowed with `*` is a commutative magma, if it admits a surjective map that preserves
 `*` from a commutative magma. -/
@@ -345,11 +342,7 @@ protected abbrev semigroup [Pow M₂ ℕ+] [Semigroup M₁] (f : M₁ → M₂) 
   ppow := fun n hn x => x ^ (PNat.mk n hn : ℕ+)
   ppow_one := hf.forall.2 fun x => by simp [← ppow]
   ppow_succ := hf.forall.2 fun x n => by
-    rw [← ppow, ← ppow, ← mul]
-    congr
-    change Semigroup.ppow (n + 2) _ _ = _
-    rw [Semigroup.ppow_succ]
-    rfl
+    simp [← ppow, ← mul, ← Semigroup.ppow_eq_pow, Semigroup.ppow_succ]
 
 /-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
 `*` from a commutative semigroup. See note [reducible non-instances]. -/

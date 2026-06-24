@@ -325,7 +325,7 @@ end SMul
 
 instance addGroup : AddGroup (CauSeq β abv) :=
   Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
 
@@ -334,6 +334,7 @@ instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
 instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
   Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
   coe_add coe_neg coe_sub
+  (by intros; rfl)
   (by intros; rfl)
   (by intros; rfl)
   (by intros; rfl)
@@ -354,9 +355,26 @@ theorem pow_apply (f : CauSeq β abv) (n i : ℕ) : (f ^ n) i = f i ^ n :=
 theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 
+instance : Pow (CauSeq β abv) ℕ+ :=
+  ⟨fun f n =>
+    (ofEq (ppowRec n n.prop f) fun i => f i ^ n) <| fun i ↦ by
+      refine Semigroup.ppow_induction (f i) n ?_ ?_ <;> simp +contextual [ppowRec]⟩
+
+@[simp, norm_cast]
+theorem coe_ppow (f : CauSeq β abv) (n : ℕ+) : ⇑(f ^ n) = (f : ℕ → β) ^ n :=
+  rfl
+
+@[simp, norm_cast]
+theorem ppow_apply (f : CauSeq β abv) (n : ℕ+) (i : ℕ) : (f ^ n) i = f i ^ n :=
+  rfl
+
+theorem const_ppow (x : β) (n : ℕ+) : const (x ^ n) = const x ^ n :=
+  rfl
+
 instance ring : Ring (CauSeq β abv) :=
   Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow coe_pow
+    (fun _ => rfl) fun _ => rfl
 
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with

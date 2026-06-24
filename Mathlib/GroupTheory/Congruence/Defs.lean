@@ -569,14 +569,11 @@ section Monoids
 @[to_additive /-- Additive congruence relations preserve positive natural scaling. -/]
 protected theorem ppow {M : Type*} [Semigroup M] (c : Con M) (n : ℕ+) {w x} (h : c w x) :
     c (w ^ n) (x ^ n) := by
-  rcases n with ⟨n, hn⟩
-  simp only [← Semigroup.ppow_eq_pow, PNat.mk_coe]
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'
-  induction k with
-  | zero => simp [Semigroup.ppow_one, h]
-  | succ k IH =>
-    rw [Semigroup.ppow_succ, Semigroup.ppow_succ]
-    exact c.mul h (IH Nat.succ_pos')
+  induction n using Semigroup.ppow_induction w generalizing x with
+  | h1 => simp [h]
+  | hsucc n IH =>
+    rw [ppow_mk_add_one x (Nat.succ_ne_zero _)]
+    exact c.mul h (IH h)
 
 @[to_additive]
 instance {M : Type*} [Semigroup M] (c : Con M) : Pow c.Quotient ℕ+ where

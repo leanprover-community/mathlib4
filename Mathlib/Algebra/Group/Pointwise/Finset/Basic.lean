@@ -724,16 +724,10 @@ scoped[Pointwise] attribute [instance] Finset.psmul Finset.ppow Finset.nsmul Fin
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_ppow [Semigroup α] (s : Finset α) (n : ℕ+) : ↑(s ^ n) = (s : Set α) ^ n := by
-  change ↑(ppowRec n n.prop s) = (s : Set α) ^ n
-  rw [← Semigroup.ppow_eq_pow]
-  rcases n with ⟨_|n, hn⟩
-  · contradiction
-  simp only [_root_.mk_coe]
-  induction n with
-  | zero => rfl
-  | succ n IH =>
-    rw [ppowRec]
-    simp [IH Nat.succ_pos', Semigroup.ppow_succ]
+  change ↑(ppowRec _ _ s) = (s : Set α) ^ _
+  induction n using Semigroup.ppow_induction (s : Set α)
+  · rfl
+  · simp_all [ppowRec]
 
 /-- `Finset α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive (attr := implicit_reducible)
