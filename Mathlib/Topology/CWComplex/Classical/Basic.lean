@@ -1095,14 +1095,11 @@ def CWComplex.OfDiscreteClosed (hD : IsDiscrete D) (Dc : IsClosed D) : CWComplex
     | (_ + 1) => i.elim
   pairwiseDisjoint' := by
     simp_rw [PairwiseDisjoint, Set.Pairwise, Function.onFun]
-    exact fun ⟨n, j⟩ _ ⟨m, i⟩ _ ne ↦  match n with
-      | 0 => match m with
-        | 0 => by
-          simp_all [Subtype.coe_injective.ne]
-        | (_ + 1) => i.elim
-      | (_ + 1) => match m with
-        | 0 => by tauto
-        | (_ + 1) => i.elim
+    rintro ⟨_|n, j⟩ _ ⟨_|m, i⟩ _ ne
+    · simp_all [Subtype.coe_injective.ne]
+    · exact i.elim
+    · tauto
+    · exact i.elim
   mapsTo' n i := match n with
     | 0 => by simp [Matrix.zero_empty, sphere_eq_empty_of_subsingleton]
     | (_ + 1) => i.elim

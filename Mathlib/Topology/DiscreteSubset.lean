@@ -66,14 +66,14 @@ lemma discreteTopology_subtype_iff' {S : Set Y} :
   grind
 
 /-- A set `s` is discrete iff for every `y ∈ s` there is an open `u` with `u ∩ s = {y}`.
-See `isDiscrete_iff_forall_exists_isOpen'` for a related version of this with subsets. -/
-theorem isDiscrete_iff_forall_exists_isOpen {s : Set Y} :
+See `isDiscrete_iff_forall_subset_exists_isOpen'` for a related version of this with subsets. -/
+theorem isDiscrete_iff_forall_mem_exists_isOpen {s : Set Y} :
     IsDiscrete s ↔ ∀ y ∈ s, ∃ u, IsOpen u ∧ u ∩ s = {y} := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff']
 
 /-- A set `s` is discrete iff for every `t ⊆ s` there is an open `u` with `u ∩ s = t`.
-See `isDiscrete_iff_forall_exists_isOpen` for a similar version of this with singletons. -/
-theorem isDiscrete_iff_forall_exists_isOpen' {s : Set X} :
+See `isDiscrete_iff_forall_mem_exists_isOpen` for a similar version of this with singletons. -/
+theorem isDiscrete_iff_forall_subset_exists_isOpen {s : Set X} :
     IsDiscrete s ↔ ∀ t ⊆ s, ∃ u, IsOpen u ∧ u ∩ s = t := by
   simp_rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_forall_isOpen,
     isOpen_induced_iff, ← image_eq_image (Subtype.val_injective), Subtype.image_preimage_coe,
@@ -82,7 +82,7 @@ theorem isDiscrete_iff_forall_exists_isOpen' {s : Set X} :
 /-- A set `s` is discrete iff for every `t ⊆ s` there is a closed `u` with `u ∩ s = t`. -/
 theorem isDiscrete_iff_forall_exists_isClosed {S : Set X} :
     IsDiscrete S ↔ ∀ s ⊆ S, ∃ U, IsClosed U ∧ U ∩ S = s := by
-  rw [isDiscrete_iff_forall_exists_isOpen']
+  rw [isDiscrete_iff_forall_subset_exists_isOpen]
   constructor <;> intro h s sS
   · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
     exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
