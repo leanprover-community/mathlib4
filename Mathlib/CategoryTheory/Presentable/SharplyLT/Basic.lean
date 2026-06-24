@@ -14,7 +14,8 @@ public import Mathlib.Order.TransfiniteIteration
 
 In this file, we introduce the predicate `Cardinal.SharplyLT`. Given two regular
 cardinals `κ₁ < κ₂`, this condition can be described in different ways:
-(i) the category `IsCardinalAccessibleCategory C κ₁` is `κ₂`-accessible;
+(i) the category `CardinalFilteredPoset κ₁` (of `κ₁`-directed partially ordered
+  types, with order embeddings as morphisms), is `κ₂`-accessible;
 (ii) any `κ₁`-accessible category is `κ₂`-accessible.
 (iii) for any type `X` of cardinality `< κ₂`, there exists a cofinal set of
   cardinality `< κ₂` in the subtype of subsets of `X` of cardinality `< κ₁`;
