@@ -684,7 +684,7 @@ protected theorem MulHom.map_ppow {M N : Type*} [Semigroup M] [Semigroup N] (f :
     (n : ℕ+) : f (a ^ n) = f a ^ n := by
   induction n using Semigroup.ppow_induction a
   · simp
-  · simp [ppow_mk_add_one _ (Nat.succ_ne_zero _), *]
+  · simp [ppow_mk_add_one, *]
 
 /-- If `f` is a monoid homomorphism then `f (a * b) = f a * f b`. -/
 @[to_additive /-- If `f` is an additive monoid homomorphism then `f (a + b) = f a + f b`. -/]

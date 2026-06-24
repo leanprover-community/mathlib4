@@ -289,7 +289,7 @@ lemma ppow_coe_mem {M A : Type*} [Semigroup M] [SetLike A M] [hA : MulMemClass A
   induction n with
   | zero => simp [ppow_one]
   | succ n IH =>
-    rw [ppow_mk_add_one _ (Nat.succ_ne_zero _)]
+    rw [ppow_mk_add_one]
     exact mul_mem x.2 (IH Nat.succ_pos')
 
 -- lower priority so other instances are found first

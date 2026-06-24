@@ -572,7 +572,7 @@ protected theorem ppow {M : Type*} [Semigroup M] (c : Con M) (n : ℕ+) {w x} (h
   induction n using Semigroup.ppow_induction w generalizing x with
   | h1 => simp [h]
   | hsucc n IH =>
-    rw [ppow_mk_add_one x (Nat.succ_ne_zero _)]
+    rw [ppow_mk_add_one x]
     exact c.mul h (IH h)
 
 @[to_additive]

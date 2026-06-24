@@ -61,7 +61,7 @@ lemma Semigroup.ppow_induction [Semigroup M] {p : ℕ+ → M → Prop} (x : M) (
   simpa [q, PNat.mk] using hq k
 
 @[to_additive]
-lemma ppow_mk_add_one [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0) :
+lemma ppow_mk_add_one [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0 := by exact Nat.succ_ne_zero _) :
     x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x * x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) := by
   cases n
   · contradiction
@@ -90,7 +90,7 @@ lemma mul_ppow (x y : M) (n : ℕ+) : (x * y) ^ n = x ^ n * y ^ n := by
   induction n using Semigroup.ppow_induction (x * y) with
   | h1 => simp
   | hsucc n IH =>
-    rw [ppow_mk_add_one x (Nat.succ_ne_zero n), ppow_mk_add_one y (Nat.succ_ne_zero n),
+    rw [ppow_mk_add_one x, ppow_mk_add_one y,
         IH, mul_assoc, mul_comm y, ← mul_assoc, ← mul_assoc, mul_comm y, ← mul_assoc]
 
 end CommSemigroup
