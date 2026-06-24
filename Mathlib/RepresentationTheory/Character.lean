@@ -37,7 +37,7 @@ defined in `Mathlib/CategoryTheory/Simple.lean`
 
 noncomputable section
 
-universe u
+universe u v
 
 open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation Module
 
@@ -47,7 +47,7 @@ namespace FDRep
 
 section Monoid
 
-variable {G : Type u} [Monoid G]
+variable {G : Type v} [Monoid G]
 
 /-- The character of a representation `V : FDRep k G` is the function associating to `g : G` the
 trace of the linear map `V.ρ g`. -/
@@ -64,7 +64,7 @@ theorem char_one (V : FDRep k G) : V.character 1 = Module.finrank k V := by
 /-- The character is multiplicative under the tensor product. -/
 @[simp]
 theorem char_tensor (V W : FDRep k G) : (V ⊗ W).character = V.character * W.character := by
-  ext g; convert trace_tensorProduct' (V.ρ g) (W.ρ g)
+  ext g; convert! trace_tensorProduct' (V.ρ g) (W.ρ g)
 
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso {V W : FDRep k G} (i : V ≅ W) : V.character = W.character := by
@@ -76,7 +76,7 @@ end Monoid
 
 section Group
 
-variable {G : Type u} [Group G]
+variable {G : Type v} [Group G]
 
 /-- The character of a representation is constant on conjugacy classes. -/
 @[simp]
@@ -119,7 +119,7 @@ end Group
 
 section Orthogonality
 
-variable {G : Type u} [Group G] [IsAlgClosed k]
+variable {G : Type v} [Group G] [IsAlgClosed k]
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -163,7 +163,7 @@ theorem char_one (ρ : Representation k G V) : ρ.character 1 = Module.finrank k
 /-- The character is multiplicative under the tensor product. -/
 @[simp]
 theorem char_tensor : (tprod ρ σ).character = ρ.character * σ.character := by
-  ext g; convert trace_tensorProduct' (ρ g) (σ g)
+  ext g; convert! trace_tensorProduct' (ρ g) (σ g)
 
 omit [FiniteDimensional k V] [FiniteDimensional k W] in
 variable {ρ σ} in
