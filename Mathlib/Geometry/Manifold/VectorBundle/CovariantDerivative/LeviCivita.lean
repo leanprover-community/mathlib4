@@ -159,9 +159,9 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     ⟪∇ X Y, Z⟫ x =
       (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
-      - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
-      - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
-      + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2 := by
+      - ⟪Y, VectorField.mlieBracket I X Z⟫ x
+      - ⟪Z, VectorField.mlieBracket I Y X⟫ x
+      + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2 := by
   -- use the compatibility in three ways
   have eq1a := h.1.mvfderiv_inner_eq X hY hZ
   have eq2a := h.1.mvfderiv_inner_eq Y hZ hX
@@ -194,9 +194,9 @@ variable (X Y Z) in
 If `∇` is the Levi-Civita connection on `TM`, this formula will express `⟨∇ X Y, Z⟩`. -/
 noncomputable def leviCivitaAux (x : M) : ℝ :=
   (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
-  - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
-  - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
-  + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2
+  - ⟪Y, VectorField.mlieBracket I X Z⟫ x
+  - ⟪Z, VectorField.mlieBracket I Y X⟫ x
+  + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2
 
 /-- `leviCivitaAux` is tensorial with respect to its first argument. -/
 theorem leviCivitaAux_tensorial₁ [FiniteDimensional ℝ E]

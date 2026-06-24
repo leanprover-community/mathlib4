@@ -302,7 +302,7 @@ lemma HasMFDerivWithinAt.smul
     HasMFDerivAt[s] (f • g) x (f x • g'_ + gx ∘L f') := by
   constructor
   · exact hs.1.smul hg.1
-  · simpa using hs.2.smul hg.2
+  · simpa using! hs.2.smul hg.2
 
 -- TODO: investigate inlining this proof entirely!
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
@@ -450,17 +450,6 @@ private lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDif
 end smul
 
 /-! ### Exterior derivative of a vector-valued function -/
-
-variable (I) in
-/-- The exterior derivative of a vector-valued function on `M` within a set,
-as a section of the cotangent bundle.
-
-Future: this could be generalised to functions into additive torsors over abelian Lie groups
--/
-@[expose]
-noncomputable def mvfderivWithin (g : M → F) (s : Set M) :
-    Π x : M, TangentSpace I x →L[𝕜] F :=
-  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv[s] g x)
 
 variable (I) in
 /-- `mvfderivWithin I J f s x` is the `mfderiv` of a vector-valued function `f` on `M` at `x`
