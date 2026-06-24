@@ -167,24 +167,14 @@ theorem exists_vecMul_eq_zero_iff [DecidableEq n] : (∃ v ≠ 0, v ᵥ* M = 0) 
   simpa only [← M.det_transpose, ← mulVec_transpose] using exists_mulVec_eq_zero_iff
 
 theorem nondegenerate_iff_det_ne_zero [DecidableEq n] : Nondegenerate M ↔ M.det ≠ 0 := by
-  refine ⟨?_, nondegenerate_of_det_ne_zero⟩
-  rw [ne_eq, ← exists_vecMul_eq_zero_iff]
-  push Not
-  intro hM v hv hMv
-  obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
-  simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq] at hwMv
+  grind [nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero, exists_mulVec_eq_zero_iff,
+    exists_vecMul_eq_zero_iff]
 
 lemma separatingLeft_iff_det_ne_zero [DecidableEq n] : SeparatingLeft M ↔ M.det ≠ 0 := by
-  refine ⟨fun h hc ↦ ?_, fun h ↦ (nondegenerate_of_det_ne_zero h).1⟩
-  obtain ⟨v, hvne, hv⟩ := exists_vecMul_eq_zero_iff.mpr hc
-  refine hvne (separatingLeft_def.mp h v ?_)
-  simp [dotProduct_mulVec, hv]
+  grind [separatingLeft_iff_forall_vecMul_eq_zero, exists_vecMul_eq_zero_iff]
 
 lemma separatingRight_iff_det_ne_zero [DecidableEq n] : SeparatingRight M ↔ M.det ≠ 0 := by
-  refine ⟨fun h hc ↦ ?_, fun h ↦ (nondegenerate_of_det_ne_zero h).2⟩
-  obtain ⟨v, hvne, hv⟩ := exists_mulVec_eq_zero_iff.mpr hc
-  refine hvne (separatingRight_def.mp h v ?_)
-  simp [hv]
+  grind [separatingRight_iff_forall_mulVec_eq_zero, exists_mulVec_eq_zero_iff]
 
 omit [Fintype n] in
 theorem nondegenerate_iff_separatingLeft [Finite n] : M.Nondegenerate ↔ M.SeparatingLeft := by
