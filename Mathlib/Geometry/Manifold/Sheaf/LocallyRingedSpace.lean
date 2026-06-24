@@ -402,14 +402,10 @@ instance (X : LocallyRingedSpace) [X.IsManifold H] :
     letI := chartedSpace H X
     _root_.IsManifold H ∞ X := by
   letI := chartedSpace H X
-  suffices HasGroupoid X (contDiffGroupoid ∞ H) by constructor
-  constructor
+  apply isManifold_of_contDiffOn
   rintro - - ⟨x, rfl⟩ ⟨y, rfl⟩
-  simp only [contDiffGroupoid, contDiffPregroupoid]
-  apply groupoid_of_pregroupoid_le (PG₁ := contDiffPregroupoid ∞ H)
-  · intro f s hfs
-    sorry
-  · sorry
+  -- possibly only true under stronger hypotheses on `𝕜` and `EM`
+  sorry
 
 end LocallyRingedSpace.IsManifold
 
