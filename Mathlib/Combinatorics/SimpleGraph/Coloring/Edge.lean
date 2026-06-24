@@ -6,7 +6,7 @@ Authors: Snir Broshi
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeLabeling
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.LineGraph
 public import Mathlib.Combinatorics.SimpleGraph.Matching
 
@@ -287,7 +287,7 @@ def EdgeColoring.colorClassSubgraph (C : G.EdgeColoring α) (a : α) : G.Subgrap
   Adj u v := ∃ (hadj : G.Adj u v), C ⟨s(u, v), hadj⟩ = a
   adj_sub := Exists.fst
   edge_vert := (⟨_, ·⟩)
-  symm := fun _ _ ⟨hadj, _⟩ ↦ ⟨hadj.symm, by grind⟩
+  symm.symm := fun _ _ ⟨hadj, _⟩ ↦ ⟨hadj.symm, by grind⟩
 
 theorem EdgeColoring.isMatching_colorClassSubgraph (C : G.EdgeColoring α) (a : α) :
     C.colorClassSubgraph a |>.IsMatching := by
