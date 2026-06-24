@@ -139,24 +139,18 @@ lemma ramificationIdx_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
   dsimp only [ramificationIdx]
   congr 1
   ext n
-  simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap, ]
-  rw [← comap_coe e, comap_coe]
   have : comap f (comap e P ^ n) = comap (algebraMap R S₁) (P ^ n) := by
     have hpow : comap e P ^ n = comap e (P ^ n) := by
-      apply le_antisymm
-      · exact Ideal.le_comap_pow _ _
-      · intro x hx
-        have hxP : e x ∈ P ^ n := by simpa [Ideal.mem_comap] using hx
-        have hx' : e.symm (e x) ∈ comap e P ^ n := by
-          rw [show comap e P = P.map e.toRingEquiv.symm from
-            (Ideal.map_symm e.toRingEquiv).symm]
-          rw [← Ideal.map_pow]
-          exact Ideal.mem_map_of_mem _ hxP
-        simpa using hx'
-    rw [hpow]
+      refine le_antisymm (Ideal.le_comap_pow _ _) (fun x hx ↦ ?_)
+      have hxP : e x ∈ P ^ n := by simpa [Ideal.mem_comap] using hx
+      have hx' : e.symm (e x) ∈ comap e P ^ n := by
+        rw [show comap e P = P.map e.toRingEquiv.symm from (Ideal.map_symm e.toRingEquiv).symm,
+          ← Ideal.map_pow]
+        exact Ideal.mem_map_of_mem _ hxP
+      simpa using hx'
     ext x
-    simp [Ideal.mem_comap, e.commutes x]
-  rw [this]
+    simp [hpow, e.commutes x]
+  simp [Ideal.map_le_iff_le_comap, this]
 
 variable (p) in
 lemma ramificationIdx_map_eq {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁]

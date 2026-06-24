@@ -282,11 +282,10 @@ lemma span_range_relation_eq_ker_baseChange :
     let φ : T ⊗[R] MvPolynomial ι R →+* MvPolynomial ι T := e.toRingEquiv.toRingHom
     have H'' : x ∈ Ideal.map φ (Ideal.map TensorProduct.includeRight P.ker) := by
       simpa [φ] using Ideal.mem_map_of_mem φ H'
-    rw [← P.span_range_relation_eq_ker] at H''
-    simp only [Ideal.map_span] at H''
+    simp only [← P.span_range_relation_eq_ker, Ideal.map_span] at H''
     convert H'' using 2
     ext y
-    simp [Set.image_image, φ, e]
+    simp [φ, e]
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/

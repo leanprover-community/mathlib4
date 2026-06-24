@@ -948,8 +948,7 @@ set_option backward.isDefEq.respectTransparency false in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the
 localization of `f` away from `r`. -/
-noncomputable
-def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
+noncomputable def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
     Arrow.mk (Spec.map f ∣_ (PrimeSpectrum.basicOpen r)) ≅
       Arrow.mk (Spec.map <| CommRingCat.ofHom (Localization.awayMap f.hom r)) := by
   refine Arrow.isoMk ?_ ?_ ?_
@@ -961,10 +960,8 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
       ext x
       simp [Localization.awayMap, IsLocalization.Away.map]
     rw [← cancel_mono (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))))]
-    simp only [basicOpenIsoSpecAway, Scheme.isoOfEq_rfl, Iso.refl_trans, Arrow.mk_left,
-      Arrow.mk_right, Arrow.mk_hom, Category.assoc, ← Spec.map_comp]
-    rw [hcomp, Spec.map_comp]
-    simp [IsOpenImmersion.isoOfRangeEq_hom_fac]
+    simp only [basicOpenIsoSpecAway, Arrow.mk_hom, Category.assoc, ← Spec.map_comp]
+    simp [hcomp]
 
 lemma stalkMap_injective_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] (x : X)
     (h : ∀ g, f.stalkMap x (Y.presheaf.Γgerm (f x) g) = 0 → Y.presheaf.Γgerm (f x) g = 0) :
