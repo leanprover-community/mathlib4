@@ -106,6 +106,9 @@ theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f :
     c • mk f = mk (c • f) :=
   rfl
 
+instance : Pow (Cauchy abv) ℕ+ :=
+  ⟨fun x n => Quotient.map (· ^ n) (fun _ _ hf => ppow_equiv_ppow hf _) x⟩
+
 instance : Pow (Cauchy abv) ℕ :=
   ⟨fun x n => Quotient.map (· ^ n) (fun _ _ hf => pow_equiv_pow hf _) x⟩
 
@@ -145,6 +148,7 @@ instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
   Function.Surjective.ring mk Quotient.mk'_surjective rfl rfl
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
+    (fun _ _ => (mk_smul _ _).symm) (fun _ _ => rfl)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
 
 /-- `CauSeq.Completion.ofRat` as a `RingHom` -/
@@ -173,6 +177,7 @@ instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
   Function.Surjective.commRing mk Quotient.mk'_surjective rfl rfl
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
+    (fun _ _ => (mk_smul _ _).symm) (fun _ _ => rfl)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
 
 end

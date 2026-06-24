@@ -371,6 +371,11 @@ theorem ppow_apply (f : CauSeq β abv) (n : ℕ+) (i : ℕ) : (f ^ n) i = f i ^ 
 theorem const_ppow (x : β) (n : ℕ+) : const (x ^ n) = const x ^ n :=
   rfl
 
+@[norm_cast]
+theorem npow_val_eq_ppow (f : CauSeq β abv) (n : ℕ+) : f ^ n.val = f ^ n := by
+  ext
+  simp [← _root_.npow_val_eq_ppow]
+
 instance ring : Ring (CauSeq β abv) :=
   Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow coe_pow
@@ -521,6 +526,9 @@ theorem pow_equiv_pow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ) : f1 ^ 
   induction n with
   | zero => simp only [pow_zero, Setoid.refl]
   | succ n ih => simpa only [pow_succ'] using mul_equiv_mul hf ih
+
+theorem ppow_equiv_ppow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ+) : f1 ^ n ≈ f2 ^ n := by
+  simp [← npow_val_eq_ppow, pow_equiv_pow hf n.val]
 
 end Ring
 
