@@ -261,9 +261,8 @@ theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici
   have := anti.summable_of_integrable_eventually integrable nonneg
   rw [← summable_nat_add_iff N] at this
   have lim := this.tendsto_sum_tsum_nat
-  have : Filter.Tendsto (fun (n : ℕ) ↦ (n : ℝ)) Filter.atTop Filter.atTop := by exact tendsto_natCast_atTop_atTop
-  have  : Filter.Tendsto (fun (n : ℕ) ↦ (n + N : ℝ)) Filter.atTop Filter.atTop := by exact Filter.tendsto_atTop_add_const_right Filter.atTop (↑N) this
-  refine le_of_tendsto_of_tendsto (MeasureTheory.intervalIntegral_tendsto_integral_Ioi N integrable this) lim ?_
+  have  := Filter.tendsto_atTop_add_const_right Filter.atTop (N : ℝ) tendsto_natCast_atTop_atTop
+  refine le_of_tendsto_of_tendsto (intervalIntegral_tendsto_integral_Ioi N integrable this) lim ?_
   filter_upwards with M
   calc
   _ ≤ ∑ n ∈ Finset.Ico N (N + M), f n := by
