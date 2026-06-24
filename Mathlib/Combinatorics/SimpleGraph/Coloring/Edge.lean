@@ -142,21 +142,15 @@ def EdgeColoring.ofLineGraphIso (f : G.lineGraph ≃g G'.lineGraph) :
   left_inv _ := RelHom.ext (congrArg _ <| RelIso.symm_apply_apply f ·)
   right_inv _ := RelHom.ext (congrArg _ <| RelIso.apply_symm_apply f ·)
 
-variable (α) in
-/-- Edge-colorings of isomorphic graphs are equivalent. -/
+/-- Lift isomorphisms of graphs and colors to an isomorphism of edge colorings. -/
 @[expose]
-def EdgeColoring.ofIso (f : G ≃g G') : G.EdgeColoring α ≃ G'.EdgeColoring α :=
-  EdgeColoring.ofLineGraphIso α f.lineGraph
+def edgeColoringCongr (f : G ≃g G') (g : α ≃ β) : G.EdgeColoring α ≃ G'.EdgeColoring β :=
+  EdgeColoring.ofLineGraphIso α f.lineGraph |>.trans <| recolorOfEquiv _ g
 
 /-- Lift an embedding of colors to an embedding of edge colorings. -/
 @[expose]
 def edgeColoringEmbedding (f : α ↪ β) : G.EdgeColoring α ↪ G.EdgeColoring β :=
   recolorOfEmbedding _ f
-
-/-- Lift an isomorphism of colors to an isomorphism of edge colorings. -/
-@[expose]
-def edgeColoringEquivOfColorIso (f : α ≃ β) : G.EdgeColoring α ≃ G.EdgeColoring β :=
-  recolorOfEquiv _ f
 
 @[gcongr]
 theorem EdgeColorableWith.mono (f : α ↪ β) (h : G.EdgeColorableWith α) : G.EdgeColorableWith β :=
