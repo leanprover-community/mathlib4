@@ -44,8 +44,6 @@ namespace Rep.FiniteCyclicGroup
 
 variable {k G : Type u} [CommRing k] [CommGroup G] [Fintype G] (A : Rep k G) (g : G)
 
-set_option maxHeartbeats 1600000 in
--- unification through the coinvariants equivalences is slow after the `MonoidAlgebra` refactor
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open ModuleCat.MonoidalCategory in

@@ -61,7 +61,7 @@ section Module
 variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 
 @[to_additive (dont_translate := R)]
-instance : Module R S[M] := coeffEquiv.module _
+instance : Module R S[M] := fast_instance% coeffEquiv.module _
 
 @[to_additive]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
