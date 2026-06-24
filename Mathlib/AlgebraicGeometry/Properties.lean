@@ -386,6 +386,13 @@ lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
   apply WithBot.coe_eq_coe.mpr
   exact idealHeight_eq_coheight R x
 
+open Order in
+variable {X} in
+lemma krullDimLE_of_coheight
+    {z : X} {n : ℕ} (hz : coheight z = n) : Ring.KrullDimLE n (X.presheaf.stalk z) := by
+  rw [Ring.krullDimLE_iff, ringKrullDim_stalk_eq_coheight z]
+  exact_mod_cast hz.le
+
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by
   rw [← PrimeSpectrum.t1Space_iff_isField]

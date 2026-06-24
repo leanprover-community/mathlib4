@@ -386,6 +386,17 @@ theorem le_ofAdd_iff
     a ≤ ofAdd b ↔ toAdd (unzero ha) ≤ b :=
   ⟨toAdd_unzero_le_of_lt_ofAdd ha, le_ofAdd_of_toAdd_unzero_le ha⟩
 
+lemma toAdd_unzero_eq_iff {α : Type*} {a : WithZero (Multiplicative α)} (h : a ≠ 0)
+    (b : α) : Multiplicative.toAdd WithZero.unzero h = b ↔ a = ↑(Multiplicative.ofAdd b) := by
+  constructor
+  · intro k
+    rw [← k]
+    exact (coe_unzero h).symm
+  · intro k
+    apply Multiplicative.ext
+    change unzero h = Multiplicative.ofAdd b
+    simp [← WithZero.coe_inj, ← k]
+
 end Multiplicative
 
 end Preorder

@@ -24,68 +24,114 @@ universe u
 
 variable {X : Scheme.{u}}
 
-namespace AlgebraicGeometry
-namespace Scheme
+namespace AlgebraicGeometry.Scheme
 
-lemma krullDimLE_of_coheight
-    {Z : X} {n : ℕ} (hZ : coheight Z = n) : Ring.KrullDimLE n (X.presheaf.stalk Z) := by
-  rw [Ring.krullDimLE_iff, ringKrullDim_stalk_eq_coheight Z]
-  exact_mod_cast hZ.le
-
-variable [IsIntegral X]
+variable [IsIntegral X] [IsLocallyNoetherian X]
 
 /--
-For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that
-`f` is a unit in `Γ(X, U)`.
--/
-lemma exists_isUnit_germ_eq (f : X.functionField) (hf : f ≠ 0) :
-    ∃ U : X.Opens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
-    X.germToFunctionField U f' = f ∧ IsUnit f' := by
-  obtain ⟨U, hU, g, hg⟩ := TopCat.Presheaf.germ_exist _ _ f
-  have : Nonempty U := ⟨_, hU⟩
-  have : Nonempty (X.basicOpen g) := by
-    rw [Scheme.Opens.nonempty_iff]
-    apply (Opens.ne_bot_iff_nonempty (X.basicOpen g)).mp
-    intro a
-    simp_all
-  refine ⟨X.basicOpen g, X.presheaf.map (X.basicOpen_le g).hom.op g, ‹_›, ?_,
-    X.toRingedSpace.isUnit_res_basicOpen g⟩
-  rw [germToFunctionField_map, hg]
-
-variable [IsLocallyNoetherian X]
-
-/--
-On a locally Noetherian integral scheme, we define the order of vanishing of an element of the
-function field `f` at a point `Z` of codimension `1` to be `Ring.ordFrac (X.presheaf.stalk Z) f`.
-Because of this definition, `Scheme.ord` is valued in `ℤᵐ⁰`.
+Order of vanishing on a locally Noetherian integral scheme as a monoid with zero hom to `ℤᵐ⁰`
 -/
 noncomputable
-def ord (Z : X) (hZ : coheight Z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
-  have : Ring.KrullDimLE 1 _ := krullDimLE_of_coheight hZ
-  Ring.ordFrac (X.presheaf.stalk Z)
+def ordHom (z : X) (hz : coheight z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
+  haveI : Ring.KrullDimLE 1 (X.presheaf.stalk z) := krullDimLE_of_coheight hz
+  Ring.ordFrac (X.presheaf.stalk z)
 
-/--
-The order of vanishing of a non-zero element of the function field at any point is not zero. Since
-`Scheme.ord` is valued in `ℤᵐ⁰`, `0` does not denote a value of `ℤ` but an added `⊥` element. With
-that in mind, this theorem is really saying that the order of vanishing of any nonzero element of
-the function field at any point of codimension one is some finite value.
--/
-lemma ord_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
-    Scheme.ord Z hZ f ≠ 0 := (map_ne_zero (Scheme.ord Z hZ)).mpr hf
+lemma ordHom_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
+    ordHom Z hZ f ≠ 0 := (map_ne_zero _).mpr hf
 
-/--
-The order of vanishing of a unit is `1` everywhere.
--/
-lemma ord_of_isUnit {U : X.Opens}
+lemma ordHom_of_isUnit {U : X.Opens}
     [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X} (hx : coheight x = 1) (hx' : x ∈ U) :
-    Scheme.ord x hx (X.germToFunctionField U f) = 1 := by
+    ordHom x hx (X.germToFunctionField U f) = 1 := by
   have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight hx
-  rw [germToFunctionField_eq_algebraMap_germ hx']
+  rw [← algebraMap_germ_eq_germToFunctionField hx']
   exact Ring.ordFrac_of_isUnit (hf.map (X.presheaf.germ U x hx').hom)
 
-lemma not_mem_of_ord_neq_one (f : X.functionField) {U : X.Opens} [Nonempty U] {g : Γ(X, U)}
-    (hg : IsUnit g) (hgf : X.germToFunctionField U g = f) {x : X} {hx : coheight x = 1}
-    (h : Scheme.ord x hx f ≠ 1) : x ∉ U := fun a ↦ h (hgf ▸ ord_of_isUnit hg hx a)
+/--
+The order of vanishing of an element of the function field of a locally Noetherian integral scheme
+at a point. This has a junk value of `0` if `f = 0` or if `coheight z ≠ 1`.
+-/
+noncomputable
+def ord (z : X) (f : X.functionField) : ℤ :=
+  if hz : coheight z = 1
+  then Multiplicative.toAdd <| WithZero.recZeroCoe 1 id <| X.ordHom z hz f
+  else 0
 
-end Scheme
-end AlgebraicGeometry
+lemma ord_eq_ordHom_of_coheight_eq_one {z : X} (hz : coheight z = 1) (f : X.functionField) :
+    ord z f = Multiplicative.toAdd (WithZero.recZeroCoe 1 id <| X.ordHom z hz f) := dif_pos hz
+
+@[simp]
+lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.functionField) :
+    ord z f = 0 := dif_neg hz
+
+@[simp]
+lemma ord_zero {z : X} : ord z 0 = 0 := by
+  by_cases h : coheight z = 1
+  · simp [ord_eq_ordHom_of_coheight_eq_one h]
+  · simp [h]
+
+lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :
+    ord x f = Multiplicative.toAdd WithZero.unzero (ordHom_ne_zero hx hf) := by
+  simp only [ord]
+  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ordHom_ne_zero hx hf
+  simp only [← ha1, hx]
+  change a1 = unzero _
+  rw [← WithZero.coe_inj, ha1]
+  exact Eq.symm (coe_unzero (ordHom_ne_zero hx hf))
+
+lemma ord_eq_iff {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) {n : ℤ} :
+    ord z f = n ↔ ordHom z hz f = Multiplicative.ofAdd n := by
+  rw [ord_eq_unzero_ordHom hz hf]
+  exact WithZero.toAdd_unzero_eq_iff _ _
+
+@[simp]
+lemma ord_mul {x : X} (hx : coheight x = 1) {f g : X.functionField}
+    (hf : f ≠ 0) (hg : g ≠ 0) : ord x (f*g) = ord x f + ord x g := by
+  have : f * g ≠ 0 := (mul_ne_zero_iff_right hg).mpr hf
+  rw [ord_eq_iff hx this]
+  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ordHom_ne_zero hx hf
+  obtain ⟨a1, ha2⟩ := WithZero.ne_zero_iff_exists.mp <| ordHom_ne_zero hx hg
+  simp [ord_eq_ordHom_of_coheight_eq_one hx, ← ha1, ← ha2]
+
+lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X}
+    (hx : coheight x = 1) (hx' : x ∈ U) : ord x (X.germToFunctionField U f) = 0 := by
+  have hf' : X.germToFunctionField U f ≠ 0 :=
+    (map_ne_zero_iff _ (germToFunctionField_injective X U)).mpr <| IsUnit.ne_zero hf
+  simp [ord_eq_iff hx hf', ordHom_of_isUnit hf hx hx']
+
+lemma ord_le_ord_iff {x y : X} (hx : coheight x = 1) (hy : coheight y = 1) {f g : X.functionField}
+    (hf : f ≠ 0) (hg : g ≠ 0) :
+    ord x f ≤ ord y g ↔ ordHom x hx f ≤ ordHom y hy g := by
+  rw [ord_eq_unzero_ordHom hx hf, ord_eq_unzero_ordHom hy hg]
+  erw [Multiplicative.toAdd_le]
+  simp
+
+lemma ord_add {x : X} (hx : coheight x = 1) [IsDiscreteValuationRing (X.presheaf.stalk x)]
+    {f g : X.functionField} (hfg : f + g ≠ 0) :
+    min (ord x f) (ord x g) ≤ ord x (f + g) := by
+  by_cases hf : f = 0
+  · simp [hf]
+  by_cases hg : g = 0
+  · simp [hg]
+  simp only [inf_le_iff]
+  obtain h | h := inf_le_iff.mp <| Ring.ordFrac_add (R := X.presheaf.stalk x) _ _ hfg
+  · left
+    rwa [ord_le_ord_iff hx hx hf hfg]
+  · right
+    rwa [ord_le_ord_iff hx hx hg hfg]
+
+lemma ord_le_smul {x : X} (hx : coheight x = 1) {U : X.Opens} [Nonempty U] (hxU : x ∈ U)
+    {a : Γ(X, U)} (ha : a ≠ 0) (f : X.functionField) : ord x f ≤ ord x (a • f) := by
+  by_cases hf : f = 0
+  · simp [hf]
+  have : a • f ≠ 0 := (mul_ne_zero_iff_right hf).mpr <|
+    (map_ne_zero_iff _ (germToFunctionField_injective _ _)).mpr ha
+  rw [ord_le_ord_iff hx hx hf this]
+  let l : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hxU).hom.toAlgebra
+  have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight hx
+  have : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk x) ↑X.functionField :=
+    functionField_isScalarTower X U ⟨x, hxU⟩
+  have : (algebraMap Γ(X, U) (X.presheaf.stalk x) a) ≠ 0 :=
+    (map_ne_zero_iff _ (germ_injective_of_isIntegral X x hxU)).mpr ha
+  exact Ring.ordFrac_le_smul a this f
+
+end AlgebraicGeometry.Scheme
