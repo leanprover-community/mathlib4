@@ -48,13 +48,29 @@ mkDeclAndDepr () {
     awk -v regex="${begs}" -v idRegex="${identRegex}" -v date="$(date +%Y-%m-%d)" -v fil="${1}" '
     # with `perr` we print to stderr a summary of the deprecations
     function perr(msg) { print msg | "cat >&2"; close("cat >&2") }
-    function depr(ol,ne) {
+    function additiveName(name) {
+      if (name ~ /_mul$/) {
+        sub(/_mul$/, "_add", name)
+        return name
+      }
+      return ""
+    }
+    function deprLine(ol,ne) {
       aliasLine=sprintf("alias %s :=||||  %s", ol, ne)
       # if the `alias` line contains less than 100 characters long, we leave it on a single line
       if(length(aliasLine) <= 105) { sub(/\|\|\|\| /, "", aliasLine) }
       line=sprintf("@[deprecated (since := \"%s\")]||||%s", date, aliasLine)
       # if the `deprecated` and `alias` lines together contain less than 100 characters, we leave them on a single line
       if(length(line) <= 103) { sub(/\|\|\|\|/, " ", line) }
+      return line
+    }
+    function depr(ol,ne) {
+      line=deprLine(ol, ne)
+      additiveOld=additiveName(ol)
+      additiveNew=additiveName(ne)
+      if ((additiveOld != "") && (additiveNew != "")) {
+        line=sprintf("%s||||%s", line, deprLine(additiveOld, additiveNew))
+      }
       return line
     }
     # `{plus/minus}Regex` makes sure that we find a declaration, followed by something that
