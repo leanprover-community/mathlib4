@@ -248,7 +248,7 @@ theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
   exact_mod_cast AntitoneOn.tsum_comp_add_le_integral 0 (mod_cast anti) (mod_cast integrable)
     (mod_cast nonneg)
 
-/-- **Integral test**: bouns the sum of a nonnegative antitone function by an integral. -/
+/-- **Integral test**: bounds the sum of a nonnegative antitone function by an integral. -/
 theorem AntitoneOn.tsum_le_integral (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑' (n : ℕ),  f n ≤ f 0 + ∫ x in Ioi 0, f x  := by
