@@ -165,7 +165,7 @@ register_option linter.translateRedundant : Bool := {
   descr := "Linter used by translate attributes that checks if the attribute is redundant" }
 
 /-- Linter explaining how to use `deprecated` in combination with translate attributes. -/
-register_option linter.translateDeprecated : Bool := {
+register_option linter.translate.deprecated : Bool := {
   defValue := true
   descr := "Linter explaining how to use `deprecated` in combination with translate attributes." }
 
@@ -1216,7 +1216,7 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
           (impl · attr.stx attr.kind)
     else
       if attr.name == `deprecated then
-        Linter.logLintIf linter.translateDeprecated cfg.ref m!"\
+        Linter.logLintIf linter.translate.deprecated cfg.ref m!"\
           Instead of `@[{t.attrName} (attr := deprecated ...)]`, \
           the deprecation should be added separately, before the `{t.attrName}` attribute:\n\n\
           `@[deprecated ..., {t.attrName}]`.\n\n\

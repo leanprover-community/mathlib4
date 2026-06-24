@@ -1005,7 +1005,7 @@ warning: Instead of `@[to_additive (attr := deprecated ...)]`, the deprecation s
 
 Then `to_additive` will automatically deprecate the newly generated declaration.
 
-Note: This linter can be disabled with `set_option linter.translateDeprecated false`
+Note: This linter can be disabled with `set_option linter.translate.deprecated false`
 -/
 #guard_msgs in
 @[to_additive (attr := deprecated mul_comm (since := "today"))]
