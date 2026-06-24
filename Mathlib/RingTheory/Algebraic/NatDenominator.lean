@@ -21,13 +21,13 @@ denominator `natDenominator x`.
 
 ## Main definitions
 
-* `AlgebraicDenominator.denominator`: the denominator in a principal ideal ring
-* `AlgebraicDenominator.natDenominator`: the natural-number denominator over `ℤ`
+* `IsAlgebraic.denominator`: the denominator in a principal ideal ring
+* `IsAlgebraic.natDenominator`: the natural-number denominator over `ℤ`
 -/
 
 @[expose] public section
 
-namespace AlgebraicDenominator
+namespace IsAlgebraic
 
 variable (R : Type*) [CommRing R] [IsPrincipalIdealRing R] {S : Type*} [CommRing S] [Algebra R S]
 
@@ -64,4 +64,4 @@ theorem natDenominator_ne_zero {x : S} (hx : IsAlgebraic ℤ x) : natDenominator
   rw [natDenominator, Int.natAbs_ne_zero]
   exact denominator_ne_zero hx
 
-end AlgebraicDenominator
+end IsAlgebraic
