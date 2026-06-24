@@ -10,13 +10,15 @@ public import Mathlib.RingTheory.HopfAlgebra.Convolution
 /-!
 # Constructing Hopf algebras from algebra generators
 
-This file provides a constructor for Hopf algebras given antimultiplicative
-antipode data on an algebra-generating set, via an extension principle for
-pointwise convolution inverses of multiplicative maps.
+This file provides an extension principle to upgrade a bialgebra to a Hopf algebra given
+antimultiplicative antipode data on generators.
 
-## Main declarations
+## Main definitions
 
 * `HopfAlgebra.ofGenerators` : construct a Hopf algebra from data on a generating set.
+
+## Main results
+
 * `HopfAlgebra.convMul_eq_one_of_adjoin_eq_top_left` and
   `HopfAlgebra.convMul_eq_one_of_adjoin_eq_top_right`: a pointwise one-sided convolution inverse of
   a multiplicative map on generators is a global one.
@@ -30,7 +32,7 @@ public section
 
 namespace HopfAlgebra
 
-open Coalgebra LinearMap WithConv
+open Algebra Coalgebra LinearMap WithConv
 
 variable {R A B : Type*} [CommSemiring R]
 
@@ -47,26 +49,21 @@ a left convolution inverse on generators is a left convolution inverse. -/
 theorem convMul_eq_one_of_adjoin_eq_top_left
     (g_one : g 1 = 1) (g_mul : ∀ x y, g (x * y) = g y * g x)
     (f_one : f 1 = 1) (f_mul : ∀ x y, f (x * y) = f x * f y)
-    (adjoin_eq_top : Algebra.adjoin R s = ⊤)
+    (adjoin_eq_top : adjoin R s = ⊤)
     (g_convMul_f : ∀ p ∈ s, (toConv g * toConv f) p = (1 : WithConv (A →ₗ[R] B)) p) :
     toConv g * toConv f = 1 := by
-  refine WithConv.ext (ext fun x => ?_)
-  refine Algebra.adjoin_induction g_convMul_f
-    (fun r => by simp [g_one, f_one, Algebra.algebraMap_eq_smul_one, Algebra.TensorProduct.one_def])
-    (fun a b _ _ ha hb => by simp [map_add, ha, hb])
-    (fun a b _ _ ha hb => ?_) (adjoin_eq_top ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)
+  ext x; refine adjoin_le
+    (S := (eqLocus (toConv g * toConv f).ofConv (ofConv 1)).toSubalgebra ?_ fun a b ha hb => ?_)
+    g_convMul_f (adjoin_eq_top ▸ mem_top : x ∈ adjoin R s)
+  · simp [g_one, f_one, TensorProduct.one_def]
   let 𝓡a := ℛ R a; let 𝓡b := ℛ R b
-  simp only [𝓡a.convMul_apply, 𝓡b.convMul_apply, convOne_apply] at ha hb
-  rw [convOne_apply]
+  simp only [mem_eqLocus, 𝓡a.convMul_apply, 𝓡b.convMul_apply, convOne_apply] at ha hb ⊢
   calc (toConv g * toConv f) (a * b)
       _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
-            g (𝓡a.left p * 𝓡b.left q) * f (𝓡a.right p * 𝓡b.right q) := by
-        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum]
-      _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
             g (𝓡b.left q) * (g (𝓡a.left p) * f (𝓡a.right p)) * f (𝓡b.right q) := by
-        simp_rw [g_mul, f_mul, mul_assoc]
+        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, g_mul, f_mul, mul_assoc]
       _ = ∑ q ∈ 𝓡b.index, algebraMap R B (counit a) * g (𝓡b.left q) * f (𝓡b.right q) := by
-        rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ha, ← Algebra.commutes]
+        rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ha, ← commutes]
       _ = algebraMap R B (counit (a * b)) := by
         simp_rw [mul_assoc, ← Finset.mul_sum, hb, ← map_mul, ← Bialgebra.counit_mul]
 
@@ -75,26 +72,21 @@ a right convolution inverse on generators is a right convolution inverse. -/
 theorem convMul_eq_one_of_adjoin_eq_top_right
     (g_one : g 1 = 1) (g_mul : ∀ x y, g (x * y) = g y * g x)
     (f_one : f 1 = 1) (f_mul : ∀ x y, f (x * y) = f x * f y)
-    (adjoin_eq_top : Algebra.adjoin R s = ⊤)
+    (adjoin_eq_top : adjoin R s = ⊤)
     (f_convMul_g : ∀ p ∈ s, (toConv f * toConv g) p = (1 : WithConv (A →ₗ[R] B)) p) :
     toConv f * toConv g = 1 := by
-  refine WithConv.ext (ext fun x => ?_)
-  refine Algebra.adjoin_induction f_convMul_g
-    (fun r => by simp [g_one, f_one, Algebra.algebraMap_eq_smul_one, Algebra.TensorProduct.one_def])
-    (fun a b _ _ ha hb => by simp [map_add, ha, hb])
-    (fun a b _ _ ha hb => ?_) (adjoin_eq_top ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)
+  ext x; refine adjoin_le
+    (S := (eqLocus (toConv f * toConv g).ofConv (ofConv 1)).toSubalgebra ?_ fun a b ha hb => ?_)
+    f_convMul_g (adjoin_eq_top ▸ mem_top : x ∈ adjoin R s)
+  · simp [g_one, f_one, TensorProduct.one_def]
   let 𝓡a := ℛ R a; let 𝓡b := ℛ R b
-  simp only [𝓡a.convMul_apply, 𝓡b.convMul_apply, convOne_apply] at ha hb
-  rw [convOne_apply]
+  simp only [mem_eqLocus, 𝓡a.convMul_apply, 𝓡b.convMul_apply, convOne_apply] at ha hb ⊢
   calc (toConv f * toConv g) (a * b)
       _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
-            f (𝓡a.left p * 𝓡b.left q) * g (𝓡a.right p * 𝓡b.right q) := by
-        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum]
-      _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
             f (𝓡a.left p) * (f (𝓡b.left q) * g (𝓡b.right q)) * g (𝓡a.right p) := by
-        simp_rw [g_mul, f_mul, mul_assoc]
+        simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, g_mul, f_mul, mul_assoc]
       _ = ∑ p ∈ 𝓡a.index, algebraMap R B (counit b) * f (𝓡a.left p) * g (𝓡a.right p) := by
-        simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hb, ← Algebra.commutes]
+        simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hb, ← commutes]
       _ = algebraMap R B (counit (a * b)) := by
         simp_rw [mul_assoc, ← Finset.mul_sum, ha, ← map_mul, mul_comm (counit b),
           ← Bialgebra.counit_mul]
@@ -109,7 +101,7 @@ variable (S₀) in
 that is a two-sided convolution inverse of the identity pointwise on an algebra-generating
 set. -/
 noncomputable abbrev ofGenerators (S₀_one : S₀ 1 = 1) (S₀_mul : ∀ x y, S₀ (x * y) = S₀ y * S₀ x)
-    (adjoin_eq_top : Algebra.adjoin R s = ⊤)
+    (adjoin_eq_top : adjoin R s = ⊤)
     (S₀_convMul_id : ∀ p ∈ s,
       (toConv S₀ * toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p)
     (id_convMul_S₀ : ∀ p ∈ s,
@@ -135,7 +127,7 @@ variable (S₀) in
 /-- A unital antimultiplicative map that is a left convolution inverse of the identity on an
 algebra-generating set is the antipode. -/
 theorem eq_antipode_of_adjoin_eq_top (S₀_one : S₀ 1 = 1)
-    (S₀_mul : ∀ x y, S₀ (x * y) = S₀ y * S₀ x) (adjoin_eq_top : Algebra.adjoin R s = ⊤)
+    (S₀_mul : ∀ x y, S₀ (x * y) = S₀ y * S₀ x) (adjoin_eq_top : adjoin R s = ⊤)
     (S₀_convMul_id : ∀ p ∈ s,
       (toConv S₀ * toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p) :
     S₀ = antipode R :=
