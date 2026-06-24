@@ -1261,8 +1261,91 @@ arguments that can use the `T%` elaborator. -/
   let ss ← withAppArg delab
   `(UniqueMDiffAt[$ss]) >>= annotateGoToSyntaxDef
 
--- TODO: add more delaborators (and tests) for
--- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt
+/-- Delaborator for `ContMDiffWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab ContMDiffWithinAt] meta def delabContMDiffWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 23 do
+  let ss ← withAppArg delab
+  let m ← withNaryArg 20 delab
+  try
+    let f := (← getExpr).getAppArgs[21]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 21 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(CMDiffAt[$ss] $m $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 21 delab
+    `(CMDiffAt[$ss] $m $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `ContMDiffAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab ContMDiffAt] meta def delabContMDiffAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let m ← withNaryArg 20 delab
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(CMDiffAt $m $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(CMDiffAt $m $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `ContMDiffOn` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab ContMDiffOn] meta def delabContMDiffOn : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 23 do
+  let ss ← withAppArg delab
+  let m ← withNaryArg 20 delab
+  try
+    let f := (← getExpr).getAppArgs[21]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 21 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(CMDiff[$ss] $m $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 21 <| delab
+    `(CMDiff[$ss] $m $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `ContMDiff` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab ContMDiff] meta def delabContMDiff : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let m ← withNaryArg 20 delab
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(CMDiff $m $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(CMDiff $m $fs) >>= annotateGoToSyntaxDef
 
 -- TODO: when adding more elaborators, also add the corresponding delaborators
 

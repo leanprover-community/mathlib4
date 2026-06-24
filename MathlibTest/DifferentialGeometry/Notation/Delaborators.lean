@@ -19,7 +19,7 @@ variable
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
   [ChartedSpace H M] [IsManifold I ∞ M]
   (f : M → M) (x : M) (s : Set M) (f' : TangentSpace I x →L[ℝ] TangentSpace I (f x))
-  (v : (x : M) → TangentSpace I x)
+  (v : (x : M) → TangentSpace I x) (n : ℕ)
 
 /-- info: MDiff f : Prop -/
 #guard_msgs in
@@ -122,6 +122,38 @@ variable
 #guard_msgs in
 #check HasMFDerivAt% f x f'
 
+/-- info: CMDiffAt[s] (↑n) f x : Prop -/
+#guard_msgs in
+#check CMDiffAt[s] n f x
+
+/-- info: CMDiffAt[s] (↑n) f x : Prop -/
+#guard_msgs in
+#check ContMDiffWithinAt I I n f s x
+
+/-- info: CMDiffAt (↑n) f x : Prop -/
+#guard_msgs in
+#check CMDiffAt n f x
+
+/-- info: CMDiffAt (↑n) f x : Prop -/
+#guard_msgs in
+#check ContMDiffAt I I n f x
+
+/-- info: CMDiff[s] (↑n) f : Prop -/
+#guard_msgs in
+#check ContMDiffOn I I n f s
+
+/-- info: CMDiff[s] (↑n) f : Prop -/
+#guard_msgs in
+#check CMDiff[s] n f
+
+/-- info: CMDiff (↑n) f : Prop -/
+#guard_msgs in
+#check ContMDiff I I n f
+
+/-- info: CMDiff (↑n) f : Prop -/
+#guard_msgs in
+#check CMDiff n f
+
 section TotalSpace
 
 variable {𝕜 B : Type*} {E : B → Type*}
@@ -209,6 +241,38 @@ info: mfderiv% (T% s) : (x : B) → TangentSpace I x →L[𝕜] TangentSpace (I.
 #guard_msgs in
 #check HasMFDerivAt% (T% s) x₀ f'
 
+/-- info: CMDiffAt[u] ↑n (T% s) : B → Prop -/
+#guard_msgs in
+#check ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (T% s) u
+
+/-- info: CMDiffAt[u] ↑n (T% s) : B → Prop -/
+#guard_msgs in
+#check CMDiffAt[u] n (T% s)
+
+/-- info: CMDiffAt ↑n (T% s) : B → Prop -/
+#guard_msgs in
+#check ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (T% s)
+
+/-- info: CMDiffAt ↑n (T% s) : B → Prop -/
+#guard_msgs in
+#check CMDiffAt n (T% s)
+
+/-- info: CMDiff[u] ↑n (T% s) : Prop -/
+#guard_msgs in
+#check ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (T% s) u
+
+/-- info: CMDiff[u] ↑n (T% s) : Prop -/
+#guard_msgs in
+#check CMDiff[u] n (T% s)
+
+/-- info: CMDiff ↑n (T% s) : Prop -/
+#guard_msgs in
+#check ContMDiff I (I.prod 𝓘(𝕜, F)) n (T% s)
+
+/-- info: CMDiff ↑n (T% s) : Prop -/
+#guard_msgs in
+#check CMDiff n (T% s)
+
 end TotalSpace
 
 section ambiguity
@@ -257,6 +321,7 @@ x : M
 s : Set M
 f' : TangentSpace I x →L[ℝ] TangentSpace I (f x)
 v : (x : M) → TangentSpace I x
+n : ℕ
 g✝ g : E × E → E × E
 ⊢ MDiff id
 -/
