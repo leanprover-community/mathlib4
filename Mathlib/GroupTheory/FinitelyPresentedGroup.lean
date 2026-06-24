@@ -103,6 +103,7 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [φ.ker_mulEquiv_comp iso]
 
+@[to_additive]
 theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
     (hf_surj : Function.Surjective f) (hf_ker : f.ker.IsNormalClosureFG) :
     IsFinitelyPresented H := by
@@ -132,6 +133,7 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
 variable (G)
 
 /-- Any finite group is finitely presented. -/
+@[to_additive]
 instance [Finite G] : IsFinitelyPresented G :=
   of_surjective FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 
