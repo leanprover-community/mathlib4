@@ -32,12 +32,11 @@ jobs:
   export:
     name: Export cross-reference JSON
     runs-on: ubuntu-latest
-    # Automatic runs are restricted to the canonical repository; manual dispatch
-    # is also allowed elsewhere (e.g. a fork) for pre-deployment verification.
+    environment: crossref-exports
     if: >-
-      github.event_name == 'workflow_dispatch'
-      || (github.repository == 'leanprover-community/mathlib4'
-          && github.event.workflow_run.conclusion == 'success')
+      github.repository == 'leanprover-community/mathlib4' &&
+      (github.event_name == 'workflow_dispatch'
+      || github.event.workflow_run.conclusion == 'success')
     steps:
       - name: Checkout the built commit
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -85,7 +84,7 @@ jobs:
         with:
           app-id: ${{ secrets.MATHLIB_CROSSREFS_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
-          key-name: mathlib-crossrefs-app-pk
+          key-name: crossrefs-exports-app-pk
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_CROSSREFS }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
           owner: ${{ steps.repo.outputs.owner }}
