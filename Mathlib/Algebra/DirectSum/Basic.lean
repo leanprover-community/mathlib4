@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.DFinsupp.Sigma
 public import Mathlib.Data.DFinsupp.Submonoid
+
 /-!
 # Direct sum
 
