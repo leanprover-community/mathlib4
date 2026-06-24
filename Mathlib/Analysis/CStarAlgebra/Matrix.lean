@@ -316,9 +316,6 @@ given by the identification with (continuous) linear endomorphisms of `Euclidean
 @[instance_reducible]
 def instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
-  predicate_zero := by simp
-  spectrum_nonempty := ContinuousFunctionalCalculus.spectrum_nonempty
-  exists_cfc_of_predicate := ContinuousFunctionalCalculus.exists_cfc_of_predicate
   isometric A hA := by
     rw [← isHermitian_iff_isSelfAdjoint] at hA
     rw [IsHermitian.cfcHom_eq_cfcAux hA, AddMonoidHomClass.isometry_iff_norm]
