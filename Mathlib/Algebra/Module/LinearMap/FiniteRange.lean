@@ -296,6 +296,12 @@ linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
 def IsQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) :=
   u.IsLeftQuasiInverse v ∧ u.IsRightQuasiInverse v
 
+lemma isLeftQuasiInverse_iff_isRightQuasiInverse_swap {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} :
+    u.IsLeftQuasiInverse v ↔ v.IsRightQuasiInverse u := Iff.rfl
+
+alias ⟨IsLeftQuasiInverse.isRightQuasiInverse, IsRightQuasiInverse.isLeftQuasiInverse⟩ :=
+  isLeftQuasiInverse_iff_isRightQuasiInverse_swap
+
 lemma IsLeftQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     (h : u.IsLeftQuasiInverse v) : u ∘ₗ v ≈ .id := h
 
@@ -324,10 +330,8 @@ lemma isLeftQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[
 @[gcongr]
 lemma IsRightQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (h : u.IsRightQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
-    u'.IsRightQuasiInverse v' := by
-  unfold IsRightQuasiInverse at *
-  grw [hu, hv]
-  assumption
+    u'.IsRightQuasiInverse v' :=
+  h.isLeftQuasiInverse.congr hv hu |>.isRightQuasiInverse
 
 lemma isRightQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (hu : u' ≈ u) (hv : v' ≈ v) :
@@ -374,10 +378,7 @@ lemma IsLeftQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {
 lemma IsRightQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
     {v' : V₃ →ₗ[K] V₂} (hu : u'.IsRightQuasiInverse u) (hv : v'.IsRightQuasiInverse v) :
     (u' ∘ₗ v').IsRightQuasiInverse (v ∘ₗ u) :=
-  calc
-    _ = v ∘ₗ (u ∘ₗ u') ∘ₗ v' := rfl
-    _ ≈ v ∘ₗ .id ∘ₗ v' := by grw [hu.equiv]
-    _ ≈ .id := hv.equiv
+  hv.isLeftQuasiInverse.comp hu.isLeftQuasiInverse |>.isRightQuasiInverse
 
 /-- Quasi-inverses compose in the opposite order. -/
 lemma IsQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
