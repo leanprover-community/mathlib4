@@ -5,11 +5,10 @@ Authors: Raphael Douglas Giles
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Scheme
-public import Mathlib.Topology.LocallyFinsupp.Pushforward
-public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-public import Mathlib.AlgebraicGeometry.Fiber
+public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.Topology.LocallyFinsupp.Pushforward
+public import Mathlib.AlgebraicGeometry.ResidueField
 
 /-!
 # Algebraic Cycles
@@ -25,8 +24,9 @@ nonstandard definition.
 
 @[expose] public section
 
-open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
-  CategoryTheory
+namespace AlgebraicGeometry
+
+open CategoryTheory
 
 universe u v
 variable {X Y : Scheme.{u}} {R : Type*}
@@ -43,24 +43,6 @@ abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
     Function.locallyFinsupp X R
 
 variable (f : X ⟶ Y) [Semiring R] (c : AlgebraicCycle X R) (x : X) (z : Y)
-
-noncomputable
-instance moduleResidueFieldExtension (x : X) :
-    Module (IsLocalRing.ResidueField ↑(Y.presheaf.stalk (f x)))
-    (IsLocalRing.ResidueField ↑(X.presheaf.stalk x)) :=
-  letI := RingHom.toAlgebra (IsLocalRing.ResidueField.map (f.stalkMap x).hom)
-  Algebra.toModule
-
-/--
-Degree of `f` at a point `x` is defined to be the degree of the associated field extension
-from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is either infinite
-or undefined.
--/
-noncomputable
-def _root_.AlgebraicGeometry.Scheme.Hom.degree : ℕ := @Module.finrank
-    (IsLocalRing.ResidueField (Y.presheaf.stalk (f.base x)))
-    (IsLocalRing.ResidueField (X.presheaf.stalk x)) _ _ _
-
 namespace AlgebraicCycle
 
 /--
@@ -69,7 +51,7 @@ of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
 noncomputable
 def mapAux {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N) (wy : Y → N) (x : X) :
-    ℕ := if wx x = wy (f.base x) then f.degree x else 0
+    ℕ := if wx x = wy (f.base x) then f.residueDegree x else 0
 
 /--
 The pushforward of algebraic cycles with respect to a quasicompact morphism of schemes. The
@@ -81,8 +63,16 @@ more sophisticated notions exist in the literature which are useful when suffici
 equidimensionality hypotheses cannot be assumed.
 -/
 noncomputable
-def pushforward [QuasiCompact f] {N : Type*} [DecidableEq N] (c : AlgebraicCycle X R)
-    (wx : X → N) (wy : Y → N) : AlgebraicCycle Y R :=
+def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
+    (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
   Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) f.isSpectralMap c
 
+@[simp]
+lemma map_id [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N)
+    (c : AlgebraicCycle X R) :
+    map (𝟙 _) wx wx c = c := by
+  apply Function.locallyFinsupp.map_id
+  simp [mapAux]
+
 end AlgebraicCycle
+end AlgebraicGeometry
