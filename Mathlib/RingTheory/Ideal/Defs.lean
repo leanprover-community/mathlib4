@@ -146,11 +146,18 @@ theorem mul_sub_mul_mem [I.IsTwoSided]
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
 
-/--
-The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`.
--/
-abbrev inertia (G : Type*) [Group G] [MulAction G α] (I : Ideal α) :
-    Subgroup G := AddSubgroup.inertia I.toAddSubgroup G
+section inertia
+
+variable (G : Type*) [Group G] [MulAction G α] (I : Ideal α)
+
+/-- The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`. -/
+abbrev inertia : Subgroup G := I.toAddSubgroup.inertia G
+
+variable {I G} in
+theorem coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H :=
+  I.toAddSubgroup.coe_mem_inertia
+
+end inertia
 
 end Ideal
 

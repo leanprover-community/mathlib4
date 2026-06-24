@@ -68,7 +68,18 @@ section CommRing
 
 variable [CommRing R] (f g : R[X])
 
-deriving instance CommRing, Inhabited for AdjoinRoot
+deriving instance Inhabited for AdjoinRoot
+
+instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
+  inferInstanceAs <| SMul S (_ ⧸ _)
+
+instance : CommRing (AdjoinRoot f) where
+  nsmul := letI := instSMulAdjoinRoot (S := ℕ) (R := R); (· • ·)
+  zsmul := letI := instSMulAdjoinRoot (S := ℤ) (R := R); (· • ·)
+  __ : CommRing (AdjoinRoot f) := inferInstanceAs <| CommRing (_ ⧸ _)
+
+instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
+  inferInstanceAs <| DistribSMul S (_ ⧸ _)
 
 instance : DecidableEq (AdjoinRoot f) :=
   Classical.decEq _
@@ -91,12 +102,6 @@ theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p 
 /-- Embedding of the original ring `R` into `AdjoinRoot f`. -/
 def of : R →+* AdjoinRoot f :=
   (mk f).comp C
-
-instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
-  inferInstanceAs <| SMul S (_ ⧸ _)
-
-instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
-  inferInstanceAs <| DistribSMul S (_ ⧸ _)
 
 @[simp]
 theorem smul_mk [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R[X]) :
@@ -1009,7 +1014,7 @@ theorem quotientEquivQuotientMinpolyMap_apply_mk (pb : PowerBasis R S) (I : Idea
         (Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
           (g.map (Ideal.Quotient.mk I)) := by
   rw [PowerBasis.quotientEquivQuotientMinpolyMap, AlgEquiv.trans_apply, AlgEquiv.ofRingEquiv_apply,
-    quotientEquiv_mk, AlgEquiv.coe_ringEquiv', AdjoinRoot.equiv'_symm_apply, PowerBasis.lift_aeval,
+    quotientEquiv_mk, AlgEquiv.coe_ringEquiv, AdjoinRoot.equiv'_symm_apply, PowerBasis.lift_aeval,
     AdjoinRoot.aeval_eq, AdjoinRoot.quotEquivQuotMap_apply_mk]
 
 -- This lemma should have the simp tag but this causes a lint issue.
