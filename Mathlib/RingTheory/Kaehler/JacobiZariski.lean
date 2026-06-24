@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Flat.Basic
 # The Jacobi-Zariski exact sequence
 
 Given algebras `R → S → T`, the Jacobi-Zariski exact sequence is a long exact sequence
-relating the first homology of the naive cotangent complexes and Kaehler differentials of
+relating the first homology of the naive cotangent complexes and the Kaehler differentials of
 the respective algebras. It takes the form:
 ```
 H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0
@@ -38,7 +38,7 @@ the construction of the connecting homomorphism `Algebra.Generators.H1Cotangent.
 naturally extends via a base change map. The exactness lemma is
 `Algebra.Generators.H1Cotangent.exact_liftBaseChange_map_of_flat`. Globally, this extends
 the Jacobi-Zariski exact sequence to the left via the map `(map R R S T).liftBaseChange T`,
-taking the form `T ⊗[S] H₁(L_{S/R}) → H₁(L_{T/R}) → H₁(L_{T/S})`.
+taking the form $T ⊗[S] H₁(L_{S/R}) → H₁(L_{T/R}) → H₁(L_{T/S})$.
 The exactness lemma is `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`.
 
 # TODO
@@ -552,7 +552,7 @@ lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseCha
   Generators.H1Cotangent.exact_δ_map (Generators.self S T) (Generators.self R S)
 
 /-- Given algebras `R → S → T` and `T` flat over `S`,
-`T ⊗[S] H₁(L_{S/R}) → H₁(L_{T/R}) → H₁(L_{T/S})` is exact. -/
+$T ⊗[S] H₁(L_{S/R}) → H₁(L_{T/R}) → H₁(L_{T/S})$ is exact. -/
 -- #TODO : Generalize the flatness assumption to vanishings conditions on `Tor` modules
 lemma H1Cotangent.exact_liftBaseChange_map_of_flat [Module.Flat S T] :
     Function.Exact ((map R R S T).liftBaseChange T) (map R S T T) :=
