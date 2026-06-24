@@ -164,7 +164,7 @@ lemma temp_mdiff
 --   apply hτ.of_le
 --   norm_num
 
-variable [CompleteSpace E] [VectorBundle 𝕜 F V]
+variable [CompleteSpace E]
 
 theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn F cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
@@ -255,6 +255,7 @@ def traceCurvature [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [FiniteDimens
     (hcov : IsCovariantDerivativeOn F cov) (x : M) :
     TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] 𝕜 :=
   have : T2Space (V x) := (VectorBundle.continuousLinearEquivAt 𝕜 F V x).toHomeomorph.symm.t2Space
+  have : T2Space (TangentSpace% x) := inferInstanceAs <| T2Space E
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
   have : FiniteDimensional 𝕜 (TangentSpace I x) :=
     VectorBundle.finiteDimensional 𝕜 E (TangentSpace I) x

@@ -63,7 +63,7 @@ lemma projection_apply (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) 
 lemma cov_eq_proj (hcov : IsCovariantDerivativeOn F cov s) (σ : M → F)
     {x : M} (X₀ : TM x) (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov σ x X₀ = hcov.projection x (σ x) (X₀, mfderiv I 𝓘(𝕜, F) σ x X₀) := by
-  simpa using congr($(hcov.eq_one_form hσ) X₀)
+  simpa using! congr($(hcov.eq_one_form hσ) X₀)
 
 noncomputable def horiz (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f : F) :
     Submodule 𝕜 (TM x × F) :=
@@ -104,8 +104,7 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E] (hcov : IsCovariantDerivat
     · rw [hcov.eq_one_form]
       · simp only [w, h]
         convert huv
-        convert ContinuousLinearMap.add_apply (M₁ := TangentSpace I x) (M₂ := F) _
-          (hcov.one_form x f) u
+        convert add_apply (α := TangentSpace% x) (β := F) _ (hcov.one_form x f) u
         exact h''.symm
       · rwa [mdifferentiableAt_section]
   · rintro ⟨s, s_diff, rfl, rfl, covs⟩
@@ -345,7 +344,7 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
       -- sometimes Tvt.toLinerMap
       erw [hTvtw] at mfderivs
       rw [u_def, t.mfderiv_total_funToSec sdiff hvproj]
-      simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.prod_apply,
+      simp only [ContinuousLinearMap.coe_comp, Function.comp_apply, ContinuousLinearMap.prod_apply,
         ContinuousLinearMap.coe_id', id_eq]
       erw [mfderivs]
       rw [t.mfderiv_proj_fst_deriv hvproj]

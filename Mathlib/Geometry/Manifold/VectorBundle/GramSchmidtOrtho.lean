@@ -63,9 +63,8 @@ open Submodule
 /-- The Gram-Schmidt process takes a set of sections as input
 and outputs a set of sections which are point-wise orthogonal with the same span.
 Basically, we apply the Gram-Schmidt algorithm point-wise. -/
-noncomputable def gramSchmidt [WellFoundedLT ι]
-    (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
-  InnerProductSpace.gramSchmidt ℝ (s · x) n
+noncomputable def gramSchmidt (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x :=
+  fun x ↦ InnerProductSpace.gramSchmidt ℝ (s · x) n
 
 -- Let `s i` be a collection of sections in `E`, indexed by `ι`.
 variable {s : ι → (x : B) → E x}
@@ -105,7 +104,7 @@ theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [O
 @[simp]
 theorem gramSchmidt_zero (n : ι) : gramSchmidt (0 : ι → (x : B) → E x) n = 0 := by
   ext x
-  simpa using InnerProductSpace.gramSchmidt_zero ..
+  simpa using! InnerProductSpace.gramSchmidt_zero ..
 
 variable (s) in
 /-- **Gram-Schmidt Orthogonalisation**: `gramSchmidt` produces a point-wise orthogonal system
@@ -192,9 +191,8 @@ theorem coe_gramSchmidtBasis {x} (hs : LinearIndependent ℝ (s · x))
     (gramSchmidtBasis hs hs') = (gramSchmidt s · x) :=
   Module.Basis.coe_mk _ _
 
-noncomputable def gramSchmidtNormed [WellFoundedLT ι]
-    (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
-  InnerProductSpace.gramSchmidtNormed ℝ (s · x) n
+noncomputable def gramSchmidtNormed (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x :=
+  fun x ↦ InnerProductSpace.gramSchmidtNormed ℝ (s · x) n
 
 lemma gramSchmidtNormed_coe {n : ι} {x} :
     gramSchmidtNormed s n x = ‖gramSchmidt s n x‖⁻¹ • gramSchmidt s n x := by
@@ -320,7 +318,7 @@ lemma contMDiffAt_aux (hs : CMDiffAt n (T% s) x) (ht : CMDiffAt n (T% t) x) (hs'
   rw [← contMDiffWithinAt_univ] at hs ht ⊢
   exact contMDiffWithinAt_aux hs ht hs'
 
-def ContMDiffWithinAt.orthogonalProjection
+theorem ContMDiffWithinAt.orthogonalProjection
     (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
     CMDiffAt[u] n (T% (fun x ↦ (Submodule.span ℝ {s x}).starProjection (t x))) x := by
   simp_rw [Submodule.starProjection_singleton]

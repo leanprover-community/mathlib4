@@ -107,7 +107,7 @@ lemma CovariantDerivative.lift_vec_mem_horiz {v : TotalSpace F V} (u : TangentSp
   let tlift := hcov.lift_vec v.proj (t v).2
   rw [lift_vec_apply, CovariantDerivative.mem_horiz_iff_proj]
   -- TODO: cleanup
-  simp only [proj, IsCovariantDerivativeOn.lift_vec_apply, ContinuousLinearMap.coe_comp',
+  simp only [proj, IsCovariantDerivativeOn.lift_vec_apply, ContinuousLinearMap.coe_comp,
              Trivialization.symmL_apply, Function.comp_apply]
   rw [t.deriv_derivInv_apply (FiberBundle.mem_baseSet_trivializationAt' v.proj)]
   suffices t.symm v.proj 0 = 0 by simpa
@@ -139,7 +139,7 @@ lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace
     have mem := FiberBundle.mem_baseSet_trivializationAt F V v.proj
     apply (t.bijective_deriv mem).1
     unfold CovariantDerivative.lift_vec
-    simp only [ContinuousLinearMap.coe_comp', Function.comp_apply]
+    simp only [ContinuousLinearMap.coe_comp, Function.comp_apply]
     rw [t.deriv_derivInv_apply mem]
     rw [hcov.lift_vec_eq_iff]
     constructor
@@ -178,12 +178,12 @@ lemma CovariantDerivative.lift_vec_eq [FiniteDimensional 𝕜 E] {v : TotalSpace
     · exact e.mdifferentiableAt_funToSec hv sdiff
     · simp [sval, hv]
     · rw [e.mfderiv_total_funToSec sdiff hv]
-      simp only [TotalSpace.proj_mk', ContinuousLinearMap.coe_comp', Function.comp_apply,
+      simp only [TotalSpace.proj_mk', ContinuousLinearMap.coe_comp, Function.comp_apply,
                  ContinuousLinearMap.prod_apply, ContinuousLinearMap.coe_id', id_eq]
       congr 2
       · simp [e.funToSec_proj_eq hv sval]
       · simp [e.mfderiv_proj_fst_deriv, hv]
-      · simp only [hv, e.mfderiv_proj_derivInv_apply, ContinuousLinearMap.coe_neg,
+      · simp only [hv, e.mfderiv_proj_derivInv_apply, ContinuousLinearMap.toLinearMap_neg,
                    LinearMap.neg_apply, ContinuousLinearMap.coe_coe]
         rw [proj_lift] at mfderivs ⊢
         erw [mfderivs]

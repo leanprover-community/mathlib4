@@ -396,7 +396,7 @@ lemma derivInv_deriv
   have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
   have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
   have D1' := D₁
-  simp only [PartialEquiv.invFun_as_coe, OpenPartialHomeomorph.coe_coe_symm] at D1'
+  simp only [PartialEquiv.invFun_as_coe, OpenPartialHomeomorph.coe_toPartialEquiv_symm] at D1'
   rw [e.mk_proj_snd' hv] at D₁
   have comp := mfderiv_comp v D₁ D₂
   rw [(invFun_comp_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
@@ -442,7 +442,7 @@ lemma mfderiv_proj_derivInv_apply
   have := congr($this u).symm
   change mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v _ = _ at this
   -- Why all this pain??
-  convert this
+  convert! this
   ext x
   simp
   rfl
@@ -461,7 +461,7 @@ lemma deriv_derivInv
   have comp := mfderiv_comp (e v) D₂ D₁
   rw [(comp_invFun_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
   symm
-  convert comp <;> rw [this]
+  convert! comp <;> rw [this]
 
 @[simp]
 lemma deriv_derivInv_apply

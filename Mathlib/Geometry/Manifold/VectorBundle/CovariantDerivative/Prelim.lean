@@ -49,7 +49,7 @@ lemma injective_mfderiv_of_eventually_leftInverse
   rw [hfg.mfderiv_eq] at this
   have : LeftInverse (mfderiv% g (f x)) (mfderiv% f x) := by
     intro u
-    simpa using congr($this u).symm
+    simpa using! congr($this u).symm
   exact LeftInverse.injective this
 
 -- unused; could move to `SpecificFunctions`
@@ -62,7 +62,7 @@ lemma surjective_mfderiv_of_eventually_rightInverse
   rw [hfg.mfderiv_eq] at this
   have : RightInverse (mfderiv% f x) (mfderiv% g (f x)) := by
     intro u
-    simpa using congr($this u).symm
+    simpa using! congr($this u).symm
   rw [← hxy] at this
   exact RightInverse.surjective this
 

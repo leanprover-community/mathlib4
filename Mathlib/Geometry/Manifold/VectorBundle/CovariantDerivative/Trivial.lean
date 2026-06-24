@@ -166,7 +166,7 @@ lemma _root_.CovariantDerivative.exists_one_form
     ∀ σ : M → F, ∀ x, MDiffAt (T% σ) x →
     letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
     cov σ x = d + A x (σ x) := by
-  simpa using cov.isCovariantDerivativeOnUniv.exists_one_form
+  simpa using! cov.isCovariantDerivativeOnUniv.exists_one_form
 
 end classification
 
