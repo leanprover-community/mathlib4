@@ -396,21 +396,18 @@ def ofIso {G : C ⥤ D} (e : F ≅ G) : G.OplaxMonoidal where
       oplax_associativity_assoc, NatTrans.naturality_assoc,
       tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp (f := e.hom.app (Y ⊗ Z)),
       Iso.hom_inv_id_app_assoc, MonoidalCategory.whiskerLeft_comp,
-      whisker_exchange_assoc, tensorHom_def,
-      MonoidalCategory.whiskerLeft_comp]
+      whisker_exchange_assoc, tensorHom_def, MonoidalCategory.whiskerLeft_comp]
   oplax_left_unitality X := by
     rw [assoc, assoc, NatTrans.naturality_assoc, tensorHom_def'_assoc,
-      ← comp_whiskerRight, Iso.hom_inv_id_app_assoc,
-      whisker_exchange, ← oplax_left_unitality_assoc,
-      leftUnitor_inv_naturality_assoc, ← MonoidalCategory.whiskerLeft_comp,
-      Iso.inv_hom_id_app, MonoidalCategory.whiskerLeft_id, comp_id]
+      ← comp_whiskerRight, Iso.hom_inv_id_app_assoc, whisker_exchange,
+      ← oplax_left_unitality_assoc, leftUnitor_inv_naturality_assoc,
+      ← MonoidalCategory.whiskerLeft_comp, Iso.inv_hom_id_app,
+      MonoidalCategory.whiskerLeft_id, comp_id]
   oplax_right_unitality X := by
-    rw [assoc, assoc, NatTrans.naturality_assoc,
-      tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp,
-      Iso.hom_inv_id_app_assoc, ← whisker_exchange, ← oplax_right_unitality_assoc,
-      rightUnitor_inv_naturality_assoc, ← comp_whiskerRight,
-      Iso.inv_hom_id_app, MonoidalCategory.whiskerRight_id, id_comp,
-      Iso.hom_inv_id, comp_id]
+    rw [assoc, assoc, NatTrans.naturality_assoc, tensorHom_def_assoc,
+      ← MonoidalCategory.whiskerLeft_comp, Iso.hom_inv_id_app_assoc, ← whisker_exchange,
+      ← oplax_right_unitality_assoc, rightUnitor_inv_naturality_assoc, ← comp_whiskerRight,
+      Iso.inv_hom_id_app, MonoidalCategory.whiskerRight_id, id_comp, Iso.hom_inv_id, comp_id]
 
 end
 
