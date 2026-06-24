@@ -184,7 +184,8 @@ theorem hasIndiscreteTopology [HasIndiscreteTopology Y] {f : X → Y} (hf : IsIn
 theorem nontrivialTopology [NontrivialTopology X] {f : X → Y} (hf : IsInducing f) :
     NontrivialTopology Y :=
   not_imp_not.1
-    (by simpa using (fun _ : HasIndiscreteTopology Y => hf.hasIndiscreteTopology)) ‹NontrivialTopology X›
+    (by simpa using (fun _ : HasIndiscreteTopology Y => hf.hasIndiscreteTopology))
+      ‹NontrivialTopology X›
 
 end IsInducing.IsInducing
 

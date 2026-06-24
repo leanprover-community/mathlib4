@@ -255,9 +255,10 @@ protected theorem hasIndiscreteTopology [HasIndiscreteTopology X] (h : X ≃ₜ 
     HasIndiscreteTopology Y :=
   h.symm.isInducing.hasIndiscreteTopology
 
-@[deprecated (since := "2026-06-24")] alias indiscreteTopology := hasIndiscreteTopology
+@[deprecated (since := "2026-06-24")] alias indiscreteTopology := Homeomorph.hasIndiscreteTopology
 
-theorem hasIndiscreteTopology_iff (h : X ≃ₜ Y) : HasIndiscreteTopology X ↔ HasIndiscreteTopology Y :=
+theorem hasIndiscreteTopology_iff (h : X ≃ₜ Y) :
+    HasIndiscreteTopology X ↔ HasIndiscreteTopology Y :=
   ⟨fun _ ↦ h.hasIndiscreteTopology, fun _ ↦ h.symm.hasIndiscreteTopology⟩
 
 @[deprecated (since := "2026-06-24")] alias indiscreteTopology_iff := hasIndiscreteTopology_iff
