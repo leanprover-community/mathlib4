@@ -1205,6 +1205,7 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
 theorem toBoundedContinuousFunctionCLM_injective :
     Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
   fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
+
 instance : T3Space 𝓢(E, F) :=
   suffices T2Space 𝓢(E, F) from inferInstance
   .of_injective_continuous (toBoundedContinuousFunctionCLM_injective 𝕜 ..)
