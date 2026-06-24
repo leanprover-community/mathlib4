@@ -259,7 +259,7 @@ theorem chromaticIndex_le_one_of_subsingleton [Subsingleton G.edgeSet] : G.chrom
 theorem EdgeColorable.chromaticIndex_pos (h : G.EdgeColorable n) (he : G.edgeSet.Nonempty) :
     0 < G.chromaticIndex :=
   have := he.to_subtype
-  chromaticNumber_pos h
+  Colorable.chromaticNumber_pos h
 
 theorem EdgeColoring.ne_of_adj_lineGraph (C : G.EdgeColoring α) {e₁ e₂ : G.edgeSet}
     (hadj : G.lineGraph.Adj e₁ e₂) : C e₁ ≠ C e₂ :=
