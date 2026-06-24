@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Congruence.Hom
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Clifford Algebras
@@ -69,6 +70,7 @@ end CliffordAlgebra
 
 /-- The Clifford algebra of an `R`-module `M` equipped with a `QuadraticForm` `Q`.
 -/
+@[wikidata Q674689]
 def CliffordAlgebra := CliffordAlgebra.ringCon Q |>.Quotient
 deriving Inhabited, Ring, Algebra R
 
