@@ -78,7 +78,7 @@ lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
 lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
   le_antisymm f.isContained'.egirth_le f.isContained.egirth_le
 
-lemma egirth_le_two_ediam_plus_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
+lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
   obtain ⟨u, w, hw, hwl⟩ := exists_egirth_eq_length.mpr h
   have half_g_le_edist : ↑(w.length / 2) ≤ G.edist u (w.getVert (w.length / 2)) := by
     have ⟨p,_⟩ := ((w.take (w.length / 2)).reachable).exists_walk_length_eq_edist
