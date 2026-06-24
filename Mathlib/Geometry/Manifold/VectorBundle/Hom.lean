@@ -300,21 +300,71 @@ lemma ContMDiff.clm_bundle_apply
     CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
+
+section
+variable [CompleteSpace 𝕜] [IsManifold IB 1 B]
+    [FiniteDimensional 𝕜 F₁]
+    [ContMDiffVectorBundle 1 F₁ E₁ IB]
+    [FiniteDimensional 𝕜 F₂]
+    [VectorBundle 𝕜 F₂ E₂] [ContMDiffVectorBundle 1 F₂ E₂ IB]
+    {φ : Π x : B, E₁ x →L[𝕜] E₂ x}
+
+/- #synth FiberBundle (F₁ →L[𝕜] F₂) (fun x : B ↦ E₁ x →L[𝕜] E₂ x) -/
+/- #check fiberBundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂ -/
+
+/--
+error: could not find a `FiberBundle` instance on `@ContinuousLinearMap 𝕜 𝕜 Field.toSemifield.toDivisionSemiring.toSemiring
+  Field.toSemifield.toDivisionSemiring.toSemiring (RingHom.id 𝕜) (E₁ x) (inst✝³⁷ x) (inst✝⁴² x).toAddCommMonoid (E₂ x)
+  (inst✝³¹ x) (inst✝³⁶ x).toAddCommMonoid (inst✝⁴¹ x)`:
+`φ` is a function into `@ContinuousLinearMap 𝕜 𝕜 Field.toSemifield.toDivisionSemiring.toSemiring
+  Field.toSemifield.toDivisionSemiring.toSemiring (RingHom.id 𝕜) (E₁ x) (inst✝³⁷ x) (inst✝⁴² x).toAddCommMonoid (E₂ x)
+  (inst✝³¹ x) (inst✝³⁶ x).toAddCommMonoid (inst✝⁴¹ x)`
+
+hint: you may be missing suitable typeclass assumptions
+-/
+#guard_msgs in
+#check T% φ
+
+
+lemma ContMDiff.clm_bundle_of_apply {k}
+    (h : ∀ (σ : Π x : B, E₁ x), CMDiff k (T% σ) → CMDiff k (T% (fun x ↦ φ x (σ x)))) :
+    ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) := by
+  sorry
+
+lemma ContMDiff.mdifferentiableAt_section {σ : (x : B) → E₁ x} {k}
+    (hσ : ContMDiff IB (IB.prod 𝓘(𝕜, F₁)) k (T% σ)) (x : B) :
+    MDiffAt (T% σ) x := by
+  sorry
+
+set_option linter.unusedSectionVars false in
+lemma TensorialAt.apply_clm
+    {φ : (Π x : B, E₁ x) → (Π x, E₂ x)} {x : B}
+    (hφ : TensorialAt IB F₁ (φ · x) x)
+    {σ : Π x : B, E₁ x} (hσ : MDiffAt (T% σ) x) :
+    TensorialAt.mkHom (φ · x) x hφ (σ x) = φ σ x := by
+  rw [mkHom_apply_eq_extend]
+  exact hφ.pointwise (FiberBundle.mdifferentiableAt_extend ..) hσ
+    <| FiberBundle.extend_apply_self F₁ (σ x)
+end
+
 /-- Criterion for a section of a Hom-bundle constructed using the tensoriality criterion to be
 smooth. -/
 theorem TensorialAt.contMDiff_mkHom [CompleteSpace 𝕜] [IsManifold IB 1 B]
     [FiniteDimensional 𝕜 F₁]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
     [ContMDiffVectorBundle 1 F₁ E₁ IB]
+    [FiniteDimensional 𝕜 F₂]
+    [ContMDiffVectorBundle 1 F₂ E₂ IB]
     (φ : (Π x : B, E₁ x) → (Π x, E₂ x))
     (hφ : ∀ x, TensorialAt IB F₁ (φ · x) x)
-    -- hopefully this is the correct smoothness criterion!
     {k} (φ_contMDiff : ∀ (σ : Π x : B, E₁ x), CMDiff k (T% σ) → CMDiff k (T% (φ σ))) :
     -- elaborators not working here
-    let T (x : B) : TotalSpace (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) :=
+    letI T (x : B) : TotalSpace (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) :=
       ⟨x, TensorialAt.mkHom (φ · x) x (hφ x)⟩
     ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k T := by
-  sorry
+  apply ContMDiff.clm_bundle_of_apply fun σ hσ ↦ ?_
+  simp only [fun x ↦ TensorialAt.apply_clm (hφ x) (hσ.mdifferentiableAt_section x)]
+  exact φ_contMDiff σ hσ
 
 end OneVariable
 
