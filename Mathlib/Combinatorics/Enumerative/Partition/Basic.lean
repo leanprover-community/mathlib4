@@ -138,6 +138,22 @@ def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
     suffices m ∈ p.parts → m ≠ 0 by simpa
     grind
 
+/-- If `1 ≤ a` and `a ≤ n`, partitions of `n` containing `a` as a part are equivalent to
+partitions of `n - a`. The forward map removes one occurrence of `a`, and the inverse adds `a` as
+a part. -/
+def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n) :
+    {p : n.Partition // a ∈ p.parts} ≃ (n - a).Partition where
+  toFun p := by
+    refine ⟨p.1.parts.erase a, ?_, ?_⟩
+    · intro _ hi
+      exact p.1.parts_pos (p.1.parts.erase_subset a hi)
+    · have hs : a + (p.1.parts.erase a).sum = n := by
+        simpa [p.1.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.2)
+      lia
+  invFun q := ⟨⟨a ::ₘ q.parts, by grind, by simp [q.parts_sum, ha]⟩, by simp⟩
+  left_inv p := Subtype.ext <| Partition.ext <| cons_erase p.property
+  right_inv q := Partition.ext <| erase_cons_head a q.parts
+
 theorem toFinsuppAntidiag_injective (n : ℕ) : Function.Injective (toFinsuppAntidiag (n := n)) := by
   unfold toFinsuppAntidiag
   intro p q h

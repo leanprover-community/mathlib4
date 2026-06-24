@@ -243,19 +243,6 @@ theorem bell_eq_sum_erase {n : ℕ} (p : (n + 1).Partition) :
     grind [Nat.add_one_mul_choose_eq, cons_erase, bell_cons_mul_count]
   _ = _ := by rw [Finset.mul_sum]
 
-private def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n) :
-    {p : n.Partition // a ∈ p.parts} ≃ (n - a).Partition where
-  toFun p := by
-    refine ⟨p.1.parts.erase a, ?_, ?_⟩
-    · intro _ hi
-      exact p.1.parts_pos (p.1.parts.erase_subset a hi)
-    · have hs : a + (p.1.parts.erase a).sum = n := by
-        simpa [p.1.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.2)
-      lia
-  invFun q := ⟨⟨a ::ₘ q.parts, by grind, by simp [q.parts_sum, ha]⟩, by simp⟩
-  left_inv p := Subtype.ext <| Partition.ext <| cons_erase p.property
-  right_inv q := Partition.ext <| erase_cons_head a q.parts
-
 private def sigmaPartitionWithPartEquiv (n : ℕ) :
     (Σ i : Fin n.succ, {p : (n + 1).Partition // (i + 1 : ℕ) ∈ p.parts}) ≃
     Σ p : (n + 1).Partition, {a : ℕ // a ∈ p.parts.toFinset} where
@@ -282,14 +269,13 @@ theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.
     have h1 : 1 ≤ (i + 1 : ℕ) := by lia
     have h2 : (i + 1 : ℕ) ≤ n + 1 := by lia
     have hsub : n + 1 - (i + 1 : ℕ) = n - i := by lia
-    exact hsub ▸ (Fintype.sum_equiv (partitionWithPartEquiv h1 h2) _ _ (fun _ ↦ rfl)).symm
+    exact hsub ▸ (Fintype.sum_equiv (Partition.partitionWithPartEquiv h1 h2) _ _ (fun _ ↦ rfl)).symm
   _ = ∑ x : Σ p : (n + 1).Partition, p.parts.toFinset,
       choose n (x.2.1 - 1) * (x.1.parts.erase x.2.1).bell := by
     rw [← Nat.range_succ_eq_Iic, Finset.sum_range, ← Fintype.sum_sigma']
     refine Fintype.sum_equiv (sigmaPartitionWithPartEquiv n) _ _ ?_
     simp [sigmaPartitionWithPartEquiv]
-  _ = ∑ p : (n + 1).Partition, ∑ a : p.parts.toFinset,
-      choose n (a - 1) * (p.parts.erase a).bell :=
+  _ = ∑ p : (n + 1).Partition, ∑ a : p.parts.toFinset, choose n (a - 1) * (p.parts.erase a).bell :=
     Fintype.sum_sigma' fun (p : (n + 1).Partition) (a : p.parts.toFinset) ↦
       choose n (a - 1) * (p.parts.erase a.1).bell
   _ = _ := by
