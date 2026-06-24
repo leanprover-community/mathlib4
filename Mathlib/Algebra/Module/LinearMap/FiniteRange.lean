@@ -53,10 +53,12 @@ variable [Semiring K]
   [AddCommMonoid V₃] [Module K V₃]
 
 /-- A linear map **has Noetherian range** if its range is a Noetherian module. -/
-def HasNoetherianRange (f : V →ₗ[K] V₂) := IsNoetherian K f.range
+def HasNoetherianRange (f : V →ₗ[K] V₂) : Prop :=
+  IsNoetherian K f.range
 
 /-- A linear map **has finite range** if its range is finitely generated. -/
-def HasFiniteRange (f : V →ₗ[K] V₂) := f.range.FG
+def HasFiniteRange (f : V →ₗ[K] V₂) : Prop :=
+  f.range.FG
 
 lemma hasNoetherianRange_iff_range {f : V →ₗ[K] V₂} :
     f.HasNoetherianRange ↔ IsNoetherian K f.range :=
@@ -283,17 +285,19 @@ open scoped LinearMap.FiniteRangeSetoid
 /-- `u` is a **left quasi-inverse** to `v` if `u ∘ₗ v ≈ id` modulo
 linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
 (e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
-def IsLeftQuasiInverse (u : V →ₗ[K] V₂) (v : V₂ →ₗ[K] V) := u ∘ₗ v ≈ .id
+def IsLeftQuasiInverse (u : V →ₗ[K] V₂) (v : V₂ →ₗ[K] V) : Prop :=
+  u ∘ₗ v ≈ .id
 
 /-- `u` is a **right quasi-inverse** to `v` if `v ∘ₗ u ≈ id` modulo
 linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
 (e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
-def IsRightQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) := v ∘ₗ u ≈ .id
+def IsRightQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) : Prop :=
+  v ∘ₗ u ≈ .id
 
 /-- `u` is a **quasi-inverse** to `v` if `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo
 linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
 (e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
-def IsQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) :=
+def IsQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) : Prop :=
   u.IsLeftQuasiInverse v ∧ u.IsRightQuasiInverse v
 
 lemma isLeftQuasiInverse_iff_isRightQuasiInverse_swap {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} :
