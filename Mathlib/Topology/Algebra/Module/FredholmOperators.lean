@@ -623,12 +623,11 @@ lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E)
     (h_inv : (u.restrict h_mapsto).IsInvertible) :
     IsFredholmStruct u := by
   have h : Topology.IsStrictMap u ∧ IsClosed (u.range : Set F) := by
-    refine u.isStrictMap_isClosed_range_iff_restrict E₁ E₁_closed |>.2 ⟨?_, ?_⟩
-    · obtain ⟨e, he⟩ := h_inv
-      have h_emb : Topology.IsEmbedding (Subtype.val ∘ (u.restrict h_mapsto)) :=
-        Topology.IsEmbedding.subtypeVal.comp <| he ▸ e.toHomeomorph.isEmbedding
-      exact h_emb.isStrictMap
-    · simpa [u.image_eq_of_surjective_restrict h_mapsto h_inv.surjective]
+    obtain ⟨e, he⟩ := h_inv
+    have eq : u.domRestrict E₁ = F₁.subtypeL ∘L e := he ▸ rfl
+    rw [u.isStrictMap_isClosed_range_iff_restrict E₁ E₁_closed, ← LinearMap.range_domRestrict,
+      ← ContinuousLinearMap.toLinearMap_domRestrict, eq]
+    exact ⟨F₁.isEmbedding_subtypeL.comp e.toHomeomorph.isEmbedding |>.isStrictMap, by simpa⟩
   constructor
   · exact h.1
   · exact h.2
