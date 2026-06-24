@@ -940,7 +940,7 @@ def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃
 /-- Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
 
 This is `Equiv.embeddingCongr`/`RelIso.relEmbeddingCongr` for `OrderEmbedding`. -/
-def orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
+abbrev orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
   RelIso.relEmbeddingCongr f g
 
 @[simp]
@@ -956,7 +956,7 @@ theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ
 /-- Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
 
 This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
-def orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
+abbrev orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
   RelIso.relIsoCongr f g
 
 @[simp]
