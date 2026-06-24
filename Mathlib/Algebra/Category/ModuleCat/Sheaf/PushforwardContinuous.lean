@@ -48,6 +48,11 @@ noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S wh
   map f :=
     { val := (PresheafOfModules.pushforward φ.hom).map f.val }
 
+lemma forget₂_map_pushforward_obj_val_map {U V : Cᵒᵖ} (f : U ⟶ V) (M) :
+    (forget₂ _ Ab).map (((pushforward.{v} φ).obj M).val.map f) =
+      M.val.presheaf.map (F.map f.unop).op :=
+  rfl
+
 variable (R) in
 /-- The restriction functor from sheaves of `R`-modules to sheaves of `R.over X`-modules
 for some `X : D`. -/
@@ -128,12 +133,13 @@ section
 
 variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
   {G : D ⥤ D'} {R' : Sheaf K' RingCat.{u}}
-  [Functor.IsContinuous G K K'] [Functor.IsContinuous (F ⋙ G) J K']
+  [Functor.IsContinuous G K K']
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K K').obj R')
 
 /-- The composition of two pushforward functors on categories of sheaves of modules
 identify to the pushforward for the composition. -/
 noncomputable def pushforwardComp :
+    haveI : Functor.IsContinuous (F ⋙ G) J K' := Functor.isContinuous_comp _ _ _ K _
     pushforward.{v} ψ ⋙ pushforward.{v} φ ≅
       pushforward.{v} (F := F ⋙ G) (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ) :=
   Iso.refl _
@@ -149,8 +155,7 @@ lemma pushforwardComp_inv_app_val_app (M U x) :
 variable {G' : D' ⥤ D''} {R'' : Sheaf K'' RingCat.{u}}
   [Functor.IsContinuous G' K' K'']
   [Functor.IsContinuous (G ⋙ G') K K'']
-  [Functor.IsContinuous ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous (F ⋙ G ⋙ G') J K'']
+  [(F ⋙ G).IsContinuous J K']
   (ψ' : R' ⟶ (G'.sheafPushforwardContinuous RingCat.{u} K' K'').obj R'')
 
 lemma pushforward_assoc :
@@ -239,6 +244,14 @@ noncomputable def pushforwardNatIso (α : F ≅ G) :
       X.val.presheaf.map (α.hom.app U.unop).op = 𝟙 _ from congr($this x)
     simp only [← Functor.map_comp, ← op_comp,
       Iso.hom_inv_id_app, op_id, CategoryTheory.Functor.map_id]
+
+/-- More flexible variant of `SheafOfModules.pushforwardNatIso`. -/
+@[simps!]
+noncomputable
+def pushforwardCongr₂ {ψ : T ⟶ (F.sheafPushforwardContinuous RingCat J K).obj S} (e : F ≅ G)
+    (he : φ ≫ (Functor.sheafPushforwardContinuousNatTrans e.hom _ _ _).app S = ψ) :
+    pushforward.{v} φ ≅ pushforward.{v} ψ :=
+  pushforwardNatIso _ e ≪≫ pushforwardCongr he
 
 end NatTrans
 
