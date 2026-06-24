@@ -96,9 +96,8 @@ lemma IsCusp.mono {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ} (hGH
 
 lemma IsCusp.of_isFiniteRelIndex {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ}
     [𝒢.IsFiniteRelIndex ℋ] (hc : IsCusp c ℋ) : IsCusp c 𝒢 := by
-  have hGH : 𝒢.relIndex ℋ ≠ 0 := 𝒢.relIndex_ne_zero
-  rw [← Subgroup.inf_relIndex_right] at hGH
-  rw [← isCusp_iff_of_relIndex_ne_zero inf_le_right hGH] at hc
+  rw [← isCusp_iff_of_relIndex_ne_zero inf_le_right
+    (Subgroup.inf_relIndex_right (H := 𝒢) (K := ℋ) ▸ 𝒢.relIndex_ne_zero)] at hc
   exact hc.mono inf_le_left
 
 open scoped Pointwise in
@@ -282,7 +281,7 @@ variable [TopologicalSpace R] [IsTopologicalRing R]
 instance instDiscreteTopStrictPeriods [hG : DiscreteTopology 𝒢] :
     DiscreteTopology 𝒢.strictPeriods := by
   let H : Set (GL (Fin 2) R) := 𝒢 ∩ Set.range upperRightHom
-  have hH : DiscreteTopology H := hG.of_subset Set.inter_subset_left
+  haveI : DiscreteTopology H := hG.of_subset Set.inter_subset_left
   have : Set.MapsTo upperRightHom 𝒢.strictPeriods H := fun x hx ↦ by
     grind [SetLike.mem_coe, Subgroup.mem_strictPeriods_iff]
   exact .of_continuous_injective (continuous_upperRightHom.restrict this)
@@ -522,9 +521,10 @@ lemma integerCuspWidth_eq_nat_mul_strictWidthInfty [DiscreteTopology 𝒢.strict
     Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty (𝒢 := 𝒢) ▸
       integerCuspWidth_mem_strictPeriods
   rw [zsmul_eq_mul] at hm
-  have hmR_pos : (0 : ℝ) < m :=
-    pos_of_mul_pos_left (hm ▸ mod_cast integerCuspWidth_pos) 𝒢.strictWidthInfty_nonneg
-  have hm_pos : (0 : ℤ) < m := mod_cast hmR_pos
+  have hm_pos : (0 : ℤ) < m := by
+    have : (0 : ℝ) < m :=
+      pos_of_mul_pos_left (hm ▸ mod_cast integerCuspWidth_pos) 𝒢.strictWidthInfty_nonneg
+    exact_mod_cast this
   exact ⟨m.toNat, by lia, by rw [← hm, ← Int.cast_natCast, Int.toNat_of_nonneg hm_pos.le]⟩
 
 end IntegerCuspWidth
