@@ -173,7 +173,7 @@ def monomial : R →ₗ[R] SkewPolynomial R := lsingle R (ofAdd n)
 
 lemma monomial_zero_right : monomial n (0 : R) = 0 := single_zero _
 
-lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial 0 (1 : R) = 1 :=
+lemma monomial_zero_one : monomial 0 (1 : R) = 1 :=
   rfl
 
 lemma monomial_def (a : R) : monomial n a = single (ofAdd n) a := rfl
@@ -348,8 +348,7 @@ lemma coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 :=
 
 @[simp] lemma coeff_zero (n : ℕ) : coeff (0 : SkewPolynomial R) n = 0 := rfl
 
-@[simp] lemma coeff_one_zero [MulSemiringAction (Multiplicative ℕ) R] :
-    coeff (1 : SkewPolynomial R) 0 = 1 := coeff_monomial
+@[simp] lemma coeff_one_zero : coeff (1 : SkewPolynomial R) 0 = 1 := coeff_monomial
 
 lemma coeff_one [MulSemiringAction (Multiplicative ℕ) R] (n : ℕ) :
     coeff (1 : SkewPolynomial R) n = if 0 = n then 1 else 0 := by

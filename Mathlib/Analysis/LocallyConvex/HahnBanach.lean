@@ -68,7 +68,7 @@ variable [TopologicalSpace E]
 
 /-- **Hahn-Banach theorem** for linear functionals dominated by a continuous seminorm on
 polynormable spaces over `ℝ`. -/
-theorem Module.Dual.exists_continuous_extension_of_le_seminorm_real [IsTopologicalAddGroup E]
+theorem Module.Dual.exists_continuous_extension_of_le_seminorm_real
     [Module ℝ E] [ContinuousSMul ℝ E] [PolynormableSpace ℝ E] (S : Subspace ℝ E) (f : Dual ℝ S)
     {p : Seminorm ℝ E} (hp_cont : Continuous p) (hp : ∀ x, f x ≤ p x) :
     ∃ g : StrongDual ℝ E, (∀ x : S, g x = f x) ∧ ∀ x, |g x| ≤ p x := by
