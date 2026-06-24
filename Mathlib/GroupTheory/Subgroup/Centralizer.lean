@@ -74,6 +74,10 @@ theorem centralizer_le {s t : Set G} (h : s ⊆ t) : centralizer t ≤ centraliz
 theorem centralizer_eq_top_iff_subset {s : Set G} : centralizer s = ⊤ ↔ s ⊆ center G :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 
+@[to_additive (attr := simp)]
+theorem centralizer_center : centralizer (center G : Set G) = ⊤ :=
+  centralizer_eq_top_iff_subset.mpr le_rfl
+
 @[to_additive]
 theorem map_centralizer_le_centralizer_image (s : Set G) (f : G →* G') :
     (Subgroup.centralizer s).map f ≤ Subgroup.centralizer (f '' s) := by
