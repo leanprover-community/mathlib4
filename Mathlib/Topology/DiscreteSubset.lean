@@ -71,7 +71,7 @@ theorem isDiscrete_iff_forall_mem_exists_isOpen {s : Set Y} :
     IsDiscrete s ↔ ∀ y ∈ s, ∃ u, IsOpen u ∧ u ∩ s = {y} := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff']
 
-[@[deprecated (since := "2026-06-24")]]
+@[deprecated (since := "2026-06-24")]
 alias isDiscrete_iff_forall_exists_isOpen := isDiscrete_iff_forall_mem_exists_isOpen
 
 /-- A set `s` is discrete iff for every `t ⊆ s` there is an open `u` with `u ∩ s = t`.
