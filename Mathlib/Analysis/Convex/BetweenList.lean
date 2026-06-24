@@ -180,20 +180,9 @@ variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {R}
 
 lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
-  induction l with
-  | nil => simp
-  | cons head tail ih =>
-    rw [wbtw_cons]
-    refine ⟨?_, ih h.pairwise.of_cons.sortedLE⟩
-    clear ih
-    induction tail with
-    | nil => simp
-    | cons head' tail' ih =>
-      rw [pairwise_cons]
-      refine ⟨?_, ih (h.pairwise.sublist ?_).sortedLE⟩
-      · simp_rw [sortedLE_iff_pairwise, pairwise_cons_cons, pairwise_cons] at h
-        exact fun a ha ↦ .of_le_of_le h.1 (h.2.2.1 a ha)
-      · simp
+  rw [List.Wbtw, List.triplewise_iff_getElem]
+  intro i j k hij hjk hk
+  exact Wbtw.of_le_of_le (h.getElem_le_getElem_of_le hij.le) (h.getElem_le_getElem_of_le hjk.le)
 
 lemma SortedLT.sbtw {l : List R} (h : l.SortedLT) : l.Sbtw R :=
   ⟨h.sortedLE.wbtw, h.nodup⟩
@@ -241,7 +230,6 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
                 nlinarith
               · refine hl''s.pairwise.map _ fun a b hab ↦ ?_
                 gcongr
-                linarith
             · simp only [map_cons, lineMap_apply_zero, map_map, ← hl'', cons.injEq,
                 map_inj_left, Function.comp_apply, lineMap_lineMap_left, lineMap_eq_lineMap_iff,
                 true_and]

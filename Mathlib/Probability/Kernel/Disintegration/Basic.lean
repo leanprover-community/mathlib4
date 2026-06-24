@@ -140,7 +140,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
   by_cases h_sfin : IsSFiniteKernel κCond
   swap; · rw [Kernel.compProd_of_not_isSFiniteKernel_right _ _ h_sfin] at h; simp [h.symm]
   suffices ∀ᵐ b ∂(κ.fst a), κCond (a, b) Set.univ = 1 by
-    convert this with b
+    convert! this with b
     exact ⟨fun _ ↦ measure_univ, fun h ↦ ⟨h⟩⟩
   suffices (∀ᵐ b ∂(κ.fst a), κCond (a, b) Set.univ ≤ 1)
       ∧ (∀ᵐ b ∂(κ.fst a), 1 ≤ κCond (a, b) Set.univ) by

@@ -327,7 +327,7 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
+    simp only [Finset.sum_apply, sum_empty, mul_zero, exp_zero]
     exact aestronglyMeasurable_const
   | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -350,7 +350,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
+    simp only [Finset.sum_apply, sum_empty, mul_zero, exp_zero]
     exact integrable_const _
   | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -533,3 +533,28 @@ lemma integral_id_map (h : Integrable id μ) (L : E →L[𝕜] F) :
   simp [L.integral_comp_id_comm h]
 
 end ContinuousLinearMap
+
+namespace ContinuousLinearEquiv
+
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 E] [NormedSpace ℝ E] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E]
+    [CompleteSpace F] [MeasurableSpace E] {μ : Measure E}
+
+lemma integral_comp_id_comm' (L : E ≃L[𝕜] F) :
+    μ[L] = L μ[id] := by
+  by_cases h : Integrable (fun x ↦ x) μ
+  · exact ContinuousLinearMap.integral_comp_id_comm' h L.toContinuousLinearMap
+  have : ¬ Integrable L μ := mt L.integrable_comp_iff.1 h
+  simp_all [integral_undef]
+
+lemma integral_comp_id_comm (L : E ≃L[𝕜] F) :
+    μ[L] = L (∫ x, x ∂μ) := L.integral_comp_id_comm'
+
+variable [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
+
+lemma integral_id_map (L : E ≃L[𝕜] F) :
+    ∫ x, x ∂(μ.map L) = L (∫ x, x ∂μ) := by
+  rw [show ⇑L = ⇑L.toHomeomorph.toMeasurableEquiv from rfl, integral_map_equiv]
+  simp [L.integral_comp_id_comm]
+
+end ContinuousLinearEquiv
