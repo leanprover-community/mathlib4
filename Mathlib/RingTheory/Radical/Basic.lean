@@ -336,7 +336,7 @@ theorem radical_mul_of_dvd (h : a ∣ b) : radical (a * b) = radical b := by
     ← radical_dvd_iff_primeFactors_subset hb]
   exact radical_dvd_self.trans h
 
-theorem exists_self_dvd_pow_radical (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n := by
+theorem exists_self_dvd_radical_pow (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n := by
   induction a using induction_on_prime with
   | h₁ => tauto
   | h₂ x h => simpa [radical_of_isUnit h, ← isUnit_iff_dvd_one]
@@ -373,7 +373,7 @@ lemma Ideal.radical_span_singleton_eq_span_radical {S : Type*} [CommSemiring S]
     · rw [UniqueFactorizationMonoid.radical_pow _ n_eq]
       exact radical_dvd_self
   · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
-    exact exists_self_dvd_pow_radical h
+    exact exists_self_dvd_radical_pow h
 
 /-! Theorems for UFDs -/
 namespace UniqueFactorizationDomain
