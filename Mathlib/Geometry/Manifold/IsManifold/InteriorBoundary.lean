@@ -6,6 +6,7 @@ Authors: Michael Rothgang, Ben Eltschig
 module
 
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
+public import Mathlib.Geometry.Manifold.Notation
 
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.LocallyConvex.Separation
@@ -115,8 +116,8 @@ lemma isBoundaryPoint_iff {x : M} : I.IsBoundaryPoint x ↔ extChartAt I x x ∈
 
 /-- Every point is either an interior or a boundary point. -/
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
-  rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_diff_interior,
-    I.isClosed_range.closure_eq, mem_diff]
+  rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_sdiff_interior,
+    I.isClosed_range.closure_eq, mem_sdiff]
   exact fun h ↦ ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
@@ -231,7 +232,7 @@ lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
   -- It suffices to show that `fderiv ℝ f x` sends everything to the kernel of `F`.
   suffices h : ∀ y, F (fderiv ℝ f x y) = 0 by
     have ⟨y, hy⟩ := hs''
-    unfold Function.Surjective; push_neg
+    unfold Function.Surjective; push Not
     refine ⟨f x - y, fun z ↦ ne_of_apply_ne F ?_⟩
     rw [h z, F.map_sub]
     exact (sub_pos.2 <| hF _ hy).ne
@@ -246,7 +247,6 @@ lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
 
 variable {n : WithTop ℕ∞} [IsManifold I n M] {e e' : OpenPartialHomeomorph M H} {x : M}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any two charts `e`, `e'` around a point `x` in a C¹ manifold, if `e` maps `x` to the
 interior of the model space, `e'` does too - in other words, the notion of interior points does not
 depend on any choice of charts.
@@ -352,7 +352,7 @@ variable
 /-- If a function `f` is differentiable at `x` with surjective `mfderiv I I' f x` and `x` is an
 interior point with respect to `I`, `f x` must be an interior point with respect to `I'`. -/
 lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x : M}
-    (hf : MDifferentiableAt I I' f x) (hf' : Surjective (mfderiv I I' f x))
+    (hf : MDiffAt f x) (hf' : Surjective (mfderiv% f x))
     (hx : I.IsInteriorPoint x) : I'.IsInteriorPoint (f x) := by
   -- Since p-adic manifolds don't have boundary, WLOG `𝕜` is `ℝ` or `ℂ` and `E` is normed over `ℝ`.
   wlog _ : IsRCLikeNormedField 𝕜
@@ -363,7 +363,7 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
   -- Write everything in terms of extended charts around `x` and `f x`.
   simp only [mfderiv, hf, ite_true] at hf'
   have hf'' := hf.differentiableWithinAt_writtenInExtChartAt.differentiableAt <| by
-    simpa [← mem_interior_iff_mem_nhds] using hx
+    simpa [← mem_interior_iff_mem_nhds] using! hx
   rw [fderivWithin_eq_fderiv (I.uniqueDiffOn _ <| by simp) hf''] at hf'
   /- Since `writtenInExtChartAt I I' x f` is differentiable with surjective differential at `x`
   over `𝕜`, it also is so over `ℝ`. -/
@@ -376,7 +376,7 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
   a closed convex set with nonempty interior (`I'.range`), it must send `x` to that interior. -/
   have := hf''.mem_interior_convex_of_surjective_fderiv (Filter.inter_mem ?_ ?_) I'.convex_range
     I'.isClosed_range I'.nonempty_interior (writtenInExtChartAt_mapsTo.mono_right ?_) hf'
-  · simpa using this
+  · simpa using! this
   · rw [← nhdsWithin_eq_nhds.2 (mem_interior_iff_mem_nhds.1 hx)]
     exact extChartAt_target_mem_nhdsWithin x
   · exact extChartAt_preimage_mem_nhds <| hf.continuousAt.preimage_mem_nhds <|
@@ -400,12 +400,12 @@ lemma IsLocalDiffeomorphAt.isBoundaryPoint_iff (hn : n ≠ 0) {f : M → N} {x :
 lemma IsLocalDiffeomorphOn.preimage_interior_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
     (hf : IsLocalDiffeomorphOn I I' n f s) : f ⁻¹' I'.interior N ∩ s = I.interior M ∩ s := by
   ext x
-  simpa using fun hx ↦ ((hf ⟨x, hx⟩).isInteriorPoint_iff hn).symm
+  simpa using! fun hx ↦ ((hf ⟨x, hx⟩).isInteriorPoint_iff hn).symm
 
 lemma IsLocalDiffeomorphOn.preimage_boundary_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
     (hf : IsLocalDiffeomorphOn I I' n f s) : f ⁻¹' I'.boundary N ∩ s = I.boundary M ∩ s := by
   ext x
-  simpa using fun hx ↦ ((hf ⟨x, hx⟩).isBoundaryPoint_iff hn).symm
+  simpa using! fun hx ↦ ((hf ⟨x, hx⟩).isBoundaryPoint_iff hn).symm
 
 lemma IsLocalDiffeomorph.preimage_interior (hn : n ≠ 0) {f : M → N}
     (hf : IsLocalDiffeomorph I I' n f) : f ⁻¹' I'.interior N = I.interior M := by
@@ -438,7 +438,7 @@ lemma Diffeomorph.image_boundary (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
 
 lemma Diffeomorph.boundarylessManifold (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N)
     [BoundarylessManifold I M] : BoundarylessManifold I' N :=
-    Φ.symm.isLocalDiffeomorph.boundarylessManifold hn
+  Φ.symm.isLocalDiffeomorph.boundarylessManifold hn
 
 lemma Diffeomorph.boundarylessManifold_iff (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
     BoundarylessManifold I M ↔ BoundarylessManifold I' N :=
@@ -457,7 +457,7 @@ open TopologicalSpace
 lemma isInteriorPoint_iff_isInteriorPoint_val {u : Opens M} {x : u} :
     I.IsInteriorPoint x ↔ I.IsInteriorPoint x.1 := by
   simpa [I.isInteriorPoint_iff, u.chartAt_eq,
-    OpenPartialHomeomorph.subtypeRestr, mem_interior_iff_mem_nhds] using
+    OpenPartialHomeomorph.subtypeRestr, mem_interior_iff_mem_nhds] using!
     fun _ _ ↦ (chartAt H x.1).extend_preimage_mem_nhds (mem_chart_source H x.1) (u.2.mem_nhds x.2)
 
 /-- For `u : Opens M`, `x : u` is a boundary point iff `x.val : M` is. -/
@@ -581,24 +581,11 @@ lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
 -- it had to be a boundary point, hence `p` were a boundary point also, contradiction.
 lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
     (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
-  by_contra h
-  set x := Sum.getLeft p hleft
-  rw [isInteriorPoint_iff_not_isBoundaryPoint x, not_not] at h
-  rw [isInteriorPoint_iff_not_isBoundaryPoint p] at hp
-  have := boundaryPoint_inl (M' := M') x (by tauto)
-  rw [← Sum.eq_left_getLeft_of_isLeft hleft] at this
-  exact hp this
+  grind [isInteriorPoint_iff_not_isBoundaryPoint, boundaryPoint_inl]
 
 lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
     (hright : Sum.isRight p) : I.IsInteriorPoint (Sum.getRight p hright) := by
-  by_contra h
-  set x := Sum.getRight p hright
-  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I)).inter_eq]
-  constructor
-  · rw [ModelWithCorners.interior, mem_setOf]; exact hp
-  · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_right_getRight_of_isRight hright]
-    have := isInteriorPoint_or_isBoundaryPoint (I := I) x
-    exact boundaryPoint_inr (M' := M') x (by tauto)
+  grind [isInteriorPoint_iff_not_isBoundaryPoint, boundaryPoint_inr]
 
 lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =

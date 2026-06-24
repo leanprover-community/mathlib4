@@ -17,11 +17,11 @@ Prove some results on the fractional ideals of number fields.
 
 ## Main definitions and results
 
-  * `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
-    a fractional ideal of a number field `K`.
-  * `NumberField.det_basisOfFractionalIdeal_eq_absNorm`: for `I` a fractional ideal of a number
-    field `K`, the absolute value of the determinant of the base change from `integralBasis` to
-    `basisOfFractionalIdeal I` is equal to the norm of `I`.
+* `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
+  a fractional ideal of a number field `K`.
+* `NumberField.det_basisOfFractionalIdeal_eq_absNorm`: for `I` a fractional ideal of a number
+  field `K`, the absolute value of the determinant of the base change from `integralBasis` to
+  `basisOfFractionalIdeal I` is equal to the norm of `I`.
 -/
 
 @[expose] public section
@@ -36,15 +36,10 @@ section Basis
 
 open Module
 
--- This is necessary to avoid several timeouts
-attribute [local instance 2000] Submodule.module
-
-set_option backward.isDefEq.respectTransparency false in
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
   refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm
   exact nonZeroDivisors.coe_ne_zero I.den
 
-set_option backward.isDefEq.respectTransparency false in
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Finite ℤ I := by
   refine Module.Finite.of_surjective
     (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm.toLinearMap (LinearEquiv.surjective _)

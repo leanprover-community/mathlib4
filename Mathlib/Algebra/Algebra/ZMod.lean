@@ -55,12 +55,11 @@ def algebraOfModule (n : ℕ) (R : Type*) [Ring R] [Module (ZMod n) R] : Algebra
   Algebra.ofModule' (proof · · |>.1) (proof · · |>.2) where
   proof (r : ZMod n) (x : R) : r • 1 * x = r • x ∧ x * r • 1 = r • x := by
     obtain _ | n := n
-    · obtain rfl : (inferInstanceAs (Module ℤ R)) = ‹_› := Subsingleton.elim _ _
+    · obtain rfl : ((inferInstance : Module ℤ R)) = ‹_› := Subsingleton.elim _ _
       simp [ZMod, Int.cast_comm]
     · obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
       simp [Nat.cast_smul_eq_nsmul, Nat.cast_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 instance instIsScalarTower (n : ℕ) (R M : Type*) [Ring R] [AddCommGroup M]
     [Module (ZMod n) R] [m₁ : Module (ZMod n) M] [Module R M] :
     IsScalarTower (ZMod n) R M := by

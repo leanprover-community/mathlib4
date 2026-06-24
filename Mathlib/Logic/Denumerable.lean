@@ -91,7 +91,6 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
     decode_inv := fun n => by
       simp [decode_ofEquiv, encode_ofEquiv] }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
@@ -128,9 +127,8 @@ instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by
       simpa [bit_bodd_div2]
-    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.map_some,
-      Option.mem_def, Sum.exists]
-    cases bodd n <;> simp [bit, encodeSum, Nat.two_mul]⟩
+    simp only [decodeSum, decode_eq_ofNat, Option.map_some, Sum.exists]
+    cases bodd n <;> simp [bit_val, encodeSum]⟩
 
 section Sigma
 
@@ -158,10 +156,10 @@ theorem prod_ofNat_val (n : ℕ) :
 theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
 
 instance int : Denumerable ℤ :=
-  Denumerable.mk' Equiv.intEquivNat
+  fast_instance% Denumerable.mk' Equiv.intEquivNat
 
 instance pnat : Denumerable ℕ+ :=
-  Denumerable.mk' Equiv.pnatEquivNat
+  fast_instance% Denumerable.mk' Equiv.pnatEquivNat
 
 /-- The lift of a denumerable type is denumerable. -/
 instance ulift : Denumerable (ULift α) :=
@@ -240,7 +238,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
-        (by intro a ha; simpa using (List.mem_filter.mp ha).2) with ht
+        (by intro a ha; simpa using! (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
       simp [List.mem_filter, Subtype.ext_iff, ht]
     cases hmax : List.maximum t with
@@ -248,7 +246,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
       refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     | coe m =>
-      have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
+      have wf : ↑m < x := by simpa using! hmt.mp (List.maximum_mem hmax)
       rcases ofNat_surjective m with ⟨a, rfl⟩
       refine ⟨a + 1, le_antisymm (succ_le_of_lt wf) ?_⟩
       exact le_succ_of_forall_lt_le fun z hz => List.le_maximum_of_mem (hmt.2 hz) hmax

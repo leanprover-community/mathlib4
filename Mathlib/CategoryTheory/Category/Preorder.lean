@@ -5,7 +5,6 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Data.ULift
@@ -81,6 +80,7 @@ theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
 theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
+set_option linter.defProp false in
 @[nolint defLemma, inherit_doc leOfHom]
 abbrev _root_.Quiver.Hom.le := @leOfHom
 
@@ -185,7 +185,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 namespace CategoryTheory.Functor
 
 /-- A functor between preorder categories is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
 
 /-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/

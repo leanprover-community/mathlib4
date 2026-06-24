@@ -245,8 +245,8 @@ tracing the result if `trace.linarith` is on.
 -/
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
     (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
-  withTraceNode `linarith (fun e =>
-      return m!"{exceptEmoji e} {.ofConstName pp.name}: {pp.description}") do
+  withTraceNode `linarith (fun _ =>
+      return m!"{.ofConstName pp.name}: {pp.description}") do
     let branches ← pp.transform g l
     if branches.length > 1 then
       trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"

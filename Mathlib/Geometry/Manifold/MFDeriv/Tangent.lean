@@ -35,7 +35,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
 the identification between the tangent bundle of the model space and the product space. -/
 theorem tangentMap_chart {p q : TangentBundle I M} (h : q.1 ∈ (chartAt H p.1).source) :
-    tangentMap I I (chartAt H p.1) q =
+    tangentMap% (chartAt H p.1) q =
       (TotalSpace.toProd _ _).symm
         ((chartAt (ModelProd H E) p : TangentBundle I M → ModelProd H E) q) := by
   dsimp [tangentMap]
@@ -48,17 +48,16 @@ tangent bundle, composed with the identification between the tangent bundle of t
 the product space. -/
 theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
     (h : q.1 ∈ (chartAt H p.1).target) :
-    tangentMap I I (chartAt H p.1).symm q =
+    tangentMap% (chartAt H p.1).symm q =
       (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
   dsimp only [tangentMap]
   rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm (chart_mem_atlas _ _) h)]
   simp only [TangentBundle.chartAt, tangentBundleCore,
-    mfld_simps, (· ∘ ·)]
+    mfld_simps]
   -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
   congr
   exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
     mfderiv% (chartAt H y) x = tangentCoordChange I x y x := by
   have := mdifferentiableAt_atlas (I := I) (ChartedSpace.chart_mem_atlas _) hsrc
@@ -70,13 +69,12 @@ theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffO
     UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
   hs.bundle_preimage _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
 postcomposing it with derivatives of extended charts.
 Concrete version of `inTangentCoordinates_eq`. -/
 lemma inTangentCoordinates_eq_mfderiv_comp
     {N : Type*} {f : N → M} {g : N → M'}
-    {ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)} {x₀ : N} {x : N}
+    {ϕ : Π x : N, TangentSpace% (f x) →L[𝕜] TangentSpace% (g x)} {x₀ : N} {x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
     (mfderiv% (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L

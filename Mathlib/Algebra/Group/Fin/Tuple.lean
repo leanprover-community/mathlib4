@@ -103,6 +103,9 @@ variable [Zero α]
 
 @[simp] lemma zero_empty : (0 : Fin 0 → α) = ![] := empty_eq _
 
+@[simp] lemma finZeroElim_eq_zero : (@finZeroElim fun _ ↦ α) = 0 := by
+  rw [Matrix.empty_eq finZeroElim, Matrix.zero_empty]
+
 @[simp] lemma cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
   ext i; exact i.cases rfl (by simp)
 
@@ -111,7 +114,7 @@ variable [Zero α]
 @[simp] lemma tail_zero : vecTail (0 : Fin n.succ → α) = 0 := rfl
 
 @[simp] lemma cons_eq_zero_iff {v : Fin n → α} {x : α} : vecCons x v = 0 ↔ x = 0 ∧ v = 0 where
-  mp h := ⟨congr_fun h 0, by convert congr_arg vecTail h⟩
+  mp h := ⟨congr_fun h 0, by convert! congr_arg vecTail h⟩
   mpr := fun ⟨hx, hv⟩ ↦ by simp [hx, hv]
 
 lemma cons_nonzero_iff {v : Fin n → α} {x : α} : vecCons x v ≠ 0 ↔ x ≠ 0 ∨ v ≠ 0 where

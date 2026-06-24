@@ -73,7 +73,7 @@ theorem Infinite.exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) 
   have := h.to_subtype
   obtain ⟨f⟩ : Nonempty (s ≃ s ⊕ s) := by
     rw [← Cardinal.eq, ← add_def, add_mk_eq_self]
-  refine ⟨Subtype.val '' (f ⁻¹' (range .inl)), Subtype.val '' (f ⁻¹' (range .inr)), ?_, ?_, ?_⟩
+  refine ⟨Subtype.val '' f ⁻¹' (range .inl), Subtype.val '' f ⁻¹' (range .inr), ?_, ?_, ?_⟩
   · simp [← image_union, ← preimage_union]
   · exact disjoint_image_of_injective Subtype.val_injective
       (isCompl_range_inl_range_inr.disjoint.preimage f)
@@ -116,7 +116,6 @@ lemma ncard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).
   rw [← finsum_mem_univ, ← finite_univ.ncard_biUnion (by simpa) (fun _ _ _ _ hab ↦ h hab)]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
     (hs : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).encard = ∑ᶠ i ∈ t, (s i).encard := by
   classical
@@ -125,8 +124,8 @@ lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
     rw [← this.cast_ncard_eq, ncard_biUnion ht h hs,
       ← finsum_mem_congr rfl fun i hi ↦ (h i hi).cast_ncard_eq, Nat.cast_finsum_mem ht]
   · obtain ⟨i, hi, (hn : (s i).Infinite)⟩ := h
-    rw [← Set.insert_diff_self_of_mem hi,
-      finsum_mem_insert _ (notMem_diff_of_mem <| mem_singleton i) ht.diff]
+    rw [← Set.insert_sdiff_self_of_mem hi,
+      finsum_mem_insert _ (notMem_sdiff_of_mem <| mem_singleton i) ht.sdiff]
     simp [hn]
 
 lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise (Disjoint on s)) :

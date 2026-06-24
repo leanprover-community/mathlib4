@@ -388,7 +388,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     next l.reverse x (mem_reverse.mpr hx) = prev l x hx := by
-  convert (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x (mem_reverse.mpr hx)).symm
+  convert! (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x (mem_reverse.mpr hx)).symm
   exact (reverse_reverse l).symm
 
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
@@ -876,20 +876,11 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   rw [Cycle.chain_coe_cons]
   apply Pairwise.isChain
   rw [pairwise_cons]
-  refine
-    ⟨fun b hb => ?_,
+  exact
+    ⟨fun b hb => by grind,
       pairwise_append.2
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
-          pairwise_singleton r a, fun b hb c hc => ?_⟩⟩
-  · rw [mem_append] at hb
-    rcases hb with hb | hb
-    · exact hs a Ha b (Hl hb)
-    · rw [mem_singleton] at hb
-      rw [hb]
-      exact hs a Ha a Ha
-  · rw [mem_singleton] at hc
-    rw [hc]
-    exact hs b (Hl hb) a Ha
+          pairwise_singleton r a, fun b hb c hc => by grind⟩⟩
 
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by

@@ -129,7 +129,7 @@ instance : Mono (coequalizer.desc f pullback.condition) := by
     infer_instance
   -- We precompose with the epimorphism `g₁ ≫ pullback.snd e k₁`, and finish
   rw [← cancel_epi (g₁ ≫ pullback.snd e k₁)]
-  convert coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
+  convert! coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
   all_goals cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
@@ -176,7 +176,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Given a morphism `f : A ⟶ B` and subobjects `A' ⟶ A` and `B' ⟶ B`, we have a canonical morphism
 `(A' ⊓ (Subobject.pullback f).obj B') ⟶ ((«exists» f).obj A' ⊓ B')`.
-This morphism is part of a StrongEpiMonoFactorosation of
+This morphism is part of a `StrongEpiMonoFactorisation` of
 `(A' ⊓ (Subobject.pullback f).obj B').arrow ≫ f`, see `frobeniusStrongEpiMonoFactorisation`.
 -/
 noncomputable def frobeniusMorphism :

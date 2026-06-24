@@ -33,8 +33,6 @@ We provide a group instance using path composition and show commutativity when `
 
 TODO:
 * `Ω^M (Ω^N X) ≃ₜ Ω^(M⊕N) X`, and `Ω^M X ≃ₜ Ω^N X` when `M ≃ N`. Similarly for `π_`.
-* Path-induced homomorphisms. Show that `HomotopyGroup.pi1EquivFundamentalGroup`
-  is a group isomorphism.
 * Examples with `𝕊^n`: `π_n (𝕊^n) = ℤ`, `π_m (𝕊^n)` trivial for `m < n`.
 * Actions of π_1 on π_n.
 * Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
@@ -108,14 +106,14 @@ namespace GenLoop
 
 instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
   coe f := f.1
-  coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
+  coe_injective := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
 
 @[simp]
 theorem coe_coe (f : Ω^ N X x) : ⇑(f : C(I^N, X)) = f := rfl
 
 @[ext]
 theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
-  DFunLike.coe_injective' (funext H)
+  DFunLike.coe_injective (funext H)
 
 @[simp]
 theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
@@ -129,7 +127,7 @@ instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := in
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
-  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
+  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert! f.2⟩
 
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -287,7 +285,7 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
     (Cube.splitAt i),
     by
     rintro y ⟨j, Hj⟩
-    simp only [ContinuousMap.comp_apply, ContinuousMap.coe_coe,
+    simp only [ContinuousMap.comp_apply,
       funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
       Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
@@ -395,6 +393,7 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     | apply congr_arg q
     apply (Cube.splitAt i).left_inv
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
 def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
   copy (fromLoop i <| (toLoop i f).trans <| toLoop i g)
@@ -527,6 +526,17 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
 def HomotopyGroup.pi1EquivFundamentalGroup : π_ 1 X x ≃ FundamentalGroup X x :=
   homotopyGroupEquivFundamentalGroupOfUnique (Fin 1)
 
+lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [DecidableEq N] [Unique N] (p q : Ω^ N X x) :
+    genLoopEquivOfUnique _ (transAt default q p) =
+      (genLoopEquivOfUnique _ q).trans (genLoopEquivOfUnique _ p) := by
+  ext t
+  simp only [genLoopEquivOfUnique, GenLoop.transAt, GenLoop.copy,
+    one_div, Equiv.coe_fn_mk, GenLoop.mk_apply, ContinuousMap.coe_mk, Path.coe_mk', Path.trans,
+    Function.comp_apply]
+  refine ite_congr rfl (fun _ ↦ congrArg q ?_)
+    fun _ ↦ congrArg p ?_
+  <;> (ext i; rw [Unique.eq_default i]; simp)
+
 namespace HomotopyGroup
 
 /-- Group structure on `HomotopyGroup N X x` for nonempty `N` (in particular `π_(n+1) X x`). -/
@@ -588,11 +598,31 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
   In particular, multiplication on `π_(n+2)` is commutative. -/
 instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
-  @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1 (isUnital_auxGroup <| Classical.choose h) _
+  fast_instance% @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1
+    (isUnital_auxGroup <| Classical.choose h) _
     (by
       rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
       apply congr_arg Quotient.mk'
       simp only [fromLoop_trans_toLoop, transAt_distrib <| Classical.choose_spec h, coe_toEquiv,
         loopHomeo_apply, coe_symm_toEquiv, loopHomeo_symm_apply])
+
+/-- The homotopy group at `x` indexed by a singleton is isomorphic to the fundamental group,
+  i.e. the loops based at `x` up to homotopy. -/
+def homotopyGroupOfUniqueMulEquivFundamentalGroup (N) [Unique N] :
+    HomotopyGroup N X x ≃* FundamentalGroup X x where
+  toEquiv := homotopyGroupEquivFundamentalGroupOfUnique N
+  map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
+    simp only [HomotopyGroup.mul_spec (i := default)]
+    apply Quotient.sound
+    simp [genLoopEquivOfUnique_transAt]
+
+/-- The first homotopy group at `x` is isomorphic to the fundamental group. -/
+def pi1MulEquivFundamentalGroup :
+    π_ 1 X x ≃* FundamentalGroup X x where
+  toEquiv := HomotopyGroup.pi1EquivFundamentalGroup (X := X) (x := x)
+  map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
+    simp only [HomotopyGroup.mul_spec (i := (0 : Fin 1))]
+    apply Quotient.sound
+    rw [Unique.eq_default 0, genLoopEquivOfUnique_transAt]
 
 end HomotopyGroup

@@ -79,7 +79,6 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 ### Facts about `circleMap`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The range of `circleMap c R` is the circle with center `c` and radius `|R|`. -/
 @[simp]
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
@@ -96,16 +95,14 @@ theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |
 theorem image_circleMap_Ioc (c : ℂ) (R : ℝ) : circleMap c R '' Ioc 0 (2 * π) = sphere c |R| := by
   rw [← range_circleMap, ← (periodic_circleMap c R).image_Ioc Real.two_pi_pos 0, zero_add]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
   simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
-    using (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
+    using! (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
 
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The circleMap is real analytic. -/
 theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) :
     AnalyticOnNhd ℝ (circleMap c R) Set.univ := by
@@ -197,9 +194,13 @@ Analogue of `IntervalIntegrable.abs`: If a real-valued function `f` is circle in
 theorem abs {f : ℂ → ℝ} (hf : CircleIntegrable f c R) :
     CircleIntegrable |f| c R := IntervalIntegrable.abs hf
 
-nonrec theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
+@[to_fun] theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
     CircleIntegrable (f + g) c R :=
-  hf.add hg
+  IntervalIntegrable.add hf hg
+
+@[to_fun] theorem sub (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
+    CircleIntegrable (f - g) c R :=
+  IntervalIntegrable.sub hf hg
 
 /-- Sums of circle integrable functions are circle integrable. -/
 protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
@@ -213,7 +214,7 @@ protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
 theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
-  convert CircleIntegrable.sum s h
+  convert! CircleIntegrable.sum s h
   simp
 
 /-- `finsum`s of circle integrable functions are circle integrable. -/
@@ -236,6 +237,29 @@ theorem const_smul {f : ℂ → A} (h : CircleIntegrable f c R) : CircleIntegrab
 theorem const_fun_smul {f : ℂ → A} (h : CircleIntegrable f c R) :
     CircleIntegrable (fun z ↦ a • f z) c R := const_smul h
 
+variable
+  {𝕜 F : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [NormSMulClass 𝕜 F]
+
+/--
+If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g • f` is
+circle integrable.
+-/
+@[to_fun] theorem smul_of_continuousOn {f : ℂ → F} {g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
+    (hg : ContinuousOn g (sphere c |R|)) :
+    CircleIntegrable (g • f) c R :=
+  IntervalIntegrable.continuousOn_smul hf
+    (hg.comp (by fun_prop) (fun x hx ↦ circleMap_mem_sphere' c R x))
+
+/--
+If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g * f` is
+circle integrable.
+-/
+@[to_fun] theorem mul_of_continuousOn {f g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
+    (hg : ContinuousOn g (sphere c |R|)) :
+    CircleIntegrable (g * f) c R :=
+  IntervalIntegrable.continuousOn_mul hf
+    (hg.comp (by fun_prop) (fun x hx ↦ circleMap_mem_sphere' c R x))
+
 /-- The function we actually integrate over `[0, 2π]` in the definition of `circleIntegral` is
 integrable. -/
 theorem out [NormedSpace ℂ E] (hf : CircleIntegrable f c R) :
@@ -255,10 +279,12 @@ theorem circleIntegrable_zero_radius {f : ℂ → E} {c : ℂ} : CircleIntegrabl
 /--
 Circle integrability depends only on the restriction of the function to the sphere.
 -/
-theorem crcleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
+theorem circleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : Set.EqOn f₁ f₂ (sphere c |R|)) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   intervalIntegrable_congr fun x _ ↦ hf (circleMap_mem_sphere' c R x)
+
+@[deprecated (since := "2026-04-26")] alias crcleIntegrable_congr := circleIntegrable_congr
 
 /--
 Circle integrability is invariant when taking negative radius.
@@ -269,7 +295,7 @@ Circle integrability is invariant when taking negative radius.
   rw [intervalIntegrable_congr (f := fun θ ↦ f (circleMap c (-R) θ))
     (g := fun θ ↦ (f ∘ (circleMap c R)) (θ + π)) (fun _ _ ↦ by simp [circleMap_neg_radius]),
     IntervalIntegrable.comp_add_right_iff (c := π), add_comm (2 * π) π]
-  simpa using ((periodic_circleMap c R).comp f).intervalIntegrable_iff (t₂ := 0)
+  simpa using! ((periodic_circleMap c R).comp f).intervalIntegrable_iff (t₂ := 0)
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
 theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
@@ -280,7 +306,7 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
   apply (intervalIntegrable_congr_codiscreteWithin _).1 hf₁
   rw [eventuallyEq_iff_exists_mem]
   exact ⟨(circleMap c R)⁻¹' {z | f₁ z = f₂ z},
-    codiscreteWithin.mono (by simp only [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf),
+    codiscreteWithin_mono (by simp only [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf),
     by tauto⟩
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
@@ -301,7 +327,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
   · have H : ∀ {θ}, circleMap 0 R θ * I ≠ 0 := fun {θ} => by simp [h₀, I_ne_zero]
     simpa only [inv_smul_smul₀ H]
       using ((continuous_circleMap 0 R).aestronglyMeasurable.mul_const
-        I).aemeasurable.inv.aestronglyMeasurable.smul h.aestronglyMeasurable
+        I).aemeasurable.fun_inv.aestronglyMeasurable.smul h.aestronglyMeasurable
   · simp [norm_smul, h₀]
 
 theorem ContinuousOn.circleIntegrable' {f : ℂ → E} {c : ℂ} {R : ℝ}
@@ -368,6 +394,28 @@ theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
   rw [circleIntegral, intervalIntegral.integral_of_le Real.two_pi_pos.le,
     Measure.restrict_congr_set Ioc_ae_eq_Icc]
 
+/-- If a sequence of continuous functions converges uniformly on the circle,
+then their circle integrals converge to the circle integral of the limit function. -/
+theorem _root_.TendstoUniformlyOn.tendsto_circleIntegral_of_continuousOn
+    {ι : Type*} {f : ι → ℂ → E} {g : ℂ → E} {c : ℂ} {R : ℝ}
+    {l : Filter ι} [l.IsCountablyGenerated] (hR : 0 ≤ R)
+    (hf : ∀ᶠ i in l, ContinuousOn (f i) (sphere c R)) (h : TendstoUniformlyOn f g l (sphere c R)) :
+    Tendsto (fun n ↦ ∮ z in C(c, R), f n z) l (𝓝 (∮ z in C(c, R), g z)) := by
+  apply TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
+  · refine hf.mono fun i hi ↦ .smul ?_ (hi.comp ?_ ?_)
+    · rw [funext (deriv_circleMap _ _)]
+      fun_prop
+    · fun_prop
+    · simp [hR, MapsTo]
+  · rw [Metric.tendstoUniformlyOn_iff] at h ⊢
+    simp only [dist_smul₀, deriv_circleMap, norm_mul, norm_I, norm_circleMap_zero,
+      abs_of_nonneg hR, mul_one]
+    intro ε hε
+    rcases exists_pos_mul_lt hε R with ⟨δ, hδ₀, hRδ⟩
+    refine (h δ hδ₀).mono fun i hi x hx ↦ ?_
+    grw [hi (circleMap c R x) (by simp [hR])]
+    exact hRδ
+
 namespace circleIntegral
 
 @[simp]
@@ -386,7 +434,7 @@ theorem circleIntegral_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : �
   apply ae_restrict_le_codiscreteWithin measurableSet_uIoc
   simp only [deriv_circleMap, smul_eq_mul, mul_eq_mul_left_iff, mul_eq_zero,
     circleMap_eq_center_iff, hR, Complex.I_ne_zero, or_self, or_false]
-  exact codiscreteWithin.mono (by tauto) (circleMap_preimage_codiscrete hR hf)
+  exact codiscreteWithin_mono (by tauto) (circleMap_preimage_codiscrete hR hf)
 
 theorem integral_sub_inv_smul_sub_smul (f : ℂ → E) (c w : ℂ) (R : ℝ) :
     (∮ z in C(c, R), (z - w)⁻¹ • (z - w) • f z) = ∮ z in C(c, R), f z := by
@@ -414,7 +462,7 @@ theorem integral_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E} {c 
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     (∮ z in C(c, R), ∑ i ∈ s, f i z) = ∑ i ∈ s, ∮ z in C(c, R), f i z := by
   simp only [circleIntegral, Finset.smul_sum,
-    intervalIntegral.integral_finset_sum fun i hi ↦ (h i hi).out]
+    intervalIntegral.integral_finsetSum fun i hi ↦ (h i hi).out]
 
 theorem norm_integral_le_of_norm_le_const' {f : ℂ → E} {c : ℂ} {R C : ℝ}
     (hf : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ C) : ‖∮ z in C(c, R), f z‖ ≤ 2 * π * |R| * C :=
@@ -424,8 +472,8 @@ theorem norm_integral_le_of_norm_le_const' {f : ℂ → E} {c : ℂ} {R C : ℝ}
         calc
           ‖deriv (circleMap c R) θ • f (circleMap c R θ)‖ = |R| * ‖f (circleMap c R θ)‖ := by
             simp [norm_smul]
-          _ ≤ |R| * C :=
-            mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere' _ _ _) (abs_nonneg _)
+          _ ≤ |R| * C := by
+            gcongr; exact hf _ <| circleMap_mem_sphere' _ _ _
     _ = 2 * π * |R| * C := by rw [sub_zero, _root_.abs_of_pos Real.two_pi_pos]; ac_rfl
 
 theorem norm_integral_le_of_norm_le_const {f : ℂ → E} {c : ℂ} {R C : ℝ} (hR : 0 ≤ R)
@@ -460,7 +508,8 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
           Real.two_pi_pos ?_ continuousOn_const (fun θ _ => ?_) ⟨θ₀, Ioc_subset_Icc_self hmem, ?_⟩
       · exact continuousOn_const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
           circleMap_mem_sphere _ hR.le _).norm
-      · exact mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere _ hR.le _) hR.le
+      · gcongr
+        exact hf _ <| circleMap_mem_sphere _ hR.le _
       · gcongr
     _ = 2 * π * R * C := by simp [mul_assoc]; ring
 
@@ -469,7 +518,6 @@ theorem integral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCom
     (f : ℂ → E) (c : ℂ) (R : ℝ) : (∮ z in C(c, R), a • f z) = a • ∮ z in C(c, R), f z := by
   simp only [circleIntegral, ← smul_comm a (_ : ℂ) (_ : E), intervalIntegral.integral_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_smul_const [CompleteSpace E] (f : ℂ → ℂ) (a : E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z • a) = (∮ z in C(c, R), f z) • a := by
@@ -480,13 +528,11 @@ theorem integral_const_mul (a : ℂ) (f : ℂ → ℂ) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), a * f z) = a * ∮ z in C(c, R), f z :=
   integral_smul a f c R
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_sub_center_inv (c : ℂ) {R : ℝ} (hR : R ≠ 0) :
     (∮ z in C(c, R), (z - c)⁻¹) = 2 * π * I := by
   simp [circleIntegral, ← div_eq_mul_inv, mul_div_cancel_left₀ _ (circleMap_ne_center hR)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f' : ℂ → E` is a derivative of a complex differentiable function on the circle
 `Metric.sphere c |R|`, then `∮ z in C(c, R), f' z = 0`. -/
 theorem integral_eq_zero_of_hasDerivWithinAt' [CompleteSpace E] {f f' : ℂ → E} {c : ℂ} {R : ℝ}
@@ -525,8 +571,9 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
   have hd : ∀ z, z ≠ w ∨ -1 ≤ n →
       HasDerivAt (fun z => (z - w) ^ (n + 1) / (n + 1)) ((z - w) ^ n) z := by
     intro z hne
-    convert ((hasDerivAt_zpow (n + 1) _ (hne.imp _ _)).comp z
-      ((hasDerivAt_id z).sub_const w)).div_const _ using 1
+    convert!
+      ((hasDerivAt_zpow (n + 1) _ (hne.imp _ _)).comp z ((hasDerivAt_id z).sub_const w)).div_const
+        _ using 1
     · have hn' : (n + 1 : ℂ) ≠ 0 := by
         rwa [Ne, ← eq_neg_iff_add_eq_zero, ← Int.cast_one, ← Int.cast_neg, Int.cast_inj]
       simp [mul_div_cancel_left₀ _ hn']
@@ -561,10 +608,9 @@ theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) 
     _ = (2 * π)⁻¹ * ‖∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ := by
       simp [cauchyPowerSeries, norm_smul, Real.pi_pos.le]
     _ ≤ (2 * π)⁻¹ * ∫ θ in 0..2 * π, ‖deriv (circleMap c R) θ •
-        (circleMap c R θ - c)⁻¹ ^ n • (circleMap c R θ - c)⁻¹ • f (circleMap c R θ)‖ :=
-      (mul_le_mul_of_nonneg_left
-        (intervalIntegral.norm_integral_le_integral_norm Real.two_pi_pos.le)
-        (by simp [Real.pi_pos.le]))
+        (circleMap c R θ - c)⁻¹ ^ n • (circleMap c R θ - c)⁻¹ • f (circleMap c R θ)‖ := by
+      gcongr
+      exact intervalIntegral.norm_integral_le_integral_norm (by positivity)
     _ = (2 * π)⁻¹ *
         (|R|⁻¹ ^ n * (|R| * (|R|⁻¹ * ∫ x : ℝ in 0..2 * π, ‖f (circleMap c R x)‖))) := by
       simp [norm_smul, mul_left_comm |R|]
@@ -615,7 +661,7 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
     simp only [smul_smul]
     refine HasSum.smul_const ?_ _
     have : ‖w / (circleMap c R θ - c)‖ < 1 := by simpa [abs_of_pos hR] using hwR.2
-    convert (hasSum_geometric_of_norm_lt_one this).mul_right _ using 1
+    convert! (hasSum_geometric_of_norm_lt_one this).mul_right _ using 1
     simp [← sub_sub, ← mul_inv, sub_mul, div_mul_cancel₀ _ (circleMap_ne_center hR.ne')]
 
 /-- For any circle integrable function `f`, the power series `cauchyPowerSeries f c R`, `R > 0`,

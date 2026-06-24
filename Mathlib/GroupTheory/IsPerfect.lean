@@ -79,6 +79,7 @@ variable (G) in
 lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
   fun _ ↦ (not_isSolvable G) IsNilpotent.to_isSolvable
 
+open scoped IsMulCommutative in
 variable (G) in
 lemma not_isMulCommutative [Nontrivial G] [IsPerfect G] : ¬ IsMulCommutative G :=
   fun _ ↦ (not_isSolvable G) CommGroup.isSolvable
@@ -102,5 +103,42 @@ lemma ofSurjective [IsPerfect G] (hf : Function.Surjective f) : IsPerfect G' := 
 
 instance instQuotientSubgroup [H.Normal] [IsPerfect G] : IsPerfect (G ⧸ H) :=
   ofSurjective (QuotientGroup.mk'_surjective H)
+
+variable (G) in
+@[simp]
+theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : derivedSeries G n = ⊤ := by
+  match n with
+  | 0 => simp
+  | n + 1 =>
+    rw [derivedSeries_succ, derivedSeries_eq_top, commutator_eq_self]
+
+@[simp]
+theorem lowerCentralSeries_eq_top (H : Subgroup G) [IsPerfect H] (n : ℕ) :
+    H.lowerCentralSeries n = H := by
+  match n with
+  | 0 => simp
+  | n + 1 =>
+    rw [Subgroup.lowerCentralSeries_succ, lowerCentralSeries_eq_top, commutator_eq_self]
+
+variable (G) in
+@[simp]
+theorem upperCentralSeries_eq_center [IsPerfect G] {n : ℕ} (hn : n ≠ 0) :
+    Subgroup.upperCentralSeries G n = center G := by
+  rw [← Subgroup.upperCentralSeries_one, eq_comm]
+  apply Subgroup.upperCentralSeries.eq_ge_of_eq_succ <| by lia
+  apply le_antisymm <| Subgroup.upperCentralSeries_mono G one_le_two
+  rw [Subgroup.upperCentralSeries_one, ← commutator_top_right_eq_bot_iff_le_center,
+    ← commutator_eq_top, commutator_comm, commutator_def]
+  suffices ⁅⁅Subgroup.upperCentralSeries G 2, ⊤⁆, ⊤⁆ = ⊥ from
+    commutator_commutator_eq_bot_of_rotate (by simpa [commutator_comm]) this
+  rw [commutator_top_right_eq_bot_iff_le_center, ← Subgroup.upperCentralSeries_one]
+  apply commutator_upperCentralSeries_top_le
+
+variable (G) in
+/-- **Grün's lemma** -/
+theorem center_quotient_center_eq_bot [IsPerfect G] : center (G ⧸ center G) = ⊥ := by
+  rw [← Subgroup.upperCentralSeries_one (G ⧸ center G),
+    ← comap_eq_ker_of_surjective <| QuotientGroup.mk'_surjective _, QuotientGroup.ker_mk',
+    Subgroup.comap_upperCentralSeries_quotient_center, upperCentralSeries_eq_center G <| by lia]
 
 end Group.IsPerfect

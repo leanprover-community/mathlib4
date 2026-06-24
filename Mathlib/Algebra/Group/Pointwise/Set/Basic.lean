@@ -85,7 +85,7 @@ protected def one : One (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.one Set.zero
 
-open Pointwise
+open scoped Pointwise
 
 -- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
 -- scoped
@@ -152,7 +152,7 @@ protected def inv [Inv α] : Inv (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.inv Set.neg
 
-open Pointwise
+open scoped Pointwise
 
 section Inv
 
@@ -229,6 +229,10 @@ theorem inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=
 @[to_additive]
 theorem inv_subset : s⁻¹ ⊆ t ↔ s ⊆ t⁻¹ := by rw [← inv_subset_inv, inv_inv]
 
+@[to_additive]
+theorem inv_eq_self_iff_inv_subset : s⁻¹ = s ↔ s⁻¹ ⊆ s :=
+  ⟨le_of_eq, fun h => antisymm h <| inv_subset.mp h⟩
+
 @[to_additive (attr := simp)]
 theorem inv_singleton (a : α) : ({a} : Set α)⁻¹ = {a⁻¹} := by
   rw [← image_inv_eq_inv, image_singleton]
@@ -241,6 +245,9 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
 theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
   rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
+
+@[to_additive]
+lemma inv_range' {ι : Type*} {f : ι → α} : (range f)⁻¹ = range f⁻¹ := inv_range
 
 @[to_additive]
 theorem image_inv_of_apply_inv_eq {f g : α → β} (H : ∀ x ∈ s, f x⁻¹ = g x) :
@@ -272,7 +279,7 @@ end InvolutiveInv
 
 end Inv
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Set addition/multiplication -/
 
@@ -755,7 +762,7 @@ protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.commMonoid Set.addCommMonoid
 
-open Pointwise
+open scoped Pointwise
 
 section DivisionMonoid
 

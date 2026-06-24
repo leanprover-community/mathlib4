@@ -59,6 +59,12 @@ priori, it only behaves well when `‖x‖ < p.radius`. -/
 protected def sum (p : FormalMultilinearSeries 𝕜 E F) (x : E) : F :=
   ∑' n : ℕ, p n fun _ => x
 
+theorem sum_mem {S : Type*} {s : S} [SetLike S F] [AddSubmonoidClass S F]
+    (h_closed : IsClosed (s : Set F)) (p : FormalMultilinearSeries 𝕜 E F) (x : E)
+    (h : ∀ k, p k (fun _ : Fin k => x) ∈ s) :
+    p.sum x ∈ s :=
+  tsum_mem h_closed h
+
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.partialSum n x` is the sum
 `Σ pₖ xᵏ` for `k ∈ {0,..., n-1}`. -/
 def partialSum (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) (x : E) : F :=
@@ -280,7 +286,6 @@ lemma radius_le_of_le {𝕜' E' F' : Type*}
   gcongr
   exact h n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The radius of the sum of two formal series is at least the minimum of their two radii. -/
 theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
     min p.radius q.radius ≤ (p + q).radius := by
@@ -372,7 +377,7 @@ theorem radius_compContinuousLinearMap_linearIsometryEquiv_eq [Nontrivial E]
     (p.compContinuousLinearMap u.toLinearIsometry.toContinuousLinearMap).radius = p.radius := by
   refine le_antisymm ?_ <| le_radius_compContinuousLinearMap _ _
   have _ : Nontrivial F := u.symm.toEquiv.nontrivial
-  convert radius_compContinuousLinearMap_le p u.toContinuousLinearEquiv
+  convert! radius_compContinuousLinearMap_le p u.toContinuousLinearEquiv
   have : u.toContinuousLinearEquiv.symm.toContinuousLinearMap =
     u.symm.toLinearIsometry.toContinuousLinearMap := rfl
   simp [this]
@@ -445,6 +450,6 @@ theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries �
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
   refine IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ ?_) (isBigO_refl _ _)
   refine IsBigOWith.of_bound (Eventually.of_forall fun n => ?_)
-  simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
+  simpa only [norm_norm] using! f.norm_compContinuousMultilinearMap_le (p n)
 
 end FormalMultilinearSeries

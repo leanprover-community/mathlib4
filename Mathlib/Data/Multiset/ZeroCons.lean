@@ -466,6 +466,11 @@ theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, 
         Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
     fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
 
+theorem card_eq_succ_iff {s : Multiset α} {n : ℕ} :
+    card s = n + 1 ↔ ∃ a t, a ::ₘ t = s ∧ card t = n := by
+  refine ⟨?_, by aesop⟩
+  induction s using Multiset.induction generalizing n with aesop
+
 /-! ### Map for partial functions -/
 
 @[simp]
@@ -517,8 +522,7 @@ theorem rel_eq {s t : Multiset α} : Rel (· = ·) s t ↔ s = t := by
   constructor
   · intro h
     induction h <;> simp [*]
-  · intro h
-    subst h
+  · rintro rfl
     exact rel_eq_refl
 
 theorem Rel.mono {r p : α → β → Prop} {s t} (hst : Rel r s t)
@@ -546,10 +550,8 @@ theorem rel_cons_left {a as bs} :
     induction h generalizing as with
     | zero => simp at hm
     | @cons a' b as' bs ha'b h ih =>
-      rcases cons_eq_cons.1 hm with (⟨eq₁, eq₂⟩ | ⟨_h, cs, eq₁, eq₂⟩)
-      · subst eq₁
-        subst eq₂
-        exact ⟨b, bs, ha'b, h, rfl⟩
+      rcases cons_eq_cons.1 hm with (⟨rfl, rfl⟩ | ⟨_h, cs, eq₁, eq₂⟩)
+      · exact ⟨b, bs, ha'b, h, rfl⟩
       · rcases ih eq₂.symm with ⟨b', bs', h₁, h₂, eq⟩
         exact ⟨b', b ::ₘ bs', h₁, eq₁.symm ▸ Rel.cons ha'b h₂, eq.symm ▸ cons_swap _ _ _⟩
   · exact fun ⟨b, bs', hab, h, Eq⟩ => Eq.symm ▸ Rel.cons hab h

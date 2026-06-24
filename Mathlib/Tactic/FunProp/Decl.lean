@@ -134,7 +134,7 @@ open Elab Term in
 /-- Turn tactic syntax into a discharger function. -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+    (fun _ => do pure s!"discharging: {← ppExpr e}") do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try

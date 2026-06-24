@@ -141,13 +141,11 @@ lemma divConst_le_card : δₘ[A, B] ≤ #B := by
 section Fintype
 variable [Fintype G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Dense sets have small doubling. -/
 @[to_additive addConst_le_inv_dens /-- Dense sets have small doubling. -/]
 lemma mulConst_le_inv_dens : σₘ[A, B] ≤ A.dens⁻¹ := by
   rw [dens, inv_div, mulConst]; gcongr; exact card_le_univ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Dense sets have small difference constant. -/
 @[to_additive subConst_le_inv_dens /-- Dense sets have small difference constant. -/]
 lemma divConst_le_inv_dens : δₘ[A, B] ≤ A.dens⁻¹ := by

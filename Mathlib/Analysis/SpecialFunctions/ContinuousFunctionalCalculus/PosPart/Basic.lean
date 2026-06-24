@@ -102,7 +102,6 @@ section SMul
 
 variable [StarModule ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   by_cases ha : IsSelfAdjoint a
@@ -149,6 +148,9 @@ lemma negPart_nonneg (a : A) :
     0 ≤ a⁻ :=
   cfcₙ_nonneg (fun x _ ↦ by positivity)
 
+instance : SelfAdjointDecompose A where
+  exists_nonneg_sub_nonneg {a} ha := ⟨a⁺, a⁻, by cfc_tac, by cfc_tac, (posPart_sub_negPart a).symm⟩
+
 lemma posPart_eq_of_eq_sub_negPart {a b : A} (hab : a = b - a⁻) (hb : 0 ≤ b := by cfc_tac) :
     a⁺ = b := by
   have ha := hab.symm ▸ hb.isSelfAdjoint.sub (negPart_nonneg a).isSelfAdjoint
@@ -183,7 +185,6 @@ lemma negPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
   nth_rw 2 [← posPart_sub_negPart a]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma negPart_eq_neg (a : A) : a⁻ = -a ↔ a ≤ 0 := by
   rw [← neg_inj, neg_neg, eq_comm]
   refine ⟨fun ha ↦ by rw [ha, neg_nonpos]; exact negPart_nonneg a, fun ha ↦ ?_⟩
@@ -207,7 +208,7 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [IsTopologicalRing A] [T2Space A]
+variable [IsSemitopologicalRing A] [T2Space A]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- simp followed by `exact le_rfl`

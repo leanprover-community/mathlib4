@@ -57,7 +57,7 @@ variable (E : Type*) {A B σ τ ι : Type*} [SetLike σ A] [SetLike τ B]
   (𝒜 : ι → σ) (ℬ : ι → τ) [EquivLike E A B] [GradedEquivLike E 𝒜 ℬ]
 
 instance (priority := 100) GradedEquivLike.toGradedFunLike : GradedFunLike E 𝒜 ℬ where
-  __ := inferInstanceAs (FunLike E A B)
+  __ := (inferInstance : FunLike E A B)
   map_mem e := (map_mem_iff e).mpr
 
 variable {E 𝒜 ℬ}

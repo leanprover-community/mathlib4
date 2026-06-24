@@ -92,22 +92,22 @@ theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf :
 
 variable [TopologicalSpace β] {g : β → α} {b : β} {s : Set β}
 
-@[to_additive]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
-    ContinuousWithinAt (fun x => c • g x) s b :=
+    ContinuousWithinAt (c • g) s b :=
   hg.const_smul c
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
-    ContinuousAt (fun x => c • g x) b :=
+    ContinuousAt (c • g) b :=
   hg.const_smul c
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
-    ContinuousOn (fun x => c • g x) s := fun x hx => (hg x hx).const_smul c
+    ContinuousOn (c • g) s := fun x hx => (hg x hx).const_smul c
 
-@[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
+@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
+theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous (c • g) :=
   (continuous_const_smul _).comp hg
 
 /-- If a scalar is central, then its right action is continuous when its left action is. -/
@@ -157,7 +157,7 @@ theorem Topology.IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [Topo
     {g : β → α} (hg : IsInducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
     ContinuousConstSMul N β where
   continuous_const_smul c := by
-    simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.const_smul (f c)
+    simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.fun_const_smul (f c)
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
@@ -229,8 +229,6 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
 @[to_additive (attr := simps!)]
 def Homeomorph.smul (γ : G) : α ≃ₜ α where
   toEquiv := MulAction.toPerm γ
-  continuous_toFun := continuous_const_smul γ
-  continuous_invFun := continuous_const_smul γ⁻¹
 
 /-- The homeomorphism given by affine-addition by an element of an additive group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
@@ -472,7 +470,7 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 theorem isQuotientMap_smul {S β} [SMul S M] [SMul S α] [IsScalarTower S M α]
     [SMul S β] (f : α →[S] β) [TopologicalSpace β] (hf : IsQuotientMap f)
     (c : S) (hc : IsUnit (c • 1 : M)) : IsQuotientMap (c • · : β → β) :=
-  hf.of_comp_isQuotientMap <| by convert hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
+  hf.of_comp_isQuotientMap <| by convert! hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
 
 theorem isQuotientMap_nsmul {M β} [Semiring M] [AddCommMonoid α] [Module M α]
     [ContinuousConstSMul M α] [AddMonoid β] (f : α →+ β) [TopologicalSpace β]
@@ -511,6 +509,12 @@ attribute [to_additive] ProperlyDiscontinuousSMul
 export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
 export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
+@[to_additive]
+lemma properlyDiscontinuousSMul_iff [TopologicalSpace α] [SMul M α] :
+    ProperlyDiscontinuousSMul M α ↔
+      ∀ {K L : Set α}, IsCompact K → IsCompact L → {m : M | (m • K ∩ L).Nonempty}.Finite :=
+  ⟨fun _ _ _ ↦ ProperlyDiscontinuousSMul.finite_disjoint_inter_image, .mk⟩
+
 section
 
 variable (Γ : Type*) {T : Type*}
@@ -538,7 +542,7 @@ variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_disjoint_image :
     ∃ U ∈ 𝓝 x, ∀ γ : Γ, γ • x ≠ x → Disjoint ((γ • ·) '' U) U := by
-  convert exists_nhds_image_smul_eq_self Γ x using 4
+  convert! exists_nhds_image_smul_eq_self Γ x using 4
   rw [← not_imp_not]
   simp [Set.not_disjoint_iff_nonempty_inter]
 
