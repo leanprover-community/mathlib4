@@ -994,4 +994,54 @@ end IsPullback
 
 end IsPullbackOverPullback
 
+namespace Limits
+
+instance {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) {X' : C} (i : X' ⟶ X) [IsIso i] [HasPullback f g] :
+    HasPullback (i ≫ f) g :=
+  IsPullback.paste_vert
+    (IsPullback.of_vert_isIso_mono (fst := pullback.fst _ _ ≫ inv i) (snd := 𝟙 (pullback f g)) <|
+      ⟨by simp⟩) (.of_hasPullback f g) |>.hasPullback
+
+@[simp]
+lemma HasPullback.comp_left_left_iff_of_isIso
+    {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {X' : C} (i : X' ⟶ X) [IsIso i] :
+    HasPullback (i ≫ f) g ↔ HasPullback f g := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← IsIso.inv_hom_id_assoc i f]
+  infer_instance
+
+instance {X Y Z Z' : C} {f : X ⟶ Z} {g : Y ⟶ Z'} (i : Z ⟶ Z') [IsIso i] [HasPullback (f ≫ i) g] :
+    HasPullback f (g ≫ inv i) := by
+  simpa using hasPullback_of_comp_mono (f ≫ i) g (inv i)
+
+lemma HasPullback.comp_left_right_iff_of_isIso
+    {X Y Z Z' : C} {f : X ⟶ Z} {g : Y ⟶ Z'} (i : Z ⟶ Z') [IsIso i] :
+    HasPullback (f ≫ i) g ↔ HasPullback f (g ≫ inv i) :=
+  ⟨fun h ↦ inferInstance, fun h ↦ by simpa using hasPullback_of_comp_mono f (g ≫ inv i) i⟩
+
+instance {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y) {X' : C} (i : X ⟶ X') [IsIso i] [HasPushout f g] :
+    HasPushout (f ≫ i) g :=
+  IsPushout.paste_horiz (.of_hasPushout f g)
+    (IsPushout.of_horiz_isIso_epi (inl := inv i ≫ pushout.inl _ _) (inr := 𝟙 (pushout f g)) <|
+      ⟨by simp⟩) |>.hasPushout
+
+@[simp]
+lemma HasPushout.comp_left_left_iff_of_isIso
+    {X Y Z : C} {f : Z ⟶ X} {g : Z ⟶ Y} {X' : C} (i : X ⟶ X') [IsIso i] :
+    HasPushout (f ≫ i) g ↔ HasPushout f g := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← Category.comp_id f, ← IsIso.hom_inv_id i, ← Category.assoc]
+  infer_instance
+
+instance {X Y Z Z' : C} {f : Z ⟶ X} {g : Z' ⟶ Y} (i : Z' ⟶ Z) [IsIso i] [HasPushout (i ≫ f) g] :
+    HasPushout f (inv i ≫ g) := by
+  simpa using hasPushout_of_epi_comp (i ≫ f) g (inv i)
+
+lemma HasPushout.comp_left_right_iff_of_isIso
+    {X Y Z Z' : C} {f : Z ⟶ X} {g : Z' ⟶ Y} (i : Z' ⟶ Z) [IsIso i] :
+    HasPushout (i ≫ f) g ↔ HasPushout f (inv i ≫ g) :=
+  ⟨fun h ↦ inferInstance, fun h ↦ by simpa using hasPushout_of_epi_comp f (inv i ≫ g) i⟩
+
+end Limits
+
 end CategoryTheory

@@ -62,6 +62,10 @@ concurrency:
   group: lake-cache-shadow-${{ inputs.mathlib_ref || 'master' }}
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
 env:
   # Scope prefix for all puts and gets in this workflow. Namespaces the
   # workflow's artifacts within the cache bucket.
@@ -87,7 +91,7 @@ jobs:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env STAGE_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
     steps:
       - name: job info
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: echo "::notice::Lake cache shadow on ref ${{ inputs.mathlib_ref || 'master' }} run ${{ github.run_id }}"
 
       - name: Setup jq
@@ -108,7 +112,7 @@ jobs:
 
       - name: Resolve sha & toolchain
         id: resolve
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
           cd pr-branch
           SHA="$(git rev-parse HEAD)"
@@ -117,23 +121,22 @@ jobs:
           echo "toolchain=$TC" >> "$GITHUB_OUTPUT"
 
       - name: Create empty directories (landrun prerequisites)
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
           mkdir -p pr-branch/.lake/
           mkdir -p .cache/mathlib/
           mkdir -p _work
 
       - name: install elan
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
-          set -o pipefail
           curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: set toolchain directory
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
           cd pr-branch
           LAKE_PATH=$(elan which lake)
@@ -141,7 +144,7 @@ jobs:
           echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
 
       - name: set LEAN_SRC_PATH
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
           cd pr-branch
           LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
@@ -154,7 +157,7 @@ jobs:
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
 
       - name: build tools-branch tools
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
           cd tools-branch
           lake build cache
@@ -166,13 +169,13 @@ jobs:
           lake env
 
       - name: Hydrate .lake/build via legacy cache
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache get
 
       - name: Patch lakefile to enable Lake's artifact cache
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
           cd pr-branch
           if grep -q 'enableArtifactCache' lakefile.lean; then
@@ -183,12 +186,10 @@ jobs:
           from pathlib import Path
           p = Path("lakefile.lean")
           src = p.read_text()
-          marker = '  testDriver := "MathlibTest"'
+          marker = '  restoreAllArtifacts := true'
           inject = (
-              '  testDriver := "MathlibTest"\n'
-              '  fixedToolchain := true\n'
-              '  enableArtifactCache := true\n'
-              '  restoreAllArtifacts := true'
+              '  restoreAllArtifacts := true\n'
+              '  enableArtifactCache := true'
           )
           if marker not in src:
               raise SystemExit("lakefile.lean shape changed; update the shadow patch in lake_cache_shadow.yml")
@@ -228,7 +229,7 @@ jobs:
       # write to it. Same pattern as build_template.yml uses for the legacy
       # cache-staging dir.
       - name: Create staging directory
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: mkdir -p lake-cache-staging
 
       - name: Stage cache for upload
@@ -245,7 +246,7 @@ jobs:
       # free-tier / lifecycle budget. Logs the size first, so a trip still tells
       # us how big the build got.
       - name: Guard upload size (bail if staging > 1 GB)
-        shell: bash
+        shell: bash -euo pipefail {0}
         run: |
           MAX=$((1 * 1000 * 1000 * 1000))   # 1 GB — ~2.5x the measured ~389 MB full build (runaway guard)
           BYTES=$(du -sb lake-cache-staging | cut -f1)
@@ -284,9 +285,7 @@ jobs:
           fetch-depth: 1
 
       - name: install elan + matching lake
-        shell: bash
         run: |
-          set -o pipefail
           curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
@@ -336,7 +335,8 @@ jobs:
           base="${AUTH%/artifacts}/analysis"
           sha="${{ needs.build_and_stage.outputs.sha }}"
           sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
-          grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt
+          # grep exits 1 on no match (handled by the total==0 branch); tolerate it under pipefail.
+          grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt || true
           total=$(wc -l < /tmp/today.txt)
           if [ "$total" -eq 0 ]; then
             echo "::warning::no uploaded artifacts parsed from put.log — skipping carryover (manifest/pointer left unchanged)"
@@ -418,7 +418,6 @@ jobs:
 
       - name: install elan
         run: |
-          set -o pipefail
           curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
@@ -437,12 +436,10 @@ jobs:
           from pathlib import Path
           p = Path("lakefile.lean")
           src = p.read_text()
-          marker = '  testDriver := "MathlibTest"'
+          marker = '  restoreAllArtifacts := true'
           inject = (
-              '  testDriver := "MathlibTest"\n'
-              '  fixedToolchain := true\n'
-              '  enableArtifactCache := true\n'
-              '  restoreAllArtifacts := true'
+              '  restoreAllArtifacts := true\n'
+              '  enableArtifactCache := true'
           )
           if marker not in src:
               raise SystemExit("lakefile.lean shape changed")
@@ -458,7 +455,8 @@ jobs:
           # Artifacts fetched here = the root-package outputs served from cache
           # (a non-verbose build replays them silently). Hand the count to the
           # provenance step.
-          FETCHED=$(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l)
+          # `|| true`: an informational count must not trip pipefail if find fails.
+          FETCHED=$(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l || true)
           echo "ltar count after get: $FETCHED"
           echo "FETCHED_ARTIFACTS=$FETCHED" >> "$GITHUB_ENV"
 
@@ -514,7 +512,6 @@ jobs:
     steps:
       - name: Compose Zulip message
         id: compose
-        shell: bash
         env:
           BUILD: ${{ needs.build_and_stage.result }}
           UPLOAD: ${{ needs.upload.result }}
