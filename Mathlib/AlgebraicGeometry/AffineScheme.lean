@@ -433,6 +433,10 @@ instance isOpenImmersion_fromSpec :
 lemma isoSpec_inv_ι : hU.isoSpec.inv ≫ U.ι = hU.fromSpec := rfl
 
 @[reassoc (attr := simp)]
+lemma isoSpec_hom_fromSpec : hU.isoSpec.hom ≫ hU.fromSpec = U.ι := by
+  simp [← cancel_epi hU.isoSpec.inv]
+
+@[reassoc (attr := simp)]
 lemma toSpecΓ_fromSpec : U.toSpecΓ ≫ hU.fromSpec = U.ι := toSpecΓ_isoSpec_inv_assoc _ _
 
 set_option backward.defeqAttrib.useBackward true in
@@ -942,6 +946,17 @@ theorem self_le_iSup_basicOpen_iff {s : Set Γ(X, U)} :
   exact X.basicOpen_le x
 
 end IsAffineOpen
+
+@[simps I₀ X f]
+def Scheme.AffineOpenCover.ofIsOpenCover {X : Scheme.{u}} {ι : Type*} (U : ι → X.Opens)
+    (hU : IsOpenCover U) (hU' : ∀ i, IsAffineOpen (U i)) :
+    AffineOpenCover X where
+  I₀ := ι
+  X i := Γ(X, U i)
+  f i := (hU' i).fromSpec
+  idx x := (hU.exists_mem x).choose
+  covers x :=
+    ⟨(hU' _).isoSpec.hom ⟨_, (hU.exists_mem x).choose_spec⟩, by simp [← Scheme.Hom.comp_apply]⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
