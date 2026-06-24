@@ -109,21 +109,13 @@ is induced by `DerivedCategory.Qh : HomotopyCategory C (.up ℤ) ⥤ DerivedCate
 noncomputable def QhCompιIsoιCompQh :
     Qh ⋙ Plus.ι ≅ HomotopyCategory.Plus.ι C ⋙ DerivedCategory.Qh := Iso.refl _
 
-instance : (Qh (C := C)).EssSurj := by
-  suffices ∀ (X : DerivedCategory C) (n : ℤ) (_ : X.IsGE n),
-    ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n),
-      Nonempty (DerivedCategory.Q.obj K ≅ X) from ⟨by
-        intro ⟨X, n, K, e, h⟩
-        refine ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, ?_⟩,
-          ⟨Plus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩
-        · simp only [HomotopyCategory.plus_quotient_obj_iff]
-          exact ⟨n, h⟩⟩
-  intro X n hn
-  have : (Q.objPreimage X).IsGE n := by
-    rw [← isGE_Q_obj_iff]
-    apply t.isGE_of_iso (Q.objObjPreimageIso X).symm
-  exact ⟨(Q.objPreimage X).truncGE n, inferInstance,
-    ⟨(asIso (Q.map ((Q.objPreimage X).πTruncGE n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
+instance : (Qh (C := C)).EssSurj where
+  mem_essImage := by
+    intro ⟨X, n, K, e, h⟩
+    refine ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, ?_⟩,
+      ⟨Plus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩
+    simp only [HomotopyCategory.plus_quotient_obj_iff]
+    exact ⟨n, h⟩
 
 instance : Qh.IsLocalization (HomotopyCategory.Plus.subcategoryAcyclic C).trW :=
   ((HomotopyCategory.plus C).triangulatedLocalizerMorphism
