@@ -69,7 +69,15 @@ noncomputable def heckeOp (n : ℕ+) : (ℍ → ℂ) →ₗ[ℂ] (ℍ → ℂ) w
     simp only [SlashAction.add_slash, Finset.sum_add_distrib]
   map_smul' c f := by
     simp only [RingHom.id_apply, Finset.smul_sum]
-    exact Finset.sum_congr rfl fun A _ => by sorry
+    refine Finset.sum_congr rfl fun A _ => ?_
+    have hdet : 0 < (reps_toGL A).det.val := by
+      rw [Matrix.GeneralLinearGroup.val_det_apply]
+      unfold reps_toGL
+      rw [Matrix.GeneralLinearGroup.val_mkOfDetNeZero, ← RingHom.mapMatrix_apply, ← RingHom.map_det,
+        A.1.2, eq_intCast]
+      exact_mod_cast n.pos
+    have hσ : σ (reps_toGL A) c = c := by rw [σ, if_pos hdet]; rfl
+    rw [smul_slash, hσ]
 
 lemma heckeOp_apply (n : ℕ+) (f : ℍ → ℂ) :
     heckeOp k n f = ∑ A : reps (n : ℤ), f ∣[k] reps_toGL A :=
