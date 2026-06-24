@@ -68,7 +68,7 @@ def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
 end Condensed
 
 /-- A condensed `R`-module `A` is *solid* if for all `X : Profinite`, the solidification map
-induces an isomorphism `Hom(profiniteSolid X, A) ? Hom(profiniteFree X, A)`. -/
+induces an isomorphism `Hom(profiniteSolid X, A) ≅ Hom(profiniteFree X, A)`. -/
 class CondensedMod.IsSolid (A : CondensedMod.{u} R) : Prop where
   isIso_solidification_map : ∀ X : Profinite.{u}, IsIso ((yoneda.obj A).map
     ((Condensed.profiniteSolidification R).app X).op)
