@@ -446,9 +446,7 @@ theorem _root_.Continuous.compacts_map (hf : Continuous f) : Continuous (Compact
 theorem _root_.Continuous.compacts_map' {f : α → Compacts β} {g : α → β → γ}
     (hf : Continuous f) (hg : Continuous g.uncurry) :
     Continuous (fun x => (f x).map (g x) (by fun_prop)) := by
-  conv =>
-    enter [1, x]
-    equals ({x} ×ˢ f x).map g.uncurry hg => ext; simp
+  conv in Compacts.map _ _ _ => equals ({x} ×ˢ f x).map g.uncurry hg => ext; simp
   have := hg.compacts_map
   fun_prop
 
