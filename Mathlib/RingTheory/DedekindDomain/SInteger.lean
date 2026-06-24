@@ -28,10 +28,14 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 
 * `Set.integer`: `S`-integers.
 * `Set.unit`: `S`-units.
-* TODO: localised notation for `S`-integers.
+* `Set.Submonoid`: the submonoid of non-zero elements of `R` that are not contained in any prime
+    ideal in `S`.
 
 ## Main statements
 
+* `IsDedekindDomain.IsLocalizationSInteger`: The ring of `S`-integers is a localization of `R`.
+* `IsDedekindDomain.isDedekindDomainSInteger`: The ring of `S`-integers of a Dedekind domain is a
+    Dedekind domain.
 * `Set.unitEquivUnitsInteger`: `S`-units are units of `S`-integers.
 * `IsDedekindDomain.integer_empty`: `∅`-integers is the usual ring of integers.
 * TODO: proof that `S`-units is the kernel of a map to a product.
