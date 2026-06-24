@@ -17,15 +17,14 @@ import Mathlib.Data.Set.Lattice
 A set `s` in an ordered type `α` is cofinal when for every `a : α` there exists an element of `s`
 greater or equal to it. This file provides a basic API for the `IsCofinal` predicate.
 
-For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality.lean`.
+For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality/Basic.lean`.
 
 ## TODO
 
-- Define `Order.cof` in terms of `Cofinal`.
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -34,11 +33,11 @@ variable {α β : Type*}
 section LE
 variable [LE α]
 
-theorem IsCofinal.of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
+theorem IsCofinal.of_isEmpty [IsEmpty α] {s : Set α} : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
 theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty _⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty⟩
   simpa using h a
 
 @[simp]
@@ -52,6 +51,11 @@ theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofin
   intro a
   obtain ⟨b, hb, hb'⟩ := hs a
   exact ⟨b, h hb, hb'⟩
+
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (h : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  obtain ⟨x, hx, _⟩ := h default
+  exact ⟨x, hx⟩
 
 end LE
 

@@ -18,7 +18,7 @@ Lemmas about the topology of matrix groups, such as `GL(n, R)` and `SL(n, R)` fo
 topological ring `R`.
 -/
 
-@[expose] public section
+public section
 
 open Matrix Topology
 

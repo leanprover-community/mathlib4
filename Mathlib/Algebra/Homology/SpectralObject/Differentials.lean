@@ -66,6 +66,7 @@ lemma toCycles_πE_d
   subst h₁₂ h₃₄
   simp only [d, δ_toCycles_assoc, toCycles_πE_descE]
 
+set_option backward.defeqAttrib.useBackward true in
 include h₃₄ in
 @[reassoc]
 lemma d_ιE_fromOpcycles
@@ -178,6 +179,7 @@ lemma cyclesMap_Ψ_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
       X.cyclesMap_i _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) (𝟙 _) n₀ (by cat_disch),
       Functor.map_id, comp_id, liftCycles_i]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Ψ_opcyclesMap_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
     (ShortComplex.mk _ _ (X.Ψ_opcyclesMap f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ n₀ n₁ hn₁)).Exact := by
@@ -219,6 +221,7 @@ section
 variable {i₀ i₁ i₂ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂)
   (n₀ n₁ n₂ n₃ : ℤ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma πE_EIsoH_hom (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :

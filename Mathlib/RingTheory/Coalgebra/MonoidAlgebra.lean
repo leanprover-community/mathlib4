@@ -23,7 +23,7 @@ corresponding structure on its coefficients, defined in `Mathlib/RingTheory/Coal
   `A[T;T⁻¹]` when `A` is an `R`-coalgebra.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -20,7 +20,7 @@ that `P` holds for all zero objects, as in some applications (e.g. triangulated 
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 
@@ -102,6 +102,12 @@ instance [P.ContainsZero] : HasZeroObject P.FullSubcategory where
   zero := by
     obtain ⟨X, h₁, h₂⟩ := P.exists_prop_of_containsZero
     exact ⟨_, IsZero.of_full_of_faithful_of_isZero P.ι ⟨X, h₂⟩ h₁⟩
+
+instance [P.ContainsZero] [Q.ContainsZero] [Q.IsClosedUnderIsomorphisms] :
+    (P ⊓ Q).ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z, hZ, hP, Q.prop_of_isZero hZ⟩
 
 end ObjectProperty
 

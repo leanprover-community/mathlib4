@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.Real
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Complex.Basic
-public import Mathlib.Data.Real.Sqrt
 
 /-!
   # Norm on the complex numbers
@@ -305,7 +305,7 @@ theorem equiv_limAux (f : CauSeq ℂ (‖·‖)) :
     fun _ H j ij ↦ by
     obtain ⟨H₁, H₂⟩ := H _ ij
     apply lt_of_le_of_lt (norm_le_abs_re_add_abs_im _)
-    simpa using add_lt_add H₁ H₂
+    simpa using! add_lt_add H₁ H₂
 
 instance instIsComplete : CauSeq.IsComplete ℂ (‖·‖) :=
   ⟨fun f ↦ ⟨limAux f, equiv_limAux f⟩⟩
@@ -371,9 +371,6 @@ lemma norm_sub_one_sq_eq_of_norm_eq_one {z : ℂ} (hz : ‖z‖ = 1) :
     linarith
   simp [Complex.sq_norm, normSq_apply, this]
   ring
-
-@[deprecated (since := "2025-11-15")] alias norm_sub_one_sq_eq_of_norm_one :=
-  norm_sub_one_sq_eq_of_norm_eq_one
 
 lemma norm_sub_one_sq_eqOn_sphere :
     (Metric.sphere (0 : ℂ) 1).EqOn (‖· - 1‖ ^ 2) (fun z ↦ 2 * (1 - z.re)) :=

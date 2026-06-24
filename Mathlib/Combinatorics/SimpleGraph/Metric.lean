@@ -73,9 +73,8 @@ theorem edist_le (p : G.Walk u v) :
 protected alias Walk.edist_le := edist_le
 
 @[simp]
-theorem edist_eq_zero_iff :
-    G.edist u v = 0 ↔ u = v := by
-  apply Iff.intro <;> simp [edist, ENat.iInf_eq_zero]
+theorem edist_eq_zero_iff : G.edist u v = 0 ↔ u = v := by
+  simp [edist]
 
 @[simp]
 theorem edist_self : edist G v v = 0 :=
@@ -158,8 +157,8 @@ lemma edist_eq_two_iff {u v : V} :
     rw [mem_commonNeighbors] at hw
     have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
     simp_all
-  · by_contra! hc
-    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) <;> simp_all
+  · by_contra
+    simp_all [Order.le_one_iff]
 
 lemma two_lt_edist_iff {u v : V} :
     2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
@@ -329,7 +328,7 @@ theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u
     p.IsPath := by
   classical
   have : p.bypass = p := by
-    apply Walk.bypass_eq_self_of_length_le
+    apply bypass_eq_self_of_length_le_length_bypass
     calc p.length
       _ = G.dist u v := hp
       _ ≤ p.bypass.length := dist_le p.bypass
@@ -380,7 +379,7 @@ of length at least two: the first and third nodes are different and not connecte
 lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v w)
     (hl : 1 < G.dist v w) : ∃ (x a b : V), G.Adj x a ∧ G.Adj a b ∧ ¬ G.Adj x b ∧ x ≠ b := by
   use v, p.getVert 1, p.getVert 2
-  have hnp : ¬p.Nil := by simpa [nil_iff_length_eq, hp] using Nat.ne_zero_of_lt hl
+  have hnp : ¬p.Nil := by grind [Nil.length_eq_zero]
   have : p.tail.tail.length < p.tail.length := by
     rw [← p.tail.length_tail_add_one (by
       simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
@@ -419,7 +418,7 @@ theorem ball_zero : G.ball c 0 = ∅ := by simp [ball]
 /-- The ball of radius one consists of just the center. -/
 @[simp]
 theorem ball_one : G.ball c 1 = {c} := by
-  simp [ball, ENat.lt_one_iff_eq_zero]
+  simp [ball]
 
 /-- The ball of radius two consists of the center and its neighbors. -/
 @[simp]

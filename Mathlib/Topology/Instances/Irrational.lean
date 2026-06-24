@@ -31,7 +31,7 @@ instances for `{x // Irrational x}`.
 irrational, residual
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Metric
