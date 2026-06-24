@@ -161,18 +161,16 @@ section Complex
 /-- Strict derivative of `z ↦ (denom g z) ^ k`:
 $\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}$. -/
 lemma hasStrictDerivAt_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
-    HasStrictDerivAt (fun z ↦ (denom g z) ^ k)
-      (k * (g 1 0 : ℂ) * (denom g τ) ^ (k - 1)) τ := by
-  have hd : HasStrictDerivAt (fun z ↦ denom g z) ((g 1 0 : ℂ)) τ := by
-    simpa [denom] using
-      ((hasStrictDerivAt_id (τ : ℂ)).const_mul (g 1 0 : ℂ)).add_const (g 1 1 : ℂ)
+    HasStrictDerivAt (fun z ↦ denom g z ^ k) (k * g 1 0 * denom g τ ^ (k - 1)) τ := by
+  have hd : HasStrictDerivAt (denom g ·) (g 1 0) τ := by
+    simpa [denom] using hasStrictDerivAt_id _ |>.const_mul _ |>.add_const (g 1 1 : ℂ)
   have := (hasStrictDerivAt_zpow k (denom g τ) (Or.inl (denom_ne_zero g τ))).comp _ hd
   simpa only [Function.comp_def, mul_right_comm] using this
 
 /-- Derivative of `z ↦ (denom g z) ^ k`:
 $\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}$. -/
 lemma deriv_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
-    deriv (fun z ↦ (denom g z) ^ k) τ = k * (g 1 0 : ℂ) * (denom g τ) ^ (k - 1) :=
+    deriv (fun z ↦ denom g z ^ k) τ = k * g 1 0 * denom g τ ^ (k - 1) :=
   (hasStrictDerivAt_denom_zpow g k τ).hasDerivAt.deriv
 
 lemma hasStrictDerivAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :

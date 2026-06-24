@@ -203,10 +203,8 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) 
     simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw, ofComplex_apply]
     rw [ModularForm.SL_slash_apply (f := F) (k := k) γ ⟨w, hw⟩]
   rw [(((h_F.comp (z : ℂ) h_smul).mul h_denom).congr_of_eventuallyEq hcomp).deriv]
-  simp only [ModularForm.SL_slash_apply, Function.comp_apply, ofComplex_apply]
-  rw [Int.neg_add, sub_eq_add_neg, zpow_add₀ hz, zpow_add₀ hz]
-  field_simp
-  ring
+  simp [ModularForm.SL_slash_apply, sub_eq_add_neg, zpow_add₀]
+  field
 
 /--
 Serre derivative is equivariant under the slash action. More precisely,
