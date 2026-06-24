@@ -39,7 +39,7 @@ namespace Cardinal
 variable {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
 
 variable (κ₁ κ₂) in
-/-- If `κ₁ < κ₂` are two regular cardinal, we say that `κ₁` is sharply
+/-- If `κ₁ < κ₂` are two regular cardinals, we say that `κ₁` is sharply
 smaller than `κ₂` if the category `CardinalFilteredPoset κ₁`
 is `κ₂`-accessible. There are other characterizations (TODO @joelriou),
 including the property that any `κ₁`-accessible category is
