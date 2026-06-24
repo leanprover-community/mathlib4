@@ -187,7 +187,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       · rcongr e
         apply_fun e at h
         simp only [AlgEquiv.commutes, map_add, map_sum, map_mul] at h
-        convert h using 2
+        convert! h using 2
         · rcongr x
           simp [logDeriv, algEquiv_deriv']
         · rw [algEquiv_deriv']

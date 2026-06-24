@@ -75,7 +75,7 @@ theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop}
     (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
   let f : Filter X := ofCountableUnion {t | p t} hcountable_union (fun t ht _ hsub ↦ hmono hsub ht)
-  have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa [f] using hnhds)
+  have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa [f] using! hnhds)
   rwa [← compl_compl s]
 
 /-- The intersection of a Lindelöf set and a closed set is a Lindelöf set. -/
@@ -108,7 +108,7 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
   haveI := hx.neBot
   use f x, mem_image_of_mem f hxs
   have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
-    convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
+    convert! (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
     rw [nhdsWithin]
     ac_rfl
   exact this.neBot

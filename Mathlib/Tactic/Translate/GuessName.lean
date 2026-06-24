@@ -15,7 +15,7 @@ public import Mathlib.Init
 
 public meta section
 
-open Std
+open Lean Std
 
 namespace Mathlib.Tactic.GuessName
 open GuessName -- currently needed to enable projection notation
@@ -40,6 +40,7 @@ structure GuessNameData where
   When applying the dictionary, we lower-case the output if the input was also given in lower-case.
   -/
   abbreviationDict : Std.HashMap String String
+  deriving Inhabited
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
@@ -175,5 +176,28 @@ def guessName (g : GuessNameData) : String → String :=
     fixAbbreviation g <|
     applyNameDict g <|
     s.splitCase
+
+/-- Environment extension used for guessing the translation of a name. -/
+abbrev GuessNameExt := EnvExtension GuessNameData
+
+/-- Register a new `GuessNameExt`. -/
+def registerGuessNameExt (data : GuessNameData) : IO GuessNameExt := do
+  registerEnvExtension (pure data)
+
+/-- Add the translation `src ↦ tgt` to the `GuessNameExt`.
+Both `src` and `tgt` should be capitalized.
+This change persists until the end of the current file, but it does not persist through imports. -/
+def GuessNameExt.addTranslation (ext : GuessNameExt) (srcId tgtId : Ident) :
+    Elab.Command.CommandElabM Unit := do
+  let src := srcId.getId.toString
+  let tgt := tgtId.getId.toString
+  unless src.front.isUpper do throwErrorAt srcId "`{src}` should be capitalized"
+  unless tgt.front.isUpper do throwErrorAt tgtId "`{tgt}` should be capitalized"
+  modifyEnv fun env ↦ ext.modifyState env fun data ↦
+    let src := src.decapitalizeSeq
+    if src.splitCase matches [_] then
+      { data with nameDict := data.nameDict.insert src tgt.splitCase }
+    else
+      { data with abbreviationDict := data.abbreviationDict.insert src tgt }
 
 end Mathlib.Tactic.GuessName

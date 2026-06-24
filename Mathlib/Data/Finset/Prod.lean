@@ -68,6 +68,14 @@ theorem coe_product (s : Finset α) (t : Finset β) :
     (↑(s ×ˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
   Set.ext fun _ => Finset.mem_product
 
+/-- The product `s ×ˢ t` of two finsets, viewed as a subtype, is equivalent to the product of the
+subtypes `s × t`. The `Finset` analogue of `Equiv.Set.prod`. -/
+def _root_.Equiv.Finset.prod (s : Finset α) (t : Finset β) : ↥(s ×ˢ t) ≃ s × t where
+  toFun x := ⟨⟨x.1.1, (mem_product.mp x.2).1⟩, ⟨x.1.2, (mem_product.mp x.2).2⟩⟩
+  invFun x := ⟨⟨x.1.1, x.2.1⟩, mem_product.mpr ⟨x.1.2, x.2.2⟩⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
   simp +contextual [mem_image]
 
@@ -295,10 +303,10 @@ theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card := by
   rcases s with ⟨⟨s⟩, hs⟩
   apply List.length_offDiag
 
-@[mono]
+@[gcongr, mono]
 theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ ↦ by simp [diag]
 
-@[mono]
+@[gcongr, mono]
 theorem offDiag_mono : Monotone (offDiag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
   mem_offDiag.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiag.1 hx
 

@@ -132,6 +132,65 @@ lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β
   obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   exact ⟨z, hz, hxz.1, hyz.2⟩
 
+theorem IsCofinalFor.union_left (hc : IsCofinalFor s t) : IsCofinalFor (s ∪ t) t := by
+  rintro a (has | hat)
+  · exact hc has
+  · exact ⟨a, hat, le_rfl⟩
+
+theorem IsCofinalFor.union_right (hc : IsCofinalFor s t) : IsCofinalFor (t ∪ s) t := by
+  rw [union_comm]
+  exact hc.union_left
+
+theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
+    (hst : s ⊆ t) (hc : IsCofinalFor t s) : DirectedOn (· ≤ ·) s := by
+  intro x hx y hy
+  obtain ⟨z, hz, hxz, hyz⟩ := hd x (hst hx) y (hst hy)
+  obtain ⟨w, hw, hzw⟩ := hc hz
+  exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
+
+theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    IsCofinalFor t s ∨ IsCofinalFor s t := by
+  rw [or_iff_not_imp_left]
+  intro hts x hx
+  simp only [IsCofinalFor, not_forall, not_exists, not_and] at hts
+  obtain ⟨y, hy, hys⟩ := hts
+  obtain ⟨z, (hzs | hzt), hxz, hyz⟩ := h x (.inl hx) y (.inr hy)
+  · cases hys z hzs hyz
+  · exact ⟨z, hzt, hxz⟩
+
+theorem directedOn_union_iff :
+    DirectedOn (· ≤ ·) (s ∪ t) ↔
+      DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s ∨ DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases isCofinalFor_or_isCofinalFor_of_directedOn_union h with hts | hst
+    · exact .inl ⟨DirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
+    · exact .inr ⟨DirectedOn.of_isCofinalFor h subset_union_right hst.union_left, hst⟩
+  · rintro (⟨hs, hts⟩ | ⟨ht, hst⟩) x hx y hy
+    · obtain ⟨x', hx', hxx'⟩ := hts.union_right hx
+      obtain ⟨y', hy', hyy'⟩ := hts.union_right hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := hs x' hx' y' hy'
+      exact ⟨z, .inl hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+    · obtain ⟨x', hx', hxx'⟩ := hst.union_left hx
+      obtain ⟨y', hy', hyy'⟩ := hst.union_left hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := ht x' hx' y' hy'
+      exact ⟨z, .inr hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+
+theorem directedOn_or_directedOn_of_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
+  rw [directedOn_union_iff] at h
+  tauto
+
+theorem directedOn_or_directedOn_of_union'
+    (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
+  obtain h | h := directedOn_or_directedOn_of_union h
+  · obtain rfl | hs := s.eq_empty_or_nonempty
+    · aesop
+    · exact .inl ⟨h, hs⟩
+  · obtain rfl | ht := t.eq_empty_or_nonempty
+    · aesop
+    · exact .inr ⟨h, ht⟩
+
 /-!
 ### Monotonicity
 -/
@@ -274,6 +333,32 @@ theorem bddAbove_union [IsDirectedOrder α] {s t : Set α} :
   ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 
+@[to_dual]
+theorem bbdAbove_range_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (hf : BddAbove <| range f) (hg : BddAbove <| range g) :
+    BddAbove <| range fun x ↦ f x ⊔ g x := by
+  have ⟨af, haf⟩ := hf
+  have ⟨ag, hag⟩ := hg
+  exact ⟨af ⊔ ag, fun a ⟨i, ha⟩ ↦ ha ▸ sup_le_sup (haf ⟨i, rfl⟩) (hag ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_left_of_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (h : BddAbove <| range fun x ↦ f x ⊔ g x) : BddAbove <| range f := by
+  have ⟨b, hb⟩ := h
+  exact ⟨b, fun a ⟨i, ha⟩ ↦ ha ▸ le_sup_left.trans (hb ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_right_of_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (h : BddAbove <| range fun x ↦ f x ⊔ g x) : BddAbove <| range g := by
+  have ⟨b, hb⟩ := h
+  exact ⟨b, fun a ⟨i, ha⟩ ↦ ha ▸ le_sup_right.trans (hb ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_sup_iff {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α} :
+    BddAbove (range fun x ↦ f x ⊔ g x) ↔ BddAbove (range f) ∧ BddAbove (range g) where
+  mp h := ⟨bbdAbove_range_left_of_sup h, bbdAbove_range_right_of_sup h⟩
+  mpr := fun ⟨hf, hg⟩ ↦ bbdAbove_range_sup hf hg
+
 /-- If `a` is the least upper bound of `s` and `b` is the least upper bound of `t`,
 then `a ⊔ b` is the least upper bound of `s ∪ t`. -/
 @[to_dual /-- If `a` is the greatest lower bound of `s` and `b` is the greatest lower bound of `t`,
@@ -317,6 +402,7 @@ theorem BddAbove.exists_ge [SemilatticeSup γ] {s : Set γ} (hs : BddAbove s) (x
 
 /-!
 ### Specific sets
+
 #### Unbounded intervals
 -/
 
@@ -479,13 +565,13 @@ section
 variable [SemilatticeInf γ] [DenselyOrdered γ]
 
 theorem isLUB_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b := by
-  simpa only [Ioo_toDual] using isGLB_Ioo hab.dual
+  simpa only [Ioo_toDual] using! isGLB_Ioo hab.dual
 
 theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b :=
   (isLUB_Ioo hab).upperBounds_eq
 
 theorem isLUB_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b := by
-  simpa only [Ioc_toDual] using isGLB_Ioc hab.dual
+  simpa only [Ioc_toDual] using! isGLB_Ioc hab.dual
 
 theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b :=
   (isLUB_Ico hab).upperBounds_eq

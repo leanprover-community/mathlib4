@@ -43,7 +43,6 @@ namespace Extension
 variable {R S} (P : Extension.{u} R S)
 variable (T : Type*) [CommRing T] [Algebra R T]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cotangent space of an extension commutes with base change. -/
 noncomputable
 def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [CommRing T] [Algebra R T] :
@@ -58,7 +57,7 @@ def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [CommRing T] [Algeb
       rfl
   letI PT : Extension T (T ⊗[R] S) := P.baseChange
   haveI : IsPushout R T P.Ring PT.Ring := by
-    convert TensorProduct.isPushout (R := R) (T := P.Ring) (S := T)
+    convert! TensorProduct.isPushout (R := R) (T := P.Ring) (S := T)
     exact Algebra.algebra_ext _ _ fun _ ↦ rfl
   haveI : IsScalarTower P.Ring PT.Ring (T ⊗[R] S) := .of_algebraMap_eq' rfl
   (IsTensorProduct.assocOfMapSMul (TensorProduct.mk R T S) (isTensorProduct _ _ _)

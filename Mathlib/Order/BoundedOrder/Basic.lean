@@ -94,10 +94,9 @@ Prefer `IsTop.eq_top` if `α` already has a top element. -/
 @[to_dual (attr := elab_as_elim) /-- A bottom element can be replaced with `⊥`.
 
 Prefer `IsBot.eq_bot` if `α` already has a bottom element. -/]
-protected def IsTop.rec [LE α] {P : (x : α) → IsTop x → Sort*}
-    (h : ∀ [OrderTop α], P ⊤ isTop_top) (x : α) (hx : IsTop x) : P x hx := by
-  letI : OrderTop α := { top := x, le_top := hx }
-  apply h
+protected def IsTop.rec [LE α] {motive : (x : α) → IsTop x → Sort*}
+    (top : ∀ [OrderTop α], motive ⊤ isTop_top) (x : α) (hx : IsTop x) : motive x hx :=
+  @top { top := x, le_top a := hx a }
 
 section Preorder
 
@@ -110,6 +109,10 @@ theorem isMax_top : IsMax (⊤ : α) :=
 @[to_dual (attr := simp) not_lt_bot]
 theorem not_top_lt : ¬⊤ < a :=
   isMax_top.not_lt
+
+@[to_dual (attr := simp) not_covBy_bot]
+theorem not_top_covBy : ¬⊤ ⋖ a :=
+  fun h ↦ not_top_lt h.1
 
 @[to_dual ne_bot_of_gt]
 theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
@@ -312,6 +315,14 @@ instance instBoundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] :
 end Pi
 
 section Subsingleton
+
+/-- A type with a single element is a bounded order. -/
+@[implicit_reducible]
+def BoundedOrder.ofUnique (α : Type*) [Preorder α] [Unique α] : BoundedOrder α where
+  bot := default
+  top := default
+  le_top := by simp
+  bot_le := by simp
 
 variable [PartialOrder α] [BoundedOrder α]
 

@@ -31,7 +31,7 @@ jobs:
     steps:
       # Checkout repository, so that we can fetch tags to decide which branch we want.
       - name: Checkout branch or tag
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
@@ -52,13 +52,13 @@ jobs:
 
       # Checkout the branch or tag we want to test.
       - name: Checkout branch or tag
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
           ref: ${{ env.BRANCH_REF }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
         with:
           auto-config: false
           use-github-cache: false
@@ -82,7 +82,7 @@ jobs:
         branch_type: [master, nightly]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Get job status and URLs
         id: get-status
@@ -122,12 +122,12 @@ jobs:
 
       - name: Post success message for leanchecker on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'leanchecker'
           content: |
@@ -135,12 +135,12 @@ jobs:
 
       - name: Post failure / cancelled message for leanchecker on Zulip
         if: steps.get-status.outputs.job_conclusion != 'success'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'leanchecker failure'
           content: |
@@ -156,7 +156,7 @@ jobs:
     steps:
       # Checkout repository, so that we can fetch tags to decide which branch we want.
       - name: Checkout branch or tag
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
@@ -177,13 +177,13 @@ jobs:
 
       # Checkout the branch or tag we want to test.
       - name: Checkout branch or tag
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
           ref: ${{ env.BRANCH_REF }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
         with:
           auto-config: false
           use-github-cache: false
@@ -205,7 +205,7 @@ jobs:
         branch_type: [master, nightly]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Get job status and URLs
         id: get-status
@@ -245,12 +245,12 @@ jobs:
 
       - name: Post success message for mathlib_test_executable on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'mathlib test executable'
           content: |
@@ -258,12 +258,12 @@ jobs:
 
       - name: Post failure / cancelled message for mathlib_test_executable on Zulip
         if: steps.get-status.outputs.job_conclusion != 'success'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
@@ -279,7 +279,7 @@ jobs:
     steps:
       # Checkout repository, so that we can fetch tags to decide which branch we want.
       - name: Checkout branch or tag
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
@@ -300,13 +300,13 @@ jobs:
 
       # Checkout the branch or tag we want to test.
       - name: Checkout branch or tag
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
           ref: ${{ env.BRANCH_REF }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
         with:
           auto-config: false
           use-github-cache: false
@@ -370,7 +370,7 @@ jobs:
         branch_type: [master, nightly]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Get job status and URLs
         id: get-status
@@ -410,12 +410,12 @@ jobs:
 
       - name: Post success message for nanoda on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'nanoda'
           content: |
@@ -423,12 +423,12 @@ jobs:
 
       - name: Post failure / cancelled message for nanoda on Zulip
         if: steps.get-status.outputs.job_conclusion != 'success'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'nanoda failure'
           content: |

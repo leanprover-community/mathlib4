@@ -56,8 +56,8 @@ noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
     lightProfiniteToLightCondSet.{u} ≅ LightProfinite.toTopCat.{u} ⋙ topCatToLightCondSet.{u} :=
   dsimp% NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
     NatIso.ofComponents fun S ↦ {
-      hom := TypeCat.ofHom (fun f ↦ { toFun := f.hom })
-      inv := TypeCat.ofHom (fun f ↦ InducedCategory.homMk (TopCat.ofHom f)) }
+      hom := ↾fun f ↦ { toFun := f.hom }
+      inv := ↾fun f ↦ InducedCategory.homMk (TopCat.ofHom f) }
 
 /--
 The functor from `LightProfinite` to `LightCondSet` preserves countable limits.

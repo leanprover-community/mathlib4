@@ -41,7 +41,7 @@ elab "swap_var " swapRules:(colGt swapRule),+ : tactic => do
   let lctx ← swapRules.getElems.foldlM (init := mdecl.lctx) fun lctx swapRule ↦ do
     withLCtx lctx localInstances do
       let `(swapRule| $n₁:ident $[↔]? $n₂:ident) := swapRule
-        | unreachable!
+        | Elab.throwUnsupportedSyntax
       let n₁ := n₁.getId
       let n₂ := n₂.getId
       let fvarId₁ := (← getLocalDeclFromUserName n₁).fvarId

@@ -35,7 +35,7 @@ noncomputable instance : InvolutiveStar (A ⊗[R] B) where
   star_involutive x := by
     simp_rw [star]
     rw [congr_congr]
-    convert congr($congr_refl_refl x) <;> ext <;> simp
+    convert! congr($congr_refl_refl x) <;> ext <;> simp
 
 noncomputable instance : StarAddMonoid (A ⊗[R] B) where
   star_add := map_add _

@@ -118,7 +118,6 @@ lemma toEuclideanCLM_toLp (A : Matrix n n 𝕜) (x : n → 𝕜) :
 lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ofLp (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ ofLp x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped RealInnerProductSpace in
 lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
     ⟪x, toEuclideanCLM (𝕜 := ℝ) A y⟫ = x ⬝ᵥ A *ᵥ y := by
@@ -219,7 +218,7 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
   simp only [l2_opNorm_def]
   have := (toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) A
     |>.opNorm_comp_le <| (toEuclideanLin (n := l) (m := n) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) B
-  convert this
+  convert! this
   ext1 x
   exact congr(toLp 2 ($(Matrix.toLin'_mul A B) x))
 

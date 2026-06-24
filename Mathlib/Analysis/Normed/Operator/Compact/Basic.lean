@@ -29,6 +29,12 @@ In this file we define compact linear operators between two topological vector s
 * `isClosed_setOf_isCompactOperator` : the set of compact operators is closed for the operator
   norm
 
+Note that results linking compact operators with `FiniteDimensional` are in a separate file
+in order to avoid a heavy import. There, we prove :
+
+* `isCompactOperator_id_iff_finiteDimensional` : the identity of `E` is compact if and only if
+  `E` has finite dimension.
+
 ## Implementation details
 
 We define `IsCompactOperator` as a predicate, because the space of compact operators inherits all
@@ -439,8 +445,8 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
   rcases hTv with ⟨t, ht, htx⟩
   refine ⟨t, ht, ?_⟩
   rw [mem_preimage, mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub] at htx ⊢
-  convert hVU _ htx _ (huv x hx) using 1
-  rw [ContinuousLinearMap.sub_apply]
+  convert! hVU _ htx _ (huv x hx) using 1
+  rw [sub_apply]
   abel
 
 theorem compactOperator_topologicalClosure {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]
