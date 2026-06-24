@@ -281,7 +281,7 @@ variable [TopologicalSpace R] [IsTopologicalRing R]
 instance instDiscreteTopStrictPeriods [hG : DiscreteTopology 𝒢] :
     DiscreteTopology 𝒢.strictPeriods := by
   let H : Set (GL (Fin 2) R) := 𝒢 ∩ Set.range upperRightHom
-  haveI : DiscreteTopology H := hG.of_subset Set.inter_subset_left
+  have : DiscreteTopology H := hG.of_subset Set.inter_subset_left
   have : Set.MapsTo upperRightHom 𝒢.strictPeriods H := fun x hx ↦ by
     grind [SetLike.mem_coe, Subgroup.mem_strictPeriods_iff]
   exact .of_continuous_injective (continuous_upperRightHom.restrict this)
