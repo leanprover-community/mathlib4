@@ -158,7 +158,7 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       let ⟨leading, h_leading_eq⟩ ← getLeadingMonomialWithProof ms_trimmed.val
       let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"
-      let h_tendsto ← match ← getFirstIs exps with
+      match ← getFirstIs exps with
       | .pos h_exps =>
         match ← compareReal q($coef) with
         | .neg h_coef =>

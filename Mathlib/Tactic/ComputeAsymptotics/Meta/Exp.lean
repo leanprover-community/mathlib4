@@ -163,11 +163,14 @@ lemma MultiseriesExpansion.leadingMonomial_cons_exps {basis_hd : ℝ → ℝ} {b
   simpa [MultiseriesExpansion.leadingMonomial] using h
 
 /-- Given trimmed `ms : MS` finds its coefficient on depth `depth`. -/
-def extractDeepCoef (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val)) (depth : Nat) :
+partial def extractDeepCoef (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val))
+    (depth : Q(Nat)) :
     MetaM <| ExtractDeepCoefResult ms q($depth) := do
   match depth with
-  | 0 => return ⟨ms, q($h_trimmed), q(rfl), q(rfl)⟩
-  | newDepth + 1 =>
+  | ~q(0) =>
+    have : $depth =Q 0 := ⟨⟩
+    return ⟨ms, q($h_trimmed), q(rfl), q(rfl)⟩
+  | ~q(Nat.succ $newDepth) =>
     let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "Unexpected basis in extractDeepCoef"
     let ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) := ms.val
       | panic! "Unexpected ms in extractDeepCoef"
@@ -245,7 +248,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimme
     q($h_leading ▸ $h_first_is_pos')
   haveI : $ms.basis =Q $left ++ $right_hd :: $right_tl := ⟨⟩; do
   -- extract deep coef `G`
-  let depth := ← computeLength left
+  let depth := mkNatLitQ <| ← computeLength left
   let ⟨G, hG_trimmed, hG_exps, hG_coef⟩ := ← extractDeepCoef ms h_trimmed depth
   let ⟨Gf, hGf⟩ ← Normalization.getFun G.val
   haveI : $G.basis =Q $right_hd :: $right_tl := ⟨⟩

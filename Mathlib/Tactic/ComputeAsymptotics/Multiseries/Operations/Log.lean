@@ -223,7 +223,7 @@ theorem log_approximates {basis : Basis}
         apply mulConst_approximates
         convert h_tl using 4
         simp
-    convert h.replaceFun _
+    convert! h.replaceFun _
     · ext g
       simp [ext_iff, ms]
     simp only [pow_zero, const_toFun, one_mul, add_toFun, const_toFun', powser_toFun,
@@ -300,7 +300,7 @@ theorem log_approximates {basis : Basis}
           apply inv_sorted h_coef_sorted
         apply mulMonomial_approximates h_basis h_tl
         exact inv_approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
-    convert h.replaceFun _
+    convert! h.replaceFun _
     · ext g
       simp [ext_iff, ms]
     have h_tendsto_zero := tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis

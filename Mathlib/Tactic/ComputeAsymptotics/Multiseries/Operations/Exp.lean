@@ -156,7 +156,7 @@ theorem exp_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   | nil f =>
     simp only [exp, mk_seq, Multiseries.exp, Multiseries.destruct_nil, mk_toFun]
     apply Approximates.elim_nil at h_approx
-    convert (one_approximates h_basis).replaceFun _
+    convert! (one_approximates h_basis).replaceFun _
     · ext g
       simp [ext_iff]
     · apply h_approx.mono

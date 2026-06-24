@@ -76,12 +76,12 @@ theorem invSeries_get_eq {n : ℕ} : invSeries.get? n = .some ((-1) ^ n) := by
   simp [invSeries, invSeriesFrom_get_eq]
 
 theorem invSeries_eq_geom :
-    invSeries.toFormalMultilinearSeries = geometricAlternatingSeries ℝ ℝ := by
+    invSeries.toFormalMultilinearSeries = alternatingGeometricSeries ℝ ℝ := by
   ext n
-  simp [geometricAlternatingSeries, invSeries_get_eq]
+  simp [alternatingGeometricSeries, invSeries_get_eq]
 
 theorem invSeries_convergent : Convergent invSeries := by
-  simp [Convergent, invSeries_eq_geom, geometricAlternatingSeries_radius]
+  simp [Convergent, invSeries_eq_geom, alternatingGeometricSeries_radius]
 
 -- TODO: rewrite
 theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 + t)⁻¹ := by
