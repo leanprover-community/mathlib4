@@ -113,7 +113,11 @@ lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
   ext X
   exact (α.naturality (β.app X)).symm
 
-/-- `hcomp α β` is the horizontal composition of natural transformations. -/
+/-- `hcomp α β` is the horizontal composition of natural transformations.
+
+There are two possible definitions that are equivalent and dual to eachother.
+This is inconvenient for `to_dual`, so we `no_expose` the definition,
+and instead rely on `hcomp_app` or `hcomp_app'` to unfold it. -/
 @[no_expose, to_dual self]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
   app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
@@ -123,11 +127,13 @@ infixl:80 " ◫ " => hcomp
 
 @[simp, grind =]
 theorem hcomp_app {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
-    (α ◫ β).app X = β.app (F.obj X) ≫ I.map (α.app X) := (rfl)
+    (α ◫ β).app X = β.app (F.obj X) ≫ I.map (α.app X) :=
+  (rfl)
 
 @[to_dual existing hcomp_app]
 theorem hcomp_app' {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
-    (α ◫ β).app X = H.map (α.app X) ≫ β.app (G.obj X) := by simp
+    (α ◫ β).app X = H.map (α.app X) ≫ β.app (G.obj X) := by
+  simp
 
 set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
