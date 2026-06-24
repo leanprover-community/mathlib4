@@ -232,7 +232,8 @@ lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
     simp [RingHom.algebraMap_toAlgebra, Localization.awayMap, IsLocalization.Away.map,
       Algebra.TensorProduct.tmul_one_eq_one_tmul, RingHom.algebraMap_toAlgebra]
   rw [this]
-  sorry
+  exact hP.1 _ (IsLocalization.Away.tensorRightEquiv S r (Localization.Away r)).symm.toRingEquiv
+    (hf ⟨r, hr⟩)
 
 section HoldsForLocalization
 
