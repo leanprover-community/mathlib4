@@ -28,7 +28,7 @@ meta def isNonemptyDoc (doc : TacticDoc) : Bool :=
   doc.docString.isSome || doc.extensionDocs.any (! ·.isEmpty)
 
 /-- Check that all tactics available in Mathlib have a docstring. -/
-@[env_linter] public meta def tacticDocs : Batteries.Tactic.Lint.Linter where
+@[env_linter] public meta def tacticDocs : Batteries.Linter where
   noErrorsFound := "No tactics are missing documentation."
   errorsFound := "TACTICS ARE MISSING DOCUMENTATION STRINGS:"
   test tac := do

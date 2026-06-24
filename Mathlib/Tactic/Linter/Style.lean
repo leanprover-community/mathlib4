@@ -551,10 +551,10 @@ public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
   if declName.toString.contains "_" then return true
   else return false
 
-open Batteries.Tactic.Lint in
+open Batteries.Linter in
 /-- Linter that checks for definitions whose name contains an underscore:
 such names violate the naming convention. -/
-@[env_linter] public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
+@[env_linter] public def defsWithUnderscore : Batteries.Linter where
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
