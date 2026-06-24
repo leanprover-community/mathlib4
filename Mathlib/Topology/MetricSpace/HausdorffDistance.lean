@@ -689,6 +689,9 @@ theorem infDist_zero_of_mem_closure (hx : x ∈ closure s) : infDist x s = 0 := 
 theorem mem_closure_iff_infDist_zero (h : s.Nonempty) : x ∈ closure s ↔ infDist x s = 0 := by
   simp [mem_closure_iff_infEDist_zero, infDist, ENNReal.toReal_eq_zero_iff, infEDist_ne_top h]
 
+theorem closure_eq (h : s.Nonempty) : closure s = {x | Metric.infDist x s = 0} := by
+  grind [Metric.mem_closure_iff_infDist_zero]
+
 theorem infDist_pos_iff_notMem_closure (hs : s.Nonempty) :
     x ∉ closure s ↔ 0 < infDist x s :=
   (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.lt_iff_ne'.symm

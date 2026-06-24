@@ -7255,6 +7255,7 @@ public import Mathlib.Topology.Algebra.Constructions.DomMulAct
 public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.EpsilonDense
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.FilterBasis
