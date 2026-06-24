@@ -196,11 +196,6 @@ lemma associated_sub_one_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimiti
   rw [show hη.toInteger = hζ.toInteger ^ i from RingOfIntegers.ext hζη.symm]
   exact hζ.toInteger_isPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime hi
 
-@[deprecated "The statement has been changed to use the `ζ - 1` spelling rather than `1 - ζ`, \
-for consistency with the rest of the API, so the type is now different. \
-Use `associated_sub_one_of_isPrimitiveRoot` instead." (since := "2026-06-23")]
-alias associated_one_sub_of_isPrimitiveRoot := associated_sub_one_of_isPrimitiveRoot
-
 omit [NumberField K] hK in
 open Polynomial in
 /-- `(ζ - 1) ^ (p - 1)` is associated to `p`, where `ζ` is a primitive `p`-th root of unity and
