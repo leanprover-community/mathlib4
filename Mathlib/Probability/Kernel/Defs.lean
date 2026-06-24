@@ -75,7 +75,7 @@ namespace Kernel
 
 instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
