@@ -277,8 +277,8 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     · convert this (by rwa [uIcc_comm]) (by rwa [uIcc_comm]) hba using 1
       rw [integral_symm, norm_neg]
   revert hk hL
-  -- The idea is induction on the order `k`.
-  -- If `k = 2` we use the order one theorem and show the monotonicity condition.
+  /- The idea is induction on the order `k`.
+    If `k = 2` we use the order one theorem and show the monotonicity condition. -/
   induction k generalizing a b L φ with
   | zero => intro hk; contradiction
   | succ k ih =>
@@ -292,10 +292,10 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     · simp [← conj_exp_ofReal_mul_I, intervalIntegral_conj]
     · convert hφc'.neg using 2
       exact funext <| fun x ↦ iteratedDerivWithin_neg _
-  -- Main idea: split the integral into three pieces: `[a, d - δ]`, `[d - δ, d + δ]`, `[d + δ, b]`
-  -- `δ` is small and carefully chosen, `d` is argmin of `|φ^(k) x|`,
-  -- so that `δ`-away from `d` we have a good lower bound on `|φ^(k) x|` which allows us
-  -- to use the inductive hypothesis (or the order one theorem).
+  /- Main idea: split the integral into three pieces: `[a, d - δ]`, `[d - δ, d + δ]`, `[d + δ, b]`
+     `δ` is small and carefully chosen, `d` is argmin of `|φ^(k) x|`,
+     so that `δ`-far from `d` we have a good lower bound on `|φ^(k) x|` which allows us
+     to use the inductive hypothesis (or the order one theorem). -/
   let δ := L ^ (-(1 : ℝ) / (k + 1))
   obtain ⟨d, hd, hd'⟩ := exists_le_abs_of_le_derivWithin (L := L) (hL := hL)
     ((contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin
@@ -315,19 +315,18 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
   have hud := uniqueDiffOn_uIcc hab.ne
   replace hk : 1 ≤ k := by omega
   -- This is the main estimate for the outer two pieces, unified to avoid duplication.
-  have haux {α β : ℝ} (hαβ : [[α, β]] ⊆ [[a, b]])
+  have haux {α β : ℝ} (hαβ' : α ≤ β) (hαβ : [[α, β]] ⊆ [[a, b]])
       (hest : α ≠ β → ∀ x ∈ [[α, β]], L * δ ≤ |iteratedDerivWithin k φ [[a, b]] x|) :
       ‖∫ x in α..β, exp (φ x * I)‖ ≤ c k * (L * δ) ^ (-(1 : ℝ) / k) := by
-    clear * - a b hαβ hud hφc hest hk hab hL hφ' ih
-    by_cases hαβ' : α = β
-    · simp only [hαβ', integral_same, norm_zero]; have := c_pos k; positivity
-    have hud_αβ := uniqueDiffOn_uIcc hαβ'
+    by_cases hαβ_ne : α = β
+    · simp only [hαβ_ne, integral_same, norm_zero]; have := c_pos k; positivity
+    have hud_αβ := uniqueDiffOn_uIcc hαβ_ne
     have deriv_eq (x : ℝ) (hx : x ∈ [[α, β]]) :
         iteratedDerivWithin k φ [[α, β]] x = iteratedDerivWithin k φ [[a, b]] x := by
       simp only [iteratedDerivWithin]; congr 1
       exact iteratedFDerivWithin_subset hαβ hud_αβ hud (hφc.of_le (by norm_cast; omega)) hx
     have hψ_bd (x : ℝ) (hx : x ∈ [[α, β]]) : L * δ ≤ |iteratedDerivWithin k φ [[α, β]] x| := by
-      simpa [deriv_eq x hx] using hest hαβ' x hx
+      simpa [deriv_eq x hx] using hest hαβ_ne x hx
     rcases eq_or_lt_of_le hk with rfl | hk'
     · -- This is the `k = 1` case: use the order one theorem
       have deq1 : ∀ z ∈ [[α, β]], derivWithin φ [[α, β]] z = derivWithin φ [[a, b]] z :=
@@ -343,22 +342,14 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
         _ = _ := by norm_num [rpow_neg_one]
     · -- This is the `k ≥ 2` case: use inductive hypothesis
       have hψc : ContDiffOn ℝ (k : ℕ∞) φ [[α, β]] := (hφc.mono hαβ).of_le (by norm_cast; simp)
-      rcases lt_or_gt_of_ne hαβ' with h | h
-      · simpa [mul_comm] using ih hψc hψ_bd h hk' (by positivity)
-      · rw [integral_symm, norm_neg]
-        simpa [mul_comm] using ih (by rwa [uIcc_comm]) (by rwa [uIcc_comm]) h hk' (by positivity)
-  -- Auxiliaries for verifying the hypothesis of `haux`.
+      simpa [mul_comm] using ih hψc hψ_bd (lt_of_le_of_ne hαβ' hαβ_ne) hk' (by positivity)
+  -- The derivative estimate `hest` needed by `haux` holds if interval is `δ`-far from `d`.
   have hest_sub {α β : ℝ} (hαβ : [[α, β]] ⊆ [[a, b]])
       (hle : ∀ x ∈ [[α, β]], δ ≤ |x - d|) :
       ∀ x ∈ [[α, β]], L * δ ≤ |iteratedDerivWithin k φ [[a, b]] x| := fun x hx ↦ by
     have h1 : L * |x - d| ≤ |iteratedDerivWithin k φ [[a, b]] x| := by simpa using hd' x (hαβ hx)
     exact le_trans (by have := hle x hx; gcongr) h1
-  have hφcont : ContinuousOn φ [[a, b]] := hφc.continuousOn
-  have hf : ContinuousOn (fun x : ℝ ↦ exp (φ x * I)) [[a, b]] := by fun_prop
-  have hLδ : (L * δ) ^ (-(1 : ℝ) / k) = δ := by
-    rw [mul_rpow (by positivity) (by positivity), ← rpow_mul (by positivity),
-      ← rpow_add (by positivity)]
-    congr; field_simp; simp
+  -- Show that the outer two intervals are `δ`-far from `d`
   have hac₁_est : a ≠ c₁ → ∀ x ∈ [[a, c₁]], δ ≤ |x - d| := fun hne x hx ↦ by
     rw [uIcc_of_le (le_max_left a (d - δ))] at hx
     have : a < d - δ := by by_contra! hle; exact hne (max_eq_left hle).symm
@@ -369,23 +360,30 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     have : d + δ < b := by by_contra! hle; exact hne (min_eq_left hle)
     rw [abs_of_nonneg (by linarith only [hδ_pos, hx.1, min_eq_right this.le])]
     linarith only [hδ_pos, hx.1, min_eq_right this.le]
-  -- Finally we are ready to put the pieces together
+  -- Finally, split the integral into three pieces
+  have hf : ContinuousOn (fun x ↦ exp (φ x * I)) [[a, b]] := by have := hφc.continuousOn; fun_prop
   have hac₁ := uIcc_subset_uIcc left_mem_uIcc hc₁_mem
   have hc₂b := uIcc_subset_uIcc hc₂_mem right_mem_uIcc
   rw [← integral_add_adjacent_intervals (hf.mono hac₁ |>.intervalIntegrable)
           (hf.mono (uIcc_subset_uIcc hc₁_mem right_mem_uIcc) |>.intervalIntegrable),
     ← integral_add_adjacent_intervals (hf.mono (uIcc_subset_uIcc hc₁_mem hc₂_mem)
           |>.intervalIntegrable) (hf.mono hc₂b |>.intervalIntegrable)]
+  -- Now apply the triangle inequality and estimate the outer two pieces by `haux`
   calc
     _ ≤ ‖∫ x in a..c₁, exp (φ x * I)‖ + ‖∫ x in c₁..c₂, exp (φ x * I)‖ +
         ‖∫ x in c₂..b, exp (φ x * I)‖ := by grind only [add_assoc, norm_add_le]
     _ ≤ c k * (L * δ) ^ (-(1 : ℝ) / k) + 2 * δ + c k * (L * δ) ^ (-(1 : ℝ) / k) := by
       gcongr
-      · exact haux hac₁ fun hne ↦ hest_sub hac₁ (hac₁_est hne)
+      · exact haux (le_max_left ..) hac₁ fun hne ↦ hest_sub hac₁ (hac₁_est hne)
       · exact le_trans (norm_integral_le_of_norm_le_const fun x _ ↦
           le_of_eq <| norm_exp_ofReal_mul_I _) (by simpa using hδ)
-      · exact haux hc₂b fun hne ↦ hest_sub hc₂b (hc₂b_est hne)
-    _ = _ := by grind only [c_rec <|ne_zero_of_lt hk]
+      · exact haux (min_le_left ..) hc₂b fun hne ↦ hest_sub hc₂b (hc₂b_est hne)
+    _ = _ := by
+      have _ : (L * δ) ^ (-(1 : ℝ) / k) = δ := by
+        rw [mul_rpow (by positivity) (by positivity), ← rpow_mul (by positivity),
+          ← rpow_add (by positivity)]
+        congr; field_simp; simp
+      grind only [c_rec <|ne_zero_of_lt hk]
 
 end SpecialCase
 
