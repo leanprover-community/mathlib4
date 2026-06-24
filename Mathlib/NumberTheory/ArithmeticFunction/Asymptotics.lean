@@ -24,14 +24,13 @@ section sigma
 
 open scoped sigma
 
-theorem sigma_isBigO_pow_add_one (k : ℕ) :
-    (fun n ↦ (σ k n : ℝ)) =O[atTop] (fun n ↦ (n ^ (k + 1) : ℝ)) := by
-  rw [isBigO_iff]
-  use 1
-  simp only [Real.norm_eq_abs, Nat.abs_cast, norm_pow, one_mul, eventually_atTop]
-  use 0
+theorem sigma_isBigOWith_pow_add_one (k : ℕ) :
+    IsBigOWith 1 atTop (fun n ↦ (σ k n : ℝ)) (fun n ↦ (n ^ (k + 1) : ℝ)) := by
+  apply isBigOWith_of_le
+  intro n
+  simp only [Real.norm_eq_abs, Nat.abs_cast, norm_pow]
   norm_cast
-  grind [sigma_le_pow_succ]
+  exact sigma_le_pow_succ k n
 
 end sigma
 
