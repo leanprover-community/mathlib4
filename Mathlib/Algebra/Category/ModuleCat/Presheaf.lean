@@ -140,6 +140,13 @@ lemma presheaf_obj_coe (X : Cᵒᵖ) :
 lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
     DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f).hom x = M.map f x := rfl
 
+@[reassoc]
+lemma smul_map {U V : Cᵒᵖ} (f : U ⟶ V) (r : R.obj U) :
+    dsimp% ModuleCat.smul _ r ≫ M.presheaf.map f =
+      M.presheaf.map f ≫ ModuleCat.smul _ (R.map f r) := by
+  ext x
+  exact (M.map f).hom.map_smul r x
+
 instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
     Module (R.obj X) (M.presheaf.obj X) :=
   inferInstanceAs (Module (R.obj X) (M.obj X))
