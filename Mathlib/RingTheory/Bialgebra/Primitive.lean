@@ -27,7 +27,7 @@ This file defines primitive elements in a bialgebra, i.e. elements `a` such that
 
 public section
 
-open Bialgebra Coalgebra TensorProduct Algebra.TensorProduct
+open Coalgebra TensorProduct
 
 variable {F R A B : Type*}
 
