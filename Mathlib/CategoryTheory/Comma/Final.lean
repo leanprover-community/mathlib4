@@ -45,12 +45,12 @@ variable (L : A ⥤ T) (R : B ⥤ T)
 section Relative
 
 lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
-    [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : IsCofiltered (Comma L R) := by
-  have : Nonempty (Comma L R) := by
+    [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : IsCofiltered (Comma L R) where
+  nonempty := by
     obtain ⟨b⟩ := IsCofiltered.nonempty (C := B)
     obtain ⟨X⟩ : Nonempty (CostructuredArrow L (R.obj b)) := IsCofiltered.nonempty
     exact ⟨⟨X.left, b, X.hom⟩⟩
-  have : IsCofilteredOrEmpty (Comma L R) := by
+  toIsCofilteredOrEmpty := by
     refine ⟨fun j₁ j₂ ↦ ?_, fun j₁ j₂ u v ↦ ?_⟩
     · obtain ⟨Q⟩ : Nonempty (CostructuredArrow L (R.obj (IsCofiltered.min j₁.right j₂.right))) :=
         IsCofiltered.nonempty
@@ -70,7 +70,6 @@ lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilte
       have := IsCofiltered.eq_condition u.right v.right
       exact ⟨⟨i₀, IsCofiltered.eq u.right v.right, L.map (β ≫ va₁) ≫ Q.hom⟩,
         ⟨β ≫ va₂, IsCofiltered.eqHom u.right v.right, by cat_disch⟩, by cat_disch⟩
-  constructor
 
 set_option backward.isDefEq.respectTransparency false in
 lemma initial_fst_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
