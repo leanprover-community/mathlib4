@@ -557,21 +557,16 @@ set_option backward.isDefEq.respectTransparency false in
 instance Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
     [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
     ((restrictFunctor f).obj M).IsQuasicoherent := by
-  letI α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
+  let α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
   have hα : IsIso α := NatIso.isIso_of_isIso_app _
-  dsimp [restrictFunctor]
-  convert SheafOfModules.isQuasicoherent_pushforward_of_isLeftAdjoint.{u}
-    (J := Opens.grothendieckTopology _) (K := Opens.grothendieckTopology _) f.opensFunctor _ _
-  · refine (SheafOfModules.fullyFaithfulForget _).preimageIso ?_
-    refine PresheafOfModules.isoMk (fun U ↦ ?_) (fun U V g ↦ ?_)
-    · exact ModuleCat.restrictScalarsIsoOfEquiv (f.appIso U.unop).symm.commRingCatIsoToRingEquiv
-    · ext x
-      exact congr($(f.appIso_hom_naturality _).hom x)
-  · convert isIso_of_reflects_iso _ (ObjectProperty.ι _)
-    · dsimp
-      infer_instance
-    · infer_instance
-  · infer_instance
+  let φ : X.ringCatSheaf ⟶ (f.opensFunctor.sheafPushforwardContinuous _ _ _).obj Y.ringCatSheaf :=
+    ⟨Functor.whiskerRight α (forget₂ CommRingCat RingCat)⟩
+  have : IsIso φ := by
+    rw [← isIso_iff_of_reflects_iso _ (ObjectProperty.ι _)]
+    dsimp [φ]
+    infer_instance
+  exact SheafOfModules.isQuasicoherent_pushforward_of_isLeftAdjoint.{u}
+    f.opensFunctor φ (Scheme.Modules.restrictUnitIso _)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The presentation of `M.restrict f` by restricting a presentation of `M`. -/
