@@ -679,7 +679,7 @@ protected theorem MonoidHom.map_one [MulOne M] [MulOne N] (f : M →* N) : f 1 =
 protected theorem MulHom.map_mul [Mul M] [Mul N] (f : M →ₙ* N) (a b : M) : f (a * b) = f a * f b :=
   f.map_mul' a b
 
-@[to_additive]
+@[to_additive (reorder := a n)]
 protected theorem MulHom.map_ppow {M N : Type*} [Semigroup M] [Semigroup N] (f : M →ₙ* N) (a : M)
     (n : ℕ+) : f (a ^ n) = f a ^ n := by
   induction n using Semigroup.ppow_induction a

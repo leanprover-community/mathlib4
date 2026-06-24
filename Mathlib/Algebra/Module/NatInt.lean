@@ -57,6 +57,10 @@ section AddCommMonoid
 
 variable [AddCommMonoid M]
 
+instance AddCommMonoid.toPNatDistribSMul : DistribSMul ℕ+ M where
+  smul_add n a b := psmul_add a b n
+  smul_zero := psmul_zero
+
 instance AddCommMonoid.toNatModule : Module ℕ M where
   smul_add n a b := nsmul_add a b n
   smul_zero := nsmul_zero
