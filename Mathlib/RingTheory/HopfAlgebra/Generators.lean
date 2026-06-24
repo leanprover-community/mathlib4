@@ -62,9 +62,8 @@ theorem convMul_eq_one_of_adjoin_eq_top_left
       _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
             g (𝓡b.left q) * (g (𝓡a.left p) * f (𝓡a.right p)) * f (𝓡b.right q) := by
         simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, g_mul, f_mul, mul_assoc]
-      _ = ∑ q ∈ 𝓡b.index, algebraMap R B (counit a) * g (𝓡b.left q) * f (𝓡b.right q) := by
-        rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ha, ← commutes]
       _ = algebraMap R B (counit (a * b)) := by
+        rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ha, ← commutes]
         simp_rw [mul_assoc, ← Finset.mul_sum, hb, ← map_mul, ← Bialgebra.counit_mul]
 
 /-- Analogue of `convMul_eq_one_of_adjoin_eq_top_left` for `toConv f * toConv g = 1`:
@@ -85,9 +84,8 @@ theorem convMul_eq_one_of_adjoin_eq_top_right
       _ = ∑ p ∈ 𝓡a.index, ∑ q ∈ 𝓡b.index,
             f (𝓡a.left p) * (f (𝓡b.left q) * g (𝓡b.right q)) * g (𝓡a.right p) := by
         simp [← 𝓡a.eq, ← 𝓡b.eq, Finset.sum_mul_sum, g_mul, f_mul, mul_assoc]
-      _ = ∑ p ∈ 𝓡a.index, algebraMap R B (counit b) * f (𝓡a.left p) * g (𝓡a.right p) := by
-        simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hb, ← commutes]
       _ = algebraMap R B (counit (a * b)) := by
+        simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hb, ← commutes]
         simp_rw [mul_assoc, ← Finset.mul_sum, ha, ← map_mul, mul_comm (counit b),
           ← Bialgebra.counit_mul]
 
