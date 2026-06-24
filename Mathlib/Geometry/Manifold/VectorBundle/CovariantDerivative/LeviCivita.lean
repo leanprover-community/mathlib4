@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
+public import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
 
 /-!
 # The Levi-Civita connection on a Riemannian manifold
@@ -479,17 +480,43 @@ lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
     CMDiff (k + 1) (T% W) := by
   sorry
 
+open Module in
 -- Variant of step 2' with slightly stronger requirements on differentiability,
 -- but less on the regularity of the metric.
 -- This cannot be applied to the Levi-Civita connection as there is a loss of derivatives there.
 variable {I} in
 lemma step2' (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
-    [IsManifold I k M]
+    [IsManifold I k M] [IsManifold I (k + 1) M]
     [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
     (hW : ∀ {Z : (x : M) → TangentSpace% x}
       (hZ : CMDiff k (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
     CMDiff k (T% W) := by
-  sorry
+  intro x
+  obtain (_hE | hE) := subsingleton_or_nontrivial E
+  · have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
+    sorry -- constant functions, nothing to prove
+  -- Take an orthonormal frame.
+  let b := Basis.ofVectorSpace ℝ E
+  let t := trivializationAt E (TangentSpace I : M → Type _) x
+  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+  -- The linear ordering on the indexing set of `b` is only used in this proof,
+  -- so our choice does not matter.
+  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+    choose r wo using exists_wellFoundedLT _
+    exact r
+  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
+  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  let frame := b.orthonormalFrame t
+  -- M is a C^{k+1} manifold, so should be obvious!
+  have : ContMDiffVectorBundle k E (fun (x : M) ↦ TangentSpace% x) I := sorry
+  have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k) t (IB := I)
+  rw [hs.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
+  intro i
+  simp_rw [real_inner_comm]
+  let myZ := (b.orthonormalFrame t i)
+  have : CMDiff k (T% myZ) := sorry -- scifi, want a point-wise version anyway!
+  exact hW this x
 
 /-- If `M` is endowed with a `C^k` metric, its Levi-Civita connection is a `C^k` connection. -/
 instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
