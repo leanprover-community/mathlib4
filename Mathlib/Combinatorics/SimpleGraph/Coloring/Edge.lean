@@ -109,24 +109,6 @@ theorem chromaticIndex_eq_zero : G.chromaticIndex = 0 ↔ G = ⊥ := by
   refine ⟨fun h ↦ ?_, (· ▸ chromaticIndex_bot V)⟩
   simpa using chromaticNumber_eq_zero_iff.mp h
 
-/-- Lift an embedding of colors to an embedding of edge colorings. -/
-@[expose]
-def edgeColoringEmbedding (f : α ↪ β) : G.EdgeColoring α ↪ G.EdgeColoring β :=
-  recolorOfEmbedding _ f
-
-/-- Lift an isomorphism of colors to an isomorphism of edge colorings. -/
-@[expose]
-def edgeColoringEquivOfColorIso (f : α ≃ β) : G.EdgeColoring α ≃ G.EdgeColoring β :=
-  recolorOfEquiv _ f
-
-@[gcongr]
-theorem EdgeColorableWith.mono (f : α ↪ β) (h : G.EdgeColorableWith α) : G.EdgeColorableWith β :=
-  ⟨edgeColoringEmbedding f h.some⟩
-
-@[gcongr]
-theorem EdgeColorable.mono (hle : n ≤ m) (h : G.EdgeColorable n) : G.EdgeColorable m :=
-  Colorable.mono hle h
-
 /-- Edge coloring using the edges themselves as colors, coloring with the identity function. -/
 @[expose]
 def EdgeColoring.id : G.EdgeColoring G.edgeSet :=
@@ -165,6 +147,24 @@ variable (α) in
 @[expose]
 def EdgeColoring.ofIso (f : G ≃g G') : G.EdgeColoring α ≃ G'.EdgeColoring α :=
   EdgeColoring.ofLineGraphIso α f.lineGraph
+
+/-- Lift an embedding of colors to an embedding of edge colorings. -/
+@[expose]
+def edgeColoringEmbedding (f : α ↪ β) : G.EdgeColoring α ↪ G.EdgeColoring β :=
+  recolorOfEmbedding _ f
+
+/-- Lift an isomorphism of colors to an isomorphism of edge colorings. -/
+@[expose]
+def edgeColoringEquivOfColorIso (f : α ≃ β) : G.EdgeColoring α ≃ G.EdgeColoring β :=
+  recolorOfEquiv _ f
+
+@[gcongr]
+theorem EdgeColorableWith.mono (f : α ↪ β) (h : G.EdgeColorableWith α) : G.EdgeColorableWith β :=
+  ⟨edgeColoringEmbedding f h.some⟩
+
+@[gcongr]
+theorem EdgeColorable.mono (hle : n ≤ m) (h : G.EdgeColorable n) : G.EdgeColorable m :=
+  Colorable.mono hle h
 
 theorem EdgeColorableWith.of_lineGraph_hom (f : G.lineGraph →g G'.lineGraph)
     (h : G'.EdgeColorableWith α) : G.EdgeColorableWith α :=
