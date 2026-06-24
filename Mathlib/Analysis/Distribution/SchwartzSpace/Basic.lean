@@ -618,7 +618,6 @@ def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
   toLinearMap := mkLM A hadd hsmul hsmooth hbound
 
 /-- Define a continuous semilinear map from Schwartz space to a normed space. -/
-@[simps]
 def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
     (hadd : ∀ (f g : 𝓢(D, E)), A (f + g) = A f + A g)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)), A (a • f) = σ a • A f)
@@ -1193,20 +1192,22 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
-@[simps! apply]
 def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
   mkCLMtoNormedSpace toBoundedContinuousFunction (by intros; ext; simp) (by intros; ext; simp)
     (⟨{0}, 1, zero_le_one, by
       simpa [BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
 
-theorem injective_toBoundedContinuousFunctionCLM :
-    Function.Injective (toBoundedContinuousFunctionCLM ..: 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
-  fun f g h ↦ by
-    ext x; simpa using DFunLike.congr_fun h x
+@[simp]
+theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
+    toBoundedContinuousFunctionCLM 𝕜 E F f x = f x :=
+  rfl
 
+theorem toBoundedContinuousFunctionCLM_injective :
+    Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
+  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
 instance : T3Space 𝓢(E, F) :=
   suffices T2Space 𝓢(E, F) from inferInstance
-  .of_injective_continuous (injective_toBoundedContinuousFunctionCLM 𝕜 ..)
+  .of_injective_continuous (toBoundedContinuousFunctionCLM_injective 𝕜 ..)
     (ContinuousLinearMap.continuous _)
 
 end BoundedContinuousFunction
