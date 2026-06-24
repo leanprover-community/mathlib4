@@ -197,8 +197,7 @@ lemma surjective_cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsAri
   rintro ⟨c, (hc : IsCusp c _)⟩
   rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff'] at hc
   obtain ⟨g, rfl⟩ := hc
-  use ⟦g⁻¹⟧
-  aesop
+  exact ⟨⟦g⁻¹⟧, Quotient.sound (by simp)⟩
 
 /-- An arithmetic subgroup has finitely many cusp orbits. -/
 instance (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] : Finite (CuspOrbits 𝒢) :=
@@ -310,6 +309,13 @@ lemma _root_.ModularGroup.mapGL_T_zpow_eq_upperRightHom {S : Type*} [CommRing S]
     Matrix.SpecialLinearGroup.mapGL S ((ModularGroup.T : SL(2, ℤ))^n) =
       Matrix.GeneralLinearGroup.upperRightHom (n : S) := by
   rw [map_zpow, ModularGroup.mapGL_T_eq_upperRightHom, ← AddChar.map_zsmul_eq_zpow, zsmul_one]
+
+/-- The image of `T^n : SL(2, ℤ)` in `GL(2, S)` for any commutative ring `S` is the
+upper-triangular matrix `[1, n; 0, 1]`. -/
+lemma _root_.ModularGroup.mapGL_T_pow_eq_upperRightHom {S : Type*} [CommRing S] (n : ℕ) :
+    Matrix.SpecialLinearGroup.mapGL S ((ModularGroup.T : SL(2, ℤ))^n) =
+      Matrix.GeneralLinearGroup.upperRightHom (n : S) := by
+  rw [← zpow_natCast, ModularGroup.mapGL_T_zpow_eq_upperRightHom, Int.cast_natCast]
 
 lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictPeriods (Γ : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 := by
@@ -446,17 +452,12 @@ section IntegerCuspWidth
 namely the order of `T` modulo `𝒢 ⊓ 𝒮ℒ`. -/
 lemma exists_pos_nat_mem_strictPeriods (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsFiniteRelIndex 𝒮ℒ] :
     ∃ n : ℕ, 0 < n ∧ (n : ℝ) ∈ 𝒢.strictPeriods := by
-  set T_SL : 𝒮ℒ := (mapGL ℝ).rangeRestrict ModularGroup.T with hT_SL
-  have hidx : ((𝒢 : Subgroup (GL (Fin 2) ℝ)).subgroupOf 𝒮ℒ).index ≠ 0 :=
-    Subgroup.FiniteIndex.index_ne_zero
-  obtain ⟨n, hn_pos, _, hn_mem⟩ :=
-    Subgroup.exists_pow_mem_of_index_ne_zero hidx T_SL
+  obtain ⟨n, hn_pos, _, hn_mem⟩ := Subgroup.exists_pow_mem_of_index_ne_zero
+    (Subgroup.FiniteIndex.index_ne_zero (H := (𝒢 : Subgroup (GL (Fin 2) ℝ)).subgroupOf 𝒮ℒ))
+    ((mapGL ℝ).rangeRestrict ModularGroup.T)
   refine ⟨n, hn_pos, ?_⟩
-  rw [Subgroup.mem_subgroupOf] at hn_mem
-  have hcoe : ((T_SL ^ n : 𝒮ℒ) : GL (Fin 2) ℝ) =
-      mapGL ℝ ((ModularGroup.T : SL(2, ℤ))^n) := by
-    rw [Subgroup.coe_pow, hT_SL, MonoidHom.coe_rangeRestrict, ← map_pow]
-  rw [hcoe, ← zpow_natCast, ModularGroup.mapGL_T_zpow_eq_upperRightHom] at hn_mem
+  rw [Subgroup.mem_subgroupOf, Subgroup.coe_pow, MonoidHom.coe_rangeRestrict, ← map_pow,
+    ← zpow_natCast, ModularGroup.mapGL_T_zpow_eq_upperRightHom] at hn_mem
   simpa [Subgroup.mem_strictPeriods_iff] using hn_mem
 
 /-- The smallest positive integer `n` such that the upper-triangular matrix `[1, n; 0, 1]` lies in
@@ -474,17 +475,18 @@ lemma integerCuspWidth_pos : 0 < integerCuspWidth 𝒢 := by
 lemma integerCuspWidth_mem_strictPeriods : (integerCuspWidth 𝒢 : ℝ) ∈ 𝒢.strictPeriods := by
   classical exact (Nat.find_spec (exists_pos_nat_mem_strictPeriods 𝒢)).2
 
+/-- Minimality of `integerCuspWidth`: any positive natural number whose image in `ℝ` lies in
+the strict periods of `𝒢` is at least `integerCuspWidth 𝒢`. -/
+lemma integerCuspWidth_le {n : ℕ} (hpos : 0 < n) (hmem : (n : ℝ) ∈ 𝒢.strictPeriods) :
+    integerCuspWidth 𝒢 ≤ n := by
+  classical exact Nat.find_le ⟨hpos, hmem⟩
+
 /-- The matrix `T ^ integerCuspWidth 𝒢` lies in `𝒢`. -/
 lemma T_pow_integerCuspWidth_mem :
     ((ModularGroup.T : SL(2, ℤ))^(integerCuspWidth 𝒢 : ℕ) : GL (Fin 2) ℝ) ∈ 𝒢 := by
-  have h := integerCuspWidth_mem_strictPeriods (𝒢 := 𝒢)
-  rw [Subgroup.mem_strictPeriods_iff] at h
-  have hgl : ((ModularGroup.T : SL(2, ℤ))^(integerCuspWidth 𝒢 : ℕ) : GL (Fin 2) ℝ) =
-      mapGL ℝ ((ModularGroup.T : SL(2, ℤ))^((integerCuspWidth 𝒢 : ℕ) : ℤ)) := by
-    change (mapGL ℝ ModularGroup.T)^(integerCuspWidth 𝒢 : ℕ) = _
-    rw [← map_pow, ← zpow_natCast]
-  rw [hgl, ModularGroup.mapGL_T_zpow_eq_upperRightHom]
-  exact_mod_cast h
+  change (mapGL ℝ ModularGroup.T)^(integerCuspWidth 𝒢 : ℕ) ∈ 𝒢
+  rw [← map_pow, ModularGroup.mapGL_T_pow_eq_upperRightHom, ← mem_strictPeriods_iff]
+  exact integerCuspWidth_mem_strictPeriods
 
 /-- The cosets `T ^ j • (𝒢 ⊓ 𝒮ℒ)` for `j < integerCuspWidth 𝒢` are pairwise distinct in
 `𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ`. -/
@@ -492,50 +494,38 @@ lemma quotient_T_pow_injective_integerCuspWidth [DiscreteTopology 𝒢.strictPer
     Function.Injective (fun j : Fin (integerCuspWidth 𝒢) ↦
       (⟦(mapGL ℝ).rangeRestrict ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
         𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) := by
-  classical
-  intro j₁ j₂ hj
-  rw [QuotientGroup.eq, Subgroup.mem_subgroupOf] at hj
-  have hSub : (((((mapGL ℝ).rangeRestrict ((ModularGroup.T : SL(2, ℤ))^(j₁ : ℕ)))⁻¹ *
-      (mapGL ℝ).rangeRestrict ((ModularGroup.T : SL(2, ℤ))^(j₂ : ℕ))) : 𝒮ℒ) : GL (Fin 2) ℝ) =
-      mapGL ℝ ((ModularGroup.T : SL(2, ℤ))^((j₂ : ℤ) - (j₁ : ℤ))) := by
-    rw [Subgroup.coe_mul, Subgroup.coe_inv,
-      MonoidHom.coe_rangeRestrict, MonoidHom.coe_rangeRestrict,
-      ← map_inv, ← map_mul, zpow_sub, zpow_natCast, zpow_natCast]
-    congr 1
-    exact ((Commute.pow_pow_self ModularGroup.T (j₂ : ℕ) (j₁ : ℕ)).inv_right).eq.symm
-  rw [hSub, ModularGroup.mapGL_T_zpow_eq_upperRightHom,
-    show (((j₂ : ℤ) - (j₁ : ℤ) : ℤ) : ℝ) = ((j₂ : ℝ) - (j₁ : ℝ)) by push_cast; ring,
-    ← Subgroup.mem_strictPeriods_iff] at hj
-  have h_min_zero : ∀ d : ℕ, d < integerCuspWidth 𝒢 → (d : ℝ) ∈ 𝒢.strictPeriods → d = 0 :=
-    fun d hd_lt hd_mem ↦ by
-      by_contra hd_ne
-      have hd_lt' : d < Nat.find (exists_pos_nat_mem_strictPeriods 𝒢) := hd_lt
-      exact Nat.find_min (exists_pos_nat_mem_strictPeriods 𝒢) hd_lt'
-        ⟨Nat.pos_of_ne_zero hd_ne, hd_mem⟩
-  rcases le_total (j₁ : ℕ) (j₂ : ℕ) with hle | hle
-  · have : (j₂ : ℕ) - (j₁ : ℕ) = 0 :=
-      h_min_zero _ (by have := j₂.isLt; lia) (by rw [Nat.cast_sub hle]; exact hj)
-    exact Fin.ext (by lia)
-  · have : (j₁ : ℕ) - (j₂ : ℕ) = 0 :=
-      h_min_zero _ (by have := j₁.isLt; lia) <| by
-        rw [Nat.cast_sub hle]
-        simpa [neg_sub] using neg_mem hj
-    exact Fin.ext (by lia)
+  -- For `a ≤ b < integerCuspWidth 𝒢`, if `(b - a : ℝ) ∈ strictPeriods` then `a = b`.
+  suffices key : ∀ {a b : ℕ}, a ≤ b → b < integerCuspWidth 𝒢 →
+      ((b : ℝ) - (a : ℝ)) ∈ 𝒢.strictPeriods → a = b by
+    intro j₁ j₂ hj
+    rw [QuotientGroup.eq, Subgroup.mem_subgroupOf] at hj
+    have hSub : (((((mapGL ℝ).rangeRestrict ((ModularGroup.T : SL(2, ℤ))^(j₁ : ℕ)))⁻¹ *
+        (mapGL ℝ).rangeRestrict ((ModularGroup.T : SL(2, ℤ))^(j₂ : ℕ))) : 𝒮ℒ) : GL (Fin 2) ℝ) =
+        mapGL ℝ ((ModularGroup.T : SL(2, ℤ))^((j₂ : ℤ) - (j₁ : ℤ))) := by
+      rw [Subgroup.coe_mul, Subgroup.coe_inv, MonoidHom.coe_rangeRestrict,
+        MonoidHom.coe_rangeRestrict, ← map_inv, ← map_mul, zpow_sub, zpow_natCast, zpow_natCast]
+      exact congr_arg _ ((Commute.pow_pow_self ModularGroup.T _ _).inv_right).eq.symm
+    rw [hSub, ModularGroup.mapGL_T_zpow_eq_upperRightHom,
+      show (((j₂ : ℤ) - (j₁ : ℤ) : ℤ) : ℝ) = ((j₂ : ℝ) - (j₁ : ℝ)) by push_cast; ring,
+      ← mem_strictPeriods_iff] at hj
+    exact Fin.ext <| (le_total (j₁ : ℕ) (j₂ : ℕ)).elim (key · j₂.isLt hj) fun hle ↦
+      (key hle j₁.isLt (by simpa [neg_sub] using neg_mem hj)).symm
+  intro a b hab hb hmem
+  by_contra hne
+  exact absurd (integerCuspWidth_le (n := b - a) (by lia)
+    (by rwa [Nat.cast_sub hab])) (by lia)
 
 /-- The integer cusp width is a positive integer multiple of the strict width at `∞`. -/
 lemma integerCuspWidth_eq_nat_mul_strictWidthInfty [DiscreteTopology 𝒢.strictPeriods] :
     ∃ m : ℕ, 0 < m ∧ (integerCuspWidth 𝒢 : ℝ) = m * 𝒢.strictWidthInfty := by
-  have hnR_pos : (0 : ℝ) < integerCuspWidth 𝒢 := by exact_mod_cast integerCuspWidth_pos
-  obtain ⟨m, hm⟩ : ∃ m : ℤ, (integerCuspWidth 𝒢 : ℝ) = m * 𝒢.strictWidthInfty := by
-    obtain ⟨m, hm⟩ := AddSubgroup.mem_zmultiples_iff.mp <|
-      Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty (𝒢 := 𝒢) ▸
-        integerCuspWidth_mem_strictPeriods
-    exact ⟨m, by rw [← hm, zsmul_eq_mul]⟩
-  have hw_pos : (0 : ℝ) < 𝒢.strictWidthInfty :=
-    𝒢.strictWidthInfty_nonneg.lt_of_ne fun heq ↦ hnR_pos.ne' (by rw [hm, ← heq, mul_zero])
-  have hm_pos : 0 < m := by exact_mod_cast (by nlinarith [hm ▸ hnR_pos, hw_pos] : (0 : ℝ) < m)
-  refine ⟨m.toNat, by lia, ?_⟩
-  rw [hm, ← Int.cast_natCast, Int.toNat_of_nonneg hm_pos.le]
+  obtain ⟨m, hm⟩ := AddSubgroup.mem_zmultiples_iff.mp <|
+    Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty (𝒢 := 𝒢) ▸
+      integerCuspWidth_mem_strictPeriods
+  rw [zsmul_eq_mul] at hm
+  have hmR_pos : (0 : ℝ) < m :=
+    pos_of_mul_pos_left (hm ▸ mod_cast integerCuspWidth_pos) 𝒢.strictWidthInfty_nonneg
+  have hm_pos : (0 : ℤ) < m := mod_cast hmR_pos
+  exact ⟨m.toNat, by lia, by rw [← hm, ← Int.cast_natCast, Int.toNat_of_nonneg hm_pos.le]⟩
 
 end IntegerCuspWidth
 
@@ -563,29 +553,27 @@ namespace CongruenceSubgroup
     strictWidthInfty (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
   strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
 
+/-- The strict periods of `Γ(N)` (viewed as a subgroup of `GL(2, ℝ)`) are the integer multiples
+of `N`. -/
 @[simp] lemma strictPeriods_Gamma (N : ℕ) :
     strictPeriods (Gamma N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples ↑N := by
   ext x
-  have : AddSubgroup.zmultiples ↑N = .map (Int.castAddHom ℝ) (.zmultiples N) := by simp
-  simp only [this, mem_strictPeriods_iff, Subgroup.mem_map, Gamma_mem]
-  constructor
-  · rintro ⟨g, ⟨-, hg, -, -⟩, hx⟩
-    rw [show x = g 0 1 by simpa using congr_arg (· 0 1) hx.symm]
-    apply AddSubgroup.mem_map_of_mem
-    rwa [Int.mem_zmultiples_iff, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
-  · simp only [AddSubgroup.mem_map, AddSubgroup.mem_zmultiples_iff, existsAndEq, true_and,
-      Units.ext_iff, mapGL_coe_matrix, map_apply_coe, forall_exists_index]
-    refine fun a ha ↦ ⟨ModularGroup.T ^ (a * N), by simp [ModularGroup.coe_T_zpow], ?_⟩
-    ext i j
-    fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow, ← ha]
+  have hN : AddSubgroup.zmultiples (N : ℝ) = .map (Int.castAddHom ℝ) (.zmultiples N) := by simp
+  rw [hN, mem_strictPeriods_iff, Subgroup.mem_map, AddSubgroup.mem_map]
+  refine ⟨fun ⟨g, hg, hgx⟩ ↦ ⟨g 0 1, ?_, by simpa using congr_arg (· 0 1) hgx⟩,
+    fun ⟨n, hn, hnx⟩ ↦ ⟨ModularGroup.T ^ n,
+      ModularGroup_T_pow_mem_Gamma N _ (Int.mem_zmultiples_iff.mp hn), ?_⟩⟩
+  · rw [Int.mem_zmultiples_iff, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
+    exact (Gamma_mem.mp hg).2.1
+  · rw [ModularGroup.mapGL_T_zpow_eq_upperRightHom, ← hnx, Int.coe_castAddHom]
 
+/-- The strict width at `∞` of `Γ(N)` (viewed as a subgroup of `GL(2, ℝ)`) is `N`. -/
 @[simp] lemma strictWidthInfty_Gamma (N : ℕ) [NeZero N] :
     strictWidthInfty (Gamma N : Subgroup (GL (Fin 2) ℝ)) = N := by
-  have hsp := strictPeriods_Gamma N
-  rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
-    AddSubgroup.zmultiples_eq_zmultiples_iff
-      (not_isOfFinAddOrder_of_isAddTorsionFree (NeZero.ne _))] at hsp
-  grind [strictWidthInfty_nonneg, Nat.cast_nonneg]
+  have hsp := strictPeriods_eq_zmultiples_strictWidthInfty (𝒢 := Gamma N) ▸ strictPeriods_Gamma N
+  rw [Eq.comm, AddSubgroup.zmultiples_eq_zmultiples_iff
+    (not_isOfFinAddOrder_of_isAddTorsionFree (NeZero.ne _))] at hsp
+  grind [strictWidthInfty_nonneg]
 
 end CongruenceSubgroup
 
