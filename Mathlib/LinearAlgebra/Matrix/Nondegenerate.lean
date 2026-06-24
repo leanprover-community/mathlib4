@@ -142,8 +142,9 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n
   not_forall.mp (mt hM.eq_zero_of_ortho' hw)
 
 section Determinant
-open scoped nonZeroDivisors
 variable [DecidableEq m] {M : Matrix m m R}
+
+open scoped nonZeroDivisors
 
 private theorem SeparatingLeft.of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) : M.SeparatingLeft := by
   refine separatingLeft_def.mpr fun v h ↦ funext fun i ↦ mem_nonZeroDivisors_iff_left.mp hM _ ?_
