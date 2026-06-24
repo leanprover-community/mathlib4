@@ -387,8 +387,17 @@ def ofIso {G : C ⥤ D} (e : F ≅ G) : G.OplaxMonoidal where
       ← MonoidalCategory.whiskerLeft_comp_assoc,
       ← NatTrans.naturality, MonoidalCategory.whiskerLeft_comp_assoc,
       δ_natural_right_assoc, NatTrans.naturality_assoc, tensorHom_def']
-  oplax_associativity := by
-    sorry
+  oplax_associativity X Y Z := by
+    rw [assoc, assoc, assoc, assoc, tensorHom_def'_assoc,
+      ← comp_whiskerRight_assoc, Iso.hom_inv_id_app_assoc,
+      whisker_exchange_assoc, comp_whiskerRight_assoc,
+      associator_naturality_right, tensorHom_def, comp_whiskerRight_assoc,
+      associator_naturality_middle_assoc, associator_naturality_left_assoc,
+      oplax_associativity_assoc, NatTrans.naturality_assoc,
+      tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp (f := e.hom.app (Y ⊗ Z)),
+      Iso.hom_inv_id_app_assoc, MonoidalCategory.whiskerLeft_comp,
+      whisker_exchange_assoc, tensorHom_def,
+      MonoidalCategory.whiskerLeft_comp]
   oplax_left_unitality X := by
     rw [assoc, assoc, NatTrans.naturality_assoc, tensorHom_def'_assoc,
       ← comp_whiskerRight, Iso.hom_inv_id_app_assoc,
