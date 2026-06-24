@@ -3238,6 +3238,7 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
 public import Mathlib.CategoryTheory.Preadditive.Indization
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.CategoryTheory.Preadditive.Injective.InjectiveObject
 public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution

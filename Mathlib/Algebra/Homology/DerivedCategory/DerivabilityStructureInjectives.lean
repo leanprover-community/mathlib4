@@ -5,19 +5,24 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.Plus
-public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
-public import Mathlib.Algebra.Homology.Factorizations.CM5a
-public import Mathlib.Algebra.Homology.HomotopyFiber
-public import Mathlib.Algebra.Homology.ModelCategory.Injective
 public import Mathlib.Algebra.Homology.FullSubcategory
+public import Mathlib.Algebra.Homology.ModelCategory.Injective
 public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureFibrant
-public import Mathlib.CategoryTheory.GuitartExact.Quotient
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
+public import Mathlib.CategoryTheory.Preadditive.Injective.InjectiveObject
 
 /-!
 # The injective derivability structure
+
+Let `C` be an abelian category with enough injectives.
+In this file, we define a localizer morphism `CochainComplex.Plus.localizerMorphism`
+(relatively to quasi-isomorphisms) which is given by the (fully faithful) functor
+`CochainComplex.Plus (InjectiveObject C) ⥤ CochainComplex.Plus C`, and we show
+that it is a right derivability structure. (The proof proceeds by showing that
+up to equivalences of categories, this functor is the inclusion of the full
+subcategory of fibrant objects in the model category `CochainComplex.Plus C`.)
+
+TODO(@joelriou): obtain similar results for the bounded below homotopy category.
 
 -/
 
@@ -28,112 +33,12 @@ universe w₁ w₂
 open HomotopicalAlgebra CategoryTheory Limits ZeroObject Category
 
 variable (C : Type*) [Category C] [Abelian C]
-  {H : Type*} [Category H]
-
-namespace CategoryTheory
-
-abbrev InjectiveObject := ObjectProperty.FullSubcategory (fun (X : C) => Injective X)
-
-namespace InjectiveObject
-
-instance closedUnderLimitsOfShapeDiscrete (J : Type*) :
-    ObjectProperty.IsClosedUnderLimitsOfShape (fun (X : C) => Injective X) (Discrete J) where
-  limitsOfShape_le := by
-    rintro Y ⟨p⟩
-    have : HasLimit p.diag := ⟨_, p.isLimit⟩
-    let X := fun j => p.diag.obj ⟨j⟩
-    let e := Discrete.natIsoFunctor (F := p.diag)
-    have : HasProduct X := hasLimit_of_iso e
-    have : HasLimit (Discrete.functor (p.diag.obj ∘ Discrete.mk)) := by
-      change HasProduct X
-      infer_instance
-    have : ∀ j, Injective (X j) := fun j => p.prop_diag_obj ⟨j⟩
-    have e' : ∏ᶜ X ≅ Y := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-      ((IsLimit.postcomposeHomEquiv e _).symm p.isLimit)
-    exact Injective.of_iso e' inferInstance
-
-instance : HasFiniteProducts (InjectiveObject C) where
-  out n := by infer_instance
-
-instance : HasFiniteBiproducts (InjectiveObject C) :=
-  HasFiniteBiproducts.of_hasFiniteProducts
-
-instance : HasBinaryBiproducts (InjectiveObject C) := hasBinaryBiproducts_of_finite_biproducts _
-
-instance : HasZeroObject (InjectiveObject C) where
-  zero := by
-    refine ⟨⟨0, inferInstance⟩, ?_⟩
-    rw [IsZero.iff_id_eq_zero]
-    ext : 1
-    apply id_zero
-
-abbrev ι : InjectiveObject C ⥤ C := ObjectProperty.ι _
-
-instance (X : InjectiveObject C) : Injective ((ι C).obj X) := X.2
-
-instance (X : InjectiveObject C) : Injective X.obj := X.2
-
-instance (X : HomotopyCategory.Plus (InjectiveObject C)) (n : ℤ) :
-    Injective (((ι C).mapHomotopyCategoryPlus.obj X).obj.as.X n) := by
-  change Injective ((ι C).obj (X.obj.as.X n))
-  infer_instance
-
-set_option backward.defeqAttrib.useBackward true in
-instance (K : CochainComplex.Plus (InjectiveObject C)) :
-    CochainComplex.IsKInjective
-      (((InjectiveObject.ι C).mapHomologicalComplex (.up ℤ)).obj K.obj) := by
-  obtain ⟨K, n, hn⟩ := K
-  let L := ((InjectiveObject.ι C).mapHomologicalComplex (.up ℤ)).obj K
-  have (n : ℤ) : Injective (L.X n) := by dsimp [L]; infer_instance
-  exact CochainComplex.isKInjective_of_injective L n
-
-end InjectiveObject
-
-end CategoryTheory
 
 namespace CochainComplex.Plus
 
-variable {C}
-
-lemma exists_injective_resolution [EnoughInjectives C]
-    (K : CochainComplex.Plus C) (n : ℤ) [K.obj.IsStrictlyGE n] :
-    ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n)
-      (i : K ⟶ (InjectiveObject.ι C).mapCochainComplexPlus.obj L),
-        quasiIso C i := by
-  obtain ⟨L, i, _, _, _⟩ := modelCategoryQuillen.exists_quasiIso_injective K.obj n
-  let L' : CochainComplex (InjectiveObject C) ℤ :=
-    HomologicalComplex.liftObjectProperty _ L inferInstance
-  have hL' : L'.IsStrictlyGE n := by
-    rw [CochainComplex.isStrictlyGE_iff]
-    intro i hi
-    rw [IsZero.iff_id_eq_zero]
-    ext
-    exact (L.isZero_of_isStrictlyGE n i).eq_of_src _ _
-  exact ⟨⟨L', n, hL'⟩, hL', ObjectProperty.homMk i, by assumption⟩
-
-end CochainComplex.Plus
-
-namespace DerivedCategory.Plus
-
-variable {C} [HasDerivedCategory C]
-
-lemma exists_injective_resolution [EnoughInjectives C] (K : DerivedCategory.Plus C)
-    (n : ℤ) [K.IsGE n] :
-    ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n),
-      Nonempty (DerivedCategory.Plus.Q.obj
-        ((InjectiveObject.ι C).mapCochainComplexPlus.obj L) ≅ K) := by
-  have : K.obj.IsGE n := (K.isGE_ι_obj_iff n).2 (by assumption)
-  obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.exists_iso_Q_obj_of_isGE K.obj n
-  obtain ⟨M, _, i, hi⟩ :=
-    CochainComplex.Plus.exists_injective_resolution ⟨L, ⟨n, inferInstance⟩⟩ n
-  have : QuasiIso i.hom := by assumption
-  exact ⟨M, inferInstance,
-    ⟨DerivedCategory.Plus.ι.preimageIso ((asIso (DerivedCategory.Q.map i.hom)).symm ≪≫ e.symm)⟩⟩
-
-end DerivedCategory.Plus
-
-namespace CochainComplex.Plus
-
+/-- The localizer morphism (relatively to quasi-isomorphisms) that is
+given by the "inclusion functor"
+`CochainComplex.Plus (InjectiveObject C) ⥤ CochainComplex.Plus C`. -/
 @[simps]
 def localizerMorphism :
     LocalizerMorphism ((quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
@@ -160,6 +65,9 @@ instance (K : FibrantObject (Plus C)) (n : ℤ) :
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
+/-- The equivalence between `CochainComplex.Plus (InjectiveObject C)`
+and the category of fibrant object in `CochainComplex.Plus C` for the
+Quillen model category structure.  -/
 def fibrantObjectEquivalence :
     Plus (InjectiveObject C) ≌ FibrantObject (Plus C) where
   functor := ObjectProperty.lift _ (InjectiveObject.ι C).mapCochainComplexPlus (fun K ↦ by
@@ -181,6 +89,9 @@ def fibrantObjectEquivalence :
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+/-- The localizer morphism (relatively to quasi-isomorphisms) that is
+given by the equivalence of categories
+`CochainComplex.Plus (InjectiveObject C) ≌ FibrantObject (CochainComplex.Plus C)`. -/
 @[simps]
 def fibrantObjectLocalizerMorphism :
     LocalizerMorphism ((quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
@@ -195,21 +106,18 @@ set_option backward.defeqAttrib.useBackward true in
 instance : (fibrantObjectLocalizerMorphism C).functor.IsEquivalence := by
   dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (localizerMorphism C).IsRightDerivabilityStructure := by
   rw [LocalizerMorphism.isRightDerivabilityStructure_iff_of_equivalences
     (T := localizerMorphism C) (B := FibrantObject.localizerMorphism (Plus C))
     (R := .id _) (L := fibrantObjectLocalizerMorphism C) (Iso.refl _)]
-  exact inferInstanceAs (FibrantObject.localizerMorphism (Plus C)).IsRightDerivabilityStructure
+  infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (localizerMorphism C).arrow.HasRightResolutions := by
   rw [LocalizerMorphism.hasRightResolutions_arrow_iff_of_equivalences
     (T := localizerMorphism C) (B := FibrantObject.localizerMorphism (Plus C))
     (R := .id _) (L := fibrantObjectLocalizerMorphism C) (Iso.refl _)]
-  exact inferInstanceAs (FibrantObject.localizerMorphism (Plus C)).arrow.HasRightResolutions
+  infer_instance
 
 end CochainComplex.Plus
-
-
-end
-
-end HomotopyCategory.Plus
