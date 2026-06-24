@@ -1,6 +1,7 @@
 module
 
 import Mathlib.Init
+import Batteries.Linter.Frontend
 
 /-! Checks that some utilities are available already when importing `Mathlib.Init`. -/
 
@@ -33,7 +34,8 @@ import Mathlib.Init
 proof_wanted please_prove_this : True
 
 -- Guard against the shake tool modifying our imports
-/-- info: [public import Init, public meta import Init, import Mathlib.Init] -/
+/-- info: [public import Init, public meta import Init, import Mathlib.Init,
+import Batteries.Linter.Frontend] -/
 #guard_msgs in
 run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"
 

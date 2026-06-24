@@ -11,7 +11,7 @@ public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
-public import Batteries.Tactic.Lint.Simp
+public import Batteries.Linter.Simp
 public import Batteries.Tactic.SeqFocus
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
