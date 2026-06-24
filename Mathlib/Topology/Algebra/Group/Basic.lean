@@ -257,9 +257,9 @@ instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H
   ⟨continuous_of_discreteTopology⟩
 
 @[to_additive]
-instance (priority := 100) continuousInv_of_indiscreteTopology [TopologicalSpace H] [Inv H]
-    [IndiscreteTopology H] : ContinuousInv H :=
-  ⟨continuous_of_indiscreteTopology⟩
+instance (priority := 100) continuousInv_of_hasIndiscreteTopology [TopologicalSpace H] [Inv H]
+    [HasIndiscreteTopology H] : ContinuousInv H :=
+  ⟨continuous_of_hasIndiscreteTopology⟩
 
 @[to_additive]
 instance (priority := 100) continuousDiv_of_discreteTopology [TopologicalSpace H] [Div H]
@@ -267,17 +267,17 @@ instance (priority := 100) continuousDiv_of_discreteTopology [TopologicalSpace H
   ⟨continuous_of_discreteTopology⟩
 
 @[to_additive]
-instance (priority := 100) continuousDiv_of_indiscreteTopology [TopologicalSpace H] [Div H]
-    [IndiscreteTopology H] : ContinuousDiv H :=
-  ⟨continuous_of_indiscreteTopology⟩
+instance (priority := 100) continuousDiv_of_hasIndiscreteTopology [TopologicalSpace H] [Div H]
+    [HasIndiscreteTopology H] : ContinuousDiv H :=
+  ⟨continuous_of_hasIndiscreteTopology⟩
 
 @[to_additive]
 instance (priority := 100) topologicalGroup_of_discreteTopology
     [TopologicalSpace H] [Group H] [DiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
 
 @[to_additive]
-instance (priority := 100) topologicalGroup_of_indiscreteTopology
-    [TopologicalSpace H] [Group H] [IndiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
+instance (priority := 100) topologicalGroup_of_hasIndiscreteTopology
+    [TopologicalSpace H] [Group H] [HasIndiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
 
 section PointwiseLimits
 

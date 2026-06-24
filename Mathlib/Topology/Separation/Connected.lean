@@ -43,7 +43,7 @@ theorem PreconnectedSpace.infinite [PreconnectedSpace X] [Nontrivial X] [T1Space
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
 
 theorem subsingleton_iff_discrete_and_indiscrete :
-    Subsingleton X ↔ DiscreteTopology X ∧ IndiscreteTopology X :=
+    Subsingleton X ↔ DiscreteTopology X ∧ HasIndiscreteTopology X :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ PreconnectedSpace.trivial_of_discrete⟩
 
 /-- A non-trivial connected T1 space has no isolated points. -/

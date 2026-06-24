@@ -251,12 +251,12 @@ protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) : Discr
 theorem discreteTopology_iff (h : X ≃ₜ Y) : DiscreteTopology X ↔ DiscreteTopology Y :=
   ⟨fun _ ↦ h.discreteTopology, fun _ ↦ h.symm.discreteTopology⟩
 
-protected theorem indiscreteTopology [IndiscreteTopology X] (h : X ≃ₜ Y) :
-    IndiscreteTopology Y :=
-  h.symm.isInducing.indiscreteTopology
+protected theorem hasIndiscreteTopology [HasIndiscreteTopology X] (h : X ≃ₜ Y) :
+    HasIndiscreteTopology Y :=
+  h.symm.isInducing.hasIndiscreteTopology
 
-theorem indiscreteTopology_iff (h : X ≃ₜ Y) : IndiscreteTopology X ↔ IndiscreteTopology Y :=
-  ⟨fun _ ↦ h.indiscreteTopology, fun _ ↦ h.symm.indiscreteTopology⟩
+theorem hasIndiscreteTopology_iff (h : X ≃ₜ Y) : HasIndiscreteTopology X ↔ HasIndiscreteTopology Y :=
+  ⟨fun _ ↦ h.hasIndiscreteTopology, fun _ ↦ h.symm.hasIndiscreteTopology⟩
 
 protected theorem nontrivialTopology [NontrivialTopology X] (h : X ≃ₜ Y) :
     NontrivialTopology Y :=

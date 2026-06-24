@@ -164,8 +164,8 @@ theorem nontrivial_iff_nontrivialTopology {α} [EMetricSpace α] :
   simp_rw [nontrivial_iff, TopologicalSpace.nontrivial_iff_exists_not_inseparable,
     EMetric.inseparable_iff, edist_eq_zero]
 
-theorem subsingleton_iff_indiscreteTopology {α} [EMetricSpace α] :
-    Subsingleton α ↔ IndiscreteTopology α := by
+theorem subsingleton_iff_hasIndiscreteTopology {α} [EMetricSpace α] :
+    Subsingleton α ↔ HasIndiscreteTopology α := by
   simpa [not_nontrivial_iff_subsingleton] using nontrivial_iff_nontrivialTopology (α := α).not
 
 /-- In an (e)metric space, every nontrivial type has a nontrivial topology. -/

@@ -545,9 +545,9 @@ theorem nontrivialTopology_iff_exists_nnnorm_ne_zero' :
     nndist_eq_nnnorm_inv_mul]
   exact ⟨fun ⟨x, y, hxy⟩ => ⟨_, hxy⟩, fun ⟨x, hx⟩ => ⟨x, 1, by simpa using hx⟩⟩
 
-@[to_additive indiscreteTopology_iff_forall_nnnorm_eq_zero]
-theorem indiscreteTopology_iff_forall_nnnorm_eq_zero' :
-    IndiscreteTopology E ↔ ∀ x : E, ‖x‖₊ = 0 := by
+@[to_additive hasIndiscreteTopology_iff_forall_nnnorm_eq_zero]
+theorem hasIndiscreteTopology_iff_forall_nnnorm_eq_zero' :
+    HasIndiscreteTopology E ↔ ∀ x : E, ‖x‖₊ = 0 := by
   simpa using nontrivialTopology_iff_exists_nnnorm_ne_zero' (E := E).not
 
 variable (E) in
@@ -556,8 +556,8 @@ theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ �
   nontrivialTopology_iff_exists_nnnorm_ne_zero'.1 ‹_›
 
 @[to_additive (attr := nontriviality) nnnorm_eq_zero]
-theorem IndiscreteTopology.nnnorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
+theorem HasIndiscreteTopology.nnnorm_eq_zero' [HasIndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
+  hasIndiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
 
 alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_nnnorm_ne_zero'
@@ -566,21 +566,21 @@ alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero⟩ :=
 attribute [to_additive existing NontrivialTopology.of_exists_nnnorm_ne_zero]
   NontrivialTopology.of_exists_nnnorm_ne_zero'
 
-alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero'⟩ :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_nnnorm_eq_zero]
-  IndiscreteTopology.of_forall_nnnorm_eq_zero'
+alias ⟨_, HasIndiscreteTopology.of_forall_nnnorm_eq_zero'⟩ :=
+  hasIndiscreteTopology_iff_forall_nnnorm_eq_zero'
+alias ⟨_, HasIndiscreteTopology.of_forall_nnnorm_eq_zero⟩ :=
+  hasIndiscreteTopology_iff_forall_nnnorm_eq_zero
+attribute [to_additive existing HasIndiscreteTopology.of_forall_nnnorm_eq_zero]
+  HasIndiscreteTopology.of_forall_nnnorm_eq_zero'
 
 @[to_additive nontrivialTopology_iff_exists_norm_ne_zero]
 theorem nontrivialTopology_iff_exists_norm_ne_zero' :
     NontrivialTopology E ↔ ∃ x : E, ‖x‖ ≠ 0 := by
   simp [nontrivialTopology_iff_exists_nnnorm_ne_zero', ← NNReal.ne_iff]
 
-@[to_additive indiscreteTopology_iff_forall_norm_eq_zero]
-theorem indiscreteTopology_iff_forall_norm_eq_zero' :
-    IndiscreteTopology E ↔ ∀ x : E, ‖x‖ = 0 := by
+@[to_additive hasIndiscreteTopology_iff_forall_norm_eq_zero]
+theorem hasIndiscreteTopology_iff_forall_norm_eq_zero' :
+    HasIndiscreteTopology E ↔ ∀ x : E, ‖x‖ = 0 := by
   simpa using nontrivialTopology_iff_exists_norm_ne_zero' (E := E).not
 
 variable (E) in
@@ -588,9 +588,9 @@ variable (E) in
 theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :=
   nontrivialTopology_iff_exists_norm_ne_zero'.1 ‹_›
 
-@[to_additive (attr := nontriviality) IndiscreteTopology.norm_eq_zero]
-theorem IndiscreteTopology.norm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
-  indiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
+@[to_additive (attr := nontriviality) HasIndiscreteTopology.norm_eq_zero]
+theorem HasIndiscreteTopology.norm_eq_zero' [HasIndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
+  hasIndiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
 
 alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_norm_ne_zero'
@@ -599,12 +599,12 @@ alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero⟩ :=
 attribute [to_additive existing NontrivialTopology.of_exists_norm_ne_zero]
   NontrivialTopology.of_exists_norm_ne_zero'
 
-alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero'⟩ :=
-  indiscreteTopology_iff_forall_norm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_norm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_norm_eq_zero]
-  IndiscreteTopology.of_forall_norm_eq_zero'
+alias ⟨_, HasIndiscreteTopology.of_forall_norm_eq_zero'⟩ :=
+  hasIndiscreteTopology_iff_forall_norm_eq_zero'
+alias ⟨_, HasIndiscreteTopology.of_forall_norm_eq_zero⟩ :=
+  hasIndiscreteTopology_iff_forall_norm_eq_zero
+attribute [to_additive existing HasIndiscreteTopology.of_forall_norm_eq_zero]
+  HasIndiscreteTopology.of_forall_norm_eq_zero'
 
 end NNNorm
 

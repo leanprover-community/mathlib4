@@ -331,26 +331,26 @@ theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg 
 
 end SeparationQuotient
 
-namespace IndiscreteTopology
+namespace HasIndiscreteTopology
 
 variable {α : Type*} [u : UniformSpace α]
 
-theorem of_uniformity_eq_top (h : uniformity α = ⊤) : IndiscreteTopology α :=
+theorem of_uniformity_eq_top (h : uniformity α = ⊤) : HasIndiscreteTopology α :=
   ⟨(UniformSpace.ext h.symm : ⊤ = u) ▸ rfl⟩
 
-lemma eq_top_uniformSpace [IndiscreteTopology α] : u = ⊤ := by
+lemma eq_top_uniformSpace [HasIndiscreteTopology α] : u = ⊤ := by
   refine UniformSpace.ext ?_
   rw [top_uniformity, ← Filter.ker_eq_univ]
   ext x
   rw [← inseparable_iff_ker_uniformity]
   simp
 
-lemma eq_top_iff_indiscrete : u = ⊤ ↔ IndiscreteTopology α :=
-  ⟨fun h ↦ IndiscreteTopology.mk <| h ▸ UniformSpace.toTopologicalSpace_top (α := α),
+lemma eq_top_iff_indiscrete : u = ⊤ ↔ HasIndiscreteTopology α :=
+  ⟨fun h ↦ HasIndiscreteTopology.mk <| h ▸ UniformSpace.toTopologicalSpace_top (α := α),
   fun _ ↦ eq_top_uniformSpace⟩
 
-lemma uniformContinuous [IndiscreteTopology β] {f : α → β} : UniformContinuous f := by
+lemma uniformContinuous [HasIndiscreteTopology β] {f : α → β} : UniformContinuous f := by
   rw [UniformContinuous, eq_top_uniformSpace (α := β), top_uniformity]
   exact Filter.tendsto_top
 
-end IndiscreteTopology
+end HasIndiscreteTopology

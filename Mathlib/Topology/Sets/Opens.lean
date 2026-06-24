@@ -302,12 +302,12 @@ theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
   rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 
-theorem eq_bot_or_top [IndiscreteTopology α] (U : Opens α) :
+theorem eq_bot_or_top [HasIndiscreteTopology α] (U : Opens α) :
     U = ⊥ ∨ U = ⊤ := by
-  rw [← coe_eq_empty, ← coe_eq_univ, ← IndiscreteTopology.isOpen_iff]
+  rw [← coe_eq_empty, ← coe_eq_univ, ← HasIndiscreteTopology.isOpen_iff]
   exact U.2
 
-instance [Nonempty α] [IndiscreteTopology α] : IsSimpleOrder (Opens α) where
+instance [Nonempty α] [HasIndiscreteTopology α] : IsSimpleOrder (Opens α) where
   eq_bot_or_eq_top := eq_bot_or_top
 
 /-- A set of `opens α` is a basis if the set of corresponding sets is a topological basis. -/
