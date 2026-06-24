@@ -211,7 +211,7 @@ lemma isZero_homology_of_isLE
     IsZero ((homologyFunctor C i).obj X) :=
   (ι.obj X).isZero_of_isLE n i hi
 
-lemma isIso_iff {X Y : DerivedCategory.Plus C} (f : X ⟶ Y) :
+lemma isIso_iff {X Y : Plus C} (f : X ⟶ Y) :
     IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
   refine ⟨fun _ _ ↦ inferInstance, fun _ ↦ ?_⟩
   have : IsIso (ι.map f) := by rwa [DerivedCategory.isIso_iff]
