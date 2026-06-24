@@ -32,31 +32,43 @@ open CategoryTheory Limits Profinite Condensed
 noncomputable section
 namespace Condensed
 
+/-- The functor `FintypeCat → CondensedMod R` sending a finite type
+to the associated free condensed `R`-module. -/
 abbrev finFree : FintypeCat.{u} ⥤ CondensedMod.{u} R :=
   FintypeCat.toProfinite ⋙ profiniteToCondensed ⋙ free R
 
+/-- The functor `Profinite → CondensedMod R` sending a profinite set
+to the associated free condensed `R`-module. -/
 abbrev profiniteFree : Profinite.{u} ⥤ CondensedMod.{u} R :=
   profiniteToCondensed ⋙ free R
 
+/-- The solid `R`-module functor on `Profinite`, defined as the right Kan extension
+of `finFree R` along `FintypeCat.toProfinite`. -/
 def profiniteSolid : Profinite.{u} ⥤ CondensedMod.{u} R :=
   Functor.rightKanExtension FintypeCat.toProfinite (finFree R)
 
+/-- The counit of the right Kan extension,
+a natural transformation `FintypeCat.toProfinite ⋙ profiniteSolid R ⟶ finFree R`. -/
 def profiniteSolidCounit : FintypeCat.toProfinite ⋙ profiniteSolid R ⟶ finFree R :=
   Functor.rightKanExtensionCounit FintypeCat.toProfinite (finFree R)
 
 instance : (profiniteSolid R).IsRightKanExtension (profiniteSolidCounit R) := by
   dsimp only [profiniteSolidCounit, profiniteSolid]; infer_instance
 
+/-- The right Kan extension defining `profiniteSolid R` is pointwise. -/
 def profiniteSolidIsPointwiseRightKanExtension :
     (Functor.RightExtension.mk _ (profiniteSolidCounit R)).IsPointwiseRightKanExtension :=
   Functor.isPointwiseRightKanExtensionOfIsRightKanExtension _ _
 
 -- alpha (= counit) is EXPLICIT in liftOfIsRightKanExtension
+/-- The solidification map: the natural transformation `profiniteFree R ⟶ profiniteSolid R`. -/
 def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
   (profiniteSolid R).liftOfIsRightKanExtension (profiniteSolidCounit R) _ (NatTrans.id _)
 
 end Condensed
 
+/-- A condensed `R`-module `A` is *solid* if for all `X : Profinite`, precomposition
+with the solidification map induces an isomorphism `Hom(profiniteSolid X, A) ≅ Hom(profiniteFree X, A)`. -/
 class CondensedMod.IsSolid (A : CondensedMod.{u} R) : Prop where
   isIso_solidification_map : ∀ X : Profinite.{u}, IsIso ((yoneda.obj A).map
     ((Condensed.profiniteSolidification R).app X).op)
@@ -91,6 +103,8 @@ theorem profiniteSolid_isSolid_at_fintype (S : Profinite.{u}) (T : FintypeCat.{u
     profiniteSolidification_isIso_at_fintype R T
   infer_instance
 
+/-- The canonical isomorphism `(profiniteSolid R).obj (toProfinite T) ≅ (finFree R).obj T`
+given by the counit of the Kan extension. -/
 noncomputable def finFreeIsoSolid (T : FintypeCat.{u}) :
     (profiniteSolid R).obj (FintypeCat.toProfinite.obj T) ≅ (finFree R).obj T :=
   @asIso _ _ _ _ ((profiniteSolidCounit R).app T) (profiniteSolidCounit_isIso R T)
@@ -106,12 +120,18 @@ lemma sol_map_counit (T : FintypeCat.{u}) (X : Profinite.{u})
       Category.assoc]
   rw [profiniteSolidification_comp_counit R T]; exact Category.comp_id _
 
+/-- **(Axiom)** Every morphism from a free condensed module on a profinite set factors
+through a finite type. Proved in Clausen-Scholze, Condensed Mathematics Theorem 5.8;
+not yet formalizable without the CompHaus ↔ TopMod equivalence. -/
 axiom surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
     (h : (profiniteFree R).obj X ⟶ (finFree R).obj T) :
     ∃ (U₀ : FintypeCat.{u}) (q₀ : X ⟶ FintypeCat.toProfinite.obj U₀)
       (h₀ : (profiniteFree R).obj (FintypeCat.toProfinite.obj U₀) ⟶ (finFree R).obj T),
       h = (profiniteFree R).map q₀ ≫ h₀
 
+/-- **(Axiom)** The solidification map is left-cancellable:
+if `solidification ≫ f = solidification ≫ g` then `f = g`.
+Proved in Clausen-Scholze, Condensed Mathematics Theorem 5.8. -/
 axiom sol_leftCancel (T : FintypeCat.{u}) (X : Profinite.{u})
     (f g : (profiniteSolid R).obj X ⟶ (finFree R).obj T)
     (h : (profiniteSolidification R).app X ≫ f =
