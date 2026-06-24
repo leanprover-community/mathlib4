@@ -135,7 +135,7 @@ def EdgeColoring.ofCopy (f : Copy G G') (C : G'.EdgeColoring α) : G.EdgeColorin
 variable (α) in
 /-- Edge-colorings of graphs with isomorphic line-graphs are equivalent. -/
 @[expose]
-def EdgeColoring.ofLineGraphIso (f : G.lineGraph ≃g G'.lineGraph) :
+def edgeColoringEquivOfLineGraphIso (f : G.lineGraph ≃g G'.lineGraph) :
     G.EdgeColoring α ≃ G'.EdgeColoring α where
   toFun C := .ofLineGraphHom f.symm.toHom C
   invFun C' := .ofLineGraphHom f.toHom C'
@@ -145,7 +145,7 @@ def EdgeColoring.ofLineGraphIso (f : G.lineGraph ≃g G'.lineGraph) :
 /-- Lift isomorphisms of graphs and colors to an isomorphism of edge colorings. -/
 @[expose]
 def edgeColoringCongr (f : G ≃g G') (g : α ≃ β) : G.EdgeColoring α ≃ G'.EdgeColoring β :=
-  EdgeColoring.ofLineGraphIso α f.lineGraph |>.trans <| recolorOfEquiv _ g
+  edgeColoringEquivOfLineGraphIso α f.lineGraph |>.trans <| recolorOfEquiv _ g
 
 /-- Lift an embedding of colors to an embedding of edge colorings. -/
 @[expose]
@@ -170,8 +170,9 @@ theorem EdgeColorableWith.of_isContained (hle : G ⊑ G') (h : G'.EdgeColorableW
 
 variable (α) in
 theorem EdgeColorableWith.of_lineGraph_iso (f : G.lineGraph ≃g G'.lineGraph) :
-    G.EdgeColorableWith α ↔ G'.EdgeColorableWith α :=
-  ⟨(⟨EdgeColoring.ofLineGraphIso α f ·.some⟩), (⟨EdgeColoring.ofLineGraphIso α f |>.symm ·.some⟩)⟩
+    G.EdgeColorableWith α ↔ G'.EdgeColorableWith α where
+  mp h := ⟨edgeColoringEquivOfLineGraphIso α f h.some⟩
+  mpr h := ⟨edgeColoringEquivOfLineGraphIso α f |>.symm h.some⟩
 
 variable (α) in
 theorem EdgeColorableWith.of_iso (f : G ≃g G') : G.EdgeColorableWith α ↔ G'.EdgeColorableWith α :=
