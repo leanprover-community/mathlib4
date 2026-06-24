@@ -958,7 +958,6 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     exact congr_arg PresheafedSpace.Hom.base h₁
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance sigma_ι_isOpenImmersion {ι : Type w} [Small.{v} ι]
     (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F] (i : Discrete ι)
     [HasStrictTerminalObjects C] :

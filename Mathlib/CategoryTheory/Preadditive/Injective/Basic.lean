@@ -276,7 +276,6 @@ namespace Adjunction
 
 variable {D : Type*} [Category* D] {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
   ⟨fun {X} {Y} f g => by
@@ -286,7 +285,6 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     rw [← unit_naturality_assoc, ← G.map_comp, h]
     simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
   ⟨fun {X} {Y} f g => by

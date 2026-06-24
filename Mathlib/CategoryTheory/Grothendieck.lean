@@ -579,7 +579,6 @@ variable (hom_id : ∀ c, hom (𝟙 c) = eqToHom (by simp only [Functor.map_id];
 variable (hom_comp : ∀ c₁ c₂ c₃ (f : c₁ ⟶ c₂) (g : c₂ ⟶ c₃), hom (f ≫ g) =
   hom f ≫ whiskerLeft (F.map f).toFunctor (hom g) ≫ eqToHom (by simp only [Functor.map_comp]; rfl))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a functor from `Grothendieck F` to another category `E` by providing a family of
 functors on the fibers of `Grothendieck F`, a family of natural transformations on morphisms in the
 base of `Grothendieck F` and coherence data for this family of natural transformations. -/

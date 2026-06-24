@@ -86,7 +86,6 @@ variable {D₁ D₂ : Type*} [Category* D₁] [Category* D₂] (L₁ : C₁ ⥤ 
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
     Φ.IsRightDerivabilityStructure ↔ TwoSquare.GuitartExact e.hom := by
   have : Φ.IsRightDerivabilityStructure ↔

@@ -176,7 +176,7 @@ end Mon
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-@[to_additive (attr := simps, implicit_reducible)
+@[to_additive (attr := simps, instance_reducible)
 /-- If `X` represents a presheaf of additive monoids, then `X` is an additive monoid object. -/]
 def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     MonObj X where

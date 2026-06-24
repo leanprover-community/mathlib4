@@ -160,7 +160,6 @@ namespace Adjunction
 
 attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The hom set equivalence associated to an adjunction. -/
 @[to_dual none, simps (attr := to_dual none) -isSimp]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
@@ -186,7 +185,6 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
 -- it may be advisable to add a local simp attribute to these lemmas.
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.existingAttributeWarning false in
 @[ext, to_dual ext_counit]
 lemma ext {F : C ⥤ D} {G : D ⥤ C} {adj adj' : F ⊣ G}
@@ -217,7 +215,6 @@ theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by s
 @[to_dual none]
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, to_dual none]
 lemma homEquiv_symm_unit (X : C) : dsimp% (adj.homEquiv _ _).symm (adj.unit.app X) = 𝟙 _ := by
   simp
@@ -312,7 +309,6 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`. -/
 @[simps]
 def corepresentableBy (X : C) :
@@ -412,7 +408,6 @@ variable {F : C ⥤ D} {G : D ⥤ C}
 
 attribute [local simp] CoreHomEquivUnitCounit.homEquiv_unit CoreHomEquivUnitCounit.homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Construct an adjunction from the data of a `CoreHomEquivUnitCounit`, i.e. a hom set
 equivalence, unit and counit natural transformations together with proofs of the equalities
@@ -429,7 +424,6 @@ def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
     rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply, adj.homEquiv_counit]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj.homEquiv := by
   ext
   rw [homEquiv_unit, adj.homEquiv_unit, mk'_unit]
@@ -502,7 +496,6 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   left_inv f := by simp
   right_inv g := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the left. -/
 @[simps]
 def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
@@ -578,7 +571,6 @@ section
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition of adjunctions. -/
 @[simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=

@@ -220,7 +220,6 @@ variable {F L}
 variable (E : LeftExtension L F)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cocone for `CostructuredArrow.proj L Y ⋙ F` attached to `E : LeftExtension L F`.
 The point of this cocone is `E.right.obj Y` -/
 @[simps]
@@ -651,7 +650,6 @@ instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary cocone used in the lemma `pointwiseLeftKanExtension_desc_app` -/
 @[simps]
 def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
@@ -759,7 +757,6 @@ instance : HasRightKanExtension L F :=
   HasRightKanExtension.mk _ (pointwiseRightKanExtensionCounit L F)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary cocone used in the lemma `pointwiseRightKanExtension_lift_app` -/
 @[simps]
 def structuredArrowMapCone (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :

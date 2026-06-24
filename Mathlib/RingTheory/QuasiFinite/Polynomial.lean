@@ -17,6 +17,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 namespace Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.WeaklyQuasiFiniteAt.finite_locoalization in
 lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFiniteAt R P := by
   intro H

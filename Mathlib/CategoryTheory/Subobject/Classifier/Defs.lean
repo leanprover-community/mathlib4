@@ -687,7 +687,6 @@ section Equivalence
 
 variable {D : Type*} [Category* D]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The image of a subobject classifier under an equivalence of categories is a subobject classifier.
 -/

@@ -73,7 +73,7 @@ protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
     (G.induce s).IsCompleteMultipartite where trans _u _v _w := hG.trans _ _ _
 
 /-- The setoid given by non-adjacency -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
     ⟨(¬ G.Adj · ·), ⟨G.loopless.irrefl, fun h' ↦ by rwa [adj_comm] at h', h.trans _ _ _⟩⟩
 

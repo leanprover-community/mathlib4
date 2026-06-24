@@ -647,7 +647,7 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
 
 /-- Given a `MulSemiringAction G B`, extend the action of `G` on `B` to a `MulSemiringAction G L`
 on the fraction field `L` of `B`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def mulSemiringAction :
     MulSemiringAction G L :=
   MulSemiringAction.compHom L
