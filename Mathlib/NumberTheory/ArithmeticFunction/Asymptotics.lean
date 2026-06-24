@@ -9,6 +9,11 @@ public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
+/-! # Asymptotics of Arithmetic Functions
+
+This file is intended to host results about asymptotic estimates of various arithmetic functions.
+-/
+
 @[expose] public section
 
 open Asymptotics Filter ArithmeticFunction
