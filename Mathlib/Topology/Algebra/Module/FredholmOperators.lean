@@ -385,10 +385,6 @@ theorem FredholmDecomposition_mapsTo₂ (huF : IsFredholmStruct u) :
   simp only [FredholmDecomposition, LinearMap.mem_ker, ContinuousLinearMap.coe_coe] at hx
   exact hx ▸ Submodule.zero_mem ..
 
--- FAE: Perhaps we want (also?) the version with `restrict` instead of `domRestrict`
-theorem FredholmDecomposition_ZeroOn₂ (huF : IsFredholmStruct u) :
-    (u.domRestrict (FredholmDecomposition huF).1.X₂) = 0 := by sorry
-
 namespace LinearMap
 section IsCompl
 
