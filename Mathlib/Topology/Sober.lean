@@ -9,6 +9,7 @@ public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.NoetherianSpace
 public import Mathlib.Order.KrullDimension
+public import Mathlib.Topology.NoetherianSpace -- This probably shouldn't be here
 
 /-!
 # Sober spaces
@@ -254,21 +255,6 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
       exact closure_mono (singleton_subset_iff.mpr hx)
     · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
 
-open scoped Set.Notation in
-lemma QuasiSober.of_subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
-    QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| .inclusion h hV
-
-lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) [QuasiSober W]
-    (hV : IsClosed V) : QuasiSober (W ∩ V : Set α) := by
-  refine QuasiSober.of_subset ?_ (Set.inter_subset_left : W ∩ V ⊆ W)
-  rw [Subtype.preimage_coe_self_inter W V]
-  exact IsClosed.preimage_val hV
-
-lemma QuasiSober.inter_of_isClosed_of_quasiSober_right {V : Set α} (W : Set α) [QuasiSober V]
-    (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
-  rw [inter_comm]
-  exact .inter_of_isClosed_of_quasiSober_left V hW
-
 open Order in
 /--
 In a sober space `α` set of points with coheight `0` in the specialization order is order iso to
@@ -293,23 +279,20 @@ def QuasiSober.withTopLift [DecidableEq α] [IrreducibleSpace β] [QuasiSober β
     WithTop α → β := fun a ↦ if h : a = ⊤ then genericPoint β else f (WithTop.untop a h)
 
 attribute [local instance] specializationPreorder in
-lemma QuasiSober.withTopLift_strictMono [DecidableEq α]
-    [QuasiSober β] [IrreducibleSpace β]
-    (f : α → β) (hf : @StrictMono _ _ (specializationPreorder α) (specializationPreorder β) f)
-    (hf2 : ∀ x : α, f x < genericPoint β) :
-    @StrictMono _ _ (@WithTop.instPreorder _ (specializationPreorder α)) (specializationPreorder β)
-    (QuasiSober.withTopLift f) := fun a ↦ by aesop (add simp QuasiSober.withTopLift)
+lemma QuasiSober.withTopLift_strictMono [DecidableEq α] [QuasiSober β] [IrreducibleSpace β]
+    (f : α → β) (hf : StrictMono f) (hf2 : ∀ x : α, f x < genericPoint β) :
+    StrictMono (QuasiSober.withTopLift f) := fun a ↦ by aesop (add simp QuasiSober.withTopLift)
 
+attribute [local instance] specializationPreorder in
 lemma QuasiSober.val_lt_genericPoint_of_closure_ne_top [QuasiSober α] [IrreducibleSpace α]
-    {p : Set α} (hp : closure p ≠ univ) :
-    ∀ x : p, @LT.lt α (specializationPreorder α).toLT (Subtype.val x) (genericPoint α) := by
+    {p : Set α} (hp : closure p ≠ univ) : ∀ x : p, (Subtype.val x) < (genericPoint α) := by
   simp_all only [ne_eq, Subtype.forall]
   refine fun x hx ↦ ⟨genericPoint_specializes x, fun h ↦ ?_⟩
   have : closure {Subtype.val ⟨x, hx⟩} ⊆ closure p := closure_mono (by simp [hx])
   simp_all [specializes_iff_closure_subset]
 
+attribute [local instance 10000] specializationPreorder in
 open Order in
-attribute [local instance] specializationPreorder in
 /--
 In a quasisober, irreducible space `X`, any set `p` which is not dense satisfies that the
 set of points in `X` which lie in `p` and have coheight `1` in the specialization order on `X` have
@@ -323,15 +306,12 @@ lemma QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one {p : Set α}
     Subtype.exists, exists_and_right, exists_eq_right, and_imp]
   intro x hx kx
   use hx
-  convert @coheight_zero_of_coheight_one_of_strictMono (Subtype p) α
-    (specializationPreorder (Subtype p)) (specializationPreorder α)
+  exact coheight_zero_of_coheight_one_of_strictMono
     (QuasiSober.withTopLift (Subtype.val : Subtype p → α))
     (QuasiSober.withTopLift_strictMono (Subtype.val : Subtype p → α)
     Specializes.strictMono_val <| QuasiSober.val_lt_genericPoint_of_closure_ne_top hp) ⟨x, hx⟩ kx
-  simp only [Subtype.preorder, Preorder.lift, specializationPreorder]
-  ext a b
-  exact (subtype_specializes_iff b a).symm
 
+attribute [local instance 10000] specializationPreorder in
 open Order in
 /--
 In a quasi-sober, irreducible, T0 space `α`, a Noetherian quasi-sober subspace `p` whose closure
@@ -342,16 +322,27 @@ lemma TopologicalSpace.NoetherianSpace.finite_coheight_one_of_closure_ne_univ
     [QuasiSober α] [IrreducibleSpace α] [T0Space α] {p : Set α}
     [NoetherianSpace p] [QuasiSober p] (hp : closure p ≠ univ) :
     {x | x ∈ p ∧ coheight x = 1}.Finite := by
-  have h0 : {x : p | coheight x = 0}.Finite := by
-    have := (Equiv.finite_iff
+  have h : {x : p | coheight x = 0}.Finite :=
+    finite_coe_iff.mp <| (Equiv.finite_iff
       (coheightZeroSetOrderIsoIrreducibleComponents (α := p)).toEquiv).mpr
       NoetherianSpace.finite_irreducibleComponents
-    simp only [finite_coe_iff] at this
-    convert this
-    ext a b
-    exact (subtype_specializes_iff b a).symm
-  exact (h0.image Subtype.val).subset
+  exact (h.image Subtype.val).subset
     (QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one hp)
+
+open scoped Set.Notation in
+lemma QuasiSober.of_subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
+    QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| .inclusion h hV
+
+lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) [QuasiSober W]
+    (hV : IsClosed V) : QuasiSober (W ∩ V : Set α) := by
+  refine QuasiSober.of_subset ?_ (Set.inter_subset_left : W ∩ V ⊆ W)
+  rw [Subtype.preimage_coe_self_inter W V]
+  exact IsClosed.preimage_val hV
+
+lemma QuasiSober.inter_of_isClosed_of_quasiSober_right {V : Set α} (W : Set α) [QuasiSober V]
+    (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
+  rw [inter_comm]
+  exact .inter_of_isClosed_of_quasiSober_left V hW
 
 end Sober
 
