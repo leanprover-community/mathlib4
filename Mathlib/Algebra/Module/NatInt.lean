@@ -146,6 +146,9 @@ instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
     | zero => simp only [zero_smul]
     | succ n ih => simp only [add_smul, one_smul, ih]
 
+instance AddCommMonoid.pnat_isScalarTower : IsScalarTower ℕ+ R M where
+  smul_assoc _ _ _ := by rw [← nsmul_val_eq_psmul, smul_assoc, nsmul_val_eq_psmul]
+
 end AddCommMonoid
 
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
