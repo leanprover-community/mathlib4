@@ -25,7 +25,7 @@ variable (e : R ≃ S)
 
 For `star : R → R` bundled as an `Equiv`, see `Equiv.Perm.star`. -/
 protected abbrev star [Star S] : Star R where
-  star r := e.symm (star (e r))
+  star r := e.invFun (star (e.toFun r))
 
 /-- Transfer `InvolutiveStar` across an `Equiv`. See note [reducible non-instances]. -/
 protected abbrev involutiveStar [InvolutiveStar S] : InvolutiveStar R :=
