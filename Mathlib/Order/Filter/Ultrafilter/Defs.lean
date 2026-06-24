@@ -116,8 +116,10 @@ alias ⟨_root_.Filter.Frequently.eventually, _⟩ := frequently_iff_eventually
 
 theorem compl_mem_iff_notMem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_notMem_iff, compl_compl]
 
-theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f :=
+theorem sdiff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f :=
   inter_mem_iff.trans <| and_congr Iff.rfl compl_mem_iff_notMem
+
+@[deprecated (since := "2026-06-03")] alias diff_mem_iff := sdiff_mem_iff
 
 /-- If `sᶜ ∉ f ↔ s ∈ f`, then `f` is an ultrafilter. The other implication is given by
 `Ultrafilter.compl_notMem_iff`. -/
