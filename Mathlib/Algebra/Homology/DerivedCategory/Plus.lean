@@ -170,7 +170,7 @@ abbrev IsGE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsGE X n
 that `X` is `≤ n` for the canonical t-structure. -/
 abbrev IsLE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsLE X n
 
-lemma isGE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
+lemma isGE_ι_obj_iff (X : Plus C) (n : ℤ) :
     (ι.obj X).IsGE n ↔ X.IsGE n := by
   constructor
   all_goals exact fun h ↦ ⟨h.1⟩
