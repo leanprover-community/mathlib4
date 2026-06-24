@@ -497,8 +497,8 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     tauto
   -- Both cases: the IccLeftChart ↔ IccRightChart transition is z ↦ (y-x) - z on range I
   all_goals
-    -- The chart transition agrees with z ↦ c - z on (extChartAt p).target,
-    -- which gives fderivWithin = -id since (extChartAt p).target ∈ 𝓝[range I].
+    -- The chart transition agrees with `z ↦ c - z` near the point (within `range I`), so its
+    -- derivative there is `-id`, which sends `v` to `-v`.
     have hw_mem : extChartAt (𝓡∂ 1) p r ∈ (extChartAt (𝓡∂ 1) p).target :=
       (extChartAt (𝓡∂ 1) p).map_source (by rw [extChartAt_source]; exact hr.1)
     have hEqOn : Set.EqOn ((extChartAt (𝓡∂ 1) q) ∘ (extChartAt (𝓡∂ 1) p).symm)
@@ -507,8 +507,8 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
       rw [extChartAt_target]
       intro z hz
       obtain ⟨h_target, h, rfl⟩ := hz
-      have hlt : h.1 0 < y - x := by
-        exact (show h.1 0 < y - x ∧ x < y by
+      have hlt : h.1 0 < y - x :=
+        (show h.1 0 < y - x ∧ x < y by
           simpa [Icc_chartedSpaceChartAt, hp', IccLeftChart, IccRightChart,
             modelWithCornersEuclideanHalfSpace] using h_target).1
       ext i
@@ -518,20 +518,17 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
         max_eq_left h.2, min_eq_left (by linarith : h.1 0 + x ≤ y),
         max_eq_left (show x ≤ y - h.1 0 by linarith)]
       ring
-    have hw_range : extChartAt (𝓡∂ 1) p r ∈ Set.range (𝓡∂ 1) :=
-      extChartAt_target_subset_range (I := 𝓡∂ 1) (x := p) hw_mem
+    -- Reduce to the derivative of `z ↦ c - z`, which is `-id`, and evaluate it at `v`.
     rw [(hEqOn.eventuallyEq_of_mem
       (extChartAt_target_mem_nhdsWithin_of_mem hw_mem)).fderivWithin_eq (hEqOn hw_mem)]
-    set c : EuclideanSpace ℝ (Fin 1) :=
-      (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x) with hc
-    have hderiv :
-        fderivWithin ℝ (fun z : EuclideanSpace ℝ (Fin 1) ↦ c - z)
-            (Set.range (𝓡∂ 1)) (extChartAt (𝓡∂ 1) p r) =
-          (-(1 : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1))) := by
-      have h := ((hasFDerivAt_const c (extChartAt (𝓡∂ 1) p r)).sub
+    set c : EuclideanSpace ℝ (Fin 1) := (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x)
+    have hderiv : fderivWithin ℝ (fun z : EuclideanSpace ℝ (Fin 1) ↦ c - z) (Set.range (𝓡∂ 1))
+        (extChartAt (𝓡∂ 1) p r) =
+          -(1 : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1)) :=
+      (((hasFDerivAt_const c (extChartAt (𝓡∂ 1) p r)).sub
         (hasFDerivAt_id (𝕜 := ℝ) (extChartAt (𝓡∂ 1) p r))).hasFDerivWithinAt.fderivWithin
-          (hw_range.elim fun h hx ↦ hx ▸ (𝓡∂ 1).uniqueDiffWithinAt_image)
-      rwa [zero_sub] at h
+          ((extChartAt_target_subset_range (I := 𝓡∂ 1) (x := p) hw_mem).elim
+            fun h hx ↦ hx ▸ (𝓡∂ 1).uniqueDiffWithinAt_image)).trans (zero_sub _)
     simpa [neg_apply] using
       congrArg (fun L : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1) ↦ L v) hderiv
 
