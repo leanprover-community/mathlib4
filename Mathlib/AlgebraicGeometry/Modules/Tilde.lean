@@ -554,6 +554,7 @@ theorem isIso_fromTildeΓ_pushforward (M : (Spec S).Modules) [h : IsIso M.fromTi
 end IsLocalizing
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The presentation of `M.restrict f` by restricting a presentation of `M`. -/
 def Scheme.Modules.presentationRestrict {X Y : Scheme.{u}} (f : Y ⟶ X)
     [IsOpenImmersion f] {M : X.Modules} (pres : M.Presentation) :
     (M.restrict f).Presentation :=
