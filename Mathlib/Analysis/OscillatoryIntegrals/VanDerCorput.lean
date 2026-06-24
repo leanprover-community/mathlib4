@@ -79,28 +79,6 @@ variable {a b : ℝ} {L : ℝ}
 variable {φ : ℝ → ℝ}
 variable {k : ℕ}
 
-section GeneralLemma
-
-variable {α β : Type*}
-variable [TopologicalSpace α] [LinearOrder β] [TopologicalSpace β] [OrderClosedTopology β]
-
-variable [Group β] [MulLeftMono β]
-
--- Find correct file. `Topology/Connected/Basic.lean` does not import absolute value
-@[to_additive]
-theorem _root_.IsPreconnected.forall_le_or_forall_le_of_forall_le_mabs {s : Set α}
-    (hs : IsPreconnected s) {L : β} (hL : 1 < L) {f : α → β}
-    (hfcont : ContinuousOn f s) (hf : ∀ x ∈ s, L ≤ |f x|ₘ) :
-    (∀ x ∈ s, L ≤ f x) ∨ (∀ x ∈ s, L ≤ (f x)⁻¹) := by
-  obtain (h | h) := hs.mapsTo_Ioi_or_Iio (b := 1) hfcont (fun x hx h ↦
-    not_le_of_gt hL <| by simpa [mabs_one, h] using hf x hx)
-  · grind [MapsTo, mabs_of_one_lt]
-  · grind [MapsTo, mabs_of_lt_one]
-
--- #find_home! IsPreconnected.forall_le_or_forall_le_of_forall_le_mabs
-
-end GeneralLemma
-
 /-- Auxiliary lemma used in the higher-order proof -/
 private theorem exists_le_abs_of_le_derivWithin
     {L : ℝ} (hL : 0 < L) (hφ : ContDiffOn ℝ 1 φ [[a, b]])
@@ -146,7 +124,7 @@ private theorem exists_le_abs_of_le_derivWithin
     linarith only [hmvt _ hx _ hc' h.le, hfc]
 
 /-- Auxiliary lemma: If the second derivative is bounded from below,
-  then the first derivative is monotone. -/
+then the first derivative is monotone. -/
 private theorem monotoneOn_derivWithin_of_le_iteratedDerivWithin_two
     {L : ℝ} (hab : a ≠ b) (hL : 0 < L) (hφc : ContDiffOn ℝ 2 φ [[a, b]])
     (hφ : ∀ x ∈ [[a, b]], L ≤ iteratedDerivWithin 2 φ [[a, b]] x) :
@@ -243,8 +221,8 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
       case cont => fun_prop (discharger := grind)
       grind
     _ ≤ L⁻¹ := by
-      -- To get the right constant, want `≤ L⁻¹`, not `2 * L⁻¹` here,
-      -- so we can't just use the triangle inequality.
+      /- To get the right constant, want `≤ L⁻¹`, not `2 * L⁻¹` here,
+      so we can't just use the triangle inequality. -/
       suffices hrange : (∀ x ∈ [[a, b]], (φ' x)⁻¹ ≤ L⁻¹ ∧ 0 ≤ (φ' x)⁻¹) ∨
           (∀ x ∈ [[a, b]], (φ' x)⁻¹ ≤ 0 ∧ -L⁻¹ ≤ (φ' x)⁻¹) by
         rcases hrange with h | h <;> grind [h a left_mem_uIcc, h b right_mem_uIcc]
@@ -278,7 +256,7 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
       rw [integral_symm, norm_neg]
   revert hk hL
   /- The idea is induction on the order `k`.
-    If `k = 2` we use the order one theorem and show the monotonicity condition. -/
+  If `k = 2` we use the order one theorem and show the monotonicity condition. -/
   induction k generalizing a b L φ with
   | zero => intro hk; contradiction
   | succ k ih =>
@@ -293,9 +271,9 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     · convert hφc'.neg using 2
       exact funext <| fun x ↦ iteratedDerivWithin_neg _
   /- Main idea: split the integral into three pieces: `[a, d - δ]`, `[d - δ, d + δ]`, `[d + δ, b]`
-     `δ` is small and carefully chosen, `d` is argmin of `|φ^(k) x|`,
-     so that `δ`-far from `d` we have a good lower bound on `|φ^(k) x|` which allows us
-     to use the inductive hypothesis (or the order one theorem). -/
+  `δ` is small and carefully chosen, `d` is argmin of `|φ^(k) x|`,
+  so that `δ`-far from `d` we have a good lower bound on `|φ^(k) x|` which allows us
+  to use the inductive hypothesis (or the order one theorem). -/
   let δ := L ^ (-(1 : ℝ) / (k + 1))
   obtain ⟨d, hd, hd'⟩ := exists_le_abs_of_le_derivWithin (L := L) (hL := hL)
     ((contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin
