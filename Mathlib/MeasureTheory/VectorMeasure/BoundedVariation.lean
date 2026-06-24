@@ -379,4 +379,33 @@ instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.vectorMeasure.var
   rw [← variationAux_eq_variation_vectorMeasure hf]
   infer_instance
 
+lemma variation_vectorMeasure_Ioo (hf : BoundedVariationOn f univ) {a b: α} :
+    hf.vectorMeasure.variation (Ioo a b) = eVariationOn f.rightLim (Ioo a b) := by
+  rcases le_or_gt b a with hab | hab
+  · have : Ioo a b = ∅ := by grind
+    simp [this]
+  have : (𝓝[<] b).NeBot := nhdsLT_neBot_of_exists_lt ⟨a, hab⟩
+  have A : hf.vectorMeasure.variation (Ioc a b) = eVariationOn f.rightLim (Ioc a b) :=
+    variation_vectorMeasure_Ioc _
+  have B : eVariationOn f.rightLim (Ioc a b) = eVariationOn f.rightLim (Ioo a b) +
+      edist (f.rightLim b) (f.leftLim b) := by
+    rw [show Ioc a b = Ioc a b ∩ Iic b by grind,
+      eVariationOn.eVariationOn_on_inter_Iic_eq_Iio_add_edist (l := f.leftLim b),
+      show Ioc a b ∩ Iio b = Ioo a b by grind]
+    · have : 𝓝[Ioc a b ∩ Iio b] b = 𝓝[<] b := nhdsWithin_inter_of_mem (Ioc_mem_nhdsLT hab)
+      rwa [this]
+    · grind
+    · have : (𝓝[<] b).NeBot := nhdsLT_neBot_of_exists_lt ⟨a, hab⟩
+      rw [← leftLim_rightLim (hf.tendsto_leftLim _)]
+      apply (hf.rightLim.tendsto_leftLim b).mono_left
+      exact nhdsWithin_mono _ inter_subset_right
+  rw [B] at A
+
+
+
+
 end BoundedVariationOn
+
+#exit
+
+-- eVariationOn f (s ∩ Iic a) = eVariationOn f (s ∩ Iio a) + edist (f a) l
