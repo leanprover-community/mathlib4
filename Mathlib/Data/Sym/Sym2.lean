@@ -172,6 +172,9 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
 
 theorem mk_surjective : (Sym2.mk (α := α)).uncurry.Surjective := Quot.mk_surjective
 
+theorem mk_fiber (a b : α) : Sym2.mk.uncurry ⁻¹' {s(a, b)} = {(a, b), (b, a)} := by
+  grind
+
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
   mk_surjective.exists.trans Prod.exists

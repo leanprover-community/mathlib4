@@ -23,10 +23,6 @@ open scoped Cardinal
 
 variable {α : Type*}
 
-/-- The equivalence class of an unordered pair -/
-theorem mk_fiber (a b : α) : Sym2.mk.uncurry ⁻¹' {s(a, b)} = {(a, b), (b, a)} := by
-  grind
-
 theorem finite_mk_fiber (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).Finite := by
   cases z
   simp [mk_fiber]
