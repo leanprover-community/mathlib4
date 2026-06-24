@@ -73,7 +73,7 @@ lemma map_apply [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy 
   map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapAux f wx wy x) := rfl
 
 @[simp]
-lemma map_id [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
+lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
     map (𝟙 _) wx wx c = c := by
   apply Function.locallyFinsupp.map_id
   simp [mapAux]
