@@ -243,4 +243,3 @@ def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
   map_mul' _ _ := by ext; rfl
 
 end Set
-#min_imports
