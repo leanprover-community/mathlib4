@@ -302,25 +302,28 @@ lemma exists_nat_le_mulHeight₁ (x : K) :
   gcongr
   exact Finite.le_ciSup_of_le 1 <| by simp
 
+private lemma pow_totalWeight_sub_one_eq [DecidableEq (InfinitePlace K)] {n : ℕ} (hn : n ≠ 0)
+    (v : InfinitePlace K) :
+    (n ^ (totalWeight K - 1) : ℝ) = (∏ w ∈ univ.erase v, (n ^ w.mult : ℝ)) * n ^ (v.mult - 1) := by
+  refine mul_right_cancel₀ (b := (n : ℝ)) (mod_cast hn) ?_
+  rw [pow_sub_one_mul (totalWeight_pos K).ne', totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum,
+    ← prod_erase_mul _ _ (mem_univ v), ← pow_sub_one_mul v.mult_ne_zero, ← mul_assoc]
+
 private lemma infinitePlace_apply_le_of_prod_le {n : ℕ} (hn : n ≠ 0) (B : ℝ) {x : 𝓞 K}
     (h : ∏ v : InfinitePlace K, (⨆ i, v (![(x : K), n] i)) ^ v.mult ≤ B) (v : InfinitePlace K) :
     v x ≤ B / n ^ (totalWeight K - 1) := by
   classical
   rw [le_div_iff₀' (by positivity)]
-  have hv (v : InfinitePlace K) : n ≤ ⨆ i, v (![(x : K), n] i) := Finite.le_ciSup_of_le 1 <| by simp
   calc
     _ ≤ n ^ (totalWeight K - 1) * ⨆ i, v (![(x : K), n] i) := by
       gcongr; exact Finite.le_ciSup_of_le 0 le_rfl
     _ ≤ (∏ v' ∈ univ.erase v, (⨆ i, v' (![↑x, ↑n] i)) ^ v'.mult) *
          (⨆ i, v (![↑x, ↑n] i)) ^ (v.mult - 1) * ⨆ i, v (![(x : K), n] i) := by
+      rw [pow_totalWeight_sub_one_eq hn]
       gcongr
       · exact Real.iSup_nonneg_of_nonnegHomClass ..
-      · refine mul_le_mul_iff_left₀ (a := (n : ℝ)) (mod_cast hn.pos) |>.mp ?_
-        rw [pow_sub_one_mul (totalWeight_pos K).ne', totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum,
-          ← prod_erase_mul _ _ (mem_univ v), ← pow_sub_one_mul v.mult_ne_zero, ← mul_assoc]
-        gcongr
-        · exact prod_nonneg fun _ _ ↦ pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass ..) _
-        all_goals exact hv _
+      · exact prod_nonneg fun _ _ ↦ pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass ..) _
+      all_goals exact Finite.le_ciSup_of_le 1 <| by simp
     _ ≤ B := by
       rwa [mul_assoc, pow_sub_one_mul v.mult_ne_zero, prod_erase_mul _ _ (mem_univ v)]
 
