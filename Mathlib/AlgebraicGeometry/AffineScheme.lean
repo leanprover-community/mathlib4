@@ -947,6 +947,7 @@ theorem self_le_iSup_basicOpen_iff {s : Set Γ(X, U)} :
 
 end IsAffineOpen
 
+/-- The affine open cover given by a covering family of affine opens. -/
 @[simps I₀ X f]
 def Scheme.AffineOpenCover.ofIsOpenCover {X : Scheme.{u}} {ι : Type*} (U : ι → X.Opens)
     (hU : IsOpenCover U) (hU' : ∀ i, IsAffineOpen (U i)) :
