@@ -37,7 +37,8 @@ open Metric
 
 /-- We say a subgroup `H` is `ε`-dense if for all `g : G` there exists a `h : H`, such that
   `‖g⁻¹ * (h : G)‖ ≤ ε * ‖g‖`. -/
-@[to_additive]
+@[to_additive /-- We say a subgroup `H` is `ε`-dense if for all `g : G` there exists a `h : H`,
+  such that `‖g⁻¹ * (h : G)‖ ≤ ε * ‖g‖`. -/]
 def epsilonDense (ε : ℝ) : Prop := ∀ g : G, ∃ h : H, ‖g⁻¹ * (h : G)‖ ≤ ε * ‖g‖
 
 @[to_additive]
