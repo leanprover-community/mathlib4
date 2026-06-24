@@ -186,7 +186,24 @@ private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
     (Ideal.IsMaximal.eq_of_le w.isMaximal v.isPrime.ne_top' (Ideal.IsPrime.le_of_pow_le hwle))
   exact hvS (hT_subset v (by simpa [hw_eq] using hwT))
 
+instance IsLocalizationSInteger [Fact (Monoid.IsTorsion (ClassGroup R))] :
+    IsLocalization S.Submonoid <| S.integer K where
+  map_units y := by
+    obtain ⟨r, hr⟩ := y
+    have h₀ : algebraMap R K r ≠ 0 :=
+      IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hr.2
+    refine ⟨⟨⟨_, fun v _ ↦ v.valuation_le_one r⟩,
+              ⟨(algebraMap R K r)⁻¹,
+              fun _ _ ↦ by simp_all [Set.Submonoid, HeightOneSpectrum.valuation_of_algebraMap,
+                HeightOneSpectrum.intValuation_eq_one_iff.2 ]⟩,
+      by simp [Subtype.ext_iff, h₀], by simp [Subtype.ext_iff, h₀]⟩, rfl⟩
+  surj := sur R S K
+  exists_of_eq := fun h ↦
+    ⟨1, by simpa using (IsFractionRing.injective R K (congrArg Subtype.val h))⟩
 
+instance isDedekindDomainSInteger [Fact (Monoid.IsTorsion (ClassGroup R))] :
+    IsDedekindDomain (S.integer K) :=
+  IsLocalization.isDedekindDomain _ (fun _ h ↦ h.2 : S.Submonoid ≤ nonZeroDivisors R) _
 
 end IsDedekindDomain
 /-! ## `S`-units -/
