@@ -99,7 +99,7 @@ lemma mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a :=
 @[to_additive (attr := simp)]
 lemma mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.mul e
-    (mulEquiv e).invFun b = e.invFun b := rfl
+    (mulEquiv e).symm b = e.symm b := rfl
 
 /-- Transfer `Semigroup` across an `Equiv` -/
 @[to_additive /-- Transfer `add_semigroup` across an `Equiv` -/]
