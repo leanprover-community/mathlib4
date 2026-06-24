@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
-public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.Algebra.Module.LocalizedModule.Away
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 
 /-!
@@ -552,6 +552,47 @@ theorem isIso_fromTildeΓ_pushforward (M : (Spec S).Modules) [h : IsIso M.fromTi
   exact isLocalizing_pushforward_of_isLocalizing φ h
 
 end IsLocalizing
+
+set_option backward.isDefEq.respectTransparency false in
+def Scheme.Modules.presentationRestrict {X Y : Scheme.{u}} (f : Y ⟶ X)
+    [IsOpenImmersion f] {M : X.Modules} (pres : M.Presentation) :
+    (M.restrict f).Presentation :=
+  have : PreservesColimitsOfSize.{u, u} (Scheme.Modules.restrictFunctor f) :=
+    inferInstance
+  pres.map (Scheme.Modules.restrictFunctor.{u} f) (Scheme.Modules.restrictUnitIso _).symm
+
+set_option backward.isDefEq.respectTransparency false in
+lemma Scheme.Modules.exists_isOpenCover_presentation {X : Scheme.{u}} (M : X.Modules)
+    [M.IsQuasicoherent] :
+    ∃ (ι : Type u) (U : ι → X.Opens) (_ : ∀ i, (M.restrict (U i).ι).Presentation),
+      IsOpenCover U ∧ (∀ i, IsAffineOpen (U i)) := by
+  obtain ⟨⟨I, W, cov, pres⟩⟩ := SheafOfModules.IsQuasicoherent.nonempty_quasicoherentData (M := M)
+  choose κ hsub heq using fun i ↦ Opens.isBasis_iff_cover.mp X.isBasis_affineOpens (W i)
+  refine ⟨Σ (i : I), κ i, fun j ↦ j.2, fun i ↦ ?_, ?_, ?_⟩
+  · let u := X.homOfLE (U := i.2) (V := W i.1) (by simp [heq, le_sSup])
+    have : PreservesColimitsOfSize.{u, u} (restrictFunctor u) := inferInstance
+    let F := (overEquiv (W i.1)).functor ⋙ restrictFunctor u
+    let iso : SheafOfModules.overFunctor X.ringCatSheaf _ ⋙ F ≅ restrictFunctor
+      (Scheme.Opens.ι i.2.1) := (Functor.associator _ _ _).symm ≪≫
+        Functor.isoWhiskerRight (Scheme.Modules.overFunctorEquiv _) _ ≪≫
+        (restrictFunctorComp _ _).symm ≪≫ (restrictFunctorCongr (by simp [u]))
+    exact SheafOfModules.Presentation.ofIsIso.{u, u, u} (iso.app M).hom <|
+      (pres i.1).map F (Scheme.Modules.restrictUnitIso _).symm
+  · rw [Opens.coversTop_iff, IsOpenCover] at cov
+    rw [IsOpenCover, iSup_sigma, ← cov]
+    refine iSup_congr fun i ↦ ?_
+    rw [heq i, sSup_eq_iSup']
+  · intro j
+    exact hsub _ j.2.2
+
+lemma Scheme.Modules.exists_affineOpenCover_presentation {X : Scheme.{u}} (M : X.Modules)
+    [M.IsQuasicoherent] :
+    ∃ (𝒰 : Scheme.AffineOpenCover.{u} X),
+      ∀ i, Nonempty (M.restrict (𝒰.f i)).Presentation := by
+  obtain ⟨ι, U, pres, hU, hU'⟩ := M.exists_isOpenCover_presentation
+  refine ⟨Scheme.AffineOpenCover.ofIsOpenCover _ hU hU', fun i ↦ ⟨?_⟩⟩
+  exact SheafOfModules.Presentation.ofIsIso.{u, u, u} ((restrictFunctorComp _ _).app M).inv <|
+    (presentationRestrict (hU' i).isoSpec.inv (pres i))
 
 end IsQuasicoherent
 
