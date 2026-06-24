@@ -1,0 +1,157 @@
+# Shared runner setup for the self-hosted `build` and `test_lint` jobs in
+# build_template.yml. Both run on the same Hoskinson pool and need the same
+# preparation before they diverge (build → build + stage, test_lint →
+# fetch + test + lint): toolchain hygiene, jq, the cache-trust and get-tools
+# wiring, the PR-branch checkout, the elan toolchain and LEAN_SRC_PATH
+# environment, and the dependency download.
+#
+# The caller runs `Checkout local actions` (sparse `.github/actions` →
+# `workflow-actions/`) before invoking this action: that checkout puts both this
+# action and the sibling actions it calls (`cache-trust-dispatch`, `get-tools`)
+# on disk under `workflow-actions/`, so the `uses: ./workflow-actions/...` paths
+# below resolve relative to the workspace root, as in the calling workflow.
+#
+# Each `run:` step sets its own `shell:`, since composite steps do not inherit the
+# job's landrun `defaults.run.shell`.
+name: Set up build environment
+description: Shared self-hosted runner setup for the build and test_lint jobs.
+
+inputs:
+  pr_branch_ref:
+    description: Git ref of the PR branch to check out and build.
+    required: true
+  tools_branch_ref:
+    description: Git ref to build the CI tools from when not using the prebuilt artifact.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    # Prune old toolchains from `~/.elan`. That directory is mounted from the host
+    # and shared across the ephemeral job containers, so toolchains accumulate and
+    # nothing else trims them (host-side housekeeping only trims the mathlib `.ltar`
+    # cache). Keep the 5 most recent plus `nightly`/`stable`.
+    - name: prune old toolchains
+      shell: bash # just deletes old files; safe to run outside landrun
+      run: |
+        # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+        # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+        if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
+            : # Do nothing on success
+        else
+            : # Do nothing on failure, but suppress errors
+        fi
+
+    # The Hoskinson runners may not have jq installed, so do that now.
+    - name: 'Setup jq'
+      uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
+
+    # Compute the trust-classified container target and read fallback for this
+    # job. Sets MATHLIB_CACHE_FROM / MATHLIB_CACHE_PRIMARY in env so every
+    # subsequent `cache get` inherits them without per-call flag plumbing. Loaded
+    # from the trust-rooted `workflow-actions/` checkout, not the PR branch.
+    - name: Compute cache trust dispatch
+      uses: ./workflow-actions/.github/actions/cache-trust-dispatch
+      with:
+        repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        branch: ${{ github.head_ref || github.ref_name }}
+        head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    # Checkout the PR branch into a subdirectory. HEAD only (fetch-depth: 1) is
+    # enough: the cache is fetched HEAD-scoped and warmed from the master snapshot,
+    # so no parent-commit history is needed. This is untrusted (potentially fork)
+    # code we build, so don't leave the GITHUB_TOKEN in pr-branch/.git/config where
+    # that code could read it.
+    - name: Checkout PR branch
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      with:
+        ref: ${{ inputs.pr_branch_ref }}
+        fetch-depth: 1
+        path: pr-branch
+        persist-credentials: false
+
+    # Create empty directories so landrun doesn't complain.
+    - name: Create empty directories
+      shell: bash # We need to run this outside landrun, as it is a prerequisite for landrun!
+      run: |
+        mkdir -p pr-branch/.lake/
+        mkdir -p .cache/mathlib/
+        mkdir -p _work
+
+    # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
+    # We install manually, to avoid running lean outside landrun.
+    - name: install elan
+      shell: bash
+      run: |
+        set -o pipefail
+        curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+        chmod +x elan-init.sh
+        ./elan-init.sh -y --default-toolchain none
+        echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+    - name: set toolchain directory
+      shell: bash
+      run: |
+        cd pr-branch
+        # Get the lake binary path from elan and extract toolchain directory
+        LAKE_PATH=$(elan which lake)
+        echo "Lake path: $LAKE_PATH"
+
+        # Extract the toolchain directory by removing /bin/lake from the end
+        TOOLCHAIN_DIR=$(dirname "$LAKE_PATH")
+        TOOLCHAIN_DIR=$(dirname "$TOOLCHAIN_DIR")
+        echo "Toolchain directory: $TOOLCHAIN_DIR"
+
+        # Set it as an environment variable for subsequent steps
+        echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
+
+    - name: set LEAN_SRC_PATH
+      shell: bash
+      run: |
+        cd pr-branch
+
+        # Start with the base paths
+        LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+
+        # Extract package names from lake-manifest.json and validate them
+        # Only allow A-Z, a-z, 0-9, _, and - characters
+        # Build the LEAN_SRC_PATH by appending each validated package
+        PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+        for pkg in $PACKAGE_NAMES; do
+          if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+            LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+          else
+            echo "Warning: Skipping invalid package name: $pkg"
+          fi
+        done
+
+        echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
+
+        # Set it as an environment variable for subsequent steps
+        echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
+
+    # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
+    # the `lake-build-*` helper scripts invoked by path). Fast path: download the
+    # prebuilt `tools-bin` artifact published from master (canonical mathlib4 only,
+    # and only when the branch under test doesn't change the cache tool — get-tools
+    # makes that comparison against `source_dir`). Source build otherwise. See the
+    # get-tools action for the full trust rationale.
+    - name: Get CI tools
+      uses: ./workflow-actions/.github/actions/get-tools
+      with:
+        use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
+        tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
+        source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
+        github_token: ${{ github.token }}
+
+    - name: download dependencies
+      # We need network access to download dependencies. We run this inside
+      # landrun, but restrict disk access:
+      # - --rox access to `~/.elan` and `~/actions-runner/_work` (GitHub CI needs this)
+      # - --unrestricted-network as we need this to download dependencies
+      # - git needs read only access to `/etc`.
+      shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+      run: |
+        cd pr-branch
+        lake env
