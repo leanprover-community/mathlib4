@@ -405,9 +405,9 @@ private theorem norm_integral_exp_mul_I_smul_le_of_norm_integral_exp_mul_I {A : 
   have hasDeriv_F : ∀ x ∈ [[a, b]], HasDerivWithinAt F (F' x) [[a, b]] x := fun x hx ↦ by
     have := FTCFilter.nhdsUIcc (h := ⟨hx⟩)
     apply integral_hasDerivWithinAt_right (t := [[a, b]])
-    · exact ContinuousOn.intervalIntegrable <| .mono cont_F' <| uIcc_subset_uIcc_left hx
-    · apply ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin cont_F' measurableSet_uIcc
-    · exact ContinuousOn.continuousWithinAt cont_F' hx
+    · exact cont_F'.mono (uIcc_subset_uIcc_left hx) |>.intervalIntegrable
+    · exact cont_F'.stronglyMeasurableAtFilter_nhdsWithin measurableSet_uIcc _
+    · exact cont_F'.continuousWithinAt hx
   have h1 : ∫ x in a..b, F x • ψ' x = F b • ψ b - F a • ψ a - ∫ x in a..b, F' x • ψ x := by
     apply integral_smul_deriv_eq_deriv_smul_of_hasDerivWithinAt hasDeriv_F hasDeriv_ψ
       <;> { apply ContinuousOn.intervalIntegrable; fun_prop }
