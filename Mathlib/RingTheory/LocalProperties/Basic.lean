@@ -433,9 +433,8 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
   intro r
   obtain ⟨T, _, _, _, hT⟩ := hT r
   convert! hP'.1 _ (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
-  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe,
-    AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
-    RingHom.comp_id]
+  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, Localization.coe_algEquiv_symm,
+    IsLocalization.map_comp, RingHom.comp_id]
 
 section
 
