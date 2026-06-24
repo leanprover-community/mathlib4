@@ -67,7 +67,7 @@ instance (K : FibrantObject (Plus C)) (n : ℤ) :
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between `CochainComplex.Plus (InjectiveObject C)`
 and the category of fibrant object in `CochainComplex.Plus C` for the
-Quillen model category structure.  -/
+Quillen model category structure. -/
 def fibrantObjectEquivalence :
     Plus (InjectiveObject C) ≌ FibrantObject (Plus C) where
   functor := ObjectProperty.lift _ (InjectiveObject.ι C).mapCochainComplexPlus (fun K ↦ by
