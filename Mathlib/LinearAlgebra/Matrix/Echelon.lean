@@ -105,7 +105,7 @@ namespace GeneralLinearGroup
 variable [Fintype m]
 
 /-- `Matrix.rowScale` as an element of `GL m R`. -/
-@[simps]
+@[simps val]
 def rowScale (i : m) (c : Rˣ) : GL m R where
   val := Matrix.rowScale i (c : R)
   inv := Matrix.rowScale i ↑c⁻¹
@@ -141,7 +141,7 @@ variable [CommRing R] [Fintype m] [DecidableEq m]
 namespace GeneralLinearGroup
 
 /-- `Matrix.transvection` as an element of `GL`. -/
-@[simps]
+@[simps val]
 def transvection (i j : m) (h : i ≠ j) (c : R) : GL m R where
   val := Matrix.transvection i j c
   inv := Matrix.transvection i j (-c)
