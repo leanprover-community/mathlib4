@@ -626,17 +626,107 @@ private lemma Aux.of_le {M : (Spec R).Modules} {V : (Spec R).Opens} (g : R) (hg 
     simp [smul_comm, ← ht', ← M.map_smul_Spec, hm]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- [Lemme 1.4.1.1][grothendieck-1971] -/
+/-- This is the key computation for the proof of
+`Scheme.Modules.isQuasicoherent_iff_isIso_fromTildeΓ`.
+ [Lemme 1.4.1.1][grothendieck-1971] -/
 private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Opens)
     {ι : Type*} [Finite ι] (g : ι → R) (hg : V = ⨆ i, basicOpen (g i))
     (h₁ : ∀ (i : ι), Aux M (basicOpen (g i))) :
     Aux M V := by
   have h₂ (i j : ι) : Aux M (basicOpen (g i * g j)) :=
     .of_le _ (basicOpen_mul_le_left _ _) (h₁ i)
-  have hgle (i : ι) : basicOpen (g i) ≤ V := by rw [hg]; exact le_iSup_iff.mpr fun b a ↦ a i
-  have h (f : R) (hf : basicOpen f ≤ V) (t : Γ(M, V)) (hs : M.presheaf.map (homOfLE hf).op t = 0) :
-      ∃ (n : ℕ), f ^ n • t = 0 := by
-    have (i : ι) : ∃ (n : ℕ), M.presheaf.map (homOfLE (hgle i)).op (f ^ n • t) = 0 := by
+  have hgle (i : ι) : basicOpen (g i) ≤ V := by rw [hg]; exact le_iSup_of_le _ le_rfl
+  have hug (i : ι) (m : ℕ) :
+      IsUnit (algebraMap R (Module.End R Γ(M, basicOpen (g i))) (g i ^ m)) := by
+    rw [map_pow]
+    exact (Scheme.Modules.isUnit_algebraMap_end_of_le_basicOpen (g i) le_rfl).pow m
+  -- We show existence and uniqueness separately.
+  refine ⟨fun f hf s ↦ ?_, fun f hf t hs ↦ ?_⟩
+  · have hfgi (i : ι) : basicOpen (f * g i) ≤ basicOpen (g i) := basicOpen_mul_le_right f (g i)
+    let s' (i : ι) : Γ(M, basicOpen (f * g i)) :=
+      M.presheaf.map (homOfLE <| basicOpen_mul_le_left f (g i)).op s
+    /- By `h₁`, up to a factor of `f ^ N`, the restrictions of `s` to `D(f) ∩ D(gᵢ)` lift
+    to sections `tᵢ` over `D(gᵢ)`. -/
+    obtain ⟨N, t, ht⟩ : ∃ (N : ℕ) (t : ∀ i, Γ(M, basicOpen (g i))),
+        ∀ i, f ^ N • s' i = M.presheaf.map (homOfLE (basicOpen_mul_le_right f (g i))).op (t i) := by
+      have (i : ι) : ∃ (n : ℕ) (t : Γ(M, basicOpen (g i))),
+          f ^ n • s' i = M.presheaf.map (homOfLE (hfgi i)).op t := by
+        obtain ⟨n, t', ht'⟩ := (h₁ i).existence (f * g i) (hfgi i) (s' i)
+        rw [mul_pow, mul_smul, smul_comm] at ht'
+        obtain ⟨ψ, hψ⟩ := IsUnit.exists_right_inv (hug i n)
+        use n, ψ t'
+        apply (M.isSMulRegular_of_le_basicOpen (basicOpen_mul_le_right f (g i))).pow n
+        dsimp
+        rw [← ht', ← Scheme.Modules.map_smul_Spec]
+        congr 1
+        exact congr($hψ t').symm
+      choose n t' ht' using this
+      have (i : ι) : n i ≤ ⨆ i, n i := le_ciSup (Finite.bddAbove_range _) _
+      have hN (i : ι) : ⨆ i, n i = ((⨆ i, n i) - n i) + n i := by grind
+      refine ⟨⨆ i, n i, fun i ↦ f ^ ((⨆ i, n i) - n i) • t' i, fun i ↦ ?_⟩
+      conv_lhs => rw [hN i]
+      rw [pow_add, mul_smul, ht', M.map_smul_Spec]
+    /- By `h₂`, up to a factor of `f ^ K`, the restrictions of `tᵢ` and `tⱼ` to
+    to `D(gᵢ) ∩ D(gⱼ)` agree. -/
+    obtain ⟨K, hK⟩ : ∃ (K : ℕ), ∀ (i j : ι),
+        M.presheaf.map (homOfLE (basicOpen_mul_le_left (g i) (g j))).op (f ^ K • t i) =
+          M.presheaf.map (homOfLE (basicOpen_mul_le_right (g i) (g j))).op (f ^ K • t j) := by
+      have (i j : ι) : ∃ (m : ℕ),
+          M.presheaf.map (homOfLE (basicOpen_mul_le_left (g i) (g j))).op (f ^ m • t i) =
+            M.presheaf.map (homOfLE (basicOpen_mul_le_right (g i) (g j))).op (f ^ m • t j) := by
+        have := (h₂ i j).uniqueness (f * (g i * g j)) (basicOpen_mul_le_right _ _)
+          (M.presheaf.map (homOfLE (basicOpen_mul_le_left (g i) (g j))).op (t i) -
+            M.presheaf.map (homOfLE (basicOpen_mul_le_right (g i) (g j))).op (t j)) ?_
+        · obtain ⟨m, hm⟩ := this
+          use m
+          apply (M.isSMulRegular_of_le_basicOpen le_rfl).pow m
+          simpa [M.map_smul_Spec _ (f ^ m), ← mul_smul, ← mul_smul, ← mul_pow, ← mul_comm f,
+            smul_sub, sub_eq_zero] using hm
+        · have hfgigi : basicOpen (f * (g i * g j)) ≤ basicOpen (f * g i) := by
+            rw [← mul_assoc]
+            exact basicOpen_mul_le_left _ _
+          have hfgigj : basicOpen (f * (g i * g j)) ≤ basicOpen (f * g j) := by
+            rw [mul_comm (g i) (g j), ← mul_assoc]
+            exact basicOpen_mul_le_left _ _
+          rw [map_sub, ← M.presheaf.map_comp_apply, ← op_comp, ← M.presheaf.map_comp_apply,
+            ← op_comp, homOfLE_comp, homOfLE_comp, ← homOfLE_comp hfgigi (hfgi i),
+            ← homOfLE_comp hfgigj (hfgi j), op_comp, M.presheaf.map_comp_apply, ← ht i,
+            M.map_smul_Spec, ← M.presheaf.map_comp_apply, ← op_comp, homOfLE_comp, op_comp,
+            M.presheaf.map_comp_apply, ← ht j, M.map_smul_Spec, ← M.presheaf.map_comp_apply,
+            ← op_comp, homOfLE_comp]
+          simp
+      choose m hm using this
+      let K := ⨆ i, ⨆ j, m i j
+      refine ⟨K, fun i j ↦ ?_⟩
+      have : m i j ≤ K :=
+        le_ciSup_of_le (Finite.bddAbove_range _) i (le_ciSup (Finite.bddAbove_range _) _)
+      have : K = (K - m i j) + m i j := by lia
+      rw [this, pow_add, mul_smul, mul_smul, M.map_smul_Spec, M.map_smul_Spec _ (f ^ (K - m i j)),
+        hm i j]
+    -- So up to a factor of `f ^ (N + K)`, the `tᵢ` glue.
+    refine ⟨N + K, ?_⟩
+    have := TopCat.Sheaf.existsUnique_gluing' ⟨_, M.isSheaf⟩ (fun i ↦ basicOpen (g i)) V
+      (fun i ↦ homOfLE (by rw [hg]; exact le_iSup_of_le _ le_rfl)) (by simp [hg])
+      (fun i ↦ f ^ K • t i) ?_
+    · obtain ⟨a, ha, -⟩ := this
+      use a
+      refine TopCat.Sheaf.eq_of_locally_eq' ⟨_, M.isSheaf⟩ (fun i ↦ basicOpen (f * g i)) _
+          (fun i ↦ homOfLE (basicOpen_mul_le_left f (g i))) ?_ _ _ ?_
+      · rw [left_eq_inf.mpr hf, hg, inf_iSup_eq]
+        simp_rw [basicOpen_mul]
+        exact le_rfl
+      · intro i
+        rw [← M.presheaf.map_comp_apply, ← op_comp, homOfLE_comp,
+          ← homOfLE_comp (basicOpen_mul_le_right _ _) (hgle i), op_comp, M.presheaf.map_comp_apply,
+          M.map_smul_Spec, ha, M.map_smul_Spec, pow_add, mul_smul, smul_comm, ht i]
+    · intro i j
+      have : Function.Injective (M.presheaf.map (eqToHom <| (basicOpen_mul (g i) (g j))).op) :=
+        ConcreteCategory.injective_of_mono_of_preservesPullback _
+      apply this
+      dsimp [Opens.infLELeft, Opens.infLERight]
+      simp_rw [← M.presheaf.map_comp_apply, ← op_comp, eqToHom_comp_homOfLE]
+      exact hK i j
+  · have (i : ι) : ∃ (n : ℕ), M.presheaf.map (homOfLE (hgle i)).op (f ^ n • t) = 0 := by
       have := (h₁ i).uniqueness (f * g i) (basicOpen_mul_le_right f (g i))
         (M.presheaf.map (homOfLE (hgle i)).op t) ?_
       · obtain ⟨n, hn⟩ := this
@@ -649,124 +739,17 @@ private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Open
     choose n hn using this
     use ⨆ i, n i
     apply TopCat.Sheaf.eq_of_locally_eq' ⟨_, M.isSheaf⟩ (fun i ↦ basicOpen (g i)) _
-      (fun i ↦ homOfLE (by rw [hg]; exact le_iSup_iff.mpr fun b a ↦ a i))
+      (fun i ↦ homOfLE (by rw [hg]; exact le_iSup_of_le _ le_rfl))
     · simp [hg]
     · intro i
-      simp only [homOfLE_leOfHom, map_zero]
       have : n i ≤ ⨆ i, n i := le_ciSup (Finite.bddAbove_range _) _
       have : ⨆ i, n i = ((⨆ i, n i) - n i) + n i := by lia
       rw [this, pow_add, mul_smul, Scheme.Modules.map_smul_Spec, hn i]
       simp
-  refine ⟨fun f hf s ↦ ?_, h⟩
-  have hug (i : ι) (m : ℕ) :
-      IsUnit (algebraMap R (Module.End R Γ(M, basicOpen (g i))) (g i ^ m)) := by
-    rw [map_pow]
-    exact (Scheme.Modules.isUnit_algebraMap_end_of_le_basicOpen (g i) le_rfl).pow m
-  let s' (i : ι) : Γ(M, basicOpen (f * g i)) :=
-    M.presheaf.map (homOfLE <| basicOpen_mul_le_left f (g i)).op s
-  have (i : ι) : ∃ (n : ℕ) (t : Γ(M, basicOpen (g i))),
-      f ^ n • s' i =
-        M.presheaf.map (homOfLE (basicOpen_mul_le_right f (g i))).op t := by
-    obtain ⟨n, t', ht'⟩ := (h₁ i).existence (f * g i) (basicOpen_mul_le_right f (g i)) (s' i)
-    rw [mul_pow, mul_smul, smul_comm] at ht'
-    obtain ⟨ψ, hψ⟩ := IsUnit.exists_right_inv (hug i n)
-    use n, ψ t'
-    apply ((M.isSMulRegular_of_le_basicOpen (basicOpen_mul_le_right f (g i))).pow n)
-    dsimp
-    rw [← ht', ← Scheme.Modules.map_smul_Spec]
-    congr 1
-    have := congr($hψ t')
-    rw [Module.End.mul_apply, Module.End.one_apply] at this
-    exact this.symm
-  choose n t' ht' using this
-  let N : ℕ := ⨆ i, n i
-  have (i : ι) : n i ≤ N := le_ciSup (Finite.bddAbove_range _) _
-  have hN (i : ι) : N = (N - n i) + n i := by grind
-  let t (i : ι) : Γ(M, basicOpen (g i)) := f ^ (N - n i) • t' i
-  have ht (i : ι) :
-      f ^ N • s' i = M.presheaf.map (homOfLE (basicOpen_mul_le_right f (g i))).op (t i) := by
-    rw [hN i, pow_add, mul_smul, ht', M.map_smul_Spec]
-  obtain ⟨K, hK⟩ : ∃ (K : ℕ), ∀ (i j : ι),
-      M.presheaf.map (homOfLE (basicOpen_mul_le_left (g i) (g j))).op (f ^ K • t i) =
-        M.presheaf.map (homOfLE (basicOpen_mul_le_right (g i) (g j))).op (f ^ K • t j) := by
-    have (i j : ι) : ∃ (m : ℕ),
-        M.presheaf.map (homOfLE (basicOpen_mul_le_left (g i) (g j))).op (f ^ m • t i) =
-          M.presheaf.map (homOfLE (basicOpen_mul_le_right (g i) (g j))).op (f ^ m • t j) := by
-      have := (h₂ i j).uniqueness (f * (g i * g j)) (basicOpen_mul_le_right _ _)
-        (M.presheaf.map (homOfLE (basicOpen_mul_le_left (g i) (g j))).op (t i) -
-          M.presheaf.map (homOfLE (basicOpen_mul_le_right (g i) (g j))).op (t j)) ?_
-      · obtain ⟨m, hm⟩ := this
-        use m
-        apply (M.isSMulRegular_of_le_basicOpen le_rfl).pow m
-        rw [smul_sub, sub_eq_zero] at hm
-        rw [M.map_smul_Spec _ (f ^ m), M.map_smul_Spec _ (f ^ m)]
-        dsimp
-        rwa [← mul_smul, ← mul_smul, ← mul_pow, ← mul_comm f]
-      · have hfgigi : basicOpen (f * (g i * g j)) ≤ basicOpen (f * g i) := by
-          rw [← mul_assoc]
-          exact basicOpen_mul_le_left _ _
-        have hfgigj : basicOpen (f * (g i * g j)) ≤ basicOpen (f * g j) := by
-          rw [mul_comm (g i) (g j), ← mul_assoc]
-          exact basicOpen_mul_le_left _ _
-        rw [map_sub,
-          ← M.presheaf.map_comp_apply, ← op_comp,
-          ← M.presheaf.map_comp_apply, ← op_comp,
-          homOfLE_comp, homOfLE_comp,
-          ← homOfLE_comp hfgigi (basicOpen_mul_le_right f (g i)),
-          ← homOfLE_comp hfgigj (basicOpen_mul_le_right f (g j))]
-        rw [op_comp, M.presheaf.map_comp_apply, ← ht i, M.map_smul_Spec,
-          ← M.presheaf.map_comp_apply, ← op_comp, homOfLE_comp]
-        rw [op_comp, M.presheaf.map_comp_apply, ← ht j, M.map_smul_Spec,
-          ← M.presheaf.map_comp_apply, ← op_comp, homOfLE_comp, ← smul_sub, ← map_sub]
-        simp
-    choose m hm using this
-    let K := ⨆ i, ⨆ j, m i j
-    refine ⟨K, fun i j ↦ ?_⟩
-    have : m i j ≤ K := by
-      dsimp [K]
-      apply le_ciSup_of_le (Finite.bddAbove_range _) i
-      exact le_ciSup (Finite.bddAbove_range _) _
-    have : K = (K - m i j) + m i j := by lia
-    rw [this, pow_add, mul_smul, mul_smul, M.map_smul_Spec, M.map_smul_Spec _ (f ^ (K - m i j)),
-      hm i j]
-  refine ⟨N + K, ?_⟩
-  have := TopCat.Sheaf.existsUnique_gluing' ⟨_, M.isSheaf⟩ (fun i ↦ basicOpen (g i)) V
-    (fun i ↦ homOfLE (by rw [hg]; exact le_iSup_iff.mpr fun b a ↦ a i)) (by simp [hg])
-    (fun i ↦ f ^ K • t i) ?_
-  · obtain ⟨a, ha, -⟩ := this
-    use a
-    refine TopCat.Sheaf.eq_of_locally_eq' ⟨_, M.isSheaf⟩ (fun i ↦ basicOpen (f * g i)) _ ?_ ?_
-        _ _ ?_
-    · intro i
-      exact homOfLE (basicOpen_mul_le_left f (g i))
-    · rw [left_eq_inf.mpr hf, hg, inf_iSup_eq]
-      simp_rw [basicOpen_mul]
-      exact le_rfl
-    · intro i
-      change M.presheaf.map _ _ = M.presheaf.map _ _
-      rw [← M.presheaf.map_comp_apply, ← op_comp, homOfLE_comp,
-        ← homOfLE_comp (basicOpen_mul_le_right _ _) (hgle i), op_comp, M.presheaf.map_comp_apply,
-        M.map_smul_Spec, ha]
-      rw [M.map_smul_Spec]
-      rw [pow_add]
-      simp_rw [mul_comm]
-      rw [mul_smul, ht i]
-  · intro i j
-    change M.presheaf.map _ _ = M.presheaf.map _ _
-    let iso : Γ(M, basicOpen (g i * g j)) ≅ Γ(M, basicOpen (g i) ⊓ basicOpen (g j)) :=
-      M.presheaf.mapIso (eqToIso <| (basicOpen_mul (g i) (g j))).op |>.symm
-    have : Function.Injective (M.presheaf.map (eqToHom <| (basicOpen_mul (g i) (g j))).op) :=
-      ConcreteCategory.injective_of_mono_of_preservesPullback _
-    apply this
-    dsimp [Opens.infLELeft, Opens.infLERight]
-    rw [← M.presheaf.map_comp_apply, ← op_comp, eqToHom_comp_homOfLE]
-    rw [← M.presheaf.map_comp_apply, ← op_comp, eqToHom_comp_homOfLE]
-    exact hK i j
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma isLocalizing_iff_aux (M : (Spec R).Modules) :
     IsLocalizing (modulesSpecToSheaf.obj M) ↔ Aux M ⊤ := by
-  let φ (f : R) := ModuleCat.Hom.hom ((modulesSpecToSheaf.obj M).obj.map (basicOpen f).leTop.op)
+  let φ (f : R) := ((modulesSpecToSheaf.obj M).obj.map (basicOpen f).leTop.op).hom
   refine ⟨fun h ↦ ?_, fun h f ↦ IsLocalizedModule.Away.mk_of_addCommGroup ?_ ?_ ?_⟩
   · have hf (f : R) : IsLocalizedModule.Away f (φ f) := h f
     refine ⟨fun f hle s ↦ ?_, fun f hle s hs ↦ ?_⟩
@@ -782,26 +765,7 @@ private lemma isLocalizing_iff_aux (M : (Spec R).Modules) :
     obtain ⟨n, hn⟩ := h.uniqueness _ _ _ hx
     use n, hn
 
-section
-
-variable {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f]
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma _root_.TopCat.Presheaf.map_eqToHom_map_homOfLE {X : TopCat.{u}} (F : X.Presheaf Ab)
-    {U V W : TopologicalSpace.Opens X} (hUV : Opposite.op U = .op V)
-    (hVW : W ≤ V) :
-    F.map (eqToHom hUV) ≫ F.map (homOfLE hVW).op = F.map (homOfLE <| by grind).op := by
-  rw [← F.map_comp, eqToHom_comp_homOfLE_op]
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma _root_.TopCat.Presheaf.map_homOfLE_map_eqToHom {X : TopCat.{u}} (F : X.Presheaf Ab)
-    {U V W : TopologicalSpace.Opens X} (hUV : U ≤ V)
-    (hUW : Opposite.op U = Opposite.op W) :
-    F.map (homOfLE hUV).op ≫ F.map (eqToHom hUW) = F.map (homOfLE <| by grind).op := by
-  rw [← F.map_comp, homOfLE_op_comp_eqToHom]
-
-end
-
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private lemma aux_basicOpen_of_aux_restrict (M : (Spec R).Modules) (g : R)
     (h : Aux (M.restrict <|
@@ -812,58 +776,34 @@ private lemma aux_basicOpen_of_aux_restrict (M : (Spec R).Modules) (g : R)
   set ψ : Spec (.of <| Localization.Away g) ⟶ Spec (.of R) := Spec.map a
   set M' : (Spec (.of <| Localization.Away g)).Modules := M.restrict ψ
   have heq (f : R) (hf : basicOpen f ≤ basicOpen g) :
-      basicOpen f = ψ ''ᵁ basicOpen ((ConcreteCategory.hom a) f) := by
+      basicOpen f = ψ ''ᵁ basicOpen (a f) := by
     rw [← SpecMap_preimage_basicOpen, Scheme.Hom.image_preimage_eq_opensRange_inf]
     simp [a, ψ, hf]
-  let iso : Γ(M', ⊤) ≅ Γ(M, basicOpen g) :=
+  let iso : Γ(M.restrict ψ, ⊤) ≅ Γ(M, basicOpen g) :=
     M.restrictAppIso _ _ ≪≫ M.presheaf.mapIso (eqToIso <| by simp [ψ, a]).op
-  let e (f : R) (hf : basicOpen f ≤ basicOpen g) :
-      Γ(M', basicOpen (a f)) ≅ Γ(M, basicOpen f) :=
+  let e (f : R) (hf : basicOpen f ≤ basicOpen g) : Γ(M', basicOpen (a f)) ≅ Γ(M, basicOpen f) :=
     M.restrictAppIso ψ (basicOpen (a f)) ≪≫ M.presheaf.mapIso (eqToIso <| heq f hf).op
-  refine ⟨?_, ?_⟩
-  · intro f hf s
-    obtain ⟨n, t, ht⟩ := h.existence (a f) le_top ((e _ hf).inv s)
+  refine ⟨fun f hf s ↦ ?_, fun f hf t ht ↦ ?_⟩
+  · obtain ⟨n, t, ht⟩ := h.existence (a f) le_top ((e _ hf).inv s)
     use n, iso.hom t
     have := congr((e _ hf).hom $ht)
-    simp only [homOfLE_leOfHom, M'] at this
+    dsimp [M'] at this
     rw [← ConcreteCategory.comp_apply] at this
     simp only [homOfLE_leOfHom, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
-      eqToHom_op, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, e] at this
-    simp only [homOfLE_leOfHom, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
-      eqToHom_op, AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply, iso]
+      eqToHom_op, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, e, iso] at this ⊢
     simp only [homOfLE_leOfHom, Scheme.Modules.map_restrictAppIso_hom_assoc, AddCommGrpCat.hom_comp,
       AddMonoidHom.coe_comp, Function.comp_apply, ← map_pow, ψ] at this
     rw [Scheme.Modules.restrictAppIso_smul_Spec] at this
-    simp only [homOfLE_leOfHom, Iso.inv_hom_id_apply, Scheme.Modules.map_smul_Spec,
-      eqToHom_map_comp_apply, eqToHom_refl, CategoryTheory.Functor.map_id, AddCommGrpCat.hom_id,
-      AddMonoidHom.id_apply] at this
-    rw [TopCat.Presheaf.map_eqToHom_map_homOfLE_apply]
-    rw [TopCat.Presheaf.map_homOfLE_map_eqToHom_apply] at this
-    exact this
-  · intro f hf t ht
-    obtain ⟨n, hn⟩ := h.uniqueness (a f) le_top (iso.inv t) <| by
-      have := congr((e _ hf).inv $ht)
-      simp only [Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op,
-        AddCommGrpCat.hom_comp, homOfLE_leOfHom, AddMonoidHom.coe_comp, Function.comp_apply,
-        map_zero, e] at this
-      simp only [homOfLE_leOfHom, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv,
-        eqToHom_op, AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply,
-        Scheme.Modules.restrictAppIso_inv_map_apply, M', iso]
-      rw [← M.presheaf.map_comp_apply, eqToHom_comp_homOfLE_op]
-      rw [← M.presheaf.map_comp_apply, homOfLE_op_comp_eqToHom] at this
-      exact this
+    simpa [← Functor.map_comp_apply, eqToHom_comp_homOfLE_op, homOfLE_op_comp_eqToHom] using this
+  · obtain ⟨n, hn⟩ := h.uniqueness (a f) le_top (iso.inv t) <| by
+      simpa [M', iso, ← M.presheaf.map_comp_apply, homOfLE_op_comp_eqToHom, e] using
+        congr((e _ hf).inv $ht)
     use n
     have := congr(iso.hom $hn)
-    simp only [Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom, eqToHom_op,
-      AddCommGrpCat.hom_comp, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv,
-      AddMonoidHom.coe_comp, Function.comp_apply, map_zero, iso] at this
-    rw [← map_pow, Scheme.Modules.restrictAppIso_smul_Spec] at this
-    simp only [ψ] at this
-    rw [M.map_smul_Spec] at this
-    rw [Iso.inv_hom_id_apply] at this
-    simp only [eqToHom_map_comp_apply, eqToHom_refl, CategoryTheory.Functor.map_id,
-      AddCommGrpCat.hom_id, AddMonoidHom.id_apply] at this
-    exact this
+    dsimp [iso, ψ] at this
+    rw [eqToHom_op, map_zero, ← map_pow, Scheme.Modules.restrictAppIso_smul_Spec,
+      M.map_smul_Spec, Iso.inv_hom_id_apply] at this
+    simpa using this
 
 end QuasicoherentTilde
 
