@@ -120,6 +120,63 @@ local macro_rules | `(∇' $X $σ) => `(fun (x : M) ↦ cov' $σ x ($X x))
 -- with `open scoped RealInnerProductSpace.`
 local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 
+section prerequisites
+
+-- TODO: generalise and move to a better place!
+instance {k : ℕ∞ω} : ContMDiffMul 𝓘(ℝ, ℝ) k ℝ where
+  contMDiff_mul := by
+    -- This is almost [contMDiff_iff_contDiff], except that we want the other model on the domain.
+    intro x
+    rw [contMDiffAt_iff]
+    refine ⟨by fun_prop, ?_⟩
+    suffices ContDiffAt ℝ k (fun p ↦ p.1 * p.2) x by
+      simp
+      simpa [ModelProd, contDiffWithinAt_univ] using this
+    fun_prop
+
+variable {I}
+variable {x : M}
+
+lemma ContMDiffWithinAt.mvfderivWithin {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {k : ℕ∞ω} {f : M → V} {s : Set M}
+    (hf : CMDiffAt[s] (k + 1) f x) (hX : CMDiffAt[s] (k + 1) (T% X) x) :
+    CMDiffAt[s] k (fun (x : M) ↦ d[s] f x (X x)) x := by
+  -- This proof is similar to ContMDiffWithinAt.mfderivWithin, but we can avoid all
+  -- the coordinate change business. TODO: actually push this through.
+  rw [contMDiffWithinAt_iff]
+  have hf' := hf.mdifferentiableWithinAt (by simp)
+  constructor
+  · change ContinuousWithinAt (fun x ↦ (mfderiv[s] f x) (X x)) s x -- missing apply lemma
+    simp only [mfderivWithin]
+    let f' := fderivWithin ℝ (writtenInExtChartAt I 𝓘(ℝ, V) x f)
+      ((extChartAt I x).symm ⁻¹' s ∩ Set.range I) ((extChartAt I x) x)
+    have : ContinuousWithinAt f' (extChartAt I x '' s) (extChartAt I x x) := sorry
+    sorry
+  · simp
+    rw [contMDiffWithinAt_iff] at hf hX
+    have hf' := hf.2; have hX' := hX.2
+    simp at hf' hX'
+    sorry
+
+lemma ContMDiffAt.mvfderiv {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {k : ℕ∞ω} {f : M → V} (hf : CMDiffAt (k + 1) f x) (hX : CMDiffAt (k + 1) (T% X) x) :
+    CMDiffAt k (fun (x : M) ↦ d% f x (X x)) x := by
+  simp_rw [← mvfderivWithin_univ]
+  rw [← contMDiffWithinAt_univ] at hf hX ⊢
+  apply ContMDiffWithinAt.mvfderivWithin hf hX
+
+lemma ContMDiffOn.mvfderivWithin {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {k : ℕ∞ω} {f : M → V} {s : Set M} (hf : CMDiff[s] (k + 1) f) (hX : CMDiff[s] (k + 1) (T% X)) :
+    CMDiff[s] k (fun (x : M) ↦ d[s] f x (X x)) :=
+  fun x hx ↦ ContMDiffWithinAt.mvfderivWithin (hf x hx) (hX x hx)
+
+lemma ContMDiff.mvfderiv {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {k : ℕ∞ω} {f : M → V} (hf : CMDiff (k + 1) f) (hX : CMDiff (k + 1) (T% X)) :
+    CMDiff k (fun (x : M) ↦ d% f x (X x)) :=
+  fun x ↦ ContMDiffAt.mvfderiv (hf x) (hX x)
+
+end prerequisites
+
 /- TODO: The next four lemmas are workaround for some version of Lean 4 #9077
 (Instance synthesis sees through type synonyms). They should be removed when that issue will
 be fully solved. -/
@@ -129,13 +186,11 @@ section
 variable {k : ℕ∞ω} [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
 
 variable {I} in
---@[fun_prop]
 lemma _root_.ContMDiff.inner_bundle' {X Y : Π x : M, TangentSpace% x}
     (hX : CMDiff k (T% X)) (hY : CMDiff k (T% Y)) : CMDiff k ⟪X, Y⟫ :=
   ContMDiff.inner_bundle hX hY
 
 variable {I} in
---@[fun_prop]
 lemma _root_.ContMDiffAt.inner_bundle' {x : M} {X Y : Π x : M, TangentSpace% x}
     (hX : CMDiffAt k (T% X) x) (hY : CMDiffAt k (T% Y) x) : CMDiffAt k ⟪X, Y⟫ x :=
   ContMDiffAt.inner_bundle hX hY
@@ -168,7 +223,7 @@ Note that the bundle metric on `TM` is implicitly hidden in this definition.
 
 section uniqueness
 
-variable {cov cov'}
+variable {cov cov' I}
 
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 `⟨∇ X Y, Z⟩` for all differentiable vector fields `X`, `Y` and `Z`, without reference to `∇`. -/
@@ -192,6 +247,44 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
   simp (disch := fun_prop) [real_inner_comm, inner_sub_right, torsion_apply] at *
   linear_combination - (eq1a + eq1b + eq2a + eq2b - eq3a - eq3b) / 2
 
+/-- Suppose `(M, g)` is a `C^{k+2}` manifold with a `C^{k+1}` Riemannian metric.
+Then Levi-Civita connection, applied to `C^{k+1}` vector fields, yields a `C^k` vector field. -/
+lemma IsLeviCivitaConnection.contMDiff_apply (k : ℕ∞) [FiniteDimensional ℝ E]
+    [IsManifold I (k + 2) M]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    (h : cov.IsLeviCivitaConnection)
+    {X Y Z : (x : M) → TangentSpace% x}
+    (hX : CMDiff (k + 1) (T% X)) (hY : CMDiff (k + 1) (T% Y)) (hZ : CMDiff (k + 1) (T% Z)) :
+    CMDiff k (fun x ↦ ⟪(cov Y x) (X x), Z x⟫) := by
+  have a : IsManifold I ((k + 1) + 1) M := by
+    rw [show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]; infer_instance
+  have : IsManifold I (minSmoothness ℝ 2) M := by simpa
+  have : IsManifold I (↑(k + 1) + 1) M := by simpa
+  have : IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x) :=
+    IsContMDiffRiemannianBundle.of_le (n := k + 1) (by simp)
+  have a (x) := h.apply_eq (hX.mdifferentiableAt (by simp))
+    (hY.mdifferentiableAt (by simp)) (hZ.mdifferentiableAt (by simp) (x := x))
+  simp_rw [a]
+  -- Future: automate this using fun_prop!
+  apply ContMDiff.div_const
+  repeat apply ContMDiff.add
+  all_goals
+    try apply ContMDiff.neg
+    try apply ContMDiff.mvfderiv
+  all_goals try assumption
+  · exact hY.inner_bundle' hZ
+  · exact hZ.inner_bundle' hX
+  · exact hX.inner_bundle' hY
+  · apply ContMDiff.inner_bundle'
+    · exact hY.of_le (by simp)
+    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hX hZ (by simp)
+  · apply ContMDiff.inner_bundle'
+    · exact hZ.of_le (by simp)
+    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hY hX (by norm_num)
+  · apply ContMDiff.inner_bundle'
+    · exact hX.of_le (by simp)
+    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hZ hY (by norm_num)
+
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
 
 Note that the differentiability hypotheses are required, since `CovariantDerivative` objects are
@@ -201,7 +294,7 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     ∇ X Y x = ∇' X Y x := by
   apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-  exact (hcov.apply_eq I hX hY hZ).trans <| hcov'.apply_eq I hX hY hZ |>.symm
+  exact (hcov.apply_eq hX hY hZ).trans <| hcov'.apply_eq hX hY hZ |>.symm
 
 end uniqueness
 
@@ -368,120 +461,69 @@ public lemma leviCivitaConnection_isLeviCivitaConnection [FiniteDimensional ℝ 
     (leviCivitaConnection I M).IsLeviCivitaConnection :=
   ⟨leviCivitaConnection_isMetricCompatible I, leviCivitaConnection_torsion_eq_zero I⟩
 
-instance {k : ℕ∞ω} : ContMDiffMul 𝓘(ℝ, ℝ) k ℝ where
-  contMDiff_mul := by
-    --rw [contMDiff_prod_iff]
-    -- rw [contMDiff_iff_contDiff] except for the wrong model
-    intro x
-    rw [contMDiffAt_iff]
-    refine ⟨by fun_prop, ?_⟩
-    suffices ContDiffAt ℝ k (fun p ↦ p.1 * p.2) x by
-      simp
-      simpa [ModelProd, contDiffWithinAt_univ] using this
-    fun_prop
-
 variable {I} in
-lemma ContMDiffWithinAt.mvfderivWithin {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    {k : ℕ∞ω} {f : M → V} {s : Set M}
-    (hf : CMDiffAt[s] (k + 1) f x) (hX : CMDiffAt[s] (k + 1) (T% X) x) :
-    CMDiffAt[s] k (fun (x : M) ↦ d[s] f x (X x)) x := by
-  -- This proof is similar to ContMDiffWithinAt.mfderivWithin, but we can avoid all
-  -- the coordinate change business.
-  rw [contMDiffWithinAt_iff] --at hf hX ⊢
-  have hf' := hf.mdifferentiableWithinAt (by simp)
-  constructor
-  · change ContinuousWithinAt (fun x ↦ (mfderiv[s] f x) (X x)) s x -- missing apply lemma
-    simp only [mfderivWithin]
-    let f' := fderivWithin ℝ (writtenInExtChartAt I 𝓘(ℝ, V) x f)
-      ((extChartAt I x).symm ⁻¹' s ∩ Set.range I) ((extChartAt I x) x)
-    have : ContinuousWithinAt f' (extChartAt I x '' s) (extChartAt I x x) := sorry
-    sorry
-  · simp
-    rw [contMDiffWithinAt_iff] at hf hX
-    have hf' := hf.2; have hX' := hX.2
-    simp at hf' hX'
-    sorry
-
-variable {I} in
-lemma ContMDiffAt.mvfderiv {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    {k : ℕ∞ω} {f : M → V} (hf : CMDiffAt (k + 1) f x) (hX : CMDiffAt (k + 1) (T% X) x) :
-    CMDiffAt k (fun (x : M) ↦ d% f x (X x)) x := by
-  simp_rw [← mvfderivWithin_univ]
-  rw [← contMDiffWithinAt_univ] at hf hX ⊢
-  apply ContMDiffWithinAt.mvfderivWithin hf hX
-
-variable {I} in
-lemma ContMDiffOn.mvfderivWithin {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    {k : ℕ∞ω} {f : M → V} {s : Set M} (hf : CMDiff[s] (k + 1) f) (hX : CMDiff[s] (k + 1) (T% X)) :
-    CMDiff[s] k (fun (x : M) ↦ d[s] f x (X x)) :=
-  fun x hx ↦ ContMDiffWithinAt.mvfderivWithin (hf x hx) (hX x hx)
-
-variable {I} in
-lemma ContMDiff.mvfderiv {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    {k : ℕ∞ω} {f : M → V} (hf : CMDiff (k + 1) f) (hX : CMDiff (k + 1) (T% X)) :
-    CMDiff k (fun (x : M) ↦ d% f x (X x)) :=
-  fun x ↦ ContMDiffAt.mvfderiv (hf x) (hX x)
-
-variable {I} in
-lemma aux (k : ℕ∞) {X Y Z : (x : M) → TangentSpace I x} [FiniteDimensional ℝ E]
+lemma contMDiff_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
-    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace I x)]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    {X Y Z : (x : M) → TangentSpace% x}
     (hX : CMDiff (k + 1) (T% X)) (hY : CMDiff (k + 1) (T% Y)) (hZ : CMDiff (k + 1) (T% Z)) :
-    CMDiff k (fun x ↦ ⟪((leviCivitaConnection I M) Y x) (X x), Z x⟫) := by
-  have a : IsManifold I ((k + 1) + 1) M := by
-    rw [show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]; infer_instance
-  have : IsManifold I (minSmoothness ℝ 2) M := by simpa
-  have : IsManifold I (↑(k + 1) + 1) M := by simpa
-  have : IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace I x) :=
-    IsContMDiffRiemannianBundle.of_le (n := k + 1) (by simp)
-  have a (x) := leviCivitaConnection_apply I (hX.mdifferentiableAt (by simp))
-    (hY.mdifferentiableAt (by simp)) (hZ.mdifferentiableAt (by simp) (x := x))
-  simp_rw [a]
-  -- Future: automate this using fun_prop!
-  apply ContMDiff.div_const
-  repeat apply ContMDiff.add
-  all_goals
-    try apply ContMDiff.neg
-    try apply ContMDiff.mvfderiv
-  all_goals try assumption
-  · exact hY.inner_bundle' hZ
-  · exact hZ.inner_bundle' hX
-  · exact hX.inner_bundle' hY
-  · apply ContMDiff.inner_bundle'
-    · exact hY.of_le (by simp)
-    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hX hZ (by simp)
-  · apply ContMDiff.inner_bundle'
-    · exact hZ.of_le (by simp)
-    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hY hX (by norm_num)
-  · apply ContMDiff.inner_bundle'
-    · exact hX.of_le (by simp)
-    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hZ hY (by norm_num)
+    CMDiff k (fun x ↦ ⟪((leviCivitaConnection I M) Y x) (X x), Z x⟫) :=
+  (leviCivitaConnection_isLeviCivitaConnection I).contMDiff_apply k hX hY hZ
 
 variable {I} in
-lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace I x} [FiniteDimensional ℝ E]
+lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
-    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace I x)]
-    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiff (k + 1) (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiff (k + 1) (T% Z)),
+      CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
     CMDiff (k + 1) (T% W) := by
   sorry
 
+-- Variant of step 2' with slightly stronger requirements on differentiability,
+-- but less on the regularity of the metric.
+-- This cannot be applied to the Levi-Civita connection as there is a loss of derivatives there.
+variable {I} in
+lemma step2' (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+    [IsManifold I k M]
+    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
+    (hW : ∀ {Z : (x : M) → TangentSpace% x}
+      (hZ : CMDiff k (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
+    CMDiff k (T% W) := by
+  sorry
+
 /-- If `M` is endowed with a `C^k` metric, its Levi-Civita connection is a `C^k` connection. -/
-instance leviCivitaConnection_foo [FiniteDimensional ℝ E] [IsManifold I 1 M]
-    [IsManifold I ∞ M] :
+instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
     ContMDiffCovariantDerivative (leviCivitaConnection I M) 1 where
   contMDiff := by
     have : IsManifold I (↑0 + 2) M := by simpa only [zero_add]
-    have : IsContMDiffRiemannianBundle I (↑0 + 1) E (fun (x : M) ↦ TangentSpace I x) := by
+    have : IsContMDiffRiemannianBundle I (↑0 + 1) E (fun (x : M) ↦ TangentSpace% x) := by
       simpa only [zero_add]
     refine ⟨fun {σ} hσ ↦ ?_⟩
     rw [contMDiffOn_univ] at hσ ⊢
     apply ContMDiff.clm_bundle_of_apply
     intro τ hτ
     apply step2 0 (fun {Z} hZ ↦ ?_)
-    exact aux 0 hτ (hσ.of_le (by simp)) hZ
+    exact contMDiff_leviCivitaConnection_apply 0 hτ (hσ.of_le (by simp)) hZ
 
-#exit
--- next: C^n hyps, C^n
+section
+
+variable {k : ℕ∞}
+  [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)] [IsManifold I (k + 2) M]
+
+/-- If `M` is `C^{k+2}` and endowed with a `C^{k+1}` metric,
+its Levi-Civita connection is a `C^k` connection. -/
+instance leviCivitaConnection_bar [FiniteDimensional ℝ E] :
+    ContMDiffCovariantDerivative (leviCivitaConnection I M) (k + 1) where
+  contMDiff := by
+    refine ⟨fun {σ} hσ ↦ ?_⟩
+    rw [contMDiffOn_univ] at hσ ⊢
+    apply ContMDiff.clm_bundle_of_apply
+    intro τ hτ
+    apply step2 k (fun {Z} hZ ↦ ?_)
+    exact contMDiff_leviCivitaConnection_apply k hτ (hσ.of_le (by simp)) hZ
+
+end
+
 end existence
 
 end CovariantDerivative
