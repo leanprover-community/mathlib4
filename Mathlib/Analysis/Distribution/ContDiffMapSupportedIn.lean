@@ -12,6 +12,21 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.Sets.Compacts
 
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Distribution.TemperateGrowth
+public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Normed.Lp.SmoothApprox
+import Mathlib.Tactic.MoveAdd
+import Mathlib.Data.Nat.Factorial.Basic
+
 /-!
 # Continuously differentiable functions supported in a given compact set
 
@@ -1000,5 +1015,88 @@ lemma integralAgainstBilinCLM_eq_setIntegral {B : F₁ →L[𝕜] F₂ →L[𝕜
   integralAgainstBilinLM_eq_setIntegral hφ
 
 end Integral
+
+
+section Multiplication
+
+section bilin
+
+open ContDiffMapSupportedIn
+
+variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+
+variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [IsScalarTower ℝ 𝕜 F₂] [NormedSpace ℝ F₃]
+  [IsScalarTower ℝ 𝕜 F₃] [SMulCommClass ℝ 𝕜 F₁] [SMulCommClass ℝ 𝕜 F₂] [SMulCommClass ℝ 𝕜 F₃]
+
+open ContinuousLinearMap
+
+noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g):
+    𝓓^{n}_{K}(E, F₁) →L[𝕜] 𝓓^{n}_{K}(E, F₃) :=
+  letI T : 𝓓^{n}_{K}(E, F₁) →ₗ[𝕜] 𝓓^{n}_{K}(E, F₃) := {
+    toFun φ := ⟨fun x ↦ B (φ x) (g x),
+    ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
+    (fun x hx ↦ by simp only [φ.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply])⟩
+    map_add' := by aesop
+    map_smul' := by aesop
+  }
+  ⟨T, show Continuous T by {
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
+      (ContDiffMapSupportedIn.withSeminorms ..) _ (fun k ↦ ?_)
+    by_cases k_le_n : k ≤ n
+    · have q := fun i : Finset.range (k+1) ↦ K.isCompact.exists_bound_of_continuousOn
+        (hg.continuous_iteratedFDeriv (m := i)
+        (mod_cast le_trans (show i ≤ (k : ℕ∞) by aesop) k_le_n)).continuousOn
+      have : ∀ (i : ↥(Finset.range (k + 1))), ∃ C, 0 ≤ C ∧ ∀ x ∈ ↑K, ‖iteratedFDeriv ℝ (↑i) g x‖ ≤ C := by
+        intro i
+        by_cases hK : Nonempty K
+        · rcases q i with ⟨C, hC⟩
+          refine ⟨C, ?_, hC⟩
+          apply le_trans (norm_nonneg _) (hC (hK.some) (by aesop))
+        · refine ⟨0, le_refl 0, by aesop⟩
+      choose fG hfG using this
+      set G := Finset.univ.sup' (by aesop) fG with G_def
+      have G_pos : 0 ≤ G := by
+        rw [G_def, Finset.le_sup'_iff]
+        refine ⟨⟨0, by aesop⟩, by aesop, by aesop⟩
+      set C : ℝ≥0 := ⟨‖B‖*((k : ℝ) + 1)*(Nat.pow k k)*G, by positivity⟩ with C_def
+      refine ⟨Finset.Iic k, C, fun φ ↦ ?_⟩
+      apply ((T φ).seminorm_le_iff 𝕜 (by positivity) k).2
+      intro k_le_n x x_in_K
+      apply le_trans (norm_iteratedFDeriv_le_of_bilinear
+        (B.bilinearRestrictScalars ℝ) (φ.contDiff) hg x (mod_cast k_le_n))
+      rw [norm_bilinearRestrictScalars, C_def]
+      conv =>
+        rhs
+        change ‖B‖*((k : ℝ) + 1)*((Nat.pow k k))*G*((Finset.Iic k).sup (fun m ↦ N[𝕜]_{K, n, m}) φ)
+      repeat simp_rw [mul_assoc]
+      rw [← show (∑ _x ∈ Finset.range (k + 1), (1 : ℝ)) = k + 1 by simp, Finset.sum_mul, one_mul]
+      rw [mul_comm G _]
+      gcongr 1
+      apply Finset.sum_le_sum (fun i hi ↦ ?_)
+      gcongr
+      · simp only [Finset.mem_range, Order.lt_add_one_iff] at hi
+        by_cases h : 0 < k
+        · apply_mod_cast le_trans (Nat.choose_le_pow k i) (Nat.pow_le_pow_right h hi)
+        · rw [Nat.eq_zero_of_not_pos h]; cases i <;> simp
+      · have i_le_n : i ≤ n := by
+          apply_mod_cast le_trans (show (i : ℕ∞) ≤ (k : ℕ∞) by aesop) k_le_n
+        have := norm_iteratedFDeriv_apply_le_seminorm 𝕜 i_le_n (f := φ) (x := x)
+        refine le_trans this (Seminorm.le_finset_sup_apply (by aesop))
+      · have := (hfG ⟨(k-i), by grind⟩).2 x x_in_K
+        apply le_trans this
+        rw [G_def, Finset.le_sup'_iff]
+        have : k - i ∈ Finset.range (k+1) := by aesop
+        aesop
+    · refine ⟨{0}, 0, fun φ ↦ ?_⟩
+      simp [ContDiffMapSupportedIn.seminorm_eq_bot_of_gt 𝕜 (not_le.1 k_le_n)]
+  }⟩
+
+
+end bilin
+
+end Multiplication
 
 end ContDiffMapSupportedIn
