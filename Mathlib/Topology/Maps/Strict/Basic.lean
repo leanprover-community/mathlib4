@@ -41,12 +41,12 @@ We provide several equivalent ways to characterize a strict map `f`:
 In general, the product (in the sense of `Prod.map`) of two strict maps need not be strict.
 But thanks to `MonoidHom.isOpenQuotientMap_of_isQuotientMap`, we can replace `IsQuotientMap`
 by `IsOpenQuotientMap` in the setting of group homomorphisms. Therefore we provide several
-important properties of a strict group homomorphisms `f` :
+important properties of strict group homomorphisms :
 
 * `isStrictMap_iff_isOpenQuotientMap_rangeRestrict`: `f` is a strict group homomorphism if
   and only if the `rangeRestrict` of `f` is an open quotient map.
 * `isStrictMap_prodMap`: The product (in the sense of Prod.map) of strict group homomorphisms
-is strict.
+  is strict.
 -/
 
 @[expose] public section
@@ -184,7 +184,7 @@ namespace MonoidHom
 variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H] (f : G →* H) (g : G' →* H')
   [TopologicalSpace G] [IsTopologicalGroup G] [TopologicalSpace H]
 
-/-- A group homomorphism is strict if and only if its rangeRestrict is an open quotient map. -/
+/-- A group homomorphism is strict if and only if its `rangeRestrict` is an open quotient map. -/
 @[to_additive] lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
     IsStrictMap f ↔ IsOpenQuotientMap f.rangeRestrict := by
   rw [isOpenQuotientMap_iff_isQuotientMap]
@@ -194,7 +194,7 @@ variable {f g} [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H
 
 /-- The product (in the sense of `Prod.map`) of strict group homomorphisms is strict -/
 @[to_additive isStrictMap_prodMap] lemma isStrictMap_prodMap (hf : IsStrictMap f)
-    (hg : IsStrictMap g) :IsStrictMap (f.prodMap g) := by
+    (hg : IsStrictMap g) : IsStrictMap (f.prodMap g) := by
   rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict] at hf hg ⊢
   let aux : (f.prodMap g).range ≃ₜ f.range × g.range :=
     (Homeomorph.setCongr (by simp [Subgroup.coe_prod])).trans (Homeomorph.Set.prod _ _)
