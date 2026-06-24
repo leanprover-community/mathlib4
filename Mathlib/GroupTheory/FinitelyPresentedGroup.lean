@@ -103,6 +103,14 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [φ.ker_mulEquiv_comp iso]
 
+theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
+    (hf_surj : Function.Surjective f) (hf_ker : f.ker.IsNormalClosureFG) :
+    IsFinitelyPresented H := by
+  obtain ⟨n, φ, hφ_surj, hφ_ker⟩ := hG.out
+  refine ⟨n, f.comp φ, hf_surj.comp hφ_surj, ?_⟩
+  rw [← MonoidHom.comap_ker]
+  exact hf_ker.comap hφ_surj hφ_ker
+
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
 ]
@@ -123,17 +131,8 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
 
 variable (G)
 
-theorem mk' (S : Type*) [Finite S] (φ : FreeGroup S →* G)
-    (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G := by
-  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin S
-  let e' := FreeGroup.freeGroupCongr e
-  let φ' := φ.comp e'.symm.toMonoidHom
-  have h : φ'.ker = φ.ker.map e' := φ.ker_comp_mulEquiv e'.symm
-  refine ⟨n, φ', h1.comp e'.symm.surjective, ?_⟩
-  simpa [h] using h2.map e'.surjective
-
 /-- Any finite group is finitely presented. -/
 instance [Finite G] : IsFinitelyPresented G :=
-  mk' G G FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
+  of_surjective FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 
 end Group.IsFinitelyPresented
