@@ -56,7 +56,7 @@ lemma le_stabilizer_add (ρ : Representation k G V) (v1 v2 : V) :
   intro g hg_stab
   rw [mem_stabilizer, map_add, hg_stab.1, hg_stab.2]
 
-lemma le_stabilizer_sum (ρ : Representation k G V) (n : ℕ) (v : Fin n → V) :
+lemma le_stabilizer_sum {n : ℕ} (ρ : Representation k G V) (v : Fin n → V) :
     ⨅ i, (stabilizer ρ (v i)) ≤ stabilizer ρ (∑ i, v i) := by
   intro g hg_stab
   simp only [Subgroup.mem_iInf, mem_stabilizer] at hg_stab
