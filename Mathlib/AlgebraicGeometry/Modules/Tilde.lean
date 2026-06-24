@@ -8,12 +8,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
-public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Over
-public import Mathlib.CategoryTheory.Limits.Preorder
 
 /-!
 
@@ -556,29 +552,6 @@ theorem isIso_fromTildeΓ_pushforward (M : (Spec S).Modules) [h : IsIso M.fromTi
   exact isLocalizing_pushforward_of_isLocalizing φ h
 
 end IsLocalizing
-
-set_option backward.isDefEq.respectTransparency false in
-instance Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
-    [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
-    ((restrictFunctor f).obj M).IsQuasicoherent := by
-  letI α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
-  have hα : IsIso α := NatIso.isIso_of_isIso_app _
-  dsimp [restrictFunctor]
-  convert SheafOfModules.isQuasicoherent_pushforward_of_isLeftAdjoint.{u}
-    (J := Opens.grothendieckTopology _) (K := Opens.grothendieckTopology _) f.opensFunctor _ _
-  · refine (SheafOfModules.fullyFaithfulForget _).preimageIso ?_
-    refine PresheafOfModules.isoMk ?_ ?_
-    · intro U
-      dsimp [SheafOfModules.pushforward, PresheafOfModules.unit]
-      exact ModuleCat.restrictScalarsIsoOfEquiv (f.appIso U.unop).symm.commRingCatIsoToRingEquiv
-    · intro U V g
-      ext x
-      exact congr($(f.appIso_hom_naturality _).hom x)
-  · convert isIso_of_reflects_iso _ (ObjectProperty.ι _)
-    · dsimp
-      infer_instance
-    · infer_instance
-  · infer_instance
 
 end IsQuasicoherent
 
