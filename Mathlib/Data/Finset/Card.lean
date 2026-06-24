@@ -743,12 +743,12 @@ theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
 
 /-- Given an injective map `f : α → β` for finite sets `s ⊂ α` and `t ⊂ β` such that `t` has
     cardinality one more than `s`, there exists a unique element of `t` not in `f(s)`. -/
-theorem existsUnique_mem_codomain_notMem_image_of_injective_of_card_eq_add_one
+theorem existsUnique_notMem_image_of_injOn_of_card_eq_add_one
     {t : Finset β} [DecidableEq β]
-    (hf : f.Injective) (hf' : Set.MapsTo f s t) (h : #t = #s + 1) :
+    (hf : Set.InjOn f s) (hf' : Set.MapsTo f s t) (h : #t = #s + 1) :
     ∃! x, x ∈ t ∧ x ∉ s.image f := by
   have : #(t \ s.image f) = 1 := by
-    grind [card_sdiff_of_subset hf'.finsetImage_subset, card_image_of_injective _ hf]
+    grind [card_sdiff_of_subset hf'.finsetImage_subset, card_image_of_injOn hf]
   simpa [card_eq_one_iff_existsUnique] using this
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
