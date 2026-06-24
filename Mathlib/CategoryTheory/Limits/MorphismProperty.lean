@@ -121,7 +121,7 @@ lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
       isColimitOfPreserves _ d.isColimit
     have heq : Y.hom = hd.desc { pt := X, ι := { app j := (d.diag.obj j).hom } } := by
       refine hd.hom_ext fun j ↦ ?_
-      simp only [Functor.const_obj_obj, IsColimit.fac]
+      simp only [IsColimit.fac]
       simp
     rw [P.costructuredArrowObj_iff, heq, ← hd.coconePointUniqueUpToIso_hom_desc (hc _),
       P.cancel_left_of_respectsIso]

@@ -174,9 +174,10 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
         obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
         simp [hf] }
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :
-    (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
+    dsimp% (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
   (forget₂ _ AddCommGrpCat).map_injective
     ((AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
 
