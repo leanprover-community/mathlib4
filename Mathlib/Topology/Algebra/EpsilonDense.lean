@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: William Coram
 -/
 module
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Real.StarOrdered
+
+public import Mathlib.Analysis.Normed.Group.Defs
+public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
-
 # Epsilon dense
 
 In this file, we prove [BGR, Prop 1.1.4./2][bosch-guntzer-remmert]: If `G` is a normed group and
@@ -24,7 +24,6 @@ In this file, we prove [BGR, Prop 1.1.4./2][bosch-guntzer-remmert]: If `G` is a 
 
 ## References
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
-
 -/
 
 @[expose] public section
