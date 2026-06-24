@@ -64,8 +64,7 @@ noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
   t.plus.lift (HomotopyCategory.Plus.ι _ ⋙ DerivedCategory.Qh) (by
     rintro ⟨K, hK⟩
     obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
-    simp only [HomotopyCategory.plus_quotient_obj_iff] at hK
-    obtain ⟨n, hn⟩ := hK
+    obtain ⟨n, _⟩ := (HomotopyCategory.plus_quotient_obj_iff _).mp hK
     exact ⟨n, t.isGE_of_iso ((quotientCompQhIso C).symm.app K) n⟩)
 
 noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ := by
