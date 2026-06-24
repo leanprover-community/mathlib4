@@ -336,30 +336,31 @@ theorem radical_dvd_of_dvd_pow {n : ℕ} (h : a ∣ b ^ n) : radical a ∣ b := 
   replace h := radical_pow b hn ▸ radical_dvd_radical h (pow_ne_zero n hb)
   exact h.trans radical_dvd_self
 
-theorem exists_self_dvd_pow_radical (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n := by
+theorem radical_mul_of_dvd (h : a ∣ b) : radical (a * b) = radical b := by
   classical
-  nontriviality M
-  by_cases h : IsUnit a; · exact ⟨0, by simpa [← isUnit_iff_dvd_one]⟩
-  have ne : (primeFactors a).Nonempty := by
-    rwa [Finset.nonempty_iff_ne_empty, ne_eq, primeFactors_eq_empty_iff ha]
-  use Finset.sup' (primeFactors a) ne (multiplicity · a)
-  refine (dvd_iff_emultiplicity_le ha).mpr fun p hp ↦ ?_
-  rw [emultiplicity_eq_count_normalizedFactors hp.irreducible ha,
-    emultiplicity_eq_count_normalizedFactors hp.irreducible (pow_ne_zero _ radical_ne_zero),
-    ENat.coe_le_coe, normalizedFactors_pow, Multiset.count_nsmul,
-    Multiset.count_eq_of_nodup (normalizedFactors_nodup isRadical_radical)]
-  split_ifs with h
-  · rw [mul_one, ← multiplicity_eq_count_normalizedFactors hp.irreducible ha,
-      multiplicity_eq_of_associated_left (normalize_associated _)]
-    apply Finset.le_sup' (multiplicity · a)
-    rw [mem_normalizedFactors_iff' radical_ne_zero] at h
-    rw [mem_primeFactors, mem_normalizedFactors_iff' ha]
-    exact ⟨h.1, h.2.1, h.2.2.trans radical_dvd_self⟩
-  · suffices normalize p ∉ normalizedFactors a by simpa
-    revert h; contrapose
-    rw [mem_normalizedFactors_iff' ha, mem_normalizedFactors_iff' radical_ne_zero,
-      dvd_radical_iff ((associated_normalize p).prime hp).isRadical ha]
-    tauto
+  by_cases ha : a = 0; · simp_all
+  by_cases hb : b = 0; · simp_all
+  rw [radical_eq_iff_primeFactors_eq, primeFactors_mul_eq_union ha hb, Finset.union_eq_right,
+    ← radical_dvd_iff_primeFactors_subset hb]
+  exact radical_dvd_self.trans h
+
+theorem exists_self_dvd_pow_radical (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n := by
+  induction a using induction_on_prime with
+  | h₁ => tauto
+  | h₂ x h => simpa [radical_of_isUnit h, ← isUnit_iff_dvd_one]
+  | h₃ b p ne p_prime ih =>
+    rcases ih ne with ⟨c, hc⟩
+    rcases p_prime.irreducible.dvd_or_isRelPrime (n := b) with dvd | coprime
+    · use c + 1; rw [radical_mul_of_dvd dvd, pow_succ']
+      refine mul_dvd_mul ?_ hc
+      rw [(associated_normalize p).dvd_iff_dvd_left, ← radical_of_prime p_prime]
+      exact radical_dvd_radical dvd ne
+    · use c + 1; rw [radical_mul coprime, radical_of_prime p_prime, mul_pow]
+      refine mul_dvd_mul ?_ ?_
+      · rw [pow_succ]
+        exact dvd_mul_of_dvd_right (associated_normalize p).dvd _
+      · rw [pow_succ]
+        exact dvd_mul_of_dvd_left hc _
 
 end UniqueFactorizationMonoid
 
