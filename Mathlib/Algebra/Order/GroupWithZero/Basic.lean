@@ -371,7 +371,7 @@ section SemigroupWithZero
 variable [SemigroupWithZero M₀]
 variable [Preorder M₀] {a b : M₀}
 
-@[simp] lemma ppow_nonneg [PosMulMono M₀] (n : ℕ+) (ha : 0 ≤ a) : 0 ≤ a ^ n := by
+@[simp] lemma ppow_nonneg [PosMulMono M₀] (ha : 0 ≤ a) (n : ℕ+) : 0 ≤ a ^ n := by
   induction n using Semigroup.ppow_induction a
   · exact ha
   · exact mul_nonneg ha ‹_›
@@ -403,6 +403,12 @@ lemma pow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : 
     gcongr
     exact pow_nonneg ha₀ n
 
+-- not `Antitone` because no order on `ℕ+` here
+lemma ppow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) ⦃m n : ℕ+⦄ (hm : m.val ≤ n.val) :
+    a ^ n ≤ a ^ m := by
+  rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
+  exact pow_right_anti₀ ha₀ ha₁ hm
+
 lemma pow_le_pow_of_le_one [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) {m n : ℕ}
     (hmn : m ≤ n) : a ^ n ≤ a ^ m := pow_right_anti₀ ha₀ ha₁ hmn
 
@@ -411,6 +417,13 @@ lemma pow_le_of_le_one [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) (hn :
 
 lemma sq_le [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a :=
   pow_le_of_le_one h₀ h₁ two_ne_zero
+
+lemma ppow_le_one₀ [PosMulMono M₀] {n : ℕ+} (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : a ^ n ≤ 1 := by
+  induction n using Semigroup.ppow_induction a with
+  | h1 => exact ha₁
+  | hsucc n IH =>
+    refine mul_le_of_mul_le_of_nonneg_left ?_ IH ha₀
+    simp [ha₁]
 
 lemma pow_le_one₀ [PosMulMono M₀] {n : ℕ} (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : a ^ n ≤ 1 :=
   pow_zero a ▸ pow_right_anti₀ ha₀ ha₁ (Nat.zero_le n)
@@ -445,6 +458,10 @@ lemma pow_lt_one₀ [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n :
   | 0, h => (h rfl).elim
   | n + 1, _ => by
     rw [pow_succ']; exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
+
+lemma ppow_lt_one₀ [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a < 1) (n : ℕ+) : a ^ n < 1 := by
+  rw [← npow_val_eq_ppow]
+  exact pow_lt_one₀ h₀ h₁ n.prop.ne'
 
 lemma pow_right_mono₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (h : 1 ≤ a) : Monotone (a ^ ·) :=
   monotone_nat_of_le_succ fun n => by
