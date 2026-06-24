@@ -71,8 +71,7 @@ structure ManifoldOrientation (M : Type*) [TopologicalSpace M] [ChartedSpace H M
   /-- The coordinate change from the chart at `x` to the chart at `y`, evaluated at `z`, has
   positive Jacobian determinant exactly when the two chart signs agree at `z`. -/
   compatible : ∀ x y z, z ∈ (chartAt H x).source → z ∈ (chartAt H y).source →
-    (0 < LinearMap.det (((trivializationAt E (TangentSpace I) x).coordChangeL ℝ
-        (trivializationAt E (TangentSpace I) y) z).toLinearEquiv.toLinearMap) ↔
+    (0 < LinearMap.det (tangentCoordChange I x y z).toLinearMap ↔
       chartSign x z = chartSign y z)
 
 /-- A manifold is orientable if it admits a manifold orientation. -/
