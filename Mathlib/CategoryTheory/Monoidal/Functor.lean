@@ -179,17 +179,13 @@ def ofIso {G : C ⥤ D} (e : F ≅ G) : G.LaxMonoidal where
       assoc, assoc, assoc, Iso.hom_inv_id_app, comp_id,
       comp_whiskerRight_assoc, ← whisker_exchange_assoc,
       comp_whiskerRight_assoc, ← NatTrans.naturality,
-      associativity_assoc,
-      associator_naturality_middle_assoc,
-      associator_naturality_right_assoc,
-      associator_naturality_left_assoc]
-    simp only [← assoc]; congr 2; simp only [assoc]
-    congr 1
-    rw [tensorHom_def'_assoc, tensorHom_def',
+      associativity_assoc, associator_naturality_middle_assoc,
+      associator_naturality_right_assoc, associator_naturality_left_assoc,
+      tensorHom_def'_assoc, tensorHom_def'_assoc,
       ← MonoidalCategory.whiskerLeft_comp_assoc,
-      ← MonoidalCategory.whiskerLeft_comp_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc (g := e.inv.app (Y ⊗ Z)),
       assoc, assoc, assoc, Iso.hom_inv_id_app, comp_id, whisker_exchange,
-      whisker_exchange, whisker_exchange_assoc]
+      whisker_exchange_assoc, whisker_exchange_assoc]
     simp
   left_unitality X := by
     rw [assoc, assoc, tensorHom_def_assoc, ← comp_whiskerRight_assoc, assoc,
@@ -315,6 +311,7 @@ class OplaxMonoidal (F : C ⥤ D) where
 namespace OplaxMonoidal
 
 attribute [reassoc (attr := simp)] δ_natural_left δ_natural_right
+attribute [reassoc] oplax_associativity oplax_left_unitality oplax_right_unitality
 
 @[reassoc (attr := simp)]
 alias associativity := oplax_associativity
@@ -385,10 +382,26 @@ def ofIso {G : C ⥤ D} (e : F ≅ G) : G.OplaxMonoidal where
     rw [assoc, assoc, NatTrans.naturality_assoc, ← δ_natural_left_assoc,
       tensorHom_def'_assoc, ← comp_whiskerRight, ← NatTrans.naturality,
       comp_whiskerRight, tensorHom_def', whisker_exchange_assoc]
-  δ_natural_right := sorry
-  oplax_associativity := sorry
-  oplax_left_unitality := sorry
-  oplax_right_unitality := sorry
+  δ_natural_right {Y₁ Y₂} X f := by
+    rw [assoc, assoc, tensorHom_def'_assoc, ← whisker_exchange,
+      ← MonoidalCategory.whiskerLeft_comp_assoc,
+      ← NatTrans.naturality, MonoidalCategory.whiskerLeft_comp_assoc,
+      δ_natural_right_assoc, NatTrans.naturality_assoc, tensorHom_def']
+  oplax_associativity := by
+    sorry
+  oplax_left_unitality X := by
+    rw [assoc, assoc, NatTrans.naturality_assoc, tensorHom_def'_assoc,
+      ← comp_whiskerRight, Iso.hom_inv_id_app_assoc,
+      whisker_exchange, ← oplax_left_unitality_assoc,
+      leftUnitor_inv_naturality_assoc, ← MonoidalCategory.whiskerLeft_comp,
+      Iso.inv_hom_id_app, MonoidalCategory.whiskerLeft_id, comp_id]
+  oplax_right_unitality X := by
+    rw [assoc, assoc, NatTrans.naturality_assoc,
+      tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp,
+      Iso.hom_inv_id_app_assoc, ← whisker_exchange, ← oplax_right_unitality_assoc,
+      rightUnitor_inv_naturality_assoc, ← comp_whiskerRight,
+      Iso.inv_hom_id_app, MonoidalCategory.whiskerRight_id, id_comp,
+      Iso.hom_inv_id, comp_id]
 
 end
 
