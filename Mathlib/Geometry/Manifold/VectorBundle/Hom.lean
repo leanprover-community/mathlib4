@@ -331,11 +331,6 @@ lemma ContMDiff.clm_bundle_of_apply {k}
     ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) := by
   sorry
 
-lemma ContMDiff.mdifferentiableAt_section {σ : (x : B) → E₁ x} {k}
-    (hσ : ContMDiff IB (IB.prod 𝓘(𝕜, F₁)) k (T% σ)) (x : B) :
-    MDiffAt (T% σ) x := by
-  sorry
-
 set_option linter.unusedSectionVars false in
 lemma TensorialAt.apply_clm
     {φ : (Π x : B, E₁ x) → (Π x, E₂ x)} {x : B}
@@ -357,13 +352,13 @@ theorem TensorialAt.contMDiff_mkHom [CompleteSpace 𝕜] [IsManifold IB 1 B]
     [ContMDiffVectorBundle 1 F₂ E₂ IB]
     (φ : (Π x : B, E₁ x) → (Π x, E₂ x))
     (hφ : ∀ x, TensorialAt IB F₁ (φ · x) x)
-    {k} (φ_contMDiff : ∀ (σ : Π x : B, E₁ x), CMDiff k (T% σ) → CMDiff k (T% (φ σ))) :
+    {k} (hk : k ≠ 0) (φ_contMDiff : ∀ (σ : Π x : B, E₁ x), CMDiff k (T% σ) → CMDiff k (T% (φ σ))) :
     -- elaborators not working here
     letI T (x : B) : TotalSpace (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) :=
       ⟨x, TensorialAt.mkHom (φ · x) x (hφ x)⟩
     ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k T := by
   apply ContMDiff.clm_bundle_of_apply fun σ hσ ↦ ?_
-  simp only [fun x ↦ TensorialAt.apply_clm (hφ x) (hσ.mdifferentiableAt_section x)]
+  simp only [fun x ↦ TensorialAt.apply_clm (hφ x) (hσ.mdifferentiableAt hk)]
   exact φ_contMDiff σ hσ
 
 end OneVariable
