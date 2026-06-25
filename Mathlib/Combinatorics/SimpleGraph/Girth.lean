@@ -46,12 +46,12 @@ lemma egirth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.egirth ≤ w.len
 lemma Walk.IsCircuit.egirth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
     G.egirth ≤ w.length := by
   classical
-  by_contra hlg
-  rw [not_le] at hlg
+  by_contra! hlg
   let w' : G.Walk a a := w.cycleBypass
   have hwc' : w'.IsCycle := hwc.isCycle_cycleBypass
-  have hwlg' : w'.length < G.egirth :=
-    lt_of_le_of_lt (ENat.coe_le_coe.mpr w.length_cycleBypass_le_length) hlg
+  have hwlg' : w'.length < G.egirth := by
+    grw [w.length_cycleBypass_le_length]
+    exact hlg
   exact not_le_of_gt hwlg' (SimpleGraph.egirth_le_length hwc')
 
 @[simp]
