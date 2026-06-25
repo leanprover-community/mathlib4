@@ -36,10 +36,7 @@ variable {X Y : Scheme.{u}} {R : Type*}
 /--
 Algebraic cycle on a scheme `X` with coefficients in a type `Z` is just a function from `X` to `Z`
 with locally finite support.
-
-Here we're making use of the equivalence between irreducible closed subsets of a scheme and their
-generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
-nonstandard definition.
+(see the module docstring for more details).
 -/
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
   Function.locallyFinsupp X R
