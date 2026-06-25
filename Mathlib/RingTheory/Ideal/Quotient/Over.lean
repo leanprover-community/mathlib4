@@ -12,8 +12,15 @@ public import Mathlib.RingTheory.Ideal.Over
 
 @[expose] public section
 
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+
+/-- Given a prime `P` of `R` and an ideal `I` in an `R`-algebra `S`.
+Suppose we can find a prime `P'` over `P`, not containing `I`,
+then the number of primes of `S / I` over `P`
+is strictly less than primes of `S` over `P` (provided they are finite).
+
+The lemma is stated in terms of surjections for syntactic generality. -/
 lemma Ideal.ncard_primesOver_lt_of_not_le
-    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
     (f : S →ₐ[R] T) (Hf : Function.Surjective f)
     (P : Ideal R) [P.IsPrime] (P' : Ideal S) [P'.IsPrime] [P'.LiesOver P]
     (hkP' : ¬ RingHom.ker f.toRingHom ≤ P') (H : (P.primesOver S).Finite) :
@@ -25,7 +32,6 @@ lemma Ideal.ncard_primesOver_lt_of_not_le
   · rintro ⟨q, ⟨_, _⟩, rfl⟩; exact hkP' (Ideal.ker_le_comap _)
 
 lemma Ideal.ncard_primesOver_quotient_singleton_lt_of_notMem
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (P : Ideal R) [P.IsPrime] (e : S) (P' : Ideal S) [P'.IsPrime] [P'.LiesOver P]
     (heP' : e ∉ P') (H : (P.primesOver S).Finite) :
     (P.primesOver (S ⧸ Ideal.span {e})).ncard < (P.primesOver S).ncard :=

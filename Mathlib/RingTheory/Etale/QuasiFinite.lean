@@ -541,7 +541,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
         ⟨⟨by simp [IsIdempotentElem],
           by simp only [Nat.reduceAdd, Pi.one_apply, mul_one, Subsingleton.pairwise]⟩,
           by simp⟩, nofun, nofun, nofun, ?_, nofun, ?_⟩
-      · convert show Function.Bijective (AlgHom.id R _) from Function.bijective_id; ext
+      · rw! [ofId_self, Ideal.ResidueField.mapₐ_id]; exact Function.bijective_id
       · exact fun P h₁ h₂ ↦ (this.le
           ⟨show (P.comap Algebra.TensorProduct.includeRight.toRingHom).IsPrime from inferInstance,
           ⟨by simp [P.over_def p, Ideal.under, Ideal.comap_comap]⟩⟩).elim
@@ -557,10 +557,8 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
     obtain ⟨R'', _, _, _, Q, _, _, n, e' : _ → R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}),
       he', Q' : _ → Ideal (R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e})), _, _, hPQ, hQ', H'⟩ :=
       IH _ this (R := R') (S := R' ⊗[R] S ⧸ Ideal.span {e}) P rfl
-    change ∀ (P'' : Ideal (R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}))), P''.IsPrime → P''.LiesOver Q →
-      e' (Fin.last n) ∈ P'' ∧ ∀ (i : Fin n), e' i.castSucc ∉ P'' → P'' = Q' i at H'
-    letI : Algebra R R'' := .compHom _ (algebraMap R R')
-    haveI : IsScalarTower R R' R'' := .of_algebraMap_eq' rfl
+    let : Algebra R R'' := .compHom _ (algebraMap R R')
+    have : IsScalarTower R R' R'' := .of_algebraMap_eq' rfl
     let φ := Algebra.TensorProduct.map (Algebra.ofId R' R'') (AlgHom.id R S)
     let e₁ : R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}) ≃ₐ[R''] (R'' ⊗[R] S ⧸ Ideal.span {φ e}) :=
       tensorQuotientTensorEquiv (R'' := R'') e
@@ -574,8 +572,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
       ((CompleteOrthogonalIdempotents.equiv (finSuccEquiv _)).mpr he'') rfl
       (Q' · |>.comap (e₁.symm.toAlgHom.comp (Ideal.Quotient.mkₐ _ _))) hPQ
       (fun i ↦ by rw [Function.comp_def]; simpa [← hψe''] using hQ' i) ?_
-    simp only [Function.comp_apply, finSuccEquiv_zero,
-      show finSuccEquiv (n + 1) (Fin.last (n + 1)) = Fin.last n from rfl, Fin.castSucc_succ,
+    simp only [Function.comp_apply, finSuccEquiv_zero, finSuccEquiv_last, Fin.castSucc_succ,
       finSuccEquiv_succ]
     intro P'' heP'' _ _
     have : (P''.map (Ideal.Quotient.mk (.span {φ e}))).IsPrime :=
@@ -594,6 +591,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
       Ideal.mem_map_span_singleton_iff_of_isIdempotentElem (he.map φ),
       Ideal.IsPrime.mul_mem_left_iff hP''] at this
     refine ⟨this.1, fun i hi ↦ (this.2 i hi).symm ▸ ?_⟩
+    -- TODO: clean-up when `Ideal.comap` is refactored to take a `RingHom`
     change _ = Ideal.comap (Ideal.Quotient.mk _) (Ideal.comap (e₁.symm.trans e₁).toRingHom _)
     simp only [AlgEquiv.symm_trans_self, RingEquiv.toRingHom_eq_coe,
       AlgEquiv.toRingEquiv_toRingHom, AlgEquiv.refl_toRingHom, Ideal.comap_id]
@@ -601,12 +599,14 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
     simpa [left_eq_sup, ← RingHom.ker_eq_comap_bot, Ideal.span_le] using heP''
 
 /--
-If `S` is finite over `R`, and `p` is a prime of `R`, then there exists a etale neighborhood
+If `S` is finite over `R`, and `p` is a prime of `R`, then there exists an étale neighborhood
 `(R', P)` of `p` with `κ(p) = κ(P)` such that `R' ⊗[R] S ≃ₐ[R'] R₁ × ... × Rₙ × A`,
 each `Rᵢ` has a unique prime `Pᵢ` lying over `P`, and no other prime in `R' ⊗[R] S` lies over `P`.
 
-This is merely a iterated application of `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`.
-This is weaker than the corresponding statement of stacks project, and the only reason is that
+This is merely an iterated application of `exists_etale_isIdempotentElem_forall_liesOver_eq`.
+This is weaker than the corresponding statement of stacks project (in particular we asked for
+`Module.Finite` instead of quasi finite when localized at `p`, so that we don't need to keep
+track of this when passing to quotients and tensor products), and the only reason is that
 the corresponding stronger statement is even harder to state and even more annoying to prove.
 -/
 @[stacks 00UL]

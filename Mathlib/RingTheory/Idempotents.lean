@@ -479,7 +479,9 @@ noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem
   AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
     RingHom.prod_bijective_of_isIdempotentElem he hf hef₁ hef₂
 
-/-- One can lift complete orthogonal idempotents of `R/e` to get one on `R`. -/
+/-- One can lift a family of complete orthogonal idempotents of `R/e₀` to get one on `R`.
+
+Note that the lemma itself is stated in terms of surjections instead for syntactic generality. -/
 lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
     (f : R →+* S) (e₀ : R) (he₀ : IsIdempotentElem e₀) (hfe₀ : RingHom.ker f = .span {e₀})
     (e : I → S) (he : CompleteOrthogonalIdempotents e) (he : ∀ i, e i ∈ f.range) :
