@@ -165,7 +165,7 @@ lemma X_isZero_of_card_generators_lt {ι : Type*} [Finite ι] [LinearOrder ι] (
     (exteriorPower.subsingleton_of_card_generators_le g hg i hi)
 
 lemma ofList_X_isZero_of_length_lt (l : List R) (i : ℕ) (hi : l.length < i) :
-    IsZero ((ofList l).X i) := X_isZero_of_card_generators_le _
+    IsZero ((ofList l).X i) := X_isZero_of_card_generators_lt _
   (Pi.basisFun R (Fin l.length)) (Pi.basisFun R (Fin l.length)).span_eq i
   (by simpa [Nat.card_eq_fintype_card] using hi)
 
