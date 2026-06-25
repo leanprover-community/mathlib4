@@ -143,9 +143,7 @@ haveI : FiniteDimensional 𝕜 K := Module.finite_of_finrank_pos (by lia)
 /-- If a nonzero vector `w` and a vector `u` are both orthogonal to the same nonzero vector `v`
 in a two-dimensional inner product space, then `u` lies in the span of `w`. -/
 theorem mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero
-    {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [Fact (finrank 𝕜 E = 2)] {u v w : E}
-    (hv : v ≠ 0) (hw : w ≠ 0)
+    [Fact (finrank 𝕜 E = 2)] {u v w : E} (hv : v ≠ 0) (hw : w ≠ 0)
     (huv : ⟪v, u⟫_𝕜 = 0) (hwv : ⟪v, w⟫_𝕜 = 0) :
     u ∈ Submodule.span 𝕜 {w} := by
   haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ 1
