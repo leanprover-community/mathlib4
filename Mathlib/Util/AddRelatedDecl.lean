@@ -97,7 +97,7 @@ register_option linter.generateName : Bool := {
   declaration name is equal to the automatically generated name" }
 
 /-- Modify a name `name` to have a given (optional) suffix:
-- if `suffix` is `some val` and `val` is in the root namespace, replace the whole name by `val`
+- if `suffix` is `some val` and `val` is in the `_root_` namespace, replace the whole name by `val`
   (without the `_root_` prefix),
 - if `suffix` has some other value of depth `d`, replace the last `d` components of `name` by `val`,
 - otherwise, return `name`
