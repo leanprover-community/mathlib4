@@ -79,6 +79,11 @@ theorem prod_mapRange_index {f : M → M'} {hf : f 0 = 0} {g : α →₀ M} {h :
   Finset.prod_subset support_mapRange fun _ _ H => by rw [notMem_support_iff.1 H, h0]
 
 @[to_additive (attr := simp)]
+lemma prod_onFinset (s : Finset α) (f : α → M) (hf) (g : α → M → N) (hg : ∀ i ∈ s, g i 0 = 1) :
+    (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
+  prod_of_support_subset _ support_onFinset_subset _ hg
+
+@[to_additive (attr := simp)]
 theorem prod_zero_index {h : α → M → N} : (0 : α →₀ M).prod h = 1 :=
   rfl
 
@@ -174,11 +179,25 @@ theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [Submono
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
--- Note: Using `gcongr` since `congr` doesn't accept this lemma.
-@[to_additive (attr := gcongr)]
+-- Note: Using `gcongr only` since `congr` doesn't accept this lemma.
+@[to_additive (attr := gcongr only)]
 theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.support, g1 x (f x) = g2 x (f x)) :
     f.prod g1 = f.prod g2 :=
   Finset.prod_congr rfl h
+
+/-- The product over two finsupps agree if the functions agree and are well-behaved within the
+shared support. -/
+@[to_additive (attr := gcongr only)
+/-- The sum over two finsupps agree if the functions agree and are well-behaved within the
+shared support. -/]
+theorem prod_congr_of_eq_on_union [DecidableEq α] {f1 f2 : α →₀ M} {g1 g2 : α → M → N}
+    (h : ∀ x ∈ f1.support ∪ f2.support, g1 x (f1 x) = g2 x (f2 x))
+    (h1 : ∀ x ∈ f1.support ∪ f2.support, g1 x 0 = 1)
+    (h2 : ∀ x ∈ f1.support ∪ f2.support, g2 x 0 = 1) :
+    f1.prod g1 = f2.prod g2 := by
+  rw [Finsupp.prod_of_support_subset f1 Finset.subset_union_left _ h1,
+    Finsupp.prod_of_support_subset f2 Finset.subset_union_right _ h2]
+  exact Finset.prod_congr rfl h
 
 @[to_additive]
 theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
@@ -606,10 +625,6 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
   induction g.support using Finset.induction with
   | empty => simp [h0]
   | insert i s hi ih => simp [sum_insert hi, hadd, ih]
-
-@[deprecated "use instead `sum_finsetSum_index` (with equality reversed)" (since := "2025-11-07")]
-theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
-    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := (sum_finsetSum_index h0 h1).symm
 
 section
 

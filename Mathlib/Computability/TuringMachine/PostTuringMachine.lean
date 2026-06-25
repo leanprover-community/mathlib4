@@ -768,13 +768,13 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
       (Tape.move Dir.left)^[l₁.length]
       (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       Tape.mk' L' (ListBlank.append (List.Vector.toList (enc a)) R') by
-    simpa only [List.length_reverse, Vector.toList_length] using this (List.reverse_reverse _).symm
+    simpa only [List.length_reverse, Vector.toList_length] using! this (List.reverse_reverse _).symm
   intro _ _ l₁ l₂ e
   induction l₁ generalizing l₂ with
   | nil => cases e; rfl
   | cons b l₁ IH =>
     simp only [List.length, iterate_succ_apply]
-    convert IH e
+    convert! IH e
     simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
 
 theorem trTape'_move_right (L R : ListBlank Γ) :
@@ -863,7 +863,7 @@ theorem tr_respects :
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
         trTape'_move_left enc0]
-      simpa using IH ..
+      simpa using! IH ..
     | load a q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH

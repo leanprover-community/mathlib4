@@ -34,6 +34,7 @@ namespace Adjunction
 
 attribute [local simp] bicategoricalComp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction in the bicategorical sense attached to an adjunction between functors. -/
 @[simps]
@@ -41,6 +42,7 @@ def toCat : Bicategory.Adjunction F.toCatHom G.toCatHom where
   unit := .ofNatTrans adj.unit
   counit := .ofNatTrans adj.counit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The adjunction of functors corresponding to an adjunction in the bicategory `Cat`. -/
 @[simps]
 def ofCat {C D : Cat} {F : C ⟶ D} {G : D ⟶ C}
@@ -62,6 +64,7 @@ lemma toCat_ofCat
 lemma ofCat_toCat :
     Adjunction.ofCat adj.toCat = adj := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma toCat_comp_toCat : adj.toCat.comp adj'.toCat = (adj.comp adj').toCat := by
   cat_disch
@@ -77,6 +80,7 @@ lemma Adjunction.ofCat_id (C : Cat.{v, u}) :
     Adjunction.ofCat (Adjunction.id C) = CategoryTheory.Adjunction.id :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma Adjunction.ofCat_comp {C D E : Cat.{v, u}}
     {F : C ⟶ D} {G : D ⟶ C} (adj : F ⊣ G)
     {F' : D ⟶ E} {G' : E ⟶ D} (adj' : F' ⊣ G') :
@@ -84,6 +88,7 @@ lemma Adjunction.ofCat_comp {C D E : Cat.{v, u}}
   ext
   simp [bicategoricalComp]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma toNatTrans_mateEquiv {C D E F : Cat}
     {G : C ⟶ E} {H : D ⟶ F} {L₁ : C ⟶ D} {R₁ : D ⟶ C} {L₂ : E ⟶ F} {R₂ : F ⟶ E}
     (adj₁ : Bicategory.Adjunction L₁ R₁) (adj₂ : Bicategory.Adjunction L₂ R₂)
@@ -93,6 +98,7 @@ lemma toNatTrans_mateEquiv {C D E F : Cat}
   ext X
   simp [mateEquiv, Adjunction.homEquiv₁, Adjunction.homEquiv₂]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma toNatTrans_conjugateEquiv {C D : Cat}
     {L₁ L₂ : C ⟶ D} {R₁ R₂ : D ⟶ C}
