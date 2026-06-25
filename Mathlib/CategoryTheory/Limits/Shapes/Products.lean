@@ -967,6 +967,27 @@ instance [HasColimit F] [HasCoproduct F.obj] : Epi (Sigma.desc (colimit.ι F)) w
 
 end
 
+section Thin
+
+variable [Quiver.IsThin C] {J : Type*} [Category* J] {K : J ⥤ C}
+
+/-- If `K : J ⥤ C` is a diagram with `C` thin, a cone for `K` is limiting
+if and only if the cone point is the product of the components. -/
+def isLimitEquivFanOfIsThin (c : Cone K) : IsLimit c ≃ IsLimit (Fan.mk c.pt c.π.app) where
+  toFun hc := Fan.IsLimit.mk _ (fun s ↦ hc.lift { pt := s.pt, π.app j := s.proj j })
+    (by subsingleton) (by subsingleton)
+  invFun h := { lift s := Fan.IsLimit.lift h s.π.app }
+
+/-- If `K : J ⥤ C` is a diagram with `C` thin, a cone for `K` is limiting
+if and only if the cone point is the product of the components. -/
+def isColimitEquivCofanOfIsThin (c : Cocone K) :
+    IsColimit c ≃ IsColimit (Cofan.mk c.pt c.ι.app) where
+  toFun hc := Cofan.IsColimit.mk _ (fun s ↦ hc.desc { pt := s.pt, ι.app j := s.inj j })
+    (by subsingleton) (by subsingleton)
+  invFun h := { desc s := Cofan.IsColimit.desc h s.ι.app }
+
+end Thin
+
 section Fubini
 
 variable {ι ι' : Type*} {X : ι → ι' → C}
