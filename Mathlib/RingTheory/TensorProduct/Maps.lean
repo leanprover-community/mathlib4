@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.RingTheory.TensorProduct.Basic
 
+import Mathlib.Tactic.Algebraize
+
 /-!
 # Maps between tensor products of R-algebras
 
@@ -504,7 +506,7 @@ def mapRingHom : S ⊗[R] T →+* S' ⊗[R'] T' :=
 @[simp]
 lemma mapRingHom_tmul (s : S) (t : T) : mapRingHom fR fS fT HS HT (s ⊗ₜ t) = fS s ⊗ₜ fT t := by
   trans (fS s * 1 : S') ⊗ₜ[R'] (1 * fT t : T')
-  · dsimp [mapRingHom, lift_tmul]; rfl
+  · dsimp [mapRingHom, lift_tmul, algebraMap]
   · simp
 
 @[simp]
