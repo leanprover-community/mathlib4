@@ -993,7 +993,7 @@ lemma measurableSet_notMem_finset (a : α) : MeasurableSet {s : Finset α | a �
 variable [Countable α]
 
 instance Finset.instMeasurableSingletonClass : MeasurableSingletonClass (Finset α) :=
-  .mk (fun S ↦ (measurableSet_finset_iff _).mpr ⟨ {↑S}, by simp, by ext; simp ⟩)
+  .mk fun S ↦ (measurableSet_finset_iff _).mpr ⟨ {↑S}, by aesop ⟩
 
 end Finset
 
