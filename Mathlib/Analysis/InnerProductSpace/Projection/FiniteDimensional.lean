@@ -130,16 +130,6 @@ theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E =
   exact finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
 
-/-- A submodule of finrank 1 is spanned by any of its nonzero elements. -/
-theorem eq_span_singleton_of_mem_of_finrank_eq_one
-    {𝕜 E : Type*} [DivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    {K : Submodule 𝕜 E} {w : E}
-    (hK : finrank 𝕜 K = 1) (hw : w ∈ K) (hw0 : w ≠ 0) :
-    K = span 𝕜 {w} := by
-haveI : FiniteDimensional 𝕜 K := Module.finite_of_finrank_pos (by lia)
-  exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
-    (by rw [hK, finrank_span_singleton hw0])
-
 /-- If a nonzero vector `w` and a vector `u` are both orthogonal to the same nonzero vector `v`
 in a two-dimensional inner product space, then `u` lies in the span of `w`. -/
 theorem mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero
