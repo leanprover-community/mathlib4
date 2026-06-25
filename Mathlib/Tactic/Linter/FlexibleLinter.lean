@@ -9,6 +9,8 @@ public meta import Lean.Elab.Command
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Server.InfoUtils
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Term
 
@@ -32,6 +34,7 @@ directed graph, where
 * two hypotheses/goals are connected by an arrow if there is a tactic that modifies the source
   of the arrow into the target (this does not apply well to all tactics, but it does apply to
   a large number of them).
+
 With this in mind, a tactic like `rw [lemma]` takes a *very specific* input and return a
 *very predictable* output.
 Such a tactic is "rigid". Any tactic is rigid, unless it is in `flexible` or `stoppers`.
@@ -311,6 +314,7 @@ def flexible : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
+    ``Lean.Parser.Tactic.simpaUsingBang,
     ``Lean.Parser.Tactic.dsimp,
     ``Lean.Parser.Tactic.constructor,
     ``Lean.Parser.Tactic.congr,

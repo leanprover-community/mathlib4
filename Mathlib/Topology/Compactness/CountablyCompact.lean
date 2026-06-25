@@ -108,12 +108,12 @@ theorem IsCountablyCompact.elim_directed_cover [Countable ι] [Nonempty ι]
     (hAU : A ⊆ ⋃ i, U i) (hdU : Directed (· ⊆ ·) U) : ∃ i, A ⊆ U i := by
   by_contra! h
   have hdir : Directed (· ≥ ·) fun i => 𝓟 (A \ U i) :=
-    fun i j => (hdU i j).imp fun _ ⟨hi, hj⟩ => ⟨principal_mono.mpr <| diff_subset_diff_right hi,
-      principal_mono.mpr <| diff_subset_diff_right hj⟩
+    fun i j => (hdU i j).imp fun _ ⟨hi, hj⟩ => ⟨principal_mono.mpr <| sdiff_subset_sdiff_right hi,
+      principal_mono.mpr <| sdiff_subset_sdiff_right hj⟩
   have : NeBot (⨅ i, 𝓟 (A \ U i)) :=
-    iInf_neBot_of_directed' hdir fun i => (diff_nonempty.mpr (h i)).principal_neBot
+    iInf_neBot_of_directed' hdir fun i => (sdiff_nonempty.mpr (h i)).principal_neBot
   have hle : (⨅ i, 𝓟 (A \ U i)) ≤ 𝓟 A :=
-    iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr diff_subset
+    iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr sdiff_subset
   rcases hA hle with ⟨a, ha, hac⟩
   rcases mem_iUnion.mp (hAU ha) with ⟨k, hk⟩
   exact closure_minimal (fun _ hx => hx.2) (hUo k).isClosed_compl
@@ -250,7 +250,7 @@ instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
     refine hx a φ hφ1 (tendsto_atTop_nhds.2 fun U ha hUo => ⟨0, fun n _ => ?_⟩)
     simpa using mem_closure_iff.1 (hφ2 n) U hUo ha
   have : a ∉ ⋃ i, closure {x (i + (k + 1))} := by
-    simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using
+    simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using!
       fun i hi => hk i (Nat.lt_of_lt_of_eq hi rfl)
   apply this
   suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from
@@ -261,9 +261,9 @@ instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
   · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
     exact iUnion_mono fun i => subset_closure
 
-/-- If `f : X → Y` is an embedding map, the image `f '' s` of a set `s` is sequentially compact
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is sequentially compact
   if and only if `s` is sequentially compact. -/
-theorem Topology.IsEmbedding.isSeqCompact_iff {f : E → F} (hf : IsEmbedding f) :
+theorem Topology.IsInducing.isSeqCompact_iff {f : E → F} (hf : IsInducing f) :
     IsSeqCompact A ↔ IsSeqCompact (f '' A) where
   mp hA x hx := by
     choose y hy using hx
@@ -340,7 +340,7 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
     · -- Case 2: Infinite range
       obtain ⟨a, haA, hacc⟩ := h (Set.range x ∩ A) inter_subset_right <| by
         rw [eventually_iff, mem_cofinite, compl_setOf] at hx
-        exact hfin.inter_of_finite_diff (hx.image x |>.subset (by grind))
+        exact hfin.inter_of_finite_sdiff (hx.image x |>.subset (by grind))
       refine ⟨a, haA, ?_⟩
       simp_rw [mapClusterPt_iff_frequently, frequently_cofinite_iff_infinite]
       exact fun s hs ↦ Infinite.of_accPt (hacc.nhds_inter hs) |>.mono (by grind) |>.of_image x
@@ -358,9 +358,12 @@ theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
   · exact ⟨∅, by simp_all⟩
 
 /-- A countably compact Lindelöf space is compact. -/
-theorem LindelofSpace.CompactSpace {X : Type*} [TopologicalSpace X]
+theorem LindelofSpace.compactSpace {X : Type*} [TopologicalSpace X]
     [LindelofSpace X] [h : CountablyCompactSpace X] : CompactSpace X where
   isCompact_univ := isLindelof_univ.isCompact h.isCountablyCompact_univ
+
+@[deprecated (since := "2026-05-19")]
+alias LindelofSpace.CompactSpace := LindelofSpace.compactSpace
 
 /-- In a Hereditarily Lindelöf space, a countably compact set is compact. -/
 theorem IsCountablyCompact.isCompact [HereditarilyLindelofSpace E]

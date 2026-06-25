@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Metrizable.Basic
 
@@ -121,7 +121,6 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   suffices ∀ n, length l = n → d x y ≤ 2 * (zipWith d (x :: l) (l ++ [y])).sum by exact this _ rfl
   intro n hn
   induction n using Nat.strong_induction_on generalizing x y l with | h n ihn =>
-  simp only at ihn
   subst n
   set L := zipWith d (x::l) (l ++ [y])
   have hL_len : length L = length l + 1 := by simp [L]

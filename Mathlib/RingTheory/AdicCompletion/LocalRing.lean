@@ -6,19 +6,37 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Module.SpanRankOperations
-public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.AdicCompletion.Completeness
-public import Mathlib.RingTheory.AdicCompletion.Exactness
-public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Basic Properties of Complete Local Ring
 
-In this file we prove that for `I` an finitely generated ideal of `R`,
-`AdicCompletion I M` is adic complete with respect to `I`. Then we use this to deduce for
-Noetherian local ring `R`, `AdicCompletion (maximalIdeal R) R` is always a complete local ring.
+In this file we prove that for local ring `R` with finitely generated maximal ideal,
+`AdicCompletion (IsLocalRing.maximalIdeal R) R` is local ring with maximal ideal equal to
+`IsLocalRing.maximalIdeal R` mapped by algebra map. Furthermore, it is complete with respect to
+its maximal ideal.
+
+As a corollary, for Noetherian local ring `R`, `AdicCompletion (maximalIdeal R) R` is always
+a complete Noetherian local ring.
+
+Most results needing finitely generation of maximal ideal have a version for Noetherian ring without
+this side condition for convenience.
+
+# Main Results
+
+* `AdicCompletion.isLocalRing_of_fg` : for a local ring `R` with finitely generated maximal ideal,
+  its completion with respect to `IsLocalRing.maximalIdeal R` is local ring.
+
+* `AdicCompletion.maximalIdeal_eq_map_of_fg` : for a local ring `R` with finitely generated
+  maximal ideal, the maximal ideal of its completion with respect to `IsLocalRing.maximalIdeal R`
+  is equal to `IsLocalRing.maximalIdeal R` mapped by algebra map.
+
+* `AdicCompletion.isAdicComplete_of_fg` : for a local ring `R` with finitely generated
+  maximal ideal, `AdicCompletion (IsLocalRing.maximalIdeal R) R` itself is complete with respect to
+  its maximal ideal.
+
+* `AdicCompletion.spanFinrank_maximalIdeal_eq` : for Noetherian local ring `R`, minimal number of
+  generators of maximal ideal of `R` and `AdicCompletion (IsLocalRing.maximalIdeal R) R` are equal.
 
 -/
 
@@ -36,64 +54,51 @@ theorem isLocalRing_of_isAdicComplete_maximal (m : Ideal R) [m.IsMaximal] [IsAdi
 
 open IsLocalRing
 
+namespace AdicCompletion
+
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
-lemma AdicCompletion.isAdicComplete_self (fg : I.FG) :
+lemma isAdicComplete_self (fg : I.FG) :
     IsAdicComplete (I.map (algebraMap R (AdicCompletion I R))) (AdicCompletion I R) :=
   (IsAdicComplete.map_algebraMap_iff _ _).mpr (AdicCompletion.isAdicComplete fg)
 
-lemma AdicCompletion.isMaximal_map_of_le (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG) :
+lemma isMaximal_map_of_le (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG) :
     (m.map (algebraMap R (AdicCompletion I R))).IsMaximal := by
-  have compeq : (AdicCompletion.evalOneₐ I).toRingHom.comp (algebraMap R (AdicCompletion I R)) =
-    (Ideal.Quotient.mk I) := rfl
-  have kerle : RingHom.ker (evalOneₐ I).toRingHom ≤ m.map (algebraMap R (AdicCompletion I R)) := by
-    intro x hx
-    have : x ∈ (AdicCompletion.eval I R 1).ker := by
-      have eq : I ^ 1 * ⊤ = I := by simp
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.mem_ker, RingHom.coe_coe, ← factorₐ_evalₐ_one,
-        pow_one, smul_eq_mul, mul_top, le_refl, ← factor_eval_eq_evalₐ, Submodule.mapQ_eq_factor,
-        Submodule.factor_eq_factor, factor_comp_apply] at hx
-      have : (factor (le_of_eq eq.symm)) ((factor (le_of_eq eq)) ((eval I R 1) x)) = 0 := by
-        simp [hx]
-      simpa using this
-    simp only [smul_eq_mul, ← pow_smul_top_eq_ker_eval fg, pow_one, smul_top_eq_map,
-      Submodule.restrictScalars_mem] at this
-    exact Ideal.map_mono le this
-  have : m.map (algebraMap R (AdicCompletion I R)) = (m.map (Ideal.Quotient.mk I)).comap
+  have mapeq : m.map (algebraMap R (AdicCompletion I R)) = (m.map (Ideal.Quotient.mk I)).comap
     (AdicCompletion.evalOneₐ I).toRingHom := by
-    rw [← compeq, ← Ideal.map_map,
+    rw [← AdicCompletion.evalOneₐ_comp_algebraMap_eq_mk, ← Ideal.map_map,
       Ideal.comap_map_of_surjective' (evalOneₐ I).toRingHom (evalOneₐ_surjective I),
-      eq_comm, sup_eq_left]
-    exact kerle
-  rw [this]
+      eq_comm, sup_eq_left, AdicCompletion.ker_evalOneₐ_eq_map I fg]
+    exact Ideal.map_mono le
   have : (Ideal.map (Ideal.Quotient.mk I) m).IsMaximal :=
     Ideal.IsMaximal.map_of_surjective_of_ker_le Ideal.Quotient.mk_surjective (by simpa using le)
+  rw [mapeq]
   exact Ideal.comap_isMaximal_of_surjective _ (evalOneₐ_surjective I)
 
-lemma AdicCompletion.isLocalRing_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
-    IsLocalRing (AdicCompletion (maximalIdeal R) R) :=
-  @isLocalRing_of_isAdicComplete_maximal _ _
+lemma isLocalRing_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
+    IsLocalRing (AdicCompletion (maximalIdeal R) R) := by
+  have := AdicCompletion.isMaximal_map_of_le _ _ (le_refl _) fg
+  have := AdicCompletion.isAdicComplete_self _ fg
+  exact isLocalRing_of_isAdicComplete_maximal
     ((maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)))
-    (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _) fg)
-    (AdicCompletion.isAdicComplete_self _ fg)
 
 instance [IsNoetherianRing R] [IsLocalRing R] : IsLocalRing (AdicCompletion (maximalIdeal R) R) :=
   AdicCompletion.isLocalRing_of_fg (fg_of_isNoetherianRing (maximalIdeal R))
 
-lemma AdicCompletion.maximalIdeal_eq_map_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
-    letI := AdicCompletion.isLocalRing_of_fg fg
+lemma maximalIdeal_eq_map_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
+    haveI := AdicCompletion.isLocalRing_of_fg fg
     maximalIdeal (AdicCompletion (maximalIdeal R) R) =
     (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
-  letI := AdicCompletion.isLocalRing_of_fg fg
+  haveI := AdicCompletion.isLocalRing_of_fg fg
   (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _) fg)).symm
 
-lemma AdicCompletion.maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
+lemma maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
     maximalIdeal (AdicCompletion (maximalIdeal R) R) =
     (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
   (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _)
     (maximalIdeal R).fg_of_isNoetherianRing)).symm
 
-lemma AdicCompletion.mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] [IsLocalRing R]
+lemma mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] [IsLocalRing R]
     (x : AdicCompletion (maximalIdeal R) R) :
     x ∈ maximalIdeal (AdicCompletion (maximalIdeal R) R) ↔ x.1 1 = 0 := by
   have : (AdicCompletion.eval (maximalIdeal R) R 1).ker =
@@ -102,9 +107,9 @@ lemma AdicCompletion.mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] 
   rw [maximalIdeal_eq_map, ← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map]
   simp [← this, eval]
 
-lemma AdicCompletion.algebraMap_isLocalHom_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
+lemma algebraMap_isLocalHom_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
     IsLocalHom (algebraMap R (AdicCompletion (maximalIdeal R) R)) := by
-  let _ := AdicCompletion.isLocalRing_of_fg fg
+  have := AdicCompletion.isLocalRing_of_fg fg
   apply ((IsLocalRing.local_hom_TFAE _).out 0 2).mpr
   simp [AdicCompletion.maximalIdeal_eq_map_of_fg fg]
 
@@ -112,8 +117,8 @@ instance [IsNoetherianRing R] [IsLocalRing R] :
     IsLocalHom (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
   AdicCompletion.algebraMap_isLocalHom_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
-lemma AdicCompletion.isAdicComplete_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
-    letI := AdicCompletion.isLocalRing_of_fg fg
+lemma isAdicComplete_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
+    haveI := AdicCompletion.isLocalRing_of_fg fg
     IsAdicComplete (maximalIdeal (AdicCompletion (maximalIdeal R) R))
       (AdicCompletion (maximalIdeal R) R) := by
   rw [AdicCompletion.maximalIdeal_eq_map_of_fg fg]
@@ -123,7 +128,7 @@ instance [IsNoetherianRing R] [IsLocalRing R] : IsAdicComplete
     (maximalIdeal (AdicCompletion (maximalIdeal R) R)) (AdicCompletion (maximalIdeal R) R) :=
   AdicCompletion.isAdicComplete_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
-lemma AdicCompletion.residueField_map_bijective_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
+lemma residueField_map_bijective_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
     haveI := AdicCompletion.isLocalRing_of_fg fg
     haveI := AdicCompletion.algebraMap_isLocalHom_of_fg fg
     Function.Bijective
@@ -143,12 +148,12 @@ lemma AdicCompletion.residueField_map_bijective_of_fg [IsLocalRing R] (fg : (max
   simpa
 
 variable (R) in
-lemma AdicCompletion.residueField_map_bijective [IsNoetherianRing R] [IsLocalRing R] :
+lemma residueField_map_bijective [IsNoetherianRing R] [IsLocalRing R] :
     Function.Bijective (IsLocalRing.ResidueField.map
       (algebraMap R (AdicCompletion (maximalIdeal R) R))) :=
     AdicCompletion.residueField_map_bijective_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
-lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRing R] :
+lemma spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRing R] :
     (maximalIdeal (AdicCompletion (maximalIdeal R) R)).spanFinrank =
     (maximalIdeal R).spanFinrank := by
   have fg : (maximalIdeal R).FG := fg_of_isNoetherianRing (maximalIdeal R)
@@ -192,3 +197,5 @@ lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRi
   rw [IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg fg,
     IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg fg', eq_comm]
   simp [Module.finrank, CotangentSpace, rkeq]
+
+end AdicCompletion

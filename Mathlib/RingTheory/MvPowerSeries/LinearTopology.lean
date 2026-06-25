@@ -128,7 +128,7 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
     convert! hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
   · intro ⟨I, d⟩ hI
     refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩
-    simpa [basis, coeff_apply, Iic, Set.pi] using subset_rfl
+    simpa [basis, coeff_apply, Iic, Set.pi] using! subset_rfl
 
 /-- The topology on `MvPowerSeries` is a left linear topology
   when the ring of coefficients has a linear topology. -/
@@ -168,7 +168,7 @@ theorem isTopologicallyNilpotent_iff_constantCoeff
   refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff⟩
   replace H : Tendsto (fun n ↦ constantCoeff (f ^ n)) atTop (nhds 0) :=
     continuous_constantCoeff R |>.tendsto' 0 0 constantCoeff_zero |>.comp H
-  simpa only [map_pow] using H
+  simpa only [map_pow] using! H
 
 end LinearTopology
 

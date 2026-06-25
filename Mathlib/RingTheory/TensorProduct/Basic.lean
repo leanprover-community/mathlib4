@@ -269,16 +269,15 @@ theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[
   | succ k ih => simp [pow_succ, ih]
 
 /-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
-@[simps]
+@[simps!]
 def includeLeftRingHom : A →+* A ⊗[R] B where
-  toFun a := a ⊗ₜ 1
-  map_zero' := by simp
-  map_add' := by simp [add_tmul]
+  __ := (AlgebraTensorModule.mk R R A B).flip 1 |>.toAddMonoidHom
   map_one' := rfl
   map_mul' := by simp
 
 variable [CommSemiring S] [Algebra S A]
 
+set_option backward.defeqAttrib.useBackward true in
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { commutes' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
@@ -317,18 +316,22 @@ theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
     (includeLeft : A →ₐ[S] A ⊗[R] B) a = a ⊗ₜ 1 :=
   rfl
 
+@[simp] theorem toLinearMap_includeLeft [SMulCommClass R S A] :
+    (includeLeft : A →ₐ[S] A ⊗[R] B).toLinearMap = (AlgebraTensorModule.mk R S A B).flip 1 := rfl
+
 /-- The algebra morphism `B →ₐ[R] A ⊗[R] B` sending `b` to `1 ⊗ₜ b`. -/
 def includeRight : B →ₐ[R] A ⊗[R] B where
-  toFun b := 1 ⊗ₜ b
-  map_zero' := by simp
-  map_add' := by simp [tmul_add]
+  __ := AlgebraTensorModule.mk R R A B 1 |>.toAddMonoidHom
   map_one' := rfl
   map_mul' := by simp
-  commutes' r := by simp only [algebraMap_apply']
+  commutes' r := by simp [algebraMap_eq_smul_one', smul_tmul]
 
 @[simp]
 theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b = 1 ⊗ₜ b :=
   rfl
+
+@[simp] theorem toLinearMap_includeRight :
+    (includeRight : B →ₐ[R] A ⊗[R] B).toLinearMap = AlgebraTensorModule.mk R R A B 1 := rfl
 
 theorem includeLeftRingHom_comp_algebraMap :
     (includeLeftRingHom.comp (algebraMap R A) : R →+* A ⊗[R] B) =

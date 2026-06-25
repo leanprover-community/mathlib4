@@ -13,14 +13,15 @@ public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 # The extension adjoining all p-th roots to a field of characteristic p.
 
 In this file, we introduce the field extension adjoining all `p`-th roots to a
-field of characteristic `p`.
+field of (exponential) characteristic `p`.
 
 # Main definitions and results
 
-* `adjoinPthRoots`: the field extension adjoining all `p`-th roots, defined as the field itself,
-  with the algebra map being the frobenius map.
-* `adjoinPthRootsPthRoot`: the ring equivalence with underlying identity map, mapping an element
-  to its unique `p`-th root in `adjoinPthRoots`.
+* `AdjoinPthRoots`: the field extension adjoining all `p`-th roots to a field of
+  (exponential) characteristic `p`.
+* `AdjoinPthRoots.root`: for `k` a field of (exponential) characteristic `p`, the `p`-th root map
+  `k → AdjoinPthRoots k`, mapping an element to its unique `p`-th root in `AdjoinPthRoots`,
+  as a `RingEquiv`.
 
 -/
 
@@ -28,30 +29,39 @@ public section
 
 variable (k : Type*) [Field k]
 
-/-- Adjoining all `p`-th root to a field of characteristic `p`.
-It is defined as the field itself with algebra map being the frobenius map. -/
-@[nolint unusedArguments, expose]
-def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
+/-- Adjoining all `p`-th root to a field of (exponential) characteristic `p`. -/
+-- Note: It is defined as a typeclass synonym of the field `k` itself
+-- with a `k`-algebra structure given by the frobenius map.
+def AdjoinPthRoots := k
 
-variable (p : ℕ) [ExpChar k p]
+@[no_expose]
+noncomputable instance : Field (AdjoinPthRoots k) := inferInstanceAs (Field k)
 
-instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
+@[no_expose]
+noncomputable instance : Algebra k (AdjoinPthRoots k) := (frobenius k (ringExpChar k)).toAlgebra
 
-instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
+instance (p : ℕ) [ExpChar k p] : ExpChar (AdjoinPthRoots k) p := inferInstanceAs (ExpChar k p)
 
-/-- The equivalence `k ≃ adjoinPthRoots k p` with underlying map id. -/
-def adjoinPthRootsPthRoot : k ≃+* adjoinPthRoots k p := RingEquiv.refl k
+/-- For `k` a field of (exponential) characteristic `p`,
+the `p`-th root map `k → AdjoinPthRoots k`, as a `RingEquiv`. -/
+noncomputable def AdjoinPthRoots.root : k ≃+* AdjoinPthRoots k := RingEquiv.refl k
 
-lemma adjoinPthRootsPthRoot_apply_pow (x : k) :
-    (adjoinPthRootsPthRoot k p x) ^ p = algebraMap k (adjoinPthRoots k p) x := by
+variable {k} (p : ℕ) [ExpChar k p]
+
+@[simp]
+lemma AdjoinPthRoots.root_pow (x : k) :
+    (AdjoinPthRoots.root k x) ^ p = algebraMap k (AdjoinPthRoots k) x := by
+  rw [← ringExpChar.eq k p]
   rfl
 
-lemma adjoinPthRootsPthRoot_symm_apply_eq_pow (x : adjoinPthRoots k p) :
-    algebraMap k (adjoinPthRoots k p) ((adjoinPthRootsPthRoot k p).symm x) = x ^ p := by
+lemma AdjoinPthRoots.algebraMap_root_symm (x : AdjoinPthRoots k) :
+    algebraMap k (AdjoinPthRoots k) ((AdjoinPthRoots.root k).symm x) = x ^ p := by
+  rw [← ringExpChar.eq k p]
   rfl
 
-instance adjoinPthRoots_purelyInseparable : IsPurelyInseparable k (adjoinPthRoots k p) := by
+instance : IsPurelyInseparable k (AdjoinPthRoots k) := by
+  obtain ⟨p, hp⟩ := ExpChar.exists k
   rw [isPurelyInseparable_iff_pow_mem k p]
   intro x
-  use 1, (adjoinPthRootsPthRoot k p).symm x
-  simp [adjoinPthRootsPthRoot_symm_apply_eq_pow]
+  use 1, (AdjoinPthRoots.root k).symm x
+  simp [AdjoinPthRoots.algebraMap_root_symm p]
