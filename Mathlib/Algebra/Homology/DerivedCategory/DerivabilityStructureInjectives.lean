@@ -28,7 +28,15 @@ that it is a right derivability structure. (The proof proceeds by showing that
 up to equivalences of categories, this functor is the inclusion of the full
 subcategory of fibrant objects in the model category `CochainComplex.Plus C`.)
 
-UPDATE
+We also obtain a similar right derivability structure `HomotopyCategory.Plus.localizerMorphism`
+for the functor `HomotopyCategory.Plus (InjectiveObject C) ⥤ HomotopyCategory.Plus C`, where
+The target category is equipped with the class of quasi-isomorphisms while
+the source category `HomotopyCategory.Plus (InjectiveObject C)` is equipped
+with the class of isomorphisms (which is exactly the same as quasi-isomorphisms).
+The consequence is that any functor from the category `HomotopyCategory.Plus C`
+has a right derived functor, and we show that the unit natural transformation for
+such a derived functor is an isomorphism on objects coming from
+`HomotopyCategory.Plus (InjectiveObject C)`.
 
 -/
 
@@ -36,10 +44,10 @@ UPDATE
 
 universe w₁ w₂
 
-open HomotopicalAlgebra CategoryTheory Limits ZeroObject Category
+open HomotopicalAlgebra CategoryTheory Limits
 
-variable {C : Type*} [Category C] [Abelian C]
-  {H : Type*} [Category H]
+variable {C : Type*} [Category* C] [Abelian C]
+  {H : Type*} [Category* H]
 
 namespace CochainComplex.Plus
 
@@ -121,7 +129,6 @@ instance (K : FibrantObject (Plus C)) (n : ℤ) :
     Injective (K.obj.obj.X n) := by
   obtain ⟨K, hK⟩ := K
   rw [fibrantObjects, modelCategoryQuillen.isFibrant_iff] at hK
-  dsimp
   infer_instance
 
 variable (C) in
@@ -154,8 +161,7 @@ variable (C) in
 /-- The localizer morphism (relatively to quasi-isomorphisms) that is
 given by the equivalence of categories
 `CochainComplex.Plus (InjectiveObject C) ≌ FibrantObject (CochainComplex.Plus C)`. -/
-@[simps]
-def fibrantObjectLocalizerMorphism :
+abbrev fibrantObjectLocalizerMorphism :
     LocalizerMorphism ((quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
       (weakEquivalences (FibrantObject (Plus C))) where
   functor := (fibrantObjectEquivalence C).functor
@@ -163,10 +169,6 @@ def fibrantObjectLocalizerMorphism :
 
 instance : (fibrantObjectLocalizerMorphism C).IsInduced where
   inverseImage_eq := rfl
-
-set_option backward.defeqAttrib.useBackward true in
-instance : (fibrantObjectLocalizerMorphism C).functor.IsEquivalence := by
-  dsimp; infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (localizerMorphism C).IsRightDerivabilityStructure := by
@@ -187,8 +189,12 @@ end CochainComplex.Plus
 namespace HomotopyCategory.Plus
 
 variable (C) in
-@[simps]
-def localizerMorphism : LocalizerMorphism
+/-- The localizer morphism that is given by the "inclusion functor"
+`HomotopyCategory.Plus (InjectiveObject C) ⥤ HomotopyCategory.Plus C`.
+The target category is equipped with the class of quasi-isomorphisms while
+the source category `HomotopyCategory.Plus (InjectiveObject C)` is equipped
+with the class of isomorphisms (which is exactly the same as quasi-isomorphisms). -/
+abbrev localizerMorphism : LocalizerMorphism
   (MorphismProperty.isomorphisms (HomotopyCategory.Plus (InjectiveObject C)))
     (HomotopyCategory.Plus.quasiIso C) where
   functor := (InjectiveObject.ι C).mapHomotopyCategoryPlus
@@ -211,39 +217,12 @@ lemma isIso_quotient_map
     ← CochainComplex.IsKInjective.quasiIso_iff]
   rfl
 
-namespace isRightDerivabilityStructure
-
-open MorphismProperty
-
-variable (C) in
-@[simps]
-def L : LocalizerMorphism
-  ((CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
-      (isomorphisms (Plus (InjectiveObject C))) where
-  functor := HomotopyCategory.Plus.quotient (InjectiveObject C)
-  map _ _ f hf := (isIso_quotient_map f).2 hf
-
-instance : (L C).IsInduced where
-  inverseImage_eq := by ext; apply isIso_quotient_map
-
-variable (C) in
-set_option backward.isDefEq.respectTransparency false in
-@[simps]
-def R : LocalizerMorphism (CochainComplex.Plus.quasiIso C) (quasiIso C) where
-  functor := HomotopyCategory.Plus.quotient C
-  map := by
-    intro X Y f hf
-    simpa [quasiIso, quotient_map_mem_quasiIso_iff]
-
-instance : (R C).IsInduced where
-  inverseImage_eq := by ext; apply quotient_map_mem_quasiIso_iff
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexPlus_injectivesι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =
-    (homotopyEquivalences (InjectiveObject C) (ComplexShape.up ℤ)).inverseImage
+    (homotopyEquivalences (InjectiveObject C) (.up ℤ)).inverseImage
       (CochainComplex.Plus.ι (InjectiveObject C)) := by
   ext K L f
   simp [CochainComplex.Plus.quasiIso, Functor.mapCochainComplexPlus,
@@ -251,23 +230,16 @@ lemma inverseImage_quasiIso_mapCochainComplexPlus_injectivesι :
     CochainComplex.IsKInjective.quasiIso_iff,
     ← isIso_iff_of_reflects_iso _ ((InjectiveObject.ι C).mapHomotopyCategory (.up ℤ))]
 
-instance : (HomotopyCategory.Plus.quotient (InjectiveObject C)).IsLocalization
+instance :
+    (HomotopyCategory.Plus.quotient (InjectiveObject C)).IsLocalization
       ((CochainComplex.Plus.quasiIso C).inverseImage
       (InjectiveObject.ι C).mapCochainComplexPlus) := by
   rw [inverseImage_quasiIso_mapCochainComplexPlus_injectivesι]
   infer_instance
 
-instance : (L C).IsLocalizedEquivalence := by
-  have :
-      ((L C).functor ⋙ 𝟭 (Plus (InjectiveObject C))).IsLocalization
-        ((CochainComplex.Plus.quasiIso C).inverseImage
-          (InjectiveObject.ι C).mapCochainComplexPlus) :=
-    inferInstanceAs ((HomotopyCategory.Plus.quotient (InjectiveObject C)).IsLocalization _)
-  exact LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization (L C) (𝟭 _)
-
 set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
-instance {D : Type*} [Category* D] (L : Plus C ⥤ D) [L.IsLocalization (quasiIso C)] :
+instance (L : Plus C ⥤ H) [L.IsLocalization (quasiIso C)] :
     (quotient C ⋙ L).IsLocalization (CochainComplex.Plus.quasiIso C) := by
   refine Functor.IsLocalization.comp _ _
     ((homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C))
@@ -282,36 +254,77 @@ instance {D : Type*} [Category* D] (L : Plus C ⥤ D) [L.IsLocalization (quasiIs
     obtain ⟨L, rfl⟩ := Plus.quotient_obj_surjective L
     obtain ⟨f, rfl⟩ := (Plus.quotient C).map_surjective f
     apply MorphismProperty.map_mem_map
-    simp only [quasiIso, inverseImage_iff, ObjectProperty.ι_obj, ObjectProperty.ι_map,
-      quotient_map_hom, quotient_map_mem_quasiIso_iff, HomologicalComplex.mem_quasiIso_iff] at hf
-    exact hf
+    simpa [quasiIso, quotient_map_mem_quasiIso_iff] using! hf
 
-set_option backward.defeqAttrib.useBackward true in
-instance {D : Type*} [Category* D] (L : Plus C ⥤ D) [L.IsLocalization (quasiIso C)] :
-    ((R C).functor ⋙ L).IsLocalization (CochainComplex.Plus.quasiIso C) := by
-  dsimp; infer_instance
+namespace isRightDerivabilityStructure
 
-instance : (R C).IsLocalizedEquivalence :=
+/-! The following private definitions are used to deduce that
+`HomotopyCategory.Plus.localizerMorphism` is a right derivability structure
+from the fact that `CochainComplex.Plus.localizerMorphism` is.
+
+The strategy is to observe that the following commutative square
+of localizer morphisms gives a Guitart exact square:
+```
+                           CochainComplex.Plus.localizerMorphism C
+CochainComplex.Plus (InjectiveObject C) ----------> CochainComplex.Plus C
+     |                                                        |
+ L C |                                                        | R C
+     v                                                        v
+HomotopyCategory.Plus (InjectiveObject C) --------> HomotopyCategory.Plus C
+                           HomotopyCategory.Plus.localizerMorphism C
+```
+That the square is Guitart exact will follow from the lemma
+`TwoSquare.GuitartExact.quotient_of_nonempty_rightHomotopy`
+from the file `Mathlib/CategoryTheory/GuitartExact/Quotient.lean`.
+
+-/
+
+open MorphismProperty
+
+variable (C) in
+/-- The left localizer morphism in the Guitart exact square `iso`. -/
+private abbrev L : LocalizerMorphism
+  ((CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
+      (isomorphisms (Plus (InjectiveObject C))) where
+  functor := HomotopyCategory.Plus.quotient (InjectiveObject C)
+  map _ _ f hf := (isIso_quotient_map f).2 hf
+
+private instance : (L C).IsInduced where
+  inverseImage_eq := by ext; apply isIso_quotient_map
+
+variable (C) in
+set_option backward.isDefEq.respectTransparency false in
+/-- The right localizer morphism in the Guitart exact square `iso`. -/
+private abbrev R : LocalizerMorphism (CochainComplex.Plus.quasiIso C) (quasiIso C) where
+  functor := HomotopyCategory.Plus.quotient C
+  map _ _ _ _ := by simpa [quasiIso, quotient_map_mem_quasiIso_iff]
+
+private instance : (R C).IsInduced where
+  inverseImage_eq := by ext; apply quotient_map_mem_quasiIso_iff
+
+private instance : (L C).IsLocalizedEquivalence := by
+  have :
+      ((L C).functor ⋙ 𝟭 (Plus (InjectiveObject C))).IsLocalization
+        ((CochainComplex.Plus.quasiIso C).inverseImage
+          (InjectiveObject.ι C).mapCochainComplexPlus) :=
+    inferInstanceAs ((HomotopyCategory.Plus.quotient (InjectiveObject C)).IsLocalization _)
+  exact LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization (L C) (𝟭 _)
+
+private instance : (R C).IsLocalizedEquivalence :=
   LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization
     (R C) ((quasiIso C).Q)
 
-set_option backward.defeqAttrib.useBackward true in
-instance : (L C).functor.Full := by dsimp; infer_instance
-set_option backward.defeqAttrib.useBackward true in
-instance : (R C).functor.Full := by dsimp; infer_instance
-set_option backward.defeqAttrib.useBackward true in
-instance : (L C).functor.EssSurj := by dsimp; infer_instance
-set_option backward.defeqAttrib.useBackward true in
-instance : (R C).functor.EssSurj := by dsimp; infer_instance
-
 variable (C) in
-def iso : (CochainComplex.Plus.localizerMorphism C).functor ⋙
-  (R C).functor ≅ (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
+/-- The "commutative" square of functors involving the underlying functors
+of the localizer morphisms `CochainComplex.Plus.localizerMorphism C`
+and `HomotopyCategory.Plus.localizerMorphism C`. -/
+private def iso :
+    (CochainComplex.Plus.localizerMorphism C).functor ⋙ (R C).functor ≅
+  (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex CochainComplex in
-instance : TwoSquare.GuitartExact (iso C).hom :=
+private instance : TwoSquare.GuitartExact (iso C).hom :=
   TwoSquare.GuitartExact.quotient_of_nonempty_rightHomotopy (iso C).symm (by
     rintro ⟨K₁, n₁, hn₁⟩ ⟨K₂, n₂, hn₂⟩ f₀ f₁ hf
     obtain ⟨f₀, rfl⟩ := ObjectProperty.homMk_surjective f₀
@@ -343,15 +356,6 @@ instance : (HomotopyCategory.Plus.localizerMorphism C).arrow.HasRightResolutions
   LocalizerMorphism.hasRightResolutions_arrow_of_essSurj_of_full
     (isRightDerivabilityStructure.iso C)
 
-set_option backward.defeqAttrib.useBackward true in
-noncomputable instance : (HomotopyCategory.Plus.localizerMorphism C).functor.CommShift ℤ := by
-  dsimp; infer_instance
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-instance : (HomotopyCategory.Plus.localizerMorphism C).functor.IsTriangulated := by
-  dsimp; infer_instance
-
 instance [HasDerivedCategory C] :
     ((InjectiveObject.ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).EssSurj where
   mem_essImage K := by
@@ -369,13 +373,13 @@ omit [EnoughInjectives C] in
 lemma localizerMorphism_derives : (localizerMorphism C).Derives F :=
   MorphismProperty.isInvertedBy_isomorphisms _
 
-/-- Any functor from the homotopy category `K^+` has a right derived functor
+/-- Any functor from the bounded below homotopy category has a right derived functor
 with respect to quasi-isomorphisms. -/
 instance : F.HasPointwiseRightDerivedFunctor (HomotopyCategory.Plus.quasiIso C) :=
   (localizerMorphism_derives F).hasPointwiseRightDerivedFunctor
 
-variable [HasDerivedCategory C]
-variable (F' : DerivedCategory.Plus C ⥤ H) (α : F ⟶ DerivedCategory.Plus.Qh ⋙ F')
+variable [HasDerivedCategory C] (F' : DerivedCategory.Plus C ⥤ H)
+  (α : F ⟶ DerivedCategory.Plus.Qh ⋙ F')
   [F'.IsRightDerivedFunctor α (HomotopyCategory.Plus.quasiIso C)]
 
 instance (K : HomotopyCategory.Plus C) [(∀ (n : ℤ), Injective (K.obj.as.X n))] :
