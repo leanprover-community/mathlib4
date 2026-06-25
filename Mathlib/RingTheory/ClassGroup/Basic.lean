@@ -408,12 +408,9 @@ theorem Ideal.IsPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDomain R]
   by_cases hI0 : I = 0
   · rw [hI0]
     exact bot_isPrincipal
-  rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero _)] at hI ⊢
-  swap
-  · exact hI0
-  swap
-  · exact pow_ne_zero n hI0
-  · rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
+  rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero (pow_ne_zero n hI0))] at hI
+  rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero hI0), ← orderOf_eq_one_iff, 
+    ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
     refine ⟨?_, orderOf_dvd_card⟩
     rwa [orderOf_dvd_iff_pow_eq_one, ← map_pow, SubmonoidClass.mk_pow]
 
