@@ -770,10 +770,12 @@ variable [ConditionallyCompleteLattice α]
 variable {f : α → β} {s : Set α} (hs : s.Nonempty) (hf : Monotone f)
 include hs hf
 
-theorem csSup_image_le_csSup (hbdd : BddAbove s := by bddDefault) : sSup (f '' s) ≤ f (sSup s) :=
+theorem csSup_image_le_map_csSup (hbdd : BddAbove s := by bddDefault) :
+    sSup (f '' s) ≤ f (sSup s) :=
   csSup_image_le hf hs <| isLUB_csSup hs hbdd |>.left
 
-theorem csInf_le_csInf_image (hbdd : BddBelow s := by bddDefault) : f (sInf s) ≤ sInf (f '' s) :=
+theorem map_csInf_le_csInf_image (hbdd : BddBelow s := by bddDefault) :
+    f (sInf s) ≤ sInf (f '' s) :=
   le_csInf_image hf hs <| isGLB_csInf hs hbdd |>.left
 
 end ConditionallyCompleteLattice
