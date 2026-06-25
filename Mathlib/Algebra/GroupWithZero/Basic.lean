@@ -6,6 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Conv
@@ -211,6 +212,14 @@ lemma exists_isNilpotent_of_not_isReduced {R : Type*} [Zero R] [Pow R ℕ] (h : 
   simpa [isReduced_iff, not_forall, and_comm] using h
 
 end Nilpotent
+
+section SemigroupWithZero
+variable {S₀ : Type*} [SemigroupWithZero S₀]
+
+@[simp] lemma zero_ppow (n : ℕ+) : (0 : S₀) ^ n = 0 := by
+  induction n using Semigroup.ppow_induction (0 : S₀) <;> simp
+
+end SemigroupWithZero
 
 section MonoidWithZero
 variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}

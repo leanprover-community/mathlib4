@@ -71,29 +71,36 @@ instance : MulZeroClass (α →₀ β) :=
 
 end
 
+instance [SemigroupWithZero β] : Pow (α →₀ β) ℕ+ where
+  pow g n := Finsupp.ofSupportFinite (fun a ↦ g a ^ n)
+    (Set.Finite.subset g.hasFiniteSupport (by simp; grind [zero_ppow]))
+
 instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
-  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
+  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
+  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
+  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
+  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
-    fun _ _ ↦ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 lemma pointwise_smul_support_finite [Zero γ] [SMulZeroClass β γ] (f : α → β)
     (g : α →₀ γ) : (fun x ↦ f x • g x).support.Finite :=
