@@ -54,10 +54,8 @@ lemma resMap_hom_toLinearMap {M N : Rep k G} (p : M ⟶ N) :
 
 @[simp]
 lemma resMap_hom_apply {M N : Rep k G} (p : M ⟶ N) (x : M.V) :
-    @DFunLike.coe (Representation.IntertwiningMap (MonoidHom.comp M.ρ f) (MonoidHom.comp N.ρ f))
-      M.V (fun _ : M.V ↦ N.V) (Representation.IntertwiningMap.instFunLike
-      (MonoidHom.comp M.ρ f) (MonoidHom.comp N.ρ f))
-      (Hom.hom (resMap f p)) x = p.hom x := rfl
+    @DFunLike.coe (Representation.IntertwiningMap (M.ρ.comp f) (N.ρ.comp f)) _ _ _
+      (resMap f p).hom x = p.hom x := rfl
 
 section
 
