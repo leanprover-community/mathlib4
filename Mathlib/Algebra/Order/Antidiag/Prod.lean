@@ -72,7 +72,7 @@ export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
 attribute [simp] mem_antidiagonal
 
-/-- The class of additive monoids with an mulAntidiagonal -/
+/-- The class of (multiplicative) monoids with a mulAntidiagonal -/
 class HasMulAntidiagonal (A : Type*) [Monoid A] where
   /-- The mulAntidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i * j = n`. -/
