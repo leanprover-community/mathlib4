@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Tactic.FunProp.Decl
 
 /-!
 ## `funProp`
@@ -192,6 +193,47 @@ def logError (msg : String) : FunPropM Unit := do
           s.msgLog
         else
           msg::s.msgLog}
+
+initialize funPropCoreImplRef : IO.Ref (Expr → FunPropM (Option Result)) ←
+  .mkRef fun _ => return none
+
+/-- Solve `fun_prop` goal like `Continuous f` or `Differentiable ℝ fun x : ℝ => exp x + x` -/
+def funPropCore (goal : Expr) : FunPropM (Option Result) := do
+  let impl ← funPropCoreImplRef.get
+  impl goal
+
+/-- Main `funProp` function. Returns proof of `e`. -/
+partial def funProp (e : Expr) : FunPropM (Option Result) := do
+
+  let e ← instantiateMVars e
+
+  match e with
+  | .letE .. =>
+    letTelescope e fun xs b => do
+      let some r ← funProp b
+        | return none
+      -- cacheResult e {proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
+      return some { proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
+  | .forallE .. =>
+    forallTelescope e fun xs b => do
+      let some r ← funProp b
+        | return none
+      -- cacheResult e {proof := ← mkLambdaFVars xs r.proof }
+      return some { proof := ← mkLambdaFVars xs r.proof }
+  | .mdata _ e' => funProp e'
+  | _ =>
+    let some (_, goal) ← getFunProp? e | return none
+
+    if let some r ← funPropCore goal then
+      -- assign mvars in `e` from the result throuh defeq check
+      let t ← inferType r.proof
+      if (← isDefEq e t) then
+        return r
+      else
+        logError s!"Failed to assign result {← ppExpr t} to {← ppExpr e}!"
+        return none
+    else
+      return none
 
 end Meta.FunProp
 
