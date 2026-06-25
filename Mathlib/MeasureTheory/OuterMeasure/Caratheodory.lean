@@ -57,13 +57,13 @@ def IsCaratheodory (s : Set α) : Prop :=
 
 theorem isCaratheodory_iff_le' {s : Set α} :
     IsCaratheodory m s ↔ ∀ t, m (t ∩ s) + m (t \ s) ≤ m t :=
-  forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| measure_le_inter_add_diff _ _ _
+  forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| measure_le_inter_add_sdiff _ _ _
 
 @[simp]
-theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, diff_empty]
+theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, sdiff_empty]
 
 theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁ᶜ := by
-  simp [IsCaratheodory, diff_eq, add_comm]
+  simp [IsCaratheodory, sdiff_eq, add_comm]
 
 @[simp]
 theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s :=
@@ -71,10 +71,10 @@ theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s 
 
 theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
     IsCaratheodory m (s₁ ∪ s₂) := fun t => by
-  rw [h₁ t, h₂ (t ∩ s₁), h₂ (t \ s₁), h₁ (t ∩ (s₁ ∪ s₂)), inter_diff_assoc _ _ s₁,
+  rw [h₁ t, h₂ (t ∩ s₁), h₂ (t \ s₁), h₁ (t ∩ (s₁ ∪ s₂)), inter_sdiff_assoc _ _ s₁,
     Set.inter_assoc _ _ s₁, inter_eq_self_of_subset_right Set.subset_union_left,
-    union_diff_left, h₂ (t ∩ s₁)]
-  simp [diff_eq, add_assoc]
+    union_sdiff_left, h₂ (t ∩ s₁)]
+  simp [sdiff_eq, add_assoc]
 
 variable {m} in
 lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
@@ -90,7 +90,8 @@ lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set
 
 theorem measure_inter_union (h : s₁ ∩ s₂ ⊆ ∅) (h₁ : IsCaratheodory m s₁) {t : Set α} :
     m (t ∩ (s₁ ∪ s₂)) = m (t ∩ s₁) + m (t ∩ s₂) := by
-  rw [h₁, Set.inter_assoc, Set.union_inter_cancel_left, inter_diff_assoc, union_diff_cancel_left h]
+  rw [h₁, Set.inter_assoc, Set.union_inter_cancel_left, inter_sdiff_assoc,
+    union_sdiff_cancel_left h]
 
 theorem isCaratheodory_iUnion_lt {s : ℕ → Set α} :
     ∀ {n : ℕ}, (∀ i < n, IsCaratheodory m (s i)) → IsCaratheodory m (⋃ i < n, s i)
@@ -106,8 +107,10 @@ theorem isCaratheodory_inter (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
   rw [← isCaratheodory_compl_iff, Set.compl_inter]
   exact isCaratheodory_union _ (isCaratheodory_compl _ h₁) (isCaratheodory_compl _ h₂)
 
-lemma isCaratheodory_diff (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
+lemma isCaratheodory_sdiff (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
     IsCaratheodory m (s₁ \ s₂) := m.isCaratheodory_inter h₁ (m.isCaratheodory_compl h₂)
+
+@[deprecated (since := "2026-06-03")] alias isCaratheodory_diff := isCaratheodory_sdiff
 
 lemma isCaratheodory_partialSups {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
@@ -118,7 +121,7 @@ lemma isCaratheodory_partialSups {ι : Type*} [Preorder ι] [LocallyFiniteOrderB
 lemma isCaratheodory_disjointed {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
     m.IsCaratheodory (disjointed s i) :=
-  disjointedRec (fun _ j ht ↦ m.isCaratheodory_diff ht <| h j) (h i)
+  disjointedRec (fun _ j ht ↦ m.isCaratheodory_sdiff ht <| h j) (h i)
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :
@@ -204,8 +207,8 @@ theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ :
       ?_
   · rw [← iUnion_inter]
     exact inter_subset_inter_left _ hf
-  · rw [← iUnion_diff]
-    exact diff_subset_diff_left hf
+  · rw [← iUnion_sdiff]
+    exact sdiff_subset_sdiff_left hf
   · rw [← ENNReal.tsum_add]
     exact ENNReal.tsum_le_tsum fun i => hs _
 

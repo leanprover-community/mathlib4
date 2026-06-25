@@ -261,8 +261,8 @@ noncomputable def quotientPolynomialTensorProductEquiv (f : K[X]) :
     (K[X] ⊗[k] S ⧸ Ideal.map (algebraMap K[X] (K[X] ⊗[k] S)) (Ideal.span {f})) :=
     IsScalarTower.of_algebraMap_eq' rfl
   (((Algebra.TensorProduct.cancelBaseChange k K[X] K[X] (K[X] ⧸ Ideal.span {f})
-    S).symm.restrictScalars K).trans
-      ((Algebra.TensorProduct.quotIdealMapEquivQuotTensor _ _).symm.restrictScalars K)).trans
+    S).symm.restrictScalars K).trans ((Algebra.TensorProduct.quotIdealMapEquivQuotTensor _
+      (Ideal.span {f})).symm.restrictScalars K)).trans
         (Ideal.quotientEquivAlg _ _ (polynomialTensorProductEquiv k K S) (by
           simp only [Ideal.map_span, Set.image_singleton, RingHom.coe_coe,
             polynomialTensorProductEquiv_map_algebraMap]))
