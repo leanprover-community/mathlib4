@@ -189,6 +189,23 @@ instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
 lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStarNormal u :=
   coe_isStarNormal ⟨u, hu⟩
 
+lemma commute_self_star (u : unitary R) : Commute u (star u) := by simp [commute_iff_eq]
+lemma commute_star_self (u : unitary R) : Commute (star u) u := by simp [commute_iff_eq]
+
+lemma _root_.commute_unitary_star_self {u : R} (hu : u ∈ unitary R) : Commute (star u) u :=
+  isStarNormal_of_mem_unitary hu |>.star_comm_self
+
+lemma _root_.commute_unitary_self_star {u : R} (hu : u ∈ unitary R) : Commute u (star u) :=
+  commute_unitary_star_self hu |>.symm
+
+lemma _root_.commute_unitary_iff_star_left_conjugate {x u : R} (hu : u ∈ unitary R) :
+    Commute u x ↔ star u * x * u = x := by
+  simpa using! (Unitary.toUnits ⟨u, hu⟩).commute_iff_inv_mul_cancel
+
+lemma _root_.commute_unitary_iff_star_right_conjugate {x u : R} (hu : u ∈ unitary R) :
+    Commute u x ↔ u * x * star u = x := by
+  simpa using! (Unitary.toUnits ⟨u, hu⟩).commute_iff_mul_inv_cancel
+
 end Monoid
 
 end Unitary
@@ -423,6 +440,12 @@ lemma spectrum_star_left_conjugate {a : A} {U : unitary A} :
   simpa using spectrum_star_right_conjugate (U := star U)
 
 end UnitaryConjugate
+
+/-- In a ring without zero divisors and with trivial star, the only unitary elements are `1`
+and `-1`. -/
+theorem mem_iff_eq_one_or_eq_neg_one [Ring R] [StarRing R] [TrivialStar R] [NoZeroDivisors R]
+    {a : R} : a ∈ unitary R ↔ a = 1 ∨ a = -1 := by
+  simp [mem_iff, mul_self_eq_one_iff]
 
 end Unitary
 

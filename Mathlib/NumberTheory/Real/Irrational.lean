@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -32,6 +33,7 @@ but this only works if you `unseal Nat.sqrt.iter in` before the theorem where yo
 open Rat Real
 
 /-- A real number is irrational if it is not equal to any rational number. -/
+@[wikidata Q607728]
 def Irrational (x : ℝ) :=
   x ∉ Set.range ((↑) : ℚ → ℝ)
 
