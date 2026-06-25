@@ -54,6 +54,8 @@ instance : Monoid (Function.End α) where
   mul_assoc _ _ _ := rfl
   mul_one _ := rfl
   one_mul _ := rfl
+  ppow n _ f := f^[n]
+  ppow_succ _ _ := Function.iterate_succ _ _
   npow n f := f^[n]
   npow_succ _ _ := Function.iterate_succ _ _
 
