@@ -225,9 +225,7 @@ lemma skyscraperAb_presheaf_map_pos {X : TopCat} (p : ↑X)
   [Category* C] (A : C) [HasTerminal C] {U V : (TopologicalSpace.Opens X)ᵒᵖ} (i : U ⟶ V)
     (h : p ∈ unop V) :
     (skyscraperSheaf p A).presheaf.map i =
-      eqToHom ((if_pos (i.unop.le h)).trans (if_pos h).symm) := by
-  change (skyscraperPresheaf p A).map i = _
-  rw [skyscraperPresheaf_map, dif_pos h]
+      eqToHom ((if_pos (i.unop.le h)).trans (if_pos h).symm) := by simp [h]
 
 open Classical in
 /--
