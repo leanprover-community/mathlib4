@@ -25,22 +25,23 @@ open scoped Topology Pointwise
 
 variable {R : Type*} [NormedRing R]
 
+/-- Predicate for when `f` is a restricted power series. -/
 abbrev IsRestricted (c : ℝ) (f : PowerSeries R) :=
   MvPowerSeries.IsRestricted (σ := Unit) (fun _ ↦ c) f
 
-lemma isRestricted_foo (c : ℝ) (f : PowerSeries R) :
+private lemma isRestricted_comp_uniqueEquiv (c : ℝ) (f : PowerSeries R) :
     (fun (t : Unit →₀ ℕ) ↦ ‖MvPowerSeries.coeff t f‖ * t.prod (fun _ x ↦ c ^ x)) =
-    (fun (n : ℕ) ↦ ‖coeff n f‖ * c ^ n) ∘ Equiv.finsuppUnique := by
+    (fun (n : ℕ) ↦ ‖coeff n f‖ * c ^ n) ∘ Finsupp.uniqueEquiv () := by
   funext t
-  simp only [Function.comp_apply, Equiv.finsuppUnique_apply, PUnit.default_eq_unit,
+  simp only [Function.comp_apply, Finsupp.uniqueEquiv_apply, PUnit.default_eq_unit,
     Finsupp.prod_pow, Finset.univ_unique, Finset.prod_singleton, coeff,
     show (Finsupp.single () (t ())) = t by grind]
 
 lemma isRestricted_iff (c : ℝ) (f : PowerSeries R) :
     IsRestricted c f ↔ Tendsto (fun (t : ℕ) ↦ ‖coeff t f‖ * c ^ t) cofinite (𝓝 0) := by
-  rw [IsRestricted, MvPowerSeries.IsRestricted, isRestricted_foo]
-  exact ⟨fun H => (H.comp Equiv.finsuppUnique.symm.injective.tendsto_cofinite).congr fun n =>
-    by simp, fun H => H.comp Equiv.finsuppUnique.injective.tendsto_cofinite⟩
+  rw [IsRestricted, MvPowerSeries.IsRestricted, isRestricted_comp_uniqueEquiv]
+  exact ⟨fun H => (H.comp (Finsupp.uniqueEquiv ()).symm.injective.tendsto_cofinite).congr fun n =>
+    by simp, fun H => H.comp (Finsupp.uniqueEquiv ()).injective.tendsto_cofinite⟩
 
 lemma isRestricted_iff' (c : ℝ) (f : PowerSeries R) :
     IsRestricted c f ↔ Tendsto (fun (t : ℕ) ↦ ‖coeff t f‖ * c ^ t) atTop (𝓝 0) := by
