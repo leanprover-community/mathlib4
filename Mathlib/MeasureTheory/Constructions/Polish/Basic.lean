@@ -319,7 +319,7 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
       ∃ t' : TopologicalSpace α, t' ≤ t ∧ @PolishSpace α t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s :=
     hs.isClopenable
   have A := @IsClosed.analyticSet α t' t'_polish s s_closed
-  convert @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
+  convert! @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
   simp only [id, image_id']
 
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
@@ -364,7 +364,7 @@ protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [Topolog
     AnalyticSet (f ⁻¹' s) := by
   rcases analyticSet_iff_exists_polishSpace_range.1 hs with ⟨Z, _, _, g, hg, rfl⟩
   have : IsClosed {x : X × Z | f x.1 = g x.2} := isClosed_eq hf.fst' hg.snd'
-  convert this.analyticSet.image_of_continuous continuous_fst
+  convert! this.analyticSet.image_of_continuous continuous_fst
   ext x
   simp [eq_comm]
 
@@ -462,7 +462,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- by design, the cylinders around these points have images which are not Borel-separable.
   have M : ∀ n, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) := by
     intro n
-    convert (p n).2 using 3
+    convert! (p n).2 using 3
     · rw [pn_fst, ← mem_cylinder_iff_eq, mem_cylinder_iff]
       intro i hi
       rw [hx]
@@ -716,7 +716,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
       exact ball_mem_nhds _ (half_pos (u_pos n))
     have diam_s : diam s ≤ u n := by
       apply (diam_mono hs isBounded_ball).trans
-      convert diam_ball (x := y) (half_pos (u_pos n)).le
+      convert! diam_ball (x := y) (half_pos (u_pos n)).le
       ring
     refine mem_iUnion.2 ⟨⟨s, sb⟩, ?_⟩
     refine mem_iUnion.2 ⟨⟨isBounded_ball.subset hs, diam_s⟩, ?_⟩
@@ -837,14 +837,10 @@ theorem MeasurableSet.image_of_measurable_injOn {f : γ → α}
   obtain ⟨t', t't, f_cont, t'_polish⟩ :
       ∃ t' : TopologicalSpace γ, t' ≤ tγ ∧ @Continuous γ _ t' _ f ∧ @PolishSpace γ t' :=
     f_meas.exists_continuous
-  have M : MeasurableSet[@borel γ t'] s :=
-    @Continuous.measurable γ γ t' (@borel γ t')
-      (@BorelSpace.opensMeasurable γ t' (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl))
-      tγ _ _ _ (continuous_id_of_le t't) s hs
-  exact
-    @MeasurableSet.image_of_continuousOn_injOn γ
-      _ _ _ _ s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
-      M (@Continuous.continuousOn γ _ t' _ f s f_cont) f_inj
+  have hs' := (borel_anti t't s) <| by rwa [← eq_borel_upgradeStandardBorel γ]
+  letI : MeasurableSpace γ := @borel γ t'
+  letI : BorelSpace γ := ⟨rfl⟩
+  exact hs'.image_of_continuousOn_injOn f_cont.continuousOn f_inj
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
 theorem Continuous.measurableEmbedding [BorelSpace β]
@@ -892,7 +888,7 @@ theorem MeasureTheory.borel_eq_borel_of_le {t t' : TopologicalSpace γ}
   have e := @Continuous.measurableEmbedding
     _ _ (@borel _ t') t' _ _ (@BorelSpace.mk _ _ (borel γ) rfl)
     t _ (@borel _ t) (@BorelSpace.mk _ t (@borel _ t) rfl) (continuous_id_of_le hle) injective_id
-  convert e.measurableSet_image.2 hs
+  convert! e.measurableSet_image.2 hs
   simp only [id_eq, image_id']
 
 /-- In a Polish space, a set is clopenable if and only if it is Borel-measurable. -/
@@ -937,7 +933,7 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   have : g '' t = g '' (t \ t') ∪ g '' t' := by simp [← image_union, t']
   rw [this]
   apply MeasurableSet.union
-  · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono diff_subset)
+  · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono sdiff_subset)
     intro x hx y hy hxy
     contrapose! hxy
     wlog! H : x < y generalizing x y with h
@@ -963,10 +959,10 @@ theorem MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
   rw [this]
   apply MeasurableSet.union _ (ht'.image g).measurableSet
   apply MeasurableSet.image_of_monotoneOn_of_continuousOn (ht.diff ht'.measurableSet)
-    (hg.mono diff_subset)
+    (hg.mono sdiff_subset)
   intro x hx
   simp only [sdiff_sep_self, not_not, mem_setOf_eq, t'] at hx
-  exact hx.2.mono diff_subset
+  exact hx.2.mono sdiff_subset
 
 /-- The image of a measurable set under an antitone map is measurable. -/
 theorem MeasurableSet.image_of_antitoneOn [SecondCountableTopology β]

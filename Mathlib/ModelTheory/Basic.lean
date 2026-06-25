@@ -52,9 +52,9 @@ namespace FirstOrder
 
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- A first-order language consists of a type of functions of every natural-number arity and a
   type of relations of every natural-number arity. -/
-@[nolint checkUnivs]
 structure Language where
   /-- For every arity, a `Type u` of functions of that arity -/
   Functions : ℕ → Type u
@@ -282,7 +282,7 @@ namespace Hom
 
 instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
-  coe_injective' f g h := by cases f; cases g; cases h; rfl
+  coe_injective f g h := by cases f; cases g; cases h; rfl
 
 instance homClass : HomClass L (M →[L] N) M N where
   map_fun := map_fun'
@@ -366,7 +366,7 @@ namespace Embedding
 
 instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -712,7 +712,7 @@ theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.c
 theorem comp_right_injective (h : M ≃[L] N) :
     Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
   intro f g hfg
-  convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
+  convert! (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
     rw [comp_assoc, self_comp_symm, comp_refl]
 
 @[simp]

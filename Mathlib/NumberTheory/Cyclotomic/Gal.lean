@@ -58,9 +58,9 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
   have : f.toAlgHom = g.toAlgHom := by
     apply (hμ.powerBasis K).algHom_ext
-    rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgHom.coe_coe,
-      powerBasis_gen, ← autToPow_spec K hμ g, ← autToPow_spec K hμ f, hfg]
-  exact AlgEquiv.coe_algHom_injective this
+    rw [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_toAlgHom, powerBasis_gen,
+      ← autToPow_spec K hμ g, ← autToPow_spec K hμ f, hfg]
+  exact AlgEquiv.coe_toAlgHom_injective this
 
 end IsPrimitiveRoot
 
@@ -89,9 +89,9 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
           exact ((zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible h).symm.trans hr)
     left_inv := fun f => by
       simp only [MonoidHom.toFun_eq_coe]
-      apply AlgEquiv.coe_algHom_injective
+      apply AlgEquiv.coe_toAlgHom_injective
       apply (hζ.powerBasis K).algHom_ext
-      simp only [AlgHom.coe_coe]
+      simp only [AlgEquiv.coe_toAlgHom]
       rw [PowerBasis.equivOfMinpoly_gen]
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
     right_inv := fun x => by
@@ -123,7 +123,7 @@ theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   generalize_proofs hζ h _ hμ _
   nth_rewrite 4 [← hζ.powerBasis_gen K]
   rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
-  convert h.choose_spec.2
+  convert! h.choose_spec.2
   exact ZMod.val_cast_of_lt h.choose_spec.1
 
 end IsCyclotomicExtension

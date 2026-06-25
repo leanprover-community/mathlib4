@@ -71,9 +71,6 @@ def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →�
   toFun := f
   commutes' := AlgHomClass.commutes f
 
-instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
-  ⟨AlgHomClass.toAlgHom⟩
-
 end AlgHomClass
 
 namespace AlgHom
@@ -87,7 +84,7 @@ variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     congr
@@ -111,7 +108,7 @@ initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₐ[R] B) = f :=
+    ⇑(AlgHomClass.toAlgHom f : A →ₐ[R] B) = f :=
   rfl
 
 @[simp]

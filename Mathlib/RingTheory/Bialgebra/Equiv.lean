@@ -124,7 +124,7 @@ instance : EquivLike (A ≃ₐc[R] B) A B where
 
 instance : FunLike (A ≃ₐc[R] B) A B where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   map_add := (·.map_add')
@@ -181,6 +181,7 @@ theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
 theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
   rfl
 
+@[deprecated "Now a syntactic equality" (since := "2026-04-30"), nolint synTaut]
 theorem toBialgHom_toAlgHom : ((e : A →ₐc[R] B) : A →ₐ[R] B) = e := rfl
 
 section
@@ -216,7 +217,7 @@ initialize_simps_projections BialgEquiv (toFun → apply, invFun → symm_apply)
 
 variable (A R) in
 /-- The identity map is a bialgebra equivalence. -/
-@[refl, simps!]
+@[refl, simps! apply]
 def refl : A ≃ₐc[R] A :=
   { CoalgEquiv.refl R A, BialgHom.id R A with }
 
@@ -256,7 +257,7 @@ theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm :=
 variable {e₁₂ : A ≃ₐc[R] B} {e₂₃ : B ≃ₐc[R] C}
 
 /-- Bialgebra equivalences are transitive. -/
-@[trans, simps!]
+@[trans, simps! apply]
 def trans (e₁₂ : A ≃ₐc[R] B) (e₂₃ : B ≃ₐc[R] C) : A ≃ₐc[R] C :=
   { (e₁₂ : A ≃ₗc[R] B).trans (e₂₃ : B ≃ₗc[R] C), (e₁₂ : A ≃* B).trans (e₂₃ : B ≃* C) with }
 
@@ -279,10 +280,10 @@ lemma apply_symm_apply (e : A ≃ₐc[R] B) : ∀ x, e (e.symm x) = x := e.toEqu
 lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEquiv.symm_apply_apply
 
 @[simp] lemma comp_symm (e : A ≃ₐc[R] B) : (e : A →ₐc[R] B).comp e.symm = .id R B :=
-  BialgHom.coe_algHom_injective e.toAlgEquiv.comp_symm
+  BialgHom.coe_toAlgHom_injective e.toAlgEquiv.comp_symm
 
 @[simp] lemma symm_comp (e : A ≃ₐc[R] B) : (e.symm : B →ₐc[R] A).comp e = .id R A :=
-  BialgHom.coe_algHom_injective e.toAlgEquiv.symm_comp
+  BialgHom.coe_toAlgHom_injective e.toAlgEquiv.symm_comp
 
 @[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl

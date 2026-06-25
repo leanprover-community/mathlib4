@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.Category.Ring.Basic
@@ -166,6 +167,19 @@ instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
     { obj := fun A => RingCat.of A
       map := fun f => RingCat.ofHom f.hom.toRingHom }
 
+@[simp]
+lemma forget₂_ringCat_obj (X : AlgCat.{v} R) :
+    (forget₂ (AlgCat.{v} R) RingCat.{v}).obj X = RingCat.of X :=
+  rfl
+
+@[simp]
+lemma forget₂_ringCat_map {X Y : AlgCat.{v} R} (f : X ⟶ Y) :
+    (forget₂ (AlgCat.{v} R) RingCat.{v}).map f = RingCat.ofHom f.hom :=
+  rfl
+
+instance (A : AlgCat.{v} R) : Algebra R ((forget₂ (AlgCat.{v} R) RingCat).obj A) :=
+  inferInstanceAs <| Algebra R A
+
 instance hasForgetToModule : HasForget₂ (AlgCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
@@ -187,6 +201,7 @@ def free : Type u ⥤ AlgCat.{u} R where
   obj S := of R (FreeAlgebra R S)
   map f := ofHom <| FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
@@ -202,7 +217,7 @@ instance : (forget (AlgCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 end AlgCat
 
 variable {R}
-variable {X₁ X₂ : Type u}
+variable {X₁ X₂ : Type v}
 
 /-- Build an isomorphism in the category `AlgCat R` from an `AlgEquiv` between `Algebra`s. -/
 @[simps]
@@ -215,7 +230,7 @@ namespace CategoryTheory.Iso
 
 /-- Build an `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
 @[simps]
-def toAlgEquiv {X Y : AlgCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
+def toAlgEquiv {X Y : AlgCat.{v} R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
   { i.hom.hom with
     toFun := i.hom
     invFun := i.inv
@@ -227,13 +242,13 @@ end CategoryTheory.Iso
 /-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
 `AlgCat`. -/
 @[simps]
-def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
+def algEquivIsoAlgebraIso {X Y : Type v} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ (AlgCat.of R X ≅ AlgCat.of R Y) where
   hom := ↾fun e ↦ e.toAlgebraIso
   inv := ↾fun i ↦ i.toAlgEquiv
 
-instance AlgCat.forget_reflects_isos : (forget (AlgCat.{u} R)).ReflectsIsomorphisms where
+instance AlgCat.forget_reflects_isos : (forget (AlgCat.{v} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
-    let i := asIso ((forget (AlgCat.{u} R)).map f)
+    let i := asIso ((forget (AlgCat.{v} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom

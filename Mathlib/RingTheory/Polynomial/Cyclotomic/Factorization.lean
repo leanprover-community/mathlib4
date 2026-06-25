@@ -5,10 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.GaloisField
-public import Mathlib.RingTheory.SimpleModule.Basic
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.Algebra.CharP.CharAndCard
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Factorization of cyclotomic polynomials over finite fields
@@ -51,28 +51,28 @@ private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ 
   have hζ : IsPrimitiveRoot (root P) n := by
     have : NeZero (n : AdjoinRoot P) := by
       suffices NeZero (n : K) by
-        simpa using NeZero.of_injective (algebraMap K (AdjoinRoot P)).injective
+        simpa using! NeZero.of_injective (algebraMap K (AdjoinRoot P)).injective
       have := charP_of_card_eq_prime_pow hK
       exact ⟨fun h0 ↦ Nat.Prime.not_coprime_iff_dvd.mpr
         ⟨p, hp.out, dvd_pow_self p (f_ne_zero hK), (CharP.cast_eq_zero_iff K p n).mp h0⟩
           (hn.pow_left f)⟩
-    simpa [← isRoot_cyclotomic_iff] using (isRoot_root P).dvd
-      (by simpa using map_dvd (algebraMap K (AdjoinRoot P)) hP)
+    simpa [← isRoot_cyclotomic_iff] using! (isRoot_root P).dvd
+      (by simpa using! map_dvd (algebraMap K (AdjoinRoot P)) hP)
   let pB := powerBasis hPirr.ne_zero
   rw [← powerBasis_dim hPirr.ne_zero, ← pB.finrank, ← orderOf_frobeniusAlgEquivOfAlgebraic]
   have hζ' := isOfFinOrder_iff_pow_eq_one.mpr
       ⟨n, pos_of_ne_zero (fun h0 ↦ by simp [h0, hp.out.ne_one] at hn),
       hζ.pow_eq_one⟩
   refine dvd_antisymm
-    (orderOf_dvd_iff_pow_eq_one.mpr <| AlgEquiv.coe_algHom_injective <| pB.algHom_ext ?_)
+    (orderOf_dvd_iff_pow_eq_one.mpr <| AlgEquiv.coe_toAlgHom_injective <| pB.algHom_ext ?_)
     (orderOf_dvd_iff_pow_eq_one.mpr <| Units.ext ?_)
-  · simp only [AlgHom.coe_coe, AlgEquiv.coe_pow, AlgEquiv.one_apply,
+  · simp only [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_pow, AlgEquiv.one_apply,
       coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, hK]
     nth_rewrite 2 [← pow_one pB.gen]
     rw [powerBasis_gen hPirr.ne_zero, hζ'.pow_eq_pow_iff_modEq, ← hζ.eq_orderOf,
       ← natCast_eq_natCast_iff]
     simpa only [Nat.cast_pow, Nat.cast_one, coe_unitOfCoprime, Units.val_one,
-      Units.val_pow_eq_pow_val] using Units.val_inj.mpr <| pow_orderOf_eq_one
+      Units.val_pow_eq_pow_val] using! Units.val_inj.mpr <| pow_orderOf_eq_one
       (unitOfCoprime _ (hn.pow_left f))
   · let φ := frobeniusAlgEquivOfAlgebraic K (AdjoinRoot P)
     have : (φ ^ orderOf φ) (root P) = root P := by simp [pow_orderOf_eq_one φ]

@@ -5,8 +5,8 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.Data.Set.Image
 
 /-!
 # Discrete categories
@@ -63,6 +63,9 @@ def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   invFun := Discrete.mk
   left_inv := by cat_disch
   right_inv := by cat_disch
+
+lemma Discrete.as_bijective {α : Type*} : (Discrete.as (α := α)).Bijective :=
+  discreteEquiv.bijective
 
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
@@ -180,6 +183,10 @@ theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
     (Discrete.functor F).obj X = F X.as :=
   rfl
 
+@[simp]
+lemma range_functor {I : Type*} (X : I → C) : Set.range (Discrete.functor X).obj = Set.range X := by
+  simp [Discrete.functor, Set.range_comp, Discrete.as_bijective.surjective.range_eq]
+
 @[ext]
 lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.obj ⟨i⟩ = F.obj ⟨i⟩) :
     G = F := by
@@ -187,6 +194,7 @@ lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.ob
   · intro I; rw [h]
   · intro ⟨X⟩ ⟨Y⟩ ⟨⟨p⟩⟩; simp only at p; induction p; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
 -/
@@ -303,6 +311,7 @@ lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
   rw [iff_iff_eq, discreteEquiv.exists_congr_left]
   simp [discreteEquiv]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]
 def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :
@@ -320,6 +329,13 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       obtain rfl : x = y := Discrete.eq_of_hom f
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by cat_disch)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- `piEquivalenceFunctorDiscrete` is compatible with `evaluation`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompEvaluationIso (C : Type*) [Category* C] {J : Type*} (j : J) :
+    (piEquivalenceFunctorDiscrete J C).functor ⋙ (evaluation _ _).obj ⟨j⟩ ≅ Pi.eval _ j :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- A category is discrete when there is at most one morphism between two objects,
 in which case they are equal. -/

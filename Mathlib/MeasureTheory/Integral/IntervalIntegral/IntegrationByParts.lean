@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.JacobianOneDim
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Integration by parts and by substitution
@@ -526,6 +527,7 @@ theorem integral_comp_mul_deriv' {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b,
 and `g` is continuous, then we can substitute `u = f x` to get
 `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`.
 -/
+@[wikidata Q1071270]
 theorem integral_comp_mul_deriv {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : Continuous g) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ x in f a..f b, g x :=
@@ -538,7 +540,7 @@ theorem integral_comp_mul_deriv_of_deriv_nonneg {f f' g : ℝ → ℝ} (hf : Con
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
-  simpa [mul_comm] using integral_deriv_smul_comp_of_deriv_nonneg hf hff' hf'
+  simpa [mul_comm] using! integral_deriv_smul_comp_of_deriv_nonneg hf hff' hf'
 
 /-- Change of variables for monotone functions.
 If `f` is continuous on `[a, b]` and has a nonnegative derivative `f'` in `(a, b)`,
@@ -547,21 +549,21 @@ theorem integral_comp_mul_deriv_of_deriv_nonpos {f f' g : ℝ → ℝ} (hf : Con
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
-  simpa [mul_comm] using integral_deriv_smul_comp_of_deriv_nonpos hf hff' hf'
+  simpa [mul_comm] using! integral_deriv_smul_comp_of_deriv_nonpos hf hff' hf'
 
 lemma integrable_comp_mul_deriv_iff_of_deriv_nonneg {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
     IntervalIntegrable (fun x ↦ (g ∘ f) x * f' x) volume a b ↔
       IntervalIntegrable g volume (f a) (f b) := by
-  simpa [mul_comm] using integrable_deriv_smul_comp_iff_of_deriv_nonneg hf hff' hf'
+  simpa [mul_comm] using! integrable_deriv_smul_comp_iff_of_deriv_nonneg hf hff' hf'
 
 lemma integrable_comp_mul_deriv_iff_of_deriv_nonpos {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
     IntervalIntegrable (fun x ↦ (g ∘ f) x * f' x) volume a b ↔
       IntervalIntegrable g volume (f a) (f b) := by
-  simpa [mul_comm] using integrable_deriv_smul_comp_iff_of_deriv_nonpos hf hff' hf'
+  simpa [mul_comm] using! integrable_deriv_smul_comp_iff_of_deriv_nonpos hf hff' hf'
 
 theorem integral_deriv_comp_mul_deriv' {f f' g g' : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
