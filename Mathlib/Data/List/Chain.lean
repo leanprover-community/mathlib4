@@ -191,7 +191,7 @@ protected theorem IsChain.rel_cons [Trans R R R] (hl : (a :: l).IsChain R) (hb :
 theorem IsChain.tail {l : List α} (h : IsChain R l) : IsChain R l.tail := by
   grind +splitIndPred
 
-@[deprecated (since := "2026-03-20")] alias IsChain.rel_head := IsChain.rel
+@[deprecated (since := "2026-06-25")] alias IsChain.rel_head := IsChain.rel
 
 theorem IsChain.rel_head? {x l} (h : IsChain R (x :: l)) ⦃y⦄ (hy : y ∈ head? l) : R x y := by
   rw [← cons_head?_tail hy] at h
