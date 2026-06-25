@@ -87,7 +87,7 @@ def mkDeprecationWithDate (date : String)
 def mkDeprecation (customMessage : Option String := some "Auto-generated deprecation") :
     CommandElabM Format := do
   -- Get the current date in UTC: we don't want this to depend on the user computer's time zone.
-  let date := s!"{(← Std.Time.DateTime.now (tz := .UTC)).toPlainDate}"
+  let date := s!"{(Std.Time.DateTime.ofTimestamp (← Std.Time.Timestamp.now) .UTC).toPlainDate}"
   mkDeprecationWithDate date customMessage
 
 /--
