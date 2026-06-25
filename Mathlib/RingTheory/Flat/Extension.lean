@@ -392,7 +392,7 @@ instance (S₁ S₂ : FlatExtension R K) :
     FunLike {f : S₁ →ₐ[R] S₂ //
       (IsScalarTower.toAlgHom R S₂ K).comp f = IsScalarTower.toAlgHom R S₁ K} S₁ S₂ where
   coe f := f
-  coe_injective' _ _ h := Subtype.ext (AlgHom.ext fun x ↦ congr($h x))
+  coe_injective _ _ h := Subtype.ext (AlgHom.ext fun x ↦ congr($h x))
 
 instance : ConcreteCategory (FlatExtension R K)
     fun S₁ S₂ ↦ {f : S₁ →ₐ[R] S₂ //
