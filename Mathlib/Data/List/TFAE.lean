@@ -39,8 +39,8 @@ theorem TFAE.sublist {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ <+ l₂)
   fun p hp q hq ↦ h p (hl.subset hp) q (hl.subset hq)
 
 theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁.Perm l₂) : TFAE l₁ ↔ TFAE l₂ :=
-  ⟨fun h p hp₁ q hp₂ => h p (hp.mem_iff.2 hp₁) q (hp.mem_iff.2 hp₂),
-    fun h p hp₁ q hp₂ => h p (hp.mem_iff.1 hp₁) q (hp.mem_iff.1 hp₂)⟩
+  ⟨fun h p hp₁ q hp₂ ↦ h p (hp.mem_iff.2 hp₁) q (hp.mem_iff.2 hp₂),
+    fun h p hp₁ q hp₂ ↦ h p (hp.mem_iff.1 hp₁) q (hp.mem_iff.1 hp₂)⟩
 
 theorem tfae_append_of_mem {a b} {l₁ l₂ : List Prop} (ha : a ∈ l₁) (hb : b ∈ l₂) :
     TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ where
