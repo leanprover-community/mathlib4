@@ -22,8 +22,6 @@ the definiton of `Functor.rightDerived`
 
 @[expose] public section
 
-open CategoryTheory Category Limits
-
 namespace CategoryTheory
 
 namespace Functor
@@ -33,11 +31,18 @@ variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
 
 variable (F : C ⥤ D) [F.Additive] [EnoughInjectives C]
 
+/-- The right derived functor `DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
+when `F : C ⥤ D` is an additive functors between abelian categories and
+`C` has enough injectives. -/
 noncomputable def rightDerivedFunctorPlus :
     DerivedCategory.Plus C ⥤ DerivedCategory.Plus D :=
   (F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).totalRightDerived DerivedCategory.Plus.Qh
     (HomotopyCategory.Plus.quasiIso C)
 
+/-- The natural transformation that is part of the data of
+the right derived functor `DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
+when `F : C ⥤ D` is an additive functors between abelian categories and
+`C` has enough injectives. -/
 noncomputable def rightDerivedFunctorPlusUnit :
     F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh ⟶
       DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus :=
