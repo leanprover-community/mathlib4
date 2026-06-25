@@ -680,6 +680,9 @@ theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
   cases s
   simp only [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
 
+theorem card_eq_one_iff_existsUnique : #s = 1 ↔ ∃! a, a ∈ s := by
+  simp [card_eq_one, Finset.singleton_iff_unique_mem]
+
 theorem exists_eq_insert_iff [DecidableEq α] :
     (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ #s + 1 = #t := by
   constructor
@@ -737,6 +740,16 @@ theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
+
+/-- Given an injective map `f : α → β` for finite sets `s ⊂ α` and `t ⊂ β` such that `t` has
+    cardinality one more than `s`, there exists a unique element of `t` not in `f(s)`. -/
+theorem existsUnique_notMem_image_of_injOn_of_card_eq_add_one
+    {t : Finset β} [DecidableEq β]
+    (hf : Set.InjOn f s) (hf' : Set.MapsTo f s t) (h : #t = #s + 1) :
+    ∃! x, x ∈ t ∧ x ∉ s.image f := by
+  have : #(t \ s.image f) = 1 := by
+    grind [card_sdiff_of_subset hf'.finsetImage_subset, card_image_of_injOn hf]
+  simpa [card_eq_one_iff_existsUnique] using this
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
   its projection to some factor is nontrivial, and the fibers of the projection
