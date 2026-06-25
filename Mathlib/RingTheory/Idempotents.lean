@@ -481,12 +481,13 @@ noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem
 
 /-- One can lift a family of complete orthogonal idempotents of `R/e₀` to get one on `R`.
 
-Note that the lemma itself is stated in terms of surjections instead for syntactic generality. -/
+Note that the lemma itself is stated in terms of surjections (where `T = S / I`)
+instead for syntactic generality. -/
 lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
     (f : R →+* S) (e₀ : R) (he₀ : IsIdempotentElem e₀) (hfe₀ : RingHom.ker f = .span {e₀})
-    (e : I → S) (he : CompleteOrthogonalIdempotents e) (he : ∀ i, e i ∈ f.range) :
+    (e : I → S) (he : CompleteOrthogonalIdempotents e) (hef : ∀ i, e i ∈ f.range) :
     ∃ e', CompleteOrthogonalIdempotents (Option.rec e₀ e') ∧ e = f ∘ e' := by
-  choose e' he' using he
+  choose e' he' using hef
   choose k hk using fun i ↦ Ideal.mem_span_singleton.mp
       (hfe₀.le (show f (e' i * e' i - e' i) = 0 by simp [he', (he.1.1 i).eq]))
   refine ⟨(1 - e₀) • e', ⟨⟨Option.rec he₀ fun i ↦ ?_, ?_⟩, ?_⟩, ?_⟩

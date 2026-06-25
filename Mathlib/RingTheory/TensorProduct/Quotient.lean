@@ -159,7 +159,8 @@ variable {R R' R'' S : Type*} [CommRing R] [CommRing R'] [CommRing R''] [CommRin
 variable (R'') in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local ext high] Ideal.Quotient.algHom_ext in
-/-- Let `e` be an element of `R' ⊗[R] S`. Then `R'' ⊗[R'] (R' ⊗[R] S / <e>) = R'' ⊗[R] S / <e>`. -/
+/-- Let `e` be an element of `R' ⊗[R] S`. Then `R'' ⊗[R'] ((R' ⊗[R] S) / e)` is isomorphic to
+`(R'' ⊗[R] S) / e` as `R''`-algebras. -/
 noncomputable
 def Algebra.tensorQuotientTensorEquiv (e : R' ⊗[R] S) :
     R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}) ≃ₐ[R'']
