@@ -142,8 +142,7 @@ lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
 
 /--
 Degree of `f` at a point `x` is defined to be the degree of the associated field extension
-from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is either infinite
-or undefined.
+from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is infinite.
 -/
 def Hom.residueDegree (f : X ⟶ Y) (x : X) : ℕ :=
   letI := (f.residueFieldMap x).hom.toAlgebra
