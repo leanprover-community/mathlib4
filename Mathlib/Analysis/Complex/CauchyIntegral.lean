@@ -735,10 +735,8 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
   calc ‖∫ (x : ℝ) in x₁..x₂, g m (↑x + ↑m * I)‖
     _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| := by
       refine intervalIntegral.norm_integral_le_of_norm_le_const fun x _ ↦ ?_
-      have hbd := hp (hM₁ m (le_of_max_le_left hm))
-        (hK m (le_of_max_le_right hm) (x + m * I) (by simp))
-      simp only [Pi.zero_apply, dist_zero_left] at hbd
-      exact hbd.le
+      simpa using hp (hM₁ m (le_of_max_le_left hm))
+        (hK m (le_of_max_le_right hm) (x + m * I) (by simp)) |>.le
     _ = (1 / 2) * ε := by field_simp
     _ < ε := by linarith
 
