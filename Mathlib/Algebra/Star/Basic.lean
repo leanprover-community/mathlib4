@@ -94,8 +94,10 @@ theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
 
 /-- `star` as an equivalence when it is involutive. -/
 @[simps! apply]
-protected def Equiv.Perm.star [InvolutiveStar R] : Equiv.Perm R :=
-  star_involutive.toPerm _
+protected def Equiv.Perm.star [InvolutiveStar R] : Equiv.Perm R where
+  toFun := star
+  invFun := star
+  __ : Equiv.Perm R := star_involutive.toPerm _
 
 @[simp]
 theorem Equiv.Perm.symm_star [InvolutiveStar R] :
@@ -213,7 +215,7 @@ theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / s
 See note [reducible non-instances].
 -/
 abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
-  star := id
+  star x := x
   star_involutive _ := rfl
   star_mul := mul_comm
 
@@ -324,7 +326,8 @@ variable [CommSemiring R] [StarRing R]
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
-def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun := star }
+def starRingAut : RingAut R :=
+  { starAddEquiv, starMulAut (R := R) with toFun := star, invFun := star }
 
 variable (R) in
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
@@ -334,7 +337,12 @@ Note that this is the preferred form (over `starRingAut`, available under the sa
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
 `E →ₛₗ[starRingEnd R] F`) does not pretty-print if there is a coercion involved, as would be the
 case for `(↑starRingAut : R →* R)`. -/
-def starRingEnd : R →+* R := @starRingAut R _ _
+@[implicit_reducible]
+def starRingEnd : R →+* R where
+  toFun := star
+  map_one' := star_one R
+  map_zero' := star_zero R
+  __ := @starRingAut R _ _
 
 @[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
