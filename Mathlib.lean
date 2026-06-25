@@ -802,6 +802,7 @@ public import Mathlib.Algebra.Module.LocalizedModule.Int
 public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.Algebra.Module.MinimalAxioms
+public import Mathlib.Algebra.Module.MinimalGenerators
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Module.PID
