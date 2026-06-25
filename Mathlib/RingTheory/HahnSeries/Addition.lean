@@ -118,11 +118,19 @@ theorem coeff_add {x y : R⟦Γ⟧} {a : Γ} : (x + y).coeff a = x.coeff a + y.c
   classical
   ext : 1; exact Pi.single_add (f := fun _ => R) a r s
 
+-- can't infer this otherwise, since `ℕ+` has no `Zero` instance, so can't be `SMulZeroClass`
+instance instPSMul : SMul ℕ+ R⟦Γ⟧ where
+  smul n x := n.val • x
+
+theorem coeff_nsmul {x : R⟦Γ⟧} {n : ℕ} : (n • x).coeff = n • x.coeff := rfl
+
+theorem coeff_psmul {x : R⟦Γ⟧} {n : ℕ+} : (n • x).coeff = n • x.coeff := by
+  rw [← nsmul_val_eq_psmul]
+  rfl
+
 instance : AddMonoid R⟦Γ⟧ := fast_instance%
   coeff_injective.addMonoid _
-    coeff_zero' coeff_add' (fun _ _ => coeff_smul' _ _)
-
-theorem coeff_nsmul {x : R⟦Γ⟧} {n : ℕ} : (n • x).coeff = n • x.coeff := coeff_smul' _ _
+    coeff_zero' coeff_add' (fun _ _ ↦ coeff_psmul) (fun _ _ ↦ coeff_nsmul)
 
 @[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : R⟦Γ⟧} :
@@ -365,7 +373,7 @@ theorem coeff_sub {x y : R⟦Γ⟧} {a : Γ} : (x - y).coeff a = x.coeff a - y.c
 instance : AddGroup R⟦Γ⟧ := fast_instance%
   coeff_injective.addGroup _
     coeff_zero' coeff_add' coeff_neg' coeff_sub'
-    (fun _ _ => coeff_smul' _ _) (fun _ _ => coeff_smul' _ _)
+    (fun _ _ => coeff_psmul) (fun _ _ => coeff_nsmul) (fun _ _ => rfl)
 
 @[simp]
 theorem single_sub (a : Γ) (r s : R) : single a (r - s) = single a r - single a s :=
