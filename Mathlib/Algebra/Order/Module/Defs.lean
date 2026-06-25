@@ -327,6 +327,26 @@ lemma strictMono_smul_left_of_pos [PosSMulStrictMono α β] (ha : 0 < a) :
 @[gcongr] lemma smul_lt_smul_of_pos_left [PosSMulStrictMono α β] (hb : b₁ < b₂) (ha : 0 < a) :
     a • b₁ < a • b₂ := strictMono_smul_left_of_pos ha hb
 
+/-- Scalar multiplication on the left by a nonnegative element preserves monotonicity. -/
+lemma Monotone.const_smul [PosSMulMono α β] {γ : Type*} [Preorder γ] {f : γ → β}
+    (hf : Monotone f) (ha : 0 ≤ a) : Monotone fun x ↦ a • f x :=
+  (monotone_smul_left_of_nonneg ha).comp hf
+
+/-- Scalar multiplication on the left by a nonnegative element preserves antitonicity. -/
+lemma Antitone.const_smul [PosSMulMono α β] {γ : Type*} [Preorder γ] {f : γ → β}
+    (hf : Antitone f) (ha : 0 ≤ a) : Antitone fun x ↦ a • f x :=
+  (monotone_smul_left_of_nonneg ha).comp_antitone hf
+
+/-- Scalar multiplication on the left by a positive element preserves strict monotonicity. -/
+lemma StrictMono.const_smul [PosSMulStrictMono α β] {γ : Type*} [Preorder γ] {f : γ → β}
+    (hf : StrictMono f) (ha : 0 < a) : StrictMono fun x ↦ a • f x :=
+  (strictMono_smul_left_of_pos ha).comp hf
+
+/-- Scalar multiplication on the left by a positive element preserves strict antitonicity. -/
+lemma StrictAnti.const_smul [PosSMulStrictMono α β] {γ : Type*} [Preorder γ] {f : γ → β}
+    (hf : StrictAnti f) (ha : 0 < a) : StrictAnti fun x ↦ a • f x :=
+  (strictMono_smul_left_of_pos ha).comp_strictAnti hf
+
 lemma lt_of_smul_lt_smul_left [PosSMulReflectLT α β] (h : a • b₁ < a • b₂) (ha : 0 ≤ a) : b₁ < b₂ :=
   PosSMulReflectLT.lt_of_smul_lt_smul_left ha h
 
@@ -356,6 +376,26 @@ lemma monotone_smul_right_of_nonneg [SMulPosMono α β] (hb : 0 ≤ b) : Monoton
 
 lemma strictMono_smul_right_of_pos [SMulPosStrictMono α β] (hb : 0 < b) :
     StrictMono ((· • b) : α → β) := SMulPosStrictMono.smul_lt_smul_of_pos_right hb
+
+/-- Scalar multiplication on the right by a nonnegative element preserves monotonicity. -/
+lemma Monotone.smul_const [SMulPosMono α β] {γ : Type*} [Preorder γ] {f : γ → α}
+    (hf : Monotone f) (hb : 0 ≤ b) : Monotone fun x ↦ f x • b :=
+  (monotone_smul_right_of_nonneg hb).comp hf
+
+/-- Scalar multiplication on the right by a nonnegative element preserves antitonicity. -/
+lemma Antitone.smul_const [SMulPosMono α β] {γ : Type*} [Preorder γ] {f : γ → α}
+    (hf : Antitone f) (hb : 0 ≤ b) : Antitone fun x ↦ f x • b :=
+  (monotone_smul_right_of_nonneg hb).comp_antitone hf
+
+/-- Scalar multiplication on the right by a positive element preserves strict monotonicity. -/
+lemma StrictMono.smul_const [SMulPosStrictMono α β] {γ : Type*} [Preorder γ] {f : γ → α}
+    (hf : StrictMono f) (hb : 0 < b) : StrictMono fun x ↦ f x • b :=
+  (strictMono_smul_right_of_pos hb).comp hf
+
+/-- Scalar multiplication on the right by a positive element preserves strict antitonicity. -/
+lemma StrictAnti.smul_const [SMulPosStrictMono α β] {γ : Type*} [Preorder γ] {f : γ → α}
+    (hf : StrictAnti f) (hb : 0 < b) : StrictAnti fun x ↦ f x • b :=
+  (strictMono_smul_right_of_pos hb).comp_strictAnti hf
 
 @[gcongr] lemma smul_le_smul_of_nonneg_right [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : 0 ≤ b) :
     a₁ • b ≤ a₂ • b := monotone_smul_right_of_nonneg hb ha
