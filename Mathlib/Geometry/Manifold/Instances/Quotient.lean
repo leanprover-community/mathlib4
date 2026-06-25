@@ -6,8 +6,6 @@ Authors: Michael Rothgang, Pepa Montero, Archibald Browne, Enrique Díaz, Juan J
 -/
 module
 
-public import Mathlib.Geometry.Manifold.IsManifold.Basic
-public import Mathlib.Geometry.Manifold.ChartedSpace
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
