@@ -178,9 +178,9 @@ noncomputable def mapIso (e : G ≃* H) (e' : B.V ≃ₗ[k] A.V)
     (he : ∀ g, e' ∘ₗ B.ρ g = A.ρ (e g) ∘ₗ e') (n : ℕ) :
     groupCohomology B n ≅ groupCohomology A n where
   hom := groupCohomology.map e.symm (ofHom ⟨e'.toLinearMap, fun h ↦ by simp [he]⟩) n
-  inv := groupCohomology.map e (ofHom ⟨e'.symm.toLinearMap, fun g ↦
-    e'.eq_comp_toLinearMap_iff _ _|>.1 <| by
-      simp [LinearMap.comp_assoc, ← he g]⟩) n
+  inv := groupCohomology.map e (ofHom ⟨e'.symm.toLinearMap, fun g ↦ by
+    rw [e'.toLinearMap_symm_comp_eq, ← LinearMap.comp_assoc]
+    simp [he, LinearMap.comp_assoc]⟩) n
   hom_inv_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
     refine map_congr (by simp) (by simp [res_id]) n
