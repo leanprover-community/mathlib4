@@ -151,12 +151,10 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
   }⟩
 
 set_option backward.defeqAttrib.useBackward true in
-@[to_dual (attr := reassoc (attr := simp))]
+@[to_dual (attr := reassoc (attr := simp), elementwise)]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
   simpa using (c.π.naturality f).symm
-
-attribute [elementwise] Cocone.w Cone.w
 
 end
 
@@ -258,7 +256,7 @@ instance Cone.category : Category (Cone F) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
-/- We do not want `simps` automatically generate the lemma for simplifying the
+/-- We do not want `simps` automatically generate the lemma for simplifying the
 hom field of a category. So we need to write the `ext` lemma in terms of the
 categorical morphism, rather than the underlying structure. -/
 @[to_dual (attr := ext)
