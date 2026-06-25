@@ -62,7 +62,7 @@ lemma spanFinrank_comap [IsNoetherianRing R] [IsLocalRing R] (x : R)
   have le' : (maximalIdeal R • (⊤ : Submodule R I)) ≤
     (maximalIdeal S • (⊤ : Submodule S I)).restrictScalars R := by
     refine Submodule.smul_le.mpr (fun r hr z hz ↦ ?_)
-    simpa only [Submodule.restrictScalars_mem] using Submodule.smul_mem_smul
+    simpa only [Submodule.restrictScalars_mem] using! Submodule.smul_mem_smul
       (map_nonunit (Ideal.Quotient.mk (Ideal.span {x})) r hr) Submodule.mem_top
   let f : QJ →ₗ[R] QI := Submodule.mapQ (p := (maximalIdeal R • (⊤ : Submodule R J)))
       (q := (maximalIdeal S • (⊤ : Submodule S I)).restrictScalars R) qr
@@ -72,7 +72,7 @@ lemma spanFinrank_comap [IsNoetherianRing R] [IsLocalRing R] (x : R)
     obtain ⟨r, hr⟩ := Ideal.Quotient.mk_surjective i.1
     refine ⟨⟨r, by simp [eq, hr]⟩, SetCoe.ext ?_⟩
     change q r = (i : S)
-    simpa [q] using hr
+    simpa [q] using! hr
   have surjf : Function.Surjective f := by
     intro y
     obtain ⟨i, rfl⟩ := Submodule.Quotient.mk_surjective _ y
@@ -121,7 +121,8 @@ lemma spanFinrank_comap [IsNoetherianRing R] [IsLocalRing R] (x : R)
   let qres : R ⧸ maximalIdeal R →+* S ⧸ maximalIdeal S :=
     ResidueField.map (Ideal.Quotient.mk (Ideal.span {x}))
   have qresbij : Function.Bijective qres :=
-    ResidueField.map_bijective_of_surjective _ Ideal.Quotient.mk_surjective
+    ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
+      (Ideal.Quotient.mk_surjective.comp Ideal.Quotient.mk_surjective)⟩
   have (r : R ⧸ maximalIdeal R) (m : QJ ⧸ K) : e (r • m) = qres r • e m := by
     induction m using Submodule.Quotient.induction_on
     induction r using Submodule.Quotient.induction_on
@@ -178,9 +179,8 @@ noncomputable instance [IsNoetherianRing R] [IsLocalRing R] (i : ℕ) :
   IsScalarTower.of_compHom R (ResidueField R) ((koszulAlgebra R).homology i)
 
 noncomputable instance [IsNoetherianRing R] [IsLocalRing R] (i : ℕ) :
-    Module.Finite R ((koszulAlgebra R).X i) := by
-  simp only [koszulComplex.ofList, koszulComplex]
-  exact exteriorPower.instFinite
+    Module.Finite R ((koszulAlgebra R).X i) :=
+  exteriorPower.instFinite
 
 noncomputable instance [IsNoetherianRing R] [IsLocalRing R] (i : ℕ) :
     Module.Finite R ((koszulAlgebra R).homology i) := by
@@ -209,7 +209,7 @@ lemma epsilon1_eq_of_ringEquiv_aux {R : Type u} [CommRing R] [IsNoetherianRing R
     have : (maximalIdeal R').comap e = maximalIdeal R := by
       ext
       simp
-    simpa [← this] using Ideal.map_comap_eq_self_of_equiv e (maximalIdeal R')
+    simpa [← this] using! Ideal.map_comap_eq_self_of_equiv e (maximalIdeal R')
   have eq2 : Ideal.ofList l' = maximalIdeal R' := by
     simp only [l', ← Ideal.map_ofList, eq1, eqmap]
   have len1 : l.length = (maximalIdeal R).spanFinrank := by
@@ -218,10 +218,12 @@ lemma epsilon1_eq_of_ringEquiv_aux {R : Type u} [CommRing R] [IsNoetherianRing R
   have len2 : l'.length = (maximalIdeal R').spanFinrank := by
     rw [← map_ringEquiv_maximalIdeal e, Ideal.spanFinrank_map_eq_of_ringEquiv e]
     simp [l', len1]
-  let e1 := koszulComplex.baseChange_iso R' e l l' rfl
-  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len2
+  let e1 := koszulComplex.ofListBaseChangeIso.{u, v} e l l' rfl
+  --obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len2
   let F := ModuleCat.extendScalars (RingHomClass.toRingHom e)
-  let e' : koszulAlgebra R' ≅ (F.mapHomologicalComplex _).obj (koszulAlgebra R) := e2.trans e1
+  let e' : koszulAlgebra R' ≅ (F.mapHomologicalComplex _).obj (koszulAlgebra R) :=
+    --e2.trans e1
+    sorry
   let h1R := (koszulAlgebra R).homology 1
   let h1R' := (koszulAlgebra R').homology 1
   let _ : F.PreservesHomology := preservesHomology_of_flat R R' (RingHomClass.toRingHom e)
@@ -249,8 +251,8 @@ lemma epsilon1_eq_of_ringEquiv {R : Type u} [CommRing R] [IsNoetherianRing R] [I
     Epsilon1 R = Epsilon1 R' := by
   let R'' := ULift.{v} R
   let e1 : R'' ≃+* R := ULift.ringEquiv
-  let _ : IsNoetherianRing R'' := isNoetherianRing_of_ringEquiv R e1.symm
-  let _ : IsLocalRing R'' := e1.symm.isLocalRing
+  have : IsNoetherianRing R'' := isNoetherianRing_of_ringEquiv R e1.symm
+  have : IsLocalRing R'' := e1.symm.isLocalRing
   let e2 := e1.trans e
   rw [epsilon1_eq_of_ringEquiv_aux e1.symm, epsilon1_eq_of_ringEquiv_aux e2.symm]
 
@@ -324,16 +326,14 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
       have : Nontrivial (S ⧸ I) :=
         Submodule.Quotient.nontrivial_iff.mpr (ne_top_of_le_ne_top Ideal.IsPrime.ne_top'
           (le.trans (Ideal.pow_le_self (Nat.zero_ne_add_one 1).symm)))
-      have : IsLocalHom (Ideal.Quotient.mk I) :=
-        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-      IsLocalRing.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
     Epsilon1 (S ⧸ I) = I.spanFinrank := by
   have Ine := ne_top_of_le_ne_top Ideal.IsPrime.ne_top'
     (le.trans (Ideal.pow_le_self (Nat.zero_ne_add_one 1).symm))
-  let _ : Nontrivial (S ⧸ I) := Submodule.Quotient.nontrivial_iff.mpr Ine
-  let _ : IsLocalHom (Ideal.Quotient.mk I) :=
+  have : Nontrivial (S ⧸ I) := Submodule.Quotient.nontrivial_iff.mpr Ine
+  have : IsLocalHom (Ideal.Quotient.mk I) :=
     IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-  letI : IsLocalRing (S ⧸ I) :=
+  have : IsLocalRing (S ⧸ I) :=
     IsLocalRing.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
   have sprkeq : (maximalIdeal (S ⧸ I)).spanFinrank = (maximalIdeal S).spanFinrank :=
     spanFinrank_eq_of_surjective_of_ker_le (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
@@ -356,11 +356,13 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
       ((local_hom_TFAE _).out 0 4).mp ‹_›
     simp [← comapeq, Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective]
   have len'' : l'.length = (maximalIdeal (S ⧸ I)).spanFinrank := by simp [sprkeq, l', l, len]
-  let e1 := koszulComplex.baseChange_iso (S ⧸ I) (Ideal.Quotient.mk I) l l' rfl
-  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len''
+  let e1 := koszulComplex.ofListBaseChangeIso (Ideal.Quotient.mk I) l l' rfl
+  --obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len''
   let e : koszulAlgebra (S ⧸ I) ≅
-    ((ModuleCat.extendScalars (Ideal.Quotient.mk I)).mapHomologicalComplex
-    _).obj (koszulAlgebra S) := e2.trans e1
+    ((ModuleCat.extendScalars (Ideal.Quotient.mk I)).mapHomologicalComplex _).obj
+      (koszulAlgebra S) :=
+    --e2.trans e1
+    sorry
   let F := (ModuleCat.extendScalars.{u, u, u} (Ideal.Quotient.mk I))
   have preveq : (ComplexShape.down ℕ).prev 1 = 2 := by simp
   have nexteq : (ComplexShape.down ℕ).next 1 = 0 := by simp
@@ -393,7 +395,7 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
       ((koszulAlgebra S).sc' 1 0 0).moduleCatOpcyclesIso).toLinearEquiv
     let eqr : (T.X₃ ⧸ g.range) ≃ₗ[S] S ⧸ g'.range :=
       Submodule.Quotient.equiv _ _ e3 (g.range_comp _).symm
-    let E := (koszulComplex.zeroHomologyLinearEquiv l).symm.trans (eh0.trans eqr)
+    let E := (koszulComplex.zeroHomologyOfListLinearEquiv l).symm.trans (eh0.trans eqr)
     simpa [Ideal.annihilator_quotient, eq1] using E.annihilator_eq.symm
   let g'r := g'.codRestrict (maximalIdeal S) (by simp [← rangeg'])
   have compeq : (maximalIdeal S).subtype.comp g'r = g' :=
@@ -440,7 +442,8 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
     inferInstanceAs (Module (S ⧸ maximalIdeal S) _)
   have rk := rank_eq_of_equiv_equiv (ResidueField.map (Ideal.Quotient.mk I))
     (eK'.toAddEquiv.trans eK.toAddEquiv).symm
-    (ResidueField.map_bijective_of_surjective _ Ideal.Quotient.mk_surjective) (fun r m ↦ by
+    ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
+      (Ideal.Quotient.mk_surjective.comp Ideal.Quotient.mk_surjective)⟩ (fun r m ↦ by
     rcases IsLocalRing.residue_surjective r with ⟨s, hs⟩
     simp only [← hs, AddEquiv.symm_trans_apply]
     change eK'.symm (eK.symm (s • m)) = (Ideal.Quotient.mk I s) • eK'.symm (eK.symm m)
@@ -463,11 +466,9 @@ lemma epsilon1_add_ringKrullDim_eq_spanFinrank_add_spanFinrank_of_surjective (S 
   induction n generalizing S with
   | zero =>
     let e := RingHom.quotientKerEquivOfSurjective surj
-    let _ : Nontrivial (S ⧸ RingHom.ker f) := e.nontrivial
-    let _ : IsLocalRing (S ⧸ RingHom.ker f) :=
-      have : IsLocalHom (Ideal.Quotient.mk (RingHom.ker f)) :=
-        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-      IsLocalRing.of_surjective (Ideal.Quotient.mk (RingHom.ker f)) Ideal.Quotient.mk_surjective
+    have : Nontrivial (S ⧸ RingHom.ker f) := e.nontrivial
+    have : IsLocalRing (S ⧸ RingHom.ker f) :=
+      IsLocalRing.of_surjective' (Ideal.Quotient.mk (RingHom.ker f)) Ideal.Quotient.mk_surjective
     simp only [← (isRegularLocalRing_iff S).mp ‹_›, ← Nat.cast_add, Nat.cast_inj]
     have : RingHom.ker f ≤ (maximalIdeal S) ^ 2 := by
       intro x hx
@@ -515,15 +516,11 @@ lemma epsilon1_add_ringKrullDim_eq_spanFinrank_add_spanFinrank (S : Type u) [Com
     letI : IsLocalRing (S ⧸ I) :=
       have : Nontrivial (S ⧸ I) :=
         Submodule.Quotient.nontrivial_iff.mpr ne
-      have : IsLocalHom (Ideal.Quotient.mk I) :=
-        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-      IsLocalRing.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
     Epsilon1 (S ⧸ I) + ringKrullDim S = I.spanFinrank + (maximalIdeal (S ⧸ I)).spanFinrank := by
-  let _ := Submodule.Quotient.nontrivial_iff.mpr ne
-  let _ : IsLocalHom (Ideal.Quotient.mk I) :=
-    IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-  let _ : IsLocalRing (S ⧸ I) :=
-    IsLocalRing.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  have := Submodule.Quotient.nontrivial_iff.mpr ne
+  have : IsLocalRing (S ⧸ I) :=
+    IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
   convert epsilon1_add_ringKrullDim_eq_spanFinrank_add_spanFinrank_of_surjective S (S ⧸ I)
     (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
   exact Ideal.mk_ker.symm
@@ -547,13 +544,15 @@ lemma AdicCompletion.epsilon1_eq : Epsilon1 (AdicCompletion (maximalIdeal R) R) 
     AdicCompletion.spanFinrank_maximalIdeal_eq
   have len2 : l'.length = (maximalIdeal R').spanFinrank := by
     simp [R', l', sprkeq, len1]
-  let e1 := koszulComplex.baseChange_iso _ (algebraMap R R') l l' rfl
-  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len2
+  let e1 := koszulComplex.ofListBaseChangeIso (algebraMap R R') l l' rfl
+  --obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len2
   let F := (ModuleCat.extendScalars (algebraMap R R'))
-  let e : koszulAlgebra R' ≅ (F.mapHomologicalComplex _).obj (koszulAlgebra R) := e2.trans e1
+  let e : koszulAlgebra R' ≅ (F.mapHomologicalComplex _).obj (koszulAlgebra R) :=
+    --e2.trans e1
+    sorry
   let h1R := (koszulAlgebra R).homology 1
   let h1R' := (koszulAlgebra R').homology 1
-  let _ : F.PreservesHomology := preservesHomology_of_flat R R' (algebraMap R R') flat
+  have : F.PreservesHomology := preservesHomology_of_flat R R' (algebraMap R R') flat
   let eh : h1R' ≅ F.obj h1R :=
     (HomologicalComplex.homologyMapIso e 1).trans (((koszulAlgebra R).sc 1).mapHomologyIso F)
   let eh' : ↑h1R' ≃ₗ[R'] TensorProduct R R' ↑h1R := eh.toLinearEquiv
@@ -576,11 +575,9 @@ lemma epsilon1_add_ringKrullDim_ge :
     Epsilon1 R + ringKrullDim R ≥ (maximalIdeal R).spanFinrank := by
   rcases exist_isRegularLocalRing_surjective_adicCompletion_ker_le R with ⟨S, _, reg, f, surj, le⟩
   let e := RingHom.quotientKerEquivOfSurjective surj
-  let _ : Nontrivial (S ⧸ RingHom.ker f) := e.nontrivial
-  let _ : IsLocalRing (S ⧸ RingHom.ker f) :=
-    have : IsLocalHom (Ideal.Quotient.mk (RingHom.ker f)) :=
-      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-    IsLocalRing.of_surjective (Ideal.Quotient.mk (RingHom.ker f)) Ideal.Quotient.mk_surjective
+  have : Nontrivial (S ⧸ RingHom.ker f) := e.nontrivial
+  have : IsLocalRing (S ⧸ RingHom.ker f) :=
+    IsLocalRing.of_surjective' (Ideal.Quotient.mk (RingHom.ker f)) Ideal.Quotient.mk_surjective
   rw [← AdicCompletion.epsilon1_eq, ← AdicCompletion.ringKrullDim_eq,
     ← AdicCompletion.spanFinrank_maximalIdeal_eq, ← epsilon1_eq_of_ringEquiv e,
     ← ringKrullDim_eq_of_ringEquiv e, epsilon1_eq_spanFinrank S (RingHom.ker f) le, ge_iff_le]
@@ -600,8 +597,8 @@ lemma isCompleteIntersectionLocalRing_def : IsCompleteIntersectionLocalRing R �
     Epsilon1 R + ringKrullDim R = (maximalIdeal R).spanFinrank :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-lemma isCompleteIntersectionLocalRing_of_ringEquiv {R : Type*} [CommRing R] [IsNoetherianRing R]
-    [IsLocalRing R] {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
+lemma isCompleteIntersectionLocalRing_of_ringEquiv {R : Type*} [CommRing R]
+    {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
     (e : R ≃+* R') [IsCompleteIntersectionLocalRing R] : IsCompleteIntersectionLocalRing R' := by
   simp only [isCompleteIntersectionLocalRing_def, ← epsilon1_eq_of_ringEquiv e,
     ← ringKrullDim_eq_of_ringEquiv e]
@@ -654,11 +651,9 @@ lemma quotient_isCompleteIntersectionLocalRing_iff (S : Type u) [CommRing S] [Is
     (I : Ideal S) (ne : I ≠ ⊤) : IsCompleteIntersectionLocalRing (S ⧸ I) ↔
     ∃ (rs : List S), I = Ideal.ofList rs ∧ IsRegular S rs := by
   refine ⟨fun h ↦ quotient_isCompleteIntersectionLocalRing S I, fun ⟨rs, hrs, reg⟩ ↦ ?_⟩
-  let _ : Nontrivial (S ⧸ I) := Submodule.Quotient.nontrivial_iff.mpr ne
-  let _ : IsLocalRing (S ⧸ I) :=
-    have : IsLocalHom (Ideal.Quotient.mk I) :=
-      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-    IsLocalRing.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  have : Nontrivial (S ⧸ I) := Submodule.Quotient.nontrivial_iff.mpr ne
+  have : IsLocalRing (S ⧸ I) :=
+    IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
   have eqht : (I.spanFinrank : WithBot ℕ∞) = I.height := by
     change ((I.spanFinrank : ℕ∞) : WithBot ℕ∞) = _
     classical
@@ -693,15 +688,13 @@ theorem isCompleteIntersectionLocalRing_iff :
   refine ⟨fun h ↦ ?_, fun ⟨S, _, regS, f, rs, surj, hrs, reg⟩ ↦ ?_⟩
   · rcases exist_isRegularLocalRing_surjective_adicCompletion R with ⟨S, _, regS, f, surj⟩
     let e := RingHom.quotientKerEquivOfSurjective surj
-    let _ : Nontrivial (S ⧸ RingHom.ker f) := e.nontrivial
-    let _ : IsLocalRing (S ⧸ RingHom.ker f) :=
-      have : IsLocalHom (Ideal.Quotient.mk (RingHom.ker f)) :=
-        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-      IsLocalRing.of_surjective (Ideal.Quotient.mk (RingHom.ker f)) Ideal.Quotient.mk_surjective
+    have : Nontrivial (S ⧸ RingHom.ker f) := e.nontrivial
+    have : IsLocalRing (S ⧸ RingHom.ker f) :=
+      IsLocalRing.of_surjective' (Ideal.Quotient.mk (RingHom.ker f)) Ideal.Quotient.mk_surjective
     let _ := isCompleteIntersectionLocalRing_of_ringEquiv e.symm
     rcases quotient_isCompleteIntersectionLocalRing S (RingHom.ker f) with ⟨rs, hrs⟩
     use S, inferInstance, inferInstance, f, rs
   · let e := RingHom.quotientKerEquivOfSurjective surj
-    let _ : IsCompleteIntersectionLocalRing (S ⧸ RingHom.ker f) :=
+    have : IsCompleteIntersectionLocalRing (S ⧸ RingHom.ker f) :=
       (quotient_isCompleteIntersectionLocalRing_iff S _ (RingHom.ker_ne_top f)).mpr ⟨rs, hrs, reg⟩
     exact isCompleteIntersectionLocalRing_of_ringEquiv e
