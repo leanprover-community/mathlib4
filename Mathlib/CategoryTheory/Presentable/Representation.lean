@@ -138,7 +138,7 @@ instance (X : C) [IsCardinalPresentable X κ] :
   preservesColimitOfShape J _ _ := by
     have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
     have := preservesColimitsOfShape_of_natIso (J := J)
-      (shrinkYonedaFlipObjCompUliftFunctorIso.{w} X).symm
+      (shrinkYonedaFlipObjCompUliftFunctorIso X).symm
     exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor.{v}
 
 set_option backward.defeqAttrib.useBackward true in

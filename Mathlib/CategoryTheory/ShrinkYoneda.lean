@@ -19,7 +19,7 @@ file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 
 @[expose] public section
 
-universe w w' w'' v u
+universe w w' w'' v v' u u'
 
 namespace CategoryTheory
 
@@ -181,6 +181,11 @@ lemma shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm {X : C} {P : Cᵒ�
   obtain ⟨g, rfl⟩ := shrinkYonedaEquiv.surjective s
   simp [map_shrinkYonedaEquiv]
 
+@[reassoc]
+lemma shrinkYonedaEquiv_symm_comp {X : Cᵒᵖ} {P Q : Cᵒᵖ ⥤ Type w} (x : P.obj X) (α : P ⟶ Q) :
+    shrinkYonedaEquiv.symm x ≫ α = shrinkYonedaEquiv.symm (α.app _ x) :=
+  shrinkYonedaEquiv.injective (by simp [shrinkYonedaEquiv])
+
 variable (C) in
 /-- The functor `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`
 is fully faithful. -/
@@ -227,17 +232,21 @@ noncomputable def uliftYonedaIsoShrinkYoneda :
       exact (shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm _ _).symm)
 
 set_option backward.defeqAttrib.useBackward true in
-/-- The functor `shrinkYoneda.{w}` followed by the evaluation
-at `Y : Cᵒᵖ` and `uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed
-by `uliftFunctor.{w}`. -/
-noncomputable def shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor (Y : Cᵒᵖ) :
-    shrinkYoneda.{w} ⋙ (evaluation Cᵒᵖ _).obj Y ⋙ uliftFunctor.{v} ≅
-      coyoneda.obj Y ⋙ uliftFunctor.{w} :=
-  NatIso.ofComponents (fun X ↦ (Equiv.ulift.trans
-    (shrinkYonedaObjObjEquiv.trans Equiv.ulift.symm)).toIso) (fun f ↦ by
+/-- For `X : C`, the functor `shrinkYoneda.{w}.flip.obj (op X)` followed by
+`uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed by `uliftFunctor.{w}`. -/
+noncomputable def shrinkYonedaFlipObjCompUliftFunctorIso (X : C) :
+    shrinkYoneda.{w}.flip.obj (op X) ⋙ uliftFunctor.{v} ≅
+      coyoneda.obj (op X) ⋙ uliftFunctor.{w} :=
+  NatIso.ofComponents
+    (fun Y ↦ Equiv.toIso (Equiv.ulift.trans (shrinkYonedaObjObjEquiv.trans Equiv.ulift.symm)))
+    (fun _ ↦ by
       ext ⟨g⟩
       obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
-      simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])
+      simp [shrinkYonedaObjObjEquiv, shrinkYoneda])
+
+@[deprecated (since := "2026-06-25")]
+alias shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor :=
+  shrinkYonedaFlipObjCompUliftFunctorIso
 
 /-- `shrinkYoneda.obj X` is represented by `X`. -/
 @[simps]
@@ -248,5 +257,13 @@ def shrinkYonedaRepresentableBy (X : C) : (shrinkYoneda.{w}.obj X).Representable
 
 instance (X : C) : (shrinkYoneda.{w}.obj X).IsRepresentable :=
   (shrinkYonedaRepresentableBy X).isRepresentable
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps!]
+noncomputable def shrinkYonedaMap
+    {D : Type u'} [Category.{v'} D] [LocallySmall.{w} D] (F : C ⥤ D) (X : C) :
+    shrinkYoneda.{w}.obj X ⟶ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) where
+  app X := ↾(equivShrink _ ∘ F.map ∘ (equivShrink _).symm)
+  naturality _ _ _ := by ext; simp [shrinkYoneda]
 
 end CategoryTheory

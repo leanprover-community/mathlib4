@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
+public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.Presheaf

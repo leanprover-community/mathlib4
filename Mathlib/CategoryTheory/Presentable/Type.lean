@@ -146,7 +146,6 @@ instance (X : Type u) : IsPresentable.{u} X := by
   have := hX.isCardinalPresentable
   exact isPresentable_of_isCardinalPresentable X κ
 
-
 lemma isStrongGenerator_punit :
     (ObjectProperty.singleton (PUnit.{u + 1})).IsStrongGenerator  := by
   rw [ObjectProperty.isStrongGenerator_iff]
