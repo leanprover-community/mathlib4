@@ -60,14 +60,14 @@ lemma Semigroup.ppow_induction [Semigroup M] {p : ℕ+ → M → Prop} (x : M) (
       simpa [q, PNat.mk, ← Semigroup.ppow_eq_pow, Semigroup.ppow_succ] using hsucc k IH
   simpa [q, PNat.mk] using hq k
 
-@[to_additive]
+@[to_additive psmul_mk_add_one]
 lemma ppow_mk_add_one [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0 := by exact Nat.succ_ne_zero _) :
     x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) * x := by
   cases n
   · contradiction
   · simp [← Semigroup.ppow_eq_pow, PNat.mk, Semigroup.ppow_succ]
 
-@[to_additive]
+@[to_additive psmul_mk_add_one']
 lemma ppow_mk_add_one' [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0 := by exact Nat.succ_ne_zero _) :
     x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x * x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) := by
   cases n
