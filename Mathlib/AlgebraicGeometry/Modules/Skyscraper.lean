@@ -168,6 +168,21 @@ def skyscraperPresheafOfModules : PresheafOfModules R where
 
 section Iso
 
+lemma test {C : Type*} [Category* C]
+    {FC : C → C → Type u_1} {CC : C → Type*} [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory C FC] {A B : C} (e : A = B) (x : CC A) :
+    HEq ((eqToHom e) x) x := by
+  subst e
+  simp_all only [eqToHom_refl, id_apply, heq_eq_eq]
+
+
+/-
+Note: the following is quite hacky and is (in principal) generalized by the above lemma (which also
+feels dumb).
+
+TODO: Get rid of all this nonsense
+-/
+
 /-- Applying `eqToHom` commutes with application in `ModuleCat` (stated heterogeneously). -/
 lemma heq_eqToHom_apply_moduleCat {R : Type*} [Ring R] {M N : ModuleCat R}
     (e : M = N) (x : M) : HEq ((eqToHom e) x) x := by
@@ -214,9 +229,8 @@ lemma skyscraperPresheafOfModules_presheaf_map_pos {U V : (TopologicalSpace.Open
 
 open Classical in
 /--
-The component at `U` of the isomorphism between the underlying `Ab`-presheaf of `skyscraper2`
-and the skyscraper presheaf: when `p ∈ U` both objects are equal to (the `Ab`-bundling of) the
-residue field at `p`; otherwise both objects are zero objects.
+The isomorphism from the underlying sheaf of `skyscraperPresheafOfModules` to `skyscraperSheaf` at
+an open `U`.
 -/
 noncomputable
 def skyscraperPresheafOfModulesPresheafIsoSkyscraperApp (U : (TopologicalSpace.Opens X)ᵒᵖ) :
