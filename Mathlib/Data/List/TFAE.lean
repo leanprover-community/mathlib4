@@ -6,7 +6,7 @@ Authors: Johan Commelin, Simon Hudon
 module
 
 public import Batteries.Tactic.Alias
-public import Batteries.Data.List.Basic
+public import Batteries.Data.List.Perm
 public import Mathlib.Init
 
 /-!
@@ -35,15 +35,34 @@ theorem tfae_nil : TFAE [] :=
 @[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
-theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
-  ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
-    fun _ hp _ hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
-      by
-        rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
-        · rfl
-        · exact ab.trans (H _ h _ hq)
-        · exact (ab.trans (H _ h _ hp)).symm
-        · exact H _ hp _ hq⟩
+theorem TFAE.sublist {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ <+ l₂) : TFAE l₁ :=
+  fun p hp q hq => h p (hl.subset hp) q (hl.subset hq)
+
+theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁.Perm l₂) : TFAE l₁ ↔ TFAE l₂ :=
+  ⟨fun h p hp₁ q hp₂ => h p (hp.mem_iff.2 hp₁) q (hp.mem_iff.2 hp₂),
+    fun h p hp₁ q hp₂ => h p (hp.mem_iff.1 hp₁) q (hp.mem_iff.1 hp₂)⟩
+
+theorem tfae_append_of_mem {a b} {l₁ l₂ : List Prop} (ha : a ∈ l₁) (hb : b ∈ l₂) :
+    TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ where
+  mp h := by
+    refine ⟨h a (mem_append_left l₂ ha) b (mem_append_right l₁ hb), ?_, ?_⟩
+    · exact h.sublist (sublist_append_left l₁ l₂)
+    · exact h.sublist (sublist_append_right l₁ l₂)
+  mpr := by
+    rintro ⟨hab, h₁, h₂⟩ p hp q hq
+    rcases mem_append.1 hp with hp | hp <;> rcases mem_append.1 hq with hq | hq
+    · exact h₁ p hp q hq
+    · exact (h₁ p hp a ha).trans (hab.trans (h₂ b hb q hq))
+    · exact (h₂ p hp b hb).trans (hab.symm.trans (h₁ a ha q hq))
+    · exact h₂ p hp q hq
+
+theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) :
+    TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
+  simpa using tfae_append_of_mem (l₁ := [a]) (by simp) h
+
+theorem tfae_append_singleton_of_mem {a b} {l : List Prop} (h : b ∈ l) :
+    TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
+  simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (a := b) (b := a) h (by simp), iff_comm]
 
 theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons_of_mem (Mem.head _)
