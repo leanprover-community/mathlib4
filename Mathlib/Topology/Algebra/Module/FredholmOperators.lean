@@ -578,6 +578,7 @@ lemma image_eq_of_surjective_restrict {𝕜 E F : Type*} [Semiring 𝕜] [AddCom
 
 end ContinuousLinearMap
 
+-- no longer used, I think we can remove
 open Set in
 lemma ContinuousLinearMap.ker_closedComplemented_of_isInvertible_restrict
     {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
@@ -603,6 +604,7 @@ lemma fooo {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜
     u.ker.ClosedComplemented := by
   sorry
 
+omit [T2Space E] [ContinuousSMul 𝕜 F] in
 open Set in
 lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
     (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (F₁ : Set F))
@@ -615,7 +617,7 @@ lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E)
   have h : Topology.IsStrictMap u ∧ IsClosed (u.range : Set F) := by
     rw [u.isStrictMap_isClosed_range_iff_restrict E₁ E₁_closed, ← LinearMap.range_domRestrict,
       eqₗ, eqL]
-    exact ⟨F₁.isEmbedding_subtype.comp e.toHomeomorph.isEmbedding |>.isStrictMap, by simpa⟩
+    exact ⟨F₁.isEmbedding_subtype.comp e.isHomeomorph.isEmbedding |>.isStrictMap, by simpa⟩
   have disj : Disjoint E₁ u.ker := by
     rw [disjoint_iff_comap_eq_bot, ← LinearMap.ker_domRestrict, eqₗ,
       LinearMap.ker_comp, ker_subtype, comap_bot, LinearEquiv.ker]
@@ -626,8 +628,7 @@ lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E)
     exact E₁_coFG.fg_of_disjoint disj.symm
   · refine F₁_coFG.of_le (le_trans ?_ (u.range_domRestrict_le_range E₁))
     rw [eqₗ, LinearMap.range_comp, LinearEquiv.range, Submodule.map_top, range_subtype]
-  · exact ContinuousLinearMap.ker_closedComplemented_of_isInvertible_restrict
-      E₁ F₁ E₁_closed E₁_coFG h_mapsto ⟨e, he⟩
+  · exact .of_disjoint_of_finiteDimensional_quotient E₁_closed disj.symm
 
 /- ## Glue together the equivalence (Anatole) -/
 
