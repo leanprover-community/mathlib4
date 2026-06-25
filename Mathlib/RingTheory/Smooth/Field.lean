@@ -68,8 +68,8 @@ lemma Algebra.Generators.homOfComm_cotangentSpace_map_eq [Algebra S T] [IsScalar
     rw [Generators.homOfComm_toExtensionHom_toAlgHom]
     exact MvPolynomial.rename_X _ _
   simp only [Module.Basis.coe_repr_symm, Finsupp.linearCombination_single, linearMap_apply, this,
-    toExtension_Ring, LinearEquiv.restrictScalars_toLinearMap, Finsupp.lmapDomain_apply, one_smul,
-    Finsupp.mapDomain_single, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, map_one]
+    LinearEquiv.restrictScalars_toLinearMap, Finsupp.lmapDomain_apply, one_smul, map_one,
+    Finsupp.mapDomain_single, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single]
   exact ((Finsupp.linearCombination_single T _ _).trans (one_smul T _)).symm
 
 variable (R S T) in
@@ -117,13 +117,12 @@ lemma Algebra.h1Cotangent_subsingleton_of_subalgebra
   rcases h s with ⟨S, sub, hS⟩
   obtain ⟨z, hz⟩ : ∃ (z : MvPolynomial S R), MvPolynomial.rename S.val z = y.1 := by
     use MvPolynomial.rename (Set.inclusion sub) y'
-    simp only [Subalgebra.coe_val, SetLike.coe_sort_coe, MvPolynomial.rename_rename,
-      Generators.toExtension_Ring, hy']
+    simp only [Subalgebra.coe_val, SetLike.coe_sort_coe, MvPolynomial.rename_rename, hy']
     congr 1
   have eqcomap : (Generators.self R S).toExtension.ker = (Generators.self R T).toExtension.ker.comap
     (MvPolynomial.rename S.val) := Algebra.Extension.ker_eq_comap_of_subalgebra S
   have zmem : z ∈ (Generators.self R S).toExtension.ker := by
-    simpa [eqcomap] using Ideal.mem_comap.mpr (hz ▸ y.2)
+    simpa [eqcomap] using! Ideal.mem_comap.mpr (hz ▸ y.2)
   let z' : (Generators.self R ↥S).toExtension.Cotangent := Ideal.toCotangent _ ⟨z, zmem⟩
   have mapeq : Extension.Cotangent.map (Generators.HomOfCommSelf R S T).toExtensionHom z' = x := by
     apply (Algebra.Extension.Cotangent.map_mk _ _).trans

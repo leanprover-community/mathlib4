@@ -89,7 +89,7 @@ lemma algebraMap_eq_zero (x : S) (mem : x ∈ maximalIdeal S) : algebraMap S K x
   exact (iff_not_comm.mp isUnit_iff_ne_zero).mpr ((IsLocalHom.map_nonunit x).mt mem)
 
 /-- An `S`-algebra `K` is algebra over the residue field of `S` if algebra map `IsLocalHom`. -/
-local instance [IsLocalHom (algebraMap S K)] : Algebra (ResidueField S) K :=
+local instance : Algebra (ResidueField S) K :=
   (Ideal.Quotient.lift _ (algebraMap S K) (fun x hx ↦ algebraMap_eq_zero x hx)).toAlgebra
 
 local instance : IsScalarTower S (ResidueField S) K :=
@@ -392,7 +392,7 @@ instance (S₁ S₂ : FlatExtension R K) :
     FunLike {f : S₁ →ₐ[R] S₂ //
       (IsScalarTower.toAlgHom R S₂ K).comp f = IsScalarTower.toAlgHom R S₁ K} S₁ S₂ where
   coe f := f
-  coe_injective' _ _ h := Subtype.ext (AlgHom.ext fun x ↦ congr($h x))
+  coe_injective _ _ h := Subtype.ext (AlgHom.ext fun x ↦ congr($h x))
 
 instance : ConcreteCategory (FlatExtension R K)
     fun S₁ S₂ ↦ {f : S₁ →ₐ[R] S₂ //
@@ -436,12 +436,11 @@ lemma algebraMap_comp_ι_eq (j j' : J) :
     exact (h _ _ f).trans (h _ _ g).symm
   intro j1 j2 f
   have heq1 := c.ι.naturality f
-  simp only [Functor.comp_obj, Functor.const_obj_obj, Functor.comp_map, Functor.const_obj_map,
-    Category.comp_id] at heq1
+  simp only [Functor.const, Functor.comp_map, Category.comp_id] at heq1
   have heq2 :  ((forget₂ (FlatExtension R K) CommRingCat).map (F.map f)).hom.comp
     (algebraMap R (F.obj j1)) = algebraMap R (F.obj j2) := (RingHom.ext fun x ↦
       congr($(AlgHom.comp_algebraMap (F.map f).algHom) x))
-  simp only [Functor.const_obj_obj, Functor.comp_obj, ← heq1, CommRingCat.hom_comp, ← heq2]
+  simp only [Functor.const, ← heq1, CommRingCat.hom_comp, ← heq2]
   exact RingHom.comp_assoc ..
 
 /-- Auxiliary construction for `pt` of colimit in `FlatExtension`, with underlying ring the
@@ -474,9 +473,9 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
         exact CommRingCat.hom_ext (RingHom.ext fun x ↦
           congr($(AlgHom.comp_algebraMap (F.map f).algHom) x).symm) }
     refine ⟨J, inferInstance, inferInstance, _, G, c.ι, hc, fun j' ↦ ⟨?_, ?_⟩⟩
-    · simpa [CommRingCat.flat_iff] using RingHom.flat_algebraMap_iff.mpr (F.obj j').flat
+    · simpa [CommRingCat.flat_iff] using! RingHom.flat_algebraMap_iff.mpr (F.obj j').flat
     · ext x
-      simpa using congr($(algebraMap_comp_ι_eq c j' j) x)
+      simpa using! congr($(algebraMap_comp_ι_eq c j' j) x)
   · refine le_antisymm (fun x hx ↦ ?_) (((local_hom_TFAE (algebraMap R c.pt)).out 0 2).mp ?_)
     · obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp <| (le_of_eq <|
         @CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit _ _ _ _

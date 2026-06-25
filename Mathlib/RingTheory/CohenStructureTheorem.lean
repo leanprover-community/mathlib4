@@ -66,7 +66,6 @@ class IsCohenRing [IsDomain R] extends IsDiscreteValuationRing R, IsAdicComplete
     where
   span : maximalIdeal R = Ideal.span {(ringChar (ResidueField R) : R)}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ CharZero k) :
     ∃ (R : Type u) (_ : CommRing R) (_ : IsDomain R) (_ : IsCohenRing R),
       Nonempty (ResidueField R ≃+* k) := by
@@ -160,7 +159,7 @@ lemma padicIntToIntQuotient_surjective (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) 
 
 lemma padicIntToIntQuotient_ker (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) :
     RingHom.ker (padicIntToIntQuotient p n) = Ideal.span {(p ^ n : ℤ_[p])} := by
-  simpa [← PadicInt.ker_toZModPow, padicIntToIntQuotient] using RingHom.ker_equiv_comp _ _
+  simpa [← PadicInt.ker_toZModPow, padicIntToIntQuotient] using! RingHom.ker_equiv_comp _ _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma padicInt_to_int_quotient_comm (p : ℕ) [Fact (Nat.Prime p)] {m n : ℕ} (hle : m ≤ n) :
@@ -190,7 +189,7 @@ noncomputable def padicIntOfCharP [IsLocalRing R] [IsAdicComplete (maximalIdeal 
     simp only [padicInt_to_int_quotient_comm p hle, f]
     congr)
 
-lemma padicIntOfCharP_flat_of_isCohenRing [IsLocalRing R] [IsDomain R] [IsCohenRing R]
+lemma padicIntOfCharP_flat_of_isCohenRing [IsDomain R] [IsCohenRing R]
     (p : ℕ) [Fact (Nat.Prime p)] (char : CharP (ResidueField R) p) :
     (padicIntOfCharP R p char).Flat := by
   let := (padicIntOfCharP R p char).toAlgebra
@@ -271,7 +270,6 @@ section
 
 variable {R} [IsLocalRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
     (char : CharZero (ResidueField R)) :
     ∃ (f : ResidueField R →+* R), (IsLocalRing.residue R).comp f = RingHom.id _ := by
@@ -424,8 +422,8 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
 end
 
 variable {R} in
-set_option backward.isDefEq.respectTransparency false in
 open MvPowerSeries in
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing R]
     [IsAdicComplete (maximalIdeal R) R] (fg : (maximalIdeal R).FG)
     (S : Type u) [CommRing S] [IsLocalRing S]
@@ -455,7 +453,8 @@ lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing
     congr
     ext r
     suffices (∃ a, (s.equivFin.symm a) = r) ↔ r ∈ s by
-      simpa [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_X, IsDenseInducing.extend_eq _ aux_cont]
+      simp [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_X, ← this,
+        IsDenseInducing.extend_eq _ aux_cont]
     exact ⟨fun ⟨i, hi⟩ ↦ by simp [← hi], fun h ↦ ⟨s.equivFin ⟨r, h⟩, by simp⟩⟩
   have : IsAdicComplete (I.map F) R := by simpa [map_F_I]
   have F_C (s : S) : F (C s) = f s := by
@@ -495,30 +494,15 @@ lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoether
     [IsLocalRing R] {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
     (f : R →+* R') (surj : Function.Surjective f) (le : RingHom.ker f ≤ (maximalIdeal R) ^ 2) :
     (maximalIdeal R').spanFinrank = (maximalIdeal R).spanFinrank := by
-  classical
-  apply le_antisymm
-  · rw [← map_maximalIdeal_of_surjective _ surj]
-    exact Ideal.spanFinrank_map_le_of_fg _ (maximalIdeal R).fg_of_isNoetherianRing
-  · let fin := Submodule.FG.finite_generators (maximalIdeal R').fg_of_isNoetherianRing
-    let := fin.fintype
-    let := surj.isLocalHom f
-    rcases surj.list_map (maximalIdeal R').generators.toFinset.toList with ⟨l, hl⟩
-    apply le_of_le_of_eq _ (Submodule.FG.generators_ncard (maximalIdeal R').fg_of_isNoetherianRing)
-    have leneq : l.length = (maximalIdeal R').generators.ncard := by
-      rw [← List.length_map (as := l) f, hl, Set.ncard_eq_toFinset_card', Finset.length_toList]
-    rw [← leneq]
-    have hspan : Ideal.span (maximalIdeal R').generators = _ := (maximalIdeal R').span_generators
-    have supeq : Ideal.ofList l ⊔ RingHom.ker f = maximalIdeal R := by
-      simp [← Ideal.comap_map_of_surjective' f surj, Ideal.map_ofList, hl, Ideal.ofList, hspan,
-        IsLocalRing.maximalIdeal_comap]
-    have : Ideal.ofList l = maximalIdeal R :=
-      le_antisymm (by simp [← supeq]) (Submodule.le_of_le_smul_of_le_jacobson_bot
-        (maximalIdeal R).fg_of_isNoetherianRing (maximalIdeal_le_jacobson ⊥)
-        (le_of_eq_of_le supeq.symm (sup_le_sup_left (by simpa [← pow_two]) _)))
-    have spaneq : Submodule.span R (l.toFinset : Set R) = maximalIdeal R := by simp [← this]
-    rw [← spaneq]
-    apply (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet _)).trans
-    exact le_of_eq_of_le (Set.ncard_coe_finset _) (List.toFinset_card_le l)
+  let := f.toAlgebra
+  have : IsLocalHom f := IsLocalHom.of_surjective f surj
+  have : _ + Module.finrank (ResidueField R) ((Submodule.comap (maximalIdeal R).subtype
+    (RingHom.ker f)).map (toCotangentSpace R)) = _ :=
+    IsLocalRing.spanFinrank_maximalIdeal_add_finrank_eq_of_surjective surj
+  simp only [← this, Nat.left_eq_add, Submodule.finrank_eq_zero, eq_bot_iff,
+    Submodule.map_le_iff_le_comap]
+  intro x
+  simpa [toCotangentSpace, Ideal.toCotangent_eq_zero] using fun h ↦ le h
 
 set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
@@ -563,13 +547,11 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     simp only [← add_assoc, ← dim, Nat.add_right_cancel_iff] at hn
     exact ih (S ⧸ Ideal.span {x}) inferInstance reg _ surj' hn
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_adicCompletion :
     ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
     (f : S →+* (AdicCompletion (maximalIdeal R) R)), Function.Surjective f :=
   exist_isRegularLocalRing_surjective_of_isAdicComplete _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_adicCompletion_ker_le :
     ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
     (f : S →+* (AdicCompletion (maximalIdeal R) R)),
