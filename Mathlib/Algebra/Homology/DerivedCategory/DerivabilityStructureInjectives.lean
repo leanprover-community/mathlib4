@@ -32,7 +32,7 @@ universe w₁ w₂
 
 open HomotopicalAlgebra CategoryTheory Limits ZeroObject Category
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
 
 namespace CochainComplex.Plus
 
