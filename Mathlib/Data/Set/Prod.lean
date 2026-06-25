@@ -296,7 +296,9 @@ theorem subset_fst_image_prod_snd_image {s : Set (α × β)} :
 lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
   fun _ hx ↦ (mem_prod.1 hx).2
 
-theorem prod_diff_prod : s ×ˢ t \ s₁ ×ˢ t₁ = s ×ˢ (t \ t₁) ∪ (s \ s₁) ×ˢ t := by grind
+theorem prod_sdiff_prod : s ×ˢ t \ s₁ ×ˢ t₁ = s ×ˢ (t \ t₁) ∪ (s \ s₁) ×ˢ t := by grind
+
+@[deprecated (since := "2026-06-03")] alias prod_diff_prod := prod_sdiff_prod
 
 /-- A product set is included in a product set if and only factors are included, or a factor of the
 first set is empty. -/
@@ -840,14 +842,14 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
     (s.pi fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) :=
   calc
     (s.pi fun j => t j (update f i a j)) = ({i} ∪ s \ {i}).pi fun j => t j (update f i a j) := by
-        rw [union_diff_self, union_eq_self_of_subset_left (singleton_subset_iff.2 hi)]
+        rw [union_sdiff_self, union_eq_self_of_subset_left (singleton_subset_iff.2 hi)]
     _ = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) := by
         rw [union_pi, singleton_pi', update_self, pi_update_of_notMem]; simp
 
 theorem univ_pi_update [DecidableEq ι] {β : ι → Type*} (i : ι) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
     (pi univ fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ pi {i}ᶜ fun j => t j (f j) := by
-  rw [compl_eq_univ_diff, ← pi_update_of_mem (mem_univ _)]
+  rw [compl_eq_univ_sdiff, ← pi_update_of_mem (mem_univ _)]
 
 theorem univ_pi_update_univ [DecidableEq ι] (i : ι) (s : Set (α i)) :
     pi univ (update (fun j : ι => (univ : Set (α j))) i s) = eval i ⁻¹' s := by

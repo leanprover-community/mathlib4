@@ -103,6 +103,9 @@ variable [Zero α]
 
 @[simp] lemma zero_empty : (0 : Fin 0 → α) = ![] := empty_eq _
 
+@[simp] lemma finZeroElim_eq_zero : (@finZeroElim fun _ ↦ α) = 0 := by
+  rw [Matrix.empty_eq finZeroElim, Matrix.zero_empty]
+
 @[simp] lemma cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
   ext i; exact i.cases rfl (by simp)
 
