@@ -160,10 +160,11 @@ variable (R'') in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local ext high] Ideal.Quotient.algHom_ext in
 /-- Let `e` be an element of `R' ⊗[R] S`. Then `R'' ⊗[R'] (R' ⊗[R] S / <e>) = R'' ⊗[R] S / <e>`. -/
+noncomputable
 def Algebra.tensorQuotientTensorEquiv (e : R' ⊗[R] S) :
     R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}) ≃ₐ[R'']
     (R'' ⊗[R] S ⧸ Ideal.span {Algebra.TensorProduct.map (Algebra.ofId R' R'') (AlgHom.id R S) e}) :=
-  letI φ := Algebra.TensorProduct.map (Algebra.ofId R' R'') (AlgHom.id R S)
+  letI φ := Algebra.TensorProduct.rTensor S (Algebra.ofId R' R'')
   letI ψ : R'' ⊗[R] S →ₐ[R''] R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}) :=
     Algebra.TensorProduct.lift (Algebra.ofId _ _)
       ((Algebra.TensorProduct.includeRight.restrictScalars R).comp
