@@ -220,8 +220,8 @@ def isoMk {X Y : Extension.{u} Λ k} {_ : IsLocalRing X.Ring} {_ : IsLocalRing Y
   hom := ofHom e
   inv := ofHom <| .ofAlgHom (AlgEquiv.ofBijective e.toAlgHom he).symm (AlgHom.ext fun r ↦ by
     obtain ⟨r, rfl⟩ := he.surjective r
-    nth_rw 1 [AlgHom.comp_apply, AlgEquiv.coe_algHom, ← AlgEquiv.coe_ofBijective e.toAlgHom he,
-      AlgEquiv.symm_apply_apply]
+    nth_rw 1 [AlgHom.comp_apply, AlgEquiv.coe_toAlgHom,
+      ← AlgEquiv.coe_ofBijective e.toAlgHom he, AlgEquiv.symm_apply_apply]
     simp)
   inv_hom_id := by
     ext r
