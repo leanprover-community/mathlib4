@@ -85,7 +85,7 @@ def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ �
   (fun s ↦ ofHom <|
     { toLinearMap := φ.hom.range.liftQ s.π.hom.toLinearMap
         (LinearMap.range_le_ker_iff.mpr <| show (φ ≫ s.π).hom.toLinearMap = 0 by
-          rw [s.condition, hom_zero, ContinuousLinearMap.coe_zero])
+          rw [s.condition, hom_zero, ContinuousLinearMap.toLinearMap_zero])
       cont := Continuous.quotient_lift s.π.hom.2 _ })
   (fun s ↦ rfl)
   (fun s m h ↦ by dsimp at h ⊢; rw [← cancel_epi (cokerπ φ), h]; rfl)
@@ -113,7 +113,7 @@ instance : CategoryWithHomology (TopModuleCat R) := by
       (Submodule.isOpenQuotientMap_mkQ _).isQuotientMap
       (Submodule.isOpenQuotientMap_mkQ _)
       (Subtype.val_injective.comp hF.1) ?_
-    · rw [← ContinuousLinearMap.coe_comp', ← ContinuousLinearMap.coe_comp',
+    · rw [← ContinuousLinearMap.coe_comp, ← ContinuousLinearMap.coe_comp,
         ← hom_comp, ← hom_comp, ShortComplex.π_leftRightHomologyComparison'_ι]
     · suffices ∀ x y, S.g y = 0 → D₂.p y = D₂.p x → S.g x = 0 by
         simpa [Set.subset_def, D₁, kerι_apply S.g] using this
