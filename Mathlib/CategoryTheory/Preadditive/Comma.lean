@@ -68,11 +68,13 @@ instance : AddCommGroup (u ⟶ v) where
     (by simp [Functor.map_nsmul, Preadditive.comp_nsmul, Preadditive.nsmul_comp])
   zsmul n α := CommaMorphism.mk (n • α.left) (n • α.right)
     (by simp [Functor.map_zsmul, Preadditive.comp_zsmul, Preadditive.zsmul_comp])
-  nsmul_zero := by cat_disch
-  nsmul_succ _ _ := by ext <;> dsimp <;> simp [add_nsmul]
-  zsmul_zero' := by cat_disch
-  zsmul_succ' _ _ := by ext <;> dsimp <;> simp [add_zsmul]
-  zsmul_neg' _ _ := by ext <;> dsimp <;> simp [add_nsmul, add_zsmul]
+  nsmul_zero := by simp_rw [HSMul.hSMul, SMul.smul]; cat_disch
+  nsmul_succ _ _ := by simp_rw [HSMul.hSMul, SMul.smul]; ext <;> dsimp <;> simp [add_nsmul]
+  zsmul_zero' := by simp_rw [HSMul.hSMul, SMul.smul]; cat_disch
+  zsmul_succ' _ _ := by simp_rw [HSMul.hSMul, SMul.smul]; ext <;> dsimp <;> simp [add_zsmul]
+  zsmul_neg' _ _ := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    ext <;> dsimp <;> simp [add_nsmul, add_zsmul]
 
 /-- If we have additive functors `L : A ⥤ T` and `R : B ⥤ T` between preadditive categories,
 then the category `Comma L R` is preadditive.

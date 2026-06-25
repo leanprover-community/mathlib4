@@ -39,7 +39,7 @@ instance (J : Type*) :
         p.isLimit.hom_ext (fun ⟨j⟩ ↦ by simp [p.isLimit.fac])⟩⟩
 
 instance [HasFiniteProducts C] : HasFiniteProducts (InjectiveObject C) where
-  out n := by infer_instance
+  out _ := inferInstance
 
 instance [Preadditive C] [HasFiniteProducts C] : HasFiniteBiproducts (InjectiveObject C) :=
   HasFiniteBiproducts.of_hasFiniteProducts
