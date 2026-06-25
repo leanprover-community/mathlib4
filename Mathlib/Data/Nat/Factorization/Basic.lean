@@ -477,11 +477,16 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
   · intro p hp
     simp [factorization_def n (prime_of_mem_primeFactors hp)]
 
-lemma prod_pow_primeFactors_factorization (hn : n ≠ 0) :
+theorem prod_primeFactors_pow_factorization (hn : n ≠ 0) :
+    n = ∏ p ∈ n.primeFactors, p ^ n.factorization p :=
+  prod_factorization_pow_eq_self hn |>.symm.trans <| prod_factorization_eq_prod_primeFactors _
+
+lemma prod_primeFactors_coe_pow_factorization (hn : n ≠ 0) :
     n = ∏ (p : n.primeFactors), (p : ℕ) ^ (n.factorization p) := by
-  nth_rw 1 [← prod_factorization_pow_eq_self hn]
-  rw [prod_factorization_eq_prod_primeFactors _]
-  exact prod_subtype n.primeFactors (fun _ ↦ Iff.rfl) fun a ↦ a ^ n.factorization a
+  simpa using prod_primeFactors_pow_factorization hn
+
+@[deprecated (since := "2026-06-24")]
+alias prod_pow_primeFactors_factorization := prod_primeFactors_coe_pow_factorization
 
 lemma pairwise_coprime_pow_primeFactors_factorization :
     Pairwise (Function.onFun Nat.Coprime fun (p : n.primeFactors) ↦ p ^ n.factorization p) := by
@@ -491,19 +496,18 @@ lemma pairwise_coprime_pow_primeFactors_factorization :
   · exact Nat.prime_of_mem_primeFactors p1.2
   · exact Nat.prime_of_mem_primeFactors p2.2
 
+theorem dvd_prod_primeFactors_pow_self {n : ℕ} (hn : n ≠ 0) :
+    n ∣ (∏ p ∈ n.primeFactors, p) ^ n := by
+  nth_rw 1 [← Finset.prod_pow, prod_primeFactors_pow_factorization hn]
+  refine prod_dvd_prod_of_dvd _ _ fun i hi ↦ pow_dvd_pow i ?_
+  grw [n.factorization_def <| prime_of_mem_primeFactors hi, padicValNat_le_self n]
+
 theorem dvd_pow_self_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
     n ∣ k ^ n ↔ n.primeFactors ⊆ k.primeFactors := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← Nat.primeFactors_pow k hn]
-    exact Nat.primeFactors_mono h <| pow_ne_zero n hk
-  refine Nat.factorization_prime_le_iff_dvd hn (pow_ne_zero n hk) |>.mp fun p hp ↦ ?_
-  by_cases! hpn : p ∉ n.factorization.support
-  · simp [Finsupp.notMem_support_iff.mp hpn]
-  simp_rw [← Nat.support_factorization] at h
-  rw [Nat.factorization_pow, Finsupp.smul_apply]
-  grw [← Nat.one_le_iff_ne_zero.mpr <| Finsupp.mem_support_iff.mp <| h hpn, smul_eq_mul, mul_one,
-    Nat.factorization_def n hp, padicValNat_le_self]
-  exact zero_le n
+  · grw [← Nat.primeFactors_pow k hn, Nat.primeFactors_mono h <| pow_ne_zero n hk]
+  · grw [dvd_prod_primeFactors_pow_self hn, pow_dvd_pow_of_dvd ?_ n]
+    grw [prod_dvd_prod_of_subset _ _ _ h, prod_primeFactors_dvd k]
 
 theorem exists_dvd_pow_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
     (∃ m, n ∣ k ^ m) ↔ n.primeFactors ⊆ k.primeFactors := by

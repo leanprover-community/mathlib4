@@ -87,7 +87,7 @@ def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
 /-- The **Chinese remainder theorem**, version for `ZMod n`. -/
 def ZMod.equivPi (hn : n ≠ 0) :
     ZMod n ≃+* Π (p : n.primeFactors), ZMod (p ^ (n.factorization p)) :=
-  (ringEquivCongr <| Nat.prod_pow_primeFactors_factorization hn).trans
+  (ringEquivCongr <| Nat.prod_primeFactors_coe_pow_factorization hn).trans
     <| prodEquivPi (fun (p : n.primeFactors) ↦ (p : ℕ) ^ (n.factorization p))
       n.pairwise_coprime_pow_primeFactors_factorization
 
