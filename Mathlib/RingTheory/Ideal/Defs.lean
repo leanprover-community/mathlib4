@@ -157,6 +157,7 @@ variable {I G} in
 theorem mem_inertia {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I :=
   I.toAddSubgroup.mem_inertia
 
+variable {I G} in
 theorem coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H :=
   I.toAddSubgroup.coe_mem_inertia
 
