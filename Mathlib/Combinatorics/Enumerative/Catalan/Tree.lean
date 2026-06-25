@@ -26,7 +26,7 @@ import Mathlib.Tactic.Field
 
 open Finset
 
-open Finset.antidiagonal (fst_le snd_le)
+open Finset.HasAntidiagonal.antidiagonal (fst_le snd_le)
 
 namespace BinaryTree
 
