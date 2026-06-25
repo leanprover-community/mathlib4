@@ -156,6 +156,48 @@ lemma whiskerLeft_μ_comp_μ (X Y Z : C) :
       μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom := by
   rw [associativity, Iso.inv_hom_id_assoc]
 
+variable {F} in
+/-- A functor that is isomorphic to a lax monoidal functor is lax monoidal. -/
+@[reducible, simps]
+def ofIso {G : C ⥤ D} (e : F ≅ G) : G.LaxMonoidal where
+  ε := ε F ≫ e.hom.app _
+  μ X Y := (e.inv.app _ ⊗ₘ e.inv.app _) ≫ μ F X Y ≫ e.hom.app _
+  μ_natural_left {X₁ X₂} f Y := by
+    rw [tensorHom_def_assoc, ← whisker_exchange_assoc,
+      ← whisker_exchange_assoc, ← comp_whiskerRight_assoc,
+      NatTrans.naturality, comp_whiskerRight_assoc,
+      μ_natural_left_assoc, tensorHom_def'_assoc]
+    simp
+  μ_natural_right {Y₁ Y₂} X f := by
+    rw [assoc, assoc, ← NatTrans.naturality, ← μ_natural_right_assoc,
+      tensorHom_def'_assoc, tensorHom_def'_assoc, ← whisker_exchange_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, NatTrans.naturality,
+      MonoidalCategory.whiskerLeft_comp_assoc]
+  associativity X Y Z := by
+    rw [assoc, assoc, tensorHom_def_assoc,
+      tensorHom_def_assoc, ← comp_whiskerRight_assoc,
+      assoc, assoc, assoc, Iso.hom_inv_id_app, comp_id,
+      comp_whiskerRight_assoc, ← whisker_exchange_assoc,
+      comp_whiskerRight_assoc, ← NatTrans.naturality,
+      associativity_assoc, associator_naturality_middle_assoc,
+      associator_naturality_right_assoc, associator_naturality_left_assoc,
+      tensorHom_def'_assoc, tensorHom_def'_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc (g := e.inv.app (Y ⊗ Z)),
+      assoc, assoc, assoc, Iso.hom_inv_id_app, comp_id, whisker_exchange,
+      whisker_exchange_assoc, whisker_exchange_assoc]
+    simp
+  left_unitality X := by
+    rw [assoc, assoc, tensorHom_def_assoc, ← comp_whiskerRight_assoc, assoc,
+      Iso.hom_inv_id_app, comp_id, ← whisker_exchange_assoc,
+      ← NatTrans.naturality, ← left_unitality_assoc]
+    simp
+  right_unitality X := by
+    rw [assoc, assoc, tensorHom_def'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      assoc, Iso.hom_inv_id_app, comp_id, whisker_exchange_assoc, ← NatTrans.naturality,
+      ← right_unitality_assoc]
+    simp
+
 end
 
 section
@@ -269,6 +311,7 @@ class OplaxMonoidal (F : C ⥤ D) where
 namespace OplaxMonoidal
 
 attribute [reassoc (attr := simp)] δ_natural_left δ_natural_right
+attribute [reassoc] oplax_associativity oplax_left_unitality oplax_right_unitality
 
 @[reassoc (attr := simp)]
 alias associativity := oplax_associativity
@@ -328,6 +371,43 @@ lemma δ_comp_whiskerLeft_δ (X Y Z : C) :
     δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z = F.map (α_ X Y Z).inv ≫
       δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom := by
   rw [associativity, ← F.map_comp_assoc, Iso.inv_hom_id, Functor.map_id, Category.id_comp]
+
+variable {F} in
+/-- A functor that is isomorphic to an oplax monoidal functor is oplax monoidal. -/
+@[reducible, simps]
+def ofIso {G : C ⥤ D} (e : F ≅ G) : G.OplaxMonoidal where
+  η := e.inv.app _ ≫ η F
+  δ X Y := e.inv.app _ ≫ δ F X Y ≫ (e.hom.app _ ⊗ₘ e.hom.app _)
+  δ_natural_left {X₁ X₂} f Y := by
+    rw [assoc, assoc, NatTrans.naturality_assoc, ← δ_natural_left_assoc,
+      tensorHom_def'_assoc, ← comp_whiskerRight, ← NatTrans.naturality,
+      comp_whiskerRight, tensorHom_def', whisker_exchange_assoc]
+  δ_natural_right {Y₁ Y₂} X f := by
+    rw [assoc, assoc, tensorHom_def'_assoc, ← whisker_exchange,
+      ← MonoidalCategory.whiskerLeft_comp_assoc,
+      ← NatTrans.naturality, MonoidalCategory.whiskerLeft_comp_assoc,
+      δ_natural_right_assoc, NatTrans.naturality_assoc, tensorHom_def']
+  oplax_associativity X Y Z := by
+    rw [assoc, assoc, assoc, assoc, tensorHom_def'_assoc,
+      ← comp_whiskerRight_assoc, Iso.hom_inv_id_app_assoc,
+      whisker_exchange_assoc, comp_whiskerRight_assoc,
+      associator_naturality_right, tensorHom_def, comp_whiskerRight_assoc,
+      associator_naturality_middle_assoc, associator_naturality_left_assoc,
+      oplax_associativity_assoc, NatTrans.naturality_assoc,
+      tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp (f := e.hom.app (Y ⊗ Z)),
+      Iso.hom_inv_id_app_assoc, MonoidalCategory.whiskerLeft_comp,
+      whisker_exchange_assoc, tensorHom_def, MonoidalCategory.whiskerLeft_comp]
+  oplax_left_unitality X := by
+    rw [assoc, assoc, NatTrans.naturality_assoc, tensorHom_def'_assoc,
+      ← comp_whiskerRight, Iso.hom_inv_id_app_assoc, whisker_exchange,
+      ← oplax_left_unitality_assoc, leftUnitor_inv_naturality_assoc,
+      ← MonoidalCategory.whiskerLeft_comp, Iso.inv_hom_id_app,
+      MonoidalCategory.whiskerLeft_id, comp_id]
+  oplax_right_unitality X := by
+    rw [assoc, assoc, NatTrans.naturality_assoc, tensorHom_def_assoc,
+      ← MonoidalCategory.whiskerLeft_comp, Iso.hom_inv_id_app_assoc, ← whisker_exchange,
+      ← oplax_right_unitality_assoc, rightUnitor_inv_naturality_assoc, ← comp_whiskerRight,
+      Iso.inv_hom_id_app, MonoidalCategory.whiskerRight_id, id_comp, Iso.hom_inv_id, comp_id]
 
 end
 
@@ -536,6 +616,12 @@ set_option backward.defeqAttrib.useBackward true in
 def commTensorRight (X : C) :
     F ⋙ tensorRight (F.obj X) ≅ tensorRight X ⋙ F :=
   NatIso.ofComponents (fun Y => μIso F Y X)
+
+variable {F} in
+/-- A functor that is isomorphic to a monoidal functor is monoidal. -/
+abbrev ofIso {G : C ⥤ D} (e : F ≅ G) : G.Monoidal where
+  toLaxMonoidal := .ofIso e
+  toOplaxMonoidal := .ofIso e
 
 end
 
