@@ -200,7 +200,7 @@ theorem gnpowRec_zero (a : GradedMonoid A) : GradedMonoid.mk _ (gnpowRec 0 a.snd
 
 @[simp]
 theorem gnpowRec_succ (n : ℕ) (a : GradedMonoid A) :
-    (GradedMonoid.mk _ <| gnpowRec n.succ a.snd) = ⟨_, gnpowRec n a.snd⟩ * a :=
+    (GradedMonoid.mk _ <| gnpowRec n.succ a.snd) = (GradedMonoid.mk _ <| gnpowRec n a.snd) * a :=
   Sigma.ext (succ_nsmul _ _) (heq_of_cast_eq _ rfl).symm
 
 end GMonoid
@@ -229,11 +229,14 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
   /-- Successor powers behave as expected -/
   gnpow_succ' :
     ∀ (n : ℕ) (a : GradedMonoid A),
-      (GradedMonoid.mk _ <| gnpow n.succ a.snd) = ⟨_, gnpow n a.snd⟩ * a := by
+      (GradedMonoid.mk _ <| gnpow n.succ a.snd) = (GradedMonoid.mk _ <| gnpow n a.snd) * a := by
     apply_gmonoid_gnpowRec_succ_tac
 
 /-- `GMonoid` implies a `Monoid (GradedMonoid A)`. -/
 instance GMonoid.toMonoid [AddMonoid ι] [GMonoid A] : Monoid (GradedMonoid A) where
+  ppow n hn a := GradedMonoid.mk _ (GMonoid.gnpow n a.snd)
+  ppow_one a := by simp [GMonoid.gnpow_succ', GMonoid.gnpow_zero', GMonoid.one_mul]
+  ppow_succ n a := GMonoid.gnpow_succ' (n + 1) a
   npow n a := GradedMonoid.mk _ (GMonoid.gnpow n a.snd)
   npow_zero a := GMonoid.gnpow_zero' a
   npow_succ n a := GMonoid.gnpow_succ' n a
@@ -316,6 +319,9 @@ section Monoid
 
 variable [AddMonoid ι] [GMonoid A]
 
+instance : Pow (A 0) ℕ+ where
+  pow x n := @Eq.rec ι (n.val • (0 : ι)) (fun a _ => A a) (GMonoid.gnpow n.val x) 0 (nsmul_zero n)
+
 instance : NatPow (A 0) where
   pow x n := @Eq.rec ι (n • (0 : ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
 
@@ -324,9 +330,14 @@ variable {A} in
 theorem mk_zero_pow (a : A 0) (n : ℕ) : mk _ (a ^ n) = mk _ a ^ n :=
   Sigma.ext (nsmul_zero n).symm <| eqRec_heq _ _
 
+variable {A} in
+@[simp]
+theorem mk_zero_ppow (a : A 0) (n : ℕ+) : mk _ (a ^ n) = mk _ a ^ n :=
+  Sigma.ext (nsmul_zero n).symm <| eqRec_heq _ _
+
 /-- The `Monoid` structure derived from `GMonoid A`. -/
 instance (priority := 900) GradeZero.monoid : Monoid (A 0) :=
-  Function.Injective.monoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
+  Function.Injective.monoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_ppow mk_zero_pow
 
 end Monoid
 
@@ -336,7 +347,7 @@ variable [AddCommMonoid ι] [GCommMonoid A]
 
 /-- The `CommMonoid` structure derived from `GCommMonoid A`. -/
 instance (priority := 900) GradeZero.commMonoid : CommMonoid (A 0) :=
-  Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
+  Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_ppow mk_zero_pow
 
 end Monoid
 
