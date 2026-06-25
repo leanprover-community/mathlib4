@@ -17,10 +17,9 @@ Given a group homomorphism `f : H →* G`, we have the restriction functor
 
 @[expose] public section
 
-universe t w u v v1 v2 v3
+universe t w u v v1 v2
 
-variable {k : Type u} [Semiring k] {G : Type v1} {H : Type v2} {K : Type v3}
-  [Monoid G] [Monoid H] [Monoid K]
+variable {k : Type u} [Semiring k] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
 
 open CategoryTheory
 
