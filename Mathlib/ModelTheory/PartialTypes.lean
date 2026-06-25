@@ -162,6 +162,20 @@ theorem exists_modelType_isRealizedIn (p : T.PartialType α) :
   obtain ⟨M⟩ := p.isSatisfiable
   exact ⟨p.reductModelType M, p.isRealizedIn_reductModelType M⟩
 
+/-- If `M` models `T` and a tuple `v` realizes every formula in `S`, then `M` (with the
+`constantsOn` structure induced by `v`) models the theory `T` adjoined with the formulas `S`. -/
+lemma model_withFormulaSet_of_realize {M : Type w'} [L.Structure M] [M ⊨ T]
+    (v : α → M) {S : Set (L.Formula α)} (hS : ∀ φ ∈ S, φ.Realize v) :
+    letI : (constantsOn α).Structure M := constantsOn.structure v;
+    M ⊨ T.withFormulaSet S := by
+  letI : (constantsOn α).Structure M := constantsOn.structure v
+  have hM_on : M ⊨ (L.lhomWithConstants α).onTheory T :=
+    (LHom.onTheory_model _ _).2 inferInstance
+  refine (Theory.model_iff (T.withFormulaSet S)).2 fun φ hφ => ?_
+  rcases hφ with (hφ | ⟨ψ, hψ, rfl⟩)
+  · exact hM_on.realize_of_mem _ hφ
+  · exact (Formula.realize_equivSentence M ψ).2 (hS ψ hψ)
+
 /-- Compactness for partial types: a set of formulas extends to a partial type over `T` if and
 only if every finite subset is realized in some model of `T`. -/
 theorem partialType_iff_finitelyRealizable
@@ -182,27 +196,23 @@ theorem partialType_iff_finitelyRealizable
     classical
     let s : Finset (L.Formula α) :=
       (T0.map (Formula.equivSentence).symm.toEmbedding).filter fun φ => φ ∈ S
-    have hs : (↑s : Set (L.Formula α)) ⊆ S := by
-      intro φ hφ
+    have hs : (s : Set (L.Formula α)) ⊆ S := fun φ hφ => by
       simp only [Finset.coe_filter, Finset.mem_map_equiv, _root_.Equiv.symm_symm, mem_setOf_eq,
         s] at hφ
       exact hφ.2
     obtain ⟨M, v, hv⟩ := h s hs
     letI : (constantsOn α).Structure M := constantsOn.structure v
-    have hM : M ⊨ (L.lhomWithConstants α).onTheory T := by
-      simp only [LHom.onTheory_model]
-      infer_instance
-    haveI : M ⊨ (T0 : L[[α]].Theory) := by
-      simp only [model_iff, SetLike.mem_coe]
+    haveI hM_with : M ⊨ T.withFormulaSet (s : Set (L.Formula α)) :=
+      model_withFormulaSet_of_realize v hv
+    have hT0_ss : (T0 : L[[α]].Theory) ⊆ T.withFormulaSet (s : Set (L.Formula α)) := by
       intro φ hφ
-      rcases hT0 hφ with hφT | hφS
-      · exact hM.realize_of_mem _ hφT
-      · obtain ⟨ψ, hψS, rfl⟩ := hφS
-        have hψ : ψ ∈ s := by
-          simpa [s, hψS] using hφ
-        exact
-          (Formula.realize_equivSentence_symm M (Formula.equivSentence ψ) v).1
-            (by simpa using hv ψ hψ)
+      rcases hT0 hφ with (hφT | ⟨ψ, hψS, rfl⟩)
+      · exact Or.inl hφT
+      · refine Or.inr ⟨ψ, ?_, rfl⟩
+        simp only [Finset.coe_filter, Finset.mem_map_equiv, _root_.Equiv.symm_symm, mem_setOf_eq, s]
+        refine ⟨by simpa, hψS⟩
+    haveI : M ⊨ (T0 : L[[α]].Theory) :=
+      hM_with.mono hT0_ss
     exact ⟨ModelType.of (T0 : L[[α]].Theory) M⟩
 
 variable {M : Type u'} [L.Structure M] [Nonempty M]
@@ -238,25 +248,12 @@ theorem partialType_completeTheory_iff_finitelyRealizable
     intro s hs
     obtain ⟨v, hv⟩ := h s hs
     letI : (constantsOn α).Structure M := constantsOn.structure v
-    have hModel :
-        M ⊨ (L.lhomWithConstants α).onTheory (L.completeTheory M) ∪
-          Formula.equivSentence '' (↑s : Set (L.Formula α)) := by
-      simp only [Theory.model_iff]
-      intro φ hφ
-      rcases hφ with hφT | hφS
-      · exact (((LHom.onTheory_model _ _).2 inferInstance).realize_of_mem _ hφT)
-      · rcases hφS with ⟨ψ, hψ, rfl⟩
-        exact (Formula.realize_equivSentence M ψ).2 (hv ψ hψ)
-    haveI :
-        M ⊨ (L.lhomWithConstants α).onTheory (L.completeTheory M) ∪
-          Formula.equivSentence '' (↑s : Set (L.Formula α)) :=
-      hModel
-    have hSat :
-        (((L.lhomWithConstants α).onTheory (L.completeTheory M) ∪
-            Formula.equivSentence '' (↑s : Set (L.Formula α))).IsSatisfiable) :=
+    haveI hModel : M ⊨ (L.completeTheory M).withFormulaSet (s : Set (L.Formula α)) :=
+      model_withFormulaSet_of_realize v (fun φ hφ => hv φ (by simpa using hφ))
+    have hSat : ((L.completeTheory M).withFormulaSet (s : Set (L.Formula α))).IsSatisfiable :=
       Theory.Model.isSatisfiable M
     exact
-      (partialType_iff_finitelyRealizable (↑s : Set (L.Formula α))).1 hSat s fun _ hφ => hφ
+      (partialType_iff_finitelyRealizable (s : Set (L.Formula α))).1 hSat s fun _ hφ => hφ
 
 variable {β γ : Type*}
 
