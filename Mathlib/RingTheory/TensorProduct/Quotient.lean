@@ -164,7 +164,7 @@ attribute [local ext high] Ideal.Quotient.algHom_ext in
 noncomputable
 def Algebra.tensorQuotientTensorEquiv (e : R' ⊗[R] S) :
     R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}) ≃ₐ[R'']
-    (R'' ⊗[R] S ⧸ Ideal.span {Algebra.TensorProduct.map (Algebra.ofId R' R'') (AlgHom.id R S) e}) :=
+    (R'' ⊗[R] S ⧸ Ideal.span {Algebra.TensorProduct.rTensor S (Algebra.ofId R' R'') e}) :=
   letI φ := Algebra.TensorProduct.rTensor S (Algebra.ofId R' R'')
   letI ψ : R'' ⊗[R] S →ₐ[R''] R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}) :=
     Algebra.TensorProduct.lift (Algebra.ofId _ _)
