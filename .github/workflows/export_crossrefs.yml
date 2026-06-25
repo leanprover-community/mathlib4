@@ -27,12 +27,15 @@ permissions:
 
 env:
   CROSSREFS_REPO: leanprover-community/crossref-exports
+  BUILT_SHA: ${{ github.event.workflow_run.head_sha || github.ref }}
 
 jobs:
   export:
     name: Export cross-reference JSON
     runs-on: ubuntu-latest
-    environment: crossref-exports
+    environment:
+      name: crossref-exports
+      deployment: false
     if: >-
       github.repository == 'leanprover-community/mathlib4' &&
       (github.event_name == 'workflow_dispatch'
@@ -40,13 +43,10 @@ jobs:
     steps:
       - name: Checkout the built commit
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        persist-credentials: false
         with:
           # The exact commit CI validated; for manual runs, the dispatched ref.
           ref: ${{ github.event.workflow_run.head_sha || github.ref }}
-
-      - name: Record commit SHA
-        id: sha
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Configure Lean and fetch the Mathlib cache
         uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
@@ -59,7 +59,7 @@ jobs:
       - name: Generate crossrefs.json
         env:
           CROSSREFS_OUT: crossrefs.json
-          CROSSREFS_COMMIT: ${{ steps.sha.outputs.sha }}
+          CROSSREFS_COMMIT: ${{ env.BUILT_SHA }}
         run: lake env lean scripts/export_crossrefs.lean
 
       - name: Sanity-check the output
@@ -90,7 +90,6 @@ jobs:
           owner: ${{ steps.repo.outputs.owner }}
           repositories: ${{ steps.repo.outputs.name }}
 
-      # This token is masked by the token minting action and will not be logged accidentally.
       - name: Push to the crossrefs repository
         env:
           CROSSREFS_PUSH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -113,7 +112,7 @@ jobs:
             git config user.name  "leanprover-community-bot"
             git config user.email "leanprover-community-bot@users.noreply.github.com"
             git add crossrefs.json
-            git commit -m "Update crossrefs (mathlib4@${{ steps.sha.outputs.sha }})"
+            git commit -m "Update crossrefs (mathlib4@${BUILT_SHA})"
             git push
           fi
 
@@ -128,4 +127,4 @@ jobs:
           type: 'stream'
           topic: 'crossrefs export failure'
           content: |
-            ❌ Cross-reference export [failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ steps.sha.outputs.sha }}
+            ❌ Cross-reference export [failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ env.BUILT_SHA }}

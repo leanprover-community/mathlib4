@@ -245,7 +245,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
   mathlib commit SHA is read from `CROSSREFS_COMMIT`. The
   [`export_crossrefs.yml`](../.github/workflows/export_crossrefs.yml) workflow runs this after every
   successful master build and publishes the result to the
-  [`mathlib4-crossrefs`](https://github.com/leanprover-community/mathlib4-crossrefs) repository
+  [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
   (committing only when the entries actually change).
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
