@@ -739,9 +739,7 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
         (hK m (le_of_max_le_right hm) (x + m * I) (by simp))
       simp only [Pi.zero_apply, dist_zero_left] at hbd
       exact hbd.le
-    _ = (1 / 2) * ε := by
-      have : 0 ≠ |x₂ - x₁| := (abs_sub_pos.mpr hne.symm).ne
-      field_simp
+    _ = (1 / 2) * ε := by field_simp
     _ < ε := by linarith
 
 /-- If $f(z) \to 0$ as $\Im(z) \to \infty$, then
