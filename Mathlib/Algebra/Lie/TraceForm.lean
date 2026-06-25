@@ -47,6 +47,8 @@ open Set Module
 
 namespace LieModule
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace form. See also `killingForm`. -/
 noncomputable def traceForm : LinearMap.BilinForm R L :=
@@ -125,9 +127,9 @@ lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     obtain ⟨c : L, hbc : φ c = ⁅y, φ b⁆⟩ := hy (φ b) (LieHom.mem_range_self φ b)
     replace hbc : ⁅φ b, y⁆ = -φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
     rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
-      ← LieRing.of_associative_ring_bracket, ← Module.End.instLieRingModule_eq, hbc, mul_neg,
-      map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
-      LinearMap.zero_apply, LinearMap.zero_apply]
+      ← LieRing.of_associative_ring_bracket, hbc, mul_neg, map_neg, neg_eq_zero,
+      Module.End.mul_eq_comp, ← traceForm_apply_apply, h, LinearMap.zero_apply,
+      LinearMap.zero_apply]
   | zero => simp
   | add u v _ _ hu hv => simp [add_mul, hu, hv]
   | smul t u _ hu => simp [hu]
@@ -402,7 +404,7 @@ noncomputable def killingCompl : LieIdeal R L :=
 lemma coe_killingCompl_top :
     killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by
   ext x
-  simp [LinearMap.ext_iff, LinearMap.BilinForm.IsOrtho, LieModule.traceForm_comm R L L x]
+  simp [LinearMap.ext_iff, LieModule.traceForm_comm R L L x]
 
 lemma restrict_killingForm :
     (killingForm R L).restrict I = LieModule.traceForm R I L :=
