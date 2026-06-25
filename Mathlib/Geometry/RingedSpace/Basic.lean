@@ -38,6 +38,7 @@ open TopCat.Presheaf
 
 namespace AlgebraicGeometry
 
+set_option linter.checkUnivs false in
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
 @[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
 abbrev RingedSpace : Type max (u + 1) (v + 1) :=
