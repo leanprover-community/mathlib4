@@ -181,25 +181,25 @@ variable (φ : M →ₗ[R] R) (a : R)
 abbrev appendMap : M × R →ₗ[R] R := φ.comp (LinearMap.fst R M R) + a • (LinearMap.snd R M R)
 
 variable (R M) in
-noncomputable abbrev X_equiv_zero : ⋀[R]^0 M ≃ₗ[R] ⋀[R]^0 (M × R):=
+noncomputable abbrev XZeroEquiv : ⋀[R]^0 M ≃ₗ[R] ⋀[R]^0 (M × R):=
   (exteriorPower.zeroEquiv R _).trans (exteriorPower.zeroEquiv R _).symm
 
 lemma koszulComplexAux_eq_zero :
     (koszulComplexAux (appendMap φ a) 0).comp (exteriorPowerProdEquivProd R M 0).toLinearMap =
-      (X_equiv_zero R M).toLinearMap.comp ((koszulComplexAux φ 0).comp (LinearMap.fst R _ _) +
+      (XZeroEquiv R M).toLinearMap.comp ((koszulComplexAux φ 0).comp (LinearMap.fst R _ _) +
         a • (LinearMap.snd R _ _)) := by
   ext m
   · simp only [LinearMap.compAlternatingMap_apply, LinearMap.coe_comp, Function.comp_apply,
       LinearEquiv.coe_coe, LinearMap.add_apply, LinearMap.coe_fst,
       LinearMap.smul_apply, LinearMap.coe_snd, smul_zero, add_zero, LinearMap.coe_inl]
     rw [exteriorPowerProdEquivProd_apply_inl_ιMulti]
-    simp [koszulComplexAux, koszulComplexAuxAlternating_apply, X_equiv_zero, appendMap,
+    simp [koszulComplexAux, koszulComplexAuxAlternating_apply, XZeroEquiv, appendMap,
       exteriorPower.zeroEquiv_symm_apply]
   · have hE : (exteriorPowerProdEquivProd R M 0) (0, exteriorPower.ιMulti R 0 m) =
         exteriorPower.ιMulti R 1 (fun _ => ((0, 1) : M × R)) := by
       apply Subtype.ext
       simp [exteriorPowerProdEquivProd_apply_inr_ιMulti]
-    simp [hE, koszulComplexAux, koszulComplexAuxAlternating_apply, X_equiv_zero, appendMap,
+    simp [hE, koszulComplexAux, koszulComplexAuxAlternating_apply, XZeroEquiv, appendMap,
       exteriorPower.zeroEquiv_symm_apply]
 
 variable (n : ℕ)
@@ -265,34 +265,34 @@ lemma koszulComplexAux_eq_pos (n : ℕ) :
       map_add, map_zsmul]
     simp [appendMap, ← Int.cast_smul_eq_zsmul R ((-1) ^ (n + 1)), smul_smul]
 
-noncomputable def from_ofList_hom_zero :
+noncomputable def fromOfListHomZero :
     (koszulComplex φ).X 0 ⟶ (koszulComplex (appendMap φ a)).X 0 :=
-  ModuleCat.ofHom (X_equiv_zero R M).toLinearMap
+  ModuleCat.ofHom (XZeroEquiv R M).toLinearMap
 
-noncomputable def from_ofList_hom_pos (i : ℕ) :
+noncomputable def fromOfListHomSucc (i : ℕ) :
     (koszulComplex φ).X (i + 1) ⟶ (koszulComplex (appendMap φ a)).X (i + 1) :=
   ModuleCat.ofHom ((exteriorPowerProdEquivProd R M i).toLinearMap.comp (LinearMap.inl R _ _))
 
 lemma from_ofList_hom_comm_zero :
-    from_ofList_hom_pos φ a 0 ≫ (koszulComplex (appendMap φ a)).d (0 + 1) 0 =
-      (koszulComplex φ).d (0 + 1) 0 ≫ from_ofList_hom_zero φ a := by
+    fromOfListHomSucc φ a 0 ≫ (koszulComplex (appendMap φ a)).d (0 + 1) 0 =
+      (koszulComplex φ).d (0 + 1) 0 ≫ fromOfListHomZero φ a := by
   ext y
   have h := LinearMap.congr_fun (koszulComplexAux_eq_zero φ a) (y, 0)
-  simpa [d_eq_aux, from_ofList_hom_pos, from_ofList_hom_zero] using! h
+  simpa [d_eq_aux, fromOfListHomSucc, fromOfListHomZero] using! h
 
 lemma from_ofList_hom_comm_pos (i : ℕ) :
-    from_ofList_hom_pos φ a (i + 1) ≫ (koszulComplex (appendMap φ a)).d (i + 1 + 1) (i + 1) =
-      (koszulComplex φ).d (i + 1 + 1) (i + 1) ≫ from_ofList_hom_pos φ a i := by
+    fromOfListHomSucc φ a (i + 1) ≫ (koszulComplex (appendMap φ a)).d (i + 1 + 1) (i + 1) =
+      (koszulComplex φ).d (i + 1 + 1) (i + 1) ≫ fromOfListHomSucc φ a i := by
   ext y
   have h := LinearMap.congr_fun (koszulComplexAux_eq_pos φ a i) (y, 0)
-  simpa [d_eq_aux, from_ofList_hom_pos] using! h
+  simpa [d_eq_aux, fromOfListHomSucc] using! h
 
 noncomputable def toAppendMap : koszulComplex φ ⟶ koszulComplex (appendMap φ a) :=
   ChainComplex.ofHom
     (fun i ↦
       match i with
-      | 0 => from_ofList_hom_zero φ a
-      | i + 1 => from_ofList_hom_pos φ a i)
+      | 0 => fromOfListHomZero φ a
+      | i + 1 => fromOfListHomSucc φ a i)
     (fun i ↦
       match i with
       | 0 => from_ofList_hom_comm_zero φ a
@@ -373,11 +373,11 @@ lemma shortComplexProd_shortExact : (shortComplexProd φ a).ShortExact := by
   intro n
   rcases n with _ | n
   · apply ShortComplex.ShortExact.mk' _
-      ((ModuleCat.mono_iff_injective _).mpr (X_equiv_zero R M).injective)
+      ((ModuleCat.mono_iff_injective _).mpr (XZeroEquiv R M).injective)
       ((ModuleCat.epi_iff_surjective _).mpr fun x ↦ ⟨0, rfl⟩)
     rw [ShortComplex.moduleCat_exact_iff]
     intro x₂ _
-    exact ⟨(X_equiv_zero R M).symm x₂, (X_equiv_zero R M).apply_symm_apply x₂⟩
+    exact ⟨(XZeroEquiv R M).symm x₂, (XZeroEquiv R M).apply_symm_apply x₂⟩
   · let e := exteriorPowerProdEquivProd R M n
     apply ShortComplex.ShortExact.mk' _
       ((ModuleCat.mono_iff_injective _).mpr (e.injective.comp (Prod.mk_left_injective 0)))
