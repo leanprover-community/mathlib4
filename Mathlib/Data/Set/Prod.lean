@@ -567,24 +567,23 @@ theorem diag_mono : Monotone (diag : Set α → Set (α × α)) := fun _ _ h _ =
   And.imp_left (@h _)
 
 @[simp]
-theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
+theorem diag_nonempty_iff : s.diag.Nonempty ↔ s.Nonempty := by
   simp [diag, Set.Nonempty]
 
 @[simp]
-theorem diag_eq_empty : s.diag = ∅ ↔ s = ∅ := by
-  rw [← not_nonempty_iff_eq_empty, ← not_nonempty_iff_eq_empty, diag_nonempty.not]
+theorem diag_eq_empty_iff : s.diag = ∅ ↔ s = ∅ := by
+  simp [Set.ext_iff]
 
-alias ⟨_, Nonempty.diag_nonempty⟩ := diag_nonempty
+alias ⟨_, Nonempty.diag_nonempty⟩ := diag_nonempty_iff
 
 @[simp]
-theorem diag_empty : (∅ : Set α).diag = ∅ := by simp
+theorem diag_empty : (∅ : Set α).diag = ∅ := by grind
 
 variable (s t)
 
-theorem diag_subset_prod : s.diag ⊆ s ×ˢ s := fun _ hx => ⟨hx.1, hx.2 ▸ hx.1⟩
+theorem diag_subset_prod : s.diag ⊆ s ×ˢ s := by grind
 
-theorem diag_eq_sep_prod : s.diag = { x ∈ s ×ˢ s | x.1 = x.2 } := by
-  ext ⟨x, y⟩; simp only [mem_diag, mem_prod, mem_setOf_eq]; grind
+theorem diag_eq_sep_prod : s.diag = { x ∈ s ×ˢ s | x.1 = x.2 } := by grind
 
 variable {s t}
 
@@ -592,42 +591,29 @@ variable {s t}
 theorem diag_singleton (a : α) : ({a} : Set α).diag = {(a, a)} := by grind
 
 @[simp]
-theorem diag_univ : (univ : Set α).diag = diagonal α :=
-  ext <| by simp
+theorem diag_univ : (univ : Set α).diag = diagonal α := by grind
 
 variable (s t)
 
-theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag :=
-  ext fun x => by
-    simp only [mem_diag, mem_inter_iff]
-    tauto
+theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag := by grind
 
 variable {s t}
 
-theorem diag_union : (s ∪ t).diag = s.diag ∪ t.diag := by
-  ext ⟨x, y⟩; simp only [mem_diag, mem_union]; tauto
+theorem diag_union : (s ∪ t).diag = s.diag ∪ t.diag := by grind
 
 theorem diag_insert (a : α) (s : Set α) :
-    (insert a s).diag = insert (a, a) s.diag := by
-  ext ⟨x, y⟩; simp only [mem_diag, mem_insert_iff, Prod.mk.injEq]; grind
+    (insert a s).diag = insert (a, a) s.diag := by grind
 
-theorem diag_eq_image : s.diag = (fun x : α => (x, x)) '' s := by
-  ext ⟨x, y⟩; simp [diag, eq_comm, and_comm]
+theorem diag_eq_image : s.diag = (fun x => (x, x)) '' s := by grind
 
 theorem image_diag {β : Type*} (f : α × α → β) :
-    f '' s.diag = (fun x => f (x, x)) '' s := by
-  rw [diag_eq_image, ← image_comp]; rfl
+    f '' s.diag = (fun x => f (x, x)) '' s := by grind
 
 theorem preimage_coe_coe_diag (s : Set α) :
-    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' s.diag = diagonal s := by
-  ext ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
-  simp [Set.diag]
+    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' s.diag = diagonal s := by grind
 
-@[deprecated preimage_coe_coe_diag (since := "2026-04-22")]
 theorem preimage_coe_coe_diagonal (s : Set α) :
-    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s := by
-  ext ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
-  simp [Set.diagonal]
+    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s := by grind
 
 end Diag
 
@@ -639,12 +625,18 @@ theorem offDiag_mono : Monotone (offDiag : Set α → Set (α × α)) := fun _ _
   And.imp (@h _) <| And.imp_left <| @h _
 
 @[simp]
-theorem offDiag_nonempty : s.offDiag.Nonempty ↔ s.Nontrivial := by
+theorem offDiag_nonempty_iff : s.offDiag.Nonempty ↔ s.Nontrivial := by
   simp [offDiag, Set.Nonempty, Set.Nontrivial]
 
+@[deprecated (since := "2026-06-26")]
+alias offDiag_nonempty := offDiag_nonempty_iff
+
 @[simp]
-theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
-  rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiag_nonempty.not]
+theorem offDiag_eq_empty_iff : s.offDiag = ∅ ↔ s.Subsingleton := by
+  simp [Set.ext_iff, Set.Subsingleton, forall_cond_comm]
+
+@[deprecated (since := "2026-06-26")]
+alias offDiag_eq_empty := offDiag_eq_empty_iff
 
 alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
 
@@ -696,20 +688,16 @@ theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a}
 
 variable (s)
 
-theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
-  ext ⟨x, y⟩; simp only [mem_union, mem_diag, mem_offDiag, mem_prod]; grind
+theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by grind
 
 @[simp]
-theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
-  disjoint_left.mpr fun _ hd ho => ho.2.2 hd.2
+theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by grind
 
 @[simp]
-theorem prod_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by
-  ext ⟨x, y⟩; simp only [mem_sdiff, mem_prod, mem_offDiag, mem_diag]; grind
+theorem prod_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by grind
 
 @[simp]
-theorem prod_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by
-  ext ⟨x, y⟩; simp only [mem_sdiff, mem_prod, mem_diag, mem_offDiag]; grind
+theorem prod_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by grind
 
 end OffDiag
 
