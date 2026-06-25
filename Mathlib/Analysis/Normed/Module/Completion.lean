@@ -96,7 +96,11 @@ instance [NormedField A] [CompletableTopField A] :
 
 end Algebra
 
-section Extension
+end Completion
+
+namespace LinearMap
+
+open UniformSpace.Completion
 
 variable {R₁ R₂ E F : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R₁ →+* R₂} [UniformSpace E]
     [AddCommGroup E] [Module R₁ E] [UniformContinuousConstSMul R₁ E] [IsUniformAddGroup E]
@@ -105,29 +109,28 @@ variable {R₁ R₂ E F : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R�
 
 /-- The continuous linear version of `.extension`. It extends a linear function to a linear function
 over the completion. -/
-def extensionL {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) : Completion E →SL[σ₁₂] F where
+def fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) : Completion E →SL[σ₁₂] F where
   toFun := Completion.extension f
-  map_add' a b := Completion.induction_on₂ a b (isClosed_eq (by fun_prop) (by fun_prop)) <| by
+  map_add' a b := induction_on₂ a b (isClosed_eq (by fun_prop) (by fun_prop)) <| by
     simp [extension_coe, hf, ← coe_add]
-  map_smul' c a := Completion.induction_on a
+  map_smul' c a := induction_on a
       (isClosed_eq (continuous_extension.comp (continuous_const_smul c))
         (continuous_extension.const_smul (σ₁₂ c))) <| by
     simp [extension_coe, hf, ← coe_smul]
 
 @[simp]
-lemma extensionL_apply {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) (e : Completion E) :
-    extensionL hf e = Completion.extension f e := rfl
+lemma fromCompletion_apply {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) (e : Completion E) :
+    fromCompletion hf e = Completion.extension f e := rfl
 
-lemma uniformContinuous_extensionL {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) :
-    UniformContinuous (extensionL hf) :=
-  uniformContinuous_def.mpr (UniformSpace.Completion.uniformContinuous_extension)
+lemma uniformContinuous_fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) :
+    UniformContinuous (fromCompletion hf) :=
+  uniformContinuous_def.mpr (uniformContinuous_extension)
 
-lemma extensionL_unique {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) {g : Completion E →SL[σ₁₂] F}
-    (hg : UniformContinuous g) (h : ∀ (e : E), f e = g e) : extensionL hf = g := by
-  ext; simp [UniformSpace.Completion.extension_unique hf hg h]
+lemma fromCompletion_unique {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f)
+    {g : Completion E →SL[σ₁₂] F} (hg : UniformContinuous g) (h : ∀ (e : E), f e = g e) :
+    fromCompletion hf = g := by
+  ext; simp [extension_unique hf hg h]
 
-end Extension
-
-end Completion
+end LinearMap
 
 end UniformSpace
