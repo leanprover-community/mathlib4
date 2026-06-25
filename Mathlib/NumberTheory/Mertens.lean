@@ -207,7 +207,12 @@ noncomputable instance instCoefn : CoeFun Weight (fun _ ↦ ℕ → ℝ) where
 open intervalIntegral
 
 /- This is needed to ensure measurability of various error terms -/
-attribute [fun_prop] measurable_from_top
+instance instMeasurableSpace {X : Type*} : MeasurableSpace (Finset X)
+    := .comap SetLike.coe (by infer_instance)
+
+instance {X : Type*} [Countable X] : MeasurableSingletonClass (Finset X) :=
+  .mk (fun S ↦ MeasurableSpace.measurableSet_comap.mpr ⟨ {↑S}, by simp, by ext; simp ⟩)
+
 
 variable [f : Weight] (x : ℝ) (N : ℕ)
 
