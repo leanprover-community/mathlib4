@@ -23,7 +23,7 @@ to be more convenient at first glance. This is because doing so produces express
 `ModuleCat.of _ (if _ then _ else _)` which are horrible to work with.
 -/
 
-open AlgebraicGeometry Opposite CategoryTheory Limits ZeroObject
+open Opposite CategoryTheory Limits ZeroObject
 
 /-
 In this file we define the skyscraper sheaf as a sheaf of modules
