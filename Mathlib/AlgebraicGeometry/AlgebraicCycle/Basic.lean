@@ -103,18 +103,19 @@ lemma restrict_univ {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X 
 end restrict
 
 variable [Semiring R] (c : AlgebraicCycle X R)
+
 /--
 Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the
-pushforward of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
+pushforward of a cycle `c` at a point `z = f x`.
 -/
-noncomputable
-def mapAux {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N) (wy : Y → N) (x : X) :
-    ℕ := if wx x = wy (f.base x) then f.residueDegree x else 0
+@[stacks 02R3]
+noncomputable def mapCoeff {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N)
+    (wy : Y → N) (x : X) : ℕ := if wx x = wy (f.base x) then f.residueDegree x else 0
 
 /--
 The pushforward of algebraic cycles with respect to a quasicompact morphism of schemes. The
-arguments `wx` and `wy` are gradings of the algebraic cycle, which is necessary information for the
-function determining how to adjust the coefficients of the cycle. Typically in
+arguments `wx` and `wy` are certain weight functions used to calculate how the weights of the
+algebraic cycle should be adjusted to make the pushforward operation functorial. Typically in
 applications these will be some notions of dimension or codimension. The most common notion of
 dimension is `Order.height`, and the most common notion of codimension is `Order.coheight`, though
 more sophisticated notions exist in the literature which are useful when sufficient
@@ -124,17 +125,17 @@ equidimensionality hypotheses cannot be assumed.
 noncomputable
 def map [QuasiCompact f] {N : Type*} [DecidableEq N]
     (wx : X → N) (wy : Y → N) (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
-  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) f.isSpectralMap c
+  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapCoeff f wx wy ·) f.isSpectralMap c
 
 lemma map_apply [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
     (c : AlgebraicCycle X R) (y : Y) :
-  map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapAux f wx wy x) := rfl
+  map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapCoeff f wx wy x) := rfl
 
 @[simp]
 lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
     map (𝟙 _) wx wx c = c := by
   apply Function.locallyFinsupp.map_id
-  simp [mapAux]
+  simp [mapCoeff]
 
 @[ext]
 lemma ext {R : Type*} [Zero R] {D₁ D₂ : AlgebraicCycle X R}
@@ -159,5 +160,6 @@ lemma le_iff_of_support_subset {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : Al
   · simp_all
   specialize hD₁ p
   contradiction
+
 
 end AlgebraicGeometry.AlgebraicCycle
