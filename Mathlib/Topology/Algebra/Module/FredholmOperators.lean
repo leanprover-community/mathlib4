@@ -609,32 +609,25 @@ lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E)
     (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
     (h_inv : (u.restrict h_mapsto).IsInvertible) :
     IsFredholmStruct u := by
+  obtain ⟨e, he⟩ := h_inv
+  have eqL : u.domRestrict E₁ = F₁.subtypeL ∘L e := congr(F₁.subtypeL ∘L $he).symm
+  have eqₗ : u.toLinearMap.domRestrict E₁ = F₁.subtype ∘ₗ e := congr(($eqL).toLinearMap)
   have h : Topology.IsStrictMap u ∧ IsClosed (u.range : Set F) := by
-    obtain ⟨e, he⟩ := h_inv
-    have eq : u.domRestrict E₁ = F₁.subtypeL ∘L e := he ▸ rfl
     rw [u.isStrictMap_isClosed_range_iff_restrict E₁ E₁_closed, ← LinearMap.range_domRestrict,
-      ← ContinuousLinearMap.toLinearMap_domRestrict, eq]
-    exact ⟨F₁.isEmbedding_subtypeL.comp e.toHomeomorph.isEmbedding |>.isStrictMap, by simpa⟩
+      eqₗ, eqL]
+    exact ⟨F₁.isEmbedding_subtype.comp e.toHomeomorph.isEmbedding |>.isStrictMap, by simpa⟩
+  have disj : Disjoint E₁ u.ker := by
+    rw [disjoint_iff_comap_eq_bot, ← LinearMap.ker_domRestrict, eqₗ,
+      LinearMap.ker_comp, ker_subtype, comap_bot, LinearEquiv.ker]
   constructor
   · exact h.1
   · exact h.2
-  · obtain ⟨G, hc⟩ := E₁.exists_isCompl
-    have : FiniteDimensional 𝕜 G := G.fg_iff_finiteDimensional.1 (E₁_coFG.fg_of_isCompl hc)
-    refine FiniteDimensional.of_injective
-      ((G.projectionOnto E₁ hc.symm).domRestrict u.ker) (LinearMap.ker_eq_bot.1 ?_)
-    ext z
-    -- The following argument can probably be simplified
-    simp only [LinearMap.mem_ker, LinearMap.domRestrict_apply, projectionOnto_apply_eq_zero_iff,
-      mem_bot]
-    refine ⟨fun h => ?_, fun h => by simp_all⟩
-    have : (u.restrict h_mapsto) ⟨z, h⟩ = (u.restrict h_mapsto) 0 := by
-      simp [ContinuousLinearMap.restrict_apply]
-    simpa using h_inv.injective this
-  · refine F₁_coFG.of_le fun x hx => ⟨(u.restrict h_mapsto).inverse ⟨x, hx⟩, ?_⟩
-    rw [ContinuousLinearMap.coe_coe, ← ContinuousLinearMap.coe_restrict_apply
-      h_mapsto ((u.restrict h_mapsto).inverse ⟨x, hx⟩), h_inv.self_apply_inverse]
+  · rw [← Submodule.fg_iff_finiteDimensional]
+    exact E₁_coFG.fg_of_disjoint disj.symm
+  · refine F₁_coFG.of_le (le_trans ?_ (u.range_domRestrict_le_range E₁))
+    rw [eqₗ, LinearMap.range_comp, LinearEquiv.range, Submodule.map_top, range_subtype]
   · exact ContinuousLinearMap.ker_closedComplemented_of_isInvertible_restrict
-      E₁ F₁ E₁_closed E₁_coFG h_mapsto h_inv
+      E₁ F₁ E₁_closed E₁_coFG h_mapsto ⟨e, he⟩
 
 /- ## Glue together the equivalence (Anatole) -/
 
