@@ -56,8 +56,10 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
     · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
     · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 
-lemma withSign.independent : iSupIndep withSign := by
-  apply (iSupIndep_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
+set_option linter.defProp false in
+def withSign.independent : iSupIndep withSign := by
+  apply
+    (iSupIndep_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
   intro i
   fin_cases i <;> simp
 

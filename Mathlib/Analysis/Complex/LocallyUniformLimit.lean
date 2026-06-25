@@ -65,13 +65,14 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by
   have h1 : ContinuousOn (fun w : ℂ => ((w - z) ^ 2)⁻¹) (sphere z r) := by
-    refine ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => hr.ne ?_
+    refine ((continuous_id'.fun_sub continuous_const).fun_pow 2).continuousOn.inv₀
+      fun w hw h => hr.ne ?_
     rwa [mem_sphere_iff_norm, sq_eq_zero_iff.mp h, norm_zero] at hw
   simp_rw [cderiv, ← smul_sub]
   congr 1
   simpa only [Pi.sub_apply, smul_sub] using
-    circleIntegral.integral_sub ((h1.smul hf).circleIntegrable hr.le)
-      ((h1.smul hg).circleIntegrable hr.le)
+    circleIntegral.integral_sub ((h1.fun_smul hf).circleIntegrable hr.le)
+      ((h1.fun_smul hg).circleIntegrable hr.le)
 
 theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
     (hf : ContinuousOn f (sphere z r)) : ‖cderiv r f z‖ < M / r := by

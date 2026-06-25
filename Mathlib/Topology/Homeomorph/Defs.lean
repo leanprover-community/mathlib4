@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 module
 
 public import Mathlib.Topology.ContinuousMap.Defs
-public import Mathlib.Topology.Maps.Basic
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Homeomorphisms
@@ -341,6 +341,20 @@ theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h)
   intro hf
   rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp_assoc]
   exact hf.comp h.symm.isOpenMap
+
+/-- Open quotient maps are preserved by precomposing with a homeomorphism. -/
+@[simp]
+theorem isOpenQuotient_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
+    IsOpenQuotientMap (f ∘ e) ↔ IsOpenQuotientMap f :=
+  ⟨fun h ↦ by simpa [Function.comp_assoc] using h.comp e.symm.isOpenQuotientMap,
+    fun hf ↦ hf.comp e.isOpenQuotientMap⟩
+
+/-- Open quotient maps are preserved by postcomposing with a homeomorphism. -/
+@[simp]
+theorem comp_isOpenQuotientMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
+    IsOpenQuotientMap (e ∘ f) ↔ IsOpenQuotientMap f :=
+  ⟨fun h ↦ by simpa [← Function.comp_assoc] using e.symm.isOpenQuotientMap.comp h,
+    fun hf ↦ e.isOpenQuotientMap.comp hf⟩
 
 variable (X Y) in
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/

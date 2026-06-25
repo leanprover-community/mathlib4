@@ -71,6 +71,7 @@ attribute [to_dual existing] Semilattice.toSemilatticeSup
 
 -- when reordering arguments in arguments that are being reordered,
 -- there is a convenient syntax to specify this at the same time:
+set_option linter.defProp false in
 @[to_dual self (reorder := h₁ h₂ (a b))]
 def SemilatticeSup.foo {α} [Semilattice α]
     (h₁ : ∀ a b : α, a ⊔ b ≤ b) (h₂ : ∀ a b : α, a ≤ b ⊓ a) (my_sorry : ∀ {p : Prop}, p) : False :=
@@ -310,6 +311,7 @@ info: theorem Cov.Ioc_def : ∀ {α : Type} [inst : PartialOrder α] {a b x : α
 
 /-! Test that translated autoparams are marked with `meta`. -/
 
+set_option linter.defProp false in
 @[to_dual]
 def Top.autoParamTest {a b : α} (h : a ≤ b := by grind) : a ≤ b := h
 
@@ -362,6 +364,7 @@ private theorem WithBotPrivate.coe_le_top : WithTop.coe a ≤ .top := .le_top (W
 
 run_meta guard <| (← getEnv).contains ``WithTopPrivate.coe_le_bot
 
+set_option linter.defProp false in
 set_option linter.unusedVariables false in
 @[to_dual (rename := x → y, Pbot ↔ Ptop) renameTest']
 def renameTest [Top α] [Bot α] (x : α) {P : α → Prop} (Ptop : P ⊤) (Pbot : P ⊥) : True := trivial
