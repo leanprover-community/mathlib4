@@ -180,7 +180,7 @@ lemma ultrametric_strict (na : IsNonarchimedean f)
 variable [Semiring S]
 
 lemma Finset.Nonempty.map_sum_le_sup'_map
-    {α S : Type*} [Semiring S] [LinearOrder S] [AddCommMonoid α] (g : α → S)
+    {α S : Type*} [LinearOrder S] [AddCommMonoid α] (g : α → S)
     {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (f : ι → α)
     (na : ∀ a b, g (a + b) ≤ max (g a) (g b)) :
     g (∑ i ∈ s, f i) ≤ s.sup' hs fun x ↦ g (f x) := by
