@@ -405,7 +405,7 @@ lemma IndepFun.integral_smul_eq_smul_integral
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     μ[X • Y] = μ[X] • μ[Y] := by
   by_cases hE : CompleteSpace E
-  · exact hXY.integral_bilin' (𝕜 := 𝕜) hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
+  · exact hXY.integral_bilin' hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
   · simp [integral, hE]
 
 lemma IndepFun.integral_mul_eq_mul_integral
