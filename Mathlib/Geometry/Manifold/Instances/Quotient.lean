@@ -56,7 +56,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {n : ℕ∞} [IsManifold I n M]
 
 omit [T2Space M] [LocallyCompactSpace M] in
-lemma mem_contDiffGroupoid_of_contMDiff_chartAt (x y : M) {h : OpenPartialHomeomorph M M}
+lemma mem_contDiffGroupoid_of_contMDiff_chartAt {x y : M} {h : OpenPartialHomeomorph M M}
     (hh : ContMDiff I I n h) (hhsymm : ContMDiff I I n h.symm) :
     (chartAt H x).symm.trans (h.trans (chartAt H y)) ∈ (contDiffGroupoid (↑n) I) := by
   refine mem_groupoid_of_pregroupoid.mpr ⟨?_, ?_⟩
