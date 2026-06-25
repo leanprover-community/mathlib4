@@ -407,7 +407,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
   { Function.Surjective.monoid ofFun Quot.mk_surjective rfl
-      (fun _ _ => by rfl) fun _ _ => by rfl with
+      (fun _ _ => by rfl) (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := instSemigroup
     toOne := instOne
     npow := fun n a => a ^ n }
