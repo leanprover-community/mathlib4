@@ -10,6 +10,7 @@ public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sober
+public import Mathlib.Topology.NoetherianSpace
 
 /-!
 # The Krull dimension of a topological space
@@ -91,3 +92,20 @@ lemma Topology.IsOpenEmbedding.coheight_eq [QuasiSober Y] [T0Space Y] [QuasiSobe
   congr
   ext : 1
   simp [closure_image_closure hf.continuous]
+
+attribute [local instance 10000] specializationPreorder in
+/--
+In a quasi-sober, irreducible, T0 space `X`, a Noetherian quasi-sober subspace `p` whose closure
+is not all of `X` contains only finitely many points of coheight `1` (in the specialization order
+of `X`).
+-/
+lemma TopologicalSpace.NoetherianSpace.finite_coheight_one_of_closure_ne_univ
+    [QuasiSober X] [IrreducibleSpace X] [T0Space X] {p : Set X}
+    [NoetherianSpace p] [QuasiSober p] (hp : closure p ≠ univ) :
+    {x | x ∈ p ∧ coheight x = 1}.Finite := by
+  have h : {x : p | coheight x = 0}.Finite :=
+    finite_coe_iff.mp <| (Equiv.finite_iff
+      (coheightZeroSetOrderIsoIrreducibleComponents (α := p)).toEquiv).mpr
+      NoetherianSpace.finite_irreducibleComponents
+  exact (h.image Subtype.val).subset
+    (QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one hp)
