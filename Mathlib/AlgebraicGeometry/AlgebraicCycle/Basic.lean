@@ -78,5 +78,4 @@ lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R)
   apply Function.locallyFinsupp.map_id
   simp [mapAux]
 
-end AlgebraicCycle
-end AlgebraicGeometry
+end AlgebraicGeometry.AlgebraicCycle
