@@ -1,9 +1,11 @@
--- import Mathlib
--- import Mathlib.CFT.StandardEtale
-import Mathlib.CFT.No
-import Mathlib.CFT.SeparableResidueStruct
-import Mathlib.CFT.IsStandardEtale
-import Mathlib.CFT.Stuff
+module
+
+public import Mathlib.CFT.No
+public import Mathlib.CFT.Stuff
+public import Mathlib.RingTheory.Henselian
+public import Mathlib.RingTheory.Unramified.LocalStructure
+
+@[expose] public section
 
 open Polynomial TensorProduct
 
@@ -11,7 +13,7 @@ open IsLocalRing
 
 universe u
 
-variable {R : Type*} [CommRing R] [IsLocalRing R]
+variable {R : Type*} [CommRing R] [HenselianLocalRing R]
 
 local notation "𝓀[" R "]" => ResidueField R
 local notation "𝓂[" R "]" => maximalIdeal R
@@ -48,8 +50,9 @@ instance {A : Type*} [CommRing A] [Algebra R A] [Algebra.Etale R A]
     .of_isLocalization P.primeCompl
   Algebra.FormallyEtale.comp _ A _
 
+attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
 lemma HenselianLocalRing.exists_lift_of_to_ResidueField
-    {A : Type*} [CommRing A] [Algebra R A] [Algebra.Etale R A]
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [Algebra.Etale R A]
     [HenselianLocalRing R] (f : A →ₐ[R] ResidueField R) :
     ∃ (g : A →ₐ[R] R), f = (IsScalarTower.toAlgHom _ _ _).comp g := by
   let P := RingHom.ker f.toRingHom
@@ -81,6 +84,8 @@ lemma HenselianLocalRing.exists_lift_of_to_ResidueField
     ext
     simp [hxy, hx]
 
+attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
+set_option backward.isDefEq.respectTransparency false in
 lemma HenselianLocalRing.exists_completeOrthogonalIdempotents_forall_isLocalRing
     {R A : Type*} [CommRing R]
     [HenselianLocalRing R] [CommRing A] [Algebra R A] [Module.Finite R A] :
@@ -88,11 +93,12 @@ lemma HenselianLocalRing.exists_completeOrthogonalIdempotents_forall_isLocalRing
       ∀ i, IsLocalRing (he.idem i).Corner := by
   obtain ⟨R', _, _, _, P, _, _, n, e, he, P', _, _, hP, hP', H⟩ :=
     exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq (R := R) (S := A) 𝓂[R]
-  let φ : 𝓀[R] ≃ₐ[R] 𝓂[R].ResidueField := .ofBijective (IsScalarTower.toAlgHom _ (R ⧸ _) _)
+  let φ : 𝓀[R] ≃ₐ[R] 𝓂[R].ResidueField := .ofBijective
+    (IsScalarTower.toAlgHom R (R ⧸ 𝓂[R]) 𝓂[R].ResidueField)
     (Ideal.bijective_algebraMap_quotient_residueField _)
   let φ' := φ.trans (AlgEquiv.ofBijective _ hP)
   obtain ⟨ψ, hψ⟩ := HenselianLocalRing.exists_lift_of_to_ResidueField
-    ((AlgHomClass.toAlgHom φ'.symm).comp (IsScalarTower.toAlgHom R R' _))
+    (φ'.symm.toAlgHom.comp (IsScalarTower.toAlgHom R R' _))
   have hPeq : P = 𝓂[R].comap ψ.toRingHom := by
     trans RingHom.ker (IsScalarTower.toAlgHom R R' P.ResidueField).toRingHom
     · exact P.ker_algebraMap_residueField.symm
@@ -181,7 +187,7 @@ lemma Module.finrank_eq_one_iff_algebraMap_bijective
     Module.finrank R S = 1 ↔ Function.Bijective (algebraMap R S) := by
   constructor
   · intro H
-    let := (Module.basisUnique Unit H).repr ≪≫ₗ Finsupp.LinearEquiv.finsuppUnique R R Unit
+    let := (Module.basisUnique Unit H).repr ≪≫ₗ Finsupp.uniqueLinearEquiv _ _ .unit
     exact (LinearEquiv.algEquivOfRing this.symm).bijective
   · intro H
     rw [← (AlgEquiv.ofBijective (Algebra.ofId R S) H).toLinearEquiv.finrank_eq, finrank_self]
@@ -298,7 +304,7 @@ instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R]
     .of_surjective _ Ideal.Quotient.mk_surjective
   exact RingHom.isLocalHom_comp (algebraMap R S).kerLift (Ideal.Quotient.mk _)
 
-lemma HenselianLocalRing.exist_residueFieldMap_eq_of_etale [HenselianLocalRing R] {A B : Type*}
+lemma HenselianLocalRing.exist_residueFieldMap_eq_of_etale {A B : Type*}
     [CommRing A] [IsLocalRing A] [Algebra R A]
       [IsLocalHom (algebraMap R A)] [Algebra.Etale R A]
     [CommRing B] [IsLocalRing B] [Algebra R B] [Module.Finite R B]
@@ -342,8 +348,7 @@ lemma IsLocalRing.eq_of_eval_derivative_notMem
   rwa [← add_mul, hc'.mul_right_eq_zero, sub_eq_zero, eq_comm] at hc
 
 lemma HenselianLocalRing.eq_of_toAlgHom_residueField_comp_eq_of_isStandardEtale
-    {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsStandardEtale R A]
-    [HenselianLocalRing R] (f₁ f₂ : A →ₐ[R] R)
+    {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsStandardEtale R A] (f₁ f₂ : A →ₐ[R] R)
     (H : (IsScalarTower.toAlgHom _ _ (ResidueField R)).comp f₁ =
       (IsScalarTower.toAlgHom _ _ _).comp f₂) : f₁ = f₂ := by
   obtain ⟨𝓟⟩ := Algebra.IsStandardEtale.nonempty_standardEtalePresentation (R := R) (S := A)
@@ -357,8 +362,7 @@ lemma HenselianLocalRing.eq_of_toAlgHom_residueField_comp_eq_of_isStandardEtale
     simpa using 𝓟.hasMap.isUnit_derivative_f.map f₁
 
 lemma HenselianLocalRing.eq_of_toAlgHom_residueField_comp_eq
-    {A : Type*} [CommRing A] [Algebra R A] [Algebra.Etale R A]
-    [HenselianLocalRing R] (f₁ f₂ : A →ₐ[R] R)
+    {A : Type*} [CommRing A] [Algebra R A] [Algebra.Etale R A] (f₁ f₂ : A →ₐ[R] R)
     (H : (IsScalarTower.toAlgHom _ _ (ResidueField R)).comp f₁ =
       (IsScalarTower.toAlgHom _ _ _).comp f₂) : f₁ = f₂ := by
   let P := RingHom.ker ((IsScalarTower.toAlgHom R R 𝓀[R]).comp f₁).toRingHom
@@ -381,9 +385,7 @@ lemma HenselianLocalRing.eq_of_toAlgHom_residueField_comp_eq
   ext x
   simpa using congr($this (algebraMap _ _ x))
 
-omit [IsLocalRing R] in
-lemma HenselianLocalRing.eq_of_residueFieldMap_eq
-    [HenselianLocalRing R] {A B : Type*}
+lemma HenselianLocalRing.eq_of_residueFieldMap_eq {A B : Type*}
     [CommRing A] [IsLocalRing A] [Algebra R A]
       [Module.Finite R A] [Algebra.Etale R A]
     [CommRing B] [IsLocalRing B] [Algebra R B] [Module.Finite R B] [Algebra.Etale R B]
@@ -399,7 +401,7 @@ lemma HenselianLocalRing.eq_of_residueFieldMap_eq
   simpa using congr($this (1 ⊗ₜ x))
 
 lemma HenselianLocalRing.exist_algEquiv_residueFieldMap_eq_of_etale
-    [HenselianLocalRing R] {A B : Type*}
+    {R A B : Type*} [CommRing R] [HenselianLocalRing R]
     [CommRing A] [IsLocalRing A] [Algebra R A]
     [Module.Finite R A] [Algebra.Etale R A]
     [CommRing B] [IsLocalRing B] [Algebra R B] [Module.Finite R B] [Algebra.Etale R B]

@@ -102,6 +102,7 @@ instance : Algebra.IsSeparable 𝓀[R] (AdjoinRoot (𝓟.p.map (residue R))) := 
 lemma toResidueExt_surjective : Function.Surjective 𝓟.toResidueExt :=
   𝓟.toResidueExt_eq ▸ (AdjoinRoot.quotEquivQuotMap _ _).surjective.comp Ideal.Quotient.mk_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ker_toResidueExt : RingHom.ker 𝓟.toResidueExt.toRingHom = 𝓂[R].map (algebraMap _ _) := by
   rw [𝓟.toResidueExt_eq, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
     RingHom.ker_comp_of_injective _ (AdjoinRoot.quotEquivQuotMap _ _).injective,

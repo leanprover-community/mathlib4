@@ -46,21 +46,23 @@ lemma IsIdempotentElem.ker_toCorner
   · intro x hx
     refine Ideal.mem_span_singleton.mpr ⟨x, ?_⟩
     simp [show x * e = 0 from congr($(hx).1), sub_mul, mul_comm e]
-  · simpa [Ideal.span_le, sub_eq_zero, -FaithfulSMul.ker_algebraMap_eq_bot] using
+  · simpa [Ideal.span_le, sub_eq_zero, -FaithfulSMul.ker_algebraMap_eq_bot] using!
       Subtype.ext he.eq.symm
 
 instance {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
     (f : S →ₐ[R] T) (I : Ideal T) (J : Ideal R) [I.LiesOver J] : (I.comap f).LiesOver J := by
   constructor; ext; simp [I.over_def J]
 
+attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
 instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.EssFiniteType R S] (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
-    [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
+    [Algebra.IsUnramifiedAt R q] :
+    Algebra.IsSeparable p.ResidueField q.ResidueField :=
   ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
 
 lemma Ideal.isRadical_ker {R S : Type*} [CommRing R] [CommRing S] [IsReduced S] (f : R →+* S) :
     (RingHom.ker f).IsRadical := by
-  simpa [IsRadical, SetLike.le_def, Ideal.mem_radical_iff] using fun _ _ ↦ IsReduced.pow_eq_zero
+  simpa [IsRadical, SetLike.le_def, Ideal.mem_radical_iff] using fun _ _ ↦ eq_zero_of_pow_eq_zero
 
 lemma Ideal.IsRadical.pow_mem_iff {R : Type*} [CommRing R] {I : Ideal R} (hI : I.IsRadical)
     {x : R} {n : ℕ} (hn : n ≠ 0) :

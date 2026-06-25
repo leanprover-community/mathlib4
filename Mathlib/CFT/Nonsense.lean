@@ -1,7 +1,11 @@
-import Mathlib.CFT.SmoothFibers
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.RingTheory.Flat.TorsionFree
-import Mathlib.RingTheory.Henselian
+module
+
+public import Mathlib.RingTheory.Smooth.Fiber
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.Flat.TorsionFree
+public import Mathlib.RingTheory.Henselian
+
+@[expose] public section
 
 instance {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [Algebra.Etale R A] :
   Algebra.Unramified R A where
