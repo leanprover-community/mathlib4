@@ -8,9 +8,9 @@ module
 public import Mathlib.Data.Set.Card
 public import Mathlib.RingTheory.Ideal.Over
 
-@[expose] public section
-
 /-! # Lemmas about `primesOver` in quotient rings. -/
+
+@[expose] public section
 
 lemma Ideal.ncard_primesOver_lt_of_not_le
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
