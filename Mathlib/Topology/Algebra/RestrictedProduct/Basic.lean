@@ -242,9 +242,19 @@ lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
   rfl
 
 @[to_additive]
+instance instPPow [Π i, Semigroup (R i)] [∀ i, MulMemClass (S i) (R i)] :
+    Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ+ where
+  pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ ppow_mem hi n⟩
+
+@[to_additive]
 instance instPow [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
+
+@[to_additive]
+lemma ppow_apply [Π i, Semigroup (R i)] [∀ i, MulMemClass (S i) (R i)]
+    (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℕ+) (i : ι) : (x ^ n) i = x i ^ n :=
+  rfl
 
 @[to_additive]
 lemma pow_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
@@ -254,12 +264,12 @@ lemma pow_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
 @[to_additive]
 instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Monoid (Πʳ i, [R i, B i]_[𝓕]) :=
-  DFunLike.coe_injective.monoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  DFunLike.coe_injective.monoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     CommMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
-  DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance instZPow [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
@@ -279,13 +289,13 @@ instance [Π i, AddMonoidWithOne (R i)] [∀ i, AddSubmonoidWithOneClass (S i) (
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Group (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance [Π i, CommGroup (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     CommGroup (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     IntCast (Πʳ i, [R i, B i]_[𝓕]) where
@@ -294,7 +304,8 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     Ring (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.ring _ rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 instance [Π i, CommRing (R i)] [∀ i, SubringClass (S i) (R i)] :
     CommRing (Πʳ i, [R i, B i]_[𝓕]) where
