@@ -206,7 +206,7 @@ lemma hom_surjective :
     Function.Surjective (Hom.hom : (A ⟶ B) → (A.ρ.IntertwiningMap B.ρ)) :=
   hom_bijective.surjective
 
-/-- The morphisms between two objects in `Rep k G` has an equivalence to the intertwining maps
+/- - Themorphisms between two objects in `Rep k G` has an equivalence to the intertwining maps
   between their underlying representations. -/
 @[simps]
 def homEquiv : (A ⟶ B) ≃ (A.ρ.IntertwiningMap B.ρ) where
