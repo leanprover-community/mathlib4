@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Damien Thomine
 -/
 module
 
@@ -58,7 +58,8 @@ lemma Set.infinite_iff_exists_gt_mem {α : Type*} [LinearOrder α] [LocallyFinit
 
 lemma Set.infinite_iff_exists_lt_mem {α : Type*} [LinearOrder α] [LocallyFiniteOrderTop α]
     {s : Set α} (hs : s.Nonempty) :
-    s.Infinite ↔ ∀ a ∈ s, ∃ b ∈ s, b < a := infinite_iff_exists_gt_mem (α := αᵒᵈ) hs
+    s.Infinite ↔ ∀ a ∈ s, ∃ b ∈ s, b < a :=
+  infinite_iff_exists_gt_mem (α := αᵒᵈ) hs
 
 /- Put in Mathlib.Order.Filter.Basic-/
 lemma Filter.eventuallyLE_of_subset {α : Type*} {l : Filter α} {s t : Set α} (h : s ⊆ t) :
@@ -72,6 +73,13 @@ lemma Filter.EventuallyLE.countable_iUnion' {ι : Sort*} {α : Type*} {l : Filte
   refine (eventually_countable_forall.2 h).mono fun x hx1 hx2 ↦ ?_
   obtain ⟨i, hi⟩ := mem_iUnion.1 hx2
   exact hx1 i hi
+
+/- Put in Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving-/
+lemma MeasureTheory.Measure.QuasiMeasurePreserving.of_eq_ae {α : Type*} [MeasurableSpace α]
+    {μ ν : Measure α} {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
+    (h : MeasureTheory.ae μ = MeasureTheory.ae ν) :
+    QuasiMeasurePreserving f ν ν :=
+  hf.mono h.ge.absolutelyContinuous_of_ae h.le.absolutelyContinuous_of_ae
 
 /- Put somewhere-/
 lemma preimage_limsup_preimage {α : Type*} {s : Set α} {f : α → α} {n : ℕ} :
@@ -89,9 +97,7 @@ lemma preimage_limsup_preimage {α : Type*} {s : Set α} {f : α → α} {n : �
 
 namespace MeasureTheory
 
-open Set Filter Function
-
-open Measure
+open Function Measure
 
 variable {α : Type*} [MeasurableSpace α] {f : α → α} {μ : Measure α} {s : Set α}
 
@@ -249,119 +255,110 @@ lemma MeasurePreserving.isRecurrent [IsFiniteMeasure μ] (hf : MeasurePreserving
     IsRecurrent f μ s :=
   isRecurrent_def.2 (hf.ae_mem_exists_iterate_mem hs)
 
-open Finset TopologicalSpace Topology
+lemma isRecurrent_id :
+    IsRecurrent id μ s :=
+  Eventually.of_forall fun x x_s ↦ mem_iUnion₂.2 ⟨1, one_ne_zero, by simpa⟩
 
 /-- We say that a non-singular (`MeasureTheory.QuasiMeasurePreserving`) self-map is
-*conservative* if for any measurable set `s` of positive measure there exists `x ∈ s` such that `x`
-returns back to `s` under some iteration of `f`. -/
+*conservative* if any measurable set `s` is recurrent, i.e. almost every point `x` returns to `s`
+under some iteration of `f`. -/
 structure Conservative (f : α → α) (μ : Measure α) : Prop extends QuasiMeasurePreserving f μ μ where
   /-- If `f` is a conservative self-map and `s` is a measurable set of nonzero measure,
   then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
-  exists_mem_iterate_mem' : ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s
-
-/-- A self-map preserving a finite measure is conservative. -/
-protected theorem MeasurePreserving.conservative [IsFiniteMeasure μ] (h : MeasurePreserving f μ μ) :
-    Conservative f μ :=
-  ⟨h.quasiMeasurePreserving, fun _ hsm h0 => h.exists_mem_iterate_mem hsm.nullMeasurableSet h0⟩
+  isRecurrent : ∀ ⦃s⦄, MeasurableSet s → IsRecurrent f μ s
 
 namespace Conservative
 
-/-- The identity map is conservative w.r.t. any measure. -/
-protected theorem id (μ : Measure α) : Conservative id μ :=
-  { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
-    exists_mem_iterate_mem' := fun _ _ h0 => by
-      simpa [exists_ne] using! nonempty_of_measure_ne_zero h0 }
+theorem nullMeasurableSet_isRecurrent (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
+    IsRecurrent f μ s := by
+  obtain ⟨t, _, ht, s_t⟩ := hs.exists_measurable_subset_ae_eq
+  exact (isRecurrent_congr_set hf.toQuasiMeasurePreserving s_t).1 (hf.isRecurrent ht)
+
+theorem _root_.MeasureTheory.conservative_iff_exists_mem_iterate_mem
+    (hf : QuasiMeasurePreserving f μ μ) :
+    Conservative f μ ↔ ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
+  refine ⟨fun h s s_m s_0 ↦ (h.isRecurrent s_m).exists_mem_iterate_mem s_0, fun h ↦ ?_⟩
+  refine ⟨hf, fun s hs ↦ ae_le_set.2 ?_⟩
+  suffices ht : μ (s ∩ ⋂ n ≠ 0, f^[n] ⁻¹' sᶜ) = 0 by
+    rw [← ht]; congr; ext x
+    simp only [Set.mem_sdiff, mem_iUnion, not_exists, preimage_compl, mem_inter_iff, mem_iInter,
+      mem_compl_iff]
+  by_contra t_0
+  have t_m : MeasurableSet (s ∩ ⋂ n ≠ 0, f^[n] ⁻¹' sᶜ) := by
+    refine MeasurableSet.inter hs (MeasurableSet.iInter fun n ↦ ?_)
+    exact MeasurableSet.iInter fun _ ↦ ((hf.iterate n).measurable hs).compl
+  obtain ⟨x, x_t, n, n_0, x_n⟩ := h t_m t_0
+  exact notMem_of_mem_compl (mem_iInter₂.1 x_t.2 n n_0) x_n.1
+
+/-- If `f` is a conservative self-map and `s` is a null measurable set of nonzero measure,
+then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
+theorem exists_mem_iterate_mem (hf : Conservative f μ) (hsm : NullMeasurableSet s μ)
+    (hs₀ : μ s ≠ 0) :
+    ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s :=
+  (hf.nullMeasurableSet_isRecurrent hsm).exists_mem_iterate_mem hs₀
 
 theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν : ν ≪ μ)
-    (h' : QuasiMeasurePreserving f ν ν) : Conservative f ν :=
-  ⟨h', fun _ hsm h0 ↦ h.exists_mem_iterate_mem' hsm (mt (@hν _) h0)⟩
-
-/-- Restriction of a conservative system to an invariant set is a conservative system,
-formulated in terms of the restriction of the measure. -/
-theorem measureRestrict (h : Conservative f μ) (hs : MapsTo f s s) :
-    Conservative f (μ.restrict s) :=
-  .of_absolutelyContinuous h (absolutelyContinuous_of_le restrict_le_self) <|
-    h.toQuasiMeasurePreserving.restrict hs
+    (h' : QuasiMeasurePreserving f ν ν) :
+    Conservative f ν :=
+  ⟨h', fun _ hs ↦ (h.isRecurrent hs).of_absolutelyContinuous hν⟩
 
 theorem congr_ae {ν : Measure α} (hf : Conservative f μ) (h : ae μ = ae ν) :
     Conservative f ν :=
-  .of_absolutelyContinuous hf h.ge.absolutelyContinuous_of_ae <|
-    hf.toQuasiMeasurePreserving.mono h.ge.absolutelyContinuous_of_ae h.le.absolutelyContinuous_of_ae
+  hf.of_absolutelyContinuous h.ge.absolutelyContinuous_of_ae
+    (hf.toQuasiMeasurePreserving.of_eq_ae h)
 
 theorem _root_.MeasureTheory.conservative_congr {ν : Measure α} (h : ae μ = ae ν) :
     Conservative f μ ↔ Conservative f ν :=
   ⟨(congr_ae · h), (congr_ae · h.symm)⟩
 
-/-- If `f` is a conservative self-map and `s` is a null measurable set of nonzero measure,
-then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
-theorem exists_mem_iterate_mem (hf : Conservative f μ)
-    (hsm : NullMeasurableSet s μ) (hs₀ : μ s ≠ 0) :
-    ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
-  rcases hsm.exists_measurable_subset_ae_eq with ⟨t, hsub, htm, hts⟩
-  rcases hf.exists_mem_iterate_mem' htm (by rwa [measure_congr hts]) with ⟨x, hxt, m, hm₀, hmt⟩
-  exact ⟨x, hsub hxt, m, hm₀, hsub hmt⟩
+/-- Restriction of a conservative system to an invariant set is a conservative system,
+formulated in terms of the restriction of the measure. -/
+theorem measureRestrict (h : Conservative f μ) (hs : MapsTo f s s) :
+    Conservative f (μ.restrict s) :=
+  h.of_absolutelyContinuous (absolutelyContinuous_of_le restrict_le_self) <|
+    h.toQuasiMeasurePreserving.restrict hs
+
+/-- A self-map preserving a finite measure is conservative. -/
+protected theorem _root_.MeasurePreserving.conservative [IsFiniteMeasure μ]
+    (h : MeasurePreserving f μ μ) :
+    Conservative f μ :=
+  ⟨h.quasiMeasurePreserving, fun _ hs ↦ h.isRecurrent hs.nullMeasurableSet⟩
+
+/-- The identity map is conservative with respect to any measure. -/
+protected theorem id (μ : Measure α) : Conservative id μ :=
+  { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
+    isRecurrent := fun _ _ ↦ isRecurrent_id }
 
 /-- If `f` is a conservative map and `s` is a measurable set of nonzero measure, then
 for infinitely many values of `m` a positive measure of points `x ∈ s` returns back to `s`
 after `m` iterations of `f`. -/
 theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeasurableSet s μ)
-    (h0 : μ s ≠ 0) : ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 := by
-  set t : ℕ → Set α := fun n ↦ s ∩ f^[n] ⁻¹' s
-  -- Assume that `μ (t n) ≠ 0`, where `t n = s ∩ f^[n] ⁻¹' s`, only for finitely many `n`.
-  by_contra H
-  -- Let `N` be the maximal `n` such that `μ (t n) ≠ 0`.
-  obtain ⟨N, hN, hmax⟩ : ∃ N, μ (t N) ≠ 0 ∧ ∀ n > N, μ (t n) = 0 := by
-    rw [Nat.frequently_atTop_iff_infinite, not_infinite] at H
-    convert! exists_max_image _ (·) H ⟨0, by simpa⟩ using 4
-    rw [gt_iff_lt, ← not_le, not_imp_comm, mem_setOf]
-  have htm {n : ℕ} : NullMeasurableSet (t n) μ :=
-    hs.inter <| hs.preimage <| hf.toQuasiMeasurePreserving.iterate n
-  -- Then all `t n`, `n > N`, are null sets, hence `T = t N \ ⋃ n > N, t n` has positive measure.
-  set T := t N \ ⋃ n > N, t n with hT
-  have hμT : μ T ≠ 0 := by
-    rwa [hT, measure_sdiff_null]
-    exact (measure_biUnion_null_iff {n | N < n}.to_countable).2 hmax
-  have hTm : NullMeasurableSet T μ := htm.diff <| .biUnion {n | N < n}.to_countable fun _ _ ↦ htm
-  -- Take `x ∈ T` and `m ≠ 0` such that `f^[m] x ∈ T`.
-  rcases hf.exists_mem_iterate_mem hTm hμT with ⟨x, hxt, m, hm₀, hmt⟩
-  -- Then `N + m > N`, `x ∈ s`, and `f^[N + m] x = f^[N] (f^[m] x) ∈ s`.
-  -- This contradicts `x ∈ T ⊆ (⋃ n > N, t n)ᶜ`.
-  refine hxt.2 <| mem_iUnion₂.2 ⟨N + m, ?_, hxt.1.1, ?_⟩
-  · simpa [pos_iff_ne_zero]
-  · simpa only [iterate_add] using! hmt.1.2
+    (h0 : μ s ≠ 0) : ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 :=
+  (hf.nullMeasurableSet_isRecurrent hs).frequently_measure_inter_ne_zero hf.toQuasiMeasurePreserving
+    (subset_refl s) h0
 
 /-- If `f` is a conservative map and `s` is a measurable set of nonzero measure, then
 for an arbitrarily large `m` a positive measure of points `x ∈ s` returns back to `s`
 after `m` iterations of `f`. -/
 theorem exists_gt_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeasurableSet s μ)
-    (h0 : μ s ≠ 0) (N : ℕ) : ∃ m > N, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 :=
-  let ⟨m, hm, hmN⟩ :=
-    ((hf.frequently_measure_inter_ne_zero hs h0).and_eventually (eventually_gt_atTop N)).exists
-  ⟨m, hmN, hm⟩
+    (h0 : μ s ≠ 0) (N : ℕ) : ∃ m > N, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 := by
+  obtain ⟨m, N_m, hm⟩ := (hf.frequently_measure_inter_ne_zero hs h0).forall_exists_of_atTop (N + 1)
+  exact ⟨m, by linarith, hm⟩
+
+/-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
+almost every point `x ∈ s` returns back to `s` infinitely many times. -/
+theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
+    ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s :=
+  (hf.nullMeasurableSet_isRecurrent hs).ae_mem_imp_frequently_image_mem hf.toQuasiMeasurePreserving
 
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`, the set
 of points `x ∈ s` such that `x` does not return to `s` after `≥ n` iterations has measure zero. -/
 theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ ({ x ∈ s | ∀ m ≥ n, f^[m] x ∉ s }) = 0 := by
-  by_contra H
-  have : NullMeasurableSet (s ∩ { x | ∀ m ≥ n, f^[m] x ∉ s }) μ := by
-    simp only [setOf_forall, ← compl_setOf]
-    exact hs.inter <| .biInter (to_countable _) fun m _ ↦
-      (hs.preimage <| hf.toQuasiMeasurePreserving.iterate m).compl
-  rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
-  rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
-  exact hxn m hmn.lt.le hxm
-
-/-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
-almost every point `x ∈ s` returns back to `s` infinitely many times. -/
-theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
-    ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
-  simp only [frequently_atTop, @forall_comm (_ ∈ s), ae_all_iff]
-  intro n
-  filter_upwards
-    [measure_eq_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
-  simp
+  apply measure_mono_null _ (ae_iff.1 (hf.ae_mem_imp_frequently_image_mem hs))
+  simp only [Classical.not_imp, not_frequently, eventually_atTop, setOf_subset_setOf, and_imp]
+  exact fun x x_s hx ↦ ⟨x_s, n, fun m m_n ↦ hx m m_n⟩
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
     (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } : Set α) =ᵐ[μ] s :=
@@ -390,6 +387,31 @@ theorem frequently_ae_mem_and_frequently_image_mem (hf : Conservative f μ)
   ((frequently_ae_mem_iff.2 h0).and_eventually (hf.ae_mem_imp_frequently_image_mem hs)).mono
     fun _ hx => ⟨hx.1, hx.2 hx.1⟩
 
+/-- Iteration of a conservative system is a conservative system. -/
+protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n] μ := by
+  -- Discharge the trivial case `n = 0`
+  rcases n with - | n
+  · exact Conservative.id μ
+  apply (conservative_iff_exists_mem_iterate_mem (hf.toQuasiMeasurePreserving.iterate (n + 1))).2
+  intro s hs hs0
+  obtain ⟨x, _, hx⟩ :=
+    (hf.frequently_ae_mem_and_frequently_image_mem hs.nullMeasurableSet hs0).exists
+  /- We take a point `x ∈ s` such that `f^[k] x ∈ s` for infinitely many values of `k`,
+    then we choose two of these values `k < l` such that `k ≡ l [MOD (n + 1)]`.
+    Then `f^[k] x ∈ s` and `f^[n + 1]^[(l - k) / (n + 1)] (f^[k] x) = f^[l] x ∈ s`. -/
+  rw [Nat.frequently_atTop_iff_infinite] at hx
+  obtain ⟨k, hk, l, hl, hkl, hn⟩ := Nat.exists_lt_modEq_of_infinite hx n.succ_pos
+  set m := (l - k) / (n + 1)
+  have : (n + 1) * m = l - k := Nat.mul_div_cancel' ((Nat.modEq_iff_dvd' hkl.le).1 hn)
+  refine ⟨f^[k] x, hk, m, ?_, ?_⟩
+  · intro hm
+    rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
+    exact this.not_gt hkl
+  · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
+    exact hkl.le
+
+open TopologicalSpace Topology
+
 /-- Poincaré recurrence theorem. Let `f : α → α` be a conservative dynamical system on a topological
 space with second countable topology and measurable open sets. Then almost every point `x : α`
 is recurrent: it visits every neighborhood `s ∈ 𝓝 x` infinitely many times. -/
@@ -401,30 +423,6 @@ theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopo
   refine ((ae_ball_iff <| countable_countableBasis α).2 this).mono fun x hx s hs => ?_
   rcases (isBasis_countableBasis α).mem_nhds_iff.1 hs with ⟨o, hoS, hxo, hos⟩
   exact (hx o hoS hxo).mono fun n hn => hos hn
-
-/-- Iteration of a conservative system is a conservative system. -/
-protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n] μ := by
-  -- Discharge the trivial case `n = 0`
-  rcases n with - | n
-  · exact Conservative.id μ
-  refine ⟨hf.1.iterate _, fun s hs hs0 => ?_⟩
-  rcases (hf.frequently_ae_mem_and_frequently_image_mem hs.nullMeasurableSet hs0).exists
-    with ⟨x, _, hx⟩
-  /- We take a point `x ∈ s` such that `f^[k] x ∈ s` for infinitely many values of `k`,
-    then we choose two of these values `k < l` such that `k ≡ l [MOD (n + 1)]`.
-    Then `f^[k] x ∈ s` and `f^[n + 1]^[(l - k) / (n + 1)] (f^[k] x) = f^[l] x ∈ s`. -/
-  rw [Nat.frequently_atTop_iff_infinite] at hx
-  rcases Nat.exists_lt_modEq_of_infinite hx n.succ_pos with ⟨k, hk, l, hl, hkl, hn⟩
-  set m := (l - k) / (n + 1)
-  have : (n + 1) * m = l - k := by
-    apply Nat.mul_div_cancel'
-    exact (Nat.modEq_iff_dvd' hkl.le).1 hn
-  refine ⟨f^[k] x, hk, m, ?_, ?_⟩
-  · intro hm
-    rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
-    exact this.not_gt hkl
-  · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
-    exact hkl.le
 
 end Conservative
 
