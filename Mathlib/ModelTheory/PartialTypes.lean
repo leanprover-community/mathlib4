@@ -62,16 +62,20 @@ variable {L : Language.{u, v}} (T : L.Theory) (α : Type w)
 
 /-- The theory obtained from `T` by adjoining a set of formulas in variables `α`, viewed as
 sentences in the language with constants for `α`. -/
-def withSet {α} (S : Set (L.Formula α)) : L[[α]].Theory :=
+def withFormulaSet {α} (S : Set (L.Formula α)) : L[[α]].Theory :=
   ((L.lhomWithConstants α).onTheory T ∪ Formula.equivSentence '' S)
+
+/-- `T.IsConsistentWith S` means that the set of formulas `S` is consistent with `T`,
+i.e. there exists a model of `T` that realizes every formula in `S`. -/
+def IsConsistentWith {α} (S : Set (L.Formula α)) : Prop :=
+  (T.withFormulaSet S).IsSatisfiable
 
 /-- A partial type over `T` in variables `α` is a set of formulas consistent with `T`. -/
 structure PartialType where
   /-- The underlying set of formulas. -/
   toSet : Set (L.Formula α)
-  /-- Consistency with `T`, packaged as satisfiability in the language with constants for `α`. -/
-  isSatisfiable' :
-    (T.withSet toSet).IsSatisfiable
+  /-- `S` is consistent with `T`. -/
+  isConsistent : T.IsConsistentWith toSet
 
 variable {T α}
 
@@ -85,12 +89,12 @@ namespace PartialType
 attribute [coe] PartialType.toSet
 
 /-- Construct a partial type from a set of formulas via consistency. -/
-def ofSet (S : Set (L.Formula α)) (hS : (T.withSet S).IsSatisfiable) :
+def ofSet (S : Set (L.Formula α)) (hS : T.IsConsistentWith S) :
     T.PartialType α :=
   ⟨S, hS⟩
 
 @[simp]
-theorem toSet_ofSet (S : Set (L.Formula α)) (hS : (T.withSet S).IsSatisfiable) :
+theorem toSet_ofSet (S : Set (L.Formula α)) (hS : T.IsConsistentWith S) :
     (ofSet S hS).toSet = S :=
   rfl
 
@@ -102,7 +106,7 @@ instance : SetLike (T.PartialType α) (L.Formula α) :=
 
 @[simp]
 theorem coe_ofSet (S : Set (L.Formula α))
-    (hS : (T.withSet S).IsSatisfiable) :
+    (hS : T.IsConsistentWith S) :
     ((ofSet S hS : T.PartialType α) : Set (L.Formula α)) = S :=
   rfl
 
@@ -111,10 +115,10 @@ instance : PartialOrder (T.PartialType α) :=
 
 /-- The theory associated to a partial type. -/
 def toTheory (p : T.PartialType α) : L[[α]].Theory :=
-  T.withSet p.toSet
+  T.withFormulaSet p.toSet
 
 theorem isSatisfiable (p : T.PartialType α) : p.toTheory.IsSatisfiable := by
-  simpa [toTheory] using p.isSatisfiable'
+  simpa [toTheory, IsConsistentWith] using p.isConsistent
 
 theorem subset_toTheory (p : T.PartialType α) :
     (L.lhomWithConstants α).onTheory T ⊆ p.toTheory := by
@@ -139,8 +143,7 @@ def RealizedBy {M : Type w'} [L.Structure M] (p : T.PartialType α) (v : α → 
   ∀ φ ∈ p, φ.Realize v
 
 /-- A partial type is realized in a structure if some tuple realizes it. -/
-@[nolint unusedArguments]
-def IsRealizedIn (p : T.PartialType α) (M : Type w') [L.Structure M] [M ⊨ T] [Nonempty M] :
+def IsRealizedIn (p : T.PartialType α) (M : Type w') [L.Structure M] :
     Prop :=
   ∃ v : α → M, p.RealizedBy v
 
@@ -163,7 +166,7 @@ theorem exists_modelType_isRealizedIn (p : T.PartialType α) :
 only if every finite subset is realized in some model of `T`. -/
 theorem partialType_iff_finitelyRealizable
     (S : Set (L.Formula α)) :
-    ((T.withSet S).IsSatisfiable) ↔
+    (T.IsConsistentWith S) ↔
       ∀ s : Finset (L.Formula α), (↑s : Set (L.Formula α)) ⊆ S →
         ∃ M : Theory.ModelType.{u, v, max u v w} T,
           ∃ v : α → M, ∀ φ ∈ s, φ.Realize v := by
@@ -174,7 +177,7 @@ theorem partialType_iff_finitelyRealizable
     exists (p.reductModelType M)
     obtain ⟨v,hv⟩ := p.isRealizedIn_reductModelType M
     aesop
-  · rw [isSatisfiable_iff_isFinitelySatisfiable]
+  · rw [IsConsistentWith, isSatisfiable_iff_isFinitelySatisfiable]
     intro T0 hT0
     classical
     let s : Finset (L.Formula α) :=
@@ -206,7 +209,7 @@ variable {M : Type u'} [L.Structure M] [Nonempty M]
 
 theorem partialType_completeTheory_iff_finitelyRealizable
     (S : Set (L.Formula α)) :
-    (((L.completeTheory M).withSet S).IsSatisfiable) ↔
+    ((L.completeTheory M).IsConsistentWith S) ↔
       ∀ s : Finset (L.Formula α), (↑s : Set (L.Formula α)) ⊆ S →
         ∃ v : α → M, ∀ φ ∈ s, φ.Realize v := by
   classical
@@ -274,8 +277,8 @@ provided the induced language map is an expansion on `M`. -/
 theorem partialType_completeTheory_map [L[[β]].Structure M] [L[[γ]].Structure M]
     (g : β → γ) [hg : (L.lhomWithConstantsMap g).IsExpansionOn M]
     {S : Set (L[[β]].Formula α)}
-    (hS : (((L[[β]].completeTheory M).withSet S).IsSatisfiable)) :
-    (((L[[γ]].completeTheory M).withSet (mapSet g S)).IsSatisfiable) := by
+    (hS : ((L[[β]].completeTheory M).IsConsistentWith S)) :
+    ((L[[γ]].completeTheory M).IsConsistentWith (mapSet g S)) := by
   rw [partialType_completeTheory_iff_finitelyRealizable] at hS ⊢
   intro s hs
   classical
@@ -312,7 +315,7 @@ variable {A : Set M}
 defines a partial type if and only if every finite subset is realized in `M` itself. -/
 theorem partialTypeOver_iff_finitelyRealizable
     (S : Set (L[[A]].Formula α)) :
-    (((L[[A]].completeTheory M).withSet S).IsSatisfiable) ↔
+    ((L[[A]].completeTheory M).IsConsistentWith S) ↔
       ∀ s : Finset (L[[A]].Formula α), (↑s : Set (L[[A]].Formula α)) ⊆ S →
         ∃ v : α → M,
           ∀ φ ∈ s, φ.Realize v := by
@@ -336,8 +339,8 @@ theorem mem_liftSet (hAB : A ⊆ B) {S : Set (L[[A]].Formula α)}
 
 /-- A partial type over `A` stays a partial type over any larger parameter set `B`. -/
 theorem partialTypeOver_mono (hAB : A ⊆ B) {S : Set (L[[A]].Formula α)}
-    (hS : (((L[[A]].completeTheory M).withSet S).IsSatisfiable)) :
-    (((L[[B]].completeTheory M).withSet (liftSet hAB S)).IsSatisfiable) := by
+    (hS : ((L[[A]].completeTheory M).IsConsistentWith S)) :
+    ((L[[B]].completeTheory M).IsConsistentWith (liftSet hAB S)) := by
   simpa [liftSet] using
     (partialType_completeTheory_map (M := M) (g := Set.inclusion hAB) (S := S) hS)
 
@@ -346,7 +349,7 @@ def liftParams (hAB : A ⊆ B) (p : PartialTypeOver (L := L) A α) :
    PartialTypeOver (L := L) B α :=
   ofSet
     (liftSet hAB (p : Set (L[[A]].Formula α)))
-    (partialTypeOver_mono (S := (p : Set (L[[A]].Formula α))) hAB p.isSatisfiable')
+    (partialTypeOver_mono (S := (p : Set (L[[A]].Formula α))) hAB p.isConsistent)
 
 @[simp]
 theorem coe_liftParams (hAB : A ⊆ B) (p : PartialTypeOver (L := L) A α) :
@@ -360,7 +363,7 @@ reinterpreting those parameters as constants from `M`, it is realized in a model
 diagram of `M`. -/
 theorem partialTypeOver_iff_realizedIn_elementaryExtension
     (S : Set (L[[A]].Formula α)) :
-    (((L[[A]].completeTheory M).withSet S).IsSatisfiable) ↔
+    ((L[[A]].completeTheory M).IsConsistentWith S) ↔
       ∃ N : Theory.ModelType.{max u u', v, max (max (max u u') v) w} (L.elementaryDiagram M),
         ∃ v : α → N,
           ∀ φ ∈ S,
@@ -373,8 +376,8 @@ theorem partialTypeOver_iff_realizedIn_elementaryExtension
       constantsOnMap_isExpansionOn rfl
     haveI : (L.lhomWithConstantsMap ((↑) : A → M)).IsExpansionOn M :=
       LHom.sumMap_isExpansionOn _ _ _
-    have hS' : (((L.elementaryDiagram M).withSet S').IsSatisfiable) := by
-      change (((L[[M]].completeTheory M).withSet S').IsSatisfiable)
+    have hS' : ((L.elementaryDiagram M).IsConsistentWith S') := by
+      change ((L[[M]].completeTheory M).IsConsistentWith S')
       simpa [S'] using
         (partialType_completeTheory_map ((↑) : A → M) hS)
     let p : (L.elementaryDiagram M).PartialType α := ofSet S' hS'
