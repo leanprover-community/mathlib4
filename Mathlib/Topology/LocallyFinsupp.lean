@@ -692,7 +692,7 @@ lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U
   simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
   aesop
 
-lemma eventually_nhdsWithin_support_specializes
+lemma eventually_nhdsWithin_support_specializes_of_mem
     [Zero Y] (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
     ∀ᶠ x in 𝓝[f.support] p, x ⤳ p := by
   obtain ⟨t, h₁t, h₂t⟩ := f.supportLocallyFiniteWithinDomain p hp
@@ -706,9 +706,9 @@ lemma eventually_nhdsWithin_support_specializes
   refine fun hxp hxf ↦ mem_iInter₂.mp hxS x ⟨⟨hxt, hxf⟩, hxp⟩ ?_
   grind [subset_closure]
 
-lemma _root_.Function.locallyFinsupp.exists_nhd_mem_support_implies_specializes
+lemma _root_.Function.locallyFinsupp.eventually_nhdsWithin_support_specializes
     [Zero Y] (f : locallyFinsupp X Y) (p : X) :
-    ∀ᶠ x in 𝓝 p, x ∈ f.support → x ⤳ p :=
-  exists_nhd_mem_support_implies_specializes_of_mem_support_within f p <| mem_univ _
+    ∀ᶠ x in 𝓝[f.support] p, x ⤳ p :=
+  eventually_nhdsWithin_support_specializes_of_mem f p <| mem_univ _
 
 end Function.locallyFinsuppWithin
