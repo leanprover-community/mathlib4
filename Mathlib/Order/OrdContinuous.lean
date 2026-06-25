@@ -40,8 +40,7 @@ complete lattices and conditionally complete lattices. -/
 @[to_dual
 /-- A function `f` between preorders is right order continuous if it preserves all infima of
 nonempty sets.  We define it using `IsGLB` instead of `sInf` so that the proof works both for
-complete lattices and conditionally complete lattices. -/
-]
+complete lattices and conditionally complete lattices. -/]
 def LeftOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=
   ∀ ⦃s : Set α⦄ ⦃x⦄, s.Nonempty → IsLUB s x → IsLUB (f '' s) (f x)
 
