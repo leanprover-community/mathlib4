@@ -81,11 +81,13 @@ theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFoun
 
 @[deprecated (since := "2026-01-24")] alias isTrichotomous_lex := trichotomous_lex
 
+-- We would like to mark these instances `@[semireducible]`, but the linter doesn't allow this,
+-- so we wrap them in `id` instead.
 instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
-  ⟨Pi.Lex (· < ·) (· < ·)⟩
+  id ⟨Pi.Lex (· < ·) (· < ·)⟩
 
 instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
-  ⟨Pi.Lex (· > ·) (· < ·)⟩
+  id ⟨Pi.Lex (· > ·) (· < ·)⟩
 
 -- If `Lex` and `Colex` are ever made into one-field structures, we need a `CoeFun` instance.
 -- This will make `x i` syntactically equal to `ofLex x i` for `x : Πₗ i, α i`, thus making
