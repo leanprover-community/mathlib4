@@ -172,7 +172,7 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
   rw [map, cochainsMap_id_comp, HomologicalComplex.homologyMap_comp]
 
 /-- The isomorphism between cohomology groups induced by a group isomorphism `e : G ≃* H` and a
-  isomorphism between representations (restricted by `e`). -/
+isomorphism between representations (restricted by `e`). -/
 @[simps]
 noncomputable def mapIso (e : G ≃* H) (e' : B.V ≃ₗ[k] A.V)
     (he : ∀ g, e' ∘ₗ B.ρ g = A.ρ (e g) ∘ₗ e') (n : ℕ) :
