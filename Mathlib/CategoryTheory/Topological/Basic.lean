@@ -45,7 +45,7 @@ namespace ComposableArrows
 variable {C : Type*} [Category* C] [TopologicalSpace C] [TopologicalSpace (Arrow C)] {n : ℕ}
 
 /-- Given a topology on `Arrow C`, we equip `ComposableArrows C n` with the coarsest topology making
-the `ǹ + 1` projections to `C` as well as the `n` projections to `Arrow C` selecting one of the `n`
+the `n + 1` projections to `C` as well as the `n` projections to `Arrow C` selecting one of the `n`
 arrows continuous. In the case of topological categories also implies continuity of the
 projections to `Arrow C` given by partial compositions. -/
 instance instTopologicalSpace (C : Type*) [Category* C] [TopologicalSpace C]
