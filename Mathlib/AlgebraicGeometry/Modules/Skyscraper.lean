@@ -51,8 +51,8 @@ def skyscraperPresheafOfModulesObj (U : (TopologicalSpace.Opens X)ᵒᵖ) :
 
 lemma skyscraperPresheafOfModulesObj_pos {U : (TopologicalSpace.Opens X)ᵒᵖ} (hp : p ∈ unop U) :
     skyscraperPresheafOfModulesObj p R M U =
-      letI _ := Module.compHom M (R.germ (unop U) p hp).hom
-      .of (R.obj U) M := dif_pos hp
+    letI _ := Module.compHom M (R.germ (unop U) p hp).hom
+    .of (R.obj U) M := dif_pos hp
 
 lemma skyscraperPresheafOfModulesObj_neg {U : (TopologicalSpace.Opens X)ᵒᵖ} (hp : p ∉ unop U) :
     skyscraperPresheafOfModulesObj p R M U = 0 := dif_neg hp
@@ -168,33 +168,6 @@ def skyscraperPresheafOfModules : PresheafOfModules R where
 
 section Iso
 
-lemma test {C : Type*} [Category* C]
-    {FC : C → C → Type u_1} {CC : C → Type*} [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)]
-    [ConcreteCategory C FC] {A B : C} (e : A = B) (x : CC A) :
-    HEq ((eqToHom e) x) x := by
-  subst e
-  simp_all only [eqToHom_refl, id_apply, heq_eq_eq]
-
-
-/-
-Note: the following is quite hacky and is (in principal) generalized by the above lemma (which also
-feels dumb).
-
-TODO: Get rid of all this nonsense
--/
-
-/-- Applying `eqToHom` commutes with application in `ModuleCat` (stated heterogeneously). -/
-lemma heq_eqToHom_apply_moduleCat {R : Type*} [Ring R] {M N : ModuleCat R}
-    (e : M = N) (x : M) : HEq ((eqToHom e) x) x := by
-  subst e
-  rfl
-
-/-- Applying `eqToHom` commutes with application in `Ab` (stated heterogeneously). -/
-lemma heq_eqToHom_apply_ab {M N : Ab} (e : M = N) (x : M) :
-    HEq ((eqToHom e) x) x := by
-  subst e
-  rfl
-
 lemma skyscraperPresheafOfModules_presheaf_obj_pos {U : (TopologicalSpace.Opens X)ᵒᵖ}
     (h : p ∈ unop U) :
     (skyscraperPresheafOfModules p R M).presheaf.obj U = AddCommGrpCat.of M := by
@@ -217,15 +190,19 @@ lemma skyscraperPresheafOfModules_presheaf_map_pos {U V : (TopologicalSpace.Open
     (skyscraperPresheafOfModules p R M).presheaf.map i =
       eqToHom ((skyscraperPresheafOfModules_presheaf_obj_pos p R M (i.unop.le h)).trans
         (skyscraperPresheafOfModules_presheaf_obj_pos p R M h).symm) := by
-  ext x
-  change (skyscraperPresheafOfModulesMap p R M i) x =
-    (eqToHom ((skyscraperPresheafOfModules_presheaf_obj_pos p R M (i.unop.le h)).trans
-    (skyscraperPresheafOfModules_presheaf_obj_pos p R M h).symm)) x
-  rw [skyscraperPresheafOfModulesMap_pos p R M i h]
-  exact eq_of_heq
-    (((heq_eqToHom_apply_moduleCat (skyscraperPresheafOfModulesObj_pos p R M h).symm _).trans
-    (heq_eqToHom_apply_moduleCat (skyscraperPresheafOfModulesObj_pos p R M (i.unop.le h)) x)).trans
-    (heq_eqToHom_apply_ab _ x).symm)
+  -- `presheaf.map i` is by definition the image under `forget₂ _ Ab` of the module-valued
+  -- restriction map, which by `skyscraperPresheafOfModulesMap_pos` is `eqToHom`s sandwiching the
+  -- actual restriction.
+  have hrw : (skyscraperPresheafOfModules p R M).presheaf.map i
+      = (forget₂ (ModuleCat _) Ab).map (skyscraperPresheafOfModulesMap p R M i) := rfl
+  rw [hrw, skyscraperPresheafOfModulesMap_pos p R M i h]
+  simp only [Functor.map_comp, eqToHom_map]
+  -- The restriction map is definitionally the identity on the underlying abelian group, so the
+  -- composite reduces to a composite of `eqToHom`s.
+  have hmid : (forget₂ (ModuleCat _) Ab).map (skyscraperPresheafOfModulesRestriction p R M i h)
+      = 𝟙 _ := rfl
+  rw [hmid]
+  exact (_ ≫= Category.id_comp _).trans (eqToHom_trans _ _)
 
 open Classical in
 /--
@@ -277,11 +254,9 @@ noncomputable def skyscraperPresheafOfModulesPresheafIsoSkyscraper :
       skyscraperPresheafOfModules_presheaf_map_pos p R M i h,
       skyscraperAb_presheaf_map_pos p (AddCommGrpCat.of M) i h]
     simp only [eqToIso.hom]
-    -- The remaining equation composes `eqToHom`s whose middle objects are spelled differently;
-    -- elementwise, both sides are casts of `x`.
-    ext x
-    exact eq_of_heq (((heq_eqToHom_apply_ab _ _).trans (heq_eqToHom_apply_ab _ x)).trans
-      ((heq_eqToHom_apply_ab _ _).trans (heq_eqToHom_apply_ab _ x)).symm)
+    -- Both sides compose `eqToHom`s with equal source and target (only the middle objects are
+    -- spelled differently), so each collapses to a single `eqToHom`.
+    exact (eqToHom_trans _ _).trans (eqToHom_trans _ _).symm
   · have : IsZero ((skyscraperSheaf p (AddCommGrpCat.of M)).presheaf.obj V) := by
       simp [h, AddCommGrpCat.isZero_of_subsingleton]
     exact this.eq_of_tgt _ _
