@@ -127,8 +127,19 @@ instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) := rfl
 
 /-- The relation that one `Digraph` is a spanning subgraph of another. -/
-abbrev IsSpanningSubgraph (x y : Digraph V) : Prop :=
+def IsSpanningSubgraph (x y : Digraph V) : Prop :=
   x ≤ y ∧ x.verts = y.verts
+@[simp] theorem isSpanningSubgraph_iff {x y : Digraph V} :
+    IsSpanningSubgraph x y ↔ x ≤ y ∧ x.verts = y.verts := by
+  rfl
+
+@[simp] theorem isSpanningSubgraph_self (G : Digraph V) : IsSpanningSubgraph G G := by
+  rw [isSpanningSubgraph_iff]
+  constructor
+  · constructor
+    · intro v hv; exact hv
+    · intro v w h; exact h
+  · rfl
 
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (Digraph V) where
@@ -249,7 +260,38 @@ In this section we provide the complete boolean algebra for spanning subgraphs
 /--
 The type of spanning subgraphs of a digraph `G`
 -/
-abbrev SpanningSubgraph (G : Digraph V) := {H : Digraph V // IsSpanningSubgraph H G}
+def SpanningSubgraph (G : Digraph V) := {H : Digraph V // IsSpanningSubgraph H G}
+
+instance {G : Digraph V} : PartialOrder G.SpanningSubgraph where
+  le H K := H.val ≤ K.val
+  le_refl H := by
+    constructor
+    · intro v hv; exact hv
+    · intro v w h; exact h
+  le_trans H K L hHK hKL := hHK.trans hKL
+  le_antisymm H K hHK hKH := by
+    apply Subtype.ext
+    exact le_antisymm hHK hKH
+
+@[simp] theorem SpanningSubgraph.le_iff_val_le {G : Digraph V}
+    {H K : G.SpanningSubgraph} :
+    H ≤ K ↔ H.val ≤ K.val := by
+  rfl
+
+@[simp] theorem SpanningSubgraph.mk_le_mk {G H K : Digraph V}
+    {hH : IsSpanningSubgraph H G} {hK : IsSpanningSubgraph K G} :
+    (⟨H, hH⟩ : G.SpanningSubgraph) ≤ ⟨K, hK⟩ ↔ H ≤ K := by
+  rfl
+
+@[simp] theorem SpanningSubgraph.property_le {G : Digraph V}
+    (H : G.SpanningSubgraph) :
+    H.val ≤ G := by
+  exact (isSpanningSubgraph_iff.mp H.property).1
+
+@[simp] theorem SpanningSubgraph.property_verts {G : Digraph V}
+    (H : G.SpanningSubgraph) :
+    H.val.verts = G.verts := by
+  exact (isSpanningSubgraph_iff.mp H.property).2
 
 /--
 The join/union of two Digraphs i.e. `G₁ ⊔ G₂`
@@ -283,6 +325,29 @@ instance {G : Digraph V} : OrderTop (G.SpanningSubgraph) where
     simp_all
 
 /--
+The bottom subgraph `⊥`
+-/
+instance {G : Digraph V} : OrderBot (G.SpanningSubgraph) where
+  bot : G.SpanningSubgraph := ⟨
+    ⟨G.verts, fun _ _ => False, by simp, by simp⟩,
+    by
+      rw [isSpanningSubgraph_iff]
+      constructor
+      · constructor
+        · intro v hv
+          exact hv
+        · intro v w h
+          exact False.elim h
+      · rfl⟩
+  bot_le := by
+    intro H
+    constructor
+    · intro v hv
+      simpa [SpanningSubgraph.property_verts H] using hv
+    · intro v w h
+      exact False.elim h
+
+/--
 The complement of a spanning subgraph `H` of `G` with respect to `G`
 -/
 def compl {G : Digraph V} (H : G.SpanningSubgraph) : G.SpanningSubgraph := by
@@ -298,7 +363,7 @@ def compl {G : Digraph V} (H : G.SpanningSubgraph) : G.SpanningSubgraph := by
         simpa [H.property.2] using hv
       · intro _ _ h
         exact h.1
-    · simp [H.property.2]
+    · simp
 
 /--
 The meet/intersection of two spanning subgraphs `H₁` and `H₂` of `G`
@@ -369,11 +434,6 @@ lemma le_inf {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
   exact by_val <| by
     aesop (add safe [_root_.le_inf]) (add simp [inf_of_val])
 
-lemma bot_le {G : Digraph V} : ∀ (H : G.SpanningSubgraph), bot ≤ H := by
-  intro ⟨H, ⟨H_sub, H_verts⟩⟩
-  unfold instLE LE.le Subtype.instLE
-  simp_all [Digraph.IsSubgraph, bot]
-
 /--
 The supremum of a set of spanning subgraphs of a graph `G`
 -/
@@ -431,8 +491,8 @@ lemma sSup_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
 lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), ⊤ ≤ sup H (compl H) := by
   intro
   constructor
-  · intro
-    grind
+  · intro _ _
+    simp_all only [SpanningSubgraph.property_verts]
   · intro _ _ top_adj
     push_cast
     simp only [compl, sup_adj]
@@ -471,8 +531,10 @@ instance (G : Digraph V) : CompleteLattice G.SpanningSubgraph where
   le_top := by
     intro ⟨_, ⟨h, _⟩⟩
     exact h
-  bot := bot
-  bot_le := bot_le
+  bot := ⊥
+  bot_le := by
+    intro a
+    exact bot_le
   sSup := sSup
   sInf := sInf
   isLUB_sSup s := ⟨le_sSup s, sSup_le s⟩
@@ -488,7 +550,9 @@ instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
   compl := compl
   le_top := by
     intros; simp_all only [le_top]
-  bot_le := bot_le
+  bot_le := by
+    intro H
+    exact bot_le
   top_le_sup_compl := top_le_sup_compl
   inf_compl_le_bot := inf_compl_le_bot
 
