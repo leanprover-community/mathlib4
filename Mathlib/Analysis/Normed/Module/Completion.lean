@@ -114,8 +114,7 @@ def fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) : Co
   map_add' a b := induction_on₂ a b (isClosed_eq (by fun_prop) (by fun_prop)) <| by
     simp [extension_coe, hf, ← coe_add]
   map_smul' c a := induction_on a
-      (isClosed_eq (continuous_extension.comp (continuous_const_smul c))
-        (continuous_extension.const_smul (σ₁₂ c))) <| by
+      (isClosed_eq (continuous_extension.comp (continuous_const_smul c)) (by fun_prop)) <| by
     simp [extension_coe, hf, ← coe_smul]
 
 @[simp]
