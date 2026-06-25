@@ -639,7 +639,7 @@ theorem mapMatrix_trans (f : α ≃+* β) (g : β ≃+* γ) :
   rfl
 
 open MulOpposite in
-/-- For any ring `R`, we have ring isomorphism `Matₙₓₙ(Rᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
+/-- For any ring `α`, we have ring isomorphism `Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(α))ᵒᵖ` given by transpose.
 
 See also `Matrix.transposeRingEquiv` for a version that doesn't take the opposite of `α`,
 given that its multiplication is commutative. -/
