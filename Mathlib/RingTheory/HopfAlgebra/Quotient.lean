@@ -9,62 +9,52 @@ public import Mathlib.RingTheory.Bialgebra.Quotient
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
 /-!
-# Hopf algebra structure on quotients by Hopf ideals
+# Hopf algebra structure on quotients by a ring congruence
 
-A *Hopf ideal* of an `R`-Hopf algebra `A` is a biideal stable under the antipode. The quotient
-by a Hopf ideal inherits a Hopf algebra structure.
+If the antipode of an `R`-Hopf algebra `A` descends along a bialgebra congruence `c`, then
+`c.Quotient` is again a Hopf algebra.
 
 ## Main definitions
 
-* `Ideal.IsHopfIdeal R I` : `I` is a coideal (as an `R`-submodule) stable under the antipode.
+* `RingCon.IsHopfCon R c` : `IsBialgebraCon R c` together with descent of the antipode.
 
 ## Main results
 
-* `HopfAlgebra R (A ⧸ I)` instance when `[I.IsTwoSided]` and `[I.IsHopfIdeal R]`.
+* `HopfAlgebra R c.Quotient` instance when `[c.IsHopfCon R]`.
 -/
 
 public section
 
-open Bialgebra.Quotient Coalgebra HopfAlgebra Ideal.Quotient LinearMap
+open Coalgebra HopfAlgebra LinearMap MulOpposite
 
-variable {R A : Type*} [CommRing R] [Ring A]
-
-section HopfAlgebraStruct
-
-variable [HopfAlgebraStruct R A]
+variable {R A : Type*} [CommRing R] [Ring A] [HopfAlgebra R A]
 
 variable (R) in
-/-- An ideal whose underlying `R`-submodule is a coideal and which is stable under the
-antipode (`S(I) ⊆ I`). Together with `I.IsTwoSided`, this makes `I` a *Hopf ideal*. -/
+/-- A ring congruence `c` on an `R`-Hopf algebra is a *Hopf congruence* if it is a bialgebra
+congruence along which the antipode also descends. -/
 @[mk_iff]
-class Ideal.IsHopfIdeal (I : Ideal A) : Prop extends (I.restrictScalars R).IsCoideal where
-  antipode_mem : ∀ ⦃x : A⦄, x ∈ I → antipode R x ∈ I
-
-end HopfAlgebraStruct
+class RingCon.IsHopfCon (c : RingCon A) : Prop extends RingCon.IsBialgebraCon R c where
+  antipode_rel : ∀ ⦃x y : A⦄, c x y → c (antipode R x) (antipode R y)
 
 namespace HopfAlgebra.Quotient
 
-section HopfAlgebraStruct
+variable (c : RingCon A) [c.IsHopfCon R]
 
-variable [HopfAlgebraStruct R A] (I : Ideal A) [I.IsTwoSided] [I.IsHopfIdeal R]
-
-instance : HopfAlgebraStruct R (A ⧸ I) where
-  antipode := Submodule.mapQ (I.restrictScalars R) (I.restrictScalars R)
-    (antipode R) (Ideal.IsHopfIdeal.antipode_mem (R := R))
+/-- The antipode descends to `c.Quotient`: it is the linear map underlying the algebra anti-hom
+`(c.mkₐ R).op.comp (antipodeAlgHomOp R A)`, namely `a ↦ op (mkₐ (antipode a))`. -/
+noncomputable instance : HopfAlgebraStruct R c.Quotient where
+  antipode := (opLinearEquiv R).symm.toLinearMap ∘ₗ
+    (c.liftₐ ((c.mkₐ R).op.comp (antipodeAlgHomOp R A)) fun _ _ h ↦
+      congrArg op (by simpa using ‹c.IsHopfCon R›.antipode_rel h)).toLinearMap
 
 @[simp]
-lemma antipode_mk (a : A) :
-    antipode R (Ideal.Quotient.mk I a) = Ideal.Quotient.mk I (antipode R a) := rfl
+lemma antipode_mkₐ (a : A) : antipode R (c.mkₐ R a) = c.mkₐ R (antipode R a) := rfl
 
 lemma antipode_comp_mkₐ :
-    antipode R ∘ₗ (Ideal.Quotient.mkₐ R I).toLinearMap =
-      (Ideal.Quotient.mkₐ R I).toLinearMap ∘ₗ antipode R := by ext; simp
+    (antipode R).comp (c.mkₐ R).toLinearMap = (c.mkₐ R).toLinearMap ∘ₗ antipode R := by
+  ext a; exact antipode_mkₐ c a
 
-end HopfAlgebraStruct
-
-variable [HopfAlgebra R A] (I : Ideal A) [I.IsTwoSided] [I.IsHopfIdeal R]
-
-noncomputable instance : HopfAlgebra R (A ⧸ I) :=
-  .ofSurjective (mkBialgHom I) mk_surjective (antipode_comp_mkₐ I)
+noncomputable instance : HopfAlgebra R c.Quotient :=
+  .ofSurjective (Bialgebra.Quotient.mkBialgHom c) (c.mkₐ_surjective (α := R)) (antipode_comp_mkₐ c)
 
 end HopfAlgebra.Quotient
