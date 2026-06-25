@@ -436,7 +436,7 @@ end setup
 
 variable (k G) in
 /-- The functor equipping a module with the trivial representation. -/
-@[simps! obj_V map_hom]
+@[implicit_reducible, simps! obj_V map_hom]
 def trivialFunctor : ModuleCat.{w} k ⥤ Rep.{w} k G where
   obj V := trivial k G V
   map f := ofHom ⟨f.hom, fun _ ↦ rfl⟩
