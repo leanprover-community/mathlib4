@@ -443,7 +443,6 @@ protected def Lift : PSet.{u} → PSet.{max u v}
 -- intended to be used with explicit universe parameters
 set_option linter.checkUnivs false in
 /-- Embedding of one universe in another -/
-@[nolint checkUnivs]
 def embed : PSet.{max (u + 1) v} :=
   ⟨ULift.{v, u + 1} PSet, fun ⟨x⟩ => PSet.Lift.{u, max (u + 1) v} x⟩
 

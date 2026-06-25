@@ -36,6 +36,8 @@ open Category
 variable {C : Type*} [Category* C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶ B') (p : X ⟶ Y)
   (p' : Y ⟶ Y')
 
+to_dual_name_hint Left Right, A Y, B X, I P
+
 /-- `HasLiftingProperty i p` means that `i` has the left lifting
 property with respect to `p`, or equivalently that `p` has
 the right lifting property with respect to `i`. -/
@@ -80,7 +82,7 @@ theorem iff_unop {A B X Y : Cᵒᵖ} (i : A ⟶ B) (p : X ⟶ Y) :
 
 variable (i p)
 
-@[to_dual of_right_iso]
+@[to_dual]
 instance (priority := 100) of_left_iso [IsIso i] : HasLiftingProperty i p :=
   ⟨fun {f} {g} sq =>
     CommSq.HasLift.mk'
@@ -88,7 +90,7 @@ instance (priority := 100) of_left_iso [IsIso i] : HasLiftingProperty i p :=
         fac_left := by simp only [IsIso.hom_inv_id_assoc]
         fac_right := by simp only [sq.w, assoc, IsIso.inv_hom_id_assoc] }⟩
 
-@[to_dual of_comp_right]
+@[to_dual]
 instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
     HasLiftingProperty (i ≫ i') p :=
   ⟨fun {f} {g} sq => by
@@ -101,52 +103,30 @@ instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
           fac_right := by simp only [CommSq.fac_right] }⟩
 
 set_option backward.isDefEq.respectTransparency false in
+@[to_dual (reorder := i i' e p)]
 theorem of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
     (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) [hip : HasLiftingProperty i p] :
     HasLiftingProperty i' p := by
   rw [Arrow.iso_w' e]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
-theorem of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
-    (e : Arrow.mk p ≅ Arrow.mk p') [hip : HasLiftingProperty i p] : HasLiftingProperty i p' := by
-  rw [Arrow.iso_w' e]
-  infer_instance
-
+@[to_dual (reorder := i i' e p)]
 theorem iff_of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
     (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) :
     HasLiftingProperty i p ↔ HasLiftingProperty i' p := by
   constructor <;> intro
   exacts [of_arrow_iso_left e p, of_arrow_iso_left e.symm p]
 
-theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
-    (e : Arrow.mk p ≅ Arrow.mk p') : HasLiftingProperty i p ↔ HasLiftingProperty i p' := by
-  constructor <;> intro
-  exacts [of_arrow_iso_right i e, of_arrow_iso_right i e.symm]
-
 end HasLiftingProperty
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-lemma RetractArrow.leftLiftingProperty
-    {X Y Z W Z' W' : C} {g : Z ⟶ W} {g' : Z' ⟶ W'}
-    (h : RetractArrow g' g) (f : X ⟶ Y) [HasLiftingProperty g f] : HasLiftingProperty g' f where
-  sq_hasLift := fun {u v} sq ↦ by
-    have sq' : CommSq (h.r.left ≫ u) g f (h.r.right ≫ v) := by simp only [Arrow.mk_left,
-      Arrow.mk_right, Category.assoc, sq.w, Arrow.w_mk_right_assoc, Arrow.mk_hom, CommSq.mk]
-    exact
-      ⟨⟨{ l := h.i.right ≫ sq'.lift
-          fac_left := by
-            simp only [← h.i_w_assoc, sq'.fac_left, h.retract_left_assoc,
-              Arrow.mk_left, Category.id_comp]}⟩⟩
-
-set_option backward.isDefEq.respectTransparency false in
+@[to_dual]
 lemma RetractArrow.rightLiftingProperty
     {X Y Z W X' Y' : C} {f : X ⟶ Y} {f' : X' ⟶ Y'}
     (h : RetractArrow f' f) (g : Z ⟶ W) [HasLiftingProperty g f] : HasLiftingProperty g f' where
   sq_hasLift := fun {u v} sq ↦
     have sq' : CommSq (u ≫ h.i.left) g f (v ≫ h.i.right) :=
-      ⟨by rw [← Category.assoc, ← sq.w, Category.assoc, RetractArrow.i_w, Category.assoc]⟩
+      ⟨by rw [← sq.w_assoc, Category.assoc, RetractArrow.i_w]⟩
     ⟨⟨{ l := sq'.lift ≫ h.r.left}⟩⟩
 
 namespace Arrow
@@ -154,9 +134,11 @@ namespace Arrow
 /-- Given a morphism `φ : f ⟶ g` in the category `Arrow C`, this is an
 abbreviation for the `CommSq.LiftStruct` structure for
 the square corresponding to `φ`. -/
+@[to_dual self]
 abbrev LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
 
 set_option backward.isDefEq.respectTransparency false in
+@[to_dual self]
 lemma hasLiftingProperty_iff {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty i p ↔
       ∀ (φ : Arrow.mk i ⟶ Arrow.mk p), Nonempty (LiftStruct φ) := by
@@ -172,7 +154,7 @@ end Arrow
 /-- Given morphisms `i : A ⟶ B`, `p : X ⟶ Y`, `t : A ⟶ X`,
 this is the property that a lifting exists for all squares
 with `i` on left, `p` on the right and `t` on the top. -/
-@[to_dual (rename := i ↔ p, t → b, A ↔ Y, B ↔ X) (reorder := i p)
+@[to_dual (rename := t → b) (reorder := i p)
 /-- Given morphisms `i : A ⟶ B`, `p : X ⟶ Y`, `b : B ⟶ Y`,
 this is the property that a lifting exists for all squares
 with `i` on left, `p` on the right and `b` on the bottom. -/]
