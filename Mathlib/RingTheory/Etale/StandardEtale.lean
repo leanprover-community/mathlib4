@@ -196,6 +196,7 @@ to not abuse the defeq between the two. -/
 def equivPolynomialQuotient :
     P.Ring ≃ₐ[R] R[X][Y] ⧸ Ideal.span {C P.f, Y * C P.g - 1} := .refl ..
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `R[X][Y]/⟨f, Yg-1⟩ ≃ (R[X]/f)[1/g]` -/
 def equivAwayAdjoinRoot :
     P.Ring ≃ₐ[R] Localization.Away (AdjoinRoot.mk P.f P.g) := by
@@ -210,6 +211,7 @@ def equivAwayAdjoinRoot :
   · ext; simp [Algebra.algHom]
   · ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `R[X][Y]/⟨f, Yg-1⟩ ≃ R[X][1/g]/f` -/
 def equivAwayQuotient :
     P.Ring ≃ₐ[R] Localization.Away P.g ⧸ Ideal.span {algebraMap _ (Localization.Away P.g) P.f} := by
@@ -284,6 +286,7 @@ lemma StandardEtalePresentation.equivRing_symm_X : P.equivRing.symm P.X = P.x :=
 lemma StandardEtalePresentation.equivRing_x : P.equivRing P.x = P.X :=
   (P.equivRing.symm_apply_eq.mp P.equivRing_symm_X).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `Algebra.Presentation` associated to a standard etale presentation. -/
 @[simps! relation val]
 def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) (Fin 2) where
@@ -300,6 +303,7 @@ def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) 
       RingHom.ker_comp_of_injective _ (by exact P.equivMvPolynomialQuotient.symm.injective)]
     simp [Set.pair_comm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma StandardEtalePresentation.aeval_val_equivMvPolynomial (p : R[X]) :
     MvPolynomial.aeval P.toPresentation.val
     (Bivariate.equivMvPolynomial R (.C p)) = p.aeval P.x := by
@@ -313,6 +317,7 @@ attribute [local simp] Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatri
   Polynomial.Bivariate.pderiv_zero_equivMvPolynomial
   Polynomial.Bivariate.pderiv_one_equivMvPolynomial
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `Algebra.SubmersivePresentation` associated to a standard etale presentation. -/
 @[simps map toPreSubmersivePresentation_toPresentation]
 def StandardEtalePresentation.toSubmersivePresentation :
@@ -322,10 +327,12 @@ def StandardEtalePresentation.toSubmersivePresentation :
   map_inj := Function.injective_id
   jacobian_isUnit := by simp [P.hasMap.2, P.hasMap.isUnit_derivative_f]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma StandardEtalePresentation.toSubmersivePresentation_jacobian :
     P.toSubmersivePresentation.jacobian = aeval P.x P.f.derivative * aeval P.x P.g := by
   simp [StandardEtalePresentation.toSubmersivePresentation]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma StandardEtalePresentation.exists_mul_aeval_x_g_pow_eq_aeval_x (x : S) :
     ∃ p : R[X], ∃ n, x * P.g.aeval P.x ^ n = p.aeval P.x := by
   obtain ⟨x, rfl⟩ := (P.equivRing.trans P.P.equivAwayAdjoinRoot).symm.surjective x
@@ -335,6 +342,7 @@ lemma StandardEtalePresentation.exists_mul_aeval_x_g_pow_eq_aeval_x (x : S) :
   simpa [← aeval_algHom_apply, StandardEtalePair.equivAwayAdjoinRoot, ← aeval_def] using
     congr(P.equivAwayAdjoinRoot.symm $e)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Mapping `StandardEtalePresentation` under `AlgEquiv`s. -/
 def StandardEtalePresentation.mapEquiv (e : S ≃ₐ[R] T) : StandardEtalePresentation R T where
   P := P.P
@@ -352,6 +360,7 @@ lemma StandardEtalePresentation.hom_ext {f₁ f₂ : S →ₐ[R] T} (h : f₁ P.
 
 open scoped TensorProduct
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The base change of a standard etale algebra is standard etale. -/
 noncomputable
 def StandardEtalePresentation.baseChange :
@@ -398,6 +407,7 @@ instance : IsStandardEtale R R :=
       (by ext) (by ext; simp [this])
     exact e.bijective⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     {Sₛ : Type*} [CommRing Sₛ] [Algebra S Sₛ]
     [Algebra R Sₛ] [IsScalarTower R S Sₛ] (s : S) [IsLocalization.Away s Sₛ] :

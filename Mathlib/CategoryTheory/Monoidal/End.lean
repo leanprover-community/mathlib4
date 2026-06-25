@@ -102,6 +102,7 @@ namespace MonoidalCategory
 
 variable [MonoidalCategory C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
@@ -111,15 +112,19 @@ instance : (tensoringRight C).Monoidal :=
       μIso := fun X Y => (Functor.isoWhiskerRight (curriedAssociatorNatIso C)
       ((evaluation C (C ⥤ C)).obj X ⋙ (evaluation C C).obj Y)) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_ε :
     ε (tensoringRight C) = (rightUnitorNatIso C).inv := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_η :
     η (tensoringRight C) = (rightUnitorNatIso C).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_μ (X Y : C) (Z : C) :
     (μ (tensoringRight C) X Y).app Z = (α_ Z X Y).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_δ (X Y : C) (Z : C) :
     (δ (tensoringRight C) X Y).app Z = (α_ Z X Y).inv := rfl
 

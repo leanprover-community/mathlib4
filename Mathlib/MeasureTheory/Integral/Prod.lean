@@ -63,6 +63,7 @@ section
 
 variable [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
   Fubini's theorem is measurable.
   This version has `f` in curried form. -/

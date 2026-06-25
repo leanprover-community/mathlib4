@@ -67,6 +67,7 @@ lemma semivariation_mono (hst : s ⊆ t) : μ.semivariation s ≤ μ.semivariati
   apply (measure_mono hst).trans
   apply le_biSup _ hℓ
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma semivariation_le_variation : μ.semivariation s ≤ μ.variation s := by
   simp only [semivariation, iSup_le_iff]
   intro ℓ hℓ
@@ -76,6 +77,7 @@ lemma semivariation_le_variation : μ.semivariation s ≤ μ.variation s := by
   apply le_trans ?_ (enorm_measure_le_variation _ _)
   exact (ContinuousLinearMap.le_opNorm_enorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma enorm_apply_le_semivariation : ‖μ s‖ₑ ≤ μ.semivariation s := by
   by_cases hs : MeasurableSet s; swap
   · simp [not_measurable, hs]

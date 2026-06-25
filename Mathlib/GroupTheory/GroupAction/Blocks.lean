@@ -580,7 +580,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
   map_rel_iff' := by
     rintro ⟨B, ha, hB⟩; rintro ⟨B', ha', hB'⟩
-    simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Set.le_eq_subset]
+    simp only [Subtype.mk_le_mk, Set.le_eq_subset]
     constructor
     · rintro hBB' b hb
       obtain ⟨k, rfl⟩ := htGX.exists_smul_eq a b

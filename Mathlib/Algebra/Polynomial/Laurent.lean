@@ -297,6 +297,7 @@ nonnegative degree coincide with the ones of `f`.  The terms of negative degree 
 def trunc : R[T;T⁻¹] →+ R[X] :=
   (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ => Int.ofNat.inj
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
@@ -539,6 +540,7 @@ theorem mk'_one_X_pow (n : ℕ) :
     IsLocalization.mk' R[T;T⁻¹] 1 (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) = T (-n) := by
   rw [mk'_eq 1 n, toLaurent_one, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk'_one_X :
     IsLocalization.mk' R[T;T⁻¹] 1 (⟨X, 1, pow_one X⟩ : Submonoid.powers (X : R[X])) = T (-1) := by

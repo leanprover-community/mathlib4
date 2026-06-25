@@ -234,6 +234,7 @@ instance [Language.order.Structure M] [Language.order.OrderedStructure M]
 
 variable [L.OrderedStructure M]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
     LHom.IsExpansionOn (orderLHom L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
@@ -408,6 +409,7 @@ variable [Language.order.Structure M] [LE M] [Language.order.OrderedStructure M]
   {N : Type*} [Language.order.Structure N] [LE N] [Language.order.OrderedStructure N]
   {F : Type*}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :=
   ⟨fun _ => isEmptyElim, by
     simp only [forall_relations, relation_eq_leSymb, relMap_leSymb, Fin.isValue,
@@ -415,11 +417,13 @@ instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :
     exact fun φ x => map_rel φ⟩
 
 -- If `OrderEmbeddingClass` or `RelEmbeddingClass` is defined, this should be generalized.
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Language.order.StrongHomClass (M ↪o N) M N :=
   ⟨fun _ => isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
     Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [EquivLike F M N] [OrderIsoClass F M N] : Language.order.StrongHomClass F M N :=
   ⟨fun _ => isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,

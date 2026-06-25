@@ -367,6 +367,7 @@ theorem image_snd_divisorsAntidiagonal : (divisorsAntidiagonal n).image Prod.snd
   rw [← map_swap_divisorsAntidiagonal, map_eq_image, image_image]
   exact image_fst_divisorsAntidiagonal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_div_right_divisors :
     n.divisors.map ⟨fun d => (d, n / d), fun _ _ => congr_arg Prod.fst⟩ =
       n.divisorsAntidiagonal := by
@@ -380,6 +381,7 @@ theorem map_div_right_divisors :
   · rintro ⟨rfl, hn⟩
     exact ⟨⟨dvd_mul_right _ _, hn⟩, Nat.mul_div_cancel_left _ (left_ne_zero_of_mul hn).bot_lt⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_div_left_divisors :
     n.divisors.map ⟨fun d => (n / d, d), fun _ _ => congr_arg Prod.snd⟩ =
       n.divisorsAntidiagonal := by

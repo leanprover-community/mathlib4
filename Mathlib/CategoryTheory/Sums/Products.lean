@@ -105,6 +105,9 @@ def functorEquivInverseCompWhiskeringLeftInrIso :
     Prod.snd (A ⥤ B) (A' ⥤ B) :=
   NatIso.ofComponents (fun _ ↦ Functor.inrCompSum' _ _)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A consequence of `functorEquiv`: we can construct a natural transformation of functors
 `A ⊕ A' ⥤ B` from the data of natural transformations of their whiskering with `inl_` and `inr_`. -/
 @[simps!]
@@ -115,12 +118,14 @@ def natTransOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (Sum.functorEquiv A A' B).inverse.map ((η₁, η₂) :) ≫
       (Sum.functorEquiv A A' B).unitInv.app G
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :
     natTransOfWhiskerLeftInlInr (𝟙 (Sum.inl_ A A' ⋙ F)) (𝟙 (Sum.inr_ A A' ⋙ F)) = 𝟙 F := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
@@ -167,6 +172,7 @@ section CompatibilityWithProductAssociator
 
 variable (T : Type*) [Category* T]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Sum.functorEquiv` sends associativity of sums to associativity of products -/
 @[simps! hom_app_fst hom_app_snd_fst hom_app_snd_snd inv_app_fst inv_app_snd_fst inv_app_snd_snd]

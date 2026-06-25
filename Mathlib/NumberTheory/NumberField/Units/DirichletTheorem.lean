@@ -139,6 +139,7 @@ theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
   simp_rw [Pi.norm_def, NNReal.coe_le_coe, Finset.sup_le_iff, ← NNReal.coe_le_coe] at h
   exact h w (mem_univ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     (h : ‖logEmbedding K (Additive.ofMul x)‖ ≤ r) (w : InfinitePlace K) :
@@ -312,6 +313,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
   rw [Set.mem_setOf_eq, Ideal.absNorm_span_singleton]
   exact seq_norm_le K w₁ hB n
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unitLattice_span_eq_top :
     Submodule.span ℝ (unitLattice K : Set (logSpace K)) = ⊤ := by
   classical
@@ -407,6 +409,7 @@ theorem logEmbeddingQuot_injective :
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
 def logEmbeddingEquiv :

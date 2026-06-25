@@ -558,7 +558,7 @@ theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
 -- TODO: better error when the type of x is left open
 theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
     tangentMap% (fun (x : M) ↦ (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
-  simp only [tangentMap, mfderiv_prod_left, TotalSpace.mk_inj]
+  simp only [tangentMap, mfderiv_prod_left]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -570,7 +570,7 @@ theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
 
 theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
     tangentMap% (fun (y : M') ↦ (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
-  simp only [tangentMap, mfderiv_prod_right, TotalSpace.mk_inj]
+  simp only [tangentMap, mfderiv_prod_right]
   rfl
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
@@ -604,13 +604,13 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'} (hf : MDiff
   congr
   · have : (fun z : M × M' ↦ f (z.1, p.2)) = (fun z : M ↦ f (z, p.2)) ∘ Prod.fst := rfl
     rw [this, mfderiv_comp (I' := I)]
-    · simp only [mfderiv_fst, id_eq]
+    · simp only [mfderiv_fst]
       rfl
     · exact hf.comp _ (mdifferentiableAt_id.prodMk mdifferentiableAt_const)
     · exact mdifferentiableAt_fst
   · have : (fun z : M × M' ↦ f (p.1, z.2)) = (fun z : M' ↦ f (p.1, z)) ∘ Prod.snd := rfl
     rw [this, mfderiv_comp (I' := I')]
-    · simp only [mfderiv_snd, id_eq]
+    · simp only [mfderiv_snd]
       rfl
     · exact hf.comp _ (mdifferentiableAt_const.prodMk mdifferentiableAt_id)
     · exact mdifferentiableAt_snd
@@ -715,6 +715,7 @@ theorem hasMFDerivWithinAt_inl :
   exact (hasFDerivWithinAt_id (extChartAt I q q) _).congr_of_eventuallyEq this
     (by simp [writtenInExtChartAt, extChartAt])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_inl :
     HasMFDerivAt% (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
   simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inl (s := Set.univ)
@@ -728,6 +729,7 @@ theorem hasMFDerivWithinAt_inr {t : Set M'} :
   exact (hasFDerivWithinAt_id (extChartAt I q' q') _).congr_of_eventuallyEq this
     (by simp [writtenInExtChartAt, extChartAt])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_inr :
     HasMFDerivAt% (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
   simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inr (t := Set.univ)
@@ -809,6 +811,7 @@ lemma HasMFDerivWithinAt.sum (hf : ∀ i ∈ t, HasMFDerivAt[s] (f i) z (f' i)) 
   | empty => simpa using! hasMFDerivWithinAt_const ..
   | insert i s hi IH => grind [HasMFDerivWithinAt.add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivAt.sum (hf : ∀ i ∈ t, HasMFDerivAt% (f i) z (f' i)) :
     HasMFDerivAt% (∑ i ∈ t, f i) z (∑ i ∈ t, f' i) := by
   simp_all only [← hasMFDerivWithinAt_univ]
@@ -860,6 +863,7 @@ theorem HasMFDerivWithinAt.neg {s : Set M} (hf : HasMFDerivAt[s] f z f') :
 theorem HasMFDerivAt.neg (hf : HasMFDerivAt% f z f') : HasMFDerivAt% (-f) z (-f') :=
   ⟨hf.1.neg, hf.2.neg⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_neg : HasMFDerivAt% (-f) z (-f') ↔ HasMFDerivAt% f z f' :=
   ⟨fun hf ↦ by convert! hf.neg <;> rw [neg_neg], fun hf ↦ hf.neg⟩
 
@@ -1013,6 +1017,7 @@ lemma HasMFDerivWithinAt.prod [DecidableEq ι]
       rw [t.erase_insert_of_ne (by grind), Finset.prod_insert (by grind)]
     · simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivAt.prod [DecidableEq ι]
     (hf : ∀ i ∈ t, HasMFDerivAt I 𝓘(𝕜, F') (f i) z (f' i)) :
     HasMFDerivAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) z (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
@@ -1100,6 +1105,7 @@ section Field
 variable {z : M} {F' : Type*} [NormedField F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace% z →L[𝕜] F'}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma HasMFDerivWithinAt.inv (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p⁻¹) s z (-(p z ^ 2)⁻¹ • p' : E →L[𝕜] F') := by
   convert! hp.inv' hp_ne
@@ -1111,6 +1117,7 @@ lemma HasMFDerivAt.inv (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p') (hp_ne : p z 
     HasMFDerivAt I 𝓘(𝕜, F') (p⁻¹) z (-(p z ^ 2)⁻¹ • p' : E →L[𝕜] F') :=
   hasMFDerivWithinAt_univ.mp <| hp.hasMFDerivWithinAt.inv hp_ne
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma HasMFDerivWithinAt.div (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
     (hq : HasMFDerivWithinAt I 𝓘(𝕜, F') q s z q') (hq_ne : q z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p / q) s z

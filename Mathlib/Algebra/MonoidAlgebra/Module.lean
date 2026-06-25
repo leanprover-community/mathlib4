@@ -84,6 +84,7 @@ lemma supported_eq_map :
     supported R S s = (Finsupp.supported S R s).map (coeffLinearEquiv R).symm.toLinearMap :=
   Submodule.comap_equiv_eq_map_symm ..
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S s) in
 @[to_additive (dont_translate := R)]
 lemma supported_eq_span_single : supported R R s = .span R ((fun m ↦ single m 1) '' s) := by
@@ -93,6 +94,9 @@ lemma supported_eq_span_single : supported R R s = .span R ((fun m ↦ single m 
 @[to_additive (attr := gcongr)]
 lemma supported_mono (hst : s ⊆ t) : supported R S s ≤ supported R S t := fun _ h ↦ h.trans hst
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 @[to_additive (dont_translate := R) (attr := simps!)

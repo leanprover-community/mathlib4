@@ -365,6 +365,7 @@ lemma image_latticeClosure (s : Set α) (f : α → β)
   · rintro _ - _ - ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
     exact ⟨a ⊓ b, isSublattice_latticeClosure.infClosed ha hb, map_inf ..⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
   ext

@@ -48,6 +48,7 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`. -/
 noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     (w : W) :
@@ -107,6 +108,7 @@ noncomputable def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V �
   map_one' := char_zero_eq_one
   map_mul' := char_add_eq_mul (he := he) (hL := hL)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma charMonoidHom_apply (w : Multiplicative W) (v : V) :
     charMonoidHom he hL w v = e (L v w) := by simp [charMonoidHom]
@@ -126,6 +128,7 @@ lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
     rfl
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The family of `ℂ`-linear combinations of `char he hL w, w : W`, is closed under `star`. -/
 lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {x : V →ᵇ ℂ} (hx : x ∈ (charAlgHom he hL).range) :

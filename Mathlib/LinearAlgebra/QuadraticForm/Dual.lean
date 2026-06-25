@@ -48,6 +48,7 @@ section Ring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem separatingLeft_dualProd :
     (dualProd R M).SeparatingLeft ↔ Function.Injective (Module.Dual.eval R M) := by
   classical

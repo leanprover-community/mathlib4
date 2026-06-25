@@ -40,6 +40,7 @@ section ofFn
 
 variable {R : Type*} [Semiring R] [DecidableEq R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ofFn n v` is the polynomial whose coefficients are the entries of the vector `v`. -/
 def ofFn (n : ℕ) : (Fin n → R) →ₗ[R] R[X] where
   toFun v := ⟨(List.ofFn v).toFinsupp⟩
@@ -64,12 +65,14 @@ lemma ne_zero_of_ofFn_ne_zero {n : ℕ} {v : Fin n → R} (h : ofFn n v ≠ 0) :
   subst h
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `i < n` the `i`-th coefficient of `ofFn n v` is `v i`. -/
 @[simp]
 theorem ofFn_coeff_eq_val_of_lt {n i : ℕ} (v : Fin n → R) (hi : i < n) :
     (ofFn n v).coeff i = v ⟨i, hi⟩ := by
   simp [ofFn, hi]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `n ≤ i` the `i`-th coefficient of `ofFn n v` is `0`. -/
 @[simp]
 theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) :
@@ -98,6 +101,7 @@ theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
   · rw [as_sum_range' (ofFn n v) n <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr h) v]
     simp [Finset.sum_range]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toFn_comp_ofFn_eq_id (n : ℕ) (v : Fin n → R) : toFn n (ofFn n v) = v := by
   simp [toFn, ofFn, LinearMap.pi]
 

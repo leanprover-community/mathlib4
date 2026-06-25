@@ -1022,6 +1022,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n\
       to the environment, but it already exists."
   trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
+  Mathlib.Tactic.warnIfImplicitIllTyped ref declName declType
   prependError "Failed to add projection lemma {declName}:" do
     addDecl <| .thmDecl {
       name := declName

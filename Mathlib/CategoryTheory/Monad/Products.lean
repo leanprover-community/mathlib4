@@ -98,6 +98,7 @@ def coprodMonad : Monad C where
   η := { app := fun _ => coprod.inr }
   μ := { app := fun _ => coprod.desc coprod.inl (𝟙 _) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The forward direction of the equivalence from algebras for the coproduct monad to the under
 category.

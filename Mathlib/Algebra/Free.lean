@@ -344,6 +344,7 @@ theorem quot_mk_assoc_left (x y z w : α) :
     Quot.mk (AssocRel α) (x * (y * z * w)) = Quot.mk _ (x * (y * (z * w))) :=
   Quot.sound (AssocRel.left _ _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : Semigroup (AssocQuotient α) where
   mul x y := by

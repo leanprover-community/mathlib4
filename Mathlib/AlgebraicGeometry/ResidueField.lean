@@ -281,6 +281,7 @@ section Spec
 
 variable (R : CommRingCat) (x : Spec R)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The residue fields of `Spec R` are isomorphic to `Ideal.ResidueField`. -/
 noncomputable
 def Spec.residueFieldIso :
@@ -288,6 +289,7 @@ def Spec.residueFieldIso :
   (IsLocalRing.ResidueField.mapEquiv
     (Spec.stalkIso R x).commRingCatIsoToRingEquiv).toCommRingCatIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma Spec.algebraMap_residueFieldIso_inv :
     CommRingCat.ofHom (algebraMap R _) ≫ (residueFieldIso R x).inv =
@@ -299,6 +301,7 @@ lemma Spec.residue_residueFieldIso_hom :
     (Spec R).residue x ≫ (residueFieldIso R x).hom =
       (Spec.stalkIso R x).hom ≫ CommRingCat.ofHom (algebraMap _ _) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
     Spec.map (residueFieldIso _ _).inv ≫
@@ -322,6 +325,7 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
     rintro ⟨(rfl : f = g), h⟩
     simpa
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
 to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
 @[simps]
@@ -340,6 +344,7 @@ def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
       Scheme.fromSpecResidueField_apply,
       Scheme.residueFieldCongr_fromSpecResidueField]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma descResidueField_stalkClosedPointTo_comp {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
     dsimp% descResidueField (stalkClosedPointTo (g ≫ f)) =

@@ -170,11 +170,13 @@ def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
   · exact w₂
 
 /-- `cospan f g` is the functor from the walking cospan hitting `f` and `g`. -/
+@[implicit_reducible]
 def cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) : WalkingCospan ⥤ C :=
   WidePullbackShape.wideCospan Z (fun j => WalkingPair.casesOn j X Y) fun j =>
     WalkingPair.casesOn j f g
 
 /-- `span f g` is the functor from the walking span hitting `f` and `g`. -/
+@[implicit_reducible]
 def span {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : WalkingSpan ⥤ C :=
   WidePushoutShape.wideSpan X (fun j => WalkingPair.casesOn j Y Z) fun j =>
     WalkingPair.casesOn j f g
@@ -225,6 +227,7 @@ theorem cospan_map_id {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (w : WalkingCospan
 theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every diagram indexing a pullback is naturally isomorphic (actually, equal) to a `cospan` -/
 @[simps (rhsMd := default)]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
@@ -232,6 +235,7 @@ def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
 @[simps (rhsMd := default)]
 def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) :=
@@ -241,6 +245,7 @@ def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) 
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor applied to a cospan is a cospan. -/
 def cospanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -286,6 +291,7 @@ theorem cospanCompIso_inv_app_one : (cospanCompIso F f g).inv.app WalkingCospan.
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor applied to a span is a span. -/
 def spanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
@@ -332,6 +338,7 @@ variable {X Y Z X' Y' Z' : C} (iX : X ≅ X') (iY : Y ≅ Y') (iZ : Z ≅ Z')
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for natural transformations between cospans. -/
 @[simps]
 def cospanHomMk {F G : WalkingCospan ⥤ C}
@@ -342,6 +349,7 @@ def cospanHomMk {F G : WalkingCospan ⥤ C}
   app := by rintro (_ | _ | _); exacts [z, l, r]
   naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for natural isomorphisms between cospans. -/
 @[simps!]
 def cospanIsoMk {F G : WalkingCospan ⥤ C}
@@ -398,6 +406,7 @@ end
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for natural transformations between spans. -/
 @[simps]
 def spanHomMk {F G : WalkingSpan ⥤ C}
@@ -408,6 +417,7 @@ def spanHomMk {F G : WalkingSpan ⥤ C}
   app := by rintro (_ | _ | _); exacts [z, l, r]
   naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for natural isomorphisms between spans. -/
 @[simps!]
 def spanIsoMk {F G : WalkingSpan ⥤ C}

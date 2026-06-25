@@ -37,6 +37,7 @@ namespace Equivalence
 
 variable (C : Type*) [Category* C] (D : Type*) [Category* D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The forward functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps]
@@ -45,6 +46,7 @@ def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   map {e f} α := (mkHom <| conjugateEquiv f.toAdjunction e.toAdjunction <| asNatTrans α).op
   map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps!]
@@ -73,6 +75,9 @@ def symmEquiv : (C ≌ D) ≌ (D ≌ C)ᵒᵖ where
   functor_unitIso_comp X := by
     simp [symm, symmEquivInverse]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `inverse` functor that sends a functor to its inverse. -/
 @[simps!]
 def inverseFunctor : (C ≌ D) ⥤ (D ⥤ C)ᵒᵖ :=
@@ -80,11 +85,13 @@ def inverseFunctor : (C ≌ D) ⥤ (D ⥤ C)ᵒᵖ :=
 
 variable {C D}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `inverse` functor sends an equivalence to its inverse. -/
 @[simps!]
 def inverseFunctorObjIso (e : C ≌ D) :
     (inverseFunctor C D).obj e ≅ Opposite.op e.inverse := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We can compare the way we obtain a natural isomorphism `e.inverse ≅ f.inverse` from
 an isomorphism `e ≌ f` via `inverseFunctor` with the way we get one through
 `Iso.isoInverseOfIsoFunctor`. -/
@@ -93,12 +100,14 @@ lemma inverseFunctorMapIso_symm_eq_isoInverseOfIsoFunctor {e f : C ≌ D} (α : 
     Iso.isoInverseOfIsoFunctor ((functorFunctor _ _).mapIso α) := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An "unopped" version of the equivalence `inverseFunctorObj'`. -/
 @[simps!]
 def inverseFunctorObj' (e : C ≌ D) :
     Opposite.unop ((inverseFunctor C D).obj e) ≅ e.inverse :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (C D) in
 /-- Promoting `Equivalence.congrLeft` to a functor. -/
 @[simps!]

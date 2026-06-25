@@ -83,6 +83,7 @@ theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
     · rw [notMem_support_iff.mp af, zero_mul]
     · rw [notMem_support_iff.mp bg, mul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors R[A] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by

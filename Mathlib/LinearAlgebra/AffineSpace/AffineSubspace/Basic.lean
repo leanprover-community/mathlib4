@@ -113,6 +113,7 @@ theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P
 
 end AffineSubspace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
@@ -367,11 +368,13 @@ theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
   rw [vectorSpan_pair_rev, Submodule.mem_span_singleton]
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A combination of two points expressed with `lineMap` lies in their affine span. -/
 theorem AffineMap.lineMap_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
     AffineMap.lineMap p₁ p₂ r ∈ line[k, p₁, p₂] :=
   AffineMap.lineMap_mem _ (left_mem_affineSpan_pair _ _ _) (right_mem_affineSpan_pair _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A combination of two points expressed with `lineMap` (with the two points reversed) lies in
 their affine span. -/
 theorem AffineMap.lineMap_rev_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
@@ -404,6 +407,7 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
   rw [vadd_mem_iff_mem_direction _ (right_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
     p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₁ p₂ r = p := by
   constructor
@@ -415,6 +419,7 @@ lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
   · rintro ⟨r, rfl⟩
     exact AffineMap.lineMap_mem_affineSpan_pair _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_affineSpan_pair_iff_exists_lineMap_rev_eq {p p₁ p₂ : P} :
     p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₂ p₁ r = p := by
   rw [Set.pair_comm, mem_affineSpan_pair_iff_exists_lineMap_eq]

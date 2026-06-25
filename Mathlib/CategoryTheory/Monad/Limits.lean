@@ -194,6 +194,7 @@ noncomputable def coconePoint : Algebra T where
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
     apply (D.obj j).assoc_assoc _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) Construct the lifted cocone in `Algebra T` which will be colimiting. -/
 @[simps]
 noncomputable def liftedCocone : Cocone D where
@@ -230,6 +231,7 @@ end ForgetCreatesColimits
 open ForgetCreatesColimits
 
 -- TODO: the converse of this is true as well
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from the Eilenberg-Moore category for a monad creates any colimit
 which the monad itself preserves.
 -/
@@ -527,6 +529,7 @@ noncomputable def conePoint : Coalgebra T where
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
     rw [(D.obj j).coassoc, ← assoc, ← assoc, commuting]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) Construct the lifted cone in `Coalgebra T` which will be limiting. -/
 @[simps]
 noncomputable def liftedCone : Cone D where
@@ -564,6 +567,7 @@ end ForgetCreatesLimits'
 open ForgetCreatesLimits'
 
 -- TODO: the converse of this is true as well
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from the Eilenberg-Moore category for a comonad creates any limit
 which the comonad itself preserves.
 -/

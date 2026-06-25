@@ -489,6 +489,7 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
   rcases mkAlgHom_surjective S s x with ⟨x, rfl⟩
   exact AlgHom.congr_fun w x
 
+set_option backward.isDefEq.respectTransparency false in
 irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=
 { toFun := fun x ↦ Quot.lift f

@@ -201,6 +201,7 @@ variable {ι : Type*}
 
 namespace Orientation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A module `M` over a linearly ordered commutative ring has precisely two "orientations" with
 respect to an empty index type. (Note that these are only orientations of `M` of in the conventional
 mathematical sense if `M` is zero-dimensional.) -/

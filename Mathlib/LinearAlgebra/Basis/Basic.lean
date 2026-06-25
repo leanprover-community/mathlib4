@@ -210,6 +210,7 @@ lemma span_neg {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 end Span
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any basis is a maximal linear independent set.
 -/
 theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
@@ -253,10 +254,12 @@ protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :
       map_add' := fun x y => by simp
       map_smul' := fun c x => by simp }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem singleton_apply (ι R : Type*) [Unique ι] [Semiring R] (i) : Basis.singleton ι R i = 1 :=
   apply_eq_iff.mpr (by simp [Basis.singleton])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
@@ -284,6 +287,7 @@ end Empty
 
 section Module.IsTorsionFree
 
+set_option backward.isDefEq.respectTransparency false in
 -- Can't be an instance because the basis can't be inferred.
 protected lemma isTorsionFree (b : Basis ι R M) :
     Module.IsTorsionFree R M := b.repr.injective.moduleIsTorsionFree _ (by simp)

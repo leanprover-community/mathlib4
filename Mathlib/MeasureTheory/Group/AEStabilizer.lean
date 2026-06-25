@@ -39,6 +39,7 @@ variable (G : Type*) {α : Type*} [Group G] [MulAction G α]
 
 namespace MulAction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A.e. stabilizer of a set under a group action. -/
 @[to_additive (attr := simps) /-- A.e. stabilizer of a set under an additive group action. -/]
 def aestabilizer (s : Set α) : Subgroup G where
@@ -54,6 +55,7 @@ variable {g : G} {s t : Set α}
 @[to_additive (attr := simp)]
 lemma mem_aestabilizer : g ∈ aestabilizer G μ s ↔ g • s =ᵐ[μ] s := .rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma stabilizer_le_aestabilizer (s : Set α) : stabilizer G s ≤ aestabilizer G μ s := by
   intro g hg
@@ -65,6 +67,7 @@ lemma aestabilizer_empty : aestabilizer G μ ∅ = ⊤ := top_unique fun _ _ ↦
 @[to_additive (attr := simp)]
 lemma aestabilizer_univ : aestabilizer G μ univ = ⊤ := top_unique fun _ _ ↦ by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma aestabilizer_congr (h : s =ᵐ[μ] t) : aestabilizer G μ s = aestabilizer G μ t := by
   ext g

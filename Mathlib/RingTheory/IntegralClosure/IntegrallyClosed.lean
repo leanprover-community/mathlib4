@@ -375,6 +375,7 @@ section localization
 
 variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
     (hM : M ≤ R⁰) [IsLocalization M S] : IsIntegrallyClosed S := by
   let K := FractionRing R

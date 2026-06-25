@@ -208,6 +208,7 @@ private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
       (T_pow' hnorm _)
 
 
+set_option backward.isDefEq.respectTransparency false in
 private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n z)
     (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = ⟨_, h1⟩) :
     { q : ℤ_[p] // F.aeval z' = q * z1 ^ 2 } := by
@@ -280,6 +281,7 @@ private theorem newton_seq_norm_le (n : ℕ) :
     ‖F.aeval (newton_seq n)‖ ≤ ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n :=
   (newton_seq_aux hnorm n).2.2
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem newton_seq_norm_eq (n : ℕ) :
     ‖newton_seq (n + 1) - newton_seq n‖ =
     ‖F.aeval (newton_seq n)‖ / ‖F.derivative.aeval (newton_seq n)‖ := by
@@ -400,6 +402,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
       apply mul_div_mul_left
       apply deriv_norm_ne_zero; assumption
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem newton_seq_dist_to_a :
     ∀ n : ℕ, 0 < n → ‖newton_seq n - a‖ = ‖F.aeval a‖ / ‖F.derivative.aeval a‖
   | 1, _h => by simp [sub_eq_add_neg, add_assoc, newton_seq_gen, newton_seq_aux, ih_n]

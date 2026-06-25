@@ -419,6 +419,7 @@ lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
   obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D hp
   rwa [he, Function.leftInverse_invFun hD]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
   refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
@@ -489,6 +490,7 @@ lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 
   simp_rw [leadingCoeff, hp, hq, ← hadd, Function.leftInverse_invFun hD _]
   exact apply_add_of_supDegree_le hadd hD hp.le hq.le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)

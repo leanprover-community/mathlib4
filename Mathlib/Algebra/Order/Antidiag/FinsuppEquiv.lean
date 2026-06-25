@@ -37,6 +37,7 @@ namespace Finset
 variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}
   {n : μ}
 
+set_option backward.isDefEq.respectTransparency false in
 variable (s n) in
 /-- The equivalence between `Finset.finsuppAntidiag s n` and the subtype of `s →₀ μ` whose sum is
 `n`. -/

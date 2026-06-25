@@ -72,6 +72,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   · subst s'
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- First case of the inductive step: assuming that
 `∀ (s : Finset ι), s.Nonempty → s ≠ univ → #s < #(s.biUnion t)`
 and that the statement of **Hall's Marriage Theorem** is true for all

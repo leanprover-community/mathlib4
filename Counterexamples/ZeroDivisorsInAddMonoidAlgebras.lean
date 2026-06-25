@@ -217,6 +217,7 @@ theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
 theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
   single_apply_eq_zero.mpr fun h => h.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
 enough and is the content of `Finsupp.Lex.addLeftStrictMono`. -/

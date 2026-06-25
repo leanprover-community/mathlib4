@@ -595,6 +595,7 @@ lemma mem_irrelevant_of_mem {x : A} {i : ι} (hi : 0 < i) (hx : x ∈ 𝒜 i) : 
   rw [mem_irrelevant_iff, GradedRing.proj_apply, DirectSum.decompose_of_mem _ hx,
     DirectSum.of_eq_of_ne _ _ _ (by aesop), ZeroMemClass.coe_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `irrelevant 𝒜 = ⨁_{i>0} 𝒜ᵢ` -/
 lemma irrelevant_eq_iSup : 𝒜₊.toAddSubmonoid = ⨆ i > 0, .ofClass (𝒜 i) := by
   refine le_antisymm (fun x hx ↦ ?_) <| iSup₂_le fun i hi x hx ↦ mem_irrelevant_of_mem _ hi hx

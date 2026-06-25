@@ -403,6 +403,7 @@ def H1Cotangent.map (f : Hom P P') : P.H1Cotangent →ₗ[S] P'.H1Cotangent := b
   rw [hx]
   exact LinearMap.map_zero _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
   ext x
   simp only [map_apply_coe]
@@ -410,8 +411,10 @@ lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.map_coe_ker, map_zero,
     Cotangent.val_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma H1Cotangent.map_id : map (.id P) = LinearMap.id := by ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 omit [IsScalarTower R S S'] in
 lemma H1Cotangent.map_comp
     (f : Hom P P') (g : Hom P' P'') :

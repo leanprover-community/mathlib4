@@ -173,6 +173,7 @@ lemma shiftFunctor_of_induced (a : A) :
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
@@ -180,6 +181,7 @@ lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_hom_app_obj]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
@@ -189,6 +191,7 @@ lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
 
 variable {A}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
     letI := HasShift.induced F A s i
@@ -199,6 +202,7 @@ lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
         (s b).map ((i a).inv.app X) := by
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_hom_app_obj]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
     letI := HasShift.induced F A s i

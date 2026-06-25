@@ -106,6 +106,7 @@ lemma forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
 instance forget₂_faithful [HasForget₂ C D] : (forget₂ C D).Faithful :=
   HasForget₂.forget_comp.faithful_of_comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance InducedCategory.hasForget₂ (f : C → D) : HasForget₂ (InducedCategory D f) D where
   forget₂ := inducedFunctor f
   forget_comp := rfl

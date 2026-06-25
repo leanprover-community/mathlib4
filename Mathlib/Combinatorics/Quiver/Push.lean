@@ -65,6 +65,7 @@ noncomputable def lift : Push σ ⥤q W' where
 theorem lift_obj : (lift σ φ τ h).obj = τ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
   fapply Prefunctor.ext
   · rintro X

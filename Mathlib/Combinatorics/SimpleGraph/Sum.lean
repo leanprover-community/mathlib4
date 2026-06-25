@@ -62,6 +62,7 @@ def Iso.sumAssoc : (G ⊕g H) ⊕g I ≃g G ⊕g (H ⊕g I) where
   toEquiv := .sumAssoc ..
   map_rel_iff' := by rintro ((u | u) | u) ((v | v) | v) <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The embedding of `G` into `G ⊕g H`. -/
 @[simps]
 def Embedding.sumInl : G ↪g G ⊕g H where
@@ -69,6 +70,7 @@ def Embedding.sumInl : G ↪g G ⊕g H where
   inj' u v := by simp
   map_rel_iff' := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The embedding of `H` into `G ⊕g H`. -/
 @[simps]
 def Embedding.sumInr : H ↪g G ⊕g H where
@@ -91,6 +93,7 @@ lemma Hom.sum_sum_comp_sumAssoc (f : G →g G') (g : H →g H') (h : I →g I') 
     comp (sum f (sum g h)) Iso.sumAssoc.toHom = comp Iso.sumAssoc.toHom (sum (sum f g) h) := by
   ext ((v | w) | u) <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given embeddings `f : G ↪g G'` and `g : H ↪g H'`, returns an embedding from `G ⊕g H` to
 `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
 @[simps]
@@ -132,6 +135,7 @@ lemma Iso.sumAssoc_comp_sumCongr (f : G ≃g G') (g : H ≃g H') (h : I ≃g I')
     comp sumAssoc (sumCongr (sumCongr f g) h) = comp (sumCongr f (sumCongr g h)) sumAssoc := by
   ext ((v | w) | u) <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The edges of the disjoint sum of `G` and `H` are in bijection with
 the disjoint sum of the edges of `G` and the edges of `H` -/
 def edgeSetSumEquiv : (G ⊕g H).edgeSet ≃ G.edgeSet ⊕ H.edgeSet where

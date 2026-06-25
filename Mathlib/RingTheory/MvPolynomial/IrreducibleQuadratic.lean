@@ -202,6 +202,7 @@ noncomputable def sumSMulXSMulY :
 
 variable (c : n →₀ R)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem irreducible_sumSMulXSMulY [IsDomain R]
     (hc : c.support.Nontrivial)
     (h_dvd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :

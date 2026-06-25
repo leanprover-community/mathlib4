@@ -221,6 +221,7 @@ theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
   simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
   simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) :
     M.acceptsFrom (⋃ (i) (j), f i j) = ⋃ (i) (j), M.acceptsFrom (f i j) := by

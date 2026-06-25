@@ -910,6 +910,7 @@ theorem continuous_totalSpaceMk (b : B) :
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology _ :=
   a.toFiberPrebundle.toFiberBundle
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Make a `VectorBundle` from a `VectorPrebundle`.  Concretely this means
 that, given a `VectorPrebundle` structure for a sigma-type `E` -- which consists of a
 number of "pretrivializations" identifying parts of `E` with product spaces `U × F` -- one

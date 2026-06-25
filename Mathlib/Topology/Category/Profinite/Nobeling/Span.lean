@@ -50,8 +50,7 @@ def πJ : LocallyConstant (π C (· ∈ s)) ℤ →ₗ[ℤ] LocallyConstant C �
 theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
     l.eval C = πJ C s (l.eval (π C (· ∈ s))) := by
   ext f
-  simp only [πJ, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
-    LocallyConstant.coe_comap, Function.comp_apply]
+  simp only [πJ, LocallyConstant.comapₗ]
   exact (congr_fun (Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood C (· ∈ s) hl)) _).symm
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/

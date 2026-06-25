@@ -59,10 +59,12 @@ instance (U : X.affineOpens) : IsPreimmersion (I.glueDataObjι U) :=
       (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective)
   .comp _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma glueDataObjι_ι (U : X.affineOpens) : I.glueDataObjι U ≫ U.1.ι =
     Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) ≫ U.2.fromSpec := by
   rw [glueDataObjι, Category.assoc]; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
     RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.1.topIso.hom.hom := by
   let φ : Γ(X, U) ⟶ CommRingCat.of (Γ(X, U) ⧸ I.ideal U) :=
@@ -78,6 +80,7 @@ lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
   rw [← Scheme.Hom.appTop, U.2.isoSpec_inv_appTop, Category.assoc, Iso.inv_hom_id_assoc]
   simp only [Scheme.Opens.topIso_hom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Set.Notation in
 lemma range_glueDataObjι (U : X.affineOpens) :
     Set.range (I.glueDataObjι U) =
@@ -88,6 +91,7 @@ lemma range_glueDataObjι (U : X.affineOpens) :
   simp
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma range_glueDataObjι_ι (U : X.affineOpens) :
     Set.range (I.glueDataObjι U ≫ U.1.ι) = X.zeroLocus (U := U) (I.ideal U) ∩ U := by
   simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, range_glueDataObjι]
@@ -333,6 +337,7 @@ private lemma ι_gluedTo (U : X.affineOpens) :
     I.glueData.ι U ≫ I.gluedTo = I.glueDataObjι U ≫ U.1.ι :=
   Multicoequalizer.π_desc _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 private lemma glueDataObjMap_ι (U V : X.affineOpens) (h : U ≤ V) :
@@ -384,6 +389,7 @@ lemma range_glueDataObjι_ι_eq_support_inter (U : X.affineOpens) :
     Set.range (I.glueDataObjι U ≫ U.1.ι) = (I.support : Set X) ∩ U :=
   (I.range_glueDataObjι_ι U).trans (I.coe_support_inter U).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma range_gluedTo : Set.range I.gluedTo = I.support := by
   refine subset_antisymm (Set.range_subset_iff.mpr fun x ↦ ?_) ?_
   · obtain ⟨ix, x : I.glueDataObj ix, rfl⟩ :=
@@ -427,6 +433,7 @@ private lemma glueDataObjIso_hom_restrict (U : X.affineOpens) :
     (I.glueDataObjIso U).hom ≫ I.gluedTo ∣_ ↑U = I.glueDataObjι U := by
   rw [← cancel_mono U.1.ι]; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsPreimmersion I.gluedTo := by
   rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsPreimmersion)
     _ (iSup_affineOpens_eq_top X)]
@@ -460,6 +467,7 @@ def subschemeIso : I.subscheme ≅ I.glueData.glued :=
   letI := IsOpenImmersion.isIso F
   asIso F
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion from the subscheme associated to an ideal sheaf. -/
 noncomputable
 def subschemeι : I.subscheme ⟶ X :=
@@ -486,6 +494,7 @@ instance : QuasiCompact I.subschemeι := by
 lemma range_subschemeι : Set.range I.subschemeι = I.support := by
   simp [← range_gluedTo, I.subschemeι_def, Set.range_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
     (I.glueData.ι U ≫ I.subschemeIso.inv).opensRange = I.subschemeι ⁻¹ᵁ U := by
@@ -507,6 +516,7 @@ def subschemeCover : I.subscheme.AffineOpenCover where
       (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).covers x.1
     exact (I.opensRange_glueData_ι_subschemeIso_inv U).ge hy
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma opensRange_subschemeCover_map (U : X.affineOpens) :
     (I.subschemeCover.f U).opensRange = I.subschemeι ⁻¹ᵁ U :=
@@ -619,6 +629,7 @@ lemma inclusion_subschemeι {I J : IdealSheafData X} (h : I ≤ J) :
     inclusion h ≫ I.subschemeι = J.subschemeι :=
   J.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma inclusion_id (I : IdealSheafData X) :
@@ -631,6 +642,7 @@ lemma inclusion_comp {I J K : IdealSheafData X} (h₁ : I ≤ J) (h₂ : J ≤ K
     inclusion h₂ ≫ inclusion h₁ = inclusion (h₁.trans h₂) :=
   K.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor taking an ideal sheaf to its associated subscheme. -/
 @[simps]
@@ -764,6 +776,7 @@ def kerAdjunction (Y : Scheme.{u}) : (subschemeFunctor Y).rightOp ⊣ Y.kerFunct
   counit.naturality _ _ _ := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
   left_triangle_components I := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : (IdealSheafData.subschemeFunctor Y).Full :=
   have : IsIso Y.kerAdjunction.rightOp.counit := by

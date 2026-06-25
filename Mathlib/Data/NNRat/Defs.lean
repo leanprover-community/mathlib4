@@ -253,6 +253,7 @@ theorem toNNRat_zero : toNNRat 0 = 0 := rfl
 @[simp]
 theorem toNNRat_one : toNNRat 1 = 1 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_pos : 0 < toNNRat q ↔ 0 < q := by simp [toNNRat, ← coe_lt_coe]
 
@@ -262,10 +263,12 @@ theorem toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
 
 alias ⟨_, toNNRat_of_nonpos⟩ := toNNRat_eq_zero
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_le_toNNRat_iff (hp : 0 ≤ p) : toNNRat q ≤ toNNRat p ↔ q ≤ p := by
   simp [← coe_le_coe, toNNRat, hp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_lt_toNNRat_iff' : toNNRat q < toNNRat p ↔ q < p ∧ 0 < p := by
   simp [← coe_lt_coe, toNNRat]
@@ -276,6 +279,7 @@ theorem toNNRat_lt_toNNRat_iff (h : 0 < p) : toNNRat q < toNNRat p ↔ q < p :=
 theorem toNNRat_lt_toNNRat_iff_of_nonneg (hq : 0 ≤ q) : toNNRat q < toNNRat p ↔ q < p :=
   toNNRat_lt_toNNRat_iff'.trans ⟨And.left, fun h ↦ ⟨h, hq.trans_lt h⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_add (hq : 0 ≤ q) (hp : 0 ≤ p) : toNNRat (q + p) = toNNRat q + toNNRat p :=
   NNRat.ext <| by simp [toNNRat, hq, hp, add_nonneg]
@@ -299,6 +303,7 @@ theorem toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q
 theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
   · ext; simp [toNNRat, hp, hq, mul_nonneg]

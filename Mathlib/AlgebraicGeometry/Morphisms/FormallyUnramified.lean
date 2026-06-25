@@ -72,6 +72,7 @@ instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified whe
 instance : MorphismProperty.IsStableUnderComposition @FormallyUnramified :=
   HasRingHomProperty.stableUnderComposition RingHom.FormallyUnramified.stableUnderComposition
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `f : X ⟶ S` is formally unramified if `X ⟶ X ×ₛ X` is an open immersion.
 In particular, monomorphisms (e.g. immersions) are formally unramified.
 The converse is true if `f` is locally of finite type. -/
@@ -119,6 +120,7 @@ instance : MorphismProperty.IsMultiplicative @FormallyUnramified where
 instance : MorphismProperty.IsStableUnderBaseChange @FormallyUnramified :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.FormallyUnramified.isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 open MorphismProperty in
 /-- The diagonal of a formally unramified morphism of finite type is an open immersion. -/
 instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f] :
@@ -175,6 +177,7 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     exact stalkMap f x
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given any commuting diagram
 ```

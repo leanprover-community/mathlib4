@@ -287,12 +287,14 @@ theorem curveIntegral_trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegr
   simp only [curveIntegral_def]
   norm_num
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem curveIntegralFun_segment [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (a b : E)
     {t : ℝ} (ht : t ∈ I) : curveIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
   have := Path.eqOn_extend_segment a b
   simp only [curveIntegralFun_def, this ht, derivWithin_congr this (this ht),
     (hasDerivWithinAt_lineMap ..).derivWithin (uniqueDiffOn_Icc_zero_one t ht)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem curveIntegrable_segment [NormedSpace ℝ E] :
     CurveIntegrable ω (.segment a b) ↔
       IntervalIntegrable (fun t ↦ ω (lineMap a b t) (b - a)) volume 0 1 := by
@@ -300,6 +302,7 @@ theorem curveIntegrable_segment [NormedSpace ℝ E] :
   rw [uIoc_of_le zero_le_one]
   exact .mono Ioc_subset_Icc_self fun _t ↦ curveIntegralFun_segment ω a b
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem curveIntegral_segment [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (a b : E) :
     ∫ᶜ x in .segment a b, ω x = ∫ t in 0..1, ω (lineMap a b t) (b - a) := by
   rw [curveIntegral_def]
@@ -313,6 +316,7 @@ theorem curveIntegral_segment_const [NormedSpace ℝ E] [CompleteSpace F] (ω : 
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   simp [curveIntegral_segment]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `‖ω z‖ ≤ C` at all points of the segment `[a -[ℝ] b]`,
 then the curve integral `∫ᶜ x in .segment a b, ω x` has norm at most `C * ‖b - a‖`. -/
 theorem norm_curveIntegral_segment_le [NormedSpace ℝ E] {C : ℝ} (h : ∀ z ∈ [a -[ℝ] b], ‖ω z‖ ≤ C) :

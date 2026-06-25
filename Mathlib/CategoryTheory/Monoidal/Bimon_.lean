@@ -109,6 +109,7 @@ def toMonComonObj (M : Bimon C) : Mon (Comon C) where
   mon.mul.hom := μ[M.X.X]
   mon.mul.isComonHom_hom.hom_comul := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[simps]
 def toMonComon : Bimon C ⥤ Mon (Comon C) where
@@ -141,6 +142,7 @@ def ofMonComonObj (M : Mon (Comon C)) : Bimon C where
   comon.counit := .mk' ε[M.X.X]
   comon.comul := .mk' Δ[M.X.X]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (C) in
 /-- The backward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[simps]
@@ -148,16 +150,19 @@ def ofMonComon : Mon (Comon C) ⥤ Bimon C where
   obj := ofMonComonObj
   map f := .mk' ((Comon.forget C).mapMon.map f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toMonComon_ofMonComon_obj_one (M : Bimon C) :
     η[((toMonComon C ⋙ ofMonComon C).obj M).X.X] = 𝟙 _ ≫ η[M.X.X] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toMonComon_ofMonComon_obj_mul (M : Bimon C) :
     μ[((toMonComon C ⋙ ofMonComon C).obj M).X.X] = 𝟙 _ ≫ μ[M.X.X] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `equivMonComonUnitIsoApp`. -/
 @[simps!]
 def equivMonComonUnitIsoAppXAux (M : Bimon C) :
@@ -193,6 +198,9 @@ theorem ofMonComon_toMonComon_obj_comul (M : Mon (Comon C)) :
     Δ[((ofMonComon C ⋙ toMonComon C).obj M).X.X] = Δ[M.X.X] ≫ 𝟙 _ :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `equivMonComonCounitIsoApp`. -/
 @[simps!]
 def equivMonComonCounitIsoAppXAux (M : Mon (Comon C)) :
@@ -202,6 +210,9 @@ def equivMonComonCounitIsoAppXAux (M : Mon (Comon C)) :
 set_option backward.isDefEq.respectTransparency false in
 instance (M : Mon (Comon C)) : IsComonHom (equivMonComonCounitIsoAppXAux M).hom where
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `equivMonComonCounitIsoApp`. -/
 @[simps!]
 def equivMonComonCounitIsoAppX (M : Mon (Comon C)) :
@@ -218,6 +229,7 @@ def equivMonComonCounitIsoApp (M : Mon (Comon C)) :
     (ofMonComon C ⋙ toMonComon C).obj M ≅ M :=
  Mon.mkIso <| (equivMonComonCounitIsoAppX M)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `Comon (Mon C) ≌ Mon (Comon C)` -/
 def equivMonComon : Bimon C ≌ Mon (Comon C) where
   functor := toMonComon C
@@ -232,11 +244,13 @@ variable (C) in
 @[simps!]
 def trivial : Bimon C := Comon.trivial (Mon C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bimonoid morphism from the trivial bimonoid to any bimonoid. -/
 @[simps]
 def trivialTo (A : Bimon C) : trivial C ⟶ A :=
   .mk' (default : Mon.trivial C ⟶ A.X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bimonoid morphism from any bimonoid to the trivial bimonoid. -/
 @[simps!]
 def toTrivial (A : Bimon C) : A ⟶ trivial C :=
@@ -244,10 +258,12 @@ def toTrivial (A : Bimon C) : A ⟶ trivial C :=
 
 /-! ### Additional lemmas -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem BimonObjAux_counit (M : Bimon C) :
     ε[((toComon C).obj M).X] = ε[M.X].hom :=
   Category.comp_id _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem BimonObjAux_comul (M : Bimon C) :
     Δ[((toComon C).obj M).X] = Δ[M.X].hom :=
   Category.comp_id _

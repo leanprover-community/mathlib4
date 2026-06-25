@@ -437,6 +437,7 @@ lemma map_isBasis_iff' {I X : Set β} {hf} :
   rintro ⟨I, X, hIX, rfl, rfl⟩
   exact hIX.map hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_dual {hf} : (M.map f hf)✶ = M✶.map f hf := by
   apply ext_isBase (by simp)
   simp only [dual_ground, map_ground, subset_image_iff, forall_exists_index, and_imp,
@@ -458,6 +459,7 @@ lemma map_isBasis_iff' {I X : Set β} {hf} :
 @[simp] lemma map_id : M.map id (injOn_id M.E) = M := by
   simp [ext_iff_indep]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_comap {f : α → β} (h_range : N.E ⊆ range f) (hf : InjOn f (f ⁻¹' N.E)) :
     (N.comap f).map f hf = N := by
   refine ext_indep (by simpa [image_preimage_eq_iff]) ?_
@@ -498,6 +500,7 @@ end map
 
 section mapSetEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Map `M : Matroid α` to a `Matroid β` with ground set `E` using an equivalence `M.E ≃ E`.
 Defined using `Matroid.ofExistsMatroid` for better defeq. -/
 def mapSetEquiv (M : Matroid α) {E : Set β} (e : M.E ≃ E) : Matroid β :=
@@ -683,6 +686,7 @@ lemma eq_of_restrictSubtype_eq {N : Matroid α} (hM : M.E = E) (hN : N.E = E)
 lemma restrictSubtype_dual' (hM : M.E = E) : (M.restrictSubtype E)✶ = M✶.restrictSubtype E := by
   rw [← hM, restrictSubtype_dual]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `M.restrictSubtype X` is isomorphic to `M ↾ X`. -/
 @[simp] lemma map_val_restrictSubtype_eq (M : Matroid α) (X : Set α) :
     (M.restrictSubtype X).map (↑) Subtype.val_injective.injOn = M ↾ X := by

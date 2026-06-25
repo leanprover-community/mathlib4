@@ -137,6 +137,7 @@ noncomputable def diracProbaEquiv [T0Space X] : X ≃ range (diracProba (X := X)
   left_inv x := by apply diracProbaInverse_eq; rfl
   right_inv μ := Subtype.ext (by simp only [diracProba_diracProbaInverse])
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The composition of `diracProbaEquiv.symm` and `diracProba` is the subtype inclusion. -/
 lemma diracProba_comp_diracProbaEquiv_symm_eq_val [T0Space X] :
     diracProba ∘ (diracProbaEquiv (X := X)).symm = fun μ ↦ μ.val := by

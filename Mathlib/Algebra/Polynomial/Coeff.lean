@@ -64,6 +64,7 @@ theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
       Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
     _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
 def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
@@ -117,6 +118,7 @@ theorem coeff_mul (p q : R[X]) (n : ℕ) :
 @[simp]
 theorem mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_coeff_one (p q : R[X]) :
     coeff (p * q) 1 = coeff p 0 * coeff q 1 + coeff p 1 * coeff q 0 := by
   rw [coeff_mul, Nat.antidiagonal_eq_map]

@@ -411,6 +411,7 @@ section
 
 variable {e : M → H} (h : IsOpenEmbedding e) {n : ℕ∞ω}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
@@ -436,6 +437,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
       h.toOpenPartialHomeomorph_target] at this
     exact this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :

@@ -287,6 +287,7 @@ lemma ofCoeff_smul (a : A) (x : M →₀ R) : ofCoeff (a • x) = a • ofCoeff 
 @[to_additive (attr := simp) (dont_translate := A) smul_apply]
 lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
   ext
@@ -374,6 +375,7 @@ theorem single_apply {a a' : M} {b : R} [Decidable (a = a')] :
 @[to_additive (attr := simp)]
 lemma single_eq_zero : single m r = 0 ↔ r = 0 := Finsupp.single_eq_zero
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] lemma single_ne_zero : single m r ≠ 0 ↔ r ≠ 0 := by simp [single]
 
 @[to_additive (attr := elab_as_elim)]
@@ -442,6 +444,7 @@ lemma mul_apply [DecidableEq M] (x y : R[M]) (m : M) :
   rw [Finsupp.sum_apply]; congr; ext
   apply single_apply
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 @[to_additive (dont_translate := R) mul_apply_antidiagonal]
 lemma mul_apply_antidiagonal (x y : R[M]) (m : M) (s : Finset (M × M))
@@ -477,6 +480,7 @@ lemma single_commute (hm : ∀ m', Commute m m') (hr : ∀ r', Commute r r') (x 
     ext m' r' : 2; exact single_commute_single (hm m') (hr r')
   exact congr($this x)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) mul_single_apply_aux]
 lemma mul_single_apply_aux (H : ∀ m' ∈ x.support, m' * m = m₁ ↔ m' = m₂) :
     (x * single m r) m₁ = x m₂ * r := by
@@ -488,6 +492,7 @@ lemma mul_single_apply_aux (H : ∀ m' ∈ x.support, m' * m = m₁ ↔ m' = m�
       dsimp [Finsupp.sum]; congr! 2; simp [*]
     _ = x m₂ * r := by simp +contextual [Finsupp.sum_eq_single m₂]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) single_mul_apply_aux]
 lemma single_mul_apply_aux (H : ∀ m' ∈ x.support, m * m' = m₁ ↔ m' = m₂) :
     (single m r * x) m₁ = r * x m₂ := by
@@ -499,10 +504,12 @@ lemma single_mul_apply_aux (H : ∀ m' ∈ x.support, m * m' = m₁ ↔ m' = m�
       dsimp [Finsupp.sum]; congr! 2; simp [*]
     _ = r * x m₂ := by simp +contextual [Finsupp.sum_eq_single m₂]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) (dont_translate := R) mul_single_apply_of_not_exists_add]
 lemma mul_single_apply_of_not_exists_mul (r : R) (x : R[M]) (h : ¬ ∃ d, m' = d * m) :
     (x * single m r) m' = 0 := by classical simp_all [mul_apply, eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) (dont_translate := R) single_mul_apply_of_not_exists_add]
 lemma single_mul_apply_of_not_exists_mul (r : R) (x : R[M]) (h : ¬ ∃ d, m' = m * d) :
     (single m r * x) m' = 0 := by classical simp_all [mul_apply, eq_comm]
@@ -688,6 +695,7 @@ lemma mul_single_apply (x : R[G]) (r : R) (g h : G) : (x * single g r) h = x (h 
 lemma single_mul_apply (x : R[G]) (r : R) (g h : G) : (single g r * x) h = r * x (g⁻¹ * h) :=
   single_mul_apply_aux <| by simp [eq_inv_mul_iff_mul_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) mul_apply_left]
 lemma mul_apply_left (x y : R[G]) (g : G) : (x * y) g = x.sum fun h r ↦ r * y (h⁻¹ * g) := by
   classical
@@ -696,6 +704,7 @@ lemma mul_apply_left (x y : R[G]) (g : G) : (x * y) g = x.sum fun h r ↦ r * y 
   congr! 1
   simp +contextual [← eq_inv_mul_iff_mul_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) mul_apply_right]
 lemma mul_apply_right (x y : R[G]) (g : G) : (x * y) g = y.sum fun h r ↦ x (g * h⁻¹) * r := by
   classical
@@ -846,6 +855,7 @@ def singleHom [AddZeroClass M] : R × Multiplicative M →* R[M] where
   map_one' := rfl
   map_mul' _a _b := (single_mul_single ..).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem induction_on [AddMonoid M] {p : R[M] → Prop} (x : R[M])
     (hM : ∀ m, p (of R M <| .ofAdd m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
     (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=

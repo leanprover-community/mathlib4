@@ -345,6 +345,7 @@ theorem ofPermHomFun_one (x : α) : (ofPermHomFun a 1) x = x := by
   · rw [ofPermHomFun_apply_of_mem_fixedPoints a _ hx]
   · rw [ofPermHomFun_apply_of_cycleOf_mem a _ hc hm, OneMemClass.coe_one, coe_one, id_eq, hm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `a : g.Basis` and a permutation of `g.cycleFactorsFinset` that
   preserve the lengths of the cycles, a permutation of `α` that
   moves the `Basis` and commutes with `g` -/
@@ -458,6 +459,7 @@ theorem range_toPermHom_eq_range_toPermHom' :
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by
@@ -488,6 +490,7 @@ def kerParam : (Perm (Function.fixedPoints g)) ×
   MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise_commute_of_mem_zpowers)
     g.commute_ofSubtype_noncommPiCoprod
 
+set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     {v : (c : g.cycleFactorsFinset) → Subgroup.zpowers c.val} {x : α} :
     kerParam g (u, v) x =
@@ -596,6 +599,7 @@ open Function
 variable {a : Type*} (g : Perm α) (k : Perm (fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sign_kerParam_apply_apply :
     sign (kerParam g ⟨k, v⟩) = sign k * ∏ c, sign (v c).val := by
   rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,

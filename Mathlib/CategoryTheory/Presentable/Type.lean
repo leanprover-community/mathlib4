@@ -98,6 +98,7 @@ def cocone : Cocone (Set.functor X κ) where
   pt := X
   ι.app _ := ↾(Subtype.val)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Any type `X` is the (filtered) colimit of its subsets of cardinality `< κ`
 when `κ` is an infinite cardinal. (This colimit is `κ`-filtered when `κ` is

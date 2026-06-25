@@ -53,6 +53,7 @@ theorem invariantBasisNumber_iff_matrix : InvariantBasisNumber R ↔ ∀ n m
       h (toLinearEquivRight'OfInv hfg hgf).symm) fun h n m e ↦ h n m (toMatrixRight' e)
     (toMatrixRight' e.symm) (by simp [← toMatrixRight'_comp]) (by simp [← toMatrixRight'_comp])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The rank condition is left-right symmetric. Note that the strong rank condition
 is not left-right symmetric, see Remark (1.32) in §1.1D of [lam_1999]. -/
 protected theorem MulOpposite.rankCondition_iff : RankCondition Rᵐᵒᵖ ↔ RankCondition R := by
@@ -66,6 +67,7 @@ protected theorem MulOpposite.rankCondition_iff : RankCondition Rᵐᵒᵖ ↔ R
   · ext; simp [map, mul_apply]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Invariant basis number is left-right symmetric. -/
 protected theorem MulOpposite.invariantBasisNumber_iff :
     InvariantBasisNumber Rᵐᵒᵖ ↔ InvariantBasisNumber R := by

@@ -232,7 +232,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 `(evaluation.obj X).obj F = F.obj X`,
 which is functorial in both `X` and `F`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def evaluation : C ⥤ (C ⥤ D) ⥤ D where
   obj X :=
     { obj := fun F => F.obj X
@@ -264,7 +264,7 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 namespace Functor
 
 /-- The Cartesian product of two functors. -/
-@[simps]
+@[simps, implicit_reducible]
 def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D where
   obj X := (F.obj X.1, G.obj X.2)
   map f := F.map f.1 ×ₘ G.map f.2
@@ -330,6 +330,7 @@ def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
 
 namespace NatIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two natural isomorphisms. -/
 @[simps]
@@ -342,6 +343,7 @@ end NatIso
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two equivalences of categories. -/
 @[simps]
@@ -411,6 +413,7 @@ def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C) where
   obj F := ⟨F ⋙ CategoryTheory.Prod.fst B C, F ⋙ CategoryTheory.Prod.snd B C⟩
   map α := whiskerRight α _ ×ₘ whiskerRight α _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism for `functorProdFunctorEquiv` -/
 @[simps!]
@@ -420,6 +423,7 @@ def functorProdFunctorEquivUnitIso :
     Functor.prod'CompFst F.fst F.snd |>.prod (Functor.prod'CompSnd F.fst F.snd) |>.trans
       (prod.etaIso F) |>.symm)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The counit isomorphism for `functorProdFunctorEquiv` -/
 @[simps!]
@@ -427,6 +431,7 @@ def functorProdFunctorEquivCounitIso :
     functorProdToProdFunctor A B C ⋙ prodFunctorToFunctorProd A B C ≅ 𝟭 _ :=
   NatIso.ofComponents fun F => NatIso.ofComponents fun X => prod.etaIso (F.obj X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories between `(A ⥤ B) × (A ⥤ C)` and `A ⥤ (B × C)` -/
 @[simps]

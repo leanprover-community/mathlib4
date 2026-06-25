@@ -153,6 +153,7 @@ noncomputable def isColimit (i : Fin (n + 1)) :
 
 variable {X : SSet.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hom_ext' {i : Fin (n + 2)} {f g : (Λ[n + 1, i] : SSet) ⟶ X}
     (h : ∀ (j : Fin (n + 2)) (hj : j ≠ i), horn.ι i j hj ≫ f = horn.ι i j hj ≫ g) :
     f = g := by
@@ -206,6 +207,7 @@ lemma δ_pred_comp {i : Fin (n + 3)} {f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), (
 
 variable {i : Fin (n + 2)} {f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ X}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 open stdSimplex in
 /-- Auxiliary definition for `horn.IsCompatible.desc`. -/
@@ -223,6 +225,7 @@ private def multicofork (hf : horn.IsCompatible f) :
         homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_castPred_assoc _ _ hab,
         hf.δ_pred_comp ..])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_desc (hf : horn.IsCompatible f) :
     ∃ (φ : (Λ[n + 1, i] : SSet) ⟶ X),
       ∀ (j : Fin (n + 2)) (hj : j ≠ i), horn.ι i j hj ≫ φ = f j hj :=

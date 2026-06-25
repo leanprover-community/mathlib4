@@ -156,6 +156,7 @@ def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
     map_smul' := fun _ _ ↦ rfl
   }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma piScalarRightInv_single (x : N) (i : ι) :
     piScalarRightInv R S N ι (Pi.single i x) = x ⊗ₜ Pi.single i 1 := by

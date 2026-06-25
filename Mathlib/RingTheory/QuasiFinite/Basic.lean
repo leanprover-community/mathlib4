@@ -294,6 +294,7 @@ lemma iff_finite_comap_preimage_singleton [FiniteType R S] :
   exact ⟨Algebra.FiniteType.isNoetherianRing P.ResidueField _,
     (PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero.mp inferInstance).right⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma iff_finite_primesOver [FiniteType R S] :
     QuasiFinite R S ↔ ∀ I : Ideal R, I.IsPrime → (I.primesOver S).Finite := by
   rw [iff_finite_comap_preimage_singleton,
@@ -305,6 +306,7 @@ lemma iff_finite_primesOver [FiniteType R S] :
   simp [(PrimeSpectrum.equivSubtype S).exists_congr_left, PrimeSpectrum.ext_iff, eq_comm,
     PrimeSpectrum.equivSubtype, Ideal.primesOver, and_comm, Ideal.liesOver_iff, Ideal.under]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `T` is both a finite type `R`-algebra, and the localization of an integral `R`-algebra
 (away from an element), then `T` is quasi-finite over `R` -/
 lemma of_isIntegral_of_finiteType [Algebra.IsIntegral R S] [Algebra.FiniteType R T]

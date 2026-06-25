@@ -76,6 +76,7 @@ def preadditiveCoyonedaObj (X : C) : C ⥤ ModuleCat.{v} (End X)ᵐᵒᵖ where
       map_add' := fun _ _ => add_comp _ _ _ _ _ _
       map_smul' := fun _ _ => Category.assoc _ _ _ }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
 object `Y` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End X`-module
 structure, see `preadditiveCoyonedaObj`.
@@ -98,6 +99,7 @@ instance additive_yonedaObj' (X : C) : Functor.Additive (preadditiveYoneda.obj X
 
 instance additive_coyonedaObj (X : C) : Functor.Additive (preadditiveCoyonedaObj X) where
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance additive_coyonedaObj' (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyoneda.obj X) where
 
@@ -111,6 +113,7 @@ theorem whiskering_preadditiveYoneda :
       yoneda :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Composing the preadditive yoneda embedding with the forgetful functor yields the regular
 Yoneda embedding.
 -/
@@ -128,6 +131,7 @@ instance full_preadditiveYoneda : (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddComm
   Functor.Full.of_comp_faithful preadditiveYoneda
     ((whiskeringRight Cᵒᵖ AddCommGrpCat (Type v)).obj (forget AddCommGrpCat))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance full_preadditiveCoyoneda : (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat).Full :=
   let _ : Functor.Full (preadditiveCoyoneda ⋙
       (whiskeringRight C AddCommGrpCat (Type v)).obj (forget AddCommGrpCat)) :=
@@ -157,6 +161,7 @@ def preadditiveYonedaMap (X : C) :
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The preadditive coyoneda functor for the category `AddCommGrpCat` agrees with
 `AddCommGrpCat.coyoneda`. -/
 def _root_.AddCommGrpCat.preadditiveCoyonedaIso : preadditiveCoyoneda ≅ AddCommGrpCat.coyoneda :=

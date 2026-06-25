@@ -190,6 +190,7 @@ lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
   have := L.initial_iff_isCofiltered_costructuredArrow.mp inferInstance
   exact isCofiltered_of_isCofiltered_costructuredArrow L R
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the
 projection `snd L R : Comma L R ⥤ B` is final. -/
 instance final_snd [IsFiltered A] [IsFiltered B] [R.Final] : (snd L R).Final := by

@@ -60,6 +60,7 @@ section Mul
 
 variable [Semiring k] [Mul G] [Semiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :

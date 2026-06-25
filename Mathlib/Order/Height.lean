@@ -160,6 +160,7 @@ theorem chainHeight_eq_of_relIso (e : r ≃r r') : (e '' s).chainHeight r' = s.c
 
 end Rel
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem chainHeight_coe_univ : (@Set.univ ↑s).chainHeight (r ↑· ↑·) = s.chainHeight r := by
   have hc := Set.chainHeight_eq_of_relEmbedding univ <| Subtype.relEmbedding (r · ·) (· ∈ s)

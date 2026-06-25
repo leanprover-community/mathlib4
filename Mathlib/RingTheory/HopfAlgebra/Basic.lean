@@ -120,6 +120,7 @@ lemma sum_mul_antipode_eq_smul (repr : Repr R a ι) :
       counit (R := R) a • 1 := by
   rw [sum_mul_antipode_eq_algebraMap_counit, Algebra.smul_def, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma counit_antipode (a : A) : counit (R := R) (antipode R a) = counit a := by
   calc
         counit (antipode R a)

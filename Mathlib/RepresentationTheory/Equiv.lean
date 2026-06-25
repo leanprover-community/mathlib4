@@ -169,6 +169,7 @@ def leftRegularMapEquiv : ((leftRegular k G).IntertwiningMap σ) ≃ₗ[k] V whe
   left_inv x := by ext; simp [← x.isIntertwining]
   right_inv v := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma leftRegularMapEquiv_symm_single (g : G) (v : V) :
     ((leftRegularMapEquiv σ).symm v) (Finsupp.single g 1) = σ g v := by
   simp

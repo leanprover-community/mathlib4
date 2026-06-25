@@ -81,6 +81,7 @@ lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Pr
   rw [isSheafFor_comp_uliftFunctor_iff]
   exact hR _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.proofsInPublic true in
 /--
@@ -196,6 +197,7 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α)
   · rintro ⟨a, g, rfl⟩
     exact ⟨_, g, π a, ⟨a⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.proofsInPublic true in
 /--

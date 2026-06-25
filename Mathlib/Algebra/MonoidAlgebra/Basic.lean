@@ -228,6 +228,7 @@ theorem algHom_ext' ⦃φ₁ φ₂ : R[M] →ₐ[R] A⦄
     (h : (φ₁ : R[M] →* A).comp (of R M) = (φ₂ : R[M] →* A).comp (of R M)) : φ₁ = φ₂ :=
   algHom_ext <| DFunLike.congr_fun h
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A M) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism `R[M] →ₐ[R] A`. -/
 def lift : (M →* A) ≃ (R[M] →ₐ[R] A) where
@@ -277,6 +278,7 @@ theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
 @[deprecated (since := "2026-03-20")]
 alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 /-- If `f : M → N` is a monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an algebra
 homomorphism between their monoid algebras. -/
@@ -287,10 +289,12 @@ def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] where
   toRingHom := mapDomainRingHom A f
   commutes' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainAlgHom_id : mapDomainAlgHom R A (.id M) = .id R A[M] := by
   ext; simp [MonoidHom.id, ← Function.id_def]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainAlgHom_comp (f : M →* N) (g : N →* O) :
     mapDomainAlgHom R A (g.comp f) = (mapDomainAlgHom R A g).comp (mapDomainAlgHom R A f) := by
@@ -313,6 +317,7 @@ lemma domCongr_apply (e : M ≃* N) (x : A[M]) (n : N) : domCongr R A e x n = x 
 @[to_additive]
 theorem domCongr_toAlgHom (e : M ≃* N) : (domCongr R A e).toAlgHom = mapDomainAlgHom R A e := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma domCongr_support (e : M ≃* N) (f : A[M]) : (domCongr R A e f).support = f.support.map e := by
   ext; simp
@@ -589,6 +594,7 @@ theorem algHom_ext' ⦃φ₁ φ₂ : R[M] →ₐ[R] A⦄
     φ₁ = φ₂ :=
   algHom_ext <| DFunLike.congr_fun h
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R M A) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism
 `R[M] →ₐ[R] A`. -/
@@ -678,6 +684,7 @@ end AddMonoidAlgebra
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A M) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
@@ -686,6 +693,7 @@ def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
   toRingEquiv := AddMonoidAlgebra.toMultiplicative A M
   commutes' r := by simp [AddMonoidAlgebra.toMultiplicative]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/

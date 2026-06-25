@@ -115,6 +115,7 @@ section NormedSpace
 open AffineMap
 variable {f : E → F} {a b : E} {C r : ℝ} {s : Set E}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Consider a function `f : E → F` continuous on a segment `[a, b]`
 and line differentiable in the direction `b - a` at all points of the open segment `(a, b)`.
 
@@ -144,6 +145,7 @@ lemma norm_sub_le_mul_volume_of_norm_lineDeriv_le
   · exact fun t ht ↦ (hdg t ht).differentiableAt.differentiableWithinAt
   · exact hf'.mono fun t ht ht_mem ↦ by simpa only [(hdg t ht_mem).deriv] using ht ht_mem
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `f : E → F` be a function differentiable on a set `s` and continuous on its closure.
 Let `a`, `b` be two points such that the open segment connecting `a` to `b` is a subset of `s`.
 

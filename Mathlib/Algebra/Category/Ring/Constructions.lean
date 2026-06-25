@@ -408,11 +408,13 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
     ext x
     exact Subtype.ext <| RingHom.congr_fun (congrArg Hom.hom hm) x
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsLocalHom (equalizerFork f g).ι.hom :=
   inferInstanceAs <| IsLocalHom (f.hom.eqLocus g.hom).subtype
 
 open WalkingParallelPair WalkingParallelPairHom Opposite
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F WalkingParallelPair.zero).hom := by
   refine Limits.π_isLocalHom _ (limit.isLimit _) zero fun x hx i ↦ ?_

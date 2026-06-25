@@ -327,6 +327,7 @@ theorem sum_mult_eq [NumberField K] :
   exact Finset.sum_congr rfl
     (fun _ _ => by rw [Finset.sum_const, smul_eq_mul, mul_one, card_filter_mk_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The map from real embeddings to real infinite places as an equiv -/
 noncomputable def mkReal :
     { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } ≃ { w : InfinitePlace K // IsReal w } := by
@@ -438,6 +439,7 @@ theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
       (disjoint_isReal_isComplex K) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 theorem card_complex_embeddings :
     card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * nrComplexPlaces K := by
@@ -558,16 +560,19 @@ namespace NumberField.InfinitePlace
 
 variable {K : Type*} [Field K] {v w : InfinitePlace K}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_ratCast (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_intCast (v : InfinitePlace K) (z : ℤ) : v z = ‖z‖ := by
   rcases v with ⟨_, _⟩

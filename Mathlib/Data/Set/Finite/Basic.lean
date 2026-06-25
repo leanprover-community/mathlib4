@@ -294,6 +294,7 @@ instance fintypeInsert (a : α) (s : Set α) [DecidableEq α] [Fintype s] :
     Fintype (insert a s : Set α) :=
   Fintype.ofFinset (insert a s.toFinset) <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A `Fintype` structure on `insert a s` when inserting a new element. -/
 @[instance_reducible]
 def fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
@@ -767,6 +768,7 @@ end
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [Fintype.card_ofFinset]
@@ -907,6 +909,7 @@ theorem infinite_of_injective_forall_mem [Infinite α] {s : Set β} {f : α → 
   rw [← range_subset_iff] at hf
   exact (infinite_range_of_injective hi).mono hf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.Infinite)
     (h_fin : (f '' s).Finite) : ¬InjOn f s := by
   have : Finite (f '' s) := finite_coe_iff.mpr h_fin

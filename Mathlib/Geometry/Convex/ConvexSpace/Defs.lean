@@ -487,6 +487,7 @@ lemma IsAffineMap.map_convexCombPair {f : M → N} (hf : IsAffineMap R f)
     f (convexCombPair s t hs ht h x y) = convexCombPair s t hs ht h (f x) (f y) := by
   simp [hf.map_sConvexComb, convexCombPair]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Flattening with the outer combination specialized to `convexCombPair`. -/
 lemma convexCombPair_iConvexComb_iConvexComb {J₁ : Type u₁} {J₂ : Type u₂}
     (g₁ : StdSimplex R J₁) (g₂ : StdSimplex R J₂)

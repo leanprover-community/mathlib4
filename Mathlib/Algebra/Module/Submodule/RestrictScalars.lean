@@ -137,6 +137,7 @@ lemma restrictScalars_sInf (s : Set (Submodule R M)) :
     (sInf s).restrictScalars S = sInf (restrictScalars S '' s) := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalars_sSup (s : Set (Submodule R M)) :
     (sSup s).restrictScalars S = sSup (restrictScalars S '' s) := by

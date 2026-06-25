@@ -68,6 +68,7 @@ noncomputable def ramificationIdx : ℕ := sSup {n | map f p ≤ P ^ n}
 
 variable {p P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ramificationIdx_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx p P = Nat.find h := by
@@ -256,6 +257,7 @@ theorem ramificationIdx_ne_zero_of_liesOver [IsDomain R] [IsTorsionFree R S]
   IsDedekindDomain.ramificationIdx_ne_zero (map_ne_bot_of_ne_bot hp) hP <|
     map_le_iff_le_comap.mpr <| le_of_eq <| (liesOver_iff _ _).mp hPp
 
+set_option backward.isDefEq.respectTransparency.types false in
 open IsLocalRing in
 lemma ramificationIdx_eq_one_iff
     {p : Ideal R} {P : Ideal S} [P.IsPrime]

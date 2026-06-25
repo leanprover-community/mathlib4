@@ -38,6 +38,7 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 /-- The average of all elements of the group `G`, considered as an element of `k[G]`. -/
 noncomputable def average : k[G] := ⅟(Fintype.card G : k) • ∑ g : G, of k G g
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `average k G` is invariant under left multiplication by elements of `G`. -/
 @[simp]
 theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
@@ -47,6 +48,7 @@ theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = avera
   change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `average k G` is invariant under right multiplication by elements of `G`.
 -/
 @[simp]

@@ -126,6 +126,7 @@ private def triangleIndices (s : Finset α) : Finset (α × α × α) :=
       obtain rfl := add_right_injective _ h.2.1
       rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma mem_triangleIndices :
     x ∈ triangleIndices s ↔ ∃ y, ∃ a ∈ s, (y, y + a, y + 2 * a) = x := by simp [triangleIndices]

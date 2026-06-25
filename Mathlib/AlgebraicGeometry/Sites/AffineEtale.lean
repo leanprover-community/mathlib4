@@ -39,6 +39,7 @@ namespace AlgebraicGeometry.Scheme
 
 variable {S : Scheme.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The small affine étale site: The category of affine schemes étale over `S`, whose objects are
 commutative rings `R` with an étale structure morphism `Spec R ⟶ S`. -/
 def AffineEtale (S : Scheme.{u}) : Type (u + 1) :=
@@ -57,12 +58,15 @@ protected def mk {R : CommRingCat.{u}} (f : Spec R ⟶ S) [Etale f] : AffineEtal
 protected def Spec (S : Scheme.{u}) : S.AffineEtale ⥤ S.Etale :=
   MorphismProperty.CostructuredArrow.toOver _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (AffineEtale.Spec S).Faithful :=
   inferInstanceAs <| (MorphismProperty.CostructuredArrow.toOver _ _ _).Faithful
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (AffineEtale.Spec S).Full :=
   inferInstanceAs <| (MorphismProperty.CostructuredArrow.toOver _ _ _).Full
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (AffineEtale.Spec S).IsCoverDense S.smallEtaleTopology :=
   inferInstanceAs <| (MorphismProperty.CostructuredArrow.toOver _ _ _).IsCoverDense
     (S.smallGrothendieckTopology _)
@@ -77,10 +81,12 @@ instance : Functor.IsDenseSubsite (topology S) S.smallEtaleTopology (AffineEtale
   dsimp [topology]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Functor.IsOneHypercoverDense.{u} (AffineEtale.Spec S)
     (topology S) S.smallEtaleTopology :=
   isOneHypercoverDense_toOver_Spec _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : EssentiallySmall.{u} S.AffineEtale :=
   essentiallySmall_costructuredArrow_Spec _ fun _ _ _ _ ↦ inferInstance
 

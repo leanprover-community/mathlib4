@@ -341,6 +341,7 @@ variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {f : V →ₗ[K] K} {v : V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v ≠ 0`,
 there exists a basis `b` with an index `i`
@@ -425,7 +426,7 @@ theorem exists_basis_of_pairing_eq_zero
   · apply b.ext
     intro i
     rw [Basis.coord_apply, Basis.repr_self]
-    simp only [b, Basis.mk_apply]
+    simp only [b]
     rcases i with ⟨x, rfl | ⟨x, hx, rfl⟩⟩
     · simp [hw]
     · suffices x ≠ w by simp [this]

@@ -245,6 +245,7 @@ instance : LieModule ℤ L M where
   smul_lie n x m := zsmul_lie x m n
   lie_smul n x m := lie_zsmul x m n
 
+set_option backward.isDefEq.respectTransparency false in
 instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
     { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
@@ -270,6 +271,7 @@ instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
 theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = ⁅x, f m⁆ - f ⁅x, m⁆ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N) where
   smul_lie t x f := by
     ext n
@@ -484,6 +486,7 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
     ⁅x, m⁆ = ⁅f x, m⁆ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Lie module may be pulled back along a morphism of Lie algebras. -/
 theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=

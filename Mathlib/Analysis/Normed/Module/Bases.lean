@@ -181,6 +181,7 @@ theorem range_proj_eq_span (A : Finset β) :
     use b i
     rw [ContinuousLinearMap.coe_coe, proj_apply_basis_mem, if_pos (Finset.mem_coe.mp hi)]
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- Composition of projections: `proj A (proj B x) = proj (A ∩ B) x`. -/
 theorem proj_comp (A B : Finset β) (x : X) : b.proj A (b.proj B x) = b.proj (A ∩ B) x := by

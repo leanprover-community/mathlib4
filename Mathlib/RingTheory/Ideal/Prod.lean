@@ -96,6 +96,7 @@ theorem map_prodComm_prod :
   refine Trans.trans (ideal_prod_eq _) ?_
   simp [map_map]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Ideals of `R × S` are in one-to-one correspondence with pairs of ideals of `R` and ideals of
 `S`. -/
 def idealProdEquiv : Ideal (R × S) ≃o Ideal R × Ideal S where

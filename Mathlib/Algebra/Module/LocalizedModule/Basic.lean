@@ -563,6 +563,7 @@ lemma IsLocalizedModule.injective_iff_isRegular [IsLocalizedModule S f] :
     Function.Injective f ↔ ∀ c : S, IsSMulRegular M c := by
   simp_rw [IsSMulRegular, Function.Injective, eq_iff_exists S, exists_imp, forall_comm (α := S)]
 
+set_option backward.isDefEq.respectTransparency false in
 instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
   map_units s := by
@@ -579,6 +580,7 @@ instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocaliz
       EmbeddingLike.apply_eq_iff_eq] at h
     exact hf.exists_of_eq h
 
+set_option backward.isDefEq.respectTransparency false in
 instance IsLocalizedModule.of_linearEquiv_right (e : M'' ≃ₗ[R] M) [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (f ∘ₗ e : M'' →ₗ[R] M') where
   map_units s := hf.map_units s
@@ -1129,6 +1131,7 @@ theorem mk_eq_mk' (s : S) (m : M) :
   rw [eq_comm, mk'_eq_iff, Submonoid.smul_def, LocalizedModule.smul'_mk, ← Submonoid.smul_def,
     LocalizedModule.mk_cancel, LocalizedModule.mkLinearMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 lemma mk'_smul_mk' (x : R) (m : M) (s t : S) :
     IsLocalization.mk' A x s • mk' f m t = mk' f (x • m) (s * t) := by
@@ -1168,6 +1171,7 @@ lemma liftOfLE_comp : (liftOfLE S₁ S₂ h f₁ f₂).comp f₁ = f₂ := lift_
 
 @[simp] lemma liftOfLE_apply (x) : liftOfLE S₁ S₂ h f₁ f₂ (f₁ x) = f₂ x := lift_apply ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of `m/s` under `liftOfLE` is `m/s`. -/
 @[simp]
 lemma liftOfLE_mk' (m : M) (s : S₁) :
@@ -1322,6 +1326,7 @@ theorem map_comp' (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) :
 
 section Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mkOfAlgebra {R S S' : Type*} [CommSemiring R] [Ring S] [Ring S'] [Algebra R S]
     [Algebra R S'] (M : Submonoid R) (f : S →ₐ[R] S') (h₁ : ∀ x ∈ M, IsUnit (algebraMap R S' x))
     (h₂ : ∀ y, ∃ x : S × M, x.2 • y = f x.1) (h₃ : ∀ x, f x = 0 → ∃ m : M, m • x = 0) :

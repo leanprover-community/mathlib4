@@ -36,6 +36,7 @@ def sigmaIsoHom : C((x : Fiber f) × x.val, S) where
   toFun | ⟨a, x⟩ => x.val
   continuous_toFun := continuous_sigma (by fun_prop)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
   rintro ⟨⟨_, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨_, _, rfl⟩, ⟨_, hy⟩⟩ h
   refine Sigma.subtype_ext ?_ h
@@ -50,6 +51,7 @@ lemma sigmaIsoHom_surj : Function.Surjective (sigmaIsoHom f) :=
 def sigmaIncl (a : Fiber f) : C(a.val, S) where
   toFun x := x.val
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion map from a fiber of a composition into the intermediate fiber. -/
 def sigmaInclIncl {X : Type*} (g : Y → X) (a : Fiber (g ∘ f))
     (b : Fiber (f ∘ (sigmaIncl (g ∘ f) a))) :

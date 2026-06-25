@@ -233,6 +233,7 @@ end comm
 
 end LinearizeMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma linearizeTrivial_def (X : Type w) (g : G) :
     linearize k G (Action.trivial _ X) g = LinearMap.id := by
   ext (x : X) : 2

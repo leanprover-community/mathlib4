@@ -78,7 +78,7 @@ theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
   rcases hφ' with ⟨ne, hφ'⟩
   simp only [← h, WithTop.coe_eq_coe] at hφ'
   suffices toLex d ∈ toLex '' φ.support by
-    simp only [Set.mem_image_equiv, toLex_symm_eq, ofLex_toLex, Function.mem_support, ne_eq] at this
+    simp only [Set.mem_image_equiv, toLex_symm_eq, ofLex_toLex] at this
     apply this
   rw [hφ']
   apply WellFounded.min_mem

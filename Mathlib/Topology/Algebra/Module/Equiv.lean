@@ -862,6 +862,7 @@ section AutRing
 
 variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
 def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
   toFun u :=

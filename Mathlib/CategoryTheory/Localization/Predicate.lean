@@ -435,6 +435,7 @@ same `MorphismProperty C`, this is an equivalence of categories `D₁ ≌ D₂`.
 def uniq : D₁ ≌ D₂ :=
   (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
   dsimp [uniq, Equivalence.trans]
   ext <;> aesop

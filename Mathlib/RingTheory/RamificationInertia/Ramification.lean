@@ -166,6 +166,7 @@ theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
     apply ramificationIdx'_tower'
   · rw [ramificationIdx'_of_not_isPrime r R hr, ramificationIdx'_of_not_isPrime r S hr, mul_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 open Pointwise in
 @[simp]

@@ -43,6 +43,7 @@ alias Scheme.Hom.finite_app := IsFinite.finite_app
 
 namespace IsFinite
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : HasAffineProperty @IsFinite
     (fun X _ f _ ↦ IsAffine X ∧ RingHom.Finite (f.appTop).hom) := by
   change HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
@@ -50,20 +51,24 @@ instance : HasAffineProperty @IsFinite
     RingHom.finite_localizationPreserves.away RingHom.finite_ofLocalizationSpan]
   simp [isFinite_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsStableUnderComposition @IsFinite :=
   HasAffineProperty.affineAnd_isStableUnderComposition inferInstance
     RingHom.finite_stableUnderComposition
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsStableUnderBaseChange @IsFinite :=
   HasAffineProperty.affineAnd_isStableUnderBaseChange inferInstance
     RingHom.finite_respectsIso RingHom.finite_isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : ContainsIdentities @IsFinite :=
   HasAffineProperty.affineAnd_containsIdentities inferInstance
     RingHom.finite_respectsIso RingHom.finite_containsIdentities
 
 instance : IsMultiplicative @IsFinite where
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     IsFinite (Spec.map f) ↔ f.hom.Finite := by
@@ -72,20 +77,26 @@ lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := 900) [IsIso f] : IsFinite f := of_isIso @IsFinite f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsFinite f] [IsFinite g] : IsFinite (f ≫ g) :=
   IsStableUnderComposition.comp_mem f g ‹IsFinite f› ‹IsFinite g›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsFinite g] : IsFinite (Limits.pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsFinite f] : IsFinite (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [IsFinite f] : IsFinite (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma iff_isIntegralHom_and_locallyOfFiniteType :
     IsFinite f ↔ IsIntegralHom f ∧ LocallyOfFiniteType f := by
   wlog hY : IsAffine Y
@@ -144,6 +155,7 @@ lemma comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsFinite g] :
     IsFinite (f ≫ g) ↔ IsFinite f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite g] :
     IsFinite (Limits.coprod.desc f g) := by
   refine HasAffineProperty.coprodDesc_affineAnd inferInstance RingHom.finite_respectsIso
@@ -154,11 +166,13 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite
 
 end IsFinite
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.finite_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine X] [IsAffine Y]
     [IsFinite f] :
     f.appTop.hom.Finite :=
   (HasAffineProperty.iff_of_isAffine (P := @IsFinite).mp inferInstance).2
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `X` is a Jacobson scheme and `k` is a field,
 `Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
 (The statement is more general to allow the empty scheme as well) -/
@@ -203,6 +217,7 @@ lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
   simpa [Set.range_comp, Scheme.range_fromSpecResidueField] using
     (X.fromSpecResidueField x ≫ f).isClosedMap.isClosed_range
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01TB "(1) => (2)"]
 lemma isClosed_singleton_iff_locallyOfFiniteType {X : Scheme.{u}} [JacobsonSpace X] {x : X} :
     IsClosed {x} ↔ LocallyOfFiniteType (X.fromSpecResidueField x) := by

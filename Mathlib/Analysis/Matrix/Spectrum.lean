@@ -162,6 +162,7 @@ lemma roots_charpoly_eq_eigenvalues :
   · simp
   · simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma roots_charpoly_eq_eigenvalues₀ :
     A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues₀) Finset.univ.val := by
   rw [hA.roots_charpoly_eq_eigenvalues]

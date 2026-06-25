@@ -733,6 +733,7 @@ def equivSigmaParts : s ≃ Σ t : P.parts, t.1 where
       rw [P.part_eq_of_mem mp mf]
     · simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin #t.1,
     ∀ a b : s, P.part a = P.part b ↔ (f a).1 = (f b).1 := by
   use P.equivSigmaParts.trans ((Equiv.refl _).sigmaCongr (fun t ↦ t.1.equivFin))

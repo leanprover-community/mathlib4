@@ -116,6 +116,7 @@ lemma shift_v (a : ℤ) (p q : ℤ) (hpq : p + n = q) (p' q' : ℤ)
   subst hp' hq'
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma shift_v' (a : ℤ) (p q : ℤ) (hpq : p + n = q) :
     (γ.shift a).v p q hpq = γ.v (p + a) (q + a) (by lia) := by
@@ -583,6 +584,7 @@ def equivHomShift :
     (K ⟶ L⟦n⟧) ≃+ Cocycle K L n :=
   (equivHom _ _).trans (rightShiftAddEquiv _ _ _ (zero_add n)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHomShift_comp {K' : CochainComplex C ℤ}
     (g : K' ⟶ K) (f : K ⟶ L⟦n⟧) :
     equivHomShift (g ≫ f) = Cocycle.precomp (equivHomShift f) g := by
@@ -594,6 +596,7 @@ lemma equivHomShift_symm_precomp
     equivHomShift.symm (z.precomp g) = g ≫ equivHomShift.symm z :=
   equivHomShift.injective (by simp [equivHomShift_comp])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHomShift_comp_shift (f : K ⟶ L⟦n⟧) {L' : CochainComplex C ℤ} (g : L ⟶ L') :
     equivHomShift (f ≫ g⟦n⟧') = Cocycle.postcomp (equivHomShift f) g := by
   ext p q rfl

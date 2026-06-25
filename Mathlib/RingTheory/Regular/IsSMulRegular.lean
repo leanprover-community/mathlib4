@@ -168,6 +168,7 @@ lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
   exact Eq.trans (congrArg (· ⊓ N) (map_top _)) (map_comap_eq _ _).symm
 
 -- Who knew this didn't rely on exactness at the right!?
+set_option backward.isDefEq.respectTransparency.types false in
 open Function in
 lemma QuotSMulTop.map_first_exact_on_four_term_exact_of_isSMulRegular_last
     {M'''} [AddCommGroup M'''] [Module R M''']

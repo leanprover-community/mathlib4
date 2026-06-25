@@ -159,6 +159,7 @@ variable {H : SimpleGraph V}
 theorem transfer_eq_map_ofLE (hp) (GH : G ≤ H) : p.transfer H hp = p.map (.ofLE GH) := by
   induction p <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
   induction p <;> simp [*]
@@ -166,10 +167,12 @@ theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
 @[simp]
 theorem edgeSet_transfer (hp) : (p.transfer H hp).edgeSet = p.edgeSet := by ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
   induction p <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem length_transfer (hp) : (p.transfer H hp).length = p.length := by
   induction p <;> simp [*]
@@ -179,6 +182,7 @@ theorem transfer_transfer (hp) {K : SimpleGraph V} (hp') :
     (p.transfer H hp).transfer K hp' = p.transfer K (p.edges_transfer hp ▸ hp') := by
   induction p <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem transfer_append {w : V} (q : G.Walk v w) (hpq) :
     (p.append q).transfer H hpq =
@@ -186,6 +190,7 @@ theorem transfer_append {w : V} (q : G.Walk v w) (hpq) :
         (q.transfer H fun e he => hpq _ (by simp [he])) := by
   induction p <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem reverse_transfer (hp) :
     (p.transfer H hp).reverse =
@@ -219,6 +224,7 @@ protected def induce {u v : V} :
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) (hw),
     (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (subset_trans hw hs)
   | .nil, hw => rfl

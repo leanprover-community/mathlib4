@@ -95,6 +95,7 @@ theorem IsSRGWith.top :
   of_adj _ _ := card_commonNeighbors_top
   of_not_adj v w h h' := (h' ((top_adj v w).2 h)).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
     #(G.neighborFinset v ∪ G.neighborFinset w) =
       2 * k - Fintype.card (G.commonNeighbors v w) := by
@@ -201,6 +202,7 @@ theorem IsSRGWith.param_eq
       ← Set.toFinset_card]
     congr!
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` and `C` be the adjacency matrices of a strongly regular graph with parameters `n k ℓ μ`
 and its complement respectively and `I` be the identity matrix,
 then `A ^ 2 = k • I + ℓ • A + μ • C`. `C` is equivalent to the expression `J - I - A`

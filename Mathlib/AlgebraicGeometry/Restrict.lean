@@ -162,6 +162,7 @@ lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x
       (U.stalkIso x).inv = U.toScheme.presheaf.germ V x hx :=
   PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace U.isOpenEmbedding V x hx
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (x : U) :
     (U.stalkIso x).inv = U.ι.stalkMap x := by
   rw [← Category.comp_id (U.stalkIso x).inv, Iso.inv_comp_eq]
@@ -190,6 +191,9 @@ def Scheme.openCoverOfIsOpenCover {s : Type*} (X : Scheme.{u}) (U : s → X.Open
     use i
     simpa
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
 def opensRestrict :
@@ -266,6 +270,7 @@ theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
     (X.homOfLE e x).1 = x := by
   rw [Scheme.homOfLE_apply']
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Scheme.ι_image_homOfLE_eq_ι_image_inf {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ X.homOfLE e ⁻¹ᵁ W = V.ι ''ᵁ W ⊓ U := by
   ext x
@@ -508,6 +513,7 @@ lemma Scheme.Opens.isoOfLE_inv_ι {X : Scheme.{u}} {U V : X.Opens} (hUV : U ≤ 
     (isoOfLE hUV).inv ≫ (V.ι ⁻¹ᵁ U).ι ≫ V.ι = U.ι := by
   simp [isoOfLE]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For `f : R`, `D(f)` as an open subscheme of `Spec R` is isomorphic to `Spec R[1/f]`. -/
 def basicOpenIsoSpecAway {R : CommRingCat.{u}} (f : R) :
     Scheme.Opens.toScheme (X := Spec R) (PrimeSpectrum.basicOpen f) ≅
@@ -574,6 +580,7 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   apply IsOpenImmersion.isPullback <;>
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
   refine (isPullback_morphismRestrict (X.homOfLE hV) (W.ι ⁻¹ᵁ U)).of_iso (V.ι.isoImage _ ≪≫
@@ -583,6 +590,7 @@ lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV 
   · exact (W.functor_map_eq_inf U).trans (by simpa)
   all_goals { simp [← cancel_mono (Scheme.Opens.ι _)] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isPullback_opens_inf {X : Scheme} (U V : X.Opens) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) U.ι V.ι :=
   (isPullback_morphismRestrict V.ι U).of_iso (V.ι.isoImage _ ≪≫ X.isoOfEq
@@ -779,11 +787,13 @@ lemma resLE_comp_resLE {Z : Scheme.{u}} (g : Y ⟶ Z) {W : Z.Opens} (e') :
       (e.trans ((Opens.map f.base).map (homOfLE e')).le) := by
   simp [← cancel_mono W.ι]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma map_resLE (i : V' ≤ V) :
     X.homOfLE i ≫ f.resLE U V e = f.resLE U V' (i.trans e) := by
   simp_rw [← resLE_id, resLE_comp_resLE, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma resLE_map (i : U ≤ U') :
     f.resLE U V e ≫ Y.homOfLE i =
@@ -818,6 +828,7 @@ lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
   rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma coe_resLE_apply (x : V) : (f.resLE U V e x).1 = f x := by
   simp [resLE, morphismRestrict_base]
@@ -845,6 +856,7 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
   simp only [Scheme.Opens.topIso_hom, eqToHom_op, Arrow.mk_hom, Scheme.Hom.map_appLE]
   rw [Scheme.Hom.appTop, ← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.isPullback_resLE
     {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
     (H : IsPullback g iY iX f)

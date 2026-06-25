@@ -54,6 +54,7 @@ noncomputable def equiv : DirectLimit _ (fgSystem R M) ≃ₗ[R] M :=
 
 variable {R M}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equiv_comp_of (N : {N : Submodule R M // N.FG}) :
     (equiv R M).toLinearMap ∘ₗ of _ _ _ _ N = N.1.subtype := by
   ext; simp [equiv]

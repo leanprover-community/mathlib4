@@ -168,6 +168,7 @@ lemma hasCardinalLT_subtype_iSup
     obtain ⟨i, hi⟩ := h
     exact ⟨⟨i, _, hi⟩, rfl⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasCardinalLT_iUnion
     {ι : Type*} {X : Type*} (S : ι → Set X) {κ : Cardinal} [Fact κ.IsRegular]
     (hι : HasCardinalLT ι κ) (hS : ∀ i, HasCardinalLT (S i) κ) :

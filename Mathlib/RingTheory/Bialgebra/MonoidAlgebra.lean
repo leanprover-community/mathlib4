@@ -52,6 +52,7 @@ instance instBialgebra : Bialgebra R A[M] where
       LinearMap.compl₁₂_apply, LinearMap.coe_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
 variable (R) [AddMonoid M] [AddMonoid N] in
 /-- If `f : M → N` is a monoid hom, then `AddMonoidAlgebra.mapDomain f` is a bialgebra hom between
@@ -60,6 +61,7 @@ noncomputable def _root_.AddMonoidAlgebra.mapDomainBialgHom (f : M →+ N) :
     AddMonoidAlgebra R M →ₐc[R] AddMonoidAlgebra R N :=
   .ofAlgHom (AddMonoidAlgebra.mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
 variable (R) in
 /-- If `f : M → N` is a monoid hom, then `MonoidAlgebra.mapDomain f` is a bialgebra hom between
@@ -68,9 +70,11 @@ their monoid algebras. -/
 noncomputable def mapDomainBialgHom (f : M →* N) : R[M] →ₐc[R] R[N] :=
   .ofAlgHom (mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id R R[M] := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
     mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by

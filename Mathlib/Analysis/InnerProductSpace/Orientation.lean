@@ -181,6 +181,7 @@ theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
       AlternatingMap.constLinearEquivOfIsEmpty 1 := by
   simp [volumeForm, Or.by_cases]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
       -AlternatingMap.constLinearEquivOfIsEmpty 1 := by

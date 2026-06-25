@@ -71,6 +71,7 @@ noncomputable def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R 
 
 variable {σ : Type*} {R : Type*} [Ring R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A power series `f` belongs to the two-sided ideal `basis σ R ⟨J, d⟩`
 if and only if `coeff e f ∈ J` for all `e ≤ d`. -/
 theorem mem_basis_iff {f : MvPowerSeries σ R} {Jd : TwoSidedIdeal R × (σ →₀ ℕ)} :
@@ -83,6 +84,7 @@ theorem basis_le {Jd Ke : TwoSidedIdeal R × (σ →₀ ℕ)} (hJK : Jd.1 ≤ Ke
     basis σ R Jd ≤ basis σ R Ke :=
   fun _ ↦ forall_imp (fun _ h hue ↦ hJK (h (le_trans hue hed)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `basis σ R ⟨J, d⟩ ≤ basis σ R ⟨K, e⟩` if and only if `J ≤ K` and `e ≤ d`. -/
 theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ ⊤) :
     basis σ R ⟨J, d⟩ ≤ basis σ R ⟨K, e⟩ ↔ J ≤ K ∧ e ≤ d := by

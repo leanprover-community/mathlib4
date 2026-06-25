@@ -740,6 +740,7 @@ lemma mk_congr_succ_d₂ {S S' : ShortComplex V} (h : S = S') :
   subst h
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
     mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
@@ -756,6 +757,7 @@ def mkXIso (n : ℕ) :
       (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)]
     rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mk_d (n : ℕ) :
     (mk X₀ X₁ X₂ d₀ d₁ s succ).d (n + 3) (n + 2) =
       (mkXIso X₀ X₁ X₂ d₀ d₁ s succ n).hom ≫ (succ
@@ -796,6 +798,7 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
   rw [if_pos rfl, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism from `(mk' X₀ X₁ d₀ succ').X (n + 2)` that is given by
 the inductive construction. -/
 def mk'XIso (n : ℕ) :

@@ -59,6 +59,7 @@ lemma baseField_essentially_unique
   obtain ⟨x', H⟩ := H
   exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_algEquiv (e : D ≃ₐ[K] D') : IsCentral K D' where
   out x hx :=
     have ⟨k, hk⟩ := h.1 ((MulEquivClass.apply_mem_center_iff e.symm).mpr hx)

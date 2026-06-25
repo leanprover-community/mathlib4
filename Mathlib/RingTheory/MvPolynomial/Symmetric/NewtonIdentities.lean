@@ -161,11 +161,13 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma filter_pairs_lt (k : ℕ) :
     (pairs σ k).filter (fun (s, _) ↦ #s < k) =
       (range k).disjiUnion (powersetCard · univ) ((pairwise_disjoint_powersetCard _).set_pairwise _)
         ×ˢ univ := by ext; aesop (add unsafe le_of_lt)
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k : ℕ)
     (f : Finset σ × σ → MvPolynomial σ R) :
     ∑ t ∈ pairs σ k with #t.1 < k, f t =

@@ -101,6 +101,7 @@ variable
 ## Logarithmic Counting Functions for the Poles of a Meromorphic Function
 -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 A meromorphic function has only removable singularities if and only if the logarithmic counting
 function for its pole divisor is asymptotically bounded.

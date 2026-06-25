@@ -53,6 +53,7 @@ noncomputable section
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An auxiliary definition to be used below.
 

@@ -279,6 +279,7 @@ def inducedOrderRingHom : α →+*o β :=
           two_ne_zero (inducedMap_one _ _) with
     monotone' := inducedMap_mono _ _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism of ordered rings between two conditionally complete linearly ordered fields. -/
 def inducedOrderRingIso : β ≃+*o γ :=
   { inducedOrderRingHom β γ with

@@ -120,6 +120,7 @@ theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
 
 open CommApplicative
 
+set_option backward.isDefEq.respectTransparency false in
 instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applicative g]
     [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) where
   commutative_prod _ _ := by
@@ -152,6 +153,7 @@ instance {α} [One α] [Mul α] : Applicative (Const α) where
 -- Porting note: `(· <*> ·)` needed to change to `Seq.seq` in the `simp`.
 -- Also, `simp` didn't close `refl` goals.
 
+set_option backward.isDefEq.respectTransparency false in
 instance {α} [Monoid α] : LawfulApplicative (Const α) where
   map_pure _ _ := rfl
   seq_pure _ _ := by simp [Const.map, map, Seq.seq, pure, mul_one]
@@ -164,6 +166,7 @@ instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
   pure _ := (0 : α)
   seq f x := (show α from f) + (show α from x Unit.unit)
 
+set_option backward.isDefEq.respectTransparency false in
 instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) where
   map_pure _ _ := rfl
   seq_pure _ _ := by simp [Const.map, map, Seq.seq, pure, add_zero]

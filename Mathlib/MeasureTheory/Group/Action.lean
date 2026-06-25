@@ -165,6 +165,7 @@ theorem eventuallyConst_smul_set_ae (c : G) {s : Set α} :
 theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by
   simp only [ae_le_set, ← smul_set_sdiff, measure_smul_eq_zero_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
   simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]

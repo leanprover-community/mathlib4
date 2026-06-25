@@ -484,6 +484,7 @@ def cycleFactorsFinset : Finset (Perm α) :=
       list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left
         hl.right.right hl'.right.right
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped List in
 theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} (hn : l.Nodup) :
     σ.cycleFactorsFinset = l.toFinset ↔
@@ -506,6 +507,7 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
     refine list_cycles_perm_list_cycles ?_ hc' hc hd' hd
     rw [hp, hp']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cycleFactorsFinset_eq_finset {σ : Perm α} {s : Finset (Perm α)} :
     σ.cycleFactorsFinset = s ↔
       (∀ f : Perm α, f ∈ s → f.IsCycle) ∧
@@ -624,6 +626,7 @@ theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {g : Equiv.Perm α
   · rintro ⟨c, hc, hx⟩
     exact mem_cycleFactorsFinset_support_le hc hx
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem cycleFactorsFinset_eq_empty_iff {f : Perm α} : cycleFactorsFinset f = ∅ ↔ f = 1 := by
   simpa [cycleFactorsFinset_eq_finset] using eq_comm
 

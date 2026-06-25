@@ -24,6 +24,7 @@ variable {G P R V : Type*}
 
 namespace MonoidAlgebra
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
 theorem mem_smulAntidiagonal_of_group [Group G] [MulAction G P] [Semiring R] [Zero V]
     (f : R[G]) (x : P → V) (p : P) (gh : G × P) :

@@ -252,6 +252,7 @@ theorem _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : 
     ↑(MulAut.conjNormal g h) = g * h * g⁻¹ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by

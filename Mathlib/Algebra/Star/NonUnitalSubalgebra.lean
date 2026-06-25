@@ -1049,6 +1049,7 @@ instance instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder 
     IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) :=
   isMulCommutative_iSup S.monotone.directed_le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define a non-unital star algebra homomorphism on a directed supremum of non-unital star
 subalgebras by defining it on each non-unital star subalgebra, and proving that it agrees on the
 intersection of non-unital star subalgebras. -/

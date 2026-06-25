@@ -500,6 +500,7 @@ lemma IsLocallyConstructible.inter_of_isOpen_isCompact
 
 variable {ι : Type*} {U : ι → Opens X}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsLocallyConstructible.of_isOpenCover
     (hU : IsOpenCover U) (H : ∀ i, IsLocallyConstructible ((U i : Set X) ↓∩ s)) :
     IsLocallyConstructible s := by

@@ -654,6 +654,7 @@ def sSupHom.setImage (f : α → β) : sSupHom (Set α) (Set β) where
   toFun := image f
   map_sSup' := Set.image_sSup
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of types yields an order isomorphism between their lattices of subsets. -/
 @[simps]
 def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β where

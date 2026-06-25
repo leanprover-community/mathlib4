@@ -460,6 +460,7 @@ lemma isInitSeg_initSeg : IsInitSeg (initSeg s) #s := by
   rw [mem_initSeg] at ht₁
   exact ht₂.1.le.trans ht₁.2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonempty) :
     ∃ s : Finset α, #s = r ∧ 𝒜 = initSeg s := by
   have hs := sup'_mem (ofColex ⁻¹' 𝒜) (LinearOrder.supClosed _) 𝒜 h𝒜₀ toColex

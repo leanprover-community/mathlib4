@@ -168,6 +168,7 @@ noncomputable def measure [mα : MeasurableSpace α] (m : AddContent ℝ≥0∞ 
   (m.measureCaratheodory hC m_sigma_subadd).trim <|
     fun s a ↦ isCaratheodory_inducedOuterMeasure hC m s (hC_gen s a)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The measure defined through a sigma-subadditive
   content on a semiring coincides with the content on the semiring. -/
 theorem measure_eq [mα : MeasurableSpace α] (m : AddContent ℝ≥0∞ C) (hC : IsSetSemiring C)

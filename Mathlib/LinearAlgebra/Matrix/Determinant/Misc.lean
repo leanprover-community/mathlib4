@@ -22,6 +22,7 @@ namespace Matrix
 
 variable {R : Type*} [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `M` be a `(n+1) × n` matrix whose row sums to zero. Then all the matrices obtained by
 deleting one row have the same determinant up to a sign. -/
 theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
@@ -52,6 +53,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
             Fin.succAbove_of_succ_le _ _ (Fin.succ_lt_succ_iff.mpr h).le]
         · rw [Fin.succAbove_succ_of_lt _ _ h, Fin.succAbove_castSucc_of_le _ _ h.le]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `M` be a `(n+1) × n` matrix whose column sums to zero. Then all the matrices obtained by
 deleting one column have the same determinant up to a sign. -/
 theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
@@ -64,6 +66,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
   ext
   simp_rw [Finset.sum_apply, transpose_apply, hv, Pi.zero_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `M` be a `(n+1) × (n+1)` matrix. Assume that all columns, but the `j₀`-column, sums to zero.
 Then its determinant is, up to sign, the sum of the `j₀`-column times the determinant of the
 matrix obtained by deleting any row and the `j₀`-column. -/

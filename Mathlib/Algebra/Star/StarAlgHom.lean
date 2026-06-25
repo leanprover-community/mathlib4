@@ -656,6 +656,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
     NonUnitalAlgHomClass F R A B :=
   { }
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [lower instance priority]
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :

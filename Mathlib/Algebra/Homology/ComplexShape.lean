@@ -88,7 +88,7 @@ def refl (ι : Type*) : ComplexShape ι where
 
 /-- The reverse of a `ComplexShape`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def symm (c : ComplexShape ι) : ComplexShape ι where
   Rel i j := c.Rel j i
   next_eq w w' := c.prev_eq w w'

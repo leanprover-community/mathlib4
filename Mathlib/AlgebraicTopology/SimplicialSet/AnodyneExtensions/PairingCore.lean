@@ -248,6 +248,7 @@ is regular. -/
 class IsRegular (h : A.PairingCore) extends h.IsProper where
   wf (h) : WellFounded h.AncestralRel
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [h.IsRegular] : h.pairing.IsRegular where
   wf := by
     have := IsRegular.wf h

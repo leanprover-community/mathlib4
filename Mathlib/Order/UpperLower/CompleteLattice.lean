@@ -335,6 +335,7 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   right_inv _ := ext <| f.image_preimage _
   map_rel_iff' := image_subset_image_iff f.injective
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual (attr := simp)]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
  ext; simp [map, OrderIso.symm_apply_eq]

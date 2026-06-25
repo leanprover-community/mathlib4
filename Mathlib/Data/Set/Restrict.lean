@@ -288,6 +288,7 @@ theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
 
 alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) ↔ InjOn f s := by
   rw [h.restrict_eq_codRestrict, injective_codRestrict, injOn_iff_injective]
 

@@ -222,6 +222,7 @@ theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
     Representation.IntertwiningMap.smul_apply, (Representation.linearizeMap_single), smul_single,
     smul_eq_mul, mul_one]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma d_apply {n : ℕ} (f : (Fin (n + 1 + 1) → G) →₀ k) :
     ((standardComplex k G).d (n + 1) n).hom f = d k G (n + 1) f := by
   rw [← Representation.IntertwiningMap.toLinearMap_apply, d_eq]; rfl

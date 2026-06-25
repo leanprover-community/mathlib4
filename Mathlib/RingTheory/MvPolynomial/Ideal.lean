@@ -71,6 +71,7 @@ variable (σ R) in
 lemma idealOfVars_fg [Finite σ] : (idealOfVars σ R).FG :=
   Submodule.fg_span <| Set.finite_range _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
   apply le_antisymm
@@ -100,6 +101,7 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
   rw [pow_idealOfVars]
@@ -130,6 +132,7 @@ theorem mkₐ_eq_aeval :
   ext d
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mk_eq_eval₂ : (Ideal.Quotient.mk I).toFun =
       eval₂ (algebraMap A (MvPolynomial σ A ⧸ I)) fun d : σ => Ideal.Quotient.mk I (X d) := by
   ext d

@@ -55,6 +55,7 @@ lemma RingHom.SurjectiveOnStalks.residueFieldMap_bijective
   exact ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
     (Ideal.Quotient.mk_surjective.comp (H J ‹_›))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 def Ideal.ResidueField.mapₐ (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime]
@@ -212,6 +213,7 @@ noncomputable def Ideal.ResidueField.lift
   IsLocalization.lift (M := (R ⧸ I)⁰) (g := Ideal.Quotient.lift I (f := f) hf₁) <| by
     simpa [Ideal.Quotient.mk_surjective.forall, Ideal.Quotient.eq_zero_iff_mem]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Ideal.ResidueField.lift_algebraMap
     (f : R →+* S) (hf₁ : I ≤ RingHom.ker f)
     (hf₂ : I.primeCompl ≤ (IsUnit.submonoid S).comap f) (r : R) :

@@ -160,6 +160,7 @@ instance : PartialOrder (M ≃ₚ[L] N) where
   le_trans := le_trans
   le_antisymm := private le_antisymm
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[gcongr] lemma symm_le_symm {f g : M ≃ₚ[L] N} (hfg : f ≤ g) : f.symm ≤ g.symm := by
   rw [le_iff]
   refine ⟨cod_le_cod hfg, dom_le_dom hfg, ?_⟩
@@ -439,7 +440,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
         and_self]
     · ext ⟨x, hx⟩
       rw [Embedding.subtype_equivRange] at ff'2
-      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
+      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion,
         Equiv.coe_toEmbedding, coe_subtype, PartialEquiv.toEmbedding_apply]
   · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
     refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,

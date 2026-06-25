@@ -69,6 +69,7 @@ def coindV : Submodule k (H → A) where
 lemma mem_coindV (f : H → A) : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `ρ : Representation k G A` and `φ : G →* H` then `coind φ ρ` is the representation
 coinduced by `ρ` along `φ`, defined as the following action of `H` on the submodule `coindV φ ρ`
@@ -84,6 +85,7 @@ def coind : Representation k H (coindV φ ρ) where
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {σ ρ} in
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
   natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
@@ -156,6 +158,7 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
 end Coind
 section Coind'
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `φ : G →* H` and `A : Rep k G` then `coind' φ A`, the coinduction of `A` along `φ`,
 is defined as an `H`-action on `Hom_{k[G]}(k[H], A)`. If `f : k[H] → A` is `G`-equivariant
@@ -223,6 +226,7 @@ noncomputable def coindVEquiv :
   left_inv x := by simp
   right_inv x := coind'_ext φ fun _ => by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
@@ -243,6 +247,7 @@ end CoindIso
 
 noncomputable section Adjunction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism induced by the adjunction between `res φ` and `coind φ` sending a morphism
   `f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
   `b : B.V` to the function sending `h : H` to `f ((B.ρ h) b)`. -/
@@ -269,6 +274,7 @@ info: _.1 (@DFunLike.coe _ _.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ _) _ _ _ _ 
 
 attribute [pp_with_univ] Rep coind
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `G`-representation morphisms `res φ B ⟶ A` and
 the `H`-representation morphisms `B ⟶ coind φ A`.

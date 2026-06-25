@@ -225,6 +225,7 @@ lemma coe_path (x y : Circle) : (path x y : _ → _) =
   ext t
   rw [path_apply, comp_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma path_self (x : Circle) : path x x = Path.refl x := by
   ext a

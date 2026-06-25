@@ -66,6 +66,7 @@ theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ
         ((SetLike.ext_iff.mp ?_ x).mpr Algebra.mem_top)
   rwa [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `p` splits in `F` then the `p.gal` is trivial. -/
 @[instance_reducible]
 def uniqueGalOfSplits (h : p.Splits) : Unique p.Gal where
@@ -77,24 +78,31 @@ def uniqueGalOfSplits (h : p.Splits) : Unique p.Gal where
           ((SetLike.ext_iff.mp ((IsSplittingField.splits_iff _ p).mp h) x).mp Algebra.mem_top)
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [h : Fact p.Splits] : Unique p.Gal :=
   uniqueGalOfSplits _ h.1
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalZero : Unique (0 : F[X]).Gal :=
   uniqueGalOfSplits _ (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalOne : Unique (1 : F[X]).Gal :=
   uniqueGalOfSplits _ Splits.one
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalC (x : F) : Unique (C x).Gal :=
   uniqueGalOfSplits _ (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalX : Unique (X : F[X]).Gal :=
   uniqueGalOfSplits _ Splits.X
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalXSubC (x : F) : Unique (X - C x).Gal :=
   uniqueGalOfSplits _ (Splits.X_sub_C _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
   uniqueGalOfSplits _ (Splits.X_pow _)
 

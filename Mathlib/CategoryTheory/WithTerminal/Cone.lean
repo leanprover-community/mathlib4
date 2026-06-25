@@ -55,6 +55,7 @@ def commaFromOver : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) 
 @[simps!]
 def liftFromOver : (J ⥤ Over X) ⥤ WithTerminal J ⥤ C := commaFromOver ⋙ equivComma.inverse
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The extension of a functor to over categories behaves well with compositions. -/
 @[simps]
 def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj K ⋙ F where
@@ -86,6 +87,7 @@ private def coneLift : Cone K ⥤ Cone (liftFromOver.obj K) where
     | of a => by simp [← Comma.comp_left]
   }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cone of an extended functor
@@ -101,6 +103,7 @@ private def coneBack : Cone (liftFromOver.obj K) ⥤ Cone K where
     { hom := Over.homMk f.hom (by simp [dsimp% f.w star] )
       w j := by ext; simp [dsimp% f.w (of j)] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Given a functor `K : J ⥤ Over X` and its extension `liftFromOver K : WithTerminal J ⥤ C`,
@@ -124,6 +127,9 @@ lemma coneEquiv_functor_obj_π_app_star : (coneEquiv.functor.obj t).π.app star 
 lemma coneEquiv_functor_obj_π_app_of (Y : J) :
     (coneEquiv.functor.obj t).π.app (of Y) = (t.π.app Y).left := rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A cone `t` of `K : J ⥤ Over X` is a limit if and only if the corresponding cone
 `coneLift t` of `liftFromOver.obj K : WithTerminal K ⥤ C` is a limit. -/
 @[simps!]
@@ -169,6 +175,7 @@ def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)
 @[simps!]
 def liftFromUnder : (J ⥤ Under X) ⥤ WithInitial J ⥤ C := commaFromUnder ⋙ equivComma.inverse
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The extension of a functor to under categories behaves well with compositions. -/
 @[simps]
 def liftFromUnderComp : liftFromUnder.obj (K ⋙ Under.post F) ≅ liftFromUnder.obj K ⋙ F where
@@ -200,6 +207,7 @@ private def coconeLift : Cocone K ⥤ Cocone (liftFromUnder.obj K) where
     | of a => by simp [← Comma.comp_right]
   }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cocone of an extended functor
@@ -215,6 +223,7 @@ private def coconeBack : Cocone (liftFromUnder.obj K) ⥤ Cocone K where
     { hom := Under.homMk f.hom (f.w .star)
       w j := by ext; simp [dsimp% f.w (of j)] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Given a functor `K : J ⥤ Under X` and its extension `liftFromUnder K : WithInitial J ⥤ C`,
@@ -238,6 +247,9 @@ lemma coconeEquiv_functor_obj_ι_app_star : (coconeEquiv.functor.obj t).ι.app s
 lemma coconeEquiv_functor_obj_ι_app_of (Y : J) :
     (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
 `coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/
 @[simps!]

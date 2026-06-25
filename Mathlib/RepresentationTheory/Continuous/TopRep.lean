@@ -180,6 +180,7 @@ end Linear
 
 section equivAction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor sending a topological representation to the corresponding object in
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where

@@ -73,6 +73,7 @@ def Presheaf.χ (m : F ⟶ G) : G ⟶ Functor.sieves C where
     use F.map g.op a
     simp [ha, NatTrans.naturality_apply]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Presheaf.comp_χ_eq (m : F ⟶ G) : m ≫ Presheaf.χ m =
     (Functor.isTerminalConst _ Types.isTerminalPUnit).from F ≫ Presheaf.truth C := by
   ext
@@ -135,6 +136,7 @@ end presheaf
 
 variable {J : GrothendieckTopology C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Presheaf in
 lemma GrothendieckTopology.isClosed_χ_app_apply_of_isSheaf_of_isSeparated
     {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] (hF : Presieve.IsSheaf J F)
@@ -164,6 +166,7 @@ def Ω (J : GrothendieckTopology C) : Sheaf J (Type max u v) where
     rw [CategoryTheory.isSheaf_iff_isSheaf_of_type]
     exact CategoryTheory.classifier_isSheaf J
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism `t : 1 ⟶ Ω` which picks out the maximal sieve -/
 @[simps]
 def truth (J : GrothendieckTopology C) :
@@ -185,6 +188,7 @@ def χ (m : F ⟶ G) [Mono m] : G ⟶ Sheaf.Ω J where
       ((isSheaf_iff_isSheaf_of_type _ _).mp F.property)
       ((isSheaf_iff_isSheaf_of_type _ _).mp G.property).isSeparated _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isPullback_χ_truth (m : F ⟶ G) [Mono m] :
     IsPullback m ((isTerminalTerminal J _).from F) (Sheaf.χ m) (Sheaf.truth J) := by

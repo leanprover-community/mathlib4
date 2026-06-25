@@ -89,6 +89,7 @@ lemma measurable_IicProdIoc {m n : ι} : Measurable (IicProdIoc (X := X) m n) :=
 
 namespace MeasurableEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Gluing `Iic a` and `Ioc a b` into `Iic b`. This version requires `a ≤ b` to get a measurable
 equivalence. -/
 def IicProdIoc {a b : ι} (hab : a ≤ b) :
@@ -115,6 +116,7 @@ lemma coe_IicProdIoc_symm {a b : ι} (hab : a ≤ b) :
     ⇑(IicProdIoc (X := X) hab).symm =
     fun x ↦ (frestrictLe₂ hab x, restrict₂ Ioc_subset_Iic_self x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Gluing `Iic a` and `Ioi a` into `ℕ`, version as a measurable equivalence
 on dependent functions. -/
 def IicProdIoi (a : ι) :
@@ -142,6 +144,7 @@ section Nat
 
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Identifying `{a + 1}` with `Ioc a (a + 1)`, as a measurable equiv on dependent functions. -/
 def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1), X i where
   toFun x i := (Nat.mem_Ioc_succ.1 i.2).symm ▸ x

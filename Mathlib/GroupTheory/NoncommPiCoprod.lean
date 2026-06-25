@@ -98,6 +98,7 @@ variable (hcomm : Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y))
 
 namespace MonoidHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical homomorphism from a family of monoids. -/
 @[to_additive /-- The canonical homomorphism from a family of additive monoids. See also
 `LinearMap.lsum` for a linear version without the commutativity assumption. -/]
@@ -115,6 +116,7 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M where
 
 variable {hcomm}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem noncommPiCoprod_mulSingle [DecidableEq ι] (i : ι) (y : N i) :
     noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y := by
@@ -184,6 +186,7 @@ lemma noncommPiCoprod_apply (h : (i : ι) → N i) :
       (Pairwise.set_pairwise (fun ⦃i j⦄ a ↦ hcomm a (h i) (h j)) _) := by
   dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have sufficient commutativity, then
 `f ∘ (∐ᵢ φᵢ) = ∐ᵢ (f ∘ φᵢ)` -/
@@ -326,6 +329,7 @@ theorem noncommPiCoprod_mulSingle [DecidableEq ι]
     {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y} (i : ι) (y : H i) :
     noncommPiCoprod hcomm (Pi.mulSingle i y) = y := by apply MonoidHom.noncommPiCoprod_mulSingle
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem noncommPiCoprod_range
     {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y} :

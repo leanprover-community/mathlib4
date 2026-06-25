@@ -120,6 +120,7 @@ instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
   lie_add x y z := by simp only [bracket_def, map_add]
   leibniz_lie := bracket_leibniz_lie R A L M
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
   lie_smul _ _ _ := map_smul _ _ _
@@ -183,6 +184,7 @@ variable (N : LieSubmodule R L M)
 
 open LieModule
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R L M} in
 /-- If `A` is an `R`-algebra, any Lie submodule of a Lie module `M` with coefficients in `R` may be
 pushed forward to a Lie submodule of `A ⊗ M` with coefficients in `A`.

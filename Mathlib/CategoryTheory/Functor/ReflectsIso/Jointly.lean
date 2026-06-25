@@ -50,6 +50,7 @@ structure JointlyFaithful (F : ∀ i, C ⥤ D i) : Prop where
 
 variable {F : ∀ i, C ⥤ D i}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma JointlyFaithful.of_jointly_reflects_isIso_of_mono [HasEqualizers C]
     [∀ i, PreservesLimitsOfShape WalkingParallelPair (F i)]

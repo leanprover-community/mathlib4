@@ -178,6 +178,7 @@ lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finse
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [filter_map]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
       (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
@@ -255,6 +256,7 @@ theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s 
 
 end Map
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_add_one' (n : ℕ) :
     range (n + 1) = insert 0 ((range n).map ⟨fun i => i + 1, fun i j => by simp⟩) := by
   ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.zero_lt_succ n]
@@ -300,6 +302,7 @@ theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c :=
 theorem mem_image_const_self : b ∈ s.image (const α b) ↔ s.Nonempty :=
   mem_image_const.trans <| and_iff_left rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance canLift (c) (p) [CanLift β α c p] :
     CanLift (Finset β) (Finset α) (image c) fun s => ∀ x ∈ s, p x where
   prf := by
@@ -535,6 +538,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma attach_cons (a : α) (s : Finset α) (ha) :
     attach (cons a s ha) =
@@ -628,6 +632,7 @@ protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) :
     ⟨fun x => ⟨x.1, by simpa using (Finset.mem_filter.1 x.2).2⟩,
      fun _ _ H => Subtype.ext <| Subtype.mk.inj H⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
     ∀ {a : Subtype p}, a ∈ s.subtype p ↔ (a : α) ∈ s
@@ -758,6 +763,7 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
     e.finsetCongr.toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
   `Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
 @[simps]

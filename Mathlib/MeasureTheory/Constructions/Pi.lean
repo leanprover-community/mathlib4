@@ -164,7 +164,7 @@ theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinit
   | nil => simp
   | cons a l ih =>
     rw [tprod_cons, Set.tprod]
-    dsimp only [foldr_cons, map_cons, prod_cons]
+    simp only [foldr_cons, prod_cons, map_cons]
     rw [prod_prod, ih]
 
 end Tprod
@@ -928,6 +928,7 @@ theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' 
     MeasurePreserving (fun (a : (i : ι) → α' i) (i : ι) ↦ (f i) (a i)) :=
   measurePreserving_pi _ _ hf
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The measurable equiv `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂` is
 measure preserving. -/
 theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]

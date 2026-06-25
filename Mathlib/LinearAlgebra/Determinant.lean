@@ -250,6 +250,7 @@ theorem det_comp (f g : M →ₗ[A] M) :
 theorem det_id : LinearMap.det (LinearMap.id : M →ₗ[A] M) = 1 :=
   LinearMap.det.map_one
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying a map by a scalar `c` multiplies its determinant by `c ^ dim M`. -/
 @[simp]
 theorem det_smul [Module.Free A M] (c : A) (f : M →ₗ[A] M) :
@@ -342,6 +343,7 @@ theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Fin
     exact Module.Finite.of_basis hs
   · classical simp [LinearMap.coe_det, H] at hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the determinant of a map vanishes, then the map is not injective. -/
 theorem bot_lt_ker_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M} (hf : f.det = 0) :
     ⊥ < ker f := by
@@ -595,6 +597,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 namespace Module.Basis
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
 nonrec def det : M [⋀^ι]→ₗ[R] R where
@@ -734,6 +737,7 @@ theorem det_map' (b : Basis ι R M) (f : M ≃ₗ[R] M') :
 
 end Module.Basis
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Pi.basisFun_det : (Pi.basisFun R ι).det = Matrix.detRowAlternating := by
   ext M

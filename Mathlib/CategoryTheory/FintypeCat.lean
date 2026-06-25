@@ -215,6 +215,7 @@ instance : incl.Faithful where
   map_injective h := by
     simpa using TypeCat.homEquiv.symm.injective (InducedCategory.homEquiv.symm.injective h)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>
     letI := X.fintype

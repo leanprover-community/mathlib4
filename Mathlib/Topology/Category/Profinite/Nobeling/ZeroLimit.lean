@@ -50,6 +50,7 @@ theorem GoodProducts.linearIndependentEmpty {I} [LinearOrder I] :
 /-- The empty list as a `Products` -/
 def Products.nil : Products I := ⟨[], by simp only [List.isChain_nil]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Products.lt_nil_empty {I} [LinearOrder I] : { m : Products I | m < Products.nil } = ∅ := by
   ext ⟨m, hm⟩
   refine ⟨fun h ↦ ?_, by tauto⟩
@@ -58,6 +59,7 @@ theorem Products.lt_nil_empty {I} [LinearOrder I] : { m : Products I | m < Produ
 instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) :=
   ⟨0, 1, ne_of_apply_ne DFunLike.coe <| (Function.const_injective (β := ℤ)).ne zero_ne_one⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Products.isGood_nil {I} [LinearOrder I] :
     Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
@@ -74,6 +76,7 @@ theorem Products.span_nil_eq_top {I} [LinearOrder I] :
   obtain rfl : x = default := by simp only [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- There is a unique `GoodProducts` for the singleton `{fun _ ↦ false}`. -/
 noncomputable
 instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) l } where
@@ -149,6 +152,7 @@ noncomputable
 def range_equiv_smaller_toFun (o : Ordinal) (x : range (π C (ord I · < o))) : smaller C o :=
   ⟨πs C o ↑x, x.val, x.property, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (range_equiv_smaller_toFun C o) := by
   dsimp +unfoldPartialApp [range_equiv_smaller_toFun]

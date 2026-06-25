@@ -304,6 +304,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFin
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (k K) in
 /-- Any finitely generated extension over perfect fields are separably generated. -/
 lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField

@@ -69,6 +69,7 @@ theorem ContinuousMap.exists_restrict_eq (hs : IsClosed s) (f : C(s, Y)) :
     ∃ (g : C(X, Y)), g.restrict s = f :=
   TietzeExtension.exists_restrict_eq' s hs f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
 nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
@@ -512,6 +513,7 @@ instance Real.instTietzeExtension : TietzeExtension ℝ where
     f.exists_restrict_eq_forall_mem_of_closed (fun _ => mem_univ _) univ_nonempty hs |>.imp
       fun _ ↦ (And.right ·)
 
+set_option backward.isDefEq.respectTransparency false in
 open NNReal in
 /-- **Tietze extension theorem** for nonnegative real-valued continuous maps.
 `ℝ≥0` is a `TietzeExtension` space. -/

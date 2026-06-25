@@ -96,6 +96,7 @@ theorem Dart.symm_involutive : Function.Involutive (Dart.symm : G.Dart → G.Dar
 theorem Dart.symm_ne (d : G.Dart) : d.symm ≠ d :=
   ne_of_apply_ne (Prod.snd ∘ Dart.toProd) d.adj.ne
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by
   rintro ⟨p, hp⟩ ⟨q, hq⟩
   simp

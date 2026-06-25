@@ -338,6 +338,7 @@ variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
 abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
@@ -649,6 +650,7 @@ variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]

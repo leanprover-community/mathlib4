@@ -59,6 +59,7 @@ instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
   Function.Injective.isOrderedAddMonoid
     (toLex ∘ coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
   refine
@@ -118,6 +119,7 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
   exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
     rw [coeff_sub, intCast_coeff_zero]; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ceil of `n + ε` is `n + 1` but its image under `forgetEpsilons` is `n`, whose ceil is
 itself. -/
 theorem lt_forgetEpsilons_ceil (n : ℤ) :

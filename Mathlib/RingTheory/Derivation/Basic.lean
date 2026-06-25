@@ -264,6 +264,7 @@ variable {N : Type*} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower 
 
 variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can push forward derivations using linear maps, i.e., the composition of a derivation with a
 linear map is a derivation. Furthermore, this operation is linear on the spaces of derivations. -/
 def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
@@ -360,6 +361,7 @@ variable [CommSemiring R] [CommRing A] [CommRing M]
 variable [Algebra R A] [Algebra R M]
 variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Lift a derivation via an algebra homomorphism `f` with a right inverse such that
 `f(x) = 0 → f(d(x)) = 0`. This gives the derivation `f ∘ d ∘ f⁻¹`.

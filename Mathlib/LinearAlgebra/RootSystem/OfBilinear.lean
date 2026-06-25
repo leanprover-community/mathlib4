@@ -79,6 +79,7 @@ lemma smul_coroot : B x x • coroot B hx = 2 • B x := by
 lemma coroot_apply_self : coroot B hx x = 2 :=
   hx.regular.left <| by simp [mul_comm _ (B x x)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z

@@ -240,6 +240,7 @@ theorem op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ₘ g.o
 theorem unop_tensor_unop {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) :
     f.unop ⊗ₘ g.unop = (f ⊗ₘ g).unop := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
@@ -261,58 +262,86 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
 -- it would be nice if we could autogenerate all of these somehow
 section MonoidalOppositeLemmas
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_tensorObj (X Y : C) : mop (X ⊗ Y) = mop Y ⊗ mop X := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_tensorObj (X Y : Cᴹᵒᵖ) : unmop (X ⊗ Y) = unmop Y ⊗ unmop X := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_tensorUnit : mop (𝟙_ C) = 𝟙_ Cᴹᵒᵖ := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_tensorUnit : unmop (𝟙_ Cᴹᵒᵖ) = 𝟙_ C := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     (f ⊗ₘ g).mop = g.mop ⊗ₘ f.mop := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_tensorHom {X₁ Y₁ X₂ Y₂ : Cᴹᵒᵖ} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     (f ⊗ₘ g).unmop = g.unmop ⊗ₘ f.unmop := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
     (X ◁ f).mop = f.mop ▷ mop X := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_whiskerLeft (X : Cᴹᵒᵖ) {Y Z : Cᴹᵒᵖ} (f : Y ⟶ Z) :
     (X ◁ f).unmop = f.unmop ▷ unmop X := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     (f ▷ Z).mop = mop Z ◁ f.mop := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_whiskerRight {X Y : Cᴹᵒᵖ} (f : X ⟶ Y) (Z : Cᴹᵒᵖ) :
     (f ▷ Z).unmop = unmop Z ◁ f.unmop := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_associator (X Y Z : C) :
     (α_ X Y Z).mop = (α_ (mop Z) (mop Y) (mop X)).symm := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_associator (X Y Z : Cᴹᵒᵖ) :
     (α_ X Y Z).unmop = (α_ (unmop Z) (unmop Y) (unmop X)).symm := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_hom_associator (X Y Z : C) :
     (α_ X Y Z).hom.mop = (α_ (mop Z) (mop Y) (mop X)).inv := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_hom_associator (X Y Z : Cᴹᵒᵖ) :
     (α_ X Y Z).hom.unmop = (α_ (unmop Z) (unmop Y) (unmop X)).inv := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_inv_associator (X Y Z : C) :
     (α_ X Y Z).inv.mop = (α_ (mop Z) (mop Y) (mop X)).hom := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_inv_associator (X Y Z : Cᴹᵒᵖ) :
     (α_ X Y Z).inv.unmop = (α_ (unmop Z) (unmop Y) (unmop X)).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_leftUnitor (X : C) : (λ_ X).mop = (ρ_ (mop X)) := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_leftUnitor (X : Cᴹᵒᵖ) : (λ_ X).unmop = ρ_ (unmop X) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_hom_leftUnitor (X : C) : (λ_ X).hom.mop = (ρ_ (mop X)).hom := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_hom_leftUnitor (X : Cᴹᵒᵖ) : (λ_ X).hom.unmop = (ρ_ (unmop X)).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_inv_leftUnitor (X : C) : (λ_ X).inv.mop = (ρ_ (mop X)).inv := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_inv_leftUnitor (X : Cᴹᵒᵖ) : (λ_ X).inv.unmop = (ρ_ (unmop X)).inv := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_rightUnitor (X : C) : (ρ_ X).mop = (λ_ (mop X)) := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_rightUnitor (X : Cᴹᵒᵖ) : (ρ_ X).unmop = λ_ (unmop X) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_hom_rightUnitor (X : C) : (ρ_ X).hom.mop = (λ_ (mop X)).hom := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_hom_rightUnitor (X : Cᴹᵒᵖ) : (ρ_ X).hom.unmop = (λ_ (unmop X)).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma mop_inv_rightUnitor (X : C) : (ρ_ X).inv.mop = (λ_ (mop X)).inv := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma unmop_inv_rightUnitor (X : Cᴹᵒᵖ) : (ρ_ X).inv.unmop = (λ_ (unmop X)).inv := rfl
 
 end MonoidalOppositeLemmas
@@ -331,10 +360,14 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 /-- The (identity) equivalence between `Cᴹᵒᵖ` and `C`. -/
 @[simps!] def MonoidalOpposite.unmopEquiv : Cᴹᵒᵖ ≌ C := (mopEquiv C).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between `C` and its monoidal opposite's monoidal opposite. -/
 @[simps!] def MonoidalOpposite.mopMopEquivalence : Cᴹᵒᵖᴹᵒᵖ ≌ C :=
   .trans (MonoidalOpposite.unmopEquiv Cᴹᵒᵖ) (MonoidalOpposite.unmopEquiv C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 instance MonoidalOpposite.mopMopEquivalenceFunctorMonoidal :
     (MonoidalOpposite.mopMopEquivalence C).functor.Monoidal where
@@ -360,12 +393,14 @@ instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
   μ_δ X Y := Category.comp_id _
   δ_μ X Y := Category.comp_id _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (mopMopEquivalence C).IsMonoidal where
   leftAdjoint_ε := by
     simp [ε, η, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
   leftAdjoint_μ X Y := by
     simp [μ, δ, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorIso :
@@ -375,36 +410,42 @@ def MonoidalOpposite.tensorIso :
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identification `X ⊗ - = mop (- ⊗ unmop X)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorLeftIso (X : Cᴹᵒᵖ) :
     tensorLeft X ≅ unmopFunctor C ⋙ tensorRight (unmop X) ⋙ mopFunctor C :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identification `mop X ⊗ - = mop (- ⊗ X)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorLeftMopIso (X : C) :
     tensorLeft (mop X) ≅ unmopFunctor C ⋙ tensorRight X ⋙ mopFunctor C :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identification `unmop X ⊗ - = unmop (mop - ⊗ X)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorLeftUnmopIso (X : Cᴹᵒᵖ) :
     tensorLeft (unmop X) ≅ mopFunctor C ⋙ tensorRight X ⋙ unmopFunctor C :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identification `- ⊗ X = mop (unmop X ⊗ -)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorRightIso (X : Cᴹᵒᵖ) :
     tensorRight X ≅ unmopFunctor C ⋙ tensorLeft (unmop X) ⋙ mopFunctor C :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identification `- ⊗ mop X = mop (- ⊗ unmop X)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorRightMopIso (X : C) :
     tensorRight (mop X) ≅ unmopFunctor C ⋙ tensorLeft X ⋙ mopFunctor C :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identification `- ⊗ unmop X = unmop (X ⊗ mop -)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorRightUnmopIso (X : Cᴹᵒᵖ) :
@@ -436,6 +477,7 @@ instance monoidalUnopUnop : (unopUnop C).Monoidal where
 instance : (opOpEquivalence C).functor.Monoidal := monoidalUnopUnop
 instance : (opOpEquivalence C).inverse.Monoidal := monoidalOpOp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (opOpEquivalence C).IsMonoidal where
   leftAdjoint_ε := by simp [opOpEquivalence]
   leftAdjoint_μ := by simp [opOpEquivalence]

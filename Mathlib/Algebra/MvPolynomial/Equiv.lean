@@ -366,6 +366,7 @@ def sumRingEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃+* MvPolynomial S₁ (MvPol
 @[simp] lemma sumToIter_iterToSum (p) :
     sumToIter R S₁ S₂ (iterToSum R S₁ S₂ p) = p := (sumRingEquiv _ _ _).apply_symm_apply _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
@@ -543,6 +544,7 @@ lemma natDegree_optionEquivLeft (p : MvPolynomial (Option σ) R) :
   · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
   · rw [Polynomial.natDegree, degree_optionEquivLeft R c, Nat.cast_withBot, WithBot.unbotD_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma totalDegree_coeff_optionEquivLeft_add_le
     (p : MvPolynomial (Option S₁) R) (i : ℕ) (hi : i ≤ p.totalDegree) :
     ((optionEquivLeft R S₁ p).coeff i).totalDegree + i ≤ p.totalDegree := by
@@ -555,6 +557,7 @@ lemma totalDegree_coeff_optionEquivLeft_add_le
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain, add_comm i]
   · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
 
+set_option backward.isDefEq.respectTransparency false in
 lemma totalDegree_coeff_optionEquivLeft_le
     (p : MvPolynomial (Option S₁) R) (i : ℕ) :
     ((optionEquivLeft R S₁ p).coeff i).totalDegree ≤ p.totalDegree := by

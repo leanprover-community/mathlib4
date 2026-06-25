@@ -56,6 +56,7 @@ sphere `Metric.sphere c R`. We also prove that the distance to the center of the
 this inversion is given by `R ^ 2 / dist x c`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inversion_eq_lineMap (c : P) (R : ℝ) (x : P) :
     inversion c R x = lineMap c x ((R / dist x c) ^ 2) :=
   rfl

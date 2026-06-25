@@ -84,6 +84,7 @@ lemma map_π_liftedConeElement (i : I) :
     (preservesLimitIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
   simp [liftedConeElement, ← comp_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- (implementation) The constructed limit cone. -/
 @[simps]
 noncomputable def liftedCone : Cone F where
@@ -92,6 +93,7 @@ noncomputable def liftedCone : Cone F where
     { app := fun i => ⟨limit.π (F ⋙ π A) i, by simpa using! map_π_liftedConeElement _ _⟩
       naturality := fun i i' f => by ext; simpa using! (limit.w _ _).symm }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- (implementation) The constructed limit cone is a lift of the limit cone in `C`. -/
 noncomputable def isValidLift : (π A).mapCone (liftedCone F) ≅ limit.cone (F ⋙ π A) :=
   Iso.refl _

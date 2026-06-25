@@ -93,6 +93,7 @@ def L : MvPolynomial ι ℝ →ₗ[ℝ]
     (fun p f₁ f₂ ↦ by simp_rw [smul_eq_mul, ← integral_add (int p _) (int p _), ← mul_add]; rfl)
     fun r p f ↦ by simp_rw [← integral_smul, smul_comm r]; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma inj_L : Injective (L ι) :=
   (injective_iff_map_eq_zero _).mpr fun p hp ↦ by
     have H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 :=

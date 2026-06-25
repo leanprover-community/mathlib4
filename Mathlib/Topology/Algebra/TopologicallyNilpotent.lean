@@ -145,6 +145,7 @@ def _root_.topologicalNilradical : Ideal R where
   zero_mem' := zero
   smul_mem' := mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_topologicalNilradical_iff {a : R} :
     a ∈ topologicalNilradical R ↔ IsTopologicallyNilpotent a := by
   simp [topologicalNilradical]

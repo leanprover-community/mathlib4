@@ -125,6 +125,7 @@ def h1CotangentEquivCotangent {R : Type u} {S : Type v} [CommRing R] [CommRing S
     P.extendScalars.h1CotangentEquivOfSurjective Function.surjective_id ≪≫ₗ
     P.cotangentExtendScalarsEquiv
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem cotangentComplex_comp_h1CotangentEquivCotangent (P : Extension.{w} R S) :
     P.cotangentComplex.comp P.h1CotangentEquivCotangent.toLinearMap =
       H1Cotangent.δ R P.Ring S := by
@@ -141,6 +142,7 @@ theorem cotangentComplex_comp_h1CotangentEquivCotangent (P : Extension.{w} R S) 
   rw [← Generators.H1Cotangent.δ_C _ _ u.prop]
   congr
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem h1CotangentEquivCotangent_comp_map (P : Extension.{w} R S) :
     P.h1CotangentEquivCotangent.toLinearMap.comp (Algebra.H1Cotangent.map R P.Ring S S) =
       h1Cotangentι.comp (H1Cotangent.map P.defaultHom) := by

@@ -231,6 +231,7 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, and if
 `ψ` is injective on an open set `U`, then the induced measure on `U` is bounded above by
 `μC Set.univ * μA {1}` (possibly infinite). -/

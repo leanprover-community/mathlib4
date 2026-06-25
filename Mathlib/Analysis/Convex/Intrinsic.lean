@@ -222,6 +222,7 @@ section ImageOfHomeomorphAffineSpan
 variable [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q] [AddTorsor W Q]
   {f : P → Q} {s : Set P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` agrees with a homeomorphism between the affine spans of `s` and `f '' s`, then pulling
 `f '' s` back to the affine span of `s` recovers `s` itself. -/
 private theorem preimage_image_eq_of_homeomorph_affineSpan

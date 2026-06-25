@@ -99,6 +99,7 @@ def unify {α : Type*} (x : α → Σˣ f) (i : ι) (h : i ∈ upperBounds (rang
 
 variable [DirectedSystem G fun i j h => f i j h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem unify_sigma_mk_self {α : Type*} {i : ι} {x : α → G i} :
     (unify f (fun a => .mk f i (x a)) i fun _ ⟨_, hj⟩ =>
@@ -294,6 +295,7 @@ theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) 
   refine Setoid.symm ⟨j, hij, refl j, ?_⟩
   simp only [DirectedSystem.map_self]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
 theorem exists_of (z : DirectLimit G f) : ∃ i x, of L ι G f i x = z :=
@@ -309,6 +311,7 @@ theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
   eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
     (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every finitely generated substructure of the direct limit corresponds to some
 substructure in some component of the directed system. -/
 theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (S_fg : S.FG) :
@@ -404,6 +407,7 @@ theorem equiv_lift_of {i : ι} (x : G i) :
 
 variable {L ι G f}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The direct limit of countably many countably generated structures is countably generated. -/
 theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
@@ -450,6 +454,7 @@ theorem liftInclusion_of {i : ι} (x : S i) :
     (liftInclusion S) (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
     = Substructure.subtype (S i) x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma rangeLiftInclusion : (liftInclusion S).toHom.range = ⨆ i, S i := by
   simp_rw [liftInclusion, range_lift, Substructure.range_subtype]
 

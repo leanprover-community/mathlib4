@@ -663,6 +663,7 @@ open Graded
   num := f.gradedAddHom _ c.num
   den_mem := hw c.den_mem
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Let `A, B` be two graded rings with the same indexing set and `g : 𝒜 →+*ᵍ ℬ` be a graded ring
 homomorphism. Let `P ≤ A` be a submonoid and `Q ≤ B` be a submonoid such that `P ≤ g⁻¹ Q`, then `g`
@@ -695,10 +696,12 @@ abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
   map (.id _) h
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
     map g comap_le (mk x) = mk ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (𝒜) in
 @[simp] theorem map_id (P : Submonoid A) : map (.id 𝒜) (P := P) (Q := P) le_rfl = .id _ := by
   ext x
@@ -754,11 +757,13 @@ noncomputable def localRingHom : AtPrime 𝒜 I →+* AtPrime ℬ J :=
 
 variable {f I J hIJ}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma val_localRingHom (x : AtPrime 𝒜 I) :
     (localRingHom f I J hIJ x).val = Localization.localRingHom _ _ f hIJ x.val := by
   obtain ⟨⟨i, x, s, hs⟩, rfl⟩ := x.mk_surjective
   simp [localRingHom, map_mk]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsLocalHom (localRingHom f I J hIJ) where
   map_nonunit x hx := by
     rw [← isUnit_iff_isUnit_val] at hx ⊢
@@ -842,8 +847,7 @@ lemma val_awayMap (a) : (awayMap 𝒜 hg hx a).val = Localization.awayLift (alge
 lemma awayMap_fromZeroRingHom (a) :
     awayMap 𝒜 hg hx (fromZeroRingHom 𝒜 _ a) = fromZeroRingHom 𝒜 _ a := by
   ext
-  simp only [fromZeroRingHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    val_awayMap, val_mk]
+  simp only [fromZeroRingHom, val_awayMap]
   convert! IsLocalization.lift_eq _ _
 
 lemma val_awayMap_mk (n a i hi) : (awayMap 𝒜 hg hx (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩)).val =
@@ -934,6 +938,7 @@ end isLocalization
 
 section span
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
 /--
 Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,

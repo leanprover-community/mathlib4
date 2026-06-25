@@ -73,6 +73,7 @@ def d (b : B) : M :=
 @[simp]
 lemma d_add (b b' : B) : D.d (b + b') = D.d b + D.d b' := by simp [d]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma d_mul (b b' : B) : D.d (b * b') = b • D.d b' + b' • D.d b := by simp [d]
 

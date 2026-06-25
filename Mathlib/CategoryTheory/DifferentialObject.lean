@@ -293,6 +293,7 @@ nonrec def shiftFunctorAdd (m n : S) :
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]

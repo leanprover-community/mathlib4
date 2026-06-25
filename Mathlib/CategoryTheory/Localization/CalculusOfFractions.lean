@@ -528,6 +528,7 @@ which belongs to `W`. -/
 noncomputable def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X :=
   homMk (ofInv s hs)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
     (Q W).map f ≫ Qinv s hs = homMk (mk f s hs) := by
@@ -961,6 +962,7 @@ section
 
 variable [W.HasRightCalculusOfFractions]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Localization.exists_rightFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.RightFraction X Y), f = φ.map L (Localization.inverts L W) := by
   obtain ⟨φ, eq⟩ := Localization.exists_leftFraction L.op W.op f.op

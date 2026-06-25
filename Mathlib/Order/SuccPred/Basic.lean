@@ -110,6 +110,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
 
 variable (α)
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- A well-order is a `SuccOrder`. -/
 @[to_dual (attr := instance_reducible)
@@ -899,12 +900,14 @@ noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
   letI : PredOrder sᵒᵈ := inferInstanceAs (PredOrder (OrderDual.ofDual ⁻¹' s))
   inferInstanceAs (SuccOrder sᵒᵈᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ ↑a ∈ s) :
     (succ a).1 = succ ↑a := by classical
   change Subtype.val (dite ..) = _
   split_ifs <;> trivial
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isMax_of_succ_notMem [SuccOrder α] {a : s} (h : succ ↑a ∉ s) : IsMax a := by
   classical
   rw [← succ_eq_iff_isMax]

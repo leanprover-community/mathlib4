@@ -67,6 +67,7 @@ def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [CommRing T] [Algeb
   (AlgebraTensorModule.congr (LinearEquiv.refl PT.Ring (T ⊗[R] S))
     (KaehlerDifferential.tensorKaehlerEquiv R T P.Ring PT.Ring)).restrictScalars T
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] algebraBaseChange in
 lemma tensorCotangentSpace_tmul_tmul (t : T) (s : S) (x : Ω[P.Ring⁄R]) :
     P.tensorCotangentSpace T (t ⊗ₜ (s ⊗ₜ x)) = t ⊗ₜ s ⊗ₜ KaehlerDifferential.map _ _ _ _ x := by
@@ -101,6 +102,7 @@ lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
   simp [tensorCotangentSpace_tmul_tmul, CotangentSpace.map_tmul_eq_tmul_map,
     smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `T` is flat over `R`, there is a `T`-linear isomorphism
 `T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange).Cotangent`. -/
 noncomputable def tensorCotangentOfFlat [Module.Flat R T] :
@@ -110,6 +112,7 @@ noncomputable def tensorCotangentOfFlat [Module.Flat R T] :
     (Ideal.Cotangent.equivOfEq _ _ (P.ker_baseChange T).symm).restrictScalars T ≪≫ₗ
     (P.baseChange (T := T)).cotangentEquivCotangentKer.symm.restrictScalars T
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma tensorCotangentOfFlat_tmul [Module.Flat R T] (t : T) (x : P.Cotangent) :
@@ -135,6 +138,7 @@ lemma tensorToH1Cotangent_tmul (t : T) (x : P.H1Cotangent) :
     (P.tensorToH1Cotangent T (t ⊗ₜ x)).val = t • Cotangent.map (P.toBaseChange T) x.val :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `T` is `R`-flat, the canonical map `T ⊗[R] P.H1Cotangent →ₗ[T] (P.baseChange T).H1Cotangent`
 is bijective. -/
 lemma tensorToH1Cotangent_bijective_of_flat [Module.Flat R T] :
@@ -201,6 +205,7 @@ noncomputable def tensorH1CotangentOfFlat (T : Type*) [CommRing T] [Algebra R T]
       ((Generators.self R S).baseChangeToBaseChange T)).restrictScalars T ≪≫ₗ
     ((Generators.self R S).baseChange (T := T)).equivH1Cotangent.restrictScalars T
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] TensorProduct.rightAlgebra in
 lemma tensorH1CotangentOfFlat_tmul (T : Type*) [CommRing T] [Algebra R T] [Module.Flat R T]
     (t : T) (x : H1Cotangent R S) :

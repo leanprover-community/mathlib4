@@ -82,6 +82,7 @@ theorem RCLike.re_sqrt_ofReal {a : ℝ} :
 @[simp] theorem RCLike.sqrt_complex {a : ℂ} :
     sqrt a = a.sqrt := by simp [sqrt]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Complex.sqrt_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
     a.sqrt = √a.re := by
   obtain ⟨α : ℝ, hα, rfl⟩ := RCLike.nonneg_iff_exists_ofReal.mp ha

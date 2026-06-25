@@ -157,6 +157,7 @@ lemma ext_iff_of_isSymm (hB : IsSymm B) (hC : IsSymm C) :
 
 end polarization
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     IsSymm B ↔ ∀ i j, B (b i) (b j) = B (b j) (b i) where
   mp := fun ⟨h⟩ i j ↦ h _ _

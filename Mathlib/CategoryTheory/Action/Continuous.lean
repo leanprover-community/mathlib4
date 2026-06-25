@@ -40,6 +40,7 @@ namespace Action
 instance : HasForget₂ (Action V G) TopCat :=
   HasForget₂.trans (Action V G) V TopCat
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
   smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
   one_smul x := by
@@ -107,6 +108,7 @@ def res (f : G →ₜ* H) : ContAction V H ⥤ ContAction V G :=
     change Continuous (u ∘ v)
     fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Restricting scalars along a composition is naturally isomorphic to restricting scalars twice. -/
 @[simps! hom inv]
@@ -115,6 +117,7 @@ def resComp {K : Type*} [Monoid K] [TopologicalSpace K]
     ContAction.res V (h.comp f) ≅ ContAction.res V h ⋙ ContAction.res V f :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `f = f'`, restriction of scalars along `f` and `f'` is the same. -/
 @[simps! hom inv]
@@ -122,6 +125,7 @@ def resCongr (f f' : G →ₜ* H) (h : f = f') : ContAction.res V f ≅ ContActi
   NatIso.ofComponents (fun _ ↦ ObjectProperty.isoMk _ (Action.mkIso (Iso.refl _)
     (by subst h; simp))) fun f ↦ ObjectProperty.hom_ext _ (Action.Hom.ext (by simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Restriction of scalars along a topological monoid isomorphism induces an equivalence of
 categories. -/
@@ -138,6 +142,7 @@ end ContAction
 
 open ContAction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The subcategory of `ContAction V G` where the topology is discrete. -/
 def DiscreteContAction : Type _ := ObjectProperty.FullSubcategory (IsDiscrete (V := V) (G := G))
 deriving Category, ConcreteCategory
@@ -145,14 +150,17 @@ deriving Category, ConcreteCategory
 namespace DiscreteContAction
 
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
   inferInstanceAs <| HasForget₂ (ObjectProperty.FullSubcategory _) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : HasForget₂ (DiscreteContAction V G) TopCat :=
   HasForget₂.trans (DiscreteContAction V G) (ContAction V G) TopCat
 
 variable {V G}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (X : DiscreteContAction V G) :
     DiscreteTopology ((CategoryTheory.forget₂ _ TopCat).obj X) :=
   X.property
@@ -176,6 +184,7 @@ def mapContAction (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).ob
     ContAction V G ⥤ ContAction W G :=
   ObjectProperty.lift _ (ObjectProperty.ι _ ⋙ F.mapAction G) H
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Continuous version of `Functor.mapActionComp`. -/
 @[simps! hom inv]
@@ -201,6 +210,7 @@ def mapContActionCongr
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Continuous version of `Equivalence.mapAction`. -/
 @[simps functor inverse]

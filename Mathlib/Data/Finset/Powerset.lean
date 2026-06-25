@@ -301,6 +301,7 @@ theorem pairwise_disjoint_powersetCard (s : Finset α) :
   Finset.disjoint_left.mpr fun _x hi hj =>
     hij <| (mem_powersetCard.mp hi).2.symm.trans (mem_powersetCard.mp hj).2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_disjiUnion (s : Finset α) :
     Finset.powerset s =
       (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
@@ -313,6 +314,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
   · rcases mem_disjiUnion.mp ha with ⟨i, _hi, ha⟩
     exact mem_powerset.mpr (mem_powersetCard.mp ha).1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_biUnion [DecidableEq (Finset α)] (s : Finset α) :
     Finset.powerset s = (range (s.card + 1)).biUnion fun i => powersetCard i s := by
   simpa only [disjiUnion_eq_biUnion] using powerset_card_disjiUnion s

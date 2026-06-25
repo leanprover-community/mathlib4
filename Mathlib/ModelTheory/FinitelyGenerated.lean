@@ -97,6 +97,7 @@ theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [h] at h'
   exact Hom.map_le_range h'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FG.of_finite {s : L.Substructure M} [h : Finite s] : s.FG :=
   ⟨Set.Finite.toFinset h, by simp only [Finite.coe_toFinset, closure_eq]⟩
 

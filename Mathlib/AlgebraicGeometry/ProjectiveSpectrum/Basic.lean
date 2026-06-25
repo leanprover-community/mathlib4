@@ -141,6 +141,7 @@ noncomputable
 def basicOpenToSpec : (basicOpen 𝒜 f).toScheme ⟶ Spec (.of <| Away 𝒜 f) :=
   (basicOpen 𝒜 f).toSpecΓ ≫ Spec.map (awayToSection 𝒜 f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma basicOpenToSpec_app_top :
     (basicOpenToSpec 𝒜 f).app ⊤ = (Scheme.ΓSpecIso _).hom ≫ awayToSection 𝒜 f ≫
       (basicOpen 𝒜 f).topIso.inv := by
@@ -349,6 +350,7 @@ end basicOpen
 
 section stalk
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The stalk of `Proj A` at `x` is the degree `0` part of the localization of `A` at `x`. -/
 noncomputable
 def stalkIso (x : Proj 𝒜) :
@@ -375,6 +377,7 @@ def toBasicOpenOfGlobalSections (H : f t = x) (h0d : 0 < d) (hd : t ∈ 𝒜 d) 
   · rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_powers]
     simp [H]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma homOfLE_toBasicOpenOfGlobalSections_ι
     {H : f t = x} {h0d : 0 < d} {hd : t ∈ 𝒜 d} {H' : f t' = x'} {h0d' : 0 < d'} {hd' : t' ∈ 𝒜 d'}
@@ -406,6 +409,7 @@ lemma homOfLE_toBasicOpenOfGlobalSections_ι
 
 variable (f : A →+* Γ(X, ⊤)) (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal.map f = ⊤)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
 irrelevant ideal under `f` generates the whole ring, the set of `D(f(r))` for homogeneous `r`
 of positive degree forms an open cover on `X`. -/
@@ -433,6 +437,7 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
     rw [← Scheme.zeroLocus_span, Set.range_comp', ← Ideal.map_span, H, hf]
     simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
 irrelevant ideal under `f` generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`. -/
@@ -488,6 +493,7 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
       ← Scheme.Hom.comp_apply, fromOfGlobalSections]
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma fromOfGlobalSections_morphismRestrict {r : A} {n : ℕ} (hn : 0 < n) (hr : r ∈ 𝒜 n) :
     (fromOfGlobalSections 𝒜 f hf) ∣_ (basicOpen 𝒜 r) =
       (Scheme.isoOfEq _ (fromOfGlobalSections_preimage_basicOpen _ _ _ hn hr)).hom ≫

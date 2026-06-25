@@ -111,9 +111,11 @@ def toConvexCone (C : PointedCone R E) : ConvexCone R E where
 instance : Coe (PointedCone R E) (ConvexCone R E) where
   coe := toConvexCone
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toConvexCone_injective : Injective ((↑) : PointedCone R E → ConvexCone R E) :=
   fun _ _ => by simp [toConvexCone]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointed := by
   simp [toConvexCone, ConvexCone.Pointed]
@@ -337,6 +339,7 @@ def lineal (C : PointedCone R E) : Submodule R E where
 
 @[simp] theorem support_eq (C : PointedCone R E) : C.support = C.lineal.toAddSubgroup := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The lineality space of a cone is the largest submodule contained in the cone. -/
 theorem gc_ofSubmodule_lineal :
     GaloisConnection (α := Submodule R E) ofSubmodule lineal :=

@@ -277,6 +277,7 @@ def baseSupp (i : ι) : Dual R b.cartan :=
     simp [f, this, Finsupp.single_apply]
   simp [this]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma symm_baseSupp :
     b.symm.baseSupp = -b.baseSupp := by
   let b₁ : Module.Basis ι R b.cartan :=
@@ -331,6 +332,7 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 
 variable [IsDomain R] [CharZero R]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lemma 4.4 from [Geck](Geck2017). -/
 lemma borelUpper_le_biSup :
     b.borelUpper ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i) := by
@@ -390,6 +392,7 @@ private lemma cartan_borelLower_borelUpper_le :
 
 variable [IsTorsionFree R L]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma iSupIndep_rootSpace :
     letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i)
     letI V := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i)

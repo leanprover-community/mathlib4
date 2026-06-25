@@ -143,6 +143,7 @@ open Hom2
 
 variable {B : Type u} [Bicategory.{w, v} B]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The 1-cell dual bicategory `Bᵒᵖ`.
 
 It is defined as follows.

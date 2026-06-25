@@ -183,6 +183,7 @@ theorem coe_ext_iff {I J : FractionalIdeal S P} :
 theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J :=
   SetLike.ext
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
  theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
     {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) (x : I) :
@@ -558,6 +559,7 @@ instance : Mul (FractionalIdeal S P) :=
 theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_def (I J : FractionalIdeal S P) :
     I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul_def']
 

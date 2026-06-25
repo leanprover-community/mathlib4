@@ -64,6 +64,7 @@ section SubfieldValued
 
 variable [P.IsValuedIn K]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Restriction of scalars for a root pairing taking values in a subfield.
 
 See also `RootPairing.restrictScalars`. -/
@@ -87,6 +88,7 @@ def restrictScalars' :
   reflectionPerm_coroot i j := by
     ext; simpa [algebra_compatible_smul L] using P.reflectionPerm_coroot i j
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (P.restrictScalars' K).IsRootSystem where
   span_root_eq_top := by
     rw [← span_setOf_mem_eq_top]
@@ -99,6 +101,7 @@ instance : (P.restrictScalars' K).IsRootSystem where
     ext ⟨x, hx⟩
     simp [restrictScalars']
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma restrictScalars_toLinearMap_apply_apply
     (x : span K (range P.root)) (y : span K (range P.coroot)) :
     algebraMap K L ((P.restrictScalars' K).toLinearMap x y) = P.toLinearMap x y := by

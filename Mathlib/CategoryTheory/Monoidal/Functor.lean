@@ -803,21 +803,25 @@ variable [F.LaxMonoidal] [G.LaxMonoidal]
 instance LaxMonoidal.prod' : (prod' F G).LaxMonoidal :=
   inferInstanceAs (diag C ⋙ prod F G).LaxMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_ε_fst : (ε (prod' F G)).1 = ε F := by
   change _ ≫ F.map (𝟙 _) = _
   rw [Functor.map_id, Category.comp_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_ε_snd : (ε (prod' F G)).2 = ε G := by
   change _ ≫ G.map (𝟙 _) = _
   rw [Functor.map_id, Category.comp_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_μ_fst (X Y : C) : (μ (prod' F G) X Y).1 = μ F X Y := by
   change _ ≫ F.map (𝟙 _) = _
   rw [Functor.map_id, Category.comp_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_μ_snd (X Y : C) : (μ (prod' F G) X Y).2 = μ G X Y := by
   change _ ≫ G.map (𝟙 _) = _
   rw [Functor.map_id, Category.comp_id]
@@ -833,21 +837,25 @@ variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 instance OplaxMonoidal.prod' : (prod' F G).OplaxMonoidal :=
   inferInstanceAs (diag C ⋙ prod F G).OplaxMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_η_fst : (η (prod' F G)).1 = η F := by
   change F.map (𝟙 _) ≫ _ = _
   rw [Functor.map_id, Category.id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_η_snd : (η (prod' F G)).2 = η G := by
   change G.map (𝟙 _) ≫ _ = _
   rw [Functor.map_id, Category.id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_δ_fst (X Y : C) : (δ (prod' F G) X Y).1 = δ F X Y := by
   change F.map (𝟙 _) ≫ _ = _
   rw [Functor.map_id, Category.id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_δ_snd (X Y : C) : (δ (prod' F G) X Y).2 = δ G X Y := by
   change G.map (𝟙 _) ≫ _ = _
   rw [Functor.map_id, Category.id_comp]

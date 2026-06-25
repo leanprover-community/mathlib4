@@ -69,6 +69,7 @@ def innerProbChar (t : E) : E →ᵇ ℂ :=
 
 lemma innerProbChar_apply (t x : E) : innerProbChar t x = exp (⟪x, t⟫ * I) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma innerProbChar_zero : innerProbChar (0 : E) = 1 := by simp [innerProbChar]
 
@@ -81,6 +82,7 @@ def probCharDual (L : StrongDual ℝ F) : F →ᵇ ℂ :=
 
 lemma probCharDual_apply (L : StrongDual ℝ F) (x : F) : probCharDual L x = exp (L x * I) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma probCharDual_zero : probCharDual (0 : StrongDual ℝ F) = 1 := by simp [probCharDual]
 

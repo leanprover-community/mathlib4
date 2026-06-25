@@ -45,6 +45,7 @@ lemma isPreimmersion_eq_inf :
 
 namespace IsPreimmersion
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsZariskiLocalAtTarget @IsPreimmersion :=
   isPreimmersion_eq_inf ▸ inferInstance
 
@@ -56,6 +57,7 @@ instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
   id_mem _ := inferInstance
   comp_mem f g _ _ := ⟨g.isEmbedding.comp f.isEmbedding⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion f]
     [IsPreimmersion g] : IsPreimmersion (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
@@ -95,6 +97,7 @@ lemma of_isLocalization {R S : Type u} [CommRing R] (M : Submonoid R) [CommRing 
     (PrimeSpectrum.localization_comap_isEmbedding (R := R) S M)
     (RingHom.surjectiveOnStalks_of_isLocalization (M := M) S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Limits MorphismProperty in
 instance : IsStableUnderBaseChange @IsPreimmersion := by
   refine .mk' fun X Y Z f g _ _ ↦ ?_
@@ -110,9 +113,11 @@ instance : IsStableUnderBaseChange @IsPreimmersion := by
 
 variable {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [IsPreimmersion g] : IsPreimmersion (Limits.pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [IsPreimmersion f] : IsPreimmersion (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 

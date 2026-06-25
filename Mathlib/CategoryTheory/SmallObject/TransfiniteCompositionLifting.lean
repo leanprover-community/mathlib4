@@ -169,6 +169,7 @@ lemma liftHom_fac (i : J) (hi : i < j) :
     F.map (homOfLE hi.le) ≫ liftHom hj s = (s.1 ⟨⟨i, hi⟩⟩).f' :=
   (F.isColimitOfIsWellOrderContinuous j hj).fac _ ⟨i, hi⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 @[simps]
@@ -185,6 +186,7 @@ noncomputable def lift : (sqFunctor c p f g).obj (Opposite.op j) where
     dsimp at this ⊢
     rw [liftHom_fac_assoc _ _ _ hij, this, Cocone.w_assoc])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma map_lift {i : J} (hij : i < j) :
     (lift hj s).map (homOfLE hij.le) = s.1 ⟨⟨i, hij⟩⟩ := by
   ext

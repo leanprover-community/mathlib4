@@ -87,6 +87,7 @@ namespace KaroubiFunctorCategoryEmbedding
 
 variable {J C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- On objects, the functor which sends a formal direct factor `P` of a
 functor `F : J ⥤ C` to the functor `J ⥤ Karoubi C` which sends `(j : J)` to
 the corresponding direct factor of `F.obj j`. -/
@@ -101,6 +102,7 @@ def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
         rw [NatTrans.comp_app] at h
         rw [reassoc_of% h, reassoc_of% h] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
@@ -138,6 +140,7 @@ instance : (karoubiFunctorCategoryEmbedding J C).Faithful where
     ext j
     exact hom_ext_iff.mp (congr_app h j)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The composition of `(J ⥤ C) ⥤ Karoubi (J ⥤ C)` and `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`
 equals the functor `(J ⥤ C) ⥤ (J ⥤ Karoubi C)` given by the composition with

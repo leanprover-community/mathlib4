@@ -61,12 +61,14 @@ But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `
 attribute [to_dual_dont_translate] Set
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
+@[implicit_reducible]
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
 
 namespace Set
 
 /-- Membership in a set -/
+@[implicit_reducible]
 protected def Mem (s : Set α) (a : α) : Prop :=
   s a
 

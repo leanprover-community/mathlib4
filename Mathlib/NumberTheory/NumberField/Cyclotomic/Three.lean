@@ -77,19 +77,22 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     · right; ext; exact h
   fin_cases hr <;> rcases hru with h | h <;> simp [h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We have that `λ ^ 2 = -3 * η`. -/
 private lemma lambda_sq : λ ^ 2 = -3 * η := by
   ext
   calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by
-        simp only [RingOfIntegers.map_mk, IsUnit.unit_spec]; ring
+        simp only [IsUnit.unit_spec]; ring
   _ = 0 - 3 * η := by simpa using hζ.isRoot_cyclotomic (by decide)
   _ = -3 * η := by ring
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We have that `η ^ 2 = -η - 1`. -/
 lemma eta_sq : (η ^ 2 : 𝓞 K) = -η - 1 := by
   rw [← neg_add', ← add_eq_zero_iff_eq_neg, ← add_assoc]
   ext; simpa using hζ.isRoot_cyclotomic (by decide)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a unit `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma*. -/

@@ -211,6 +211,7 @@ open IsLocalization AtPrime
 variable [IsDomain R] [IsDedekindDomain S] [IsTorsionFree R S] [Algebra R Sₚ] [IsScalarTower R S Sₚ]
   [IsScalarTower R Rₚ Sₚ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 For `R ⊆ S` an extension of Dedekind domains and `p` a prime ideal of `R`, the bijection
 between the primes of `S` over `p` and the primes over the maximal ideal of `Rₚ` in `Sₚ` where

@@ -139,6 +139,7 @@ def ofNatIso : F'.PushoutObjObj f₁ f₂ where
     sq.isPushout.of_iso ((e.app _).app _) ((e.app _).app _) ((e.app _).app _) (Iso.refl _)
       (by simp) (by simp) (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma ofNatIso_ι :
@@ -177,6 +178,7 @@ noncomputable def ofIsInitialLeft : F.PushoutObjObj f₁ f₂ where
     · exact isIso_of_isInitial hX₂ hY₂ _
     · exact ⟨hX₂.hom_ext _ _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofIsInitialLeft_ι : (ofIsInitialLeft F f₁ f₂ h).ι = (F.obj Y₁).map f₂ := by
@@ -206,6 +208,7 @@ noncomputable def ofIsInitialRight : F.PushoutObjObj f₁ f₂ where
     · exact isIso_of_isInitial hX₁ hY₁ _
     · exact ⟨hX₁.hom_ext _ _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofIsInitialRight_ι : (ofIsInitialRight F f₁ f₂ h).ι = (F.map f₁).app Y₂ := by
@@ -420,6 +423,7 @@ noncomputable def ofIsInitial : G.PullbackObjObj f₁ f₃ where
     · exact isIso_of_isTerminal hX₃ hY₃ _
     · exact ⟨hY₃.hom_ext _ _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofIsInitial_π : (ofIsInitial G f₁ f₃ h).π = (G.obj (op Y₁)).map f₃ := by
@@ -449,6 +453,7 @@ noncomputable def ofIsTerminal : G.PullbackObjObj f₁ f₃ where
     · exact isIso_of_isTerminal hY₁ hX₁ _
     · exact ⟨hX₁.hom_ext _ _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofIsTerminal_π : (ofIsTerminal G f₁ f₃ h).π = (G.map f₁.op).app X₃ := by

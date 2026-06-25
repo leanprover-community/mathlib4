@@ -59,6 +59,7 @@ theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
   have h : Nonempty s := by simpa using! h
   simp [shift, h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem shift_top (c : P) (r : k) : shift ⊤ c r = ⊤ := by
   simp [shift, AffineEquiv.surjective]

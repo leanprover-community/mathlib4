@@ -150,6 +150,7 @@ theorem Subfunctor.sheafify_sheafify (h : Presieve.IsSheaf J F) :
 @[deprecated (since := "2025-12-11")]
 alias Subpresheaf.sheafify_sheafify := Subfunctor.sheafify_sheafify
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The lift of a presheaf morphism onto the sheafification subpresheaf. -/
 noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsSheaf J F') :
@@ -175,6 +176,7 @@ noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.sheafifyLift := Subfunctor.sheafifyLift
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Subfunctor.to_sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsSheaf J F') :
     Subfunctor.homOfLe (G.le_sheafify J) ≫ G.sheafifyLift f h = f := by
   ext U s
@@ -187,6 +189,7 @@ theorem Subfunctor.to_sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsShea
 @[deprecated (since := "2025-12-11")]
 alias Subpresheaf.to_sheafifyLift := Subfunctor.to_sheafifyLift
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toFunctor ⟶ F')
@@ -202,6 +205,7 @@ theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
 @[deprecated (since := "2025-12-11")]
 alias Subpresheaf.to_sheafify_lift_unique := Subfunctor.to_sheafify_lift_unique
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Subfunctor.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
     (hG' : Presieve.IsSheaf J G'.toFunctor) : G.sheafify J ≤ G' := by
   intro U x hx
@@ -264,6 +268,7 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Mono (Sheaf.imageι f) :=
       dsimp
       infer_instance)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   refine ⟨@fun G' g₁ g₂ e => ?_⟩
   ext U ⟨s, hx⟩
@@ -285,6 +290,7 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
   m := Sheaf.imageι f
   e := Sheaf.toImage f
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
 noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F ⟶ F') :

@@ -92,6 +92,7 @@ section
 variable {R : Type*} (S T A : Type*) [CommRing R] [CommRing S] [Algebra R S]
   [CommRing T] [Algebra R T] [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of an `S`-algebra `A` over `R` with the quotient of `T` by an ideal `I`
 is isomorphic (as an `S`-algebra) to the quotient of `A ⊗[R] T` by the extended ideal. -/
 noncomputable def tensorQuotientEquiv (I : Ideal T) :

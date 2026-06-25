@@ -447,6 +447,7 @@ protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliab
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead
 requires the target to be a group under multiplication (and hence fails for infinite products in a

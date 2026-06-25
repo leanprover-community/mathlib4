@@ -12,6 +12,7 @@ namespace tests
 Tests that the enumerable types succeed, even with universe levels.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 inductive A | x | y | z
   deriving Fintype
 
@@ -21,6 +22,7 @@ info: tests.A.enumList : List A
 #guard_msgs in
 #check A.enumList
 
+set_option backward.isDefEq.respectTransparency false in
 inductive A' : Type u | x | y | z
   deriving Fintype
 
@@ -30,6 +32,7 @@ info: tests.A'.enumList.{u} : List A'
 #guard_msgs in
 #check A'.enumList
 
+set_option backward.isDefEq.respectTransparency false in
 inductive A'' : Type 1 | x | y | z
   deriving Fintype
 
@@ -160,6 +163,7 @@ instance (s : Set α) [Fintype α] [DecidablePred (· ∈ s)] : Fintype (MySubty
 Tests from mathlib 3
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 inductive Alphabet
   | a | b | c | d | e | f | g | h | i | j | k | l | m
   | n | o | p | q | r | s | t | u | v | w | x | y | z

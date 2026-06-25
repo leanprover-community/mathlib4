@@ -63,6 +63,7 @@ section Ring
 
 variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,
 and `s` is a maximal linearly independent set,

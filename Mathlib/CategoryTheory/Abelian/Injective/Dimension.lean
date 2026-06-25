@@ -267,6 +267,7 @@ lemma injectiveDimension_eq_of_iso {X Y : C} (e : X ≅ Y) :
   exact ⟨fun h ↦ hasInjectiveDimensionLT_of_iso e _,
     fun h ↦ hasInjectiveDimensionLT_of_iso e.symm _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Retract.injectiveDimension_le {X Y : C} (h : Retract X Y) :
     injectiveDimension X ≤ injectiveDimension Y :=
   sInf_le_sInf_of_subset_insert_top (fun n hn ↦ by

@@ -106,6 +106,7 @@ lemma toPresheaf_map_sheafificationHomEquiv
   rw [toPresheaf_map_sheafificationHomEquiv_def, Adjunction.homEquiv_unit]
   dsimp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toSheaf_map_sheafificationHomEquiv_symm
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (g : P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :

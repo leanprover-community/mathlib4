@@ -212,6 +212,7 @@ instance IsCofiltered.over [IsCofilteredOrEmpty C] (c : C) : IsCofiltered (Over 
   isCofiltered_costructuredArrow_of_isCofiltered_of_exists _ c ⟨c, ⟨𝟙 _⟩⟩
     (fun s s' => IsCofilteredOrEmpty.cone_maps s s')
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The forgetful functor of the under category on any filtered or empty category is final. -/
 instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget c) :=
@@ -223,6 +224,7 @@ instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget 
       simp only [forget_obj, mk_right, forget_map, homMk_right]
       rw [IsFiltered.coeq_condition])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The forgetful functor of the over category on any cofiltered or empty category is initial. -/
 instance Over.initial_forget [IsCofilteredOrEmpty C] (c : C) : Initial (Over.forget c) :=
@@ -253,6 +255,7 @@ theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final 
 
 end LocallySmall
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is filtered, then we can give an explicit condition for a functor `F : C ⥤ D` to
 be final. -/
@@ -401,6 +404,7 @@ instance StructuredArrow.final_post [IsFiltered C] {E : Type u₃} [Category.{v�
     (T : C ⥤ D) [T.Final] (S : D ⥤ E) [S.Final] : Final (post X T S) := by
   apply final_of_natIso (postIsoMap₂ X T S).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
 induces via `CostructuredArrow.map₂` is initial, if `T` and `S` are initial and the domain of `T` is
 filtered. -/

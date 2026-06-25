@@ -227,6 +227,7 @@ instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
 
 end NonemptyInterval
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where

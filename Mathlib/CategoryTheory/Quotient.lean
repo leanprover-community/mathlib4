@@ -159,6 +159,7 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
     comp r (Quot.mk _ f) (Quot.mk _ g) = Quot.mk _ (f ≫ g) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
@@ -189,6 +190,7 @@ theorem inv_mk {X Y : Quotient r} (f : X.as ⟶ Y.as) :
     Quotient.inv r (Quot.mk _ f) = Quot.mk _ (Groupoid.inv f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The quotient of a groupoid is a groupoid. -/
 instance groupoid : Groupoid (Quotient r) where
   inv f := Quotient.inv r f
@@ -203,6 +205,7 @@ def functor : C ⥤ Quotient r where
   obj a := { as := a }
   map f := Quot.mk _ f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance full_functor : (functor r).Full where
   map_surjective f := ⟨Quot.out f, by simp [functor]⟩
 
@@ -236,6 +239,7 @@ theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
     (functor r).homRel f g ↔ Relation.EqvGen (@HomRel.CompClosure C _ r X Y) f g :=
   Quot.eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem compClosure.congruence :
     Congruence fun X Y => Relation.EqvGen (@HomRel.CompClosure C _ r X Y) := by
   convert! (inferInstance : Congruence (functor r).homRel)

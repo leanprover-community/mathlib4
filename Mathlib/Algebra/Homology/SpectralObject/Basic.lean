@@ -64,6 +64,7 @@ def δ {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n₀ n₁ : ℤ) (hn₁ : n₀ 
     (X.H n₀).obj (mk₁ g) ⟶ (X.H n₁).obj (mk₁ f) :=
   (X.δ' n₀ n₁ hn₁).app (mk₂ f g)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma δ_naturality {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)

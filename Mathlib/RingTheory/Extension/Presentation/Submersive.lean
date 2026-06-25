@@ -350,7 +350,7 @@ private lemma jacobiMatrix_comp_₂₂_det :
   simp only [Matrix.toBlocks₂₂, AlgHom.mapMatrix_apply, Matrix.map_apply, Matrix.of_apply,
     RingHom.mapMatrix_apply, Generators.algebraMap_apply, map_aeval, coe_eval₂Hom]
   rw [jacobiMatrix_comp_inr_inr, ← IsScalarTower.algebraMap_eq]
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  simp only [aeval]
   generalize P.jacobiMatrix i j = p
   induction p using MvPolynomial.induction_on with
   | C a =>

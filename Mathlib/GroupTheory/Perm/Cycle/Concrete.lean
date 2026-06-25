@@ -138,6 +138,7 @@ def formPerm : ∀ s : Cycle α, Nodup s → Equiv.Perm α :=
 theorem formPerm_coe (l : List α) (hl : l.Nodup) : formPerm (l : Cycle α) hl = l.formPerm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h.nodup = 1 := by
   obtain ⟨s⟩ := s
   simp only [formPerm_coe, mk_eq_coe]
@@ -159,6 +160,7 @@ theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontriv
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
     formPerm s h x = x := by
   induction s using Quot.inductionOn
@@ -169,11 +171,13 @@ theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x
   induction s using Quot.inductionOn
   simpa using! List.formPerm_apply_mem_eq_next h _ (by simp_all)
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
     formPerm s.reverse (nodup_reverse_iff.mpr h) = (formPerm s h)⁻¹ := by
   induction s using Quot.inductionOn
   simpa using formPerm_reverse _
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
@@ -360,6 +364,7 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
       have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
       exact Quotient.sound' hc.toList_isRotated)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ x) :
     toCycle f hf = toList f x := by
   have key : (Finset.univ : Finset α).val = x ::ₘ Finset.univ.val.erase x := by simp
@@ -397,6 +402,7 @@ theorem toCycle_next (f : Perm α) (hf : f.IsCycle) (hx : x ∈ toCycle f hf) :
   simp only [hl, Cycle.mem_coe_iff] at ⊢ hx
   exact Equiv.Perm.next_toList_eq_apply f l x hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any cyclic `f : Perm α` is isomorphic to the nontrivial `Cycle α`
 that corresponds to repeated application of `f`.
 The forward direction is implemented by `Equiv.Perm.toCycle`.
@@ -431,6 +437,7 @@ section Finite
 
 variable [Finite α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
     ∃! s : Cycle α, ∃ h : s.Nodup, s.formPerm h = f := by
   cases nonempty_fintype α

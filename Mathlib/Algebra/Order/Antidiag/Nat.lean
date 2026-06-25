@@ -29,6 +29,7 @@ open Finset
 open scoped ArithmeticFunction
 namespace PNat
 
+set_option backward.isDefEq.respectTransparency false in
 instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=
   /- The set of divisors of a positive natural number.
 This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
@@ -60,6 +61,7 @@ def finMulAntidiag (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   else
     ∅
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
     f ∈ finMulAntidiag d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by

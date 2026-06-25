@@ -226,6 +226,7 @@ def finEncodingList (α : Type) [Fintype α] : FinEncoding (List α) where
   decode_encode _ := rfl
   ΓFin := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given `FinEncoding` of `α` and `β`,
 constructs a `FinEncoding` of `α × β` by concatenating the encodings,

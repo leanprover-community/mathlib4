@@ -57,6 +57,7 @@ omit [IsOrderedRing 𝕜] in
 lemma IsVisible.mono (hst : s ⊆ t) (ht : IsVisible 𝕜 t x y) : IsVisible 𝕜 s x y :=
   fun _z hz ↦ ht <| hst hz
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isVisible_iff_lineMap (hxy : x ≠ y) :
     IsVisible 𝕜 s x y ↔ ∀ δ ∈ Set.Ioo (0 : 𝕜) 1, lineMap x y δ ∉ s := by
   simp [IsVisible, sbtw_iff_mem_image_Ioo_and_ne, hxy]
@@ -68,6 +69,7 @@ section Module
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
   [AddCommGroup V] [Module 𝕜 V] {s : Set V} {x y z : V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a point `x` sees a convex combination of points of a set `s` through `convexHull ℝ s ∌ x`,
 then it sees all terms of that combination.
 
@@ -119,6 +121,7 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
 variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [TopologicalSpace V] [IsTopologicalAddGroup V]
   [ContinuousSMul 𝕜 V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- One cannot see any point in the interior of a set. -/
 lemma IsVisible.eq_of_mem_interior (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ interior s) :
     x = y := by
@@ -156,6 +159,7 @@ lemma IsVisible.mem_convexHull_isVisible (hx : x ∉ convexHull ℝ s) (hy : y �
 
 variable [TopologicalSpace V] [IsTopologicalAddGroup V] [ContinuousSMul ℝ V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is a closed set, then any point `x` sees some point of `s` in any direction where there
 is something to see. -/
 lemma IsClosed.exists_wbtw_isVisible (hs : IsClosed s) (hy : y ∈ s) (x : V) :

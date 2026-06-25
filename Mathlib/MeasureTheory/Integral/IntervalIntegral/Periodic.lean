@@ -162,6 +162,7 @@ lemma measurePreserving_equivIoc {a : ℝ} :
   congr! with hx
   rw [equivIoc_coe_eq hx]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Subtype.measureSpace in
 /-- The lower integral of a function over `AddCircle T` is equal to the lower integral over an
 interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
@@ -184,6 +185,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Subtype.measureSpace in
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
 to the integral over an interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/

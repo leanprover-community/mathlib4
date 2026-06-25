@@ -47,6 +47,7 @@ end CommSq.HasLift
 
 namespace HasLiftingProperty
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma over {A B X Y : Over S}
     (i : A ⟶ B) (p : X ⟶ Y) [HasLiftingProperty i.left p.left] :
     HasLiftingProperty i p := ⟨fun _ ↦ .over⟩

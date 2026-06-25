@@ -83,6 +83,7 @@ section PrimitiveElementInf
 
 variable {F : Type*} [Field F] [Infinite F] {E : Type*} [Field E] (ϕ : F →+* E) (α β : E)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
     ∃ c : F, ∀ α' ∈ (f.map ϕ).roots, ∀ β' ∈ (g.map ϕ).roots, -(α' - α) / (β' - β) ≠ ϕ c := by
   classical

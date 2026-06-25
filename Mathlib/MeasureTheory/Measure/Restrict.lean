@@ -55,6 +55,7 @@ theorem restrictₗ_apply {_m0 : MeasurableSpace α} (s : Set α) (μ : Measure 
     restrictₗ s μ = μ.restrict s :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma shows that `restrict` and `toOuterMeasure` commute. Note that the LHS has a
 restrict on measures and the RHS has a restrict on outer measures. -/
 theorem restrict_toOuterMeasure_eq_toOuterMeasure_restrict (h : MeasurableSet s) :

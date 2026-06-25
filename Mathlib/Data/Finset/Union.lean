@@ -146,11 +146,13 @@ theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β →
     (s.disjiUnion f h).filter p
       = s.disjiUnion (fun a ↦ (f a).filter p) (pairwiseDisjoint_filter h p) := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjiUnion_singleton {f : α → β} (hf : f.Injective) :
     s.disjiUnion (fun a ↦ {f a}) (fun _ _ _ _ ↦ disjoint_singleton.mpr ∘ hf.ne) =
       s.map ⟨f, hf⟩ := by
   ext; simp [eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_disjiUnion_left
     (s : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint s f) (t : Finset β) :
     Disjoint (s.disjiUnion f hf) t ↔ ∀ i ∈ s, Disjoint (f i) t := by

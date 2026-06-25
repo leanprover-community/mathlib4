@@ -148,6 +148,7 @@ lemma linearIndependent_single_of_ne_zero [IsDomain R] [Module R M] [IsTorsionFr
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
     {u : α → ι} {v : β → ι} (hu : u.Injective) (h : IsCompl (Set.range u) (Set.range v)) :
     lcomapDomain u hu =

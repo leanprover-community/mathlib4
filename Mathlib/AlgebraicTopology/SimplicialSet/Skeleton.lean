@@ -70,6 +70,7 @@ lemma ofSimplex_le_skeleton {i : ℕ} (x : X _⦋i⦌) {n : ℕ} (hi : i < n) :
     Subcomplex.ofSimplex x ≤ X.skeleton n := by
   simpa using X.mem_skeleton x hi
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_skeleton_obj_iff_of_nonDegenerate
     {d : ℕ} (x : X.nonDegenerate d) (n : ℕ) :
     x.1 ∈ (X.skeleton n).obj _ ↔ d < n := by
@@ -82,6 +83,7 @@ lemma mem_skeleton_obj_iff_of_nonDegenerate
   have : d ≤ i := SimplexCategory.len_le_of_mono f
   lia
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma skeleton_zero : X.skeleton 0 = ⊥ := by
   simp [skeleton]
@@ -94,6 +96,7 @@ lemma iSup_skeleton :
     simp only [Subfunctor.iSup_obj, Set.mem_iUnion]
     exact ⟨n + 1, mem_skeleton _ _ (by lia)⟩)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma skeleton_succ (n : ℕ) :
     X.skeleton (n + 1) =
       X.skeleton n ⊔ ⨆ (x : X.nonDegenerate n), Subcomplex.ofSimplex x.1 := by
@@ -132,6 +135,7 @@ section
 lemma skeleton_le_skeletonOfMono (n : ℕ) :
     Y.skeleton n ≤ skeletonOfMono i n := le_sup_right
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma skeletonOfMono_zero :
     skeletonOfMono i 0 = Subcomplex.range i := by
@@ -144,6 +148,7 @@ lemma iSup_skeletonOfMono :
   intro n
   exact le_trans (skeleton_le_skeletonOfMono i n) (le_iSup _ n)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_skeletonOfMono_obj_iff_of_nonDegenerate
     {d : ℕ} (x : Y.nonDegenerate d) (n : ℕ) :
     x.1 ∈ (skeletonOfMono i n).obj _ ↔
@@ -155,6 +160,7 @@ lemma skeletonOfMono_obj_eq_top {d n : ℕ} (h : d < n) :
   rw [← top_le_iff, ← Y.skeleton_obj_eq_top h]
   exact le_sup_right
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma skeletonOfMono_succ (n : ℕ) :
     skeletonOfMono i (n + 1) =
       skeletonOfMono i n ⊔ ⨆ (x : Y.nonDegenerate n)
@@ -237,6 +243,7 @@ noncomputable abbrev ιSigmaBoundary : (∂Δ[d] : SSet) ⟶ sigmaBoundary i d :
 of `Y` not in the range of `i`, this is the corresponding morphism `Δ[d] ⟶ Y`. -/
 abbrev map : Δ[d] ⟶ Y := yonedaEquiv.symm c.simplex
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_skeletonOfMono_obj_iff {d' : ℕ} :
     c.simplex ∈ (skeletonOfMono i d').obj _ ↔
     c.simplex ∈ Set.range (i.app _) ∨ d < d' := by
@@ -290,7 +297,7 @@ abbrev r : (skeletonOfMono i d : SSet) ⟶ skeletonOfMono i (d + 1) :=
 @[reassoc]
 lemma w : t i d ≫ r i d = l i d ≫ b i d := by
   ext c : 1
-  simp [← cancel_mono (Subcomplex.ι _), Sigma.ι_desc_assoc]
+  simp [← cancel_mono (Subcomplex.ι _)]
 
 namespace Cell
 
@@ -300,16 +307,25 @@ variable {i d}
 lemma ι_t_ι_eq_ι_l_b_ι (c : Cell i d) :
     c.ιSigmaBoundary ≫ t i d ≫ Subcomplex.ι _ = ∂Δ[d].ι ≫
       c.ιSigmaStdSimplex ≫ b i d ≫ Subcomplex.ι _ := by
-  simp [Sigma.ι_desc_assoc]
+  simp
 
 @[reassoc]
 lemma ι_l (c : Cell i d) : c.ιSigmaBoundary ≫ l i d = ∂Δ[d].ι ≫ c.ιSigmaStdSimplex := by
   simp
 
-@[reassoc (attr := simp)]
+#adaptation_note
+/--
+Now that `Cofan.mk` and `Discrete.functor` are implicit-reducible and
+`backward.isDefEq.implicitBump` is enabled, the simp lemma `colimit.ι_desc_assoc` is applicable.
+Previously, we had to use `by simp [Sigma.ι_desc_assoc]`, now `by simp` suffices.
+The `simp` annotation on this lemma was removed because it would be redundant now, triggering the
+`simpNF` linter.
+-/
+@[reassoc]
 lemma ι_b_ι (c : Cell i d) : c.ιSigmaStdSimplex ≫ b i d ≫ Subcomplex.ι _ = c.map := by
-  simp [Sigma.ι_desc_assoc]
+  simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
     dsimp% ((b i d).app _ (c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f))).val =
@@ -319,6 +335,7 @@ lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n
 
 end Cell
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
   w := w i d

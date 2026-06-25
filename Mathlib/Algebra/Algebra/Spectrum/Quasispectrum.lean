@@ -268,6 +268,7 @@ instance quasispectrum.instZero [Nontrivial R] (a : A) : Zero (quasispectrum R a
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `NonUnitalAlgHom.quasispectrum_apply_subset` which allows for `quasispectrum R`,
 where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. In this case, we
 need `S` to be explicit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or

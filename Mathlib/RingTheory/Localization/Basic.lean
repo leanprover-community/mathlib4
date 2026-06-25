@@ -130,6 +130,7 @@ section CompatibleSMul
 
 variable (N₁ N₂ : Type*) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M S) in
 include M in
 theorem linearMap_compatibleSMul [Module S N₁] [Module S N₂]
@@ -225,6 +226,7 @@ variable {A : Type*} [CommSemiring A]
 include H
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M`, `T` respectively,
 an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
 `S ≃ₐ[A] Q`. -/
@@ -241,10 +243,12 @@ theorem algEquivOfAlgEquiv_eq_map :
       map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem algEquivOfAlgEquiv_eq (x : R) :
     algEquivOfAlgEquiv S Q h H ((algebraMap R S) x) = algebraMap P Q (h x) := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.docPrime false in
 theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
     algEquivOfAlgEquiv S Q h H (mk' S x y) =
@@ -301,6 +305,7 @@ instance : IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S
 
 variable (R M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The localization at a module of units is isomorphic to the ring. -/
 noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
   refine AlgEquiv.ofBijective (Algebra.ofId R S) ⟨?_, ?_⟩

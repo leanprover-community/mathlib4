@@ -151,6 +151,7 @@ lemma differentials.comm₂₃ :
       pres.differentialsSolution.π :=
   comm₂₃' pres
 
+set_option backward.isDefEq.respectTransparency.types false in
 open differentials in
 lemma differentialsSolution_isPresentation :
     pres.differentialsSolution.IsPresentation := by

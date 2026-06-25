@@ -242,6 +242,7 @@ end LaxBraided
 section Braided
 variable [F.Braided]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
 `CommMonCat(F) : CommMonCat C ⥤ CommMonCat D` is fully faithful too. -/
@@ -365,6 +366,7 @@ end EquivLaxBraidedFunctorPUnit
 
 open EquivLaxBraidedFunctorPUnit
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Commutative monoid objects in `C` are "just" braided lax monoidal functors from the trivial
 braided monoidal category to `C`.

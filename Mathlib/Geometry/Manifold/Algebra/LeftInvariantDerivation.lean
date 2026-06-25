@@ -101,6 +101,7 @@ protected theorem map_neg : X (-f) = -X f := by simp
 
 protected theorem map_sub : X (f - f') = X f - X f' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem map_smul : X (r • f) = r • X f := by simp
 
 @[simp]
@@ -214,6 +215,7 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
   rw [ContMDiffMap.comp_apply, L_apply, ← evalAt_apply, evalAt_mul, hfdifferential_apply,
     fdifferential_apply, evalAt_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
@@ -252,6 +254,7 @@ instance : LieRing (LeftInvariantDerivation I G) where
     simp only [commutator_apply, coe_add, map_sub, Pi.add_apply]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where
   lie_smul r Y Z := by
     ext1

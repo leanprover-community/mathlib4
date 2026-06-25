@@ -353,6 +353,7 @@ def ω : X q := (2, 1)
 /-- We define `ωb = 2 - √3`, which is the inverse of `ω`. -/
 def ωb : X q := (2, -1)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ω_mul_ωb : (ω : X q) * ωb = 1 := by
   dsimp [ω, ωb]
   ext <;> simp; ring
@@ -360,6 +361,7 @@ theorem ω_mul_ωb : (ω : X q) * ωb = 1 := by
 theorem ωb_mul_ω : (ωb : X q) * ω = 1 := by
   rw [mul_comm, ω_mul_ωb]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A closed form for the recurrence relation. -/
 theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^ 2 ^ i := by
   induction i with
@@ -379,9 +381,11 @@ theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^
 /-- We define `α = √3`. -/
 def α : X q := (0, 1)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma α_sq : (α ^ 2 : X q) = 3 := by
   ext <;> simp [α, sq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma one_add_α_sq : ((1 + α) ^ 2 : X q) = 2 * ω := by
   ext <;> simp [α, ω, sq] <;> norm_num
 

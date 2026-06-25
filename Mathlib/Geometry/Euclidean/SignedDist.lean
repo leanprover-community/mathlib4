@@ -205,6 +205,7 @@ lemma signedDist_eq_dist_iff_vsub_mem_span : signedDist v p q = dist p q ↔ q -
   rw [← neg_eq_iff_eq_neg, ← signedDist_neg, neg_vsub_eq_vsub_rev]
   apply signedDist_vsub_self
 
+set_option backward.isDefEq.respectTransparency false in
 lemma signedDist_lineMap_lineMap (c₁ c₂ : ℝ) :
     signedDist v (AffineMap.lineMap p q c₁) (AffineMap.lineMap p q c₂) =
       (c₂ - c₁) * signedDist v p q := by
@@ -212,18 +213,22 @@ lemma signedDist_lineMap_lineMap (c₁ c₂ : ℝ) :
   · simp [AffineMap.lineMap_apply_ring']
   · rw [sub_mul, ← signedDist_anticomm v p, mul_neg, sub_eq_add_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma signedDist_lineMap_left (c : ℝ) :
     signedDist v (AffineMap.lineMap p q c) p = -c * signedDist v p q := by
   simpa using signedDist_lineMap_lineMap v p q c 0
 
+set_option backward.isDefEq.respectTransparency false in
 lemma signedDist_left_lineMap (c : ℝ) :
     signedDist v p (AffineMap.lineMap p q c) = c * signedDist v p q := by
   simpa using signedDist_lineMap_lineMap v p q 0 c
 
+set_option backward.isDefEq.respectTransparency false in
 lemma signedDist_lineMap_right (c : ℝ) :
     signedDist v (AffineMap.lineMap p q c) q = (1 - c) * signedDist v p q := by
   simpa using signedDist_lineMap_lineMap v p q c 1
 
+set_option backward.isDefEq.respectTransparency false in
 lemma signedDist_right_lineMap (c : ℝ) :
     signedDist v q (AffineMap.lineMap p q c) = (c - 1) * signedDist v p q := by
   simpa using signedDist_lineMap_lineMap v p q 1 c
@@ -299,6 +304,7 @@ trilinear coordinates; in a tetrahedron, they are quadriplanar coordinates. -/
 noncomputable def signedInfDist : P →ᴬ[ℝ] ℝ :=
   AffineSubspace.signedInfDist (affineSpan ℝ (s.points '' {i}ᶜ)) (s.points i)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma signedInfDist_reindex {m : ℕ} [NeZero m] (e : Fin (n + 1) ≃ Fin (m + 1))
     (j : Fin (m + 1)) : (s.reindex e).signedInfDist j = s.signedInfDist (e.symm j) := by
   simp_rw [signedInfDist, reindex_points, Set.image_comp, Set.image_compl_eq e.symm.bijective,

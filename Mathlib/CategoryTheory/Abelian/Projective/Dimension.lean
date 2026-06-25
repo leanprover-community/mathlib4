@@ -272,6 +272,7 @@ lemma projectiveDimension_eq_of_iso {X Y : C} (e : X ≅ Y) :
   exact ⟨fun h ↦ hasProjectiveDimensionLT_of_iso e _,
     fun h ↦ hasProjectiveDimensionLT_of_iso e.symm _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     projectiveDimension X ≤ projectiveDimension Y :=
   sInf_le_sInf_of_subset_insert_top (fun n hn ↦ by

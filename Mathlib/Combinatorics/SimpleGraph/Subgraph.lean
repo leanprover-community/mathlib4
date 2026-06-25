@@ -1105,6 +1105,7 @@ theorem deleteEdges_spanningCoe_eq :
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     G'.coe.deleteEdges s = (G'.deleteEdges (Sym2.map (↑) '' s)).coe := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
@@ -1121,6 +1122,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro h' hs
     exact h' _ hs rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_deleteEdges_eq (s : Set (Sym2 V)) :
     (G'.deleteEdges s).coe = G'.coe.deleteEdges (Sym2.map (↑) ⁻¹' s) := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
@@ -1145,6 +1147,7 @@ theorem deleteEdges_inter_edgeSet_right_eq :
     G'.deleteEdges (s ∩ G'.edgeSet) = G'.deleteEdges s := by
   ext <;> simp +contextual [imp_false]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_deleteEdges_le : (G'.deleteEdges s).coe ≤ (G'.coe : SimpleGraph G'.verts) := by
   intro v w
   simp +contextual
@@ -1172,6 +1175,7 @@ def induce (G' : G.Subgraph) (s : Set V) : G.Subgraph where
   edge_vert h := h.1
   symm.symm _ _ h := ⟨h.2.1, h.1, h.2.2.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
     G.induce s = ((⊤ : G.Subgraph).induce s).coe := by
   ext
@@ -1309,6 +1313,7 @@ theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
   induce_mono h (Set.sdiff_subset_sdiff_left h.1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[mono]
 lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
     ((⊤ : Subgraph G).deleteVerts u).coe ≤ ((⊤ : Subgraph G').deleteVerts u).coe := by

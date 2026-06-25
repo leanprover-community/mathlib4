@@ -137,6 +137,7 @@ noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N
 
 @[deprecated (since := "2026-04-15")] alias Presentation.of_isIso := Presentation.ofIsIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.Presentation) [σ.IsFinite] : (σ.ofIsIso f).IsFinite where
   isFiniteType_generators := inferInstanceAs (σ.generators.ofEpi _).IsFiniteType
@@ -172,6 +173,7 @@ theorem Presentation.mapRelations_mapGenerators :
   simp only [mapRelations, GeneratingSections.mapFreeHom, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
@@ -403,6 +405,7 @@ instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
     intro ⟨⟨q⟩⟩
     exact ⟨⟨q.ofIsIso e.hom⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
     [σ.IsFinitePresentation] : (σ.ofIsIso f).IsFinitePresentation where

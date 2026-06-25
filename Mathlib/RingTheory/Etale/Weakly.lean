@@ -42,6 +42,7 @@ attribute [instance] WeaklyEtale.flat
 
 namespace WeaklyEtale
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] ULift.algebra' in
 lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale R S := by
   rw [weaklyEtale_iff, weaklyEtale_iff, Module.Flat.ulift_left_iff, Module.Flat.ulift_right_iff]

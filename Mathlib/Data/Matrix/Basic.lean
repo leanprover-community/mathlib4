@@ -653,6 +653,7 @@ def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (M
 
 end RingEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
   isDedekindFiniteMonoid n := .of_injective (MonoidHom.mk
     ⟨RingEquiv.mopMatrix, by simp⟩ RingEquiv.mopMatrix.map_mul) (RingEquiv.injective _)

@@ -56,6 +56,7 @@ lemma IsQuasiAffine.of_isImmersion
   have : IsImmersion X.toSpecΓ := .of_comp _ (Spec.map f.appTop)
   constructor
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
     Opens.IsBasis { X.basicOpen r | (r : Γ(X, ⊤)) (_ : IsAffineOpen (X.basicOpen r)) } := by
   refine Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_

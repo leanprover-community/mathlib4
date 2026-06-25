@@ -296,6 +296,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     simp_rw [map_add]
     exact congr_arg₂ (· + ·) hx hy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
 projection provides a means to decompose the space into its submodules.
 

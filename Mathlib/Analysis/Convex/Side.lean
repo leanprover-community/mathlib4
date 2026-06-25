@@ -286,10 +286,12 @@ theorem wSameSide_smul_vsub_vadd_right {s : AffineSubspace R P} {p₁ p₂ : P} 
     (hp₂ : p₂ ∈ s) {t : R} (ht : 0 ≤ t) : s.WSameSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
   (wSameSide_smul_vsub_vadd_left x hp₁ hp₂ ht).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wSameSide_lineMap_left {s : AffineSubspace R P} {x : P} (y : P) (h : x ∈ s) {t : R}
     (ht : 0 ≤ t) : s.WSameSide (lineMap x y t) y :=
   wSameSide_smul_vsub_vadd_left y h h ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wSameSide_lineMap_right {s : AffineSubspace R P} {x : P} (y : P) (h : x ∈ s) {t : R}
     (ht : 0 ≤ t) : s.WSameSide y (lineMap x y t) :=
   (wSameSide_lineMap_left y h ht).symm
@@ -304,10 +306,12 @@ theorem wOppSide_smul_vsub_vadd_right {s : AffineSubspace R P} {p₁ p₂ : P} (
     (hp₂ : p₂ ∈ s) {t : R} (ht : t ≤ 0) : s.WOppSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
   (wOppSide_smul_vsub_vadd_left x hp₁ hp₂ ht).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wOppSide_lineMap_left {s : AffineSubspace R P} {x : P} (y : P) (h : x ∈ s) {t : R}
     (ht : t ≤ 0) : s.WOppSide (lineMap x y t) y :=
   wOppSide_smul_vsub_vadd_left y h h ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wOppSide_lineMap_right {s : AffineSubspace R P} {x : P} (y : P) (h : x ∈ s) {t : R}
     (ht : t ≤ 0) : s.WOppSide y (lineMap x y t) :=
   (wOppSide_lineMap_left y h ht).symm
@@ -571,6 +575,7 @@ theorem SOppSide.not_sSameSide {s : AffineSubspace R P} {x y : P} (h : s.SOppSid
     ¬s.SSameSide x y :=
   fun hs => h.not_wSameSide hs.1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
     s.WOppSide x y ↔ ∃ p ∈ s, Wbtw R x p y := by
   refine ⟨fun h => ?_, fun ⟨p, hp, h⟩ => h.wOppSide₁₃ hp⟩
@@ -625,10 +630,12 @@ theorem sSameSide_smul_vsub_vadd_right {s : AffineSubspace R P} {x p₁ p₂ : P
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) {t : R} (ht : 0 < t) : s.SSameSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
   (sSameSide_smul_vsub_vadd_left hx hp₁ hp₂ ht).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSameSide_lineMap_left {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) {t : R}
     (ht : 0 < t) : s.SSameSide (lineMap x y t) y :=
   sSameSide_smul_vsub_vadd_left hy hx hx ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSameSide_lineMap_right {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) {t : R}
     (ht : 0 < t) : s.SSameSide y (lineMap x y t) :=
   (sSameSide_lineMap_left hx hy ht).symm
@@ -643,10 +650,12 @@ theorem sOppSide_smul_vsub_vadd_right {s : AffineSubspace R P} {x p₁ p₂ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) {t : R} (ht : t < 0) : s.SOppSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
   (sOppSide_smul_vsub_vadd_left hx hp₁ hp₂ ht).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sOppSide_lineMap_left {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) {t : R}
     (ht : t < 0) : s.SOppSide (lineMap x y t) y :=
   sOppSide_smul_vsub_vadd_left hy hx hx ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sOppSide_lineMap_right {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) {t : R}
     (ht : t < 0) : s.SOppSide y (lineMap x y t) :=
   (sOppSide_lineMap_left hx hy ht).symm
@@ -830,6 +839,7 @@ open AffineSubspace
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup V] [Module R V]
 variable [AddTorsor V P] {n : ℕ} [NeZero n] (s : Simplex R P n)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
     (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} (hs : SignType.sign (w₁ i) = SignType.sign (w₂ i))
     (h0 : w₁ i ≠ 0) :
@@ -860,6 +870,7 @@ lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → 
   · rw [sign_pos h, eq_comm, sign_eq_one_iff] at hs
     positivity
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sOppSide_affineSpan_faceOpposite_of_pos_of_neg {w₁ w₂ : Fin (n + 1) → R}
     (hw₁ : ∑ j, w₁ j = 1) (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} (hs₁ : 0 < w₁ i)
     (hs₂ : w₂ i < 0) :

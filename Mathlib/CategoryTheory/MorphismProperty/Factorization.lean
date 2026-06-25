@@ -157,11 +157,17 @@ functoriality of the intermediate objects of the factorizations
 for `φ : Arrow.mk f ⟶ Arrow.mk g`. -/
 def mapZ : (data.factorizationData f).Z ⟶ (data.factorizationData g).Z := data.Z.map φ
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma i_mapZ :
     (data.factorizationData f).i ≫ data.mapZ φ = φ.left ≫ (data.factorizationData g).i :=
   (data.i.naturality φ).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma mapZ_p :
     data.mapZ φ ≫ (data.factorizationData g).p = (data.factorizationData f).p ≫ φ.right :=
@@ -183,6 +189,7 @@ section
 
 variable (J : Type*) [Category* J]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
@@ -214,6 +221,7 @@ def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
     rw [← data.mapZ_comp]
     congr 1
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functorial factorization in the category `C` extends to the functor category `J ⥤ C`. -/
 def functorCategory :

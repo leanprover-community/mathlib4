@@ -146,6 +146,7 @@ theorem projectQuotient_mk [HasFiniteColimits C] [PreservesFiniteColimits S]
     projectQuotient (Subobject.mk f) = Subobject.mk f.unop.left.op :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 theorem projectQuotient_factors [HasFiniteColimits C] [PreservesFiniteColimits S]
     {A : CostructuredArrow S T} :

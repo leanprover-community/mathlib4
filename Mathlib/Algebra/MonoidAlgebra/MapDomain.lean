@@ -60,6 +60,7 @@ lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := by ext; si
 lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
   Finsupp.mapDomain_injective hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp) mapDomain_one]
 theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F M N] (f : F) :
     mapDomain f (1 : R[M]) = (1 : R[N]) := by
@@ -96,9 +97,11 @@ protected lemma map_sum (f : R →+ S) (s : Finset ι) (x : ι → R[M]) :
 lemma map_single (f : R →+ S) (r : R) (m : M) : map f (single m r) = single m (f r) :=
   mapRange_single (hf := f.map_zero)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma map_id (x : R[M]) : map (.id R) x = x := by simp [map, coeff, ofCoeff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma map_map (f : S →+ T) (g : R →+ S) (x : R[M]) :
     map f (map g x) = map (f.comp g) x := by simp [map, coeff, ofCoeff]
@@ -158,6 +161,7 @@ def comapDomainAddMonoidHom (f : M → N) (hf : Injective f) : R[N] →+ R[M] wh
   map_zero' := by simp
   map_add' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma comapDomain_single_map (f : M → N) (hf) (m : M) (r : R) :
     comapDomain f hf (single (f m) r) = single m r := by simp [comapDomain, single, coeff, ofCoeff]
@@ -186,15 +190,18 @@ def mapDomainNonUnitalRingHom (f : M →ₙ* N) : R[M] →ₙ+* R[N] where
   map_add' := mapDomain_add _
   map_mul' := mapDomain_mul f
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainNonUnitalRingHom_id : mapDomainNonUnitalRingHom R (.id M) = .id R[M] := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainNonUnitalRingHom_comp (f : N →ₙ* O) (g : M →ₙ* N) :
     mapDomainNonUnitalRingHom R (f.comp g) =
       (mapDomainNonUnitalRingHom R f).comp (mapDomainNonUnitalRingHom R g) := by
   ext; simp [Finsupp.mapDomain_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Equivalent monoids have additively isomorphic monoid algebras.
 
@@ -210,10 +217,12 @@ def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
   right_inv x := by ext; simp
   map_add' x y := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainAddEquiv_apply (e : M ≃ N) (x : R[M]) (n : N) :
     mapDomainAddEquiv R e x n = x (e.symm n) := by simp [mapDomainAddEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainAddEquiv_single (e : M ≃ N) (r : R) (m : M) :
     mapDomainAddEquiv R e (single m r) = single (e m) r := by simp [mapDomainAddEquiv]
@@ -244,12 +253,14 @@ def mapAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv := mapAddEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapAddEquiv_apply (e : R ≃+ S) (x : R[M]) (m : M) :
     mapAddEquiv M e x m = e (x m) := by simp [mapAddEquiv, map, coeff, ofCoeff]
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_apply := mapAddEquiv_apply
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapAddEquiv_single (e : R ≃+ S) (r : R) (m : M) :
     mapAddEquiv M e (single m r) = single m (e r) := by simp [mapAddEquiv]
@@ -301,6 +312,7 @@ attribute [local ext high] ringHom_ext
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainRingHom_id : mapDomainRingHom R (.id M) = .id R[M] := by ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainRingHom_comp (f : N →* O) (g : M →* N) :
     mapDomainRingHom R (f.comp g) = (mapDomainRingHom R f).comp (mapDomainRingHom R g) := by
@@ -328,6 +340,7 @@ lemma coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom M f) = map f := rfl
 
 @[deprecated (since := "2026-03-20")] alias coe_mapRangeRingHom := coe_mapRingHom
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
     mapRingHom M f x m = f (x m) := by simp [mapRingHom, map, coeff, ofCoeff]
@@ -361,6 +374,7 @@ lemma mapRingHom_comp_mapDomainRingHom (f : R →+* S) (g : M →* N) :
 @[deprecated (since := "2026-03-20")]
 alias mapRangeRingHom_comp_mapDomainRingHom := mapRingHom_comp_mapDomainRingHom
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Isomorphic monoids have isomorphic monoid algebras. -/
 @[to_additive (dont_translate := R)
@@ -373,6 +387,7 @@ def mapDomainRingEquiv (e : M ≃* N) : R[M] ≃+* R[N] :=
 lemma mapDomainRingEquiv_apply (e : M ≃* N) (x : R[M]) (n : N) :
     mapDomainRingEquiv R e x n = x (e.symm n) := mapDomainAddEquiv_apply ..
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainRingEquiv_single (e : M ≃* N) (r : R) (m : M) :
     mapDomainRingEquiv R e (single m r) = single (e m) r := by simp [mapDomainRingEquiv]
@@ -482,6 +497,7 @@ since the changes that have made `nsmul` definitional, this would be possible,
 but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 variable (k G) in
 /-- The equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative` -/
@@ -496,6 +512,7 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
     dsimp [Multiplicative.ofAdd]
     exact MonoidAlgebra.mapDomain_mul (M := Multiplicative G) (MulHom.id (Multiplicative G)) x y
 
+set_option backward.isDefEq.respectTransparency false in
 variable (k G) in
 /-- The equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of `Additive` -/
 protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :

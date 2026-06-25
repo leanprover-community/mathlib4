@@ -170,6 +170,7 @@ theorem lift_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commut
     lift f g hfg (a ⊗ₜ b) = f a * g b :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_includeLeft_includeRight :
     lift includeLeft includeRight (fun _ _ => (Commute.one_right _).tmul (Commute.one_left _)) =

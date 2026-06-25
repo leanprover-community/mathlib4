@@ -109,12 +109,18 @@ costructured arrows. -/
 def grothendieckProj : Grothendieck (functor L) ⥤ C :=
   grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst _ _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
 @[simps!]
 def ιCompGrothendieckProj (X : D) :
     Grothendieck.ι (functor L) X ⋙ grothendieckProj L ≅ proj L X :=
   ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) X
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Functors between costructured arrow categories induced by morphisms in the base category
 composed with fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
 @[simps!]

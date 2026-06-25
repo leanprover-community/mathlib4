@@ -493,6 +493,7 @@ theorem eval_prec_succ (cf cg : Code) (a k : ℕ) :
 instance : Membership (ℕ →. ℕ) Code :=
   ⟨fun c f => eval c = f⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
   | 0, _ => rfl
@@ -501,6 +502,7 @@ theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
 @[simp]
 theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq, Code.id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq, curry]
 
@@ -528,6 +530,7 @@ theorem smn :
     ∃ f : Code → ℕ → Code, Computable₂ f ∧ ∀ c n x, eval (f c n) x = eval c (Nat.pair n x) :=
   ⟨curry, Primrec₂.to_comp primrec₂_curry, eval_curry⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function is partial recursive if and only if there is a code implementing it. Therefore,
 `eval` is a **universal partial recursive function**. -/
 theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f := by
@@ -647,6 +650,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
@@ -686,6 +690,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
         · rcases hy₂ (Nat.lt_of_succ_lt_succ im) with ⟨z, hz, z0⟩
           exact ⟨z, by simpa [add_comm, add_left_comm] using hz, z0⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := by
   refine ⟨fun h => ?_, fun ⟨k, h⟩ => evaln_sound h⟩
@@ -1031,6 +1036,7 @@ instance : Countable {f : ℕ →. ℕ // Partrec f} := by
   apply Function.Surjective.countable (f := fun c => ⟨eval c, eval_part.comp (.const c) .id⟩)
   intro ⟨f, hf⟩; simpa using! exists_code.1 hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There are only countably many computable functions `ℕ → ℕ`. -/
 instance : Countable {f : ℕ → ℕ // Computable f} :=
   @Function.Injective.countable {f : ℕ → ℕ // Computable f} {f : ℕ →. ℕ // Partrec f} _

@@ -300,6 +300,7 @@ theorem ker_one : (1 : G →* M).ker = ⊤ :=
 theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
   simp [ker, ← top_le_iff, SetLike.le_def, f.ext_iff]
 
@@ -517,6 +518,7 @@ theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
   map_le_map_iff_of_injective G'.subtype_injective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Subgroups of the subgroup `H` are considered as subgroups that are less than or equal to
 `H`. -/
 @[to_additive (attr := simps apply_coe) /-- Additive subgroups of the subgroup `H` are considered as

@@ -218,6 +218,7 @@ theorem cycleRange_mk_zero (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 :=
   have : NeZero n := .of_pos h
   cycleRange_zero n
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_cycleRange (i : Fin n) : Perm.sign (cycleRange i) = (-1) ^ (i : ℕ) := by
   simp [cycleRange]
@@ -288,6 +289,7 @@ theorem isCycle_cycleRange [NeZero n] (h0 : i ≠ 0) : IsCycle (cycleRange i) :=
   · exact (h0 rfl).elim
   exact isCycle_finRotate.extendDomain _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cycleType_cycleRange [NeZero n] (h0 : i ≠ 0) :
     cycleType (cycleRange i) = {(i + 1 : ℕ)} := by

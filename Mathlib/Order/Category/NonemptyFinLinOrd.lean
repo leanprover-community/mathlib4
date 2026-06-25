@@ -142,6 +142,7 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
   rw [cancel_mono] at eq
   rw [eq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Epi f ↔ Function.Surjective f := by
   constructor

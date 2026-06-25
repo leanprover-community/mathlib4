@@ -59,6 +59,7 @@ noncomputable def toClosedBall (r : ℝ) :
   apply restrictMonoidHom
   tauto
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsupp E ℤ)
     (ha : z ∈ closedBall 0 |r|) :
@@ -66,11 +67,13 @@ lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsupp E ℤ)
   unfold toClosedBall
   simp_all [restrict_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : Meromorphic f) :
     (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
   simp_all [locallyFinsuppWithin.toClosedBall]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] {r : ℝ}
     (f : locallyFinsupp E ℤ) :
     (toClosedBall r f).support ⊆ closedBall 0 |r| := by
@@ -124,6 +127,7 @@ Evaluation of the logarithmic counting function at zero yields zero.
     logCounting D 0 = 0 := by
   simp [logCounting]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The logarithmic counting function of a singleton indicator is asymptotically equal to
 `log · - log ‖e‖`.
@@ -148,6 +152,7 @@ The logarithmic counting function of a singleton indicator is asymptotically equ
 ### Elementary Properties of Logarithmic Counting Functions
 -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The logarithmic counting function is even.
 -/

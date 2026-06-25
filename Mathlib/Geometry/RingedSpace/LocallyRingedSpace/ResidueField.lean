@@ -111,6 +111,7 @@ lemma residueFieldMap_id (x : X) :
   simp only [residueFieldMap, stalkMap_id]
   apply IsLocalRing.ResidueField.map_id
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.base x) ≫ residueFieldMap f x := by
@@ -118,6 +119,7 @@ lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
   simp only [residueFieldMap, stalkMap_comp]
   apply IsLocalRing.ResidueField.map_comp (Hom.stalkMap g (f.base x)).hom (Hom.stalkMap f x).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.base).obj V) :
     Y.evaluation ⟨f.base x, x.property⟩ ≫ residueFieldMap f x.val =

@@ -135,6 +135,7 @@ theorem realize_substFunc [L'.Structure M] {c : {n : ℕ} → L.Functions n → 
   | var => simp
   | func f ts ih => simp [← ih, ← hc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
     (t.restrictVar f).realize v = t.realize v' := by
@@ -150,6 +151,7 @@ theorem realize_restrictVar' [DecidableEq α] {t : L.Term α} {s : Set α} (h : 
     {v : α → M} : (t.restrictVar (Set.inclusion h)).realize (v ∘ (↑)) = t.realize v :=
   realize_restrictVar _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (α ⊕ γ)}
     {f : t.varFinsetLeft → β}
     {xs : β ⊕ γ → M} (xs' : α → M) (hxs' : ∀ a, xs (Sum.inl (f a)) = xs' a) :
@@ -437,6 +439,7 @@ theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : 
       · rfl)
     (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n}
     {f : φ.freeVarFinset → β} {v : β → M} {xs : Fin n → M}
     (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :

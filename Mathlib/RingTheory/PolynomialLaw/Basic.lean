@@ -415,6 +415,7 @@ theorem factorsThrough_toFunLifted_π :
   · simp only [hq, hu, ← LinearMap.comp_apply, comp_toLinearMap, rTensor_comp]
     congr; ext; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toFun_eq_rTensor_φ_toFun' {t : S ⊗[R] M} {s : Finset S}
     {p : MvPolynomial (Fin s.card) R ⊗[R] M} (ha : π R M S (⟨s, p⟩ : lifts R M S) = t) :
     f.toFun S t = (φ R s).toLinearMap.rTensor N (f.toFun' _ p) := by

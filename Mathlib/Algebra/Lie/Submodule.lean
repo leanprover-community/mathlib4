@@ -971,6 +971,7 @@ lemma map_le_range {M' : Type*}
   rw [← LieModuleHom.map_top]
   exact LieSubmodule.map_mono le_top
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_incl_lt_iff_lt_top {N' : LieSubmodule R L N} :
     N'.map (LieSubmodule.incl N) < N ↔ N' < ⊤ := by

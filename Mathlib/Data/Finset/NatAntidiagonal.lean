@@ -48,10 +48,12 @@ lemma antidiagonal_eq_map' (n : ℕ) :
       (range (n + 1)).map ⟨fun i ↦ (n - i, i), fun _ _ h ↦ (Prod.ext_iff.1 h).2⟩ := by
   rw [← map_swap_antidiagonal, antidiagonal_eq_map, map_map]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antidiagonal_eq_image (n : ℕ) :
     antidiagonal n = (range (n + 1)).image fun i ↦ (i, n - i) := by
   simp only [antidiagonal_eq_map, map_eq_image, Function.Embedding.coeFn_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antidiagonal_eq_image' (n : ℕ) :
     antidiagonal n = (range (n + 1)).image fun i ↦ (n - i, i) := by
   simp only [antidiagonal_eq_map', map_eq_image, Function.Embedding.coeFn_mk]
@@ -147,7 +149,8 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
                       ∃ a b, a + b = n - k ∧ a = i ∧ b + k = j :=
     fun i j ↦ by rw [exists_comm]; exact exists₂_congr (fun a b ↦ by rw [add_comm])
   rw [← map_prodComm_antidiagonal]
-  simp_rw [aux₁, ← map_filter, antidiagonal_filter_le_fst_of_le h, map_map]
+  simp_rw [aux₁, ← map_filter, antidiagonal_filter_le_fst_of_le h,
+    map_map]
   ext ⟨i, j⟩
   simpa using aux₂ i j
 

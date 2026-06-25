@@ -57,8 +57,8 @@ if it is full, faithful and essentially surjective.
 We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bundled equivalence.
 
 -/
-
 set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency.types false
 
 @[expose] public section
 
@@ -109,6 +109,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual existing functor_unitIso_comp]
 theorem counitIso_functor_comp (e : C ≌ D) (X : C) :
     dsimp% e.counitIso.inv.app (e.functor.obj X) ≫ e.functor.map (e.unitIso.inv.app X) =
@@ -116,6 +117,7 @@ theorem counitIso_functor_comp (e : C ≌ D) (X : C) :
   simpa [functor_unitIso_comp] using Iso.inv_eq_inv
     (e.functor.mapIso (e.unitIso.app X) ≪≫ e.counitIso.app (e.functor.obj X)) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Equivalence.mk'` is the dual of `Equivalence.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
 @[to_dual existing mk']
@@ -144,23 +146,23 @@ abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
 
 @[reassoc +to_dual]
 lemma unitIso_hom_inv_id_app (e : C ≌ D) (X : C) :
-    dsimp% e.unit.app X ≫ e.unitInv.app X = 𝟙 X :=
-  e.unitIso.hom_inv_id_app X
+    dsimp% e.unit.app X ≫ e.unitInv.app X = 𝟙 X := by
+  simp
 
 @[reassoc +to_dual]
 lemma unitIso_inv_hom_id_app (e : C ≌ D) (X : C) :
-    dsimp% e.unitInv.app X ≫ e.unit.app X = 𝟙 _ :=
-  e.unitIso.inv_hom_id_app X
+    dsimp% e.unitInv.app X ≫ e.unit.app X = 𝟙 _ := by
+  simp
 
 @[reassoc +to_dual]
 lemma counitIso_hom_inv_id_app (e : C ≌ D) (Y : D) :
-    dsimp% e.counit.app Y ≫ e.counitInv.app Y = 𝟙 _ :=
-  e.counitIso.hom_inv_id_app Y
+    dsimp% e.counit.app Y ≫ e.counitInv.app Y = 𝟙 _ := by
+  simp
 
 @[reassoc +to_dual]
 lemma counitIso_inv_hom_id_app (e : C ≌ D) (Y : D) :
-    dsimp% e.counitInv.app Y ≫ e.counit.app Y = 𝟙 Y :=
-  e.counitIso.inv_hom_id_app Y
+    dsimp% e.counitInv.app Y ≫ e.counit.app Y = 𝟙 Y := by
+  simp
 
 section CategoryStructure
 
@@ -263,6 +265,7 @@ theorem functor_unit_comp (e : C ≌ D) (X : C) :
     dsimp% e.functor.map (e.unit.app X) ≫ e.counit.app (e.functor.obj X) = 𝟙 (e.functor.obj X) :=
   e.functor_unitIso_comp X
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual counitInv_app_functor]
 theorem counit_app_functor (e : C ≌ D) (X : C) :
     e.counit.app (e.functor.obj X) = e.functor.map (e.unitInv.app X) := by
@@ -303,6 +306,7 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     rw [← map_comp e.inverse, e.counitInv_naturality, e.counitIso.hom_inv_id_app]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual unitInv_app_inverse]
 theorem unit_app_inverse (e : C ≌ D) (Y : D) :
     e.unit.app (e.inverse.obj Y) = e.inverse.map (e.counitInv.app Y) := by
@@ -336,6 +340,7 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
     _ ≅ 𝟭 C ⋙ F ⋙ G := isoWhiskerRight η.symm (F ⋙ G)
     _ ≅ F ⋙ G := leftUnitor (F ⋙ G)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
@@ -458,7 +463,10 @@ variable (e : C ≌ D)
 `cancel_natIso_inv_right(_assoc)` for units and counits, because neither `simp` or `rw` will apply
 those lemmas in this setting without providing `e.unitIso` (or similar) as an explicit argument.
 We also provide the lemmas for length four compositions, since they're occasionally useful.
-(e.g. in proving that equivalences take monos to monos) -/
+(e.g. in proving that equivalences take monos to monos)
+
+`cancel_unitInv_left` is not a `simp` lemma because it would be redundant.
+-/
 @[to_dual cancel_unitInv_left, simp]
 theorem cancel_unit_right {X Y : C} (f f' : X ⟶ Y) :
     f ≫ e.unit.app Y = f' ≫ e.unit.app Y ↔ f = f' := by simp only [cancel_mono]
@@ -471,6 +479,10 @@ theorem cancel_unitInv_right {X Y : C} (f f' : X ⟶ e.inverse.obj (e.functor.ob
 theorem cancel_counit_right {X Y : D} (f f' : X ⟶ e.functor.obj (e.inverse.obj Y)) :
     f ≫ e.counit.app Y = f' ≫ e.counit.app Y ↔ f = f' := by simp only [cancel_mono]
 
+/-
+`cancel_counit_left` is not a `simp` lemma because it would be redundant.
+-/
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual cancel_counit_left, simp]
 theorem cancel_counitInv_right {X Y : D} (f f' : X ⟶ Y) :
     f ≫ e.counitInv.app Y = f' ≫ e.counitInv.app Y ↔ f = f' := by simp only [cancel_mono]

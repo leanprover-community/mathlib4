@@ -46,6 +46,7 @@ open scoped Real Filter FourierTransform
 
 open ContinuousMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function
 `∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. -/
 theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}

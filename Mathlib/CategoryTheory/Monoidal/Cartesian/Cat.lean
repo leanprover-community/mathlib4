@@ -50,6 +50,7 @@ def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal â
 def prodCone (C D : Cat.{v, u}) : BinaryFan C D :=
   .mk (P := .of (C Ã— D)) (Prod.fst _ _).toCatHom (Prod.snd _ _).toCatHom
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The product cone in `Cat` is indeed a product. -/
 def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
   (fun S => (S.fst.toFunctor.prod' S.snd.toFunctor).toCatHom) (fun _ => rfl)

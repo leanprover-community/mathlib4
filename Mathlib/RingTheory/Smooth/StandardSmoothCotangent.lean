@@ -114,6 +114,7 @@ lemma cotangentComplexAux_injective : Function.Injective P.cotangentComplexAux :
     simpa using this i
   · exact P.relation_mem_ker i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma cotangentComplexAux_surjective : Function.Surjective P.cotangentComplexAux := by
   rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← P.basisDeriv.span_eq, Submodule.span_le]
   rintro - ⟨i, rfl⟩

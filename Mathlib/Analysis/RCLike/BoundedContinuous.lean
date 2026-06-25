@@ -22,6 +22,7 @@ variable (𝕜 E : Type*) [RCLike 𝕜] [PseudoEMetricSpace E]
 
 namespace RCLike
 
+set_option backward.isDefEq.respectTransparency false in
 /-- On a star subalgebra of bounded continuous functions, the operations "restrict scalars to ℝ"
 and "forget that a bounded continuous function is a bounded" commute. -/
 theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict

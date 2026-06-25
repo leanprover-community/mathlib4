@@ -56,6 +56,7 @@ variable [DenselyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [CStarRi
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E]
 variable (E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
 instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|

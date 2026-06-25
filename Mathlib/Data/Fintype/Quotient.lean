@@ -240,6 +240,7 @@ def finRecOn {C : (∀ i, Trunc (α i)) → Sort*}
     C q :=
   Quotient.finRecOn q (f ·) (fun _ _ _ ↦ h _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finRecOn_mk {C : (∀ i, Trunc (α i)) → Sort*}
     (a : ∀ i, α i) :

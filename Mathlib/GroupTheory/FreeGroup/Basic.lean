@@ -671,6 +671,7 @@ def Lift.aux : List (α × Bool) → β := fun L =>
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
   obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux, List.prod_append]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
 @[to_additive (attr := simps symm_apply)
@@ -738,6 +739,7 @@ section Map
 
 variable {β : Type v} (f : α → β) {x y : FreeGroup α}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any function from `α` to `β` extends uniquely to a group homomorphism from the free group over
   `α` to the free group over `β`. -/
 @[to_additive /-- Any function from `α` to `β` extends uniquely to an additive group homomorphism
@@ -957,6 +959,7 @@ def equivIntOfUnique [Unique α] : FreeGroup α ≃ ℤ where
     | succ x hx => simpa [zpow_add_one] using hx
     | pred x hx => simpa [zpow_sub_one, ← sub_eq_add_neg] using hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between the free group on a unique type and the integers. -/
 def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   toFun := Multiplicative.ofAdd ∘ equivIntOfUnique

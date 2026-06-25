@@ -64,6 +64,7 @@ open FiniteMeasure
 
 variable {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [BorelSpace E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (E) in
 /-- In a compact space, the set of finite measures with mass at most `C` is compact. -/
 theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : ℝ≥0) :

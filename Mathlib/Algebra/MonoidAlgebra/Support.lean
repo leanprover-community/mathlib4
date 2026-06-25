@@ -48,6 +48,7 @@ theorem support_mul_single_subset [DecidableEq G] (f : k[G]) (r : k) (a : G) :
   (support_mul _ _).trans <| (Finset.image₂_subset_left support_single_subset).trans <| by
     rw [Finset.image₂_singleton_right]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := k) support_single_mul_eq_image]
 theorem support_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
@@ -56,6 +57,7 @@ theorem support_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by grind
   simp [mul_apply, mem_support_iff.mp yf, hr, lx.eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := k) support_mul_single_eq_image]
 theorem support_mul_single_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (hr : ∀ y, y * r = 0 ↔ y = 0) {x : G} (rx : IsRightRegular x) :

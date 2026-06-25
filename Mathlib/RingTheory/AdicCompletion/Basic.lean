@@ -550,6 +550,7 @@ theorem mk_zero_of (f : AdicCauchySequence I M)
     ← AdicCauchySequence.mk_eq_mk (show n ≤ m by lia)]
   simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))) hl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
   intro x
@@ -622,6 +623,7 @@ theorem of_injective [IsHausdorff I M] : Function.Injective (of I M) :=
 theorem of_inj [IsHausdorff I M] {a b : M} : of I M a = of I M b ↔ a = b :=
   (of_injective I M).eq_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_surjective_iff : Function.Surjective (of I M) ↔ IsPrecomplete I M := by
   constructor
   · refine fun h ↦ ⟨fun f hmn ↦ ?_⟩
@@ -676,12 +678,14 @@ theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
 
 end Bijective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_smul_top_le_ker_eval (n : ℕ) : I ^ n • ⊤ ≤ (eval I M n).ker := by
   simp only [smul_le, mem_top, LinearMap.mem_ker, map_smul, coe_eval, forall_const]
   intro r r_in x
   rw [← Submodule.Quotient.mk_out (x.val n), ← Quotient.mk_smul, Quotient.mk_eq_zero]
   exact smul_mem_smul r_in mem_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma val_apply_mem_smul_top_iff {m n : ℕ} {x : AdicCompletion I M}
     (m_ge : n ≤ m) : x.val m ∈ I ^ n • (⊤ : Submodule R (M ⧸ I ^ m • ⊤)) ↔ x.val n = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩

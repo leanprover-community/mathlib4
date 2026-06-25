@@ -144,6 +144,7 @@ def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
   toFun n := LinearMap.range (f ^ n)
   monotone' := monotone_nat_of_le_succ fun | n, _, ⟨x, rfl⟩ => ⟨f x, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iterateRange_succ {f : M →ₗ[R] M} {n : ℕ} :
     iterateRange f (n + 1) = (iterateRange f n).map f := by
   simp only [iterateRange_coe, range_eq_map, ← map_comp, Module.End.iterate_succ']
@@ -350,6 +351,7 @@ lemma restrictScalars_map [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScala
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M) :
     (M'.map f).restrictScalars R = (M'.restrictScalars R).map (f.restrictScalars R) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 
 See also `Submodule.mapIic`. -/

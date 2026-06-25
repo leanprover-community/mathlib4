@@ -152,6 +152,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
     apply Finset.card_le_card
     grind
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a relation such that the image of every singleton set is finite, then the image of every
 finite set is finite. -/
 instance {α : Type u} {β : Type v} [DecidableEq β] (R : SetRel α β)
@@ -162,6 +163,7 @@ instance {α : Type u} {β : Type v} [DecidableEq β] (R : SetRel α β)
   rw [h]
   apply FinsetCoe.fintype
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a version of **Hall's Marriage Theorem** in terms of a relation
 between types `α` and `β` such that `α` is finite and the image of
 each `x : α` is finite (it suffices for `β` to be finite; see
