@@ -59,21 +59,49 @@ attribute [fun_prop] MDifferentiable MDifferentiableAt
 
 end funpropsetup
 
--- Let `M` be a `C²` manifold modeled on `(E, H)`.
-variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-
-variable {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
-
--- From now on, `M` is endowed with a Riemannian metric.
-variable
-  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
-  {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
+-- More injectivity-like lemmas on Riemannian vector bundles.
+section ext
 
 open scoped RealInnerProductSpace
 
--- move this, also perhaps generalize to general Riemannian vector bundles,
+section
+
+variable
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB}
+  {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
+
+variable (IB F E) in
+public lemma injective_inner_mdifferentiableAt_section [CompleteSpace F] (x : B) :
+    Function.Injective
+      (fun X₀ : E x ↦
+        fun (Z : Π x, E x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
+  have := VectorBundle.completeSpace ℝ F E
+  set Φ := InnerProductSpace.toDual ℝ (E x)
+  exact (VectorBundle.injective_eval_mdifferentiableAt_sec ..).comp Φ.injective
+
+variable (IB F E) in
+public lemma injective_inner_contMDiffAt_section [CompleteSpace F] (n : ℕ∞ω) (x : B) :
+    Function.Injective
+      (fun X₀ : E x ↦
+        fun (Z : Π x, E x) (_ : CMDiffAt n (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
+  have := VectorBundle.completeSpace ℝ F E
+  set Φ := InnerProductSpace.toDual ℝ (E x)
+  exact (VectorBundle.injective_eval_contMDiffAt_sec ..).comp Φ.injective
+
+end
+
+section -- and a specialisation to manifolds
+
+-- Let `M` be a `C²` manifold modeled on `(E, H)`, endowed with a Riemannian metric.
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+
 lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
@@ -89,6 +117,24 @@ lemma injective_inner_contMDiffAt_vectorField {n : ℕ∞ω} [CompleteSpace E] (
   have := VectorBundle.completeSpace ℝ E (TangentSpace I (M := M))
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
   exact (injective_eval_contMDiffAt_vectorField I ℝ x).comp Φ.injective
+
+end
+
+end ext
+
+-- Let `M` be a `C²` manifold modeled on `(E, H)`.
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+
+variable {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
+
+-- From now on, `M` is endowed with a Riemannian metric.
+variable
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+  {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
+
+open scoped RealInnerProductSpace
 
 -- Let `cov` and `cov'` be covariant derivatives on `TM`.
 variable (cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _))
