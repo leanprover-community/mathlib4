@@ -414,7 +414,7 @@ noncomputable def leftInverse_of_injective_of_isClosed_range
     rintro ⟨y, x, rfl⟩
     have aux := hfK.le_mul_dist x 0
     simp only [dist_zero_right, map_zero] at aux
-    convert aux
+    convert! aux
     exact f.rangeRestrict.leftInverse_apply_of_inj
       (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x)
 
@@ -498,10 +498,9 @@ noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F
   ContinuousLinearEquiv.ofBijective (f.coprod G.subtypeL)
     (by
       rw [ker_coprod_of_disjoint_range]
-      · rw [hker, Submodule.ker_subtypeL, Submodule.prod_bot]
-      · rw [Submodule.range_subtypeL]
-        exact h.disjoint)
-    (by simp only [range_coprod, Submodule.range_subtypeL, h.sup_eq_top])
+      · simp [hker]
+      · simp [h.disjoint])
+    (by simp [LinearMap.range_coprod, h.sup_eq_top])
 
 theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
@@ -509,8 +508,9 @@ theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGrou
     f.range =
       ((⊤ : Submodule 𝕜 E).prod (⊥ : Submodule 𝕜 G)).map
         (f.coprodSubtypeLEquivOfIsCompl h hker : E × G →ₗ[𝕜] F) := by
-  rw [coprodSubtypeLEquivOfIsCompl, ContinuousLinearEquiv.coe_ofBijective,
-    coe_coprod, LinearMap.coprod_map_prod, Submodule.map_bot, sup_bot_eq, Submodule.map_top]
+  rw [coprodSubtypeLEquivOfIsCompl, ← ContinuousLinearEquiv.toLinearMap_toContinuousLinearMap,
+    ContinuousLinearEquiv.coe_ofBijective, coe_coprod, LinearMap.coprod_map_prod, Submodule.map_bot,
+    sup_bot_eq, Submodule.map_top]
 
 /- TODO: remove the assumption `f.ker = ⊥` in the next lemma, by using the map induced by `f` on
 `E / f.ker`, once we have quotient normed spaces. -/
@@ -626,7 +626,7 @@ open Function
 lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
     Bijective f ↔ f.range.topologicalClosure = ⊤ ∧ ∃ c, AntilipschitzWith c f := by
   refine ⟨fun h ↦ ⟨?eq_top, ?anti⟩, fun ⟨hd, c, hf⟩ ↦ ⟨hf.injective, ?surj⟩⟩
-  case eq_top => simpa [SetLike.ext'_iff] using h.2.denseRange.closure_eq
+  case eq_top => simpa [SetLike.ext'_iff] using! h.2.denseRange.closure_eq
   case anti =>
     refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitz⟩ <;>
     simp only [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]

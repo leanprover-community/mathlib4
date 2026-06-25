@@ -50,6 +50,13 @@ namespace stdSimplex
 
 open Finset Opposite SimplexCategory
 
+/-- The functor `stdSimplex : SimplexCategory ⥤ SSet` is fully faithful; -/
+abbrev fullyFaithful : stdSimplex.{u}.FullyFaithful :=
+  ULiftYoneda.fullyFaithful SimplexCategory
+
+instance : stdSimplex.{u}.Full := fullyFaithful.full
+instance : stdSimplex.{u}.Faithful := fullyFaithful.faithful
+
 @[simp]
 lemma map_id (n : SimplexCategory) :
     (SSet.stdSimplex.map (SimplexCategory.Hom.mk OrderHom.id : n ⟶ n)) = 𝟙 _ :=
@@ -67,7 +74,7 @@ instance (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
 instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
-  coe_injective' _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
+  coe_injective _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
 
 lemma monotone_apply {n i : ℕ} (x : Δ[n] _⦋i⦌) :
     Monotone (fun (j : Fin (i + 1)) ↦ x j) :=
@@ -197,6 +204,12 @@ lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
 
 namespace stdSimplex
 
+lemma δ_apply {n d : ℕ} (x : (Δ[n] _⦋d + 1⦌ : Type u)) (i : Fin (d + 2)) (j : Fin (d + 1)) :
+    Δ[n].δ i x j = x (i.succAbove j) := rfl
+
+lemma σ_apply {n d : ℕ} (x : (Δ[n] _⦋d⦌ : Type u)) (i : Fin (d + 1)) (j : Fin (d + 2)) :
+    Δ[n].σ i x j = x (i.predAbove j) := rfl
+
 @[simp]
 lemma objEquiv_yonedaEquiv_id (n : ℕ) :
     dsimp% objEquiv (yonedaEquiv.{u} (𝟙 Δ[n])) = 𝟙 _ := rfl
@@ -296,6 +309,17 @@ lemma yonedaEquiv_symm_app_id {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
     (yonedaEquiv.symm x).app _ (yonedaEquiv (𝟙 _)) = x := by
   simp
 
+lemma yonedaEquiv_naturality {X : SSet} {m n : SimplexCategory}
+    (f : m ⟶ n) (g : stdSimplex.obj n ⟶ X) :
+    X.map f.op (yonedaEquiv g) = yonedaEquiv (stdSimplex.map f ≫ g) :=
+  uliftYonedaEquiv_naturality _ _
+
+@[reassoc]
+lemma yonedaEquiv_symm_naturality_left {X : SSet} {m n : SimplexCategory}
+    (f : m ⟶ n) (g : X.obj (Opposite.op n)) :
+    stdSimplex.map f ≫ yonedaEquiv.symm g = yonedaEquiv.symm (X.map f.op g) := by
+  rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply, ← yonedaEquiv_naturality,
+    yonedaEquiv.apply_symm_apply]
 
 namespace Subcomplex
 
@@ -317,7 +341,7 @@ namespace stdSimplex
 lemma obj₀Equiv_symm_mem_face_iff
     {n : ℕ} (S : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     (obj₀Equiv.symm i) ∈ (face.{u} S).obj (op (.mk 0)) ↔ i ∈ S :=
-  ⟨fun h ↦ by simpa using h, by aesop⟩
+  ⟨fun h ↦ by simpa using! h, by aesop⟩
 
 lemma face_le_face_iff {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
     face.{u} S₁ ≤ face S₂ ↔ S₁ ≤ S₂ := by
@@ -340,9 +364,10 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
     refine ⟨Quiver.Hom.op
       (SimplexCategory.Hom.mk ((e.symm.toOrderEmbedding.toOrderHom.comp φ))), ?_⟩
     ext j : 1
-    simpa only [Subtype.ext_iff] using e.apply_symm_apply ⟨_, hx j⟩
+    simpa only [Subtype.ext_iff] using! e.apply_symm_apply ⟨_, hx j⟩
   · simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `S : Finset (Fin (n + 1))` is order isomorphic to `Fin (m + 1)`,
 then the face `face S` of `Δ[n]` is representable by `m`,
 i.e. `face S` is isomorphic to `Δ[m]`, see `stdSimplex.isoOfRepresentableBy`. -/
@@ -435,7 +460,7 @@ def nonDegenerateEquiv {n d : ℕ} :
     (Δ[n] : SSet.{u}).nonDegenerate d ≃ (Fin (d + 1) ↪o Fin (n + 1)) where
   toFun s := OrderEmbedding.ofStrictMono _ ((mem_nonDegenerate_iff_strictMono _).1 s.2)
   invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
-    simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
+    simpa [mem_nonDegenerate_iff_strictMono] using! s.strictMono⟩
   left_inv _ := by aesop
 
 instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
@@ -564,6 +589,7 @@ noncomputable def facePairIso {n : ℕ} (i j : Fin (n + 1)) (hij : i < j) :
   stdSimplex.isoOfRepresentableBy
     (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoPair i j hij))
 
+set_option backward.defeqAttrib.useBackward true in
 variable (n) in
 private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     Function.Bijective (fun (⟨x, hx⟩ : (Δ[n] : SSet.{u}).nonDegenerate m) ↦
@@ -606,6 +632,7 @@ lemma nonDegenerateEquiv'_iff {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate 
   dsimp [nonDegenerateEquiv']
   aesop
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `x` is a nondegenerate `d`-simplex of `Δ[n]`, this is the order isomorphism
 between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinality `d + 1`. -/
 @[no_expose] noncomputable def orderIsoOfNonDegenerate
@@ -639,6 +666,7 @@ lemma face_nonDegenerateEquiv' {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate
     face (nonDegenerateEquiv' x) = Subcomplex.ofSimplex x.val :=
   face_eq_ofSimplex.{u} _ _ (orderIsoOfNonDegenerate x)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma nonDegenerateEquiv'_symm_apply_mem {n d : ℕ}
     (S : { S : Finset (Fin (n + 1)) | S.card = d + 1 }) (i : Fin (d + 1)) :
@@ -724,10 +752,12 @@ lemma opObjEquiv_opObjEquiv_symm_apply {d n : ℕ} (f : (Δ[n] _⦋d⦌)) (i : F
     SSet.opObjEquiv (stdSimplex.opObjEquiv.{u}.symm f) i = (f i.rev).rev :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map_rev_map_op_apply {n d d' : ℕ} (f : ⦋d⦌ ⟶ ⦋d'⦌) (g : Δ[n] _⦋d'⦌) (i : Fin (d + 1)) :
     dsimp% (show Δ[n] _⦋d⦌ from (Δ[n] : SSet.{u}).map (rev.map f).op g : Δ[n] _⦋d⦌) i =
       g (f i.rev).rev := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite of `Δ[n]` is isomorphic to `Δ[n]`. -/
 @[simps! hom_app_hom_apply inv_app_hom_apply]
 def opIso (n : SimplexCategory) :
@@ -757,6 +787,7 @@ end Examples
 
 namespace Augmented
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
 @[simps]
@@ -770,5 +801,47 @@ noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
       right := terminal.from _ }
 
 end Augmented
+
+namespace Subcomplex
+
+variable {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌)
+
+/-- Given `x : X _⦋n⦌`, this is the epimorphism from `Δ[n]`
+to the subcomplex of `X` generated by `x`. -/
+def toOfSimplex : Δ[n] ⟶ ofSimplex x :=
+  Subcomplex.lift (yonedaEquiv.symm x) (by simp [range_eq_ofSimplex])
+
+@[reassoc (attr := simp)]
+lemma toOfSimplex_ι :
+    toOfSimplex x ≫ (ofSimplex x).ι = yonedaEquiv.symm x := rfl
+
+@[simp]
+lemma yonedaEquiv_toOfSimplex :
+    yonedaEquiv (toOfSimplex x) = ⟨x, mem_ofSimplex_obj x⟩ :=
+  yonedaEquiv.symm.injective (by cat_disch)
+
+set_option backward.defeqAttrib.useBackward true in
+instance : Epi (toOfSimplex x) := by
+  rw [← range_eq_top_iff]
+  ext m ⟨_, u, rfl⟩
+  simp only [range_eq_ofSimplex, yonedaEquiv_toOfSimplex, Subfunctor.top_obj,
+    Set.top_eq_univ, Set.mem_univ, iff_true]
+  refine ⟨u, ?_⟩
+  dsimp
+  ext
+  rw [← yonedaEquiv.right_inv x]
+  aesop
+
+lemma isIso_toOfSimplex_iff :
+    IsIso (toOfSimplex x) ↔ Mono (yonedaEquiv.symm x) := by
+  constructor
+  · intro
+    rw [← toOfSimplex_ι]
+    infer_instance
+  · intro h
+    have := mono_of_mono_fac (toOfSimplex_ι x)
+    apply isIso_of_mono_of_epi
+
+end Subcomplex
 
 end SSet

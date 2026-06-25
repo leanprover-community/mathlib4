@@ -19,7 +19,7 @@ formulas for this average:
 * `interval_average_eq_div`: `⨍ x in a..b, f x = (∫ x in a..b, f x) / (b - a)`;
 * `exists_eq_interval_average_of_measure`:
     `∃ c ∈ Ι a b, f c = ⨍ x in Ι a b, f x ∂μ`.
-* `exists_eq_interval_average_of_noAtoms`:
+* `exists_eq_interval_average_of_nullSingletonClass`:
     `∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ`.
 * `exists_eq_interval_average`:
     `∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x`.
@@ -78,16 +78,16 @@ theorem exists_eq_interval_average_of_measure
     isCompact_uIcc measurableSet_uIoc uIoc_subset_uIcc hμfin) hμfin hμ0
 
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-and `μ` has no atoms, then `∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ`. -/
-theorem exists_eq_interval_average_of_noAtoms
-    [NoAtoms μ] (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
-    ∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ := by
+and `μ` has value zero on singletons, then `∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ`. -/
+theorem exists_eq_interval_average_of_nullSingletonClass
+    [NullSingletonClass μ] (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤)
+    (hμ0 : μ (Ι a b) ≠ 0) : ∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ := by
   have hint : IntegrableOn f (Ι a b) μ := hf.integrableOn_of_subset_isCompact
     isCompact_uIcc measurableSet_uIoc uIoc_subset_uIcc hμfin
   have h : a ≠ b := by intro hab; simp [hab] at hμ0
   let s := uIoo a b
   have hs' : s ⊆ Ι a b := by intro x hx; rcases hx with ⟨h1, h2⟩; grind
-  have hs_ev : s =ᵐ[μ] Ι a b := by simpa using Ioo_ae_eq_Ioc
+  have hs_ev : s =ᵐ[μ] Ι a b := by simpa using! Ioo_ae_eq_Ioc
   have hμ0' : μ s ≠ 0 := by
     have hμ : μ s = μ (Ι a b) := by rw [measure_congr hs_ev]
     rwa [hμ]
@@ -95,10 +95,14 @@ theorem exists_eq_interval_average_of_noAtoms
     (hint.mono_set hs') (measure_ne_top_of_subset hs' hμfin) hμ0'
   exact ⟨c, hc, by rwa [← setAverage_congr hs_ev]⟩
 
+@[deprecated (since := "2026-06-09")]
+alias exists_eq_interval_average_of_noAtoms := exists_eq_interval_average_of_nullSingletonClass
+
 /-- The mean value theorem for integrals:
 There exists a point in an interval such that the mean of a continuous function over the interval
 equals the value of the function at the point. -/
 theorem exists_eq_interval_average
     (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
     ∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x :=
-  exists_eq_interval_average_of_noAtoms hf (by simp) (by simpa using sub_ne_zero.mpr hab.symm)
+  exists_eq_interval_average_of_nullSingletonClass hf (by simp)
+    (by simpa using sub_ne_zero.mpr hab.symm)

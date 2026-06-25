@@ -278,7 +278,7 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
   intro hG
   obtain ⟨p, hp⟩ := hG.exists_isHamiltonianCycle u
   refine hp.isHamiltonian_tail.isPath.isTrail.not_mem_support_of_not_reachable
-    (fun huv ↦ he.2 <| .trans ?_ huv) he.2 (hp.isHamiltonian_tail.mem_support v)
+    (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
 end SimpleGraph
