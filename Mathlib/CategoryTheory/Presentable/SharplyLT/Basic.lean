@@ -60,7 +60,7 @@ of `SharplyLT κ₁ κ₂` in the docstring of this file. -/
 public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalDirectedPoset
     (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalDirectedPoset κ₁) κ₂]
     {X : Type w} (hX : HasCardinalLT X κ₂) :
-    ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A := by
+    ∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y := by
   -- We write the partially ordered type `setCardinalLT κ₁ X` of subsets
   -- of `X` of cardinality `< κ₁` as a `κ₂`-filtered colimit (with index
   -- category `J`) of `κ₂`-presentable objects (i.e. partially ordered
@@ -107,17 +107,28 @@ of `Sharply κ₁ κ₂` which appear in the docstring of this file. -/
 
 variable (h₀ : κ₁ < κ₂)
   {X : Type w} [PartialOrder X]
+  -- The variables `Y`, `hY` and `hY'` below can be obtained by applying
+  -- the `choose` tactic to an assumption of the form
+  -- `∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y)`
+  -- e.g. when the condition (iii) in the docstring of this file is satisfied
   (Y : ∀ (B : Set X) (_ : HasCardinalLT B κ₂), Set (SetCardinalLT κ₁ B))
   (hY : ∀ (B : Set X) (hB : HasCardinalLT B κ₂), HasCardinalLT (Y B hB) κ₂)
   (hY' : ∀ (B : Set X) (hB : HasCardinalLT B κ₂), IsCofinal (Y B hB))
+  -- In the proof of `exists_isCardinalFiltered_set_of_exists_cofinal` below,
+  -- we shall show that we can find such `m` and `hm`, i.e.
+  -- for any `B : Set X`, `hB : HasCardinalLT B κ₂`, `C : SetCardinalLT κ₁ B`,
+  -- if `C ∈ Y B hB`, then there exists `m : X` such that all the elements
+  -- of `C` are less than or equal to `m`.
   (m : ∀ (B : Set X) (hB : HasCardinalLT B κ₂) (C : SetCardinalLT κ₁ B),
     C ∈ Y B hB → X)
   (hm : ∀ (B : Set X) (hB : HasCardinalLT B κ₂) (C : SetCardinalLT κ₁ B)
     (hC : C ∈ Y B hB) (b : B), b ∈ C.val → b ≤ m B hB C hC)
   (A : Set X) (hA : HasCardinalLT A κ₂)
 
+/-- The subset of `X` given by the union over all `C : Y B hB` of
+`C` and `{m B hB C _}`. -/
 def φ₀ (B : Set X) (hB : HasCardinalLT B κ₂) : Set X :=
-    ⋃ (C : Y B hB), Subtype.val '' C.val.val ∪ {m B hB _ C.prop}
+    ⋃ (C : Y B hB), Subtype.val '' C.val.val ∪ {m B hB C C.prop}
 
 omit [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] in
 include hY' hm in
@@ -131,6 +142,7 @@ lemma hφ₀ (B : Set X) (hB : HasCardinalLT B κ₂) {T : Type w} (f : T → B)
     fun t ↦ hm B hB C hC (f t) (hC' (by simp [C₀]))⟩
 
 open Classical in
+/-- This coincides with `φ₀` when `HasCardinalLT B κ₂` holds. -/
 def φ (B : Set X) : Set X :=
   if hB : HasCardinalLT B κ₂ then φ₀ Y m B hB else B
 
@@ -160,6 +172,8 @@ noncomputable abbrev orderBot : OrderBot κ₁.ord.ToType :=
 
 include h₀ hA hY in
 omit [PartialOrder X] in
+/-- By iterating `φ` to the power `j : κ₁.ord.ToType` and evaluating
+on `A`, we get a subset that is of cardinality `< κ₂`. -/
 lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
     HasCardinalLT (transfiniteIterate (φ Y m) j A :) κ₂ := by
   induction j using SuccOrder.limitRecOn with
@@ -227,7 +241,7 @@ open existsIsCardinalFilteredSetOfExistsCofinal in
 of `SharplyLT κ₁ κ₂` in the docstring of this file. -/
 public lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
     (h : ∀ (X : Type w) (_ : HasCardinalLT X κ₂),
-    ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A)
+      ∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y)
     {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
     (A : Set X) (hA : HasCardinalLT A κ₂) :
     ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂ := by
@@ -239,7 +253,10 @@ public lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ�
         fun b hb ↦ leOfHom (IsCardinalFiltered.toMax
           (fun (c : C.val) ↦ c.val.val) C.prop ⟨_, hb⟩)⟩
   choose m hm using hY''
-  exact ⟨_, subset_iUnion Y m A,
+  -- The expected subset `B` is obtained as the union over
+  -- all `j : κ₁.ord.ToType` of the transfinite iterations
+  -- of the map `φ`
+  exact ⟨⋃ j, transfiniteIterate (φ Y m) j A, subset_iUnion Y m A,
     isCardinalFiltered_iUnion h₀ Y hY hY' m hm A hA,
     hasCardinalLT_iUnion _ (by simpa [hasCardinalLT_iff_cardinal_mk_lt])
       (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA)⟩
