@@ -178,12 +178,15 @@ section induction
 
 variable (φ : M →ₗ[R] R) (a : R)
 
+/-- Abbreviation for `x ↦ φ x.1 + a • x.2`. -/
 abbrev appendMap : M × R →ₗ[R] R := φ.comp (LinearMap.fst R M R) + a • (LinearMap.snd R M R)
 
 variable (R M) in
+/-- Abbreviation for equivalence between zero term of Koszul complex. -/
 noncomputable abbrev XZeroEquiv : ⋀[R]^0 M ≃ₗ[R] ⋀[R]^0 (M × R):=
   (exteriorPower.zeroEquiv R _).trans (exteriorPower.zeroEquiv R _).symm
 
+/-- Caratcerization of differential under `exteriorPowerProdEquivProd` at zero degree. -/
 lemma koszulComplexAux_eq_zero :
     (koszulComplexAux (appendMap φ a) 0).comp (exteriorPowerProdEquivProd R M 0).toLinearMap =
       (XZeroEquiv R M).toLinearMap.comp ((koszulComplexAux φ 0).comp (LinearMap.fst R _ _) +
@@ -227,6 +230,7 @@ lemma exteriorPowerProdEquivProd_apply_inr_eq_snoc (k : ℕ) (v : Fin k → M) :
     ExteriorAlgebra.ιMulti_mul_ιMulti, Fin.append_right_eq_snoc]
   simp
 
+/-- Caratcerization of differential under `exteriorPowerProdEquivProd` at positive degree. -/
 lemma koszulComplexAux_eq_pos (n : ℕ) :
     (koszulComplexAux (appendMap φ a) (n + 1)).comp
       (exteriorPowerProdEquivProd R M (n + 1)).toLinearMap =
@@ -265,11 +269,13 @@ lemma koszulComplexAux_eq_pos (n : ℕ) :
       map_add, map_zsmul]
     simp [appendMap, ← Int.cast_smul_eq_zsmul R ((-1) ^ (n + 1)), smul_smul]
 
-noncomputable def fromOfListHomZero :
+/-- The zero hom of `koszulComplex.toAppendMap`. -/
+noncomputable abbrev fromOfListHomZero :
     (koszulComplex φ).X 0 ⟶ (koszulComplex (appendMap φ a)).X 0 :=
   ModuleCat.ofHom (XZeroEquiv R M).toLinearMap
 
-noncomputable def fromOfListHomSucc (i : ℕ) :
+/-- The `i + 1`-th hom of `koszulComplex.toAppendMap`. -/
+noncomputable abbrev fromOfListHomSucc (i : ℕ) :
     (koszulComplex φ).X (i + 1) ⟶ (koszulComplex (appendMap φ a)).X (i + 1) :=
   ModuleCat.ofHom ((exteriorPowerProdEquivProd R M i).toLinearMap.comp (LinearMap.inl R _ _))
 
@@ -287,6 +293,8 @@ lemma from_ofList_hom_comm_pos (i : ℕ) :
   have h := LinearMap.congr_fun (koszulComplexAux_eq_pos φ a i) (y, 0)
   simpa [d_eq_aux, fromOfListHomSucc] using! h
 
+/-- The homomorphism given by inclusion to the first component
+using `exteriorPowerProdEquivProd`. -/
 noncomputable def toAppendMap : koszulComplex φ ⟶ koszulComplex (appendMap φ a) :=
   ChainComplex.ofHom
     (fun i ↦
@@ -298,12 +306,11 @@ noncomputable def toAppendMap : koszulComplex φ ⟶ koszulComplex (appendMap φ
       | 0 => from_ofList_hom_comm_zero φ a
       | i + 1 => from_ofList_hom_comm_pos φ a i)
 
+/-- Augumentation of Koszul complex by zero object. -/
 noncomputable abbrev upOne : ChainComplex (ModuleCat R) ℕ :=
   (koszulComplex φ).augment (X := ModuleCat.of R PUnit) 0 (by simp)
 
-/--
-The canonical isomorphism of homology for augumenting with zero object.
--/
+/-- The canonical isomorphism of homology for augumenting with zero object. -/
 noncomputable def upOneHomologyIso (i : ℕ) :
     (upOne φ).homology (i + 1) ≅ (koszulComplex φ).homology i :=
   match i with
@@ -318,7 +325,8 @@ noncomputable def upOneHomologyIso (i : ℕ) :
     ((upOne φ).homologyIsoSc' (n + 3) (n + 2) (n + 1) (by simp) (by simp)) ≪≫
       ((koszulComplex φ).homologyIsoSc' (n + 2) (n + 1) n (by simp) (by simp)).symm
 
-noncomputable def toUpOneHom (i : ℕ) :
+/-- Auxiliary definition for `toUpOne` -/
+noncomputable abbrev toUpOneHom (i : ℕ) :
     (koszulComplex (appendMap φ a)).X (i + 1) ⟶ (upOne φ).X (i + 1) :=
   ModuleCat.ofHom ((LinearMap.snd R _ _).comp (exteriorPowerProdEquivProd R M i).symm.toLinearMap)
 
@@ -338,6 +346,8 @@ lemma to_self_hom_comm (i : ℕ) :
   rw [h, LinearEquiv.symm_apply_apply]
   simp
 
+/-- The homomorphism given by projection to the second component
+using `exteriorPowerProdEquivProd`. -/
 noncomputable def toUpOne : koszulComplex (appendMap φ a) ⟶ upOne φ :=
   ChainComplex.ofHom
     (fun i ↦
@@ -363,6 +373,7 @@ lemma toAppendMap_comp_toUpOne_eq_zero : toAppendMap φ a ≫ toUpOne φ a = 0 :
       ((exteriorPowerProdEquivProd R M n) ((LinearMap.inl R _ _) y))) = 0
     simp [LinearEquiv.symm_apply_apply]
 
+/-- The short complex given by `toAppendMap` and `toUpOne` -/
 noncomputable def shortComplexProd : ShortComplex (ChainComplex (ModuleCat R) ℕ) where
   f := toAppendMap φ a
   g := toUpOne φ a
@@ -388,6 +399,7 @@ lemma shortComplexProd_shortExact : (shortComplexProd φ a).ShortExact := by
     exact ⟨(e.symm x₂).1, e.eq_symm_apply.mp this.symm⟩
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Characterization of connecting `δ` of `koszulComplex.shortComplexProd`. -/
 lemma shortComplexProd_δ_eq (i : ℕ) :
     (shortComplexProd_shortExact φ a).δ (i + 1) i rfl =
       ((-1 : R) ^ i * a) • (upOneHomologyIso φ i).hom := by
@@ -472,6 +484,7 @@ section H0
 
 variable (φ : M →ₗ[R] R)
 
+/-- The equivalence between zeroth homology and cokernel of the differential. -/
 noncomputable def zeroHomologyLinearEquivAux : (koszulComplex φ).homology 0 ≃ₗ[R]
     (⋀[R]^0 M) ⧸ (koszulComplexAux φ 0).range :=
   (((koszulComplex φ).isoHomologyι₀.trans
@@ -489,6 +502,8 @@ lemma koszulComplexAux_zero_range_map :
   rw [← LinearMap.range_comp, equiv_comp_koszulComplexAux_zero_eq]
   simp
 
+/-- Zeroth homology of Koszul complex generated by a list of elements is isomorphic to
+the ring quotient by these elements. -/
 noncomputable def zeroHomologyOfListLinearEquiv (l : List R) :
     (ofList l).homology 0 ≃ₗ[R] R ⧸ Ideal.ofList l :=
   (zeroHomologyLinearEquivAux _).trans (Submodule.Quotient.equiv _ _ (exteriorPower.zeroEquiv R _)
@@ -510,6 +525,7 @@ def snocLinearEquiv (n : ℕ) : (Fin (n + 1) → R) ≃ₗ[R] (Fin n → R) × R
   left_inv f := Fin.snoc_init_self f
   right_inv p := Prod.ext (by simp) (by simp)
 
+/-- Isomorphism on module level for `ofListIsoOfEq` -/
 def ofListIsoOfEqAux {rs' rs : List R} {a : R} (eq : rs = rs' ++ [a]) :
     (Fin rs.length → R) ≃ₗ[R] (Fin rs'.length → R) × R :=
   (LinearEquiv.funCongrLeft R R (finCongr (by simp [eq]))).trans (snocLinearEquiv R rs'.length)
@@ -533,6 +549,8 @@ lemma ofListIsoOfEqAux_comp {rs' rs : List R} {a : R} (eq : rs = rs' ++ [a]) :
     · simp [mul_comm, Fin.last]
   simpa [ofListIsoOfEqAux, appendMap]
 
+/-- Given `rs = rs' ++ [a]`, the Koszul complex generated by `rs` is isomorphic to the one
+defined by `appendMap (Fintype.linearCombination R rs'.get) a` via `ofListIsoOfEqAux`. -/
 noncomputable def ofListIsoOfEq {rs' rs : List R} {a : R} (eq : rs = rs' ++ [a]) : ofList rs ≅
     koszulComplex (appendMap (Fintype.linearCombination R rs'.get) a) :=
   isoOfEquiv _ (ofListIsoOfEqAux eq) _ (ofListIsoOfEqAux_comp eq)
