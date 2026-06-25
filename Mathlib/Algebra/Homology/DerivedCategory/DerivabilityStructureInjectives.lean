@@ -87,7 +87,7 @@ def fibrantObjectEquivalence :
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-/-- The localizer morphism (relatively to quasi-isomorphisms) that is
+/-- The localizer morphism (relative to quasi-isomorphisms) that is
 given by the equivalence of categories
 `CochainComplex.Plus (InjectiveObject C) ≌ FibrantObject (CochainComplex.Plus C)`. -/
 @[simps]
