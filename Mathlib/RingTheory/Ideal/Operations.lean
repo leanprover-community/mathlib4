@@ -438,7 +438,7 @@ theorem span_singleton_mul_left_inj [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
 theorem mul_le_inf [I.IsTwoSided] : I * J ≤ I ⊓ J :=
   mul_le.2 fun r hri s hsj => ⟨I.mul_mem_right s hri, J.mul_mem_left r hsj⟩
 
-lemma inf_ne_bot_of_ne_bot [NoZeroDivisors R] {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided]
+lemma inf_ne_bot_of_ne_bot [NoZeroDivisors R] {I J : Ideal R} [I.IsTwoSided]
     (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     I ⊓ J ≠ ⊥ := by
   grw [← bot_lt_iff_ne_bot, ← mul_le_inf, bot_lt_iff_ne_bot, Ne, mul_eq_bot]
