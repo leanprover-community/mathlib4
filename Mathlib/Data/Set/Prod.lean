@@ -705,11 +705,11 @@ theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
 
 @[simp]
 theorem prod_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by
-  ext ⟨x, y⟩; simp only [mem_diff, mem_prod, mem_offDiag, mem_diag]; grind
+  ext ⟨x, y⟩; simp only [mem_sdiff, mem_prod, mem_offDiag, mem_diag]; grind
 
 @[simp]
 theorem prod_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by
-  ext ⟨x, y⟩; simp only [mem_diff, mem_prod, mem_diag, mem_offDiag]; grind
+  ext ⟨x, y⟩; simp only [mem_sdiff, mem_prod, mem_diag, mem_offDiag]; grind
 
 end OffDiag
 
