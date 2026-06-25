@@ -410,8 +410,8 @@ theorem Ideal.IsPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDomain R]
   rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero (pow_ne_zero n hI0))] at hI
   rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero hI0), ← orderOf_eq_one_iff,
     ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
-    refine ⟨?_, orderOf_dvd_card⟩
-    rwa [orderOf_dvd_iff_pow_eq_one, ← map_pow, SubmonoidClass.mk_pow]
+  refine ⟨?_, orderOf_dvd_card⟩
+  rwa [orderOf_dvd_iff_pow_eq_one, ← map_pow, SubmonoidClass.mk_pow]
 
 theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ ↔
