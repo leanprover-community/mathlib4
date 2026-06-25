@@ -692,7 +692,7 @@ lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U
   simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
   aesop
 
-lemma exists_nhd_mem_support_implies_specializes_of_mem_support_within
+lemma eventually_nhdsWithin_support_specializes
     [Zero Y] (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
     ∀ᶠ x in 𝓝 p, x ∈ f.support → x ⤳ p := by
   rw [eventually_nhds_iff]
