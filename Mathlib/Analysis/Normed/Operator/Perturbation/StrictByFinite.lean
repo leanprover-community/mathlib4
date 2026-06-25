@@ -68,6 +68,12 @@ We prove the theorem under the assumptions that
 - `u` is surjective
 - `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
 - `map u A` is closed
+
+The strategy of proof is to decompose both spaces into complementary subspace,
+with one of the spaces being finite dimensional and `u` preserving this decomposition.
+
+The result then follows from `AddMonoidHom.isStrictMap_prodMap_iff` and
+`ContinuousLinearMap.isStrictMap_of_finiteDimensional`.
 -/
 
 theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
@@ -89,8 +95,8 @@ theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
         S_compl_A.symm.inf_eq_bot, Submodule.map_bot]
     · rw [codisjoint_iff, ← Submodule.map_sup, S_compl_A.sup_eq_top, Submodule.map_top,
         h_range]
-  -- Because `A` (resp. `map u A`) is closed and `S` (resp `map u S`) is closed, `A` and `S`
-  -- (resp `map u A` and `map u S`) are in fact *topological* complements of each other.
+  -- Because `A` (resp. `map u A`) is closed and `S` (resp `map u S`) has finite dimension,
+  -- `A` and `S` (resp `map u A` and `map u S`) are in fact *topological* complements of each other.
   replace S_compl_A : IsTopCompl S A :=
     S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
