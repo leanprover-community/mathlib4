@@ -850,7 +850,7 @@ theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [Meas
 /-! ### Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the measure being finite at the endpoint, while
-the unprimed ones use `[NoAtoms μ]`.
+the unprimed ones use `[NullSingletonClass μ]`.
 -/
 
 
@@ -908,7 +908,7 @@ theorem integrableOn_Iic_iff_integrableOn_Iio'
     IntegrableOn f (Iic b) μ ↔ IntegrableOn f (Iio b) μ := by
   rw [← Iio_union_right, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ :=
