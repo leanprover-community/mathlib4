@@ -68,6 +68,12 @@ We prove the theorem under the assumptions that
 - `u` is surjective
 - `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
 - `map u A` is closed
+
+The strategy of proof is to decompose both spaces into complementary subspace,
+with one of the spaces being finite dimensional and `u` preserving this decomposition.
+
+The result then follows from `AddMonoidHom.isStrictMap_prodMap_iff` and
+`ContinuousLinearMap.isStrictMap_of_finiteDimensional`.
 -/
 
 theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
@@ -89,8 +95,8 @@ theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
         S_compl_A.symm.inf_eq_bot, Submodule.map_bot]
     · rw [codisjoint_iff, ← Submodule.map_sup, S_compl_A.sup_eq_top, Submodule.map_top,
         h_range]
-  -- Because `A` (resp. `map u A`) is closed and `S` (resp `map u S`) is closed, `A` and `S`
-  -- (resp `map u A` and `map u S`) are in fact *topological* complements of each other.
+  -- Because `A` (resp. `map u A`) is closed and `S` (resp `map u S`) has finite dimension,
+  -- `A` and `S` (resp `map u A` and `map u S`) are in fact *topological* complements of each other.
   replace S_compl_A : IsTopCompl S A :=
     S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
@@ -107,19 +113,14 @@ theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   set Φ : (S × A) ≃L[𝕜] E := prodEquivOfIsTopCompl S A S_compl_A
   set Ψ : (map u.toLinearMap S × map u.toLinearMap A) ≃L[𝕜] F :=
     prodEquivOfIsTopCompl _ _ uS_compl_uA
-  -- TODO: after PR #39476 we will be able to use `Φ.symm.isHomeomorph`
-  have Φ_symm_homeo : IsHomeomorph Φ.symm := Φ.symm.toHomeomorph.isHomeomorph
-  -- TODO: after PR #39476 we will be able to use `Ψ.isHomeomorph`
-  have Ψ_homeo : IsHomeomorph Ψ := Ψ.toHomeomorph.isHomeomorph
-  have uₛ_surj : Surjective uₛ := surjective_mapsTo_image_restrict _ _
-  have uₐ_surj : Surjective uₐ := surjective_mapsTo_image_restrict _ _
   have u_eq : u = Ψ ∘ (uₛ.prodMap uₐ) ∘ Φ.symm := by
     ext x
     simp [Φ, Ψ, uₛ, uₐ, ← map_add, projection_add_projection_eq_self]
   have u_restr_eq : u.domRestrict A = (map u.toLinearMap A).subtypeL ∘ uₐ := rfl
   suffices IsStrictMap (uₛ.prodMap uₐ) ↔ IsStrictMap uₐ by
     rwa [u_restr_eq, u_eq, ← (isEmbedding_subtypeL _).isStrictMap_iff,
-      ← Ψ_homeo.isEmbedding.isStrictMap_iff, ← Φ_symm_homeo.isQuotientMap.isStrictMap_iff]
+      ← Ψ.isHomeomorph.isEmbedding.isStrictMap_iff,
+      ← Φ.symm.isHomeomorph.isQuotientMap.isStrictMap_iff]
   -- TODO: we should think of a way to avoid this
   change IsStrictMap (uₛ.toAddMonoidHom.prodMap uₐ.toAddMonoidHom) ↔ IsStrictMap uₐ
   simp_rw [AddMonoidHom.isStrictMap_prodMap_iff, LinearMap.toAddMonoidHom_coe, coe_coe,
@@ -326,7 +327,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
   obtain ⟨S, A_compl_S⟩ := A_compl.exists_isTopCompl
   let Φ : (F ⧸ A) ≃L[𝕜] S := A.quotientEquivOfIsTopCompl S A_compl_S
   let i : S →L[𝕜] F := S.subtypeL
-  -- have i_clemb : IsClosedEmbedding i := S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed
+  have i_clemb : IsClosedEmbedding i := S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed
   let p : F →L[𝕜] F := S.projectionL A A_compl_S.symm
   have eq : i ∘ Φ ∘ A.mkQ = p := rfl
   -- TODO: The following should be extracted to API about `≈`.
@@ -340,8 +341,8 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
           ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid _ _ this
     _ ↔ (IsStrictMap (i ∘ Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (i ∘ Φ ∘ A.mkQ ∘ u))) := by
           simp_rw [← eq, Function.comp_assoc]
-    _ ↔ (IsStrictMap (Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (Φ ∘ A.mkQ ∘ u))) := by sorry
-          -- rw [i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp]
+    _ ↔ (IsStrictMap (Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (Φ ∘ A.mkQ ∘ u))) := by
+          rw [i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp]
     _ ↔ (IsStrictMap (A.mkQ ∘ u) ∧ IsClosed (range (A.mkQ ∘ u))) := by
           rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
               ← range_comp, Φ.coe_toHomeomorph]
