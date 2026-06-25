@@ -166,7 +166,7 @@ private theorem smul_def [Fact ((p.map (algebraMap F E)).Splits)] (ϕ : p.Gal) (
   rfl
 
 theorem smul_rootsEquivRoots [Fact (map (algebraMap F E) p).Splits]
-    [Fact (map (algebraMap F E') p).Splits] {g : p.Gal} (x : p.rootSet E) :
+    [Fact (map (algebraMap F E') p).Splits] (g : p.Gal) (x : p.rootSet E) :
     g • rootsEquivRoots p E E' x = rootsEquivRoots p E E' (g • x) := by
   simp [rootsEquivRoots, smul_def]
 
