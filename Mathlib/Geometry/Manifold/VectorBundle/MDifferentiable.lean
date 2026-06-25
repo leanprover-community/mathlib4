@@ -687,8 +687,7 @@ lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle �
   have : CMDiff[t.baseSet] k (fun (_x : M) ↦ w) := contMDiffOn_const
   exact this.congr (fun x hx ↦ by simp [extend, t, w, hx])
 
-lemma contMDiffAt_extend' {x : M} (σ₀ : V x) :
-    CMDiffAt k (T% (extend F σ₀)) x := by
+protected lemma contMDiffAt_extend {x : M} (σ₀ : V x) : CMDiffAt k (T% (extend F σ₀)) x := by
   rw [contMDiffAt_section]
   set t := trivializationAt F V x
   let w : F := (t ⟨x, σ₀⟩).2
@@ -699,6 +698,7 @@ lemma contMDiffAt_extend' {x : M} (σ₀ : V x) :
   · intro x hx
     simp [extend, t, hx, w]
   · exact FiberBundle.mem_baseSet_trivializationAt' x
+@[deprecated (since := "2026-06-25")] alias contMDiffAt_extend' := contMDiffAt_extend
 
 lemma exists_mdifferentiableOn_extend [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
     [ContMDiffVectorBundle 1 F V I] {x₀ : M} (σ₀ : V x₀) :
@@ -706,9 +706,8 @@ lemma exists_mdifferentiableOn_extend [∀ x, Module 𝕜 (V x)] [VectorBundle �
   obtain ⟨s, hs, hsσ⟩ := exists_contMDiffOn_extend (k := 1) I F σ₀
   exact ⟨s, hs, hsσ.mdifferentiableOn one_ne_zero⟩
 
-lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) :
-    MDiffAt (T% (extend F σ₀)) x :=
-  (contMDiffAt_extend' (k := 1) I F σ₀).mdifferentiableAt one_ne_zero
+protected lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) : MDiffAt (T% (extend F σ₀)) x :=
+  (FiberBundle.contMDiffAt_extend (k := 1) I F σ₀).mdifferentiableAt one_ne_zero
 
 variable (V) in
 lemma _root_.VectorBundle.injective_eval_mdifferentiableAt_sec [∀ x, Module 𝕜 (V x)]
@@ -718,17 +717,17 @@ lemma _root_.VectorBundle.injective_eval_mdifferentiableAt_sec [∀ x, Module �
         fun (Z : Π x, V x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) := by
   intro X X' h
   ext σ₀
-  simpa using congr($h (extend F σ₀) (mdifferentiableAt_extend ..))
+  simpa using congr($h (extend F σ₀) (FiberBundle.mdifferentiableAt_extend ..))
 
 variable (V) in
-lemma _root_.VectorBundle.injective_eval_contMDiffAt_sec {n : WithTop ℕ∞} [∀ x, Module 𝕜 (V x)]
+lemma _root_.VectorBundle.injective_eval_contMDiffAt_sec [∀ x, Module 𝕜 (V x)]
     (W : Type*) [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
     Function.Injective
       (fun A : V x →L[𝕜] W ↦
-        fun (Z : Π x, V x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) := by
+        fun (Z : Π x, V x) (_ : CMDiffAt k (T% Z) x) ↦ A (Z x)) := by
   intro X X' h
   ext σ₀
-  simpa using congr($h (extend F σ₀) (contMDiffAt_extend' ..))
+  simpa using congr($h (extend F σ₀) (FiberBundle.contMDiffAt_extend ..))
 
 end FiberBundle
 end extend
