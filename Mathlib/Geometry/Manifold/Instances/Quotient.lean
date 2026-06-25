@@ -106,7 +106,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       ((Homeomorph.isOpen_image _).mpr (πinvy.open_target.inter φy.open_source))
 
     have is_open_t : IsOpen t := φx.isOpen_image_of_subset_source is_open_Up'
-      (Subset.trans inter_subset_left inter_subset_right)
+      (inter_subset_left.trans inter_subset_right)
 
     have h_in_t : h ∈ t := by
       refine ⟨φx.symm h, ?_, φx.right_inv hh1⟩
