@@ -977,11 +977,11 @@ noncomputable def ofSurjective (f : α ↪o β) (hf : Function.Surjective f) : �
 /-- Surjective order embeddings are equivalent to order isomorphisms. -/
 @[simps apply symm_apply]
 noncomputable def equivEmbeddingSurjective :
-    { f : α ↪o β // Function.Surjective f } ≃ (α ≃o β) where
-  toFun f := ofSurjective f f.prop
-  invFun f := ⟨f, f.surjective⟩
-  left_inv _ := rfl
-  right_inv _ := by ext; rfl
+    α ≃o β ≃ { f : α ↪o β // Function.Surjective f } where
+  toFun f := ⟨f, f.surjective⟩
+  invFun f := ofSurjective f f.prop
+  left_inv _ := by ext; rfl
+  right_inv _ := rfl
 
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
