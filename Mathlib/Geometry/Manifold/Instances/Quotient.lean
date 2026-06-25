@@ -132,7 +132,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       refine ⟨⟨hh2, OpenPartialHomeomorph.map_target φx hh1⟩, ?_⟩
       use πinvy (πinvx.symm (φx.symm h))
       refine ⟨⟨OpenPartialHomeomorph.map_source _ hh3, hh4⟩, ((Homeomorph.smul g0).injective ?_)⟩
-      simp only [Homeomorph.smul_apply, smul_inv_smul, hg0]
+      simp [hg0]
 
     refine ⟨t, is_open_t, h_in_t, ?_⟩
     set f := (φx.symm.trans ((πinvx.symm.trans πinvy).trans φy))
