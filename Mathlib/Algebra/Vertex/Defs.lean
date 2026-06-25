@@ -110,7 +110,7 @@ theorem coeff_zero_if_lt_order (a b : V) (n : ℤ) (h : n < order Y a b) :
 
 theorem coeff_nonzero_at_order (a b : V) (h : Y a b ≠ 0) :
     HVertexOperator.coeff (Y a) (order Y a b) b ≠ 0 :=
-  HahnSeries.coeff_order_eq_zero.not.mpr h
+  HahnSeries.coeff_order_eq_zero.not.mpr <| ne_of_apply_ne HahnModule.mk fun hc ↦ id h.symm hc.symm
 
 theorem ncoeff_zero_if_neg_order_leq (a b : V) (n : ℤ) (h : -order Y a b ≤ n) :
     ncoeff (Y a) n b = 0 := by
@@ -176,7 +176,8 @@ def IsLocal (a b : V) : Prop :=
 -- was Borcherds_sum_2 R a b c r s t + Borcherds_sum_3 R a b c r s t = 0
 -- weak associativity needs to be changed to the vertex operator definition.
 -/
-/-- The weak associativity property for vertex algebras. -/
+/-- The weak associativity property for vertex algebras, asserting
+`x^N Y(Y(a,x)b,y)c = x^N Y(a,x) Y(b,x + y)c`. -/
 def weak_associativity (a b c : V) (r s t : ℤ) : Prop :=
   Borcherds_sum_1 Y a b c r s t = Borcherds_sum_2 Y a b c r s t
 
@@ -195,7 +196,7 @@ variable {R : Type*} {V : Type*} [CommRing R] [AddCommGroupWithOne V] [Module R 
 /-- A field is creative with respect to the unit vector `1` if evaluating at `1` yields a regular
 series. -/
 def IsCreative (A : VertexOperator R V) : Prop :=
-  0 ≤ HahnSeries.order (A 1)
+  0 ≤ HahnSeries.order (A 1).carrier
 
 /-- The state attached to a creative field is its `z^0`-coefficient at `1`. We omit the creative
 hypothesis. -/

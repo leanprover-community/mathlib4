@@ -22,11 +22,11 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 ## Main results
  * Composition rule for Hasse derivatives.
  * Comparison between Hasse derivatives and iterated derivatives.
+ * residue products with identity give Hasse derivatives.
  * locality at order `≤ n` implies locality at order `≤ n + m`.
  * Basic results on residue products
 
 ## TODO:
-* residue products with identity give Hasse derivatives.
 * Dong's lemma : pairwise locality implies locality with residue products.
 * API for SMul by integer powers of suitable MVPolynomials, like `(X i) - (X j)`
 
@@ -75,37 +75,41 @@ theorem coeff_eq_ncoeff (A : VertexOperator R V)
     (n : ℤ) : HVertexOperator.coeff A n = A[[-n - 1]] := by
   simp [ncoeff]
 
+theorem ncoeff_apply_apply (A : VertexOperator R V) (n : ℤ) (v : V) :
+    (ncoeff A n) v = (A v).carrier.coeff (-n - 1) := by
+  rw [ncoeff_apply, coeff_apply_apply]
+
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A[[n]]) x = 0 := by
+    (h : -n - 1 < (A x).carrier.order) : (A[[n]]) x = 0 := by
   simp only [ncoeff, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
 theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : n < HahnSeries.order ((HahnModule.of R).symm (A x))) :
+    (h : n < (A x).carrier.order) :
     HVertexOperator.coeff A n x = 0 := by
   rw [coeff_eq_ncoeff, ncoeff_eq_zero_of_lt_order A (-n - 1) x]
   lia
 
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
-noncomputable def of_coeff (f : ℤ → Module.End R V)
+noncomputable def ofCoeff (f : ℤ → Module.End R V)
     (hf : ∀ x, BddBelow (Function.support fun y ↦ f y x)) : VertexOperator R V :=
-  HVertexOperator.of_coeff f fun x ↦ (BddBelow.isWF (hf x)).isPWO
+  HVertexOperator.ofCoeff f fun x ↦ (BddBelow.isWF (hf x)).isPWO
 
 @[simp]
-theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
+theorem ofCoeff_apply_coeff (f : ℤ → Module.End R V)
     (hf : ∀ x, BddBelow (Function.support fun y ↦ f y x)) (x : V) (n : ℤ) :
-    ((HahnModule.of R).symm ((of_coeff f hf) x)).coeff n = (f n) x := by
+    ((ofCoeff f hf) x).carrier.coeff n = (f n) x := by
   rfl
 
 @[simp]
-theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
+theorem ncoeff_ofCoeff (f : ℤ → Module.End R V)
     (hf : ∀ x, BddBelow (Function.support fun y ↦ f y x)) (n : ℤ) :
-    (of_coeff f hf)[[n]] = f (-n - 1) := by
+    (ofCoeff f hf)[[n]] = f (-n - 1) := by
   ext v
-  rw [ncoeff_apply, coeff_apply_apply, of_coeff_apply_coeff]
+  rw [ncoeff_apply, coeff_apply_apply, ofCoeff_apply_coeff]
 
-instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
+instance : One (VertexOperator R V) :=
   ⟨(HahnModule.lof R (Γ := ℤ) (V := V)) ∘ₗ HahnSeries.single.linearMap (0 : ℤ)⟩
 
 @[simp]
@@ -115,35 +119,28 @@ theorem one_apply (x : V) :
 
 @[simp]
 theorem one_ncoeff_neg_one : (1 : VertexOperator R V) [[-1]] = LinearMap.id := by
-  ext
-  rw [show -1 = - 0 - 1 by omega, ← coeff_eq_ncoeff, coeff_apply_apply, one_apply,
-    Equiv.symm_apply_apply, HahnSeries.coeff_single_same, LinearMap.id_apply]
+  ext; simp [ncoeff_apply_apply]
 
 theorem one_coeff_zero : HVertexOperator.coeff (1 : VertexOperator R V) 0 = LinearMap.id := by
   ext; simp
 
 @[simp]
-theorem one_ncoeff_ne_neg_one {n : ℤ} (hn : n ≠ -1) :
-    (1 : VertexOperator R V) [[n]] = 0 := by
-  ext
-  rw [LinearMap.zero_apply, show n = -(-n - 1) - 1 by omega, ← coeff_eq_ncoeff, coeff_apply_apply,
-    one_apply, Equiv.symm_apply_apply, HahnSeries.coeff_single_of_ne (show -n - 1 ≠ 0 by omega)]
+theorem one_ncoeff_ne_neg_one {n : ℤ} (hn : n ≠ -1) : (1 : VertexOperator R V) [[n]] = 0 := by
+  ext; simp [ncoeff_apply_apply, HahnSeries.coeff_single_of_ne (show -n - 1 ≠ 0 by lia)]
 
 theorem one_coeff_of_ne {n : ℤ} (hn : n ≠ 0) :
     HVertexOperator.coeff (1 : VertexOperator R V) n = 0 := by
-  simp [(show -n - 1 ≠ -1 by omega)]
+  simp [(show -n - 1 ≠ -1 by lia)]
 
 section HasseDerivative
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `k`th Hasse derivative of a vertex operator `∑ A_i X^i` is `∑ (i.choose k) A_i X^(i-k)`.
 That is, it sends a vector to the `k`th Hasse derivative of the corresponding Laurent series.
 It satisfies `k! * (hasseDeriv k A) = derivative^[k] A`. -/
 @[simps]
 def hasseDeriv (k : ℕ) : VertexOperator R V →ₗ[R] VertexOperator R V where
   toFun A :=
-    { toFun := fun (x : V) => HahnModule.of R
-        (LaurentSeries.hasseDeriv R k ((HahnModule.of R).symm (A x)))
+    { toFun := fun (x : V) => HahnModule.of R (LaurentSeries.hasseDeriv R k (A x).carrier)
       map_add' := by
         intros
         simp
@@ -165,12 +162,11 @@ theorem hasseDeriv_coeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
 theorem hasseDeriv_ncoeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
     (hasseDeriv k A) [[n]] = (Ring.choose (-n - 1 + k) k) • A [[n - k]] := by
   dsimp [ncoeff]
-  rw [hasseDeriv_coeff, show -n - 1 + k = -(n - k) - 1 by omega]
+  rw [hasseDeriv_coeff, show -n - 1 + k = -(n - k) - 1 by lia]
 
 @[simp]
 theorem hasseDeriv_zero : hasseDeriv 0 = LinearMap.id (M := VertexOperator R V) := by
-  ext
-  simp
+  ext; simp
 
 theorem hasseDeriv_one_coeff (A : VertexOperator R V) (n : ℤ) :
     HVertexOperator.coeff (hasseDeriv 1 A) n = (n + 1) • HVertexOperator.coeff A (n + 1) := by
@@ -190,20 +186,17 @@ theorem hasseDeriv_one : hasseDeriv 1 = derivative R (V := V) :=
   rfl
 
 theorem hasseDeriv_apply_one (k : ℕ) (hk : 0 < k) : hasseDeriv k (1 : VertexOperator R V) = 0 := by
-  ext n v
-  simp [Ring.choose_zero_pos ℤ hk]
+  ext; simp [Ring.choose_zero_pos ℤ hk]
 
 @[simp]
 theorem hasseDeriv_comp (k l : ℕ) (A : VertexOperator R V) :
     (hasseDeriv k) (hasseDeriv l A) = (k + l).choose k • (hasseDeriv (k + l) A) := by
-  ext
-  simp
+  ext; simp
 
 @[simp]
 theorem hasseDeriv_comp_linear (k l : ℕ) : (hasseDeriv k).comp
     (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) (R := R) (V := V) := by
-  ext
-  simp
+  ext; simp
 
 theorem factorial_smul_hasseDeriv (k : ℕ) (A : VertexOperator R V) :
     k.factorial • hasseDeriv k A = ((derivative R) ^ k) A := by
@@ -236,7 +229,7 @@ to Y(a,x)Y(b,y)c, after multiplying by a suitable power of xy(x-y) and a substit
 
 
 (old)
-Given a totally ordered fintype `σ`, we consider binomials in `HahnSeries (PiLex σ Z) R`.
+Given a totally ordered fintype `σ`, we consider binomials in `HahnSeries (PiLex σ ℤ) R`.
 Define binomials `X i - X j` as `varMinus hij` for `hij : i < j`.
 Need to add API for comparing `varMinus i j` with `varMinus j i`(and their ℕ-powers) under permuted
 order and associativity equivalences. Binomials are also Finsupps, so we can make a
@@ -253,12 +246,9 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexO
 
 open HVertexOperator
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `(X - Y)^n A(X) B(Y)` as a linear map from `V` to `V((X))((Y))` -/
 def binomCompLeft (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
   HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) n • (lexComp A B)
-
-set_option backward.isDefEq.respectTransparency false in
 
 @[simp]
 theorem binomialPow_smul_binomCompLeft (m n : ℤ) :
@@ -266,7 +256,6 @@ theorem binomialPow_smul_binomCompLeft (m n : ℤ) :
       binomCompLeft A B (m + n) := by
   rw [binomCompLeft, binomCompLeft, ← mul_smul, HahnSeries.binomialPow_add]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem binomCompLeft_apply_coeff (k l n : ℤ) (v : V) :
     (binomCompLeft A B n).coeff (toLex (k, l)) v =
       ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
@@ -285,29 +274,27 @@ theorem binomCompLeft_one_left_nat_coeff (n : ℕ) (g : ℤ ×ₗ ℤ) :
       B.coeff ((ofLex g).1 - n + (ofLex g).2) := by
   ext v
   rw [show g = toLex ((ofLex g).1, (ofLex g).2) by rfl, binomCompLeft_apply_coeff]
-  simp only [coeff_apply_apply, one_apply, Equiv.symm_apply_apply, Prod.mk.eta, toLex_ofLex]
+  simp only [coeff_apply_apply, one_apply, Equiv.coe_fn_mk, Prod.mk.eta, toLex_ofLex]
   rw [finsum_eq_single _ ((n : ℤ) - (ofLex g).2).toNat]
   · by_cases h : (ofLex g).2 - n + (n - (ofLex g).2).toNat = 0
     · rw [h, HahnSeries.coeff_single_same 0]
-      have : (n - (ofLex g).2).toNat = n - (ofLex g).2 := by omega
-      have hng : (ofLex g).2 ≤ n := by omega
+      have : (n - (ofLex g).2).toNat = n - (ofLex g).2 := by lia
+      have hng : (ofLex g).2 ≤ n := by lia
       simp only [this, hng, ↓reduceIte]
       congr 1
       simp only [zsmul_eq_mul, Module.End.mul_apply, Module.End.intCast_apply, coeff_apply_apply]
       abel_nf
     · rw [HahnSeries.coeff_single_of_ne h]
-      simp [show ¬ (ofLex g).2 ≤ n by omega]
+      simp [show ¬ (ofLex g).2 ≤ n by lia]
   · intro i hi
-    have : (ofLex g).2 - n + i ≠ 0 := by omega
+    have : (ofLex g).2 - n + i ≠ 0 := by lia
     rw [HahnSeries.coeff_single_of_ne this, smul_zero, smul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `(X - Y)^n B(Y) A(X)` as a linear map from `V` to `V((Y))((X))` -/
 def binomCompRight (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
   (Int.negOnePow n : R) •
     HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) n • (lexComp B A)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem binomialPow_smul_binomCompRight (m n : ℤ) :
     Int.negOnePow m • HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) m •
@@ -316,7 +303,6 @@ theorem binomialPow_smul_binomCompRight (m n : ℤ) :
       SMulCommClass.smul_comm, smul_smul, ← Int.cast_mul, ← Units.val_mul, ← Int.negOnePow_add,
       ← SMulCommClass.smul_comm, smul_smul, HahnSeries.binomialPow_add]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem binomCompRight_apply_coeff (k l n : ℤ) (v : V) :
     (binomCompRight A B n).coeff (toLex (k, l)) v =
       Int.negOnePow n • ∑ᶠ (m : ℕ),
@@ -366,7 +352,7 @@ def Commute : Prop :=
 lemma Commute_iff :
     Commute A B ↔ ∀ (m n : ℤ), A[[n]] ∘ₗ B[[m]] = B[[m]] ∘ₗ A[[n]] := by
   simp only [Commute, swapEquiv, lexComp, coeff_eq_ncoeff, LinearMap.coe_mk, AddHom.coe_mk,
-    coeff_of_coeff, LinearEquiv.coe_mk, Function.comp_apply, ofLex_toLex]
+    coeff_ofCoeff, LinearEquiv.coe_mk, Function.comp_apply, ofLex_toLex]
   constructor
   · intro h m n
     rw [funext_iff] at h
@@ -387,7 +373,6 @@ def IsLocalToOrderLeq (n : ℕ) : Prop :=
   ∀ (k l : ℤ), (binomCompLeft A B n).coeff (toLex (k, l)) =
     (binomCompRight A B n).coeff (toLex (l, k))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
     IsLocalToOrderLeq A B (n + m) := by
   induction m with
@@ -440,7 +425,7 @@ theorem coeff_resProdLeft_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) :
     (A.resProdLeft m B).coeff n v =
       ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
         (coeff A (-1 - m + i)) ((coeff B (n - i)) v) := by
-  dsimp only [resProdLeft, LexResRight, Int.reduceNeg, coeff_of_coeff]
+  dsimp only [resProdLeft, LexResRight, Int.reduceNeg, coeff_ofCoeff]
   rw [binomCompLeft_apply_coeff]
 
 @[simp]
@@ -453,20 +438,18 @@ theorem resProdLeft_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) 
   refine finsum_congr ?_
   intro i
   congr 3
-  · rw [coeff_eq_ncoeff, show (-(-1 - m + i) - 1) = (m - i) by omega]
-  · rw [coeff_eq_ncoeff, show -(-n - 1 - i) - 1 = n + i by omega, Module.End.smul_def]
+  · rw [coeff_eq_ncoeff, show (-(-1 - m + i) - 1) = (m - i) by lia]
+  · rw [coeff_eq_ncoeff, show -(-n - 1 - i) - 1 = n + i by lia, Module.End.smul_def]
 
 theorem finite_supp_ncoeff_ncoeff (m n : ℤ) (A B : VertexOperator R V) (v : V) :
     (Function.support fun (i : ℕ) ↦ (Int.negOnePow i) • Ring.choose n i •
       (ncoeff A (n - i)) ((ncoeff B (-m - 1 + i)) v)).Finite := by
   refine BddAbove.finite <| bddAbove_def.mpr ?_
-  use (-((HahnModule.of R).symm (B v)).order + m).toNat
+  use (-(B v).carrier.order + m).toNat
   intro j hj
   contrapose! hj
-  suffices (ncoeff B (-m - 1 + j)) v = 0 by simp [this]
-  have (i : ℕ) := ncoeff_eq_zero_of_lt_order B (-m - 1 + i) v
-  apply this j
-  omega
+  simp only [Function.mem_support, ne_eq, not_not]
+  simp [ncoeff_eq_zero_of_lt_order B (-m - 1 + j) v (by lia)]
 
 @[simp]
 theorem resProdLeft_add_right (n : ℤ) (A B C : VertexOperator R V) :
@@ -492,21 +475,15 @@ theorem resProdLeft_add_left (n : ℤ) (A B C : VertexOperator R V) :
 theorem resProdLeft_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
     A.resProdLeft n (r • B) = r • (A.resProdLeft n B) := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_smul,
-    Pi.smul_apply, Module.End.smul_def, LinearMap.smul_apply, HahnModule.of_symm_smul,
-    HahnSeries.coeff_smul']
-  simp_rw [smul_comm _ r]
-  rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff]
+  simp [smul_comm _ r, smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
 
 @[simp]
 theorem resProdLeft_smul_left (n : ℤ) (A B : VertexOperator R V) (r : R) :
     (r • A).resProdLeft n B = r • (A.resProdLeft n B) := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_smul,
-    Pi.smul_apply, Module.End.smul_def, LinearMap.smul_apply, HahnModule.of_symm_smul,
-    HahnSeries.coeff_smul']
-  simp_rw [smul_comm _ r]
-  rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
+  simp [← coeff_apply_apply, smul_comm _ r,
+    smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
 
 @[simp]
 theorem resProdLeft_ne_neg_one_one_left {n : ℤ} (hn : n ≠ -1) (A : VertexOperator R V) :
@@ -518,23 +495,22 @@ theorem resProdLeft_ne_neg_one_one_left {n : ℤ} (hn : n ≠ -1) (A : VertexOpe
   by_cases h : n ≥ 0
   · by_cases hni : n < i
     · set m : ℕ := n.toNat
-      have : n = m := by omega
-      have hmi : m < i := by omega
+      have : n = m := by lia
+      have hmi : m < i := by lia
       rw [this, Ring.choose_natCast, (Nat.choose_eq_zero_iff).mpr hmi]
       simp
-    · rw [one_ncoeff_ne_neg_one (by omega)]
+    · rw [one_ncoeff_ne_neg_one (by lia)]
       simp
-  · rw [one_ncoeff_ne_neg_one (by omega)]
+  · rw [one_ncoeff_ne_neg_one (by lia)]
     simp
 
 @[simp]
 theorem resProdLeft_neg_one_one_left (A : VertexOperator R V) : resProdLeft (-1 : ℤ) 1 A  = A := by
   ext
   simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff]
-  rw [finsum_eq_single _ 0 fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
+  rw [finsum_eq_single _ 0 fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by lia)]; simp)]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma resProdLeft_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
     (A.hasseDeriv m).resProdLeft k B =
@@ -550,8 +526,8 @@ lemma resProdLeft_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V)
       ← smul_assoc (Ring.choose k m), smul_eq_mul (Ring.choose k m), ← Ring.choose_add_smul_choose,
       smul_comm (Int.negOnePow m)]
     congr 1
-    rw [show -(k - r) - 1 + m = -(k - r + 1 - m) by omega, Ring.choose_neg,
-      show k - r + 1 - m + m - 1 = k - r by omega]
+    rw [show -(k - r) - 1 + m = -(k - r + 1 - m) by lia, Ring.choose_neg,
+      show k - r + 1 - m + m - 1 = k - r by lia]
     simp only [smul_assoc, zsmul_eq_mul, LinearMap.smul_apply, Module.End.mul_apply,
       Module.End.intCast_apply, nsmul_eq_mul]
     rw [smul_comm (Int.negOnePow m), ← smul_assoc (Ring.choose k r), smul_eq_mul,
@@ -580,8 +556,8 @@ theorem coeff_resProdRight_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) 
     (A.resProdRight m B).coeff n v =
       (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
         (coeff B (n - m + i)) ((coeff A (-1 - i)) v) := by
-  dsimp only [resProdRight, LexResLeft, Int.reduceNeg, coeff_of_coeff]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, coeff_of_coeff, binomCompRight_apply_coeff]
+  dsimp only [resProdRight, LexResLeft, Int.reduceNeg, coeff_ofCoeff]
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, coeff_ofCoeff, binomCompRight_apply_coeff]
 
 @[simp]
 theorem resProdRight_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :
@@ -594,19 +570,18 @@ theorem resProdRight_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V)
   refine finsum_congr ?_
   intro i
   congr 3
-  · rw [coeff_eq_ncoeff, show -(-n - 1 - m + i) - 1 = (m + n - i) by omega]
-  · rw [coeff_eq_ncoeff, show -((-1 : ℤ) - i) - 1 = i by omega, Module.End.smul_def]
+  · rw [coeff_eq_ncoeff, show -(-n - 1 - m + i) - 1 = (m + n - i) by lia]
+  · rw [coeff_eq_ncoeff, show -((-1 : ℤ) - i) - 1 = i by lia, Module.End.smul_def]
 
 theorem finite_supp_ncoeff_ncoeff_right (m n : ℤ) (A B : VertexOperator R V) (v : V) :
     (Function.support fun (i : ℕ) ↦ (Int.negOnePow i) • Ring.choose n i •
       (ncoeff B (n + (-m - 1) - i)) ((ncoeff A i) v)).Finite := by
   refine BddAbove.finite <| bddAbove_def.mpr ?_
-  use (-((HahnModule.of R).symm (A v)).order - 1).toNat
+  use (-(A v).carrier.order - 1).toNat
   intro j hj
   contrapose! hj
   suffices (ncoeff A j) v = 0 by simp [this]
-  apply ncoeff_eq_zero_of_lt_order A j v
-  omega
+  exact ncoeff_eq_zero_of_lt_order A j v (by lia)
 
 @[simp]
 theorem resProdRight_add_right (n : ℤ) (A B C : VertexOperator R V) :
@@ -665,10 +640,9 @@ theorem resProdRight_one_left (n : ℤ) (A : VertexOperator R V) :
   · simp
   · refine finsum_eq_zero_of_forall_eq_zero ?_
     intro i
-    rw [one_ncoeff_ne_neg_one (by omega)]
+    rw [one_ncoeff_ne_neg_one (by lia)]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
     (A.hasseDeriv m).resProdRight k B =
@@ -690,8 +664,8 @@ lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V
     intro i
     simp only [hasseDeriv_ncoeff, zsmul_eq_mul, Module.End.mul_apply, Module.End.intCast_apply,
       LinearMap.map_smul_of_tower]
-    rw [show -(i + m : ℕ) - 1 + (m : ℤ) = - (i + 1) by omega, Ring.choose_neg, show
-      (i : ℤ) + 1 + m - 1 = (m + i : ℕ) by omega, smul_comm (Ring.choose k (i + m)), smul_assoc,
+    rw [show -(i + m : ℕ) - 1 + (m : ℤ) = - (i + 1) by lia, Ring.choose_neg, show
+      (i : ℤ) + 1 + m - 1 = (m + i : ℕ) by lia, smul_comm (Ring.choose k (i + m)), smul_assoc,
       ← smul_assoc (Ring.choose _ m), Ring.choose_natCast, add_comm m i, natCast_zsmul,
       Ring.choose_add_smul_choose, smul_comm (Ring.choose k m), ← smul_assoc, Units.smul_eq_mul,
       ← Int.negOnePow_sub, Nat.cast_add, Int.add_sub_cancel, ← smul_assoc (Ring.choose k m)]
@@ -701,12 +675,11 @@ lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V
       Function.support_subset_iff]
     intro i hi
     contrapose! hi
-    rw [hasseDeriv_ncoeff, show -(i : ℤ) - 1 + m = -(i + 1 - m) by omega, Ring.choose_neg,
-      show (i : ℤ) + 1 - m + m - 1 = i by omega, Ring.choose_natCast,
+    rw [hasseDeriv_ncoeff, show -(i : ℤ) - 1 + m = -(i + 1 - m) by lia, Ring.choose_neg,
+      show (i : ℤ) + 1 - m + m - 1 = i by lia, Ring.choose_natCast,
       Nat.choose_eq_zero_of_lt (lt_of_lt_of_eq hi (zero_add m))]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The the `m`-th residue product of vertex operators, as a bilinear map. -/
 @[simps]
 def resProd (m : ℤ) :
@@ -718,42 +691,38 @@ def resProd (m : ℤ) :
   map_add' A B := by ext; simp; abel
   map_smul' r A := by ext; simp [smul_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem resProd_neg_one_one_left (A : VertexOperator R V) : resProd (-1 : ℤ) 1 A = A := by
   rw [resProd_apply_apply, resProdLeft_neg_one_one_left, resProdRight_one_left, sub_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem resProd_ne_neg_one_one_left {n : ℤ} (hn : n ≠ -1) (A : VertexOperator R V) :
     resProd n 1 A = 0 := by
   simp [hn]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem resProd_nat_one_right_apply (n : ℕ) (A : VertexOperator R V) :
     resProd n A 1 = 0 := by
   ext v m
   rw [resProd_apply_apply, ← coeff_apply_apply, ← coeff_apply_apply, coeff_eq_ncoeff,
     map_sub, Pi.sub_apply, LinearMap.sub_apply, resProdLeft_apply_ncoeff]
-  rw [finsum_eq_single _ m.toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
+  rw [finsum_eq_single _ m.toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by lia)]; simp)]
   by_cases h : m ≥ 0
-  · rw [show -m - 1 + m.toNat = -1 by omega, one_ncoeff_neg_one, resProdRight_apply_ncoeff]
-    rw [finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
+  · rw [show -m - 1 + m.toNat = -1 by lia, one_ncoeff_neg_one, resProdRight_apply_ncoeff]
+    rw [finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by lia)]; simp)]
     by_cases hmn : m ≤ n
-    · rw [show n + (-m - 1) - (n - m).toNat = -1 by omega, one_ncoeff_neg_one, LinearMap.map_zero,
+    · rw [show n + (-m - 1) - (n - m).toNat = -1 by lia, one_ncoeff_neg_one, LinearMap.map_zero,
         Pi.zero_apply, LinearMap.zero_apply, sub_eq_zero, ← smul_assoc (n : ℤ).negOnePow]
       congr 2
-      · rw [Units.ext_iff, Units.val_smul, Units.smul_def, zsmul_eq_mul', Int.cast_eq,
-          ← Units.val_mul, ← Int.negOnePow_sub]
-        simp [h, hmn]
+      · rw [smul_eq_mul, ← Int.negOnePow_add, Int.negOnePow_eq_iff]
+        grind
       · rw [Ring.choose_natCast, Ring.choose_natCast]
         refine Int.ofNat_inj.mpr ?_
-        rw [← Nat.choose_symm (by omega), show (n - m).toNat = n - m.toNat by omega]
+        rw [← Nat.choose_symm (by lia), show (n - m).toNat = n - m.toNat by lia]
       · simp [h, hmn]
-    · rw [Ring.choose_natCast, Ring.choose_natCast, Nat.choose_eq_zero_of_lt (by omega),
-        one_ncoeff_ne_neg_one (by omega)]
+    · rw [Ring.choose_natCast, Ring.choose_natCast, Nat.choose_eq_zero_of_lt (by lia),
+        one_ncoeff_ne_neg_one (by lia)]
       simp
-  · rw [one_ncoeff_ne_neg_one (by omega), resProdRight_apply_ncoeff,
-      finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp),
-      Ring.choose_natCast n (n - m).toNat, Nat.choose_eq_zero_of_lt (by omega)]
+  · rw [one_ncoeff_ne_neg_one (by lia), resProdRight_apply_ncoeff,
+      finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by lia)]; simp),
+      Ring.choose_natCast n (n - m).toNat, Nat.choose_eq_zero_of_lt (by lia)]
     simp
 
 lemma resProdLeft_neg_nat_one_right_neg (n k : ℕ) (A : VertexOperator R V) :
@@ -817,7 +786,6 @@ lemma resProdRight_neg_nat_one_right_neg (n k : ℕ) (A : VertexOperator R V) :
     rw [one_ncoeff_ne_neg_one (by grind)]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma resProd_neg_nat_one_right (n : ℕ) (A : VertexOperator R V) :
     resProd (-n - 1) A 1 = A.hasseDeriv n := by
   simp only [resProd_apply_apply]
@@ -832,7 +800,6 @@ lemma resProd_neg_nat_one_right (n : ℕ) (A : VertexOperator R V) :
     rw [this, resProdRight_neg_nat_one_right_nonneg, resProdLeft_neg_nat_one_right_nonneg,
       sub_neg_eq_add, zero_add]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma resProd_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
     (A.hasseDeriv m).resProd k B = Int.negOnePow m • Ring.choose k m • A.resProd (k - m) B := by
   ext v n
@@ -841,14 +808,12 @@ lemma resProd_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
 
 -- locality: If `A.IsLocalToOrderLeq B n`, then `A.resProd k B = 0` when `n ≤ k`.
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A product of integer powers of three binomials. -/
 abbrev tripleProductLeft (p q r : ℤ) : HahnSeries ((ℤ ×ₗ ℤ) ×ₗ ℤ) R :=
     HahnSeries.binomialPow R (toLex (toLex (1, 0), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ) (toLex (toLex (0, 1), 0)) p *
     HahnSeries.binomialPow R (toLex (toLex (0, 1), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ) (toLex (toLex (0, 1), 0)) q *
     HahnSeries.binomialPow R (toLex (toLex (1, 0), 0) : (ℤ ×ₗ ℤ) ×ₗ ℤ) (toLex (toLex (0, 0), 1)) r
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A product of integer powers of three binomials. -/
 abbrev tripleProductRight (p q r : ℤ) : HahnSeries (ℤ ×ₗ (ℤ ×ₗ ℤ)) R :=
     HahnSeries.binomialPow R (toLex (1, toLex (0, 0)) : ℤ ×ₗ (ℤ ×ₗ ℤ)) (toLex (0, toLex (1, 0))) p *
@@ -942,7 +907,7 @@ theorem composite_summand_eq_zero_of_lt_order_right (A B : VertexOperator R V) (
     (composite_summand A B m n k i f) x = 0 := by
   simp_all only [composite_summand, LinearMap.coe_mk, AddHom.coe_mk, Int.toNat_le,
     tsub_le_iff_right, ncoeff, coeff]
-  have hi : (- (k + i) - 1) < HahnSeries.order (B x) := by omega
+  have hi : (- (k + i) - 1) < HahnSeries.order (B x) := by lia
   rw [HahnSeries.coeff_eq_zero_of_lt_order hi, LinearMap.map_zero, HahnSeries.zero_coeff, smul_zero]
 
 
@@ -1008,7 +973,7 @@ theorem composite_ncoeff_smul (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ 
       simp_all only [map_smul, forall_const, ne_eq, not_false_eq_true]
     have h₄ : Int.toNat (-k - HahnSeries.order (B (r • x))) ≤
         Int.toNat (-k - HahnSeries.order (B x)) := by
-      have h₅ : -k - HahnSeries.order (B (r • x)) ≤ -k - HahnSeries.order (B x) := by omega
+      have h₅ : -k - HahnSeries.order (B (r • x)) ≤ -k - HahnSeries.order (B x) := by lia
       exact Int.toNat_le_toNat h₅
     rw [Finset.eventually_constant_sum
       (fun i => composite_summand_eq_zero_of_lt_order_right A B m n k i f (r • x)) h₄]
@@ -1031,7 +996,7 @@ theorem composite_bdd_below_right (A B : VertexOperator R V) (m n : ℤ) (f : �
   unfold composite_ncoeff
   have h : Int.toNat (-k - HahnSeries.order (B x)) = 0 := by
     refine Int.toNat_eq_zero.mpr ?_
-    omega
+    lia
   rw [h, Finset.sum_range_zero]
 
 theorem composite_bdd_below_left (A B : VertexOperator R V) (m k : ℤ) (f : ℕ → ℤ) (x : V) :
@@ -1041,7 +1006,7 @@ theorem composite_bdd_below_left (A B : VertexOperator R V) (m k : ℤ) (f : ℕ
     intro i n hn
     simp_all only [tsub_le_iff_right]
     refine ncoeff_eq_zero_of_lt_order A (m + n - i) (ncoeff B (k + i) x) ?_
-    omega
+    lia
   use Nat.cast (Finset.sup (Finset.range (Int.toNat (-k - HahnSeries.order (B x))))
     (fun i => Int.toNat (bd i)))
   intro n hn

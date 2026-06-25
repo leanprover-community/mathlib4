@@ -144,7 +144,7 @@ theorem support_of_Subsingleton [Subsingleton R] {x : HahnSeries Γ R} : x.suppo
 
 /-- The map of Hahn series induced by applying a zero-preserving map to each coefficient. -/
 @[simps]
-def map [Zero S] (x : R⟦Γ⟧) {F : Type*} [FunLike F R S] [ZeroHomClass F R S] (f : F) : S⟦Γ⟧ where
+def map [Zero S] (x : R⟦Γ⟧) (f : ZeroHom R S) : S⟦Γ⟧ where
   coeff g := f (x.coeff g)
   isPWO_support' := x.isPWO_support.mono <| Function.support_comp_subset (ZeroHomClass.map_zero f) _
 
@@ -705,8 +705,7 @@ theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
-def ofSuppBddBelow [LinearOrder Γ] [LocallyFiniteOrder Γ] (f : Γ → R)
-    (hf : BddBelow (Function.support f)) : R⟦Γ⟧ :=
+def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ :=
   ⟨f, hf.isWF.isPWO⟩
 
 @[simp]

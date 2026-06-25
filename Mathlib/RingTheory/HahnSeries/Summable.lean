@@ -403,10 +403,9 @@ open HahnModule
 set_option backward.isDefEq.respectTransparency false in
 theorem isPWO_iUnion_support_prod_smul {s : α → R⟦Γ⟧}
     {t : β → V⟦Γ'⟧} (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
-    (⋃ (a : α × β), ((fun a ↦ (HahnModule.of R).symm
-      ((s a.1) • (HahnModule.of R) (t a.2))) a).support).IsPWO := by
+    (⋃ (a : α × β), ((fun a ↦ ((s a.1) • (HahnModule.of R) (t a.2))) a).carrier.support).IsPWO := by
   apply (hs.vadd ht).mono
-  have hsupp : ∀ ab : α × β, support ((fun ab ↦ (of R).symm (s ab.1 • (of R) (t ab.2))) ab) ⊆
+  have hsupp : ∀ ab : α × β, support ((fun ab ↦ (s ab.1 • (of R) (t ab.2))) ab).carrier ⊆
       (s ab.1).support +ᵥ (t ab.2).support := by
     intro ab
     refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd fun a ↦
@@ -437,7 +436,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
 /-- An elementwise scalar multiplication of one summable family on another. -/
 @[simps]
 def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) : SummableFamily Γ' V (α × β) where
-  toFun ab := (of R).symm (s (ab.1) • ((of R) (t (ab.2))))
+  toFun ab := (s (ab.1) • ((of R) (t (ab.2)))).carrier
   isPWO_iUnion_support' :=
     isPWO_iUnion_support_prod_smul s.isPWO_iUnion_support t.isPWO_iUnion_support
   finite_co_support' g := finite_co_support_prod_smul s t g
@@ -475,7 +474,7 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     ∑ gh ∈ VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support
       t.isPWO_iUnion_support g), (s.hsum.coeff gh.1) • (t.hsum.coeff gh.2) := by
   rw [coeff_hsum]
-  simp only [coeff_hsum_eq_sum, smul_toFun, HahnModule.coeff_smul, Equiv.symm_apply_apply]
+  simp only [coeff_hsum_eq_sum, smul_toFun, HahnModule.coeff_smul, Equiv.coe_fn_mk]
   simp_rw [sum_vAddAntidiagonal_eq, Finset.smul_sum, Finset.sum_smul]
   rw [← sum_finsum_comm _ _ <| fun gh _ => hasFiniteSupport_smul s t gh]
   refine sum_congr rfl fun gh _ => ?_
@@ -489,9 +488,9 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
 
 theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
-    (smul s t).hsum = (of R).symm (s.hsum • (of R) (t.hsum)) := by
+    (smul s t).hsum = (s.hsum • (of R) (t.hsum)).carrier := by
   ext g
-  rw [coeff_smul s t g, HahnModule.coeff_smul, Equiv.symm_apply_apply]
+  rw [coeff_smul s t g, HahnModule.coeff_smul, Equiv.coe_fn_mk]
   refine Eq.symm (sum_of_injOn (fun a ↦ a) (fun _ _ _ _ h ↦ h) (fun _ hgh => ?_)
     (fun gh _ hgh => ?_) fun _ _ => by simp)
   · simp_all only [mem_coe, mem_vaddAntidiagonal, mem_support, ne_eq, Set.mem_iUnion, and_true]
@@ -516,13 +515,13 @@ theorem smul_eq {x : R⟦Γ⟧} {t : SummableFamily Γ' V β} :
 @[simp]
 theorem smul_apply {x : R⟦Γ⟧}
     {s : SummableFamily Γ' V α} {a : α} :
-    (x • s) a = (HahnModule.of R).symm (x • HahnModule.of R (s a)) :=
+    (x • s) a = (x • HahnModule.of R (s a)).carrier :=
   rfl
 
 @[simp]
 theorem hsum_smul_module (R) (V) [Semiring R] [AddCommMonoid V] [Module R V] {x : R⟦Γ⟧}
     {s : SummableFamily Γ' V α} :
-    (x • s).hsum = (of R).symm (x • of R s.hsum) := by
+    (x • s).hsum = (x • of R s.hsum).carrier := by
   rw [smul_eq, hsum_equiv, smul_hsum, hsum_unique, const_toFun]
 
 end SMul
@@ -530,15 +529,15 @@ end SMul
 section Semiring
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ']
-[AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
+  [AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
 
 instance [AddCommMonoid V] [Module R V] : Module R⟦Γ⟧ (SummableFamily Γ' V α) where
   smul_zero _ := ext fun _ => by simp
   zero_smul _ := ext fun _ => by simp
-  one_smul _ := ext fun _ => by rw [smul_apply, HahnModule.one_smul', Equiv.symm_apply_apply]
+  one_smul _ := ext fun _ => by rw [smul_apply, HahnModule.one_smul', Equiv.coe_fn_mk]
   add_smul _ _ _ := ext fun _ => by simp [add_smul]
   smul_add _ _ _ := ext fun _ => by simp
-  mul_smul _ _ _ := ext fun _ => by simp [HahnModule.instModule.mul_smul]
+  mul_smul _ _ _ := ext fun _ => by simp [mul_smul]
 
 theorem hsum_smul {x : R⟦Γ⟧} {s : SummableFamily Γ R α} :
     (x • s).hsum = x * s.hsum := by
@@ -784,29 +783,30 @@ theorem pi_PWO_iUnion_support_Fintype {R} [CommSemiring R] (α : σ → Type*)
 open Classical in
 /-- The equivalence between a pi type over a fintype and a pi type on `univ`. -/
 @[simps]
-def univ_equiv (α : σ → Type*) :
+def univEquiv (α : σ → Type*) :
     ((i : σ) → α i) ≃ ((i : σ) → i ∈ Finset.univ → α i) where
   toFun a := fun i _ ↦ a i
   invFun a := fun i ↦ a i (Finset.mem_univ i)
   left_inv := congrFun rfl
   right_inv := congrFun rfl
+--#find_home! univEquiv --[Mathlib.Data.Fintype.Defs]
 
 open Classical in
-theorem univ_equiv_Family {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
+theorem univEquiv_Family {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
     {t : Π i : σ, (α i) → HahnSeries Γ R} (a : (i : σ) → α i) :
     a ∈ {a : (i : σ) → α i | (∏ i, (t i) (a i)).coeff g ≠ 0} ↔
-      univ_equiv α a ∈ {a : (i : σ) → i ∈ Finset.univ → α i |
+      univEquiv α a ∈ {a : (i : σ) → i ∈ Finset.univ → α i |
         (∏ i, (t i) (a i (Finset.mem_univ i))).coeff g ≠ 0} := by
   simp_all
 
 /-- The equivalence between a pi-parametrized family and the corresponding finset-parametrized
 family. -/
-def univ_equiv_Hahn {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
+def univEquivHahn {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
     {t : Π i : σ, (α i) → HahnSeries Γ R} :
     {a : (i : σ) → α i | (∏ i, (t i) (a i)).coeff g ≠ 0} ≃
     {a : (i : σ) → i ∈ Finset.univ → α i | (∏ i, (t i) (a i (Finset.mem_univ i))).coeff g ≠ 0} where
-  toFun a := ⟨univ_equiv α a, (univ_equiv_Family α g a).mp (Subtype.coe_prop a)⟩
-  invFun a := ⟨(univ_equiv α).symm a, (univ_equiv_Family α g _).mpr (by simp)⟩
+  toFun a := ⟨univEquiv α a, (univEquiv_Family α g a).mp (Subtype.coe_prop a)⟩
+  invFun a := ⟨(univEquiv α).symm a, (univEquiv_Family α g _).mpr (by simp)⟩
   left_inv a := by simp
   right_inv a := by simp
 /-!
@@ -1016,9 +1016,9 @@ theorem embDomain_succ_smul_powers :
   apply SummableFamily.ext
   rintro (_ | n)
   · simp [hx]
-  · -- FIXME: smul_eq_mul introduces type confusion between HahnModule and HahnSeries.
-    simp [embDomain_apply, of_symm_smul_of_eq_mul, powers_of_orderTop_pos hx, pow_succ',
-      -smul_eq_mul]
+  · have : (x • ({ carrier := x ^ n } : HahnModule Γ R R)).carrier = x ^ (n + 1) := by
+      rw [HahnModule.eq_of, of_symm_smul_of_eq_mul, pow_succ']
+    simp [embDomain_apply, hx, this]
 
 include hx in
 theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by

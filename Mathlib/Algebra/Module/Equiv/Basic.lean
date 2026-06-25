@@ -65,7 +65,7 @@ end RestrictScalars
 section RestrictScalarsSemi
 
 variable {S S₂ : Type*} [Semiring S] [Semiring S₂] [Module R M] [Module R M₂] [Module S M]
-[Module S₂ M₂] (e : S →+* S₂) {e' : S₂ →+* S} [RingHomInvPair e e'] [RingHomInvPair e' e]
+  [Module S₂ M₂] (e : S →+* S₂) {e' : S₂ →+* S} [RingHomInvPair e e'] [RingHomInvPair e' e]
 
 /-- If `M` and `M₂` are both `R`-modules and modules for `S` and `S₂`, respectively, then for any
 ring isomorphism `e` between `S` and `S₂` and any `e`-semilinear equivalence between `M` and `M₂`

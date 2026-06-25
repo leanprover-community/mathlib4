@@ -69,15 +69,15 @@ series with coefficients in linear maps. -/
 @[simps]
 def coeff : HVertexOperator Γ R V W →ₗ[R] Γ → V →ₗ[R] W where
   toFun A n := {
-    toFun v := ((of R).symm (A v)).coeff n
+    toFun v := (A v).carrier.coeff n
     map_add' u v := by simp
     map_smul' r v := by simp }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
 theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
-    ((of R).symm (A v)).coeff.support.IsPWO :=
-  ((of R).symm (A v)).isPWO_support'
+    (A v).carrier.coeff.support.IsPWO :=
+  (A v).carrier.isPWO_support'
 
 @[ext]
 theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W →ₗ[R] Γ → (V →ₗ[R] W)) := by
@@ -89,20 +89,20 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
-def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ (x : V), (Function.support (f · x)).IsPWO) :
+def ofCoeff (f : Γ → V →ₗ[R] W) (hf : ∀ (x : V), (Function.support (f · x)).IsPWO) :
     HVertexOperator Γ R V W where
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
 @[simp]
-theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
-    (hf : ∀ (x : V), (Function.support (fun g => f g x)).IsPWO) : (of_coeff f hf).coeff = f :=
+theorem coeff_ofCoeff (f : Γ → V →ₗ[R] W)
+    (hf : ∀ (x : V), (Function.support (fun g => f g x)).IsPWO) : (ofCoeff f hf).coeff = f :=
   rfl
 
 @[simp]
-theorem of_coeff_coeff (A : HVertexOperator Γ R V W) :
-    of_coeff A.coeff A.coeff_isPWOsupport = A := by
+theorem ofCoeff_coeff (A : HVertexOperator Γ R V W) :
+    ofCoeff A.coeff A.coeff_isPWOsupport = A := by
   rfl
 
 end Coeff
@@ -208,13 +208,13 @@ omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 def equivDomain [PartialOrder Γ₂] (f : Γ ≃o Γ₂) :
     HVertexOperator Γ R V W ≃ₗ[R] HVertexOperator Γ₂ R V W where
   toFun A := {
-    toFun v := (HahnModule.of R) (HahnSeries.equivDomain f ((HahnModule.of R).symm (A v)))
+    toFun v := (HahnModule.of R) (HahnSeries.equivDomain f (A v).carrier)
     map_add' _ _ := by ext; simp
     map_smul' r x := by ext; simp }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
   invFun A := {
-    toFun v := (HahnModule.of R) (HahnSeries.equivDomain f.symm ((HahnModule.of R).symm (A v)))
+    toFun v := (HahnModule.of R) (HahnSeries.equivDomain f.symm (A v).carrier)
     map_add' _ _ := by ext; simp
     map_smul' _ _ := by ext; simp }
   left_inv _ := by ext; simp
@@ -228,20 +228,20 @@ def lexRevEquivBase (Γ Γ₂) [PartialOrder Γ] [PartialOrder Γ₂] :
 
 theorem lexRevEquivBase_apply_apply_coeff (Γ Γ₂) [PartialOrder Γ] [PartialOrder Γ₂]
     (A : HVertexOperator (Lex (Γ × Γ₂)) R V W) (v : V) (g : RevLex (Γ₂ × Γ)) :
-    ((lexRevEquivBase Γ Γ₂ A) v).coeff g =
-      ((HahnModule.of R).symm (A v)).coeff ((Prod.RevLex.lexEquiv Γ Γ₂).symm g) :=
+    ((lexRevEquivBase Γ Γ₂ A) v).carrier.coeff g =
+      (A v).carrier.coeff ((Prod.RevLex.lexEquiv Γ Γ₂).symm g) :=
   rfl
 
 theorem lexRevEquivBase_symm_apply_apply_coeff (Γ Γ₂) [PartialOrder Γ] [PartialOrder Γ₂]
     (A : HVertexOperator (RevLex (Γ₂ × Γ)) R V W) (v : V) (g : Lex (Γ × Γ₂)) :
-    (((lexRevEquivBase Γ Γ₂).symm A) v).coeff g =
-      ((HahnModule.of R).symm (A v)).coeff ((Prod.RevLex.lexEquiv Γ Γ₂) g) :=
+    (((lexRevEquivBase Γ Γ₂).symm A) v).carrier.coeff g =
+      (A v).carrier.coeff ((Prod.RevLex.lexEquiv Γ Γ₂) g) :=
   rfl
 
 variable {Γ' Γ₁' F : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
-[PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁'] [EquivLike S Γ Γ']
-[AddMonoidHomClass S Γ Γ'] [OrderIsoClass S Γ Γ'] (f : S) [EquivLike F Γ₁ Γ₁']
-[OrderIsoClass F Γ₁ Γ₁'] [AddActionSemiHomClass F f Γ₁ Γ₁'] (f₁ : F)
+  [PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁'] [EquivLike S Γ Γ']
+  [AddMonoidHomClass S Γ Γ'] [OrderIsoClass S Γ Γ'] (f : S) [EquivLike F Γ₁ Γ₁']
+  [OrderIsoClass F Γ₁ Γ₁'] [AddActionSemiHomClass F f Γ₁ Γ₁'] (f₁ : F)
 
 open scoped HahnModule
 
@@ -321,6 +321,35 @@ section CoeffOps
 
 variable [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
+/- (2026-06-24) The hard part is applying 2-variable locality to situations where I have 3
+variables in play. I should have a coeff-along-group-isom function to remove orderings, and assign
+A to X₁, B to X₂, C to X₃.
+
+
+-/
+@[simps]
+def ofLex3 : (ℤ ×ₗ (ℤ ×ₗ ℤ)) ≃+ (Fin 3 → ℤ) where
+  toFun a n := if n = 0 then (ofLex a).1 else
+    if n = 1 then (ofLex (ofLex a).2).1 else (ofLex (ofLex a).2).2
+  invFun f := toLex (f 0, toLex (f 1, f 2))
+  map_add' a b := by
+    ext n
+    by_cases h₀ : n = 0
+    · simp [h₀]
+    · by_cases h₁ : n = 1
+      · simp [h₁]
+      · simp [h₀, h₁]
+  right_inv f := by
+    ext n
+    by_cases h₀ : n = 0
+    · simp [h₀]
+    · by_cases h₁ : n = 1
+      · simp [h₁]
+      · have h₂ : n = 2 := by lia
+        simp [h₂]
+
+
+
 /-- Swap inputs for a function on a product. -/
 @[simps!]
 def swapEquiv : ((Γ₁ × Γ) → V) ≃ₗ[R] ((Γ × Γ₁) → V) where
@@ -371,7 +400,7 @@ theorem lexComp_support_isPWO (A : HVertexOperator Γ R V W) (B : HVertexOperato
     (fun x ↦ (fun (g : Γ₁ ×ₗ Γ) ↦
       A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1) x u).support.IsPWO := by
   refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
-  · refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
+  · refine Set.IsPWO.mono ((B u).carrier.isPWO_support') ?_
     simp only [Set.image_subset_iff, Function.support_subset_iff, Set.mem_preimage,
       Function.mem_support, Lex.forall, ofLex_toLex, Prod.forall]
     intro _ _ h
@@ -388,7 +417,7 @@ def lexComp : HVertexOperator Γ R V W →ₗ[R] HVertexOperator Γ₁ R U V →
     HVertexOperator (Γ₁ ×ₗ Γ) R U W where
   toFun A := {
     toFun B :=
-      of_coeff (fun g ↦ (coeff A (ofLex g).2) ∘ₗ (coeff B (ofLex g).1))
+      ofCoeff (fun g ↦ (coeff A (ofLex g).2) ∘ₗ (coeff B (ofLex g).1))
         (fun u ↦ lexComp_support_isPWO A B u)
     map_add' _ _ := by ext; simp
     map_smul' _ _ := by ext; simp }
@@ -404,7 +433,7 @@ theorem lexComp_apply_apply_coeff (A : HVertexOperator Γ R V W) (B : HVertexOpe
 @[simp]
 theorem lexComp_apply_apply_apply_coeff (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V)
     (u : U) (g : Γ₁ ×ₗ Γ) :
-    ((HahnModule.of R).symm (lexComp A B u)).coeff g =
+    (lexComp A B u).carrier.coeff g =
       A.coeff (ofLex g).2 (B.coeff (ofLex g).1 u) := by
   rfl
 
@@ -417,8 +446,8 @@ def revLexComp : HVertexOperator Γ R V W →ₗ[R] HVertexOperator Γ₁ R U V 
 
 theorem revLexComp_apply_apply_apply_coeff (A : HVertexOperator Γ R V W)
     (B : HVertexOperator Γ₁ R U V) (v : U) (g : RevLex (Γ × Γ₁)) :
-    (revLexComp A B v).coeff g =
-      ((of R).symm (lexComp A B v)).coeff ((Prod.RevLex.lexEquiv Γ₁ Γ).symm g) := by
+    (revLexComp A B v).carrier.coeff g =
+      (lexComp A B v).carrier.coeff ((Prod.RevLex.lexEquiv Γ₁ Γ).symm g) := by
   rfl
 
 -- TODO: comp_assoc
@@ -426,8 +455,8 @@ theorem revLexComp_apply_apply_apply_coeff (A : HVertexOperator Γ R V W)
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
 factor, as a linear map. -/
 def LexResLeft (g' : Γ₁) : HVertexOperator (Γ₁ ×ₗ Γ) R V W →ₗ[R] HVertexOperator Γ R V W where
-  toFun A := HVertexOperator.of_coeff (fun g => coeff A (toLex (g', g)))
-    (fun v => Set.PartiallyWellOrderedOn.fiberProdLex (A v).isPWO_support' _)
+  toFun A := HVertexOperator.ofCoeff (fun g => coeff A (toLex (g', g)))
+    (fun v => Set.PartiallyWellOrderedOn.fiberProdLex (A v).carrier.isPWO_support' _)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -437,14 +466,14 @@ theorem coeff_ResLeft (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) (g' : Γ₁) 
 
 theorem coeff_left_lex_supp.isPWO (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) (v : V) :
     (Function.support (fun (g : Γ) => (coeff A (toLex (g, g'))) v)).IsPWO := by
-  refine Set.IsPWO.mono (Set.PartiallyWellOrderedOn.imageProdLex (A v).isPWO_support') ?_
+  refine Set.IsPWO.mono (Set.PartiallyWellOrderedOn.imageProdLex (A v).carrier.isPWO_support') ?_
   simp only [Function.support_subset_iff, ne_eq, Set.mem_image, Function.mem_support]
   exact fun x h ↦ Exists.intro (toLex (x, g')) ⟨h, rfl⟩
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the right
 factor. -/
 def LexResRight (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) : HVertexOperator Γ R V W :=
-  HVertexOperator.of_coeff (fun g => coeff A (toLex (g, g')))
+  HVertexOperator.ofCoeff (fun g => coeff A (toLex (g, g')))
     (fun v => coeff_left_lex_supp.isPWO A g' v)
 
 theorem coeff_ResRight (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) (g : Γ) :
@@ -580,31 +609,31 @@ namespace HVertexOperator
 section binomialPow
 
 variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [CommRing R] [CommRing S]
-[BinomialRing S] [Module S Γ] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
-[PartialOrder Γ₁] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [Module S W] [Algebra S R]
-[IsScalarTower S R W]
+  [BinomialRing S] [Module S Γ] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+  [PartialOrder Γ₁] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [Module S W] [Algebra S R]
+  [IsScalarTower S R W]
 
 omit [BinomialRing S] [Module S W] [Algebra S R] in
 theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     (A : HVertexOperator Γ₁ R V W) (v : V) :
     ∃ (k : ℕ), ∀ (m : ℕ) (_ : k < m),
-      (-(n • g) - m • (g' - g)) +ᵥ g₁ ∉ ((HahnModule.of R).symm (A v)).support :=
-  Set.PartiallyWellOrderedOn.exists_notMem_of_gt ((HahnModule.of R).symm (A v)).isPWO_support
+      (-(n • g) - m • (g' - g)) +ᵥ g₁ ∉ (A v).carrier.support :=
+  Set.PartiallyWellOrderedOn.exists_notMem_of_gt (A v).carrier.isPWO_support
     fun _ _ hkl ↦ not_le_of_gt <| VAdd.vadd_lt_vadd_of_lt_of_le
       (sub_lt_sub_left (nsmul_lt_nsmul_left (sub_pos.mpr h) hkl) (-(n • g))) <| Preorder.le_refl g₁
 
 theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     (A : HVertexOperator Γ₁ R V W) (v : V) :
-    ((HahnModule.of R).symm (HahnSeries.binomialPow (A := R) g g' n • A v)).coeff g₁ =
+    (HahnSeries.binomialPow (A := R) g g' n • A v).carrier.coeff g₁ =
       ∑ᶠ m : ℕ, Int.negOnePow m • Ring.choose n m •
-        ((HahnModule.of R).symm (A v)).coeff ((- (n • g) - (m • (g' - g))) +ᵥ g₁) := by
+        (A v).carrier.coeff ((- (n • g) - (m • (g' - g))) +ᵥ g₁) := by
   let f : ℕ → Γ × Γ₁ := fun k ↦  ((n • g) + k • (g' - g), (- (n • g) - (k • (g' - g))) +ᵥ g₁)
   let s := Finset.range <| (exists_binomialPow_smul_support_bound g₁ h n A v).choose + 1
   rw [HahnModule.coeff_smul, finsum_eq_sum_of_support_subset (s := s)]
   · classical
     refine Eq.trans (b := ∑ ij ∈ (Finset.image f s),
       (HahnSeries.binomialPow R g g' n).coeff ij.1 •
-        ((HahnModule.of R).symm (A v)).coeff ij.2) ?_ ?_
+        (A v).carrier.coeff ij.2) ?_ ?_
     · refine Finset.sum_of_injOn (fun k ↦ k) (Function.Injective.injOn fun ⦃x y⦄ a ↦ a) ?_ ?_ ?_
       · rw [Set.mapsTo_iff_image_subset, Set.image_id', Finset.coe_subset]
         intro ij hij
@@ -631,7 +660,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
         by_cases h1 : (HahnSeries.binomialPow R g g' n).coeff ij.1 = 0
         · rw [h1, zero_smul]
         · specialize hn h1
-          by_cases h2 : ((HahnModule.of R).symm (A v)).coeff ij.2 = 0
+          by_cases h2 : (A v).carrier.coeff ij.2 = 0
           · rw [h2, smul_zero]
           · exact ((hn h2) this).elim
       · intro ij hij
@@ -680,8 +709,8 @@ end HVertexOperator
 section HStateField
 
 variable (Γ R U₀ U₁ U₂ V W : Type*) [CommRing R] [AddCommGroup U₀] [Module R U₀] [AddCommGroup U₁]
-[Module R U₁] [AddCommGroup U₂] [Module R U₂] [AddCommGroup V] [Module R V] [AddCommGroup W]
-[Module R W]
+  [Module R U₁] [AddCommGroup U₂] [Module R U₂] [AddCommGroup V] [Module R V] [AddCommGroup W]
+  [Module R W]
 
 /-- A heterogeneous state-field map is a linear map from a vector space `U` to the space of
 heterogeneous fields (or vertex operators) from `V` to `W`.  Equivalently, it is a bilinear map
@@ -695,9 +724,9 @@ namespace HStateField
 section
 
 variable {Γ' Γ₁ Γ₁' : Type*} [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
-[PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
-[PartialOrder Γ₁] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [PartialOrder Γ₁'] [AddAction Γ' Γ₁']
-[IsOrderedCancelVAdd Γ' Γ₁'] (f : Γ ≃+o Γ') (f₁ : OrderedAddActionEquiv f.toEquiv Γ₁ Γ₁')
+  [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ'] [PartialOrder Γ₁]
+  [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [PartialOrder Γ₁'] [AddAction Γ' Γ₁']
+  [IsOrderedCancelVAdd Γ' Γ₁'] (f : Γ ≃+o Γ') (f₁ : OrderedAddActionEquiv f.toEquiv Γ₁ Γ₁')
 
 open scoped HahnModule
 /-!
@@ -732,10 +761,10 @@ end
 
 theorem compLeft_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
     (x : HahnModule Γ₁ R V) (u₂ : U₂) :
-    (fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
-      (Y₁ (((HahnModule.of R).symm x).coeff (ofLex g).1) u₂)).coeff (ofLex g).2).support.IsPWO := by
+    (fun (g : Γ₁ ×ₗ Γ) ↦ (Y₁ (x.carrier.coeff (ofLex g).1) u₂).carrier.coeff
+      (ofLex g).2).support.IsPWO := by
   refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
-  · refine Set.IsPWO.mono (HahnSeries.isPWO_support ((HahnModule.of R).symm x)) ?_
+  · refine Set.IsPWO.mono x.carrier.isPWO_support ?_
     intro g hg
     contrapose! hg
     simp only [HahnSeries.mem_support, ne_eq, not_not] at hg
@@ -746,7 +775,6 @@ theorem compLeft_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStat
 
 variable {Γ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition of state-field maps by left-insertion. In traditional notation, if `Y₁(-,z)` and
 `Y₂(-,w)` are state-field maps, then this is `Y₁(Y₂(u₀,w)u₁,z)u₂`. -/
 @[simps!]
@@ -755,8 +783,8 @@ def compLeft [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R 
     U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ₁ ×ₗ Γ) R W where
   toFun u₀ := {
     toFun u₁ := {
-      toFun u₂ := (HahnModule.of R) ⟨fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
-        (Y₁ (((HahnModule.of R).symm (Y₂ u₀ u₁)).coeff (ofLex g).1) u₂)).coeff (ofLex g).2,
+      toFun u₂ := (HahnModule.of R) ⟨fun (g : Γ₁ ×ₗ Γ) ↦
+        (Y₁ ((Y₂ u₀ u₁).carrier.coeff (ofLex g).1) u₂).carrier.coeff (ofLex g).2,
           compLeft_isPWO R U₂ V W Y₁ (Y₂ u₀ u₁) u₂⟩
       map_add' _ _ := by ext; simp
       map_smul' _ _ := by ext; simp }
@@ -774,10 +802,10 @@ def CompLeftRev [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ
 
 theorem compRight_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
     (u₀ : U₀) (x : HahnModule Γ₁ R V) :
-    (Function.support fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
-      ((Y₁ u₀) (((HahnModule.of R).symm x).coeff (ofLex g).1))).coeff (ofLex g).2).IsPWO := by
+    (Function.support fun (g : Γ₁ ×ₗ Γ) ↦
+      ((Y₁ u₀) (x.carrier.coeff (ofLex g).1)).carrier.coeff (ofLex g).2).IsPWO := by
   refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
-  · refine Set.IsPWO.mono (HahnSeries.isPWO_support ((HahnModule.of R).symm x)) ?_
+  · refine Set.IsPWO.mono x.carrier.isPWO_support ?_
     intro g hg
     contrapose! hg
     simp only [HahnSeries.mem_support, ne_eq, not_not] at hg
@@ -795,8 +823,8 @@ def compRight [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R
     U₀ →ₗ[R] U₁ →ₗ[R] U₂ →ₗ[R] HahnModule (Γ₁ ×ₗ Γ) R W where
   toFun u₀ := {
     toFun u₁ := {
-      toFun u₂ := (HahnModule.of R) ⟨fun (g : Γ₁ ×ₗ Γ) ↦ ((HahnModule.of R).symm
-        (Y₁ u₀ (((HahnModule.of R).symm (Y₂ u₁ u₂)).coeff (ofLex g).1))).coeff (ofLex g).2,
+      toFun u₂ := (HahnModule.of R) ⟨fun (g : Γ₁ ×ₗ Γ) ↦
+        (Y₁ u₀ ((Y₂ u₁ u₂).carrier.coeff (ofLex g).1)).carrier.coeff (ofLex g).2,
           compRight_isPWO R U₀ V W Y₁ u₀ (Y₂ u₁ u₂)⟩
       map_add' _ _ := by ext; simp
       map_smul' _ _ := by ext; simp }
@@ -852,7 +880,7 @@ section Composition
 -/
 
 variable [PartialOrder Γ] [PartialOrder Γ₁] [AddCommGroup U] [Module R U] [AddCommGroup X]
-[Module R X] [AddCommGroup Y] [Module R Y]
+  [Module R X] [AddCommGroup Y] [Module R Y]
 
 /-- Left iterated vertex operator. -/
 def leftTensorComp (A : HVertexOperator Γ R (U ⊗[R] V) X)

@@ -637,7 +637,7 @@ theorem trans_smul [IsScalarTower S R G]
 
 end smul
 variable [Semiring R] [CommSemiring R₂] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
-[Module R M₂] [Module R₂ M₂] [SMulCommClass R R₂ M₂]
+  [Module R M₂] [Module R₂ M₂] [SMulCommClass R R₂ M₂]
 
 /-- Linear maps to a module for a larger ring are the same as semilinear maps along the ring
 homomorphism. -/

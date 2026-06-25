@@ -700,7 +700,7 @@ end Module
 section Algebra
 
 variable [Semiring R] [Semiring S] [Module R S] [SMulCommClass R S S]
-(f g : R[T;T⁻¹]) (x y : Sˣ)
+  (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 theorem smeval_T_pow_mul (n : ℤ) : (T n * f).smeval x = (x ^ n).val * f.smeval x := by
   induction f using LaurentPolynomial.induction_on' with

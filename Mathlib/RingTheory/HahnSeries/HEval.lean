@@ -352,7 +352,7 @@ end PowerSeriesFamily
 section MVpowers
 
 variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R] [CommRing V]
-[Algebra R V] {x : HahnSeries Γ V} (hx : 0 < x.orderTop)
+  [Algebra R V] {x : HahnSeries Γ V} (hx : 0 < x.orderTop)
 
 -- use Finsupp.sumFinsuppAddEquivProdFinsupp and maybe Finsupp.lsingle
 -- see also Finsupp.restrictSupportEquiv
@@ -429,8 +429,7 @@ theorem mvPowerSeriesFamilySMul [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     mvPowerSeriesFamily y (r • f) =
       (HahnSeries.single (0 : Γ) r) • (mvPowerSeriesFamily y f) := by
   ext1 n
-  simp only [smulFamily_toFun, map_smul, smul_eq_mul, smul_apply, HahnModule.of_smul,
-    HahnModule.single_zero_smul_eq_smul, HahnModule.of_symm_smul, Equiv.symm_apply_apply, mul_smul]
+  simp [mul_smul]
 
 /-!
 open Classical in
@@ -613,7 +612,7 @@ namespace MvPowerSeries
 open HahnSeries SummableFamily
 
 variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R] {σ : Type*}
-[Fintype σ] (y : σ →₀ HahnSeries Γ R) (hy : ∀ i, 0 < (y i).orderTop)
+  [Fintype σ] (y : σ →₀ HahnSeries Γ R) (hy : ∀ i, 0 < (y i).orderTop)
 /-!
 /-- The `R`-algebra homomorphism from `R[[X₁,…,Xₙ]]` to `HahnSeries Γ R` given by sending each power
 series variable `Xᵢ` to a positive order element. -/

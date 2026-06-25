@@ -84,7 +84,7 @@ namespace HahnSeries
 section BinomialPow
 
 variable (A : Type*) [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
-[BinomialRing R] [Module R Γ] [CommRing A] [Algebra R A]
+  [BinomialRing R] [Module R Γ] [CommRing A] [Algebra R A]
 
 theorem pos_orderTop_single_sub {g g' : Γ} (h : g < g') (a : A) :
     0 < (single (g' - g) a).orderTop := by
@@ -219,10 +219,9 @@ theorem one_sub_single_sub_one_orderTop_pos [PartialOrder Γ] [AddCommMonoid Γ]
   refine lt_of_lt_of_le (WithTop.coe_pos.mpr hg) ?_
   simp only [sub_sub_cancel_left, orderTop_neg, orderTop_single_le]
 
-variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+variable [LinearOrder Γ] [AddCommMonoid Γ] -- [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
-omit [IsOrderedCancelAddMonoid Γ] in
-theorem minus_one_orderTop_pos [Nontrivial R] (x : HahnSeries Γ R) :
+theorem minus_one_orderTop_pos [AddCommGroupWithOne R] [NeZero (1 : R)] (x : HahnSeries Γ R) :
     0 < (x - 1).orderTop ↔ x.orderTop = 0 ∧ x.leadingCoeff = 1 := by
   constructor
   · intro hx
@@ -240,7 +239,7 @@ theorem minus_one_orderTop_pos [Nontrivial R] (x : HahnSeries Γ R) :
 /-- The monoid of elements close to 1, i.e., subtracting 1 yields positive `orderTop`. -/
 @[simps]
 def onePlusPosOrderTop (Γ) (R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
-    [CommRing R] :
+    [Ring R] :
     Submonoid (HahnSeries Γ R) where
   carrier := { x : HahnSeries Γ R | 0 < (x - 1).orderTop}
   mul_mem' := by
@@ -255,11 +254,12 @@ def onePlusPosOrderTop (Γ) (R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCa
   one_mem' := by simp
 
 @[simp]
-theorem mem_onePlusPosOrderTop_iff (x : HahnSeries Γ R) :
+theorem mem_onePlusPosOrderTop_iff [IsOrderedCancelAddMonoid Γ] [Ring R] (x : HahnSeries Γ R) :
     x ∈ onePlusPosOrderTop Γ R ↔ 0 < (x - 1).orderTop := by
   exact Eq.to_iff rfl
 
-theorem one_plus_single_mem_onePlusPosOrderTop {g : Γ} (hg : 0 < g) (r : R) :
+theorem one_plus_single_mem_onePlusPosOrderTop [IsOrderedCancelAddMonoid Γ] [Ring R] {g : Γ}
+    (hg : 0 < g) (r : R) :
     1 + single g r ∈ onePlusPosOrderTop Γ R := by
   refine (mem_onePlusPosOrderTop_iff _).mpr ?_
   rw [add_sub_cancel_left]
@@ -268,7 +268,7 @@ theorem one_plus_single_mem_onePlusPosOrderTop {g : Γ} (hg : 0 < g) (r : R) :
 namespace SummableFamily
 open HahnSeries
 
-variable [BinomialRing R] [CommRing A] [Algebra R A]
+variable [CommRing R] [IsOrderedCancelAddMonoid Γ] [BinomialRing R] [CommRing A] [Algebra R A]
 
 /-- A summable family of Hahn series, whose `n`th term is `Ring.choose r n • (x - 1) ^ n` when
 `x` is close to `1` (more precisely, when `0 < (x - 1).orderTop`), and `0 ^ n` otherwise. These
@@ -331,7 +331,7 @@ end SummableFamily
 section Pow
 open SummableFamily
 
-variable [BinomialRing R]
+variable [CommRing R] [BinomialRing R] [IsOrderedCancelAddMonoid Γ]
 
 instance : Pow (orderTopSubOnePos Γ R) R where
   pow x r := toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r)
@@ -360,6 +360,8 @@ theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) 
   · by_cases hr : r = 0 <;> simp [hr, hg]
 
 end Pow
+
+variable [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
 theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
   refine isUnit_of_orderTop_pos ?_
@@ -405,14 +407,16 @@ def UnitBinomial {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : Is
     IsUnit.unit (isUnit_one_sub_single (pos_addUnit_neg_add hg hgg') (ha.unit.inv * -b))
 
 theorem unitBinomial_eq_single_add_single {g g' : Γ} {hg : IsAddUnit g} {hgg' : g < g'} {a : R}
-    {ha : IsUnit a} {b : R} : UnitBinomial hg hgg' ha b = single g a + single g' b := by
+   {ha : IsUnit a} {b : R} :
+    UnitBinomial hg hgg' ha b = single g a + single g' b := by
   simp only [UnitBinomial, AddUnits.neg_eq_val_neg, Units.inv_eq_val_inv, Units.val_mul,
     val_UnitSingle, IsUnit.unit_spec, mul_sub, mul_one, single_mul_single]
   rw [← add_assoc, IsAddUnit.add_val_neg, zero_add, ← mul_assoc, IsUnit.mul_val_inv, one_mul,
     sub_eq_iff_eq_add, add_assoc, ← single_add, add_neg_cancel, single_eq_zero, add_zero]
 
 theorem orderTop_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R}
-    (ha : IsUnit a) (b : R) : (UnitBinomial hg hgg' ha b).val.orderTop = g := by
+    (ha : IsUnit a) (b : R) :
+    (UnitBinomial hg hgg' ha b).val.orderTop = g := by
   rw [unitBinomial_eq_single_add_single, orderTop_add_eq_left, orderTop_single (IsUnit.ne_zero ha)]
   · refine lt_of_lt_of_le ?_ orderTop_single_le
     rw [(orderTop_single (IsUnit.ne_zero ha))]
@@ -562,11 +566,9 @@ theorem _root_.AddSubmonoid.neg_not_in_closure [IsOrderedAddMonoid Γ] {g g' : �
     (hg' : g' < 0) : ¬ g' ∈ AddSubmonoid.closure {g} := by
   rw [AddSubmonoid.mem_closure_singleton, not_exists]
   intro k hk
-  have hgk : 0 ≤ k • g :=
-    nsmul_nonneg hg k
-  rw [hk] at hgk
-  exact (lt_self_iff_false 0).mp (lt_of_le_of_lt hgk hg')
---#find_home AddSubmonoid.neg_not_in_closure --[Mathlib.GroupTheory.Submonoid.Membership]
+  grind [nsmul_nonneg hg k]
+  --exact (lt_self_iff_false 0).mp (lt_of_le_of_lt (hk ▸ nsmul_nonneg hg k) hg')
+--#find_home! AddSubmonoid.neg_not_in_closure --[Mathlib.Algebra.Group.Submonoid.Pointwise]
 
 /-!
 theorem coeff_one_sub_single_pow_of_neg {g g' : Γ} (hg : 0 ≤ g) (hg' : g' < 0) {r : R} {n : ℕ} :
@@ -591,7 +593,7 @@ theorem coeff_single_mul_of_no_add [IsOrderedCancelAddMonoid Γ] {x : HahnSeries
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
     simp_all [mem_addAntidiagonal, coeff_single]
-  · exact rfl
+  · exact sum_empty
 --#find_home! coeff_single_mul_of_no_add --[Mathlib.RingTheory.HahnSeries.Multiplication]
 /-!
 theorem coeff_zero_one_sub_single_npow {g : Γ} (hg : 0 < g) {r : R} {n : ℕ} :

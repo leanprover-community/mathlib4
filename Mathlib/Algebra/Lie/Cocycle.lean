@@ -371,7 +371,7 @@ lemma coboundary_first_alternating (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) (g :
     (i j : Fin (n + 1)) (h : g i = g j) (hij : i ≠ j) :
     (∑ i : Fin (n + 1), coboundary_first_summand f.toMultilinearMap i).toFun g = 0 := by
   simp only [coboundary_first_summand, AlternatingMap.coe_multilinearMap,
-    MultilinearMap.toFun_eq_coe, MultilinearMap.coe_sum, MultilinearMap.coe_mk, Finset.sum_apply]
+    MultilinearMap.toFun_eq_coe, FunLike.coe_sum, MultilinearMap.coe_mk, Finset.sum_apply]
   rw [Finset.sum_eq_add_of_mem i j (Finset.mem_univ i) (Finset.mem_univ j) hij]
   · simp_rw [h, Units.smul_def, ← lie_smul, ← lie_add]
     suffices (Int.negOnePow i.val : ℤ) • f (i.removeNth g) +
@@ -426,8 +426,8 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
     by_cases hik : i = k
     · have hjk := ne_of_gt <| hik.symm ▸ h
       simp only [hik]
-      simp_rw [show ∀ (z : L), Function.update g k z i = z by
-        intros; rw [hik, Function.update_self], show ∀ (z : L), Function.update g k z j = g j by
+      simp_rw [show ∀ (z : L), Function.update g k z k = z by
+        intros; rw [Function.update_self], show ∀ (z : L), Function.update g k z j = g j by
         intros; rw [← hik, Function.update_of_ne (ne_of_lt h).symm]]
       simp_rw [Fin.removeNth_update_of_gt (hik.symm ▸ h), Fin.removeNth_update]
       simp only [add_lie]

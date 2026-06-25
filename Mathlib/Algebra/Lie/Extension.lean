@@ -679,7 +679,7 @@ open LieModule.Cohomology
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-(c : twoCocycle R L M)
+  (c : twoCocycle R L M)
 
 /-- The Lie algebra map from a central extension derived from a 2-cocycle. -/
 @[simps]
@@ -702,7 +702,7 @@ section ofTwoCocycle
 open LieModule.Cohomology
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M] [IsLieAbelian M]
-[LieRingModule L M] [LieModule R L M] (c : twoCocycle R L M)
+  [LieRingModule L M] [LieModule R L M] (c : twoCocycle R L M)
 
 lemma bracket_ofTwoCocycle (x y : (ofTwoCocycle c).L) :
     ⁅x, y⁆ = ofAlg c ⁅(ofAlg c).symm x, (ofAlg c).symm y⁆ := rfl
