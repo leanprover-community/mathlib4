@@ -123,7 +123,7 @@ theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R]
   AlgHom.toLinearMap_injective.comp coe_toAlgHom_injective
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
-  AlgHom.coe_ringHom_injective.comp coe_toAlgHom_injective
+  AlgHom.coe_toRingHom_injective.comp coe_toAlgHom_injective
 
 theorem coe_monoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
   AlgHom.coe_monoidHom_injective.comp coe_toAlgHom_injective
