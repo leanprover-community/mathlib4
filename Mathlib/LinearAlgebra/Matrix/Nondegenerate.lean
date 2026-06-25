@@ -162,7 +162,7 @@ See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDet
 theorem nondegenerate_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : M.Nondegenerate :=
   .of_det_mem_nonZeroDivisors <| mem_nonZeroDivisors_of_ne_zero hM
 
-theorem eq_zero_of_vecMul_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰)
+theorem eq_zero_of_det_mem_nonZeroDivisors_of_vecMul_eq_zero (hM : M.det ∈ R⁰)
     {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
   Nondegenerate.of_det_mem_nonZeroDivisors hM |>.separatingLeft.eq_zero_of_vecMul_eq_zero hv
 
@@ -170,7 +170,7 @@ theorem eq_zero_of_vecMul_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m �
     (hv : v ᵥ* M = 0) : v = 0 :=
   nondegenerate_of_det_ne_zero hM |>.separatingLeft.eq_zero_of_vecMul_eq_zero hv
 
-theorem eq_zero_of_mulVec_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰)
+theorem eq_zero_of_det_mem_nonZeroDivisors_of_mulVec_eq_zero (hM : M.det ∈ R⁰)
     {v : m → R} (hv : M *ᵥ v = 0) : v = 0 :=
   Nondegenerate.of_det_mem_nonZeroDivisors hM |>.separatingRight.eq_zero_of_mulVec_eq_zero hv
 
