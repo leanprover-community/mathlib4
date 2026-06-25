@@ -38,6 +38,7 @@ open Topology
 
 namespace CategoryTheory
 
+/-- The inclusion `C → Arrow C´ sending each object to its identity arrow. -/
 protected abbrev Arrow.id {C : Type*} [Category* C] (X : C) : Arrow C := 𝟙 X
 
 namespace ComposableArrows
@@ -232,6 +233,8 @@ def ComposableArrows.equivProd {C : Type*} [Category* C] [Subsingleton C] (X : C
 instance {M : Type*} [Monoid M] [TopologicalSpace M] : TopologicalSpace (Arrow (SingleObj M)) :=
   (Arrow.mkEquiv (SingleObj.star M) (SingleObj.star M)).symm.topologicalSpace
 
+/-- The bijection between morphisms `star M ⟶ star M` and `Arrow (SingleObj M)` given by `Arrow.mk`,
+upgraded to a homeomorphism. -/
 @[simps!]
 def SingleObj.arrowMkHomeomorph {M : Type*} [Monoid M] [TopologicalSpace M] :
     (star M ⟶ star M) ≃ₜ Arrow (SingleObj M) where
