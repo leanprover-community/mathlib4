@@ -65,10 +65,6 @@ def findDiamonds (declName : Name) : MetaM (Option MessageData) := withReducible
   let cinfo ← getConstInfo declName
   let .const cls _ := cinfo.type.getForallBody.getAppFn | return none
   if (← getConstInfo cls).type.getForallBody.isProp then return none
-  -- TODO: try to get rid of these manual exceptions to the linter.
-  if cinfo.type.getUsedConstants.any (· matches `Additive | `Multiplicative
-      | `DomAddAct | `DomMulAct | `MulOpposite | `AddOpposite | `RestrictScalars | `WithVal) then
-    return none
   withoutModifyingEnv do
   let s ← (instanceExtension.getState (← getEnv)).erase declName
   modifyEnv (instanceExtension.modifyState · fun _ => s)
