@@ -83,14 +83,14 @@ theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
   unfold Pi.hasLe Prop.le
   grind [Std.Refl]
 
-@[deprecated (since := "2026-04-23")] alias refl_iff_subrelation_eq := refl_iff_eq_le
+@[deprecated (since := "2026-06-23")] alias refl_iff_subrelation_eq := refl_iff_eq_le
 @[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_eq_le
 
 theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   unfold Pi.hasLe Prop.le
   grind [Std.Irrefl]
 
-@[deprecated (since := "2026-04-23")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
+@[deprecated (since := "2026-06-23")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
 @[deprecated (since := "2026-02-12")] alias irreflexive_iff_subrelation_ne := irrefl_iff_le_ne
 
 protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
