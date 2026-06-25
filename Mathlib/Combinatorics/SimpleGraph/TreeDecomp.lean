@@ -235,7 +235,7 @@ lemma ewidth_botTreeDecomp [Fintype V] : (botTreeDecomp (V := V)).ewidth = 0 := 
 
 /-- If G has a tree decomposition of width n, then the same decomposition applies for any
   subgraph. -/
-@[mono]
+@[gcongr]
 lemma TreeDecomp.mono {G' : SimpleGraph V} {n : ℕ∞} (h : G' ≤ G) (hG : G.hasTreeDecomp n) :
     G'.hasTreeDecomp n := by
   obtain ⟨t, ht⟩ := hG
