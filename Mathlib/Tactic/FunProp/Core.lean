@@ -24,6 +24,35 @@ open Lean Meta Qq
 
 namespace Meta.FunProp
 
+/-- Forward declaration of main `funProp` function -/
+initialize funPropCoreImplRef : IO.Ref (Expr → FunPropM (Option Result)) ←
+  .mkRef fun _ => return none
+
+/-- Solve `fun_prop` goal like `Continuous f` or `Differentiable ℝ fun x : ℝ => exp x + x` -/
+def funPropCore (e : Expr) : FunPropM (Option Result) := do
+  let impl ← funPropCoreImplRef.get
+  impl e
+
+/-- Main `funProp` function. Returns proof of `e`. -/
+partial def funProp (e : Expr) : FunPropM (Option Result) := do
+
+  let e ← instantiateMVars e
+
+  match e with
+  | .letE .. =>
+    letTelescope e fun xs b => do
+      let some r ← funProp b
+        | return none
+      -- cacheResult e {proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
+      return some { proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
+  | .forallE .. =>
+    forallTelescope e fun xs b => do
+      let some r ← funProp b
+        | return none
+      -- cacheResult e {proof := ← mkLambdaFVars xs r.proof }
+      return some { proof := ← mkLambdaFVars xs r.proof }
+  | .mdata _ e' => funProp e'
+  | _ => funPropCore e
 
 /-- Synthesize instance of type `type` and
   1. assign it to `x` if `x` is meta variable
