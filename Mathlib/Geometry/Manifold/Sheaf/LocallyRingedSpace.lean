@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Geometry.Manifold.Sheaf.Smooth
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-! # Smooth manifolds as locally ringed spaces
 
@@ -130,6 +132,13 @@ instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
   intro f g
   exact Ideal.add_mem _
 
+lemma smoothSheafCommRing.maximalIdeal_eq_ker_eval (x : M) :
+    IsLocalRing.maximalIdeal ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) =
+      RingHom.ker (smoothSheafCommRing.eval IM 𝓘(𝕜) M 𝕜 x) := by
+  rw [SetLike.ext'_iff, ← smoothSheafCommRing.nonunits_stalk]
+  ext
+  simp
+
 variable (M)
 
 /-- A smooth manifold can be considered as a locally ringed space. -/
@@ -239,6 +248,220 @@ def ChartedSpace.restrictLocallyRingedSpaceIso (U : Opens M) :
   inv_hom_id := by
     simp [← cancel_mono (locallyRingedSpaceMap _ contMDiff_subtype_val)]
 
+/-- `Γ(X, U)` is notation for `X.presheaf.obj (op U)`. -/
+scoped[AlgebraicGeometry.LocallyRingedSpace] notation3 "Γ(" X ", " U ")" =>
+  (PresheafedSpace.presheaf (SheafedSpace.toPresheafedSpace
+    (LocallyRingedSpace.toSheafedSpace X))).obj
+    (Opposite.op (α := TopologicalSpace.Opens _) U)
+
+open scoped AlgebraicGeometry.LocallyRingedSpace
+
+def AlgebraicGeometry.LocallyRingedSpace.residue {X : LocallyRingedSpace.{u}} (x : X) :
+    X.presheaf.stalk x ⟶ X.residueField x :=
+  CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
+
+@[reassoc]
+lemma AlgebraicGeometry.LocallyRingedSpace.residue_residueFieldMap
+    {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    Y.residue (f.base x) ≫ residueFieldMap f x = f.stalkMap x ≫ X.residue x :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma AlgebraicGeometry.LocallyRingedSpace.Hom.germ_stalkMap {X Y : LocallyRingedSpace.{u}}
+    (f : X ⟶ Y) (U : Opens Y) (x : X) (hx : f.base x ∈ U) :
+    Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x = f.c.app _ ≫ X.presheaf.germ _ _ hx :=
+  PresheafedSpace.stalkMap_germ _ _ _ _
+
+-- def TopCat.Sheaf.constant
+
+def Set.orderIsoFun (α : Type*) : Set α ≃o (α → Prop) where
+  toFun s := (· ∈ s)
+  invFun p := setOf p
+  map_rel_iff' := .rfl
+
+def OrderIso.punitArrowEquiv (α : Type*) [LE α] : (PUnit → α) ≃o α :=
+  .symm <|
+  { __ := (Equiv.punitArrowEquiv _).symm
+    map_rel_iff' {a b} := by
+      simp [Pi.le_def, Equiv.punitArrowEquiv] }
+
+def asdfasdfasdfadsf : Set PUnit ≃o Prop :=
+  (Set.orderIsoFun _).trans (OrderIso.punitArrowEquiv _)
+
+def TopologicalSpace.Opens.orderIsoSet (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
+    Opens α ≃o Set α where
+  toFun U := U.carrier
+  invFun s := ⟨s, isOpen_discrete s⟩
+  map_rel_iff' := .rfl
+
+def OrderIso.propBool : Prop ≃o Bool :=
+  .symm <|
+  { __ := Equiv.propEquivBool.symm
+    map_rel_iff' := .rfl }
+
+/-- The opens on `PUnit` are order isomorphic to `Prop`. -/
+def TopologicalSpace.Opens.pUnitOrderIso : Opens PUnit.{u + 1} ≃o Prop :=
+  (TopologicalSpace.Opens.orderIsoSet _).trans <|
+    (Set.orderIsoFun _).trans (OrderIso.punitArrowEquiv _)
+
+section
+
+variable {C : Type*} [Category* C]
+
+def CategoryTheory.Functor.fromBool {X Y : C} (f : X ⟶ Y) : Bool ⥤ C where
+  obj
+    | .false => X
+    | .true => Y
+  map {X Y} u :=
+    match X, Y, u with
+    | .true, .true, _ => 𝟙 _
+    | .false, .true, _ => f
+    | .true, .false, u => False.elim (by have := leOfHom u; contradiction)
+    | .false, .false, _ => 𝟙 _
+  map_comp := by grind
+
+@[simp]
+lemma CategoryTheory.Functor.fromBool_obj_true {X Y : C} (f : X ⟶ Y) :
+    (fromBool f).obj .true = Y :=
+  rfl
+
+@[simp]
+lemma CategoryTheory.Functor.fromBool_obj_false {X Y : C} (f : X ⟶ Y) :
+    (fromBool f).obj .false = X :=
+  rfl
+
+lemma Bool.antitone_not : Antitone Bool.not :=
+  fun b b' hbb' ↦ by rcases b <;> rcases b' <;> grind
+
+def CategoryTheory.Functor.fromBoolOp {X Y : C} (f : X ⟶ Y) : Boolᵒᵖ ⥤ C where
+  obj b := (Functor.fromBool f).obj b.unop.not
+  map {b b'} u := (Functor.fromBool f).map (homOfLE <| Bool.antitone_not (leOfHom u.unop))
+  map_comp := by simp [← Functor.map_comp]
+
+@[simp]
+lemma CategoryTheory.Functor.fromBoolOp_obj_true {X Y : C} (f : X ⟶ Y) :
+    (fromBoolOp f).obj (.op .true) = X :=
+  rfl
+
+@[simp]
+lemma CategoryTheory.Functor.fromBoolOp_obj_false {X Y : C} (f : X ⟶ Y) :
+    (fromBoolOp f).obj (.op .false) = Y :=
+  rfl
+
+end
+
+def TopCat.Sheaf.asdfasdf {C : Type*} [Category* C] (T : C) (hT : IsTerminal T) :
+    TopCat.Sheaf C (.of PUnit.{u + 1}) ≌ C where
+  functor := ObjectProperty.ι _ ⋙ (evaluation _ _).obj (.op ⊤)
+  inverse.obj A :=
+    ⟨Opens.pUnitOrderIso.toOrderEmbedding.toOrderHom.toFunctor.op ⋙
+     OrderIso.propBool.toOrderEmbedding.toOrderHom.toFunctor.op ⋙
+     Functor.fromBoolOp (hT.from A),
+     sorry⟩
+  inverse.map := sorry
+  inverse.map_id := sorry
+  inverse.map_comp := sorry
+  unitIso := sorry
+  counitIso := sorry
+  functor_unitIso_comp := sorry
+
+def AlgebraicGeometry.SheafedSpace.pUnit {C : Type*} [Category* C] (A : C) :
+    SheafedSpace.{_, _, u} C where
+  carrier := .of PUnit.{u + 1}
+  presheaf := sorry
+  IsSheaf := sorry
+
+-- def AlgebraicGeometry.SheafedSpace.pUnitStalkIso {C : Type*} [Category* C] (A : C) :
+--     (pUnit.{u} A).presheaf.stalk ⟨⟩ ≅ A :=
+--   sorry
+
+def AlgebraicGeometry.LocallyRingedSpace.pUnit (R : Type u) [CommRing R] [IsLocalRing R] :
+    LocallyRingedSpace.{u} where
+  __ := SheafedSpace.pUnit (.of R)
+  isLocalRing := sorry
+
+namespace ChartedSpace
+
+variable (IM) in
+def evaluation (x : M) : (locallyRingedSpace IM M).presheaf.stalk x ⟶ .of 𝕜 :=
+  smoothSheafCommRing.evalHom IM 𝓘(𝕜) M 𝕜 x
+
+lemma ker_evaluation (x : M) :
+    RingHom.ker (evaluation IM x).hom = IsLocalRing.maximalIdeal _ :=
+  (smoothSheafCommRing.maximalIdeal_eq_ker_eval _ _).symm
+
+@[simp]
+lemma evaluation_germ (U : Opens M) (x : M) (hx : x ∈ U)
+    (g : Γ(locallyRingedSpace IM M, U)) :
+    evaluation IM x ((locallyRingedSpace IM M).presheaf.germ U x hx g) = g.val ⟨x, hx⟩ :=
+  smoothSheafCommRing.eval_germ _ _ _ _
+
+@[simp]
+lemma evaluation_germ_coe (U : Opens M) (x : U)
+    (g : Γ(locallyRingedSpace IM M, U)) :
+    evaluation IM x.1 ((locallyRingedSpace IM M).presheaf.germ U x.1 x.2 g) = g.val x :=
+  smoothSheafCommRing.eval_germ _ _ _ _
+
+instance : ChartedSpace HM (locallyRingedSpace IM M).toPresheafedSpace :=
+  inferInstanceAs <| ChartedSpace HM M
+
+variable (IM) in
+def residueIso (x : M) : (locallyRingedSpace IM M).residueField x ≅ .of 𝕜 :=
+  RingEquiv.toCommRingCatIso <|
+    RingEquiv.trans (Ideal.quotEquivOfEq (ker_evaluation _).symm)
+    (RingHom.quotientKerEquivOfSurjective
+    (smoothSheafCommRing.eval_surjective IM 𝓘(𝕜) M 𝕜 x))
+
+
+
+@[reassoc (attr := simp)]
+lemma residue_residueIso_hom (x : M) :
+    (locallyRingedSpace IM M).residue x ≫ (residueIso IM x).hom = evaluation IM x :=
+  rfl
+
+instance (U : Opens M) : Algebra 𝕜 Γ(locallyRingedSpace IM M, U) :=
+  --inferInstanceAs <| Algebra 𝕜 ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.obj _)
+  sorry
+
+instance (x : M) : Algebra 𝕜 ((locallyRingedSpace IM M).presheaf.stalk x) :=
+  sorry
+
+instance (x : M) : Algebra 𝕜 ((locallyRingedSpace IM M).residueField x) :=
+  inferInstanceAs <| Algebra 𝕜 (IsLocalRing.ResidueField _)
+
+@[reassoc (attr := simp)]
+lemma algebraMap_residueField (x : M) :
+    CommRingCat.ofHom (algebraMap 𝕜 <| (locallyRingedSpace IM M).residueField x) =
+      (residueIso IM x).inv :=
+  sorry
+
+-- def asdfasdf : locallyRingedSpace IM PUnit ⟶ _ := sorry
+
+@[reassoc (attr := simp)]
+lemma stalkMap_evaluation (f : locallyRingedSpace IM M ⟶ locallyRingedSpace IN N) (x : M) :
+    f.stalkMap x ≫ evaluation IM x = evaluation IN (f.base x) := by
+  rw [← residue_residueIso_hom, ← residue_residueIso_hom]
+  rw [← LocallyRingedSpace.residue_residueFieldMap_assoc]
+  congr 1
+  rw [← cancel_epi (residueIso _ _).inv]
+  conv_lhs => rw [← algebraMap_residueField]
+  erw [Iso.inv_hom_id]
+  sorry
+
+end ChartedSpace
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ChartedSpace.app_apply (f : locallyRingedSpace IM M ⟶ locallyRingedSpace IN N)
+    (U : Opens N) (g) (x : ((Opens.map f.base).op.obj (Opposite.op U)).unop) :
+    (f.c.app (.op U) g).val x = g.val ⟨f.base x.1, x.2⟩ := by
+  dsimp
+  rw [← evaluation_germ]
+  rw [← evaluation_germ_coe]
+  simp only [← ConcreteCategory.comp_apply]
+  erw [← ConcreteCategory.comp_apply]
+  rw [← LocallyRingedSpace.Hom.germ_stalkMap_assoc]
+  simp
+
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {EM : Type u} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type u} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
@@ -278,7 +501,7 @@ lemma ofArrows_mem_zariskiPrecoverage_iff {ι : Type*} {X : LocallyRingedSpace.{
   intro
   rfl
 
-def Hom.isOpenEmbedding {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+lemma Hom.isOpenEmbedding {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     IsOpenEmbedding f.base :=
   PresheafedSpace.IsOpenImmersion.base_open
 

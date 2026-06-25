@@ -1070,6 +1070,9 @@ end ULift
 instance Bool.instPartialOrder : PartialOrder Bool := inferInstance
 instance Bool.instDistribLattice : DistribLattice Bool := inferInstance
 
+lemma Bool.antitone_not : Antitone not :=
+  fun b b' hbb' ↦ by rcases b <;> rcases b' <;> grind
+
 variable [LinearOrder α] {p : α → α → Prop}
 
 lemma pairwise_iff_lt [Std.Symm p] : Pairwise p ↔ ∀ ⦃a b⦄, a < b → p a b := by
