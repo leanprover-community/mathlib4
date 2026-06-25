@@ -711,14 +711,6 @@ open Set Real Complex intervalIntegral Metric Filter MeasureTheory
 
 open scoped Interval Topology
 
-section aux
-
--- Helper lemmas that make it easier to work with `x + y * I` where `x y : ℝ`.
-private lemma re_of_real_add_real_mul_I (x y : ℝ) : (x + y * I).re = x := by simp
-private lemma im_of_real_add_real_mul_I (x y : ℝ) : (x + y * I).im = y := by simp
-
-end aux
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} {x₁ x₂ : ℝ} (y : ℝ)
 
 section Tendsto_Zero
