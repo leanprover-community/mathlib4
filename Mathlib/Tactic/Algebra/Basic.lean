@@ -5,11 +5,9 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.Algebra.Defs
+public meta import Lean.Meta.Tactic.NormCast
 public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Ring.RingNF
-
 
 /-!
 # The `algebra` tactic
@@ -128,7 +126,7 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
 into casts. -/
 def pushCast (e : Expr) : MetaM Simp.Result := do
   -- collect the available `push_cast` lemmas
-  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   let simps : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
   for thm in simps do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
@@ -165,24 +163,24 @@ namespace RingCompute
 
 /-- Evaluate the sum of two normalized expressions in `R` using `ring`. -/
 def add (cR : Common.Cache sR) {a b : Q($A)} (za : BaseType sAlg a) (zb : BaseType sAlg b) :
-    MetaM (Common.Result (BaseType sAlg) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
-  let ⟨r, vr⟩ := za
-  let ⟨s, vs⟩ := zb
-  let ⟨t, vt, pt⟩ ← Common.evalAdd (Ring.ringCompute cR) rcℕ vr vs
-  match vt with
-  | .zero =>
-    have : $t =Q 0 := ⟨⟩
-    return  ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, some q(add_algebraMap_isNat_zero $pt)⟩
-  | vt =>
-    return ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, none⟩
+    MetaM (Common.Result (BaseType sAlg) q($a + $b) × Option Q(IsNat ($a + $b) 0)) :=
+  match za, zb with
+  | .mk r vr, .mk s vs => do
+    let ⟨t, vt, pt⟩ ← Common.evalAdd (Ring.ringCompute cR) rcℕ vr vs
+    match (dependent := true) vt with
+    | .zero =>
+      have : $t =Q 0 := ⟨⟩
+      return  ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, some q(add_algebraMap_isNat_zero $pt)⟩
+    | vt =>
+      return ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, none⟩
 
 /-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
 def mul (cR : Common.Cache sR) {a b : Q($A)} (za : BaseType sAlg a) (zb : BaseType sAlg b) :
-    MetaM (Common.Result (BaseType sAlg) q($a * $b)) := do
-  let ⟨r, vr⟩ := za
-  let ⟨s, vs⟩ := zb
-  let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute cR) rcℕ vr vs
-  return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
+    MetaM (Common.Result (BaseType sAlg) q($a * $b)) :=
+  match za, zb with
+  | .mk r vr, .mk s vs => do
+    let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute cR) rcℕ vr vs
+    return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
 
 /-- Take an expression `r'` in a ring `R'` such that `R` is an `R'`-algebra and cast `r'` to `R`
 using `algebraMap R' R`, so that the scalar multiplication action on `A` is preserved. -/
@@ -195,7 +193,7 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u'))
   let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q($_smul) r'
   let ⟨_r'', vr, pr⟩ ←
     Common.eval rcℕ (Ring.ringCompute cR.toCache) cR.toCache q($r)
-  match vr with
+  match (dependent := true) vr with
   | .zero .. =>
     assumeInstancesCommute
     return ⟨_, .zero, q(cast_zero_smul_eq_zero_mul $pr $pf_smul)⟩
@@ -206,37 +204,40 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u'))
 
 /-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
 def neg (cR : Algebra.Cache sR) {a : Q($A)} (_rA : Q(CommRing $A)) (za : BaseType sAlg a) :
-    MetaM (Common.Result (BaseType sAlg) q(-$a)) := do
-  let ⟨r, vr⟩ := za
-  match cR.rα with
-  | some rR =>
-    let ⟨_, vt, pt⟩ ← Common.evalNeg (Ring.ringCompute cR.toCache) q($rR) vr
-    assumeInstancesCommute
-    return ⟨_, .mk _ vt, q(neg_algebraMap $pt)⟩
-  | none => failure
+    MetaM (Common.Result (BaseType sAlg) q(-$a)) :=
+  match za with
+  | .mk r vr => do
+    match cR.rα with
+    | some rR =>
+      let ⟨_, vt, pt⟩ ← Common.evalNeg (Ring.ringCompute cR.toCache) q($rR) vr
+      assumeInstancesCommute
+      return ⟨_, .mk _ vt, q(neg_algebraMap $pt)⟩
+    | none => failure
 
 /-- Raise a normalized expression in `R` to the power of a normalized natural number expression
 using `ring`. -/
 def pow (cR : Common.Cache sR) {a : Q($A)} {b : Q(ℕ)} (za : BaseType sAlg a)
     (vb : Common.ExProdNat q($b)) :
-    OptionT MetaM (Common.Result (BaseType sAlg) q($a ^ $b)) := do
-  let ⟨r, vr⟩ := za
-  let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute cR) rcℕ vr vb
-  return ⟨_, ⟨_, vs⟩, q(pow_algebraMap $ps)⟩
+    OptionT MetaM (Common.Result (BaseType sAlg) q($a ^ $b)) :=
+  match za with
+  | .mk r vr => do
+    let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute cR) rcℕ vr vb
+    return ⟨_, ⟨_, vs⟩, q(pow_algebraMap $ps)⟩
 
 /-- Evaluate the inverse of two normalized expressions in `R` using `ring`. -/
 /- We include the CharZero argument to match the type signature of the ringCompute entry. -/
 @[nolint unusedArguments]
 def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(Semifield $A))
-    (za : BaseType sAlg a) : AtomM (Option (Common.Result (BaseType sAlg) q($a⁻¹))) := do
-  match cR.dsα with
-  | some fR =>
-    let ⟨r, vr⟩ := za
-    let ⟨_, vs, ps⟩ ← Common.ExSum.evalInv (Ring.ringCompute cR.toCache) rcℕ q($fR) cR.czα vr
-    assumeInstancesCommute
-    return some ⟨_, ⟨_, vs⟩, q(inv_algebraMap $ps)⟩
-  | none =>
-    return none
+    (za : BaseType sAlg a) : AtomM (Option (Common.Result (BaseType sAlg) q($a⁻¹))) :=
+  match za with
+  | .mk r vr => do
+    match cR.dsα with
+    | some fR =>
+      let ⟨_, vs, ps⟩ ← Common.ExSum.evalInv (Ring.ringCompute cR.toCache) rcℕ q($fR) cR.czα vr
+      assumeInstancesCommute
+      return some ⟨_, ⟨_, vs⟩, q(inv_algebraMap $ps)⟩
+    | none =>
+      return none
 
 /-- Evaluate constants in `A` using `norm_num`. -/
 def derive (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
@@ -293,59 +294,17 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 theorem Nat.cast_eq_algebraMap (A : Type*) [CommSemiring A] (n : ℕ) :
     Nat.cast n = algebraMap ℕ A n := rfl
 
-theorem Nat.algebraMap_eq_cast (A : Type*) [CommSemiring A] (n : ℕ) :
-    algebraMap ℕ A n = Nat.cast n := rfl
-
 theorem Int.cast_eq_algebraMap (A : Type*) [CommRing A] (n : ℤ) :
     Int.cast n = algebraMap ℤ A n := rfl
 
-theorem Int.algebraMap_eq_cast (A : Type*) [CommRing A] (n : ℤ) :
-    algebraMap ℤ A n = Int.cast n := rfl
-
 /-- Remove some nonstandard spellings of `algebraMap` such as `Nat.cast` -/
-def preprocess (mvarId : MVarId) : MetaM MVarId := do
+def preprocess (e : Expr) : MetaM Simp.Result := do
   -- collect the available `push_cast` lemmas
   let thms : SimpTheorems := {}
   let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap,
     ``Algebra.algebraMap_eq_smul_one].foldlM (·.addConst ·) thms
   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
-  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
-    throwError "internal error in polynomial tactic: preprocessing should not close goals"
-  return r
-
-/-- Clean up the normal form into a more human-friendly format. This does everything
-  `RingNF.cleanup` does and also pulls the scalar multiplication from the end of of each term to
-  the start. i.e. x * y * (r • 1) → r • (x * y)
-  Used by `cleanup`. -/
-def cleanupSMul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
-  let thms : SimpTheorems := {}
-  let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
-    ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm, ``Nat.algebraMap_eq_cast,
-    ``Int.algebraMap_eq_cast].foldlM (·.addConst ·) thms
-  let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
-      ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
-    (simpTheorems := #[thms])
-    (congrTheorems := ← getSimpCongrTheorems)
-  pure <| ←
-    r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
-
-/-- Turn scalar multiplication by an explicit constant in `R` into multiplication in `A`.
-
-e.g. `(4 : ℚ) • x` becomes `4 * x` but `↑n • x` stays `↑n • x`.
--/
-def cleanupConsts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
-  let thms : SimpTheorems := {}
-  let thms ← [``add_zero, ``_root_.one_mul, ``_root_.mul_one,
-    ``neg_mul, ``add_neg].foldlM (·.addConst ·) thms
-  let thms ← [``ofNat_smul, ``neg_ofNat_smul, ``neg_1_smul, ``nnRat_ofNat_smul_1,
-    ``nnRat_ofNat_smul_2, ``rat_ofNat_smul_1, ``rat_ofNat_smul_2
-    ].foldlM (·.addConst · (post := false)) thms
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
-    (simpTheorems := #[thms])
-    (congrTheorems := ← getSimpCongrTheorems)
-  pure <| ←
-    r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+  return (← Simp.main e ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
 /-- Collect all scalar rings from scalar multiplications using a state monad for performance.
 
@@ -475,14 +434,14 @@ automatically.
  -/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
-    liftMetaTactic' preprocess
+    liftMetaTactic1 (transformAtTarget (fun e _ ↦ preprocess e) "algebra" .silent · default)
     let g ← getMainGoal
     AtomM.run .default (proveEq none g)
 
 @[tactic_alt algebra]
 elab (name := algebraWith) "algebra" " with " R:term : tactic =>
   withMainContext do
-    liftMetaTactic' preprocess
+    liftMetaTactic1 (transformAtTarget (fun e _ ↦ preprocess e) "algebra" .silent · default)
     let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
     let g ← getMainGoal
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)

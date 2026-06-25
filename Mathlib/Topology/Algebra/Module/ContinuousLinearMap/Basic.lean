@@ -450,7 +450,6 @@ instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
-  nsmul := (· • ·)
   nsmul_zero f := by
     ext
     simp
@@ -686,12 +685,21 @@ end ApplyAction
 
 theorem isClosed_ker [T1Space M₂] (f : M₁ →SL[σ₁₂] M₂) :
     IsClosed (f.ker : Set M₁) :=
-  continuous_iff_isClosed.1 (map_continuous f) _ isClosed_singleton
+  isClosed_singleton.preimage f.continuous
+
+theorem isClosed_eqLocus [T2Space M₂] (f g : M₁ →SL[σ₁₂] M₂) :
+    IsClosed (f.eqLocus g : Set M₁) :=
+  isClosed_eq f.continuous g.continuous
 
 theorem isComplete_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
     [Module R₁ M'] [T1Space M₂] (f : M' →SL[σ₁₂] M₂) :
     IsComplete (f.ker : Set M') :=
   (isClosed_ker f).isComplete
+
+theorem isComplete_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
+    [Module R₁ M'] [T2Space M₂] (f g : M' →SL[σ₁₂] M₂) :
+    IsComplete (f.eqLocus g : Set M') :=
+  (isClosed_eqLocus f g).isComplete
 
 instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂]
@@ -701,7 +709,7 @@ instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
 instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
     (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (f.toLinearMap.eqLocus g.toLinearMap) :=
-  IsClosed.completeSpace_coe (hs := isClosed_eq (map_continuous f) (map_continuous g))
+  (isComplete_eqLocus f g).completeSpace_coe
 
 section
 
@@ -874,7 +882,6 @@ instance : IsSubApply (M →SL[σ₁₂] M₂) M M₂ where
 -- Todo: figure out how to use `FunLike.addCommGroup` here
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
-  zsmul := (· • ·)
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
   zsmul_neg' n f := by ext; simp [add_smul]

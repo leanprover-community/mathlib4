@@ -140,6 +140,20 @@ lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
     (f ≫ g).residueFieldMap x = g.residueFieldMap (f x) ≫ f.residueFieldMap x :=
   LocallyRingedSpace.residueFieldMap_comp _ _ _
 
+/--
+Degree of `f` at a point `x` is defined to be the degree of the associated field extension
+from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is infinite.
+-/
+def Hom.residueDegree (f : X ⟶ Y) (x : X) : ℕ :=
+  letI := (f.residueFieldMap x).hom.toAlgebra
+  Module.finrank (Y.residueField (f x)) (X.residueField x)
+
+@[simp]
+lemma Hom.residueDegree_id (x : X) : (𝟙 _ : X ⟶ X).residueDegree x = 1 := by
+  dsimp [residueDegree]
+  rw [residueFieldMap_id]
+  exact CommSemiring.finrank_self _
+
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f x ∈ V) :
     Y.evaluation V (f x) hx ≫ f.residueFieldMap x =
