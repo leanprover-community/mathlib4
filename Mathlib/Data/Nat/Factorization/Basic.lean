@@ -500,14 +500,13 @@ theorem dvd_prod_primeFactors_pow_self {n : ℕ} (hn : n ≠ 0) :
     n ∣ (∏ p ∈ n.primeFactors, p) ^ n := by
   nth_rw 1 [← Finset.prod_pow, prod_primeFactors_pow_factorization hn]
   refine prod_dvd_prod_of_dvd _ _ fun i hi ↦ pow_dvd_pow i ?_
-  grw [n.factorization_def <| prime_of_mem_primeFactors hi, padicValNat_le_self n]
+  grw [n.factorization_def <| prime_of_mem_primeFactors hi, padicValNat_le_self]
 
 theorem dvd_pow_self_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
     n ∣ k ^ n ↔ n.primeFactors ⊆ k.primeFactors := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · grw [← Nat.primeFactors_pow k hn, Nat.primeFactors_mono h <| pow_ne_zero n hk]
-  · grw [dvd_prod_primeFactors_pow_self hn, pow_dvd_pow_of_dvd ?_ n]
-    grw [prod_dvd_prod_of_subset _ _ _ h, prod_primeFactors_dvd k]
+  · grw [dvd_prod_primeFactors_pow_self hn, prod_dvd_prod_of_subset _ _ _ h, prod_primeFactors_dvd]
 
 theorem exists_dvd_pow_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
     (∃ m, n ∣ k ^ m) ↔ n.primeFactors ⊆ k.primeFactors := by
