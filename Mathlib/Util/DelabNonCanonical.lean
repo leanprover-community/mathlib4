@@ -6,7 +6,6 @@ Authors: Robert Maxton
 module
 
 public import Mathlib.Init
-public meta import Lean.Meta
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! Delab checking canonicity.

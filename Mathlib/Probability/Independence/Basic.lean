@@ -337,7 +337,7 @@ end Definition_lemmas
 
 section Indep
 
-variable {m₁ m₂ m₃ : MeasurableSpace Ω} (m' : MeasurableSpace Ω)
+variable {m₁ m₂ m₃ m₄ : MeasurableSpace Ω} (m' : MeasurableSpace Ω)
   {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 
 @[symm]
@@ -375,6 +375,10 @@ theorem indep_of_indep_of_le_left (h_indep : Indep m₁ m₂ μ) (h31 : m₃ ≤
 theorem indep_of_indep_of_le_right (h_indep : Indep m₁ m₂ μ) (h32 : m₃ ≤ m₂) :
     Indep m₁ m₃ μ :=
   Kernel.indep_of_indep_of_le_right h_indep h32
+
+theorem indep_of_indep_of_le (h_indep : Indep m₁ m₂ μ) (h31 : m₃ ≤ m₁) (h42 : m₄ ≤ m₂) :
+    Indep m₃ m₄ μ :=
+  Kernel.indep_of_indep_of_le h_indep h31 h42
 
 theorem iIndep_of_iIndep_of_le {m₁ m₂ : ι → MeasurableSpace Ω} (h_indep : iIndep m₂ μ)
     (h_le : ∀ i, m₁ i ≤ m₂ i) : iIndep m₁ μ :=
@@ -701,33 +705,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
     f ⟂ᵢ[μ] g ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
   apply indepFun_iff_map_prod_eq_prod_map_map' hf hg <;> apply IsFiniteMeasure.toSigmaFinite
 
-theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
-    {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i} [IsProbabilityMeasure μ]
-    (hf : ∀ i, AEMeasurable (f i) μ) :
-    iIndepFun f μ ↔ μ.map (fun ω i ↦ f i ω) = Measure.pi (fun i ↦ μ.map (f i)) := by
-  classical
-  rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
-  have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :
-      ∏ i : ι, μ (f i ⁻¹' s i) = ∏ i : ι, μ.map (f i) (s i) ∧
-      μ (⋂ i : ι, (f i ⁻¹' s i)) = μ.map (fun ω i ↦ f i ω) (univ.pi s) := by
-    constructor
-    · congr with x
-      rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
-      congr with x
-      simp
-  constructor
-  · refine fun hS ↦ (Measure.pi_eq fun h hm ↦ ?_).symm
-    rw [← (h₀ hm).1, ← (h₀ hm).2]
-    simpa [hm] using hS Finset.univ (sets := h)
-  · intro h S s hs
-    specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
-      fun i ↦ by beta_reduce; split_ifs with hiS <;> simp [hiS, hs]
-    simp only [apply_ite, preimage_univ, measure_univ, Finset.prod_ite_mem, Finset.univ_inter,
-      Finset.prod_ite, Finset.filter_univ_mem, iInter_ite, iInter_univ, inter_univ, h,
-      Measure.pi_pi] at h₀
-    rw [h₀.2, ← h₀.1]
+alias ⟨IndepFun.map_prod_eq_prod_map_map, _⟩ := indepFun_iff_map_prod_eq_prod_map_map
 
 @[symm]
 nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
@@ -749,7 +727,7 @@ variables defined on the product space `Ω × Ω'`. -/
 lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
     (fun ω ↦ X ω.1) ⟂ᵢ[μ.prod ν] (fun ω ↦ Y ω.2) := by
   refine indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop) |>.2 ?_
-  convert Measure.map_prod_map μ ν mX mY |>.symm
+  convert! Measure.map_prod_map μ ν mX mY |>.symm
   · rw [← Function.comp_def, ← Measure.map_map mX measurable_fst, Measure.map_fst_prod,
       measure_univ, one_smul]
   · rw [← Function.comp_def, ← Measure.map_map mY measurable_snd, Measure.map_snd_prod,
@@ -772,25 +750,6 @@ lemma indepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
     · exact measurable_snd.aemeasurable
     · rw [measurePreserving_snd.map_eq]
       exact (AEMeasurable.ae_eq_mk mY).symm
-
-variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
-    {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
-    {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)] {X : (i : ι) → Ω i → 𝓧 i}
-
-/-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
-variables defined on the product space `Π i, Ω i`. -/
-lemma iIndepFun_pi (mX : ∀ i, AEMeasurable (X i) (μ i)) :
-    iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
-  refine iIndepFun_iff_map_fun_eq_pi_map ?_ |>.2 ?_
-  · exact fun i ↦ (mX i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval _ i)
-  rw [Measure.pi_map_pi mX]
-  congr
-  ext i : 1
-  rw [← (measurePreserving_eval μ i).map_eq, AEMeasurable.map_map_of_aemeasurable,
-    Function.comp_def]
-  · rw [(measurePreserving_eval μ i).map_eq]
-    exact mX i
-  · exact (measurable_pi_apply i).aemeasurable
 
 end Prod
 
@@ -877,6 +836,71 @@ lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.
     exact (h s).meas_iInter fun i ↦ hs i i.2
 
 alias ⟨iIndepFun.restrict, _⟩ := iIndepFun_iff_finset
+
+theorem iIndepFun.map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
+    {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i}
+    (hf : ∀ i, AEMeasurable (f i) μ) (h : iIndepFun f μ) :
+    μ.map (fun ω i ↦ f i ω) = Measure.pi (fun i ↦ μ.map (f i)) := by
+  classical
+  have := h.isProbabilityMeasure
+  rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at h
+  have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :
+      ∏ i : ι, μ (f i ⁻¹' s i) = ∏ i : ι, μ.map (f i) (s i) ∧
+      μ (⋂ i : ι, (f i ⁻¹' s i)) = μ.map (fun ω i ↦ f i ω) (univ.pi s) := by
+    constructor
+    · congr with x
+      rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
+    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
+        (.univ_pi hm)]
+      congr with x
+      simp
+  refine (Measure.pi_eq fun h' hm ↦ ?_).symm
+  rw [← (h₀ hm).1, ← (h₀ hm).2]
+  simpa [hm] using h Finset.univ (sets := h')
+
+theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
+    {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i} [IsProbabilityMeasure μ]
+    (hf : ∀ i, AEMeasurable (f i) μ) :
+    iIndepFun f μ ↔ μ.map (fun ω i ↦ f i ω) = Measure.pi (fun i ↦ μ.map (f i)) := by
+  refine ⟨iIndepFun.map_fun_eq_pi_map hf, ?_⟩
+  classical
+  rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
+  have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :
+      ∏ i : ι, μ (f i ⁻¹' s i) = ∏ i : ι, μ.map (f i) (s i) ∧
+      μ (⋂ i : ι, (f i ⁻¹' s i)) = μ.map (fun ω i ↦ f i ω) (univ.pi s) := by
+    constructor
+    · congr with x
+      rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
+    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
+        (.univ_pi hm)]
+      congr with x
+      simp
+  intro h S s hs
+  specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
+    fun i ↦ by split_ifs with hiS <;> simp [hiS, hs]
+  simp only [apply_ite, preimage_univ, measure_univ, Finset.prod_ite_mem, Finset.univ_inter,
+    Finset.prod_ite, Finset.filter_univ_mem, iInter_ite, iInter_univ, inter_univ, h,
+    Measure.pi_pi] at h₀
+  rw [h₀.2, ← h₀.1]
+
+variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
+    {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
+    {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)] {X : (i : ι) → Ω i → 𝓧 i}
+
+/-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
+variables defined on the product space `Π i, Ω i`. -/
+lemma iIndepFun_pi (mX : ∀ i, AEMeasurable (X i) (μ i)) :
+    iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
+  refine iIndepFun_iff_map_fun_eq_pi_map ?_ |>.2 ?_
+  · exact fun i ↦ (mX i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval _ i)
+  rw [Measure.pi_map_pi mX]
+  congr
+  ext i : 1
+  rw [← (measurePreserving_eval μ i).map_eq, AEMeasurable.map_map_of_aemeasurable,
+    Function.comp_def]
+  · rw [(measurePreserving_eval μ i).map_eq]
+    exact mX i
+  · exact (measurable_pi_apply i).aemeasurable
 
 end iIndepFun
 
@@ -1011,6 +1035,12 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
     iIndepFun (fun n => (s n).indicator fun _ω => (1 : β)) μ :=
   Kernel.iIndepSet.iIndepFun_indicator hs
 
+lemma Indep.indicator_indepFun {m : MeasurableSpace Ω} {M 𝓧 : Type*}
+    [Zero M] [MeasurableSpace M] (c : M) {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
+    {X : Ω → 𝓧} (hA : MeasurableSet[m] A) (h : Indep m (m𝓧.comap X) μ) :
+    (A.indicator (fun _ ↦ c)) ⟂ᵢ[μ] X :=
+  Kernel.Indep.indicator_const_indepFun c hA h
+
 end IndepFun
 
 variable {ι Ω α β : Type*} {mΩ : MeasurableSpace Ω} {mα : MeasurableSpace α}
@@ -1065,7 +1095,7 @@ lemma iIndepFun.cond [Finite ι] (hY : ∀ i, Measurable (Y i))
     iIndepFun X μ[|⋂ i, Y i ⁻¹' t i] := by
   rw [iIndepFun_iff]
   intro s f hf
-  convert cond_iInter hY hindep hf (fun i _ ↦ hy _) ht using 2 with i hi
+  convert! cond_iInter hY hindep hf (fun i _ ↦ hy _) ht using 2 with i hi
   simpa using cond_iInter hY hindep (fun j hj ↦ hf _ <| Finset.mem_singleton.1 hj ▸ hi)
     (fun i _ ↦ hy _) ht
 

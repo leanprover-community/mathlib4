@@ -102,12 +102,12 @@ noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [
     CompleteDistribLattice.MinimalAxioms α where
   __ := toCompleteLattice α
   iInf_sup_le_sup_sInf := fun a s => by
-    convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
+    convert! (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
     rw [Finset.inf_eq_iInf]
     simp_rw [Set.mem_toFinset]
     rfl
   inf_sSup_le_iSup_inf := fun a s => by
-    convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
+    convert! (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]
     rfl
@@ -187,7 +187,7 @@ variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [N
 
 theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
-  convert D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
+  convert! D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
 
 lemma Directed.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → α} (hf : Directed r f)
     (g : κ → ι) : ∃ z, ∀ i, r (f (g i)) (f z) := by

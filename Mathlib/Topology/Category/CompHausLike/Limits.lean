@@ -120,6 +120,12 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩
 
+/-
+This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
+in the indexing type of the coproduct. In almost all cases, `w` will be either `0` or `u`, but we
+want to allow both possibilities.
+-/
+set_option linter.checkUnivs false in
 variable (P) in
 /--
 A typeclass describing the property that forming all finite disjoint unions is stable under the
@@ -127,13 +133,6 @@ property `P`.
 -/
 class HasExplicitFiniteCoproducts : Prop where
   hasProp {α : Type w} [Finite α] (X : α → CompHausLike.{max u w} P) : HasExplicitFiniteCoproduct X
-
-/-
-This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
-in the indexing type of the coproduct. In almost all cases, `w` will be either `0` or `u`, but we
-want to allow both possibilities.
--/
-attribute [nolint checkUnivs] HasExplicitFiniteCoproducts
 
 attribute [instance] HasExplicitFiniteCoproducts.hasProp
 
@@ -156,13 +155,14 @@ lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (finiteCoproduct.ι X a) :=
   .sigmaMk (σ := fun a ↦ X a)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (Sigma.ι X a) := by
   refine IsOpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
     (finiteCoproduct.isColimit X))).isOpenEmbedding ?_
-  convert finiteCoproduct.isOpenEmbedding_ι X a
+  convert! finiteCoproduct.isOpenEmbedding_ι X a
   ext x
   change (Sigma.ι X a ≫ _) x = _
   simp

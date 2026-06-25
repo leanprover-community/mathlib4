@@ -47,7 +47,8 @@ products of exponential unitaries.
   `expUnitary x` for a selfadjoint element `x`.
 + `Unitary.isPathConnected_ball`: any ball of radius `δ < 2` in the unitary group of a unital
   C⋆-algebra is path connected.
-+ `Unitary.instLocPathConnectedSpace`: the unitary group of a C⋆-algebra is locally path connected.
++ `Unitary.instLocallyPathConnectedSpace`: the unitary group of a C⋆-algebra is
+  locally path connected.
 + `Unitary.mem_pathComponentOne_iff`: The path component of the identity in the unitary group of a
   C⋆-algebra is the set of unitaries that can be expressed as a product of exponentials of
   selfadjoint elements.
@@ -67,7 +68,7 @@ lemma Unitary.two_mul_one_sub_le_norm_sub_one_sq {u : A} (hu : u ∈ unitary A)
   have := spectrum.subset_circle_of_unitary hu hz
   simp only [mem_sphere_iff_norm, sub_zero] at this
   rw [← cfc_id' ℂ u, ← cfc_one ℂ u, ← cfc_sub ..]
-  convert norm_apply_le_norm_cfc (fun z ↦ z - 1) u hz
+  convert! norm_apply_le_norm_cfc (fun z ↦ z - 1) u hz
   simpa using congr(Real.sqrt $(norm_sub_one_sq_eq_of_norm_eq_one this)).symm
 
 lemma Unitary.norm_sub_one_sq_eq {u : A} (hu : u ∈ unitary A) {x : ℝ}
@@ -315,7 +316,7 @@ lemma Unitary.joined (u v : unitary A) (huv : ‖(v - u : A)‖ < 2) :
 lemma Unitary.isPathConnected_ball (u : unitary A) (δ : ℝ) (hδ₀ : 0 < δ) (hδ₂ : δ < 2) :
     IsPathConnected (ball (u : unitary A) δ) := by
   suffices IsPathConnected (ball (1 : unitary A) δ) by
-    convert this |>.image (f := (u * ·)) (by fun_prop)
+    convert! this |>.image (f := (u * ·)) (by fun_prop)
     ext v
     rw [← inv_mul_cancel u]
     simp [-inv_mul_cancel, Subtype.dist_eq, dist_eq_norm, ← mul_sub]
@@ -326,9 +327,9 @@ lemma Unitary.isPathConnected_ball (u : unitary A) (δ : ℝ) (hδ₀ : 0 < δ) 
     norm_expUnitary_smul_argSelfAdjoint_sub_one_le u t.2 (hu.trans hδ₂) |>.trans_lt hu
 
 /-- The unitary group in a C⋆-algebra is locally path connected. -/
-instance Unitary.instLocPathConnectedSpace : LocPathConnectedSpace (unitary A) :=
+instance Unitary.instLocallyPathConnectedSpace : LocallyPathConnectedSpace (unitary A) :=
   .of_bases (fun _ ↦ nhds_basis_uniformity <| uniformity_basis_dist_lt zero_lt_two) <| by
-    simpa using isPathConnected_ball
+    simpa using! isPathConnected_ball
 
 /-- The path component of the identity in the unitary group of a C⋆-algebra is the set of
 unitaries that can be expressed as a product of exponential unitaries. -/
@@ -344,8 +345,11 @@ lemma Unitary.mem_pathComponentOne_iff {u : unitary A} :
     obtain ⟨v, ⟨⟨l, (hlv : (l.map expUnitary).prod = v)⟩, huv⟩⟩ := hu
     refine ⟨argSelfAdjoint (u * star v) :: l, ?_⟩
     simp [hlv, mul_assoc,
-      expUnitary_eq_mul_inv u v (by simpa [Subtype.dist_eq, dist_eq_norm] using huv)]
+      expUnitary_eq_mul_inv u v (by simpa [Subtype.dist_eq, dist_eq_norm] using! huv)]
   · rintro ⟨l, rfl⟩
     induction l with
     | nil => simp
-    | cons x xs ih => simpa using (joined_one_expUnitary x).mul ih
+    | cons x xs ih => simpa using! (joined_one_expUnitary x).mul ih
+
+@[deprecated (since := "2025-10-29")] alias unitary.mem_pathComponentOne_iff :=
+  Unitary.mem_pathComponentOne_iff

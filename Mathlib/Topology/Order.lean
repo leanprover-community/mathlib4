@@ -292,6 +292,7 @@ theorem closure_indiscrete [IndiscreteTopology α] {s : Set α} (h : s.Nonempty)
     closure s = Set.univ := Dense.closure_eq (dense_indiscrete h)
 
 /-- Every function to the indiscrete topology is continuous -/
+@[fun_prop]
 theorem continuous_of_indiscreteTopology {β} [TopologicalSpace β] [IndiscreteTopology β]
     {f : α → β} : Continuous f where
   isOpen_preimage := by simp [IndiscreteTopology.isOpen_iff]
@@ -576,7 +577,10 @@ instance : DiscreteTopology ℤ := ⟨rfl⟩
 instance {n} : TopologicalSpace (Fin n) := ⊥
 instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
 
-instance : DiscreteTopology (WithTopology α ⊥) where
+/-- A copy of a type equipped with the discrete topology. -/
+abbrev WithDiscreteTopology (α : Type*) := WithTopology α ⊥
+
+instance : DiscreteTopology (WithDiscreteTopology α) where
   eq_bot := coinduced_bot
 
 instance : IndiscreteTopology (WithTopology α ⊤) where

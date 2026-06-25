@@ -47,7 +47,7 @@ lemma exists_finite_sum_smul_approximation_of_mem_uniformity [TopologicalSpace R
     f.curry (nhdsSet_diagonal_le_uniformity hS')
   refine ⟨n, fun i ↦ ⟨_, (U i).isClopen.continuous_indicator <| continuous_const (y := 1)⟩,
     v, fun x y ↦ ?_⟩
-  convert hv x y using 2
+  convert! hv x y using 2
   simp only [sum_apply]
   congr 1 with i
   by_cases hi : x ∈ U i <;> simp [hi]
@@ -95,9 +95,8 @@ lemma tensorHom_tmul (f : C(X, R)) (g : C(Y, R)) :
     tensorHom (f ⊗ₜ g) = prodMul f g := by
   rw [tensorHom, TensorProduct.lift.tmul]
 
-lemma denseRange_tensorHom [CompactSpace X] [T2Space X] [CompactSpace Y] [T2Space Y]
-    [TotallyDisconnectedSpace X] :
-    DenseRange (tensorHom : C(X, R) ⊗[R] C(Y, R) → C(X × Y, R)) := by
+lemma denseRange_tensorHom [CompactSpace X] [T2Space X] [CompactSpace Y]
+    [TotallyDisconnectedSpace X] : DenseRange (tensorHom : C(X, R) ⊗[R] C(Y, R) → C(X × Y, R)) := by
   let : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
   let : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
   intro f

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -491,8 +491,6 @@ def coeFnRingHom {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpa
 end ContinuousMap
 
 end RingStructure
-
-attribute [local ext] Subtype.eq
 
 section ModuleStructure
 
