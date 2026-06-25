@@ -136,10 +136,9 @@ theorem eq_span_singleton_of_mem_of_finrank_eq_one
     {K : Submodule 𝕜 E} {w : E}
     (hK : finrank 𝕜 K = 1) (hw : w ∈ K) (hw0 : w ≠ 0) :
     K = Submodule.span 𝕜 {w} := by
-  haveI : FiniteDimensional 𝕜 K := Module.finite_of_finrank_pos (by omega)
-  exact (Submodule.eq_of_le_of_finrank_le
-    ((Submodule.span_singleton_le_iff_mem _ _).mpr hw)
-    (by rw [hK, finrank_span_singleton (K := 𝕜) hw0])).symm
+haveI : FiniteDimensional 𝕜 K := Module.finite_of_finrank_pos (by lia)
+  exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
+    (by rw [hK, finrank_span_singleton hw0])
 
 /-- If a nonzero vector `w` and a vector `u` are both orthogonal to the same nonzero vector `v`
 in a two-dimensional inner product space, then `u` lies in the span of `w`. -/
