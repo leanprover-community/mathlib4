@@ -95,9 +95,8 @@ lemma tensorHom_tmul (f : C(X, R)) (g : C(Y, R)) :
     tensorHom (f ⊗ₜ g) = prodMul f g := by
   rw [tensorHom, TensorProduct.lift.tmul]
 
-lemma denseRange_tensorHom [CompactSpace X] [T2Space X] [CompactSpace Y] [T2Space Y]
-    [TotallyDisconnectedSpace X] :
-    DenseRange (tensorHom : C(X, R) ⊗[R] C(Y, R) → C(X × Y, R)) := by
+lemma denseRange_tensorHom [CompactSpace X] [T2Space X] [CompactSpace Y]
+    [TotallyDisconnectedSpace X] : DenseRange (tensorHom : C(X, R) ⊗[R] C(Y, R) → C(X × Y, R)) := by
   let : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
   let : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
   intro f
