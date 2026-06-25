@@ -24,6 +24,11 @@ def MATHLIBREPO := "leanprover-community/mathlib4"
 /-- The full name of the Mathlib nightly-testing GitHub repository. -/
 def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
 
+/-- Whether `repo` is a first-party Mathlib repo rather than a fork. Forks cache
+into the per-commit `forks` namespace; the canonical repos do not. -/
+def isCanonicalRepo (repo : String) : Bool :=
+  repo == MATHLIBREPO || repo == NIGHTLY_TESTING_REPO
+
 /--
 Canonical form of a GitHub `owner/repo` name for use as a cache blob path
 segment.

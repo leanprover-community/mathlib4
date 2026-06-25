@@ -278,8 +278,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
   let s' : Set (TangentBundle I M) := (π E (TangentSpace I) ⁻¹' s)
   let b₁ : TangentBundle I M → M := fun p ↦ p.1
   let v : Π (y : TangentBundle I M), TangentSpace% (b₁ y) := fun y ↦ y.2
-  have hv : ContMDiffWithinAt I.tangent I.tangent m (fun y ↦ (v y : TangentBundle I M)) s' x₀ :=
-    contMDiffWithinAt_id
+  have hv : CMDiffAt[s'] m (fun y ↦ (v y : TangentBundle I M)) x₀ := contMDiffWithinAt_id
   let b₂ : TangentBundle I M → M' := f ∘ b₁
   have hb₂ : CMDiffAt[s'] m b₂ x₀ :=
     ((hf (b₁ x₀) hx₀).of_le (le_self_add.trans hmn)).comp _

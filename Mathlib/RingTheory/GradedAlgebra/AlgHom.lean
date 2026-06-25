@@ -101,9 +101,7 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
 theorem coe_toAlgHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
   dsimp only
 
-@[deprecated coe_toAlgHom_mk (since := "2026-05-05")]
-theorem coe_algHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
-  dsimp only
+@[deprecated (since := "2026-05-05")] alias coe_algHom_mk := coe_toAlgHom_mk
 
 variable (f : 𝒜 →ₐᵍ[R] ℬ)
 
@@ -116,9 +114,7 @@ theorem coe_fn_inj {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} : (f₁ : A → B) = f₂
 theorem coe_toAlgHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₐ[R] B) :=
   fun _ _ h ↦ coe_fn_injective congr($h)
 
-@[deprecated coe_toAlgHom_injective (since := "2026-05-05")]
-theorem coe_algHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₐ[R] B) :=
-  fun _ _ h ↦ coe_fn_injective congr($h)
+@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 theorem toGradedRingHom_injective : Function.Injective (toGradedRingHom (𝒜 := 𝒜) (ℬ := ℬ)) :=
   fun _ _ h ↦ coe_fn_injective congr($h)
@@ -126,10 +122,8 @@ theorem toGradedRingHom_injective : Function.Injective (toGradedRingHom (𝒜 :=
 theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₗ[R] B) :=
   AlgHom.toLinearMap_injective.comp coe_toAlgHom_injective
 
-theorem coe_toRingHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
-  AlgHom.coe_toRingHom_injective.comp coe_toAlgHom_injective
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := coe_toRingHom_injective
+theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
+  AlgHom.coe_ringHom_injective.comp coe_toAlgHom_injective
 
 theorem coe_monoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
   AlgHom.coe_monoidHom_injective.comp coe_toAlgHom_injective
@@ -266,12 +260,11 @@ variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
 
 @[simp] lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
 
-@[simp] lemma restrictScalars_coe_toAlgHom :
+@[simp] lemma restrictScalars_toAlgHom :
     (f : A →ₐ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
 
-@[deprecated restrictScalars_coe_toAlgHom (since := "2026-05-05")]
-lemma restrictScalars_coe_algHom :
-    (f : A →ₐ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
+@[deprecated (since := "2026-05-05")]
+alias restrictScalars_coe_algHom := restrictScalars_toAlgHom
 
 @[simp] lemma restrictScalars_coe_linearMap :
     (f : A →ₗ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
