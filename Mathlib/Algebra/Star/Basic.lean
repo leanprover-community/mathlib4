@@ -340,9 +340,7 @@ case for `(↑starRingAut : R →* R)`. -/
 @[implicit_reducible]
 def starRingEnd : R →+* R where
   toFun := star
-  map_one' := star_one R
-  map_zero' := star_zero R
-  __ := @starRingAut R _ _
+  __ := (@starRingAut R _ _).toRingHom
 
 @[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
