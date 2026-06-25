@@ -340,7 +340,8 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
     _ ↔ (IsStrictMap (Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (Φ ∘ A.mkQ ∘ u))) := by
           rw [i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp]
     _ ↔ (IsStrictMap (A.mkQ ∘ u) ∧ IsClosed (range (A.mkQ ∘ u))) := by
-          rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
-              ← range_comp, Φ.coe_toHomeomorph]
+          rw [Φ.isHomeomorph.isEmbedding.isStrictMap_iff,
+            Φ.isHomeomorph.isClosedEmbedding.isClosed_iff_image_isClosed,
+            ← range_comp]
 
 end FiniteDimQuotient
