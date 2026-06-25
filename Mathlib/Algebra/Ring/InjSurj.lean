@@ -164,7 +164,7 @@ protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
 protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (f : S → R)
     (hf : Injective f) (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
-    (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x) (sub : ∀ x y, f (x - y) = f x - f y)
+    (sub : ∀ x y, f (x - y) = f x - f y) (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalNonAssocRing S where
   toAddCommGroup := hf.addCommGroup f zero add neg sub (swap psmul) (swap nsmul) (swap zsmul)
@@ -178,7 +178,7 @@ protected abbrev nonUnitalRing [NonUnitalRing R]
     (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) :
     NonUnitalRing S where
-  toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg psmul sub nsmul zsmul
+  toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub psmul nsmul zsmul
   __ := hf.nonUnitalSemiring f zero add mul psmul nsmul ppow
 
 /-- Pullback a `NonAssocRing` instance along an injective function. -/
@@ -189,7 +189,7 @@ protected abbrev nonAssocRing [NonAssocRing R]
     (sub : ∀ x y, f (x - y) = f x - f y) (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : NonAssocRing S where
-  toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg psmul sub nsmul zsmul
+  toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub psmul nsmul zsmul
   __ := hf.nonAssocSemiring f zero one add mul psmul nsmul natCast
   __ := hf.addCommGroupWithOne f zero one add neg sub psmul nsmul zsmul natCast intCast
 
@@ -255,7 +255,7 @@ protected abbrev nonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] (f : S 
     (sub : ∀ x y, f (x - y) = f x - f y) (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalNonAssocCommRing S where
-  toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg psmul sub nsmul zsmul
+  toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub psmul nsmul zsmul
   __ := hf.nonUnitalNonAssocCommSemiring f zero add mul psmul nsmul
 
 /-- Pullback a `NonUnitalCommRing` instance along an injective function. -/
