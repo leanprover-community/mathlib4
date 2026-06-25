@@ -17,16 +17,19 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
         path: pr-branch
         # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
         persist-credentials: false
+        # Only trusted base-repo scripts run against this checkout, so checking out
+        # fork PR code under pull_request_target is safe.
+        allow-unsafe-pr-checkout: true
 
     - name: Checkout local actions
-      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         ref: ${{ github.workflow_sha }}
         fetch-depth: 1

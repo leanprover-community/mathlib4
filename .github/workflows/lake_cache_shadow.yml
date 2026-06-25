@@ -98,13 +98,13 @@ jobs:
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
       - name: Checkout tools branch
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: master
           path: tools-branch
 
       - name: Checkout mathlib (pr-branch)
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ inputs.mathlib_ref || 'master' }}
           fetch-depth: 2
@@ -278,7 +278,7 @@ jobs:
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
       - name: Checkout mathlib (for lean-toolchain pin)
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
@@ -410,7 +410,7 @@ jobs:
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
     steps:
       - name: Checkout mathlib
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
