@@ -309,6 +309,7 @@ lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHo
 lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒮ℒ).IsArithmetic := by
   constructor
+  simp_rw [Subgroup.Commensurable, Subgroup.isFiniteRelIndex_iff_relIndex_ne_zero]
   rw [MonoidHom.range_eq_map]
   constructor
   · rw [← Subgroup.relIndex_comap, Subgroup.relIndex_top_right]
@@ -321,7 +322,7 @@ lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
 lemma _root_.Subgroup.IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic]
     (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
-  ⟨(Subgroup.IsArithmetic.is_commensurable.conj _).trans
+  ⟨(Subgroup.IsArithmetic.is_commensurable.smul _).trans
     (isArithmetic_conj_SL2Z g).is_commensurable⟩
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/

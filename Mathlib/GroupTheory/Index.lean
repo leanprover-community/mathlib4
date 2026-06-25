@@ -685,6 +685,20 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
 lemma isFiniteRelIndex_iff_relIndex_ne_zero : H.IsFiniteRelIndex K ↔ H.relIndex K ≠ 0 :=
   ⟨fun _ ↦ relIndex_ne_zero, IsFiniteRelIndex.mk⟩
 
+@[to_additive (attr := simp)]
+instance : IsFiniteRelIndex H H := by
+  simp [isFiniteRelIndex_iff_relIndex_ne_zero]
+
+@[to_additive]
+protected theorem IsFiniteRelIndex.trans (hHK : IsFiniteRelIndex H K) (hKL : IsFiniteRelIndex K L) :
+    IsFiniteRelIndex H L where
+  relIndex_ne_zero := relIndex_ne_zero_trans hHK.relIndex_ne_zero hKL.relIndex_ne_zero
+
+@[to_additive]
+protected theorem IsFiniteRelIndex.inf (hHK : IsFiniteRelIndex H L) (hKL : IsFiniteRelIndex K L) :
+    IsFiniteRelIndex (H ⊓ K) L where
+  relIndex_ne_zero := relIndex_inf_ne_zero hHK.relIndex_ne_zero hKL.relIndex_ne_zero
+
 @[to_additive]
 theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
@@ -794,6 +808,25 @@ lemma isFiniteRelIndex_of_le_right (h : K ≤ L) [H.IsFiniteRelIndex L] :
     H.IsFiniteRelIndex K := by
   rw [isFiniteRelIndex_iff_relIndex_ne_zero]
   exact mt (relIndex_eq_zero_of_le_right h) relIndex_ne_zero
+
+@[to_additive]
+theorem isFiniteRelIndex_comap_iff {K : Subgroup G'} {f : G' →* G} :
+    IsFiniteRelIndex (H.comap f) K ↔ IsFiniteRelIndex H (K.map f) := by
+  rw [isFiniteRelIndex_iff_relIndex_ne_zero, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_comap]
+
+@[to_additive]
+theorem IsFiniteRelIndex.map (f : G →* G') (hHK : IsFiniteRelIndex H K) :
+    IsFiniteRelIndex (H.map f) (K.map f) := by
+  rw [← isFiniteRelIndex_comap_iff, comap_map_eq]
+  exact isFiniteRelIndex_of_le_left K le_sup_left
+
+@[to_additive]
+theorem IsFiniteRelIndex.comap (f : G' →* G) (hHK : IsFiniteRelIndex H K) :
+    IsFiniteRelIndex (H.comap f) (K.comap f) := by
+  rw [isFiniteRelIndex_comap_iff, map_comap_eq]
+  exact isFiniteRelIndex_of_le_right H inf_le_right
+
+#check relIndex_inf_ne_zero
 
 @[to_additive]
 lemma isFiniteRelIndex_of_finiteIndex [h : H.FiniteIndex] : H.IsFiniteRelIndex K := by

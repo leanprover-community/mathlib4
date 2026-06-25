@@ -87,8 +87,8 @@ lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
     (h𝒢 : Commensurable 𝒢 𝒢') {c : OnePoint ℝ} :
     IsCusp c 𝒢 ↔ IsCusp c 𝒢' := by
   rw [← isCusp_iff_of_relIndex_ne_zero inf_le_left, isCusp_iff_of_relIndex_ne_zero inf_le_right]
-  · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
-  · simpa [Subgroup.inf_relIndex_left] using h𝒢.2
+  · simpa [Subgroup.inf_relIndex_right] using h𝒢.1.relIndex_ne_zero
+  · simpa [Subgroup.inf_relIndex_left] using h𝒢.2.relIndex_ne_zero
 
 lemma IsCusp.mono {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ} (hGH : 𝒢 ≤ ℋ)
     (hc : IsCusp c 𝒢) : IsCusp c ℋ :=
@@ -264,6 +264,7 @@ lemma relIndex_strictPeriods :
 
 lemma commensurable_strictPeriods_periods :
     𝒢.strictPeriods.Commensurable 𝒢.periods := by
+  simp_rw [AddSubgroup.Commensurable, AddSubgroup.isFiniteRelIndex_iff_relIndex_ne_zero]
   constructor
   · rcases 𝒢.relIndex_strictPeriods with h | h <;> simp [h]
   · simp [AddSubgroup.relIndex_eq_one.mpr 𝒢.strictPeriods_le_periods]
