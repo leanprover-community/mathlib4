@@ -194,6 +194,7 @@ def logError (msg : String) : FunPropM Unit := do
         else
           msg::s.msgLog}
 
+/-- Forward declaration of main `funProp` function -/
 initialize funPropCoreImplRef : IO.Ref (Expr → FunPropM (Option Result)) ←
   .mkRef fun _ => return none
 
