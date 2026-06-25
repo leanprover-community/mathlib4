@@ -22,7 +22,7 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.InjectiveObject
 
 Let `C` be an abelian category with enough injectives.
 In this file, we define a localizer morphism `CochainComplex.Plus.localizerMorphism`
-(relatively to quasi-isomorphisms) which is given by the (fully faithful) functor
+(relative to quasi-isomorphisms) which is given by the (fully faithful) functor
 `CochainComplex.Plus (InjectiveObject C) ⥤ CochainComplex.Plus C`, and we show
 that it is a right derivability structure. (The proof proceeds by showing that
 up to equivalences of categories, this functor is the inclusion of the full
@@ -42,12 +42,9 @@ such a derived functor is an isomorphism on objects coming from
 
 @[expose] public section
 
-universe w₁ w₂
-
 open HomotopicalAlgebra CategoryTheory Limits
 
-variable {C : Type*} [Category* C] [Abelian C]
-  {H : Type*} [Category* H]
+variable {C H : Type*} [Category* C] [Abelian C] [Category* H]
 
 namespace CochainComplex.Plus
 
@@ -104,7 +101,7 @@ end DerivedCategory.Plus
 namespace CochainComplex.Plus
 
 variable (C) in
-/-- The localizer morphism (relatively to quasi-isomorphisms) that is
+/-- The localizer morphism (relative to quasi-isomorphisms) that is
 given by the "inclusion functor"
 `CochainComplex.Plus (InjectiveObject C) ⥤ CochainComplex.Plus C`. -/
 @[simps]
@@ -158,7 +155,7 @@ def fibrantObjectEquivalence :
   counitIso := Iso.refl _
 
 variable (C) in
-/-- The localizer morphism (relatively to quasi-isomorphisms) that is
+/-- The localizer morphism (relative to quasi-isomorphisms) that is
 given by the equivalence of categories
 `CochainComplex.Plus (InjectiveObject C) ≌ FibrantObject (CochainComplex.Plus C)`. -/
 abbrev fibrantObjectLocalizerMorphism :
