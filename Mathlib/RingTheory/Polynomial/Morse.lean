@@ -168,7 +168,7 @@ open NumberField
 
 open scoped Pointwise
 
-#check IsPrimitive.irreducible_iff_irreducible_map_fraction_map
+variable (f : ℚ[X])
 
 theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₀' : f₀.Monic)
     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
@@ -187,16 +187,16 @@ theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₀' : f₀.Monic)
   let R := 𝓞 K
   let := Ring.toIntAlgebra R
   have foo := @aeval_algebraMap_apply (R := ℤ) (A := R) K _ _ _ _ _ _ (IsScalarTower.of_algebraMap_eq' rfl)
+  have hoof : (f₀.map (algebraMap ℤ R)).Splits := by
+    -- requires monic
+    sorry
   let G := f.Gal
   have := Gal.galAction_isPretransitive f ℂ hf
-  have : Set.BijOn v (f₀.rootSet R) (f.rootSet K) := by
+  have : Set.BijOn (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
     rw [rootSet, rootSet, aroots_map, ← rootSet, ← rootSet] -- rootSet_map lemma
-    have := Polynomial.Splits.image_rootSet_algebraMap (f := f₀) (A := R) (B := K) ?_ v
-
-    rw [← Polynomial.Splits.image_rootSet (f := f₀) ?_ v] -- switch to algebraMap version
-    suffices Set.InjOn (algebraMap R K) ∧
-    refine ⟨?_, ?_⟩
-    sorry
+    rw [← @hoof.image_rootSet_algebraMap ℤ R K _ _ _ _ _ _ _ f₀ _ _ ?_]
+    · exact (FaithfulSMul.algebraMap_injective R K).bijOn_image
+    · exact IsScalarTower.of_algebraMap_eq' rfl
   have hφ : Set.MapsTo (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
     intro x hx
     rw [hf'.mem_rootSet, aeval_map_algebraMap, foo, aeval_eq_zero_of_mem_rootSet hx, map_zero]
@@ -211,12 +211,11 @@ theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₀' : f₀.Monic)
     refine ⟨y, ?_, rfl⟩
     rw [mem_rootSet, and_iff_right hf₀.ne_zero]
     simpa using (foo y f₀).symm.trans h0
-  let e₀ := Equiv.ofBijective hφ.restrict hφ2
-  let e₁ : f₀.rootSet R ≃ f.rootSet K := by
-
-    sorry
+  let e₀ : f₀.rootSet R ≃ f.rootSet K := Equiv.ofBijective hφ.restrict hφ2
+  let e₁ : f₀.rootSet R ≃ f.rootSet K := e₀.trans (Gal.rootsEquivRoots f K)
   have he₁ (g : G) (x : f₀.rootSet R) : e₁ (g • x) = g • e₁ x := by
-    sorry
+    erw [Gal.smul_def f K g ((Gal.rootsEquivRoots f K) (e₀ x)), symm_apply_apply]
+    rfl
   let e₂ : f.rootSet K ≃ f.rootSet ℂ := Gal.rootsEquivRoots' f K ℂ
   have he₂ (g : G) (x : f.rootSet K) : e₂ (g • x) = g • e₂ x :=
     (Gal.smul_rootsEquivRoots' f K ℂ g x).symm
@@ -237,16 +236,13 @@ theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₀' : f₀.Monic)
     apply_fun e at hg
     simp [he] at hg
     simpa
-  have h1 : (f₀.map (algebraMap ℤ R)).Splits := by
-    -- might require monic
-    sorry
   have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
-  refine h1.surjective_toPermHom_of_iSup_inertia_eq_top (fun m ↦ ?_)
+  refine hoof.surjective_toPermHom_of_iSup_inertia_eq_top (fun m ↦ ?_)
     (NumberField.supr_inertia_maximalSpectrum_eq_top (𝓞 K) G)
   let := Ideal.Quotient.field m.asIdeal
   refine le_trans (f₀.ncard_rootSet_le R) (h (R ⧸ m.asIdeal) ?_)
   rw [IsScalarTower.algebraMap_eq ℤ R, ← Polynomial.map_map]
-  exact h1.map _
+  exact hoof.map _
 
 -- theorem tada'''' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
 --     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
