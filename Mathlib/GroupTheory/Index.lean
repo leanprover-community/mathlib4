@@ -826,8 +826,6 @@ theorem IsFiniteRelIndex.comap (f : G' →* G) (hHK : IsFiniteRelIndex H K) :
   rw [isFiniteRelIndex_comap_iff, map_comap_eq]
   exact isFiniteRelIndex_of_le_right H inf_le_right
 
-#check relIndex_inf_ne_zero
-
 @[to_additive]
 lemma isFiniteRelIndex_of_finiteIndex [h : H.FiniteIndex] : H.IsFiniteRelIndex K := by
   rw [← isFiniteRelIndex_top_iff] at h
