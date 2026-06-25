@@ -65,6 +65,8 @@ lemma mem_contDiffGroupoid_of_contMDiff_chartAt {x y : M} {h : OpenPartialHomeom
   · refine ((contMDiff_iff.mp hhsymm).2 y x).mono (fun v hv ↦ ?_)
     simpa using ⟨⟨hv.2, hv.1.1.1⟩, hv.1.2⟩
 
+open Set
+
 instance : IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
@@ -104,7 +106,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       ((Homeomorph.isOpen_image _).mpr (πinvy.open_target.inter φy.open_source))
 
     have is_open_t : IsOpen t := φx.isOpen_image_of_subset_source is_open_Up'
-      (Set.Subset.trans Set.inter_subset_left Set.inter_subset_right)
+      (Subset.trans inter_subset_left inter_subset_right)
 
     have h_in_t : h ∈ t := by
       refine ⟨φx.symm h, ?_, φx.right_inv hh1⟩
@@ -124,9 +126,9 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       simp only [f, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
       rw [← hz, φx.left_inv hu.1.2, hQ.localInverseAt_symm,
         ← orbitRel.Quotient.quotient_smul_eq (g:=g0)]
-      apply Set.mem_image_of_mem (Homeomorph.smul g0) at hu
+      apply mem_image_of_mem (Homeomorph.smul g0) at hu
       simp only [Up', ← Homeomorph.smul_symm, Homeomorph.image_symm, Homeomorph.smul_apply,
-        Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, smul_left_cancel_iff, exists_eq_right]
+        mem_image, mem_inter_iff, mem_preimage, smul_left_cancel_iff, exists_eq_right]
         at hu
       rw [← hQ.localInverseAt_symm, ← Homeomorph.smul_apply, πinvy.right_inv (by exact hu.2.1)]
 
@@ -136,7 +138,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       · ext z
         refine ⟨?_, ?_⟩
         · intro ⟨_, hzt⟩
-          rw [f.restr_source, is_open_t.interior_eq, Set.inter_comm]
+          rw [f.restr_source, is_open_t.interior_eq, inter_comm]
           simpa [(is_open_t.inter f.open_source).interior_eq] using hzt
         · intro ⟨hzf, hzt⟩
           rw [is_open_t.interior_eq] at hzt
