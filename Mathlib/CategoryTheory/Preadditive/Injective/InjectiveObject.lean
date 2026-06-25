@@ -33,17 +33,10 @@ instance closedUnderLimitsOfShapeDiscrete (J : Type*) :
     ObjectProperty.IsClosedUnderLimitsOfShape (isInjective C) (Discrete J) where
   limitsOfShape_le := by
     rintro Y ⟨p⟩
-    have : HasLimit p.diag := ⟨_, p.isLimit⟩
-    let X := fun j => p.diag.obj ⟨j⟩
-    let e := Discrete.natIsoFunctor (F := p.diag)
-    have : HasProduct X := hasLimit_of_iso e
-    have : HasLimit (Discrete.functor (p.diag.obj ∘ Discrete.mk)) := by
-      change HasProduct X
-      infer_instance
-    have : ∀ j, Injective (X j) := fun j => p.prop_diag_obj ⟨j⟩
-    have e' : ∏ᶜ X ≅ Y := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-      ((IsLimit.postcomposeHomEquiv e _).symm p.isLimit)
-    exact Injective.of_iso e' inferInstance
+    have (j : J) : Injective (p.diag.obj ⟨j⟩) := p.prop_diag_obj _
+    exact ⟨fun q i _ ↦ ⟨p.isLimit.lift (Cone.mk _
+      (Discrete.natTrans (fun ⟨j⟩ ↦ (Injective.factorThru (q ≫ p.π.app ⟨j⟩) i :)))),
+        p.isLimit.hom_ext (fun ⟨j⟩ ↦ by simp [p.isLimit.fac])⟩⟩
 
 instance [HasFiniteProducts C] : HasFiniteProducts (InjectiveObject C) where
   out n := by infer_instance
