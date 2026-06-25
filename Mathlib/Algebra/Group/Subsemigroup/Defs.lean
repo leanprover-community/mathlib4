@@ -92,6 +92,13 @@ structure AddSubsemigroup (M : Type*) [Add M] where
 
 attribute [to_additive AddSubsemigroup] Subsemigroup
 
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
+theorem ppow_mem {S A} [Semigroup S] [SetLike A S] [MulMemClass A S] {U : A} {x : S}
+    (hx : x ∈ U) (n : ℕ+) : x ^ n ∈ U := by
+  induction n using Semigroup.ppow_induction x
+  · exact hx
+  · exact MulMemClass.mul_mem ‹_› hx
+
 namespace Subsemigroup
 
 @[to_additive]
