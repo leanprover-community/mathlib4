@@ -14,7 +14,7 @@ public import Mathlib.Topology.Sheaves.Skyscraper
 # The skyscraper sheaf as a sheaf of modules
 
 In this file, we define the skyscraper sheaf on a topological space at a point `p` over a sheaf of
-rings `R` valued in a module `M` over the stalk of `R` at `p`.
+rings `R`, valued in a module `M` over the stalk of `R` at `p`.
 
 # Implementation notes
 
@@ -24,10 +24,6 @@ to be more convenient at first glance. This is because doing so produces express
 -/
 
 open Opposite CategoryTheory Limits ZeroObject
-
-/-
-In this file we define the skyscraper sheaf as a sheaf of modules
--/
 
 @[expose] public section
 
@@ -55,10 +51,8 @@ lemma skyscraperPresheafOfModulesObj_pos {U : (TopologicalSpace.Opens X)ᵒᵖ} 
 lemma skyscraperPresheafOfModulesObj_neg {U : (TopologicalSpace.Opens X)ᵒᵖ} (hp : p ∉ unop U) :
     skyscraperPresheafOfModulesObj p R M U = 0 := dif_neg hp
 
-open Classical in
 /-- The restriction map of the skyscraper presheaf of modules between two opens both
-containing `p`: it is the identity on `k(p)`, semilinear with respect to restriction of
-scalars along `Γ(X, U) ⟶ Γ(X, V)`. -/
+containing `p`. -/
 noncomputable
 def skyscraperPresheafOfModulesRestriction {U V : (TopologicalSpace.Opens X)ᵒᵖ}
     (i : U ⟶ V) (h : p ∈ unop V) :
@@ -136,10 +130,6 @@ lemma skyscraperPresheafOfModulesObj_isZero_of_neg {U : (TopologicalSpace.Opens 
   rw [skyscraperPresheafOfModulesObj_neg p R M h]
   exact isZero_zero _
 
-lemma skyscraperPresheafOfModulesObj_subsingleton_of_neg {U : (TopologicalSpace.Opens X)ᵒᵖ}
-    (h : p ∉ unop U) : Subsingleton (skyscraperPresheafOfModulesObj p R M U) :=
-  ModuleCat.isZero_iff_subsingleton.mp <| skyscraperPresheafOfModulesObj_isZero_of_neg p R M h
-
 open Classical in
 noncomputable
 def skyscraperPresheafOfModules : PresheafOfModules R where
@@ -168,9 +158,10 @@ lemma skyscraperPresheafOfModules_presheaf_map {U V : (TopologicalSpace.Opens X)
     (skyscraperPresheafOfModules p R M).presheaf.map i =
     (forget₂ (ModuleCat _) Ab).map (skyscraperPresheafOfModulesMap p R M i) := rfl
 
-lemma skyscraperPresheafOfModules_forget_map
+lemma skyscraperPresheafOfModulesRestriction_forget₂_map
     {U V : (TopologicalSpace.Opens X)ᵒᵖ} (i : U ⟶ V) (h : p ∈ unop V) :
     (forget₂ (ModuleCat _) Ab).map (skyscraperPresheafOfModulesRestriction p R M i h) = 𝟙 _ := rfl
+
 section Iso
 
 lemma skyscraperPresheafOfModules_presheaf_obj_pos {U : (TopologicalSpace.Opens X)ᵒᵖ}
@@ -191,7 +182,7 @@ lemma skyscraperPresheafOfModules_presheaf_map_pos {U V : (TopologicalSpace.Open
         (skyscraperPresheafOfModules_presheaf_obj_pos p R M h).symm) := by
   rw [skyscraperPresheafOfModules_presheaf_map, skyscraperPresheafOfModulesMap_pos p R M i h]
   simp only [Functor.map_comp, eqToHom_map]
-  rw [skyscraperPresheafOfModules_forget_map]
+  rw [skyscraperPresheafOfModulesRestriction_forget₂_map]
   exact (_ ≫= Category.id_comp _).trans (eqToHom_trans _ _)
 
 open Classical in
@@ -218,17 +209,6 @@ lemma skyscraperPresheafOfModulesPresheafIsoSkyscraperApp_pos {U : (TopologicalS
 
 open Classical in
 /--
-When `p ∈ V`, the restriction map of the skyscraper presheaf is an `eqToHom`.
--/
-lemma skyscraperAb_presheaf_map_pos {X : TopCat} (p : ↑X)
-  [(U : TopologicalSpace.Opens ↑X) → Decidable (p ∈ U)] {C : Type*}
-  [Category* C] (A : C) [HasTerminal C] {U V : (TopologicalSpace.Opens X)ᵒᵖ} (i : U ⟶ V)
-    (h : p ∈ unop V) :
-    (skyscraperSheaf p A).presheaf.map i =
-      eqToHom ((if_pos (i.unop.le h)).trans (if_pos h).symm) := by simp [h]
-
-open Classical in
-/--
 The underlying presheaf of the skyscraper sheaf of modules is isomorphic to `skyscraperSheaf`
 -/
 noncomputable def skyscraperPresheafOfModulesPresheafIsoSkyscraper :
@@ -239,9 +219,8 @@ noncomputable def skyscraperPresheafOfModulesPresheafIsoSkyscraper :
   by_cases h : p ∈ unop V
   · rw [skyscraperPresheafOfModulesPresheafIsoSkyscraperApp_pos p R M (i.unop.le h),
       skyscraperPresheafOfModulesPresheafIsoSkyscraperApp_pos p R M h,
-      skyscraperPresheafOfModules_presheaf_map_pos p R M i h,
-      skyscraperAb_presheaf_map_pos p (AddCommGrpCat.of M) i h]
-    simp only [eqToIso.hom]
+      skyscraperPresheafOfModules_presheaf_map_pos p R M i h]
+    simp only [skyscraperSheaf_obj_map, h, ↓reduceDIte, eqToIso.hom]
     exact (eqToHom_trans _ _).trans (eqToHom_trans _ _).symm
   · exact (isTerminalSkyscraperSheafObjObjOfNotMem h).isZero.eq_of_tgt _ _
 
@@ -249,7 +228,8 @@ end Iso
 
 open Classical in
 /--
-The skyscraper sheaf at a point `p` of a scheme as a sheaf of
+The skyscraper sheaf at a point `p` of a topological space over a sheaf of rings `R` valued in a
+module over `(↑(R.presheaf.stalk p))`.
 -/
 noncomputable
 def skyscraperSheafOfModules (R : TopCat.Sheaf RingCat X)
