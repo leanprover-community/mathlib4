@@ -74,6 +74,10 @@ theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving
     QuasiMeasurePreserving f μa' μb' :=
   (h.mono_left ha).mono_right hb
 
+theorem of_eq_ae {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (h : ae μ = ae ν) :
+    QuasiMeasurePreserving f ν ν :=
+  hf.mono h.ge.absolutelyContinuous_of_ae h.le.absolutelyContinuous_of_ae
+
 @[fun_prop]
 protected theorem comp {g : β → γ} {f : α → β} (hg : QuasiMeasurePreserving g μb μc)
     (hf : QuasiMeasurePreserving f μa μb) : QuasiMeasurePreserving (g ∘ f) μa μc :=

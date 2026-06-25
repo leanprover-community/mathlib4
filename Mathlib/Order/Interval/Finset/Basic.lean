@@ -913,6 +913,16 @@ theorem _root_.Set.Infinite.exists_gt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, a 
 theorem _root_.Set.infinite_iff_exists_gt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, a < b :=
   ⟨Set.Infinite.exists_gt, Set.infinite_of_forall_exists_gt⟩
 
+theorem _root_.Set.infinite_iff_exists_gt_mem (hs : s.Nonempty) :
+    s.Infinite ↔ ∀ a ∈ s, ∃ b ∈ s, a < b := by
+  have : Nonempty α := hs.nonempty
+  refine ⟨fun h a _ ↦ Set.infinite_iff_exists_gt.1 h a, fun h ↦ ?_⟩
+  by_contra s_fin
+  obtain ⟨a, ha⟩ := (Set.not_infinite.1 s_fin).exists_maximalFor id s hs
+  rw [maximalFor_id] at ha
+  obtain ⟨b, b_s, a_b⟩ := h a ha.prop
+  exact (ha.le_of_ge b_s a_b.le).not_gt a_b
+
 end LocallyFiniteOrderBot
 
 section LocallyFiniteOrderTop
@@ -923,6 +933,10 @@ theorem _root_.Set.Infinite.exists_lt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, b 
 
 theorem _root_.Set.infinite_iff_exists_lt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, b < a :=
   ⟨Set.Infinite.exists_lt, Set.infinite_of_forall_exists_lt⟩
+
+theorem _root_.Set.infinite_iff_exists_lt_mem (hs : s.Nonempty) :
+    s.Infinite ↔ ∀ a ∈ s, ∃ b ∈ s, b < a :=
+  Set.infinite_iff_exists_gt_mem (α := αᵒᵈ) hs
 
 end LocallyFiniteOrderTop
 

@@ -1129,6 +1129,10 @@ theorem eventuallyLE_iff_all_subsets {f g : α → β} {l : Filter α} :
     f ≤ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x ≤ g x :=
   eventually_iff_all_subsets
 
+lemma eventuallyLE_of_subset {s t : Set α} (h : s ⊆ t) :
+    s ≤ᶠ[l] t :=
+  Eventually.of_forall h
+
 end LE
 
 section Preorder

@@ -11,24 +11,23 @@ public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Measure-theoretic recurrence and conservative systems
-In this file, we implement notions of measure-theoretic recurrence of sets and conservative
+In this file, we implement notions of measure-theoretic recurrence of sets as weel as conservative
 dynamical systems.
 
 ## Main definitions
 - `IsRecurrent`: given a map `f : α → α` and a measure `μ`, a set `s` is said to be *recurrent* if
   `μ`-almost every point in `s` returns to `s` after some number of iterations of `f`.
 - `Conservative`: a map `f : α → α` is said to be a *conservative* system with respect to a measure
-  `μ` if `f` is non-singular (`QuasiMeasurePreserving`) and all measurable sets are
-  recurrent.
+  `μ` if `f` is non-singular (`QuasiMeasurePreserving`) and all measurable sets are recurrent.
 
 ## Main results
 There are several properties that look like they are stronger than recurrence but actually
-follow from it:
+follow from it for non-singular maps:
 - `IsRecurrent.frequently_measure_inter_ne_zero`: if a subset `t ⊆ s` has positive measure, then
   for infinitely many `n`, the measure of `t ∩ f^[n] ⁻¹' s` is positive.
 - `IsRecurrent.ae_mem_imp_frequently_image_mem`: `μ`-almost every every point of `s` visits `s`
   infinitely many times.
-- `isRecurrent_iff_ae_sub_limsup_preimage`: `μ`-almost everywhere, if a point visites `s`, then it
+- `isRecurrent_iff_ae_sub_limsup_preimage`: `μ`-almost everywhere, if a point visits `s`, then it
   visits `s` infinitely many times.
 
 Another definition of conservative systems is that any measurable set `s` of positive measure
@@ -51,64 +50,13 @@ public section
 
 noncomputable section
 
-open Filter Set
-
-/- Put in Mathlib.Order.Preorder.Finite-/
-lemma Set.infinite_iff_exists_gt_mem {α : Type*} [LinearOrder α] [LocallyFiniteOrderBot α]
-    {s : Set α} (hs : s.Nonempty) :
-    s.Infinite ↔ ∀ a ∈ s, ∃ b ∈ s, a < b := by
-  have : Nonempty α := hs.nonempty
-  refine ⟨fun h a _ ↦ infinite_iff_exists_gt.1 h a, fun h ↦ ?_⟩
-  by_contra s_fin
-  obtain ⟨a, ha⟩ := (not_infinite.1 s_fin).exists_maximalFor id s hs
-  rw [maximalFor_id] at ha
-  obtain ⟨b, b_s, a_b⟩ := h a ha.prop
-  exact (ha.le_of_ge b_s a_b.le).not_gt a_b
-
-lemma Set.infinite_iff_exists_lt_mem {α : Type*} [LinearOrder α] [LocallyFiniteOrderTop α]
-    {s : Set α} (hs : s.Nonempty) :
-    s.Infinite ↔ ∀ a ∈ s, ∃ b ∈ s, b < a :=
-  infinite_iff_exists_gt_mem (α := αᵒᵈ) hs
-
-/- Put in Mathlib.Order.Filter.Basic-/
-lemma Filter.eventuallyLE_of_subset {α : Type*} {l : Filter α} {s t : Set α} (h : s ⊆ t) :
-    s ≤ᶠ[l] t :=
-  Eventually.of_forall h
-
-/- Put in Mathlib.Order.Filter.CountableInter-/
-lemma Filter.EventuallyLE.countable_iUnion' {ι : Sort*} {α : Type*} {l : Filter α}
-    [CountableInterFilter l] [Countable ι] {s : ι → Set α} {t : Set α} (h : ∀ i, s i ≤ᶠ[l] t) :
-    ⋃ i, s i ≤ᶠ[l] t := by
-  refine (eventually_countable_forall.2 h).mono fun x hx1 hx2 ↦ ?_
-  obtain ⟨i, hi⟩ := mem_iUnion.1 hx2
-  exact hx1 i hi
-
-/- Put in Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving-/
-lemma MeasureTheory.Measure.QuasiMeasurePreserving.of_eq_ae {α : Type*} [MeasurableSpace α]
-    {μ ν : Measure α} {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (h : MeasureTheory.ae μ = MeasureTheory.ae ν) :
-    QuasiMeasurePreserving f ν ν :=
-  hf.mono h.ge.absolutelyContinuous_of_ae h.le.absolutelyContinuous_of_ae
-
-/- Put somewhere-/
-lemma preimage_limsup_preimage {α : Type*} {s : Set α} {f : α → α} {n : ℕ} :
-    f^[n] ⁻¹' limsup (fun k ↦ f^[k] ⁻¹' s) atTop = limsup (fun k ↦ f^[k] ⁻¹' s) atTop := by
-  ext x
-  simp only [limsup_eq_iInf_iSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter, mem_preimage, mem_iInter,
-    mem_iUnion, exists_prop]
-  constructor <;> intro h m
-  · obtain ⟨k, k_m, f_k⟩ := h m
-    refine ⟨n + k, by linarith, ?_⟩
-    rwa [add_comm, Function.iterate_add_apply]
-  · obtain ⟨k, k_m, f_k⟩ := h (m + n)
-    refine ⟨k - n, Nat.le_sub_of_add_le k_m, ?_⟩
-    rwa [← Function.iterate_add_apply, Nat.sub_add_cancel (Nat.le_of_add_left_le k_m)]
-
 namespace MeasureTheory
 
-open Function Measure
+open Filter Function Measure Set
 
 variable {α : Type*} [MeasurableSpace α] {f : α → α} {μ : Measure α} {s : Set α}
+
+/-! ### Recurrent sets -/
 
 /-- A set `s` is recurrent for a transformation `f` and a measure `μ` if almost every point in `s`
 returns to `s` under some iteration of `f`. -/
@@ -239,6 +187,19 @@ lemma IsRecurrent.ae_mem_imp_frequently_image_mem (hf : QuasiMeasurePreserving f
   apply iInter_eq_empty_of_eq_empty (i := m)
   simp [n_m]
 
+lemma preimage_limsup_preimage {α : Type*} {s : Set α} {f : α → α} {n : ℕ} :
+    f^[n] ⁻¹' limsup (fun k ↦ f^[k] ⁻¹' s) atTop = limsup (fun k ↦ f^[k] ⁻¹' s) atTop := by
+  ext x
+  simp only [limsup_eq_iInf_iSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter, mem_preimage, mem_iInter,
+    mem_iUnion, exists_prop]
+  constructor <;> intro h m
+  · obtain ⟨k, k_m, f_k⟩ := h m
+    refine ⟨n + k, by linarith, ?_⟩
+    rwa [add_comm, Function.iterate_add_apply]
+  · obtain ⟨k, k_m, f_k⟩ := h (m + n)
+    refine ⟨k - n, Nat.le_sub_of_add_le k_m, ?_⟩
+    rwa [← Function.iterate_add_apply, Nat.sub_add_cancel (Nat.le_of_add_left_le k_m)]
+
 lemma isRecurrent_iff_ae_sub_limsup_preimage (s : Set α) (hf : QuasiMeasurePreserving f μ μ) :
     IsRecurrent f μ s ↔ ⋃ n, f^[n] ⁻¹' s =ᵐ[μ] (limsup (fun n ↦ f^[n] ⁻¹' s) atTop : Set α) := by
   have hl : (limsup (fun n ↦ f^[n] ⁻¹' s) atTop : Set α) ≤ᵐ[μ] ⋃ n ≠ 0, f^[n] ⁻¹' s := by
@@ -268,6 +229,8 @@ lemma MeasurePreserving.isRecurrent [IsFiniteMeasure μ] (hf : MeasurePreserving
 lemma isRecurrent_id :
     IsRecurrent id μ s :=
   Eventually.of_forall fun x x_s ↦ mem_iUnion₂.2 ⟨1, one_ne_zero, by simpa⟩
+
+/-! ### Conservative systems -/
 
 /-- We say that a non-singular (`MeasureTheory.QuasiMeasurePreserving`) self-map is
 *conservative* if any measurable set `s` is recurrent, i.e. almost every point `x` returns to `s`
