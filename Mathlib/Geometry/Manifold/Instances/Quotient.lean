@@ -55,11 +55,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   (I : ModelWithCorners 𝕜 E H)
   {n : ℕ∞} [IsManifold I n M]
 
--- are these two needed? since they're only used once each
-lemma Homeomorph.smul_symm {g : G} :
-    (Homeomorph.smul g (α := M)).symm = (Homeomorph.smul g⁻¹) :=
-  Homeomorph.ext_iff.mpr (fun x ↦ Homeomorph.smul_symm_apply g x)
-
 lemma quotient_ignores_smul (g : G) (u : M) :
     (⟦u⟧ : orbitRel.Quotient G M) = ⟦g • u⟧ :=
   Quotient.eq.mpr ⟨g⁻¹, (by exact inv_smul_smul g u)⟩

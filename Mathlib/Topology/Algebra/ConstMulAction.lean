@@ -235,6 +235,10 @@ def Homeomorph.smul (γ : G) : α ≃ₜ α where
 add_decl_doc Homeomorph.vadd
 
 @[to_additive]
+lemma Homeomorph.smul_symm {g : G} : (Homeomorph.smul (α := α) g).symm = (Homeomorph.smul g⁻¹) :=
+  Homeomorph.ext_iff.mpr (fun x ↦ Homeomorph.smul_symm_apply g x)
+
+@[to_additive]
 theorem isHomeomorph_smul (c : G) : IsHomeomorph fun x : α ↦ c • x :=
   (Homeomorph.smul c).isHomeomorph
 
