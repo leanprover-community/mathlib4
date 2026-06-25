@@ -142,26 +142,24 @@ theorem mapRoots_bijective [h : Fact ((p.map (algebraMap F E)).Splits)] :
     exact ⟨⟨x, (@Multiset.mem_toFinset _ (Classical.decEq _) _ _).mpr hx1⟩, Subtype.ext hx2⟩
 
 /-- The bijection between `rootSet p p.SplittingField` and `rootSet p E`. -/
-private def rootsEquivRootsAux [Fact ((p.map (algebraMap F E)).Splits)] :
+def rootsEquivRootsAux [Fact ((p.map (algebraMap F E)).Splits)] :
     rootSet p p.SplittingField ≃ rootSet p E :=
   Equiv.ofBijective (mapRoots p E) (mapRoots_bijective p E)
 
 /-- The bijection between `rootSet p E` and `rootSet p E'` when `p` splits in both `E` and `E'`. -/
-@[no_expose]
 noncomputable def rootsEquivRoots [Fact (map (algebraMap F E) p).Splits]
     [Fact (map (algebraMap F E') p).Splits] : p.rootSet E ≃ p.rootSet E' :=
   (rootsEquivRootsAux p E).symm.trans (rootsEquivRootsAux p E')
 
-private instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
+instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
   smul ϕ := Set.MapsTo.restrict ϕ _ _ <| rootSet_mapsTo ϕ.toAlgHom
   one_smul _ := by ext; rfl
   mul_smul _ _ _ := by ext; rfl
 
-@[no_expose]
 instance smul [Fact ((p.map (algebraMap F E)).Splits)] : SMul p.Gal (rootSet p E) where
   smul ϕ x := rootsEquivRootsAux p E (ϕ • (rootsEquivRootsAux p E).symm x)
 
-private theorem smul_def [Fact ((p.map (algebraMap F E)).Splits)] (ϕ : p.Gal) (x : rootSet p E) :
+theorem smul_def [Fact ((p.map (algebraMap F E)).Splits)] (ϕ : p.Gal) (x : rootSet p E) :
     ϕ • x = rootsEquivRootsAux p E (ϕ • (rootsEquivRootsAux p E).symm x) :=
   rfl
 
