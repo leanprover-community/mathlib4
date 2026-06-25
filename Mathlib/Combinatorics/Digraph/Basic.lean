@@ -512,7 +512,7 @@ instance [IsEmpty V] : Unique (Digraph V) where
   default := ⊥
   uniq G := by
     ext1
-    · rw [←Digraph.emptyDigraph_eq_bot, Set.eq_empty_of_isEmpty G.verts]
+    · rw [← Digraph.emptyDigraph_eq_bot, Set.eq_empty_of_isEmpty G.verts]
       rfl
     · congr!
 
