@@ -503,8 +503,7 @@ variable (A α)
 @[simps! symm_apply]
 noncomputable abbrev coinvariantsTensorFreeLEquiv :
     Coinvariants (A ⊗ free k G α).ρ ≃ₗ[k] (α →₀ A) :=
-  LinearEquiv.ofLinearMap (coinvariantsTensorFreeToFinsupp A α)
-    (finsuppToCoinvariantsTensorFree A α)
+  .ofLinearMap (coinvariantsTensorFreeToFinsupp A α) (finsuppToCoinvariantsTensorFree A α)
     (lhom_ext fun i x => by
       simp [finsuppToCoinvariantsTensorFree_single,
         coinvariantsTensorFreeToFinsupp_mk_tmul_single]) <|

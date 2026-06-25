@@ -411,8 +411,7 @@ variable (R M) in
 /-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
-  LinearEquiv.ofLinearMap
-    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
       map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
@@ -430,22 +429,21 @@ variable (R M) in
 /-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
-  LinearEquiv.ofLinearMap
-    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
-      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
-        ext i
-        fin_cases i
-        rfl
-      exact
-        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
-          map_add' := fun m₁ m₂ ↦ by
-            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_add]
-          map_smul' := fun r m ↦ by
-            dsimp
-            rw [h]; nth_rw 2 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
-    (by aesop) (by aesop)
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
+    have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+      ext i
+      fin_cases i
+      rfl
+    exact
+      { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+        map_add' := fun m₁ m₂ ↦ by
+          rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_add]
+        map_smul' := fun r m ↦ by
+          dsimp
+          rw [h]; nth_rw 2 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+  (by aesop) (by aesop)
 
 @[simp]
 lemma oneEquiv_ιMulti (f : Fin 1 → M) :
