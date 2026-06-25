@@ -13,16 +13,16 @@ public import Mathlib.Order.Interval.Finset.Defs
 
 /-! # Antidiagonal with values in general types
 
-We define a type class `Finset.HasAntidiagonal A` contains a function
+We define a type class `Finset.HasAntidiagonal A` which contains a function
 `antidiagonal : A → Finset (A × A)` such that `antidiagonal n`
 is the finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
 
-Analogously, the type class `Finset.HasMulAntidiagonal A` which contains a function
+Analogously, the type class `Finset.HasMulAntidiagonal A` contains a function
 `mulAntidiagonal : A → Finset (A × A)` such that `mulAntidiagonal n`
 is the finset of all pairs multiplying to `n`, as witnessed by `mem_mulAntidiagonal`.
 
 When `A` is a canonically ordered additive monoid with locally finite order
-this typeclass can be instantiated with `Finset.mulAntidiagonalOfLocallyFinite`.
+this typeclass can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
 This applies in particular when `A` is `ℕ`, more generally or `σ →₀ ℕ`,
 or even `ι →₀ A`  under the additional assumption `OrderedSub A`
 that make it a canonically ordered additive monoid.
@@ -36,17 +36,17 @@ These instances are provided as `Finset.Nat.instHasAntidiagonal` and
 `Finsupp.instHasAntidiagonal`.
 This is why `Finset.mulAntidiagonalOfLocallyFinite` is an `abbrev` and not an `instance`.
 
-This definition does not exactly match with that of `Multiset.mulAntidiagonal`
+This definition does not exactly match with that of `Multiset.antidiagonal`
 defined in `Mathlib/Data/Multiset/Antidiagonal.lean`, because of the multiplicities.
 Indeed, by counting multiplicities, `Multiset α` is equivalent to `α →₀ ℕ`,
-but `Finset.mulAntidiagonal` and `Multiset.mulAntidiagonal` will return different objects.
-For example, for `s : Multiset ℕ := {0,0,0}`, `Multiset.mulAntidiagonal s` has 8 elements
-but `Finset.mulAntidiagonal s` has only 4.
+but `Finset.antidiagonal` and `Multiset.antidiagonal` will return different objects.
+For example, for `s : Multiset ℕ := {0,0,0}`, `Multiset.antidiagonal s` has 8 elements
+but `Finset.antidiagonal s` has only 4.
 
 ```lean
 def s : Multiset ℕ := {0, 0, 0}
-#eval (Finset.mulAntidiagonal s).card -- 4
-#eval Multiset.card (Multiset.mulAntidiagonal s) -- 8
+#eval (Finset.antidiagonal s).card -- 4
+#eval Multiset.card (Multiset.antidiagonal s) -- 8
 ```
 
 ## TODO
@@ -60,19 +60,19 @@ open Function
 
 namespace Finset
 
-/-- The class of additive monoids with an mulAntidiagonal -/
+/-- The class of additive monoids with an antidiagonal. -/
 class HasAntidiagonal (A : Type*) [AddMonoid A] where
   /-- The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i + j = n`. -/
   antidiagonal : A → Finset (A × A)
-  /-- A pair belongs to `mulAntidiagonal n` iff the sum of its components is equal to `n`. -/
+  /-- A pair belongs to `antidiagonal n` iff the sum of its components is equal to `n`. -/
   mem_antidiagonal {n} {a} : a ∈ antidiagonal n ↔ a.fst + a.snd = n
 
 export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
 attribute [simp] mem_antidiagonal
 
-/-- The class of (multiplicative) monoids with a mulAntidiagonal -/
+/-- The class of (multiplicative) monoids with a mulAntidiagonal. -/
 class HasMulAntidiagonal (A : Type*) [Monoid A] where
   /-- The mulAntidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i * j = n`. -/
@@ -242,10 +242,10 @@ variable {A : Type*}
   [CommMonoid A] [PartialOrder A] [CanonicallyOrderedMul A]
   [LocallyFiniteOrderBot A] [DecidableEq A]
 
-/-- In a canonically ordered multiplicative monoid, the mulAntidiagonal can be construct by
+/-- In a canonically ordered multiplicative monoid, the mulAntidiagonal can be constructed by
 filtering.
 
-Note that this is not an instance, as for some times a more efficient algorithm is available. -/
+Note that this is not an instance, as for sometimes a more efficient algorithm is available. -/
 @[to_additive
 /-- In a canonically ordered additive monoid, the antidiagonal can be construct by filtering.
 
@@ -267,10 +267,10 @@ variable {A : Type*} [AddMonoid A] [HasAntidiagonal A]
 
 instance : HasMulAntidiagonal (Multiplicative A) where
   mulAntidiagonal a :=
-    (antidiagonal (toAdd a)).map ⟨fun p ↦ (ofAdd p.1 , ofAdd p.2), fun _ _ h ↦ h⟩
+    (antidiagonal (toAdd a)).map ⟨fun p ↦ (ofAdd p.1 , ofAdd p.2), fun _ _ h ↦ by aesop⟩
   mem_mulAntidiagonal {a p} := by aesop
 
-lemma mem_mulAntidiagonal_ofAdd_iff_toAdd_mem_mulAntidiagonal {a : A}
+lemma mem_mulAntidiagonal_ofAdd_iff_toAdd_mem_antidiagonal {a : A}
     {p : Multiplicative A × Multiplicative A} :
     p ∈ mulAntidiagonal (ofAdd a) ↔ (toAdd p.1, toAdd p.2) ∈ antidiagonal a := by
   simp only [mem_mulAntidiagonal, mem_antidiagonal]
