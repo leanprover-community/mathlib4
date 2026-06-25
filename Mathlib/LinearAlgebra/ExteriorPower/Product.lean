@@ -34,7 +34,6 @@ lemma algebraMapInv_ι (x : M) : algebraMapInv (ι R x) = (0 : R) := by
   simp [algebraMapInv]
 
 variable {M} in
-@[simp]
 lemma algebraMapInv_algebraMap (r : R) :
     algebraMapInv (algebraMap R (ExteriorAlgebra R M) r) = r :=
   algebraMap_leftInverse M r
@@ -56,8 +55,6 @@ variable {M} in
 lemma ιInv_algebraMap (r : R) : ιInv (algebraMap R (ExteriorAlgebra R M) r) = 0 := by
   rw [Algebra.algebraMap_eq_smul_one, map_smul, ιInv_one, smul_zero]
 
-/-- In the exterior algebra of the base ring (viewed as a module over itself), the product of
-any two generators vanishes. -/
 lemma ι_mul_ι_ring (a b : R) : ι R a * ι R b = 0 := by
   trans a • ι R (1 : R) * b • ι R (1 : R)
   · simp [← map_smul, smul_eq_mul, mul_one]
@@ -138,8 +135,6 @@ section MemDecomp
 
 variable {R M N}
 
-/-- `ExteriorAlgebra.map` along `inl` sends the `k`-th exterior power into the `k`-th exterior
-power. -/
 lemma map_mem_exteriorPower (f : M →ₗ[R] N) {k : ℕ} {w : ExteriorAlgebra R M} (hw : w ∈ ⋀[R]^k M) :
     ExteriorAlgebra.map f w ∈ ⋀[R]^k N := by
   simpa [exteriorPower.coe_map] using (exteriorPower.map k f ⟨w, hw⟩).2
