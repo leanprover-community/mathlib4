@@ -67,7 +67,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
 def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
-  __ := (f : A →+* B)
+  __ := RingHomClass.toRingHom f
   toFun := f
   commutes' := AlgHomClass.commutes f
 
@@ -95,6 +95,8 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   commutes f := f.commutes'
+
+instance : CoeOut (A →ₐ[R] B) (A →+* B) where coe := RingHomClass.toRingHom
 
 @[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
