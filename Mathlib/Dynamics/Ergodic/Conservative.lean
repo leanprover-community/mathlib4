@@ -10,35 +10,44 @@ public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
-# Conservative systems
+# Measure-theoretic recurrence and conservative systems
+In this file, we implement notions of measure-theoretic recurrence of sets and conservative
+dynamical systems.
 
-In this file we define `f : α → α` to be a *conservative* system w.r.t. a measure `μ` if `f` is
-non-singular (`MeasureTheory.QuasiMeasurePreserving`) and for every measurable set `s` of
-positive measure at least one point `x ∈ s` returns back to `s` after some number of iterations of
-`f`. There are several properties that look like they are stronger than this one but actually follow
-from it:
+## Main definitions
+- `IsRecurrent`: given a map `f : α → α` and a measure `μ`, a set `s` is said to be *recurrent* if
+  `μ`-almost every point in `s` returns to `s` after some number of iterations of `f`.
+- `Conservative`: a map `f : α → α` is said to be a *conservative* system with respect to a measure
+  `μ` if `f` is non-singular (`QuasiMeasurePreserving`) and all measurable sets are
+  recurrent.
 
-* `MeasureTheory.Conservative.frequently_measure_inter_ne_zero`,
-  `MeasureTheory.Conservative.exists_gt_measure_inter_ne_zero`: if `μ s ≠ 0`, then for infinitely
-  many `n`, the measure of `s ∩ f^[n] ⁻¹' s` is positive.
+## Main results
+There are several properties that look like they are stronger than recurrence but actually
+follow from it:
+- `IsRecurrent.frequently_measure_inter_ne_zero`: if a subset `t ⊆ s` has positive measure, then
+  for infinitely many `n`, the measure of `t ∩ f^[n] ⁻¹' s` is positive.
+- `IsRecurrent.ae_mem_imp_frequently_image_mem`: `μ`-almost every every point of `s` visits `s`
+  infinitely many times.
+- `isRecurrent_iff_ae_sub_limsup_preimage`: `μ`-almost everywhere, if a point visites `s`, then it
+  visits `s` infinitely many times.
 
-* `MeasureTheory.Conservative.measure_mem_forall_ge_image_notMem_eq_zero`,
-  `MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem`: a.e. every point of `s` visits `s`
-  infinitely many times (Poincaré recurrence theorem).
+Another definition of conservative systems is that any measurable set `s` of positive measure
+contains a point which returns to `s` after some number of iterations of `f`. The equivalence
+between these definitions is proven in lemma `conservative_iff_exists_mem_iterate_mem`.
 
-We also prove the topological Poincaré recurrence theorem
-`MeasureTheory.Conservative.ae_frequently_mem_of_mem_nhds`. Let `f : α → α` be a conservative
-dynamical system on a topological space with second countable topology and measurable open
-sets. Then almost every point `x : α` is recurrent: it visits every neighborhood `s ∈ 𝓝 x`
-infinitely many times.
+We also prove:
+- `MeasurePreserving.conservative`: a map preserving a finite measure is conservative.
+- `Conservative.iterate`: iterates of conservative maps are conservative.
+- `Conservative.ae_frequently_mem_of_mem_nhds`: the topological Poincaré recurrence theorem. Let
+  `f : α → α` be a conservative dynamical system on a topological space with second countable
+  topology and measurable open sets. Then almost every point `x : α` is topologically recurrent: it
+  visits every neighborhood `s ∈ 𝓝 x` infinitely many times.
 
 ## Tags
-
-conservative dynamical system, Poincare recurrence theorem
+recurrent set, conservative dynamical system, Poincare recurrence theorem
 -/
 
 public section
-
 
 noncomputable section
 
@@ -105,7 +114,6 @@ variable {α : Type*} [MeasurableSpace α] {f : α → α} {μ : Measure α} {s 
 returns to `s` under some iteration of `f`. -/
 def IsRecurrent (f : α → α) (μ : Measure α) (s : Set α) :=
     s ≤ᵐ[μ] ⋃ n ≠ 0, f^[n] ⁻¹' s
-    --∀ᵐ (x : α) ∂μ, x ∈ s → ∃ n ≠ 0, f^[n] x ∈ s
 
 lemma isRecurrent_def :
     IsRecurrent f μ s ↔ ∀ᵐ (x : α) ∂μ, x ∈ s → ∃ n ≠ 0, f^[n] x ∈ s := by
@@ -135,9 +143,11 @@ theorem IsRecurrent.of_absolutelyContinuous {ν : Measure α} (hν : ν ≪ μ) 
 lemma isRecurrent_of_null (hs : μ s = 0) : IsRecurrent f μ s :=
   (measure_eq_zero_iff_ae_notMem.1 hs).mono fun x _ _ ↦ by contradiction
 
-lemma isRecurrent_univ : IsRecurrent f μ univ := by
-  simp only [isRecurrent_def, mem_univ, and_true, forall_const]
-  exact Eventually.of_forall fun _ ↦ ⟨1, one_ne_zero⟩
+lemma isRecurrent_of_mapsTo (hs : MapsTo f s s) : IsRecurrent f μ s :=
+  isRecurrent_def.2 (Eventually.of_forall fun _ x_s ↦ ⟨1, one_ne_zero, hs x_s⟩)
+
+lemma isRecurrent_univ : IsRecurrent f μ univ :=
+  isRecurrent_of_mapsTo (mapsTo_univ f univ)
 
 lemma isRecurrent_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
     (hs : ∀ i, IsRecurrent f μ (s i)) :
