@@ -223,7 +223,8 @@ lemma cancel_right {g₁ g₂ : ℬ →ₐᵍ[R] 𝒞} {f : 𝒜 →ₐᵍ[R] �
 
 lemma cancel_left {g₁ g₂ : 𝒜 →ₐᵍ[R] ℬ} {f : ℬ →ₐᵍ[R] 𝒞} (hf : Function.Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h ↦ coe_toAlgHom_injective <| (AlgHom.cancel_left hf).1 congr($(h).toAlgHom), fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ coe_toAlgHom_injective <| (AlgHom.cancel_left hf).1 congr($(h).toAlgHom),
+    fun h ↦ h ▸ rfl⟩
 
 /-- We enrich the existing function `toAlgHom` with the structure of a `MonoidHom`, to produce a
 bundled function that we now call `toEnd`. -/
