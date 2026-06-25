@@ -154,13 +154,11 @@ variable (G : Type*) [Group G] [MulAction G α] (I : Ideal α)
 abbrev inertia : Subgroup G := I.toAddSubgroup.inertia G
 
 variable {I G} in
-<<<<<<< HEAD
 theorem mem_inertia {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I :=
   I.toAddSubgroup.mem_inertia
-=======
+
 theorem coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H :=
   I.toAddSubgroup.coe_mem_inertia
->>>>>>> master
 
 end inertia
 
