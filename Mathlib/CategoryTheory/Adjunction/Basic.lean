@@ -121,8 +121,7 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
 
 to_dual_name_hint Left Right
 
-attribute [to_dual existing counit] Adjunction.unit
-attribute [to_dual existing right_triangle_components] Adjunction.left_triangle_components
+attribute [to_dual existing] Adjunction.unit Adjunction.left_triangle_components
 attribute [to_dual self (reorder := C D, 2 4, F G,
   unit counit, left_triangle_components right_triangle_components)] Adjunction.mk
 attribute [to_dual self (reorder := C D, 2 4, F G,
