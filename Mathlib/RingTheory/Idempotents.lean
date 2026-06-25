@@ -625,7 +625,7 @@ lemma Ideal.mem_map_span_singleton_iff_of_isIdempotentElem
   simp only [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective,
     Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton]
   refine ⟨?_, fun H ↦ ⟨_, H, by simp [sub_mul]⟩⟩
-  rintro ⟨s, hs, t, hrst⟩
+  intro ⟨s, hs, t, hrst⟩
   convert I.mul_mem_left (1 - e) hs using 1
   linear_combination he.eq * t - (1 - e) * hrst
 
