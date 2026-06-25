@@ -46,7 +46,7 @@ def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name :=
   let `(attr| to_fun%$tk $optAttr $[$id]?) := stx | throwUnsupportedSyntax
   if (kind != AttributeKind.global) then
     throwError "`to_fun` can only be used as a global attribute"
-  let name ← (src.appendBefore "fun_").modifySuffix (id.map (·.getId)) false "to_fun" id
+  let name ← (src.appendBefore "fun_").modifySuffix id false "to_fun"
   MetaM.run' <| addRelatedDecl src name (id.elim tk (·.raw)) optAttr
     (docstringPrefix? := s!"Eta-expanded form of `{src}`") (hoverInfo := true)
     fun value levels => do
