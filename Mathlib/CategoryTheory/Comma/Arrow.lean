@@ -78,6 +78,9 @@ def mk {X Y : T} (f : X ⟶ Y) : Arrow T where
   right := Y
   hom := f
 
+attribute [to_dual existing] mk_left
+attribute [to_dual self] mk_hom
+
 @[simp]
 theorem mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
   cases f
