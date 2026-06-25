@@ -915,6 +915,13 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
         rw [map_mul, hk, mul_one]
 
 @[to_additive]
+lemma MonoidHom.isOpenQuotientMap_iff_isQuotientMap {A : Type*} [Group A]
+    [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
+    {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F} :
+    IsOpenQuotientMap φ ↔ IsQuotientMap φ :=
+  ⟨fun hf => hf.isQuotientMap, MonoidHom.isOpenQuotientMap_of_isQuotientMap⟩
+
+@[to_additive]
 theorem IsTopologicalGroup.ext {G : Type*} [Group G] {t t' : TopologicalSpace G}
     (tg : @IsTopologicalGroup G t _) (tg' : @IsTopologicalGroup G t' _)
     (h : @nhds G t 1 = @nhds G t' 1) : t = t' :=
