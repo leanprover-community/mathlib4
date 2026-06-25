@@ -99,7 +99,7 @@ lemma Submartingale.predictablePart_nonneg
   filter_upwards [hf.monotone_predictablePart] with ω hω n
   simpa [predictablePart_zero] using hω (Nat.zero_le n)
 
-lemma IsStronglyPredictable.predictablePart_eq [MeasurableSpace E]
+lemma IsStronglyPredictable.predictablePart_eq
     [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
     (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
     predictablePart f ℱ μ n =ᵐ[μ] f n - f 0 := by
@@ -148,8 +148,7 @@ lemma Martingale.martingalePart_eq [CompleteSpace E] (hf : Martingale f ℱ μ) 
   filter_upwards [hf.predictablePart_eq_zero n] with ω hω
   simp [martingalePart, hω]
 
-lemma IsPredictable.martingalePart_eq [SecondCountableTopology E] [MeasurableSpace E]
-    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
+lemma IsPredictable.martingalePart_eq [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
     (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
     martingalePart f ℱ μ n =ᵐ[μ] f 0 := by
   filter_upwards [hf.predictablePart_eq (μ := μ) hfint n] with ω hω

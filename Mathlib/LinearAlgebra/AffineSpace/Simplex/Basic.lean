@@ -669,8 +669,8 @@ theorem closedInterior_faceOpposite_ssubset_closedInterior [Nontrivial k] [ZeroL
     (s.faceOpposite i).closedInterior ⊂ s.closedInterior :=
   s.closedInterior_face_ssubset_closedInterior (by simp) _
 
-theorem disjoint_interior_closedInterior_faceOpposite [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
-    [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+theorem disjoint_interior_closedInterior_faceOpposite {n : ℕ} [NeZero n]
+    (s : Simplex k P n) (i : Fin (n + 1)) :
     Disjoint s.interior (s.faceOpposite i).closedInterior :=
   s.disjoint_interior_closedInterior_face (by simp) _
 
@@ -705,7 +705,7 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
 
-theorem closedInterior_sdiff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
+theorem closedInterior_sdiff_interior [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
     s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
   simpa [closedInterior_eq_interior_union] using
