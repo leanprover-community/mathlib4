@@ -1207,7 +1207,7 @@ theorem toBoundedContinuousFunctionCLM_injective :
   fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
 
 instance : T2Space 𝓢(E, F) :=
-   .of_injective_continuous (toBoundedContinuousFunctionCLM_injective ℝ ..)  
+   .of_injective_continuous (toBoundedContinuousFunctionCLM_injective ℝ ..)
     (ContinuousLinearMap.continuous _)
 
 end BoundedContinuousFunction
