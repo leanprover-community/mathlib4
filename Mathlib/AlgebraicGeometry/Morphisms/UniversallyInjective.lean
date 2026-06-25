@@ -137,7 +137,7 @@ theorem tfae_universallyInjective :
     algebraize [(f.residueFieldMap x).hom]
     rw [RingHom.IsPurelyInseparable, isPurelyInseparable_iff_subsingleton_emb, subsingleton_iff]
     intro σ₁ σ₂
-    apply AlgHom.coe_toRingHom_injective
+    apply AlgHom.coe_ringHom_injective
     let g₁ := (X.SpecToEquivOfField _).symm ⟨_, CommRingCat.ofHom σ₁.toRingHom⟩
     let g₂ := (X.SpecToEquivOfField _).symm ⟨_, CommRingCat.ofHom σ₂.toRingHom⟩
     suffices X.SpecToEquivOfField _ g₁ = X.SpecToEquivOfField _ g₂ by
