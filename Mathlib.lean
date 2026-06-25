@@ -2177,6 +2177,7 @@ public import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+public import Mathlib.Analysis.Normed.Lp.Finsupp
 public import Mathlib.Analysis.Normed.Lp.LpEquiv
 public import Mathlib.Analysis.Normed.Lp.Matrix
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
@@ -7959,7 +7960,6 @@ public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Dilation
 public import Mathlib.Topology.MetricSpace.DilationEquiv
 public import Mathlib.Topology.MetricSpace.Equicontinuity
-public import Mathlib.Topology.MetricSpace.Finsupp
 public import Mathlib.Topology.MetricSpace.Gluing
 public import Mathlib.Topology.MetricSpace.GromovHausdorff
 public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized

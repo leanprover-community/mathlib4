@@ -101,6 +101,9 @@ variable {K V}
 lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
 @[simp] lemma toLp_ofLp (x : WithLp p V) : toLp p (ofLp x) = x := rfl
 
+lemma ext_iff {x y : WithLp p V} : x = y ↔ x.ofLp = y.ofLp :=
+  (WithLp.equiv p V).injective.eq_iff.symm
+
 lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
   Function.RightInverse.surjective <| ofLp_toLp _
 
