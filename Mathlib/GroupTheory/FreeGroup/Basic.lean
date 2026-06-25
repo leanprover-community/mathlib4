@@ -186,7 +186,7 @@ theorem Step.diamond :
 
 @[to_additive]
 theorem Step.to_red : Step L₁ L₂ → Red L₁ L₂ :=
-  ReflTransGen.single L₁ L₂
+  ReflTransGen.single
 
 /-- **Church-Rosser theorem** for word reduction: If `w1 w2 w3` are words such that `w1` reduces
 to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
@@ -275,7 +275,7 @@ theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b
   Iff.intro
     (fun h => by
       have h₁ : Red ((x, not b) :: (x, b) :: L) [(x, not b)] := cons_cons h
-      have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single _ L Step.cons_not_rev
+      have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single Step.cons_not_rev
       let ⟨L', h₁, h₂⟩ := church_rosser h₁ h₂
       rw [singleton_iff] at h₁
       subst L'
@@ -363,7 +363,7 @@ theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
   equivalence_join_reflTransGen fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | _, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single c d hcd⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
 
 @[to_additive]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ := by
