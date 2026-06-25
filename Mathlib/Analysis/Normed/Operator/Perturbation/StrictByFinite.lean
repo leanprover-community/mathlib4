@@ -107,19 +107,14 @@ theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   set Φ : (S × A) ≃L[𝕜] E := prodEquivOfIsTopCompl S A S_compl_A
   set Ψ : (map u.toLinearMap S × map u.toLinearMap A) ≃L[𝕜] F :=
     prodEquivOfIsTopCompl _ _ uS_compl_uA
-  -- TODO: after PR #39476 we will be able to use `Φ.symm.isHomeomorph`
-  have Φ_symm_homeo : IsHomeomorph Φ.symm := Φ.symm.toHomeomorph.isHomeomorph
-  -- TODO: after PR #39476 we will be able to use `Ψ.isHomeomorph`
-  have Ψ_homeo : IsHomeomorph Ψ := Ψ.toHomeomorph.isHomeomorph
-  have uₛ_surj : Surjective uₛ := surjective_mapsTo_image_restrict _ _
-  have uₐ_surj : Surjective uₐ := surjective_mapsTo_image_restrict _ _
   have u_eq : u = Ψ ∘ (uₛ.prodMap uₐ) ∘ Φ.symm := by
     ext x
     simp [Φ, Ψ, uₛ, uₐ, ← map_add, projection_add_projection_eq_self]
   have u_restr_eq : u.domRestrict A = (map u.toLinearMap A).subtypeL ∘ uₐ := rfl
   suffices IsStrictMap (uₛ.prodMap uₐ) ↔ IsStrictMap uₐ by
     rwa [u_restr_eq, u_eq, ← (isEmbedding_subtypeL _).isStrictMap_iff,
-      ← Ψ_homeo.isEmbedding.isStrictMap_iff, ← Φ_symm_homeo.isQuotientMap.isStrictMap_iff]
+      ← Ψ.isHomeomorph.isEmbedding.isStrictMap_iff,
+      ← Φ.symm.isHomeomorph.isQuotientMap.isStrictMap_iff]
   -- TODO: we should think of a way to avoid this
   change IsStrictMap (uₛ.toAddMonoidHom.prodMap uₐ.toAddMonoidHom) ↔ IsStrictMap uₐ
   simp_rw [AddMonoidHom.isStrictMap_prodMap_iff, LinearMap.toAddMonoidHom_coe, coe_coe,
