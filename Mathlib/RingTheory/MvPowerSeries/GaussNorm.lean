@@ -174,7 +174,7 @@ abbrev AchievesGaussNorm (i : σ →₀ ℕ) : Prop :=
 lemma gaussNorm_neg (vNeg : ∀ x, v (-x) = v x) (f : MvPowerSeries σ R) :
     gaussNorm v c (-f) = gaussNorm v c f  := by
   simp_rw [gaussNorm]
-  have (t : σ →₀ ℕ) : (coeff t) (-f) = - (coeff t) (f) := by rfl
+  have (t : σ →₀ ℕ) : (coeff t) (-f) = - (coeff t) f := by rfl
   simp_rw [this, vNeg]
 
 section absoluteValue
