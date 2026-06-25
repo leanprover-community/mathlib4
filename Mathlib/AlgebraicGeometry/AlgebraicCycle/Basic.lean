@@ -38,6 +38,7 @@ Algebraic cycle on a scheme `X` with coefficients in a type `Z` is just a functi
 with locally finite support.
 (see the module docstring for more details).
 -/
+@[stacks 02QR]
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
   Function.locallyFinsupp X R
 
