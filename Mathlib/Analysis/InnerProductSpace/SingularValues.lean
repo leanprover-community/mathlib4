@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Singular values for finite-dimensional linear maps
@@ -92,7 +91,6 @@ the infinite sequence are zero. Please see the module docstring of
 The singular values are zero-indexed, so `T.singularValues 0` refers to the first singular value.
 This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 ≤ i ≤ rank(T)`.
 -/
-@[wikidata Q4166054]
 noncomputable def singularValues : ℕ →₀ ℝ :=
   Finsupp.embDomain Fin.valEmbedding <|
     Finsupp.ofSupportFinite
