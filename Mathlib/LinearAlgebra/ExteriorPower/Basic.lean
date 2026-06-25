@@ -300,7 +300,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
 
 theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
     (Submodule.subtype _) ∘ₗ (map n f) =
-    (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
+      (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
   linearMap_ext <| AlternatingMap.ext fun m ↦ (by simp)
 
 @[simp]
@@ -413,6 +413,32 @@ lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
     Submodule.map_span, ← Set.range_comp, map_comp_ιMulti_family, hf]
 
 end ιMulti_family
+
+lemma span_ιMulti_orderEmbedding_of_span_eq_top {ι : Type*} [LinearOrder ι] {g : ι → M}
+    (hg : Submodule.span R (Set.range g) = ⊤) (n : ℕ) :
+    Submodule.span R (Set.range (fun (x : Fin n ↪o ι) ↦ ιMulti R _ (g ∘ x))) = ⊤ := by
+  have hrange : Set.range (ιMulti_family R n g) =
+      Set.range (fun x : Fin n ↪o ι ↦ ιMulti R n (g ∘ x)) := by
+    ext y
+    constructor
+    · rintro ⟨s, rfl⟩
+      exact ⟨Set.powersetCard.ofFinEmbEquiv.symm s, by simp [ιMulti_family]⟩
+    · rintro ⟨x, rfl⟩
+      exact ⟨Set.powersetCard.ofFinEmbEquiv x, by simp [ιMulti_family]⟩
+  simpa [hrange] using ιMulti_family_span_of_span R (n := n) hg
+
+lemma subsingleton_of_card_generators_le {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+    (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
+    Subsingleton (⋀[R]^i M) := by
+  let : Fintype ι := Fintype.ofFinite ι
+  have hcard : Fintype.card ι < i := by simpa [Nat.card_eq_fintype_card] using hi
+  have hbotTop : (⊥ : Submodule R (⋀[R]^i M)) = ⊤ := by
+    rw [← exteriorPower.span_ιMulti_orderEmbedding_of_span_eq_top (R := R) (M := M) hg i]
+    convert Submodule.span_empty.symm
+    refine Set.range_eq_empty_iff.mpr ⟨fun f ↦ ?_⟩
+    absurd hcard
+    simpa using Fintype.card_le_of_injective f f.injective
+  exact (Submodule.subsingleton_iff R).mp <| (subsingleton_iff_bot_eq_top).mp hbotTop
 
 /-! Linear equivalences in degrees 0 and 1. -/
 
