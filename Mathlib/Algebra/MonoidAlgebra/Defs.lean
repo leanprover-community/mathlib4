@@ -131,7 +131,7 @@ variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ m₁' m₂'
 @[to_additive] lemma ofCoeff_coeff (x : R[M]) : ofCoeff x.coeff = x := rfl
 
 /-- `MonoidAlgebra.coeff` as an equiv. -/
-@[to_additive (attr := simps! apply symm_apply)
+@[to_additive (attr := simps apply symm_apply)
 /-- `AddMonoidAlgebra.coeff` as an equiv. -/]
 def coeffEquiv : R[M] ≃ (M →₀ R) where
   toFun := coeff
