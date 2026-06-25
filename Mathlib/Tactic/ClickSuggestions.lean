@@ -129,7 +129,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       let goals := if useAfter then tacticInfo.goalsAfter else tacticInfo.goalsBefore
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
-  goal.ctx.val.runMetaM {} do loc.mvarId.withContext do
+  goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
