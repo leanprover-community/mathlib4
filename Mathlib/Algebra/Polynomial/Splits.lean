@@ -576,8 +576,7 @@ theorem Splits.image_rootSet (hf : (f.map (algebraMap R A)).Splits)
     (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
   classical
   rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
-    ← hf.roots_map_of_injective, map_map, g.comp_algebraMap, ← rootSet]
-  exact g.injective
+    ← hf.roots_map, map_map, g.comp_algebraMap, ← rootSet]
 
 theorem Splits.adjoin_rootSet_eq_range
     (hf : (f.map (algebraMap R A)).Splits) (g : A →ₐ[R] B) :
