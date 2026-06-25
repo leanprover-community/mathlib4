@@ -55,20 +55,30 @@ public lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 
 set_option backward.defeqAttrib.useBackward true in
 open CardinalDirectedPoset in
+/-- This is the implication (i) → (iii) in the characterizations
+of `SharplyLT κ₁ κ₂` in the docstring of this file. -/
 public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalDirectedPoset
     (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalDirectedPoset κ₁) κ₂]
     {X : Type w} (hX : HasCardinalLT X κ₂) :
     ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A := by
+  -- We write the partially ordered type `setCardinalLT κ₁ X` of subsets
+  -- of `X` of cardinality `< κ₁` as a `κ₂`-filtered colimit (with index
+  -- category `J`) of `κ₂`-presentable objects (i.e. partially ordered
+  -- types of cardinality `< κ₂`.)
   obtain ⟨J, _, _, ⟨p⟩⟩ := (isCardinalFilteredGenerator_isCardinalPresentable
     (CardinalDirectedPoset κ₁) κ₂).exists_colimitsOfShape (setCardinalLT κ₁ X)
   have : IsCardinalFiltered J κ₁ := .of_le _ h
   have hp (j : J) : HasCardinalLT (p.diag.obj j).obj κ₂ := by
     rw [← CardinalDirectedPoset.isCardinalPresentable_iff _ h]
     exact p.prop_diag_obj j
+  -- For each `x : X`, we choose `j : J` in such a way that the singleton
+  -- `{x}` belongs to the image of `p.diag.obj j`.
   choose j y hy using fun x ↦ Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget (CardinalDirectedPoset κ₁)) p.isColimit)
     (SetCardinalLT.singleton κ₁ x)
   dsimp at y hy
+  -- The expected cofinal set `A` will be the range of `p.ι.app j'`
+  -- where `j' : J` is such that for any `x : X`, there is a map `j x ⟶ j'`
   let j' := IsCardinalFiltered.max j hX
   let y' (x : X) : (p.diag.obj j').obj :=
     p.diag.map (IsCardinalFiltered.toMax j hX x) (y x)
@@ -91,8 +101,9 @@ open CardinalDirectedPoset
 namespace existsIsCardinalFilteredSetOfExistsCofinal
 
 /-! The definitions in this section are part of the proof of the
-lemma `exists_isCardinalFiltered_set_of_exists_cofinal` below.
--/
+lemma `exists_isCardinalFiltered_set_of_exists_cofinal` below,
+which is the implication (iii) → (iv) in the characterizations
+of `Sharply κ₁ κ₂` which appear in the docstring of this file. -/
 
 variable (h₀ : κ₁ < κ₂)
   {X : Type w} [PartialOrder X]
@@ -212,6 +223,8 @@ lemma isCardinalFiltered_iUnion :
 end existsIsCardinalFilteredSetOfExistsCofinal
 
 open existsIsCardinalFilteredSetOfExistsCofinal in
+/-- This is the implication (iii) → (iv) in the characterizations
+of `SharplyLT κ₁ κ₂` in the docstring of this file. -/
 public lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
     (h : ∀ (X : Type w) (_ : HasCardinalLT X κ₂),
     ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A)
