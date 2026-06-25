@@ -45,9 +45,13 @@ We also register the fact that `ℂ` is an `RCLike` field.
 
 assert_not_exists Absorbs
 
+namespace Complex
+
 /-- A shortcut instance to ensure computability; otherwise we get the noncomputable instance
 `Complex.instNormedField.toNormedModule.toModule`. -/
-instance Complex.instModuleSelf : Module ℂ ℂ := delta% inferInstance
+instance instModuleSelf : Module ℂ ℂ := delta% inferInstance
+
+end Complex
 
 noncomputable section
 
@@ -89,7 +93,7 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
 
 @[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
-  simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).pow 2
+  simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).fun_pow 2
 
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
   (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]

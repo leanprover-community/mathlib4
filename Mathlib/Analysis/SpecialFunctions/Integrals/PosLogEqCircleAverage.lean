@@ -219,7 +219,7 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
         true_and]
       apply Set.Subsingleton.finite
       intro z₁ hz₁ z₂ hz₂
-      simp_all only [ne_eq, abs_one, mem_sphere_iff_norm, sub_zero, Set.mem_diff, Set.mem_setOf_eq,
+      simp_all only [ne_eq, abs_one, mem_sphere_iff_norm, sub_zero, Set.mem_sdiff, Set.mem_setOf_eq,
         Decidable.not_not]
       rw [add_eq_zero_iff_eq_neg.1 hz₁.2, add_eq_zero_iff_eq_neg.1 hz₂.2]
     filter_upwards [this] with z hz

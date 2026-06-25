@@ -66,7 +66,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_tower
       (AlgEquiv.ofBijective _ H').trans <|
       (AlgEquiv.mapIntegralClosure (Algebra.TensorProduct.cancelBaseChange ..))
   convert! e.bijective
-  rw [← e.coe_algHom]
+  rw [← e.coe_toAlgHom]
   congr 1
   ext; simp [e, toIntegralClosure]
 
@@ -136,7 +136,7 @@ lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
         change e₀.toRingHom.comp (algebraMap _ _) r = _
         congr 1
         ext <;> simp [e₀, MvPolynomial.scalarRTensorAlgEquiv, MvPolynomial.coeff_map,
-          ← Algebra.algebraMap_eq_smul_one, apply_ite (algebraMap _ _), MvPolynomial.coeff_X'] }
+          ← Algebra.algebraMap_eq_smul_one, apply_ite (algebraMap _ _), MvPolynomial.coeff_X] }
   have := MvPolynomial.isIntegral_iff_isIntegral_coeff.mp (hx.map e)
   obtain ⟨y, hy⟩ : e x ∈ RingHom.range (MvPolynomial.map (integralClosure R B).val.toRingHom) := by
     refine MvPolynomial.mem_range_map_iff_coeffs_subset.mpr ?_
@@ -175,7 +175,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
   convert!
     (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (integralClosure R B) M)
         (S ⊗[R] integralClosure R B) (integralClosure S (S ⊗[R] B))).bijective
-  rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars' R, ← AlgEquiv.coe_algHom]
+  rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars' R, ← AlgEquiv.coe_toAlgHom]
   congr 1
   ext1
   · apply IsLocalization.algHom_ext M; ext
@@ -354,7 +354,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
         AlgEquiv.apply_symm_apply, map_pow, heg]
       simp_rw [mul_assoc, ← map_pow, show 𝓟.g.map (algebraMap R B) = 𝓟'.g from rfl,
         IsLocalization.mk'_spec'_mk, ← derivative_map]; rfl
-    · simp only [← AlgEquiv.coe_algHom, ← AlgHom.coe_toRingHom, ← RingHom.comp_apply,
+    · simp only [← AlgEquiv.coe_toAlgHom, ← AlgHom.coe_toRingHom, ← RingHom.comp_apply,
         ← coe_eval₂RingHom]
       congr 1
       ext <;> simp [e, StandardEtalePair.equivAwayAdjoinRoot]; rfl
