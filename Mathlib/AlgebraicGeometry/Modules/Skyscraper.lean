@@ -35,25 +35,24 @@ universe u
 
 variable {X : TopCat.{u}} (p : X)
 
-variable (R : TopCat.Sheaf RingCat X)
-  (M : Type u) [AddCommGroup M] [Module (R.presheaf.stalk p) M]
+variable (R : TopCat.Presheaf RingCat X) (M : Type u) [AddCommGroup M] [Module (R.stalk p) M]
 
 /--
 The action of the skyscraper sheaf (of modules) on objects.
 -/
 noncomputable
 def skyscraperPresheafOfModulesObj (U : (TopologicalSpace.Opens X)ᵒᵖ) :
-    ModuleCat ↑(R.obj.obj U) := by
+    ModuleCat ↑(R.obj U) := by
   classical
   exact if hp : p ∈ unop U then
-    letI _ := Module.compHom M (R.presheaf.germ (unop U) p hp).hom
+    letI _ := Module.compHom M (R.germ (unop U) p hp).hom
     .of _ M
   else 0
 
 lemma skyscraperPresheafOfModulesObj_pos {U : (TopologicalSpace.Opens X)ᵒᵖ} (hp : p ∈ unop U) :
     skyscraperPresheafOfModulesObj p R M U =
-      letI _ := Module.compHom M (R.presheaf.germ (unop U) p hp).hom
-      .of (R.obj.obj U) M := dif_pos hp
+      letI _ := Module.compHom M (R.germ (unop U) p hp).hom
+      .of (R.obj U) M := dif_pos hp
 
 lemma skyscraperPresheafOfModulesObj_neg {U : (TopologicalSpace.Opens X)ᵒᵖ} (hp : p ∉ unop U) :
     skyscraperPresheafOfModulesObj p R M U = 0 := dif_neg hp
@@ -65,49 +64,49 @@ scalars along `Γ(X, U) ⟶ Γ(X, V)`. -/
 noncomputable
 def skyscraperPresheafOfModulesRestriction {U V : (TopologicalSpace.Opens X)ᵒᵖ}
     (i : U ⟶ V) (h : p ∈ unop V) :
-    letI _ := Module.compHom M (R.presheaf.germ (unop U) p (i.unop.le h)).hom
-    letI _ := Module.compHom M (R.presheaf.germ (unop V) p h).hom
-    (ModuleCat.of ↑(R.obj.obj U) ↑M) ⟶
-      (ModuleCat.restrictScalars (RingCat.Hom.hom (R.obj.map i))).obj
-        (ModuleCat.of ↑(R.obj.obj V) ↑M) :=
-  letI _ := Module.compHom M (R.presheaf.germ (unop U) p (i.unop.le h)).hom
-  letI _ := Module.compHom M (R.presheaf.germ (unop V) p h).hom
+    letI _ := Module.compHom M (R.germ (unop U) p (i.unop.le h)).hom
+    letI _ := Module.compHom M (R.germ (unop V) p h).hom
+    (ModuleCat.of ↑(R.obj U) ↑M) ⟶
+      (ModuleCat.restrictScalars (RingCat.Hom.hom (R.map i))).obj
+        (ModuleCat.of ↑(R.obj V) ↑M) :=
+  letI _ := Module.compHom M (R.germ (unop U) p (i.unop.le h)).hom
+  letI _ := Module.compHom M (R.germ (unop V) p h).hom
   ModuleCat.ofHom
-    (X := ModuleCat.of ↑(R.obj.obj U) ↑M)
-    (Y := (ModuleCat.restrictScalars (RingCat.Hom.hom (R.obj.map i))).obj
-      (ModuleCat.of ↑(R.obj.obj V) ↑M))
+    (X := ModuleCat.of ↑(R.obj U) ↑M)
+    (Y := (ModuleCat.restrictScalars (RingCat.Hom.hom (R.map i))).obj
+      (ModuleCat.of ↑(R.obj V) ↑M))
     { toFun x := x
       map_add' _ _ := rfl
       map_smul' a b := by
         -- Both scalar actions are given by acting by the germ in the stalk, and the germ is
         -- unchanged by restriction.
-        change ((R.presheaf.germ (unop U) p (i.unop.le h)).hom a : ↑(R.presheaf.stalk p)) • b
-          = ((R.presheaf.germ (unop V) p h).hom ((R.obj.map i).hom a) :
-            ↑(R.presheaf.stalk p)) • b
-        rw [(TopCat.Presheaf.germ_res_apply' R.presheaf i p h a)]
+        change ((R.germ (unop U) p (i.unop.le h)).hom a : ↑(R.stalk p)) • b
+          = ((R.germ (unop V) p h).hom ((R.map i).hom a) :
+            ↑(R.stalk p)) • b
+        rw [(TopCat.Presheaf.germ_res_apply' R i p h a)]
     }
 
 open Classical in
 lemma skyscraperPresheafOfModulesRestriction_id {U : (TopologicalSpace.Opens X)ᵒᵖ}
     (h : p ∈ unop U) : skyscraperPresheafOfModulesRestriction p R M (𝟙 U) h =
-    letI _ := Module.compHom M (R.presheaf.germ (unop U) p h).hom
-    (ModuleCat.restrictScalarsId'App (RingCat.Hom.hom (R.obj.map (𝟙 U)))
-      (congrArg RingCat.Hom.hom (R.obj.map_id U))
+    letI _ := Module.compHom M (R.germ (unop U) p h).hom
+    (ModuleCat.restrictScalarsId'App (RingCat.Hom.hom (R.map (𝟙 U)))
+      (congrArg RingCat.Hom.hom (R.map_id U))
       (ModuleCat.of _ M)).inv := rfl
 
 open Classical in
 lemma skyscraperPresheafOfModulesRestriction_comp {U V W : (TopologicalSpace.Opens X)ᵒᵖ}
     (i : U ⟶ V) (j : V ⟶ W) (h : p ∈ unop W) :
     skyscraperPresheafOfModulesRestriction p R M (i ≫ j) h =
-      letI _ := Module.compHom M (R.presheaf.germ (unop W) p h).hom
+      letI _ := Module.compHom M (R.germ (unop W) p h).hom
       skyscraperPresheafOfModulesRestriction p R M i (j.unop.le h) ≫
-        (ModuleCat.restrictScalars (RingCat.Hom.hom (R.obj.map i))).map
+        (ModuleCat.restrictScalars (RingCat.Hom.hom (R.map i))).map
           (skyscraperPresheafOfModulesRestriction p R M j h) ≫
         (ModuleCat.restrictScalarsComp'App
-          (RingCat.Hom.hom (R.obj.map i))
-          (RingCat.Hom.hom (R.obj.map j))
-          (RingCat.Hom.hom (R.obj.map (i ≫ j)))
-          (by rw [R.obj.map_comp]; rfl)
+          (RingCat.Hom.hom (R.map i))
+          (RingCat.Hom.hom (R.map j))
+          (RingCat.Hom.hom (R.map (i ≫ j)))
+          (by rw [R.map_comp]; rfl)
           (ModuleCat.of _ M)).inv := rfl
 
 open Classical in
@@ -115,7 +114,7 @@ open Classical in
 noncomputable
 def skyscraperPresheafOfModulesMap {U V : (TopologicalSpace.Opens X)ᵒᵖ} (i : U ⟶ V) :
     skyscraperPresheafOfModulesObj p R M U ⟶
-      (ModuleCat.restrictScalars (RingCat.Hom.hom (R.obj.map i))).obj
+      (ModuleCat.restrictScalars (RingCat.Hom.hom (R.map i))).obj
       (skyscraperPresheafOfModulesObj p R M V) :=
   if h : p ∈ unop V then
     eqToHom (skyscraperPresheafOfModulesObj_pos p R M (i.unop.le h)) ≫
@@ -145,7 +144,7 @@ lemma skyscraperPresheafOfModulesObj_subsingleton_of_neg {U : (TopologicalSpace.
 
 open Classical in
 noncomputable
-def skyscraperPresheafOfModules : PresheafOfModules R.obj where
+def skyscraperPresheafOfModules : PresheafOfModules R where
   obj U := skyscraperPresheafOfModulesObj p R M U
   map i := skyscraperPresheafOfModulesMap p R M i
   map_id X := by
@@ -280,8 +279,9 @@ open Classical in
 The skyscraper sheaf at a point `p` of a scheme as a sheaf of
 -/
 noncomputable
-def skyscraperSheafOfModules : SheafOfModules R where
-  val := skyscraperPresheafOfModules p R M
+def skyscraperSheafOfModules (R : TopCat.Sheaf RingCat X)
+    (M : Type u) [AddCommGroup M] [Module (R.presheaf.stalk p) M] : SheafOfModules R where
+  val := skyscraperPresheafOfModules p R.presheaf M
   isSheaf := TopCat.Presheaf.isSheaf_of_iso (
-    skyscraperPresheafOfModulesPresheafIsoSkyscraper p R M).symm
+    skyscraperPresheafOfModulesPresheafIsoSkyscraper p R.presheaf M).symm
     (skyscraperSheaf p (AddCommGrpCat.of M)).2
