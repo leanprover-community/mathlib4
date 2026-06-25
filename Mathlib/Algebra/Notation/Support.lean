@@ -63,6 +63,15 @@ lemma ext_iff_mulSupport : f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f
     else rw [notMem_mulSupport.1 hx, notMem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]
 
 @[to_additive]
+lemma ext_iff_mulSupport_union  :
+    f = g ↔ ∀ x ∈ f.mulSupport ∪ g.mulSupport, f x = g x := by
+  rw [funext_iff]
+  refine ⟨fun h x _ ↦ h x, fun h x ↦ ?_⟩
+  by_cases o : x ∈ f.mulSupport ∪ g.mulSupport
+  · exact h x o
+  simp_all
+
+@[to_additive]
 lemma mulSupport_update_of_ne_one [DecidableEq ι] (f : ι → M) (x : ι) {y : M} (hy : y ≠ 1) :
     mulSupport (update f x y) = insert x (mulSupport f) := by
   ext a; obtain rfl | hne := eq_or_ne a x <;> simp [*]

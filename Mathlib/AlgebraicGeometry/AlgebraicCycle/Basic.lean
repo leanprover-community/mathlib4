@@ -50,7 +50,8 @@ section restrict
 variable [Zero R] (D : AlgebraicCycle X R) (t : Set X)
 /--
 Restriction of an algebraic cycle to some set. This is distinct from `Function.locallyFinsuppWithin`
-because here we get something which is still just a locally finsupp function on the whole space.
+because here we get something which is locally of finite support on the whole space rather than just
+within the set we're restricting to.
 -/
 noncomputable
 def restrict : AlgebraicCycle X R where
@@ -140,12 +141,7 @@ lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R)
 @[ext]
 lemma ext {R : Type*} [Zero R] {D₁ D₂ : AlgebraicCycle X R}
     (h : ∀ a ∈ D₁.support ∪ D₂.support, D₁ a = D₂ a) : D₁ = D₂ :=
-  have h' : ∀ a, D₁ a = D₂ a := by
-    intro a
-    by_cases o : a ∈ D₁.support ∪ D₂.support
-    · exact h a o
-    simp_all
-  DFunLike.ext _ _ h'
+  DFunLike.ext' <| ext_iff_support_union.mpr h
 
 lemma le_iff_of_support_subset {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : AlgebraicCycle X R}
     {t : Set X} (hD₁ : D₁.support ⊆ t) (hD₂ : ∀ z ∈ tᶜ, D₂ z ≥ 0) :
