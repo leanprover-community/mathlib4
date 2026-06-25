@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 public import Mathlib.Analysis.PSeriesComplex
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definition of the Riemann zeta function
@@ -116,6 +117,7 @@ lemma completedRiemannZeta_residue_one :
 -/
 
 /-- The Riemann zeta function `ζ(s)`. -/
+@[wikidata Q187235]
 def riemannZeta := hurwitzZetaEven 0
 
 lemma HurwitzZeta.hurwitzZetaEven_zero : hurwitzZetaEven 0 = riemannZeta := rfl
@@ -179,6 +181,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
 
 /-- A formal statement of the **Riemann hypothesis** – constructing a term of this type is worth a
 million dollars. -/
+@[wikidata Q205966]
 def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2
 
