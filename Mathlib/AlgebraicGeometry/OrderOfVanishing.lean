@@ -33,7 +33,7 @@ Order of vanishing on a locally Noetherian integral scheme as a monoid with zero
 -/
 noncomputable
 def ordHom (z : X) (hz : coheight z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
-  haveI : Ring.KrullDimLE 1 (X.presheaf.stalk z) := krullDimLE_of_coheight hz
+  haveI : Ring.KrullDimLE 1 (X.presheaf.stalk z) := krullDimLE_of_coheight_le hz.le
   Ring.ordFrac (X.presheaf.stalk z)
 
 lemma ordHom_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
@@ -42,7 +42,7 @@ lemma ordHom_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f
 lemma ordHom_of_isUnit {U : X.Opens}
     [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X} (hx : coheight x = 1) (hx' : x ∈ U) :
     ordHom x hx (X.germToFunctionField U f) = 1 := by
-  have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight hx
+  have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight_le hx.le
   rw [← algebraMap_germ_eq_germToFunctionField hx']
   exact Ring.ordFrac_of_isUnit (hf.map (X.presheaf.germ U x hx').hom)
 
@@ -140,7 +140,7 @@ lemma ord_le_smul {x : X} (hx : coheight x = 1) {U : X.Opens} [Nonempty U] (hxU 
     (map_ne_zero_iff _ (germToFunctionField_injective _ _)).mpr ha
   rw [ord_le_ord_iff hx hx hf this]
   let l : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hxU).hom.toAlgebra
-  have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight hx
+  have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight_le hx.le
   have : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk x) ↑X.functionField :=
     functionField_isScalarTower X U ⟨x, hxU⟩
   have : (algebraMap Γ(X, U) (X.presheaf.stalk x) a) ≠ 0 :=
