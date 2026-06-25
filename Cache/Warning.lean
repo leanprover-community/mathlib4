@@ -179,8 +179,8 @@ Fires only on naive `cache get` invocations:
   picked a scope and the non-default-scope warning is doing the talking)
 - no `--cache-from` override (else they've already taken explicit
   responsibility for the lookup chain)
-- the resolved repo's default lookup chain reads from `forks` (otherwise SHA
-  scoping is not relevant)
+- the repo is a fork, not a first-party repo: the canonical repos don't build
+  into the per-commit `forks` namespace this note checks
 - HEAD is not already an ancestor of `master`. From a personal-fork checkout
   sitting on `master` (or an undiverged branch), the fork's SHA-scoped marker is
   structurally absent, but `master` is first in the fork lookup chain and serves
@@ -195,7 +195,7 @@ mix with `cache get`'s stdout output.
 def informIfHeadNotBuilt (repo : String) : IO Unit := do
   if (← getRepoScope).isSome then return
   if (← cacheFromOverride.get).isSome then return
-  unless (defaultContainersForRepo repo).contains Container.forks do return
+  if isCanonicalRepo repo then return
   -- HEAD already on (an ancestor of) master: master CI builds these commits and
   -- the master container (first in the fork lookup chain) serves their artifacts
   -- by hash, so there is nothing fork-specific to build. The forks marker is

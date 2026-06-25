@@ -9,13 +9,13 @@ public import Mathlib.MeasureTheory.Measure.Restrict
 public import Mathlib.Topology.DiscreteSubset
 
 /-!
-# Measures having no atoms
-
-A measure `μ` has no atoms if the measure of each singleton is zero.
+# Measures having value zero on singletons
 
 ## TODO
 
-Should `NoAtoms` be redefined as `∀ s, 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s`?
+Add a `NoAtoms` class defined as
+`∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s`.
+This implies `NullSingletonClass` but the converse is not true.
 -/
 
 public section
@@ -26,47 +26,49 @@ open Set Measure Filter TopologicalSpace
 
 variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
-/-- Measure `μ` *has no atoms* if the measure of each singleton is zero.
-
-NB: Wikipedia assumes that for any measurable set `s` with positive `μ`-measure,
-there exists a measurable `t ⊆ s` such that `0 < μ t < μ s`. While this implies `μ {x} = 0`,
-the converse is not true. -/
-class NoAtoms {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
+/-- Measure `μ` has value zero on singletons. -/
+class NullSingletonClass {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   measure_singleton : ∀ x, μ {x} = 0
 
-export MeasureTheory.NoAtoms (measure_singleton)
+@[deprecated (since := "2026-06-09")]
+alias NoAtoms := NullSingletonClass
+
+export MeasureTheory.NullSingletonClass (measure_singleton)
 
 attribute [simp] measure_singleton
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
-theorem _root_.Set.Subsingleton.measure_zero (hs : s.Subsingleton) (μ : Measure α) [NoAtoms μ] :
+theorem _root_.Set.Subsingleton.measure_zero (hs : s.Subsingleton) (μ : Measure α)
+    [NullSingletonClass μ] :
     μ s = 0 :=
   hs.induction_on (p := fun s => μ s = 0) measure_empty measure_singleton
 
 theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
   simp only [measure_singleton, Measure.restrict_eq_zero]
 
-instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := by
+instance Measure.restrict.instNullSingletonClass (s : Set α) :
+    NullSingletonClass (μ.restrict s) := by
   refine ⟨fun x => ?_⟩
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
   rw [Measure.restrict_apply ht1]
   apply measure_mono_null inter_subset_left ht2
 
-theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
+theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NullSingletonClass μ] :
     μ s = 0 := by
   rw [← biUnion_of_singleton s, measure_biUnion_null_iff h]
   simp
 
-theorem _root_.Set.Countable.ae_notMem (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
+theorem _root_.Set.Countable.ae_notMem (h : s.Countable) (μ : Measure α) [NullSingletonClass μ] :
     ∀ᵐ x ∂μ, x ∉ s := by
   simpa only [ae_iff, Classical.not_not] using! h.measure_zero μ
 
-lemma Measure.ae_ne (μ : Measure α) [NoAtoms μ] (a : α) : ∀ᵐ x ∂μ, x ≠ a :=
+lemma Measure.ae_ne (μ : Measure α) [NullSingletonClass μ] (a : α) : ∀ᵐ x ∂μ, x ≠ a :=
   (countable_singleton a).ae_notMem μ
 
-lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
+lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α)
+    [NullSingletonClass μ] :
     μ.restrict sᶜ = μ :=
   restrict_eq_self_of_ae_mem <| h.ae_notMem μ
 
@@ -74,10 +76,12 @@ lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measur
 lemma restrict_compl_singleton (a : α) : μ.restrict ({a}ᶜ) = μ :=
   (countable_singleton _).measure_restrict_compl μ
 
-theorem _root_.Set.Finite.measure_zero (h : s.Finite) (μ : Measure α) [NoAtoms μ] : μ s = 0 :=
+theorem _root_.Set.Finite.measure_zero (h : s.Finite) (μ : Measure α) [NullSingletonClass μ] :
+    μ s = 0 :=
   h.countable.measure_zero μ
 
-theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ] : μ s = 0 :=
+theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NullSingletonClass μ] :
+    μ s = 0 :=
   s.finite_toSet.measure_zero μ
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
@@ -86,12 +90,15 @@ theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ]
 /-
 If a set has positive measure under an atomless measure, then it has an accumulation point.
 -/
-theorem exists_accPt_of_noAtoms {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
-    {μ : Measure X} [NoAtoms μ] {E : Set X} [SeparableSpace E] (hE : 0 < μ E) :
+theorem exists_accPt_of_nullSingletonClass {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+    {μ : Measure X} [NullSingletonClass μ] {E : Set X} [SeparableSpace E] (hE : 0 < μ E) :
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
   haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
   exact hE.ne' <| (Set.countable_coe_iff.mp <| separableSpace_iff_countable.mp ‹_›).measure_zero μ
+
+@[deprecated (since := "2026-06-09")]
+alias exists_accPt_of_noAtoms := exists_accPt_of_nullSingletonClass
 
 section
 

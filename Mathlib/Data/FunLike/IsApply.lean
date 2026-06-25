@@ -6,9 +6,11 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.Nat.Cast.Pi
 public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Logic.Function.Iterate
 
 /-! # Typeclasses for `FunLike` and algebraic operations
 In this file we provide typeclasses for the compatibility of algebraic structures and `FunLike`
@@ -111,6 +113,14 @@ class IsMulApplyEqComp (F : Type*) (α : outParam Type*) [FunLike F α α] [Mul 
 
 @[simp, grind =]
 alias mul_apply_eq_comp := IsMulApplyEqComp.mul_apply_eq_comp
+
+@[simp, grind =]
+lemma pow_apply_eq_iterate {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApplyEqSelf F α]
+    [IsMulApplyEqComp F α] (f : F) (n : ℕ) (x : α) :
+    (f ^ n) x = f^[n] x := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
 
 end Add
 
@@ -264,6 +274,11 @@ theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F' α] (f : F') : (f : α �
 @[norm_cast]
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F' α] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
+
+@[norm_cast]
+lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F' α] [IsOneApplyEqSelf F' α]
+    (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+  funext <| pow_apply_eq_iterate f n
 
 @[norm_cast]
 theorem coe_natCast [NatCast F] [NatCast β] [IsNatCastApply F α β] (n : Nat) :
