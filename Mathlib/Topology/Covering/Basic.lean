@@ -583,3 +583,18 @@ theorem IsCoveringMapOn.of_openPartialHomeomorph
     (h : ∀ e ∈ f ⁻¹' s, ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
     IsCoveringMapOn f s :=
   fun x hx ↦ .of_openPartialHomeomorph hf fun e he ↦ h e (by apply he ▸ hx)
+
+@[simp]
+lemma isCoveringMap_iff_isLocalHomeomorph [T2Space E] [T2Space X] [CompactSpace E] :
+    IsLocalHomeomorph f ↔ IsCoveringMap f := by
+  refine ⟨fun h ↦ ?_, IsCoveringMap.isLocalHomeomorph⟩
+  have hf : Continuous f := by
+    rw [continuous_iff_continuousAt]
+    intro e
+    obtain ⟨φ, hφ, rfl⟩ := h e
+    exact φ.continuousAt hφ
+  rw [isCoveringMap_iff_isCoveringMapOn_univ]
+  replace h (e : E) : ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f := by
+    obtain ⟨φ, hφ, rfl⟩ := h e
+    aesop
+  exact IsCoveringMapOn.of_openPartialHomeomorph hf <| by aesop
