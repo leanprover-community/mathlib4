@@ -52,6 +52,9 @@ lemma res_obj_V : (res f M).V = M.V := rfl
 lemma resMap_hom_toLinearMap {M N : Rep k G} (p : M ⟶ N) :
     (resMap f p).hom.toLinearMap = p.hom.toLinearMap := rfl
 
+@[deprecated (since := "26/06/2026")]
+alias res_map_hom_toLinearMap := resMap_hom_toLinearMap
+
 @[simp]
 lemma resMap_hom_apply {M N : Rep k G} (p : M ⟶ N) (x : M.V) :
     @DFunLike.coe (Representation.IntertwiningMap (M.ρ.comp f) (N.ρ.comp f)) _ _ _
