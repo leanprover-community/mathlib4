@@ -194,10 +194,9 @@ noncomputable def mapIso (e : G ≃* H) (e' : A.V ≃ₗ[k] B.V)
     (he : ∀ g, e' ∘ₗ A.ρ g = B.ρ (e g) ∘ₗ e') (n : ℕ) :
     groupHomology A n ≅ groupHomology B n where
   hom := groupHomology.map (A := A) e (ofHom ⟨e', by simp [he]⟩) n
-  inv := groupHomology.map (A := B) e.symm (ofHom ⟨e'.symm, fun h ↦
-      e'.eq_comp_toLinearMap_iff _ _|>.1 <| by
-    choose g hg using e.surjective h
-    simp [LinearMap.comp_assoc, ← hg, ← he g]⟩) n
+  inv := groupHomology.map (A := B) e.symm (ofHom ⟨e'.symm, fun h ↦ by
+    rw [LinearEquiv.toLinearMap_symm_comp_eq, ← LinearMap.comp_assoc]
+    simp [he, LinearMap.comp_assoc]⟩) n
   hom_inv_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
     exact groupHomology.map_congr e.coe_monoidHom_symm_comp_coe_monoidHom e'.symm_comp n
