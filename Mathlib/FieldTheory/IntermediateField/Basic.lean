@@ -541,23 +541,25 @@ theorem coe_fieldRange : ↑f.fieldRange = Set.range f :=
 theorem fieldRange_toSubfield : f.fieldRange.toSubfield = (f : L →+* L').fieldRange :=
   rfl
 
-variable {f}
-
+variable {f} in
 @[simp]
 theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 
-/-- An algebra homomorphism between fields restricts to an algebra equivalence onto its range. -/
+/-- The isomorphism from `L` to the field range of the `AlgHom` `f`, sending `x` to `f x`. -/
+@[simps! apply_coe]
 noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
-  AlgEquiv.ofBijective
-    (f.codRestrict f.range fun x ↦ mem_fieldRange.mpr ⟨x, rfl⟩)
-    ⟨fun _ _ h ↦ f.injective (congr_arg Subtype.val h),
-     fun ⟨_, hy⟩ ↦ (mem_fieldRange.mp hy).imp fun _ hx => Subtype.ext hx⟩
+  .ofBijective f.rangeRestrict ⟨f.rangeRestrict.injective, fun ⟨_, ⟨x, hx⟩⟩ ↦ ⟨x, Subtype.ext hx⟩⟩
 
-@[simp]
-theorem equivFieldRange_apply (x : L) : f.equivFieldRange x = f x := rfl
+@[deprecated (since := "2026-06-20")] alias equivFieldRange_apply := equivFieldRange_apply_coe
 
 end AlgHom
+
+variable (K L L') in
+@[simp]
+theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
+    (IsScalarTower.toAlgHom K L L').fieldRange = Set.range (algebraMap L L') := by
+  ext; simp
 
 namespace IntermediateField
 

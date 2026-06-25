@@ -26,7 +26,6 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 ## TODO
 
-* Use this for `RingQuot` too.
 * Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
@@ -158,6 +157,26 @@ def comap (J : RingCon R') (f : F) :
 @[simp]
 theorem comap_rel {J : RingCon R'} {f : F} {x y : R} :
     J.comap f x y ↔ J (f x) (f y) := Iff.rfl
+
+@[simp]
+theorem comap_nonUnitalRingHomId {R} [NonUnitalNonAssocSemiring R] (J : RingCon R) :
+    J.comap (NonUnitalRingHom.id _) = J := rfl
+
+@[simp]
+theorem comap_nonUnitalRingHomComp {R R' R''}
+    [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring R'']
+    (J : RingCon R) (g : R' →ₙ+* R) (f : R'' →ₙ+* R') :
+    J.comap (g.comp f) = (J.comap g).comap f := rfl
+
+@[simp]
+theorem comap_ringHomId {R} [NonAssocSemiring R] (J : RingCon R) :
+    J.comap (RingHom.id _) = J := rfl
+
+@[simp]
+theorem comap_ringHomComp {R R' R''}
+    [NonAssocSemiring R] [NonAssocSemiring R'] [NonAssocSemiring R'']
+    (J : RingCon R) (g : R' →+* R) (f : R'' →+* R') :
+    J.comap (g.comp f) = (J.comap g).comap f := rfl
 
 end Basic
 
@@ -390,8 +409,10 @@ instance [Add R] [CommMagma R] (c : RingCon R) : CommMagma c.Quotient :=
 instance [Add R] [CommSemigroup R] (c : RingCon R) : CommSemigroup c.Quotient :=
   inferInstanceAs <| CommSemigroup c.toCon.Quotient
 
-instance [Add R] [Monoid R] (c : RingCon R) : Monoid c.Quotient :=
-  inferInstanceAs <| Monoid c.toCon.Quotient
+instance [Add R] [Monoid R] (c : RingCon R) : Monoid c.Quotient := fast_instance%
+  { __ : Monoid c.toCon.Quotient := inferInstanceAs _
+    -- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/inferInstanceAs.20creates.20non-reducible.20diamonds/near/603969174
+    npow n x := x ^ n }
 
 instance [Add R] [CommMonoid R] (c : RingCon R) : CommMonoid c.Quotient :=
   inferInstanceAs <| CommMonoid c.toCon.Quotient
