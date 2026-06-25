@@ -80,9 +80,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
     set πinvx := hQ.localInverseAt (πinv x)
     set πinvy := hQ.localInverseAt (πinv y)
 
-    rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm]
-    nth_rw 1 [OpenPartialHomeomorph.trans_assoc]
-    nth_rw 2 [← OpenPartialHomeomorph.trans_assoc]
+    rw [πinvx.trans_symm_eq_symm_trans_symm, φx.symm.trans_assoc, ← πinvx.symm.trans_assoc]
 
     apply StructureGroupoid.locality
 
@@ -102,25 +100,17 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
 
     set t := φx '' (Up')
 
-    have is_open_Up' : IsOpen Up' := by
-      refine TopologicalSpace.isOpen_inter _ _ ?_ ?_
-      · refine TopologicalSpace.isOpen_inter _ _ (OpenPartialHomeomorph.open_target _)
-          (OpenPartialHomeomorph.open_source _)
-      · change IsOpen (Homeomorph.smul g0⁻¹ '' Uq) -- why is this needed?
-        rw [Homeomorph.isOpen_image]
-        refine TopologicalSpace.isOpen_inter _ _ (OpenPartialHomeomorph.open_target _)
-          (OpenPartialHomeomorph.open_source _)
+    have is_open_Up' : IsOpen Up' := (πinvx.open_target.inter φx.open_source).inter
+      ((Homeomorph.isOpen_image _).mpr (πinvy.open_target.inter φy.open_source))
 
-    have is_open_t : IsOpen t :=
-      OpenPartialHomeomorph.isOpen_image_of_subset_source _ is_open_Up'
-        (Set.Subset.trans Set.inter_subset_left Set.inter_subset_right)
+    have is_open_t : IsOpen t := φx.isOpen_image_of_subset_source is_open_Up'
+      (Set.Subset.trans Set.inter_subset_left Set.inter_subset_right)
 
     have h_in_t : h ∈ t := by
-      refine ⟨φx.symm h, ?_, OpenPartialHomeomorph.right_inv φx hh1⟩
-      refine ⟨⟨hh2, OpenPartialHomeomorph.map_target φx hh1⟩, ?_⟩
-      use πinvy (πinvx.symm (φx.symm h))
-      refine ⟨⟨OpenPartialHomeomorph.map_source _ hh3, hh4⟩, ((Homeomorph.smul g0).injective ?_)⟩
-      simp [hg0]
+      refine ⟨φx.symm h, ?_, φx.right_inv hh1⟩
+      refine ⟨⟨hh2, φx.map_target hh1⟩, ?_⟩
+      refine ⟨πinvy (πinvx.symm (φx.symm h)), ?_⟩
+      exact ⟨⟨πinvy.map_source hh3, hh4⟩, (Homeomorph.smul g0).injective (by simp [hg0])⟩
 
     refine ⟨t, is_open_t, h_in_t, ?_⟩
     set f := (φx.symm.trans ((πinvx.symm.trans πinvy).trans φy))
@@ -135,24 +125,21 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       rw [← hz, φx.left_inv hu.1.2, hQ.localInverseAt_symm,
         ← orbitRel.Quotient.quotient_smul_eq (g:=g0)]
       apply Set.mem_image_of_mem (Homeomorph.smul g0) at hu
-      simp only [Up', ← Homeomorph.smul_symm, Homeomorph.image_symm,
-        Homeomorph.smul_apply, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage,
-        smul_left_cancel_iff, exists_eq_right] at hu
-      rw [← hQ.localInverseAt_symm, ← Homeomorph.smul_apply,
-        πinvy.right_inv (by exact hu.2.1)]
+      simp only [Up', ← Homeomorph.smul_symm, Homeomorph.image_symm, Homeomorph.smul_apply,
+        Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, smul_left_cancel_iff, exists_eq_right]
+        at hu
+      rw [← hQ.localInverseAt_symm, ← Homeomorph.smul_apply, πinvy.right_inv (by exact hu.2.1)]
 
-    have hfg_t : OpenPartialHomeomorph.EqOnSource
-        ((φx.symm.trans (((Homeomorph.smul g0).toOpenPartialHomeomorph).trans φy)).restr
-        (t ∩ f.source)) (f.restr t)
-        := by
+    have hfg_t : ((φx.symm.trans (((Homeomorph.smul g0).toOpenPartialHomeomorph).trans φy)).restr
+      (t ∩ f.source)).EqOnSource (f.restr t) := by
       refine ⟨?_, ?_⟩
       · ext z
         refine ⟨?_, ?_⟩
         · intro ⟨_, hzt⟩
-          rw [OpenPartialHomeomorph.restr_source, IsOpen.interior_eq is_open_t, Set.inter_comm]
-          simpa [IsOpen.interior_eq (IsOpen.inter is_open_t f.open_source)] using hzt
+          rw [f.restr_source, is_open_t.interior_eq, Set.inter_comm]
+          simpa [(is_open_t.inter f.open_source).interior_eq] using hzt
         · intro ⟨hzf, hzt⟩
-          rw [IsOpen.interior_eq is_open_t] at hzt
+          rw [is_open_t.interior_eq] at hzt
           obtain ⟨u, hu, hz⟩ := hzt
           refine ⟨?_, ?_⟩
           · rw [← hz]
@@ -162,11 +149,11 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
             rw [φx.left_inv hu.1.2, ← hu'.2, Homeomorph.smul_apply, Homeomorph.smul_apply,
               smul_inv_smul]
             exact hu'.1.2
-          · rw [interior_inter, IsOpen.interior_eq is_open_t, IsOpen.interior_eq f.open_source]
+          · rw [interior_inter, is_open_t.interior_eq, f.open_source.interior_eq]
             exact ⟨⟨u, ⟨hu, hz⟩⟩, hzf⟩
       · intro z ⟨_, hz⟩
         refine Eq.symm (f_eq_φρφ_t z ?_)
-        simpa [interior_inter,IsOpen.interior_eq f.open_source, And.comm] using hz
+        simpa [interior_inter, f.open_source.interior_eq, And.comm] using hz
 
     apply (StructureGroupoid.mem_iff_of_eqOnSource hfg_t).mp
 
@@ -174,7 +161,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
     · apply mem_contDiffGroupoid_of_contMDiff_chartAt
       · sorry
       · sorry
-    · exact TopologicalSpace.isOpen_inter _ _ is_open_t f.open_source
+    · exact is_open_t.inter f.open_source
 
 end MulAction
 
