@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Jingting Wang, Nailin Guan. All rights reserved.
+Copyright (c) 2026 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jingting Wang, Nailin Guan
+Authors: Nailin Guan
 -/
 module
 
@@ -10,6 +10,13 @@ public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 /-!
 
 # Base change of exterior power
+
+In this PR, we proved that exterior power commutes with arbitrary base change.
+
+# Main Results
+
+* `exteriorPower.baseChangeIso`: for `R`-algebra `S`, the base change isomorphism
+  `S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M)`
 
 -/
 
