@@ -119,6 +119,7 @@ def grothendieckTopology : GrothendieckTopology X.AffineZariskiSite :=
 lemma mem_grothendieckTopology {U : X.AffineZariskiSite} {S : Sieve U} :
     S ∈ grothendieckTopology X U ↔
       ∀ x ∈ U.toOpens, ∃ (V : _) (f : V ⟶ U), S.arrows f ∧ x ∈ V.toOpens := by
+  rw [grothendieckTopology, Functor.mem_inducedTopology_iff_of_isCoverDense]
   apply forall₂_congr fun x hxU ↦ ⟨?_, ?_⟩
   · rintro ⟨V, f, ⟨W, g, h, hg, rfl⟩, hxV⟩
     exact ⟨W, g, hg, h.le hxV⟩
@@ -127,7 +128,7 @@ lemma mem_grothendieckTopology {U : X.AffineZariskiSite} {S : Sieve U} :
 
 instance : (toOpensFunctor X).IsDenseSubsite
     (grothendieckTopology X) (Opens.grothendieckTopology X) where
-  functorPushforward_mem_iff := Iff.rfl
+  functorPushforward_mem_iff := by simp [grothendieckTopology]
 
 /-- The presieve associated to a set of sections.
 This is a surjection, see `presieveOfSections_surjective`. -/

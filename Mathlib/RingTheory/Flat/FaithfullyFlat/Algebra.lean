@@ -154,3 +154,16 @@ lemma PrimeSpectrum.comap_surjective_of_faithfullyFlat :
 @[deprecated (since := "2025-12-10")]
 alias PrimeSpectrum.specComap_surjective_of_faithfullyFlat :=
   PrimeSpectrum.comap_surjective_of_faithfullyFlat
+
+section IsLocalRing
+
+variable (A B)
+
+instance Module.FaithfullyFlat.isLocalHom : IsLocalHom (algebraMap A B) :=
+  IsLocalHom.of_comap_surjective (algebraMap A B) PrimeSpectrum.comap_surjective_of_faithfullyFlat
+
+/-- Let `B` be a faithfully flat `A`-algebra, then `A` is a local ring if `B` is. -/
+theorem Module.FaithfullyFlat.isLocalRing [IsLocalRing B] : IsLocalRing A :=
+  (algebraMap A B).domain_isLocalRing
+
+end IsLocalRing
