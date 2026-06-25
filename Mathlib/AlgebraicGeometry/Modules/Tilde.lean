@@ -602,6 +602,7 @@ variable (M : (Spec R).Modules)
 
 /-- Auxiliary structure used in the proof of `Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`.
 These are conditions d1) and d2) from [Theoreme 1.4.1, grothendieck-1971]. -/
+-- TODO: Generalise this to a general scheme, replacing `f : R` by sections over a suitable set.
 private structure Aux (V : (Spec R).Opens) where
   existence (f : R) (hf : basicOpen f ≤ V) (s : Γ(M, basicOpen f)) :
     ∃ (n : ℕ) (t : Γ(M, V)), M.presheaf.map (homOfLE hf).op t = f ^ n • s
