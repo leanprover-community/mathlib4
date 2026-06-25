@@ -115,7 +115,7 @@ just `R` itself, via `Algebra.botEquivOfInjective` and `IsFractionRing.injective
   rintro ⟨y, rfl⟩ v
   exact v.valuation_le_one y
 
-open IsDedekindDomain.HeightOneSpectrum Set in
+open Ideal IsDedekindDomain.HeightOneSpectrum Set in
 private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
     ∀ z : S.integer K, ∃ x : R × S.Submonoid,
     z * algebraMap R (S.integer K) x.2 = algebraMap R (S.integer K) x.1 := by
@@ -138,50 +138,52 @@ private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
     ((Fact.out : Monoid.IsTorsion (ClassGroup R)) (ClassGroup.mk0 I₀))
   obtain ⟨α, hα⟩ : (I ^ n).IsPrincipal := by
     simp_all [← MonoidHom.map_pow, ClassGroup.mk0_eq_one_iff, I₀]
-  have hα_mem_pow {v : HeightOneSpectrum R} (hvT : v ∈ T) :
+  have hα_mem_pow (v : HeightOneSpectrum R) :
       α ∈ v.asIdeal ^ (WithZero.log (v.valuation K z)).toNat := by
-    rw [← Ideal.span_singleton_le_iff_mem]
+    rw [← span_singleton_le_iff_mem]
     calc
-      Ideal.span {α} = R ∙ α := by rw [← Ideal.submodule_span_eq]
+      span {α} = R ∙ α := by rw [← submodule_span_eq]
       _ = I ^ n := hα.symm
-      _ ≤ I := Ideal.pow_le_self hn.ne'
-      _ ≤ T.inf fun v ↦ v.asIdeal ^ (WithZero.log (v.valuation K z)).toNat :=
-        Ideal.prod_le_inf
-      _ ≤ v.asIdeal ^ (WithZero.log (v.valuation K z)).toNat :=
-        Finset.inf_le hvT
+      _ ≤ I := pow_le_self hn.ne'
+      _ ≤ T.inf fun v ↦ v.asIdeal ^ (WithZero.log (v.valuation K z)).toNat := prod_le_inf
+      _ ≤ v.asIdeal ^ (WithZero.log (v.valuation K z)).toNat := by
+        by_cases hvT : v ∈ T
+        · exact Finset.inf_le hvT
+        · by_cases hz : z = 0
+          · simp [hz]
+          · simp_all [Int.toNat_eq_zero.mpr, WithZero.log_le_iff_le_exp, T, Support]
   have hαz_valuation_le_one (v : HeightOneSpectrum R) :
       v.valuation K (algebraMap R K α * z) ≤ 1 := by
     rw [map_mul]
-    by_cases hvT : v ∈ T
-    · let e := (WithZero.log (v.valuation K z)).toNat
-      calc
-      v.valuation K (algebraMap R K α) * v.valuation K z
-        ≤ WithZero.exp (-(e : ℤ)) * WithZero.exp (e : ℤ) := by
-              apply mul_le_mul' _ <| WithZero.le_exp_of_log_le (Int.self_le_toNat _)
-              simpa [valuation_of_algebraMap, intValuation_le_pow_iff_mem, -Int.ofNat_toNat,
-                -WithZero.exp_neg] using hα_mem_pow hvT
-      _ = 1 := by simp
-    · apply Right.mul_le_one (valuation_le_one v α)
-      simpa [T, Support] using hvT
+    let e := (WithZero.log (v.valuation K z)).toNat
+    calc
+    v.valuation K (algebraMap R K α) * v.valuation K z
+      ≤ WithZero.exp (-(e : ℤ)) * WithZero.exp (e : ℤ) := by
+            apply mul_le_mul' _ <| WithZero.le_exp_of_log_le (Int.self_le_toNat _)
+            simpa [valuation_of_algebraMap, intValuation_le_pow_iff_mem, -Int.ofNat_toNat,
+              -WithZero.exp_neg] using hα_mem_pow v
+    _ = 1 := by simp
   -- we can write `z * α = β` for some `β ∈ R`.
   obtain ⟨β, hβ⟩ : ∃ β : R, z * algebraMap R K α = algebraMap R K β := by
     simpa [mul_comm, eq_comm] using
       mem_range.mp <| mem_integers_of_valuation_le_one (K := K) (algebraMap R K α * z)
         hαz_valuation_le_one
   refine ⟨β, α, ?_, SetLike.coe_eq_coe.mp hβ⟩
-  simp only [Set.Submonoid, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_inter_iff, mem_iInter,
-    SetLike.mem_coe, mem_nonZeroDivisors_iff_ne_zero]
+  -- we are left to prove that `α ∈ S.Submonoid`, i.e. that `α` is non-zero and not contained in any
+  -- prime ideal not in `S`.
+  simp only [Set.Submonoid, Submodule.carrier_eq_coe, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    mem_inter_iff, mem_iInter, mem_compl_iff, SetLike.mem_coe, mem_nonZeroDivisors_iff_ne_zero,
+    ne_eq]
   refine ⟨?_, fun hα0 ↦ hI_ne_zero <| eq_zero_of_pow_eq_zero (by simpa [hα0] using hα)⟩
   intro v hvS hvα
-  obtain ⟨w, hwT, hwle⟩ :=
-    (Ideal.IsPrime.prod_le (s := T) (f := fun w : HeightOneSpectrum R =>
-        w.asIdeal ^ (WithZero.log (w.valuation K (z : K))).toNat)
-      v.isPrime).1 <| Ideal.IsPrime.le_of_pow_le (by
-        rw [hα]
-        exact (Ideal.span_singleton_le_iff_mem v.asIdeal).2 hvα)
-  have hw_eq : w = v := HeightOneSpectrum.ext
-    (Ideal.IsMaximal.eq_of_le w.isMaximal v.isPrime.ne_top' (Ideal.IsPrime.le_of_pow_le hwle))
-  exact hvS (hT_subset v (by simpa [hw_eq] using hwT))
+  -- `α ∈ v.asIdeal` and `I ^ n = R ∙ α` imply that `v` is in `T`.
+  have hvT : v ∈ T := by
+    obtain ⟨w, hwT, hwle⟩ :=
+      (IsPrime.prod_le v.isPrime).1 <| IsPrime.le_of_pow_le (by
+        rwa [hα, span_singleton_le_iff_mem v.asIdeal])
+    simpa [HeightOneSpectrum.ext
+      (IsMaximal.eq_of_le w.isMaximal v.isPrime.ne_top' (IsPrime.le_of_pow_le hwle))] using hwT
+  exact hvS (hT_subset v hvT)
 
 instance IsLocalizationSInteger [Fact (Monoid.IsTorsion (ClassGroup R))] :
     IsLocalization S.Submonoid <| S.integer K where
