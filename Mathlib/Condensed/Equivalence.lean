@@ -102,13 +102,13 @@ variable {A : Type*} [Category* A] (X : Condensed.{u} A)
 lemma isSheafProfinite
     [∀ Y, HasLimitsOfShape (StructuredArrow Y profiniteToCompHaus.{u}.op) A] :
     Presheaf.IsSheaf (coherentTopology Profinite)
-    (profiniteToCompHaus.op ⋙ X.val) :=
-  ((ProfiniteCompHaus.equivalence A).inverse.obj X).cond
+    (profiniteToCompHaus.op ⋙ X.obj) :=
+  ((ProfiniteCompHaus.equivalence A).inverse.obj X).property
 
 lemma isSheafStonean
     [∀ Y, HasLimitsOfShape (StructuredArrow Y Stonean.toCompHaus.{u}.op) A] :
     Presheaf.IsSheaf (coherentTopology Stonean)
-    (Stonean.toCompHaus.op ⋙ X.val) :=
-  ((StoneanCompHaus.equivalence A).inverse.obj X).cond
+    (Stonean.toCompHaus.op ⋙ X.obj) :=
+  ((StoneanCompHaus.equivalence A).inverse.obj X).property
 
 end Condensed

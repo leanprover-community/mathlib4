@@ -352,7 +352,7 @@ theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
       IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩) by
     cases c
     apply eq_of_heq
-    convert this <;> rw [insert_of_notMem h]
+    convert! this <;> rw [insert_of_notMem h]
   rw [insertRec]
   apply cast_heq
 

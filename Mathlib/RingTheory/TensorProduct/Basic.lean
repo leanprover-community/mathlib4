@@ -269,16 +269,15 @@ theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[
   | succ k ih => simp [pow_succ, ih]
 
 /-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
-@[simps]
+@[simps!]
 def includeLeftRingHom : A →+* A ⊗[R] B where
-  toFun a := a ⊗ₜ 1
-  map_zero' := by simp
-  map_add' := by simp [add_tmul]
+  __ := (AlgebraTensorModule.mk R R A B).flip 1 |>.toAddMonoidHom
   map_one' := rfl
   map_mul' := by simp
 
 variable [CommSemiring S] [Algebra S A]
 
+set_option backward.defeqAttrib.useBackward true in
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { commutes' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
@@ -317,18 +316,22 @@ theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
     (includeLeft : A →ₐ[S] A ⊗[R] B) a = a ⊗ₜ 1 :=
   rfl
 
+@[simp] theorem toLinearMap_includeLeft [SMulCommClass R S A] :
+    (includeLeft : A →ₐ[S] A ⊗[R] B).toLinearMap = (AlgebraTensorModule.mk R S A B).flip 1 := rfl
+
 /-- The algebra morphism `B →ₐ[R] A ⊗[R] B` sending `b` to `1 ⊗ₜ b`. -/
 def includeRight : B →ₐ[R] A ⊗[R] B where
-  toFun b := 1 ⊗ₜ b
-  map_zero' := by simp
-  map_add' := by simp [tmul_add]
+  __ := AlgebraTensorModule.mk R R A B 1 |>.toAddMonoidHom
   map_one' := rfl
   map_mul' := by simp
-  commutes' r := by simp only [algebraMap_apply']
+  commutes' r := by simp [algebraMap_eq_smul_one', smul_tmul]
 
 @[simp]
 theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b = 1 ⊗ₜ b :=
   rfl
+
+@[simp] theorem toLinearMap_includeRight :
+    (includeRight : B →ₐ[R] A ⊗[R] B).toLinearMap = AlgebraTensorModule.mk R R A B 1 := rfl
 
 theorem includeLeftRingHom_comp_algebraMap :
     (includeLeftRingHom.comp (algebraMap R A) : R →+* A ⊗[R] B) =
@@ -546,7 +549,7 @@ lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
     [Semiring B] [Algebra R A] [Algebra R B]
     (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
   suffices h : adjoin A ((⊤ : Subalgebra R B).map (includeRight (A := A)) : Set (A ⊗[R] B)) = ⊤ by
-    simp [← h, ← hs, AlgHom.map_adjoin, -adjoin_toSubsemiring, adjoin_adjoin_of_tower]
+    simp [← h, ← hs, AlgHom.map_adjoin, adjoin_adjoin_of_tower]
   rw [← Algebra.toSubmodule_eq_top, ← top_le_iff, Algebra.map_top, ← Submodule.baseChange_top,
     Submodule.baseChange_eq_span, Submodule.map_top]
   exact span_le_adjoin _ _
@@ -611,6 +614,7 @@ multiplication, and one from this would-be instance. Arguably we could live with
 case the real fix is to address the ambiguity in notation, probably along the lines outlined here:
 https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.234773.20base.20change/near/240929258
 -/
+@[instance_reducible]
 protected def module : Module (A ⊗[R] B) M where
   smul x m := moduleAux x m
   zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]
@@ -752,3 +756,44 @@ noncomputable instance : StarRing (A ⊗[R] B) where
   star_add := by simp
 
 end TensorProduct
+
+namespace AlgHom
+
+variable (R S A B : Type*)
+variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+variable [Algebra R S] [Algebra R B] [IsScalarTower R S B]
+
+/-- Universal property of the base change of algebra.
+
+An algebra map from the base change is equivalent to an algebra map over the base ring.
+
+In categorical terms, this is an adjunction between:
+1. `A ↦ S ⊗[R] A`, a functor `R-Alg ⥤ S-Alg` (the base change).
+2. `B ↦ B`, a functor `S-Alg ⥤ R-Alg` (the restriction).
+-/
+def liftEquiv : (A →ₐ[R] B) ≃ (S ⊗[R] A →ₐ[S] B) where
+  toFun f :=
+    .ofLinearMap (.liftBaseChange S f) (by simp [Algebra.TensorProduct.one_def]) fun x y ↦ by
+      rw [← LinearMap.mul_apply_apply S, ← LinearMap.compr₂_apply,
+        ← LinearMap.mul_apply_apply S, ← LinearMap.compl₁₂_apply]
+      congr; ext; simp
+  invFun f := f.restrictScalars R |>.comp Algebra.TensorProduct.includeRight
+  left_inv f := by ext; simp
+  right_inv f := Algebra.TensorProduct.ext (Subsingleton.elim _ _) <| by ext; simp
+
+variable {R S A B}
+
+@[simp] lemma liftEquiv_tmul (f : A →ₐ[R] B) (s : S) (a : A) :
+    f.liftEquiv R S A B (s ⊗ₜ a) = s • f a := rfl
+
+@[simp] lemma liftEquiv_symm_apply (f : S ⊗[R] A →ₐ[S] B) (a : A) :
+    (liftEquiv ..).symm f a = f (1 ⊗ₜ[R] a) := rfl
+
+@[ext high + 1]
+lemma _root_.Algebra.TensorProduct.ext_ring {f g : S ⊗[R] A →ₐ[S] B}
+    (h : (AlgHom.restrictScalars R f).comp Algebra.TensorProduct.includeRight =
+      (AlgHom.restrictScalars R g).comp Algebra.TensorProduct.includeRight) :
+    f = g :=
+  liftEquiv .. |>.symm.injective h
+
+end AlgHom

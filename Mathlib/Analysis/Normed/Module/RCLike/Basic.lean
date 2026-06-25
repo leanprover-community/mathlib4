@@ -97,6 +97,22 @@ theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r)
   apply LinearMap.bound_of_ball_bound' r_pos
   exact fun z hz => h z hz
 
+/-- If a map `f` over an `RCLike` space satisfies `‖x‖ = 1 → 1 ≤ K * ‖f x‖`, then
+`f` is antilipschitz with constant `K`.
+We require that the map is an additive monoid homomorphism, and acts as a multiplicative action:
+in practice this means `f` is a linear map, but we allow the flexibility so it is convenient
+to apply for eg continuous linear maps also, without a coercion in the goal.
+-/
+lemma antilipschitz_of_bound_of_norm_one {𝓕 E F : Type*}
+    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+    [FunLike 𝓕 E F] [AddMonoidHomClass 𝓕 E F] [MulActionHomClass 𝓕 𝕜 E F]
+    (f : 𝓕) {K : NNReal} (h : ∀ x, ‖x‖ = 1 → 1 ≤ K * ‖f x‖) :
+    AntilipschitzWith K f :=
+  AddMonoidHomClass.antilipschitz_of_bound f fun x ↦ by
+    obtain rfl | hx := eq_or_ne x 0
+    · simp
+    simpa [norm_smul, field] using h ((‖x‖⁻¹ : 𝕜) • x) (norm_smul_inv_norm hx)
+
 variable (𝕜)
 include 𝕜 in
 theorem NormedSpace.sphere_nonempty_rclike [Nontrivial E] {r : ℝ} (hr : 0 ≤ r) :

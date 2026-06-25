@@ -46,6 +46,7 @@ variable [Zero β] [SMulZeroClass α β] {s : Set α} {t : Set β} {a : α}
 
 /-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
 then the same is true for `(0 : Set β)`. -/
+@[instance_reducible]
 protected def smulZeroClassSet : SMulZeroClass α (Set β) where
   smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
 
@@ -54,7 +55,7 @@ scoped[Pointwise] attribute [instance] Set.smulZeroClassSet
 lemma smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
 
 lemma Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
-  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
+  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using! hs
 
 lemma zero_mem_smul_set (h : (0 : β) ∈ t) : (0 : β) ∈ a • t := ⟨0, h, smul_zero _⟩
 
@@ -71,7 +72,7 @@ because `0 * ∅ ≠ 0`.
 lemma zero_smul_subset (t : Set β) : (0 : Set α) • t ⊆ 0 := by simp [subset_def, mem_smul]
 
 lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
-  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
+  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using! ht
 
 /-- A nonempty set is scaled by zero to the singleton set containing 0. -/
 @[simp] lemma zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
@@ -87,6 +88,7 @@ end SMulWithZero
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Set β → Set β`. -/
+@[instance_reducible]
 protected noncomputable def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
     DistribSMul α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
@@ -95,12 +97,14 @@ scoped[Pointwise] attribute [instance] Set.distribSMulSet
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Set β`. -/
+@[instance_reducible]
 protected noncomputable def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Set β) where
   smul_add := smul_add
   smul_zero := smul_zero
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
+@[instance_reducible]
 protected noncomputable def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Set β) where
   smul_mul _ _ _ := image_image2_distrib <| smul_mul' _
@@ -150,7 +154,7 @@ lemma smul_set_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :
   show Units.mk0 a ha • _ = _ from smul_set_inter
 
 lemma smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
-  image_diff (MulAction.injective₀ ha) _ _
+  image_sdiff (MulAction.injective₀ ha) _ _
 
 open scoped symmDiff in
 lemma smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=

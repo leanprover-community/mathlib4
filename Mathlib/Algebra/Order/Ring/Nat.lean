@@ -19,7 +19,7 @@ This file contains the commutative linear ordered semiring instance on the natur
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 
@@ -32,7 +32,7 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℕ where
 instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
   bot := 0
   bot_le := zero_le
-  zero_le := zero_le
+  isBot_zero := zero_le
 
 /-! ### Miscellaneous lemmas -/
 

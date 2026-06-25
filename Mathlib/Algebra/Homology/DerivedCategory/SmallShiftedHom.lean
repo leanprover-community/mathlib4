@@ -33,6 +33,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
   {K L : CochainComplex C ℤ} {n : ℤ}
   [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `x : CohomologyClass K L n`, this is the element in the type
 `SmallShiftedHom` relatively to quasi-isomorphisms that is associated
 to the `x`. -/

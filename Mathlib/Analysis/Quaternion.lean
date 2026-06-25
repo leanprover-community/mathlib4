@@ -32,7 +32,7 @@ The following notation is available with `open Quaternion` or `open scoped Quate
 quaternion, normed ring, normed space, normed algebra
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 
 @[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
@@ -50,7 +50,7 @@ theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
 theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 
-noncomputable instance : NormedAddCommGroup ℍ :=
+instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_inner_symm := fun x y => by simp [inner_def, mul_comm]
@@ -59,7 +59,7 @@ noncomputable instance : NormedAddCommGroup ℍ :=
       add_left := fun x y z => by simp only [inner_def, add_mul, re_add]
       smul_left := fun x y r => by simp [inner_def] }
 
-noncomputable instance : InnerProductSpace ℝ ℍ :=
+instance : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
 
 theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
@@ -84,11 +84,11 @@ theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 
-noncomputable instance : NormedDivisionRing ℍ where
+instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
   norm_mul _ _ := by simp_rw [norm_eq_sqrt_real_inner, inner_self]; simp
 
-noncomputable instance : NormedAlgebra ℝ ℍ where
+instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
 
@@ -105,25 +105,17 @@ instance : Coe ℂ ℍ := ⟨coeComplex⟩
 theorem re_coeComplex (z : ℂ) : (z : ℍ).re = z.re :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias coeComplex_re := re_coeComplex
-
 @[simp, norm_cast]
 theorem imI_coeComplex (z : ℂ) : (z : ℍ).imI = z.im :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imI := imI_coeComplex
 
 @[simp, norm_cast]
 theorem imJ_coeComplex (z : ℂ) : (z : ℍ).imJ = 0 :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias coeComplex_imJ := imJ_coeComplex
-
 @[simp, norm_cast]
 theorem imK_coeComplex (z : ℂ) : (z : ℍ).imK = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imK := imK_coeComplex
 
 @[simp, norm_cast]
 theorem coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
@@ -167,7 +159,7 @@ lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = 
 
 /-- `QuaternionAlgebra.linearEquivTuple` as a `LinearIsometryEquiv`. -/
 @[simps apply symm_apply]
-noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
+def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (0 : ℝ) (-1 : ℝ)).trans
       (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
     toFun := fun a => !₂[a.1, a.2, a.3, a.4]
@@ -201,7 +193,7 @@ theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
 
 @[continuity]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by
-  simpa only [← sub_re_self] using continuous_id.sub (continuous_coe.comp continuous_re)
+  simpa only [← sub_re_self] using! continuous_id.sub (continuous_coe.comp continuous_re)
 
 instance : CompleteSpace ℍ :=
   haveI : IsUniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
@@ -215,13 +207,13 @@ variable {α : Type*} {L : SummationFilter α}
 @[simp, norm_cast]
 theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) L ↔ HasSum f r L :=
   ⟨fun h => by
-    simpa only using
+    simpa only using!
     h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _ _) continuous_re,
-    fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
+    fun h => by simpa only using! h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
 
 @[simp, norm_cast]
 theorem summable_coe {f : α → ℝ} : (Summable (fun a => (f a : ℍ)) L) ↔ Summable f L := by
-  simpa only using
+  simpa only using!
     Summable.map_iff_of_leftInverse (algebraMap ℝ ℍ) (show ℍ →ₗ[ℝ] ℝ from
       QuaternionAlgebra.reₗ _ _ _)
       (continuous_algebraMap _ _) continuous_re re_coe

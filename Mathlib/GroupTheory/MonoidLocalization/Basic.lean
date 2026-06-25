@@ -181,7 +181,7 @@ theorem r_eq_r' : r S = r' S :=
     le_sInf fun b H ⟨p, q⟩ ⟨x, y⟩ ⟨t, ht⟩ ↦ by
       rw [← one_mul (p, q), ← one_mul (x, y)]
       refine b.trans (b.mul (H (t * y)) (b.refl _)) ?_
-      convert b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
+      convert! b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
       dsimp only [Prod.mk_mul_mk, Submonoid.coe_mul] at ht ⊢
       simp_rw [mul_assoc, ht, mul_comm y q]
 
@@ -193,8 +193,8 @@ theorem r_iff_exists {x y : M × S} : r S x y ↔ ∃ c : S, ↑c * (↑y.2 * x.
 
 @[to_additive]
 theorem r_iff_oreEqv_r {x y : M × S} : r S x y ↔ (OreLocalization.oreEqv S M).r x y := by
-  simp only [r_iff_exists, Subtype.exists, exists_prop, OreLocalization.oreEqv, smul_eq_mul,
-    Submonoid.mk_smul]
+  simp +instances only [r_iff_exists, Subtype.exists, exists_prop, OreLocalization.oreEqv,
+    smul_eq_mul, Submonoid.mk_smul]
   constructor
   · rintro ⟨u, hu, e⟩
     exact ⟨_, mul_mem hu x.2.2, u * y.2, by rw [mul_assoc, mul_assoc, ← e], mul_right_comm _ _ _⟩
@@ -221,7 +221,7 @@ def mk (x : M) (y : S) : Localization S := x /ₒ y
 
 @[to_additive]
 theorem mk_eq_mk_iff {a c : M} {b d : S} : mk a b = mk c d ↔ r S ⟨a, b⟩ ⟨c, d⟩ := by
-  simp only [mk, OreLocalization.oreDiv_eq_iff, r_iff_oreEqv_r, OreLocalization.oreEqv]
+  simp +instances only [mk, OreLocalization.oreDiv_eq_iff, r_iff_oreEqv_r, OreLocalization.oreEqv]
 
 universe u
 
@@ -235,7 +235,7 @@ then `f` is defined on the whole `AddLocalization S`. -/]
 def rec {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk a b))
     (H : ∀ {a c : M} {b d : S} (h : r S (a, b) (c, d)),
       (Eq.ndrec (f a b) (mk_eq_mk_iff.mpr h) : p (mk c d)) = f c d) (x) : p x :=
-  Quot.rec (fun y ↦ Eq.ndrec (f y.1 y.2) (by rfl))
+  Quot.rec (fun y ↦ f y.1 y.2)
     (fun y z h ↦ by cases y; cases z; exact H (r_iff_oreEqv_r.mpr h)) x
 
 /-- Copy of `Quotient.recOnSubsingleton₂` for `Localization` -/
@@ -256,8 +256,8 @@ unseal OreLocalization.one in
 theorem mk_one : mk 1 (1 : S) = 1 := OreLocalization.one_def
 
 @[to_additive]
-theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) := by
-  induction n <;> simp [pow_succ, *, ← mk_mul, ← mk_one]
+theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) :=
+  OreLocalization.oreDiv_pow _ _ _ <| .all _ _
 
 @[to_additive]
 theorem mk_prod {ι} (t : Finset ι) (f : ι → M) (s : ι → S) :
@@ -356,11 +356,6 @@ theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
   change (c • 1) • a /ₒ (b * 1) = _
   rw [smul_assoc, one_smul, mul_one]
 
--- move me
-instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
-  smul_comm r s x := by
-    rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
-
 -- Note: Previously there was a `MulDistribMulAction R (Localization S)`.
 -- It was removed as it is not the correct action.
 
@@ -421,7 +416,7 @@ theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N →
 
 @[to_additive] instance : FunLike (LocalizationMap S N) M N where
   coe f := f.toMonoidHom
-  coe_injective' := DFunLike.coe_injective.comp toMonoidHom_injective
+  coe_injective := DFunLike.coe_injective.comp toMonoidHom_injective
 
 @[to_additive] instance : MonoidHomClass (LocalizationMap S N) M N where
   map_one f := f.toMonoidHom.map_one
@@ -857,7 +852,7 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
     Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
   simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
     Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
-  exact forall₂_swap
+  exact forall₂_comm
 
 @[to_additive] theorem top_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
     Injective f ↔ IsCancelMul M := by

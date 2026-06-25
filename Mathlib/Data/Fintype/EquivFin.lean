@@ -175,6 +175,7 @@ theorem finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Finty
 
 /-- Noncomputably get a `Fintype` instance from a `Finite` instance. This is not an
 instance because we want `Fintype` instances to be useful for computations. -/
+@[instance_reducible]
 noncomputable def Fintype.ofFinite (α : Type*) [Finite α] : Fintype α :=
   (nonempty_fintype α).some
 
@@ -408,6 +409,7 @@ theorem isEmpty_fintype {α : Type*} : IsEmpty (Fintype α) ↔ Infinite α :=
   ⟨fun ⟨h⟩ => ⟨fun h' => (@nonempty_fintype α h').elim h⟩, fun ⟨h⟩ => ⟨fun h' => h h'.finite⟩⟩
 
 /-- A non-infinite type is a fintype. -/
+@[implicit_reducible]
 noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintype α :=
   @Fintype.ofFinite _ (not_infinite_iff_finite.mp h)
 
@@ -574,6 +576,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
 end Infinite
 
 /-- If every finset in a type has bounded cardinality, that type is finite. -/
+@[implicit_reducible]
 noncomputable def fintypeOfFinsetCardLe {ι : Type*} (n : ℕ) (w : ∀ s : Finset ι, #s ≤ n) :
     Fintype ι := by
   apply fintypeOfNotInfinite

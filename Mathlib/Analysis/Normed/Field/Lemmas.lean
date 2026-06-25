@@ -105,7 +105,7 @@ theorem uniformContinuousOn_inv₀ {s : Set α} (hs : sᶜ ∈ 𝓝 0) :
     UniformContinuousOn Inv.inv s := by
   rw [Metric.uniformContinuousOn_iff_le]
   intro ε hε
-  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp hs with ⟨r, hr₀, hr⟩
+  rcases NormedAddGroup.nhds_zero_basis_norm_lt.mem_iff.mp hs with ⟨r, hr₀, hr⟩
   simp only [Set.subset_compl_comm (t := s), Set.compl_setOf, not_lt] at hr
   have hs₀ : ∀ x ∈ s, x ≠ 0 := fun x hx ↦ norm_pos_iff.mp <| hr₀.trans_le (hr hx)
   refine ⟨ε * r ^ 2, by positivity, fun x hx y hy hxy ↦ ?_⟩
@@ -180,9 +180,6 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
       simpa
     · apply Metric.closedBall_mem_nhds
       simpa
-
-@[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
-  NormedDivisionRing.to_continuousInv₀
 
 @[to_fun]
 theorem TendstoLocallyUniformlyOn.div₀ {X ι : Type*} [TopologicalSpace X]
@@ -314,7 +311,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
     rw [div_le_one (kpos.trans_lt hx)]
     exact hx.le.trans' (hk (by simp))
   obtain ⟨a, -, ha'⟩ := cauchySeq_tendsto_of_isComplete h hb hu'
-  refine ⟨a * x, (((continuous_mul_right x).tendsto a).comp ha').congr ?_⟩
+  refine ⟨a * x, (((continuous_mul_const x).tendsto a).comp ha').congr ?_⟩
   have hx' : x ≠ 0 := by
     contrapose! hx
     simp [hx, kpos]

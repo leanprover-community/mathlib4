@@ -47,6 +47,7 @@ variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 def ae (μ : F) : Filter α :=
   .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht
+deriving CountableInterFilter
 
 /-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
@@ -63,13 +64,13 @@ notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measur
 i.e. `f=g` away from a null set.
 
 This is notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
-notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (MeasureTheory.ae μ) f g
+notation3:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (MeasureTheory.ae μ) f g
 
 /-- `f ≤ᵐ[μ] g` means `f` is eventually less than `g` along the a.e. filter,
 i.e. `f ≤ g` away from a null set.
 
 This is notation for `Filter.EventuallyLE (MeasureTheory.ae μ) f g`. -/
-notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (MeasureTheory.ae μ) f g
+notation3:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (MeasureTheory.ae μ) f g
 
 theorem mem_ae_iff {s : Set α} : s ∈ ae μ ↔ μ sᶜ = 0 :=
   Iff.rfl
@@ -88,13 +89,8 @@ theorem frequently_ae_mem_iff {s : Set α} : (∃ᵐ a ∂μ, a ∈ s) ↔ μ s 
 theorem measure_eq_zero_iff_ae_notMem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a ∉ s :=
   compl_mem_ae_iff.symm
 
-@[deprecated (since := "2025-08-26")]
-alias measure_zero_iff_ae_notMem := measure_eq_zero_iff_ae_notMem
 theorem ae_of_all {p : α → Prop} (μ : F) : (∀ a, p a) → ∀ᵐ a ∂μ, p a :=
   Eventually.of_forall
-
-instance instCountableInterFilter : CountableInterFilter (ae μ) := by
-  unfold ae; infer_instance
 
 theorem ae_all_iff {ι : Sort*} [Countable ι] {p : α → ι → Prop} :
     (∀ᵐ a ∂μ, ∀ i, p a i) ↔ ∀ i, ∀ᵐ a ∂μ, p a i :=
@@ -121,6 +117,11 @@ theorem ae_eq_symm {f g : α → β} (h : f =ᵐ[μ] g) : g =ᵐ[μ] f :=
 
 theorem ae_eq_trans {f g h : α → β} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ] h) : f =ᵐ[μ] h :=
   h₁.trans h₂
+
+lemma aeEq_iff {f g : α → β} : f =ᵐ[μ] g ↔ μ {x | f x ≠ g x} = 0 := by rfl
+
+lemma _root_.Set.EqOn.aeEq {f g : α → β} (h : s.EqOn f g) (h2 : μ sᶜ = 0) : f =ᵐ[μ] g :=
+  eventuallyEq_of_mem h2 h
 
 @[simp] lemma ae_eq_top : ae μ = ⊤ ↔ ∀ a, μ {a} ≠ 0 := by
   simp only [Filter.ext_iff, mem_ae_iff, mem_top, ne_eq]
@@ -158,14 +159,18 @@ theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ
   h.union h'
 
 theorem union_ae_eq_right : (s ∪ t : Set α) =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
-  simp [eventuallyLE_antisymm_iff, ae_le_set, union_diff_right,
-    diff_eq_empty.2 Set.subset_union_right]
+  simp [eventuallyLE_antisymm_iff, ae_le_set, union_sdiff_right,
+    sdiff_eq_empty.2 Set.subset_union_right]
 
-theorem diff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
+theorem sdiff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
-theorem diff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
-  diff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
+@[deprecated (since := "2026-06-03")] alias diff_ae_eq_self := sdiff_ae_eq_self
+
+theorem sdiff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
+  sdiff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
+
+@[deprecated (since := "2026-06-03")] alias diff_null_ae_eq_self := sdiff_null_ae_eq_self
 
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
@@ -175,6 +180,7 @@ open scoped symmDiff in
 theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s =ᵐ[μ] t := by
   simp [ae_eq_set, symmDiff_def]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ =ᵐ[μ] tᶜ ↔ s =ᵐ[μ] t := by
   simp only [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]
@@ -190,9 +196,11 @@ theorem ae_eq_set_union {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t'
     (s ∪ s' : Set α) =ᵐ[μ] (t ∪ t' : Set α) :=
   h.union h'
 
-theorem ae_eq_set_diff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
+theorem ae_eq_set_sdiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
     s \ s' =ᵐ[μ] t \ t' :=
   h.diff h'
+
+@[deprecated (since := "2026-06-03")] alias ae_eq_set_diff := ae_eq_set_sdiff
 
 open scoped symmDiff in
 theorem ae_eq_set_symmDiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
@@ -203,34 +211,44 @@ theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : S
   (ae_eq_set_union h (ae_eq_refl t)).trans <| by rw [univ_union]
 
 theorem union_ae_eq_univ_of_ae_eq_univ_right (h : t =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ := by
-  convert ae_eq_set_union (ae_eq_refl s) h
+  convert! ae_eq_set_union (ae_eq_refl s) h
   rw [union_univ]
 
 theorem union_ae_eq_right_of_ae_eq_empty (h : s =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] t := by
-  convert ae_eq_set_union h (ae_eq_refl t)
+  convert! ae_eq_set_union h (ae_eq_refl t)
   rw [empty_union]
 
 theorem union_ae_eq_left_of_ae_eq_empty (h : t =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] s := by
-  convert ae_eq_set_union (ae_eq_refl s) h
+  convert! ae_eq_set_union (ae_eq_refl s) h
   rw [union_empty]
 
 theorem inter_ae_eq_right_of_ae_eq_univ (h : s =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] t := by
-  convert ae_eq_set_inter h (ae_eq_refl t)
+  convert! ae_eq_set_inter h (ae_eq_refl t)
   rw [univ_inter]
 
 theorem inter_ae_eq_left_of_ae_eq_univ (h : t =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] s := by
-  convert ae_eq_set_inter (ae_eq_refl s) h
+  convert! ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_univ]
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_left (h : s =ᵐ[μ] (∅ : Set α)) :
     (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
-  convert ae_eq_set_inter h (ae_eq_refl t)
+  convert! ae_eq_set_inter h (ae_eq_refl t)
   rw [empty_inter]
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
     (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
-  convert ae_eq_set_inter (ae_eq_refl s) h
+  convert! ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_empty]
+
+theorem ae_eq_set_biInter {s : Set β} (hs : s.Countable) {t t' : β → Set α}
+    (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :
+    (⋂ b ∈ s, t b : Set α) =ᵐ[μ] (⋂ b ∈ s, t' b : Set α) :=
+  .countable_bInter hs h
+
+theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
+    (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :
+    (⋃ b ∈ s, t b : Set α) =ᵐ[μ] (⋃ b ∈ s, t' b : Set α) :=
+  .countable_bUnion hs h
 
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
@@ -242,7 +260,7 @@ theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s 
 theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
   calc
     μ s ≤ μ (s ∪ t) := measure_mono subset_union_left
-    _ = μ (t ∪ s \ t) := by rw [union_diff_self, Set.union_comm]
+    _ = μ (t ∪ s \ t) := by rw [union_sdiff_self, Set.union_comm]
     _ ≤ μ t + μ (s \ t) := measure_union_le _ _
     _ = μ t := by rw [ae_le_set.1 H, add_zero]
 

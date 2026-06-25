@@ -241,7 +241,7 @@ theorem logb_nonpos_iff (hx : 0 < x) : logb b x ≤ 0 ↔ x ≤ 1 := by
 
 theorem logb_nonpos_iff' (hx : 0 ≤ x) : logb b x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   exact logb_nonpos_iff hb hx
 
 theorem logb_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : logb b x ≤ 0 :=
@@ -505,7 +505,7 @@ theorem logb_nat_eq_sum_factorization (n : ℕ) :
 theorem tendsto_pow_logb_div_mul_add_atTop (a c : ℝ) (n : ℕ) (ha : a ≠ 0) :
     Tendsto (fun x => logb b x ^ n / (a * x + c)) atTop (𝓝 0) := by
   cases eq_or_ne (log b) 0 with
-  | inl h => simpa [logb, h] using ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
+  | inl h => simpa [logb, h] using! ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
   | inr h => apply (tendsto_pow_log_div_mul_add_atTop (a * (log b) ^ n) (c * (log b) ^ n) n
                 (by positivity)).congr fun x ↦ by simp [field, div_pow, logb]
 
@@ -526,9 +526,9 @@ theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b �
 theorem isBigO_logb_log : logb b =O[⊤] log := by
   by_cases! h : b = -1 ∨ b = 0 ∨ b = 1
   · obtain rfl | rfl | rfl := h
-    all_goals simpa [-Asymptotics.isBigO_top] using Asymptotics.isBigO_zero log ⊤
+    all_goals simpa [-Asymptotics.isBigO_top] using! Asymptotics.isBigO_zero log ⊤
   · simpa [logb, div_eq_mul_inv, mul_comm]
-      using (Asymptotics.isBigO_refl log ⊤).const_mul_left (log b)⁻¹
+      using! (Asymptotics.isBigO_refl log ⊤).const_mul_left (log b)⁻¹
 
 theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (fun x ↦ log (c * x)) =O[atTop] log := by
   obtain rfl | hc := eq_or_ne c 0
@@ -595,7 +595,7 @@ variable {b : ℝ}
 
 theorem tendsto_logb_comp_add_sub_logb (y : ℝ) :
     Tendsto (fun x : ℝ => logb b (x + y) - logb b x) atTop (𝓝 0) := by
-  simpa [sub_div] using (tendsto_log_comp_add_sub_log y).div_const (log b)
+  simpa [sub_div] using! (tendsto_log_comp_add_sub_log y).div_const (log b)
 
 theorem tendsto_logb_nat_add_one_sub_logb :
     Tendsto (fun k : ℕ => logb b (k + 1) - logb b k) atTop (𝓝 0) :=

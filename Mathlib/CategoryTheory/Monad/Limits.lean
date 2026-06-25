@@ -25,6 +25,8 @@ and `T` preserves.
 This is generalised to the case of a comonadic functor `D ⥤ C`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -47,6 +49,7 @@ namespace ForgetCreatesLimits
 
 variable (D : J ⥤ Algebra T) (c : Cone (D ⋙ T.forget)) (t : IsLimit c)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) The natural transformation used to define the new cone -/
 @[simps]
 def γ : D ⋙ T.forget ⋙ ↑T ⟶ D ⋙ T.forget where app j := (D.obj j).a
@@ -57,6 +60,7 @@ def newCone : Cone (D ⋙ forget T) where
   pt := T.obj c.pt
   π := (Functor.constComp _ _ (T : C ⥤ C)).inv ≫ whiskerRight c.π (T : C ⥤ C) ≫ γ D
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The algebra structure which will be the apex of the new limit cone for `D`. -/
 @[simps]
 def conePoint : Algebra T where
@@ -74,6 +78,7 @@ def conePoint : Algebra T where
         (D.obj j).assoc, Functor.map_comp, Category.assoc]
       rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) Construct the lifted cone in `Algebra T` which will be limiting. -/
 @[simps]
 def liftedCone : Cone D where
@@ -84,6 +89,7 @@ def liftedCone : Cone D where
         ext1
         simpa using (c.w f).symm }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) Prove that the lifted cone is limiting. -/
 @[simps]
 def liftedConeIsLimit : IsLimit (liftedCone D c t) where
@@ -110,7 +116,7 @@ noncomputable instance forgetCreatesLimits : CreatesLimitsOfSize (forget T) wher
     CreatesLimit := fun {D} =>
       createsLimitOfReflectsIso fun c t =>
         { liftedCone := ForgetCreatesLimits.liftedCone D c t
-          validLift := Cones.ext (Iso.refl _) fun _ => (id_comp _).symm
+          validLift := Cone.ext (Iso.refl _) fun _ => (id_comp _).symm
           makesLimit := ForgetCreatesLimits.liftedConeIsLimit _ _ _ } }
 
 /-- `D ⋙ forget T` has a limit, then `D` has a limit. -/
@@ -164,6 +170,7 @@ theorem commuting (j : J) : (T : C ⥤ C).map (c.ι.app j) ≫ lambda c t = (D.o
 
 variable [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl)
 Construct the colimiting algebra from the map `λ : TL ⟶ L` given by `lambda`. We are required to
 show it satisfies the two algebra laws, which follow from the algebra laws for the image of `D` and
@@ -201,6 +208,7 @@ noncomputable def liftedCocone : Cocone D where
         rw [comp_id]
         apply c.w }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) Prove that the lifted cocone is colimiting. -/
 @[simps]
 noncomputable def liftedCoconeIsColimit : IsColimit (liftedCocone c t) where
@@ -238,7 +246,7 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
               naturality := fun A B f => by
                 ext1
                 simpa using (c.w f) } }
-      validLift := Cocones.ext (Iso.refl _)
+      validLift := Cocone.ext (Iso.refl _)
       makesColimit := liftedCoconeIsColimit _ _ }
 
 noncomputable instance forgetCreatesColimitsOfShape [PreservesColimitsOfShape J (T : C ⥤ C)] :
@@ -269,6 +277,7 @@ instance comp_comparison_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoi
   Monad.hasLimit_of_comp_forget_hasLimit (F ⋙ Monad.comparison (monadicAdjunction R))
 
 /-- Any monadic functor creates limits. -/
+@[implicit_reducible]
 noncomputable def monadicCreatesLimits (R : D ⥤ C) [MonadicRightAdjoint R] :
     CreatesLimitsOfSize.{v, u} R :=
   createsLimitsOfNatIso (Monad.comparisonForget (monadicAdjunction R))
@@ -276,6 +285,7 @@ noncomputable def monadicCreatesLimits (R : D ⥤ C) [MonadicRightAdjoint R] :
 /-- The forgetful functor from the Eilenberg-Moore category for a monad creates any colimit
 which the monad itself preserves.
 -/
+@[implicit_reducible]
 noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J ⥤ D)
     [MonadicRightAdjoint R] [PreservesColimit (K ⋙ R) (monadicLeftAdjoint R ⋙ R)]
     [PreservesColimit ((K ⋙ R) ⋙ monadicLeftAdjoint R ⋙ R) (monadicLeftAdjoint R ⋙ R)] :
@@ -304,6 +314,7 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
   apply createsColimitOfNatIso e
 
 /-- A monadic functor creates any colimits of shapes it preserves. -/
+@[implicit_reducible]
 noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D ⥤ C)
     [MonadicRightAdjoint R] [PreservesColimitsOfShape J R] : CreatesColimitsOfShape J R :=
   letI : PreservesColimitsOfShape J (monadicLeftAdjoint R) := by
@@ -313,6 +324,7 @@ noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D
   ⟨monadicCreatesColimitOfPreservesColimit _ _⟩
 
 /-- A monadic functor creates colimits if it preserves colimits. -/
+@[implicit_reducible]
 noncomputable def monadicCreatesColimitsOfPreservesColimits (R : D ⥤ C) [MonadicRightAdjoint R]
     [PreservesColimitsOfSize.{v, u} R] : CreatesColimitsOfSize.{v, u} R where
   CreatesColimitsOfShape :=
@@ -394,21 +406,23 @@ def newCocone : Cocone (D ⋙ forget T) where
   pt := T.obj c.pt
   ι := γ D ≫ whiskerRight c.ι (T : C ⥤ C) ≫ (Functor.constComp J _ (T : C ⥤ C)).hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coalgebra structure which will be the point of the new colimit cone for `D`. -/
 @[simps]
 def coconePoint : Coalgebra T where
   A := c.pt
   a := t.desc (newCocone D c)
   counit := t.hom_ext fun j ↦ by
-    simp only [Functor.comp_obj, forget_obj, Functor.id_obj, Functor.const_obj_obj,
+    simp only [Functor.comp_obj, forget_obj, Functor.id_obj,
       IsColimit.fac_assoc, newCocone_ι_app, assoc, NatTrans.naturality, Functor.id_map, comp_id]
     rw [← Category.assoc, (D.obj j).counit, Category.id_comp]
   coassoc := t.hom_ext fun j ↦ by
-    simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, IsColimit.fac_assoc,
+    simp only [Functor.comp_obj, forget_obj, IsColimit.fac_assoc,
       newCocone_ι_app, assoc, NatTrans.naturality, Functor.comp_map]
     rw [← Category.assoc, (D.obj j).coassoc, ← Functor.map_comp, t.fac (newCocone D c) j,
       newCocone_ι_app, Functor.map_comp, assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) Construct the lifted cocone in `Coalgebra T` which will be colimiting. -/
 @[simps]
 def liftedCocone : Cocone D where
@@ -419,6 +433,7 @@ def liftedCocone : Cocone D where
         ext1
         simpa using (c.w f) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) Prove that the lifted cocone is colimiting. -/
 @[simps]
 def liftedCoconeIsColimit : IsColimit (liftedCocone D c t) where
@@ -445,7 +460,7 @@ noncomputable instance forgetCreatesColimit : CreatesColimitsOfSize (forget T) w
     CreatesColimit := fun {D} =>
       createsColimitOfReflectsIso fun c t =>
         { liftedCocone := ForgetCreatesColimits'.liftedCocone D c t
-          validLift := Cocones.ext (Iso.refl _) fun _ => (comp_id _)
+          validLift := Cocone.ext (Iso.refl _) fun _ => (comp_id _)
           makesColimit := ForgetCreatesColimits'.liftedCoconeIsColimit _ _ _ } }
 
 /-- If `D ⋙ forget T` has a colimit, then `D` has a colimit. -/
@@ -491,6 +506,7 @@ theorem commuting (j : J) : lambda c t ≫ (T : C ⥤ C).map (c.π.app j) = c.π
 variable [PreservesLimit ((D ⋙ forget T) ⋙ T.toFunctor) T.toFunctor]
 variable [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl)
 Construct the limiting coalgebra from the map `λ : L ⟶ TL` given by `lambda`. We are required to
 show it satisfies the two coalgebra laws, which follow from the coalgebra laws for the image of `D`
@@ -525,6 +541,7 @@ noncomputable def liftedCone : Cone D where
         rw [id_comp, ← c.w]
         rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) Prove that the lifted cone is limiting. -/
 @[simps]
 noncomputable def liftedConeIsLimit : IsLimit (liftedCone c t) where
@@ -563,7 +580,7 @@ noncomputable instance forgetCreatesLimit (D : J ⥤ Coalgebra T)
               naturality := fun A B f => by
                 ext1
                 simpa using (c.w f).symm } }
-      validLift := Cones.ext (Iso.refl _)
+      validLift := Cone.ext (Iso.refl _)
       makesLimit := liftedConeIsLimit _ _ }
 
 noncomputable instance forgetCreatesLimitsOfShape [PreservesLimitsOfShape J (T : C ⥤ C)] :
@@ -591,6 +608,7 @@ instance comp_comparison_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAd
   Comonad.hasColimit_of_comp_forget_hasColimit (F ⋙ Comonad.comparison (comonadicAdjunction R))
 
 /-- Any comonadic functor creates colimits. -/
+@[implicit_reducible]
 noncomputable def comonadicCreatesColimits (R : D ⥤ C) [ComonadicLeftAdjoint R] :
     CreatesColimitsOfSize.{v, u} R :=
   createsColimitsOfNatIso (Comonad.comparisonForget (comonadicAdjunction R))
@@ -598,6 +616,7 @@ noncomputable def comonadicCreatesColimits (R : D ⥤ C) [ComonadicLeftAdjoint R
 /-- The forgetful functor from the Eilenberg-Moore category for a comonad creates any limit
 which the comonad itself preserves.
 -/
+@[implicit_reducible]
 noncomputable def comonadicCreatesLimitOfPreservesLimit (R : D ⥤ C) (K : J ⥤ D)
     [ComonadicLeftAdjoint R] [PreservesLimit (K ⋙ R) (comonadicRightAdjoint R ⋙ R)]
     [PreservesLimit ((K ⋙ R) ⋙ comonadicRightAdjoint R ⋙ R) (comonadicRightAdjoint R ⋙ R)] :
@@ -624,6 +643,7 @@ noncomputable def comonadicCreatesLimitOfPreservesLimit (R : D ⥤ C) (K : J ⥤
   apply createsLimitOfNatIso e
 
 /-- A comonadic functor creates any limits of shapes it preserves. -/
+@[implicit_reducible]
 noncomputable def comonadicCreatesLimitsOfShapeOfPreservesLimitsOfShape (R : D ⥤ C)
     [ComonadicLeftAdjoint R] [PreservesLimitsOfShape J R] : CreatesLimitsOfShape J R :=
   letI : PreservesLimitsOfShape J (comonadicRightAdjoint R) := by
@@ -633,6 +653,7 @@ noncomputable def comonadicCreatesLimitsOfShapeOfPreservesLimitsOfShape (R : D �
   ⟨comonadicCreatesLimitOfPreservesLimit _ _⟩
 
 /-- A comonadic functor creates limits if it preserves limits. -/
+@[implicit_reducible]
 noncomputable def comonadicCreatesLimitsOfPreservesLimits (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [PreservesLimitsOfSize.{v, u} R] : CreatesLimitsOfSize.{v, u} R where
   CreatesLimitsOfShape :=

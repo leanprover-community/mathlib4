@@ -22,7 +22,7 @@ The uniform space structure is induced from the space of continuous maps `C(I, X
 and corresponds to uniform convergence of paths on `I`, see `Path.hasBasis_uniformity`.
 -/
 
-@[expose] public section
+public section
 
 open scoped unitInterval Topology Uniformity
 

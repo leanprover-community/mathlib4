@@ -165,7 +165,7 @@ lemma injective_lift_iff {I : Ideal R} [I.IsTwoSided]
   · rintro rfl; rfl
 
 lemma ker_Pi_Quotient_mk {ι : Type*} (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] :
-    ker (Pi.ringHom fun i : ι ↦ Quotient.mk (I i)) = ⨅ i, I i := by
+    ker (RingHom.pi fun i : ι ↦ Quotient.mk (I i)) = ⨅ i, I i := by
   simp [Pi.ker_ringHom, mk_ker]
 
 @[simp]
@@ -199,7 +199,7 @@ variable {ι : Type*}
   Remainder Theorem. It is bijective if the ideals `f i` are coprime. -/
 def quotientInfToPiQuotient (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] :
     (R ⧸ ⨅ i, I i) →+* ∀ i, R ⧸ I i :=
-  Quotient.lift (⨅ i, I i) (Pi.ringHom fun i : ι ↦ Quotient.mk (I i))
+  Quotient.lift (⨅ i, I i) (RingHom.pi fun i : ι ↦ Quotient.mk (I i))
     (by simp [← RingHom.mem_ker, ker_Pi_Quotient_mk])
 
 lemma quotientInfToPiQuotient_mk (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] (x : R) :
@@ -242,6 +242,7 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
 
 /-- **Chinese Remainder Theorem**. Eisenbud Ex.2.6.
 Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
+@[wikidata Q193878]
 noncomputable def quotientInfRingEquivPiQuotient (f : ι → Ideal R)
     (hf : Pairwise (IsCoprime on f)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
@@ -310,7 +311,7 @@ theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopri
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
 noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
-  Ideal.quotEquivOfEq (inf_eq_mul_of_isCoprime coprime).symm |>.trans <|
+  Ideal.quotEquivOfEq (mul_eq_inf_of_isCoprime coprime) |>.trans <|
     Ideal.quotientInfEquivQuotientProd I J coprime
 
 @[simp]
@@ -492,7 +493,7 @@ theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
   rw [← map_one (mk _), ← Submodule.range_mkQ I, ← Submodule.map_top, ← Ideal.span_singleton_one,
     Ideal.span, Submodule.map_span, Set.image_singleton, Submodule.mkQ_apply, Quotient.mk_eq_mk]
 
-open Pointwise in
+open scoped Pointwise in
 lemma Quotient.smul_top {R : Type*} [CommRing R] (a : R) (I : Ideal R) :
     (a • ⊤ : Submodule R (R ⧸ I)) = Submodule.span R {Submodule.Quotient.mk a} := by
   simp [← Ideal.Quotient.span_singleton_one, Algebra.smul_def, Submodule.smul_span]
@@ -565,7 +566,7 @@ lemma _root_.AlgHom.liftOfSurjective_apply (f : A →ₐ[R] B) (hf : Function.Su
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :
     AlgHom.liftOfSurjective f hf g H (f x) = g x := by
   dsimp [AlgHom.liftOfSurjective]
-  erw [AlgEquiv.coe_algHom] -- fixed after #21031
+  erw [AlgEquiv.coe_toAlgHom] -- fixed after #21031
   rw [Ideal.quotientKerAlgEquivOfSurjective_symm_apply]
   rfl
 
@@ -577,7 +578,7 @@ lemma _root_.AlgHom.liftOfSurjective_comp (f : A →ₐ[R] B) (hf : Function.Sur
 lemma _root_.AlgHom.liftOfSurjective_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom)
     (hg : Function.Surjective g) : Function.Surjective (AlgHom.liftOfSurjective f hf g H) :=
-  .of_comp (g := f) (by convert hg; ext; simp)
+  .of_comp (g := f) (by convert! hg; ext; simp)
 
 end liftOfSurjective
 
@@ -1142,6 +1143,7 @@ section PowQuot
 
 variable {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
 This definition gives the `R`-linear equivalence between the two. -/
 noncomputable

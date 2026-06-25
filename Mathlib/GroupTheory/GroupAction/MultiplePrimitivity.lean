@@ -13,9 +13,9 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 Let `G` be a group acting on a type `α`.
 
 * `MulAction.IsMultiplyPreprimitive` :
-The action is said to be `n`-primitive if, for every subset `s :
-Set α` with `n` elements, the actions f `stabilizer G s` on the
-complement of `s` is primitive.
+  The action is said to be `n`-primitive if, for every subset `s :
+  Set α` with `n` elements, the actions f `stabilizer G s` on the
+  complement of `s` is primitive.
 
 * `MulAction.is_zero_preprimitive` : any action is 0-primitive
 
@@ -30,13 +30,13 @@ complement of `s` is primitive.
   ofFixingSubgroup.isMultiplyPreprimitive
 
 * `MulAction.ofFixingSubgroup.isMultiplyPreprimitive`:
-If an action is `s.ncard + m`-primitive, then
-the action of `FixingSubgroup G s` on the complement of `s`
-is `m`-primitive.
+  If an action is `s.ncard + m`-primitive, then
+  the action of `FixingSubgroup G s` on the complement of `s`
+  is `m`-primitive.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise Cardinal
 
@@ -133,15 +133,7 @@ theorem is_one_preprimitive_iff :
     rw [isMultiplyPreprimitive_iff]
     constructor
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
-    · intro s hs
-      suffices s = ∅ by
-        rwa [this, isPreprimitive_of_fixingSubgroup_empty_iff]
-      rw [← Set.encard_eq_zero]
-      suffices s.encard ≠ (⊤ : ℕ∞) by
-        obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp this
-        rw [← hm, ← Nat.cast_one, ← ENat.coe_add, Nat.cast_inj, Nat.add_eq_right] at hs
-        simp [← hm, hs]
-      exact fun h ↦ by simp [h] at hs
+    · simpa using isPreprimitive_of_fixingSubgroup_empty_iff.mpr h
 
 /-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
@@ -201,7 +193,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
         · rw [Set.mem_insert_iff]
           rintro (⟨rfl⟩ | ⟨y, hy, rfl⟩)
           · simpa [s', ← hg]
-          · simpa only using hy
+          · simpa only using! hy
       rw [hst, isPreprimitive_fixingSubgroup_insert_iff]
       apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup _ n
       apply ENat.add_left_injective_of_ne_top ENat.one_ne_top
@@ -252,7 +244,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le hn
     apply isPreprimitive_of_is_two_pretransitive
     have hs' : s.encard = m := by
-      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1, Nat.cast_add, Nat.cast_one] at hs
+      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1] at hs
       exact ENat.add_left_injective_of_ne_top ENat.one_ne_top hs
     have : Finite s := Set.finite_of_encard_eq_coe hs'
     apply ofFixingSubgroup.isMultiplyPretransitive (G := M) s (n := n.succ)
@@ -305,7 +297,7 @@ theorem IsMultiplyPreprimitive.of_bijective_map
       rintro ⟨y, hy⟩
       obtain ⟨x, hx⟩ := hf.right y
       use ⟨x, ?_⟩
-      · simpa only [f', ← Subtype.coe_inj] using hx
+      · simpa only [f', ← Subtype.coe_inj] using! hx
       · intro h
         apply hy
         rw [← hs']
@@ -334,7 +326,7 @@ theorem isMultiplyPreprimitive_congr
         obtain ⟨x, hx, rfl⟩ := this
         rwa [← map_smulₛₗ, hg]
       obtain ⟨x, rfl⟩ := hf.surjective y
-      simpa only [Set.mem_image, t, eq_comm] using hy⟩
+      simpa only [Set.mem_image, t, eq_comm] using! hy⟩
     let g : ofFixingSubgroup M s →ₑ[ψ] ofFixingSubgroup N t := {
       toFun x := ⟨f x.val, by
         simp only [mem_ofFixingSubgroup_iff, Set.mem_image, hf.injective.eq_iff, exists_eq_right, t]
@@ -355,8 +347,8 @@ theorem isMultiplyPreprimitive_congr
     · constructor
       · rintro ⟨x, hx⟩ ⟨y, hy⟩ h
         suffices f x = f y by
-          simpa [← Subtype.coe_inj, hf.injective.eq_iff] using this
-        simpa only [g, ← Subtype.coe_inj] using h
+          simpa [← Subtype.coe_inj, hf.injective.eq_iff] using! this
+        simpa only [g, ← Subtype.coe_inj] using! h
       · rintro ⟨x, hx⟩
         obtain ⟨y, rfl⟩ := hf.surjective x
         suffices y ∈ ofFixingSubgroup M s by

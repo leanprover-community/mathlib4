@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Translate.ToDual
 public meta section
 
 attribute [to_dual self (reorder := 3 4)] LE.le LT.lt GE.ge GT.gt
+attribute [to_dual self (reorder := 2 (1 2))] LE.mk LT.mk
 
 to_dual_insert_cast_fun DecidableLE := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
 to_dual_insert_cast_fun DecidableLT := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
@@ -23,7 +24,6 @@ to_dual_insert_cast_fun DecidableLT := fun inst a b ↦ inst b a, fun inst a b �
 attribute [to_dual_do_translate] Empty PEmpty Unit PUnit
 attribute [to_dual_ignore_args 2] Subtype
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual self] ge_iff_le gt_iff_lt
 
 attribute [to_dual le_of_eq_of_le''] le_of_eq_of_le
@@ -32,6 +32,8 @@ attribute [to_dual lt_of_eq_of_lt''] lt_of_eq_of_lt
 attribute [to_dual lt_of_lt_of_eq''] lt_of_lt_of_eq
 
 attribute [to_dual] Max
+
+attribute [to_dual existing] Std.LawfulOrderSup Std.LawfulOrderSup.mk Std.LawfulOrderSup.max_le_iff
 
 -- We need to tag the lemmas used by `grind` in order to translate `grind` proofs.
 namespace Lean.Grind.Order

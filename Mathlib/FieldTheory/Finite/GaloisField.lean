@@ -77,6 +77,7 @@ namespace GaloisField
 
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
@@ -136,7 +137,7 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
 theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
-    convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
+    convert! FiniteField.roots_X_pow_card_sub_X (ZMod p)
     exact (ZMod.card p).symm
   have h2 := FiniteField.X_pow_card_sub_X_natDegree_eq (ZMod p) hp
   -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
@@ -185,6 +186,14 @@ theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
 
+theorem _root_.Polynomial.splits_X_pow_nat_card_sub_X :
+    Splits (X ^ (Nat.card K) - X : K[X]) := by
+  cases fintypeOrInfinite K
+  · have := (IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
+    simpa [Algebra.algebraMap_self, map_sub, map_pow, map_X] using this
+  · rw [← Polynomial.splits_neg_iff]
+    simpa [Nat.card_eq_zero_of_infinite, pow_zero, neg_sub] using Splits.X_sub_C (1 : K)
+
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
   cases nonempty_fintype K'
@@ -231,9 +240,12 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     simp_rw [Nat.card_units]
     classical
     have := Fintype.ofFinite K'ˣ
-    convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
-      (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
-      Nat.sub_pos_of_lt Finite.one_lt_card
+    convert!
+      IsCyclic.card_pow_eq_one_le (α := K'ˣ) <|
+        Nat.div_pos
+            (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective)
+              _) <|
+          Nat.sub_pos_of_lt Finite.one_lt_card
     rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr 1; ext
     simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
 

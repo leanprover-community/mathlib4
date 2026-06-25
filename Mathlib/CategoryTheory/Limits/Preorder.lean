@@ -6,6 +6,7 @@ Authors: Sina Hazratpour, Joël Riou, Fernando Chu
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.Order.Bounds.Defs
 
 /-!
@@ -104,11 +105,13 @@ section
 variable [Preorder C]
 
 /-- A terminal object in a preorder `C` is top element for `C`. -/
+@[implicit_reducible]
 def _root_.CategoryTheory.Limits.IsTerminal.orderTop {X : C} (t : IsTerminal X) : OrderTop C where
   top := X
   le_top Y := leOfHom (t.from Y)
 
 /-- A preorder with a terminal object has a greatest element. -/
+@[implicit_reducible]
 noncomputable def orderTopOfHasTerminal [HasTerminal C] : OrderTop C :=
   IsTerminal.orderTop terminalIsTerminal
 
@@ -119,11 +122,13 @@ def isTerminalTop [OrderTop C] : IsTerminal (⊤ : C) := IsTerminal.ofUnique _
 instance (priority := low) [OrderTop C] : HasTerminal C := hasTerminal_of_unique ⊤
 
 /-- An initial object in a preorder `C` is bottom element for `C`. -/
+@[implicit_reducible]
 def _root_.CategoryTheory.Limits.IsInitial.orderBot {X : C} (t : IsInitial X) : OrderBot C where
   bot := X
   bot_le Y := leOfHom (t.to Y)
 
 /-- A preorder with an initial object has a least element. -/
+@[implicit_reducible]
 noncomputable def orderBotOfHasInitial [HasInitial C] : OrderBot C :=
   IsInitial.orderBot initialIsInitial
 
@@ -142,15 +147,17 @@ variable [PartialOrder C]
 /--
 A family of limiting binary fans on a partial order induces an inf-semilattice structure on it.
 -/
+@[implicit_reducible]
 def semilatticeInfOfIsLimitBinaryFan
     (c : ∀ (X Y : C), BinaryFan X Y) (h : (X Y : C) → IsLimit (c X Y)) : SemilatticeInf C where
   inf X Y := (c X Y).pt
   inf_le_left X Y := leOfHom (c X Y).fst
   inf_le_right X Y := leOfHom (c X Y).snd
-  le_inf _ _ _ le_fst le_snd := leOfHom <| (h _ _).lift (BinaryFan.mk le_fst.hom le_snd.hom)
+  le_inf _ _ _ le_fst le_snd := leOfHom <| BinaryFan.IsLimit.lift (h _ _) le_fst.hom le_snd.hom
 
 variable (C) in
 /-- If a partial order has binary products, then it is an inf-semilattice -/
+@[implicit_reducible]
 noncomputable def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : SemilatticeInf C :=
   semilatticeInfOfIsLimitBinaryFan
     (fun _ _ ↦ BinaryFan.mk prod.fst prod.snd) (fun X Y ↦ prodIsProd X Y)
@@ -158,15 +165,17 @@ noncomputable def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : Semi
 /--
 A family of colimiting binary cofans on a partial order induces a sup-semilattice structure on it.
 -/
+@[implicit_reducible]
 def semilatticeSupOfIsColimitBinaryCofan
     (c : ∀ (X Y : C), BinaryCofan X Y) (h : (X Y : C) → IsColimit (c X Y)) : SemilatticeSup C where
   sup X Y := (c X Y).pt
   le_sup_left X Y := leOfHom (c X Y).inl
   le_sup_right X Y := leOfHom (c X Y).inr
-  sup_le _ _ _ le_inl le_inr := leOfHom <| (h _ _).desc (BinaryCofan.mk le_inl.hom le_inr.hom)
+  sup_le _ _ _ le_inl le_inr := leOfHom <| BinaryCofan.IsColimit.desc (h _ _) le_inl.hom le_inr.hom
 
 variable (C) in
 /-- If a partial order has binary coproducts, then it is a sup-semilattice -/
+@[implicit_reducible]
 noncomputable def semilatticeSupOfHasBinaryCoproducts [HasBinaryCoproducts C] : SemilatticeSup C :=
   semilatticeSupOfIsColimitBinaryCofan
     (fun _ _ ↦ BinaryCofan.mk coprod.inl coprod.inr) (fun X Y ↦ coprodIsCoprod X Y)
@@ -200,6 +209,20 @@ instance (priority := low) [SemilatticeSup C] : HasBinaryCoproducts C where
     have : HasColimit (pair (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)) :=
       ⟨⟨⟨_, isColimitBinaryCofan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
     apply hasColimit_of_iso (diagramIsoPair F)
+
+end
+
+section
+
+/-- The product of elements in a complete lattice is the infimum. -/
+def isLimitIInf [CompleteLattice C] {ι : Type*} (X : ι → C) :
+    IsLimit (Fan.mk (⨅ i, X i) fun i : ι ↦ homOfLE (iInf_le X i)) :=
+  isLimitOfIsGLB _ _ (by simp [isGLB_iInf])
+
+/-- The coproduct of elements in a complete lattice is the supremum. -/
+def isColimitISup [CompleteLattice C] {ι : Type*} (X : ι → C) :
+    IsColimit (Cofan.mk (⨆ i, X i) fun i : ι ↦ homOfLE (le_iSup X i)) :=
+  isColimitOfIsLUB _ _ (by simp [isLUB_iSup])
 
 end
 

@@ -37,7 +37,7 @@ class DilationEquivClass [EquivLike F X Y] : Prop where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
 instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
-  { inferInstanceAs (FunLike F X Y), ‹DilationEquivClass F X Y› with }
+  { (inferInstance : FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 
@@ -184,7 +184,7 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
 def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
-  edist_eq' := ⟨1, one_ne_zero, by simpa using e.isometry⟩
+  edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
   __ := e.toEquiv
 
 @[simp]

@@ -85,6 +85,7 @@ theorem equalizerSubobject_arrow_comp :
 theorem equalizerSubobject_of_self : equalizerSubobject f f = ⊤ := by
   apply mk_eq_top_of_isIso
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equalizerSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = h ≫ g) :
     (equalizerSubobject f g).Factors h :=
   ⟨equalizer.lift h w, by simp⟩
@@ -170,26 +171,31 @@ section
 
 variable {f} {X' Y' : C} {f' : X' ⟶ Y'} [HasKernel f']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A commuting square induces a morphism between the kernel subobjects. -/
 def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
     (kernelSubobject f : C) ⟶ (kernelSubobject f' : C) :=
   Subobject.factorThru _ ((kernelSubobject f).arrow ≫ sq.left)
     (kernelSubobject_factors _ _ (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernelSubobjectMap sq ≫ (kernelSubobject f').arrow = (kernelSubobject f).arrow ≫ sq.left := by
   simp [kernelSubobjectMap]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f'']
     (sq : Arrow.mk f ⟶ Arrow.mk f') (sq' : Arrow.mk f' ⟶ Arrow.mk f'') :
     kernelSubobjectMap (sq ≫ sq') = kernelSubobjectMap sq ≫ kernelSubobjectMap sq' := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
@@ -248,6 +254,7 @@ instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h 
   · infer_instance
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking cokernels is an order-reversing map from the subobjects of `X` to the quotient objects
 of `X`. -/
 @[simps]
@@ -270,6 +277,8 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
       · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking kernels is an order-reversing map from the quotient objects of `X` to the subobjects of
 `X`. -/
 @[simps]
@@ -440,13 +449,17 @@ def imageSubobjectMap {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [Ha
     (imageSubobject f : C) ⟶ (imageSubobject g : C) :=
   (imageSubobjectIso f).hom ≫ image.map sq ≫ (imageSubobjectIso g).inv
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [HasImage g]
     (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     imageSubobjectMap sq ≫ (imageSubobject g).arrow = (imageSubobject f).arrow ≫ sq.right := by
-  simp only [imageSubobjectMap, Category.assoc, imageSubobject_arrow']
-  erw [image.map_ι, ← Category.assoc, imageSubobject_arrow]
+  simp only [imageSubobjectMap, Category.assoc, Arrow.mk_left, Arrow.mk_right,
+    Arrow.mk_hom, imageSubobject_arrow']
+  rw [dsimp% image.map_ι sq]
+  simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     image.map sq ≫ (imageSubobjectIso _).inv =
@@ -454,6 +467,7 @@ theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasIma
   ext
   simpa using image.map_ι sq
 
+set_option backward.defeqAttrib.useBackward true in
 theorem imageSubobjectIso_comp_image_map {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     (imageSubobjectIso _).hom ≫ image.map sq =

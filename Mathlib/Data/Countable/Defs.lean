@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finite.Defs
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -23,7 +24,7 @@ This file also provides a few instances of these typeclasses.
 More instances can be found in other files.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -36,7 +37,7 @@ variable {α : Sort u} {β : Sort v}
 -/
 
 /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
-@[mk_iff countable_iff_exists_injective]
+@[mk_iff countable_iff_exists_injective, wikidata Q66707394]
 class Countable (α : Sort u) : Prop where
   /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
   exists_injective_nat' : ∃ f : α → ℕ, Injective f
@@ -113,7 +114,7 @@ instance (priority := 500) Quotient.countable [Countable α] {r : α → α → 
   Quot.mk_surjective.countable
 
 instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient s) :=
-  (inferInstance : Countable (@Quot α _))
+  inferInstanceAs <| Countable (@Quot α _)
 
 /-!
 ### Uncountable types

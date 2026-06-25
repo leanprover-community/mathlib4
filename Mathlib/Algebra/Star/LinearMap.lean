@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.RingTheory.Coalgebra.Convolution
 
 /-! # Intrinsic star operation on linear maps
 
@@ -29,7 +30,7 @@ The reason we chose `WithConv` is because together with the convolution product 
 `Mathlib/RingTheory/Coalgebra/Convolution.lean`, we get a ⋆-algebra when
 `star (WithConv.toConv comul) = WithConv.toConv (comm ∘ comul)`. -/
 
-@[expose] public section
+public section
 
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
   [AddCommMonoid E] [Module R E] [StarAddMonoid E] [StarModule R E]
@@ -83,6 +84,10 @@ theorem intrinsicStar_comp (f : WithConv (E →ₗ[R] F)) (g : WithConv (G →�
     star (toConv (f.ofConv ∘ₗ g.ofConv)) = toConv ((star f).ofConv ∘ₗ (star g).ofConv) := by
   ext; simp
 
+theorem intrinsicStar_comp' (f : E →ₗ[R] F) (g : G →ₗ[R] E) :
+    star (toConv (f ∘ₗ g)) = toConv ((star (toConv f)).ofConv ∘ₗ (star (toConv g)).ofConv) := by
+  simpa using intrinsicStar_comp _ _
+
 @[simp] theorem intrinsicStar_id :
     star (toConv (LinearMap.id (R := R) (M := E))) = toConv LinearMap.id := by ext; simp
 theorem intrinsicStar_zero : star (0 : WithConv (E →ₗ[R] F)) = 0 := by simp
@@ -122,6 +127,12 @@ theorem _root_.TensorProduct.intrinsicStar_map
       toConv (TensorProduct.map (star f).ofConv (star g).ofConv) :=
   WithConv.ext <| TensorProduct.ext' fun _ _ ↦ by simp
 
+theorem _root_.TensorProduct.star_map_apply_eq_map_intrinsicStar
+    (f : WithConv (E →ₗ[R] F)) (g : WithConv (G →ₗ[R] H)) (x) :
+    star (TensorProduct.map f.ofConv g.ofConv x) =
+      TensorProduct.map (star f).ofConv (star g).ofConv (star x) := by
+  simpa using congr($(TensorProduct.intrinsicStar_map f g) (star x))
+
 theorem intrinsicStar_lTensor (f : WithConv (F →ₗ[R] G)) :
     star (toConv (lTensor E f.ofConv)) = toConv (lTensor E (star f).ofConv) := by ext; simp
 
@@ -152,6 +163,66 @@ theorem intrinsicStar_smulRight [Module S F] [StarModule S F] (f : WithConv (E �
   ext; simp
 
 end starAddMonoidSemiring
+
+section convRing
+variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A]
+  [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarRing A] [StarModule R A]
+  [AddCommMonoid C] [Module R C] [StarAddMonoid C] [StarModule R C]
+
+open Coalgebra TensorProduct
+
+theorem intrinsicStar_convMul [CoalgebraStruct R C]
+    (h : star (toConv comul) = toConv ((TensorProduct.comm R C C).toLinearMap ∘ₗ comul))
+    (f g : WithConv (C →ₗ[R] A)) : star (f * g) = star g * star f := by
+  simp_rw [convMul_def, intrinsicStar_comp', intrinsicStar_mul', intrinsicStar_map,
+    h, comp_assoc, ← comp_assoc _ _ (map _ _), map_comp_comm_eq,
+    ← comp_assoc _ (TensorProduct.comm R A A).toLinearMap]
+  ext; simp
+
+/-- The convolutive intrinsic star ring on linear maps from coalgebras
+to ⋆-algebras, given that `star (toConv comul) = toConv (comm ∘ₗ comul)`.
+
+In finite-dimensional C⋆-algebras, under the GNS construction, and the adjoint
+coalgebra, we get this hypothesis.
+
+See note [reducible non-instances]. -/
+abbrev convIntrinsicStarRing [Coalgebra R C]
+    (h : star (toConv comul) = toConv ((TensorProduct.comm R C C).toLinearMap ∘ₗ comul)) :
+    StarRing (WithConv (C →ₗ[R] A)) where
+  __ := intrinsicStarAddMonoid
+  star_mul := intrinsicStar_convMul h
+
+variable {n : Type*} [DecidableEq n] {B : n → Type*} [Π i, AddCommMonoid (B i)]
+  [Π i, Module R (B i)] [Π i, StarAddMonoid (B i)] [∀ i, StarModule R (B i)]
+
+@[simp] theorem intrinsicStar_single (i : n) :
+    star (toConv (single R B i)) = toConv (single R B i) := by
+  aesop (add simp [Pi.single, Function.update])
+
+variable [Fintype n]
+
+theorem _root_.Pi.intrinsicStar_comul [Π i, CoalgebraStruct R (B i)]
+    (h : ∀ i, star (toConv (comul (R := R) (A := B i))) =
+      toConv (TensorProduct.comm R (B i) (B i) ∘ₗ comul)) :
+    star (toConv (comul (R := R) (A := Π i, B i))) =
+      toConv (TensorProduct.comm R (Π i, B i) (Π i, B i) ∘ₗ comul) := by
+  ext i x
+  have := by simpa using congr($(h i) x)
+  simp only [coe_comp, coe_single, Function.comp_apply, intrinsicStar_apply, Pi.star_single,
+    Pi.comul_single, LinearEquiv.coe_coe]
+  rw [star_map_apply_eq_map_intrinsicStar, this, map_comm]
+  simp
+
+@[simp] theorem _root_.Pi.intrinsicStar_comul_commSemiring :
+    star (toConv (comul (R := R) (A := n → R))) =
+      toConv (TensorProduct.comm R (n → R) (n → R) ∘ₗ comul) :=
+  Pi.intrinsicStar_comul fun _ ↦ by ext; simp
+
+/-- The intrinsic star convolutive ring on linear maps from `n → R` to `m → R`. -/
+instance _root_.Pi.convIntrinsicStarRingCommSemiring {m : Type*} :
+    StarRing (WithConv ((n → R) →ₗ[R] m → R)) := convIntrinsicStarRing (by simp)
+
+end convRing
 
 end LinearMap
 
@@ -197,9 +268,7 @@ instance Units.intrinsicStar : Star (WithConv (End R E)ˣ) where
     refine ⟨(star (toConv ↑f.ofConv : WithConv (End R E))).ofConv,
       (star (toConv ↑(f.ofConv⁻¹ : (End R E)ˣ))).ofConv, ?_, ?_⟩
     all_goals
-      ext
-      simp only [mul_apply, LinearMap.intrinsicStar_apply, star_star]
-      rw [← LinearMap.comp_apply]
+      rw [mul_eq_comp, ← toConv_injective.eq_iff, ← LinearMap.intrinsicStar_comp']
       simp [← mul_eq_comp, one_eq_id]
 
 theorem IsUnit.intrinsicStar {f : WithConv (End R E)} (hf : IsUnit f.ofConv) :

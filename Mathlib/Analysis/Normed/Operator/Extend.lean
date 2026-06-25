@@ -129,7 +129,7 @@ theorem opNorm_extend_le (h_dense : DenseRange e) (h_e : ∀ x, ‖x‖ ≤ N * 
   · rw [extend_eq _ h_dense (isUniformEmbedding_of_bound _ h_e).isUniformInducing]
     calc
       ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-      _ ≤ ‖f‖ * (N * ‖e x‖) := mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _)
+      _ ≤ ‖f‖ * (N * ‖e x‖) := by gcongr; exact h_e x
       _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 
 
@@ -194,8 +194,8 @@ variable {f e}
 theorem extendOfNorm_eq (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖)
     (x : E) : f.extendOfNorm e (e x) = f x := by
   have := (f.compLeftInverse e).extend_eq (e := (LinearMap.range e).subtypeL)
-    (by simpa using h_dense) isUniformEmbedding_subtype_val.isUniformInducing
-  convert this ⟨e x, LinearMap.mem_range_self e x⟩
+    (by simpa using! h_dense) isUniformEmbedding_subtype_val.isUniformInducing
+  convert! this ⟨e x, LinearMap.mem_range_self e x⟩
   exact (compLeftInverse_apply_of_bdd _ _ h_norm _ _ rfl).symm
 
 theorem norm_extendOfNorm_apply_le (h_dense : DenseRange e) (C : ℝ)
@@ -209,7 +209,7 @@ theorem norm_extendOfNorm_apply_le (h_dense : DenseRange e) (C : ℝ)
 theorem extendOfNorm_unique (h_dense : DenseRange e) (C : ℝ) (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖)
     (g : Eₗ →SL[σ₁₂] F) (H : g.toLinearMap.comp e = f) : extendOfNorm f e = g := by
   apply ContinuousLinearMap.extend_unique
-  · simpa using h_dense
+  · simpa using! h_dense
   · exact isUniformEmbedding_subtype_val.isUniformInducing
   ext ⟨y, x, hxy⟩
   rw [compLeftInverse_apply_of_bdd _ _ ⟨C, h_norm⟩ x y hxy]
@@ -327,7 +327,7 @@ def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e�
       refine h_dense₁.induction ?_ (isClosed_eq (by
         simp only [ContinuousLinearEquiv.coe_toLinearEquiv]; fun_prop) continuous_norm)
       rintro x ⟨y, rfl⟩
-      convert h_norm y
+      convert! h_norm y
       apply LinearMap.extendOfNorm_eq h_dense₁ (by use 1; simp [h_norm]) }
 
 theorem extendOfIsometry_apply (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)

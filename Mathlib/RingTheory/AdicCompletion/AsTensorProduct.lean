@@ -52,35 +52,22 @@ open TensorProduct
 
 namespace AdicCompletion
 
-set_option backward.privateInPublic true in
-private
-def ofTensorProductBil : AdicCompletion I R →ₗ[AdicCompletion I R] M →ₗ[R] AdicCompletion I M where
-  toFun r := LinearMap.lsmul (AdicCompletion I R) (AdicCompletion I M) r ∘ₗ of I M
-  map_add' x y := by
-    apply LinearMap.ext
-    simp
-  map_smul' r x := by
-    apply LinearMap.ext
-    intro y
-    ext n
-    simp [mul_smul (r.val n)]
-
-@[simp]
-private lemma ofTensorProductBil_apply_apply (r : AdicCompletion I R) (x : M) :
-    ((AdicCompletion.ofTensorProductBil I M) r) x = r • (of I M) x :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The natural `AdicCompletion I R`-linear map from `AdicCompletion I R ⊗[R] M` to
 the adic completion of `M`. -/
 def ofTensorProduct : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I M :=
-  TensorProduct.AlgebraTensorModule.lift (ofTensorProductBil I M)
+  TensorProduct.AlgebraTensorModule.lift
+    { toFun r := LinearMap.lsmul (AdicCompletion I R) (AdicCompletion I M) r ∘ₗ of I M
+      map_add' x y := by
+        apply LinearMap.ext
+        simp
+      map_smul' r x := by
+        apply LinearMap.ext
+        simp [mul_smul] }
 
 @[simp]
 lemma ofTensorProduct_tmul (r : AdicCompletion I R) (x : M) :
     ofTensorProduct I M (r ⊗ₜ x) = r • of I M x := by
-  simp [ofTensorProduct]
+  rfl
 
 variable {M} in
 /-- `ofTensorProduct` is functorial in `M`. -/
@@ -102,6 +89,7 @@ section DecidableEq
 
 variable [Fintype ι] [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     piEquivOfFintype I (fun _ : ι ↦ R) ∘ₗ ofTensorProduct I (ι → R) =
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
@@ -110,37 +98,84 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     simpa [Pi.single_apply, -smul_eq_mul]
   split <;> simp
 
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
+set_option backward.isDefEq.respectTransparency false in
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
   rw [← piEquivOfFintype_comp_ofTensorProduct_eq I ι, ← LinearMap.comp_assoc]
   simp
 
-set_option backward.privateInPublic true in
-/- If `M = R^ι` and `ι` is finite, we may construct an inverse to `ofTensorProduct I (ι → R)`. -/
-private def ofTensorProductInvOfPiFintype :
+/-- (Implementation): If `M = R^ι` and `ι` is finite, we may construct an inverse to
+`ofTensorProduct I (ι → R)`. -/
+def ofTensorProductInvOfPiFintype :
     AdicCompletion I (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] (ι → R) :=
   letI f := piEquivOfFintype I (fun _ : ι ↦ R)
   letI g := (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).symm
   f.trans g
 
-set_option backward.privateInPublic true in
-private lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
+set_option backward.isDefEq.respectTransparency false in
+lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
     ofTensorProductInvOfPiFintype I ι ∘ₗ ofTensorProduct I (ι → R) = LinearMap.id := by
   dsimp only [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, LinearMap.comp_assoc, piEquivOfFintype_comp_ofTensorProduct_eq]
   simp
 
-set_option backward.privateInPublic true in
-private lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
+set_option backward.isDefEq.respectTransparency false in
+lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
     ofTensorProduct I (ι → R) ∘ₗ ofTensorProductInvOfPiFintype I ι = LinearMap.id := by
   dsimp only [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, ofTensorProduct_eq, LinearMap.comp_assoc]
   nth_rw 2 [← LinearMap.comp_assoc]
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- `ofTensorProduct` as an equiv in the case of `M = R^ι` where `ι` is finite. -/
 def ofTensorProductEquivOfPiFintype :
     AdicCompletion I R ⊗[R] (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I (ι → R) :=
@@ -216,13 +251,13 @@ section
 
 variable {ι : Type} (f : (ι → R) →ₗ[R] M)
 
-/- The first horizontal arrow in the top row. -/
+/-- The first horizontal arrow in the top row. -/
 private
 def lTensorKerIncl : AdicCompletion I R ⊗[R] LinearMap.ker f →ₗ[AdicCompletion I R]
     AdicCompletion I R ⊗[R] (ι → R) :=
   AlgebraTensorModule.map LinearMap.id (LinearMap.ker f).subtype
 
-/- The second horizontal arrow in the top row. -/
+/-- The second horizontal arrow in the top row. -/
 private def lTensorf :
     AdicCompletion I R ⊗[R] (ι → R) →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] M :=
   AlgebraTensorModule.map LinearMap.id f
@@ -341,7 +376,7 @@ lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
 end
 
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
-instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
+instance flat_of_isNoetherian : Module.Flat R (AdicCompletion I R) :=
   Module.Flat.iff_lTensor_injective'.mpr fun J ↦
     tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 

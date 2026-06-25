@@ -15,7 +15,7 @@ public meta import Lean.PrettyPrinter.Delaborator.Builtins
 /-! # Conv widget
 
 This is a slightly improved version of one of the examples that used to be
-in the ProofWidget library. It defines a `conv?` tactic that displays a widget panel
+in the ProofWidgets library. It defines a `conv?` tactic that displays a widget panel
 allowing to generate a `conv` call zooming to the subexpression selected in the goal.
 -/
 
@@ -29,7 +29,7 @@ namespace Mathlib.Tactic.Conv
 A path to a subexpression from a root expression.
 The constructors are chosen to be easily translatable into `conv` directions.
 -/
-inductive Path where
+public inductive Path where
   /--
   Accesses the `arg`th implicit or explicit argument,
   depending on whether `all` is `true` or `false`, respectively.
@@ -157,14 +157,20 @@ where
       else -- ran out of `Expr.app` nodes
         arg 0 false <$> go expr i
 
+/--
+Given an `e : Expr` and `pos : SubExpr.Pos`, `Path.ofSubExprPos expr pos` generates
+the `Path` corresponding to traversing `pos` starting at the reference expression `e`.
+-/
+public def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
+  Path.ofSubExprPosArray expr pos.toArray
+
 open Lean.Parser.Tactic.Conv in
 /--
-Given a `path : Path` and `xs : TSepArray ``enterArg ","`, generate the `conv` syntax
+Given a `path : Path` and ```xs : TSepArray ``enterArg ","```, generate the `conv` syntax
 corresponding to `enter [xs,*]` followed by traversing `path`. If `loc` is `some fvar`,
 start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`.
-We end every `conv` sequence with `skip`, and highlight `skip` upon insertion.
 -/
-def pathToStx {m} [Monad m] [MonadEnv m] [MonadQuotation m]
+public def pathToStx {m} [Monad m] [MonadQuotation m] (convStx : TSyntax `conv)
     (path : Path) (loc : Option Name) (xs : Syntax.TSepArray ``enterArg "," := {}) :
     m (TSyntax `tactic) := do
   match path with
@@ -172,17 +178,17 @@ def pathToStx {m} [Monad m] [MonadEnv m] [MonadQuotation m]
     let num := Syntax.mkNumLit (toString arg) (← MonadRef.mkInfoFromRefPos)
     let arg ← if all then `(enterArg| @$num:num)
       else `(enterArg| $num:num)
-    pathToStx next loc (xs.push arg)
+    pathToStx convStx next loc (xs.push arg)
   | Path.type next =>
     let arg ← `(enterArg| 1)
-    pathToStx next loc (xs.push arg)
+    pathToStx convStx next loc (xs.push arg)
   | Path.body name next =>
     let bi ←
       if name.eraseMacroScopes.willRoundTrip then
         `(binderIdent| $(← mkIdentFromRef name.eraseMacroScopes):ident)
       else `(binderIdent| _)
     let arg ← `(enterArg| $bi:binderIdent)
-    pathToStx next loc (xs.push arg)
+    pathToStx convStx next loc (xs.push arg)
   | Path.fun depth =>
     let capacity := if xs.elemsAndSeps.isEmpty
       then depth + 1 -- `fun`*depth; `skip`
@@ -190,10 +196,9 @@ def pathToStx {m} [Monad m] [MonadEnv m] [MonadQuotation m]
     let mut arr := Array.emptyWithCapacity capacity
     let enterStx ← `(conv| enter [$xs,*])
     let funStx ← `(conv| fun)
-    let skipStx ← `(conv| skip)
     if !xs.elemsAndSeps.isEmpty then arr := arr.push enterStx
     for _ in [0:depth] do arr := arr.push funStx
-    arr := arr.push skipStx
+    arr := arr.push convStx
     let seq ← `(convSeq1Indented| $arr:conv*)
     match loc with
     | none => `(tactic| conv => $seq:convSeq1Indented)
@@ -213,8 +218,8 @@ public def insertEnterSyntax (locations : Array Lean.SubExpr.GoalsLocation) (goa
   | _ => throwError "You must select something in the goal or in the type of a local hypothesis."
   let expr ← instantiateMVars expr
   -- generate list of commands for `enter`
-  let path ← Path.ofSubExprPosArray expr subexprPos.toArray
-  pathToStx path fvarUserName?
+  let path ← Path.ofSubExprPos expr subexprPos
+  pathToStx (← `(conv| skip)) path fvarUserName?
 
 /-- Return the text for the link in the conv widget that inserts the replacement,
 and also return the replacement, and the range within the file to highlight after the
@@ -258,7 +263,7 @@ public protected def SelectionPanel.rpc :=
   mkSelectionPanelRPC insertEnter
     "Use shift-click to select one sub-expression in the goal or local context that you want to \
     zoom in on."
-    "Conv 🔍" (onlyGoal := false) (onlyOne := true)
+    "Conv 🔍️" (onlyGoal := false) (onlyOne := true)
 
 /-- The conv widget. -/
 @[widget_module]

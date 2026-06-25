@@ -35,9 +35,9 @@ namespace Matrix
 variable {n' : Type*} [DecidableEq n'] [Fintype n'] {R : Type*} [CommRing R]
 
 local notation "M" => Matrix n' n' R
-
-noncomputable instance : DivInvMonoid M :=
-  { show Monoid M by infer_instance, show Inv M by infer_instance with }
+noncomputable instance : DivInvMonoid (Matrix n' n' R) where
+  __ : Monoid M := inferInstance
+  __ : Inv M := inferInstance
 
 section NatPow
 
@@ -97,7 +97,7 @@ theorem inv_zpow (A : M) : ∀ n : ℤ, A⁻¹ ^ n = (A ^ n)⁻¹
 
 @[simp]
 theorem zpow_neg_one (A : M) : A ^ (-1 : ℤ) = A⁻¹ := by
-  convert DivInvMonoid.zpow_neg' 0 A
+  convert! DivInvMonoid.zpow_neg' 0 A
   simp only [zpow_one, Int.ofNat_zero, Int.natCast_succ, zpow_eq_pow, zero_add]
 
 @[simp]
@@ -186,9 +186,9 @@ theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det
     rw [zpow_negSucc, zpow_negSucc, nonsing_inv_apply _ hx', nonsing_inv_apply _ hy', SemiconjBy]
     refine (isRegular_of_isLeftRegular_det hy'.isRegular.left).left ?_
     dsimp only
-    rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, mul_smul,
-      mul_adjugate, ← Matrix.mul_assoc,
-      mul_smul (Y ^ _) (↑hy'.unit⁻¹ : R), mul_adjugate, smul_smul, smul_smul, hx'.val_inv_mul,
+    rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, Matrix.mul_smul,
+      mul_adjugate, ← Matrix.mul_assoc, Matrix.mul_smul (Y ^ _) (↑hy'.unit⁻¹ : R),
+      mul_adjugate, smul_smul, smul_smul, hx'.val_inv_mul,
       hy'.val_inv_mul, one_smul, Matrix.mul_one, Matrix.one_mul]
 
 theorem Commute.zpow_right {A B : M} (h : Commute A B) (m : ℤ) : Commute A (B ^ m) := by
@@ -249,8 +249,8 @@ theorem coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = (u : M) ^ 
 theorem zpow_ne_zero_of_isUnit_det [Nonempty n'] [Nontrivial R] {A : M} (ha : IsUnit A.det)
     (z : ℤ) : A ^ z ≠ 0 := by
   have := ha.det_zpow z
-  contrapose! this
-  rw [this, det_zero ‹_›]
+  contrapose this
+  rw [this, det_zero]
   exact not_isUnit_zero
 
 theorem zpow_sub {A : M} (ha : IsUnit A.det) (z1 z2 : ℤ) : A ^ (z1 - z2) = A ^ z1 / A ^ z2 := by

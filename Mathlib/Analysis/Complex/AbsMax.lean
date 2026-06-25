@@ -133,11 +133,12 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
   · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
-    rintro ζ (hζ : ‖ζ - z‖ = r)
-    rw [le_div_iff₀ hr, norm_smul, norm_inv, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
+    rintro ζ hζ
+    rw [le_div_iff₀ hr, norm_smul, norm_inv, mem_sphere_iff_norm.1 hζ, mul_comm,
+      mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  rw [norm_smul, norm_inv, ← div_eq_inv_mul]
+  rw [norm_smul, norm_inv, ← div_eq_inv_mul, ← dist_eq_norm]
   exact (div_lt_div_iff_of_pos_right hr).2 hw_lt
 
 /-!
@@ -422,7 +423,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
 theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U)
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
     EqOn f g (closure U) := by
-  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using H
+  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using! H
   refine fun z hz => norm_le_of_forall_mem_frontier_norm_le hU (hf.sub hg) (fun w hw => ?_) hz
   simp [hfg hw]
 

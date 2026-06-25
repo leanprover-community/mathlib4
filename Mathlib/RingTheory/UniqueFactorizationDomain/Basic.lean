@@ -27,7 +27,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   to get relatively prime elements.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -57,10 +57,7 @@ end WfDvdMonoid
 theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCancelMulZero α]
     (h : WellFoundedLT (Associates α)) : WfDvdMonoid α :=
   WfDvdMonoid.of_wfDvdMonoid_associates
-    ⟨by
-      convert h.wf
-      ext
-      exact Associates.dvdNotUnit_iff_lt⟩
+    ⟨by convert h.wf; exact Associates.dvdNotUnit_iff_lt⟩
 
 theorem WfDvdMonoid.iff_wellFounded_associates [CommMonoidWithZero α] [IsCancelMulZero α] :
     WfDvdMonoid α ↔ WellFoundedLT (Associates α) :=
@@ -284,6 +281,7 @@ open Multiset UniqueFactorizationMonoid
 
 variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unique' {p q : Multiset (Associates α)} :
     (∀ a ∈ p, Irreducible a) → (∀ a ∈ q, Irreducible a) → p.prod = q.prod → p = q := by
   apply Multiset.induction_on_multiset_quot p
@@ -344,7 +342,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
           _ = Multiset.card (Classical.choose (pf b h)) :=
             Multiset.card_eq_card_of_rel
             (prime_factors_unique ?_ (Classical.choose_spec (pf _ h)).1 ?_)
-        · convert (Classical.choose_spec (pf c cne0)).2.symm
+        · convert! (Classical.choose_spec (pf c cne0)).2.symm
           rw [con, Multiset.prod_zero]
         · intro x hadd
           rw [Multiset.mem_add] at hadd
@@ -389,7 +387,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
   obtain ⟨w, hp, u, h⟩ :=
     hα (e.symm a) fun h =>
       ha <| by
-        convert ← map_zero e
+        convert! ← map_zero e
         simp [← h]
   exact
     ⟨w.map e, fun b hb =>
@@ -417,7 +415,7 @@ theorem of_existsUnique_irreducible_factors [CommMonoidWithZero α] [IsCancelMul
     UniqueFactorizationMonoid α :=
   UniqueFactorizationMonoid.of_exists_prime_factors
     (by
-      convert eif using 7
+      convert! eif using 7
       simp_rw [irreducible_iff_prime_of_existsUnique_irreducible_factors eif uif])
 
 variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]

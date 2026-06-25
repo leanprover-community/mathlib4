@@ -1,4 +1,5 @@
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+import Mathlib.CategoryTheory.Monoidal.Mon
 
 open CategoryTheory MonoidalCategory
 open scoped MonObj

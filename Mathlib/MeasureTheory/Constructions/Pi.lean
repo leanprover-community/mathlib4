@@ -74,7 +74,6 @@ variable [Fintype ι] {m : ∀ i, OuterMeasure (α i)}
   It is defined by taking the image of the set under all projections, and taking the product
   of the measures of these images.
   For measurable boxes it is equal to the correct measure. -/
-@[simp]
 def piPremeasure (m : ∀ i, OuterMeasure (α i)) (s : Set (∀ i, α i)) : ℝ≥0∞ :=
   ∏ i, m i (eval i '' s)
 
@@ -150,12 +149,14 @@ theorem tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (X i)) :
     Measure.tprod (i :: l) μ = (μ i).prod (Measure.tprod l μ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (Measure.tprod l μ) := by
   induction l with
   | nil => rw [tprod_nil]; infer_instance
   | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (X i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
@@ -202,9 +203,9 @@ theorem pi_caratheodory :
   intro t
   simp_rw [piPremeasure]
   refine Finset.prod_add_prod_le' (Finset.mem_univ i) ?_ ?_ ?_
-  · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs, le_refl]
+  · simp [image_inter_preimage, image_sdiff_preimage, measure_inter_add_sdiff _ hs]
   · rintro j - _; gcongr; apply inter_subset_left
-  · rintro j - _; gcongr; apply diff_subset
+  · rintro j - _; gcongr; apply sdiff_subset
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.
   It is defined to be measure corresponding to `MeasureTheory.OuterMeasure.pi`. -/
@@ -288,7 +289,7 @@ theorem pi'_eq_pi [Encodable ι] [∀ i, SigmaFinite (μ i)] : pi' μ = Measure.
   Eq.symm <| pi_eq fun s _ => pi'_pi μ s
 
 @[simp]
-theorem pi_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
+theorem pi_pi [∀ i, SigmaFinite (μ i)] (s : (i : ι) → Set (α i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
   haveI : Encodable ι := Fintype.toEncodable ι
   rw [← pi'_eq_pi, pi'_pi]
@@ -311,6 +312,11 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsFiniteMeasur
 instance pi.instIsProbabilityMeasure [∀ i, IsProbabilityMeasure (μ i)] :
     IsProbabilityMeasure (Measure.pi μ) :=
   ⟨by simp only [Measure.pi_univ, measure_univ, Finset.prod_const_one]⟩
+
+@[simp]
+theorem pi_pi_finset [∀ i, IsProbabilityMeasure (μ i)] (f : (i : ι) → Set (α i)) (s : Finset ι) :
+    Measure.pi μ ((s : Set ι).pi f) = ∏ i ∈ s, μ i (f i) := by
+  classical simp [← Set.univ_pi_ite, pi_pi, apply_ite]
 
 instance {α : ι → Type*} [∀ i, MeasureSpace (α i)]
     [∀ i, IsProbabilityMeasure (volume : Measure (α i))] :
@@ -404,11 +410,12 @@ lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (
   rw [Measure.pi_map_eval, Finset.prod_eq_one, one_smul]
   exact fun _ _ ↦ measure_univ
 
-theorem pi_hyperplane (i : ι) [NoAtoms (μ i)] (x : α i) :
+theorem pi_hyperplane (i : ι) [NullSingletonClass (μ i)] (x : α i) :
     Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
   show Measure.pi μ (eval i ⁻¹' {x}) = 0 from pi_eval_preimage_null _ (measure_singleton x)
 
-theorem ae_eval_ne (i : ι) [NoAtoms (μ i)] (x : α i) : ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
+theorem ae_eval_ne (i : ι) [NullSingletonClass (μ i)] (x : α i) :
+    ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
   compl_mem_ae_iff.2 (pi_hyperplane μ i x)
 
 theorem restrict_pi_pi (s : (i : ι) → Set (α i)) :
@@ -443,23 +450,6 @@ theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s 
     Set.pi I s =ᵐ[Measure.pi μ] Set.pi I t :=
   (ae_le_set_pi fun i hi => (h i hi).le).antisymm (ae_le_set_pi fun i hi => (h i hi).symm.le)
 
-lemma pi_map_piCongrLeft [hι' : Fintype ι'] (e : ι ≃ ι') {β : ι' → Type*}
-    [∀ i, MeasurableSpace (β i)] (μ : (i : ι') → Measure (β i)) [∀ i, SigmaFinite (μ i)] :
-    (Measure.pi fun i ↦ μ (e i)).map (MeasurableEquiv.piCongrLeft (fun i ↦ β i) e)
-      = Measure.pi μ := by
-  let e_meas : ((b : ι) → β (e b)) ≃ᵐ ((a : ι') → β a) :=
-    MeasurableEquiv.piCongrLeft (fun i ↦ β i) e
-  refine Measure.pi_eq (fun s _ ↦ ?_) |>.symm
-  rw [e_meas.measurableEmbedding.map_apply]
-  let s' : (i : ι) → Set (β (e i)) := fun i ↦ s (e i)
-  have : e_meas ⁻¹' pi univ s = pi univ s' := by
-    ext x
-    simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, s']
-    refine (e.forall_congr ?_).symm
-    intro i
-    rw [MeasurableEquiv.piCongrLeft_apply_apply e x i]
-  simpa [this] using Fintype.prod_equiv _ (fun _ ↦ (μ _) (s' _)) _ (congrFun rfl)
-
 lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
     (μ : (i : Option ι) → Measure (β i)) [∀ (i : Option ι), SigmaFinite (μ i)] :
     ((Measure.pi fun i ↦ μ (some i)).prod (μ none)).map
@@ -478,7 +468,7 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
 
 section Intervals
 
-variable [∀ i, PartialOrder (α i)] [∀ i, NoAtoms (μ i)]
+variable [∀ i, PartialOrder (α i)] [∀ i, NullSingletonClass (μ i)]
 
 theorem pi_Iio_ae_eq_pi_Iic {s : Set ι} {f : ∀ i, α i} :
     (pi s fun i => Iio (f i)) =ᵐ[Measure.pi μ] pi s fun i => Iic (f i) :=
@@ -526,18 +516,27 @@ theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
 
 end Intervals
 
-/-- If one of the measures `μ i` has no atoms, them `Measure.pi µ`
-has no atoms. The instance below assumes that all `μ i` have no atoms. -/
-theorem pi_noAtoms (i : ι) [NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
+/-- If one of the measures `μ i` has value zero on singeltons, them `Measure.pi µ`
+has value zero on singletons. The instance below assumes that all `μ i` have value zero on
+singletons. -/
+theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :
+    NullSingletonClass (Measure.pi μ) :=
   ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
 
-instance pi_noAtoms' [h : Nonempty ι] [∀ i, NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
-  h.elim fun i => pi_noAtoms i
+@[deprecated (since := "2026-06-09")]
+alias pi_noAtoms := pi_nullSingletonClass
+
+instance pi_nullSingletonClass' [h : Nonempty ι] [∀ i, NullSingletonClass (μ i)] :
+    NullSingletonClass (Measure.pi μ) :=
+  h.elim fun i => pi_nullSingletonClass i
+
+@[deprecated (since := "2026-06-09")]
+alias pi_noAtoms' := pi_nullSingletonClass'
 
 instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
-    [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NoAtoms (volume : Measure (α i))] :
-    NoAtoms (volume : Measure (∀ i, α i)) :=
-  pi_noAtoms'
+    [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NullSingletonClass (volume : Measure (α i))] :
+    NullSingletonClass (volume : Measure (∀ i, α i)) :=
+  pi_nullSingletonClass'
 
 instance pi.isLocallyFiniteMeasure
     [∀ i, TopologicalSpace (α i)] [∀ i, IsLocallyFiniteMeasure (μ i)] :
@@ -748,6 +747,12 @@ theorem volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f) volume volume :=
   measurePreserving_piCongrLeft (fun _ ↦ volume) f
 
+lemma Measure.pi_map_piCongrLeft (e : ι ≃ ι') {β : ι' → Type*} [∀ i, MeasurableSpace (β i)]
+    (μ : (i : ι') → Measure (β i)) [∀ i, SigmaFinite (μ i)] :
+    (Measure.pi fun i ↦ μ (e i)).map (MeasurableEquiv.piCongrLeft (fun i ↦ β i) e) =
+      Measure.pi μ :=
+  (measurePreserving_piCongrLeft (α := fun i ↦ β i) μ e).map_eq
+
 theorem measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α]
     [MeasurableSpace β] [Fintype γ] (μ : γ → Measure α) (ν : γ → Measure β) [∀ i, SigmaFinite (μ i)]
     [∀ i, SigmaFinite (ν i)] :
@@ -882,7 +887,7 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype �
       (Measure.dirac ()) := by
   set e := MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit
   refine ⟨e.measurable, ?_⟩
-  rw [Measure.pi_of_empty, Measure.map_dirac e.measurable]
+  rw [Measure.pi_of_empty, Measure.map_dirac' e.measurable]
 
 theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype ι] [IsEmpty ι]
     [∀ i, MeasureSpace (α i)] :
@@ -932,8 +937,9 @@ theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype
     MeasurePreserving (MeasurableEquiv.arrowCongr' eα eβ) (Measure.pi fun i ↦ μ i)
       (Measure.pi fun i ↦ ν i) := by
   classical
-  convert (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
-    (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
+  convert!
+    (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
+      (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
   simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,
     comp_def, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft,
     Equiv.piCongrLeft, Equiv.symm_symm, Equiv.piCongrLeft', eq_rec_constant, Equiv.coe_fn_symm_mk]
