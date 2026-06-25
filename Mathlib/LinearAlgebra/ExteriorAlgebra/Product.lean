@@ -107,12 +107,9 @@ lemma prodEquivTensor_forward_comp_inverse :
 /-- The equivalence `ExteriorAlgebra R (M × N) ≃ₐ[R] ExteriorAlgebra R M ⊗ ExteriorAlgebra R N`,
 with the right side given graded multiplication. -/
 noncomputable def prodEquivTensor :
-    ExteriorAlgebra R (M × N) ≃ₐ[R]
-      ((fun (i : ℕ) => ⋀[R]^i M) ᵍ⊗[R] (fun (i : ℕ) => ⋀[R]^i N)) where
-  __ := prodEquivTensorForward R M N
-  invFun := prodEquivTensorInverse R M N
-  left_inv x := AlgHom.congr_fun (prodEquivTensor_inverse_comp_forward R M N) x
-  right_inv x := AlgHom.congr_fun (prodEquivTensor_forward_comp_inverse R M N) x
+    ExteriorAlgebra R (M × N) ≃ₐ[R] ((fun (i : ℕ) => ⋀[R]^i M) ᵍ⊗[R] (fun (i : ℕ) => ⋀[R]^i N)) :=
+  AlgEquiv.ofAlgHom (prodEquivTensorForward R M N) (prodEquivTensorInverse R M N)
+    (prodEquivTensor_forward_comp_inverse R M N) (prodEquivTensor_inverse_comp_forward R M N)
 
 lemma prodEquivTensor_symm_apply_tmul_ιMulti (i j : ℕ) (m : Fin i → M) (n : Fin j → N) :
     (prodEquivTensor R M N).symm (ιMulti R i m ᵍ⊗ₜ[R] ιMulti R j n) =
