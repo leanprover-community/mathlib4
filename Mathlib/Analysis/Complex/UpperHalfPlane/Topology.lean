@@ -69,7 +69,7 @@ instance : ContractibleSpace ℍ := by
   rw [isEmbedding_coe.toHomeomorph.trans (.setCongr range_coe) |>.contractibleSpace_iff]
   exact (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
-instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
+instance : LocallyPathConnectedSpace ℍ := isOpenEmbedding_coe.locallyPathConnectedSpace
 
 instance : NoncompactSpace ℍ where
   noncompact_univ h := by
