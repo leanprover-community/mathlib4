@@ -53,12 +53,13 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
           (DerivedCategory.singleFunctorIsoCompQ C 0).inv.app Y)) (zero_add _)) (add_zero _) := by
   change SmallShiftedHom.equiv _ _ ((CohomologyClass.mk x).toSmallShiftedHom.comp _ _) = _
   simp only [SmallShiftedHom.equiv_comp, CohomologyClass.equiv_toSmallShiftedHom_mk,
-    SmallShiftedHom.equiv_mk₀Inv, isoOfHom, asIso_inv, Functor.comp_obj,
+    SmallShiftedHom.equiv_mk₀Inv, isoOfHom, asIso_inv,
     DerivedCategory.singleFunctorIsoCompQ, Iso.refl_hom, NatTrans.id_app, Iso.refl_inv,
     ShiftedHom.mk₀_id_comp]
   congr
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma extEquivCohomologyClass_symm_add
     (x y : CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n) :
@@ -255,6 +256,6 @@ lemma extMk_comp_mk₀ {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n +
   rw [Category.assoc, ← NatTrans.naturality, ← Category.assoc, ← Category.assoc]
   congr 1
   simpa only [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq,
-    Functor.map_comp] using DerivedCategory.Q.congr_map φ.ι'_comp_hom'.symm
+    Functor.map_comp] using! DerivedCategory.Q.congr_map φ.ι'_comp_hom'.symm
 
 end CategoryTheory.InjectiveResolution

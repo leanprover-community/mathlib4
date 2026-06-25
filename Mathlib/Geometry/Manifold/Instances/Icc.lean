@@ -76,10 +76,10 @@ lemma contMDiff_subtype_coe_Icc : CMDiff n (fun (z : Icc x y) ↦ (z : ℝ)) := 
   suffices ContDiffWithinAt ℝ n _ (range ↑(𝓡∂ 1)) _ by simpa
   split_ifs with hz
   · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
-      simp only [IccLeftChart, Fin.isValue, OpenPartialHomeomorph.mk_coe_symm,
+      simp only [IccLeftChart, Fin.isValue, OpenPartialHomeomorph.coe_mk_symm,
         PartialEquiv.coe_symm_mk, modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm,
         Function.comp_def, Function.update_self, ModelWithCorners.mk_coe,
-        OpenPartialHomeomorph.mk_coe]
+        OpenPartialHomeomorph.coe_mk]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ z 0 + x) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
@@ -92,10 +92,10 @@ lemma contMDiff_subtype_coe_Icc : CMDiff n (fun (z : Icc x y) ↦ (z : ℝ)) := 
     linarith
   · simp only [not_lt] at hz
     simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
-      simp only [IccRightChart, Fin.isValue, OpenPartialHomeomorph.mk_coe_symm,
+      simp only [IccRightChart, Fin.isValue, OpenPartialHomeomorph.coe_mk_symm,
         PartialEquiv.coe_symm_mk, modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm,
         Function.comp_def, Function.update_self, ModelWithCorners.mk_coe,
-        OpenPartialHomeomorph.mk_coe]
+        OpenPartialHomeomorph.coe_mk]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ y - z 0) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
@@ -143,7 +143,7 @@ lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
 lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
     CMDiff[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) ↔ CMDiff n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
-  convert hf.comp_contMDiff (contMDiff_subtype_coe_Icc (x := x) (y := y)) (fun z ↦ z.2)
+  convert! hf.comp_contMDiff (contMDiff_subtype_coe_Icc (x := x) (y := y)) (fun z ↦ z.2)
   ext z
   simp
 
@@ -153,7 +153,7 @@ lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
     fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.2) (by simp)⟩
   have A := contMDiff_subtype_coe_Icc (x := x) (y := y) (n := n) w
   rw [← contMDiffWithinAt_univ] at A ⊢
-  convert hf.comp _ A (fun z hz ↦ z.2)
+  convert! hf.comp _ A (fun z hz ↦ z.2)
   ext z
   simp
 
@@ -162,7 +162,7 @@ lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y}
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
   · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) w).mdifferentiableAt one_ne_zero
     rw [← mdifferentiableWithinAt_univ] at A ⊢
-    convert hf.comp _ A (fun z hz ↦ z.2)
+    convert! hf.comp _ A (fun z hz ↦ z.2)
     ext z
     simp
   · have := (contMDiffOn_projIcc (x := x) (y := y) w w.2).mdifferentiableWithinAt one_ne_zero
@@ -186,11 +186,11 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
   · simp [hw]
   · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt one_ne_zero
   · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
   have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
   rw [projIcc_of_mem _ w.2]
   congr 1
-  convert mfderivWithin_projIcc_one w.2
+  convert! mfderivWithin_projIcc_one w.2
 
 lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
     mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by

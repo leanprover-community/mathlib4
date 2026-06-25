@@ -52,6 +52,7 @@ namespace IsFlasque
 
 attribute [instance low] IsFlasque.epi
 
+set_option backward.defeqAttrib.useBackward true in
 instance pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
     IsFlasque (f _* F) where
   epi {U V} i := by
@@ -162,7 +163,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
           refine (eq_app_of_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
           rw [Fin.forall_fin_two]
           refine ⟨tcomp.symm, ?_⟩
-          simp only [Fin.isValue, Functor.comp_obj, map_add, homOfLE_leOfHom, sf, f]
+          simp only [Fin.isValue, map_add, homOfLE_leOfHom, sf, f]
           have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
             rw [← NatTrans.comp_app, ← ObjectProperty.FullSubcategory.comp_hom, S.zero]
             rfl
@@ -185,3 +186,32 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
     exact CategoryTheory.epi_of_epi (S.g.1.app U) (S.X₃.obj.map i)
 
 end TopCat.Sheaf.IsFlasque
+
+set_option backward.defeqAttrib.useBackward true in
+/--
+If the unique map from `A` to the terminal object is an epimorphism, then the skyscraper sheaf
+valued in `A` supported at an arbitrary point is a flasque sheaf.
+-/
+theorem isFlasque_skyscraperSheaf_of_epi_from {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasTerminal C]
+    [Epi <| terminalIsTerminal.from A] :
+    (skyscraperSheaf p₀ A).IsFlasque where
+  epi {U V} r := by
+    by_cases h1 : p₀ ∈ unop U
+    · by_cases h2 : p₀ ∈ unop V
+      · simp_all only [skyscraperSheaf_obj_obj, skyscraperSheaf_obj_map, ↓reduceDIte]
+        infer_instance
+      · simp
+        grind
+    · have h2 : p₀ ∉ unop V := fun hV => h1 (r.unop.le hV)
+      have := isIso_of_isTerminal (isTerminalSkyscraperSheafObjObjOfNotMem h1)
+        (isTerminalSkyscraperSheafObjObjOfNotMem h2) ((skyscraperSheaf p₀ A).obj.map r)
+      infer_instance
+
+/--
+If the target category has a zero object, then any skyscraper sheaf valued in this category is a
+flasque sheaf.
+-/
+theorem isFlasque_skyscraperSheaf_of_hasZeroObject {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasZeroObject C] :
+    (skyscraperSheaf p₀ A).IsFlasque := isFlasque_skyscraperSheaf_of_epi_from p₀ A

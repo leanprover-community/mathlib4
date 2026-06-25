@@ -85,7 +85,7 @@ private lemma re_herglotzRieszKernel_le_aux (φ θ r R : ℝ) (h₁ : 0 < r) (h�
   have h_subst :
       (R ^ 2 - r ^ 2) / (R ^ 2 + r ^ 2 - 2 * R * r * Real.cos (θ - φ)) ≤ (R + r) / (R - r) := by
     rw [div_le_div_iff₀] <;> nlinarith [mul_pos h₁ (sub_pos.mpr h₂)]
-  convert h_subst using 1
+  convert h_subst
   rw [← div_eq_mul_inv, poissonKernel_eq_re_herglotzRieszKernel_aux]
   suffices (R * R * normSq (cexp (θ * I)) + r * r * normSq (cexp (φ * I)) -
       2 * (R * Real.cos θ * (r * Real.cos φ) + R * Real.sin θ * (r * Real.sin φ))) =
@@ -154,7 +154,6 @@ private lemma circleAverage_re_smul_on_ball_zero_aux {φ θ : ℝ} {r : ℝ} :
 ## Integral Formulas
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 -- Version of `DiffContOnCl.circleAverage_re_smul` in case where the center of the ball is zero.
 private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
     (hf : DiffContOnCl ℂ f (ball 0 R)) (hw : w ∈ ball 0 R) :

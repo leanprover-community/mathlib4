@@ -258,7 +258,7 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
 @[continuity]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
-  h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq
+  h.quotient_liftOn' <| by convert! h.image_eq_of_connectedComponent_eq
 
 @[simp]
 theorem Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :
@@ -306,7 +306,7 @@ theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSp
 lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
     (hf : IsCoinducing f) :
     IsCoinducing hf.continuous.connectedComponentsMap := by
-  rw [← ConnectedComponents.isQuotientMap_coe.of_comp_iff]
+  rw [← ConnectedComponents.isQuotientMap_coe.isCoinducing.of_comp_iff]
   exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
 
 @[simp]
@@ -353,3 +353,12 @@ theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
   · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
   · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hT hc hTm hx' hx⟩
+
+theorem IsPreconnected.isDiscrete_iff_subsingleton {S : Set α} (hS : IsPreconnected S) :
+    IsDiscrete S ↔ S.Subsingleton where
+  mp h := by
+    have : DiscreteTopology S := isDiscrete_iff_discreteTopology.mp h
+    have : PreconnectedSpace S := isPreconnected_iff_preconnectedSpace.mp hS
+    have : Subsingleton S := subsingleton_of_preconnected_totallyDisconnected
+    simpa using this
+  mpr h := h.isDiscrete

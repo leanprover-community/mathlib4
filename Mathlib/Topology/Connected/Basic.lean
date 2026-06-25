@@ -200,6 +200,26 @@ theorem IsConnected.iUnion_of_reflTransGen {ι : Type*} [Nonempty ι] {s : ι �
   ⟨nonempty_iUnion.2 <| Nonempty.elim ‹_› fun i : ι => ⟨i, (H _).nonempty⟩,
     IsPreconnected.iUnion_of_reflTransGen (fun i => (H i).isPreconnected) K⟩
 
+lemma IsPreconnected.transGen_of_iUnion {ι : Type*} {s : ι → Set α}
+    (hs : IsPreconnected (⋃ n, s n)) (hs' : ∀ i, IsOpen (s i)) (i j : ι) (hi : (s i).Nonempty)
+    (hj : (s j).Nonempty) : TransGen (fun a b ↦ (s a ∩ s b).Nonempty) i j := by
+  by_contra hij
+  let S : Set ι := {k | TransGen (fun a b ↦ (s a ∩ s b).Nonempty) i k}
+  let U : Set α := ⋃ k ∈ S, s k
+  let V : Set α := ⋃ k ∈ Sᶜ, s k
+  have hsplit : (⋃ n, s n) = U ∪ V := iSup_split s (· ∈ S)
+  obtain ⟨a, ha⟩ := hi
+  obtain ⟨b, hb⟩ := hj
+  let hi_S : i ∈ S := Relation.TransGen.single ⟨a, ha, ha⟩
+  have hUne : ((⋃ n, s n) ∩ U).Nonempty := ⟨a, mem_iUnion_of_mem i ha, mem_iUnion₂_of_mem hi_S ha⟩
+  have hVne : ((⋃ n, s n) ∩ V).Nonempty := ⟨b, mem_iUnion_of_mem j hb, mem_iUnion₂_of_mem hij hb⟩
+  obtain ⟨x, -, hxU, hxV⟩ := hs U V (isOpen_biUnion fun i a ↦ hs' i)
+    (isOpen_biUnion fun i a ↦ hs' i) hsplit.le hUne hVne
+  simp only [mem_iUnion, exists_prop, mem_compl_iff, U, V] at hxU hxV
+  obtain ⟨k, hk, hxk⟩ := hxU
+  obtain ⟨l, hl, hxl⟩ := hxV
+  exact hl (hk.tail ⟨x, hxk, hxl⟩)
+
 section SuccOrder
 
 open Order
@@ -611,7 +631,7 @@ theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=
   isIrreducible_irreducibleComponent.isConnected.subset_connectedComponent mem_irreducibleComponent
 
-@[mono]
+@[gcongr, mono]
 theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
     connectedComponentIn F x ⊆ connectedComponentIn G x := by
   by_cases hx : x ∈ F
@@ -629,6 +649,7 @@ class PreconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
 export PreconnectedSpace (isPreconnected_univ)
 
 /-- A connected space is a nonempty one where there is no non-trivial open partition. -/
+@[wikidata Q1491995]
 class ConnectedSpace (α : Type u) [TopologicalSpace α] : Prop extends PreconnectedSpace α where
   /-- A connected space is nonempty. -/
   toNonempty : Nonempty α
