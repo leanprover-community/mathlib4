@@ -100,7 +100,7 @@ def nhdsMap (K : Compacts β) (L : K.compactNhds) : (properPreimage pf K).compac
   ⟨properPreimage pf L,
   by
     obtain ⟨U,hU1,hU2⟩ := exists_open_nhds_sub_compact_nhds L
-    refine (compactNhds_of_existsOpenSubsetBetween _ ?_ ?_ ?_).property
+    refine (compactNhdsOfExistsOpenSubsetBetween _ ?_ ?_ ?_).property
     · exact ((Opens.map (TopCat.ofHom ( ContinuousMap.mk f pf.toContinuous))).obj U)
     · simp only [coe_properPreimage]
       exact Set.preimage_mono hU1-- pareil que dans properMap_mono avec showtrem
@@ -127,7 +127,7 @@ instance [T2Space β] [LocallyCompactSpace β] (K : Compacts β) : (nhdsMap_mono
     (IsClosedMap.isOpen_kernImage (IsProperMap.isClosedMap pf) U.isOpen)
     (Set.subset_kernImage_iff.2 hU1)
   use ⟨⟨M,hM1⟩,
-    (compactNhds_of_existsOpenSubsetBetween _ ⟨interior M, isOpen_interior⟩
+    (compactNhdsOfExistsOpenSubsetBetween _ ⟨interior M, isOpen_interior⟩
     hM2 interior_subset).property⟩
   exact (Set.subset_kernImage_iff.1 hM3).trans hU2
 

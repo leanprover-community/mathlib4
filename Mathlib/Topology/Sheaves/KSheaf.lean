@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Sets.BaseChangeNhds
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Ksheaves
