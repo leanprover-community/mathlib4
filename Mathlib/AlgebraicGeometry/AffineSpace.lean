@@ -6,10 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Algebra.MvPolynomial.Nilpotent
+public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
-public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Affine space
@@ -70,15 +69,13 @@ instance over : 𝔸(n; S).CanonicallyOver S where
 /-- The map from the affine `n`-space over `S` to the integral model `Spec ℤ[n]`. -/
 def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
 
-variable {X : Scheme.{u}}
-
 set_option backward.defeqAttrib.useBackward true in
 /--
 Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections.
 Use `homOverEquiv` instead.
 -/
 @[simps]
-def toSpecMvPolyIntEquiv : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
+def toSpecMvPolyIntEquiv {X : Scheme.{u}} : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
   toFun f i := f.appTop ((Scheme.ΓSpecIso ℤ[n]).inv (.X i))
   invFun v := X.toSpecΓ ≫ Spec.map
     (CommRingCat.ofHom (MvPolynomial.eval₂Hom ((algebraMap ℤ _).comp ULift.ringEquiv.toRingHom) v))
@@ -106,10 +103,10 @@ section homOfVector
 variable {n S}
 
 /-- The morphism `X ⟶ 𝔸(n; S)` given by a `X ⟶ S` and a choice of `n`-coordinate functions. -/
-def homOfVector (f : X ⟶ S) (v : n → Γ(X, ⊤)) : X ⟶ 𝔸(n; S) :=
+def homOfVector {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤)) : X ⟶ 𝔸(n; S) :=
   pullback.lift f ((toSpecMvPolyIntEquiv n).symm v) (by simp)
 
-variable (f : X ⟶ S) (v : n → Γ(X, ⊤))
+variable {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤))
 
 @[reassoc (attr := simp)]
 lemma homOfVector_over : homOfVector f v ≫ 𝔸(n; S) ↘ S = f :=
@@ -144,15 +141,15 @@ lemma comp_homOfVector {X Y : Scheme} (v : n → Γ(Y, ⊤)) (f : X ⟶ Y) (g : 
 
 end homOfVector
 
-variable [X.Over S]
-
 variable {n}
 
-instance (v : n → Γ(X, ⊤)) : (homOfVector (X ↘ S) v).IsOver S where
+instance {X : Scheme.{u}} [X.Over S] (v : n → Γ(X, ⊤)) :
+    (homOfVector (X ↘ S) v).IsOver S where
 
 /-- `S`-morphisms into `Spec 𝔸(n; S)` are equivalent to the choice of `n` global sections. -/
 @[simps]
-def homOverEquiv : { f : X ⟶ 𝔸(n; S) // f.IsOver S } ≃ (n → Γ(X, ⊤)) where
+def homOverEquiv {X : Scheme.{u}} [X.Over S] :
+    { f : X ⟶ 𝔸(n; S) // f.IsOver S } ≃ (n → Γ(X, ⊤)) where
   toFun f i := f.1.appTop (coord S i)
   invFun v := ⟨homOfVector (X ↘ S) v, inferInstance⟩
   left_inv f := by
@@ -392,6 +389,38 @@ lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
     (SpecIso n R).inv, SpecIso_inv_over]
   exact MvPolynomial.isOpenMap_comap_C
 
+instance : GeometricallyIrreducible (𝔸(n; S) ↘ S) := by
+  rw [geometricallyIrreducible_iff]
+  introv K h
+  apply ObjectProperty.prop_of_iso _
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+  infer_instance
+
+instance [IrreducibleSpace S] : IrreducibleSpace 𝔸(n; S) :=
+  GeometricallyIrreducible.irreducibleSpace (𝔸(n; S) ↘ S) (isOpenMap_over S)
+
+instance : GeometricallyReduced (𝔸(n; S) ↘ S) := by
+  rw [geometricallyReduced_iff]
+  introv K h
+  apply ObjectProperty.prop_of_iso _
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+  infer_instance
+
+instance [h : IsReduced S] : IsReduced 𝔸(n; S) := by
+  wlog hS : ∃ R, S = Spec R
+  · rw [IsReduced.iff_of_openCover _ (S.affineCover.pullback₁ (𝔸(n; S) ↘ S))]
+    intro i
+    have : IsReduced 𝔸(n; S.affineCover.X i) := this _ ⟨_, rfl⟩
+    exact isReduced_of_isOpenImmersion ((isPullback_map _).isoPullback.inv)
+  obtain ⟨R, rfl⟩ := hS
+  rw [affine_isReduced_iff] at h
+  exact isReduced_of_isOpenImmersion (SpecIso n R).hom
+
+instance : GeometricallyIntegral (𝔸(n; S) ↘ S) :=
+  .of_geometricallyReduced_of_geometricallyIrreducible _
+
+instance [IsIntegral S] : IsIntegral 𝔸(n; S) := isIntegral_of_irreducibleSpace_of_isReduced _
+
 open MorphismProperty in
 instance [IsEmpty n] : IsIso (𝔸(n; S) ↘ S) := pullback_fst
     (P := isomorphisms _) _ _ <| by
@@ -428,7 +457,7 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
     have : (rename fun _ ↦ i).comp (uniqueAlgEquiv.{_, u} _ PUnit).symm.toAlgHom p = 0 := by
       simp [← hp', ← algebraMap_eq]
     rw [AlgHom.comp_apply, map_eq_zero_iff _ (rename_injective _ (fun _ _ _ ↦ rfl))] at this
-    simp only [AlgEquiv.coe_algHom, EmbeddingLike.map_eq_zero_iff] at this
+    simp only [AlgEquiv.coe_toAlgHom, EmbeddingLike.map_eq_zero_iff] at this
     simp [this] at hp
   · rintro (_ | _) <;> infer_instance
 

@@ -164,13 +164,12 @@ def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generator
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
-def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  (mapFreeIso F P.generators.I η).hom ≫ F.map (P.generators.π)
+abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M := P.generators.mapFreeHom F η
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
-  simp only [mapRelations, mapGenerators, Category.assoc, Iso.inv_hom_id_assoc,
+  simp only [mapRelations, GeneratingSections.mapFreeHom, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -185,7 +184,7 @@ def Presentation.map : Presentation (F.obj M) :=
       (parallelPairIsoMk (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
         (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
-      <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
+      <;> simp [Presentation.mapRelations, GeneratingSections.mapFreeHom, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
     (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
@@ -283,6 +282,81 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
     obtain ⟨σ, _⟩ := IsFinitePresentation.exists_quasicoherentData M
     exact ⟨σ.localGeneratorsData, inferInstance⟩
 
+section map
+
+variable {D : Type u₂} [Category.{v₂, u₂} D] {K : GrothendieckTopology D}
+  {S : Sheaf K RingCat.{u}} [∀ (X : D), (K.over X).WEqualsLocallyBijective AddCommGrpCat]
+  [∀ (X : D), (K.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+
+variable [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [K.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ (X : D), HasSheafify (K.over X) AddCommGrpCat.{u}]
+
+variable (G : D ⥤ C) [G.IsContinuous K J] [G.IsCocontinuous K J]
+  (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} K J).obj R)
+
+/-- The pushforward of `SheafOfModules.QuasicoherentData` along a continuous
+and cocontinuous functor. -/
+-- TODO: Remove the continuous assumption on `Over.post` here and below.
+@[simps I X]
+noncomputable def QuasicoherentData.pushforward (η : (pushforward φ).obj (unit R) ≅ unit S)
+    [∀ (X : D), (Over.post G).IsContinuous (K.over X) (J.over _)]
+    (h : ∀ (X : D) (Y : C) (f : G.obj X ⟶ Y),
+      PreservesColimitsOfSize.{u, u} <|
+      pushforward.{u} (R := (R.over Y)) (F := Over.post (X := X) G ⋙ Over.map f)
+        (((Over.forget X).sheafPushforwardContinuous RingCat.{u} (K.over X) K).map φ))
+    {M : SheafOfModules.{u} R} (P : M.QuasicoherentData) :
+    QuasicoherentData ((pushforward φ).obj M) where
+  I := Σ (X : D) (i : P.I), G.obj X ⟶ P.X i
+  X i := i.1
+  coversTop Y := by
+    refine K.superset_covering ?_ <| G.cover_lift K _ (P.coversTop (G.obj Y))
+    intro Z g ⟨i, ⟨v⟩⟩
+    exact ⟨⟨Z, i, v⟩, ⟨𝟙 _⟩⟩
+  presentation i := by
+    letI overS : SheafOfModules.{u} S ⥤ SheafOfModules.{u} (S.over i.1) :=
+      SheafOfModules.pushforward (𝟙 _)
+    letI G' := Over.post (X := i.1) G ⋙ Over.map i.2.2
+    letI ψ : S.over i.1 ⟶
+        (G'.sheafPushforwardContinuous RingCat.{u} (K.over i.1) (J.over (P.X i.2.1))).obj
+          (R.over (P.X i.2.1)) :=
+      ((Over.forget i.1).sheafPushforwardContinuous RingCat.{u} (K.over i.1) K).map φ
+    letI e : (SheafOfModules.pushforward ψ).obj (unit (R.over (P.X i.snd.fst))) ≅
+      unit (S.over i.fst) := overS.mapIso η
+    haveI : PreservesColimitsOfSize.{u, u, _} (SheafOfModules.pushforward ψ) := h _ _ _
+    exact (P.presentation i.2.1).map (SheafOfModules.pushforward ψ) e.symm
+
+lemma isQuasicoherent_pushforward (η : (pushforward φ).obj (unit R) ≅ unit S)
+    [∀ (X : D), (Over.post G).IsContinuous (K.over X) (J.over _)]
+    (h : ∀ (X : D) (Y : C) (f : G.obj X ⟶ Y),
+      PreservesColimitsOfSize.{u, u} <|
+      pushforward.{u} (R := (R.over Y)) (F := Over.post (X := X) G ⋙ Over.map f)
+        (((Over.forget X).sheafPushforwardContinuous RingCat.{u} (K.over X) K).map φ))
+    {M : SheafOfModules.{u} R} [IsQuasicoherent M] :
+    IsQuasicoherent ((pushforward φ).obj M) :=
+  IsQuasicoherent.nonempty_quasicoherentData.some.pushforward G φ η h |>.isQuasicoherent
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isQuasicoherent_pushforward_of_isLeftAdjoint (η : (pushforward φ).obj (unit R) ≅ unit S)
+    [G.IsLeftAdjoint] [IsIso φ]
+    [∀ X, Functor.IsContinuous (Over.post (X := X) G) (K.over _) (J.over _)]
+    [HasPullbacks C] [HasPullbacks D]
+    {M : SheafOfModules.{u} R} [IsQuasicoherent M] :
+    IsQuasicoherent ((pushforward φ).obj M) := by
+  apply +allowSynthFailures isQuasicoherent_pushforward G φ η _
+  intro X Y f
+  let G' := Over.post (X := X) G ⋙ Over.map f
+  have : G'.IsContinuous (K.over X) (J.over Y) := Functor.isContinuous_comp _ _ _ (J.over _) _
+  have : G'.IsCocontinuous (K.over X) (J.over Y) := isCocontinuous_comp _ _ _ (J.over _)
+  let a : S.over X ⟶
+      (G'.sheafPushforwardContinuous RingCat.{u} (K.over X) (J.over Y)).obj (R.over Y) :=
+    ((Over.forget X).sheafPushforwardContinuous RingCat.{u} (K.over X) K).map φ
+  have : (pushforward.{u} a).IsLeftAdjoint := isLeftAdjoint_pushforward_of_isIso a
+  infer_instance
+
+end map
+
 end
 
 noncomputable section
@@ -307,7 +381,7 @@ def Presentation.quasicoherentData {M : SheafOfModules.{u} R} (P : Presentation 
   coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
     rw [Sieve.ext_iff]
     intro _ f
-    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+    simp [Sieve.top_apply]
   presentation x := P.map (pushforward (𝟙 (R.over x))) (by rfl)
 
 /-- If a sheaf of `R`-modules `M` has a presentation, then `M` is quasi-coherent. -/
@@ -375,6 +449,12 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
     IsQuasicoherent M :=
   (QuasicoherentData.bind M X hX fun _ ↦
     IsQuasicoherent.nonempty_quasicoherentData.some).isQuasicoherent
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isQuasicoherent_over [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+    [HasPullbacks C] [HasBinaryProducts C] (M : SheafOfModules.{u} R) (X : C) [IsQuasicoherent M] :
+    IsQuasicoherent (M.over X) :=
+  isQuasicoherent_pushforward_of_isLeftAdjoint _ _ (Iso.refl _)
 
 end bind
 
