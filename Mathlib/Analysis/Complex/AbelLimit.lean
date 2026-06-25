@@ -233,7 +233,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
       _ = _ := by
         rw [← mul_rotate, mul_div_cancel_right₀ _ (by linarith only [zn]),
           div_mul_cancel₀ _ (by linarith only [hM])]
-  convert add_lt_add S₁ S₂ using 1
+  convert! add_lt_add S₁ S₂ using 1
   linarith only
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
@@ -270,7 +270,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_lt
   replace h := Complex.tendsto_tsum_powerSeries_nhdsWithin_lt h
   rw [tendsto_map'_iff] at h
   rw [Metric.tendsto_nhdsWithin_nhds] at h ⊢
-  convert h
+  convert! h
   simp_rw [Function.comp_apply, dist_eq_norm]
   norm_cast
 

@@ -70,6 +70,7 @@ instance : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R) :=
 instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) :=
   Limits.PreservesLimitsOfSize.preservesFiniteLimits _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by
@@ -85,6 +86,7 @@ instance : Limits.PreservesFiniteColimits (uliftFunctor.{v', v} R) := by
     (uliftFunctor_map_exact R)
   exact this.2
 
+set_option backward.defeqAttrib.useBackward true in
 instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesProjectiveObjects where
   projective_obj {M} proj := by
     have := small_lift.{u, v'} R

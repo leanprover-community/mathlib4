@@ -189,6 +189,7 @@ theorem UniformSpace.Core.nhds_toTopologicalSpace {α : Type u} (u : Core α) (x
 
   A metric space has a natural uniformity, and a uniform space has a natural topology.
   A topological group also has a natural uniformity, even when it is not metrizable. -/
+@[wikidata Q652446]
 class UniformSpace (α : Type u) extends TopologicalSpace α where
   /-- The uniformity filter. -/
   protected uniformity : Filter (α × α)
@@ -233,7 +234,7 @@ abbrev UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
     have : Prod.mk x ⁻¹' U ∈ 𝓝 x := by
       rw [UniformSpace.nhds_eq_comap_uniformity]
       exact preimage_mem_comap hU
-    convert mem_of_mem_nhds this
+    convert! mem_of_mem_nhds this
 
 theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=

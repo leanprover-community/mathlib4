@@ -94,6 +94,7 @@ instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
 instance [PreservesColimitsOfSize.{w, w} F] : F.IsCardinalAccessible κ where
 
+set_option backward.defeqAttrib.useBackward true in
 instance (A : C) : IsCardinalAccessible ((Functor.const C).obj A) κ where
   preservesColimitOfShape J _ _ :=
     { preservesColimit {F} :=
@@ -200,6 +201,7 @@ instance : (isCardinalPresentable C κ).IsClosedUnderIsomorphisms where
     rw [isCardinalPresentable_iff] at hX ⊢
     exact isCardinalPresentable_of_iso e _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isCardinalPresentable_of_equivalence
     {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
     IsCardinalPresentable (e.functor.obj X) κ := by
@@ -235,35 +237,80 @@ lemma isCardinalPresentable_iff_of_isEquivalence
   · intro
     infer_instance
 
+section
+
+variable {J : Type*} [Category* J] {D : J ⥤ C}
+
+lemma Limits.exists_hom_of_preservesColimit_coyoneda {c : Cocone D} (hc : IsColimit c) {X : C}
+    [PreservesColimit D (coyoneda.obj (.op X))] (f : X ⟶ c.pt) :
+    ∃ (j : J) (p : X ⟶ D.obj j), p ≫ c.ι.app j = f :=
+  Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f
+
+lemma Limits.exists_eq_of_preservesColimit_coyoneda [IsFiltered J] {c : Cocone D}
+    (hc : IsColimit c) {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
+    {i j : J} (f : X ⟶ D.obj i) (g : X ⟶ D.obj j) (h : f ≫ c.ι.app i = g ≫ c.ι.app j) :
+    ∃ (k : J) (u : i ⟶ k) (v : j ⟶ k), f ≫ D.map u = g ≫ D.map v :=
+  (Types.FilteredColimit.isColimit_eq_iff _ (isColimitOfPreserves (coyoneda.obj (.op X)) hc)).mp h
+
+lemma Limits.exists_eq_of_preservesColimit_coyoneda_self [IsFiltered J] {c : Cocone D}
+    (hc : IsColimit c) {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
+    {i : J} (f g : X ⟶ D.obj i) (h : f ≫ c.ι.app i = g ≫ c.ι.app i) :
+    ∃ (j : J) (a : i ⟶ j), f ≫ D.map a = g ≫ D.map a :=
+  (Types.FilteredColimit.isColimit_eq_iff'
+    (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g).mp h
+
+lemma Limits.exists_hom_of_preservesColimit_yoneda {c : Cone D} (hc : IsLimit c) {X : C}
+    [PreservesColimit D.op (yoneda.obj X)] (f : c.pt ⟶ X) :
+    ∃ (j : J) (p : D.obj j ⟶ X), c.π.app j ≫ p = f := by
+  obtain ⟨j, p, hp⟩ := Types.jointly_surjective_of_isColimit
+    (isColimitOfPreserves (yoneda.obj X) hc.op) f
+  exact ⟨j.unop, p, hp⟩
+
+lemma Limits.exists_eq_of_preservesColimit_yoneda [IsCofiltered J] {c : Cone D} (hc : IsLimit c)
+    {X : C} [PreservesColimit D.op (yoneda.obj X)]
+    {i j : J} (f : D.obj i ⟶ X) (g : D.obj j ⟶ X) (h : c.π.app i ≫ f = c.π.app j ≫ g) :
+    ∃ (k : J) (u : k ⟶ i) (v : k ⟶ j), D.map u ≫ f = D.map v ≫ g := by
+  obtain ⟨k, u, v, huv⟩ :=
+    (Types.FilteredColimit.isColimit_eq_iff _ (isColimitOfPreserves (yoneda.obj X) hc.op)).mp h
+  exact ⟨k.unop, u.unop, v.unop, huv⟩
+
+lemma Limits.exists_eq_of_preservesColimit_yoneda_self [IsCofiltered J] {c : Cone D}
+    (hc : IsLimit c) {X : C} [PreservesColimit D.op (yoneda.obj X)]
+    {i : J} (f g : D.obj i ⟶ X) (h : c.π.app i ≫ f = c.π.app i ≫ g) :
+    ∃ (j : J) (a : j ⟶ i), D.map a ≫ f = D.map a ≫ g := by
+  obtain ⟨j, a, ha⟩ := (Types.FilteredColimit.isColimit_eq_iff'
+    (isColimitOfPreserves (yoneda.obj X) hc.op) f g).mp h
+  exact ⟨j.unop, a.unop, ha⟩
+
 variable {X} in
 lemma IsCardinalPresentable.exists_hom_of_isColimit [IsCardinalPresentable X κ]
-    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
     {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f : X ⟶ c.pt) :
     ∃ (j : J) (f' : X ⟶ F.obj j), f' ≫ c.ι.app j = f := by
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
-  exact Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (op X)) hc) f
+  exact exists_hom_of_preservesColimit_coyoneda hc f
 
 variable {X} in
 lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
-    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
     {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i₁ i₂ : J} (f₁ : X ⟶ F.obj i₁)
     (f₂ : X ⟶ F.obj i₂) (hf : f₁ ≫ c.ι.app i₁ = f₂ ≫ c.ι.app i₂) :
     ∃ (j : J) (u : i₁ ⟶ j) (v : i₂ ⟶ j), f₁ ≫ F.map u = f₂ ≫ F.map v := by
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   have := isFiltered_of_isCardinalFiltered J κ
-  exact (Types.FilteredColimit.isColimit_eq_iff _
-    (isColimitOfPreserves (coyoneda.obj (op X)) hc)).1 hf
+  exact exists_eq_of_preservesColimit_coyoneda hc f₁ f₂ hf
 
 variable {X} in
 lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
-    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
     {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i : J} (f₁ f₂ : X ⟶ F.obj i)
     (hf : f₁ ≫ c.ι.app i = f₂ ≫ c.ι.app i) :
     ∃ (j : J) (u : i ⟶ j), f₁ ≫ F.map u = f₂ ≫ F.map u := by
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   have := isFiltered_of_isCardinalFiltered J κ
-  exact (Types.FilteredColimit.isColimit_eq_iff'
-    (isColimitOfPreserves (coyoneda.obj (op X)) hc) f₁ f₂).1 hf
+  exact exists_eq_of_preservesColimit_coyoneda_self hc f₁ f₂ hf
+
+end
 
 lemma isCardinalPresentable_iff_isCardinalAccessible_uliftCoyoneda_obj :
     IsCardinalPresentable X κ ↔ (uliftCoyoneda.{t}.obj (op X)).IsCardinalAccessible κ := by

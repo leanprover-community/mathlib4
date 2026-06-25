@@ -10,6 +10,7 @@ public import Mathlib.Order.Zorn
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Topology.WithTopology
 
 /-!
 # Irreducibility in topological spaces
@@ -264,11 +265,10 @@ instance (priority := 100) [IndiscreteTopology X] : PreirreducibleSpace X where
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
 instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
   isPreirreducible_univ u v := by
-    haveI : Infinite (CofiniteTopology X) := ‹_›
     simp only [CofiniteTopology.isOpen_iff, univ_inter]
     intro hu hv hu' hv'
     simpa only [compl_union, compl_compl] using ((hu hu').union (hv hv')).infinite_compl.nonempty
-  toNonempty := (inferInstance : Nonempty X)
+  toNonempty := inferInstance
 
 theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
     irreducibleComponents X = {univ} :=
@@ -362,22 +362,22 @@ theorem mem_of_subset_sUnion_irreducibleComponents (Z : Set X) (hZ : Z ∈ irred
   rw [hS.mem_toFinset] at hWS
   rwa [Set.Subset.antisymm hZW (hZ.2 (hSα hWS).1 hZW)]
 
-theorem closure_sUnion_irreducibleComponents_diff_singleton
+theorem closure_sUnion_irreducibleComponents_sdiff_singleton
     (hX : (irreducibleComponents X).Finite) (Z : Set X) (hZ : Z ∈ irreducibleComponents X) :
     closure (⋃₀ (irreducibleComponents X \ {Z}))ᶜ = Z := by
   have h : (⋃₀ (irreducibleComponents X \ {Z}))ᶜ ⊆ Z := by
     rw [Set.compl_subset_iff_union, ← Set.sUnion_singleton Z, ← Set.sUnion_union,
-      Set.sUnion_singleton, Set.diff_union_of_subset, sUnion_irreducibleComponents]
+      Set.sUnion_singleton, Set.sdiff_union_of_subset, sUnion_irreducibleComponents]
     rwa [Set.singleton_subset_iff]
   apply Set.Subset.antisymm
   · rwa [(isClosed_of_mem_irreducibleComponents Z hZ).closure_subset_iff]
   · rw [← Set.inter_eq_right.mpr h]
     apply subset_closure_inter_of_isPreirreducible_of_isOpen hZ.1.2
     · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-      exact hX.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
+      exact hX.sdiff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
     · rw [Set.inter_compl_nonempty_iff]
-      exact mt (mem_of_subset_sUnion_irreducibleComponents Z hZ _ hX.diff Set.diff_subset)
-        (Set.notMem_diff_of_mem (Set.mem_singleton Z))
+      exact mt (mem_of_subset_sUnion_irreducibleComponents Z hZ _ hX.sdiff Set.sdiff_subset)
+        (Set.notMem_sdiff_of_mem (Set.mem_singleton Z))
 
 /-- If `∅ ≠ U ⊆ S ⊆ t` such that `U` is open and `t` is preirreducible, then `S` is irreducible. -/
 theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible t)
@@ -517,15 +517,15 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
   left_inv _ := Subtype.ext <| Set.image_preimage_eq _ hf₄
   map_rel_iff' {W Z} := by
     refine ⟨fun H ↦ ?_, Set.preimage_mono⟩
-    simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using Set.image_mono (f := f) H
+    simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using! Set.image_mono (f := f) H
 
 end
 
 lemma IsDiscrete.subsingleton_of_isPreirreducible (hs : IsDiscrete s) (hs' : IsPreirreducible s) :
     s.Subsingleton := by
   intro x hxs y hys
-  obtain ⟨U, hU, hUx⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs x hxs
-  obtain ⟨V, hV, hVy⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs y hys
+  obtain ⟨U, hU, hUx⟩ := isDiscrete_iff_forall_mem_exists_isOpen.mp hs x hxs
+  obtain ⟨V, hV, hVy⟩ := isDiscrete_iff_forall_mem_exists_isOpen.mp hs y hys
   obtain ⟨z, hz⟩ := hs' _ _ hU hV ⟨x, by grind⟩ ⟨y, by grind⟩
   exact (hUx.le (by grind)).symm.trans (b := z) (hVy.le (by grind))
 

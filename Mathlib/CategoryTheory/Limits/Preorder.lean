@@ -6,6 +6,7 @@ Authors: Sina Hazratpour, Joël Riou, Fernando Chu
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.Order.Bounds.Defs
 
 /-!
@@ -152,7 +153,7 @@ def semilatticeInfOfIsLimitBinaryFan
   inf X Y := (c X Y).pt
   inf_le_left X Y := leOfHom (c X Y).fst
   inf_le_right X Y := leOfHom (c X Y).snd
-  le_inf _ _ _ le_fst le_snd := leOfHom <| (h _ _).lift (BinaryFan.mk le_fst.hom le_snd.hom)
+  le_inf _ _ _ le_fst le_snd := leOfHom <| BinaryFan.IsLimit.lift (h _ _) le_fst.hom le_snd.hom
 
 variable (C) in
 /-- If a partial order has binary products, then it is an inf-semilattice -/
@@ -170,7 +171,7 @@ def semilatticeSupOfIsColimitBinaryCofan
   sup X Y := (c X Y).pt
   le_sup_left X Y := leOfHom (c X Y).inl
   le_sup_right X Y := leOfHom (c X Y).inr
-  sup_le _ _ _ le_inl le_inr := leOfHom <| (h _ _).desc (BinaryCofan.mk le_inl.hom le_inr.hom)
+  sup_le _ _ _ le_inl le_inr := leOfHom <| BinaryCofan.IsColimit.desc (h _ _) le_inl.hom le_inr.hom
 
 variable (C) in
 /-- If a partial order has binary coproducts, then it is a sup-semilattice -/
@@ -208,6 +209,20 @@ instance (priority := low) [SemilatticeSup C] : HasBinaryCoproducts C where
     have : HasColimit (pair (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)) :=
       ⟨⟨⟨_, isColimitBinaryCofan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
     apply hasColimit_of_iso (diagramIsoPair F)
+
+end
+
+section
+
+/-- The product of elements in a complete lattice is the infimum. -/
+def isLimitIInf [CompleteLattice C] {ι : Type*} (X : ι → C) :
+    IsLimit (Fan.mk (⨅ i, X i) fun i : ι ↦ homOfLE (iInf_le X i)) :=
+  isLimitOfIsGLB _ _ (by simp [isGLB_iInf])
+
+/-- The coproduct of elements in a complete lattice is the supremum. -/
+def isColimitISup [CompleteLattice C] {ι : Type*} (X : ι → C) :
+    IsColimit (Cofan.mk (⨆ i, X i) fun i : ι ↦ homOfLE (le_iSup X i)) :=
+  isColimitOfIsLUB _ _ (by simp [isLUB_iSup])
 
 end
 
