@@ -392,8 +392,8 @@ theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
         dist (G (f x)) (G (g x)) ≤ C * dist (f x) (g x) := H.dist_le_mul _ _
         _ ≤ C * dist f g := by gcongr; apply dist_coe_le_dist
 
-@[fun_prop]
 /-- The composition operator (in the target) with a Lipschitz map is uniformly continuous. -/
+@[fun_prop]
 theorem uniformContinuous_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     UniformContinuous (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   (lipschitz_comp H).uniformContinuous
