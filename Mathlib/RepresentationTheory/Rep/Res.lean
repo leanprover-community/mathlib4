@@ -26,6 +26,8 @@ open CategoryTheory
 
 namespace Rep
 
+/-- The map induced by a monoid homomorphism `f : H →* G` on morphisms between
+`G`-representations. -/
 @[implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
     of (X := X.V) (X.ρ.comp f) ⟶ of (X := Y.V) (Y.ρ.comp f) :=
