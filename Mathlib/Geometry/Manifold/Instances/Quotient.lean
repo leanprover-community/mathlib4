@@ -60,7 +60,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 -- are these two needed? since they're only used once each
 lemma Homeomorph.smul_symm {g : G} :
     (Homeomorph.smul g (α := M)).symm = (Homeomorph.smul g⁻¹) :=
-  Homeomorph.ext_iff.mpr (congrFun rfl)
+lemma Homeomorph.smul_symm {g : G} :
+    (Homeomorph.smul g (α := M)).symm = (Homeomorph.smul g⁻¹) :=
+  Homeomorph.ext_iff.mpr (fun x ↦ Homeomorph.smul_symm_apply g x)
 
 lemma quotient_ignores_smul (g : G) (u : M) :
     (⟦u⟧ : orbitRel.Quotient G M) = ⟦g • u⟧ :=
