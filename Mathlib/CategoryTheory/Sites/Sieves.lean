@@ -42,6 +42,13 @@ def Presieve (X : C) :=
   ∀ ⦃Y⦄, (Y ⟶ X) → Prop
 deriving CompleteLattice, Inhabited
 
+@[ext]
+lemma Presieve.ext {X : C} {P Q : Presieve X}
+    (h : ∀ (Y : C) (f : Y ⟶ X), P f ↔ Q f) : P = Q := by
+  simp only [Presieve]
+  ext
+  apply h
+
 @[simp]
 lemma top_apply (f : Y ⟶ X) : (⊤ : Presieve X) f :=
   trivial

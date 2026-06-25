@@ -29,7 +29,7 @@ universe w v' v u' u
 
 namespace CategoryTheory
 
-open Category
+open Category Opposite
 
 variable {C : Type u} [Category.{v} C]
 
@@ -39,6 +39,34 @@ lemma Presieve.map_functorPullback_overForget {X : C} {Y : Over X} (R : Presieve
   refine le_antisymm (map_functorPullback _) fun Z g hg ↦ ?_
   let g' : Over.mk (g ≫ Y.hom) ⟶ Y := Over.homMk g
   exact Presieve.map.of (u := g') hg
+
+def Presieve.ofOver {X : C} {Y : Over X} (P : Presieve Y) : Presieve Y.left :=
+  fun Z p ↦ @P (Over.mk (p ≫ Y.hom)) (Over.homMk p)
+
+lemma Presieve.mem_ofOver_iff {X : C} {Y : Over X} (P : Presieve Y)
+    {Z : C} (f : Z ⟶ X) (g : Z ⟶ Y.left) (fac : g ≫ Y.hom = f := by cat_disch) :
+    P.ofOver g ↔ @P (Over.mk f) (Over.homMk g) := by
+  subst fac
+  rfl
+
+@[simp]
+lemma Presieve.functorPullback_forget_ofOver {X : C} {Y : Over X} (P : Presieve Y) :
+    P.ofOver.functorPullback (Over.forget _) = P := by
+  ext Z f
+  simp only [functorPullback_mem, Over.forget_obj, Over.forget_map]
+  obtain ⟨g, hg, rfl⟩ := Over.homMk_surjective f
+  exact Presieve.mem_ofOver_iff P Z.hom g
+
+@[simp]
+lemma Presieve.ofOver_functorPullback_forget {X : C} {Y : Over X} (P : Presieve Y.left) :
+    (P.functorPullback (Over.forget _)).ofOver = P := rfl
+
+@[simps]
+def Presieve.overEquiv {X : C} (Y : Over X) :
+    Presieve Y ≃ Presieve Y.left where
+  toFun P := P.ofOver
+  invFun P := Presieve.functorPullback (Over.forget _) P
+  left_inv P := by simp
 
 namespace Sieve
 
@@ -67,6 +95,9 @@ def overEquiv {X : C} (Y : Over X) :
       exact S.downward_closed h _
     · intro h
       exact ⟨Over.mk ((g ≫ Y.hom)), Over.homMk g, 𝟙 _, h, by simp⟩
+
+lemma overEquiv_arrows {X : C} {Y : Over X} (S : Sieve Y) :
+    (overEquiv _ S).arrows = Presieve.overEquiv _ S.arrows := sorry
 
 @[simp]
 lemma overEquiv_top {X : C} (Y : Over X) :
@@ -575,5 +606,83 @@ instance {X : C} (f : Over X) :
 instance {X : C} (f : Over X) :
     f.iteratedSliceBackward.IsCocontinuous (J.over _) ((J.over _).over _) :=
   inferInstanceAs (f.iteratedSliceEquiv.inverse.IsCocontinuous _ _)
+
+section
+
+variable {X : C} (F : (Over X)ᵒᵖ ⥤ Type w)
+
+structure Functor.SectionPresheafOver (Y : C) where
+  hom : Y ⟶ X
+  val : F.obj (op (Over.mk hom))
+
+namespace Functor.SectionPresheafOver
+
+variable {F}
+
+@[simps]
+def pull {Y : C} (s : F.SectionPresheafOver Y) {Z : C} (f : Z ⟶ Y) :
+    F.SectionPresheafOver Z where
+  hom := f ≫ s.hom
+  val := F.map (Over.homMk f).op s.val
+
+lemma pull_eq {Y : C} (s : F.SectionPresheafOver Y) {Z : C} (f : Z ⟶ Y)
+    (g : Z ⟶ X) (val : F.obj (op (Over.mk g)))
+    (hg : f ≫ s.hom = g := by cat_disch)
+    (hval : F.map (Over.homMk f).op s.val = val := by cat_disch) :
+    s.pull f = .mk g val := by
+  subst hg
+  rw [← hval]
+  rfl
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma pull_id {Y : C} (s : F.SectionPresheafOver Y) :
+    s.pull (𝟙 Y) = s := by
+  rw [s.pull_eq (𝟙 Y) s.hom s.val (by simp)
+    (by simp [show Over.homMk (𝟙 Y) = 𝟙 (Over.mk s.hom) from rfl])]
+
+@[simp]
+lemma pull_pull {Y Z W : C} (s : F.SectionPresheafOver Y)
+     (f : W ⟶ Z) (g : Z ⟶ Y) :
+    (s.pull g).pull f = s.pull (f ≫ g) := by
+  let α : Over.mk (f ≫ g ≫ s.hom) ⟶ Over.mk (g ≫ s.hom) :=
+    Over.homMk f
+  let β : Over.mk (g ≫ s.hom) ⟶ Over.mk s.hom :=
+    Over.homMk g
+  let γ : Over.mk (f ≫ g ≫ s.hom) ⟶ Over.mk s.hom :=
+    Over.homMk (f ≫ g)
+  rw [s.pull_eq (f ≫ g) (f ≫ g ≫ s.hom) (F.map γ.op s.val) (by simp) rfl,
+    (s.pull g).pull_eq f (f ≫ g ≫ s.hom) (F.map γ.op s.val) (by simp)
+      (by rw [show γ = α ≫ β by cat_disch]; cat_disch)]
+
+end Functor.SectionPresheafOver
+
+set_option backward.defeqAttrib.useBackward true in
+@[simps]
+def Functor.presheafOfPresheafOver : Cᵒᵖ ⥤ Type max v w where
+  obj U := Functor.SectionPresheafOver F U.unop
+  map f := ↾fun s ↦ s.pull f.unop
+
+end
+
+-- is this true?
+lemma Presieve.isSheafFor_presheafOfPresheafOver_iff
+    {X : C} (F : (Over X)ᵒᵖ ⥤ Type w) {Y : C} (P : Presieve Y) :
+    Presieve.IsSheafFor F.presheafOfPresheafOver P ↔
+      ∀ (p : Y ⟶ X), Presieve.IsSheafFor F (X := Over.mk p)
+        ((Presieve.overEquiv _).symm P) := by
+  sorry
+
+lemma Presieve.isSheaf_presheafOfPresheafOver_iff
+    {X : C} (F : (Over X)ᵒᵖ ⥤ Type w) :
+    Presieve.IsSheaf J F.presheafOfPresheafOver ↔
+      Presieve.IsSheaf (J.over X) F := by
+  simp only [IsSheaf, isSheafFor_presheafOfPresheafOver_iff, overEquiv_symm_apply]
+  refine ⟨fun h Y S hS ↦ ?_, fun h Y S hS p ↦ ?_⟩
+  · rw [← Presieve.functorPullback_forget_ofOver S.arrows]
+    have := h (Sieve.overEquiv _ S) hS Y.hom
+    rwa [Sieve.overEquiv_arrows] at this
+  · exact h _ (GrothendieckTopology.overEquiv_symm_mem_over J (Over.mk p) S hS)
 
 end CategoryTheory

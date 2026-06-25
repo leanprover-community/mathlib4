@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
 # Sheaves for the quasi-compact topology
@@ -33,7 +34,7 @@ set_option backward.isDefEq.respectTransparency false in
 for the Zariski topology and satisfies the sheaf property for all single object coverings
 `{ f : Spec S ⟶ Spec R }` where `f` satisfies `P`. -/
 @[stacks 022H]
-nonrec lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ Type*)
+lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ Type*)
     [IsZariskiLocalAtSource P] :
     Presieve.IsSheaf (propQCTopology P) F ↔
       Presieve.IsSheaf Scheme.zariskiTopology F ∧
@@ -91,6 +92,21 @@ nonrec lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u
       have : Surjective (Sigma.desc 𝒰.f) := inferInstanceAs <| Surjective (Sigma.desc 𝒰.forgetQc.f)
       infer_instance
 
+/-- A presheaf of types on `Over X` (with `X : Scheme`) is a sheaf for the `P`-qc
+topology if and only if it is a sheaf for the Zariski topology and satisfies the
+sheaf property for all single object coverings `{ f : Spec S ⟶ Spec R }`
+where `f` satisfies `P` and `Spec R` is equipped with a morphism towards `X`. -/
+@[stacks 022H]
+lemma isSheaf_type_propQCTopology_over_iff {X : Scheme.{u}}
+    [P.IsMultiplicative] [IsZariskiLocalAtSource P] (F : (Over X)ᵒᵖ ⥤ Type*) :
+    Presieve.IsSheaf ((propQCTopology P).over X) F ↔
+      Presieve.IsSheaf (Scheme.zariskiTopology.over X) F ∧
+        ∀ {R S : CommRingCat.{u}} (f : R ⟶ S) (a : Spec R ⟶ X), P (Spec.map f) →
+          Surjective (Spec.map f) →
+            Presieve.IsSheafFor F (X := Over.mk a)
+              (.singleton (Y := Over.mk (Spec.map f ≫ a)) (Over.homMk (Spec.map f))) := by
+  sorry
+
 variable {A : Type*} [Category* A]
 
 /-- A presheaf is a sheaf for the `P`-qc topology if and only if it is a sheaf
@@ -105,5 +121,20 @@ nonrec lemma isSheaf_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒ�
           ∀ (M : A),
           Presieve.IsSheafFor (F ⋙ coyoneda.obj (.op M)) (.singleton (Spec.map f)) := by
   grind [Presheaf.IsSheaf, isSheaf_type_propQCTopology_iff]
+
+/-- A presheaf of types on `Over X` (with `X : Scheme`) is a sheaf for the `P`-qc
+topology if and only if it is a sheaf for the Zariski topology and satisfies the
+sheaf property for all single object coverings `{ f : Spec S ⟶ Spec R }`
+where `f` satisfies `P` and `Spec R` is equipped with a morphism towards `X`. -/
+@[stacks 022H]
+lemma isSheaf_propQCTopology_over_iff {X : Scheme.{u}} [P.IsMultiplicative]
+    [IsZariskiLocalAtSource P] (F : (Over X)ᵒᵖ ⥤ A) :
+    Presheaf.IsSheaf ((propQCTopology P).over X) F ↔
+      Presheaf.IsSheaf (Scheme.zariskiTopology.over X) F ∧
+        ∀ {R S : CommRingCat.{u}} (f : R ⟶ S) (a : Spec R ⟶ X), P (Spec.map f) →
+          Surjective (Spec.map f) → ∀ (M : A),
+            Presieve.IsSheafFor (F ⋙ coyoneda.obj (.op M)) (X := Over.mk a)
+              (.singleton (Y := Over.mk (Spec.map f ≫ a)) (Over.homMk (Spec.map f))) := by
+  grind [Presheaf.IsSheaf, isSheaf_type_propQCTopology_over_iff]
 
 end AlgebraicGeometry
