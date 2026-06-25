@@ -63,7 +63,6 @@ section
 
 instance : (resFunctor (k := k) f).Faithful where
   map_injective h := by
-    ext : 2
     simpa [Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff] using h
 
 /-- Morphism between `X Y : Rep k G` can be lifted from restrictions associated with `f : H →* G`
@@ -80,10 +79,10 @@ lemma full_res (hf : (⇑f).Surjective) : (resFunctor (k := k) f).Full where
   map_surjective {X Y} f' := ⟨liftHomOfSurj f hf f', by ext; simp⟩
 
 instance : (resFunctor (k := k) f).Additive where
-  map_add {_ _} _ _ := by ext; simp [add_hom]
+  map_add {_ _} _ _ := by ext : 2; simp [add_hom]
 
 instance {k : Type u} [CommSemiring k] : (resFunctor (k := k) f).Linear k where
-  map_smul {X Y} l r := by ext; simp [smul_hom]
+  map_smul {_ _} _ _ := by ext : 2; simp [smul_hom]
 
 noncomputable section
 
