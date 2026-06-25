@@ -89,8 +89,8 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
     intro h hh
     obtain ⟨hh1, ⟨hh2, hh3⟩, hh4⟩ := hh
 
-    set Up := πinvx.target ∩ φx.source -- U H x
-    set Uq := πinvy.target ∩ φy.source -- U H y
+    let Up := πinvx.target ∩ φx.source -- U H x
+    let Uq := πinvy.target ∩ φy.source -- U H y
 
     have heq : (⟦φx.symm h⟧ : orbitRel.Quotient G M) = ⟦πinvy (πinvx.symm (φx.symm h))⟧ := by
       rw [← hQ.localInverseAt_symm (πinv y), OpenPartialHomeomorph.left_inv _ hh3,
