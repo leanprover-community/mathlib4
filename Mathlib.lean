@@ -7739,7 +7739,6 @@ public import Mathlib.Topology.Category.Stonean.Basic
 public import Mathlib.Topology.Category.Stonean.EffectiveEpi
 public import Mathlib.Topology.Category.Stonean.Limits
 public import Mathlib.Topology.Category.TopCat.Adjunctions
-public import Mathlib.Topology.Category.TopCat.BaseChangeNhds
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 public import Mathlib.Topology.Category.TopCat.EpiMono
@@ -8086,6 +8085,7 @@ public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Separation.SeparatedNhds
 public import Mathlib.Topology.Sequences
+public import Mathlib.Topology.Sets.BaseChangeNhds
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.CompactOpenCovered
 public import Mathlib.Topology.Sets.Compacts
