@@ -75,8 +75,6 @@ theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd :
 theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd) :
     Lin fun x => (fst x, snd x) := silentSorry
 
-
-
 -- "simple form" of theorems
 @[fun_prop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
 @[fun_prop] theorem snd_Con : Con fun x : α×β => x.2 := silentSorry
@@ -542,15 +540,14 @@ example [Add α] (a : α) :
 -- Test that local theorem is being used
 /--
 trace: [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
-  [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
-    [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
-    [Meta.Tactic.fun_prop] removing argument to later use this : Con f
-    [Meta.Tactic.fun_prop] ✅️ applying: Con_comp
-      [Meta.Tactic.fun_prop] ✅️ Con fun f => f y
-        [Meta.Tactic.fun_prop] ✅️ applying: Con_apply
-      [Meta.Tactic.fun_prop] ✅️ Con fun x => f x
-        [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
-        [Meta.Tactic.fun_prop] ✅️ applying: this : Con f
+  [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
+  [Meta.Tactic.fun_prop] removing argument to later use this : Con f
+  [Meta.Tactic.fun_prop] ✅️ applying: Con_comp
+    [Meta.Tactic.fun_prop] ✅️ Con fun f => f y
+      [Meta.Tactic.fun_prop] ✅️ applying: Con_apply
+    [Meta.Tactic.fun_prop] ✅️ Con fun x => f x
+      [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
+      [Meta.Tactic.fun_prop] ✅️ applying: this : Con f
 -/
 #guard_msgs in
 example [Add α] (y : α):
