@@ -38,6 +38,22 @@ Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois].
 
 public section
 
+namespace Polynomial.Gal
+
+noncomputable def rootsEquivRoots' {F : Type*} [Field F] (p : F[X])
+    (E E' : Type*) [Field E] [Field E'] [Algebra F E] [Algebra F E']
+    [Fact (map (algebraMap F E) p).Splits] [Fact (map (algebraMap F E') p).Splits] :
+    p.rootSet E ≃ p.rootSet E' :=
+  (rootsEquivRoots p E).symm.trans (rootsEquivRoots p E')
+
+theorem smul_rootsEquivRoots' {F : Type*} [Field F] (p : F[X])
+    (E E' : Type*) [Field E] [Field E'] [Algebra F E] [Algebra F E']
+    [Fact (map (algebraMap F E) p).Splits] [Fact (map (algebraMap F E') p).Splits]
+    {g : p.Gal} (x : p.rootSet E) : g • rootsEquivRoots' p E E' x = rootsEquivRoots' p E E' (g • x) := by
+  simp [rootsEquivRoots', smul_def]
+
+end Polynomial.Gal
+
 namespace Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsDomain S]
@@ -168,11 +184,11 @@ theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₉' : f₀.Monic)
     to_normal := Polynomial.SplittingField.instNormal f }
   let R := 𝓞 K
   let G := f.Gal
-  have h_transitive := Gal.galAction_isPretransitive f ℂ hf'
+  have := Gal.galAction_isPretransitive f ℂ hf'
   let e : f₀.rootSet R ≃ f.rootSet ℂ := by
     let e₀ : f₀.rootSet R ≃ f.rootSet K := by
       sorry
-    let e1 := Polynomial.Gal.rootsEquivRoots f ℂ
+    let e1 : f.rootSet K ≃ f.rootSet ℂ := Polynomial.Gal.rootsEquivRoots f ℂ
 
     sorry
   have he (g : G) (x : f₀.rootSet R) : e (g • x) = g • e x := by
@@ -183,7 +199,6 @@ theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₉' : f₀.Monic)
     exact ⟨g, e.injective ((he g x).trans hg)⟩
   suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
     use Polynomial.Gal.galActionHom_injective (f₀.map (algebraMap ℤ ℚ)) ℂ
-    change Function.Surjective (MulAction.toPermHom G (f.rootSet ℂ))
     intro φ
     obtain ⟨g, hg⟩ := this (e.permCongr.symm φ)
     use g
