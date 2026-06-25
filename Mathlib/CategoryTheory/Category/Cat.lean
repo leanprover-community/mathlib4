@@ -402,12 +402,10 @@ end Cat
 
 section cubeLemma
 
-variable {A : Type u} [Category.{v} A]
-
-variable (M000 M001 M010 M011 M100 M101 M110 M111 : A) (f00x : M000 ⟶ M001) (f01x : M010 ⟶ M011)
-  (f10x : M100 ⟶ M101) (f11x : M110 ⟶ M111) (f0x0 : M000 ⟶ M010) (f0x1 : M001 ⟶ M011)
-  (f1x0 : M100 ⟶ M110) (f1x1 : M101 ⟶ M111) (fx00 : M000 ⟶ M100) (fx01 : M001 ⟶ M101)
-  (fx10 : M010 ⟶ M110) (fx11 : M011 ⟶ M111)
+variable {A : Type u} [Category.{v} A] (M000 M001 M010 M011 M100 M101 M110 M111 : A)
+  (f00x : M000 ⟶ M001) (f01x : M010 ⟶ M011) (f10x : M100 ⟶ M101) (f11x : M110 ⟶ M111)
+  (f0x0 : M000 ⟶ M010) (f0x1 : M001 ⟶ M011) (f1x0 : M100 ⟶ M110) (f1x1 : M101 ⟶ M111)
+  (fx00 : M000 ⟶ M100) (fx01 : M001 ⟶ M101) (fx10 : M010 ⟶ M110) (fx11 : M011 ⟶ M111)
 
 /-- This is a theorem saying if five faces of a cube commute and one edge is an epimorphism,
   then the sixth face must also commute. -/
