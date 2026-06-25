@@ -435,8 +435,11 @@ theorem trans (hab : ReflTransGen r a b) (hbc : ReflTransGen r b c) : ReflTransG
   | refl => assumption
   | tail _ hcd hac => exact hac.tail hcd
 
-theorem single : r ≤ ReflTransGen r :=
-  fun _ _ ↦ refl.tail
+theorem single (hab : r a b) : ReflTransGen r a b :=
+  refl.tail hab
+
+theorem le_reflTransGen : r ≤ ReflTransGen r :=
+  fun _ _ ↦ single
 
 theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
   induction hbc with
@@ -469,12 +472,12 @@ theorem head_induction_on {motive : ∀ a : α, ReflTransGen r a b → Prop} {a 
 @[elab_as_elim]
 theorem trans_induction_on {motive : ∀ {a b : α}, ReflTransGen r a b → Prop} {a b : α}
     (h : ReflTransGen r a b) (refl : ∀ a, @motive a a refl)
-    (single : ∀ {a b} (h : r a b), motive (single a b h))
+    (single : ∀ {a b} (h : r a b), motive (single h))
     (trans : ∀ {a b c} (h₁ : ReflTransGen r a b) (h₂ : ReflTransGen r b c), motive h₁ → motive h₂ →
       motive (h₁.trans h₂)) : motive h := by
   induction h with
   | refl => exact refl a
-  | tail hab hbc ih => exact trans hab (.single _ _ hbc) ih (single hbc)
+  | tail hab hbc ih => exact trans hab (.single hbc) ih (single hbc)
 
 theorem cases_head (h : ReflTransGen r a b) : a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
   induction h using Relation.ReflTransGen.head_induction_on <;> grind
@@ -492,7 +495,7 @@ theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a
   | tail _ bd IH =>
     rcases IH with (IH | IH)
     · rcases cases_head IH with (rfl | ⟨e, be, ec⟩)
-      · exact Or.inr (single _ _ bd)
+      · exact Or.inr (single bd)
       · cases U bd be
         exact Or.inl ec
     · exact Or.inr (IH.tail bd)
@@ -504,7 +507,7 @@ namespace TransGen
 theorem to_reflTransGen : TransGen r ≤ ReflTransGen r := by
   intro a _ h
   induction h with
-  | single h => exact ReflTransGen.single a _ h
+  | single h => exact ReflTransGen.single h
   | tail _ bc ab => exact ReflTransGen.tail ab bc
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
@@ -699,7 +702,7 @@ theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ Trans
 
 theorem ReflTransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
     ReflTransGen r ≤ (ReflTransGen p on f) :=
-  fun _ _ hab ↦ trans_induction_on hab (fun _ ↦ refl) (single _ _ ∘ h _ _) fun _ _ ↦ trans
+  fun _ _ hab ↦ trans_induction_on hab (fun _ ↦ refl) (single ∘ h _ _) fun _ _ ↦ trans
 
 theorem ReflTransGen.mono {p : α → α → Prop} : r ≤ p → ReflTransGen r ≤ ReflTransGen p :=
   ReflTransGen.lift id
@@ -710,7 +713,7 @@ theorem reflTransGen_eq_self [Std.Refl r] [IsTrans α r] : ReflTransGen r = r :=
     ⟨fun h ↦ by
       induction h with
       | refl => exact refl a
-      | tail _ h₂ IH => exact IsTrans.trans a _ _ IH h₂, single a b⟩
+      | tail _ h₂ IH => exact IsTrans.trans _ _ _ IH h₂, single⟩
 
 instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
   ⟨head⟩
