@@ -33,6 +33,8 @@ monoids, expressing that an element is a primitive root of unity.
   has a primitive `k`-th root of unity, then it has `φ k` of them.
 * `primitiveRootsPowEquivOfCoprime`: An equivalence between `primitiveRoots k R` that takes each
   root to a coprime power `a`.
+* `nthRootsFinset_eq_of_prime`: for `p` prime, the `p`-th roots of unity are the primitive `p`-th
+  roots of unity together with `1`.
 
 ## Implementation details
 
@@ -228,9 +230,10 @@ theorem pow_mul_pow_lcm {ζ' : M} {k' : ℕ} (hζ : IsPrimitiveRoot ζ k) (hζ' 
     IsPrimitiveRoot
       (ζ ^ (k / Nat.factorizationLCMLeft k k') * ζ' ^ (k' / Nat.factorizationLCMRight k k'))
       (Nat.lcm k k') := by
-  convert IsPrimitiveRoot.orderOf _
-  convert ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm
-    (by simpa [← hζ.eq_orderOf]) (by simpa [← hζ'.eq_orderOf])).symm using 2
+  convert! IsPrimitiveRoot.orderOf _
+  convert!
+    ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm (by simpa [← hζ.eq_orderOf])
+        (by simpa [← hζ'.eq_orderOf])).symm using 2
   all_goals simp [hζ.eq_orderOf, hζ'.eq_orderOf]
 
 theorem pow_of_dvd (h : IsPrimitiveRoot ζ k) {p : ℕ} (hp : p ≠ 0) (hdiv : p ∣ k) :
@@ -238,6 +241,12 @@ theorem pow_of_dvd (h : IsPrimitiveRoot ζ k) {p : ℕ} (hp : p ≠ 0) (hdiv : p
   rw [h.eq_orderOf] at hdiv ⊢
   rw [← orderOf_pow_of_dvd hp hdiv]
   exact IsPrimitiveRoot.orderOf _
+
+/-- If `ζ` is a primitive `k`-th root of unity with `k` odd, then every power of `ζ` is an even
+power of `ζ`. -/
+theorem exists_pow_eq_pow_two_mul (h : IsPrimitiveRoot ζ k) (hk : Odd k) (n : ℕ) :
+    ∃ m, ζ ^ n = ζ ^ (2 * m) :=
+  _root_.exists_pow_eq_pow_two_mul h.pow_eq_one hk n
 
 protected theorem mem_rootsOfUnity {ζ : Mˣ} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     ζ ∈ rootsOfUnity n M :=
@@ -422,7 +431,7 @@ theorem eq_neg_one_of_two_right [NoZeroDivisors R] {ζ : R} (h : IsPrimitiveRoot
 
 theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
     IsPrimitiveRoot (-1 : R) 2 := by
-  convert IsPrimitiveRoot.orderOf (-1 : R)
+  convert! IsPrimitiveRoot.orderOf (-1 : R)
   rw [orderOf_neg_one, if_neg <| by rwa [ringChar.eq_iff.mpr h]]
 
 /-- If `1 < k` then `(∑ i ∈ range k, ζ ^ i) = 0`. -/
@@ -788,9 +797,9 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         generalize_proofs h1
         have h := h1.choose_spec
         replace h : μ' = μ' ^ h1.choose :=
-          rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using h)
+          rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using! h)
         nth_rw 1 [← pow_one μ'] at h
-        convert ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
+        convert! ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
         exact Nat.cast_one.symm
       map_mul' := by
         intro x y
@@ -803,7 +812,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
           hx'.choose_spec ▸ hxy
         rw [← pow_mul] at hxy
         replace hxy : μ' ^ (hx'.choose * hy'.choose) = μ' ^ hxy'.choose :=
-          rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using hxy)
+          rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using! hxy)
         convert ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp hxy).symm
         exact (Nat.cast_mul ..).symm }
 
@@ -828,6 +837,37 @@ theorem autToPow_spec [NeZero n] (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : 
 end Automorphisms
 
 end IsPrimitiveRoot
+
+section nthRootsFinsetPrime
+
+open IsPrimitiveRoot
+
+variable [CommRing R] [IsDomain R] {p : ℕ}
+
+/-- If `p` is prime, the `p`-th roots of unity in an integral domain are exactly the primitive
+`p`-th roots of unity together with `1`. -/
+theorem nthRootsFinset_eq_of_prime [DecidableEq R] (hp : p.Prime) :
+    nthRootsFinset p (1 : R) = primitiveRoots p R ∪ {1} := by
+  simp [nthRoots_one_eq_biUnion_primitiveRoots, hp.divisors]
+
+/-- For `p` prime, an element of `R` is a `p`-th root of unity if and only if it is either a
+primitive `p`-th root of unity or `1`. -/
+theorem mem_nthRootsFinset_iff_of_prime (hp : p.Prime) {η : R} :
+    η ∈ nthRootsFinset p (1 : R) ↔ IsPrimitiveRoot η p ∨ η = 1 := by
+  classical
+  simp [nthRootsFinset_eq_of_prime hp, mem_primitiveRoots hp.pos, or_comm]
+
+/-- A `p`-th root of unity that is not `1`, with `p` prime, satisfies `IsPrimitiveRoot η p`. -/
+theorem isPrimitiveRoot_of_mem_nthRootsFinset (hp : p.Prime) {η : R}
+    (hη : η ∈ nthRootsFinset p (1 : R)) (hne1 : η ≠ 1) : IsPrimitiveRoot η p :=
+  ((mem_nthRootsFinset_iff_of_prime hp).1 hη).resolve_right hne1
+
+/-- A `p`-th root of unity that is not `1`, with `p` prime, is a primitive `p`-th root of unity. -/
+theorem mem_primitiveRoots_of_mem_nthRootsFinset (hp : p.Prime) {η : R}
+    (hη : η ∈ nthRootsFinset p (1 : R)) (hne1 : η ≠ 1) : η ∈ primitiveRoots p R :=
+  (mem_primitiveRoots hp.pos).2 (isPrimitiveRoot_of_mem_nthRootsFinset hp hη hne1)
+
+end nthRootsFinsetPrime
 
 section cyclic
 

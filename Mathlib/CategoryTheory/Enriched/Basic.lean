@@ -127,14 +127,14 @@ instance : EnrichedCategory W (TransportEnrichment F C) where
     simp only [comp_whiskerRight, Category.assoc, Functor.LaxMonoidal.μ_natural_left_assoc,
       Functor.LaxMonoidal.left_unitality_inv_assoc]
     simp_rw [← F.map_comp]
-    convert F.map_id _
+    convert! F.map_id _
     simp
   comp_id X Y := by
     simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Functor.LaxMonoidal.μ_natural_right_assoc,
       Functor.LaxMonoidal.right_unitality_inv_assoc]
     simp_rw [← F.map_comp]
-    convert F.map_id _
+    convert! F.map_id _
     simp
   assoc P Q R S := by
     rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
@@ -356,12 +356,14 @@ def forget (F : EnrichedFunctor W C D) :
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `EnrichedFunctor.forget` distributes over composition of enriched functors up to isomorphism. -/
 @[simps!]
 def forgetComp (F : EnrichedFunctor W C D) (G : EnrichedFunctor W D E) :
     (F.comp W G).forget ≅ F.forget ⋙ G.forget :=
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [comp, forget])
 
+set_option backward.defeqAttrib.useBackward true in
 variable (W) (C) in
 /-- `EnrichedFunctor.forget` maps the identity enriched functor to a functor isomorphic to
 `Functor.id`. -/
@@ -476,6 +478,7 @@ variable [BraidedCategory V]
 
 open BraidedCategory
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A presheaf isomorphic to the Yoneda embedding of
 the `V`-object of natural transformations from `F` to `G`.
 -/

@@ -10,10 +10,12 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
+public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
 
@@ -383,8 +385,7 @@ theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLin
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
-    (e.toContinuousLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm :=
-  rfl
+    (e.toContinuousLinearEquiv.toLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm := rfl
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
@@ -634,7 +635,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
     exact ⟨f, Submodule.subset_span hf, y, hy, rfl⟩
   have h_ind (n : ℕ) : U ⊆ M + c ^ n • U := by
     induction n with
-    | zero => simpa using fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
+    | zero => simpa using! fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
     | succ n ih =>
       calc
         U ⊆ M + c ^ n • U := ih
@@ -654,7 +655,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
       intro W hW
       exact (tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
     have hm_tendsto : Tendsto m atTop (𝓝 x) := by
-      simpa [show m = fun n ↦ x - u n by grind] using tendsto_const_nhds.sub hu_tendsto
+      simpa [show m = fun n ↦ x - u n by grind] using! tendsto_const_nhds.sub hu_tendsto
     exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
   have hM_top : M = ⊤ := absorbent_nhds_zero (𝕜 := 𝕜) hU_nhds |>.mono hU_sub_M |>.submodule_eq_top
   exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
@@ -704,3 +705,61 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
   HasCompactSupport.eq_zero_or_finiteDimensional 𝕜 (X := Additive X) hf h'f
 
 end Riesz
+
+section Compl
+
+open Submodule
+
+/-- If `p` is a closed subspace with finite codimension, then any algebraic complement `q` to `p`
+is a topological complement. -/
+theorem Submodule.IsCompl.isTopCompl_of_finiteDimensional_quotient {p q : Submodule 𝕜 E}
+    (h : IsCompl p q) (hp : IsClosed (p : Set E)) [FiniteDimensional 𝕜 (E ⧸ p)] :
+    IsTopCompl p q := by
+  let φ : E ⧸ p →L[𝕜] q := (p.quotientEquivOfIsCompl q h).toLinearMap.toContinuousLinearMap
+  have := (φ ∘L p.mkQL).isTopCompl_of_proj fun x ↦ by simp [φ]
+  simpa [φ] using this.symm
+
+/-- Assume that `p q : Submodule 𝕜 E` are algebraic complements. If `p` is closed and `q`
+has finite dimension, then they are in fact topological complements.
+
+Note that this theorem does not help you to build a closed complement to a finite dimensional
+subspace. That requires the Hahn-Banach theorem, and you don't get much control over what the
+complement is. See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
+theorem Submodule.IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
+    (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
+    IsTopCompl p q := by
+  suffices FiniteDimensional 𝕜 (E ⧸ p) from h.isTopCompl_of_finiteDimensional_quotient hp
+  exact (p.quotientEquivOfIsCompl q h).symm.finiteDimensional
+
+theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodule 𝕜 E}
+    (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 (E ⧸ p)] : p.ClosedComplemented := by
+  obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
+  exact hq.isTopCompl_of_finiteDimensional_quotient hp |>.closedComplemented
+
+@[deprecated (since := "2026-05-09")]
+alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
+  Submodule.ClosedComplemented.of_finiteDimensional_quotient
+
+theorem Submodule.ClosedComplemented.of_disjoint_of_finiteDimensional_quotient
+    {A B : Submodule 𝕜 E} [B_cofg : FiniteDimensional 𝕜 (E ⧸ B)] (hB : IsClosed (B : Set E))
+    (hAB : Disjoint A B) : A.ClosedComplemented := by
+  obtain ⟨C, B_le_C, C_compl_A⟩ := hAB.symm.exists_isCompl
+  have C_cofg : FiniteDimensional 𝕜 (E ⧸ C) := CoFG.of_le B_le_C B_cofg
+  have hC : IsClosed (C : Set E) := isClosed_mono_of_finiteDimensional_quotient hB B_le_C
+  exact C_compl_A.isTopCompl_of_finiteDimensional_quotient hC |>.symm.closedComplemented
+
+lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
+    {A B : Submodule 𝕜 E} [FiniteDimensional 𝕜 A] (hA : A.ClosedComplemented) [T2Space A]
+    (hB : B ≤ A) : B.ClosedComplemented := by
+  obtain ⟨p, hp⟩ := hA
+  obtain ⟨C, hBC⟩ := B.exists_isCompl
+  refine ⟨((projectionOnto B C hBC).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
+  simp [hp ⟨x, hB x.2⟩]
+
+omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
+theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]
+    (f : E →L[𝕜] F) [FiniteDimensional 𝕜 f.range] : f.ker.ClosedComplemented := by
+  suffices FiniteDimensional 𝕜 (E ⧸ f.ker) from .of_finiteDimensional_quotient f.isClosed_ker
+  exact f.toLinearMap.quotKerEquivRange.symm.finiteDimensional
+
+end Compl

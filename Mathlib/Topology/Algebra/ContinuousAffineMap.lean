@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Affine
 
 /-!
@@ -56,7 +56,7 @@ theorem toAffineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (
 
 instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
-  coe_injective' _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
+  coe_injective _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
 
 instance : ContinuousMapClass (P →ᴬ[R] Q) P Q where
   map_continuous := cont
@@ -400,7 +400,7 @@ def prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : P₁ →ᴬ[k] P�
   __ := AffineMap.prod f g
   cont := by eta_expand; dsimp; fun_prop
 
-theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]

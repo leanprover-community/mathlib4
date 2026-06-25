@@ -143,7 +143,7 @@ abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
 
 @[to_additive] instance : FunLike (MulActionHom φ X Y) X Y where
   coe := MulActionHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_additive (attr := simp)]
 theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
@@ -448,7 +448,6 @@ lemma coe_add [SMul M X] [AddZeroClass Y] [DistribSMul N Y] (f g : X →ₑ[σ] 
 instance [SMul M X] [AddMonoid Y] [DistribSMul N Y] :
     AddMonoid (X →ₑ[σ] Y) where
   add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
-  nsmul n f := n • f
   nsmul_zero f := ext fun x ↦ AddMonoid.nsmul_zero (f x)
   nsmul_succ n f := ext fun x ↦ AddMonoid.nsmul_succ n (f x)
 
@@ -484,7 +483,6 @@ instance [SMul M X] [AddGroup Y] [DistribSMul N Y] : AddGroup (X →ₑ[σ] Y) w
   neg f := ⟨-f, by simp⟩
   neg_add_cancel f := ext fun _ ↦ neg_add_cancel _
   sub_eq_add_neg _ _ := ext fun _ ↦ sub_eq_add_neg _ _
-  zsmul z f := z • f
   zsmul_zero' f := ext fun x ↦ SubNegMonoid.zsmul_zero' _
   zsmul_neg' _ _ := ext fun x ↦ SubNegMonoid.zsmul_neg' _ _
   zsmul_succ' _ _ := ext fun x ↦ SubNegMonoid.zsmul_succ' _ _
@@ -555,6 +553,7 @@ variable (C : Type*) [Monoid C] [MulDistribMulAction P C]
 variable (A' : Type*) [Group A'] [MulDistribMulAction M A']
 variable (B' : Type*) [Group B'] [MulDistribMulAction N B']
 
+set_option linter.translateOverwrite false in
 attribute [to_additive existing (dont_translate := M) DistribMulAction]
   MulDistribMulAction
 
@@ -638,7 +637,7 @@ namespace MulDistribMulActionHom
 @[to_additive (dont_translate := M N)]
 instance : FunLike (A →ₑ*[φ] B) A B where
   coe m := m.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
 
@@ -878,7 +877,7 @@ namespace MulSemiringActionHom
 
 instance : FunLike (R →ₑ+*[φ] S) R S where
   coe m := m.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
     cases tF; cases tG; congr
 

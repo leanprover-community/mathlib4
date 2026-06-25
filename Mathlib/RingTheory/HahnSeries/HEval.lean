@@ -94,7 +94,7 @@ theorem support_powerSeriesFamily_subset {x : V⟦Γ⟧} (a b : PowerSeries R) (
         ((powers x) n).coeff g ≠ 0 := by
       refine exists_ne_zero_of_sum_ne_zero ?_
       simpa [PowerSeries.coeff_mul, sum_smul, mul_smul, h] using hn
-    simp only [powers_of_orderTop_pos h, mem_antidiagonal] at he
+    simp only [powers_of_orderTop_pos h, HasAntidiagonal.mem_antidiagonal] at he
     obtain ⟨c, hcn, hc⟩ := he
     simp only [coe_image, Set.Finite.coe_toFinset, Set.mem_image]
     use c
@@ -129,7 +129,7 @@ theorem hsum_powerSeriesFamily_mul {x : V⟦Γ⟧} (a b : PowerSeries R) :
       (fun _ _ => by simp [smul_smul, mul_comm, pow_add])).symm
     · intro ij hij
       simp only [coe_sigma, coe_image, Set.mem_sigma_iff, Set.mem_image, Prod.exists, mem_coe,
-        mem_antidiagonal, and_true]
+        HasAntidiagonal.mem_antidiagonal, and_true]
       use ij.1, ij.2
       simp_all
     · intro i hi his
@@ -140,7 +140,7 @@ theorem hsum_powerSeriesFamily_mul {x : V⟦Γ⟧} (a b : PowerSeries R) :
         simp only [powers_of_orderTop_pos h, Set.Finite.coe_toFinset, Set.mem_image,
           Function.mem_support, ne_eq, Prod.exists, not_exists, not_and] at his
         exact his m n
-      simp only [mem_sigma, mem_antidiagonal] at hi
+      simp only [mem_sigma, HasAntidiagonal.mem_antidiagonal] at hi
       rw [mul_comm ((PowerSeries.coeff i.snd.1) a), ← hi.2, mul_smul, pow_add]
       exact hisc i.snd.1 i.snd.2 <| Sigma.eq hi.2 (by simp)
   · simp only [h, not_false_eq_true, powerSeriesFamily_of_not_orderTop_pos,
@@ -192,7 +192,7 @@ theorem heval_C (r : R) : heval x (C r) = r • 1 := by
   ext g
   simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
     HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
-  rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_ne_zero_C hn])]
+  rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_C_of_ne_zero hn])]
   by_cases hg : g = 0 <;> simp
 
 theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by

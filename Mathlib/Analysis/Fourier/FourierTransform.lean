@@ -177,7 +177,7 @@ section Fubini
 variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] [MeasurableSpace W] [BorelSpace W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
-  {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]
+  {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopologyEither W V]
 
 variable {σ : ℂ →+* ℂ} [RingHomIsometric σ]
 
@@ -206,7 +206,7 @@ theorem integral_fourierIntegral_swap
     apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
   · filter_upwards with ⟨ξ, x⟩
     simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]
-    convert M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
+    convert! M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
     simp
 
 variable [CompleteSpace E] [CompleteSpace F]
@@ -231,7 +231,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
     integral_fourierIntegral_swap M.flip he hL hf hg
   _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by
     simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower,
-      ContinuousLinearMap.coe_smul', Pi.smul_apply, LinearMap.flip_apply]
+      smul_apply, LinearMap.flip_apply]
   _ = ∫ x, M (f x) (∫ ξ, e (-L.flip ξ x) • g ξ ∂ν) ∂μ := by
     congr with x
     apply ContinuousLinearMap.integral_comp_comm
@@ -431,12 +431,6 @@ instance instFourierTransform : FourierTransform (V → E) (V → E) where
 
 instance instFourierTransformInv : FourierTransformInv (V → E) (V → E) where
   fourierInv f w := VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
-
-@[deprecated (since := "2025-11-12")]
-alias fourierIntegral := FourierTransform.fourier
-
-@[deprecated (since := "2025-11-12")]
-alias fourierIntegralInv := FourierTransform.fourierInv
 
 lemma fourier_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl

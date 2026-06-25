@@ -276,10 +276,14 @@ def mapDomain (f : α → β) (v : α →₀ M) : β →₀ M :=
   · intro _
     rw [single_zero, coe_zero, Pi.zero_apply]
 
+lemma mapDomain_of_not_mem_image_support {f : α → β} {x : α →₀ M} {b : β}
+    (hb : b ∉ f '' x.support) : mapDomain f x b = 0 := by
+  rw [mapDomain, sum_apply, sum, Finset.sum_eq_zero]
+  exact fun a ha ↦ single_eq_of_ne fun eq => hb <| eq ▸ Set.mem_image_of_mem _ ha
+
 theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
-    mapDomain f x a = 0 := by
-  rw [mapDomain, sum_apply, sum]
-  exact Finset.sum_eq_zero fun a' _ => single_eq_of_ne fun eq => h <| eq ▸ Set.mem_range_self _
+    mapDomain f x a = 0 :=
+  mapDomain_of_not_mem_image_support <| by grw [Set.image_subset_range]; exact h
 
 @[simp]
 theorem mapDomain_id : mapDomain id v = v :=
@@ -359,7 +363,7 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, if_pos rfl]
-      convert add_zero (x a)
+      convert! add_zero (x a)
       refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [notMem_support_iff.1 hax]
@@ -551,8 +555,8 @@ theorem comapDomain_single (f : α → β) (a : α) (m : M)
   rcases eq_or_ne m 0 with (rfl | hm)
   · simp_rw [single_zero, comapDomain_zero]
   · rw [eq_single_iff, comapDomain_apply, comapDomain_support, ← Finset.coe_subset, coe_preimage,
-      support_single_ne_zero _ hm, coe_singleton, coe_singleton, single_eq_same]
-    rw [support_single_ne_zero _ hm, coe_singleton] at hif
+      support_single _ hm, coe_singleton, coe_singleton, single_eq_same]
+    rw [support_single _ hm, coe_singleton] at hif
     exact ⟨fun x hx => hif hx rfl hx, rfl⟩
 
 lemma comapDomain_surjective {f : α → β} (hf : Function.Injective f) :
@@ -1387,7 +1391,7 @@ end Sigma
 
 lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
     x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
-  convert mem_range_mapDomain_iff _ f.injective _
+  convert! mem_range_mapDomain_iff _ f.injective _
   · ext; rw [embDomain_eq_mapDomain]
   · grind
 

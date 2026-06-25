@@ -96,7 +96,7 @@ theorem of_mul_inv_t (a : A) :
 /-- Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t` -/
 def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     HNNExtension G A B φ →* H :=
-  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le <| by
+  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le.2 <| by
     rintro _ _ ⟨a, rfl, rfl⟩
     simp [hx])
 
@@ -160,7 +160,7 @@ and `toSubgroupEquiv` is the group isomorphism from `toSubgroup A B u` to `toSub
 It is defined to be `φ` when `u = 1` and `φ⁻¹` when `u = -1`. -/
 def toSubgroupEquiv (u : ℤˣ) : toSubgroup A B u ≃* toSubgroup A B (-u) :=
   if hu : u = 1 then hu ▸ φ else by
-    convert φ.symm <;>
+    convert! φ.symm <;>
     cases Int.units_eq_one_or u <;> simp_all
 
 @[simp]
@@ -418,6 +418,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
+set_option backward.defeqAttrib.useBackward true in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
@@ -449,7 +450,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
     invFun := unitsSMul φ (-1),
     left_inv := fun _ => by rw [unitsSMul_neg]
-    right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
+    right_inv := fun w => by convert! unitsSMul_neg _ _ w; simp }
 
 set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :

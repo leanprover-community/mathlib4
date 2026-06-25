@@ -30,6 +30,7 @@ open Set Function
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
+@[wikidata Q11567]
 structure Complex : Type where
   /-- The real part of a complex number. -/
   re : ℝ
@@ -285,7 +286,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 /-! ### Commutative ring instance and lemmas -/
 
 
-/- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
+/-- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
 defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
@@ -322,8 +323,6 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 end SMul
 
 instance addCommGroup : AddCommGroup ℂ where
-  nsmul := (· • ·)
-  zsmul := (· • ·)
   zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
@@ -347,6 +346,8 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 @[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
 @[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
 @[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
+@[simp, norm_cast] lemma ofReal_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ofReal (OfScientific.ofScientific m s e : ℝ) = OfScientific.ofScientific m s e := rfl
 
 @[simp] lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
 @[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
@@ -358,6 +359,10 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 @[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
 @[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+@[simp] lemma re_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℂ).re = OfScientific.ofScientific m s e := rfl
+@[simp] lemma im_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℂ).im = 0 := rfl
 
 
 /-! ### Ring structure -/
@@ -382,19 +387,34 @@ instance commRing : CommRing ℂ :=
     mul_one := by intros; ext <;> simp
     mul_comm := by intros; ext <;> simp <;> ring }
 
+section computable_shortcuts
+
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
-instance : Ring ℂ := by infer_instance
+instance : Ring ℂ :=
+  delta% inferInstance
+
+/-- This shortcut instance ensures we do not find `NonUnitalCommRing` via the noncomputable
+`instCommCStarAlgebraComplex` instance. -/
+instance : NonUnitalCommRing ℂ :=
+  delta% inferInstance
 
 /-- This shortcut instance ensures we do not find `CommSemiring` via the noncomputable
 `Complex.field` instance. -/
 instance : CommSemiring ℂ :=
-  inferInstance
+  delta% inferInstance
 
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
 instance : Semiring ℂ :=
-  inferInstance
+  delta% inferInstance
+
+/-- This shortcut instance ensures we do not find `AddCommMonoid` via the noncomputable
+`Complex.instNormedField` instance. -/
+instance : AddCommMonoid ℂ :=
+  delta% inferInstance
+
+end computable_shortcuts
 
 /-- The "real part" map, considered as an additive group homomorphism. -/
 def reAddGroupHom : ℂ →+ ℝ where
@@ -785,7 +805,7 @@ lemma reProdIm_subset_iff {s s₁ t t₁ : Set ℝ} : s ×ℂ t ⊆ s₁ ×ℂ t
 /-- If `s ⊆ s₁ ⊆ ℝ` and `t ⊆ t₁ ⊆ ℝ`, then `s × t ⊆ s₁ × t₁` in `ℂ`. -/
 lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
     s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
-  convert prod_subset_prod_iff
+  convert! prod_subset_prod_iff
   exact reProdIm_subset_iff
 
 variable {s t : Set ℝ}

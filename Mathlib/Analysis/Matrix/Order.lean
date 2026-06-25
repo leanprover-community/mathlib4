@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 public import Mathlib.LinearAlgebra.Matrix.Vec
+public import Mathlib.Analysis.CStarAlgebra.Matrix
 
 /-!
 # The partial order on matrices
@@ -339,7 +340,28 @@ def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
 
 @[deprecated (since := "2025-11-18")] alias PosDef.matrixNormedAddCommGroup :=
   toMatrixNormedAddCommGroup
-@[deprecated (since := "2025-11-12")] alias PosDef.matrixInnerProductSpace :=
-  toMatrixInnerProductSpace
+
+open scoped Norms.L2Operator in
+set_option backward.isDefEq.respectTransparency false in
+/-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
+given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
+instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
+    IsometricContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
+  isometric A hA := by
+    rw [← isHermitian_iff_isSelfAdjoint] at hA
+    rw [IsHermitian.cfcHom_eq_cfcAux hA, AddMonoidHomClass.isometry_iff_norm]
+    intro f
+    simp only [IsHermitian.cfcAux_apply, Unitary.conjStarAlgAut_apply, ← Unitary.coe_star,
+      CStarRing.norm_mul_coe_unitary, CStarRing.norm_coe_unitary_mul, l2_opNorm_diagonal]
+    rw [((algebraMap_isometry ℝ 𝕜).postcomp_pi).norm_map_of_map_zero (by ext; simp)]
+    let : Fintype (spectrum ℝ A) := .ofFinite _
+    rw [ContinuousMap.norm_eq_norm_coeFn]
+    refine Function.Surjective.pi_norm_comp ?_ _
+    rw [← Function.Surjective.of_comp_iff'
+      (Equiv.setCongr hA.spectrum_real_eq_range_eigenvalues).bijective]
+    exact Set.codRestrict_range_surjective hA.eigenvalues
+
+scoped[Matrix.Norms.L2Operator] attribute [instance]
+  Matrix.instIsometricContinuousFunctionalCalculus
 
 end Matrix

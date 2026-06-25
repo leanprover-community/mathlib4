@@ -478,8 +478,9 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
       exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
-      convert H.degree_eq_coe_lift_order_map g 1
-        (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)
+      convert!
+        H.degree_eq_coe_lift_order_map g 1 (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one])
+          (by simp)
       exact (ENat.lift_eq_toNat_of_lt_top _).symm
     dsimp
     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
@@ -745,9 +746,9 @@ theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
   · rw [coeff_of_lt_order p.1 ?_]
     · rw [zero_mul]
     · rw [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg), ENat.lift_eq_toNat_of_lt_top]
-      refine (Finset.antidiagonal.fst_le hp).lt_of_ne ?_
+      refine (Finset.HasAntidiagonal.antidiagonal.fst_le hp).lt_of_ne ?_
       contrapose hnotMem
-      rwa [Finset.mem_singleton, Finset.antidiagonal_congr hp (by simp)]
+      rwa [Finset.mem_singleton, Finset.HasAntidiagonal.antidiagonal_congr hp (by simp)]
 
 theorem IsWeierstrassDivision.isWeierstrassFactorization
     {g q : A⟦X⟧} {r : A[X]} (hg : g.map (IsLocalRing.residue A) ≠ 0)

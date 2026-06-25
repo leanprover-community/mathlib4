@@ -324,7 +324,6 @@ lemma exists_leftFraction₃ {X Y : C} (f f' f'' : L.obj X ⟶ L.obj Y) :
 
 end Localization
 
-
 lemma Functor.faithful_of_comp_of_hasLeftCalculusOfFractions
     {E : Type*} [Category* E] (F : D ⥤ E)
     [W.HasLeftCalculusOfFractions]

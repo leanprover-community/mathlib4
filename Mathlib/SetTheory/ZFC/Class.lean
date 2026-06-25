@@ -208,8 +208,10 @@ theorem coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (x : Class.{u}) ∩ y :=
   ext fun _ => ZFSet.mem_inter
 
 @[simp, norm_cast]
-theorem coe_diff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
+theorem coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
   ext fun _ => ZFSet.mem_sdiff
+
+@[deprecated (since := "2026-06-03")] alias coe_diff := coe_sdiff
 
 @[simp, norm_cast]
 theorem coe_powerset (x : ZFSet.{u}) : ↑x.powerset = powerset.{u} x :=
@@ -366,8 +368,6 @@ noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} 
   left_inv := private Function.rightInverse_of_injective_of_leftInverse (by intro _ _; simp)
     fun s ↦ Subtype.coe_injective <| coe_equiv_aux s.2
   right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.2
-
-@[deprecated (since := "2025-11-05")] alias toSet_equiv := coeEquiv
 
 /-- The **Burali-Forti paradox**: ordinals form a proper class. -/
 theorem isOrdinal_notMem_univ : IsOrdinal ∉ Class.univ.{u} := by
