@@ -84,7 +84,7 @@ is the digraph whose vertices are all adjacent.
 Note that every vertex is adjacent to itself in `⊤`.
 -/
 protected def completeDigraph (V : Type*) : Digraph V where
-  verts := ⊤
+  verts := .univ
   Adj := ⊤
 
 /--
