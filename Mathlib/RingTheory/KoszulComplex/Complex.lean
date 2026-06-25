@@ -158,13 +158,13 @@ noncomputable def XZeroLinearEquivRing : (koszulComplex φ).X 0 ≃ₗ[R] R :=
   exteriorPower.zeroEquiv R M
 
 set_option backward.isDefEq.respectTransparency false in
-lemma X_isZero_of_card_generators_le {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+lemma X_isZero_of_card_generators_lt {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulComplex φ).X i) :=
   ModuleCat.isZero_of_iff_subsingleton.mpr
     (exteriorPower.subsingleton_of_card_generators_le g hg i hi)
 
-lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
+lemma ofList_X_isZero_of_length_lt (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((ofList l).X i) := X_isZero_of_card_generators_le _
   (Pi.basisFun R (Fin l.length)) (Pi.basisFun R (Fin l.length)).span_eq i
   (by simpa [Nat.card_eq_fintype_card] using hi)
