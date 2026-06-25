@@ -35,8 +35,10 @@ variable {X Y : Scheme.{u}} {R : Type*}
 
 /--
 Algebraic cycle on a scheme `X` with coefficients in a type `Z` is just a function from `X` to `Z`
-with locally finite support.
-(see the module docstring for more details).
+with locally finite support (see the module docstring for more details).
+
+Note: currently this is an abbrev to save some effort in duplicating API. This seems fine for now,
+but be aware of this if there is ever an instance clash involving algebraic cycles.
 -/
 @[stacks 02QR]
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
