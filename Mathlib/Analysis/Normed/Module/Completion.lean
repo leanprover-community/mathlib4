@@ -107,8 +107,8 @@ variable {R₁ R₂ E F : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R�
     [UniformSpace F] [AddCommGroup F] [Module R₂ F] [T2Space F] [ContinuousAdd F] [CompleteSpace F]
     [ContinuousConstSMul R₂ F]
 
-/-- The continuous linear version of `.extension`. It extends a linear function to a linear function
-over the completion. -/
+/-- Extension of a linear function to a linear function over the completion. This is the continuous
+linear version of `UniformSpace.Completion.extension`. -/
 def fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) : Completion E →SL[σ₁₂] F where
   toFun := Completion.extension f
   map_add' a b := induction_on₂ a b (isClosed_eq (by fun_prop) (by fun_prop)) <| by
