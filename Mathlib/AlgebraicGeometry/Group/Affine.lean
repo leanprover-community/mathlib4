@@ -454,13 +454,10 @@ affine group schemes over `Spec R`.
 section rightEdge
 
 set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in
 /-- The essential image of `R`-algebras under `Spec` is precisely affine schemes over `Spec R`. -/
 @[simp]
 lemma essImage_algSpec {G : Over <| Spec R} : (algSpec R).essImage G ↔ IsAffine G.left := by
-  simp [algSpec]
-  rw [Functor.essImage_overPost] -- not sure why `simp` doesn't use this already
-  simp
+  simp [algSpec, Functor.essImage_overPost (F := Scheme.Spec)]
 
 /-- The essential image of `R`-bialgebras under `Spec` is precisely affine monoid schemes over
 `Spec R`. -/
