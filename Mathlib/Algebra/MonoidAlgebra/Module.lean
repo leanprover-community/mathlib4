@@ -66,7 +66,7 @@ variable (R) in
 def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S where
   __ := coeffEquiv
   __ := coeffEquiv.addEquiv (β := M →₀ S)
-  map_smul' m x := (coeffEquiv.linearEquiv R (β := M →₀ S) :).map_smul m x
+  map_smul' := (coeffEquiv.linearEquiv R (β := M →₀ S)).map_smul
 
 variable (R S s) in
 /-- The `R`-submodule of all elements of `S[M]` supported on a subset `s` of `M`. -/
