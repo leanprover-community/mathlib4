@@ -125,21 +125,21 @@ theorem ReflectsMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
   ⟨fun _ => of_iso α, fun _ => of_iso α.symm⟩
 
 @[deprecated (since := "2026-06-25")]
-alias preservedMonomorphisms.of_natTrans := PreservesMonomorphisms.of_natTrans
+alias preservesMonomorphisms.of_natTrans := PreservesMonomorphisms.of_natTrans
 @[deprecated (since := "2026-06-25")]
-alias preservedMonomorphisms.of_iso := PreservesMonomorphisms.of_iso
+alias preservesMonomorphisms.of_iso := PreservesMonomorphisms.of_iso
 @[deprecated (since := "2026-06-25")]
-alias preservedMonomorphisms.iso_iff := PreservesMonomorphisms.iso_iff
+alias preservesMonomorphisms.iso_iff := PreservesMonomorphisms.iso_iff
 @[deprecated (since := "2026-06-25")]
 alias reflectsMonomorphisms.of_iso := ReflectsMonomorphisms.of_iso
 @[deprecated (since := "2026-06-25")]
 alias reflectsMonomorphisms.iso_iff := ReflectsMonomorphisms.iso_iff
 @[deprecated (since := "2026-06-25")]
-alias preservedEpimorphisms.of_natTrans := PreservesEpimorphisms.of_natTrans
+alias preservesEpimorphisms.of_natTrans := PreservesEpimorphisms.of_natTrans
 @[deprecated (since := "2026-06-25")]
-alias preservedEpimorphisms.of_iso := PreservesEpimorphisms.of_iso
+alias preservesEpimorphisms.of_iso := PreservesEpimorphisms.of_iso
 @[deprecated (since := "2026-06-25")]
-alias preservedEpimorphisms.iso_iff := PreservesEpimorphisms.iso_iff
+alias preservesEpimorphisms.iso_iff := PreservesEpimorphisms.iso_iff
 @[deprecated (since := "2026-06-25")]
 alias reflectsEpimorphisms.of_iso := ReflectsEpimorphisms.of_iso
 @[deprecated (since := "2026-06-25")]
