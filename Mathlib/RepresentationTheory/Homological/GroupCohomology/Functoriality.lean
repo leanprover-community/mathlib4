@@ -183,7 +183,7 @@ noncomputable def mapIso (e : G ≃* H) (e' : B.V ≃ₗ[k] A.V)
     simp [he, LinearMap.comp_assoc]⟩) n
   hom_inv_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    refine map_congr (by simp) (by simp [res_id]) n
+    exact map_congr (by simp) (by simp [res_id]) n
   inv_hom_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
     exact groupCohomology.map_congr (by simp) e'.comp_symm n
