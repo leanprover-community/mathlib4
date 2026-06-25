@@ -55,10 +55,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   (I : ModelWithCorners 𝕜 E H)
   {n : ℕ∞} [IsManifold I n M]
 
-lemma quotient_ignores_smul (g : G) (u : M) :
-    (⟦u⟧ : orbitRel.Quotient G M) = ⟦g • u⟧ :=
-  Quotient.eq.mpr ⟨g⁻¹, (by exact inv_smul_smul g u)⟩
-
 omit [T2Space M] [LocallyCompactSpace M] in
 lemma mem_contDiffGroupoid_of_contMDiff_chartAt (x y : M) {h : OpenPartialHomeomorph M M}
     (hh : ContMDiff I I n h) (hhsymm : ContMDiff I I n h.symm) :
@@ -137,7 +133,8 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       intro z hz
       obtain ⟨u, hu, hz⟩ := f_source_t hz
       simp only [f, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
-      rw [← hz, φx.left_inv hu.1.2, hQ.localInverseAt_symm, quotient_ignores_smul g0 u]
+      rw [← hz, φx.left_inv hu.1.2, hQ.localInverseAt_symm,
+        ← orbitRel.Quotient.quotient_smul_eq (g:=g0)]
       apply Set.mem_image_of_mem (Homeomorph.smul g0) at hu
       simp only [Up', ← Homeomorph.smul_symm, Homeomorph.image_symm,
         Homeomorph.smul_apply, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage,

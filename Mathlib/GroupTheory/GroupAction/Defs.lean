@@ -343,6 +343,11 @@ abbrev orbitRel.Quotient : Type _ :=
 
 variable {G α}
 
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.quotient_smul_eq {g : G} {a : α} :
+    ⟦g • a⟧ = (⟦a⟧ : orbitRel.Quotient G α) :=
+  Quotient.eq.mpr ⟨g, rfl⟩
+
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
