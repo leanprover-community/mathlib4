@@ -3,13 +3,13 @@ Copyright (c) 2026 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.ComposableArrows.Basic
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Homeomorph.TransferInstance
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Homeomorph.TransferInstance
 
 /-! # Topological categories and groupoids
 In this file we define topological categories and groupoids, i.e. categories / groupoids whose
@@ -26,12 +26,13 @@ here instead of working abstractly with category/groupoid objects in `TopCat`.
   composition maps of `C` are continuous with respect to given topologies on `C` and `Arrow C`.
 * `IsTopologicalGroupoid C`: `Prop`-valued typeclass stating that a category is both a groupoid and
   a topological category for which the inverse map `Arrow C → Arrow C` is also continuous.
-* `topologicalNerve C`: the nerve of a topological category as a simplicial topological space.
 * For every topological monoid `M`, `SingleObj M` is a topological category.
 * For every topological group `G`, `SingleObj G` is a topological groupoid.
 -/
 
 universe u
+
+@[expose] public section
 
 open Topology
 
@@ -58,6 +59,10 @@ lemma continuous_obj' {n : ℕ} {i : ℕ} (h : i ≤ n := by valid) :
     Continuous (fun F ↦ F.obj' i : ComposableArrows C n → C) :=
   continuous_iff_le_induced.2 <| inf_le_of_left_le <| iInf₂_le _ _
 
+/-- By construction, the map from `ComposableArrows C n` to `Arrow C` selecting the `i`th arrow is
+continuous. Continuity of `map'` for arbitrary indices `i` and `j` also holds but only for
+topological categories - continuity of all `map'` is exactly the statement that composition and
+the creation of identity morphisms from objects are continuous. -/
 lemma continuous_map'_add_one {C : Type*} [Category* C] [TopologicalSpace C]
     [TopologicalSpace (Arrow C)] {n : ℕ} {i : ℕ} (h : i < n := by valid) :
     Continuous (fun F ↦ F.map' i (i + 1) : ComposableArrows C n → Arrow C) :=
@@ -152,7 +157,6 @@ lemma continuous_comp {C : Type*} [Category* C] [TopologicalSpace C] [Topologica
 
 namespace ComposableArrows
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `C` is a topological groupoid, all projections of `ComposableArrows C` to `Arrow C`
 are continuous, including the ones given by identities or compositions. -/
 lemma continuous_map' {C : Type*} [Category* C] [TopologicalSpace C] [TopologicalSpace (Arrow C)]
@@ -181,20 +185,6 @@ lemma continuous_hom {C : Type*} [Category* C] [TopologicalSpace C] [Topological
     Continuous (fun F ↦ F.hom : ComposableArrows C n → Arrow C) :=
   continuous_map'
 
-lemma continuous_map {C : Type*} [Category* C] [TopologicalSpace C] [TopologicalSpace (Arrow C)]
-    [∀ X Y : C, TopologicalSpace (X ⟶ Y)] [IsTopologicalCategory C]
-    {n : ℕ} {i j} {f : i ⟶ j} : Continuous (fun F ↦ F.map f : ComposableArrows C n → Arrow C) := by
-  obtain ⟨i, hi⟩ := i
-  obtain ⟨j, hj⟩ := j
-  rw [Subsingleton.elim f (homOfLE (leOfHom f))]
-  exact continuous_map' (h := leOfHom f)
-
-lemma continuous_whiskerLeft {C : Type*} [Category* C] [TopologicalSpace C]
-    [TopologicalSpace (Arrow C)] [∀ X Y : C, TopologicalSpace (X ⟶ Y)] [IsTopologicalCategory C]
-    {n m : ℕ} (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
-    Continuous (fun F : ComposableArrows C m ↦ F.whiskerLeft Φ) :=
-  continuous_iff.2 ⟨fun i hi ↦ continuous_obj', fun i hi ↦ continuous_map⟩
-
 end ComposableArrows
 
 /-- We say that a category is a topological groupoid if it is both a groupoid and a topological
@@ -214,7 +204,7 @@ lemma continuous_groupoidInv (C : Type*) [Groupoid C] [TopologicalSpace C]
 
 end IsTopologicalGroupoid
 
-section Examples
+section SingleObj
 
 instance {M : Type*} : TopologicalSpace (SingleObj M) := ⊥
 
@@ -281,25 +271,6 @@ instance {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
     obtain rfl := Subsingleton.elim Y (SingleObj.star G)
     simp [SingleObj.arrowMkHomeomorph, SingleObj.inv_as_inv]
 
-end Examples
-
-section Nerve
-
-open ConcreteCategory in
-/-- The *topological nerve* of a topological category is the simplicial topological space whose
-underlying simplicial set is the nerve of the underlying category, equipped with the appropriate
-topologies. -/
-@[simps -isSimp]
-def topologicalNerve (C : Type*) [Category* C] [TopologicalSpace C] [TopologicalSpace (Arrow C)]
-    [∀ X Y : C, TopologicalSpace (X ⟶ Y)] [IsTopologicalCategory C] : SimplicialObject TopCat where
-  obj Δ := .of (ComposableArrows C (Δ.unop.len))
-  map f := ofHom ⟨↾fun x ↦ x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor,
-    ComposableArrows.continuous_whiskerLeft _⟩
-  map_id _ := rfl
-  map_comp _ _ := rfl
-
-attribute [simp] topologicalNerve_obj_carrier
-
-end Nerve
+end SingleObj
 
 end CategoryTheory
