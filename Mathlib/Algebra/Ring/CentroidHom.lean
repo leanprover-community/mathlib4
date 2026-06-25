@@ -246,6 +246,10 @@ instance instSMul : SMul M (CentroidHom α) where
         change n • f (a * b) = n • f a * b
         rw [map_mul_right f, ← smul_mul_assoc] }
 
+-- separate because `ℕ+` is not a `Monoid`
+instance instPSMul : SMul ℕ+ (CentroidHom α) where
+  smul n f := n.val • f
+
 instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (CentroidHom α) where
   smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
@@ -257,6 +261,28 @@ instance [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScal
 
 instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) where
   smul_assoc _ _ _ := rfl
+
+instance hasPPow : Pow (CentroidHom α) ℕ+ :=
+  ⟨fun f n ↦
+    { toAddMonoidHom := (f.toEnd ^ n : AddMonoid.End α)
+      map_mul_left' := fun a b ↦ by
+        induction n using Semigroup.ppow_induction f.toEnd generalizing b with
+        | h1 => exact f.map_mul_left' _ _
+        | hsucc n IH =>
+          have : f.toEnd (a * b) = a * f.toEnd b := f.map_mul_left' a b
+          refine (congr_fun (AddMonoid.End.coe_mul _
+            (f.toEnd ^ PNat.mk (n + 1) (Nat.succ_pos n)) f.toEnd) (a * b)).trans ?_
+          simp only [Function.comp_apply, this]
+          exact IH (f.toEnd b)
+      map_mul_right' := fun a b ↦ by
+        induction n using Semigroup.ppow_induction f.toEnd generalizing a with
+        | h1 => exact f.map_mul_right' _ _
+        | hsucc n IH =>
+          have h a b : f.toEnd (a * b) = f.toEnd a * b := f.map_mul_right' a b
+          refine (congr_fun (AddMonoid.End.coe_mul _
+            (f.toEnd ^ PNat.mk (n + 1) (Nat.succ_pos n)) f.toEnd) (a * b)).trans ?_
+          simp only [Function.comp_apply, h]
+          exact IH (f.toEnd a)}⟩
 
 instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
@@ -327,8 +353,13 @@ theorem toEnd_add (x y : CentroidHom α) : (x + y).toEnd = x.toEnd + y.toEnd :=
 theorem toEnd_smul (m : M) (x : CentroidHom α) : (m • x).toEnd = m • x.toEnd :=
   rfl
 
+theorem toEnd_psmul (n : ℕ+) (x : CentroidHom α) : (n • x).toEnd = n • x.toEnd := by
+  rw [← nsmul_val_eq_psmul]
+  exact toEnd_smul n.val x
+
 instance : AddCommMonoid (CentroidHom α) :=
-  coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add (swap toEnd_smul)
+  coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add (swap toEnd_psmul)
+    (swap toEnd_smul)
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
@@ -348,6 +379,10 @@ theorem toEnd_mul (x y : CentroidHom α) : (x * y).toEnd = x.toEnd * y.toEnd :=
   rfl
 
 @[simp]
+theorem toEnd_ppow (x : CentroidHom α) (n : ℕ+) : (x ^ n).toEnd = x.toEnd ^ n :=
+  rfl
+
+@[simp]
 theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :=
   rfl
 
@@ -357,8 +392,8 @@ theorem toEnd_natCast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
-  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_smul toEnd_pow
-    toEnd_natCast
+  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_psmul toEnd_smul
+    toEnd_ppow toEnd_pow toEnd_natCast
 
 variable (α) in
 /-- `CentroidHom.toEnd` as a `RingHom`. -/
@@ -571,7 +606,7 @@ theorem toEnd_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
 
 instance : AddCommGroup (CentroidHom α) :=
   toEnd_injective.addCommGroup _
-    toEnd_zero toEnd_add toEnd_neg toEnd_sub (swap toEnd_smul) (swap toEnd_smul)
+    toEnd_zero toEnd_add toEnd_neg toEnd_sub (swap toEnd_psmul) (swap toEnd_smul) (swap toEnd_smul)
 
 @[simp, norm_cast]
 theorem coe_neg (f : CentroidHom α) : ⇑(-f) = -f :=
@@ -595,7 +630,7 @@ theorem toEnd_intCast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
 
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
-    toEnd_smul toEnd_smul toEnd_pow toEnd_natCast toEnd_intCast
+    toEnd_psmul toEnd_smul toEnd_smul toEnd_ppow toEnd_pow toEnd_natCast toEnd_intCast
 
 end NonUnitalNonAssocRing
 
