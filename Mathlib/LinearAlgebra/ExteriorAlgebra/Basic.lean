@@ -389,6 +389,29 @@ lemma ιMulti_family_mul_of_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v 
       finSumFinEquiv_symm_apply_natAdd]
     aesop
 
+section anticomm
+
+lemma ι_mul_ιMulti_anticomm {j : ℕ} (z : M) (v : Fin j → M) :
+    ι R z * ιMulti R j v = ((-1 : ℤˣ) ^ j) • (ιMulti R j v * ι R z) := by
+  induction j with
+  | zero => simp
+  | succ j ih =>
+    have hzw : ι R z * ι R (v 0) = -(ι R (v 0) * ι R z) :=
+      eq_neg_of_add_eq_zero_left (ι_add_mul_swap z (v 0))
+    rw [ιMulti_succ_apply, ← mul_assoc, hzw, neg_mul, mul_assoc, ih (Matrix.vecTail v),
+      mul_smul_comm, uzpow_add, uzpow_one, mul_smul, Units.neg_smul, one_smul, smul_neg,
+      mul_assoc]
+
+lemma ιMulti_mul_ιMulti_anticomm {i j : ℕ} (u : Fin i → M) (v : Fin j → M) :
+    ιMulti R i u * ιMulti R j v = ((-1 : ℤˣ) ^ (j * i)) • (ιMulti R j v * ιMulti R i u) := by
+  induction i with
+  | zero => simp
+  | succ i ih =>
+    rw [ιMulti_succ_apply, mul_assoc, ih (Matrix.vecTail u), mul_smul_comm, ← mul_assoc,
+      ι_mul_ιMulti_anticomm, smul_mul_assoc, smul_smul, ← uzpow_add, Nat.mul_succ, mul_assoc]
+
+end anticomm
+
 variable {R}
 
 /-- An `ExteriorAlgebra` over a nontrivial ring is nontrivial. -/
