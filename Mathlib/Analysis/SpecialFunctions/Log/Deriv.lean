@@ -253,8 +253,6 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   -- fourth step: conclude by massaging the inequality of the third step
   simpa [F, div_mul_eq_mul_div, pow_succ] using C
 
--- see https://github.com/leanprover-community/mathlib4/issues/29041
-set_option linter.unusedSimpArgs false in
 /--
 Compute the derivative of the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
 Taylor series at `0` up to order `n`. This is an auxiliary lemma for
@@ -270,14 +268,14 @@ lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
   refine ((((((hasDerivAt_id _).const_add _).div ((hasDerivAt_id _).const_sub _) (by grind)).log
           ?_).const_mul _).sub (HasDerivAt.fun_sum fun i hi ↦ (hasDerivAt_pow _ _).div_const _))
         |>.congr_deriv ?_
-  · simp only [id_eq, div_ne_zero_iff, Pi.div_apply]; grind
+  · simp only [div_ne_zero_iff, Pi.div_apply]; grind
   have : (∑ i ∈ range n, (2 * i + 1) * y ^ (2 * i) / (2 * i + 1)) =
       (∑ i ∈ range n, (y ^ 2) ^ i) := by
     congr with i
     simp [field, mul_comm, ← pow_mul]
   have hy₃ : y ^ 2 ≠ 1 := by simp [hy₁.ne', hy₂.ne]
   have hy₄ : (1 - y) * (1 + y) = 1 - y ^ 2 := by ring
-  simp [this, field, geom_sum_eq hy₃, hy₄, sub_ne_zero_of_ne, hy₃.symm]
+  simp [this, field, geom_sum_eq hy₃, hy₄]
   ring
 
 /-- A lemma estimating the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
