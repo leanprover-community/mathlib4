@@ -175,6 +175,15 @@ section CovariantLESwap
 
 variable [Preorder β] [MulLeftMono M] [MulRightMono M]
 
+@[to_additive (attr := mono, gcongr) psmul_le_psmul_right]
+theorem ppow_le_ppow_left' {M : Type*} [Semigroup M] [Preorder M] [MulLeftMono M] [MulRightMono M]
+    {a b : M} (hab : a ≤ b) (i : ℕ+) : a ^ i ≤ b ^ i := by
+  induction i using Semigroup.ppow_induction a generalizing b with
+  | h1 => simp [hab]
+  | hsucc i IH =>
+    rw [ppow_mk_add_one b]
+    exact mul_le_mul' (IH hab) hab
+
 @[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
