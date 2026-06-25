@@ -15,20 +15,26 @@ Given a group homomorphism `f : H →* G`, we have the restriction functor
 
 -/
 
-public section
+@[expose] public section
 
-universe t w u v v1 v2
+universe t w u v v1 v2 v3
 
-variable {k : Type u} [Semiring k] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
+variable {k : Type u} [Semiring k] {G : Type v1} {H : Type v2} {K : Type v3}
+  [Monoid G] [Monoid H] [Monoid K]
 
 open CategoryTheory
 
 namespace Rep
 
+@[implicit_reducible]
+def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
+    of (X := X.V) (X.ρ.comp f) ⟶ of (X := Y.V) (Y.ρ.comp f) :=
+  ofHom ⟨p.hom, fun h ↦ by simpa using p.hom.2 (f h)⟩
+
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
   obj A := of (X := A.V) (A.ρ.comp f)
-  map f' := ofHom ⟨f'.hom, fun h ↦ by simpa using f'.hom.2 (f h)⟩
+  map f' := resMap f f'
 
 /-- The restriction of `X : Rep k G` associated to a monoid homomorphism `f : H →* G` -/
 abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
@@ -41,16 +47,23 @@ lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
 
 lemma res_obj_V : (res f M).V = M.V := rfl
 
-lemma res_map_hom_toLinearMap {M N : Rep k G} (p : M ⟶ N) :
-    ((resFunctor f).map p).hom.toLinearMap = p.hom.toLinearMap := rfl
+@[simp]
+lemma resMap_hom_toLinearMap {M N : Rep k G} (p : M ⟶ N) :
+    (resMap f p).hom.toLinearMap = p.hom.toLinearMap := rfl
+
+@[simp]
+lemma resMap_hom_apply {M N : Rep k G} (p : M ⟶ N) (x : M.V) :
+    @DFunLike.coe (Representation.IntertwiningMap (MonoidHom.comp M.ρ f) (MonoidHom.comp N.ρ f))
+      M.V (fun _ : M.V ↦ N.V) (Representation.IntertwiningMap.instFunLike
+      (MonoidHom.comp M.ρ f) (MonoidHom.comp N.ρ f))
+      (Hom.hom (resMap f p)) x = p.hom x := rfl
 
 section
 
 instance : (resFunctor (k := k) f).Faithful where
   map_injective h := by
     ext : 2
-    rw [Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff] at h
-    simpa using h
+    simpa [Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff] using h
 
 /-- Morphism between `X Y : Rep k G` can be lifted from restrictions associated with `f : H →* G`
   when `f` is surjective. -/
@@ -63,21 +76,13 @@ lemma liftHomOfSurj_toLinearMap {X Y : Rep k G} (hf : Function.Surjective f)
       f'.hom.toLinearMap := rfl
 
 lemma full_res (hf : (⇑f).Surjective) : (resFunctor (k := k) f).Full where
-  map_surjective {X Y} f' := ⟨liftHomOfSurj f hf f', by
-    ext : 2; rw [res_map_hom_toLinearMap, liftHomOfSurj_toLinearMap]⟩
+  map_surjective {X Y} f' := ⟨liftHomOfSurj f hf f', by ext; simp⟩
 
 instance : (resFunctor (k := k) f).Additive where
-  map_add {_ _} _ _ := by
-    ext : 2;
-    simp only [add_hom, Representation.IntertwiningMap.add_toLinearMap]
-    rfl
+  map_add {_ _} _ _ := by ext; simp [add_hom]
 
 instance {k : Type u} [CommSemiring k] : (resFunctor (k := k) f).Linear k where
-  map_smul {X Y} l r := by
-    ext : 2;
-    rw [smul_hom, Representation.IntertwiningMap.toLinearMap_smul,
-      res_map_hom_toLinearMap, smul_hom, Representation.IntertwiningMap.toLinearMap_smul,
-      res_map_hom_toLinearMap]
+  map_smul {X Y} l r := by ext; simp [smul_hom]
 
 noncomputable section
 

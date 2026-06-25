@@ -524,7 +524,7 @@ noncomputable def resNatTrans (n : ℕ) :
     simp only [functor_map, Functor.comp_map,
       ← cancel_epi (groupCohomology.π _ n), HomologicalComplex.homologyπ_naturality_assoc,
       HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
-      ← cochainsMap_comp, res_obj_ρ, Category.comp_id, Rep.hom_id]
+      ← cochainsMap_comp, res_obj_ρ, Category.comp_id]
     rfl
 
 set_option backward.isDefEq.respectTransparency false in

@@ -826,10 +826,8 @@ noncomputable def coresNatTrans (n : ℕ) :
     simp only [← cancel_epi (groupHomology.π _ n), Functor.comp_map,
       functor_map, HomologicalComplex.homologyπ_naturality_assoc,
       HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
-      ← chainsMap_comp, res_obj_ρ, Rep.hom_id, Category.id_comp]
+      ← chainsMap_comp, Category.id_comp]
     rfl
-
-
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this sends `A : Rep k G` to the `n`th "coinflation" map

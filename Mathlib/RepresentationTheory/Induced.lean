@@ -262,8 +262,7 @@ noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ resFunctor φ ⋙ (coinvariantsTensor k G).obj A :=
   NatIso.ofComponents (fun B => coinvariantsTensorIndIso φ A B) fun {X Y} f => by
     ext
-    simp [coinvariantsTensorIndHom, coinvariantsTensorMk,
-      hom_comm_apply, Representation.IntertwiningMap.toLinearMap_apply]
+    simp [coinvariantsTensorIndHom, coinvariantsTensorMk, hom_comm_apply]
 
 end
 end Rep
