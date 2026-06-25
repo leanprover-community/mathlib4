@@ -28,8 +28,6 @@ TODO(@joelriou): obtain similar results for the bounded below homotopy category.
 
 @[expose] public section
 
-universe w₁ w₂
-
 open HomotopicalAlgebra CategoryTheory Limits ZeroObject Category
 
 variable (C : Type*) [Category* C] [Abelian C]
