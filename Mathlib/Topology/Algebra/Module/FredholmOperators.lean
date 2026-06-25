@@ -477,15 +477,6 @@ lemma IsHomeomorph.inv_coe {X Y : Type*} [TopologicalSpace X] [TopologicalSpace 
     (hf : IsHomeomorph f) : hf.homeomorph.invFun = f.invFun := by
   simp
 
--- **FAE** MOVE ME
-open ContinuousLinearEquiv in
-def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₂) (hf : IsHomeomorph f.toEquiv) : M ≃SL[σ] M₂ where
-  __ := f
-  continuous_toFun := hf.continuous
-  continuous_invFun := by
-    rw [Equiv.isHomeomorph_iff] at hf
-    exact hf.2 -- nice?
-
 @[simp]
 lemma ofIsHomeomorph_coe {f : M ≃ₛₗ[σ] M₂} (hf : IsHomeomorph f) :
     (ContinuousLinearEquiv.ofIsHomeomorph f hf).toLinearEquiv = f := by dsimp only [ofIsHomeomorph]
