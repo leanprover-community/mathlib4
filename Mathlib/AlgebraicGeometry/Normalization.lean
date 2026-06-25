@@ -290,7 +290,7 @@ instance [IsIntegralHom f] : IsIso f.toNormalization := by
   rw [← MorphismProperty.cancel_left_of_respectsIso (.isomorphisms _)
     (e ≪≫ (U.2.preimage f).isoSpec).inv]
   letI := (f.app U.1).hom.toAlgebra
-  convert_to IsIso (Spec.map (CommRingCat.ofHom
+  convert_to! IsIso (Spec.map (CommRingCat.ofHom
       (integralClosure Γ(Y, U.1) Γ(X, f ⁻¹ᵁ U.1)).val.toRingHom))
   · rw [← cancel_mono (f.normalizationOpenCover.f U), ← cancel_epi (U.2.preimage f).isoSpec.hom]
     simp [e, -Iso.cancel_iso_hom_left, IsAffineOpen.isoSpec_hom,
