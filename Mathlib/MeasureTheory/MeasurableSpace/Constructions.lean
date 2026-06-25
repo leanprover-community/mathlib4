@@ -962,6 +962,41 @@ protected lemma Measurable.subset {s t : β → Set α} (hs : Measurable s) (hs 
 
 end Set
 
+section Finset
+variable [MeasurableSpace β] {g : β → Finset α}
+
+/-- We give `Finset α` the measurable structure inherited from `Set α` -/
+instance Finset.instMeasurableSpace : MeasurableSpace (Finset α) :=
+  .comap SetLike.coe inferInstance
+
+@[simp]
+lemma measurable_finset_iff : Measurable g ↔ Measurable (fun x ↦ (g x : Set α)) :=
+    measurable_comap_iff
+
+lemma measurableSet_finset_iff (S : Set (Finset α)) : MeasurableSet S ↔
+    ∃ S' : Set (Set α), MeasurableSet S' ∧ { s : Finset α | ↑s ∈ S'} = S :=
+  MeasurableSpace.measurableSet_comap
+
+@[fun_prop]
+lemma measurable_finset_mem (a : α) : Measurable fun s : Finset α ↦ a ∈ s :=
+  (measurable_set_mem a).comp (comap_measurable _)
+
+lemma measurable_finset_notMem (a : α) : Measurable fun s : Finset α ↦ a ∉ s :=
+  (measurable_set_notMem a).comp (comap_measurable _)
+
+lemma measurableSet_mem_finset (a : α) : MeasurableSet {s : Finset α | a ∈ s} :=
+  measurableSet_setOf.2 <| measurable_finset_mem _
+
+lemma measurableSet_notMem_finset (a : α) : MeasurableSet {s : Finset α | a ∉ s} :=
+  measurableSet_setOf.2 <| measurable_finset_notMem _
+
+variable [Countable α]
+
+instance Finset.instMeasurableSingletonClass : MeasurableSingletonClass (Finset α) :=
+  .mk (fun S ↦ (measurableSet_finset_iff _).mpr ⟨ {↑S}, by simp, by ext; simp ⟩)
+
+end Finset
+
 section curry
 
 variable {ι : Type*}
