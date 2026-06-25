@@ -344,7 +344,8 @@ lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
       ← Finset.sum_mul, ← map_sum, RCLike.conj_mul]
     simp
 
-lemma posSemidef_of_mem (f : H) : ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef := by
+lemma posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : H) :
+    ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef := by
   rw [posSemidef_iff_re_sum_kernel']
   refine ⟨((posSemidef_kernel H).1.smul
     (by rw [← RCLike.im_eq_zero_iff_isSelfAdjoint, RCLike.im_ofReal_pow])).sub
@@ -369,8 +370,8 @@ lemma posSemidef_of_mem (f : H) : ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKern
     _ ≥ 0 := by
       grw [ge_iff_le, sub_nonneg, norm_inner_le_norm]
 
-lemma mem_of_posSemidef (f : X → V) {c : ℝ}
-    (hc : ((c : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef) : ∃ (g : H), (g : X → V) = f := by
+lemma mem_coeCLM_range (f : X → V) {c : ℝ}
+    (hc : ((c : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef) : f ∈ (coeCLM 𝕜 (H:=H)).range := by
   let Laux : (X × V →₀ 𝕜) →ₗ[𝕜] 𝕜 := Finsupp.linearCombination 𝕜 (fun xv => ⟪f xv.1, xv.2⟫_𝕜)
   let toSpan : (X × V →₀ 𝕜) →ₗ[𝕜] H := Finsupp.linearCombination 𝕜 (fun xv => kerFun H xv.1 xv.2)
   let toSpan' : (X × V →₀ 𝕜) →ₗ[𝕜] ↥(span 𝕜 {kerFun H x v | (x : X) (v : V)}) :=
@@ -425,6 +426,7 @@ lemma mem_of_posSemidef (f : X → V) {c : ℝ}
   ext x
   apply ext_inner_left 𝕜
   intro v
+  simp only [coe_coe, coeCLM_apply]
   rw [← kerFun_inner, ← inner_conj_symm, toDual_symm_apply,
     show kerFun H x v = K (toSpan' (Finsupp.single (x, v) 1)) from
       (by simp [toSpan', Finsupp.linearCombination_single]; rfl),
@@ -437,9 +439,9 @@ lemma mem_of_posSemidef (f : X → V) {c : ℝ}
     Finsupp.linearCombination_single]
   simp
 
-theorem mem_iff (f : X → V) : (∃ (g : H), (g : X → V) = f) ↔
+theorem mem_coeCLM_range_iff (f : X → V) : f ∈ (coeCLM 𝕜 (H:=H)).range ↔
     ∃ (c : ℝ), 0 ≤ c ∧ ((c : 𝕜)^2 • kernel H - outerKernel 𝕜 f).PosSemidef :=
-  ⟨fun ⟨g, hg⟩ => ⟨‖g‖, norm_nonneg _, hg ▸ posSemidef_of_mem g⟩,
-   fun ⟨_, _, hc⟩ => mem_of_posSemidef f hc⟩
+  ⟨fun ⟨g, hg⟩ => ⟨‖g‖, norm_nonneg _, hg ▸ posSemidef_norm_sq_smul_kernel_sub_outerKernel g⟩,
+   fun ⟨_, _, hc⟩ => mem_coeCLM_range f hc⟩
 
 end RKHS
