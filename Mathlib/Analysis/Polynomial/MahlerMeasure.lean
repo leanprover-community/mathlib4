@@ -293,7 +293,6 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
-set_option linter.style.emptyLine false in
 open MeasureTheory Set in
 /-- **Landau's inequality**: the Mahler measure of a polynomial is at most the ℓ² norm
 of its coefficient vector, `√(∑ ‖coeff i‖²)`.

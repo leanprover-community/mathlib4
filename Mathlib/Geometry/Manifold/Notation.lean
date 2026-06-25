@@ -354,7 +354,6 @@ where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
       else return none
     | _ => pure none
 
-set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -730,7 +729,6 @@ where
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
 
-set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance.
 This supports all `ModelWithCorners` instances that are currently defined in mathlib.
