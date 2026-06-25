@@ -371,8 +371,7 @@ theorem FractionalIdeal.isPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDom
     (I : FractionalIdeal R⁰ K) (hI : ((I ^ n : FractionalIdeal R⁰ K) : Submodule R K).IsPrincipal) :
     (I : Submodule R K).IsPrincipal := by
   by_cases hI0 : I = 0
-  · rw [hI0, FractionalIdeal.coe_zero]
-    exact bot_isPrincipal
+  · simp [hI0, bot_isPrincipal]
   rw [← Ne, ← isUnit_iff_ne_zero] at hI0
   change Submodule.IsPrincipal ((hI0.unit' : FractionalIdeal R⁰ K) : Submodule R K)
   rw [← ClassGroup.mk_eq_one_iff, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
