@@ -63,7 +63,7 @@ lemma ext_iff_mulSupport : f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f
     else rw [notMem_mulSupport.1 hx, notMem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]
 
 @[to_additive]
-lemma ext_iff_mulSupport_union  :
+lemma ext_iff_mulSupport_union :
     f = g ↔ ∀ x ∈ f.mulSupport ∪ g.mulSupport, f x = g x := by
   rw [funext_iff]
   refine ⟨fun h x _ ↦ h x, fun h x ↦ ?_⟩
