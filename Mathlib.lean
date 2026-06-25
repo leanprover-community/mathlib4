@@ -4715,6 +4715,7 @@ public import Mathlib.GroupTheory.Congruence.BigOperators
 public import Mathlib.GroupTheory.Congruence.Defs
 public import Mathlib.GroupTheory.Congruence.Hom
 public import Mathlib.GroupTheory.Congruence.Opposite
+public import Mathlib.GroupTheory.Congruence.Star
 public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.CoprodI
 public import Mathlib.GroupTheory.Coset.Basic
@@ -6474,6 +6475,7 @@ public import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.Congruence.Defs
 public import Mathlib.RingTheory.Congruence.Hom
 public import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.RingTheory.Congruence.Star
 public import Mathlib.RingTheory.Coprime.Basic
 public import Mathlib.RingTheory.Coprime.Ideal
 public import Mathlib.RingTheory.Coprime.Lemmas
