@@ -36,7 +36,7 @@ theorem tfae_nil : TFAE [] :=
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
 theorem TFAE.sublist {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ <+ l₂) : TFAE l₁ :=
-  fun p hp q hq => h p (hl.subset hp) q (hl.subset hq)
+  fun p hp q hq ↦ h p (hl.subset hp) q (hl.subset hq)
 
 theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁.Perm l₂) : TFAE l₁ ↔ TFAE l₂ :=
   ⟨fun h p hp₁ q hp₂ => h p (hp.mem_iff.2 hp₁) q (hp.mem_iff.2 hp₂),
