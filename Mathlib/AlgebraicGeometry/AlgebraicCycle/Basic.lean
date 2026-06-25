@@ -17,6 +17,8 @@ In this file we define algebraic cycles on a scheme `X` with coefficients in a t
 some basic API for working with them. We define an algebraic cycle on a scheme `X` with
 coefficients in a type `R` to be functions `c : X → R` whose support is locally finite.
 
+## Implementation notes
+
 Here we're making use of the equivalence between irreducible closed subsets of a scheme and their
 generic points in order to reuse the API in `Function.locallyFinsupp`, hence the slightly
 nonstandard definition.
