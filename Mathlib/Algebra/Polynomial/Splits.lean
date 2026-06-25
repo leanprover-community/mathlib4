@@ -569,25 +569,33 @@ end
 
 section
 
-variable {A B : Type*} [CommRing R] [Field A] [Algebra R A]
+variable {A B : Type*} [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
   [CommRing B] [IsDomain B] [Algebra R B] {f : R[X]}
 
-theorem Splits.map_aroots_algebraMap [Algebra A B] [IsScalarTower R A B]
-    (hf : (f.map (algebraMap R A)).Splits) :
-    (f.aroots A).map (algebraMap A B) = f.aroots B := by
-  rw [← aroots_map B A, aroots, aroots, hf.roots_map]
-
-theorem Splits.image_rootSet (hf : (f.map (algebraMap R A)).Splits)
+theorem Splits.image_rootSet [IsSimpleRing A] (hf : (f.map (algebraMap R A)).Splits)
     (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
   classical
   rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
-    ← hf.roots_map, map_map, g.comp_algebraMap, ← rootSet]
+    ← hf.roots_map_of_injective, map_map, g.comp_algebraMap, ← rootSet]
+  exact g.injective
 
-theorem Splits.adjoin_rootSet_eq_range
+theorem Splits.adjoin_rootSet_eq_range [IsSimpleRing A]
     (hf : (f.map (algebraMap R A)).Splits) (g : A →ₐ[R] B) :
     Algebra.adjoin R (f.rootSet B) = g.range ↔ Algebra.adjoin R (f.rootSet A) = ⊤ := by
   rw [← hf.image_rootSet g, Algebra.adjoin_image, ← Algebra.map_top]
   exact (Subalgebra.map_injective g.injective).eq_iff
+
+variable [Algebra A B] [FaithfulSMul A B] [IsScalarTower R A B]
+
+theorem Splits.map_aroots_algebraMap (hf : (f.map (algebraMap R A)).Splits) :
+    (f.aroots A).map (algebraMap A B) = f.aroots B := by
+  rw [← aroots_map B A, aroots, aroots,
+    hf.roots_map_of_injective (FaithfulSMul.algebraMap_injective A B)]
+
+theorem Splits.image_rootSet_algebraMap (hf : (f.map (algebraMap R A)).Splits) :
+    (algebraMap A B) '' f.rootSet A = f.rootSet B := by
+  classical
+  rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, hf.map_aroots_algebraMap, ← rootSet]
 
 end
 
