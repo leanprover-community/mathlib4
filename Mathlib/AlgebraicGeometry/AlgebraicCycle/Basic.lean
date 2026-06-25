@@ -62,6 +62,7 @@ dimension is `Order.height`, and the most common notion of codimension is `Order
 more sophisticated notions exist in the literature which are useful when sufficient
 equidimensionality hypotheses cannot be assumed.
 -/
+@[stacks 02R3]
 noncomputable
 def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
     (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
