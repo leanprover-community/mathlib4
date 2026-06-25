@@ -131,6 +131,9 @@ lemma skyscraperPresheafOfModulesObj_isZero_of_neg {U : (TopologicalSpace.Opens 
   exact isZero_zero _
 
 open Classical in
+/--
+The skyscraper presheaf as a presheaf of modules
+-/
 noncomputable
 def skyscraperPresheafOfModules : PresheafOfModules R where
   obj U := skyscraperPresheafOfModulesObj p R M U
