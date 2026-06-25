@@ -88,6 +88,7 @@ Declarations whose name ends with a `'` are expected to contain an explanation f
 Note: This linter can be disabled with `set_option linter.docPrime false`
 -/
 #guard_msgs in
+set_option linter.defProp false in
 def def_no_doc' := 0
 
 -- Anonymous declarations in a primed namespace should not get flagged by the linter.

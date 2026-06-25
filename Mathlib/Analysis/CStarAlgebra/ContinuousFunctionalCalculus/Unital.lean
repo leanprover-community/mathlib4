@@ -770,7 +770,7 @@ noncomputable def cfcUnits (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
 lemma cfcUnits_pow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℕ)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     (cfcUnits f a hf') ^ n =
-      cfcUnits _ _ (forall₂_imp (fun _ _ ↦ pow_ne_zero n) hf') (hf := hf.pow n) := by
+      cfcUnits _ _ (forall₂_imp (fun _ _ ↦ pow_ne_zero n) hf') (hf := hf.fun_pow n) := by
   ext
   cases n with
   | zero => simp [cfc_const_one R a]
@@ -882,7 +882,7 @@ lemma cfc_neg : cfc (fun x ↦ -(f x)) a = -(cfc f a) := by
   · obtain (ha | hf) := not_and_or.mp h
     · simp [cfc_apply_of_not_predicate a ha]
     · rw [cfc_apply_of_not_continuousOn a hf, cfc_apply_of_not_continuousOn, neg_zero]
-      exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
+      exact fun hf_neg ↦ hf <| by simpa using hf_neg.fun_neg
 
 lemma cfc_neg' : cfc (-f) = (-cfc f : A → A) := by ext1 a; exact cfc_neg f a
 
