@@ -138,7 +138,9 @@ private lemma completion_leftMulMapPreGNS_map_smul (m : ℂ) (x : A) :
     (f.leftMulMapPreGNS (m • x)).completion = m • (f.leftMulMapPreGNS x).completion := by
   ext a
   induction a using induction_on with
-  | hp => apply isClosed_eq <;> fun_prop
+  | hp =>
+    exact isClosed_eq (f.leftMulMapPreGNS (m • x)).completion.continuous
+      (m • (f.leftMulMapPreGNS x).completion).continuous
   | ih a => simp [smul_mul_assoc]
 
 /--

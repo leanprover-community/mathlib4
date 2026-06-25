@@ -23,7 +23,6 @@ variable {ι M N : Type*}
 namespace List
 section Defs
 
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] prod prod_nil prod_cons prod_one_cons prod_append prod_concat
   prod_flatten prod_eq_foldl
 

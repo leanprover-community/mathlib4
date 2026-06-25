@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
-public import Mathlib.Algebra.Homology.Refinements
 public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Category.Factorisation
 public import Mathlib.CategoryTheory.Functor.OfSequence
@@ -48,6 +47,7 @@ to take its limit, which shall be the intermediate object in the
 lemma `cm5a_cof`.
 
 -/
+
 
 open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
 
@@ -650,5 +650,44 @@ public lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
   obtain ⟨K', _, ι, π, _, _, hπ, rfl⟩ := cm5a_cof i n
   exact ⟨K', inferInstance, ι, π ≫ p, inferInstance, inferInstance,
     MorphismProperty.comp_mem _ _ _ hπ hp, by simp⟩
+
+open ZeroObject
+
+variable (K)
+
+public lemma exists_mono_quasiIso_injective (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia)
+    [K.IsStrictlyGE n₁] :
+    ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi : Mono i) (_hi' : QuasiIso i)
+      (_ : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n₀ := by
+  have : K.IsStrictlyGE (n₀ + 1) := by rw [h]; infer_instance
+  obtain ⟨L, hL, i, p, hi, hi', hp, _⟩ := cm5a (0 : K ⟶ 0) n₀
+  exact ⟨L, i, hi, hi', (degreewiseEpiWithInjectiveKernel_iff_of_isZero p
+    (Limits.isZero_zero _)).1 hp, hL⟩
+
+public lemma exists_quasiIso_injective (n : ℤ) [K.IsStrictlyGE n] :
+    ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
+      (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
+  /- The proof proceeds by first applying `exists_mono_quasiIso_injective` in order to
+  obtain a monomorphism `K ⟶ L` that is also a quasi-isomorphism
+  with `L` consisting of injective objects and `L` lying in degrees `≥ n - 1`.
+  Then, as it is quasi-isomorphic to `K`, the cochain complex `L` is cohomologically
+  in degrees `≥ n`, so that the composition `K ⟶ L ⟶ L.truncGE n` is a quasi-isomorphism.
+  In order to conclude, one needs to show that `(L.truncGE n).X n` is injective,
+  i.e. that `L.opcycles n` is injective. -/
+  have : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+  obtain ⟨L, i, _, _, hL, _⟩ := exists_mono_quasiIso_injective K (n - 1) n (by simp)
+  have : L.IsGE n := by
+    have hK : K.IsGE n := inferInstance
+    rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
+    exact DerivedCategory.TStructure.t.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
+  have : QuasiIso (L.πTruncGE n) := (L.quasiIso_πTruncGE_iff n).mpr inferInstance
+  have : Injective (L.opcycles n) :=
+    L.injective_opcycles (n - 1) n (L.exactAt_of_isGE n (n - 1))
+  -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
+  refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, fun q ↦ ?_, inferInstance⟩
+  obtain h | rfl | h := lt_trichotomy q n
+  · exact (isZero_of_isStrictlyGE _ n _ h).injective
+  · exact Injective.of_iso (L.truncGEXIsoOpcycles q).symm inferInstance
+  · exact Injective.of_iso (L.truncGEXIso n q h).symm (hL q)
 
 end CochainComplex.Plus.modelCategoryQuillen
