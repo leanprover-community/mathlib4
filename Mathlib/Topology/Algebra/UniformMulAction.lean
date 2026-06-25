@@ -89,7 +89,7 @@ instance (priority := 100) UniformContinuousConstSMul.to_continuousConstSMul
 
 variable {M X Y}
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem UniformContinuous.const_smul [UniformContinuousConstSMul M X] {f : Y → X}
     (hf : UniformContinuous f) (c : M) : UniformContinuous (c • f) :=
   (uniformContinuous_const_smul c).comp hf
@@ -127,10 +127,12 @@ section Ring
 
 variable {R β : Type*} [Ring R] [UniformSpace R] [UniformSpace β]
 
+@[fun_prop]
 theorem UniformContinuous.const_mul' [UniformContinuousConstSMul R R] {f : β → R}
     (hf : UniformContinuous f) (a : R) : UniformContinuous fun x ↦ a * f x :=
   hf.const_smul a
 
+@[fun_prop]
 theorem UniformContinuous.mul_const' [UniformContinuousConstSMul Rᵐᵒᵖ R] {f : β → R}
     (hf : UniformContinuous f) (a : R) : UniformContinuous fun x ↦ f x * a :=
   hf.const_smul (MulOpposite.op a)
@@ -143,6 +145,7 @@ theorem uniformContinuous_mul_right' [UniformContinuousConstSMul Rᵐᵒᵖ R] (
     UniformContinuous fun b : R => b * a :=
   uniformContinuous_id.mul_const' _
 
+@[fun_prop]
 theorem UniformContinuous.div_const' {R β : Type*} [DivisionRing R] [UniformSpace R]
     [UniformContinuousConstSMul Rᵐᵒᵖ R] [UniformSpace β] {f : β → R}
     (hf : UniformContinuous f) (a : R) :

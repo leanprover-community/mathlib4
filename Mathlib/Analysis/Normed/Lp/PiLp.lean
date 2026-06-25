@@ -565,10 +565,12 @@ instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   (Pi.uniformSpace β).comap ofLp
 
+@[fun_prop]
 lemma uniformContinuous_ofLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@ofLp p (∀ i, β i)) :=
   uniformContinuous_comap
 
+@[fun_prop]
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)) :=
   uniformContinuous_comap' uniformContinuous_id

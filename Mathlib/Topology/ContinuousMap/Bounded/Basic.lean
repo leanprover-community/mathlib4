@@ -280,6 +280,7 @@ theorem lipschitz_eval_const (x : α) : LipschitzWith 1 fun f : α →ᵇ β => 
 @[deprecated (since := "2025-11-29")]
 alias lipschitz_evalx := lipschitz_eval_const
 
+@[fun_prop]
 theorem uniformContinuous_coe : @UniformContinuous (α →ᵇ β) (α → β) _ _ (⇑) :=
   uniformContinuous_pi.2 fun x => (lipschitz_eval_const x).uniformContinuous
 
@@ -391,6 +392,7 @@ theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
         dist (G (f x)) (G (g x)) ≤ C * dist (f x) (g x) := H.dist_le_mul _ _
         _ ≤ C * dist f g := by gcongr; apply dist_coe_le_dist
 
+@[fun_prop]
 /-- The composition operator (in the target) with a Lipschitz map is uniformly continuous. -/
 theorem uniformContinuous_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     UniformContinuous (comp G H : (α →ᵇ β) → α →ᵇ γ) :=

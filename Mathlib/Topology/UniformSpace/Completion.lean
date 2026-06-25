@@ -238,6 +238,7 @@ end T0Space
 
 variable [CompleteSpace β]
 
+@[fun_prop]
 theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) := by
   by_cases hf : UniformContinuous f
   · rw [extend, if_pos hf]
@@ -344,6 +345,7 @@ attribute [local instance]
 theorem nonempty_completion_iff : Nonempty (Completion α) ↔ Nonempty α :=
   cPkg.dense.nonempty_iff.symm
 
+@[fun_prop]
 theorem uniformContinuous_coe : UniformContinuous ((↑) : α → Completion α) :=
   cPkg.uniformContinuous_coe
 
@@ -431,6 +433,7 @@ section CompleteSpace
 
 variable [CompleteSpace β]
 
+@[fun_prop]
 theorem uniformContinuous_extension : UniformContinuous (Completion.extension f) :=
   cPkg.uniformContinuous_extend
 
@@ -474,6 +477,7 @@ variable {f : α → β}
 protected def map (f : α → β) : Completion α → Completion β :=
   cPkg.map cPkg f
 
+@[fun_prop]
 theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 
@@ -535,10 +539,12 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     rw [map_coe uniformContinuous_mk, extension_coe (uniformContinuous_lift' _),
       lift'_mk (uniformContinuous_coe _)]
 
+@[fun_prop]
 theorem uniformContinuous_completionSeparationQuotientEquiv :
     UniformContinuous (completionSeparationQuotientEquiv α) :=
   uniformContinuous_extension
 
+@[fun_prop]
 theorem uniformContinuous_completionSeparationQuotientEquiv_symm :
     UniformContinuous (completionSeparationQuotientEquiv α).symm :=
   uniformContinuous_map
@@ -567,6 +573,7 @@ end T0Space
 
 variable [CompleteSpace γ]
 
+@[fun_prop]
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (Completion.extension₂ f) :=
   cPkg.uniformContinuous_extension₂ cPkg f
 
@@ -580,6 +587,7 @@ open Function
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=
   cPkg.map₂ cPkg cPkg f
 
+@[fun_prop]
 theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (Completion.map₂ f) :=
   cPkg.uniformContinuous_map₂ cPkg cPkg f
 

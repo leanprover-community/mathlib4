@@ -517,9 +517,11 @@ variable [UniformSpace α] [UniformSpace β]
 instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
   instUniformSpaceProd.comap ofLp
 
+@[fun_prop]
 lemma prod_uniformContinuous_toLp : UniformContinuous (@toLp p (α × β)) :=
   uniformContinuous_comap' uniformContinuous_id
 
+@[fun_prop]
 lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
   uniformContinuous_comap
 
@@ -681,6 +683,7 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm, ← norm_neg_add]
       rfl
 
+@[fun_prop]
 lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     IsUniformInducing (@toLp p (α × β)) :=
   (prod_antilipschitzWith_toLp p α β).isUniformInducing
