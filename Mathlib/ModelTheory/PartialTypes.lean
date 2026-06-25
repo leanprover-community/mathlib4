@@ -230,19 +230,14 @@ theorem partialType_completeTheory_iff_finitelyRealizable
     have hψN : ψ.Realize v := by
       simp only [Formula.realize_iInf, Subtype.forall, ψ]
       aesop
-    have hψexN : ψ.exClosure.Realize N := by
-      letI : (constantsOn α).Structure N := constantsOn.structure v
-      exact Formula.realize_exClosure_of_realize_equivSentence
-        ((Formula.realize_equivSentence N ψ).2 hψN)
+    have hψexN : ψ.exClosure.Realize N :=
+      (Formula.realize_exClosure_iff'.2 ⟨v, hψN⟩)
     have hψexM : ψ.exClosure.Realize M :=
       ((L.realize_iff_of_model_completeTheory M N ψ.exClosure).1 hψexN)
-    obtain ⟨vM, hvM⟩ :=
-      (Formula.exists_realize_equivSentence_iff_realize_exClosure.mpr hψexM)
-    have hψM : ψ.Realize vM := by
-      simpa [Equiv.symm_apply_apply] using
-        (Formula.realize_equivSentence_symm M (Formula.equivSentence ψ) vM).mpr hvM
-    exists vM
-    aesop
+    obtain ⟨vM, hψM⟩ := Formula.realize_exClosure_iff'.1 hψexM
+    refine ⟨vM, fun φ hφ => ?_⟩
+    simp only [Formula.realize_iInf, Subtype.forall, ψ] at hψM
+    exact hψM φ hφ
   · intro h
     rw [partialType_iff_finitelyRealizable S]
     intro s hs
@@ -366,15 +361,14 @@ theorem partialTypeOver_iff_realizedIn_elementaryExtension
           ∀ φ ∈ S,
             ((L.lhomWithConstantsMap ((↑) : A → M)).onFormula φ).Realize v := by
   classical
+  haveI : (LHom.constantsOnMap ((↑) : A → M)).IsExpansionOn M :=
+    constantsOnMap_isExpansionOn rfl
+  haveI : (L.lhomWithConstantsMap ((↑) : A → M)).IsExpansionOn M :=
+    LHom.sumMap_isExpansionOn _ _ _
   constructor
   · intro hS
     let S' : Set (L[[M]].Formula α) := mapSet ((↑) : A → M) S
-    haveI : (LHom.constantsOnMap ((↑) : A → M)).IsExpansionOn M :=
-      constantsOnMap_isExpansionOn rfl
-    haveI : (L.lhomWithConstantsMap ((↑) : A → M)).IsExpansionOn M :=
-      LHom.sumMap_isExpansionOn _ _ _
     have hS' : ((L.elementaryDiagram M).IsConsistentWith S') := by
-      change ((L[[M]].completeTheory M).IsConsistentWith S')
       simpa [S'] using
         (partialType_completeTheory_map ((↑) : A → M) hS)
     let p : (L.elementaryDiagram M).PartialType α := ofSet S' hS'
@@ -396,30 +390,17 @@ theorem partialTypeOver_iff_realizedIn_elementaryExtension
     have : ψ'.Realize v := by
       simp only [LHom.realize_onFormula, Formula.realize_iInf, Subtype.forall, ψ', ψ]
       intro φ hφ
-      specialize h φ (mem_of_subset_of_mem hs hφ)
-      simpa [ψ', ψ] using h
+      simpa [ψ', ψ] using h φ (mem_of_subset_of_mem hs hφ)
     let ψ'' : L[[M]].Sentence := ψ'.exClosure
     have hψ'' : ψ''.Realize N := by
-      simp only [Formula.realize_exClosure, ψ'']
-      exists v ∘ (↑)
-      exact (BoundedFormula.realize_restrictFreeVar'
-        (s := (ψ'.freeVarFinset : Set α)) Set.Subset.rfl (v := v)).2 this
+      rw [Formula.realize_exClosure_iff']
+      exists v
     haveI : (L.lhomWithConstants M).IsExpansionOn ↑N :=
       LHom.isExpansionOn_reduct (L.lhomWithConstants M) N
-    rw [realize_iff_of_model_completeTheory M N] at hψ''
-    rw [Formula.realize_exClosure] at hψ''
+    rw [realize_iff_of_model_completeTheory M N, Formula.realize_exClosure_iff'] at hψ''
     obtain ⟨w, hw⟩ := hψ''
-    let vM : α → M := fun a =>
-      if hmem : a ∈ ψ'.freeVarFinset then w ⟨a, hmem⟩ else Classical.choice inferInstance
-    have hwEq : vM ∘ (↑) = w := by aesop
-    haveI : (LHom.constantsOnMap ((↑) : A → M)).IsExpansionOn M :=
-        constantsOnMap_isExpansionOn rfl
-    haveI : (L.lhomWithConstantsMap ((↑) : A → M)).IsExpansionOn M :=
-      LHom.sumMap_isExpansionOn _ _ _
-    exists vM
-    suffices hψ' : ψ'.Realize vM by
-      simpa [ψ', ψ] using hψ'
-    exact (BoundedFormula.realize_restrictFreeVar vM (congrFun (id (Eq.symm hwEq)))).mp hw
+    exists w
+    simpa [ψ', ψ] using hw
 
 end PartialType
 
