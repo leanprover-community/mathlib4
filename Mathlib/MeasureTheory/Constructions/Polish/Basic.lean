@@ -933,7 +933,7 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   have : g '' t = g '' (t \ t') ∪ g '' t' := by simp [← image_union, t']
   rw [this]
   apply MeasurableSet.union
-  · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono diff_subset)
+  · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono sdiff_subset)
     intro x hx y hy hxy
     contrapose! hxy
     wlog! H : x < y generalizing x y with h
@@ -959,10 +959,10 @@ theorem MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
   rw [this]
   apply MeasurableSet.union _ (ht'.image g).measurableSet
   apply MeasurableSet.image_of_monotoneOn_of_continuousOn (ht.diff ht'.measurableSet)
-    (hg.mono diff_subset)
+    (hg.mono sdiff_subset)
   intro x hx
   simp only [sdiff_sep_self, not_not, mem_setOf_eq, t'] at hx
-  exact hx.2.mono diff_subset
+  exact hx.2.mono sdiff_subset
 
 /-- The image of a measurable set under an antitone map is measurable. -/
 theorem MeasurableSet.image_of_antitoneOn [SecondCountableTopology β]

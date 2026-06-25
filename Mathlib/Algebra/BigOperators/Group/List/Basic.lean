@@ -249,7 +249,6 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] prod_reverse
 
 @[to_additive]
