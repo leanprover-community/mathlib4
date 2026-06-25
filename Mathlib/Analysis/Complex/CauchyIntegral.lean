@@ -701,7 +701,9 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
       exact (d z m).differentiableWithinAt
     exact h _ m
 
-section Unbounded
+end analyticity
+
+section unbounded
 
 /-!
 ## Integrals over unbounded rectangular contours
@@ -713,7 +715,7 @@ open scoped Interval Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} {x₁ x₂ : ℝ} (y : ℝ)
 
-section Tendsto_Zero
+section tendsto_zero
 
 /-- If a family of functions `g m` tends to zero uniformly along the product filter
 `atTop ×ˢ comap im atTop` (i.e., as `m → ∞` and the imaginary part of the input → ∞ jointly),
@@ -749,9 +751,9 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
     tendstoUniformlyOnFilter_iff_tendsto.mpr <|
       tendsto_left_nhds_uniformity.comp (htendsto.comp tendsto_snd)
 
-end Tendsto_Zero
+end tendsto_zero
 
-section Eventually_Eq_Zero
+section eventually_eq_zero
 
 private lemma hzero (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x) :
@@ -787,9 +789,9 @@ lemma integral_boundary_rect_eq_zero_eventually_atTop_of_differentiable_on_off_c
         - (I • ∫ (t : ℝ) in y..m, f (x₁ + t * I))) =ᶠ[atTop] (fun (_ : ℝ) ↦ 0) := by
   filter_upwards [eventually_ge_atTop y] with m hm using hzero y hcont s hs hdiff m hm
 
-end Eventually_Eq_Zero
+end eventually_eq_zero
 
-section Contour_Deformation_Tensdsto
+section tendsto
 
 /-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
 that a function satisfies Cauchy-Goursat conditions between them, interval integrals of increasing
@@ -851,9 +853,9 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
   integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable y hcont s hs hdiff
     (hC₁.const_smul I) (hC₂.const_smul I) htendsto
 
-end Contour_Deformation_Tensdsto
+end tendsto
 
-section Contour_Deformation_of_Integrable_along_BOTH
+section integrable
 
 /-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
 that a function satisfies Cauchy-Goursat conditions between them and is integrable along both
@@ -879,11 +881,9 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
   · exact intervalIntegral_tendsto_integral_Ioi y hint₁ fun ⦃U⦄ a ↦ a
   · exact intervalIntegral_tendsto_integral_Ioi y hint₂ fun ⦃U⦄ a ↦ a
 
-end Contour_Deformation_of_Integrable_along_BOTH
+end integrable
 
-end Unbounded
-
-end analyticity
+end unbounded
 
 section derivatives
 /-!
