@@ -141,12 +141,15 @@ theorem mapRoots_bijective [h : Fact ((p.map (algebraMap F E)).Splits)] :
     rcases hy with ⟨x, hx1, hx2⟩
     exact ⟨⟨x, (@Multiset.mem_toFinset _ (Classical.decEq _) _ _).mpr hx1⟩, Subtype.ext hx2⟩
 
-/-- The bijection between `rootSet p p.SplittingField` and `rootSet p E`. -/
+/-- A bijection between `rootSet p p.SplittingField` and `rootSet p E`. This is an auxilliary
+definition used to define the Galois-equivariant `Polynomial.Gal.rootsEquivRoots`, but we keep
+this definition public to help prove facts about `galAction`. -/
 def rootsEquivRootsAux [Fact ((p.map (algebraMap F E)).Splits)] :
     rootSet p p.SplittingField ≃ rootSet p E :=
   Equiv.ofBijective (mapRoots p E) (mapRoots_bijective p E)
 
-/-- The bijection between `rootSet p E` and `rootSet p E'` when `p` splits in both `E` and `E'`. -/
+/-- A bijection between `rootSet p E` and `rootSet p E'` when `p` splits in both `E` and `E'`.
+This bijection is Galois-equivariant, see `smul_rootsEquivRoots`. -/
 noncomputable def rootsEquivRoots [Fact (map (algebraMap F E) p).Splits]
     [Fact (map (algebraMap F E') p).Splits] : p.rootSet E ≃ p.rootSet E' :=
   (rootsEquivRootsAux p E).symm.trans (rootsEquivRootsAux p E')
