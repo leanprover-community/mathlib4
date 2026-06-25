@@ -29,7 +29,7 @@ abbrev InjectiveObject : Type u := ObjectProperty.FullSubcategory (isInjective C
 
 namespace InjectiveObject
 
-instance closedUnderLimitsOfShapeDiscrete (J : Type*) :
+instance (J : Type*) :
     ObjectProperty.IsClosedUnderLimitsOfShape (isInjective C) (Discrete J) where
   limitsOfShape_le := by
     rintro Y ⟨p⟩
@@ -46,8 +46,6 @@ instance [Preadditive C] [HasFiniteProducts C] : HasFiniteBiproducts (InjectiveO
 
 instance [HasZeroMorphisms C] [HasZeroObject C] : (isInjective C).ContainsZero where
   exists_zero := ⟨0, by simp [IsZero.iff_id_eq_zero], Injective.zero_injective⟩
-
-instance [HasZeroMorphisms C] [HasZeroObject C] : HasZeroObject (InjectiveObject C) := inferInstance
 
 /-- The inclusion `InjectiveObject C ⥤ C` of the full subcategory of
 injective objects in `C`. -/
