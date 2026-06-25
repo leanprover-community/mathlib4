@@ -264,7 +264,7 @@ instance {P : Type*} [Ring S] [SMul P S] [SMul R S] [SMul P R]
 
 instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
     [IsScalarTower P S R] (v : Valuation S Γ₀) : IsScalarTower P (WithVal v) R where
-  smul_assoc := by simp [smul_right_def, smul_left_def, - toVal_smul]
+  smul_assoc := by simp [smul_right_def, smul_left_def, -toVal_smul]
 
 instance [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
   .compHom S (equiv v).toRingHom
