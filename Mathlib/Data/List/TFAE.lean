@@ -56,8 +56,7 @@ theorem tfae_append_of_mem {a b} {l₁ l₂ : List Prop} (ha : a ∈ l₁) (hb :
     · exact (h₂ p hp b hb).trans (hab.symm.trans (h₁ a ha q hq))
     · exact h₂ p hp q hq
 
-theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) :
-    TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
+theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
   simpa using tfae_append_of_mem (l₁ := [a]) (by simp) h
 
 theorem tfae_append_singleton_of_mem {a b} {l : List Prop} (h : b ∈ l) :
