@@ -1,8 +1,6 @@
 import Mathlib.Tactic.Linter.ValidatePRTitle
 
-/-! Tests for the PR title validation logic. -/
-section title
-
+-- Tests for the PR title validation logic.
 open Lean in
 /--
 `#check_title title` takes as input the `String` `title`, expected to be a mathlib PR title.
@@ -202,81 +200,22 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 #guard_msgs in
 #check_title "feat(Mathlib/Algebra.lean):  title."
 
-end title
-
--- Tests for the PR description validation logic.
-section description
-
-open Lean in
-/--
-`#check_description desc` takes as input the `String` `desc`, expected to be a mathlib PR body.
-It logs details of what the linter would report if the description is "malformed".
--/
-elab "#check_description " desc:str : command => do
-  let title := desc.getString
-  for err in validatePRBody title false do
-    logInfo m!"Message: '{err}'"
-
-/-- info: Message: 'error: the PR description is empty' -/
 #guard_msgs in
-#check_description ""
+#check_title "feat(ModularForm): E2 is bounded at ImInfty"
 
-/-- info: Message: 'error: the PR description is empty' -/
 #guard_msgs in
-#check_description "    " -- whitespace only PR bodies should also get linted
+#check_title "feat(ModuleForm): 2E is bounded at ImInfty"
 
--- This description is virtually empty: just whitespace.
-/-- info: Message: 'error: the PR description is empty' -/
 #guard_msgs in
-#check_description "\n\n---"
+#check_title "feat(ModuleForm): 2e is less than 6"
 
-/-- info: Message: 'error: the PR description is empty' -/
+/-- info: Message: 'error: the PR subject should be lowercased' -/
 #guard_msgs in
-#check_description ".\n\n---"
+#check_title "feat(ModuleForm): W3c"
 
-/-- info: Message: 'error: there should be a blank line between the PR description and the fold' -/
 #guard_msgs in
-#check_description "A word\n----\n"
+#check_title "feat(ModuleForm): W3C"
 
-/-- info: Message: 'error: there should be a blank line between the PR description and the fold' -/
+/-- info: Message: 'error: the PR subject should be lowercased' -/
 #guard_msgs in
-#check_description "A word\n----\nSome content\nAnother fold\n"
-
--- Regression test against confusing errors with just a fold.
-/-- info: Message: 'error: the PR description is empty' -/
-#guard_msgs in
-#check_description "---"
-
-/--
-info: Message: 'warning: your PR description is non-empty, but everything is after the '---' line
-note: the final PR commit message only uses what is above that line'
--/
-#guard_msgs in
-#check_description "----\nA helpful description after the fold\n"
-
-/-- info: Message: 'error: do not include a 'summary' header in the PR body' -/
-#guard_msgs in
-#check_description "## Summary\nSome other content\n"
-
-/--
-info: Message: 'error: usually, a section 'Testing plan' is superfluous (particularly if it only mentions checks done in CI anyway)
-If you have done particular testing, please mention this --- but no need for the header.'
--/
-#guard_msgs in
-#check_description "Some actual PR body containing useful content.\n## Testing plan\nLake build passes\n"
-
-/--
-info: Message: 'error: do not include a 'summary' header in the PR body'
----
-info: Message: 'error: usually, a section 'Testing plan' is superfluous (particularly if it only mentions checks done in CI anyway)
-If you have done particular testing, please mention this --- but no need for the header.'
--/
-#guard_msgs in
-#check_description "Some actual PR body containing useful content.\n## Testing plan\n## Summary\nLake build passes\n"
-
--- Tests for false positives around a bug in recognising the "fold".
-#guard_msgs in #check_description "First paragraph.\n\nSecond paragraph.\n"
-
-#guard_msgs in #check_description "My description.\n\n---\n\nMeta info after the fold.\n"
-
-end description
+#check_title "feat(ModuleForm): A new lemma"

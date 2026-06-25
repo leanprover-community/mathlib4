@@ -76,6 +76,7 @@ instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : 
 instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inr : B ⟶ A ⨿ B) :=
   binaryCofan_inr _ (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂) :
     Mono c₁.inl ↔ Mono c₂.inl := by
   suffices
