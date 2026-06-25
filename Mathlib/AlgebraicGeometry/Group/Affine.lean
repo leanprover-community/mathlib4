@@ -323,8 +323,6 @@ lemma algebraMap_Γ [X.Over (Spec R)] [IsAffine X] :
     algebraMap R Γ(X, ⊤) = (Spec.fullyFaithful.preimage <| X.isoSpec.inv ≫ X ↘ Spec R).unop.hom :=
   rfl
 
--- TODO: Isn't this just a bad lemma?
-attribute [-simp] Hom.isOver_iff
 attribute [local simp] specOverSpec_over algebraMap_Γ in
 instance [X.Over (Spec R)] [IsAffine X] : X.isoSpec.inv.IsOver (Spec R) where
 
