@@ -601,7 +601,7 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
   rcases chains₁ToCoinvariantsKer_surjective
     (res S.subtype A) ⟨d₁₀ A Y, this⟩ with ⟨(Z : S →₀ A), hZ⟩
   have H : d₁₀ A (Y - mapDomain S.subtype Z) = 0 := by
-    simpa [map_sub, sub_eq_zero, chains₁ToCoinvariantsKer, - LinearMap.sub_apply, d₁₀,
+    simpa [map_sub, sub_eq_zero, chains₁ToCoinvariantsKer, -LinearMap.sub_apply, d₁₀,
       sum_mapDomain_index_inj] using! Subtype.ext_iff.1 hZ.symm
   use H1π A ⟨Y - mapDomain S.subtype Z, H⟩
   simp only [H1CoresCoinf_X₃, H1CoresCoinf_X₂, H1CoresCoinf_g,
