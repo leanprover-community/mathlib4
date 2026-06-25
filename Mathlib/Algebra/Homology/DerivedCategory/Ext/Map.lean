@@ -68,13 +68,13 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
     (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← Functor.map_comp,
     descShortComplex_triangleOfSESδ, F.mapDerivedCategoryFactors_hom_naturality_assoc,
     ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex,
-    Functor.map_comp, Category.assoc, Functor.map_comp_assoc,
-    descShortComplex_triangleOfSESδ_assoc]
+    Functor.map_comp_assoc, descShortComplex_triangleOfSESδ_assoc]
   dsimp
-  rw [← Functor.map_comp_assoc, ← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
-    ← Category.assoc, ← F.mapDerivedCategoryFactors_hom_naturality_assoc]
-  simp [← Q.map_comp_assoc, NatTrans.shift_app,
-    Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app]
+  rw  [← Functor.map_comp_assoc]
+  rw [← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
+    ← F.mapDerivedCategoryFactors_hom_naturality_assoc, Functor.map_comp]
+  simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
+    ← Functor.map_comp_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
@@ -102,7 +102,6 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     ← Functor.map_comp_assoc]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
@@ -207,7 +206,6 @@ end
 
 namespace Abelian.Ext
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mapExactFunctor_mk₀ [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     (mk₀ f).mapExactFunctor F = mk₀ (F.map f) := by
   dsimp [Ext.mapExactFunctor, mk₀]

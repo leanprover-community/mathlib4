@@ -106,7 +106,7 @@ attribute [to_additive existing (attr := reassoc (attr := simp))] one_mul mul_on
 
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[to_additive (attr := simps! -isSimp, implicit_reducible)
+@[to_additive (attr := simps! -isSimp, instance_reducible)
 /-- Transfer `AddMonObj` along an isomorphism. -/]
 def ofIso (e : M ≅ X) : MonObj X where
   one := η[M] ≫ e.hom

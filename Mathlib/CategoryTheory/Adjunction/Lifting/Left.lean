@@ -107,7 +107,6 @@ def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
   F'.map (U.map (F.map (adj₂.unit.app _) ≫ adj₁.counit.app _)) ≫ adj₂.counit.app _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
 this pair has a coequalizer.
 -/
@@ -130,7 +129,6 @@ variable [HasReflexiveCoequalizers A]
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
 @[simps!]
 noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (Y : A)

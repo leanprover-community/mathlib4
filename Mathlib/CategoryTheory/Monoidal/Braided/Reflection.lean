@@ -41,7 +41,6 @@ variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 section
 variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
@@ -56,7 +55,6 @@ private noncomputable def adjRetraction (c : C) (d : D)
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
   curry <| adjRetractionAux adj c d
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma adjRetraction_is_retraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
     adj.unit.app ((ihom d).obj (R.obj c)) ≫ adjRetraction adj c d = 𝟙 _ := by
@@ -220,7 +218,7 @@ instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `monoidalClosed`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def closed (c : C) : Closed c where
   rightAdj := R ⋙ (ihom (R.obj c)) ⋙ L
   adj := by
@@ -240,7 +238,7 @@ noncomputable def closed (c : C) : Closed c where
 Given a reflective functor `R : C ⥤ D` with a monoidal left adjoint, such that `D` is symmetric
 monoidal closed, then `C` is monoidal closed.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def monoidalClosed : MonoidalClosed C where
   closed c := closed adj c
 

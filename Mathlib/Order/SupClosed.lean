@@ -406,7 +406,7 @@ end DistribLattice
 
 /-- A join-semilattice where every sup-closed set has a least upper bound is automatically complete.
 -/
-@[to_dual (attr := implicit_reducible) /--
+@[to_dual (attr := instance_reducible) /--
 A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
 complete. -/]
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)

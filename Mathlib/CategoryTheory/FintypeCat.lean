@@ -47,7 +47,7 @@ instance {X : FintypeCat} : Finite X :=
 
 /-- A `Fintype` instance on objects on `FintypeCat`, that should be turned on as needed.
 Prefer the `Finite` instance if possible. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintype {X : FintypeCat} : Fintype X :=
   Fintype.ofFinite X.obj
 
@@ -286,7 +286,6 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
       Y.uSwitchEquiv)).inv := rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] uSwitch_map_uSwitch_map in
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where

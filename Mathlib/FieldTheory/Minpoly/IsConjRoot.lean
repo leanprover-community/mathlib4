@@ -82,7 +82,7 @@ variable (R A) in
 /--
 The setoid structure on `A` defined by the equivalence relation of `IsConjRoot R · ·`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def setoid : Setoid A where
   r := IsConjRoot R
   iseqv := ⟨fun _ => refl, symm, trans⟩
