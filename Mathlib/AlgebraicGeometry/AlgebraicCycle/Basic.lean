@@ -47,11 +47,11 @@ namespace AlgebraicCycle
 
 /--
 Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the
-pushforward of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
+pushforward of a cycle `c` at a point `z = f x`.
 -/
-noncomputable
-def mapAux {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N) (wy : Y → N) (x : X) :
-    ℕ := if wx x = wy (f.base x) then f.residueDegree x else 0
+@[stacks 02R3]
+noncomputable def mapCoeff {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N)
+    (wy : Y → N) (x : X) : ℕ := if wx x = wy (f.base x) then f.residueDegree x else 0
 
 /--
 The pushforward of algebraic cycles with respect to a quasicompact morphism of schemes. The
@@ -66,16 +66,12 @@ equidimensionality hypotheses cannot be assumed.
 noncomputable
 def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
     (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
-  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) f.isSpectralMap c
-
-lemma map_apply [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
-    (c : AlgebraicCycle X R) (y : Y) :
-  map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapAux f wx wy x) := rfl
+  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapCoeff f wx wy ·) f.isSpectralMap c
 
 @[simp]
 lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
     map (𝟙 _) wx wx c = c := by
   apply Function.locallyFinsupp.map_id
-  simp [mapAux]
+  simp [mapCoeff]
 
 end AlgebraicGeometry.AlgebraicCycle
