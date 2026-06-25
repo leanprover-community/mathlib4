@@ -175,7 +175,7 @@ theorem toAlgHom_apply (x : A) : e.toAlgHom x = e x :=
 @[simp, norm_cast]
 theorem coe_toAlgHom :  DFunLike.coe e.toAlgHom = e := rfl
 
-theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
+theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A ≃ₐ[R] B) → A →ₐ[R] B) :=
   fun _ _ h => ext <| AlgHom.congr_fun h
 
 @[deprecated (since := "2026-05-05")] alias coe_algHom := coe_toAlgHom
@@ -375,19 +375,19 @@ def ofAlgHom (f : A →ₐ[R] B) (g : B →ₐ[R] A) (h₁ : f.comp g = AlgHom.i
     left_inv := AlgHom.ext_iff.1 h₂
     right_inv := AlgHom.ext_iff.1 h₁ }
 
-theorem toAlgHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+theorem toAlgHom_ofAlgHom (f : A →ₐ[R] B) (g : B →ₐ[R] A) (h₁ h₂) :
     ↑(ofAlgHom f g h₁ h₂) = f :=
   rfl
 
 @[simp]
-theorem ofAlgHom_toAlgHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+theorem ofAlgHom_toAlgHom (f : A ≃ₐ[R] B) (g : B →ₐ[R] A) (h₁ h₂) :
     ofAlgHom (↑f) g h₁ h₂ = f :=
   ext fun _ => rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_algHom_ofAlgHom := toAlgHom_ofAlgHom
 @[deprecated (since := "2026-05-05")] alias ofAlgHom_coe_algHom := ofAlgHom_toAlgHom
 
-theorem ofAlgHom_symm (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+theorem ofAlgHom_symm (f : A →ₐ[R] B) (g : B →ₐ[R] A) (h₁ h₂) :
     (ofAlgHom f g h₁ h₂).symm = ofAlgHom g f h₂ h₁ :=
   rfl
 
