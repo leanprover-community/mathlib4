@@ -125,13 +125,14 @@ local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 section prerequisites
 
 -- TODO: generalise and move to a better place!
-instance {k : ℕ∞ω} : ContMDiffMul 𝓘(ℝ, ℝ) k ℝ where
+-- TODO: should we have ContDiffMul, and then deduce this from a ContDiffMul instance?
+instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} : ContMDiffMul 𝓘(𝕜) n 𝕜 where
   contMDiff_mul := by
     -- This is almost [contMDiff_iff_contDiff], except that we want the other model on the domain.
     intro x
     rw [contMDiffAt_iff]
     refine ⟨by fun_prop, ?_⟩
-    suffices ContDiffAt ℝ k (fun p ↦ p.1 * p.2) x by
+    suffices ContDiffAt 𝕜 n (fun p ↦ p.1 * p.2) x by
       simp
       simpa [ModelProd, contDiffWithinAt_univ] using this
     fun_prop
