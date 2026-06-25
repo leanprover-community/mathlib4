@@ -84,7 +84,7 @@ is the digraph whose vertices are all adjacent.
 Note that every vertex is adjacent to itself in `⊤`.
 -/
 protected def completeDigraph (V : Type*) : Digraph V where
-  verts := ⊤
+  verts := .univ
   Adj := ⊤
 
 /--
@@ -133,7 +133,7 @@ abbrev IsSpanningSubgraph (x y : Digraph V) : Prop :=
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (Digraph V) where
   max x y := {
-    verts := x.verts ⊔ y.verts
+    verts := x.verts ∪ y.verts
     Adj := x.Adj ⊔ y.Adj
   }
 
@@ -143,7 +143,7 @@ theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w �
 /-- The infimum of two digraphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
 instance : Min (Digraph V) where
   min x y := {
-    verts := x.verts ⊓ y.verts
+    verts := x.verts ∩ y.verts
     Adj := x.Adj ⊓ y.Adj
   }
 
@@ -158,8 +158,8 @@ instance : Compl (Digraph V) where
     Adj v w := v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w
   }
 
-@[simp] theorem compl_adj (G : Digraph V) (v w : V) (hmem : v ∈ G.verts ∧ w ∈ G.verts) :
-  Gᶜ.Adj v w ↔ ¬G.Adj v w := ⟨fun h => h.2.2, fun h => ⟨hmem.1, hmem.2, h⟩⟩
+@[simp] theorem compl_adj (G : Digraph V) (v w : V) (hv : v ∈ G.verts) (hw : w ∈ G.verts) :
+  Gᶜ.Adj v w ↔ ¬G.Adj v w := ⟨fun h => h.2.2, fun h => ⟨hv, hw, h⟩⟩
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
 instance sdiff : SDiff (Digraph V) where
@@ -276,7 +276,11 @@ lemma sup_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
 /--
 The top subgraph `⊤`
 -/
-def top {G : Digraph V} : G.SpanningSubgraph := ⟨G, by aesop⟩
+instance {G : Digraph V} : OrderTop (G.SpanningSubgraph) where
+  top : G.SpanningSubgraph := ⟨G, by aesop⟩
+  le_top := by
+    intro ⟨H, ⟨H_sub, H_verts⟩⟩
+    simp_all
 
 /--
 The complement of a spanning subgraph `H` of `G` with respect to `G`
@@ -365,11 +369,6 @@ lemma le_inf {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
   exact by_val <| by
     aesop (add safe [_root_.le_inf]) (add simp [inf_of_val])
 
-lemma le_top {G : Digraph V} : ∀ H : G.SpanningSubgraph,
-  H ≤ top := by
-  intro ⟨H, ⟨H_sub, H_verts⟩⟩
-  simp_all [top]
-
 lemma bot_le {G : Digraph V} : ∀ (H : G.SpanningSubgraph), bot ≤ H := by
   intro ⟨H, ⟨H_sub, H_verts⟩⟩
   unfold instLE LE.le Subtype.instLE
@@ -429,7 +428,7 @@ lemma sSup_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
     have : ∀ ⦃v w⦄, H'.val.Adj v w → H.val.Adj v w := (hH H' H'_mem).2
     aesop
 
-lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), top ≤ sup H (compl H) := by
+lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), ⊤ ≤ sup H (compl H) := by
   intro
   constructor
   · intro
@@ -468,8 +467,10 @@ instance (G : Digraph V) : CompleteLattice G.SpanningSubgraph where
   inf_le_left := inf_le_left
   inf_le_right := inf_le_right
   le_inf := le_inf
-  top := top
-  le_top := le_top
+  top := ⊤
+  le_top := by
+    intro ⟨_, ⟨h, _⟩⟩
+    exact h
   bot := bot
   bot_le := bot_le
   sSup := sSup
@@ -485,7 +486,8 @@ instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
       H₁.val ⊔ H₂.val ⊓ H₃.val
     exact le_sup_inf
   compl := compl
-  le_top := le_top
+  le_top := by
+    intros; simp_all only [le_top]
   bot_le := bot_le
   top_le_sup_compl := top_le_sup_compl
   inf_compl_le_bot := inf_compl_le_bot
@@ -522,7 +524,7 @@ instance [Nonempty V] : Nontrivial (Digraph V) := by
 section Decidable
 
 variable (V) (H : Digraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
-variable [DecidablePred G.verts] [DecidablePred H.verts]
+variable [DecidablePred (· ∈ G.verts)] [DecidablePred (· ∈ H.verts)]
 
 instance Bot.adjDecidable : DecidableRel (⊥ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ False
@@ -539,7 +541,7 @@ instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := fun v w => by
+instance decidableRelAdjCompl : DecidableRel (Gᶜ.Adj) := fun v w => by
   refine (@instDecidableAnd  (v ∈ G.verts) (w ∈ G.verts ∧ ¬ G.Adj v w) ?_
     (@instDecidableAnd (w ∈ G.verts) (¬ G.Adj v w) ?_ (
       @instDecidableNot (G.Adj v w) ?_
