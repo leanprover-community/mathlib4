@@ -135,7 +135,7 @@ theorem eq_span_singleton_of_mem_of_finrank_eq_one
     {𝕜 E : Type*} [DivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
     {K : Submodule 𝕜 E} {w : E}
     (hK : finrank 𝕜 K = 1) (hw : w ∈ K) (hw0 : w ≠ 0) :
-    K = Submodule.span 𝕜 {w} := by
+    K = span 𝕜 {w} := by
 haveI : FiniteDimensional 𝕜 K := Module.finite_of_finrank_pos (by lia)
   exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
     (by rw [hK, finrank_span_singleton hw0])
