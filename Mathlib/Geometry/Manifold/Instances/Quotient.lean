@@ -86,8 +86,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
 
     apply StructureGroupoid.locality
 
-    intro h hh
-    obtain ⟨hh1, ⟨hh2, hh3⟩, hh4⟩ := hh
+    intro h ⟨hh1, ⟨hh2, hh3⟩, hh4⟩
 
     let Up := πinvx.target ∩ φx.source -- U H x
     let Uq := πinvy.target ∩ φy.source -- U H y
