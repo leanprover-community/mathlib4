@@ -275,7 +275,7 @@ noncomputable def from_ofList_hom_pos (i : ℕ) :
 
 lemma from_ofList_hom_comm_zero :
     from_ofList_hom_pos φ a 0 ≫ (koszulComplex (appendMap φ a)).d (0 + 1) 0 =
-    (koszulComplex φ).d (0 + 1) 0 ≫ from_ofList_hom_zero φ a := by
+      (koszulComplex φ).d (0 + 1) 0 ≫ from_ofList_hom_zero φ a := by
   ext y
   have h := LinearMap.congr_fun (koszulComplexAux_eq_zero φ a) (y, 0)
   simpa [d_eq_aux, from_ofList_hom_pos, from_ofList_hom_zero] using! h
@@ -287,8 +287,7 @@ lemma from_ofList_hom_comm_pos (i : ℕ) :
   have h := LinearMap.congr_fun (koszulComplexAux_eq_pos φ a i) (y, 0)
   simpa [d_eq_aux, from_ofList_hom_pos] using! h
 
-noncomputable def toAppendMap :
-    koszulComplex φ ⟶ koszulComplex (appendMap φ a) :=
+noncomputable def toAppendMap : koszulComplex φ ⟶ koszulComplex (appendMap φ a) :=
   ChainComplex.ofHom
     (fun i ↦
       match i with
@@ -339,8 +338,7 @@ lemma to_self_hom_comm (i : ℕ) :
   rw [h, LinearEquiv.symm_apply_apply]
   simp
 
-noncomputable def toUpOne :
-    koszulComplex (appendMap φ a) ⟶ upOne φ :=
+noncomputable def toUpOne : koszulComplex (appendMap φ a) ⟶ upOne φ :=
   ChainComplex.ofHom
     (fun i ↦
       match i with
@@ -354,8 +352,7 @@ noncomputable def toUpOne :
         exact comp_zero.symm
       | i + 1 => to_self_hom_comm φ a i)
 
-lemma toAppendMap_comp_toUpOne_eq_zero :
-    toAppendMap φ a ≫ toUpOne φ a = 0 := by
+lemma toAppendMap_comp_toUpOne_eq_zero : toAppendMap φ a ≫ toUpOne φ a = 0 := by
   refine HomologicalComplex.hom_ext _ _ fun n => ?_
   rcases n with _ | n
   · simp only [ChainComplex.augment_X_zero, toAppendMap, toUpOne, HomologicalComplex.comp_f,
@@ -418,9 +415,7 @@ lemma shortComplexProd_δ_eq (i : ℕ) :
       simpa using! h.symm
     · ext z
       have hcyc : koszulComplexAux φ n (((upOne φ).iCycles (n + 2)).hom z) = 0 := by
-        have h0 := congrArg (fun F => ModuleCat.Hom.hom F z) hx₃
-        simp only [ChainComplex.augment_d_succ_succ, d_eq_aux] at h0
-        exact h0
+        simpa [d_eq_aux] using! congrArg (fun F => ModuleCat.Hom.hom F z) hx₃
       have h := LinearMap.congr_fun (koszulComplexAux_eq_pos φ a n)
         (0, ((upOne φ).iCycles (n + 2)).hom z)
       have hsc : ((-1 : ℤ) ^ (n + 1)) • a • (((upOne φ).iCycles (n + 2)).hom z, 0) =
@@ -450,10 +445,9 @@ lemma shortComplexProd_δ_eq (i : ℕ) :
       · rw [Category.assoc, HomologicalComplex.isoHomologyι_hom, HomologicalComplex.homology_π_ι,
           ← Category.assoc, HomologicalComplex.liftCycles_i]
       · have : HomologicalComplex.pOpcycles (koszulComplex φ) 0 =
-          cokernel.π (HomologicalComplex.sc' (upOne φ) 2 1 0).f ≫
-          cokernel.desc (HomologicalComplex.sc' (koszulComplex φ) 1 0 0).f
-          (HomologicalComplex.sc' (koszulComplex φ) 1 0 0).pOpcycles (ShortComplex.f_pOpcycles _) ≫
-          (HomologicalComplex.opcyclesIsoSc' (koszulComplex φ) 1 0 0 (by simp) (by simp)).inv := by
+          cokernel.π ((upOne φ).sc' 2 1 0).f ≫ cokernel.desc ((koszulComplex φ).sc' 1 0 0).f
+            ((koszulComplex φ).sc' 1 0 0).pOpcycles (ShortComplex.f_pOpcycles _) ≫
+              ((koszulComplex φ).opcyclesIsoSc' 1 0 0 (by simp) (by simp)).inv := by
           simp only [ChainComplex.prev, zero_add, ChainComplex.next_nat_zero,
             ← HomologicalComplex.pOpcycles_opcyclesIsoSc'_inv, ← assoc, Iso.cancel_iso_inv_right]
           exact (CategoryTheory.Limits.cokernel.π_desc _ _ _).symm
@@ -507,7 +501,7 @@ section regular
 open RingTheory.Sequence
 
 variable (R) in
-/-- Splitting off the last coordinate of a tuple, as a linear equivalence. -/
+/-- Splitting off the last coordinate of a tuple as a linear equivalence. -/
 def snocLinearEquiv (n : ℕ) : (Fin (n + 1) → R) ≃ₗ[R] (Fin n → R) × R where
   toFun f := (Fin.init f, f (Fin.last n))
   map_add' f g := rfl
