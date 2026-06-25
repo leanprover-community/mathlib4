@@ -6,10 +6,9 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Topology.Sheaves.Skyscraper
-public import Mathlib.AlgebraicGeometry.ResidueField
-public import Mathlib.AlgebraicGeometry.Modules.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
 # The skyscraper sheaf as a sheaf of modules
@@ -39,13 +38,14 @@ variable {X : TopCat.{u}} (p : X)
 variable (R : TopCat.Sheaf RingCat X)
   (M : Type u) [AddCommGroup M] [Module (R.presheaf.stalk p) M]
 
-open Classical in
 /--
 The action of the skyscraper sheaf (of modules) on objects.
 -/
 noncomputable
-def skyscraperPresheafOfModulesObj (U : (TopologicalSpace.Opens X)ᵒᵖ) : ModuleCat ↑(R.obj.obj U) :=
-  if hp : p ∈ unop U then
+def skyscraperPresheafOfModulesObj (U : (TopologicalSpace.Opens X)ᵒᵖ) :
+    ModuleCat ↑(R.obj.obj U) := by
+  classical
+  exact if hp : p ∈ unop U then
     letI _ := Module.compHom M (R.presheaf.germ (unop U) p hp).hom
     .of _ M
   else 0
@@ -150,11 +150,9 @@ def skyscraperPresheafOfModules : PresheafOfModules R.obj where
   map i := skyscraperPresheafOfModulesMap p R M i
   map_id X := by
     by_cases h : p ∈ unop X
-    · rw [skyscraperPresheafOfModulesMap_pos p R M (𝟙 X) h,
-        skyscraperPresheafOfModulesRestriction_id p R M h]
-      simp only [ModuleCat.restrictScalarsId'_inv_app]
-      rw [← ModuleCat.restrictScalarsId'App_inv_naturality]
-      simp
+    · simp [skyscraperPresheafOfModulesMap_pos p R M (𝟙 X) h,
+        skyscraperPresheafOfModulesRestriction_id p R M h, ModuleCat.restrictScalarsId'_inv_app,
+        ← ModuleCat.restrictScalarsId'App_inv_naturality]
     · rw [skyscraperPresheafOfModulesMap_neg p R M (𝟙 X) h]
       exact (skyscraperPresheafOfModulesObj_isZero_of_neg p R M h).isInitial.hom_ext _ _
   map_comp {U V W} i j := by
@@ -200,10 +198,6 @@ instance : Unique ((⊤_ Ab).carrier : Type u) := by
     exact this
   infer_instance
 
-/--
-When `p ∈ V`, the restriction map of the underlying `Ab`-presheaf of `skyscraper2` is the
-identity of the residue field, i.e. an `eqToHom`.
--/
 lemma skyscraperPresheafOfModules_presheaf_map_pos {U V : (TopologicalSpace.Opens X)ᵒᵖ} (i : U ⟶ V)
     (h : p ∈ unop V) :
     (skyscraperPresheafOfModules p R M).presheaf.map i =
@@ -234,12 +228,7 @@ def skyscraperPresheafOfModulesPresheafIsoSkyscraperApp (U : (TopologicalSpace.O
     (if_pos h).symm)
   else
     (skyscraperPresheafOfModules_presheaf_obj_isZero p R M h).iso
-    (by
-      have : (skyscraperSheaf p (AddCommGrpCat.of M)).presheaf.obj U = terminal _ := by
-        change (skyscraperPresheaf p (AddCommGrpCat.of M)).obj U = terminal _
-        simp [h]
-      rw [this]
-      exact AddCommGrpCat.isZero_of_subsingleton (⊤_ AddCommGrpCat))
+    (by simp [h, AddCommGrpCat.isZero_of_subsingleton])
 
 lemma skyscraperPresheafOfModulesPresheafIsoSkyscraperApp_pos {U : (TopologicalSpace.Opens X)ᵒᵖ}
     (h : p ∈ unop U) :
@@ -260,13 +249,9 @@ lemma skyscraperAb_presheaf_map_pos {X : TopCat} (p : ↑X)
   change (skyscraperPresheaf p A).map i = _
   rw [skyscraperPresheaf_map, dif_pos h]
 
-
-set_option backward.isDefEq.respectTransparency false in
---set_option backward.defeqAttrib.useBackward false in
 open Classical in
 /--
-The underlying `Ab`-presheaf of `skyscraper2` is isomorphic to the skyscraper presheaf valued in
-the residue field at `p`.
+The underlying presheaf of the skyscraper sheaf of modules is isomorphic to `skyscraperSheaf`
 -/
 noncomputable def skyscraperPresheafOfModulesPresheafIsoSkyscraper :
     (skyscraperPresheafOfModules p R M).presheaf ≅
@@ -285,9 +270,7 @@ noncomputable def skyscraperPresheafOfModulesPresheafIsoSkyscraper :
     exact eq_of_heq (((heq_eqToHom_apply_ab _ _).trans (heq_eqToHom_apply_ab _ x)).trans
       ((heq_eqToHom_apply_ab _ _).trans (heq_eqToHom_apply_ab _ x)).symm)
   · have : IsZero ((skyscraperSheaf p (AddCommGrpCat.of M)).presheaf.obj V) := by
-      simp [h]
-      sorry
-      --simp [h, AddCommGrpCat.isZero_of_subsingleton]
+      simp [h, AddCommGrpCat.isZero_of_subsingleton]
     exact this.eq_of_tgt _ _
 
 end Iso
