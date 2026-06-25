@@ -210,7 +210,7 @@ variable (n : ℕ)
 private lemma removeNth_castSucc_snoc {α : Type*} {k : ℕ} (u : Fin (k + 1) → α) (z : α)
     (j : Fin (k + 1)) :
     (Fin.castSucc j).removeNth (Fin.snoc u z : Fin (k + 2) → α) =
-      (Fin.snoc (j.removeNth u) z : Fin (k + 1) → α) := by
+      Fin.snoc (j.removeNth u) z := by
   ext l
   induction l using Fin.lastCases with
   | last =>
@@ -452,7 +452,7 @@ lemma shortComplexProd_δ_eq (i : ℕ) :
   have hmain : (koszulComplex φ).liftCycles ((upOne φ).iCycles (i + 1)) (i - 1) hk hd ≫
     (koszulComplex φ).homologyπ i = (upOne φ).homologyπ (i + 1) ≫ (upOneHomologyIso φ i).hom := by
     rcases i with _ | n
-    · refine (cancel_mono ((koszulComplex φ).isoHomologyι₀.hom)).mp ?_
+    · rw [← cancel_mono ((koszulComplex φ).isoHomologyι₀.hom)]
       trans ((upOne φ).iCycles 1) ≫ (koszulComplex φ).pOpcycles 0
       · rw [Category.assoc, HomologicalComplex.isoHomologyι_hom, HomologicalComplex.homology_π_ι,
           ← Category.assoc, HomologicalComplex.liftCycles_i]
@@ -467,16 +467,15 @@ lemma shortComplexProd_δ_eq (i : ℕ) :
     · have e3 : (koszulComplex φ).liftCycles ((upOne φ).iCycles (n + 2)) (n + 1 - 1) hk hd =
         ((upOne φ).cyclesIsoSc' (n + 3) (n + 2) (n + 1) (by simp) (by simp)).hom ≫
           ((koszulComplex φ).cyclesIsoSc' (n + 2) (n + 1) n (by simp) (by simp)).inv := by
-        apply (cancel_mono ((koszulComplex φ).iCycles (n + 1))).mp
-        rw [HomologicalComplex.liftCycles_i, Category.assoc,
+        rw [← cancel_mono ((koszulComplex φ).iCycles (n + 1)),
+          HomologicalComplex.liftCycles_i, Category.assoc,
           ← (upOne φ).cyclesIsoSc'_hom_iCycles (n + 3) (n + 2) (n + 1) (by simp) (by simp),
           (koszulComplex φ).cyclesIsoSc'_inv_iCycles (n + 2) (n + 1) n (by simp) (by simp)]
         rfl
       simp only [e3, assoc, upOneHomologyIso, Iso.trans_hom, Iso.symm_hom,
         HomologicalComplex.π_homologyIsoSc'_hom_assoc, Iso.cancel_iso_hom_left]
       exact ((koszulComplex φ).π_homologyIsoSc'_inv (n + 2) (n + 1) n (by simp) (by simp)).symm
-  apply (cancel_epi ((upOne φ).homologyπ (i + 1))).mp
-  rw [hδ', Linear.comp_smul, ← hmain]
+  rw [← cancel_epi ((upOne φ).homologyπ (i + 1)), hδ', Linear.comp_smul, ← hmain]
 
 end induction
 
