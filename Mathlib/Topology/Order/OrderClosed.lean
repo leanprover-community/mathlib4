@@ -555,7 +555,7 @@ theorem isClosed_monotone : IsClosed {f : β → α | Monotone f} := by
 
 /-- The set of antitone functions on a set is closed. -/
 theorem isClosed_antitoneOn : IsClosed {f : β → α | AntitoneOn f s} :=
-  isClosed_monotoneOn (α := αᵒᵈ) (β := β)
+  isClosed_monotoneOn (α := αᵒᵈ)
 
 /-- The set of antitone functions is closed. -/
 theorem isClosed_antitone : IsClosed {f : β → α | Antitone f} :=
