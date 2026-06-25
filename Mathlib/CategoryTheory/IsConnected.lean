@@ -5,10 +5,11 @@ Authors: Bhavik Mehta, Jakob von Raumer
 -/
 module
 
-public import Mathlib.Data.List.Chain
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.Data.List.Chain
 
 /-!
 # Connected category
@@ -504,5 +505,12 @@ instance isPreconnected_of_subsingleton [Subsingleton J] : IsPreconnected J wher
 
 instance isConnected_of_nonempty_and_subsingleton [Nonempty J] [Subsingleton J] :
     IsConnected J where
+
+instance isPreconnected_of_linearOrder {α : Type*} [LinearOrder α] : IsPreconnected α :=
+  zigzag_isPreconnected fun a b ↦ (le_total a b).rec
+    (fun h ↦ .of_hom (homOfLE h)) (fun h ↦ .of_inv (homOfLE h))
+
+instance isConnected_of_nonempty_and_linearOrder {α : Type*} [Nonempty α] [LinearOrder α] :
+    IsConnected α where
 
 end CategoryTheory
