@@ -17,6 +17,8 @@ In this file we define algebraic cycles on a scheme `X` with coefficients in a t
 some basic API for working with them. We define an algebraic cycle on a scheme `X` with
 coefficients in a type `R` to be functions `c : X → R` whose support is locally finite.
 
+## Implementation notes
+
 Here we're making use of the equivalence between irreducible closed subsets of a scheme and their
 generic points in order to reuse the API in `Function.locallyFinsupp`, hence the slightly
 nonstandard definition.
@@ -34,11 +36,9 @@ variable {X Y : Scheme.{u}} {R : Type*}
 /--
 Algebraic cycle on a scheme `X` with coefficients in a type `Z` is just a function from `X` to `Z`
 with locally finite support.
-
-Here we're making use of the equivalence between irreducible closed subsets of a scheme and their
-generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
-nonstandard definition.
+(see the module docstring for more details).
 -/
+@[stacks 02QR]
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
     Function.locallyFinsupp X R
 
@@ -120,18 +120,18 @@ dimension is `Order.height`, and the most common notion of codimension is `Order
 more sophisticated notions exist in the literature which are useful when sufficient
 equidimensionality hypotheses cannot be assumed.
 -/
+@[stacks 02R3]
 noncomputable
 def map [QuasiCompact f] {N : Type*} [DecidableEq N]
     (wx : X → N) (wy : Y → N) (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
   Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) f.isSpectralMap c
 
-@[simp]
 lemma map_apply [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
     (c : AlgebraicCycle X R) (y : Y) :
   map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapAux f wx wy x) := rfl
 
 @[simp]
-lemma map_id [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
+lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
     map (𝟙 _) wx wx c = c := by
   apply Function.locallyFinsupp.map_id
   simp [mapAux]
@@ -160,5 +160,4 @@ lemma le_iff_of_support_subset {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : Al
   specialize hD₁ p
   contradiction
 
-end AlgebraicCycle
-end AlgebraicGeometry
+end AlgebraicGeometry.AlgebraicCycle
