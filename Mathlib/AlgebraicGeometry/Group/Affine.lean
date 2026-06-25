@@ -265,10 +265,6 @@ instance {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [
     (f : S →ₐ[R] T) : (Spec.map (CommRingCat.ofHom f.toRingHom)).IsOver Spec(R) where
   comp_over := by simp [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp]
 
--- TODO: Fix in mathlib
-set_option allowUnsafeReducibility true in
-attribute [implicit_reducible] OverClass.asOver
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Spec.map` as a `MulEquiv` on hom-sets. -/
