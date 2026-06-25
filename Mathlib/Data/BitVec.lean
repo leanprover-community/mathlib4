@@ -61,20 +61,34 @@ theorem toFin_injective {n : Nat} : Function.Injective (toFin : BitVec n → _)
 
 open Fin.NatCast
 
+instance : SMul ℕ+ (BitVec w) where
+  smul n x := n.val • x
+
 lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin :=
   toFin_mul _ _ |>.trans <| by
     open scoped Fin.CommRing in
     simp only [natCast_eq_ofNat, toFin_ofNat, Fin.ofNat_eq_cast, nsmul_eq_mul]
+
+lemma toFin_psmul (n : ℕ+) (x : BitVec w) : toFin (n • x) = n • x.toFin := by
+  rw [← nsmul_val_eq_psmul]
+  exact toFin_nsmul n.val x
 
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
   toFin_mul _ _ |>.trans <| by
     open scoped Fin.CommRing in
     simp only [zsmul_eq_mul, toFin_intCast]
 
+instance : Pow (BitVec w) ℕ+ where
+  pow x n := x ^ n.val
+
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
   | succ n ih => simp [ih, BitVec.pow_succ]
+
+lemma toFin_ppow (x : BitVec w) (n : ℕ+) : toFin (x ^ n) = x.toFin ^ n := by
+  rw [← npow_val_eq_ppow]
+  exact toFin_pow x n.val
 
 /-!
 ## Ring
@@ -90,7 +104,9 @@ instance : CommSemiring (BitVec w) :=
     toFin_one
     toFin_add
     toFin_mul
+    toFin_psmul
     toFin_nsmul
+    toFin_ppow
     toFin_pow
     toFin_natCast
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
@@ -99,7 +115,7 @@ instance : CommRing (BitVec w) :=
   open Fin.CommRing in
   toFin_injective.commRing _
     toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
-    toFin_nsmul toFin_zsmul toFin_pow toFin_natCast toFin_intCast
+    toFin_psmul toFin_nsmul toFin_zsmul toFin_ppow toFin_pow toFin_natCast toFin_intCast
 
 /-- The ring `BitVec m` is isomorphic to `Fin (2 ^ m)`. -/
 @[simps]
