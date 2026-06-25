@@ -312,7 +312,7 @@ theorem IndepFun.integral_bilin_comp_comp'
 /-- If `X` and `Y` are independent and integrable random variables and `B`
 is a continuous bilinear map, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].` -/
 theorem IndepFun.integral_bilin
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
@@ -333,7 +333,7 @@ The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin'`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin'
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
