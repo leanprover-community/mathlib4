@@ -27,20 +27,22 @@ namespace CategoryTheory.Functor
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
   [Category.{v₃} E]
 
+to_dual_name_hint Left Right
+
 /-- A functor preserves monomorphisms if it maps monomorphisms to monomorphisms. -/
 class PreservesMonomorphisms (F : C ⥤ D) : Prop where
   /-- A functor preserves monomorphisms if it maps monomorphisms to monomorphisms. -/
   preserves : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Mono (F.map f)
 
-instance map_mono (F : C ⥤ D) [PreservesMonomorphisms F] {X Y : C} (f : X ⟶ Y) [Mono f] :
-    Mono (F.map f) :=
-  PreservesMonomorphisms.preserves f
-
 /-- A functor preserves epimorphisms if it maps epimorphisms to epimorphisms. -/
+@[to_dual]
 class PreservesEpimorphisms (F : C ⥤ D) : Prop where
   /-- A functor preserves epimorphisms if it maps epimorphisms to epimorphisms. -/
   preserves : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Epi (F.map f)
 
+attribute [to_dual existing] PreservesEpimorphisms.preserves PreservesEpimorphisms.mk
+
+@[to_dual]
 instance map_epi (F : C ⥤ D) [PreservesEpimorphisms F] {X Y : C} (f : X ⟶ Y) [Epi f] :
     Epi (F.map f) :=
   PreservesEpimorphisms.preserves f
@@ -52,60 +54,46 @@ class ReflectsMonomorphisms (F : C ⥤ D) : Prop where
   monomorphisms. -/
   reflects : ∀ {X Y : C} (f : X ⟶ Y), Mono (F.map f) → Mono f
 
-theorem mono_of_mono_map (F : C ⥤ D) [ReflectsMonomorphisms F] {X Y : C} {f : X ⟶ Y}
-    (h : Mono (F.map f)) : Mono f :=
-  ReflectsMonomorphisms.reflects f h
-
 /-- A functor reflects epimorphisms if morphisms that are mapped to epimorphisms are themselves
 epimorphisms. -/
+@[to_dual]
 class ReflectsEpimorphisms (F : C ⥤ D) : Prop where
   /-- A functor reflects epimorphisms if morphisms that are mapped to epimorphisms are themselves
   epimorphisms. -/
   reflects : ∀ {X Y : C} (f : X ⟶ Y), Epi (F.map f) → Epi f
 
+attribute [to_dual existing] ReflectsEpimorphisms.reflects ReflectsEpimorphisms.mk
+
+@[to_dual]
 theorem epi_of_epi_map (F : C ⥤ D) [ReflectsEpimorphisms F] {X Y : C} {f : X ⟶ Y}
     (h : Epi (F.map f)) : Epi f :=
   ReflectsEpimorphisms.reflects f h
 
 set_option backward.isDefEq.respectTransparency false in
+@[to_dual]
 instance preservesMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesMonomorphisms F]
     [PreservesMonomorphisms G] : PreservesMonomorphisms (F ⋙ G) where
   preserves f h := by
     rw [comp_map]
     exact inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
-instance preservesEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesEpimorphisms F]
-    [PreservesEpimorphisms G] : PreservesEpimorphisms (F ⋙ G) where
-  preserves f h := by
-    rw [comp_map]
-    exact inferInstance
-
+@[to_dual]
 instance reflectsMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsMonomorphisms F]
     [ReflectsMonomorphisms G] : ReflectsMonomorphisms (F ⋙ G) where
   reflects _ h := F.mono_of_mono_map (G.mono_of_mono_map h)
 
-instance reflectsEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsEpimorphisms F]
-    [ReflectsEpimorphisms G] : ReflectsEpimorphisms (F ⋙ G) where
-  reflects _ h := F.epi_of_epi_map (G.epi_of_epi_map h)
-
+@[to_dual]
 theorem preservesEpimorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesEpimorphisms (F ⋙ G)] [ReflectsEpimorphisms G] : PreservesEpimorphisms F :=
   ⟨fun f _ => G.epi_of_epi_map <| show Epi ((F ⋙ G).map f) from inferInstance⟩
 
-theorem preservesMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
-    [PreservesMonomorphisms (F ⋙ G)] [ReflectsMonomorphisms G] : PreservesMonomorphisms F :=
-  ⟨fun f _ => G.mono_of_mono_map <| show Mono ((F ⋙ G).map f) from inferInstance⟩
-
+@[to_dual]
 theorem reflectsEpimorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesEpimorphisms G] [ReflectsEpimorphisms (F ⋙ G)] : ReflectsEpimorphisms F :=
   ⟨fun f _ => (F ⋙ G).epi_of_epi_map <| show Epi (G.map (F.map f)) from inferInstance⟩
 
-theorem reflectsMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
-    [PreservesMonomorphisms G] [ReflectsMonomorphisms (F ⋙ G)] : ReflectsMonomorphisms F :=
-  ⟨fun f _ => (F ⋙ G).mono_of_mono_map <| show Mono (G.map (F.map f)) from inferInstance⟩
-
-lemma preservesMonomorphisms.of_natTrans {F G : C ⥤ D} [PreservesMonomorphisms F]
+@[to_dual]
+lemma PreservesMonomorphisms.of_natTrans {F G : C ⥤ D} [PreservesMonomorphisms F]
     (f : G ⟶ F) [∀ X, Mono (f.app X)] :
     PreservesMonomorphisms G where
   preserves {X Y} π hπ := by
@@ -113,109 +101,92 @@ lemma preservesMonomorphisms.of_natTrans {F G : C ⥤ D} [PreservesMonomorphisms
     rw [f.naturality π]
     infer_instance
 
-theorem preservesMonomorphisms.of_iso {F G : C ⥤ D} [PreservesMonomorphisms F] (α : F ≅ G) :
+@[to_dual]
+theorem PreservesMonomorphisms.of_iso {F G : C ⥤ D} [PreservesMonomorphisms F] (α : F ≅ G) :
     PreservesMonomorphisms G :=
   of_natTrans α.inv
 
-theorem preservesMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
+@[to_dual]
+theorem PreservesMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     PreservesMonomorphisms F ↔ PreservesMonomorphisms G :=
-  ⟨fun _ => preservesMonomorphisms.of_iso α, fun _ => preservesMonomorphisms.of_iso α.symm⟩
+  ⟨fun _ => of_iso α, fun _ => of_iso α.symm⟩
 
-lemma preservesEpimorphisms.of_natTrans {F G : C ⥤ D} [PreservesEpimorphisms F]
-    (f : F ⟶ G) [∀ X, Epi (f.app X)] :
-    PreservesEpimorphisms G where
-  preserves {X Y} π hπ := by
-    suffices Epi (f.app X ≫ G.map π) from epi_of_epi (f.app X) (G.map π)
-    rw [← f.naturality π]
-    infer_instance
+@[to_dual]
+theorem ReflectsMonomorphisms.of_iso {F G : C ⥤ D} [ReflectsMonomorphisms F] (α : F ≅ G) :
+    ReflectsMonomorphisms G where
+  reflects {X Y} f h := by
+    apply F.mono_of_mono_map
+    suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ mono_comp _ _
+    simp
 
-theorem preservesEpimorphisms.of_iso {F G : C ⥤ D} [PreservesEpimorphisms F] (α : F ≅ G) :
-    PreservesEpimorphisms G :=
-  of_natTrans α.hom
-
-theorem preservesEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
-    PreservesEpimorphisms F ↔ PreservesEpimorphisms G :=
-  ⟨fun _ => preservesEpimorphisms.of_iso α, fun _ => preservesEpimorphisms.of_iso α.symm⟩
-
-theorem reflectsMonomorphisms.of_iso {F G : C ⥤ D} [ReflectsMonomorphisms F] (α : F ≅ G) :
-    ReflectsMonomorphisms G :=
-  { reflects := fun {X} {Y} f h => by
-      apply F.mono_of_mono_map
-      suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ mono_comp _ _
-      simp }
-
-theorem reflectsMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
+@[to_dual]
+theorem ReflectsMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     ReflectsMonomorphisms F ↔ ReflectsMonomorphisms G :=
-  ⟨fun _ => reflectsMonomorphisms.of_iso α, fun _ => reflectsMonomorphisms.of_iso α.symm⟩
+  ⟨fun _ => of_iso α, fun _ => of_iso α.symm⟩
 
-theorem reflectsEpimorphisms.of_iso {F G : C ⥤ D} [ReflectsEpimorphisms F] (α : F ≅ G) :
-    ReflectsEpimorphisms G :=
-  { reflects := fun {X} {Y} f h => by
-      apply F.epi_of_epi_map
-      suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ epi_comp _ _
-      simp }
+@[deprecated (since := "2026-06-25")]
+alias preservedMonomorphisms.of_natTrans := PreservesMonomorphisms.of_natTrans
+@[deprecated (since := "2026-06-25")]
+alias preservedMonomorphisms.of_iso := PreservesMonomorphisms.of_iso
+@[deprecated (since := "2026-06-25")]
+alias preservedMonomorphisms.iso_iff := PreservesMonomorphisms.iso_iff
+@[deprecated (since := "2026-06-25")]
+alias reflectsMonomorphisms.of_iso := ReflectsMonomorphisms.of_iso
+@[deprecated (since := "2026-06-25")]
+alias reflectsMonomorphisms.iso_iff := ReflectsMonomorphisms.iso_iff
+@[deprecated (since := "2026-06-25")]
+alias preservedEpimorphisms.of_natTrans := PreservesEpimorphisms.of_natTrans
+@[deprecated (since := "2026-06-25")]
+alias preservedEpimorphisms.of_iso := PreservesEpimorphisms.of_iso
+@[deprecated (since := "2026-06-25")]
+alias preservedEpimorphisms.iso_iff := PreservesEpimorphisms.iso_iff
+@[deprecated (since := "2026-06-25")]
+alias reflectsEpimorphisms.of_iso := ReflectsEpimorphisms.of_iso
+@[deprecated (since := "2026-06-25")]
+alias reflectsEpimorphisms.iso_iff := ReflectsEpimorphisms.iso_iff
 
-theorem reflectsEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
-    ReflectsEpimorphisms F ↔ ReflectsEpimorphisms G :=
-  ⟨fun _ => reflectsEpimorphisms.of_iso α, fun _ => reflectsEpimorphisms.of_iso α.symm⟩
-
+@[to_dual]
 theorem preservesEpimorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
-    PreservesEpimorphisms F :=
-  { preserves := fun {X} {Y} f hf =>
-      ⟨by
-        intro Z g h H
-        replace H := congr_arg (adj.homEquiv X Z) H
-        rwa [adj.homEquiv_naturality_left, adj.homEquiv_naturality_left, cancel_epi,
-          Equiv.apply_eq_iff_eq] at H⟩ }
+    PreservesEpimorphisms F where
+  preserves {X Y} f hf := ⟨by
+    intro Z g h H
+    replace H := congr_arg (adj.homEquiv X Z) H
+    rwa [adj.homEquiv_naturality_left, adj.homEquiv_naturality_left, cancel_epi,
+      Equiv.apply_eq_iff_eq] at H⟩
 
+@[to_dual]
 instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesEpimorphisms F :=
   preservesEpimorphisms_of_adjunction (Adjunction.ofIsLeftAdjoint F)
 
-theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
-    PreservesMonomorphisms G :=
-  { preserves := fun {X} {Y} f hf =>
-      ⟨by
-        intro Z g h H
-        replace H := congr_arg (adj.homEquiv Z Y).symm H
-        rwa [adj.homEquiv_naturality_right_symm, adj.homEquiv_naturality_right_symm, cancel_mono,
-          Equiv.apply_eq_iff_eq] at H⟩ }
-
-instance (priority := 100) preservesMonomorphisms_of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
-    PreservesMonomorphisms F :=
-  preservesMonomorphisms_of_adjunction (Adjunction.ofIsRightAdjoint F)
-
+@[to_dual]
 instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
     ReflectsMonomorphisms F where
   reflects {X} {Y} f _ :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_mono (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 
-instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
-    ReflectsEpimorphisms F where
-  reflects {X} {Y} f _ :=
-    ⟨fun {Z} g h hgh =>
-      F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
-
+@[to_dual]
 instance {F G : C ⥤ D} (f : F ⟶ G) [IsSplitEpi f] (X : C) : IsSplitEpi (f.app X) :=
   inferInstanceAs (IsSplitEpi (((evaluation C D).obj X).map f))
 
-instance {F G : C ⥤ D} (f : F ⟶ G) [IsSplitMono f] (X : C) : IsSplitMono (f.app X) :=
-  inferInstanceAs (IsSplitMono (((evaluation C D).obj X).map f))
-
-lemma preservesEpimorphisms.ofRetract {F G : C ⥤ D} (r : Retract G F) [F.PreservesEpimorphisms] :
+@[to_dual]
+lemma PreservesEpimorphisms.ofRetract {F G : C ⥤ D} (r : Retract G F) [F.PreservesEpimorphisms] :
     G.PreservesEpimorphisms where
-  preserves := (preservesEpimorphisms.of_natTrans r.r).preserves
+  preserves := (PreservesEpimorphisms.of_natTrans r.r).preserves
 
-lemma preservesMonomorphisms.ofRetract {F G : C ⥤ D} (r : Retract G F) [F.PreservesMonomorphisms] :
-    G.PreservesMonomorphisms where
-  preserves := (preservesMonomorphisms.of_natTrans r.i).preserves
+@[deprecated (since := "2026-06-25")]
+alias preservesEpimorphisms.ofRetract := PreservesEpimorphisms.ofRetract
+@[deprecated (since := "2026-06-25")]
+alias preservesMonomorphisms.ofRetract := PreservesMonomorphisms.ofRetract
 
 section
 
 variable (F : C ⥤ D) {X Y : C} (f : X ⟶ Y)
 
 /-- If `F` is a fully faithful functor, split epimorphisms are preserved and reflected by `F`. -/
+@[to_dual
+/-- If `F` is a fully faithful functor, split monomorphisms are preserved and reflected by `F`. -/]
 noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f) where
   toFun f := f.map F
   invFun s := ⟨F.preimage s.section_, by
@@ -225,7 +196,7 @@ noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi 
   left_inv := by cat_disch
   right_inv x := by cat_disch
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitEpi f := by
   constructor
   · intro h
@@ -233,25 +204,7 @@ theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitE
   · intro h
     exact IsSplitEpi.mk' ((splitEpiEquiv F f).toFun h.exists_splitEpi.some)
 
-/-- If `F` is a fully faithful functor, split monomorphisms are preserved and reflected by `F`. -/
-noncomputable def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f) where
-  toFun f := f.map F
-  invFun s := ⟨F.preimage s.retraction, by
-    apply F.map_injective
-    simp only [map_comp, map_preimage, map_id]
-    apply SplitMono.id⟩
-  left_inv := by cat_disch
-  right_inv x := by cat_disch
-
-@[simp]
-theorem isSplitMono_iff [Full F] [Faithful F] : IsSplitMono (F.map f) ↔ IsSplitMono f := by
-  constructor
-  · intro h
-    exact IsSplitMono.mk' ((splitMonoEquiv F f).invFun h.exists_splitMono.some)
-  · intro h
-    exact IsSplitMono.mk' ((splitMonoEquiv F f).toFun h.exists_splitMono.some)
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem epi_map_iff_epi [hF₁ : PreservesEpimorphisms F] [hF₂ : ReflectsEpimorphisms F] :
     Epi (F.map f) ↔ Epi f := by
   constructor
@@ -259,16 +212,11 @@ theorem epi_map_iff_epi [hF₁ : PreservesEpimorphisms F] [hF₂ : ReflectsEpimo
   · intro h
     exact F.map_epi f
 
-@[simp]
-theorem mono_map_iff_mono [hF₁ : PreservesMonomorphisms F] [hF₂ : ReflectsMonomorphisms F] :
-    Mono (F.map f) ↔ Mono f := by
-  constructor
-  · exact F.mono_of_mono_map
-  · intro h
-    exact F.map_mono f
-
 /-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `SplitEpiCategory`,
 then `D` also is. -/
+@[to_dual
+/-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `SplitMonoCategory`,
+then `D` also is. -/]
 theorem splitEpiCategoryImpOfIsEquivalence [IsEquivalence F] [SplitEpiCategory C] :
     SplitEpiCategory D :=
   ⟨fun {X} {Y} f => by
@@ -284,6 +232,7 @@ namespace CategoryTheory.Adjunction
 
 variable {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
 
+@[to_dual]
 theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [F'.PreservesMonomorphisms]
     [F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
   ⟨inferInstance, fun X Y Z => by
@@ -291,10 +240,12 @@ theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [F'.PreservesM
     rw [adj.hasLiftingProperty_iff]
     infer_instance⟩
 
+@[to_dual]
 instance strongEpi_map_of_isEquivalence [F.IsEquivalence] (f : A ⟶ B) [_h : StrongEpi f] :
     StrongEpi (F.map f) :=
   F.asEquivalence.toAdjunction.strongEpi_map_of_strongEpi f
 
+@[to_dual]
 instance (adj : F ⊣ F') {X : C} {Y : D} (f : F.obj X ⟶ Y) [hf : Mono f] [F.ReflectsMonomorphisms] :
     Mono (adj.homEquiv _ _ f) :=
   F.mono_of_mono_map <| by
@@ -307,7 +258,7 @@ namespace CategoryTheory.Functor
 
 variable {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem strongEpi_map_iff_strongEpi_of_isEquivalence [IsEquivalence F] :
     StrongEpi (F.map f) ↔ StrongEpi f := by
   constructor

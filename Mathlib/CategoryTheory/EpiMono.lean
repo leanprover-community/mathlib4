@@ -70,6 +70,9 @@ structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- `section_` composed with `f` is the identity -/
   id : section_ ≫ f = 𝟙 Y := by cat_disch
 
+-- TODO: `to_dual` should add these automatically:
+attribute [to_dual existing] SplitEpi.ext SplitEpi.ext_iff
+
 /-- `IsSplitEpi f` is the assertion that `f` admits a section -/
 @[to_dual]
 class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
