@@ -44,26 +44,19 @@ lemma stabilizer_zero (ρ : Representation k G V) : stabilizer ρ 0 = ⊤ := by
 
 lemma le_stabilizer_smul (ρ : Representation k G V) (c : k) (v : V) :
     stabilizer ρ v ≤ stabilizer ρ (c • v) := by
-  intro g hg_stab
-  rw [mem_stabilizer] at hg_stab
-  rw [mem_stabilizer, map_smul, hg_stab]
+  simp +contextual [SetLike.le_def]
 
 lemma le_stabilizer_add (ρ : Representation k G V) (v1 v2 : V) :
     (stabilizer ρ v1) ⊓ (stabilizer ρ v2) ≤ stabilizer ρ (v1 + v2) := by
-  intro g hg_stab
-  rw [mem_stabilizer, map_add, hg_stab.1, hg_stab.2]
+  simp +contextual [SetLike.le_def]
 
 lemma le_stabilizer_sum {n : ℕ} (ρ : Representation k G V) (v : Fin n → V) :
     ⨅ i, (stabilizer ρ (v i)) ≤ stabilizer ρ (∑ i, v i) := by
-  intro g hg_stab
-  simp only [Subgroup.mem_iInf, mem_stabilizer] at hg_stab
-  simp [hg_stab]
+  simp +contextual [SetLike.le_def]
 
 lemma IntertwiningMap.stabilizer_le {ρ : Representation k G V} {ρ' : Representation k G V'}
     (f : ρ.IntertwiningMap ρ') (v : V) : stabilizer ρ v ≤ stabilizer ρ' (f v) := by
-  intro x hx_stab
-  rw [mem_stabilizer] at hx_stab
-  rw [mem_stabilizer, ← IntertwiningMap.isIntertwining, hx_stab]
+  simp +contextual [SetLike.le_def, ← IntertwiningMap.isIntertwining]
 
 /-- The stabilizer of `ρ g v` is the conjugate of the stabilizer of `v`. -/
 lemma stabilizer_conj (ρ : Representation k G V) (g : G) (v : V) :
