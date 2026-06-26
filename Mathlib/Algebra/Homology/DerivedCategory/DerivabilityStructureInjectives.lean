@@ -314,7 +314,7 @@ of the localizer morphisms `CochainComplex.Plus.localizerMorphism C`
 and `HomotopyCategory.Plus.localizerMorphism C`. -/
 private def iso :
     (CochainComplex.Plus.localizerMorphism C).functor ⋙ (R C).functor ≅
-  (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
+    (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex CochainComplex in
