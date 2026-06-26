@@ -58,7 +58,7 @@ instance (K : CochainComplex.Plus (InjectiveObject C)) :
   have (n : ℤ) : Injective (L.X n) := by dsimp [L]; infer_instance
   exact CochainComplex.isKInjective_of_injective L n
 
-lemma exists_injective_resolution [EnoughInjectives C]
+lemma exists_quasiIso_injective [EnoughInjectives C]
     (K : CochainComplex.Plus C) (n : ℤ) [K.obj.IsStrictlyGE n] :
     ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n)
       (i : K ⟶ (InjectiveObject.ι C).mapCochainComplexPlus.obj L),
@@ -89,7 +89,7 @@ lemma exists_injective_nonempty_iso [EnoughInjectives C] (K : DerivedCategory.Pl
   have : K.obj.IsGE n := (K.isGE_ι_obj_iff n).2 (by assumption)
   obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.exists_iso_Q_obj_of_isGE K.obj n
   obtain ⟨M, _, i, hi⟩ :=
-    CochainComplex.Plus.exists_injective_resolution ⟨L, ⟨n, inferInstance⟩⟩ n
+    CochainComplex.Plus.exists_quasiIso_injective ⟨L, ⟨n, inferInstance⟩⟩ n
   have : QuasiIso i.hom := by assumption
   exact ⟨M, inferInstance,
     ⟨DerivedCategory.Plus.ι.preimageIso ((asIso (DerivedCategory.Q.map i.hom)).symm ≪≫ e.symm)⟩⟩
