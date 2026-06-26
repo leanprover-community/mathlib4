@@ -189,8 +189,7 @@ lemma hasSum_qExpansion_of_norm_lt {f : ℍ → ℂ} (hh : 0 < h)
 lemma hasSum_qExpansion {f : ℍ → ℂ} (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f)
     (τ : ℍ) : HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • 𝕢 h τ ^ m) (f τ) := by
-  have : 0 < 2 * π * τ.im / h := by positivity
-  have : ‖𝕢 h τ‖ < 1 := by simpa [Periodic.qParam, Complex.norm_exp, neg_div]
+  have : ‖𝕢 h τ‖ < 1 := Periodic.norm_qParam_lt_one hh τ.im_pos
   simpa [eq_cuspFunction τ hh.ne' hfper] using
     hasSum_qExpansion_of_norm_lt hh hfper hfhol hfbdd this
 
@@ -266,15 +265,14 @@ theorem isBoundedAtImInfty_of_hasSum_qExpansion {f : ℍ → ℂ} {c : ℕ → �
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) : IsBoundedAtImInfty f := by
   have hfeq : f = fun τ : ℍ ↦ update (cuspFunction h f) 0 (c 0) (𝕢 h τ) := by
     funext τ
-    have : (0 : ℝ) < 2 * π * τ.im / h := by positivity
-    have hqlt : ‖𝕢 h (τ : ℂ)‖ < 1 := by simpa [Periodic.qParam, norm_exp, neg_div]
     rw [update_of_ne (Periodic.qParam_ne_zero _)]
-    exact (hf τ).unique (hasSum_cuspFunction_of_hasSum_punctured hh hf hqlt (exp_ne_zero _))
-  have hball := hasFPowerSeriesOnBall_update hh hf
+    exact (hf τ).unique (hasSum_cuspFunction_of_hasSum_punctured hh hf
+      (Periodic.norm_qParam_lt_one hh τ.im_pos) (exp_ne_zero _))
   have htend : Tendsto f atImInfty (𝓝 (c 0)) := by
     rw [hfeq]
     simpa [update_self, Function.comp_def] using
-      hball.hasFPowerSeriesAt.continuousAt.tendsto.comp (qParam_tendsto_atImInfty hh)
+      (hasFPowerSeriesOnBall_update hh hf).hasFPowerSeriesAt.continuousAt.tendsto.comp
+        (qParam_tendsto_atImInfty hh)
   exact htend.isBigO_one ℝ
 
 lemma hasFPowerSeriesOnBall_cuspFunction {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
