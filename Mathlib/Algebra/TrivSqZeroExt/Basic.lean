@@ -790,7 +790,7 @@ protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
 protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
-  convert! mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx) using 2
+  convert mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx)
   ext <;> simp
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
