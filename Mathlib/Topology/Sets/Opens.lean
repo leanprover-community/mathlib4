@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.ContinuousMap.Basic
@@ -231,6 +232,13 @@ instance [Nonempty α] : Nontrivial (Opens α) where
 @[simp, norm_cast]
 theorem coe_iSup {ι} (s : ι → Opens α) : ((⨆ i, s i : Opens α) : Set α) = ⋃ i, s i := by
   simp [iSup]
+
+lemma coe_iInf {ι : Type*} [Finite ι] (U : ι → TopologicalSpace.Opens α) :
+    (((⨅ i, U i) : Opens α) : Set α) = ⋂ i, U i := by
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e ih => rw [← e.iInf_comp, ← e.surjective.iInter_comp, ih]
+  | h_empty => simp
+  | h_option ih => rw [iInf_option, Set.iInter_option, Opens.coe_inf, ih]
 
 theorem iSup_def {ι} (s : ι → Opens α) : ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).2⟩ :=
   ext <| coe_iSup s

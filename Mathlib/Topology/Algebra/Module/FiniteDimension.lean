@@ -10,6 +10,7 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -738,6 +739,14 @@ theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodul
 @[deprecated (since := "2026-05-09")]
 alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
   Submodule.ClosedComplemented.of_finiteDimensional_quotient
+
+theorem Submodule.ClosedComplemented.of_disjoint_of_finiteDimensional_quotient
+    {A B : Submodule 𝕜 E} [B_cofg : FiniteDimensional 𝕜 (E ⧸ B)] (hB : IsClosed (B : Set E))
+    (hAB : Disjoint A B) : A.ClosedComplemented := by
+  obtain ⟨C, B_le_C, C_compl_A⟩ := hAB.symm.exists_isCompl
+  have C_cofg : FiniteDimensional 𝕜 (E ⧸ C) := CoFG.of_le B_le_C B_cofg
+  have hC : IsClosed (C : Set E) := isClosed_mono_of_finiteDimensional_quotient hB B_le_C
+  exact C_compl_A.isTopCompl_of_finiteDimensional_quotient hC |>.symm.closedComplemented
 
 lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
     {A B : Submodule 𝕜 E} [FiniteDimensional 𝕜 A] (hA : A.ClosedComplemented) [T2Space A]
