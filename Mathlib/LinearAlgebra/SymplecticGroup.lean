@@ -36,29 +36,13 @@ namespace Matrix
 
 variable (l) [DecidableEq l] (R) [CommRing R]
 
+section JMatrixLemmas
+
 /-- The matrix defining the canonical skew-symmetric bilinear form. -/
 def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
-/-- The group of symplectic matrices over a ring `R`. -/
-def symplecticGroup [Fintype l] : Submonoid (Matrix (l ⊕ l) (l ⊕ l) R) where
-  carrier := { A | A * J l R * Aᵀ = J l R }
-  mul_mem' {a b} ha hb := by
-    simp only [Set.mem_setOf_eq, transpose_mul] at *
-    rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
-    exact ha
-  one_mem' := by simp
-
-end Matrix
-
-namespace SymplecticGroup
-
-variable [DecidableEq l] [CommRing R]
-
-open Matrix
-
-section JMatrixLemmas
-
+variable {R} in
 @[simp]
 theorem map_J {F S : Type*} [CommRing S] [FunLike F R S]
     [AddMonoidHomClass F R S] [OneHomClass F R S] (f : F) :
@@ -71,7 +55,7 @@ theorem J_transpose : (J l R)ᵀ = -J l R := by
     fromBlocks_smul, Matrix.transpose_zero, Matrix.transpose_one, transpose_neg]
   simp [fromBlocks]
 
-variable (l) (R) [Fintype l]
+variable [Fintype l]
 
 theorem J_squared : J l R * J l R = -1 := by
   rw [J, fromBlocks_multiply]
@@ -95,6 +79,23 @@ theorem isUnit_det_J : IsUnit (det (J l R)) :=
 end JMatrixLemmas
 
 variable [Fintype l]
+
+/-- The group of symplectic matrices over a ring `R`. -/
+def symplecticGroup : Submonoid (Matrix (l ⊕ l) (l ⊕ l) R) where
+  carrier := { A | A * J l R * Aᵀ = J l R }
+  mul_mem' {a b} ha hb := by
+    simp only [Set.mem_setOf_eq, transpose_mul] at *
+    rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
+    exact ha
+  one_mem' := by simp
+
+end Matrix
+
+namespace SymplecticGroup
+
+variable [DecidableEq l] [Fintype l] [CommRing R]
+
+open Matrix
 
 theorem mem_iff {A : Matrix (l ⊕ l) (l ⊕ l) R} :
     A ∈ symplecticGroup l R ↔ A * J l R * Aᵀ = J l R := by simp [symplecticGroup]
@@ -139,8 +140,8 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   exact hA
 
 theorem map_mem {F S : Type*} [CommRing S] [FunLike F R S] [RingHomClass F R S]
-    (f : F) (hA : A ∈ symplecticGroup l R) : A.map f ∈ symplecticGroup l S := by
-  simp_rw [mem_iff, ← transpose_map, ← map_J f, ← Matrix.map_mul, mem_iff.mp hA]
+    (hA : A ∈ symplecticGroup l R) (f : F) : A.map f ∈ symplecticGroup l S := by
+  simp_rw [mem_iff, ← transpose_map, ← map_J _ f, ← Matrix.map_mul, mem_iff.mp hA]
 
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
@@ -343,7 +344,7 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
 theorem det_eq_one {M : Matrix (l ⊕ l) (l ⊕ l) R} (hM : M ∈ symplecticGroup l R) :
     M.det = 1 := by
   refine sub_eq_zero.1 <| eq_zero_of_localization _ fun _ _ ↦ ?_
-  simp [RingHom.map_det, RingHom.mapMatrix_apply, det_eq_one_of_isLocalRing <| map_mem _ hM]
+  simp [RingHom.map_det, RingHom.mapMatrix_apply, det_eq_one_of_isLocalRing <| map_mem hM _]
 
 end Determinant
 
