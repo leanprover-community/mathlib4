@@ -540,12 +540,10 @@ instance preservesColimits_forget :
 
 instance : Limits.HasBinaryBiproducts (Rep.{w} k G) where
   has_binary_biproduct A B := Limits.hasBinaryBiproduct_of_total
-    ⟨Rep.of (X := A.V × B.V) (Representation.prod A.ρ B.ρ), Rep.ofHom ⟨LinearMap.fst k _ _, by
-      simp [LinearMap.ext_iff]⟩, Rep.ofHom ⟨LinearMap.snd k _ _, by simp [LinearMap.ext_iff]⟩,
-      Rep.ofHom ⟨LinearMap.inl _ _ _, by simp [LinearMap.ext_iff]⟩, Rep.ofHom ⟨LinearMap.inr _ _ _,
-      by simp [LinearMap.ext_iff]⟩, by ext : 2; simp, by ext : 2; simp [zero_hom], by
-      ext : 2; simp [zero_hom], by ext : 2; simp⟩ <| by
-    ext : 2; simp [← ofHom_comp, ← ofHom_add, LinearMap.ext_iff]
+    ⟨Rep.of (X := A.V × B.V) (A.ρ.prod B.ρ), Rep.ofHom (.fst k A.ρ B.ρ), Rep.ofHom (.snd k A.ρ B.ρ),
+      Rep.ofHom (.inl k A.ρ B.ρ), Rep.ofHom (.inr k A.ρ B.ρ), by ext1; simp,
+      by ext1; simp [zero_hom], by ext1; simp [zero_hom], by ext1; simp⟩ <| by
+    ext1; simp [Rep.add_hom]
 
 instance : Limits.HasZeroObject (Rep.{w} k G) where
   zero := ⟨Rep.trivial k G PUnit, {
