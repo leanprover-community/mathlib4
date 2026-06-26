@@ -44,6 +44,9 @@ instance [HasFiniteProducts C] : HasFiniteProducts (InjectiveObject C) where
 instance [Preadditive C] [HasFiniteProducts C] : HasFiniteBiproducts (InjectiveObject C) :=
   HasFiniteBiproducts.of_hasFiniteProducts
 
+instance [Preadditive C] [HasBinaryBiproducts C] : HasBinaryBiproducts (InjectiveObject C) :=
+  HasBinaryBiproducts.of_hasBinaryProducts
+
 instance [HasZeroMorphisms C] [HasZeroObject C] : (isInjective C).ContainsZero where
   exists_zero := ⟨0, by simp [IsZero.iff_id_eq_zero], Injective.zero_injective⟩
 
