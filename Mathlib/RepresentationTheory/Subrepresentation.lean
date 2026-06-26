@@ -102,6 +102,23 @@ instance : BoundedOrder (Subrepresentation ρ) where
 
 end non_comm
 
+section quotient
+
+variable {A G W : Type*} [Ring A] [Group G] [AddCommGroup W] [Module A W]
+
+/-- The quotient representation associated to a subrepresentation. -/
+def quotient {ρ : Representation A G W} (ρ' : Subrepresentation ρ) :
+    Representation A G (W ⧸ ρ'.toSubmodule) :=
+  ρ.quotient ρ'.toSubmodule (by exact fun g w hw => ρ'.apply_mem_toSubmodule g hw)
+
+@[simp]
+lemma quotient_apply {ρ : Representation A G W} (ρ' : Subrepresentation ρ)
+    (g : G) (w : W) :
+    ρ'.quotient g ⟦w⟧ = ⟦ρ g w⟧ := by
+  rfl
+
+end quotient
+
 variable [CommSemiring A] [Monoid G] [AddCommMonoid W] [Module A W]
   {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
 
