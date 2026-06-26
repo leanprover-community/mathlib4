@@ -322,7 +322,7 @@ theorem fixedPoints_fixingSubgroup [Finite G] :
 
 /-- If `G` acts as a Galois group on `L/K` and the subgroup `H` acts as a Galois group on `L/B`,
 then the fixed points of `H` equals the range of `algebraMap B L`. -/
-theorem fixedPoints_eq_range_algebraMap [Finite G] (B : Type*)
+theorem fixedPoints_eq_range_algebraMap (B : Type*)
     [CommSemiring B] [Algebra B L] [IsGaloisGroup H B L] :
     (FixedPoints.intermediateField H : IntermediateField K L) = Set.range (algebraMap B L) := by
   ext

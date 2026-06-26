@@ -1175,7 +1175,7 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   exact isOpen_lt hq continuous_const
 
 /-- The sum over a finite set of continuous seminorms is continuous. -/
-theorem continuous_finsetSum [TopologicalSpace E] [IsTopologicalAddGroup E]
+theorem continuous_finsetSum [TopologicalSpace E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
     Continuous ((∑ i ∈ s, p i : Seminorm 𝕝 E) : E → ℝ) := by
   change Continuous (fun x ↦ coeFnAddMonoidHom _ _ (∑ i ∈ s, p i) x)
