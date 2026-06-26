@@ -104,7 +104,7 @@ namespace RelHom
 
 instance : FunLike (r →r s) α β where
   coe o := o.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -220,7 +220,7 @@ instance : Coe (r ↪r s) (r →r s) :=
 
 instance : FunLike (r ↪r s) α β where
   coe x := x.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
     congr
@@ -579,7 +579,7 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 
 instance : FunLike (r ≃r s) α β where
   coe x := x
-  coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
+  coe_injective := Equiv.coe_fn_injective.comp toEquiv_injective
 
 instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
