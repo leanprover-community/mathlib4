@@ -226,7 +226,6 @@ lemma isCardinalFiltered_iUnion :
           (leOfHom (IsCardinalFiltered.toMax a hK k)) (ha k)⟩) hK
     exact ⟨⟨z, Set.subset_iUnion _ _ hz⟩, hz'⟩
   intro K j f hK
-  have := hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A
   obtain ⟨⟨x, hx⟩, hx'⟩ := hφ₀ Y hY' m hm _
     (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA _) f hK
   refine ⟨⟨x, ?_⟩, hx'⟩
