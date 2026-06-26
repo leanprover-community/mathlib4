@@ -274,9 +274,11 @@ lemma prod_comp (X : Type*) [AddCommMonoid X] [Module A X] {π : Representation 
   IntertwiningMap.ext <| LinearMap.prod_comp ..
 
 variable (A ρ σ) in
+/-- The left inclusion of a product representation is an intertwining map. -/
 def inl : IntertwiningMap ρ (ρ.prod σ) := prod (id ρ) (0 : IntertwiningMap ρ σ)
 
 variable (A ρ σ) in
+/-- The right inclusion of a product representation is an intertwining map. -/
 def inr : IntertwiningMap σ (ρ.prod σ) := prod (0 : IntertwiningMap σ ρ) (id σ)
 
 lemma range_inl : (inl A ρ σ).range = (snd A ρ σ).ker :=
