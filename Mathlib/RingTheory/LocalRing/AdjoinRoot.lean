@@ -15,6 +15,7 @@ import Mathlib.RingTheory.RegularLocalRing.Defs
 import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
+
 # Results on `AdjoinRoot` and Local Rings
 
 This file establishes the necessary and sufficient conditions for the polynomial
