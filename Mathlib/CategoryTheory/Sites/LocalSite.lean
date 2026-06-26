@@ -22,13 +22,12 @@ See https://ncatlab.org/nlab/show/local+site.
   `coconstantSheaf`.
 * `fullyFaithfulCoconstantSheaf`: `coconstantSheaf` is fully faithful.
 * `fullyFaithfulConstantSheaf`: on local sites, the constant sheaf functor is fully faithful.
+
 All together this shows that for local sites `Sheaf J (Type max u v w)` forms a local topos, but
 since we don't yet have local topoi this can't be stated yet.
-
-TODO: generalise universe levels from `max u v` to `max u v w` again once that is possible.
 -/
 
-universe u v w
+universe w u v
 
 open CategoryTheory Limits Sheaf Opposite GrothendieckTopology
 
@@ -85,7 +84,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- On local sites, the global sections functor `Γ` is left-adjoint to the coconstant functor. -/
 @[simps!]
 noncomputable def IsLocalSite.ΓCoconstantSheafAdj [J.IsLocalSite] :
-    Γ J (Type max u v) ⊣ coconstantSheaf J := by
+    Γ J (Type max u v w) ⊣ coconstantSheaf J := by
   refine Adjunction.ofNatIsoLeft ?_ (ΓNatIsoSheafSections J _ terminalIsTerminal).symm
   exact {
     unit := {
@@ -114,12 +113,12 @@ noncomputable def IsLocalSite.ΓCoconstantSheafAdj [J.IsLocalSite] :
       simp
   }
 
-instance [J.IsLocalSite] : (IsLocalSite.coconstantSheaf.{u,v,max u v} J).IsRightAdjoint :=
+instance [J.IsLocalSite] : (IsLocalSite.coconstantSheaf.{max u v w} J).IsRightAdjoint :=
   ⟨Γ J _, ⟨IsLocalSite.ΓCoconstantSheafAdj J⟩⟩
 
 /-- The global sections of the coconstant sheaf on a type are naturally isomorphic to that type. -/
 noncomputable def coconstantSheafΓNatIsoId [J.IsLocalSite] :
-    IsLocalSite.coconstantSheaf J ⋙ Γ J _ ≅ 𝟭 (Type max u v) := by
+    IsLocalSite.coconstantSheaf J ⋙ Γ J _ ≅ 𝟭 (Type max u v w) := by
   refine (Functor.isoWhiskerLeft _ (ΓNatIsoSheafSections J _ terminalIsTerminal)).trans ?_
   exact (NatIso.ofComponents (fun X ↦ {
     hom := TypeCat.ofHom fun x _ ↦ x
@@ -133,27 +132,27 @@ noncomputable def coconstantSheafΓNatIsoId [J.IsLocalSite] :
 
 /-- `coconstantSheaf` is fully faithful. -/
 noncomputable def fullyFaithfulCoconstantSheaf [J.IsLocalSite] :
-    (IsLocalSite.coconstantSheaf.{u,v,max u v} J).FullyFaithful :=
+    (IsLocalSite.coconstantSheaf.{max u v w} J).FullyFaithful :=
   (IsLocalSite.ΓCoconstantSheafAdj J).fullyFaithfulROfCompIsoId (coconstantSheafΓNatIsoId J)
 
-instance [J.IsLocalSite] : (IsLocalSite.coconstantSheaf.{u,v,max u v} J).Full :=
+instance [J.IsLocalSite] : (IsLocalSite.coconstantSheaf.{max u v} J).Full :=
   (fullyFaithfulCoconstantSheaf J).full
 
-instance [J.IsLocalSite] : (IsLocalSite.coconstantSheaf.{u,v,max u v} J).Faithful :=
+instance [J.IsLocalSite] : (IsLocalSite.coconstantSheaf.{max u v} J).Faithful :=
   (fullyFaithfulCoconstantSheaf J).faithful
 
 /-- On local sites, the constant sheaf functor is fully faithful. -/
-noncomputable def fullyFaithfulConstantSheaf [HasWeakSheafify J (Type max u v)] [J.IsLocalSite] :
-    (constantSheaf J (Type max u v)).FullyFaithful :=
+noncomputable def fullyFaithfulConstantSheaf [HasWeakSheafify J (Type max u v w)] [J.IsLocalSite] :
+    (constantSheaf J (Type max u v w)).FullyFaithful :=
   (Adjunction.Triple.mk (constantSheafΓAdj J _)
     (IsLocalSite.ΓCoconstantSheafAdj J)).fullyFaithfulEquiv.symm <| fullyFaithfulCoconstantSheaf J
 
-instance [HasWeakSheafify J (Type max u v)] [J.IsLocalSite] :
-    (constantSheaf J (Type max u v)).Full :=
+instance [HasWeakSheafify J (Type max u v w)] [J.IsLocalSite] :
+    (constantSheaf J (Type max u v w)).Full :=
   (fullyFaithfulConstantSheaf J).full
 
-instance [HasWeakSheafify J (Type max u v)] [J.IsLocalSite] :
-    (constantSheaf J (Type max u v)).Faithful :=
+instance [HasWeakSheafify J (Type max u v w)] [J.IsLocalSite] :
+    (constantSheaf J (Type max u v w)).Faithful :=
   (fullyFaithfulConstantSheaf J).faithful
 
 open List in
@@ -165,22 +164,22 @@ open List in
 protected theorem GrothendieckTopology.IsLocalSite.tfae [HasTerminal C] :
     TFAE [J.IsLocalSite,
       ∀ X : C, ∀ S ∈ J X, ∀ x : ⊤_ C ⟶ X, S x,
-      Presieve.IsSheaf J (Presheaf.coconst.{u,v,max u v}.obj PEmpty),
+      Presieve.IsSheaf J (Presheaf.coconst.{max u v}.obj PEmpty),
       ∀ X : Type max u v, Presieve.IsSheaf J (Presheaf.coconst.obj X)] := by
   tfae_have 2 → 1 := fun h ↦ ⟨fun S hS ↦ S.id_mem_iff_eq_top.1 <| h _ S hS _⟩
   tfae_have 1 → 2 := fun h X S hS f ↦ by
     simpa using Sieve.id_mem_iff_eq_top.2 <| h.eq_top_of_mem _ <| J.pullback_stable f hS
   tfae_have 3 → 1 := fun h ↦ ⟨fun S hS ↦ by
     replace h : IsEmpty (Presieve.FamilyOfElements
-        (Presheaf.coconst.{u,v,max u v}.obj PEmpty) S.arrows) := by
-      have : IsEmpty ((Presheaf.coconst.{u,v,max u v}.obj PEmpty).obj (op (⊤_ C))) := by
+        (Presheaf.coconst.{max u v}.obj PEmpty) S.arrows) := by
+      have : IsEmpty ((Presheaf.coconst.{max u v}.obj PEmpty).obj (op (⊤_ C))) := by
         dsimp [Presheaf.coconst]; exact isEmpty_fun.2 ⟨⟨𝟙 _⟩, inferInstance⟩
-      have {X : C} : Subsingleton ((Presheaf.coconst.{u,v,max u v}.obj PEmpty).obj (op X)) :=
+      have {X : C} : Subsingleton ((Presheaf.coconst.{max u v}.obj PEmpty).obj (op X)) :=
         Pi.instSubsingleton
       refine not_nonempty_iff.1 fun ⟨x⟩ ↦ IsEmpty.false (h S hS x ?_).choose
       exact fun _ _ _ _ _ _ _ _ _ _ ↦ Subsingleton.elim _ _
     replace ⟨X, f, hf, h⟩ : ∃ X, ∃ f : X ⟶ ⊤_ C, S f ∧
-        IsEmpty ((Presheaf.coconst.{u,v,max u v}.obj PEmpty).obj (op X)) := by
+        IsEmpty ((Presheaf.coconst.{max u v}.obj PEmpty).obj (op X)) := by
       by_contra! h'; exact h.false fun X f hf ↦ (h' X f hf).some
     let ⟨(g : _ ⟶ _)⟩ := (isEmpty_fun.1 h).1
     refine S.id_mem_iff_eq_top.1 ?_
