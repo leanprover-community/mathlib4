@@ -650,7 +650,7 @@ open Set
 open scoped LinearMap.FiniteRangeSetoid
 
 open ContinuousLinearMap in
-theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
+theorem isFredholmTFAE' (u : E →L[𝕜] F) : List.TFAE
     [
       IsFredholmQuot u,
       IsFredholmStruct u,
