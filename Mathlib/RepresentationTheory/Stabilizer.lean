@@ -28,22 +28,19 @@ variable {V V' : Type*} [AddCommMonoid V] [Module k V] [AddCommMonoid V'] [Modul
 /-- The stabilizer of a vector in a representation. -/
 def stabilizer (ρ : Representation k G V) (v : V) : Subgroup G where
   carrier := {g : G | ρ g v = v}
-  mul_mem' := by
-    intro a b ha hb
+  mul_mem' {a b} ha hb := by
     rw [Set.mem_setOf_eq, map_mul, Module.End.mul_apply, hb, ha]
   one_mem' := by simp
-  inv_mem' := by
-    intro g hg
+  inv_mem' {g} hg := by
     rw [Set.mem_setOf_eq, ← hg, inv_self_apply, hg]
 
 @[simp]
-lemma mem_stabilizer (ρ : Representation k G V) (v : V) (g : G) :
-    (g ∈ stabilizer ρ v) ↔ (ρ g v = v) := by
+lemma mem_stabilizer {ρ : Representation k G V} {v : V} {g : G} :
+    g ∈ stabilizer ρ v ↔ ρ g v = v := by
   rfl
 
 lemma stabilizer_zero (ρ : Representation k G V) : stabilizer ρ 0 = ⊤ := by
-  ext x
-  simp only [mem_stabilizer, map_zero, Subgroup.mem_top]
+  ext; simp
 
 lemma le_stabilizer_smul (ρ : Representation k G V) (c : k) (v : V) :
     stabilizer ρ v ≤ stabilizer ρ (c • v) := by
@@ -60,7 +57,7 @@ lemma le_stabilizer_sum {n : ℕ} (ρ : Representation k G V) (v : Fin n → V) 
     ⨅ i, (stabilizer ρ (v i)) ≤ stabilizer ρ (∑ i, v i) := by
   intro g hg_stab
   simp only [Subgroup.mem_iInf, mem_stabilizer] at hg_stab
-  simp only [mem_stabilizer, map_sum, hg_stab]
+  simp [hg_stab]
 
 lemma IntertwiningMap.stabilizer_le {ρ : Representation k G V} {ρ' : Representation k G V'}
     (f : ρ.IntertwiningMap ρ') (v : V) : stabilizer ρ v ≤ stabilizer ρ' (f v) := by
@@ -76,9 +73,9 @@ lemma stabilizer_conj (ρ : Representation k G V) (g : G) (v : V) :
   constructor
   · intro hx_stab
     refine ⟨g⁻¹ * x * g, ?_, ?_⟩
-    · simp only [map_mul, Module.End.mul_apply, hx_stab, inv_self_apply]
+    · simp [hx_stab]
     · group
   · rintro ⟨y, hy_stab, hy_conj⟩
-    simp only [← hy_conj, map_mul, Module.End.mul_apply, inv_self_apply, hy_stab]
+    simp [← hy_conj, hy_stab]
 
 end Representation
