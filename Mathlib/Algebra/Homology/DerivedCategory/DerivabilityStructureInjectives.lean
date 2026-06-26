@@ -144,11 +144,7 @@ def fibrantObjectEquivalence :
       (fun K n ↦ by dsimp; infer_instance)) (by
         rintro ⟨⟨K, n, hn⟩, _⟩
         refine ⟨n, ?_⟩
-        rw [isStrictlyGE_iff]
-        intro i hi
-        rw [IsZero.iff_id_eq_zero]
-        ext
-        apply (K.isZero_of_isStrictlyGE n i hi).eq_of_tgt)
+        rwa [← isStrictlyGE_mapHomologicalComplex_obj_iff _ (InjectiveObject.ι _)])
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
