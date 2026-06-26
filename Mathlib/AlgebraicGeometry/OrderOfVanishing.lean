@@ -36,9 +36,6 @@ def ordHom (z : X) (hz : coheight z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
   haveI : Ring.KrullDimLE 1 (X.presheaf.stalk z) := krullDimLE_of_coheight_le hz.le
   Ring.ordFrac (X.presheaf.stalk z)
 
-lemma ordHom_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
-    ordHom Z hZ f ≠ 0 := (map_ne_zero _).mpr hf
-
 lemma ordHom_of_isUnit {U : X.Opens}
     [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X} (hx : coheight x = 1) (hx' : x ∈ U) :
     ordHom x hx (X.germToFunctionField U f) = 1 := by
@@ -64,24 +61,20 @@ lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.fun
     ord f z = 0 := dif_neg hz
 
 @[simp]
-lemma ord_zero_apply {z : X} : ord 0 z = 0 := by
+lemma ord_zero : ord (0 : X.functionField) = 0 := by
+  ext z
   by_cases h : coheight z = 1
   · simp [ord_eq_ordHom_of_coheight_eq_one h]
   · simp [h]
 
-@[simp]
-lemma ord_zero : ord (0 : X.functionField) = 0 := by
-  ext z
-  simp
-
 lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :
-    ord f x = Multiplicative.toAdd WithZero.unzero (ordHom_ne_zero hx hf) := by
+    ord f x = Multiplicative.toAdd WithZero.unzero ((map_ne_zero (ordHom x hx)).mpr hf) := by
   simp only [ord]
-  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ordHom_ne_zero hx hf
+  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| (map_ne_zero (ordHom x hx)).mpr hf
   simp only [← ha1, hx]
   change a1 = unzero _
   rw [← WithZero.coe_inj, ha1]
-  exact Eq.symm (coe_unzero (ordHom_ne_zero hx hf))
+  exact Eq.symm (coe_unzero ((map_ne_zero (ordHom x hx)).mpr hf))
 
 lemma ord_eq_iff {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) {n : ℤ} :
     ord f z = n ↔ ordHom z hz f = Multiplicative.ofAdd n := by
@@ -93,8 +86,8 @@ lemma ord_mul {x : X} (hx : coheight x = 1) {f g : X.functionField}
     (hf : f ≠ 0) (hg : g ≠ 0) : ord (f*g) x = ord f x + ord g x := by
   have : f * g ≠ 0 := (mul_ne_zero_iff_right hg).mpr hf
   rw [ord_eq_iff hx this]
-  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ordHom_ne_zero hx hf
-  obtain ⟨a1, ha2⟩ := WithZero.ne_zero_iff_exists.mp <| ordHom_ne_zero hx hg
+  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| (map_ne_zero (ordHom x hx)).mpr hf
+  obtain ⟨a1, ha2⟩ := WithZero.ne_zero_iff_exists.mp <| (map_ne_zero (ordHom x hx)).mpr hg
   simp [ord_eq_ordHom_of_coheight_eq_one hx, ← ha1, ← ha2]
 
 lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X}
