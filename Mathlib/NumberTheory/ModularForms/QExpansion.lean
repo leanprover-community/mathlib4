@@ -267,9 +267,9 @@ theorem isBoundedAtImInfty_of_hasSum_qExpansion {f : ℍ → ℂ} {c : ℕ → �
   have hfeq : f = fun τ : ℍ ↦ update (cuspFunction h f) 0 (c 0) (𝕢 h τ) := by
     funext τ
     have : (0 : ℝ) < 2 * π * τ.im / h := by positivity
-    have hqlt : ‖𝕢 h (τ : ℂ)‖ < 1 := by simpa [Periodic.qParam, Complex.norm_exp, neg_div]
+    have hqlt : ‖𝕢 h (τ : ℂ)‖ < 1 := by simpa [Periodic.qParam, norm_exp, neg_div]
     rw [update_of_ne (Periodic.qParam_ne_zero _)]
-    exact (hf τ).unique (hasSum_cuspFunction_of_hasSum_punctured hh hf hqlt (Complex.exp_ne_zero _))
+    exact (hf τ).unique (hasSum_cuspFunction_of_hasSum_punctured hh hf hqlt (exp_ne_zero _))
   have hball := hasFPowerSeriesOnBall_update hh hf
   have htend : Tendsto f atImInfty (𝓝 (c 0)) := by
     rw [hfeq]

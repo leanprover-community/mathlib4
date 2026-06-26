@@ -109,12 +109,11 @@ theorem hasSum_qExpansion_E2 :
   have hS : Summable fun n : ℕ ↦ σ 1 (n + 1) * 𝕢 z ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (k := 2) (one_le_two) z)
   rw [← hasSum_nat_add_iff' 1]
-  simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, smul_eq_mul, Finset.range_one,
-    ite_mul, one_mul, Finset.sum_singleton, pow_zero]
   convert! (hS.mul_left (-24)).hasSum using 1
-  · ext n; ring
-  · rw [E2_eq_tsum_cexp, tsum_mul_left, ← tsum_pnat_eq_tsum_succ (f := fun n ↦ σ 1 n * 𝕢 z ^ n)]
-    ring
+  · ext : 1
+    simp [mul_assoc]
+  · rw [E2_eq_tsum_cexp, tsum_pnat_eq_tsum_succ (f := fun n ↦ σ 1 n * 𝕢 z ^ n), tsum_mul_left]
+    simp
 
 /-- `E2` is bounded at `i∞`. -/
 theorem isBoundedAtImInfty_E2 : IsBoundedAtImInfty E2 :=
