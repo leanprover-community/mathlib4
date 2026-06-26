@@ -29,7 +29,7 @@ namespace AlgebraicGeometry.Scheme
 variable [IsIntegral X] [IsLocallyNoetherian X]
 
 /--
-Order of vanishing on a locally Noetherian integral scheme as a monoid with zero hom to `ℤᵐ⁰`
+Order of vanishing on a locally Noetherian integral scheme as a monoid with zero hom to `ℤᵐ⁰`.
 -/
 noncomputable
 def ordHom (z : X) (hz : coheight z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
@@ -39,7 +39,7 @@ def ordHom (z : X) (hz : coheight z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
 lemma ordHom_of_isUnit {U : X.Opens}
     [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X} (hx : coheight x = 1) (hx' : x ∈ U) :
     ordHom x hx (X.germToFunctionField U f) = 1 := by
-  have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight_le hx.le
+  have : Ring.KrullDimLE 1 (X.presheaf.stalk x) := krullDimLE_of_coheight_le hx.le
   rw [← algebraMap_germ_eq_germToFunctionField hx']
   exact Ring.ordFrac_of_isUnit (hf.map (X.presheaf.germ U x hx').hom)
 
@@ -50,11 +50,11 @@ at a point. This has a junk value of `0` if `f = 0` or if `coheight z ≠ 1`.
 noncomputable
 def ord (f : X.functionField) (z : X) : ℤ :=
   if hz : coheight z = 1
-  then Multiplicative.toAdd <| WithZero.recZeroCoe 1 id <| X.ordHom z hz f
+  then Multiplicative.toAdd <| (X.ordHom z hz f).recZeroCoe 1 id
   else 0
 
 lemma ord_eq_ordHom_of_coheight_eq_one {z : X} (hz : coheight z = 1) (f : X.functionField) :
-    ord f z = Multiplicative.toAdd (WithZero.recZeroCoe 1 id <| X.ordHom z hz f) := dif_pos hz
+    ord f z = Multiplicative.toAdd ((X.ordHom z hz f).recZeroCoe 1 id) := dif_pos hz
 
 @[simp]
 lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.functionField) :

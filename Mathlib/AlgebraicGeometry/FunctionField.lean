@@ -95,7 +95,7 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
 lemma Scheme.algebraMap_germ_eq_germToFunctionField {X : Scheme} [IrreducibleSpace X]
     {U : X.Opens} [Nonempty U] {x : X} (hx : x ∈ U) (f : Γ(X, U)) :
     algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) =
-    X.germToFunctionField U f := by
+      X.germToFunctionField U f := by
   simp [RingHom.algebraMap_toAlgebra, ← ConcreteCategory.comp_apply]
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
@@ -184,23 +184,21 @@ For `f` an element of the function field of `X`, there exists some open set `U �
 -/
 lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) :
     ∃ U ∈ X.affineOpens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
-    X.germToFunctionField U f' = f ∧ IsUnit f' := by
+      X.germToFunctionField U f' = f ∧ IsUnit f' := by
   obtain ⟨U, hU, g, hg⟩ := X.presheaf.exists_germ_eq f
   obtain ⟨_, ⟨A, hA, rfl⟩, hxA, hAU⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hU U.isOpen
   have : Nonempty A := ⟨_, hxA⟩
-  set gA : Γ(X, A) := X.presheaf.map (homOfLE hAU).op g with hgA_def
+  let gA : Γ(X, A) := X.presheaf.map (homOfLE hAU).op g
   have h_germ_gA : X.presheaf.germ A (genericPoint X) hxA gA = f := by
-    rw [hgA_def]
-    exact (X.presheaf.germ_res_apply (homOfLE hAU) (genericPoint X) hxA g).trans hg
+    simp only [← hg, ← X.presheaf.germ_res_apply (homOfLE hAU) (genericPoint X) hxA g, gA]
+    rfl
   have hxV : genericPoint X ∈ X.basicOpen gA := by
-    rw [Scheme.mem_basicOpen X gA (genericPoint X) hxA, h_germ_gA]
-    exact isUnit_iff_ne_zero.mpr hf
+    rwa [Scheme.mem_basicOpen X gA (genericPoint X) hxA, h_germ_gA, isUnit_iff_ne_zero]
   have : Nonempty (X.basicOpen gA) := ⟨⟨_, hxV⟩⟩
   refine ⟨X.basicOpen gA, hA.basicOpen gA,
-      X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
-      X.toRingedSpace.isUnit_res_basicOpen gA⟩
+    X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
+    X.toRingedSpace.isUnit_res_basicOpen gA⟩
   simpa using h_germ_gA
-
 
 end AlgebraicGeometry
