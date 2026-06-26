@@ -21,7 +21,7 @@ and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular
 - `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
 
 TODO:
-- Ramanujan-Serre derivative preserves modularity, i.e. $\partial_k (M_k) \subseteq M_{k+2}$.
+- Serre derivative preserves modularity, i.e. $\partial_k (M_k) \subseteq M_{k+2}$.
 - Use above, prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
   for `sorry`-free proofs.
 -/
@@ -179,32 +179,50 @@ theorem serreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff 
 open ModularGroup
 
 /-- How `D` interacts with the slash action. -/
-lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
-    D (F ∣[k] γ) = (D F ∣[k + 2] γ) -
-      (fun z : ℍ ↦ (k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
+lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
+    {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) :
+    D (F ∣[k] g) = fun z : ℍ ↦ (g.val.det : ℂ)⁻¹ * (D F ∣[k + 2] g) z -
+      (k : ℂ) * (2 * π * I)⁻¹ * (g 1 0 / denom g z) * (F ∣[k] g) z := by
+  have hdet : g.det.val = g.val.det := Matrix.GeneralLinearGroup.val_det_apply g
+  have hdetℂ : (g.val.det : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr hg.ne'
+  have hσ : ∀ x : ℂ, σ g x = x := fun x ↦ by
+    rw [σ, if_pos (hdet ▸ hg), ContinuousAlgEquiv.refl_apply]
   ext z
   unfold normalizedDerivOfComplex
-  simp only [Pi.sub_apply]
-  have hz := denom_ne_zero γ z
-  have hdet : ((↑γ : GL (Fin 2) ℝ)).val.det = 1 := by
-    rw [← Matrix.GeneralLinearGroup.val_det_apply]; simp
-  have h_smul : HasDerivAt (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (1 / (denom γ z) ^ 2) ↑z := by
-    have h := (hasStrictDerivAt_smul (hdet ▸ one_pos) z).hasDerivAt
-    rwa [hdet, Complex.ofReal_one] at h
-  have h_F : HasDerivAt (F ∘ ofComplex) (deriv (F ∘ ofComplex) ↑(γ • ofComplex (z : ℂ)))
-      ↑(γ • ofComplex (z : ℂ)) :=
-    (ofComplex_apply z).symm ▸ (mdifferentiableAt_iff.mp (hF (γ • z))).hasDerivAt
-  have h_denom : HasDerivAt (fun w ↦ (denom γ w) ^ (-k))
-      (-k * ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) * (denom γ z) ^ (-k - 1)) ↑z := by
-    simpa using (hasStrictDerivAt_denom_zpow ↑γ (-k) z).hasDerivAt
-  have hcomp : ((F ∣[k] γ) ∘ ofComplex) =ᶠ[𝓝 ↑z]
-      fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w) * (denom γ w) ^ (-k) := by
+  have hz := denom_ne_zero g z
+  have h_smul : HasDerivAt (fun w ↦ ↑(g • ofComplex w) : ℂ → ℂ)
+      ((g.val.det : ℂ) / denom g z ^ 2) ↑z := (hasStrictDerivAt_smul hg z).hasDerivAt
+  have h_F : HasDerivAt (F ∘ ofComplex) (deriv (F ∘ ofComplex) ↑(g • ofComplex (z : ℂ)))
+      ↑(g • ofComplex (z : ℂ)) :=
+    (ofComplex_apply z).symm ▸ (mdifferentiableAt_iff.mp (hF (g • z))).hasDerivAt
+  have h_denom : HasDerivAt (fun w ↦ (denom g w) ^ (-k))
+      (-k * (g 1 0 : ℂ) * (denom g z) ^ (-k - 1)) ↑z := by
+    simpa using (hasStrictDerivAt_denom_zpow g (-k) z).hasDerivAt
+  have hcomp : ((F ∣[k] g) ∘ ofComplex) =ᶠ[𝓝 ↑z]
+      fun w ↦ (g.val.det : ℂ) ^ (k - 1) *
+        ((F ∘ ofComplex) ↑(g • ofComplex w) * (denom g w) ^ (-k)) := by
     filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
-    simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw, ofComplex_apply]
-    rw [ModularForm.SL_slash_apply (f := F) (k := k) γ ⟨w, hw⟩]
-  rw [(((h_F.comp (z : ℂ) h_smul).mul h_denom).congr_of_eventuallyEq hcomp).deriv]
-  simp [ModularForm.SL_slash_apply, sub_eq_add_neg, zpow_add₀]
+    simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw, ofComplex_apply,
+      ModularForm.slash_apply, hσ, hdet, abs_of_pos hg]
+    ring
+  have hderiv := (((h_F.comp (z : ℂ) h_smul).mul h_denom).const_mul _).congr_of_eventuallyEq hcomp
+  rw [hderiv.deriv]
+  simp only [ModularForm.slash_apply, hσ, hdet, abs_of_pos hg, ofComplex_apply, Function.comp_apply]
+  rw [show k + 2 - 1 = (k - 1) + 2 by ring, show -(k + 2) = -k + -2 by ring,
+    zpow_add₀ hdetℂ, zpow_add₀ hz, zpow_sub_one₀ hz]
   field
+
+/-- The `SL(2, ℤ)` case of `normalizedDerivOfComplex_slash`, where the determinant factor is `1`. -/
+lemma normalizedDerivOfComplex_SL_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
+    D (F ∣[k] γ) = (D F ∣[k + 2] γ) -
+      (fun z : ℍ ↦ (k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
+  have hdet : ((γ : GL (Fin 2) ℝ)).val.det = 1 := by
+    rw [← Matrix.GeneralLinearGroup.val_det_apply]; simp
+  ext z
+  have h := congrFun (normalizedDerivOfComplex_slash k F hF (g := (γ : GL (Fin 2) ℝ))
+    (by rw [hdet]; exact one_pos)) z
+  rw [hdet] at h
+  simpa [ModularForm.SL_slash, Pi.sub_apply] using h
 
 /--
 Serre derivative is equivariant under the slash action. More precisely,
@@ -222,7 +240,7 @@ theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDif
     ring_nf
   have hDz : (D (F ∣[k] γ)) z = (D F ∣[k + 2] γ) z -
       ((k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
-    simpa [Pi.sub_apply] using congrFun (normalizedDerivOfComplex_slash k F hF γ) z
+    simpa [Pi.sub_apply] using congrFun (normalizedDerivOfComplex_SL_slash k F hF γ) z
   have hE2z : (EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z =
       EisensteinSeries.E2 z - 1 / (2 * riemannZeta 2) * EisensteinSeries.D2 γ z := by
     simpa [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] using
@@ -239,7 +257,8 @@ As a corollary, if `F` is invariant under the slash action of weight `k`, then
 `serreDerivative k F` is invariant under the slash action of weight `k + 2`.
 -/
 theorem serreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ))
-    (h : F ∣[k] γ = F) : serreDerivative k F ∣[k + 2] γ = serreDerivative k F := by
+    (h : F ∣[k] γ = F) :
+    serreDerivative k F ∣[k + 2] γ = serreDerivative k F := by
   rw [serreDerivative_slash_equivariant, h]
   exact hF
 
