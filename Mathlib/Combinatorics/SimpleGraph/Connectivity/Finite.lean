@@ -23,7 +23,7 @@ can also be useful as a recursive description of this set when `V` is finite.
 TODO: should this be extended further?
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -85,7 +85,6 @@ end Fintype
 infinite components. -/
 abbrev oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd {c ∈ G.oddComponents | c.supp ⊆ c'.supp}.ncard ↔ Odd c'.supp.ncard := by

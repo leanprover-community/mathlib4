@@ -70,6 +70,7 @@ instance centerCharacteristic : (center G).Characteristic := by
   rw [← ϕ.injective.eq_iff, map_mul, map_mul]
   exact (hg.comm (ϕ h)).symm
 
+@[to_additive]
 theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
   rw [eq_top_iff']
   intro x
@@ -85,8 +86,9 @@ theorem center_eq_top_iff : center G = ⊤ ↔ IsMulCommutative G := by
 theorem center_eq_top [hG : IsMulCommutative G] : center G = ⊤ :=
     center_eq_top_iff.mpr hG
 
-/-- A group is commutative if the center is the whole group -/
-@[implicit_reducible]
+/-- A group is commutative if the center is the whole group. -/
+@[to_additive /-- An additive group is commutative if the center is the whole group. -/,
+  implicit_reducible]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by
@@ -95,6 +97,15 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
       apply Subgroup.mem_center_iff.mp _ x
       exact h y
   }
+
+@[to_additive]
+protected theorem center_prod {H : Type*} [Group H] : center (G × H) = prod (center G) (center H) :=
+  SetLike.coe_injective Set.center_prod
+
+@[to_additive]
+protected theorem center_pi {η : Type*} {G : η → Type*} [Π i, Group (G i)] :
+    center (Π i, G i) = pi .univ fun i ↦ center (G i) :=
+  SetLike.coe_injective Set.center_pi
 
 variable {H : Subgroup G}
 

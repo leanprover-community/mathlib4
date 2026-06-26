@@ -75,7 +75,12 @@ theorem map_eq_of_eq {f : G →g G'} (f' : G →g G') (h : f = f') :
   subst_vars
   rfl
 
+variable {p} in
 @[simp]
+theorem nil_map_iff : (p.map f).Nil ↔ p.Nil := by
+  cases p <;> simp
+
+@[deprecated nil_map_iff (since := "2026-05-12")]
 theorem map_eq_nil_iff {p : G.Walk u u} : p.map f = nil ↔ p = nil := by cases p <;> simp
 
 @[simp]
@@ -226,7 +231,7 @@ with those edges deleted. -/
 abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
     (hp : ∀ e, e ∈ p.edges → e ∉ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
-    simp only [edgeSet_deleteEdges, Set.mem_diff]
+    simp only [edgeSet_deleteEdges, Set.mem_sdiff]
     exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩
 
 @[simp]
@@ -244,7 +249,7 @@ theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G
 This is an abbreviation for `SimpleGraph.Walk.toDeleteEdges`. -/
 abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
     (G.deleteEdges {e}).Walk v w :=
-  p.toDeleteEdges {e} (fun _ => by contrapose!; simp +contextual [hp])
+  p.toDeleteEdges {e} (fun _ ↦ by contrapose; simp +contextual [hp])
 
 @[simp]
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :

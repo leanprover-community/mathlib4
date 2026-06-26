@@ -121,12 +121,11 @@ lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
 theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
   Set.toFinset_card _
 
-@[simp]
 theorem card_edgeSet : Fintype.card G.edgeSet = #G.edgeFinset :=
   .symm <| Set.toFinset_card _
 
 theorem edgeSet_univ_card : #(univ : Finset G.edgeSet) = #G.edgeFinset := by
-  simp
+  simp [card_edgeSet]
 
 variable [Fintype V]
 
@@ -186,15 +185,32 @@ theorem neighborFinset_disjoint_singleton : Disjoint (G.neighborFinset v) {v} :=
 theorem singleton_disjoint_neighborFinset : Disjoint {v} (G.neighborFinset v) :=
   Finset.disjoint_singleton_left.mpr <| notMem_neighborFinset_self _ _
 
+@[simp] lemma neighborFinset_eq_empty : G.neighborFinset v = ∅ ↔ G.IsIsolated v := by
+  simp [neighborFinset, IsIsolated, Set.ext_iff]
+
+@[simp] lemma neighborFinset_nonempty : (G.neighborFinset v).Nonempty ↔ ¬ G.IsIsolated v := by
+  simp [nonempty_iff_ne_empty]
+
+protected alias ⟨IsIsolated.of_neighborFinset_eq_empty, IsIsolated.neighborFinset_eq_empty⟩
+    := neighborFinset_eq_empty
+
+attribute [simp] IsIsolated.neighborFinset_eq_empty
+
 /-- `G.degree v` is the number of vertices adjacent to `v`. -/
 def degree : ℕ := #(G.neighborFinset v)
 
 @[simp]
 theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v := rfl
 
-@[simp]
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
   (Set.toFinset_card _).symm
+
+lemma degree_eq_zero : G.degree v = 0 ↔ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
+lemma degree_pos : 0 < G.degree v ↔ ¬ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
+
+protected alias ⟨IsIsolated.of_degree_eq_zero, IsIsolated.degree_eq_zero⟩ := degree_eq_zero
+
+attribute [simp] IsIsolated.degree_eq_zero
 
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
@@ -217,27 +233,25 @@ theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
 theorem degree_eq_zero_iff_notMem_support : G.degree v = 0 ↔ v ∉ G.support := by
   rw [← G.degree_pos_iff_mem_support v, Nat.pos_iff_ne_zero, not_ne_iff]
 
-@[simp]
 theorem degree_eq_zero_of_subsingleton {G : SimpleGraph V} (v : V) [Fintype (G.neighborSet v)]
     [Subsingleton V] : G.degree v = 0 := by
-  have := G.degree_pos_iff_exists_adj v
-  simp_all [subsingleton_iff_forall_eq v]
+  simp
+
+theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)]
+    (h : G.degree v ≠ 0) : Nontrivial V :=
+  nontrivial_of_not_isIsolated <| G.degree_eq_zero v |>.not.mp h
 
 theorem degree_eq_one_iff_existsUnique_adj {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)] :
     G.degree v = 1 ↔ ∃! w : V, G.Adj v w := by
   rw [degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [mem_neighborFinset]
 
-theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)]
-    (h : G.degree v ≠ 0) : Nontrivial V := by
-  by_contra!
-  simp_all [degree_eq_zero_of_subsingleton]
-
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
   classical
     rw [← card_neighborSet_union_compl_neighborSet G v, Set.toFinset_union]
-    simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v))]
+    simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v)),
+      card_neighborSet_eq_degree]
 
 instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
   Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
@@ -246,11 +260,9 @@ instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
 def incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
   (G.incidenceSet v).toFinset
 
-@[simp]
 theorem card_incidenceSet_eq_degree [DecidableEq V] :
     Fintype.card (G.incidenceSet v) = G.degree v := by
-  rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v)]
-  simp
+  rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v), card_neighborSet_eq_degree]
 
 @[simp, norm_cast]
 theorem coe_incidenceFinset [DecidableEq V] :
@@ -269,8 +281,7 @@ theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
 
 theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v = {e ∈ G.edgeFinset | v ∈ e} := by
-  ext e
-  induction e
+  ext ⟨⟨⟩⟩
   simp [mk'_mem_incidenceSet_iff]
 
 theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
@@ -291,6 +302,10 @@ lemma degree_le_of_le {H : SimpleGraph V} [Fintype (H.neighborSet v)] (hle : G �
     G.degree v ≤ H.degree v := by
   simp_rw [← card_neighborSet_eq_degree]
   exact Set.card_le_card fun v hv => hle hv
+
+theorem degree_lt_card_verts [Fintype V] [DecidableRel G.Adj] (v : V) :
+    G.degree v < Fintype.card V :=
+  Finset.card_lt_univ_of_notMem <| G.notMem_neighborFinset_self v
 
 end FiniteAt
 
@@ -327,19 +342,17 @@ section Finite
 
 variable [Fintype V]
 
-instance neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
-  @Subtype.fintype _ (· ∈ G.neighborSet v)
-    (by
-      simp_rw [mem_neighborSet]
-      infer_instance)
-    _
+/-- `Fintype` for `neighborSet` -/
+@[deprecated inferInstance (since := "2026-04-29")]
+abbrev neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
+  inferInstance
 
 theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
     G.neighborFinset v = ({w | G.Adj v w} : Finset _) := by ext; simp
 
 theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     Gᶜ.neighborFinset v = (G.neighborFinset v)ᶜ \ {v} := by
-  simp only [neighborFinset, neighborSet_compl, Set.toFinset_diff, Set.toFinset_compl,
+  simp only [neighborFinset, neighborSet_compl, Set.toFinset_sdiff, Set.toFinset_compl,
     Set.toFinset_singleton]
 
 @[simp]
@@ -348,15 +361,12 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
   simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
   rw [card_erase_of_mem (mem_univ v), card_univ]
 
-@[simp]
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_false]
-  exact Finset.card_empty
+  simp
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
     (⊤ : SimpleGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
-  intro v
-  simp
+  simp [IsRegularOfDegree]
 
 @[simp]
 theorem IsRegularOfDegree.bot : (⊥ : SimpleGraph V).IsRegularOfDegree 0 :=
@@ -372,15 +382,11 @@ def minDegree [DecidableRel G.Adj] : ℕ :=
 the lemma implies there exists a vertex. -/
 theorem exists_minimal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.minDegree = G.degree v := by
-  obtain ⟨t, ht : _ = _⟩ := min_of_nonempty (univ_nonempty.image fun v => G.degree v)
-  obtain ⟨v, _, rfl⟩ := mem_image.mp (mem_of_min ht)
-  exact ⟨v, by simp [minDegree, ht]⟩
+  grind [minDegree, WithTop.untopD_coe, min_mem_image_coe <| univ_nonempty.image (G.degree ·)]
 
 /-- The minimum degree in the graph is at most the degree of any particular vertex. -/
-theorem minDegree_le_degree [DecidableRel G.Adj] (v : V) : G.minDegree ≤ G.degree v := by
-  obtain ⟨t, ht⟩ := Finset.min_of_mem (mem_image_of_mem (fun v => G.degree v) (mem_univ v))
-  have := Finset.min_le_of_eq (mem_image_of_mem _ (mem_univ v)) ht
-  rwa [minDegree, ht]
+theorem minDegree_le_degree [DecidableRel G.Adj] (v : V) : G.minDegree ≤ G.degree v :=
+  WithTop.untopD_le <| Finset.min_le <| mem_image_of_mem (G.degree ·) <| mem_univ v
 
 /-- In a nonempty graph, if `k` is at most the degree of every vertex, it is at most the minimum
 degree. Note the assumption that the graph is nonempty is necessary as long as `G.minDegree` is
@@ -391,31 +397,29 @@ theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : 
   rw [hv]
   apply h
 
-/-- If there are no vertices then the `minDegree` is zero. -/
 @[simp]
-lemma minDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0 := by
-  rw [minDegree, WithTop.untopD_eq_self_iff]
-  simp
+lemma minDegree_of_subsingleton [DecidableRel G.Adj] [Subsingleton V] : G.minDegree = 0 := by
+  cases isEmpty_or_nonempty V <;>
+    simp [minDegree, Finset.image_const]
+
+@[deprecated (since := "2026-06-15")] alias minDegree_of_isEmpty := minDegree_of_subsingleton
 
 variable {G} in
 /-- If `G` is a subgraph of `H` then `G.minDegree ≤ H.minDegree`. -/
+@[gcongr]
 lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
     (hle : G ≤ H) : G.minDegree ≤ H.minDegree := by
-  by_cases! hne : Nonempty V
+  cases isEmpty_or_nonempty V
+  · simp
   · apply le_minDegree_of_forall_le_degree
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
-  · simp
 
 /-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
 theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
     G.minDegree < Fintype.card V := by
-  obtain ⟨v, hδ⟩ := G.exists_minimal_degree_vertex
-  rw [hδ, ← card_neighborFinset_eq_degree, ← card_univ]
-  have h : v ∉ G.neighborFinset v :=
-    (G.mem_neighborFinset v v).not.mpr (G.loopless.irrefl v)
-  contrapose! h
-  rw [eq_of_subset_of_card_le (subset_univ _) h]
-  exact mem_univ v
+  have ⟨v, hv⟩ := G.exists_minimal_degree_vertex
+  rw [hv]
+  apply degree_lt_card_verts
 
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
@@ -427,28 +431,24 @@ def maxDegree [DecidableRel G.Adj] : ℕ :=
 the lemma implies there exists a vertex. -/
 theorem exists_maximal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.maxDegree = G.degree v := by
-  obtain ⟨t, ht⟩ := max_of_nonempty (univ_nonempty.image fun v => G.degree v)
-  have ht₂ := mem_of_max ht
-  simp only [mem_image, mem_univ, true_and] at ht₂
-  rcases ht₂ with ⟨v, rfl⟩
-  refine ⟨v, ?_⟩
-  rw [maxDegree, ht, WithBot.unbotD_coe]
+  grind [maxDegree, WithBot.unbotD_coe, max_mem_image_coe <| univ_nonempty.image (G.degree ·)]
 
 /-- The maximum degree in the graph is at least the degree of any particular vertex. -/
-theorem degree_le_maxDegree [DecidableRel G.Adj] (v : V) : G.degree v ≤ G.maxDegree := by
-  obtain ⟨t, ht : _ = _⟩ := Finset.max_of_mem (mem_image_of_mem (fun v => G.degree v) (mem_univ v))
-  have := Finset.le_max_of_eq (mem_image_of_mem _ (mem_univ v)) ht
-  rwa [maxDegree, ht, WithBot.unbotD_coe]
+theorem degree_le_maxDegree [DecidableRel G.Adj] (v : V) : G.degree v ≤ G.maxDegree :=
+  WithBot.le_unbotD <| Finset.le_max <| mem_image_of_mem (G.degree ·) <| mem_univ v
 
 @[simp]
-lemma maxDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.maxDegree = 0 := by
-  rw [maxDegree, univ_eq_empty, image_empty, max_empty, WithBot.unbotD_bot]
+lemma maxDegree_of_subsingleton [DecidableRel G.Adj] [Subsingleton V] : G.maxDegree = 0 := by
+  cases isEmpty_or_nonempty V <;>
+    simp [maxDegree, Finset.image_const]
+
+@[deprecated (since := "2026-06-15")] alias maxDegree_of_isEmpty := maxDegree_of_subsingleton
 
 /-- In a graph, if `k` is at least the degree of every vertex, then it is at least the maximum
 degree. -/
 theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀ v, G.degree v ≤ k) :
     G.maxDegree ≤ k := by
-  by_cases! hV : IsEmpty V
+  cases isEmpty_or_nonempty V
   · simp
   · obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
     exact hv ▸ h _
@@ -460,6 +460,16 @@ theorem IsRegularOfDegree.maxDegree_eq [Nonempty V] [DecidableRel G.Adj] {d : �
 @[simp]
 lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
   Nat.le_zero.1 <| maxDegree_le_of_forall_degree_le _ _ (by simp)
+
+variable {G} in
+@[simp]
+theorem maxDegree_eq_zero_iff [DecidableRel G.Adj] : G.maxDegree = 0 ↔ G = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [eq_bot_iff_isIsolated]
+    intro v
+    grind [degree_eq_zero, G.degree_le_maxDegree v]
+  · convert maxDegree_bot_eq_zero
+    assumption
 
 @[simp]
 lemma maxDegree_top [DecidableEq V] : (⊤ : SimpleGraph V).maxDegree = Fintype.card V - 1 := by
@@ -481,17 +491,23 @@ theorem IsRegularOfDegree.minDegree_eq [Nonempty V] [DecidableRel G.Adj] {d : �
 lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=
   Nat.le_zero.1 <| (minDegree_le_maxDegree _).trans (by simp)
 
+variable {G} in
+theorem minDegree_eq_zero_iff [DecidableRel G.Adj] [Nonempty V] :
+    G.minDegree = 0 ↔ ∃ v, G.IsIsolated v := by
+  refine ⟨fun h ↦ ?_, fun ⟨v, hv⟩ ↦ ?_⟩
+  · grind [G.exists_minimal_degree_vertex, degree_eq_zero]
+  · grind [G.minDegree_le_degree v, degree_eq_zero]
+
+variable {G} in
+theorem minDegree_eq_zero_iff_support_ne [DecidableRel G.Adj] [Nonempty V] :
+    G.minDegree = 0 ↔ G.support ≠ .univ := by
+  simp [Set.ne_univ_iff_exists_notMem, minDegree_eq_zero_iff]
+
 @[simp]
 lemma minDegree_top [DecidableEq V] : (⊤ : SimpleGraph V).minDegree = Fintype.card V - 1 := by
   cases isEmpty_or_nonempty V
   · simp
   exact IsRegularOfDegree.top.minDegree_eq
-
-theorem degree_lt_card_verts [DecidableRel G.Adj] (v : V) : G.degree v < Fintype.card V := by
-  classical
-  apply Finset.card_lt_card
-  rw [Finset.ssubset_iff]
-  exact ⟨v, by simp, Finset.subset_univ _⟩
 
 /--
 The maximum degree of a nonempty graph is less than the number of vertices. Note that the assumption
@@ -522,22 +538,14 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
     (h : G.Adj v w) : Fintype.card (G.commonNeighbors v w) < G.degree v := by
   classical
   rw [← Set.toFinset_card]
-  apply Finset.card_lt_card
-  rw [Finset.ssubset_iff]
-  use w
-  constructor
+  refine Finset.card_lt_card <| Finset.ssubset_iff.mpr ⟨w, ?_, ?_⟩
   · rw [Set.mem_toFinset]
     apply notMem_commonNeighbors_right
-  · rw [Finset.insert_subset_iff]
-    constructor
-    · simpa
-    · rw [neighborFinset, Set.toFinset_subset_toFinset]
-      exact G.commonNeighbors_subset_neighborSet_left _ _
+  · simpa [Finset.insert_subset_iff, G.commonNeighbors_subset_neighborSet_left v w]
 
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
-    Fintype.card ((⊤ : SimpleGraph V).commonNeighbors v w) = Fintype.card V - 2 := by
-  simp only [commonNeighbors_top_eq, ← Set.toFinset_card, Set.toFinset_diff]
-  simp [Finset.card_sdiff, h]
+    Fintype.card (commonNeighbors ⊤ v w) = Fintype.card V - 2 := by
+  simp [commonNeighbors_top_eq, ← Set.toFinset_card, Finset.card_sdiff, h]
 
 end Finite
 
@@ -548,8 +556,7 @@ variable {G} {W : Type*} {G' : SimpleGraph W}
 theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
     #G.edgeFinset = #G'.edgeFinset := by
   apply Finset.card_eq_of_equiv
-  simp only [mem_edgeFinset]
-  exact f.mapEdgeSet
+  simpa using f.mapEdgeSet
 
 @[simp] theorem degree_eq (f : G ≃g G') (x : V)
     [Fintype ↑(G.neighborSet x)] [Fintype ↑(G'.neighborSet (f x))] :
@@ -560,24 +567,14 @@ theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeS
 variable [Fintype V] [DecidableRel G.Adj] [Fintype W] [DecidableRel G'.Adj]
 
 theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
-  rcases isEmpty_or_nonempty V
-  · simp [f.symm.isEmpty]
-  · have : Nonempty W := f.symm.nonempty
-    apply le_antisymm
-    · obtain ⟨x', hx'⟩ := exists_minimal_degree_vertex G'
-      simpa only [hx', ← degree_eq f.symm x'] using minDegree_le_degree G (f.symm x')
-    · obtain ⟨x, hx⟩ := exists_minimal_degree_vertex G
-      simpa only [hx, ← degree_eq f x] using minDegree_le_degree G' (f x)
+  classical
+  have : (G'.degree ·) ∘ f = (G.degree ·) := funext (f.degree_eq ·)
+  rw [minDegree, minDegree, ← this, ← image_image, Finset.image_univ_of_surjective f.surjective]
 
 theorem maxDegree_eq (f : G ≃g G') : G.maxDegree = G'.maxDegree := by
-  rcases isEmpty_or_nonempty V
-  · simp [f.symm.isEmpty]
-  · have : Nonempty W := f.symm.nonempty
-    apply le_antisymm
-    · obtain ⟨x, hx⟩ := exists_maximal_degree_vertex G
-      simpa only [hx, ← degree_eq f x] using degree_le_maxDegree G' (f x)
-    · obtain ⟨x', hx'⟩ := exists_maximal_degree_vertex G'
-      simpa only [hx', ← degree_eq f.symm x'] using degree_le_maxDegree G (f.symm x')
+  classical
+  have : (G'.degree ·) ∘ f = (G.degree ·) := funext (f.degree_eq ·)
+  rw [maxDegree, maxDegree, ← this, ← image_image, Finset.image_univ_of_surjective f.surjective]
 
 end Iso
 
@@ -587,10 +584,8 @@ variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} 
 
 lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
     G.edgeFinset ⊆ s.toFinset.sym2 := by
-  simp_rw [subset_iff, Sym2.forall,
-    mem_edgeFinset, mem_edgeSet, mk_mem_sym2_iff, Set.mem_toFinset]
-  intro _ _ hadj
-  exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
+  rw [← coe_subset, coe_sym2, edgeFinset, Set.coe_toFinset, Set.coe_toFinset]
+  exact edgeSet_subset_sym2_iff.mpr h
 
 instance : DecidablePred (· ∈ G.support) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
@@ -642,6 +637,17 @@ theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
 theorem degree_induce_support (v : G.support) :
     (G.induce G.support).degree v = G.degree v :=
   degree_induce_of_support_subset subset_rfl v
+
+theorem le_minDegree_induce_of_support_subset (h : G.support ⊆ s) :
+    G.minDegree ≤ (G.induce s).minDegree := by
+  cases isEmpty_or_nonempty V
+  · simp
+  rcases s.eq_empty_or_nonempty with (rfl | hs)
+  · simp [minDegree_eq_zero_iff_support_ne, Set.subset_empty_iff.mp h, Set.empty_ne_univ]
+  have := hs.to_subtype
+  refine le_minDegree_of_forall_le_degree _ _ fun v ↦ ?_
+  grw [G.minDegree_le_degree v, degree_induce_of_neighborSet_subset]
+  grw [neighborSet_subset_support, h]
 
 end Support
 

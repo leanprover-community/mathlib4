@@ -65,12 +65,12 @@ lemma lpNorm_one_eq_integral_norm (hf : AEStronglyMeasurable f μ) :
 
 lemma ae_le_lpNorm_exponent_top (hf : MemLp f ∞ μ) : ∀ᵐ x ∂μ, ‖f x‖ ≤ lpNorm f ∞ μ := by
   simpa only [← toReal_eLpNorm hf.aestronglyMeasurable, ← ENNReal.ofReal_le_iff_le_toReal hf.2.ne,
-    ofReal_norm] using ae_le_eLpNormEssSup
+    ofReal_norm] using! ae_le_eLpNormEssSup
 
 lemma lpNorm_exponent_top_eq_essSup (hf : MemLp f ∞ μ) : lpNorm f ∞ μ = essSup (‖f ·‖) μ := by
   simp only [← toReal_eLpNorm hf.aestronglyMeasurable, eLpNorm_exponent_top, eLpNormEssSup]
   refine ENNReal.toReal_essSup (by simp) ⟨lpNorm f ∞ μ, ?_⟩
-  simpa [-toReal_enorm, lpNorm] using ae_le_lpNorm_exponent_top hf
+  simpa [-toReal_enorm, lpNorm] using! ae_le_lpNorm_exponent_top hf
 
 @[simp]
 lemma lpNorm_zero (p : ℝ≥0∞) (μ : Measure α) : lpNorm (0 : α → E) p μ = 0 := by simp [lpNorm]
@@ -231,7 +231,6 @@ lemma lpNorm_mono_real {g : α → ℝ} (hg : MemLp g p μ) (h : ∀ x, ‖f x�
     exact ENNReal.toNNReal_mono (hg.eLpNorm_ne_top) (eLpNorm_mono_real h)
   · simp [hf]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lpNorm_smul_measure_of_ne_zero {f : α → E} {c : ℝ≥0} (hc : c ≠ 0) :
     lpNorm f p (c • μ) = c ^ p.toReal⁻¹ • lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
@@ -241,7 +240,6 @@ lemma lpNorm_smul_measure_of_ne_zero {f : α → E} {c : ℝ≥0} (hc : c ≠ 0)
       simpa [hc] using h.smul_measure c⁻¹]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lpNorm_smul_measure_of_ne_top (hp : p ≠ ∞) {f : α → E} (c : ℝ≥0) :
     lpNorm f p (c • μ) = c ^ p.toReal⁻¹ • lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ

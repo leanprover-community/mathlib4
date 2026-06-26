@@ -147,7 +147,7 @@ lemma coindToInd_indToCoind : A.indToCoind ∘ₗ A.coindToInd = LinearMap.id :=
   ext g a
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
   conv_lhs => rw [coindToInd_apply]
-  simp only [map_sum, AddSubmonoidClass.coe_finset_sum, Finset.sum_apply]
+  simp only [map_sum, AddSubmonoidClass.coe_finsetSum, Finset.sum_apply]
   rw [Finset.sum_eq_single ⟦a⟧]
   · simp
   · intro b _ hb
@@ -162,7 +162,7 @@ lemma indToCoind_coindToInd : A.coindToInd ∘ₗ A.indToCoind = LinearMap.id :=
   rw [coindToInd_of_support_subset_orbit g]
   · simp
   · intro x hx
-    contrapose! hx
+    contrapose hx
     simpa using indToCoindAux_of_not_rel g x a hx
 
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
@@ -177,6 +177,7 @@ noncomputable def indCoindIso (A : Rep.{max w u} k S) :
 
 variable (k S)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a finite index subgroup `S ≤ G`, this is a natural isomorphism between the `Ind_S^G` and
 `Coind_G^S` functors `Rep k S ⥤ Rep k G`. -/
 @[simps! hom_app inv_app]
@@ -214,6 +215,7 @@ lemma resIndAdjunction_unit_app (B : Rep.{max w u v} k G) :
       (resCoindAdjunction.{max w u} k S.subtype).unit.app B ≫
       (indCoindIso.{max w (max u v)} (res S.subtype B)).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G} (f : res S.subtype B ⟶ A) :

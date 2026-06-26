@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.NumberTheory.Padics.PadicNorm
 public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Peel
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
@@ -526,6 +527,7 @@ end PadicSeq
 
 /-- The `p`-adic numbers `ℚ_[p]` are the Cauchy completion of `ℚ` with respect to the `p`-adic norm.
 -/
+@[wikidata Q311627]
 def Padic (p : ℕ) [Fact p.Prime] :=
   CauSeq.Completion.Cauchy (padicNorm p)
 deriving Zero, One, Add, Neg, Sub, Mul, Div, AddCommGroup, Ring, CommRing, Field, Inhabited
@@ -601,8 +603,8 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
   eq_zero' q := Quotient.inductionOn q fun r ↦ by
-    erw [Padic.zero_def, Quotient.eq]
-    exact PadicSeq.norm_zero_iff r
+    rw [Padic.zero_def, Quotient.lift_mk, PadicSeq.norm_zero_iff r]
+    exact Quotient.eq.symm
   add_le' q r := by
     trans
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
@@ -681,14 +683,14 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     ⟨q' N, by
       classical
       dsimp [padicNormE]
-      convert_to PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
+      convert_to! PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
       rcases Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq | hne'
       · simpa only [heq, PadicSeq.norm, dif_pos]
       · simp only [PadicSeq.norm, dif_neg hne']
         change padicNorm p (q' _ - q' _) < ε
         rcases Decidable.em (stationaryPoint hne' ≤ N) with hle | hle
         · have := (stationaryPoint_spec hne' le_rfl hle).symm
-          simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
+          simp only [const_apply, CauSeq.sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 
@@ -1055,7 +1057,7 @@ theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : �
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
-    contrapose! hf
+    contrapose hf
     apply Quotient.sound
     simpa using hf
 
