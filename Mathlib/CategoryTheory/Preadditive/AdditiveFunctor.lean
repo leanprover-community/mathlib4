@@ -218,7 +218,7 @@ instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
     PreservesFiniteProducts F where
   preserves _ := preservesProductsOfShape_of_preservesBiproductsOfShape F
 
-lemma hasFiniteProductsOfAdditiveEssSurj [HasFiniteProducts C] [Additive F]
+lemma hasFiniteProducts_of_additive_of_essSurj [HasFiniteProducts C] [Additive F]
     [EssSurj F] : HasFiniteProducts D where
   out _ := {
     has_limit K :=
