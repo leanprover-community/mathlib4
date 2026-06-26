@@ -53,7 +53,7 @@ at a point. This has a junk value of `0` if `f = 0` or if `coheight z ≠ 1`.
 noncomputable
 def ord (f : X.functionField) (z : X) : ℤ :=
   if hz : coheight z = 1
-  then Multiplicative.toAdd <| WithZero.recZeroCoe 1 id <| X.ordHom z hz f
+  then Multiplicative.toAdd <| (X.ordHom z hz f).recZeroCoe 1 id
   else 0
 
 lemma ord_eq_ordHom_of_coheight_eq_one {z : X} (hz : coheight z = 1) (f : X.functionField) :
