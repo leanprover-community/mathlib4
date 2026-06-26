@@ -210,7 +210,10 @@ instance : PreservesColimitsOfShape (J₂ κ f) F₂ :=
   F₂.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
 
 instance : IsCardinalFiltered (J κ f) κ := by
-  sorry
+  rw [isCardinalFiltered_iff]
+  refine ⟨fun ι j hι ↦ ?_, fun ι j k g hι ↦ ?_⟩
+  · sorry
+  · sorry
 
 instance : PreservesColimitsOfShape (J κ f) F₁ :=
   F₁.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
