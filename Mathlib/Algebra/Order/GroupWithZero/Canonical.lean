@@ -612,4 +612,50 @@ lemma le_exp_log {x : Gᵐ⁰} :
   · simp
   · rfl
 
+section LE
+
+variable [LE α] {x y : WithZero α} {a b : α}
+
+lemma le_unZeroD_iff (hx : x ≠ 0) : b ≤ x.unZeroD a ↔ b ≤ x := by
+  lift x to α using hx; simp
+
+lemma unZeroD_le_iff (hx : x = 0 → a ≤ b) : x.unZeroD a ≤ b ↔ x ≤ b := by
+  cases x <;> simp [hx]
+
+lemma unZeroD_mono (hx : x ≠ 0) (h : x ≤ y) : x.unZeroD a ≤ y.unZeroD a := by
+  lift x to α using hx
+  cases y <;> simp_all
+
+end LE
+
+section LT
+
+variable [LT α] {x y : WithZero α} {a b : α}
+
+lemma lt_unZeroD_iff (hx : x ≠ 0) : b < x.unZeroD a ↔ b < x := by
+  lift x to α using hx; simp
+
+lemma unZeroD_lt_iff (hx : x = 0 → a < b) : x.unZeroD a < b ↔ x < b := by
+  cases x <;> simp [hx]
+
+end LT
+
+section Preorder
+
+variable [Preorder α] {x y : WithZero α} {a b : α}
+
+theorem le_coe_unZeroD (x : WithZero α) (b : α) : x ≤ x.unZeroD b := by cases x <;> simp
+
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] {x y : WithZero α} {a b : α}
+
+lemma le_unZeroD (hy : b ≤ y) : b ≤ y.unZeroD a := by
+  have hne : y ≠ 0 := ne_bot_of_le_ne_bot WithZero.coe_ne_zero hy
+  rwa [le_unZeroD_iff hne]
+
+end PartialOrder
+
 end WithZero

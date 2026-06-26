@@ -50,11 +50,11 @@ at a point. This has a junk value of `0` if `f = 0` or if `coheight z ≠ 1`.
 noncomputable
 def ord (f : X.functionField) (z : X) : ℤ :=
   if hz : coheight z = 1
-  then Multiplicative.toAdd <| (X.ordHom z hz f).recZeroCoe 1 id
+  then Multiplicative.toAdd <| (X.ordHom z hz f).unZeroD 1
   else 0
 
 lemma ord_eq_ordHom_of_coheight_eq_one {z : X} (hz : coheight z = 1) (f : X.functionField) :
-    ord f z = Multiplicative.toAdd ((X.ordHom z hz f).recZeroCoe 1 id) := dif_pos hz
+    ord f z = Multiplicative.toAdd ((X.ordHom z hz f).unZeroD 1) := dif_pos hz
 
 @[simp]
 lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.functionField) :
@@ -64,17 +64,14 @@ lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.fun
 lemma ord_zero : ord (0 : X.functionField) = 0 := by
   ext z
   by_cases h : coheight z = 1
-  · simp [ord_eq_ordHom_of_coheight_eq_one h]
+  · simp [ord_eq_ordHom_of_coheight_eq_one h, unZeroD]
   · simp [h]
 
 lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :
     ord f x = Multiplicative.toAdd WithZero.unzero ((map_ne_zero (ordHom x hx)).mpr hf) := by
-  simp only [ord]
-  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| (map_ne_zero (ordHom x hx)).mpr hf
-  simp only [← ha1, hx]
-  change a1 = unzero _
-  rw [← WithZero.coe_inj, ha1]
-  exact Eq.symm (coe_unzero ((map_ne_zero (ordHom x hx)).mpr hf))
+  simp only [ord, hx, ↓reduceDIte, ne_eq]
+  rw [unZeroD_eq_unZero ((map_ne_zero (ordHom x hx)).mpr hf)]
+  rfl
 
 lemma ord_eq_iff {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) {n : ℤ} :
     ord f z = n ↔ ordHom z hz f = Multiplicative.ofAdd n := by

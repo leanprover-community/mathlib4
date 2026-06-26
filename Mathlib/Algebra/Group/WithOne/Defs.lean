@@ -194,4 +194,33 @@ instance instCommMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
 
+-- Specialization of `Option.getD` to values in `WithZero α` that respects API boundaries. -/
+@[to_additive unzeroD]
+def unoneD (d : α) (x : WithOne α) : α := recOneCoe d id x
+
+@[to_additive (attr := simp)]
+theorem unoneD_one {α} (d : α) : unoneD d (1 : WithOne α) = d :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem unOneD_coe {α} (d x : α) : unOneD d (x : WithOne α) = x :=
+  rfl
+
+@[to_additive]
+theorem unOneD_eq_iff {d y : α} {x : WithOne α} : unOneD d x = y ↔ x = y ∨ x = 1 ∧ y = d := by
+  induction x <;> simp [@eq_comm _ d]
+
+@[to_additive (attr := simp)]
+theorem unOneD_eq_self_iff {d : α} {x : WithOne α} : unOneD d x = d ↔ x = d ∨ x = 1 := by
+  simp [unOneD_eq_iff]
+
+@[to_additive]
+theorem unOneD_eq_unOneD_iff {d : α} {x y : WithOne α} :
+    unOneD d x = unOneD d y ↔ x = y ∨ x = d ∧ y = 1 ∨ x = 1 ∧ y = d := by
+  induction y <;> simp [unOneD_eq_iff, or_comm]
+
+@[to_additive]
+lemma unOneD_eq_unOne {d : α} {x : WithOne α} (hx : x ≠ 1) : unOneD d x = unone hx := by
+  simp [unOneD_eq_iff]
+
 end WithOne
