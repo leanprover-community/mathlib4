@@ -42,7 +42,7 @@ variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRin
 
 open IsLocalRing Module OrderIso PrimeSpectrum in
 theorem sum_ramification_inertia_eq_finrank_fiber
-    [Algebra.QuasiFinite R S] [Flat R S] [Fintype (p.primesOver S)] :
+    [Algebra.QuasiFinite R S] [Fintype (p.primesOver S)] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R =
       finrank p.ResidueField (p.Fiber S) := by
   let := Fintype.ofFinite (PrimeSpectrum (p.Fiber S))
