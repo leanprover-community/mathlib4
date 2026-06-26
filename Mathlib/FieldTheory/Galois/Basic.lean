@@ -181,7 +181,7 @@ instance isGalois_bot : IsGalois F (⊥ : IntermediateField F E) :=
   (IntermediateField.botEquiv F E).transfer_galois.mpr (IsGalois.self F)
 
 theorem IsGalois.of_equiv_equiv {M N : Type*} [Field N] [Field M] [Algebra M N]
-    [Algebra.IsAlgebraic F E] [h : IsGalois F E] {f : F ≃+* M} {g : E ≃+* N}
+    [h : IsGalois F E] {f : F ≃+* M} {g : E ≃+* N}
     (hcomp : (algebraMap M N).comp f = (g : E →+* N).comp (algebraMap F E)) :
     IsGalois M N :=
   isGalois_iff.mpr ⟨Algebra.IsSeparable.of_equiv_equiv f g hcomp, Normal.of_equiv_equiv hcomp⟩
@@ -447,7 +447,7 @@ open scoped Pointwise
 theorem map_fixingSubgroup (σ : Gal(L/K)) :
     (E.map σ).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
   ext τ
-  simp only [coe_map, AlgEquiv.coe_algHom, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
+  simp only [coe_map, AlgEquiv.coe_toAlgHom, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
     IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]

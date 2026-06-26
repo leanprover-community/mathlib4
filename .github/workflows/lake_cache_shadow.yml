@@ -186,12 +186,10 @@ jobs:
           from pathlib import Path
           p = Path("lakefile.lean")
           src = p.read_text()
-          marker = '  testDriver := "MathlibTest"'
+          marker = '  restoreAllArtifacts := true'
           inject = (
-              '  testDriver := "MathlibTest"\n'
-              '  fixedToolchain := true\n'
-              '  enableArtifactCache := true\n'
-              '  restoreAllArtifacts := true'
+              '  restoreAllArtifacts := true\n'
+              '  enableArtifactCache := true'
           )
           if marker not in src:
               raise SystemExit("lakefile.lean shape changed; update the shadow patch in lake_cache_shadow.yml")
@@ -438,12 +436,10 @@ jobs:
           from pathlib import Path
           p = Path("lakefile.lean")
           src = p.read_text()
-          marker = '  testDriver := "MathlibTest"'
+          marker = '  restoreAllArtifacts := true'
           inject = (
-              '  testDriver := "MathlibTest"\n'
-              '  fixedToolchain := true\n'
-              '  enableArtifactCache := true\n'
-              '  restoreAllArtifacts := true'
+              '  restoreAllArtifacts := true\n'
+              '  enableArtifactCache := true'
           )
           if marker not in src:
               raise SystemExit("lakefile.lean shape changed")
