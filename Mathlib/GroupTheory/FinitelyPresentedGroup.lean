@@ -103,6 +103,10 @@ theorem equiv (iso : G ≃* H) [h : IsFinitelyPresented G] : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [φ.ker_mulEquiv_comp iso]
 
+/-- The image of a finitely presented group under a surjective homomorphism whose kernel is
+finitely generated as a normal subgroup is finitely presented. -/
+@[to_additive /-- The image of a finitely presented additive group under a surjective additive
+homomorphism whose kernel is finitely generated as a normal subgroup is finitely presented. -/]
 theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
     (hf_surj : Function.Surjective f) (hf_ker : f.ker.IsNormalClosureFG) :
     IsFinitelyPresented H := by
@@ -110,6 +114,15 @@ theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
   refine ⟨n, f.comp φ, hf_surj.comp hφ_surj, ?_⟩
   rw [← MonoidHom.comap_ker]
   exact hf_ker.comap hφ_surj hφ_ker
+
+/-- The quotient of a finitely presented group by a subgroup
+which is finitely generated as a normal subgroup is finitely presented. -/
+@[to_additive /-- The quotient of a finitely presented additive group by an additive subgroup
+which is finitely generated as a normal subgroup is finitely presented. -/]
+theorem quotient [hG : IsFinitelyPresented G] (N : Subgroup G) [N.Normal]
+    (hN : N.IsNormalClosureFG) : IsFinitelyPresented (G ⧸ N) :=
+  of_surjective (QuotientGroup.mk' N) (QuotientGroup.mk'_surjective N)
+    ((QuotientGroup.ker_mk' N).symm ▸ hN)
 
 open QuotientGroup in
 theorem exists_mulEquiv_presentedGroup [hg : IsFinitelyPresented G] :

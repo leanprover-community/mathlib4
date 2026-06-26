@@ -39,6 +39,8 @@ def const : C ⥤ J ⥤ C where
       map := fun _ => 𝟙 X }
   map f := { app := fun _ => f }
 
+attribute [to_dual self] const_obj_map
+
 namespace const
 
 open Opposite
