@@ -15,7 +15,7 @@ This file contains basic results on the natural-valued floor and ceiling functio
 
 ## TODO
 
-`LinearOrderedSemiring` can be relaxed to `OrderedSemiring` in many lemmas.
+`LinearOrder` can be relaxed to `PartialOrder` in many lemmas.
 
 ## Tags
 
@@ -385,6 +385,12 @@ variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
 @[bound]
 theorem sub_one_lt_floor (a : R) : a - 1 < ⌊a⌋₊ :=
   sub_lt_iff_lt_add.2 <| lt_floor_add_one a
+
+lemma self_sub_floor_lt_one (a : R) : a - ⌊a⌋₊ < 1 :=
+  sub_lt_iff_lt_add'.mpr <| lt_floor_add_one a
+
+lemma zero_le_self_sub_floor {a : R} (ha : 0 ≤ a) : 0 ≤ a - ⌊a⌋₊ :=
+  sub_nonneg.mpr <| Nat.floor_le ha
 
 lemma abs_sub_floor_le {a : R} (ha : 0 ≤ a) : |a - ⌊a⌋₊| ≤ 1 := by
   refine abs_le.mpr ⟨?_, ?_⟩

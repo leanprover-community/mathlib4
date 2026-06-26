@@ -81,12 +81,13 @@ class CreatesLimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
   CreatesLimit : ∀ {K : J ⥤ C}, CreatesLimit K F := by infer_instance
 
 -- This should be used with explicit universe variables.
+set_option linter.checkUnivs false in
 /-- `F` creates limits if it creates limits of shape `J` for any `J`. -/
 -- After https://github.com/leanprover/lean4/pull/12286 and
 -- https://github.com/leanprover/lean4/pull/12423, the shape universes in
 -- `CreatesLimitsOfSize` and `CreatesColimitsOfSize` would default to universe output parameters.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class CreatesLimitsOfSize (F : C ⥤ D) where
   CreatesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesLimitsOfShape J F := by
     infer_instance
@@ -114,8 +115,9 @@ class CreatesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
   CreatesColimit : ∀ {K : J ⥤ C}, CreatesColimit K F := by infer_instance
 
 -- This should be used with explicit universe variables.
+set_option linter.checkUnivs false in
 /-- `F` creates colimits if it creates colimits of shape `J` for any small `J`. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class CreatesColimitsOfSize (F : C ⥤ D) where
   CreatesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesColimitsOfShape J F := by
     infer_instance

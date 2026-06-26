@@ -243,6 +243,13 @@ theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
     {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=
   (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
 
+lemma norm_eq_norm_coeFn [Fintype α] : ‖f‖ = ‖(f : α → E)‖ := by
+  apply le_antisymm
+  · rw [ContinuousMap.norm_le _ (by positivity)]
+    exact norm_le_pi_norm _
+  · rw [pi_norm_le_iff_of_nonneg (by positivity)]
+    exact f.norm_coe_le_norm
+
 end
 
 section

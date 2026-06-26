@@ -145,7 +145,7 @@ theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Conv
     exact convex_convexHull 𝕜 _
   exact
     Subset.antisymm (subset_convexHull 𝕜 _) fun y hy =>
-      ⟨convexHull_min diff_subset hs hy, by
+      ⟨convexHull_min sdiff_subset hs hy, by
         rintro (rfl : y = x)
         exact hx hy⟩
 

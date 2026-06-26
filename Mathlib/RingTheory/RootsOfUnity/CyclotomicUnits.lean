@@ -118,21 +118,23 @@ theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ 
 
 /-- If `p` is prime and `ζ` is a `p`-th primitive root of unity, then `ζ - 1` and `η₁ - η₂` are
   associated for all distinct `p`-th roots of unity `η₁` and `η₂`. -/
-lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveRoot ζ p)
+lemma nthRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveRoot ζ p)
     (hp : p.Prime) :
-    Set.Pairwise (nthRootsFinset p (1 : A)) (fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂)) := by
+    Set.Pairwise (nthRootsFinset p (1 : A)) fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂) := by
   intro η₁ hη₁ η₂ hη₂ e
   have : NeZero p := ⟨hp.ne_zero⟩
-  obtain ⟨i, hi, rfl⟩ :=
-    hζ.eq_pow_of_pow_eq_one ((Polynomial.mem_nthRootsFinset hp.pos 1).1 hη₁)
-  obtain ⟨j, hj, rfl⟩ :=
-    hζ.eq_pow_of_pow_eq_one ((Polynomial.mem_nthRootsFinset hp.pos 1).1 hη₂)
+  obtain ⟨i, hi, rfl⟩ := hζ.eq_pow_of_pow_eq_one ((Polynomial.mem_nthRootsFinset hp.pos 1).1 hη₁)
+  obtain ⟨j, hj, rfl⟩ := hζ.eq_pow_of_pow_eq_one ((Polynomial.mem_nthRootsFinset hp.pos 1).1 hη₂)
   wlog hij : j ≤ i
   · simpa using (this hζ ‹_› ‹_› _ hj ‹_› _ hi ‹_› e.symm (by lia)).neg_right
   have H : (i - j).Coprime p := (coprime_of_lt_prime (by grind) (by grind) hp).symm
   obtain ⟨u, h⟩ := hζ.associated_pow_add_sub_sub_one hp.two_le j H
   simp only [hij, add_tsub_cancel_of_le] at h
   rw [← h, associated_mul_unit_right_iff]
+
+@[deprecated (since := "2026-06-23")]
+alias ntRootsFinset_pairwise_associated_sub_one_sub_of_prime :=
+  nthRootsFinset_pairwise_associated_sub_one_sub_of_prime
 
 /-- If `p` is prime and `ζ` is a `p`-th primitive root of unity, then `ζ - 1` divides `η₁ - η₂`
 for all `p`-th roots of unity `η₁` and `η₂`. -/
@@ -142,6 +144,6 @@ lemma sub_one_dvd_sub (hζ : IsPrimitiveRoot ζ p) (hp : p.Prime)
     ζ - 1 ∣ η₁ - η₂ := by
   rcases eq_or_ne η₁ η₂ with rfl | h
   · simp
-  · exact (hζ.ntRootsFinset_pairwise_associated_sub_one_sub_of_prime hp hη₁ hη₂ h).dvd
+  · exact (hζ.nthRootsFinset_pairwise_associated_sub_one_sub_of_prime hp hη₁ hη₂ h).dvd
 
 end IsPrimitiveRoot
