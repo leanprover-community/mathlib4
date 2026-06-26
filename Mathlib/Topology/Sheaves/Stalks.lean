@@ -703,7 +703,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma germ_stalkIsoOfIndiscreteTopology_hom [IndiscreteTopology X] (F : TopCat.Presheaf C X)
     (x : X) :
-    F.germ ⊤ _ (by simp) ≫ (F.stalkIsoOfIndiscreteTopology x).hom = 𝟙 _ := by
+    dsimp% F.germ ⊤ _ (by simp) ≫ (F.stalkIsoOfIndiscreteTopology x).hom = 𝟙 _ := by
   let G := (orderDualEquivalence PUnit.{1}).functor ⋙
     (OpenNhds.orderIsoOfIndiscreteTopology X x).equivalence.inverse.op
   change colimit.ι ((OpenNhds.inclusion x).op ⋙ F) (G.obj PUnit.unit) ≫ _ ≫ _ = _
