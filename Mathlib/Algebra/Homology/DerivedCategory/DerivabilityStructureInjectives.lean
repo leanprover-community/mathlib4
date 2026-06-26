@@ -67,11 +67,7 @@ lemma exists_injective_resolution [EnoughInjectives C]
   let L' : CochainComplex (InjectiveObject C) ℤ :=
     HomologicalComplex.liftObjectProperty _ L inferInstance
   have hL' : L'.IsStrictlyGE n := by
-    rw [CochainComplex.isStrictlyGE_iff]
-    intro i hi
-    rw [IsZero.iff_id_eq_zero]
-    ext
-    exact (L.isZero_of_isStrictlyGE n i).eq_of_src _ _
+    rwa [← isStrictlyGE_mapHomologicalComplex_obj_iff _ (InjectiveObject.ι _)]
   exact ⟨⟨L', n, hL'⟩, hL', ObjectProperty.homMk i, by assumption⟩
 
 end CochainComplex.Plus
