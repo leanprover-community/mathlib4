@@ -117,7 +117,7 @@ def TopCat.toSheafCompHausLike :
     apply +allowSynthFailures equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.hom.continuous
+    exact .of_surjective_continuous (hs _ he) π.hom.hom.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to

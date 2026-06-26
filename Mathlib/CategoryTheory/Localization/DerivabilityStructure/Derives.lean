@@ -65,7 +65,7 @@ section
 
 variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H} (α : F ⟶ L₂ ⋙ RF)
 
-lemma isIso (X₁ : C₁) [RF.IsRightDerivedFunctor α W₂] :
+lemma isIso_of_isRightDerivedFunctor (X₁ : C₁) [RF.IsRightDerivedFunctor α W₂] :
     IsIso (α.app (Φ.functor.obj X₁)) := by
   let G : W₁.Localization ⥤ H := Localization.lift (Φ.functor ⋙ F) h W₁.Q
   let eG := Localization.Lifting.iso W₁.Q W₁ (Φ.functor ⋙ F) G
@@ -74,12 +74,14 @@ lemma isIso (X₁ : C₁) [RF.IsRightDerivedFunctor α W₂] :
   rw [← Φ.isIso_iff_of_isRightDerivabilityStructure W₁.Q L₂ F G eG.inv RF α]
   infer_instance
 
+@[deprecated (since := "2026-06-22")] alias isIso := isIso_of_isRightDerivedFunctor
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     RF.IsRightDerivedFunctor α W₂ := by
   have := h.hasPointwiseRightDerivedFunctor
-  have := h.isIso (F.totalRightDerivedUnit L₂ W₂)
+  have := h.isIso_of_isRightDerivedFunctor (F.totalRightDerivedUnit L₂ W₂)
   have := Φ.essSurj_of_hasRightResolutions L₂
   let φ := (F.totalRightDerived L₂ W₂).rightDerivedDesc (F.totalRightDerivedUnit L₂ W₂) W₂ RF α
   have hφ : F.totalRightDerivedUnit L₂ W₂ ≫ Functor.whiskerLeft L₂ φ = α :=
@@ -97,7 +99,7 @@ lemma isRightDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ
 
 lemma isRightDerivedFunctor_iff_isIso :
     RF.IsRightDerivedFunctor α W₂ ↔ ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁)) :=
-  ⟨fun _ _ ↦ h.isIso α _, h.isRightDerivedFunctor_of_isIso α⟩
+  ⟨fun _ _ ↦ h.isIso_of_isRightDerivedFunctor α _, h.isRightDerivedFunctor_of_isIso α⟩
 
 end
 

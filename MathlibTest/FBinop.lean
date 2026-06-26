@@ -69,7 +69,7 @@ structure SubObj (X : Type _) where
 
 instance : SetLike (SubObj X) X where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr
+  coe_injective p q h := by cases p; cases q; congr
 
 instance : PartialOrder (SubObj X) := .ofSetLike (SubObj X) X
 
@@ -83,7 +83,7 @@ structure DecSubObj (X : Type _) [DecidableEq X] where
 
 instance [DecidableEq X] : SetLike (DecSubObj X) X where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr
+  coe_injective p q h := by cases p; cases q; congr
 
 instance [DecidableEq X] : PartialOrder (DecSubObj X) := .ofSetLike (DecSubObj X) X
 

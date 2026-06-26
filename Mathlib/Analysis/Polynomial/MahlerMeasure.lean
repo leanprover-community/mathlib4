@@ -281,8 +281,8 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
   use {x : ℝ | eval (circleMap 0 1 x) p ≠ 0}
   constructor
   · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp)]
-    apply (Finite.of_diff _ <| finite_singleton (2 * π)).measure_zero
-    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_diff_assoc, Icc_diff_right]
+    apply (Finite.of_sdiff _ <| finite_singleton (2 * π)).measure_zero
+    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_sdiff_assoc, Icc_sdiff_right]
     rw [setOf_inter_eq_sep]
     apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _)
       <| fun _ h _ k l ↦ injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
@@ -293,7 +293,6 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
-set_option linter.style.emptyLine false in
 open MeasureTheory Set in
 /-- **Landau's inequality**: the Mahler measure of a polynomial is at most the ℓ² norm
 of its coefficient vector, `√(∑ ‖coeff i‖²)`.

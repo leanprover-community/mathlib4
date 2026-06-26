@@ -120,7 +120,7 @@ def IsSplitEqualizer.isEqualizer {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g
     IsLimit t.asFork :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨ s.ι ≫ t.leftRetraction,
-      by simp [- top_rightRetraction, ← t.top_rightRetraction, s.condition_assoc],
+      by simp [-top_rightRetraction, ← t.top_rightRetraction, s.condition_assoc],
       fun hm => by simp [← hm] ⟩
 
 end

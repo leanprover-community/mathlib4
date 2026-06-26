@@ -190,8 +190,8 @@ mismatch error.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
   * Ensure that the order of arguments of all relevant declarations are the same for the
     multiplicative and additive version. This might mean that arguments have an "unnatural" order
-    (e.g. `Monoid.npow n x` corresponds to `x ^ n`, but it is convenient that `Monoid.npow` has this
-    argument order, since it matches `AddMonoid.nsmul n x`.
+    (e.g. `NPow.npow n x` corresponds to `x ^ n`, but it is convenient that `NPow.npow` has this
+    argument order, since it matches `NSMul.nsmul n x`.
   * If this is not possible, add `(reorder := ...)` argument to `to_additive`.
 
 If neither of these solutions work, and `to_additive` is unable to automatically generate the
@@ -291,6 +291,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("smul", ["VAdd"]),
   ("inv", ["Neg"]),
   ("div", ["Sub"]),
+  ("sdiv", ["VSub"]),
   ("prod", ["Sum"]),
   ("hmul", ["HAdd"]),
   ("hsmul", ["HVAdd"]),
@@ -307,6 +308,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("group", ["Add", "Group"]),
   ("subgroup", ["Add", "Subgroup"]),
   ("semigroup", ["Add", "Semigroup"]),
+  ("torsor", ["Add", "Torsor"]),
   ("magma", ["Add", "Magma"]),
   ("haar", ["Add", "Haar"]),
   ("prehaar", ["Add", "Prehaar"]),
@@ -349,6 +351,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("le_zero", "Nonpos"),
   ("ltzero", "Neg"),
   ("lt_zero", "Neg"),
+  ("addAntidiagonal", "Antidiagonal"),
   ("addSingle", "Single"),
   ("addSupport", "Support"),
   ("addTSupport", "TSupport"),
