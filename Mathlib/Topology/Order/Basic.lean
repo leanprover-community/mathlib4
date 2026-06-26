@@ -787,7 +787,7 @@ lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
   simp_rw [TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_nhdsWithin]
   rintro V ⟨z, rfl | rfl⟩ hxz
   -- The case `V = Ioi z`.
-  · rcases (em (f ⁻¹' Iic z).Nonempty).symm with hz|ne
+  · obtain hz | ne := em' (f ⁻¹' Iic z).Nonempty
     · exact ⟨univ, isOpen_univ, mem_univ _, fun a ha ↦ not_le.mp fun h ↦ hz ⟨a, h⟩⟩
     have bdd : BddAbove (f ⁻¹' Iic z) := ⟨x, fun a ha ↦ (hf.mono.reflect_lt (ha.trans_lt hxz)).le⟩
     have u_eq : Ioi (sSup (f ⁻¹' Iic z)) = f ⁻¹' (Ioi z) := Set.ext fun a ↦
