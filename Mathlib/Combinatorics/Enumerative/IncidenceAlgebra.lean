@@ -155,11 +155,15 @@ lemma constSMul_apply (c : M) (f : IncidenceAlgebra 𝕜 α) (a b : α) : (c •
 
 end Smul
 
+instance instPSMul {𝕜 : Type*} [AddMonoid 𝕜] [LE α] : SMul ℕ+ (IncidenceAlgebra 𝕜 α) where
+  smul n f :=
+    ⟨n • ⇑f, fun a b hab ↦ by simp_rw [Pi.smul_apply, apply_eq_zero_of_not_le hab, smul_zero n] ⟩
+
 instance instAddMonoid [AddMonoid 𝕜] [LE α] : AddMonoid (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ ↦ rfl
+  DFunLike.coe_injective.addMonoid _ coe_zero coe_add (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance instAddCommMonoid [AddCommMonoid 𝕜] [LE α] : AddCommMonoid (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ ↦ rfl
+  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 section AddGroup
 variable [AddGroup 𝕜] [LE α]
@@ -176,13 +180,14 @@ lemma neg_apply (f : IncidenceAlgebra 𝕜 α) (a b : α) : (-f) a b = -f a b :=
 lemma sub_apply (f g : IncidenceAlgebra 𝕜 α) (a b : α) : (f - g) a b = f a b - g a b := rfl
 
 instance instAddGroup : AddGroup (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 end AddGroup
 
 instance instAddCommGroup [AddCommGroup 𝕜] [LE α] : AddCommGroup (IncidenceAlgebra 𝕜 α) :=
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl)
-    fun _ _ ↦ rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 section One
 variable [Preorder α] [DecidableEq α] [Zero 𝕜] [One 𝕜]
