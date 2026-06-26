@@ -25,6 +25,7 @@ quotient ring $R[X]/(p)$ (i.e., `AdjoinRoot p`) to be a local ring.
 
 * `AdjoinRoot.isLocalRing_iff_isPrimePow_normalize`: Over a field $k$, the quotient
   ring $k[X]/(f)$ is a local ring if and only if $f$ is a prime power.
+
 * `AdjoinRoot.isLocalRing_iff_of_monic`: Over a commutative ring $R$, for a monic
   polynomial $p$, $R[X]/(p)$ is a local ring if and only if $R$ is a local ring
   and the reduction of $p$ modulo the maximal ideal of $R$ is a prime power
