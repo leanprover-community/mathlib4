@@ -198,8 +198,8 @@ lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) 
     exact isUnit_iff_ne_zero.mpr hf
   have : Nonempty (X.basicOpen gA) := ⟨⟨_, hxV⟩⟩
   refine ⟨X.basicOpen gA, hA.basicOpen gA,
-      X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
-      X.toRingedSpace.isUnit_res_basicOpen gA⟩
+    X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
+    X.toRingedSpace.isUnit_res_basicOpen gA⟩
   simpa using h_germ_gA
 
 
