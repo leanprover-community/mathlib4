@@ -138,7 +138,7 @@ theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv R i (X j) = 0 := by
   classical
   ext n
   simpa only [coeff_pderiv, coeff_X, boole_mul, coeff_zero] using
-    if_neg (ne_iff.mpr ⟨i, by grind [add_apply]⟩)
+    if_neg (ne_iff.mpr ⟨i, by grind [Finsupp.add_apply]⟩)
 
 theorem pderiv_X [DecidableEq σ] {i j : σ} :
     pderiv R i (X j) = Pi.single (M := fun _ => _) i 1 j := by
