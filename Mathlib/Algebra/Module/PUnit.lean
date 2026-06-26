@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Ring.PUnit
 This file collects facts about module structures on the one-element type
 -/
 
-@[expose] public section
+public section
 
 namespace PUnit
 

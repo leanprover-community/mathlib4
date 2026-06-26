@@ -68,7 +68,7 @@ protected lemma IsEdgeReachable.zero : G.IsEdgeReachable 0 u v := by simp [IsEdg
 
 @[simp]
 lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
-  simp [IsEdgeReachable, ENat.lt_one_iff_eq_zero]
+  simp [IsEdgeReachable, Order.lt_one_iff]
 
 @[simp]
 lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
@@ -96,9 +96,9 @@ lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachab
     (huv : u ≠ v) : k ≤ G.degree u := by
   classical
   by_contra! hh
-  obtain ⟨w, _⟩ :=
-    @h (G.incidenceSet u) (by simpa [← Set.coe_fintypeCard, ENat.coe_lt_coe]) |>.exists_isPath
-  simpa using w.adj_snd <| by grind [Walk.nil_iff_length_eq, Walk.eq_of_length_eq_zero]
+  rw [← card_incidenceSet_eq_degree, ← ENat.coe_lt_coe, Set.coe_fintypeCard] at hh
+  obtain ⟨w, _⟩ := h hh |>.exists_isPath
+  simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
 lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
     (h : G.IsEdgeConnected k) : k ≤ G.degree u := by
@@ -114,27 +114,34 @@ lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     exact ENat.add_lt_add_iff_right ENat.one_ne_top |>.mpr hk
   obtain rfl | ⟨e, he⟩ := s.eq_empty_or_nonempty
   · simpa using (h s(u, u)).reachable hk
-  · rw [← Set.insert_diff_self_of_mem he, Set.insert_eq, ← deleteEdges_deleteEdges]
+  · rw [← Set.insert_sdiff_self_of_mem he, Set.insert_eq, ← deleteEdges_deleteEdges]
     refine h e <| ENat.add_lt_add_iff_right ENat.one_ne_top |>.mp ?_
-    rwa [Set.encard_diff_singleton_add_one he]
+    rwa [Set.encard_sdiff_singleton_add_one he]
 
 lemma isEdgeConnected_add_one (hk : k ≠ 0) :
     G.IsEdgeConnected (k + 1) ↔ ∀ e, (G.deleteEdges {e}).IsEdgeConnected k := by
   simp [IsEdgeConnected, isEdgeReachable_add_one hk, forall_comm (α := Sym2 _)]
 
-/-- An edge is a bridge iff its endpoints are adjacent and not 2-edge-reachable. -/
-lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
-    G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬G.IsEdgeReachable 2 u v := by
-  refine ⟨fun h ↦ ⟨h.left, fun hc ↦ ?_⟩, fun ⟨hadj, hc⟩ ↦ ?_⟩
-  · exact isBridge_iff.mp h |>.right <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat
-  · refine isBridge_iff.mpr ⟨hadj, fun hr ↦ hc fun s hs₂ ↦ ?_⟩
-    by_cases! hs₁ : s.encard ≠ (1 : ℕ)
-    · apply G.isEdgeReachable_one.mpr hadj.reachable
-      exact lt_of_le_of_ne (ENat.lt_coe_add_one_iff.mp hs₂) hs₁
-    obtain ⟨x, rfl⟩ := Set.encard_eq_one (s := s).mp hs₁
-    by_cases hx : s(u, v) = x
-    · exact hx ▸ hr
-    exact deleteEdges_adj.mpr ⟨hadj, hx⟩ |>.reachable
+lemma IsBridge.not_isEdgeReachable_two (huv : G.IsBridge s(u, v)) : ¬ G.IsEdgeReachable 2 u v :=
+  fun hc ↦ huv <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat
+
+/-- An edge is a bridge iff its endpoints are not 2-edge-reachable.
+
+The forward direction of this is true without assuming `u` and `v` are adjacent.
+See `IsBridge.not_isEdgeReachable_two`. -/
+lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
+    G.IsBridge s(u, v) ↔ ¬G.IsEdgeReachable 2 u v := by
+  refine ⟨fun h ↦ h.not_isEdgeReachable_two, fun hc hr ↦ hc fun s hs₂ ↦ ?_⟩
+  by_cases! hs₁ : s.encard ≠ (1 : ℕ)
+  · apply G.isEdgeReachable_one.mpr huv.reachable
+    exact lt_of_le_of_ne (ENat.lt_coe_add_one_iff.mp hs₂) hs₁
+  obtain ⟨x, rfl⟩ := s.encard_eq_one.mp hs₁
+  obtain rfl | hx := eq_or_ne s(u, v) x
+  · exact hr
+  · exact deleteEdges_adj.mpr ⟨huv, hx⟩ |>.reachable
+
+@[deprecated (since := "2026-05-16")]
+alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeReachable_two
 
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
   simp [isEdgeReachable_add_one]
@@ -157,7 +164,7 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
     simp only [Walk.getVert_tail, Nat.reduceAdd] at this
     simpa using hw.getVert_eq_start_iff_of_not_nil (Walk.not_nil_of_ne hne) |>.mp this.symm
   · refine Walk.reachable <| Walk.cons (deleteEdges_adj.mpr ⟨this, ?_⟩) Walk.nil
-    contrapose! h'
+    contrapose h'
     refine (Set.subsingleton_iff_singleton h').mp ?_
     exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
 
@@ -173,7 +180,7 @@ variable {w : G.Walk u v}
 private lemma IsTrail.isEdgeReachable_two_of_isEdgeReachable_two_aux (hw : w.IsTrail)
     (huv : G.IsEdgeReachable 2 u v) (huy : x ∈ w.support) : G.IsEdgeReachable 2 u x := by
   classical
-  contrapose! huy
+  contrapose huy
   obtain ⟨e, he⟩ := by simpa [isEdgeReachable_two] using huy
   have he' : ¬ (G.deleteEdges {e}).Reachable v x := fun hvy ↦
     he <| (isEdgeReachable_two.1 huv _).trans hvy

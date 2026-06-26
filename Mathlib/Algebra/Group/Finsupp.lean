@@ -57,6 +57,10 @@ lemma add_apply (g₁ g₂ : ι →₀ M) (a : ι) : (g₁ + g₂) a = g₁ a + 
 
 lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support := support_zipWith
 
+/-- The support of a sum is the union of the supports when the supports are disjoint.
+
+In the case where the coefficients satisfy `CanonicallyOrderedAdd`, there is also
+`Finsupp.support_add_eq_union`, which holds without any disjointness assumption. -/
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
   le_antisymm support_zipWith fun a ha => by
@@ -77,7 +81,18 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
 
 /-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
 is isomorphic to `M`. -/
-@[simps!]
+@[simps! apply symm_apply]
+noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+ M where
+  toEquiv := uniqueEquiv i
+  map_add' _ _ := rfl
+
+-- We want this lemma to fire before `uniqueAddEquiv_symm_apply`.
+@[simp↓ high] lemma uniqueAddEquiv_symm_apply_apply (i : ι) [Subsingleton ι] (m : M) (j : ι) :
+    (uniqueAddEquiv i).symm m j = m := by simp [Subsingleton.elim j i]
+
+/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
+is isomorphic to `M`. -/
+@[simps!, deprecated uniqueAddEquiv (since := "2026-05-06")]
 noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
   toEquiv := .finsuppUnique
   map_add' _ _ := rfl
@@ -138,29 +153,30 @@ lemma single_add_apply (a : ι) (m₁ m₂ : M) (b : ι) :
 lemma support_single_add {a : ι} {b : M} {f : ι →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
     support (single a b + f) = cons a f.support ha := by
   classical
-  have H := support_single_ne_zero a hb
+  have H := support_single a hb
   rw [support_add_eq, H, cons_eq_insert, insert_eq]
   rwa [H, disjoint_singleton_left]
 
 lemma support_add_single {a : ι} {b : M} {f : ι →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
     support (f + single a b) = cons a f.support ha := by
   classical
-  have H := support_single_ne_zero a hb
+  have H := support_single a hb
   rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
   rwa [H, disjoint_singleton_right]
 
 lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M}
     (H : f₁ ≠ f₂) (hg₁ : g₁ ≠ 0) (hg₂ : g₂ ≠ 0) :
     (single f₁ g₁ + single f₂ g₂).support = {f₁, f₂} := by
-  rw [support_add_eq, support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂]
+  rw [support_add_eq, support_single _ hg₁, support_single _ hg₂]
   · simp
-  · simp [support_single_ne_zero, *]
+  · simp [support_single, *]
 
 lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M} :
     (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by
   refine subset_trans Finsupp.support_add <| union_subset_iff.mpr ⟨?_, ?_⟩ <;>
   exact subset_trans Finsupp.support_single_subset (by simp)
 
+@[deprecated uniqueAddEquiv_symm_apply (since := "2026-05-06")]
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
@@ -255,9 +271,9 @@ lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : m
       a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f := by
   classical
   refine f.induction zero ?_
-  convert add_single using 7
+  convert! add_single using 7
   apply (addCommute_of_disjoint _).eq
-  simp_all [disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem, single_apply]
+  simp_all
 
 @[elab_as_elim]
 lemma induction_linear {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : motive 0)
@@ -301,10 +317,10 @@ lemma induction_on_max₂ (f : ι →₀ M) (zero : motive 0)
       motive f → motive (f + single a b)) : motive f := by
   classical
   refine f.induction_on_max zero ?_
-  convert add_single using 7 with _ _ _ H
+  convert! add_single using 7 with _ _ _ H
   have := fun c hc ↦ (H c hc).ne
   apply (addCommute_of_disjoint _).eq
-  simp_all [disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem, single_apply, not_imp_not]
+  simp_all [not_imp_not]
 
 /-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
 

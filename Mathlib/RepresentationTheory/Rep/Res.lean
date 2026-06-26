@@ -15,11 +15,11 @@ Given a group homomorphism `f : H →* G`, we have the restriction functor
 
 -/
 
-@[expose] public section
+public section
 
 universe t w u v v1 v2
 
-variable {k : Type u} [CommRing k] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
+variable {k : Type u} [Semiring k] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
 
 open CategoryTheory
 
@@ -34,6 +34,8 @@ abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
 abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 
 variable (f : H →* G) (M : Rep k G)
+
+lemma res_id : res (MonoidHom.id G) M = M := rfl
 
 @[simp] lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
 
@@ -72,7 +74,7 @@ instance : (resFunctor (k := k) f).Additive where
     simp only [add_hom, Representation.IntertwiningMap.add_toLinearMap]
     rfl
 
-instance : (resFunctor (k := k) f).Linear k where
+instance {k : Type u} [CommSemiring k] : (resFunctor (k := k) f).Linear k where
   map_smul {X Y} l r := by
     ext : 2;
     rw [smul_hom, Representation.IntertwiningMap.toLinearMap_smul,
@@ -91,8 +93,7 @@ abbrev ofQuotient : Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
 /-- A `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially induces a
 `G ⧸ S`-representation on `A`, and composing this with the quotient map `G → G ⧸ S` gives the
 original representation by definition. Useful for typechecking. -/
-abbrev resOfQuotientIso [Representation.IsTrivial (A.ρ.comp S.subtype)] :
-    (res (QuotientGroup.mk' S) (A.ofQuotient S)) ≅ A := Iso.refl _
+abbrev resOfQuotientIso : (res (QuotientGroup.mk' S) (A.ofQuotient S)) ≅ A := Iso.refl _
 
 end
 

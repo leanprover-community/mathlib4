@@ -212,7 +212,7 @@ structure Basis (g : Equiv.Perm α) where
 
 instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
   coe a := a.toFun
-  coe_injective' a a' _ := by cases a; cases a'; congr
+  coe_injective a a' _ := by cases a; cases a'; congr
 
 namespace Basis
 
@@ -434,7 +434,7 @@ end Basis
 
 namespace OnCycleFactors
 
-open Basis BigOperators Nat Equiv.Perm
+open Basis Nat
 
 theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
     ∀ c, #(τ c).val.support = #c.val.support := by
@@ -500,7 +500,7 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     rw [kerParam, MonoidHom.noncommCoprod_apply', mul_apply, ofSubtype_apply_of_not_mem u hx',
       noncommPiCoprod_apply, ← Finset.noncommProd_erase_mul _ (Finset.mem_univ ⟨g.cycleOf x, hx⟩),
       mul_apply, ← notMem_support]
-    contrapose! hx'
+    contrapose hx'
     obtain ⟨a, ha1, ha2⟩ := mem_support_of_mem_noncommProd_support hx'
     simp only [Finset.mem_erase, Finset.mem_univ, and_true, Ne, Subtype.ext_iff] at ha1
     have key := cycleFactorsFinset_pairwise_disjoint g a.2 hx ha1
@@ -512,7 +512,7 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
   · rw [cycleOf_mem_cycleFactorsFinset_iff] at hx
     rw [kerParam, MonoidHom.noncommCoprod_apply, mul_apply, Equiv.apply_eq_iff_eq,
       ← notMem_support]
-    contrapose! hx
+    contrapose hx
     obtain ⟨a, -, ha⟩ := mem_support_of_mem_noncommProd_support
       (comm := fun a ha b hb h ↦ g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).2 (v b).2) hx
     exact support_zpowers_of_mem_cycleFactorsFinset_le (v a) ha
@@ -646,7 +646,7 @@ theorem card_isConj_mul_eq :
   classical
   rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
-  convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
+  convert! MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
   · ext h
     simp only [Set.mem_setOf_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
@@ -681,7 +681,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
   · -- nonempty case
     classical
     obtain ⟨g, rfl⟩ := (exists_with_cycleType_iff α).mpr hm
-    convert card_isConj_mul_eq g
+    convert! card_isConj_mul_eq g
     simp_rw [Set.coe_setOf, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
       Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case

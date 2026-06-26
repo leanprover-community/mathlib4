@@ -20,7 +20,7 @@ see `Mathlib/Topology/Metrizable/Uniformity.lean`.
 -- don't import the real numbers
 assert_not_exists AddMonoidWithOne
 
-@[expose] public section
+public section
 
 open Filter Set Topology Uniformity UniformSpace SetRel
 

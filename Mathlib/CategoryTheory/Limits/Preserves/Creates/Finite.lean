@@ -101,6 +101,14 @@ attribute [instance_reducible, instance] CreatesFiniteProducts.creates
 
 noncomputable section
 
+/-- The condition of `CreatesFiniteProducts` can be checked for finite types in an arbitrary
+universe. -/
+@[implicit_reducible]
+def CreatesFiniteProducts.mk' (F : C ⥤ D)
+    (H : ∀ (J : Type w) [Fintype J], CreatesLimitsOfShape (Discrete J) F) :
+    CreatesFiniteProducts F where
+  creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift.{w}) F
+
 instance (priority := 100) createsLimitsOfShapeOfCreatesFiniteProducts (F : C ⥤ D)
     [CreatesFiniteProducts F] (J : Type w) [Finite J] : CreatesLimitsOfShape (Discrete J) F :=
   createsLimitsOfShapeOfEquiv

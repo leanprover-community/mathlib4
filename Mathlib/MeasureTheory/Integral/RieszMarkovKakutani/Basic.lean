@@ -296,7 +296,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   lift ε to ℝ≥0 using hε.le
   obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
   rw [rieszContentAux, Real.toNNReal_of_nonneg hε.le, ← NNReal.coe_lt_coe] at hfle
-  refine ((le_iff_forall_one_lt_le_mul₀ (zero_le (Λ f))).mpr fun α hα ↦ ?_).trans hfle.le
+  refine ((le_iff_forall_one_lt_le_mul₀ (zero_le (a := Λ f))).mpr fun α hα ↦ ?_).trans hfle.le
   rw [mul_comm, ← smul_eq_mul, ← map_smul]
   set K' := f ⁻¹' Ici α⁻¹
   have hKK' : ↑K ⊆ interior K' :=
@@ -337,7 +337,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
   by_cases hx : x ∈ tsupport f
   · exact le_trans (hf x) (hg.1 x (Set.mem_of_subset_of_mem h hx))
   · rw [image_eq_zero_of_notMem_tsupport hx]
-    exact zero_le (g x)
+    exact zero_le
 
 lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1) {V : Set X}
     (h : tsupport f ⊆ V) : .ofNNReal (Λ f) ≤ rieszMeasure Λ V := by

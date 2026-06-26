@@ -57,8 +57,6 @@ class IsStrictSegal (X : SSet.Truncated.{u} (n + 1)) : Prop where
 
 export IsStrictSegal (spine_bijective)
 
-@[deprecated (since := "2025-11-04")] alias IsStrictSegal.segal := spine_bijective
-
 lemma spine_injective (X : SSet.Truncated.{u} (n + 1)) [X.IsStrictSegal]
     {m : ℕ} {h : m ≤ n + 1} :
     Function.Injective (X.spine m) :=
@@ -85,12 +83,12 @@ lemma IsStrictSegal.hom_ext {Y : SSet.Truncated.{u} (n + 1)} [Y.IsStrictSegal]
   obtain _ | m := m
   · have fac := δ_comp_σ_self (i := (0 : Fin 1))
     dsimp at fac
-    simpa [← FunctorToTypes.naturality,
-      ← FunctorToTypes.map_comp_apply, ← op_comp,
+    simpa [← NatTrans.naturality_apply,
+      ← Functor.map_comp_apply, ← op_comp,
       ← SimplexCategory.Truncated.Hom.tr_comp, fac] using
       congr_arg (Y.map (SimplexCategory.Truncated.Hom.tr (SimplexCategory.δ 0)).op)
         (h (X.map (SimplexCategory.Truncated.Hom.tr (SimplexCategory.σ 0)).op x))
-  · exact IsStrictSegal.ext (fun i ↦ by simp only [← FunctorToTypes.naturality, h])
+  · exact IsStrictSegal.ext (fun i ↦ by simp [← NatTrans.naturality_apply, h])
 
 namespace StrictSegal
 
@@ -168,14 +166,14 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
   apply sx.spineInjective l
   dsimp only [spineEquiv, Equiv.coe_fn_mk]
   rw [spine_spineToSimplex_apply]
-  convert spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
+  convert! spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
   exact sx.spine_spineToSimplex_apply m h f |>.symm
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
     X.map (tr (intervalEdge j l hjl)).op (sx.spineToSimplex m h f) =
       sx.spineToDiagonal l (by lia) (f.interval j l hjl) := by
   dsimp only [spineToDiagonal, Function.comp_apply]
-  rw [← spineToSimplex_interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
+  rw [← spineToSimplex_interval, ← Functor.map_comp_apply, ← op_comp,
     ← tr_comp, diag_subinterval_eq]
 
 end spineToSimplex
@@ -190,32 +188,34 @@ lemma spineToSimplex_map {X Y : SSet.Truncated.{u} (n + 1)} (sx : StrictSegal X)
   ext k
   dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
   rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
-  simp
+  simp [-NatTrans.naturality]
 
 section spine_δ
 
 variable (m : ℕ) (h : m ≤ n) (f : Path X (m + 1))
 variable {i : Fin (m + 1)} {j : Fin (m + 2)}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 the common vertices will agree with those of the original path `f`. In particular,
 a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
 lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.castSucc := by
-  rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+  rw [spine_vertex, ← Functor.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
   dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
     Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 a vertex `i` with `j ≤ i` can be identified with vertex `i + 1` in the original
 path. -/
 lemma spine_δ_vertex_ge (hij : j ≤ i.castSucc) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.succ := by
-  rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+  rw [spine_vertex, ← Functor.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
   dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
     Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
@@ -229,7 +229,7 @@ an arrow `i` with `i + 1 < j` can be identified with the same arrow in `f`. -/
 lemma spine_δ_arrow_lt (hij : i.succ.castSucc < j) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).arrow i = f.arrow i.castSucc := by
-  rw [spine_arrow, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+  rw [spine_arrow, ← Functor.map_comp_apply, ← op_comp, ← tr_comp,
     mkOfSucc_δ_lt hij, spineToSimplex_arrow]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -238,7 +238,7 @@ original path. -/
 lemma spine_δ_arrow_gt (hij : j < i.succ.castSucc) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).arrow i = f.arrow i.succ := by
-  rw [spine_arrow, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+  rw [spine_arrow, ← Functor.map_comp_apply, ← op_comp, ← tr_comp,
     mkOfSucc_δ_gt hij, spineToSimplex_arrow]
 
 end spine_δ
@@ -250,7 +250,7 @@ lemma spine_δ_arrow_eq (hij : j = i.succ.castSucc) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).arrow i =
       sx.spineToDiagonal 2 (by lia) (f.interval i 2 (by lia)) := by
-  rw [spine_arrow, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+  rw [spine_arrow, ← Functor.map_comp_apply, ← op_comp, ← tr_comp,
     mkOfSucc_δ_eq hij, spineToSimplex_edge]
 
 end StrictSegal
@@ -359,7 +359,7 @@ theorem spineToSimplex_edge :
     X.map (intervalEdge j l hjl).op (sx.spineToSimplex f) =
       sx.spineToDiagonal (f.interval j l hjl) := by
   dsimp only [spineToDiagonal, SimplicialObject.diagonal]
-  rw [← spineToSimplex_interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
+  rw [← spineToSimplex_interval, ← Functor.map_comp_apply, ← op_comp,
     diag_subinterval_eq]
 
 end interval
@@ -385,7 +385,7 @@ lemma spine_δ_vertex_lt (h : i.castSucc < j) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).vertex i =
       f.vertex i.castSucc := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
+  rw [← Functor.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
     spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
@@ -397,7 +397,7 @@ path. -/
 lemma spine_δ_vertex_ge (h : j ≤ i.castSucc) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).vertex i = f.vertex i.succ := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
+  rw [← Functor.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
     spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
@@ -411,7 +411,7 @@ an arrow `i` with `i + 1 < j` can be identified with the same arrow in `f`. -/
 lemma spine_δ_arrow_lt (h : i.succ.castSucc < j) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).arrow i = f.arrow i.castSucc := by
   simp only [SimplicialObject.δ, spine_arrow]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [← Functor.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_lt h, spineToSimplex_arrow]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -420,7 +420,7 @@ original path. -/
 lemma spine_δ_arrow_gt (h : j < i.succ.castSucc) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).arrow i = f.arrow i.succ := by
   simp only [SimplicialObject.δ, spine_arrow]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [← Functor.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_gt h, spineToSimplex_arrow]
 
 /-- If we take the path along the spine of a face of a `spineToSimplex`, the
@@ -430,7 +430,7 @@ lemma spine_δ_arrow_eq (h : j = i.succ.castSucc) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).arrow i =
       sx.spineToDiagonal (f.interval i 2 (by lia)) := by
   simp only [SimplicialObject.δ, spine_arrow]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [← Functor.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_eq h, spineToSimplex_edge]
 
 end StrictSegal
@@ -463,7 +463,7 @@ def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
       · dsimp
         rw [map_mkOfSucc_zero_concat]
       · simpa [spine_arrow, ← SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp),
-          op_comp, FunctorToTypes.map_comp_apply, ← SimplicialObject.δ_def, δ₀_concat,
+          op_comp, Functor.map_comp_apply, ← SimplicialObject.δ_def, δ₀_concat,
           ← p.arrow_interval 1 n i i.succ (by grind) (by grind)] using
             Path.congr_arrow (hn (p.interval 1 n)).prop i
 
