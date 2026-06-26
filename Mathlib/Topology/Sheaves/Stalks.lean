@@ -688,7 +688,8 @@ def stalkFunctorIsoOfIndiscreteTopology (X : TopCat) [IndiscreteTopology X] (x :
       (OpenNhds.orderIsoOfIndiscreteTopology.{0} X x).equivalence.inverse.op).symm ≪≫
     (Functor.associator _ _ _).symm ≪≫
     Functor.isoWhiskerRight (Functor.whiskeringLeftObjCompIso _ _).symm _ ≪≫
-    whiskeringColimIsoOfSubsingleton _ ⟨⟩
+    Functor.isoWhiskerLeft _ (colimIsoEvaluation (X := ⟨⟩) _ isTerminalTop) ≪≫
+    (whiskeringLeftCompEvaluation _ _)
 
 variable {C} in
 /-- The stalk of a presheaf `F` on an indiscrete topological space is isomorphic to the global
