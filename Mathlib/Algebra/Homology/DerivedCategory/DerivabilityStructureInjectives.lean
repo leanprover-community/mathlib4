@@ -27,7 +27,7 @@ subcategory of fibrant objects in the model category `CochainComplex.Plus C`.)
 
 We also obtain a similar right derivability structure `HomotopyCategory.Plus.localizerMorphism`
 for the functor `HomotopyCategory.Plus (InjectiveObject C) ⥤ HomotopyCategory.Plus C`, where
-The target category is equipped with the class of quasi-isomorphisms while
+the target category is equipped with the class of quasi-isomorphisms while
 the source category `HomotopyCategory.Plus (InjectiveObject C)` is equipped
 with the class of isomorphisms (which is exactly the same as quasi-isomorphisms).
 The consequence is that any functor from the category `HomotopyCategory.Plus C`
@@ -58,7 +58,7 @@ instance (K : CochainComplex.Plus (InjectiveObject C)) :
   have (n : ℤ) : Injective (L.X n) := by dsimp [L]; infer_instance
   exact CochainComplex.isKInjective_of_injective L n
 
-lemma exists_injective_resolution [EnoughInjectives C]
+lemma exists_quasiIso_injective [EnoughInjectives C]
     (K : CochainComplex.Plus C) (n : ℤ) [K.obj.IsStrictlyGE n] :
     ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n)
       (i : K ⟶ (InjectiveObject.ι C).mapCochainComplexPlus.obj L),
@@ -67,11 +67,7 @@ lemma exists_injective_resolution [EnoughInjectives C]
   let L' : CochainComplex (InjectiveObject C) ℤ :=
     HomologicalComplex.liftObjectProperty _ L inferInstance
   have hL' : L'.IsStrictlyGE n := by
-    rw [CochainComplex.isStrictlyGE_iff]
-    intro i hi
-    rw [IsZero.iff_id_eq_zero]
-    ext
-    exact (L.isZero_of_isStrictlyGE n i).eq_of_src _ _
+    rwa [← isStrictlyGE_mapHomologicalComplex_obj_iff _ (InjectiveObject.ι _)]
   exact ⟨⟨L', n, hL'⟩, hL', ObjectProperty.homMk i, by assumption⟩
 
 end CochainComplex.Plus
@@ -80,7 +76,12 @@ namespace DerivedCategory.Plus
 
 variable [HasDerivedCategory C]
 
-lemma exists_injective_resolution [EnoughInjectives C] (K : DerivedCategory.Plus C)
+/-- Let `K` be an object in the bounded below derived category of an abelian category `C`
+with enough injectives. Assume that `K` is cohomologically `≥ n`. Then, `K`
+admits an "injective resolution", in the sense that there exists a cochain
+complex `L` consisting of injective object and lying in degrees `≥ n`, such that `K`
+is isomorphic to the image of `L`. -/
+lemma exists_injective_nonempty_iso [EnoughInjectives C] (K : DerivedCategory.Plus C)
     (n : ℤ) [K.IsGE n] :
     ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n),
       Nonempty (DerivedCategory.Plus.Q.obj
@@ -88,7 +89,7 @@ lemma exists_injective_resolution [EnoughInjectives C] (K : DerivedCategory.Plus
   have : K.obj.IsGE n := (K.isGE_ι_obj_iff n).2 (by assumption)
   obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.exists_iso_Q_obj_of_isGE K.obj n
   obtain ⟨M, _, i, hi⟩ :=
-    CochainComplex.Plus.exists_injective_resolution ⟨L, ⟨n, inferInstance⟩⟩ n
+    CochainComplex.Plus.exists_quasiIso_injective ⟨L, ⟨n, inferInstance⟩⟩ n
   have : QuasiIso i.hom := by assumption
   exact ⟨M, inferInstance,
     ⟨DerivedCategory.Plus.ι.preimageIso ((asIso (DerivedCategory.Q.map i.hom)).symm ≪≫ e.symm)⟩⟩
@@ -143,11 +144,7 @@ def fibrantObjectEquivalence :
       (fun K n ↦ by dsimp; infer_instance)) (by
         rintro ⟨⟨K, n, hn⟩, _⟩
         refine ⟨n, ?_⟩
-        rw [isStrictlyGE_iff]
-        intro i hi
-        rw [IsZero.iff_id_eq_zero]
-        ext
-        apply (K.isZero_of_isStrictlyGE n i hi).eq_of_tgt)
+        rwa [← isStrictlyGE_mapHomologicalComplex_obj_iff _ (InjectiveObject.ι _)])
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
@@ -200,7 +197,7 @@ abbrev localizerMorphism : LocalizerMorphism
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-lemma isIso_quotient_map
+lemma isIso_quotient_map_iff
     {K L : CochainComplex.Plus (InjectiveObject C)} (f : K ⟶ L) :
     IsIso ((quotient _).map f) ↔
     CochainComplex.Plus.quasiIso C ((InjectiveObject.ι C).mapCochainComplexPlus.map f) := by
@@ -214,7 +211,7 @@ lemma isIso_quotient_map
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
-lemma inverseImage_quasiIso_mapCochainComplexPlus_injectivesι :
+lemma inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =
     (homotopyEquivalences (InjectiveObject C) (.up ℤ)).inverseImage
       (CochainComplex.Plus.ι (InjectiveObject C)) := by
@@ -228,7 +225,7 @@ instance :
     (HomotopyCategory.Plus.quotient (InjectiveObject C)).IsLocalization
       ((CochainComplex.Plus.quasiIso C).inverseImage
       (InjectiveObject.ι C).mapCochainComplexPlus) := by
-  rw [inverseImage_quasiIso_mapCochainComplexPlus_injectivesι]
+  rw [inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι]
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
@@ -278,13 +275,13 @@ open MorphismProperty
 variable (C) in
 /-- The left localizer morphism in the Guitart exact square `iso`. -/
 private abbrev L : LocalizerMorphism
-  ((CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
+    ((CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
       (isomorphisms (Plus (InjectiveObject C))) where
   functor := HomotopyCategory.Plus.quotient (InjectiveObject C)
-  map _ _ f hf := (isIso_quotient_map f).2 hf
+  map _ _ f hf := (isIso_quotient_map_iff f).2 hf
 
 private instance : (L C).IsInduced where
-  inverseImage_eq := by ext; apply isIso_quotient_map
+  inverseImage_eq := by ext; apply isIso_quotient_map_iff
 
 variable (C) in
 set_option backward.isDefEq.respectTransparency false in
@@ -314,7 +311,7 @@ of the localizer morphisms `CochainComplex.Plus.localizerMorphism C`
 and `HomotopyCategory.Plus.localizerMorphism C`. -/
 private def iso :
     (CochainComplex.Plus.localizerMorphism C).functor ⋙ (R C).functor ≅
-  (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
+    (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex CochainComplex in
