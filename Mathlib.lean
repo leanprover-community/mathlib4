@@ -6664,6 +6664,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Index
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Over
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Ideal.Span
 public import Mathlib.RingTheory.IdealFilter.Basic
