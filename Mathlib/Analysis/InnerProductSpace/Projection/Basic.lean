@@ -434,7 +434,8 @@ theorem orthogonalProjectionOnto_apply_of_mem_orthogonal
     [K.HasOrthogonalProjection] {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjectionOnto v = 0 :=
   orthogonalProjectionOnto_eq_zero_iff.mpr hv
 
-@[deprecated (since := "2026-05-06")] alias orthogonalProjection_apply_of_mem_orthogonal :=
+@[deprecated (since := "2026-05-06")] alias
+orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero :=
   orthogonalProjectionOnto_apply_of_mem_orthogonal
 
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
@@ -456,7 +457,7 @@ theorem IsOrtho.starProjection_comp_starProjection {U V : Submodule 𝕜 E}
 theorem orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 ↔ U ⟂ V := by
   refine ⟨fun h u hu v hv ↦ ?_, Submodule.IsOrtho.orthogonalProjectionOnto_comp_subtypeL⟩
-  convert! starProjection_inner_eq_zero v u hu using 2
+  convert starProjection_inner_eq_zero v u hu
   have : U.orthogonalProjectionOnto v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
   rw [starProjection_apply, this, Submodule.coe_zero, sub_zero]
 
