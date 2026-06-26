@@ -506,11 +506,11 @@ instance isPreconnected_of_subsingleton [Subsingleton J] : IsPreconnected J wher
 instance isConnected_of_nonempty_and_subsingleton [Nonempty J] [Subsingleton J] :
     IsConnected J where
 
-instance isPreconnected_of_linearOrder {α : Type*} [LinearOrder α] : IsPreconnected α :=
+instance {α : Type*} [LinearOrder α] : IsPreconnected α :=
   zigzag_isPreconnected fun a b ↦ (le_total a b).rec
     (fun h ↦ .of_hom (homOfLE h)) (fun h ↦ .of_inv (homOfLE h))
 
-instance isConnected_of_nonempty_and_linearOrder {α : Type*} [Nonempty α] [LinearOrder α] :
+instance {α : Type*} [Nonempty α] [LinearOrder α] :
     IsConnected α where
 
 end CategoryTheory
