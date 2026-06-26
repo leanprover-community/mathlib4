@@ -95,7 +95,7 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
 lemma Scheme.algebraMap_germ_eq_germToFunctionField {X : Scheme} [IrreducibleSpace X]
     {U : X.Opens} [Nonempty U] {x : X} (hx : x ∈ U) (f : Γ(X, U)) :
     algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) =
-    X.germToFunctionField U f := by
+      X.germToFunctionField U f := by
   simp [RingHom.algebraMap_toAlgebra, ← ConcreteCategory.comp_apply]
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
