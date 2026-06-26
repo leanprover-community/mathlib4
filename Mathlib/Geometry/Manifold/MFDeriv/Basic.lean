@@ -228,8 +228,8 @@ variable {e : OpenPartialHomeomorph M H} {e' : OpenPartialHomeomorph M' H'}
 
 open IsManifold
 
-theorem mdifferentiableWithinAt_iff_source_of_mem_maximalAtlas
-    [IsManifold I 1 M] (he : e ∈ maximalAtlas I 1 M) (hx : x ∈ e.source) :
+theorem mdifferentiableWithinAt_iff_source_of_mem_maximalAtlas (he : e ∈ maximalAtlas I 1 M)
+    (hx : x ∈ e.source) :
     MDiffAt[s] f x ↔
       MDiffAt[(e.extend I).symm ⁻¹' s ∩ range I] (f ∘ (e.extend I).symm) (e.extend I x) := by
   have h2x := hx; rw [← e.extend_source (I := I)] at h2x
