@@ -137,7 +137,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
     · rintro ⟨μ, hμ⟩
       rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat] at hμ
       refine ⟨ih.mp ⟨Pi.single h.choose (μ a * s h.choose) + μ * fun _ ↦ s a, ?_⟩, fun b hb ↦ ?_⟩
-      · rw [prod_eq_mul_prod_diff_singleton_of_mem h.choose_spec, ← mul_assoc, ←
+      · rw [prod_eq_mul_prod_sdiff_singleton_of_mem h.choose_spec, ← mul_assoc, ←
           @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
         rw [← hμ, sum_congr rfl]
         intro x hx
@@ -146,16 +146,16 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
           · rw [hx, Pi.single_eq_same, Pi.single_eq_same]
           · rw [Pi.single_eq_of_ne hx, Pi.single_eq_of_ne hx, zero_mul]
         · convert! (mul_assoc _ _ _).symm
-          rw [prod_eq_prod_diff_singleton_mul (mem x hx), mul_comm, sdiff_sdiff_comm,
+          rw [prod_eq_prod_sdiff_singleton_mul (mem x hx), mul_comm, sdiff_sdiff_comm,
             sdiff_singleton_eq_erase a, erase_insert hat]
       · have : IsCoprime (s b) (s a) :=
           ⟨μ a * ∏ i ∈ t \ {b}, s i, ∑ i ∈ t, μ i * ∏ j ∈ t \ {i}, s j, ?_⟩
         · exact ⟨this.symm, this⟩
-        rw [mul_assoc, ← prod_eq_prod_diff_singleton_mul hb, sum_mul, ← hμ, sum_congr rfl]
+        rw [mul_assoc, ← prod_eq_prod_sdiff_singleton_mul hb, sum_mul, ← hμ, sum_congr rfl]
         intro x hx
         rw [mul_assoc]
         congr
-        rw [prod_eq_prod_diff_singleton_mul (mem x hx) _]
+        rw [prod_eq_prod_sdiff_singleton_mul (mem x hx) _]
         congr 2
         rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
     · rintro ⟨hs, Hb⟩
@@ -171,7 +171,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       rw [mul_assoc, if_neg fun ha : x = a ↦ hat (ha.casesOn hx)]
       rw [mul_assoc]
       congr
-      rw [prod_eq_prod_diff_singleton_mul (mem x hx) _]
+      rw [prod_eq_prod_sdiff_singleton_mul (mem x hx) _]
       congr 2
       rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
 
