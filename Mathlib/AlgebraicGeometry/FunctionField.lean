@@ -184,7 +184,7 @@ For `f` an element of the function field of `X`, there exists some open set `U �
 -/
 lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) :
     ∃ U ∈ X.affineOpens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
-    X.germToFunctionField U f' = f ∧ IsUnit f' := by
+      X.germToFunctionField U f' = f ∧ IsUnit f' := by
   obtain ⟨U, hU, g, hg⟩ := X.presheaf.exists_germ_eq f
   obtain ⟨_, ⟨A, hA, rfl⟩, hxA, hAU⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hU U.isOpen
