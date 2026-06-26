@@ -1035,6 +1035,43 @@ open ContDiff in -- for the ∞ notation
 
 end
 
+/-! Inferring a model with corners on a normed space, for an `IsManifold` hypothesis -/
+section
+
+open scoped ContDiff
+
+variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X] [IsManifold 𝓘(ℝ) ω X]
+  [TopologicalSpace Y] [ChartedSpace ℝ Y] [IsManifold 𝓘(ℝ) ω Y] {f : X → Y}
+
+/--
+info: ContMDiff (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) Top.top f : Prop
+-/
+#guard_msgs in
+#check CMDiff ω f
+
+variable {f : X → ℝ} in /--
+info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in #check MDiff f
+
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] [IsManifold 𝓘(𝕜, F) ω X] {f : X → 𝕜} in
+/-- info: MDifferentiable (modelWithCornersSelf 𝕜 F) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+-- This test is expected to fail: it passing would amount to guessing a model with corners on
+-- a product of two normed spaces (which is ambiguous).
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
+/--
+error: Could not find a model with corners for `X`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+#check MDiff f
+
+end
+
 /-! Tests for the elaborators for `tangentMap(Within)` and `TangentSpace` -/
 section
 
