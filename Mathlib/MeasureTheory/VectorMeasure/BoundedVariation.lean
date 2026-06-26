@@ -29,6 +29,10 @@ dominated by a finite measure. For this, we can use the Stieltjes measure associ
 variation of `f.rightLim`. The extension we get is not exactly the desired vector measure, as we
 need to tweak things if there is a bot element `a`: the previous vector measure gives to `{a}` the
 mass `0` instead of the desired `f.rightLim a - f a`, so we add a Dirac mass to correct this defect.
+
+We also study the variation of this vector measure. We show that it is always finite, and we
+control its variation on the different kinds of intervals in terms of the `eVariationOn` of `f`
+(for upper bounds) or `f.leftLim` or `f.rightLim` (for exact formulas).
 -/
 
 @[expose] public section
@@ -563,34 +567,30 @@ lemma variation_vectorMeasure_Iic_le (hf : BoundedVariationOn f univ) {a : α} :
     (measurableSet_singleton _), variation_vectorMeasure_singleton,
     variation_vectorMeasure_Iio_le]
 
-lemma variation_vectorMeasure_le (hf : BoundedVariationOn f univ) :
+lemma variation_vectorMeasure_univ_le (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure.variation univ ≤ eVariationOn f univ := by
   rcases isEmpty_or_nonempty α with hα | ⟨⟨a⟩⟩
   · have : (univ : Set α) = ∅ := Subsingleton.elim _ _
     simp [this]
   calc hf.vectorMeasure.variation univ
-  _ = hf.vectorMeasure.variation (Iio a ∪ {a} ∪ Ioi a) := by congr 1; grind
+  _ = hf.vectorMeasure.variation (Iio a ∪ {a} ∪ Ioi a) := by simp
   _ = hf.vectorMeasure.variation (Iio a) + hf.vectorMeasure.variation {a}
         + hf.vectorMeasure.variation (Ioi a) := by rw [measure_union (by grind) measurableSet_Ioi,
     measure_union (by grind) (measurableSet_singleton _)]
-  _ ≤ eVariationOn f (Iio a) + (‖f a - f.leftLim a‖ₑ + ‖f a - f.rightLim a‖ₑ)
+  _ ≤ eVariationOn f (Iio a) + (‖f a - f.rightLim a‖ₑ + ‖f a - f.leftLim a‖ₑ)
       + eVariationOn f (Ioi a) := by
     gcongr
     · exact variation_vectorMeasure_Iio_le _
-    · sorry
+    · rw [variation_vectorMeasure_singleton]
+      simp only [← edist_eq_enorm_sub]
+      apply edist_triangle_left
     · exact variation_vectorMeasure_Ioi_le _
   _ = (eVariationOn f (Iio a) + ‖f a - f.leftLim a‖ₑ)
       + (eVariationOn f (Ioi a) + ‖f a - f.rightLim a‖ₑ) := by abel
-  _ = eVariationOn f (Iic a) + eVariationOn f (Ici a) := sorry
-  _ = eVariationOn f univ := sorry
-
-
-#exit
-
-  grw [measure_union (by grind) measurableSet_Ioi,
-    measure_union (by grind) (measurableSet_singleton _),
-    variation_vectorMeasure_Iio_le, variation_vectorMeasure_Ioi_le, A]
-
-
+  _ = eVariationOn f (Iic a) + eVariationOn f (Ici a) := by
+    rw [← edist_eq_enorm_sub, ← edist_eq_enorm_sub, hf.eVariationOn_Ici_eq_Ioi_add_edist,
+      hf.eVariationOn_Iic_eq_Iio_add_edist]
+  _ = eVariationOn f univ := by
+    rw [← eVariationOn.union (x := a) _ isGreatest_Iic isLeast_Ici, Iic_union_Ici]
 
 end BoundedVariationOn
