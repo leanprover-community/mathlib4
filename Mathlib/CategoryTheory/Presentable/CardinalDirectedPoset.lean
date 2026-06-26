@@ -98,7 +98,7 @@ namespace CategoryTheory
 variable (κ : Cardinal.{u}) [Fact κ.IsRegular]
 
 /-- The category of `κ`-filtered partially ordered types,
-with morphisms given by order embeddings. () -/
+with morphisms given by order embeddings. -/
 abbrev CardinalDirectedPoset :=
   (PartOrdEmb.isCardinalFiltered κ).FullSubcategory
 
