@@ -49,6 +49,25 @@ lemma IsCardinalPresentable.mk
       · obtain ⟨j, f, rfl⟩ := (h J _ inferInstance F c hc).1 g
         exact ⟨Functor.ιColimitType _ j f, rfl⟩⟩⟩
 
+namespace Functor
+
+variable {C D : Type*} [Category* C] [Category* D]
+
+-- to be moved
+class PreservesCardinalPresentable
+    (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
+  le_inverseImage_isCardinalPresentable (F κ) :
+    isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F
+
+export PreservesCardinalPresentable (le_inverseImage_isCardinalPresentable)
+
+instance (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] (X : C)
+    [IsCardinalPresentable X κ] [F.PreservesCardinalPresentable κ] :
+    IsCardinalPresentable (F.obj X) κ :=
+  le_inverseImage_isCardinalPresentable F κ _ (by assumption)
+
+end Functor
+
 namespace Comma
 
 variable {C₁ : Type u₁} [Category.{v₁} C₁] {C₂ : Type u₂} [Category.{v₂} C₂]
@@ -77,18 +96,15 @@ instance : (Comma.snd F₁ F₂).IsCardinalAccessible κ where
 
 end
 
-variable [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
-  [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-  (hF₁ : isCardinalPresentable C₁ κ ≤ (isCardinalPresentable D κ).inverseImage F₁)
-  (hF₂ : isCardinalPresentable C₂ κ ≤ (isCardinalPresentable D κ).inverseImage F₂)
-
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 open IsFiltered in
-include hF₁ in
+variable {F₁ F₂} in
 lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
+    [HasCardinalFilteredColimits C₁ κ] [HasCardinalFilteredColimits C₂ κ]
+    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
     [IsCardinalPresentable X₁ κ] [IsCardinalPresentable X₂ κ]
-    (f : F₁.obj X₁ ⟶ F₂.obj X₂) :
+    [F₁.PreservesCardinalPresentable κ] (f : F₁.obj X₁ ⟶ F₂.obj X₂) :
     IsCardinalPresentable (Comma.mk _ _ f) κ :=
   .mk (fun J _ _ G c hc ↦ by
     have := isFiltered_of_isCardinalFiltered J κ
@@ -107,7 +123,6 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
           f₂ ≫ (G.map (rightToMax j₁ j₂)).right, ?_, ?_⟩
         · rw [Category.assoc, ← hf₁, ← Comma.comp_left, Cocone.w]
         · rw [Category.assoc, ← hf₂, ← Comma.comp_right, Cocone.w]
-      have : IsCardinalPresentable (F₁.obj X₁) κ := hF₁ _ (by assumption)
       obtain ⟨j', a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit'
         κ (isColimitOfPreserves (snd _ _ ⋙ F₂) hc)
         (F₁.map f₁ ≫ (G.obj j).hom) (f ≫ F₂.map f₂) (by
