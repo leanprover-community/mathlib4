@@ -72,7 +72,7 @@ public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalDirectedPose
     rw [← CardinalDirectedPoset.isCardinalPresentable_iff _ h]
     exact p.prop_diag_obj j
   -- For each `x : X`, we choose `j : J` in such a way that the singleton
-  -- `{x}` belongs to the image of `p.diag.obj j`.
+  -- `{x}` belongs to the image of `p.diag.obj j` in `SetCardinalLT κ₁ X`.
   choose j y hy using fun x ↦ Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget (CardinalDirectedPoset κ₁)) p.isColimit)
     (SetCardinalLT.singleton κ₁ x)
