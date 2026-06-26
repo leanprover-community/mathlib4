@@ -112,7 +112,8 @@ def nhdsMap (K : Compacts β) (L : K.compactNhds) : (properPreimage proper_f K).
 lemma nhdsMap_mono (K : Compacts β) : Monotone (nhdsMap proper_f K) :=
   fun _ _ h ↦ properPreimage_mono proper_f h
 
-instance [T2Space β] [LocallyCompactSpace β] (K : Compacts β) : (nhdsMap_mono proper_f K).functor.Initial
+instance [T2Space β] [LocallyCompactSpace β] (K : Compacts β) :
+    (nhdsMap_mono proper_f K).functor.Initial
     := by
   apply (Monotone.initial_functor_iff _).2
   intro L
