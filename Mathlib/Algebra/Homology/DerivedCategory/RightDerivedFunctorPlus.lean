@@ -15,7 +15,7 @@ where `C` has enough injectives, we define the right derived functor
 `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
 between the corresponding bounded below derived categories.
 
-TODO(@joelriou): how that this functor is triangulated and refactor
+TODO(@joelriou): show that this functor is triangulated and refactor
 the definiton of `Functor.rightDerived`
 
 -/
