@@ -741,8 +741,8 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
     assertInstancesCommute
@@ -751,8 +751,8 @@ meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e := do
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
     assertInstancesCommute
