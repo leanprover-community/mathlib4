@@ -44,13 +44,9 @@ lemma Ideal.isMaximal_of_isMaximal_under_of_formallyUnramified
     inferInstance) (Ideal.IsPrime.ne_top inferInstance) ?_).ge
   rwa [PrimeSpectrum.asIdeal_le_asIdeal, OrderIso.le_iff_le]
 
-instance {A : Type*} [CommRing A] [Algebra R A] [Algebra.Etale R A]
-    {P : Ideal A} [P.IsPrime] : Algebra.IsEtaleAt R P :=
-  have : Algebra.IsEtaleAt A P :=
-    .of_isLocalization P.primeCompl
-  Algebra.FormallyEtale.comp _ A _
-
 attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
+/-- If `R` is an henselian local ring with residue field `k`, then for any etale `R`-algebra `A`,
+every `A →ₐ[R] k` lifts to a `A →ₐ[R] R`. -/
 lemma HenselianLocalRing.exists_lift_of_to_ResidueField
     {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [Algebra.Etale R A]
     [HenselianLocalRing R] (f : A →ₐ[R] ResidueField R) :
@@ -86,13 +82,16 @@ lemma HenselianLocalRing.exists_lift_of_to_ResidueField
 
 attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
 set_option backward.isDefEq.respectTransparency false in
+/-- A finite algebra over an henselian local ring is a product of (henselian) local rings.
+
+TODO: show that the local rings are exactly `Aₘ` with `m` maximal ideals of `A`. -/
 lemma HenselianLocalRing.exists_completeOrthogonalIdempotents_forall_isLocalRing
     {R A : Type*} [CommRing R]
     [HenselianLocalRing R] [CommRing A] [Algebra R A] [Module.Finite R A] :
     ∃ (n : ℕ) (e : Fin n → A) (he : CompleteOrthogonalIdempotents e),
       ∀ i, IsLocalRing (he.idem i).Corner := by
   obtain ⟨R', _, _, _, P, _, _, n, e, he, P', _, _, hP, hP', H⟩ :=
-    exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq (R := R) (S := A) 𝓂[R]
+    Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq (R := R) (S := A) 𝓂[R]
   let φ : 𝓀[R] ≃ₐ[R] 𝓂[R].ResidueField := .ofBijective
     (IsScalarTower.toAlgHom R (R ⧸ 𝓂[R]) 𝓂[R].ResidueField)
     (Ideal.bijective_algebraMap_quotient_residueField _)
@@ -235,6 +234,13 @@ theorem HenselianLocalRing.of_finite_aux
   simpa [← ResidueField.algebraMap_eq, hrootf, -mul_eq_zero, -mul_eq_left₀, -mul_eq_right₀] using
     congr(aeval root $hg).symm
 
+/-- A finite local ring over an henselian local ring is also henselian.
+
+This proof hides the fact that
+(every finite extension is a product of local rings) implies henselian.
+
+Consider splitting this fact out (if useful) once we have a nice way of stating the
+former condition (as `Function.Surjective (MaximalSpectrum.toPiLocalization R)`). -/
 lemma HenselianLocalRing.of_finite
     {R A : Type*} [CommRing R] [HenselianLocalRing R] [CommRing A] [Algebra R A]
     [Module.Finite R A] [IsLocalRing A] : HenselianLocalRing A := by
@@ -304,6 +310,11 @@ instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R]
     .of_surjective _ Ideal.Quotient.mk_surjective
   exact RingHom.isLocalHom_comp (algebraMap R S).kerLift (Ideal.Quotient.mk _)
 
+/-- Let `R` be an henselian local ring, `A, B` be local `R`-algebras.
+Suppose `A` is etale and `B` is module-finite, then any `k(R)`-algebra map `k(A) → k(B)` lifts to
+an `R`-algebra map `A → B`.
+
+See `HenselianLocalRing.eq_of_residueFieldMap_eq` for the uniqueness of the lift. -/
 lemma HenselianLocalRing.exist_residueFieldMap_eq_of_etale {A B : Type*}
     [CommRing A] [IsLocalRing A] [Algebra R A]
       [IsLocalHom (algebraMap R A)] [Algebra.Etale R A]
