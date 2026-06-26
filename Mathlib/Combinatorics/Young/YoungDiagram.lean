@@ -490,9 +490,7 @@ This section defines the equivalence between Young diagrams `μ` with cardinalit
 partitions of `n`, where each row of the diagram becomes a part of the partition.
 
 The two directions are `YoungDiagram.toPartition` and `YoungDiagram.ofPartition`.
-
 -/
-
 
 /-- Convert a Young diagram to a partition. -/
 def toPartition {n : ℕ} (μ : YoungDiagram) (h : μ.card = n) : Nat.Partition n where
