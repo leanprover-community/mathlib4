@@ -54,7 +54,7 @@ instance : ToExpr LinterSets := inferInstanceAs <| ToExpr (NameMap _)
 
 /-- Return the linter sets defined at this point of elaborating the current file. -/
 elab "linter_sets%" : term => do
-  return toExpr <| linterSetsExt.getState (← getEnv)
+  return toExpr <| (linterSetsExt.getState (← getEnv)).merged
 
 end LinterSetsElab
 
@@ -133,7 +133,15 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
 
   -- Now, it only remains to check that every module (except for the Header linter itself)
   -- imports some file in Mathlib.
-  let missing := modulesWithoutMathlibImports.erase `Mathlib.Tactic.Linter.Header
+  -- Deprecated module files are exempt: they are just import-redirect stubs and may have
+  -- no Mathlib imports (the `deprecated_module` command is a core builtin).
+  let mut nonDeprecated := #[]
+  for module in modulesWithoutMathlibImports do
+    let path := System.mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
+    let content ← IO.FS.readFile path
+    unless content.splitOn "\n" |>.any (·.trimAsciiStart.startsWith "deprecated_module") do
+      nonDeprecated := nonDeprecated.push module
+  let missing := nonDeprecated.erase `Mathlib.Tactic.Linter.Header
     -- This file is imported by `Mathlib/Tactic/Linter/Header.lean`.
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
   if missing.size > 0 then

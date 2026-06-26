@@ -181,7 +181,7 @@ variable {G : Type*} [Groupoid G] (r : HomRel G)
 protected def inv {X Y : Quotient r} (f : X ⟶ Y) : Y ⟶ X :=
   Quot.liftOn f (fun f' => Quot.mk _ (Groupoid.inv f')) (fun _ _ con => by
     obtain ⟨_, _, a, f, g, b, hfg⟩ := con
-    simpa using (Quot.sound (HomRel.CompClosure.intro _ _
+    simpa using! (Quot.sound (HomRel.CompClosure.intro _ _
       (inv b ≫ inv g) _ _ (inv f ≫ inv a) hfg)).symm)
 
 @[simp]
@@ -222,7 +222,7 @@ protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
 
 protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
     (functor r).map f₁ = (functor r).map f₂ := by
-  simpa using Quot.sound (HomRel.CompClosure.intro _ _ (𝟙 a) f₁ f₂ (𝟙 b) h)
+  simpa using! Quot.sound (HomRel.CompClosure.intro _ _ (𝟙 a) f₁ f₂ (𝟙 b) h)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
@@ -237,7 +237,7 @@ theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
 
 theorem compClosure.congruence :
     Congruence fun X Y => Relation.EqvGen (@HomRel.CompClosure C _ r X Y) := by
-  convert (inferInstance : Congruence (functor r).homRel)
+  convert! (inferInstance : Congruence (functor r).homRel)
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
 

@@ -25,10 +25,12 @@ namespace MeasureTheory
 
 namespace Measure
 
-/- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
-an additive Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
+/-- The instance `MeasureTheory.Measure.IsAddHaarMeasure.nullSingletonClass` applies in particular
+to show that an additive Haar measure on a nontrivial finite-dimensional real vector space has no
+atom. -/
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
-    [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
+    [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] :
+    NullSingletonClass μ := by
   infer_instance
 
 section LinearEquiv
@@ -178,7 +180,7 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
   suffices
     ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
     refine ⟨fun hf => ?_, fun hf => this hf hR⟩
-    convert this hf (inv_ne_zero hR)
+    convert! this hf (inv_ne_zero hR)
     rw [← mul_smul, mul_inv_cancel₀ hR, one_smul]
   -- now prove
   intro g hg S hS

@@ -320,7 +320,7 @@ theorem mem_cycleType_iff {n : ℕ} {σ : Perm α} :
     obtain ⟨l, rfl, hlc, hld⟩ := truncCycleFactors σ
     rw [cycleType_eq _ rfl hlc hld, Multiset.mem_coe, List.mem_map] at h
     obtain ⟨c, cl, rfl⟩ := h
-    rw [(List.perm_cons_erase cl).pairwise_iff @(Disjoint.symmetric)] at hld
+    rw [(List.perm_cons_erase cl).pairwise_iff symm] at hld
     refine ⟨c, (l.erase c).prod, ?_, ?_, hlc _ cl, rfl⟩
     · rw [← List.prod_cons, (List.perm_cons_erase cl).symm.prod_eq' (hld.imp Disjoint.commute)]
     · exact disjoint_prod_right _ fun g => List.rel_of_pairwise_cons hld
@@ -530,7 +530,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
 theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
     [Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
-  @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
+  @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert! hdvd)
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card
 
@@ -733,7 +733,7 @@ theorem IsThreeCycle.eq_swap_mul_swap_iff_mem_support
     rw [mem_support]
     intro hx
     apply hg3.isCycle.ne_one
-    simpa [hx] using hg
+    simpa [hx] using! hg
   intro ha
   have ha' := hg3.support_eq_iff_mem_support.mpr ha
   have ha'' := hg3.nodup_iff_mem_support.mpr ha
@@ -750,7 +750,7 @@ theorem IsThreeCycle.eq_swap_mul_swap_iff_mem_support
       simp [← hg3.orderOf]
   · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
     rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
-    simpa [notMem_support] using h
+    simpa [notMem_support] using! h
 
 open Subgroup
 

@@ -22,7 +22,7 @@ fixed point
 
 namespace Function
 
-variable {α : Type*} {x : α} {f : α → α}
+variable {α : Type*} {x : α} {f g : α → α}
 
 /-- The set of fixed points of a map `f : α → α`. -/
 def fixedPoints (f : α → α) : Set α :=
@@ -42,6 +42,12 @@ theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedP
 @[simp]
 theorem fixedPoints_id : fixedPoints (@id α) = Set.univ :=
   Set.ext fun _ => by simpa using isFixedPt_id _
+
+@[simp]
+theorem inter_subset_fixedPoints_comp : fixedPoints f ∩ fixedPoints g ⊆ fixedPoints (f ∘ g) := by
+  rintro x ⟨hf, hg⟩
+  rw [mem_fixedPoints_iff] at *
+  rw [comp_apply, hg, hf]
 
 theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
 

@@ -369,6 +369,12 @@ protected theorem id : IsOpenMap (@id X) := fun s hs => by rwa [image_id]
 protected theorem comp (hg : IsOpenMap g) (hf : IsOpenMap f) :
     IsOpenMap (g ∘ f) := fun s hs => by rw [image_comp]; exact hg _ (hf _ hs)
 
+/-- If `g ∘ f` is open, where `f` is continuous and surjective, then `g` is open. -/
+theorem of_comp (hf : Continuous f) (f_surj : Surjective f) (h : IsOpenMap (g ∘ f)) :
+    IsOpenMap g := fun s hs => by
+  rw [← f_surj.image_preimage s, ← image_comp]
+  exact h _ (hs.preimage hf)
+
 theorem isOpen_range (hf : IsOpenMap f) : IsOpen (range f) := by
   rw [← image_univ]
   exact hf _ isOpen_univ
@@ -448,7 +454,7 @@ lemma preimage_closure_image (h₁ : IsOpenMap f) (h₂ : Function.Injective f)
 
 theorem preimage_frontier_subset_frontier_preimage (hf : IsOpenMap f) {s : Set Y} :
     f ⁻¹' frontier s ⊆ frontier (f ⁻¹' s) := by
-  simpa only [frontier_eq_closure_inter_closure, preimage_inter] using
+  simpa only [frontier_eq_closure_inter_closure, preimage_inter] using!
     inter_subset_inter hf.preimage_closure_subset_closure_preimage
       hf.preimage_closure_subset_closure_preimage
 
@@ -706,7 +712,9 @@ theorem IsOpenEmbedding.map_nhds_eq (hf : IsOpenEmbedding f) (x : X) :
 lemma IsOpenEmbedding.isOpen_iff_image_isOpen (hf : IsOpenEmbedding f) {s : Set X} :
     IsOpen s ↔ IsOpen (f '' s) where
   mp := hf.isOpenMap s
-  mpr h := by convert ← h.preimage hf.isEmbedding.continuous; apply preimage_image_eq _ hf.injective
+  mpr h := by
+    convert! ← h.preimage hf.isEmbedding.continuous
+    apply preimage_image_eq _ hf.injective
 
 theorem IsOpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
     (hg : IsOpenEmbedding g) : Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
@@ -857,7 +865,7 @@ protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f))
     IsClosedEmbedding f where
   __ := hg.of_comp_iff.mp hgf.isEmbedding
   isClosed_range := by
-    convert hg.isClosed_preimage _ hgf.isClosed_range
+    convert! hg.isClosed_preimage _ hgf.isClosed_range
     rw [range_comp, hg.injective.preimage_image]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :
