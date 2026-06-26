@@ -61,7 +61,7 @@ public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalDirectedPose
     (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalDirectedPoset κ₁) κ₂]
     {X : Type w} (hX : HasCardinalLT X κ₂) :
     ∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y := by
-  -- We write the partially ordered type `setCardinalLT κ₁ X` of subsets
+  -- We write the partially ordered type `SetCardinalLT κ₁ X` of subsets
   -- of `X` of cardinality `< κ₁` as a `κ₂`-filtered colimit (with index
   -- category `J`) of `κ₂`-presentable objects (i.e. partially ordered
   -- types of cardinality `< κ₂`.)
