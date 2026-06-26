@@ -197,7 +197,7 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
     (ofComplex_apply z).symm ▸ (mdifferentiableAt_iff.mp (hF (g • z))).hasDerivAt
   have h_denom : HasDerivAt (fun w ↦ (denom g w) ^ (-k))
       (-k * (g 1 0 : ℂ) * (denom g z) ^ (-k - 1)) ↑z := by
-    simpa using (hasStrictDerivAt_denom_zpow g (-k) z).hasDerivAt
+    simpa using hasDerivAt_denom_zpow g (-k) z
   have hcomp : ((F ∣[k] g) ∘ ofComplex) =ᶠ[𝓝 ↑z]
       fun w ↦ (g.val.det : ℂ) ^ (k - 1) *
         ((F ∘ ofComplex) ↑(g • ofComplex w) * (denom g w) ^ (-k)) := by
