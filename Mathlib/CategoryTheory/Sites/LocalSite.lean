@@ -25,9 +25,6 @@ See https://ncatlab.org/nlab/show/local+site.
 All together this shows that for local sites `Sheaf J (Type max u v w)` forms a local topos, but
 since we don't yet have local topoi this can't be stated yet.
 
-We also define a Grothendieck topology `localTopology C` on any category `C` with a terminal object,
-and show that it is the largest topology making `C` into a local site.
-
 TODO: generalise universe levels from `max u v` to `max u v w` again once that is possible.
 -/
 
@@ -56,25 +53,27 @@ instance {C : Type u} [Category.{v} C] [HasTerminal C] : (trivial C).IsLocalSite
 /-- The functor that sends any type `A` to the functor `Cᵒᵖ → Type _` that sends any `X : C`
 to the type of all functions `(⊤_ C ⟶ X) → A`. This can be defined on any site with a terminal
 object, but has values in sheaves in the case of local sites. -/
-@[simps!?]
+@[simps!]
 noncomputable def Presheaf.coconst {C : Type u} [Category.{v} C] [HasTerminal C] :
     Type w ⥤ (Cᵒᵖ ⥤ Type max v w) :=
   uliftFunctor ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj
     (coyoneda.obj (op (⊤_ C)) ⋙ uliftFunctor).op
 
+open ConcreteCategory in
 set_option backward.isDefEq.respectTransparency false in
 /-- On local sites, `Presheaf.coconst` actually takes values in sheaves. -/
 lemma Presheaf.coconst_isSheaf [J.IsLocalSite] (X : Type w) : IsSheaf J (coconst.obj X) := by
   refine (isSheaf_iff_isSheaf_of_type J _).2 fun Y S hS f hf ↦ ?_
-  refine ⟨TypeCat.ofHom fun g ↦ by
-    have := f g.down (LocalSite.from_terminal_mem_of_mem J g.down hS)
-    exact (TypeCat.Hom.hom this) ⟨𝟙 _⟩, ?_, ?_⟩
+  refine ⟨TypeCat.ofHom fun g ↦
+    (hom (f g.down (LocalSite.from_terminal_mem_of_mem J g.down hS))) ⟨𝟙 _⟩, ?_, ?_⟩
   · intro Z g hg
-    exact funext fun (x : ULift (_ ⟶ _)) ↦
-      (congrFun (f.comp_of_compatible S hf hg x.down) _).trans (congrArg (f g hg) <| by simp)
+    refine hom_ext _ _ fun (x : ULift (_ ⟶ _)) ↦ ?_
+    exact (congr_hom (f.comp_of_compatible S hf hg x.down) _).trans <|
+      congr_arg (f g hg) <| ULift.ext _ _ <| Category.id_comp _
   · intro g hg
-    exact funext fun h : ULift (⊤_ C ⟶ Y) ↦ Eq.trans (by simp [Presheaf.coconst]) <|
-      congrFun (hg h.down ((LocalSite.from_terminal_mem_of_mem J h.down hS))) _
+    refine hom_ext _ _ fun ⟨h⟩ ↦ ?_
+    exact Eq.trans (by simp [coconst, uliftFunctor, Functor.whiskeringLeft, Functor.comp]) <|
+      congr_hom (hg h ((LocalSite.from_terminal_mem_of_mem J h hS))) _
 
 /-- The right adjoint to the global sections functor that exists over any local site.
 Takes a type `X` to the sheaf that sends each `Y : C` to the type of functions `Y → X`. -/
@@ -85,10 +84,7 @@ noncomputable def IsLocalSite.coconstantSheaf [J.IsLocalSite] :
   map_id _ := rfl
   map_comp _ _ := rfl
 
--- this is currently needed to obtain the instance `HasSheafify J (Type max u v)`.
-attribute [local instance] CategoryTheory.Types.instConcreteCategory
-attribute [local instance] CategoryTheory.Types.instFunLike
-
+set_option backward.isDefEq.respectTransparency false in
 /-- On local sites, the global sections functor `Γ` is left-adjoint to the coconstant functor. -/
 @[simps!]
 noncomputable def IsLocalSite.ΓCoconstantSheafAdj [J.IsLocalSite] :
@@ -97,16 +93,31 @@ noncomputable def IsLocalSite.ΓCoconstantSheafAdj [J.IsLocalSite] :
   exact {
     unit := {
       app X := ⟨{
-        app Y (x : X.obj.obj Y) y := ⟨X.obj.map (op y.down) x⟩
+        app Y := TypeCat.ofHom fun (x : X.obj.obj Y) ↦ TypeCat.ofHom fun y ↦
+          ⟨X.obj.map (op y.down) x⟩
         naturality Y Z f := by
-          ext (x : X.obj.obj Y); dsimp [coconstantSheaf, Presheaf.coconst]; ext z
-          exact (FunctorToTypes.map_comp_apply X.obj _ _ x).symm
+          ext (x : X.obj.obj Y)
+          dsimp [coconstantSheaf, Presheaf.coconst, Functor.comp, Functor.whiskeringLeft,
+            uliftFunctor, yoneda, coyoneda]
+          ext z
+          exact (Functor.map_comp_apply X.obj _ _ x).symm
       }⟩
       naturality X Y f := by
-        ext Z (x : X.obj.obj Z); dsimp [coconstantSheaf, Presheaf.coconst]; ext z
+        ext Z (x : X.obj.obj Z)
+        dsimp [coconstantSheaf, Presheaf.coconst, Functor.comp,
+          Functor.whiskeringLeft, uliftFunctor, yoneda, coyoneda]
+        ext z
         exact (NatTrans.naturality_apply f.hom _ x).symm
     }
-    counit := { app X := fun f : ULift (_ ⟶ _) → _ ↦ (f default).down }
+    counit := {
+      app X := by
+        refine TypeCat.ofHom fun f ↦ ?_
+
+        dsimp [coconstantSheaf, Presheaf.coconst, Functor.comp, Functor.whiskeringLeft,
+          uliftFunctor, yoneda, coyoneda] at f
+        --exact (f.hom (𝟙 _)).down
+        --exact fun f : ULift (_ ⟶ _) → _ ↦ (f default).down
+        sorry }
     left_triangle_components X := by
       ext (x : X.obj.obj _)
       dsimp; convert congrFun (X.obj.map_id _) x; exact Subsingleton.elim _ _
@@ -160,13 +171,7 @@ open List in
 * the site is local, i.e. the only covering sieve of the terminal object is the trivial one
 * every covering sieve contains all morphisms from the terminal object
 * the coconstant presheaf on the empty type is a sheaf
-* every coconstant presheaf is a sheaf.
-
-I don't yet know how exactly `HasCoconstantSheaf J (Type max u v)` fits into this - every
-local site has a coconstant sheaf functor, and every *subcanonical* site with a coconstant sheaf
-functor is local, but it's not clear to me what can be said in the non-subcanonical case. Maybe
-having a fully faithful coconstant sheaf functor could be strong enough?
-TODO: figure this out -/
+* every coconstant presheaf is a sheaf. -/
 protected theorem GrothendieckTopology.IsLocalSite.tfae [HasTerminal C] :
     TFAE [J.IsLocalSite,
       ∀ X : C, ∀ S ∈ J X, ∀ x : ⊤_ C ⟶ X, S x,
@@ -174,7 +179,7 @@ protected theorem GrothendieckTopology.IsLocalSite.tfae [HasTerminal C] :
       ∀ X : Type max u v, Presieve.IsSheaf J (Presheaf.coconst.obj X)] := by
   tfae_have 2 → 1 := fun h ↦ ⟨fun S hS ↦ S.id_mem_iff_eq_top.1 <| h _ S hS _⟩
   tfae_have 1 → 2 := fun h X S hS f ↦ by
-    simpa using Sieve.id_mem_iff_eq_top.2 <| h.eq_top_of_mem _ <| J.pullback_stable f HShiftRight
+    simpa using Sieve.id_mem_iff_eq_top.2 <| h.eq_top_of_mem _ <| J.pullback_stable f hS
   tfae_have 4 → 1 := fun h ↦ ⟨fun S hS ↦ by
     replace h : IsEmpty (Presieve.FamilyOfElements
         (Presheaf.coconst.{u,v,max u v}.obj PEmpty) S.arrows) := by
@@ -194,8 +199,5 @@ protected theorem GrothendieckTopology.IsLocalSite.tfae [HasTerminal C] :
   tfae_have 5 → 4 := fun h ↦ h _
   tfae_have 1 → 5 := fun _ _ ↦ (isSheaf_iff_isSheaf_of_type _ _).1 <| Presheaf.coconst_isSheaf J _
   tfae_finish
-
-instance [HasTerminal C] : (localTopology C).IsLocalSite :=
-  ((GrothendieckTopology.IsLocalSite.tfae _).out 0 2).2 le_rfl
 
 end CategoryTheory
