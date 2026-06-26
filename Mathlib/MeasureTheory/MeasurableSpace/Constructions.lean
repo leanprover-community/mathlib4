@@ -965,7 +965,10 @@ end Set
 section Finset
 variable [MeasurableSpace β] {g : β → Finset α}
 
-/-- We give `Finset α` the measurable structure inherited from `Set α` -/
+/-- We give `Finset α` the measurable structure inherited from `Set α`.
+
+This is the smallest sigma-algebra making `(a \in \.)` for all `a : α`.
+See `measurable_finset_iff`. -/
 instance Finset.instMeasurableSpace : MeasurableSpace (Finset α) :=
   .comap SetLike.coe inferInstance
 
