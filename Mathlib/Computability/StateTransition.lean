@@ -170,7 +170,7 @@ theorem tr_reaches {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : 
   rcases reflTransGen_iff_eq_or_transGen.1 ab with (rfl | ab)
   · exact ⟨_, aa, ReflTransGen.refl⟩
   · have ⟨b₂, bb, h⟩ := tr_reaches₁ H aa ab
-    exact ⟨b₂, bb, h.to_reflTransGen⟩
+    exact ⟨b₂, bb, h.le_reflTransGen⟩
 
 theorem tr_reaches_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ a₂}
     (aa : tr a₁ a₂) {b₂} (ab : Reaches f₂ a₂ b₂) :

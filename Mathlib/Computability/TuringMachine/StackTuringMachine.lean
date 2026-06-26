@@ -677,7 +677,7 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
     stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq List.length_reverse),
     Option.isNone, cond, hrun, TM1.stepAux] at this
   obtain ⟨c, gc, rc⟩ := IH hT'
-  refine ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl ?_)).to_reflTransGen⟩
+  refine ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl ?_)).le_reflTransGen⟩
   rw [tr, TM1.stepAux, Tape.mk'_head, addBottom_head_fst]
   exact rc
 

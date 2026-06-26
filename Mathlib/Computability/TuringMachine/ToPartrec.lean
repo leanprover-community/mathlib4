@@ -940,7 +940,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
   refine Part.ext fun x => ?_
-  rw [reaches_eval h₂.to_reflTransGen]; simp only [Part.map_eq_map, Part.mem_map_iff]
+  rw [reaches_eval h₂.le_reflTransGen]; simp only [Part.map_eq_map, Part.mem_map_iff]
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h
     simp only [stepNormal_eval, Part.map_eq_map, Part.mem_map_iff] at hc₂
