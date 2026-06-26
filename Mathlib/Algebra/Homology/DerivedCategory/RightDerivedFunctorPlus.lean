@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInje
 /-!
 # The right derived functor on the bounded below derived category
 
-If `F : C ⥤ D` is an additive functors between abelian categories,
+If `F : C ⥤ D` is an additive functor between abelian categories,
 where `C` has enough injectives, we define the right derived functor
 `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
 between the corresponding bounded below derived categories.
@@ -32,7 +32,7 @@ variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive] [EnoughInjectives C]
 
 /-- The right derived functor `DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
-when `F : C ⥤ D` is an additive functors between abelian categories and
+when `F : C ⥤ D` is an additive functor between abelian categories and
 `C` has enough injectives. -/
 noncomputable def rightDerivedFunctorPlus :
     DerivedCategory.Plus C ⥤ DerivedCategory.Plus D :=
@@ -41,7 +41,7 @@ noncomputable def rightDerivedFunctorPlus :
 
 /-- The natural transformation that is part of the data of
 the right derived functor `DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
-when `F : C ⥤ D` is an additive functors between abelian categories and
+when `F : C ⥤ D` is an additive functor between abelian categories and
 `C` has enough injectives. -/
 noncomputable def rightDerivedFunctorPlusUnit :
     F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh ⟶
