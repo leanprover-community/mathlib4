@@ -44,7 +44,6 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   withNewMCtxDepth do
   let mut result : Array GrwPos := #[]
   -- Any relation `r` can be proved from `AntisymmRel r`, so we add this as a possible relation
-  -- TODO: make this step more robust/extensible, without increasing imports
   if (← getEnv).contains `AntisymmRel then
     let antiSymm := mkApp2 (.const `AntisymmRel [u]) α relation
     result := result.push { relName := `AntisymmRel, relation := antiSymm, symm? := none }
@@ -62,14 +61,13 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   result := result.push { relName, relation, symm? }
   -- For `≤`, we add the relation `<`.
   if relName == ``LE.le then
-    try
+    if (← getEnv).contains `le_of_lt then
       let (mvars, _, le) ←
         forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels `le_of_lt))
-        if ← isDefEq le.appFn!.appFn! relation then
-          let lt ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
-          result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
-    catch _ => pure ()
-  return result
+      if ← isDefEq le.appFn!.appFn! relation then
+        let lt ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
+        result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
+   return result
 
 /-- This function is passed to `MVarId.gcongr` as the main discharger.
 It doesn't try to prove the goal, but instead observes what the goal is,
