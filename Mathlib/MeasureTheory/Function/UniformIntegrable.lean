@@ -823,7 +823,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
       rw [ENNReal.coe_toNNReal (by finiteness)]
 
 /-- A version of `uniformIntegrable_of'` with a strict inequality in the tail condition. -/
-theorem uniformIntegrable_of'_lt [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
+theorem uniformIntegrable_of_lt' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ i, StronglyMeasurable (f i))
     (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
       ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε) :
