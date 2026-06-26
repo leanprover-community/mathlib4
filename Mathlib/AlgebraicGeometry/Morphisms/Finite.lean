@@ -211,4 +211,12 @@ lemma isClosed_singleton_iff_locallyOfFiniteType {X : Scheme.{u}} [JacobsonSpace
     simpa using (X.fromSpecResidueField x).closePoints_subset_preimage_closedPoints
       (IsLocalRing.isClosed_singleton_closedPoint _)
 
+noncomputable
+def checking {k : Type u} [Field k] (x : Spec (.of k)) : (Spec (.of k)).residueField x ≅ .of k := by
+    letI : IsIso (Spec.preimage <| (Spec (.of k)).fromSpecResidueField x) := by
+      /-
+      This is definitely obvious, but I can't think
+      -/
+      sorry
+    exact (asIso (Spec.preimage <| (Spec (.of k)).fromSpecResidueField x)).symm
 end AlgebraicGeometry

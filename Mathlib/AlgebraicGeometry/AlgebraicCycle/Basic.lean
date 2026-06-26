@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.AlgebraicGeometry.ResidueField
+public import Mathlib.RingTheory.Flat.Rank
 
 /-!
 # Algebraic Cycles
@@ -75,5 +76,59 @@ lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R)
     map (𝟙 _) wx wx c = c := by
   apply Function.locallyFinsupp.map_id
   simp [mapCoeff]
+
+section degree
+
+variable {Y : Scheme.{u}} (f : X ⟶ Y) (D : AlgebraicCycle X R)
+
+/--
+The degree of a Weil divisor on a (complete) curve. Note that whilst this is defined for more
+general cycles on more general schemes, this is not a very useful notion outside of the usecase of
+divisors on curves. More generally, one can only define degree with respect to an embedding.
+-/
+noncomputable def degree : R := ∑ᶠ (x : X), (f.residueDegree x) • (D x)
+
+@[simp]
+lemma degree_sum (D D' : AlgebraicCycle X ℤ) [CompactSpace X]
+    : degree f (D + D') = degree f D + degree f D' := by
+  simp [degree]
+  ring_nf
+  rw [finsum_add_distrib]
+  · have :=
+      LocallyFiniteSupport.finite_inter_support_of_isCompact D.locallyFiniteSupport
+      CompactSpace.isCompact_univ
+    simp only [Function.locallyFinsuppWithin.toFun_eq_coe, Set.univ_inter,
+      Function.HasFiniteSupport, Function.support_mul] at this ⊢
+    exact Set.Finite.inter_of_right this _
+  · have :=
+      LocallyFiniteSupport.finite_inter_support_of_isCompact D'.locallyFiniteSupport
+      CompactSpace.isCompact_univ
+    simp only [Function.locallyFinsuppWithin.toFun_eq_coe, Set.univ_inter,
+      Function.HasFiniteSupport, Function.support_mul] at this ⊢
+    exact Set.Finite.inter_of_right this _
+
+@[simp]
+lemma degree_neg (D : AlgebraicCycle X ℤ)
+    : degree f (-D) = - degree f D := by simp [degree, finsum_neg_distrib]
+
+@[simp]
+lemma degree_minus (D D' : AlgebraicCycle X ℤ) [CompactSpace X] : degree f (D - D') =
+    degree f D - degree f D' := by
+  have := degree_sum f D (-D')
+  simp [-degree_sum] at this
+  ring_nf at this
+  rw [← this]
+  congr
+
+open Function.locallyFinsuppWithin in
+@[simp]
+lemma degree_single [DecidableEq X] (p : X) {r : R} : degree f (single p r) =
+    (f.residueDegree p) • r := by
+  simp only [degree]
+  rw [finsum_eq_finsetSum_of_support_subset (s := {p})]
+  · simp
+  · simp
+
+end degree
 
 end AlgebraicGeometry.AlgebraicCycle

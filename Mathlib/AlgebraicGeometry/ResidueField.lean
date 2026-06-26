@@ -154,6 +154,18 @@ lemma Hom.residueDegree_id (x : X) : (𝟙 _ : X ⟶ X).residueDegree x = 1 := b
   rw [residueFieldMap_id]
   exact CommSemiring.finrank_self _
 
+lemma Hom.residueDegree_eq_finrank {k : Type u} [Field k] (f : X ⟶ Spec (.of k)) (x : X) :
+    letI := Algebra.compHom (↑(X.residueField x))
+      ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
+    f.residueDegree x = Module.finrank k (X.residueField x) := by
+  letI := Algebra.compHom (↑(X.residueField x))
+      ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
+  simp [residueDegree]
+
+
+  sorry
+
+
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f x ∈ V) :
     Y.evaluation V (f x) hx ≫ f.residueFieldMap x =
@@ -359,6 +371,11 @@ lemma descResidueField_stalkClosedPointTo_comp {K : Type u} [Field K] (g : Spec 
     dsimp% descResidueField (stalkClosedPointTo (g ≫ f)) =
       Hom.residueFieldMap f (g (closedPoint K)) ≫ descResidueField (stalkClosedPointTo g) := by
   simp [← cancel_epi (Y.residue _), stalkClosedPointTo_comp, residue_residueFieldMap_assoc]
+
+noncomputable instance test123 (R : CommRingCat.{u}) {X : Scheme.{u}} [X.Over (Spec R)] {p : X} :
+    Algebra R ↑(X.residueField p) :=
+  Algebra.compHom (↑(X.residueField p))
+    ((X.Γevaluation p).hom.comp ((Scheme.ΓSpecIso R).inv ≫ (X ↘ Spec R).appTop).hom)
 
 end Scheme
 
