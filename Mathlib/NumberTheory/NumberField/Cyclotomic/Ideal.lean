@@ -72,6 +72,14 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
+/-- An integer `n` is divisible by `ζ - 1` in `𝓞 K` if and only if it is divisible by `p`,
+where `ζ` is a primitive `p ^ (k + 1)`-th root of unity. -/
+theorem zeta_sub_one_dvd_intCast_iff {n : ℤ} :
+    hζ.toInteger - 1 ∣ (n : 𝓞 K) ↔ (p : ℤ) ∣ n := by
+  have h := associated_norm_zeta_sub_one p k hζ
+  rw [← Ideal.norm_dvd_iff (h.symm.prime (Nat.prime_iff_prime_int.mp hp.out))]
+  exact h.dvd_iff_dvd_left
+
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
   simpa using congr_arg absNorm <|
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
@@ -230,6 +238,13 @@ theorem ramificationIdx_span_zeta_sub_one' :
     ramificationIdx' (span {hζ.toInteger - 1}) ℤ = p - 1 := by
   rw [← pow_one p] at hK hζ
   rw [ramificationIdx_span_zeta_sub_one p 0 hζ, pow_zero, one_mul]
+
+/-- An integer `n` is divisible by `ζ - 1` in `𝓞 K` if and only if it is divisible by `p`,
+where `ζ` is a primitive `p`-th root of unity. -/
+theorem zeta_sub_one_dvd_intCast_iff' {n : ℤ} :
+    hζ.toInteger - 1 ∣ (n : 𝓞 K) ↔ (p : ℤ) ∣ n := by
+  rw [← pow_one p] at hK hζ
+  exact zeta_sub_one_dvd_intCast_iff p 0 hζ
 
 variable (K)
 
