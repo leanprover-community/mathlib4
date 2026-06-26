@@ -218,8 +218,16 @@ instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
   one_smul _ := ext fun _ => one_smul _ _
   mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
+-- no SemigroupAction because no `Semigroup ℕ+` here
+instance smulPNat : SMul ℕ+ (P1 →ᵃ[k] V2) where
+  smul n f := ⟨n • ⇑f, n • f.linear, fun p v => by simp⟩
+
 @[simp, norm_cast]
 theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_psmul (c : ℕ+) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
   rfl
 
 @[simp]
@@ -277,8 +285,8 @@ theorem neg_linear (f : P1 →ᵃ[k] V2) : (-f).linear = -f.linear :=
 
 /-- The set of affine maps to a vector space is an additive commutative group. -/
 instance : AddCommGroup (P1 →ᵃ[k] V2) :=
-  coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _)
-    fun _ _ => coe_smul _ _
+  coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 /-- The space of affine maps from `P1` to `P2` is an affine space over the space of affine maps
 from `P1` to the vector space `V2` corresponding to `P2`. -/
