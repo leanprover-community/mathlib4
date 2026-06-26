@@ -171,13 +171,30 @@ instance [ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C₁ κ)]
   dsimp only [Comma.isCardinalPresentable]
   infer_instance
 
-section isCardinalAccessibleCategory
+instance (f : Comma F₁ F₂) :
+    IsCardinalFiltered (CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f) κ := by
+  sorry
 
-variable
-  [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
-  [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense := by
+  sorry
 
-end isCardinalAccessibleCategory
+protected lemma isCardinalFilteredGenerator_isCardinalPresentable
+    [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
+    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+    [F₁.PreservesCardinalPresentable κ] [LocallySmall.{w} D] :
+    (Comma.isCardinalPresentable F₁ F₂ κ).IsCardinalFilteredGenerator κ :=
+  .mk' (isCardinalPresentable_le _ _ _)
+    (fun f ↦ ⟨(CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f), inferInstance,
+      inferInstance, inferInstance,
+      ⟨_, _, (Comma.isCardinalPresentable F₁ F₂ κ).ι.denseAt f⟩,
+    fun g ↦ g.left.property⟩)
+
+instance [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
+    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+    [F₁.PreservesCardinalPresentable κ] [LocallySmall.{w} D] :
+    IsCardinalAccessibleCategory (Comma F₁ F₂) κ where
+  exists_generator :=
+    ⟨_, inferInstance, Comma.isCardinalFilteredGenerator_isCardinalPresentable.{w} F₁ F₂ κ⟩
 
 end Comma
 

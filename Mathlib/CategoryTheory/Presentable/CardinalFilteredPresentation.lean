@@ -33,7 +33,7 @@ such that `P.IsCardinalFilteredGenerator κ` holds.
 
 public section
 
-universe w v u
+universe w₁ w₂ w v u
 
 namespace CategoryTheory
 
@@ -82,6 +82,13 @@ structure IsCardinalFilteredGenerator : Prop where
       P.colimitsOfShape J X
 
 namespace IsCardinalFilteredGenerator
+
+lemma mk' (h₁ : P ≤ isCardinalPresentable C κ)
+    (h₂ : ∀ (X : C), ∃ (J : Type w₁) (_ : Category.{w₂} J)
+      (_ : EssentiallySmall.{w} J) (_ : IsCardinalFiltered J κ), P.colimitsOfShape J X) :
+    P.IsCardinalFilteredGenerator κ where
+  le_isCardinalPresentable := h₁
+  exists_colimitsOfShape := sorry
 
 variable (h : P.IsCardinalFilteredGenerator κ) (X : C)
 
