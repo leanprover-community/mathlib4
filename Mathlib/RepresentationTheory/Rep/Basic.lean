@@ -538,6 +538,39 @@ instance preservesColimits_forget :
     Limits.PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.preservesColimits_of_natIso (forgetNatIsoActionForget k G).symm
 
+instance : Limits.HasBinaryBiproducts (Rep.{w} k G) where
+  has_binary_biproduct A B := Limits.hasBinaryBiproduct_of_total
+    ⟨Rep.of (X := A.V × B.V) (Representation.prod A.ρ B.ρ), Rep.ofHom ⟨LinearMap.fst k _ _, by
+      simp [LinearMap.ext_iff]⟩, Rep.ofHom ⟨LinearMap.snd k _ _, by simp [LinearMap.ext_iff]⟩,
+      Rep.ofHom ⟨LinearMap.inl _ _ _, by simp [LinearMap.ext_iff]⟩, Rep.ofHom ⟨LinearMap.inr _ _ _,
+      by simp [LinearMap.ext_iff]⟩, by ext : 2; simp, by ext : 2; simp [zero_hom], by
+      ext : 2; simp [zero_hom], by ext : 2; simp⟩ <| by
+    ext : 2; simp [← ofHom_comp, ← ofHom_add, LinearMap.ext_iff]
+
+instance : Limits.HasZeroObject (Rep.{w} k G) where
+  zero := ⟨Rep.trivial k G PUnit, {
+    unique_to X := Nonempty.intro ⟨⟨0⟩, fun f ↦ by
+      ext x; have : x = 0 := Subsingleton.elim _ _; subst this; simp⟩
+    unique_from X := Nonempty.intro ⟨⟨0⟩, fun f ↦ by ext⟩
+  }⟩
+
+/-- An object of `Rep k G` is zero iff the underlying `k`-module is zero. -/
+lemma isZero_iff (M : Rep k G) : Limits.IsZero M ↔ Subsingleton M.V := by
+  simp [Limits.IsZero.iff_id_eq_zero, Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff,
+    ← ModuleCat.isZero_of_iff_subsingleton (R := k), ModuleCat.hom_ext_iff]
+
+instance : Limits.HasLimits (Rep.{w} k G) :=
+  Adjunction.has_limits_of_equivalence (repIsoAction k G).functor
+
+instance : Limits.HasColimits (Rep.{w} k G) :=
+  Adjunction.has_colimits_of_equivalence (repIsoAction k G).functor
+
+instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+  Limits.reflectsLimits_of_reflectsIsomorphisms
+
+instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+  Limits.reflectsColimits_of_reflectsIsomorphisms
+
 variable {k G} in
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,

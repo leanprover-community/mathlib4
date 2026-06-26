@@ -5,7 +5,10 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.RepresentationTheory.Rep.Basic
+public import Mathlib.RepresentationTheory.Rep.Iso
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Restriction of representations
@@ -80,6 +83,57 @@ instance {k : Type u} [CommSemiring k] : (resFunctor (k := k) f).Linear k where
     rw [smul_hom, Representation.IntertwiningMap.toLinearMap_smul,
       res_map_hom_toLinearMap, smul_hom, Representation.IntertwiningMap.toLinearMap_smul,
       res_map_hom_toLinearMap]
+
+section ShortComplex
+
+open Limits
+
+variable {k : Type u} [Ring k]
+
+instance : PreservesLimits (resFunctor.{w} (k := k) f) :=
+  have : PreservesLimitsOfSize.{w, w} (resFunctor f ⋙ forget₂ (Rep.{w} k H) (ModuleCat k)) :=
+    inferInstanceAs (PreservesLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)))
+  preservesLimits_of_reflects_of_preserves _ (forget₂ (Rep.{w} k H) (ModuleCat k))
+
+instance : Limits.PreservesColimits (resFunctor.{w} (k := k) f) :=
+  have : PreservesColimitsOfSize.{w, w} (resFunctor (k := k) f ⋙
+      forget₂ (Rep.{w} k H) (ModuleCat k)) :=
+    inferInstanceAs (PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)))
+  preservesColimits_of_reflects_of_preserves _ (forget₂ (Rep.{w} k H) (ModuleCat k))
+
+/-- An object of `Rep k G` is zero iff its restriction to `H` is zero. -/
+lemma isZero_res_iff (M : Rep k G) :
+    IsZero (res f M) ↔ IsZero M := by
+  rw [isZero_iff, isZero_iff, Rep.res_obj_V]
+
+/--
+The instances above show that the restriction functor `res φ : Rep R G ⥤ Rep R H`
+preserves and reflects exactness. -/
+lemma res_map_exact {k : Type u} [CommRing k]
+    (S : ShortComplex (Rep.{w} k G)) :
+    (S.map (resFunctor f)).Exact ↔ S.Exact := by
+  rw [ShortComplex.exact_map_iff_of_faithful]
+
+lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex (Rep.{w} k G)} :
+    (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
+  constructor
+  · intro h
+    have h₁ := h.1
+    have h₂ := h.2
+    have h₃ := h.3
+    rw [ShortComplex.exact_map_iff_of_faithful] at h₁
+    simp only [ShortComplex.map_f, Representation.IntertwiningMap.coe_eq_toLinearMap,
+      mono_iff_injective, ShortComplex.map_g, epi_iff_surjective] at h₂ h₃
+    exact {exact := h₁, mono_f := mono_iff_injective _|>.2 h₂, epi_g := epi_iff_surjective _|>.2 h₃}
+  · rintro ⟨h⟩
+    expose_names
+    exact {
+      exact := by rwa [ShortComplex.exact_map_iff_of_faithful]
+      mono_f := by simpa [mono_iff_injective] using! mono_f
+      epi_g := by simpa [epi_iff_surjective] using! epi_g
+    }
+
+end ShortComplex
 
 noncomputable section
 
