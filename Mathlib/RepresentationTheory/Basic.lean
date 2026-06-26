@@ -101,6 +101,10 @@ theorem self_inv_apply (g : G) (x : V) :
     ρ g (ρ g⁻¹ x) = x := by
   simp [← Module.End.mul_apply, ← map_mul]
 
+lemma inv_apply_eq_iff (g : G) (x y : V) :
+    ρ g⁻¹ x = y ↔ x = ρ g y := by
+  constructor <;> rintro rfl <;> simp
+
 lemma apply_bijective (g : G) :
     Function.Bijective (ρ g) :=
   Equiv.bijective ⟨ρ g, ρ g⁻¹, inv_self_apply ρ g, self_inv_apply ρ g⟩
