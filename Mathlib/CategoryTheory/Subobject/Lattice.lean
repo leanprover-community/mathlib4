@@ -507,6 +507,28 @@ theorem sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B}
     (X ⊔ Y).Factors f :=
   factors_of_le f le_sup_right P
 
+def sup_MonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisation
+    (coprod.desc f.arrow g.arrow) where
+  I := underlying.obj (f ⊔ g)
+  m := (f ⊔ g).arrow
+  m_mono := inferInstance
+  e := coprod.desc (ofLE f (f ⊔ g) le_sup_left) (ofLE g (f ⊔ g) le_sup_right)
+  fac := by simp only [coprod.desc_comp, ofLE_arrow]
+
+def sup_isImage {A : C} (f g : Subobject A) :
+    IsImage (sup_MonoFactorisation f g) where
+  lift F := by
+    refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
+    · refine le_mk_of_comm (coprod.inl ≫ F.e) ?_
+      · simp only [assoc, MonoFactorisation.fac, coprod.inl_desc]
+    · refine le_mk_of_comm (coprod.inr ≫ F.e) ?_
+      · simp only [assoc, MonoFactorisation.fac, coprod.inr_desc]
+  lift_fac := by simp [sup_MonoFactorisation]
+
+def sup_isoImage {A : C} (f g : Subobject A) : underlying.obj (f ⊔ g) ≅
+    image (coprod.desc f.arrow g.arrow) :=
+  IsImage.isoExt (sup_isImage ..) <| Image.isImage _
+
 variable [HasInitial C] [InitialMonoClass C]
 
 theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} {f : A ⟶ B}

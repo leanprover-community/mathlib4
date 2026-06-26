@@ -35,16 +35,15 @@ instance [MonoidalCategory C] [RigidCategory C] : MonoidalClosed C :=
   monoidalClosedOfLeftRigidCategory C
 
 /-- A weak tensor category over a field `k` (does not require that `C` is locally finite,
-  i.e. that hom spaces are finite dimensional and finite length objects) -/
+  i.e., hom spaces are finite dimensional and objects have finite length). -/
 class WeakTensorCategory (k : Type*) [Field k] (C : Type u) [Category.{v, u} C] [Abelian C]
     [MonoidalCategory C] [RigidCategory C] [MonoidalPreadditive C]
     [Linear k C] [MonoidalLinear k C] : Prop where
-  /-- The endomorphism algebra of the monoidal unit is isomorphic to the base field `k` -/
+  /-- The endomorphism algebra of the monoidal unit is isomorphic to the base field `k`. -/
   end_unit_iso : Nonempty (End (𝟙_ C) ≃ₐ[k] k)
 
 class PreTannakian (k : Type*) [Field k] (C : Type u) [Category.{v, u} C] [Abelian C]
     [MonoidalCategory C] [SymmetricCategory C] [RigidCategory C] [Linear k C] [MonoidalLinear k C]
      : Prop extends WeakTensorCategory k C where
-  /-- Every object `X` in `C` has finite length. That is, there exists a composition series
-    for `X`. -/
+  /-- Every object `X` in `C` has finite length, i.e., admits a composition series. -/
   finite_length : ∀ (X : C), Nonempty (CompositionSeries (Subobject X))
