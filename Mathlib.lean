@@ -5020,8 +5020,8 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
-public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
+public import Mathlib.LinearAlgebra.ExteriorPower.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
@@ -6470,6 +6470,7 @@ public import Mathlib.RingTheory.CohenMacaulay.Catenary
 public import Mathlib.RingTheory.CohenMacaulay.Maximal
 public import Mathlib.RingTheory.CohenStructureTheorem
 public import Mathlib.RingTheory.CompleteIntersection.Basic
+public import Mathlib.RingTheory.CompleteIntersection.Gorenstein
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.Congruence.Basic
