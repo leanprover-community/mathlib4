@@ -24,7 +24,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   complete linear ordered archimedean commutative semifield; we have no typeclass for this in
   `mathlib` yet, so we define the following instances instead:
 
-  - `LinearOrderedSemiring ℝ≥0`;
+  - `IsOrderedRing ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
   - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
@@ -126,6 +126,8 @@ noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
+
+@[simp] lemma mk_coe (a : ℝ≥0) (ha : 0 ≤ (a : ℝ)) : NNReal.mk (a : ℝ) ha = a := rfl
 
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
@@ -1004,11 +1006,12 @@ alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
@@ -1016,11 +1019,12 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `Real.toNNReal` -/
 @[positivity Real.toNNReal _]
-meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealToNNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
     assertInstancesCommute
-    match (← core q(inferInstance) q(inferInstance) a) with
+    match (← core q(inferInstance) (some q(inferInstance)) a) with
     | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
     | _ => failure
   | _, _, _ => throwError "not Real.toNNReal"
@@ -1029,11 +1033,12 @@ alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
 /-- Extension for the `positivity` tactic: `Real.nnabs` -/
 @[positivity Real.nnabs _]
-meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
     assertInstancesCommute
-    match (← core q(inferInstance) q(inferInstance) a).toNonzero with
+    match (← core q(inferInstance) (some q(inferInstance)) a).toNonzero with
     | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
     | _ => failure
   | _, _, _ => throwError "not Real.nnabs"

@@ -101,6 +101,7 @@ theorem map_adj_apply' {f : V → W} (hadj : G.Adj u v) (hne : f u ≠ f v) :
     (G.map f).Adj (f u) (f v) :=
   ⟨hne, u, v, hadj, rfl, rfl⟩
 
+@[gcongr]
 theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   rintro G G' h z1 z2 ⟨huv, u, v, ha, rfl, rfl⟩
   exact ⟨huv, _, _, h ha, rfl, rfl⟩
@@ -151,6 +152,7 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 
+@[gcongr]
 theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) :=
   fun _ _ h _ _ ha ↦ h ha
 
