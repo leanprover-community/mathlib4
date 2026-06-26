@@ -317,9 +317,8 @@ instance : Sub (X ⟶ Y) where
 instance : SMul ℕ (X ⟶ Y) where
   smul n f := ⟨n • f.hom, by simp [f.comm]⟩
 
--- because no `Linear ℕ+ V` possible
 instance : SMul ℕ+ (X ⟶ Y) where
-  smul n f := n.val • f
+  smul n f := ⟨n • f.hom, by simp [Preadditive.psmul_comp, Preadditive.comp_psmul, f.comm]⟩
 
 instance : SMul ℤ (X ⟶ Y) where
   smul n f := ⟨n • f.hom, by simp [f.comm]⟩
@@ -328,15 +327,13 @@ instance : SMul ℤ (X ⟶ Y) where
 @[simp] lemma neg_hom (f : X ⟶ Y) : (-f).hom = -f.hom := rfl
 @[simp] lemma sub_hom (f g : X ⟶ Y) : (f - g).hom = f.hom - g.hom := rfl
 @[simp] lemma nsmul_hom (n : ℕ) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
-@[simp] lemma psmul_hom (n : ℕ+) (f : X ⟶ Y) : (n • f).hom = n • f.hom := by
-  rw [← nsmul_val_eq_psmul]
-  rfl
+@[simp] lemma psmul_hom (n : ℕ+) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
 @[simp] lemma zsmul_hom (n : ℤ) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
 
 instance : Preadditive (Action V G) where
   homGroup X Y :=
     hom_injective.addCommGroup (M₂ := X.V ⟶ Y.V) _ zero_hom add_hom neg_hom sub_hom
-      (Function.swap psmul_hom) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+      (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
   add_comp := by intros; ext; exact Preadditive.add_comp _ _ _ _ _ _
   comp_add := by intros; ext; exact Preadditive.comp_add _ _ _ _ _ _
 
