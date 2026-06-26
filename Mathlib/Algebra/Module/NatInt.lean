@@ -45,6 +45,11 @@ instance [AddMonoid M] : SMulWithZero ℕ M where
   smul_zero := nsmul_zero
   zero_smul := zero_nsmul
 
+-- Ideally we would also have `SemigroupAction ℕ+ M` but no `Semigroup ℕ+` available here
+
+instance [AddMonoid M] : SMulZeroClass ℕ+ M where
+  smul_zero := psmul_zero
+
 instance [SubtractionMonoid M] : MulAction ℤ M where
   one_smul := one_zsmul
   mul_smul _ _ _ := mul_zsmul ..
