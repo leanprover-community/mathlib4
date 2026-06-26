@@ -33,6 +33,7 @@ universe v u
 namespace CategoryTheory
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- Category of groupoids -/
 @[nolint checkUnivs]
 def Grpd :=
