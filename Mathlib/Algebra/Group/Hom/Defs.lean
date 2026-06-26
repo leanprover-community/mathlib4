@@ -686,6 +686,12 @@ protected theorem MulHom.map_ppow {M N : Type*} [Semigroup M] [Semigroup N] (f :
   · simp
   · simp [ppow_mk_add_one, *]
 
+-- not marked as `simp` because in a monoid we probably prefer powers with type `ℕ`
+@[to_additive (reorder := x n)]
+lemma map_ppow {F M N : Type _} [Semigroup M] [Semigroup N] [FunLike F M N] [MulHomClass F M N]
+    (f : F) (x : M) (n : ℕ+) : f (x ^ n) = f x ^ n :=
+  MulHom.map_ppow (MulHomClass.toMulHom f) _ _
+
 /-- If `f` is a monoid homomorphism then `f (a * b) = f a * f b`. -/
 @[to_additive /-- If `f` is an additive monoid homomorphism then `f (a + b) = f a + f b`. -/]
 protected theorem MonoidHom.map_mul [MulOne M] [MulOne N] (f : M →* N) (a b : M) :

@@ -85,9 +85,3 @@ end CommSemigroup
 @[to_additive]
 theorem pow_mul_comm'' [Monoid M] (a : M) (n : ℕ+) : a ^ n * a = a * a ^ n := by
   exact ppow_mul_comm' a n
-
--- not marked as `simp` because in a monoid we probably prefer powers with type `ℕ`
-@[to_additive]
-lemma map_ppow {F M N : Type _} [Semigroup M] [Semigroup N] [FunLike F M N] [MulHomClass F M N]
-    (f : F) (x : M) (n : ℕ+) : f (x ^ n) = f x ^ n :=
-  MulHom.map_ppow (MulHomClass.toMulHom f) _ _
