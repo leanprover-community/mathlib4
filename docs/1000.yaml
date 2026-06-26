@@ -909,9 +909,8 @@ Q830513:
 
 Q834025:
   title: Cauchy integral theorem
-  decl: Complex.circleIntegral_div_sub_of_differentiable_on_off_countable
-  authors: Yury Kudryashov
-  date: 2021
+  comment: We have `DiffContOnCl.circleIntegral_eq_zero` for circle contours
+  url: https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Complex/CauchyIntegral.html#DiffContOnCl.circleIntegral_eq_zero
 
 Q834211:
   title: Wallace–Bolyai–Gerwien theorem

@@ -161,8 +161,11 @@ instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
   IsWeak.continuousAdd (pairing B)
 
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
-instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) :=
-  IsWeak.continuousSMul (pairing B)
+instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
+  refine ⟨continuous_induced_rng.2 ?_⟩
+  refine cast (congr_arg _ ?_) (continuous_fst.fun_smul ((coeFn_continuous B).comp continuous_snd))
+  ext
+  simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, LinearMap.smul_apply]
 
 /--
 Map `F` into the topological dual of `E` with the weak topology induced by `F`
