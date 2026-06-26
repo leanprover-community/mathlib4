@@ -199,6 +199,15 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
 theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C a) = MvPolynomial.C a :=
   truncFinset_C (by simpa using pos_of_ne_zero hnn) a
 
+@[simp]
+theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
+    trunc R n (C a * p) = MvPolynomial.C a * trunc R n p := by
+  ext m; simp [coeff_trunc]
+
+@[simp]
+theorem trunc_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
+    trunc S n (map f p) = MvPolynomial.map f (trunc R n p) := truncFinset_map f p
+
 /-- A coefficient of a product of truncated power series equals the coefficient of the untruncated
 product, with the two truncation levels `n₁` and `n₂` allowed to differ. -/
 theorem coeff_trunc_mul_trunc_eq_coeff_mul₂ (n₁ n₂ : σ →₀ ℕ)
@@ -213,15 +222,6 @@ theorem coeff_trunc_mul_trunc_eq_coeff_mul (n : σ →₀ ℕ)
     (f g : MvPowerSeries σ R) {m : σ →₀ ℕ} (h : m < n) :
     (trunc R n f * trunc R n g).coeff m = coeff m (f * g) :=
   coeff_trunc_mul_trunc_eq_coeff_mul₂ n n f g h h
-
-@[simp]
-theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
-    trunc R n (C a * p) = MvPolynomial.C a * trunc R n p := by
-  ext m; simp [coeff_trunc]
-
-@[simp]
-theorem trunc_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
-    trunc S n (map f p) = MvPolynomial.map f (trunc R n p) := truncFinset_map f p
 
 end TruncLT
 
