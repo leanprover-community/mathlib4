@@ -72,6 +72,9 @@ instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   nth_rw 1 [this]
   infer_instance
 
+instance : e.inverse.IsDenseSubsite K (e.functor.inducedTopology K) :=
+  inferInstanceAs <| e.symm.functor.IsDenseSubsite K (e.symm.inverse.inducedTopology K)
+
 lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
     K = e.inverse.inducedTopology J := by
   ext

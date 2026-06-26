@@ -12,6 +12,10 @@ public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.Topology.Sheaves.PUnit
+public import Mathlib.CategoryTheory.Sites.InducedTopology
+public import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-! # Smooth manifolds as locally ringed spaces
 
@@ -274,111 +278,301 @@ lemma AlgebraicGeometry.LocallyRingedSpace.Hom.germ_stalkMap {X Y : LocallyRinge
 
 -- def TopCat.Sheaf.constant
 
+/-- Order isomorphism between `Set α` and `α → Prop`. -/
 def Set.orderIsoFun (α : Type*) : Set α ≃o (α → Prop) where
   toFun s := (· ∈ s)
   invFun p := setOf p
   map_rel_iff' := .rfl
 
-def OrderIso.punitArrowEquiv (α : Type*) [LE α] : (PUnit → α) ≃o α :=
+/-- `Equiv.punitArrowEquiv` as an `OrderIso`. -/
+def OrderIso.pUnitArrowEquiv (α : Type*) [LE α] : (PUnit → α) ≃o α :=
   .symm <|
   { __ := (Equiv.punitArrowEquiv _).symm
     map_rel_iff' {a b} := by
       simp [Pi.le_def, Equiv.punitArrowEquiv] }
 
-def asdfasdfasdfadsf : Set PUnit ≃o Prop :=
-  (Set.orderIsoFun _).trans (OrderIso.punitArrowEquiv _)
-
+/-- Opens on a discrete topological space are all sets. -/
 def TopologicalSpace.Opens.orderIsoSet (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
     Opens α ≃o Set α where
   toFun U := U.carrier
   invFun s := ⟨s, isOpen_discrete s⟩
   map_rel_iff' := .rfl
 
+/-- `Prop` is order isomorphic to `Bool`. -/
+@[simps!]
 def OrderIso.propBool : Prop ≃o Bool :=
   .symm <|
   { __ := Equiv.propEquivBool.symm
     map_rel_iff' := .rfl }
 
+@[simp]
+lemma Equiv.propEquivBool_false : Equiv.propEquivBool False = false := by
+  simp [Equiv.propEquivBool]
+
+@[simp]
+lemma Equiv.propEquivBool_true : Equiv.propEquivBool True = true := by
+  simp [Equiv.propEquivBool]
+
+@[simp]
+lemma Equiv.propEquivBool_symm_true : Equiv.propEquivBool.symm true = True := by
+  simp [Equiv.propEquivBool]
+
+@[simp]
+lemma Equiv.propEquivBool_symm_false : Equiv.propEquivBool.symm false = False := by
+  simp [Equiv.propEquivBool]
+
 /-- The opens on `PUnit` are order isomorphic to `Prop`. -/
 def TopologicalSpace.Opens.pUnitOrderIso : Opens PUnit.{u + 1} ≃o Prop :=
   (TopologicalSpace.Opens.orderIsoSet _).trans <|
-    (Set.orderIsoFun _).trans (OrderIso.punitArrowEquiv _)
+    (Set.orderIsoFun _).trans (OrderIso.pUnitArrowEquiv _)
 
-section
-
-variable {C : Type*} [Category* C]
-
-def CategoryTheory.Functor.fromBool {X Y : C} (f : X ⟶ Y) : Bool ⥤ C where
-  obj
-    | .false => X
-    | .true => Y
-  map {X Y} u :=
-    match X, Y, u with
-    | .true, .true, _ => 𝟙 _
-    | .false, .true, _ => f
-    | .true, .false, u => False.elim (by have := leOfHom u; contradiction)
-    | .false, .false, _ => 𝟙 _
-  map_comp := by grind
+/-- `Fin 2` is order isomorphic to `Bool`. -/
+@[simps!]
+def finTwoOrderIsoBool : OrderIso (Fin 2) Bool :=
+  .symm <|
+  { __ := finTwoEquiv.symm
+    map_rel_iff' {a b} := by rcases a <;> rcases b <;> simp [finTwoEquiv] }
 
 @[simp]
-lemma CategoryTheory.Functor.fromBool_obj_true {X Y : C} (f : X ⟶ Y) :
-    (fromBool f).obj .true = Y :=
-  rfl
+lemma finTwoEquiv_zero : finTwoEquiv 0 = false := rfl
 
 @[simp]
-lemma CategoryTheory.Functor.fromBool_obj_false {X Y : C} (f : X ⟶ Y) :
-    (fromBool f).obj .false = X :=
-  rfl
-
-lemma Bool.antitone_not : Antitone Bool.not :=
-  fun b b' hbb' ↦ by rcases b <;> rcases b' <;> grind
-
-def CategoryTheory.Functor.fromBoolOp {X Y : C} (f : X ⟶ Y) : Boolᵒᵖ ⥤ C where
-  obj b := (Functor.fromBool f).obj b.unop.not
-  map {b b'} u := (Functor.fromBool f).map (homOfLE <| Bool.antitone_not (leOfHom u.unop))
-  map_comp := by simp [← Functor.map_comp]
+lemma finTwoEquiv_one : finTwoEquiv 1 = true := rfl
 
 @[simp]
-lemma CategoryTheory.Functor.fromBoolOp_obj_true {X Y : C} (f : X ⟶ Y) :
-    (fromBoolOp f).obj (.op .true) = X :=
-  rfl
+lemma finTwoEquiv_symm_false : finTwoEquiv.symm false = 0 := rfl
 
 @[simp]
-lemma CategoryTheory.Functor.fromBoolOp_obj_false {X Y : C} (f : X ⟶ Y) :
-    (fromBoolOp f).obj (.op .false) = Y :=
+lemma finTwoEquiv_symm_true : finTwoEquiv.symm true = 1 := rfl
+
+@[simps!]
+def TopologicalSpace.Opens.pUnitOrderIsoFinTwo :
+    TopologicalSpace.Opens PUnit.{u + 1} ≃o Fin 2 :=
+  Opens.pUnitOrderIso.trans (OrderIso.propBool.trans finTwoOrderIsoBool.symm)
+
+@[simp]
+lemma TopologicalSpace.Opens.pUnitOrderIsoFinTwo_symm_zero :
+    pUnitOrderIsoFinTwo.symm 0 = ⊥ := by
+  simp only [Fin.isValue, map_eq_bot_iff]
   rfl
 
-end
+@[simps]
+def TopCat.Sheaf.star {C : Type*} [Category* C] {T : C} (hT : IsTerminal T) (A : C) :
+    TopCat.Sheaf C (.of PUnit.{u + 1}) where
+  obj := TopologicalSpace.Opens.pUnitOrderIsoFinTwo.toOrderEmbedding.toOrderHom.toFunctor.op ⋙
+    Functor.leftOp (ComposableArrows.mk₁ (hT.from A).op)
+  property := by
+    rw [← TopCat.Presheaf.IsSheaf, TopCat.Presheaf.isSheaf_on_punit_iff_isTerminal]
+    simpa using ⟨hT⟩
 
-def TopCat.Sheaf.asdfasdf {C : Type*} [Category* C] (T : C) (hT : IsTerminal T) :
-    TopCat.Sheaf C (.of PUnit.{u + 1}) ≌ C where
+lemma CategoryTheory.Presieve.isSheafFor_of_isInitial_of_isTerminal
+    {C A : Type*} [Category* C] [Category* A] [HasStrictInitialObjects C]
+    (U : C) (hU : IsInitial U)
+    (F : Cᵒᵖ ⥤ A) (R : Presieve U) (M : A) (hF : IsTerminal (F.obj (.op U))) :
+    Presieve.IsSheafFor (F ⋙ coyoneda.obj (.op M)) R := by
+  intro _ _
+  rw [@existsUnique_iff_exists _ ⟨fun _ _ => _⟩]
+  · refine ⟨hF.from _, fun V f hs ↦ IsTerminal.hom_ext ?_ _ _⟩
+    have : IsIso f := IsInitial.isIso_to hU f
+    exact .ofIso hF (F.mapIso (asIso f).op)
+  · exact hF.hom_ext
+
+lemma CategoryTheory.isIso_iff_of_thin {C : Type*} [Category* C] [Quiver.IsThin C]
+    {X Y : C} (f : X ⟶ Y) :
+    IsIso f ↔ Nonempty (Y ⟶ X) :=
+  ⟨fun _ ↦ ⟨inv f⟩, fun g ↦ ⟨g.some, Subsingleton.elim _ _, Subsingleton.elim _ _⟩⟩
+
+instance {C : Type*} [Category* C] [Quiver.IsThin C] : HasStrictInitialObjects C where
+  out {I A} f hI := by
+    rw [CategoryTheory.isIso_iff_of_thin]
+    exact ⟨hI.to _⟩
+
+lemma Presheaf.IsSheaf.iff_of_equivalence {C D A : Type*} [Category* C] [Category* D]
+      [Category* A] (F : C ≌ D)
+      (P : Cᵒᵖ ⥤ A) (J : GrothendieckTopology D) :
+    Presheaf.IsSheaf (F.functor.inducedTopology J) P ↔ Presheaf.IsSheaf J (F.inverse.op ⋙ P) := by
+  refine ⟨?_, ?_⟩
+  · intro hP
+    exact Functor.op_comp_isSheaf_of_isSheaf _ _ (F.functor.inducedTopology J) _ hP
+  · intro hP
+    let e : P ≅ F.functor.op ⋙ F.inverse.op ⋙ P :=
+      (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight
+          ((Functor.opId _).symm ≪≫ NatIso.op F.unitIso.symm ≪≫ Functor.opComp _ _) _ ≪≫
+        Functor.associator _ _ _
+    rw [Presheaf.isSheaf_of_iso_iff e]
+    exact Functor.op_comp_isSheaf_of_isSheaf _ _ _ _ hP
+
+lemma isSheaf_inducedTopology_finTwo {C : Type*} [Category* C] (F : (Fin 2)ᵒᵖ ⥤ C) :
+    Presheaf.IsSheaf
+      (Functor.inducedTopology
+        TopologicalSpace.Opens.pUnitOrderIsoFinTwo.symm.equivalence.functor
+        (Opens.grothendieckTopology PUnit)) F ↔
+      Nonempty (IsTerminal (F.obj <| .op 0)) := by
+  rw [Presheaf.IsSheaf.iff_of_equivalence]
+  change TopCat.Presheaf.IsSheaf (X := .of PUnit) _ ↔ _
+  rw [TopCat.Presheaf.isSheaf_on_punit_iff_isTerminal]
+  congr! 5
+  simp
+  rfl
+
+lemma Opens.bot_mem_grothendieckTopology_iff (X : TopCat.{u}) (U : Opens X) :
+    ⊥ ∈ grothendieckTopology X U ↔ U = ⊥ := by
+  rw [mem_grothendieckTopology]
+  cat_disch
+
+@[simp]
+lemma Opens.bot_mem_grothendieckTopology_bot (X : TopCat.{u}) : ⊥ ∈ grothendieckTopology X ⊥ := by
+  rw [bot_mem_grothendieckTopology_iff]
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+def CategoryTheory.sheafFinTwoEquivOfIsTerminal {C : Type*} [Category* C] {T : C}
+    (hT : IsTerminal T) :
+    Sheaf (Opens.pUnitOrderIsoFinTwo.symm.equivalence.functor.inducedTopology
+      (Opens.grothendieckTopology PUnit)) C ≌ C where
   functor := ObjectProperty.ι _ ⋙ (evaluation _ _).obj (.op ⊤)
   inverse.obj A :=
-    ⟨Opens.pUnitOrderIso.toOrderEmbedding.toOrderHom.toFunctor.op ⋙
-     OrderIso.propBool.toOrderEmbedding.toOrderHom.toFunctor.op ⋙
-     Functor.fromBoolOp (hT.from A),
-     sorry⟩
-  inverse.map := sorry
-  inverse.map_id := sorry
-  inverse.map_comp := sorry
-  unitIso := sorry
-  counitIso := sorry
-  functor_unitIso_comp := sorry
+    ⟨Functor.leftOp (ComposableArrows.mk₁ (hT.from A).op), by
+      rw [isSheaf_inducedTopology_finTwo]
+      exact ⟨hT⟩⟩
+  inverse.map f :=
+    ObjectProperty.homMk <|
+      NatTrans.leftOp <| ComposableArrows.homMk₁ (𝟙 _) f.op (by apply Quiver.Hom.unop_inj; simp)
+  inverse.map_id X := by
+    ext ⟨i⟩
+    cat_disch
+  inverse.map_comp {X Y Z} f g := by
+    ext ⟨i⟩
+    cat_disch
+  unitIso := by
+    refine NatIso.ofComponents ?_ ?_
+    · intro F
+      refine ObjectProperty.isoMk _ ?_
+      refine NatIso.ofComponents ?_ ?_
+      · intro ⟨i⟩
+        match i with
+        | 0 =>
+          refine (hT.uniqueUpToIso <| F.isTerminalOfBotCover 0 ?_).symm
+          rw [Functor.mem_inducedTopology_iff_of_isCoverDense, Sieve.functorPushforward_bot]
+          have : Opens.pUnitOrderIsoFinTwo.{u}.symm.equivalence.functor.obj 0 = ⊥ := by
+            simp
+          rw [this]
+          exact Opens.bot_mem_grothendieckTopology_bot (.of PUnit.{u + 1})
+        | 1 => exact Iso.refl _
+      · intro ⟨i⟩ ⟨j⟩ u
+        match i, j, u with
+        | 0, 0, _ => simp
+        | 0, 1, _ => dsimp; grind
+        | 1, 0, _ => simp
+        | 1, 1, u =>
+          obtain rfl : u = 𝟙 _ := Subsingleton.elim _ _
+          simp
+    · intro F G u
+      ext ⟨i⟩
+      cat_disch
+  counitIso := .refl _
 
-def AlgebraicGeometry.SheafedSpace.pUnit {C : Type*} [Category* C] (A : C) :
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+def TopCat.Sheaf.pUnitEquivOfIsTerminal {C : Type*} [Category* C] {T : C} (hT : IsTerminal T) :
+    TopCat.Sheaf C (.of PUnit.{u + 1}) ≌ C :=
+  .trans (Opens.pUnitOrderIsoFinTwo.symm.equivalence.sheafCongr _ _ _).symm
+    (sheafFinTwoEquivOfIsTerminal hT)
+
+set_option backward.defeqAttrib.useBackward true in
+def TopCat.Sheaf.pUnitEquivOfIsTerminalInverseObjIso {C : Type*} [Category* C] {T : C}
+    (hT : IsTerminal T) (A : C) :
+    ((TopCat.Sheaf.pUnitEquivOfIsTerminal.{u} hT).inverse.obj A).presheaf.obj (.op ⊤) ≅ A := by
+  sorry
+
+instance (X : TopCat) [IndiscreteTopology X] (x : X) : Subsingleton (OpenNhds x) where
+  allEq
+    | ⟨U, hU⟩, ⟨V, hV⟩ => by
+      obtain (rfl | rfl) := TopologicalSpace.Opens.eq_bot_or_top U <;>
+      obtain (rfl | rfl) := TopologicalSpace.Opens.eq_bot_or_top V <;>
+      simp at hU hV ⊢
+
+def OpenNhds.orderIsoOfIndiscreteTopology (X : TopCat) [IndiscreteTopology X] (x : X) :
+    OpenNhds x ≃o PUnit.{u + 1} where
+  toFun _ := ⟨⟩
+  invFun _ := ⟨⟨Set.univ, isOpen_univ⟩, by simp⟩
+  left_inv U := Subsingleton.elim _ _
+  map_rel_iff' {a b} := by
+    obtain rfl := Subsingleton.elim a b
+    simp
+
+instance {C : Type*} [Category* C] {α : Type*} [Nonempty α] [Subsingleton α] [Preorder α] :
+    HasColimitsOfShape α C :=
+  sorry
+
+set_option backward.defeqAttrib.useBackward true in
+def CategoryTheory.Limits.whiskeringLeftPUnitColimIso {J C : Type*} [Category* J] [Category* C]
+    {α : Type*} [Preorder α]
+    (D : α ⥤ J) [Nonempty α] [Subsingleton α] (a : α) :
+    (Functor.whiskeringLeft α J C).obj D ⋙ colim ≅ (evaluation J C).obj (D.obj a) :=
+  NatIso.ofComponents (fun K ↦ by dsimp; sorry) sorry
+
+def TopCat.Presheaf.stalkFunctorIsoOfIndiscreteTopology {C : Type*} [Category* C]
+    [HasColimits C] (X : TopCat) [IndiscreteTopology X] (x : X) :
+    TopCat.Presheaf.stalkFunctor C x ≅ (evaluation _ _).obj (.op ⊤) :=
+  Functor.isoWhiskerLeft _
+    (Functor.Final.colimIso <| (CategoryTheory.orderDualEquivalence _).functor ⋙
+    (OpenNhds.orderIsoOfIndiscreteTopology.{0} X x).equivalence.inverse.op).symm ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    Functor.isoWhiskerRight (Functor.whiskeringLeftObjCompIso _ _).symm _ ≪≫
+    CategoryTheory.Limits.whiskeringLeftPUnitColimIso _ ⟨⟩
+
+abbrev TopCat.Presheaf.stalkIsoOfIndiscreteTopology {C : Type*} [Category* C]
+    [HasColimits C] (X : TopCat) [IndiscreteTopology X] (F : TopCat.Presheaf C X) (x : X) :
+    F.stalk x ≅ F.obj (.op ⊤) :=
+  (TopCat.Presheaf.stalkFunctorIsoOfIndiscreteTopology _ _).app F
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma TopCat.Presheaf.germ_stalkIsoOfIndiscreteTopology_hom {C : Type*} [Category* C]
+    [HasColimits C] (X : TopCat) [IndiscreteTopology X] (F : TopCat.Presheaf C X) (x : X) :
+    F.germ ⊤ _ (by simp) ≫ (F.stalkIsoOfIndiscreteTopology X x).hom = 𝟙 _ := by
+  simp [TopCat.Presheaf.stalkIsoOfIndiscreteTopology,
+    TopCat.Presheaf.stalkFunctorIsoOfIndiscreteTopology]
+  simp [TopCat.Presheaf.germ, CategoryTheory.Functor.Final.colimIso]
+  -- erw [Functor.Final.ι_colimitIso_inv_assoc]
+  sorry
+
+abbrev TopCat.Sheaf.pUnitEquivOfIsTerminalStalkIso {C : Type*} [Category* C] [HasColimits C]
+    {T : C} (hT : IsTerminal T) (A : C) (x : PUnit) :
+    ((TopCat.Sheaf.pUnitEquivOfIsTerminal hT).inverse.obj A).presheaf.stalk x ≅ A :=
+  TopCat.Presheaf.stalkIsoOfIndiscreteTopology _ _ _ ≪≫
+    TopCat.Sheaf.pUnitEquivOfIsTerminalInverseObjIso _ _
+
+/-- The sheafed space on the point with stalk given by `A`. -/
+@[implicit_reducible]
+def AlgebraicGeometry.SheafedSpace.pUnit {C : Type*} [Category* C] {T : C} (hT : IsTerminal T)
+    (A : C) :
     SheafedSpace.{_, _, u} C where
   carrier := .of PUnit.{u + 1}
-  presheaf := sorry
-  IsSheaf := sorry
+  presheaf := ((TopCat.Sheaf.pUnitEquivOfIsTerminal hT).inverse.obj A).presheaf
+  IsSheaf := ((TopCat.Sheaf.pUnitEquivOfIsTerminal hT).inverse.obj A).property
 
--- def AlgebraicGeometry.SheafedSpace.pUnitStalkIso {C : Type*} [Category* C] (A : C) :
---     (pUnit.{u} A).presheaf.stalk ⟨⟩ ≅ A :=
---   sorry
+/-- The stalk of `AlgebraicGeometry.SheafedSpace.pUnit` is `A`. -/
+abbrev AlgebraicGeometry.SheafedSpace.pUnitStalkIso {C : Type*} [Category* C] [HasColimits C]
+    {T : C} (hT : IsTerminal T) (A : C) (x : PUnit) :
+    (AlgebraicGeometry.SheafedSpace.pUnit hT A).presheaf.stalk x ≅ A :=
+  TopCat.Sheaf.pUnitEquivOfIsTerminalStalkIso _ _ _
 
-def AlgebraicGeometry.LocallyRingedSpace.pUnit (R : Type u) [CommRing R] [IsLocalRing R] :
+/-- The locally ringed space on the point with stalk given by the local ring `R`. -/
+@[implicit_reducible]
+def AlgebraicGeometry.LocallyRingedSpace.pUnit (R : CommRingCat.{u}) [IsLocalRing R] :
     LocallyRingedSpace.{u} where
-  __ := SheafedSpace.pUnit (.of R)
-  isLocalRing := sorry
+  __ := SheafedSpace.pUnit CommRingCat.punitIsTerminal (.of R)
+  isLocalRing x :=
+    RingEquiv.isLocalRing
+      (SheafedSpace.pUnitStalkIso CommRingCat.punitIsTerminal R x).commRingCatIsoToRingEquiv.symm
+
+/-- The stalk of `AlgebraicGeometry.LocallyRingedSpace.pUnit R` is `R`. -/
+abbrev AlgebraicGeometry.LocallyRingedSpace.pUnitStalkIso (R : CommRingCat.{u}) [IsLocalRing R]
+    (x : PUnit) : (pUnit R).presheaf.stalk x ≅ R :=
+  AlgebraicGeometry.SheafedSpace.pUnitStalkIso _ _ _
 
 namespace ChartedSpace
 
