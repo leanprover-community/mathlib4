@@ -6,6 +6,8 @@ import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
 import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Tactic.Determinant.Bird
 import Qq
 
 open Qq
@@ -191,18 +193,56 @@ section BirdDet
 
 open BirdDet
 
+variable
+  {R : Type*}
+  [CommRing R]
+
 example : birdDet 0 #[] = (1 : ℤ) := by
-  cbv
+  eval_det
 
 example : birdDet 1 #[-1] = -1 := by
-  cbv
+  eval_det
 
 example : birdDet 2 #[1, 2, 3, 4] = -2 := by
-  cbv
+  eval_det
 
-example {R : Type*} [CommRing R] (a b c d : R) :
+example (a b c d : R) :
     birdDet 2 #[a, b, c, d] = a * d - b * c := by
-  simp [birdDet, iter, BirdDet.get, sumFrom]
+  eval_det
+  ring
+
+example (a b c d : R) :
+    birdDet 2 #[a, b, c, d] = a * d - b * c := by
+  simp only [norm_det]
+  ring
+
+example : birdDet 2 #[1, 2, 2, 4] + birdDet 2 #[2, 3, 4, 5] = -2 := by
+  simp only [norm_det]
+  norm_num
+
+example : birdDet 2 #[birdDet 2 #[2, 3, 4, 5], 2, 2, 4] = -12 := by
+  simp only [norm_det]
+
+example :
+  birdDet 8
+    #[ 2,  0, -1,  0,  0,  0,  0,  0,
+       0,  2,  0, -1,  0,  0,  0,  0,
+      -1,  0,  2, -1,  0,  0,  0,  0,
+       0, -1, -1,  2, -1,  0,  0,  0,
+       0,  0,  0, -1,  2, -1,  0,  0,
+       0,  0,  0,  0, -1,  2, -1,  0,
+       0,  0,  0,  0,  0, -1,  2, -1,
+       0,  0,  0,  0,  0,  0, -1,  2] = 1 := by
+  simp only [norm_det]
+
+open MvPolynomial in
+lemma test_case_11 :
+    birdDet (R := MvPolynomial (Fin 3) R)
+      3
+      #[1 , X 0, (X 0) ^ 2,
+        1 , X 1, (X 1) ^ 2,
+        1 , X 2, (X 2) ^ 2] = (X 0 - X 1) * (X 1 - X 2) * (X 2 - X 0) := by
+  simp only [norm_det]
   ring
 
 end BirdDet
