@@ -34,44 +34,35 @@ namespace Function
 
 /- ### Dependent composition -/
 
-/-- Composition of dependent functions: `(f ∘' g) i = f (g i)`, where the type of `g i` depends on
-`i` and the type of `f (g i)` depends on `i` and `g i`. -/
-@[inline, reducible] def dcomp {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*}
-    (f : ∀ {i : ι} (y : β i), φ y) (g : ∀ i, β i) (i : ι) : φ (g i) := f (g i)
+/-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
+and type of `f (g x)` depends on `x` and `g x`. -/
+@[inline, reducible]
+def dcomp {ι} {β : ι → Sort*} {φ : ∀ {x : ι}, β x → Sort*} (f : ∀ {x : ι} (y : β x), φ y)
+    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
 
-@[inherit_doc] infixr:90 " ∘' " => dcomp
+@[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
-section
+section DComp
 
 variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
     (g : ∀ i, β i) (i : ι)
 
-theorem dcomp_apply : dcomp f g i = f (g i) := rfl
+theorem dcomp_def : @f ∘' g = fun i => f (g i) := rfl
 
-theorem dcomp_def : f ∘' g = fun i => f (g i) := rfl
+theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
 
 @[simp] theorem dcomp_eq_comp {α β γ} (f : β → γ) (g : α → β) : f ∘' g = f ∘ g := rfl
 
-@[simp] theorem id_dcomp {α β} (f : α → β) : (fun {_} => id) ∘' f = f := rfl
+end DComp
 
-@[simp] theorem dcomp_id {α β} (f : α → β) : f ∘' (id : α → α) = f := rfl
-
-theorem dcomp_assoc {κ : Sort*} (h : κ → ι) : f ∘' g ∘' h = (f ∘' g) ∘' h := rfl
-
-@[simp] theorem const_dcomp {α β γ} (a : α) (g : γ → β) :
-    (const β a) ∘' g = const γ a := rfl
-
-@[simp] theorem dcomp_const {α β δ} (f : α → δ) (a : α) :
-    f ∘' (const β a) = const β (f a) := rfl
-
-end
+/- ### Product of (dependent) functions -/
 
 /-- Product of functions: `(f ×ᶠ g) i = (f i, g i)`, where the types of `f i` and `g i`
 may depend on `i`. -/
-@[inline] def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) :
+@[inline] protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) :
     (i : ι) → α i × β i := fun i => Prod.mk (f i) (g i)
 
-@[inherit_doc] infixr:95 " ×ᶠ " => prod
+@[inherit_doc] infixr:95 " ×ᶠ " => Function.prod
 
 /-- The first component of a map into a product. -/
 @[inline] def fstComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) := (h ·|>.1)
@@ -134,17 +125,17 @@ section
 variable {ι : Type*} {α β : ι → Type*}
 
 theorem leftInverse_uncurry_prod_fstComp_prod_sndComp :
-    LeftInverse prod.uncurry (fstComp (α := α) ×ᶠ sndComp (β := β)) := by
+    LeftInverse Function.prod.uncurry (fstComp (α := α) ×ᶠ sndComp (β := β)) := by
   simp [LeftInverse]
 
 theorem rightInverse_uncurry_prod_fstComp_prod_sndComp :
-    RightInverse prod.uncurry (fstComp (α := α) ×ᶠ sndComp (β := β)) := by
+    RightInverse Function.prod.uncurry (fstComp (α := α) ×ᶠ sndComp (β := β)) := by
   simp [RightInverse, LeftInverse]
 
-theorem uncurry_prod_injective : (prod (α := α) (β := β)).uncurry.Injective :=
+theorem uncurry_prod_injective : (Function.prod (α := α) (β := β)).uncurry.Injective :=
   rightInverse_uncurry_prod_fstComp_prod_sndComp.injective
 
-theorem uncurry_prod_surjective : (prod (α := α) (β := β)).uncurry.Surjective :=
+theorem uncurry_prod_surjective : (Function.prod (α := α) (β := β)).uncurry.Surjective :=
   RightInverse.surjective leftInverse_uncurry_prod_fstComp_prod_sndComp
 
 end
@@ -181,6 +172,8 @@ theorem map_comp_prod (h : α → γ) (k : β → δ) :
 @[simp] theorem swap_comp_prod : Prod.swap ∘ (f ×ᶠ g) = g ×ᶠ f := rfl
 
 end
+
+/- ### The diagonal map -/
 
 /-- The diagonal map into `Prod`. -/
 @[inline] def diag {α} : α → α × α := id ×ᶠ id

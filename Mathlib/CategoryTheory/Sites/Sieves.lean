@@ -271,7 +271,7 @@ lemma ofArrows_of_unique {X : C} {ι : Type*} [Unique ι] {Y : ι → C} (f : �
   obtain rfl : i = default := Subsingleton.elim _ _
   simp
 
-theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
+theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit.{w + 1} => f) = singleton f := by
   rw [ofArrows_of_unique]
 
 @[grind =]
@@ -294,6 +294,82 @@ lemma bindOfArrows_ofArrows {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) �
   refine le_antisymm ?_ (fun _ _ ⟨p⟩ ↦ ⟨p.1, _, ⟨p.2⟩⟩)
   rintro W u ⟨i, v, ⟨j⟩⟩
   exact ⟨Sigma.mk i j⟩
+
+/-- Compose a presieve on the right with a morphism. -/
+def pushforward {X Y : C} (f : X ⟶ Y) (R : Presieve X) : Presieve Y :=
+  fun Z fg ↦ ∃ (g : Z ⟶ X), g ≫ f = fg ∧ R g
+
+@[grind .]
+lemma pushforward_apply_comp {X Y Z : C} {f : X ⟶ Y} {R : Presieve X} {g : Z ⟶ X} (hg : R g) :
+    R.pushforward f (g ≫ f) :=
+  ⟨g, rfl, hg⟩
+
+lemma pushforward_ofArrows {ι : Type*} {U : ι → C} {X Y : C} (g : ∀ i, U i ⟶ X)
+    (f : X ⟶ Y) : (ofArrows _ g).pushforward f = ofArrows _ (g · ≫ f) := by
+  refine le_antisymm ?_ ?_
+  · rintro _ _ ⟨u, rfl, ⟨i⟩⟩
+    exact ⟨i⟩
+  · rw [ofArrows_le_iff]
+    intro i
+    use g i, rfl
+    exact ⟨i⟩
+
+lemma pushforward_singleton {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (singleton f).pushforward g = .singleton (f ≫ g) := by
+  rw [← ofArrows_pUnit.{0}, pushforward_ofArrows, ofArrows_pUnit.{0}]
+
+/-- The pullback of a presieve `R` on `Y` along a morphism `f : X ⟶ Y` is the presieve on `X`
+given by all morphisms `g : Z ⟶ X` such that `f ≫ g` is in `R`. -/
+def pullback {X Y : C} (f : X ⟶ Y) (R : Presieve Y) : Presieve X :=
+  fun _ g ↦ R (g ≫ f)
+
+variable {f} in
+@[simp, grind =]
+lemma pullback_iff {R : Presieve X} {Z : C} {g : Z ⟶ Y} :
+    R.pullback f g ↔ R (g ≫ f) :=
+  .rfl
+
+lemma pushforward_le_iff_le_pullback (R : Presieve Y) (T : Presieve X) :
+    R.pushforward f ≤ T ↔ R ≤ T.pullback f := by
+  refine ⟨fun hle Z g hg ↦ hle _ _ (pushforward_apply_comp hg), ?_⟩
+  rintro hle Z - ⟨g, rfl, hg⟩
+  exact hle _ _ hg
+
+lemma galoisConnection_pushforward_pullback :
+    GaloisConnection (pushforward f) (pullback f) :=
+  pushforward_le_iff_le_pullback f
+
+lemma monotone_pushforward : Monotone (pushforward f) :=
+  (galoisConnection_pushforward_pullback f).monotone_l
+
+lemma monotone_pullback : Monotone (pullback f) :=
+  (galoisConnection_pushforward_pullback f).monotone_u
+
+lemma pushforward_pullback_le (R : Presieve X) : (R.pullback f).pushforward f ≤ R :=
+  (galoisConnection_pushforward_pullback f).l_u_le _
+
+lemma le_pullback_pushforward (R : Presieve Y) : R ≤ (R.pushforward f).pullback f :=
+  (galoisConnection_pushforward_pullback f).le_u_l _
+
+@[simp]
+lemma pullback_id (R : Presieve X) : R.pullback (𝟙 X) = R := by
+  funext
+  simp
+
+lemma pullback_comp (R : Presieve Z) (g : X ⟶ Z) :
+    R.pullback (f ≫ g) = (R.pullback g).pullback f := by
+  funext
+  simp
+
+@[simp]
+lemma pushforward_id (R : Presieve X) : R.pushforward (𝟙 X) = R := by
+  funext
+  simp [pushforward]
+
+lemma pushforward_comp (R : Presieve Y) (g : X ⟶ Z) :
+    R.pushforward (f ≫ g) = (R.pushforward f).pushforward g := by
+  funext
+  simp [pushforward]
 
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
 def functorPullback (R : Presieve (F.obj X)) : Presieve X := fun _ f => R (F.map f)
@@ -399,7 +475,7 @@ lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
 
 @[simp]
 lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
-  rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
+  rw [← ofArrows_pUnit.{0}, map_ofArrows, ofArrows_pUnit]
 
 lemma map_le_iff_le_functorPullback {R : Presieve X} {S : Presieve (F.obj X)} :
     R.map F ≤ S ↔ R ≤ S.functorPullback F :=
@@ -462,7 +538,8 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
     obtain ⟨rfl, h⟩ := h; subst h; constructor
 
 @[simp] theorem uncurry_pullbackArrows [HasPullbacks C] {B : C} (b : B ⟶ X) :
-    (pullbackArrows b s).uncurry = (fun f ↦ ⟨pullback f.2 b, pullback.snd _ _⟩) '' s.uncurry := by
+    (pullbackArrows b s).uncurry =
+      (fun f ↦ ⟨Limits.pullback f.2 b, pullback.snd _ _⟩) '' s.uncurry := by
   ext ⟨Z, v⟩; constructor
   · rintro ⟨Y, u, hu⟩; exact ⟨⟨Y, u⟩, hu, rfl⟩
   · rintro ⟨⟨Y, u⟩, hu, h⟩
@@ -867,6 +944,10 @@ lemma pullback_ofObjects {I : Type*} (X : I → C) {Y Z : C} (f : Z ⟶ Y) :
   ext
   simp [Sieve.ofObjects]
 
+@[simp]
+lemma ofObjects_id (X : C) : Sieve.ofObjects id X = ⊤ :=
+  Sieve.pullback_ofObjects_eq_top _ (𝟙 _)
+
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`
 factors through some `g : Z ⟶ Y` which is in `R`.
 -/
@@ -951,6 +1032,19 @@ theorem pullbackArrows_comm {X Y : C} (f : Y ⟶ X) (R : Presieve X) [R.HasPullb
   · rintro ⟨W, h, k, hk, comm⟩
     have := R.hasPullback f hk
     exact ⟨_, _, _, Presieve.pullbackArrows.mk _ _ hk, pullback.lift_snd _ _ comm⟩
+
+lemma pullback_arrows {X Y : C} (f : X ⟶ Y) (S : Sieve Y) :
+    (S.pullback f).arrows = S.arrows.pullback f :=
+  rfl
+
+lemma pushforward_arrows {X Y : C} (f : X ⟶ Y) (S : Sieve X) :
+    (S.pushforward f).arrows = S.arrows.pushforward f :=
+  rfl
+
+lemma generate_pushforward {X Y : C} (f : X ⟶ Y) (R : Presieve X) :
+    generate (R.pushforward f) = (generate R).pushforward f := by
+  ext
+  grind [generate_apply, Presieve.pushforward, pushforward_apply]
 
 section Functor
 

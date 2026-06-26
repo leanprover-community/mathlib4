@@ -263,6 +263,8 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
 
 /-- Build an isomorphism in the category `ProfiniteGrp` from
 a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
+@[to_additive /-- Build an isomorphism in the category `ProfiniteAddGrp` from
+a `ContinuousAddEquiv` between `ProfiniteAddGrp`s. -/]
 def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) : X ≅ Y where
   hom := ofHom e
   inv := ofHom e.symm
@@ -279,7 +281,7 @@ instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
   map_injective := fun {_ _} _ _ h =>
     ConcreteCategory.hom_ext _ _ fun x ↦ CategoryTheory.congr_fun h x }
 
-
+@[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget₂ ProfiniteGrp Profinite).map f)
@@ -288,6 +290,7 @@ instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
           map_mul' := map_mul f.hom }
     exact (ContinuousMulEquiv.toProfiniteGrpIso e).isIso_hom
 
+@[to_additive]
 instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
   CategoryTheory.reflectsIsomorphisms_comp (forget₂ ProfiniteGrp Profinite) (forget Profinite)
 
@@ -319,7 +322,6 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
-set_option backward.inferInstanceAs.wrap false in
 @[to_additive]
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (Group (limitConePtAux F))
@@ -376,7 +378,6 @@ instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
-set_option backward.inferInstanceAs.wrap false in
 @[to_additive]
 instance : CompactSpace (limitConePtAux F) :=
   inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)

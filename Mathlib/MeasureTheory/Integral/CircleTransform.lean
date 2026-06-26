@@ -47,12 +47,7 @@ def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
 
 theorem circleTransformDeriv_periodic (f : ℂ → E) :
     Periodic (circleTransformDeriv R z w f) (2 * π) := by
-  have := periodic_circleMap
-  simp_rw [Periodic] at *
-  intro x
-  simp_rw [circleTransformDeriv, this]
-  congr 2
-  simp [this]
+  simp [circleTransformDeriv, periodic_circleMap z R _, periodic_circleMap 0 R _]
 
 theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
     fun θ => (circleMap z R θ - w)⁻¹ • circleTransform R z w f θ := by
@@ -102,7 +97,7 @@ theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z 
 theorem continuousOn_norm_circleTransformBoundingFunction {R r : ℝ} (hr : r < R) (z : ℂ) :
     ContinuousOn ((‖·‖) ∘ circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
   have : ContinuousOn (circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
-    apply_rules [ContinuousOn.smul, continuousOn_const]
+    apply_rules [ContinuousOn.fun_smul, continuousOn_const]
     · simp only [deriv_circleMap]
       apply_rules [ContinuousOn.mul, (continuous_circleMap 0 R).comp_continuousOn continuousOn_snd,
         continuousOn_const]

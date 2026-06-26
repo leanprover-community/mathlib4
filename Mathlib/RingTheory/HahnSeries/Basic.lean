@@ -589,7 +589,6 @@ theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔
 theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} : (ofSuppBddBelow f hf).coeff = f :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated le_order_iff_forall (since := "2026-01-02")]
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
     (hn : ∀ (m : Γ), m < n → f m = 0) :
