@@ -116,6 +116,9 @@ instance instMul : Mul (G ≃+c[a, a] G) := ⟨fun f g ↦ g.trans f⟩
 instance instInv : Inv (G ≃+c[a, a] G) := ⟨.symm⟩
 instance instDiv : Div (G ≃+c[a, a] G) := ⟨fun f g ↦ f * g⁻¹⟩
 
+instance instPowPNat : Pow (G ≃+c[a, a] G) ℕ+ where
+  pow e n := ⟨e^n, (e.toAddConstMap^n).map_add_const'⟩
+
 instance instPowNat : Pow (G ≃+c[a, a] G) ℕ where
   pow e n := ⟨e^n, (e.toAddConstMap^n).map_add_const'⟩
 
@@ -127,7 +130,7 @@ instance instPowInt : Pow (G ≃+c[a, a] G) ℤ where
 
 instance instGroup : Group (G ≃+c[a, a] G) :=
   toEquiv_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    fun _ _ ↦ rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- Projection from `G ≃+c[a, a] G` to permutations `G ≃ G`, as a monoid homomorphism. -/
 @[simps! apply]

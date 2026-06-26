@@ -78,6 +78,8 @@ instance permGroup : Group (Perm α) where
   one_mul := trans_refl
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm
+  ppow n hn f := f ^ n
+  ppow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
   npow n f := f ^ n
   npow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
   zpow := zpowRec fun n f ↦ f ^ n
