@@ -500,7 +500,8 @@ is ae-measurable. -/
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 
-theorem IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) : Measurable f :=
+theorem Topology.IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) :
+    Measurable f :=
   hf.continuous.measurable
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
@@ -515,7 +516,7 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
     rw [hu]
     exact u_open.measurableSet.inter hs
   · rcases _root_.continuousOn_iff'.1 hg t ht with ⟨u, u_open, hu⟩
-    rw [diff_eq_compl_inter, inter_comm, hu]
+    rw [sdiff_eq_compl_inter, inter_comm, hu]
     exact u_open.measurableSet.inter hs.compl
 
 @[to_additive]

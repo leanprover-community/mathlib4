@@ -174,6 +174,15 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
 
+/-- The restriction functor of a sheaf to an open subspace. -/
+@[simps!]
+def TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
+    Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
+  haveI H : IsOpenEmbedding (TopCat.Hom.hom (TopCat.ofHom ⟨_, continuous_subtype_val⟩)) :=
+    U.isOpenEmbedding
+  haveI := H.functor_isContinuous
+  H.isOpenMap.functor.sheafPushforwardContinuous C _ _
+
 variable (f)
 
 instance : RepresentablyFlat (Opens.map f) := by
@@ -248,26 +257,12 @@ theorem hom_ext (h : Opens.IsBasis (Set.range B))
 
 theorem isIso_iff_isIso_basis {F G : Sheaf C X} (h : Opens.IsBasis (Set.range B))
     {φ : F ⟶ G} (hi : ∀ i, IsIso (φ.hom.app (op (B i)))) :
-    IsIso φ where
-  out := ⟨
-    {hom := (restrictHomEquivHom G.1 F h).toFun {
-        app := by
-          intro U
-          dsimp
-          exact inv (φ.hom.app (op (B (unop U))))
-      }
-    },
-    by
-      constructor
-      all_goals erw [ObjectProperty.hom_ext_iff]
-      any_goals apply hom_ext F.1 F h
-      any_goals apply hom_ext G.1 G h
-      all_goals
-        intro i
-        erw [InducedCategory.comp_hom]
-        cat_disch
-  ⟩
-
+    IsIso φ := by
+  have : (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X) :=
+    Opens.coverDense_inducedFunctor h
+  refine Functor.IsCoverDense.iso_of_restrict_iso (G := inducedFunctor B) _ ?_
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact fun _ ↦ hi _
 
 end TopCat.Sheaf
 

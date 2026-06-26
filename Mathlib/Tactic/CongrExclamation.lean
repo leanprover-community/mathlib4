@@ -10,7 +10,7 @@ public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Mathlib.Lean.Meta.CongrTheorems
-public meta import Mathlib.Logic.Basic
+public import Mathlib.Logic.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
 
 /-!
@@ -63,7 +63,8 @@ to right-hand sides of goals. Here is an exhaustive list of things it can try:
 
 - It can try to close goals using a few strategies, including checking
   definitional equality, trying to apply `Subsingleton.elim` or `proof_irrel_heq`, and using the
-  `assumption` tactic.
+  `assumption` tactic. Discharging is done at default transparency (unless specified otherwise),
+  but this will become reducible transparency in the future.
 
 The optional parameter is the depth of the recursive applications.
 This is useful when `congr!` is too aggressive in breaking down the goal.
@@ -106,7 +107,8 @@ structure Congr!.Config where
   closePre : Bool := true
   /-- If `closePost := true`, then try to close goals that remain after no more congruence
   lemmas can be applied, using the same tactics as `closePre`. These tactics are applied
-  with current tactic transparency level. -/
+  with the transparency level specified by `postTransparency`, which is currently default
+  transparency but in the future will become `.reducible` by default. -/
   closePost : Bool := true
   /-- The transparency level to use when applying a congruence theorem.
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
@@ -115,6 +117,12 @@ structure Congr!.Config where
   This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
   preTransparency : TransparencyMode := TransparencyMode.reducible
+  /-- The transparency level to use when trying to close goals after no more congruence lemmas can
+  be applied. This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
+  For backwards compatibility this is set to `.default`, which will be changed in the future to
+  `.reducible`.
+  -/
+  postTransparency : TransparencyMode := TransparencyMode.default
   /-- For passes that synthesize a congruence lemma using one side of the equality,
   we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
   then we start with the left-hand side.
@@ -190,6 +198,7 @@ between different functions being applied. -/
   sameFun := true
   transparency := .default
   preTransparency := .default
+  postTransparency := .default
 
 /-- Whether the given number of arguments is allowed to be considered. -/
 def Congr!.Config.numArgsOk (config : Config) (numArgs : Nat) : Bool :=
@@ -676,7 +685,8 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   return none
 
 /-- A pass to clean up after `Lean.MVarId.preCongr!` and `Lean.MVarId.congrCore!`. -/
-def Lean.MVarId.postCongr! (config : Congr!.Config) (mvarId : MVarId) : MetaM (Option MVarId) := do
+def Lean.MVarId.postCongr! (config : Congr!.Config) (mvarId : MVarId) : MetaM (Option MVarId) :=
+  withTransparency config.postTransparency do
   let some mvarId ← mvarId.preCongr! config.closePost | return none
   -- Convert `p = q` to `p ↔ q`, which is likely the more useful form:
   let mvarId ← mvarId.propext
