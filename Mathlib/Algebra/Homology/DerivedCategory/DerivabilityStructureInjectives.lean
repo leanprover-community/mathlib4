@@ -80,7 +80,12 @@ namespace DerivedCategory.Plus
 
 variable [HasDerivedCategory C]
 
-lemma exists_injective_resolution [EnoughInjectives C] (K : DerivedCategory.Plus C)
+/-- Let `K` be an object in the bounded below derived category of an abelian category `C`
+with enough injectives. Assume that `K` is cohomologically `≥ n`. Then, `K`
+admits an "injective resolution", in the sense that there exists a cochain
+complex `L` consisting of injective object and lying in degrees `≥ n`, such that `K`
+is isomorphic to the image of `L`. -/
+lemma exists_iso_injective [EnoughInjectives C] (K : DerivedCategory.Plus C)
     (n : ℤ) [K.IsGE n] :
     ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n),
       Nonempty (DerivedCategory.Plus.Q.obj
@@ -228,7 +233,7 @@ instance :
     (HomotopyCategory.Plus.quotient (InjectiveObject C)).IsLocalization
       ((CochainComplex.Plus.quasiIso C).inverseImage
       (InjectiveObject.ι C).mapCochainComplexPlus) := by
-  rw [inverseImage_quasiIso_mapCochainComplexPlus_injectivesι]
+  rw [inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι]
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
@@ -281,10 +286,10 @@ private abbrev L : LocalizerMorphism
     ((CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
       (isomorphisms (Plus (InjectiveObject C))) where
   functor := HomotopyCategory.Plus.quotient (InjectiveObject C)
-  map _ _ f hf := (isIso_quotient_map f).2 hf
+  map _ _ f hf := (isIso_quotient_map_iff f).2 hf
 
 private instance : (L C).IsInduced where
-  inverseImage_eq := by ext; apply isIso_quotient_map
+  inverseImage_eq := by ext; apply isIso_quotient_map_iff
 
 variable (C) in
 set_option backward.isDefEq.respectTransparency false in
