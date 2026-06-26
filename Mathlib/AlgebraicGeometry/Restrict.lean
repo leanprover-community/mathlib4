@@ -517,6 +517,12 @@ def basicOpenIsoSpecAway {R : CommRingCat.{u}} (f : R) :
       simp only [Scheme.Opens.range_ι]
       exact (PrimeSpectrum.localization_away_comap_range _ _).symm)
 
+@[reassoc (attr := simp)]
+lemma basicOpenIsoSpecAway_hom_SpecMap {R : CommRingCat.{u}} (f : R) :
+    (basicOpenIsoSpecAway f).hom ≫ Spec.map (CommRingCat.ofHom (algebraMap R _)) =
+        Scheme.Opens.ι (X := Spec R) (PrimeSpectrum.basicOpen f) := by
+  simp [basicOpenIsoSpecAway]
+
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma basicOpenIsoSpecAway_inv_homOfLE {R : CommRingCat.{u}} (f g x : R) (hx : x = f * g) :

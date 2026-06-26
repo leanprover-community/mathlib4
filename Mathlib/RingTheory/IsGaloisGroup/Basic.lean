@@ -116,7 +116,7 @@ If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is
 a Galois group for `FractionRing B / FractionRing A` for the action defined by
 `IsFractionRing.mulSemiringAction`.
 -/
-instance IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
+instance IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [Finite G]
     [IsGaloisGroup G A B] [Algebra (FractionRing A) (FractionRing B)]
     [IsScalarTower A (FractionRing A) (FractionRing B)] :
     letI := IsFractionRing.mulSemiringAction G B (FractionRing B)
