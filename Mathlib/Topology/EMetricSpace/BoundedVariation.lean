@@ -821,6 +821,28 @@ theorem _root_.BoundedVariationOn.tendsto_rightLim [CompleteSpace E] [Topologica
     Tendsto f (𝓝[>] x) (𝓝 (f.rightLim x)) :=
   hf.ofDual.tendsto_leftLim x
 
+theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_edist [CompleteSpace E]
+    [DenselyOrdered α] {f : α → E} {a : α} (hf : BoundedVariationOn f univ) :
+    eVariationOn f (Iic a) = eVariationOn f (Iio a) + edist (f a) (f.leftLim a) := by
+  let : TopologicalSpace α := Preorder.topology α
+  have : OrderTopology α := ⟨rfl⟩
+  by_cases ha : IsBot a
+  · have A : Iic a = {a} := by ext x; grind [ha x]
+    have B : Iio a = ∅ := by simp [ha.isMin]
+    simp [A, B, leftLim_eq_of_isBot ha]
+  have : (𝓝[<] a).NeBot := nhdsLT_neBot_of_exists_lt (by simpa [IsBot] using ha)
+  have : eVariationOn f (univ ∩ Iic a) = eVariationOn f (univ ∩ Iio a)
+      + edist (f a) (f.leftLim a) := by
+    apply eVariationOn_on_inter_Iic_eq_Iio_add_edist (by simpa) (mem_univ _)
+    simpa only [univ_inter] using hf.tendsto_leftLim _
+  simpa using this
+
+theorem _root_.BoundedVariationOn.eVariationOn_Ici_eq_Ioi_add_edist [CompleteSpace E]
+    [DenselyOrdered α] {f : α → E} {a : α} (hf : BoundedVariationOn f univ) :
+    eVariationOn f (Ici a) = eVariationOn f (Ioi a) + edist (f a) (f.rightLim a) := by
+  rw [← eVariationOn.comp_ofDual f, ← eVariationOn.comp_ofDual f]
+  exact hf.ofDual.eVariationOn_Iic_eq_Iio_add_edist (a := toDual a)
+
 /-- If a function has bounded variation, then the variation on
 small closed intervals to the left of this point tends to the contribution of the point, i.e.,
 the distance between the left limit and the value at the point -/
