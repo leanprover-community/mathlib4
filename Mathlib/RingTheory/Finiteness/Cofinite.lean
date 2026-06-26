@@ -54,10 +54,10 @@ theorem CoFG.fg_of_disjoint [IsNoetherianRing R] {S T : Submodule R M} (hST : Di
     (hT : T.CoFG) : S.FG :=
   .of_disjoint_of_isNoetherian_quotient hST
 
-/-- If `S` and `T` are co-disjoint and `T` is FG, then `S` is CoFG. -/
-theorem FG.cofg_of_codisjoint {S T : Submodule R M} (hST : Codisjoint S T) (hT : S.FG) :
+/-- If `S` and `T` are co-disjoint and `S` is FG, then `T` is CoFG. -/
+theorem FG.cofg_of_codisjoint {S T : Submodule R M} (hST : Codisjoint S T) (hS : S.FG) :
     T.CoFG :=
-  have := Module.Finite.iff_fg.mpr hT
+  have := Module.Finite.iff_fg.mpr hS
   .of_surjective (T.mkQ.domRestrict S) (by simp [← LinearMap.range_eq_top, hST.symm.eq_top])
 
 /-- A complement of an FG submodule is CoFG. -/

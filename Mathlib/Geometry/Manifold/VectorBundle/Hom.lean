@@ -360,7 +360,7 @@ section TwoVariables
 variable [∀ x, IsTopologicalAddGroup (E₃ x)] [∀ x, ContinuousSMul 𝕜 (E₃ x)]
   {ψ : ∀ x, (E₁ (b x) →L[𝕜] E₂ (b x) →L[𝕜] E₃ (b x))} {w : ∀ x, E₂ (b x)}
 
-/-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
+/-- Consider `C^n` maps `v : M → E₁` and `w : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
 
@@ -373,7 +373,7 @@ lemma ContMDiffWithinAt.clm_bundle_apply₂
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   hψ.clm_bundle_apply hv |>.clm_bundle_apply hw
 
-/-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
+/-- Consider `C^n` maps `v : M → E₁` and `w : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
 
@@ -386,7 +386,7 @@ lemma ContMDiffAt.clm_bundle_apply₂
     CMDiffAt n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   ContMDiffWithinAt.clm_bundle_apply₂ hψ hv hw
 
-/-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
+/-- Consider `C^n` maps `v : M → E₁` and `w : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
 
@@ -399,7 +399,7 @@ lemma ContMDiffOn.clm_bundle_apply₂
     CMDiff[s] n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x hx ↦ (hψ x hx).clm_bundle_apply₂ (hv x hx) (hw x hx)
 
-/-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
+/-- Consider `C^n` maps `v : M → E₁` and `w : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`. -/
 lemma ContMDiff.clm_bundle_apply₂
@@ -417,7 +417,7 @@ section TwoVariables'
 variable [∀ x, IsTopologicalAddGroup (E₃ x)] [∀ x, ContinuousSMul 𝕜 (E₃ x)]
   {ψ : ∀ x, (E₁ (b x) →L[𝕜] E₂ (b x) →L[𝕜] E₃ (b x))} {w : ∀ x, E₂ (b x)}
 
-/-- Consider differentiable maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
+/-- Consider differentiable maps `v : M → E₁` and `w : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is differentiable.
 
@@ -430,7 +430,7 @@ lemma MDifferentiableWithinAt.clm_bundle_apply₂
     MDiffAt[s] (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   hψ.clm_bundle_apply hv |>.clm_bundle_apply hw
 
-/-- Consider differentiable maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
+/-- Consider differentiable maps `v : M → E₁` and `w : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is differentiable.
 
@@ -443,7 +443,7 @@ lemma MDifferentiableAt.clm_bundle_apply₂
     MDiffAt (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   MDifferentiableWithinAt.clm_bundle_apply₂ hψ hv hw
 
-/-- Consider differentiable maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
+/-- Consider differentiable maps `v : M → E₁` and `w : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is differentiable.
 
@@ -456,7 +456,7 @@ lemma MDifferentiableOn.clm_bundle_apply₂
     MDiff[s] (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x hx ↦ (hψ x hx).clm_bundle_apply₂ (hv x hx) (hw x hx)
 
-/-- Consider differentiable maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
+/-- Consider differentiable maps `v : M → E₁` and `w : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is differentiable. -/
 lemma MDifferentiable.clm_bundle_apply₂

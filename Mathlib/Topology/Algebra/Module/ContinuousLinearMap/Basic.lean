@@ -450,7 +450,6 @@ instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
-  nsmul := (· • ·)
   nsmul_zero f := by
     ext
     simp
@@ -883,7 +882,6 @@ instance : IsSubApply (M →SL[σ₁₂] M₂) M M₂ where
 -- Todo: figure out how to use `FunLike.addCommGroup` here
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
-  zsmul := (· • ·)
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
   zsmul_neg' n f := by ext; simp [add_smul]
