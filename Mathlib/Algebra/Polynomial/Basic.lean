@@ -138,6 +138,8 @@ instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] wh
 -- to avoid a bug in the `ring` tactic
 instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
 
+instance (priority := 1) ppow : Pow R[X] ℕ+ where pow p n := ppowRec n n.property p
+
 @[simp]
 theorem ofFinsupp_zero : (⟨0⟩ : R[X]) = 0 :=
   rfl
@@ -181,6 +183,12 @@ theorem ofFinsupp_pow (a) (n : ℕ) : (⟨a ^ n⟩ : R[X]) = ⟨a⟩ ^ n := by
   | succ n n_ih => simp [npowRec, n_ih, pow_succ]
 
 @[simp]
+theorem ofFinsupp_ppow (a) (n : ℕ+) : (⟨a ^ n⟩ : R[X]) = ⟨a⟩ ^ n := by
+  induction n using Semigroup.ppow_induction a <;>
+  · try simp only [ofFinsupp_mul, *]
+    rfl
+
+@[simp]
 theorem toFinsupp_zero : (0 : R[X]).toFinsupp = 0 :=
   rfl
 
@@ -207,6 +215,10 @@ theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsu
   (rfl)
 
 @[simp]
+theorem toFinsupp_psmul (a : ℕ+) (b : R[X]) : (a • b).toFinsupp = a • b.toFinsupp :=
+  rfl
+
+@[simp]
 theorem toFinsupp_nsmul (a : ℕ) (b : R[X]) : (a • b).toFinsupp = a • b.toFinsupp :=
   rfl
 
@@ -214,6 +226,10 @@ theorem toFinsupp_nsmul (a : ℕ) (b : R[X]) : (a • b).toFinsupp = a • b.toF
 theorem toFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b : R[X]) :
     (a • b).toFinsupp = a • b.toFinsupp :=
   rfl
+
+@[simp]
+theorem toFinsupp_ppow (a : R[X]) (n : ℕ+) : (a ^ n).toFinsupp = a.toFinsupp ^ n := by
+  rw [← ofFinsupp_ppow]
 
 @[simp]
 theorem toFinsupp_pow (a : R[X]) (n : ℕ) : (a ^ n).toFinsupp = a.toFinsupp ^ n := by
@@ -268,8 +284,8 @@ theorem toFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).toFinsupp =
 
 instance semiring : Semiring R[X] :=
   fast_instance% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero
-    toFinsupp_one toFinsupp_add toFinsupp_mul (fun _ _ ↦ toFinsupp_nsmul _ _) toFinsupp_pow
-    fun _ ↦ rfl
+    toFinsupp_one toFinsupp_add toFinsupp_mul toFinsupp_psmul toFinsupp_nsmul toFinsupp_ppow
+    toFinsupp_pow fun _ ↦ rfl
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
   fast_instance% Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
@@ -1094,8 +1110,8 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance commSemiring : CommSemiring R[X] :=
-  fast_instance% { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
-    toSemiring := Polynomial.semiring }
+  fast_instance% { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul
+      toFinsupp_ppow with toSemiring := Polynomial.semiring }
 
 end CommSemiring
 
@@ -1127,8 +1143,8 @@ theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 instance ring : Ring R[X] :=
   fast_instance% Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
-      toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ ↦ toFinsupp_nsmul _ _)
-      (fun _ _ ↦ toFinsupp_zsmul _ _) toFinsupp_pow (fun _ ↦ rfl) fun _ ↦ rfl
+      toFinsupp_mul toFinsupp_neg toFinsupp_sub toFinsupp_psmul toFinsupp_nsmul
+      toFinsupp_zsmul toFinsupp_ppow toFinsupp_pow (fun _ ↦ rfl) fun _ ↦ rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
