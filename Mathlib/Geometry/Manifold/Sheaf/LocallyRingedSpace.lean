@@ -418,16 +418,6 @@ lemma CategoryTheory.Presieve.isSheafFor_of_isInitial_of_isTerminal
     exact .ofIso hF (F.mapIso (asIso f).op)
   · exact hF.hom_ext
 
-lemma CategoryTheory.isIso_iff_of_thin {C : Type*} [Category* C] [Quiver.IsThin C]
-    {X Y : C} (f : X ⟶ Y) :
-    IsIso f ↔ Nonempty (Y ⟶ X) :=
-  ⟨fun _ ↦ ⟨inv f⟩, fun g ↦ ⟨g.some, Subsingleton.elim _ _, Subsingleton.elim _ _⟩⟩
-
-instance {C : Type*} [Category* C] [Quiver.IsThin C] : HasStrictInitialObjects C where
-  out {I A} f hI := by
-    rw [CategoryTheory.isIso_iff_of_thin]
-    exact ⟨hI.to _⟩
-
 lemma Presheaf.IsSheaf.iff_of_equivalence {C D A : Type*} [Category* C] [Category* D]
       [Category* A] (F : C ≌ D)
       (P : Cᵒᵖ ⥤ A) (J : GrothendieckTopology D) :
