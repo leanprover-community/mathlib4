@@ -185,8 +185,7 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
       (k : ℂ) * (2 * π * I)⁻¹ * (g 1 0 / denom g z) * (F ∣[k] g) z := by
   have hdet : g.det.val = g.val.det := Matrix.GeneralLinearGroup.val_det_apply g
   have hdetℂ : (g.val.det : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr hg.ne'
-  have hσ : ∀ x : ℂ, σ g x = x := fun x ↦ by
-    rw [σ, if_pos (hdet ▸ hg), ContinuousAlgEquiv.refl_apply]
+  have hσ (x) : σ g x = x := by grind [σ, ContinuousAlgEquiv.refl_apply]
   ext z
   unfold normalizedDerivOfComplex
   have hz := denom_ne_zero g z
@@ -202,11 +201,8 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
       fun w ↦ (g.val.det : ℂ) ^ (k - 1) *
         ((F ∘ ofComplex) ↑(g • ofComplex w) * (denom g w) ^ (-k)) := by
     filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
-    simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw, ofComplex_apply,
-      ModularForm.slash_apply, hσ, hdet, abs_of_pos hg]
-    ring
-  have hderiv := (((h_F.comp (z : ℂ) h_smul).mul h_denom).const_mul _).congr_of_eventuallyEq hcomp
-  rw [hderiv.deriv]
+    grind [ofComplex_apply_of_im_pos, ofComplex_apply, ModularForm.slash_apply]
+  rw [((((h_F.comp (z : ℂ) h_smul).mul h_denom).const_mul _).congr_of_eventuallyEq hcomp).deriv]
   simp only [ModularForm.slash_apply, hσ, hdet, abs_of_pos hg, ofComplex_apply, Function.comp_apply]
   rw [show k + 2 - 1 = (k - 1) + 2 by ring, show -(k + 2) = -k + -2 by ring,
     zpow_add₀ hdetℂ, zpow_add₀ hz, zpow_sub_one₀ hz]
@@ -216,13 +212,11 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
 lemma normalizedDerivOfComplex_SL_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
     D (F ∣[k] γ) = (D F ∣[k + 2] γ) -
       (fun z : ℍ ↦ (k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
-  have hdet : ((γ : GL (Fin 2) ℝ)).val.det = 1 := by
+  have hdet : (γ : GL (Fin 2) ℝ).val.det = 1 := by
     rw [← Matrix.GeneralLinearGroup.val_det_apply]; simp
   ext z
-  have h := congrFun (normalizedDerivOfComplex_slash k F hF (g := (γ : GL (Fin 2) ℝ))
-    (by rw [hdet]; exact one_pos)) z
-  rw [hdet] at h
-  simpa [ModularForm.SL_slash, Pi.sub_apply] using h
+  simpa [ModularForm.SL_slash] using 
+    (hdet ▸ congrFun (normalizedDerivOfComplex_slash k F hF (by grind)) z :)
 
 /--
 Serre derivative is equivariant under the slash action. More precisely,
@@ -231,26 +225,17 @@ $\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \i
 theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
     serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
   ext z
-  simp only [serreDerivative_apply]
   have hLHS : (serreDerivative (k : ℂ) F ∣[k + 2] γ) z =
       (D F ∣[k + 2] γ) z - ↑k * 12⁻¹ * ((EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z * (F ∣[k] γ) z) := by
-    have h := congrFun (ModularForm.mul_slash_SL2 (2 : ℤ) k γ EisensteinSeries.E2 F) z
-    simp only [ModularForm.SL_slash_apply, serreDerivative_apply, Pi.mul_apply] at h ⊢
-    rw [← h]
-    ring_nf
+    grind [ModularForm.SL_slash_apply, serreDerivative_apply, Pi.mul_apply, 
+      congrFun (ModularForm.mul_slash_SL2 2 k γ EisensteinSeries.E2 F) z]
   have hDz : (D (F ∣[k] γ)) z = (D F ∣[k + 2] γ) z -
-      ((k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
-    simpa [Pi.sub_apply] using congrFun (normalizedDerivOfComplex_SL_slash k F hF γ) z
+      (k * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
+    simp [normalizedDerivOfComplex_SL_slash k F hF]
   have hE2z : (EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z =
       EisensteinSeries.E2 z - 1 / (2 * riemannZeta 2) * EisensteinSeries.D2 γ z := by
-    simpa [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] using
-      congrFun (EisensteinSeries.E2_slash_action γ) z
-  rw [hLHS, hDz, hE2z]
-  simp only [EisensteinSeries.D2, riemannZeta_two]
-  field_simp [denom_ne_zero γ z, Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
-  ring_nf
-  simp only [I_sq]
-  ring
+    simp [EisensteinSeries.E2_slash_action]
+  grind [serreDerivative_apply, EisensteinSeries.D2, riemannZeta_two, I_sq]
 
 /--
 As a corollary, if `F` is invariant under the slash action of weight `k`, then
@@ -259,8 +244,7 @@ As a corollary, if `F` is invariant under the slash action of weight `k`, then
 theorem serreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ))
     (h : F ∣[k] γ = F) :
     serreDerivative k F ∣[k + 2] γ = serreDerivative k F := by
-  rw [serreDerivative_slash_equivariant, h]
-  exact hF
+  grind [serreDerivative_slash_equivariant]
 
 end
 
