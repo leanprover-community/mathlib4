@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Order.SymmDiff
+public meta import Mathlib.Tactic.Polynomial.Core
 
 /-!
 # Multivariate polynomials
@@ -106,8 +107,12 @@ def C : R →+* MvPolynomial σ R :=
 
 variable (R σ)
 
-@[simp]
+@[simp, polynomial_post]
 theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
+  rfl
+
+@[polynomial_pre]
+theorem C_eq_algebraMap : MvPolynomial.C = algebraMap R (MvPolynomial σ R) :=
   rfl
 
 variable {R σ}
@@ -1077,5 +1082,18 @@ end Algebra
 end coeffsIn
 
 end CommSemiring
+
+meta section Meta
+
+open Mathlib.Tactic.Polynomial in
+/-- Infer base ring for `MvPolynomial _ R`. Used by the `polynomial` tactic. -/
+@[polynomial_infer_base]
+def mvPolynomialInferBaseImpl : PolynomialExt where
+  infer e := do
+  match_expr e with
+  | MvPolynomial _ R _ => pure R
+  | _ => failure
+
+end Meta
 
 end MvPolynomial
