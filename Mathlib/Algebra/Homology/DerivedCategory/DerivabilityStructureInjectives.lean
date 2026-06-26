@@ -214,7 +214,7 @@ lemma isIso_quotient_map
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
-lemma inverseImage_quasiIso_mapCochainComplexPlus_injectivesι :
+lemma inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =
     (homotopyEquivalences (InjectiveObject C) (.up ℤ)).inverseImage
       (CochainComplex.Plus.ι (InjectiveObject C)) := by
