@@ -29,7 +29,7 @@ namespace AlgebraicGeometry.Scheme
 variable [IsIntegral X] [IsLocallyNoetherian X]
 
 /--
-Order of vanishing on a locally Noetherian integral scheme as a monoid with zero hom to `ℤᵐ⁰`
+Order of vanishing on a locally Noetherian integral scheme as a monoid with zero hom to `ℤᵐ⁰`.
 -/
 noncomputable
 def ordHom (z : X) (hz : coheight z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
