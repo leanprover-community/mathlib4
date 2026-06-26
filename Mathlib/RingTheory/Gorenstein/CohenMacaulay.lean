@@ -895,15 +895,16 @@ lemma postcomp_extClass_surjective (M N : ModuleCat.{v} R) (x : R) (reg : IsSMul
 lemma ext_subsingleton_of_regualr_sequence (M N : ModuleCat.{v} R) {rs : List R}
     (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N)
     (n : ℕ) (hn : n < rs.length) : Subsingleton (Ext N M n) := by
-  induction n generalizing M rs
-  · match rs with
+  induction n generalizing M rs with
+  | zero =>
+    match rs with
     | [] => simp at hn
     | a :: rs' =>
       simp only [List.mem_cons, forall_eq_or_imp] at mem
       rw [Ext.homEquiv₀.subsingleton_congr, ModuleCat.homEquiv.subsingleton_congr]
       exact IsSMulRegular.linearMap_subsingleton_of_mem_annihilator
         ((isWeaklyRegular_cons_iff _ _ _).mp reg).1 mem.1
-  · rename_i n ih
+  | succ n ih =>
     match rs with
     | [] => simp at hn
     | a :: rs' =>
@@ -1100,7 +1101,7 @@ lemma generators_toList_isRegular_of_spanFinrank_eq [IsNoetherianRing R]
     (rank : J.spanFinrank = ringKrullDim R) :
     ∃ (rs : List R), rs.length = ringKrullDim R ∧ Ideal.ofList rs = J ∧ IsRegular R rs := by
   have fg : J.FG := (isNoetherianRing_iff_ideal_fg R).mp ‹_› J
-  let _ : Fintype J.generators := (Submodule.FG.finite_generators fg).fintype
+  let : Fintype J.generators := (Submodule.FG.finite_generators fg).fintype
   use J.generators.toFinset.toList
   have len : J.generators.toFinset.toList.length = ringKrullDim R := by
     simp [Finset.length_toList, ← rank, ← Submodule.FG.generators_ncard fg]
@@ -1133,7 +1134,7 @@ lemma hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero [IsNoetheria
   have maxass : maximalIdeal R ∈ associatedPrimes R R := by
     apply Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes
     rw [annihilator_eq_bot.mpr inferInstance]
-    let _ : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr h2
+    have : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr h2
     exact Ideal.mem_minimalPrimes_of_krullDimLE_zero (maximalIdeal R)
   rcases (isAssociatedPrime_iff_exists_injective_linearMap _ _).mp maxass with ⟨_, f, hf⟩
   use f
@@ -1147,15 +1148,13 @@ set_option backward.isDefEq.respectTransparency false in
 lemma linearMap_isPrincipal_iff (J : Ideal R) (hJ : J ≠ ⊤) :
     letI : IsLocalRing (R ⧸ J) :=
       have : Nontrivial (R ⧸ J) := Ideal.Quotient.nontrivial_iff.mpr hJ
-      have : IsLocalHom (Ideal.Quotient.mk J) :=
-        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-      IsLocalRing.of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective' (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
     (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R ⧸ J)).IsPrincipal ↔
     (⊤ : Submodule (R ⧸ J) ((R ⧸ J) ⧸ maximalIdeal (R ⧸ J) →ₗ[R ⧸ J] R ⧸ J)).IsPrincipal := by
-  let _ : Nontrivial (R ⧸ J) := Ideal.Quotient.nontrivial_iff.mpr hJ
-  let _ : IsLocalHom (Ideal.Quotient.mk J) :=
+  have : Nontrivial (R ⧸ J) := Ideal.Quotient.nontrivial_iff.mpr hJ
+  have : IsLocalHom (Ideal.Quotient.mk J) :=
     IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-  let _ : IsLocalRing (R ⧸ J) :=
+  have : IsLocalRing (R ⧸ J) :=
     IsLocalRing.of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
   let e : (R ⧸ maximalIdeal R) ≃ₗ[R] (R ⧸ J) ⧸ maximalIdeal (R ⧸ J) :=
     LinearEquiv.ofBijective
@@ -1240,8 +1239,7 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
   have lenle (M : Type u) [AddCommGroup M] [Module R M] [fin : Module.Finite R M] :
     Module.length R (M →ₗ[R] R) ≤ Module.length R M := by
     induction fin using IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
-    · rename_i N _ _ _ sub
-      simp
+    · simp
     · rename_i N _ _ _ p e
       rw [Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1] at e
       rw [(e.congrLeft R R).length_eq, e.length_eq, leneq1, leneq1']
@@ -1299,7 +1297,7 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
   rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
   apply (((extFunctor _).mapIso (Shrink.linearEquiv.{u} R (R ⧸ maximalIdeal R)).toModuleIso.op).app
     (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr.mpr
-  let _ : Subsingleton (Ext.{u} (ModuleCat.of R R) (ModuleCat.of R R) 1) :=
+  have : Subsingleton (Ext.{u} (ModuleCat.of R R) (ModuleCat.of R R) 1) :=
     HasProjectiveDimensionLT.subsingleton (ModuleCat.of R R) 1 1 (le_refl 1) (ModuleCat.of R R)
   exact inj.subsingleton
 
