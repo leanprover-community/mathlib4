@@ -199,10 +199,10 @@ open CpltSepUniformSpace
 @[simps map]
 noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
   obj X := CpltSepUniformSpace.of (Completion X)
-  map f := ConcreteCategory.ofHom ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
-  map_id _ := InducedCategory.hom_ext (hom_ext (by apply Completion.map_id))
+  map f := ConcreteCategory.ofHom ⟨Function.completion f.1, Function.uniformContinuous_completion⟩
+  map_id _ := InducedCategory.hom_ext (hom_ext (by apply Function.completion_id))
   map_comp f g := InducedCategory.hom_ext (hom_ext (by
-    exact (Completion.map_comp g.hom.property f.hom.property).symm))
+    exact (Function.completion_comp g.hom.property f.hom.property).symm))
 
 /-- The inclusion of a uniform space into its completion. -/
 noncomputable def completionHom (X : UniformSpaceCat) :
@@ -218,11 +218,11 @@ theorem completionHom_val (X : UniformSpaceCat) (x) : (completionHom X) x = (x :
 noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj Y) :
     completionFunctor.obj X ⟶ Y :=
-  ConcreteCategory.ofHom ⟨Completion.extension f, Completion.uniformContinuous_extension⟩
+  ConcreteCategory.ofHom ⟨Function.fromCompletion f, Function.uniformContinuous_fromCompletion⟩
 
 @[simp]
 theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
-    (f : X ⟶ (forget₂ _ _).obj Y) (x) : (extensionHom f) x = Completion.extension f x :=
+    (f : X ⟶ (forget₂ _ _).obj Y) (x) : (extensionHom f) x = Function.fromCompletion f x :=
   rfl
 
 @[simp]
@@ -230,7 +230,7 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : toUniformSpace (CpltSepUniformSpace.of (Completion X)) ⟶ toUniformSpace Y) :
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
-  exact congr_fun (Completion.extension_comp_coe f.hom.property) x
+  exact congr_fun (Function.fromCompletion_comp_coe f.hom.property) x
 
 @[deprecated (since := "2025-12-18")] alias extension_comp_coe := extension_comp_hom
 
@@ -245,12 +245,12 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
           right_inv := fun f => by
             ext x
             rcases f with ⟨⟨_, _⟩⟩
-            exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)
+            exact @Function.fromCompletion_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)
               ‹_› _ }
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         ext x
         dsimp [-Function.comp_apply]
-        erw [Completion.extension_map (γ := Y) g.hom.2 f.hom.2]
+        erw [Function.fromCompletion_completion (γ := Y) g.hom.2 f.hom.2]
         rfl }
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
