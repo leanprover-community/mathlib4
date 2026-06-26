@@ -140,38 +140,38 @@ section deprecated
 
 variable [CommSemiring R]
 
-@[deprecated derivative (since := "2026-05-20")]
+@[deprecated derivative (since := "2026-06-26")]
 noncomputable def derivativeFun (f : R⟦X⟧) := (derivative R).toFun f
 
 set_option linter.deprecated false in
-@[deprecated "Use Derivation.map_add" (since := "2026-05-20")]
+@[deprecated "Use Derivation.map_add" (since := "2026-06-26")]
 theorem derivativeFun_add (f g : R⟦X⟧) :
     derivativeFun (f + g) = derivativeFun f + derivativeFun g :=
   (derivative R).map_add f g
 
 set_option linter.deprecated false in
-@[deprecated "Use Derivation.leibniz" (since := "2026-05-20")]
+@[deprecated "Use Derivation.leibniz" (since := "2026-06-26")]
 theorem derivativeFun_mul (f g : R⟦X⟧) :
     derivativeFun (f * g) = f • g.derivativeFun + g • f.derivativeFun :=
   (derivative R).leibniz f g
 
 set_option linter.deprecated false in
-@[deprecated "Use Derivation.map_one_eq_zero" (since := "2026-05-20")]
+@[deprecated "Use Derivation.map_one_eq_zero" (since := "2026-06-26")]
 theorem derivativeFun_one : derivativeFun (1 : R⟦X⟧) = 0 :=
   (derivative R).map_one_eq_zero
 
 set_option linter.deprecated false in
-@[deprecated "Use Derivation.map_smul" (since := "2026-05-20")]
+@[deprecated "Use Derivation.map_smul" (since := "2026-06-26")]
 theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r • derivativeFun f :=
   (derivative R).map_smul r f
 
-@[deprecated (since := "2026-05-20")] alias derivativeFun_C := derivative_C
+@[deprecated (since := "2026-06-26")] alias derivativeFun_C := derivative_C
 
-@[deprecated (since := "2026-05-20")] alias coeff_derivativeFun := coeff_derivative
+@[deprecated (since := "2026-06-26")] alias coeff_derivativeFun := coeff_derivative
 
-@[deprecated (since := "2026-05-20")] alias derivativeFun_coe := derivative_coe
+@[deprecated (since := "2026-06-26")] alias derivativeFun_coe := derivative_coe
 
-@[deprecated (since := "2026-05-20")] alias trunc_derivativeFun := trunc_derivative
+@[deprecated (since := "2026-06-26")] alias trunc_derivativeFun := trunc_derivative
 
 end deprecated
 
