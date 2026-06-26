@@ -46,6 +46,8 @@ variable {J : Type*} [Category* J] {K : Type*} [Category* K] {C : Type*}
 
 namespace Limits
 
+/-- A cone `t` over `F` is a weak limit cone if each cone over `F` admits a
+cone morphism to `t`. -/
 structure IsWeakLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -66,7 +68,7 @@ def _root_.Retract.ofIsLimit {t t' : Cone F} (l : IsLimit t) (l' : IsWeakLimit t
 /--
 If `c : Cone F` is a limit, then it is a weak limit.
 -/
-def IsWeakLimit_of_isLimit {t : Cone F} (l : IsLimit t) : IsWeakLimit t where
+def IsWeakLimit.OfIsLimit {t : Cone F} (l : IsLimit t) : IsWeakLimit t where
   lift := l.lift
   fac := l.fac
 
@@ -82,9 +84,9 @@ structure WeakLimitCone (F : J ⥤ C) where
 Any limit cone defines a weak limit cone with the same underlying cone over `F` and the same
 lifts.
 -/
-def WeakLimitCone_of_limitCone {F : J ⥤ C} (c : LimitCone F) : WeakLimitCone F where
+def WeakLimitCone.OfLimitCone {F : J ⥤ C} (c : LimitCone F) : WeakLimitCone F where
   cone := c.cone
-  isWeakLimit := IsWeakLimit_of_isLimit c.isLimit
+  isWeakLimit := IsWeakLimit.OfIsLimit c.isLimit
 
 /-- `HasWeakLimit F` represents the mere existence of a weak limit for `F`. -/
 class HasWeakLimit (F : J ⥤ C) : Prop where mk' ::
@@ -95,7 +97,7 @@ class HasWeakLimit (F : J ⥤ C) : Prop where mk' ::
 If `F` has a limit, then it has a weak limit.
 -/
 lemma HasWeakLimit_of_hasLimit (F : J ⥤ C) [HasLimit F] : HasWeakLimit F where
-  exists_weakLimit := Nonempty.intro (WeakLimitCone_of_limitCone (getLimitCone F))
+  exists_weakLimit := Nonempty.intro (WeakLimitCone.OfLimitCone (getLimitCone F))
 
 theorem HasWeakLimit.mk {F : J ⥤ C} (d : WeakLimitCone F) : HasWeakLimit F :=
   ⟨Nonempty.intro d⟩
