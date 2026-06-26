@@ -278,7 +278,7 @@ open MorphismProperty
 variable (C) in
 /-- The left localizer morphism in the Guitart exact square `iso`. -/
 private abbrev L : LocalizerMorphism
-  ((CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
+    ((CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
       (isomorphisms (Plus (InjectiveObject C))) where
   functor := HomotopyCategory.Plus.quotient (InjectiveObject C)
   map _ _ f hf := (isIso_quotient_map f).2 hf
