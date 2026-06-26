@@ -126,21 +126,6 @@ theorem card_eq_finrank' : Nat.card G = Module.finrank A B := by
   rw [IsGaloisGroup.card_eq_finrank G (FractionRing A) (FractionRing B),
     Algebra.IsAlgebraic.finrank_of_isFractionRing A (FractionRing A) B (FractionRing B)]
 
-attribute [local instance] FractionRing.liftAlgebra in
-/-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
-@[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
-  MulEquiv.ofBijective (MulSemiringAction.toAlgAut G A B) (by
-    have := IsDomain.of_faithfulSMul A B
-    letI K := FractionRing A
-    letI L := FractionRing B
-    letI := IsFractionRing.mulSemiringAction G B L
-    have := isGalois G K L
-    have := finiteDimensional G K L
-    refine .of_comp_left ?_ (IsFractionRing.fieldEquivOfAlgEquivHom_injective A B K L)
-    rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
-      IsGalois.card_aut_eq_finrank K L]
-    exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
-
 @[simp]
 theorem map_mulEquivAlgEquiv_fixingSubgroup [IsGaloisGroup G K L] (F : IntermediateField K L) :
     (fixingSubgroup G (F : Set L)).map (mulEquivAlgEquiv G K L) = F.fixingSubgroup := by
