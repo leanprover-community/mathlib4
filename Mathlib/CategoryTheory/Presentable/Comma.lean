@@ -221,7 +221,7 @@ instance : IsFiltered (J κ f) :=
 set_option backward.defeqAttrib.useBackward true in
 instance : (π₁ κ f).Final := by
   rw [Functor.final_iff_of_isFiltered]
-  refine ⟨fun d ↦ ?_, ?_⟩
+  refine ⟨fun d ↦ ?_, fun {d e} g₁ g₂ ↦ ?_⟩
   · obtain ⟨g, a, ha⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
       (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
       (F₁.map d.hom ≫ f.hom)
@@ -233,12 +233,13 @@ instance : (π₁ κ f).Final := by
         w := ha.symm }, ⟨?_⟩⟩
     · exact CostructuredArrow.homMk (ObjectProperty.homMk (𝟙 _)) (by simp)
     · exact ⟨d.left.property, g.left.property⟩
-  · sorry
+  · refine ⟨?_, sorry⟩
+    sorry
 
 set_option backward.defeqAttrib.useBackward true in
 instance : (π₂ κ f).Final := by
   rw [Functor.final_iff_of_isFiltered]
-  refine ⟨fun d ↦ ?_, ?_⟩
+  refine ⟨fun d ↦ ?_, fun {d e} f₁ f₂ ↦ ?_⟩
   · let j₁ : J₁ κ f := Classical.arbitrary _
     obtain ⟨e : J₂ κ f, a, ha⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
       (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
@@ -256,7 +257,25 @@ instance : (π₂ κ f).Final := by
     rw [Category.assoc, ← ha, ← F₂.map_comp,
       ← CostructuredArrow.w (IsFiltered.rightToMax d e)]
     dsimp
-  · sorry
+  · obtain ⟨j₂, a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit'
+      κ ((isCardinalPresentable C₂ κ).ι.denseAt f.right)
+      (i := (π₂ κ f).obj e) f₁.left.hom f₂.left.hom (by
+      simp [dsimp% CostructuredArrow.w f₁, dsimp% CostructuredArrow.w f₂])
+    refine ⟨CostructuredArrow.mk
+      (Y := ⟨Comma.mk _ _ (e.left.obj.hom ≫ F₂.map a.left.hom),
+        ⟨e.left.property.1, j₂.left.property⟩⟩)
+        { left := e.hom.left
+          right := by exact j₂.hom
+          w := by simp [← dsimp% CostructuredArrow.w a] },
+        CostructuredArrow.homMk (ObjectProperty.homMk
+          { left := 𝟙 _
+            right := by exact a.left.hom }) ?_, ?_⟩
+    · dsimp
+      ext
+      · simp
+      · exact CostructuredArrow.w a
+    · ext
+      simpa
 
 abbrev functor : J κ f ⥤ Comma F₁ F₂ :=
   CostructuredArrow.proj (Comma.isCardinalPresentable F₁ F₂ κ).ι f ⋙
