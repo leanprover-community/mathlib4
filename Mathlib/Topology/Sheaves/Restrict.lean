@@ -46,6 +46,6 @@ lemma toRestrict_obj_obj_obj :
     F.obj.obj (op (U.isOpenEmbedding.functor.obj ((Opens.map U.inclusion').obj V))) := rfl
 
 lemma toRestrict_app_hom_app : ((toRestrict C U).app F).hom.app (op V) =
-    F.obj.map (U.isOpenEmbedding.isOpenMap.adjunction.counit.app V).op := by simp
+    F.obj.map (U.isOpenEmbedding.isOpenMap.adjunction.counit.app V).op := by simp; rfl
 
 end TopCat.Sheaf
