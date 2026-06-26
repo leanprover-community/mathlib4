@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Topology.Defs.Filter
 
 /-!
@@ -182,6 +183,17 @@ theorem isClosed_iUnion_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsC
     IsClosed (⋃ i, s i) := by
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact isOpen_iInter_of_finite h
+
+lemma IsOpenMap.isClosed_kernImage {Y : Type v} [TopologicalSpace Y] {f : X → Y}
+    (open_f : IsOpenMap f) {u : Set X} (hu : IsClosed u) : IsClosed (kernImage f u) := by
+  rw [kernImage_eq_compl]
+  exact (open_f _ hu.isOpen_compl).isClosed_compl
+
+lemma IsClosedMap.isOpen_kernImage {Y : Type v} [TopologicalSpace Y] {f : X → Y}
+    (closed_f : IsClosedMap f) {u : Set X} (hu : IsOpen u) : IsOpen (kernImage f u) := by
+  rw [Set.kernImage_eq_compl]
+  exact (closed_f _ hu.isClosed_compl).isOpen_compl
+
 
 theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :
     IsClosed { x | p x → q x } := by

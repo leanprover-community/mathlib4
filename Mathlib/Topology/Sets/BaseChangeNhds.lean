@@ -15,9 +15,10 @@ public import Mathlib.Topology.Sets.Compacts
 # Base changes among different families of neighbourhoods
 
 This file builds base changes for `.compactInsd`, `openNhds`.
+`Compact.nhdMap`
 
-It also contains the evidences that `oRcNhds_to_openNhds`and
- `oRcNhds_to_compactNhds` are initials functors.
+It also contains the evidences that `oRcNhds_to_openNhds`,
+ `oRcNhds_to_compactNhds` and `Compact.nhdMap`are initials functors.
 
 -/
 
@@ -79,15 +80,15 @@ instance {K : Compacts α} [T2Space α] : K.mono_oRcNhds_to_compactNhds.functor.
     (IsCompact.isClosed L.1.isCompact') ).2 h2
   exact ⟨⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
 
-variable {β : Type u_1} [TopologicalSpace β] {f : α → β} (pf : IsProperMap f)
+variable {β : Type u_1} [TopologicalSpace β] {f : α → β} (proper_f : IsProperMap f)
 
 /--
 The preimage of a compact by a proper map as a compact -/
 @[simps]
 def properPreimage (K : Compacts β) : Compacts α :=
-  ⟨f ⁻¹' K.carrier , IsProperMap.isCompact_preimage pf K.isCompact'⟩
+  ⟨f ⁻¹' K.carrier , IsProperMap.isCompact_preimage proper_f K.isCompact'⟩
 
-lemma properPreimage_mono : Monotone (properPreimage pf) := fun _ _ h ↦ by
+lemma properPreimage_mono : Monotone (properPreimage proper_f) := fun _ _ h ↦ by
   apply SetLike.coe_subset_coe.1
   simp only [coe_properPreimage, Compacts.carrier_eq_coe]
   exact Set.preimage_mono h
@@ -96,35 +97,29 @@ lemma properPreimage_mono : Monotone (properPreimage pf) := fun _ _ h ↦ by
 /--
 The base change of compactNhds induced by properPreimage -/
 @[simps]
-def nhdsMap (K : Compacts β) (L : K.compactNhds) : (properPreimage pf K).compactNhds :=
-  ⟨properPreimage pf L,
+def nhdsMap (K : Compacts β) (L : K.compactNhds) : (properPreimage proper_f K).compactNhds :=
+  ⟨properPreimage proper_f L,
   by
     obtain ⟨U,hU1,hU2⟩ := exists_open_nhds_sub_compact_nhds L
     refine (compactNhdsOfExistsOpenSubsetBetween _ ?_ ?_ ?_).property
-    · exact ((Opens.map (TopCat.ofHom ( ContinuousMap.mk f pf.toContinuous))).obj U)
+    · exact ((Opens.map (TopCat.ofHom ( ContinuousMap.mk f proper_f.toContinuous))).obj U)
     · simp only [coe_properPreimage]
       exact Set.preimage_mono hU1-- pareil que dans properMap_mono avec showtrem
     · simp only [coe_mk]
       exact Set.preimage_mono hU2
       ⟩
 
-lemma nhdsMap_mono (K : Compacts β) : Monotone (nhdsMap pf K) :=
-  fun _ _ h ↦ properPreimage_mono pf h
+lemma nhdsMap_mono (K : Compacts β) : Monotone (nhdsMap proper_f K) :=
+  fun _ _ h ↦ properPreimage_mono proper_f h
 
---trouver meilleure endroit
-lemma IsClosedMap.isOpen_kernImage {f : α → β} (closed_f : IsClosedMap f) {u : Set α}
-    (hu : IsOpen u) : IsOpen (kernImage f u) := by
-  rw [Set.kernImage_eq_compl]
-  exact (closed_f _ hu.isClosed_compl).isOpen_compl
-
-instance [T2Space β] [LocallyCompactSpace β] (K : Compacts β) : (nhdsMap_mono pf K).functor.Initial
+instance [T2Space β] [LocallyCompactSpace β] (K : Compacts β) : (nhdsMap_mono proper_f K).functor.Initial
     := by
   apply (Monotone.initial_functor_iff _).2
   intro L
   obtain ⟨U,hU1,hU2⟩ := exists_open_nhds_sub_compact_nhds L
   obtain ⟨M,hM1,hM2,hM3⟩ :=
     exists_compact_between K.isCompact'
-    (IsClosedMap.isOpen_kernImage (IsProperMap.isClosedMap pf) U.isOpen)
+    (IsClosedMap.isOpen_kernImage (IsProperMap.isClosedMap proper_f) U.isOpen)
     (Set.subset_kernImage_iff.2 hU1)
   use ⟨⟨M,hM1⟩,
     (compactNhdsOfExistsOpenSubsetBetween _ ⟨interior M, isOpen_interior⟩
