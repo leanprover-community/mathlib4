@@ -39,6 +39,13 @@ section JMatrixLemmas
 def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
+variable {R} in
+@[simp]
+theorem map_J {F S : Type*} [CommRing S] [FunLike F R S]
+    [AddMonoidHomClass F R S] [OneHomClass F R S] (f : F) :
+    (J l R).map f = J l S := by
+  simp [J, fromBlocks_map, Matrix.map_neg]
+
 @[simp]
 theorem J_transpose : (J l R)ᵀ = -J l R := by
   rw [J, fromBlocks_transpose, ← neg_one_smul R (fromBlocks _ _ _ _ : Matrix (l ⊕ l) (l ⊕ l) R),
@@ -128,6 +135,10 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   simp only [det_mul, det_transpose] at hA
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
+
+theorem map_mem {F S : Type*} [CommRing S] [FunLike F R S] [RingHomClass F R S]
+    (hA : A ∈ symplecticGroup l R) (f : F) : A.map f ∈ symplecticGroup l S := by
+  simp_rw [mem_iff, ← transpose_map, ← map_J _ f, ← Matrix.map_mul, mem_iff.mp hA]
 
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
