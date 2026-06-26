@@ -208,7 +208,7 @@ theorem gcd_choose_eq_minFac_of_isPrimePow (h : IsPrimePow n) :
   have : multiplicity n.minFac ((Icc 1 (n - 1)).gcd n.choose) = 1 := by
     refine multiplicity_eq_of_dvd_of_not_dvd ?_ (minFac_sq_ndvd_gcd_choose_of_isPrimePow h)
     simpa using minFac_dvd_gcd_choose_of_isPrimePow h
-  rw [Nat.prod_pow_primeFactors_factorization ne_zero, primeFactors_gcd_choose_of_isPrimePow h]
+  rw [Nat.prod_primeFactors_coe_pow_factorization ne_zero, primeFactors_gcd_choose_of_isPrimePow h]
   simp [← Nat.multiplicity_eq_factorization isPrime ne_zero, this]
 
 /-- For a natural number `n` greater than `1`, assume that `n` is not a prime power, then
