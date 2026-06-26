@@ -972,9 +972,10 @@ See `measurable_finset_iff`. -/
 instance Finset.instMeasurableSpace : MeasurableSpace (Finset α) :=
   .comap SetLike.coe inferInstance
 
-@[simp]
-lemma measurable_finset_iff : Measurable g ↔ Measurable (fun x ↦ (g x : Set α)) :=
+lemma measurable_finset_iff_measurable_set : Measurable g ↔ Measurable (fun x ↦ (g x : Set α)) :=
     measurable_comap_iff
+
+lemma measurable_finset_iff : Measurable g ↔ \forall a, Measurable (a \in g \.) :=
 
 lemma measurableSet_finset_iff (S : Set (Finset α)) : MeasurableSet S ↔
     ∃ S' : Set (Set α), MeasurableSet S' ∧ { s : Finset α | ↑s ∈ S'} = S :=
