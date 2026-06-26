@@ -37,7 +37,7 @@ incompatible with the Vietoris topology.
 
 open Set Topology
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
+variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : α → β}
 
 namespace TopologicalSpace
 
@@ -465,9 +465,16 @@ theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 �
       (isOpen_inter_nonempty_of_isOpen hV).prod (isOpen_inter_nonempty_of_isOpen hW),
       ⟨x, hx, hxV⟩, ⟨y, hy, hyW⟩⟩
 
-@[fun_prop]
 theorem _root_.Continuous.compacts_map (hf : Continuous f) : Continuous (Compacts.map f hf) :=
   isEmbedding_coe.continuous_iff.mpr <| hf.image_vietoris.comp continuous_coe
+
+@[fun_prop]
+theorem _root_.Continuous.compacts_map' {f : α → Compacts β} {g : α → β → γ}
+    (hf : Continuous f) (hg : Continuous g.uncurry) :
+    Continuous (fun x => (f x).map (g x) (by fun_prop)) := by
+  conv in Compacts.map _ _ _ => equals ({x} ×ˢ f x).map g.uncurry hg => ext; simp
+  have := hg.compacts_map
+  fun_prop
 
 @[fun_prop]
 theorem _root_.Topology.IsInducing.compacts_map (hf : IsInducing f) :
@@ -751,10 +758,16 @@ theorem continuous_prod :
   simp_rw [isEmbedding_toCompacts.continuous_iff, Function.comp_def, toCompacts_prod]
   fun_prop
 
-@[fun_prop]
 theorem _root_.Continuous.nonemptyCompacts_map (hf : Continuous f) :
     Continuous (NonemptyCompacts.map f hf) :=
   isEmbedding_toCompacts.continuous_iff.mpr <| hf.compacts_map.comp continuous_toCompacts
+
+@[fun_prop]
+theorem _root_.Continuous.nonemptyCompacts_map' {f : α → NonemptyCompacts β} {g : α → β → γ}
+    (hf : Continuous f) (hg : Continuous g.uncurry) :
+    Continuous (fun x => (f x).map (g x) (by fun_prop)) := by
+  simp_rw [isEmbedding_toCompacts.continuous_iff, Function.comp_def, toCompacts_map]
+  fun_prop
 
 @[fun_prop]
 theorem _root_.Topology.IsInducing.nonemptyCompacts_map (hf : IsInducing f) :
