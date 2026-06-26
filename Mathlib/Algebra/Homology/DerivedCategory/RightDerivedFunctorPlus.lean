@@ -28,8 +28,7 @@ namespace Functor
 
 variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
   [HasDerivedCategory C] [HasDerivedCategory D]
-
-variable (F : C ⥤ D) [F.Additive] [EnoughInjectives C]
+  (F : C ⥤ D) [F.Additive] [EnoughInjectives C]
 
 /-- The right derived functor `DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`
 when `F : C ⥤ D` is an additive functor between abelian categories and
