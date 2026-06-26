@@ -204,8 +204,8 @@ product, with the two truncation levels `n₁` and `n₂` allowed to differ. -/
 theorem coeff_trunc_mul_trunc_eq_coeff_mul₂ (n₁ n₂ : σ →₀ ℕ)
     (f g : MvPowerSeries σ R) {m : σ →₀ ℕ} (h₁ : m < n₁) (h₂ : m < n₂) :
     (trunc R n₁ f * trunc R n₂ g).coeff m = coeff m (f * g) :=
-  coeff_truncFinset_mul_truncFinset_eq_coeff_mul₂ (by intro; grind) (by intro; grind) f g
-    (by simpa) (by simpa)
+  coeff_truncFinset_mul_truncFinset_eq_coeff_mul₂ (by grind [IsLowerSet]) (by grind [IsLowerSet])
+    f g (by simpa) (by simpa)
 
 /-- A coefficient of a product of truncated power series equals the coefficient of the untruncated
 product. Both factors are truncated at the same level `n`. -/
@@ -260,8 +260,8 @@ product, with the two truncation levels `n₁` and `n₂` allowed to differ. -/
 theorem coeff_trunc'_mul_trunc'_eq_coeff_mul₂ (n₁ n₂ : σ →₀ ℕ)
     (f g : MvPowerSeries σ R) {m : σ →₀ ℕ} (h₁ : m ≤ n₁) (h₂ : m ≤ n₂) :
     (trunc' R n₁ f * trunc' R n₂ g).coeff m = coeff m (f * g) :=
-  coeff_truncFinset_mul_truncFinset_eq_coeff_mul₂ (by intro; grind) (by intro; grind) f g
-    (by simpa) (by simpa)
+  coeff_truncFinset_mul_truncFinset_eq_coeff_mul₂ (by grind [IsLowerSet]) (by grind [IsLowerSet])
+    f g (by simpa) (by simpa)
 
 /-- A coefficient of a product of truncated power series equals the coefficient of the untruncated
 product. Both factors are truncated at the same level `n`. -/
