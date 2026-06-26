@@ -4,6 +4,7 @@ https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1
 -/
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
 import Mathlib.LinearAlgebra.Matrix.Notation
 import Qq
 
@@ -185,5 +186,25 @@ example (ι : Type*) [Inhabited ι] : Matrix.replicateRow ι (fun (_ : Fin 3) =>
 example (ι : Type*) [Inhabited ι] : Matrix.replicateCol ι (fun (_ : Fin 3) => 0) = 0 := by
   simp_all
   rfl
+
+section BirdDet
+
+open BirdDet
+
+example : birdDet 0 #[] = (1 : ℤ) := by
+  cbv
+
+example : birdDet 1 #[-1] = -1 := by
+  cbv
+
+example : birdDet 2 #[1, 2, 3, 4] = -2 := by
+  cbv
+
+example {R : Type*} [CommRing R] (a b c d : R) :
+    birdDet 2 #[a, b, c, d] = a * d - b * c := by
+  simp [birdDet, iter, BirdDet.get, sumFrom]
+  ring
+
+end BirdDet
 
 end Matrix
