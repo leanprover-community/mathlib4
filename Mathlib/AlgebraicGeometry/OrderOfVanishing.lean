@@ -50,11 +50,11 @@ at a point. This has a junk value of `0` if `f = 0` or if `coheight z ≠ 1`.
 noncomputable
 def ord (f : X.functionField) (z : X) : ℤ :=
   if hz : coheight z = 1
-  then Multiplicative.toAdd <| (X.ordHom z hz f).unZeroD 1
+  then Multiplicative.toAdd <| (X.ordHom z hz f).unzeroD 1
   else 0
 
 lemma ord_eq_ordHom_of_coheight_eq_one {z : X} (hz : coheight z = 1) (f : X.functionField) :
-    ord f z = Multiplicative.toAdd ((X.ordHom z hz f).unZeroD 1) := dif_pos hz
+    ord f z = Multiplicative.toAdd ((X.ordHom z hz f).unzeroD 1) := dif_pos hz
 
 @[simp]
 lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.functionField) :
@@ -64,7 +64,7 @@ lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.fun
 lemma ord_zero : ord (0 : X.functionField) = 0 := by
   ext z
   by_cases h : coheight z = 1
-  · simp [ord_eq_ordHom_of_coheight_eq_one h, unZeroD]
+  · simp [ord_eq_ordHom_of_coheight_eq_one h, unzeroD]
   · simp [h]
 
 lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :

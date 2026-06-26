@@ -616,13 +616,13 @@ section LE
 
 variable [LE α] {x y : WithZero α} {a b : α}
 
-lemma le_unZeroD_iff (hx : x ≠ 0) : b ≤ x.unZeroD a ↔ b ≤ x := by
+lemma le_unzeroD_iff (hx : x ≠ 0) : b ≤ x.unzeroD a ↔ b ≤ x := by
   lift x to α using hx; simp
 
-lemma unZeroD_le_iff (hx : x = 0 → a ≤ b) : x.unZeroD a ≤ b ↔ x ≤ b := by
+lemma unzeroD_le_iff (hx : x = 0 → a ≤ b) : x.unzeroD a ≤ b ↔ x ≤ b := by
   cases x <;> simp [hx]
 
-lemma unZeroD_mono (hx : x ≠ 0) (h : x ≤ y) : x.unZeroD a ≤ y.unZeroD a := by
+lemma unZeroD_mono (hx : x ≠ 0) (h : x ≤ y) : x.unzeroD a ≤ y.unzeroD a := by
   lift x to α using hx
   cases y <;> simp_all
 
@@ -632,10 +632,10 @@ section LT
 
 variable [LT α] {x y : WithZero α} {a b : α}
 
-lemma lt_unZeroD_iff (hx : x ≠ 0) : b < x.unZeroD a ↔ b < x := by
+lemma lt_unzeroD_iff (hx : x ≠ 0) : b < x.unzeroD a ↔ b < x := by
   lift x to α using hx; simp
 
-lemma unZeroD_lt_iff (hx : x = 0 → a < b) : x.unZeroD a < b ↔ x < b := by
+lemma unzeroD_lt_iff (hx : x = 0 → a < b) : x.unzeroD a < b ↔ x < b := by
   cases x <;> simp [hx]
 
 end LT
@@ -644,7 +644,7 @@ section Preorder
 
 variable [Preorder α] {x y : WithZero α} {a b : α}
 
-theorem le_coe_unZeroD (x : WithZero α) (b : α) : x ≤ x.unZeroD b := by cases x <;> simp
+theorem le_coe_unzeroD (x : WithZero α) (b : α) : x ≤ x.unzeroD b := by cases x <;> simp
 
 end Preorder
 
@@ -652,9 +652,9 @@ section PartialOrder
 
 variable [PartialOrder α] {x y : WithZero α} {a b : α}
 
-lemma le_unZeroD (hy : b ≤ y) : b ≤ y.unZeroD a := by
+lemma le_unzeroD (hy : b ≤ y) : b ≤ y.unzeroD a := by
   have hne : y ≠ 0 := ne_bot_of_le_ne_bot WithZero.coe_ne_zero hy
-  rwa [le_unZeroD_iff hne]
+  rwa [le_unzeroD_iff hne]
 
 end PartialOrder
 
