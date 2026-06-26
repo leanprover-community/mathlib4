@@ -201,5 +201,4 @@ lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) 
     X.toRingedSpace.isUnit_res_basicOpen gA⟩
   simpa using h_germ_gA
 
-
 end AlgebraicGeometry
