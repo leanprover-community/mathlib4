@@ -234,8 +234,8 @@ theorem coeff_monomial_mul (a : R) :
     ∀ p ∈ antidiagonal m,
       coeff (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 (monomial n a) * coeff p.2 φ ≠ 0 → p.1 = n :=
     fun p _ hp => eq_of_coeff_monomial_ne_zero (left_ne_zero_of_mul hp)
-  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.filter_fst_eq_antidiagonal _ n,
-    Finset.sum_ite_index]
+  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.HasAntidiagonal.filter_fst_eq_antidiagonal
+    _ n, Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 
 theorem coeff_mul_monomial (a : R) :
@@ -245,8 +245,8 @@ theorem coeff_mul_monomial (a : R) :
     ∀ p ∈ antidiagonal m,
       coeff (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 φ * coeff p.2 (monomial n a) ≠ 0 → p.2 = n :=
     fun p _ hp => eq_of_coeff_monomial_ne_zero (right_ne_zero_of_mul hp)
-  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.filter_snd_eq_antidiagonal _ n,
-    Finset.sum_ite_index]
+  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.HasAntidiagonal.filter_snd_eq_antidiagonal
+    _ n, Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 
 theorem coeff_add_monomial_mul (a : R) :
@@ -350,6 +350,15 @@ theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
 
 theorem coeff_zero_C (a : R) : coeff (0 : σ →₀ ℕ) (C a) = a :=
   coeff_monomial_same 0 a
+
+theorem coeff_C_of_ne_zero {n : σ →₀ ℕ} (h : n ≠ 0) (a : R) : coeff n (C a) = 0 := by
+  classical rw [coeff_C, if_neg h]
+
+-- The intended use case of this theorem is for `m = 1` (often useful for `pderiv`).
+@[simp]
+theorem coeff_add_single_C {m : ℕ} [NeZero m] {n : σ →₀ ℕ} (a : R) (i : σ) :
+    coeff (n + single i m) (C a) = 0 :=
+  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($(H) i)) a
 
 @[grind inj]
 theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
