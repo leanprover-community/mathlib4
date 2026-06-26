@@ -688,4 +688,8 @@ lemma add_le_add_natCast_left_iff {a b : WithBot ℕ∞} {c : ℕ} : c + a ≤ c
 lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤ b :=
   WithBot.add_le_add_natCast_left_iff
 
+theorem eq_top_iff_forall_ge {n : WithBot ℕ∞} : n = ⊤ ↔ ∀ (m : ℕ), ↑m ≤ n := by
+  cases n <;> simp [ENat.eq_top_iff_forall_ge]
+  norm_cast
+
 end ENat.WithBot
