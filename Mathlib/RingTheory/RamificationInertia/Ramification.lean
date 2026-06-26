@@ -146,6 +146,17 @@ theorem ramificationIdx_eq_ramificationIdx'
   have hpS : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp
   exact ramificationIdx_eq_ramificationIdx'' p q hpS
 
+open UniqueFactorizationMonoid in
+theorem IsDedekindDomain.ramificationIdx'_eq_factors_count [IsDomain R] [IsDedekindDomain S]
+    [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx' R = (factors (p.map (algebraMap R S))).count q := by
+  by_cases hq : q.IsPrime; swap
+  · rw [ramificationIdx'_of_not_isPrime q R hq, eq_comm, Multiset.count_eq_zero]
+    contrapose! hq
+    exact isPrime_of_prime (prime_of_factor q hq)
+  have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
+  rw [← ramificationIdx_eq_ramificationIdx'' p q hp0, ramificationIdx_eq_factors_count hp0 ‹_› hq0]
+
 /-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
 theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     [Algebra (Localization.AtPrime q) (Localization.AtPrime r)]
@@ -194,23 +205,5 @@ theorem ramificationIdx'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMu
       e.toLinearEquiv.length_eq, Module.length_eq_of_surjective f.surjective]
 
 end
-
-namespace IsDedekindDomain
-
-open UniqueFactorizationMonoid
-
-variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain R] [IsDedekindDomain S]
-  [Algebra R S] {p : Ideal R} {q : Ideal S}
-
-theorem ramificationIdx'_eq_factors_count [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
-    q.ramificationIdx' R = (factors (p.map (algebraMap R S))).count q := by
-  by_cases hq : q.IsPrime; swap
-  · rw [ramificationIdx'_of_not_isPrime q R hq, eq_comm, Multiset.count_eq_zero]
-    contrapose! hq
-    exact isPrime_of_prime (prime_of_factor q hq)
-  have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
-  rw [← ramificationIdx_eq_ramificationIdx'' p q hp0, ramificationIdx_eq_factors_count hp0 ‹_› hq0]
-
-end IsDedekindDomain
 
 end Ideal
