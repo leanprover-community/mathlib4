@@ -1159,8 +1159,8 @@ theorem center_eq_top (A : Type*) [StarRing R] [NonUnitalCommSemiring A] [StarRi
 
 variable {R A}
 
-instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  fast_instance% NonUnitalSubalgebra.center.instNonUnitalCommSemiring
+instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) where
+  mul_comm := Subsemigroup.center.commSemigroup.mul_comm
 
 instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
