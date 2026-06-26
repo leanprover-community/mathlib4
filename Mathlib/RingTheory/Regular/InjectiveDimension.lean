@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRingsExact
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
@@ -75,9 +76,9 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
     simp only [Module.support_of_exact exac inj surj, Set.union_subset_iff] at h2
     let S := ModuleCat.shortComplexOfCompEqZero f g exac.linearMap_comp_eq_zero
     have S_exact : S.ShortExact := ModuleCat.shortComplex_shortExact S exac inj surj
-    have := (Ext.contravariant_sequence_exact₂' S_exact M n).isZero_X₂
-      ((@AddCommGrpCat.isZero_of_subsingleton _ (h3 h2.2)).eq_zero_of_src _)
-      ((@AddCommGrpCat.isZero_of_subsingleton _ (h1 h2.1)).eq_zero_of_tgt _)
+    have := (Ext.contravariant_sequence_exact₂' S_exact M n).isZero_of_both_isZero
+      (AddCommGrpCat.isZero_of_iff_subsingleton.mpr (h3 h2.2))
+      (AddCommGrpCat.isZero_of_iff_subsingleton.mpr (h1 h2.1))
     exact AddCommGrpCat.subsingleton_of_isZero this
 
 set_option backward.isDefEq.respectTransparency false in
@@ -105,7 +106,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
     simpa [Algebra.smul_def, Ideal.Quotient.eq_zero_iff_mem, nmem] using hr
   have S_exact : S.ShortExact := IsSMulRegular.smulShortComplex_shortExact reg
   have exac := Ext.contravariant_sequence_exact₁' S_exact M n (n + 1) (add_comm 1 n)
-  have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
+  have epi := exac.epi_f ((AddCommGrpCat.isZero_of_iff_subsingleton.mpr this).eq_zero_of_tgt _)
   have : S.f = x • 𝟙 (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))) := rfl
   simp only [S, this, AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom] at epi
   have mem_jac : x ∈ (Module.annihilator R (Ext S.X₂ M n)).jacobson :=
@@ -263,8 +264,7 @@ lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
   refine ⟨?_, fun y ↦ Ext.covariant_sequence_exact₁ _ regM.smulShortComplex_shortExact y ?_ rfl⟩
   · apply (AddCommGrpCat.mono_iff_injective _).mp ((Ext.covariant_sequence_exact₃' N
       regM.smulShortComplex_shortExact 0 1 (zero_add 1)).mono_g (IsZero.eq_zero_of_src ?_ _))
-    apply @AddCommGrpCat.isZero_of_subsingleton _ ?_
-    apply Ext.homEquiv₀.subsingleton_congr.mpr
+    rw [AddCommGrpCat.isZero_of_iff_subsingleton, Ext.homEquiv₀.subsingleton_congr]
     apply subsingleton_of_forall_eq 0 fun f ↦ ModuleCat.hom_ext (LinearMap.ext fun t ↦ regM ?_)
     have : (x • 𝟙 N) t = x • t := by simp
     simp [smul_zero, ← map_smul, ← this, ann, map_zero]
@@ -284,8 +284,9 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     ((ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x}))).mapExtAddHom N
     (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n)) := by
   let Fr := (ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x})))
-  induction n generalizing N
-  · simp only [ModuleCat.smulShortComplex, Nat.reduceAdd, AddMonoidHom.coe_comp]
+  induction n generalizing N with
+  | zero =>
+    simp only [ModuleCat.smulShortComplex, Nat.reduceAdd, AddMonoidHom.coe_comp]
     refine Function.Bijective.comp ?_ ?_
     · apply extClass_postcomp_bijective_of_isSMulRegular regM
       ext u
@@ -294,7 +295,7 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       rw [Ext.mapExactFunctor₀, Equiv.comp_bijective, Equiv.bijective_comp]
       apply Functor.FullyFaithful.map_bijective
       exact ModuleCat.restrictScalarsFullyFaithfulOfSurjective _ Ideal.Quotient.mk_surjective
-  · rename_i n ih
+  | succ n ih =>
     let S := N.projectiveShortComplex
     have S_exact : S.ShortExact := N.shortExact_projectiveShortComplex
     have : HasProjectiveDimensionLT (S.map Fr).X₂ 2 :=
@@ -313,8 +314,8 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       (ShortComplex.ab_exact_iff_function_exact  _).mp (Ext.contravariant_sequence_exact₁'
       (S_exact.map_of_exact Fr) M (n + 1) (n + 2) (add_comm 1 (n + 1)))
     have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (S.map Fr).X₂ M (n + 2))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _ (HasProjectiveDimensionLT.subsingleton (S.map Fr).X₂
-        2 (n + 2) (Nat.le_add_left _ n) M)
+      AddCommGrpCat.isZero_of_iff_subsingleton.mpr
+        (HasProjectiveDimensionLT.subsingleton (S.map Fr).X₂ 2 (n + 2) (Nat.le_add_left _ n) M)
     have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
       ((Ext.contravariant_sequence_exact₃' (S_exact.map_of_exact Fr) M (n + 1) (n + 2)
         (add_comm 1 (n + 1))).epi_f (isz2.eq_zero_of_tgt _))
