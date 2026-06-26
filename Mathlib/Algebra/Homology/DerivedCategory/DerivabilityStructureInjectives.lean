@@ -85,7 +85,7 @@ with enough injectives. Assume that `K` is cohomologically `≥ n`. Then, `K`
 admits an "injective resolution", in the sense that there exists a cochain
 complex `L` consisting of injective object and lying in degrees `≥ n`, such that `K`
 is isomorphic to the image of `L`. -/
-lemma exists_iso_injective [EnoughInjectives C] (K : DerivedCategory.Plus C)
+lemma exists_injective_nonempty_iso [EnoughInjectives C] (K : DerivedCategory.Plus C)
     (n : ℤ) [K.IsGE n] :
     ∃ (L : CochainComplex.Plus (InjectiveObject C)) (_ : L.obj.IsStrictlyGE n),
       Nonempty (DerivedCategory.Plus.Q.obj
