@@ -64,6 +64,9 @@ def id : LocalizerMorphism W₁ W₁ where
   functor := 𝟭 C₁
   map _ _ _ hf := hf
 
+instance : (id W₁).functor.IsEquivalence :=
+  inferInstanceAs (𝟭 C₁).IsEquivalence
+
 variable {W₁ W₂ W₃}
 
 /-- The composition of two localizers morphisms. -/
