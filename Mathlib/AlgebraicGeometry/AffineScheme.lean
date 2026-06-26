@@ -964,47 +964,20 @@ set_option backward.isDefEq.respectTransparency false in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the
 localization of `f` away from `r`. -/
-noncomputable
-def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
+noncomputable def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
     Arrow.mk (Spec.map f ∣_ (PrimeSpectrum.basicOpen r)) ≅
       Arrow.mk (Spec.map <| CommRingCat.ofHom (Localization.awayMap f.hom r)) := by
-  letI e₁ : Localization.Away r ≃ₐ[R] Γ(Spec R, basicOpen r) :=
-    IsLocalization.algEquiv (Submonoid.powers r) _ _
-  letI e₂ : Localization.Away (f.hom r) ≃ₐ[S] Γ(Spec S, basicOpen (f.hom r)) :=
-    IsLocalization.algEquiv (Submonoid.powers (f.hom r)) _ _
   refine Arrow.isoMk ?_ ?_ ?_
-  · exact (Spec _).isoOfEq (comap_basicOpen _ _) ≪≫
-      (IsAffineOpen.Spec_basicOpen (f.hom r)).isoSpec ≪≫ Scheme.Spec.mapIso e₂.toCommRingCatIso.op
-  · exact (IsAffineOpen.Spec_basicOpen r).isoSpec ≪≫ Scheme.Spec.mapIso e₁.toCommRingCatIso.op
-  · have := AlgebraicGeometry.IsOpenImmersion.of_isLocalization
-      (S := (Localization.Away r)) r
-    rw [← cancel_mono (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))))]
-    simp only [Arrow.mk_left, Arrow.mk_right, Scheme.isoOfEq_rfl, Iso.refl_trans,
-      Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, Scheme.Spec_map, Quiver.Hom.unop_op,
-      Arrow.mk_hom, Category.assoc, ← Spec.map_comp]
-    conv =>
-      congr
-      · enter [2, 1]; tactic =>
-        change _ =
-          (f ≫ (Scheme.ΓSpecIso S).inv ≫ (Spec S).presheaf.map (homOfLE le_top).op)
-        ext
-        simp only [Localization.awayMap, IsLocalization.Away.map,
-          RingEquiv.toCommRingCatIso_hom, AlgEquiv.toRingEquiv_toRingHom, CommRingCat.hom_comp,
-          CommRingCat.hom_ofHom, RingHom.comp_apply, IsLocalization.map_eq, RingHom.coe_coe,
-          AlgEquiv.commutes, IsAffineOpen.algebraMap_Spec_obj]
-      · enter [2, 2, 1]; tactic =>
-        change _ = (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op
-        ext
-        simp only [RingEquiv.toCommRingCatIso_hom,
-          AlgEquiv.toRingEquiv_toRingHom, CommRingCat.hom_comp, CommRingCat.hom_ofHom,
-          RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes,
-          IsAffineOpen.algebraMap_Spec_obj, homOfLE_leOfHom]
-    simp only [IsAffineOpen.isoSpec_hom, homOfLE_leOfHom, Spec.map_comp, Category.assoc,
-      Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc, Scheme.Opens.toSpecΓ_top,
-      Scheme.homOfLE_ι_assoc, morphismRestrict_ι_assoc]
-    simp only [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Category.assoc, Iso.inv_hom_id,
-      Category.comp_id, Category.id_comp]
-    rfl
+  · exact (Spec _).isoOfEq (comap_basicOpen _ _) ≪≫ basicOpenIsoSpecAway (f.hom r)
+  · exact basicOpenIsoSpecAway r
+  · have hcomp : CommRingCat.ofHom (algebraMap R (Localization.Away r)) ≫
+        CommRingCat.ofHom (Localization.awayMap f.hom r) =
+        f ≫ CommRingCat.ofHom (algebraMap S (Localization.Away (f.hom r))) := by
+      ext x
+      simp [Localization.awayMap, IsLocalization.Away.map]
+    rw [← cancel_mono (Spec.map (CommRingCat.ofHom (algebraMap R _)))]
+    simp only [Arrow.mk_hom, Category.assoc, ← Spec.map_comp]
+    simp [hcomp]
 
 lemma stalkMap_injective_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] (x : X)
     (h : ∀ g, f.stalkMap x (Y.presheaf.Γgerm (f x) g) = 0 → Y.presheaf.Γgerm (f x) g = 0) :
