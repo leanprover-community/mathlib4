@@ -763,17 +763,8 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
         (renameEquiv R <| (Equiv.sumComm (↥sᶜ) s).trans <| Equiv.Set.sumCompl s)
     have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
       apply ringHom_ext
-      · intro
-        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_C,
-          AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, AlgEquiv.coe_trans,
-          Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply, iterToSum_C_C,
-          renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
-      · intro
-        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_X,
-          AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, AlgEquiv.coe_trans,
-          Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply, iterToSum_C_X,
-          renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
-          Equiv.Set.sumCompl_apply_inl]
+      · simp [eqv]
+      · simp [eqv]
     apply_fun (· p) at this
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_toRingHom,
       RingHom.coe_comp, Function.comp_apply] at this
@@ -935,7 +926,7 @@ lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
   apply (Polynomial.natDegree_sum_le _ _).trans
   apply Finset.sup_le
   intro d hd
-  simp_rw [Function.comp_apply, ← C_eq_algebraMap]
+  simp_rw [Function.comp_apply, ← Polynomial.C_eq_algebraMap]
   apply (Polynomial.natDegree_C_mul_le _ _).trans
   apply (Polynomial.natDegree_prod_le _ _).trans
   have : ∑ i ∈ d.support, (d i) * n ≤ m * n := by

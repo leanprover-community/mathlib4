@@ -533,7 +533,7 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
     ← descPochhammer_eq_factorial_smul_choose, smul_sum, descPochhammer_smeval_add _ h]
   refine sum_congr rfl ?_
   intro x hx
-  rw [← Nat.choose_mul_factorial_mul_factorial (antidiagonal.fst_le hx),
+  rw [← Nat.choose_mul_factorial_mul_factorial (HasAntidiagonal.antidiagonal.fst_le hx),
     tsub_eq_of_eq_add_rev (List.Nat.mem_antidiagonal.mp hx).symm, mul_assoc, nsmul_eq_mul,
     Nat.cast_mul, Nat.cast_mul, ← mul_assoc _ (x.1.factorial : R), mul_assoc _ (x.2.factorial : R),
     ← mul_assoc (x.2.factorial : R), Nat.cast_commute x.2.factorial,
