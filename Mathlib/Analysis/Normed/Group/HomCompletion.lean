@@ -185,27 +185,44 @@ variable {H : Type*} [SeminormedAddCommGroup H] [T0Space H] [CompleteSpace H]
 
 /-- If `H` is complete, the extension of `f : NormedAddGroupHom G H` to a
 `NormedAddGroupHom (completion G) H`. -/
-def NormedAddGroupHom.extension (f : NormedAddGroupHom G H) : NormedAddGroupHom (Completion G) H :=
+def NormedAddGroupHom.fromCompletion (f : NormedAddGroupHom G H) :
+    NormedAddGroupHom (Completion G) H :=
   .ofLipschitz (f.toAddMonoidHom.extension f.continuous) <|
     let _ := MetricSpace.ofT0PseudoMetricSpace H
     f.lipschitz.completion_extension
 
-theorem NormedAddGroupHom.extension_def (f : NormedAddGroupHom G H) (v : G) :
-    f.extension v = Completion.extension f v :=
+@[deprecated (since := "2026-06-26")] alias NormedAddGroupHom.extension :=
+  NormedAddGroupHom.fromCompletion
+
+theorem NormedAddGroupHom.fromCompletion_def (f : NormedAddGroupHom G H) (v : G) :
+    f.fromCompletion v = Completion.extension f v :=
   rfl
+
+@[deprecated (since := "2026-06-26")] alias NormedAddGroupHom.extension_def :=
+  NormedAddGroupHom.fromCompletion_def
 
 @[simp]
-theorem NormedAddGroupHom.extension_coe (f : NormedAddGroupHom G H) (v : G) : f.extension v = f v :=
+theorem NormedAddGroupHom.fromCompletion_coe (f : NormedAddGroupHom G H) (v : G) :
+    f.fromCompletion v = f v :=
   AddMonoidHom.extension_coe _ f.continuous _
 
-theorem NormedAddGroupHom.extension_coe_to_fun (f : NormedAddGroupHom G H) :
-    (f.extension : Completion G → H) = Completion.extension f :=
+@[deprecated (since := "2026-06-26")] alias NormedAddGroupHom.extension_coe :=
+  NormedAddGroupHom.fromCompletion_coe
+
+theorem NormedAddGroupHom.fromCompletion_coe_to_fun (f : NormedAddGroupHom G H) :
+    (f.fromCompletion : Completion G → H) = Completion.extension f :=
   rfl
 
-theorem NormedAddGroupHom.extension_unique (f : NormedAddGroupHom G H)
-    {g : NormedAddGroupHom (Completion G) H} (hg : ∀ v, f v = g v) : f.extension = g := by
+@[deprecated (since := "2026-06-26")] alias NormedAddGroupHom.extension_coe_to_fun :=
+  NormedAddGroupHom.fromCompletion_coe_to_fun
+
+theorem NormedAddGroupHom.fromCompletion_unique (f : NormedAddGroupHom G H)
+    {g : NormedAddGroupHom (Completion G) H} (hg : ∀ v, f v = g v) : f.fromCompletion = g := by
   ext v
-  rw [NormedAddGroupHom.extension_coe_to_fun,
+  rw [NormedAddGroupHom.fromCompletion_coe_to_fun,
     Completion.extension_unique f.uniformContinuous g.uniformContinuous fun a => hg a]
+
+@[deprecated (since := "2026-06-26")] alias NormedAddGroupHom.extension_unique :=
+  NormedAddGroupHom.fromCompletion_unique
 
 end Extension
