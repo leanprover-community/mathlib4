@@ -62,13 +62,8 @@ lemma IntertwiningMap.stabilizer_le {ρ : Representation k G V} {ρ' : Represent
 lemma stabilizer_conj (ρ : Representation k G V) (g : G) (v : V) :
     ρ.stabilizer (ρ g v) = (stabilizer ρ v).map (MulAut.conj g) := by
   ext x
-  simp only [mem_stabilizer, Subgroup.mem_map, MonoidHom.coe_coe, MulAut.conj_apply]
-  constructor
-  · intro hx_stab
-    refine ⟨g⁻¹ * x * g, ?_, ?_⟩
-    · simp [hx_stab]
-    · group
-  · rintro ⟨y, hy_stab, hy_conj⟩
-    simp [← hy_conj, hy_stab]
+  simp only [mem_stabilizer, Subgroup.mem_map, MonoidHom.coe_coe, MulAut.conj_apply,
+    ← Module.End.mul_apply, ← inv_apply_eq_iff, ← map_mul, ← mul_assoc]
+  exact ⟨fun h ↦ ⟨_, h, by simp [mul_assoc]⟩, by rintro ⟨y, hy1, rfl⟩; simp [mul_assoc, hy1]⟩
 
 end Representation
