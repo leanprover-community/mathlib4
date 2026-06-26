@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Nat.Defs
-public meta import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Tactic.Push
 
 /-!
