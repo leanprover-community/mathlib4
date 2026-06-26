@@ -22,7 +22,7 @@ is strictly less than primes of `S` over `P` (provided they are finite).
 The lemma is stated in terms of surjections for syntactic generality. -/
 lemma Ideal.ncard_primesOver_lt_of_not_le
     (f : S →ₐ[R] T) (Hf : Function.Surjective f)
-    (P : Ideal R) [P.IsPrime] (P' : Ideal S) [P'.IsPrime] [P'.LiesOver P]
+    (P : Ideal R) (P' : Ideal S) [P'.IsPrime] [P'.LiesOver P]
     (hkP' : ¬ RingHom.ker f.toRingHom ≤ P') (H : (P.primesOver S).Finite) :
     (P.primesOver T).ncard < (P.primesOver S).ncard := by
   rw [← Set.ncard_image_of_injective _ (Ideal.comap_injective_of_surjective _ Hf)]
@@ -32,7 +32,7 @@ lemma Ideal.ncard_primesOver_lt_of_not_le
   · rintro ⟨q, ⟨_, _⟩, rfl⟩; exact hkP' (Ideal.ker_le_comap _)
 
 lemma Ideal.ncard_primesOver_quotient_singleton_lt_of_notMem
-    (P : Ideal R) [P.IsPrime] (e : S) (P' : Ideal S) [P'.IsPrime] [P'.LiesOver P]
+    (P : Ideal R) (e : S) (P' : Ideal S) [P'.IsPrime] [P'.LiesOver P]
     (heP' : e ∉ P') (H : (P.primesOver S).Finite) :
     (P.primesOver (S ⧸ Ideal.span {e})).ncard < (P.primesOver S).ncard :=
   Ideal.ncard_primesOver_lt_of_not_le _ (Ideal.Quotient.mkₐ_surjective R _) _ P' (by simpa) H
