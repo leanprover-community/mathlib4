@@ -211,9 +211,9 @@ theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
   mp h t hD ht₀ ht₁ a ha has := by
     by_contra! H
     have hcof : IsCofinalFor t (t \ s) := by grind [IsCofinalFor, not_subset]
-    obtain ⟨x, hx, hxs⟩ := h (hDL diff_subset hD) (hcof.nonempty ht₀)
-      (ht₁.of_isCofinalFor diff_subset hcof)
-      (ha.of_isCofinalFor diff_subset hcof) has
+    obtain ⟨x, hx, hxs⟩ := h (hDL sdiff_subset hD) (hcof.nonempty ht₀)
+      (ht₁.of_isCofinalFor sdiff_subset hcof)
+      (ha.of_isCofinalFor sdiff_subset hcof) has
     exact hx.2 hxs
 
 /-- The condition `(d ∩ s).Nonempty` in `DirSupInacc` can be replaced with the stronger
