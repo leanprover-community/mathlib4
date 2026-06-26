@@ -323,6 +323,9 @@ instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
 instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem_addSubmonoid (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
+instance [AddMonoid Y] : SMul ℕ+ (locallyFinsuppWithin U Y) where
+  smul n D := mk_of_mem_addSubmonoid (n • D) <| psmul_mem D.memAddSubmonoid n
+
 instance [AddMonoid Y] : SMul ℕ (locallyFinsuppWithin U Y) where
   smul n D := mk_of_mem_addSubmonoid (n • D) <| nsmul_mem D.memAddSubmonoid n
 
@@ -352,6 +355,8 @@ instance [AddGroup Y] : SMul ℤ (locallyFinsuppWithin U Y) where
     (↑(-D) : X → Y) = -(D : X → Y) := rfl
 @[simp] lemma coe_sub [AddGroup Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
     (↑(D₁ - D₂) : X → Y) = D₁ - D₂ := rfl
+@[simp] lemma coe_psmul [AddMonoid Y] (D : locallyFinsuppWithin U Y) (n : ℕ+) :
+    (↑(n • D) : X → Y) = n • (D : X → Y) := rfl
 @[simp] lemma coe_nsmul [AddMonoid Y] (D : locallyFinsuppWithin U Y) (n : ℕ) :
     (↑(n • D) : X → Y) = n • (D : X → Y) := rfl
 @[simp] lemma coe_zsmul [AddGroup Y] (D : locallyFinsuppWithin U Y) (n : ℤ) :
@@ -359,11 +364,11 @@ instance [AddGroup Y] : SMul ℤ (locallyFinsuppWithin U Y) where
 
 instance [AddMonoid Y] : AddMonoid (locallyFinsuppWithin U Y) :=
   Injective.addMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
-    _ coe_injective coe_zero coe_add coe_nsmul
+    _ coe_injective coe_zero coe_add (fun _ _ ↦ rfl) coe_nsmul
 
 instance [AddCommMonoid Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
   Injective.addCommMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
-    _ coe_injective coe_zero coe_add coe_nsmul
+    _ coe_injective coe_zero coe_add coe_psmul coe_nsmul
 
 @[simp] lemma coe_sum [AddCommMonoid Y] {ι : Type*} {s : Finset ι}
     {F : ι → locallyFinsuppWithin U Y} :
@@ -385,7 +390,7 @@ instance [AddCommMonoid Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
 
 instance [AddGroup Y] : AddGroup (locallyFinsuppWithin U Y) :=
   Injective.addGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
-    _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+    _ coe_injective coe_zero coe_add coe_neg coe_sub coe_psmul coe_nsmul coe_zsmul
 
 /--
 Simplifier lemma: Support does not change when replacing a function with locally finite support by
@@ -396,7 +401,7 @@ its negative.
 
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
-    _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+    _ coe_injective coe_zero coe_add coe_neg coe_sub coe_psmul coe_nsmul coe_zsmul
 
 instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
   le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
