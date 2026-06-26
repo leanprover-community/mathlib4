@@ -555,6 +555,21 @@ theorem isIso_fromTildeΓ_pushforward (M : (Spec S).Modules) [h : IsIso M.fromTi
 end IsLocalizing
 
 set_option backward.isDefEq.respectTransparency false in
+instance Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
+    [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
+    ((restrictFunctor f).obj M).IsQuasicoherent := by
+  let α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
+  have hα : IsIso α := NatIso.isIso_of_isIso_app _
+  let φ : X.ringCatSheaf ⟶ (f.opensFunctor.sheafPushforwardContinuous _ _ _).obj Y.ringCatSheaf :=
+    ⟨Functor.whiskerRight α (forget₂ CommRingCat RingCat)⟩
+  have : IsIso φ := by
+    rw [← isIso_iff_of_reflects_iso _ (ObjectProperty.ι _)]
+    dsimp [φ]
+    infer_instance
+  exact SheafOfModules.isQuasicoherent_pushforward_of_isLeftAdjoint.{u}
+    f.opensFunctor φ (Scheme.Modules.restrictUnitIso _)
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The presentation of `M.restrict f` by restricting a presentation of `M`. -/
 def Scheme.Modules.presentationRestrict {X Y : Scheme.{u}} (f : Y ⟶ X)
     [IsOpenImmersion f] {M : X.Modules} (pres : M.Presentation) :
