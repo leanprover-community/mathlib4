@@ -163,13 +163,6 @@ lemma le_φ (B : Set X) : B ≤ φ Y m B := by
     refine ⟨hb, @hC' ⟨b, hb⟩ (by simp)⟩
   · simp
 
-variable (κ₁) in
-noncomputable abbrev orderBot : OrderBot κ₁.ord.ToType :=
-  have : Nonempty κ₁.ord.ToType := by
-    rw [Ordinal.nonempty_toType_iff, ne_eq, ord_eq_zero]
-    exact IsRegular.ne_zero Fact.out
-  WellFoundedLT.toOrderBot _
-
 include h₀ hA hY in
 omit [PartialOrder X] in
 /-- By iterating `φ` to the power `j : κ₁.ord.ToType` and evaluating
@@ -178,7 +171,8 @@ lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
     HasCardinalLT (transfiniteIterate (φ Y m) j A :) κ₂ := by
   induction j using SuccOrder.limitRecOn with
   | isMin j hj =>
-    letI := orderBot κ₁
+    have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
+    letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
     simpa [hj.eq_bot]
   | succ j hj hj' =>
     have hκ₂ : κ₂.IsRegular := Fact.out
@@ -201,12 +195,14 @@ include hY' in
 omit [Fact κ₂.IsRegular] [PartialOrder X] in
 lemma monotone_transfiniteIterate_φ :
     Monotone (fun (j : κ₁.ord.ToType) ↦ transfiniteIterate (φ Y m) j A) :=
-  letI := orderBot κ₁
+  have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
+  letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
   monotone_transfiniteIterate _ _ (le_φ _ hY' _)
 
 omit [PartialOrder X] [Fact κ₂.IsRegular] in
 lemma subset_iUnion : A ⊆ ⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A := by
-  letI := orderBot κ₁
+  have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
+  letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
   exact subset_trans (by simp) (Set.subset_iUnion _ ⊥)
 
 include h₀ hY hY' hm hA in
