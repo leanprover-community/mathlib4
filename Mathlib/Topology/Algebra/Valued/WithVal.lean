@@ -645,14 +645,14 @@ theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
     {w : Valuation K Γ₀'} (h : v.IsEquiv w) {x : v.Completion} :
-    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv h.uniformEquiv x) ≤ 1 := by
+    Valued.v x ≤ 1 ↔ Valued.v (h.uniformEquiv.completion x) ≤ 1 := by
   induction x using induction_on with
   | hp =>
     have h1 (x : UniformSpace.Completion (WithVal v)) :
       Valued.v x ≤ 1 ↔ Valued.v.restrict x ≤ 1 := by rw [restrict_le_one_iff]
     simp_rw [h1]
     convert!
-      (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
+      h.uniformEquiv.completion.toHomeomorph.isClosed_setOf_iff
         (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
     rw [restrict_le_one_iff]
     rfl
