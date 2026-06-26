@@ -129,6 +129,15 @@ variable [L.IsLocalization P.isoModSerre] [Preadditive D] [L.Additive]
 
 include L P
 
+lemma isZero_obj_iff (X : C) :
+    IsZero (L.obj X) ↔ P X := by
+  simp only [IsZero.iff_id_eq_zero, ← L.map_id, ← L.map_zero,
+    MorphismProperty.map_eq_iff_precomp L P.isoModSerre,
+    Category.comp_id, comp_zero, exists_prop, exists_eq_right]
+  refine ⟨?_, fun _ ↦ ⟨X, by simpa⟩⟩
+  rintro ⟨Y, h⟩
+  simpa using h.2
+
 lemma map_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     L.map f = 0 ↔ P (Abelian.image f) := by
   rw [← L.map_zero, MorphismProperty.map_eq_iff_precomp L P.isoModSerre]
@@ -370,7 +379,7 @@ lemma hasCoequalizers : HasCoequalizers D :=
 
 lemma hasFiniteProducts : HasFiniteProducts D :=
   have := Localization.essSurj L P.isoModSerre
-  L.hasFiniteProductsOfAdditiveEssSurj
+  L.hasFiniteProducts_of_additive_of_essSurj
 
 lemma isNormalMonoCategory : IsNormalMonoCategory D where
   normalMonoOfMono f hf := by
@@ -416,6 +425,10 @@ def abelian : Abelian D := by
   have := isNormalMonoCategory L P
   have := isNormalEpiCategory L P
   constructor
+
+lemma hasZeroObject : HasZeroObject D :=
+  have := abelian L P
+  Abelian.hasZeroObject
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
   letI := abelian L P
