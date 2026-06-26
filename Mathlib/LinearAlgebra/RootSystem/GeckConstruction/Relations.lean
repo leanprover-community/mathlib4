@@ -184,6 +184,8 @@ lemma lie_e_f_same :
     · exact lie_e_f_same_aux i k hki hki'
     · simp_all [h, e, f]
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 lemma isSl2Triple [DecidableEq ι] :
     IsSl2Triple (h i) (e i) (f i) where
   h_ne_zero := fun contra ↦ by simpa [h] using congr_fun₂ contra (.inr i) (.inr i)
