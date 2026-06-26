@@ -39,7 +39,7 @@ open Polynomial IsLocalRing Ideal UniqueFactorizationMonoid
 
 namespace AdjoinRoot
 
-variable {R k : Type*} [CommRing R] [Field k] {p q : R[X]} {f : k[X]}
+variable {R k : Type*} [CommRing R] [Field k] {p : R[X]} {f : k[X]}
 
 lemma isLocalRing_of_monic_of_isLocalRing (monic : p.Monic) [IsLocalRing (AdjoinRoot p)] :
     IsLocalRing R :=
