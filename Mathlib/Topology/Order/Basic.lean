@@ -790,12 +790,13 @@ lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
   · obtain hz | ne := em' (f ⁻¹' Iic z).Nonempty
     · exact ⟨univ, isOpen_univ, mem_univ _, fun a ha ↦ not_le.mp fun h ↦ hz ⟨a, h⟩⟩
     have bdd : BddAbove (f ⁻¹' Iic z) := ⟨x, fun a ha ↦ (hf.mono.reflect_lt (ha.trans_lt hxz)).le⟩
-    have u_eq : Ioi (sSup (f ⁻¹' Iic z)) = f ⁻¹' (Ioi z) := Set.ext fun a ↦
-      ⟨fun ha ↦ not_le.mp fun h ↦ ha.not_ge (le_csSup bdd h),
-        fun ha ↦ lt_of_le_of_ne
-          (csSup_le ne fun b hb ↦ (hf.mono.reflect_lt (hb.trans_lt ha)).le)
-          fun h ↦ ((h ▸ ha).trans_eq (hf.map_csSup ne bdd)).not_ge
-            (csSup_le (.image _ ne) fun _ ⟨b, hb, heq⟩ ↦ heq ▸ hb)⟩
+    have u_eq : Ioi (sSup (f ⁻¹' Iic z)) = f ⁻¹' (Ioi z) := by
+      refine Set.ext fun a ↦ ⟨fun ha ↦ ?_, fun ha ↦ ?_⟩
+      · exact not_le.mp fun h ↦ ha.not_ge (le_csSup bdd h)
+      · apply lt_of_le_of_ne
+        · exact csSup_le ne fun b hb ↦ (hf.mono.reflect_lt (hb.trans_lt ha)).le
+        · have : sSup (f '' f ⁻¹' Iic z) ≤ z := csSup_le (.image _ ne) fun _ ⟨b, hb, heq⟩ ↦ heq ▸ hb
+          exact fun h ↦ this.not_gt ((h ▸ ha).trans_eq (hf.map_csSup ne bdd))
     exact ⟨f ⁻¹' (Ioi z), u_eq ▸ isOpen_Ioi, hxz, fun _ h ↦ h.1⟩
   -- The case `V = Iio z`.
   · exact ⟨univ, isOpen_univ, trivial, fun a ha ↦ (hf.mono ha.2).trans_lt hxz⟩
