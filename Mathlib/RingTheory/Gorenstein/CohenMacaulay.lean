@@ -107,7 +107,7 @@ noncomputable def quotSMulTopExtEquivExtQuotSMulTop (M : ModuleCat.{v} R) (n : �
   have ker : LinearMap.ker f = a • (⊤ : Submodule R _) := by
     have exac := Ext.contravariant_sequence_exact₁' S_exact N n (n + 1) (add_comm 1 n)
     have exac' : Function.Exact (a • LinearMap.id (R := R) (M := (Ext M N n))) f := by
-      convert (ShortComplex.ab_exact_iff_function_exact _).mp exac
+      convert! (ShortComplex.ab_exact_iff_function_exact _).mp exac
       ext x
       simp only [S, M.smulShortComplex_f_eq_smul_id]
       simp [ModuleCat.smulShortComplex, Ext.mk₀_smul]
@@ -125,13 +125,14 @@ noncomputable def extQuotientLengthEquivOfIsRegular [IsLocalRing R] [IsNoetheria
     (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M rs.length) ≃ₗ[R]
     M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := by
   generalize len : rs.length = n
-  induction n generalizing rs
-  · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
+  induction n generalizing rs with
+  | zero =>
+    rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
     let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans
       (AlgEquiv.quotientBot R R).toLinearEquiv
     exact ((Ext.linearEquiv₀.trans (ModuleCat.homLinearEquiv.trans (e₀.congrLeft M R))).trans
       (LinearMap.ringLmapEquivSelf R R M)).trans (Submodule.quotEquivOfEqBot ⊥ rfl).symm
-  · rename_i n hn
+  | succ n hn =>
     let a := rs[n]
     let rs' := rs.take n
     have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
@@ -160,7 +161,7 @@ noncomputable def extQuotientLengthEquivOfIsRegular [IsLocalRing R] [IsNoetheria
       Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
       __ := (((extFunctor (n + 1)).mapIso e1'.toModuleIso.op).app M).addCommGroupIsoToAddEquiv
       map_smul' r x := by simp [Iso.addCommGroupIsoToAddEquiv] }
-    let _ : HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) n :=
+    have : HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) n :=
       have : projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) = n := by
         simp [ModuleCat.projectiveDimension_quotient_eq_length rs' rs'reg, rs', len]
       (projectiveDimension_le_iff _ n).mp (le_of_eq this)
@@ -264,7 +265,7 @@ instance (S : Submonoid R) : Small.{v} (Localization S) :=
 instance (p : Ideal R) [p.IsPrime] : Small.{v} p.ResidueField :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
-private instance (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
+instance (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
     Small.{v} (LocalizedModule S M) :=
   small_of_surjective (IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M))
 
@@ -414,9 +415,10 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
   have lem' (i : ℕ) (h : i ≤ q.length) : Nontrivial (Ext.{v}
     (ModuleCat.of (Localization (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.primeCompl)
       (Shrink.{v, u} (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.ResidueField))
-    (M.localizedModule (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.primeCompl) i) := by
-    induction i
-    · simp only [Fin.zero_eta, Ext.homEquiv₀.nontrivial_congr, ModuleCat.localizedModule]
+        (M.localizedModule (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.primeCompl) i) := by
+    induction i with
+    | zero =>
+      simp only [Fin.zero_eta, Ext.homEquiv₀.nontrivial_congr, ModuleCat.localizedModule]
       rw [ModuleCat.homAddEquiv.nontrivial_congr, ((Shrink.linearEquiv.{v} _ _).congrLeft _
         (Localization (q 0).1.1.primeCompl)).nontrivial_congr,
         (Shrink.linearEquiv.{v} _ _).congrRight.nontrivial_congr]
@@ -426,7 +428,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
       simp only [AssociatedPrimes.mem_iff, isAssociatedPrime_iff_exists_injective_linearMap] at this
       rcases this with ⟨_, f, hf⟩
       exact nontrivial_of_ne f 0  (LinearMap.ne_zero_of_injective hf)
-    · rename_i i ih
+    | succ i ih =>
       exact ext_succ_nontrivial_of_eq_of_le M (q.step ⟨i, h⟩) (eq_of_le ⟨i, h⟩) i
         (ih (Nat.le_of_succ_le h))
   have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) M
