@@ -32,9 +32,6 @@ complete field). In the planned file `Mathlib/Geometry/Manifold/VectorBundle/Ort
 metric. This includes bundles of finite rank, modelled on a Hilbert space or on a Banach space which
 has smooth partitions of unity.
 
-We will use this to construct local extensions of a vector to a section which is smooth on the
-trivialisation domain.
-
 ## Main definitions and results
 
 * `IsLocalFrameOn`: a family of sections `s i` of `V → M` is called a **C^k local frame** on a set
