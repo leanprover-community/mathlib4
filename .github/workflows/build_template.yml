@@ -79,7 +79,7 @@ jobs:
           # We just populate the env vars for this step to make them viewable in the logs
 
       - name: Checkout local actions
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -394,7 +394,7 @@ jobs:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: Checkout local actions
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -604,7 +604,7 @@ jobs:
       # `build_template` via `pull_request_target`, never this one — so
       # `pr_branch_ref` is always a trusted ref here. Fork PRs keep `master`.
       - name: Checkout tools branch
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
           fetch-depth: 1
@@ -674,7 +674,7 @@ jobs:
       contents: read
     steps:
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ inputs.pr_branch_ref }}
           # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
@@ -684,7 +684,7 @@ jobs:
       # below loads from a trust-rooted source, not from PR-branch-controlled
       # content. Mirrors the `Checkout local actions` step in the `build` job.
       - name: Checkout local actions
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -748,7 +748,7 @@ jobs:
           lake exe graph
 
       - name: Checkout local actions
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
