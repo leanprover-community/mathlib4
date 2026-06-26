@@ -398,7 +398,7 @@ of a `GNonUnitalNonAssocSemiring`. -/
 scoped instance (priority := 900) :
     NonUnitalNonAssocSemiring (A 0) :=
   Function.Injective.nonUnitalNonAssocSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
-    (of A 0).map_add (of_zero_mul A) (map_nsmul _)
+    (of A 0).map_add (of_zero_mul A) (map_psmul _) (map_nsmul _)
 
 /-- The `SMulWithZero` structure on the grade zero part
 of a `GNonUnitalNonAssocSemiring`. -/
@@ -414,6 +414,10 @@ section Semiring
 variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 @[simp]
+theorem of_zero_ppow (a : A 0) (n : ℕ+) :
+    of A 0 (a ^ n) = of A 0 a ^ n := by
+  induction n using Semigroup.ppow_induction a <;> simp [*, ppow_mk_add_one]
+
 theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
   | 0 => by rw [pow_zero, pow_zero, DirectSum.of_zero_one]
   -- Porting note: Lean doesn't think this terminates if we only use `of_zero_pow` alone
@@ -437,7 +441,8 @@ theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
 /-- The `Semiring` structure derived from `GSemiring A`. -/
 scoped instance (priority := 900) : Semiring (A 0) :=
   Function.Injective.semiring (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
-    (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ (of A 0).map_nsmul _ _)
+    (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ (of A 0).map_psmul _ _)
+    (fun _ _ ↦ (of A 0).map_nsmul _ _) (fun _ _ => of_zero_ppow _ _ _)
     (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
 
 /-- `of A 0` is a `RingHom`, using the `DirectSum.GradeZero.semiring` structure. -/
@@ -462,7 +467,8 @@ variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
 scoped instance (priority := 900) : CommSemiring (A 0) :=
   Function.Injective.commSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
-    (of_zero_one A) (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ map_nsmul _ _ _)
+    (of_zero_one A) (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ map_psmul _ _ _)
+    (fun _ _ ↦ map_nsmul _ _ _) (fun _ _ => of_zero_ppow _ _ _)
     (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
 
 end CommSemiring
@@ -474,8 +480,8 @@ variable [∀ i, AddCommGroup (A i)] [AddZeroClass ι] [GNonUnitalNonAssocSemiri
 /-- The `NonUnitalNonAssocRing` derived from `GNonUnitalNonAssocSemiring A`. -/
 scoped instance (priority := 900) : NonUnitalNonAssocRing (A 0) :=
   Function.Injective.nonUnitalNonAssocRing (of A 0) DFinsupp.single_injective (of A 0).map_zero
-    (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
-    (fun _ _ ↦ map_zsmul _ _ _)
+    (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_psmul _ _ _)
+    (fun _ _ ↦ map_nsmul _ _ _) (fun _ _ ↦ map_zsmul _ _ _)
 
 end Ring
 
@@ -494,8 +500,9 @@ theorem of_intCast (n : ℤ) : of A 0 n = n := by
 /-- The `Ring` derived from `GSemiring A`. -/
 scoped instance (priority := 900) : Ring (A 0) :=
   Function.Injective.ring (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
-    (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
-    (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
+    (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_psmul _ _ _)
+    (fun _ _ ↦ map_nsmul _ _ _) (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_ppow _ _ _)
+    (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
 
 end Ring
 
@@ -506,8 +513,9 @@ variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 /-- The `CommRing` derived from `GCommSemiring A`. -/
 scoped instance (priority := 900) : CommRing (A 0) :=
   Function.Injective.commRing (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
-    (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
-    (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
+    (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_psmul _ _ _)
+    (fun _ _ ↦ map_nsmul _ _ _) (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_ppow _ _ _)
+    (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
 
 end CommRing
 
