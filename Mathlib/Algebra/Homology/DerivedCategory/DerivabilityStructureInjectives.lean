@@ -142,7 +142,7 @@ def fibrantObjectEquivalence :
   inverse := ObjectProperty.lift _
     (HomologicalComplex.liftFunctorObjectProperty _ (FibrantObject.ι ⋙ Plus.ι C)
       (fun K n ↦ by dsimp; infer_instance)) (by
-        rintro ⟨⟨K, n, hn⟩, _⟩
+        rintro ⟨⟨_, n, _⟩, _⟩
         refine ⟨n, ?_⟩
         rwa [← isStrictlyGE_mapHomologicalComplex_obj_iff _ (InjectiveObject.ι _)])
   unitIso := Iso.refl _
