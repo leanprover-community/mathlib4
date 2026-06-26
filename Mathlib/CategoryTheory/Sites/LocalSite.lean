@@ -55,25 +55,22 @@ to the type of all functions `(⊤_ C ⟶ X) → A`. This can be defined on any 
 object, but has values in sheaves in the case of local sites. -/
 @[simps!]
 noncomputable def Presheaf.coconst {C : Type u} [Category.{v} C] [HasTerminal C] :
-    Type w ⥤ (Cᵒᵖ ⥤ Type max v w) :=
-  uliftFunctor ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj
-    (coyoneda.obj (op (⊤_ C)) ⋙ uliftFunctor).op
+    Type w ⥤ (Cᵒᵖ ⥤ Type max v w) where
+  obj A := {
+    obj X := ((⊤_ C ⟶ X.unop) → A)
+    map f := TypeCat.ofHom fun g g' ↦ g (g' ≫ f.unop) }
+  map f := {
+    app X := TypeCat.ofHom fun g ↦ ConcreteCategory.hom f ∘ g }
 
-open ConcreteCategory in
 set_option backward.isDefEq.respectTransparency false in
-/-- On local sites, `Presheaf.coconst` actually takes values in sheaves. -/
+/-- On local sites, `Presheaf.coconst'` actually takes values in sheaves. -/
 lemma Presheaf.coconst_isSheaf [J.IsLocalSite] (X : Type w) : IsSheaf J (coconst.obj X) := by
   refine (isSheaf_iff_isSheaf_of_type J _).2 fun Y S hS f hf ↦ ?_
-  refine ⟨TypeCat.ofHom fun g ↦
-    (hom (f g.down (LocalSite.from_terminal_mem_of_mem J g.down hS))) ⟨𝟙 _⟩, ?_, ?_⟩
-  · intro Z g hg
-    refine hom_ext _ _ fun (x : ULift (_ ⟶ _)) ↦ ?_
-    exact (congr_hom (f.comp_of_compatible S hf hg x.down) _).trans <|
-      congr_arg (f g hg) <| ULift.ext _ _ <| Category.id_comp _
-  · intro g hg
-    refine hom_ext _ _ fun ⟨h⟩ ↦ ?_
-    exact Eq.trans (by simp [coconst, uliftFunctor, Functor.whiskeringLeft, Functor.comp]) <|
-      congr_hom (hg h ((LocalSite.from_terminal_mem_of_mem J h hS))) _
+  refine ⟨fun g ↦ f g (LocalSite.from_terminal_mem_of_mem J g hS) (𝟙 _), ?_, ?_⟩
+  · refine fun Z g hg ↦ funext fun x ↦ ?_
+    exact (congrFun (f.comp_of_compatible S hf hg x) _).trans (congrArg (f g hg) <| by simp)
+  · exact fun g hg ↦ funext fun h : (⊤_ C ⟶ Y) ↦ Eq.trans (by simp [Presheaf.coconst]) <|
+      congrFun (hg h ((LocalSite.from_terminal_mem_of_mem J h hS))) _
 
 /-- The right adjoint to the global sections functor that exists over any local site.
 Takes a type `X` to the sheaf that sends each `Y : C` to the type of functions `Y → X`. -/
@@ -93,52 +90,45 @@ noncomputable def IsLocalSite.ΓCoconstantSheafAdj [J.IsLocalSite] :
   exact {
     unit := {
       app X := ⟨{
-        app Y := TypeCat.ofHom fun (x : X.obj.obj Y) ↦ TypeCat.ofHom fun y ↦
-          ⟨X.obj.map (op y.down) x⟩
+        app Y := TypeCat.ofHom fun (x : X.obj.obj Y) y ↦ X.obj.map (op y) x
         naturality Y Z f := by
           ext (x : X.obj.obj Y)
-          dsimp [coconstantSheaf, Presheaf.coconst, Functor.comp, Functor.whiskeringLeft,
-            uliftFunctor, yoneda, coyoneda]
+          dsimp [coconstantSheaf, Presheaf.coconst, Functor.comp]
           ext z
           exact (Functor.map_comp_apply X.obj _ _ x).symm
       }⟩
       naturality X Y f := by
         ext Z (x : X.obj.obj Z)
-        dsimp [coconstantSheaf, Presheaf.coconst, Functor.comp,
-          Functor.whiskeringLeft, uliftFunctor, yoneda, coyoneda]
+        dsimp [coconstantSheaf, Presheaf.coconst, Functor.comp]
         ext z
         exact (NatTrans.naturality_apply f.hom _ x).symm
     }
-    counit := {
-      app X := by
-        refine TypeCat.ofHom fun f ↦ ?_
-
-        dsimp [coconstantSheaf, Presheaf.coconst, Functor.comp, Functor.whiskeringLeft,
-          uliftFunctor, yoneda, coyoneda] at f
-        --exact (f.hom (𝟙 _)).down
-        --exact fun f : ULift (_ ⟶ _) → _ ↦ (f default).down
-        sorry }
+    counit := { app X := TypeCat.ofHom fun f ↦ f (𝟙 _) }
     left_triangle_components X := by
       ext (x : X.obj.obj _)
-      dsimp; convert congrFun (X.obj.map_id _) x; exact Subsingleton.elim _ _
+      exact ConcreteCategory.congr_hom (X.obj.map_id _) x
     right_triangle_components X := by
-      ext Y (f : _ → _); dsimp [coconstantSheaf, Presheaf.coconst]; ext y
-      dsimp; congr; convert Category.id_comp _; exact Subsingleton.elim _ _
+      ext Y (f : _ → _)
+      dsimp [coconstantSheaf, Presheaf.coconst]
+      ext y
+      simp
   }
 
 instance [J.IsLocalSite] : (IsLocalSite.coconstantSheaf.{u,v,max u v} J).IsRightAdjoint :=
   ⟨Γ J _, ⟨IsLocalSite.ΓCoconstantSheafAdj J⟩⟩
 
-/-- The global sections of the coconstant sheaf on a type are naturally isomorphic to that type.-/
+/-- The global sections of the coconstant sheaf on a type are naturally isomorphic to that type. -/
 noncomputable def coconstantSheafΓNatIsoId [J.IsLocalSite] :
     IsLocalSite.coconstantSheaf J ⋙ Γ J _ ≅ 𝟭 (Type max u v) := by
   refine (Functor.isoWhiskerLeft _ (ΓNatIsoSheafSections J _ terminalIsTerminal)).trans ?_
   exact (NatIso.ofComponents (fun X ↦ {
-    hom x := fun _ ↦ ⟨x⟩
-    inv f := (f (default : ULift (⊤_ C ⟶ ⊤_ C))).down
+    hom := TypeCat.ofHom fun x _ ↦ x
+    inv := TypeCat.ofHom fun f ↦ by exact f (𝟙 (⊤_ C))
     inv_hom_id := by
-      dsimp [IsLocalSite.coconstantSheaf, Presheaf.coconst]; ext; dsimp
-      congr; exact Subsingleton.elim _ _
+      dsimp [IsLocalSite.coconstantSheaf, Presheaf.coconst]
+      ext x
+      dsimp at ⊢
+      exact funext fun x ↦ congr_arg _ <| Subsingleton.elim _ _
   })).symm
 
 /-- `coconstantSheaf` is fully faithful. -/
@@ -180,24 +170,24 @@ protected theorem GrothendieckTopology.IsLocalSite.tfae [HasTerminal C] :
   tfae_have 2 → 1 := fun h ↦ ⟨fun S hS ↦ S.id_mem_iff_eq_top.1 <| h _ S hS _⟩
   tfae_have 1 → 2 := fun h X S hS f ↦ by
     simpa using Sieve.id_mem_iff_eq_top.2 <| h.eq_top_of_mem _ <| J.pullback_stable f hS
-  tfae_have 4 → 1 := fun h ↦ ⟨fun S hS ↦ by
+  tfae_have 3 → 1 := fun h ↦ ⟨fun S hS ↦ by
     replace h : IsEmpty (Presieve.FamilyOfElements
         (Presheaf.coconst.{u,v,max u v}.obj PEmpty) S.arrows) := by
       have : IsEmpty ((Presheaf.coconst.{u,v,max u v}.obj PEmpty).obj (op (⊤_ C))) := by
-        dsimp [Presheaf.coconst]; exact isEmpty_fun.2 ⟨⟨⟨𝟙 _⟩⟩, inferInstance⟩
-      have {X : C} : Subsingleton ((Presheaf.coconst.{u,v,max u v}.obj PEmpty).obj (op X)) := by
-        dsimp [Presheaf.coconst]; exact Pi.instSubsingleton
+        dsimp [Presheaf.coconst]; exact isEmpty_fun.2 ⟨⟨𝟙 _⟩, inferInstance⟩
+      have {X : C} : Subsingleton ((Presheaf.coconst.{u,v,max u v}.obj PEmpty).obj (op X)) :=
+        Pi.instSubsingleton
       refine not_nonempty_iff.1 fun ⟨x⟩ ↦ IsEmpty.false (h S hS x ?_).choose
       exact fun _ _ _ _ _ _ _ _ _ _ ↦ Subsingleton.elim _ _
     replace ⟨X, f, hf, h⟩ : ∃ X, ∃ f : X ⟶ ⊤_ C, S f ∧
         IsEmpty ((Presheaf.coconst.{u,v,max u v}.obj PEmpty).obj (op X)) := by
       by_contra! h'; exact h.false fun X f hf ↦ (h' X f hf).some
-    let ⟨⟨(g : _ ⟶ _)⟩⟩ := (isEmpty_fun.1 h).1
+    let ⟨(g : _ ⟶ _)⟩ := (isEmpty_fun.1 h).1
     refine S.id_mem_iff_eq_top.1 ?_
     convert S.downward_closed hf g
     exact Subsingleton.elim _ _⟩
-  tfae_have 5 → 4 := fun h ↦ h _
-  tfae_have 1 → 5 := fun _ _ ↦ (isSheaf_iff_isSheaf_of_type _ _).1 <| Presheaf.coconst_isSheaf J _
+  tfae_have 4 → 3 := fun h ↦ h _
+  tfae_have 1 → 4 := fun _ _ ↦ (isSheaf_iff_isSheaf_of_type _ _).1 <| Presheaf.coconst_isSheaf J _
   tfae_finish
 
 end CategoryTheory
