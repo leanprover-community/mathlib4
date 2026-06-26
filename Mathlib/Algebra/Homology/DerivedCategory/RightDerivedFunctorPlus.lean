@@ -54,19 +54,16 @@ instance :
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
 
-instance (X : HomotopyCategory.Plus (InjectiveObject C)) :
+example (X : HomotopyCategory.Plus (InjectiveObject C)) :
     IsIso (F.rightDerivedFunctorPlusUnit.app
       ((InjectiveObject.ι C).mapHomotopyCategoryPlus.obj X)) := by
-  dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
 
-instance (K : CochainComplex.Plus (InjectiveObject C)) :
+example (K : CochainComplex.Plus (InjectiveObject C)) :
     IsIso (F.rightDerivedFunctorPlusUnit.app
       ((HomotopyCategory.Plus.quotient C).obj
-        ((InjectiveObject.ι C).mapCochainComplexPlus.obj K))) :=
-  inferInstanceAs (IsIso (F.rightDerivedFunctorPlusUnit.app
-    ((InjectiveObject.ι C).mapHomotopyCategoryPlus.obj
-      ((HomotopyCategory.Plus.quotient _).obj K))))
+        ((InjectiveObject.ι C).mapCochainComplexPlus.obj K))) := by
+  infer_instance
 
 end Functor
 
