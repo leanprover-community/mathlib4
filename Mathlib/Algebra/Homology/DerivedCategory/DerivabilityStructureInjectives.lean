@@ -27,7 +27,7 @@ subcategory of fibrant objects in the model category `CochainComplex.Plus C`.)
 
 We also obtain a similar right derivability structure `HomotopyCategory.Plus.localizerMorphism`
 for the functor `HomotopyCategory.Plus (InjectiveObject C) ⥤ HomotopyCategory.Plus C`, where
-The target category is equipped with the class of quasi-isomorphisms while
+the target category is equipped with the class of quasi-isomorphisms while
 the source category `HomotopyCategory.Plus (InjectiveObject C)` is equipped
 with the class of isomorphisms (which is exactly the same as quasi-isomorphisms).
 The consequence is that any functor from the category `HomotopyCategory.Plus C`
