@@ -56,6 +56,12 @@ def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSub
   map_one' := by ext; simp
   map_mul' x y := by ext; simp
 
+@[simp]
+lemma toRepresentation_apply
+    {ρ' : Subrepresentation ρ} {g : G} {v w : W} {hv : v ∈ ρ'} {hw : w ∈ ρ'}
+    : ρ'.toRepresentation g ⟨v, hv⟩ = ⟨w, hw⟩ ↔ ρ g v = w := by
+  simp [Subrepresentation.toRepresentation, Subtype.ext_iff]
+
 instance : Max (Subrepresentation ρ) where
   max ρ₁ ρ₂ := .mk (ρ₁.toSubmodule ⊔ ρ₂.toSubmodule) <| by
       simp only [Submodule.forall_mem_sup, map_add]
