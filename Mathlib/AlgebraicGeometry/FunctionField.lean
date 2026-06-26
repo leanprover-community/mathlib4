@@ -194,8 +194,7 @@ lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) 
     simp only [← hg, ← X.presheaf.germ_res_apply (homOfLE hAU) (genericPoint X) hxA g, gA]
     rfl
   have hxV : genericPoint X ∈ X.basicOpen gA := by
-    rw [Scheme.mem_basicOpen X gA (genericPoint X) hxA, h_germ_gA]
-    exact isUnit_iff_ne_zero.mpr hf
+    rwa [Scheme.mem_basicOpen X gA (genericPoint X) hxA, h_germ_gA, isUnit_iff_ne_zero]
   have : Nonempty (X.basicOpen gA) := ⟨⟨_, hxV⟩⟩
   refine ⟨X.basicOpen gA, hA.basicOpen gA,
     X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
