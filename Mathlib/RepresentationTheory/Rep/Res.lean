@@ -5,11 +5,8 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.RepresentationTheory.Rep.Iso
-public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-
+public import Mathlib.RepresentationTheory.Rep.Iso
 /-!
 # Restriction of representations
 Given a group homomorphism `f : H →* G`, we have the restriction functor
