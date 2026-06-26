@@ -103,7 +103,7 @@ namespace existsIsCardinalFilteredSetOfExistsCofinal
 /-! The definitions in this section are part of the proof of the
 lemma `exists_isCardinalFiltered_set_of_exists_cofinal` below,
 which is the implication (iii) → (iv) in the characterizations
-of `Sharply κ₁ κ₂` which appear in the docstring of this file. -/
+of `SharplyLT κ₁ κ₂` which appear in the docstring of this file. -/
 
 variable (h₀ : κ₁ < κ₂)
   {X : Type w} [PartialOrder X]
