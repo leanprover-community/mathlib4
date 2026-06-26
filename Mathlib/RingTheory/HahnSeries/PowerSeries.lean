@@ -70,8 +70,8 @@ def toPowerSeries : R⟦ℕ⟧ ≃+* PowerSeries R where
     refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
       sum_filter_ne_zero _
     ext m
-    simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
-      mem_support]
+    simp only [HasAntidiagonal.mem_antidiagonal, Finset.mem_antidiagonal, and_congr_left_iff,
+      mem_filter, mem_support]
     rintro h
     rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
@@ -169,8 +169,8 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : R⟦σ →₀ ℕ⟧ ≃+* MvPowe
       refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
         sum_filter_ne_zero _
       ext m
-      simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,
-        Finset.mem_antidiagonal]
+      simp only [and_congr_left_iff, Finset.mem_antidiagonal, mem_filter, mem_support,
+        HasAntidiagonal.mem_antidiagonal]
       rintro h
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
