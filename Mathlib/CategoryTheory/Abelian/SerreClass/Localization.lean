@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-public import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
 # Localization with respect to a Serre class
@@ -29,7 +28,7 @@ universe v'' v' v u'' u' u
 
 namespace CategoryTheory
 
-open Limits ZeroObject
+open Limits
 
 namespace ObjectProperty
 
@@ -129,18 +128,6 @@ noncomputable example : P.isoModSerre.Q.Additive := inferInstance
 variable [L.IsLocalization P.isoModSerre] [Preadditive D] [L.Additive]
 
 include L P
-
-lemma isZero_obj_iff (X : C) :
-    IsZero (L.obj X) ↔ P X := by
-  simp only [IsZero.iff_id_eq_zero, ← L.map_id, ← L.map_zero,
-    MorphismProperty.map_eq_iff_precomp L P.isoModSerre,
-    Category.comp_id, comp_zero, exists_prop, exists_eq_right]
-  refine ⟨?_, fun _ ↦ ⟨X, by simpa⟩⟩
-  rintro ⟨Y, h⟩
-  simpa using h.2
-
-lemma hasZeroObject : HasZeroObject D :=
-  ⟨L.obj 0, by simpa [isZero_obj_iff L P] using P.prop_zero⟩
 
 lemma map_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     L.map f = 0 ↔ P (Abelian.image f) := by
@@ -381,17 +368,9 @@ lemma hasCoequalizers : HasCoequalizers D :=
     Preadditive.hasCoequalizer_of_hasCokernel _ _
   hasCoequalizers_of_hasColimit_parallelPair _
 
-lemma hasBinaryProducts : HasBinaryProducts D :=
-  have := Localization.essSurj L P.isoModSerre
-  have (X Y : D) : HasBinaryProduct X Y :=
-    hasLimit_of_iso (show Limits.pair _ _ ≅ _ from
-      mapPairIso (L.objObjPreimageIso X) (L.objObjPreimageIso Y))
-  hasBinaryProducts_of_hasLimit_pair D
-
 lemma hasFiniteProducts : HasFiniteProducts D :=
-  have := hasZeroObject L P
-  have := hasBinaryProducts L P
-  hasFiniteProducts_of_has_binary_and_terminal
+  have := Localization.essSurj L P.isoModSerre
+  L.hasFiniteProductsOfAdditiveEssSurj
 
 lemma isNormalMonoCategory : IsNormalMonoCategory D where
   normalMonoOfMono f hf := by
