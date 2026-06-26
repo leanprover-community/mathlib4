@@ -352,6 +352,19 @@ structure FredholmDecomposition' where
   mapsto : ∀ a ∈ (dec_left).X₁, u a ∈ (dec_right).X₁
   invertible₁ : (u.restrict mapsto).IsInvertible
 
+lemma FredholmDecomposition'.exists_equiv_eq_proj (dec : FredholmDecomposition' 𝕜 u) :
+    ∃ equiv : dec.dec_left.X₁ ≃L[𝕜] dec.dec_right.X₁,
+      u = dec.dec_right.X₁.subtypeL ∘L equiv ∘L
+        dec.dec_left.X₁.projectionOntoL dec.dec_left.X₂ dec.dec_left.topCompl := by
+  obtain ⟨equiv, h⟩ := dec.invertible₁
+  use equiv
+  refine LinearMap.ext_on_codisjoint dec.dec_left.topCompl.isCompl.codisjoint ?_ ?_
+  · intro x hx
+    simp [projectionOnto_apply_of_mem_left _ hx, h]
+  · intro x hx
+    have hux : u x = 0 := congr($dec.ker ⟨x, hx⟩)
+    simp [projectionOnto_apply_of_mem_right _ hx, hux]
+
 variable (huF : IsFredholmStruct u)
 
 @[simp]
@@ -634,6 +647,42 @@ lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E)
 
 open Set
 
+open scoped LinearMap.FiniteRangeSetoid
+
+open ContinuousLinearMap in
+theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
+    [
+      IsFredholmQuot u,
+      IsFredholmStruct u,
+      ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
+        IsClosed F₁.carrier ∧ F₁.CoFG ∧ ∃ h : MapsTo u E₁ F₁,
+          (u.restrict h).IsInvertible, Nonempty (FredholmDecomposition' 𝕜 u)] := by
+  tfae_have 1 → 3 := aaron
+  tfae_have 3 → 2 := by
+    rintro ⟨E₁, F₁, E₁_closed, E₁_coFG, F₁_closed, F₁_coFG, u_mapsto, u_invertible⟩
+    exact bar E₁ F₁ E₁_closed F₁_closed E₁_coFG F₁_coFG u_mapsto u_invertible
+  tfae_have 2 → 4 := fun huF ↦ ⟨NiceFD huF⟩
+  tfae_have 4 → 1 := by
+    rintro ⟨FD⟩
+    set i := FD.dec_left.X₁.subtypeL
+    set j := FD.dec_right.X₁.subtypeL
+    set p := FD.dec_left.X₁.projectionOntoL FD.dec_left.X₂ FD.dec_left.topCompl
+    set q := FD.dec_right.X₁.projectionOntoL FD.dec_right.X₂ FD.dec_right.topCompl
+    have hpi : p.toLinearMap ∘ₗ i = .id := projectionOnto_comp_subtype _
+    have hqj : q.toLinearMap ∘ₗ j = .id := projectionOnto_comp_subtype _
+    have hip : i.toLinearMap ∘ₗ p ≈ .id := sorry -- forgot to merge
+    have hjq : j.toLinearMap ∘ₗ q ≈ .id := sorry -- forgot to merge
+    obtain ⟨equiv, heq : u = j ∘L equiv ∘L p⟩ := FD.exists_equiv_eq_proj
+    rw [heq]
+    use i ∘L equiv.symm ∘L q
+    constructor
+    · --calc  (j.toLinearMap ∘ₗ equiv ∘ₗ p) ∘ₗ (i.toLinearMap ∘ₗ equiv.symm ∘ₗ q)
+      --  _ = j.toLinearMap ∘ₗ (equiv ∘ₗ (p ∘ₗ i) ∘ₗ equiv.symm) ∘ₗ q. := by simp [comp_assoc]
+      --  _ = j.toLinearMap ∘ₗ (equiv ∘ₗ (p ∘ₗ i) ∘ₗ equiv.symm) ∘ₗ q := by simp [comp_assoc]
+      sorry
+    · sorry
+  tfae_finish
+
 open ContinuousLinearMap in
 theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
     [
@@ -691,6 +740,8 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
         simp [← domRestrict_apply (f := u) (p := FD.dec_left.X₂) b, FD.3]
       simp_all
   tfae_finish
+
+#exit
 
 #print axioms isFredholmTFAE
 
