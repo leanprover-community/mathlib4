@@ -377,11 +377,11 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₁, p₁) ← eval e
     let (e₂, p₂) ← evalNeg e₁
     return (e₂, ← iapp `Mathlib.Tactic.Abel.subst_into_neg #[e, e₁, e₂, p₁, p₂])
-  | (``AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
+  | (``NSMul.nsmul, #[_, _, e₁, e₂]) => do
     let n ← if (← read).isGroup then mkAppM ``Int.ofNat #[e₁] else pure e₁
     let (e', p) ← eval <| ← iapp ``smul #[n, e₂]
     return (e', ← iapp ``unfold_smul #[e₁, e₂, e', p])
-  | (``SubNegMonoid.zsmul, #[_, _, e₁, e₂]) => do
+  | (``ZSMul.zsmul, #[_, _, e₁, e₂]) => do
       if ¬ (← read).isGroup then failure
       let (e', p) ← eval <| ← iapp ``smul #[e₁, e₂]
       return (e', (← read).app ``unfold_zsmul (← read).inst #[e₁, e₂, e', p])
@@ -411,8 +411,8 @@ def isAtom (e : Expr) : Bool :=
   | (``HAdd.hAdd, #[_, _, _, _, _, _])
   | (``HSub.hSub, #[_, _, _, _, _, _])
   | (``Neg.neg, #[_, _, _])
-  | (``AddMonoid.nsmul, #[_, _, _, _])
-  | (``SubNegMonoid.zsmul, #[_, _, _, _])
+  | (``NSMul.nsmul, #[_, _, _, _])
+  | (``ZSMul.zsmul, #[_, _, _, _])
   | (``SMul.smul, #[.const ``Int _, _, _, _, _])
   | (``SMul.smul, #[.const ``Nat _, _, _, _, _])
   | (``HSMul.hSMul, #[.const ``Int _, _, _, _, _, _])

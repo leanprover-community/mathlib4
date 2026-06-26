@@ -9,7 +9,6 @@ public meta import Lean.Meta.Tactic.NormCast
 public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Ring.RingNF
 
-
 /-!
 # The `algebra` tactic
 A suite of three tactics for solving equations in commutative algebras over commutative (semi)rings,
@@ -295,59 +294,17 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 theorem Nat.cast_eq_algebraMap (A : Type*) [CommSemiring A] (n : ℕ) :
     Nat.cast n = algebraMap ℕ A n := rfl
 
-theorem Nat.algebraMap_eq_cast (A : Type*) [CommSemiring A] (n : ℕ) :
-    algebraMap ℕ A n = Nat.cast n := rfl
-
 theorem Int.cast_eq_algebraMap (A : Type*) [CommRing A] (n : ℤ) :
     Int.cast n = algebraMap ℤ A n := rfl
 
-theorem Int.algebraMap_eq_cast (A : Type*) [CommRing A] (n : ℤ) :
-    algebraMap ℤ A n = Int.cast n := rfl
-
 /-- Remove some nonstandard spellings of `algebraMap` such as `Nat.cast` -/
-def preprocess (mvarId : MVarId) : MetaM MVarId := do
+def preprocess (e : Expr) : MetaM Simp.Result := do
   -- collect the available `push_cast` lemmas
   let thms : SimpTheorems := {}
   let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap,
     ``Algebra.algebraMap_eq_smul_one].foldlM (·.addConst ·) thms
   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
-  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
-    throwError "internal error in polynomial tactic: preprocessing should not close goals"
-  return r
-
-/-- Clean up the normal form into a more human-friendly format. This does everything
-  `RingNF.cleanup` does and also pulls the scalar multiplication from the end of of each term to
-  the start. i.e. x * y * (r • 1) → r • (x * y)
-  Used by `cleanup`. -/
-def cleanupSMul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
-  let thms : SimpTheorems := {}
-  let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
-    ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm, ``Nat.algebraMap_eq_cast,
-    ``Int.algebraMap_eq_cast].foldlM (·.addConst ·) thms
-  let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
-      ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
-    (simpTheorems := #[thms])
-    (congrTheorems := ← getSimpCongrTheorems)
-  pure <| ←
-    r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
-
-/-- Turn scalar multiplication by an explicit constant in `R` into multiplication in `A`.
-
-e.g. `(4 : ℚ) • x` becomes `4 * x` but `↑n • x` stays `↑n • x`.
--/
-def cleanupConsts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
-  let thms : SimpTheorems := {}
-  let thms ← [``add_zero, ``_root_.one_mul, ``_root_.mul_one,
-    ``neg_mul, ``add_neg].foldlM (·.addConst ·) thms
-  let thms ← [``ofNat_smul, ``neg_ofNat_smul, ``neg_1_smul, ``nnRat_ofNat_smul_1,
-    ``nnRat_ofNat_smul_2, ``rat_ofNat_smul_1, ``rat_ofNat_smul_2
-    ].foldlM (·.addConst · (post := false)) thms
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
-    (simpTheorems := #[thms])
-    (congrTheorems := ← getSimpCongrTheorems)
-  pure <| ←
-    r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+  return (← Simp.main e ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
 /-- Collect all scalar rings from scalar multiplications using a state monad for performance.
 
@@ -477,14 +434,14 @@ automatically.
  -/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
-    liftMetaTactic' preprocess
+    liftMetaTactic1 (transformAtTarget (fun e _ ↦ preprocess e) "algebra" .silent · default)
     let g ← getMainGoal
     AtomM.run .default (proveEq none g)
 
 @[tactic_alt algebra]
 elab (name := algebraWith) "algebra" " with " R:term : tactic =>
   withMainContext do
-    liftMetaTactic' preprocess
+    liftMetaTactic1 (transformAtTarget (fun e _ ↦ preprocess e) "algebra" .silent · default)
     let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
     let g ← getMainGoal
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
