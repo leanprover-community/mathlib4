@@ -3,8 +3,10 @@ Copyright (c) 2025 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Adjunction.Triple
-import Mathlib.CategoryTheory.Sites.GlobalSections
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Triple
+public import Mathlib.CategoryTheory.Sites.GlobalSections
 
 /-!
 # Local sites
@@ -28,6 +30,8 @@ since we don't yet have local topoi this can't be stated yet.
 -/
 
 universe w u v
+
+@[expose] public section
 
 open CategoryTheory Limits Sheaf Opposite GrothendieckTopology
 
