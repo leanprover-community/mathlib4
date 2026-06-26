@@ -143,3 +143,14 @@ theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := 
   simp [← p.mapQ_pow, hk]
 
 end Module.End
+
+section CommRing
+
+variable {R S : Type*} [CommRing R] [CommRing S]
+
+theorem nilradical_eq_map_radical_ker_of_surjective {f : R →+* S} (h : Function.Surjective f) :
+    nilradical S = (RingHom.ker f).radical.map f := by
+  rw [nilradical, Ideal.zero_eq_bot, Ideal.map_radical_of_surjective h le_rfl,
+    (Ideal.map_eq_bot_iff_le_ker _).mpr le_rfl]
+
+end CommRing
