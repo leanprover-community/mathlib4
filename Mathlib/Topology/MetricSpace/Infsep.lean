@@ -378,7 +378,7 @@ theorem infsep_eq_iInf [Decidable s.Nontrivial] :
       rcases h with ⟨_, _, _, rfl⟩
       exact dist_nonneg
     refine eq_of_forall_le_iff fun _ => ?_
-    simp_rw [hs.le_infsep_iff, le_ciInf_set_iff (offDiag_nonempty.mpr hs) hb, imp_forall_iff,
+    simp_rw [hs.le_infsep_iff, le_ciInf_set_iff (hs.offDiag_nonempty) hb, imp_forall_iff,
       mem_offDiag, Prod.forall, uncurry_apply_pair, and_imp]
   · exact (not_nontrivial_iff.mp hs).infsep_zero
 
@@ -416,7 +416,7 @@ theorem Finite.infsep_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
 theorem _root_.Finset.coe_infsep (s : Finset α) : (s : Set α).infsep =
     if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 := by
   have H : (s : Set α).Nontrivial ↔ s.offDiag.Nonempty := by
-    rw [← Set.offDiag_nonempty, ← Finset.coe_offDiag, Finset.coe_nonempty]
+    rw [← Set.offDiag_nonempty_iff, ← Finset.coe_offDiag, Finset.coe_nonempty]
   split_ifs with hs
   · classical simp_rw [(H.mpr hs).infsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
   · exact (not_nontrivial_iff.mp (H.mp.mt hs)).infsep_zero
