@@ -55,7 +55,7 @@ namespace PreAbstractSimplicialComplex
 
 instance : SetLike (PreAbstractSimplicialComplex ι) (Finset ι) where
   coe K := K.faces
-  coe_injective' K _ _ := by
+  coe_injective K _ _ := by
     cases K
     congr
 
@@ -179,7 +179,7 @@ variable {ι}
 
 instance : SetLike (AbstractSimplicialComplex ι) (Finset ι) where
   coe K := K.faces
-  coe_injective' _ _ _ := by
+  coe_injective _ _ _ := by
     ext
     grind
 

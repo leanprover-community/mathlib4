@@ -156,9 +156,12 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
   inferInstanceAs <| DecidableEq <| M →₀ R
 
 -- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
+@[to_additive (dont_translate := A)]
+instance {A : Type*} [SMulZeroClass A R] : SMul A R[M] where
+  smul a x := x.mapRange (a • ·) (smul_zero _)
+
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
-  fast_instance% { (inferInstance : AddCommMonoid <| M →₀ R) with
-    nsmul n x := x.mapRange (n • ·) (smul_zero _) }
+  inferInstanceAs <| AddCommMonoid <| M →₀ R
 
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
@@ -260,15 +263,13 @@ Further results on scalar multiplication can be found in
 
 variable {A : Type*} [SMulZeroClass A R]
 
--- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
 @[to_additive (dont_translate := A) smulZeroClass]
 instance smulZeroClass : SMulZeroClass A R[M] :=
-  fast_instance% { (inferInstance : SMulZeroClass A (M →₀ R)) with
-    smul a x := x.mapRange (a • ·) (smul_zero _) }
+  inferInstanceAs <| SMulZeroClass A (M →₀ R)
 
 section
 -- Ensure that the different smul instances do not create a diamond.
-example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = addCommMonoid.toNSMul := by
+example : (smulZeroClass (A := ℕ) (R := R) (M := M)).smul = addCommMonoid.nsmul := by
   with_reducible_and_instances rfl
 
 -- Ensure that smul has good defeq properties
@@ -590,7 +591,7 @@ lemma ringHom_ext [Semiring S] {f g : R[M] →+* S}
     (h₁ : ∀ r, f (single 1 r) = g (single 1 r)) (h_of : ∀ m, f (single m 1) = g (single m 1)) :
     f = g :=
   RingHom.coe_addMonoidHom_injective <| addHom_ext fun m r ↦ by
-    simpa [← map_mul] using congr($(h₁ r) * $(h_of m))
+    simpa [← map_mul] using! congr($(h₁ r) * $(h_of m))
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
 and `single 1 r`, then they are equal.
@@ -634,12 +635,24 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
 set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
-@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
+@[to_additive (dont_translate := R) (attr := simps! apply)
 /-- The trivial additive monoid algebra is the base ring. -/]
-def uniqueRingEquiv [Unique M] : R[M] ≃+* R where
-  toAddEquiv := .finsuppUnique
-  map_mul' x y :=
-    (mul_apply ..).trans <| by simp [Finsupp.sum_unique, Unique.eq_default, MonoidAlgebra]
+def uniqueRingEquiv [Subsingleton M] : R[M] ≃+* R where
+  toAddEquiv := Finsupp.uniqueAddEquiv 1
+  map_mul' x y := by
+    let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim _ _⟩
+    refine (mul_apply ..).trans ?_
+    simp [Finsupp.sum_unique, Unique.eq_default, MonoidAlgebra]
+
+variable (M) in
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma uniqueRingEquiv_symm_apply [Subsingleton M] (r : R) :
+    (uniqueRingEquiv M).symm r = single 1 r := rfl
+
+-- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
+@[to_additive (dont_translate := R) (attr := simp↓ high)]
+lemma uniqueRingEquiv_symm_apply_apply [Subsingleton M] (r : R) (m : M) :
+    (uniqueRingEquiv M).symm r m = r := by simp [Subsingleton.elim m 1]
 
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)
@@ -837,8 +850,8 @@ def singleHom [AddZeroClass M] : R × Multiplicative M →* R[M] where
 theorem induction_on [AddMonoid M] {p : R[M] → Prop} (x : R[M])
     (hM : ∀ m, p (of R M <| .ofAdd m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
     (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
-  Finsupp.induction_linear x (by simpa using hsmul 0 (of R M 1) (hM 0))
-    (fun x y hf hg ↦ hadd x y hf hg) fun m r ↦ by simpa using hsmul r (of R M m) (hM m)
+  Finsupp.induction_linear x (by simpa using! hsmul 0 (of R M 1) (hM 0))
+    (fun x y hf hg ↦ hadd x y hf hg) fun m r ↦ by simpa using! hsmul r (of R M m) (hM m)
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
 and `single 0 r`, then they are equal.

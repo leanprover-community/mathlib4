@@ -53,8 +53,9 @@ protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion
 protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
   Completion.extension₂_coe_coe uniformContinuous_dist _ _
 
-/- Let us check that the new distance satisfies the axioms of a distance, by starting from the
+/-! Let us check that the new distance satisfies the axioms of a distance, by starting from the
 properties on α and extending them to `Completion α` by continuity. -/
+
 protected theorem dist_self (x : Completion α) : dist x x = 0 := by
   refine induction_on x ?_ ?_
   · refine isClosed_eq ?_ continuous_const
