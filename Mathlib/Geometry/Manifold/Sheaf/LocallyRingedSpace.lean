@@ -16,6 +16,7 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 public import Mathlib.Topology.Sheaves.PUnit
 public import Mathlib.CategoryTheory.Sites.InducedTopology
 public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 
 /-! # Smooth manifolds as locally ringed spaces
 
@@ -46,6 +47,34 @@ noncomputable section
 universe u
 
 open scoped ContDiff
+
+open CategoryTheory
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+def CategoryTheory.Limits.whiskeringColimIsoOfSubsingleton {J C : Type*} [Category* J] [Category* C]
+    {α : Type*} [Preorder α]
+    (D : α ⥤ J) [Nonempty α] [Subsingleton α] (a : α) :
+    (Functor.whiskeringLeft α J C).obj D ⋙ colim ≅ (evaluation J C).obj (D.obj a) := by
+  letI : OrderTop α := { top := a, le_top := by simp }
+  refine NatIso.ofComponents
+    (fun K ↦ ((colimitOfDiagramTerminal isTerminalTop _).coconePointUniqueUpToIso
+      (colimit.isColimit _)).symm) ?_
+  · intros
+    apply colimit.hom_ext
+    intro
+    simp [← NatTrans.naturality]
+    rfl
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+lemma CategoryTheory.Limits.ι_whiskeringColimIsoOfSubsingleton_hom {J C : Type*} [Category* J]
+    [Category* C] {α : Type*} [Preorder α] (D : α ⥤ J) [Nonempty α] [Subsingleton α]
+    (F : J ⥤ C) (a : α) :
+    dsimp% colimit.ι (D ⋙ F) a ≫ ((whiskeringColimIsoOfSubsingleton D a).app F).hom = 𝟙 _ := by
+  letI : OrderTop α := { top := a, le_top := by simp }
+  simp [whiskeringColimIsoOfSubsingleton, show isTerminalTop.from a = 𝟙 _ from rfl]
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
@@ -356,6 +385,18 @@ lemma TopologicalSpace.Opens.pUnitOrderIsoFinTwo_symm_zero :
   simp only [Fin.isValue, map_eq_bot_iff]
   rfl
 
+@[simp]
+lemma TopologicalSpace.Opens.pUnitOrderIsoFinTwo_bot :
+    pUnitOrderIsoFinTwo ⊥ = 0 := by
+  rw [map_bot]
+  rfl
+
+@[simp]
+lemma TopologicalSpace.Opens.pUnitOrderIsoFinTwo_top :
+    pUnitOrderIsoFinTwo ⊤ = 1 := by
+  simp only [TopHomClass.map_top, Fin.isValue]
+  rfl
+
 @[simps]
 def TopCat.Sheaf.star {C : Type*} [Category* C] {T : C} (hT : IsTerminal T) (A : C) :
     TopCat.Sheaf C (.of PUnit.{u + 1}) where
@@ -479,11 +520,11 @@ def TopCat.Sheaf.pUnitEquivOfIsTerminal {C : Type*} [Category* C] {T : C} (hT : 
   .trans (Opens.pUnitOrderIsoFinTwo.symm.equivalence.sheafCongr _ _ _).symm
     (sheafFinTwoEquivOfIsTerminal hT)
 
-set_option backward.defeqAttrib.useBackward true in
 def TopCat.Sheaf.pUnitEquivOfIsTerminalInverseObjIso {C : Type*} [Category* C] {T : C}
     (hT : IsTerminal T) (A : C) :
-    ((TopCat.Sheaf.pUnitEquivOfIsTerminal.{u} hT).inverse.obj A).presheaf.obj (.op ⊤) ≅ A := by
-  sorry
+    ((pUnitEquivOfIsTerminal.{u} hT).inverse.obj A).presheaf.obj (.op ⊤) ≅ A :=
+  ((sheafFinTwoEquivOfIsTerminal.{u} hT).inverse.obj A).obj.mapIso
+    (eqToIso <| show _ = .op 1 by simp; rfl)
 
 instance (X : TopCat) [IndiscreteTopology X] (x : X) : Subsingleton (OpenNhds x) where
   allEq
@@ -501,27 +542,18 @@ def OpenNhds.orderIsoOfIndiscreteTopology (X : TopCat) [IndiscreteTopology X] (x
     obtain rfl := Subsingleton.elim a b
     simp
 
-instance {C : Type*} [Category* C] {α : Type*} [Nonempty α] [Subsingleton α] [Preorder α] :
-    HasColimitsOfShape α C :=
-  sorry
-
-set_option backward.defeqAttrib.useBackward true in
-def CategoryTheory.Limits.whiskeringLeftPUnitColimIso {J C : Type*} [Category* J] [Category* C]
-    {α : Type*} [Preorder α]
-    (D : α ⥤ J) [Nonempty α] [Subsingleton α] (a : α) :
-    (Functor.whiskeringLeft α J C).obj D ⋙ colim ≅ (evaluation J C).obj (D.obj a) :=
-  NatIso.ofComponents (fun K ↦ by dsimp; sorry) sorry
-
 def TopCat.Presheaf.stalkFunctorIsoOfIndiscreteTopology {C : Type*} [Category* C]
     [HasColimits C] (X : TopCat) [IndiscreteTopology X] (x : X) :
     TopCat.Presheaf.stalkFunctor C x ≅ (evaluation _ _).obj (.op ⊤) :=
   Functor.isoWhiskerLeft _
-    (Functor.Final.colimIso <| (CategoryTheory.orderDualEquivalence _).functor ⋙
-    (OpenNhds.orderIsoOfIndiscreteTopology.{0} X x).equivalence.inverse.op).symm ≪≫
+    (Functor.Final.colimIso <| (orderDualEquivalence _).functor ⋙
+      (OpenNhds.orderIsoOfIndiscreteTopology.{0} X x).equivalence.inverse.op).symm ≪≫
     (Functor.associator _ _ _).symm ≪≫
     Functor.isoWhiskerRight (Functor.whiskeringLeftObjCompIso _ _).symm _ ≪≫
-    CategoryTheory.Limits.whiskeringLeftPUnitColimIso _ ⟨⟩
+    CategoryTheory.Limits.whiskeringColimIsoOfSubsingleton _ ⟨⟩
 
+/-- The stalk of a presheaf `F` on an indiscrete topological space is isomorphic to the global
+sections of `F`. -/
 abbrev TopCat.Presheaf.stalkIsoOfIndiscreteTopology {C : Type*} [Category* C]
     [HasColimits C] (X : TopCat) [IndiscreteTopology X] (F : TopCat.Presheaf C X) (x : X) :
     F.stalk x ≅ F.obj (.op ⊤) :=
@@ -533,12 +565,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma TopCat.Presheaf.germ_stalkIsoOfIndiscreteTopology_hom {C : Type*} [Category* C]
     [HasColimits C] (X : TopCat) [IndiscreteTopology X] (F : TopCat.Presheaf C X) (x : X) :
     F.germ ⊤ _ (by simp) ≫ (F.stalkIsoOfIndiscreteTopology X x).hom = 𝟙 _ := by
-  simp [TopCat.Presheaf.stalkIsoOfIndiscreteTopology,
-    TopCat.Presheaf.stalkFunctorIsoOfIndiscreteTopology]
-  simp [TopCat.Presheaf.germ, CategoryTheory.Functor.Final.colimIso]
-  -- erw [Functor.Final.ι_colimitIso_inv_assoc]
-  sorry
+  let G := (orderDualEquivalence PUnit.{1}).functor ⋙
+    (OpenNhds.orderIsoOfIndiscreteTopology X x).equivalence.inverse.op
+  change colimit.ι ((OpenNhds.inclusion x).op ⋙ F) (G.obj PUnit.unit) ≫ _ ≫ _ = _
+  have := Functor.Final.ι_colimitIso_inv G ((OpenNhds.inclusion _).op ⋙ F) ⟨⟩
+  dsimp [G] at this
+  simp [Functor.Final.colimIso, G, reassoc_of% this]
+  rfl
 
+/-- The stalk of the sheaf on the point induced by `A` is isomorphic to `A`. -/
 abbrev TopCat.Sheaf.pUnitEquivOfIsTerminalStalkIso {C : Type*} [Category* C] [HasColimits C]
     {T : C} (hT : IsTerminal T) (A : C) (x : PUnit) :
     ((TopCat.Sheaf.pUnitEquivOfIsTerminal hT).inverse.obj A).presheaf.stalk x ≅ A :=

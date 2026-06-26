@@ -29,17 +29,21 @@ namespace Preorder
 
 section OrderBot
 
-variable [OrderBot J]
+instance [OrderBot J] : HasLimitsOfShape J C := ⟨fun _ ↦ by infer_instance⟩
 
-instance : HasLimitsOfShape J C := ⟨fun _ ↦ by infer_instance⟩
+instance [Nonempty J] [Subsingleton J] : HasLimitsOfShape J C :=
+  have : OrderBot J := { bot := Classical.arbitrary _, bot_le _ := by simp }
+  inferInstance
 
 end OrderBot
 
 section OrderTop
 
-variable [OrderTop J]
+instance [OrderTop J] : HasColimitsOfShape J C := ⟨fun _ ↦ by infer_instance⟩
 
-instance : HasColimitsOfShape J C := ⟨fun _ ↦ by infer_instance⟩
+instance [Nonempty J] [Subsingleton J] : HasColimitsOfShape J C :=
+  have : OrderTop J := { top := Classical.arbitrary _, le_top _ := by simp }
+  inferInstance
 
 end OrderTop
 
