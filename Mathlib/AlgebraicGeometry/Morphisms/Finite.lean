@@ -211,12 +211,22 @@ lemma isClosed_singleton_iff_locallyOfFiniteType {X : Scheme.{u}} [JacobsonSpace
     simpa using (X.fromSpecResidueField x).closePoints_subset_preimage_closedPoints
       (IsLocalRing.isClosed_singleton_closedPoint _)
 
+#check IsLocalRing.ResidueField
+def dimb {k : Type*} [Field k] : IsLocalRing.ResidueField k ≅ k := by
+  simp [IsLocalRing.ResidueField]
+
+  sorry
+
 noncomputable
 def checking {k : Type u} [Field k] (x : Spec (.of k)) : (Spec (.of k)).residueField x ≅ .of k := by
+    simp [Scheme.residueField]
+
     letI : IsIso (Spec.preimage <| (Spec (.of k)).fromSpecResidueField x) := by
-      /-
-      This is definitely obvious, but I can't think
-      -/
+      have : IsFinite ((Spec (.of k)).fromSpecResidueField x) := by
+        rw [isFinite_iff_locallyOfFiniteType_of_jacobsonSpace]
+        sorry
+      rw [ConcreteCategory.isIso_iff_bijective]
+
       sorry
     exact (asIso (Spec.preimage <| (Spec (.of k)).fromSpecResidueField x)).symm
 end AlgebraicGeometry
