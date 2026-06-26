@@ -200,7 +200,7 @@ abbrev localizerMorphism : LocalizerMorphism
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-lemma isIso_quotient_map
+lemma isIso_quotient_map_iff
     {K L : CochainComplex.Plus (InjectiveObject C)} (f : K ⟶ L) :
     IsIso ((quotient _).map f) ↔
     CochainComplex.Plus.quasiIso C ((InjectiveObject.ι C).mapCochainComplexPlus.map f) := by
