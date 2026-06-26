@@ -141,6 +141,28 @@ noncomputable def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L
     · exact t₁.uniq ((fst L R).mapCocone s) _ (fun j => by simp [← w])
     · exact t₂.uniq ((snd L R).mapCocone s) _ (fun j => by simp [← w])
 
+set_option backward.defeqAttrib.useBackward true in
+def fstSndJointlyReflectColimit {F : J ⥤ Comma L R} {c : Cocone F}
+    [PreservesColimit (F ⋙ fst _ _) L]
+    (h₁ : IsColimit ((fst _ _).mapCocone c))
+    (h₂ : IsColimit ((snd _ _).mapCocone c)) :
+    IsColimit c where
+  desc s :=
+    { left := h₁.desc ((fst _ _).mapCocone s)
+      right := h₂.desc ((snd _ _).mapCocone s)
+      w := (isColimitOfPreserves L h₁).hom_ext (fun j ↦ by
+        simp [← Functor.map_comp_assoc, ← Functor.map_comp,
+          dsimp% h₁.fac ((fst _ _).mapCocone s) j,
+          dsimp% h₂.fac ((snd _ _).mapCocone s) j]) }
+  fac s j := by
+    ext
+    · exact h₁.fac ((fst _ _).mapCocone s) j
+    · exact h₂.fac ((snd _ _).mapCocone s) j
+  uniq s m hm := by
+    ext
+    · exact h₁.uniq ((fst _ _).mapCocone s) _ (fun j ↦ by simp [← hm])
+    · exact h₂.uniq ((snd _ _).mapCocone s) _ (fun j ↦ by simp [← hm])
+
 instance hasLimit (F : J ⥤ Comma L R) [HasLimit (F ⋙ fst L R)] [HasLimit (F ⋙ snd L R)]
     [PreservesLimit (F ⋙ snd L R) R] : HasLimit F :=
   HasLimit.mk ⟨_, coneOfPreservesIsLimit _ (limit.isLimit _) (limit.isLimit _)⟩

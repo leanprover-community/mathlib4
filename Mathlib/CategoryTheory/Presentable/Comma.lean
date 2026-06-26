@@ -166,17 +166,61 @@ lemma isCardinalPresentable_le
 instance [ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C₁ κ)]
     [ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C₂ κ)]
     [LocallySmall.{w} D] :
-    ObjectProperty.EssentiallySmall.{w}
-    (Comma.isCardinalPresentable F₁ F₂ κ) := by
+    ObjectProperty.EssentiallySmall.{w} (Comma.isCardinalPresentable F₁ F₂ κ) := by
   dsimp only [Comma.isCardinalPresentable]
   infer_instance
 
-instance (f : Comma F₁ F₂) :
-    IsCardinalFiltered (CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f) κ := by
+namespace isCardinalAccessibleCategory
+
+variable {F₁ F₂}
+  [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
+  [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+  [F₁.PreservesCardinalPresentable κ] [LocallySmall.{w} D]
+
+variable (f : Comma F₁ F₂)
+
+abbrev J := CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f
+
+-- there must be some better way to define these functors
+def π₁ : J κ f ⥤ CostructuredArrow (isCardinalPresentable C₁ κ).ι f.left where
+  obj g := CostructuredArrow.mk (Y := ⟨_, g.left.property.1⟩) (by exact g.hom.left)
+  map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.left))
+    (by exact congr_arg CommaMorphism.left (CostructuredArrow.w φ))
+
+def π₂ : J κ f ⥤ CostructuredArrow (isCardinalPresentable C₂ κ).ι f.right where
+  obj g := CostructuredArrow.mk (Y := ⟨_, g.left.property.2⟩) (by exact g.hom.right)
+  map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.right))
+    (by exact congr_arg CommaMorphism.right (CostructuredArrow.w φ))
+
+instance : (π₁ κ f).Final := sorry
+
+instance : (π₂ κ f).Final := sorry
+
+instance : IsCardinalFiltered (J κ f) κ := by
   sorry
 
-instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense := by
-  sorry
+instance : PreservesColimitsOfShape (J κ f) F₁ := sorry
+
+abbrev functor : J κ f ⥤ Comma F₁ F₂ :=
+  CostructuredArrow.proj (Comma.isCardinalPresentable F₁ F₂ κ).ι f ⋙
+    (Comma.isCardinalPresentable F₁ F₂ κ).ι
+
+abbrev cocone : Cocone (functor κ f) :=
+  (Functor.LeftExtension.mk (𝟭 (Comma F₁ F₂))
+    (Comma.isCardinalPresentable F₁ F₂ κ).ι.rightUnitor.inv).coconeAt f
+
+noncomputable def isColimitCocone : IsColimit (cocone κ f) := by
+  refine Comma.fstSndJointlyReflectColimit ?_ ?_
+  · exact (Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).2
+      ((isCardinalPresentable C₁ κ).ι.denseAt f.left)
+  · exact (Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).2
+      ((isCardinalPresentable C₂ κ).ι.denseAt f.right)
+
+instance [F₁.IsCardinalAccessible κ] :
+    (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
+  isDenseAt f := ⟨isColimitCocone κ f⟩
+
+end isCardinalAccessibleCategory
 
 protected lemma isCardinalFilteredGenerator_isCardinalPresentable
     [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
