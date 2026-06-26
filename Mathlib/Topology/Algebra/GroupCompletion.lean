@@ -215,7 +215,7 @@ variable [UniformSpace α] [AddGroup α] [IsUniformAddGroup α] [UniformSpace β
 open UniformSpace UniformSpace.Completion
 
 /-- Extension to the completion of a continuous group hom. -/
-def UniformSpace.AddMonoidHom.fromCompletion [CompleteSpace β] [T0Space β]
+def AddMonoidHom.fromCompletion [CompleteSpace β] [T0Space β]
     (f : α →+ β) (hf : Continuous f) :
     Completion α →+ β :=
   have hf : UniformContinuous f := uniformContinuous_addMonoidHom_of_continuous hf
@@ -231,22 +231,22 @@ def UniformSpace.AddMonoidHom.fromCompletion [CompleteSpace β] [T0Space β]
           Function.fromCompletion_coe hf, f.map_add] }
 
 @[deprecated (since := "2026-06-26")]
-alias AddMonoidHom.extension := UniformSpace.AddMonoidHom.fromCompletion
+alias AddMonoidHom.extension := AddMonoidHom.fromCompletion
 
-theorem UniformSpace.AddMonoidHom.extension_coe [CompleteSpace β] [T0Space β] (f : α →+ β)
+theorem AddMonoidHom.fromCompletion_coe [CompleteSpace β] [T0Space β] (f : α →+ β)
     (hf : Continuous f) (a : α) : f.fromCompletion hf a = f a :=
   Function.fromCompletion_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
 
 @[deprecated (since := "2026-06-26")]
-alias AddMonoidHom.extension_coe := UniformSpace.AddMonoidHom.extension_coe
+alias AddMonoidHom.extension_coe := AddMonoidHom.fromCompletion_coe
 
 @[continuity]
-theorem UniformSpace.AddMonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α →+ β)
+theorem AddMonoidHom.continuous_fromCompletion [CompleteSpace β] [T0Space β] (f : α →+ β)
     (hf : Continuous f) : Continuous (f.fromCompletion hf) :=
   Function.continuous_fromCompletion
 
 @[deprecated (since := "2026-06-26")]
-alias AddMonoidHom.continuous_extension := UniformSpace.AddMonoidHom.continuous_extension
+alias AddMonoidHom.continuous_extension := AddMonoidHom.continuous_fromCompletion
 
 /-- Completion of a continuous group hom, as a group hom. -/
 def AddMonoidHom.completion (f : α →+ β) (hf : Continuous f) : Completion α →+ Completion β :=
