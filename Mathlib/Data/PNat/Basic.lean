@@ -298,7 +298,7 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
       rintro rfl
       simp only [mul_zero, ne_zero] at h
     use ⟨n.succ, n.succ_pos⟩
-    rw [← coe_inj, h, mul_coe, mk_coe]
+    rw [← coe_inj, h, mul_coe, mk_coe _ k.prop]
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
   rw [dvd_iff]

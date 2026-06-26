@@ -14,6 +14,7 @@ public import Mathlib.Data.Nat.Notation
 /-- `ℕ+` is the type of positive natural numbers. It is defined as a subtype,
   and the VM representation of `ℕ+` is the same as `ℕ` because the proof
   is not stored. -/
+@[instance_reducible]
 def PNat := { n : ℕ // 0 < n } deriving DecidableEq
 
 @[inherit_doc]
@@ -22,9 +23,17 @@ notation "ℕ+" => PNat
 /-- Helper constructor for `ℕ+`. -/
 abbrev PNat.mk (n : ℕ) (h : 0 < n) : ℕ+ := ⟨n, h⟩
 
+-- Assert that eta-rfl works; if `PNat.mk` was a `def`, it would not.
+example (n : ℕ+) : n = PNat.mk n.val n.property := by
+  with_reducible_and_instances rfl
+
 /-- The underlying natural number -/
 @[coe]
-def PNat.val : ℕ+ → ℕ := Subtype.val
+abbrev PNat.val : ℕ+ → ℕ := Subtype.val
+
+-- Assert that eta-rfl works; if `PNat.val` was a `def`, it would not.
+example (n : ℕ+) : n = PNat.mk (PNat.val n) n.property := by
+  with_reducible_and_instances rfl
 
 instance coePNatNat : Coe ℕ+ ℕ :=
   ⟨PNat.val⟩
