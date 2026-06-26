@@ -15,7 +15,7 @@ Given a group homomorphism `f : H →* G`, we have the restriction functor
 
 -/
 
-@[expose] public section
+public section
 
 universe t w u v v1 v2
 
@@ -27,7 +27,7 @@ namespace Rep
 
 /-- The map induced by a monoid homomorphism `f : H →* G` on morphisms between
 `G`-representations. -/
-@[implicit_reducible]
+@[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
     of (X := X.V) (X.ρ.comp f) ⟶ of (X := Y.V) (Y.ρ.comp f) :=
   ofHom ⟨p.hom, fun h ↦ by simpa using p.hom.2 (f h)⟩
