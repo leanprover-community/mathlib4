@@ -25,9 +25,8 @@ basic lemmas about construction and elementary calculations are found there.
 
 ## Main declarations
 
-* `IsOrtho`: states that two vectors are orthogonal with respect to a sesquilinear map
 * `IsSymm`, `IsAlt`: states that a sesquilinear form is symmetric and alternating, respectively
-* `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear form
+* `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear map
 
 ## References
 
@@ -57,28 +56,36 @@ variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ 
   {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
 
 /-- The proposition that two elements of a sesquilinear map space are orthogonal -/
+@[deprecated "Use `B x y = 0`" (since := "2026-03-30")]
 def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x : M₁) (y : M₂) : Prop :=
   B x y = 0
 
+set_option linter.deprecated false in
+@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} {x y} : B.IsOrtho x y ↔ B x y = 0 :=
   Iff.rfl
 
+set_option linter.deprecated false in
+@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B (0 : M₁) x := by
   dsimp only [IsOrtho]
   rw [map_zero B, zero_apply]
 
+set_option linter.deprecated false in
+@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B x (0 : M₂) :=
   map_zero (B x)
 
+set_option linter.deprecated false in
+@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
   simp_rw [isOrtho_def, flip_apply]
 
 open scoped Function in -- required for scoped `on` notation
 /-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
-if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
-`BilinForm.isOrtho` -/
+if for all `i ≠ j`, `B (v i) (v j) = 0`. -/
 def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) (v : n → M₁) : Prop :=
-  Pairwise (B.IsOrtho on v)
+  Pairwise ((fun n m => B n m = 0) on v)
 
 theorem isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {v : n → M₁} :
     B.IsOrthoᵢ v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
@@ -97,7 +104,8 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
   [Field K₂] [AddCommGroup V₂] [Module K₂ V₂]
   {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K} {J₁ : K →+* K} {J₂ : K →+* K}
 
--- todo: this also holds for [CommRing R] [IsDomain R] when J₁ is invertible
+set_option linter.deprecated false in
+@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₁} (ha : a ≠ 0) :
     IsOrtho B x y ↔ IsOrtho B (a • x) y := by
   dsimp only [IsOrtho]
@@ -109,7 +117,8 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} 
       trivial
     · exact H
 
--- todo: this also holds for [CommRing R] [IsDomain R] when J₂ is invertible
+set_option linter.deprecated false in
+@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
   simp_all [IsOrtho]
@@ -117,7 +126,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] V} {v : n → V₁}
-    (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, ¬B.IsOrtho (v i) (v i)) : LinearIndependent K₁ v := by
+    (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K₁ v := by
   classical
     rw [linearIndependent_iff']
     intro s w hs i hi
@@ -133,7 +142,6 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
 end Field
 
 /-! ### Reflexive bilinear maps -/
-
 
 section Reflexive
 
@@ -154,8 +162,8 @@ theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
 theorem eq_iff {x y} : B x y = 0 ↔ B y x = 0 := ⟨H x y, H y x⟩
 
-theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
-  ⟨eq_zero H, eq_zero H⟩
+@[deprecated (since := "2026-03-30")]
+alias ortho_comm := eq_iff
 
 theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
@@ -184,7 +192,6 @@ end Reflexive
 
 /-! ### Symmetric bilinear forms -/
 
-
 section Symmetric
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I : R →+* R} {B : M →ₛₗ[I] M →ₗ[R] R}
@@ -202,8 +209,10 @@ theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
   rw [← H.eq]
   simp [H1]
 
-theorem ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
-  H.isRefl.ortho_comm
+theorem eq_iff (H : B.IsSymm) {x y} : B x y = 0 ↔ B y x = 0 := H.isRefl.eq_iff
+
+@[deprecated (since := "2026-03-30")]
+alias ortho_comm := eq_iff
 
 theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm where
   eq _ _ := by
@@ -273,7 +282,6 @@ end PositiveSemidefinite
 
 /-! ### Alternating bilinear maps -/
 
-
 section Alternating
 
 section CommSemiring
@@ -317,8 +325,10 @@ theorem isRefl (H : B.IsAlt) : B.IsRefl := by
   intro x y h
   rw [← neg H, h, neg_zero]
 
-theorem ortho_comm (H : B.IsAlt) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
-  H.isRefl.ortho_comm
+theorem eq_iff (H : B.IsAlt) {x y} : B x y = 0 ↔ B y x = 0 := H.isRefl.eq_iff
+
+@[deprecated (since := "2026-03-30")]
+alias ortho_comm := eq_iff
 
 end IsAlt
 
@@ -371,16 +381,13 @@ chirality; in addition to this "left" orthogonal complement one could define a "
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
 def orthogonalBilin (N : Submodule R₁ M₁) : Submodule R₂ M₂ where
-  carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
-  zero_mem' x _ := B.isOrtho_zero_right x
-  add_mem' hx hy n hn := by
-    rw [LinearMap.IsOrtho, map_add, show B n _ = 0 from hx n hn, show B n _ = 0 from hy n hn,
-      zero_add]
-  smul_mem' c x hx n hn := by
-    rw [LinearMap.IsOrtho, map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
+  carrier := { m | ∀ n ∈ N, B n m = 0 }
+  zero_mem' x _ := map_zero _
+  add_mem' {u v} hu hv x hx := by simp [hu _ hx, hv _ hx]
+  smul_mem' c y hy x hx := by simp [hy _ hx]
 
 @[simp]
-theorem mem_orthogonalBilin_iff {m : M₂} : m ∈ N.orthogonalBilin B ↔ ∀ n ∈ N, B.IsOrtho n m :=
+theorem mem_orthogonalBilin_iff {m : M₂} : m ∈ N.orthogonalBilin B ↔ ∀ n ∈ N, B n m = 0:=
   Iff.rfl
 
 theorem orthogonalBilin_le (h : N ≤ L) : L.orthogonalBilin B ≤ N.orthogonalBilin B :=
@@ -408,14 +415,14 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
-    (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ (K₁ ∙ x).orthogonalBilin B = ⊥ := by
+    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ (K₁ ∙ x).orthogonalBilin B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h ↦ ?_
   obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
   suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
-  rw [isOrtho_def, map_smulₛₗ] at h
+  rw [map_smulₛₗ] at h
   exact Or.elim (smul_eq_zero.mp h)
       (fun y ↦ by simpa using y)
       (fun hfalse ↦ False.elim <| hx hfalse)
@@ -428,11 +435,11 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
   constructor
   · exact fun h ↦ h x ⟨1, one_smul _ _⟩
   · rintro h _ ⟨z, rfl⟩
-    rw [isOrtho_def, map_smulₛₗ₂, smul_eq_zero]
+    rw [map_smulₛₗ₂, smul_eq_zero]
     exact Or.intro_right _ h
 
 -- todo: Generalize this to sesquilinear maps
-theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
+theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
     (K ∙ x) ⊔ (K ∙ x).orthogonalBilin B = ⊤ := by
   rw [orthogonal_span_singleton_eq_to_lin_ker]
   exact (B x).span_singleton_sup_ker_eq_top hx
@@ -440,7 +447,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
 -- todo: Generalize this to sesquilinear maps
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
-theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
+theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
     IsCompl (K ∙ x) ((K ∙ x).orthogonalBilin B) :=
   { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
     codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
@@ -448,7 +455,6 @@ theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V
 end Orthogonal
 
 /-! ### Adjoint pairs -/
-
 
 section AdjointPair
 
@@ -558,7 +564,6 @@ end AdjointPair
 
 /-! ### Self-adjoint pairs -/
 
-
 section SelfadjointPair
 
 section AddCommMonoid
@@ -657,7 +662,6 @@ end SelfadjointPair
 
 /-! ### Nondegenerate bilinear maps -/
 
-
 section Nondegenerate
 
 section CommSemiring
@@ -723,7 +727,7 @@ theorem Nondegenerate.congr (h : B.Nondegenerate) :
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
-    convert h.congr e₁.symm e₂.symm
+    convert! h.congr e₁.symm e₂.symm
     ext x y
     simp,
    SeparatingLeft.congr e₁ e₂⟩
@@ -815,7 +819,7 @@ lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] 
   rw [LinearMap.IsRefl.nondegenerate_iff_separatingLeft hB']
   intro ⟨x, hx⟩ hx'
   simp only [Submodule.mk_eq_zero]
-  replace hx' : ∀ y ∈ W, B x y = 0 := by simpa [Subtype.forall] using hx'
+  replace hx' : ∀ y ∈ W, B x y = 0 := by simpa [Subtype.forall] using! hx'
   replace hx' : x ∈ W ⊓ ker B := by
     refine ⟨hx, ?_⟩
     ext y
@@ -823,7 +827,7 @@ lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] 
       rw [← Submodule.mem_sup, hW.sup_eq_top]; exact Submodule.mem_top
     suffices B x u = 0 by rw [mem_ker] at hv; simpa [← hB.eq v, hv]
     exact hx' u hu
-  simpa [hW.inf_eq_bot] using hx'
+  simpa [hW.inf_eq_bot] using! hx'
 
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
@@ -837,8 +841,7 @@ theorem nondegenerate_restrict_of_disjoint_orthogonal {B : M →ₗ[R] M →ₗ[
   refine hW.le_bot ⟨hx, fun y hy ↦ ?_⟩
   specialize b₁ ⟨y, hy⟩
   simp_rw [domRestrict₁₂_apply] at b₁
-  rw [hB.ortho_comm]
-  exact b₁
+  exact hB.eq_zero b₁
 
 end CommRing
 
@@ -851,7 +854,7 @@ variable {R M M₁ : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M�
 elements. -/
 theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
     {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingLeft)
-    (i : n) : ¬B.IsOrtho (v i) (v i) := by
+    (i : n) : B (v i) (v i) ≠ 0 := by
   intro ho
   refine v.ne_zero i (hB (v i) fun m ↦ ?_)
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
@@ -868,9 +871,8 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
 elements. -/
 theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
     {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingRight)
-    (i : n) : ¬B.IsOrtho (v i) (v i) := by
+    (i : n) : B (v i) (v i) ≠ 0 := by
   rw [isOrthoᵢ_flip] at h
-  rw [isOrtho_flip]
   exact h.not_isOrtho_basis_self_of_separatingLeft (flip_separatingLeft.mpr hB) i
 
 variable [IsDomain R] [IsTorsionFree R M₁]
@@ -878,7 +880,7 @@ variable [IsDomain R] [IsTorsionFree R M₁]
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is left-separating if
 the basis has no elements which are self-orthogonal. -/
 theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
-    (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft := by
+    (hO : B.IsOrthoᵢ v) (h : ∀ i, B (v i) (v i) ≠ 0) : B.SeparatingLeft := by
   intro m hB
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [LinearEquiv.map_eq_zero_iff]
@@ -888,7 +890,10 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self {B : M →ₗ[R] M �
   simp_rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂,
            map_smulₛₗ₂] at hB
   rw [Finset.sum_eq_single i] at hB
-  · exact (smul_eq_zero.mp hB).elim _root_.id (h i).elim
+  · cases smul_eq_zero.mp hB
+    · assumption
+    · specialize h i
+      contradiction
   · intro j _hj hij
     replace hij : B (v j) (v i) = 0 := hO hij
     rw [hij, RingHom.id_apply, smul_zero]
@@ -899,17 +904,16 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self {B : M →ₗ[R] M �
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is right-separating
 if the basis has no elements which are self-orthogonal. -/
 lemma IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
-    (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight := by
+    (hO : B.IsOrthoᵢ v) (h : ∀ i, B (v i) (v i) ≠ 0) : B.SeparatingRight := by
   rw [isOrthoᵢ_flip] at hO
   rw [← flip_separatingLeft]
   refine IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO fun i ↦ ?_
-  rw [isOrtho_flip]
   exact h i
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is nondegenerate
 if the basis has no elements which are self-orthogonal. -/
 theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
-    (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.Nondegenerate :=
+    (hO : B.IsOrthoᵢ v) (h : ∀ i, B (v i) (v i) ≠ 0) : B.Nondegenerate :=
   ⟨IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO h,
     IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self v hO h⟩
 
@@ -931,6 +935,7 @@ variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
 
 /-- The **Cauchy-Schwarz inequality** for positive semidefinite forms. -/
+@[wikidata Q190546]
 lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
     (B x y) * (B y x) ≤ (B x x) * (B y y) := by
   have aux (x y : M) : 0 ≤ (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
@@ -1007,7 +1012,7 @@ lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.
   have key : x ∈ W ⊓ LinearMap.ker B := ⟨hx, h⟩
   simpa [hW.eq_bot] using key
 
-variable [IsDomain R] [IsTorsionFree R M]
+variable [IsTorsionFree R M]
 
 /-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite forms. -/
 lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x x) (x y : M) :

@@ -425,7 +425,7 @@ counting function for the poles.
 -/
 @[simp] theorem logCounting_sub_const (hf : Meromorphic f) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
-  simpa [sub_eq_add_neg] using logCounting_add_const hf
+  simpa [sub_eq_add_neg] using! logCounting_add_const hf
 
 /-!
 ## Behaviour under Arithmetic Operations

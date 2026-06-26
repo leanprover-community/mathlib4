@@ -107,7 +107,7 @@ theorem comp_hasFDerivWithinAt_iff {f : G → E} {s : Set G} {x : G} {f' : G →
 theorem comp_hasStrictFDerivAt_iff {f : G → E} {x : G} {f' : G →L[𝕜] E} :
     HasStrictFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasStrictFDerivAt f f' x := by
   refine ⟨fun H => ?_, fun H => iso.hasStrictFDerivAt.comp x H⟩
-  convert iso.symm.hasStrictFDerivAt.comp x H using 1 <;>
+  convert! iso.symm.hasStrictFDerivAt.comp x H using 1 <;>
     ext z <;> apply (iso.symm_apply_apply _).symm
 
 theorem comp_hasFDerivAt_iff {f : G → E} {x : G} {f' : G →L[𝕜] E} :
@@ -330,8 +330,8 @@ theorem HasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE (h : HasFDerivWithinAt f f' 
   have : (fun z ↦ f z - f x) ~[𝓝[s] x] fun z ↦ f' (z - x) := h.isLittleO.trans_isBigO A
   have : ∀ᶠ (x_1 : E) in 𝓝[s] x, x_1 ∈ ({x}ᶜ : Set E) → f x_1 ∈ ({f x}ᶜ : Set F) := by
     simpa [sub_eq_zero, not_imp_not] using (A.trans this.isBigO_symm).eq_zero_imp
-  apply le_inf ((map_mono (nhdsWithin_mono x diff_subset)).trans h.continuousWithinAt)
-  rwa [le_principal_iff, ← eventually_mem_set, eventually_map, diff_eq, nhdsWithin_inter',
+  apply le_inf ((map_mono (nhdsWithin_mono x sdiff_subset)).trans h.continuousWithinAt)
+  rwa [le_principal_iff, ← eventually_mem_set, eventually_map, sdiff_eq, nhdsWithin_inter',
     eventually_inf_principal]
 
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
@@ -350,15 +350,15 @@ theorem HasFDerivWithinAt.eventually_notMem (h : HasFDerivWithinAt f f' s x)
 
 theorem HasFDerivAt.tendsto_nhdsNE (h : HasFDerivAt f f' x)
     (hf' : ∃ C, AntilipschitzWith C f') : Tendsto f (𝓝[≠] x) (𝓝[≠] f x) := by
-  simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).tendsto_nhdsWithin_nhdsNE hf'
+  simpa only [compl_eq_univ_sdiff] using (hasFDerivWithinAt_univ.2 h).tendsto_nhdsWithin_nhdsNE hf'
 
 theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, AntilipschitzWith C f') :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
-  simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
+  simpa only [compl_eq_univ_sdiff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
 
 theorem HasFDerivAt.eventually_notMem (h : HasFDerivAt f f' x) (hf' : ∃ C, AntilipschitzWith C f')
     (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) : ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
-  simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_notMem hf' t ht
+  simpa only [compl_eq_univ_sdiff] using (hasFDerivWithinAt_univ.2 h).eventually_notMem hf' t ht
 
 end
 

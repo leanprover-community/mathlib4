@@ -98,7 +98,7 @@ theorem image_circleMap_Ioc (c : ℂ) (R : ℝ) : circleMap c R '' Ioc 0 (2 * π
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
   simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
-    using (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
+    using! (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
 
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
@@ -214,7 +214,7 @@ protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
 theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
-  convert CircleIntegrable.sum s h
+  convert! CircleIntegrable.sum s h
   simp
 
 /-- `finsum`s of circle integrable functions are circle integrable. -/
@@ -295,7 +295,7 @@ Circle integrability is invariant when taking negative radius.
   rw [intervalIntegrable_congr (f := fun θ ↦ f (circleMap c (-R) θ))
     (g := fun θ ↦ (f ∘ (circleMap c R)) (θ + π)) (fun _ _ ↦ by simp [circleMap_neg_radius]),
     IntervalIntegrable.comp_add_right_iff (c := π), add_comm (2 * π) π]
-  simpa using ((periodic_circleMap c R).comp f).intervalIntegrable_iff (t₂ := 0)
+  simpa using! ((periodic_circleMap c R).comp f).intervalIntegrable_iff (t₂ := 0)
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
 theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
@@ -327,7 +327,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
   · have H : ∀ {θ}, circleMap 0 R θ * I ≠ 0 := fun {θ} => by simp [h₀, I_ne_zero]
     simpa only [inv_smul_smul₀ H]
       using ((continuous_circleMap 0 R).aestronglyMeasurable.mul_const
-        I).aemeasurable.inv.aestronglyMeasurable.smul h.aestronglyMeasurable
+        I).aemeasurable.fun_inv.aestronglyMeasurable.smul h.aestronglyMeasurable
   · simp [norm_smul, h₀]
 
 theorem ContinuousOn.circleIntegrable' {f : ℂ → E} {c : ℂ} {R : ℝ}
@@ -571,8 +571,9 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
   have hd : ∀ z, z ≠ w ∨ -1 ≤ n →
       HasDerivAt (fun z => (z - w) ^ (n + 1) / (n + 1)) ((z - w) ^ n) z := by
     intro z hne
-    convert ((hasDerivAt_zpow (n + 1) _ (hne.imp _ _)).comp z
-      ((hasDerivAt_id z).sub_const w)).div_const _ using 1
+    convert!
+      ((hasDerivAt_zpow (n + 1) _ (hne.imp _ _)).comp z ((hasDerivAt_id z).sub_const w)).div_const
+        _ using 1
     · have hn' : (n + 1 : ℂ) ≠ 0 := by
         rwa [Ne, ← eq_neg_iff_add_eq_zero, ← Int.cast_one, ← Int.cast_neg, Int.cast_inj]
       simp [mul_div_cancel_left₀ _ hn']
@@ -660,7 +661,7 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
     simp only [smul_smul]
     refine HasSum.smul_const ?_ _
     have : ‖w / (circleMap c R θ - c)‖ < 1 := by simpa [abs_of_pos hR] using hwR.2
-    convert (hasSum_geometric_of_norm_lt_one this).mul_right _ using 1
+    convert! (hasSum_geometric_of_norm_lt_one this).mul_right _ using 1
     simp [← sub_sub, ← mul_inv, sub_mul, div_mul_cancel₀ _ (circleMap_ne_center hR.ne')]
 
 /-- For any circle integrable function `f`, the power series `cauchyPowerSeries f c R`, `R > 0`,
