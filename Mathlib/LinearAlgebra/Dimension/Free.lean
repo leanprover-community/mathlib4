@@ -362,7 +362,7 @@ noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finr
 
 lemma finrank_eq_one_iff_algebraMap_bijective
     {R S : Type*} [CommSemiring R] [CommSemiring S] [StrongRankCondition R] [Algebra R S]
-    [Module.Free R S] [Nontrivial R] :
+    [Module.Free R S] :
     Module.finrank R S = 1 ↔ Function.Bijective (algebraMap R S) := by
   constructor
   · intro H
