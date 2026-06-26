@@ -192,14 +192,15 @@ def π₂ : J κ f ⥤ CostructuredArrow (isCardinalPresentable C₂ κ).ι f.ri
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.right))
     (by exact congr_arg CommaMorphism.right (CostructuredArrow.w φ))
 
+instance : IsCardinalFiltered (J κ f) κ := by
+  sorry
+
 instance : (π₁ κ f).Final := sorry
 
 instance : (π₂ κ f).Final := sorry
 
-instance : IsCardinalFiltered (J κ f) κ := by
-  sorry
-
-instance : PreservesColimitsOfShape (J κ f) F₁ := sorry
+instance : PreservesColimitsOfShape (J κ f) F₁ :=
+  F₁.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
 
 abbrev functor : J κ f ⥤ Comma F₁ F₂ :=
   CostructuredArrow.proj (Comma.isCardinalPresentable F₁ F₂ κ).ι f ⋙
