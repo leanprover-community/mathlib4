@@ -263,22 +263,6 @@ scoped[AlgebraicGeometry.LocallyRingedSpace] notation3 "Γ(" X ", " U ")" =>
 
 open scoped AlgebraicGeometry.LocallyRingedSpace
 
-def AlgebraicGeometry.LocallyRingedSpace.residue {X : LocallyRingedSpace.{u}} (x : X) :
-    X.presheaf.stalk x ⟶ X.residueField x :=
-  CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
-
-@[reassoc]
-lemma AlgebraicGeometry.LocallyRingedSpace.residue_residueFieldMap
-    {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    Y.residue (f.base x) ≫ residueFieldMap f x = f.stalkMap x ≫ X.residue x :=
-  rfl
-
-@[reassoc (attr := simp)]
-lemma AlgebraicGeometry.LocallyRingedSpace.Hom.germ_stalkMap {X Y : LocallyRingedSpace.{u}}
-    (f : X ⟶ Y) (U : Opens Y) (x : X) (hx : f.base x ∈ U) :
-    Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x = f.c.app _ ≫ X.presheaf.germ _ _ hx :=
-  PresheafedSpace.stalkMap_germ _ _ _ _
-
 -- def TopCat.Sheaf.constant
 
 /-- Order isomorphism between `Set α` and `α → Prop`. -/
@@ -557,7 +541,7 @@ lemma algebraMap_residueField (x : M) :
 lemma stalkMap_evaluation (f : locallyRingedSpace IM M ⟶ locallyRingedSpace IN N) (x : M) :
     f.stalkMap x ≫ evaluation IM x = evaluation IN (f.base x) := by
   rw [← residue_residueIso_hom, ← residue_residueIso_hom]
-  rw [← LocallyRingedSpace.residue_residueFieldMap_assoc]
+  rw [← LocallyRingedSpace.residue_comp_residueFieldMap_eq_stalkMap_comp_residue_assoc]
   congr 1
   rw [← cancel_epi (residueIso _ _).inv]
   conv_lhs => rw [← algebraMap_residueField]
