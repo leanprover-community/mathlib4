@@ -142,7 +142,7 @@ instance [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
 
 instance : AddMonoid (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.addMonoid _ toFinsupp_zero toFinsupp_add
-    (fun _ _ ↦ toFinsupp_smul _ _)
+    (fun _ _ ↦ toFinsupp_smul _ _) (fun _ _ ↦ toFinsupp_smul _ _)
 
 section Support
 
@@ -347,7 +347,7 @@ variable [AddCommMonoid k]
 
 instance : AddCommMonoid (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
-    (fun _ _ ↦ toFinsupp_smul _ _)
+    (fun _ _ ↦ toFinsupp_smul _ _) (fun _ _ ↦ toFinsupp_smul _ _)
 
 section sum
 
