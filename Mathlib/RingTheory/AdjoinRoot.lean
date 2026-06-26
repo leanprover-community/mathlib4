@@ -90,6 +90,7 @@ protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (Adj
   rintro x hx rfl
   exact h (degree_C hx.ne_zero)
 
+variable {f} in
 lemma nontrivial_iff_of_monic (monic : f.Monic) : Nontrivial (AdjoinRoot f) ↔ 0 < f.degree := by
   rw [AdjoinRoot, Quotient.nontrivial_iff, ne_eq, span_singleton_eq_top, monic.isUnit_iff,
     monic.degree_pos]
