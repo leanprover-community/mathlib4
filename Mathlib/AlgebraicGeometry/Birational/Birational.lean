@@ -93,8 +93,8 @@ def symm (f : X.PartialIso Y) : Y.PartialIso X where
   iso := f.iso.symm
 
 set_option backward.defeqAttrib.useBackward true in
-lemma symm_over (f : X.PartialIso Y) (hf : f.IsOver sX sY) : f.symm.IsOver sY sX := by
-  simpa [IsOver, ← cancel_epi f.iso.hom] using hf.symm
+lemma IsOver.symm {f : X.PartialIso Y} (hf : f.IsOver sX sY) : f.symm.IsOver sY sX := by
+  simpa [IsOver, ← cancel_epi f.iso.hom] using Eq.symm hf
 
 /-- Compose two partial isomorphisms along a proof that the target of `f` equals the source
 of `g`. See `trans` for the version that does not require this. -/
@@ -108,7 +108,7 @@ noncomputable def trans' (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target
   iso := f.iso ≪≫ Y.isoOfEq e ≪≫ g.iso
 
 set_option backward.defeqAttrib.useBackward true in
-lemma trans'_over (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target = g.source)
+lemma IsOver.trans' {f : X.PartialIso Y} {g : Y.PartialIso Z} {e : f.target = g.source}
     (hf : f.IsOver sX sY) (hg : g.IsOver sY sZ) : (trans' f g e).IsOver sX sZ := by
   simp [IsOver, ← hf, hg]
 
@@ -129,7 +129,7 @@ noncomputable def restrictSource (f : X.PartialIso Y) (U : Opens X) (hU : Dense 
     (f.target.ι.isoImage (f.iso.hom ''ᵁ f.source.ι ⁻¹ᵁ U))
 
 set_option backward.defeqAttrib.useBackward true in
-lemma restrictSource_over (f : X.PartialIso Y) (hf : f.IsOver sX sY) (U : Opens X)
+lemma IsOver.restrictSource {f : X.PartialIso Y} (hf : f.IsOver sX sY) (U : Opens X)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.source) :
     (f.restrictSource U hU hU').IsOver sX sY := by
   simp [IsOver, hf]
@@ -140,10 +140,10 @@ noncomputable def restrictTarget (f : X.PartialIso Y) (U : Opens Y) (hU : Dense 
     (hU' : U ≤ f.target) : X.PartialIso Y :=
   (f.symm.restrictSource U hU hU').symm
 
-lemma restrictTarget_over (f : X.PartialIso Y) (hf : f.IsOver sX sY) (U : Opens Y)
+lemma IsOver.restrictTarget {f : X.PartialIso Y} (hf : f.IsOver sX sY) (U : Opens Y)
     (hU : Dense (U : Set Y)) (hU' : U ≤ f.target) :
     (f.restrictTarget U hU hU').IsOver sX sY :=
-  symm_over _ (restrictSource_over _ (symm_over f hf) U hU hU')
+  (hf.symm.restrictSource U hU hU').symm
 
 /-- Compose two partial isomorphisms, restricting to the intersection of the intermediate opens. -/
 @[trans, simps! source target iso]
@@ -151,9 +151,9 @@ noncomputable def trans (f : X.PartialIso Y) (g : Y.PartialIso Z) : X.PartialIso
   have := f.dense_target.inter_of_isOpen_right g.dense_source g.source.2
   (f.restrictTarget _ this inf_le_left).trans' (g.restrictSource _ this inf_le_right) rfl
 
-lemma trans_over (f : X.PartialIso Y) (g : Y.PartialIso Z) (hf : f.IsOver sX sY)
+lemma IsOver.trans {f : X.PartialIso Y} {g : Y.PartialIso Z} (hf : f.IsOver sX sY)
     (hg : g.IsOver sY sZ) : (f.trans g).IsOver sX sZ :=
-  trans'_over _ _ rfl (restrictTarget_over _ hf _ _ _) (restrictSource_over _ hg _ _ _)
+  (hf.restrictTarget _ _ _).trans' (hg.restrictSource _ _ _)
 
 /-- The underlying partial map of a partial isomorphism. -/
 @[simps]
@@ -224,16 +224,15 @@ lemma BirationalOver.refl {S X : Scheme.{u}} (sX : X ⟶ S) : BirationalOver sX 
 
 lemma BirationalOver.symm {S X Y : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S}
     (h : BirationalOver sX sY) : BirationalOver sY sX :=
-  ⟨h.partialIso.symm, PartialIso.symm_over _ h.partialIso_isOver⟩
+  ⟨h.partialIso.symm, h.partialIso_isOver.symm⟩
 
 lemma BirationalOver.trans {S X Y Z : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
     (h₁ : BirationalOver sX sY) (h₂ : BirationalOver sY sZ) :
     BirationalOver sX sZ :=
-  ⟨h₁.partialIso.trans h₂.partialIso,
-    PartialIso.trans_over _ _ h₁.partialIso_isOver h₂.partialIso_isOver⟩
+  ⟨h₁.partialIso.trans h₂.partialIso, h₁.partialIso_isOver.trans h₂.partialIso_isOver⟩
 
 /-- `X` is rational over `S` (or `S`-rational) if it is birational over `S` to some
-affine space `𝔸(n; S)`. -/
+affine space `𝔸(n; S)`. Note that we do not require `n` to be finite here. -/
 @[mk_iff]
 class IsRationalOver {S X : Scheme.{u}} (sX : X ⟶ S) : Prop where
   exists_birationalOver_affineSpace (sX) : ∃ (n : Type u), BirationalOver sX (𝔸(n; S) ↘ S)
