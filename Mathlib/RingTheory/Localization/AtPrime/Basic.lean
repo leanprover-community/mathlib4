@@ -372,6 +372,14 @@ abbrev IsLiesOverAlgebra (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)] :=
   IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)
 
+instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+    letI := algebraOfLiesOver p P
+    IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P) := by
+  let := algebraOfLiesOver p P
+  refine .of_algebraMap_eq fun x ↦ ?_
+  rw [IsScalarTower.algebraMap_apply A B (Localization.AtPrime P),
+    RingHom.algebraMap_toAlgebra, localRingHom_to_map]
+
 theorem IsLiesOverAlgebra.algebraMap_eq (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
     [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)] [P.LiesOver p] :
