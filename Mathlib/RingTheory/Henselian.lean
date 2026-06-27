@@ -571,7 +571,7 @@ lemma HenselianLocalRing.exists_residueFieldMap_eq_of_etale [HenselianLocalRing 
   simp [ResidueField.map_residue, H]
 
 lemma IsLocalRing.eq_of_residueFieldMap_eq
-    [IsLocalRing A] [Algebra.Etale R A] [IsLocalRing B] [Module.Finite R B]
+    [IsLocalRing A] [Algebra.Etale R A] [IsLocalRing B]
     (f₁ f₂ : A →ₐ[R] B) [IsLocalHom f₁.toRingHom] [IsLocalHom f₂.toRingHom]
     (H : ResidueField.map f₁.toRingHom = ResidueField.map f₂.toRingHom) : f₁ = f₂ := by
   have := (IsLocalRing.ofId_comp_injective (R := B) (A := B ⊗[R] A))
