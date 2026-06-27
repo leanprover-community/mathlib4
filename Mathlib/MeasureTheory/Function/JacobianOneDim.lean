@@ -94,7 +94,7 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
     have : b = ⋃ z ∈ u, s₁ ∩ f ⁻¹' {z} := by ext; simp [b]
     rw [this]
     apply MeasurableSet.biUnion hu (fun z hz ↦ ?_)
-    obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ (s \ a) ∩ f ⁻¹' {z} = (s \ a) ∩ v :=
+    obtain ⟨v, hv, tv⟩ : ∃ v, IsConvexSet v ∧ (s \ a) ∩ f ⁻¹' {z} = (s \ a) ∩ v :=
       ordConnected_singleton.preimage_monotoneOn (hf.mono sdiff_subset)
     exact tv ▸ (hs.diff a_count.measurableSet).inter hv.measurableSet
   let c := s₁ \ b

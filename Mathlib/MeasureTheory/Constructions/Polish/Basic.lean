@@ -927,7 +927,7 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
     have : t' = ⋃ c ∈ u, t ∩ g ⁻¹' {c} := by ext; simp [t']
     rw [this]
     apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
-    obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=
+    obtain ⟨v, hv, tv⟩ : ∃ v, IsConvexSet v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=
       ordConnected_singleton.preimage_monotoneOn hg
     exact tv ▸ ht.inter hv.measurableSet
   have : g '' t = g '' (t \ t') ∪ g '' t' := by simp [← image_union, t']

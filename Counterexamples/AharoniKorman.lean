@@ -241,7 +241,7 @@ Each level is order-connected, i.e. for any `x ∈ level n` and `y ∈ level n` 
 `[x, y] ⊆ level n`.
 This corresponds to 5.8 (i) in the [hollom2025].
 -/
-lemma ordConnected_level {n : ℕ} : (level n).OrdConnected := by
+lemma ordConnected_level {n : ℕ} : (level n).IsConvexSet := by
   rw [Set.ordConnected_iff]
   simp only [level_eq, Set.mem_setOf_eq, Set.subset_def, Set.mem_Icc, and_imp, Hollom.forall,
     Prod.forall, forall_eq, toHollom_le_toHollom_iff_fixed_right]

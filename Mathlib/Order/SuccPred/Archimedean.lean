@@ -314,12 +314,12 @@ protected lemma IsPredArchimedean.of_orderIso [PredOrder X] [IsPredArchimedean X
 
 end OrderIso
 
-section OrdConnected
+section IsConvexSet
 
 variable [PartialOrder α]
 
-instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α]
-    (s : Set α) [s.OrdConnected] : IsPredArchimedean s where
+instance Order.IsConvexSet.isPredArchimedean [PredOrder α] [IsPredArchimedean α]
+    (s : Set α) [s.IsConvexSet] : IsPredArchimedean s where
   exists_pred_iterate_of_le := @fun ⟨b, hb⟩ ⟨c, hc⟩ hbc ↦ by classical
     simp only [Subtype.mk_le_mk] at hbc
     obtain ⟨n, hn⟩ := hbc.exists_pred_iterate
@@ -343,12 +343,12 @@ instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α
           exact hbc
         · exact this
 
-instance Set.OrdConnected.isSuccArchimedean [SuccOrder α] [IsSuccArchimedean α]
-    (s : Set α) [s.OrdConnected] : IsSuccArchimedean s :=
+instance Order.IsConvexSet.isSuccArchimedean [SuccOrder α] [IsSuccArchimedean α]
+    (s : Set α) [s.IsConvexSet] : IsSuccArchimedean s :=
   letI : IsPredArchimedean sᵒᵈ := inferInstanceAs (IsPredArchimedean (OrderDual.ofDual ⁻¹' s))
   inferInstanceAs (IsSuccArchimedean sᵒᵈᵒᵈ)
 
-end OrdConnected
+end IsConvexSet
 
 section Monotone
 variable {α β : Type*} [PartialOrder α] [Preorder β]
@@ -356,7 +356,7 @@ variable {α β : Type*} [PartialOrder α] [Preorder β]
 section SuccOrder
 variable [SuccOrder α] [IsSuccArchimedean α] {s : Set α} {f : α → β}
 
-lemma monotoneOn_of_le_succ (hs : s.OrdConnected)
+lemma monotoneOn_of_le_succ (hs : s.IsConvexSet)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f a ≤ f (succ a)) : MonotoneOn f s := by
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hab
@@ -371,11 +371,11 @@ lemma monotoneOn_of_le_succ (hs : s.OrdConnected)
       exact hn this
     · exact (hn this).trans (hf _ hb' this hb)
 
-lemma antitoneOn_of_succ_le (hs : s.OrdConnected)
+lemma antitoneOn_of_succ_le (hs : s.IsConvexSet)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f (succ a) ≤ f a) : AntitoneOn f s :=
   monotoneOn_of_le_succ (β := βᵒᵈ) hs hf
 
-lemma strictMonoOn_of_lt_succ (hs : s.OrdConnected)
+lemma strictMonoOn_of_lt_succ (hs : s.IsConvexSet)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f a < f (succ a)) : StrictMonoOn f s := by
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hab.le
@@ -392,7 +392,7 @@ lemma strictMonoOn_of_lt_succ (hs : s.OrdConnected)
       exact hn this
     · exact (hn this).trans (hf _ hb' this hb)
 
-lemma strictAntiOn_of_succ_lt (hs : s.OrdConnected)
+lemma strictAntiOn_of_succ_lt (hs : s.IsConvexSet)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f (succ a) < f a) : StrictAntiOn f s :=
   strictMonoOn_of_lt_succ (β := βᵒᵈ) hs hf
 
@@ -413,7 +413,7 @@ end SuccOrder
 section PredOrder
 variable [PredOrder α] [IsPredArchimedean α] {s : Set α} {f : α → β}
 
-lemma monotoneOn_of_pred_le (hs : s.OrdConnected)
+lemma monotoneOn_of_pred_le (hs : s.IsConvexSet)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f (pred a) ≤ f a) : MonotoneOn f s := by
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_pred_iterate_of_le hab
@@ -428,11 +428,11 @@ lemma monotoneOn_of_pred_le (hs : s.OrdConnected)
       exact hn this
     · exact (hn this).trans' (hf _ ha' this ha)
 
-lemma antitoneOn_of_le_pred (hs : s.OrdConnected)
+lemma antitoneOn_of_le_pred (hs : s.IsConvexSet)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f a ≤ f (pred a)) : AntitoneOn f s :=
   monotoneOn_of_pred_le (β := βᵒᵈ) hs hf
 
-lemma strictMonoOn_of_pred_lt (hs : s.OrdConnected)
+lemma strictMonoOn_of_pred_lt (hs : s.IsConvexSet)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f (pred a) < f a) : StrictMonoOn f s := by
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_pred_iterate_of_le hab.le
@@ -449,7 +449,7 @@ lemma strictMonoOn_of_pred_lt (hs : s.OrdConnected)
       exact hn this
     · exact (hn this).trans' (hf _ ha' this ha)
 
-lemma strictAntiOn_of_lt_pred (hs : s.OrdConnected)
+lemma strictAntiOn_of_lt_pred (hs : s.IsConvexSet)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f a < f (pred a)) : StrictAntiOn f s :=
   strictMonoOn_of_pred_lt (β := βᵒᵈ) hs hf
 

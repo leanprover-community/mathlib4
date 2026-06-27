@@ -22,7 +22,7 @@ using the following naming conventions:
 Each interval has the name `I` + letter for left side + letter for right side.
 For instance, `Ioc a b` denotes the interval `(a, b]`.
 
-We also define a typeclass `Set.OrdConnected`
+We also define a typeclass `Order.IsConvexSet`
 saying that a set includes `Set.Icc a b` whenever it contains both `a` and `b`.
 -/
 
@@ -80,15 +80,15 @@ to_dual_insert_cast Icc := by simp only [and_comm]
 @[simp, grind =, push, to_dual none] theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := .rfl
 @[to_dual none] theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b := rfl
 
-/-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
+/-- We say that a set `s : Set α` is `IsConvexSet` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
 linearly ordered field, then this condition is also equivalent to `Convex α s`. -/
-class OrdConnected (s : Set α) : Prop where
-  /-- `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the interval `[[x, y]]`. -/
+class IsConvexSet (s : Set α) : Prop where
+  /-- `s : Set α` is `IsConvexSet` if for all `x y ∈ s` it includes the interval `[[x, y]]`. -/
   out' ⦃x : α⦄ (hx : x ∈ s) ⦃y : α⦄ (hy : y ∈ s) : Icc x y ⊆ s
 
-attribute [to_dual self (reorder := out' (x y, hx hy))] OrdConnected.mk
-attribute [to_dual self (reorder := x y, hx hy)] OrdConnected.out'
+attribute [to_dual self (reorder := out' (x y, hx hy))] IsConvexSet.mk
+attribute [to_dual self (reorder := x y, hx hy)] IsConvexSet.out'
 
 end Set

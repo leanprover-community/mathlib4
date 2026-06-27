@@ -465,10 +465,10 @@ theorem eball_eq_empty_iff : eball x ε = ∅ ↔ ε = 0 :=
       not_lt_of_ge (le_of_eq ε0) (pos_of_mem_eball h)⟩
 
 theorem ordConnected_setOf_closedEBall_subset (x : α) (s : Set α) :
-    OrdConnected { r | closedEBall x r ⊆ s } :=
+    IsConvexSet { r | closedEBall x r ⊆ s } :=
   ⟨fun _ _ _ h₁ _ h₂ => (closedEBall_subset_closedEBall h₂.2).trans h₁⟩
 
-theorem ordConnected_setOf_eball_subset (x : α) (s : Set α) : OrdConnected { r | eball x r ⊆ s } :=
+theorem ordConnected_setOf_eball_subset (x : α) (s : Set α) : IsConvexSet { r | eball x r ⊆ s } :=
   ⟨fun _ _ _ h₁ _ h₂ => (eball_subset_eball h₂.2).trans h₁⟩
 
 /-- Relation “two points are at a finite edistance” is an equivalence relation. -/

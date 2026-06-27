@@ -267,7 +267,7 @@ theorem nullMeasurableSet_le [SecondCountableTopology α] [OrderClosedTopology �
     NullMeasurableSet { a | f a ≤ g a } μ :=
   (hf.prodMk hg).nullMeasurable measurableSet_le'
 
-theorem Set.OrdConnected.measurableSet [OrderClosedTopology α] (h : OrdConnected s) :
+theorem Order.IsConvexSet.measurableSet [OrderClosedTopology α] (h : IsConvexSet s) :
     MeasurableSet s := by
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y
   have huopen : IsOpen u := isOpen_biUnion fun _ _ => isOpen_biUnion fun _ _ => isOpen_Ioo
@@ -789,7 +789,7 @@ theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
 
 protected theorem Monotone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
     (hf : Monotone f) : Measurable f :=
-  suffices h : ∀ x, OrdConnected (f ⁻¹' Ioi x) from measurable_of_Ioi fun x => (h x).measurableSet
+  suffices h : ∀ x, IsConvexSet (f ⁻¹' Ioi x) from measurable_of_Ioi fun x => (h x).measurableSet
   fun _ => ordConnected_def.mpr fun _a ha _ _ _c hc => lt_of_lt_of_le ha (hf hc.1)
 
 theorem aemeasurable_restrict_of_monotoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}

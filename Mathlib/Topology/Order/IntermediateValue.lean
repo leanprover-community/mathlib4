@@ -185,7 +185,7 @@ theorem mem_range_of_exists_le_of_exists_ge [PreconnectedSpace X] {c : α} {f : 
 
 In this section we prove the following results:
 
-* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `OrdConnected`,
+* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `IsConvexSet`,
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
 * `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
@@ -201,7 +201,7 @@ theorem IsPreconnected.Icc_subset {s : Set α} (hs : IsPreconnected s) {a b : α
     (hb : b ∈ s) : Icc a b ⊆ s := by
   simpa only [image_id] using! hs.intermediate_value ha hb continuousOn_id
 
-theorem IsPreconnected.ordConnected {s : Set α} (h : IsPreconnected s) : OrdConnected s :=
+theorem IsPreconnected.ordConnected {s : Set α} (h : IsPreconnected s) : IsConvexSet s :=
   ⟨fun _ hx _ hy => h.Icc_subset hx hy⟩
 
 /-- If a preconnected set contains endpoints of an interval, then it includes the whole interval. -/
@@ -302,7 +302,7 @@ theorem setOf_isPreconnected_subset_of_ordered :
 /-!
 ### Intervals are connected
 
-In this section we prove that a closed interval (hence, any `OrdConnected` set) in a dense
+In this section we prove that a closed interval (hence, any `IsConvexSet` set) in a dense
 conditionally complete linear order is preconnected.
 -/
 
@@ -440,12 +440,12 @@ theorem isPreconnected_Icc : IsPreconnected (Icc a b) :=
 theorem isPreconnected_uIcc : IsPreconnected ([[a, b]]) :=
   isPreconnected_Icc
 
-theorem Set.OrdConnected.isPreconnected {s : Set α} (h : s.OrdConnected) : IsPreconnected s :=
+theorem Order.IsConvexSet.isPreconnected {s : Set α} (h : s.IsConvexSet) : IsPreconnected s :=
   isPreconnected_of_forall_pair fun x hx y hy =>
     ⟨[[x, y]], h.uIcc_subset hx hy, left_mem_uIcc, right_mem_uIcc, isPreconnected_uIcc⟩
 
-theorem isPreconnected_iff_ordConnected {s : Set α} : IsPreconnected s ↔ OrdConnected s :=
-  ⟨IsPreconnected.ordConnected, Set.OrdConnected.isPreconnected⟩
+theorem isPreconnected_iff_ordConnected {s : Set α} : IsPreconnected s ↔ IsConvexSet s :=
+  ⟨IsPreconnected.ordConnected, Order.IsConvexSet.isPreconnected⟩
 
 theorem isPreconnected_Ici : IsPreconnected (Ici a) :=
   ordConnected_Ici.isPreconnected
@@ -635,13 +635,13 @@ theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
 
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
 `b` are two points of this set, then `f` sends `s` to a superset of `Icc (f a) (f b)`. -/
-theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → δ}
+theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : IsConvexSet s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (Icc (f a) (f b)) :=
   hs.isPreconnected.intermediate_value ha hb hf
 
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
 `b` are two points of this set, then `f` sends `s` to a superset of `[f a, f b]`. -/
-theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
+theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : IsConvexSet s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     SurjOn f s (uIcc (f a) (f b)) := by
   rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
@@ -663,7 +663,7 @@ theorem Continuous.surjective' {f : α → δ} (hf : Continuous f) (h_top : Tend
 tends to `Filter.atBot : Filter β` along `Filter.atBot : Filter ↥s` and tends to
 `Filter.atTop : Filter β` along `Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is
 surjective. We formulate the conclusion as `Function.surjOn f s Set.univ`. -/
-theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
+theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [IsConvexSet s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atBot)
     (htop : Tendsto (fun x : s => f x) atTop atTop) : SurjOn f s univ :=
   haveI := Classical.inhabited_of_nonempty hs.to_subtype
@@ -673,7 +673,7 @@ theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnecte
 tends to `Filter.atTop : Filter β` along `Filter.atBot : Filter ↥s` and tends to
 `Filter.atBot : Filter β` along `Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is
 surjective. We formulate the conclusion as `Function.surjOn f s Set.univ`. -/
-theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
+theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [IsConvexSet s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atTop)
     (htop : Tendsto (fun x : s => f x) atTop atBot) : SurjOn f s univ :=
   ContinuousOn.surjOn_of_tendsto (δ := δᵒᵈ) hs hf hbot htop

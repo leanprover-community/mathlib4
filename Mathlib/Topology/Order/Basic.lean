@@ -315,7 +315,7 @@ theorem induced_orderTopology {α β : Type*} [Preorder α] [ta : TopologicalSpa
 topology. -/
 nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type*} [LinearOrder α]
     [LinearOrder β] [t : TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (hf : StrictMono f) (hc : OrdConnected (range f)) : t.induced f = Preorder.topology α := by
+    (hf : StrictMono f) (hc : IsConvexSet (range f)) : t.induced f = Preorder.topology α := by
   refine induced_topology_eq_preorder hf.lt_iff_lt (fun h₁ h₂ => ?_) fun h₁ h₂ => ?_
   · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨not_lt.1 h₂, h₁.le⟩ with ⟨y, rfl⟩
     exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
@@ -326,20 +326,20 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type*} [LinearOr
 embedding provided that the range of `f` is order-connected. -/
 theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (hf : StrictMono f) (hc : OrdConnected (range f)) : IsEmbedding f :=
+    (hf : StrictMono f) (hc : IsConvexSet (range f)) : IsEmbedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
 
 /-- An `OrderEmbedding` is a topological embedding provided that the range of `f` is
 order-connected -/
 lemma OrderEmbedding.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [OrderTopology β]
-    (f : α ↪o β) (hc : OrdConnected (range f)) : Topology.IsEmbedding f :=
+    (f : α ↪o β) (hc : IsConvexSet (range f)) : Topology.IsEmbedding f :=
   f.strictMono.isEmbedding_of_ordConnected hc
 
-/-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
+/-- On a `Order.IsConvexSet` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
-    [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
+    [OrderTopology α] {t : Set α} [ht : IsConvexSet t] : OrderTopology t :=
   ⟨(Subtype.strictMono_coe (· ∈ t)).induced_topology_eq_preorder <| by
     rwa [← @Subtype.range_val _ t] at ht⟩
 

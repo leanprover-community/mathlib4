@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 public import Mathlib.Order.Minimal
 public import Mathlib.Order.UpperLower.Principal
 
@@ -146,14 +146,14 @@ theorem lowerClosure_iUnion (f : ι → Set α) : lowerClosure (⋃ i, f i) = �
 theorem upperClosure_sUnion (S : Set (Set α)) : upperClosure (⋃₀ S) = ⨅ s ∈ S, upperClosure s := by
   simp_rw [sUnion_eq_biUnion, upperClosure_iUnion]
 
-theorem Set.OrdConnected.upperClosure_inter_lowerClosure (h : s.OrdConnected) :
+theorem Order.IsConvexSet.upperClosure_inter_lowerClosure (h : s.IsConvexSet) :
     ↑(upperClosure s) ∩ ↑(lowerClosure s) = s :=
   (subset_inter subset_upperClosure subset_lowerClosure).antisymm'
     fun _a ⟨⟨_b, hb, hba⟩, _c, hc, hac⟩ => h.out hb hc ⟨hba, hac⟩
 
 theorem ordConnected_iff_upperClosure_inter_lowerClosure :
-    s.OrdConnected ↔ ↑(upperClosure s) ∩ ↑(lowerClosure s) = s := by
-  refine ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => ?_⟩
+    s.IsConvexSet ↔ ↑(upperClosure s) ∩ ↑(lowerClosure s) = s := by
+  refine ⟨Order.IsConvexSet.upperClosure_inter_lowerClosure, fun h => ?_⟩
   rw [← h]
   exact (UpperSet.upper _).ordConnected.inter (LowerSet.lower _).ordConnected
 

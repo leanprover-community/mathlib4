@@ -713,9 +713,9 @@ Q660799:
   decls:
     - exists_hasDerivWithinAt_eq_of_gt_of_lt
     - exists_hasDerivWithinAt_eq_of_lt_of_gt
-    - Set.OrdConnected.image_hasDerivWithinAt
-    - Set.OrdConnected.image_derivWithin
-    - Set.OrdConnected.image_deriv
+    - Order.IsConvexSet.image_hasDerivWithinAt
+    - Order.IsConvexSet.image_derivWithin
+    - Order.IsConvexSet.image_deriv
     - Convex.image_hasDerivWithinAt
     - Convex.image_derivWithin
     - Convex.image_deriv

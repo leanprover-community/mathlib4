@@ -51,10 +51,10 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE (hd : Disjoint s (
     filter_upwards [Ico_mem_nhdsGE hac] with x hx hx'
     refine hx.2.ne (eq_of_mem_ordConnectedSection_of_uIcc_subset hx' hc ?_)
     refine subset_inter (subset_iUnion₂_of_subset a ha ?_) ?_
-    · exact OrdConnected.uIcc_subset inferInstance (hsub' ⟨hx.1, hx.2.le.trans hcb⟩)
+    · exact IsConvexSet.uIcc_subset inferInstance (hsub' ⟨hx.1, hx.2.le.trans hcb⟩)
         (hsub' ⟨hac.le, hcb⟩)
     · rcases mem_iUnion₂.1 (ordConnectedSection_subset hx').2 with ⟨y, hyt, hxy⟩
-      refine subset_iUnion₂_of_subset y hyt (OrdConnected.uIcc_subset inferInstance hxy ?_)
+      refine subset_iUnion₂_of_subset y hyt (IsConvexSet.uIcc_subset inferInstance hxy ?_)
       refine subset_ordConnectedComponent left_mem_uIcc hxy ?_
       suffices c < y by
         rw [uIcc_of_ge (hx.2.trans this).le]

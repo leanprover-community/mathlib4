@@ -7,14 +7,14 @@ module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.LatticeIntervals
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 
 /-! # Subtypes of conditionally complete linear orders
 
 In this file we give conditions on a subset of a conditionally complete linear order, to ensure that
 the subtype is itself conditionally complete.
 
-We check that an `OrdConnected` set satisfies these conditions.
+We check that an `IsConvexSet` set satisfies these conditions.
 
 ## TODO
 
@@ -110,7 +110,7 @@ theorem subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t
 
 end InfSet
 
-section OrdConnected
+section IsConvexSet
 
 variable [ConditionallyCompleteLinearOrder α]
 
@@ -136,9 +136,9 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
     csSup_of_not_bddAbove := fun t ht ↦ by simp [ht]
     csInf_of_not_bddBelow := fun t ht ↦ by simp [ht] }
 
-/-- The `sSup` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
+/-- The `sSup` function on a nonempty `IsConvexSet` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-above subsets of `s`. -/
-theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
+theorem sSup_within_of_ordConnected {s : Set α} [hs : IsConvexSet s] ⦃t : Set s⦄ (ht : t.Nonempty)
     (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
@@ -146,9 +146,9 @@ theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
   · exact (Subtype.mono_coe (· ∈ s)).le_csSup_image hct ⟨B, hB⟩
   · exact (Subtype.mono_coe (· ∈ s)).csSup_image_le ⟨c, hct⟩ hB
 
-/-- The `sInf` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
+/-- The `sInf` function on a nonempty `IsConvexSet` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-below subsets of `s`. -/
-theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
+theorem sInf_within_of_ordConnected {s : Set α} [hs : IsConvexSet s] ⦃t : Set s⦄ (ht : t.Nonempty)
     (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
@@ -156,15 +156,15 @@ theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
   · exact (Subtype.mono_coe (· ∈ s)).le_csInf_image ⟨c, hct⟩ hB
   · exact (Subtype.mono_coe (· ∈ s)).csInf_image_le hct ⟨B, hB⟩
 
-/-- A nonempty `OrdConnected` set in a conditionally complete linear order is naturally a
+/-- A nonempty `IsConvexSet` set in a conditionally complete linear order is naturally a
 conditionally complete linear order. -/
 noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhabited s]
-    [OrdConnected s] : ConditionallyCompleteLinearOrder s :=
+    [IsConvexSet s] : ConditionallyCompleteLinearOrder s :=
   subsetConditionallyCompleteLinearOrder s
     (fun h => sSup_within_of_ordConnected h)
     (fun h => sInf_within_of_ordConnected h)
 
-end OrdConnected
+end IsConvexSet
 
 section Icc
 

@@ -419,12 +419,12 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
 topological space `Y`. Let `f` be a bounded continuous real-valued function on `X`. Let `t` be
-a nonempty convex set of real numbers (we use `OrdConnected` instead of `Convex` to automatically
+a nonempty convex set of real numbers (we use `IsConvexSet` instead of `Convex` to automatically
 deduce this argument by typeclass search) such that `f x ∈ t` for all `x`. Then there exists
 a bounded continuous real-valued function `g : Y →ᵇ ℝ` such that `g y ∈ t` for all `y` and
 `g ∘ e = f`. -/
 theorem exists_extension_forall_mem_of_isClosedEmbedding (f : X →ᵇ ℝ) {t : Set ℝ} {e : X → Y}
-    [hs : OrdConnected t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) (he : IsClosedEmbedding e) :
+    [hs : IsConvexSet t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) (he : IsClosedEmbedding e) :
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   cases isEmpty_or_nonempty X
   · rcases hne with ⟨c, hc⟩
@@ -437,11 +437,11 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : X →ᵇ ℝ) {t :
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 set. Let `s` be a closed set in a normal topological space `Y`. Let `f` be a bounded continuous
 real-valued function on `s`. Let `t` be a nonempty convex set of real numbers (we use
-`OrdConnected` instead of `Convex` to automatically deduce this argument by typeclass search) such
+`IsConvexSet` instead of `Convex` to automatically deduce this argument by typeclass search) such
 that `f x ∈ t` for all `x : s`. Then there exists a bounded continuous real-valued function
 `g : Y →ᵇ ℝ` such that `g y ∈ t` for all `y` and `g.restrict s = f`. -/
 theorem exists_forall_mem_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs : IsClosed s)
-    {t : Set ℝ} [OrdConnected t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) :
+    {t : Set ℝ} [IsConvexSet t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) :
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g.restrict s = f := by
   obtain ⟨g, hg, hgf⟩ :=
     exists_extension_forall_mem_of_isClosedEmbedding f hf hne hs.isClosedEmbedding_subtypeVal
@@ -454,11 +454,11 @@ namespace ContinuousMap
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
 topological space `Y`. Let `f` be a continuous real-valued function on `X`. Let `t` be a nonempty
-convex set of real numbers (we use `OrdConnected` instead of `Convex` to automatically deduce this
+convex set of real numbers (we use `IsConvexSet` instead of `Convex` to automatically deduce this
 argument by typeclass search) such that `f x ∈ t` for all `x`. Then there exists a continuous
 real-valued function `g : C(Y, ℝ)` such that `g y ∈ t` for all `y` and `g ∘ e = f`. -/
 theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Set ℝ} {e : X → Y}
-    [hs : OrdConnected t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) (he : IsClosedEmbedding e) :
+    [hs : IsConvexSet t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) (he : IsClosedEmbedding e) :
     ∃ g : C(Y, ℝ), (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   have h : ℝ ≃o Ioo (-1 : ℝ) 1 := orderIsoIooNegOneOne ℝ
   let F : X →ᵇ ℝ :=
@@ -468,7 +468,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
         ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).2) }
   let t' : Set ℝ := (↑) ∘ h '' t
   have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).2
-  have : OrdConnected t' := by
+  have : IsConvexSet t' := by
     constructor
     rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ z hz
     lift z to Ioo (-1 : ℝ) 1 using Icc_subset_Ioo (h x).2.1 (h y).2.2 hz
@@ -492,12 +492,12 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
 
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed set. Let
 `s` be a closed set in a normal topological space `Y`. Let `f` be a continuous real-valued function
-on `s`. Let `t` be a nonempty convex set of real numbers (we use `OrdConnected` instead of `Convex`
+on `s`. Let `t` be a nonempty convex set of real numbers (we use `IsConvexSet` instead of `Convex`
 to automatically deduce this argument by typeclass search) such that `f x ∈ t` for all `x : s`. Then
 there exists a continuous real-valued function `g : C(Y, ℝ)` such that `g y ∈ t` for all `y` and
 `g.restrict s = f`. -/
 theorem exists_restrict_eq_forall_mem_of_closed {s : Set Y} (f : C(s, ℝ)) {t : Set ℝ}
-    [OrdConnected t] (ht : ∀ x, f x ∈ t) (hne : t.Nonempty) (hs : IsClosed s) :
+    [IsConvexSet t] (ht : ∀ x, f x ∈ t) (hne : t.Nonempty) (hs : IsClosed s) :
     ∃ g : C(Y, ℝ), (∀ y, g y ∈ t) ∧ g.restrict s = f :=
   let ⟨g, hgt, hgf⟩ :=
     exists_extension_forall_mem_of_isClosedEmbedding f ht hne hs.isClosedEmbedding_subtypeVal

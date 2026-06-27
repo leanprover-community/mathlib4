@@ -18,7 +18,7 @@ Recall that `x ≤ y` iff `∀ i, x i ≤ y i`, and `s` is order-connected iff
 
 ## Main declarations
 
-* `Set.OrdConnected.null_frontier`: The frontier of an order-connected set in `ℝⁿ` has measure `0`.
+* `Order.IsConvexSet.null_frontier`: The frontier of an order-connected set in `ℝⁿ` has measure `0`.
 
 ## Notes
 
@@ -143,13 +143,13 @@ theorem IsLowerSet.null_frontier (hs : IsLowerSet s) : volume (frontier s) = 0 :
     rwa [frontier_compl]
   · exact aux₀ fun _ ↦ hs.exists_subset_ball <| frontier_subset_closure hx
 
-theorem Set.OrdConnected.null_frontier (hs : s.OrdConnected) : volume (frontier s) = 0 := by
+theorem Order.IsConvexSet.null_frontier (hs : s.IsConvexSet) : volume (frontier s) = 0 := by
   rw [← hs.upperClosure_inter_lowerClosure]
   exact measure_mono_null (frontier_inter_subset _ _) <| measure_union_null
     (measure_inter_null_of_null_left _ (UpperSet.upper _).null_frontier)
     (measure_inter_null_of_null_right _ (LowerSet.lower _).null_frontier)
 
-protected theorem Set.OrdConnected.nullMeasurableSet (hs : s.OrdConnected) : NullMeasurableSet s :=
+protected theorem Order.IsConvexSet.nullMeasurableSet (hs : s.IsConvexSet) : NullMeasurableSet s :=
   nullMeasurableSet_of_null_frontier hs.null_frontier
 
 theorem IsAntichain.volume_eq_zero [Nonempty ι] (hs : IsAntichain (· ≤ ·) s) : volume s = 0 := by

@@ -71,10 +71,10 @@ theorem exists_hasDerivWithinAt_eq_of_lt_of_gt (hab : a ≤ b)
       (neg_lt_neg hmb)
   ⟨c, cmem, neg_injective hc⟩
 
-/-- **Darboux's theorem**: the image of a `Set.OrdConnected` set under `f'` is a `Set.OrdConnected`
+/-- **Darboux's theorem**: the image of a `Order.IsConvexSet` set under `f'` is a `Order.IsConvexSet`
 set, `HasDerivWithinAt` version. -/
-theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected s)
-    (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : OrdConnected (f' '' s) := by
+theorem Order.IsConvexSet.image_hasDerivWithinAt {s : Set ℝ} (hs : IsConvexSet s)
+    (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : IsConvexSet (f' '' s) := by
   apply ordConnected_of_Ioo
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ - m ⟨hma, hmb⟩
   rcases le_total a b with hab | hab
@@ -89,16 +89,16 @@ theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected
       ⟨c, cmem, hc⟩
     exact ⟨c, this <| Ioo_subset_Icc_self cmem, hc⟩
 
-/-- **Darboux's theorem**: the image of a `Set.OrdConnected` set under `f'` is a `Set.OrdConnected`
+/-- **Darboux's theorem**: the image of a `Order.IsConvexSet` set under `f'` is a `Order.IsConvexSet`
 set, `derivWithin` version. -/
-theorem Set.OrdConnected.image_derivWithin {s : Set ℝ} (hs : OrdConnected s)
-    (hf : DifferentiableOn ℝ f s) : OrdConnected (derivWithin f s '' s) :=
+theorem Order.IsConvexSet.image_derivWithin {s : Set ℝ} (hs : IsConvexSet s)
+    (hf : DifferentiableOn ℝ f s) : IsConvexSet (derivWithin f s '' s) :=
   hs.image_hasDerivWithinAt fun x hx => (hf x hx).hasDerivWithinAt
 
-/-- **Darboux's theorem**: the image of a `Set.OrdConnected` set under `f'` is a `Set.OrdConnected`
+/-- **Darboux's theorem**: the image of a `Order.IsConvexSet` set under `f'` is a `Order.IsConvexSet`
 set, `deriv` version. -/
-theorem Set.OrdConnected.image_deriv {s : Set ℝ} (hs : OrdConnected s)
-    (hf : ∀ x ∈ s, DifferentiableAt ℝ f x) : OrdConnected (deriv f '' s) :=
+theorem Order.IsConvexSet.image_deriv {s : Set ℝ} (hs : IsConvexSet s)
+    (hf : ∀ x ∈ s, DifferentiableAt ℝ f x) : IsConvexSet (deriv f '' s) :=
   hs.image_hasDerivWithinAt fun x hx => (hf x hx).hasDerivAt.hasDerivWithinAt
 
 /-- **Darboux's theorem**: the image of a convex set under `f'` is a convex set,

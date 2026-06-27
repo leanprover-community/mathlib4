@@ -306,19 +306,19 @@ variable {α β : Type*} [PartialOrder α] [Preorder β]
 section SuccAddOrder
 variable [Add α] [One α] [SuccAddOrder α] [IsSuccArchimedean α] {s : Set α} {f : α → β}
 
-lemma monotoneOn_of_le_add_one (hs : s.OrdConnected) :
+lemma monotoneOn_of_le_add_one (hs : s.IsConvexSet) :
     (∀ a, ¬ IsMax a → a ∈ s → a + 1 ∈ s → f a ≤ f (a + 1)) → MonotoneOn f s := by
   simpa [Order.succ_eq_add_one] using monotoneOn_of_le_succ hs (f := f)
 
-lemma antitoneOn_of_add_one_le (hs : s.OrdConnected) :
+lemma antitoneOn_of_add_one_le (hs : s.IsConvexSet) :
     (∀ a, ¬ IsMax a → a ∈ s → a + 1 ∈ s → f (a + 1) ≤ f a) → AntitoneOn f s := by
   simpa [Order.succ_eq_add_one] using antitoneOn_of_succ_le hs (f := f)
 
-lemma strictMonoOn_of_lt_add_one (hs : s.OrdConnected) :
+lemma strictMonoOn_of_lt_add_one (hs : s.IsConvexSet) :
     (∀ a, ¬ IsMax a → a ∈ s → a + 1 ∈ s → f a < f (a + 1)) → StrictMonoOn f s := by
   simpa [Order.succ_eq_add_one] using strictMonoOn_of_lt_succ hs (f := f)
 
-lemma strictAntiOn_of_add_one_lt (hs : s.OrdConnected) :
+lemma strictAntiOn_of_add_one_lt (hs : s.IsConvexSet) :
     (∀ a, ¬ IsMax a → a ∈ s → a + 1 ∈ s → f (a + 1) < f a) → StrictAntiOn f s := by
   simpa [Order.succ_eq_add_one] using strictAntiOn_of_succ_lt hs (f := f)
 
@@ -339,19 +339,19 @@ end SuccAddOrder
 section PredSubOrder
 variable [Sub α] [One α] [PredSubOrder α] [IsPredArchimedean α] {s : Set α} {f : α → β}
 
-lemma monotoneOn_of_sub_one_le (hs : s.OrdConnected) :
+lemma monotoneOn_of_sub_one_le (hs : s.IsConvexSet) :
     (∀ a, ¬ IsMin a → a ∈ s → a - 1 ∈ s → f (a - 1) ≤ f a) → MonotoneOn f s := by
   simpa [Order.pred_eq_sub_one] using monotoneOn_of_pred_le hs (f := f)
 
-lemma antitoneOn_of_le_sub_one (hs : s.OrdConnected) :
+lemma antitoneOn_of_le_sub_one (hs : s.IsConvexSet) :
     (∀ a, ¬ IsMin a → a ∈ s → a - 1 ∈ s → f a ≤ f (a - 1)) → AntitoneOn f s := by
   simpa [Order.pred_eq_sub_one] using antitoneOn_of_le_pred hs (f := f)
 
-lemma strictMonoOn_of_sub_one_lt (hs : s.OrdConnected) :
+lemma strictMonoOn_of_sub_one_lt (hs : s.IsConvexSet) :
     (∀ a, ¬ IsMin a → a ∈ s → a - 1 ∈ s → f (a - 1) < f a) → StrictMonoOn f s := by
   simpa [Order.pred_eq_sub_one] using strictMonoOn_of_pred_lt hs (f := f)
 
-lemma strictAntiOn_of_lt_sub_one (hs : s.OrdConnected) :
+lemma strictAntiOn_of_lt_sub_one (hs : s.IsConvexSet) :
     (∀ a, ¬ IsMin a → a ∈ s → a - 1 ∈ s → f a < f (a - 1)) → StrictAntiOn f s := by
   simpa [Order.pred_eq_sub_one] using strictAntiOn_of_lt_pred hs (f := f)
 

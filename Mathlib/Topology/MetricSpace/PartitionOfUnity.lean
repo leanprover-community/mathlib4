@@ -79,7 +79,7 @@ and its smooth counterpart. -/
 theorem exists_forall_closedEBall_subset_aux₂ (y : X) :
     Convex ℝ
       (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedEBall y r ⊆ U i }) :=
-  (convex_Ioi _).inter <| OrdConnected.convex <| OrdConnected.preimage_ennreal_ofReal <|
+  (convex_Ioi _).inter <| IsConvexSet.convex <| IsConvexSet.preimage_ennreal_ofReal <|
     ordConnected_iInter fun i => ordConnected_iInter fun (_ : y ∈ K i) =>
       ordConnected_setOf_closedEBall_subset y (U i)
 

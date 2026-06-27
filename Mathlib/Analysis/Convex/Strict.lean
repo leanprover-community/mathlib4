@@ -143,7 +143,7 @@ section LinearOrderedCancelAddCommMonoid
 variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
   [OrderTopology β] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
-protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
+protected theorem Order.IsConvexSet.strictConvex {s : Set β} (hs : IsConvexSet s) :
     StrictConvex 𝕜 s := by
   refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => ?_
   rcases hxy.lt_or_gt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
@@ -375,7 +375,7 @@ end LinearOrderedField
 /-!
 #### Convex sets in an ordered space
 
-Relates `Convex` and `Set.OrdConnected`.
+Relates `Convex` and `Order.IsConvexSet`.
 -/
 
 
@@ -389,7 +389,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Topological
 theorem strictConvex_iff_convex : StrictConvex 𝕜 s ↔ Convex 𝕜 s :=
   ⟨StrictConvex.convex, fun hs => hs.ordConnected.strictConvex⟩
 
-theorem strictConvex_iff_ordConnected : StrictConvex 𝕜 s ↔ s.OrdConnected :=
+theorem strictConvex_iff_ordConnected : StrictConvex 𝕜 s ↔ s.IsConvexSet :=
   strictConvex_iff_convex.trans convex_iff_ordConnected
 
 alias ⟨StrictConvex.ordConnected, _⟩ := strictConvex_iff_ordConnected

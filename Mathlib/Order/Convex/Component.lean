@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 public import Mathlib.Data.Set.Lattice.Image
 
 /-!
@@ -41,7 +41,7 @@ theorem dual_ordConnectedComponent :
 theorem ordConnectedComponent_subset : ordConnectedComponent s x ⊆ s := fun _ hy =>
   hy right_mem_uIcc
 
-theorem subset_ordConnectedComponent {t} [h : OrdConnected s] (hs : x ∈ s) (ht : s ⊆ t) :
+theorem subset_ordConnectedComponent {t} [h : IsConvexSet s] (hs : x ∈ s) (ht : s ⊆ t) :
     s ⊆ ordConnectedComponent t x := fun _ hy => (h.uIcc_subset hs hy).trans ht
 
 @[simp]
@@ -84,7 +84,7 @@ theorem ordConnectedComponent_eq (h : [[x, y]] ⊆ s) :
     ⟨mem_ordConnectedComponent_trans (mem_ordConnectedComponent_comm.2 h),
       mem_ordConnectedComponent_trans h⟩
 
-instance : OrdConnected (ordConnectedComponent s x) :=
+instance : IsConvexSet (ordConnectedComponent s x) :=
   ordConnected_of_uIcc_subset_left fun _ hy _ hz => (uIcc_subset_uIcc_left hz).trans hy
 
 /-- Projection from `s : Set α` to `α` sending each order connected component of `s` to a single

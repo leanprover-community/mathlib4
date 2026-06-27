@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Order.Basic
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 public import Mathlib.Order.Nat
 public import Mathlib.Order.UpperLower.Basic
 

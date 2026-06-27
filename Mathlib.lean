@@ -6110,7 +6110,7 @@ public import Mathlib.Order.Interval.Set.Limit
 public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Order.Interval.Set.Nat
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 public import Mathlib.Order.Interval.Set.OrdConnectedComponent
 public import Mathlib.Order.Interval.Set.OrdConnectedLinear
 public import Mathlib.Order.Interval.Set.OrderEmbedding

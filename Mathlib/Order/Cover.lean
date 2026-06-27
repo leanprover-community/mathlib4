@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Hom.WithTopBot
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 public import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
@@ -107,14 +107,14 @@ theorem WCovBy.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
   ⟨f.le_iff_le.mp h.le, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
 
 @[to_dual self]
-theorem WCovBy.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).OrdConnected) : f a ⩿ f b := by
+theorem WCovBy.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).IsConvexSet) : f a ⩿ f b := by
   refine ⟨f.monotone hab.le, fun c ha hb => ?_⟩
   obtain ⟨c, rfl⟩ := h.out (mem_range_self _) (mem_range_self _) ⟨ha.le, hb.le⟩
   rw [f.lt_iff_lt] at ha hb
   exact hab.2 ha hb
 
 @[to_dual self]
-theorem Set.OrdConnected.apply_wcovBy_apply_iff (f : α ↪o β) (h : (range f).OrdConnected) :
+theorem Order.IsConvexSet.apply_wcovBy_apply_iff (f : α ↪o β) (h : (range f).IsConvexSet) :
     f a ⩿ f b ↔ a ⩿ b :=
   ⟨fun h2 => h2.of_image f, fun hab => hab.image f h⟩
 
@@ -322,11 +322,11 @@ theorem CovBy.of_image (f : α ↪o β) (h : f a ⋖ f b) : a ⋖ b :=
   ⟨f.lt_iff_lt.mp h.lt, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
 
 @[to_dual self]
-theorem CovBy.image (f : α ↪o β) (hab : a ⋖ b) (h : (range f).OrdConnected) : f a ⋖ f b :=
+theorem CovBy.image (f : α ↪o β) (hab : a ⋖ b) (h : (range f).IsConvexSet) : f a ⋖ f b :=
   (hab.wcovBy.image f h).covBy_of_lt <| f.strictMono hab.lt
 
 @[to_dual self]
-theorem Set.OrdConnected.apply_covBy_apply_iff (f : α ↪o β) (h : (range f).OrdConnected) :
+theorem Order.IsConvexSet.apply_covBy_apply_iff (f : α ↪o β) (h : (range f).IsConvexSet) :
     f a ⋖ f b ↔ a ⋖ b :=
   ⟨CovBy.of_image f, fun hab => hab.image f h⟩
 
@@ -736,12 +736,12 @@ variable [Preorder α] {a b : α}
 
 @[to_dual (attr := simp, norm_cast)]
 lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
-  Set.OrdConnected.apply_wcovBy_apply_iff WithTop.coeOrderHom <| by
+  Order.IsConvexSet.apply_wcovBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[to_dual (attr := simp, norm_cast)]
 lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
+  Order.IsConvexSet.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[to_dual]

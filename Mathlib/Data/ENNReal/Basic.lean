@@ -712,26 +712,26 @@ open ENNReal
 
 namespace Set
 
-namespace OrdConnected
+namespace IsConvexSet
 
 variable {s : Set ℝ} {t : Set ℝ≥0} {u : Set ℝ≥0∞}
 
-theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set ℝ≥0).OrdConnected :=
+theorem preimage_coe_nnreal_ennreal (h : u.IsConvexSet) : ((↑) ⁻¹' u : Set ℝ≥0).IsConvexSet :=
   h.preimage_mono ENNReal.coe_mono
 
 -- TODO: generalize to `WithTop`
-theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
+theorem image_coe_nnreal_ennreal (h : t.IsConvexSet) : ((↑) '' t : Set ℝ≥0∞).IsConvexSet := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩
   exact mem_image_of_mem _ (h.out hx hy ⟨ENNReal.coe_le_coe.1 hz.1, ENNReal.coe_le_coe.1 hz.2⟩)
 
-theorem preimage_ennreal_ofReal (h : u.OrdConnected) : (ENNReal.ofReal ⁻¹' u).OrdConnected :=
+theorem preimage_ennreal_ofReal (h : u.IsConvexSet) : (ENNReal.ofReal ⁻¹' u).IsConvexSet :=
   h.preimage_coe_nnreal_ennreal.preimage_real_toNNReal
 
-theorem image_ennreal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdConnected := by
+theorem image_ennreal_ofReal (h : s.IsConvexSet) : (ENNReal.ofReal '' s).IsConvexSet := by
   simpa only [image_image] using! h.image_real_toNNReal.image_coe_nnreal_ennreal
 
-end OrdConnected
+end IsConvexSet
 
 end Set
 

@@ -461,7 +461,7 @@ theorem nhds_basis_Ioo_one_lt_of_one_lt [NoMaxOrder α] {a : α} (ha : 1 < a) :
 
 end LinearOrderedCommGroup
 
-namespace Set.OrdConnected
+namespace Order.IsConvexSet
 
 section ClosedIciTopology
 
@@ -469,12 +469,12 @@ variable [TopologicalSpace α] [LinearOrder α] [ClosedIciTopology α] {S : Set 
 
 /-- If `S` is order-connected and contains two points `x < y`,
 then `S` is a right neighbourhood of `x`. -/
-lemma mem_nhdsGE (hS : OrdConnected S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[≥] x :=
+lemma mem_nhdsGE (hS : IsConvexSet S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[≥] x :=
   mem_of_superset (Icc_mem_nhdsGE hxy) <| hS.out hx hy
 
 /-- If `S` is order-connected and contains two points `x < y`,
 then `S` is a punctured right neighbourhood of `x`. -/
-lemma mem_nhdsGT (hS : OrdConnected S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[>] x :=
+lemma mem_nhdsGT (hS : IsConvexSet S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[>] x :=
   nhdsWithin_mono _ Ioi_subset_Ici_self <| hS.mem_nhdsGE hx hy hxy
 
 end ClosedIciTopology
@@ -483,14 +483,14 @@ variable [TopologicalSpace α] [LinearOrder α] [ClosedIicTopology α] {S : Set 
 
 /-- If `S` is order-connected and contains two points `x < y`, then `S` is a left neighbourhood
 of `y`. -/
-lemma mem_nhdsLE (hS : OrdConnected S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[≤] y :=
+lemma mem_nhdsLE (hS : IsConvexSet S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[≤] y :=
   hS.dual.mem_nhdsGE hy hx hxy
 
 /-- If `S` is order-connected and contains two points `x < y`, then `S` is a punctured left
 neighbourhood of `y`. -/
-lemma mem_nhdsLT (hS : OrdConnected S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[<] y :=
+lemma mem_nhdsLT (hS : IsConvexSet S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[<] y :=
   hS.dual.mem_nhdsGT hy hx hxy
 
-end OrdConnected
+end IsConvexSet
 
 end Set

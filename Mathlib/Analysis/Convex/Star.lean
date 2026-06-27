@@ -420,12 +420,12 @@ end LinearOrderedField
 Relates `starConvex` and `Set.ordConnected`.
 -/
 
-section OrdConnected
+section IsConvexSet
 
 /-- If `s` is an order-connected set in an ordered module over an ordered semiring
 and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
-theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [PartialOrder E]
-    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected)
+theorem Order.IsConvexSet.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [PartialOrder E]
+    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {x : E} {s : Set E} (hs : s.IsConvexSet)
     (hx : x ∈ s) (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab
   obtain hxy | hyx := h _ hy
@@ -446,9 +446,9 @@ theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [AddComm
 
 theorem starConvex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) :
-    StarConvex 𝕜 x s ↔ s.OrdConnected := by
+    StarConvex 𝕜 x s ↔ s.IsConvexSet := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, starConvex_iff_segment_subset, segment_eq_uIcc]
 
 alias ⟨StarConvex.ordConnected, _⟩ := starConvex_iff_ordConnected
 
-end OrdConnected
+end IsConvexSet

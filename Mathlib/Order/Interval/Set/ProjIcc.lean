@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Function
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 
 /-!
 # Projection of a line onto a closed interval
@@ -273,14 +273,14 @@ theorem StrictMono.strictMonoOn_IccExtend (hf : StrictMono f) :
     StrictMonoOn (IccExtend h f) (Icc a b) :=
   hf.comp_strictMonoOn (strictMonoOn_projIcc h)
 
-protected theorem Set.OrdConnected.IciExtend {s : Set (Ici a)} (hs : s.OrdConnected) :
-    {x | IciExtend (· ∈ s) x}.OrdConnected :=
+protected theorem Order.IsConvexSet.IciExtend {s : Set (Ici a)} (hs : s.IsConvexSet) :
+    {x | IciExtend (· ∈ s) x}.IsConvexSet :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨max_le_max le_rfl hz.1, max_le_max le_rfl hz.2⟩⟩
 
-protected theorem Set.OrdConnected.IicExtend {s : Set (Iic b)} (hs : s.OrdConnected) :
-    {x | IicExtend (· ∈ s) x}.OrdConnected :=
+protected theorem Order.IsConvexSet.IicExtend {s : Set (Iic b)} (hs : s.IsConvexSet) :
+    {x | IicExtend (· ∈ s) x}.IsConvexSet :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
 
-protected theorem Set.OrdConnected.restrict (hs : s.OrdConnected) :
-    {x | restrict t (· ∈ s) x}.OrdConnected :=
+protected theorem Order.IsConvexSet.restrict (hs : s.IsConvexSet) :
+    {x | restrict t (· ∈ s) x}.IsConvexSet :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy hz⟩

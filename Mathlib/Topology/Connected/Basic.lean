@@ -241,7 +241,7 @@ theorem IsConnected.iUnion_of_chain [Nonempty β] {s : β → Set α} (H : ∀ n
 
 /-- The iUnion of preconnected sets indexed by a subset of a type with an archimedean successor
   (like `ℕ` or `ℤ`) such that any two neighboring sets meet is preconnected. -/
-theorem IsPreconnected.biUnion_of_chain {s : β → Set α} {t : Set β} (ht : OrdConnected t)
+theorem IsPreconnected.biUnion_of_chain {s : β → Set α} {t : Set β} (ht : IsConvexSet t)
     (H : ∀ n ∈ t, IsPreconnected (s n))
     (K : ∀ n : β, n ∈ t → succ n ∈ t → (s n ∩ s (succ n)).Nonempty) :
     IsPreconnected (⋃ n ∈ t, s n) := by
@@ -258,7 +258,7 @@ theorem IsPreconnected.biUnion_of_chain {s : β → Set α} {t : Set β} (ht : O
 /-- The iUnion of connected sets indexed by a subset of a type with an archimedean successor
   (like `ℕ` or `ℤ`) such that any two neighboring sets meet is preconnected. -/
 theorem IsConnected.biUnion_of_chain {s : β → Set α} {t : Set β} (hnt : t.Nonempty)
-    (ht : OrdConnected t) (H : ∀ n ∈ t, IsConnected (s n))
+    (ht : IsConvexSet t) (H : ∀ n ∈ t, IsConnected (s n))
     (K : ∀ n : β, n ∈ t → succ n ∈ t → (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n ∈ t, s n) :=
   ⟨nonempty_biUnion.2 <| ⟨hnt.some, hnt.some_mem, (H _ hnt.some_mem).nonempty⟩,
     IsPreconnected.biUnion_of_chain ht (fun i hi => (H i hi).isPreconnected) K⟩

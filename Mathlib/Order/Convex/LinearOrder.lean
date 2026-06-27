@@ -18,7 +18,7 @@ some convenience lemmas for characterising closed intervals in certain concrete 
 `ℕ`, and `Fin n`.
 
 ## Main results:
-* `Set.ordConnected_iff_disjoint_Ioo_empty`: a characterisation of `Set.OrdConnected` for
+* `Set.ordConnected_iff_disjoint_Ioo_empty`: a characterisation of `Order.IsConvexSet` for
   locally-finite linear orders.
 * `Set.Nonempty.ordConnected_iff_of_bdd`: a characterisation of closed intervals for locally-finite
   conditionally complete linear orders.
@@ -35,7 +35,7 @@ variable {α : Type*} {I : Set α}
 lemma Set.Nonempty.ordConnected_iff_of_bdd
     [ConditionallyCompleteLinearOrder α] [LocallyFiniteOrder α]
     (h₀ : I.Nonempty) (h₁ : BddBelow I) (h₂ : BddAbove I) :
-    I.OrdConnected ↔ I = Icc (sInf I) (sSup I) :=
+    I.IsConvexSet ↔ I = Icc (sInf I) (sSup I) :=
   have h₄ : I.Finite := h₁.finite_of_bddAbove h₂
   ⟨fun _ ↦ le_antisymm (subset_Icc_csInf_csSup h₁ h₂)
     (I.Icc_subset (h₀.csInf_mem h₄) (h₀.csSup_mem h₄)), fun h₃ ↦ h₃ ▸ ordConnected_Icc⟩
@@ -45,14 +45,14 @@ in which the explicit boundedness hypotheses are not necessary. -/
 lemma Set.Nonempty.ordConnected_iff_of_bdd' [ConditionallyCompleteLinearOrder α]
     [OrderTop α] [OrderBot α] [LocallyFiniteOrder α]
     (h₀ : I.Nonempty) :
-    I.OrdConnected ↔ I = Icc (sInf I) (sSup I) :=
+    I.IsConvexSet ↔ I = Icc (sInf I) (sSup I) :=
   h₀.ordConnected_iff_of_bdd (OrderBot.bddBelow I) (OrderTop.bddAbove I)
 
 /- TODO The `LocallyFiniteOrder` assumption here is probably too strong (e.g., it rules out `ℝ`
 for which this result holds). However at the time of writing it is not clear what weaker
 assumption(s) should replace it. -/
 lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrder α] :
-    I.OrdConnected ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → Ioo x y = ∅ := by
+    I.IsConvexSet ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → Ioo x y = ∅ := by
   simp_rw [← Set.subset_compl_iff_disjoint_right]
   refine ⟨fun h' x hx y hy hxy ↦ ?_, fun h' ↦ ordConnected_of_Ioo fun x hx y hy hxy z hz ↦ ?_⟩
   · suffices ∀ z, x < z → y ≤ z by ext z; simpa using this z

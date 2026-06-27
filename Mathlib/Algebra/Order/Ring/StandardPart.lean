@@ -128,7 +128,7 @@ deriving Field
 
 namespace FiniteResidueField
 
-instance ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
+instance ordConnected_preimage_mk' : ∀ x, Order.IsConvexSet <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
   refine fun x ↦ ⟨?_⟩
   rintro x rfl y hy z ⟨hxz, hzy⟩
@@ -153,7 +153,7 @@ theorem ind {motive : FiniteResidueField K → Prop} (mk : ∀ x, motive (mk x))
   Quotient.ind mk
 
 instance ordConnected_preimage_mk :
-    ∀ x, Set.OrdConnected (mk ⁻¹' ({x} : Set (FiniteResidueField K))) :=
+    ∀ x, Order.IsConvexSet (mk ⁻¹' ({x} : Set (FiniteResidueField K))) :=
   ordConnected_preimage_mk'
 
 set_option backward.isDefEq.respectTransparency false in

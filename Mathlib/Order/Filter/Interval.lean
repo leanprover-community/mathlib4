@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.Bases.Finite
@@ -147,7 +147,7 @@ protected theorem Tendsto.Ioo {l₁ l₂ : Filter α} [TendstoIxxClass Ioo l₁ 
 
 instance tendsto_Icc_atTop_atTop : TendstoIxxClass Icc (atTop : Filter α) atTop :=
   (hasBasis_iInf_principal_finite _).tendstoIxxClass fun _ _ =>
-    Set.OrdConnected.out <| ordConnected_biInter fun _ _ => ordConnected_Ici
+    Order.IsConvexSet.out <| ordConnected_biInter fun _ _ => ordConnected_Ici
 
 instance tendsto_Ico_atTop_atTop : TendstoIxxClass Ico (atTop : Filter α) atTop :=
   tendstoIxxClass_of_subset fun _ _ => Ico_subset_Icc_self
@@ -160,7 +160,7 @@ instance tendsto_Ioo_atTop_atTop : TendstoIxxClass Ioo (atTop : Filter α) atTop
 
 instance tendsto_Icc_atBot_atBot : TendstoIxxClass Icc (atBot : Filter α) atBot :=
   (hasBasis_iInf_principal_finite _).tendstoIxxClass fun _ _ =>
-    Set.OrdConnected.out <| ordConnected_biInter fun _ _ => ordConnected_Iic
+    Order.IsConvexSet.out <| ordConnected_biInter fun _ _ => ordConnected_Iic
 
 instance tendsto_Ico_atBot_atBot : TendstoIxxClass Ico (atBot : Filter α) atBot :=
   tendstoIxxClass_of_subset fun _ _ => Ico_subset_Icc_self
@@ -171,7 +171,7 @@ instance tendsto_Ioc_atBot_atBot : TendstoIxxClass Ioc (atBot : Filter α) atBot
 instance tendsto_Ioo_atBot_atBot : TendstoIxxClass Ioo (atBot : Filter α) atBot :=
   tendstoIxxClass_of_subset fun _ _ => Ioo_subset_Icc_self
 
-instance OrdConnected.tendsto_Icc {s : Set α} [hs : OrdConnected s] :
+instance IsConvexSet.tendsto_Icc {s : Set α} [hs : IsConvexSet s] :
     TendstoIxxClass Icc (𝓟 s) (𝓟 s) :=
   tendstoIxxClass_principal.2 hs.out
 

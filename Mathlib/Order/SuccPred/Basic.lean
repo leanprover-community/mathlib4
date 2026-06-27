@@ -846,12 +846,12 @@ protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y
 
 end OrderIso
 
-section OrdConnected
+section IsConvexSet
 
-variable {α : Type*} [PartialOrder α] {s : Set α} [s.OrdConnected]
+variable {α : Type*} [PartialOrder α] {s : Set α} [s.IsConvexSet]
 
 open scoped Classical in
-noncomputable instance Set.OrdConnected.predOrder [PredOrder α] : PredOrder s where
+noncomputable instance Order.IsConvexSet.predOrder [PredOrder α] : PredOrder s where
   pred x := if h : Order.pred x.1 ∈ s then ⟨Order.pred x.1, h⟩ else x
   pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp_all [Order.pred_le]
   min_of_le_pred := @fun ⟨x, hx⟩ h ↦ by
@@ -894,7 +894,7 @@ lemma pred_notMem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
     rw [coe_pred_of_mem nh] at h
     simp at h
 
-noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
+noncomputable instance Order.IsConvexSet.succOrder [SuccOrder α] :
     SuccOrder s :=
   letI : PredOrder sᵒᵈ := inferInstanceAs (PredOrder (OrderDual.ofDual ⁻¹' s))
   inferInstanceAs (SuccOrder sᵒᵈᵒᵈ)
@@ -919,4 +919,4 @@ lemma succ_notMem_iff_isMax [SuccOrder α] [NoMaxOrder α] {a : s} :
     rw [coe_succ_of_mem nh] at h
     simp at h
 
-end OrdConnected
+end IsConvexSet

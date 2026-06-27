@@ -93,7 +93,7 @@ theorem Real.exists_seq_rat_strictAnti_tendsto (x : ℝ) :
 
 section
 
-theorem closure_ordConnected_inter_rat {s : Set ℝ} (conn : s.OrdConnected) (nt : s.Nontrivial) :
+theorem closure_ordConnected_inter_rat {s : Set ℝ} (conn : s.IsConvexSet) (nt : s.Nontrivial) :
     closure (s ∩ .range Rat.cast) = closure s :=
   (closure_mono inter_subset_left).antisymm <| isClosed_closure.closure_subset_iff.mpr fun x hx ↦
     Real.mem_closure_iff.mpr fun ε ε_pos ↦ by

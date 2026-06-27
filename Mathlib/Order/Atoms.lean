@@ -269,13 +269,13 @@ variable [PartialOrder α] {a b : α}
 @[simp]
 theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b := by
   rw [← bot_covBy_iff]
-  refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) ?_).symm
+  refine (Order.IsConvexSet.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) ?_).symm
   simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using! Set.ordConnected_Ici
 
 @[simp]
 theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
   rw [← covBy_top_iff]
-  refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) ?_).symm
+  refine (Order.IsConvexSet.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) ?_).symm
   simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using! Set.ordConnected_Iic
 
 theorem covBy_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
@@ -454,8 +454,8 @@ instance IsStronglyCoatomic.toIsCoatomic (α : Type*) [PartialOrder α] [OrderTo
     [IsStronglyCoatomic α] : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 <| IsStronglyAtomic.isAtomic (α := αᵒᵈ)
 
-theorem Set.OrdConnected.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
-    (h : Set.OrdConnected s) : IsStronglyAtomic s where
+theorem Order.IsConvexSet.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
+    (h : Order.IsConvexSet s) : IsStronglyAtomic s where
   exists_covBy_le_of_lt := by
     rintro ⟨c, hc⟩ ⟨d, hd⟩ hcd
     obtain ⟨x, hcx, hxd⟩ := (Subtype.mk_lt_mk.1 hcd).exists_covby_le
@@ -463,15 +463,15 @@ theorem Set.OrdConnected.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
       ⟨by simpa
         using! hcx.lt, fun y hy hy' ↦ hcx.2 (by simpa using! hy) (by simpa using! hy')⟩, hxd⟩
 
-theorem Set.OrdConnected.isStronglyCoatomic [IsStronglyCoatomic α] {s : Set α}
-    (h : Set.OrdConnected s) : IsStronglyCoatomic s :=
+theorem Order.IsConvexSet.isStronglyCoatomic [IsStronglyCoatomic α] {s : Set α}
+    (h : Order.IsConvexSet s) : IsStronglyCoatomic s :=
   isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 h.dual.isStronglyAtomic
 
-instance [IsStronglyAtomic α] {s : Set α} [Set.OrdConnected s] : IsStronglyAtomic s :=
-  Set.OrdConnected.isStronglyAtomic <| by assumption
+instance [IsStronglyAtomic α] {s : Set α} [Order.IsConvexSet s] : IsStronglyAtomic s :=
+  Order.IsConvexSet.isStronglyAtomic <| by assumption
 
-instance [IsStronglyCoatomic α] {s : Set α} [h : Set.OrdConnected s] : IsStronglyCoatomic s :=
-  Set.OrdConnected.isStronglyCoatomic <| by assumption
+instance [IsStronglyCoatomic α] {s : Set α} [h : Order.IsConvexSet s] : IsStronglyCoatomic s :=
+  Order.IsConvexSet.isStronglyCoatomic <| by assumption
 
 instance SuccOrder.toIsStronglyAtomic [SuccOrder α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a _ hab :=

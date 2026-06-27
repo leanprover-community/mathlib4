@@ -80,7 +80,7 @@ instance : HasUpperLowerClosure αᵒᵈ where
   isOpen_lowerClosure := @IsOpen.upperClosure α _ _ _
 
 /-
-Note: `s.OrdConnected` does not imply `(closure s).OrdConnected`, as we can see by taking
+Note: `s.IsConvexSet` does not imply `(closure s).IsConvexSet`, as we can see by taking
 `s := Ioo 0 1 × Ioo 1 2 ∪ Ioo 2 3 × Ioo 0 1` because then
 `closure s = Icc 0 1 × Icc 1 2 ∪ Icc 2 3 × Icc 0 1` is not order-connected as
 `(1, 1) ∈ closure s`, `(2, 1) ∈ closure s` but `Icc (1, 1) (2, 1) ⊈ closure s`.
@@ -100,7 +100,7 @@ protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior 
 protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
   h.toDual.interior
 
-protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
+protected theorem Order.IsConvexSet.interior (h : s.IsConvexSet) : (interior s).IsConvexSet := by
   rw [← h.upperClosure_inter_lowerClosure, interior_inter]
   exact
     (upperClosure s).upper.interior.ordConnected.inter (lowerClosure s).lower.interior.ordConnected

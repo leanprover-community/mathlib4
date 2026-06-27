@@ -131,12 +131,12 @@ theorem isUpperSet_iff_Ici_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ic
 theorem IsUpperSet.Ioi_subset (h : IsUpperSet s) ⦃a⦄ (ha : a ∈ s) : Ioi a ⊆ s :=
   Ioi_subset_Ici_self.trans <| h.Ici_subset ha
 
-theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
+theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.IsConvexSet :=
   ⟨fun _ ha _ _ => Icc_subset_Ici_self.trans <| h.Ici_subset ha⟩
 
 -- `to_dual` cannot yet reorder arguments of arguments
 @[to_dual existing]
-theorem IsLowerSet.ordConnected (h : IsLowerSet s) : s.OrdConnected :=
+theorem IsLowerSet.ordConnected (h : IsLowerSet s) : s.IsConvexSet :=
   ⟨fun _ _ _ hb => Icc_subset_Iic_self.trans <| h.Iic_subset hb⟩
 
 @[to_dual]

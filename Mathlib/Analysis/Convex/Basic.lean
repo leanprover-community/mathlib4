@@ -581,28 +581,28 @@ end LinearOrderedField
 
 /-!
 #### Convex sets in an ordered space
-Relates `Convex` and `OrdConnected`.
+Relates `Convex` and `IsConvexSet`.
 -/
 
 
 section
 
-theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+theorem Order.IsConvexSet.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
     [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E}
-    (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
+    (hs : s.IsConvexSet) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
   refine convex_iff_segment_subset.mpr fun x hx y hy => ?_
   obtain hxy | hyx := h.total hx hy
   · exact (segment_subset_Icc hxy).trans (hs.out hx hy)
   · rw [segment_symm]
     exact (segment_subset_Icc hyx).trans (hs.out hy hx)
 
-theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [LinearOrder E]
-    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E} (hs : s.OrdConnected) :
+theorem Order.IsConvexSet.convex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [LinearOrder E]
+    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E} (hs : s.IsConvexSet) :
     Convex 𝕜 s :=
   hs.convex_of_chain <| isChain_of_trichotomous s
 
 theorem convex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} :
-    Convex 𝕜 s ↔ s.OrdConnected := by
+    Convex 𝕜 s ↔ s.IsConvexSet := by
   simp_rw [convex_iff_segment_subset, segment_eq_uIcc, ordConnected_iff_uIcc_subset]
 
 alias ⟨Convex.ordConnected, _⟩ := convex_iff_ordConnected

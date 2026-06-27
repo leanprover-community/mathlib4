@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Convex.Defs
 
 /-!
 ### Order instances on quotients
@@ -13,7 +13,7 @@ public import Mathlib.Order.Interval.Set.OrdConnected
 We define a `Preorder` instance on a general `Quotient`, as the transitive closure of the
 `x ≤ y ∨ x ≈ y` relation. This is the quotient object in the category of preorders.
 
-We show that in the case of a linear order with `Set.OrdConnected` equivalence classes, this
+We show that in the case of a linear order with `Order.IsConvexSet` equivalence classes, this
 relation is automatically transitive (we don't need to take the transitive closure), and gives a
 `LinearOrder` structure on the quotient. In that case, the resulting order is sometimes called a
 **condensation**.
@@ -88,7 +88,7 @@ theorem lift_monotone {α β : Type*} [Preorder α] {s : Setoid α} [Preorder β
 end Preorder
 
 section LinearOrder
-variable [LinearOrder α] [H : ∀ x, OrdConnected (Quotient.mk s ⁻¹' {x})]
+variable [LinearOrder α] [H : ∀ x, IsConvexSet (Quotient.mk s ⁻¹' {x})]
 
 theorem mk_le_mk {x y : α} : Quotient.mk s x ≤ Quotient.mk s y ↔ x ≤ y ∨ x ≈ y := by
   rw [← propext_iff]

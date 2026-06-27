@@ -48,7 +48,7 @@ theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image <
 theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) := hs.image <| OrderIso.mulLeft _
 
 @[to_additive]
-theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected := by
+theorem Order.IsConvexSet.smul (hs : s.IsConvexSet) : (a • s).IsConvexSet := by
   rw [← hs.upperClosure_inter_lowerClosure, smul_set_inter]
   exact (upperClosure _).upper.smul.ordConnected.inter (lowerClosure _).lower.smul.ordConnected
 

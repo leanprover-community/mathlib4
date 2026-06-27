@@ -866,19 +866,19 @@ end NNReal
 
 namespace Set
 
-namespace OrdConnected
+namespace IsConvexSet
 
 variable {s : Set ℝ} {t : Set ℝ≥0}
 
-theorem preimage_coe_nnreal_real (h : s.OrdConnected) : ((↑) ⁻¹' s : Set ℝ≥0).OrdConnected :=
+theorem preimage_coe_nnreal_real (h : s.IsConvexSet) : ((↑) ⁻¹' s : Set ℝ≥0).IsConvexSet :=
   h.preimage_mono NNReal.coe_mono
 
-theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdConnected :=
+theorem image_coe_nnreal_real (h : t.IsConvexSet) : ((↑) '' t : Set ℝ).IsConvexSet :=
   ⟨forall_mem_image.2 fun x hx =>
       forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 
 -- TODO: does it generalize to a `GaloisInsertion`?
-theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
+theorem image_real_toNNReal (h : s.IsConvexSet) : (Real.toNNReal '' s).IsConvexSet := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases le_total y 0 with hy₀ | hy₀
   · rw [mem_Icc, Real.toNNReal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
@@ -887,10 +887,10 @@ theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConne
     rw [toNNReal_coe] at hz
     exact ⟨z, h.out hx hy ⟨toNNReal_le_iff_le_coe.1 hz.1, hz.2⟩, toNNReal_coe⟩
 
-theorem preimage_real_toNNReal (h : t.OrdConnected) : (Real.toNNReal ⁻¹' t).OrdConnected :=
+theorem preimage_real_toNNReal (h : t.IsConvexSet) : (Real.toNNReal ⁻¹' t).IsConvexSet :=
   h.preimage_mono Real.toNNReal_monotone
 
-end OrdConnected
+end IsConvexSet
 
 end Set
 
