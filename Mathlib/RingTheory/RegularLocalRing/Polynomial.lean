@@ -13,6 +13,15 @@ public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 # Polynomial over Regular Ring
 
+In this file we proved that polynomial over regular ring is regular ring.
+
+# Main results
+
+* `Polynomial.isRegularRing_of_isRegularRing` : polynomial over regular ring is regular ring.
+
+* `MvPolynomial.isRegularRing_of_isRegularRing` : multivariate polynomial with finite variates
+  over regular ring is regular ring.
+
 -/
 
 @[expose] public section
