@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Etale.QuasiFinite
+public import Mathlib.RingTheory.IdempotentInstances
 public import Mathlib.RingTheory.Unramified.LocalStructure
 
 /-!
@@ -283,74 +284,80 @@ open nonZeroDivisors
 variable {R A B : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
+/-- If `R` is an local ring with residue field `k`, then for any étale `R`-algebra `A`,
+every `A →ₐ[R] k` lifts to at most one an `A →ₐ[R] R`. -/
+lemma IsLocalRing.ofId_comp_injective [Algebra.Etale R A] [IsLocalRing R] :
+    Function.Injective ((Algebra.ofId R 𝓀[R]).comp : (A →ₐ[R] R) → (A →ₐ[R] 𝓀[R])) := by
+  intro f₁ f₂ H
+  wlog _ : Algebra.IsStandardEtale R A
+  · let P := RingHom.ker ((IsScalarTower.toAlgHom R R 𝓀[R]).comp f₁).toRingHom
+    have inst : P.IsPrime := RingHom.ker_isPrime _
+    obtain ⟨r, hrP, _⟩ := Algebra.IsEtaleAt.exists_isStandardEtale (R := R) P
+    have hf₁ : IsUnit (f₁ r) := by
+      rw [← residue_ne_zero_iff_isUnit]
+      exact hrP
+    have hf₂ : IsUnit (f₂ r) := by
+      rw [← residue_ne_zero_iff_isUnit]
+      refine congr($H r).symm.trans_ne hrP
+    have : IsLocalization.liftAlgHom (S := Localization.Away r) (f := f₁) (M := .powers r)
+          (by simp [Submonoid.mem_powers_iff, hf₁.pow _]) =
+        IsLocalization.liftAlgHom (f := f₂) (M := .powers r)
+          (by simp [Submonoid.mem_powers_iff, hf₂.pow _]) := by
+      refine this (IsLocalization.algHom_ext (.powers r) ?_) inferInstance
+      ext x
+      simpa [Algebra.algHom] using congr($H x)
+    ext x
+    simpa using congr($this (algebraMap _ _ x))
+  obtain ⟨𝓟⟩ := Algebra.IsStandardEtale.nonempty_standardEtalePresentation (R := R) (S := A)
+  apply 𝓟.hom_ext
+  apply IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub (f := 𝓟.f)
+  · rw [← coe_aeval_eq_eval, aeval_algHom_apply, 𝓟.hasMap.1, map_zero]
+  · rw [← coe_aeval_eq_eval, aeval_algHom_apply, 𝓟.hasMap.1, map_zero]
+  · rw [← mem_nonunits_iff, ← mem_maximalIdeal, ← residue_eq_zero_iff, map_sub, sub_eq_zero]
+    exact congr($H _)
+  · rw [← coe_aeval_eq_eval, aeval_algHom_apply]
+    simpa using 𝓟.hasMap.isUnit_derivative_f.map f₁
+
+attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
 /-- If `R` is an henselian local ring with residue field `k`, then for any étale `R`-algebra `A`,
 every `A →ₐ[R] k` lifts uniquely to an `A →ₐ[R] R`. -/
 @[stacks 04GG "(1) => (7)"]
 lemma HenselianLocalRing.ofId_comp_bijective [Algebra.Etale R A] [HenselianLocalRing R] :
     Function.Bijective ((Algebra.ofId R 𝓀[R]).comp : (A →ₐ[R] R) → (A →ₐ[R] 𝓀[R])) := by
-  constructor
-  · intro f₁ f₂ H
-    wlog _ : Algebra.IsStandardEtale R A
-    · let P := RingHom.ker ((IsScalarTower.toAlgHom R R 𝓀[R]).comp f₁).toRingHom
-      have inst : P.IsPrime := RingHom.ker_isPrime _
-      obtain ⟨r, hrP, _⟩ := Algebra.IsEtaleAt.exists_isStandardEtale (R := R) P
-      have hf₁ : IsUnit (f₁ r) := by
-        rw [← residue_ne_zero_iff_isUnit]
-        exact hrP
-      have hf₂ : IsUnit (f₂ r) := by
-        rw [← residue_ne_zero_iff_isUnit]
-        refine congr($H r).symm.trans_ne hrP
-      have : IsLocalization.liftAlgHom (S := Localization.Away r) (f := f₁) (M := .powers r)
-            (by simp [Submonoid.mem_powers_iff, hf₁.pow _]) =
-          IsLocalization.liftAlgHom (f := f₂) (M := .powers r)
-            (by simp [Submonoid.mem_powers_iff, hf₂.pow _]) := by
-        refine this (IsLocalization.algHom_ext (.powers r) ?_) inferInstance
-        ext x
-        simpa [Algebra.algHom] using congr($H x)
-      ext x
-      simpa using congr($this (algebraMap _ _ x))
-    obtain ⟨𝓟⟩ := Algebra.IsStandardEtale.nonempty_standardEtalePresentation (R := R) (S := A)
-    apply 𝓟.hom_ext
-    apply IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub (f := 𝓟.f)
-    · rw [← coe_aeval_eq_eval, aeval_algHom_apply, 𝓟.hasMap.1, map_zero]
-    · rw [← coe_aeval_eq_eval, aeval_algHom_apply, 𝓟.hasMap.1, map_zero]
-    · rw [← mem_nonunits_iff, ← mem_maximalIdeal, ← residue_eq_zero_iff, map_sub, sub_eq_zero]
-      exact congr($H _)
-    · rw [← coe_aeval_eq_eval, aeval_algHom_apply]
-      simpa using 𝓟.hasMap.isUnit_derivative_f.map f₁
-  · intro f
-    let P := RingHom.ker f.toRingHom
-    have : P.IsPrime := RingHom.ker_isPrime _
-    obtain ⟨r, hrP, ⟨⟨𝓟⟩⟩⟩ := Algebra.IsEtaleAt.exists_isStandardEtale (R := R) P
-    let φ : Localization.Away r →ₐ[R] 𝓀[R] :=
-      IsLocalization.liftAlgHom (M := .powers r) (f := f) <| Subtype.forall.mpr <|
-        show Submonoid.powers r ≤ (IsUnit.submonoid _).comap _ from Submonoid.powers_le.mpr
-        (by simpa [IsUnit.mem_submonoid_iff])
-    obtain ⟨x, hx⟩ := residue_surjective (φ 𝓟.x)
-    obtain ⟨y, hy, hxy⟩ := HenselianLocalRing.is_henselian 𝓟.f 𝓟.monic_f x (by
-      rw [← residue_eq_zero_iff, ← ResidueField.algebraMap_eq, eval, hom_eval₂, RingHom.comp_id,
-        ← aeval_def, ResidueField.algebraMap_eq, hx, aeval_algHom_apply, 𝓟.hasMap.1, map_zero]) (by
-      rw [← residue_ne_zero_iff_isUnit, ← ResidueField.algebraMap_eq, eval, hom_eval₂,
-        RingHom.comp_id, ← aeval_def, ResidueField.algebraMap_eq, hx, aeval_algHom_apply]
-      exact (𝓟.hasMap.isUnit_derivative_f.map φ).ne_zero)
-    rw [← residue_eq_zero_iff, map_sub, sub_eq_zero] at hxy
-    have Hy : 𝓟.HasMap y := by
-      refine ⟨hy, ?_⟩
-      rw [← residue_ne_zero_iff_isUnit, ← ResidueField.algebraMap_eq, ← aeval_algebraMap_apply,
-        ResidueField.algebraMap_eq, hxy, hx, aeval_algHom_apply]
-      exact (𝓟.hasMap.2.map φ).ne_zero
-    refine ⟨((𝓟.lift _ Hy).comp 𝓟.equivRing.toAlgHom).comp (IsScalarTower.toAlgHom _ _ _), ?_⟩
-    trans ((φ.comp 𝓟.equivRing.symm.toAlgHom).comp 𝓟.equivRing.toAlgHom).comp
-        (IsScalarTower.toAlgHom _ _ _)
-    · simp_rw [← AlgHom.comp_assoc]
-      congr 2
-      ext
-      simp [hxy, hx]
-    · ext; simp [φ]
+  refine ⟨IsLocalRing.ofId_comp_injective, fun f ↦ ?_⟩
+  let P := RingHom.ker f.toRingHom
+  have : P.IsPrime := RingHom.ker_isPrime _
+  obtain ⟨r, hrP, ⟨⟨𝓟⟩⟩⟩ := Algebra.IsEtaleAt.exists_isStandardEtale (R := R) P
+  let φ : Localization.Away r →ₐ[R] 𝓀[R] :=
+    IsLocalization.liftAlgHom (M := .powers r) (f := f) <| Subtype.forall.mpr <|
+      show Submonoid.powers r ≤ (IsUnit.submonoid _).comap _ from Submonoid.powers_le.mpr
+      (by simpa [IsUnit.mem_submonoid_iff])
+  obtain ⟨x, hx⟩ := residue_surjective (φ 𝓟.x)
+  obtain ⟨y, hy, hxy⟩ := HenselianLocalRing.is_henselian 𝓟.f 𝓟.monic_f x (by
+    rw [← residue_eq_zero_iff, ← ResidueField.algebraMap_eq, eval, hom_eval₂, RingHom.comp_id,
+      ← aeval_def, ResidueField.algebraMap_eq, hx, aeval_algHom_apply, 𝓟.hasMap.1, map_zero]) (by
+    rw [← residue_ne_zero_iff_isUnit, ← ResidueField.algebraMap_eq, eval, hom_eval₂,
+      RingHom.comp_id, ← aeval_def, ResidueField.algebraMap_eq, hx, aeval_algHom_apply]
+    exact (𝓟.hasMap.isUnit_derivative_f.map φ).ne_zero)
+  rw [← residue_eq_zero_iff, map_sub, sub_eq_zero] at hxy
+  have Hy : 𝓟.HasMap y := by
+    refine ⟨hy, ?_⟩
+    rw [← residue_ne_zero_iff_isUnit, ← ResidueField.algebraMap_eq, ← aeval_algebraMap_apply,
+      ResidueField.algebraMap_eq, hxy, hx, aeval_algHom_apply]
+    exact (𝓟.hasMap.2.map φ).ne_zero
+  refine ⟨((𝓟.lift _ Hy).comp 𝓟.equivRing.toAlgHom).comp (IsScalarTower.toAlgHom _ _ _), ?_⟩
+  trans ((φ.comp 𝓟.equivRing.symm.toAlgHom).comp 𝓟.equivRing.toAlgHom).comp
+      (IsScalarTower.toAlgHom _ _ _)
+  · simp_rw [← AlgHom.comp_assoc]
+    congr 2
+    ext
+    simp [hxy, hx]
+  · ext; simp [φ]
 
 attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
 set_option backward.isDefEq.respectTransparency false in
-/-- A finite algebra over an henselian local ring is a product of (henselian) local rings.
+/-- A finite algebra over a Henselian local ring is a product of (Henselian) local rings.
+(See `HenselianLocalRing.of_finite` for the Henselian part)
 
 TODO: show that the local rings are exactly `Aₘ` with `m` maximal ideals of `A`. -/
 @[stacks 04GG "(1) => (10)"]
@@ -416,15 +423,15 @@ lemma HenselianLocalRing.exists_completeOrthogonalIdempotents_forall_isLocalRing
     have hQP'' : (P' i).comap Algebra.TensorProduct.includeRight.toRingHom = Q := by
       rw [← hQP', Ideal.comap_comap]; convert Ideal.comap_id _; ext; simp [ψ']
     have heQ : RingHom.ker (algebraMap A he₀.Corner) ≤ Q := by
-      rw [he₀.ker_toCorner, Ideal.span_le]
+      rw [he₀.ker_algebraMap_corner, Ideal.span_le]
       simp only [Set.singleton_subset_iff, SetLike.mem_coe]
       rw [← Ideal.IsPrime.mul_mem_left_iff (I := Q) fun h ↦ hP' i (hQP'.le h)]
       simp [mul_sub, ← map_mul, (he.idem _).eq]
-    have := Ideal.IsMaximal.map_of_surjective_of_ker_le he₀.toCorner_surjective heQ
+    have := Ideal.IsMaximal.map_of_surjective_of_ker_le he₀.algebraMap_corner_surjective heQ
     refine IsLocalRing.of_unique_max_ideal ⟨Q.map (algebraMap A he₀.Corner), ‹_›, fun Q' hQ' ↦ ?_⟩
-    have inst := Ideal.comap_isMaximal_of_surjective _ he₀.toCorner_surjective (K := Q')
+    have inst := Ideal.comap_isMaximal_of_surjective _ he₀.algebraMap_corner_surjective (K := Q')
     refine (hQ'.eq_of_le this.ne_top ?_)
-    refine Ideal.le_map_of_comap_le_of_surjective _ he₀.toCorner_surjective ?_
+    refine Ideal.le_map_of_comap_le_of_surjective _ he₀.algebraMap_corner_surjective ?_
     suffices (Q'.comap (algebraMap A _)).comap ψ'.toRingHom = P' i by
       rw [← hQP'', ← this, Ideal.comap_comap,]
       simp only [AlgHom.toRingHom_eq_coe, ← AlgHom.comp_toRingHom, ψ', Function.comp_apply, le_refl,
@@ -459,8 +466,8 @@ private theorem HenselianLocalRing.of_finite_aux [IsLocalRing A]
     simpa using ha₀'
   let φ' : he.Corner →ₐ[A] 𝓀[A] := by
     refine AlgHom.liftOfSurjective (IsScalarTower.toAlgHom _ _ _)
-      he.toCorner_surjective φ ?_
-    refine he.ker_toCorner.trans_le ((Ideal.span_singleton_le_iff_mem _).mpr ?_)
+      he.algebraMap_corner_surjective φ ?_
+    refine he.ker_algebraMap_corner.trans_le ((Ideal.span_singleton_le_iff_mem _).mpr ?_)
     rw [← Ideal.IsPrime.mul_mem_left_iff (by exact ha₀''), mul_sub, mul_one, he.eq, sub_self]
     exact zero_mem _
   have hφ' (x : AdjoinRoot f) : φ' (algebraMap _ _ x) = φ x :=
@@ -502,14 +509,8 @@ lemma HenselianLocalRing.of_finite
     by_contra! H
     exact Ideal.one_notMem (RingHom.ker φ.toRingHom) (he.complete ▸ sum_mem fun i _ ↦ H i)
   have : Module.Finite A (he.idem i).Corner := .of_surjective
-    (IsScalarTower.toAlgHom _ (AdjoinRoot f) _).toLinearMap (he.idem i).toCorner_surjective
-  have : Module.Free A (he.idem i).Corner :=
-    have : Module.Projective A (he.idem i).Corner :=
-      .of_split ⟨⟨Subtype.val, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
-        (IsScalarTower.toAlgHom _ (AdjoinRoot f) _).toLinearMap
-        (LinearMap.ext fun a ↦ Subtype.ext ((Subsemigroup.mem_corner_iff (he.idem i)).mp a.2).2)
-    have : Module.Flat A (he.idem i).Corner := Module.Flat.of_projective
-    Module.free_of_flat_of_isLocalRing
+    (IsScalarTower.toAlgHom _ (AdjoinRoot f) _).toLinearMap (he.idem i).algebraMap_corner_surjective
+  have : Module.Free A (he.idem i).Corner := Module.free_of_flat_of_isLocalRing
   have hroot :
       1 ⊗ₜ algebraMap _ (he.idem i).Corner (AdjoinRoot.root f) = residue A a₀ ⊗ₜ[A] 1 :=
     HenselianLocalRing.of_finite_aux f a₀ ha₀ ha₀' _ (he.idem i) hi
@@ -517,7 +518,7 @@ lemma HenselianLocalRing.of_finite
     intro x
     obtain ⟨x, rfl⟩ := Algebra.TensorProduct.includeRight_surjective _
       (by exact residue_surjective) x
-    obtain ⟨x, rfl⟩ := (he.idem i).toCorner_surjective x
+    obtain ⟨x, rfl⟩ := (he.idem i).algebraMap_corner_surjective x
     obtain ⟨g, rfl⟩ := AdjoinRoot.mk_surjective x
     have h₁ : residue _ (eval a₀ g) = φ (.mk f g) := by simp [φ]
     have h₂ : (IsScalarTower.toAlgHom _ _ (𝓀[A] ⊗[A] (he.idem i).Corner)).comp φ =
@@ -531,7 +532,7 @@ lemma HenselianLocalRing.of_finite
     apply le_antisymm ?_ ((Module.finrank_pos_iff_of_free _ _).mpr inferInstance)
     · rw [← Module.finrank_baseChange (R := 𝓀[A]), finrank_le_one_iff]
       refine ⟨1, H.forall.mpr fun x ↦ ⟨x, by simp [Algebra.smul_def]⟩⟩
-  rw [Module.finrank_eq_one_iff_algebraMap_bijective] at this
+  rw [Algebra.finrank_eq_one_iff_bijective_algebraMap] at this
   obtain ⟨a, ha⟩ := this.2 (algebraMap _ _ (AdjoinRoot.root f))
   refine ⟨a, this.1 ?_, ?_⟩
   · rw [eval, hom_eval₂, RingHom.comp_id, ← aeval_def, ha, aeval_algebraMap_apply]
@@ -542,24 +543,12 @@ lemma HenselianLocalRing.of_finite
     · simp
     · rw [ha]; simp [← hroot]
 
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R]
-    [Algebra.IsIntegral R S] [Nontrivial S] : IsLocalHom (algebraMap R S) := by
-  have : (algebraMap R S).kerLift.IsIntegral :=
-    .tower_top (Ideal.Quotient.mk _) _
-      (by have := algebraMap_isIntegral_iff.mpr ‹Algebra.IsIntegral R S›; exact this)
-  have := this.isLocalHom (algebraMap R S).kerLift_injective
-  have : Nontrivial (R ⧸ RingHom.ker (algebraMap R S)) :=
-    Ideal.Quotient.nontrivial_iff.mpr (RingHom.ker_ne_top _)
-  have : IsLocalHom (Ideal.Quotient.mk (RingHom.ker (algebraMap R S))) :=
-    .of_surjective _ Ideal.Quotient.mk_surjective
-  exact RingHom.isLocalHom_comp (algebraMap R S).kerLift (Ideal.Quotient.mk _)
-
 /-- Let `R` be an henselian local ring, `A, B` be local `R`-algebras.
 Suppose `A` is etale and `B` is module-finite, then any `k(R)`-algebra map `k(A) → k(B)` lifts to
 an `R`-algebra map `A → B`.
 
 See `HenselianLocalRing.eq_of_residueFieldMap_eq` for the uniqueness of the lift. -/
-lemma HenselianLocalRing.exist_residueFieldMap_eq_of_etale [HenselianLocalRing R] [IsLocalRing A]
+lemma HenselianLocalRing.exists_residueFieldMap_eq_of_etale [HenselianLocalRing R] [IsLocalRing A]
     [IsLocalHom (algebraMap R A)] [Algebra.Etale R A] [IsLocalRing B] [Module.Finite R B]
     (f : 𝓀[A] →ₐ[𝓀[R]] 𝓀[B]) :
     ∃ (g : A →ₐ[R] B) (_ : IsLocalHom g.toRingHom), ResidueField.map g.toRingHom = f.toRingHom := by
@@ -582,12 +571,11 @@ lemma HenselianLocalRing.exist_residueFieldMap_eq_of_etale [HenselianLocalRing R
   obtain ⟨x, rfl⟩ := residue_surjective x
   simp [ResidueField.map_residue, H]
 
-lemma HenselianLocalRing.eq_of_residueFieldMap_eq [HenselianLocalRing R]
+lemma IsLocalRing.eq_of_residueFieldMap_eq
     [IsLocalRing A] [Algebra.Etale R A] [IsLocalRing B] [Module.Finite R B]
     (f₁ f₂ : A →ₐ[R] B) [IsLocalHom f₁.toRingHom] [IsLocalHom f₂.toRingHom]
     (H : ResidueField.map f₁.toRingHom = ResidueField.map f₂.toRingHom) : f₁ = f₂ := by
-  have : HenselianLocalRing B := .of_finite (R := R)
-  have := (HenselianLocalRing.ofId_comp_bijective (R := B) (A := B ⊗[R] A)).injective
+  have := (IsLocalRing.ofId_comp_injective (R := B) (A := B ⊗[R] A))
     (a₁ := (Algebra.TensorProduct.lift (Algebra.ofId _ _) f₁ fun _ _ ↦ .all _ _))
     (a₂ := (Algebra.TensorProduct.lift (Algebra.ofId _ _) f₂ fun _ _ ↦ .all _ _))
     (by ext a; simpa using congr($H (algebraMap _ _ a)))
@@ -599,13 +587,13 @@ lemma HenselianLocalRing.exist_algEquiv_residueFieldMap_eq_of_etale [HenselianLo
     [IsLocalRing B] [Module.Finite R B] [Algebra.Etale R B]
     (f : 𝓀[A] ≃ₐ[𝓀[R]] 𝓀[B]) :
     ∃ (g : A ≃ₐ[R] B), ResidueField.map g.toRingHom = f.toRingHom := by
-  obtain ⟨φ, hφ, hφ'⟩ := exist_residueFieldMap_eq_of_etale f.toAlgHom
-  obtain ⟨ψ, hψ, hψ'⟩ := exist_residueFieldMap_eq_of_etale f.symm.toAlgHom
+  obtain ⟨φ, hφ, hφ'⟩ := exists_residueFieldMap_eq_of_etale f.toAlgHom
+  obtain ⟨ψ, hψ, hψ'⟩ := exists_residueFieldMap_eq_of_etale f.symm.toAlgHom
   have : φ.comp ψ = .id _ _ := by
     have : IsLocalHom (AlgHom.id R B).toRingHom := by dsimp; infer_instance
     have : IsLocalHom (φ.comp ψ).toRingHom := by
       dsimp [AlgHom.comp_toRingHom] at hφ hψ ⊢; exact RingHom.isLocalHom_comp _ _
-    apply HenselianLocalRing.eq_of_residueFieldMap_eq
+    apply IsLocalRing.eq_of_residueFieldMap_eq
     dsimp [AlgHom.comp_toRingHom] at hφ hψ ⊢ hφ' hψ'
     simp only [ResidueField.map_comp, ResidueField.map_id, *]
     ext; simp
@@ -613,7 +601,7 @@ lemma HenselianLocalRing.exist_algEquiv_residueFieldMap_eq_of_etale [HenselianLo
     have : IsLocalHom (AlgHom.id R A).toRingHom := by dsimp; infer_instance
     have : IsLocalHom (ψ.comp φ).toRingHom := by
       dsimp [AlgHom.comp_toRingHom] at hφ hψ ⊢; exact RingHom.isLocalHom_comp _ _
-    apply HenselianLocalRing.eq_of_residueFieldMap_eq
+    apply IsLocalRing.eq_of_residueFieldMap_eq
     dsimp [AlgHom.comp_toRingHom] at hφ hψ ⊢ hφ' hψ'
     simp only [ResidueField.map_comp, ResidueField.map_id, *]
     ext; simp
@@ -633,7 +621,7 @@ def HenselianLocalRing.algEquivEquiv [HenselianLocalRing R]
       map_one' := AlgEquiv.ext fun _ ↦ congr($ResidueField.map_id _)
       map_mul' f g :=
         AlgEquiv.ext fun x ↦ congr($(ResidueField.map_comp g.toRingHom f.toRingHom) x) } <|
-    ⟨fun f g e ↦ AlgEquiv.coe_toAlgHom_injective (HenselianLocalRing.eq_of_residueFieldMap_eq
+    ⟨fun f g e ↦ AlgEquiv.coe_toAlgHom_injective (IsLocalRing.eq_of_residueFieldMap_eq
       f.toAlgHom g.toAlgHom congr(($e).toRingHom)), fun f ↦ by
     have ⟨g, hg⟩ := HenselianLocalRing.exist_algEquiv_residueFieldMap_eq_of_etale f
     exact ⟨g, AlgEquiv.ext fun _ ↦ congr($hg _)⟩⟩

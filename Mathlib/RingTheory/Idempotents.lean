@@ -609,11 +609,18 @@ instance {R R' S : Type*} [CommSemiring R] [CommSemiring R'] [Semiring S] [Algeb
     {e : S} (he : IsIdempotentElem e) : IsScalarTower R R' he.Corner :=
   .of_algebraMap_eq fun _ ↦ Subtype.ext (IsScalarTower.algebraMap_smul _ _ _).symm
 
-lemma IsIdempotentElem.toCorner_surjective [CommSemiring R] {e : R} (he : IsIdempotentElem e) :
+@[simp]
+lemma IsIdempotentElem.algebraMap_corner_apply
+    {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    {e : S} (he : IsIdempotentElem e) (x : R) :
+    (algebraMap R he.Corner x).1 = x • e := rfl
+
+lemma IsIdempotentElem.algebraMap_corner_surjective [CommSemiring R]
+    {e : R} (he : IsIdempotentElem e) :
     Function.Surjective (algebraMap R he.Corner) :=
   fun x ↦ ⟨x.1, Subtype.ext ((Subsemigroup.mem_corner_iff he).mp x.2).2⟩
 
-lemma IsIdempotentElem.ker_toCorner [CommRing R] {e : R} (he : IsIdempotentElem e) :
+lemma IsIdempotentElem.ker_algebraMap_corner [CommRing R] {e : R} (he : IsIdempotentElem e) :
     RingHom.ker (algebraMap R he.Corner) = Ideal.span {1 - e} := by
   apply le_antisymm
   · intro x hx
