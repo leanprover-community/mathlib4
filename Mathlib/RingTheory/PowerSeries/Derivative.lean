@@ -55,7 +55,7 @@ scoped notation "d⁄dX" => derivative
 
 @[simp] theorem derivative_C {r : R} : d⁄dX R (C r) = 0 := MvPowerSeries.pderiv_C
 
-@[simp] theorem derivative_one : d⁄dX R 1 = 0 := MvPowerSeries.pderiv_one
+theorem derivative_one : d⁄dX R 1 = 0 := MvPowerSeries.pderiv_one
 
 theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
     coeff n (d⁄dX R f) = coeff (n + 1) f * (n + 1) := by
@@ -140,6 +140,11 @@ section deprecated
 
 variable [CommSemiring R]
 
+/--
+The formal derivative of a power series in one variable.
+This is defined here as a function, but will be packaged as a
+derivation `derivative` on `R⟦X⟧`.
+-/
 @[deprecated derivative (since := "2026-06-26")]
 noncomputable def derivativeFun (f : R⟦X⟧) := (derivative R).toFun f
 

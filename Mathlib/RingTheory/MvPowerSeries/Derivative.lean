@@ -117,7 +117,7 @@ noncomputable def pderiv (i : σ) : Derivation R (MvPowerSeries σ R) (MvPowerSe
 
 @[simp] theorem pderiv_C {i : σ} {r : R} : pderiv R i (C r) = 0 := pderivFun_C r
 
-@[simp] theorem pderiv_one {i : σ} : pderiv R i 1 = 0 := pderiv_C
+theorem pderiv_one {i : σ} : pderiv R i 1 = 0 := pderiv_C
 
 theorem coeff_pderiv {i : σ} (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
     coeff n (pderiv R i f) = coeff (n + single i 1) f * (n i + 1) :=
