@@ -551,7 +551,7 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
       eraseIdx (j.succAbove i) (insertIdx a j v) = insertIdx a (i.predAbove j) (eraseIdx i v)
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
     dsimp [insertIdx, eraseIdx, Fin.succAbove, Fin.predAbove]
-    erw [Subtype.mk_eq_mk]
+    congr 1
     simp only [Fin.lt_def]
     split_ifs with hij
     · rcases Nat.exists_eq_succ_of_ne_zero
