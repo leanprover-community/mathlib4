@@ -6,10 +6,11 @@ Authors: Johan Commelin, Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Taylor
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Etale.QuasiFinite
 public import Mathlib.RingTheory.IdempotentInstances
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.LocalRing.RingHom.IsIntegral
 public import Mathlib.RingTheory.Unramified.LocalStructure
 
 /-!

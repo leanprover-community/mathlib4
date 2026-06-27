@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Polynomial.IntegralNormalization
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
@@ -613,18 +612,6 @@ theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
       ← add_eq_zero_iff_neg_eq, ← eval_C (a := p.reverse.coeff 0), ← eval_add, X_mul_divX_add,
       ← (injective_iff_map_eq_zero' _).mp inj, ← eval₂_hom]
     rwa [← eval₂_reverse_eq_zero_iff] at hp
-
-instance [Algebra R S] [IsLocalRing R] [Algebra.IsIntegral R S] [Nontrivial S] :
-    IsLocalHom (algebraMap R S) := by
-  have : (algebraMap R S).kerLift.IsIntegral :=
-    .tower_top (Ideal.Quotient.mk _) _
-      (by have := algebraMap_isIntegral_iff.mpr ‹Algebra.IsIntegral R S›; exact this)
-  have := this.isLocalHom (algebraMap R S).kerLift_injective
-  have : Nontrivial (R ⧸ RingHom.ker (algebraMap R S)) :=
-    Ideal.Quotient.nontrivial_iff.mpr (RingHom.ker_ne_top _)
-  have : IsLocalHom (Ideal.Quotient.mk (RingHom.ker (algebraMap R S))) :=
-    .of_surjective _ Ideal.Quotient.mk_surjective
-  exact RingHom.isLocalHom_comp (algebraMap R S).kerLift (Ideal.Quotient.mk _)
 
 variable [Algebra R S] [Algebra.IsIntegral R S]
 
