@@ -20,7 +20,7 @@ the ranges of these functions, and their monotonicity in suitable intervals.
 Here we prove the following:
 
 * `sin_lt`: for `x > 0` we have `sin x < x`.
-* `sin_gt_sub_cube`: For `0 < x ≤ 1` we have `x - x ^ 3 / 4 < sin x`.
+* `sin_gt_sub_cube`: For `0 < x` we have `x - x ^ 3 / 6 < sin x`.
 * `lt_tan`: for `0 < x < π/2` we have `x < tan x`.
 * `cos_le_one_div_sqrt_sq_add_one` and `cos_lt_one_div_sqrt_sq_add_one`: for
   `-3 * π / 2 ≤ x ≤ 3 * π / 2`, we have `cos x ≤ 1 / sqrt (x ^ 2 + 1)`, with strict inequality if
