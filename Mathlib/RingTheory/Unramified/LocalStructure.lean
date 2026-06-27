@@ -317,7 +317,8 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_finite
       Localization.localRingHom_surjective_of_primesOver_eq_singleton hQ' hQ'Q.2⟩
   obtain ⟨r, hrQ', H⟩ := Localization.exists_awayMap_bijective_of_residueField_surjective hQ' hQ'Q.2
   have : Module.Finite R S' := finite_adjoin_simple_of_isIntegral (IsIntegral.isIntegral _)
-  have : IsUnramifiedAt R Q' := .of_equiv <| .symm <| .ofBijective (IsScalarTower.toAlgHom _ _ _) hφ
+  have h : IsScalarTower R (Localization.AtPrime Q') (Localization.AtPrime Q) := inferInstance
+  have : IsUnramifiedAt R Q' := .of_equiv <| .symm <| .ofBijective h.toAlgHom hφ
   obtain ⟨f, hfQ', hf⟩ :=
     IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
     (R := R) (S := S') ⟨⟨x, self_mem_adjoin_singleton _ _⟩, Subalgebra.map_injective

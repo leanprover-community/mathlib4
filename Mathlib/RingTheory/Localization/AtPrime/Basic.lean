@@ -393,10 +393,7 @@ instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
     [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)] :
     IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) :=
-  .of_algebraMap_eq <| by
-    simp [IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
-      Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
-      IsScalarTower.algebraMap_apply R A B, IsLiesOverAlgebra.algebraMap_eq]
+  .to₁₃₄ R A (Localization.AtPrime p) (Localization.AtPrime P)
 
 instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] (Q : Ideal C)
     [Q.IsPrime] [Q.LiesOver P] [Q.LiesOver p]
@@ -408,7 +405,7 @@ instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] (Q :
     [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime Q)] :
     IsScalarTower (Localization.AtPrime p) (Localization.AtPrime P) (Localization.AtPrime Q) :=
   .of_algebraMap_eq' <| by
-    simp [IsLiesOverAlgebra.algebraMap_eq, ← localRingHom_comp, ← IsScalarTower.algebraMap_eq]
+    simp_rw [IsLiesOverAlgebra.algebraMap_eq, ← localRingHom_comp, ← IsScalarTower.algebraMap_eq]
 
 end
 
