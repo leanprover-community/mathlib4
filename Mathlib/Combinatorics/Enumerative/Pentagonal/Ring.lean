@@ -17,9 +17,6 @@ modulo summability and multipliability. The complete proof for formal power seri
 `Mathlib/RingTheory/PowerSeries/Pentagonal.lean`. TODO: also prove for real/complex numbers.
 
 # Declarations
-The following two declarations are exposed
-* `Pentagonal.powMulProdOneSubPow`: an auxiliary sequence for which the user needs to prove
-  summability and growth rate.
 * `Pentagonal.tprod_one_sub_pow`: pentagonal number theorem with a few summability and
   multipliability assumptions.
 
@@ -40,8 +37,7 @@ $$ a_{k, n} = x^{(k+1)n} \prod_{i=0}^{n} (1 - x^{k + i + 1}) $$
 We will also use its sum
 
 $$ A_k = \sum_{n=0}^{\infty} a_{k, n} $$ -/
-@[expose]
-public def powMulProdOneSubPow (k n : ℕ) (x : R) : R :=
+def powMulProdOneSubPow (k n : ℕ) (x : R) : R :=
   x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1))
 
 /-- And a second auxiliary sequence
@@ -92,7 +88,7 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow_zero {x : R}
     (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))
     (h : ∀ k, Multipliable fun n ↦ 1 - x ^ (n + k + 1)) :
     ∏' n, (1 - x ^ (n + 1)) = 1 - x - x ^ 2 * ∑' n, powMulProdOneSubPow 0 n x := by
-  obtain hsum := hsum 0
+  have hsum := hsum 0
   simp_rw [powMulProdOneSubPow, zero_add, one_mul] at hsum
   have hsum' : Summable fun i ↦ x ^ (i + 1) * ∏ n ∈ Finset.range i, (1 - x ^ (n + 1)) := by
     apply Summable.comp_nat_add (k := 1)
@@ -142,15 +138,17 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow (j : ℕ) {x : R} (hx : IsTopol
 $$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
 \sum_{k=0}^{\infty} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) $$ -/
 public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
-    (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))
+    (hsum : ∀ k, Summable
+      (fun n ↦ x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1))))
     (hlhs : ∀ k, Multipliable (fun n ↦ 1 - x ^ (n + k + 1)))
     (hrhs : Summable fun (k : ℕ) ↦
       (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)))
     (htail : Tendsto (fun k ↦ (-1) ^ (k + 1) * x ^ ((k + 1) * (3 * k + 4) / 2) *
-      ∑' (n : ℕ), powMulProdOneSubPow k n x) atTop (𝓝 0)) :
+      ∑' (n : ℕ), x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1)))
+      atTop (𝓝 0)) :
     ∏' n, (1 - x ^ (n + 1)) =
     ∑' (k : ℕ), (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)) := by
-  obtain h := fun n ↦ tprod_one_sub_pow_eq_powMulProdOneSubPow n hx hsum hlhs
+  have h := fun n ↦ tprod_one_sub_pow_eq_powMulProdOneSubPow n hx hsum hlhs
   simp_rw [← sub_eq_iff_eq_add] at h
   refine (HasSum.tsum_eq ?_).symm
   rw [hrhs.hasSum_iff_tendsto_nat, (map_add_atTop_eq_nat 1).symm]
@@ -159,6 +157,6 @@ public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
   have h2 (k : ℕ) : pentagonal (-k) = (k * (3 * k + 1) / 2) := by grind [pentagonal_neg]
   simp_rw [h1, h2, Function.comp_def, ← h]
   rw [← tendsto_sub_nhds_zero_iff]
-  simpa using htail.neg
+  simpa [powMulProdOneSubPow] using htail.neg
 
 end Pentagonal

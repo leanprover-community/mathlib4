@@ -39,12 +39,13 @@ variable (R : Type*) [CommRing R]
 namespace Pentagonal
 -- private auxiliary lemma
 
-theorem tendsto_order_powMulProdOneSubPow_X (k : ℕ) :
-    Tendsto (fun i ↦ (powMulProdOneSubPow k i (X : R⟦X⟧)).order) atTop (𝓝 ⊤) := by
+theorem tendsto_order_pow_mul_prod_one_sub_pow (k : ℕ) :
+    Tendsto (fun i ↦ (X ^ ((k + 1) * i) *
+      ∏ i ∈ Finset.range (i + 1), (1 - X ^ (k + i + 1)) : R⟦X⟧).order) atTop (𝓝 ⊤) := by
   nontriviality R using Subsingleton.eq_zero
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n + 1, ?_⟩
   intro m hm
-  grw [powMulProdOneSubPow, ← le_order_mul, order_X_pow]
+  grw [← le_order_mul, order_X_pow]
   refine lt_add_of_lt_of_nonneg ?_ (by simp)
   norm_cast
   grind
@@ -57,8 +58,10 @@ theorem tendsto_order_neg_X_pow (k : ℕ) :
 
 variable [TopologicalSpace R]
 
-theorem summable_powMulProdOneSubPow_X (k : ℕ) : Summable (powMulProdOneSubPow k · (X : R⟦X⟧)) :=
-  summable_of_tendsto_order_atTop_nhds_top R (tendsto_order_powMulProdOneSubPow_X R k)
+theorem summable_pow_mul_prod_one_sub_pow (k : ℕ) :
+    Summable
+      (fun n ↦ (X ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - X ^ (k + i + 1)) : R⟦X⟧)) :=
+  summable_of_tendsto_order_atTop_nhds_top R (tendsto_order_pow_mul_prod_one_sub_pow R k)
 
 theorem multipliable_one_sub_X_pow (k : ℕ) : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + k + 1) := by
   simpa [sub_eq_add_neg] using
@@ -98,9 +101,9 @@ theorem pentagonalSeries_eq_tsum [T2Space R] :
 are ordered by strictly increasing exponent `pentagonal k` for `k = 0, 1, -1, 2, -2, 3, ...`,
 and every two terms are grouped together. -/
 theorem hasSum_pow_pentagonal_sub_pentagonalSeries :
-    HasSum (fun (k : ℕ) ↦ (-1) ^ k * (X ^ pentagonal (-k) - X ^ pentagonal (k + 1)))
-    (pentagonalSeries R) := by
-  obtain h := hasSum_pentagonalSeries R
+    HasSum (fun k : ℕ ↦ (-1) ^ k * (X ^ pentagonal (-k) - X ^ pentagonal (k + 1)))
+      (pentagonalSeries R) := by
+  have h := hasSum_pentagonalSeries R
   rw [← neg_injective.hasSum_iff (fun x hx ↦ by absurd hx; use -x; simp)] at h
   convert h.nat_add_neg_add_one using 2 with k
   simp_rw [Function.comp_apply, neg_neg, Int.negOnePow_add]
@@ -121,7 +124,7 @@ private theorem tprod_one_sub_X_pow' [IsTopologicalRing R] [T2Space R] :
   · rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto]
     refine fun d ↦ tendsto_atTop_of_eventually_const fun i (hi : i ≥ d + 1) ↦ ?_
     grind [coeff_X_pow]
-  · exact Pentagonal.summable_powMulProdOneSubPow_X R
+  · exact Pentagonal.summable_pow_mul_prod_one_sub_pow R
   · exact Pentagonal.multipliable_one_sub_X_pow R
   · exact (hasSum_pow_pentagonal_sub_pentagonalSeries R).summable
   · rw [tendsto_iff_coeff_tendsto]
@@ -141,7 +144,7 @@ theorem coeff_prod_one_sub_X_pow_eventually_eq (n : ℕ) :
     ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff n = pentagonalCoeff R n := by
   let _ : TopologicalSpace R := ⊥
   have _ : DiscreteTopology R := ⟨rfl⟩
-  obtain h := (multipliable_one_sub_X_pow R).hasProd
+  have h := (multipliable_one_sub_X_pow R).hasProd
   rw [tprod_one_sub_X_pow' R, HasProd, tendsto_iff_coeff_tendsto] at h
   simpa using h n
 
