@@ -205,3 +205,77 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
       have ha : ‖χ p‖ ≤ 1 := χ.norm_le_one p
       have hb : ‖(p : ℂ) ^ (-s)‖ ≤ 1 / 2 := norm_prime_cpow_le_one_half ⟨p, h⟩ hs
       exact ((mul_le_mul ha hb (norm_nonneg _) zero_le_one).trans_lt (by norm_num)).ne
+
+
+
+section LogZeta
+
+open Real hiding log exp_nat_mul exp_add
+open ArithmeticFunction Primes
+
+/-- TODO: Generalize this to twists by Dirichlet characters. -/
+theorem eulerProduct_log_eq_LSeries {s : ℂ} (hs : 1 < s.re) :
+    ∑' p : Primes, -log (1 - p ^ (-s)) = LSeries (fun (n : ℕ) ↦ Λ n / Real.log n) s
+    := by
+  have hpow_le (p : Primes) : ‖(p : ℂ) ^ (-s)‖ < 1 := by
+    rw [norm_natCast_cpow_of_pos (mod_cast p.prop.pos), Complex.neg_re]
+    apply rpow_lt_one_of_one_lt_of_neg (mod_cast p.prop.one_lt) (by linarith)
+  have htaylor (p : Primes) : HasSum (fun n : ℕ ↦ ((p : ℂ) ^ (-s)) ^ (n + 1) / (n + 1))
+      (-log (1 - p ^ (-s))) := by
+    rw [← hasSum_extend_zero (add_left_injective 1)]
+    convert hasSum_taylorSeries_neg_log (hpow_le p) with n
+    classical
+    rw [Function.extend_def]
+    split_ifs with h
+    · aesop
+    simp_all
+  rw [tsum_congr (fun p ↦ (htaylor p).tsum_eq.symm), LSeries_def₀ (by simp)]
+  calc
+    _ = ∑' (p : Primes × ℕ), ((p.1 : ℂ) ^ (-s)) ^ (p.2 + 1) / (↑p.2 + 1) := by
+      rw [Summable.tsum_prod']
+      · stop
+        rw [summable_prod_of_nonneg (fun _ ↦ by positivity)]
+        refine ⟨fun p ↦ (htaylor p).summable, ?_⟩
+        refine Summable.congr ?_ (fun p ↦ ((htaylor p).tsum_eq).symm)
+        have := summable_rpow.mpr (by linarith : -s < -1)
+        convert! (summable_log_one_add_of_summable this.neg).neg using 1
+      exact fun p ↦ (htaylor p).summable
+    _ = ∑' n : {n : ℕ // IsPrimePow n}, Λ n / Real.log n / ((n : ℂ) ^ s) := by
+      rw [← Equiv.tsum_eq Primes.prodNatEquiv (fun n ↦ Λ n / Real.log n / ((n : ℂ) ^ s))]
+      apply tsum_congr; rintro ⟨p, n⟩
+      have : 1 < (p : ℝ) := mod_cast p.prop.one_lt
+      have : (Real.log (p : ℝ) : ℂ) ≠ 0 := mod_cast (log_ne_zero.mpr (by grind))
+      rw [coe_prodNatEquiv_apply, vonMangoldt_apply_pow n.succ_ne_zero,
+        vonMangoldt_apply_prime p.prop, cpow_def_of_ne_zero, cpow_def_of_ne_zero,
+        ← exp_nat_mul, ← natCast_log, ← natCast_log, cast_pow, Real.log_pow]
+      · simp only [cast_add, cast_one, ofReal_mul, ofReal_add, ofReal_natCast, ofReal_one]
+        field_simp
+        rw [← exp_add]
+        ring_nf
+        simp
+      · simp [p.prop.ne_zero]
+      simp [p.prop.ne_zero]
+    _ = _ := by
+      suffices (Function.support fun n ↦ Λ n / Real.log n / ((n : ℂ) ^ s)) ⊆ {n | IsPrimePow n} from
+        tsum_subtype_eq_of_support_subset this
+      intro n hn
+      contrapose! hn
+      simp [vonMangoldt_eq_zero_iff.mpr hn]
+
+/-- TODO: Generalize this to twists by Dirichlet characters. -/
+theorem riemannZeta_eq_exp_LSeries {s : ℂ} (hs : 1 < s.re) :
+    exp (LSeries (fun (n : ℕ) ↦ ↑(Λ n) / Real.log n) s) = riemannZeta s := by
+  rw [← eulerProduct_log_eq_LSeries hs, riemannZeta_eulerProduct_exp_log hs]
+
+/-- TODO: Generalize this to twists by Dirichlet characters. -/
+theorem log_riemannZeta_eq {s : ℝ} (hs : 1 < s) :
+    Real.log (riemannZeta (s:ℂ)).re = ∑' n, Λ n / (n^s * Real.log n) := by
+  rw [← riemannZeta_eq_exp_LSeries (by simpa using hs), LSeries_def₀ (by simp)]
+  convert Real.log_exp _
+  convert Complex.exp_ofReal_re _
+  push_cast
+  congr! 2 with p
+  rw [Complex.ofReal_cpow (by positivity)]
+  simp [field]
+
+end LogZeta
