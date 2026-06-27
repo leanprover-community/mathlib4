@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.ContinuousMap.Basic
@@ -232,6 +233,13 @@ instance [Nonempty α] : Nontrivial (Opens α) where
 theorem coe_iSup {ι} (s : ι → Opens α) : ((⨆ i, s i : Opens α) : Set α) = ⋃ i, s i := by
   simp [iSup]
 
+lemma coe_iInf {ι : Type*} [Finite ι] (U : ι → TopologicalSpace.Opens α) :
+    (((⨅ i, U i) : Opens α) : Set α) = ⋂ i, U i := by
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e ih => rw [← e.iInf_comp, ← e.surjective.iInter_comp, ih]
+  | h_empty => simp
+  | h_option ih => rw [iInf_option, Set.iInter_option, Opens.coe_inf, ih]
+
 theorem iSup_def {ι} (s : ι → Opens α) : ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).2⟩ :=
   ext <| coe_iSup s
 
@@ -353,6 +361,19 @@ lemma IsBasis.exists_iSup_eq {X : Type u} [TopologicalSpace X] {ι : Type*}
   choose a ha using hsub
   use Us, fun i ↦ a i.2
   simp [hUs, ha, sSup_eq_iSup' Us]
+
+lemma IsBasis.exists_iSup_eq_of_isCompact {X : Type u} [TopologicalSpace X] {ι : Type*}
+    {U : ι → TopologicalSpace.Opens X} (hU : TopologicalSpace.Opens.IsBasis (Set.range U))
+    (W : TopologicalSpace.Opens X) (hW : IsCompact W.1) :
+    ∃ (κ : Type u) (_ : Finite κ) (a : κ → ι), W = ⨆ (k : κ), U (a k) := by
+  obtain ⟨κ, a, heq⟩ := hU.exists_iSup_eq W
+  obtain ⟨s, hs⟩ := hW.elim_finite_subcover _ (fun k : κ ↦ (U (a k)).2) (by simp [heq])
+  use s, s.finite_toSet, a ∘ Subtype.val
+  refine le_antisymm ?_ ?_
+  · simpa [← SetLike.coe_subset_coe, Set.iUnion_subtype]
+  · rw [heq, iSup_le_iff]
+    intro i
+    exact le_iSup_of_le _ le_rfl
 
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
   it is a finite union of some elements in the basis -/
