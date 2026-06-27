@@ -155,14 +155,6 @@ def isoEquivDiffeomorph : (M ≅ N) ≃ (M ≃ₘ^n⟮I, I⟯ N) where
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- The constant morphism `M ⟶ N` in `ModelWithCorners.MfldCat` given by `y : N`. -/
-def const (y : N) : M ⟶ N :=
-  ofHom <| ContMDiffMap.const y
-
-@[simp]
-lemma const_apply (y : N) (x : M) :
-    const y x = y := rfl
-
 end MfldCat
 
 end ModelWithCorners
