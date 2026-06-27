@@ -82,8 +82,7 @@ instance : Category (MfldCat I n) where
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (MfldCat I n)
-    (fun M N => ContMDiffMap I I M N n) where
+instance : ConcreteCategory (MfldCat I n) (fun M N => ContMDiffMap I I M N n) where
   hom := Hom.hom'
   ofHom := Hom.mk
 
