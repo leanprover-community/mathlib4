@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Gaussian distributions over ℝ
@@ -69,14 +70,22 @@ lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussian
 
 /-- The Gaussian pdf is measurable. -/
 @[fun_prop]
-lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
-  (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
+lemma measurable_uncurry_gaussianPDFReal : Measurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) := by
+  unfold gaussianPDFReal
+  fun_prop
+
+lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) := by
+  fun_prop
 
 /-- The Gaussian pdf is strongly measurable. -/
 @[fun_prop]
+lemma stronglyMeasurable_uncurry_gaussianPDFReal :
+    StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) :=
+  measurable_uncurry_gaussianPDFReal.stronglyMeasurable
+
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
-    StronglyMeasurable (gaussianPDFReal μ v) :=
-  (measurable_gaussianPDFReal μ v).stronglyMeasurable
+    StronglyMeasurable (gaussianPDFReal μ v) := by
+  fun_prop
 
 @[fun_prop]
 lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
@@ -183,8 +192,20 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
   exact (gaussianPDF_pos _ hv x).ne'
 
 @[fun_prop]
-lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
-  (measurable_gaussianPDFReal _ _).ennreal_ofReal
+lemma measurable_uncurry_gaussianPDF : Measurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+  Measurable.ennreal_ofReal (by fun_prop)
+
+lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) := by
+  fun_prop
+
+@[fun_prop]
+lemma stronglyMeasurable_uncurry_gaussianPDF :
+    StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+  measurable_uncurry_gaussianPDF.stronglyMeasurable
+
+lemma stronglyMeasurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) :
+    StronglyMeasurable (gaussianPDF μ v) := by
+  fun_prop
 
 @[simp]
 lemma lintegral_gaussianPDF_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
@@ -196,6 +217,7 @@ end GaussianPDF
 section GaussianReal
 
 /-- A Gaussian distribution on `ℝ` with mean `μ` and variance `v`. -/
+@[wikidata Q133871]
 noncomputable
 def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
   if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPDF μ v)
@@ -252,6 +274,11 @@ lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] 
   simp [gaussianReal, hv,
     integral_withDensity_eq_integral_toReal_smul (measurable_gaussianPDF _ _)
       (ae_of_all _ fun _ ↦ gaussianPDF_lt_top)]
+
+@[fun_prop]
+lemma measurable_gaussianReal :
+    Measurable gaussianReal.uncurry :=
+  Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
 
 section Transformations
 

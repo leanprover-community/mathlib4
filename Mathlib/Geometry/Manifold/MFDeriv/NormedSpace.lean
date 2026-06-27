@@ -276,15 +276,15 @@ This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, w
 canonical identification. (It would also be possible to phrase the formula without this equiv,
 instead using casting and definitional abuse.) -/
 private lemma HasMFDerivAt.smul
-    {f' : TangentSpace I x →L[𝕜] 𝕜}
+    {f' : TangentSpace% x →L[𝕜] 𝕜}
     (hs : HasMFDerivAt% f x ((fromTangentSpace (f x)).symm.toContinuousLinearMap ∘L f'))
-    {g' : TangentSpace I x →L[𝕜] V}
+    {g' : TangentSpace% x →L[𝕜] V}
     (hg : HasMFDerivAt% g x ((fromTangentSpace (g x)).symm.toContinuousLinearMap ∘L g')) :
     -- canonically identify `g'` with a linear map into the tangent space at `(f • g) x`
-    letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+    letI g'_ : TangentSpace% x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
     -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
-    letI gx : 𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+    letI gx : 𝕜 →L[𝕜] TangentSpace% ((f • g) x) :=
       toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
     -- now the main statement typechecks
     HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
@@ -382,7 +382,7 @@ typecheck we need a phrasing involving the canonical identification `NormedSpace
 between the vector space `V` and the tangent space to this vector space at any point. This is
 because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation. -/
 private lemma fromTangentSpace_mfderiv_smul_apply (hf : MDiffAt f x) (hg : MDiffAt g x)
-    (v : TangentSpace I x) :
+    (v : TangentSpace% x) :
     fromTangentSpace _ (mfderiv% (f • g) x v)
     = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x := by
   simpa using congr($(fromTangentSpace_mfderiv_smul hf hg) v)
@@ -400,7 +400,7 @@ because two different tangent spaces (at `(f • g) x` and `g x`) appear in the 
 This is a defeq variant of the main lemma `fromTangentSpace_mfderiv_smul_apply`, in which we work in
 the tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
 private lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
-    (v : TangentSpace I x) :
+    (v : TangentSpace% x) :
     fromTangentSpace (f x • g x) (mfderiv% (f • g) x v)
     = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x :=
   fromTangentSpace_mfderiv_smul_apply hf hg v
@@ -428,7 +428,7 @@ Future: this could be generalised to functions into additive torsors over abelia
 -/
 @[expose]
 noncomputable def mvfderiv (g : M → F) :
-    Π x : M, TangentSpace I x →L[𝕜] F :=
+    Π x : M, TangentSpace% x →L[𝕜] F :=
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
 @[deprecated (since := "2026-05-17")] alias extDerivFun := mvfderiv
 
@@ -510,7 +510,7 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
     d[s](a • g) x =
       a x • d[s] g x + (d[s] a x).smulRight (g x) := by
   refine HasMFDerivWithinAt.mfderivWithin ⟨ha.1.smul hg.1, ?_⟩ hs
-  convert ha.hasMFDerivWithinAt.2.smul hg.hasMFDerivWithinAt.2
+  convert! ha.hasMFDerivWithinAt.2.smul hg.hasMFDerivWithinAt.2
   simp
   rfl
 
@@ -518,7 +518,7 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
 lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffWithinAt I s x) :
     d[s](f * g) x = f x • d[s]g x + (g x) • (d[s]f x) := by
-  convert mvfderivWithin_smul hf hg hs
+  convert! mvfderivWithin_smul hf hg hs
   ext v
   simp [mul_comm]
 

@@ -18,6 +18,7 @@ This file defines polynomial functors and the W-type construction as a polynomia
 
 universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃
 
+set_option linter.checkUnivs false in
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
 any type `α` to a new type `P α`, which is defined as the sigma type `Σ x, P.B x → α`.
 
