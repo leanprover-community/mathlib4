@@ -173,8 +173,8 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
     | (a : α), n => ↑(a ^ n)
     | ⊤, 0 => 1
     | ⊤, _n + 1 => ⊤
-  npow_zero a := by cases a <;> simp
-  npow_succ n a := by cases n <;> cases a <;> simp [pow_succ]
+  npow_zero a := by simp_rw [HPow.hPow, Pow.pow]; cases a <;> simp
+  npow_succ n a := by simp_rw [HPow.hPow, Pow.pow]; cases n <;> cases a <;> simp [pow_succ]
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithTop α) = a ^ n := rfl
 
@@ -280,7 +280,7 @@ variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
 
 protected lemma pow_right_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a : WithTop α ↦ a ^ n
   | 0, h => absurd rfl h
-  | 1, _ => by simpa only [pow_one] using strictMono_id
+  | 1, _ => by simpa only [pow_one] using! strictMono_id
   | n + 2, _ => fun x y h ↦ by
     simp_rw [pow_succ _ (n + 1)]
     exact WithTop.mul_lt_mul (WithTop.pow_right_strictMono n.succ_ne_zero h) h

@@ -152,6 +152,7 @@ private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) 
 
 variable {V} (hUinV : U ≤ V)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiag :
@@ -172,6 +173,7 @@ private def coconeQuotientDiag :
     apply (QuotientGroup.leftRel_apply).mpr
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiagDesc
@@ -200,6 +202,7 @@ private def coconeQuotientDiagDesc
     rw [← this, u.inv.comm g]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed cocone `coconeQuotientDiag` on the diagram `quotientDiag` is colimiting. -/
 private def coconeQuotientDiagIsColimit :
