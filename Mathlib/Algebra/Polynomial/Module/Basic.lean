@@ -96,9 +96,6 @@ instance instDecidableEq [DecidableEq M] : DecidableEq (PolynomialModule R M) :=
 instance instAddCommGroup : AddCommGroup (PolynomialModule R M) := fast_instance%
   (coeffEquiv R).addCommGroup
 
-instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd (PolynomialModule R M) :=
-  (coeffEquiv R).isCancelAdd
-
 /-- `PolynomialModule.coeff` as an `AddEquiv`. -/
 @[simps! apply symm_apply]
 def coeffAddEquiv : PolynomialModule R M ≃+ (ℕ →₀ M) := (coeffEquiv R).addEquiv
