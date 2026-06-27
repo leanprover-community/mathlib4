@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
-public import Mathlib.Data.Set.Dissipate
 public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
+public import Mathlib.Order.SetDissipate
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
