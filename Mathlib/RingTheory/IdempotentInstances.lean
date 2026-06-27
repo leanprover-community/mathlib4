@@ -25,4 +25,3 @@ instance [Module.Flat R A] : Module.Flat R he.Corner :=
 
 instance [Module.Finite R A] : Module.Finite R he.Corner :=
   .of_surjective (IsScalarTower.toAlgHom _ _ _).toLinearMap he.algebraMap_corner_surjective
-#min_imports
