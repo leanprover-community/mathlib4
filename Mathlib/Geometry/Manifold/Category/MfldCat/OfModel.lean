@@ -94,8 +94,7 @@ abbrev ofHom (f : ContMDiffMap I I X Y n) : of (I := I) (n := n) X ⟶ of (I := 
   ConcreteCategory.ofHom (C := MfldCat I n) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (M N : MfldCat.{u} I n) (f : Hom M N) :=
-  f.hom
+def Hom.Simps.hom (M N : MfldCat.{u} I n) (f : Hom M N) := f.hom
 
 initialize_simps_projections Hom (hom' → hom)
 
