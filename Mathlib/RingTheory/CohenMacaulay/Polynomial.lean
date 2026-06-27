@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.Ideal.MonicSpan
 public import Mathlib.RingTheory.KrullDimension.Polynomial
 
 /-!
@@ -24,36 +25,6 @@ variable (R : Type u) [CommRing R]
 section Polynomial
 
 open RingTheory.Sequence IsLocalRing Polynomial Ideal
-
-lemma Polynomial.exists_monic_span' {k : Type*} [Field k] (I : Ideal k[X]) (ne : I ≠ ⊥) :
-    ∃ f, f.Monic ∧ I = Ideal.span {f} := by
-  obtain ⟨x, rfl⟩ := IsPrincipalIdealRing.principal I
-  have xne : x ≠ 0 := by
-    by_contra eq0
-    simp [eq0] at ne
-  refine ⟨C x.leadingCoeff⁻¹ * x, ?_, ?_⟩
-  · simp [Monic, leadingCoeff_ne_zero.mpr xne]
-  · apply (Ideal.span_singleton_mul_left_unit _ x).symm
-    simpa using xne
-
-lemma Polynomial.exists_monic_span_sup_map_eq' (p : Ideal R[X]) [p.IsPrime]
-    (ism : (p.comap C).IsMaximal) (ne : p ≠ (p.comap C).map C) :
-    ∃ f : R[X], f.Monic ∧ p = (p.comap C).map C ⊔ Ideal.span {f} := by
-  let q := p.comap C
-  let : Field (R ⧸ q) := Ideal.Quotient.field q
-  have ne' : Ideal.map (mapRingHom (Ideal.Quotient.mk q)) p ≠ ⊥ := by
-    simp only [ne_eq, map_eq_bot_iff_le_ker, Polynomial.ker_mapRingHom, q, mk_ker]
-    exact not_le_of_gt (lt_of_le_of_ne Ideal.map_comap_le ne.symm)
-  rcases Polynomial.exists_monic_span' _ ne' with ⟨y, mony, hy⟩
-  have : y ∈ lifts (Ideal.Quotient.mk q) := map_surjective _ Ideal.Quotient.mk_surjective _
-  rcases Polynomial.lifts_and_natDegree_eq_and_monic this mony with ⟨f, hf, deg, monf⟩
-  use f, monf
-  trans comap (mapRingHom (Ideal.Quotient.mk q)) ((span {f}).map (mapRingHom (Ideal.Quotient.mk q)))
-  · rw [Ideal.map_span, coe_mapRingHom, Set.image_singleton, hf, ← hy,
-      Ideal.comap_map_of_surjective' _ (map_surjective _ Ideal.Quotient.mk_surjective)]
-    simpa [Polynomial.ker_mapRingHom, q] using Ideal.map_comap_le
-  · rw [Ideal.comap_map_of_surjective' _ (map_surjective _ Ideal.Quotient.mk_surjective),
-      sup_comm, Polynomial.ker_mapRingHom, mk_ker]
 
 lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     [IsCohenMacaulayLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
@@ -93,7 +64,7 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     use (rs.map (algebraMap R (Localization.AtPrime p))), reg
     simpa [cm] using mem'
   · have : (p.comap C).IsMaximal := by simpa [max] using maximalIdeal.isMaximal R
-    rcases Polynomial.exists_monic_span_sup_map_eq' R p this (by simpa [max]) with ⟨f, monf, hf⟩
+    rcases Polynomial.exists_monic_span_sup_map_eq R p this (by simpa [max]) with ⟨f, monf, hf⟩
     have fmem : f ∈ p := by
       rw [hf]
       exact Ideal.mem_sup_right (Submodule.mem_span_singleton_self f)
