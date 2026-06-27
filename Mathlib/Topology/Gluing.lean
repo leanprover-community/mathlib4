@@ -208,7 +208,7 @@ theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   · dsimp only at *
     -- Porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
     rw [← e₁, ← e₂]
-    simp
+    simp_all
 
 instance ι_mono (i : D.J) : Mono (𝖣.ι i) :=
   (TopCat.mono_iff_injective _).mpr (D.ι_injective _)
