@@ -938,7 +938,7 @@ lemma exists_a_apply_add_eq : ∃ b c, 0 < c ∧ ∀ n, b < n →
     have := hc.p_pos (N' a N + 2 * (b + 2))
     rcases hc.even_p (by lia) (hs (b + 2)) with ⟨_, _⟩
     lia
-  · convert! hc.apply_add_p_eq (by lia) (hs n) using 3
+  · convert hc.apply_add_p_eq (by lia) (hs n)
     rcases hc.even_p (by lia) (hs n) with ⟨_, ht⟩
     simp [ht, ← two_mul]
 
@@ -949,8 +949,8 @@ theorem result {a : ℕ → ℕ} {N : ℕ} (h : Condition a N) :
   obtain ⟨b, c, hc, hbc⟩ := h.exists_a_apply_add_eq a N
   obtain ⟨t, _⟩ | ⟨t, _⟩ := Nat.even_or_odd (Condition.N' a N)
   · refine .inl ⟨c, Condition.N' a N / 2 + b + 1, hc, fun m hm ↦ ?_⟩
-    convert! hbc (m - t) (by lia) using 1 <;> dsimp only <;> congr <;> lia
+    convert hbc (m - t) (by lia) <;> lia
   · refine .inr ⟨c, Condition.N' a N / 2 + b + 1, hc, fun m hm ↦ ?_⟩
-    convert! hbc (m - t) (by lia) using 1 <;> dsimp only <;> congr 1 <;> lia
+    convert hbc (m - t) (by lia) using 2 <;> lia
 
 end Imo2024Q3

@@ -82,6 +82,10 @@ def CURLBIN :=
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
+/-- The platform's null device, for discarding a command's output: `NUL` on
+Windows, `/dev/null` elsewhere. -/
+def nullDevice : String := if System.Platform.isWindows then "NUL" else "/dev/null"
+
 def LAKEPACKAGESDIR : FilePath :=
   ".lake" / "packages"
 
