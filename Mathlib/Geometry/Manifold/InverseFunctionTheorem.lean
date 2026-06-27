@@ -20,11 +20,11 @@ theorem for normed vector spaces over an `RCLike` field (`ContDiffAt.toOpenParti
 
 ## Main definitions
 * `diffeoExtChartAt n hp`: we can restrict `extChartAt I p` to a `PartialDiffeomorph` between the
-manifold and its model vector space if `p` is an interior point.
+  manifold and its model vector space if `p` is an interior point.
 
 ## Main results
 * `isLocalDiffeomorphAt_of_bijective_mfderiv`: if a ContDiff map `f : M₁ → M₂` has bijective
-differential at an interior point `p ∈ M₁`, then `f` is a local diffeomorphism at `p`.
+  differential at an interior point `p ∈ M₁`, then `f` is a local diffeomorphism at `p`.
 
 ## TODO
 * prove the same statement (with adjustments if needed) when `p` is a boundary point and `f`
