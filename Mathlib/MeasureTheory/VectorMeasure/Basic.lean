@@ -255,8 +255,7 @@ theorem tendsto_vectorMeasure_iInter_atTop_nat
 
 /-- If two vector measures give the same mass to the whole space and coincide on a
 generating π-system, then they coincide. -/
-theorem ext_of_generateFrom
-    {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M] [ContinuousSub M]
+theorem ext_of_generateFrom {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     {X : Type*} {mX : MeasurableSpace X} {μ ν : VectorMeasure X M}
     (C : Set (Set X)) (hμν : ∀ s ∈ C, μ s = ν s)
     (hA : mX = MeasurableSpace.generateFrom C) (hC : IsPiSystem C)
