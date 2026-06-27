@@ -25,7 +25,7 @@ In this file we define box-additive functions and prove that a function such tha
 `f J = f (J ∩ {x | x i < y}) + f (J ∩ {x | y ≤ x i})` is box-additive.
 
 In one dimension, we associate a box additive map `ofDiff g` to a function `g : ℝ → M` by the
-formula `ofDiff g (uIoc a b) = g b - g a`.  This is used to define the Riemann–Stieltjes integral
+formula `ofDiff g J = g J.upper₁ - g J.lower₁`.  This is used to define the Riemann–Stieltjes integral
 in `BoxIntegral.Stieltjes`.
 
 ## Tags
