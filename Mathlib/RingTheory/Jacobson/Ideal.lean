@@ -397,7 +397,7 @@ section
 
 open Ideal
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] {I : Ideal R}
+variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 
 theorem RingHom.ker_le_jacobson_of_isLocalHom (g : R →+* S) [h : IsLocalHom g] :
     ker g ≤ Ring.jacobson R := fun x (hx : g x = 0) ↦ by
@@ -412,9 +412,5 @@ theorem RingHom.isLocalHom_iff_ker_le_jacobson {g : R →+* S} (h : Function.Sur
   rw [← map_one g, ← sub_eq_zero, ← map_mul, ← map_sub, ← mem_ker] at hy
   exact isUnit_of_mul_isUnit_left <| isUnit_of_sub_one_mem_jacobson_bot _
     <| jacobson_bot (R := R) ▸ le hy
-
-theorem Ideal.Quotient.mk_isLocalHom_iff_forall_isMaximal_le :
-    IsLocalHom (mk I) ↔ ∀ (J : Ideal R) [J.IsMaximal], I ≤ J := by
-  simp [RingHom.isLocalHom_iff_ker_le_jacobson mk_surjective, Ring.jacobson_eq_sInf_isMaximal]
 
 end
