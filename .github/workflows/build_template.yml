@@ -679,6 +679,9 @@ jobs:
           ref: ${{ inputs.pr_branch_ref }}
           # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
           persist-credentials: false
+          # This job runs with only `contents: read` and no persisted credentials,
+          # so checking out fork PR code under pull_request_target is safe.
+          allow-unsafe-pr-checkout: true
 
       # Sparse-checkout master's `.github/actions/` so the trust dispatch
       # below loads from a trust-rooted source, not from PR-branch-controlled
