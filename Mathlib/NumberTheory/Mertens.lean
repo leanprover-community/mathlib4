@@ -836,7 +836,7 @@ private lemma Weight.prime_sum_inv_log_mul_eq {N : ℕ} :
   simp only [Weight.prime_apply, mul_ite, mul_zero, primesLE_eq_filter_Ioc_zero, one_div,
     sum_filter]
   congr! 2 with p h hp
-  have : 0 < log p := log_pos (mod_cast hp.one_lt)
+  have := hp.log_pos
   field_simp
 
 /-- Preliminary version - will be migrated once `Weight.vonMangoldt.M` is proven to
