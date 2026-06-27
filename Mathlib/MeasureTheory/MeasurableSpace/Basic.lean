@@ -207,9 +207,7 @@ lemma measurable_comap_iff {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
 
 lemma measurable_comap_iff_right {mβ : MeasurableSpace β} [MeasurableSpace γ] {g : α → β}
     {f : β → γ} (hg : Function.Surjective g) : Measurable f ↔ Measurable[mβ.comap g] (f ∘ g) := by
-  simp only [measurable_iff_comap_le, ← comap_comp]
-  refine ⟨ comap_mono, fun h ↦ ?_ ⟩
-  simpa only [map_comap_eq_of_surjective hg] using map_mono (f := g) h
+  rw [measurable_iff_le_map, measurable_iff_le_map, ← map_comp, map_comap_eq_of_surjective hg]
 
 theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace β} {f : α → β}
     (hf : @Measurable α β ma mb f) (ha : ma ≤ ma') (hb : mb' ≤ mb) : @Measurable α β ma' mb' f :=
