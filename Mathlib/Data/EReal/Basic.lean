@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Data.Real.ENatENNReal
 
 /-!
 # The extended real numbers
@@ -805,6 +806,18 @@ theorem natCast_lt_iff {m n : ℕ} : (m : EReal) < (n : EReal) ↔ m < n := by
 theorem natCast_mul (m n : ℕ) :
     (m * n : ℕ) = (m : EReal) * (n : EReal) := by
   rw [← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_coe_eq_natCast, Nat.cast_mul, EReal.coe_mul]
+
+@[simp] lemma ennrealtoEReal_le_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) ≤ n ↔ r ≤ n := by
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff]; rfl
+
+@[simp] lemma natCast_le_ennrealtoEReal {r : ℝ≥0∞} {n : ℕ} : n ≤ (r : EReal) ↔ n ≤ r := by
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff]; rfl
+
+@[simp] lemma ennrealtoEReal_lt_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) < n ↔ r < n := by
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff]; rfl
+
+@[simp] lemma natCast_lt_ennrealtoEReal {r : ℝ≥0∞} {n : ℕ} : n < (r : EReal) ↔ n < r := by
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff]; rfl
 
 /-! ### Miscellaneous lemmas -/
 
