@@ -251,10 +251,9 @@ theorem eulerProduct_log_eq_LSeries {s : ℂ} (hs : 1 < s.re) :
       rw [norm_div, norm_pow]
       exact div_le_self (by positivity) (by norm_cast; linarith)
     _ = ∑' n : {n : ℕ // IsPrimePow n}, Λ n / Real.log n / ((n : ℂ) ^ s) := by
-      rw [← Equiv.tsum_eq Primes.prodNatEquiv (fun n ↦ Λ n / Real.log n / ((n : ℂ) ^ s))]
+      rw [← Equiv.tsum_eq prodNatEquiv (fun n ↦ Λ n / Real.log n / ((n : ℂ) ^ s))]
       apply tsum_congr; rintro ⟨p, n⟩
-      have : 1 < (p : ℝ) := mod_cast p.prop.one_lt
-      have : (Real.log (p : ℝ) : ℂ) ≠ 0 := mod_cast (log_ne_zero.mpr (by grind))
+      have : (Real.log (p : ℝ) : ℂ) ≠ 0 := mod_cast p.prop.log_ne_zero
       rw [coe_prodNatEquiv_apply, vonMangoldt_apply_pow n.succ_ne_zero,
         vonMangoldt_apply_prime p.prop, cpow_def_of_ne_zero, cpow_def_of_ne_zero,
         ← exp_nat_mul, ← natCast_log, ← natCast_log, cast_pow, Real.log_pow]
