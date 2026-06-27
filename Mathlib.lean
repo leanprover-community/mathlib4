@@ -1669,7 +1669,7 @@ public import Mathlib.Analysis.Asymptotics.Theta
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Analysis.BoxIntegral.Basic
 public import Mathlib.Analysis.BoxIntegral.Box.Basic
-public import Mathlib.Analysis.BoxIntegral.Box.Ioc
+public import Mathlib.Analysis.BoxIntegral.Box.Interval
 public import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 public import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 public import Mathlib.Analysis.BoxIntegral.Integrability

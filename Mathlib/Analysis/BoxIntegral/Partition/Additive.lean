@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Partition.Split
 public import Mathlib.Analysis.Normed.Operator.Mul
-public import Mathlib.Analysis.BoxIntegral.Box.Ioc
+public import Mathlib.Analysis.BoxIntegral.Box.Interval
 
 /-!
 # Box additive functions
