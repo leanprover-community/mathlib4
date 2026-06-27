@@ -102,23 +102,21 @@ private theorem continuous_of_measurable_of_mul_aux {f : ℝ → 𝕜} (hmeas : 
       ext x; simpa using hne x
     rw [huniv, Real.volume_univ] at hzero
     exact ENNReal.top_ne_zero hzero
-  -- The sliding-window identity recovers `f` from the continuous primitive.
+  -- The sliding-window identity exhibits `f` as the continuous `s ↦ (F (s + a) - F s) / F a`.
   obtain ⟨a, ha⟩ := hExists
-  have hwindow : ∀ s : ℝ, f s = (F (s + a) - F s) / F a := by
-    intro s
-    have h2 : (∫ u in (0 : ℝ)..a, f (s + u)) = f s * ∫ u in (0 : ℝ)..a, f u := by
-      simp_rw [hmul s, intervalIntegral.integral_const_mul]
-    have hsub : f s * F a = ∫ t in s..(s + a), f t := by
-      have hFa : F a = ∫ u in (0 : ℝ)..a, f u := rfl
-      rw [hFa, ← h2, intervalIntegral.integral_comp_add_left f s, add_zero]
-    have hadj : F (s + a) - F s = ∫ t in s..(s + a), f t := by
-      have h := intervalIntegral.integral_add_adjacent_intervals (hii 0 s) (hii s (s + a))
-      have hFsa : F (s + a) = ∫ t in (0 : ℝ)..(s + a), f t := rfl
-      have hFs : F s = ∫ t in (0 : ℝ)..s, f t := rfl
-      rw [hFsa, hFs, ← h]; ring
-    rw [eq_div_iff ha, hsub, hadj]
-  exact (((hFcont.comp (continuous_id.add continuous_const)).sub hFcont).div_const (F a)).congr
-    fun s ↦ (hwindow s).symm
+  have hcontinuous : Continuous fun s ↦ (F (s + a) - F s) / F a := by fun_prop
+  convert hcontinuous with s
+  have h2 : (∫ u in (0 : ℝ)..a, f (s + u)) = f s * ∫ u in (0 : ℝ)..a, f u := by
+    simp_rw [hmul s, intervalIntegral.integral_const_mul]
+  have hsub : f s * F a = ∫ t in s..(s + a), f t := by
+    have hFa : F a = ∫ u in (0 : ℝ)..a, f u := rfl
+    rw [hFa, ← h2, intervalIntegral.integral_comp_add_left f s, add_zero]
+  have hadj : F (s + a) - F s = ∫ t in s..(s + a), f t := by
+    have h := intervalIntegral.integral_add_adjacent_intervals (hii 0 s) (hii s (s + a))
+    have hFsa : F (s + a) = ∫ t in (0 : ℝ)..(s + a), f t := rfl
+    have hFs : F s = ∫ t in (0 : ℝ)..s, f t := rfl
+    rw [hFsa, hFs, ← h]; ring
+  rw [eq_div_iff ha, hsub, hadj]
 
 /-- **Automatic continuity for the multiplicative Cauchy equation.** A Borel-measurable
 `f : ℝ → 𝕜` (`RCLike 𝕜`, e.g. `ℝ` or `ℂ`) with `f (x + y) = f x * f y` is continuous. No
