@@ -36,7 +36,8 @@ namespace Finsupp
 variable {ι X : Type*} [Zero X] {p : ℝ≥0} [Fact (1 ≤ p)]
 
 /-- The L^1 extended metric on `ι`-many copies of a metric space `X` -/
-noncomputable instance [PseudoEMetricSpace X] : PseudoEMetricSpace (WithLp p <| ι →₀ X) where
+noncomputable instance instPseudoEMetricSpace [PseudoEMetricSpace X] :
+    PseudoEMetricSpace (WithLp p <| ι →₀ X) where
   edist f g :=
   ((f.ofLp.zipWith edist (edist_self _) g.ofLp).sum fun i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ)
   edist_self f := by
@@ -65,11 +66,12 @@ lemma edist_def [PseudoEMetricSpace X] {p : ℝ≥0} [Fact (1 ≤ p)]
       ((f.ofLp.zipWith edist (edist_self _) g.ofLp).sum fun _i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ) := rfl
 
 /-- The L^1 extended metric on `ι`-many copies of a metric space `X` -/
-noncomputable instance [EMetricSpace X] : EMetricSpace (WithLp p <| ι →₀ X) where
+noncomputable instance instEMetricSpace [EMetricSpace X] : EMetricSpace (WithLp p <| ι →₀ X) where
   eq_of_edist_eq_zero {f g} hfg := by simp_all [edist_def, sum, WithLp.ext_iff, DFunLike.ext_iff]
 
 /-- The L^1 metric on `ι`-many copies of a metric space `X` -/
-noncomputable instance [PseudoMetricSpace X] : PseudoMetricSpace (WithLp p <| ι →₀ X) :=
+noncomputable instance instPseudoMetricSpace [PseudoMetricSpace X] :
+    PseudoMetricSpace (WithLp p <| ι →₀ X) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun f g ↦ ((f.ofLp.zipWith dist (dist_self _) g.ofLp).sum fun i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ))
     (fun f g ↦ by dsimp [sum]; positivity) fun f g ↦ by
@@ -94,7 +96,7 @@ lemma nndist_def [PseudoMetricSpace X] (f g : WithLp p <| ι →₀ X) :
   simp [← coe_nndist]
 
 /-- The L^1 metric on `ι`-many copies of a metric space `X` -/
-noncomputable instance [MetricSpace X] : MetricSpace (WithLp p <| ι →₀ X) :=
+noncomputable instance instMetricSpace [MetricSpace X] : MetricSpace (WithLp p <| ι →₀ X) :=
   EMetricSpace.toMetricSpaceOfDist
     (fun f g ↦ ((f.ofLp.zipWith dist (dist_self _) g.ofLp).sum fun i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ))
     (fun f g ↦ by dsimp [sum]; positivity) fun f g ↦ by rw [edist_dist, dist_def]
