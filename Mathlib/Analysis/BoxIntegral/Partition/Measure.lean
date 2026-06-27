@@ -124,6 +124,16 @@ theorem volume_apply' (I : Box ι) :
     ((volume : Measure (ι → ℝ)) I).toReal = ∏ i, (I.upper i - I.lower i) := by
   rw [coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
 
+/-- For a one-dimensional box, the length equals the box-additive Lebesgue volume. -/
+theorem length_eq_volume (J : Box (Fin 1)) : J.length = volume.toBoxAdditive J := by
+  rw [volume_apply, Fin.prod_univ_one]
+  rfl
+
+/-- For a one-dimensional box, the length equals the (real) Lebesgue volume. -/
+theorem length_eq_volume' (J : Box (Fin 1)) : J.length = (volume J.toSet).toReal := by
+  rw [volume_apply', Fin.prod_univ_one]
+  rfl
+
 theorem volume_face_mul {n} (i : Fin (n + 1)) (I : Box (Fin (n + 1))) :
     (∏ j, ((I.face i).upper j - (I.face i).lower j)) * (I.upper i - I.lower i) =
       ∏ j, (I.upper j - I.lower j) := by
@@ -144,6 +154,15 @@ theorem volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I :
     BoxAdditiveMap.volume I x = (∏ j, (I.upper j - I.lower j)) • x := by
   rw [BoxAdditiveMap.volume, toSMul_apply]
   exact congr_arg₂ (· • ·) I.volume_apply rfl
+
+/-- The Riemann–Stieltjes differential of `ContinuousLinearMap.lsmul ℝ ℝ : ℝ → (E →L[ℝ] E)`
+equals the Lebesgue volume box-additive map on `Box (Fin 1)`. -/
+lemma ofDiff_lsmul_eq_volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] :
+    ofDiff (fun x : ℝ ↦ (ContinuousLinearMap.lsmul ℝ ℝ : ℝ →L[ℝ] E →L[ℝ] E) x) =
+      (BoxAdditiveMap.volume : (Fin 1) →ᵇᵃ E →L[ℝ] E) := by
+  ext
+  simp [volume_apply, Box.upper₁, Box.lower₁]
+  module
 
 end BoxAdditiveMap
 

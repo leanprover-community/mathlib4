@@ -1669,6 +1669,7 @@ public import Mathlib.Analysis.Asymptotics.Theta
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Analysis.BoxIntegral.Basic
 public import Mathlib.Analysis.BoxIntegral.Box.Basic
+public import Mathlib.Analysis.BoxIntegral.Box.Ioc
 public import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 public import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 public import Mathlib.Analysis.BoxIntegral.Integrability
@@ -1679,6 +1680,7 @@ public import Mathlib.Analysis.BoxIntegral.Partition.Measure
 public import Mathlib.Analysis.BoxIntegral.Partition.Split
 public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+public import Mathlib.Analysis.BoxIntegral.Stieltjes.Defs
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 public import Mathlib.Analysis.CStarAlgebra.Basic
