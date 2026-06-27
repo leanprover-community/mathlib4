@@ -23,7 +23,7 @@ theorem for normed vector spaces over an `RCLike` field (`ContDiffAt.toOpenParti
   manifold and its model vector space if `p` is an interior point.
 
 ## Main results
-* `isLocalDiffeomorphAt_of_bijective_mfderiv`: if a ContDiff map `f : M₁ → M₂` has bijective
+* `isLocalDiffeomorphAt_of_bijective_mfderiv`: if a ContMDiff map `f : M₁ → M₂` has bijective
   differential at an interior point `p ∈ M₁`, then `f` is a local diffeomorphism at `p`.
 
 ## TODO
@@ -127,7 +127,7 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {M₂ : Type*} [TopologicalSpace M₂] [ChartedSpace H₂ M₂]
   {n : WithTop ℕ∞} [IsManifold I₁ n M₁] [IsManifold I₂ n M₂]
 
-/-- The inverse function theorem for manifolds. If a ContDiff map `f : M₁ → M₂` has bijective
+/-- The inverse function theorem for manifolds. If a ContMDiff map `f : M₁ → M₂` has bijective
 differential at an interior point `p ∈ M₁`, then `f` is a local diffeomorphism at `p`.
 -/
 theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M₂} {p : M₁}
