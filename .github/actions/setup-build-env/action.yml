@@ -70,6 +70,9 @@ runs:
         fetch-depth: 1
         path: pr-branch
         persist-credentials: false
+        # The build runs this fork PR code sandboxed (landrun) with no persisted
+        # credentials, so checking it out under pull_request_target is safe.
+        allow-unsafe-pr-checkout: true
 
     # Create empty directories so landrun doesn't complain.
     - name: Create empty directories
