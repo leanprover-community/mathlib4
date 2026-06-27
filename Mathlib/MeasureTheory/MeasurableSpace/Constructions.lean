@@ -973,7 +973,7 @@ instance Finset.instMeasurableSpace : MeasurableSpace (Finset α) :=
   .comap SetLike.coe inferInstance
 
 lemma measurable_finset_iff_measurable_set : Measurable g ↔ Measurable (fun x ↦ (g x : Set α)) :=
-    measurable_comap_iff
+  measurable_comap_iff
 
 lemma measurable_finset_iff : Measurable g ↔ ∀ a, Measurable (a ∈ g ·) := by
   rw [measurable_finset_iff_measurable_set, measurable_set_iff]; rfl
