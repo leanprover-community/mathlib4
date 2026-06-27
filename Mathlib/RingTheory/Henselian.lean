@@ -285,7 +285,7 @@ open nonZeroDivisors
 variable {R A B : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
-/-- If `R` is an local ring with residue field `k`, then for any étale `R`-algebra `A`,
+/-- If `R` is a local ring with residue field `k`, then for any étale `R`-algebra `A`,
 every `A →ₐ[R] k` lifts to at most one an `A →ₐ[R] R`. -/
 lemma IsLocalRing.ofId_comp_injective [Algebra.Etale R A] [IsLocalRing R] :
     Function.Injective ((Algebra.ofId R 𝓀[R]).comp : (A →ₐ[R] R) → (A →ₐ[R] 𝓀[R])) := by
