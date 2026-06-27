@@ -122,7 +122,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     rintro c hc d hd hcd
     apply ball_disjoint_ball
     rw [dist_eq_norm]
-    convert h c hc d hd hcd
+    convert! h c hc d hd hcd
     norm_num
   have A_subset : A ⊆ ball (0 : E) ρ := by
     refine iUnion₂_subset fun x hx => ?_
@@ -410,7 +410,7 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       change i = last N at iN
       rw [iN, lastc, norm_zero] at hi
       exact lt_irrefl _ (zero_le_two.trans_lt hi)
-    convert (a.hlast i this).1 using 1
+    convert! (a.hlast i this).1 using 1
     rw [dist_eq_norm, lastc, sub_zero]
   have hj : 2 < ‖a.c j‖ := hi.trans_le hij
   set s := ‖a.c i‖

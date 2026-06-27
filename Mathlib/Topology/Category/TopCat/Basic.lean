@@ -161,7 +161,6 @@ def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
   toFun f := f.hom
   invFun f := ofHom f
 
-set_option linter.deprecated false in
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
 equal function coercion for a continuous map `C(X, Y)`.
@@ -250,7 +249,7 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor
   · intro h
-    convert h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
+    convert! h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
     exact congr_arg (DFunLike.coe ∘ ConcreteCategory.hom) (IsIso.inv_hom_id_assoc f g).symm
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 
@@ -270,7 +269,7 @@ lemma isEmbedding_iff ⦃A X : TopCat⦄ (f : A ⟶ X) : isEmbedding f ↔ Topol
 
 /-- The constant morphism `X ⟶ Y` in `TopCat` given by `y : Y`. -/
 def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
-  ofHom ⟨fun _ ↦ y, by continuity⟩
+  ofHom ⟨fun _ ↦ y, by fun_prop⟩
 
 @[simp]
 lemma const_apply {X Y : TopCat.{u}} (y : Y) (x : X) :

@@ -104,7 +104,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le fun x y => ?_
+    apply Con.conGen_le.2 fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
@@ -496,14 +496,14 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
     (base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base φ h • w)) : motive w := by
   rcases w with ⟨w, head, h3⟩
-  convert base head ⟨w, 1, h3⟩ rfl ?_
+  convert! base head ⟨w, 1, h3⟩ rfl ?_
   · simp [base_smul_def]
   · induction w using Word.consRecOn with
     | empty => exact empty
     | cons i g w h1 hg1 ih =>
-      convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
-        h1 (h3 _ _ List.mem_cons_self) ?_ rfl
-        (ih ?_)
+      convert!
+        cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩ h1
+          (h3 _ _ List.mem_cons_self) ?_ rfl (ih ?_)
       · simp only [Word.cons, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]

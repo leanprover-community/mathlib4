@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Semi
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # The category of `R`-modules
@@ -60,6 +61,7 @@ structure ModuleCat where
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
 
+initialize_simps_projections ModuleCat (-isModule, -isAddCommGroup)
 attribute [instance] ModuleCat.isAddCommGroup
 attribute [instance 1100] ModuleCat.isModule
 
@@ -150,7 +152,7 @@ lemma hom_ext {M N : ModuleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) : f =
 
 lemma hom_bijective {M N : ModuleCat.{v} R} :
     Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
+  left f g h := by cases f; cases g; simpa using! h
   right f := ⟨⟨f⟩, rfl⟩
 
 /-- Convenience shortcut for `ModuleCat.hom_bijective.injective`. -/
@@ -385,6 +387,15 @@ lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
 lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
     IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
+@[simp]
+lemma ofHom_zero {M N : Type v} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] : ModuleCat.ofHom (0 : M →ₗ[R] N) = 0 := rfl
+
+@[simp]
+lemma ofHom_add {M N : Type v} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (f g : M →ₗ[R] N) :
+    ModuleCat.ofHom (f + g) = ModuleCat.ofHom f + ModuleCat.ofHom g := rfl
+
 end AddCommGroup
 
 section SMul
@@ -454,6 +465,9 @@ section
 variable {S : Type u} [CommRing S]
 
 instance : Linear S (ModuleCat.{v} S) := ModuleCat.Algebra.instLinear
+
+lemma lsmul_eq_smul_id (M : ModuleCat.{v} S) (s : S) :
+    ModuleCat.ofHom (LinearMap.lsmul S M s) = s • 𝟙 M := rfl
 
 variable {X Y X' Y' : ModuleCat.{v} S}
 
@@ -570,6 +584,33 @@ def homMk : M ⟶ N where
 
 lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGrpCat).map (homMk φ hφ) = φ := rfl
+
+/-- Constructor for isomorphisms in `ModuleCat R` taking an isomorphism in `AddCommGrpCat`
+and a compatibility condition. -/
+def isoMk (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    M ≅ N :=
+  LinearEquiv.toModuleIso
+    { __ := φ.addCommGroupIsoToAddEquiv
+      map_smul' r x := congr($(hφ r) x).symm }
+
+@[simp]
+lemma isoMk_hom (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    (isoMk φ hφ).hom = homMk φ.hom hφ :=
+  rfl
+
+@[simp]
+lemma isoMk_inv (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    (isoMk φ hφ).inv = homMk φ.inv (ModuleCat.smul_naturality (isoMk φ hφ).inv) :=
+  rfl
+
+@[simp]
+lemma isoMk_symm (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    (isoMk φ hφ).symm = isoMk φ.symm (ModuleCat.smul_naturality (isoMk φ hφ).inv) :=
+  rfl
 
 end
 

@@ -5,9 +5,6 @@ Authors: Kim Morrison, Uni Marx
 -/
 module
 
-public import Mathlib.CategoryTheory.EssentialImage
-public import Mathlib.CategoryTheory.Iso
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Rel
 

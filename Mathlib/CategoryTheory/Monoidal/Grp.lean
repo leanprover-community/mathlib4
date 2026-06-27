@@ -57,7 +57,6 @@ namespace GrpObj
 
 attribute [reassoc (attr := simp)] left_inv right_inv
 attribute [reassoc (attr := simp)] AddGrpObj.left_neg AddGrpObj.right_neg
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] left_inv left_inv_assoc right_inv right_inv_assoc
 
 @[to_additive]
@@ -336,7 +335,7 @@ lemma toMonObj_injective {X : C} :
   suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
   rw [left_inv]
-  convert @left_inv _ _ _ _ h₁ using 2
+  convert! @left_inv _ _ _ _ h₁ using 2
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[to_additive (attr := ext)]
@@ -350,7 +349,7 @@ def ofInvertible (G : C) [MonObj G] (h : ∀ X (f : X ⟶ G), Invertible f) : Gr
   inv := Yoneda.fullyFaithful.preimage
     ⟨fun X ↦ ↾fun f ↦ (h X.unop f).invOf, fun X Y f ↦ by
       ext g
-      simp only [yoneda_obj_obj, yoneda_obj_map, TypeCat.Fun.toFun_apply, comp_apply,
+      simp only [yoneda_obj_map, TypeCat.Fun.toFun_apply, comp_apply,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, invOf_eq_iff_left]
       rw [← comp_mul, invOf_mul_self, comp_one]⟩
   left_inv := by simp [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, Hom.one_def]
@@ -435,7 +434,7 @@ def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [GrpObj H] [IsMonHom e.hom] : mk G
 
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-@[to_additive (attr := simps!)
+@[to_additive (attr := simps! -isSimp)
 /-- Construct an isomorphism of additive group objects by giving an isomorphism between
 the underlying objects and checking compatibility with zero and addition only in the
 forward direction. -/]
@@ -542,6 +541,7 @@ instance instMonoidalCategory : MonoidalCategory (Grp C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
   triangle _ _ := by ext; exact triangle _ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
   isTerminalTensorUnit :=
@@ -572,6 +572,7 @@ instance : (forget₂Mon C).Monoidal where
   «η» := 𝟙 _
   δ G H := 𝟙 _
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
 @[to_additive]
 instance instBraidedCategory : BraidedCategory (Grp C) :=
@@ -678,18 +679,21 @@ set_option backward.isDefEq.respectTransparency false in
 def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Natural transformations between functors lift to group objects. -/
 @[to_additive (attr := simps!)
 /-- Natural transformations between functors lift to additive group objects. -/]
 def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
   app X := Grp.homMk' ((mapMonNatTrans f).app X.toMon)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[to_additive (attr := simps!)
 /-- Natural isomorphisms between functors lift to additive group objects. -/]
 def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (e.app _)
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[to_additive (attr := simps)
@@ -762,6 +766,7 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
 @[to_additive (attr := simps)
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts
@@ -775,6 +780,7 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[to_additive (attr := simps)
 /-- An equivalence of categories lifts to an equivalence of their additive group objects. -/]

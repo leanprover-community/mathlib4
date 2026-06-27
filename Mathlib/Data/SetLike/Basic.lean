@@ -108,13 +108,15 @@ class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
-  protected coe_injective' : Function.Injective coe
+  coe_injective : Function.Injective coe
 
 attribute [coe] SetLike.coe
 
 namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
+
+@[deprecated (since := "2026-06-04")] alias coe_injective' := coe_injective
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
@@ -154,9 +156,6 @@ protected theorem «exists» {q : p → Prop} : (∃ x, q x) ↔ ∃ (x : B) (h 
 
 protected theorem «forall» {q : p → Prop} : (∀ x, q x) ↔ ∀ (x : B) (h : x ∈ p), q ⟨x, ‹_›⟩ :=
   SetCoe.forall
-
-theorem coe_injective : Function.Injective (SetLike.coe : A → Set B) := fun _ _ h =>
-  SetLike.coe_injective' h
 
 @[simp, norm_cast]
 theorem coe_set_eq : (p : Set B) = q ↔ p = q :=
@@ -262,7 +261,7 @@ alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 @[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
-  simpa [← coe_subset_coe] using Set.not_subset
+  simpa [← coe_subset_coe] using! Set.not_subset
 
 end LE
 
@@ -286,7 +285,7 @@ variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
 theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
-  simpa [← coe_ssubset_coe] using Set.exists_of_ssubset
+  simpa [← coe_ssubset_coe] using! Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
@@ -303,12 +302,12 @@ theorem lt_of_mem_notMem {x : B} (hst : p ≤ q) (hat : x ∈ q) (has : x ∉ p)
 /-- membership is inherited from `Set X` -/
 abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
   coe := (↑)
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 /-- membership is inherited from `S` -/
 abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
   coe := (↑)
-  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
+  coe_injective := SetLike.coe_injective.comp Subtype.val_injective
 
 section
 

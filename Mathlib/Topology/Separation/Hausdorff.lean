@@ -173,7 +173,7 @@ theorem t2Space_iff_of_isOpenQuotientMap [TopologicalSpace Y] {π : X → Y}
   replace h := IsOpenQuotientMap.prodMap h h
   refine ⟨fun H ↦ H.preimage h.continuous, fun H ↦ ?_⟩
   simp_rw [← isOpen_compl_iff] at H ⊢
-  convert h.isOpenMap _ H
+  convert! h.isOpenMap _ H
   exact (h.surjective.image_preimage _).symm
 
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
@@ -557,7 +557,7 @@ lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [R1Space X] {s 
   -- Since `t` is a closed subset of the compact set `closure sᶜ`, it is compact.
   have ht : IsCompact t := .of_isClosed_subset H2 H3 <| H4.subset_compl_left.trans subset_closure
   -- we split `s` into its frontier and its interior.
-  rw [← diff_union_of_subset (interior_subset (s := s))]
+  rw [← sdiff_union_of_subset (interior_subset (s := s))]
   -- since `t ⊆ sᶜ`, which is open, and `interior s` is open, we have
   -- `SeparatedNhds (interior s) t`, which leaves us only with the frontier.
   refine .union_left ?_ ⟨interior s, sᶜ, isOpen_interior, H1.isOpen_compl, le_rfl,
@@ -573,6 +573,11 @@ section SeparatedFinset
 theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoint s t) :
     SeparatedNhds (s : Set X) t :=
   .of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
+
+theorem SeparatedNhds.of_finite [T2Space X] {s t : Set X} (hs : s.Finite) (ht : t.Finite)
+    (h : Disjoint s t) : SeparatedNhds s t := by
+  rw [← hs.coe_toFinset, ← ht.coe_toFinset]
+  exact SeparatedNhds.of_finset_finset _ _ (Finite.disjoint_toFinset.2 h)
 
 theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
     SeparatedNhds ({x} : Set X) s :=
@@ -670,7 +675,7 @@ theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} 
   .of_continuous_injective_isClosedMap h hf h.isClosedMap
 
 /-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
-theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
+theorem Topology.IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
     (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
   hcont.isClosedMap.isQuotientMap hcont hsurj
 
