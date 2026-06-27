@@ -440,7 +440,7 @@ theorem Function.uniformContinuous_fromCompletion : UniformContinuous (fromCompl
   cPkg.uniformContinuous_extend
 
 @[deprecated (since := "2026-06-26")]
-alias uniformContinuous_extension := Function.uniformContinuous_fromCompletion
+alias Completion.uniformContinuous_extension := Function.uniformContinuous_fromCompletion
 
 @[continuity, fun_prop]
 theorem Function.continuous_fromCompletion : Continuous (fromCompletion f) :=
@@ -556,13 +556,13 @@ theorem Function.completion_comp_completion {g : β → γ} {f : α → β}
 def _root_.UniformEquiv.completion (e : α ≃ᵤ β) : Completion α ≃ᵤ Completion β :=
   cPkg.mapEquiv cPkg e
 
-@[deprecated (since := "2026-06-26")] alias mapEquiv := _root_.UniformEquiv.completion
+@[deprecated (since := "2026-06-26")] alias Completion.mapEquiv := _root_.UniformEquiv.completion
 
 @[simp]
-theorem _root_.UniformEquiv.completion_symm (e : α ≃ᵤ β) : e.completion.symm = e.symm.completion :=
+theorem _root_.UniformEquiv.symm_completion (e : α ≃ᵤ β) : e.completion.symm = e.symm.completion :=
   cPkg.mapEquiv_symm cPkg e
 
-@[deprecated (since := "2026-06-26")] alias Completion.mapEquiv_symm := UniformEquiv.completion_symm
+@[deprecated (since := "2026-06-26")] alias Completion.mapEquiv_symm := UniformEquiv.symm_completion
 
 @[simp]
 theorem _root_.UniformEquiv.completion_coe (e : α ≃ᵤ β) (a : α) : e.completion a = (e a) :=

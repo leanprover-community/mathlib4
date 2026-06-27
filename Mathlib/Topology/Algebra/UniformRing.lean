@@ -209,7 +209,11 @@ def _root_.UniformSpace.RingEquiv.completion (f : α ≃+* β) (hf : Continuous 
   .ofRingHom (f.toRingHom.completion hf) (f.symm.toRingHom.completion hf')
     (by simp [RingHom.completion_comp]) (by simp [RingHom.completion_comp])
 
-@[deprecated (since := "2026-06-26")] alias mapRingEquiv := _root_.UniformSpace.RingEquiv.completion
+@[deprecated (since := "2026-06-26")] alias mapRingEquiv := UniformSpace.RingEquiv.completion
+@[deprecated (since := "2026-06-26")] alias mapRingEquiv_apply :=
+  UniformSpace.RingEquiv.completion_apply
+@[deprecated (since := "2026-06-26")] alias mapRingEquiv_symm_apply :=
+  UniformSpace.RingEquiv.completion_symm_apply
 
 section Algebra
 
