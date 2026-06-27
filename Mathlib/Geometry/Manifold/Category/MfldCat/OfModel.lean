@@ -102,12 +102,13 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
-lemma hom_id : (𝟙 M : M ⟶ M).hom = ContMDiffMap.id := rfl
+@[simp] lemma hom_id : (𝟙 M : M ⟶ M).hom = ContMDiffMap.id := rfl
+@[simp] lemma hom_comp (f : M ⟶ N) (g : N ⟶ P) : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-@[simp]
-lemma hom_comp (f : M ⟶ N) (g : N ⟶ P) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
+lemma id_apply (M : MfldCat I n) (m : M) : (𝟙 M : M ⟶ M) m = m := rfl
+lemma comp_apply (f : M ⟶ N) (g : N ⟶ P) (m : M) : (f ≫ g) m = g (f m) := rfl
+
+@[ext] lemma hom_ext {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g := Hom.ext hf
 
 section ofHom
 
@@ -126,7 +127,12 @@ lemma ofHom_id :
 lemma ofHom_comp (f : ContMDiffMap I I X Y n) (g : ContMDiffMap I I Y Z n) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
 
+lemma ofHom_apply (f : ContMDiffMap I I X Y n) (x : X) : ofHom f x = f x := rfl
+
 end ofHom
+
+lemma inv_hom_apply (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by simp
+lemma hom_inv_apply (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by simp
 
 instance inhabited : Inhabited (MfldCat I n) :=
   ⟨of H⟩
