@@ -380,11 +380,11 @@ def sigmaFiberAddEquiv : (⨁ i, β i) ≃+ ⨁ (j : ι₂) (i : { i : ι₁ // 
   (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm).trans
     (sigmaCurryEquiv (δ := fun j ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i)))
 
-theorem sigmaFiberAddEquiv_apply' (x : ⨁ i, β i) :
+theorem sigmaFiberAddEquiv_apply (x : ⨁ i, β i) :
     sigmaFiberAddEquiv f x = sigmaCurry (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm x) := rfl
 
 @[simp]
-theorem sigmaFiberAddEquiv_apply (x : ⨁ i, β i) (j : ι₂) (i' : { i : ι₁ // f i = j}) :
+theorem sigmaFiberAddEquiv_apply_apply (x : ⨁ i, β i) (j : ι₂) (i' : { i : ι₁ // f i = j}) :
     sigmaFiberAddEquiv f x j i' = x i' := rfl
 
 @[simp]
@@ -394,7 +394,7 @@ theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
   let k : (j : ι₂) × {i₁ : ι₁ // f i₁ = j} := ⟨f i, ⟨i, rfl⟩⟩
   calc sigmaFiberAddEquiv f (of β (h k) x)
     _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β k.2) k x) := by
-      rw [sigmaFiberAddEquiv_apply']
+      rw [sigmaFiberAddEquiv_apply]
       exact congrArg sigmaCurry (equivCongrLeft_of (h := h.symm) _ _)
     _ = of _ k.1 (of _ k.2 x) := by simp
 
