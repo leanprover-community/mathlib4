@@ -113,9 +113,6 @@ This depends on `W`, and has argument order: `x`, `y`. -/
 def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
 
-lemma sub_negY_eq (x y : R) : y - W'.negY x y = 2 * y + W'.a₁ * x + W'.a₃ :=
-  by rw [negY]; ring
-
 lemma negY_negY (x y : R) : W'.negY x (W'.negY x y) = y := by
   simp only [negY]
   ring1
@@ -390,22 +387,11 @@ lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
   linear_combination (norm := ring1) 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
 
 /-- The explicit formula for the `x`-coordinate of `P + Q` when `P ≠ ±Q`. -/
-lemma addX_slope_of_x_ne_x {xP yP xQ yQ : F} (hn : xP ≠ xQ) :
-     W.addX xP xQ (W.slope xP xQ yP yQ) =
-       ((yP - yQ) ^ 2 + W.a₁ * (yP - yQ) * (xP - xQ) - (W.a₂ + xP + xQ) * (xP - xQ) ^2) /
-         (xP - xQ) ^ 2 := by
-  have hxPQ' : xP - xQ ≠ 0 := by grind only
-  simp [addX, slope, hn, div_pow]
-  field
-
-/-- The explicit formula for the `x`-coordinate of `P - Q` when `P ≠ ±Q`. -/
-lemma addX_slope_negY_of_x_ne_x {xP yP xQ yQ : F} (hn : xP ≠ xQ) :
-     W.addX xP xQ (W.slope xP xQ yP <| W.negY xQ yQ) =
-       ((yP + yQ + W.a₁ * xQ + W.a₃) ^ 2 + W.a₁ * (yP + yQ + W.a₁ * xQ + W.a₃) * (xP - xQ)
-           - (W.a₂ + xP + xQ) * (xP - xQ) ^2) / (xP - xQ) ^ 2 := by
-  have hxPQ' : (xP - xQ) ≠ 0 := by grind only
-  simp [addX, slope, hn, div_pow]
-  field
+lemma addX_of_X_ne {x₁ y₁ x₂ y₂ : F} (hn : x₁ ≠ x₂) :
+     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) =
+       ((y₁ - y₂) ^ 2 + W.a₁ * (y₁ - y₂) * (x₁ - x₂) - (W.a₂ + x₁ + x₂) * (x₁ - x₂) ^2) /
+         (x₁ - x₂) ^ 2 := by
+  grind only [addX, slope]
 
 /-!
 ### Some statements about the numerator and denominator of the x-coordinate of 2*P
@@ -441,7 +427,7 @@ lemma den_duplication_ne_zero_or_num_duplication_ne_zero {x y : F} (h : W.Nonsin
     grobner
 
 /-- The explicit duplication formula for the `x`-coordinate when `2*P ≠ 0`. -/
-lemma addX_x_x_slope_eq {x y : F} (h : W.Equation x y) (hn : y ≠ W.negY x y) :
+lemma addX_self_of_Y_ne {x y : F} (h : W.Equation x y) (hn : y ≠ W.negY x y) :
     W.addX x x (W.slope x x y y) =
       (x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈) /
         (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) := by
@@ -453,7 +439,7 @@ lemma addX_x_x_slope_eq {x y : F} (h : W.Equation x y) (hn : y ≠ W.negY x y) :
     grind
   rw [mul_div_cancel₀ _ hn', addX, sub_sub, sub_sub, mul_sub, mul_add]
   simp only [slope, ↓reduceIte, hn]
-  rw [sub_negY_eq, div_pow]
+  rw [negY, show y - (-y - W.a₁ * x - W.a₃) = 2 * y + W.a₁ * x + W.a₃ by ring, div_pow]
   nth_rewrite 1 2 [den_duplication_eq h]
   rw [mul_div_cancel₀ _ <| pow_ne_zero 2 hn'', aux hn'', b₂, b₄, b₆, b₈]
   linear_combination -W.a₁ ^ 2 * (W.equation_iff x y).mp h
