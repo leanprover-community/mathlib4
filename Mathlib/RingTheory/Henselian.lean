@@ -38,11 +38,11 @@ In this case the first condition is automatic, and in the second condition we ma
 * `Henselian.TFAE`: equivalent ways of expressing the Henselian property for local rings
 * `IsAdicComplete.henselianRing`:
   a ring `R` with ideal `I` that is `I`-adically complete is Henselian at `I`
-* `HenselianLocalRing.ofId_comp_bijective`: The étale lifting property for henselian local rings:
-  If `R` is an henselian local ring with residue field `k`, then for any étale `R`-algebra `A`,
+* `HenselianLocalRing.ofId_comp_bijective`: The étale lifting property for Henselian local rings:
+  If `R` is a Henselian local ring with residue field `k`, then for any étale `R`-algebra `A`,
   every `A →ₐ[R] k` lifts uniquely to an `A →ₐ[R] R`.
-* `HenselianLocalRing.of_finite`: Finite local extensions of henselian local rings are henselian.
-* `HenselianLocalRing.algEquivEquiv`: If `A` is finite local étale over a henselian local ring `R`,
+* `HenselianLocalRing.of_finite`: Finite local extensions of Henselian local rings are Henselian.
+* `HenselianLocalRing.algEquivEquiv`: If `A` is finite local étale over a Henselian local ring `R`,
   then `Aut(A/R) ≃ Gal(k(A)/k(R))`.
 
 ## References
@@ -283,7 +283,7 @@ open nonZeroDivisors
 variable {R A B : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 attribute [local instance] Localization.AtPrime.algebraOfLiesOver in
-/-- If `R` is an henselian local ring with residue field `k`, then for any étale `R`-algebra `A`,
+/-- If `R` is a Henselian local ring with residue field `k`, then for any étale `R`-algebra `A`,
 every `A →ₐ[R] k` lifts uniquely to an `A →ₐ[R] R`. -/
 @[stacks 04GG "(1) => (7)"]
 lemma HenselianLocalRing.ofId_comp_bijective [Algebra.Etale R A] [HenselianLocalRing R] :
@@ -299,7 +299,7 @@ lemma HenselianLocalRing.ofId_comp_bijective [Algebra.Etale R A] [HenselianLocal
         exact hrP
       have hf₂ : IsUnit (f₂ r) := by
         rw [← residue_ne_zero_iff_isUnit]
-        refine congr($H r).symm.trans_ne hrP
+        exact congr($H r).symm.trans_ne hrP
       have : IsLocalization.liftAlgHom (S := Localization.Away r) (f := f₁) (M := .powers r)
             (by simp [Submonoid.mem_powers_iff, hf₁.pow _]) =
           IsLocalization.liftAlgHom (f := f₂) (M := .powers r)
@@ -479,7 +479,7 @@ private theorem HenselianLocalRing.of_finite_aux [IsLocalRing A]
   simpa [← ResidueField.algebraMap_eq, hrootf, -mul_eq_zero, -mul_eq_left₀, -mul_eq_right₀] using
     congr(aeval root $hg).symm
 
-/-- A finite local ring over an henselian local ring is also henselian.
+/-- A finite local ring over a Henselian local ring is also Henselian.
 
 This proof hides the fact that
 (every finite extension is a product of local rings) implies henselian.
@@ -508,7 +508,6 @@ lemma HenselianLocalRing.of_finite
       .of_split ⟨⟨Subtype.val, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
         (IsScalarTower.toAlgHom _ (AdjoinRoot f) _).toLinearMap
         (LinearMap.ext fun a ↦ Subtype.ext ((Subsemigroup.mem_corner_iff (he.idem i)).mp a.2).2)
-    have : Module.Flat A (he.idem i).Corner := Module.Flat.of_projective
     Module.free_of_flat_of_isLocalRing
   have hroot :
       1 ⊗ₜ algebraMap _ (he.idem i).Corner (AdjoinRoot.root f) = residue A a₀ ⊗ₜ[A] 1 :=
