@@ -160,8 +160,12 @@ theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeas
   rw [← A, ← B]
   exact withDensity_apply _ (measurableSet_toMeasurable μ s)
 
-instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
+instance nullSingletonClass_withDensity [NullSingletonClass μ] (f : α → ℝ≥0∞) :
+    NullSingletonClass (μ.withDensity f) where
   measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
+
+@[deprecated (since := "2026-06-09")]
+alias noAtoms_withDensity := nullSingletonClass_withDensity
 
 @[simp]
 theorem withDensity_zero : μ.withDensity 0 = 0 := by
@@ -204,7 +208,7 @@ theorem withDensity_ofReal_mutuallySingular {f : α → ℝ} (hf : Measurable f)
   refine ⟨S, hS, ?_, ?_⟩
   · rw [withDensity_apply _ hS, lintegral_eq_zero_iff hf.ennreal_ofReal, EventuallyEq]
     exact (ae_restrict_mem hS).mono fun x hx => ENNReal.ofReal_eq_zero.2 (le_of_lt hx)
-  · rw [withDensity_apply _ hS.compl, lintegral_eq_zero_iff hf.neg.ennreal_ofReal, EventuallyEq]
+  · rw [withDensity_apply _ hS.compl, lintegral_eq_zero_iff hf.fun_neg.ennreal_ofReal, EventuallyEq]
     exact
       (ae_restrict_mem hS.compl).mono fun x hx =>
         ENNReal.ofReal_eq_zero.2 (not_lt.1 <| mt neg_pos.1 hx)
@@ -252,7 +256,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
     simp only [Pi.zero_apply] at A
-    convert A using 2
+    convert! A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
       not_forall]
@@ -372,6 +376,15 @@ theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) 
     count.withDensity f = sum (fun a ↦ f a • dirac a) := by
   simp [count, withDensity_sum, dirac_withDensity]
 
+@[fun_prop]
+theorem measurable_withDensity {β : Type*} [MeasurableSpace β] {f : β → α → ℝ≥0∞}
+    [SFinite μ] (hf : Measurable f.uncurry) :
+    Measurable fun b ↦ μ.withDensity (f b) := by
+  rw [Measure.measurable_measure]
+  intro s hs
+  simp only [withDensity_apply _ hs]
+  fun_prop
+
 open MeasureTheory.SimpleFunc
 
 /-- This is Exercise 1.2.1 from [tao2010]. It allows you to express integration of a measurable
@@ -473,9 +486,9 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) 
     dsimp
     rw [mul_comm, ← div_eq_mul_inv]
     exact div_le_of_le_mul' (hi x)
-  refine le_iSup_of_le (fun x => (f x)⁻¹ * i x) (le_iSup_of_le (f_meas.inv.mul i_meas) ?_)
+  refine le_iSup_of_le (fun x => (f x)⁻¹ * i x) (le_iSup_of_le (f_meas.fun_inv.mul i_meas) ?_)
   refine le_iSup_of_le A ?_
-  rw [lintegral_withDensity_eq_lintegral_mul _ f_meas (f_meas.inv.mul i_meas)]
+  rw [lintegral_withDensity_eq_lintegral_mul _ f_meas (f_meas.fun_inv.mul i_meas)]
   apply lintegral_mono_ae
   filter_upwards [hf]
   intro x h'x
@@ -537,7 +550,7 @@ theorem withDensity_mul (μ : Measure α) {f g : α → ℝ≥0∞} (hf : Measur
 lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     (μ.withDensity f).withDensity f⁻¹ ≤ μ := by
   change (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) ≤ μ
-  rw [← withDensity_mul₀ hf hf.inv]
+  rw [← withDensity_mul₀ hf hf.fun_inv]
   suffices (f * fun x ↦ (f x)⁻¹) ≤ᵐ[μ] 1 by
     refine (withDensity_mono this).trans ?_
     rw [withDensity_one]
@@ -547,7 +560,7 @@ lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AE
 lemma withDensity_inv_same₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) = μ := by
-  rw [← withDensity_mul₀ hf hf.inv]
+  rw [← withDensity_mul₀ hf hf.fun_inv]
   suffices (f * fun x ↦ (f x)⁻¹) =ᵐ[μ] 1 by
     rw [withDensity_congr_ae this, withDensity_one]
   filter_upwards [hf_ne_zero, hf_ne_top] with x hf_ne_zero hf_ne_top

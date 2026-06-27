@@ -52,8 +52,8 @@ theorem totient_eq_card_coprime (n : ℕ) : φ n = #{a ∈ range n | n.Coprime a
 /-- A characterisation of `Nat.totient` that avoids `Finset`. -/
 theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.Coprime m } := by
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
-    { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
+    { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
+      invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
       left_inv := fun m => by simp only [Subtype.coe_eta]
       right_inv := fun m => by simp only [Subtype.coe_eta] }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
@@ -152,7 +152,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
     rw [gcd_mul_left, ha2, mul_one]
   · simp [hd0.ne']
   · simp only [mem_filter, mem_range, exists_prop, and_imp]
-    refine fun b hb1 hb2 => ?_
+    intro b hb1 hb2
     have : d ∣ b := by
       rw [← hb2]
       apply gcd_dvd_right
@@ -172,7 +172,7 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   exact sum_congr rfl fun x hx => totient_div_of_dvd (dvd_of_mem_divisors hx)
 
 theorem sum_totient' (n : ℕ) : ∑ m ∈ range n.succ with m ∣ n, φ m = n := by
-  convert sum_totient _ using 1
+  convert! sum_totient _ using 1
   simp only [Nat.divisors, sum_filter, range_eq_Ico]
   rw [sum_eq_sum_Ico_succ_bot] <;> simp
 
@@ -443,12 +443,14 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.totient`. -/
 @[positivity Nat.totient _]
-meta def evalNatTotient : PositivityExt where eval {u α} z p e := do
+meta def evalNatTotient : PositivityExt where eval {u α} z p e :=
+  match p with | none => pure .none | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.totient $n) =>
-    assumeInstancesCommute
     match ← core z p n with
-    | .positive pa => return .positive q(Nat.totient_pos.mpr $pa)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Nat.totient_pos.mpr $pa)
     | _ => failure
   | _, _, _ => throwError "not Nat.totient"
 

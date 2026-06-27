@@ -173,7 +173,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
     push Not at this
     rcases this with ⟨I, ⟨hJI, hIm⟩, hI'⟩
-    convert hIm
+    convert! hIm
     by_cases hJ : J = I.map (algebraMap R S)
     · rw [hJ, under_map_of_isPrime_disjoint (powers y) S hIm.isPrime]
       rwa [disjoint_powers_iff_notMem_of_isPrime]
@@ -524,7 +524,7 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     refine le_antisymm (le_sup_of_le_left le_rfl) (sup_le le_rfl ?_)
     refine fun p hp =>
       polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp ?_
-    simpa only [f, coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
+    simpa only [f, coeff_map, coe_mapRingHom] using! (Polynomial.ext_iff.mp hp) n
   refine RingHom.IsIntegral.tower_bot
     (T := (R ⧸ comap C P)[X] ⧸ _) _ _ (injective_quotient_le_comap_map P) ?_
   rw [← quotient_mk_maps_eq]
@@ -657,7 +657,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     rw [← hfg, coe_comp] at hf'
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
-  convert this
+  convert! this
   refine RingHom.ext fun x => ?_
   exact ((renameEquiv R e).commutes' x).symm
 

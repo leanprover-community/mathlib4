@@ -63,7 +63,7 @@ theorem coeff_bernoulli (n i : ℕ) :
     (bernoulli n).coeff i = if i ≤ n then (_root_.bernoulli (n - i) * choose n i) else 0 := by
   simp only [bernoulli, finsetSum_coeff, coeff_monomial]
   split_ifs with h
-  · convert sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
+  · convert! sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
   · exact Finset.sum_eq_zero <| by grind
 
 /-
@@ -111,7 +111,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [range_add_one, sum_insert notMem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
-  refine sum_congr (by rfl) fun m _ => ?_
+  refine sum_congr rfl fun m _ => ?_
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_natCast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3

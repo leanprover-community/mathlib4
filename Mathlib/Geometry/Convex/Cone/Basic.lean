@@ -75,7 +75,7 @@ variable [SMul R M] {C C₁ C₂ : ConvexCone R M} {s : Set M} {c : R} {x : M}
 
 instance : SetLike (ConvexCone R M) M where
   coe := carrier
-  coe_injective' C₁ C₂ h := by cases C₁; congr!
+  coe_injective C₁ C₂ h := by cases C₁; congr!
 
 instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M) M
 
@@ -101,7 +101,7 @@ equalities. -/
 @[simps] protected def copy (C : ConvexCone R M) (s : Set M) (hs : s = C) : ConvexCone R M where
   carrier := s
   add_mem' := hs.symm ▸ C.add_mem'
-  smul_mem' := by simpa [hs] using C.smul_mem'
+  smul_mem' := by simpa [hs] using! C.smul_mem'
 
 lemma copy_eq (C : ConvexCone R M) (s : Set M) (hs) : C.copy s hs = C := SetLike.coe_injective hs
 
@@ -417,7 +417,6 @@ See `IsReproducing.isGenerating` and `IsGenerating.isReproducing` for details. -
 def IsGenerating (C : ConvexCone R M) : Prop :=
   Submodule.span R (C : Set M) = ⊤
 
-set_option linter.deprecated false in
 /-- A sufficient criteria for a convex cone `C` to be generating is that top is less than or equal
 to the linear span of `C`. -/
 @[deprecated "no replacement" (since := "2026-03-30")]
@@ -425,40 +424,34 @@ theorem IsGenerating.of_top_le_span {C : ConvexCone R M} (h : ⊤ ≤ Submodule.
     C.IsGenerating :=
   eq_top_iff.mpr h
 
-set_option linter.deprecated false in
 /-- The linear span of a generating convex cone equals top. -/
 @[deprecated "no replacement" (since := "2026-03-30")]
 lemma IsGenerating.span_eq_top {C : ConvexCone R M} (hC : C.IsGenerating) :
     Submodule.span R (C : Set M) = ⊤ :=
   hC
 
-set_option linter.deprecated false in
 /-- Top is less than or equal to the linear span of a generating convex cone. -/
 @[deprecated "no replacement" (since := "2026-03-30")]
 lemma IsGenerating.top_le_span {C : ConvexCone R M} (hC : C.IsGenerating) :
     ⊤ ≤ Submodule.span R (C : Set M) :=
   hC.span_eq_top.ge
 
-set_option linter.deprecated false in
 /-- The whole `R`-module `M` (viewed as the top convex cone) is generating. -/
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem isGenerating_top : (⊤ : ConvexCone R M).IsGenerating := by
   simp
 
-set_option linter.deprecated false in
 /-- The empty convex cone is generating iff the module is a subsingleton. -/
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem isGenerating_bot_iff : (⊥ : ConvexCone R M).IsGenerating ↔ Subsingleton M := by
   simpa only [IsGenerating, coe_bot, Submodule.span_empty, ← Submodule.subsingleton_iff R] using
     subsingleton_iff_bot_eq_top
 
-set_option linter.deprecated false in
 /-- In a subsingleton module, the empty convex cone is generating. -/
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem isGenerating_bot [Subsingleton M] : (⊥ : ConvexCone R M).IsGenerating :=
   isGenerating_bot_iff.mpr inferInstance
 
-set_option linter.deprecated false in
 /-- A convex cone containing a generating cone is also a generating cone. -/
 @[gcongr, deprecated "no replacement" (since := "2026-03-30")]
 theorem IsGenerating.mono {C₁ C₂ : ConvexCone R M} (h : C₁ ≤ C₂) (hgen : C₁.IsGenerating) :
@@ -702,12 +695,10 @@ def toCone (s : Set M) (hs : Convex 𝕜 s) : ConvexCone 𝕜 M := by
 
 variable {s : Set M} (hs : Convex 𝕜 s) {x : M}
 
-set_option linter.deprecated false in
 @[deprecated ConvexCone.mem_hull_of_convex (since := "2026-03-30")]
 theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, c • y = x := by
   simp only [toCone, ConvexCone.mem_mk, mem_iUnion, mem_smul_set, eq_comm, exists_prop]
 
-set_option linter.deprecated false in
 @[deprecated ConvexCone.mem_hull_of_convex (since := "2026-03-30")]
 theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
   refine hs.mem_toCone.trans ⟨?_, ?_⟩
@@ -716,12 +707,10 @@ theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ 
   · rintro ⟨c, hc, hcx⟩
     exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel₀ hc.ne', one_smul]⟩
 
-set_option linter.deprecated false in
 @[deprecated ConvexCone.subset_hull (since := "2026-03-30")]
 theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
   hs.mem_toCone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
 
-set_option linter.deprecated false in
 /-- `hs.toCone s` is the least cone that includes `s`. -/
 @[deprecated "`ConvexCone.gi.gc.isLeast_l`" (since := "2026-03-30")]
 theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } (hs.toCone s) := by
@@ -729,22 +718,19 @@ theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } (hs.toCone 
   rcases hs.mem_toCone.1 hx with ⟨c, hc, y, hy, rfl⟩
   exact t.smul_mem hc (ht hy)
 
-set_option linter.deprecated false in
 @[deprecated "`ConvexCone.gi.gc.isLUB_u.sSup_eq`" (since := "2026-03-30")]
 theorem toCone_eq_sInf : hs.toCone s = sInf { t : ConvexCone 𝕜 M | s ⊆ t } :=
   hs.toCone_isLeast.isGLB.sInf_eq.symm
 
 end Convex
 
-set_option linter.deprecated false in
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem convexHull_toCone_isLeast (s : Set M) :
     IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
-  convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
+  convert! (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
   exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 
-set_option linter.deprecated false in
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem convexHull_toCone_eq_sInf (s : Set M) :
     (convex_convexHull 𝕜 s).toCone _ = sInf { t : ConvexCone 𝕜 M | s ⊆ t } :=
