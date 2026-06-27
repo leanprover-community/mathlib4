@@ -126,8 +126,6 @@ alias mem_coverings_of_isIso := HasIsos.mem_coverings_of_isIso
 alias sup_mem_coverings := IsStableUnderSup.sup_mem_coverings
 alias hasPullbacks_of_mem := HasPullbacks.hasPullbacks_of_mem
 
-set_option warning.simp.varHead false in
-attribute [local simp] Presieve.ofArrows.obj_idx Presieve.ofArrows.hom_idx in
 lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J]
     {ι : Type w} {S : C} {X : ι → C}
     (f : ∀ i, X i ⟶ S) (hR : Presieve.ofArrows X f ∈ J S) {Y : C} (g : Y ⟶ S)
@@ -140,15 +138,19 @@ lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J
     i.elim (fun i ↦ i.2.idx) (fun i ↦ i.2.idx)
   convert_to Presieve.ofArrows (P ∘ a) (fun i ↦ p₁ (a i)) ∈ _
   · refine le_antisymm (fun Z g hg ↦ ?_) fun Z g ⟨i⟩ ↦ ⟨a i⟩
-    exact .mk' (Sum.inr ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
+    refine .mk' (Sum.inr ⟨⟨_, _⟩, hg⟩) ?_ ?_
+    · simp [a, Presieve.ofArrows.obj_idx hg]
+    · simp [a, Presieve.ofArrows.hom_idx hg]
   · refine IsStableUnderBaseChange.mem_coverings_of_isPullback (fun i ↦ f (a i)) ?_ g _
       (fun i ↦ p₂ (a i)) fun i ↦ h _
     convert! hR
     refine le_antisymm (fun Z g ⟨i⟩ ↦ .mk _) fun Z g hg ↦ ?_
-    exact .mk' (Sum.inl ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
+    have : g = eqToHom (Presieve.ofArrows.obj_idx hg).symm ≫ f hg.idx := by
+      simp [Presieve.ofArrows.hom_idx hg]
+    refine .mk' (Sum.inl ⟨⟨_, _⟩, hg⟩) ?_ ?_
+    · simp [a, Presieve.ofArrows.obj_idx hg]
+    · simp [a, Presieve.ofArrows.hom_idx hg]
 
-set_option warning.simp.varHead false in
-attribute [local simp] Presieve.ofArrows.obj_idx Presieve.ofArrows.hom_idx in
 lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : Type w}
     {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) (hf : Presieve.ofArrows X f ∈ J S)
     {σ : ι → Type w'} {Y : ∀ (i : ι), σ i → C}
@@ -174,12 +176,26 @@ lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : 
         (g := fun i j ↦ g (incl i) (fibincl i j)) ?_ fun i ↦ ?_
     · convert! hf
       refine le_antisymm (fun T u ⟨p⟩ ↦ .mk _) fun T u hu ↦ ?_
-      exact .mk' (Sum.inl ⟨⟨_, _⟩, hu⟩) (by cat_disch) (by cat_disch)
+      refine .mk' (Sum.inl ⟨⟨_, _⟩, hu⟩) ?_ ?_
+      · simp [incl, Presieve.ofArrows.obj_idx hu]
+      · simp [incl, Presieve.ofArrows.hom_idx hu]
     · convert! hg (incl i)
       refine le_antisymm (fun T u ⟨p⟩ ↦ .mk _) fun T u hu ↦ ?_
       match i with
-      | .inl i => exact .mk' ⟨⟨_, _⟩, hu⟩ (by cat_disch) (by cat_disch)
-      | .inr i => exact .mk' (.inr ⟨⟨_, _⟩, hu⟩) (by cat_disch) (by cat_disch)
+      | .inl i =>
+        refine .mk' ⟨⟨_, _⟩, hu⟩ ?_ ?_
+        · simp [fibincl, incl, (Presieve.ofArrows.obj_idx hu).symm]
+        · have :
+              u = eqToHom (Presieve.ofArrows.obj_idx hu).symm ≫  g (incl (Sum.inl i)) hu.idx := by
+            simp [Presieve.ofArrows.hom_idx hu]
+          simp [fibincl, this, incl]
+      | .inr i =>
+        refine .mk' (.inr ⟨⟨_, _⟩, hu⟩) ?_ ?_
+        · simp [fibincl, incl, (Presieve.ofArrows.obj_idx hu).symm]
+        · have :
+              u = eqToHom (Presieve.ofArrows.obj_idx hu).symm ≫  g (incl (Sum.inr i)) hu.idx := by
+            simp [Presieve.ofArrows.hom_idx hu]
+          simp [fibincl, this, incl]
 
 instance (J : Precoverage C) [Limits.HasPullbacks C] : J.HasPullbacks where
   hasPullbacks_of_mem := inferInstance
