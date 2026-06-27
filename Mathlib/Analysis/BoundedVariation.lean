@@ -49,7 +49,7 @@ variable {α : Type*} [LinearOrder α] {E F G : Type*}
   {s : Set α} {f : α → E} {g : α → F} {C D : ℝ≥0∞} {B : E →L[ℝ] F →L[ℝ] G}
 
 lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D)
-    {B : E →L[ℝ] F →L[ℝ] G} :
+    (B : E →L[ℝ] F →L[ℝ] G) :
     eVariationOn (fun x ↦ B (f x) (g x) : α → G) s ≤
       ‖B‖ₑ * (C * eVariationOn g s + D * eVariationOn f s) := by
   apply iSup_le
@@ -98,8 +98,8 @@ lemma eVariation_mul_le {f g : α → ℝ}
     eVariationOn (f * g) s ≤ C * eVariationOn g s + D * eVariationOn f s := by
   apply eVariationOn_smul_le hf hg
 
-lemma BoundedVariationOn.bilinear_comp {B : E →L[ℝ] F →L[ℝ] G}
-    (hf : BoundedVariationOn f s) (hg : BoundedVariationOn g s) :
+lemma BoundedVariationOn.bilinear_comp
+    (hf : BoundedVariationOn f s) (hg : BoundedVariationOn g s) (B : E →L[ℝ] F →L[ℝ] G) :
     BoundedVariationOn (fun x ↦ B (f x) (g x)) s := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨⟨x, hx⟩⟩
   · simp
@@ -127,10 +127,10 @@ lemma BoundedVariationOn.mul {f g : α → ℝ} {s : Set α}
     BoundedVariationOn (f * g) s :=
   hf.bilinear_comp hg (B := ContinuousLinearMap.lsmul ℝ ℝ)
 
-lemma LocallyBoundedVariationOn.bilinear_comp {B : E →L[ℝ] F →L[ℝ] G}
-    (hf : LocallyBoundedVariationOn f s) (hg : LocallyBoundedVariationOn g s) :
+lemma LocallyBoundedVariationOn.bilinear_comp (hf : LocallyBoundedVariationOn f s)
+    (hg : LocallyBoundedVariationOn g s) (B : E →L[ℝ] F →L[ℝ] G) :
     LocallyBoundedVariationOn (fun x ↦ B (f x) (g x)) s :=
-  fun a b ha hb ↦ (hf a b ha hb).bilinear_comp (hg a b ha hb)
+  fun a b ha hb ↦ (hf a b ha hb).bilinear_comp (hg a b ha hb) B
 
 @[to_fun]
 lemma LocallyBoundedVariationOn.smul {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
