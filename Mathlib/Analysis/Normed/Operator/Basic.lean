@@ -414,11 +414,13 @@ theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := norm_of_subsinglet
 
 /-- The fundamental property of the operator norm, expressed with extended norms:
 `‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ`. -/
-lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
+lemma le_opENorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
   simp_rw [← ofReal_norm]
   rw [← ENNReal.ofReal_mul (by positivity)]
   gcongr
   exact f.le_opNorm x
+
+@[deprecated (since := "2026-06-27")] alias le_opNorm_enorm := le_opENorm
 
 /-- If one controls the enorm of every `f x`, then one controls the enorm of `f`. -/
 theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ) :
@@ -431,6 +433,20 @@ theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x,
   specialize hM x
   simp only [← ofReal_norm, ← ENNReal.ofReal_coe_nnreal] at hM
   rwa [← ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_le_ofReal_iff (by positivity)] at hM
+
+theorem le_of_opENorm_le_of_le {x} {a b : ℝ≥0∞} (hf : ‖f‖ₑ ≤ a) (hx : ‖x‖ₑ ≤ b) :
+    ‖f x‖ₑ ≤ a * b :=
+  (f.le_opENorm x).trans <| by gcongr
+
+theorem le_opENorm_of_le {c : ℝ≥0∞} {x} (h : ‖x‖ₑ ≤ c) : ‖f x‖ₑ ≤ ‖f‖ₑ * c :=
+  f.le_of_opENorm_le_of_le le_rfl h
+
+theorem le_of_opENorm_le {c : ℝ≥0∞} (h : ‖f‖ₑ ≤ c) (x : E) : ‖f x‖ₑ ≤ c * ‖x‖ₑ :=
+  f.le_of_opENorm_le_of_le h le_rfl
+
+theorem opENorm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ≥0∞} :
+    ‖f‖ₑ ≤ M ↔ ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ :=
+  ⟨f.le_of_opENorm_le, opENorm_le_bound f⟩
 
 variable {f} in
 theorem homothety_norm [NontrivialTopology E] (f : E →SL[σ₁₂] F) {a : ℝ}

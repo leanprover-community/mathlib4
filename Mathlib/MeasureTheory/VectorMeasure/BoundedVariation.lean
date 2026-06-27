@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Stieltjes
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Prod
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 import Mathlib.MeasureTheory.VectorMeasure.AddContent
@@ -42,7 +41,8 @@ open scoped symmDiff Topology NNReal ENNReal
 
 variable {α : Type*} [LinearOrder α] [DenselyOrdered α] [TopologicalSpace α] [OrderTopology α]
   [SecondCountableTopology α] [CompactIccSpace α] [hα : MeasurableSpace α] [BorelSpace α]
-  {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+  {E F G : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+  [NormedAddCommGroup F] [NormedAddCommGroup G]
   {f : α → E} {a b : α}
 
 namespace BoundedVariationOn
@@ -592,5 +592,36 @@ lemma variation_vectorMeasure_univ_le (hf : BoundedVariationOn f univ) :
       hf.eVariationOn_Iic_eq_Iio_add_edist]
   _ = eVariationOn f univ := by
     rw [← eVariationOn.union (x := a) _ isGreatest_Iic isLeast_Ici, Iic_union_Ici]
+
+#where
+
+variable {g : α → F} (hg : BoundedVariationOn g univ)
+  [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace ℝ G]
+
+#where
+
+open Finset
+
+lemma glouglou {C D : ℝ≥0∞} {s : Set α} (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D)
+    {B : E →L[ℝ] F →L[ℝ] G} :
+    eVariationOn (fun x ↦ B (f x) (g x) : α → G) s ≤
+      ‖B‖ₑ * (C * eVariationOn f s + D * eVariationOn g s) := by
+  apply iSup_le
+  rintro ⟨n, ⟨u, u_mono, u_mem⟩⟩
+  calc ∑ i ∈ range n, edist (B (f (u (i + 1))) (g (u (i + 1)))) (B (f (u i)) (g (u i)))
+  _ ≤ ∑ i ∈ range n, edist (B (f (u (i + 1))) (g (u (i + 1)))) (B (f (u i)) (g (u (i + 1)))) +
+      ∑ i ∈ range n, edist (B (f (u i)) (g (u (i + 1)))) (B (f (u i)) (g (u i))) := by
+    rw [← Finset.sum_add_distrib]
+    gcongr with i hi
+    apply edist_triangle
+  _ = ∑ i ∈ range n, ‖B (f (u (i + 1)) - f (u i)) (g (u (i + 1)))‖ₑ +
+      ∑ i ∈ range n, ‖B (f (u i)) (g (u (i + 1)) - g (u i))‖ₑ := by simp [edist_eq_enorm_sub]
+  _ ≤ ∑ i ∈ range n, ‖B‖ₑ *  ‖f (u (i + 1)) - f (u i)‖ₑ * ‖g (u (i + 1))‖ₑ +
+      ∑ i ∈ range n, ‖B‖ₑ * ‖f (u i)‖ₑ * ‖g (u (i + 1)) - g (u i)‖ₑ := by
+    gcongr with i hi i hi
+    · have W := ContinuousLinearMap.le_opNorm₂
+  _ ≤ ‖B‖ₑ * (C * eVariationOn f s + D * eVariationOn g s) := sorry
+
+
 
 end BoundedVariationOn
