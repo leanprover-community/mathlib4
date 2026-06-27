@@ -110,18 +110,10 @@ lemma comp_apply (f : M ⟶ N) (g : N ⟶ P) (m : M) : (f ≫ g) m = g (f m) := 
 
 @[ext] lemma hom_ext {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g := Hom.ext hf
 
-section ofHom
+@[simp] lemma hom_ofHom (f : ContMDiffMap I I X Y n) : (ofHom f).hom = f := rfl
+@[simp] lemma ofHom_hom (f : M ⟶ N) : ofHom f.hom = f := rfl
 
-@[simp]
-lemma hom_ofHom (f : ContMDiffMap I I X Y n) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
-
-@[simp]
-lemma ofHom_id :
-    ofHom (ContMDiffMap.id : ContMDiffMap I I X X n) = 𝟙 (of (I := I) (n := n) X) := rfl
+@[simp] lemma ofHom_id : ofHom (.id (I := I) (n := n)) = 𝟙 (of X) := rfl
 
 @[simp]
 lemma ofHom_comp (f : ContMDiffMap I I X Y n) (g : ContMDiffMap I I Y Z n) :
@@ -129,13 +121,10 @@ lemma ofHom_comp (f : ContMDiffMap I I X Y n) (g : ContMDiffMap I I Y Z n) :
 
 lemma ofHom_apply (f : ContMDiffMap I I X Y n) (x : X) : ofHom f x = f x := rfl
 
-end ofHom
-
 lemma inv_hom_apply (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by simp
 lemma hom_inv_apply (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by simp
 
-instance inhabited : Inhabited (MfldCat I n) :=
-  ⟨of H⟩
+instance inhabited : Inhabited (MfldCat I n) := ⟨of H⟩
 
 /-- `ModelWithCorners.MfldCat I n` has a forgetful functor to `TopCat`. -/
 instance : HasForget₂ (MfldCat I n) TopCat.{u} where
