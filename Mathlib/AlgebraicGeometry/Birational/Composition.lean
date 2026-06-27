@@ -140,10 +140,7 @@ lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
     rfl
 
 set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] :
-    f.comp (PartialMap.id Y) = f := by
-  rw [comp_toPartialMap, compHom_id]
+lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] : f.comp (PartialMap.id Y) = f := by simp
 
 end PartialMap
 
