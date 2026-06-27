@@ -170,8 +170,10 @@ section
 open Localization AtPrime
 
 variable (J : Ideal A) (K : Ideal B) [J.IsPrime] [K.IsPrime]
-  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)] [IsLiesOverAlgebra I J]
-  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)] [IsLiesOverAlgebra I K]
+  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
+  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime K)]
 
 instance : IsLocalHom (algebraMap (Localization.AtPrime I) (Localization.AtPrime J)) := by
   rw [IsLiesOverAlgebra.algebraMap_eq]
@@ -200,7 +202,7 @@ instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
 instance [Algebra.EssFiniteType R A]
     (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     Algebra.EssFiniteType p.ResidueField q.ResidueField := by
   have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
   refine .of_comp R _ _

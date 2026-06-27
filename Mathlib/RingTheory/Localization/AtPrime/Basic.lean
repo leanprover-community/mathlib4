@@ -367,19 +367,23 @@ noncomputable def algebraOfLiesOver
 
 @[deprecated (since := "2026-04-24")] alias instAlgebraOfLiesOver := algebraOfLiesOver
 
-/-- A predicate expressing that `Localization.AtPrime P` is an algebra over `Localization.AtPrime p`
-in the natural way when `P` lies over `p`. -/
-class IsLiesOverAlgebra (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]
-    [Algebra (Localization.AtPrime p) (Localization.AtPrime P)] : Prop where
-  algebraMap_eq : algebraMap (Localization.AtPrime p) (Localization.AtPrime P) =
-    Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over
+@[deprecated "Use `IsScalarTower` instead." (since := "2026-06-27")]
+abbrev IsLiesOverAlgebra (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime P)] :=
+  IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)
 
-instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-    letI := algebraOfLiesOver p P; IsLiesOverAlgebra p P :=
-  letI := algebraOfLiesOver p P; ⟨rfl⟩
+theorem IsLiesOverAlgebra.algebraMap_eq (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)] [P.LiesOver p] :
+    algebraMap (Localization.AtPrime p) (Localization.AtPrime P) =
+      Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over := by
+  symm
+  apply localRingHom_unique
+  simp [← IsScalarTower.algebraMap_apply]
 
 instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]
-    [Algebra (Localization.AtPrime p) (Localization.AtPrime P)] [IsLiesOverAlgebra p P] :
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)] :
     IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) :=
   .of_algebraMap_eq <| by
     simp [IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
@@ -388,9 +392,12 @@ instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]
 
 instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] (Q : Ideal C)
     [Q.IsPrime] [Q.LiesOver P] [Q.LiesOver p]
-    [Algebra (Localization.AtPrime p) (Localization.AtPrime P)] [IsLiesOverAlgebra p P]
-    [Algebra (Localization.AtPrime P) (Localization.AtPrime Q)] [IsLiesOverAlgebra P Q]
-    [Algebra (Localization.AtPrime p) (Localization.AtPrime Q)] [IsLiesOverAlgebra p Q] :
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
+    [Algebra (Localization.AtPrime P) (Localization.AtPrime Q)]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime Q)]
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)]
+    [IsScalarTower B (Localization.AtPrime P) (Localization.AtPrime Q)]
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime Q)] :
     IsScalarTower (Localization.AtPrime p) (Localization.AtPrime P) (Localization.AtPrime Q) :=
   .of_algebraMap_eq' <| by
     simp [IsLiesOverAlgebra.algebraMap_eq, ← localRingHom_comp, ← IsScalarTower.algebraMap_eq]
@@ -423,8 +430,10 @@ section localAlg
 open AtPrime
 
 variable {S} [Algebra R P] (J : Ideal S) (K : Ideal P) [J.IsPrime] [K.IsPrime]
-  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)] [IsLiesOverAlgebra I J]
-  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)] [IsLiesOverAlgebra I K]
+  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
+  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime K)]
 
 /-- For an `R`-algebra homomorphism `f : S →ₐ[R] P` and prime ideals `J = f⁻¹(K)` lying over `I`,
 the induced algebra homomorphism from the localization of `S` at `J` to the localization of `P` at

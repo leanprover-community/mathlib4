@@ -47,7 +47,7 @@ noncomputable def inertiaDeg' : ℕ :=
 
 theorem inertiaDeg'_def [hq : q.IsPrime]
     [Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra (q.under R) q] :
+    [IsScalarTower R (Localization.AtPrime (q.under R)) (Localization.AtPrime q)] :
     q.inertiaDeg' R = Module.finrank (q.under R).ResidueField q.ResidueField := by
   convert! dif_pos hq
   simp [Algebra.algebra_ext_iff, Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
@@ -70,7 +70,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
   have := Ideal.over_def q p
   subst this
