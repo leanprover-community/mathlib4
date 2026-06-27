@@ -177,7 +177,7 @@ lemma localRingHom_injective_of_primesOver_eq_singleton
     ⟨⟨r, hrp⟩, FaithfulSMul.algebraMap_injective R S ?_⟩
   grind
 
-lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p]
+lemma finite_of_primesOver_eq_singleton [Module.Finite R S]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     Module.Finite (Localization.AtPrime p) (Localization.AtPrime q) := by

@@ -63,7 +63,7 @@ lemma IsUnramifiedAt.of_restrictScalars (P : Ideal B) [P.IsPrime]
     [IsUnramifiedAt R P] : IsUnramifiedAt A P :=
   FormallyUnramified.of_restrictScalars R _ _
 
-instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] [IsUnramifiedAt R q]
+instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [IsUnramifiedAt R q]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime q) :=

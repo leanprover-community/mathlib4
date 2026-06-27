@@ -105,7 +105,7 @@ end Module
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
-instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]
+instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
     [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)] :
     Module.Flat (Localization.AtPrime p) (Localization.AtPrime P) := by
