@@ -251,8 +251,7 @@ theorem smul_pointwise_eq_self_of_isUnit [SMul α R] [IsScalarTower α R M] {N :
   ext x
   rw [N.mem_smul_pointwise_iff_exists]
   constructor
-  · intro hx
-    rcases hx with ⟨m, hm, rfl⟩
+  · rintro ⟨m, hm, rfl⟩
     exact N.smul_of_tower_mem u hm
   · intro hx
     rcases hu with ⟨u, rfl⟩
