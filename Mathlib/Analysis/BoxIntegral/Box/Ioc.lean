@@ -46,13 +46,14 @@ lemma Box.length_nonneg : 0 ≤ J.length := J.length_pos.le
 def Box.toSet₁ : Set ℝ := Set.Ioc J.lower₁ J.upper₁
 
 @[simp]
-lemma Box.toSet₁_def : J.toSet₁ = Set.Ioc J.lower₁ J.upper₁ := rfl
+lemma Box.toSet₁_def : J.toSet₁ = .Ioc J.lower₁ J.upper₁ := rfl
 
 @[simp]
-lemma Box.mem₁ (x : Fin 1 → ℝ) :
-    x ∈ J ↔ x 0 ∈ J.toSet₁ := by simp [mem_def, lower₁, upper₁]
+lemma Box.mem₁ (x : Fin 1 → ℝ) : x ∈ J ↔ x 0 ∈ J.toSet₁ := by simp [mem_def, lower₁, upper₁]
 
 lemma Box.upper_mem₁ : J.upper₁ ∈ J.toSet₁ := by simp [toSet₁_def, lower_lt_upper₁]
+
+lemma Box.lower_not_mem₁ : J.lower₁ ∉ J.toSet₁ := by simp [toSet₁_def]
 
 lemma Box.ext_iff₁ : J = K ↔ J.lower₁ = K.lower₁ ∧ J.upper₁ = K.upper₁ :=
   ⟨by aesop, fun ⟨hlow, hup⟩ ↦ by ext; simp [hlow, hup]⟩
@@ -175,7 +176,7 @@ lemma Box.mem_of_le (hab : a < b) {J : Box (Fin 1)} (hJ : J ≤ uIoc a b) :
     J.lower₁ ∈ Set.Icc a b ∧ J.upper₁ ∈ Set.Icc a b := by grind [le_uIoc_iff, lower_lt_upper₁]
 
 lemma Icc_subset_of_box_le_uIoc {a b : ℝ} {J : Box (Fin 1)} (hab : a < b) (hJ : J ≤ uIoc a b) :
-    J.Icc₁ ⊆ Set.Icc a b := by simp; grind [Box.le_uIoc_iff]
+    J.Icc₁ ⊆ .Icc a b := by simp; grind [Box.le_uIoc_iff]
 
 /-! ## Mapping an interval -/
 
