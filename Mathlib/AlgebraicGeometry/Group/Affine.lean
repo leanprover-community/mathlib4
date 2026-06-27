@@ -374,6 +374,9 @@ instance [Algebra R T] : (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in
+-- The `simp` calls are non-terminal merely because the `erw` calls are necessary.
+-- If this proof breaks because of a non-terminal `simp` in the future, it is likely that one can
+-- simply remove the following `erw`.
 variable (R S T) in
 lemma μ_pullback_left_fst [Algebra R T] :
     (LaxMonoidal.μ (Over.pullback (Spec.map (CommRingCat.ofHom (algebraMap R S))))
