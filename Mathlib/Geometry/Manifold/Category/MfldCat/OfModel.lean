@@ -126,8 +126,7 @@ lemma hom_inv_apply (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by simp
 
 instance inhabited : Inhabited (MfldCat I n) := ⟨of H⟩
 
-/-- `ModelWithCorners.MfldCat I n` has a forgetful functor to `TopCat`. -/
-instance : HasForget₂ (MfldCat I n) TopCat.{u} where
+instance hasForgetToTopCat : HasForget₂ (MfldCat I n) TopCat.{u} where
   forget₂.obj M := TopCat.of M
   forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
 
