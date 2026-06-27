@@ -380,7 +380,8 @@ theorem totalDegree_truncTotal_lt (h : n ≠ 0) :
 theorem truncTotal_coe_eq_self_iff (p : MvPolynomial σ R) (h : n ≠ 0) :
     truncTotal n p = p ↔ p.totalDegree < n := by
   rw [truncTotal, truncFinset_coe_eq_self_iff, Set.Finite.subset_toFinset,
-    MvPolynomial.totalDegree, Finset.sup_lt_iff (bot_lt_iff_ne_bot.mpr h), Set.subset_def]
+    MvPolynomial.totalDegree, MvPolynomial.supDegree_def,
+    Finset.sup_lt_iff (bot_lt_iff_ne_bot.mpr h), Set.subset_def]
   simp [degree, sum]
 
 end TruncTotal

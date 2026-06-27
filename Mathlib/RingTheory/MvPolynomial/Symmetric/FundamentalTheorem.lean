@@ -178,14 +178,13 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
     Monic toLex (esymm (Fin m) R (i + 1)) := by
   have := supDegree_leadingCoeff_sum_eq (D := toLex) (s := univ.powersetCard (i + 1))
     (i := Iic (⟨i, him⟩ : Fin m)) ?_ (f := fun s ↦ monomial (∑ j ∈ s, fun₀ | j => 1) (1 : R)) ?_
-  · rwa [← esymm_eq_sum_monomial, ← Finsupp.indicator_eq_sum_single, ← single_eq_monomial,
-      supDegree_single_ne_zero _ one_ne_zero, leadingCoeff_single toLex.injective] at this
+  · rwa [← esymm_eq_sum_monomial, ← Finsupp.indicator_eq_sum_single,
+      supDegree_monomial_ne_zero _ one_ne_zero, leadingCoeff_monomial toLex.injective] at this
   · exact mem_powersetCard.2 ⟨subset_univ _, Fin.card_Iic _⟩
   intro t ht hne
   have ht' : #t = #(Iic (⟨i, him⟩ : Fin m)) := by
     rw [(mem_powersetCard.1 ht).2, Fin.card_Iic]
-  simp_rw [← single_eq_monomial, supDegree_single_ne_zero _ one_ne_zero,
-    ← Finsupp.indicator_eq_sum_single]
+  simp_rw [supDegree_monomial_ne_zero _ one_ne_zero, ← Finsupp.indicator_eq_sum_single]
   rw [ne_comm, Ne, ← subset_iff_eq_of_card_le ht'.le, not_subset] at hne
   simp_rw [← mem_sdiff] at hne
   have hkm := mem_sdiff.1 (min'_mem _ hne)
@@ -256,7 +255,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
   refine ⟨i, fun k hk ↦ ?_, ?_⟩
   all_goals dsimp only [Pi.toLex_apply, ofLex_toLex]
   · conv_rhs => rw [← Equiv.swap_apply_of_ne_of_ne hk.ne (hk.trans_le hle).ne]
-    rw [Finsupp.mapDomain_apply (Equiv.injective _), supDegree]; rfl
+    rw [Finsupp.mapDomain_apply (Equiv.injective _), supDegree_def]
   · apply hlt.trans_eq
     simp_rw [Finsupp.mapDomain_equiv_apply, Equiv.symm_swap, Equiv.swap_apply_left]
 

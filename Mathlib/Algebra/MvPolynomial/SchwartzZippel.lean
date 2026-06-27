@@ -157,10 +157,10 @@ lemma schwartz_zippel_sup_sum :
           _ = k := hpₓdeg
           _ ≤ p.degreeOf 0 := by
             have :
-              (ofLex (AddMonoidAlgebra.supDegree toLex p'.leadingCoeff)).cons k ∈ p.support := by
+              (ofLex (p'.leadingCoeff.supDegree toLex)).cons k ∈ p.support := by
               rwa [← mem_support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
                 ← Polynomial.leadingCoeff, ← hpₖ, ← leadingCoeff_toLex,
-                AddMonoidAlgebra.leadingCoeff_ne_zero toLex.injective]
+                leadingCoeff_ne_zero toLex.injective]
             simpa using monomial_le_degreeOf 0 this
     · rw [Finset.sup_add (support_nonempty.mpr hpₖ₀)]
       apply Finset.sup_le
@@ -198,7 +198,7 @@ lemma schwartz_zippel_totalDegree {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0
       obtain rfl | hs := S.eq_empty_or_nonempty
       · simp
         simp only [← _root_.bot_eq_zero, sup_bot]
-      simp_rw [totalDegree, Nat.cast_finsetSup]
+      simp_rw [totalDegree, supDegree_def, Nat.cast_finsetSup]
       rw [sup_div₀ (by positivity)]
       simp [← sum_div, Finsupp.sum_fintype]
 

@@ -80,8 +80,7 @@ theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
     weightedTotalDegree w (rename e P) = weightedTotalDegree (w ∘ e) P := by
   classical
-  unfold weightedTotalDegree
-  rw [support_rename_of_injective he, Finset.sup_image]
+  rw [weightedTotalDegree, supDegree_def, support_rename_of_injective he, Finset.sup_image]
   congr; ext; unfold weight; simp
 
 variable (σ R)
@@ -314,6 +313,7 @@ end CommRing
 
 See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero. -/
 lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
+  rw [totalDegree, supDegree_def]
   apply Finset.sup_le
   intro d hd
   rw [mem_support_iff] at hd
@@ -456,8 +456,8 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       refine lt_of_le_of_lt natDegree_map_le ?_
       suffices (finSuccEquiv _ _ F).natDegree ≠ n by lia
       rintro rfl
-      refine leadingCoeff_ne_zero.mpr ?_ hFn
-      simpa using! (finSuccEquiv R N).injective.ne hF₀
+      refine Polynomial.leadingCoeff_ne_zero.mpr ?_ hFn
+      simpa using (finSuccEquiv R N).injective.ne hF₀
     obtain ⟨r₀, hr₀⟩ : ∃ r₀, Polynomial.eval r₀ φ ≠ 0 :=
       φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR
     use Fin.cons r₀ r

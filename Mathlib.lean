@@ -895,6 +895,7 @@ public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.Algebra.MvPolynomial.Polynomial
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.MvPolynomial.SchwartzZippel
+public import Mathlib.Algebra.MvPolynomial.SupDegree
 public import Mathlib.Algebra.MvPolynomial.Supported
 public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.NeZero
