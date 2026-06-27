@@ -13,10 +13,10 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Localization
 # UFD criteria via height `1` prime ideals and localization
 
 ## Main results
-* `UniqueFactorizationMonoid.iff_forall_isPrincipal_of_height_eq_one` : Let `R` be a Noetherian domain. Then
-  `R` is a UFD if and only if every height `1` prime ideal is principal.
+* `UniqueFactorizationMonoid.iff_forall_isPrincipal_of_height_eq_one` : Let `R` be a
+  Noetherian domain. Then `R` is a UFD if and only if every height `1` prime ideal is principal.
 
-* `UniqueFactorizationMonoid.iff_localization_away_of_prime` : Let `R` be a Noetherian domain,
+* `UniqueFactorizationMonoid.iff_localizationAway_of_prime` : Let `R` be a Noetherian domain,
   `x ∈ R` be a prime element. Then `R` is a UFD if and only if `Rₓ` is a UFD.
 -/
 
@@ -73,12 +73,12 @@ theorem Ideal.isPrincipal_of_isPrincipal_isLocalizationAway_of_prime
       rw [mem_span_singleton] at hy ⊢
       exact (hx.left_dvd_or_dvd_right_of_dvd_mul hy).resolve_left hxa
 
-theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
+theorem Ideal.isPrincipal_of_isPrincipal_localizationAway_of_prime
     [WfDvdMonoid R] {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hxp : x ∉ p)
     (hp : (map (algebraMap R (Localization.Away x)) p).IsPrincipal) : p.IsPrincipal :=
-  p.isPrincipal_of_isPrincipal_isLocalization_away_of_prime hx hxp (Localization.Away x) hp
+  p.isPrincipal_of_isPrincipal_isLocalizationAway_of_prime hx hxp (Localization.Away x) hp
 
-theorem UniqueFactorizationMonoid.iff_of_isLocalizationAaway_of_prime
+theorem UniqueFactorizationMonoid.iff_of_isLocalizationAway_of_prime
     [IsNoetherianRing R] {x : R} (hx : Prime x) (S : Type*) [CommRing S] [Algebra R S]
     [IsLocalization.Away x S] : UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid S := by
   have : IsDomain S := IsLocalization.Away.isDomain S hx.ne_zero
@@ -91,14 +91,14 @@ theorem UniqueFactorizationMonoid.iff_of_isLocalizationAaway_of_prime
   · exact ⟨x, p.eq_span_singleton_of_height_eq_one h1 hxp hx⟩
   · have hd := by rwa [← Ideal.disjoint_powers_iff_notMem_of_isPrime x] at hxp
     have := IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers x) S p hp hd
-    exact p.isPrincipal_of_isPrincipal_isLocalization_away_of_prime hx hxp S <|
+    exact p.isPrincipal_of_isPrincipal_isLocalizationAway_of_prime hx hxp S <|
       isPrincipal_of_height_eq_one <| by
         rw [← IsLocalization.height_under (Submonoid.powers x),
           IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers x) S hp hd, h1]
 
 /-- Let `R` be a Noetherian domain, `x ∈ R` be a prime element. Then `R` is a UFD if and only if
   `Rₓ` is a UFD. -/
-theorem UniqueFactorizationMonoid.iff_localization_away_of_prime
+theorem UniqueFactorizationMonoid.iff_localizationAway_of_prime
     [IsNoetherianRing R] {x : R} (hx : Prime x) :
     UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid (Localization.Away x) :=
-  UniqueFactorizationMonoid.iff_isLocalization_away_of_prime hx (Localization.Away x)
+  UniqueFactorizationMonoid.iff_of_isLocalizationAway_of_prime hx (Localization.Away x)
