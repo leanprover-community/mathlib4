@@ -137,24 +137,13 @@ theorem inclusionMapIso_hom (x : X) : (inclusionMapIso f x).hom = 𝟙 _ :=
 theorem inclusionMapIso_inv (x : X) : (inclusionMapIso f x).inv = 𝟙 _ :=
   rfl
 
-instance [IndiscreteTopology X] (x : X) : Subsingleton (OpenNhds x) where
-  allEq
-    | ⟨U, hU⟩, ⟨V, hV⟩ => by
+instance [IndiscreteTopology X] (x : X) : Unique (OpenNhds x) where
+  default := ⊤
+  uniq
+    | ⟨U, hU⟩ => by
       obtain (rfl | rfl) := TopologicalSpace.Opens.eq_bot_or_top U <;>
-      obtain (rfl | rfl) := TopologicalSpace.Opens.eq_bot_or_top V <;>
-      simp at hU hV ⊢
-
-variable (X) in
-/-- If `X` has the indiscrete topology, the lattice of open neighbourhoods of any point
-is a singleton. -/
-def orderIsoOfIndiscreteTopology (X : TopCat) [IndiscreteTopology X] (x : X) :
-    OpenNhds x ≃o PUnit.{u + 1} where
-  toFun _ := ⟨⟩
-  invFun _ := ⟨⟨Set.univ, isOpen_univ⟩, by simp⟩
-  left_inv U := Subsingleton.elim _ _
-  map_rel_iff' {a b} := by
-    obtain rfl := Subsingleton.elim a b
-    simp
+      simp at hU ⊢
+      rfl
 
 end OpenNhds
 

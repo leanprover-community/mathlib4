@@ -683,13 +683,11 @@ end Concrete
 /-- Taking stalks on an indiscrete topological space is isomorphic to taking global sections. -/
 def stalkFunctorIsoOfIndiscreteTopology (X : TopCat) [IndiscreteTopology X] (x : X) :
     TopCat.Presheaf.stalkFunctor C x ≅ (evaluation _ _).obj (.op ⊤) :=
+  letI F := (orderDualEquivalence _).functor ⋙
+    (OrderIso.ofUnique (OpenNhds x) PUnit.{1}).equivalence.op.inverse
   Functor.isoWhiskerLeft _
-    (Functor.Final.colimIso <| (orderDualEquivalence _).functor ⋙
-      (OpenNhds.orderIsoOfIndiscreteTopology.{0} X x).equivalence.inverse.op).symm ≪≫
-    (Functor.associator _ _ _).symm ≪≫
-    Functor.isoWhiskerRight (Functor.whiskeringLeftObjCompIso _ _).symm _ ≪≫
-    Functor.isoWhiskerLeft _ (colimIsoEvaluation (X := ⟨⟩) _ isTerminalTop) ≪≫
-    (whiskeringLeftCompEvaluation _ _)
+    (colimIsoEvaluation (X := F.obj ⊤) _ <| IsTerminal.isTerminalObj _ _ isTerminalTop) ≪≫
+    whiskeringLeftCompEvaluation _ _
 
 variable {C} in
 /-- The stalk of a presheaf `F` on an indiscrete topological space is isomorphic to the global
@@ -704,12 +702,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma germ_stalkIsoOfIndiscreteTopology_hom [IndiscreteTopology X] (F : TopCat.Presheaf C X)
     (x : X) :
     dsimp% F.germ ⊤ _ (by simp) ≫ (F.stalkIsoOfIndiscreteTopology x).hom = 𝟙 _ := by
-  let G := (orderDualEquivalence PUnit.{1}).functor ⋙
-    (OpenNhds.orderIsoOfIndiscreteTopology X x).equivalence.inverse.op
-  change colimit.ι ((OpenNhds.inclusion x).op ⋙ F) (G.obj PUnit.unit) ≫ _ ≫ _ = _
-  have := Functor.Final.ι_colimitIso_inv G ((OpenNhds.inclusion _).op ⋙ F) ⟨⟩
-  dsimp [G] at this
-  simp [Functor.Final.colimIso, G, reassoc_of% this]
-  rfl
+  simp [stalkFunctorIsoOfIndiscreteTopology, TopCat.Presheaf.germ]
 
 end TopCat.Presheaf
