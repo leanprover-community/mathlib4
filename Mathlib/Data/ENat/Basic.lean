@@ -636,6 +636,16 @@ lemma coe_eq_natCast (n : ℕ) : (n : ℕ∞) = (n : WithBot ℕ∞) := rfl
 lemma eq_top_iff_forall_ge {n : WithBot ℕ∞} : n = ⊤ ↔ ∀ m : ℕ, m ≤ n :=
   _root_.WithBot.eq_top_iff_forall_ge
 
+@[simp]
+protected lemma top_add {a : WithBot ℕ∞} (h : a ≠ ⊥) : ⊤ + a = ⊤ := by
+  lift a to ℕ∞ using h
+  exact WithBot.coe_inj.mpr (by simp)
+
+@[simp]
+protected lemma add_top {a : WithBot ℕ∞} (h : a ≠ ⊥) : a + ⊤ = ⊤ := by
+  lift a to ℕ∞ using h
+  exact WithBot.coe_inj.mpr (by simp)
+
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases n
@@ -696,5 +706,8 @@ lemma add_le_add_natCast_left_iff {a b : WithBot ℕ∞} {c : ℕ} : c + a ≤ c
 
 lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤ b :=
   WithBot.add_le_add_natCast_left_iff
+
+lemma ne_bot_iff_zero_le {n : WithBot ℕ∞} : n ≠ ⊥ ↔ 0 ≤ n := by
+  cases n <;> simp
 
 end ENat.WithBot

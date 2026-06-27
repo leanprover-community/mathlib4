@@ -116,7 +116,7 @@ end Polynomial
 
 /-- If `R` is Noetherian, `dim R[X₁, ..., Xₙ] = dim R + n`. -/
 @[simp]
-lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
+lemma MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite {ι : Type*} [Finite ι] :
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H =>
@@ -129,3 +129,11 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
       ← add_assoc] at IH ⊢
     rw [ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv,
       Polynomial.ringKrullDim_of_isNoetherianRing, IH]
+
+/-- If `R` is Noetherian, `dim R[Xₛ] = dim R + card(Xₛ)`. -/
+lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} :
+    ringKrullDim (MvPolynomial ι R) = ringKrullDim R + ENat.card ι := by
+  nontriviality R
+  by_cases! Finite ι
+  · simp [ringKrullDim_of_isNoetherianRing_of_finite, ENat.card_eq_coe_natCard]
+  · simp [ENat.WithBot.ne_bot_iff_zero_le, ringKrullDim_nonneg_of_nontrivial]
