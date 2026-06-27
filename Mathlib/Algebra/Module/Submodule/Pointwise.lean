@@ -71,8 +71,6 @@ protected def pointwiseNeg : Neg (Submodule R M) where
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
 
-open scoped Pointwise
-
 @[simp]
 theorem coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
   rfl
@@ -139,8 +137,6 @@ variable {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
 
 end Semiring
 
-open scoped Pointwise
-
 @[simp]
 theorem neg_eq_self [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M) : -p = p :=
   ext fun _ => p.neg_mem_iff
@@ -201,8 +197,6 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 theorem pointwise_smul_def {a : α} {S : Submodule R M} :
     a • S = S.map (DistribSMul.toLinearMap R M a) := rfl
 
-open scoped Pointwise
-
 @[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
   rfl
@@ -251,6 +245,22 @@ theorem smul_le_self_of_tower {α : Type*} [Monoid α] [SMul α R] [DistribMulAc
     [SMulCommClass α R M] [IsScalarTower α R M] (a : α) (S : Submodule R M) : a • S ≤ S := by
   rintro y ⟨x, hx, rfl⟩
   exact smul_of_tower_mem _ a hx
+
+theorem smul_pointwise_eq_self_of_isUnit [SMul α R] [IsScalarTower α R M] {N : Submodule R M}
+    {u : α} (hu : IsUnit u) : u • N = N := by
+  ext x
+  rw [N.mem_smul_pointwise_iff_exists]
+  constructor
+  · intro hx
+    rcases hx with ⟨m, hm, rfl⟩
+    exact N.smul_of_tower_mem u hm
+  · intro hx
+    rcases hu with ⟨u, rfl⟩
+    use u.inv • x, N.smul_of_tower_mem u.inv hx, by simp [← mul_smul]
+
+theorem mul_smul_pointwise_eq_of_isUnit [SMul α R] [IsScalarTower α R M] {N : Submodule R M}
+    {u : α} (hu : IsUnit u) (v : α) : (u * v) • N = v • N := by
+  rw [mul_smul, (v • N).smul_pointwise_eq_self_of_isUnit hu]
 
 end
 
