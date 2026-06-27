@@ -46,7 +46,7 @@ attribute [instance] MfldCat.topologicalSpace MfldCat.chartedSpace MfldCat.isMan
 initialize_simps_projections MfldCat (-topologicalSpace, -chartedSpace, -isManifold)
 
 namespace MfldCat
-variable {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} {X Y Z : Type u}
+variable {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} {M N P : MfldCat I n} {X Y Z : Type u}
   [TopologicalSpace X] [ChartedSpace H X] [IsManifold I n X]
   [TopologicalSpace Y] [ChartedSpace H Y] [IsManifold I n Y]
   [TopologicalSpace Z] [ChartedSpace H Z] [IsManifold I n Z]
@@ -84,11 +84,11 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (MfldCat I n)
     (fun M N => ContMDiffMap I I M N n) where
-  hom f := f.hom'
-  ofHom f := ⟨f⟩
+  hom := Hom.hom'
+  ofHom := Hom.mk
 
 /-- Turn a morphism in `ModelWithCorners.MfldCat` back into a `ContMDiffMap`. -/
-abbrev Hom.hom {M N : MfldCat I n} (f : Hom M N) :=
+abbrev Hom.hom (f : Hom M N) :=
   ConcreteCategory.hom (C := MfldCat I n) f
 
 /-- Typecheck a `ContMDiffMap` as a morphism in `ModelWithCorners.MfldCat`. -/
@@ -106,11 +106,10 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 -/
 
 @[simp]
-lemma hom_id {M : MfldCat I n} :
-    (𝟙 M : M ⟶ M).hom = ContMDiffMap.id := rfl
+lemma hom_id : (𝟙 M : M ⟶ M).hom = ContMDiffMap.id := rfl
 
 @[simp]
-lemma hom_comp {M N P : MfldCat I n} (f : M ⟶ N) (g : N ⟶ P) :
+lemma hom_comp (f : M ⟶ N) (g : N ⟶ P) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 section ofHom
@@ -119,7 +118,7 @@ section ofHom
 lemma hom_ofHom (f : ContMDiffMap I I X Y n) : (ofHom f).hom = f := rfl
 
 @[simp]
-lemma ofHom_hom {M N : MfldCat I n} (f : M ⟶ N) :
+lemma ofHom_hom (f : M ⟶ N) :
     ofHom (Hom.hom f) = f := rfl
 
 @[simp]
@@ -140,38 +139,37 @@ instance : HasForget₂ (MfldCat I n) TopCat.{u} where
   forget₂.obj M := TopCat.of M
   forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
 
-/-- Any diffeomorphism induces an isomorphism in `ModelWithCorners.MfldCat`. -/
+/-- Build an isomorphism in `ModelWithCorners.MfldCat I n` from a diffeomorphism. -/
 @[simps]
-def isoOfDiffeomorph {M N : MfldCat I n} (f : M ≃ₘ^n⟮I, I⟯ N) : M ≅ N where
-  hom := ofHom f.toContMDiffMap
-  inv := ofHom f.symm.toContMDiffMap
+def isoOfDiffeomorph (e : M ≃ₘ^n⟮I, I⟯ N) : M ≅ N where
+  hom := ofHom e.toContMDiffMap
+  inv := ofHom e.symm.toContMDiffMap
 
-/-- Any isomorphism in `ModelWithCorners.MfldCat` induces a diffeomorphism. -/
+/-- Build a diffeomorphism from an isomorphism in `ModelWithCorners.MfldCat I n`. -/
 @[simps]
-def diffeomorphOfIso {M N : MfldCat I n} (f : M ≅ N) : M ≃ₘ^n⟮I, I⟯ N where
-  toFun := f.hom
-  invFun := f.inv
+def diffeomorphOfIso (i : M ≅ N) : M ≃ₘ^n⟮I, I⟯ N where
+  toFun := i.hom
+  invFun := i.inv
   left_inv _ := by simp
   right_inv _ := by simp
-  contMDiff_toFun := f.hom.hom.contMDiff
-  contMDiff_invFun := f.inv.hom.contMDiff
+  contMDiff_toFun := i.hom.hom.contMDiff
+  contMDiff_invFun := i.inv.hom.contMDiff
 
-@[simp]
-theorem of_isoOfDiffeomorph {M N : MfldCat I n} (f : M ≃ₘ^n⟮I, I⟯ N) :
-    diffeomorphOfIso (isoOfDiffeomorph f) = f :=
-  rfl
-
-@[simp]
-theorem of_diffeomorphOfIso {M N : MfldCat I n} (f : M ≅ N) :
-    isoOfDiffeomorph (diffeomorphOfIso f) = f :=
-  rfl
+/-- Diffeomorphisms between manifolds modeled on `I` are the same as isomorphisms in
+`ModelWithCorners.MfldCat I n`. -/
+@[simps]
+def isoEquivDiffeomorph : (M ≅ N) ≃ (M ≃ₘ^n⟮I, I⟯ N) where
+  toFun := diffeomorphOfIso
+  invFun := isoOfDiffeomorph
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- The constant morphism `M ⟶ N` in `ModelWithCorners.MfldCat` given by `y : N`. -/
-def const {M N : MfldCat I n} (y : N) : M ⟶ N :=
+def const (y : N) : M ⟶ N :=
   ofHom <| ContMDiffMap.const y
 
 @[simp]
-lemma const_apply {M N : MfldCat I n} (y : N) (x : M) :
+lemma const_apply (y : N) (x : M) :
     const y x = y := rfl
 
 end MfldCat
