@@ -86,7 +86,6 @@ noncomputable def IsLocalSite.coconstantSheaf [J.IsLocalSite] :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- On local sites, the global sections functor `Γ` is left-adjoint to the coconstant functor. -/
-@[simps!]
 noncomputable def IsLocalSite.ΓCoconstantSheafAdj [J.IsLocalSite] :
     Γ J (Type max u v w) ⊣ coconstantSheaf J := by
   refine Adjunction.ofNatIsoLeft ?_ (ΓNatIsoSheafSections J _ terminalIsTerminal).symm
@@ -114,8 +113,7 @@ noncomputable def IsLocalSite.ΓCoconstantSheafAdj [J.IsLocalSite] :
       ext Y (f : _ → _)
       dsimp [coconstantSheaf, Presheaf.coconst]
       ext y
-      simp
-  }
+      simp }
 
 instance [J.IsLocalSite] : (IsLocalSite.coconstantSheaf.{max u v w} J).IsRightAdjoint :=
   ⟨Γ J _, ⟨IsLocalSite.ΓCoconstantSheafAdj J⟩⟩
