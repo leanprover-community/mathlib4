@@ -43,7 +43,7 @@ local notation x "#" => primorial x
 
 lemma primorial_eq_prod_primesLE (n : ℕ) : n # = ∏ p ∈ primesLE n, p := rfl
 
-lemma primorial_primeFactors (n : ℕ) : primeFactors (n#) = primesLE n := by
+lemma primeFactors_primorial (n : ℕ) : primeFactors (n#) = primesLE n := by
   rw [primorial_eq_prod_primesLE]
   exact primeFactors_prod fun _ hp ↦ prime_of_mem_primesLE hp
 
