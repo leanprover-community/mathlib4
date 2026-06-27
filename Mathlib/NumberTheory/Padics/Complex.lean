@@ -204,7 +204,7 @@ theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) :=
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
 theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
-  apply UniformSpace.Completion.extension_unique (f := @norm (PadicAlgCl p) _) (g := Valued.v.norm)
+  apply UniformSpace.Function.fromCompletion_unique (f := @norm (PadicAlgCl p) _)
   · exact uniformContinuous_norm
   · letI S := (Valued.toNormedField ℂ_[p] NNReal).toNormedCommRing.toNormedRing.toSeminormedRing
     letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup

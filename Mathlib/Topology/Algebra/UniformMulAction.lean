@@ -205,8 +205,8 @@ instance : UniformContinuousConstSMul M (Completion X) :=
 instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] [IsScalarTower M N X] : IsScalarTower M N (Completion X) :=
   ⟨fun m n x => by
-    have : _ = (_ : Completion X → Completion X) :=
-      Function.completion_comp (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
+    have : _ = (_ : Completion X → Completion X) := Function.completion_comp_completion
+      (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
     refine Eq.trans ?_ (congr_fun this.symm x)
     exact congr_arg (fun f => Function.completion f x) (funext (smul_assoc _ _))⟩
 
@@ -218,7 +218,7 @@ instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
       Function.completion (SMul.smul n)) x := rfl
     have hnm : n • m • x = (Function.completion (SMul.smul n) ∘
       Function.completion (SMul.smul m)) x := rfl
-    rw [hmn, hnm, Function.completion_comp, Function.completion_comp]
+    rw [hmn, hnm, Function.completion_comp_completion, Function.completion_comp_completion]
     · exact congr_arg (fun f => Function.completion f x) (funext (smul_comm _ _))
     repeat' exact uniformContinuous_const_smul _⟩
 

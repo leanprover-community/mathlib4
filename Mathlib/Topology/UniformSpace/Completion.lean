@@ -418,140 +418,141 @@ theorem ext' {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : Completion α �
     f a = g a :=
   congr_fun (ext hf hg h) a
 
-section Extension
+end Completion
 
+variable {α}
 variable {f : α → β}
+
+open Completion (cPkg)
 
 /-- "Extension" to the completion. It is defined for any map `f` but
 returns an arbitrary constant value if `f` is not uniformly continuous -/
-def _root_.UniformSpace.Function.fromCompletion (f : α → β) : Completion α → β :=
+def Function.fromCompletion (f : α → β) : Completion α → β :=
   cPkg.extend f
 
-@[deprecated (since := "2026-06-26")] alias extension := _root_.UniformSpace.Function.fromCompletion
+@[deprecated (since := "2026-06-26")] alias Completion.extension := Function.fromCompletion
 
 section CompleteSpace
 
 variable [CompleteSpace β]
 
-theorem _root_.UniformSpace.Function.uniformContinuous_fromCompletion :
-    UniformContinuous (Function.fromCompletion f) :=
+theorem Function.uniformContinuous_fromCompletion : UniformContinuous (fromCompletion f) :=
   cPkg.uniformContinuous_extend
 
 @[deprecated (since := "2026-06-26")]
-alias uniformContinuous_extension := _root_.UniformSpace.Function.uniformContinuous_fromCompletion
+alias uniformContinuous_extension := Function.uniformContinuous_fromCompletion
 
 @[continuity, fun_prop]
-theorem _root_.UniformSpace.Function.continuous_fromCompletion :
-    Continuous (Function.fromCompletion f) :=
+theorem Function.continuous_fromCompletion : Continuous (fromCompletion f) :=
   cPkg.continuous_extend
 
 @[deprecated (since := "2026-06-26")]
-alias continuous_extension := _root_.UniformSpace.Function.continuous_fromCompletion
+alias Completion.continuous_extension := Function.continuous_fromCompletion
 
 end CompleteSpace
 
-theorem _root_.UniformSpace.Function.fromCompletion_coe [T0Space β] (hf : UniformContinuous f)
-    (a : α) : (Function.fromCompletion f) a = f a :=
+theorem Function.fromCompletion_coe [T0Space β] (hf : UniformContinuous f) (a : α) :
+    fromCompletion f a = f a :=
   cPkg.extend_coe hf a
 
 @[deprecated (since := "2026-06-26")]
-alias extension_coe := _root_.UniformSpace.Function.fromCompletion_coe
+alias Completion.extension_coe := Function.fromCompletion_coe
 
-theorem _root_.UniformSpace.Function.inseparable_fromCompletion_coe (hf : UniformContinuous f)
-    (x : α) : Inseparable (Function.fromCompletion f x) (f x) :=
+theorem Function.inseparable_fromCompletion_coe (hf : UniformContinuous f)
+    (x : α) : Inseparable (fromCompletion f x) (f x) :=
   cPkg.inseparable_extend_coe hf x
 
 @[deprecated (since := "2026-06-26")]
-alias inseparable_extension_coe := _root_.UniformSpace.Function.inseparable_fromCompletion_coe
+alias Completion.inseparable_extension_coe := Function.inseparable_fromCompletion_coe
 
-lemma _root_.UniformSpace.Function.isUniformInducing_fromCompletion [CompleteSpace β]
-    (h : IsUniformInducing f) : IsUniformInducing (Function.fromCompletion f) :=
+lemma Function.isUniformInducing_fromCompletion [CompleteSpace β]
+    (h : IsUniformInducing f) : IsUniformInducing (fromCompletion f) :=
   cPkg.isUniformInducing_extend h
 
 @[deprecated (since := "2026-06-26")]
-alias isUniformInducing_extension := _root_.UniformSpace.Function.isUniformInducing_fromCompletion
+alias Completion.isUniformInducing_extension := Function.isUniformInducing_fromCompletion
 
+section
 variable [T0Space β] [CompleteSpace β]
 
-theorem _root_.UniformSpace.Function.fromCompletion_unique (hf : UniformContinuous f)
+theorem Function.fromCompletion_unique (hf : UniformContinuous f)
     {g : Completion α → β} (hg : UniformContinuous g) (h : ∀ a : α, f a = g (a : Completion α)) :
-    Function.fromCompletion f = g :=
+    fromCompletion f = g :=
   cPkg.extend_unique hf hg h
 
 @[deprecated (since := "2026-06-26")]
-alias extension_unique := _root_.UniformSpace.Function.fromCompletion_unique
+alias Completion.extension_unique := Function.fromCompletion_unique
 
 @[simp]
-theorem _root_.UniformSpace.Function.fromCompletion_comp_coe {f : Completion α → β}
-    (hf : UniformContinuous f) : Function.fromCompletion (f ∘ (↑)) = f :=
+theorem Function.fromCompletion_comp_coe {f : Completion α → β}
+    (hf : UniformContinuous f) : fromCompletion (f ∘ (↑)) = f :=
   cPkg.extend_comp_coe hf
 
 @[deprecated (since := "2026-06-26")]
-alias extension_comp_coe := _root_.UniformSpace.Function.fromCompletion_comp_coe
+alias Completion.extension_comp_coe := Function.fromCompletion_comp_coe
 
-end Extension
+end
 
 section Map
 
 variable {f : α → β}
 
 /-- Completion functor acting on morphisms -/
-def _root_.UniformSpace.Function.completion (f : α → β) : Completion α → Completion β :=
+def Function.completion (f : α → β) : Completion α → Completion β :=
   cPkg.map cPkg f
 
-@[deprecated (since := "2026-06-26")] alias map := _root_.UniformSpace.Function.completion
+@[deprecated (since := "2026-06-26")] alias Completion.map := Function.completion
 
-theorem _root_.UniformSpace.Function.uniformContinuous_completion :
-    UniformContinuous (Function.completion f) :=
+theorem Function.uniformContinuous_completion : UniformContinuous (completion f) :=
   cPkg.uniformContinuous_map cPkg f
 
 @[deprecated (since := "2026-06-26")]
-alias uniformContinuous_map := _root_.UniformSpace.Function.uniformContinuous_completion
+alias Completion.uniformContinuous_map := Function.uniformContinuous_completion
 
 @[continuity, fun_prop]
-theorem _root_.UniformSpace.Function.continuous_completion : Continuous (Function.completion f) :=
+theorem Function.continuous_completion : Continuous (completion f) :=
   cPkg.continuous_map cPkg f
 
 @[deprecated (since := "2026-06-26")]
-alias continuous_map := _root_.UniformSpace.Function.continuous_completion
+alias Completion.continuous_map := Function.continuous_completion
 
-theorem _root_.UniformSpace.Function.completion_coe (hf : UniformContinuous f) (a : α) :
-    (Function.completion f) a = f a :=
+theorem Function.completion_coe (hf : UniformContinuous f) (a : α) :
+    (completion f) a = f a :=
   cPkg.map_coe cPkg hf a
 
-@[deprecated (since := "2026-06-26")] alias map_coe := _root_.UniformSpace.Function.completion_coe
+@[deprecated (since := "2026-06-26")] alias Completion.map_coe := Function.completion_coe
 
-theorem _root_.UniformSpace.Function.completion_unique {f : α → β} {g : Completion α → Completion β}
-    (hg : UniformContinuous g) (h : ∀ a : α, ↑(f a) = g a) : Function.completion f = g :=
+theorem Function.completion_unique {f : α → β} {g : Completion α → Completion β}
+    (hg : UniformContinuous g) (h : ∀ a : α, ↑(f a) = g a) : completion f = g :=
   cPkg.map_unique cPkg hg h
 
 @[deprecated (since := "2026-06-26")]
-alias map_unique := _root_.UniformSpace.Function.completion_unique
+alias Completion.map_unique := Function.completion_unique
 
 @[simp]
-theorem _root_.UniformSpace.Function.completion_id : Function.completion (@id α) = id :=
+theorem Function.completion_id : completion (@id α) = id :=
   cPkg.map_id
 
-@[deprecated (since := "2026-06-26")] alias map_id := _root_.UniformSpace.Function.completion_id
+@[deprecated (since := "2026-06-26")] alias Completion.map_id := Function.completion_id
 
-theorem _root_.UniformSpace.Function.fromCompletion_completion [CompleteSpace γ] [T0Space γ]
+theorem Function.fromCompletion_comp_completion [CompleteSpace γ] [T0Space γ]
     {f : β → γ} {g : α → β}
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
-    Function.fromCompletion f ∘ Function.completion g = Function.fromCompletion (f ∘ g) :=
+    fromCompletion f ∘ completion g = fromCompletion (f ∘ g) :=
   Completion.ext (Function.continuous_fromCompletion.comp Function.continuous_completion)
       Function.continuous_fromCompletion <| by
     simp [hf, hg, hf.comp hg, Function.completion_coe, Function.fromCompletion_coe]
 
 @[deprecated (since := "2026-06-26")]
-alias extension_map := _root_.UniformSpace.Function.fromCompletion_completion
+alias Completion.extension_map := Function.fromCompletion_comp_completion
 
-set_option backward.isDefEq.respectTransparency false in
-theorem _root_.UniformSpace.Function.completion_comp {g : β → γ} {f : α → β}
+theorem Function.completion_comp_completion {g : β → γ} {f : α → β}
     (hg : UniformContinuous g) (hf : UniformContinuous f) :
-    Function.completion g ∘ Function.completion f = Function.completion (g ∘ f) :=
-  Function.fromCompletion_completion ((uniformContinuous_coe _).comp hg) hf
+    completion g ∘ completion f = completion (g ∘ f) := by
+  convert! fromCompletion_comp_completion ((Completion.uniformContinuous_coe _).comp hg) hf
 
-@[deprecated (since := "2026-06-26")] alias map_comp := _root_.UniformSpace.Function.completion_comp
+@[deprecated (since := "2026-06-26")] alias Completion.map_comp :=
+  Function.completion_comp_completion
 
 /-- The uniform isomorphism between two completions of isomorphic uniform spaces. -/
 def _root_.UniformEquiv.completion (e : α ≃ᵤ β) : Completion α ≃ᵤ Completion β :=
@@ -563,15 +564,17 @@ def _root_.UniformEquiv.completion (e : α ≃ᵤ β) : Completion α ≃ᵤ Com
 theorem _root_.UniformEquiv.completion_symm (e : α ≃ᵤ β) : e.completion.symm = e.symm.completion :=
   cPkg.mapEquiv_symm cPkg e
 
-@[deprecated (since := "2026-06-26")] alias mapEquiv_symm := _root_.UniformEquiv.completion_symm
+@[deprecated (since := "2026-06-26")] alias Completion.mapEquiv_symm := UniformEquiv.completion_symm
 
 @[simp]
 theorem _root_.UniformEquiv.completion_coe (e : α ≃ᵤ β) (a : α) : e.completion a = (e a) :=
   cPkg.mapEquiv_coe cPkg e a
 
-@[deprecated (since := "2026-06-26")] alias mapEquiv_coe := _root_.UniformEquiv.completion_coe
+@[deprecated (since := "2026-06-26")] alias Completion.mapEquiv_coe := UniformEquiv.completion_coe
 
 end Map
+
+namespace Completion
 
 /- In this section we construct isomorphisms between the completion of a uniform space and the
 completion of its separation quotient -/

@@ -657,7 +657,7 @@ instance adicValued.uniformContinuousConstSMul :
 open UniformSpace in
 instance : Algebra S (v.adicCompletion K) where
   toSMul := Completion.instSMul _ _
-  algebraMap := Completion.coeRingHom.comp (algebraMap _ _)
+  algebraMap := RingHom.toCompletion.comp (algebraMap _ _)
   commutes' r x := by
     induction x using Completion.induction_on with
     | hp =>
@@ -669,7 +669,7 @@ instance : Algebra S (v.adicCompletion K) where
       exact isClosed_eq (continuous_const_smul _) (continuous_const_mul _)
     | ih x =>
       simp [Algebra.smul_def, Completion.algebraMap_def, WithVal.algebraMap_right_apply,
-        Completion.coeRingHom]
+        RingHom.toCompletion]
 
 theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=

@@ -185,7 +185,7 @@ theorem _root_.UniformSpace.RingHom.completion_comp
     {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGroup γ]
     [IsTopologicalRing γ] {g : β →+* γ} (hg : Continuous g) (hf : Continuous f) :
     (g.completion hg).comp (f.completion hf) = (g.comp f).completion (hg.comp hf) :=
-  DFunLike.ext' <| Function.completion_comp
+  DFunLike.ext' <| Function.completion_comp_completion
     (uniformContinuous_addMonoidHom_of_continuous hg)
     (uniformContinuous_addMonoidHom_of_continuous hf)
 

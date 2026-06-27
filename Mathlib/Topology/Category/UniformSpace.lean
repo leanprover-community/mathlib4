@@ -202,7 +202,7 @@ noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace wh
   map f := ConcreteCategory.ofHom ⟨Function.completion f.1, Function.uniformContinuous_completion⟩
   map_id _ := InducedCategory.hom_ext (hom_ext (by apply Function.completion_id))
   map_comp f g := InducedCategory.hom_ext (hom_ext (by
-    exact (Function.completion_comp g.hom.property f.hom.property).symm))
+    exact (Function.completion_comp_completion g.hom.property f.hom.property).symm))
 
 /-- The inclusion of a uniform space into its completion. -/
 noncomputable def completionHom (X : UniformSpaceCat) :
@@ -250,7 +250,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         ext x
         dsimp [-Function.comp_apply]
-        erw [Function.fromCompletion_completion (γ := Y) g.hom.2 f.hom.2]
+        erw [Function.fromCompletion_comp_completion (γ := Y) g.hom.2 f.hom.2]
         rfl }
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
