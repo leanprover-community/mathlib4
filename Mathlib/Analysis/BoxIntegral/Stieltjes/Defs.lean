@@ -38,8 +38,8 @@ Montgomery–Vaughan, *Multiplicative Number Theory I: Classical Theory*, Append
 `∫ˢ x in a..b, f x ∂[B; g]` exists.
 * `BoxIntegral.HasStieltjesIntegral a b B f g L`: the predicate that the integral
 `∫ˢ x in a..b, f x ∂[B; g]` exists and equals `L`.
-* `BoxIntegral.stieltjesIntegral a b B f g`: the value of `∫ˢ x in a..b, f x ∂[B; g]` if it exists, or
-the junk value of `0` otherwise.
+* `BoxIntegral.stieltjesIntegral a b B f g`: the value of `∫ˢ x in a..b, f x ∂[B; g]` if it
+exists, or the junk value of `0` otherwise.
 
 ## Implementation notes
 
@@ -255,7 +255,8 @@ theorem stieltjesIntegral.integral_same : ∫ˢ x in a..a, f x ∂[B; g] = 0 :=
 theorem stieltjesIntegral.integral_undef (h : ¬StieltjesIntegrable a b B f g) :
     ∫ˢ x in a..b, f x ∂[B; g] = 0 := by simp [stieltjesIntegral, h]
 
-theorem stieltjesIntegral.integral_symm : ∫ˢ x in b..a, f x ∂[B; g] = -∫ˢ x in a..b, f x ∂[B; g] := by
+theorem stieltjesIntegral.integral_symm :
+    ∫ˢ x in b..a, f x ∂[B; g] = -∫ˢ x in a..b, f x ∂[B; g] := by
   by_cases h_integ : StieltjesIntegrable a b B f g
   · exact (h_integ.hasStieltjesIntegral.symm.unique h_integ.symm.hasStieltjesIntegral).symm
   have h_integ_symm : ¬ StieltjesIntegrable b a B f g := by contrapose! h_integ; exact h_integ.symm
