@@ -103,6 +103,45 @@ theorem flat_of_localized_span
 
 end Module
 
+/-- A module `N` over a commutative ring `R` is flat if and only if its localization at every
+prime ideal is flat over `R`. -/
+theorem Module.flat_iff_forall_localizedModule_prime (R : Type*) [CommRing R] (N : Type*)
+    [AddCommGroup N] [Module R N] :
+    Module.Flat R N ↔
+      ∀ (p : Ideal R) [p.IsPrime], Module.Flat R (LocalizedModule p.primeCompl N) := by
+  refine ⟨fun _ p _ ↦ ?_, fun h ↦ Module.flat_of_localized_maximal _ fun P hP ↦ ?_⟩
+  · have : Module.Flat (Localization p.primeCompl) (LocalizedModule p.primeCompl N) :=
+      Module.Flat.localizedModule _
+    have : Module.Flat R (Localization p.primeCompl) := IsLocalization.flat _ p.primeCompl
+    exact Module.Flat.trans R (Localization p.primeCompl) _
+  · haveI := hP.isPrime
+    exact h P
+
+/-- Localising an `R`-flat module (which is also a module over an `R`-algebra `S`) at a submonoid
+of `S` yields again an `R`-flat module. -/
+theorem Module.Flat.localizedModule_base {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+    (q : Submonoid S) [Module.Flat R M] :
+    Module.Flat R (LocalizedModule q M) := by
+  have e : LocalizedModule q M ≃ₗ[R] (Localization q ⊗[S] M) :=
+    (LocalizedModule.equivTensorProduct q M).restrictScalars R
+  haveI : Module.Flat S (Localization q) := IsLocalization.flat (Localization q) q
+  haveI : Module.Flat R (Localization q ⊗[S] M) := Module.Flat.tensor_tower (Localization q) M
+  exact Module.Flat.of_linearEquiv e
+
+/-- **Local–global flatness over a base, indexed by primes of `S`.** For an `R`-algebra `S` and an
+`S`-module `M`, `M` is flat over `R` iff its localization at every prime of `S` is flat over `R`. -/
+theorem Module.flat_iff_forall_localizedModule_prime_of_algebra {R S : Type*} [CommRing R]
+    [CommRing S] [Algebra R S] (M : Type*) [AddCommGroup M] [Module R M] [Module S M]
+    [IsScalarTower R S M] :
+    Module.Flat R M ↔
+      ∀ (q : Ideal S) [q.IsPrime], Module.Flat R (LocalizedModule q.primeCompl M) := by
+  refine ⟨fun _ q _ ↦ Module.Flat.localizedModule_base M q.primeCompl, fun h ↦ ?_⟩
+  refine Module.flat_of_isLocalized_maximal S M (fun P _ ↦ LocalizedModule P.primeCompl M)
+    (fun P _ ↦ LocalizedModule.mkLinearMap P.primeCompl M) fun P hP ↦ ?_
+  haveI := hP.isPrime
+  exact h P
+
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
 instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]

@@ -1396,6 +1396,7 @@ public import Mathlib.AlgebraicGeometry.IdealSheaf.IrreducibleComponent
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.AlgebraicGeometry.LimitsOver
+public import Mathlib.AlgebraicGeometry.Modules.Flat
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.AlgebraicGeometry.Modules.Tilde
