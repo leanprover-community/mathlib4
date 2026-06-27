@@ -77,7 +77,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : Category (MfldCat I n) where
   Hom M N := Hom M N
-  id M := ⟨ContMDiffMap.id⟩
+  id M := ⟨.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
 set_option backward.privateInPublic true in
