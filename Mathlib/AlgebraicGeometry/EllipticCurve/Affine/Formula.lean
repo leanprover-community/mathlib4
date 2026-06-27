@@ -397,18 +397,27 @@ lemma addX_of_X_ne {x₁ y₁ x₂ y₂ : F} (hn : x₁ ≠ x₂) :
 ### Some statements about the numerator and denominator of the x-coordinate of 2*P
 -/
 
+/-- The polynomial on the left is the denominator of the rational expression for the `x`-coordinate
+of twice the point `(x, y)`. This is the same as `W'.Ψ₂Sq` evaluated at `x`.
+The statement corresponds to `W'.C_Ψ₂Sq` after evaluation (but note that `C_Ψ₂Sq`
+is not available in this file). -/
 lemma den_duplication_eq {x y : R} (h : W'.Equation x y) :
     4 * x ^ 3 + W'.b₂ * x ^ 2 + 2 * W'.b₄ * x + W'.b₆ = (2 * y + W'.a₁ * x + W'.a₃) ^ 2 := by
   have Heq := (W'.equation_iff x y).mp h
   simp only [b₂, b₄, b₆]
   linear_combination -4 * Heq
 
+/-- The denominator in the rational expression for the `x`-coordinate of twice the point `(x, y)`
+vanishes if and only if the point is equal to its negative. -/
 lemma den_duplication_eq_zero_iff [IsReduced R] {x y : R} (h : W'.Equation x y) :
     4 * x ^ 3 + W'.b₂ * x ^ 2 + 2 * W'.b₄ * x + W'.b₆ = 0 ↔ y = W'.negY x y := by
   rw [den_duplication_eq h, sq_eq_zero_iff, negY]
   grind only
 
 omit [DecidableEq F] in
+/-- If `(x, y)` is a nonsingular point on `W` in affine coordinates, then the `x`-coordinate
+of its double is well-defined as a point on the projective line: in the corresponding rational
+expression, at least one of the numerator and denominator does not vanish. -/
 lemma den_duplication_ne_zero_or_num_duplication_ne_zero {x y : F} (h : W.Nonsingular x y) :
     4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆ ≠ 0 ∨
       x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈ ≠ 0 := by
