@@ -293,7 +293,7 @@ lemma exists_awayMap_bijective_of_localRingHom_bijective
 lemma exists_awayMap_bijective_of_residueField_surjective
     [Module.Finite R S] [FaithfulSMul R S] [q.LiesOver p] [Algebra.IsUnramifiedAt R q]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)]
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)]
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :
     ∃ r ∉ p, ∀ r', r ∣ r' → Function.Bijective (awayMap (algebraMap R S) r') :=
   exists_awayMap_bijective_of_localRingHom_bijective hq (by simpa using! Submodule.fg_bot)
