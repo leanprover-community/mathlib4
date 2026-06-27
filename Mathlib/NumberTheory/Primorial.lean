@@ -146,7 +146,7 @@ theorem primorial_le_four_pow (n : ℕ) : n# ≤ 4 ^ n := by
 
 @[deprecated (since := "2026-03-21")] alias primorial_le_4_pow := primorial_le_four_pow
 
-lemma primorial_squarefree (n : ℕ) : Squarefree (n#) := by
+lemma squarefree_primorial (n : ℕ) : Squarefree (n#) := by
   rw [primorial_eq_prod_primesLE]
   refine Finset.squarefree_prod_of_pairwise_isCoprime (fun _ hp _ hq hpq ↦ ?_) 
     fun _ hp ↦ (prime_of_mem_primesLE hp).squarefree
