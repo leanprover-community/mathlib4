@@ -205,7 +205,7 @@ lemma measurable_comap_iff {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
     {f : α → β} {g : β → γ} : Measurable[mα, mγ.comap g] f ↔ Measurable (g ∘ f) := by
   simp [measurable_iff_comap_le]
 
-lemma measurable_comap_iff_right {mβ : MeasurableSpace β} [MeasurableSpace γ] {g : α → β}
+lemma measurable_comap_iff_right {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {g : α → β}
     {f : β → γ} (hg : Function.Surjective g) : Measurable f ↔ Measurable[mβ.comap g] (f ∘ g) := by
   rw [measurable_iff_le_map, measurable_iff_le_map, ← map_comp, map_comap_eq_of_surjective hg]
 
