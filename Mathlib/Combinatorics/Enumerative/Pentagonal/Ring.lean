@@ -141,7 +141,7 @@ public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
     (hsum : ∀ k, Summable
       (fun n ↦ x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1))))
     (hlhs : ∀ k, Multipliable (fun n ↦ 1 - x ^ (n + k + 1)))
-    (hrhs : Summable fun (k : ℕ) ↦
+    (hrhs : Summable fun k : ℕ ↦
       (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)))
     (htail : Tendsto (fun k ↦ (-1) ^ (k + 1) * x ^ ((k + 1) * (3 * k + 4) / 2) *
       ∑' (n : ℕ), x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1)))
