@@ -148,8 +148,7 @@ theorem primorial_le_four_pow (n : ℕ) : n# ≤ 4 ^ n := by
 
 lemma primorial_squarefree (n : ℕ) : Squarefree (n#) := by
   rw [primorial_eq_prod_primesLE]
-  refine Finset.squarefree_prod_of_pairwise_isCoprime ?_ <|
-    fun _ hp => (prime_of_mem_primesLE hp).squarefree
-  intro _ hp _ hq hpq
+  refine Finset.squarefree_prod_of_pairwise_isCoprime (fun _ hp _ hq hpq ↦ ?_) 
+    fun _ hp ↦ (prime_of_mem_primesLE hp).squarefree
   simp only [← coprime_iff_isRelPrime]
   exact (coprime_primes (prime_of_mem_primesLE hp) (prime_of_mem_primesLE hq)).mpr hpq
