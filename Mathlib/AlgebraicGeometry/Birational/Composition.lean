@@ -59,12 +59,9 @@ lemma comp_restrict_left (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) (g : Y.PartialMap Z) :
     (f.restrict U hU hU').comp g = (f.comp g).restrict (f.domain.ι ''ᵁ f.hom ⁻¹ᵁ g.domain ⊓ U)
       ((f.comp g).dense_domain.inter_of_isOpen_right hU U.2) inf_le_left := by
-  ext1
-  · simp only [comp_domain, restrict_domain, restrict_hom, Hom.comp_preimage,
-      ι_image_homOfLE_eq_ι_image_inf]
-  · simp only [comp_hom, comp_domain, restrict_hom, restrict_domain, Hom.comp_preimage,
-      morphismRestrict_comp, Category.assoc, isoOfEq_hom, homOfLE_homOfLE_assoc,
-      isoImage_ι_inv_morphismRestrict_homOfLE_assoc]
+  ext
+  · simp [ι_image_homOfLE_eq_ι_image_inf]
+  · simp [morphismRestrict_comp, isoImage_ι_inv_morphismRestrict_homOfLE_assoc, isoOfEq_hom]
 
 set_option backward.defeqAttrib.useBackward true in
 lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z)
@@ -74,10 +71,9 @@ lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Partial
         simpa [← Set.nonempty_preimage_iff] using
           f.hom.denseRange.inter_open_nonempty _ V.2 hV.nonempty)
       (f.domain.ι.image_mono (f.hom.preimage_mono hV')) := by
-  ext1
-  · rfl
-  · simp only [comp_domain, restrict_domain, comp_hom, restrict_hom, isoOfEq_rfl, Iso.refl_hom,
-      Category.id_comp, ← f.domain.ι.isoImage_inv_homOfLE_assoc _ _ (f.hom.preimage_mono hV'),
+  ext
+  · simp
+  · simp [← f.domain.ι.isoImage_inv_homOfLE_assoc _ _ (f.hom.preimage_mono hV'),
       ← morphismRestrict_homOfLE_assoc f.hom _ _ hV']
 
 set_option backward.defeqAttrib.useBackward true in
@@ -117,22 +113,24 @@ instance isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Part
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
+@[simp]
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f : X₁.PartialMap X₂) [IsDominant f.hom] (g : X₂.PartialMap X₃)
     [IsDominant g.hom] (h : X₃.PartialMap Y) :
     (f.comp g).comp h = f.comp (g.comp h) := by
-  ext1
+  ext
   · simp_rw [comp_domain, comp_hom, ← Category.assoc, Hom.comp_preimage, Hom.inv_preimage,
       ← Hom.comp_image, Hom.isoImage_hom_ι, Hom.comp_image, image_morphismRestrict_preimage]
-  · simp_rw [comp_hom, comp_domain, morphismRestrict_comp,
-      morphismRestrict_ι_image_ι_isoImage_inv_assoc, isoOfEq_hom, comp_hom, Hom.comp_preimage,
-      Category.assoc]
+  · dsimp
+    simp_rw [morphismRestrict_comp, morphismRestrict_ι_image_ι_isoImage_inv_assoc,
+      Hom.comp_preimage, Category.assoc]
     conv_lhs => rw [← Category.assoc]
     conv_rhs => rw [← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
     simp [← cancel_mono (Opens.ι _)]
 
 set_option backward.defeqAttrib.useBackward true in
+@[simp]
 lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
     f.comp g.toPartialMap = f.compHom g := by
   ext1
