@@ -153,8 +153,7 @@ theorem le_map_comap : m ≤ (m.comap g).map g :=
   (gc_comap_map g).le_u_l _
 
 theorem map_comap_eq_of_surjective (hg : Function.Surjective g) : (m.comap g).map g = m := by
-  apply le_antisymm _ le_map_comap
-  intro S hS
+  refine le_antisymm (fun S hS => ?_) le_map_comap
   rw [map_def, measurableSet_comap] at hS
   aesop
 
