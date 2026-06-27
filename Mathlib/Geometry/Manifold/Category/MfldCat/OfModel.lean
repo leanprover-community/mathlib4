@@ -11,7 +11,7 @@ public import Mathlib.Topology.Category.TopCat.Basic
 /-!
 # The category of `C^n` manifolds modeled on `I`
 
-`ModelWithCorners.MfldCat.{u} I n` is the category of bundled `C^n` manifolds modeled on a *fixed*
+`ModelWithCorners.MfldCat.{u} I n` is the category of bundled `C^n` manifolds modeled on a fixed
 `I : ModelWithCorners 𝕜 E H`.
 
 ## Future work
@@ -127,8 +127,14 @@ lemma hom_inv_apply (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by simp
 instance inhabited : Inhabited (MfldCat I n) := ⟨of H⟩
 
 instance hasForgetToTopCat : HasForget₂ (MfldCat I n) TopCat.{u} where
-  forget₂.obj M := TopCat.of M
+  forget₂.obj M := .of M
   forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
+
+@[simp] lemma forget₂_topCat_obj (M : MfldCat I n) :
+    (forget₂ (MfldCat I n) TopCat).obj M = .of M := rfl
+
+@[simp] lemma forget₂_topCat_map (f : M ⟶ N) :
+    (forget₂ (MfldCat I n) TopCat).map f = TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩ := rfl
 
 /-- Build an isomorphism in `ModelWithCorners.MfldCat I n` from a diffeomorphism. -/
 @[simps]
