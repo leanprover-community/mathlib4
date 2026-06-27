@@ -596,68 +596,9 @@ lemma variation_vectorMeasure_univ_le (hf : BoundedVariationOn f univ) :
 variable {g : α → F}
   [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace ℝ G]
 
-open Finset
 
 omit [CompleteSpace E]
 variable {α : Type*} [LinearOrder α] {f : α → E} {g : α → F}
     {C D : ℝ≥0∞} {s : Set α}
-
-lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D)
-    {B : E →L[ℝ] F →L[ℝ] G} :
-    eVariationOn (fun x ↦ B (f x) (g x) : α → G) s ≤
-      ‖B‖ₑ * (C * eVariationOn g s + D * eVariationOn f s) := by
-  apply iSup_le
-  rintro ⟨n, ⟨u, u_mono, u_mem⟩⟩
-  calc ∑ i ∈ range n, edist (B (f (u (i + 1))) (g (u (i + 1)))) (B (f (u i)) (g (u i)))
-  _ ≤ ∑ i ∈ range n, edist (B (f (u (i + 1))) (g (u (i + 1)))) (B (f (u i)) (g (u (i + 1)))) +
-      ∑ i ∈ range n, edist (B (f (u i)) (g (u (i + 1)))) (B (f (u i)) (g (u i))) := by
-    rw [← Finset.sum_add_distrib]
-    gcongr with i hi
-    apply edist_triangle
-  _ = ∑ i ∈ range n, ‖B (f (u (i + 1)) - f (u i)) (g (u (i + 1)))‖ₑ +
-      ∑ i ∈ range n, ‖B (f (u i)) (g (u (i + 1)) - g (u i))‖ₑ := by simp [edist_eq_enorm_sub]
-  _ ≤ ∑ i ∈ range n, ‖B‖ₑ * ‖f (u (i + 1)) - f (u i)‖ₑ * ‖g (u (i + 1))‖ₑ +
-      ∑ i ∈ range n, ‖B‖ₑ * ‖f (u i)‖ₑ * ‖g (u (i + 1)) - g (u i)‖ₑ := by
-    gcongr with i hi i hi
-    · apply ContinuousLinearMap.le_opENorm₂
-    · apply ContinuousLinearMap.le_opENorm₂
-  _ ≤ ∑ i ∈ range n, ‖B‖ₑ * ‖f (u (i + 1)) - f (u i)‖ₑ * D +
-      ∑ i ∈ range n, ‖B‖ₑ * C * ‖g (u (i + 1)) - g (u i)‖ₑ := by
-    gcongr with i hi i hi
-    · apply hg _ (u_mem _)
-    · apply hf _ (u_mem _)
-  _ = ‖B‖ₑ * D * ∑ i ∈ range n, ‖f (u (i + 1)) - f (u i)‖ₑ +
-      ‖B‖ₑ * C * ∑ i ∈ range n, ‖g (u (i + 1)) - g (u i)‖ₑ := by
-    simp only [← sum_mul, ← mul_sum]
-    ring
-  _ ≤ ‖B‖ₑ * D * eVariationOn f s + ‖B‖ₑ * C * eVariationOn g s := by
-    simp only [← edist_eq_enorm_sub]
-    gcongr
-    · exact eVariationOn.sum_le_of_monotoneOn_Iic (u_mono.monotoneOn _) (fun i hi ↦ u_mem i)
-    · exact eVariationOn.sum_le_of_monotoneOn_Iic (u_mono.monotoneOn _) (fun i hi ↦ u_mem i)
-  _ = ‖B‖ₑ * (C * eVariationOn g s + D * eVariationOn f s) := by ring
-
-@[to_fun eVariationOn_fun_smul_le]
-lemma eVariationOn_smul_le {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
-    [NormedRing 𝕜] [NormedAlgebra ℝ 𝕜] [Module 𝕜 F]
-    [NormSMulClass 𝕜 F] [IsScalarTower ℝ 𝕜 F]
-    {C D : ℝ≥0∞} {s : Set α} (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D) :
-    eVariationOn (f • g) s ≤ C * eVariationOn g s + D * eVariationOn f s := by
-  apply (eVariationOn_bilinear_comp_le hf hg (B := ContinuousLinearMap.lsmul ℝ 𝕜)).trans
-  grw [ContinuousLinearMap.opENorm_lsmul_le, one_mul]
-
-@[to_fun eVariationOn_fun_mul_le]
-lemma eVariation_mul_le {f g : α → ℝ}
-    {C D : ℝ≥0∞} {s : Set α} (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D) :
-    eVariationOn (f * g) s ≤ C * eVariationOn g s + D * eVariationOn f s := by
-  apply eVariationOn_smul_le hf hg
-
-lemma _root_.BoundedVariationOn.bilinear_comp {B : E →L[ℝ] F →L[ℝ] G}
-    (hf : BoundedVariationOn f s) (hg : BoundedVariationOn g s) :
-    BoundedVariationOn (fun x ↦ B (f x) (g x)) s := by
-  rcases Set.eq_empty_or_nonempty s with rfl | ⟨⟨x, hx⟩⟩
-  · simp
-  apply ne_of_lt
-
 
 end BoundedVariationOn
