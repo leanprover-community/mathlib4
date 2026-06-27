@@ -66,7 +66,7 @@ theorem tsum_powMulProdOneSubPow (k : ℕ) {x : R} (hx : IsTopologicallyNilpoten
     (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))
     (h : ∀ k, Multipliable (fun n ↦ 1 - x ^ (n + k + 1))) :
     ∑' n, powMulProdOneSubPow k n x =
-    1 - x ^ (2 * k + 3) - x ^ (3 * k + 5) * ∑' n, powMulProdOneSubPow (k + 1) n x := by
+      1 - x ^ (2 * k + 3) - x ^ (3 * k + 5) * ∑' n, powMulProdOneSubPow (k + 1) n x := by
   rw [eq_sub_iff_add_eq, show 1 - x ^ (2 * k + 3) = 0 - aux k 0 x by simp [aux]]
   rw [← (hsum _).tsum_mul_left, ← (hsum _).tsum_add ((hsum _).mul_left _)]
   apply HasSum.tsum_eq
@@ -147,7 +147,7 @@ public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
       ∑' (n : ℕ), x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1)))
       atTop (𝓝 0)) :
     ∏' n, (1 - x ^ (n + 1)) =
-    ∑' (k : ℕ), (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)) := by
+      ∑' (k : ℕ), (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)) := by
   have h := fun n ↦ tprod_one_sub_pow_eq_powMulProdOneSubPow n hx hsum hlhs
   simp_rw [← sub_eq_iff_eq_add] at h
   refine (HasSum.tsum_eq ?_).symm
