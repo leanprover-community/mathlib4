@@ -12,7 +12,7 @@ public import Mathlib.Topology.Category.TopCat.Basic
 # The category of `C^n` manifolds modeled on `I`
 
 This file defines the bundled category `ModelWithCorners.MfldCat.{u} I n` of `C^n` manifolds modeled
-on a fixed `I : ModelWithCorners 𝕜 E H`, along with the rogetful functor to `TopCat`.
+on a fixed `I : ModelWithCorners 𝕜 E H`, along with the forgetful functor to `TopCat`.
 
 ## Future work
 * Show that `ModelWithCorners.MfldCat I n` has coproducts given by disjoint unions.
