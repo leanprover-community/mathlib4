@@ -442,7 +442,7 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f
   have hmero : MeromorphicAt f x := meromorphicAt_of_meromorphicOrderAt_ne_zero horder
   simp [toMeromorphicNFAt, hmero, horder]
 
-lemma MeromorphicAt.exists_analytic_and_toMeromorphicNFAt_eventuallyEq (hf : MeromorphicAt f x)
+lemma MeromorphicAt.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq (hf : MeromorphicAt f x)
     (horder : meromorphicOrderAt f x = 0) :
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ toMeromorphicNFAt f x =ᶠ[𝓝 x] g := by
   obtain ⟨hanalytic, hgx, hg⟩ := Classical.choose_spec <|
@@ -472,9 +472,9 @@ lemma toMeromorphicNFAt_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
   · by_cases hforder : meromorphicOrderAt f x = 0
     <;> obtain hgorder := meromorphicOrderAt_congr hfg ▸ hforder
     · obtain ⟨f', hf'anl, _, hf'⟩ :=
-        hf.exists_analytic_and_toMeromorphicNFAt_eventuallyEq hforder
+        hf.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq hforder
       obtain ⟨g', hg'anl, _, hg'⟩ :=
-        hg.exists_analytic_and_toMeromorphicNFAt_eventuallyEq hgorder
+        hg.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq hgorder
       have hf'g' : f' =ᶠ[𝓝[≠] x] g' := (hf'.symm.filter_mono nhdsWithin_le_nhds).trans <|
         hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans <| hfg.trans <|
         hg.eq_nhdsNE_toMeromorphicNFAt.trans <|
