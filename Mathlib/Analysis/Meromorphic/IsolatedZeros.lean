@@ -128,3 +128,21 @@ theorem eventually_nhdsSet_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U
     exact eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf x hx) (hg x hx) hx (hU x hx) h
 
 end MeromorphicAt
+
+/-- If meromorphic `f` and `g` agree on `codiscreteWithin U`, so do their derivatives. -/
+theorem MeromorphicOn.deriv_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U)
+    (hg : MeromorphicOn g U) (h : f =ᶠ[codiscreteWithin U] g) :
+    deriv f =ᶠ[codiscreteWithin U] deriv g := by
+  rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
+  intro x hx
+  by_cases hacc : AccPt x (𝓟 U)
+  · have h : f =ᶠ[𝓝[≠] x] g := MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin
+      (hf x hx) (hg x hx) hx hacc h
+    obtain ⟨V, hopen, hxV, hV⟩ := mem_nhdsWithin.mp h
+    filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds (hopen.mem_nhds hxV)]
+      with y hy hyV
+      using Or.inl <| EventuallyEq.deriv_eq <| eventuallyEq_of_mem
+      (inter_mem (hopen.mem_nhds hyV) (isOpen_ne.mem_nhds hy)) fun z hz ↦ hV hz
+  · rw [accPt_iff_frequently, not_frequently] at hacc
+    filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds hacc] with y hy _
+      using Or.inr (by grind)
