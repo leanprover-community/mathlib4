@@ -36,11 +36,12 @@ noncomputable def arcsin : ℝ → ℝ :=
 theorem arcsin_mem_Icc (x : ℝ) : arcsin x ∈ Icc (-(π / 2)) (π / 2) :=
   Subtype.coe_prop _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_arcsin : range arcsin = Icc (-(π / 2)) (π / 2) := by
   rw [arcsin, range_comp Subtype.val]
-  simp [Icc]
+  simp only [Icc, mem_setOf_eq, coe_setOf, IccExtend_range]
+  simp [EquivLike.range_eq_univ, image_univ,
+    Subtype.range_coe_subtype]
 
 theorem arcsin_le_pi_div_two (x : ℝ) : arcsin x ≤ π / 2 :=
   (arcsin_mem_Icc x).2

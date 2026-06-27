@@ -118,9 +118,8 @@ protected alias ⟨_, Nonempty.encard_pos⟩ := encard_pos
 theorem encard_ne_zero_of_mem {a : α} (h : a ∈ s) : s.encard ≠ 0 :=
   (encard_pos.mpr ⟨a, h⟩).ne.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem encard_singleton (e : α) : ({e} : Set α).encard = 1 := by
-  rw [encard, ENat.card_eq_coe_fintype_card, Fintype.card_ofSubsingleton, Nat.cast_one]
+  rw [encard, ENat.card_eq_coe_fintype_card, Fintype.card_unique, Nat.cast_one]
 
 theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.encard := by
   classical
