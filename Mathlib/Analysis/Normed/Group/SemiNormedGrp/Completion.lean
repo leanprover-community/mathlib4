@@ -95,17 +95,17 @@ universal property of the completion. -/
 def completion.lift {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W] (f : V ⟶ W) :
     completion.obj V ⟶ W :=
   ofHom
-  { toFun := f.hom.extension
-    map_add' := f.hom.extension.toAddMonoidHom.map_add'
-    bound' := f.hom.extension.bound' }
+  { toFun := f.hom.fromCompletion
+    map_add' := f.hom.fromCompletion.toAddMonoidHom.map_add'
+    bound' := f.hom.fromCompletion.bound' }
 
 theorem completion.lift_comp_incl {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W]
     (f : V ⟶ W) : completion.incl ≫ completion.lift f = f :=
-  ext <| NormedAddGroupHom.extension_coe _
+  ext <| NormedAddGroupHom.fromCompletion_coe _
 
 theorem completion.lift_unique {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W]
     (f : V ⟶ W) (g : completion.obj V ⟶ W) : completion.incl ≫ g = f → g = completion.lift f :=
-  fun h => SemiNormedGrp.hom_ext (NormedAddGroupHom.extension_unique _ fun v =>
+  fun h => SemiNormedGrp.hom_ext (NormedAddGroupHom.fromCompletion_unique _ fun v =>
     ((SemiNormedGrp.ext_iff.1 h) v).symm).symm
 
 end SemiNormedGrp

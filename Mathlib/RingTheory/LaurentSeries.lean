@@ -987,7 +987,7 @@ theorem LaurentSeries_coe (x : K⟮X⟯) :
 /-- Reinterpret the extension of `coe : WithVal ((idealX K).valuation _) → K⸨X⸩` as a ring
 homomorphism -/
 abbrev extensionAsRingHom :=
-  UniformSpace.Completion.extensionHom <|
+  UniformSpace.RingHom.fromCompletion <|
     (algebraMap K⟮X⟯ K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
 
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/

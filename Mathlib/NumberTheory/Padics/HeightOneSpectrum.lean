@@ -53,7 +53,7 @@ equivalent. It is best to do this after `Valued` has been refactored, or at leas
 
 @[expose] public section
 
-open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
+open IsDedekindDomain UniformSpace Completion NumberField PadicInt
 
 local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
 
@@ -145,20 +145,20 @@ noncomputable def withValEquiv (v : HeightOneSpectrum R) :
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
     v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v] where
-  __ := (mapRingEquiv _ (withValEquiv v).continuous
+  __ := (RingEquiv.completion _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
-  __ := ((mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
+  __ := ((withValEquiv v).completion.trans Padic.withValUniformEquiv).toHomeomorph
   commutes' := by simp
 
 /-- The continuous `ℤ`-algebra isomorphism between `v.adicCompletionIntegers ℚ` and
 `ℤ_[primesEquiv v]`. -/
 noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R) :
     v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] where
-  __ := let e := (mapRingEquiv _ (withValEquiv v).continuous
+  __ := let e := (RingEquiv.completion _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
             simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         e.trans withValIntegersRingEquiv
-  __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
+  __ := let e := (withValEquiv v).completion.subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (e.trans withValIntegersUniformEquiv).toHomeomorph
   commutes' := by simp
