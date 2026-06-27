@@ -206,17 +206,17 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
       have hb : ‖(p : ℂ) ^ (-s)‖ ≤ 1 / 2 := norm_prime_cpow_le_one_half ⟨p, h⟩ hs
       exact ((mul_le_mul ha hb (norm_nonneg _) zero_le_one).trans_lt (by norm_num)).ne
 
-
-
 section LogZeta
 
 open Real hiding log exp_nat_mul exp_add
 open ArithmeticFunction Primes
 
-/-- TODO: Generalize this to twists by Dirichlet characters. -/
+/-- For `1 < s.re`, the sum over primes of `-log (1 - p ^ (-s))` — the logarithm of the Euler
+product — equals the `L`-series of `n ↦ Λ n / Real.log n`, where `Λ` is the von Mangoldt function.
+
+TODO: Generalize this to twists by Dirichlet characters. -/
 theorem eulerProduct_log_eq_LSeries {s : ℂ} (hs : 1 < s.re) :
-    ∑' p : Primes, -log (1 - p ^ (-s)) = LSeries (fun (n : ℕ) ↦ Λ n / Real.log n) s
-    := by
+    ∑' p : Primes, -log (1 - p ^ (-s)) = LSeries (fun (n : ℕ) ↦ Λ n / Real.log n) s := by
   have hpow_le (p : Primes) : ‖(p : ℂ) ^ (-s)‖ < 1 := by
     rw [norm_natCast_cpow_of_pos (mod_cast p.prop.pos), Complex.neg_re]
     apply rpow_lt_one_of_one_lt_of_neg (mod_cast p.prop.one_lt) (by linarith)
@@ -232,14 +232,24 @@ theorem eulerProduct_log_eq_LSeries {s : ℂ} (hs : 1 < s.re) :
   rw [tsum_congr (fun p ↦ (htaylor p).tsum_eq.symm), LSeries_def₀ (by simp)]
   calc
     _ = ∑' (p : Primes × ℕ), ((p.1 : ℂ) ^ (-s)) ^ (p.2 + 1) / (↑p.2 + 1) := by
-      rw [Summable.tsum_prod']
-      · stop
-        rw [summable_prod_of_nonneg (fun _ ↦ by positivity)]
-        refine ⟨fun p ↦ (htaylor p).summable, ?_⟩
-        refine Summable.congr ?_ (fun p ↦ ((htaylor p).tsum_eq).symm)
-        have := summable_rpow.mpr (by linarith : -s < -1)
-        convert! (summable_log_one_add_of_summable this.neg).neg using 1
-      exact fun p ↦ (htaylor p).summable
+      symm
+      refine Summable.tsum_prod' (.of_norm ?_) (fun p ↦ (htaylor p).summable)
+      have : Summable fun p : Primes ↦ ‖(p : ℂ) ^ (-s)‖ :=
+        ((summable_riemannZetaSummand hs).comp_injective Subtype.coe_injective).congr (by
+          simp [riemannZetaSummandHom])
+      replace : Summable fun p : Primes × ℕ ↦ ‖(p.1 : ℂ) ^ (-s)‖ ^ (p.2 + 1) := by
+        rw [summable_prod_of_nonneg fun _ ↦ by positivity]
+        refine ⟨fun p ↦ ?_, (this.mul_left 2).of_nonneg_of_le
+            (fun _ ↦ tsum_nonneg fun _ ↦ by positivity) fun p ↦ ?_⟩
+        · simp_rw [pow_succ]
+          exact (summable_geometric_of_lt_one (norm_nonneg _) (hpow_le p)).mul_right _
+        · simp_rw [pow_succ, tsum_mul_right, tsum_geometric_of_lt_one (norm_nonneg _) (hpow_le p)]
+          have := norm_prime_cpow_le_one_half p hs
+          rw [inv_mul_le_iff₀ (by linarith)]
+          nlinarith [norm_nonneg ((p : ℂ) ^ (-s))]
+      refine this.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun p ↦ ?_)
+      rw [norm_div, norm_pow]
+      exact div_le_self (by positivity) (by norm_cast; linarith)
     _ = ∑' n : {n : ℕ // IsPrimePow n}, Λ n / Real.log n / ((n : ℂ) ^ s) := by
       rw [← Equiv.tsum_eq Primes.prodNatEquiv (fun n ↦ Λ n / Real.log n / ((n : ℂ) ^ s))]
       apply tsum_congr; rintro ⟨p, n⟩
@@ -262,14 +272,20 @@ theorem eulerProduct_log_eq_LSeries {s : ℂ} (hs : 1 < s.re) :
       contrapose! hn
       simp [vonMangoldt_eq_zero_iff.mpr hn]
 
-/-- TODO: Generalize this to twists by Dirichlet characters. -/
+/-- For `1 < s.re`, the Riemann zeta function is the exponential of the `L`-series of
+`n ↦ Λ n / Real.log n`, where `Λ` is the von Mangoldt function.
+
+TODO: Generalize this to twists by Dirichlet characters. -/
 theorem riemannZeta_eq_exp_LSeries {s : ℂ} (hs : 1 < s.re) :
-    exp (LSeries (fun (n : ℕ) ↦ ↑(Λ n) / Real.log n) s) = riemannZeta s := by
+    exp (LSeries (fun (n : ℕ) ↦ Λ n / Real.log n) s) = riemannZeta s := by
   rw [← eulerProduct_log_eq_LSeries hs, riemannZeta_eulerProduct_exp_log hs]
 
-/-- TODO: Generalize this to twists by Dirichlet characters. -/
+/-- For real `s > 1`, the logarithm of the (real) Riemann zeta function equals
+`∑' n, Λ n / (n ^ s * Real.log n)`, where `Λ` is the von Mangoldt function.
+
+TODO: Generalize this to twists by Dirichlet characters. -/
 theorem log_riemannZeta_eq {s : ℝ} (hs : 1 < s) :
-    Real.log (riemannZeta (s:ℂ)).re = ∑' n, Λ n / (n^s * Real.log n) := by
+    Real.log (riemannZeta (s : ℂ)).re = ∑' n, Λ n / (n ^ s * Real.log n) := by
   rw [← riemannZeta_eq_exp_LSeries (by simpa using hs), LSeries_def₀ (by simp)]
   convert Real.log_exp _
   convert Complex.exp_ofReal_re _
