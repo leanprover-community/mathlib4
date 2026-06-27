@@ -42,8 +42,6 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
-* if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
-  `f` is a local diffeomorphism at `x` (using the inverse function theorem).
 
 ## Implementation notes
 
