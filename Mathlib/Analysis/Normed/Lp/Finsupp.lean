@@ -32,21 +32,6 @@ open scoped ENNReal NNReal
 
 public section
 
-namespace NNReal
-
-@[simp] lemma not_toReal_neg {r : ℝ≥0} : ¬ r.toReal < 0 := r.coe_nonneg.not_gt
-
-end NNReal
-
-namespace Finset
-variable {ι α : Type*} [SemilatticeSup α] [OrderBot α] [One α] [IsBotOneClass α]
-  {s : Finset ι} {f : ι → α}
-
-@[to_additive (attr := simp)]
-lemma sup_eq_one : s.sup f = 1 ↔ ∀ i ∈ s, f i = 1 := by simp [← bot_eq_one]
-
-end Finset
-
 namespace Finsupp
 variable {ι X : Type*} [Zero X] {p : ℝ≥0} [Fact (1 ≤ p)]
 

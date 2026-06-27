@@ -260,6 +260,10 @@ theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ 
 protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
   classical induction S using Finset.induction <;> simp [*]
 
+@[to_additive (attr := simp)]
+lemma sup_eq_one [One α] [IsBotOneClass α] : s.sup f = 1 ↔ ∀ i ∈ s, f i = 1 := by
+  simp [← bot_eq_one]
+
 @[to_dual (attr := simp)]
 lemma sup_disjSum (s : Finset β) (t : Finset γ) (f : β ⊕ γ → α) :
     (s.disjSum t).sup f = (s.sup fun x ↦ f (.inl x)) ⊔ (t.sup fun x ↦ f (.inr x)) :=
