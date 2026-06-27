@@ -200,7 +200,11 @@ instance : Group (symplecticGroup l R) :=
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
       exact inv_left_mul_aux A.2 }
 
-theorem fromBlocks_mem_iff [Finite l] {A B C D : Matrix l l R} :
+section Determinant
+
+variable {A B C D U V : Matrix l l R}
+
+theorem fromBlocks_mem_iff :
     fromBlocks A B C D ∈ symplecticGroup l R ↔
       Aᵀ * C = Cᵀ * A ∧
       Bᵀ * D = Dᵀ * B ∧
@@ -215,10 +219,6 @@ theorem fromBlocks_mem_iff [Finite l] {A B C D : Matrix l l R} :
   · simp only [fromBlocks_transpose, J, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg,
       add_zero, neg_mul, ← sub_eq_add_neg, fromBlocks_inj, sub_eq_zero]
     exact ⟨h.1.symm, by grind, by simpa using congr(transpose $(h.2.2)), h.2.1.symm⟩
-
-section Determinant
-
-variable {A B C D U V : Matrix l l R}
 
 /-- Schur-complement step: a symplectic block matrix has determinant `1` once its upper-left
 block is invertible. -/
