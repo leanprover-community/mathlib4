@@ -9,7 +9,7 @@ public import Mathlib.Analysis.BoxIntegral.Basic
 
 /-! # Riemann–Stieltjes integral
 
-In this file we define the (one-dimensional) Riemann–Stieltjes integral `∫⟨B⟩ x in a..b, f x ∂g`
+In this file we define the (one-dimensional) Riemann–Stieltjes integral `∫ˢ x in a..b, f x ∂[B; g]`
 from `a` to `b` of a function `f : ℝ → E` against an integrator `g : ℝ → F`, paired
 by a continuous bilinear map `B : E →L[ℝ] F →L[ℝ] G`.  It is not required that `a < b`.
 
@@ -18,9 +18,10 @@ The notation here is deliberately chosen to mimic the notation `∫ x in a..b, f
 
 The bilinear pairing `B` covers the three main variants of
 Stieltjes integration that appear in practice:
-* **`f` scalar, `g` vector-valued.** Here we take `B = .lsmul ℝ ℝ`
-* **`f` vector-valued, `g` scalar.** Here we take `B = (.lsmul ℝ ℝ).flip`.
-* **`f` and `g` are both real or both complex.** Here we take `B = .mul ℝ E`.
+* **`f` scalar, `g` vector-valued** (`B = .lsmul ℝ ℝ`): notation `∫ˢ x in a..b, f x ∂•g`.
+* **`f` vector-valued, `g` scalar** (`B = (.lsmul ℝ ℝ).flip`): notation `∫ˢ x in a..b, f x ∂<•g`.
+* **`f` and `g` both real or both complex** (`B = .mul ℝ E`): no dedicated shorthand; use the
+  general `∫ˢ x in a..b, f x ∂[B; g]`.
 
 The `.` here can be removed if `ContinuousLinearMap` is open.
 
@@ -34,22 +35,22 @@ Montgomery–Vaughan, *Multiplicative Number Theory I: Classical Theory*, Append
 ## Key definitions
 
 * `BoxIntegral.StieltjesIntegrable a b B f g`: the predicate that the integral
-`∫⟨B⟩ x in a..b, f x ∂g` exists.
+`∫ˢ x in a..b, f x ∂[B; g]` exists.
 * `BoxIntegral.HasStieltjesIntegral a b B f g L`: the predicate that the integral
-`∫⟨B⟩ x in a..b, f x ∂g` exists and equals `L`.
-* `BoxIntegral.stieltjesIntegral a b B f g`: the value of `∫⟨B⟩ x in a..b, f x ∂g` if it exists, or
+`∫ˢ x in a..b, f x ∂[B; g]` exists and equals `L`.
+* `BoxIntegral.stieltjesIntegral a b B f g`: the value of `∫ˢ x in a..b, f x ∂[B; g]` if it exists, or
 the junk value of `0` otherwise.
 
 ## Implementation notes
 
-Mathematically, one can define `∫⟨B⟩ x in a..b, f x ∂g` for `a < b` as the limit of
+Mathematically, one can define `∫ˢ x in a..b, f x ∂[B; g]` for `a < b` as the limit of
 Riemann-Stieltjes sums `∑ B (f (π.tag x)) (g(x.upper) - g(x.lower))` as the mesh size of the
 tagged partition `π` of `(a, b]` tends to `0`.  We implement this via the
 `BoxIntegral.HasIntegral` predicate on `Box (Fin 1)`, relying in particular on the differential
 `ofDiff g` of `g`, which is implemented as a `BoxAdditiveMap`.
 
 The Riemann--Stieltjes integral is also extended to the `a = b` and `a > b` cases by antisymmetry.
-In all cases, we denote the integral by `∫⟨B⟩ x in a..b, f x ∂g`.
+In all cases, we denote the integral by `∫ˢ x in a..b, f x ∂[B; g]`.
 
 Thanks to ICERM for hosting the workshop "Formalization of Analysis" where most of this work
 was conducted.
@@ -108,11 +109,24 @@ The integral remains meaningful outside of the case `a < b`. -/
 noncomputable def stieltjesIntegral : G :=
   if h : StieltjesIntegrable a b B f g then h.choose else 0
 
-/-- Notation for the Riemann–Stieltjes integral. `∫⟨B⟩ x in a..b, f x ∂g` is
-`stieltjesIntegral a b B (fun x ↦ f x) g`.
-The notation parallels Mathlib's `∫ x in a..b, f x ∂μ` for `intervalIntegral`. -/
-scoped notation3 "∫⟨"B"⟩ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂"g:70 =>
+/-- Notation `∫ˢ x in a..b, f x ∂[B; g]` for the Riemann–Stieltjes integral of `f` against the
+integrator `g`, paired by the bilinear map `B`.  Mirrors the vector-measure integral notation
+`∫ᵛ x, f x ∂[B; μ]`, and parallels `∫ x in a..b, f x ∂μ` for `intervalIntegral`. -/
+scoped notation3 "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂["B:70"; "g:70"]" =>
   stieltjesIntegral a b B r g
+
+/-- The special case of `∫ˢ x in a..b, f x ∂[B; g]` with `f` real-valued, `g` vector-valued, and
+`B = ContinuousLinearMap.lsmul ℝ ℝ`. -/
+scoped notation3 "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂•"g:70 =>
+  stieltjesIntegral a b (lsmul ℝ ℝ) r g
+
+/-- The special case of `∫ˢ x in a..b, f x ∂[B; g]` with `f` vector-valued, `g` real-valued, and
+`B = (ContinuousLinearMap.lsmul ℝ ℝ).flip`. -/
+scoped notation3 "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂<•"g:70 =>
+  stieltjesIntegral a b (lsmul ℝ ℝ).flip r g
+
+-- The case where `f` and `g` are both real- or both complex-valued (`B = .mul ℝ E`) has no
+-- dedicated shorthand; write it with the general notation as `∫ˢ x in a..b, f x ∂[.mul ℝ E; g]`.
 
 /-! ### The Riemann integral
 -/
@@ -129,9 +143,14 @@ def HasRiemannIntegral := HasStieltjesIntegral a b (lsmul ℝ ℝ).flip f id L
 to access the Stieltjes integral API. -/
 def RiemannIntegrable := StieltjesIntegrable a b (lsmul ℝ ℝ).flip f id
 
-/-- `riemannIntegral a b f` is defined to equal `∫⟨(lsmul ℝ ℝ).flip⟩ x in a..b, f x ∂id`.
-Use `unfold riemannIntegral` or similar to access the Stieltjes integral API. -/
-noncomputable def riemannIntegral : E := ∫⟨(lsmul ℝ ℝ).flip⟩ x in a..b, f x ∂id
+/-- `riemannIntegral a b f`, with notation `∫ʳ x in a..b, f x`, is defined to equal
+`∫ˢ x in a..b, f x ∂<•id`.  Use `unfold riemannIntegral` or similar to access the Stieltjes integral
+API.  A future PR will relate `riemannIntegral` to `intervalIntegral` under suitable hypotheses on
+`f`. -/
+noncomputable def riemannIntegral : E := ∫ˢ x in a..b, f x ∂<•id
+
+@[inherit_doc riemannIntegral]
+scoped notation3 "∫ʳ "(...)" in "a".."b", "r:60:(scoped f => f) => riemannIntegral a b r
 
 end Defs
 
@@ -214,29 +233,29 @@ theorem HasStieltjesIntegral.stieltjesIntegrable
 
 /-- A chosen witness extracted from `StieltjesIntegrable`. -/
 theorem StieltjesIntegrable.hasStieltjesIntegral (h : StieltjesIntegrable a b B f g) :
-    HasStieltjesIntegral a b B f g (∫⟨B⟩ x in a..b, f x ∂g) := by
+    HasStieltjesIntegral a b B f g (∫ˢ x in a..b, f x ∂[B; g]) := by
   simp [stieltjesIntegral, h, h.choose_spec]
 
-/-- If `HasStieltjesIntegral a b B f g L`, then `∫⟨B⟩ x in a..b, f x ∂g = L`. -/
+/-- If `HasStieltjesIntegral a b B f g L`, then `∫ˢ x in a..b, f x ∂[B; g] = L`. -/
 theorem HasStieltjesIntegral.stieltjesIntegral_eq
-    (h : HasStieltjesIntegral a b B f g L) : ∫⟨B⟩ x in a..b, f x ∂g = L := by
+    (h : HasStieltjesIntegral a b B f g L) : ∫ˢ x in a..b, f x ∂[B; g] = L := by
   classical
   simp only [stieltjesIntegral, dif_pos h.stieltjesIntegrable]
   exact h.stieltjesIntegrable.choose_spec.unique h
 
 theorem StieltjesIntegrable.hasStieltjesIntegral_iff (h : StieltjesIntegrable a b B f g) (L : G) :
-    HasStieltjesIntegral a b B f g L ↔ ∫⟨B⟩ x in a..b, f x ∂g = L := by
+    HasStieltjesIntegral a b B f g L ↔ ∫ˢ x in a..b, f x ∂[B; g] = L := by
   grind [hasStieltjesIntegral, HasStieltjesIntegral.unique]
 
 @[simp]
-theorem stieltjesIntegral.integral_same : ∫⟨B⟩ x in a..a, f x ∂g = 0 :=
+theorem stieltjesIntegral.integral_same : ∫ˢ x in a..a, f x ∂[B; g] = 0 :=
   HasStieltjesIntegral.of_eq_iff_zero.mp StieltjesIntegrable.of_eq.hasStieltjesIntegral
 
 @[simp]
 theorem stieltjesIntegral.integral_undef (h : ¬StieltjesIntegrable a b B f g) :
-    ∫⟨B⟩ x in a..b, f x ∂g = 0 := by simp [stieltjesIntegral, h]
+    ∫ˢ x in a..b, f x ∂[B; g] = 0 := by simp [stieltjesIntegral, h]
 
-theorem stieltjesIntegral.integral_symm : ∫⟨B⟩ x in b..a, f x ∂g = -∫⟨B⟩ x in a..b, f x ∂g := by
+theorem stieltjesIntegral.integral_symm : ∫ˢ x in b..a, f x ∂[B; g] = -∫ˢ x in a..b, f x ∂[B; g] := by
   by_cases h_integ : StieltjesIntegrable a b B f g
   · exact (h_integ.hasStieltjesIntegral.symm.unique h_integ.symm.hasStieltjesIntegral).symm
   have h_integ_symm : ¬ StieltjesIntegrable b a B f g := by contrapose! h_integ; exact h_integ.symm
@@ -271,7 +290,7 @@ theorem stieltjesIntegrable_congr
 
 theorem stieltjesIntegral_congr
     (hf : Set.EqOn f₁ f₂ (.uIcc a b)) (hg : Set.EqOn g₁ g₂ (.uIcc a b)) :
-    ∫⟨B⟩ x in a..b, f₁ x ∂g₁ = ∫⟨B⟩ x in a..b, f₂ x ∂g₂ := by
+    ∫ˢ x in a..b, f₁ x ∂[B; g₁] = ∫ˢ x in a..b, f₂ x ∂[B; g₂] := by
   by_cases! h : StieltjesIntegrable a b B f₁ g₁
     <;> have h' := h <;> rw [stieltjesIntegrable_congr hf hg] at h'
   · apply h.hasStieltjesIntegral.unique
@@ -314,7 +333,7 @@ lemma HasRiemannIntegral.of_eq_iff_zero : HasRiemannIntegral a a f L ↔ L = 0 :
 lemma RiemannIntegrable.of_eq : RiemannIntegrable a a f := StieltjesIntegrable.of_eq
 
 @[simp]
-theorem riemannIntegral.integral_same : riemannIntegral a a f = 0 := stieltjesIntegral.integral_same
+theorem riemannIntegral.integral_same : ∫ʳ x in a..a, f x = 0 := stieltjesIntegral.integral_same
 
 theorem RiemannIntegrable.iff_integrable (hab : a < b) : RiemannIntegrable a b f ↔
     Integrable (uIoc a b) IntegrationParams.Riemann (fun x ↦ f (x 0)) BoxAdditiveMap.volume := by
@@ -328,15 +347,15 @@ theorem HasRiemannIntegral.riemannIntegrable
     (h : HasRiemannIntegral a b f L) : RiemannIntegrable a b f := ⟨L, h⟩
 
 theorem RiemannIntegrable.hasRiemannIntegral (h : RiemannIntegrable a b f) :
-    HasRiemannIntegral a b f (riemannIntegral a b f) :=
+    HasRiemannIntegral a b f (∫ʳ x in a..b, f x) :=
   StieltjesIntegrable.hasStieltjesIntegral h
 
 theorem HasRiemannIntegral.riemannIntegral_eq
-    (h : HasRiemannIntegral a b f L) : riemannIntegral a b f = L :=
+    (h : HasRiemannIntegral a b f L) : ∫ʳ x in a..b, f x = L :=
   HasStieltjesIntegral.stieltjesIntegral_eq h
 
 theorem RiemannIntegrable.hasRiemannIntegral_iff (h : RiemannIntegrable a b f) (L : E) :
-    HasRiemannIntegral a b f L ↔ riemannIntegral a b f = L :=
+    HasRiemannIntegral a b f L ↔ ∫ʳ x in a..b, f x = L :=
   StieltjesIntegrable.hasStieltjesIntegral_iff h L
 
 theorem hasRiemannIntegral_congr (hf : Set.EqOn f₁ f₂ (.uIcc a b)) :
@@ -349,9 +368,9 @@ theorem riemannIntegrable_congr (hf : Set.EqOn f₁ f₂ (.uIcc a b)) :
 
 @[simp]
 theorem riemannIntegral.integral_undef (h : ¬RiemannIntegrable a b f) :
-    riemannIntegral a b f = 0 := stieltjesIntegral.integral_undef h
+    ∫ʳ x in a..b, f x = 0 := stieltjesIntegral.integral_undef h
 
-theorem riemannIntegral.integral_symm : riemannIntegral b a f = -riemannIntegral a b f :=
+theorem riemannIntegral.integral_symm : ∫ʳ x in b..a, f x = -∫ʳ x in a..b, f x :=
   stieltjesIntegral.integral_symm
 
 end Riemann
