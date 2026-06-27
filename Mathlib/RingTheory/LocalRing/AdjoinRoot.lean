@@ -15,15 +15,17 @@ import Mathlib.RingTheory.RegularLocalRing.Defs
 import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
+
 # Results on `AdjoinRoot` and Local Rings
 
-This file establishes the necessary and sufficient conditions for the polynomial
+This file provides the necessary and sufficient conditions for the polynomial
 quotient ring $R[X]/(p)$ (i.e., `AdjoinRoot p`) to be a local ring.
 
 ## Main results
 
 * `AdjoinRoot.isLocalRing_iff_isPrimePow_normalize`: Over a field $k$, the quotient
   ring $k[X]/(f)$ is a local ring if and only if $f$ is a prime power.
+
 * `AdjoinRoot.isLocalRing_iff_of_monic`: Over a commutative ring $R$, for a monic
   polynomial $p$, $R[X]/(p)$ is a local ring if and only if $R$ is a local ring
   and the reduction of $p$ modulo the maximal ideal of $R$ is a prime power
@@ -37,7 +39,7 @@ open Polynomial IsLocalRing Ideal UniqueFactorizationMonoid
 
 namespace AdjoinRoot
 
-variable {R k : Type*} [CommRing R] [Field k] {p q : R[X]} {f : k[X]}
+variable {R k : Type*} [CommRing R] [Field k] {p : R[X]} {f : k[X]}
 
 lemma isLocalRing_of_monic_of_isLocalRing (monic : p.Monic) [IsLocalRing (AdjoinRoot p)] :
     IsLocalRing R :=
@@ -107,9 +109,11 @@ private lemma isLocalRingAux (monic : p.Monic) [IsLocalRing R]
 theorem isLocalRing_of_isPrimePow_map_residue (monic : p.Monic) [IsLocalRing R]
     (hp : IsPrimePow (p.map (residue R))) : IsLocalRing (AdjoinRoot p) := by
   have : IsLocalRing (AdjoinRoot p ⧸ Ideal.map (of p) (maximalIdeal R)) := isLocalRingAux monic hp
-  suffices IsLocalHom (Ideal.Quotient.mk (Ideal.map (of p) (maximalIdeal R))) from
-    RingHom.domain_isLocalRing (Ideal.Quotient.mk (Ideal.map (of p) (maximalIdeal R)))
-  refine Quotient.mk_isLocalHom_iff_forall_isMaximal_le.mpr fun I hI ↦ ?_
+  suffices IsLocalHom (Ideal.Quotient.mk ((maximalIdeal R).map (of p))) from
+    RingHom.domain_isLocalRing (Ideal.Quotient.mk ((maximalIdeal R).map (of p)))
+  refine isLocalHom_of_le_jacobson_bot _ ?_
+  simp_rw [jacobson_bot, Ring.jacobson_eq_sInf_isMaximal, le_sInf_iff, Set.mem_setOf]
+  intro I hI
   have comap : (I.comap (of p)).IsMaximal := isMaximal_comap_of_isIntegral_of_isMaximal'
     (of p) (fun _ ↦ (isIntegral_of_monic monic).isIntegral _) I
   rw [map_le_iff_le_comap, eq_maximalIdeal comap]
