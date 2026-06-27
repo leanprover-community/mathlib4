@@ -7,7 +7,6 @@ module
 
 public import Mathlib.NumberTheory.EulerProduct.ExpLog
 public import Mathlib.NumberTheory.LSeries.Dirichlet
-public import Mathlib.Analysis.SpecialFunctions.Log.Summable
 
 /-!
 # The Euler Product for the Riemann Zeta Function and Dirichlet L-Series
