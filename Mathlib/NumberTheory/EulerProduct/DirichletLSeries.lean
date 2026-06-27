@@ -213,8 +213,8 @@ open ArithmeticFunction Primes
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 
-/-- For `1 < s.re`, the sum over primes of `-log (1 - p ^ (-s))` — the logarithm of the Euler
-product — equals the `L`-series of `n ↦ Λ n / Real.log n`, where `Λ` is the von Mangoldt function.
+/-- For `1 < s.re`, the sum over primes of `-log (1 - χ p * p ^ (-s))` — the logarithm of the Euler
+product — equals the `L`-series of `n ↦ χ n * Λ n / Real.log n`.
 -/
 theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
     ∑' p : Primes, -log (1 - χ p * p ^ (-s)) = LSeries (fun (n : ℕ) ↦ χ n * Λ n / Real.log n) s
@@ -263,8 +263,8 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
       contrapose! hn
       simp [vonMangoldt_eq_zero_iff.mpr hn]
 
-/-- For `1 < s.re`, the Riemann zeta function is the exponential of the `L`-series of
-`n ↦ Λ n / Real.log n`, where `Λ` is the von Mangoldt function.
+/-- For `1 < s.re`, the Dirichlet L-function is the exponential of the `L`-series of
+`n ↦ χ n * Λ n / Real.log n`.
 -/
 theorem DirichletCharacter.LSeries_eq_exp_LSeries (hs : 1 < s.re) :
     exp (LSeries (fun (n : ℕ) ↦ χ n * Λ n / Real.log n) s) = L ↗χ s := by
