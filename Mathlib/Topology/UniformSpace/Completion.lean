@@ -516,8 +516,7 @@ theorem Function.continuous_completion : Continuous (completion f) :=
 @[deprecated (since := "2026-06-26")]
 alias Completion.continuous_map := Function.continuous_completion
 
-theorem Function.completion_coe (hf : UniformContinuous f) (a : α) :
-    (completion f) a = f a :=
+theorem Function.completion_coe (hf : UniformContinuous f) (a : α) : (completion f) a = f a :=
   cPkg.map_coe cPkg hf a
 
 @[deprecated (since := "2026-06-26")] alias Completion.map_coe := Function.completion_coe
@@ -539,9 +538,8 @@ theorem Function.fromCompletion_comp_completion [CompleteSpace γ] [T0Space γ]
     {f : β → γ} {g : α → β}
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
     fromCompletion f ∘ completion g = fromCompletion (f ∘ g) :=
-  Completion.ext (Function.continuous_fromCompletion.comp Function.continuous_completion)
-      Function.continuous_fromCompletion <| by
-    simp [hf, hg, hf.comp hg, Function.completion_coe, Function.fromCompletion_coe]
+  Completion.ext (continuous_fromCompletion.comp continuous_completion) continuous_fromCompletion
+    <| by simp [hf, hg, hf.comp hg, completion_coe, fromCompletion_coe]
 
 @[deprecated (since := "2026-06-26")]
 alias Completion.extension_map := Function.fromCompletion_comp_completion
@@ -580,22 +578,21 @@ namespace Completion
 completion of its separation quotient -/
 section SeparationQuotientCompletion
 
-open SeparationQuotient in
+open SeparationQuotient Function in
 /-- The isomorphism between the completion of a uniform space and the completion of its separation
 quotient. -/
 def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     Completion (SeparationQuotient α) ≃ Completion α := by
-  refine ⟨Function.fromCompletion (lift' ((↑) : α → Completion α)),
-    Function.completion SeparationQuotient.mk, fun a ↦ ?_, fun a ↦ ?_⟩
-  · refine induction_on a (isClosed_eq (Function.continuous_completion.comp
-      Function.continuous_fromCompletion) continuous_id) ?_
+  refine ⟨fromCompletion (lift' ((↑) : α → Completion α)),
+    completion SeparationQuotient.mk, fun a ↦ ?_, fun a ↦ ?_⟩
+  · refine induction_on a (isClosed_eq (continuous_completion.comp
+      continuous_fromCompletion) continuous_id) ?_
     refine SeparationQuotient.surjective_mk.forall.2 fun a ↦ ?_
-    rw [Function.fromCompletion_coe (uniformContinuous_lift' _), lift'_mk (uniformContinuous_coe α),
-      Function.completion_coe uniformContinuous_mk]
+    rw [fromCompletion_coe (uniformContinuous_lift' _), lift'_mk (uniformContinuous_coe α),
+      completion_coe uniformContinuous_mk]
   · refine induction_on a
-      (isClosed_eq (Function.continuous_fromCompletion.comp Function.continuous_completion)
-        continuous_id) fun a ↦ ?_
-    rw [Function.completion_coe uniformContinuous_mk, Function.fromCompletion_coe
+      (isClosed_eq (continuous_fromCompletion.comp continuous_completion) continuous_id) fun a ↦ ?_
+    rw [completion_coe uniformContinuous_mk, fromCompletion_coe
       (uniformContinuous_lift' _), lift'_mk (uniformContinuous_coe _)]
 
 theorem uniformContinuous_completionSeparationQuotientEquiv :

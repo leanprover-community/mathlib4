@@ -82,9 +82,11 @@ section IsUniformAddGroup
 
 variable [UniformSpace α] [AddGroup α] [IsUniformAddGroup α]
 
+open Function
+
 @[norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : Completion α) = -a :=
-  (Function.completion_coe uniformContinuous_neg a).symm
+  (completion_coe uniformContinuous_neg a).symm
 
 @[norm_cast]
 theorem coe_sub (a b : α) : ((a - b : α) : Completion α) = a - b :=
@@ -111,12 +113,11 @@ instance : AddMonoid (Completion α) where
       fun a b c ↦
       show (a : Completion α) + b + c = a + (b + c) by repeat' rw_mod_cast [add_assoc]
   nsmul_zero a :=
-    Completion.induction_on a (isClosed_eq Function.continuous_completion continuous_const) fun a ↦
+    Completion.induction_on a (isClosed_eq continuous_completion continuous_const) fun a ↦
       show 0 • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
   nsmul_succ n a :=
-    Completion.induction_on a
-      (isClosed_eq Function.continuous_completion <| continuous_map₂ Function.continuous_completion
-        continuous_id) fun a ↦
+    Completion.induction_on a (isClosed_eq continuous_completion <| continuous_map₂
+        continuous_completion continuous_id) fun a ↦
       show (n + 1) • (a : Completion α) = n • (a : Completion α) + (a : Completion α) by
         rw [← coe_smul, succ_nsmul, coe_add, coe_smul]
 
@@ -124,22 +125,21 @@ instance : SubNegMonoid (Completion α) where
   sub_eq_add_neg a b :=
     Completion.induction_on₂ a b
       (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
-        (continuous_map₂ continuous_fst (Function.continuous_completion.comp continuous_snd)))
+        (continuous_map₂ continuous_fst (continuous_completion.comp continuous_snd)))
       fun a b ↦ mod_cast congr_arg ((↑) : α → Completion α) (sub_eq_add_neg a b)
   zsmul_zero' a :=
-    Completion.induction_on a (isClosed_eq Function.continuous_completion continuous_const) fun a ↦
+    Completion.induction_on a (isClosed_eq continuous_completion continuous_const) fun a ↦
       show (0 : ℤ) • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
   zsmul_succ' n a :=
     Completion.induction_on a
-      (isClosed_eq Function.continuous_completion <| continuous_map₂
-          Function.continuous_completion continuous_id) fun a ↦
+      (isClosed_eq continuous_completion <| continuous_map₂
+          continuous_completion continuous_id) fun a ↦
         show (n.succ : ℤ) • (a : Completion α) = _ by
           rw [← coe_smul, show (n.succ : ℤ) • a = (n : ℤ) • a + a from
             SubNegMonoid.zsmul_succ' n a, coe_add, coe_smul]
   zsmul_neg' n a :=
     Completion.induction_on a
-      (isClosed_eq Function.continuous_completion <| Function.continuous_completion.comp
-          Function.continuous_completion) fun a ↦
+      (isClosed_eq continuous_completion (continuous_completion.comp continuous_completion)) fun a ↦
         show (Int.negSucc n) • (a : Completion α) = _ by
           rw [← coe_smul, show (Int.negSucc n) • a = -((n.succ : ℤ) • a) from
             SubNegMonoid.zsmul_neg' n a, coe_neg, coe_smul]
@@ -147,7 +147,7 @@ instance : SubNegMonoid (Completion α) where
 instance addGroup : AddGroup (Completion α) where
   neg_add_cancel a :=
     Completion.induction_on a
-      (isClosed_eq (continuous_map₂ Function.continuous_completion continuous_id) continuous_const)
+      (isClosed_eq (continuous_map₂ continuous_completion continuous_id) continuous_const)
       fun a ↦
       show -(a : Completion α) + a = 0 by
         rw_mod_cast [neg_add_cancel]
@@ -222,11 +222,7 @@ def AddMonoidHom.fromCompletion [CompleteSpace β] [T0Space β]
   { toFun := Function.fromCompletion f
     map_zero' := by rw [← coe_zero, Function.fromCompletion_coe hf, f.map_zero]
     map_add' a b :=
-      Completion.induction_on₂ a b
-        (isClosed_eq (by fun_prop) (by fun_prop))
-        fun a b ↦
-        show Function.fromCompletion f _ = Function.fromCompletion f _ +
-          Function.fromCompletion f _ by
+      Completion.induction_on₂ a b (isClosed_eq (by fun_prop) (by fun_prop)) fun a b ↦ by
         rw_mod_cast [Function.fromCompletion_coe hf, Function.fromCompletion_coe hf,
           Function.fromCompletion_coe hf, f.map_add] }
 

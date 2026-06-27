@@ -106,26 +106,22 @@ lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
 instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
   AbsoluteValue.Completion.locallyCompactSpace v.isometry_embedding
 
-open RingHom in
 /-- The embedding associated to an infinite place extended to an embedding `v.Completion →+* ℂ`. -/
-def extensionEmbedding : v.Completion →+* ℂ := v.isometry_embedding.fromCompletion
+def extensionEmbedding : v.Completion →+* ℂ := v.isometry_embedding.ringHomFromCompletion
 
-open RingHom in
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
-  (v.isometry_embedding_of_isReal hv).fromCompletion
+  (v.isometry_embedding_of_isReal hv).ringHomFromCompletion
 
-open RingHom in
 @[simp]
 theorem extensionEmbedding_coe (x : WithAbs v.1) :
     extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) :=
-  v.isometry_embedding.fromCompletion_coe _
+  v.isometry_embedding.ringHomFromCompletion_coe _
 
-open RingHom in
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
-  (v.isometry_embedding_of_isReal hv).fromCompletion_coe _
+  (v.isometry_embedding_of_isReal hv).ringHomFromCompletion_coe _
 
 open UniformSpace.Function in
 @[simp]
@@ -135,23 +131,19 @@ theorem extensionEmbeddingOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v) (
   exact isClosed_eq (Continuous.comp' (by fun_prop) continuous_fromCompletion)
     continuous_fromCompletion
 
-open Function in
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
   v.isometry_embedding.fromCompletion
 
-open Function in
 /-- The embedding `v.Completion →+* ℝ` at a real infinite place is an isometry. -/
 theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
   (v.isometry_embedding_of_isReal hv).fromCompletion
 
-open Function in
 /-- The embedding `v.Completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
   v.isometry_embedding.fromCompletion.isClosedEmbedding.isClosed_range
 
-open Function in
 /-- The embedding `v.Completion →+* ℝ` associated to a real infinite place has closed image
 inside `ℝ`. -/
 theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :

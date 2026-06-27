@@ -203,8 +203,7 @@ theorem NormedAddGroupHom.fromCompletion_def (f : NormedAddGroupHom G H) (v : G)
 
 @[simp]
 theorem NormedAddGroupHom.fromCompletion_coe (f : NormedAddGroupHom G H) (v : G) :
-    f.fromCompletion v = f v :=
-  AddMonoidHom.fromCompletion_coe _ f.continuous _
+    f.fromCompletion v = f v := AddMonoidHom.fromCompletion_coe _ f.continuous _
 
 @[deprecated (since := "2026-06-26")] alias NormedAddGroupHom.extension_coe :=
   NormedAddGroupHom.fromCompletion_coe
