@@ -315,6 +315,10 @@ end OfKernel
 
 namespace Sum
 
+/--
+This namespace implements the sum of two RKHS which are both embedded into `X → V`.
+-/
+
 variable (H₁ : Type*) [NormedAddCommGroup H₁] [InnerProductSpace 𝕜 H₁] [CompleteSpace H₁]
 variable [RKHS 𝕜 H₁ X V]
 
@@ -335,9 +339,10 @@ lemma generator_apply (f : H) (g : H₁) (x : X) :
 instance : IsClosed ((generator H H₁).ker : Set (WithLp 2 (H × H₁))) :=
   (generator H H₁).isClosed_ker
 
-abbrev Sum' := WithLp 2 (H × H₁) ⧸ (generator H H₁).ker
+abbrev sumSpace := WithLp 2 (H × H₁) ⧸ (generator H H₁).ker
+scoped infix:50 " + " => sumSpace
 
-instance : RKHS 𝕜 (Sum' H H₁) X V where
+instance : RKHS 𝕜 (H + H₁) X V where
   coeCLM := (generator H H₁).ker.liftQL (generator H H₁) (le_refl _)
   coeCLM_injective := fun f g hfg => by
     have hinj : Function.Injective
@@ -350,7 +355,7 @@ variable (V) in
 omit [CompleteSpace V] in
 /-- The evaluation of a quotient element is `generator` on any representative. -/
 lemma coe_mk (w : WithLp 2 (H × H₁)) (x : X) :
-    (Submodule.Quotient.mk w : Sum' H H₁) x = generator H H₁ w x := by
+    (Submodule.Quotient.mk w : H + H₁) x = generator H H₁ w x := by
   congr
 
 lemma kerFun_mem_orthogonal (x : X) (v : V) :
@@ -360,7 +365,7 @@ lemma kerFun_mem_orthogonal (x : X) (v : V) :
   simp_all [generator, ← inner_add_left]
 
 lemma kerFun_eq_mk (x : X) (v : V) :
-    kerFun (Sum' H H₁) x v = Submodule.Quotient.mk (WithLp.toLp 2 (kerFun H x v, kerFun H₁ x v)) := by
+    kerFun (H + H₁) x v = Submodule.Quotient.mk (WithLp.toLp 2 (kerFun H x v, kerFun H₁ x v)) := by
   rw [ext_iff_inner_left (𝕜 := 𝕜)]
   intro f
   rw [inner_kerFun]
@@ -372,58 +377,25 @@ lemma kerFun_eq_mk (x : X) (v : V) :
       starProjection_orthogonal_val, Quotient.mk_sub]
     rw [starProjection_apply ((generator H H₁)).ker, eq_sub_iff_add_eq, add_eq_left]
     simp
-  rw [hz,
-    Quotient.inner_mk_mk ((generator H H₁)).ker b _ hb (kerFun_mem_orthogonal H H₁ x v)]
+  rw [hz, Quotient.inner_mk_mk ((generator H H₁)).ker b _ hb (kerFun_mem_orthogonal H H₁ x v)]
   simp only [WithLp.prod_inner_apply, WithLp.ofLp_fst, inner_kerFun, WithLp.ofLp_snd]
   rw [← inner_add_left]
   rfl
 
-theorem kernel_sum_eq_sum_of_kernel : kernel (Sum' H H₁) = kernel H + kernel H₁ := by
+theorem kernel_sum_eq_sum_of_kernel : kernel (H + H₁) = kernel H + kernel H₁ := by
   ext
   simp [← kerFun_apply, kerFun_eq_mk H H₁ _ _]
   rfl
 
 /-- Map of an function `f : Sum' H H₁` to the unique pair in `H × H₁` that achieves the norm. -/
-def project : Sum' H H₁ →L[𝕜] H × H₁ :=
+def project : H + H₁ →L[𝕜] H × H₁ :=
   (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁) ∘L ((generator H H₁).kerᗮ).subtypeL ∘L
     (generator H H₁).ker.quotientEquivOrthogonal.toContinuousLinearEquiv
 
 theorem project_kerFun (x : X) (v : V) :
-    project H H₁ (kerFun (Sum' H H₁) x v) = ⟨kerFun H x v, kerFun H₁ x v⟩ := by
+    project H H₁ (kerFun (H + H₁) x v) = ⟨kerFun H x v, kerFun H₁ x v⟩ := by
   simp [project, kerFun_eq_mk,
     (generator H H₁).ker.quotientEquivOrthogonal_mk _ (kerFun_mem_orthogonal H H₁ x v)]
-
-/-- Embedding of `H` into the RKHS `Sum' H H₁` -/
-def coeL : H →L[𝕜] (Sum' H H₁) := (generator H H₁).ker.mkQL
-  ∘L (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).symm.toContinuousLinearMap
-  ∘L ContinuousLinearMap.prod (ContinuousLinearMap.id 𝕜 H) 0
-
-/-- Embedding of `H₁` into the RKHS `Sum' H H₁` -/
-def coeR : H₁ →L[𝕜] (Sum' H H₁) := (generator H H₁).ker.mkQL
-  ∘L (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).symm.toContinuousLinearMap
-  ∘L ContinuousLinearMap.prod 0 (ContinuousLinearMap.id 𝕜 H₁)
-
-variable (𝕜) {H} in
-omit [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
-@[simp]
-lemma coeL_apply (f : H) : (coeL H H₁) f = (generator H H₁).ker.mkQ (WithLp.toLp 2 (f, 0)) := by
-  rfl
-
-variable (𝕜) {H} in
-omit [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
-@[simp]
-lemma coeR_apply (f : H₁) : (coeR H H₁) f = (generator H H₁).ker.mkQ (WithLp.toLp 2 (0, f)) := by
-  rfl
-
-variable (𝕜) {H} in
-omit [CompleteSpace V] in
-lemma coeL_eval (f : H) (x : X) : (coeL H H₁) f x = f x := by
-  simp [coeL, coe_mk]
-
-variable (𝕜) {H₁} in
-omit [CompleteSpace V] in
-lemma coeR_eval (f : H₁) (x : X) : (coeR H H₁) f x = f x := by
-  simp [coeR, coe_mk]
 
 end Sum
 
