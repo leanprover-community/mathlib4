@@ -52,6 +52,10 @@ variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [AddCommMonoid E] [PartialOr
 /-- A set is absolutely convex if it is balanced and convex. -/
 def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex 𝕜 s
 
+theorem AbsConvex.balanced {s : Set E} (hs : AbsConvex 𝕜 s) : Balanced 𝕜 s := hs.1
+
+theorem AbsConvex.convex {s : Set E} (hs : AbsConvex 𝕜 s) : Convex 𝕜 s := hs.2
+
 variable {𝕜}
 
 theorem AbsConvex.empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, convex_empty⟩
