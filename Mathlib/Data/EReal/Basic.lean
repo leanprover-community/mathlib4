@@ -805,7 +805,6 @@ theorem natCast_lt_iff {m n : ℕ} : (m : EReal) < (n : EReal) ↔ m < n := by
 @[simp, norm_cast]
 theorem natCast_mul (m n : ℕ) :
     (m * n : ℕ) = (m : EReal) * (n : EReal) := by
-
   rw [← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_coe_eq_natCast, Nat.cast_mul, EReal.coe_mul]
 
 @[simp] lemma ennrealToEReal_le_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) ≤ n ↔ r ≤ n := by
