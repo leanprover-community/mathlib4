@@ -850,8 +850,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity Real.toEReal _]
-meta def evalRealToEReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalRealToEReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(EReal), ~q(Real.toEReal $a) =>
     assertInstancesCommute
@@ -865,8 +865,8 @@ meta def evalRealToEReal : PositivityExt where eval {u α} _zα pα? e := do
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity ENNReal.toEReal _]
-meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
     assertInstancesCommute
@@ -883,8 +883,8 @@ We prove that `EReal.toReal x` is nonnegative whenever `x` is nonnegative.
 Since `EReal.toReal ⊤ = 0`, we cannot prove a stronger statement,
 at least without relying on a tactic like `finiteness`. -/
 @[positivity EReal.toReal _]
-meta def evalERealToReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalERealToReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(Real), ~q(EReal.toReal $a) =>
     assertInstancesCommute
@@ -900,8 +900,8 @@ and it is nonnegative otherwise.
 We cannot deduce any corollaries from `x ≠ 0`, since `EReal.toENNReal x = 0` for `x < 0`.
 -/
 @[positivity EReal.toENNReal _]
-meta def evalERealToENNReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalERealToENNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
     assertInstancesCommute
