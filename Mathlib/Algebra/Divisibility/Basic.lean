@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Tactic.Common
 public import Batteries.Tactic.SeqFocus
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Divisibility
@@ -148,6 +149,10 @@ theorem IsRightRegular.rightDvd_cancel_right (h : IsRightRegular a) :
   ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd
     ⟨d, h (eq.trans <| (mul_assoc ..).symm)⟩, mul_rightDvd_mul_right a⟩
 
+theorem RightDvd.op_iff : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
+  ⟨fun ⟨c, hc⟩ => ⟨MulOpposite.op c, by simp [hc]⟩,
+   fun ⟨c, hc⟩ => ⟨MulOpposite.unop c, by simpa using congrArg MulOpposite.unop hc⟩⟩
+
 end Semigroup
 
 section Monoid
@@ -187,8 +192,9 @@ protected theorem RightDvd.refl (a : α) : a ∣ᵣ a :=
 
 protected theorem RightDvd.rfl {a : α} : a ∣ᵣ a := .refl _
 
-instance : @Std.Refl α RightDvd :=
-  ⟨RightDvd.refl⟩
+instance : IsPreorder α RightDvd where
+  refl := .refl
+  trans _ _ _ := .trans
 
 theorem RightDvd.of_eq (h : a = b) : a ∣ᵣ b := by rw [h]
 
