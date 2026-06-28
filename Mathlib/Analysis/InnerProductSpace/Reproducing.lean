@@ -89,11 +89,6 @@ lemma coe_neg (f : H) : ⇑(-f) = -f := (coeCLM 𝕜).map_neg (M₂ := X → V) 
 @[simp]
 lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_smul ..
 
-variable (H) in
-/-- Point evaluation `fun f ↦ f x` formed using the projection `(X→V)→L[𝕜] V`,`(x,f x)↦ f x` after
-the coercion `H→L[𝕜] (X→V)`. -/
-def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
-
 @[simp]
 lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := by
   simp_rw [← coeCLM_apply]
@@ -315,9 +310,13 @@ end OfKernel
 
 namespace Sum
 
-/--
+/-!
 This namespace implements the sum of two RKHS which are both embedded into `X → V`.
+
+For two RKHS `H` and `H₁`, the sum `H + H₁` is implemented as a quotient of `WithLp 2 (H × H₁)`
+instead a submodule of `X → V` with the norm induced by the quotient to avoid instance clashed.
 -/
+
 
 variable (H₁ : Type*) [NormedAddCommGroup H₁] [InnerProductSpace 𝕜 H₁] [CompleteSpace H₁]
 variable [RKHS 𝕜 H₁ X V]
