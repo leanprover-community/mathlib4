@@ -46,7 +46,7 @@ variable {G : Type*} [Group G] (H : Subgroup G)
 /-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
-  normalizer_eq_top_iff.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
+  normalizer_eq_top_iff.mp (hmax.isMax_of_gt (hnc H hmax.lt_top)).eq_top
 
 @[simp]
 theorem isCoatom_comap {H : Type*} [Group H] (f : G ≃* H) {K : Subgroup H} :
@@ -61,13 +61,14 @@ theorem isCoatom_map (f : G ≃* H) {K : Subgroup G} :
 lemma isCoatom_comap_of_surjective
     {H : Type*} [Group H] {φ : G →* H} (hφ : Function.Surjective φ)
     {M : Subgroup H} (hM : IsCoatom M) : IsCoatom (M.comap φ) := by
-  refine And.imp (fun hM ↦ ?_) (fun hM ↦ ?_) hM
-  · rwa [← (comap_injective hφ).ne_iff, comap_top] at hM
-  · intro K hK
-    specialize hM (K.map φ)
-    rw [← comap_lt_comap_of_surjective hφ, ← (comap_injective hφ).eq_iff] at hM
-    rw [comap_map_eq_self ((M.ker_le_comap φ).trans hK.le), comap_top] at hM
-    exact hM hK
+  rw [← covBy_top_iff] at hM ⊢
+  refine ⟨?_, fun c hc hct => ?_⟩
+  · rw [← comap_top φ, comap_lt_comap_of_surjective hφ]
+    exact hM.lt
+  · rw [← comap_map_eq_self ((M.ker_le_comap φ).trans hc.le), ← comap_top φ,
+      comap_lt_comap_of_surjective hφ] at hct
+    rw [← comap_map_eq_self ((M.ker_le_comap φ).trans hc.le), comap_lt_comap_of_surjective hφ] at hc
+    exact hM.2 hc hct
 
 end Subgroup
 end Coatom

@@ -557,8 +557,8 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
   · left; ext; simp only [Set.Iic.coe_top]
   right
   have ⟨a, ba, h⟩ := zorn_le_nonempty₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
-  · refine ⟨⟨a, le_of_lt h.prop⟩, ⟨ne_of_lt h.prop, fun c hck => by_contradiction fun c₀ => ?_⟩, ba⟩
-    cases h.eq_of_le (y := c.1) (lt_of_le_of_ne c.2 fun con ↦ c₀ (Subtype.ext con)) hck.le
+  · refine ⟨⟨a, le_of_lt h.prop⟩, covBy_top_iff.1 ⟨h.prop, fun c hck c₀ => ?_⟩, ba⟩
+    cases h.eq_of_le (y := c.1) (lt_of_le_of_ne c.2 fun con ↦ c₀.ne (Subtype.ext con)) hck.le
     exact lt_irrefl _ hck
   · intro S SC cC I _
     by_cases hS : S.Nonempty
@@ -630,7 +630,7 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
       obtain ⟨c, hc⟩ := exists_isCompl (⟨sSup { a : α | IsAtom a ∧ a ≤ b }, hle⟩ : Set.Iic b)
       obtain rfl | ⟨a, ha, hac⟩ := eq_bot_or_exists_atom_le c
       · exact ne_of_lt con (Subtype.ext_iff.1 (eq_top_of_isCompl_bot hc))
-      · apply ha.1
+      · apply ha.ne_bot
         rw [eq_bot_iff]
         apply le_trans (le_inf _ hac) hc.disjoint.le_bot
         rw [← Subtype.coe_le_coe, Subtype.coe_mk]
@@ -669,7 +669,7 @@ theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
   rw [← h, sSup_le_iff]
   intro a ha
   rw [← inf_eq_left]
-  refine (ha.2.le_iff.mp inf_le_left).resolve_left fun con => ha.2.1 ?_
+  refine (ha.2.le_iff.mp inf_le_left).resolve_left fun con => ha.2.ne_bot ?_
   rw [← con, eq_comm, inf_eq_left]
   refine (le_sSup ?_).trans le_sup_right
   rw [← disjoint_iff] at con

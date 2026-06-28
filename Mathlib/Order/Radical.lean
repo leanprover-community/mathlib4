@@ -21,7 +21,7 @@ The infimum of all coatoms.
 This notion specializes, e.g. in the subgroup lattice of a group to the Frattini subgroup,
 or in the lattices of ideals in a ring `R` to the Jacobson ideal.
 -/
-def Order.radical (α : Type*) [Preorder α] [OrderTop α] [InfSet α] : α :=
+def Order.radical (α : Type*) [CompleteLattice α] : α :=
   ⨅ a ∈ {H | IsCoatom H}, a
 
 variable {α : Type*} [CompleteLattice α]
@@ -47,4 +47,4 @@ theorem Order.radical_nongenerating [IsCoatomic α] {a : α} (h : a ⊔ radical 
     have q : a ⊔ radical α ≤ m := sup_le le (radical_le_coatom c)
     -- Now note that `a ⊔ radical α ≤ m` since both `a ≤ m` and `radical α ≤ m`.
     rw [h, top_le_iff] at q
-    simpa using c.1 q
+    simpa using c.ne_top q

@@ -29,7 +29,7 @@ theorem IsCoatomic.of_isChain_bounded {α : Type*} [PartialOrder α] [OrderTop �
   refine ⟨fun x => le_top.eq_or_lt.imp_right fun hx => ?_⟩
   have := zorn_le_nonempty₀ (Ico x ⊤) (fun c hxc hc y hy => ?_) x (left_mem_Ico.2 hx)
   · obtain ⟨y, hxy, hmax⟩ := this
-    refine ⟨y, ⟨hmax.prop.2.ne, fun z hyz ↦ le_top.eq_or_lt.resolve_right fun hz => ?_⟩, hxy⟩
+    refine ⟨y, (covBy_top_iff.1 ⟨hmax.prop.2, fun z hyz hz ↦ ?_⟩), hxy⟩
     exact hyz.ne <| hmax.eq_of_le ⟨hxy.trans hyz.le, hz⟩ hyz.le
   rcases h c hc ⟨y, hy⟩ fun h => (hxc h).2.ne rfl with ⟨z, hz, hcz⟩
   exact ⟨z, ⟨le_trans (hxc hy).1 (hcz hy), hz.lt_top⟩, hcz⟩

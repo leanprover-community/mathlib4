@@ -80,7 +80,7 @@ instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L :
   · exact LieModule.traceForm_lieInvariant _ _ _
   · exact (LieModule.traceForm_isSymm K L L).isRefl
   · intro I h₁ h₂
-    exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
+    exact h₁.ne_bot <| IsKilling.ideal_eq_bot_of_isLieAbelian I
 
 /-- The converse of this is true in characteristic zero; it is
 `LieAlgebra.HasTrivialRadical.instIsKilling`. There are counterexamples

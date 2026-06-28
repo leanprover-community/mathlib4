@@ -47,24 +47,25 @@ theorem of_unique_max_ideal (h : ∃! I : Ideal R, I.IsMaximal) : IsLocalRing R 
   @of_nonunits_add _ _
     (nontrivial_of_ne (0 : R) 1 <|
       let ⟨I, Imax, _⟩ := h
-      fun H : 0 = 1 => Imax.1.1 <| I.eq_top_iff_one.2 <| H ▸ I.zero_mem)
+      fun H : 0 = 1 => Imax.1.ne_top <| I.eq_top_iff_one.2 <| H ▸ I.zero_mem)
     fun x y hx hy H =>
     let ⟨I, Imax, Iuniq⟩ := h
     let ⟨Ix, Ixmax, Hx⟩ := exists_max_ideal_of_mem_nonunits hx
     let ⟨Iy, Iymax, Hy⟩ := exists_max_ideal_of_mem_nonunits hy
     have xmemI : x ∈ I := Iuniq Ix Ixmax ▸ Hx
     have ymemI : y ∈ I := Iuniq Iy Iymax ▸ Hy
-    Imax.1.1 <| I.eq_top_of_isUnit_mem (I.add_mem xmemI ymemI) H
+    Imax.1.ne_top <| I.eq_top_of_isUnit_mem (I.add_mem xmemI ymemI) H
 
 theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPrime P) : IsLocalRing R :=
   of_unique_max_ideal
     (by
       rcases h with ⟨P, ⟨hPnonzero, hPnot_top, _⟩, hPunique⟩
-      refine ⟨P, ⟨⟨hPnot_top, ?_⟩⟩, fun M hM => hPunique _ ⟨?_, Ideal.IsMaximal.isPrime hM⟩⟩
-      · refine Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM ?_
+      refine ⟨P, ⟨covBy_top_iff.1 ⟨lt_top_iff_ne_top.2 hPnot_top, fun c hcP hct => ?_⟩⟩,
+        fun M hM => hPunique _ ⟨?_, Ideal.IsMaximal.isPrime hM⟩⟩
+      · refine hct.ne <| Ideal.maximal_of_no_maximal (fun M hPM hM => ne_of_lt hPM ?_) c hcP
         exact (hPunique _ ⟨ne_bot_of_gt hPM, Ideal.IsMaximal.isPrime hM⟩).symm
       · rintro rfl
-        exact hPnot_top (hM.1.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))
+        exact hPnot_top (hM.1.isMax_of_gt (bot_lt_iff_ne_bot.2 hPnonzero)).eq_top)
 
 variable [IsLocalRing R]
 

@@ -53,7 +53,7 @@ theorem isMaximal_def {I : Ideal α} : I.IsMaximal ↔ IsCoatom I :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
 theorem IsMaximal.ne_top {I : Ideal α} (h : I.IsMaximal) : I ≠ ⊤ :=
-  (isMaximal_def.1 h).1
+  (isMaximal_def.1 h).ne_top
 
 theorem IsMaximal.lt_top {I : Ideal α} (h : I.IsMaximal) : I < ⊤ :=
   h.ne_top.lt_top
@@ -63,7 +63,7 @@ theorem isMaximal_iff {I : Ideal α} :
   simp_rw [isMaximal_def, SetLike.isCoatom_iff, Ideal.ne_top_iff_one, ← Ideal.eq_top_iff_one]
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
-  eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
+  ((hI.out.ne_iff_eq_top IJ).not_right.2 hJ).symm
 
 theorem IsMaximal.eq_iff_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) : I = J ↔ I ≤ J :=
   ⟨by aesop, Ideal.IsMaximal.eq_of_le hI hJ⟩
@@ -95,8 +95,8 @@ theorem ne_top_iff_exists_maximal {I : Ideal α} : I ≠ ⊤ ↔ ∃ M : Ideal �
   exact IsMaximal.ne_top hMmax
 
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
-  rcases @exists_maximal α _ _ with ⟨M, hM, _⟩
-  exact nontrivial_of_ne M ⊤ hM
+  rcases @exists_maximal α _ _ with ⟨M, hM⟩
+  exact nontrivial_of_ne M ⊤ hM.ne_top
 
 /-- If P is not properly contained in any maximal ideal then it is not properly contained
   in any proper ideal -/
@@ -149,7 +149,7 @@ theorem span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set 
   simp [isPrime_iff, Prime, span_singleton_eq_top, hp, mem_span_singleton]
 
 theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
-  ⟨H.1.1, @fun x y hxy =>
+  ⟨H.ne_top, @fun x y hxy =>
     or_iff_not_imp_left.2 fun hx => by
       let J : Ideal α := Submodule.span α (insert x ↑I)
       have IJ : I ≤ J := Set.Subset.trans (subset_insert _ _) subset_span
@@ -169,7 +169,7 @@ instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMax
 theorem exists_disjoint_powers_of_span_eq_top (s : Set α) (hs : span s = ⊤) (I : Ideal α)
     (hI : I ≠ ⊤) : ∃ r ∈ s, Disjoint (I : Set α) (Submonoid.powers r) := by
   have ⟨M, hM, le⟩ := exists_le_maximal I hI
-  have := hM.1.1
+  have := hM.ne_top
   rw [Ne, eq_top_iff, ← hs, span_le, Set.not_subset] at this
   have ⟨a, has, haM⟩ := this
   exact ⟨a, has, Set.disjoint_left.mpr fun x hx ⟨n, hn⟩ ↦
@@ -255,9 +255,8 @@ variable {K : Type u} [DivisionSemiring K] (I : Ideal K)
 
 namespace Ideal
 
-theorem bot_isMaximal : IsMaximal (⊥ : Ideal K) :=
-  ⟨⟨fun h => absurd ((eq_top_iff_one (⊤ : Ideal K)).mp rfl) (by rw [← h]; simp), fun I hI =>
-      or_iff_not_imp_left.mp (eq_bot_or_top I) (ne_of_gt hI)⟩⟩
+theorem bot_isMaximal : IsMaximal (⊥ : Ideal K) where
+  out := covBy_top_iff.1 ⟨bot_lt_top, fun c hb ht => c.eq_bot_or_top.elim hb.ne' ht.ne⟩
 
 end Ideal
 

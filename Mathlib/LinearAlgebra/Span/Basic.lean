@@ -556,18 +556,17 @@ theorem comap_map_sup_of_comap_le {f : M →ₛₗ[τ₁₂] M₂} {p : Submodul
 
 theorem isCoatom_comap_or_eq_top (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R₂ M₂} (hp : IsCoatom p) :
     IsCoatom (comap f p) ∨ comap f p = ⊤ :=
-  or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
-    rw [← comap_map_sup_of_comap_le lt.le, hp.2 (map f q ⊔ p), comap_top]
+  or_iff_not_imp_right.mpr fun h ↦ covBy_top_iff.1 ⟨lt_top_iff_ne_top.2 h, fun q lt ↦ by
+    rw [lt_top_iff_ne_top, not_ne_iff, ← comap_map_sup_of_comap_le lt.le, ← comap_top f]
+    refine congrArg (comap f) (hp.isMax_of_gt ?_).eq_top
     simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_ge⟩
 
 theorem isCoatom_comap_iff {f : M →ₛₗ[τ₁₂] M₂} (hf : Surjective f) {p : Submodule R₂ M₂} :
-    IsCoatom (comap f p) ↔ IsCoatom p := by
-  have := comap_injective_of_surjective hf
-  rw [IsCoatom, IsCoatom, ← comap_top f, this.ne_iff]
-  refine and_congr_right fun _ ↦
-    ⟨fun h m hm ↦ this (h _ <| comap_strictMono_of_surjective hf hm), fun h m hm ↦ ?_⟩
-  rw [← h _ (lt_map_of_comap_lt_of_surjective hf hm),
-    comap_map_eq_self ((comap_mono bot_le).trans hm.le)]
+    IsCoatom (comap f p) ↔ IsCoatom p :=
+  ⟨fun h => ((gc_map_comap f).toGaloisInsertion
+    (fun p => (map_comap_eq_of_surjective hf p).ge)).isCoatom_of_image h,
+    fun h => (isCoatom_comap_or_eq_top f h).resolve_right
+      (((comap_lt_comap_iff_of_surjective hf).2 h.lt_top).trans_eq (comap_top f)).ne⟩
 
 theorem isCoatom_map_of_ker_le {f : M →ₛₗ[τ₁₂] M₂} (hf : Surjective f) {p : Submodule R M}
     (le : LinearMap.ker f ≤ p) (hp : IsCoatom p) : IsCoatom (map f p) :=

@@ -45,22 +45,16 @@ variable {M : Type*} [CommMonoidWithZero M] [IsCancelMulZero M]
 
 theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔ Irreducible p :=
   ⟨fun hp =>
-    ⟨by simpa only [Associates.isUnit_iff_eq_one] using! hp.1, fun a b h =>
+    ⟨by simpa only [Associates.isUnit_iff_eq_one] using! hp.ne_bot, fun a b h =>
       (hp.le_iff.mp ⟨_, h⟩).casesOn (fun ha => Or.inl (a.isUnit_iff_eq_one.mpr ha)) fun ha =>
         Or.inr
           (show IsUnit b by
             rw [ha] at h
             apply isUnit_of_associated_mul (show Associated (p * b) p by conv_rhs => rw [h]) h₁)⟩,
     fun hp =>
-    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using! hp.1,
-      fun b ⟨⟨a, hab⟩, hb⟩ =>
-      (hp.isUnit_or_isUnit hab).casesOn
-        (fun hb => show b = ⊥ by rwa [Associates.isUnit_iff_eq_one, ← Associates.bot_eq_one] at hb)
-        fun ha =>
-        absurd
-          (show p ∣ b from
-            ⟨(ha.unit⁻¹ : Units _), by rw [hab, mul_assoc, IsUnit.mul_val_inv ha, mul_one]⟩)
-          hb⟩⟩
+      bot_covBy_iff.1 ⟨bot_lt_iff_ne_bot.2 (by simp [bot_eq_one, hp.ne_one]), fun c hcb hcp =>
+        (hp.dvd_iff.1 hcp.le).elim (fun hc => hcb.ne' (isUnit_iff_eq_bot.1 hc))
+          (fun hc => hcp.not_ge hc.dvd)⟩⟩
 
 open UniqueFactorizationMonoid Irreducible Associates
 
@@ -100,11 +94,12 @@ theorem second_of_chain_is_irreducible {q : Associates M} {n : ℕ} (hn : n ≠ 
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i)
     (hq : q ≠ 0) : Irreducible (c 1) := by
   rcases n with - | n; · contradiction
-  refine (Associates.isAtom_iff (ne_zero_of_dvd_ne_zero hq (h₂.2 ⟨1, rfl⟩))).mp ⟨?_, fun b hb => ?_⟩
-  · exact ne_bot_of_gt (h₁ zero_lt_one)
+  refine (Associates.isAtom_iff (ne_zero_of_dvd_ne_zero hq (h₂.2 ⟨1, rfl⟩))).mp
+    (bot_covBy_iff.1 ⟨?_, fun b hbb hb => ?_⟩)
+  · exact bot_lt_of_lt (h₁ zero_lt_one)
   obtain ⟨⟨i, hi⟩, rfl⟩ := h₂.1 (hb.le.trans (h₂.2 ⟨1, rfl⟩))
   cases i
-  · exact (Associates.isUnit_iff_eq_one _).mp (first_of_chain_isUnit h₁ @h₂)
+  · exact hbb.ne' <| Associates.isUnit_iff_eq_bot.mp (first_of_chain_isUnit h₁ @h₂)
   · simpa [Fin.lt_def] using h₁.lt_iff_lt.mp hb
 
 theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n ≠ 0)
@@ -283,8 +278,9 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
     Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
   rw [← irreducible_iff_prime]
   refine (Associates.isAtom_iff <|
-    ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).prop).mp ⟨?_, fun b hb => ?_⟩
-  · rw [Ne, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
+    ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).prop).mp <|
+      bot_covBy_iff.1 ⟨?_, fun b hbb hb => ?_⟩
+  · rw [bot_lt_iff_ne_bot, ne_eq, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
       coe_factor_orderIso_map_eq_one_iff _ d]
     rintro rfl
     exact (prime_of_normalized_factor 1 hp).not_unit isUnit_one
@@ -295,14 +291,14 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
     letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
     suffices x = ⊥ by
       rw [this, OrderIso.map_bot d] at hx
-      refine (Subtype.mk_eq_bot_iff ?_ _).mp hx.symm
+      refine hbb.ne' <| (Subtype.mk_eq_bot_iff ?_ _).mp hx.symm
       simp
     obtain ⟨a, ha⟩ := x
     rw [Subtype.mk_eq_bot_iff]
     · exact
-        ((Associates.isAtom_iff <| Prime.ne_zero <| prime_of_normalized_factor p hp).mpr <|
-              irreducible_of_normalized_factor p hp).right
-          a (Subtype.mk_lt_mk.mp <| d.lt_iff_lt.mp hb)
+        (((Associates.isAtom_iff <| Prime.ne_zero <| prime_of_normalized_factor p hp).mpr <|
+              irreducible_of_normalized_factor p hp).isMin_of_lt
+          (Subtype.mk_lt_mk.mp <| d.lt_iff_lt.mp hb)).eq_bot
     simp
 
 theorem mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors {m p : Associates M}

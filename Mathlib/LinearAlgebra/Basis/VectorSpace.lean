@@ -195,32 +195,26 @@ variable {K V}
 /-- For a module over a division ring, the span of a nonzero element is an atom of the
 lattice of submodules. -/
 theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodule K V) := by
-  constructor
-  · rw [Submodule.ne_bot_iff]
-    exact ⟨v, ⟨mem_span_singleton_self v, hv⟩⟩
-  · intro T hT
-    by_contra h
-    apply hT.2
-    change span K {v} ≤ T
-    simp_rw [span_singleton_le_iff_mem, ← Ne.eq_def, Submodule.ne_bot_iff] at *
-    rcases h with ⟨s, ⟨hs, hz⟩⟩
-    rcases mem_span_singleton.1 (hT.1 hs) with ⟨a, rfl⟩
-    rcases eq_or_ne a 0 with rfl | h
-    · simp only [zero_smul, ne_eq, not_true] at hz
-    · rwa [T.smul_mem_iff h] at hs
+  rw [isAtom_iff_le_of_ge]
+  refine ⟨(Submodule.ne_bot_iff _).2 ⟨v, by simp [hv]⟩, fun T hTe hTv x hxv => ?_⟩
+  rw [Submodule.ne_bot_iff] at hTe
+  obtain ⟨c, hcT, hc0⟩ := hTe
+  obtain ⟨k₁, hk₁⟩ := mem_span_singleton.1 hxv
+  obtain ⟨k₂, hk₂⟩ := mem_span_singleton.1 (hTv hcT)
+  have hk0 : k₂ ≠ 0 := (smul_ne_zero_iff_left hv).1 (hk₂.trans_ne hc0)
+  rw [← hk₁, ← div_mul_cancel₀ k₁ hk0, mul_smul, hk₂]
+  exact smul_mem T (k₁ / k₂) hcT
 
 /-- The atoms of the lattice of submodules of a module over a division ring are the
 submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · obtain ⟨hbot, h⟩ := h
-    rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
+  · rcases (Submodule.ne_bot_iff W).1 h.ne_bot with ⟨v, ⟨hW, hv⟩⟩
     refine ⟨v, ⟨hv, ?_⟩⟩
-    by_contra heq
-    specialize h (span K {v})
-    rw [span_singleton_eq_bot, lt_iff_le_and_ne] at h
-    exact hv (h ⟨(span_singleton_le_iff_mem v W).2 hW, Ne.symm heq⟩)
+    by_contra! heq
+    refine hv (span_singleton_eq_bot.1 (h.isMin_of_lt ?_).eq_bot)
+    exact lt_of_le_of_ne ((span_singleton_le_iff_mem _ _).2 hW) heq.symm
   · rcases h with ⟨v, ⟨hv, rfl⟩⟩
     exact nonzero_span_atom v hv
 

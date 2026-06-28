@@ -348,7 +348,9 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   have : Fintype α := Fintype.ofFinite α
   -- To prove that `stabilizer (Perm α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`
-  refine ⟨stabilizer_ne_top_of_nonempty_of_nonempty_compl h0 h1, fun G hG ↦ ?_⟩
+  refine covBy_top_iff.1 ⟨lt_top_iff_ne_top.2
+    (stabilizer_ne_top_of_nonempty_of_nonempty_compl h0 h1), fun G hG => ?_⟩
+  rw [lt_top_iff_ne_top, not_ne_iff]
   have hG' : stabilizer (Perm α) sᶜ < G := by rwa [stabilizer_compl]
   -- … and that every strict over-subgroup `G` is equal to `⊤`
   -- We know that `G` contains a swap
