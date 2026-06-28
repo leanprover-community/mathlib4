@@ -237,7 +237,7 @@ theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 
-@[simp] lemma le_toNat_self_iff : n ≤ n.toNat ↔ n ≠ ⊤ where
+@[simp] lemma le_natCast_toNat_self_iff : n ≤ n.toNat ↔ n ≠ ⊤ where
   mp := by rintro hn rfl; simp at hn
   mpr hn := by rw [coe_toNat hn]
 
