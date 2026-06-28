@@ -11,6 +11,7 @@ public import Mathlib.Data.Rel
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Simple graphs
@@ -88,7 +89,7 @@ The relation describes which pairs of vertices are adjacent.
 There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
-@[ext, aesop safe constructors (rule_sets := [SimpleGraph])]
+@[ext, aesop safe constructors (rule_sets := [SimpleGraph]), wikidata Q141488]
 structure SimpleGraph (V : Type u) where
   /-- The adjacency relation of a simple graph. -/
   Adj : V → V → Prop
@@ -315,6 +316,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
+@[wikidata Q45715]
 abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
 
 /-- The graph with no edges on a given vertex type `V`. -/
@@ -526,6 +528,27 @@ theorem edgeSet_inf : (G₁ ⊓ G₂).edgeSet = G₁.edgeSet ∩ G₂.edgeSet :=
   ext ⟨x, y⟩
   rfl
 
+theorem edgeSet_sSup {s : Set (SimpleGraph V)} : (sSup s).edgeSet = ⋃₀ (edgeSet '' s) := by
+  ext ⟨x, y⟩
+  simp
+
+theorem edgeSet_sInf {s : Set (SimpleGraph V)} (h : s.Nonempty) :
+    (sInf s).edgeSet = ⋂₀ (edgeSet '' s) := by
+  ext ⟨x, y⟩
+  have ⟨G, hG⟩ := h
+  simpa using (· G hG |>.ne)
+
+theorem edgeSet_iSup {ι : Sort*} {f : ι → SimpleGraph V} :
+    (⨆ i, f i).edgeSet = ⋃ i, (f i).edgeSet := by
+  ext ⟨x, y⟩
+  simp
+
+theorem edgeSet_iInf {ι : Sort*} [Nonempty ι] {f : ι → SimpleGraph V} :
+    (⨅ i, f i).edgeSet = ⋂ i, (f i).edgeSet := by
+  ext ⟨x, y⟩
+  have ⟨i⟩ := ‹Nonempty ι›
+  simpa using (· i |>.ne)
+
 @[simp]
 theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := by
   ext ⟨x, y⟩
@@ -670,6 +693,27 @@ theorem fromEdgeSet_union (s t : Set (Sym2 V)) :
   ext v w
   simp [Set.mem_union, or_and_right]
 
+theorem fromEdgeSet_sUnion {s : Set (Set (Sym2 V))} :
+    fromEdgeSet (⋃₀ s) = sSup (fromEdgeSet '' s) := by
+  ext u v
+  simp
+  grind
+
+theorem fromEdgeSet_iUnion {ι : Sort*} {f : ι → Set (Sym2 V)} :
+    fromEdgeSet (⋃ i, f i) = ⨆ i, fromEdgeSet (f i) := by
+  ext u v
+  simp
+
+theorem fromEdgeSet_sInter {s : Set (Set (Sym2 V))} :
+    fromEdgeSet (⋂₀ s) = sInf (fromEdgeSet '' s) := by
+  ext u v
+  simp_all
+
+theorem fromEdgeSet_iInter {ι : Sort*} {f : ι → Set (Sym2 V)} :
+    fromEdgeSet (⋂ i, f i) = ⨅ i, fromEdgeSet (f i) := by
+  ext u v
+  simp_all
+
 @[simp]
 theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
     fromEdgeSet (s \ t) = fromEdgeSet s \ fromEdgeSet t := by
@@ -749,6 +793,18 @@ theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
 
 lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
 
+variable {G} in
+theorem nonempty_neighborSet : (G.neighborSet v).Nonempty ↔ ∃ u, G.Adj v u :=
+  .rfl
+
+variable (v) in
+theorem neighborSet_subset_compl : G.neighborSet v ⊆ {v}ᶜ := by
+  simp
+
+variable (v) in
+theorem neighborSet_ne_univ : G.neighborSet v ≠ .univ :=
+  Set.ne_univ_iff_exists_notMem _ |>.mpr ⟨v, G.notMem_neighborSet_self⟩
+
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
   simp [incidenceSet]
@@ -792,6 +848,23 @@ theorem neighborSet_compl (G : SimpleGraph V) (v : V) :
   ext w
   simp [and_comm, eq_comm]
 
+variable {G} in
+@[gcongr]
+theorem neighborSet_mono {G' : SimpleGraph V} (hle : G ≤ G') (v : V) :
+    G.neighborSet v ⊆ G'.neighborSet v :=
+  fun _ hadj ↦ hle hadj
+
+@[simp]
+theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
+  grind [mem_neighborSet, top_adj]
+
+theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
+  grind [mem_neighborSet, bot_adj]
+
+variable {G} in
+theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
+  ⟨u, v, hadj.ne⟩
+
 /-- The set of common neighbors between two vertices `v` and `w` in a graph `G` is the
 intersection of the neighbor sets of `v` and `w`. -/
 def commonNeighbors (v w : V) : Set V :=
@@ -828,6 +901,10 @@ theorem commonNeighbors_top_eq {v w : V} :
     (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
   ext u
   simp [commonNeighbors, eq_comm, not_or]
+
+@[simp]
+theorem commonNeighbors_bot_eq : commonNeighbors ⊥ u v = ∅ := by
+  simp [commonNeighbors, neighborSet_bot]
 
 section Incidence
 
@@ -915,5 +992,37 @@ attribute [simp] IsIsolated.neighborSet_eq_empty
 
 lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := by
   simp [mem_support, IsIsolated]
+
+@[simp]
+theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
+  simp [mem_support_iff_not_isIsolated]
+
+variable {G} in
+theorem exists_adj_iff_not_isIsolated : (∃ u, G.Adj v u) ↔ ¬G.IsIsolated v := by
+  simp [IsIsolated]
+
+@[simp]
+theorem IsIsolated.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
+    G.IsIsolated v :=
+  fun _ hadj ↦ not_nontrivial V hadj.nontrivial
+
+variable {G} in
+theorem nontrivial_of_not_isIsolated (h : ¬G.IsIsolated v) : Nontrivial V :=
+  exists_adj_iff_not_isIsolated.mpr h |>.elim fun _ ↦ Adj.nontrivial
+
+variable {G} in
+theorem Adj.not_isIsolated_left (h : G.Adj u v) : ¬G.IsIsolated u :=
+  exists_adj_iff_not_isIsolated.mp ⟨_, h⟩
+
+variable {G} in
+theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
+  h.symm.not_isIsolated_left
+
+@[simp]
+theorem isIsolated_bot : IsIsolated ⊥ v :=
+  neighborSet_eq_empty _ |>.mp neighborSet_bot
+
+theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
+  simp [eq_bot_iff_forall_not_adj, ← neighborSet_eq_empty, Set.eq_empty_iff_forall_notMem]
 
 end SimpleGraph
