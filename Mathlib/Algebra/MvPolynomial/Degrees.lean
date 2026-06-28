@@ -691,13 +691,12 @@ theorem mainDegree_def (p : MvPolynomial σ R) :
     p.mainDegree = p.degrees.filter (IsMaxOn id p.degrees.toFinset) := Eq.refl _
 
 theorem forall_mainDegree_eq_of_forall_degrees_le (h₁ : i ∈ p.degrees)
-    (h₂ : IsMaxOn id p.degrees.toFinset i) : ∀ j ∈ p.mainDegree, i = j := by
-  intro j hj
+    (h₂ : IsMaxOn id p.degrees.toFinset i) (j : σ) (hj : j ∈ p.mainDegree) : i = j := by
   rw [mainDegree_def] at hj
   apply le_antisymm
   · apply (Multiset.mem_filter.mp hj).2
-    exact Multiset.mem_toFinset.mpr h1
-  apply h2
+    exact Multiset.mem_toFinset.mpr h₁
+  apply h₂
   apply Multiset.mem_toFinset.mpr
   exact Multiset.mem_of_mem_filter hj
 

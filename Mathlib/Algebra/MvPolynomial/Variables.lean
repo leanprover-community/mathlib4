@@ -366,20 +366,15 @@ theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p
   rw [id_eq, id_eq, ← WithBot.coe_le_coe, ← h, vars_def]
   exact Finset.le_max hj
 
-theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥ where
-  mp h :=
-    match hc : p.vars.max with
-    | ⊥ => rfl
-    | WithBot.some c => by
-      absurd Finset.mem_of_max hc
-      rw [card_mainDegree_eq_degreeOf hc, degreeOf_def] at h
-      simpa only [vars_def, Multiset.mem_toFinset, Multiset.count_eq_zero] using h
-  mpr h := by
-    simp only [mainDegree_def, Multiset.card_eq_zero]
-    suffices p.degrees = 0 by simp [this, Multiset.filter_zero]
-    rw [vars_def] at h
-    apply Multiset.toFinset_eq_empty.mp
-    exact Finset.max_eq_bot.mp h
+theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · cases hc : p.vars.max
+    · simp only
+    absurd Finset.mem_of_max hc
+    simpa [card_mainDegree_eq_degreeOf hc, degreeOf_def, vars_def] using h
+  suffices p.degrees = 0 by simp [mainDegree_def, this]
+  rw [Finset.max_eq_bot, vars_def] at h
+  exact Multiset.toFinset_eq_empty.mp h
 
 end MainDegree
 
