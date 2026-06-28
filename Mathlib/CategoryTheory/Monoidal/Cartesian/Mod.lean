@@ -5,7 +5,7 @@ Authors: Paul Lezeau, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import Mathlib.CategoryTheory.Monoidal.Mod
 public import Mathlib.GroupTheory.GroupAction.Hom
 
@@ -107,11 +107,24 @@ lemma lift_leftSMul_eq_lift_iff (Z : C) (x y : Z ⟶ X) (m : Z ⟶ M) :
     lift m x ≫ leftSMul M X = lift y x ↔ m • x = y := by
   simp [Hom.smul_def, leftSMul, CartesianMonoidalCategory.hom_ext_iff]
 
+attribute [local instance] ModObj.regular in
+lemma leftSMul_self : leftSMul M M = lift μ (snd M M) :=
+  rfl
+
+/-- A module object `X` is homogeneous over `M`, if the action is simply transitive, i.e.,
+the morphism `(m, x) ↦ (m • x, x)` is an isomorphism. -/
+abbrev IsHomogeneous (M : C) [MonObj M] (X : C) [ModObj M X] : Prop :=
+  IsIso (leftSMul M X)
+
+@[reassoc (attr := simp)]
+lemma inv_leftSMul_snd [IsHomogeneous M X] : inv (leftSMul M X) ≫ snd M X = snd _ _ := by
+  simp
+
 open CartesianMonoidalCategory in
 /-- The morphism `(m, x) ↦ (m • x, x)` is an isomorphism if and only if the induced
 action is pointwise simply transitive. -/
-lemma isIso_leftSMul_iff :
-    IsIso (leftSMul M X) ↔ ∀ (Z : C) (x y : Z ⟶ X), ∃! (m : Z ⟶ M), m • x = y := by
+lemma isHomogeneous_iff :
+    IsHomogeneous M X ↔ ∀ (Z : C) (x y : Z ⟶ X), ∃! (m : Z ⟶ M), m • x = y := by
   have H (Z : C) (x : Z ⟶ X) (m : Z ⟶ M) :
       lift m x ≫ leftSMul M X = lift (m • x) x := by
     ext <;> simp [Hom.smul_def]
@@ -119,7 +132,7 @@ lemma isIso_leftSMul_iff :
       lift m x ≫ leftSMul M X = lift f g ↔ x = g ∧ m • x = f := by
     simp [← lift_leftSMul_eq_lift_iff, CartesianMonoidalCategory.hom_ext_iff]
     grind
-  rw [isIso_iff_yoneda_map_bijective]
+  rw [IsHomogeneous, isIso_iff_yoneda_map_bijective]
   congr! with Z
   rw [← Function.Bijective.of_comp_iff _ liftEquiv.bijective, Function.bijective_iff_existsUnique]
   simp only [liftEquiv.surjective.forall, liftEquiv_apply, Prod.forall, Function.comp_apply, h]
@@ -127,6 +140,20 @@ lemma isIso_leftSMul_iff :
   congr! 2 with f g
   exact Equiv.existsUnique_subtype_congr ⟨fun a ↦ ⟨a.val.fst, by grind⟩,
     fun a ↦ ⟨⟨a.val, f⟩, by grind⟩, by cat_disch, by cat_disch⟩
+
+@[deprecated (since := "2026-06-28")]
+alias isIso_leftSMul_iff := isHomogeneous_iff
+
+attribute [local instance] ModObj.regular in
+instance (G : C) [GrpObj G] : IsHomogeneous G G := by
+  refine ⟨lift (G ◁ ι ≫ μ) (snd _ _), ?_, ?_⟩
+  · ext
+    · simp [leftSMul_self, GrpObj.lift_inv_right_eq]
+    · simp
+  · ext
+    · have : G ◁ ι[G] = lift (fst G G) (snd G G ≫ ι) := by ext <;> simp
+      simp [this, ← Hom.mul_def, ← Hom.inv_def]
+    · simp
 
 end ModObj
 
