@@ -111,7 +111,7 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
           ← dsimp% (CategoryTheory.shiftFunctorAdd' C a b (a + b) rfl).hom.naturality_assoc]
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
-    (by cat_disch)
+    (by intros; ext <;> simp)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

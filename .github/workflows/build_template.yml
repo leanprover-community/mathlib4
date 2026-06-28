@@ -190,7 +190,7 @@ jobs:
           lake exe mk_all --check
 
       - name: begin gh-problem-match-wrap for build step
-        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+        uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: lean
@@ -211,7 +211,7 @@ jobs:
           ../tools-branch/scripts/lake-build-with-retry.sh Mathlib
           # results of build at pr-branch/.lake/build_summary_Mathlib.json
       - name: end gh-problem-match-wrap for build step
-        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+        uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: remove
           linters: lean
@@ -463,7 +463,7 @@ jobs:
       # from the build job's outputs, and the problem-matcher wrap is gated to match.
       - name: begin gh-problem-match-wrap for test step
         if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' }}
-        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+        uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: lean
@@ -475,7 +475,7 @@ jobs:
           ../tools-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
       - name: end gh-problem-match-wrap for test step
         if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' }}
-        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+        uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: remove
           linters: lean
@@ -485,7 +485,7 @@ jobs:
       # lint feedback is still reported. The problem-matcher wrap is gated to match.
       - name: begin gh-problem-match-wrap for shake and lint steps
         if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
-        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+        uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: gcc
@@ -538,7 +538,7 @@ jobs:
 
       - name: end gh-problem-match-wrap for shake and lint steps
         if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
-        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+        uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: remove
           linters: gcc
