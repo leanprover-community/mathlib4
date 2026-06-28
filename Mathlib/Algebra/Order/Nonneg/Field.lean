@@ -29,7 +29,7 @@ open Set
 variable {α : Type*}
 
 section NNRat
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
+variable [DivisionSemiring α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
 
 lemma NNRat.cast_nonneg (q : ℚ≥0) : 0 ≤ (q : α) := by
   rw [cast_def]; exact div_nonneg q.num.cast_nonneg q.den.cast_nonneg
@@ -53,9 +53,9 @@ def unitsEquivPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
   right_inv r := by ext; rfl
   map_mul' _ _ := rfl
 
-section LinearOrderedSemifield
+section LinearOrderedDivisionSemiring
 
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
+variable [DivisionSemiring α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
 instance inv : Inv { x : α // 0 ≤ x } :=
   ⟨fun x => ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
@@ -106,6 +106,17 @@ instance instNNRatSMul : SMul ℚ≥0 {x : α // 0 ≤ x} where
 @[simp] lemma mk_nnqsmul (q : ℚ≥0) (a : α) (ha : 0 ≤ a) :
     (⟨q • a, by rw [NNRat.smul_def]; exact mul_nonneg q.cast_nonneg ha⟩ : {x : α // 0 ≤ x}) =
       q • a := rfl
+
+instance divisionSemiring : DivisionSemiring { x : α // 0 ≤ x } := fast_instance%
+  Subtype.coe_injective.divisionSemiring _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
+    Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
+    Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
+
+end LinearOrderedDivisionSemiring
+
+section LinearOrderedSemifield
+
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
 instance semifield : Semifield { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.semifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
