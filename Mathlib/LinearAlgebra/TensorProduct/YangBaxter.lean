@@ -88,9 +88,7 @@ theorem yangBaxterEquation_iff :
 equation. -/
 theorem yangBaxterEquation_comm :
     YangBaxterEquation (TensorProduct.comm R M M).toLinearMap := by
-  rw [yangBaxterEquation_iff]
-  intro a b c
-  simp
+  simp [yangBaxterEquation_iff]
 
 end LinearMap
 
