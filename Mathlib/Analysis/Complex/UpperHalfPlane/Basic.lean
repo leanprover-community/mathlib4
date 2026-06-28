@@ -148,20 +148,20 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
-meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(@UpperHalfPlane.im_pos $a))
   | _, _, _ => throwError "not UpperHalfPlane.im"
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
-meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
   | _, _, _ => throwError "not UpperHalfPlane.coe"
