@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.Data.Set.Operations
 
 /-!
 # Reproducing Kernel Hilbert Spaces
