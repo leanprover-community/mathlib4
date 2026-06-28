@@ -141,7 +141,7 @@ variable (M) in
 /-- Any global section `𝟙_ C ⟶ X`, induces an isomorphism `M ≅ X`. This
 is compatible with the module structure. -/
 @[to_additive
-/-- Any global section section `𝟙_ C ⟶ X`, induces an isomorphism `M ≅ X`. This
+/-- Any global section `𝟙_ C ⟶ X`, induces an isomorphism `M ≅ X`. This
 is compatible with the additive module structure. -/]
 noncomputable def isoOfHom (s : 𝟙_ C ⟶ X) [IsHomogeneous M X] : M ≅ X :=
   (ρ_ _).symm ≪≫ isoTensorOfHom M s ≪≫ ρ_ _
