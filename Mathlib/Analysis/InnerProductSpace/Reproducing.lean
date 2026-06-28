@@ -314,7 +314,8 @@ namespace Sum
 This namespace implements the sum of two RKHS which are both embedded into `X → V`.
 
 For two RKHS `H` and `H₁`, the sum `H + H₁` is implemented as a quotient of `WithLp 2 (H × H₁)`
-instead a submodule of `X → V` with the norm induced by the quotient to avoid instance clashed.
+instead of as a submodule of `X → V` with the norm induced by the quotient to avoid instance
+clashed.
 -/
 
 
@@ -338,7 +339,9 @@ lemma generator_apply (f : H) (g : H₁) (x : X) :
 instance : IsClosed ((generator H H₁).ker : Set (WithLp 2 (H × H₁))) :=
   (generator H H₁).isClosed_ker
 
+/-- The sum of two RKHS embedding in the same space of functions `X → V`. -/
 abbrev sumSpace := WithLp 2 (H × H₁) ⧸ (generator H H₁).ker
+/-- `H + H₁` is shorthand for the RKHS `sumSpace H H₁`, which is the sum of the two RKHS. -/
 scoped infix:50 " + " => sumSpace
 
 instance : RKHS 𝕜 (H + H₁) X V where
