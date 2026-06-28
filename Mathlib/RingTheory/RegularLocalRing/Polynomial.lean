@@ -77,7 +77,7 @@ lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdea
     rw [Set.ncard_singleton, add_le_add_iff_right, ← Submodule.FG.generators_ncard fg']
     exact Set.ncard_image_le fg
 
-theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularRing R[X] := by
+instance Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularRing R[X] := by
   apply isRegularRing_iff.mpr (fun p hp ↦ ?_)
   let q := p.comap C
   let S := (Localization.AtPrime q)[X]
@@ -107,7 +107,7 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularR
   exact IsRegularLocalRing.of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime pS) (Localization.AtPrime p)).toRingEquiv
 
-lemma MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] {ι : Type*} [Finite ι] :
+instance MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] {ι : Type*} [Finite ι] :
     IsRegularRing (MvPolynomial ι R) := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H => exact IsRegularRing.of_ringEquiv (renameEquiv _ e).toRingEquiv
