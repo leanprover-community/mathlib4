@@ -10,11 +10,13 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.ExtremalEpi
+public import Mathlib.CategoryTheory.Functor.Bracket
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 public import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.CategoryTheory.MorphismProperty.LocalEpi
 
 /-!
 # Bracket and hypercovers
@@ -199,10 +201,6 @@ def ninclusion [K.Nonsingular] : K.Nᵒᵖ ⥤ K.Elements where
   obj Y := .mk (.op <| .mk Y.unop.dim) Y.unop.simplex
   map {Y Z} f := .mk (.op <| N.Hom.hom f.unop) (N.Hom.hom_spec _)
 
-example : K.Elements ⥤ SimplexCategoryᵒᵖ := CategoryOfElements.π _
-
--- attribute [grind] Nonsingular.mono_of_mem_nonDegenerate
-
 set_option backward.isDefEq.respectTransparency false in
 instance mono_hom_nonDegenerateElements [K.Nonsingular]
     {x y : K.nonDegenerateElements.FullSubcategory} (f : x ⟶ y) :
@@ -291,8 +289,6 @@ def nonDegenerateElementsEquiv [K.Nonsingular] :
 lemma yonedaEquiv_symm_objEquiv_symm {n m : ℕ} (x : ⦋m⦌ ⟶ ⦋n⦌) :
     yonedaEquiv.symm (stdSimplex.objEquiv.symm x) = uliftYoneda.map x :=
   rfl
-
--- def asdfasdfasdf (n m : ℕ) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -393,84 +389,6 @@ def N.orderHomOfMono {K L : SSet.{u}} (f : K ⟶ L) [Mono f] : K.N →o L.N wher
 
 end SSet
 
-namespace CategoryTheory
-
-variable {C : Type*} [Category* C]
-
-structure Functor.Coelements (F : Cᵒᵖ ⥤ Type*) where
-  obj : C
-  val : F.obj (.op obj)
-
-variable (F : Cᵒᵖ ⥤ Type*)
-
---namespace Functor.Coelements
---
---structure Hom (X Y : F.Coelements) where
---  hom : X.obj ⟶ Y.obj
---  map_hom_val : F.map hom.op Y.val = X.val := by cat_disch
---
---instance : Category F.Coelements where
---  Hom := Hom F
---  id X := { hom := 𝟙 _ }
---  comp {X Y Z} f g := { hom := f.hom ≫ g.hom }
---
---end Functor.Coelements
-
-variable {D : Type*} [Category* D] {E : Type*} [Category* E]
-variable {A : Type*} [Category* A]
-
--- `E = K.nonDegenerateElements.FullSubcategory`
--- `C = SemiSimplexCategory`
--- `D = SimplexCategory`
--- `F = toSimplexCategory`
--- `P = map mono`
-structure FunctorLift (F : C ⥤ D) (P : ObjectProperty (E ⥤ D)) where
-  lift (G : E ⥤ D) (h : P G) : E ⥤ C
-  liftIso (G : E ⥤ D) (h : P G) : lift G h ⋙ F ≅ G
-
-structure FunctorLift' (F : C ⥤ D) (P : ObjectProperty (E ⥤ D)) where
-  lift : P.FullSubcategory ⥤ (E ⥤ C)
-  liftIso : lift ⋙ (Functor.whiskeringRight _ _ _).obj F ≅ P.ι
-
-namespace FunctorLift
-
-@[simps]
-def id : FunctorLift (𝟭 C) (⊤ : ObjectProperty (E ⥤ C)) where
-  lift G _ := G
-  liftIso _ _ := .refl _
-
-variable {F : C ⥤ D} {P : ObjectProperty (Eᵒᵖ ⥤ D)} (H : FunctorLift F P)
-
-abbrev bracketDiag (X : Cᵒᵖ ⥤ A) (K : Dᵒᵖ ⥤ Type u) (incl : E ⥤ K.Elements)
-    (h : P (incl.op ⋙ (CategoryOfElements.π K).leftOp)) :
-    E ⥤ A :=
-  Functor.rightOp (H.lift (incl.op ⋙ (CategoryOfElements.π _).leftOp) h) ⋙ X
-
-end FunctorLift
-
-namespace FunctorLift'
-
-variable {F : C ⥤ D} {P : ObjectProperty (Eᵒᵖ ⥤ D)} (H : FunctorLift' F P)
-
-abbrev bracketDiag' (X : Cᵒᵖ ⥤ A) (K : Dᵒᵖ ⥤ Type u) (incl : E ⥤ K.Elements)
-    (h : P (incl.op ⋙ (CategoryOfElements.π K).leftOp)) :
-    E ⥤ A :=
-  Functor.rightOp (H.lift.obj ⟨incl.op ⋙ (CategoryOfElements.π _).leftOp, h⟩) ⋙ X
-
-end FunctorLift'
-
-end CategoryTheory
-
-namespace SemiSimplexCategory
-
-@[simps]
-def functorLift (E : Type*) [Category* E] :
-    FunctorLift (toSimplexCategory) (fun G ↦ ∀ ⦃X Y : E⦄ (f : X ⟶ Y), Mono (G.map f)) where
-  lift G h := lift G h
-  liftIso G h := liftComp _
-
-end SemiSimplexCategory
-
 namespace CategoryTheory.SemisimplicialObject
 
 /-!
@@ -483,17 +401,6 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable abbrev bracketDiag (X : SemisimplicialObject C) (K : SSet.{u}) [K.Nonsingular] :
     K.nonDegenerateElements.FullSubcategory ⥤ C :=
   K.nonDegenerateElementsπOfNonsingular ⋙ X
-
-set_option backward.defeqAttrib.useBackward true in
-noncomputable abbrev bracketDiag' (X : SemisimplicialObject C) (K : SSet.{u}) [K.Nonsingular] :
-    K.nonDegenerateElements.FullSubcategory ⥤ C :=
-  FunctorLift.bracketDiag (SemiSimplexCategory.functorLift _) X K K.nonDegenerateElements.ι <| by
-    intro ⟨X⟩ ⟨Y⟩ f
-    dsimp
-    simp only [unop_mono_iff]
-    obtain ⟨f, rfl⟩ := _root_.Quiver.Hom.op_surjective f
-    rw [Quiver.Hom.unop_op, ← unop_mono_iff]
-    infer_instance
 
 abbrev HasBracket [K.Nonsingular] : Prop := HasLimit (X.bracketDiag K)
 
@@ -739,44 +646,9 @@ variable (J : GrothendieckTopology C)
 
 variable {A : Type*} [Category* A]
 
-def ObjectProperty.isPrelocal (P : ObjectProperty C) : MorphismProperty C := fun _ _ f =>
-  ∀ Z, P Z → Function.Injective (fun (g : _ ⟶ Z) ↦ f ≫ g)
-
 /-- Covering morphisms in the sense of SGA. -/
 def GrothendieckTopology.couvrant : MorphismProperty (Cᵒᵖ ⥤ A) :=
-  ObjectProperty.isPrelocal (Presheaf.IsSheaf J)
-
-namespace Limits.FormalCoproduct
-
-def objIsoOfEq (X : FormalCoproduct.{w} C) {i j : X.I} (hij : i = j) :
-    X.obj i ≅ X.obj j :=
-  eqToIso (by rw [hij])
-
-@[simp]
-lemma objIsoOfEq_rfl (X : FormalCoproduct.{w} C) (i : X.I) :
-    X.objIsoOfEq (rfl : i = i) = Iso.refl _ :=
-  rfl
-
-@[simp]
-lemma objIsoOfEq_trans (X : FormalCoproduct.{w} C) {i j k : X.I}
-    (hij : i = j) (hjk : j = k) :
-    X.objIsoOfEq hij ≪≫ X.objIsoOfEq hjk = X.objIsoOfEq (hij.trans hjk) := by
-  subst hij hjk
-  simp
-
-@[simp]
-lemma objIsoOfEq_symm (X : FormalCoproduct.{w} C) {i j : X.I}
-    (hij : i = j) :
-    (X.objIsoOfEq hij).symm = X.objIsoOfEq hij.symm := by
-  subst hij
-  simp
-
-variable {C : Type*} [Category.{v} C]
-
-noncomputable def uliftYoneda : FormalCoproduct.{w} C ⥤ Cᵒᵖ ⥤ Type (max w v) :=
-  (eval _ _).obj CategoryTheory.uliftYoneda
-
-end Limits.FormalCoproduct
+  ObjectProperty.localEpi (Presheaf.IsSheaf J)
 
 /-- The `1`-truncation of a semi-simplical object in `FormalCoproduct.{w} (Over S)`
 induces a pre-`1`-hypercover of `S`. -/
@@ -811,13 +683,8 @@ namespace CategoryTheory.SimplicialObject
 ## Bracket for simplicial objects
 -/
 
-abbrev bracketDiag' : K.Elements ⥤ C :=
-  FunctorLift.bracketDiag .id X K (𝟭 _) <| by tauto
-
 noncomputable abbrev bracketDiag : K.Elements ⥤ C :=
   CategoryOfElements.π K ⋙ X
-
-example : bracketDiag' X K = bracketDiag X K := rfl
 
 abbrev HasBracket : Prop := HasLimit (X.bracketDiag K)
 
