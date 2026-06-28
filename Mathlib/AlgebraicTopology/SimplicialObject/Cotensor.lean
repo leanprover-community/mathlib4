@@ -5,7 +5,7 @@ Authors: Robin Carlier, Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplexCategory.SemiSimplexCategory
+public import Mathlib.AlgebraicTopology.SimplicialObject.Semi
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
@@ -77,55 +77,7 @@ instance : toSimplexCategory.Initial := by
   · exact .of_inv <| CostructuredArrow.homMk (homOfMono s) <| IsSplitEpi.id_assoc πa τa
   · exact .of_hom <| CostructuredArrow.homMk (homOfMono τa) (by simp [U, m])
 
-set_option backward.isDefEq.respectTransparency false in
-@[simps]
-def lift {C : Type*} [Category* C] (F : C ⥤ SimplexCategory)
-    (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Mono (F.map f) := by infer_instance) :
-    C ⥤ SemiSimplexCategory where
-  obj X := .mk (F.obj X).len
-  map f :=
-    haveI : Mono (F.map f) := h f
-    homOfMono (F.map f)
-
-set_option backward.isDefEq.respectTransparency false in
-@[simps!]
-def liftComp {C : Type*} [Category* C] (F : C ⥤ SimplexCategory)
-    (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Mono (F.map f) := by infer_instance) :
-    lift F h ⋙ toSimplexCategory ≅ F :=
-  NatIso.ofComponents (fun X ↦ Iso.refl _)
-
-set_option backward.isDefEq.respectTransparency false in
-lemma homOfMono_id (n : ℕ) :
-    homOfMono (𝟙 <| toSimplexCategory.obj ⦋n⦌ₛ) = 𝟙 (⦋n⦌ₛ) :=
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
-def δ {n} (i : Fin (n + 2)) : ⦋n⦌ₛ ⟶ ⦋n + 1⦌ₛ :=
-  homOfMono (SimplexCategory.δ i)
-
-@[simp]
-lemma toSimplexCategory_map_δ {n} (i : Fin (n + 2)) :
-    toSimplexCategory.map (δ i) = SimplexCategory.δ i :=
-  rfl
-
 end SemiSimplexCategory
-
-namespace CategoryTheory
-
-abbrev SemisimplicialObject (C : Type*) [Category* C] : Type _ :=
-  SemiSimplexCategoryᵒᵖ ⥤ C
-
-set_option quotPrecheck false in
-/-- `X _⦋n⦌` denotes the `n`th-term of the simplicial object X -/
-scoped[Simplicial]
-  notation3:1000 X " _⦋" n "⦌ₛ" =>
-      (X : CategoryTheory.SemisimplicialObject _).obj (Opposite.op (SemiSimplexCategory.mk n))
-
-def SemisimplicialObject.δ (X : SemisimplicialObject C) {n : ℕ} (i : Fin (n + 2)) :
-    X _⦋n + 1⦌ₛ ⟶ X _⦋n⦌ₛ :=
-  X.map (SemiSimplexCategory.δ i).op
-
-end CategoryTheory
 
 namespace SSet
 
@@ -389,16 +341,18 @@ def N.orderHomOfMono {K L : SSet.{u}} (f : K ⟶ L) [Mono f] : K.N →o L.N wher
 
 end SSet
 
-namespace CategoryTheory.SemisimplicialObject
+namespace CategoryTheory.SemiSimplicialObject
 
 /-!
 ## Bracket for semi-simplicial objects
+
+This is deprecated
 -/
 
-variable (X : SemisimplicialObject C) (K : SSet.{u})
+variable (X : SemiSimplicialObject C) (K : SSet.{u})
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable abbrev bracketDiag (X : SemisimplicialObject C) (K : SSet.{u}) [K.Nonsingular] :
+noncomputable abbrev bracketDiag (X : SemiSimplicialObject C) (K : SSet.{u}) [K.Nonsingular] :
     K.nonDegenerateElements.FullSubcategory ⥤ C :=
   K.nonDegenerateElementsπOfNonsingular ⋙ X
 
@@ -618,11 +572,11 @@ def inclNonDegenerateBoundaryOne' :
 instance : inclNonDegenerateBoundaryOne.Initial := by
   sorry
 
-end CategoryTheory.SemisimplicialObject
+end CategoryTheory.SemiSimplicialObject
 
 namespace CategoryTheory
 
-variable (X : SemisimplicialObject C)
+variable (X : SemiSimplicialObject C)
 
 /--
 A semi-simplicial object in a category `C` with finite limits is a `P`-hypercover
@@ -653,8 +607,8 @@ def GrothendieckTopology.couvrant : MorphismProperty (Cᵒᵖ ⥤ A) :=
 /-- The `1`-truncation of a semi-simplical object in `FormalCoproduct.{w} (Over S)`
 induces a pre-`1`-hypercover of `S`. -/
 @[simps]
-def SemisimplicialObject.preOneHypercover {S : C}
-    (H : SemisimplicialObject (FormalCoproduct.{w} (Over S))) : PreOneHypercover.{w} S where
+def SemiSimplicialObject.preOneHypercover {S : C}
+    (H : SemiSimplicialObject (FormalCoproduct.{w} (Over S))) : PreOneHypercover.{w} S where
   I₀ := (H _⦋0⦌ₛ).I
   X i := ((H _⦋0⦌ₛ).obj i).left
   f i := ((H _⦋0⦌ₛ).obj i).hom
@@ -666,7 +620,7 @@ def SemisimplicialObject.preOneHypercover {S : C}
 
 /-- The `1`-truncation of a hypercover induces a `1`-hypercover. -/
 def GrothendieckTopology.OneHypercover.ofIsHypercover {S : C}
-    (H : SemisimplicialObject (FormalCoproduct.{w} (Over S)))
+    (H : SemiSimplicialObject (FormalCoproduct.{w} (Over S)))
     (h : (J.over S).couvrant.IsHypercover <| H ⋙ FormalCoproduct.uliftYoneda) :
     J.OneHypercover S where
   __ := H.preOneHypercover
