@@ -673,10 +673,8 @@ end Constructions
 
 end Diffeomorph
 
-/--
-The push-forward of a `ChartedSpace` along a homeomorphism `f : M ≃ₜ N` is a manifold, if `M`
-is a manifold.
--/
+/-- The push-forward of a `ChartedSpace` along a homeomorphism `f : M ≃ₜ N` is a manifold, if `M`
+is a manifold. -/
 theorem Homeomorph.isManifold [IsManifold I n M] (φ : M ≃ₜ N) :
   letI := φ.chartedSpace (H := H)
   IsManifold I n N  where
