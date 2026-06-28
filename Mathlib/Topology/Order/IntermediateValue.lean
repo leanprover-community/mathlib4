@@ -913,3 +913,34 @@ theorem ContinuousOn.image_Iio_of_strictMonoOn (hf : ContinuousOn f (Iic a))
 theorem ContinuousOn.image_Iio_of_strictAntiOn (hf : ContinuousOn f (Iic a))
     (hmono : StrictAntiOn f (Iic a)) (hbot : Tendsto f atBot atTop) : f '' Iio a = Ioi (f a) :=
   subset_antisymm (hmono.image_Iio_subset) (intermediate_value_Iio' hf hbot)
+
+/-!
+### Order-agnostic images under continuous strictly monotone maps
+
+If `f` is *globally* continuous and strictly monotone, each interval maps to the interval of its
+endpoint images with no `a ≤ b` hypothesis: when `a > b`, both sides are empty (since `f a > f b`).
+-/
+
+theorem Continuous.image_Icc_of_strictMono (hf_c : Continuous f) (hf : StrictMono f) :
+    f '' Icc a b = Icc (f a) (f b) := by
+  rcases le_or_gt a b with hab | hab
+  · exact hf_c.continuousOn.image_Icc_of_monotoneOn hab (hf.monotone.monotoneOn _)
+  · simp [not_le.mpr hab, not_le.mpr (hf hab)]
+
+theorem Continuous.image_Ico_of_strictMono (hf_c : Continuous f) (hf : StrictMono f) :
+    f '' Ico a b = Ico (f a) (f b) := by
+  rcases le_or_gt a b with hab | hab
+  · exact hf_c.continuousOn.image_Ico_of_strictMonoOn hab (hf.strictMonoOn _)
+  · simp [lt_asymm hab, lt_asymm (hf hab)]
+
+theorem Continuous.image_Ioc_of_strictMono (hf_c : Continuous f) (hf : StrictMono f) :
+    f '' Ioc a b = Ioc (f a) (f b) := by
+  rcases le_or_gt a b with hab | hab
+  · exact hf_c.continuousOn.image_Ioc_of_strictMonoOn hab (hf.strictMonoOn _)
+  · simp [lt_asymm hab, lt_asymm (hf hab)]
+
+theorem Continuous.image_Ioo_of_strictMono (hf_c : Continuous f) (hf : StrictMono f) :
+    f '' Ioo a b = Ioo (f a) (f b) := by
+  rcases le_or_gt a b with hab | hab
+  · exact hf_c.continuousOn.image_Ioo_of_strictMonoOn hab (hf.strictMonoOn _)
+  · simp [lt_asymm hab, lt_asymm (hf hab)]
