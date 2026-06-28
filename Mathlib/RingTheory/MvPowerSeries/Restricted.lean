@@ -68,6 +68,7 @@ lemma isRestricted.neg (c : σ → ℝ) {f : MvPowerSeries σ R} (hf : IsRestric
 
 open IsUltrametricDist
 
+open Finset.HasAntidiagonal in
 lemma tendsto_antidiagonal {M S : Type*} [AddMonoid M] [Finset.HasAntidiagonal M] [NormedRing S]
     [IsUltrametricDist S] {C : M → ℝ} (hC : ∀ a b, C (a + b) = C a * C b) {f g : M → S}
     (hf : Tendsto (fun i ↦ ‖f i‖ * C i) cofinite (𝓝 0))
@@ -81,7 +82,7 @@ lemma tendsto_antidiagonal {M S : Type*} [AddMonoid M] [Finset.HasAntidiagonal M
     (tendsto_sup'_antidiagonal_cofinite (tendsto_mul_cofinite_nhds_zero hf hg))
     (fun x ↦ mul_nonneg (by simp) (hC' x)) fun a ↦ ?_
   have : 0 ≤ C a := hC' a
-  grw [(Finset.nonempty_antidiagonal _).norm_sum_le_sup'_norm, Finset.sup'_mul₀ this]
+  grw [(nonempty_antidiagonal _).norm_sum_le_sup'_norm, Finset.sup'_mul₀ this]
   refine Finset.sup'_mono_fun fun x hx ↦ ?_
   grw [mul_mul_mul_comm, ← hC, Finset.mem_antidiagonal.mp hx, ← norm_mul_le]
 
@@ -91,8 +92,10 @@ lemma isRestricted.mul [IsUltrametricDist R] (c : σ → ℝ) {f g : MvPowerSeri
   rw [← isRestricted_abs_iff, IsRestricted] at *
   exact tendsto_antidiagonal (by simp [Finsupp.prod_add_index', pow_add]) hf hg
 
+namespace IsRestricted
+
 /-- Restricted power series as an additive subgroup of `MvPowerSeries σ R`. -/
-protected def IsRestricted.addSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
+protected def addSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
   carrier := IsRestricted c
   zero_mem' := isRestricted_zero c
   add_mem' := isRestricted.add c
@@ -101,18 +104,9 @@ protected def IsRestricted.addSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSe
 variable [IsUltrametricDist R]
 
 /-- Restricted power series as a subring of `MvPowerSeries σ R`. -/
-protected def IsRestricted.subring (c : σ → ℝ) : Subring (MvPowerSeries σ R) where
+protected def subring (c : σ → ℝ) : Subring (MvPowerSeries σ R) where
   __ := IsRestricted.addSubgroup c
   one_mem' := isRestricted_one c
   mul_mem' := isRestricted.mul c
 
-variable (R) in
-/-- The type of restricted `MvPowerSeries σ R`. -/
-def Restricted (c : σ → ℝ) : Type _ := IsRestricted.subring (R := R) c
-
-/-- Ring structure on `Restricted R c`. -/
-noncomputable
-instance (c : σ → ℝ) : Ring (Restricted R c) :=
-  Subring.toRing (IsRestricted.subring c)
-
-end MvPowerSeries
+end MvPowerSeries.IsRestricted
