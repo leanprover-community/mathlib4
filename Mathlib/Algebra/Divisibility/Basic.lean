@@ -247,7 +247,7 @@ theorem dvd_mul [DecompositionMonoid α] {k m n : α} :
 
 @[simp]
 theorem rightDvd_iff_dvd : a ∣ᵣ b ↔ a ∣ b :=
-  ⟨fun ⟨c, hc⟩ ↦ ⟨c, by rw [hc, mul_comm]⟩, fun ⟨c, hc⟩ ↦ ⟨c, by rw [hc, mul_comm]⟩⟩
+  exists_congr fun c ↦ rw [mul_comm]
 
 end CommSemigroup
 
