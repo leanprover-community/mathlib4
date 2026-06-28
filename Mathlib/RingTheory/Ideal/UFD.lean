@@ -33,8 +33,7 @@ include hx hxp
 theorem isPrincipal_of_isPrincipal_isLocalizationAway_of_prime
     (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S]
     (hp : (map (algebraMap R S) p).IsPrincipal) : p.IsPrincipal := by
-  have hd : Disjoint (Submonoid.powers x : Set R) p := by
-    rwa [← Ideal.disjoint_powers_iff_notMem_of_isPrime x] at hxp
+  have := (disjoint_powers_iff_notMem_of_isPrime x).mpr hxp
   by_cases hpbot : p = ⊥
   · simp [hpbot, bot_isPrincipal]
   · have hi := IsLocalization.injective S (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
@@ -92,17 +91,16 @@ theorem iff_of_isLocalizationAway_of_prime
   have : IsDomain S := IsLocalization.Away.isDomain S hx.ne_zero
   refine ⟨fun _ ↦ of_isLocalization (Submonoid.powers x) S, ?_⟩
   intro
-  have : IsNoetherianRing S := IsLocalization.isNoetherianRing (Submonoid.powers x) S inferInstance
   rw [iff_forall_isPrincipal_of_height_eq_one]
   intro p hp h1
   by_cases hxp : x ∈ p
   · exact ⟨x, p.eq_span_singleton_of_height_eq_one h1 hxp hx⟩
   · have hd := by rwa [← Ideal.disjoint_powers_iff_notMem_of_isPrime x] at hxp
     have := IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers x) S p hp hd
-    exact p.isPrincipal_of_isPrincipal_isLocalizationAway_of_prime hx hxp S <|
-      isPrincipal_of_height_eq_one <| by
-        rw [← IsLocalization.height_under (Submonoid.powers x),
-          IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers x) S hp hd, h1]
+    refine p.isPrincipal_of_isPrincipal_isLocalizationAway_of_prime R hx hxp S
+      (isPrincipal_of_height_eq_one ?_)
+    rwa [← IsLocalization.height_under (Submonoid.powers x),
+        IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers x) S hp hd]
 
 /-- Let `R` be a Noetherian domain, `x ∈ R` be a prime element. Then `R` is a UFD if and only if
   `Rₓ` is a UFD. -/
