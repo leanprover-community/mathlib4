@@ -551,10 +551,10 @@ theorem setToL1_nonneg [ClosedIciTopology G''] {T : Set α → G' →L[ℝ] G''}
     (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁[μ] G'}
     (hf : 0 ≤ f) : 0 ≤ setToL1 hT f := by
-  suffices ∀ f : { g : α →₁[μ] G' // 0 ≤ g }, 0 ≤ setToL1 hT f from
-    this (⟨f, hf⟩ : { g : α →₁[μ] G' // 0 ≤ g })
+  suffices ∀ f : Nonneg (α →₁[μ] G'), 0 ≤ setToL1 hT f from
+    this (⟨f, hf⟩ : Nonneg (α →₁[μ] G'))
   refine fun g =>
-    @isClosed_property { g : α →₁ₛ[μ] G' // 0 ≤ g } { g : α →₁[μ] G' // 0 ≤ g } _ _
+    @isClosed_property (Nonneg (α →₁ₛ[μ] G')) (Nonneg (α →₁[μ] G')) _ _
       (fun g => 0 ≤ setToL1 hT g)
       (denseRange_coeSimpleFuncNonnegToLpNonneg 1 μ G' one_ne_top) ?_ ?_ g
   · exact (isClosed_Ici (a := 0)).preimage ((setToL1 hT).continuous.comp continuous_induced_dom)
