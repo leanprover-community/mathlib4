@@ -88,7 +88,7 @@ namespace ModObj
 
 variable (M X) in
 /-- The morphism `(m, x) ↦ (m • x, x)`. -/
-@[to_additive]
+@[to_additive /-- The morphism `(m, x) ↦ (m +ᵥ x, x)`. -/]
 def leftSMul : M ⊗ X ⟶ X ⊗ X :=
   lift γ[M, X] (snd _ _)
 
@@ -116,7 +116,8 @@ lemma leftSMul_self : leftSMul M M = lift μ (snd M M) :=
 
 /-- A module object `X` is homogeneous over `M`, if the action is simply transitive, i.e.,
 the morphism `(m, x) ↦ (m • x, x)` is an isomorphism. -/
-@[to_additive]
+@[to_additive /-- An additive module object `X` is homogeneous over `M`, if the action is simply
+transitive, i.e., the morphism `(m, x) ↦ (m • x, x)` is an isomorphism. -/]
 abbrev IsHomogeneous (M : C) [MonObj M] (X : C) [ModObj M X] : Prop :=
   IsIso (leftSMul M X)
 
