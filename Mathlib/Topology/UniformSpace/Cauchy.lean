@@ -309,6 +309,27 @@ theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u
     refine (h j hj).imp fun N hN m hm n hn => hts ⟨u N, hjt ?_, ht' <| hjt ?_⟩
     exacts [hN m hm, hN n hn]
 
+/-- When a sequence `u` is indexed by `ℕ` and the uniformity has an antitone basis, to show `u` is
+Cauchy it suffices to show that pairs of successive terms lie in the descreasing terms of the
+basis. This is a generalization of the convergence criterion for telescoping sums. -/
+theorem Filter.HasAntitoneBasis.cauchySeq_of_succ {s : ℕ → SetRel α α}
+    (h : (𝓤 α).HasAntitoneBasis s) (hcomp : ∀ n, s (n + 1) ○ s (n + 1) ⊆ s n) {u : ℕ → α}
+    (hu : ∀ n, (u n, u (n + 1)) ∈ s (n + 1)) : CauchySeq u := by
+  -- Telescoping the composition bound: if `m ≤ n` then `u m` and `u n` are `s m`-close.
+  have key : ∀ m n, m ≤ n → (u m, u n) ∈ s m := fun m n hmn ↦
+    Nat.decreasingInduction' (fun k _ _ hk ↦ hcomp k ⟨u (k + 1), hu k, hk⟩) hmn
+      (refl_mem_uniformity (h.mem n))
+  rw [h.cauchySeq_iff]
+  intro i _
+  -- Pass to a symmetric entourage `t ⊆ s i` so that the two index orderings can be compared.
+  obtain ⟨t, ht_mem, ht_symm, ht_comp⟩ := comp_symm_of_uniformity (h.mem i)
+  have ht_sub : t ⊆ s i := fun p hp ↦ ht_comp ⟨p.1, refl_mem_uniformity ht_mem, hp⟩
+  obtain ⟨j, hj⟩ := h.mem_iff.1 ht_mem
+  refine ⟨max i j, fun m hm n hn ↦ ?_⟩
+  rcases le_total m n with hmn | hnm
+  · exact h.antitone ((le_max_left i j).trans hm) (key m n hmn)
+  · exact ht_sub (ht_symm (hj (h.antitone ((le_max_right i j).trans hn) (key n m hnm))))
+
 theorem cauchySeq_of_controlled [SemilatticeSup β] [Nonempty β] (U : β → SetRel α α)
     (hU : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s) {f : β → α}
     (hf : ∀ ⦃N m n : β⦄, N ≤ m → N ≤ n → (f m, f n) ∈ U N) : CauchySeq f :=

@@ -181,6 +181,17 @@ theorem closure_subset_of_mem_nhds_one_of_inv_mul_right_subset {s s' t : Set G}
 
 end SeparatelyContinuousMul
 
+section ContinuousMul
+
+variable {G : Type*} [TopologicalSpace G] [Mul G] [ContinuousMul G]
+
+@[to_additive]
+theorem subset_closure_mul
+    {s t : Set G} : closure s * closure t ⊆ closure (s * t) := by
+  simpa [closure_prod_eq] using image_closure_subset_closure_image (s := s ×ˢ t) continuous_mul
+
+end ContinuousMul
+
 section IsTopologicalGroup
 
 variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G] {s t : Set G}
