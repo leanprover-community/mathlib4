@@ -88,41 +88,46 @@ namespace ModObj
 
 variable (M X) in
 /-- The morphism `(m, x) ↦ (m • x, x)`. -/
+@[to_additive]
 def leftSMul : M ⊗ X ⟶ X ⊗ X :=
   lift γ[M, X] (snd _ _)
 
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 lemma leftSMul_fst : leftSMul M X ≫ fst _ _ = γ[M, X] := by
   simp [leftSMul]
 
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 lemma leftSMul_snd : leftSMul M X ≫ snd _ _ = snd _ _ := by
   simp [leftSMul]
 
-@[reassoc]
+@[to_additive (attr := reassoc)]
 lemma lift_leftSMul (Z : C) (x : Z ⟶ X) (m : Z ⟶ M) : lift m x ≫ leftSMul M X = lift (m • x) x := by
   ext <;> simp [Hom.smul_def]
 
+@[to_additive]
 lemma lift_leftSMul_eq_lift_iff (Z : C) (x y : Z ⟶ X) (m : Z ⟶ M) :
     lift m x ≫ leftSMul M X = lift y x ↔ m • x = y := by
   simp [Hom.smul_def, leftSMul, CartesianMonoidalCategory.hom_ext_iff]
 
 attribute [local instance] ModObj.regular in
+@[to_additive]
 lemma leftSMul_self : leftSMul M M = lift μ (snd M M) :=
   rfl
 
 /-- A module object `X` is homogeneous over `M`, if the action is simply transitive, i.e.,
 the morphism `(m, x) ↦ (m • x, x)` is an isomorphism. -/
+@[to_additive]
 abbrev IsHomogeneous (M : C) [MonObj M] (X : C) [ModObj M X] : Prop :=
   IsIso (leftSMul M X)
 
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 lemma inv_leftSMul_snd [IsHomogeneous M X] : inv (leftSMul M X) ≫ snd M X = snd _ _ := by
   simp
 
 open CartesianMonoidalCategory in
 /-- The morphism `(m, x) ↦ (m • x, x)` is an isomorphism if and only if the induced
 action is pointwise simply transitive. -/
+@[to_additive]
 lemma isHomogeneous_iff :
     IsHomogeneous M X ↔ ∀ (Z : C) (x y : Z ⟶ X), ∃! (m : Z ⟶ M), m • x = y := by
   have H (Z : C) (x : Z ⟶ X) (m : Z ⟶ M) :
@@ -145,6 +150,7 @@ lemma isHomogeneous_iff :
 alias isIso_leftSMul_iff := isHomogeneous_iff
 
 attribute [local instance] ModObj.regular in
+@[to_additive]
 instance (G : C) [GrpObj G] : IsHomogeneous G G := by
   refine ⟨lift (G ◁ ι ≫ μ) (snd _ _), ?_, ?_⟩
   · ext

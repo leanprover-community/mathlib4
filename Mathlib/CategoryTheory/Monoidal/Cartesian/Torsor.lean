@@ -33,18 +33,35 @@ open CategoryTheory MonoidalCategory CartesianMonoidalCategory MonObj
 
 variable (J : GrothendieckTopology C)
 
-/-- A homogeneous module object is trivial over `U : C`, if there exists a morphism `U ⟶ X ⊗ U`. -/
+/-- An additive homogeneous module object is trivial over `U : C`, if there exists a morphism
+`U ⟶ X`. -/
 @[mk_iff]
+class _root_.CategoryTheory.AddModObj.IsTrivialOver (M : C) [AddMonObj M] (X : C) [AddModObj M X]
+    (U : C) [AddModObj.IsHomogeneous M X] where
+  nonempty_hom : Nonempty (U ⟶ X)
+
+/-- A homogeneous module object is trivial over `U : C`, if there exists a morphism `U ⟶ X`. -/
+@[mk_iff, to_additive existing]
 class IsTrivialOver (M : C) [MonObj M] (X : C) [ModObj M X] (U : C) [IsHomogeneous M X] where
   nonempty_hom : Nonempty (U ⟶ X)
 
+@[to_additive]
 lemma isTrivialOver_iff_isSplitEpi [IsHomogeneous M X] (U : C) :
     IsTrivialOver M X U ↔ IsSplitEpi (snd X U) :=
   ⟨fun h ↦ ⟨⟨⟨lift h.nonempty_hom.some (𝟙 _), by simp⟩⟩⟩, fun ⟨h⟩ ↦ ⟨⟨h.some.section_ ≫ fst _ _⟩⟩⟩
 
-variable (M X) in
+/-- An additive module object `X` over a monoid object `M` is an additive torsor for the
+Grothendieck topology `J`, if `M` acts simply transitively on `X` and there exists a `J`-covering
+that trivializes `X`. -/
+class _root_.CategoryTheory.AddModObj.IsAddTorsor (J : GrothendieckTopology C) (M : C) [AddMonObj M]
+    (X : C) [AddModObj M X] where
+  isHomogeneous : AddModObj.IsHomogeneous M X := by infer_instance
+  exists_coversTop : ∃ (I : Type max u v) (U : I → C),
+    J.CoversTop U ∧ ∀ (i : I), AddModObj.IsTrivialOver M X (U i)
+
 /-- A module object `X` over a monoid object `M` is a torsor for the Grothendieck topology `J`,
 if `M` acts simply transitively on `X` and there exists a `J`-covering that trivializes `X`. -/
+@[to_additive existing]
 class IsTorsor (J : GrothendieckTopology C) (M : C) [MonObj M] (X : C) [ModObj M X] where
   isHomogeneous : IsHomogeneous M X := by infer_instance
   exists_coversTop : ∃ (I : Type max u v) (U : I → C),
@@ -52,6 +69,7 @@ class IsTorsor (J : GrothendieckTopology C) (M : C) [MonObj M] (X : C) [ModObj M
 
 namespace IsTorsor
 
+@[to_additive]
 instance : IsTorsor J G G where
   exists_coversTop := by
     refine ⟨PUnit, fun _ ↦ 𝟙_ _, ?_, ?_⟩
@@ -67,8 +85,10 @@ variable (M) in
 /-- A morphism `s : U ⟶ X` trivializes a homogeneous module object over `U`, i.e.,
 `X ⊗ U` is isomorphic to `M ⊗ U`.
 This corresponds to `X` being the trivial torsor when restricted to `Over U`. -/
-noncomputable
-def isoTensorOfHom {U : C} (s : U ⟶ X) [IsHomogeneous M X] : M ⊗ U ≅ X ⊗ U where
+@[to_additive /-- A morphism `s : U ⟶ X` trivializes an additive homogeneous module object over
+`U`, i.e., `X ⊗ U` is isomorphic to `M ⊗ U`. This corresponds to `X` being the trivial torsor when
+restricted to `Over U`. -/]
+noncomputable def isoTensorOfHom {U : C} (s : U ⟶ X) [IsHomogeneous M X] : M ⊗ U ≅ X ⊗ U where
   hom := lift (𝟙 _ ⊗ₘ s) (snd _ _) ≫ γ[M, X] ▷ U
   inv := lift (𝟙 _ ⊗ₘ s) (snd _ _) ≫ inv (leftSMul M X) ▷ U ≫ fst _ _ ▷ U
   hom_inv_id := by
@@ -87,24 +107,26 @@ def isoTensorOfHom {U : C} (s : U ⟶ X) [IsHomogeneous M X] : M ⊗ U ≅ X ⊗
     simp only [Category.assoc, reassoc_of% h1]
     simp [h2]
 
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 lemma isoTensorOfHom_hom_fst {U : C} (s : U ⟶ X) [IsHomogeneous M X] :
     (isoTensorOfHom M s).hom ≫ fst _ _ = _ ◁ s ≫ γ[M, X] := by
   simp [isoTensorOfHom]
 
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 lemma isoTensorOfHom_hom_snd {U : C} (s : U ⟶ X) [IsHomogeneous M X] :
     (isoTensorOfHom M s).hom ≫ snd _ _ = snd _ _ := by
   simp [isoTensorOfHom]
 
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 lemma isoTensorOfHom_inv_snd {U : C} (s : U ⟶ X) [IsHomogeneous M X] :
     (isoTensorOfHom M s).inv ≫ snd _ _ = snd _ _ := by
   simp [isoTensorOfHom]
 
 /-- `isoTensorOfHom` is a module object homomorphism in `Over U`. To avoid passing
 to `Over U`, we state this as an equality of morphisms `C`. -/
-@[reassoc]
+@[to_additive (attr := reassoc)
+/-- `isoTensorOfHom` is an additive module object homomorphism in `Over U`. To avoid passing
+to `Over U`, we state this as an equality of morphisms `C`. -/]
 lemma smul_isoTensorOfHom_hom {U : C} (s : U ⟶ X) [IsHomogeneous M X] :
     μ ▷ U ≫ (isoTensorOfHom M s).hom =
       (α_ _ _ _).hom ≫ M ◁ (isoTensorOfHom M s).hom ≫ (α_ _ _ _).inv ≫ γ[M, X] ▷ U := by
@@ -118,9 +140,13 @@ lemma smul_isoTensorOfHom_hom {U : C} (s : U ⟶ X) [IsHomogeneous M X] :
 variable (M) in
 /-- Any global section section `𝟙_ C ⟶ X`, induces an isomorphism `M ≅ X`. This
 is compatible with the module structure. -/
+@[to_additive
+/-- Any global section section `𝟙_ C ⟶ X`, induces an isomorphism `M ≅ X`. This
+is compatible with the additive module structure. -/]
 noncomputable def isoOfHom (s : 𝟙_ C ⟶ X) [IsHomogeneous M X] : M ≅ X :=
   (ρ_ _).symm ≪≫ isoTensorOfHom M s ≪≫ ρ_ _
 
+@[to_additive]
 instance (s : 𝟙_ C ⟶ X) [IsHomogeneous M X] :
     IsModHom M (isoOfHom M s).hom where
   smul_hom := by
@@ -129,6 +155,7 @@ instance (s : 𝟙_ C ⟶ X) [IsHomogeneous M X] :
     simp only [Iso.trans_hom, Iso.symm_hom, reassoc_of% this, smul_isoTensorOfHom_hom_assoc]
     simp
 
+@[to_additive]
 lemma isTrivialOver_iff_nonempty_iso [IsHomogeneous M X] (U : C) :
     IsTrivialOver M X U ↔ Nonempty (M ⊗ U ≅ X ⊗ U) :=
   ⟨fun h ↦ ⟨isoTensorOfHom _ h.nonempty_hom.some⟩,
