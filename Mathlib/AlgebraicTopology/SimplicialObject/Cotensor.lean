@@ -561,12 +561,6 @@ lemma bracketStdSimplexIso_inv_π (n : ℕ) :
 
 variable {K L M : SSet.{u}} [K.Nonsingular] [L.Nonsingular] [M.Nonsingular]
 
-@[simps!]
-def _root_.CategoryTheory.CategoryOfElements.mapπiso
-    {C : Type*} [Category* C] {F G : C ⥤ Type u} (f : F ⟶ G) :
-    CategoryOfElements.map f ⋙ CategoryOfElements.π G ≅ CategoryOfElements.π F :=
-  NatIso.ofComponents fun _ ↦ Iso.refl _
-
 set_option backward.isDefEq.respectTransparency false in
 noncomputable
 def bracketMap [X.HasBracket K] [X.HasBracket L] (f : K ⟶ L) [Mono f] :

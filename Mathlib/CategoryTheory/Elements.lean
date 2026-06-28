@@ -51,6 +51,10 @@ def Functor.Elements (F : C ⥤ Type w) :=
 /-- Constructor for the type `F.Elements` when `F` is a functor to types. -/
 abbrev Functor.elementsMk (F : C ⥤ Type w) (X : C) (x : F.obj X) : F.Elements := ⟨X, x⟩
 
+lemma Functor.elementsMk_surjective {F : C ⥤ Type w} (A : F.Elements) :
+    ∃ (X : C) (x : F.obj X), A = F.elementsMk X x :=
+  ⟨A.1, A.2, rfl⟩
+
 lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
     (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
   cases x
@@ -84,6 +88,10 @@ namespace CategoryOfElements
 def homMk {F : C ⥤ Type w} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f x.snd = y.snd) :
     x ⟶ y :=
   ⟨f, hf⟩
+
+lemma homMk_surjective {F : C ⥤ Type w} {A B : F.Elements} (f : A ⟶ B) :
+    ∃ (u : A.1 ⟶ B.1) (hu : F.map u A.2 = B.2), f = homMk _ _ u hu :=
+  ⟨f.1, f.2, rfl⟩
 
 @[ext]
 theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
@@ -165,6 +173,21 @@ def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂
 @[simp]
 theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F₂ = π F₁ :=
   rfl
+
+@[simp]
+lemma map_id_obj {F : C ⥤ Type w} (j : F.Elements) : (map (𝟙 F)).obj j = j :=
+  rfl
+
+@[simp]
+lemma map_comp_obj {F G H : C ⥤ Type w} (f : F ⟶ G) (g : G ⟶ H) (j : F.Elements) :
+    (map (f ≫ g)).obj j = (map g).obj ((map f).obj j) :=
+  rfl
+
+/-- The natural isomorphism witnessing the compatiblity of `CategoryOfElements.map` with
+the projection. -/
+@[simps!]
+def mapπiso {F G : C ⥤ Type w} (f : F ⟶ G) : map f ⋙ π G ≅ π F :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- The forward direction of the equivalence `F.Elements ≅ (*, F)`. -/
 def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where

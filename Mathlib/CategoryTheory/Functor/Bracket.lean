@@ -7,11 +7,23 @@ module
 
 public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
-# Bracket operation
+# Bracket operation on copresheaves
+
+Given a functor `X : C ⥤ A` and a copresheaf `K : C ⥤ Type w`, we define the object
+`X[K] : A`, which is the limit over the diagram `CategoryOfElements.π K ⋙ X : ∫ K ⥤ A`.
+
+This is used to define a bracket operation of a (semi)simplicial object with a (semi)simplicial
+set.
+
+## Main declarations
+
+- `CategoryTheory.Functor.bracket`: The bracket `X[K]` if it exists.
+- `CategoryTheory.Functor.isLimitMapConeBracketFunctor`: The bracket sends
+  colimits to limits: `X[colimⱼ Kⱼ] ≅ limⱼ X[Kⱼ]`.
 -/
 
 @[expose] public section
@@ -20,35 +32,18 @@ universe w u
 
 open CategoryTheory
 
-@[simps!]
-def _root_.CategoryTheory.CategoryOfElements.mapπiso
-    {C : Type*} [Category* C] {F G : C ⥤ Type u} (f : F ⟶ G) :
-    CategoryOfElements.map f ⋙ CategoryOfElements.π G ≅ CategoryOfElements.π F :=
-  NatIso.ofComponents fun _ ↦ Iso.refl _
-
-@[simp]
-lemma CategoryTheory.CategoryOfElements.map_id_obj
-    {C : Type*} [Category* C] {F : C ⥤ Type u} (j : F.Elements) :
-    (map (𝟙 F)).obj j = j :=
-  rfl
-
-@[simp]
-lemma CategoryTheory.CategoryOfElements.map_comp_obj
-    {C : Type*} [Category* C] {F G H : C ⥤ Type u} (f : F ⟶ G) (g : G ⟶ H)
-    (j : F.Elements) :
-    (map (f ≫ g)).obj j = (map g).obj ((map f).obj j) :=
-  rfl
-
-namespace CategoryTheory
+namespace CategoryTheory.Functor
 
 open Limits
 
 variable {C A : Type*} [Category* C] [Category* A]
   (X : C ⥤ A) (K : C ⥤ Type w)
 
+/-- The diagram defining the bracket `X[K]` given by `CategoryOfElements.π K ⋙ X`. -/
 abbrev bracketDiag : K.Elements ⥤ A :=
   CategoryOfElements.π K ⋙ X
 
+/-- The bracket `X[K]` exists if the limit over `bracketDiag X K` exists. -/
 abbrev HasBracket : Prop :=
   HasLimit (bracketDiag X K)
 
@@ -60,6 +55,8 @@ instance (K : (hasBracket X).FullSubcategory) : HasBracket X K.obj := K.property
 
 instance (K : (hasBracket X).FullSubcategory) : HasBracket X ((hasBracket X).ι.obj K) := K.property
 
+/-- The bracket `X[K]` of a functor `X : C ⥤ A` and a copresheaf `K : C ⥤ Type w` is
+the limit over the diagram `CategoryOfElements.π K ⋙ X`. -/
 noncomputable abbrev bracket [HasBracket X K] : A :=
   limit (bracketDiag X K)
 
@@ -101,54 +98,60 @@ attribute [local instance] preservesLimitsOfShape_op
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+/-- `X[-]` sends colimits of copresheaves to limits: `X[colimⱼ Kⱼ] ≅ limⱼ X[Kⱼ]`.
+Here the colimits are taken in `C ⥤ Type w`. -/
 noncomputable
-def isLimit_mapCone_bracketFunctor {J : Type*} [Category* J] [HasColimitsOfShape J (Type w)]
+def isLimitMapConeBracketFunctor {J : Type*} [Category* J] [HasColimitsOfShape J (Type w)]
     (D : J ⥤ (hasBracket.{w} X).FullSubcategory)
     (c : Cocone D) (hc : IsColimit ((hasBracket X).ι.mapCocone c)) :
     IsLimit ((bracketFunctor X).mapCone c.op) := by
-  letI c'' (s : Cone (D.op ⋙ bracketFunctor X)) (U : C) :
+  let c'' (s : Cone (D.op ⋙ bracketFunctor X)) (U : C) :
       ((D ⋙ (hasBracket X).ι) ⋙ (evaluation C (Type w)).obj U).CoconeTypes :=
     { pt := s.pt ⟶ X.obj U
       ι j x := s.π.app (.op j) ≫ limit.π (bracketDiag X (D.obj j).obj) (Functor.elementsMk _ U x)
-      ι_naturality u :=by
+      ι_naturality u := by
         ext
-        simp [← dsimp% s.w u.op]
-        rfl }
-  letI hU (U : C) := (Types.isColimit_iff_coconeTypesIsColimit _).mp
+        simp [← dsimp% s.w u.op, CategoryOfElements.map] }
+  have hU (U : C) := (Types.isColimit_iff_coconeTypesIsColimit _).mp
     ⟨isColimitOfPreserves ((evaluation _ _).obj U) hc⟩
-  refine ⟨?_, ?_, ?_⟩
-  · intro s
-    dsimp [bracketFunctor]
-    refine limit.lift (bracketDiag X c.pt.obj)
+  let hom (s : Cone (D.op ⋙ bracketFunctor X)) (U : C) : c.pt.obj.obj U → (s.pt ⟶ X.obj U) :=
+    (hU U).desc (c'' s U)
+  have hom_fac (s : Cone (D.op ⋙ bracketFunctor X)) (U : C) (j : J) (x) :
+      hom s U (((c.ι.app j).hom.app U) x) =
+        s.π.app (.op j) ≫ limit.π (bracketDiag X (D.obj j).obj) (Functor.elementsMk _ U x) :=
+    (hU U).fac_apply (c'' s U) j x
+  have hom_comp (s : Cone (D.op ⋙ bracketFunctor X)) (U V : C) (f : U ⟶ V) :
+      hom s V ∘ c.pt.obj.map f = (· ≫ X.map f) ∘ hom s U := by
+    refine (hU U).funext fun j ↦ ?_
+    ext x
+    dsimp
+    rw [dsimp% hom_fac, ← ConcreteCategory.comp_apply, ← dsimp% (c.ι.app j).hom.naturality f]
+    dsimp
+    rw [dsimp% hom_fac]
+    have := limit.w (bracketDiag X (D.obj j).obj)
+      (CategoryOfElements.homMk (Functor.elementsMk _ U x)
+        (Functor.elementsMk _ V ((D.obj j).obj.map f x)) f rfl)
+    simp [dsimp% this]
+  refine ⟨fun s ↦ ?_, ?_, ?_⟩
+  · refine limit.lift (bracketDiag X c.pt.obj)
       { pt := s.pt
-        π.app := ?_
+        π.app U := hom s U.1 U.2
         π.naturality := ?_ }
-    · intro U
-      letI hc' := isColimitOfPreserves ((evaluation _ _).obj U.1) hc
-      exact (hU U.1).desc (c'' s U.1) U.2
-    · intro ⟨U, xU⟩ ⟨V, xV⟩ ⟨(f : U ⟶ V), hf⟩
-      dsimp at hf
-      obtain ⟨j, a, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective (hU U) xU
-      obtain ⟨k, b, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective (hU V) xV
-      have := (hU U).fac_apply (c'' s U) j
-      simp only [Functor.coconeTypesEquiv_symm_apply_ι, Functor.comp_obj, ObjectProperty.ι_obj,
-        evaluation_obj_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
-        ObjectProperty.ι_map, evaluation_obj_map, CategoryOfElements.π_obj, Functor.const_obj_map,
-        dsimp% (hU V).fac_apply (c'' s V) k, Category.id_comp, dsimp% (hU U).fac_apply (c'' s U) j,
-        Functor.comp_map, CategoryOfElements.π_map]
-      simp only [Functor.comp_obj, Functor.op_obj, bracketFunctor_obj, Category.assoc, c'']
-      dsimp at a
-      dsimp at b hf
-      have := (D.obj j).obj.map f
-      have := limit.w (bracketDiag X (D.obj j).obj)
-        (j := Functor.elementsMk _ _ a) (j' := Functor.elementsMk _ V ((D.obj j).obj.map f a))
-        (f := CategoryOfElements.homMk _ _ f rfl)
-      dsimp at this
-      rw [this]
-      have := s.w (j := .op j) (j' := .op k) sorry
-      -- have := s.w _
-      sorry
-  · sorry
-  · sorry
+    · intro A B f
+      obtain ⟨U, x, rfl⟩ := Functor.elementsMk_surjective A
+      obtain ⟨V, y, rfl⟩ := Functor.elementsMk_surjective B
+      obtain ⟨f, hf, rfl⟩ := CategoryOfElements.homMk_surjective f
+      simp [← dsimp% congr($(hom_comp s _ _ f) x), dsimp% hf]
+  · intro s j
+    apply limit.hom_ext
+    intro A
+    obtain ⟨U, x, rfl⟩ := Functor.elementsMk_surjective A
+    simp [dsimp% hom_fac]
+  · intro s m hm
+    apply limit.hom_ext (F := bracketDiag X c.pt.obj)
+    intro A
+    obtain ⟨U, x, rfl⟩ := Functor.elementsMk_surjective A
+    obtain ⟨j, a, rfl⟩ := (hU U).ι_jointly_surjective x
+    simp [dsimp% hom_fac, ← hm, CategoryOfElements.map]
 
-end CategoryTheory
+end CategoryTheory.Functor
