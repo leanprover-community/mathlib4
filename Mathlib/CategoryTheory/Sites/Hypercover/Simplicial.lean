@@ -7,8 +7,10 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Semi
 public import Mathlib.CategoryTheory.Functor.Bracket
-
-@[expose] public section
+public import Mathlib.CategoryTheory.MorphismProperty.LocalEpi
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
+public import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Basic
 
 /-!
 # Hypercovers
@@ -16,6 +18,8 @@ public import Mathlib.CategoryTheory.Functor.Bracket
 In this file we define hypercovers as semi-simplicial objects satisfying a
 covering condition.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits SimplicialObject
   Simplicial
@@ -49,5 +53,36 @@ The `1`-truncation of a hypercover in the above sense induces a `1`-hypercover
 -/
 structure MorphismProperty.IsHypercover [HasFiniteLimits C] (P : MorphismProperty C) : Prop where
   prop_bracketMap (n : ℕ) : P (X.bracketMap <| (∂Δ[n]ₛ : (Δ[n]ₛ : SemiSSet.{0}).Subcomplex).ι)
+
+/-- The `1`-truncation of a semi-simplical object in `FormalCoproduct.{w} (Over S)`
+induces a pre-`1`-hypercover of `S`. -/
+@[simps]
+def SemiSimplicialObject.preOneHypercover {S : C}
+    (H : SemiSimplicialObject (FormalCoproduct.{w} (Over S))) : PreOneHypercover.{w} S where
+  I₀ := (H _⦋0⦌ₛ).I
+  X i := ((H _⦋0⦌ₛ).obj i).left
+  f i := ((H _⦋0⦌ₛ).obj i).hom
+  I₁ i j := { x : (H _⦋1⦌ₛ).I // (H.δ 0).f x = i ∧ (H.δ 1).f x = j }
+  Y _ _ k := ((H _⦋1⦌ₛ).obj k).left
+  p₁ i j k := ((H.δ 0).φ k.1).left ≫ ((H _⦋0⦌ₛ).objIsoOfEq k.2.1).hom.left
+  p₂ i j k := ((H.δ 1).φ k.1).left ≫ ((H _⦋0⦌ₛ).objIsoOfEq k.2.2).hom.left
+  w := by simp
+
+variable (J : GrothendieckTopology C)
+
+variable {A : Type*} [Category* A]
+
+/-- Covering morphisms in the sense of SGA. -/
+def GrothendieckTopology.couvrant : MorphismProperty (Cᵒᵖ ⥤ A) :=
+  ObjectProperty.localEpi (Presheaf.IsSheaf J)
+
+/-- The `1`-truncation of a hypercover induces a `1`-hypercover. -/
+def GrothendieckTopology.OneHypercover.ofIsHypercover {S : C}
+    (H : SemiSimplicialObject (FormalCoproduct.{w} (Over S)))
+    (h : (J.over S).couvrant.IsHypercover <| H ⋙ FormalCoproduct.uliftYoneda) :
+    J.OneHypercover S where
+  __ := H.preOneHypercover
+  mem₀ := sorry
+  mem₁ := sorry
 
 end CategoryTheory
