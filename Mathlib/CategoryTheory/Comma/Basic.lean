@@ -73,7 +73,7 @@ structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   /-- A morphism from `L.obj left` to `R.obj right` -/
   hom : L.obj left ⟶ R.obj right
 
-set_option linter.translateOverwrite false
+set_option linter.translate.overwrite false
 
 attribute [to_dual existing right] Comma.left
 attribute [to_dual self] Comma.mk
@@ -340,7 +340,7 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
       right := f.right }
 
 set_option linter.existingAttributeWarning false
-set_option linter.translateGenerateName false
+set_option linter.translate.generateName false
 attribute [to_dual existing mapRight_map_right] mapLeft_map_left
 attribute [to_dual existing mapRight_map_left] mapLeft_map_right
 

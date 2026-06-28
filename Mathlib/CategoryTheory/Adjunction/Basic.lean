@@ -119,8 +119,8 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
     dsimp% unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
 
 to_dual_name_hint Left Right
-set_option linter.translateOverwrite false
-set_option linter.translateGenerateName false
+set_option linter.translate.overwrite false
+set_option linter.translate.generateName false
 
 attribute [to_dual existing counit] Adjunction.unit
 attribute [to_dual existing right_triangle_components] Adjunction.left_triangle_components
