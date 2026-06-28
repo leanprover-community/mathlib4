@@ -43,7 +43,7 @@ variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover.{u} X) (f : X ⟶ Z) (g : Y ⟶ 
 variable [∀ i, HasPullback (𝒰.f i ≫ f) g]
 
 /-- The intersection of `Uᵢ ×[Z] Y` and `Uⱼ ×[Z] Y` is given by (Uᵢ ×[Z] Y) ×[X] Uⱼ -/
-@[implicit_reducible]
+@[instance_reducible]
 def v (i j : 𝒰.I₀) : Scheme :=
   pullback ((pullback.fst (𝒰.f i ≫ f) g) ≫ 𝒰.f i) (𝒰.f j)
 

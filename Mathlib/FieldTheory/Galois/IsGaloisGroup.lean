@@ -506,6 +506,7 @@ instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
 
 variable (E : IntermediateField K L) [hE : IsGaloisGroup H E L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G` is a finite Galois group for `L/K`, `N` is a normal subgroup that is a Galois group for
 `L/F`, and `H` is a subgroup that is a Galois group for `L/E` with `E ≤ F`, then the image of `H`
 under the canonical quotient map `G → G ⧸ N` is a Galois group for `F/E`. -/

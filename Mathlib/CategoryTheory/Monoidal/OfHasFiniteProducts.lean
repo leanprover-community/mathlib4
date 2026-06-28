@@ -132,7 +132,7 @@ open MonoidalCategory
 set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
-@[simps, implicit_reducible]
+@[simps, instance_reducible]
 def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
   braiding := Limits.coprod.braiding

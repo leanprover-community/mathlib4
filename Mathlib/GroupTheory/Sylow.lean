@@ -751,7 +751,7 @@ theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] : Nat.card G ∣ ∏ g : 
   simp [Finset.card_sdiff, ← Nat.card_eq_fintype_card, hH]
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : Unique (Sylow p G) := by
   refine { uniq := fun Q ↦ ?_ }

@@ -30,7 +30,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- If `X` represents a presheaf of additive monoids, then `X` is an additive monoid object. -/]
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     GrpObj X where

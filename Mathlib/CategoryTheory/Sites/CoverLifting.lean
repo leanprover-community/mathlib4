@@ -113,7 +113,6 @@ section
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Adjunction.isCocontinuous_iff_coverPreserving (adj : F ⊣ G) :
     F.IsCocontinuous J K ↔ CoverPreserving K J G := by
   refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ ⟨?_⟩⟩

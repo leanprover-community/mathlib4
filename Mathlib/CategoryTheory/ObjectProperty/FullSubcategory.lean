@@ -55,6 +55,7 @@ lemma hom_ext {X Y : P.FullSubcategory} {f g : X ⟶ Y} (h : f.hom = g.hom) : f 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
 -/
+@[implicit_reducible]
 def ι : P.FullSubcategory ⥤ C :=
   inducedFunctor FullSubcategory.obj
 

@@ -106,7 +106,6 @@ noncomputable def mapBifunctorLeftUnitor : mapBifunctorMapObj F p ((single₀ I)
     (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y j)).symm)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorLeftUnitor_hom_apply (j : J) :
     ιMapBifunctorMapObj F p ((single₀ I).obj X) Y 0 j j (hp j) ≫
@@ -123,7 +122,6 @@ lemma mapBifunctorLeftUnitor_inv_apply (j : J) :
 
 variable {Y Y'}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorLeftUnitor_inv_naturality :
     φ ≫ (mapBifunctorLeftUnitor F X e p hp Y').inv =
@@ -226,7 +224,6 @@ noncomputable def mapBifunctorRightUnitor : mapBifunctorMapObj F p X ((single₀
     (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X j)).symm)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorRightUnitor_hom_apply (j : J) :
     ιMapBifunctorMapObj F p X ((single₀ I).obj Y) j 0 j (hp j) ≫
