@@ -635,7 +635,7 @@ theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
 
 theorem intermediate_value_Ici {a : α} {f : α → δ} (hf : ContinuousOn f (Ici a))
     (htop : Tendsto f atTop atTop) : Ici (f a) ⊆ f '' Ici a :=
-  IsPreconnected.intermediate_value_Ici isPreconnected_Ici self_mem_Ici
+  isPreconnected_Ici.intermediate_value_Ici self_mem_Ici
     (le_principal_iff.mpr (Ici_mem_atTop a)) hf htop
 
 theorem intermediate_value_Ici' {a : α} {f : α → δ} (hf : ContinuousOn f (Ici a))
