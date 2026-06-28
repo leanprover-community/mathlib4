@@ -353,7 +353,7 @@ instance : RKHS 𝕜 (H + H₁) X V where
 variable (V) in
 omit [CompleteSpace V] in
 /-- The evaluation of a quotient element is `generator` on any representative. -/
-lemma coe_mk (w : WithLp 2 (H × H₁)) (x : X) :
+lemma mk_apply (w : WithLp 2 (H × H₁)) (x : X) :
     (Submodule.Quotient.mk w : H + H₁) x = generator H H₁ w x := by
   congr
 
@@ -363,7 +363,7 @@ lemma kerFun_mem_orthogonal (x : X) (v : V) :
   rw [LinearMap.mem_ker, funext_iff] at hp
   simp_all [generator, ← inner_add_left]
 
-lemma kerFun_eq_mk (x : X) (v : V) :
+lemma kerFun_apply_eq_mk (x : X) (v : V) :
     kerFun (H + H₁) x v = Submodule.Quotient.mk (WithLp.toLp 2 (kerFun H x v, kerFun H₁ x v)) := by
   rw [ext_iff_inner_left (𝕜 := 𝕜)]
   intro f
@@ -383,7 +383,7 @@ lemma kerFun_eq_mk (x : X) (v : V) :
 
 theorem kernel_sum_eq_sum_of_kernel : kernel (H + H₁) = kernel H + kernel H₁ := by
   ext
-  simp [← kerFun_apply, kerFun_eq_mk H H₁ _ _]
+  simp [← kerFun_apply, kerFun_apply_eq_mk H H₁ _ _]
   rfl
 
 /-- Map of an function `f : Sum' H H₁` to the unique pair in `H × H₁` that achieves the norm. -/
@@ -393,7 +393,7 @@ def project : H + H₁ →L[𝕜] H × H₁ :=
 
 theorem project_kerFun (x : X) (v : V) :
     project H H₁ (kerFun (H + H₁) x v) = ⟨kerFun H x v, kerFun H₁ x v⟩ := by
-  simp [project, kerFun_eq_mk,
+  simp [project, kerFun_apply_eq_mk,
     (generator H H₁).ker.quotientEquivOrthogonal_mk _ (kerFun_mem_orthogonal H H₁ x v)]
 
 end Sum
