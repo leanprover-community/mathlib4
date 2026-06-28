@@ -96,7 +96,7 @@ theorem of_mul_inv_t (a : A) :
 /-- Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t` -/
 def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     HNNExtension G A B φ →* H :=
-  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le <| by
+  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le.2 <| by
     rintro _ _ ⟨a, rfl, rfl⟩
     simp [hx])
 

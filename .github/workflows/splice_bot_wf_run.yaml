@@ -45,10 +45,14 @@ jobs:
           owner: leanprover-community
 
       - name: Run splice bot action
-        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@a463ae17022e8eb5929a208c1b136aeebcaf77e1
+        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@d86d20efffbd18f839199fdd5ec126570f7eceda
         with:
           source_workflow: ${{ github.event.workflow_run.name }}
           push_to_fork: leanprover-community/mathlib4_copy
+          # Title the split PR so it passes check_pr_titles.yaml: scope without
+          # the Mathlib/ prefix or the .lean extension.
+          pr_title: 'chore({file_scope}): automated extraction from #{pr_number}'
+          scope_strip_prefix: 'Mathlib/'
           min_repo_permission: 'disabled'
           allow_pr_author: 'true'
           allowed_teams: |

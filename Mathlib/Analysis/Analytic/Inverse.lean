@@ -133,8 +133,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       (p.leftInv i x (n + 2) fun j : Fin (n + 2) => p 1 fun _ => v j) =
         -∑ c ∈ {c : Composition (n + 2) | c.length < n + 2}.toFinset,
             (p.leftInv i x c.length) (p.applyComposition c v) := by
-      simp only [leftInv, ContinuousMultilinearMap.neg_apply, neg_inj,
-        ContinuousMultilinearMap.sum_apply]
+      simp only [leftInv, _root_.neg_apply, neg_inj, _root_.sum_apply]
       convert!
         (sum_toFinset_eq_subtype (fun c : Composition (n + 2) => c.length < n + 2)
               (fun c : Composition (n + 2) =>
@@ -629,7 +628,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
   have L : Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
     apply (closed_nhds_basis (g (f (x + y)))).tendsto_right_iff.2
     rintro u ⟨hu, u_closed⟩
-    simp only [id_eq, eventually_atTop, ge_iff_le]
+    simp only [id_eq, eventually_atTop]
     rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
     obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
         q.partialSum a (p.partialSum b y - (p 0) fun _ ↦ 0) ∈ v := by
