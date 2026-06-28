@@ -118,10 +118,9 @@ section LinearOrderedSemifield
 
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
-instance semifield : Semifield { x : α // 0 ≤ x } := fast_instance%
-  Subtype.coe_injective.semifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
-    Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
-    Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
+instance semifield : Semifield { x : α // 0 ≤ x } where
+  __ := divisionSemiring
+  mul_comm := mul_comm
 
 end LinearOrderedSemifield
 
