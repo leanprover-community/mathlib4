@@ -447,7 +447,7 @@ lemma Fin.addRothNumber_eq_rothNumberNat {k : Fin (n + 1)} (hkn : 2 * ↑k ≤ n
     addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
   IsAddFreimanIso.addRothNumber_congr <| mod_cast isAddFreimanIso_Iio two_ne_zero hkn
 
-lemma Fin.addRothNumber_le_rothNumberNat (n : ℕ) (k : Fin (n + 1)) :
+lemma Fin.addRothNumber_le_rothNumberNat {n : ℕ} (k : Fin (n + 1)) :
     addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
   open Fin.CommRing in -- TODO: should this be refactored to avoid needing the coercion?
   suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by
