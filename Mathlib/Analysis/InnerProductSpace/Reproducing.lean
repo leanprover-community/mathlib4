@@ -313,42 +313,32 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
 
 end OfKernel
 
-section Sum
+namespace Sum
 
-variable {H₁ : Type*} [NormedAddCommGroup H₁] [InnerProductSpace 𝕜 H₁]
+variable (H₁ : Type*) [NormedAddCommGroup H₁] [InnerProductSpace 𝕜 H₁] [CompleteSpace H₁]
 variable [RKHS 𝕜 H₁ X V]
-omit [CompleteSpace H] [CompleteSpace V]
 
-variable (H H₁) in
-/-- The operator `(f,g) ↦ ↑f + ↑f`, where addition is in `X→V`. -/
+variable (H)
+
+/-- The operator `(f,g) ↦ ↑f + ↑f`, where addition is in `X → V`. -/
 def generator : WithLp 2 (H × H₁) →L[𝕜] (X → V) :=
   ((coeCLM (H:=H) 𝕜).coprod (coeCLM (H:=H₁) 𝕜)) ∘L
     (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).toContinuousLinearMap
 
-variable (H H₁) in
+variable {H H₁} in
+omit [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
 @[simp]
 lemma generator_apply (f : H) (g : H₁) (x : X) :
     generator H H₁ (WithLp.toLp 2 (f,g)) x = f x + g x := by
-  simp [generator]
+  rfl
 
 instance : IsClosed ((generator H H₁).ker : Set (WithLp 2 (H × H₁))) :=
   (generator H H₁).isClosed_ker
 
--- ROUTE 2:
-
-variable (H H₁) in
 abbrev Sum' := WithLp 2 (H × H₁) ⧸ (generator H H₁).ker
 
-variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
 instance : RKHS 𝕜 (Sum' H H₁) X V where
-  coeCLM := {
-    toLinearMap := (generator H H₁).ker.liftQ (generator H H₁).toLinearMap (le_refl _)
-    cont := Continuous.quotient_lift (generator H H₁).continuous
-      (fun a b hab => by
-        have hker : -a + b ∈ (generator H H₁).ker := QuotientAddGroup.leftRel_apply.mp hab
-        simp only [LinearMap.mem_ker, coe_coe, map_add, map_neg] at hker
-        rw [← neg_add_eq_zero]
-        exact hker) }
+  coeCLM := (generator H H₁).ker.liftQL (generator H H₁) (le_refl _)
   coeCLM_injective := fun f g hfg => by
     have hinj : Function.Injective
         ((generator H H₁).ker.liftQ (generator H H₁).toLinearMap (le_refl _)) := by
@@ -356,227 +346,84 @@ instance : RKHS 𝕜 (Sum' H H₁) X V where
       exact Submodule.ker_liftQ_eq_bot _ _ (le_refl _) (le_refl _)
     exact hinj hfg
 
-/-- The RKHS generator with its range restricted to the RKHS. -/
-def generatorRestricted : WithLp 2 (H × H₁) →L[𝕜] Sum' H H₁ :=
-  ((generator H H₁).ker.mkQ).mkContinuous 1
-    (fun x => by rw [one_mul]; exact Submodule.Quotient.norm_mk_le _ x)
+variable (V) in
+omit [CompleteSpace V] in
+/-- The evaluation of a quotient element is `generator` on any representative. -/
+lemma coe_mk (w : WithLp 2 (H × H₁)) (x : X) :
+    (Submodule.Quotient.mk w : Sum' H H₁) x = generator H H₁ w x := by
+  congr
 
-variable (𝕜 H H₁) in
-variable [CompleteSpace H] [CompleteSpace H₁] in
-@[simp]
-lemma generatorRestricted_def (f : WithLp 2 (H × H₁)) :
-    generatorRestricted f = (generator H H₁) f := by
-  rw [generatorRestricted]
-  rfl
+lemma kerFun_mem_orthogonal (x : X) (v : V) :
+    (WithLp.toLp 2 (kerFun H x v, kerFun H₁ x v)) ∈ (generator H H₁).kerᗮ := by
+  intro p hp
+  rw [LinearMap.mem_ker, funext_iff] at hp
+  simp_all [generator, ← inner_add_left]
 
-variable (𝕜 H H₁) in
-/-- Embedding of `H` into the RKHS `Sum' H H₁` -/
-def coeL' : H →L[𝕜] (Sum' H H₁) := generatorRestricted
-  ∘L (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).symm.toContinuousLinearMap
-  ∘L ContinuousLinearMap.prod (ContinuousLinearMap.id 𝕜 H) 0
-
-variable (𝕜 H H₁) in
-/-- Embedding of `H₁` into the RKHS `Sum' H H₁` -/
-def coeR' : H₁ →L[𝕜] (Sum' H H₁) := generatorRestricted
-  ∘L (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).symm.toContinuousLinearMap
-  ∘L ContinuousLinearMap.prod 0 (ContinuousLinearMap.id 𝕜 H₁)
-
-variable (𝕜 H H₁) in
-variable [CompleteSpace H] [CompleteSpace H₁] in
-@[simp]
-lemma coeL'_apply (f : H) (x : X) : (coeL' 𝕜 H H₁) f x = f x := by simp [coeL']
-
-variable (𝕜 H H₁) in
-variable [CompleteSpace H] [CompleteSpace H₁] in
-@[simp]
-lemma coeR'_apply (f : H₁) (x : X) : (coeR' 𝕜 H H₁) f x = f x := by simp [coeR']
-
-variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
-lemma adjoint_coeL_add_adjoint_coeR_eq (f : Sum' H H₁) (x : X) :
-    (adjoint (coeL' 𝕜 H H₁) f) x + (adjoint (coeR' 𝕜 H H₁) f) x = f x := by
-  rw [ext_iff_inner_left (𝕜 := 𝕜)]
-  intro v
-  rw [inner_add_right]
-  simp_rw [← kerFun_inner, adjoint_inner_right]
-  rw [kerFun_inner x v f]
-
-variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
-theorem kerFun_sum_eq_sum_of_kerFun' (x : X) :
-    kerFun (Sum' H H₁) x = (coeL' 𝕜 H H₁) ∘L kerFun H x + (coeR' 𝕜 H H₁) ∘L kerFun H₁ x := by
-  apply ContinuousLinearMap.ext
-  intro v
-  -- ext
-  -- simp
-  -- rw [coeL'_apply, coeR'_apply]
+lemma kerFun_eq_mk (x : X) (v : V) :
+    kerFun (Sum' H H₁) x v = Submodule.Quotient.mk (WithLp.toLp 2 (kerFun H x v, kerFun H₁ x v)) := by
   rw [ext_iff_inner_left (𝕜 := 𝕜)]
   intro f
-  obtain ⟨⟨p1,p2⟩ , hp⟩ := Quotient.exists_rep f
-  have hs : p1 x + p2 x = f x := by sorry
-  simp
-  rw [← hs]
-  rw [inner_add_right, ← adjoint_inner_left, inner_kerFun, ← adjoint_inner_left, inner_kerFun]
-  -- rw [show (Submodule.Quotient.mk (WithLp.toLp 2 (p1, p2))) x = ↑(generator H H₁) (WithLp.toLp 2 (p1, p2)) x from rfl]
-  rw [← adjoint_coeL_add_adjoint_coeR_eq, inner_add_left]
+  rw [inner_kerFun]
+  induction f using Submodule.Quotient.induction_on with | _ z
+  set b := (((generator H H₁)).ker.orthogonalDecomposition z).1.2.1
+  set hb := (((generator H H₁)).ker.orthogonalDecomposition z).1.2.2
+  have hz : Submodule.Quotient.mk (p:=((generator H H₁)).ker) z = Submodule.Quotient.mk b := by
+    simp only [b, orthogonalDecomposition_apply, coe_orthogonalProjectionOnto_apply,
+      starProjection_orthogonal_val, Quotient.mk_sub]
+    rw [starProjection_apply ((generator H H₁)).ker, eq_sub_iff_add_eq, add_eq_left]
+    simp
+  rw [hz,
+    Quotient.inner_mk_mk ((generator H H₁)).ker b _ hb (kerFun_mem_orthogonal H H₁ x v)]
+  simp only [WithLp.prod_inner_apply, WithLp.ofLp_fst, inner_kerFun, WithLp.ofLp_snd]
+  rw [← inner_add_left]
+  rfl
 
-variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
 theorem kernel_sum_eq_sum_of_kernel : kernel (Sum' H H₁) = kernel H + kernel H₁ := by
   ext
-  rw [Matrix.add_apply, add_apply]
-  simp_rw [← kerFun_apply]
-  rw [kerFun_sum_eq_sum_of_kerFun']
-  simp
-
--- ROUTE 1:
-
-
-variable (H H₁) in
-abbrev Sum := (generator H H₁).range
-
-/-- Norm on `Sum H H₁` by pulling back to the quotient. -/
-instance : NormedAddCommGroup (Sum H H₁) :=
-  NormedAddCommGroup.induced
-    (Sum H H₁)
-    (WithLp 2 (H × H₁) ⧸ (generator H H₁).ker)
-    (generator H H₁).quotKerEquivRange.symm.toLinearMap
-    (generator H H₁).quotKerEquivRange.symm.injective
-
-/-- `Sum H H₁` comes equipped with the weaker subtype topology. This overrides it by the topology
-induced by the norm. -/
-instance : TopologicalSpace (Sum H H₁) := PseudoMetricSpace.toUniformSpace.toTopologicalSpace
-instance : UniformSpace (Sum H H₁) := PseudoMetricSpace.toUniformSpace
-
-variable (H H₁) in
-private def evalLp2CLM (x : X) : WithLp 2 (H × H₁) →L[𝕜] V :=
-  (eval H x).coprod (eval H₁ x) ∘L WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁
-
-@[simp]
-private lemma evalLp2CLM_apply (x : X) (f : WithLp 2 (H × H₁)) :
-    evalLp2CLM H H₁ x f = f.fst x + f.snd x := rfl
-
-variable (H H₁) in
-private lemma gen_ker_le_eval_ker (x : X) : (generator H H₁).ker ≤ (evalLp2CLM H H₁ x).ker := by
-  rintro f hf
-  simp_rw [LinearMap.mem_ker, funext_iff, coe_coe, Pi.zero_apply] at hf
-  simp_rw [LinearMap.mem_ker, coe_coe, evalLp2CLM_apply]
-  exact hf x
-
-variable (H H₁) in
-private def evalQCLM (x : X) : (WithLp 2 (H × H₁) ⧸ (generator H H₁).ker) →L[𝕜] V :=
-  ⟨(generator H H₁).ker.liftQ (evalLp2CLM H H₁ x) (gen_ker_le_eval_ker H H₁ x),
-    Continuous.quotient_lift ((evalLp2CLM H H₁ x).continuous)
-  (by
-    rintro f g hfg
-    have heq := gen_ker_le_eval_ker H H₁ x
-      ((generator H H₁).ker.neg_mem (QuotientAddGroup.leftRel_apply.mp hfg))
-    simp_rw [neg_add', neg_neg, LinearMap.mem_ker, coe_coe, map_sub, evalLp2CLM_apply, sub_eq_zero] at heq
-    simp_rw [evalLp2CLM_apply]
-    exact heq
-  )⟩
-
-variable (H H₁) in
-private def evalCLM_aux (x : X) : (Sum H H₁) →L[𝕜] V :=
-  (evalQCLM H H₁ x) ∘L ((generator H H₁).quotKerEquivRange.symm.mkContinuous 1
-    (fun q ↦ by simp_rw [LinearEquiv.coe_coe, one_mul]; exact le_refl _))
-
-private lemma evalCLM_aux_apply (x : X) (f : Sum H H₁) :
-    evalCLM_aux H H₁ x f = (f : X→V) x := by
-  obtain ⟨p, hp⟩ := LinearMap.mem_range.mp f.2
-  have hq : (generator H H₁).quotKerEquivRange.symm f = Submodule.Quotient.mk p := by
-    rw [LinearEquiv.symm_apply_eq, ← SetLike.coe_eq_coe, ← hp, coe_coe,
-      LinearMap.quotKerEquivRange_apply_mk]
-    rfl
-  simp [evalCLM_aux, evalQCLM, ← hp, hq]
+  simp [← kerFun_apply, kerFun_eq_mk H H₁ _ _]
   rfl
 
-private lemma piEval_eq_subtype : (ContinuousLinearMap.pi fun x ↦ evalCLM_aux H H₁ x) =
-    (Sum H H₁).subtype := by
-  ext
-  simp only [ContinuousLinearMap.coe_pi, LinearMap.pi_apply, coe_coe, evalCLM_aux_apply,
-    subtype_apply]
+/-- Map of an function `f : Sum' H H₁` to the unique pair in `H × H₁` that achieves the norm. -/
+def project : Sum' H H₁ →L[𝕜] H × H₁ :=
+  (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁) ∘L ((generator H H₁).kerᗮ).subtypeL ∘L
+    (generator H H₁).ker.quotientEquivOrthogonal.toContinuousLinearEquiv
 
-variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V]
+theorem project_kerFun (x : X) (v : V) :
+    project H H₁ (kerFun (Sum' H H₁) x v) = ⟨kerFun H x v, kerFun H₁ x v⟩ := by
+  simp [project, kerFun_eq_mk,
+    (generator H H₁).ker.quotientEquivOrthogonal_mk _ (kerFun_mem_orthogonal H H₁ x v)]
 
-instance : InnerProductSpace 𝕜 (Sum H H₁) :=
-  InnerProductSpace.induced (generator H H₁).quotKerEquivRange.symm.toLinearMap
-
-instance : RKHS 𝕜 (Sum H H₁) X V where
-  coeCLM := ⟨(Sum H H₁).subtype, by
-    rw [← piEval_eq_subtype]
-    exact (ContinuousLinearMap.pi fun x ↦ evalCLM_aux H H₁ x).cont
-  ⟩
-  coeCLM_injective := (Sum H H₁).subtype_injective
-
-lemma norm_eq (f : Sum H H₁) :
-    ‖f‖ = sInf (norm '' { g | generator H H₁ g = f} ) := by
-  obtain ⟨g₀, hg₀⟩ : ∃ g, (generator H H₁) g = f := f.2
-  have h1 : sInf (norm '' {g | (generator H H₁) g = f }) = sInf ((fun g ↦ ‖g₀ + g‖) '' {k | (generator H H₁) k = 0 }) := by
-    congr 1; ext k
-    simp only [Set.mem_image, Set.mem_setOf_eq]
-    constructor
-    · rintro ⟨g, hTg, rfl⟩
-      exact ⟨g-g₀, by simp only [map_sub, add_sub_cancel, and_true, hTg, <-hg₀, sub_self]⟩
-    · rintro ⟨g, hg, rfl⟩
-      exact ⟨g+g₀, by simp_rw [ContinuousLinearMap.map_add, hg, <-hg₀,zero_add, add_comm]; simp⟩
-  rw [h1, show {k | (generator H H₁) k = 0 } = (generator H H₁).ker.toAddSubgroup from rfl,
-    ← quotient_norm_mk_eq _ g₀]
-  rw [show ‖f‖ = ‖(generator H H₁).quotKerEquivRange.symm f‖ from rfl]
-  apply congrArg
-  apply (LinearEquiv.symm_apply_eq ((generator H H₁).quotKerEquivRange)).mpr
-  apply Subtype.val_injective
-  rw [QuotientAddGroup.mk'_apply, SetLike.coe_eq_coe]
-  exact SetLike.coe_eq_coe.mp (id (Eq.symm hg₀))
-
-def generator' : WithLp 2 (H × H₁) →L[𝕜] Sum H H₁ :=
-  (generator H H₁).toLinearMap.rangeRestrict.mkContinuous 1 (by
-    intro p
-    rw [norm_eq, one_mul]
-    refine csInf_le ⟨0, ?_⟩ (Set.mem_image_of_mem norm rfl)
-    rintro _ ⟨_, _, rfl⟩
-    exact norm_nonneg _
-  )
-
-variable (𝕜 H H₁) in
-/-- Composition of projection `H →L[𝕜] WithLp 2 (H × H₁)` with generator -/
-def coeL : H →L[𝕜] (Sum H H₁) := generator'
+/-- Embedding of `H` into the RKHS `Sum' H H₁` -/
+def coeL : H →L[𝕜] (Sum' H H₁) := (generator H H₁).ker.mkQL
   ∘L (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).symm.toContinuousLinearMap
   ∘L ContinuousLinearMap.prod (ContinuousLinearMap.id 𝕜 H) 0
 
-variable (𝕜 H H₁) in
-/-- Composition of projection `H₁ →L[𝕜] WithLp 2 (H × H₁)` with generator -/
-def coeR : H₁ →L[𝕜] (Sum H H₁) := generator'
+/-- Embedding of `H₁` into the RKHS `Sum' H H₁` -/
+def coeR : H₁ →L[𝕜] (Sum' H H₁) := (generator H H₁).ker.mkQL
   ∘L (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).symm.toContinuousLinearMap
   ∘L ContinuousLinearMap.prod 0 (ContinuousLinearMap.id 𝕜 H₁)
 
-instance [CompleteSpace H] [CompleteSpace H₁] : CompleteSpace (Sum H H₁) := by
-  let ie : Sum H H₁ ≃ᵢ (WithLp 2 (H × H₁) ⧸ (generator H H₁).ker) := {
-    toFun := (generator H H₁).quotKerEquivRange.symm.toLinearMap
-    invFun := (generator H H₁).quotKerEquivRange.toLinearMap
-    isometry_toFun x y := by rfl
-    left_inv f := (generator H H₁).quotKerEquivRange.apply_symm_apply f
-    right_inv f := (generator H H₁).quotKerEquivRange.symm_apply_apply f
-  }
-  exact IsometryEquiv.completeSpace ie
+variable (𝕜) {H} in
+omit [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
+@[simp]
+lemma coeL_apply (f : H) : (coeL H H₁) f = (generator H H₁).ker.mkQ (WithLp.toLp 2 (f, 0)) := by
+  rfl
 
-lemma adjoint_coeL_add_adjoint_coeR_eq (f : Sum H H₁) (x : X) :
-    (adjoint (coeL 𝕜 H H₁) f) x + (adjoint (coeR 𝕜 H H₁) f) x = f x := sorry
+variable (𝕜) {H} in
+omit [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
+@[simp]
+lemma coeR_apply (f : H₁) : (coeR H H₁) f = (generator H H₁).ker.mkQ (WithLp.toLp 2 (0, f)) := by
+  rfl
 
-theorem kerFun_sum_eq_sum_of_kerFun (x : X) :
-    kerFun (Sum H H₁) x = (coeL 𝕜 H H₁) ∘L kerFun H x + (coeR 𝕜 H H₁) ∘L kerFun H₁ x := by
-  apply ContinuousLinearMap.ext
-  intro v
-  rw [ext_iff_inner_left (𝕜 := 𝕜)]
-  intro f
-  simp
-  rw [inner_add_right, ← adjoint_inner_left, inner_kerFun, ← adjoint_inner_left, inner_kerFun,
-    ← adjoint_coeL_add_adjoint_coeR_eq, inner_add_left]
+variable (𝕜) {H} in
+omit [CompleteSpace V] in
+lemma coeL_eval (f : H) (x : X) : (coeL H H₁) f x = f x := by
+  simp [coeL, coe_mk]
 
-theorem kernel_sum_eq_sum_of_kernel : kernel (Sum H H₁) = kernel H + kernel H₁ := by
-  ext
-  rw [Matrix.add_apply, add_apply]
-  simp_rw [← kerFun_apply]
-  rw [kerFun_sum_eq_sum_of_kerFun]
-  sorry
-
+variable (𝕜) {H₁} in
+omit [CompleteSpace V] in
+lemma coeR_eval (f : H₁) (x : X) : (coeR H H₁) f x = f x := by
+  simp [coeR, coe_mk]
 
 end Sum
 
