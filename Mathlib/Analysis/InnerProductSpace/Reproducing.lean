@@ -391,6 +391,14 @@ def project : H + H₁ →L[𝕜] H × H₁ :=
   (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁) ∘L ((generator H H₁).kerᗮ).subtypeL ∘L
     (generator H H₁).ker.quotientEquivOrthogonal.toContinuousLinearEquiv
 
+omit [CompleteSpace V] in
+@[simp]
+lemma project_apply (f : H + H₁) :
+    project H H₁ f = ((WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁)
+      ∘ ((generator H H₁).kerᗮ).subtypeL
+      ∘ (generator H H₁).ker.quotientEquivOrthogonal.toContinuousLinearEquiv) f := by
+  rfl
+
 theorem project_kerFun (x : X) (v : V) :
     project H H₁ (kerFun (H + H₁) x v) = ⟨kerFun H x v, kerFun H₁ x v⟩ := by
   simp [project, kerFun_apply_eq_mk,
