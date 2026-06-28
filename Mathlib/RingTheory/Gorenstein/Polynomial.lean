@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Ext.BaseChange
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Gorenstein.Defs
+public import Mathlib.RingTheory.Ideal.MonicSpan
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Regular.InjectiveDimension
 
@@ -109,10 +110,8 @@ lemma Polynomial.localization_at_comap_maximal_isGorensteinLocalRing_of_isGorens
   have lep : (maximalIdeal R).map C ≤ p := by simpa [← max] using map_comap_le
   have Ker : RingHom.ker (Polynomial.mapRingHom (residue R)) = (maximalIdeal R).map C := by
     simp [ker_mapRingHom, ker_residue]
-  by_cases eq0 : p.map (Polynomial.mapRingHom (residue R)) = ⊥
-  · have peq : p = (maximalIdeal R).map C := le_antisymm
-      (by simpa [← Ker, ← Ideal.map_eq_bot_iff_le_ker]) lep
-    have maxeq : maximalIdeal (Localization.AtPrime p) =
+  by_cases peq : p = (maximalIdeal R).map C
+  · have maxeq : maximalIdeal (Localization.AtPrime p) =
       (maximalIdeal R).map (algebraMap R (Localization.AtPrime p)) := by
       rw [IsScalarTower.algebraMap_eq R R[X], ← Ideal.map_map]
       simp [← peq, IsLocalization.AtPrime.map_eq_maximalIdeal]
@@ -122,45 +121,36 @@ lemma Polynomial.localization_at_comap_maximal_isGorensteinLocalRing_of_isGorens
     rw [maxeq]
     exact subsing i hi
   · let RXp := Localization.AtPrime p
-    have isp : ((maximalIdeal R).map C).IsPrime := Ideal.isPrime_map_C_of_isPrime
+    rcases Polynomial.exists_monic_span_sup_map_eq R p
+      (by simpa [max] using maximalIdeal.isMaximal R) (by simpa [max] using peq) with ⟨y, mon, hy⟩
     have disj : Disjoint (p.primeCompl : Set R[X]) _ := disjoint_compl_left_iff.mpr lep
-    have : (Ideal.map (algebraMap R RXp) (maximalIdeal R)).IsPrime := by
+    have : ((maximalIdeal R).map (algebraMap R RXp)).IsPrime := by
       rw [IsScalarTower.algebraMap_eq R R[X], ← Ideal.map_map, algebraMap_eq]
-      exact IsLocalization.isPrime_of_isPrime_disjoint p.primeCompl RXp _ isp disj
-    rcases IsPrincipalIdealRing.principal (Ideal.map (mapRingHom (residue R)) p) with ⟨z, hz⟩
-    rcases map_surjective (residue R) residue_surjective z with ⟨y, hy⟩
-    have peq : p = (maximalIdeal R).map C ⊔ Ideal.span {y} := by
-      calc
-      p = p ⊔ RingHom.ker (mapRingHom (residue R)) := by simpa [Ker] using lep
-      _ = comap (mapRingHom (residue R)) ((Ideal.span {y}).map (mapRingHom (residue R))) := by
-        simp [← Ideal.comap_map_of_surjective' (mapRingHom (residue R))
-          (map_surjective (residue R) residue_surjective), hz, Ideal.map_span, hy]
-      _ = _ := by simp only [Ideal.comap_map_of_surjective' (mapRingHom (residue R))
-          (map_surjective (residue R) residue_surjective), sup_comm, Ker]
+      exact IsLocalization.isPrime_of_isPrime_disjoint p.primeCompl RXp _ inferInstance disj
+    have peq' : p = (maximalIdeal R).map C ⊔ Ideal.span {y} := by rw [hy, max]
     have maxeq : maximalIdeal RXp = (maximalIdeal R).map (algebraMap R RXp) ⊔
       Ideal.span {(algebraMap R[X] RXp) y} := by
-      simp [RXp, ← IsLocalization.AtPrime.map_eq_maximalIdeal p, peq, Ideal.map_sup, Ideal.map_span,
-        ← Polynomial.algebraMap_eq, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
+      simp [RXp, ← IsLocalization.AtPrime.map_eq_maximalIdeal p, peq', Ideal.map_sup,
+        Ideal.map_span, ← Polynomial.algebraMap_eq, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
     let S := quotientSMulShortComplex ((maximalIdeal R).map (algebraMap R RXp))
       ((algebraMap R[X] RXp) y)
-    have S_exact : S.ShortExact := by
-      apply quotientSMulShortComplex_shortExact_of_isSMulRegular
-      apply IsSMulRegular.of_right_eq_zero_of_smul (fun a ha ↦ ?_)
-      simp only [Algebra.smul_def, Quotient.algebraMap_eq] at ha
-      apply (mul_eq_zero_iff_left (Ideal.Quotient.eq_zero_iff_mem.not.mpr ?_)).mp ha
-      rw [IsScalarTower.algebraMap_eq R R[X], ← Ideal.map_map, algebraMap_eq, ← Ideal.mem_comap,
-        ← Ideal.under_def, IsLocalization.under_map_of_isPrime_disjoint p.primeCompl RXp isp disj]
-      simp only [← Ker, RingHom.mem_ker, coe_mapRingHom, hy]
-      contrapose! eq0
-      simp [hz, eq0]
+    have : IsRegular (Ideal.Quotient.mk ((maximalIdeal R).map (algebraMap R RXp))
+      ((algebraMap R[X] RXp) y)) := by
+      apply IsRegular.of_ne_zero
+      rw [ne_eq, Ideal.Quotient.eq_zero_iff_mem, IsScalarTower.algebraMap_eq R R[X],
+        ← Ideal.map_map, algebraMap_eq, ← Ideal.mem_comap, ← Ideal.under_def,
+        IsLocalization.under_map_of_isPrime_disjoint p.primeCompl RXp inferInstance disj]
+      contrapose peq
+      simpa [peq'] using peq
+    have S_exact : S.ShortExact :=
+      quotientSMulShortComplex_shortExact_of_isSMulRegular _ _ this.isSMulRegular
     apply (isGorensteinLocalRing_iff_exists _).mpr
     use n + 1
     intro i hi
     have : 1 + (i - 1) = i := by omega
     rw [maxeq]
     apply AddCommGrpCat.subsingleton_of_isZero <| (Ext.contravariant_sequence_exact₃' S_exact
-      (ModuleCat.of RXp RXp) (i - 1) i this).isZero_of_both_zeros
-      (IsZero.eq_zero_of_src ?_ _) (IsZero.eq_zero_of_tgt ?_ _)
+      (ModuleCat.of RXp RXp) (i - 1) i this).isZero_of_both_isZero _ _
     · exact AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsing (i - 1) (by omega))
     · exact AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsing i (Nat.le_of_succ_le hi))
 
