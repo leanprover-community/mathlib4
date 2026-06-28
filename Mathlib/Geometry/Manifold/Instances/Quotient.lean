@@ -80,12 +80,17 @@ abbrev φ : OpenPartialHomeomorph M H := chartAt H (quotient_RightInverse x)
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) (quotient_RightInverse x)
 
+variable (a : orbitRel.Quotient G M → OpenPartialHomeomorph M H)
+
 def quotientTransitionMap : OpenPartialHomeomorph H H :=
   (φ x).symm.trans (((πinv x).symm.trans (πinv y)).trans (φ y))
 
+def generalTransitionMap : OpenPartialHomeomorph H H :=
+  (a x).symm.trans (((πinv x).symm.trans (πinv y)).trans (a y))
+
 variable {x y : orbitRel.Quotient G M}
 
-lemma lemma_f_eq_φρφ_t {t : Set M} (ht : t ⊆ ((φ (H := H) x).source))
+lemma lemma_f_eq_φρφ_t {t : Set M} (ht : t ⊆ (φ (H := H) x).source)
     {g : G} {u : M} (hu : u ∈ t)
     (hu' : (Homeomorph.smul g) u ∈ (πinv y).target) :
     (quotientTransitionMap x y) (φ (H := H) x u) =
@@ -96,6 +101,19 @@ lemma lemma_f_eq_φρφ_t {t : Set M} (ht : t ⊆ ((φ (H := H) x).source))
   apply mem_image_of_mem (Homeomorph.smul g) at hu
   rw [← quotient_IsLocalHomeomorph.localInverseAt_symm, ← Homeomorph.smul_apply,
     (πinv y).right_inv hu']
+
+lemma general_f_eq_φρφ_t {t : Set M} (ht : t ⊆ (a x).source)
+    {g : G} {u : M} (hu : u ∈ t)
+    (hu' : (Homeomorph.smul g) u ∈ (πinv y).target) :
+    (generalTransitionMap x y) a (a x u) =
+      a y (Homeomorph.smul g (((a x).symm (a x u)))) := by
+  simp only [generalTransitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
+  rw [(a x).left_inv (ht hu), quotient_IsLocalHomeomorph.localInverseAt_symm,
+        ← orbitRel.Quotient.quotient_smul_eq (g:=g)]
+  apply mem_image_of_mem (Homeomorph.smul g) at hu
+  rw [← quotient_IsLocalHomeomorph.localInverseAt_symm, ← Homeomorph.smul_apply,
+    (πinv y).right_inv hu']
+
 
 lemma lemma_hfg_t
     (t : Set M) (g : G)
@@ -130,6 +148,41 @@ lemma lemma_hfg_t
     rw [(is_open_φt.inter (quotientTransitionMap x y).open_source).interior_eq] at hz
     obtain ⟨⟨_, hut, hu⟩, _⟩ := hz
     simpa [hu] using (lemma_f_eq_φρφ_t ht hut (ht'' (mem_image_of_mem _ hut))).symm
+
+
+lemma general_hfg_t
+    (t : Set M) (g : G)
+    (ht : t ⊆ (a x).source)
+    (is_open_t : IsOpen t)
+    (ht' : Homeomorph.smul g '' t ⊆ (a y).source)
+    (ht'' : Homeomorph.smul g '' t ⊆ (πinv y).target) :
+    (((a x).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans (a y))).restr
+      ((a x '' t) ∩ (generalTransitionMap x y a).source)).EqOnSource
+      ((generalTransitionMap x y a).restr (a x '' t))
+    := by
+  have is_open_at := ((a x).isOpen_image_iff_of_subset_source ht).mpr is_open_t
+  refine ⟨?_, ?_⟩
+  · ext z
+    refine ⟨?_, ?_⟩
+    · intro ⟨_, hzt⟩
+      rw [(generalTransitionMap x y a).restr_source, is_open_at.interior_eq, inter_comm]
+      simpa [(is_open_at.inter (generalTransitionMap x y a).open_source).interior_eq] using hzt
+    · intro ⟨hzf, hzt⟩
+      rw [is_open_at.interior_eq] at hzt
+      obtain ⟨u, hu, hz⟩ := hzt
+      refine ⟨?_, ?_⟩
+      · rw [← hz]
+        refine ⟨(a x).map_source' (ht hu), ?_⟩
+        suffices h : g • (a x).symm ((a x) u) ∈ (a y).source by simpa using h
+        rw [(a x).left_inv (ht hu)]
+        apply ht'
+        simp [hu]
+      · rw [(is_open_at.inter (generalTransitionMap x y a).open_source).interior_eq]
+        refine ⟨by use u;, by exact hzf⟩
+  · intro z ⟨_, hz⟩
+    rw [(is_open_at.inter (generalTransitionMap x y a).open_source).interior_eq] at hz
+    obtain ⟨⟨_, hut, hu⟩, _⟩ := hz
+    simpa [hu] using (general_f_eq_φρφ_t a ht hut (ht'' (mem_image_of_mem _ hut))).symm
 
 
 
@@ -177,7 +230,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       (((φ x).symm.trans (((Homeomorph.smul g0).toOpenPartialHomeomorph).trans (φ y))).restr
       (t ∩ (quotientTransitionMap x y).source)).EqOnSource ((quotientTransitionMap x y).restr t)
       := by
-      apply lemma_hfg_t
+      apply general_hfg_t
       · exact fun x hx => hx.1.2
       · exact is_open_Up'
       · intro m ⟨_, ⟨_, _, hw⟩, hu2⟩
