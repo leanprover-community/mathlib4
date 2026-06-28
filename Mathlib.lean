@@ -2693,6 +2693,7 @@ public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.CategoryTheory.Functor.Bracket
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Functor.Currying
