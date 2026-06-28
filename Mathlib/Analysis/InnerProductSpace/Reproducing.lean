@@ -346,11 +346,8 @@ scoped infix:50 " + " => sumSpace
 instance : RKHS 𝕜 (H + H₁) X V where
   coeCLM := (generator H H₁).ker.liftQL (generator H H₁) (le_refl _)
   coeCLM_injective := fun f g hfg => by
-    have hinj : Function.Injective
-        ((generator H H₁).ker.liftQ (generator H H₁).toLinearMap (le_refl _)) := by
-      rw [← LinearMap.ker_eq_bot]
-      exact Submodule.ker_liftQ_eq_bot _ _ (le_refl _) (le_refl _)
-    exact hinj hfg
+    refine (Function.Injective.eq_iff ?_).mp hfg
+    simp [← LinearMap.ker_eq_bot, Submodule.ker_liftQ_eq_bot]
 
 variable (V) in
 omit [CompleteSpace V] in
