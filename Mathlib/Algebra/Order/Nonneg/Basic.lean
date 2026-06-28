@@ -43,7 +43,7 @@ open Set
 
 variable {α : Type*}
 
-/- The subtype of nonnegative elements. -/
+/-- The subtype of nonnegative elements. -/
 abbrev Nonneg (α : Type*) [Zero α] [LE α] := { x : α // 0 ≤ x }
 
 namespace Nonneg
