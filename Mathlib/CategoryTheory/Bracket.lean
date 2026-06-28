@@ -3,11 +3,18 @@ Copyright (c) 2026 Robin Carlier, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier, Christian Merten
 -/
-import Mathlib
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 /-!
 # Bracket operation
 -/
+
+@[expose] public section
 
 universe w u
 
@@ -58,6 +65,7 @@ noncomputable abbrev bracket [HasBracket X K] : A :=
 
 variable {K L M : C ⥤ Type w} [HasBracket X K] [HasBracket X L] [HasBracket X M]
 
+/-- The bracket `X[-]` is functorial in the copresheaf. -/
 noncomputable def bracketMap (f : K ⟶ L) : bracket X L ⟶ bracket X K :=
   haveI : HasLimit (CategoryOfElements.map f ⋙ bracketDiag X L) :=
     hasLimit_of_iso (Functor.isoWhiskerRight (CategoryOfElements.mapπiso f) _).symm
@@ -101,7 +109,7 @@ def isLimit_mapCone_bracketFunctor {J : Type*} [Category* J] [HasColimitsOfShape
   letI c'' (s : Cone (D.op ⋙ bracketFunctor X)) (U : C) :
       ((D ⋙ (hasBracket X).ι) ⋙ (evaluation C (Type w)).obj U).CoconeTypes :=
     { pt := s.pt ⟶ X.obj U
-      ι j x := s.π.app ⟨j⟩ ≫ limit.π (bracketDiag X (D.obj j).obj) ⟨U, x⟩
+      ι j x := s.π.app (.op j) ≫ limit.π (bracketDiag X (D.obj j).obj) (Functor.elementsMk _ U x)
       ι_naturality u :=by
         ext
         simp [← dsimp% s.w u.op]
@@ -123,9 +131,21 @@ def isLimit_mapCone_bracketFunctor {J : Type*} [Category* J] [HasColimitsOfShape
       obtain ⟨j, a, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective (hU U) xU
       obtain ⟨k, b, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective (hU V) xV
       have := (hU U).fac_apply (c'' s U) j
-      simp [dsimp% (hU U).fac_apply (c'' s U) j, dsimp% (hU V).fac_apply (c'' s V) k]
-      simp [c'']
-      -- have := limit.w (bracketDiag X (D.obj j).obj)
+      simp only [Functor.coconeTypesEquiv_symm_apply_ι, Functor.comp_obj, ObjectProperty.ι_obj,
+        evaluation_obj_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
+        ObjectProperty.ι_map, evaluation_obj_map, CategoryOfElements.π_obj, Functor.const_obj_map,
+        dsimp% (hU V).fac_apply (c'' s V) k, Category.id_comp, dsimp% (hU U).fac_apply (c'' s U) j,
+        Functor.comp_map, CategoryOfElements.π_map]
+      simp only [Functor.comp_obj, Functor.op_obj, bracketFunctor_obj, Category.assoc, c'']
+      dsimp at a
+      dsimp at b hf
+      have := (D.obj j).obj.map f
+      have := limit.w (bracketDiag X (D.obj j).obj)
+        (j := Functor.elementsMk _ _ a) (j' := Functor.elementsMk _ V ((D.obj j).obj.map f a))
+        (f := CategoryOfElements.homMk _ _ f rfl)
+      dsimp at this
+      rw [this]
+      have := s.w (j := .op j) (j' := .op k) sorry
       -- have := s.w _
       sorry
   · sorry

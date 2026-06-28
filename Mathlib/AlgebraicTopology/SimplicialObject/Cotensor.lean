@@ -3,7 +3,18 @@ Copyright (c) 2026 Robin Carlier, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier, Christian Merten
 -/
-import Mathlib
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.SemiSimplexCategory
+public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
+public import Mathlib.CategoryTheory.EffectiveEpi.Comp
+public import Mathlib.CategoryTheory.ExtremalEpi
+public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
 # Bracket and hypercovers
@@ -15,7 +26,7 @@ a hypercover.
 This is a rough draft
 -/
 
-open CategoryTheory Limits AlgebraicTopology SimplicialObject
+open CategoryTheory Limits SimplicialObject
   Simplicial
 
 universe w v u
