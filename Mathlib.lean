@@ -7838,6 +7838,7 @@ public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Homogenization
 public import Mathlib.Topology.Algebra.Indicator
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
