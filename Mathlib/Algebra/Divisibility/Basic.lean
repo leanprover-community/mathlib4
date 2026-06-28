@@ -149,7 +149,7 @@ theorem IsRightRegular.rightDvd_cancel_right (h : IsRightRegular a) :
   ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd
     ⟨d, h (eq.trans <| (mul_assoc ..).symm)⟩, mul_rightDvd_mul_right a⟩
 
-theorem RightDvd.op_iff : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
+theorem rightDvd_iff_op_dvd_op : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
   ⟨fun ⟨c, hc⟩ => ⟨MulOpposite.op c, by simp [hc]⟩,
    fun ⟨c, hc⟩ => ⟨MulOpposite.unop c, by simpa using congrArg MulOpposite.unop hc⟩⟩
 
