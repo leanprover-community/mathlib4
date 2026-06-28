@@ -109,6 +109,12 @@ lemma kernel_apply (x y : X) : kernel H x y = (kerFun H x).adjoint ∘L kerFun H
   simp [kerFun, kernel]
 
 variable {H} in
+/-- Point evaluation `f ↦ f x` is the adjoint of the kernel function `kerFun H x`. -/
+@[simp]
+lemma adjoint_kerFun (x : X) (f : H) : (kerFun H x).adjoint f = f x := by
+  rw [kerFun, ContinuousLinearMap.adjoint_adjoint]; rfl
+
+variable {H} in
 /-- The "reproducing" property of the kernel functions, left version. -/
 @[simp]
 lemma kerFun_inner (x : X) (v : V) (f : H) : ⟪kerFun H x v, f⟫_𝕜 = ⟪v, f x⟫_𝕜 := by
@@ -142,9 +148,7 @@ variable {H} in
 /-- The evaluation of an element `f` of a reproducing kernel Hilbert space at a point `x` is
 bounded by `‖f‖` times the square root of the kernel diagonal `‖kernel H x x‖` at `x`. -/
 lemma norm_eval_le (f : H) (x : X) : ‖f x‖ ≤ ‖f‖ * √‖kernel H x x‖ := by
-  have hfx : f x = (kerFun H x).adjoint f := by
-    rw [kerFun, ContinuousLinearMap.adjoint_adjoint]; rfl
-  rw [hfx, ← norm_kerFun_eq_sqrt_norm_kernel, mul_comm]
+  rw [← adjoint_kerFun x f, ← norm_kerFun_eq_sqrt_norm_kernel, mul_comm]
   grw [(kerFun H x).adjoint.le_opNorm f, ContinuousLinearMap.adjoint.norm_map (kerFun H x)]
 
 /-- The span of the kernel functions is dense. -/
