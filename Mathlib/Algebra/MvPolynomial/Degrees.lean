@@ -690,8 +690,8 @@ def mainDegree (p : MvPolynomial σ R) : Multiset σ :=
 theorem mainDegree_def (p : MvPolynomial σ R) :
     p.mainDegree = p.degrees.filter (IsMaxOn id p.degrees.toFinset) := Eq.refl _
 
-theorem forall_mainDegree_eq_of_forall_degrees_le (h1 : i ∈ p.degrees)
-    (h2 : IsMaxOn id p.degrees.toFinset i) : ∀ j ∈ p.mainDegree, i = j := by
+theorem forall_mainDegree_eq_of_forall_degrees_le (h₁ : i ∈ p.degrees)
+    (h₂ : IsMaxOn id p.degrees.toFinset i) : ∀ j ∈ p.mainDegree, i = j := by
   intro j hj
   rw [mainDegree_def] at hj
   apply le_antisymm

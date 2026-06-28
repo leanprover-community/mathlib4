@@ -358,14 +358,13 @@ section MainDegree
 variable [LinearOrder σ] {c : σ}
 
 theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p.degreeOf c := by
-  rw [vars_def] at h
   apply card_mainDegree_eq_degreeOf_of_forall_degrees_le
-  · apply Multiset.mem_toFinset.mp
+  · rw [← Multiset.mem_toFinset, ← vars_def]
     exact Finset.mem_of_max h
+  rw [isMaxOn_iff]
   intro j hj
-  have := Finset.le_max hj
-  simp only [h, WithBot.coe_le_coe] at this
-  exact this
+  rw [id_eq, id_eq, ← WithBot.coe_le_coe, ← h, vars_def]
+  exact Finset.le_max hj
 
 theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥ where
   mp h :=
