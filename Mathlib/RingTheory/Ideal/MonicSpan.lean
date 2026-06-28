@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Basic
-public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 
@@ -24,14 +24,13 @@ open Polynomial Ideal
 
 lemma Polynomial.exists_monic_span {k : Type*} [Field k] (I : Ideal k[X]) (ne : I ≠ ⊥) :
     ∃ f, f.Monic ∧ I = Ideal.span {f} := by
+  classical
   obtain ⟨x, rfl⟩ := IsPrincipalIdealRing.principal I
   have xne : x ≠ 0 := by
     by_contra eq0
     simp [eq0] at ne
-  refine ⟨C x.leadingCoeff⁻¹ * x, ?_, ?_⟩
-  · simp [Monic, leadingCoeff_ne_zero.mpr xne]
-  · apply (Ideal.span_singleton_mul_left_unit _ x).symm
-    simpa using xne
+  exact ⟨normalize x, monic_normalize xne,
+    Ideal.span_singleton_eq_span_singleton.mpr (normalize_associated x).symm⟩
 
 lemma Polynomial.exists_monic_span_sup_map_eq (p : Ideal R[X]) [p.IsPrime]
     (ism : (p.comap C).IsMaximal) (ne : p ≠ (p.comap C).map C) :
