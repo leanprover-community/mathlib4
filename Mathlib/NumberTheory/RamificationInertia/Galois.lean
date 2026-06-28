@@ -5,6 +5,7 @@ Authors: Yongle Hu, Jiedong Jiang
 -/
 module
 
+public import Mathlib.RingTheory.Invariant.Galois
 public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
@@ -244,9 +245,9 @@ variable {A B : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
 include G GAC GBC in
 theorem ncard_primesOver_mul_ncard_primesOver :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
-  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
-  let := IsFractionRing.mulSemiringAction GAC A C (FractionRing A) (FractionRing C)
-  let := IsFractionRing.mulSemiringAction GBC B C (FractionRing B) (FractionRing C)
+  let := IsFractionRing.mulSemiringAction G B (FractionRing B)
+  let := IsFractionRing.mulSemiringAction GAC C (FractionRing C)
+  let := IsFractionRing.mulSemiringAction GBC C (FractionRing C)
   have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
     mul_ne_zero (ramificationIdxIn_ne_zero GAC) (inertiaDegIn_ne_zero GAC)
   rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p C GAC]
@@ -279,8 +280,6 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
     Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) * P.inertiaDeg' R := by
   let := Localization.AtPrime.algebraOfLiesOver p P
-  let : Algebra (R ⧸ p) p.ResidueField := inferInstance
-  let : Algebra (S ⧸ P) P.ResidueField := inferInstance
   have heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
       (algebraMap p.ResidueField P.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField) := by
     ext

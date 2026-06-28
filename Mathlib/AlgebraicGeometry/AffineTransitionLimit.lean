@@ -1095,7 +1095,6 @@ lemma Scheme.exists_isOpenCover_and_isAffine_of_finite [IsCofiltered I]
     simp
   · rw [← hVU, ← Hom.comp_preimage, c.w]
 
-set_option backward.isDefEq.respectTransparency false in
 open TopologicalSpace in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
@@ -1175,7 +1174,7 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
   obtain ⟨R, rfl⟩ := hS
   wlog hX : ∃ S, X = Spec S generalizing X
   · obtain ⟨i, f, hf⟩ := this (a ≫ X.isoSpec.hom) (X.isoSpec.inv ≫ f)
-      (by simp [ha, - Functor.map_comp]) ⟨_, rfl⟩
+      (by simp [ha, -Functor.map_comp]) ⟨_, rfl⟩
     exact ⟨i, f ≫ X.isoSpec.inv, by simpa [← Iso.comp_inv_eq] using! hf⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
