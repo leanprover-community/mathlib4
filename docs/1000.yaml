@@ -803,6 +803,9 @@ Q737892:
 
 Q739403:
   title: Stewart's theorem
+  decl: EuclideanGeometry.dist_sq_mul_dist_add_dist_sq_mul_dist
+  authors: Manuel Candales
+  date: 2021
 
 Q740093:
   title: Peano existence theorem
@@ -906,9 +909,8 @@ Q830513:
 
 Q834025:
   title: Cauchy integral theorem
-  decl: Complex.circleIntegral_div_sub_of_differentiable_on_off_countable
-  authors: Yury Kudryashov
-  date: 2021
+  comment: We have `DiffContOnCl.circleIntegral_eq_zero` for circle contours
+  url: https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Complex/CauchyIntegral.html#DiffContOnCl.circleIntegral_eq_zero
 
 Q834211:
   title: Wallace–Bolyai–Gerwien theorem
@@ -1013,6 +1015,9 @@ Q872088:
 
 Q877489:
   title: Apollonius's theorem
+  decl: EuclideanGeometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq
+  authors: Manuel Candales
+  date: 2021
 
 Q890875:
   title: Bohr–van Leeuwen theorem

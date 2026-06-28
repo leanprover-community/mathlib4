@@ -86,6 +86,8 @@ theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ 
 
 variable [IsOrderedRing 𝕜]
 
+set_option linter.overlappingInstances false
+
 #adaptation_note /-- nightly-2024-03-11
 we need a type annotation on the segment in the following two lemmas. -/
 
@@ -148,7 +150,7 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
 /-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : ι`. -/
 theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
-  convert convexHull_basis_eq_stdSimplex R ι
+  convert! convexHull_basis_eq_stdSimplex R ι
   aesop
 
 variable {ι R}
@@ -279,7 +281,7 @@ variable {S : Type*} [Semiring S] [PartialOrder S]
 
 instance : FunLike (stdSimplex S X) X S where
   coe s := s.val
-  coe_injective' := by aesop
+  coe_injective := by aesop
 
 @[ext high]
 lemma ext {s t : stdSimplex S X} (h : (s : X → S) = t) : s = t := by

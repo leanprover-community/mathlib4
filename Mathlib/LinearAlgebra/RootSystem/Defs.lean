@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.Reflection
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Root data and root systems
@@ -113,6 +114,7 @@ variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
 /-- A root system is a root pairing for which the roots and coroots span their ambient modules. -/
+@[wikidata Q534131]
 class IsRootSystem : Prop where
   span_root_eq_top : span R (range P.root) = ⊤
   span_coroot_eq_top : span R (range P.coroot) = ⊤
@@ -123,7 +125,7 @@ attribute [simp] IsRootSystem.span_root_eq_top
 attribute [simp] IsRootSystem.span_coroot_eq_top
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
-@[simps!, simps toLinearMap]
+@[simps! root coroot reflectionPerm, simps toLinearMap]
 protected def flip : RootPairing ι R N M where
   toLinearMap := P.toLinearMap.flip
   root := P.coroot
@@ -459,7 +461,7 @@ lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [IsAddTorsionFree N] (i j : ι)
   refine Module.eq_of_mapsTo_reflection_of_mem (f := P.root' i) (g := P.root' i)
     (finite_range P.coroot) (by simp [hij]) (by simp) (by simp [hij]) (by simp) ?_
     (P.mapsTo_coreflection_coroot i) (mem_range_self i)
-  convert P.mapsTo_coreflection_coroot j
+  convert! P.mapsTo_coreflection_coroot j
   ext x
   replace h : P.root' j = t • P.root' i := by ext; simp [h, root']
   simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]

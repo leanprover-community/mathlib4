@@ -247,7 +247,7 @@ include ha hb in
 theorem aecover_Ioo_of_Ioc : AECover (μ.restrict <| Ioo A B) l fun i => Ioc (a i) (b i) :=
   (aecover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Ioc_self) fun _ ↦ measurableSet_Ioc
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem aecover_Ioc_of_Icc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ioc A B) l fun i => Icc (a i) (b i) :=
@@ -484,7 +484,7 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
     (hφ : AECover μ l φ) {f : α → E} (hfi : Integrable f μ) :
     Tendsto (fun i => ∫ x in φ i, f x ∂μ) l (𝓝 <| ∫ x, f x ∂μ) :=
   suffices h : Tendsto (fun i => ∫ x : α, (φ i).indicator f x ∂μ) l (𝓝 (∫ x : α, f x ∂μ)) from by
-    convert h using 2; rw [integral_indicator (hφ.measurableSet _)]
+    convert! h using 2; rw [integral_indicator (hφ.measurableSet _)]
   tendsto_integral_filter_of_dominated_convergence (fun x => ‖f x‖)
     (Eventually.of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.measurableSet i)
     (Eventually.of_forall fun _ => ae_of_all _ fun _ => norm_indicator_le_norm_self _ _) hfi.norm
@@ -1036,7 +1036,7 @@ lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
   have : ‖f' x‖ₑ ≤ ∫⁻ y in Iic x, ‖deriv f' y‖ₑ := by
     rw [← HasCompactSupport.integral_Iic_deriv_eq hf' h'f' x]
     exact enorm_integral_le_lintegral_enorm _
-  convert this with y
+  convert! this with y
   · simp [f', I, Completion.enorm_coe]
   · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable one_ne_zero _)]
     simp only [ContinuousLinearMap.fderiv]
@@ -1156,7 +1156,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
 
 theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
     (∫ x in Ioi 0, (p * x ^ (p - 1)) • g (x ^ p)) = ∫ y in Ioi 0, g y := by
-  convert integral_comp_rpow_Ioi g hp.ne'
+  convert! integral_comp_rpow_Ioi g hp.ne'
   rw [abs_of_nonneg hp.le]
 
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
@@ -1212,14 +1212,14 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
 without `|p|` factor) -/
 theorem integrableOn_Ioi_comp_rpow_iff' [NormedSpace ℝ E] (f : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     IntegrableOn (fun x => x ^ (p - 1) • f (x ^ p)) (Ioi 0) ↔ IntegrableOn f (Ioi 0) := by
-  simpa only [← integrableOn_Ioi_comp_rpow_iff f hp, mul_smul] using
+  simpa only [← integrableOn_Ioi_comp_rpow_iff f hp, mul_smul] using!
     (integrable_smul_iff (abs_pos.mpr hp).ne' _).symm
 
 theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x => f (a * x)) (Ioi c) ↔ IntegrableOn f (Ioi <| a * c) := by
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi c)]
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi <| a * c)]
-  convert integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
+  convert! integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
   ext1 x
   rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ ha, mul_comm a c,
     mul_div_cancel_right₀ _ ha.ne', Function.comp_def]
@@ -1300,7 +1300,7 @@ theorem integral_deriv_mul_eq_sub [CompleteSpace A]
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ), u' x * v x + u x * v' x = b' - a' := by
   refine integral_of_hasDerivAt_of_tendsto (fun x ↦ ?_) huv h_bot h_top
-  simpa [add_comm] using (ContinuousLinearMap.mul ℝ A).hasDerivAt_of_bilinear (hu x) (hv x)
+  simpa [add_comm] using! (ContinuousLinearMap.mul ℝ A).hasDerivAt_of_bilinear (hu x) (hv x)
 
 /-- **Integration by parts on (-∞, ∞).**
 For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
@@ -1333,7 +1333,7 @@ theorem integral_Ioi_deriv_mul_eq_sub
     (huv : IntegrableOn (u' * v + u * v') (Ioi a))
     (h_zero : Tendsto (u * v) (𝓝[>] a) (𝓝 a')) (h_infty : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ) in Ioi a, u' x * v x + u x * v' x = b' - a' := by
-  rw [← Ici_diff_left] at h_zero
+  rw [← Ici_sdiff_left] at h_zero
   let f := Function.update (u * v) a a'
   have hderiv : ∀ x ∈ Ioi a, HasDerivAt f (u' x * v x + u x * v' x) x := by
     intro x (hx : a < x)
@@ -1364,7 +1364,7 @@ theorem integral_Iic_deriv_mul_eq_sub
     (huv : IntegrableOn (u' * v + u * v') (Iic a))
     (h_zero : Tendsto (u * v) (𝓝[<] a) (𝓝 a')) (h_infty : Tendsto (u * v) atBot (𝓝 b')) :
     ∫ (x : ℝ) in Iic a, u' x * v x + u x * v' x = a' - b' := by
-  rw [← Iic_diff_right] at h_zero
+  rw [← Iic_sdiff_right] at h_zero
   let f := Function.update (u * v) a a'
   have hderiv : ∀ x ∈ Iio a, HasDerivAt f (u' x * v x + u x * v' x) x := by
     intro x hx
