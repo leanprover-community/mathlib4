@@ -138,6 +138,22 @@ lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √�
 lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
   grw [norm_kernel_le]; simp [mul_pow]
 
+variable {H} in
+/-- Bounded point evaluation: every element of a reproducing kernel Hilbert space is pointwise
+bounded by its norm times the square root of the diagonal of the kernel. -/
+lemma norm_eval_le (f : H) (x : X) : ‖f x‖ ≤ ‖f‖ * √‖kernel H x x‖ := by
+  have hk : ‖kerFun H x‖ = √‖kernel H x x‖ := norm_kerFun_eq_sqrt_norm_kernel H x
+  have hsq : ‖f x‖ ^ 2 ≤ ‖f‖ * ‖kerFun H x‖ * ‖f x‖ := by
+    have e : ⟪f x, f x⟫_𝕜 = ⟪f, kerFun H x (f x)⟫_𝕜 := (inner_kerFun x (f x) f).symm
+    calc ‖f x‖ ^ 2 = RCLike.re ⟪f x, f x⟫_𝕜 := by rw [inner_self_eq_norm_sq]
+      _ = RCLike.re ⟪f, kerFun H x (f x)⟫_𝕜 := by rw [e]
+      _ ≤ ‖⟪f, kerFun H x (f x)⟫_𝕜‖ := RCLike.re_le_norm _
+      _ ≤ ‖f‖ * ‖kerFun H x (f x)‖ := norm_inner_le_norm _ _
+      _ ≤ ‖f‖ * (‖kerFun H x‖ * ‖f x‖) := by gcongr; exact (kerFun H x).le_opNorm (f x)
+      _ = ‖f‖ * ‖kerFun H x‖ * ‖f x‖ := by ring
+  rw [← hk]
+  nlinarith [norm_nonneg (f x), mul_nonneg (norm_nonneg f) (norm_nonneg (kerFun H x)), hsq]
+
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
   refine (orthogonal_eq_bot_iff.mp ((Submodule.eq_bot_iff _).mpr fun f fin ↦ DFunLike.ext f 0 ?_))
