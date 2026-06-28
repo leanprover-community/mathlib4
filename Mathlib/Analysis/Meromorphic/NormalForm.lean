@@ -439,24 +439,17 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f
 
 @[simp] lemma toMeromorphicNFAt_of_meromorphicOrderAt_ne_zero
     (horder : meromorphicOrderAt f x ≠ 0) : toMeromorphicNFAt f x x = 0 := by
-  have hmero : MeromorphicAt f x := meromorphicAt_of_meromorphicOrderAt_ne_zero horder
-  simp [toMeromorphicNFAt, hmero, horder]
+  simp [toMeromorphicNFAt, meromorphicAt_of_meromorphicOrderAt_ne_zero, horder]
 
 lemma MeromorphicAt.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq (hf : MeromorphicAt f x)
     (horder : meromorphicOrderAt f x = 0) :
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ toMeromorphicNFAt f x =ᶠ[𝓝 x] g := by
-  obtain ⟨hanalytic, hgx, hg⟩ := Classical.choose_spec <|
-    (meromorphicOrderAt_eq_int_iff hf).mp horder
-  refine ⟨Classical.choose <| (meromorphicOrderAt_eq_int_iff hf).mp horder, hanalytic, hgx, ?_⟩
-  apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
-  · simp only [toMeromorphicNFAt, hf, ↓reduceDIte, horder, coe_zero, ne_eq, zpow_zero, one_smul]
-    trans f
-    · classical
-      apply Function.update_eventuallyEq_nhdsNE
-    rw [Filter.EventuallyEq]
-    simp only [zpow_zero, ne_eq, one_smul] at hg
-    convert! hg
-    simp
+  have := (meromorphicOrderAt_eq_int_iff hf).mp horder
+  obtain ⟨hanalytic, hgx, hg⟩ := this.choose_spec
+  refine ⟨this.choose, hanalytic, hgx, eventuallyEq_nhds_of_eventuallyEq_nhdsNE ?_ ?_⟩
+  · trans f
+    · classical simpa [toMeromorphicNFAt, hf] using Function.update_eventuallyEq_nhdsNE _ _ _ _
+    simpa [Filter.EventuallyEq] using hg
   · simp [toMeromorphicNFAt, hf, horder]
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
