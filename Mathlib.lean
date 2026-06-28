@@ -2561,7 +2561,6 @@ public import Mathlib.CategoryTheory.Bicategory.Span.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Yoneda
-public import Mathlib.CategoryTheory.Bracket
 public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.CategoryTheory.Category.Bipointed
@@ -2693,6 +2692,7 @@ public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.CategoryTheory.Functor.Bracket
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Functor.Currying
