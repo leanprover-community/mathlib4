@@ -331,20 +331,19 @@ theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) 
 theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by
   classical
-  set w' : {i // (w i) ≠ 0} → _ := fun i ↦ of.symm (diagonal w) i
+  set w' : {i // (w i) ≠ 0} → _ := fun i ↦ (diagonal w) i
   have h : LinearIndependent R w' := by
     have hli' := Pi.linearIndependent_single_of_ne_zero (R := R)
       (v := fun i : m ↦ if w i = 0 then (1 : R) else w i) (by simp [ite_eq_iff'])
     convert! hli'.comp Subtype.val Subtype.val_injective
     ext ⟨j, hj⟩ k
     simp [w', diagonal, hj, Pi.single_apply, eq_comm]
-  have hrw : insert 0 (range <| of.symm (diagonal w)ᵀ) = insert 0 (range w') := by
-    suffices ∀ a, of.symm (diagonal w) a = 0 ∨ ∃ b, w b ≠ 0 ∧
-        of.symm (diagonal w) b = of.symm (diagonal w) a
-      by simpa [subset_antisymm_iff, subset_def, w'] using this
+  have hrw : insert 0 (range (diagonal w).col) = insert 0 (range w') := by
+    suffices ∀ a, diagonal w a = 0 ∨ ∃ b, w b ≠ 0 ∧ diagonal w b = diagonal w a
+      by aesop (add simp [col_eq_transpose, subset_def])
     simp_rw [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
     simp +contextual [funext_iff, diagonal]
-  rw [cRank, ← span_insert_zero, col_eq_transpose, hrw, span_insert_zero, rank_span h,
+  rw [cRank, ← span_insert_zero, hrw, span_insert_zero, rank_span h,
     ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 
 theorem eRank_diagonal [DecidableEq m] (w : m → R) :
