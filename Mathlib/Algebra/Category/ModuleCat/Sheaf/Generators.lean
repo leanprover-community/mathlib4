@@ -133,6 +133,16 @@ def LocalGeneratorsData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGenerators
     exact ⟨⟨_, i, rfl⟩, ⟨hi ≫ eqToHom (by grind)⟩⟩
   generators i := q.generators i.2.choose
 
+instance (X : C) : (SheafOfModules.overFunctor R X).PreservesEpimorphisms := sorry
+
+@[simps]
+noncomputable def LocalGeneratorsData.ofEpi {M N : SheafOfModules.{u} R} (f : M ⟶ N) [Epi f]
+    (q : M.LocalGeneratorsData) : N.LocalGeneratorsData where
+  I := q.I
+  X := q.X
+  coversTop := q.coversTop
+  generators i := (q.generators i).ofEpi (f.over (q.X i))
+
 variable {M} in
 /-- The data of local generators of a sheaf of modules is finite type if
 each family of generators is finite type. -/
