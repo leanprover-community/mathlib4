@@ -59,6 +59,8 @@ instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestric
 @[simps! over] instance : U.toScheme.CanonicallyOver X where
   hom := U.ι
 
+lemma ι_comp_over (S : Scheme.{u}) [X.Over S] : U.ι ≫ X ↘ S = U.toScheme ↘ S := rfl
+
 instance (U : X.Opens) : U.ι.IsOver X where
 
 lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
