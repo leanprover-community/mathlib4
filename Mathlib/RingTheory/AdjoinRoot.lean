@@ -1001,11 +1001,9 @@ def tensorAlgEquiv (p : S[X]) (q : (T ⊗[R] S)[X]) (h : p.map includeRight.toRi
     rw [Polynomial.eval₂_hom]
     simp [Polynomial.eval_map]
   · ext
-    · simp [Algebra.ofId_apply, ← AlgHom.toRingHom_eq_coe]
-      rfl
+    · simp [Algebra.ofId_apply]
     simp
-  · ext : 3 <;> simp [← AlgHom.toRingHom_eq_coe]
-    rfl
+  · ext : 3 <;> simp
 
 @[simp] lemma tensorAlgEquiv_root (p : S[X]) (q : Polynomial (T ⊗[R] S)) (h) :
     tensorAlgEquiv p q h (1 ⊗ₜ root p) = root q := by simp [tensorAlgEquiv]
