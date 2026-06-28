@@ -301,14 +301,14 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
   exact (FiberBundle.totalSpaceMk_isInducing F E (f x)).eq_induced.le
 
 variable {E F}
-variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
+variable [∀ _b, Nonempty (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 @[simps]
 noncomputable def Bundle.Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where
   toFun z := (z.proj, (e (Pullback.lift f z)).2)
-  invFun y := @TotalSpace.mk _ F (f *ᵖ E) y.1 (e.symm (f y.1) y.2)
+  invFun y := TotalSpace.mk' F y.1 (e.symm (f y.1) y.2)
   source := Pullback.lift f ⁻¹' e.source
   baseSet := f ⁻¹' e.baseSet
   target := (f ⁻¹' e.baseSet) ×ˢ univ

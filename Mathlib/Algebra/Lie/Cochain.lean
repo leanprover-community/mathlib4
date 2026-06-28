@@ -54,7 +54,7 @@ variable {R L M}
 
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
-  coe_injective' _ _ h := by
+  coe_injective _ _ h := by
     ext
     exact congrFun (congrArg DFunLike.coe (congrFun h _)) _
 
