@@ -138,7 +138,7 @@ lemma smul_isoTensorOfHom_hom {U : C} (s : U ⟶ X) [IsHomogeneous M X] :
   · simp
 
 variable (M) in
-/-- Any global section section `𝟙_ C ⟶ X`, induces an isomorphism `M ≅ X`. This
+/-- Any global section `𝟙_ C ⟶ X`, induces an isomorphism `M ≅ X`. This
 is compatible with the module structure. -/
 @[to_additive
 /-- Any global section section `𝟙_ C ⟶ X`, induces an isomorphism `M ≅ X`. This
