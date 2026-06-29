@@ -144,7 +144,7 @@ lemma degHom_le {X Z Y : C} (f : X ⟶ Z) (g : Z ⟶ Y) :
   obtain ⟨Zf, f₁, f₂, hf₁, hf₂, fac_f, eq_f⟩ := r.exists_fac f
   obtain ⟨Zg, g₁, g₂, hg₁, hg₂, fac_g, eq_g⟩ := r.exists_fac g
   obtain ⟨Zh, h₁, h₂, hh₁, hh₂, fac_h, eq_h⟩ := r.exists_fac (f₂ ≫ g₁)
- let factfg := MorphismProperty.MapFactorizationData.mk (f := f ≫ g) Zh (f₁ ≫ h₁) (h₂ ≫ g₂)
+  let factfg := MorphismProperty.MapFactorizationData.mk (f := f ≫ g) Zh (f₁ ≫ h₁) (h₂ ≫ g₂)
     (by simp [reassoc_of% fac_h, reassoc_of% fac_f, fac_g])
     (W₁.comp_mem _ _ hf₁ hh₁) (W₂.comp_mem _ _ hh₂ hg₂)
   rw [r.degHom_eq factfg]
@@ -170,14 +170,14 @@ lemma degHom_comp_le_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rw [h_deg, ← h_fac, <- Category.assoc]
   exact r.degHom_le (f ≫ g₁) g₂
 
-lemma prop_of_degHom_eq_deg_src {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg X) :
+lemma prop_of_degHom_eq_deg_left {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg X) :
     W₂ f := by
   obtain ⟨Z, p, i, hp, hi, fac, h⟩ := r.exists_fac f
   obtain ⟨_⟩ := r.identities_of_prop_of_eq hp (by aesop)
   obtain rfl : i = f := by simpa using fac
   exact hi
 
-lemma prop_of_degHom_eq_deg_tgt {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg Y) :
+lemma prop_of_degHom_eq_deg_right {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg Y) :
     W₁ f := by
   obtain ⟨Z, p, i, hp, hi, fac, h⟩ := r.exists_fac f
   obtain ⟨_⟩ := r.identities_of_prop_of_eq' hi (by aesop)
@@ -191,8 +191,8 @@ lemma degHom_lt_or_of_degHom_comp_lt
   contrapose!
   intro ⟨hf, hg⟩
   let φ := MorphismProperty.MapFactorizationData.mk Z f g rfl
-    (r.prop_of_degHom_eq_deg_tgt (le_antisymm (r.degHom_le_deg' f) hf))
-    (r.prop_of_degHom_eq_deg_src (le_antisymm (r.degHom_le_deg g) hg))
+    (r.prop_of_degHom_eq_deg_right (le_antisymm (r.degHom_le_deg_right f) hf))
+    (r.prop_of_degHom_eq_deg_left (le_antisymm (r.degHom_le_deg_left g) hg))
   rw [r.degHom_eq φ]
 
 @[simp]
