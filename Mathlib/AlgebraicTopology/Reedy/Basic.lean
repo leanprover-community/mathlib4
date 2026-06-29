@@ -198,12 +198,11 @@ lemma degHom_id (X : C) : r.degHom (𝟙 X) = r.deg X :=
   r.degHom_eq (MorphismProperty.MapFactorizationData.mk X (𝟙 X) (𝟙 X) (by simp) (W₁.id_mem _)
   (W₂.id_mem _))
 
-lemma deg_le_of_iso {X Y : C} (e : X ≅ Y) : r.deg X ≤ r.deg Y := by
-  rw [← r.degHom_id X, ← e.hom_inv_id]
-  apply r.degHom_le
-
-lemma deg_eq_of_iso {X Y : C} (e : X ≅ Y) : r.deg X = r.deg Y :=
-  le_antisymm (r.deg_le_of_iso e) (r.deg_le_of_iso e.symm)
+lemma deg_eq_of_iso {X Y : C} (e : X ≅ Y) : r.deg X = r.deg Y := by
+  have {X Y : C} (e : X ≅ Y) : r.deg X ≤ r.deg Y := by
+    rw [← r.degHom_id X, ← e.hom_inv_id]
+    apply r.degHom_le
+  exact le_antisymm (this e) (this e.symm)
 
 end ReedyStructure
 
