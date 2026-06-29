@@ -318,7 +318,7 @@ variable (I M)
 instance : AddCommGroup (AdicCompletion I M) :=
   let f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
   Subtype.val_injective.addCommGroup f rfl val_add val_neg val_sub (fun _ _ ↦ val_smul ..)
-    (fun _ _ ↦ val_smul ..)
+    (fun _ _ ↦ val_smul ..) (fun _ _ ↦ val_smul ..)
 
 instance [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S (AdicCompletion I M) :=
@@ -456,6 +456,9 @@ instance : Neg (AdicCauchySequence I M) where
 instance : Sub (AdicCauchySequence I M) where
   sub x y := ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
 
+instance : SMul ℕ+ (AdicCauchySequence I M) where
+  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.psmul (x.property hmn) n⟩
+
 instance : SMul ℕ (AdicCauchySequence I M) where
   smul n x := ⟨n • x.val, fun hmn ↦ SModEq.nsmul (x.property hmn) n⟩
 
@@ -465,7 +468,7 @@ instance : SMul ℤ (AdicCauchySequence I M) where
 instance : AddCommGroup (AdicCauchySequence I M) := by
   let f : AdicCauchySequence I M → (ℕ → M) := Subtype.val
   apply Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : SMul R (AdicCauchySequence I M) where
   smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩

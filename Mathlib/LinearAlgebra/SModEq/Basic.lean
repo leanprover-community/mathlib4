@@ -106,6 +106,11 @@ theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := 
   simp_rw [Quotient.mk_smul, hxy]
 
 @[gcongr]
+lemma psmul (hxy : x ≡ y [SMOD U]) (n : ℕ+) : n • x ≡ n • y [SMOD U] := by
+  rw [SModEq.def] at hxy ⊢
+  simp_rw [Quotient.mk_smul, hxy]
+
+@[gcongr]
 lemma nsmul (hxy : x ≡ y [SMOD U]) (n : ℕ) : n • x ≡ n • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
   simp_rw [Quotient.mk_smul, hxy]
