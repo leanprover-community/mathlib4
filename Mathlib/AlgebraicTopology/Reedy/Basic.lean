@@ -187,12 +187,10 @@ lemma prop_of_degHom_eq_deg_right {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.d
 lemma degHom_lt_or_of_degHom_comp_lt
     {X Z Y : C} (f : X ⟶ Z) (g : Z ⟶ Y) (hfg : r.degHom (f ≫ g) < r.deg Z) :
     r.degHom f < r.deg Z ∨ r.degHom g < r.deg Z := by
-  revert hfg
-  contrapose!
-  intro ⟨hf, hg⟩
+  contrapose! hfg
   let φ := MorphismProperty.MapFactorizationData.mk Z f g rfl
-    (r.prop_of_degHom_eq_deg_right (le_antisymm (r.degHom_le_deg_right f) hf))
-    (r.prop_of_degHom_eq_deg_left (le_antisymm (r.degHom_le_deg_left g) hg))
+    (r.prop_of_degHom_eq_deg_right (le_antisymm (r.degHom_le_deg_right f) hfg.left))
+    (r.prop_of_degHom_eq_deg_left (le_antisymm (r.degHom_le_deg_left g) hfg.right))
   rw [r.degHom_eq φ]
 
 @[simp]
