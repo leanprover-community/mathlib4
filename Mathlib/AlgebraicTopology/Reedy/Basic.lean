@@ -205,12 +205,8 @@ lemma degHom_lt_or_of_degHom_comp_lt
 
 @[simp]
 lemma degHom_id (X : C) : r.degHom (𝟙 X) = r.deg X :=
-  r.degHom_eq (f := 𝟙 X)
-    { Z := X
-      i := 𝟙 X
-      p := 𝟙 X
-      hi := W₁.id_mem _
-      hp := W₂.id_mem _ }
+  r.degHom_eq (MorphismProperty.MapFactorizationData.mk X (𝟙 X) (𝟙 X) (by simp) (W₁.id_mem _)
+  (W₂.id_mem _))
 
 lemma deg_le_of_iso {X Y : C} (e : X ≅ Y) : r.deg X ≤ r.deg Y := by
   rw [← r.degHom_id X, ← e.hom_inv_id]
