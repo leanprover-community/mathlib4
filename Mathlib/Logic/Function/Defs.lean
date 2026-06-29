@@ -46,8 +46,8 @@ end DComp
 
 /-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
 `g i` may depend on `i`. -/
-protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
-    α i × β i := (f i, g i)
+protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) : (i : ι) → α i × β i :=
+  fun i ↦ (f i, g i)
 
 @[simp, grind =] lemma prod_apply {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
     Function.prod f g i = (f i, g i) := rfl

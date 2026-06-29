@@ -59,10 +59,26 @@ section Prod
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
+theorem continuous_prod {f : X → Y × Z} :
+    Continuous f ↔ Continuous (Prod.fst ∘ f) ∧ Continuous (Prod.snd ∘ f) :=
+  continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
+
+@[continuity, fun_prop]
+theorem Continuous.prod {f : X → Y × Z} (h₁ : Continuous (Prod.fst ∘ f))
+    (h₂ : Continuous (Prod.snd ∘ f)) : Continuous f := continuous_prod.mpr ⟨h₁, h₂⟩
+
 @[simp]
 theorem continuous_prodMk {f : X → Y} {g : X → Z} :
-    (Continuous (Function.prod f g)) ↔ Continuous f ∧ Continuous g :=
-  continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
+    (Continuous (Function.prod f g)) ↔ Continuous f ∧ Continuous g := continuous_prod
+
+@[continuity, fun_prop]
+theorem Continuous.prodMk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
+    Continuous (Function.prod f g) := by fun_prop
+
+theorem Continuous.prodMk_right (x : X) : Continuous (Prod.mk x (β := Y)) := by fun_prop
+
+
+theorem Continuous.prodMk_left (y : Y) : Continuous (Prod.mk · y (α := X)) := by fun_prop
 
 @[continuity]
 theorem continuous_fst : Continuous (@Prod.fst X Y) :=
@@ -135,17 +151,6 @@ theorem ContinuousAt.snd'' {f : Y → Z} {x : X × Y} (hf : ContinuousAt f x.snd
 theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
     (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).2) l (𝓝 <| p.2) :=
   continuousAt_snd.tendsto.comp h
-
-@[continuity, fun_prop]
-theorem Continuous.prodMk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
-    Continuous (Function.prod f g) :=
-  continuous_prodMk.2 ⟨hf, hg⟩
-
-@[continuity]
-theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) := by fun_prop
-
-@[continuity]
-theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fun_prop
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
@@ -624,7 +629,7 @@ protected lemma Topology.IsClosedEmbedding.prodMap {f : X → Y} {g : Z → W}
   { hf.isEmbedding.prodMap hg.isEmbedding with
     isClosed_range := range_prodMap ▸ hf.isClosed_range.prod hg.isClosed_range }
 
-lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding Function.prod id f :=
+lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding (Function.prod id f) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
 lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=

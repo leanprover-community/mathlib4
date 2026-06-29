@@ -293,13 +293,13 @@ lemma Eventually.trans_prod {h : Filter γ}
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by
-  simp_rw [← comap_equiv_symm, prod_eq_inf, comap_inf, comap_comap, inf_assoc,
-    Function.comp_def, Equiv.prodAssoc_symm_apply]
+  simp only [prod_eq_inf, comap_inf, comap_comap, Function.comp_def, inf_assoc, ← comap_equiv_symm,
+    Equiv.prodAssoc_symm_apply, Function.prod_apply]
 
 theorem prod_assoc_symm (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ).symm (f ×ˢ (g ×ˢ h)) = (f ×ˢ g) ×ˢ h := by
-  simp_rw [map_equiv_symm, prod_eq_inf, comap_inf, comap_comap, inf_assoc,
-    Function.comp_def, Equiv.prodAssoc_apply]
+  simp only [prod_eq_inf, comap_inf, comap_comap, Function.comp_def, map_equiv_symm,
+    Equiv.prodAssoc_apply, Function.prod_apply, inf_assoc]
 
 theorem tendsto_prodAssoc {h : Filter γ} :
     Tendsto (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) (f ×ˢ (g ×ˢ h)) :=

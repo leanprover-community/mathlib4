@@ -98,15 +98,17 @@ theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
 
 /-- Type product is associative up to an equivalence. -/
 @[simps (attr := grind =)]
-def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
-  ⟨fun p => (p.1.1, p.1.2, p.2), fun p => ((p.1, p.2.1), p.2.2), fun ⟨⟨_, _⟩, _⟩ => rfl,
-    fun ⟨_, ⟨_, _⟩⟩ => rfl⟩
+def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ where
+  toFun := Function.prod (Prod.fst ∘ Prod.fst) (Function.prod (Prod.snd ∘ Prod.fst) Prod.snd)
+  invFun := Function.prod (Function.prod Prod.fst (Prod.fst ∘ Prod.snd)) (Prod.snd ∘ Prod.snd)
 
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
-@[simps (attr := grind =) apply]
+@[simps (attr := grind =) -fullyApplied apply]
 def prodProdProdComm (α β γ δ) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
-  toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
-  invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
+  toFun := Function.prod (Function.prod (Prod.fst ∘ Prod.fst) (Prod.fst ∘ Prod.snd))
+    (Function.prod (Prod.snd ∘ Prod.fst) (Prod.snd ∘ Prod.snd))
+  invFun := Function.prod (Function.prod (Prod.fst ∘ Prod.fst) (Prod.fst ∘ Prod.snd))
+    (Function.prod (Prod.snd ∘ Prod.fst) (Prod.snd ∘ Prod.snd))
 
 @[simp, grind =]
 theorem prodProdProdComm_symm (α β γ δ) :
@@ -124,10 +126,10 @@ def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
 section
 
 /-- `PUnit` is a right identity for type product up to an equivalence. -/
-@[simps (attr := grind =)]
+@[simps (attr := grind =) -fullyApplied]
 def prodPUnit (α) : α × PUnit ≃ α where
-  toFun := fun p => p.1
-  invFun := fun a => (a, PUnit.unit)
+  toFun := Prod.fst
+  invFun := Function.prod id (Function.const α ())
 
 /-- `PUnit` is a left identity for type product up to an equivalence. -/
 @[simps! (attr := grind =)]
