@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
@@ -521,6 +522,8 @@ variable [IsFractionRing B L] (𝓞F : Type*) [CommRing 𝓞F] [Algebra 𝓞F F]
   [Algebra 𝓞F B] [Algebra.IsIntegral 𝓞F B] [Algebra 𝓞F L] [IsScalarTower 𝓞F F L]
   [IsScalarTower 𝓞F B L] (𝓟F : Ideal 𝓞F) [P.LiesOver 𝓟F]
 
+/- TEMP: original `_inf` proofs (via `stabilizerMapOfLiesOver`/`inertiaMapOfLiesOver` + an explicit
+`MulEquiv`) commented out while developing the `map_of_surjective`-based versions below.
 /--
 Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension of `L/K`.
 Then, the decomposition field of `𝓟F` in `F/K` is `D ⊓ F` where `𝓟F` is the prime of `F`
@@ -579,6 +582,60 @@ theorem isInertiaField_inf [IsIntegrallyClosed A] [Algebra A K] [IsFractionRing 
     QuotientGroup.quotientInfEquivProdNormalQuotient_coe_apply, subgroup_smul_def,
     QuotientGroup.subgroupOfEquivMapQuotient_coe_apply]
   simp [Subtype.ext_iff, subgroup_smul_def, AlgEquiv.restrictNormalHom_apply]
+-/
+
+/-- Variant of `isDecompositionField_inf` using `IsGaloisGroup.map_of_surjective` (with
+`f = restrictNormalHom F`) and `Ideal.map_stabilizer_of_surjective`, instead of the bespoke
+`stabilizerMapOfLiesOver` and an explicit `MulEquiv`. -/
+theorem isDecompositionField_inf' [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
+    [hD : IsDecompositionField K L P D] [IsFractionRing 𝓞F F] [MulSemiringAction Gal(F/K) 𝓞F]
+    [SMulDistribClass Gal(F/K) 𝓞F F] [P.IsPrime] [IsGalois K F] :
+    IsDecompositionField K F 𝓟F (D ⊓ F : IntermediateField K L) := by
+  let H : Subgroup Gal(L/K) := stabilizer Gal(L/K) P ⊔ F.fixingSubgroup
+  haveI : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
+  haveI : IsGaloisGroup H ↥(D ⊓ F) L := by
+    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
+      fixingSubgroup_inf, (isDecompositionField_iff_fixingSubgroup K L P).mp hD]
+  -- `H.map (restrictNormalHom F)` is a Galois group for `(D ⊓ F) / F`:
+  have hmap : IsGaloisGroup (H.map (AlgEquiv.restrictNormalHom F)) ↥(D ⊓ F) F :=
+    IsGaloisGroup.map_of_surjective (H := H) (N := F.fixingSubgroup)
+      (E := (D ⊓ F : IntermediateField K L)) (f := AlgEquiv.restrictNormalHom F)
+      (hf := AlgEquiv.restrictNormalHom_surjective (E := L))
+      (hf_ker := IntermediateField.restrictNormalHom_ker F)
+      (hf_smul := fun g x ↦ AlgEquiv.restrictNormal_commutes g F x) (h := inf_le_right)
+  -- and that image is exactly the decomposition group of `𝓟F`. The clean shape is
+  --   `H.map (restrictNormalHom F) = (stabilizer P).map (restrictNormalHom F) = stabilizer Gal(F/K) 𝓟F`
+  -- via `Subgroup.map_sup` (dropping `F.fixingSubgroup ≤ ker`) + `Ideal.map_stabilizer_of_surjective`.
+  -- BUT `map_stabilizer_of_surjective` needs `Algebra.IsInvariant 𝓞F B F.fixingSubgroup`, i.e. the
+  -- ring-level Galois structure `IsGaloisGroup F.fixingSubgroup 𝓞F B`, which requires
+  -- `[IsIntegrallyClosed 𝓞F]` (and more) — hypotheses this theorem does not assume. (See notes.)
+  have hstab : H.map (AlgEquiv.restrictNormalHom F) = stabilizer Gal(F/K) 𝓟F := by
+    sorry
+  exact (isDecompositionField_iff _ _ _ _).mpr (hstab ▸ hmap)
+
+/-- Inertia analogue of `isDecompositionField_inf'`, via the same `IsGaloisGroup.map_of_surjective`
+and `Ideal.map_inertia_of_surjective`. -/
+theorem isInertiaField_inf' [IsIntegrallyClosed A] [Algebra A K] [IsFractionRing A K]
+    [Algebra A L] [Algebra.IsIntegral A B] [Algebra A 𝓞F] [IsScalarTower A 𝓞F B]
+    [IsScalarTower A K L] [IsScalarTower A B L]
+    [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
+    [hE : IsInertiaField K L P E] [IsFractionRing 𝓞F F] [MulSemiringAction Gal(F/K) 𝓞F]
+    [SMulDistribClass Gal(F/K) 𝓞F F] [P.IsMaximal] [IsGalois K F] (p : Ideal A) [P.LiesOver p] :
+    IsInertiaField K F 𝓟F (E ⊓ F : IntermediateField K L) := by
+  let H : Subgroup Gal(L/K) := inertia Gal(L/K) P ⊔ F.fixingSubgroup
+  haveI : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
+  haveI : IsGaloisGroup H ↥(E ⊓ F) L := by
+    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
+      fixingSubgroup_inf, (isInertiaField_iff_fixingSubgroup K L P).mp hE]
+  have hmap : IsGaloisGroup (H.map (AlgEquiv.restrictNormalHom F)) ↥(E ⊓ F) F :=
+    IsGaloisGroup.map_of_surjective (H := H) (N := F.fixingSubgroup)
+      (E := (E ⊓ F : IntermediateField K L)) (f := AlgEquiv.restrictNormalHom F)
+      (hf := AlgEquiv.restrictNormalHom_surjective (E := L))
+      (hf_ker := IntermediateField.restrictNormalHom_ker F)
+      (hf_smul := fun g x ↦ AlgEquiv.restrictNormal_commutes g F x) (h := inf_le_right)
+  have hinertia : H.map (AlgEquiv.restrictNormalHom F) = inertia Gal(F/K) 𝓟F := by
+    sorry
+  exact (isInertiaField_iff _ _ _ _).mpr (hinertia ▸ hmap)
 
 /--
 Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension of `L/K`.

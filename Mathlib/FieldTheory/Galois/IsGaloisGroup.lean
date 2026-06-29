@@ -534,6 +534,48 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
 
 @[deprecated (since := "2026-04-21")] alias quotientMap := map_quotientMk'
 
+variable {G' : Type*} [Group G'] [MulSemiringAction G' F]
+
+/-- Subgroup version of `of_mulEquiv`: an action-compatible isomorphism `φ : G₁ ≃* G₂` of groups
+acting on `B` transports a Galois group `H ≤ G₁` for `B / A` to its image `H.map φ ≤ G₂`. -/
+theorem map_of_mulEquiv {G₁ G₂ A B : Type*} [Group G₁] [Group G₂] [CommSemiring A] [Semiring B]
+    [Algebra A B] [MulSemiringAction G₁ B] [MulSemiringAction G₂ B] (H : Subgroup G₁)
+    [IsGaloisGroup H A B] (φ : G₁ ≃* G₂) (hφ : ∀ (g : G₁) (x : B), φ g • x = g • x) :
+    IsGaloisGroup (H.map (φ : G₁ →* G₂)) A B :=
+  of_mulEquiv (φ.subgroupMap H).symm fun σ x ↦ by
+    simp only [Subgroup.smul_def]
+    rw [← hφ]
+    congr 1
+    exact φ.apply_symm_apply _
+
+/-- General form of `map_quotientMk'`: if `f : G →* G'` is surjective with kernel `N`, and its
+action on `F` agrees with `G`'s action on `L` (so `G'` realizes `G ⧸ N` acting on `F`), and `H`
+is a Galois group for `L / E` with `E ≤ F`, then `H.map f` is a Galois group for `F / E`. -/
+theorem map_of_surjective [Finite G] [IsGaloisGroup G K L] (f : G →* G')
+    (hf : Function.Surjective f) (hf_ker : f.ker = N)
+    (hf_smul : ∀ (g : G) (x : F), (f g • x : F) = g • (x : L)) (h : E ≤ F) :
+    letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
+    IsGaloisGroup (H.map f) E F := by
+  letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
+  letI := smulOfNormal G F L N
+  haveI := smulDistribClass_smulOfNormal G F L N
+  letI := mulSemiringActionOfSmulDistribClass F L G
+  haveI := isScalarTower_mulSemiringActionQuotient G F L N
+  subst hf_ker
+  haveI := map_quotientMk' (G := G) (K := K) (L := L) (H := H) (F := F) (N := f.ker) (E := E) h
+  have key : H.map f = (H.map (QuotientGroup.mk' f.ker)).map
+      (QuotientGroup.quotientKerEquivOfSurjective f hf : G ⧸ f.ker →* G') := by
+    rw [Subgroup.map_map]; congr 1
+  rw [key]
+  refine map_of_mulEquiv (H.map (QuotientGroup.mk' f.ker))
+    (QuotientGroup.quotientKerEquivOfSurjective f hf) fun σ x ↦ ?_
+  induction σ using QuotientGroup.induction_on with
+  | _ g =>
+    rw [MulAction.coe_quotient_smul]
+    apply FaithfulSMul.algebraMap_injective F L
+    rw [algebraMap_smulOfNormal]
+    exact hf_smul g x
+
 end IntermediateField
 
 end Quotient
