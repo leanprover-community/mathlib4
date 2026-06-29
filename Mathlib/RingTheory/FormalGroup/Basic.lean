@@ -23,7 +23,7 @@ of the formal group law `F(X,Y)`.
 
 * `FormalGroup R`: definition of one dimensional formal group law over commutative ring `R`.
 
-* Properties: `F(X,0) = 0` and `F(0,X) = X`.
+* Properties: `F(X,0) = X` and `F(0,X) = X`.
 
 * Additive formal group laws `𝔾ₐ` and multiplicative formal group laws `𝔾ₘ`.
 
@@ -115,7 +115,7 @@ namespace FormalGroup
 variable {σ : Type*} (F : FormalGroup R)
 
 set_option linter.unusedVariables false in
-/-- `Point F σ` represents the mathematical space of points of a formal group $F$
+/-- `F.Point σ` represents the mathematical space of points of a formal group $F$
 taking values in the formal power series ring `MvPowerSeries σ R` with the property
 that constant coefficient is nilpotent.
 
@@ -126,7 +126,7 @@ via the substitution operation $x +_F y = F(x, y)$. -/
 def Point (F : FormalGroup R) (σ : Type*) := {f : MvPowerSeries σ R // PowerSeries.HasSubst f}
 
 instance : Add (F.Point σ) where
-  add x y := ⟨(F : MvPowerSeries (Fin 2) R).subst ![x.val, y.val],
+  add x y := ⟨F.toPowerSeries.subst ![x.val, y.val],
     IsNilpotent_subst (by simp [hasSubst_of_constantCoeff_nilpotent, x.prop, y.prop])
       (F.zero_constantCoeff ▸ IsNilpotent.zero)⟩
 
@@ -139,8 +139,6 @@ instance : Zero (F.Point σ) where
 
 @[simp]
 lemma zero_apply : (0 : F.Point σ).val = (0 : MvPowerSeries σ R) := rfl
-
-/- TODO : Zero, SMul, Inv instance. -/
 
 /-- Additive formal group law `𝔾ₐ(X,Y) = X + Y`. -/
 @[simps]
