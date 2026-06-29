@@ -100,6 +100,7 @@ public import Mathlib.Algebra.Category.AlgCat.FilteredColimits
 public import Mathlib.Algebra.Category.AlgCat.Limits
 public import Mathlib.Algebra.Category.AlgCat.Monoidal
 public import Mathlib.Algebra.Category.AlgCat.Symmetric
+public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.BialgCat.Basic
 public import Mathlib.Algebra.Category.BialgCat.Monoidal
 public import Mathlib.Algebra.Category.BoolRing
