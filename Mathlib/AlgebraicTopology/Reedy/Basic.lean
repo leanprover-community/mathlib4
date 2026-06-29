@@ -86,12 +86,12 @@ lemma le₂ {X Y : C} (f : X ⟶ Y) (hf : W₂ f) : r.deg X ≤ r.deg Y := by
 
 lemma identities_of_prop_of_eq {X Y : C} {f : X ⟶ Y} (hf : W₁ f) (h : r.deg X = r.deg Y) :
     MorphismProperty.identities _ f := by
-  by_contra!
+  by_contra
   exact h.not_gt (r.lt₁ _ hf this)
 
 lemma identities_of_prop_of_eq' {X Y : C} {f : X ⟶ Y} (hf : W₂ f) (h : r.deg X = r.deg Y) :
     MorphismProperty.identities _ f := by
-  by_contra!
+  by_contra
   exact h.not_lt (r.lt₂ _ hf this)
 
 include r in
