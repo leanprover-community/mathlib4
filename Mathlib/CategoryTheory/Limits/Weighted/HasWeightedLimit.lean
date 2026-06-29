@@ -23,7 +23,7 @@ open Limits
 
 namespace Limits
 
-variable {J : Type u} [Category.{v} J] {C : Type*} [Category* C]
+variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 
 abbrev WeightedCone (W : J ⥤ Type w) (F : J ⥤ C) :=
   Cone (CategoryOfElements.π W ⋙ F)
@@ -111,32 +111,32 @@ end Limits
 
 namespace Functor
 
-variable {J : Type u} [Category.{v} J] (W : J ⥤ Type w) {C : Type*} [Category* C]
-
 section
 
-variable (F : J ⥤ C) [HasWeightedLimit W F]
+variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
+  (W W' W'' : J ⥤ Type w) (g : W ⟶ W') (g' : W' ⟶ W'') (F : J ⥤ C)
+  [HasWeightedLimit W F] [HasWeightedLimit W' F] [HasWeightedLimit W'' F]
 
-noncomputable def weightedLimObj : C :=
+noncomputable def weightedLimObjObj : C :=
   limit (CategoryOfElements.π W ⋙ F)
 
 @[no_expose]
-noncomputable def weightedLimObjπ ⦃j : J⦄ (x : W.obj j) :
-    W.weightedLimObj F ⟶ F.obj j :=
+noncomputable def weightedLimObjObjπ ⦃j : J⦄ (x : W.obj j) :
+    W.weightedLimObjObj F ⟶ F.obj j :=
   limit.π (CategoryOfElements.π W ⋙ F) (Functor.elementsMk _ _ x)
 
 @[reassoc (attr := simp)]
 lemma weightedLimObjObj_w ⦃j₁ j₂ : J⦄ (x : W.obj j₁)
     (f : j₁ ⟶ j₂) :
-    W.weightedLimObjπ F x ≫ F.map f =
-      W.weightedLimObjπ F (W.map f x) := by
+    W.weightedLimObjObjπ F x ≫ F.map f =
+      W.weightedLimObjObjπ F (W.map f x) := by
   let g : Functor.elementsMk _ _ x ⟶ Functor.elementsMk _ _ (W.map f x) := ⟨f, rfl⟩
   exact limit.w (CategoryOfElements.π W ⋙ F) g
 
 noncomputable abbrev weightedLimCone :
     WeightedCone W F :=
-  WeightedCone.mk (W.weightedLimObj F)
-    (fun j x ↦ W.weightedLimObjπ F x)
+  WeightedCone.mk (W.weightedLimObjObj F)
+    (fun j x ↦ W.weightedLimObjObjπ F x)
     (fun j₁ j₂ x f ↦ by simp)
 
 @[no_expose]
@@ -146,51 +146,115 @@ noncomputable def isLimitWeightedLimCone :
 
 variable {W F} in
 @[ext]
-lemma weightedLim.hom_ext {Z : C} {f g : Z ⟶ W.weightedLimObj F}
+lemma weightedLimObjObj.hom_ext {Z : C} {f g : Z ⟶ W.weightedLimObjObj F}
     (h : ∀ {j : J} (x : W.obj j),
-      f ≫ W.weightedLimObjπ F x = g ≫ W.weightedLimObjπ F x) :
+      f ≫ W.weightedLimObjObjπ F x = g ≫ W.weightedLimObjObjπ F x) :
     f = g :=
   (W.isLimitWeightedLimCone F).hom_ext h
 
-end
-
 @[no_expose]
-noncomputable def weightedLimMap {F₁ F₂ : J ⥤ C}
+noncomputable def weightedLimObjMap {F₁ F₂ : J ⥤ C}
     [HasWeightedLimit W F₁] [HasWeightedLimit W F₂] (f : F₁ ⟶ F₂) :
-    W.weightedLimObj F₁ ⟶ W.weightedLimObj F₂ :=
+    W.weightedLimObjObj F₁ ⟶ W.weightedLimObjObj F₂ :=
   limMap (whiskerLeft _ f)
 
 @[reassoc (attr := simp)]
-lemma weightedLimMap_π {F₁ F₂ : J ⥤ C}
+lemma weightedLimObjMap_π {F₁ F₂ : J ⥤ C}
     [HasWeightedLimit W F₁] [HasWeightedLimit W F₂] (f : F₁ ⟶ F₂)
     ⦃j : J⦄ (x : W.obj j) :
-    W.weightedLimMap f ≫ W.weightedLimObjπ F₂ x =
-      W.weightedLimObjπ F₁ x ≫ f.app j :=
+    W.weightedLimObjMap f ≫ W.weightedLimObjObjπ F₂ x =
+      W.weightedLimObjObjπ F₁ x ≫ f.app j :=
   limit.lift_π ..
 
 @[simp]
-lemma weightedLimMap_id (F : J ⥤ C) [HasWeightedLimit W F] :
-    W.weightedLimMap (𝟙 F) = 𝟙 _ := by
+lemma weightedLimObjMap_id (F : J ⥤ C) [HasWeightedLimit W F] :
+    W.weightedLimObjMap (𝟙 F) = 𝟙 _ := by
   cat_disch
 
 @[reassoc]
-lemma weightedLimMap_comp {F₁ F₂ F₃ : J ⥤ C}
+lemma weightedLimObjMap_comp {F₁ F₂ F₃ : J ⥤ C}
     [HasWeightedLimit W F₁] [HasWeightedLimit W F₂] [HasWeightedLimit W F₃]
-    (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃):
-    W.weightedLimMap f ≫ W.weightedLimMap g = W.weightedLimMap (f ≫ g) := by
+    (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
+    W.weightedLimObjMap f ≫ W.weightedLimObjMap g = W.weightedLimObjMap (f ≫ g) := by
   cat_disch
 
-variable (C) in
-abbrev HasWeightedLimits (W : J ⥤ Type w) (C : Type*) [Category* C] : Prop :=
-    ∀ (F : J ⥤ C), HasWeightedLimit W F
+section
 
-variable [W.HasWeightedLimits C]
+variable {W W' W''}
+
+def weightedLimFlipObjMap :
+    W'.weightedLimObjObj F ⟶ W.weightedLimObjObj F := by
+  have := g
+  sorry
+
+@[reassoc (attr := simp)]
+lemma weightedLimObjObjMap_π ⦃j : J⦄ (x : W.obj j) :
+    weightedLimFlipObjMap g F ≫ W.weightedLimObjObjπ F x =
+      W'.weightedLimObjObjπ F (g.app j x) := by
+  sorry
+
+@[simp]
+lemma weightedLimFlipObjMap_id :
+    weightedLimFlipObjMap (𝟙 W) F = 𝟙 _ := by
+  cat_disch
+
+@[reassoc]
+lemma weightedLimFlipObjMap_comp :
+    weightedLimFlipObjMap g' F ≫ weightedLimFlipObjMap g F =
+    weightedLimFlipObjMap (g ≫ g') F := by
+  cat_disch
+
+end
+
+
+end
+
+section
+
+variable {J : Type u} [Category.{v} J] (W : J ⥤ Type w) {C : Type u'} [Category.{v'} C]
+
+variable (C) in
+abbrev HasWeightedLimObj : Prop :=
+  ∀ (F : J ⥤ C), HasWeightedLimit W F
+
+variable [W.HasWeightedLimObj C]
 
 @[implicit_reducible, simps]
-noncomputable def weightedLim : (J ⥤ C) ⥤ C where
-  obj F := W.weightedLimObj F
-  map f := W.weightedLimMap f
+noncomputable def weightedLimObj : (J ⥤ C) ⥤ C where
+  obj F := W.weightedLimObjObj F
+  map f := W.weightedLimObjMap f
+
+end
+
+section
+
+variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
+  (F : J ⥤ C)
+
+abbrev HasWeightedLimFlipObj : Prop :=
+  ∀ (W : J ⥤ Type w), HasWeightedLimit W F
+
+variable [HasWeightedLimFlipObj.{w} F]
+
+@[implicit_reducible, simps]
+noncomputable def weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C where
+  obj W := W.unop.weightedLimObjObj F
+  map g := weightedLimFlipObjMap g.unop F
+
+end
 
 end Functor
+
+namespace Limits
+
+variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
+  [∀ (W : J ⥤ Type w), W.HasWeightedLimObj C]
+
+@[implicit_reducible, simps]
+noncomputable def weightedLim : (J ⥤ Type w)ᵒᵖ ⥤ (J ⥤ C) ⥤ C where
+  obj W := W.unop.weightedLimObj
+  map g := { app F := Functor.weightedLimFlipObjMap g.unop F }
+
+end Limits
 
 end CategoryTheory
