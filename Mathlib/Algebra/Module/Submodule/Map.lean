@@ -245,9 +245,10 @@ theorem comap_inf (f : M →ₛₗ[σ₁₂] M₂) : comap f (q ⊓ q') = comap 
   rfl
 
 @[simp]
-theorem comap_iInf [RingHomSurjective σ₁₂] {ι : Sort*} (f : M →ₛₗ[σ₁₂] M₂)
-    (p : ι → Submodule R₂ M₂) : comap f (⨅ i, p i) = ⨅ i, comap f (p i) :=
-  (gc_map_comap f).u_iInf
+theorem comap_iInf {ι : Sort*} (f : M →ₛₗ[σ₁₂] M₂)
+    (p : ι → Submodule R₂ M₂) : comap f (⨅ i, p i) = ⨅ i, comap f (p i) := by
+  ext
+  simp
 
 @[simp]
 theorem comap_finsetInf [RingHomSurjective σ₁₂] {ι : Type*} (f : M →ₛₗ[σ₁₂] M₂)
