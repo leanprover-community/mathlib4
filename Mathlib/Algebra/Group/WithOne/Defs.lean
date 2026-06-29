@@ -194,8 +194,11 @@ instance instCommMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
 
--- Specialization of `Option.getD` to values in `WithZero α` that respects API boundaries. -/
-@[to_additive]
+/--
+Specialization of `Option.getD` to values in `WithOne α` that respects API boundaries.
+-/
+@[to_additive
+  /-- Specialization of `Option.getD` to values in `WithZero α` that respects API boundaries. -/]
 def unoneD (d : α) (x : WithOne α) : α := recOneCoe d id x
 
 @[to_additive (attr := simp)]
