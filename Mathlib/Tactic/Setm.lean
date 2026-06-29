@@ -18,6 +18,13 @@ a target, and creates local declarations for the matched named holes. By default
 goal, and it can be selected to be a local declaration via the `using` syntax. Optionally, with the
 syntax `at loc`, it also rewrites at locations `loc` to replace the occurrances of the matched
 expressions with the newly-introduced local declarations.
+
+
+## Todo
+
+It would be nice if the tactic was be made to work for non-constants under binders (by adding
+forall binders to the local declarations).
+
 -/
 
 meta section
