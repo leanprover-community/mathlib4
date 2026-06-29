@@ -182,16 +182,16 @@ section
 
 variable {W W' W''}
 
-def weightedLimFlipObjMap :
-    W'.weightedLimObjObj F ⟶ W.weightedLimObjObj F := by
-  have := g
-  sorry
+noncomputable def weightedLimFlipObjMap :
+    W'.weightedLimObjObj F ⟶ W.weightedLimObjObj F :=
+  (W.isLimitWeightedLimCone F).lift
+    (fun j x ↦ W'.weightedLimObjObjπ F (g.app j x)) (by simp)
 
 @[reassoc (attr := simp)]
 lemma weightedLimObjObjMap_π ⦃j : J⦄ (x : W.obj j) :
     weightedLimFlipObjMap g F ≫ W.weightedLimObjObjπ F x =
-      W'.weightedLimObjObjπ F (g.app j x) := by
-  sorry
+      W'.weightedLimObjObjπ F (g.app j x) :=
+  (W.isLimitWeightedLimCone F).fac ..
 
 @[simp]
 lemma weightedLimFlipObjMap_id :
