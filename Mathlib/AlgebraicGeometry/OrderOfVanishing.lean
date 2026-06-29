@@ -69,10 +69,8 @@ lemma ord_zero : ord (0 : X.functionField) = 0 := by
   · simp [h]
 
 lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :
-    ord f x = Multiplicative.toAdd WithZero.unzero ((map_ne_zero (ordHom x hx)).mpr hf) := by
-  simp only [ord, hx, ↓reduceDIte, ne_eq]
-  rw [unZeroD_eq_unZero ((map_ne_zero (ordHom x hx)).mpr hf)]
-  rfl
+    ord f x = (WithZero.unzero ((map_ne_zero (ordHom x hx)).mpr hf)).toAdd := by
+  simp [ord, hx,unZeroD_eq_unZero ((map_ne_zero (ordHom x hx)).mpr hf)]
 
 lemma ord_eq_iff {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) {n : ℤ} :
     ord f z = n ↔ ordHom z hz f = Multiplicative.ofAdd n := by
@@ -97,17 +95,14 @@ lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x
 lemma ord_le_ord_iff {x y : X} (hx : coheight x = 1) (hy : coheight y = 1) {f g : X.functionField}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     ord f x ≤ ord g y ↔ ordHom x hx f ≤ ordHom y hy g := by
-  rw [ord_eq_unzero_ordHom hx hf, ord_eq_unzero_ordHom hy hg]
-  erw [Multiplicative.toAdd_le]
-  simp
+  simp [ord_eq_unzero_ordHom hx hf, ord_eq_unzero_ordHom hy hg, Multiplicative.toAdd_le]
 
 lemma le_ord_iff {x : X} (hx : coheight x = 1) {f : X.functionField}
     (hf : f ≠ 0) {n : ℤ} :
     n ≤ ord f x ↔ ↑(Multiplicative.ofAdd n) ≤ ordHom x hx f := by
   rw [ord_eq_unzero_ordHom hx hf]
   change (Multiplicative.toAdd (Multiplicative.ofAdd n)) ≤ _ ↔ _
-  erw [Multiplicative.toAdd_le]
-  rw [le_unzero_iff]
+  rw [Multiplicative.toAdd_le, le_unzero_iff]
 
 lemma ord_add {x : X} (hx : coheight x = 1) [IsDiscreteValuationRing (X.presheaf.stalk x)]
     {f g : X.functionField} (hfg : f + g ≠ 0) :
