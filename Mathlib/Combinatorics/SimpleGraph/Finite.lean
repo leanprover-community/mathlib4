@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Sym.Card
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -318,6 +319,7 @@ abbrev LocallyFinite :=
 variable [LocallyFinite G]
 
 /-- A locally finite simple graph is regular of degree `d` if every vertex has degree `d`. -/
+@[wikidata Q826467]
 def IsRegularOfDegree (d : ℕ) : Prop :=
   ∀ v : V, G.degree v = d
 

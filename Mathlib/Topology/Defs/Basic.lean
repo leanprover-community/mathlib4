@@ -103,6 +103,7 @@ theorem isOpen_sUnion {s : Set (Set X)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (�
   TopologicalSpace.isOpen_sUnion s h
 
 /-- A set is closed if its complement is open -/
+@[wikidata Q320357]
 class IsClosed (s : Set X) : Prop where
   /-- The complement of a closed set is an open set. -/
   isOpen_compl : IsOpen sᶜ
