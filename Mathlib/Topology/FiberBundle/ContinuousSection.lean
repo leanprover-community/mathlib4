@@ -15,7 +15,7 @@ In this file we define continuous sections of topological fibre bundles and prov
 carries a continuous fibrewise action by a topological group `G`, its sections are acted on by both
 `G` and `G`-valued functions on the base space.
 
-## Main results / definitions
+## Main definitions and results
 * `ContinuousSection F E`: the type of continuous sections of `E`. Denoted `Cₛ⟮F, E⟯`.
 * `ContinuousSection.equivContinuousMap`: continuous sections of a trivial bundle `Trivial B F`
   correspond to continuous maps `B → F`.
@@ -24,7 +24,12 @@ carries a continuous fibrewise action by a topological group `G`, its sections a
 * `ContinuousSection.pullback f s`: the continuous section of the pullback bundle `f *ᵖ E` given
   by precomposing a given continuous section `s` of `E` with `f`.
 
-## TODO
+## Notation
+
+`Cₛ⟮F, E⟯` is notation for `ContinuousSection F E`. Note that these are not parentheses but special
+brackets that can be typed with `\([])'`.
+
+## TODO (@peabrainiac)
 * Introduce typeclasses for continuity of other fibrewise algebraic structures and show that
   sections inherit the corresponding structures in these cases.
 * Show that vector bundles satisfy these typeclasses, so that this API in particular applies
@@ -56,7 +61,7 @@ variable {F E}
 
 instance : DFunLike Cₛ⟮F, E⟯ B E where
   coe := ContinuousSection.toFun
-  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr
+  coe_injective f g _ := by cases f; cases g; congr
 
 variable {s t : Cₛ⟮F, E⟯}
 
@@ -67,11 +72,12 @@ theorem coeFn_mk (s : ∀ b, E b) (hs : Continuous fun b ↦ (⟨b, s b⟩ : Tot
 protected theorem continuous (s : Cₛ⟮F, E⟯) : Continuous fun b ↦ (⟨b, s b⟩ : TotalSpace F E) :=
   s.continuous_toFun
 
-theorem coe_inj ⦃s t : Cₛ⟮F, E⟯⦄ (h : (s : ∀ b, E b) = t) : s = t :=
-  DFunLike.ext' h
+@[simp]
+theorem coe_inj {s t : Cₛ⟮F, E⟯} : (s : ∀ b, E b) = t ↔ s = t :=
+  ⟨fun h ↦ DFunLike.ext' h, fun h ↦ by rw [h]⟩
 
 theorem coe_injective : Injective ((↑) : Cₛ⟮F, E⟯ → ∀ b, E b) :=
-  coe_inj
+  fun _ _ ↦ coe_inj.1
 
 @[ext]
 theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
