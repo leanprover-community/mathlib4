@@ -293,7 +293,7 @@ theorem AnalyticAt.meromorphicOrderAt_nonneg (hf : AnalyticAt 𝕜 f x) :
   simp [hf.meromorphicOrderAt_eq]
 
 /-- A meromorphic function has non-negative order iff there exists an analytic extension. -/
-theorem MeromorphicAt.meomorphicOrderAt_nonneg_iff_exists_eventuallyEq_analyticAt
+theorem MeromorphicAt.meomorphicOrderAt_nonneg_iff_exists_analyticAt_and_eventuallyEq
     (hf : MeromorphicAt f x) :
     0 ≤ meromorphicOrderAt f x ↔ ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ f =ᶠ[𝓝[≠] x] g := by
   refine ⟨fun nneg ↦ ?_, fun ⟨g, hg₁, hg₂⟩ ↦ ?_⟩
