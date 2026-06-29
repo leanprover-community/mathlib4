@@ -83,14 +83,14 @@ theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
   unfold Pi.hasLe Prop.le
   grind [Std.Refl]
 
-@[deprecated (since := "2026-06-26")] alias refl_iff_subrelation_eq := refl_iff_eq_le
+@[deprecated (since := "2026-06-23")] alias refl_iff_subrelation_eq := refl_iff_eq_le
 @[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_eq_le
 
 theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   unfold Pi.hasLe Prop.le
   grind [Std.Irrefl]
 
-@[deprecated (since := "2026-06-26")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
+@[deprecated (since := "2026-06-23")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
 @[deprecated (since := "2026-02-12")] alias irreflexive_iff_subrelation_ne := irrefl_iff_le_ne
 
 protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
@@ -359,11 +359,9 @@ attribute [grind] TransGen
 
 namespace ReflGen
 
-theorem le_reflTransGen : ReflGen r ≤ ReflTransGen r
+theorem to_reflTransGen : ReflGen r ≤ ReflTransGen r
   | a, _, refl => by rfl
   | _, _, single h => ReflTransGen.tail ReflTransGen.refl h
-
-@[deprecated (since := "2026-06-26")] alias to_reflTransGen := le_reflTransGen
 
 theorem mono {p : α → α → Prop} (hp : r ≤ p) : ReflGen r ≤ ReflGen p
   | a, _, ReflGen.refl => by rfl
@@ -506,13 +504,11 @@ end ReflTransGen
 
 namespace TransGen
 
-theorem le_reflTransGen : TransGen r ≤ ReflTransGen r := by
+theorem to_reflTransGen : TransGen r ≤ ReflTransGen r := by
   intro a _ h
   induction h with
   | single h => exact ReflTransGen.single h
   | tail _ bc ab => exact ReflTransGen.tail ab bc
-
-@[deprecated (since := "2026-06-26")] alias to_reflTransGen := le_reflTransGen
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
   induction hbc with
@@ -530,7 +526,7 @@ theorem tail' (hab : ReflTransGen r a b) (hbc : r b c) : TransGen r a c := by
   | tail _ hdb IH => exact tail (IH hdb) hbc
 
 theorem head (hab : r a b) (hbc : TransGen r b c) : TransGen r a c :=
-  head' hab hbc.le_reflTransGen
+  head' hab hbc.to_reflTransGen
 
 @[elab_as_elim]
 theorem head_induction_on {motive : ∀ a : α, TransGen r a b → Prop} {a : α} (h : TransGen r a b)
@@ -563,7 +559,7 @@ theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
   refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
   cases h with
   | single hac => exact ⟨_, by rfl, hac⟩
-  | tail hab hbc => exact ⟨_, hab.le_reflTransGen, hbc⟩
+  | tail hab hbc => exact ⟨_, hab.to_reflTransGen, hbc⟩
 
 theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
   refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ head' hab hbc⟩
@@ -702,7 +698,7 @@ theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ Trans
     | tail hac hcb => exact Or.inr (TransGen.tail' hac hcb)
   · rcases h with (rfl | h)
     · rfl
-    · exact h.le_reflTransGen
+    · exact h.to_reflTransGen
 
 theorem ReflTransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
     ReflTransGen r ≤ (ReflTransGen p on f) :=
@@ -766,7 +762,7 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
 @[simp, grind =] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
   ext x y
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simpa [reflTransGen_eq_self] using h.mono ReflGen.le_reflTransGen x y |>.le_reflTransGen
+  · simpa [reflTransGen_eq_self] using h.mono ReflGen.to_reflTransGen x y |>.to_reflTransGen
   · obtain (rfl | h) := reflTransGen_iff_eq_or_transGen.mp h
     · exact .single .refl
     · exact h.mono (fun _ _ ↦ .single) x y
