@@ -27,8 +27,7 @@ set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 open IsFiltered in
 lemma IsCardinalPresentable.mk
-    {C : Type*} [Category* C] {X : C} {κ : Cardinal.{w}}
-    [Fact κ.IsRegular]
+    {C : Type*} [Category* C] {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular]
     (h : ∀ (J : Type w) (_ : Category.{w} J) (_ : IsCardinalFiltered J κ)
       (F : J ⥤ C) (c : Cocone F) (_ : IsColimit c),
       (∀ (g : X ⟶ c.pt), ∃ (j : J) (f : X ⟶ F.obj j), f ≫ c.ι.app j = g) ∧

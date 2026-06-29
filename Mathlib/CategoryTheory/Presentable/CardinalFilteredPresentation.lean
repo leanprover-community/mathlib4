@@ -88,7 +88,11 @@ lemma mk' (h₁ : P ≤ isCardinalPresentable C κ)
       (_ : EssentiallySmall.{w} J) (_ : IsCardinalFiltered J κ), P.colimitsOfShape J X) :
     P.IsCardinalFilteredGenerator κ where
   le_isCardinalPresentable := h₁
-  exists_colimitsOfShape := sorry
+  exists_colimitsOfShape X := by
+    obtain ⟨J, _, _, _, p⟩ := h₂ X
+    exact ⟨SmallModel.{w} J, inferInstance,
+      IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J),
+      by rwa [← P.colimitsOfShape_congr (equivSmallModel.{w} J)]⟩
 
 variable (h : P.IsCardinalFilteredGenerator κ) (X : C)
 
