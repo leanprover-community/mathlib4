@@ -357,11 +357,14 @@ inductive EqvGen : α → α → Prop
 attribute [mk_iff] TransGen
 attribute [grind] TransGen
 
+theorem reflGen_le_reflTransGen : ReflGen r ≤ ReflTransGen r
+  | a, _, .refl => by rfl
+  | _, _, .single h => ReflTransGen.tail ReflTransGen.refl h
+
 namespace ReflGen
 
-theorem to_reflTransGen : ReflGen r ≤ ReflTransGen r
-  | a, _, refl => by rfl
-  | _, _, single h => ReflTransGen.tail ReflTransGen.refl h
+theorem to_reflTransGen {a b} : ReflGen r a b → ReflTransGen r a b :=
+  reflGen_le_reflTransGen a b
 
 theorem mono {p : α → α → Prop} (hp : r ≤ p) : ReflGen r ≤ ReflGen p
   | a, _, ReflGen.refl => by rfl
@@ -502,13 +505,16 @@ theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a
 
 end ReflTransGen
 
-namespace TransGen
-
-theorem to_reflTransGen : TransGen r ≤ ReflTransGen r := by
+theorem transGen_le_reflTransGen : TransGen r ≤ ReflTransGen r := by
   intro a _ h
   induction h with
   | single h => exact ReflTransGen.single h
   | tail _ bc ab => exact ReflTransGen.tail ab bc
+
+namespace TransGen
+
+theorem to_reflTransGen {a b} : TransGen r a b → ReflTransGen r a b :=
+  transGen_le_reflTransGen a b
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
   induction hbc with
@@ -762,7 +768,7 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
 @[simp, grind =] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
   ext x y
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simpa [reflTransGen_eq_self] using h.mono ReflGen.to_reflTransGen x y |>.to_reflTransGen
+  · simpa [reflTransGen_eq_self] using h.mono reflGen_le_reflTransGen x y |>.to_reflTransGen
   · obtain (rfl | h) := reflTransGen_iff_eq_or_transGen.mp h
     · exact .single .refl
     · exact h.mono (fun _ _ ↦ .single) x y
