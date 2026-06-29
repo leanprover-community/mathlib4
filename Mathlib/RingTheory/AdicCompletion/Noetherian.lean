@@ -60,8 +60,9 @@ instance (priority := 100) {A : Type*} [CommRing A] [IsArtinianRing A] [IsLocalR
     rw [hn, zero_smul, Ideal.zero_eq_bot, SModEq.bot] at hf
     rw [hf]
 
+open TensorProduct in
 lemma tensorProduct_reesAlgebra_isNoetherian_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
-    IsNoetherianRing (TensorProduct R (R ⧸ I) (reesAlgebra I)) := by
+    IsNoetherianRing ((R ⧸ I) ⊗[R] (reesAlgebra I)) := by
   have : Algebra.FiniteType R (reesAlgebra I) := ⟨(reesAlgebra I).fg_top.mpr (reesAlgebra.fg fg)⟩
   have := this.baseChange (R ⧸ I)
   exact Algebra.FiniteType.isNoetherianRing (R ⧸ I) _
