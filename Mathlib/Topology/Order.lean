@@ -570,6 +570,9 @@ instance : DiscreteTopology Bool := ⟨rfl⟩
 instance : TopologicalSpace ℕ := ⊥
 instance : DiscreteTopology ℕ := ⟨rfl⟩
 
+instance : TopologicalSpace ℕ+ := ⊥
+instance : DiscreteTopology ℕ+ := ⟨rfl⟩
+
 instance : TopologicalSpace ℤ := ⊥
 instance : DiscreteTopology ℤ := ⟨rfl⟩
 
