@@ -507,6 +507,7 @@ theorem sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B}
     (X ⊔ Y).Factors f :=
   factors_of_le f le_sup_right P
 
+@[simps]
 def sup_MonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisation
     (coprod.desc f.arrow g.arrow) where
   I := underlying.obj (f ⊔ g)
@@ -515,6 +516,7 @@ def sup_MonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisation
   e := coprod.desc (ofLE f (f ⊔ g) le_sup_left) (ofLE g (f ⊔ g) le_sup_right)
   fac := by simp only [coprod.desc_comp, ofLE_arrow]
 
+@[simps]
 def sup_isImage {A : C} (f g : Subobject A) :
     IsImage (sup_MonoFactorisation f g) where
   lift F := by
@@ -525,6 +527,7 @@ def sup_isImage {A : C} (f g : Subobject A) :
       · simp only [assoc, MonoFactorisation.fac, coprod.inr_desc]
   lift_fac := by simp [sup_MonoFactorisation]
 
+@[simps!]
 def sup_isoImage {A : C} (f g : Subobject A) : underlying.obj (f ⊔ g) ≅
     image (coprod.desc f.arrow g.arrow) :=
   IsImage.isoExt (sup_isImage ..) <| Image.isImage _
