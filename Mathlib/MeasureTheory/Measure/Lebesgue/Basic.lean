@@ -170,8 +170,11 @@ theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBa
 @[deprecated (since := "2026-01-24")]
 alias volume_emetric_closedBall := volume_closedEBall
 
-instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
+instance nullSingletonClass_volume : NullSingletonClass (volume : Measure ℝ) :=
   ⟨fun _ => volume_singleton⟩
+
+@[deprecated (since := "2026-06-09")]
+alias noAtoms_volume := nullSingletonClass_volume
 
 @[simp]
 theorem volume_interval {a b : ℝ} : volume (uIcc a b) = ofReal |b - a| := by
@@ -619,8 +622,8 @@ end regionBetween
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for
 all `a, b ∈ s`, then it is true almost everywhere in `s`. Formulated with `μ.restrict`.
 See also `ae_of_mem_of_ae_of_mem_inter_Ioo`. -/
-theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Set ℝ} {p : ℝ → Prop}
-    (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ.restrict (s ∩ Ioo a b), p x) :
+theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NullSingletonClass μ] {s : Set ℝ}
+    {p : ℝ → Prop} (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ.restrict (s ∩ Ioo a b), p x) :
     ∀ᵐ x ∂μ.restrict s, p x := by
   /- By second-countability, we cover `s` by countably many intervals `(a, b)` (except maybe for
     two endpoints, which don't matter since `μ` does not have any atom). -/
@@ -653,8 +656,8 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s 
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for
 all `a, b ∈ s`, then it is true almost everywhere in `s`. Formulated with bare membership.
 See also `ae_restrict_of_ae_restrict_inter_Ioo`. -/
-theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Set ℝ} {p : ℝ → Prop}
-    (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ, x ∈ s ∩ Ioo a b → p x) :
+theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NullSingletonClass μ] {s : Set ℝ}
+    {p : ℝ → Prop} (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ, x ∈ s ∩ Ioo a b → p x) :
     ∀ᵐ x ∂μ, x ∈ s → p x := by
   /- By second-countability, we cover `s` by countably many intervals `(a, b)` (except maybe for
     two endpoints, which don't matter since `μ` does not have any atom). -/

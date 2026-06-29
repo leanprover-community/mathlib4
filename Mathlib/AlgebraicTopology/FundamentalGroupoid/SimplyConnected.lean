@@ -67,7 +67,7 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 
 instance (x : X) : Subsingleton (FundamentalGroup X x) :=
-  show Subsingleton (Path.Homotopic.Quotient x x) from inferInstance
+  inferInstanceAs <| Subsingleton (Path.Homotopic.Quotient x x)
 
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance

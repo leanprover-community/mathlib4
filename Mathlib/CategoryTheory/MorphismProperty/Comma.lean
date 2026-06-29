@@ -168,7 +168,7 @@ structure Hom (X Y : P.Comma L R Q W) extends CommaMorphism X.toComma Y.toComma 
 abbrev Hom.hom {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : X.toComma ⟶ Y.toComma :=
   f.toCommaMorphism
 
-@[simp, nolint simpVarHead]
+@[simp]
 lemma Hom.hom_mk {X Y : P.Comma L R Q W} (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
     Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
 
@@ -790,7 +790,7 @@ lemma CostructuredArrow.Hom.ext {A B : P.CostructuredArrow Q F X} {f g : A ⟶ B
   ext <;> simp [h]
 
 variable {P Q F X} in
-/-- Construct an morphism in `P.CostructuredArrow Q F X` by giving the isomorphism
+/-- Construct an isomorphism in `P.CostructuredArrow Q F X` by giving the isomorphism
 on the underlying objects of `C`. -/
 @[simps]
 def CostructuredArrow.isoMk {A B : P.CostructuredArrow Q F X} (f : A.left ≅ B.left) (hf : Q f.hom)
