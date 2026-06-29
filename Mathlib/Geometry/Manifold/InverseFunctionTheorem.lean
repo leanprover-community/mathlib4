@@ -157,7 +157,7 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
   have φ₀p_mem_U : φ₀ p ∈ U := mem_image_of_mem _ ⟨mem_diffeoExtChartAt_source n hp, hpA,
     mem_diffeoExtChartAt_source (n := n) hfp⟩
   have U_nhd : U ∈ nhds (φ₀ p) := mem_nhds_iff.mpr ⟨U, subset_refl _, U_open, φ₀p_mem_U⟩
-  -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a linear equivalence
+  -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence
   have ⟨g', hg'⟩ : ∃ g' : E₁ ≃L[𝕜] E₂, HasFDerivAt g (g' : E₁ →L[𝕜] E₂) (φ₀ p) := by
     have g_diff: DifferentiableWithinAt 𝕜 g (range I₁) (φ₀ p) :=
       ((hg.differentiableOn hn).differentiableAt U_nhd).differentiableWithinAt
@@ -169,7 +169,7 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
     · rw [if_neg g'_zero, dif_pos g_diff] at hf'
       exact ⟨ContinuousLinearEquiv.ofBijective (Classical.choose g_diff) hf'.1 hf'.2,
         (Classical.choose_spec g_diff).hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
-  -- define `V ⊆ E₁`, the open set where `g'` is a linear equivalence
+  -- define `V ⊆ E₁`, the open set where `g'` is a continuous linear equivalence
   set V := (fderiv 𝕜 g) ⁻¹' (range ContinuousLinearEquiv.toContinuousLinearMap)
   have hUV: IsOpen (U ∩ V) :=
     (hg.continuousOn_fderiv_of_isOpen U_open (ENat.one_le_iff_ne_zero_withTop.mpr hn)
@@ -212,8 +212,9 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
       exact (homeo.contDiffAt_symm hy (hg' ▸ this.hasFDerivAt)
         (homeo_contdiff.contDiffAt source_nhd)).contDiffWithinAt
   }
-  -- compose with the charts to obtain partial diffeomorphism `M → N` and verify agreement with `f`
-  use (φ₁.trans coord_diffeo).trans ψ₁.symm
+  -- compose with the charts to obtain a partial diffeomorphism `M₁ → M₂`
+  set diffeo := (φ₁.trans coord_diffeo).trans ψ₁.symm
+  use diffeo
   constructor
   · refine ⟨⟨mem_diffeoExtChartAt_source n hp, φ₀p_mem_homeo_source⟩, ?_⟩
     change (ψ₁ ∘ f ∘ φ₀.symm) (φ₀ p) ∈ ψ₁.target
