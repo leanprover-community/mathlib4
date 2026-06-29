@@ -62,7 +62,7 @@ lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fs
 /- ### The diagonal map -/
 
 /-- The diagonal map into `Prod`. -/
-@[inline] protected def diag {α} : α → α × α := fun x => (x, x)
+@[inline] protected def diag {α} : α → α × α := Function.prod id id
 
 @[inherit_doc] notation:max "△(" x:min ")" => Function.diag x
 
