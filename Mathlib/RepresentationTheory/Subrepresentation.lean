@@ -57,8 +57,8 @@ def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSub
   map_mul' x y := by ext; simp
 
 @[simp]
-lemma toRepresentation_apply
-    {ρ' : Subrepresentation ρ} {g : G} {v w : W} {hv : v ∈ ρ'} {hw : w ∈ ρ'}
+lemma toRepresentation_apply_mk {ρ' : Subrepresentation ρ} {g : G} {v w : W} {hv : v ∈ ρ'}
+    {hw : w ∈ ρ'} 
     : ρ'.toRepresentation g ⟨v, hv⟩ = ⟨w, hw⟩ ↔ ρ g v = w := by
   simp [Subrepresentation.toRepresentation, Subtype.ext_iff]
 
@@ -111,8 +111,7 @@ def quotient {ρ : Representation A G W} (ρ' : Subrepresentation ρ) :
     Representation A G (W ⧸ ρ'.toSubmodule) :=
   ρ.quotient ρ'.toSubmodule (fun g _ hw => ρ'.apply_mem_toSubmodule g hw)
 
-@[simp]
-lemma quotient_apply {ρ : Representation A G W} (ρ' : Subrepresentation ρ)
+lemma quotient_apply_mk {ρ : Representation A G W} (ρ' : Subrepresentation ρ)
     (g : G) (w : W) :
     ρ'.quotient g ⟦w⟧ = ⟦ρ g w⟧ := by
   rfl
