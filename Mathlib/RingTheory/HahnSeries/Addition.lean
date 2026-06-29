@@ -118,15 +118,9 @@ theorem coeff_add {x y : R⟦Γ⟧} {a : Γ} : (x + y).coeff a = x.coeff a + y.c
   classical
   ext : 1; exact Pi.single_add (f := fun _ => R) a r s
 
--- can't infer this otherwise, since `ℕ+` has no `Zero` instance, so can't be `SMulZeroClass`
-instance instPSMul : SMul ℕ+ R⟦Γ⟧ where
-  smul n x := n.val • x
-
 theorem coeff_nsmul {x : R⟦Γ⟧} {n : ℕ} : (n • x).coeff = n • x.coeff := rfl
 
-theorem coeff_psmul {x : R⟦Γ⟧} {n : ℕ+} : (n • x).coeff = n • x.coeff := by
-  rw [← nsmul_val_eq_psmul]
-  rfl
+theorem coeff_psmul {x : R⟦Γ⟧} {n : ℕ+} : (n • x).coeff = n • x.coeff := rfl
 
 instance : AddMonoid R⟦Γ⟧ := fast_instance%
   coeff_injective.addMonoid _
@@ -320,10 +314,9 @@ section AddCommMonoid
 
 variable [AddCommMonoid R]
 
-instance : AddCommMonoid R⟦Γ⟧ where
-  add_comm x y := by
-    ext
-    apply add_comm
+instance : AddCommMonoid R⟦Γ⟧ := fast_instance%
+  coeff_injective.addCommMonoid _
+    coeff_zero' coeff_add' (fun _ _ => coeff_psmul) (fun _ _ => coeff_nsmul)
 
 @[simp]
 theorem coeff_sum {s : Finset α} {x : α → R⟦Γ⟧} (g : Γ) :
