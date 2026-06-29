@@ -28,7 +28,14 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 
 namespace Functor.weightedLimFlipObj'
 
-set_option backward.defeqAttrib.useBackward true in
+noncomputable def preservesLimit'
+    [HasColimitsOfShape K (Type w)]
+    {F : J ⥤ C} {G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategory}
+    (c : Cocone G) (hc : IsColimit ((ObjectProperty.ι _).mapCocone c)) :
+    IsLimit ((weightedLimFlipObj'.{w} F).mapCone c.op) := by
+  sorry
+
+/-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def preservesLimit
     [HasColimitsOfShape Kᵒᵖ (Type w)]
@@ -41,7 +48,7 @@ noncomputable def preservesLimit
       ⟨isColimitOfPreserves ((evaluation _ _).obj j) hc⟩).desc
         (CoconeTypes.mk _ (fun k x ↦ s.π.app k.unop ≫ weightedLimObjObjπ _ _ x) sorry)
   fac := sorry
-  uniq := sorry
+  uniq := sorry-/
 
 end Functor.weightedLimFlipObj'
 
