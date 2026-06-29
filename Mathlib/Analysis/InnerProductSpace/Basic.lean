@@ -278,6 +278,7 @@ theorem parallelogram_law {x y : E} : ⟪x + y, x + y⟫ + ⟪x - y, x - y⟫ = 
   ring
 
 /-- **Cauchy–Schwarz inequality**. -/
+@[wikidata Q190546]
 theorem inner_mul_inner_self_le (x y : E) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ :=
   letI : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   InnerProductSpace.Core.inner_mul_inner_self_le x y
@@ -817,7 +818,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
 the equality case for Cauchy-Schwarz. -/
 theorem inner_eq_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = 1 ↔ x = y := by
-  convert! inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
+  convert inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) <;> simp [hx, hy]
 
 /-- If the inner product of two unit vectors is `-1`, then the two vectors are negations of each
 other. -/

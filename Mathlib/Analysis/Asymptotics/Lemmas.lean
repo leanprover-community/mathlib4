@@ -443,7 +443,7 @@ theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTo
 theorem IsLittleO.of_tendsto_div_atBot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
   refine IsLittleO.of_neg_left (IsLittleO.of_tendsto_div_atTop ?_)
   rw [← tendsto_neg_atBot_iff]
-  convert! h using 2
+  convert h
   simp [div_neg_eq_neg_div]
 
 end div_tendsto_infty
@@ -902,4 +902,4 @@ lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 E : Type
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
     Tendsto (ε • f) l (𝓝 0) := by
   rw [← isLittleO_one_iff 𝕜] at hε ⊢
-  simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
+  simpa using! IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))

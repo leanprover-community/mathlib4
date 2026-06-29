@@ -165,6 +165,8 @@ def ω :
   letI := P.indexNeg
   .fromBlocks 1 0 0 <| .of fun i j ↦ if i = -j then 1 else 0
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- Geck's construction of the Lie algebra associated to a root system with distinguished base.
 
 Note that it is convenient to include `range h` in the Lie span, to make it elementary that it
@@ -334,7 +336,7 @@ instance : IsLieAbelian (cartanSubalgebra' b) := by
 instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
   refine ⟨fun ⟨⟨x, hx'⟩, hx⟩ ↦ ?_⟩
   obtain ⟨d, rfl⟩ : ∃ d : b.support ⊕ ι → R, Matrix.diagonal d = x :=
-    span_range_h_le_range_diagonal <| by simpa using hx
+    span_range_h_le_range_diagonal <| by simpa using! hx
   simp
 
 lemma cartanSubalgebra_le_lieAlgebra :

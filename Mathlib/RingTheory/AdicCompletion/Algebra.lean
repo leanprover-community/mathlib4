@@ -181,6 +181,11 @@ lemma factorₐ_evalₐ_one (x : AdicCompletion I R) :
     Ideal.Quotient.factor (show I ^ 1 ≤ I by simp) (evalₐ I 1 x) = evalOneₐ I x :=
   rfl
 
+lemma evalOneₐ_comp_algebraMap_eq_mk :
+    (AdicCompletion.evalOneₐ I).toRingHom.comp (algebraMap R (AdicCompletion I R)) =
+      (Ideal.Quotient.mk I) :=
+  rfl
+
 lemma evalOneₐ_surjective : Function.Surjective (evalOneₐ I) := by
   dsimp [evalOneₐ]
   exact (Ideal.Quotient.factor_surjective (show I ^ 1 ≤ I by simp)).comp

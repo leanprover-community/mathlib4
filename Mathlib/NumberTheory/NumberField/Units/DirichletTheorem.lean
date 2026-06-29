@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Torsion.Basic
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Units.Basic
@@ -416,7 +417,7 @@ def logEmbeddingEquiv :
     ⟨fun _ _ ↦ by
       rw [AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.codRestrict_apply,
         AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
-      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using ha⟩⟩
+      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using! ha⟩⟩
 
 @[simp]
 theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :
@@ -449,14 +450,18 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
-theorem rank_modTorsion :
-    Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
+
+@[deprecated (since := "2026-06-05")] alias rank_modTorsion := finrank_modTorsion
+
+theorem finrank_eq : finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
+  simpa [← finrank_modTorsion] using! finrank_quotient_torsion_eq.symm
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
-    rw [← Module.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
+    rw [← Module.finrank_eq_card_chooseBasisIndex, finrank_modTorsion, Fintype.card_fin])
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
 def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=

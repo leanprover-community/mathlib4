@@ -161,7 +161,7 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
     simp only
     refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
-    simpa using gp
+    simpa using! gp
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
     simp only
     simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
@@ -359,3 +359,11 @@ lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
   rw [← sub_eq_zero, ← smul_eq_zero_iff_left hx, Units.val_one, sub_smul, hg, one_smul, sub_self]
 
 end
+
+@[simp] lemma Multiplicative.mulAction_orbit {α β : Type*} [VAdd α β] (b : β) :
+    MulAction.orbit (Multiplicative α) b = AddAction.orbit α b :=
+  rfl
+
+@[simp] lemma Additive.mulAction_orbit {α β : Type*} [SMul α β] (b : β) :
+    AddAction.orbit (Additive α) b = MulAction.orbit α b :=
+  rfl

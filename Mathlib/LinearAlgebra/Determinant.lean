@@ -142,7 +142,13 @@ See also `detAux_def''` which allows you to vary the basis.
 -/
 theorem detAux_def' (b : Basis ι A M) (f : M →ₗ[A] M) :
     LinearMap.detAux (Trunc.mk b) f = Matrix.det (LinearMap.toMatrix b b f) := by
-  rw [detAux]
+  #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
+  The first line below was previously just `rw [detAux]`.
+  The replacement proof is a short-term fix, and we request that the authors/maintainers of
+  this file review the proof, and either approve it by removing this note, revise
+  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+  needs addressing. -/
+  simp only [detAux_def, Trunc.lift_mk]
   rfl
 
 theorem detAux_def'' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)
@@ -262,7 +268,7 @@ theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
     LinearMap.det (0 : M →ₗ[A] M) = 0 := by
   haveI := Classical.decEq ι
   cases nonempty_fintype ι
-  rwa [← det_toMatrix b, map_zero, det_zero]
+  rw [← det_toMatrix b, map_zero, det_zero]
 
 /-- In a finite-dimensional vector space, the zero map has determinant `1` in dimension `0`,
 and `0` otherwise. We give a formula that also works in infinite dimension, where we define
@@ -588,6 +594,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 
 namespace Module.Basis
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
 nonrec def det : M [⋀^ι]→ₗ[R] R where

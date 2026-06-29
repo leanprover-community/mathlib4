@@ -64,7 +64,7 @@ protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β 
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
   measurableSet_compl _ hs := m.measurableSet_compl _ hs
-  measurableSet_iUnion f hf := by simpa only [preimage_iUnion] using m.measurableSet_iUnion _ hf
+  measurableSet_iUnion f hf := by simpa only [preimage_iUnion] using! m.measurableSet_iUnion _ hf
 
 lemma map_def {s : Set β} : MeasurableSet[m.map f] s ↔ MeasurableSet[m] (f ⁻¹' s) := Iff.rfl
 
@@ -113,11 +113,13 @@ theorem gc_comap_map (f : α → β) :
 theorem map_mono (h : m₁ ≤ m₂) : m₁.map f ≤ m₂.map f :=
   (gc_comap_map f).monotone_u h
 
+@[gcongr]
 theorem monotone_map : Monotone (MeasurableSpace.map f) := fun _ _ => map_mono
 
 theorem comap_mono (h : m₁ ≤ m₂) : m₁.comap g ≤ m₂.comap g :=
   (gc_comap_map g).monotone_l h
 
+@[gcongr]
 theorem monotone_comap : Monotone (MeasurableSpace.comap g) := fun _ _ h => comap_mono h
 
 @[simp]

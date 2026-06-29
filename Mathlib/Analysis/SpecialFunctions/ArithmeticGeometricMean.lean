@@ -6,7 +6,7 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # The arithmetic-geometric mean

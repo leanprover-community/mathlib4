@@ -133,31 +133,24 @@ theorem DifferentiableAt.comp_differentiableWithinAt {g : F → G} (hg : Differe
     (hf : DifferentiableWithinAt 𝕜 f s x) : DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
   hg.differentiableWithinAt.comp x hf (mapsTo_univ _ _)
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
+attribute [local push ←] Function.comp_def
+@[to_fun fderivWithin_fun_comp]
 theorem fderivWithin_comp {g : F → G} {t : Set F} (hg : DifferentiableWithinAt 𝕜 g t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g ∘ f) s x = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) :=
   (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h).fderivWithin hxs
 
+@[to_fun fderivWithin_fun_comp_of_eq]
 theorem fderivWithin_comp_of_eq {g : F → G} {t : Set F} {y : F}
     (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
     (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) :
     fderivWithin 𝕜 (g ∘ f) s x = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) := by
   subst hy; exact fderivWithin_comp _ hg hf h hxs
 
-/-- A variant for the derivative of a composition, written without `∘`. -/
-theorem fderivWithin_comp' {g : F → G} {t : Set F} (hg : DifferentiableWithinAt 𝕜 g t (f x))
-    (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun y ↦ g (f y)) s x
-      = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) :=
-  fderivWithin_comp _ hg hf h hxs
-
-/-- A variant for the derivative of a composition, written without `∘`. -/
-theorem fderivWithin_comp_of_eq' {g : F → G} {t : Set F} {y : F}
-    (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
-    (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) :
-    fderivWithin 𝕜 (fun y ↦ g (f y)) s x
-      = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) := by
-  subst hy; exact fderivWithin_comp _ hg hf h hxs
+@[deprecated (since := "2026-05-18")] alias fderivWithin_comp' := fderivWithin_fun_comp
+@[deprecated (since := "2026-05-18")] alias fderivWithin_comp_of_eq' := fderivWithin_fun_comp_of_eq
 
 /-- A version of `fderivWithin_comp` that is useful to rewrite the composition of two derivatives
   into a single derivative. This version always applies, but creates a new side-goal `f x = y`. -/
@@ -166,7 +159,7 @@ theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s
     (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) (v : E) :
     fderivWithin 𝕜 g t y (fderivWithin 𝕜 f s x v) = fderivWithin 𝕜 (g ∘ f) s x v := by
   subst y
-  rw [fderivWithin_comp x hg hf h hxs, coe_comp', Function.comp_apply]
+  rw [fderivWithin_comp x hg hf h hxs, comp_apply]
 
 /-- Ternary version of `fderivWithin_comp`, with equality assumptions of basepoints added, in
   order to apply more easily as a rewrite from right-to-left. -/
@@ -176,18 +169,15 @@ theorem fderivWithin_comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set 
     (h3f : f x = y) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g' ∘ g ∘ f) s x =
       (fderivWithin 𝕜 g' u y').comp ((fderivWithin 𝕜 g t y).comp (fderivWithin 𝕜 f s x)) := by
-  substs h3g h3f
+  subst h3g h3f
   exact (hg'.hasFDerivWithinAt.comp x (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h2f) <|
     h2g.comp h2f).fderivWithin hxs
 
+@[to_fun fderiv_fun_comp]
 theorem fderiv_comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (g ∘ f) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
   (hg.hasFDerivAt.comp x hf.hasFDerivAt).fderiv
-
-/-- A variant for the derivative of a composition, written without `∘`. -/
-theorem fderiv_comp' {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
-    fderiv 𝕜 (fun y ↦ g (f y)) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
-  fderiv_comp x hg hf
+@[deprecated (since := "2026-05-18")] alias fderiv_comp' := fderiv_fun_comp
 
 theorem fderiv_comp_fderivWithin {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :

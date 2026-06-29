@@ -61,7 +61,7 @@ theorem aeval_toPolynomialAdjoinImageCompl_eq_zero
     {a : ι → K} {F : MvPolynomial ι k} (hFa : F.aeval a = 0) (i : ι) :
     (toPolynomialAdjoinImageCompl F a i).aeval (a i) = 0 := by
   rw [← hFa, ← AlgHom.restrictScalars_apply k]
-  simp_rw [toPolynomialAdjoinImageCompl, ← AlgEquiv.coe_algHom, ← AlgHom.comp_apply]
+  simp_rw [toPolynomialAdjoinImageCompl, ← AlgEquiv.coe_toAlgHom, ← AlgHom.comp_apply]
   congr; ext; aesop (add simp optionEquivLeft_X_some) (add simp optionEquivLeft_X_none)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -74,7 +74,7 @@ theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : I
     hF.map (renameEquiv k (Equiv.optionSubtypeNe i).symm) |>.map (optionEquivLeft k _) |>.map
       (Polynomial.mapAlgEquiv
         (H.aevalEquiv.trans (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $this.symm))))
-  rw [← AlgEquiv.coe_algHom]
+  rw [← AlgEquiv.coe_toAlgHom]
   congr
   aesop
 
@@ -134,6 +134,7 @@ theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (
       (Finsupp.mem_support_iff.mp hσi) ?_, aeval_toPolynomialAdjoinImageCompl_eq_zero hFa ..⟩
   rw [h, Polynomial.coeff_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hp H in
 theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) :
@@ -148,10 +149,10 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
   replace H (ι : Type u_3) (_ : Fintype ι) (v : ι → K) (hv : LinearIndependent k v) :
       LinearIndependent k (v · ^ p) := by
     simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ, linearIndepOn_range_iff
-      hv.injective] using H (Finset.univ.image v) (by simpa using hv.linearIndepOn_id)
+      hv.injective] using! H (Finset.univ.image v) (by simpa using! hv.linearIndepOn_id)
   have := mt (H F.support inferInstance (fun s ↦ aeval a (monomial (σ' s) (1 : k)))) (by
     simp_rw [← map_pow, monomial_pow, ← hσ'', one_pow, not_linearIndependent_iff]
-    refine ⟨.univ, (F.coeff ·), ?_, by simpa [MvPolynomial.eq_zero_iff] using hF0⟩
+    refine ⟨.univ, (F.coeff ·), ?_, by simpa [MvPolynomial.eq_zero_iff] using! hF0⟩
     simp only [← map_smul, ← map_sum, Finset.univ_eq_attach, smul_eq_mul, mul_one]
     rw [F.support.sum_attach (fun i ↦ monomial i (F.coeff i)), support_sum_monomial_coeff, hFa])
   simp only [LinearIndependent, injective_iff_map_eq_zero, not_forall] at this
@@ -205,7 +206,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     suffices S.Nonempty from
       ⟨totalDegree.argminOn S this, totalDegree.argminOn_mem ..,
         fun _ h₁ h₂ ↦ totalDegree.argminOn_le S ⟨h₁, h₂⟩⟩
-    suffices ¬ AlgebraicIndependent k a by simpa [S, algebraicIndependent_iff, and_comm] using this
+    suffices ¬ AlgebraicIndependent k a by simpa [S, algebraicIndependent_iff, and_comm] using! this
     intro h
     refine h.transcendental_adjoin (i := n) (s := {n}ᶜ) (by simp) ?_
     have : a '' {n}ᶜ = Set.range (ι := {i // i ≠ n}) (a ·) := by aesop
