@@ -184,14 +184,8 @@ angle version, provided twice the angle at the circumference is at most `π`. -/
 theorem angle_center_eq_two_mul_angle_of_two_mul_angle_le_pi {s : Sphere P} {p₁ p₂ p₃ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃)
     (h : 2 * ∠ p₁ p₂ p₃ ≤ π) : ∠ p₁ s.center p₃ = 2 * ∠ p₁ p₂ p₃ := by
-  have hp₁c : p₁ ≠ s.center := by
-    rintro rfl
-    rw [center_mem_iff] at hp₁
-    exact hp₂p₁ (dist_eq_zero.mp (by rw [mem_sphere.mp hp₂, hp₁]))
-  have hp₃c : p₃ ≠ s.center := by
-    rintro rfl
-    rw [center_mem_iff] at hp₃
-    exact hp₂p₃ (dist_eq_zero.mp (by rw [mem_sphere.mp hp₂, hp₃]))
+  have hp₁c : p₁ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₁ hp₂ hp₂p₁.symm
+  have hp₃c : p₃ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₃ hp₂ hp₂p₃.symm
   refine Real.injOn_cos ⟨angle_nonneg p₁ s.center p₃, angle_le_pi p₁ s.center p₃⟩
     ⟨mul_nonneg zero_le_two (angle_nonneg p₁ p₂ p₃), h⟩ ?_
   rw [← cos_oangle_eq_cos_angle hp₁c hp₃c,
@@ -205,12 +199,8 @@ theorem angle_center_eq_two_pi_sub_two_mul_angle_of_pi_le_two_mul_angle {s : Sph
     {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁)
     (hp₂p₃ : p₂ ≠ p₃) (h : π ≤ 2 * ∠ p₁ p₂ p₃) :
     ∠ p₁ s.center p₃ = 2 * π - 2 * ∠ p₁ p₂ p₃ := by
-  have hp₁c : p₁ ≠ s.center := by
-    rintro rfl; rw [center_mem_iff] at hp₁
-    exact hp₂p₁ (dist_eq_zero.mp (by rw [mem_sphere.mp hp₂, hp₁]))
-  have hp₃c : p₃ ≠ s.center := by
-    rintro rfl; rw [center_mem_iff] at hp₃
-    exact hp₂p₃ (dist_eq_zero.mp (by rw [mem_sphere.mp hp₂, hp₃]))
+  have hp₁c : p₁ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₁ hp₂ hp₂p₁.symm
+  have hp₃c : p₃ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₃ hp₂ hp₂p₃.symm
   refine Real.injOn_cos ⟨angle_nonneg p₁ s.center p₃, angle_le_pi p₁ s.center p₃⟩
     ⟨by linarith [angle_le_pi p₁ p₂ p₃], by linarith⟩ ?_
   rw [show (2 : ℝ) * π - 2 * ∠ p₁ p₂ p₃ = -(2 * ∠ p₁ p₂ p₃) + 2 * π by ring,
