@@ -581,7 +581,6 @@ theorem eVariationOn_on_inter_Iic_eq_Iio_add_edist
     rw [eVariationOn_eq_strictMonoOn, ENNReal.iSup_add]
     apply iSup_le
     rintro ⟨n, u, u_mono, u_mem⟩
-    dsimp only
     have : Tendsto (fun y ↦ ∑ i ∈ Finset.range n,
         edist (f (u (i + 1))) (f (u i)) + edist (f a) (f y)) (𝓝[s ∩ Iio a] a)
         (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)) + edist (f a) l)) :=

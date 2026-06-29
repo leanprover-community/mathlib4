@@ -371,7 +371,7 @@ jobs:
 
     - name: Send message on Zulip
       if: steps.commit-bump.outputs.bumped == 'true' && env.branches_exist == 'true'
-      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
+      uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'

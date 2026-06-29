@@ -11,6 +11,13 @@ public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 /-!
 # Vector measure with density with respect to a vector measure
 
+Given a vector measure `μ`, a function `f` and a pairing `B`, we define the vector measure
+with density `f` and pairing `B`, denoted `μ.withDensity f B`. It associates to a
+measurable set the mass `∫ᵛ x in s, f x ∂[B; μ]`.
+
+This file implements the basic property of this notion. Notably, we show in `variation_withDensity`
+that the variation of the vector measure `μ.withDensity f B` is the positive measure with
+density `‖f‖` with respect to the positive measure `μ.variation`.
 -/
 
 open Set Filter
@@ -104,7 +111,7 @@ lemma variation_withDensity' [CompleteSpace G]
   `∫⁻ (a : X) in s, ‖f a‖ₑ ∂(μ.transpose B).variation ≤ (μ.withDensity f B).variation s`.
   As the variation is a supremum over finite partitions, we need to exhibit a partition. For this,
   we approximate `f` by a simple function `g`. Then the left term is approximately
-  `∑ i, ‖g i‖ₑ * (μ.transpose B).variation (g ⁻¹' {i})`.
+  `∑ i, ‖g i‖ₑ * (μ.transpose B).variation (g ⁻¹' {i})` (where everything is intersected with `s`).
   By definition, the variation of `g ⁻¹' {i}` is close to a sum `∑ j, ‖(μ.transpose B) Pᵢⱼ‖ₑ` over
   a partition `Pᵢⱼ` of `g ⁻¹' {i}`. Putting all these together, one gets the desired
   partition of `s`, for which `∫⁻ a in s, ‖f a‖ₑ ∂(μ.transpose B).variation` is close to
