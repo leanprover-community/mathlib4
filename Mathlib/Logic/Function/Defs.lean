@@ -111,6 +111,9 @@ theorem map_comp_prod (h : α → γ) (k : β → δ) :
 
 @[simp] theorem swap_comp_prod : Prod.swap ∘ Function.prod f g = Function.prod g f := rfl
 
+@[simp] theorem prod_comp_fst_comp_snd {α₁ α₂ β₁ β₂} (f : α₁ → α₂) (g : β₁ → β₂) :
+    Function.prod (f ∘ Prod.fst) (g ∘ Prod.snd) = Prod.map f g := rfl
+
 end Prod
 
 /- ### The diagonal map -/
