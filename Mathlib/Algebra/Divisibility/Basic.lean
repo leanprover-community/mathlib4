@@ -132,8 +132,6 @@ theorem RightDvd.mul_self (a b : α) : a ∣ᵣ b * a :=
 theorem RightDvd.mul_left (h : a ∣ᵣ b) (c : α) : a ∣ᵣ c * b :=
   h.trans (RightDvd.mul_self b c)
 
-alias RightDvd.mul_right := RightDvd.mul_left
-
 theorem RightDvd.of_mul_left (h : b * a ∣ᵣ c) : a ∣ᵣ c :=
   (RightDvd.mul_self a b).trans h
 
