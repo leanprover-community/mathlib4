@@ -5,9 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.VectorMeasure.Prod
+public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 import Mathlib.MeasureTheory.VectorMeasure.AddContent
@@ -36,7 +38,7 @@ control its variation on the different kinds of intervals in terms of the `eVari
 
 @[expose] public section
 
-open Filter Set MeasureTheory MeasurableSpace MeasureTheory
+open Filter Set MeasureTheory MeasurableSpace
 open scoped symmDiff Topology NNReal ENNReal
 
 variable {α : Type*} [LinearOrder α] [DenselyOrdered α] [TopologicalSpace α] [OrderTopology α]
@@ -592,13 +594,5 @@ lemma variation_vectorMeasure_univ_le (hf : BoundedVariationOn f univ) :
       hf.eVariationOn_Iic_eq_Iio_add_edist]
   _ = eVariationOn f univ := by
     rw [← eVariationOn.union (x := a) _ isGreatest_Iic isLeast_Ici, Iic_union_Ici]
-
-variable {g : α → F}
-  [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace ℝ G]
-
-
-omit [CompleteSpace E]
-variable {α : Type*} [LinearOrder α] {f : α → E} {g : α → F}
-    {C D : ℝ≥0∞} {s : Set α}
 
 end BoundedVariationOn
