@@ -293,6 +293,15 @@ theorem self_trans_symm (e : α ≃ᵐ β) : e.trans e.symm = refl α :=
 theorem trans_symm (e₁ : α ≃ᵐ β) (e₂ : β ≃ᵐ γ) : (e₁.trans e₂).symm = e₂.symm.trans (e₁.symm) :=
   rfl
 
+theorem apply_eq_iff_symm_apply (e : α ≃ᵐ β) {x y} : e x = y ↔ x = e.symm y :=
+  e.toEquiv.apply_eq_iff_eq_symm_apply
+
+theorem symm_apply_eq (e : α ≃ᵐ β) {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : α ≃ᵐ β) {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
+
 protected theorem surjective (e : α ≃ᵐ β) : Surjective e :=
   e.toEquiv.surjective
 
