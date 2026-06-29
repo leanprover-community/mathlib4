@@ -184,40 +184,76 @@ theorem covBy_iff_cokernel_is_simple {A B : Subobject X} (hAB : A ≤ B) :
   --simp
   --simp [-OrderIso.isCoatom_iff, Submodule.map_comap_subtype, inf_eq_right.2 hAB]
 
+noncomputable
+def Subobject.abSup_MonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisation
+    (biprod.desc f.arrow g.arrow) where
+  I := underlying.obj (f ⊔ g)
+  m := (f ⊔ g).arrow
+  m_mono := inferInstance
+  e := biprod.desc (ofLE f (f ⊔ g) le_sup_left) (ofLE g (f ⊔ g) le_sup_right)
+  fac := by simp only [biprod.desc_eq, Preadditive.add_comp, Category.assoc, ofLE_arrow]
+
+noncomputable
+def Subobject.abSup_isImage {A : C} (f g : Subobject A) :
+    IsImage (abSup_MonoFactorisation f g) where
+  lift F := by
+    refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
+    · refine le_mk_of_comm (biprod.inl ≫ F.e) ?_
+      · simp only [Category.assoc, MonoFactorisation.fac, biprod.inl_desc]
+    · refine le_mk_of_comm (biprod.inr ≫ F.e) ?_
+      · simp only [Category.assoc, MonoFactorisation.fac, biprod.inr_desc]
+  lift_fac := by simp [abSup_MonoFactorisation]
+
+noncomputable
+def Subobject.abSup_isoImage {A : C} (f g : Subobject A) : underlying.obj (f ⊔ g) ≅
+    Limits.image (coprod.desc f.arrow g.arrow) :=
+  IsImage.isoExt (sup_isImage ..) <| Image.isImage _
+
 -- show (X ⊔ Y) ⊓ Z ≤ X ⊔ Y ⊓ Z
 open Subobject in
 instance (A : C) : IsModularLattice (Subobject A) where
   sup_inf_le_assoc_of_le := by
     intro X Y Z hXZ
-    have : pullback (X ⊔ Y).arrow Z.arrow ⟶ underlying.obj X ⊞ Limits.pullback Y.arrow Z.arrow := by
-      let g := biprod.desc X.arrow (Y ⊓ Z).arrow
-      obtain ⟨⟨V, mᵥ, eᵥ, fac_g⟩, _⟩ := Abelian.imageStrongEpiMonoFactorisation g
 
-      let f := biprod.desc X.arrow Y.arrow
+    refine le_of_comm ?_ ?_
+    · refine (inf_isPullback (X ⊔ Y) Z).isoPullback.hom ≫ ?_ ≫ (sup_isoImage X (Y ⊓ Z)).inv
+      refine ?_ ≫ (biprod.isoCoprod _ _).hom ≫ Limits.factorThruImage _
+      have : pullback (X ⊔ Y).arrow Z.arrow ⟶ X ⊞ pullback Y.arrow Z.arrow := by
 
-      have := IsImage.isoExt (sup_isImage X Y) <| Image.isImage _
+        let g := biprod.desc X.arrow (pullback.fst Y.arrow Z.arrow ≫ Y.arrow)
+        obtain ⟨⟨G, m_g, e_g, fac_g⟩, _⟩ := Abelian.imageStrongEpiMonoFactorisation g
 
-      obtain ⟨⟨I, m, e, fac_f⟩, _⟩ := Abelian.imageStrongEpiMonoFactorisation f
+        let f := biprod.desc X.arrow Y.arrow
+        obtain ⟨⟨I, m_f, e_f, fac_f⟩, _⟩ := Abelian.imageStrongEpiMonoFactorisation f
 
-      let W := pullback m Z.arrow
-      let P := pullback e (pullback.fst m Z.arrow)
-      let := Abelian.epi_pullback_of_epi_f e (pullback.fst m Z.arrow)
-      have pasteWP := IsPullback.paste_vert (IsPullback.of_hasPullback e (pullback.fst m Z.arrow))
-        (IsPullback.of_hasPullback m Z.arrow)
-      rw [fac_f] at pasteWP
-      let P_to : Limits.pullback e (pullback.fst m Z.arrow) ⟶ X ⊞ (pullback Y.arrow Z.arrow) := by
-        refine biprod.lift ?_ ?_
-        · exact pullback.fst _ _ ≫ biprod.fst
-        · refine pullback.lift ?_ ?_ ?_
-          · exact pullback.fst _ _ ≫ biprod.snd
-          · exact (pullback.snd _ _ ≫ pullback.snd _ _) -
-              (pullback.fst _ _ ≫ biprod.fst ≫ X.ofLE Z hXZ)
-          · simp [← pasteWP.w]
-            sorry
+        let W := pullback m_f Z.arrow
+        let P := pullback e_f (pullback.fst m_f Z.arrow)
 
-      --rw [biprod.desc_eq] at g
-      --have := biprod.isoCoprod
-      --have := biprod.desc_eq
+        let e' :=  (pullback.snd e_f (pullback.fst m_f Z.arrow))
+        -- e' is epi
+        let : Epi e' := Abelian.epi_pullback_of_epi_f e_f (pullback.fst m_f Z.arrow)
+
+        -- combined square is a pullback of f and z
+        have pasteWP := IsPullback.paste_vert
+          (IsPullback.of_hasPullback e_f (pullback.fst m_f Z.arrow))
+          (IsPullback.of_hasPullback m_f Z.arrow)
+        rw [fac_f] at pasteWP
+
+        let p₂ : P ⟶ Z := (pullback.snd e_f (pullback.fst m_f Z.arrow) ≫ pullback.snd m_f Z.arrow)
+
+        let u : P ⟶ (pullback Y.arrow Z.arrow) := by
+          refine pullback.lift ?_ ?_ ?_
+          · -- α
+            exact pullback.fst _ _ ≫ biprod.snd
+          · -- β
+            exact p₂ - (pullback.fst _ _ ≫ biprod.fst ≫ X.ofLE Z hXZ)
+          · sorry
+
+        let h : P ⟶ X ⊞ (pullback Y.arrow Z.arrow) :=
+          biprod.lift (pullback.fst _ _ ≫ biprod.fst) u
+
+        
+        sorry
       sorry
 
     /-
