@@ -32,14 +32,20 @@ variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C
 
 variable {X Y : C} (f : X ⟶ Y)
 
+/-- If `T` is a distinguished triangle, then `T.mor₁` defines a kernel fork for `T.mor₂`. -/
 def kernelForkOfDistTriangle {T : Triangle C} (dT : T ∈ distinguishedTriangles) :
     KernelFork T.mor₂ := KernelFork.ofι T.mor₁ (comp_distTriang_mor_zero₁₂ _ dT)
 
+/-- If `T` is a distinguished triangle, then the kernel fork for `T.mor₂` defined in
+`kernelForkOfDistTriangle` is a weak kernel fork. -/
 def kernelForkOfDistTriangleIsWeakLimit {T : Triangle C} (dT : T ∈ distinguishedTriangles) :
     IsWeakLimit (kernelForkOfDistTriangle dT) :=
   Fork.IsWeakLimit.mk' _
   (fun s ↦ ⟨_, (T.coyoneda_exact₂ dT _ (KernelFork.condition s)).choose_spec.symm⟩)
 
+/--
+A pretriangulated category has weak kernels.
+-/
 instance : HasWeakKernels C where
   has_weakLimit f := {
     exists_weakLimit :=
