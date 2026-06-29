@@ -49,7 +49,7 @@ theorem interior_subset : interior s ⊆ s :=
 theorem interior_maximal (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
   subset_sUnion_of_mem ⟨h₂, h₁⟩
 
-@[grind =]
+@[simp, grind =]
 theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
 
@@ -84,11 +84,9 @@ theorem interior_mono (h : s ⊆ t) : interior s ⊆ interior t :=
 theorem subset_interior_union : interior s ∪ interior t ⊆ interior (s ∪ t) :=
   union_subset (interior_mono subset_union_left) (interior_mono subset_union_right)
 
-@[simp]
 theorem interior_empty : interior (∅ : Set X) = ∅ :=
   isOpen_empty.interior_eq
 
-@[simp]
 theorem interior_univ : interior (univ : Set X) = univ :=
   isOpen_univ.interior_eq
 
@@ -96,7 +94,6 @@ theorem interior_univ : interior (univ : Set X) = univ :=
 theorem interior_eq_univ : interior s = univ ↔ s = univ :=
   ⟨fun h => univ_subset_iff.mp <| h.symm.trans_le interior_subset, fun h => h.symm ▸ interior_univ⟩
 
-@[simp]
 theorem interior_interior : interior (interior s) = interior s :=
   isOpen_interior.interior_eq
 
