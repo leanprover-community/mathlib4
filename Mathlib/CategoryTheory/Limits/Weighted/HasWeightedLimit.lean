@@ -231,6 +231,17 @@ section
 variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
   (F : J ⥤ C)
 
+def hasWeightedLimit : ObjectProperty (J ⥤ Type w) :=
+  fun W ↦ HasWeightedLimit W F
+
+instance (W : (hasWeightedLimit.{w} F).FullSubcategory) :
+    HasWeightedLimit W.obj F := W.property
+
+@[implicit_reducible, simps]
+noncomputable def weightedLimFlipObj' : (hasWeightedLimit.{w} F).FullSubcategoryᵒᵖ ⥤ C where
+  obj W := W.unop.1.weightedLimObjObj F
+  map g := weightedLimFlipObjMap g.unop.hom F
+
 abbrev HasWeightedLimFlipObj : Prop :=
   ∀ (W : J ⥤ Type w), HasWeightedLimit W F
 
@@ -240,6 +251,10 @@ variable [HasWeightedLimFlipObj.{w} F]
 noncomputable def weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C where
   obj W := W.unop.weightedLimObjObj F
   map g := weightedLimFlipObjMap g.unop F
+
+noncomputable def weightedLimFlipObjIso' :
+    F.hasWeightedLimit.ι.op ⋙ weightedLimFlipObj.{w} F ≅
+  F.weightedLimFlipObj' := Iso.refl _
 
 end
 
