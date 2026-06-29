@@ -27,7 +27,7 @@ open Lean Mathlib Elab Tactic Meta Term Syntax
 abbrev SetMReplaceM := StateT (List (Name × MVarId)) TermElabM
 
 /-- Collect all synthetic holes and replace them with fresh metavariables. -/
-partial def replaceWithMVars (stx : Term) : SetMReplaceM Term := do
+def replaceWithMVars (stx : Term) : SetMReplaceM Term := do
   let stx ← stx.raw.replaceM fun stx ↦ do
     let pair ←
       if let `(?$n:ident) := stx then
