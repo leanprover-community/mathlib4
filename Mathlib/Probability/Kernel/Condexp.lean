@@ -48,12 +48,12 @@ variable {Ω F : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω �
 theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [TopologicalSpace F]
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable[m.prod mΩ] (fun x : Ω × Ω => f x.2)
-      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) Function.diag μ) := by
   simpa using (aestronglyMeasurable_comp_snd_map_prodMk_iff hm).mpr hf
 
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup F]
     (hf : Integrable f μ) : Integrable (fun x : Ω × Ω => f x.2)
-      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) Function.diag μ) := by
   simpa using Integrable.comp_snd_map_prodMk id hf
 
 end AuxLemmas
@@ -92,7 +92,7 @@ instance : IsMarkovKernel (condExpKernel μ m) := by
 
 lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
     (μ.trim hm) ⊗ₘ condExpKernel μ m
-      = @Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ := by
+      = @Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) Function.diag μ := by
   rcases isEmpty_or_nonempty Ω with h | h
   · simp [Measure.eq_zero_of_isEmpty μ]
   rw [condExpKernel_eq]
