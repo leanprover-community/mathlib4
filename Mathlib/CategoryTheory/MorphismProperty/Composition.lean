@@ -88,6 +88,9 @@ lemma iff_identities_le {W : MorphismProperty C} :
     W.ContainsIdentities ↔ identities C ≤ W :=
   ⟨fun _ ↦ by intro _ _ _ ⟨_⟩; exact id_mem _, fun h ↦ ⟨fun _ ↦ h _ ⟨_⟩⟩⟩
 
+instance : (identities C).ContainsIdentities :=
+  iff_identities_le.2 (by rfl)
+
 end ContainsIdentities
 
 instance Prod.containsIdentities {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
@@ -235,6 +238,12 @@ instance : (epimorphisms C).IsMultiplicative where
   comp_mem f g hf hg := by
     rw [epimorphisms.iff] at hf hg ⊢
     apply epi_comp
+
+instance : (identities C).IsMultiplicative where
+  comp_mem := by
+    rintro _ _ _ _ _ ⟨_⟩ ⟨_⟩
+    simp only [Category.comp_id]
+    constructor
 
 instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
     (P.inverseImage F).IsMultiplicative where
