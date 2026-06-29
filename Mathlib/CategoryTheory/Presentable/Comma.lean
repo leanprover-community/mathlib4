@@ -387,25 +387,38 @@ instance [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C�
   exists_generator :=
     ⟨_, inferInstance, Comma.isCardinalFilteredGenerator_isCardinalPresentable.{w} F₁ F₂ κ⟩
 
-protected lemma isCardinalPresentable_eq
-    [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
-    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-    [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ]
-    [LocallySmall.{w} D] :
+section
+
+variable
+  [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
+  [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+  [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ]
+  [LocallySmall.{w} D]
+
+protected lemma isCardinalPresentable_eq :
     Comma.isCardinalPresentable F₁ F₂ κ = isCardinalPresentable (Comma F₁ F₂) κ := by
   rw [(Comma.isCardinalFilteredGenerator_isCardinalPresentable
       F₁ F₂ κ).isPresentable_eq_retractClosure,
     ObjectProperty.retractClosure_eq_self]
 
-protected lemma isCardinalPresentable_iff
-    [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
-    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-    [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ]
-    [LocallySmall.{w} D] (X : Comma F₁ F₂) :
-    IsCardinalPresentable X κ ↔
-      IsCardinalPresentable X.left κ ∧ IsCardinalPresentable X.right κ := by
-  change _ ↔ Comma.isCardinalPresentable F₁ F₂ κ X
+variable {F₁ F₂} in
+protected lemma isCardinalPresentable_iff (f : Comma F₁ F₂) :
+    IsCardinalPresentable f κ ↔
+      IsCardinalPresentable f.left κ ∧ IsCardinalPresentable f.right κ := by
+  change _ ↔ Comma.isCardinalPresentable F₁ F₂ κ f
   rw [Comma.isCardinalPresentable_eq]
+
+instance : (Comma.fst F₁ F₂).PreservesCardinalPresentable κ where
+  le_inverseImage_isCardinalPresentable f hf := by
+    simp only [Comma.isCardinalPresentable_iff] at hf
+    tauto
+
+instance : (Comma.snd F₁ F₂).PreservesCardinalPresentable κ where
+  le_inverseImage_isCardinalPresentable f hf := by
+    simp only [Comma.isCardinalPresentable_iff] at hf
+    tauto
+
+end
 
 end Comma
 
