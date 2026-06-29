@@ -190,13 +190,9 @@ lemma degHom_lt_or_of_degHom_comp_lt
   revert hfg
   contrapose!
   intro ⟨hf, hg⟩
-  let φ : W₁.MapFactorizationData W₂ (f ≫ g) :=
-    { Z := Z
-      i := f
-      p := g
-      fac := rfl
-      hi := r.prop_of_degHom_eq_deg_tgt (le_antisymm (r.degHom_le_deg' f) hf)
-      hp := r.prop_of_degHom_eq_deg_src (le_antisymm (r.degHom_le_deg g) hg) }
+  let φ := MorphismProperty.MapFactorizationData.mk Z f g rfl
+    (r.prop_of_degHom_eq_deg_tgt (le_antisymm (r.degHom_le_deg' f) hf))
+    (r.prop_of_degHom_eq_deg_src (le_antisymm (r.degHom_le_deg g) hg))
   rw [r.degHom_eq φ]
 
 @[simp]
