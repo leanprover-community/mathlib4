@@ -189,7 +189,7 @@ theorem intValuation_eq_exp_neg_multiplicity {r : R} (hr : r ≠ 0) :
   have hsr : Ideal.span {r} ≠ 0 := Submodule.span_singleton_eq_bot.mp.mt hr
   have hfm : FiniteMultiplicity v.asIdeal (Ideal.span {r}) :=
     FiniteMultiplicity.of_prime_left v.prime hsr
-  rw [v.intValuation_if_neg hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.coe_inj,
+  rw [v.intValuation_if_neg hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.natCast_inj,
     ← FiniteMultiplicity.emultiplicity_eq_multiplicity hfm,
     UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors (irreducible v) hsr,
     normalize_eq, Ideal.count_associates_factors_eq hsr v.isPrime v.ne_bot]
@@ -260,9 +260,9 @@ theorem intValuation_le_exp_iff_le_emultiplicity {r : R} {n : ℕ} :
 
 theorem exp_le_intValuation_iff_emultiplicity_le {r : R} {n : ℕ} :
     exp (-(n : ℤ)) ≤ v.intValuation r ↔ emultiplicity v.asIdeal (Ideal.span {r}) ≤ n := by
-  rw [← ENat.lt_coe_add_one_iff, ← ENat.coe_one, ← ENat.coe_add, emultiplicity_lt_iff_not_dvd,
-    ← intValuation_le_pow_iff_dvd, not_le, Nat.cast_add, Nat.cast_one, neg_add, exp_add,
-    exp_neg 1, mul_inv_lt_iff₀ (by simp)]
+  rw [← ENat.lt_natCast_add_one_iff, ← ENat.natCast_one, ← ENat.natCast_add,
+    emultiplicity_lt_iff_not_dvd, ← intValuation_le_pow_iff_dvd, not_le, Nat.cast_add, Nat.cast_one,
+    neg_add, exp_add, exp_neg 1, mul_inv_lt_iff₀ (by simp)]
   by_cases hv : v.intValuation r = 0
   · simp [hv]
   · rw [lt_mul_exp_iff_le hv]

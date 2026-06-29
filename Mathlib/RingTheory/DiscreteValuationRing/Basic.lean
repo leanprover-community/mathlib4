@@ -500,7 +500,7 @@ lemma addVal_eq_iff_associated (x y : R) :
     simp only [hx', AddValuation.map_mul, addVal_eq_zero_of_unit, AddValuation.map_pow,
       nsmul_eq_mul, zero_add, hy', associated_unit_mul_right_iff,
       associated_unit_mul_left_iff] at h ⊢
-    simp only [addVal_uniformizer hϖ, mul_one, ENat.coe_inj] at h
+    simp only [addVal_uniformizer hϖ, mul_one, ENat.natCast_inj] at h
     rw [h]
     exact Associates.mk_eq_mk_iff_associated.mp rfl
   · rintro ⟨u, rfl⟩
@@ -523,7 +523,7 @@ noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
     · obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
       obtain ⟨n, u, hu⟩ := eq_unit_mul_pow_irreducible hx0 hϖ
       rw [hu, addVal_def' u hϖ, span_singleton_mul_left_unit u.isUnit,
-        ENat.recTopCoe_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
+        ENat.recTopCoe_natCast, hϖ.maximalIdeal_eq, span_singleton_pow]
   right_inv n := by
     obtain ⟨k, rfl⟩ := OrderDual.toDual.surjective n
     dsimp
@@ -531,7 +531,7 @@ noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
     | top => simp
     | coe k =>
       obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
-      rw [OrderDual.toDual_inj, ENat.recTopCoe_coe, hϖ.maximalIdeal_eq,
+      rw [OrderDual.toDual_inj, ENat.recTopCoe_natCast, hϖ.maximalIdeal_eq,
         span_singleton_pow, ← hϖ.addVal_pow k, addVal_eq_iff_associated]
       exact associated_generator_span_self (ϖ ^ k)
   map_rel_iff' {I J} := by

@@ -81,11 +81,11 @@ theorem submartingale_of_expected_stoppedValue_mono [SigmaFiniteFiltration μ �
     (isStoppingTime_const 𝒢 j) ?_
     ⟨j, fun _ => le_rfl⟩
   · intro ω
-    simp only [Set.piecewise, ENat.some_eq_coe]
+    simp only [Set.piecewise, ENat.some_eq_natCast]
     split_ifs with hω
     · exact mod_cast hij
     · norm_cast
-  · rwa [stoppedValue_const, ← ENat.some_eq_coe, stoppedValue_piecewise_const,
+  · rwa [stoppedValue_const, ← ENat.some_eq_natCast, stoppedValue_piecewise_const,
       integral_piecewise (𝒢.le _ _ hs) (hint _).integrableOn (hint _).integrableOn, ←
       integral_add_compl (𝒢.le _ _ hs) (hint j), add_le_add_iff_right] at hf
 

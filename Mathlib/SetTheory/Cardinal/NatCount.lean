@@ -31,7 +31,7 @@ theorem count_le_setENCard : count p n ≤ Set.encard { k | p k } := by
   exact Nat.count_le_cardinal n
 
 theorem count_le_setNCard (h : { k | p k }.Finite) : count p n ≤ Set.ncard { k | p k } := by
-  rw [Set.ncard_def, ← ENat.coe_le_coe, ENat.coe_toNat (by simpa)]
+  rw [Set.ncard_def, ← ENat.natCast_le_natCast, ENat.natCast_toNat (by simpa)]
   exact count_le_setENCard n
 
 end Nat
