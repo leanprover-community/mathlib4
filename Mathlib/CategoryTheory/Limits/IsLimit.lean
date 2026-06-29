@@ -183,6 +183,50 @@ theorem lift_comp_conePointUniqueUpToIso_inv {r s t : Cone F} (P : IsLimit s) (Q
     Q.lift r ≫ (conePointUniqueUpToIso P Q).inv = P.lift r :=
   P.uniq _ _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
+@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_inv_comp_map]
+lemma map_comp_conePointUniqueUpToIso {F G : J ⥤ C} (s : Cone F) {t t' : Cone G}
+    (ht : IsLimit t) (ht' : IsLimit t') (α : F ⟶ G) :
+    ht.map s α ≫ (ht.conePointUniqueUpToIso ht').hom = ht'.map s α := by
+  simp [map]
+
+set_option backward.isDefEq.respectTransparency false in
+@[to_dual map_comp_coconePointUniqueUpToIso_inv, reassoc (attr := simp)]
+lemma conePointUniqueUpToIso_comp_map {F G : J ⥤ C} {s' s : Cone F} {t : Cone G}
+    (hs' : IsLimit s') (hs : IsLimit s) (ht : IsLimit t) (α : F ⟶ G) :
+    (hs'.conePointUniqueUpToIso hs).hom ≫ ht.map s α = ht.map s' α :=
+  ht.uniq (((Cone.postcompose α).obj s')) _ fun i ↦ by simp
+
+@[to_dual coconePointUniqueUpToIso_inv_naturality, reassoc]
+lemma conePointUniqueUpToIso_naturality {F G : J ⥤ C}
+    {s s' : Cone F} {t t' : Cone G} (hs : IsLimit s) (hs' : IsLimit s') (ht : IsLimit t)
+    (ht' : IsLimit t') (α : F ⟶ G) :
+    ht.map s α ≫ (ht.conePointUniqueUpToIso ht').hom =
+      (hs.conePointUniqueUpToIso hs').hom ≫ ht'.map s' α := by
+  rw [map_comp_conePointUniqueUpToIso, conePointUniqueUpToIso_comp_map]
+
+set_option backward.isDefEq.respectTransparency false in
+@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_comp_map]
+lemma map_comp_conePointUniqueUpToIso_inv {F G : J ⥤ C} (s : Cone F) {t t' : Cone G}
+    (ht : IsLimit t) (ht' : IsLimit t') (α : F ⟶ G) :
+    ht.map s α ≫ (ht'.conePointUniqueUpToIso ht).inv = ht'.map s α := by
+  simp [map]
+
+set_option backward.isDefEq.respectTransparency false in
+@[to_dual map_comp_coconePointUniqueUpToIso, reassoc (attr := simp)]
+lemma conePointUniqueUpToIso_inv_comp_map {F G : J ⥤ C} {s' s : Cone F} {t : Cone G}
+    (hs' : IsLimit s') (hs : IsLimit s) (ht : IsLimit t) (α : F ⟶ G) :
+    (hs.conePointUniqueUpToIso hs').inv ≫ ht.map s α = ht.map s' α :=
+  ht.uniq (((Cone.postcompose α).obj s')) _ fun i ↦ by simp
+
+@[to_dual coconePointUniqueUpToIso_naturality, reassoc]
+lemma conePointUniqueUpToIso_inv_naturality {F G : J ⥤ C}
+    {s s' : Cone F} {t t' : Cone G} (hs : IsLimit s) (hs' : IsLimit s') (ht : IsLimit t)
+    (ht' : IsLimit t') (α : F ⟶ G) :
+    (hs'.conePointUniqueUpToIso hs).inv ≫ ht'.map s' α =
+      ht.map s α ≫ (ht'.conePointUniqueUpToIso ht).inv := by
+  rw [map_comp_conePointUniqueUpToIso_inv, conePointUniqueUpToIso_inv_comp_map]
+
 /-- Transport evidence that a cone is a limit cone across an isomorphism of cones. -/
 @[to_dual
 /-- Transport evidence that a cocone is a colimit cocone across an isomorphism of cocones. -/]

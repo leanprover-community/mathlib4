@@ -359,6 +359,12 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
     simp
 
+lemma IsLimit.limitOfDiagramInitial_map {F G : J ⥤ C} {X : J} (hX : IsInitial X) (α : F ⟶ G) :
+    (limitOfDiagramInitial hX G).map (coneOfDiagramInitial hX F) α = α.app X := by
+  simp only [IsLimit.map, limitOfDiagramInitial, Cone.postcompose_obj_π, NatTrans.comp_app,
+    coneOfDiagramInitial_π_app, IsInitial.to_self, Functor.map_id]
+  exact Category.id_comp _
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cone for `J`,
@@ -402,6 +408,12 @@ def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
     IsColimit (coconeOfDiagramTerminal tX F) where
   desc s := s.ι.app X
   uniq s m w := by simp [← w X]
+
+lemma IsColimit.colimitOfDiagramTerminal_map {F G : J ⥤ C} {X : J} (hX : IsTerminal X) (α : F ⟶ G) :
+    (colimitOfDiagramTerminal hX F).map (coconeOfDiagramTerminal hX G) α = α.app X := by
+  simp only [IsColimit.map, colimitOfDiagramTerminal, Cocone.precompose_obj_ι, NatTrans.comp_app,
+    coconeOfDiagramTerminal_ι_app, IsTerminal.from_self, Functor.map_id]
+  exact Category.comp_id _
 
 lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
     (X : J) (hX : IsTerminal X) :

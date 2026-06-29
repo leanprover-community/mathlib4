@@ -83,41 +83,14 @@ noncomputable def IsLocalSite.pointPresheafFiberIso [LocallySmall.{w} C] [J.IsLo
     (colimitOfDiagramTerminal (Functor.Elements.isInitialOfCorepresentableBy
       <| shrinkCoyonedaCorepresentableBy <| op (⊤_ C)).op _)
 
-set_option backward.isDefEq.respectTransparency false in
-lemma IsColimit.map_comp_coconePointUniqueUpToIso {J : Type*} [Category* J] {F G : J ⥤ C}
-    {s : Cocone F} {t t' : Cocone G} (hs : IsColimit s) (ht : IsColimit t)
-    (ht' : IsColimit t') (α : F ⟶ G) :
-    hs.map t α ≫ (ht.coconePointUniqueUpToIso ht').hom = hs.map t' α :=
-  hs.uniq (((Cocone.precompose α).obj t')) _ fun i ↦ by simp
-
-set_option backward.isDefEq.respectTransparency false in
-lemma IsColimit.coconePointUniqueUpToIso_comp_map {J : Type*} [Category* J] {F G : J ⥤ C}
-    {s' s : Cocone F} (hs' : IsColimit s') (hs : IsColimit s) (t : Cocone G) (α : F ⟶ G) :
-    (hs'.coconePointUniqueUpToIso hs).hom ≫ hs.map t α = hs'.map t α :=
-  hs'.uniq (((Cocone.precompose α).obj t)) _ fun i ↦ by simp
-
-lemma IsColimit.coconePointUniqueUpToIso_naturality {J : Type*} [Category* J] {F G : J ⥤ C}
-    {s s' : Cocone F} {t t' : Cocone G} (hs : IsColimit s) (hs' : IsColimit s') (ht : IsColimit t)
-    (ht' : IsColimit t') (α : F ⟶ G) :
-    hs.map t α ≫ (ht.coconePointUniqueUpToIso ht').hom =
-      (hs.coconePointUniqueUpToIso hs').hom ≫ hs'.map t' α := by
-  rw [map_comp_coconePointUniqueUpToIso, coconePointUniqueUpToIso_comp_map]
-
-lemma IsColimit.colimitOfDiagramTerminal_map {J : Type*} [Category* J] {F G : J ⥤ C}
-    {X : J} (hX : IsTerminal X) (α : F ⟶ G) :
-    (colimitOfDiagramTerminal hX F).map (coconeOfDiagramTerminal hX G) α = α.app X := by
-  simp only [IsColimit.map, colimitOfDiagramTerminal, Cocone.precompose_obj_ι, NatTrans.comp_app,
-    coconeOfDiagramTerminal_ι_app, IsTerminal.from_self, Functor.map_id]
-  exact Category.comp_id _
-
 lemma IsLocalSite.pointPresheafFiberIso_naturality [LocallySmall.{w} C] [J.IsLocalSite]
     {A : Type u'} [Category.{v', u'} A] [Limits.HasColimitsOfSize.{w, w, v', u'} A]
     {P P' : Cᵒᵖ ⥤ A} (F : P ⟶ P') :
     (point J).presheafFiber.map F ≫ (pointPresheafFiberIso J P').hom =
       (pointPresheafFiberIso J P).hom ≫ F.app (op (⊤_ C)) := by
-  refine (IsColimit.coconePointUniqueUpToIso_naturality _
+  refine (IsColimit.coconePointUniqueUpToIso_naturality _ _
     (colimitOfDiagramTerminal (Functor.Elements.isInitialOfCorepresentableBy
-      <| shrinkCoyonedaCorepresentableBy <| op (⊤_ C)).op _) _ _
+      <| shrinkCoyonedaCorepresentableBy <| op (⊤_ C)).op _) _
       (((CategoryOfElements.π (shrinkCoyoneda.{w}.obj (op (⊤_ C)))).op.whiskerLeft F))).trans ?_
   congr
   exact IsColimit.colimitOfDiagramTerminal_map _ _
