@@ -216,7 +216,7 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
     ext v
     obtain ⟨v, rfl⟩ := hφ.surjective_mfderiv z v
     have hφ' := hφ.contMDiff.mdifferentiableAt (x := z) (by simp)
-    rw [mychainrule _ hφ']; swap; · exact hf.smul hg
+    rw [mychainrule (hf.smul hg) hφ']
     simp only [add_apply, smul_apply, smulRight_apply]
     rw [mychainrule hf hφ', mychainrule hg hφ']
     rw [Function.smul_comp, ← Function.comp_apply (f := f) (g := φ),
