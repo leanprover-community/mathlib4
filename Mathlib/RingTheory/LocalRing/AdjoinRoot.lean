@@ -18,7 +18,7 @@ import Mathlib.RingTheory.SimpleRing.Principal
 
 # Results on `AdjoinRoot` and Local Rings
 
-This file establishes the necessary and sufficient conditions for the polynomial
+This file provides the necessary and sufficient conditions for the polynomial
 quotient ring $R[X]/(p)$ (i.e., `AdjoinRoot p`) to be a local ring.
 
 ## Main results
@@ -76,11 +76,6 @@ theorem isLocalRing_iff_isPrimePow_normalize (ne : f ≠ 0) [DecidableEq k] :
     exact comap_isPrime ..
   · exact ((Ring.krullDimLE_zero_and_isLocalRing_tfae (AdjoinRoot f)).out 3 0 rfl rfl).mp
       (isMaximal_nilradical_of_isPrimePow_normalize ne h) |>.2
-
-theorem krullDimLE_zero_of_isPrimePow_normalize (ne : f ≠ 0) [DecidableEq k]
-    (h : IsPrimePow (normalize f)) : Ring.KrullDimLE 0 (AdjoinRoot f) :=
-  ((Ring.krullDimLE_zero_and_isLocalRing_tfae (AdjoinRoot f)).out 3 0 rfl rfl).mp
-      (isMaximal_nilradical_of_isPrimePow_normalize ne h) |>.1
 
 lemma isPrimePow_map_residue_of_monic_of_isLocalRing (monic : p.Monic) [IsLocalRing R]
     [IsLocalRing (AdjoinRoot p)] : IsPrimePow (p.map (residue R)) := by
