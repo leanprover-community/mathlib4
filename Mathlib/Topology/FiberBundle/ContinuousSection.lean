@@ -72,12 +72,8 @@ theorem coeFn_mk (s : ∀ b, E b) (hs : Continuous fun b ↦ (⟨b, s b⟩ : Tot
 protected theorem continuous (s : Cₛ⟮F, E⟯) : Continuous fun b ↦ (⟨b, s b⟩ : TotalSpace F E) :=
   s.continuous_toFun
 
-@[simp]
-theorem coe_inj {s t : Cₛ⟮F, E⟯} : (s : ∀ b, E b) = t ↔ s = t :=
-  ⟨fun h ↦ DFunLike.ext' h, fun h ↦ by rw [h]⟩
-
 theorem coe_injective : Injective ((↑) : Cₛ⟮F, E⟯ → ∀ b, E b) :=
-  fun _ _ ↦ coe_inj.1
+  DFunLike.coe_injective
 
 @[ext]
 theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
