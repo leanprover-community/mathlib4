@@ -28,27 +28,69 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 
 namespace Functor.weightedLimFlipObj'
 
+namespace preservesLimit'
+
+variable [HasColimitsOfShape K (Type w)]
+  {F : J ⥤ C} {G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategory}
+  {c : Cocone G} (hc : IsColimit ((hasWeightedLimit.{w} F).ι.mapCocone c))
+  (s : Cone (G.op ⋙ weightedLimFlipObj'.{w} F))
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+noncomputable def π (j : J) : c.pt.obj.obj j → (s.pt ⟶ F.obj j) :=
+  ((Types.isColimit_iff_coconeTypesIsColimit _).1
+    ⟨isColimitOfPreserves ((evaluation _ _).obj j) hc⟩).desc
+      (CoconeTypes.mk _ (fun k x ↦ s.π.app (op k) ≫ weightedLimObjObjπ _ _ x)
+    (fun {k₁ k₂} f ↦ by ext; simp [← s.w_assoc f.op]))
+
+set_option backward.defeqAttrib.useBackward true in
+@[simp]
+lemma π_ι_app_hom_app_apply ⦃j : J⦄ ⦃k : K⦄ (x : (G.obj k).obj.obj j) :
+    dsimp% π hc s j ((c.ι.app k).hom.app j x) =
+      s.π.app (op k) ≫ weightedLimObjObjπ _ _ x :=
+  ((Types.isColimit_iff_coconeTypesIsColimit _).1
+      ⟨isColimitOfPreserves ((evaluation _ _).obj j) hc⟩).fac_apply ..
+
+end preservesLimit'
+
+open preservesLimit' in
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def preservesLimit'
     [HasColimitsOfShape K (Type w)]
     {F : J ⥤ C} {G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategory}
-    (c : Cocone G) (hc : IsColimit ((ObjectProperty.ι _).mapCocone c)) :
-    IsLimit ((weightedLimFlipObj'.{w} F).mapCone c.op) := by
-  sorry
+    (c : Cocone G) (hc : IsColimit ((hasWeightedLimit.{w} F).ι.mapCocone c)) :
+    IsLimit ((weightedLimFlipObj'.{w} F).mapCone c.op) where
+  lift s := (isLimitWeightedLimCone c.pt.obj F).lift (π hc s) (fun j₁ j₂ x f ↦ by
+    obtain ⟨k, y, rfl⟩ := Types.jointly_surjective_of_isColimit
+      (isColimitOfPreserves ((evaluation _ _).obj j₁) hc) x
+    dsimp
+    rw [π_ι_app_hom_app_apply, Category.assoc, weightedLimObjObj_w,
+      ← π_ι_app_hom_app_apply hc, NatTrans.naturality_apply])
+  fac s k := by
+    dsimp
+    ext j x
+    simp
+  uniq s m hm := by
+    dsimp
+    ext j x
+    obtain ⟨k, y, rfl⟩ := Types.jointly_surjective_of_isColimit
+      (isColimitOfPreserves ((evaluation _ _).obj j) hc) x
+    simp [← hm]
 
-/-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-noncomputable def preservesLimit
+set_option backward.defeqAttrib.useBackward true in
+lemma preservesLimit
     [HasColimitsOfShape Kᵒᵖ (Type w)]
     {F : J ⥤ C} {G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategoryᵒᵖ}
-    (c : Cone G) (hc : IsColimit ((ObjectProperty.ι _).mapCocone (coconeLeftOpOfCone c))) :
-    IsLimit ((weightedLimFlipObj'.{w} F).mapCone c) where
-  lift s := by
-    refine (isLimitWeightedLimCone c.pt.unop.obj F).lift (fun j ↦ ?_) sorry
-    refine ((Types.isColimit_iff_coconeTypesIsColimit _).1
-      ⟨isColimitOfPreserves ((evaluation _ _).obj j) hc⟩).desc
-        (CoconeTypes.mk _ (fun k x ↦ s.π.app k.unop ≫ weightedLimObjObjπ _ _ x) sorry)
-  fac := sorry
-  uniq := sorry-/
+    [PreservesColimit G.leftOp (hasWeightedLimit.{w} F).ι] :
+    PreservesLimit G (weightedLimFlipObj'.{w} F) where
+  preserves {c} hc := ⟨by
+    refine (IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ?_).1
+      ((preservesLimit' (coconeLeftOpOfCone c)
+        (isColimitOfPreserves (hasWeightedLimit.{w} F).ι
+          (isColimitCoconeLeftOpOfCone _ hc))).whiskerEquivalence
+      (opOpEquivalence K).symm)
+    exact Cone.ext (Iso.refl _)⟩
 
 end Functor.weightedLimFlipObj'
 
