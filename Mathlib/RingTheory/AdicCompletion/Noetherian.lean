@@ -215,7 +215,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
   · simp [coeff', hi]
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
-    (complete : IsAdicComplete I R) : IsNoetherianRing R := by
+    [IsAdicComplete I R] : IsNoetherianRing R := by
   apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
   have := isNoetherianRing_reesAlgebra_quotient I fg
   obtain ⟨ι, f, deg, coeff, fin, eq, memJ, map_eq⟩ :=
@@ -266,10 +266,10 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
         omega
       exact Ideal.pow_le_pow_right this (coeffs'_spec (n + d) i)
     let coeffs'_lim (i : ι) : R :=
-      Classical.choose (complete.prec' (coeffs'_seq i) (coeffs'_seq_cauchy i))
+      Classical.choose (‹IsAdicComplete I R›.prec' (coeffs'_seq i) (coeffs'_seq_cauchy i))
     have coeffs'_lim_spec (i : ι) : ∀ (n : ℕ), coeffs'_seq i n ≡
       coeffs'_lim i [SMOD I ^ n • (⊤ : Ideal R)] :=
-      Classical.choose_spec (complete.prec' (coeffs'_seq i) (coeffs'_seq_cauchy i))
+      Classical.choose_spec (‹IsAdicComplete I R›.prec' (coeffs'_seq i) (coeffs'_seq_cauchy i))
     have sum_mod_eq (n : ℕ) : ∑ i, coeffs'_lim i * coeff i ≡
       ∑ i, (coeffs'_seq i n) * coeff i [SMOD I ^ n • (⊤ : Ideal R)] := by
       rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem, ← Finset.sum_sub_distrib]
@@ -295,8 +295,8 @@ lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I
     (Ideal.quotEquivOfEq (AdicCompletion.ker_evalOneₐ_eq_map I fg).symm).trans
     (RingHom.quotientKerEquivOfSurjective (AdicCompletion.evalOneₐ_surjective I))
   have := isNoetherianRing_of_ringEquiv _ e.symm
+  have := AdicCompletion.isAdicComplete_self I fg
   exact isNoetherianRing_of_isAdicComplete_of_fg _ (fg.map (algebraMap R (AdicCompletion I R)))
-    (AdicCompletion.isAdicComplete_self I fg)
 
 instance [IsNoetherianRing R] : IsNoetherianRing (AdicCompletion I R) :=
   AdicCompletion.isNoetherianRing_of_fg I I.fg_of_isNoetherianRing
