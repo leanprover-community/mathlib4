@@ -158,6 +158,20 @@ TODO(MR): investigate if using `mvfderiv` can avoid the "pain" above, and be a c
 
 section Complex
 
+/-- Derivative of `z ↦ (denom g z) ^ k`: $\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}$. -/
+lemma hasDerivAt_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
+    HasDerivAt (fun z ↦ denom g z ^ k) (k * g 1 0 * denom g τ ^ (k - 1)) τ := by
+  have hd : HasDerivAt (denom g ·) (g 1 0) τ := by
+    simpa [denom] using hasDerivAt_id _ |>.const_mul _ |>.add_const (g 1 1 : ℂ)
+  have := (hasDerivAt_zpow k (denom g τ) (Or.inl (denom_ne_zero g τ))).comp _ hd
+  simpa only [Function.comp_def, mul_right_comm] using this
+
+/-- Derivative of `z ↦ (denom g z) ^ k`:
+$\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}$. -/
+lemma deriv_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
+    deriv (fun z ↦ denom g z ^ k) τ = k * g 1 0 * denom g τ ^ (k - 1) :=
+  (hasDerivAt_denom_zpow g k τ).deriv
+
 lemma hasStrictDerivAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     HasStrictDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (g.val.det / denom g τ ^ 2) τ := by
   suffices HasStrictDerivAt (num g / denom g) (g.val.det / denom g τ ^ 2) τ by
