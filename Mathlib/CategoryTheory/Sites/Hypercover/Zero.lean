@@ -915,6 +915,9 @@ lemma le_of_zeroHypercover {J K : Precoverage C}
 class Small (J : Precoverage C) : Prop where
   zeroHypercoverSmall : ∀ {S : C} (E : ZeroHypercover.{max u v} J S), ZeroHypercover.Small.{w'} E
 
+instance (K : Precoverage C) : Small.{max u v} K where
+  zeroHypercoverSmall := inferInstance
+
 instance (J : Precoverage C) [Small.{w} J] {S : C} (E : ZeroHypercover.{w'} J S) :
     ZeroHypercover.Small.{w} E := by
   have : ZeroHypercover.Small.{w} (ZeroHypercover.restrictIndexOfSmall.{max u v} E) :=
