@@ -80,28 +80,12 @@ abbrev φ : OpenPartialHomeomorph M H := chartAt H (quotient_RightInverse x)
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) (quotient_RightInverse x)
 
-def quotientTransitionMap : OpenPartialHomeomorph H H :=
-  (φ x).symm.trans (((πinv x).symm.trans (πinv y)).trans (φ y))
-
 variable (e e' : OpenPartialHomeomorph M H)
 
 def generalTransitionMap : OpenPartialHomeomorph H H :=
   e.symm.trans (((πinv x).symm.trans (πinv y)).trans e')
 
 variable {x y : orbitRel.Quotient G M}
-
-lemma lemma_f_eq_φρφ_t {t : Set M} (ht : t ⊆ (φ (H := H) x).source)
-    {g : G} {u : M} (hu : u ∈ t)
-    (hu' : (Homeomorph.smul g) u ∈ (πinv y).target) :
-    (quotientTransitionMap x y) (φ (H := H) x u) =
-      φ y (Homeomorph.smul g (((φ (H := H) x).symm (φ x u)))) := by
-  simp only [quotientTransitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
-  rw [(φ x).left_inv (ht hu), quotient_IsLocalHomeomorph.localInverseAt_symm,
-        ← orbitRel.Quotient.quotient_smul_eq (g:=g)]
-  apply mem_image_of_mem (Homeomorph.smul g) at hu
-  rw [← quotient_IsLocalHomeomorph.localInverseAt_symm, ← Homeomorph.smul_apply,
-    (πinv y).right_inv hu']
-
 
 omit [ChartedSpace H M] in
 lemma general_f_eq_φρφ_t {t : Set M} (ht : t ⊆ e.source)
@@ -115,40 +99,6 @@ lemma general_f_eq_φρφ_t {t : Set M} (ht : t ⊆ e.source)
   apply mem_image_of_mem (Homeomorph.smul g) at hu
   rw [← quotient_IsLocalHomeomorph.localInverseAt_symm, ← Homeomorph.smul_apply,
     (πinv y).right_inv hu']
-
-lemma lemma_hfg_t
-    (t : Set M) (g : G)
-    (ht : t ⊆ (φ (H := H) x).source)
-    (is_open_t : IsOpen t)
-    (ht' : Homeomorph.smul g '' t ⊆ (φ (H := H) y).source)
-    (ht'' : Homeomorph.smul g '' t ⊆ (πinv y).target) :
-    (((φ (H := H) x).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans (φ y))).restr
-      ((φ x '' t) ∩ (quotientTransitionMap x y).source)).EqOnSource
-      ((quotientTransitionMap x y).restr (φ x '' t))
-    := by
-  have is_open_φt := ((φ x).isOpen_image_iff_of_subset_source ht).mpr is_open_t
-  refine ⟨?_, ?_⟩
-  · ext z
-    refine ⟨?_, ?_⟩
-    · intro ⟨_, hzt⟩
-      rw [(quotientTransitionMap x y).restr_source, is_open_φt.interior_eq, inter_comm]
-      simpa [(is_open_φt.inter (quotientTransitionMap x y).open_source).interior_eq] using hzt
-    · intro ⟨hzf, hzt⟩
-      rw [is_open_φt.interior_eq] at hzt
-      obtain ⟨u, hu, hz⟩ := hzt
-      refine ⟨?_, ?_⟩
-      · rw [← hz]
-        refine ⟨(φ x).map_source' (ht hu), ?_⟩
-        suffices h : g • (φ x).symm ((φ x) u) ∈ (φ y).source by simpa using h
-        rw [(φ x).left_inv (ht hu)]
-        apply ht'
-        simp [hu]
-      · rw [(is_open_φt.inter (quotientTransitionMap x y).open_source).interior_eq]
-        refine ⟨by use u;, by exact hzf⟩
-  · intro z ⟨_, hz⟩
-    rw [(is_open_φt.inter (quotientTransitionMap x y).open_source).interior_eq] at hz
-    obtain ⟨⟨_, hut, hu⟩, _⟩ := hz
-    simpa [hu] using (lemma_f_eq_φρφ_t ht hut (ht'' (mem_image_of_mem _ hut))).symm
 
 omit [ChartedSpace H M] in
 lemma general_hfg_t
@@ -226,25 +176,17 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
 
     refine ⟨t, is_open_t, h_in_t, ?_⟩
 
-    have hfg_t :
-      (((φ x).symm.trans (((Homeomorph.smul g0).toOpenPartialHomeomorph).trans (φ y))).restr
-      (t ∩ (quotientTransitionMap x y).source)).EqOnSource ((quotientTransitionMap x y).restr t)
-      := by
-      apply general_hfg_t
-      · exact fun x hx => hx.1.2
-      · exact is_open_Up'
-      · intro m ⟨_, ⟨_, _, hw⟩, hu2⟩
-        simpa [← hu2, ← hw.2] using hw.1.2
-      · intro m ⟨_, ⟨_, _, hw⟩, hu2⟩
-        simpa [← hu2, ← hw.2] using hw.1.1
+    have hfg_t := general_hfg_t (x:=x) (y:=y) (φ x) (φ y) Up' g0 (fun x hx => hx.1.2) is_open_Up'
+      (fun m ⟨_, ⟨_, _, hw⟩, hu2⟩ => by simpa [← hu2, ← hw.2] using hw.1.2)
+      (fun m ⟨_, ⟨_, _, hw⟩, hu2⟩ => by simpa [← hu2, ← hw.2] using hw.1.1)
 
-    apply (StructureGroupoid.mem_iff_of_eqOnSource hfg_t).mp
+    refine (StructureGroupoid.mem_iff_of_eqOnSource hfg_t).mp ?_
 
-    apply closedUnderRestriction'
-    · apply mem_contDiffGroupoid_of_contMDiff_chartAt
+    refine closedUnderRestriction' ?_ ?_
+    · refine mem_contDiffGroupoid_of_contMDiff_chartAt I ?_ ?_
       · sorry
       · sorry
-    · exact is_open_t.inter (quotientTransitionMap x y).open_source
+    · exact is_open_t.inter (generalTransitionMap x y _ _).open_source
 
 end MulAction
 
