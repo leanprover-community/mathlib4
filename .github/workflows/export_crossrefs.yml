@@ -14,6 +14,11 @@ on:
     branches: [master]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: mint the app token and verify push permission, but don't push to the crossrefs repo"
+        type: boolean
+        default: true
 
 concurrency:
   group: export-crossrefs
@@ -93,11 +98,17 @@ jobs:
       - name: Push to the crossrefs repository
         env:
           CROSSREFS_PUSH_TOKEN: ${{ steps.app-token.outputs.token }}
+          # On manual runs this defaults to true (see the workflow_dispatch
+          # inputs); on the automatic workflow_run trigger `inputs` is empty, so
+          # this is false and the push happens for real.
+          DRY_RUN: ${{ inputs.dry_run || false }}
         run: |
           git clone --depth 1 \
             "https://x-access-token:${CROSSREFS_PUSH_TOKEN}@github.com/${CROSSREFS_REPO}.git" \
             crossrefs-repo
           cd crossrefs-repo
+          git config user.name  "leanprover-community-bot"
+          git config user.email "leanprover-community-bot@users.noreply.github.com"
           # Commit only when the entries themselves change. The `generated`
           # timestamp and source `commit` change on every run, so comparing the
           # whole file would produce a commit even when nothing of substance did.
@@ -106,14 +117,30 @@ jobs:
           # consumers should not read `generated` as a "data freshness" signal.
           if [ -f crossrefs.json ] && \
              diff -q <(jq -S '.entries' crossrefs.json) <(jq -S '.entries' ../crossrefs.json) > /dev/null; then
-            echo "No change in entries; nothing to commit."
+            echo "No change in entries."
+            changed=false
           else
             cp ../crossrefs.json crossrefs.json
-            git config user.name  "leanprover-community-bot"
-            git config user.email "leanprover-community-bot@users.noreply.github.com"
             git add crossrefs.json
             git commit -m "Update crossrefs (mathlib4@${BUILT_SHA})"
+            changed=true
+          fi
+
+          if [ "${DRY_RUN}" = "true" ]; then
+            # Verify the minted token can actually push, without mutating the
+            # remote: `git push --dry-run` performs the authenticated
+            # git-receive-pack handshake (which GitHub gates on write access) but
+            # never sends the update. If nothing changed, add a throwaway local
+            # commit so there is a ref update to negotiate.
+            if [ "${changed}" != "true" ]; then
+              git commit --allow-empty -m "Dry-run push permission check (never sent)"
+            fi
+            echo "Dry run: verifying push permission against ${CROSSREFS_REPO} without pushing."
+            git push --dry-run
+          elif [ "${changed}" = "true" ]; then
             git push
+          else
+            echo "No change in entries; nothing to commit."
           fi
 
       - name: Post failure message on Zulip
