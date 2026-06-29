@@ -183,7 +183,7 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
   clear φ₀p_mem_U
   /- obtain an `OpenPartialHomeomorph E → F` using the standard inverse function theorem. We must
   restrict to `U ∩ V` so that we can later show ContDiff of the forward and inverse function
-  todo : refactor this part (up to the definition of `diffeo`) to a separate function since it could
+  todo : refactor this part (the creation of `coord_diffeo`) to a separate function since it could
   be independently useful? -/
   set homeo := ((hg.contDiffAt U_nhd).toOpenPartialHomeomorph g hg' hn).restrOpen _ hUV
   have homeo_contdiff : ContDiffOn 𝕜 n homeo.toFun homeo.source := by
@@ -216,10 +216,8 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
       exact (homeo.contDiffAt_symm hy (hg' ▸ this.hasFDerivAt)
         (homeo_contdiff.contDiffAt source_nhd)).contDiffWithinAt
   }
-  -- compose with the charts to obtain our partial diffeomorphism `M → N`
-  set diffeo := (φ₁.trans coord_diffeo).trans ψ₁.symm
-  use diffeo
-  -- verify `p ∈ diffeo.source` and `EqOn f diffeo diffeo.source`
+  -- compose with the charts to obtain partial diffeomorphism `M → N` and verify agreement with `f`
+  use (φ₁.trans coord_diffeo).trans ψ₁.symm
   constructor
   · refine ⟨⟨mem_diffeoExtChartAt_source n hp, φ₀p_mem_homeo_source⟩, ?_⟩
     change (ψ₁ ∘ f ∘ φ₀.symm) (φ₀ p) ∈ ψ₁.target
