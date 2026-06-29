@@ -1,0 +1,23 @@
+name: SPT Lean Check
+
+on:
+  push:
+    paths:
+      - 'PrimalitySheafVerification/**'
+  pull_request:
+    paths:
+      - 'PrimalitySheafVerification/**'
+
+jobs:
+  check-spt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get Mathlib cache
+        run: lake exe cache get
+      - name: Check completed SPT files
+        run: |
+          lake env lean PrimalitySheafVerification/Spt1.lean
+          lake env lean PrimalitySheafVerification/Spt3.lean
+          lake env lean PrimalitySheafVerification/Spt4.lean
+          lake env lean PrimalitySheafVerification/Spt5.lean
