@@ -135,8 +135,12 @@ jobs:
           # Consequence: the published `generated`/`commit` fields record when the
           # entries last changed, not the latest commit the export ran against, so
           # consumers should not read `generated` as a "data freshness" signal.
+          # Read each file fully into a string and compare; using `diff -q` on two
+          # `jq` process substitutions makes `diff` close the pipes at the first
+          # difference, which leaves the `jq` writers with a SIGPIPE ("broken pipe")
+          # and noisy spurious errors in the log.
           if [ -f crossrefs.json ] && \
-             diff -q <(jq -S '.entries' crossrefs.json) <(jq -S '.entries' ../crossrefs.json) > /dev/null; then
+             [ "$(jq -Sc '.entries' crossrefs.json)" = "$(jq -Sc '.entries' ../crossrefs.json)" ]; then
             echo "No change in entries."
             changed=false
           else
