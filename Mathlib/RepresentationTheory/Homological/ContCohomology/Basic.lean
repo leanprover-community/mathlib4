@@ -62,7 +62,7 @@ term in a cochain complex and shufts the other terms down by one.
 abbrev crop (C : Type*) [Category C] [Limits.HasZeroMorphisms C]:=
   (ComplexShape.embeddingUp'Add 1 1).restrictionFunctor C
 
-/-- `homogeneousCochains k G` is the functor taking
+/-- `homogeneousCochains R G` is the functor taking
 an `k`-linear `G`-representation to the complex of homogeneous cochains. -/
 abbrev homogeneousCochains : TopRep k G ⥤ CochainComplex (TopModuleCat k) ℕ :=
   (MultiInd.complex k G).asFunctor ⋙ (invariants k G).mapHomologicalComplex _
@@ -94,13 +94,5 @@ lemma homogeneousCochains.property {n : ℕ} {rep : TopRep k G}
     coe_mk] at this
   have key := congrArg (((MultiInd.functor k G n).obj rep).ρ g₁) this
   rwa [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self] at key
-
-/-- `continuousCohomology k G n` is the functor taking
-an `k`-linear `G`-representation to its `n`-th continuous cohomology. -/
-noncomputable def _root_.continuousCohomologyFunctor (n : ℕ) : TopRep k G ⥤ TopModuleCat k :=
-  homogeneousCochains k G ⋙ HomologicalComplex.homologyFunctor _ _ n
-
-noncomputable abbrev _root_.continuousCohomology (n : ℕ) (A : TopRep k G) :
-    TopModuleCat k := (continuousCohomologyFunctor k G n).obj A
 
 end ContinuousCohomology
