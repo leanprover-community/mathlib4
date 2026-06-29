@@ -74,13 +74,6 @@ noncomputable def IsLocalSite.point [LocallySmall.{w} C] [J.IsLocalSite] : Point
         rw [shrinkCoyoneda_obj_map_shrinkCoyonedaObjObjEquiv_symm]
         simp⟩
 
-lemma shrinkCoyoneda_obj_map [LocallySmall.{w} C]
-    {X : Cᵒᵖ} {Y Y' : C} (g : Y ⟶ Y') (f : (shrinkCoyoneda.obj X).obj Y) :
-    (shrinkCoyoneda.obj _).map g f =
-      shrinkCoyonedaObjObjEquiv.symm (shrinkCoyonedaObjObjEquiv f ≫ g) :=
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
 /-- The fibre of any presheaf `P : Cᵒᵖ ⥤ A` at `IsLocalSite.point J` is just `P` evaluated at
 the terminal object. -/
 noncomputable def IsLocalSite.pointPresheafFiberIso [LocallySmall.{w} C] [J.IsLocalSite]
