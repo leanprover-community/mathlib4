@@ -120,7 +120,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     obtain ⟨k, -, (hk : ‖∑ i : ι, (B.repr x i • ∑ i_1 : ι,
       B.repr y i_1 • B.repr (B i * B i_1)) ixy‖ ≤
       ‖(B.repr x k • ∑ j : ι, B.repr y j • B.repr (B k * B j)) ixy‖)⟩ :=
-      IsNonarchimedean.finset_image_add hna'
+      IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hna'
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
     simp only [Finsupp.coe_smul, Finsupp.coe_finsetSum, Pi.smul_apply, Finset.sum_apply,
@@ -130,7 +130,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     obtain ⟨k', hk'⟩ : ∃ (k' : ι),
         ‖∑ j : ι, B.repr y j • B.repr (B k * B j) ixy‖ ≤
           ‖B.repr y k' • B.repr (B k * B k') ixy‖ := by
-      obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add hna'
+      obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hna'
         (fun i ↦ B.repr y i • B.repr (B k * B i) ixy) (univ : Finset ι)
       exact ⟨k, hk⟩
     apply le_trans (mul_le_mul_of_nonneg_left hk' (norm_nonneg _))
@@ -153,21 +153,10 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
 theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i : ι}
     (hBi : B i = (1 : L)) (k : K) (y : L) :
     B.norm ((algebraMap K L) k * y) = B.norm ((algebraMap K L) k) * B.norm y := by
-  by_cases hk : k = 0
-  · rw [hk, map_zero, zero_mul, B.norm_zero, zero_mul]
-  · rw [norm_extends hBi]
-    obtain ⟨i, _, hi⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖B.repr y i‖)
-    obtain ⟨j, _, hj⟩ := exists_mem_eq_sup' univ_nonempty
-      (fun i ↦ ‖B.repr ((algebraMap K L) k * y) i‖)
-    have hij : ‖B.repr y i‖ = ‖B.repr y j‖ := by
-      rw [← hi]
-      apply le_antisymm _ (norm_repr_le_norm B j)
-      have hj' := Finset.le_sup' (fun i ↦ ‖B.repr ((algebraMap K L) k * y) i‖) (mem_univ i)
-      simp only [repr_smul', norm_mul, ← hi] at hj hj'
-      exact (mul_le_mul_iff_right₀ (lt_of_le_of_ne (norm_nonneg _)
-        (Ne.symm (norm_ne_zero_iff.mpr hk)))).mp (hj ▸ hj')
-    simp only [norm, hj]
-    rw [repr_smul', norm_mul, hi, hij]
+  rw [norm_extends hBi, Basis.norm, Basis.norm,
+    Finset.mul₀_sup' (norm_nonneg _) (fun j : ι ↦ ‖B.repr y j‖) univ univ_nonempty]
+  congr with j
+  rw [repr_smul', norm_mul]
 
 end Module.Basis
 

@@ -383,10 +383,10 @@ variable (hm : 0 < m) (q : Spec.T A⁰_ f)
 include hm
 
 theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
-  convert! Submodule.zero_mem q.1 using 1
+  convert Submodule.zero_mem q.1
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
     HomogeneousLocalization.val_zero]; simp_rw [map_zero, zero_pow hm.ne']
-  convert! Localization.mk_zero (S := Submonoid.powers f) _ using 1
+  exact Localization.mk_zero (S := Submonoid.powers f) _
 
 theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ carrier f_deg q := by
   revert c
@@ -442,7 +442,7 @@ theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
   q.isPrime.ne_top <|
     (Ideal.eq_top_iff_one _).mpr
       (by
-        convert! rid m
+        convert rid m
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_one,
           HomogeneousLocalization.val_mk]
         dsimp
@@ -460,7 +460,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
     (carrier.asIdeal.ne_top f_deg hm q) fun {x y} ⟨nx, hnx⟩ ⟨ny, hny⟩ hxy =>
     show (∀ _, _ ∈ _) ∨ ∀ _, _ ∈ _ by
       rw [← and_forall_ne nx, and_iff_left, ← and_forall_ne ny, and_iff_left]
-      · apply q.2.mem_or_mem; convert! hxy (nx + ny) using 1
+      · apply q.2.mem_or_mem; convert! hxy (nx + ny)
         dsimp
         simp_rw [decompose_of_mem_same 𝒜 hnx, decompose_of_mem_same 𝒜 hny,
           decompose_of_mem_same 𝒜 (SetLike.GradedMonoid.toGradedMul.mul_mem hnx hny),
@@ -469,7 +469,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
           HomogeneousLocalization.val_mul, Localization.mk_mul]
         simp only [Submonoid.mk_mul_mk, mk_eq_monoidOf_mk']
       all_goals
-        intro n hn; convert! q.1.zero_mem using 1
+        intro n hn; convert q.1.zero_mem
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
           HomogeneousLocalization.val_zero]; simp_rw [proj_apply]
         convert! mk_zero (S := Submonoid.powers f) _
@@ -742,7 +742,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
         ⟨f ^ i, SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
         (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hb' m⟩⟩,
         val_injective _ ?_⟩
-    · convert! SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
+    · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb)
       rw [← succ_nsmul', tsub_add_cancel_of_le (by lia), mul_comm, smul_eq_mul]
     · simp only [RingHom.algebraMap_toAlgebra, map_mk, GradedRingHom.id_apply, val_mul, val_mk,
         mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk, IsLocalization.mk'_eq_iff_eq]

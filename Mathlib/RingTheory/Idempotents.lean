@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 
@@ -478,6 +479,36 @@ noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem
   AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
     RingHom.prod_bijective_of_isIdempotentElem he hf hef₁ hef₂
 
+/-- One can lift a family of complete orthogonal idempotents of `R/e₀` to get one on `R`.
+
+Note that the lemma itself is stated in terms of surjections (where `T = S / I`)
+instead for syntactic generality. -/
+lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
+    (f : R →+* S) (e₀ : R) (he₀ : IsIdempotentElem e₀) (hfe₀ : RingHom.ker f = .span {e₀})
+    (e : I → S) (he : CompleteOrthogonalIdempotents e) (hef : ∀ i, e i ∈ f.range) :
+    ∃ e', CompleteOrthogonalIdempotents (Option.rec e₀ e') ∧ e = f ∘ e' := by
+  choose e' he' using hef
+  choose k hk using fun i ↦ Ideal.mem_span_singleton.mp
+      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by simp [he', (he.1.1 i).eq]))
+  refine ⟨(1 - e₀) • e', ⟨⟨Option.rec he₀ fun i ↦ ?_, ?_⟩, ?_⟩, ?_⟩
+  · rintro (_|i) (_|j) h
+    · simp at h
+    · dsimp; linear_combination - he₀.eq * e' j
+    · dsimp; linear_combination - he₀.eq * e' i
+    · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
+        (hfe₀.le (show f (e' i * e' j) = 0 by simp [he', he.1.2 (by simpa using h)]))
+      dsimp
+      rw [mul_mul_mul_comm, hk, he₀.one_sub.eq, ← mul_assoc, he₀.one_sub_mul_self, zero_mul]
+  · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
+      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.2))
+    simp only [Fintype.sum_option, Pi.smul_apply, smul_eq_mul, ← Finset.mul_sum,
+      sub_eq_iff_eq_add.mp hk]
+    linear_combination - he₀.eq * k
+  · have : f e₀ = 0 := by simpa using hfe₀.ge (Ideal.mem_span_singleton_self _)
+    aesop
+  · dsimp [IsIdempotentElem]
+    linear_combination congr($(he₀.eq) * ((e' i) ^ 2 - k i) + (1 - e₀) * $(hk i))
+
 end CommRing
 
 section corner
@@ -588,5 +619,15 @@ give rise to a direct product decomposition. -/
 def CompleteOrthogonalIdempotents.ringEquivOfComm [CommSemiring R]
     (he : CompleteOrthogonalIdempotents e) : R ≃+* Π i, (he.idem i).Corner :=
   he.ringEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
+
+lemma Ideal.mem_map_span_singleton_iff_of_isIdempotentElem
+    [CommRing R] {e r : R} (he : IsIdempotentElem e) {I : Ideal R} :
+    Ideal.Quotient.mk _ r ∈ I.map (Ideal.Quotient.mk (Ideal.span {e})) ↔ (1 - e) * r ∈ I := by
+  simp only [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective,
+    Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton]
+  refine ⟨?_, fun H ↦ ⟨_, H, by simp [sub_mul]⟩⟩
+  intro ⟨s, hs, t, hrst⟩
+  convert I.mul_mem_left (1 - e) hs using 1
+  linear_combination he.eq * t - (1 - e) * hrst
 
 end corner

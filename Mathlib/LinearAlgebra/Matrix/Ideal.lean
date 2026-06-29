@@ -261,7 +261,7 @@ theorem matrix_monotone : Monotone (matrix (R := R) n) :=
 theorem matrix_strictMono_of_nonempty [h : Nonempty n] :
     StrictMono (matrix (R := R) n) :=
   matrix_monotone n |>.strictMono_of_injective <|
-    .comp (fun _ _ => mk.inj) <| (RingCon.matrix_injective n).comp ringCon_injective
+    .comp (fun _ _ => ofRingCon.inj) <| (RingCon.matrix_injective n).comp ringCon_injective
 
 @[simp]
 theorem matrix_bot : (⊥ : TwoSidedIdeal R).matrix n = ⊥ :=
