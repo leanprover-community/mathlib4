@@ -28,6 +28,7 @@ This makes the basic API easier to set up. See `Cardinal.mk_cardinal` for a proo
 
 universe u v w
 
+set_option linter.checkUnivs false in
 open Ordinal in
 -- intended to be used with explicit universe parameters
 /-- The ordinal `univ.{u, v}` is the order type of `Ordinal.{u}` or `Cardinal.{u}`, as an element of
@@ -36,6 +37,7 @@ open Ordinal in
 def Ordinal.univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (typeLT Ordinal)
 
+set_option linter.checkUnivs false in
 open Cardinal in
 -- intended to be used with explicit universe parameters
 /-- The cardinal `univ.{u, v}` is the cardinality of `Ordinal.{u}` or `Cardinal.{u}`, as an element

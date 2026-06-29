@@ -48,6 +48,7 @@ universe w v u
 open Category Iso
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- In a bicategory, we can compose the 1-morphisms `f : a ⟶ b` and `g : b ⟶ c` to obtain
 a 1-morphism `f ≫ g : a ⟶ c`. This composition does not need to be strictly associative,
 but there is a specified associator, `α_ f g h : (f ≫ g) ≫ h ≅ f ≫ (g ≫ h)`.
