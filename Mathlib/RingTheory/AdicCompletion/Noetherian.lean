@@ -66,7 +66,7 @@ lemma tensorProduct_reesAlgebra_isNoetherian_of_fg [IsNoetherianRing (R ⧸ I)] 
   have := this.baseChange (R ⧸ I)
   exact Algebra.FiniteType.isNoetherianRing (R ⧸ I) _
 
-lemma reesAlgebra_quotient_isNoetherian [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
+lemma isNoetherianRing_reesAlgebra_quotient [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
     IsNoetherianRing ((reesAlgebra I) ⧸ I.map (algebraMap R (reesAlgebra I))) := by
   have := tensorProduct_reesAlgebra_isNoetherian_of_fg I fg
   exact isNoetherianRing_of_ringEquiv  _
@@ -217,7 +217,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     (complete : IsAdicComplete I R) : IsNoetherianRing R := by
   apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
-  have := reesAlgebra_quotient_isNoetherian I fg
+  have := isNoetherianRing_reesAlgebra_quotient I fg
   obtain ⟨ι, f, deg, coeff, fin, eq, memJ, map_eq⟩ :=
     exists_monomial_span_of_fg I J (Ideal.fg_of_isNoetherianRing _)
   have : Fintype ι := Fintype.ofFinite ι
