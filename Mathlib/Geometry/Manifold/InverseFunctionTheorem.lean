@@ -6,11 +6,7 @@ Authors: Matthew Spillman
 module
 
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
-public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-public import Mathlib.Geometry.Manifold.LocalDiffeomorph
-public import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Inverse function theorem for manifolds
