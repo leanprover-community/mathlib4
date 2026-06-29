@@ -436,6 +436,21 @@ theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ �
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
+#synth ContinuousConstSMul ℕ M₂
+#synth ContinuousConstSMul ℕ+ M₂
+#synth SMul ℕ+ (M₁ →SL[σ₁₂] M₂)
+#synth IsSMulApply ℕ+ (M₁ →SL[σ₁₂] M₂) M₁ M₂
+instance instPSMul : SMul ℕ+ (M₁ →SL[σ₁₂] M₂) where
+  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
+
+instance : IsSMulApply ℕ+ (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+  smul_apply _ _ _ := rfl
+
+@[simp, norm_cast]
+theorem toLinearMap_psmul (c : ℕ+) (f : M₁ →SL[σ₁₂] M₂) :
+    ↑(c • f) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+  rfl
+
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
@@ -450,6 +465,13 @@ instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
+  psmul n hn f := (PNat.mk n hn • f : M₁ →SL[σ₁₂] M₂)
+  psmul_one f := by
+    ext
+    simp
+  psmul_succ n f := by
+    ext
+    simp [psmul_mk_add_one]
   nsmul := (· • ·)
   nsmul_zero f := by
     ext

@@ -786,11 +786,32 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
   exact h
 
 @[to_additive (attr := continuity)]
+theorem continuous_ppow {M : Type*} [TopologicalSpace M] [Semigroup M] [ContinuousMul M] (n : ℕ+) :
+    Continuous fun a : M => a ^ n := by
+  change Continuous fun a : M => a ^ PNat.mk n _
+  rcases n with ⟨_|n, hn⟩
+  · contradiction
+  simp only [PNat.mk_coe]
+  induction n with
+  | zero => simpa using continuous_id'
+  | succ n IH =>
+    simp_rw [ppow_mk_add_one (n := n + 1)]
+    exact (IH Nat.succ_pos').mul continuous_id
+
+@[to_additive (attr := continuity)]
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
   | 0 => by simpa using continuous_const
   | k + 1 => by
     simp only [pow_succ']
     exact continuous_id.mul (continuous_pow _)
+
+instance AddSemigroup.continuousConstSMul_pnat {A} [AddSemigroup A] [TopologicalSpace A]
+    [ContinuousAdd A] : ContinuousConstSMul ℕ+ A :=
+  ⟨continuous_psmul⟩
+
+instance AddSemigroup.continuousSMul_pnat {A} [AddSemigroup A] [TopologicalSpace A]
+    [ContinuousAdd A] : ContinuousSMul ℕ+ A :=
+  ⟨continuous_prod_of_discrete_left.mpr continuous_psmul⟩
 
 instance AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousConstSMul ℕ A :=
