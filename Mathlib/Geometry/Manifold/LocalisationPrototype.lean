@@ -132,15 +132,16 @@ lemma baz (z : M) :
 
 -- missing API lemma, exercise for Christian (Merten)
 lemma mvfderiv_comp_left {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] {f : M → V}
-    {z : M₀} (φ : M₀ → M) (hφ : MDiffAt φ z) :
+    {z : M₀} (φ : M₀ → M) (hf : MDiffAt f (φ z)) (hφ : MDiffAt φ z) :
     d% (f ∘ φ) z = d% f (φ z) ∘SL (mfderiv% φ z) := by
   sorry
 
 lemma mychainrule {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-    {f : M → V} {φ : M₀ → M} {z : M₀} (hφ : MDiffAt φ z) (v : TangentSpace I₀ z) :
+    {f : M → V} {φ : M₀ → M} {z : M₀} (hf : MDiffAt f (φ z)) (hφ : MDiffAt φ z) (v : TangentSpace I₀ z) :
     d% f (φ z) (mfderiv% φ z v) = d% (f ∘ φ) z v := by
   rw [mvfderiv_comp_left (I := I)]
   · simp
+  · sorry
   · assumption
 
 -- another missing lemma, I think!
@@ -158,14 +159,47 @@ lemma mvfderiv_eq_fderiv {f : E → V} {x : E} :
   simp only [mvfderiv, mfderiv_eq_fderiv]
   rfl
 
+-- TODO: investigate why these are missing!
+attribute [simp] mdifferentiableWithinAt_univ differentiableWithinAt_univ continuousWithinAt_univ
+  mdifferentiableWithinAt_iff_differentiableWithinAt
+
+lemma mvfderivWithin_of_isOpen {f : M → V} {s : Set M} (hs : IsOpen s) {x : M} (hx : x ∈ s) :
+    d[s] f x = d% f x := by
+  simp [mvfderiv, mvfderivWithin, mfderivWithin_of_isOpen hs hx]
+
+-- we want automation to compute d% (f ∘ I), so we want a specialized version of mfderivWithin_comp
+lemma mvfderiv_comp_modelWithCorners_v2 (s : NiceSubset I) {f : E → V} {x : H} (hx : I x ∈ s.carrier)
+    (hf : DifferentiableWithinAt 𝕜 f s.carrier (I x)) :
+    d% (f ∘ I) x = (fderivWithin 𝕜 f s.carrier (I x)) ∘L (d% I x) := by
+  -- TODO fix elaborator bug in the following statement
+  have unused : mvfderiv I (f ∘ I) x = mvfderivWithin I (f ∘ I) (I ⁻¹' s.carrier) x := by
+    simp [mvfderiv, mvfderivWithin, mfderivWithin_of_isOpen s.2 hx]
+  rw [← mfderivWithin_eq_fderivWithin, ← mvfderivWithin_of_isOpen s.2 hx]
+  simp only [mvfderiv, mvfderivWithin]
+  rw [mfderivWithin_comp (I' := (𝓘(𝕜, E))) (u := s.carrier) (s := I ⁻¹' s.carrier)]
+  rotate_left
+  · simpa
+  · apply I.contMDiff.mdifferentiableWithinAt one_ne_zero
+    -- apply I.contMDiff.mdifferentiableAt one_ne_zero -- missing API lemma?
+  · simp
+  · exact s.2.uniqueMDiffWithinAt hx
+  simp only [Function.comp_apply, mfderivWithin_eq_fderivWithin]
+  rw [mfderivWithin_of_isOpen s.2 hx]
+  rfl
+
 -- should we have ModelWithCorners.isNiceSubset?
 
-lemma mvfderiv_eq_fderivWithin' (s : NiceSubset I) {f : E → V} {x : E} (hx : x ∈ s.carrier) :
-    d% f x = (fderivWithin 𝕜 f s.carrier x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
-  rw [mvfderiv_eq_fderiv]
-  rw [fderivWithin_eq_fderiv]
-  · apply s.uniqueDiffOn.uniqueDiffWithinAt hx
-  sorry -- TODO: not true in general!
+-- don't want, also false in general
+-- lemma mvfderiv_eq_fderivWithin' (s : NiceSubset I) {f : E → V} {x : E} (hx : x ∈ s.carrier) :
+--     d% f x = (fderivWithin 𝕜 f s.carrier x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
+--   -- note!
+--   have : fderivWithin 𝕜 f s.carrier x = fderivWithin 𝕜 f (range I) x := by
+--     apply fderivWithin_subset s.3 (s.uniqueDiffOn _ hx) ?_
+--     sorry -- easy or missing lemma
+--   rw [mvfderiv_eq_fderiv]
+--   rw [fderivWithin_eq_fderiv]
+--   · apply s.uniqueDiffOn.uniqueDiffWithinAt hx
+--   sorry -- TODO: not true in general!
 
 theorem Function.smul_comp {𝕜 X Y Z : Type*} [SMul 𝕜 Z] (f : Y → 𝕜) (g : Y → Z) (φ : X → Y) :
   (f • g) ∘ φ = f ∘ φ • g ∘ φ := rfl
@@ -182,9 +216,9 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
     ext v
     obtain ⟨v, rfl⟩ := hφ.surjective_mfderiv z v
     have hφ' := hφ.contMDiff.mdifferentiableAt (x := z) (by simp)
-    rw [mychainrule hφ']
+    rw [mychainrule _ hφ']; swap; · exact hf.smul hg
     simp only [add_apply, smul_apply, smulRight_apply]
-    rw [mychainrule hφ', mychainrule hφ']
+    rw [mychainrule hf hφ', mychainrule hg hφ']
     rw [Function.smul_comp, ← Function.comp_apply (f := f) (g := φ),
       ← Function.comp_apply (f := g) (g := φ)]
     have hf' : MDiffAt (f ∘ φ) z := hf.comp _ hφ'
@@ -218,6 +252,25 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
   replace hg : DifferentiableWithinAt 𝕜 g' s.carrier x' := sorry
   simp_rw [mvfderiv_restrict_apply]
   rw [← Function.smul_comp]
+  -- cleanup "unmanifoldify" tactic does all of these steps; applies this conditional simp lemma
+  -- and generates side goals as necessary
+  rw [mvfderiv_comp_modelWithCorners_v2 s (by simpa) (by simpa [s.3 hx'] using! hf.smul hg)]
+  rw [mvfderiv_comp_modelWithCorners_v2 s  (by simpa) (by simpa [s.3 hx'] using hg)]
+  rw [mvfderiv_comp_modelWithCorners_v2 s (by simpa) (by simpa [s.3 hx'])]
+
+  --set A := mfderiv I (𝓘(𝕜, E)) I (I.symm x') -- TODO: elaborators failure, fix!
+  --set B := mfderiv I I Subtype.val ⟨I.symm x', hx⟩
+  ext X
+  simp only [ContinuousLinearMap.comp_apply, add_apply, smul_apply,
+    smulRight_apply]
+  -- This is the mathematics
+  rw [fderivWithin_smul]
+  · simp
+  · exact s.uniqueDiffOn.uniqueDiffWithinAt hx -- missing API lemma!
+  · simpa [s.3 hx'] using hf
+  · simpa [s.3 hx'] using hg
+
+  /- old proof was
   -- guess: specialized to I should be simp?
   rw [mvfderiv_comp_left (I₀ := I) I I.mdifferentiableAt (z := I.symm x') (I := 𝓘(𝕜, E))]
   rw [mvfderiv_comp_left (I₀ := I) I I.mdifferentiableAt (z := I.symm x') (I := 𝓘(𝕜, E))]
@@ -230,6 +283,10 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
     simpa
   dsimp [this]
   simp only [this]
+  -- Trouble: if we rewrite by this, we cannot apply the chain rule to the fderiv
+  -- as f' and g' are only differentiable on s.
+  -- simp_rw [mvfderiv_eq_fderiv]
+  rw [mvfderiv_comp_modelWithCorners]
   simp_rw [mvfderiv_eq_fderivWithin' s (I := I) hx]
   simp only [this]
   set A := mfderiv I (𝓘(𝕜, E)) I (I.symm x') -- TODO: elaborators failure, fix!
@@ -243,5 +300,6 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
   · exact s.uniqueDiffOn.uniqueDiffWithinAt hx' -- missing API lemma!
   · exact hf
   · exact hg
+  -/
 
 end
