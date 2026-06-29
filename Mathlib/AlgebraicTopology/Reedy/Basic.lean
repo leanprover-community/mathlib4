@@ -153,7 +153,7 @@ lemma degHom_le {X Z Y : C} (f : X ⟶ Z) (g : Z ⟶ Y) :
   rw [r.degHom_eq factfg]
   exact (r.le₁ _ hh₁).trans (r.le₂ _ hf₂)
 
-lemma degHom_le_deg {X Y : C} (f : X ⟶ Y) :
+lemma degHom_le_deg_left {X Y : C} (f : X ⟶ Y) :
     r.degHom f ≤ r.deg X := by
   simpa using r.degHom_le (𝟙 X) f
 
