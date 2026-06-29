@@ -257,6 +257,9 @@ variable (R) in
 abbrev isQuasicoherent : ObjectProperty (SheafOfModules.{u} R) :=
   IsQuasicoherent
 
+instance (M : (isQuasicoherent R).FullSubcategory) : M.obj.IsQuasicoherent :=
+  M.property
+
 /-- A sheaf of modules is finitely presented if it is locally the cokernel of a
 morphism between coproducts of finitely many copies of the sheaf of rings. -/
 class IsFinitePresentation (M : SheafOfModules.{u} R) : Prop where
