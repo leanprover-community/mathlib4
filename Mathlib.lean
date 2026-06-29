@@ -925,6 +925,7 @@ public import Mathlib.Algebra.Order.Antidiag.FinsuppEquiv
 public import Mathlib.Algebra.Order.Antidiag.Nat
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Algebra.Order.Antidiag.Tendsto
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.Algebra.Order.Archimedean.Defs
@@ -6811,6 +6812,7 @@ public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.MvPowerSeries.Order
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
 public import Mathlib.RingTheory.MvPowerSeries.Rename
+public import Mathlib.RingTheory.MvPowerSeries.Restricted
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
 public import Mathlib.RingTheory.Nakayama
