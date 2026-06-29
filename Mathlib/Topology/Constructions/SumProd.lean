@@ -69,15 +69,13 @@ theorem Continuous.prod {f : X → Y × Z} (h₁ : Continuous (Prod.fst ∘ f))
 
 @[simp]
 theorem continuous_prodMk {f : X → Y} {g : X → Z} :
-    (Continuous (Function.prod f g)) ↔ Continuous f ∧ Continuous g := continuous_prod
+    (Continuous (Function.prod f g)) ↔ Continuous f ∧ Continuous g :=
+  continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
 
-@[continuity, fun_prop]
 theorem Continuous.prodMk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Function.prod f g) := by fun_prop
 
 theorem Continuous.prodMk_right (x : X) : Continuous (Prod.mk x (β := Y)) := by fun_prop
-
-
 theorem Continuous.prodMk_left (y : Y) : Continuous (Prod.mk · y (α := X)) := by fun_prop
 
 @[continuity]
@@ -692,6 +690,8 @@ theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
   toEquiv := Equiv.prodAssoc X Y Z
+  continuous_toFun := Continuous.prod (by fun_prop) (by fun_prop)
+  continuous_invFun := Continuous.prod (by fun_prop) (by fun_prop)
 
 @[simp]
 lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
@@ -699,6 +699,8 @@ lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := r
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
 def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
   toEquiv := Equiv.prodProdProdComm X Y W Z
+  continuous_toFun := Continuous.prod (by fun_prop) (by fun_prop)
+  continuous_invFun := Continuous.prod (by fun_prop) (by fun_prop)
 
 @[simp]
 theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
