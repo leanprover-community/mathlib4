@@ -70,6 +70,8 @@ section
 
 variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
 
+theorem diag_def : Function.diag = fun a : α => (a, a) := rfl
+
 @[simp, grind =] theorem diag_apply : △(a)  = (a, a) := rfl
 
 @[simp] theorem prod_id_id : Function.prod id id = Function.diag (α := α) := rfl
