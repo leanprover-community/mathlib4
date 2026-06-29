@@ -366,7 +366,7 @@ def dispatchLemma
           π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl
 
-/-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
+/-- `tryRfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
 lists: the goals containing some metavariables and the goals not containing any metavariable.
 
 If a goal containing a metavariable has the form `?_ = x`, `x = ?_`, where `?_` is a metavariable
@@ -378,12 +378,12 @@ If a goal does not contain metavariables, it tries `rfl` on it.
 It returns the list of `MVarId`s, beginning with the ones that initially involved (`Expr`)
 metavariables followed by the rest.
 -/
-def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
-  let (yesMV, noMV) := ← mvs.partitionM fun mv =>
+def tryRfl (mvs : List MVarId) : MetaM (List MVarId) := do
+  let (yesMV, noMV) ← mvs.partitionM fun mv =>
                           return hasExprMVar (← instantiateMVars (← mv.getDecl).type)
-  let tried_rfl := ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
-  let assignable := ← yesMV.mapM fun g => do
-    let tgt := ← instantiateMVars (← g.getDecl).type
+  let tried_rfl ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
+  let assignable ← yesMV.mapM fun g => do
+    let tgt ← instantiateMVars (← g.getDecl).type
     match tgt.eq? with
       | some (_, lhs, rhs) =>
         if (isMVar rhs && (! hasExprMVar lhs)) ||
@@ -393,6 +393,8 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
       | none =>
         return [g]
   return (assignable.flatten ++ tried_rfl.flatten)
+
+@[deprecated (since := "2026-05-27")] alias try_rfl := tryRfl
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
@@ -405,9 +407,9 @@ lemma and returns two lists: the left-over goals of all the applications, follow
 concatenation of the previous `static` list, followed by the newly discovered goals outside of the
 scope of `compute_degree`. -/
 def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId)) := do
-  let (can_progress, curr_static) := ← mvs.partitionM fun mv => do
+  let (can_progress, curr_static) ← mvs.partitionM fun mv => do
     return dispatchLemma (twoHeadsArgs (← mv.getType'')) != ``id
-  let progress := ← can_progress.mapM fun mv => do
+  let progress ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
     mv.applyConst <| lem
   return (progress.flatten, static ++ curr_static)
@@ -487,7 +489,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
         f!"'compute_degree' first applies lemma '{lem.lastComponentAsString}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       while gls != [] do (gls, static) ← splitApply gls static
-      let rfled ← try_rfl static
+      let rfled ← tryRfl static
       setGoals rfled
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`

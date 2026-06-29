@@ -8,7 +8,8 @@ module
 public meta import Mathlib.Lean.Expr.Rat
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.NormNum.Result
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
+public import Lean.Elab.Tactic.Try
 
 /-!
 ## `norm_num` core functionality
@@ -150,7 +151,7 @@ and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`
 def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :
     MetaM ((b : Bool) × BoolResult p' b) := do
   let ⟨b, pb⟩ ← deriveBool p
-  match b with
+  match (dependent := true) b with
   | true  => return ⟨true, q(Iff.mp $hp $pb)⟩
   | false => return ⟨false, q((Iff.not $hp).mp $pb)⟩
 

@@ -31,6 +31,19 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 @[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
+section DComp
+
+variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
+    (g : ∀ i, β i) (i : ι)
+
+theorem dcomp_def : @f ∘' g = fun i => f (g i) := rfl
+
+theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
+
+@[simp] theorem dcomp_eq_comp {α β γ} (f : β → γ) (g : α → β) : f ∘' g = f ∘ g := rfl
+
+end DComp
+
 /-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
 `g i` may depend on `i`. -/
 protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :

@@ -101,7 +101,7 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
   induction s using Quot.inductionOn with | _ a
   obtain ⟨l, hl, hd⟩ := hs
   suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
-    convert List.support_sum_eq a this
+    convert! List.support_sum_eq a this
     simp only [quot_mk_to_coe'', map_coe, sup_coe,
       Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
   simp only [Multiset.quot_mk_to_coe'', Multiset.coe_eq_coe] at hl
@@ -118,7 +118,5 @@ theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
     refine ⟨s.toList, ?_, Finset.nodup_toList _⟩
     simp
   subst hl
-  rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff_pairwise, ←
-    List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]
-  intro x y hxy
-  exact symmetric_disjoint hxy
+  rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff_pairwise,
+    ← List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]

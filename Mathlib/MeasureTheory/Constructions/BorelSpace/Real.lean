@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.MeasurableSpace.Prod
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
@@ -356,7 +356,6 @@ theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0�
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `Measurable.tsum'` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -365,7 +364,6 @@ theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0�
   convert! Measurable.ennreal_tsum h with x
   exact tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -382,7 +380,6 @@ theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -506,25 +503,11 @@ lemma measurable_of_real_real {f : EReal × EReal → β}
   · exact measurable_of_measurable_real h_top_left
 
 private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ c * x := by
-  refine measurable_of_measurable_real ?_
-  have h1 : (fun (p : ℝ) ↦ (⊥ : EReal) * p)
-      = fun p ↦ if p = 0 then (0 : EReal) else (if p < 0 then ⊤ else ⊥) := by
-    ext p
-    split_ifs with h1 h2
-    · simp [h1]
-    · rw [bot_mul_coe_of_neg h2]
-    · rw [bot_mul_coe_of_pos]
-      exact lt_of_le_of_ne (not_lt.mp h2) (Ne.symm h1)
-  have h2 : Measurable fun (p : ℝ) ↦ if p = 0 then (0 : EReal) else if p < 0 then ⊤ else ⊥ := by
-    refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
-    exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
-  induction c with
-  | bot => rwa [h1]
-  | coe c => exact (measurable_id.const_mul _).coe_real_ereal
-  | top =>
-    simp_rw [← neg_bot, neg_mul]
-    apply Measurable.neg
-    rwa [h1]
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  · refine measurable_of_continuousOn_compl_singleton 0 fun x (hx : x ≠ 0) ↦ ?_
+    exact (continuousAt_mul (Or.inl hc) (Or.inl hc) (Or.inr hx) (Or.inr hx)).comp_of_eq
+      (continuousAt_const.prodMk continuousAt_id) rfl |>.continuousWithinAt
 
 instance : MeasurableMul₂ EReal := by
   refine ⟨measurable_of_real_real ?_ ?_ ?_ ?_ ?_⟩
@@ -590,7 +573,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
   intro s hs
   simpa using mem_of_mem_nhds hs
 
-lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
+lemma tendsto_measure_Icc [NullSingletonClass μ] (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
   rw [← nhdsLT_sup_nhdsGE, tendsto_sup]
   constructor

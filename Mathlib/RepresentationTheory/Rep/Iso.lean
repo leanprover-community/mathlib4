@@ -83,7 +83,6 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
   · intro r g w
     simp only [map_smul, w, LinearMap.smul_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `toModuleMonoidAlgebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
     ModuleCat.of k[G] V.ρ.asModule ⟶ ModuleCat.of k[G] W.ρ.asModule :=
@@ -92,7 +91,6 @@ def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
       map_smul' := fun r x => to_Module_monoidAlgebra_map_aux V.V W.V V.ρ W.ρ
         f.hom.toLinearMap f.hom.2 r x }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functorially convert a representation of `G` into a module over `k[G]`. -/
 def toModuleMonoidAlgebra : Rep.{w} k G ⥤ ModuleCat k[G] where
   obj V := ModuleCat.of _ V.ρ.asModule
@@ -196,7 +194,6 @@ variable {k G : Type u} [CommRing k] [Monoid G] in
 instance : CategoryTheory.EnoughProjectives (Rep.{max w u} k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives.{max w u}
 
-set_option backward.isDefEq.respectTransparency false in
 instance free_projective {α : Type (max w u)} :
     Projective (free k G α) :=
   equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
