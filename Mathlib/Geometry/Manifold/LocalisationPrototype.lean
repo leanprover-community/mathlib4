@@ -121,9 +121,25 @@ lemma mvfderiv_restrict_apply {V : Type*} [NormedAddCommGroup V] [NormedSpace �
 
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
+-- is this false?
 lemma mvfderiv_eq_fderiv {f : E → V} {x : E} :
-  d% f x = (fderiv 𝕜 f x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
+    d% f x = (fderiv 𝕜 f x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
   sorry
+
+-- is this true?
+lemma mvfderiv_eq_fderivWithin {f : E → V} {x : E} :
+    d% f x = (fderivWithin 𝕜 f (range I) x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
+  sorry
+
+-- should we have ModelWithCorners.isNiceSubset?
+lemma mvfderiv_eq_fderivWithin' (s : NiceSubset I) {f : E → V} {x : E} :
+    d% f x = (fderivWithin 𝕜 f s.carrier x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
+  sorry
+
+theorem Function.smul_comp {𝕜 X Y Z : Type*} [SMul 𝕜 Z] (f : Y → 𝕜) (g : Y → Z) (φ : X → Y) :
+  (f • g) ∘ φ = f ∘ φ • g ∘ φ := rfl
+
+#click_suggestions
 
 open Function
 lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
@@ -140,11 +156,12 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
     rw [mychainrule hφ']
     simp only [add_apply, smul_apply, smulRight_apply]
     rw [mychainrule hφ', mychainrule hφ']
-    -- one more lemma about commuting smul and composition,
-    -- then should be the chain rule for d% again
-    -- rw [Function.smul_comp]
-      --change (d% ((f ∘ φ) • (g ∘ φ)) hz) v = f (φ hz) • (d% (g ∘ φ) hz) v + (d% (f ∘ φ) hz) v • g (φ hz) -- lemma: commute smul and comp
-    sorry
+    rw [Function.smul_comp, ← Function.comp_apply (f := f) (g := φ),
+      ← Function.comp_apply (f := g) (g := φ)]
+    have hf' : MDiffAt (f ∘ φ) z := hf.comp _ hφ'
+    have hg' : MDiffAt (g ∘ φ) z := hg.comp _ hφ'
+    specialize this hf' hg' ⟨_, .refl⟩
+    exact congr($this v)
   obtain ⟨s, ⟨⟩⟩ := h
   clear! M
   have : ∃ f' : E → 𝕜, Set.restrict (niceSubsetEquiv s) (f' ∘ I) = f := by
@@ -163,24 +180,43 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
   have : ∃ x' : E, x' ∈ s.carrier ∧ I.symm x' = x :=
     ⟨I x, by simpa [niceSubsetEquiv] using hx, I.left_inv' (by simp)⟩
   obtain ⟨x', hx', rfl⟩ := this
+  -- ideally, everything is `simp` now!
   rw [restrict_smul]
   -- mdiff lemmas, like yesterday
   -- missing mathlib lemmas: relate MDiff terms to normed space world
   -- should be global simp lemmas or a simp set
   replace hf : DifferentiableWithinAt 𝕜 f' s.carrier x' := sorry
   replace hg : DifferentiableWithinAt 𝕜 g' s.carrier x' := sorry
-  -- xxx doesn't apply! rw [mvfderiv_eq_fderiv]
   simp_rw [mvfderiv_restrict_apply]
-  dsimp
+  rw [← Function.smul_comp]
+  -- guess: specialized to I should be simp?
+  rw [mvfderiv_comp_left (I₀ := I) I I.mdifferentiableAt (z := I.symm x') (I := 𝓘(𝕜, E))]
+  rw [mvfderiv_comp_left (I₀ := I) I I.mdifferentiableAt (z := I.symm x') (I := 𝓘(𝕜, E))]
+  rw [mvfderiv_comp_left (I₀ := I) I I.mdifferentiableAt (z := I.symm x') (I := 𝓘(𝕜, E))]
   have : I (I.symm x') = x' := by
     rw [← Function.comp_apply (f := I) (g := I.symm)]
     apply I.right_inv'
     grw [s.foo] at hx'
     rw [← I.range_eq_target]
     simpa
-  rw [this]
+  dsimp [this]
+  simp only [this]
+  simp_rw [mvfderiv_eq_fderivWithin' s (I := I)]
+  simp only [this]
+  set A := mfderiv I (𝓘(𝕜, E)) I (I.symm x') -- TODO: elaborators failure, fix!
+  set B := mfderiv I I Subtype.val ⟨I.symm x', hx⟩
   ext X
-  dsimp
-  sorry
+  simp only [ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe, add_apply, smul_apply,
+    smulRight_apply]
+  -- This is the mathematics
+  rw [fderivWithin_smul]
+  · simp
+  · apply UniqueDiffWithinAt.mono
+    apply
+
+  · apply hf.mono
+    sorry
+
+  sorry -- analogous
 
 end
