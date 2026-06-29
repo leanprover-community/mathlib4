@@ -218,14 +218,14 @@ theorem sym_ne_one_iff [One α] (a : α) : sym a ≠ (1 : αˢʸᵐ) ↔ a ≠ (
   not_congr <| sym_eq_one_iff a
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αˢʸᵐ :=
-  unsym_injective.addCommSemigroup _ unsym_add
+  unsym_injective.addCommSemigroup _ unsym_add (fun _ _ => rfl)
 
 instance addMonoid [AddMonoid α] : AddMonoid αˢʸᵐ :=
-  unsym_injective.addMonoid _ unsym_zero unsym_add fun _ _ => rfl
+  unsym_injective.addMonoid _ unsym_zero unsym_add (fun _ _ => rfl) fun _ _ => rfl
 
 instance addGroup [AddGroup α] : AddGroup αˢʸᵐ :=
-  unsym_injective.addGroup _ unsym_zero unsym_add unsym_neg unsym_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+  unsym_injective.addGroup _ unsym_zero unsym_add unsym_neg unsym_sub (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αˢʸᵐ :=
   { SymAlg.addCommSemigroup, SymAlg.addMonoid with }
