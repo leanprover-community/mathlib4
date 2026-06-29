@@ -54,8 +54,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.id`: the identity map is an immersion
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
-* `IsImmersion.sumInl` and `IsImmersion.sumInr`: given `C^n` manifolds `M` and `N`,
-  `Sum.inl : M → M ⊕ N` and `Sum.inr : N → M ⊕ N` are `C^n` immersions
+* `IsImmersionOfComplement.sumInl` and `IsImmersionOfComplement.sumInr`: given `C^n` manifolds
+  `M` and `N`, `Sum.inl : M → M ⊕ N` and `Sum.inr : N → M ⊕ N` are `C^n` immersions
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
   in the sense of `ContMDiff`.
