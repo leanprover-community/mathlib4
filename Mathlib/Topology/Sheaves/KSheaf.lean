@@ -65,7 +65,7 @@ neighbourhood of K -/
 def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
     Cocone ((Subtype.mono_coe K.compactNhds).functor.op ⋙ P) where
   pt := P.obj (op K)
-  ι.app K' := P.map (homOfLE (Compacts.subset_of_mem_compactNhds K'.unop.prop)).op
+  ι.app K' := P.map <| opHomOfLE (Compacts.subset_of_mem_compactNhds K'.unop.prop)
   ι.naturality _ _ _ := by
     dsimp
     rw [← P.map_comp, Category.comp_id]
@@ -106,8 +106,8 @@ limit condition. -/
 structure IsKSheaf (P : KPresheaf A X) : Prop where
   nonempty_isTerminal : Nonempty (IsTerminal (P.obj (op ⊥)))
   isPullback {K₁ K₂ K₃ K₄ : Compacts X} (h : Lattice.BicartSq K₁ K₂ K₃ K₄) :
-    IsPullback (P.map ((homOfLE h.le₂₄).op)) (P.map ((homOfLE h.le₃₄).op))
-      (P.map ((homOfLE h.le₁₂).op)) (P.map ((homOfLE h.le₁₃).op))
+    IsPullback (P.map <| opHomOfLE h.le₂₄) (P.map <| opHomOfLE h.le₃₄)
+      (P.map <| opHomOfLE h.le₁₂) (P.map <| opHomOfLE h.le₁₃)
   nonempty_isColimit_coconeOfCompacts (K : Compacts X) :
       Nonempty (IsColimit (P.coconeOfCompacts K))
 
