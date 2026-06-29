@@ -706,9 +706,23 @@ lemma eventually_nhdsWithin_support_specializes_of_mem
   refine fun hxp hxf ↦ mem_iInter₂.mp hxS x ⟨⟨hxt, hxf⟩, hxp⟩ ?_
   grind [subset_closure]
 
+lemma nhdsWithin_support_of_mem [Zero Y] (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
+    𝓝[f.support] p = 𝓟 ({x | x ⤳ p} ∩ f.support) := by
+  apply le_antisymm
+  · simpa using ⟨eventually_nhdsWithin_support_specializes_of_mem f p hp, self_mem_nhdsWithin⟩
+  · rw [← inf_principal, nhdsWithin]
+    gcongr
+    rw [Filter.principal_le_iff]
+    exact fun s hs x hx ↦ mem_of_mem_nhds (hx hs)
+
 lemma _root_.Function.locallyFinsupp.eventually_nhdsWithin_support_specializes
     [Zero Y] (f : locallyFinsupp X Y) (p : X) :
     ∀ᶠ x in 𝓝[f.support] p, x ⤳ p :=
   eventually_nhdsWithin_support_specializes_of_mem f p <| mem_univ _
+
+lemma _root_.Function.locallyFinsupp.nhdsWithin_support
+    [Zero Y] (f : locallyFinsupp X Y) (p : X) :
+    𝓝[f.support] p = 𝓟 ({x | x ⤳ p} ∩ f.support) :=
+  nhdsWithin_support_of_mem f p (mem_univ _)
 
 end Function.locallyFinsuppWithin
