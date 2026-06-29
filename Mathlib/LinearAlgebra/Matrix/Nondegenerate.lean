@@ -114,8 +114,7 @@ alias ⟨_, SeparatingLeft.separatingRight_transpose⟩ := separatingRight_trans
 
 @[simp]
 theorem nondegenerate_transpose_iff [Finite m] [Finite n] : Mᵀ.Nondegenerate ↔ M.Nondegenerate := by
-  rw [nondegenerate_iff, nondegenerate_iff, separatingLeft_transpose_iff,
-    separatingRight_transpose_iff, and_comm]
+  simp [nondegenerate_iff, and_comm]
 
 alias ⟨_, Nondegenerate.transpose⟩ := nondegenerate_transpose_iff
 
