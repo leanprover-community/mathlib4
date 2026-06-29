@@ -122,14 +122,13 @@ def niceSubsetEquiv : NiceSubset I ≃ Opens H where
     simpa [I.image_preimage] using t.foo
   right_inv s := by ext; simp [NiceSubset.open, I.preimage_image]
 
-lemma restrict_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-  {f : M → 𝕜} {g : M → V} (U : Set M) :
-  (Set.restrict U f • Set.restrict U g) = U.restrict (f • g) := sorry
+lemma restrict_smul {X Y R : Type*} [SMul R Y] {f : X → R} {g : X → Y} (U : Set X) :
+    (Set.restrict U f • Set.restrict U g) = U.restrict (f • g) := by
+  ext x
+  simp
 
-lemma restrict_smul_apply
-  {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-  {f : M → 𝕜} {g : M → V} (U : Set M) {x : U} :
-  (Set.restrict U f • Set.restrict U g) x = U.restrict (f • g) x := sorry
+lemma restrict_smul_apply {X Y R : Type*} [SMul R Y] {f : X → R} {g : X → Y} (U : Set X) {x : U} :
+    (Set.restrict U f • Set.restrict U g) x = U.restrict (f • g) x := by simp
 
 open scoped ContDiff
 variable {n : ℕ∞ω}
@@ -145,24 +144,35 @@ lemma baz (z : M) :
   · sorry
   simpa using ⟨φ z, mem_chart_target H z, φ.left_inv <| mem_chart_source H z⟩
 
--- missing API lemma, exercise for Christian (Merten)
 lemma mvfderiv_comp_left {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] {f : M → V}
     {z : M₀} (φ : M₀ → M) (hf : MDiffAt f (φ z)) (hφ : MDiffAt φ z) :
     d% (f ∘ φ) z = d% f (φ z) ∘SL (mfderiv% φ z) := by
-  sorry
+  simp only [mvfderiv, Function.comp_apply, mfderiv_comp _ hf hφ]
+  rfl
 
 lemma mychainrule {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
     {f : M → V} {φ : M₀ → M} {z : M₀} (hf : MDiffAt f (φ z)) (hφ : MDiffAt φ z) (v : TangentSpace I₀ z) :
     d% f (φ z) (mfderiv% φ z v) = d% (f ∘ φ) z v := by
-  rw [mvfderiv_comp_left (I := I) _ hf hφ]
-  simp
+  simp [mvfderiv_comp_left (I := I) _ hf hφ]
 
 -- another missing lemma, I think!
 lemma mvfderiv_restrict_apply {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
     {f' : M → V} {U : Opens M} {x : M} (hx : x ∈ U) :
     d% (Set.restrict U f' : U → V) ⟨x, hx⟩ =
       d% f' x ∘SL (mfderiv% (Subtype.val : U → _) ⟨x, hx⟩):= by
-  sorry
+  by_cases hf : MDiffAt f' x; swap
+  · simp only [mvfderiv]
+    rw [mfderiv_zero_of_not_mdifferentiableAt hf]
+    simp
+    sorry
+  simp only [mvfderiv, Set.restrict_apply]
+  have aux : U.carrier.restrict f' = f' ∘ (Subtype.val : U → M) := by ext; simp
+  erw [aux]
+  rw [mfderiv_comp (I' := I)]
+  · simp
+    rfl
+  · simpa
+  · apply contMDiff_subtype_val.mdifferentiableAt one_ne_zero -- XXX: mdifferentiable_subtype_val
 
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
