@@ -101,4 +101,3 @@ noncomputable def continuousCohomologyZeroIso :
   rfl
 
 end ContinuousCohomology
-#lint
