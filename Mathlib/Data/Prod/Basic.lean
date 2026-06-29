@@ -44,14 +44,6 @@ theorem forall' {p : α → β → Prop} : (∀ x : α × β, p x.1 x.2) ↔ ∀
 theorem exists' {p : α → β → Prop} : (∃ x : α × β, p x.1 x.2) ↔ ∃ a b, p a b :=
   Prod.exists
 
-@[simp]
-theorem snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :=
-  rfl
-
-@[simp]
-theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
-  rfl
-
 attribute [mfld_simps] map_apply
 
 -- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.
