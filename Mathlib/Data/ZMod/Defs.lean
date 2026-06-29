@@ -132,9 +132,6 @@ attribute [scoped instance] Fin.instCommRing
 
 end CommRing
 
-instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) where
-  out := by apply ne_of_val_ne; simp [NeZero.out]
-
 end Fin
 
 /-- The integers modulo `n : ℕ`. -/
