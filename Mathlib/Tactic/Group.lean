@@ -182,13 +182,13 @@ macro_rules
       simp -decide -failIfUnchanged only [_move_mul_right_neg] $[$loc]?)
   -- tactic block for applying cancellation on the *left*
   let leftCancelAux₁ ← `(tactic |
-    simp -decide -failIfUnchanged only [↓mul_assoc, _mul_left_cancel_aux₁, _mul_left_cancel_aux₂,
+    simp -decide -failIfUnchanged only [mul_assoc, _mul_left_cancel_aux₁, _mul_left_cancel_aux₂,
     _mul_left_cancel_aux₃, _mul_left_cancel_aux₄, _mul_left_cancel_aux₅,
     _mul_left_cancel_aux₆, _mul_left_cancel_aux₇, _mul_left_cancel_aux₈] $[$loc]?)
   let leftCancelAux₂ ← `(tactic | simp -decide -failIfUnchanged only [_move_mul_left_neg] $[$loc]?)
   -- post-processing tactic for cleaning up expressions of the form ( · )^(-1) to ( · )⁻¹
   let cleanUpTac ← `(tactic |
-    simp -decide -failIfUnchanged only [zpow_neg _ 1, zpow_one, ↓← mul_assoc] $[$loc]?)
+    simp -decide -failIfUnchanged only [zpow_neg _ 1, zpow_one, ← mul_assoc] $[$loc]?)
   -- normalise the expression, apply left and right cancellation and then clean up the expression
   -- after the simplifying the expression
   `(tactic| first
