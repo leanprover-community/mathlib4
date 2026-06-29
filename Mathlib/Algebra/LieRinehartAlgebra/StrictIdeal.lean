@@ -30,7 +30,7 @@ which is a Lie ideal with respect to the Lie bracket and acts trivially on `A`. 
 structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module A L]
     [LieRingModule L A] extends Submodule A L where
   ideal' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier
-  isotrpic (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0
+  isotropic (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0
 
 namespace StrictLieRinehartIdeal
 
@@ -178,7 +178,8 @@ end LieModule
 /-- A Lie-Rinehart ideal forms a new Lie-Rinehart algebra. -/
 instance {s : StrictLieRinehartIdeal A L} : LieRinehartAlgebra R A s where
 
-open LieRinehartAlgebra in
+open scoped LieRinehartAlgebra
+
 variable (R) in
 /-- The embedding of a Lie-Rinehart ideal into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
@@ -191,5 +192,47 @@ def incl {s : StrictLieRinehartIdeal A L} : s →ₗ⁅(AlgHom.id R A)⁆ L wher
 @[simp]
 theorem coe_incl {s : StrictLieRinehartIdeal A L} : ⇑(s.incl R) = ((↑) : s → L) := rfl
 
+variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ A] [LieAlgebra R L₁]
+  [LieRing L₂] [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂]
+
+def comap (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
+    StrictLieRinehartIdeal A L₁ := {
+  s₂.toSubmodule.comap (f.toLinearMap') with
+  ideal' {x y} h := by
+    change f.toLinearMap' ⁅x, y⁆ ∈ s₂-- for some reason using simp to get here yields an
+                                     -- identically looking expression on which the next rw
+                                     -- can not be applied
+    rw [LieRinehartAlgebra.Hom.toLinearMap'_apply, LieHom.map_lie]
+    change f.toLinearMap' x ∈ s₂ at h
+    rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
+    exact s₂.ideal' h
+  isotropic x a h := by
+    change f.toLinearMap' x ∈ s₂ at h
+    rw [LieRinehartAlgebra.Hom.toLinearMap'_apply,] at h
+    have h2 := f.apply_lie' a x
+    simp only [AlgHom.coe_id, id_eq] at h2
+    rw [h2]
+    exact s₂.isotropic (f x) a h
+}
+
+
 end StrictLieRinehartIdeal
+
+namespace LieRinehartAlgebra
+namespace Hom
+
+variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRing L₁] [Module A L₁]
+  [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
+  [LieAlgebra R L₂] (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂)
+
+def ker : StrictLieRinehartIdeal A L₁ :=
+  StrictLieRinehartIdeal.comap f 0
+
+@[simp]
+theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := Iff.rfl
+
+end Hom
+end LieRinehartAlgebra
+
+
 end
