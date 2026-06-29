@@ -127,6 +127,7 @@ the intermediate object in the Reedy factorization, but it is also the smallest
 degree of an intermediate object in a factorization, see the lemma `degHom_le`. -/
 @[no_expose]
 noncomputable def degHom {X Y : C} (f : X ⟶ Y) : α := r.deg (r.mapFactorizationData f).Z
+
 lemma degHom_eq {X Y : C} {f : X ⟶ Y} (h : W₁.MapFactorizationData W₂ f) :
     r.degHom f = r.deg h.Z := by
   have := r.subsingleton_mapFactorizationData
