@@ -589,14 +589,14 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
     ∃ v ∈ 𝓝[insert x₀ s] x₀, v ⊆ insert x₀ s ∧ ∃ f' : E → F →L[𝕜] G,
       (∀ x ∈ v, HasFDerivWithinAt (f x) (f' x) t (g x)) ∧
         ContDiffWithinAt 𝕜 n (fun x => f' x) s x₀ := by
-  have hst : insert x₀ s ×ˢ t ∈ 𝓝[(fun x => (x, g x)) '' s] (x₀, g x₀) := by
+  have hst : insert x₀ s ×ˢ t ∈ 𝓝[(Function.prod id g) '' s] (x₀, g x₀) := by
     refine nhdsWithin_mono _ ?_ (nhdsWithin_prod self_mem_nhdsWithin hgt)
     simp_rw [image_subset_iff, mk_preimage_prod, preimage_id', subset_inter_iff, subset_insert,
       true_and, subset_preimage_image]
   obtain ⟨v, hv, hvs, f_an, f', hvf', hf'⟩ :=
     (contDiffWithinAt_succ_iff_hasFDerivWithinAt' hn).mp hf
   refine
-    ⟨(fun z => (z, g z)) ⁻¹' v ∩ insert x₀ s, ?_, inter_subset_right, fun z =>
+    ⟨(Function.prod id g) ⁻¹' v ∩ insert x₀ s, ?_, inter_subset_right, fun z =>
       (f' (z, g z)).comp (ContinuousLinearMap.inr 𝕜 E F), ?_, ?_⟩
   · refine inter_mem ?_ self_mem_nhdsWithin
     have := mem_of_mem_nhdsWithin (mem_insert _ _) hv

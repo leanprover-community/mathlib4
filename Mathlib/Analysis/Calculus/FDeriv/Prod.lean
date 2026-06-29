@@ -51,23 +51,23 @@ variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 
 theorem HasFDerivAtFilter.prodMk (hf₁ : HasFDerivAtFilter f₁ f₁' L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' L) :
-    HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') L :=
+    HasFDerivAtFilter (Function.prod f₁ f₂) (f₁'.prod f₂') L :=
   .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 
 protected theorem HasStrictFDerivAt.prodMk (hf₁ : HasStrictFDerivAt f₁ f₁' x)
     (hf₂ : HasStrictFDerivAt f₂ f₂' x) :
-    HasStrictFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
+    HasStrictFDerivAt (Function.prod f₁ f₂) (f₁'.prod f₂') x :=
   HasFDerivAtFilter.prodMk hf₁ hf₂
 
 @[fun_prop]
 nonrec theorem HasFDerivWithinAt.prodMk (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasFDerivWithinAt f₂ f₂' s x) :
-    HasFDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') s x :=
+    HasFDerivWithinAt (Function.prod f₁ f₂) (f₁'.prod f₂') s x :=
   hf₁.prodMk hf₂
 
 @[fun_prop]
 nonrec theorem HasFDerivAt.prodMk (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
-    HasFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
+    HasFDerivAt (Function.prod f₁ f₂) (f₁'.prod f₂') x :=
   hf₁.prodMk hf₂
 
 @[fun_prop]

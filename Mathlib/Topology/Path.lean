@@ -470,7 +470,7 @@ protected def prod (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) : Path (a�
 
 @[simp, grind =]
 theorem prod_coe (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) :
-    ⇑(γ₁.prod γ₂) = fun t => (γ₁ t, γ₂ t) :=
+    ⇑(γ₁.prod γ₂) = Function.prod γ₁ γ₂ :=
   rfl
 
 /-- Path composition commutes with products -/

@@ -346,7 +346,7 @@ then `X'` and `Y'` are independent. -/
 lemma indepFun_of_identDistrib_pair
     {μ : Measure γ} {μ' : Measure δ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']
     {X : γ → α} {X' : δ → α} {Y : γ → β} {Y' : δ → β} (h_indep : X ⟂ᵢ[μ] Y)
-    (h_ident : IdentDistrib (fun ω ↦ (X ω, Y ω)) (fun ω ↦ (X' ω, Y' ω)) μ μ') :
+    (h_ident : IdentDistrib (Function.prod X Y) (Function.prod X' Y') μ μ') :
     X' ⟂ᵢ[μ'] Y' := by
   rw [indepFun_iff_map_prod_eq_prod_map_map, ← h_ident.map_eq, h_indep.map_prod_eq_prod_map_map]
   · exact congr (congrArg Measure.prod <| (h_ident.comp measurable_fst).map_eq)

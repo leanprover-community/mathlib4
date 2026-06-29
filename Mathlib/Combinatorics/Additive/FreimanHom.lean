@@ -391,7 +391,7 @@ variable {α β₁ β₂ : Type*} [CommMonoid α] [CommMonoid β₁] [CommMonoid
 
 @[to_additive prodMk]
 lemma IsMulFreimanHom.prodMk (h₁ : IsMulFreimanHom n A B₁ f₁) (h₂ : IsMulFreimanHom n A B₂ f₂) :
-    IsMulFreimanHom n A (B₁ ×ˢ B₂) (fun x => (f₁ x, f₂ x)) where
+    IsMulFreimanHom n A (B₁ ×ˢ B₂) (Function.prod f₁ f₂) where
   mapsTo := fun x hx => mk_mem_prod (h₁.mapsTo hx) (h₂.mapsTo hx)
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     simp [Prod.ext_iff, fst_prod, snd_prod,

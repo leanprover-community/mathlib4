@@ -987,7 +987,7 @@ instance {l : Filter α} :
   trans := EventuallyEq.trans
 
 theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
-    (fun x => (f x, g x)) =ᶠ[l] fun x => (f' x, g' x) :=
+    (Function.prod f g) =ᶠ[l] (Function.prod f' g') :=
   hf.mp <|
     hg.mono <| by
       intros

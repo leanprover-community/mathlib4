@@ -167,7 +167,7 @@ theorem MDifferentiableWithinAt.clm_comp
     MDiffAt[s] (fun x ↦ (g x).comp (f x)) x :=
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₁) => x.1.comp x.2)
-    (f := fun x => (g x, f x)) (differentiable_fst.clm_comp differentiable_snd)
+    (f := Function.prod g f) (differentiable_fst.clm_comp differentiable_snd)
     (hg.prodMk_space hf)
 
 theorem MDifferentiableAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {x : M}
@@ -246,14 +246,14 @@ theorem MDifferentiableWithinAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f 
     MDiffAt[s] (fun x ↦ (g x).prodMap (f x)) x :=
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₄) => x.1.prodMap x.2)
-    (f := fun x => (g x, f x)) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).differentiable
+    (f := Function.prod g f) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).differentiable
     (hg.prodMk_space hf)
 
 nonrec theorem MDifferentiableAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {x : M}
     (hg : MDiffAt g x) (hf : MDiffAt f x) : MDiffAt (fun x ↦ (g x).prodMap (f x)) x :=
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₄) => x.1.prodMap x.2)
-    (f := fun x => (g x, f x)) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).differentiable
+    (f := Function.prod g f) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).differentiable
     (hg.prodMk_space hf)
 
 theorem MDifferentiableOn.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {s : Set M}

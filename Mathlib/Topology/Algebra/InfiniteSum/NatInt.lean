@@ -246,7 +246,7 @@ summability assumption on `f`, as otherwise all such sums are zero. -/]
 theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
     Tendsto (fun i ↦ ∏' k, f (k + i)) atTop (𝓝 1) := by
   by_cases hf : Multipliable f
-  · have h₀ : (fun i ↦ (∏' i, f i) / ∏ j ∈ range i, f j) = fun i ↦ ∏' k : ℕ, f (k + i) := by
+  · have h₀ : (Function.prod ∏' f / ∏ j ∈ range i, f j) = fun i ↦ ∏' k : ℕ, f (k + i) := by
       ext1 i
       rw [div_eq_iff_eq_mul, mul_comm, hf.prod_mul_tprod_nat_add i]
     have h₁ : Tendsto (fun _ : ℕ ↦ ∏' i, f i) atTop (𝓝 (∏' i, f i)) := tendsto_const_nhds

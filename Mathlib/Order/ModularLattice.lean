@@ -206,7 +206,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
     WellFoundedLT α :=
-  StrictMono.wellFoundedLT (f := fun A ↦ (f₂ A, g₂ A)) fun A B hAB ↦ by
+  StrictMono.wellFoundedLT (f := Function.prod f₂ g₂) fun A B hAB ↦ by
     simp only [Prod.le_def, lt_iff_le_not_ge, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg]
     exact strictMono_inf_prod_sup hAB
 

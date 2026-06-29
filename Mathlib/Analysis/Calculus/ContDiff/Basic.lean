@@ -523,7 +523,7 @@ product of `f` and `g` admits the Cartesian product of `p` and `q` as a Taylor s
 theorem HasFTaylorSeriesUpToOn.prodMk {n : ℕ∞ω}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
-    HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
+    HasFTaylorSeriesUpToOn n (Function.prod f g) (fun y k => (p y k).prod (q y k)) s := by
   set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun _ : Fin m => E) F G
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
@@ -575,7 +575,7 @@ theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg
 
 theorem iteratedFDerivWithin_prodMk {f : E → F} {g : E → G} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) (hs : UniqueDiffOn 𝕜 s) (ha : x ∈ s) {i : ℕ} (hi : i ≤ n) :
-    iteratedFDerivWithin 𝕜 i (fun x ↦ (f x, g x)) s x =
+    iteratedFDerivWithin 𝕜 i (Function.prod f g) s x =
       (iteratedFDerivWithin 𝕜 i f s x).prod (iteratedFDerivWithin 𝕜 i g s x) := by
   ext <;>
   · rw [← ContinuousLinearMap.iteratedFDerivWithin_comp_left _ (hf.prodMk hg) hs ha hi]
@@ -583,7 +583,7 @@ theorem iteratedFDerivWithin_prodMk {f : E → F} {g : E → G} (hf : ContDiffWi
 
 theorem iteratedFDeriv_prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) {i : ℕ} (hi : i ≤ n) :
-    iteratedFDeriv 𝕜 i (fun x ↦ (f x, g x)) x =
+    iteratedFDeriv 𝕜 i (Function.prod f g) x =
       (iteratedFDeriv 𝕜 i f x).prod (iteratedFDeriv 𝕜 i g x) := by
   simp only [← iteratedFDerivWithin_univ]
   exact iteratedFDerivWithin_prodMk hf.contDiffWithinAt hg.contDiffWithinAt uniqueDiffOn_univ

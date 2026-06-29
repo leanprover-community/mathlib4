@@ -40,7 +40,7 @@ lemma IdentDistrib.prodMk [IsFiniteMeasure μ]
     {X : Ω → E} {Y : Ω → F} {Z : Ω' → E} {W : Ω' → F}
     (hXZ : IdentDistrib X Z μ ν) (hYW : IdentDistrib Y W μ ν)
     (hXY : X ⟂ᵢ[μ] Y) (hZW : Z ⟂ᵢ[ν] W) :
-    IdentDistrib (fun ω ↦ (X ω, Y ω)) (fun ω' ↦ (Z ω', W ω')) μ ν where
+    IdentDistrib (Function.prod X Y) (Function.prod Z W) μ ν where
   aemeasurable_fst := hXZ.aemeasurable_fst.prodMk hYW.aemeasurable_fst
   aemeasurable_snd := hXZ.aemeasurable_snd.prodMk hYW.aemeasurable_snd
   map_eq := by

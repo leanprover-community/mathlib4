@@ -280,7 +280,7 @@ variable {E F : Type*}
 /-- Independent Gaussian random variables are jointly Gaussian. -/
 lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω → E} {Y : Ω → F}
     (hX : HasGaussianLaw X P) (hY : HasGaussianLaw Y P) (hXY : X ⟂ᵢ[P] Y) :
-    HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P where
+    HasGaussianLaw (Function.prod X Y) P where
   isGaussian_map := by
     have := hX.isProbabilityMeasure
     rw [isGaussian_iff_gaussian_charFunDual]
@@ -309,13 +309,13 @@ lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω �
 
 /-- If $(X, Y)$ is Gaussian, then $X$ and $Y$ are independent if they are uncorrelated. -/
 lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [NormedSpace ℝ F]
-    {X : Ω → E} {Y : Ω → F} (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P)
+    {X : Ω → E} {Y : Ω → F} (hXY : HasGaussianLaw (Function.prod X Y) P)
     (h : ∀ (L₁ : StrongDual ℝ E) (L₂ : StrongDual ℝ F), cov[L₁ ∘ X, L₂ ∘ Y; P] = 0) :
     IndepFun X Y P := by
   have := hXY.isProbabilityMeasure
   rw [indepFun_iff_charFunDual_prod hXY.fst.aemeasurable hXY.snd.aemeasurable]
   intro L
-  have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
+  have : L ∘ (Function.prod X Y) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
     ext; simp [-comp_apply, ← comp_inl_add_comp_inr]
   rw [hXY.charFunDual_map_eq, hXY.fst.charFunDual_map_eq, hXY.snd.charFunDual_map_eq, ← exp_add,
     sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
@@ -328,7 +328,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [Norm
 
 /-- If $(X, Y)$ is Gaussian, then $X$ and $Y$ are independent if they are uncorrelated. -/
 lemma HasGaussianLaw.indepFun_of_covariance_inner [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
-    {X : Ω → E} {Y : Ω → F} (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P)
+    {X : Ω → E} {Y : Ω → F} (hXY : HasGaussianLaw (Function.prod X Y) P)
     (h : ∀ x y, cov[fun ω ↦ ⟪x, X ω⟫, fun ω ↦ ⟪y, Y ω⟫; P] = 0) :
     IndepFun X Y P :=
   hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
@@ -368,7 +368,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_eval {ι κ : Type*} [Finite ι] [Fi
 
 /-- If $(X, Y)$ is Gaussian, then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$. -/
 lemma HasGaussianLaw.indepFun_of_covariance_eq_zero {X Y : Ω → ℝ}
-    (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) (h : cov[X, Y; P] = 0) :
+    (hXY : HasGaussianLaw (Function.prod X Y) P) (h : cov[X, Y; P] = 0) :
     IndepFun X Y P :=
   hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
     simp [Function.comp_def, ← toDual_symm_apply, covariance_mul_const_right,

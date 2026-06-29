@@ -86,7 +86,7 @@ theorem HasStrictFDerivAt.const_cpow (hf : HasStrictFDerivAt f f' x) (h0 : c ≠
 theorem HasFDerivAt.cpow (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasFDerivAt (fun x => f x ^ g x)
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Complex.log (f x)) • g') x := by
-  convert! (@Complex.hasFDerivAt_cpow ((fun x => (f x, g x)) x) h0).comp x (hf.prodMk hg)
+  convert! (@Complex.hasFDerivAt_cpow ((Function.prod f g) x) h0).comp x (hf.prodMk hg)
 
 theorem HasFDerivAt.const_cpow (hf : HasFDerivAt f f' x) (h0 : c ≠ 0 ∨ f x ≠ 0) :
     HasFDerivAt (fun x => c ^ f x) ((c ^ f x * Complex.log c) • f') x :=
@@ -96,7 +96,7 @@ theorem HasFDerivWithinAt.cpow (hf : HasFDerivWithinAt f f' s x) (hg : HasFDeriv
     (h0 : f x ∈ slitPlane) : HasFDerivWithinAt (fun x => f x ^ g x)
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Complex.log (f x)) • g') s x := by
   convert!
-    (@Complex.hasFDerivAt_cpow ((fun x => (f x, g x)) x) h0).comp_hasFDerivWithinAt x (hf.prodMk hg)
+    (@Complex.hasFDerivAt_cpow ((Function.prod f g) x) h0).comp_hasFDerivWithinAt x (hf.prodMk hg)
 
 theorem HasFDerivWithinAt.const_cpow (hf : HasFDerivWithinAt f f' s x) (h0 : c ≠ 0 ∨ f x ≠ 0) :
     HasFDerivWithinAt (fun x => c ^ f x) ((c ^ f x * Complex.log c) • f') s x :=
@@ -389,7 +389,7 @@ theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : Has
     (hg : HasStrictDerivAt g g' x) (h : 0 < f x) : HasStrictDerivAt (fun x => f x ^ g x)
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) x := by
   convert!
-    (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt x
+    (hasStrictFDerivAt_rpow_of_pos ((Function.prod f g) x) h).comp_hasStrictDerivAt x
       (hf.prodMk hg) using 1
   simp [mul_assoc, mul_comm]
 

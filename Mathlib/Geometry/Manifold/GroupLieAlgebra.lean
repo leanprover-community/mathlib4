@@ -165,7 +165,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
   have sfg : CMDiff (minSmoothness 𝕜 2) fg := contMDiff_zeroSection _ _
   let fv : G → TangentBundle I G := fun _ ↦ TotalSpace.mk' E 1 v
   have sfv : CMDiff (minSmoothness 𝕜 2) fv := contMDiff_const
-  let F₁ : G → (TangentBundle I G × TangentBundle I G) := fun g ↦ (fg g, fv g)
+  let F₁ : G → (TangentBundle I G × TangentBundle I G) := Function.prod fg fv
   have S₁ : CMDiff (minSmoothness 𝕜 2) F₁ := sfg.prodMk sfv
   let F₂ : (TangentBundle I G × TangentBundle I G) → TangentBundle (I.prod I) (G × G) :=
     (equivTangentBundleProd I G I G).symm

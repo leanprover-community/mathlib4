@@ -55,39 +55,39 @@ section ProdMk
 
 theorem ContMDiffWithinAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffWithinAt I I' n f s x)
     (hg : ContMDiffWithinAt I J' n g s x) :
-    ContMDiffWithinAt I (I'.prod J') n (fun x => (f x, g x)) s x := by
+    ContMDiffWithinAt I (I'.prod J') n (Function.prod f g) s x := by
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem ContMDiffWithinAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, E') n f s x) (hg : ContMDiffWithinAt I 𝓘(𝕜, F') n g s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s x := by
+    ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (Function.prod f g) s x := by
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 nonrec theorem ContMDiffAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffAt I I' n f x)
-    (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (fun x => (f x, g x)) x :=
+    (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (Function.prod f g) x :=
   hf.prodMk hg
 
 nonrec theorem ContMDiffAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffAt I 𝓘(𝕜, E') n f x) (hg : ContMDiffAt I 𝓘(𝕜, F') n g x) :
-    ContMDiffAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) x :=
+    ContMDiffAt I 𝓘(𝕜, E' × F') n (Function.prod f g) x :=
   hf.prodMk_space hg
 
 theorem ContMDiffOn.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffOn I I' n f s)
-    (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (fun x => (f x, g x)) s :=
+    (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (Function.prod f g) s :=
   fun x hx => (hf x hx).prodMk (hg x hx)
 
 theorem ContMDiffOn.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiffOn I 𝓘(𝕜, E') n f s)
-    (hg : ContMDiffOn I 𝓘(𝕜, F') n g s) : ContMDiffOn I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s :=
+    (hg : ContMDiffOn I 𝓘(𝕜, F') n g s) : ContMDiffOn I 𝓘(𝕜, E' × F') n (Function.prod f g) s :=
   fun x hx => (hf x hx).prodMk_space (hg x hx)
 
 nonrec theorem ContMDiff.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiff I I' n f)
-    (hg : ContMDiff I J' n g) : ContMDiff I (I'.prod J') n fun x => (f x, g x) := fun x =>
+    (hg : ContMDiff I J' n g) : ContMDiff I (I'.prod J') n (Function.prod f g) := fun x =>
   (hf x).prodMk (hg x)
 
 theorem ContMDiff.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I 𝓘(𝕜, E') n f)
-    (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n fun x => (f x, g x) := fun x =>
+    (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n (Function.prod f g) := fun x =>
   (hf x).prodMk_space (hg x)
 
 end ProdMk
@@ -224,15 +224,15 @@ theorem contMDiff_prod_assoc :
 theorem ContMDiffWithinAt.comp₂ {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
     {t : Set (M' × N')} (ha : ContMDiffWithinAt (I'.prod J') J n h t (f x, g x))
     (fa : ContMDiffWithinAt I I' n f s x) (ga : ContMDiffWithinAt I J' n g s x)
-    (st : MapsTo (fun x ↦ (f x, g x)) s t) :
+    (st : MapsTo (Function.prod f g) s t) :
     ContMDiffWithinAt I J n (fun x ↦ h (f x, g x)) s x :=
-  ha.comp (f := fun x ↦ (f x, g x)) _ (fa.prodMk ga) st
+  ha.comp (f := Function.prod f g) _ (fa.prodMk ga) st
 
 /-- `ContMDiffWithinAt.comp₂`, with a separate argument for point equality. -/
 theorem ContMDiffWithinAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
     {y : M' × N'} {t : Set (M' × N')} (ha : ContMDiffWithinAt (I'.prod J') J n h t y)
     (fa : ContMDiffWithinAt I I' n f s x) (ga : ContMDiffWithinAt I J' n g s x)
-    (e : (f x, g x) = y) (st : MapsTo (fun x ↦ (f x, g x)) s t) :
+    (e : (f x, g x) = y) (st : MapsTo (Function.prod f g) s t) :
     ContMDiffWithinAt I J n (fun x ↦ h (f x, g x)) s x := by
   rw [← e] at ha
   exact ha.comp₂ fa ga st
@@ -241,7 +241,7 @@ theorem ContMDiffWithinAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g :
 theorem ContMDiffAt.comp₂ {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
     (ha : ContMDiffAt (I'.prod J') J n h (f x, g x)) (fa : ContMDiffAt I I' n f x)
     (ga : ContMDiffAt I J' n g x) : ContMDiffAt I J n (fun x ↦ h (f x, g x)) x :=
-  ha.comp (f := fun x ↦ (f x, g x)) _ (fa.prodMk ga)
+  ha.comp (f := Function.prod f g) _ (fa.prodMk ga)
 
 /-- `ContMDiffAt.comp₂`, with a separate argument for point equality. -/
 theorem ContMDiffAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M} {y : M' × N'}

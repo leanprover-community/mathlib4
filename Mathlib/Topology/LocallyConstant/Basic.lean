@@ -111,7 +111,7 @@ protected theorem comp {f : X → Y} (hf : IsLocallyConstant f) (g : Y → Z) :
   exact hf _
 
 theorem prodMk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
-    (hf' : IsLocallyConstant f') : IsLocallyConstant fun x => (f x, f' x) :=
+    (hf' : IsLocallyConstant f') : IsLocallyConstant (Function.prod f f') :=
   (iff_eventually_eq _).2 fun x =>
     (hf.eventually_eq x).mp <| (hf'.eventually_eq x).mono fun _ hf' hf => Prod.ext hf hf'
 

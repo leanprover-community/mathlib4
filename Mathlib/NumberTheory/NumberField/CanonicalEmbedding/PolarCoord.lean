@@ -284,7 +284,7 @@ theorem homeoRealMixedSpacePolarSpace_apply_snd (x : realMixedSpace K) (w : {w /
 
 @[simp]
 theorem homeoRealMixedSpacePolarSpace_symm_apply (x : polarSpace K) :
-    (homeoRealMixedSpacePolarSpace K).symm x = ⟨fun w ↦ x.1 w, fun w ↦ (x.1 w, x.2 w)⟩ := rfl
+    (homeoRealMixedSpacePolarSpace K).symm x = ⟨fun w ↦ x.1 w, (Function.prod x.1 x.2)⟩ := rfl
 
 open scoped Classical in
 theorem volume_preserving_homeoRealMixedSpacePolarSpace [NumberField K] :

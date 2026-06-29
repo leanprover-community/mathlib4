@@ -61,7 +61,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [Topolog
 
 @[simp]
 theorem continuous_prodMk {f : X → Y} {g : X → Z} :
-    (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
+    (Continuous (Function.prod f g)) ↔ Continuous f ∧ Continuous g :=
   continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
 
 @[continuity]
@@ -138,7 +138,7 @@ theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × 
 
 @[continuity, fun_prop]
 theorem Continuous.prodMk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => (f x, g x) :=
+    Continuous (Function.prod f g) :=
   continuous_prodMk.2 ⟨hf, hg⟩
 
 @[continuity]
@@ -328,7 +328,7 @@ theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap :=
 
 theorem Filter.Tendsto.prodMk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ → X} {my : γ → Y}
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
-    Tendsto (fun c => (mx c, my c)) f (𝓝 (x, y)) := by
+    Tendsto (Function.prod mx my) f (𝓝 (x, y)) := by
   rw [nhds_prod_eq]
   exact hx.prodMk hy
 
@@ -345,7 +345,7 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
 
 @[fun_prop]
 theorem ContinuousAt.prodMk {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
-    (hg : ContinuousAt g x) : ContinuousAt (fun x => (f x, g x)) x :=
+    (hg : ContinuousAt g x) : ContinuousAt (Function.prod f g) x :=
   hf.prodMk_nhds hg
 
 theorem ContinuousAt.prodMap {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
@@ -624,7 +624,7 @@ protected lemma Topology.IsClosedEmbedding.prodMap {f : X → Y} {g : Z → W}
   { hf.isEmbedding.prodMap hg.isEmbedding with
     isClosed_range := range_prodMap ▸ hf.isClosed_range.prod hg.isClosed_range }
 
-lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
+lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding Function.prod id f :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
 lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=

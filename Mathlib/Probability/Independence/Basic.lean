@@ -687,11 +687,11 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
 theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) :
-    f ⟂ᵢ[μ] g ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
+    f ⟂ᵢ[μ] g ↔ μ.map (Function.prod f g) = (μ.map f).prod (μ.map g) := by
   rw [indepFun_iff_measure_inter_preimage_eq_mul]
   have h₀ {s : Set β} {t : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       μ (f ⁻¹' s) * μ (g ⁻¹' t) = μ.map f s * μ.map g t ∧
-      μ (f ⁻¹' s ∩ g ⁻¹' t) = μ.map (fun ω ↦ (f ω, g ω)) (s ×ˢ t) :=
+      μ (f ⁻¹' s ∩ g ⁻¹' t) = μ.map (Function.prod f g) (s ×ˢ t) :=
     ⟨by rw [Measure.map_apply_of_aemeasurable hf hs, Measure.map_apply_of_aemeasurable hg ht],
       (Measure.map_apply_of_aemeasurable (hf.prodMk hg) (hs.prod ht)).symm⟩
   constructor
@@ -702,7 +702,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' 
 
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    f ⟂ᵢ[μ] g ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
+    f ⟂ᵢ[μ] g ↔ μ.map (Function.prod f g) = (μ.map f).prod (μ.map g) := by
   apply indepFun_iff_map_prod_eq_prod_map_map' hf hg <;> apply IsFiniteMeasure.toSigmaFinite
 
 alias ⟨IndepFun.map_prod_eq_prod_map_map, _⟩ := indepFun_iff_map_prod_eq_prod_map_map
@@ -1108,7 +1108,7 @@ theorem IndepFun.map_mul_eq_map_mconv_map₀'
     {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) (hfg : f ⟂ᵢ[μ] g) :
     μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) := by
-  conv in f * g => change (fun x ↦ x.1 * x.2) ∘ (fun ω ↦ (f ω, g ω))
+  conv in f * g => change (fun x ↦ x.1 * x.2) ∘ (Function.prod f g)
   rw [← measurable_mul.aemeasurable.map_map_of_aemeasurable (hf.prodMk hg),
     (indepFun_iff_map_prod_eq_prod_map_map' hf hg σf σg).mp hfg, Measure.mconv]
 

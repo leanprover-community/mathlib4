@@ -830,7 +830,7 @@ theorem uniformContinuous_snd [UniformSpace α] [UniformSpace β] :
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
 theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : UniformContinuous f₁)
-    (h₂ : UniformContinuous f₂) : UniformContinuous fun a => (f₁ a, f₂ a) := by
+    (h₂ : UniformContinuous f₂) : UniformContinuous (Function.prod f₁ f₂) := by
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
@@ -1076,9 +1076,9 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
 end Uniform
 
 theorem Filter.Tendsto.congr_uniformity {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
-    (hf : Tendsto f l (𝓝 b)) (hg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto g l (𝓝 b) :=
+    (hf : Tendsto f l (𝓝 b)) (hg : Tendsto (Function.prod f g) l (𝓤 β)) : Tendsto g l (𝓝 b) :=
   Uniform.tendsto_nhds_right.2 <| (Uniform.tendsto_nhds_right.1 hf).uniformity_trans hg
 
 theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
-    (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
+    (hfg : Tendsto (Function.prod f g) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩

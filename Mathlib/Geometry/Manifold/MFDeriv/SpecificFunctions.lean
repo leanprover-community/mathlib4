@@ -215,7 +215,7 @@ section Prod
 
 theorem MDifferentiableWithinAt.prodMk {f : M → M'} {g : M → M''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
-    MDiffAt[s] (fun x ↦ (f x, g x)) x :=
+    MDiffAt[s] (Function.prod f g) x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 /-- If `f` and `g` have derivatives `df` and `dg` within `s` at `x`, respectively,
@@ -223,22 +223,22 @@ then `x ↦ (f x, g x)` has derivative `df.prod dg` within `s`. -/
 theorem HasMFDerivWithinAt.prodMk {f : M → M'} {g : M → M''}
     {df : TangentSpace% x →L[𝕜] TangentSpace% (f x)} (hf : HasMFDerivAt[s] f x df)
     {dg : TangentSpace% x →L[𝕜] TangentSpace% (g x)} (hg : HasMFDerivAt[s] g x dg) :
-    HasMFDerivAt[s] (fun y ↦ (f y, g y)) x (df.prod dg) :=
+    HasMFDerivAt[s] (Function.prod f g) x (df.prod dg) :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 lemma mfderivWithin_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffAt[s] x) :
-    mfderiv[s] (fun x ↦ (f x, g x)) x = (mfderiv[s] f x).prod (mfderiv[s] g x) :=
+    mfderiv[s] (Function.prod f g) x = (mfderiv[s] f x).prod (mfderiv[s] g x) :=
   (hf.hasMFDerivWithinAt.prodMk hg.hasMFDerivWithinAt).mfderivWithin hs
 
 lemma mfderiv_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    mfderiv% (fun x ↦ (f x, g x)) x = (mfderiv% f x).prod (mfderiv% g x) := by
+    mfderiv% (Function.prod f g) x = (mfderiv% f x).prod (mfderiv% g x) := by
   simp_rw [← mfderivWithin_univ]
   exact mfderivWithin_prodMk hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
     (uniqueMDiffWithinAt_univ I)
 
 theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    MDiffAt (fun x ↦ (f x, g x)) x :=
+    MDiffAt (Function.prod f g) x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 /-- If `f` and `g` have derivatives `df` and `dg` at `x`, respectively,
@@ -246,32 +246,32 @@ then `x ↦ (f x, g x)` has derivative `df.prod dg`. -/
 theorem HasMFDerivAt.prodMk {f : M → M'} {g : M → M''}
     {df : TangentSpace% x →L[𝕜] TangentSpace% (f x)} (hf : HasMFDerivAt% f x df)
     {dg : TangentSpace% x →L[𝕜] TangentSpace% (g x)} (hg : HasMFDerivAt% g x dg) :
-    HasMFDerivAt% (fun y ↦ (f y, g y)) x (df.prod dg) :=
+    HasMFDerivAt% (Function.prod f g) x (df.prod dg) :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem MDifferentiableWithinAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) s x :=
+    MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (Function.prod f g) s x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem MDifferentiableAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) x :=
+    MDifferentiableAt I 𝓘(𝕜, E' × E'') (Function.prod f g) x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem MDifferentiableOn.prodMk {f : M → M'} {g : M → M''} (hf : MDiff[s] f) (hg : MDiff[s] g) :
-    MDiff[s] (fun x ↦ (f x, g x)) := fun x hx ↦ (hf x hx).prodMk (hg x hx)
+    MDiff[s] (Function.prod f g) := fun x hx ↦ (hf x hx).prodMk (hg x hx)
 
 theorem MDifferentiable.prodMk {f : M → M'} {g : M → M''} (hf : MDiff f) (hg : MDiff g) :
-    MDiff fun x ↦ (f x, g x) := fun x ↦ (hf x).prodMk (hg x)
+    MDiff (Function.prod f g) := fun x ↦ (hf x).prodMk (hg x)
 
 theorem MDifferentiableOn.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiff[s] f) (hg : MDiff[s] g) :
-    MDifferentiableOn I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) s :=
+    MDifferentiableOn I 𝓘(𝕜, E' × E'') (Function.prod f g) s :=
   fun x hx ↦ (hf x hx).prodMk_space (hg x hx)
 
 theorem MDifferentiable.prodMk_space {f : M → E'} {g : M → E''} (hf : MDiff f) (hg : MDiff g) :
-    MDifferentiable I 𝓘(𝕜, E' × E'') fun x ↦ (f x, g x) :=
+    MDifferentiable I 𝓘(𝕜, E' × E'') (Function.prod f g) :=
 fun x ↦ (hf x).prodMk_space (hg x)
 
 theorem hasMFDerivAt_fst (x : M × M') :

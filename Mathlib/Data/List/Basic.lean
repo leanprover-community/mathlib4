@@ -1145,7 +1145,7 @@ section lookup
 variable [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
-    lookup a (as.map fun x => (x, f x)) = some (f a) := by
+    lookup a (as.map (Function.prod id f)) = some (f a) := by
   induction as with grind
 
 end lookup

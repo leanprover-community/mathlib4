@@ -831,16 +831,16 @@ alias ⟨IsLittleO.of_neg_left, IsLittleO.neg_left⟩ := isLittleO_neg_left
 /-! ### Product of functions (right) -/
 
 
-theorem isBigOWith_fst_prod : IsBigOWith 1 l f' fun x => (f' x, g' x) :=
+theorem isBigOWith_fst_prod : IsBigOWith 1 l f' (Function.prod f' g') :=
   isBigOWith_of_le l fun _x => le_max_left _ _
 
-theorem isBigOWith_snd_prod : IsBigOWith 1 l g' fun x => (f' x, g' x) :=
+theorem isBigOWith_snd_prod : IsBigOWith 1 l g' (Function.prod f' g') :=
   isBigOWith_of_le l fun _x => le_max_right _ _
 
-theorem isBigO_fst_prod : f' =O[l] fun x => (f' x, g' x) :=
+theorem isBigO_fst_prod : f' =O[l] Function.prod f' g' :=
   isBigOWith_fst_prod.isBigO
 
-theorem isBigO_snd_prod : g' =O[l] fun x => (f' x, g' x) :=
+theorem isBigO_snd_prod : g' =O[l] Function.prod f' g' :=
   isBigOWith_snd_prod.isBigO
 
 theorem isBigO_fst_prod' {f' : α → E' × F'} : (fun x => (f' x).1) =O[l] f' := by
@@ -854,25 +854,25 @@ section
 variable (f' k')
 
 theorem IsBigOWith.prod_rightl (h : IsBigOWith c l f g') (hc : 0 ≤ c) :
-    IsBigOWith c l f fun x => (g' x, k' x) :=
+    IsBigOWith c l f (Function.prod g' k') :=
   (h.trans isBigOWith_fst_prod hc).congr_const (mul_one c)
 
-theorem IsBigO.prod_rightl (h : f =O[l] g') : f =O[l] fun x => (g' x, k' x) :=
+theorem IsBigO.prod_rightl (h : f =O[l] g') : f =O[l] Function.prod g' k' :=
   let ⟨_c, cnonneg, hc⟩ := h.exists_nonneg
   (hc.prod_rightl k' cnonneg).isBigO
 
-theorem IsLittleO.prod_rightl (h : f =o[l] g') : f =o[l] fun x => (g' x, k' x) :=
+theorem IsLittleO.prod_rightl (h : f =o[l] g') : f =o[l] Function.prod g' k' :=
   IsLittleO.of_isBigOWith fun _c cpos => (h.forall_isBigOWith cpos).prod_rightl k' cpos.le
 
 theorem IsBigOWith.prod_rightr (h : IsBigOWith c l f g') (hc : 0 ≤ c) :
-    IsBigOWith c l f fun x => (f' x, g' x) :=
+    IsBigOWith c l f Function.prod f' g' :=
   (h.trans isBigOWith_snd_prod hc).congr_const (mul_one c)
 
-theorem IsBigO.prod_rightr (h : f =O[l] g') : f =O[l] fun x => (f' x, g' x) :=
+theorem IsBigO.prod_rightr (h : f =O[l] g') : f =O[l] Function.prod f' g' :=
   let ⟨_c, cnonneg, hc⟩ := h.exists_nonneg
   (hc.prod_rightr f' cnonneg).isBigO
 
-theorem IsLittleO.prod_rightr (h : f =o[l] g') : f =o[l] fun x => (f' x, g' x) :=
+theorem IsLittleO.prod_rightr (h : f =o[l] g') : f =o[l] Function.prod f' g' :=
   IsLittleO.of_isBigOWith fun _c cpos => (h.forall_isBigOWith cpos).prod_rightr f' cpos.le
 
 end
@@ -918,53 +918,53 @@ protected theorem IsLittleO.comp_snd : f =o[l] g → (f ∘ Prod.snd) =o[l' ×ˢ
 end
 
 theorem IsBigOWith.prod_left_same (hf : IsBigOWith c l f' k') (hg : IsBigOWith c l g' k') :
-    IsBigOWith c l (fun x => (f' x, g' x)) k' := by
+    IsBigOWith c l (Function.prod f' g') k' := by
   rw [isBigOWith_iff] at *; filter_upwards [hf, hg] with x using max_le
 
 theorem IsBigOWith.prod_left (hf : IsBigOWith c l f' k') (hg : IsBigOWith c' l g' k') :
-    IsBigOWith (max c c') l (fun x => (f' x, g' x)) k' :=
+    IsBigOWith (max c c') l (Function.prod f' g') k' :=
   (hf.weaken <| le_max_left c c').prod_left_same (hg.weaken <| le_max_right c c')
 
-theorem IsBigOWith.prod_left_fst (h : IsBigOWith c l (fun x => (f' x, g' x)) k') :
+theorem IsBigOWith.prod_left_fst (h : IsBigOWith c l (Function.prod f' g') k') :
     IsBigOWith c l f' k' :=
   (isBigOWith_fst_prod.trans h zero_le_one).congr_const <| one_mul c
 
-theorem IsBigOWith.prod_left_snd (h : IsBigOWith c l (fun x => (f' x, g' x)) k') :
+theorem IsBigOWith.prod_left_snd (h : IsBigOWith c l (Function.prod f' g') k') :
     IsBigOWith c l g' k' :=
   (isBigOWith_snd_prod.trans h zero_le_one).congr_const <| one_mul c
 
 theorem isBigOWith_prod_left :
-    IsBigOWith c l (fun x => (f' x, g' x)) k' ↔ IsBigOWith c l f' k' ∧ IsBigOWith c l g' k' :=
+    IsBigOWith c l (Function.prod f' g') k' ↔ IsBigOWith c l f' k' ∧ IsBigOWith c l g' k' :=
   ⟨fun h => ⟨h.prod_left_fst, h.prod_left_snd⟩, fun h => h.1.prod_left_same h.2⟩
 
-theorem IsBigO.prod_left (hf : f' =O[l] k') (hg : g' =O[l] k') : (fun x => (f' x, g' x)) =O[l] k' :=
+theorem IsBigO.prod_left (hf : f' =O[l] k') (hg : g' =O[l] k') : (Function.prod f' g') =O[l] k' :=
   let ⟨_c, hf⟩ := hf.isBigOWith
   let ⟨_c', hg⟩ := hg.isBigOWith
   (hf.prod_left hg).isBigO
 
-theorem IsBigO.prod_left_fst : (fun x => (f' x, g' x)) =O[l] k' → f' =O[l] k' :=
+theorem IsBigO.prod_left_fst : (Function.prod f' g') =O[l] k' → f' =O[l] k' :=
   IsBigO.trans isBigO_fst_prod
 
-theorem IsBigO.prod_left_snd : (fun x => (f' x, g' x)) =O[l] k' → g' =O[l] k' :=
+theorem IsBigO.prod_left_snd : (Function.prod f' g') =O[l] k' → g' =O[l] k' :=
   IsBigO.trans isBigO_snd_prod
 
 @[simp]
-theorem isBigO_prod_left : (fun x => (f' x, g' x)) =O[l] k' ↔ f' =O[l] k' ∧ g' =O[l] k' :=
+theorem isBigO_prod_left : (Function.prod f' g') =O[l] k' ↔ f' =O[l] k' ∧ g' =O[l] k' :=
   ⟨fun h => ⟨h.prod_left_fst, h.prod_left_snd⟩, fun h => h.1.prod_left h.2⟩
 
 theorem IsLittleO.prod_left (hf : f' =o[l] k') (hg : g' =o[l] k') :
-    (fun x => (f' x, g' x)) =o[l] k' :=
+    (Function.prod f' g') =o[l] k' :=
   IsLittleO.of_isBigOWith fun _c hc =>
     (hf.forall_isBigOWith hc).prod_left_same (hg.forall_isBigOWith hc)
 
-theorem IsLittleO.prod_left_fst : (fun x => (f' x, g' x)) =o[l] k' → f' =o[l] k' :=
+theorem IsLittleO.prod_left_fst : (Function.prod f' g') =o[l] k' → f' =o[l] k' :=
   IsBigO.trans_isLittleO isBigO_fst_prod
 
-theorem IsLittleO.prod_left_snd : (fun x => (f' x, g' x)) =o[l] k' → g' =o[l] k' :=
+theorem IsLittleO.prod_left_snd : (Function.prod f' g') =o[l] k' → g' =o[l] k' :=
   IsBigO.trans_isLittleO isBigO_snd_prod
 
 @[simp]
-theorem isLittleO_prod_left : (fun x => (f' x, g' x)) =o[l] k' ↔ f' =o[l] k' ∧ g' =o[l] k' :=
+theorem isLittleO_prod_left : (Function.prod f' g') =o[l] k' ↔ f' =o[l] k' ∧ g' =o[l] k' :=
   ⟨fun h => ⟨h.prod_left_fst, h.prod_left_snd⟩, fun h => h.1.prod_left h.2⟩
 
 theorem IsBigOWith.eq_zero_imp (h : IsBigOWith c l f'' g'') : ∀ᶠ x in l, g'' x = 0 → f'' x = 0 :=

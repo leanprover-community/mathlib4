@@ -283,21 +283,21 @@ theorem TendstoUniformly.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' : 
 theorem TendstoUniformlyOnFilter.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
     {f' : α → β'} {q : Filter ι'} (h : TendstoUniformlyOnFilter F f p p')
     (h' : TendstoUniformlyOnFilter F' f' q p') :
-    TendstoUniformlyOnFilter (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a))
+    TendstoUniformlyOnFilter (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (Function.prod f f')
       (p ×ˢ q) p' :=
   fun u hu => ((h.prodMap h') u hu).diag_of_prod_right
 
 protected theorem TendstoUniformlyOn.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
     {f' : α → β'} {p' : Filter ι'} (h : TendstoUniformlyOn F f p s)
     (h' : TendstoUniformlyOn F' f' p' s) :
-    TendstoUniformlyOn (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p')
+    TendstoUniformlyOn (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (Function.prod f f') (p ×ˢ p')
       s :=
   (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
 
 theorem TendstoUniformly.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
     {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
-    TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p') :=
-  (h.prodMap h').comp fun a => (a, a)
+    TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (Function.prod f f') (p ×ˢ p') :=
+  (h.prodMap h').comp (Function.prod id id)
 
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
 `p ×ˢ p'`. -/

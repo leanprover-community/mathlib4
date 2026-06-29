@@ -58,7 +58,7 @@ lemma BddBelow.mul (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
 @[to_additive]
 lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
     BddAbove (range fun i ↦ f i * g i) :=
-  .range_comp (f := fun i ↦ (f i, g i)) (bddAbove_range_prod.2 ⟨hf, hg⟩)
+  .range_comp (f := Function.prod f g) (bddAbove_range_prod.2 ⟨hf, hg⟩)
     (monotone_fst.mul' monotone_snd)
 
 @[to_additive]

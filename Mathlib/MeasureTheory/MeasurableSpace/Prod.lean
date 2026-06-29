@@ -76,7 +76,7 @@ lemma isPiSystem_prod :
 /-- The comap of a product is the supremum of the comaps. -/
 lemma MeasurableSpace.comap_prodMk {α β γ : Type*} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
     (X : α → β) (Y : α → γ) :
-    (mβ.prod mγ).comap (fun ω ↦ (X ω, Y ω)) = mβ.comap X ⊔ mγ.comap Y := by
+    (mβ.prod mγ).comap (Function.prod X Y) = mβ.comap X ⊔ mγ.comap Y := by
   simp_rw [MeasurableSpace.prod, comap_sup, comap_comp]
   rfl
 

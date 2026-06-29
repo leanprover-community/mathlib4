@@ -713,7 +713,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       haveI rI : ∀ x ∈ s', r x ∈ Ioo (0 : ℝ) 1 := fun x hx => (hr x hx).1.2
       exist_finset_disjoint_balls_large_measure μ hτ hN s' r (fun x hx => (rI x hx).1) fun x hx =>
         (rI x hx).2.le
-    refine ⟨t ∪ Finset.image (fun x => (x, r x)) v, Finset.subset_union_left, ⟨?_, ?_, ?_⟩, ?_⟩
+    refine ⟨t ∪ Finset.image (Function.prod id r) v, Finset.subset_union_left, ⟨?_, ?_, ?_⟩, ?_⟩
     · simp only [Finset.coe_union, pairwiseDisjoint_union, ht.1, true_and, Finset.coe_image]
       constructor
       · intro p hp q hq hpq
@@ -851,7 +851,7 @@ theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SFinite μ] (f
     rw [exists_eq_graphOn]
     refine fun x hx y hy heq ↦ v_disj.eq hx hy <| not_disjoint_iff.2 ⟨x.1, ?_⟩
     simp [*]
-  have hinj : InjOn (fun x ↦ (x, r x)) t := LeftInvOn.injOn (f₁' := Prod.fst) fun _ _ ↦ rfl
+  have hinj : InjOn (Function.prod id r) t := LeftInvOn.injOn (f₁' := Prod.fst) fun _ _ ↦ rfl
   simp only [graphOn, forall_mem_image, biUnion_image, hinj.pairwiseDisjoint_image] at *
   exact ⟨t, r, countable_of_injective_of_countable_image hinj v_count, vs, vg, μv, v_disj⟩
 

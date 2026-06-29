@@ -599,7 +599,7 @@ theorem continuous_parametric_primitive_of_continuous
 theorem continuous_parametric_intervalIntegral_of_continuous {a₀ : ℝ}
     (hf : Continuous f.uncurry) {s : X → ℝ} (hs : Continuous s) :
     Continuous fun x ↦ ∫ t in a₀..s x, f x t ∂μ :=
-  show Continuous ((fun p : X × ℝ ↦ ∫ t in a₀..p.2, f p.1 t ∂μ) ∘ fun x ↦ (x, s x)) from
+  show Continuous ((fun p : X × ℝ ↦ ∫ t in a₀..p.2, f p.1 t ∂μ) ∘ Function.prod id s) from
     (continuous_parametric_primitive_of_continuous hf).comp₂ continuous_id hs
 
 theorem continuous_parametric_intervalIntegral_of_continuous'

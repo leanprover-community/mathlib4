@@ -70,7 +70,7 @@ variable [ConvexSpace ℝ X] [MetricSpace X] [IsConvexDist X]
 lemma dist_iConvexComb_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X) :
     dist (f.iConvexComb x) (f.iConvexComb y) ≤ f.iConvexComb fun i ↦ dist (x i) (y i) := by
   simpa [iConvexComb_map, Finsupp.sum_mapDomain_index, add_mul]
-    using IsConvexDist.dist_iConvexComb_fst_snd_le (f.map fun i ↦ (x i, y i))
+    using IsConvexDist.dist_iConvexComb_fst_snd_le (f.map <| Function.prod x y)
 
 @[deprecated (since := "2026-05-15")] alias dist_convexCombination_right_le := dist_iConvexComb_le
 

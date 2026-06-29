@@ -932,7 +932,7 @@ variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {
 we only require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
     (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
-    WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
+    WellFounded (Prod.Lex rα rβ on (Function.prod f g)) := by
   refine ((psigma_lex (wellFoundedOn_range.2 hα) fun a => hβ a).onFun
     (f := fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩)).mono fun c c' h => ?_
   obtain h' | h' := Prod.lex_iff.1 h
@@ -943,7 +943,7 @@ theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f
 
 theorem Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber (hα : s.WellFoundedOn (rα on f))
     (hβ : ∀ a, (s ∩ f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
-    s.WellFoundedOn (Prod.Lex rα rβ on fun c => (f c, g c)) :=
+    s.WellFoundedOn (Prod.Lex rα rβ on (Function.prod f g)) :=
   WellFounded.prod_lex_of_wellFoundedOn_fiber hα
     fun a ↦ ((hβ a).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun _ _ h ↦ ‹_›)
 

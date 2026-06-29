@@ -217,7 +217,7 @@ lemma hasLaw_dirac_iff [IsProbabilityMeasure P] [MeasurableSingletonClass 𝓧] 
 
 lemma indepFun_iff_hasLaw_prodMk_prod [IsFiniteMeasure P] {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨}
     {ν : Measure 𝓨} {Y : Ω → 𝓨} (hX : HasLaw X μ P) (hY : HasLaw Y ν P) :
-    X ⟂ᵢ[P] Y ↔ HasLaw (fun ω ↦ (X ω, Y ω)) (μ.prod ν) P where
+    X ⟂ᵢ[P] Y ↔ HasLaw (Function.prod X Y) (μ.prod ν) P where
   mp h :=
     { map_eq := by
         rw [h.map_prod_eq_prod_map_map (by fun_prop) (by fun_prop), hX.map_eq,

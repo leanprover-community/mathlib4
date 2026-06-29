@@ -200,7 +200,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
   apply AEStronglyMeasurable.const_smul'
   have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
     (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
-  have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
+  have aux1 : AEStronglyMeasurable (Function.prod L f) μ :=
     L.continuous.aestronglyMeasurable.prodMk hf
   -- Elaboration without the expected type is faster here:
   exact (aux0.comp_aestronglyMeasurable aux1 :)

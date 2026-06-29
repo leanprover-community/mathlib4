@@ -116,7 +116,7 @@ theorem binaryProductCone_snd (X Y : Type u) :
 /-- The product type `X × Y` is a binary product for `X` and `Y`. -/
 @[simps]
 def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
-  lift (s : BinaryFan X Y) := ↾fun x => (s.fst x, s.snd x)
+  lift (s : BinaryFan X Y) := ↾(Function.prod s.fst s.snd)
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := by
     ext x

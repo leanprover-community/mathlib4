@@ -47,7 +47,7 @@ theorem IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
     (hextr : IsLocalExtrOn φ {x | f x = f x₀} x₀) (hf' : HasStrictFDerivAt f f' x₀)
     (hφ' : HasStrictFDerivAt φ φ' x₀) : (f'.prod φ').range ≠ ⊤ := by
   intro htop
-  set fφ := fun x => (f x, φ x)
+  set fφ := Function.prod f φ
   have A : map φ (𝓝[f ⁻¹' {f x₀}] x₀) = 𝓝 (φ x₀) := by
     change map (Prod.snd ∘ fφ) (𝓝[fφ ⁻¹' {p | p.1 = f x₀}] x₀) = 𝓝 (φ x₀)
     rw [← map_map, nhdsWithin, map_inf_principal_preimage,

@@ -1196,7 +1196,7 @@ section product
 
 /-- info: MDifferentiable I (I'.prod I') fun x ↦ Prod.mk (f x) (g x) : Prop -/
 #guard_msgs in
-#check MDiff (fun x ↦ (f x, g x))
+#check MDiff (Function.prod f g)
 
 /-- info: MDifferentiable (I.prod (modelWithCornersSelf 𝕜 E)) I' k : Prop -/
 #guard_msgs in

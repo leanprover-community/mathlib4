@@ -341,7 +341,7 @@ theorem seq_apply (f : α →ₛ β → γ) (g : α →ₛ β) (a : α) : f.seq 
   rfl
 
 /-- Combine two simple functions `f : α →ₛ β` and `g : α →ₛ β`
-into `fun a => (f a, g a)`. -/
+into `(Function.prod f g)`. -/
 def pair (f : α →ₛ β) (g : α →ₛ γ) : α →ₛ β × γ :=
   (f.map Prod.mk).seq g
 

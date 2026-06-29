@@ -179,7 +179,7 @@ theorem preimage_prod_map_prod (f : α → β) (g : γ → δ) (s : Set β) (t :
   rfl
 
 theorem mk_preimage_prod (f : γ → α) (g : γ → β) :
-    (fun x => (f x, g x)) ⁻¹' s ×ˢ t = f ⁻¹' s ∩ g ⁻¹' t :=
+    (Function.prod f g) ⁻¹' s ×ˢ t = f ⁻¹' s ∩ g ⁻¹' t :=
   rfl
 
 @[simp]
@@ -238,7 +238,7 @@ theorem prod_univ_range_eq {m₂ : β → δ} :
   ext <| by simp [range]
 
 theorem range_pair_subset (f : α → β) (g : α → γ) :
-    (range fun x => (f x, g x)) ⊆ range f ×ˢ range g := by grind
+    (range (Function.prod f g)) ⊆ range f ×ˢ range g := by grind
 
 theorem Nonempty.prod : s.Nonempty → t.Nonempty → (s ×ˢ t).Nonempty := fun ⟨x, hx⟩ ⟨y, hy⟩ =>
   ⟨(x, y), ⟨hx, hy⟩⟩
@@ -259,7 +259,7 @@ theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
     s ×ˢ t ⊆ f ⁻¹' W ↔ ∀ a b, a ∈ s → b ∈ t → f (a, b) ∈ W := by simp [subset_def]
 
 theorem image_prodMk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
-    (fun x => (f x, g x)) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
+    (Function.prod f g) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
 
 theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by grind
 
@@ -410,7 +410,7 @@ end Prod
 /-! ### Diagonal
 
 In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
-`fun x ↦ (x, x)`.
+`Function.prod id id`.
 -/
 
 
@@ -430,7 +430,7 @@ theorem preimage_coe_coe_diagonal (s : Set α) :
   simp [Set.diagonal]
 
 @[simp]
-theorem range_diag : (range fun x => (x, x)) = diagonal α := by
+theorem range_diag : range (Function.prod id id) = diagonal α := by
   ext ⟨x, y⟩
   simp [diagonal, eq_comm]
 
@@ -442,13 +442,13 @@ theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ 
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diag_preimage_prod (s t : Set α) : (Function.prod id id) ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s = s :=
+theorem diag_preimage_prod_self (s : Set α) : (Function.prod id id) ⁻¹' s ×ˢ s = s :=
   inter_self s
 
-theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
+theorem diag_image (s : Set α) : (Function.prod id id) '' s = diagonal α ∩ s ×ˢ s := by
   rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
@@ -960,9 +960,9 @@ lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn
 
 lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
     s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
-  simpa using! image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
+  simpa using! image_comp (fun x ↦ (x.1, g x.2)) (Function.prod id f) _
 
-lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
+lemma graphOn_univ_eq_range : univ.graphOn f = range (Function.prod id f) := image_univ
 
 @[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
   simp [Set.ext_iff, forall_comm, EqOn]

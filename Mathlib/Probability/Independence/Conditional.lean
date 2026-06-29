@@ -771,7 +771,7 @@ of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻
 theorem condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
-      ↔ (μ.trim hm') ⊗ₘ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
+      ↔ (μ.trim hm') ⊗ₘ (condExpKernel μ m').map (Function.prod f g)
         = (μ.trim hm') ⊗ₘ ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g) :=
   Kernel.indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg
 
@@ -786,7 +786,7 @@ theorem condIndepFun_iff_map_prod_eq_prod_map_map
     {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
     (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
-      ↔ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
+      ↔ (condExpKernel μ m').map (Function.prod f g)
         =ᵐ[μ.trim hm'] (condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g := by
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg, ← Kernel.compProd_eq_iff]
 
@@ -867,14 +867,14 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
     [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
     (hf : Measurable f) (hg : Measurable g) {k : Ω → γ} (hk : Measurable k) :
     g ⟂ᵢ[k, hk; μ] f ↔
-      condDistrib f (fun ω ↦ (k ω, g ω)) μ =ᵐ[μ.map (fun ω ↦ (k ω, g ω))]
+      condDistrib f (Function.prod k g) μ =ᵐ[μ.map (Function.prod k g)]
         (condDistrib f k μ).prodMkRight _ := by
   rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) _ hf.aemeasurable,
     condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib hg hf hk,
     Measure.compProd_eq_comp_prod]
   let e : γ × β' × β ≃ᵐ (γ × β') × β := MeasurableEquiv.prodAssoc.symm
   have h_eq : ((Kernel.id ×ₖ condDistrib g k μ) ×ₖ condDistrib f k μ) ∘ₘ μ.map k =
-      (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (fun a ↦ (k a, g a)) := by
+      (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (Function.prod k g) := by
     calc ((Kernel.id ×ₖ condDistrib g k μ) ×ₖ condDistrib f k μ) ∘ₘ μ.map k
     _ = (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ (μ.map k ⊗ₘ condDistrib g k μ) := by
       rw [Measure.compProd_eq_comp_prod, Measure.comp_assoc]
@@ -883,7 +883,7 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
         (condDistrib f k μ) Kernel.id measurable_id
       rw [← Kernel.id] at h
       simpa using h.symm
-    _ = (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (fun a ↦ (k a, g a)) := by
+    _ = (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (Function.prod k g) := by
       rw [compProd_map_condDistrib hg.aemeasurable]
   rw [← h_eq]
   have h1 : μ.map (fun x ↦ ((k x, g x), f x)) = (μ.map (fun a ↦ (k a, g a, f a))).map e := by

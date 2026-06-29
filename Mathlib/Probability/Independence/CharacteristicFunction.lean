@@ -99,7 +99,7 @@ variable [CompleteSpace E]
 to the product of the characteristic functions. This is the version for Banach spaces, see
 `indepFun_iff_charFun_prod` for the Hilbert space version. -/
 lemma indepFun_iff_charFunDual_prod (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
-    X ⟂ᵢ[P] Y ↔ ∀ L, charFunDual (P.map (fun ω ↦ (X ω, Y ω))) L =
+    X ⟂ᵢ[P] Y ↔ ∀ L, charFunDual (P.map (Function.prod X Y)) L =
       charFunDual (P.map X) (L.comp (.inl ℝ E F)) *
       charFunDual (P.map Y) (L.comp (.inr ℝ E F)) := by
   rw [indepFun_iff_map_prod_eq_prod_map_map hX hY, ← charFunDual_eq_prod_iff]

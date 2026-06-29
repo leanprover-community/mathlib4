@@ -70,10 +70,10 @@ theorem chabam (f : α → β) (hf : Con f) : Con f := hf
 ------------------------------------------------
 @[fun_prop]
 theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd) :
-    Con fun x => (fst x, snd x) := silentSorry
+    Con (Function.prod fst snd) := silentSorry
 @[fun_prop]
 theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd) :
-    Lin fun x => (fst x, snd x) := silentSorry
+    Lin (Function.prod fst snd) := silentSorry
 
 
 
@@ -793,7 +793,7 @@ theorem pi (f : α → (i : ι) → E i)
 theorem prod_mk (f : α → β) (g : α → γ)
     (Iβγ : ModelWithCorners (β × γ))
     (hf : MDifferentiable I I' f) (hg : MDifferentiable I I'' g) :
-    MDifferentiable I Iβγ (fun x ↦ (f x, g x)) := silentSorry
+    MDifferentiable I Iβγ (Function.prod f g) := silentSorry
 
 @[fun_prop]
 theorem fst (Iαβ : ModelWithCorners (α × β)) :

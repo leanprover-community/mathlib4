@@ -39,7 +39,7 @@ variable {α : Type*} [LinearOrder α]
 equipped with the lexicographic order.
 -/
 def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
-  Finset.univ.image fun i => (f i, i)
+  Finset.univ.image (Function.prod f id)
 
 /-- Given `p : α ×ₗ (Fin n) := (f i, i)` with `p ∈ graph f`,
 `graph.proj p` is defined to be `f i`.

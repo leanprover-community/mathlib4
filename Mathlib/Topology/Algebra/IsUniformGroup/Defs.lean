@@ -453,7 +453,7 @@ in the proof of said equivalence. -/]
 theorem Filter.Tendsto.conj_nhds_one {ι : Type*} {l : Filter ι} {x : ι → β}
     (hx : Tendsto x l (𝓝 1)) (g : ι → β) :
     Tendsto (g * x * g⁻¹) l (𝓝 1) := by
-  have : Tendsto (fun i ↦ (g i, x i)) l (comap Prod.snd (𝓝 1)) := by
+  have : Tendsto (Function.prod g x) l (comap Prod.snd (𝓝 1)) := by
     rwa [tendsto_comap_iff]
   -- `exact` works but is quite slow...
   convert! tendsto_conj_nhds_one.comp this

@@ -303,7 +303,7 @@ theorem snd {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.snd α β
     cases @decode β _ n.unpair.2 <;> simp
 
 theorem pair {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {f : α → β} {g : α → γ}
-    (hf : Primrec f) (hg : Primrec g) : Primrec fun a => (f a, g a) :=
+    (hf : Primrec f) (hg : Primrec g) : Primrec (Function.prod f g) :=
   ((casesOn1 0
             (Nat.Primrec.succ.comp <|
               .pair (Nat.Primrec.pred.comp hf) (Nat.Primrec.pred.comp hg))).comp

@@ -178,31 +178,31 @@ section Prod
 variable {Y : Ω → F}
 
 lemma toLp_prodMk [SecondCountableTopologyEither E F] (p : ℝ≥0∞) [Fact (1 ≤ p)]
-    (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
+    (hXY : HasGaussianLaw (Function.prod X Y) P) :
     HasGaussianLaw (fun ω ↦ toLp p (X ω, Y ω)) P :=
   hXY.map_equiv (WithLp.prodContinuousLinearEquiv p ℝ E F).symm
 
 omit [BorelSpace F] in
-lemma fst (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw X P :=
+lemma fst (hXY : HasGaussianLaw (Function.prod X Y) P) : HasGaussianLaw X P :=
   hXY.map_of_measurable (.fst ℝ E F) measurable_fst
 
 omit [BorelSpace E] in
-lemma snd (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw Y P :=
+lemma snd (hXY : HasGaussianLaw (Function.prod X Y) P) : HasGaussianLaw Y P :=
   hXY.map_of_measurable (.snd ℝ E F) measurable_snd
 
 variable [SecondCountableTopology E] {Y : Ω → E}
 
-lemma add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw (X + Y) P :=
+lemma add (hXY : HasGaussianLaw (Function.prod X Y) P) : HasGaussianLaw (X + Y) P :=
   hXY.map (ContinuousLinearMap.fst ℝ E E + ContinuousLinearMap.snd ℝ E E)
 
-lemma fun_add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
+lemma fun_add (hXY : HasGaussianLaw (Function.prod X Y) P) :
     HasGaussianLaw (fun ω ↦ X ω + Y ω) P :=
   hXY.add
 
-lemma sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw (X - Y) P :=
+lemma sub (hXY : HasGaussianLaw (Function.prod X Y) P) : HasGaussianLaw (X - Y) P :=
   hXY.map (ContinuousLinearMap.fst ℝ E E - ContinuousLinearMap.snd ℝ E E)
 
-lemma fun_sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
+lemma fun_sub (hXY : HasGaussianLaw (Function.prod X Y) P) :
     HasGaussianLaw (fun ω ↦ X ω - Y ω) P :=
   hXY.sub
 

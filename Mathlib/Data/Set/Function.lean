@@ -1265,10 +1265,10 @@ section Prod
 variable {α β₁ β₂ : Type*} {s : Set α} {t₁ : Set β₁} {t₂ : Set β₂}
   {f₁ : α → β₁} {f₂ : α → β₂} {g₁ : β₁ → α} {g₂ : β₂ → α}
 
-lemma InjOn.left_prodMk (h₁ : s.InjOn f₁) : s.InjOn fun x ↦ (f₁ x, f₂ x) :=
+lemma InjOn.left_prodMk (h₁ : s.InjOn f₁) : s.InjOn (Function.prod f₁ f₂) :=
   fun _ hx _ hy h => h₁ hx hy (Prod.ext_iff.1 h).1
 
-lemma InjOn.right_prodMk (h₂ : s.InjOn f₂) : s.InjOn fun x ↦ (f₁ x, f₂ x) :=
+lemma InjOn.right_prodMk (h₂ : s.InjOn f₂) : s.InjOn (Function.prod f₁ f₂) :=
   fun _ hx _ hy h => h₂ hx hy (Prod.ext_iff.1 h).2
 
 lemma prod_surjOn_fst (h : t₂.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ :=
@@ -1283,14 +1283,14 @@ lemma prod_surjOn_snd_iff : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ ↔ t₁.Nonem
   ⟨by by_contra!; aesop, by simp +contextual [or_imp, prod_surjOn_snd]⟩
 
 lemma MapsTo.prodMk (h₁ : MapsTo f₁ s t₁) (h₂ : MapsTo f₂ s t₂) :
-    MapsTo (fun x => (f₁ x, f₂ x)) s (t₁ ×ˢ t₂) :=
+    MapsTo (Function.prod f₁ f₂) s (t₁ ×ˢ t₂) :=
   fun _ hx => ⟨h₁ hx, h₂ hx⟩
 
 lemma LeftInvOn.left_prodMk (h₁ : LeftInvOn g₁ f₁ s) :
-    LeftInvOn (fun x ↦ g₁ x.1) (fun x ↦ (f₁ x, f₂ x)) s := h₁
+    LeftInvOn (fun x ↦ g₁ x.1) (Function.prod f₁ f₂) s := h₁
 
 lemma LeftInvOn.right_prodMk (h₂ : LeftInvOn g₂ f₂ s) :
-    LeftInvOn (fun x ↦ g₂ x.2) (fun x ↦ (f₁ x, f₂ x)) s := h₂
+    LeftInvOn (fun x ↦ g₂ x.2) (Function.prod f₁ f₂) s := h₂
 
 end Prod
 

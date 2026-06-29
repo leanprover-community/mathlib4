@@ -291,7 +291,7 @@ theorem snd : Computable (@Prod.snd α β) :=
   Primrec.snd.to_comp
 
 nonrec theorem pair {f : α → β} {g : α → γ} (hf : Computable f) (hg : Computable g) :
-    Computable fun a => (f a, g a) :=
+    Computable (Function.prod f g) :=
   (hf.pair hg).of_eq fun n => by cases decode (α := α) n <;> simp [Seq.seq]
 
 theorem unpair : Computable Nat.unpair :=

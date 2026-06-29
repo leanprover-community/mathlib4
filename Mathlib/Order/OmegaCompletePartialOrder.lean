@@ -450,7 +450,7 @@ theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = 
 @[fun_prop]
 lemma ωScottContinuous.prodMk
     {f : α → β} (hf : ωScottContinuous f) {g : α → γ} (hg : ωScottContinuous g) :
-    ωScottContinuous fun x ↦ (f x, g x) :=
+    ωScottContinuous (Function.prod f g) :=
   ScottContinuousOn.prodMk (fun a b hab ↦ ⟨pair a b hab, range_pair a b hab⟩) hf hg
 
 @[fun_prop]
