@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.Order.SuccPred.Basic
 
 /-!
@@ -84,12 +85,12 @@ lemma le₂ {X Y : C} (f : X ⟶ Y) (hf : W₂ f) : r.deg X ≤ r.deg Y := by
     rfl
   · exact (r.lt₂ f hf hf').le
 
-lemma identities_of_prop_of_eq {X Y : C} {f : X ⟶ Y} (hf : W₁ f) (h : r.deg X = r.deg Y) :
+lemma identities_of_prop₁_of_eq {X Y : C} {f : X ⟶ Y} (hf : W₁ f) (h : r.deg X = r.deg Y) :
     MorphismProperty.identities _ f := by
   by_contra
   exact h.not_gt (r.lt₁ _ hf this)
 
-lemma identities_of_prop_of_eq' {X Y : C} {f : X ⟶ Y} (hf : W₂ f) (h : r.deg X = r.deg Y) :
+lemma identities_of_prop₂_of_eq {X Y : C} {f : X ⟶ Y} (hf : W₂ f) (h : r.deg X = r.deg Y) :
     MorphismProperty.identities _ f := by
   by_contra
   exact h.not_lt (r.lt₂ _ hf this)
@@ -170,17 +171,17 @@ lemma degHom_comp_le_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rw [h_deg, ← h_fac, <- Category.assoc]
   exact r.degHom_le (f ≫ g₁) g₂
 
-lemma prop_of_degHom_eq_deg_left {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg X) :
+lemma prop₂_of_degHom_eq_deg_left {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg X) :
     W₂ f := by
   obtain ⟨Z, p, i, hp, hi, fac, h⟩ := r.exists_fac f
-  obtain ⟨_⟩ := r.identities_of_prop_of_eq hp (by aesop)
+  obtain ⟨_⟩ := r.identities_of_prop₁_of_eq hp (by aesop)
   obtain rfl : i = f := by simpa using fac
   exact hi
 
-lemma prop_of_degHom_eq_deg_right {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg Y) :
+lemma prop₁_of_degHom_eq_deg_right {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg Y) :
     W₁ f := by
   obtain ⟨Z, p, i, hp, hi, fac, h⟩ := r.exists_fac f
-  obtain ⟨_⟩ := r.identities_of_prop_of_eq' hi (by aesop)
+  obtain ⟨_⟩ := r.identities_of_prop₂_of_eq hi (by aesop)
   obtain rfl : p = f := by simpa using fac
   exact hp
 
@@ -189,8 +190,8 @@ lemma degHom_lt_or_of_degHom_comp_lt
     r.degHom f < r.deg Z ∨ r.degHom g < r.deg Z := by
   contrapose! hfg
   let φ := MorphismProperty.MapFactorizationData.mk Z f g rfl
-    (r.prop_of_degHom_eq_deg_right (le_antisymm (r.degHom_le_deg_right f) hfg.left))
-    (r.prop_of_degHom_eq_deg_left (le_antisymm (r.degHom_le_deg_left g) hfg.right))
+    (r.prop₁_of_degHom_eq_deg_right (le_antisymm (r.degHom_le_deg_right f) hfg.left))
+    (r.prop₂_of_degHom_eq_deg_left (le_antisymm (r.degHom_le_deg_left g) hfg.right))
   rw [r.degHom_eq φ]
 
 @[simp]
@@ -203,6 +204,24 @@ lemma deg_eq_of_iso {X Y : C} (e : X ≅ Y) : r.deg X = r.deg Y := by
     rw [← r.degHom_id X, ← e.hom_inv_id]
     apply r.degHom_le
   exact le_antisymm (this e) (this e.symm)
+
+include r in
+lemma prop₁_of_iso {X Y : C} (e : X ≅ Y) : W₁ e.hom :=
+  r.prop₁_of_degHom_eq_deg_right (by
+    refine le_antisymm ?_ ?_
+    · simpa using r.degHom_comp_le_right e.hom (𝟙 Y)
+    · simpa using r.degHom_comp_le_right e.inv e.hom)
+
+include r in
+lemma prop₂_of_iso {X Y : C} (e : X ≅ Y) : W₂ e.hom :=
+  (r.op.prop₁_of_iso e.op)
+
+include r in
+lemma skeletal : Skeletal C := by
+  intro X Y ⟨e⟩
+  exact (r.unique (f := e.hom)
+    (.mk X (𝟙 X) e.hom (by simp) (W₁.id_mem X) (r.prop₂_of_iso e))
+    (.mk Y e.hom (𝟙 Y) (by simp) (r.prop₁_of_iso e) (W₂.id_mem Y))).choose
 
 end ReedyStructure
 
