@@ -231,7 +231,7 @@ partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sβ a) : AtomM (Result 
 -/
 partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sβ a) : AtomM (Result (ExSum sα) q($a)) := do
   assumeInstancesCommute
-  match va with
+  match (dependent := true) va with
   | .zero => pure ⟨_, .zero, q(natCast_zero (R := $α))⟩
   | .add va₁ va₂ => do
     let ⟨_, vb₁, pb₁⟩ ← ExProd.evalNatCast va₁
@@ -378,14 +378,13 @@ partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     {a b : Q($α)} (za : RatCoeff a) (zb : RatCoeff b) :
     MetaM (Result RatCoeff q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
-  let isZero : MetaM (Option Q(IsNat ($a + $b) 0)) ← match res with
-  | Result.isNat inst lit pf => do
-    if lit.natLit! == 0 then
-      have : $lit =Q 0 := ⟨⟩
-      pure <| some q($pf)
-    else
-      pure none
-  | _ => pure none
+  let isZero ← match res with
+    | Result.isNat _inst lit pf =>
+      if lit.natLit! == 0 then
+        pure <| some (pf : Q(IsNat ($a + $b) 0))
+      else
+        pure none
+    | _ => pure none
   let r ← RatCoeff.ofResult res
   return ⟨r, isZero⟩
 

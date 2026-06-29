@@ -327,7 +327,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
   · have H : ∀ {θ}, circleMap 0 R θ * I ≠ 0 := fun {θ} => by simp [h₀, I_ne_zero]
     simpa only [inv_smul_smul₀ H]
       using ((continuous_circleMap 0 R).aestronglyMeasurable.mul_const
-        I).aemeasurable.inv.aestronglyMeasurable.smul h.aestronglyMeasurable
+        I).aemeasurable.fun_inv.aestronglyMeasurable.smul h.aestronglyMeasurable
   · simp [norm_smul, h₀]
 
 theorem ContinuousOn.circleIntegrable' {f : ℂ → E} {c : ℂ} {R : ℝ}

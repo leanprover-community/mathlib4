@@ -434,7 +434,8 @@ theorem orthogonalProjectionOnto_apply_of_mem_orthogonal
     [K.HasOrthogonalProjection] {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjectionOnto v = 0 :=
   orthogonalProjectionOnto_eq_zero_iff.mpr hv
 
-@[deprecated (since := "2026-05-06")] alias orthogonalProjection_apply_of_mem_orthogonal :=
+@[deprecated (since := "2026-05-06")] alias
+orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero :=
   orthogonalProjectionOnto_apply_of_mem_orthogonal
 
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/

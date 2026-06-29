@@ -78,8 +78,8 @@ alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
 
 /-- Extension for the `positivity` tactic: `mersenne`. -/
 @[positivity mersenne _]
-meta def evalMersenne : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalMersenne : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
     assertInstancesCommute
