@@ -139,20 +139,15 @@ theorem spectrum_toLin' (A : Matrix n n R) : spectrum R A.toLin' = spectrum R A 
 theorem mem_spectrum_of_mulVec_eq_smul {A : Matrix n n R} {v : n → R} {a : R} (h0 : v ≠ 0)
     (h : A *ᵥ v = a • v) : a ∈ spectrum R A := by
   rw [← spectrum_toLin']
-  refine hasEigenvalue_of_hasEigenvector ⟨?_, h0⟩ |>.mem_spectrum
-  simp [h]
+  exact mem_spectrum_of_map_eq_smul h0 h
 
 theorem mem_spectrum_iff_exists_mulVec_eq_smul {R : Type*} [Field R] {A : Matrix n n R} {a : R} :
     a ∈ spectrum R A ↔ ∃ v ≠ 0, A *ᵥ v = a • v := by
-  refine ⟨fun h ↦ ?_, fun ⟨v, h0, h⟩ ↦ mem_spectrum_of_mulVec_eq_smul h0 h⟩
-  rw [← spectrum_toLin', ← hasEigenvalue_iff_mem_spectrum] at h
-  refine h.exists_hasEigenvector.imp fun v h ↦ ?_
-  simpa using h.symm
+  simp_rw [← spectrum_toLin', mem_spectrum_iff_exists_map_eq_smul, toLin'_apply]
 
 theorem isUnit_iff_forall_mulVec_eq_zero {R : Type*} [Field R] {A : Matrix n n R} :
     IsUnit A ↔ ∀ v, A *ᵥ v = 0 → v = 0 := by
-  simp_rw [← spectrum.zero_notMem_iff R, mem_spectrum_iff_exists_mulVec_eq_smul, zero_smul]
-  grind only
+  simp_rw [← isUnit_toLin'_iff, isUnit_iff_forall_map_eq_zero, toLin'_apply]
 
 end Matrix
 

@@ -506,6 +506,23 @@ theorem hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ
 
 alias ⟨_, HasEigenvalue.of_mem_spectrum⟩ := hasEigenvalue_iff_mem_spectrum
 
+theorem mem_spectrum_of_map_eq_smul {f : End R M} {v : M} {a : R} (h0 : v ≠ 0) (h : f v = a • v) :
+    a ∈ spectrum R f := by
+  refine hasEigenvalue_of_hasEigenvector ⟨?_, h0⟩ |>.mem_spectrum
+  simp [h]
+
+theorem mem_spectrum_iff_exists_map_eq_smul [FiniteDimensional K V] {f : End K V} {a : K} :
+    a ∈ spectrum K f ↔ ∃ v ≠ 0, f v = a • v := by
+  refine ⟨fun h ↦ ?_, fun ⟨v, h0, h⟩ ↦ mem_spectrum_of_map_eq_smul h0 h⟩
+  rw [← hasEigenvalue_iff_mem_spectrum] at h
+  refine h.exists_hasEigenvector.imp fun v h ↦ ?_
+  simpa using h.symm
+
+theorem isUnit_iff_forall_map_eq_zero [FiniteDimensional K V] {f : End K V} :
+    IsUnit f ↔ ∀ v, f v = 0 → v = 0 := by
+  simp_rw [← spectrum.zero_notMem_iff K, mem_spectrum_iff_exists_map_eq_smul, zero_smul]
+  grind only
+
 theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     eigenspace f (a / b) = LinearMap.ker (b • f - algebraMap K (End K V) a) :=
   genEigenspace_div f a b hb
