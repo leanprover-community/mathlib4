@@ -27,7 +27,7 @@ universe w v u v' u'
 
 namespace CategoryTheory
 
-open Limits
+open Limits Opposite
 
 namespace Limits
 
@@ -77,6 +77,9 @@ protected abbrev IsLimit (c : WeightedCone W F) := Limits.IsLimit c
 namespace IsLimit
 
 variable {c : WeightedCone W F} (hc : c.IsLimit) {Z : C}
+
+include hc in
+lemma hasWeightedLimit : HasWeightedLimit W F := ⟨_, hc⟩
 
 section
 
@@ -261,6 +264,9 @@ noncomputable def weightedLimObj : (J ⥤ C) ⥤ C where
   obj F := W.weightedLimObjObj F
   map f := W.weightedLimObjMap f
 
+instance (j : Jᵒᵖ) : HasWeightedLimObj (coyoneda.obj j) C :=
+  fun F ↦ (WeightedCone.isLimitCoyoneda F j.unop).hasWeightedLimit
+
 end
 
 section
@@ -365,6 +371,15 @@ lemma WeightedCone.IsLimit.iso_inv_π {j : J} (x : W.obj j) :
   IsLimit.conePointUniqueUpToIso_inv_comp (limit.isLimit _) hc (Functor.elementsMk _ _ x)
 
 end
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Let `j : J`, the weighted limit functor with weight `coyoneda.obj (op j) : J ⥤ Type _`
+identifies to the evaluation functor `(J ⥤ C) ⥤ C` at `j`. -/
+@[simps!]
+noncomputable def weightedLimObjCoyonedaObjIso (j : J) :
+    Functor.weightedLimObj (coyoneda.obj (op j)) ≅
+      (evaluation J C).obj j :=
+  (NatIso.ofComponents (fun F ↦ (WeightedCone.isLimitCoyoneda F j).iso.symm)).symm
 
 end Limits
 
