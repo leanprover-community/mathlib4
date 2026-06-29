@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.RepresentationTheory.Continuous.Basic
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Algebra.Homology.Functor
 
 /-!
 # Topological representations
@@ -128,7 +130,9 @@ variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
   simpa using! congr($(f.hom.2 g) a)
 
-instance : AddCommGroup (A ⟶ B) := ConcreteCategory.homEquiv.addCommGroup
+instance : AddCommGroup (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.addCommGroup
+
+@[simp] lemma hom_zero : (0 : A ⟶ B).hom = 0 := rfl
 
 lemma hom_add (f g : A ⟶ B) : (f + g).hom = f.hom + g.hom := rfl
 
@@ -157,7 +161,7 @@ variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}
 
-instance : Module k (A ⟶ B) := ConcreteCategory.homEquiv.module k
+instance : Module k (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.module k
 
 lemma hom_smul (r : k) (f : A ⟶ B) : (r • f).hom = r • f.hom := rfl
 
@@ -218,5 +222,116 @@ instance : (fromActionTopModFunc (k := k) (G := G)).IsEquivalence :=
   TopRepEquivActionTop (k := k) (G := G).isEquivalence_inverse
 
 end equivAction
+
+section Homological
+
+variable {G : Type v} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+variable (k G) in
+/-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
+abbrev invariants : TopRep k G ⥤ TopModuleCat k where
+  obj A := .of k A.ρ.invariants
+  map f  := TopModuleCat.ofHom f.hom.invariants
+
+instance : (invariants k G).Additive where
+
+instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
+    (invariants k G).Linear k where
+
+variable (k G) in
+/-- The functor taking a representation `rep` to the representation `C(G, rep)`.
+The `G` action is defined by `g • f := x ↦ g • f (g⁻¹ * x)`. -/
+abbrev coind₁ : TopRep k G ⥤ TopRep k G where
+  obj A := of A.ρ.coind₁
+  map φ := ofHom <| ContRepresentation.coind₁Map _ _ φ.hom
+
+instance : (TopRep.coind₁ k G).Additive where
+
+instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
+    (coind₁ k G).Linear k where
+
+/-- The constant function `rep ⟶ C(G, rep)` as a natural transformation. -/
+@[implicit_reducible, simps]
+def coind₁ι : 𝟭 (TopRep k G) ⟶ coind₁ k G where
+  app rep := ofHom rep.ρ.coind₁ι
+
+namespace MultiInd
+
+variable (k G) in
+/-- The n-th functor taking `M` to `C(G, C(G,...,C(G, M)))` (with n `G`s).
+These functors form a complex, see `MultiInd.complex`. -/
+abbrev functor : ℕ → TopRep k G ⥤ TopRep k G
+  | 0 => 𝟭 _
+  | n + 1 => functor n ⋙ TopRep.coind₁ k G
+
+instance (A : TopRep k G) (n : ℕ) :
+    FunLike ((functor k G (n + 1)).obj A) G ((functor k G n).obj A) where
+  coe σ := σ.toFun
+  coe_injective := ContinuousMap.coe_injective
+
+lemma functor_toFun_apply {A : TopRep k G} {n : ℕ} (σ : (functor k G (n + 1)).obj A)
+    (g : G) : σ.toFun g = σ g := rfl
+
+variable (k G) in
+/-- The differential map in `MultiInd.complex`. -/
+@[implicit_reducible]
+def d : ∀ n : ℕ, functor k G n ⟶ functor k G (n + 1)
+  | 0 => coind₁ι
+  | n + 1 => (functor k G (n + 1)).whiskerLeft coind₁ι
+    - (functor k G (n + 1)).rightUnitor.hom ≫ Functor.whiskerRight (d n) (coind₁ k G)
+
+@[simp] lemma d_zero : d k G 0 = coind₁ι := dsimp% rfl
+
+lemma d_succ (n : ℕ) :
+    d k G (n + 1) = (functor k G (n + 1)).whiskerLeft coind₁ι -
+      (functor k G (n + 1)).rightUnitor.hom ≫ Functor.whiskerRight (d k G n) (coind₁ k G) :=
+  rfl
+
+lemma d_succ_app (n : ℕ) (A : TopRep k G) :
+    (d k G (n + 1)).app A = (functor k G (n + 1)).rightUnitor.hom.app A ≫
+      coind₁ι.app ((functor k G (n + 1)).obj A) -
+      (functor k G (n + 1)).rightUnitor.hom.app A ≫ ((coind₁ k G).map ((d k G n).app A)) :=
+  rfl
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma d_comp_d (n : ℕ) :
+    d k G n ≫ d k G (n + 1) = 0 := by
+  induction n with
+  | zero =>
+    simp only [Nat.reduceAdd, d_zero, d_succ, functor,
+      Functor.id_comp, Preadditive.comp_sub]
+    ext A : 3
+    simp only [Functor.id_obj, Functor.comp_obj, NatTrans.app_sub, NatTrans.comp_app, coind₁ι_app,
+      Functor.whiskerLeft_app, Functor.rightUnitor_hom_app, Functor.whiskerRight_app,
+      ConcreteCategory.hom_ofHom, Category.id_comp, hom_sub, hom_comp, Limits.zero_app, hom_zero]
+    ext x
+    simp [ContIntertwiningMap.toContinuousLinearMap_apply]
+  | succ n ih =>
+    rw [d_succ (n + 1), Preadditive.comp_sub]
+    nth_rw 2 [d_succ]
+    rw [Preadditive.sub_comp, ]
+    change _ - (_ - (_ ≫ _) ≫ Functor.whiskerRight (d k G (n + 1)) (coind₁ k G)) = 0
+    rw [Category.assoc, ← Functor.whiskerRight_comp]
+    rw [ih, Functor.whiskerRight_zero, Limits.comp_zero, sub_zero, sub_eq_zero]
+    rfl
+
+open CategoryTheory
+variable (k G) in
+/-- The complex of functors whose behaviour pointwise takes an `R`-linear `G`-representation `M`
+to the complex `M → C(G, M) → ⋯ → C(G, C(G,...,C(G, M))) → ⋯`
+The `G`-invariant submodules of it is the homogeneous cochains (shifted by one). -/
+abbrev complex : CochainComplex (TopRep k G ⥤ TopRep k G) ℕ :=
+  CochainComplex.of (functor k G) (d k G) d_comp_d
+
+lemma complex_d (A : TopRep k G) (n : ℕ) :
+    ((complex k G).asFunctor.obj A).d n (n + 1) = (d k G n).app A := by
+  rw [HomologicalComplex.asFunctor_obj_d]
+  simp_rw [CochainComplex.of_d]
+
+end MultiInd
+
+end Homological
 
 end TopRep

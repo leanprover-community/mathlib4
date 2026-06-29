@@ -415,6 +415,23 @@ def invariants (π : ContRepresentation R G V) : Submodule R V where
 lemma mem_invariants {π : ContRepresentation R G V} (v : V) :
     v ∈ π.invariants ↔ ∀ g, π g v = v := Iff.rfl
 
+def _root_.ContIntertwiningMap.invariants
+    {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
+    (f : π →ⁱL π') : π.invariants →L[R] π'.invariants :=
+  f.toContinuousLinearMap.restrict <| by
+    simp +contextual [f.toContinuousLinearMap_apply, ← f.isIntertwining]
+
+lemma _root_.ContIntertwiningMap.invariants_apply
+    {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
+    (f : π →ⁱL π') (v : π.invariants) :
+    f.invariants v = f v := rfl
+
+@[simp]
+lemma _root_.ContIntertwiningMap.mk_invariants_apply
+    {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
+    (f : π →ⁱL π') (v : V) (hv : v ∈ π.invariants) :
+    f.invariants ⟨v, hv⟩ = f v := rfl
+
 -- TODO : define `IsTopologicalMonoid` and then replace `Homeomorph.mulLeft g⁻¹` with the
 -- `ContinuousMap.mulRight g` to make `coind₁` work for monoids.
 variable {G H : Type*} [Group G] [TopologicalSpace G] [TopologicalSpace R]
