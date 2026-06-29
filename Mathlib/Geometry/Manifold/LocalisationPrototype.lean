@@ -51,6 +51,15 @@ structure NiceSubset (I : ModelWithCorners 𝕜 E H) : Type _  where
   isOpen_preimage_carrier : IsOpen <| I ⁻¹' carrier
   foo : carrier ⊆ Set.range I
 
+-- should we have a predicate ModelWithCorners.isNiceSubset, with the two properties of nice subsets
+-- (preimage under I is open and is contained in the range of I)?
+
+/-- A subset of `E` is *nice* with respect to a model with corners on `(E, H)`
+if it is an open subset of its range. -/
+def ModelWithCorners.IsNiceSubset (s : Set E) : Prop := IsOpen (I ⁻¹' s) ∧ s ⊆ Set.range I
+
+lemma NiceSubset.IsNiceSubset (s : NiceSubset I) : I.IsNiceSubset s.carrier := ⟨s.2, s.3⟩
+
 -- should IsOpenMap be namespaced? was this just missed when `IsEmbedding` got namespaced?
 
 open TopologicalSpace Set
@@ -64,14 +73,15 @@ theorem PartialHomeomorph.isEmbedding {X Y : Type*} [TopologicalSpace X] [Topolo
   sorry
 
 -- TODO: redefine ModelWithCorners instead; this is a temporary solution only
+-- not necessary, so only keeping for reference
 @[simps toPartialEquiv]
 def ModelWithCorners.toPartialHomeomorph (I : ModelWithCorners 𝕜 E H) : PartialHomeomorph H E where
   toPartialEquiv := I.toPartialEquiv
   continuousOn_toFun := I.continuous_toFun.continuousOn
   continuousOn_invFun := I.continuous_invFun.continuousOn
 
-lemma ModelWithCorners.isEmbedding : Topology.IsEmbedding I :=
-  I.toPartialHomeomorph.isEmbedding (by simp)
+-- xxx: should we have this lemma?
+--lemma ModelWithCorners.isEmbedding : Topology.IsEmbedding I := I.isClosedEmbedding.isEmbedding
 
 -- missing lemma, TODO clean up!
 lemma ModelWithCorners.image_preimage (I : ModelWithCorners 𝕜 E H)
@@ -82,30 +92,35 @@ lemma ModelWithCorners.image_preimage (I : ModelWithCorners 𝕜 E H)
   simp only [preimage_id_eq, id_eq, inter_eq_right]
   erw [I.range_eq_target]; exact hs
 
-lemma NiceSubset.uniqueDiffOn (s : NiceSubset I) : UniqueDiffOn 𝕜 s.carrier := by
-  have : ∃ t, IsOpen t ∧ s.carrier = (range I) ∩ t := by
-    obtain ⟨c, hc, hc'⟩ := I.isEmbedding.image_eq_isOpen_inter_range s.2
+lemma ModelWithCorners.IsNiceSubset.uniqueDiffOn {s : Set E} (hs : I.IsNiceSubset s) :
+    UniqueDiffOn 𝕜 s := by
+  have : ∃ t, IsOpen t ∧ s = (range I) ∩ t := by
+    obtain ⟨c, hc, hc'⟩ := I.isClosedEmbedding.isEmbedding.image_eq_isOpen_inter_range hs.1
     use c, hc
     rw [inter_comm, ← hc', I.image_preimage]
-    simpa using s.3
+    simpa using hs.2
   obtain ⟨t, ht, ht'⟩ := this
   rw [ht']
   exact I.uniqueDiffOn.inter ht
 
+lemma NiceSubset.uniqueDiffOn (s : NiceSubset I) : UniqueDiffOn 𝕜 s.carrier :=
+  s.IsNiceSubset.uniqueDiffOn
+
+def NiceSubset.open (s : NiceSubset I) : Opens H := ⟨I ⁻¹' s.carrier, s.isOpen_preimage_carrier⟩
+
 def niceSubsetEquiv : NiceSubset I ≃ Opens H where
-  toFun s := ⟨_, s.isOpen_preimage_carrier⟩
+  toFun s := s.open
   invFun t := {
     carrier := I '' t.1
-    isOpen_preimage_carrier := by simp [I.preimage_image, t.isOpen] -- why not simp?
+    isOpen_preimage_carrier := by simp [I.preimage_image, t.isOpen] -- why are these lemmas not simp?
     foo := by simp
   }
   left_inv t := by
     ext1
-    dsimp
+    dsimp [NiceSubset.open]
     rw [I.image_preimage]
     simpa [I.image_preimage] using t.foo
-  right_inv s := by ext; simp [I.preimage_image]
--- future: define NiceSubset.open to yield an Open
+  right_inv s := by ext; simp [NiceSubset.open, I.preimage_image]
 
 lemma restrict_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
   {f : M → 𝕜} {g : M → V} (U : Set M) :
@@ -185,9 +200,6 @@ lemma mvfderiv_comp_modelWithCorners (s : NiceSubset I) {f : E → V} {x : H} (h
   rw [mfderivWithin_of_isOpen s.2 hx]
   rfl
 
--- should we have a predicate ModelWithCorners.isNiceSubset, with the two properties of nice subsets
--- (preimage under I is open and is contained in the range of I)?
-
 -- don't want, also false in general
 -- lemma mvfderiv_eq_fderivWithin' (s : NiceSubset I) {f : E → V} {x : E} (hx : x ∈ s.carrier) :
 --     d% f x = (fderivWithin 𝕜 f s.carrier x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
@@ -248,7 +260,7 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
   obtain ⟨g', rfl⟩ := this
   obtain ⟨x, hx⟩ := x
   have : ∃ x' : E, x' ∈ s.carrier ∧ I.symm x' = x :=
-    ⟨I x, by simpa [niceSubsetEquiv] using hx, I.left_inv' (by simp)⟩
+    ⟨I x, by simpa [NiceSubset.open, niceSubsetEquiv] using hx, I.left_inv' (by simp)⟩
   obtain ⟨x', hx', rfl⟩ := this
   -- missing mathlib lemmas: relate MDiff terms to normed space world
   -- should be global simp lemmas or a simp set
