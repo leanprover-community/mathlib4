@@ -203,6 +203,7 @@ lemma degHom_lt_or_of_degHom_comp_lt
       hp := r.prop_of_degHom_eq_deg_src (le_antisymm (r.degHom_le_deg g) hg) }
   rw [r.degHom_eq φ]
 
+@[simp]
 lemma degHom_id (X : C) : r.degHom (𝟙 X) = r.deg X :=
   r.degHom_eq (f := 𝟙 X)
     { Z := X
