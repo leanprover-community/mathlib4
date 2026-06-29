@@ -402,7 +402,7 @@ def shrinkCoyonedaUliftFunctorIso [LocallySmall.{max w w'} C] :
     (fun X ↦ FunctorToTypes.shrinkCompUliftFunctorIso.{w, v} (coyoneda.obj X))
     fun _ ↦ by ext; simp [shrinkCoyoneda]
 
-/-- `uliftYoneda` identifies to `shrinkCoyoneda`. -/
+/-- `uliftCoyoneda` identifies to `shrinkCoyoneda`. -/
 noncomputable def uliftYonedaIsoShrinkCoyoneda :
     uliftCoyoneda.{w'} (C := C) ≅ shrinkCoyoneda.{max w' v} :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents
@@ -428,13 +428,13 @@ noncomputable def shrinkCoyonedaCompEvaluationCompUliftFunctorIsoUliftFunctor (Y
 /-- `shrinkCoyoneda.obj X` is corepresented by `X`. -/
 @[simps]
 noncomputable
-def shrinkCoyonedaRepresentableBy (X : Cᵒᵖ) :
+def shrinkCoyonedaCorepresentableBy (X : Cᵒᵖ) :
     (shrinkCoyoneda.{w}.obj X).CorepresentableBy X.unop where
   homEquiv := shrinkCoyonedaObjObjEquiv.symm
   homEquiv_comp f g := shrinkCoyonedaObjObjEquiv_symm_comp g f
 
 instance (X : Cᵒᵖ) : (shrinkCoyoneda.{w}.obj X).IsCorepresentable :=
-  (shrinkCoyonedaRepresentableBy X).isCorepresentable
+  (shrinkCoyonedaCorepresentableBy X).isCorepresentable
 
 end Coyoneda
 
