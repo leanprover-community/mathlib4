@@ -112,7 +112,7 @@ instance instMulAction {R : Type*} [Monoid R] [MulAction R ℝ≥0∞] [IsScalar
 
 instance addCommMonoid : AddCommMonoid (OuterMeasure α) :=
   Injective.addCommMonoid (show OuterMeasure α → Set α → ℝ≥0∞ from _) coe_fn_injective rfl
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- `(⇑)` as an `AddMonoidHom`. -/
 @[simps]
