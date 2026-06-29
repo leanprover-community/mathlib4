@@ -19,9 +19,6 @@ This file collects lemmas about `Finset` sums of `Function.Antiperiodic` functio
   the antiperiod `c` negates the sum.
 * `Function.Antiperiodic.sum_Ico_mul_shift`: for `w` antiperiodic, shifting the summation
   interval of `w k * g k` by `c` negates the sum and shifts the argument of `g` by `c`.
-* `Function.Antiperiodic.sum_Ico_mul_add_sum_Ico_mul_shift_eq_zero`: the `g = f` case, written as
-  a cancellation: summing `w k * f k` over `[a + c, b + c)` cancels summing `w k * f (k + c)`
-  over `[a, b)`.
 -/
 
 public section
@@ -47,13 +44,5 @@ theorem sum_Ico_mul_shift [NonAssocRing R] {w : α → R} {c : α} (hw : Antiper
     ∑ k ∈ Ico (a + c) (b + c), w k * g k = -∑ k ∈ Ico a b, w k * g (k + c) := by
   rw [← Finset.sum_Ico_add' (fun x => w x * g x) a b c]
   simp_rw [hw _, neg_mul, Finset.sum_neg_distrib]
-
-/-- For `w` antiperiodic with antiperiod `c`, the weighted sum `w k * f k` over `[a + c, b + c)`
-and the shifted-argument weighted sum `w k * f (k + c)` over `[a, b)` add to zero. -/
-theorem sum_Ico_mul_add_sum_Ico_mul_shift_eq_zero [NonAssocRing R]
-    {w : α → R} {c : α} (hw : Antiperiodic w c) (f : α → R) (a b : α) :
-    ∑ k ∈ Ico (a + c) (b + c), w k * f k +
-      ∑ k ∈ Ico a b, w k * f (k + c) = 0 := by
-  rw [sum_Ico_mul_shift hw f, neg_add_cancel]
 
 end Function.Antiperiodic
