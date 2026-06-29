@@ -513,6 +513,19 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
     rw [succ_nsmul]
     exact (IsFractional.nsmul n h).sup h
 
+theorem _root_.IsFractional.psmul {I : Submodule R P} (n : ℕ+) (h : IsFractional S I) :
+    IsFractional S (n • I : Submodule R P) := by
+  rw [← nsmul_val_eq_psmul]
+  exact h.nsmul n
+
+
+instance : SMul ℕ+ (FractionalIdeal S P) where smul n I := ⟨n • ↑I, I.isFractional.psmul n⟩
+
+@[norm_cast]
+theorem coe_psmul (n : ℕ+) (I : FractionalIdeal S P) :
+    (↑(n • I) : Submodule R P) = n • (I : Submodule R P) :=
+  rfl
+
 instance : SMul ℕ (FractionalIdeal S P) where smul n I := ⟨n • ↑I, I.isFractional.nsmul n⟩
 
 @[norm_cast]
@@ -538,6 +551,11 @@ theorem _root_.IsFractional.pow {I : Submodule R P} (h : IsFractional S I) :
     ∀ n : ℕ, IsFractional S (I ^ n : Submodule R P)
   | 0 => isFractional_of_le_one _ (pow_zero _).le
   | n + 1 => (pow_succ I n).symm ▸ (IsFractional.pow h n).mul h
+
+theorem _root_.IsFractional.ppow {I : Submodule R P} (h : IsFractional S I) (n : ℕ+) :
+    IsFractional S (I ^ n : Submodule R P) := by
+  rw [← npow_val_eq_ppow]
+  exact IsFractional.pow h n.val
 
 /-- `FractionalIdeal.mul` is the product of two fractional ideals,
 used to define the `Mul` instance.
@@ -585,6 +603,13 @@ theorem mul_le {I J K : FractionalIdeal S P} : I * J ≤ K ↔ ∀ i ∈ I, ∀ 
   simp only [mul_def]
   exact Submodule.mul_le
 
+instance : Pow (FractionalIdeal S P) ℕ+ :=
+  ⟨fun I n => ⟨(I : Submodule R P) ^ n, I.isFractional.ppow n⟩⟩
+
+@[simp, norm_cast]
+theorem coe_ppow (I : FractionalIdeal S P) (n : ℕ+) : ↑(I ^ n) = (I : Submodule R P) ^ n :=
+  rfl
+
 instance : Pow (FractionalIdeal S P) ℕ :=
   ⟨fun I n => ⟨(I : Submodule R P) ^ n, I.isFractional.pow n⟩⟩
 
@@ -608,7 +633,7 @@ theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n 
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
-    (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
+    (fun _ _ => coe_psmul _ _) (fun _ _ => coe_nsmul _ _) coe_ppow coe_pow coe_natCast
 
 instance : CanonicallyOrderedAdd (FractionalIdeal S P) where
   exists_add_of_le h := ⟨_, (sup_eq_right.mpr h).symm⟩
