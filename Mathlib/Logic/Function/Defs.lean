@@ -65,12 +65,8 @@ lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fs
 @[simp] theorem snd_dcomp_prod : Prod.snd ∘' Function.prod f g = g := rfl
 @[simp] theorem prod_fst_dcomp_snd_dcomp : Function.prod (Prod.fst ∘' h) (Prod.snd ∘' h) = h := rfl
 
-theorem prod_ext_dcomp_iff :
-    h = h' ↔ Prod.fst ∘' h = Prod.fst ∘' h' ∧ Prod.snd ∘' h = Prod.snd ∘' h' := by
-  simp [funext_iff, Prod.ext_iff, forall_and]
-
 @[simp] theorem prod_inj : Function.prod f g = Function.prod f' g' ↔ f = f' ∧ g = g' := by
-  simp [prod_ext_dcomp_iff]
+  simp [funext_iff, Prod.ext_iff, forall_and]
 
 @[simp] theorem swap_dcomp_prod : Prod.swap ∘' Function.prod f g = Function.prod g f := rfl
 
@@ -81,22 +77,12 @@ section Prod
 variable {α β γ δ : Type*} {ι κ : Sort*} (f : ι → α) (g : ι → β) (h h' : ι → α × β)
   (a : α) (b : β) (p : α × β)
 
-@[simp] theorem fst_comp_mk : Prod.fst ∘ (Prod.mk a : β → α × β) = const β a := rfl
-@[simp] theorem snd_comp_mk : Prod.snd ∘ (Prod.mk a : β → α × β) = id := rfl
-
-@[simp] theorem fst_comp_flip_mk : Prod.fst ∘ ((flip Prod.mk b) : α → α × β) = id := rfl
-@[simp] theorem snd_comp_flip_mkp : Prod.snd ∘ ((flip Prod.mk b) : α → α × β) = const α b := rfl
-
 @[simp] theorem fst_prod_snd : Function.prod (Prod.fst : _ → α) (Prod.snd : _ → β) = id := rfl
 @[simp] theorem snd_prod_fst : Function.prod (Prod.snd : _ → β) (Prod.fst : _ → α) = .swap := rfl
 
 @[simp] theorem fst_comp_prod : Prod.fst ∘ Function.prod f g = f := rfl
 @[simp] theorem snd_comp_prod : Prod.snd ∘ Function.prod f g = g := rfl
 @[simp] theorem prod_fst_comp_snd_comp : Function.prod (Prod.fst ∘ h) (Prod.snd ∘ h) = h := rfl
-
-theorem prod_ext_comp_iff :
-    h = h' ↔ Prod.fst ∘ h = Prod.fst ∘ h' ∧ Prod.snd ∘ h = Prod.snd ∘ h' := by
-  simp [prod_ext_dcomp_iff]
 
 @[simp] theorem const_prod : const ι p = Function.prod (const ι p.1) (const ι p.2) := rfl
 
