@@ -158,7 +158,7 @@ lemma degHom_le_deg_left {X Y : C} (f : X ⟶ Y) :
     r.degHom f ≤ r.deg X := by
   simpa using r.degHom_le (𝟙 X) f
 
-lemma degHom_le_deg' {X Y : C} (f : X ⟶ Y) :
+lemma degHom_le_deg_right {X Y : C} (f : X ⟶ Y) :
     r.degHom f ≤ r.deg Y := by
   simpa using r.degHom_le f (𝟙 Y)
 
