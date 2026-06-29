@@ -187,7 +187,7 @@ lemma normalizedDerivOfComplex_slash {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F)
   have hdetℂ : (g.val.det : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr hg.ne'
   have hσ (x) : σ g x = x := by grind [σ, ContinuousAlgEquiv.refl_apply]
   ext z
-  unfold normalizedDerivOfComplex
+  simp only [normalizedDerivOfComplex, ModularForm.slash_apply]
   have hz := denom_ne_zero g z
   have h_smul : HasDerivAt (fun w ↦ ↑(g • ofComplex w) : ℂ → ℂ)
       ((g.val.det : ℂ) / denom g z ^ 2) ↑z := (hasStrictDerivAt_smul hg z).hasDerivAt
@@ -203,7 +203,7 @@ lemma normalizedDerivOfComplex_slash {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F)
     filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
     grind [ofComplex_apply_of_im_pos, ofComplex_apply, ModularForm.slash_apply]
   rw [((((h_F.comp (z : ℂ) h_smul).mul h_denom).const_mul _).congr_of_eventuallyEq hcomp).deriv]
-  simp only [ModularForm.slash_apply, hσ, hdet, abs_of_pos hg, ofComplex_apply, Function.comp_apply]
+  simp only [hσ, hdet, abs_of_pos hg, ofComplex_apply, Function.comp_apply]
   rw [show k + 2 - 1 = (k - 1) + 2 by ring, show -(k + 2) = -k + -2 by ring,
     zpow_add₀ hdetℂ, zpow_add₀ hz, zpow_sub_one₀ hz]
   field
@@ -215,8 +215,10 @@ lemma normalizedDerivOfComplex_SL_slash {k : ℤ} {F : ℍ → ℂ} (hF : MDiff 
   have hdet : (γ : GL (Fin 2) ℝ).val.det = 1 := by
     rw [← Matrix.GeneralLinearGroup.val_det_apply]; simp
   ext z
-  simpa [ModularForm.SL_slash] using
-    (hdet ▸ congrFun (normalizedDerivOfComplex_slash hF (by grind)) z :)
+  have := congrFun
+    (normalizedDerivOfComplex_slash (k := k) hF (g := (γ : GL (Fin 2) ℝ)) (by grind)) z
+  rw [hdet] at this
+  simpa [ModularForm.SL_slash] using this
 
 /--
 Serre derivative is equivariant under the slash action. More precisely,
