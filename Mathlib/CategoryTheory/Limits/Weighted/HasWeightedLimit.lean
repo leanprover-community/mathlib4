@@ -236,7 +236,7 @@ section
 variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
   (F : J ⥤ C)
 
-def hasWeightedLimit : ObjectProperty (J ⥤ Type w) :=
+abbrev hasWeightedLimit : ObjectProperty (J ⥤ Type w) :=
   fun W ↦ HasWeightedLimit W F
 
 instance (W : (hasWeightedLimit.{w} F).FullSubcategory) :
@@ -252,6 +252,11 @@ abbrev HasWeightedLimFlipObj : Prop :=
 
 variable [HasWeightedLimFlipObj.{w} F]
 
+lemma hasWeightedLimit_eq_top :
+    hasWeightedLimit.{w} F = ⊤ := by
+  rw [← top_le_iff]
+  infer_instance
+
 @[implicit_reducible, simps]
 noncomputable def weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C where
   obj W := W.unop.weightedLimObjObj F
@@ -259,7 +264,19 @@ noncomputable def weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C where
 
 noncomputable def weightedLimFlipObjIso' :
     F.hasWeightedLimit.ι.op ⋙ weightedLimFlipObj.{w} F ≅
-  F.weightedLimFlipObj' := Iso.refl _
+      F.weightedLimFlipObj' :=
+  Iso.refl _
+
+instance : (hasWeightedLimit.{w} F).ι.IsEquivalence :=
+  ObjectProperty.isEquivalence_ι (hasWeightedLimit_eq_top _)
+
+noncomputable def weightedLimFlipObjIso :
+    F.hasWeightedLimit.ι.inv.op ⋙ F.weightedLimFlipObj' ≅
+      weightedLimFlipObj.{w} F :=
+  Functor.isoWhiskerLeft _ F.weightedLimFlipObjIso'.symm ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    Functor.isoWhiskerRight F.hasWeightedLimit.ι.asEquivalence.op.counitIso _ ≪≫
+    Functor.leftUnitor _
 
 end
 

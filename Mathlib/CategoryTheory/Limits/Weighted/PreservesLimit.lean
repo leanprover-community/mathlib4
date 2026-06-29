@@ -5,6 +5,7 @@ Authors: Joël Riou, Yun Liu, Christian Merten, Robin Carlier, Lyne Moser, Nima 
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Weighted.HasWeightedLimit
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
@@ -17,7 +18,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 @[expose] public section
 
-universe w v u v' u'
+universe w v'' u'' v' u' v u
 
 namespace CategoryTheory
 
@@ -26,7 +27,9 @@ open Limits Opposite
 variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
   {K : Type*} [Category* K]
 
-namespace Functor.weightedLimFlipObj'
+namespace Functor
+
+namespace weightedLimFlipObj'
 
 namespace preservesLimit'
 
@@ -37,7 +40,8 @@ variable [HasColimitsOfShape K (Type w)]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
-noncomputable def π (j : J) : c.pt.obj.obj j → (s.pt ⟶ F.obj j) :=
+/-- Auxiliary definition for `Functor.weightedLimFlipObj'.preservesLimit'` -/
+private noncomputable def π (j : J) : c.pt.obj.obj j → (s.pt ⟶ F.obj j) :=
   ((Types.isColimit_iff_coconeTypesIsColimit _).1
     ⟨isColimitOfPreserves ((evaluation _ _).obj j) hc⟩).desc
       (CoconeTypes.mk _ (fun k x ↦ s.π.app (op k) ≫ weightedLimObjObjπ _ _ x)
@@ -45,7 +49,7 @@ noncomputable def π (j : J) : c.pt.obj.obj j → (s.pt ⟶ F.obj j) :=
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
-lemma π_ι_app_hom_app_apply ⦃j : J⦄ ⦃k : K⦄ (x : (G.obj k).obj.obj j) :
+private lemma π_ι_app_hom_app_apply ⦃j : J⦄ ⦃k : K⦄ (x : (G.obj k).obj.obj j) :
     dsimp% π hc s j ((c.ι.app k).hom.app j x) =
       s.π.app (op k) ≫ weightedLimObjObjπ _ _ x :=
   ((Types.isColimit_iff_coconeTypesIsColimit _).1
@@ -56,6 +60,12 @@ end preservesLimit'
 open preservesLimit' in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+/-- Let `F : J ⥤ C` and `K` be a category. We consider a cocone `c`
+for a functor `G` from `K` to the fullsubcategory of `J ⥤ Type w` defined
+by `hasWeightedLimit.{w} F`. Assuming the cocone `c` is a colimit as a cocone
+in `J ⥤ Type w`, we show that after the application of the contravariant
+functor `F.weightedLimFlipObj'.{w}`, the corresponding cone in `C` is a limit. -/
+@[no_expose]
 noncomputable def preservesLimit'
     [HasColimitsOfShape K (Type w)]
     {F : J ⥤ C} {G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategory}
@@ -81,7 +91,7 @@ noncomputable def preservesLimit'
 set_option backward.defeqAttrib.useBackward true in
 lemma preservesLimit
     [HasColimitsOfShape Kᵒᵖ (Type w)]
-    {F : J ⥤ C} {G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategoryᵒᵖ}
+    (F : J ⥤ C) (G : K ⥤ (hasWeightedLimit.{w} F).FullSubcategoryᵒᵖ)
     [PreservesColimit G.leftOp (hasWeightedLimit.{w} F).ι] :
     PreservesLimit G (weightedLimFlipObj'.{w} F) where
   preserves {c} hc := ⟨by
@@ -92,6 +102,26 @@ lemma preservesLimit
       (opOpEquivalence K).symm)
     exact Cone.ext (Iso.refl _)⟩
 
-end Functor.weightedLimFlipObj'
+end weightedLimFlipObj'
+
+instance [HasColimitsOfShape Kᵒᵖ (Type w)]
+    (F : J ⥤ C) [HasWeightedLimFlipObj.{w} F] :
+    PreservesLimitsOfShape K (weightedLimFlipObj'.{w} F) where
+  preservesLimit := weightedLimFlipObj'.preservesLimit ..
+
+instance [HasColimitsOfShape Kᵒᵖ (Type w)]
+    (F : J ⥤ C) [HasWeightedLimFlipObj.{w} F] :
+    PreservesLimitsOfShape K (weightedLimFlipObj.{w} F) :=
+  preservesLimitsOfShape_of_natIso (weightedLimFlipObjIso.{w} F)
+
+instance [HasColimitsOfSize.{v'', u''} (Type w)]
+    (F : J ⥤ C) [HasWeightedLimFlipObj.{w} F] :
+    PreservesLimitsOfSize.{v'', u''} (weightedLimFlipObj'.{w} F) where
+
+instance [HasColimitsOfSize.{v'', u''} (Type w)]
+    (F : J ⥤ C) [HasWeightedLimFlipObj.{w} F] :
+    PreservesLimitsOfSize.{v'', u''} (weightedLimFlipObj.{w} F) where
+
+end Functor
 
 end CategoryTheory
