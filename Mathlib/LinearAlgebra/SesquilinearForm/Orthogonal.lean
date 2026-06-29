@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
+Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andreas Swerdlow
+Authors: Moritz Doll, Christopher Hoskin
 -/
 module
 
