@@ -40,18 +40,24 @@ instance : Std.LawfulCommIdentity (α := α) XorOp.xor 0 where
   right_id := xor_zero
 
 @[simp]
-theorem xor_cancel_right (a b : α) : (a ^^^ b) ^^^ b = a := by
-  rw [xor_assoc, LawfulXor.xor_self, xor_zero]
-
-@[simp]
 theorem xor_cancel_left (a b : α) : a ^^^ (a ^^^ b) = b := by
   rw [← xor_assoc, LawfulXor.xor_self, zero_xor]
+
+@[simp]
+theorem xor_cancel_right (a b : α) : (a ^^^ b) ^^^ b = a := by
+  rw [xor_assoc, LawfulXor.xor_self, xor_zero]
 
 instance : LawfulXor Nat where
   xor_assoc := Nat.xor_assoc
   xor_comm := Nat.xor_comm
   xor_self := Nat.xor_self
   xor_zero := Nat.xor_zero
+
+instance {w : ℕ} : LawfulXor (Fin (2 ^ w)) where
+  xor_assoc := Fin.xor_assoc rfl
+  xor_comm := Fin.xor_comm
+  xor_self _ := Fin.xor_self
+  xor_zero _ := Fin.xor_zero
 
 instance {w : Nat} : LawfulXor (BitVec w) where
   xor_assoc := BitVec.xor_assoc
@@ -119,19 +125,13 @@ instance : LawfulXor ISize where
   xor_self _ := ISize.xor_self
   xor_zero _ := ISize.xor_zero
 
-instance {w : ℕ} : LawfulXor (Fin (2 ^ w)) where
-  xor_assoc := Fin.xor_assoc
-  xor_comm := Fin.xor_comm
-  xor_self _ := Fin.xor_self
-  xor_zero _ := Fin.xor_zero
-
-lemma xor_right_involutive (a : α) : Function.Involutive (a ^^^ ·) := xor_cancel_left a
+lemma xor_right_eq {a : α} : (· ^^^ a) = (a ^^^ ·) := funext (xor_comm · a)
 
 lemma xor_left_involutive (a : α) : Function.Involutive (· ^^^ a) := (xor_cancel_right · a)
+lemma xor_right_involutive (a : α) : Function.Involutive (a ^^^ ·) := xor_cancel_left a
 
 lemma xor_eq_iff_left_eq (a b c : α) :
     a ^^^ b = c ↔ a = c ^^^ b := xor_left_involutive _ |>.eq_iff
-
 lemma xor_eq_iff_right_eq (a b c : α) :
     a ^^^ b = c ↔ b = a ^^^ c := xor_right_involutive _ |>.eq_iff
 
@@ -144,28 +144,20 @@ lemma xor_eq_iff_right_eq (a b c : α) :
 @[simp] lemma xor_xor_cancel_comm_assoc (a b : α) : a ^^^ (b ^^^ a) = b := by
   rw [xor_comm a, xor_cancel_right]
 
-@[simp] lemma xor_left_eq_self (a b : α) : a ^^^ b = a ↔ b = 0 := by
+@[simp] lemma xor_left_eq_self_iff {a b : α} : a ^^^ b = a ↔ b = 0 := by
    rw [xor_eq_iff_right_eq, xor_self a]
-
-@[simp] lemma xor_right_eq_self (a b : α) : b ^^^ a = a ↔ b = 0 := by
+@[simp] lemma xor_right_eq_self_iff {a b : α} : b ^^^ a = a ↔ b = 0 := by
    rw [xor_eq_iff_left_eq, xor_self a]
 
-lemma xor_right_zero : (· ^^^ (0 : α)) = id := funext xor_zero
 lemma xor_left_zero : ((0 : α) ^^^ ·) = id := funext zero_xor
+lemma xor_right_zero : (· ^^^ (0 : α)) = id := funext xor_zero
 
-lemma xor_right_id_iff (a : α) : (· ^^^ a) = id ↔ a = 0 :=
-  ⟨((zero_xor a).symm.trans <| congrFun · 0), (· ▸ xor_right_zero)⟩
-lemma xor_left_id_iff (a : α) : (a ^^^ ·) = id ↔ a = 0 :=
+@[simp] lemma xor_left_eq_id_iff {a : α} : (a ^^^ ·) = id ↔ a = 0 :=
   ⟨((xor_zero a).symm.trans <| congrFun · 0), (· ▸ xor_left_zero)⟩
+@[simp] lemma xor_right_eq_id_iff {a : α} : (· ^^^ a) = id ↔ a = 0 := by
+  rw [xor_right_eq, xor_left_eq_id_iff]
 
-lemma isFixedPt_xor_right_iff (a b : α) : Function.IsFixedPt (· ^^^ a) b ↔ a = 0 :=
-  xor_left_eq_self b a
-
-lemma isFixedPt_xor_left_iff (a b : α) : Function.IsFixedPt (a ^^^ ·) b ↔ a = 0 :=
-  xor_right_eq_self b a
-
-@[simp] lemma not_isFixedPt_xor_left_of_neZero (a : α) [NeZero a] (b : α) :
-    ¬ Function.IsFixedPt (a ^^^ ·) b := (isFixedPt_xor_left_iff a b).not.mpr (NeZero.ne a)
-
-@[simp] lemma not_isFixedPt_xor_right_of_neZero (a : α) [NeZero a] (b : α) :
-    ¬ Function.IsFixedPt (· ^^^ a) b := (isFixedPt_xor_right_iff a b).not.mpr (NeZero.ne a)
+@[simp] lemma isFixedPt_xor_left_iff {a b : α} : Function.IsFixedPt (a ^^^ ·) b ↔ a = 0 :=
+  xor_right_eq_self_iff
+@[simp] lemma isFixedPt_xor_right_iff {a b : α} : Function.IsFixedPt (· ^^^ a) b ↔ a = 0 := by
+  rw [xor_right_eq, isFixedPt_xor_left_iff]
