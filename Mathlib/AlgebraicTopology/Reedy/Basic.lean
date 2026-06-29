@@ -5,14 +5,25 @@ Authors: Joël Riou, Nima Rasekh, Aras Ergus
 -/
 module
 
---public import Reedy.MorphismProperty.Identities
---public import Reedy.MorphismProperty.Factorization
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Reedy categories
+
+In this file, we introduce the definition of a Reedy structure
+on a category `C` equipped with two classes of morphisms
+`W₁` and `W₂` (these are sometimes denoted `C₋` and `C₊` in
+the literature).
+
+## TODO
+* Construct the Reedy model category structure on the category of
+functor `C ⥤ D` when `C` is a Reedy category and `D` a model category
+https://github.com/leanprover-community/project-intentions/issues/5
+
+## References
+* [Emily Riehl and Dominic Verity, *Elements of ∞-Category Theory*, C.4][RiehlVerity2022]
 
 -/
 
@@ -24,12 +35,19 @@ open CategoryTheory
 
 namespace HomotopicalAlgebra
 
--- C.4.1
 open MorphismProperty in
+/-- A Reedy structure on a category `C` equipped with two multiplicative
+classes of morphisme `W₁` and `W₂` consists of the data of a degree
+map for objects `deg : C → α`, where `α` is a well ordered type. The first
+two axioms `lt₁` and `lt₂` expresses the behaviour of the degree with
+respect to morphisms in `W₁` (resp. `W₂`) that are not identities, and
+the last axiom says that any morphism can be factorred in a unique way
+as a morphism in `W₁` followed by a morphism in `W₂`. -/
 structure ReedyStructure {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
     [W₁.IsMultiplicative] [W₂.IsMultiplicative]
     (α : Type*) [LinearOrder α] [OrderBot α] [SuccOrder α] [WellFoundedLT α]
     where
+  /-- the degree of an object -/
   deg : C → α
   lt₁ {X Y : C} (f : X ⟶ Y) (hf : W₁ f) (hf' : ¬ identities C f) : deg Y < deg X
   lt₂ {X Y : C} (f : X ⟶ Y) (hf : W₂ f) (hf' : ¬ identities C f) : deg X < deg Y
@@ -38,11 +56,12 @@ structure ReedyStructure {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty
 
 namespace ReedyStructure
 
-variable {C : Type u} [SmallCategory C] {W₁ W₂ : MorphismProperty C}
+variable {C : Type*} [Category* C] {W₁ W₂ : MorphismProperty C}
   [W₁.IsMultiplicative] [W₂.IsMultiplicative]
   {α : Type*} [LinearOrder α] [OrderBot α] [SuccOrder α] [WellFoundedLT α]
   (r : ReedyStructure W₁ W₂ α)
 
+/-- The opposite of a Reedy structure. -/
 @[simps]
 protected def op : ReedyStructure W₂.op W₁.op α where
   deg := r.deg ∘ Opposite.unop
@@ -82,6 +101,8 @@ lemma subsingleton_mapFactorizationData ⦃X Y : C⦄ (f : X ⟶ Y) :
   have := (r.nonempty_unique f).some
   infer_instance
 
+/-- The Reedy factorization of a morphism `f : X ⟶ Y` as a morphism in `W₁`
+followed by a morphism in `W₂`. -/
 @[no_expose]
 noncomputable def mapFactorizationData {X Y : C} (f : X ⟶ Y) :
     W₁.MapFactorizationData W₂ f := by
@@ -102,6 +123,9 @@ lemma unique {X Y : C} {f : X ⟶ Y} (fac fac' : W₁.MapFactorizationData W₂ 
   obtain rfl : fac = fac' := Subsingleton.elim _ _
   simp
 
+/-- The degree of a morphisms for a Reedy structure. It is defined as the degree of
+the intermediate object in the Reedy factorization, but it is also the smallest
+degree of an intermediate object in a factorization, see the lemma `degHom_le`. -/
 @[no_expose]
 noncomputable def degHom {X Y : C} (f : X ⟶ Y) : α := r.deg (r.mapFactorizationData f).Z
 lemma degHom_eq {X Y : C} {f : X ⟶ Y} (h : W₁.MapFactorizationData W₂ f) :
@@ -117,7 +141,6 @@ lemma exists_fac {X Y : C} (f : X ⟶ Y) :
 
 lemma degHom_le {X Z Y : C} (f : X ⟶ Z) (g : Z ⟶ Y) :
     r.degHom (f ≫ g) ≤ r.deg Z := by
-  -- the argument is essentially in the diagram of lemma C.4.7
   obtain ⟨Zf, f₁, f₂, hf₁, hf₂, fac_f, eq_f⟩ := r.exists_fac f
   obtain ⟨Zg, g₁, g₂, hg₁, hg₂, fac_g, eq_g⟩ := r.exists_fac g
   obtain ⟨Zh, h₁, h₂, hh₁, hh₂, fac_h, eq_h⟩ := r.exists_fac (f₂ ≫ g₁)
@@ -179,6 +202,21 @@ lemma degHom_lt_or_of_degHom_comp_lt
       hi := r.prop_of_degHom_eq_deg_tgt (le_antisymm (r.degHom_le_deg' f) hf)
       hp := r.prop_of_degHom_eq_deg_src (le_antisymm (r.degHom_le_deg g) hg) }
   rw [r.degHom_eq φ]
+
+lemma degHom_id (X : C) : r.degHom (𝟙 X) = r.deg X :=
+  r.degHom_eq (f := 𝟙 X)
+    { Z := X
+      i := 𝟙 X
+      p := 𝟙 X
+      hi := W₁.id_mem _
+      hp := W₂.id_mem _ }
+
+lemma deg_le_of_iso {X Y : C} (e : X ≅ Y) : r.deg X ≤ r.deg Y := by
+  rw [← r.degHom_id X, ← e.hom_inv_id]
+  apply r.degHom_le
+
+lemma deg_eq_of_iso {X Y : C} (e : X ≅ Y) : r.deg X = r.deg Y :=
+  le_antisymm (r.deg_le_of_iso e) (r.deg_le_of_iso e.symm)
 
 end ReedyStructure
 
