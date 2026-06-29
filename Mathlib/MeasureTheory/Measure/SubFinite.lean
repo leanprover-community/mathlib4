@@ -6,11 +6,12 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Sub
-
-import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+
+import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # Results about subtraction of finite measures
@@ -90,5 +91,18 @@ lemma withDensity_sub {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity
   · refine sub_le_of_le_add ?_
     rw [← withDensity_add_right _ hg]
     exact withDensity_mono (ae_of_all _ fun x ↦ le_tsub_add)
+
+lemma sub_apply_eq_rnDeriv_add_singularPart [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set α) :
+    (μ - ν) s = ν.withDensity (fun a ↦ μ.rnDeriv ν a - 1) s + μ.singularPart ν s := by
+  have hμ : μ = ν.withDensity (fun a ↦ μ.rnDeriv ν a) + μ.singularPart ν := by
+    rw [rnDeriv_add_singularPart]
+  have hν : ν = ν.withDensity 1 := by rw [withDensity_one]
+  conv_lhs => rw [hν, hμ, add_comm _ (μ.singularPart ν)]
+  rw [← add_sub_of_mutuallySingular]
+  swap; · simpa only [withDensity_one] using mutuallySingular_singularPart μ ν
+  simp only [coe_add, Pi.add_apply]
+  have : IsFiniteMeasure (ν.withDensity 1) := by simp only [withDensity_one]; infer_instance
+  rw [add_comm, ← withDensity_sub (by fun_prop) (by fun_prop)]
+  congr
 
 end MeasureTheory.Measure
