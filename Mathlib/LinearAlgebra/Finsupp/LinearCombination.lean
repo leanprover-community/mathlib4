@@ -517,7 +517,7 @@ lemma Submodule.span_eq_iUnion_nat (s : Set M) :
   simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_setOf_eq, mem_span_set']
   refine exists_congr (fun n ↦ ⟨?_, ?_⟩)
   · rintro ⟨f, g, rfl⟩
-    exact ⟨Function.prod f g, fun i ↦ (g i).2, rfl⟩
+    exact ⟨Function.prod f (Subtype.val ∘ g), fun i ↦ (g i).2, rfl⟩
   · rintro ⟨f, hf, rfl⟩
     exact ⟨fun i ↦ (f i).1, fun i ↦ ⟨(f i).2, (hf i)⟩, rfl⟩
 

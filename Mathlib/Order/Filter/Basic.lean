@@ -991,7 +991,7 @@ theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : �
   hf.mp <|
     hg.mono <| by
       intros
-      simp only [*]
+      simp only [Function.prod_apply, *]
 
 /-- See `EventuallyEq.comp_tendsto` in Mathlib.Order.Filter.Tendsto for a similar statement w.r.t.
 composition on the right. -/
