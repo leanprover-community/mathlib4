@@ -101,7 +101,7 @@ lemma le_ord_iff {x : X} (hx : coheight x = 1) {f : X.functionField}
     (hf : f ≠ 0) {n : ℤ} :
     n ≤ ord f x ↔ ↑(Multiplicative.ofAdd n) ≤ ordHom x hx f := by
   rw [ord_eq_unzero_ordHom hx hf]
-  change (Multiplicative.toAdd (Multiplicative.ofAdd n)) ≤ _ ↔ _
+  nth_rw 1 [← toAdd_ofAdd n]
   rw [Multiplicative.toAdd_le, le_unzero_iff]
 
 lemma ord_add {x : X} (hx : coheight x = 1) [IsDiscreteValuationRing (X.presheaf.stalk x)]
