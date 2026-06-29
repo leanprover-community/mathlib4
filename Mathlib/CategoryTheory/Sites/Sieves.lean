@@ -271,7 +271,7 @@ lemma ofArrows_of_unique {X : C} {ι : Type*} [Unique ι] {Y : ι → C} (f : �
   obtain rfl : i = default := Subsingleton.elim _ _
   simp
 
-theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
+theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit.{w + 1} => f) = singleton f := by
   rw [ofArrows_of_unique]
 
 @[grind =]
@@ -316,7 +316,7 @@ lemma pushforward_ofArrows {ι : Type*} {U : ι → C} {X Y : C} (g : ∀ i, U i
 
 lemma pushforward_singleton {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (singleton f).pushforward g = .singleton (f ≫ g) := by
-  rw [← ofArrows_pUnit.{_, _, 0}, pushforward_ofArrows, ofArrows_pUnit.{_, _, 0}]
+  rw [← ofArrows_pUnit.{0}, pushforward_ofArrows, ofArrows_pUnit.{0}]
 
 /-- The pullback of a presieve `R` on `Y` along a morphism `f : X ⟶ Y` is the presieve on `X`
 given by all morphisms `g : Z ⟶ X` such that `f ≫ g` is in `R`. -/
@@ -475,7 +475,7 @@ lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
 
 @[simp]
 lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
-  rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
+  rw [← ofArrows_pUnit.{0}, map_ofArrows, ofArrows_pUnit]
 
 lemma map_le_iff_le_functorPullback {R : Presieve X} {S : Presieve (F.obj X)} :
     R.map F ≤ S ↔ R ≤ S.functorPullback F :=

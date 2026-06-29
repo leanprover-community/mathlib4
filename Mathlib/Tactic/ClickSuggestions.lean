@@ -72,12 +72,13 @@ def viewKAbstractSubExpr' {m α}
 /-- Compute the suggestions. Use `token` for the output. -/
 public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Option Name)
     (token : RefreshToken) : ClickSuggestionsM Unit := withReducible do
+  -- Instantiate all metavariables, so that we won't need to worry about this later on.
+  instantiateMVarDeclMVars loc.mvarId
+  loc.mvarId.withContext do
   -- TODO: instead of just putting `✝` after inaccessible names,
   -- we should figure out how to use `rename_i` to actually refer to shadowed local variables.
   let lctx := (← getLCtx).sanitizeNames.run' { options := (← getOptions) }
   Meta.withLCtx' lctx do
-  -- Instantiate all metavariables, so that we will not need to do this later on.
-  instantiateMVarDeclMVars loc.mvarId
   trackingComputation "click_suggestions" do
   let (fvarId?, pos) ← match loc.loc with
     | .hypType fvarId pos  => pure (some fvarId, pos)
@@ -129,7 +130,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       let goals := if useAfter then tacticInfo.goalsAfter else tacticInfo.goalsBefore
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
-  goal.ctx.val.runMetaM {} do loc.mvarId.withContext do
+  goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
