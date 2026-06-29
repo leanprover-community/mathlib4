@@ -318,14 +318,14 @@ instance {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
   inferInstanceAs <| (restrictScalarsEquivalenceOfRingEquiv e).inverse.IsEquivalence
 
 /-- The equivalence of categories of `ℤ`-algebras and rings. -/
-@[simps! functor inverse_obj inverse_map_hom unitIso_hom_app_hom_apply counitIso]
+@[simps! (dsimpLhs := true) functor inverse_obj inverse_map_hom unitIso_hom_app_hom_apply counitIso]
 def intEquivalence : AlgCat.{u} ℤ ≌ RingCat.{u} where
   functor := forget₂ _ _
   inverse.obj A := AlgCat.of ℤ A
   inverse.map f := AlgCat.ofHom f.hom.toIntAlgHom
   unitIso := NatIso.ofComponents
-    (fun A ↦ AlgEquiv.toAlgebraIso (@.ofRingEquiv (f := RingEquiv.refl _)
-      _ _ _ _ _ _ _ (Ring.toIntAlgebra _) fun _ ↦ by simp))
+    fun A ↦ AlgEquiv.toAlgebraIso (@.ofRingEquiv (f := RingEquiv.refl _)
+      _ _ _ _ _ _ _ (Ring.toIntAlgebra _) fun _ ↦ by simp)
   counitIso := Iso.refl _
 
 instance : (forget₂ (AlgCat.{u} ℤ) RingCat.{u}).IsEquivalence :=
