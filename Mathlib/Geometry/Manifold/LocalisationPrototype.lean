@@ -4,6 +4,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.OpenSmoothEmbedding
 public import Mathlib.Topology.Sets.OpenCover
+import Mathlib.Tactic.ClickSuggestions
 
 -- Experiments: localisation arguments in differential geometry
 -- in Utrecht (June 11), Christian Merten, Edward van de Meent, Michael Rothgang
@@ -31,7 +32,7 @@ inductive ImBad {𝕜 : Type} [NontriviallyNormedField 𝕜] :
       {H : Type} [TopologicalSpace H]
       {M : Type} [TopologicalSpace M] [ChartedSpace H M]
       {I : ModelWithCorners 𝕜 E H} : ImBad M I M I
-
+#check' ImBad.refl
 lemma _root_.Set.restrict_surjective {α β : Type*} (s : Set α) [Nonempty β] :
     (s.restrict (π := fun _ ↦ β)).Surjective := by
   sorry
@@ -50,7 +51,27 @@ structure NiceSubset (I : ModelWithCorners 𝕜 E H) : Type _  where
   isOpen_preimage_carrier : IsOpen <| I ⁻¹' carrier
   foo : carrier ⊆ Set.range I
 
+-- should IsOpenMap be namespaced? was this just missed when `IsEmbedding` got namespaced?
+
 open TopologicalSpace Set
+
+-- copied from #41045; review and merge that one!
+/-- A partial homeomorphism whose source is all of `X` defines an embedding of `X` into
+`Y`. The converse is also true; see `IsEmbedding.toPartialHomeomorph`. -/
+theorem PartialHomeomorph.isEmbedding {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {e : PartialHomeomorph X Y} (h : e.source = Set.univ) :
+    Topology.IsEmbedding e :=
+  sorry
+
+-- TODO: redefine ModelWithCorners instead; this is a temporary solution only
+@[simps toPartialEquiv]
+def ModelWithCorners.toPartialHomeomorph (I : ModelWithCorners 𝕜 E H) : PartialHomeomorph H E where
+  toPartialEquiv := I.toPartialEquiv
+  continuousOn_toFun := I.continuous_toFun.continuousOn
+  continuousOn_invFun := I.continuous_invFun.continuousOn
+
+lemma ModelWithCorners.isEmbedding : Topology.IsEmbedding I :=
+  I.toPartialHomeomorph.isEmbedding (by simp)
 
 -- missing lemma, TODO clean up!
 lemma ModelWithCorners.image_preimage (I : ModelWithCorners 𝕜 E H)
@@ -60,6 +81,16 @@ lemma ModelWithCorners.image_preimage (I : ModelWithCorners 𝕜 E H)
     I.rightInvOn.eqOn.inter_preimage_eq]
   simp only [preimage_id_eq, id_eq, inter_eq_right]
   erw [I.range_eq_target]; exact hs
+
+lemma NiceSubset.uniqueDiffOn (s : NiceSubset I) : UniqueDiffOn 𝕜 s.carrier := by
+  have : ∃ t, IsOpen t ∧ s.carrier = (range I) ∩ t := by
+    obtain ⟨c, hc, hc'⟩ := I.isEmbedding.image_eq_isOpen_inter_range s.2
+    use c, hc
+    rw [inter_comm, ← hc', I.image_preimage]
+    simpa using s.3
+  obtain ⟨t, ht, ht'⟩ := this
+  rw [ht']
+  exact I.uniqueDiffOn.inter ht
 
 def niceSubsetEquiv : NiceSubset I ≃ Opens H where
   toFun s := ⟨_, s.isOpen_preimage_carrier⟩
@@ -121,25 +152,23 @@ lemma mvfderiv_restrict_apply {V : Type*} [NormedAddCommGroup V] [NormedSpace �
 
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
--- is this false?
+-- This is true, but may not be what we want in general!
 lemma mvfderiv_eq_fderiv {f : E → V} {x : E} :
     d% f x = (fderiv 𝕜 f x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
-  sorry
-
--- is this true?
-lemma mvfderiv_eq_fderivWithin {f : E → V} {x : E} :
-    d% f x = (fderivWithin 𝕜 f (range I) x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
-  sorry
+  simp only [mvfderiv, mfderiv_eq_fderiv]
+  rfl
 
 -- should we have ModelWithCorners.isNiceSubset?
-lemma mvfderiv_eq_fderivWithin' (s : NiceSubset I) {f : E → V} {x : E} :
+
+lemma mvfderiv_eq_fderivWithin' (s : NiceSubset I) {f : E → V} {x : E} (hx : x ∈ s.carrier) :
     d% f x = (fderivWithin 𝕜 f s.carrier x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
-  sorry
+  rw [mvfderiv_eq_fderiv]
+  rw [fderivWithin_eq_fderiv]
+  · apply s.uniqueDiffOn.uniqueDiffWithinAt hx
+  sorry -- TODO: not true in general!
 
 theorem Function.smul_comp {𝕜 X Y Z : Type*} [SMul 𝕜 Z] (f : Y → 𝕜) (g : Y → Z) (φ : X → Y) :
   (f • g) ∘ φ = f ∘ φ • g ∘ φ := rfl
-
-#click_suggestions
 
 open Function
 lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
@@ -201,7 +230,7 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
     simpa
   dsimp [this]
   simp only [this]
-  simp_rw [mvfderiv_eq_fderivWithin' s (I := I)]
+  simp_rw [mvfderiv_eq_fderivWithin' s (I := I) hx]
   simp only [this]
   set A := mfderiv I (𝓘(𝕜, E)) I (I.symm x') -- TODO: elaborators failure, fix!
   set B := mfderiv I I Subtype.val ⟨I.symm x', hx⟩
@@ -211,12 +240,8 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
   -- This is the mathematics
   rw [fderivWithin_smul]
   · simp
-  · apply UniqueDiffWithinAt.mono
-    apply
-
-  · apply hf.mono
-    sorry
-
-  sorry -- analogous
+  · exact s.uniqueDiffOn.uniqueDiffWithinAt hx' -- missing API lemma!
+  · exact hf
+  · exact hg
 
 end
