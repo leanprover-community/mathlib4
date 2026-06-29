@@ -109,7 +109,7 @@ variable {A G W : Type*} [Ring A] [Group G] [AddCommGroup W] [Module A W]
 /-- The quotient representation associated to a subrepresentation. -/
 def quotient {ρ : Representation A G W} (ρ' : Subrepresentation ρ) :
     Representation A G (W ⧸ ρ'.toSubmodule) :=
-  ρ.quotient ρ'.toSubmodule (by exact fun g w hw => ρ'.apply_mem_toSubmodule g hw)
+  ρ.quotient ρ'.toSubmodule (fun g _ hw => ρ'.apply_mem_toSubmodule g hw)
 
 @[simp]
 lemma quotient_apply {ρ : Representation A G W} (ρ' : Subrepresentation ρ)
