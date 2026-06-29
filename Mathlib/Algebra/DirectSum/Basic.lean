@@ -372,7 +372,7 @@ end Sigma
 section SigmaFiber
 
 variable {ι₁ ι₂ : Type v} [DecidableEq ι₂] (f : ι₁ → ι₂)
-variable {β : ι₁ → Type w} [∀ i, AddCommMonoid (β i)]
+variable {β : ι₁ → Type w} [Π i, AddCommMonoid (β i)]
 
 /-- The equivalence between a direct sum indexed by a type `ι₁` and the double sum indexed by a type
 `ι₂` and the fibres of a map `f : ι₁ → ι₂`. -/
