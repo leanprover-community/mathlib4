@@ -73,7 +73,7 @@ lemma toPresheafOfModules_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : N.obj X) 
     dsimp% ((N.toPresheafOfModules).map f m).val = M.map f m.val := by
   rfl
 
-/-- The inclusion of the subobject cut out by `N` into `M`. -/
+/-- The inclusion of a submodule into the ambient presheaf of modules. -/
 @[simps!]
 noncomputable def ι : N.toPresheafOfModules ⟶ M :=
   homMk { app := fun X ↦ AddCommGrpCat.ofHom (N.obj X).subtype.toAddMonoidHom } (by cat_disch)
