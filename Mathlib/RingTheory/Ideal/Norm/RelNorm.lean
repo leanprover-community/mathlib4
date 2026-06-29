@@ -399,6 +399,7 @@ be Galois.
 -/
 theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     [IsGalois (FractionRing R) (FractionRing S)] : relNorm R P = p ^ p.inertiaDeg P := by
+  have : P.IsMaximal := IsMaximal.of_liesOver_isMaximal P p
   let G := Gal(FractionRing S/FractionRing R)
   let := IsIntegralClosure.MulSemiringAction R (FractionRing R) (FractionRing S) S
   have := IsGaloisGroup.of_isFractionRing G R S (FractionRing R) (FractionRing S)
@@ -417,6 +418,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     rw [Set.mem_toFinset] at hQ
     have : Q.IsPrime := hQ.1
     have : Q.LiesOver p := hQ.2
+    rw [ramificationIdx_eq_ramificationIdx' p Q hp]
     rw [← ramificationIdxIn_eq_ramificationIdx p Q G]
     obtain ⟨σ, rfl⟩ := Ideal.exists_smul_eq_of_isGaloisGroup p P Q G
     rw [relNorm_smul, hs, ← pow_mul, mul_comm]
@@ -424,12 +426,12 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     map_algebraMap_eq_finsetProd_pow hp).symm.trans <| relNorm_algebraMap S p
   simp +contextual only [map_prod, map_pow, h₀, Finset.prod_const, ← pow_mul] at h
   rwa [← IsGaloisGroup.card_eq_finrank G (FractionRing R) (FractionRing S),
-    ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G, mul_comm,
+    ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p S G, mul_comm,
     ← Set.ncard_eq_toFinset_card',
     ((IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hp).pow_injective _).eq_iff,
     mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero p S),
-    mul_right_inj' (ramificationIdxIn_ne_zero G hp),
-    inertiaDegIn_eq_inertiaDeg p P G] at h
+    mul_right_inj' (ramificationIdxIn_ne_zero G),
+    inertiaDegIn_eq_inertiaDeg p P G, ← inertiaDeg_eq_inertiaDeg' p P] at h
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 

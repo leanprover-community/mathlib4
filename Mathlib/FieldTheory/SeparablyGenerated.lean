@@ -61,7 +61,7 @@ theorem aeval_toPolynomialAdjoinImageCompl_eq_zero
     {a : ι → K} {F : MvPolynomial ι k} (hFa : F.aeval a = 0) (i : ι) :
     (toPolynomialAdjoinImageCompl F a i).aeval (a i) = 0 := by
   rw [← hFa, ← AlgHom.restrictScalars_apply k]
-  simp_rw [toPolynomialAdjoinImageCompl, ← AlgEquiv.coe_algHom, ← AlgHom.comp_apply]
+  simp_rw [toPolynomialAdjoinImageCompl, ← AlgEquiv.coe_toAlgHom, ← AlgHom.comp_apply]
   congr; ext; aesop (add simp optionEquivLeft_X_some) (add simp optionEquivLeft_X_none)
 
 theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : Irreducible F) (i : ι)
