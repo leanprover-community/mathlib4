@@ -86,7 +86,7 @@ instance iInf {ι : Type*} {W : ι → MorphismProperty C}
 
 lemma iff_identities_le {W : MorphismProperty C} :
     W.ContainsIdentities ↔ identities C ≤ W :=
-  ⟨fun _ ↦ by intro _ _ _ ⟨X⟩; exact id_mem _, fun h ↦ ⟨fun _ ↦ h _ ⟨_⟩⟩⟩
+  ⟨fun _ ↦ by intro _ _ _ ⟨_⟩; exact id_mem _, fun h ↦ ⟨fun _ ↦ h _ ⟨_⟩⟩⟩
 
 end ContainsIdentities
 
