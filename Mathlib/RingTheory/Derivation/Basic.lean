@@ -215,6 +215,17 @@ instance : SMul S (Derivation R A M) :=
       leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
         smul_comm r (_ : A) (_ : M)] }⟩
 
+-- instead of forcing this instance, we could assume
+--  [DistribSMul S (A →ₗ[R] M)] [DistribSMul S M] [SMulCommClass R S M] [SMulCommClass S A M]
+-- that is, inherit SMul from the underlying linear map instead of relying on the
+-- same instance synthesis that provides SMul for a linear map in the most common case
+instance : SMul ℕ+ (Derivation R A M) :=
+  ⟨fun r D =>
+    { toLinearMap := r • D.1
+      map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
+      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
+        smul_comm r (_ : A) (_ : M)] }⟩
+
 @[simp]
 theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
   rfl
@@ -227,7 +238,7 @@ theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
   rfl
 
 instance : AddCommMonoid (Derivation R A M) :=
-  coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => rfl) fun _ _ => rfl
 
 /-- `coeFn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
@@ -543,7 +554,8 @@ theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
   rfl
 
 instance : AddCommGroup (Derivation R A M) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 end
 
