@@ -507,9 +507,8 @@ theorem hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ
 alias ⟨_, HasEigenvalue.of_mem_spectrum⟩ := hasEigenvalue_iff_mem_spectrum
 
 theorem mem_spectrum_of_map_eq_smul {f : End R M} {v : M} {a : R} (h0 : v ≠ 0) (h : f v = a • v) :
-    a ∈ spectrum R f := by
-  refine hasEigenvalue_of_hasEigenvector ⟨?_, h0⟩ |>.mem_spectrum
-  simp [h]
+    a ∈ spectrum R f :=
+  hasEigenvalue_of_hasEigenvector ⟨by simp [h], h0⟩ |>.mem_spectrum
 
 theorem mem_spectrum_iff_exists_map_eq_smul [FiniteDimensional K V] {f : End K V} {a : K} :
     a ∈ spectrum K f ↔ ∃ v ≠ 0, f v = a • v := by
