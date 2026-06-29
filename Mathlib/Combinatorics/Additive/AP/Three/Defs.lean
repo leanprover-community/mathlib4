@@ -443,7 +443,7 @@ theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat 
   convert! (image_add_left_Ico 0 (b - a) _).symm
   exact (add_tsub_cancel_of_le h).symm
 
-lemma Fin.addRothNumber_eq_rothNumberNat {k : Fin (n + 1)} (hkn : 2 * ↑k ≤ n) :
+lemma Fin.addRothNumber_eq_rothNumberNat {k : Fin (n + 1)} (hkn : 2 * k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
   IsAddFreimanIso.addRothNumber_congr <| mod_cast isAddFreimanIso_Iio two_ne_zero hkn
 
