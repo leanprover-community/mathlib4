@@ -29,7 +29,6 @@ of the formal group law `F(X,Y)`.
 
 * `F.Point σ` taking values in the formal power series ring `MvPowerSeries σ R` with the property
 that constant coefficient is nilpotent. We have the following typeclass:
-- `AddZeroClass (F.Point σ)`
 - `AddMonoid (F.Point σ)`
 when `F` is a commutative formal group law
 - `AddCommMonoid (F.Point σ)`
@@ -128,7 +127,7 @@ def Point (F : FormalGroup R) (σ : Type*) := {f : MvPowerSeries σ R // PowerSe
 
 instance : Add (F.Point σ) where
   add x y := ⟨(F : MvPowerSeries (Fin 2) R).subst ![x.val, y.val],
-    IsNilpotent_subst' (by simp [hasSubst_of_constantCoeff_nilpotent, x.prop, y.prop])
+    IsNilpotent_subst (by simp [hasSubst_of_constantCoeff_nilpotent, x.prop, y.prop])
       (F.zero_constantCoeff ▸ IsNilpotent.zero)⟩
 
 @[simp]
@@ -244,6 +243,7 @@ lemma Xzero_subst_Xzero : F.Xzero.subst F.Xzero = F.Xzero := by
       simp [F.assoc', this, subst_zero_of_constantCoeff_zero F.zero_constantCoeff,
         PowerSeries.HasSubst.X', PowerSeries.HasSubst]
 
+@[simp]
 lemma Xzero_eq_X : F.Xzero = PowerSeries.X := by
   haveI : Invertible (F.Xzero.coeff 1) := (coeff_one_Xzero F) ▸ invertibleOne
   calc
@@ -294,6 +294,7 @@ lemma zeroX_subst_zeroX : F.zeroX.subst F.zeroX = F.zeroX := by
       simp [← F.assoc', this, subst_zero_of_constantCoeff_zero F.zero_constantCoeff,
         PowerSeries.HasSubst.X', PowerSeries.HasSubst]
 
+@[simp]
 lemma zeroX_eq_X : F.zeroX = PowerSeries.X := by
   haveI : Invertible (F.zeroX.coeff 1) := (coeff_one_zeroX F) ▸ invertibleOne
   calc

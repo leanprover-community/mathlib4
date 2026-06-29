@@ -357,15 +357,22 @@ theorem map_subst {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+*
   simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
     ← coeff_map, Finsupp.prod]
 
-lemma subst_zero_of_constantCoeff_zero {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
-    f.subst (0 : σ → MvPowerSeries τ S) = 0 := by
+lemma subst_zero_eq_C_constantCoeff {f : MvPowerSeries σ R} :
+    f.subst (0 : σ → MvPowerSeries τ S) = (C f.constantCoeff).map (algebraMap R S) := by
+  classical
   ext n
-  rw [coeff_subst (by simp [hasSubst_def]), coeff_zero, finsum_eq_zero_of_forall_eq_zero]
-  intro d
-  by_cases hd : d = 0
-  · simp [hd, hf]
+  rw [coeff_subst (by simp [hasSubst_def]), coeff_map, finsum_eq_single _ 0]
+  · by_cases hn : n = 0
+    · simp [hn, Algebra.algebraMap_eq_smul_one]
+    simp [coeff_C_of_ne_zero hn, coeff_one, hn]
+  intro d hd
   obtain ⟨i, hi⟩ : d.support.Nonempty := d.support_nonempty_iff.mpr hd
   simp [Finsupp.prod, Finset.prod_eq_zero hi, coeff_zero, zero_pow <| d.mem_support_iff.mp hi]
+
+@[simp]
+lemma subst_zero_of_constantCoeff_zero {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
+    f.subst (0 : σ → MvPowerSeries τ S) = 0 := by
+  simp [subst_zero_eq_C_constantCoeff, hf]
 
 lemma HasSubst.cons_subst_zero_left {f : MvPowerSeries (Fin 2) R} (i j k : σ)
     (hF : constantCoeff f = 0) : HasSubst (![subst ![X i, X j] f, X k]) (S := R) :=
@@ -419,7 +426,7 @@ variable {υ : Type*}
   {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   {b : τ → MvPowerSeries υ T}
 
-lemma IsNilpotent_subst' (ha : HasSubst a)
+lemma IsNilpotent_subst (ha : HasSubst a)
     {f : MvPowerSeries σ R} (hf : IsNilpotent f.constantCoeff) :
     IsNilpotent (constantCoeff (f.subst a)) := by
   classical
@@ -435,14 +442,14 @@ lemma IsNilpotent_subst' (ha : HasSubst a)
   exact Commute.isNilpotent_mul_left (Commute.all _ _)
     <| (IsNilpotent.pow_iff_pos (d.mem_support_iff.mp hi)).mpr (ha.const_coeff i)
 
-theorem IsNilpotent_subst (ha : HasSubst a)
+theorem IsNilpotent_substAlgHom (ha : HasSubst a)
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
     IsNilpotent (constantCoeff (substAlgHom ha f)) := by
-  simpa using IsNilpotent_subst' ha hf
+  simpa using IsNilpotent_subst ha hf
 
 theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
     HasSubst (fun s ↦ substAlgHom hb (a s)) where
-  const_coeff s := IsNilpotent_subst hb (ha.const_coeff s)
+  const_coeff s := IsNilpotent_substAlgHom hb (ha.const_coeff s)
   coeff_zero := by
     letI : UniformSpace S := ⊥
     letI : UniformSpace T := ⊥
