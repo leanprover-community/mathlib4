@@ -162,7 +162,7 @@ lemma degHom_le_deg_right {X Y : C} (f : X ⟶ Y) :
     r.degHom f ≤ r.deg Y := by
   simpa using r.degHom_le f (𝟙 Y)
 
-lemma degHom_comp_le {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma degHom_comp_le_left {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     r.degHom (f ≫ g) ≤ r.degHom f := by
   have ⟨_, f₁, f₂, _, _, h_fac, h_deg⟩ := r.exists_fac f
   rw [h_deg, ← h_fac, Category.assoc]
