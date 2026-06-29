@@ -435,7 +435,7 @@ theorem range_diag : range (Function.prod id id) = diagonal α := by
   simp [diagonal, eq_comm]
 
 theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
-  rw [← range_diag, range_subset_iff]
+  simp_rw [← range_diag, range_subset_iff, Function.prod_apply, id_eq]
 
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ ↔ Disjoint s t :=
