@@ -508,7 +508,7 @@ theorem monotone_snd : Monotone (@Prod.snd α β) := fun _ _ ↦ And.right
 
 theorem monotone_prodMk_iff {f : γ → α} {g : γ → β} :
     Monotone (Function.prod f g) ↔ Monotone f ∧ Monotone g := by
-  simp_rw [Monotone, Prod.mk_le_mk, forall_and]
+  simp_rw [Monotone, Function.prod_apply, Prod.mk_le_mk, forall_and]
 
 theorem Monotone.prodMk {f : γ → α} {g : γ → β} (hf : Monotone f) (hg : Monotone g) :
     Monotone (Function.prod f g) :=

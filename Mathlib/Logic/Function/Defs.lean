@@ -49,8 +49,8 @@ end DComp
 protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
     α i × β i := (f i, g i)
 
-@[simp] lemma prod_apply {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
-    Function.prod f g i = (f i , g i) := rfl
+@[simp, grind =] lemma prod_apply {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
+    Function.prod f g i = (f i, g i) := rfl
 
 lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   rfl
