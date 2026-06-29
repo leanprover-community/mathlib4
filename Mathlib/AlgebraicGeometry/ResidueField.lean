@@ -154,18 +154,6 @@ lemma Hom.residueDegree_id (x : X) : (𝟙 _ : X ⟶ X).residueDegree x = 1 := b
   rw [residueFieldMap_id]
   exact CommSemiring.finrank_self _
 
-lemma Hom.residueDegree_eq_finrank {k : Type u} [Field k] (f : X ⟶ Spec (.of k)) (x : X) :
-    letI := Algebra.compHom (↑(X.residueField x))
-      ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
-    f.residueDegree x = Module.finrank k (X.residueField x) := by
-  letI := Algebra.compHom (↑(X.residueField x))
-      ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
-  simp [residueDegree]
-
-
-  sorry
-
-
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f x ∈ V) :
     Y.evaluation V (f x) hx ≫ f.residueFieldMap x =
@@ -336,6 +324,52 @@ lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
 
 end Spec
 
+/-
+This is a stupid length for such a trivial lemma, we should factor out the isomorphism between
+
+-/
+lemma Hom.residueDegree_eq_finrank {X : Scheme.{u}} {k : Type u} [Field k]
+    (f : X ⟶ Spec (.of k)) (x : X) :
+    letI := Algebra.compHom (↑(X.residueField x))
+      ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
+    f.residueDegree x = Module.finrank k (X.residueField x) := by
+  letI algk := Algebra.compHom (↑(X.residueField x))
+      ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
+  letI algR := (f.residueFieldMap x).hom.toAlgebra
+  let i := ((Spec.residueFieldIso (.of k) (f x)).commRingCatIsoToRingEquiv.trans
+     (Ideal.algEquivResidueFieldOfField (f x).asIdeal).toRingEquiv.symm)
+  refine Algebra.finrank_eq_of_equiv_equiv i (RingEquiv.refl _) ?_
+  have hnat : (Spec (.of k)).Γevaluation (f x) ≫ f.residueFieldMap x
+      = f.appTop ≫ X.Γevaluation x := by
+    have h := Scheme.evaluation_naturality f (V := ⊤) x trivial
+    simpa [Scheme.Γevaluation, Scheme.Hom.appTop] using h
+  have keyhom : algebraMap k ↑(X.residueField x)
+      = (f.residueFieldMap x).hom.comp i.symm.toRingHom := by
+    have hi : ∀ a, i.symm a
+        = (Spec.residueFieldIso (.of k) (f x)).inv
+          (algebraMap k ((f x).asIdeal.ResidueField) a) := by
+      intro a
+      simp only [i, RingEquiv.symm_trans_apply, RingEquiv.symm_symm,
+        Ideal.algEquivResidueFieldOfField_apply, AlgEquiv.coe_ringEquiv]
+      rfl
+    have hkey := Spec.algebraMap_residueFieldIso_inv (.of k) (f x)
+    ext a
+    rw [RingHom.comp_apply, show i.symm.toRingHom a = i.symm a from rfl, hi a]
+    have hkeya := DFunLike.congr_fun (congrArg CommRingCat.Hom.hom hkey) a
+    have hnata := DFunLike.congr_fun (congrArg CommRingCat.Hom.hom hnat)
+      ((Scheme.ΓSpecIso (.of k)).inv a)
+    simp only [CommRingCat.hom_comp, RingHom.comp_apply, CommRingCat.hom_ofHom,
+      Scheme.Γevaluation, Scheme.evaluation] at hkeya hnata ⊢
+    rw [hkeya, hnata]
+    rfl
+  have hc : (algebraMap k ↑(X.residueField x)).comp i.toRingHom
+      = (RingEquiv.refl ↑(X.residueField x)).toRingHom.comp
+          (algebraMap ↑((Spec (.of k)).residueField (f x)) ↑(X.residueField x)) := by
+    rw [keyhom]
+    ext c
+    simp [algR, RingHom.algebraMap_toAlgebra]
+  exact hc
+
 /-- A helper lemma to work with `AlgebraicGeometry.Scheme.SpecToEquivOfField`. -/
 lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
     {f₁ f₂ : Σ x : X.carrier, X.residueField x ⟶ .of K} :
@@ -371,11 +405,6 @@ lemma descResidueField_stalkClosedPointTo_comp {K : Type u} [Field K] (g : Spec 
     dsimp% descResidueField (stalkClosedPointTo (g ≫ f)) =
       Hom.residueFieldMap f (g (closedPoint K)) ≫ descResidueField (stalkClosedPointTo g) := by
   simp [← cancel_epi (Y.residue _), stalkClosedPointTo_comp, residue_residueFieldMap_assoc]
-
-noncomputable instance test123 (R : CommRingCat.{u}) {X : Scheme.{u}} [X.Over (Spec R)] {p : X} :
-    Algebra R ↑(X.residueField p) :=
-  Algebra.compHom (↑(X.residueField p))
-    ((X.Γevaluation p).hom.comp ((Scheme.ΓSpecIso R).inv ≫ (X ↘ Spec R).appTop).hom)
 
 end Scheme
 
