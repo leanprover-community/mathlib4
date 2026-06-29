@@ -8,7 +8,6 @@ module
 public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
 public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
@@ -301,7 +300,6 @@ variable {B X : ℝ≥0 → Ω → ℝ}
 
 /-- A stochastic process is called **Brownian** if its finite-dimensional laws are those
 of the Brownian motion, see `IsPreBrownianReal`, and if it has almost-surely continuous paths. -/
-@[wikidata Q1056809]
 structure IsBrownianReal (X : ℝ≥0 → Ω → ℝ) (P : Measure Ω := by volume_tac) : Prop
     extends IsPreBrownianReal X P where
   cont : ∀ᵐ ω ∂P, Continuous (X · ω)
