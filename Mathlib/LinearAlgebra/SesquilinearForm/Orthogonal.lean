@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Andreas Swerdlow, Martin Winter. All rights reserved.
+Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andreas Swerdlow, Martin Winter
+Authors: Moritz Doll, Christopher Hoskin, Martin Winter
 -/
 module
 
@@ -77,13 +77,13 @@ theorem mem_orthogonalBilin_iff_le_ker_flip {y : M₂} :
 theorem orthogonalBilin_univ_eq_ker : orthogonalBilin B ⊤ = ker B.flip := by
   ext x; simp [LinearMap.ext_iff]
 
-@[gcongr] theorem orthogonalBilin_le_orthogonalBilin (h : S ≤ T) :
+@[gcongr] theorem orthogonalBilin_le (h : S ≤ T) :
     orthogonalBilin B T ≤ orthogonalBilin B S := fun _ hy _ hx ↦ hy _ (h hx)
 
-alias orthogonalBilin_anti := orthogonalBilin_le_orthogonalBilin
+alias orthogonalBilin_anti := orthogonalBilin_le
 
 theorem orthogonalBilin_antitone : Antitone (orthogonalBilin B) :=
-  fun _ _ h => orthogonalBilin_le_orthogonalBilin h
+  fun _ _ h => orthogonalBilin_le h
 
 theorem ker_le_orthogonalBilin (S) : ker B.flip ≤ orthogonalBilin B S := by
   simp [← orthogonalBilin_univ_eq_ker, orthogonalBilin_anti]
@@ -115,9 +115,6 @@ variable (B) in
 @[simp] theorem orthogonalBilin_sup_ker (S) :
     orthogonalBilin B (S ⊔ ker B) = orthogonalBilin B S := by
   simp [orthogonalBilin_sup]
-
-@[deprecated (since := "2026-06-19")]
-alias orthogonalBilin_le := orthogonalBilin_le_orthogonalBilin
 
 /-- Every submodule is contained in the orthogonal complement of its orthogonal complement. -/
 theorem le_orthogonalBilin_orthogonalBilin :
