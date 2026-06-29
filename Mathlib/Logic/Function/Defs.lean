@@ -54,7 +54,7 @@ variable {ι} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i) (
 
 theorem prod_def : Function.prod f g = fun i : ι => (f i, g i) := rfl
 
-@[simp] lemma prod_apply : Function.prod f g i = (f i, g i) := rfl
+@[simp, grind =] lemma prod_apply : Function.prod f g i = (f i, g i) := rfl
 
 lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   rfl
