@@ -109,7 +109,7 @@ jobs:
         with:
           app-id: ${{ secrets.MATHLIB_CROSSREFS_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
-          key-name: crossrefs-exports-app-pk
+          key-name: crossref-exports-app-pk
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_CROSSREFS }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
           owner: ${{ steps.repo.outputs.owner }}
