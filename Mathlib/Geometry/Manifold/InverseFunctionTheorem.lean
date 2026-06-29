@@ -114,8 +114,6 @@ end DiffeoExtChartAt
 
 @[expose] public section ManifoldInverseFunctionTheorem
 
-open PartialDiffeomorph
-
 -- need to redefine variables (this time with `RCLike 𝕜`) to prevent typeclass resolution conflicts
 variable {𝕜 : Type*} [RCLike 𝕜]
   {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
@@ -135,11 +133,6 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
     (hf : ContMDiffOn I₁ I₂ n f A)
     (hf' : (mfderiv I₁ I₂ f p).ker = ⊥ ∧ (mfderiv I₁ I₂ f p).range = ⊤) :
     IsLocalDiffeomorphAt I₁ I₂ n f p := by
-  /-
-  question : would it be better to have `f'` (linear equiv) and `HasMFDerivAt f p f'` as hypotheses?
-  The `hf`' hypothesis and the process of using it to obtain `g'` seems a bit awkward
-  -/
-
   -- obtain that `f p` is an interior point of `M₂`
   have A_nhd : A ∈ nhds p := hA.mem_nhds hpA
   have hfp : I₂.IsInteriorPoint (f p) := by
@@ -156,8 +149,6 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
   have U_open : IsOpen U := by
     refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
     exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
-  have U_nhd : U ∈ nhds (φ₀ p) := mem_nhds_iff.mpr ⟨U, subset_refl _, U_open, mem_image_of_mem _
-    ⟨mem_diffeoExtChartAt_source n hp, hpA, mem_diffeoExtChartAt_source (n := n) hfp⟩⟩
   have hg : ContDiffOn 𝕜 n g U := by
     refine ((contMDiffOn_iff.mp hf).2 p (f p)).mono ?_
     rintro e ⟨m, ⟨hm₁, hm₂, hm₃⟩, rfl⟩
@@ -166,6 +157,10 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
     rw [eqOn_diffeoExtChartAt_extChartAt n hp hm₁,
       φ₀.left_inv (diffeoExtChartAt_source_subset n hp hm₁)]
     exact ⟨hm₂, diffeoExtChartAt_source_subset n hfp hm₃⟩
+  -- keep track of membership in `U`
+  have φ₀p_mem_U : φ₀ p ∈ U := mem_image_of_mem _ ⟨mem_diffeoExtChartAt_source n hp, hpA,
+    mem_diffeoExtChartAt_source (n := n) hfp⟩
+  have U_nhd : U ∈ nhds (φ₀ p) := mem_nhds_iff.mpr ⟨U, subset_refl _, U_open, φ₀p_mem_U⟩
   -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a linear equivalence
   have ⟨g', hg'⟩ : ∃ g' : E₁ ≃L[𝕜] E₂, HasFDerivAt g (g' : E₁ →L[𝕜] E₂) (φ₀ p) := by
     have g_diff: DifferentiableWithinAt 𝕜 g (range I₁) (φ₀ p) :=
@@ -178,23 +173,27 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
     · rw [if_neg g'_zero, dif_pos g_diff] at hf'
       exact ⟨ContinuousLinearEquiv.ofBijective (Classical.choose g_diff) hf'.1 hf'.2,
         (Classical.choose_spec g_diff).hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
-  -- define `V`, the open set where `g'` is a linear equivalence
-  set V := fderiv 𝕜 g ⁻¹' range ContinuousLinearEquiv.toContinuousLinearMap
+  -- define `V ⊆ E₁`, the open set where `g'` is a linear equivalence
+  set V := (fderiv 𝕜 g) ⁻¹' (range ContinuousLinearEquiv.toContinuousLinearMap)
   have hUV: IsOpen (U ∩ V) :=
     (hg.continuousOn_fderiv_of_isOpen U_open (ENat.one_le_iff_ne_zero_withTop.mpr hn)
     ).isOpen_inter_preimage U_open (ContinuousLinearEquiv.isOpen)
+  -- keep track of membership in `V`
+  have φ₀p_mem_UV : φ₀ p ∈ U ∩ V := ⟨φ₀p_mem_U, g', Eq.symm (HasFDerivAt.fderiv hg')⟩
+  clear φ₀p_mem_U
   /- obtain an `OpenPartialHomeomorph E → F` using the standard inverse function theorem. We must
   restrict to `U ∩ V` so that we can later show ContDiff of the forward and inverse function
   todo : refactor this part (up to the definition of `diffeo`) to a separate function since it could
   be independently useful? -/
   set homeo := ((hg.contDiffAt U_nhd).toOpenPartialHomeomorph g hg' hn).restrOpen _ hUV
-  have homeo_source_sub_UV : homeo.source ⊆ U ∩ V :=
-    ((hg.contDiffAt U_nhd).toOpenPartialHomeomorph g hg' hn).restrOpen_source _ hUV ▸
-    inter_subset_right
   have homeo_contdiff : ContDiffOn 𝕜 n homeo.toFun homeo.source := by
     intro x hx
-    have : homeo.source ⊆ U := subset_trans homeo_source_sub_UV inter_subset_left
-    exact (hg.contDiffWithinAt (this hx)).mono (subset_trans homeo_source_sub_UV inter_subset_left)
+    have : homeo.source ⊆ U := subset_trans inter_subset_right inter_subset_left
+    exact (hg.contDiffWithinAt (this hx)).mono this
+  -- keep track of membership in `homeo.source`
+  have φ₀p_mem_homeo_source : φ₀ p ∈ homeo.source :=
+    ⟨(ContDiffOn.contDiffAt hg U_nhd).mem_toOpenPartialHomeomorph_source hg' hn, φ₀p_mem_UV⟩
+  clear φ₀p_mem_UV
   -- upgrade to a `PartialDiffeomorph` using the properties of `U` and `V`
   set coord_diffeo : PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n := {
     toPartialEquiv := homeo.toPartialEquiv
@@ -208,7 +207,7 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
     contMDiffOn_invFun := by
       intro y hy
       refine ⟨homeo.continuousOn_invFun.continuousWithinAt hy, ?_⟩
-      rcases (subset_trans homeo_source_sub_UV inter_subset_right) (homeo.map_target hy) with
+      rcases (subset_trans inter_subset_right inter_subset_right) (homeo.map_target hy) with
         ⟨g', hg'⟩
       have source_nhd : homeo.source ∈ nhds (homeo.symm y) :=
         mem_nhds_iff.mpr ⟨homeo.source, subset_refl _, homeo.open_source, homeo.map_target hy⟩
@@ -220,36 +219,17 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
   -- compose with the charts to obtain our partial diffeomorphism `M → N`
   set diffeo := (φ₁.trans coord_diffeo).trans ψ₁.symm
   use diffeo
-  /- rote verification of remaining conditions, mostly just unwrapping definitions (todo: clean up)
-  I suspect there might be a better approach to the overall proof / API design which would make this
-  part cleaner -/
+  -- verify `p ∈ diffeo.source` and `EqOn f diffeo diffeo.source`
   constructor
-  · show p ∈ diffeo.source
-    simp [diffeo, PartialDiffeomorph.trans, toOpenPartialHomeomorph, coord_diffeo, homeo, U, V,
-      and_assoc]
-    refine ⟨mem_diffeoExtChartAt_source n hp,
-      ContDiffAt.mem_toOpenPartialHomeomorph_source _ _ _,
-      ⟨p, mem_diffeoExtChartAt_source n hp, hpA, mem_diffeoExtChartAt_source n hfp, rfl⟩,
-      ⟨g', hg'.fderiv.symm⟩,
-      ?_⟩
-    suffices ψ₁ (f p) ∈ ψ₁.symm.source by
-      simpa [g, φ₁, diffeoExtChartAt, openPartialHomeomorph_of_isInteriorPoint]
+  · refine ⟨⟨mem_diffeoExtChartAt_source n hp, φ₀p_mem_homeo_source⟩, ?_⟩
+    change (ψ₁ ∘ f ∘ φ₀.symm) (φ₀ p) ∈ ψ₁.target
+    suffices ψ₁ (f p) ∈ ψ₁.target by simpa[φ₀.left_inv (mem_extChartAt_source p)]
     exact ψ₁.map_source (mem_diffeoExtChartAt_source n hfp)
-  · show EqOn f diffeo diffeo.source
-    intro m hm
-    suffices f m = (chartAt H₂ (f p)).symm
-      ((chartAt H₂ (f p)) (f ((chartAt H₁ p).symm ((chartAt H₁ p) m)))) by
-      simpa [diffeo, PartialDiffeomorph.trans, φ₁, ψ₁, toOpenPartialHomeomorph, diffeoExtChartAt,
-        coord_diffeo, homeo, PartialDiffeomorph.symm, openPartialHomeomorph_of_isInteriorPoint, g]
-    rw [(chartAt H₁ p).left_inv
-      (extChartAt_source I₁ p ▸ (diffeoExtChartAt_source_subset (n := n) hp) hm.1.1),
-      (chartAt H₂ (f p)).left_inv ?_]
-    rcases hm.1.2.2.1 with ⟨m', hm'₁, hm'₂⟩
-    have : m' = m := by
-      calc m' = φ₁.symm (φ₁ m') := (φ₁.left_inv hm'₁.1).symm
-      _ = φ₁.symm (φ₁ m) := by congr 1
-      _ = m := (φ₁.left_inv hm.1.1)
-    subst this
-    exact extChartAt_source I₂ (f p) ▸ diffeoExtChartAt_source_subset (n := n) hfp hm'₁.2.2
+  · intro m hm
+    change f m = ψ₀.symm (ψ₀ (f (φ₀.symm (φ₀ m))))
+    rw[φ₀.left_inv ?_, ψ₀.left_inv ?_]
+    · exact (diffeoExtChartAt_source_subset n hfp)
+        (φ₁.injOn.mem_of_mem_image inter_subset_left hm.1.1 hm.1.2.2.1).2.2
+    · exact ((diffeoExtChartAt_source_subset n hp) hm.1.1)
 
 end ManifoldInverseFunctionTheorem
