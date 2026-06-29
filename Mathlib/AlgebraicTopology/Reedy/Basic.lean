@@ -19,7 +19,7 @@ the literature).
 
 ## TODO
 * Construct the Reedy model category structure on the category of
-functor `C ⥤ D` when `C` is a Reedy category and `D` a model category
+functors `C ⥤ D` when `C` is a Reedy category and `D` a model category
 https://github.com/leanprover-community/project-intentions/issues/5
 
 ## References
