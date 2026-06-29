@@ -12,7 +12,7 @@ public import Mathlib.Order.Filter.Cofinite
 /-!
 # Univariate restricted power series
 
-`IsRestricted` : We say a multivariate power series over a normed ring `R` is restricted for a
+`IsRestricted` : We say a univariate power series over a normed ring `R` is restricted for a
 real number `c` if `‖coeff t f‖ * c i ^ t i → 0` under the cofinite filter.
 
 -/
@@ -76,8 +76,10 @@ lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
     (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) :=
   MvPowerSeries.isRestricted.mul (fun _ ↦ c) hf hg
 
+namespace IsRestricted
+
 /-- Restricted power series as an additive subgroup of `PowerSeries R`. -/
-def IsRestricted.addSubgroup (c : ℝ) : AddSubgroup (PowerSeries R) where
+def addSubgroup (c : ℝ) : AddSubgroup (PowerSeries R) where
   carrier := IsRestricted c
   zero_mem' := isRestricted_zero c
   add_mem' := isRestricted.add c
@@ -86,18 +88,9 @@ def IsRestricted.addSubgroup (c : ℝ) : AddSubgroup (PowerSeries R) where
 variable [IsUltrametricDist R]
 
 /-- Restricted power series as an subring of `PowerSeries R`. -/
-def IsRestricted.subring (c : ℝ) :  Subring (PowerSeries R) where
+def subring (c : ℝ) :  Subring (PowerSeries R) where
   __ := IsRestricted.addSubgroup c
   one_mem' := isRestricted_one c
   mul_mem' := isRestricted.mul c
 
-variable (R) in
-/-- The type of restricted `MvPowerSeries σ R`. -/
-def Restricted (c : ℝ) : Type _ := IsRestricted.subring (R := R) c
-
-/-- Ring structure on `Restricted R c`. -/
-noncomputable
-instance (c : ℝ) : Ring (Restricted R c) :=
-  Subring.toRing (IsRestricted.subring c)
-
-end PowerSeries
+end PowerSeries.IsRestricted
