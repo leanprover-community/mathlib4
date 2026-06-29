@@ -139,10 +139,8 @@ lemma mvfderiv_comp_left {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 lemma mychainrule {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
     {f : M → V} {φ : M₀ → M} {z : M₀} (hf : MDiffAt f (φ z)) (hφ : MDiffAt φ z) (v : TangentSpace I₀ z) :
     d% f (φ z) (mfderiv% φ z v) = d% (f ∘ φ) z v := by
-  rw [mvfderiv_comp_left (I := I)]
-  · simp
-  · sorry
-  · assumption
+  rw [mvfderiv_comp_left (I := I) _ hf hφ]
+  simp
 
 -- another missing lemma, I think!
 lemma mvfderiv_restrict_apply {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
