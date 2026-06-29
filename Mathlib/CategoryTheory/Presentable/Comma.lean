@@ -190,18 +190,99 @@ instance : IsFiltered (J₂ κ f) := isFiltered_of_isCardinalFiltered _ κ
 
 attribute [local instance] IsFiltered.nonempty
 
+abbrev J.fst (g : J κ f) : J₁ κ f :=
+  CostructuredArrow.mk (Y := ⟨_, g.left.property.1⟩) (by exact g.hom.left)
+
+abbrev J.snd (g : J κ f) : J₂ κ f :=
+  CostructuredArrow.mk (Y := ⟨_, g.left.property.2⟩) (by exact g.hom.right)
 -- there must be some better way to define these functors
 @[simps]
 def π₁ : J κ f ⥤ J₁ κ f where
-  obj g := CostructuredArrow.mk (Y := ⟨_, g.left.property.1⟩) (by exact g.hom.left)
+  obj g := g.fst
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.left))
     (by exact congr_arg CommaMorphism.left (CostructuredArrow.w φ))
 
 @[simps]
 def π₂ : J κ f ⥤ J₂ κ f where
-  obj g := CostructuredArrow.mk (Y := ⟨_, g.left.property.2⟩) (by exact g.hom.right)
+  obj g := g.snd
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.right))
     (by exact congr_arg CommaMorphism.right (CostructuredArrow.w φ))
+
+section
+
+variable {κ f}
+
+abbrev J.mk (j₁ : J₁ κ f) (j₂ : J₂ κ f) (g : F₁.obj j₁.left.obj ⟶ F₂.obj j₂.left.obj)
+    (w : F₁.map j₁.hom ≫ f.hom = g ≫ F₂.map j₂.hom := by cat_disch) :
+    J κ f :=
+  CostructuredArrow.mk (Y := ⟨Comma.mk _ _ g, j₁.left.property, j₂.left.property⟩)
+    { left := by exact j₁.hom
+      right := by exact j₂.hom }
+
+abbrev J.homMk {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.snd)
+    (h : F₁.map g₁.left.hom ≫ j'.left.obj.hom =
+      j.left.obj.hom ≫ F₂.map g₂.left.hom := by cat_disch) :
+    j ⟶ j' :=
+  CostructuredArrow.homMk (ObjectProperty.homMk
+    { left := g₁.left.hom
+      right := g₂.left.hom }) (by
+        ext
+        · simpa using! CostructuredArrow.w g₁
+        · simpa using! CostructuredArrow.w g₂)
+
+set_option backward.defeqAttrib.useBackward true in
+lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.snd) :
+    ∃ (j'' : J κ f) (a : j ⟶ j'') (b : j' ⟶ j''),
+      g₁.left.hom ≫ b.left.hom.left = a.left.hom.left ∧
+      g₂.left.hom ≫ b.left.hom.right = a.left.hom.right := by
+  have := Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall
+    F₂ κ (J₂ κ f)
+  obtain ⟨j₂, a, ha⟩ :
+      ∃ (j₂ : J₂ κ f) (a : j'.snd ⟶ j₂),
+        F₁.map g₁.left.hom ≫ j'.left.obj.hom ≫ F₂.map a.left.hom =
+        j.left.obj.hom ≫ F₂.map g₂.left.hom ≫ F₂.map a.left.hom := by
+    obtain ⟨j₂, a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
+      (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
+      (i := j'.snd) (F₁.map g₁.left.hom ≫ j'.left.obj.hom)
+      (j.left.obj.hom ≫ F₂.map g₂.left.hom) (by
+        dsimp
+        rw [Category.id_comp, Category.assoc, Category.assoc, ← Functor.map_comp,
+          ← dsimp% j'.hom.w, ← Functor.map_comp_assoc, dsimp% CostructuredArrow.w g₁,
+          dsimp% j.hom.w, dsimp% CostructuredArrow.w g₂])
+    exact ⟨j₂, a, by cat_disch⟩
+  exact ⟨J.mk j'.fst j₂ (j'.left.obj.hom ≫ F₂.map a.left.hom)
+    (by simp [← dsimp% (CostructuredArrow.w a)]), J.homMk g₁ (g₂ ≫ a) (by simpa),
+    J.homMk (𝟙 _) a (by simp), by simp⟩
+
+set_option backward.defeqAttrib.useBackward true in
+lemma exists_of_j₁_of_j₂ (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
+    ∃ (j : J κ f) (_ : j₁ ⟶ j.fst), Nonempty (j₂ ⟶ j.snd) := by
+  have := Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall F₂ κ
+    (J₂ κ f)
+  obtain ⟨j₂', a, ha, ⟨b⟩⟩ :
+      ∃ (j₂' : J₂ κ f) (a : F₁.obj j₁.left.obj ⟶ F₂.obj j₂'.left.obj),
+      a ≫ F₂.map j₂'.hom = F₁.map j₁.hom ≫ f.hom ∧ Nonempty (j₂ ⟶ j₂') := by
+    obtain ⟨k, a, ha⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
+      (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
+      (F₁.map j₁.hom ≫ f.hom)
+    dsimp at ha
+    simp only [Category.id_comp] at ha
+    obtain ⟨j₂', b, c, _⟩ := IsFilteredOrEmpty.cocone_objs j₂ k
+    exact ⟨j₂', a ≫ F₂.map c.left.hom,
+      by simp [← ha, ← Functor.map_comp, dsimp% CostructuredArrow.w c], ⟨b⟩⟩
+  exact ⟨J.mk j₁ j₂' a, 𝟙 _, ⟨b⟩⟩
+
+lemma exists_of_j₁ (j₁ : J₁ κ f) :
+    ∃ (j : J κ f), Nonempty (j₁ ⟶ j.fst) := by
+  obtain ⟨j, a, _⟩ := exists_of_j₁_of_j₂ j₁ (Classical.arbitrary _)
+  exact ⟨j, ⟨a⟩⟩
+
+lemma exists_of_j₂ (j₂ : J₂ κ f) :
+    ∃ (j : J κ f), Nonempty (j₂ ⟶ j.snd) := by
+  obtain ⟨j, _, ⟨a⟩⟩ := exists_of_j₁_of_j₂ (Classical.arbitrary _) j₂
+  exact ⟨j, ⟨a⟩⟩
+
+end
 
 instance : PreservesColimitsOfShape (J₁ κ f) F₁ :=
   F₁.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
@@ -209,11 +290,34 @@ instance : PreservesColimitsOfShape (J₁ κ f) F₁ :=
 instance : PreservesColimitsOfShape (J₂ κ f) F₂ :=
   F₂.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
 
+open IsCardinalFiltered in
+
+--set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance : IsCardinalFiltered (J κ f) κ := by
-  rw [isCardinalFiltered_iff]
-  refine ⟨fun ι j hι ↦ ?_, fun ι j k g hι ↦ ?_⟩
+  rw [isCardinalFiltered_iff']
+  refine ⟨fun ι j hι ↦ ?_, fun ι j k g hι hι' ↦ ?_⟩
   · sorry
-  · sorry
+  · let g₁ (i : ι) := (π₁ κ f).map (g i)
+    let g₂ (i : ι) := (π₂ κ f).map (g i)
+    obtain ⟨l, a, ⟨b⟩⟩ :=
+      exists_of_j₁_of_j₂ (coeq g₁ hι) (coeq g₂ hι)
+    obtain ⟨l', c, d, h₁, h₂⟩ := J.exists_hom (coeqHom g₁ hι ≫ a) (coeqHom g₂ hι ≫ b)
+    refine ⟨l', c, J.homMk (toCoeq g₁ hι ≫ a ≫ (π₁ κ f).map d)
+      (toCoeq g₂ hι ≫ b ≫ (π₂ κ f).map d) ?_, fun i ↦ ?_⟩
+    · let i : ι := Classical.arbitrary _
+      dsimp
+      rw [← dsimp% coeq_condition g₁ hι i, ← dsimp% coeq_condition g₂ hι i]
+      dsimp at h₁ h₂ ⊢
+      simp only [Category.assoc] at h₁ h₂ ⊢
+      rw [h₁, h₂]
+      simp only [Functor.map_comp, Category.assoc, CommaMorphism.w]
+      simp only [← Category.assoc]
+      congr 1
+      exact (g i).left.hom.w
+    · ext
+      · simp [← dsimp% [g₁] coeq_condition g₁ hι i, ← h₁, g₁]
+      · simp [← dsimp% [g₂] coeq_condition g₂ hι i, ← h₂, g₂]
 
 instance : PreservesColimitsOfShape (J κ f) F₁ :=
   F₁.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
@@ -224,61 +328,26 @@ instance : IsFiltered (J κ f) :=
 set_option backward.defeqAttrib.useBackward true in
 instance : (π₁ κ f).Final := by
   rw [Functor.final_iff_of_isFiltered]
-  refine ⟨fun d ↦ ?_, fun {d e} g₁ g₂ ↦ ?_⟩
-  · obtain ⟨g, a, ha⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
-      (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
-      (F₁.map d.hom ≫ f.hom)
-    dsimp at a ha
-    simp only [Category.id_comp] at ha
-    refine ⟨CostructuredArrow.mk (Y := ⟨Comma.mk _ _ a, ?_⟩)
-      { left := by exact d.hom
-        right := by exact g.hom
-        w := ha.symm }, ⟨?_⟩⟩
-    · exact CostructuredArrow.homMk (ObjectProperty.homMk (𝟙 _)) (by simp)
-    · exact ⟨d.left.property, g.left.property⟩
-  · refine ⟨?_, sorry⟩
-    sorry
+  refine ⟨exists_of_j₁, fun {d e} g₁ g₂ ↦ ?_⟩
+  obtain ⟨j₁, a, ha⟩ := IsFilteredOrEmpty.cocone_maps g₁ g₂
+  obtain ⟨j, b, ⟨c⟩⟩ := exists_of_j₁_of_j₂ j₁ e.snd
+  obtain ⟨j', g, h, h₁, h₂⟩ := J.exists_hom (a ≫ b) c
+  refine ⟨j', g, ?_⟩
+  ext
+  simp [← h₁, reassoc_of% dsimp% (CostructuredArrow.proj _ _ ⋙
+    ObjectProperty.ι _).congr_map ha]
 
 set_option backward.defeqAttrib.useBackward true in
 instance : (π₂ κ f).Final := by
   rw [Functor.final_iff_of_isFiltered]
-  refine ⟨fun d ↦ ?_, fun {d e} f₁ f₂ ↦ ?_⟩
-  · let j₁ : J₁ κ f := Classical.arbitrary _
-    obtain ⟨e : J₂ κ f, a, ha⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
-      (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
-      (F₁.map j₁.hom ≫ f.hom)
-    dsimp at a ha
-    simp only [Category.id_comp] at ha
-    refine ⟨CostructuredArrow.mk
-      (Y := ⟨Comma.mk _ _ (a ≫ F₂.map (IsFiltered.rightToMax d e).left.hom),
-        ⟨j₁.left.property, (IsFiltered.max d e).left.property⟩⟩)
-        { left := by exact j₁.hom
-          right := by exact (IsFiltered.max d e).hom
-          w := ?_ },
-        ⟨by exact IsFiltered.leftToMax d e⟩⟩
-    dsimp
-    rw [Category.assoc, ← ha, ← F₂.map_comp,
-      ← CostructuredArrow.w (IsFiltered.rightToMax d e)]
-    dsimp
-  · obtain ⟨j₂, a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit'
-      κ ((isCardinalPresentable C₂ κ).ι.denseAt f.right)
-      (i := (π₂ κ f).obj e) f₁.left.hom f₂.left.hom (by
-      simp [dsimp% CostructuredArrow.w f₁, dsimp% CostructuredArrow.w f₂])
-    refine ⟨CostructuredArrow.mk
-      (Y := ⟨Comma.mk _ _ (e.left.obj.hom ≫ F₂.map a.left.hom),
-        ⟨e.left.property.1, j₂.left.property⟩⟩)
-        { left := e.hom.left
-          right := by exact j₂.hom
-          w := by simp [← dsimp% CostructuredArrow.w a] },
-        CostructuredArrow.homMk (ObjectProperty.homMk
-          { left := 𝟙 _
-            right := by exact a.left.hom }) ?_, ?_⟩
-    · dsimp
-      ext
-      · simp
-      · exact CostructuredArrow.w a
-    · ext
-      simpa
+  refine ⟨exists_of_j₂, fun {d e} g₁ g₂ ↦ ?_⟩
+  obtain ⟨j₂, a, ha⟩ := IsFilteredOrEmpty.cocone_maps g₁ g₂
+  obtain ⟨j, b, ⟨c⟩⟩ := exists_of_j₁_of_j₂ e.fst j₂
+  obtain ⟨j', g, h, h₁, h₂⟩ := J.exists_hom b (a ≫ c)
+  refine ⟨j', g, ?_⟩
+  ext
+  simp [← h₂, reassoc_of% dsimp% (CostructuredArrow.proj _ _ ⋙
+    ObjectProperty.ι _).congr_map ha]
 
 abbrev functor : J κ f ⥤ Comma F₁ F₂ :=
   CostructuredArrow.proj (Comma.isCardinalPresentable F₁ F₂ κ).ι f ⋙
@@ -295,8 +364,7 @@ noncomputable def isColimitCocone : IsColimit (cocone κ f) := by
   · exact (Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).2
       ((isCardinalPresentable C₂ κ).ι.denseAt f.right)
 
-instance [F₁.IsCardinalAccessible κ] :
-    (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
+instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
   isDenseAt f := ⟨isColimitCocone κ f⟩
 
 end isCardinalAccessibleCategory
@@ -304,7 +372,7 @@ end isCardinalAccessibleCategory
 protected lemma isCardinalFilteredGenerator_isCardinalPresentable
     [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
     [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-    [F₁.PreservesCardinalPresentable κ] [LocallySmall.{w} D] :
+    [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ] [LocallySmall.{w} D] :
     (Comma.isCardinalPresentable F₁ F₂ κ).IsCardinalFilteredGenerator κ :=
   .mk' (isCardinalPresentable_le _ _ _)
     (fun f ↦ ⟨(CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f), inferInstance,
@@ -314,7 +382,7 @@ protected lemma isCardinalFilteredGenerator_isCardinalPresentable
 
 instance [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
     [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-    [F₁.PreservesCardinalPresentable κ] [LocallySmall.{w} D] :
+    [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ] [LocallySmall.{w} D] :
     IsCardinalAccessibleCategory (Comma F₁ F₂) κ where
   exists_generator :=
     ⟨_, inferInstance, Comma.isCardinalFilteredGenerator_isCardinalPresentable.{w} F₁ F₂ κ⟩
