@@ -22,12 +22,6 @@ variable (R : Type*) [CommRing R]
 
 open Polynomial Ideal
 
-lemma Ideal.exists_normalized_span_of_isPrincipal {R : Type*} [CommRing R] [NormalizationMonoid R]
-    (I : Ideal R) [I.IsPrincipal] : ∃ x : R, normalize x = x ∧ I = Ideal.span {x} := by
-  obtain ⟨x, rfl⟩ := ‹I.IsPrincipal›
-  refine ⟨normalize x, normalize_idem x, le_antisymm ?_ ?_⟩
-  <;> simp [Ideal.mem_span_singleton]
-
 lemma Polynomial.exists_monic_span {k : Type*} [Field k] (I : Ideal k[X]) (ne : I ≠ ⊥) :
     ∃ f, f.Monic ∧ I = Ideal.span {f} := by
   classical
