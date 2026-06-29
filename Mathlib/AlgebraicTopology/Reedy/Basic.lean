@@ -164,7 +164,7 @@ lemma degHom_comp_le_left {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rw [h_deg, ← h_fac, Category.assoc]
   exact r.degHom_le f₁ (f₂ ≫ g)
 
-lemma degHom_comp_le' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma degHom_comp_le_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     r.degHom (f ≫ g) ≤ r.degHom g := by
   have ⟨_, g₁, g₂, _, _, h_fac, h_deg⟩ := r.exists_fac g
   rw [h_deg, ← h_fac, <- Category.assoc]
