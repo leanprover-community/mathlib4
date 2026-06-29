@@ -88,16 +88,15 @@ def generalTransitionMap : OpenPartialHomeomorph H H :=
 variable {x y : orbitRel.Quotient G M}
 
 omit [ChartedSpace H M] in
-lemma general_f_eq_φρφ_t {t : Set M} (ht : t ⊆ e.source)
-    {g : G} {u : M} (hu : u ∈ t)
+lemma general_f_eq_φρφ_t
+    {g : G} {u : M} (hu : u ∈ e.source)
     (hu' : (Homeomorph.smul g) u ∈ (πinv y).target) :
     (generalTransitionMap x y) e e' (e u) =
       e' (Homeomorph.smul g ((e.symm (e u)))) := by
   simp only [generalTransitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
-  rw [e.left_inv (ht hu), quotient_IsLocalHomeomorph.localInverseAt_symm,
-        ← orbitRel.Quotient.quotient_smul_eq (g:=g)]
-  apply mem_image_of_mem (Homeomorph.smul g) at hu
-  rw [← quotient_IsLocalHomeomorph.localInverseAt_symm, ← Homeomorph.smul_apply,
+  rw [e.left_inv hu, quotient_IsLocalHomeomorph.localInverseAt_symm,
+    ← orbitRel.Quotient.quotient_smul_eq (g:=g),
+    ← quotient_IsLocalHomeomorph.localInverseAt_symm, ← Homeomorph.smul_apply,
     (πinv y).right_inv hu']
 
 omit [ChartedSpace H M] in
@@ -133,8 +132,7 @@ lemma general_hfg_t
   · intro z ⟨_, hz⟩
     rw [(is_open_at.inter (generalTransitionMap x y e e').open_source).interior_eq] at hz
     obtain ⟨⟨_, hut, hu⟩, _⟩ := hz
-    simpa [hu] using (general_f_eq_φρφ_t e e' ht hut (ht'' (mem_image_of_mem _ hut))).symm
-
+    simpa [hu] using (general_f_eq_φρφ_t e e' (ht hut) (ht'' (mem_image_of_mem _ hut))).symm
 
 
 instance : IsManifold I n (orbitRel.Quotient G M) where
