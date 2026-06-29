@@ -396,7 +396,6 @@ lemma projection_apply (f : H + H₁) :
       ∘ (generator H H₁).ker.quotientEquivOrthogonal) f := by
   rfl
 
-@[simp]
 lemma projection_inner (f g : H + H₁) : ⟪projection H H₁ f, projection H H₁ g⟫_𝕜 = ⟪f, g⟫_𝕜 := by
   simp [projection]
 
