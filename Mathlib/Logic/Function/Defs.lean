@@ -66,7 +66,7 @@ lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fs
 
 @[inherit_doc] notation:max "△(" x:min ")" => Function.diag x
 
-section
+section Diag
 
 variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
 
@@ -86,7 +86,7 @@ theorem injective_diag : Injective (α := α) Function.diag := fun _ _ => congrA
 
 @[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
 
-end
+end Diag
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
