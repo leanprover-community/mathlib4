@@ -415,6 +415,7 @@ def invariants (π : ContRepresentation R G V) : Submodule R V where
 lemma mem_invariants {π : ContRepresentation R G V} (v : V) :
     v ∈ π.invariants ↔ ∀ g, π g v = v := Iff.rfl
 
+/-- The map induced on `G`-invariant elements by a continuous intertwining map. -/
 def _root_.ContIntertwiningMap.invariants
     {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
     (f : π →ⁱL π') : π.invariants →L[R] π'.invariants :=
