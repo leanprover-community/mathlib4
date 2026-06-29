@@ -346,7 +346,7 @@ end
 variable (k G) [Monoid G] (A B : Rep.{w} k G)
 
 /-- The functor sending a representation to its coinvariants. -/
-@[simps! obj_carrier map_hom, implicit_reducible]
+@[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.Coinvariants
   map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
@@ -381,7 +381,6 @@ instance : (coinvariantsFunctor k G).Additive where
 instance : (coinvariantsFunctor k G).Linear k where
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
 @[simps]
@@ -397,7 +396,6 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleC
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
     (f : X ⟶ (trivialFunctor k G).obj Y) :
@@ -440,7 +438,6 @@ section
 
 variable (k : Type u) {G : Type v} [CommRing k] [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
 @[simps! obj_V map_hom_toLinearMap]
