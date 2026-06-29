@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
 # Properties of objects in comma categories
@@ -29,6 +30,12 @@ variable {F₁ F₂} in
 @[simp]
 lemma comma_iff (X : Comma F₁ F₂) :
     comma F₁ F₂ P₁ P₂ X ↔ P₁ X.left ∧ P₂ X.right := Iff.rfl
+
+instance [P₁.IsStableUnderRetracts] [P₂.IsStableUnderRetracts] :
+    (comma F₁ F₂ P₁ P₂).IsStableUnderRetracts where
+  of_retract r h :=
+    ⟨P₁.prop_of_retract (r.map (Comma.fst _ _)) h.1,
+      P₂.prop_of_retract (r.map (Comma.snd _ _)) h.2⟩
 
 instance [ObjectProperty.Small.{w} P₁] [ObjectProperty.Small.{w} P₂] [LocallySmall.{w} D] :
     ObjectProperty.Small.{w} (comma F₁ F₂ P₁ P₂) :=

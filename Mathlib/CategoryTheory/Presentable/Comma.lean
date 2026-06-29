@@ -152,6 +152,7 @@ lemma isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
 
 protected def isCardinalPresentable : ObjectProperty (Comma F₁ F₂) :=
   ObjectProperty.comma _ _ (isCardinalPresentable C₁ κ) (isCardinalPresentable C₂ κ)
+deriving ObjectProperty.IsStableUnderRetracts
 
 lemma isCardinalPresentable_le
     [HasCardinalFilteredColimits C₁ κ] [HasCardinalFilteredColimits C₂ κ]
@@ -385,6 +386,26 @@ instance [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C�
     IsCardinalAccessibleCategory (Comma F₁ F₂) κ where
   exists_generator :=
     ⟨_, inferInstance, Comma.isCardinalFilteredGenerator_isCardinalPresentable.{w} F₁ F₂ κ⟩
+
+protected lemma isCardinalPresentable_eq
+    [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
+    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+    [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ]
+    [LocallySmall.{w} D] :
+    Comma.isCardinalPresentable F₁ F₂ κ = isCardinalPresentable (Comma F₁ F₂) κ := by
+  rw [(Comma.isCardinalFilteredGenerator_isCardinalPresentable
+      F₁ F₂ κ).isPresentable_eq_retractClosure,
+    ObjectProperty.retractClosure_eq_self]
+
+protected lemma isCardinalPresentable_iff
+    [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
+    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+    [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ]
+    [LocallySmall.{w} D] (X : Comma F₁ F₂) :
+    IsCardinalPresentable X κ ↔
+      IsCardinalPresentable X.left κ ∧ IsCardinalPresentable X.right κ := by
+  change _ ↔ Comma.isCardinalPresentable F₁ F₂ κ X
+  rw [Comma.isCardinalPresentable_eq]
 
 end Comma
 
