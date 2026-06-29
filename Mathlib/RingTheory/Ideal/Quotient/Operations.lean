@@ -565,7 +565,7 @@ lemma _root_.AlgHom.liftOfSurjective_apply (f : A →ₐ[R] B) (hf : Function.Su
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :
     AlgHom.liftOfSurjective f hf g H (f x) = g x := by
   dsimp [AlgHom.liftOfSurjective]
-  erw [AlgEquiv.coe_algHom] -- fixed after #21031
+  erw [AlgEquiv.coe_toAlgHom] -- fixed after #21031
   rw [Ideal.quotientKerAlgEquivOfSurjective_symm_apply]
   rfl
 

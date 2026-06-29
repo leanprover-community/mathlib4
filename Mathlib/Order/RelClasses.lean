@@ -661,7 +661,6 @@ but after translation `instReflLe` becomes `instReflGe : Std.Refl (· ≥ ·)`. 
 theorem Std.ge_refl {α : Type*} [LE α] [inst : @Std.Refl α (· ≥ ·)] (a : α) : a ≤ a :=
   @Std.Refl.refl α (· ≥ ·) inst a
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing Std.ge_refl] Std.le_refl
 
 @[to_dual instIsTransGe]
