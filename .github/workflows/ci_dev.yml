@@ -80,6 +80,13 @@ jobs:
           CROSSREFS_COMMIT: ${{ env.BUILT_SHA }}
         run: lake env lean scripts/export_crossrefs.lean
 
+      # TESTING ONLY: the self-hosted `pr` runner may not have `jq`, which the
+      # sanity-check and push steps below use (the same reason `setup-build-env`
+      # installs it). The production `export_crossrefs.yml` runs on `ubuntu-latest`,
+      # where `jq` is preinstalled, so it omits this.
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@4fcb5062d7ce9bc4382d1a352d19ba3ba2c317c1 # v4.0.1
+
       - name: Sanity-check the output
         run: |
           jq -e '.entries | length > 0' crossrefs.json > /dev/null
