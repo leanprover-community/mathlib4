@@ -110,6 +110,13 @@ instance : Add (IntertwiningMap ρ σ) :=
 lemma add_toLinearMap (f g : IntertwiningMap ρ σ) :
     (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := rfl
 
+instance : SMul ℕ+ (IntertwiningMap ρ σ) :=
+  ⟨fun n f ↦ ⟨n • f.toLinearMap, by
+    simp [← nsmul_val_eq_psmul, LinearMap.smul_comp, LinearMap.comp_smul, f.2]⟩⟩
+
+@[simp] lemma coe_psmul (f : IntertwiningMap ρ σ) (n : ℕ+) :
+    ((n • f : IntertwiningMap ρ σ) : V → W) = n • f := rfl
+
 instance : SMul ℕ (IntertwiningMap ρ σ) :=
   ⟨fun n f ↦ ⟨n • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.2]⟩⟩
 
@@ -118,7 +125,8 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
 
 instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
+  DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_psmul])
+    (by intro f n; rw [coe_nsmul])
 
 /-- The range of an intertwining map from `V` to `W` as a subrepresentation of `W`. -/
 @[simps]
@@ -183,7 +191,7 @@ instance : SMul ℤ (IntertwiningMap ρ σ) :=
 instance : AddCommGroup (IntertwiningMap ρ σ) :=
   fast_instance%
   DFunLike.coe_injective.addCommGroup _ (coe_zero ρ σ) (coe_add ρ σ) (coe_neg ρ σ) (coe_sub ρ σ)
-    (coe_nsmul ρ σ) (coe_zsmul ρ σ)
+    (coe_psmul ρ σ) (coe_nsmul ρ σ) (coe_zsmul ρ σ)
 
 end group
 
@@ -460,19 +468,31 @@ instance : One (IntertwiningMap ρ ρ) := ⟨id ρ⟩
 
 @[simp] lemma coe_one : ((1 : IntertwiningMap ρ ρ) : V → V) = (_root_.id : V → V) := rfl
 
+instance : Pow (IntertwiningMap ρ ρ) ℕ+ := ⟨fun f n => ppowRec n n.property f⟩
+
+lemma toLinearMap_ppow (f : IntertwiningMap ρ ρ) (n : ℕ+) :
+    (f ^ n).toLinearMap = f.toLinearMap ^ n := by
+  induction n using Semigroup.ppow_induction f.toLinearMap
+  · rfl
+  · change (f ^ PNat.mk (_ + 1) Nat.succ_pos' * f).toLinearMap = _
+    simp_all
+
 instance : Semigroup (IntertwiningMap ρ ρ) :=
   Function.Injective.semigroup (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
-    (toLinearMap_injective ρ ρ) (coe_mul ρ)
+    (toLinearMap_injective ρ ρ) (coe_mul ρ) (toLinearMap_ppow _)
 
 instance : Pow (IntertwiningMap ρ ρ) ℕ := ⟨fun f n => npowRecAuto n f⟩
 
+lemma toLinearMap_pow (f : IntertwiningMap ρ ρ) (n : ℕ) :
+    (f ^ n).toLinearMap = f.toLinearMap ^ n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    simp [pow_succ, coe_mul, show f ^ (n + 1) = f ^ n * f from rfl, ih]
+
 instance : Monoid (IntertwiningMap ρ ρ) :=
   Function.Injective.monoid (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
-    (toLinearMap_injective ρ ρ) rfl (fun _ _ => rfl)
-    (fun f n => by
-      induction n with
-      | zero => rfl
-      | succ n ih => simp only [pow_succ, coe_mul, show f ^ (n + 1) = f ^ n * f from rfl, ih])
+    (toLinearMap_injective ρ ρ) rfl (fun _ _ => rfl) (toLinearMap_ppow _) (toLinearMap_pow _)
 
 instance : NatCast (IntertwiningMap ρ ρ) where
   natCast n := n • (1 : IntertwiningMap ρ ρ)
@@ -481,12 +501,7 @@ instance instSemiring : Semiring (IntertwiningMap ρ ρ) :=
   fast_instance%
   Function.Injective.semiring (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
     (toLinearMap_injective ρ ρ) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (by
-      intro f n
-      induction n with
-      | zero => rfl
-      | succ n ih => simp [ih, pow_succ])
-    (fun _ => rfl)
+    (fun _ _ => rfl) (toLinearMap_ppow _) (toLinearMap_pow _) (fun _ => rfl)
 
 instance : Algebra A (IntertwiningMap ρ ρ) :=
   Algebra.ofModule (fun a f g => rfl) (fun a f g => by ext; simp)
