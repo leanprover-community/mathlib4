@@ -277,6 +277,17 @@ theorem _root_.MeasurableEmbedding.variation_map (hφ : MeasurableEmbedding φ) 
     apply le_trans ?_ (enorm_measure_le_variation _ _)
     by_cases hx : x ∈ s <;> simp [hs, hx]
 
+@[simp] lemma variation_apply_singleton {x : X} [MeasurableSingletonClass X] :
+    μ.variation {x} = ‖μ {x}‖ₑ := by
+  apply le_antisymm ?_ (enorm_measure_le_variation μ {x})
+  rw [show ‖μ {x}‖ₑ = (‖μ {x}‖ₑ • Measure.dirac x) {x} by simp]
+  apply variation_apply_le_of_forall_enorm_le (MeasurableSet.singleton x) (fun s hs h's ↦ ?_)
+  by_cases hx : x ∈ s
+  · have : s = {x} := by grind
+    simp [this]
+  · have : s = ∅ := by grind
+    simp [this]
+
 end Basic
 
 section NormedAddCommGroup
