@@ -256,6 +256,10 @@ unseal OreLocalization.one in
 theorem mk_one : mk 1 (1 : S) = 1 := OreLocalization.one_def
 
 @[to_additive]
+theorem mk_ppow (n : ℕ+) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) :=
+  OreLocalization.oreDiv_ppow _ _ _ <| .all _ _
+
+@[to_additive]
 theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) :=
   OreLocalization.oreDiv_pow _ _ _ <| .all _ _
 

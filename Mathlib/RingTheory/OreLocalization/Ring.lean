@@ -6,6 +6,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Group.PPow.Basic -- FIXME: move
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
@@ -23,6 +24,39 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 assert_not_exists Subgroup
 
 universe u
+
+-- FIXME: move
+instance AddSemigroup.instPNatSemigroupAction {S : Type*} [AddSemigroup S] :
+    SemigroupAction ℕ+ S where
+  mul_smul n m x := by
+    induction n with
+    | one => simp
+    | succ n IH =>
+      simp [add_mul, one_mul, add_psmul, IH]
+
+-- /-- Convert back any exotic `ℕ+`-smul to the canonical instance. This should not be needed since in
+-- mathlib all `AddCommSemigroups`s should normally have exactly one `ℕ+`-semigroup action structure by
+-- design.
+-- -/
+-- theorem pnat_smul_eq_psmul {M : Type*} [AddCommMonoid M] (h : SemigroupAction ℕ+ M) (n : ℕ+) (x : M) :
+--     h.smul n x = n • x := by
+--   _
+
+-- /-- All `ℕ+`-semigroup actions structures are equal.
+-- Not an instance since in mathlib all `AddCommSemigroup` should normally have exactly
+-- one `ℕ+`-semigroup action structure by design. -/
+-- @[implicit_reducible]
+-- def AddCommSemigroup.uniquePNatSemigroupAction {S : Type*} [AddCommSemigroup S] :
+--     Unique (SemigroupAction ℕ+ S) where
+--   default := inferInstance
+--   uniq P := by
+--     ext
+
+-- /-- All `ℕ+`-semigroup action structures are equal. See also
+-- `AddCommSemigroup.uniquePNatSemigroupAction`. -/
+-- instance AddCommSemigroup.subsingletonPNatSemigroupAction {S : Type*} [AddCommSemigroup S] :
+--     Subsingleton (SemigroupAction ℕ+ S) :=
+--   AddCommSemigroup.uniquePNatSemigroupAction.instSubsingleton
 
 namespace OreLocalization
 
@@ -95,7 +129,12 @@ instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
   add_smul r s x := by simp only [← smul_one_oreDiv_one_smul, add_smul, ← add_oreDiv]
   zero_smul x := by rw [← smul_one_oreDiv_one_smul, zero_smul, zero_oreDiv, zero_smul]
 
-@[simp]
+lemma psmul_eq_psmul (n : ℕ+) (x : X[S⁻¹]) :
+    letI inst := OreLocalization.instSMulOfIsScalarTower (R := ℕ+) (X := X) (S := S)
+    HSMul.hSMul (self := @instHSMul _ _ inst) n x =
+    HSMul.hSMul (self := @instHSMul _ _ instAddMonoid.toAddSemigroup.instSMul) n x := by
+  sorry
+
 lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by

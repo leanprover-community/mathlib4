@@ -211,6 +211,9 @@ instance : AddMonoid X[S⁻¹] where
     add_assoc := OreLocalization.add_assoc
     zero_add := OreLocalization.zero_add
     add_zero := OreLocalization.add_zero
+    psmul n hn := psmulRec n hn
+    psmul_one _ := by with_unfolding_all rfl
+    psmul_succ _ _ := by with_unfolding_all rfl
     nsmul := nsmul
     nsmul_zero _ := by with_unfolding_all rfl
     nsmul_succ _ _ := by with_unfolding_all rfl
