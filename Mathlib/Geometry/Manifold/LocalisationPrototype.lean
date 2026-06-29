@@ -32,7 +32,7 @@ inductive ImBad {𝕜 : Type} [NontriviallyNormedField 𝕜] :
       {H : Type} [TopologicalSpace H]
       {M : Type} [TopologicalSpace M] [ChartedSpace H M]
       {I : ModelWithCorners 𝕜 E H} : ImBad M I M I
-#check' ImBad.refl
+
 lemma _root_.Set.restrict_surjective {α β : Type*} (s : Set α) [Nonempty β] :
     (s.restrict (π := fun _ ↦ β)).Surjective := by
   sorry
@@ -166,7 +166,7 @@ lemma mvfderivWithin_of_isOpen {f : M → V} {s : Set M} (hs : IsOpen s) {x : M}
   simp [mvfderiv, mvfderivWithin, mfderivWithin_of_isOpen hs hx]
 
 -- we want automation to compute d% (f ∘ I), so we want a specialized version of mfderivWithin_comp
-lemma mvfderiv_comp_modelWithCorners_v2 (s : NiceSubset I) {f : E → V} {x : H} (hx : I x ∈ s.carrier)
+lemma mvfderiv_comp_modelWithCorners (s : NiceSubset I) {f : E → V} {x : H} (hx : I x ∈ s.carrier)
     (hf : DifferentiableWithinAt 𝕜 f s.carrier (I x)) :
     d% (f ∘ I) x = (fderivWithin 𝕜 f s.carrier (I x)) ∘L (d% I x) := by
   -- TODO fix elaborator bug in the following statement
@@ -185,7 +185,8 @@ lemma mvfderiv_comp_modelWithCorners_v2 (s : NiceSubset I) {f : E → V} {x : H}
   rw [mfderivWithin_of_isOpen s.2 hx]
   rfl
 
--- should we have ModelWithCorners.isNiceSubset?
+-- should we have a predicate ModelWithCorners.isNiceSubset, with the two properties of nice subsets
+-- (preimage under I is open and is contained in the range of I)?
 
 -- don't want, also false in general
 -- lemma mvfderiv_eq_fderivWithin' (s : NiceSubset I) {f : E → V} {x : E} (hx : x ∈ s.carrier) :
@@ -223,8 +224,16 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
     have hg' : MDiffAt (g ∘ φ) z := hg.comp _ hφ'
     specialize this hf' hg' ⟨_, .refl⟩
     exact congr($this v)
+  -- "unmanifoldify" tactic
+  -- given data one something that's equivalent to E, pull back all the data on M to E,
+  -- and turn statements about manifolds into statements about analysis
+  -- the scope is pure translation; no locality arguments using any mathematics are in scope
+  -- (for instance, using M being boundaryless and simplifying accordingly is out of scope)
   obtain ⟨s, ⟨⟩⟩ := h
   clear! M
+  -- first version of unmanifoldify just takes M f g x and looks for such lemmas
+  -- unmanifoldify, step 1: do all the `obtain`
+  -- TODO: cleanup: make this a lemma, and save another four or five lines
   have : ∃ f' : E → 𝕜, Set.restrict (niceSubsetEquiv s) (f' ∘ I) = f := by
     obtain ⟨f₀, rfl⟩ := Set.restrict_surjective (niceSubsetEquiv s).carrier f
     use f₀ ∘ I.symm
@@ -241,32 +250,45 @@ lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
   have : ∃ x' : E, x' ∈ s.carrier ∧ I.symm x' = x :=
     ⟨I x, by simpa [niceSubsetEquiv] using hx, I.left_inv' (by simp)⟩
   obtain ⟨x', hx', rfl⟩ := this
-  -- ideally, everything is `simp` now!
-  rw [restrict_smul]
-  -- mdiff lemmas, like yesterday
   -- missing mathlib lemmas: relate MDiff terms to normed space world
   -- should be global simp lemmas or a simp set
   replace hf : DifferentiableWithinAt 𝕜 f' s.carrier x' := sorry
   replace hg : DifferentiableWithinAt 𝕜 g' s.carrier x' := sorry
-  simp_rw [mvfderiv_restrict_apply]
-  rw [← Function.smul_comp]
-  -- cleanup "unmanifoldify" tactic does all of these steps; applies this conditional simp lemma
-  -- and generates side goals as necessary
-  rw [mvfderiv_comp_modelWithCorners_v2 s (by simpa) (by simpa [s.3 hx'] using! hf.smul hg)]
-  rw [mvfderiv_comp_modelWithCorners_v2 s  (by simpa) (by simpa [s.3 hx'] using hg)]
-  rw [mvfderiv_comp_modelWithCorners_v2 s (by simpa) (by simpa [s.3 hx'])]
-
+  -- Ideally, a lot of the next steps are by `simp` now.
+  -- Should use a custom simp set, with `fun_prop` (upgraded to manifolds) as discharger.
+  -- step 2: push every form into an atomic form `f ∘ I`, where `I` is a model with corners
+  -- that step would also apply `Function.smul_comp`
+  rw [restrict_smul]
+  simp_rw [mvfderiv_restrict_apply, ← Function.smul_comp]
+  -- step 3: apply lemmas to turn the manifold things into fderiv things
+  rw [mvfderiv_comp_modelWithCorners s (by simpa) (by simpa [s.3 hx'] using hf.smul hg),
+    mvfderiv_comp_modelWithCorners s (by simpa) (by simpa [s.3 hx']),
+    mvfderiv_comp_modelWithCorners s (by simpa) (by simpa [s.3 hx'])]
   --set A := mfderiv I (𝓘(𝕜, E)) I (I.symm x') -- TODO: elaborators failure, fix!
-  --set B := mfderiv I I Subtype.val ⟨I.symm x', hx⟩
+  -- The remaining argument is domain-specific. Looks a bit ugly, though.
+  simp only [Set.restrict_apply, Function.comp_apply]
+  -- After the simp, there is no niceSubsetEquiv remaining.
+  -- TODO: X is in the tangent space to s... ideally, would like to generalise proofs accordingly
   ext X
-  simp only [ContinuousLinearMap.comp_apply, add_apply, smul_apply,
-    smulRight_apply]
-  -- This is the mathematics
-  rw [fderivWithin_smul]
-  · simp
-  · exact s.uniqueDiffOn.uniqueDiffWithinAt hx -- missing API lemma!
-  · simpa [s.3 hx'] using hf
-  · simpa [s.3 hx'] using hg
+  simp only [ContinuousLinearMap.comp_apply, add_apply, smul_apply, smulRight_apply]
+  simp only [s.3 hx', ModelWithCorners.right_inv]
+  generalize mvfderiv I I (I.symm x') (mfderiv I I Subtype.val ⟨I.symm x', hx⟩ X) = Y
+  clear! X
+  -- Final step: eliminate s being a special set, and just turn it into a bare set.
+  -- XXX: can we eliminate this "bundle a niceSubsetEquiv and remove it again" dance?
+  -- Putting a manifold structure on the subset requires producing a term of type `Opens`.
+  -- `niceSubsetEquiv` could become a function taking a set s and proofs of its various properties,
+  -- producing an `Opens`. This would avoid the final obtain step.
+
+  -- Just hard-code (or tag with an attribute) a list of lemmas about s that are useful;
+  -- we will produce all of these. `unmanifoldify` can take config options to disable the
+  -- different stages. If it's doing too much, just disable that.
+  have := s.uniqueDiffOn.uniqueDiffWithinAt hx' -- missing API lemma!
+  obtain ⟨s, s1, s2⟩ := s
+  simp_all only
+  -- This is the mathematics: just two lines.
+  rw [fderivWithin_smul] <;> try assumption
+  simp
 
   /- old proof was
   -- guess: specialized to I should be simp?
