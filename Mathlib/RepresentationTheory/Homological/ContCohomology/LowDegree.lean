@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Richard Hill. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Richard Hill, Andrew Yang, Edison Xie
+-/
 module
 
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Richard Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Richard Hill, Andrew Yang
+Authors: Richard Hill, Andrew Yang, Edison Xie
 -/
 
 module
@@ -94,5 +94,15 @@ lemma homogeneousCochains.property {n : ℕ} {rep : TopRep k G}
     coe_mk] at this
   have key := congrArg (((MultiInd.functor k G n).obj rep).ρ g₁) this
   rwa [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self] at key
+
+/-- `continuousCohomologyFunctor k G n` is the functor taking
+an `k`-linear `G`-representation to its `n`-th continuous cohomology. -/
+noncomputable def _root_.continuousCohomologyFunctor (n : ℕ) : TopRep k G ⥤ TopModuleCat k :=
+  homogeneousCochains k G ⋙ HomologicalComplex.homologyFunctor _ _ n
+
+/-- The continuous cohomology of a continuous representation defined
+by `continuousCohomologyFunctor`. -/
+noncomputable abbrev _root_.continuousCohomology (n : ℕ) (A : TopRep k G) :
+    TopModuleCat k := (continuousCohomologyFunctor k G n).obj A
 
 end ContinuousCohomology
