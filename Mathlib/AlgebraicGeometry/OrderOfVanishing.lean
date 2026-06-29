@@ -47,6 +47,7 @@ lemma ordHom_of_isUnit {U : X.Opens}
 The order of vanishing of an element of the function field of a locally Noetherian integral scheme
 at a point. This has a junk value of `0` if `f = 0` or if `coheight z ≠ 1`.
 -/
+@[no_expose]
 noncomputable
 def ord (f : X.functionField) (z : X) : ℤ :=
   if hz : coheight z = 1
