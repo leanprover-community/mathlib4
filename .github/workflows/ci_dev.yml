@@ -37,7 +37,12 @@ env:
 jobs:
   export:
     name: Export cross-reference JSON
-    runs-on: ubuntu-latest
+    # TESTING ONLY: this branch modifies the widely-imported `CrossRefAttribute.lean`,
+    # so its `Mathlib.olean` is not in the master cache and must be built from scratch
+    # (see the "Build Mathlib" step). Use the large `pr` runner for that build. The
+    # production `export_crossrefs.yml` runs on master where the cache is complete, so
+    # it stays cache-only on `ubuntu-latest`.
+    runs-on: pr
     environment:
       name: crossref-exports
       deployment: false
@@ -60,6 +65,14 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
+
+      # TESTING ONLY: build the oleans the cache can't provide. Because this branch
+      # changes a foundational module, `cache get` above only fills a small fraction
+      # and `Mathlib.olean` is absent, so `import Mathlib` below would fail without
+      # this. On master (production) the cache is complete and this would be a no-op,
+      # which is why `export_crossrefs.yml` omits it.
+      - name: Build Mathlib
+        run: lake build Mathlib
 
       - name: Generate crossrefs.json
         env:
