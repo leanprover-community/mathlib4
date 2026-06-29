@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
@@ -66,6 +67,7 @@ but we choose a definition which involves fewer existential quantifiers and repl
 with preimages.
 
 We prove the equivalence in `isCompactOperator_iff_exists_mem_nhds_image_subset_compact`. -/
+@[wikidata Q1780743]
 def IsCompactOperator {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace M₁] [TopologicalSpace M₂]
     (f : M₁ → M₂) : Prop :=
   ∃ K, IsCompact K ∧ f ⁻¹' K ∈ (𝓝 0 : Filter M₁)

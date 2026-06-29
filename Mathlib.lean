@@ -591,6 +591,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.Plus
+public import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlus
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
@@ -1349,6 +1350,7 @@ public import Mathlib.AlgebraicGeometry.AffineTransitionLimit
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.AlgebraicCycle.Basic
 public import Mathlib.AlgebraicGeometry.Artinian
+public import Mathlib.AlgebraicGeometry.Birational.Birational
 public import Mathlib.AlgebraicGeometry.Birational.Dominant
 public import Mathlib.AlgebraicGeometry.Birational.RationalMap
 public import Mathlib.AlgebraicGeometry.ColimitsOver
@@ -2180,6 +2182,7 @@ public import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+public import Mathlib.Analysis.Normed.Lp.Finsupp
 public import Mathlib.Analysis.Normed.Lp.LpEquiv
 public import Mathlib.Analysis.Normed.Lp.Matrix
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
@@ -6664,8 +6667,10 @@ public import Mathlib.RingTheory.Ideal.Quotient.Index
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Over
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Ideal.Span
+public import Mathlib.RingTheory.Ideal.UFD
 public import Mathlib.RingTheory.IdealFilter.Basic
 public import Mathlib.RingTheory.IdealFilter.Topology
 public import Mathlib.RingTheory.Idempotents
@@ -7050,6 +7055,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Localization
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Moebius
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
@@ -7608,6 +7614,7 @@ public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
+public import Mathlib.Topology.Algebra.Module.IsWeak
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 public import Mathlib.Topology.Algebra.Module.LinearPMap
