@@ -5,11 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.MeasurableEquiv
 public import Mathlib.MeasureTheory.Integral.Bochner.L1
-public import Mathlib.MeasureTheory.Integral.IntegrableOn
-public import Mathlib.MeasureTheory.Measure.OpenPos
-public import Mathlib.MeasureTheory.Measure.Real
 
 /-!
 # Bochner integral
@@ -213,6 +209,10 @@ theorem Integrable.of_integral_ne_zero {f : α → G} (h : ∫ a, f a ∂μ ≠ 
 theorem integral_non_aestronglyMeasurable {f : α → G} (h : ¬AEStronglyMeasurable f μ) :
     ∫ a, f a ∂μ = 0 :=
   integral_undef <| not_and_of_not_left _ h
+
+theorem integral_of_not_completeSpace {f : α → G} (hG : ¬CompleteSpace G) :
+    ∫ a, f a ∂μ = 0 := by
+  simp [integral, hG]
 
 variable (α G)
 
@@ -561,6 +561,20 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
   rw [← integral_sub hf.real_toNNReal]
   · simp
   · exact hf.neg.real_toNNReal
+
+theorem integral_abs_eq_two_mul_integral_posPart_sub_integral {f : α → ℝ} (hf : Integrable f μ) :
+    ∫ x, |f x| ∂μ = 2 * ∫ x, (f x)⁺ ∂μ - ∫ x, f x ∂μ := by
+  simp only [PosPart.posPart]
+  have h_eq : ∀ x, |f x| = 2 * max (f x) 0 - f x := by grind
+  rw [integral_congr_ae (Eventually.of_forall h_eq), integral_sub (by fun_prop) hf,
+    integral_const_mul]
+
+theorem integral_abs_eq_two_mul_integral_negPart_add_integral {f : α → ℝ} (hf : Integrable f μ) :
+    ∫ x, |f x| ∂μ = 2 * ∫ x, (f x)⁻ ∂μ + ∫ x, f x ∂μ := by
+  simp only [NegPart.negPart]
+  have h_eq : ∀ x, |f x| = 2 * max (-f x) 0 + f x := by grind
+  rw [integral_congr_ae (Eventually.of_forall h_eq), integral_add (by fun_prop) hf,
+    integral_const_mul]
 
 end Basic
 
@@ -1349,7 +1363,8 @@ attribute [local instance] monadLiftOptionMetaM in
 This extension only proves non-negativity, strict positivity is more delicate for integration and
 requires more assumptions. -/
 @[positivity MeasureTheory.integral _ _]
-meta def evalIntegral : PositivityExt where eval {u α} zα pα e := do
+meta def evalIntegral : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ $inst2 _ _ $f) =>
     let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque

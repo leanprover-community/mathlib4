@@ -19,6 +19,12 @@ Known limitations:
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
   are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
+- It is currently not possible for a constant to have multiple possible duals.
+  This would be useful for constants that have orders on different types, such as `Monotone f`.
+  If the domain and codomain of `f` are both dualized, then `Monotone f` is simply dual to itself.
+  But there are also cases where only the domain or only the codomain should be dualized.
+  Then, `Monotone f` would be dual to `Antitone f`.
+  We may also want this feature for dualizing results about bicategories.
 -/
 
 public meta section
@@ -289,10 +295,11 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
-/-- `to_dual_name_hint src tgt` lets `to_dual` translate between the name segments `src` and `tgt`
-for the rest of the file current. `src` and `tgt` should both be capitalized. -/
-elab "to_dual_name_hint" src:ident tgt:ident : command => do
-  guessNameExt.addTranslation src tgt
-  guessNameExt.addTranslation tgt src
+/-- `to_dual_name_hint src₁ tgt₁, ..., srcₙ tgtₙ` lets `to_dual` translate between the name segments
+`srcᵢ` and `tgtᵢ` for the rest of the file current. The name segments should be capitalized. -/
+elab "to_dual_name_hint" hints:(ident ident),* : command => do
+  for ⟨hint⟩ in hints.getElems do
+    guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
+    guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
 
 end Mathlib.Tactic.ToDual
