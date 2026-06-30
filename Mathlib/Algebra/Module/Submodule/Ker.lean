@@ -209,8 +209,8 @@ alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
     rw [h] at this
     simpa [mk_eq_zero] using this
 
-@[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {f : M →ₗ[R] M}
-    (hf : ∀ x ∈ p, f x ∈ p) :
+@[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {q : Submodule R₂ M₂}
+    {f : M →ₛₗ[τ₁₂] M₂} (hf : ∀ x ∈ p, f x ∈ q) :
     Injective (f.restrict hf) ↔ Disjoint p (ker f) := by
   rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
     disjoint_iff]
