@@ -123,6 +123,9 @@ instance hasMul : Mul (SpecialLinearGroup n R) :=
 instance hasOne : One (SpecialLinearGroup n R) :=
   ⟨⟨1, det_one⟩⟩
 
+instance : Pow (SpecialLinearGroup n R) ℕ+ where
+  pow x n := ⟨x ^ n, (det_ppow _ _).trans <| x.prop.symm ▸ one_ppow _⟩
+
 instance : Pow (SpecialLinearGroup n R) ℕ where
   pow x n := ⟨x ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
 
@@ -180,7 +183,7 @@ theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i �
 end CoeLemmas
 
 instance monoid : Monoid (SpecialLinearGroup n R) :=
-  Function.Injective.monoid _ Subtype.coe_injective coe_one coe_mul coe_pow
+  Function.Injective.monoid _ Subtype.coe_injective coe_one coe_mul (fun _ _ => rfl) coe_pow
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with

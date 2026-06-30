@@ -308,6 +308,10 @@ theorem det_mul_column (v : n → R) (A : Matrix n n R) :
   MultilinearMap.map_smul_univ _ v A
 
 @[simp]
+theorem det_ppow (M : Matrix m m R) (n : ℕ+) : det (M ^ n) = det M ^ n :=
+  (detMonoidHom : Matrix m m R →* R).map_ppow M n
+
+@[simp]
 theorem det_pow (M : Matrix m m R) (n : ℕ) : det (M ^ n) = det M ^ n :=
   (detMonoidHom : Matrix m m R →* R).map_pow M n
 
