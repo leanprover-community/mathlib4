@@ -646,26 +646,20 @@ theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
 
 /-- A variant of `IsPrimitiveRoot.card_rootsOfUnity` for `ζ : Rˣ`. -/
 theorem card_rootsOfUnity' {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
-    Fintype.card (rootsOfUnity n R) = n := by
-  let e := h.zmodEquivZPowers
-  have : Fintype (Subgroup.zpowers ζ) := Fintype.ofEquiv _ e.toEquiv
-  calc
-    Fintype.card (rootsOfUnity n R) = Fintype.card (Subgroup.zpowers ζ) :=
-      Fintype.card_congr <| by rw [h.zpowers_eq]
-    _ = Fintype.card (ZMod n) := Fintype.card_congr e.toEquiv.symm
-    _ = n := ZMod.card n
+    Nat.card (rootsOfUnity n R) = n := by
+  rw [← h.zpowers_eq, Nat.card_zpowers, h.eq_orderOf]
 
 theorem card_rootsOfUnity {ζ : R} {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ n) :
-    Fintype.card (rootsOfUnity n R) = n := by
+    Nat.card (rootsOfUnity n R) = n := by
   obtain ⟨ζ, hζ⟩ := h.isUnit NeZero.out
   rw [← hζ, IsPrimitiveRoot.coe_units_iff] at h
   exact h.card_rootsOfUnity'
 
 lemma _root_.card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot {n : ℕ} [NeZero n] :
-    Fintype.card (rootsOfUnity n R) = n ↔ ∃ ζ : R, IsPrimitiveRoot ζ n := by
+    Nat.card (rootsOfUnity n R) = n ↔ ∃ ζ : R, IsPrimitiveRoot ζ n := by
   refine ⟨fun h ↦ ?_, fun ⟨ζ, hζ⟩ ↦ hζ.card_rootsOfUnity⟩
   obtain ⟨⟨ζ, hζ'⟩, hζ⟩ := (rootsOfUnity.isCyclic R n).exists_ofOrder_eq_natCard
-  rw [Nat.card_eq_fintype_card, h, ← IsPrimitiveRoot.iff_orderOf, ← coe_submonoidClass_iff,
+  rw [h, ← IsPrimitiveRoot.iff_orderOf, ← coe_submonoidClass_iff,
     ← IsPrimitiveRoot.coe_units_iff] at hζ
   use ζ
 

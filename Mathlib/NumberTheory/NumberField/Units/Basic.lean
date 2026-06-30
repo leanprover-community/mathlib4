@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Units of a number field
@@ -220,7 +220,7 @@ theorem map_complexEmbedding_torsion (φ : K →+* ℂ) :
     exact map_rootsOfUnity _ (torsionOrder K)
   · let e := ((torsion K).equivMapOfInjective (Units.complexEmbedding φ)
       (Units.complexEmbedding_injective φ)).symm.toEquiv
-    rw [HasEnoughRootsOfUnity.natCard_rootsOfUnity, Nat.card_congr e, torsionOrder]
+    rw [Complex.card_rootsOfUnity, Nat.card_congr e, torsionOrder]
 
 theorem even_torsionOrder :
     Even (torsionOrder K) := by

@@ -470,7 +470,7 @@ theorem card_isPrincipal_norm_eq_mul_torsion (n : ℕ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) = n} * torsionOrder K =
         Nat.card {a : integerSet K | mixedEmbedding.norm (a : mixedSpace K) = n} := by
-  rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+  rw [torsionOrder, ← Nat.card_prod]
   exact Nat.card_congr (integerSetEquivNorm K n).symm
 
 variable (J : (Ideal (𝓞 K))⁰)
