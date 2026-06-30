@@ -113,7 +113,7 @@ def fstSndJointlyReflectLimit {F : J ⥤ Comma L R} {c : Cone F}
     ext
     · exact h₁.fac ((fst _ _).mapCone s) j
     · exact h₂.fac ((snd _ _).mapCone s) j
-  uniq s m hm := by
+  uniq s _ hm := by
     ext
     · exact h₁.uniq ((fst _ _).mapCone s) _ (fun _ ↦ by simp [← hm])
     · exact h₂.uniq ((snd _ _).mapCone s) _ (fun _ ↦ by simp [← hm])
