@@ -18,3 +18,12 @@ Note: This linter can be disabled with `set_option linter.style.nameCheck false`
 -/
 #guard_msgs in
 def double__underscore : Unit := ()
+
+/--
+warning: The declaration 'double__underscore'' contains '__', which does not follow the mathlib naming conventions. Consider using single underscores instead.
+
+Note: This linter can be disabled with `set_option linter.style.nameCheck false`
+-/
+#guard_msgs in
+set_option linter.style.nameCheck true in
+theorem double__underscore' : True := trivial
