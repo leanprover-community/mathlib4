@@ -148,8 +148,6 @@ theorem iInf_Ioi_eq [OrderTopology R] [DenselyOrdered R] [NoMaxOrder R]
      (f : StieltjesFunction R) (x : R) : ⨅ r : Ioi x, f r = f x := by
   suffices Function.rightLim f x = ⨅ r : Ioi x, f r by rw [← this, f.rightLim_eq]
   rw [f.mono.rightLim_eq_sInf, sInf_image']
-  rw [← neBot_iff]
-  infer_instance
 
 theorem iInf_rat_gt_eq (f : StieltjesFunction ℝ) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by

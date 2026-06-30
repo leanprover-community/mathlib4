@@ -599,6 +599,9 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 
+theorem RingHom.IsIntegral.kerLift {f : S →+* T} (hf : f.IsIntegral) : f.kerLift.IsIntegral :=
+  RingHom.IsIntegral.tower_top (Ideal.Quotient.mk (RingHom.ker f)) f.kerLift hf
+
 theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
     (inj : Function.Injective f) : IsLocalHom f where
   map_nonunit a ha := by

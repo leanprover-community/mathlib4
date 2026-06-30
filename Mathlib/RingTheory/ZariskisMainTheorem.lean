@@ -241,7 +241,7 @@ lemma exists_leadingCoeff_pow_smul_mem_conductor
       exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_range φ _ p
         (hφ.to_isIntegral (t * x)) (by convert! this using 1; ring)
     obtain ⟨r, hr : algebraMap _ _ r = _⟩ := hRS.le hn
-    exact ⟨n, (C r + q), by simp [← Polynomial.algebraMap_eq, - Polynomial.algebraMap_apply, hr]⟩
+    exact ⟨n, (C r + q), by simp [← Polynomial.algebraMap_eq, -Polynomial.algebraMap_apply, hr]⟩
   choose n hn using this
   obtain ⟨s, hs⟩ := Module.Finite.fg_top (R := R[X]) (M := S)
   refine ⟨s.sup n, fun x ↦ ?_⟩
