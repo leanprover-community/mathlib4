@@ -395,10 +395,10 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersionAtOfComplement {n : ℕ} {x : H} :
     IsImmersionAtOfComplement PUnit I 𝓘(𝕜, E) n I x :=
-  Manifold.IsImmersionAtOfComplement.mk_of_charts
+  Manifold.IsImmersionAtOfComplement.mk_of_continuousAt I.continuousAt
     (.prodUnique _ _ _) (.refl _) (.refl _) (by simp) (by simp)
     (IsManifold.subset_maximalAtlas (by simp)) (IsManifold.subset_maximalAtlas (by simp))
-    (by simp) (by simp [Function.comp_def])
+    (by simp [Function.comp_def])
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
