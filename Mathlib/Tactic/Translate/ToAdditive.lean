@@ -342,6 +342,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("leftCancelAdd", "AddLeftCancel"),
   ("rightCancelAdd", "AddRightCancel"),
   ("cancelCommAdd", "AddCancelComm"),
+  ("isTorsion", "IsAddTorsion"),
   ("commAdd", "AddComm"),
   ("zero_le", "Nonneg"),
   ("zeroLE", "Nonneg"),

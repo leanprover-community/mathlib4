@@ -86,12 +86,15 @@ theorem IsTorsion.subgroup (tG : IsTorsion G) (H : Subgroup G) : IsTorsion H := 
   Submonoid.isOfFinOrder_coe.1 <| tG h
 
 /-- The image of a surjective torsion group homomorphism is torsion. -/
-@[to_additive AddIsTorsion.of_surjective
+@[to_additive
 /-- The image of a surjective additive torsion group homomorphism is torsion. -/]
 theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG : IsTorsion G) :
     IsTorsion H := fun h ↦ by
   obtain ⟨g, rfl⟩ := hf h
   exact f.isOfFinOrder (tG g)
+
+@[deprecated (since := "2026-06-30")] alias AddIsTorsion.of_surjective :=
+  IsAddTorsion.of_surjective
 
 /-- Torsion groups are closed under extensions. -/
 @[to_additive AddIsTorsion.extension_closed
@@ -105,22 +108,31 @@ theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsi
   exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
     rw [pow_mul, ← h, ← Subgroup.coe_pow, hnn, Subgroup.coe_one]⟩
 
+@[deprecated (since := "2026-06-30")] alias AddIsTorsion.extension_closed :=
+  IsAddTorsion.extension_closed
+
 /-- The image of a quotient is torsion iff the group is torsion. -/
-@[to_additive AddIsTorsion.quotient_iff
+@[to_additive
 /-- The image of a quotient is additively torsion iff the group is torsion. -/]
 theorem IsTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN : N = f.ker)
     (tN : IsTorsion N) : IsTorsion H ↔ IsTorsion G :=
   ⟨fun tH ↦ IsTorsion.extension_closed hN tH tN, fun tG ↦ IsTorsion.of_surjective hf tG⟩
 
+@[deprecated (since := "2026-06-30")] alias AddIsTorsion.quotient_iff :=
+  IsAddTorsion.quotient_iff
+
 /-- If a group exponent exists, the group is torsion. -/
-@[to_additive ExponentExists.is_add_torsion
+@[to_additive
 /-- If a group exponent exists, the group is additively torsion. -/]
 theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g ↦ by
   obtain ⟨n, npos, hn⟩ := h
   exact isOfFinOrder_iff_pow_eq_one.mpr ⟨n, npos, hn g⟩
 
+@[deprecated (since := "2026-06-30")] alias ExponentExists.is_add_torsion :=
+  ExponentExists.isAddTorsion
+
 /-- The group exponent exists for any bounded torsion group. -/
-@[to_additive IsAddTorsion.exponentExists
+@[to_additive
 /-- The group exponent exists for any bounded additive torsion group. -/]
 theorem IsTorsion.exponentExists (tG : IsTorsion G)
     (bounded : (Set.range fun g : G ↦ orderOf g).Finite) : ExponentExists G :=
@@ -128,9 +140,12 @@ theorem IsTorsion.exponentExists (tG : IsTorsion G)
     (exponent_ne_zero_iff_range_orderOf_finite fun g ↦ (tG g).orderOf_pos).mpr bounded
 
 /-- Finite groups are torsion groups. -/
-@[to_additive is_add_torsion_of_finite /-- Finite additive groups are additive torsion groups. -/]
+@[to_additive /-- Finite additive groups are additive torsion groups. -/]
 theorem isTorsion_of_finite [Finite G] : IsTorsion G :=
   ExponentExists.isTorsion .of_finite
+
+@[deprecated (since := "2026-06-30")] alias is_add_torsion_of_finite :=
+  isAddTorsion_of_finite
 
 end Group
 
@@ -164,7 +179,7 @@ theorem IsTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsTorsion R)
 
 /-- A module with a finite ring of scalars is additively torsion. -/
 theorem IsTorsion.module_of_finite [Ring R] [Finite R] [Module R M] : IsTorsion M :=
-  (is_add_torsion_of_finite : IsTorsion R).module_of_torsion _ _
+  (isAddTorsion_of_finite : IsTorsion R).module_of_torsion _ _
 
 end AddMonoid
 
@@ -239,12 +254,16 @@ theorem mem_primaryComponent_iff_orderOf [Fact p.Prime] {g : G} :
 variable [hp : Fact p.Prime]
 
 /-- Elements of the `p`-primary component have order `p^n` for some `n`. -/
-@[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
+@[to_additive
 /-- Elements of the `p`-primary component have additive order `p^n` for some `n`. -/]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
     ∃ n : ℕ, orderOf g = p ^ n := by
   rw [← orderOf_submonoid, ← mem_primaryComponent_iff_orderOf]
   exact g.property
+
+@[deprecated (since := "2026-06-30")] alias
+    _root_.AddCommMonoid.primaryComponent.exists_orderOf_eq_prime_nsmul :=
+  AddCommMonoid.primaryComponent.exists_addOrderOf_eq_prime_nsmul
 
 /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/
 @[to_additive /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/]
