@@ -248,9 +248,11 @@ theorem empty_left : C.MonochromaticBetween ∅ Y k := by
 theorem empty_right : C.MonochromaticBetween X ∅ k := by
   simp [MonochromaticBetween]
 
+@[simp]
 theorem of_subsingleton [Subsingleton K] : C.MonochromaticBetween X Y k :=
   fun _ _ _ _ _ ↦ Subsingleton.elim _ _
 
+@[gcongr]
 protected theorem subset (hWX : C.MonochromaticBetween W X k) (hYW : Y ⊆ W) (hZX : Z ⊆ X) :
     C.MonochromaticBetween Y Z k :=
   fun _ hx _ hy ↦ hWX (hYW hx) (hZX hy)
