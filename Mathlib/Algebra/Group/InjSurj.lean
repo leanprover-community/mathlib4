@@ -424,8 +424,8 @@ that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducib
 a `SubNegMonoid`. -/]
 protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₂ :=
   { hf.monoid f one mul ppow npow with
     zpow := fun n x => x ^ n,
@@ -444,10 +444,10 @@ protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surj
 surjective map that preserves `0` and `+` to an additive group. -/]
 protected abbrev group [Group M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₂ :=
-  { hf.divInvMonoid f one mul inv ppow div npow zpow with
+  { hf.divInvMonoid f one mul inv div ppow npow zpow with
     inv_mul_cancel := hf.forall.2 fun x => by rw [← inv, ← mul, inv_mul_cancel, one] }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a commutative group, if it admits a surjective
@@ -458,10 +458,10 @@ map that preserves `1`, `*`, `⁻¹`, and `/` from a commutative group. See note
 admits a surjective map that preserves `0` and `+` to an additive commutative group. -/]
 protected abbrev commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (div : ∀ x y, f (x / y) = f x / f y) (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₂ :=
-  { hf.group f one mul inv ppow div npow zpow, hf.commMonoid f one mul ppow npow with }
+  { hf.group f one mul inv div ppow npow zpow, hf.commMonoid f one mul ppow npow with }
 
 end Surjective
 

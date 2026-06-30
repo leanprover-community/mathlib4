@@ -182,7 +182,7 @@ protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One
     (ppow : ∀ x (n : ℕ+), f (x ^ n) = f x ^ n) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : GroupWithZero G₀' :=
   { hf.monoidWithZero f zero one mul ppow npow,
-    hf.divInvMonoid f one mul inv ppow div npow zpow with
+    hf.divInvMonoid f one mul inv div ppow npow zpow with
     inv_zero := by rw [← zero, ← inv, inv_zero],
     mul_inv_cancel := hf.forall.2 fun x hx => by
         rw [← inv, ← mul, mul_inv_cancel₀ (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]

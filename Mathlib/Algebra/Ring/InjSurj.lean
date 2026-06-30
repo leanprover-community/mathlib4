@@ -361,7 +361,7 @@ protected abbrev addGroupWithOne [AddGroupWithOne R]
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : AddGroupWithOne S :=
   { hf.addMonoidWithOne f zero one add psmul nsmul natCast,
-    hf.addGroup f zero add neg (swap psmul) sub (swap nsmul) (swap zsmul) with
+    hf.addGroup f zero add neg sub (swap psmul) (swap nsmul) (swap zsmul) with
     intCast := Int.cast,
     intCast_ofNat := fun n => by rw [← intCast, Int.cast_natCast, natCast],
     intCast_negSucc := fun n => by
@@ -426,7 +426,7 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (zero : f 0 = 0
     (psmul : ∀ (n : ℕ+) (x), f (n • x) = n • f x) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalNonAssocRing S where
-  toAddCommGroup := hf.addCommGroup f zero add neg (swap psmul) sub (swap nsmul) (swap zsmul)
+  toAddCommGroup := hf.addCommGroup f zero add neg sub (swap psmul) (swap nsmul) (swap zsmul)
   __ := hf.nonUnitalNonAssocSemiring f zero add mul psmul nsmul
 
 /-- Pushforward a `NonUnitalRing` instance along a surjective function. -/
@@ -462,7 +462,7 @@ protected abbrev ring [Ring R] (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, 
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : Ring S where
   toSemiring := hf.semiring f zero one add mul psmul nsmul ppow npow natCast
   __ := hf.addGroupWithOne f zero one add neg sub psmul nsmul zsmul natCast intCast
-  __ := hf.addCommGroup f zero add neg (swap psmul) sub (swap nsmul) (swap zsmul)
+  __ := hf.addCommGroup f zero add neg sub (swap psmul) (swap nsmul) (swap zsmul)
 
 /-- Pushforward a `NonUnitalNonAssocCommSemiring` instance along a surjective function. -/
 -- See note [reducible non-instances]
