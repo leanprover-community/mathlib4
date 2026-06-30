@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
@@ -24,7 +22,7 @@ TODO: this holds more generally in any locally compact group, see
 [Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Set
 

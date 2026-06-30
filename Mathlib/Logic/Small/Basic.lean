@@ -14,7 +14,7 @@ public import Mathlib.Logic.Equiv.Set
 In particular we prove `small_of_injective` and `small_of_surjective`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Countable
 
@@ -75,3 +75,5 @@ instance small_quot {α : Type u} [Small.{v} α] (r : α → α → Prop) : Smal
 
 instance small_quotient {α : Type u} [Small.{v} α] (s : Setoid α) : Small.{v} (Quotient s) :=
   small_of_surjective Quotient.mk_surjective
+
+instance small_orderDual {α : Type*} [h : Small.{v} α] : Small.{v} αᵒᵈ := h

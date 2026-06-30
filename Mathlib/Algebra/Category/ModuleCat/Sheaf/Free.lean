@@ -32,7 +32,6 @@ open CategoryTheory Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
   [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 namespace SheafOfModules
 
@@ -158,14 +157,14 @@ noncomputable def freeSumIso : free I ⨿ free J ≅ free (R := R) (I ⊕ J) :=
 @[reassoc (attr := simp)]
 lemma inl_freeSumIso_hom :
     coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl := by
-  rw [← dsimp% freeFunctor_map (TypeCat.ofHom (Sum.inl : I → I ⊕ J))]
+  rw [← dsimp% freeFunctor_map (↾(Sum.inl : I → I ⊕ J))]
   exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .left)
 
 @[reassoc (attr := simp)]
 lemma inr_freeSumIso_hom :
     coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr := by
-  rw [← dsimp% freeFunctor_map (TypeCat.ofHom (Sum.inr : J → I ⊕ J))]
+  rw [← dsimp% freeFunctor_map (↾(Sum.inr : J → I ⊕ J))]
   exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .right)
 
@@ -175,7 +174,6 @@ section
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) (I : Type u)
 
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.

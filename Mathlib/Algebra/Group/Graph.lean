@@ -51,7 +51,6 @@ def mgraph (f : G →* H) : Submonoid (G × H) where
 -- TODO: Can `to_additive` be smarter about `simps`?
 attribute [simps! coe] mgraph
 attribute [simps! coe] AddMonoidHom.mgraph
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] coe_mgraph
 
 @[to_additive (attr := simp)]
@@ -163,7 +162,6 @@ def graph (f : G →* H) : Subgroup (G × H) where
 -- TODO: Can `to_additive` be smarter about `simps`?
 attribute [simps! coe toSubmonoid] graph
 attribute [simps! coe toAddSubmonoid] AddMonoidHom.graph
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] coe_graph graph_toSubmonoid
 
 @[to_additive]
@@ -185,7 +183,7 @@ once. Then the image of `f` is the graph of some group homomorphism `f' : H → 
 lemma exists_range_eq_graph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : H →* I, range f = f'.graph := by
-  simpa [SetLike.ext_iff] using exists_mrange_eq_mgraph hf₁ hf
+  simpa [SetLike.ext_iff] using! exists_mrange_eq_mgraph hf₁ hf
 
 /-- **Line test** for group isomorphisms.
 
@@ -202,7 +200,7 @@ group isomorphism `f' : H ≃ I`. -/]
 lemma exists_mulEquiv_range_eq_graph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : H ≃* I, range f = e.toMonoidHom.graph := by
-  simpa [SetLike.ext_iff] using exists_mulEquiv_mrange_eq_mgraph hf₁ hf₂ hf
+  simpa [SetLike.ext_iff] using! exists_mulEquiv_mrange_eq_mgraph hf₁ hf₂ hf
 
 end MonoidHom
 
@@ -217,7 +215,7 @@ factor and `G` intersects every "vertical line" `{(h, i) | i : I}` at most once.
 graph of some monoid homomorphism `f : H → I`. -/]
 lemma Subgroup.exists_eq_graph {G : Subgroup (H × I)} (hG₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →* I, G = f.graph := by
-  simpa [SetLike.ext_iff] using Submonoid.exists_eq_mgraph hG₁
+  simpa [SetLike.ext_iff] using! Submonoid.exists_eq_mgraph hG₁
 
 /-- **Goursat's lemma** for monoid isomorphisms.
 
@@ -230,6 +228,6 @@ Let `G ≤ H × I` be a submonoid of a product of additive monoids. Assume that 
 lemma Subgroup.exists_mulEquiv_eq_graph {G : Subgroup (H × I)}
     (hG₁ : Bijective (Prod.fst ∘ G.subtype)) (hG₂ : Bijective (Prod.snd ∘ G.subtype)) :
     ∃ e : H ≃* I, G = e.toMonoidHom.graph := by
-  simpa [SetLike.ext_iff] using Submonoid.exists_mulEquiv_eq_mgraph hG₁ hG₂
+  simpa [SetLike.ext_iff] using! Submonoid.exists_mulEquiv_eq_mgraph hG₁ hG₂
 
 end Group

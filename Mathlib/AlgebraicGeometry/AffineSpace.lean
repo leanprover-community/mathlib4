@@ -6,10 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Algebra.MvPolynomial.Nilpotent
+public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
-public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Affine space
@@ -34,17 +33,16 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-universe v u
+universe u
 
-variable (n : Type v) (S : Scheme.{max u v})
+variable (n : Type u) (S : Scheme.{u})
 
 local notation3 "ℤ[" n "]" => CommRingCat.of (MvPolynomial n (ULift ℤ))
-local notation3 "ℤ[" n "].{" u ", " v "}" => CommRingCat.of (MvPolynomial n (ULift.{max u v} ℤ))
 
 /-- `𝔸(n; S)` is the affine `n`-space over `S`.
-Note that `n` is an arbitrary index type (e.g. `Fin m`). -/
-def AffineSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
-  pullback (terminal.from S) (terminal.from (Spec ℤ[n].{u, v}))
+Note that `n : Type u` is an arbitrary index type (e.g. `ULift.{u} (Fin m)`). -/
+def AffineSpace (n : Type u) (S : Scheme.{u}) : Scheme.{u} :=
+  pullback (terminal.from S) (terminal.from (Spec ℤ[n]))
 
 namespace AffineSpace
 
@@ -57,11 +55,11 @@ lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g 
       g.hom.comp (MvPolynomial.mapEquiv _ ULift.ringEquiv.symm).toRingHom by
     ext x
     · obtain ⟨x⟩ := x
-      simpa [-map_intCast, -eq_intCast] using DFunLike.congr_fun this (C x)
-    · simpa [-map_intCast, -eq_intCast] using DFunLike.congr_fun this (X x)
+      simpa [-map_intCast, -eq_intCast] using! DFunLike.congr_fun this (C x)
+    · simpa [-map_intCast, -eq_intCast] using! DFunLike.congr_fun this (X x)
   ext1
   · exact RingHom.ext_int _ _
-  · simpa using h _
+  · simpa using! h _
 
 
 @[simps -isSimp]
@@ -69,16 +67,15 @@ instance over : 𝔸(n; S).CanonicallyOver S where
   hom := pullback.fst _ _
 
 /-- The map from the affine `n`-space over `S` to the integral model `Spec ℤ[n]`. -/
-def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n].{u, v} := pullback.snd _ _
+def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
 
-variable {X : Scheme.{max u v}}
-
+set_option backward.defeqAttrib.useBackward true in
 /--
 Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections.
 Use `homOverEquiv` instead.
 -/
 @[simps]
-def toSpecMvPolyIntEquiv : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
+def toSpecMvPolyIntEquiv {X : Scheme.{u}} : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
   toFun f i := f.appTop ((Scheme.ΓSpecIso ℤ[n]).inv (.X i))
   invFun v := X.toSpecΓ ≫ Spec.map
     (CommRingCat.ofHom (MvPolynomial.eval₂Hom ((algebraMap ℤ _).comp ULift.ringEquiv.toRingHom) v))
@@ -106,10 +103,10 @@ section homOfVector
 variable {n S}
 
 /-- The morphism `X ⟶ 𝔸(n; S)` given by a `X ⟶ S` and a choice of `n`-coordinate functions. -/
-def homOfVector (f : X ⟶ S) (v : n → Γ(X, ⊤)) : X ⟶ 𝔸(n; S) :=
+def homOfVector {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤)) : X ⟶ 𝔸(n; S) :=
   pullback.lift f ((toSpecMvPolyIntEquiv n).symm v) (by simp)
 
-variable (f : X ⟶ S) (v : n → Γ(X, ⊤))
+variable {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤))
 
 @[reassoc (attr := simp)]
 lemma homOfVector_over : homOfVector f v ≫ 𝔸(n; S) ↘ S = f :=
@@ -144,15 +141,15 @@ lemma comp_homOfVector {X Y : Scheme} (v : n → Γ(Y, ⊤)) (f : X ⟶ Y) (g : 
 
 end homOfVector
 
-variable [X.Over S]
-
 variable {n}
 
-instance (v : n → Γ(X, ⊤)) : (homOfVector (X ↘ S) v).IsOver S where
+instance {X : Scheme.{u}} [X.Over S] (v : n → Γ(X, ⊤)) :
+    (homOfVector (X ↘ S) v).IsOver S where
 
 /-- `S`-morphisms into `Spec 𝔸(n; S)` are equivalent to the choice of `n` global sections. -/
 @[simps]
-def homOverEquiv : { f : X ⟶ 𝔸(n; S) // f.IsOver S } ≃ (n → Γ(X, ⊤)) where
+def homOverEquiv {X : Scheme.{u}} [X.Over S] :
+    { f : X ⟶ 𝔸(n; S) // f.IsOver S } ≃ (n → Γ(X, ⊤)) where
   toFun f i := f.1.appTop (coord S i)
   invFun v := ⟨homOfVector (X ↘ S) v, inferInstance⟩
   left_inv f := by
@@ -223,13 +220,13 @@ instance [IsAffine S] : IsAffine 𝔸(n; S) := .of_isIso (isoOfIsAffine n S).hom
 
 variable (n) in
 /-- The affine space over an affine base is isomorphic to the spectrum of the polynomial ring. -/
-def SpecIso (R : CommRingCat.{max u v}) :
+def SpecIso (R : CommRingCat.{u}) :
     𝔸(n; Spec R) ≅ Spec <| .of <| MvPolynomial n R :=
   isoOfIsAffine _ _ ≪≫ Scheme.Spec.mapIso (MvPolynomial.mapEquiv _
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv).toCommRingCatIso.op
 
 @[simp]
-lemma SpecIso_hom_appTop (R : CommRingCat.{max u v}) :
+lemma SpecIso_hom_appTop (R : CommRingCat.{u}) :
     (SpecIso n R).hom.appTop = (Scheme.ΓSpecIso _).hom ≫
       CommRingCat.ofHom (eval₂Hom ((Scheme.ΓSpecIso _).inv ≫
         (𝔸(n; Spec R) ↘ Spec R).appTop).hom (coord (Spec R))) := by
@@ -237,7 +234,7 @@ lemma SpecIso_hom_appTop (R : CommRingCat.{max u v}) :
   simp [SpecIso]
 
 @[simp]
-lemma SpecIso_inv_appTop_coord (R : CommRingCat.{max u v}) (i) :
+lemma SpecIso_inv_appTop_coord (R : CommRingCat.{u}) (i) :
     (SpecIso n R).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) := by
   simp only [SpecIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, Scheme.Spec_map,
     Quiver.Hom.unop_op, TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, CommRingCat.comp_apply]
@@ -247,7 +244,7 @@ lemma SpecIso_inv_appTop_coord (R : CommRingCat.{max u v}) (i) :
   exact map_X _ _
 
 @[reassoc (attr := simp)]
-lemma SpecIso_inv_over (R : CommRingCat.{max u v}) :
+lemma SpecIso_inv_over (R : CommRingCat.{u}) :
     (SpecIso n R).inv ≫ 𝔸(n; Spec R) ↘ Spec R = Spec.map (CommRingCat.ofHom C) := by
   simp only [SpecIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, Scheme.Spec_map,
     Quiver.Hom.unop_op, Category.assoc, isoOfIsAffine_inv_over, Scheme.isoSpec_Spec_inv,
@@ -261,20 +258,20 @@ section functorial
 
 variable (n) in
 /-- `𝔸(n; S)` is functorial w.r.t. `S`. -/
-def map {S T : Scheme.{max u v}} (f : S ⟶ T) : 𝔸(n; S) ⟶ 𝔸(n; T) :=
+def map {S T : Scheme.{u}} (f : S ⟶ T) : 𝔸(n; S) ⟶ 𝔸(n; T) :=
   homOfVector (𝔸(n; S) ↘ S ≫ f) (coord S)
 
 @[reassoc (attr := simp)]
-lemma map_over {S T : Scheme.{max u v}} (f : S ⟶ T) : map n f ≫ 𝔸(n; T) ↘ T = 𝔸(n; S) ↘ S ≫ f :=
+lemma map_over {S T : Scheme.{u}} (f : S ⟶ T) : map n f ≫ 𝔸(n; T) ↘ T = 𝔸(n; S) ↘ S ≫ f :=
   pullback.lift_fst _ _ _
 
 @[simp]
-lemma map_appTop_coord {S T : Scheme.{max u v}} (f : S ⟶ T) (i) :
+lemma map_appTop_coord {S T : Scheme.{u}} (f : S ⟶ T) (i) :
     (map n f).appTop (coord T i) = coord S i :=
   homOfVector_appTop_coord _ _ _
 
 @[reassoc (attr := simp)]
-lemma map_toSpecMvPoly {S T : Scheme.{max u v}} (f : S ⟶ T) :
+lemma map_toSpecMvPoly {S T : Scheme.{u}} (f : S ⟶ T) :
     map n f ≫ toSpecMvPoly n T = toSpecMvPoly n S := by
   apply (toSpecMvPolyIntEquiv _).injective
   ext i
@@ -291,7 +288,7 @@ lemma map_comp {S S' S'' : Scheme} (f : S ⟶ S') (g : S' ⟶ S'') :
   · simp
   · simp
 
-lemma map_SpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
+lemma map_SpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :
     map n (Spec.map φ) =
       (SpecIso n S).hom ≫ Spec.map (CommRingCat.ofHom (MvPolynomial.map φ.hom)) ≫
         (SpecIso n R).inv := by
@@ -306,32 +303,33 @@ lemma map_SpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
     rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
         CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, map_X]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings. -/
-def mapSpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
+def mapSpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :
     Arrow.mk (map n (Spec.map φ)) ≅
       Arrow.mk (Spec.map (CommRingCat.ofHom (MvPolynomial.map (σ := n) φ.hom))) :=
   Arrow.isoMk (SpecIso n S) (SpecIso n R) (by have := (SpecIso n R).inv_hom_id; simp [map_SpecMap])
 
 set_option backward.isDefEq.respectTransparency false in
-lemma isPullback_map {S T : Scheme.{max u v}} (f : S ⟶ T) :
+lemma isPullback_map {S T : Scheme.{u}} (f : S ⟶ T) :
     IsPullback (map n f) (𝔸(n; S) ↘ S) (𝔸(n; T) ↘ T) f := by
   refine (IsPullback.paste_horiz_iff (.flip <| .of_hasPullback _ _) (map_over f)).mp ?_
   simp only [terminal.comp_from, ]
-  convert (IsPullback.of_hasPullback _ _).flip
+  convert! (IsPullback.of_hasPullback _ _).flip
   rw [← toSpecMvPoly, ← toSpecMvPoly, map_toSpecMvPoly]
 
 /-- `𝔸(n; S)` is functorial w.r.t. `n`. -/
-def reindex {n m : Type v} (i : m → n) (S : Scheme.{max u v}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
+def reindex {n m : Type u} (i : m → n) (S : Scheme.{u}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
   homOfVector (𝔸(n; S) ↘ S) (coord S ∘ i)
 
 @[simp, reassoc]
-lemma reindex_over {n m : Type v} (i : m → n) (S : Scheme.{max u v}) :
+lemma reindex_over {n m : Type u} (i : m → n) (S : Scheme.{u}) :
     reindex i S ≫ 𝔸(m; S) ↘ S = 𝔸(n; S) ↘ S :=
   pullback.lift_fst _ _ _
 
 @[simp]
-lemma reindex_appTop_coord {n m : Type v} (i : m → n) (S : Scheme.{max u v}) (j : m) :
+lemma reindex_appTop_coord {n m : Type u} (i : m → n) (S : Scheme.{u}) (j : m) :
     (reindex i S).appTop (coord S j) = coord S (i j) :=
   homOfVector_appTop_coord _ _ _
 
@@ -340,18 +338,18 @@ lemma reindex_id : reindex id S = 𝟙 𝔸(n; S) := by
   ext1 <;> simp
 
 @[simp, reassoc]
-lemma reindex_comp {n₁ n₂ n₃ : Type v} (i : n₁ ⟶ n₂) (j : n₂ ⟶ n₃) (S : Scheme.{max u v}) :
+lemma reindex_comp {n₁ n₂ n₃ : Type u} (i : n₁ ⟶ n₂) (j : n₂ ⟶ n₃) (S : Scheme.{u}) :
     reindex (i ≫ j) S = reindex j S ≫ reindex i S := by
   ext k <;> simp
 
 @[reassoc (attr := simp)]
-lemma map_reindex {n₁ n₂ : Type v} (i : n₁ → n₂) {S T : Scheme.{max u v}} (f : S ⟶ T) :
+lemma map_reindex {n₁ n₂ : Type u} (i : n₁ → n₂) {S T : Scheme.{u}} (f : S ⟶ T) :
     map n₂ f ≫ reindex i T = reindex i S ≫ map n₁ f := by
   apply hom_ext <;> simp
 
 /-- The affine space as a functor. -/
 @[simps]
-def functor : (Type v)ᵒᵖ ⥤ Scheme.{max u v} ⥤ Scheme.{max u v} where
+def functor : (Type u)ᵒᵖ ⥤ Scheme.{u} ⥤ Scheme.{u} where
   obj n := { obj := AffineSpace n.unop, map := map n.unop, map_id := map_id, map_comp := map_comp }
   map {n m} i := { app := reindex i.unop, naturality := fun _ _ ↦ map_reindex i.unop }
   map_id n := by ext : 2; exact reindex_id _
@@ -370,11 +368,11 @@ instance : Surjective (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ <|
 
 instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
   MorphismProperty.pullback_fst _ _ <| by
-  have := isIso_of_isTerminal specULiftZIsTerminal.{max u v} terminalIsTerminal (terminal.from _)
+  have := isIso_of_isTerminal specULiftZIsTerminal.{u} terminalIsTerminal (terminal.from _)
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @LocallyOfFinitePresentation),
     HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation), RingHom.FinitePresentation]
-  convert (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
+  convert! (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
@@ -390,6 +388,38 @@ lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := topologically @IsOpenMap)
     (SpecIso n R).inv, SpecIso_inv_over]
   exact MvPolynomial.isOpenMap_comap_C
+
+instance : GeometricallyIrreducible (𝔸(n; S) ↘ S) := by
+  rw [geometricallyIrreducible_iff]
+  introv K h
+  apply ObjectProperty.prop_of_iso _
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+  infer_instance
+
+instance [IrreducibleSpace S] : IrreducibleSpace 𝔸(n; S) :=
+  GeometricallyIrreducible.irreducibleSpace (𝔸(n; S) ↘ S) (isOpenMap_over S)
+
+instance : GeometricallyReduced (𝔸(n; S) ↘ S) := by
+  rw [geometricallyReduced_iff]
+  introv K h
+  apply ObjectProperty.prop_of_iso _
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+  infer_instance
+
+instance [h : IsReduced S] : IsReduced 𝔸(n; S) := by
+  wlog hS : ∃ R, S = Spec R
+  · rw [IsReduced.iff_of_openCover _ (S.affineCover.pullback₁ (𝔸(n; S) ↘ S))]
+    intro i
+    have : IsReduced 𝔸(n; S.affineCover.X i) := this _ ⟨_, rfl⟩
+    exact isReduced_of_isOpenImmersion ((isPullback_map _).isoPullback.inv)
+  obtain ⟨R, rfl⟩ := hS
+  rw [affine_isReduced_iff] at h
+  exact isReduced_of_isOpenImmersion (SpecIso n R).hom
+
+instance : GeometricallyIntegral (𝔸(n; S) ↘ S) :=
+  .of_geometricallyReduced_of_geometricallyIrreducible _
+
+instance [IsIntegral S] : IsIntegral 𝔸(n; S) := isIntegral_of_irreducibleSpace_of_isReduced _
 
 open MorphismProperty in
 instance [IsEmpty n] : IsIso (𝔸(n; S) ↘ S) := pullback_fst
@@ -418,16 +448,16 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
         not_isEmpty_of_nonempty (Spec R) (inferInstanceAs (IsEmpty (PrimeSpectrum R)))
     constructor
     intro i
-    have := RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.isIntegral_respectsIso.{max u v}
+    have := RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.isIntegral_respectsIso.{u}
     rw [← MorphismProperty.cancel_left_of_respectsIso @IsIntegralHom (SpecIso n R).inv,
       SpecIso_inv_over, HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom)] at h
     obtain ⟨p : Polynomial R, hp, hp'⟩ :=
       (MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
         (arrowIsoΓSpecOfIsAffine _)).mpr h.2 (X i)
-    have : (rename fun _ ↦ i).comp (uniqueAlgEquiv.{_, v} _ PUnit).symm.toAlgHom p = 0 := by
+    have : (rename fun _ ↦ i).comp (uniqueAlgEquiv.{_, u} _ PUnit).symm.toAlgHom p = 0 := by
       simp [← hp', ← algebraMap_eq]
     rw [AlgHom.comp_apply, map_eq_zero_iff _ (rename_injective _ (fun _ _ _ ↦ rfl))] at this
-    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, EmbeddingLike.map_eq_zero_iff] at this
+    simp only [AlgEquiv.coe_toAlgHom, EmbeddingLike.map_eq_zero_iff] at this
     simp [this] at hp
   · rintro (_ | _) <;> infer_instance
 
