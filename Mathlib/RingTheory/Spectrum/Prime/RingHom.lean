@@ -321,4 +321,3 @@ theorem IsLocalHom.of_comap_surjective [CommSemiring R] [CommSemiring S] (f : R 
     obtain ⟨⟨q, hqp⟩, hq⟩ := hf ⟨p, hp.isPrime⟩
     simp only [PrimeSpectrum.ext_iff, comap_asIdeal] at hq
     exact hqp.ne_top (q.eq_top_of_isUnit_mem (q.mem_comap.mp (by rwa [hq])) hfx)
-

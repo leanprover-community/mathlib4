@@ -800,4 +800,3 @@ theorem exists_contMDiff_zero_iff_one_iff_of_isClosed {s t : Set M}
     ⟨f, f_diff, f_range, fs, ft⟩
   refine ⟨f, f_diff, f_range, ?_, ft⟩
   simp [← notMem_support, fs]
-

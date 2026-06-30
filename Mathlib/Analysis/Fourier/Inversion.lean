@@ -194,4 +194,3 @@ theorem Continuous.fourier_fourierInv_eq (h : Continuous f)
     𝓕 (𝓕⁻ f) = f := by
   ext v
   exact hf.fourier_fourierInv_eq h'f h.continuousAt
-
