@@ -231,7 +231,7 @@ private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hx
     by_cases hji : j = i <;> aesop
 
 /-- A parallel cross-section of a simplex is the image of the base under a homothety. -/
-theorem closedInterior_inter_shift {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
+theorem closedInterior_inter_shift_eq_homothety {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) {x : k} (hx : x ∈ Set.Icc 0 1) :
     s.closedInterior ∩ (affineSpan k (s.points '' {i}ᶜ)).shift (s.points i) x =
     homothety (s.points i) x '' (s.faceOpposite i).closedInterior := by
