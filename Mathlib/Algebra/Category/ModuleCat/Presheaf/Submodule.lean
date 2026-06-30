@@ -89,7 +89,7 @@ lemma le_iff {N₁ N₂ : M.Submodule} : N₁ ≤ N₂ ↔ ∀ X, N₁.obj X ≤
 /-- If `N₁` and `N₂` are submodule with `N₁ ≤ N₂`, this is the associated inclusion
 of presheaves of modules. -/
 @[simps!]
-noncomputable def homOfLE (N₁ N₂ : M.Submodule) (hle : N₁ ≤ N₂) :
+noncomputable def homOfLE {N₁ N₂ : M.Submodule} (hle : N₁ ≤ N₂) :
     N₁.toPresheafOfModules ⟶ N₂.toPresheafOfModules :=
   homMk { app X := AddCommGrpCat.ofHom (Submodule.inclusion (hle X)).toAddMonoidHom } (by cat_disch)
 
