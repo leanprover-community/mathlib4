@@ -173,10 +173,6 @@ namespace IsWeakLimit
 def ofIsoWeakLimit {r t : Cone F} (P : IsWeakLimit r) (i : r ≅ t) : IsWeakLimit t where
   lift s := P.lift s ≫ i.hom.hom
 
-theorem ofIsoWeakLimit_lift {r t : Cone F} (P : IsWeakLimit r) (i : r ≅ t) (s) :
-    (P.ofIsoWeakLimit i).lift s = P.lift s ≫ i.hom.hom :=
-  rfl
-
 /-- The versal morphism from any other cone to a weak limit cone. -/
 def liftConeMorphism {t : Cone F} (h : IsWeakLimit t) (s : Cone F) : s ⟶ t where hom := h.lift s
 
