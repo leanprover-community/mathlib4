@@ -87,7 +87,7 @@ class HasWeakLimit (F : J ⥤ C) : Prop where mk' ::
 /--
 If `F` has a limit, then it has a weak limit.
 -/
-lemma HasWeakLimit_of_hasLimit (F : J ⥤ C) [HasLimit F] : HasWeakLimit F where
+instance (F : J ⥤ C) [HasLimit F] : HasWeakLimit F where
   exists_weakLimit := Nonempty.intro (WeakLimitCone.OfLimitCone (getLimitCone F))
 
 theorem HasWeakLimit.mk {F : J ⥤ C} (d : WeakLimitCone F) : HasWeakLimit F :=
