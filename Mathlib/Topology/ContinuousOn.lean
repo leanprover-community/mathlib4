@@ -574,6 +574,33 @@ theorem ContinuousOn.image_closure (hf : ContinuousOn f (closure s)) :
   ContinuousWithinAt.image_closure fun x hx => (hf x hx).mono subset_closure
 
 /-!
+## Specific functions
+-/
+
+@[fun_prop]
+theorem continuousOn_const {s : Set α} {c : β} : ContinuousOn (fun _ => c) s :=
+  continuous_const.continuousOn
+
+@[fun_prop]
+theorem continuousWithinAt_const {b : β} {s : Set α} {x : α} :
+    ContinuousWithinAt (fun _ : α => b) s x :=
+  continuous_const.continuousWithinAt
+
+theorem continuousOn_id {s : Set α} : ContinuousOn id s :=
+  continuous_id.continuousOn
+
+@[fun_prop]
+theorem continuousOn_id' (s : Set α) : ContinuousOn (fun x : α => x) s := continuousOn_id
+
+theorem continuousWithinAt_id {s : Set α} {x : α} : ContinuousWithinAt id s x :=
+  continuous_id.continuousWithinAt
+
+protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : ContinuousOn f s)
+    (hmaps : MapsTo f s s) : ∀ n, ContinuousOn (f^[n]) s
+  | 0 => continuousOn_id
+  | (n + 1) => (hcont.iterate hmaps n).comp hcont hmaps
+
+/-!
 ## Product
 -/
 
@@ -582,10 +609,19 @@ theorem ContinuousWithinAt.prodMk {f : α → β} {g : α → γ} {s : Set α} {
     ContinuousWithinAt (Function.prod f g) s x :=
   hf.prodMk_nhds hg
 
+theorem ContinuousWithinAt.prod {f : α → β × γ} {s : Set α} {x : α}
+    (hf₁ : ContinuousWithinAt (Prod.fst ∘ f) s x) (hf₂ : ContinuousWithinAt (Prod.snd ∘ f) s x) :
+    ContinuousWithinAt f s x := hf₁.prodMk hf₂
+
+
 @[fun_prop]
 theorem ContinuousOn.prodMk {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
     (hg : ContinuousOn g s) : ContinuousOn (Function.prod f g) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
+
+@[fun_prop]
+theorem ContinuousOn.prod {f : α → β × γ} {s : Set α} (hf₁ : ContinuousOn (Prod.fst ∘ f) s)
+    (hf₂ : ContinuousOn (Prod.snd ∘ f) s) : ContinuousOn f s := hf₁.prodMk hf₂
 
 theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
   continuous_fst.continuousOn
@@ -715,34 +751,6 @@ theorem continuousOn_pi' {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpac
 theorem continuousOn_apply {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     (i : ι) (s) : ContinuousOn (fun p : ∀ i, X i => p i) s :=
   Continuous.continuousOn (continuous_apply i)
-
-
-/-!
-## Specific functions
--/
-
-@[fun_prop]
-theorem continuousOn_const {s : Set α} {c : β} : ContinuousOn (fun _ => c) s :=
-  continuous_const.continuousOn
-
-@[fun_prop]
-theorem continuousWithinAt_const {b : β} {s : Set α} {x : α} :
-    ContinuousWithinAt (fun _ : α => b) s x :=
-  continuous_const.continuousWithinAt
-
-theorem continuousOn_id {s : Set α} : ContinuousOn id s :=
-  continuous_id.continuousOn
-
-@[fun_prop]
-theorem continuousOn_id' (s : Set α) : ContinuousOn (fun x : α => x) s := continuousOn_id
-
-theorem continuousWithinAt_id {s : Set α} {x : α} : ContinuousWithinAt id s x :=
-  continuous_id.continuousWithinAt
-
-protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : ContinuousOn f s)
-    (hmaps : MapsTo f s s) : ∀ n, ContinuousOn (f^[n]) s
-  | 0 => continuousOn_id
-  | (n + 1) => (hcont.iterate hmaps n).comp hcont hmaps
 
 section Fin
 variable {n : ℕ} {X : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (X i)]
