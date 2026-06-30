@@ -38,6 +38,27 @@ variable (X) in
 /-- The category of sheaves of modules over a scheme. -/
 def Modules := SheafOfModules.{u} X.ringCatSheaf
 
+section StructureRingHom
+
+variable {R : CommRingCat} (f : X ⟶ Spec R)
+
+/-- A morphism `f : X ⟶ Spec R` induces a ring homomorphism `R → Γ(X, U)`
+for every open `U`, via the Γ–Spec adjunction (`ΓSpecIso`) and restriction. -/
+noncomputable def structureRingHom (U : X.Opens) : R →+* Γ(X, U) :=
+  (X.presheaf.map U.leTop.op).hom.comp (((Scheme.ΓSpecIso R).inv ≫ f.appTop).hom)
+
+lemma structureRingHom_apply (U : X.Opens) (r : R) :
+    structureRingHom f U r =
+    X.presheaf.map U.leTop.op (((Scheme.ΓSpecIso R).inv ≫ f.appTop).hom r) := rfl
+
+lemma structureRingHom_naturality {U V : X.Opens} (i : U ⟶ V) (r : R) :
+    X.presheaf.map i.op (structureRingHom f V r) = structureRingHom f U r := by
+  rw [structureRingHom_apply, structureRingHom_apply, ← ConcreteCategory.comp_apply,
+    ← X.presheaf.map_comp]
+  congr 1
+
+end StructureRingHom
+
 namespace Modules
 
 /-- Morphisms between `𝒪ₓ`-modules. Use `Hom.app` to act on sections. -/
@@ -597,5 +618,56 @@ def overFunctorEquiv {X : Scheme.{u}} (U : X.Opens) :
   refine SheafOfModules.pushforwardComp _ _ ≪≫ SheafOfModules.pushforwardCongr ?_
   simp only [CategoryTheory.Functor.map_id, Opposite.op_unop, Opens.ι_appIso, Iso.refl_inv]
   rfl
+
+section SpecAction
+
+variable {R : CommRingCat} (f : X ⟶ Spec R) (F : X.Modules)
+
+lemma smul_presheaf_map {U V : X.Opens} (i : U ⟶ V) (r : R) (x : Γ(F, V)) :
+    letI := Module.compHom Γ(F, U) (structureRingHom f U)
+    letI := Module.compHom Γ(F, V) (structureRingHom f V)
+    F.presheaf.map i.op (r • x) = r • F.presheaf.map i.op x := by
+  change F.presheaf.map i.op (structureRingHom f V r • x)
+    = structureRingHom f U r • F.presheaf.map i.op x
+  rw [Scheme.Modules.map_smul, structureRingHom_naturality]
+
+/-- The underlying natural transformation of "multiplication by `r`" on `G = toSheaf F`. -/
+noncomputable def smulNatTrans (r : R) :
+    ((SheafOfModules.toSheaf X.ringCatSheaf).obj F).obj ⟶
+      ((SheafOfModules.toSheaf X.ringCatSheaf).obj F).obj where
+  app U :=
+    letI := Module.compHom Γ(F, U.unop) (structureRingHom f U.unop)
+    AddCommGrpCat.ofHom (DistribSMul.toAddMonoidHom (Γ(F, U.unop)) r)
+  naturality U V g := by
+    ext x
+    exact (smul_presheaf_map f F g.unop r x).symm
+
+/-- Scalar multiplication by `r : R` acts as an endomorphism of `G = toSheaf F`, the underlying
+abelian sheaf of the `𝒪_X`-module `F`. -/
+noncomputable def smulEnd :
+    R →+* CategoryTheory.End ((SheafOfModules.toSheaf _).obj F) where
+  toFun r := Sheaf.homEquiv.symm (smulNatTrans f F r)
+  map_one' := by
+    refine Sheaf.hom_ext <| NatTrans.ext (funext fun U => congrArg AddCommGrpCat.ofHom ?_)
+    ext y
+    letI := Module.compHom Γ(F, U.unop) (structureRingHom f U.unop)
+    exact one_smul R y
+  map_mul' r s := by
+    refine Sheaf.hom_ext <| NatTrans.ext (funext fun U => congrArg AddCommGrpCat.ofHom ?_)
+    ext y
+    letI := Module.compHom Γ(F, U.unop) (structureRingHom f U.unop)
+    exact mul_smul r s y
+  map_zero' := by
+    refine Sheaf.hom_ext <| NatTrans.ext (funext fun U => congrArg AddCommGrpCat.ofHom ?_)
+    ext y
+    letI := Module.compHom Γ(F, U.unop) (structureRingHom f U.unop)
+    exact zero_smul R y
+  map_add' r s := by
+    refine Sheaf.hom_ext <| NatTrans.ext (funext fun U => congrArg AddCommGrpCat.ofHom ?_)
+    ext y
+    letI := Module.compHom Γ(F, U.unop) (structureRingHom f U.unop)
+    exact add_smul r s y
+
+end SpecAction
 
 end AlgebraicGeometry.Scheme.Modules
