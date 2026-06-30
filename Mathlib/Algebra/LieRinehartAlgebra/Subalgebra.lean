@@ -23,6 +23,11 @@ applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ri
 
 * A Lie-Rinehart subalgebra of a Lie-Rinehart algebra is a Lie-Rinehart algebra over the same ring.
 
+## Remark:
+
+Currently it is assumed that the 'subalgebra' keeps the full `A` and is a subset only on the level
+of `L`.
+
 -/
 
 public section
@@ -55,20 +60,17 @@ instance : SetLike (LieRinehartSubalgebra A L) L where
 
 instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L) L
 
-/-- The universal set is the top element of the lattice of submodules. -/
 instance : Top  (LieRinehartSubalgebra A L) := ⟨{ (⊤ : Submodule A L) with
       lie_mem' {_ _} _ _ := by aesop }⟩
 
 @[simp]
-theorem top_coe : ((⊤ : LieRinehartSubalgebra A L) : Set L) = Set.univ := rfl
+theorem coe_top : ((⊤ : LieRinehartSubalgebra A L) : Set L) = Set.univ := rfl
 
 @[simp]
 theorem coe_eq_univ (L' : LieRinehartSubalgebra A L) : (L' : Set L) = Set.univ ↔ L' = ⊤ := by
-  rw [iff_comm, ← SetLike.coe_set_eq, top_coe]
+  rw [iff_comm, ← SetLike.coe_set_eq, coe_top]
 
 @[simp] lemma mem_top {x : L} : x ∈ (⊤ : LieRinehartSubalgebra A L) := trivial
-
-
 
 instance : AddSubgroupClass (LieRinehartSubalgebra A L) L where
   add_mem := Submodule.add_mem _
@@ -246,10 +248,8 @@ theorem coe_incl : ⇑(L'.incl R) = ((↑) : L' → L) := rfl
 
 variable {L₂ : Type*} [LieRing L₂] [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂]
 
-variable  (f : L →ₗ⁅(AlgHom.id R A)⁆ L₂)
-
 variable {R} in
-/-- The pushforward of a submodule `L' ⊆ L` by `f : L → L₂` -/
+/-- The pushforward of a Lie-Rinehart subalgebra `L' ⊆ L` by `f : L → L₂` -/
 def map (f : L →ₗ⁅(AlgHom.id R A)⁆ L₂) :
     LieRinehartSubalgebra A L₂ :=
     letI : RingHomSurjective (AlgHom.id R A).toRingHom := {is_surjective := Function.surjective_id}
@@ -272,7 +272,7 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
   [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
   [LieAlgebra R L₂] (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂)
 
-/-- The range of a morphism of Lie-Rinehart algberas over the identity is a Lie-Rinehart
+/-- The range of a morphism of Lie-Rinehart algebras over the identity is a Lie-Rinehart
 subalgebra. -/
 def range : LieRinehartSubalgebra A L₂ := LieRinehartSubalgebra.map ⊤ f
 

@@ -1,4 +1,3 @@
-
 /-
 Copyright (c) 2026 Leonid Ryvkin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -15,12 +14,23 @@ public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
 which is a Lie ideal with respect to the Lie bracket and whose action on `A` is trivial.
 (This can be defined independently of `R` and most Lie-Rinehart algebra axioms). -/
 
-We use the word strict, because a more flexible notion of ideals exists:
+## Main definitions/ statements:
+
+* `StrictLieRinehartIdeal` as an `A`-submodule of `L` forming an ideal  under the Lie bracket, and
+acting trivially on `A.
+
+* The inverse image of an ideal under a Lie-Rinehart algebra homomorphism over
+`f: L₁→ₗ⁅(AlgHom.id R A)⁆ L₂` is a Lie-Rinehart ideal. In particular the kernel of such an `f`
+is an ideal.
+
+## Remark on strictness:
+
+The strict notion corresponds to ideals which realize kernels of Lie Rinehart homomorphisms over
+the identity algebra map of `A`. We use the word strict, because more flexible notions of ideals
+exists:
 https://www.uni-math.gwdg.de/mjotz/JotzLean18c.pdf
 https://arxiv.org/pdf/1706.07084
 
-The strict notions corresponds to ideals which realize kernels of Lie Rinehart homomorphisms over
-the identity algebra map of `A`.
 -/
 
 @[expose] public section
@@ -104,7 +114,6 @@ theorem toSubmodule_inj {s t : StrictLieRinehartIdeal A L} : s.toSubmodule = t.t
 theorem toSubmodule_le_iff {s t : StrictLieRinehartIdeal A L} :
     s.toSubmodule ≤ t.toSubmodule ↔ s ≤ t :=
   Iff.rfl
-
 
 section LieModule
 
@@ -195,6 +204,8 @@ theorem coe_incl {s : StrictLieRinehartIdeal A L} : ⇑(s.incl R) = ((↑) : s �
 variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ A] [LieAlgebra R L₁]
   [LieRing L₂] [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂]
 
+/-- The preimage of a strict Lie-Rinehart ideal under a homomorphism `f` (which lies over the
+identity of `A`) is a strict Lie-Rinehart ideal. -/
 def comap (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
     StrictLieRinehartIdeal A L₁ := {
   s₂.toSubmodule.comap (f.toLinearMap') with
@@ -210,9 +221,7 @@ def comap (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartId
     have h2 := f.apply_lie' a x
     simp only [AlgHom.coe_id, id_eq] at h2
     rw [h2]
-    exact s₂.isotropic (f x) a h
-}
-
+    exact s₂.isotropic (f x) a h }
 
 end StrictLieRinehartIdeal
 
@@ -224,6 +233,8 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
   [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
   [LieAlgebra R L₂] (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂)
 
+/-- The kernel of a Lie-Rinehart homomorphism `f` (which lies over the
+identity of `A`) is a strict Lie-Rinehart ideal. -/
 def ker : StrictLieRinehartIdeal A L₁ := StrictLieRinehartIdeal.comap f 0
 
 @[simp]

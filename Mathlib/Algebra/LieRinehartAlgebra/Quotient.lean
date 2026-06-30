@@ -1,4 +1,3 @@
-
 /-
 Copyright (c) 2026 Leonid Ryvkin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -13,6 +12,13 @@ public import Mathlib.Algebra.LieRinehartAlgebra.StrictIdeal
 
 Given a Lie-Rinehart algebra `(R A L)` and an ideal `s ⊆ L`, the quotient `L ⧸ s` inherits the
 structure of a Lie-Rinehart algebra.
+
+## Main statements:
+
+* The quotient of a Lie-Rinehart algebra by a strict Lie-Rinehart ideal is a Lie-Rinehart algebra
+
+* The quotient map `mk'` is a Lie-Rinehart algebra homomorphism.
+
 -/
 
 @[expose] public section
@@ -32,7 +38,6 @@ variable {s : StrictLieRinehartIdeal A L}
 instance : AddCommGroup (L ⧸ s) := Submodule.Quotient.addCommGroup _
 
 instance : Module A (L ⧸ s) := Submodule.Quotient.module _
-
 
 /-- Map associating to an element in a Lie-Rinehart algebra `L`, an element in the quotient
 `L ⧸ s`, where s is a strict Lie-Rinehart ideal. -/
