@@ -58,7 +58,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_gt
-  apply degree_sub_lt _ (minpoly.ne_zero hx)
+  apply degree_sub_lt_left _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
 
