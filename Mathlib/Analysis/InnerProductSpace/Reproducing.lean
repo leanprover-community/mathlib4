@@ -147,7 +147,7 @@ lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * 
 variable {H} in
 /-- The evaluation of an element `f` of a reproducing kernel Hilbert space at a point `x` is
 bounded by `‖f‖` times the square root of the kernel diagonal `‖kernel H x x‖` at `x`. -/
-lemma norm_eval_le (f : H) (x : X) : ‖f x‖ ≤ ‖f‖ * √‖kernel H x x‖ := by
+lemma norm_apply_le (f : H) (x : X) : ‖f x‖ ≤ ‖f‖ * √‖kernel H x x‖ := by
   grw [← adjoint_kerFun, le_opNorm, norm_map, norm_kerFun_eq_sqrt_norm_kernel, mul_comm]
 
 /-- The span of the kernel functions is dense. -/
