@@ -152,6 +152,16 @@ theorem rightDvd_iff_op_dvd_op : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite
 
 end Semigroup
 
+section RightCancelSemigroup
+
+variable [RightCancelSemigroup α] {a b c : α}
+
+@[simp]
+theorem mul_rightDvd_mul_iff_right : b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
+  ⟨fun ⟨d, eq⟩ ↦ ⟨d, mul_right_cancel (eq.trans (mul_assoc ..).symm)⟩, mul_rightDvd_mul_right a⟩
+
+end RightCancelSemigroup
+
 section Monoid
 variable [Monoid α] {a b c : α} {m n : ℕ}
 
