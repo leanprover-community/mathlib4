@@ -252,7 +252,7 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
     |(∑' (n : ℕ), f n) - ∑ n ∈ Finset.range N, f n| ≤ ∫ x in Ioi (N - 1 : ℝ), f x := by
   rw [← (AntitoneOn.summable_of_integrable_eventually (mod_cast anti) (mod_cast integrable)
     (mod_cast nonneg)).sum_add_tsum_nat_add N, add_sub_cancel_left,
-    abs_of_nonneg (tsum_nonneg <| by grind)
+    abs_of_nonneg (tsum_nonneg <| by grind)]
   convert! AntitoneOn.tsum_comp_add_le_integral (N - 1) (mod_cast anti) (mod_cast integrable)
       (mod_cast nonneg) using 1
   · congr; ext; congr 2; grind
