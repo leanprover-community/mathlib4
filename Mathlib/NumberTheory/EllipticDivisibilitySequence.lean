@@ -29,7 +29,7 @@ Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, 
 `p, q, r, s ∈ ℤ`. By a cyclic permutation of variables, the vanishing of `ER` is essentially
 equivalent to the vanishing of symmetric relation `ERₐ`, where `ERₐ(p, q, r, s) ∈ R` is given for
 all `p, q, r, s ∈ ℤ` by `ERₐ(p, q, r, s) := Wₐ(p, q)Wₐ(r, s) - Wₐ(p, r)Wₐ(q, s) + Wₐ(p, s)Wₐ(q, r)`
-defined in terms of *elliptic atoms* `Wₐ(p, q) := W((p + q) / 2)W((p - q) / 2)` for some `p, q ∈ ℤ`.
+defined in terms of *elliptic atoms* `Wₐ(p, q) := W((p + q) / 2)W((p - q) / 2)`.
 
 As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0) = 0` for all
 `p, q, r ∈ ℤ`. It is a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for all `k, n ∈ ℤ`,
