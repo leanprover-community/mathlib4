@@ -6,6 +6,7 @@ Authors: Attila Gáspár
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.LinearAlgebra.AffineSpace.Restrict
 public import Mathlib.RingTheory.Finiteness.Defs
 
 import Mathlib.Algebra.Module.Submodule.EqLocus
@@ -485,6 +486,79 @@ theorem weight_eq_one_iff {x : Homogenization k P} : weight x = 1 ↔ ∃ p, x =
 theorem lift_const_apply {u : W} {x : Homogenization k P} :
     lift (AffineMap.const k P u) x = weight x • u := by
   cases x; simp
+
+/- `Homogenization.ofVector` as a linear equivalence onto the kernel of `Homogenization.weight`. -/
+def ofVectorEquiv : V ≃ₗ[k] (weight : Homogenization k P →ₗ[k] k).ker where
+  toLinearMap := ofVector.codRestrict _ (by simp)
+  invFun x := Quotient.hrecOn x.1
+    (fun
+      | .mk v _ _, _ => v
+      | .ofVector v, _ => v)
+    (by
+      refine fun _ _ h => Function.hfunext (by rw [Quotient.sound h]) fun _ h' _ => ?_
+      cases h with
+      | @mk_mk c v p v' p' h =>
+        simp only
+        change (0 : k) + c • 1 = 0 at h'
+        rw [smul_eq_mul, mul_one, zero_add] at h'
+        rw [h', _root_.zero_smul, sub_eq_zero] at h
+        exact heq_of_eq h
+      | _ => rfl)
+    x.2
+  left_inv _ := rfl
+  right_inv := by
+    intro ⟨x, hx⟩
+    obtain ⟨v, rfl⟩ := weight_eq_zero_iff.mp hx
+    rfl
+
+@[simp]
+theorem coe_ofVectorEquiv_apply {v : V} : (ofVectorEquiv (k := k) (P := P) v).val = ofVector v :=
+  rfl
+
+/- `Homogenization.ofPoint` as an affine equivalence onto its range. -/
+def ofPointEquiv [Nontrivial k] :
+    P ≃ᵃ[k] AffineSubspace.map (ofPoint : P →ᵃ[k] Homogenization k P) ⊤ where
+  toFun x := ⟨ofPoint x, Set.mem_image_of_mem _ trivial⟩
+  invFun x := Quotient.hrecOn x.1
+    (fun
+      | .mk v _ p, _ => v +ᵥ p
+      | .ofVector v, h => False.elim <| by
+        change ofVector v ∈ _ at h
+        obtain ⟨p, -, h⟩ := h
+        apply_fun weight at h
+        simp at h)
+    (by
+      refine fun _ _ h => Function.hfunext (by rw [Quotient.sound h]) ?_
+      rintro _ h' -
+      cases h with
+      | @mk_mk c v p v' p' h =>
+        simp only
+        obtain ⟨q, _, h'⟩ := h'
+        apply_fun weight at h'
+        change _ = (0 : k) + c • 1 at h'
+        rw [smul_eq_mul, mul_one, zero_add, weight_ofPoint] at h'
+        rw [← h', _root_.one_smul, ← vadd_eq_vadd_iff_sub_eq_vsub] at h
+        exact heq_of_eq h.symm
+      | _ => simp only; contradiction)
+    x.2
+  left_inv p := by
+    change (0 : V) +ᵥ p = p
+    simp
+  right_inv := by
+    rintro ⟨-, p, -, rfl⟩
+    ext
+    change ofPoint ((0 : V) +ᵥ p) = ofPoint p
+    simp
+  linear := ofVectorEquiv.trans <| .ofEq _ _ <| by
+    ext x
+    rw [LinearMap.mem_ker, weight_eq_zero_iff]
+    conv => enter [1, 1, _]; rw [eq_comm]
+    simp
+  map_vadd' _ _ := Subtype.ext <| ofPoint.map_vadd _ _
+
+@[simp]
+theorem coe_ofPointEquiv_apply [Nontrivial k] {p : P} : (ofPointEquiv (k := k) p).val = ofPoint p :=
+  rfl
 
 /-- An affine map between two affine spaces extends to a linear map between their homogenizations.
 -/
