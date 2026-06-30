@@ -86,14 +86,15 @@ lemma IsUnramifiedAt.of_liesOver
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 
+
 /-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a Dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`. -/
+@[deprecated "Use `Ideal.ramificationIdx'_eq_one_iff` instead." (since := "2026-06-30")]
 lemma isUnramifiedAt_iff_of_isDedekindDomain
     {p : Ideal S} [p.IsPrime] [EssFiniteType R S] [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S] :
-    Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 := by
-  have : Ring.HasFiniteQuotients R := .of_module_finite ℤ R
-  exact (Ideal.ramificationIdx'_eq_one_iff p R).symm
+    Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 :=
+  Ideal.ramificationIdx'_eq_one_iff.symm
 
 /-- In characteristic zero the generic point is unramified: if `S` is a domain that is integral
 over a characteristic-zero domain `R` and `R → S` is injective, then `S` is unramified at the zero
@@ -150,7 +151,7 @@ theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) {𝔓 : Ideal S}
     [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx' 𝔓 R = 1 :=
-  isUnramifiedAt_iff_of_isDedekindDomain.mp
+  Ideal.ramificationIdx'_eq_one_iff.mpr
     (hunr 𝔓 inferInstance hP)
 
 /-- A nonzero ideal of `R` is unramified in `S` if and only if every prime ideal of `S` lying
@@ -161,7 +162,7 @@ theorem isUnramifiedIn_iff_forall_ramificationIdx_eq_one [IsDomain R]
     IsUnramifiedIn S 𝔭 ↔
       ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx' 𝔓 R = 1 := by
   refine ⟨fun hunr 𝔓 _ hP ↦ hunr.ramificationIdx_eq_one hP, fun h 𝔓 _ hP ↦ ?_⟩
-  rw [isUnramifiedAt_iff_of_isDedekindDomain]
+  rw [← Ideal.ramificationIdx'_eq_one_iff]
   exact h 𝔓 hP
 
 end Algebra
