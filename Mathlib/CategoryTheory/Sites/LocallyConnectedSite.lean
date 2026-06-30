@@ -135,12 +135,11 @@ noncomputable def uniqueπ₀ObjOfIsRepresentable (X : Sheaf J (Type max u v w))
     [X.obj.IsRepresentable] : Unique ((π₀ J _).obj X) :=
   Types.uniqueColimitOfIsRepresentable.{max v w} X.obj
 
-/-- On locally connected sites with a terminal object, `Sheaf.π₀` preserves the terminal object. -/
+/-- On connected locally connected sites, `Sheaf.π₀` preserves the terminal object. -/
 instance [IsConnected C] [HasColimitsOfShape Cᵒᵖ A] [HasTerminal A] [HasWeakSheafify J A] :
     PreservesLimit (Functor.empty.{0} _) (π₀ J A) := by
   refine preservesTerminal_of_iso _ ?_
   refine ((π₀ J A).mapIso (asIso (terminalComparison (constantSheaf J A))).symm).trans ?_
-  --have := isConnected_of_hasTerminal C
   exact (asIso ((π₀ConstantSheafAdj J A).counit.app (⊤_ _)):)
 
 /-- Sheaf topoi on cosifted locally connected sites are strongly connected, in the sense that
