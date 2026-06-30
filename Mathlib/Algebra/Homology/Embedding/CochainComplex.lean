@@ -313,6 +313,24 @@ lemma quasiIso_truncLEMap_iff :
 
 end
 
+section
+
+variable {D : Type*} [Category* D] [HasZeroMorphisms D]
+
+lemma isStrictlyGE_mapHomologicalComplex_obj_iff
+    (F : C ⥤ D) [F.Faithful] [F.PreservesZeroMorphisms] (n : ℤ) :
+    CochainComplex.IsStrictlyGE ((F.mapHomologicalComplex (.up ℤ)).obj K) n ↔
+      K.IsStrictlyGE n :=
+  isStrictlySupported_mapHomologicalComplex_obj_iff ..
+
+lemma isStrictlyLE_mapHomologicalComplex_obj_iff
+    (F : C ⥤ D) [F.Faithful] [F.PreservesZeroMorphisms] (n : ℤ) :
+    CochainComplex.IsStrictlyLE ((F.mapHomologicalComplex (.up ℤ)).obj K) n ↔
+      K.IsStrictlyLE n :=
+  isStrictlySupported_mapHomologicalComplex_obj_iff ..
+
+end
+
 end HasZeroMorphisms
 
 section Preadditive
