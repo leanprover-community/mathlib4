@@ -75,11 +75,11 @@ lemma deGrootInfo_comm : deGrootInfo μ ν π = deGrootInfo ν μ (π.map Bool.n
 
 lemma deGrootInfo_of_measure_true_eq_zero (μ ν : Measure 𝓧) (hπ : π {true} = 0) :
     deGrootInfo μ ν π = 0 :=
-  le_antisymm (deGrootInfo_le_min.trans (by simp [hπ])) zero_le'
+  le_antisymm (deGrootInfo_le_min.trans (by simp [hπ])) zero_le
 
 lemma deGrootInfo_of_measure_false_eq_zero (μ ν : Measure 𝓧) (hπ : π {false} = 0) :
     deGrootInfo μ ν π = 0 :=
-  le_antisymm (deGrootInfo_le_min.trans (by simp [hπ])) zero_le'
+  le_antisymm (deGrootInfo_le_min.trans (by simp [hπ])) zero_le
 
 /-- **Data processing inequality** for the statistical information. -/
 lemma deGrootInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel 𝓧 𝓨) [IsMarkovKernel η] :
