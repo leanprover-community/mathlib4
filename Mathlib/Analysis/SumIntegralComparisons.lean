@@ -39,9 +39,9 @@ These are used to prove a version of the integral test for antitone functions.
 * `AntitoneOn.summable_of_integrable` and `AntitoneOn.tsum_le_integral`, the integral test
   for antitone functions.
 * `AntitoneOn.abs_tsum_sub_sum_range_le_integral`: an error estimate for the difference
-    between a sum and its partial sums in terms of an integral.
-  * `AntitoneOn.integrable_of_summable` and `AntitoneOn.integral_le_sum`, the converse to the
-    integral test.
+  between a sum and its partial sums in terms of an integral.
+* `AntitoneOn.integrable_of_summable` and `AntitoneOn.integral_le_tsum`, the converse to the
+  integral test.
 ## Tags
 
 analysis, comparison, asymptotics
