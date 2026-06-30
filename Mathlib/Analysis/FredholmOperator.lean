@@ -165,7 +165,8 @@ theorem IsFredholm.of_isInvertible_restrict {u : E →L[𝕜] F}
     rw [eqₗ, LinearMap.range_comp, LinearEquiv.range, Submodule.map_top, range_subtype]
   · exact .of_disjoint_of_finiteDimensional_quotient E₁_closed disj.symm
 
-def IsFredholm.fredholmDecomposition_of_isTopCompl {u : E →L[𝕜] F}
+omit [ContinuousSMul 𝕜 E] in
+def IsFredholm.fredholmDecomposition {u : E →L[𝕜] F}
     (u_fred : IsFredholm u) {dom₁ : Submodule 𝕜 E} {codom₀ : Submodule 𝕜 F}
     (h_dom : IsTopCompl u.ker dom₁) (h_codom : IsTopCompl codom₀ u.range) :
     FredholmDecomposition u :=
@@ -179,6 +180,7 @@ def IsFredholm.fredholmDecomposition_of_isTopCompl {u : E →L[𝕜] F}
     · intro x (hx : x ∈ dom₁)
       simp [hx, projection_apply_of_mem_left]
   haveI u_restr_isHomeo : IsHomeomorph (u.restrict u_mapsto) := by
+    -- This is a bit messy
     rw [isHomeomorph_iff_isStrictMap_bijective]
     constructor
     · rw [u.range.isEmbedding_subtypeL.isStrictMap_iff, ← coe_comp,
@@ -186,9 +188,10 @@ def IsFredholm.fredholmDecomposition_of_isTopCompl {u : E →L[𝕜] F}
           comp_assoc, ← u_eq_u_restr]
       exact u_fred.isStrictMap
     · constructor
-      · rw [← coe_coe, toLinearMap_restrict]
-        sorry -- rw [u.toLinearMap.injective_restrict_iff_disjoint uₗ_mapsto]
-      · sorry
+      · simpa [← coe_coe, injective_restrict_iff_disjoint] using h_dom.isCompl.symm.disjoint
+      · suffices u.range ≤ map u.toLinearMap dom₁ by simpa [← coe_coe, ← LinearMap.range_eq_top]
+        simpa [← Submodule.map_top, Submodule.map_le_iff_le_comap, Submodule.comap_map_eq]
+          using h_dom.isCompl.symm.sup_eq_top
   { dom₀ := u.ker
     dom₁ := dom₁
     finite_dom₀ := u_fred.finite_ker
@@ -198,23 +201,15 @@ def IsFredholm.fredholmDecomposition_of_isTopCompl {u : E →L[𝕜] F}
     finite_codom₀ := Module.Finite.of_fg <| u_fred.finite_coker.fg_of_isCompl h_codom.isCompl.symm
     isTopCompl_codom := h_codom
     equiv :=
-      haveI u_mapsto : MapsTo u dom₁ u.range := Set.mapsTo_range _ _
-      haveI u_restr_isHomeo : IsHomeomorph (u.restrict u_mapsto) := by
-        rw [isHomeomorph_iff_isStrictMap_bijective]
-        constructor
-        · rw [u.range.isEmbedding_subtypeL.isStrictMap_iff, ← coe_comp,
-              (isQuotientMap_projectionOntoL h_dom.symm).isStrictMap_iff, ← coe_comp]
-          simpa [comp_assoc, subtypeL_comp_restrict] using u_fred.isStrictMap
-          sorry
-        · sorry
       .ofIsHomeomorph (.ofBijective _ u_restr_isHomeo.bijective) u_restr_isHomeo
-    eq_equiv' := by
-      refine LinearMap.ext_on_codisjoint h_dom.isCompl.codisjoint ?_ ?_
-      · intro x (hx : u x = 0)
-        simp [hx, projection_apply_of_mem_right]
-      · intro x (hx : x ∈ dom₁)
-        simp [hx, projection_apply_of_mem_left] }
+    eq_equiv' := u_eq_u_restr }
 
+omit [ContinuousSMul 𝕜 E] in
+theorem IsFredholm.nonempty_fredholmDecomposition {u : E →L[𝕜] F}
+    (u_fred : IsFredholm u) : Nonempty (FredholmDecomposition u) := by
+  obtain ⟨codom₀, h_codom⟩ := u_fred.closedComplemented_range.exists_isTopCompl
+  obtain ⟨dom₁, h_dom⟩ := u_fred.closedComplemented_ker.exists_isTopCompl
+  exact ⟨u_fred.fredholmDecomposition h_dom h_codom.symm⟩
 
 variable [T2Space E] [T2Space F]
 
@@ -228,8 +223,7 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
         ∃ h : MapsTo u E₁ F₁, (u.restrict h).IsInvertible,
       Nonempty (FredholmDecomposition u)
     ] := by
-  tfae_have 1 → 4 := by
-    sorry
+  tfae_have 1 → 4 := IsFredholm.nonempty_fredholmDecomposition
   tfae_have 4 → 2 := by
     rintro ⟨dec⟩
     exact ⟨dec.quasiInverse, dec.isQuasiInverse⟩
