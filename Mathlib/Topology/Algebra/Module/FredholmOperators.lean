@@ -649,7 +649,7 @@ open Set
 
 open scoped LinearMap.FiniteRangeSetoid
 
-open ContinuousLinearMap in
+open ContinuousLinearMap LinearMap in
 theorem isFredholmTFAE' (u : E →L[𝕜] F) : List.TFAE
     [
       IsFredholmQuot u,
@@ -668,19 +668,19 @@ theorem isFredholmTFAE' (u : E →L[𝕜] F) : List.TFAE
     set j := FD.dec_right.X₁.subtypeL
     set p := FD.dec_left.X₁.projectionOntoL FD.dec_left.X₂ FD.dec_left.topCompl
     set q := FD.dec_right.X₁.projectionOntoL FD.dec_right.X₂ FD.dec_right.topCompl
-    have hpi : p.toLinearMap ∘ₗ i = .id := projectionOnto_comp_subtype _
-    have hqj : q.toLinearMap ∘ₗ j = .id := projectionOnto_comp_subtype _
-    have hip : i.toLinearMap ∘ₗ p ≈ .id := sorry -- forgot to merge
-    have hjq : j.toLinearMap ∘ₗ q ≈ .id := sorry -- forgot to merge
+    have p_comp_i : p.toLinearMap ∘ₗ i.toLinearMap = .id := projectionOnto_comp_subtype _
+    have q_comp_j : q.toLinearMap ∘ₗ j.toLinearMap = .id := projectionOnto_comp_subtype _
+    have hpi : IsQuasiInverse p.toLinearMap i.toLinearMap := sorry -- forgot to merge
+    have hqj : IsQuasiInverse q.toLinearMap j.toLinearMap := sorry -- forgot to merge
     obtain ⟨equiv, heq : u = j ∘L equiv ∘L p⟩ := FD.exists_equiv_eq_proj
-    rw [heq]
+    rw [heq, IsFredholmQuot.iff_toLinearMap]
     use i ∘L equiv.symm ∘L q
-    constructor
-    · --calc  (j.toLinearMap ∘ₗ equiv ∘ₗ p) ∘ₗ (i.toLinearMap ∘ₗ equiv.symm ∘ₗ q)
-      --  _ = j.toLinearMap ∘ₗ (equiv ∘ₗ (p ∘ₗ i) ∘ₗ equiv.symm) ∘ₗ q. := by simp [comp_assoc]
-      --  _ = j.toLinearMap ∘ₗ (equiv ∘ₗ (p ∘ₗ i) ∘ₗ equiv.symm) ∘ₗ q := by simp [comp_assoc]
-      sorry
-    · sorry
+    simp_rw [toLinearMap_comp, ContinuousLinearEquiv.toLinearMap_toContinuousLinearMap,
+      ContinuousLinearEquiv.toLinearEquiv_symm]
+    refine .of_comp_left hqj <| .of_comp_right hpi.symm ?_
+    simp_rw [LinearMap.comp_assoc, q_comp_j, LinearMap.comp_id, ← LinearMap.comp_assoc, p_comp_i,
+      LinearMap.id_comp]
+    simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]
   tfae_finish
 
 open ContinuousLinearMap in
@@ -740,8 +740,6 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
         simp [← domRestrict_apply (f := u) (p := FD.dec_left.X₂) b, FD.3]
       simp_all
   tfae_finish
-
-#exit
 
 #print axioms isFredholmTFAE
 
