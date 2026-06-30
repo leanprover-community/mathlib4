@@ -76,7 +76,7 @@ lemma toPresheafOfModules_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : N.obj X) 
 /-- The inclusion of a submodule into the ambient presheaf of modules. -/
 @[simps!]
 noncomputable def ι : N.toPresheafOfModules ⟶ M :=
-  homMk { app := fun X ↦ AddCommGrpCat.ofHom (N.obj X).subtype.toAddMonoidHom } (by cat_disch)
+  homMk { app X := AddCommGrpCat.ofHom (N.obj X).subtype.toAddMonoidHom } (by cat_disch)
 
 instance : Mono N.ι := mono_of_injective fun _ ↦ Subtype.val_injective
 
@@ -85,6 +85,19 @@ instance : PartialOrder M.Submodule :=
 
 lemma le_iff {N₁ N₂ : M.Submodule} : N₁ ≤ N₂ ↔ ∀ X, N₁.obj X ≤ N₂.obj X :=
   .rfl
+
+/-- If `N₁` and `N₂` are submodule with `N₁ ≤ N₂`, this is the associated inclusion
+of presheaves of modules. -/
+@[simps!]
+noncomputable def homOfLE (N₁ N₂ : M.Submodule) (hle : N₁ ≤ N₂) :
+    N₁.toPresheafOfModules ⟶ N₂.toPresheafOfModules :=
+  homMk { app X := AddCommGrpCat.ofHom (Submodule.inclusion (hle X)).toAddMonoidHom } (by cat_disch)
+
+instance (N₁ N₂ : M.Submodule) (hle : N₁ ≤ N₂) : Mono (homOfLE N₁ N₂ hle) :=
+  mono_of_injective fun _ ↦ Submodule.inclusion_injective (hle _)
+
+@[reassoc (attr := simp)]
+lemma homOfLE_ι (N₁ N₂ : M.Submodule) (hle : N₁ ≤ N₂) : homOfLE _ _ hle ≫ N₂.ι = N₁.ι := rfl
 
 @[simps sup_obj inf_obj sSup_obj sInf_obj top_obj bot_obj]
 instance : CompleteLattice M.Submodule where
