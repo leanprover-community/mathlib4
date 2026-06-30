@@ -13,9 +13,10 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 # Pure subobjects
 
 In this file, we define the notion of `κ`-pure morphisms (`IsCardinalPure`)
-in a category `C`. This class contains split monomorphisms and is stable
-under `κ`-filtered colimits. When `C` is a `κ`-accessible category, we show
-that `κ`-pure morphisms are monomorphisms.
+in a category `C`, where `κ` is a regular cardinal. This class contains
+split monomorphisms and is stable under `κ`-filtered colimits.
+When `C` is a `κ`-accessible category, we show that `κ`-pure
+morphisms are monomorphisms.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
