@@ -112,7 +112,7 @@ only asks for a proof of facts that carry any mathematical content -/
 def Fork.IsWeakLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
     (fac : ∀ s : Fork f g, lift s ≫ Fork.ι t = Fork.ι s) : IsWeakLimit t :=
   { lift
-    fac := fun s j =>
+    fac s j :=
       WalkingParallelPair.casesOn j (fac s) <| by
         simp [← Category.assoc, fac]}
 
