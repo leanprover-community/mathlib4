@@ -186,15 +186,17 @@ variable
 instance : Zero (Homogenization k P) where
   zero := mk (.ofVector 0)
 
+-- We would like to mark these instances `@[semireducible]`, but the linter doesn't allow this,
+-- so we wrap them in `id` instead.
 instance : Add (Homogenization k P) where
-  add := Quotient.map₂ (· + ·) (fun _ _ h₁ _ _ h₂ => Pre.add_congr h₁ h₂)
+  add := id <| Quotient.map₂ (· + ·) (fun _ _ h₁ _ _ h₂ => Pre.add_congr h₁ h₂)
 
 private theorem mk_add_mk {v₁ v₂ : V} {c₁ c₂ : k} {p : P} :
     mk (.mk v₁ c₁ p) + mk (.mk v₂ c₂ p) = mk (.mk (v₁ + v₂) (c₁ + c₂) p) :=
   Quot.sound <| .mk_mk <| by affine P
 
 instance : SMul R (Homogenization k P) where
-  smul r := Quotient.map (r • ·) (fun _ _ => Pre.smul_congr r)
+  smul r := id <| Quotient.map (r • ·) (fun _ _ => Pre.smul_congr r)
 
 private theorem smul_mk {r : R} {v : V} {c : k} {p : P} :
     r • mk (.mk v c p) = mk (.mk (r • v) (r • c) p) :=
@@ -247,10 +249,8 @@ instance : AddCommGroup (Homogenization k P) where
     change mk (.mk ..) + _ = _
     simp_rw [mk_add_mk, neg_one_smul, neg_add_cancel]
     exact Quot.sound .mk_ofVector
-  nsmul := (· • ·)
   nsmul_zero _ := by exact zero_smul
   nsmul_succ n x := by rw [add_smul, one_smul]
-  zsmul := (· • ·)
   zsmul_zero' x := by exact zero_smul
   zsmul_succ' n x := by rw [Nat.cast_succ, add_smul, one_smul]
   zsmul_neg' n x := by
