@@ -98,9 +98,9 @@ instance [NormedField A] [CompletableTopField A] :
 end Algebra
 
 theorem isLinearMap_extension {𝕜 E F : Type*} [RCLike 𝕜] [UniformSpace E] [AddCommGroup E]
-    [Module 𝕜 E] [ContinuousAdd E] [UniformContinuousConstSMul 𝕜 E] [IsUniformAddGroup E]
+    [Module 𝕜 E] [UniformContinuousConstSMul 𝕜 E] [IsUniformAddGroup E]
     [UniformSpace F] [AddCommGroup F] [Module 𝕜 F] [T2Space F] [ContinuousAdd F] [CompleteSpace F]
-    [ContinuousConstSMul 𝕜 F] [IsUniformAddGroup F] {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) :
+    [ContinuousConstSMul 𝕜 F] {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) :
     IsLinearMap 𝕜 (Completion.extension f) := by
   have h_cont : Continuous (UniformSpace.Completion.extension f) := Completion.continuous_extension
   refine {

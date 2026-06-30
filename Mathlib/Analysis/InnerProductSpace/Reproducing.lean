@@ -450,6 +450,7 @@ private def equiv_aux (h : kernel H = kernel H₁) : OfKernel (kernel H) ≃ₗ�
       (h_dense.mono h_sub).closure_eq]
   exact (LinearIsometryEquiv.ofSurjective ofOfKernel h_surj)
 
+/-- If the two RKHS have the same kernel, they are isometrically isomorphic. -/
 def Equiv (h : kernel H = kernel H₁) : H ≃ₗᵢ[𝕜] H₁ := (OfKernel.EquivOfKernel H).trans (equiv_aux h)
 
 end Equiv
