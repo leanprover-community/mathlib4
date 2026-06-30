@@ -114,7 +114,6 @@ attribute [instance] HasWeakLimitsOfShape.hasWeakLimit
 
 instance (priority := 100) {J : Type*} [Category* J]
     [HasLimitsOfShape J C] : HasWeakLimitsOfShape J C where
-  hasWeakLimit _ := inferInstance
 
 -- Interface to the `HasWeakLimit` class.
 /-- An arbitrary choice of weak limit cone for a functor. -/
