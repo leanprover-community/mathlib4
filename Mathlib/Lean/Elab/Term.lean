@@ -1,13 +1,18 @@
 /-
 Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller
+Authors: Kyle Miller, Thomas R. Murrills
 -/
-import Lean.Elab.SyntheticMVars
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Term
 
 /-!
 # Additions to `Lean.Elab.Term`
 -/
+
+public meta section
 
 namespace Lean.Elab.Term
 
@@ -21,3 +26,5 @@ def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := 
       let t ← elabTerm patt expectedType?
       synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
       instantiateMVars t
+
+end Lean.Elab.Term

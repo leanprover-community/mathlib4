@@ -3,14 +3,17 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Meta.Tactic.Cleanup
-import Lean.Meta.Tactic.Cases
-import Lean.Meta.Tactic.Refl
-import Mathlib.Logic.IsEmpty
+module
+
+public import Lean.Meta.Tactic.Cleanup
+public meta import Lean.Meta.Tactic.Refl
+public import Mathlib.Logic.IsEmpty.Defs
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`
 -/
+
+public meta section
 
 namespace Lean.Meta
 
@@ -62,7 +65,7 @@ where
       | .eq | .heq =>
         forallBoundedTelescope type (some 3) fun params' type' => do
           let #[x, y, eq] := params' | unreachable!
-          -- See if we can prove `eq` from previous parameters.
+          -- See if we can prove `Eq` from previous parameters.
           let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
           let g ← g.clear eq.fvarId!
           if (← observing? <| prove g args).isSome then
@@ -106,6 +109,11 @@ class FastIsEmpty (α : Sort u) : Prop where
 protected theorem FastSubsingleton.elim {α : Sort u} [h : FastSubsingleton α] : (a b : α) → a = b :=
   h.inst.allEq
 
+protected theorem FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
+    (h₂ : α = β) (a : α) (b : β) : a ≍ b := by
+  have : Subsingleton α := FastSubsingleton.inst
+  exact Subsingleton.helim h₂ a b
+
 instance (priority := 100) {α : Type u} [inst : FastIsEmpty α] : FastSubsingleton α where
   inst := have := inst.inst; inferInstance
 
@@ -129,7 +137,7 @@ instance {α : Sort u} [inst : FastIsEmpty α] {β : (x : α) → Sort v} :
 
 instance {α : Sort u} {β : (x : α) → Sort v} [inst : ∀ x, FastSubsingleton (β x)] :
     FastSubsingleton ((x : α) → β x) where
-  inst := have := λ x => (inst x).inst; inferInstance
+  inst := have := fun x ↦ (inst x).inst; inferInstance
 
 /--
 Runs `mx` in a context where all local `Subsingleton` and `IsEmpty` instances
@@ -185,12 +193,12 @@ this function supports generating lemmas where certain parameters
 are meant to be fixed:
 
 * If `fixedFun` is `false` (the default) then the lemma starts with three arguments for `f`, `f'`,
-and `h : f = f'`. Otherwise, if `fixedFun` is `true` then the lemma starts with just `f`.
+  and `h : f = f'`. Otherwise, if `fixedFun` is `true` then the lemma starts with just `f`.
 
 * If the `fixedParams` argument has `true` for a particular argument index, then this is a hint
-that the congruence lemma may use the same parameter for both sides of the equality. There is
-no guarantee -- it respects it if the types are equal for that parameter (i.e., if the parameter
-does not depend on non-fixed parameters).
+  that the congruence lemma may use the same parameter for both sides of the equality. There is
+  no guarantee -- it respects it if the types are equal for that parameter (i.e., if the parameter
+  does not depend on non-fixed parameters).
 
 If `forceHEq` is `true` then the conclusion of the generated theorem is a `HEq`.
 Otherwise it might be an `Eq` if the equality is homogeneous.
@@ -198,11 +206,11 @@ Otherwise it might be an `Eq` if the equality is homogeneous.
 This is the interpretation of the `CongrArgKind`s in the generated congruence theorem:
 * `.eq` corresponds to having three arguments `(x : α) (x' : α) (h : x = x')`.
   Note that `h` might have additional hypotheses.
-* `.heq` corresponds to having three arguments `(x : α) (x' : α') (h : HEq x x')`
+* `.heq` corresponds to having three arguments `(x : α) (x' : α') (h : x ≍ x')`
   Note that `h` might have additional hypotheses.
 * `.fixed` corresponds to having a single argument `(x : α)` that is fixed between the LHS and RHS
 * `.subsingletonInst` corresponds to having two arguments `(x : α) (x' : α')` for which the
-  congruence generator was able to prove that `HEq x x'` already. This is a slight abuse of
+  congruence generator was able to prove that `x ≍ x'` already. This is a slight abuse of
   this `CongrArgKind` since this is used even for types that are not subsingleton typeclasses.
 
 Note that the first entry in this array is for the function itself.
@@ -285,8 +293,8 @@ where
     let rec loop (i : Nat)
         (ftyx ftyy : Expr) (xs ys : Array Expr) (fixed' : Array Bool) : MetaM α := do
       if i < numVars then
-        let ftyx ← whnf ftyx
-        let ftyy ← whnf ftyy
+        let ftyx ← whnfD ftyx
+        let ftyy ← whnfD ftyy
         unless ftyx.isForall do
           throwError "doubleTelescope: function doesn't have enough parameters"
         withLocalDeclD ftyx.bindingName! ftyx.bindingDomain! fun fvarx => do

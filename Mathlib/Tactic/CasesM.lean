@@ -3,13 +3,18 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Tactic.Conv.Pattern
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Conv.Pattern
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
 
 These tactics implement repeated `cases` / `constructor` on anything satisfying a predicate.
 -/
+
+public meta section
 
 namespace Lean.MVarId
 
@@ -27,7 +32,7 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
     throwError "no match"
   else
     return result
-  where
+where
   /-- Auxiliary for `casesMatching`. Accumulates generated subgoals in `acc`. -/
   go (g : MVarId) (acc : Array MVarId := #[]) : MetaM (Array MVarId) :=
     g.withContext do
@@ -39,17 +44,21 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
             g.cases ldecl.fvarId
           else
             let s ← saveState
-            let subgoals ← g.cases ldecl.fvarId
+            let subgoals ← g.cases ldecl.fvarId (givenNames := #[⟨true, [ldecl.userName]⟩])
             if subgoals.size > 1 then
               s.restore
               continue
             else
               pure subgoals
           for subgoal in subgoals do
+            -- If only one new hypothesis is generated, rename it to the original name.
+            let g ← match subgoal.fields with
+            | #[.fvar fvarId] => subgoal.mvarId.rename fvarId ldecl.userName
+            | _ => pure subgoal.mvarId
             if recursive then
-              acc ← go subgoal.mvarId acc
+              acc ← go g acc
             else
-              acc := acc.push subgoal.mvarId
+              acc := acc.push g
           return acc
       return (acc.push g)
 
@@ -76,22 +85,40 @@ def matchPatterns (pats : Array AbstractMVarsResult) (e : Expr) : MetaM Bool := 
   let e ← instantiateMVars e
   pats.anyM fun p ↦ return (← Conv.matchPattern? p e) matches some (_, #[])
 
-/--
-* `casesm p` applies the `cases` tactic to a hypothesis `h : type`
-  if `type` matches the pattern `p`.
-* `casesm p_1, ..., p_n` applies the `cases` tactic to a hypothesis `h : type`
-  if `type` matches one of the given patterns.
-* `casesm* p` is a more efficient and compact version of `· repeat casesm p`.
-  It is more efficient because the pattern is compiled once.
+/-- Common implementation of `casesm` and `casesm!`. -/
+def elabCasesM (pats : Array Term) (recursive allowSplit : Bool) : TacticM Unit := do
+  let pats ← elabPatterns pats
+  liftMetaTactic (casesMatching (matchPatterns pats) recursive allowSplit)
 
-Example: The following tactic destructs all conjunctions and disjunctions in the current context.
+/--
+`casesm p` searches for the first hypothesis `h : type` where `type` matches the term `p`,
+and splits the main goal by cases on `h`. Use holes in `p` to indicate arbitrary subexpressions,
+for example `casesm _ ∧ _` will match any conjunction. `casesm p` fails if no hypothesis type
+matches `p`.
+
+* `casesm p_1, ..., p_n` searches for a hypothesis `h : type` where `type` matches one or more of
+  the given patterns `p_1`, ... `p_n`, and splits the main goal by cases on `h`.
+* `casesm* p` repeatedly performs case splits until no more hypothesis type matches `p`.
+  This is a more efficient and compact version of `· repeat casesm p`.
+  It is more efficient because the pattern is compiled once.
+* `casesm! p` and `casesm!* p` skip a hypothesis if the main goal would be replaced with two or more
+  subgoals.
+
+Example:
 ```
-casesm* _ ∨ _, _ ∧ _
+example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
+  -- The following tactic destructs all conjunctions and disjunctions in the current context.
+  casesm* _∨_, _∧_
+  · clear ‹a› ‹b› ‹e› ‹f›; (fail_if_success clear ‹c›); trivial
+  · clear ‹c› ‹d› ‹e› ‹f›; trivial
 ```
 -/
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
-  let pats ← elabPatterns pats.getElems
-  liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome)
+  elabCasesM pats recursive.isSome true
+
+@[tactic_alt casesM]
+elab (name := casesm!) "casesm!" recursive:"*"? ppSpace pats:term,+ : tactic => do
+  elabCasesM pats recursive.isSome false
 
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
@@ -100,21 +127,30 @@ def elabCasesType (heads : Array Ident)
   liftMetaTactic (casesType heads recursive allowSplit)
 
 /--
-* `cases_type I` applies the `cases` tactic to a hypothesis `h : (I ...)`
-* `cases_type I_1 ... I_n` applies the `cases` tactic to a hypothesis
-  `h : (I_1 ...)` or ... or `h : (I_n ...)`
-* `cases_type* I` is shorthand for `· repeat cases_type I`
-* `cases_type! I` only applies `cases` if the number of resulting subgoals is <= 1.
+`cases_type I` searches for a hypothesis `h : type` where `I` has the form `(I ...)`, and splits the
+main goal by cases on `h`. `cases_type p` fails if no hypothesis type has the identifier `I` as its
+head symbol.
 
-Example: The following tactic destructs all conjunctions and disjunctions in the current goal.
+* `cases_type I_1 ... I_n` searches for a hypothesis `h : type` where `type` has one or more of
+  `I_1`, ..., `I_n` as its head symbol, and splits the main goal by cases on `h`.
+* `cases_type* I` repeatedly performs case splits until no more hypothesis type has `I` as its head
+  symbol. This shorthand for `· repeat cases_type I`.
+* `cases_type! p` and `cases_type!* p` skip a hypothesis if the main goal would be replaced with two
+  or more subgoals.
+
+Example:
 ```
-cases_type* Or And
+example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
+  -- The following tactic destructs all conjunctions and disjunctions in the current context.
+  cases_type* Or And
+  · clear ‹a› ‹b› ‹e› ‹f›; (fail_if_success clear ‹c›); trivial
+  · clear ‹c› ‹d› ‹e› ‹f›; trivial
 ```
 -/
 elab (name := casesType) "cases_type" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome true
 
-@[inherit_doc casesType]
+@[tactic_alt casesType]
 elab (name := casesType!) "cases_type!" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome false
 
@@ -149,17 +185,22 @@ where
       return (acc.push g)
 
 /--
-* `constructorm p_1, ..., p_n` applies the `constructor` tactic to the main goal
-  if `type` matches one of the given patterns.
-* `constructorm* p` is a more efficient and compact version of `· repeat constructorm p`.
-  It is more efficient because the pattern is compiled once.
+`constructorm p_1, ..., p_n`, where the main goal has type `type`, applies the first matching
+constructor for `type`, if `type` matches one of the given patterns. If `type` does not match any
+of the patterns, `constructorm` fails.
 
-Example: The following tactic proves any theorem like `True ∧ (True ∨ True)` consisting of
-and/or/true:
+* `constructorm* p_1, ..., p_n` repeatedly applies a constructor until the goal no longer matches
+  `p_1`, ..., `p_n`. This is a more efficient and compact version of
+  `· repeat constructorm p_1, ..., p_n`. It is more efficient because the pattern is compiled once.
+
+Examples:
 ```
-constructorm* _ ∨ _, _ ∧ _, True
+example : True ∧ (True ∨ True) := by
+  constructorm* _ ∨ _, _ ∧ _, True
 ```
 -/
 elab (name := constructorM) "constructorm" recursive:"*"? ppSpace pats:term,+ : tactic => do
   let pats ← elabPatterns pats.getElems
   liftMetaTactic (constructorMatching · (matchPatterns pats) recursive.isSome)
+
+end Mathlib.Tactic

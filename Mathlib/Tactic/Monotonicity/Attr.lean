@@ -3,9 +3,14 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Lean.LabelAttribute
+module
+
+public import Mathlib.Init
+public meta import Lean.LabelAttribute
 
 /-! # The @[mono] attribute -/
+
+public meta section
 
 namespace Mathlib.Tactic.Monotonicity
 
@@ -29,3 +34,9 @@ initialize ext : LabelExtension ← (
 relations on its domain and range, and possibly with side conditions."
   let mono := `mono
   registerLabelAttr mono descr mono)
+
+end Attr
+
+end Monotonicity
+
+end Mathlib.Tactic

@@ -3,11 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.DList.Defs
-import Mathlib.Control.Traversable.Equiv
-import Mathlib.Control.Traversable.Instances
+module
 
-#align_import data.dlist.instances from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
+public import Batteries.Data.DList.Lemmas
+public import Mathlib.Control.Traversable.Equiv
+public import Mathlib.Control.Traversable.Instances
 
 /-!
 # Traversable instance for DLists
@@ -15,6 +15,8 @@ import Mathlib.Control.Traversable.Instances
 This file provides the equivalence between `List α` and `DList α` and the traversable instance
 for `DList`.
 -/
+
+@[expose] public section
 
 
 open Function Equiv
@@ -30,15 +32,11 @@ def DList.listEquivDList : List α ≃ DList α where
   invFun := DList.toList
   left_inv _ := DList.toList_ofList _
   right_inv _ := DList.ofList_toList _
-#align dlist.list_equiv_dlist Batteries.DList.listEquivDList
 
 instance : Traversable DList :=
   Equiv.traversable DList.listEquivDList
 
 instance : LawfulTraversable DList :=
   Equiv.isLawfulTraversable DList.listEquivDList
-
-instance {α} : Inhabited (DList α) :=
-  ⟨DList.empty⟩
 
 end Batteries

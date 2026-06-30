@@ -3,12 +3,18 @@ Copyright (c) 2018 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
-import Lean
-import Mathlib.Tactic.Core
+module
+
+public meta import Lean.Elab.Tactic.Location
+public meta import Lean.Meta.Tactic.SplitIf
+public meta import Lean.Elab.Tactic.Simp
+public import Mathlib.Tactic.Core
 
 /-!
 Tactic to split if-then-else expressions.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -25,19 +31,19 @@ private inductive SplitPosition
 private def getSplitCandidates (loc : Location) : TacticM (List (SplitPosition × Expr)) :=
 match loc with
 | Location.wildcard => do
-   let candidates ← (← getLCtx).getFVarIds.mapM
-     (fun fvarId ↦ do
-       let typ ← instantiateMVars (← inferType (mkFVar fvarId))
-       return (SplitPosition.hyp fvarId, typ))
-   pure ((SplitPosition.target, ← getMainTarget) :: candidates.toList)
+  let candidates ← (← getLCtx).getFVarIds.mapM
+    (fun fvarId ↦ do
+      let typ ← instantiateMVars (← inferType (mkFVar fvarId))
+      return (SplitPosition.hyp fvarId, typ))
+  pure ((SplitPosition.target, ← getMainTarget) :: candidates.toList)
 | Location.targets hyps tgt => do
-   let candidates ← (← hyps.mapM getFVarId).mapM
-     (fun fvarId ↦ do
-       let typ ← instantiateMVars (← inferType (mkFVar fvarId))
-       return (SplitPosition.hyp fvarId, typ))
-   if tgt
-   then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
-   else return candidates.toList
+  let candidates ← (← hyps.mapM getFVarId).mapM
+    (fun fvarId ↦ do
+      let typ ← instantiateMVars (← inferType (mkFVar fvarId))
+      return (SplitPosition.hyp fvarId, typ))
+  if tgt
+  then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
+  else return candidates.toList
 
 /-- Return the condition and decidable instance of an `if` expression to case split. -/
 private partial def findIfToSplit? (e : Expr) : Option (Expr × Expr) :=
@@ -73,8 +79,8 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
-  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
-  let _ ← simpLocation ctx {} discharge? loc
+  let ctx := ctx.setFailIfUnchanged false
+  let _ ← simpLocation ctx (← ({} : Simp.SimprocsArray).add `reduceCtorEq false) discharge? loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.
@@ -101,12 +107,14 @@ private def getNextName (hNames: IO.Ref (List (TSyntax `Lean.binderIdent))) : Me
 /-- Returns `true` if the condition or its negation already appears as a hypothesis.
 -/
 private def valueKnown (cond : Expr) : TacticM Bool := do
-  let hTypes ← (((← getLCtx).getFVarIds.map mkFVar).mapM inferType : MetaM _)
-  let hTypes := hTypes.toList
   let not_cond := mkApp (mkConst `Not) cond
-  return (hTypes.contains cond) || (hTypes.contains not_cond)
+  for h in ← getLocalHyps do
+    let ty ← instantiateMVars (← inferType h)
+    if cond == ty then return true
+    if not_cond == ty then return true
+  return false
 
-/-- Main loop of split_ifs. Pulls names for new hypotheses from `hNames`.
+/-- Main loop of `split_ifs`. Pulls names for new hypotheses from `hNames`.
 Stops if it encounters a condition in the passed-in `List Expr`.
 -/
 private partial def splitIfsCore
@@ -128,14 +136,17 @@ private partial def splitIfsCore
     andThenOnSubgoals (splitIf1 cond hName loc) ((splitIfsCore loc hNames (cond::done)) <|>
       pure ())
 
-/-- Splits all if-then-else-expressions into multiple goals.
-Given a goal of the form `g (if p then x else y)`, `split_ifs` will produce
-two goals: `p ⊢ g x` and `¬p ⊢ g y`.
-If there are multiple ite-expressions, then `split_ifs` will split them all,
-starting with a top-most one whose condition does not contain another
-ite-expression.
-`split_ifs at *` splits all ite-expressions in all hypotheses as well as the goal.
-`split_ifs with h₁ h₂ h₃` overrides the default names for the hypotheses.
+/-- `split_ifs` splits the main goal in two goals for every if-then-else expression it contains,
+by applying excluded middle to the condition. If the goal has the form `g (if p then x else y)`,
+`split_ifs` will result in two goals `h✝ : p ⊢ g x` and `h✝ : ¬p ⊢ g y`. If there are multiple
+if-then-else expressions, then `split_ifs` will split them all, starting with a top-most one whose
+condition does not contain another if-then-else expression.
+
+* `split_ifs with h₁ h₂ h₃` names the introduced hypotheses.
+  Note that names are not reused across splits: on a goal of the form
+  `⊢ (if p then 1 else 2) + (if q then 3 else 4)`, use `split_ifs with hp hq hq` to name all
+  the hypotheses.
+* `split_ifs at l` splits the if-then-else expressions at location(s) `l`.
 -/
 syntax (name := splitIfs) "split_ifs" (location)? (" with" (ppSpace colGt binderIdent)+)? : tactic
 
@@ -152,3 +163,5 @@ elab_rules : tactic
     splitIfsCore loc names []
     for name in ← names.get do
       logWarningAt name m!"unused name: {name}"
+
+end Mathlib.Tactic

@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.PurelyInseparable
-import Mathlib.FieldTheory.PerfectClosure
+module
+
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.FieldTheory.PerfectClosure
 
 /-!
 
@@ -36,8 +38,8 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
   then any ring homomorphism `K →+* M` can be lifted to `L →+* M`.
   This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`.
 
-- `PerfectRing.liftEquiv`: `K →+* M` is one-to-one correspondence to `L →+* M`,
-  given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`.
+- `PerfectRing.liftEquiv`: `K →+* M` is in one-to-one correspondence with `L →+* M`,
+  given by `PerfectRing.lift`. This generalizes `PerfectClosure.lift`.
 
 - `IsPerfectClosure.equiv`: perfect closures of a ring are isomorphic.
 
@@ -60,9 +62,9 @@ perfect ring, perfect closure, purely inseparable
 
 -/
 
-open scoped Classical Polynomial
+@[expose] public section
 
-open FiniteDimensional Polynomial IntermediateField Field
+open Module Polynomial IntermediateField Field
 
 noncomputable section
 
@@ -98,15 +100,14 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
   by_cases hp : 1 < p
   · rw [pNilradical_eq_nilradical hp]
     refine ⟨fun ⟨n, h⟩ ↦ ⟨n, ?_⟩, fun ⟨n, h⟩ ↦ ⟨p ^ n, h⟩⟩
-    rw [← Nat.sub_add_cancel ((Nat.lt_pow_self hp n).le), pow_add, h, mul_zero]
+    rw [← Nat.sub_add_cancel ((n.lt_pow_self hp).le), pow_add, h, mul_zero]
   rw [pNilradical_eq_bot hp, Ideal.mem_bot]
   refine ⟨fun h ↦ ⟨0, by rw [pow_zero, pow_one, h]⟩, fun ⟨n, h⟩ ↦ ?_⟩
   rcases Nat.le_one_iff_eq_zero_or_eq_one.1 (not_lt.1 hp) with hp | hp
   · by_cases hn : n = 0
     · rwa [hn, pow_zero, pow_one] at h
     rw [hp, zero_pow hn, pow_zero] at h
-    haveI := subsingleton_of_zero_eq_one h.symm
-    exact Subsingleton.elim _ _
+    subsingleton [subsingleton_of_zero_eq_one h.symm]
   rwa [hp, one_pow, pow_one] at h
 
 theorem sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [CommRing R] {p : ℕ} [ExpChar R p]
@@ -117,12 +118,12 @@ theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : 
     (h : pNilradical R p = ⊥) (n : ℕ) : Function.Injective fun x : R ↦ x ^ p ^ n := fun _ _ H ↦
   sub_eq_zero.1 <| Ideal.mem_bot.1 <| h ▸ sub_mem_pNilradical_iff_pow_expChar_pow_eq.2 ⟨n, H⟩
 
-theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
     (h : Function.Injective (frobenius R p)) : pNilradical R p = ⊥ := bot_unique fun x ↦ by
   rw [mem_pNilradical, Ideal.mem_bot]
   exact fun ⟨n, _⟩ ↦ h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
 
-theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
     [PerfectRing R p] : pNilradical R p = ⊥ :=
   pNilradical_eq_bot_of_frobenius_inj R p (injective_frobenius R p)
 
@@ -133,8 +134,7 @@ variable {K L M N : Type*}
 section CommSemiring
 
 variable [CommSemiring K] [CommSemiring L] [CommSemiring M]
-  (i : K →+* L) (j : K →+* M) (f : L →+* M)
-  (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p]
+  (i : K →+* L) (j : K →+* M) (f : L →+* M) (p : ℕ)
 
 /-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it is called
 `p`-radical if the following conditions are satisfied:
@@ -167,7 +167,7 @@ theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
 variable (K) in
 instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
   pow_mem' x := ⟨0, x, by simp⟩
-  ker_le' x h := by convert Ideal.zero_mem _
+  ker_le' x h := by convert! Ideal.zero_mem _
 
 /-- Composition of `p`-radical ring homomorphisms is also `p`-radical. -/
 theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
@@ -189,17 +189,18 @@ Our definition makes it synonymous to `IsPRadical` if `PerfectRing L p` is prese
 that you need to write `[PerfectRing L p] [IsPerfectClosure i p]`. This is similar to
 `PerfectRing` which has `ExpChar` as a prerequisite. -/
 @[nolint unusedArguments]
-abbrev IsPerfectClosure [PerfectRing L p] := IsPRadical i p
+abbrev IsPerfectClosure [ExpChar L p] [PerfectRing L p] := IsPRadical i p
 
 /-- If `i : K →+* L` is a ring homomorphism of exponential characteristic `p` rings, such that `L`
 is perfect, then the `p`-nilradical of `K` is contained in the kernel of `i`. -/
-theorem RingHom.pNilradical_le_ker_of_perfectRing [PerfectRing L p] :
+theorem RingHom.pNilradical_le_ker_of_perfectRing [ExpChar L p] [PerfectRing L p] :
     pNilradical K p ≤ RingHom.ker i := fun x h ↦ by
   obtain ⟨n, h⟩ := mem_pNilradical.1 h
   replace h := congr((iterateFrobeniusEquiv L p n).symm (i $h))
   rwa [map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply,
     map_zero, map_zero] at h
 
+variable [ExpChar L p] in
 theorem IsPerfectClosure.ker_eq [PerfectRing L p] [IsPerfectClosure i p] :
     RingHom.ker i = pNilradical K p :=
   IsPRadical.ker_le'.antisymm (i.pNilradical_le_ker_of_perfectRing p)
@@ -209,7 +210,7 @@ namespace PerfectRing
 /- NOTE: To define `PerfectRing.lift_aux`, only the `IsPRadical.pow_mem` is required, but not
 `IsPRadical.ker_le`. But in order to use typeclass, here we require the whole `IsPRadical`. -/
 
-variable [PerfectRing M p] [IsPRadical i p]
+variable [ExpChar M p] [PerfectRing M p] [IsPRadical i p]
 
 theorem lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := by
   obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
@@ -223,12 +224,13 @@ def liftAux (x : L) : M := (iterateFrobeniusEquiv M p (Classical.choose (lift_au
   (j (Classical.choose (lift_aux i p x)).2)
 
 @[simp]
-theorem liftAux_self_apply [PerfectRing L p] (x : L) : liftAux i i p x = x := by
+theorem liftAux_self_apply [ExpChar L p] [PerfectRing L p] (x : L) : liftAux i i p x = x := by
   rw [liftAux, Classical.choose_spec (lift_aux i p x), ← iterateFrobenius_def,
     ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply]
 
 @[simp]
-theorem liftAux_self [PerfectRing L p] : liftAux i i p = id := funext (liftAux_self_apply i p)
+theorem liftAux_self [ExpChar L p] [PerfectRing L p] : liftAux i i p = id :=
+  funext (liftAux_self_apply i p)
 
 @[simp]
 theorem liftAux_id_apply (x : K) : liftAux (RingHom.id K) j p x = j x := by
@@ -247,23 +249,24 @@ section CommRing
 
 variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
   (i : K →+* L) (j : K →+* M) (k : K →+* N) (f : L →+* M) (g : L →+* N)
-  (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p] [ExpChar N p]
+  (p : ℕ) [ExpChar M p]
+
 
 namespace IsPRadical
 
-/-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential charactistic `p` whose
+/-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential characteristic `p` whose
 `p`-nilradical is zero, the map `(L →+* M) → (K →+* M)` induced by `i` is injective. -/
 theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M p = ⊥) :
     Function.Injective fun f : L →+* M ↦ f.comp i := fun f g heq ↦ by
   ext x
   obtain ⟨n, y, hx⟩ := IsPRadical.pow_mem i p x
   apply_fun _ using pow_expChar_pow_inj_of_pNilradical_eq_bot M p h n
-  simpa only [← map_pow, ← hx] using congr($(heq) y)
+  simpa only [← map_pow, ← hx] using! congr($(heq) y)
 
 variable (M)
 
-/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential charactistic `p`,
-the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential characteristic
+`p`, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
 A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`
 and a generalization of `IsPurelyInseparable.injective_comp_algebraMap`. -/
 theorem injective_comp [IsPRadical i p] [IsReduced M] :
@@ -271,8 +274,8 @@ theorem injective_comp [IsPRadical i p] [IsReduced M] :
   injective_comp_of_pNilradical_eq_bot i p <| bot_unique <|
     pNilradical_le_nilradical.trans (nilradical_eq_zero M).le
 
-/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential charactistic `p`,
-the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential characteristic
+`p`, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
 A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`. -/
 theorem injective_comp_of_perfect [IsPRadical i p] [PerfectRing M p] :
     Function.Injective fun f : L →+* M ↦ f.comp i :=
@@ -282,7 +285,7 @@ end IsPRadical
 
 namespace PerfectRing
 
-variable [PerfectRing M p] [IsPRadical i p]
+variable [ExpChar K p] [PerfectRing M p] [IsPRadical i p]
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring, then `PerfectRing.liftAux` is well-defined. -/
@@ -303,6 +306,8 @@ theorem liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
     ← sub_eq_zero, ← map_pow, ← map_pow, ← map_sub,
     add_comm m, add_comm m, pow_add, pow_mul, pow_add, pow_mul, ← sub_pow_expChar_pow, h, map_zero]
 
+variable [ExpChar L p]
+
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring, then `PerfectRing.liftAux`
 is a ring homomorphism. This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`. -/
@@ -312,7 +317,7 @@ def lift : L →+* M where
   map_mul' x1 x2 := by
     obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
     obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
-    simp only; rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
+    rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
       liftAux_apply i j p (x1 * x2) (n1 + n2) (y1 ^ p ^ n2 * y2 ^ p ^ n1) (by rw [map_mul,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, mul_pow]),
@@ -324,7 +329,7 @@ def lift : L →+* M where
   map_add' x1 x2 := by
     obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
     obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
-    simp only; rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
+    rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
       liftAux_apply i j p (x1 + x2) (n1 + n2) (y1 ^ p ^ n2 + y2 ^ p ^ n1) (by rw [map_add,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, add_pow_expChar_pow]),
@@ -362,10 +367,10 @@ theorem comp_lift : lift i (f.comp i) p = f :=
 theorem comp_lift_apply (x : L) : lift i (f.comp i) p x = f x := congr($(comp_lift i f p) x)
 
 variable (M) in
-/-- If `i : K →+* L` is a homomorphisms of characteristic `p` rings, such that
+/-- If `i : K →+* L` is a homomorphism of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring of characteristic `p`,
-then `K →+* M` is one-to-one correspondence to
-`L →+* M`, given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`. -/
+then `K →+* M` is in one-to-one correspondence with
+`L →+* M`, given by `PerfectRing.lift`. This generalizes `PerfectClosure.lift`. -/
 def liftEquiv : (K →+* M) ≃ (L →+* M) where
   toFun j := lift i j p
   invFun f := f.comp i
@@ -385,7 +390,7 @@ theorem liftEquiv_id : liftEquiv M (RingHom.id K) p = Equiv.refl _ :=
 
 section comp
 
-variable [PerfectRing N p] [IsPRadical j p]
+variable [ExpChar N p] [PerfectRing N p] [IsPRadical j p]
 
 @[simp]
 theorem lift_comp_lift : (lift j k p).comp (lift i j p) = lift i k p :=
@@ -407,7 +412,7 @@ end comp
 
 section liftEquiv_comp
 
-variable [IsPRadical g p] [IsPRadical (g.comp i) p]
+variable [ExpChar N p] [IsPRadical g p] [IsPRadical (g.comp i) p]
 
 @[simp]
 theorem lift_lift : lift g (lift i j p) p = lift (g.comp i) j p := by
@@ -432,7 +437,8 @@ end PerfectRing
 
 namespace IsPerfectClosure
 
-variable [PerfectRing L p] [IsPerfectClosure i p] [PerfectRing M p] [IsPerfectClosure j p]
+variable [ExpChar K p] [ExpChar L p] [PerfectRing L p] [IsPerfectClosure i p] [PerfectRing M p]
+  [IsPerfectClosure j p]
 
 /-- If `L` and `M` are both perfect closures of `K`, then there is a ring isomorphism `L ≃+* M`.
 This is similar to `IsAlgClosure.equiv` and `IsSepClosure.equiv`. -/
@@ -475,7 +481,7 @@ theorem equiv_comp : RingHom.comp (equiv i j p) i = j :=
 
 section comp
 
-variable [PerfectRing N p] [IsPerfectClosure k p]
+variable [ExpChar N p] [PerfectRing N p] [IsPerfectClosure k p]
 
 @[simp]
 theorem equiv_comp_equiv_apply (x : L) :

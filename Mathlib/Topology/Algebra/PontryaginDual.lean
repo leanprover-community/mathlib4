@@ -3,104 +3,139 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
 
-#align_import topology.algebra.continuous_monoid_hom from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Topology.Algebra.Group.CompactOpen
 
 /-!
 # Pontryagin dual
 
 This file defines the Pontryagin dual of a topological group. The Pontryagin dual of a topological
-group `A` is the topological group of continuous homomorphisms `A →* circle` with the compact-open
-topology. For example, `ℤ` and `circle` are Pontryagin duals of each other. This is an example of
+group `A` is the topological group of continuous homomorphisms `A →* Circle` with the compact-open
+topology. For example, `ℤ` and `Circle` are Pontryagin duals of each other. This is an example of
 Pontryagin duality, which states that a locally compact abelian topological group is canonically
 isomorphic to its double dual.
 
 ## Main definitions
 
-* `PontryaginDual A`: The group of continuous homomorphisms `A →* circle`.
+* `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
 -/
 
-open Pointwise Function
+@[expose] public section
 
-variable (A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
-  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
-  [TopologicalSpace E] [TopologicalGroup E]
+open scoped Pointwise
+open Real
 
-/-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → circle`. -/
+variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
+  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
+  [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalGroup G] [IsTopologicalGroup H]
+
+noncomputable section
+
+/-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → Circle`. -/
 def PontryaginDual :=
-  ContinuousMonoidHom A circle
-#align pontryagin_dual PontryaginDual
+  A →ₜ* Circle
+deriving TopologicalSpace
 
--- Porting note: `deriving` doesn't derive these instances
-instance : TopologicalSpace (PontryaginDual A) :=
-  (inferInstance : TopologicalSpace (ContinuousMonoidHom A circle))
+instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
+  let Vn : ℕ → Set Circle := fun n ↦ Circle.centeredArc (π / 2 ^ (n + 1))
+  have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < π / 2 ^ (n + 1) :=
+    fun n x ↦ Circle.mem_centeredArc (z := x)
+      (div_le_self pi_nonneg (one_le_pow₀ one_le_two))
+  refine ContinuousMonoidHom.locallyCompactSpace_of_hasBasis Vn ?_ ?_
+  · intro n x h1 h2
+    rw [hVn] at h1 h2 ⊢
+    rwa [Circle.coe_mul, Complex.arg_mul x.coe_ne_zero x.coe_ne_zero,
+      ← two_mul, abs_mul, abs_two, ← lt_div_iff₀' two_pos, div_div, ← pow_succ] at h2
+    apply Set.Ioo_subset_Ioc_self
+    rw [← two_mul, Set.mem_Ioo, ← abs_lt, abs_mul, abs_two, ← lt_div_iff₀' two_pos]
+    refine h1.trans_le ?_
+    gcongr
+    exact le_self_pow₀ one_le_two n.succ_ne_zero
+  · simpa [Vn] using Circle.hasBasis_centeredArc_div_two_pow
 
-instance : T2Space (PontryaginDual A) :=
-  (inferInstance : T2Space (ContinuousMonoidHom A circle))
-
--- Porting note: instance is now noncomputable
-noncomputable instance : CommGroup (PontryaginDual A) :=
-  (inferInstance : CommGroup (ContinuousMonoidHom A circle))
-
-instance : TopologicalGroup (PontryaginDual A) :=
-  (inferInstance : TopologicalGroup (ContinuousMonoidHom A circle))
-
--- Porting note: instance is now noncomputable
-noncomputable instance : Inhabited (PontryaginDual A) :=
-  (inferInstance : Inhabited (ContinuousMonoidHom A circle))
-
-variable {A B C D E}
+variable {A B C G}
 
 namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-instance : FunLike (PontryaginDual A) A circle :=
-  ContinuousMonoidHom.funLike
+instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ* Circle))
 
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
-  ContinuousMonoidHom.ContinuousMonoidHomClass
+deriving instance
+  T2Space, IsTopologicalGroup,
+  Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
+  [DiscreteTopology A] → CompactSpace _
+for PontryaginDual A
+
+@[ext]
+theorem ext {ψ φ : PontryaginDual A} (h : ∀ a, ψ a = φ a) : ψ = φ :=
+  DFunLike.ext _ _ h
+
+@[simp]
+theorem one_apply (a : A) : (1 : PontryaginDual A) a = 1 :=
+  rfl
+
+/-- A discrete monoid has compact Pontryagin dual. -/
+add_decl_doc instLocallyCompactSpacePontryaginDual
+
+/-- A compact monoid has discrete Pontryagin dual. -/
+instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
+  let V : Set (PontryaginDual A) := {ψ | Set.MapsTo ψ Set.univ (Circle.centeredArc (π / 2))}
+  have hVopen : IsOpen V := by
+    dsimp only [V]
+    exact isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo isCompact_univ
+      (Circle.isOpen_centeredArc (π / 2)))
+  have hVeq : V = ({1} : Set (PontryaginDual A)) := by
+    ext ψ
+    rw [Set.mem_singleton_iff]
+    refine ⟨fun hψ ↦ ?_, ?_⟩
+    · ext1 a
+      refine Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n hn ↦ ?_
+      simpa using hψ (Set.mem_univ (a ^ n))
+    · rintro rfl _ _
+      rw [Circle.mem_centeredArc (by linarith [pi_pos])]
+      simp [pi_pos]
+  exact discreteTopology_of_isOpen_singleton_one (by simpa [hVeq] using hVopen)
+
+instance [DiscreteTopology A] [CompactSpace A] : Finite (PontryaginDual A) :=
+  finite_of_compact_of_discrete
+
+noncomputable instance [DiscreteTopology A] [CompactSpace A] : Fintype (PontryaginDual A) :=
+  .ofFinite _
 
 /-- `PontryaginDual` is a contravariant functor. -/
-noncomputable def map (f : ContinuousMonoidHom A B) :
-    ContinuousMonoidHom (PontryaginDual B) (PontryaginDual A) :=
-  f.compLeft circle
-#align pontryagin_dual.map PontryaginDual.map
+def map (f : A →ₜ* B) :
+    (PontryaginDual B) →ₜ* (PontryaginDual A) :=
+  f.compLeft Circle
 
 @[simp]
-theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
+theorem map_apply (f : A →ₜ* B) (x : PontryaginDual B) (y : A) :
     map f x y = x (f y) :=
   rfl
-#align pontryagin_dual.map_apply PontryaginDual.map_apply
 
 @[simp]
-theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
-  ext fun x => ext (fun _y => OneHomClass.map_one x)
-#align pontryagin_dual.map_one PontryaginDual.map_one
+theorem map_one : map (1 : A →ₜ* B) = 1 :=
+  ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun _y => OneHomClass.map_one x
 
 @[simp]
-theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
+theorem map_comp (g : B →ₜ* C) (f : A →ₜ* B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
-  ext fun _x => ext fun _y => rfl
-#align pontryagin_dual.map_comp PontryaginDual.map_comp
+  ContinuousMonoidHom.ext fun _x => PontryaginDual.ext fun _y => rfl
 
 @[simp]
-nonrec theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
-  ext fun x => ext fun y => map_mul x (f y) (g y)
-#align pontryagin_dual.map_mul PontryaginDual.map_mul
+nonrec theorem map_mul (f g : A →ₜ* G) : map (f * g) = map f * map g :=
+  ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun y => map_mul x (f y) (g y)
 
-variable (A B C D E)
+variable (A B C G)
 
 /-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
-noncomputable def mapHom [LocallyCompactSpace E] :
-    ContinuousMonoidHom (ContinuousMonoidHom A E)
-      (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
+def mapHom [LocallyCompactSpace G] :
+    (A →ₜ* G) →ₜ* ((PontryaginDual G) →ₜ* (PontryaginDual A)) where
   toFun := map
   map_one' := map_one
   map_mul' := map_mul
   continuous_toFun := continuous_of_continuous_uncurry _ continuous_comp
-#align pontryagin_dual.map_hom PontryaginDual.mapHom
 
 end PontryaginDual

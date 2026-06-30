@@ -3,8 +3,11 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Logic.Equiv.Defs
+module
+
+public meta import Mathlib.Lean.Expr.Basic
+public import Mathlib.Logic.Equiv.Defs
+public meta import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Associativity of products
@@ -17,11 +20,13 @@ For example,
 gives the "obvious" equivalence between `(α × β) × (γ × δ)` and `α × (β × γ) × δ`.
 -/
 
+public meta section
+
 namespace Lean.Expr
 
 open Lean Meta
 
-/-- A helper type to keep track of universe levels and types in iterated produts. -/
+/-- A helper type to keep track of universe levels and types in iterated products. -/
 inductive ProdTree where
   | type (tp : Expr) (l : Level)
   | prod (fst snd : ProdTree) (lfst lsnd : Level)
@@ -37,7 +42,7 @@ def ProdTree.size : ProdTree → Nat
   | type _ _ => 1
   | prod fst snd _ _ => fst.size + snd.size
 
-/-- The components of an interated product, presented as a `ProdTree`. -/
+/-- The components of an iterated product, presented as a `ProdTree`. -/
 def ProdTree.components : ProdTree → List Expr
   | type tp _ => [tp]
   | prod fst snd _ _ => fst.components ++ snd.components

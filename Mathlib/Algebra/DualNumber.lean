@@ -3,9 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.TrivSqZeroExt
+module
 
-#align_import algebra.dual_number from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
 
 /-!
 # Dual numbers
@@ -36,6 +36,8 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 * https://en.wikipedia.org/wiki/Dual_number
 -/
 
+@[expose] public section
+
 
 variable {R A B : Type*}
 
@@ -43,12 +45,10 @@ variable {R A B : Type*}
 `R[ε]` is notation for `DualNumber R`. -/
 abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
-#align dual_number DualNumber
 
 /-- The unit element $ε$ that squares to zero, with notation `ε`. -/
 def DualNumber.eps [Zero R] [One R] : DualNumber R :=
   TrivSqZeroExt.inr 1
-#align dual_number.eps DualNumber.eps
 
 @[inherit_doc]
 scoped[DualNumber] notation "ε" => DualNumber.eps
@@ -60,28 +60,28 @@ open DualNumber
 
 namespace DualNumber
 
-open TrivSqZeroExt
+open TrivSqZeroExt Algebra
 
 @[simp]
 theorem fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
-  fst_inr _ _
-#align dual_number.fst_eps DualNumber.fst_eps
+  rfl
 
 @[simp]
 theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
-  snd_inr _ _
-#align dual_number.snd_eps DualNumber.snd_eps
+  rfl
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
 @[simp]
 theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
-  TrivSqZeroExt.snd_mul _ _
-#align dual_number.snd_mul DualNumber.snd_mul
+  rfl
 
 @[simp]
 theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
   inr_mul_inr _ _ _
-#align dual_number.eps_mul_eps DualNumber.eps_mul_eps
+
+@[simp]
+lemma eps_pow_two [Semiring R] : (ε : R[ε]) ^ 2 = 0 := by
+  simp [pow_two]
 
 @[simp]
 theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
@@ -90,7 +90,6 @@ theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
 @[simp]
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
   ext (mul_zero r).symm (mul_one r).symm
-#align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
 
 /-- `ε` commutes with every element of the algebra. -/
 theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
@@ -111,16 +110,33 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
       f = g :=
   algHom_ext' hinl (by
     ext a
-    show f (inr a) = g (inr a)
-    simpa only [inr_eq_smul_eps] using DFunLike.congr_fun hinr a)
+    change f (inr a) = g (inr a)
+    simpa only [inr_eq_smul_eps] using! DFunLike.congr_fun hinr a)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
-nonrec theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
+theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
   ext
   dsimp
   simp only [one_smul, hε]
-#align dual_number.alg_hom_ext DualNumber.algHom_ext
+
+/-- A ring morphism `R[ε] →+* R'` is determined by its restriction
+on `R` and its value on `ε`. -/
+@[ext high]
+lemma ringHom_ext {R' : Type*} [CommSemiring R'] {f g : R[ε] →+* R'}
+    (h₀ : f.comp (algebraMap R R[ε]) = g.comp (algebraMap R R[ε]))
+    (hε : f ε = g ε) : f = g := by
+  letI : Algebra R R' := by
+    letI := f.toAlgebra
+    exact Algebra.compHom _ (algebraMap R R[ε])
+  let f' : R[ε] →ₐ[R] R' :=
+    { toRingHom := f
+      commutes' _ := rfl }
+  let g' : R[ε] →ₐ[R] R' :=
+    { toRingHom := g
+      commutes' r := (DFunLike.congr_fun h₀ r).symm }
+  exact congr_arg AlgHom.toRingHom (show f' = g' from algHom_ext hε)
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
 `f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of
@@ -152,7 +168,6 @@ def lift :
     right_inv := fun fg => Subtype.ext <| Prod.ext rfl <| LinearMap.ext fun x =>
       show fg.val.1 x * fg.val.2 1 = fg.val.2 x by
         rw [← fg.prop.2.1, smul_eq_mul, mul_one] }
-#align dual_number.lift DualNumber.lift
 
 theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
     lift fe a = fe.val.1 a.fst + fe.val.1 a.snd * fe.val.2 := rfl
@@ -161,17 +176,21 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
     (lift.symm F).val = (F.comp (inlAlgHom _ _ _), F ε) := rfl
 
 /-- When applied to `inl`, `DualNumber.lift` applies the map `f : A →ₐ[R] B`. -/
-@[simp] theorem lift_apply_inl (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) :
+@[simp] theorem lift_apply_inl (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) :
     lift fe (inl a : A[ε]) = fe.val.1 a := by
   rw [lift_apply_apply, fst_inl, snd_inl, map_zero, zero_mul, add_zero]
 
+@[simp] theorem lift_comp_inlHom (fe : {_fe : (A →ₐ[R] B) × B // _}) :
+    (lift fe).comp (inlAlgHom R A A) = fe.val.1 :=
+  AlgHom.ext <| lift_apply_inl fe
+
 /-- Scaling on the left is sent by `DualNumber.lift` to multiplication on the left -/
-@[simp] theorem lift_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
+@[simp] theorem lift_smul (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (a • ad) = fe.val.1 a * lift fe ad := by
   rw [← inl_mul_eq_smul, map_mul, lift_apply_inl]
 
 /-- Scaling on the right is sent by `DualNumber.lift` to multiplication on the right -/
-@[simp] theorem lift_op_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
+@[simp] theorem lift_op_smul (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (MulOpposite.op a • ad) = lift fe ad * fe.val.1 a := by
   rw [← mul_inl_eq_op_smul, map_mul, lift_apply_inl]
 
@@ -180,16 +199,32 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
     (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
     lift fe (ε : A[ε]) = fe.val.2 := by
   simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, map_one, one_mul, zero_add]
-#align dual_number.lift_apply_eps DualNumber.lift_apply_eps
 
 /-- Lifting `DualNumber.eps` itself gives the identity. -/
 @[simp]
 theorem lift_inlAlgHom_eps :
     lift ⟨(inlAlgHom _ _ _, ε), eps_mul_eps, fun _ => commute_eps_left _⟩ = AlgHom.id R A[ε] :=
   lift.apply_symm_apply <| AlgHom.id R A[ε]
-#align dual_number.lift_eps DualNumber.lift_inlAlgHom_epsₓ
 
-/-- Show DualNumber with values x and y as an "x + y*ε" string -/
+@[simp]
+theorem range_inlAlgHom_sup_adjoin_eps :
+    (inlAlgHom R A A).range ⊔ Algebra.adjoin R {ε} = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  rw [← x.inl_fst_add_inr_snd_eq, inr_eq_smul_eps, ← inl_mul_eq_smul]
+  refine add_mem ?_ (mul_mem ?_ ?_)
+  · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.fst
+  · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.snd
+  · refine le_sup_right (α := Subalgebra R _) <| subset_adjoin <| Set.mem_singleton ε
+
+@[simp]
+theorem range_lift
+    (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
+    (lift fe).range = fe.1.1.range ⊔ R[fe.1.2] := by
+  simp_rw [← Algebra.map_top, ← range_inlAlgHom_sup_adjoin_eps, Algebra.map_sup,
+    AlgHom.map_adjoin, ← AlgHom.range_comp, Set.image_singleton, lift_apply_eps, lift_comp_inlHom,
+    Algebra.map_top]
+
+/-- Show DualNumber with values x and y as an `"x + y*ε"` string -/
 instance instRepr [Repr R] : Repr (DualNumber R) where
   reprPrec f p :=
     (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|

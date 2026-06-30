@@ -1,0 +1,96 @@
+name: Bors merge/delegate follow-up
+
+# triggers the action when
+on:
+  # the PR receives a comment
+  issue_comment:
+    types: [created]
+  # the PR receives a review
+  pull_request_review:
+    # whether or not it is accompanied by a comment
+    types: [submitted]
+  # the PR receives a review comment
+  pull_request_review_comment:
+    types: [created]
+
+# This job only parses the triggering comment and emits an artifact for the
+# privileged `maintainer_bors_wf_run` workflow to consume; it never uses the
+# token to mutate the repo. Keep it read-only rather than inheriting the
+# default token permissions.
+permissions:
+  contents: read
+
+jobs:
+  bors_command_followup:
+    # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not
+    # both set simultaneously: depending on the event that triggers the PR, usually only one is set
+    env:
+      AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+      COMMENT_EVENT: ${{ github.event.comment.body }}
+      COMMENT_REVIEW: ${{ github.event.review.body }}
+      PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+    name: Detect bors merge/delegate command
+    runs-on: ubuntu-latest
+    if: >- # coarse prefilter to avoid running on irrelevant comments/reviews
+      github.repository == 'leanprover-community/mathlib4' &&
+      (github.event_name != 'issue_comment' || github.event.issue.pull_request != null) &&
+      (
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors merge') ||
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors d') ||
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors r')
+      )
+    steps:
+      - name: Find bors merge/delegate
+        id: merge_or_delegate
+        run: |
+          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+          # we strip `\r` since line endings from GitHub contain this character
+          COMMENT="${COMMENT//$'\r'/}"
+          # for debugging, we print some information
+          printf '%s' "${COMMENT}" | hexdump -cC
+          printf 'Comment:"%s"\n' "${COMMENT}"
+          # `mOrD` records which command this is ("ready-to-merge" or "delegated").
+          # It no longer drives any label: bors now manages the `ready-to-merge` and
+          # `delegated` lifecycle labels itself (see the `[labels]` table in bors.toml).
+          # It is kept only to select the Zulip emoji and to gate the
+          # awaiting-author/maintainer-merge cleanup in `maintainer_bors_wf_run.yml`.
+          m_or_d="$(printf '%s' "${COMMENT}" |
+            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
+
+          printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
+          printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
+          printf $'PR_NUMBER: \'%s\'\n' "${PR_NUMBER}"
+          printf $'%s' "${PR_NUMBER}" | hexdump -cC
+
+          printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
+          if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
+             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ] ||
+             [ "${AUTHOR}" == 'mathlib-bors[bot]' ] ||
+             [ "${AUTHOR}" == 'mathlib-triage[bot]' ]
+          then
+            printf $'bot=true\n'
+            printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
+          else
+            printf $'bot=false\n'
+            printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
+          fi
+
+      - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        name: Prepare bridge outputs
+        run: |
+          jq -n \
+            --arg bot "${{ steps.merge_or_delegate.outputs.bot }}" \
+            --arg mOrD "${{ steps.merge_or_delegate.outputs.mOrD }}" \
+            '{
+              bot: $bot,
+              mOrD: $mOrD,
+            }' > bridge-outputs.json
+
+      - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        name: Emit bridge artifact
+        uses: leanprover-community/privilege-escalation-bridge/emit@ea7d63d1c8ece92a8e89b6a6d8fda40603167a91 # v1.3.0
+        with:
+          artifact: workflow-data
+          outputs_file: bridge-outputs.json
+          include_event: minimal
+          retention_days: 5
