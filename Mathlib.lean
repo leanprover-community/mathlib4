@@ -3264,6 +3264,7 @@ public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.Presentable.Basic
 public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
+public import Mathlib.CategoryTheory.Presentable.CardinalPure
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 public import Mathlib.CategoryTheory.Presentable.Dense
 public import Mathlib.CategoryTheory.Presentable.Directed
