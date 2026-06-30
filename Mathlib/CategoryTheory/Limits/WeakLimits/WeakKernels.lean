@@ -132,8 +132,8 @@ theorem hasWeakKernel_of_hasWeakEqualizer [HasWeakEqualizer f g] : HasWeakKernel
 
 /-- If a preadditive category has all weak kernels, then it also has all weak equalizers. -/
 theorem hasWeakEqualizers_of_hasWeakKernels [HasWeakKernels C] : HasWeakEqualizers C :=
-  @hasWeakEqualizers_of_hasWeakLimit_parallelPair _ _
-  fun {_} {_} f g => hasWeakEqualizer_of_hasWeakKernel f g
+  have := fun {X Y : C} {f g : X ⟶ Y} ↦ hasWeakEqualizer_of_hasWeakKernel f g
+  hasWeakEqualizers_of_hasWeakLimit_parallelPair C
 
 end Preadditive
 
