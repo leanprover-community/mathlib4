@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.BinaryRec
-public import Mathlib.Data.Nat.DivSequence
+public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Zify

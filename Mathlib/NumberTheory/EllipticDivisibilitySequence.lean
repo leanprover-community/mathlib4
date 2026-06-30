@@ -5,7 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.Data.Nat.DivSequence
+public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
