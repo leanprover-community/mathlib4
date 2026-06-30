@@ -5,12 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Presentable.Dense
-import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Comma.LocallySmall
-import Mathlib.CategoryTheory.ObjectProperty.Comma
+public import Mathlib.CategoryTheory.Presentable.Dense
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Comma.LocallySmall
+public import Mathlib.CategoryTheory.ObjectProperty.Comma
 
 /-!
 # Comma categories are accessible
@@ -18,6 +18,8 @@ import Mathlib.CategoryTheory.ObjectProperty.Comma
 -/
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
+
+@[expose] public section
 
 namespace CategoryTheory
 
