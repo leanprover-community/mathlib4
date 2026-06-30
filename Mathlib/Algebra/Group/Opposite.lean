@@ -43,7 +43,7 @@ instance instAddCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒ�
   unop_injective.addCommSemigroup _ fun _ _ => rfl
 
 instance instAddZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
-  unop_injective.addZeroClass _ (rfl) fun _ _ => rfl
+  unop_injective.addZeroClass _ rfl fun _ _ => rfl
 
 instance instAddMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
   unop_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -56,7 +56,7 @@ instance instSubNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance instAddGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
-  unop_injective.addGroup _ (rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  unop_injective.addGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
   (fun _ _ => rfl) fun _ _ => rfl
 
 instance instAddCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
