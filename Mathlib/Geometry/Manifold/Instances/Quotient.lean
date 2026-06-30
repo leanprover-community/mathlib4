@@ -91,7 +91,7 @@ omit [ChartedSpace H M] in
 lemma general_f_eq_φρφ
     {g : G} {u : M} (hu : u ∈ e.source)
     (hu' : g • u ∈ (πinv y).target) :
-    (generalTransitionMap x y) e e' (e u) = e' (g • ((e.symm (e u)))) := by
+    generalTransitionMap x y e e' (e u) = e' (g • ((e.symm (e u)))) := by
   simp only [generalTransitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
   rw [e.left_inv hu, quotient_IsLocalHomeomorph.localInverseAt_symm,
     ← orbitRel.Quotient.quotient_smul_eq (g:=g),
@@ -173,8 +173,8 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
     refine ⟨t, is_open_t, h_in_t, ?_⟩
 
     have hfg_t := general_hfg_t (x:=x) (y:=y) (φ x) (φ y) Up' g0 (fun x hx => hx.1.2) is_open_Up'
-      (fun m ⟨_, ⟨_, _, hw⟩, hu2⟩ => by simpa [← hu2, ← hw.2] using hw.1.2)
-      (fun m ⟨_, ⟨_, _, hw⟩, hu2⟩ => by simpa [← hu2, ← hw.2] using hw.1.1)
+      (fun m ⟨_, ⟨_, _, hw⟩, hu2⟩ ↦ by simpa [← hu2, ← hw.2] using hw.1.2)
+      (fun m ⟨_, ⟨_, _, hw⟩, hu2⟩ ↦ by simpa [← hu2, ← hw.2] using hw.1.1)
 
     refine (StructureGroupoid.mem_iff_of_eqOnSource hfg_t).mp ?_
 
