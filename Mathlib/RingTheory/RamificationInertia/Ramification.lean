@@ -92,6 +92,7 @@ theorem ramificationIdx'_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
     IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
   exact Algebra.FormallyUnramified.map_maximalIdeal
 
+variable {q R} in
 theorem ramificationIdx'_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
     [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
     q.ramificationIdx' R = 1 ↔ Algebra.IsUnramifiedAt R q := by
@@ -199,6 +200,24 @@ theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
     let := Localization.AtPrime.algebraOfLiesOver q r
     apply ramificationIdx'_tower'
   · rw [ramificationIdx'_of_not_isPrime r R hr, ramificationIdx'_of_not_isPrime r S hr, mul_zero]
+
+theorem ramificationIdx'_below_dvd [r.LiesOver q] [Module.Flat S T] :
+    q.ramificationIdx' R ∣ r.ramificationIdx' R := by
+  use r.ramificationIdx' S
+  rw [← ramificationIdx'_tower]
+
+theorem ramificationIdx'_above_dvd [r.LiesOver q] [Module.Flat S T] :
+    r.ramificationIdx' S ∣ r.ramificationIdx' R := by
+  use q.ramificationIdx' R
+  rw [mul_comm, ← ramificationIdx'_tower]
+
+theorem ramificationIdx'_below_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] [Module.Flat S T] :
+    q.ramificationIdx' R ≤ r.ramificationIdx' R :=
+  Nat.le_of_dvd (r.ramificationIdx'_pos R) (q.ramificationIdx'_below_dvd r)
+
+theorem ramificationIdx'_above_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] [Module.Flat S T] :
+    r.ramificationIdx' S ≤ r.ramificationIdx' R :=
+  Nat.le_of_dvd (r.ramificationIdx'_pos R) (q.ramificationIdx'_above_dvd r)
 
 variable (R) in
 open Pointwise in

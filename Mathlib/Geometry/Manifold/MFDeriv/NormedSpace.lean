@@ -310,15 +310,18 @@ theorem MDifferentiableWithinAt.smul
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp_mdifferentiableWithinAt x
     (hf.prodMk hg)
 
+@[to_fun]
 theorem MDifferentiableAt.smul (hf : MDiffAt f x)
-    (hg : MDiffAt g x) : MDiffAt (fun p ↦ f p • g p) x :=
+    (hg : MDiffAt g x) : MDiffAt (f • g) x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp x (hf.prodMk hg)
 
+@[to_fun]
 theorem MDifferentiableOn.smul (hf : MDiff[s] f)
-    (hg : MDiff[s] g) : MDiff[s] (fun p ↦ f p • g p) :=
+    (hg : MDiff[s] g) : MDiff[s] (f • g) :=
   fun x hx ↦ (hf x hx).smul (hg x hx)
 
-theorem MDifferentiable.smul (hf : MDiff f) (hg : MDiff g) : MDiff fun p ↦ f p • g p :=
+@[to_fun]
+theorem MDifferentiable.smul (hf : MDiff f) (hg : MDiff g) : MDiff (f • g) :=
   fun x ↦ (hf x).smul (hg x)
 
 -- TODO: deprecate in favour of `mvfderiv_smul`, then delete this lemma
