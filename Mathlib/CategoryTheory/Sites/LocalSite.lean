@@ -157,17 +157,14 @@ instance (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{v, v, v', u'} A
 instance : (coconstantSheaf.{w} J A).IsRightAdjoint :=
   ⟨Γ J A, ⟨ΓCoconstantSheafAdj J A⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The global sections of the coconstant sheaf on a type are naturally isomorphic to that type. -/
-noncomputable def coconstantSheafΓNatIsoId : coconstantSheaf.{w} J A ⋙ Γ J A ≅ 𝟭 A := by
-  refine (Functor.isoWhiskerLeft _ (ΓNatIsoSheafSections J _ terminalIsTerminal)).trans ?_
-  refine NatIso.ofComponents (fun X ↦ @productUniqueIso
-    (((point J).fiber.obj (⊤_ C))) _ _ (equivShrink.{w} (⊤_ C ⟶ ⊤_ C)).symm.unique _) ?_
-  intro X Y f
-  simp only [coconstantSheaf, Point.skyscraperSheafFunctor,
-    Point.skyscraperPresheafFunctor, Functor.comp, Functor.id_obj, Functor.flip_obj_map,
-    ObjectProperty.ι_obj, ObjectProperty.ι_map, Functor.flip_map_app, piFunctor_map_app,
-    productUniqueIso_hom, Functor.id_map]
-  exact Pi.map_π _ _
+noncomputable def coconstantSheafΓNatIsoId :
+    IsLocalSite.coconstantSheaf.{w} J A ⋙ Γ J A ≅ 𝟭 A :=
+  letI : Unique (unop ((IsLocalSite.point J).fiber.op.obj (op (⊤_ C)))) :=
+    (equivShrink (⊤_ C ⟶ ⊤_ C)).symm.unique
+  (Functor.isoWhiskerLeft _ (ΓNatIsoSheafSections J _ terminalIsTerminal)) ≪≫
+    NatIso.ofComponents (fun X ↦ productUniqueIso _) (by simp [IsLocalSite.coconstantSheaf])
 
 /-- `coconstantSheaf` is fully faithful. -/
 noncomputable def fullyFaithfulCoconstantSheaf :
