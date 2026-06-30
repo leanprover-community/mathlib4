@@ -254,16 +254,12 @@ theorem mem_primaryComponent_iff_orderOf [Fact p.Prime] {g : G} :
 variable [hp : Fact p.Prime]
 
 /-- Elements of the `p`-primary component have order `p^n` for some `n`. -/
-@[to_additive
+@[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
 /-- Elements of the `p`-primary component have additive order `p^n` for some `n`. -/]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
     ∃ n : ℕ, orderOf g = p ^ n := by
   rw [← orderOf_submonoid, ← mem_primaryComponent_iff_orderOf]
   exact g.property
-
-@[deprecated (since := "2026-06-30")] alias
-    _root_.AddCommMonoid.primaryComponent.exists_orderOf_eq_prime_nsmul :=
-  AddCommMonoid.primaryComponent.exists_addOrderOf_eq_prime_nsmul
 
 /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/
 @[to_additive /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/]
