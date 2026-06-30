@@ -127,15 +127,16 @@ theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ 
   rw [one_pow, hP.dvd_iff_eq (Nat.lt_add_right 1 ha).ne', add_left_inj, pow_eq_self_iff ha] at h
   rw [h, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Fₙ = 2^(2^n)+1` is prime if `3^(2^(2^n-1)) = -1 mod Fₙ` (**Pépin's test**). -/
 lemma pepin_primality (n : ℕ) (h : 3 ^ (2 ^ (2 ^ n - 1)) = (-1 : ZMod (fermatNumber n))) :
     (fermatNumber n).Prime := by
   have := Fact.mk (two_lt_fermatNumber n)
   have key : 2 ^ n = 2 ^ n - 1 + 1 := (Nat.sub_add_cancel Nat.one_le_two_pow).symm
   apply lucas_primality (p := 2 ^ (2 ^ n) + 1) (a := 3)
-  · rw [Nat.add_sub_cancel, key, pow_succ, pow_mul, ← pow_succ, ← key, h, neg_one_sq]
+  · unfold fermatNumber at h
+    rw [Nat.add_sub_cancel, key, pow_succ, pow_mul, ← pow_succ, ← key, h, neg_one_pow_two]
   · intro p hp1 hp2
+    unfold fermatNumber at h this
     rw [Nat.add_sub_cancel, (Nat.prime_dvd_prime_iff_eq hp1 prime_two).mp (hp1.dvd_of_dvd_pow hp2),
         key, pow_succ, Nat.mul_div_cancel _ two_pos, ← pow_succ, ← key, h]
     exact neg_one_ne_one
@@ -174,8 +175,8 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
     (hpdvd : p ∣ fermatNumber n) :
     ∃ k, p = k * 2 ^ (n + 2) + 1 := by
   have : Fact p.Prime := Fact.mk hp
-  have hp2 : p ≠ 2 := by
-    exact (even_two.pow_of_ne_zero <| pow_ne_zero n two_ne_zero).add_one.ne_two_of_dvd_nat hpdvd
+  have hp2 : p ≠ 2 :=
+    (even_two.pow_of_ne_zero <| pow_ne_zero n two_ne_zero).add_one.ne_two_of_dvd_nat hpdvd
   have hp8 : p % 8 = 1 := by
     obtain ⟨k, rfl⟩ := pow_pow_add_primeFactors_one_lt hp hp2 hpdvd
     obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn
