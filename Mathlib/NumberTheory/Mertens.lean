@@ -15,6 +15,7 @@ public import Mathlib.Analysis.SpecialFunctions.Stirling
 public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.NumberTheory.Chebyshev
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Mertens theorems
@@ -547,8 +548,7 @@ theorem E₁_le : E₁ ≤ 1 := by
       := by
     convert sum_union (s₁ := {0,1,2,3,4}) (s₂ := .Ico 5 (2 * N + 5)) (by grind [disjoint_left])
     · ext; simp; lia
-    simp [e₁, prime_two, prime_three, not_prime_four]
-    ring_nf
+    norm_num [e₁]
   have : ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n = ∑ n ∈ .range N, e₁ (2 * n + 5) := by
     apply (sum_of_injOn (2 * · + 5) (by intro; grind) (by intro; grind) _ (by simp)).symm
     simp only [mem_Ico, coe_range, Set.mem_image, Set.mem_Iio, not_exists, not_and, e₁,
