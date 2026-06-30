@@ -116,7 +116,7 @@ lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
   rw [Measure.sigmaFiniteSet,
     restrict_compl_sigmaFiniteSetWRT (Measure.AbsolutelyContinuous.refl μ)]
   ext t ht
-  simp only [Measure.smul_apply, smul_eq_mul]
+  simp only [smul_apply, smul_eq_mul]
   rw [Measure.restrict_apply ht, Measure.restrict_apply ht]
   by_cases hμt : μ (t ∩ (μ.sigmaFiniteSetWRT μ)ᶜ) = 0
   · rw [hμt, toFinite_absolutelyContinuous μ hμt]

@@ -57,7 +57,7 @@ lemma withDensity_sub_of_le {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withD
     (hg : Measurable g) (hgf : g ≤ᵐ[μ] f) :
     μ.withDensity (f - g) = μ.withDensity f - μ.withDensity g := by
   ext s hs
-  rw [sub_apply hs (withDensity_mono hgf), withDensity_apply _ hs, withDensity_apply _ hs,
+  rw [Measure.sub_apply hs (withDensity_mono hgf), withDensity_apply _ hs, withDensity_apply _ hs,
     withDensity_apply _ hs, ← lintegral_sub hg _ (ae_restrict_of_ae hgf)]
   · simp
   · simp [← withDensity_apply _ hs]

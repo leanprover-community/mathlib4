@@ -47,9 +47,7 @@ def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] Oute
     (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :
     Measure α →ₗ[ℝ≥0∞] Measure β where
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
-  map_add' μ₁ μ₂ := ext fun s hs => by
-    simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
-      FunLike.coe_add, hs]
+  map_add' μ₁ μ₂ := ext fun s hs => by simp [hs]
   map_smul' c μ := ext fun s hs => by
     simp only [map_smulₛₗ, Pi.smul_apply, toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞),
       FunLike.coe_smul, smul_apply, hs]

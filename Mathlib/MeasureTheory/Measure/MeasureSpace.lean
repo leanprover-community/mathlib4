@@ -865,9 +865,10 @@ instance instZero {_ : MeasurableSpace α} : Zero (Measure α) :=
 theorem zero_toOuterMeasure {_m : MeasurableSpace α} : (0 : Measure α).toOuterMeasure = 0 :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_zero {_m : MeasurableSpace α} : ⇑(0 : Measure α) = 0 :=
-  rfl
+instance : IsZeroApply (Measure α) (Set α) ℝ≥0∞ where
+  zero_apply _ := rfl
+
+@[deprecated (since := "2026-06-20")] alias coe_zero := FunLike.coe_zero
 
 @[simp] lemma _root_.MeasureTheory.OuterMeasure.toMeasure_zero
     [ms : MeasurableSpace α] (h : ms ≤ (0 : OuterMeasure α).caratheodory) :
@@ -907,18 +908,17 @@ instance instAdd {_ : MeasurableSpace α} : Add (Measure α) :=
           rw [ENNReal.tsum_add, measure_iUnion hd hs, measure_iUnion hd hs]
       trim_le := by rw [OuterMeasure.trim_add, μ₁.trimmed, μ₂.trimmed] }⟩
 
+instance : IsAddApply (Measure α) (Set α) ℝ≥0∞ where
+  add_apply _ _ _ := rfl
+
 @[simp]
 theorem add_toOuterMeasure {_m : MeasurableSpace α} (μ₁ μ₂ : Measure α) :
     (μ₁ + μ₂).toOuterMeasure = μ₁.toOuterMeasure + μ₂.toOuterMeasure :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_add {_m : MeasurableSpace α} (μ₁ μ₂ : Measure α) : ⇑(μ₁ + μ₂) = μ₁ + μ₂ :=
-  rfl
+@[deprecated (since := "2026-06-20")] alias coe_add := FunLike.coe_add
 
-theorem add_apply {_m : MeasurableSpace α} (μ₁ μ₂ : Measure α) (s : Set α) :
-    (μ₁ + μ₂) s = μ₁ s + μ₂ s :=
-  rfl
+@[deprecated (since := "2026-06-20")] protected alias add_apply := add_apply
 
 section SMul
 
@@ -933,34 +933,29 @@ instance instSMul {_ : MeasurableSpace α} : SMul R (Measure α) :=
           measure_iUnion hd hs]
       trim_le := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 
+instance : IsSMulApply R (Measure α) (Set α) ℝ≥0∞ where
+  smul_apply _ _ _ := rfl
+
 @[simp]
 theorem smul_toOuterMeasure {_m : MeasurableSpace α} (c : R) (μ : Measure α) :
     (c • μ).toOuterMeasure = c • μ.toOuterMeasure :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_smul {_m : MeasurableSpace α} (c : R) (μ : Measure α) : ⇑(c • μ) = c • ⇑μ :=
-  rfl
+@[deprecated (since := "2026-06-20")] alias coe_smul := FunLike.coe_smul
 
 @[simp]
 lemma coe_nnreal_smul (c : ℝ≥0) (μ : Measure α) : (c : ℝ≥0∞) • μ = c • μ := rfl
 
-@[simp]
-theorem smul_apply {_m : MeasurableSpace α} (c : R) (μ : Measure α) (s : Set α) :
-    (c • μ) s = c • μ s :=
-  rfl
+@[deprecated (since := "2026-06-20")] protected alias smul_apply := smul_apply
 
 instance instSMulCommClass [SMulCommClass R R' ℝ≥0∞] {_ : MeasurableSpace α} :
-    SMulCommClass R R' (Measure α) :=
-  ⟨fun _ _ _ => ext fun _ _ => smul_comm _ _ _⟩
+    SMulCommClass R R' (Measure α) := FunLike.smulCommClass
 
 instance instIsScalarTower [SMul R R'] [IsScalarTower R R' ℝ≥0∞] {_ : MeasurableSpace α} :
-    IsScalarTower R R' (Measure α) :=
-  ⟨fun _ _ _ => ext fun _ _ => smul_assoc _ _ _⟩
+    IsScalarTower R R' (Measure α) := FunLike.isScalarTower
 
 instance instIsCentralScalar [SMul Rᵐᵒᵖ ℝ≥0∞] [IsCentralScalar R ℝ≥0∞] {_ : MeasurableSpace α} :
-    IsCentralScalar R (Measure α) :=
-  ⟨fun _ _ => ext fun _ _ => op_smul_eq_smul _ _⟩
+    IsCentralScalar R (Measure α) := FunLike.isCentralScalar
 
 end SMul
 
@@ -972,39 +967,31 @@ instance instAddCommMonoid {_ : MeasurableSpace α} : AddCommMonoid (Measure α)
   toOuterMeasure_injective.addCommMonoid toOuterMeasure zero_toOuterMeasure add_toOuterMeasure
     fun _ _ => smul_toOuterMeasure _ _
 
-/-- Coercion to function as an additive monoid homomorphism. -/
-def coeAddHom {_ : MeasurableSpace α} : Measure α →+ Set α → ℝ≥0∞ where
-  toFun := (⇑)
-  map_zero' := coe_zero
-  map_add' := coe_add
+@[deprecated (since := "2026-06-20")] alias coeAddHom := FunLike.coeAddMonoidHom
 
-@[simp]
-theorem coeAddHom_apply {_ : MeasurableSpace α} (μ : Measure α) : coeAddHom μ = ⇑μ := rfl
+@[deprecated (since := "2026-06-20")] alias coeAddHom_apply := FunLike.coeAddMonoidHom_apply
 
-@[simp]
-theorem coe_finsetSum {_m : MeasurableSpace α} (I : Finset ι) (μ : ι → Measure α) :
-    ⇑(∑ i ∈ I, μ i) = ∑ i ∈ I, ⇑(μ i) := map_sum coeAddHom μ I
+@[deprecated (since := "2026-06-20")] alias coe_finsetSum := FunLike.coe_sum
 
 @[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
 
-theorem finsetSum_apply {m : MeasurableSpace α} (I : Finset ι) (μ : ι → Measure α) (s : Set α) :
-    (∑ i ∈ I, μ i) s = ∑ i ∈ I, μ i s := by rw [coe_finsetSum, Finset.sum_apply]
+@[deprecated (since := "2026-06-20")] alias finsetSum_apply := sum_apply
 
 @[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
 
 instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    {_ : MeasurableSpace α} : DistribMulAction R (Measure α) :=
+    {_ : MeasurableSpace α} : DistribMulAction R (Measure α) := fast_instance%
   Injective.distribMulAction ⟨⟨toOuterMeasure, zero_toOuterMeasure⟩, add_toOuterMeasure⟩
     toOuterMeasure_injective smul_toOuterMeasure
 
 instance instModule [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    {_ : MeasurableSpace α} : Module R (Measure α) :=
+    {_ : MeasurableSpace α} : Module R (Measure α) := fast_instance%
   Injective.module R ⟨⟨toOuterMeasure, zero_toOuterMeasure⟩, add_toOuterMeasure⟩
     toOuterMeasure_injective smul_toOuterMeasure
 
 instance instModuleIsTorsionFree [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [Module.IsTorsionFree R ℝ≥0∞] : Module.IsTorsionFree R (Measure α) :=
-  DFunLike.coe_injective.moduleIsTorsionFree _ (by simp)
+  DFunLike.coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
 @[simp] lemma ennreal_smul_eq_zero {c : ℝ≥0∞} {μ : Measure α} : c • μ = 0 ↔ c = 0 ∨ μ = 0 := by
   simp [Measure.ext_iff', forall_or_left]
@@ -1067,7 +1054,7 @@ theorem measure_toMeasurable_add_inter_left {s t : Set α} (hs : MeasurableSet s
       measure_eq_left_of_subset_of_measure_add_eq ?_ (subset_toMeasurable _ _)
         (measure_toMeasurable t).symm
     rwa [measure_toMeasurable t]
-  · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at ht
+  · simp only [not_or, ENNReal.add_eq_top, add_apply, Ne] at ht
     exact ht.1
 
 theorem measure_toMeasurable_add_inter_right {s t : Set α} (hs : MeasurableSet s)
@@ -1379,7 +1366,7 @@ theorem ae_sum_iff' {μ : ι → Measure α} {p : α → Prop} (h : MeasurableSe
 @[simp]
 theorem sum_fintype [Fintype ι] (μ : ι → Measure α) : sum μ = ∑ i, μ i := by
   ext1 s hs
-  simp only [sum_apply, finsetSum_apply, hs, tsum_fintype]
+  simp [hs]
 
 theorem sum_coe_finset (s : Finset ι) (μ : ι → Measure α) :
     (sum fun i : s => μ i) = ∑ i ∈ s, μ i := by rw [sum_fintype, Finset.sum_coe_sort s μ]

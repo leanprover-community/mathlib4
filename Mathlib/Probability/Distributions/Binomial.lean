@@ -139,7 +139,7 @@ lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) • dirac k := by
   refine ext_of_singleton fun k ↦ ?_
-  rw [binomial_singleton, finsetSum_apply, Finset.sum_eq_single k]
+  rw [binomial_singleton, _root_.sum_apply, Finset.sum_eq_single k]
   · simp
   · simp_all
   · simp_all [Nat.choose_eq_zero_of_lt]
