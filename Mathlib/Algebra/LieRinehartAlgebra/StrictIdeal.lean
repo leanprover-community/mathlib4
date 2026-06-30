@@ -10,13 +10,13 @@ public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
 /-!
 # Lie-Rinehart ideals
 
-/-- A strict Lie-Rinehart Ideal of a Lie-Rinehart algebra `(R A L)` is an `A`-submodule of `L`,
+A strict Lie-Rinehart Ideal of a Lie-Rinehart algebra `(R A L)` is an `A`-submodule of `L`,
 which is a Lie ideal with respect to the Lie bracket and whose action on `A` is trivial.
-(This can be defined independently of `R` and most Lie-Rinehart algebra axioms). -/
+(This can be defined independently of `R` and most Lie-Rinehart algebra axioms).
 
 ## Main definitions/ statements:
 
-* `StrictLieRinehartIdeal` as an `A`-submodule of `L` forming an ideal  under the Lie bracket, and
+* `StrictLieRinehartIdeal` as an `A`-submodule of `L` forming an ideal under the Lie bracket, and
 acting trivially on `A.
 
 * The inverse image of an ideal under a Lie-Rinehart algebra homomorphism over

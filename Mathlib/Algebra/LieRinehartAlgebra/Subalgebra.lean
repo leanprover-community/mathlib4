@@ -60,7 +60,7 @@ instance : SetLike (LieRinehartSubalgebra A L) L where
 
 instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L) L
 
-instance : Top  (LieRinehartSubalgebra A L) := ⟨{ (⊤ : Submodule A L) with
+instance : Top (LieRinehartSubalgebra A L) := ⟨{ (⊤ : Submodule A L) with
       lie_mem' {_ _} _ _ := by aesop }⟩
 
 @[simp]
