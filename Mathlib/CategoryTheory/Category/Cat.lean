@@ -31,8 +31,8 @@ namespace CategoryTheory
 open Bicategory Functor
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- Category of categories. -/
-@[nolint checkUnivs]
 def Cat :=
   Bundled Category.{v, u}
 
