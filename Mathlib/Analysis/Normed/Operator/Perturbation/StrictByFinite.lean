@@ -328,14 +328,10 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
   let Φ : (F ⧸ A) ≃L[𝕜] S := A.quotientEquivOfIsTopCompl S A_compl_S
   let i : S →L[𝕜] F := S.subtypeL
   have i_clemb : IsClosedEmbedding i := S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed
-  let p : F →L[𝕜] F := S.projectionL A A_compl_S.symm
+  set p : F →L[𝕜] F := S.projectionL A A_compl_S.symm with p_def
   have eq : i ∘ Φ ∘ A.mkQ = p := rfl
-  -- TODO: The following should be extracted to API about `≈`.
-  have : .id ≈ p.toLinearMap := by
-    simp [equiv_iff_hasFiniteRange, p, ← projection_eq_id_sub_projection, LinearMap.HasFiniteRange,
-      fg_iff_finiteDimensional, dim_A]
   have : u.toLinearMap ≈ (p ∘L u).toLinearMap := by
-    grw [toLinearMap_comp, ← this, LinearMap.id_comp]
+    grw [toLinearMap_comp, p_def, toLinearMap_projectionL, projection_equiv_id, LinearMap.id_comp]
   calc  IsStrictMap u ∧ IsClosed (range u)
     _ ↔ (IsStrictMap (p ∘ u) ∧ IsClosed (range (p ∘ u))) :=
           ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid _ _ this
@@ -344,7 +340,8 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
     _ ↔ (IsStrictMap (Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (Φ ∘ A.mkQ ∘ u))) := by
           rw [i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp]
     _ ↔ (IsStrictMap (A.mkQ ∘ u) ∧ IsClosed (range (A.mkQ ∘ u))) := by
-          rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
-              ← range_comp, Φ.coe_toHomeomorph]
+          rw [Φ.isHomeomorph.isEmbedding.isStrictMap_iff,
+            Φ.isHomeomorph.isClosedEmbedding.isClosed_iff_image_isClosed,
+            ← range_comp]
 
 end FiniteDimQuotient
