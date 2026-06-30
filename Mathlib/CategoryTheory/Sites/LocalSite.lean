@@ -12,7 +12,8 @@ public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 
 /-!
 # Local sites
-A site (C,J) is called local if it has a terminal object whose only covering sieve is trivial -
+
+A site is called local if it has a terminal object whose only covering sieve is trivial -
 this makes it possible to define coconstant sheaves on it, giving its sheaf topos the structure
 of a local topos. This makes them an important stepping stone to cohesive sites.
 
@@ -23,11 +24,12 @@ has a fully faithful right adjoint), and a subcanonical site is local if and onl
 sheaves of types is.
 
 ## Main definitions / results
-* `J.IsLocalSite`: typeclass stating that (C,J) is a local site.
+
+* `J.IsLocalSite`: typeclass stating that `J` makes the category it is defined on into a local site.
 * `IsLocalSite.point J`: the canonical point of any local site, whose fibre functor is given by
   the coyoneda embedding of the terminal object and extends to the global sections functors on
   presheaves and sheaves.
-* `coconstantSheaf J A`: the coconstant sheaf functor `A ⥤ Sheaf J A` for any local site (C,J) and
+* `coconstantSheaf J A`: the coconstant sheaf functor `A ⥤ Sheaf J A` for any local site and
   sufficiently nice target category `A`, defined as the skyscraper sheaf functor of the canonical
   point.
 * `ΓCoconstantSheafAdj J A`: the adjunction between the global sections functor `Γ J A` and
@@ -35,8 +37,11 @@ sheaves of types is.
 * `fullyFaithfulCoconstantSheaf`: `coconstantSheaf` is fully faithful.
 * `fullyFaithfulConstantSheaf`: on local sites, the constant sheaf functor is fully faithful.
 
-All together this shows that for local sites `Sheaf J (Type max u v w)` forms a local topos, but
-since we don't yet have local topoi this can't be stated yet.
+## TODO
+
+* Define local topoi and prove that sheaves on any local site form a local topos
+* Show that a subcanonical site is local if and only if its global sections functor has a fully
+  faithful right adjoint
 -/
 
 universe w u v u' v'
