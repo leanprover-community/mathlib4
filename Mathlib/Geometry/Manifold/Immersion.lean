@@ -439,8 +439,9 @@ theorem contMDiffAt (h : IsImmersionAtOfComplement F I J n f x) : CMDiffAt n f x
 -- (possibly under additional hypotheses on `𝕜`). The next lemma may be golfed accordingly in the
 -- future.
 /-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
-lemma comp_diffeomorph [IsManifold J n N]
-    (h : IsImmersionAtOfComplement F I J n f x) (Φ : Diffeomorph J J N N n) :
+lemma comp_diffeomorph
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    (h : IsImmersionAtOfComplement F I J n f x) (Φ : Diffeomorph J J N N' n) :
     IsImmersionAtOfComplement F I J n (Φ ∘ f) x := by
   -- XXX: right now, `fun_prop` does not prove this (even with added tagging): investigate!
   apply mk_of_continuousAt (Φ.continuous.continuousAt.comp h.continuousAt)
@@ -641,8 +642,9 @@ theorem contMDiffAt (h : IsImmersionAt I J n f x) : CMDiffAt n f x :=
   h.isImmersionAtOfComplement_complement.contMDiffAt
 
 /-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
-lemma comp_diffeomorph [IsManifold J n N]
-    (h : IsImmersionAt I J n f x) (Φ : Diffeomorph J J N N n) :
+lemma comp_diffeomorph
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    (h : IsImmersionAt I J n f x) (Φ : Diffeomorph J J N N' n) :
     IsImmersionAt I J n (Φ ∘ f) x := by
   use h.complement, by infer_instance, by infer_instance
   exact h.isImmersionAtOfComplement_complement.comp_diffeomorph Φ
@@ -747,8 +749,9 @@ protected lemma _root_.ModelWithCorners.isImmersionOfComplement {n : ℕ} :
   fun _ ↦ I.isImmersionAtOfComplement
 
 /-- Post-composing an immersion with a diffeomorphism still yields an immersion. -/
-lemma comp_diffeomorph [IsManifold J n N]
-    (h : IsImmersionOfComplement F I J n f) (Φ : Diffeomorph J J N N n) :
+lemma comp_diffeomorph
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    (h : IsImmersionOfComplement F I J n f) (Φ : Diffeomorph J J N N' n) :
     IsImmersionOfComplement F I J n (Φ ∘ f) :=
   fun x ↦ (h x).comp_diffeomorph Φ
 
@@ -865,8 +868,9 @@ theorem contMDiff
   h.isImmersionOfComplement_complement.contMDiff
 
 /-- Post-composing an immersion with a diffeomorphism still yields an immersion. -/
-lemma comp_diffeomorph [IsManifold J n N]
-    (h : IsImmersion I J n f) (Φ : Diffeomorph J J N N n) :
+lemma comp_diffeomorph
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    (h : IsImmersion I J n f) (Φ : Diffeomorph J J N N' n) :
     IsImmersion I J n (Φ ∘ f) := by
   use h.complement, by infer_instance, by infer_instance
   exact h.isImmersionOfComplement_complement.comp_diffeomorph Φ
