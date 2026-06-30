@@ -5,7 +5,6 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 module
 
---public import Mathlib.Probability.Decision.AuxLemmas
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Kernel.Posterior
 
@@ -163,20 +162,6 @@ lemma bayesRisk_eq (hl : Measurable (Function.uncurry ℓ)) (h : HasArgminEstima
     bayesRisk ℓ P π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) := by
   rw [← h.isArgminEstimator_argminEstimator.isBayesEstimator hl,
     h.isArgminEstimator_argminEstimator.avgRisk_eq_lintegral_iInf hl]
-
--- /-- If the set of labels `𝓨` is finite, the estimation problem admits an argmin estimator. -/
--- lemma hasArgminEstimator_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
---     (hl : Measurable (Function.uncurry ℓ)) :
---     HasArgminEstimator ℓ P π where
---   exists_isArgminEstimator := by
---     classical
---     have : Encodable 𝓨 := Encodable.ofCountable 𝓨
---     have h_meas y : Measurable (fun x ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) :=
---       (Measure.measurable_lintegral (by fun_prop)).comp (by fun_prop)
---     refine ⟨measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x),
---       measurable_measurableArgmin h_meas, ae_of_all _ fun x ↦ ?_⟩
---     have h := isMinOn_measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) x
---     exact le_antisymm (by simpa using h) (iInf_le _ _)
 
 end HasArgminEstimator
 
