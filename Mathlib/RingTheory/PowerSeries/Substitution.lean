@@ -386,7 +386,7 @@ lemma _root_.MvPowerSeries.HasSubst.trunc_lt (ha : MvPowerSeries.HasSubst a) (hx
     MvPowerSeries.HasSubst (fun i => (PowerSeries.trunc (x i) (a i) : PowerSeries R)) where
   const_coeff s := by
     rw [← constantCoeff_eq, Polynomial.constantCoeff_coe, coeff_trunc, if_pos (by linarith [hx s])]
-    simpa using ha.const_coeff s
+    simp [ha.const_coeff s, constantCoeff]
   coeff_zero d :=
     Set.Finite.subset (ha.coeff_zero d) fun s hs => by
       by_contra! hc

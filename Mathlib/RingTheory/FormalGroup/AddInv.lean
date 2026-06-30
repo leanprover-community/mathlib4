@@ -219,9 +219,6 @@ theorem add_neg_cancel (f : F.Point σ) : f + (-f) = 0 := by
       rw [subst_addInv_eq_zero]; ext n
       simp [← coe_substAlgHom f.prop]
 
-instance : AddSemigroup (F.Point σ) where
-  add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
-
 instance : AddGroup (F.Point σ) where
   nsmul := nsmulRec
   zsmul := zsmulRec
