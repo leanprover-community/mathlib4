@@ -23,7 +23,7 @@ such vector-valued measures.
 * `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
 * `variation_neg`: `(-μ).variation = μ.variation`.
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
-* `ennrealVariation_eq`: if `μ : VectorMeasure X ℝ≥0∞` then `μ.ennrealVariation = μ`.
+* `ennrealVariation_eq_self`: if `μ : VectorMeasure X ℝ≥0∞` then `μ.ennrealVariation = μ`.
 
 ## References
 
