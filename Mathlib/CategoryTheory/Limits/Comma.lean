@@ -116,7 +116,7 @@ def fstSndJointlyReflectLimit {F : J ⥤ Comma L R} {c : Cone F}
   uniq s m hm := by
     ext
     · exact h₁.uniq ((fst _ _).mapCone s) _ (fun _ ↦ by simp [← hm])
-    · exact h₂.uniq ((snd _ _).mapCone s) _ (fun j ↦ by simp [← hm])
+    · exact h₂.uniq ((snd _ _).mapCone s) _ (fun _ ↦ by simp [← hm])
 
 /-- (Implementation). An auxiliary cocone which is useful in order to construct colimits
 in the comma category. -/
