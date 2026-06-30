@@ -33,7 +33,7 @@ https://arxiv.org/pdf/1706.07084
 
 -/
 
-@[expose] public section
+public section
 
 /-- A strict Lie-Rinehart Ideal of a Lie-Rinehart ring `(A L)` is an `A`-submodule of `L`,
 which is a Lie ideal with respect to the Lie bracket and acts trivially on `A`. -/

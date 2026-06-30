@@ -21,7 +21,7 @@ structure of a Lie-Rinehart algebra.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
