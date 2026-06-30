@@ -94,7 +94,7 @@ noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c�
 set_option backward.defeqAttrib.useBackward true in
 /-- Let `F : J ⥤ Comma L R`. If `R` preserves the limit of
 `F ⋙ snd _ _`, then `Comma.fst L R` and `Comma.snd L R` jointly
-reflect the colimit of `F`, i.e. if `c` is a cone for `F` which
+reflect the limit of `F`, i.e. if `c` is a cone for `F` which
 becomes a limit after applying `Comma.fst L R` and `Comma.snd L R`,
 then `c` is a limit. -/
 def fstSndJointlyReflectLimit {F : J ⥤ Comma L R} {c : Cone F}
