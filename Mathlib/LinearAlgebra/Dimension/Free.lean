@@ -193,14 +193,20 @@ def LinearEquiv.ofRankEq (cond : Module.rank R M = Module.rank R M₁) : M ≃�
 end
 
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
-theorem LinearEquiv.nonempty_equiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') ↔
+theorem Module.nonempty_equiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') ↔
     Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} (Module.rank R M') :=
   ⟨fun ⟨h⟩ => LinearEquiv.lift_rank_eq h, fun h => nonempty_linearEquiv_of_lift_rank_eq h⟩
 
+@[deprecated (since := "2026-06-30")]
+alias LinearEquiv.nonempty_equiv_iff_lift_rank_eq := Module.nonempty_equiv_iff_lift_rank_eq
+
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
-theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
+theorem Module.nonempty_equiv_iff_rank_eq :
     Nonempty (M ≃ₗ[R] M₁) ↔ Module.rank R M = Module.rank R M₁ :=
   ⟨fun ⟨h⟩ => LinearEquiv.rank_eq h, fun h => nonempty_linearEquiv_of_rank_eq h⟩
+
+@[deprecated (since := "2026-06-30")]
+alias LinearEquiv.nonempty_equiv_iff_rank_eq := Module.nonempty_equiv_iff_rank_eq
 
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 theorem FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
