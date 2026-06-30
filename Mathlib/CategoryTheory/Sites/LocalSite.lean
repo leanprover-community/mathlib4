@@ -77,14 +77,14 @@ noncomputable def IsLocalSite.point [LocallySmall.{w} C] [J.IsLocalSite] : Point
 /-- The fibre of any presheaf `P : Cᵒᵖ ⥤ A` at `IsLocalSite.point J` is just `P` evaluated at
 the terminal object. -/
 noncomputable def IsLocalSite.pointPresheafFiberIso [LocallySmall.{w} C] [J.IsLocalSite]
-    {A : Type u'} [Category.{v', u'} A] [Limits.HasColimitsOfSize.{w, w, v', u'} A] (P : Cᵒᵖ ⥤ A) :
+    {A : Type u'} [Category.{v', u'} A] [HasColimitsOfSize.{w, w, v', u'} A] (P : Cᵒᵖ ⥤ A) :
     (IsLocalSite.point J).presheafFiber.obj P ≅ P.obj (op (⊤_ C)) :=
   (colimit.isColimit _).coconePointUniqueUpToIso
     (colimitOfDiagramTerminal (Functor.Elements.isInitialOfCorepresentableBy
       <| shrinkCoyonedaCorepresentableBy <| op (⊤_ C)).op _)
 
 lemma IsLocalSite.pointPresheafFiberIso_naturality [LocallySmall.{w} C] [J.IsLocalSite]
-    {A : Type u'} [Category.{v', u'} A] [Limits.HasColimitsOfSize.{w, w, v', u'} A]
+    {A : Type u'} [Category.{v', u'} A] [HasColimitsOfSize.{w, w, v', u'} A]
     {P P' : Cᵒᵖ ⥤ A} (F : P ⟶ P') :
     (point J).presheafFiber.map F ≫ (pointPresheafFiberIso J P').hom =
       (pointPresheafFiberIso J P).hom ≫ F.app (op (⊤_ C)) := by
@@ -98,13 +98,13 @@ lemma IsLocalSite.pointPresheafFiberIso_naturality [LocallySmall.{w} C] [J.IsLoc
 /-- The presheaf fibre functor of `IsLocalSite.point J` is given by evaluation at the terminal
 object. -/
 noncomputable def IsLocalSite.pointPresheafFiberNatIso [LocallySmall.{w} C] [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [Limits.HasColimitsOfSize.{w, w, v', u'} A] :
+    (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{w, w, v', u'} A] :
     ((IsLocalSite.point J).presheafFiber : _ ⥤ A) ≅ (evaluation _ _).obj (op (⊤_ C)) :=
   NatIso.ofComponents (pointPresheafFiberIso J) fun F ↦ pointPresheafFiberIso_naturality J F
 
 /-- The sheaf fibre functor of `IsLocalSite.point J` is the global sections functor. -/
 noncomputable def IsLocalSite.pointSheafFiberIso [LocallySmall.{w} C] [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [Limits.HasColimitsOfSize.{w, w, v', u'} A]
+    (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{w, w, v', u'} A]
     [HasWeakSheafify J A] : (IsLocalSite.point J).sheafFiber ≅ Γ J A :=
   ((sheafToPresheaf J A).isoWhiskerLeft (pointPresheafFiberNatIso J A)).trans
     (ΓNatIsoSheafSections J A terminalIsTerminal).symm
@@ -118,8 +118,7 @@ Note this takes in an extra universe parameter `w` that does not appear in the o
 `A ⥤ Sheaf J A` but is required for the construction; it should always be given explicitly when
 referring to this functor, as in e.g. `coconstantSheaf.{w} J A`. -/
 noncomputable def IsLocalSite.coconstantSheaf [LocallySmall.{w} C] [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [Limits.HasColimitsOfSize.{w, w, v', u'} A]
-    [HasProducts.{w} A] : A ⥤ Sheaf J A :=
+    (A : Type u') [Category.{v', u'} A] [HasProducts.{w} A] : A ⥤ Sheaf J A :=
   (point.{w} J).skyscraperSheafFunctor
 
 /-- In particular, this construction works for sheaves of types. -/
@@ -127,7 +126,7 @@ noncomputable example [J.IsLocalSite] : Type max v w ⥤ Sheaf J (Type (max v w)
   IsLocalSite.coconstantSheaf.{max v w} J (Type max v w)
 
 variable [LocallySmall.{w} C] [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [Limits.HasColimitsOfSize.{w, w, v', u'} A]
+    (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{w, w, v', u'} A]
     [HasProducts.{w} A] [HasWeakSheafify J A]
 
 /-- On local sites, the global sections functor `Γ` is left-adjoint to the coconstant functor. -/
@@ -145,7 +144,7 @@ with colimits and products of size `v` is a left adjoint. See `IsLocalSite.ΓIsL
 version for `w`-locally small sites that can't be registered as an instance because of the extra
 universe parameter `w`. -/
 instance {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [Limits.HasColimitsOfSize.{v, v, v', u'} A]
+    (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{v, v, v', u'} A]
     [HasProducts.{v} A] [HasWeakSheafify J A] : (Γ J A).IsLeftAdjoint :=
   IsLocalSite.Γ_isLeftAdjoint.{v} J A
 
@@ -204,7 +203,7 @@ with colimits and products of size `v` is full. See `IsLocalSite.constantSheaf_f
 version for `w`-locally small sites that can't be registered as an instance because of the extra
 universe parameter `w`. -/
 instance {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [Limits.HasColimitsOfSize.{v, v, v', u'} A]
+    (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{v, v, v', u'} A]
     [HasProducts.{v} A] [HasWeakSheafify J A] : (constantSheaf J A).Full :=
   IsLocalSite.constantSheaf_full.{v} J A
 
@@ -213,7 +212,7 @@ with colimits and products of size `v` is faithful. See `IsLocalSite.constantShe
 version for `w`-locally small sites that can't be registered as an instance because of the extra
 universe parameter `w`. -/
 instance {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [Limits.HasColimitsOfSize.{v, v, v', u'} A]
+    (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{v, v, v', u'} A]
     [HasProducts.{v} A] [HasWeakSheafify J A] : (constantSheaf J A).Faithful :=
   IsLocalSite.constantSheaf_faithful.{v} J A
 
