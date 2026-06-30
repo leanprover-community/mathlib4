@@ -398,8 +398,8 @@ section ψ
 /-! ### The bivariate polynomials `ψₙ` -/
 
 /-- The bivariate `n`-division polynomials `ψₙ`. -/
-protected noncomputable def ψ (n : ℤ) : R[X][Y] :=
-  normEDS W.ψ₂ (C W.Ψ₃) (C W.preΨ₄) n
+protected noncomputable def ψ : ℤ → R[X][Y] :=
+  normEDS W.ψ₂ (C W.Ψ₃) (C W.preΨ₄)
 
 open WeierstrassCurve (Ψ ψ)
 
@@ -512,11 +512,11 @@ lemma map_preΨ₄ : (W.map f).preΨ₄ = W.preΨ₄.map f := by
 
 @[simp]
 lemma map_preΨ' (n : ℕ) : (W.map f).preΨ' n = (W.preΨ' n).map f := by
-  simp [preΨ', ← coe_mapRingHom]
+  simp [preΨ', map_preNormEDS', ← coe_mapRingHom]
 
 @[simp]
 lemma map_preΨ (n : ℤ) : (W.map f).preΨ n = (W.preΨ n).map f := by
-  simp [preΨ, ← coe_mapRingHom]
+  simp [preΨ, map_preNormEDS, ← coe_mapRingHom]
 
 @[simp]
 lemma map_ΨSq (n : ℤ) : (W.map f).ΨSq n = (W.ΨSq n).map f := by
@@ -535,7 +535,7 @@ lemma map_Φ (n : ℤ) : (W.map f).Φ n = (W.Φ n).map f := by
 @[simp]
 lemma map_ψ (n : ℤ) : (W.map f).ψ n = (W.ψ n).map (mapRingHom f) := by
   rw [← coe_mapRingHom]
-  simp [ψ]
+  simp [ψ, map_normEDS]
 
 @[simp]
 lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by
