@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

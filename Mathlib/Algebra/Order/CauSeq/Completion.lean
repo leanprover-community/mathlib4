@@ -142,7 +142,7 @@ theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun 
   simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
 
 instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
-  Function.Surjective.ring mk Quotient.mk'_surjective (by rfl) (by rfl)
+  Function.Surjective.ring mk Quotient.mk'_surjective rfl rfl
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -170,7 +170,7 @@ variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
-  Function.Surjective.commRing mk Quotient.mk'_surjective (by rfl) (by rfl)
+  Function.Surjective.commRing mk Quotient.mk'_surjective rfl rfl
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl

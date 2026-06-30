@@ -73,7 +73,7 @@ namespace ClosureOperator
 
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   map_rel f _ _ h := f.mono h
@@ -123,7 +123,7 @@ variable {α} (c : ClosureOperator α)
 theorem ext : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
   DFunLike.ext
 
-@[mono]
+@[gcongr, mono]
 theorem monotone : Monotone c :=
   c.monotone'
 
@@ -341,7 +341,7 @@ theorem ext : ∀ l₁ l₂ : LowerAdjoint u, (l₁ : α → β) = (l₂ : α �
   | ⟨l₁, _⟩, ⟨l₂, _⟩, h => by
     congr
 
-@[mono]
+@[gcongr, mono]
 theorem monotone : Monotone (u ∘ l) :=
   l.gc.monotone_u.comp l.gc.monotone_l
 
