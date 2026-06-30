@@ -97,7 +97,7 @@ instance (N₁ N₂ : M.Submodule) (hle : N₁ ≤ N₂) : Mono (homOfLE N₁ N�
   mono_of_injective fun _ ↦ Submodule.inclusion_injective (hle _)
 
 @[reassoc (attr := simp)]
-lemma homOfLE_ι (N₁ N₂ : M.Submodule) (hle : N₁ ≤ N₂) : homOfLE _ _ hle ≫ N₂.ι = N₁.ι := rfl
+lemma homOfLE_ι {N₁ N₂ : M.Submodule} (hle : N₁ ≤ N₂) : homOfLE _ _ hle ≫ N₂.ι = N₁.ι := rfl
 
 @[simps sup_obj inf_obj sSup_obj sInf_obj top_obj bot_obj]
 instance : CompleteLattice M.Submodule where
