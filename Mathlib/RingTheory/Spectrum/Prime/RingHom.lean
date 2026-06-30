@@ -117,12 +117,22 @@ section Pi
 
 variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
 
-/-- The canonical map from a disjoint union of prime spectra of commutative semirings to
-the prime spectrum of the product semiring. -/
-/- TODO: show this is always a topological embedding (even when ι is infinite)
-and is a homeomorphism when ι is finite. -/
-@[simps! asIdeal] def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
+/--
+The canonical map from a disjoint union of prime spectra of commutative semirings to
+the prime spectrum of the product semiring.
+This is always an open embedding, see `PrimeSpectrum.isOpenEmbedding_sigmaToPi` and
+a homeomorphism if `ι` is finite, see `PrimeSpectrum.sigmaHomeoPi`.
+-/
+def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
   | ⟨i, p⟩ => comap (Pi.evalRingHom R i) p
+
+@[simp]
+lemma sigmaToPi_apply (i : ι) (p : PrimeSpectrum (R i)) :
+    sigmaToPi R ⟨i, p⟩ = comap (Pi.evalRingHom R i) p :=
+  rfl
+
+@[deprecated (since := "2026-04-17")]
+alias coe_sigmaToPi_asIdeal := sigmaToPi_apply
 
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
   classical
@@ -147,7 +157,7 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
     smul_mem' := by
       rintro r _ ⟨x, rfl⟩
       refine ⟨.mk x.support fun i ↦ r i * x i, funext fun i ↦ show dite _ _ _ = _ from ?_⟩
-      simp_rw [DFinsupp.coeFnAddMonoidHom]
+      simp_rw +instances [DFinsupp.coeFnAddMonoidHom]
       refine dite_eq_left_iff.mpr fun h ↦ ?_
       rw [DFinsupp.notMem_support_iff.mp h, mul_zero] }
   have ⟨I, max, le⟩ := J.exists_le_maximal <| (Ideal.ne_top_iff_one _).mpr <| by
@@ -182,7 +192,7 @@ lemma exists_comap_evalRingHom_eq
   let h₁ : Function.Surjective (Pi.evalRingHom R i) := RingHomSurjective.is_surjective
   have h₂ : RingHom.ker (Pi.evalRingHom R i) ≤ p.asIdeal := by
     intro x hx
-    convert p.asIdeal.mul_mem_left x hi
+    convert! p.asIdeal.mul_mem_left x hi
     ext j
     by_cases hj : i = j
     · subst hj; simpa [e]
@@ -248,7 +258,7 @@ alias image_specComap_zeroLocus_eq_zeroLocus_comap := image_comap_zeroLocus_eq_z
 theorem range_comap_of_surjective (hf : Surjective f) :
     Set.range (comap f) = zeroLocus (ker f) := by
   rw [← Set.image_univ]
-  convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
+  convert! image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
   rw [zeroLocus_bot]
 
 @[deprecated (since := "2025-12-10")]

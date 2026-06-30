@@ -12,7 +12,7 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 
 In this file we introduce the notion of adjoining elements to fields.
 This isn't quite the same as adjoining elements to rings.
-For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
+For example, `K[x]` might not include `x⁻¹`.
 
 ## Notation
 
@@ -77,10 +77,10 @@ instance : CompleteLattice (IntermediateField F E) where
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₁ :=
-  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra)
+  inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra
 
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₂ :=
-  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra)
+  inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra
 
 theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl
 
@@ -91,7 +91,7 @@ instance : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
 
 instance : Unique (IntermediateField F F) :=
-  { inferInstanceAs (Inhabited (IntermediateField F F)) with
+  { (inferInstance : Inhabited (IntermediateField F F)) with
     uniq := fun _ ↦ toSubalgebra_injective <| Subsingleton.elim _ _ }
 
 theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
@@ -150,9 +150,12 @@ theorem sup_toSubfield (S T : IntermediateField F E) :
   exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
-    sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) :=
-  rfl
+theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) = ⋂ s ∈ S, ↑s :=
+  show sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) = ⋂ s ∈ S, ↑s by simp
+
+@[simp, grind =]
+theorem mem_sInf {S : Set (IntermediateField F E)} {x : E} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simpa only [Set.mem_iInter] using! Set.ext_iff.1 (coe_sInf S) x
 
 @[simp]
 theorem sInf_toSubalgebra (S : Set (IntermediateField F E)) :
@@ -167,7 +170,7 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
 @[simp]
 theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
     (sSup S).toSubfield = sSup (toSubfield '' S) := by
-  have h : toSubfield '' S = Subfield.closure '' (SetLike.coe '' S) := by
+  have h : toSubfield '' S = Subfield.closure '' SetLike.coe '' S := by
     rw [Set.image_image]
     congr! with x
     exact x.toSubfield.closure_eq.symm
@@ -200,7 +203,7 @@ theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField
 
 variable (F E)
 
-/-- The bottom intermediate_field is isomorphic to the field. -/
+/-- The bottom `IntermediateField` is isomorphic to the field. -/
 noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
   (Subalgebra.equivOfEq _ _ bot_toSubalgebra).trans (Algebra.botEquiv F E)
 
@@ -469,11 +472,7 @@ theorem restrictScalars_adjoin_of_algEquiv
     (adjoin L S).restrictScalars F = (adjoin L' S).restrictScalars F := by
   apply_fun toSubfield using (fun K K' h ↦ by
     ext x; change x ∈ K.toSubfield ↔ x ∈ K'.toSubfield; rw [h])
-  change Subfield.closure _ = Subfield.closure _
-  congr
-  ext x
-  exact ⟨fun ⟨y, h⟩ ↦ ⟨i y, by rw [← h, hi]; rfl⟩,
-    fun ⟨y, h⟩ ↦ ⟨i.symm y, by rw [← h, hi, Function.comp_apply, AlgEquiv.apply_symm_apply]⟩⟩
+  simp [hi]
 
 @[elab_as_elim]
 theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
@@ -485,7 +484,7 @@ theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
     {x} (h : x ∈ adjoin F s) : p x h :=
   Subfield.closure_induction
     (fun x hx ↦ Or.casesOn hx (fun ⟨x, hx⟩ ↦ hx ▸ algebraMap x) (mem x))
-    (by simp_rw [← (_root_.algebraMap F E).map_one]; exact algebraMap 1) add
+    (by simp_rw [← (Algebra.algebraMap F E).map_one]; exact algebraMap 1) add
     (fun x _ h ↦ by
       simp_rw [← neg_one_smul F x, Algebra.smul_def]; exact mul _ _ _ _ (algebraMap _) h) inv mul h
 
@@ -497,9 +496,9 @@ theorem adjoin_algHom_ext {s : Set E} ⦃φ₁ φ₂ : adjoin F s →ₐ[F] K⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin _ _ hx⟩ = φ₂ ⟨x, subset_adjoin _ _ hx⟩) :
     φ₁ = φ₂ :=
   AlgHom.ext fun ⟨x, hx⟩ ↦ adjoin_induction _ h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
     (fun _ _ ↦ eq_on_inv₀ _ _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
     hx
 
 theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S = adjoin F s)
@@ -566,6 +565,13 @@ theorem AdjoinSimple.coe_gen : (AdjoinSimple.gen F α : E) = α :=
 theorem AdjoinSimple.algebraMap_gen : algebraMap F⟮α⟯ E (AdjoinSimple.gen F α) = α :=
   rfl
 
+-- Note: After unfolding `AdjoinSimple.gen`, the simp lemma `coe_aeval_mk_apply`
+-- does not fire, so we have to add this.
+@[simp]
+theorem AdjoinSimple.coe_aeval_gen_apply (f : F[X]) :
+    aeval (AdjoinSimple.gen F α) f = aeval α f :=
+  Polynomial.coe_aeval_mk_apply ..
+
 theorem adjoin_simple_adjoin_simple (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮α, β⟯ :=
   adjoin_adjoin_left _ _ _
 
@@ -595,7 +601,7 @@ instance : Algebra A⟮b⟯ A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMap _)
 
 instance : IsScalarTower A⟮b⟯ A⟮(algebraMap B C) b⟯ C :=
-  IsScalarTower.of_algebraMap_eq' (by rfl)
+  IsScalarTower.of_algebraMap_eq' rfl
 
 end AdjoinSimple
 
@@ -666,6 +672,13 @@ theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h :
   choose s hs using h
   simp_rw [← hs, ← adjoin_iUnion]
   exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
+
+/-- A field is finitely generated if and only if it is finitely generated over its prime
+subfield. -/
+theorem _root_.Field.fg_iff_fg_top_bot :
+    Field.FG F ↔ (⊤ : IntermediateField (⊥ : Subfield F) F).FG := by
+  simp [Field.fg_iff, fg_def, Set.exists_finite_iff_finset,
+    ← toSubfield_inj, Subfield.algebraMap_ofSubfield, Subfield.closure_union]
 
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :

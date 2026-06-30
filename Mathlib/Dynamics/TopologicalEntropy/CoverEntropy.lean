@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Asymptotics.ExpGrowth
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
@@ -33,10 +32,10 @@ reals `[-∞, +∞]`. The consequence is that we use `ℕ∞`, `ℝ≥0∞` and 
 - `IsDynCoverOf`: property that dynamical balls centered on a subset `s` cover a subset `F`.
 - `coverMincard`: minimal cardinality of a dynamical cover. Takes values in `ℕ∞`.
 - `coverEntropyInfEntourage`/`coverEntropyEntourage`: exponential growth of `coverMincard`.
-The former is defined with a `liminf`, the later with a `limsup`. Take values in `EReal`.
+  The former is defined with a `liminf`, the later with a `limsup`. Take values in `EReal`.
 - `coverEntropyInf`/`coverEntropy`: supremum of `coverEntropyInfEntourage`/`coverEntropyEntourage`
-over all entourages (or limit as the entourages go to the diagonal). These are Bowen-Dinaburg's
-versions of the topological entropy with covers. Take values in `EReal`.
+  over all entourages (or limit as the entourages go to the diagonal). These are Bowen-Dinaburg's
+  versions of the topological entropy with covers. Take values in `EReal`.
 
 ## Implementation notes
 There are two competing definitions of topological entropy in this file: one uses a `liminf`,
@@ -48,11 +47,11 @@ using only `coverEntropy`.
 
 ## Main results
 - `IsDynCoverOf.iterate_le_pow`: given a dynamical cover at time `n`, creates dynamical covers
-at all iterates `n * m` with controlled cardinality.
+  at all iterates `n * m` with controlled cardinality.
 - `IsDynCoverOf.coverEntropyEntourage_le_log_card_div`: upper bound on `coverEntropyEntourage`
-given any dynamical cover.
+  given any dynamical cover.
 - `coverEntropyInf_eq_coverEntropy`: equality between the notions of topological entropy defined
-with a `liminf` and a `limsup`.
+  with a `liminf` and a `limsup`.
 
 ## Tags
 cover, entropy
@@ -218,6 +217,7 @@ lemma coverMincard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ coverMincard T F U n :=
   fun _ _ U_V ↦ biInf_mono fun _ h ↦ h.of_entourage_subset U_V
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynCoverOf T F U n s ∧ s.card = coverMincard T F U n := by
@@ -239,8 +239,9 @@ lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
   exact key
 
 @[simp]
-lemma coverMincard_empty : coverMincard T ∅ U n = 0 :=
-  (sInf_le (by simp [IsDynCoverOf])).antisymm (zero_le (coverMincard T ∅ U n))
+lemma coverMincard_empty : coverMincard T ∅ U n = 0 := by
+  rw [← nonpos_iff_eq_zero]
+  exact sInf_le (by simp [IsDynCoverOf])
 
 lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n = 0 ↔ F = ∅ := by
@@ -248,7 +249,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ coverMincard T F U n ↔ F.Nonempty := by
-  rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
+  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
   exact coverMincard_eq_zero_iff T F U n
 
 lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
@@ -271,7 +272,7 @@ lemma coverMincard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : coverMincard 
 lemma coverMincard_mul_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (m n : ℕ) :
     coverMincard T F (U ○ U) (m * n) ≤ coverMincard T F U m ^ n := by
   rcases F.eq_empty_or_nonempty with rfl | F_nonempty
-  · rw [coverMincard_empty]; exact zero_le _
+  · simp
   obtain rfl | hn := eq_or_ne n 0
   · rw [mul_zero, coverMincard_zero T F_nonempty (U ○ U), pow_zero]
   rcases eq_top_or_lt_top (coverMincard T F U m) with h | h
@@ -311,7 +312,7 @@ lemma nonempty_inter_of_coverMincard [U.IsSymm] {s : Finset X} (h : IsDynCoverOf
     intro y y_F
     specialize h y_F
     simp only [s.mem_coe] at h
-    simp only [s.coe_erase, mem_diff, s.mem_coe, mem_singleton_iff]
+    simp only [s.coe_erase, mem_sdiff, s.mem_coe, mem_singleton_iff]
     obtain ⟨z, z_s, hz⟩ := h
     refine ⟨z, ⟨z_s, fun z_x ↦ notMem_empty y ?_⟩, hz⟩
     rw [← ball_empt]

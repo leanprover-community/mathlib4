@@ -219,9 +219,8 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app s := ConcreteCategory.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj,
-        Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
-        (leOfHom h.unop)]
+      simp only [Functor.const_obj_map,
+        ← projRestricts_comp_projRestrict C (leOfHom h.unop)]
       rfl }
 
 /-- The isomorphism `spanFunctor hC ≅ indexFunctor hC` when `hC : IsCompact C`. -/
@@ -244,7 +243,7 @@ noncomputable
 def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
     CategoryTheory.Limits.IsLimit (spanCone hC) :=
   IsLimit.postcomposeHomEquiv (spanFunctorIsoIndexFunctor hC) _
-    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
+    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cone.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
       ext
       have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
         ext _ i; exact dif_pos i.prop
@@ -311,6 +310,7 @@ namespace Products
 instance : LinearOrder (Products I) :=
   inferInstanceAs (LinearOrder {l : List I // l.IsChain (· > ·)})
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
   simp
@@ -379,6 +379,7 @@ end GoodProducts
 
 namespace Products
 
+set_option backward.defeqAttrib.useBackward true in
 theorem eval_eq (l : Products I) (x : C) :
     l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
   change LocallyConstant.evalMonoidHom x (l.eval C) = _
@@ -390,8 +391,8 @@ theorem eval_eq (l : Products I) (x : C) :
     rintro _ ⟨i, hi, rfl⟩
     exact if_pos (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
-    push_neg at h
-    convert h with i
+    push Not at h
+    convert! h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
     simp only [ite_eq_right_iff, one_ne_zero]
 
@@ -437,7 +438,6 @@ theorem GoodProducts.span_iff_products [WellFoundedLT I] :
   suffices L l by assumption
   apply IsWellFounded.induction (· < · : Products I → Products I → Prop)
   intro l h
-  dsimp
   by_cases hl : l.isGood C
   · apply subset_span
     exact ⟨⟨l, hl⟩, rfl⟩
@@ -596,7 +596,7 @@ theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by
-  simpa only [← LocallyConstant.coe_inj] using evalFacProp C (ord I · < o) hlt
+  simpa only [← LocallyConstant.coe_inj] using! evalFacProp C (ord I · < o) hlt
 
 theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hlt : ∀ i ∈ l.val, ord I i < o₁) :
@@ -607,7 +607,7 @@ theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
 
 theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
-    (πs C o) '' (eval (π C (ord I · < o)) '' { m | m < l }) := by
+    (πs C o) '' eval (π C (ord I · < o)) '' { m | m < l } := by
   ext f
   simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m
@@ -616,7 +616,7 @@ theorem eval_πs_image {l : Products I} {o : Ordinal}
 
 theorem eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : ∀ i ∈ l.val, ord I i < o₁) : eval (π C (ord I · < o₂)) '' { m | m < l } =
-    (πs' C h) '' (eval (π C (ord I · < o₁)) '' { m | m < l }) := by
+    (πs' C h) '' eval (π C (ord I · < o₁)) '' { m | m < l } := by
   ext f
   simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m

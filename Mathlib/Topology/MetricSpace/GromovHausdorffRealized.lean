@@ -292,7 +292,7 @@ private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
 section Nonempty
 variable [Nonempty X] [Nonempty Y]
 
-/- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
+/-- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
 prove separately inequalities controlling the two terms (relying too heavily on copy-paste...) -/
 private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     (⨆ x, ⨅ y, f (inl x, inr y)) ≤ (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g := by
@@ -446,7 +446,7 @@ section Consequences
 variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y]
 
-/- Now that we have proved that the set of candidates is compact, and that `HD` is continuous,
+/-- Now that we have proved that the set of candidates is compact, and that `HD` is continuous,
 we can finally select a candidate minimizing `HD`. This will be the candidate realizing the
 optimal coupling. -/
 private theorem exists_minimizer : ∃ f ∈ candidatesB X Y, ∀ g ∈ candidatesB X Y, HD f ≤ HD g :=
@@ -471,6 +471,7 @@ set_option backward.privateInPublic.warn false in
 /-- With the optimal candidate, construct a premetric space structure on `X ⊕ Y`, on which the
 predistance is given by the candidate. Then, we will identify points at `0` predistance
 to obtain a genuine metric space. -/
+@[instance_reducible]
 def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
   dist p q := optimalGHDist X Y (p, q)
   dist_self _ := candidates_refl (optimalGHDist_mem_candidatesB X Y)
@@ -482,10 +483,7 @@ attribute [local instance] premetricOptimalGHDist
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
 def OptimalGHCoupling : Type _ :=
   @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
-
-instance : MetricSpace (OptimalGHCoupling X Y) := by
-  unfold OptimalGHCoupling
-  infer_instance
+deriving MetricSpace
 
 /-- Injection of `X` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjl (x : X) : OptimalGHCoupling X Y :=
@@ -503,6 +501,7 @@ def optimalGHInjr (y : Y) : OptimalGHCoupling X Y :=
 theorem isometry_optimalGHInjr : Isometry (optimalGHInjr X Y) :=
   Isometry.of_dist_eq fun _ _ => candidates_dist_inr (optimalGHDist_mem_candidatesB X Y) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The optimal coupling between two compact spaces `X` and `Y` is still a compact space -/
 instance compactSpace_optimalGHCoupling : CompactSpace (OptimalGHCoupling X Y) := ⟨by
   rw [← range_quotient_mk']

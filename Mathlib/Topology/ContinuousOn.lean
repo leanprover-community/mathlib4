@@ -113,9 +113,6 @@ theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : M
     Continuous (ht.restrict f s t) :=
   hf.restrict.codRestrict _
 
-@[deprecated (since := "2025-09-05")]
-alias ContinuousOn.restrict_mapsTo := ContinuousOn.mapsToRestrict
-
 theorem continuousOn_iff' :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
   have : ∀ t, IsOpen (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
@@ -186,7 +183,7 @@ theorem ContinuousOn.isOpen_inter_preimage {t : Set β}
 
 theorem ContinuousOn.isOpen_preimage {t : Set β} (h : ContinuousOn f s)
     (hs : IsOpen s) (hp : f ⁻¹' t ⊆ s) (ht : IsOpen t) : IsOpen (f ⁻¹' t) := by
-  convert (continuousOn_open_iff hs).mp h t ht
+  convert! (continuousOn_open_iff hs).mp h t ht
   rw [inter_comm, inter_eq_self_of_subset_left hp]
 
 theorem ContinuousOn.preimage_isClosed_of_isClosed {t : Set β}
@@ -216,7 +213,7 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]
-    exact forall_congr' fun t => forall_swap
+    exact forall_congr' fun t => forall_comm
 
 theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
@@ -274,32 +271,34 @@ theorem continuousWithinAt_insert_self :
 
 protected alias ⟨_, ContinuousWithinAt.insert⟩ := continuousWithinAt_insert_self
 
-/- `continuousWithinAt_insert` gives the same equivalence but at a point `y` possibly different
+/-- `continuousWithinAt_insert` gives the same equivalence but at a point `y` possibly different
 from `x`. As this requires the space to be T1, and this property is not available in this file,
 this is found in another file although it is part of the basic API for `continuousWithinAt`. -/
-
-theorem ContinuousWithinAt.diff_iff
+theorem ContinuousWithinAt.sdiff_iff
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
-  ⟨fun h => (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
-    h.mono diff_subset⟩
+  ⟨fun h => (h.union ht).mono <| by simp only [sdiff_union_self, subset_union_left], fun h =>
+    h.mono sdiff_subset⟩
 
-/-- See also `continuousWithinAt_diff_singleton` for the case of `s \ {y}`, but
+/-- See also `continuousWithinAt_sdiff_singleton` for the case of `s \ {y}`, but
 requiring `T1Space α`. -/
 @[simp]
-theorem continuousWithinAt_diff_self :
+theorem continuousWithinAt_sdiff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
-  continuousWithinAt_singleton.diff_iff
+  continuousWithinAt_singleton.sdiff_iff
+
+@[deprecated (since := "2026-06-03")]
+alias continuousWithinAt_diff_self := continuousWithinAt_sdiff_self
 
 /-- A function is continuous at a point `x` within a set `s` if `x` is not an accumulation point of
 `s`. -/
 lemma continuousWithinAt_of_not_accPt (h : ¬AccPt x (𝓟 s)) : ContinuousWithinAt f s x := by
-  rw [← continuousWithinAt_diff_self]
-  simp_all [ContinuousWithinAt, AccPt, ← nhdsWithin_inter', Set.diff_eq, Set.inter_comm]
+  rw [← continuousWithinAt_sdiff_self]
+  simp_all [ContinuousWithinAt, AccPt, ← nhdsWithin_inter', Set.sdiff_eq, Set.inter_comm]
 
 @[simp]
 theorem continuousWithinAt_compl_self :
     ContinuousWithinAt f {x}ᶜ x ↔ ContinuousAt f x := by
-  rw [compl_eq_univ_diff, continuousWithinAt_diff_self, continuousWithinAt_univ]
+  rw [compl_eq_univ_sdiff, continuousWithinAt_sdiff_self, continuousWithinAt_univ]
 
 /-- A function is continuous at a point `x` if `x` is isolated. -/
 lemma continuousAt_of_not_accPt (h : ¬AccPt x (𝓟 {x}ᶜ)) : ContinuousAt f x := by
@@ -659,7 +658,7 @@ theorem continuousOn_prod_of_discrete_left [DiscreteTopology α] {f : α × β �
 
 theorem continuousOn_prod_of_discrete_right [DiscreteTopology β] {f : α × β → γ} {s : Set (α × β)} :
     ContinuousOn f s ↔ ∀ b, ContinuousOn (f ⟨·, b⟩) {a | (a, b) ∈ s} := by
-  simp_rw [ContinuousOn, Prod.forall, continuousWithinAt_prod_of_discrete_right]; apply forall_swap
+  simp_rw [ContinuousOn, Prod.forall, continuousWithinAt_prod_of_discrete_right]; apply forall_comm
 
 /-- If a function `f a b` is such that `y ↦ f a b` is continuous for all `a`, and `a` lives in a
 discrete space, then `f` is continuous, and vice versa. -/
@@ -678,7 +677,7 @@ theorem isOpenMap_prod_of_discrete_left [DiscreteTopology α] {f : α × β → 
 
 theorem isOpenMap_prod_of_discrete_right [DiscreteTopology β] {f : α × β → γ} :
     IsOpenMap f ↔ ∀ b, IsOpenMap (f ⟨·, b⟩) := by
-  simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_swap (α := α) (β := β), nhds_prod_eq,
+  simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_comm (α := α) (β := β), nhds_prod_eq,
     nhds_discrete, prod_pure, map_map]; rfl
 
 theorem ContinuousOn.uncurry_left {f : α → β → γ} {sα : Set α} {sβ : Set β} (a : α) (ha : a ∈ sα)
@@ -879,10 +878,13 @@ theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) 
     rwa [ht.closure_eq]
 
 /-- A function is continuous on two closed sets iff it is also continuous on their union. -/
-theorem continouousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
+theorem continuousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isClosed h.right hs ht⟩
+
+@[deprecated (since := "2026-02-20")]
+alias continouousOn_union_iff_of_isClosed := continuousOn_union_iff_of_isClosed
 
 /-- If a function is continuous on two open sets, it is also continuous on their union. -/
 theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
@@ -890,10 +892,13 @@ theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (h
   union_continuousAt hs hfs fun _ hx ↦ ht.continuousOn_iff.mp hft hx
 
 /-- A function is continuous on two open sets iff it is also continuous on their union. -/
-theorem continouousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
+theorem continuousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
+
+@[deprecated (since := "2026-02-20")]
+alias continouousOn_union_iff_of_isOpen := continuousOn_union_iff_of_isOpen
 
 /-- If a function is continuous on open sets `s i`, it is continuous on their union -/
 lemma ContinuousOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set α}

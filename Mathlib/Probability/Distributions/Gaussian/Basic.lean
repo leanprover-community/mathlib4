@@ -34,7 +34,7 @@ For Gaussian distributions in `ℝ`, see the file
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Complex
 open scoped ENNReal NNReal
@@ -99,7 +99,7 @@ lemma isGaussian_map_of_measurable {E F : Type*} [TopologicalSpace E] [AddCommMo
     [Module ℝ F] {mF : MeasurableSpace F} [OpensMeasurableSpace F] {μ : Measure E}
     {L : E →L[ℝ] F} [IsGaussian μ] (hL : Measurable L) : IsGaussian (μ.map L) := by
   refine isGaussian_of_map_eq_gaussianReal fun L' ↦ ⟨μ[L' ∘L L], Var[L' ∘L L; μ].toNNReal, ?_⟩
-  rw [Measure.map_map (by fun_prop) hL, ← ContinuousLinearMap.coe_comp',
+  rw [Measure.map_map (by fun_prop) hL, ← ContinuousLinearMap.coe_comp,
     IsGaussian.map_eq_gaussianReal]
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
@@ -108,14 +108,22 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpa
 
 /-- Dirac measures are Gaussian. -/
 instance {x : E} : IsGaussian (Measure.dirac x) where
-  map_eq_gaussianReal L := by rw [Measure.map_dirac (by fun_prop)]; simp
+  map_eq_gaussianReal L := by simp
+
+omit [IsGaussian μ] in
+lemma IsGaussian.of_subsingleton [Subsingleton E] [IsProbabilityMeasure μ] :
+    IsGaussian μ := by
+  convert! instIsGaussianDirac (x := (0 : E))
+  ext s -
+  apply Subsingleton.set_cases (p := fun s ↦ μ s = _)
+  all_goals simp
 
 lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
   rw [← memLp_map_measure_iff (by fun_prop) (by fun_prop), IsGaussian.map_eq_gaussianReal L]
-  convert memLp_id_gaussianReal p.toNNReal
+  convert! memLp_id_gaussianReal p.toNNReal
   simp [hp]
 
 @[fun_prop]
@@ -163,7 +171,7 @@ theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
   refine ⟨fun h ↦ h.charFunDual_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
   ext u
   rw [charFun_map_eq_charFunDual_smul L u, h (u • L), charFun_gaussianReal]
-  simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, ofReal_mul,
+  simp only [FunLike.coe_smul', Pi.smul_apply, smul_eq_mul, ofReal_mul,
     Real.coe_toNNReal']
   congr
   · rw [integral_const_mul, integral_complex_ofReal]
