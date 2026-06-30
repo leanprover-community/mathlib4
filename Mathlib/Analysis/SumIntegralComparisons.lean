@@ -182,7 +182,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
 /-! ## Comparison of infinite sums and integrals -/
 
 /-- The partial sums of a nonnegative antitone function are bounded
-    by the integral over `(a, ∞)`. -/
+by the integral over `(a, ∞)`. -/
 lemma AntitoneOn.sum_Ico_le_integral {a b : ℕ} (hab : a ≤ b) (anti : AntitoneOn f (Icc a (b : ℝ)))
     (integrable : IntegrableOn f (Ioi (a : ℝ))) (nonneg : ∀ t ∈ Ioi (a : ℝ), 0 ≤ f t) :
     ∑ n ∈ Finset.Ico a b, f ((n + 1 : ℕ)) ≤ ∫ x in Ioi (a : ℝ), f x := by
@@ -200,7 +200,7 @@ lemma AntitoneOn.sum_range_le_integral {N : ℕ} (anti : AntitoneOn f (Icc 0 (N 
     (mod_cast integrable) (mod_cast nonneg)
 
 /-- **Integral test**: A function which is nonnegative, integrable and antitone
-  for sufficiently large `n` is summable. -/
+for sufficiently large `n` is summable. -/
 theorem AntitoneOn.summable_of_integrable_eventually {N : ℕ} (anti : AntitoneOn f (Ici (N : ℝ)))
     (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
     Summable (fun (n : ℕ) ↦ f n ) := by
