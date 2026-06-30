@@ -25,14 +25,14 @@ canonical example of a normalised elliptic divisibility sequence.
 Let `R` be a commutative ring, and let `W` be a sequence of elements in `R` indexed by `ℤ`. The
 *elliptic relator* `ER(p, q, r, s) ∈ R` associated to `W` is given for all `p, q, r, s ∈ ℤ` by
 `ER(p, q, r, s) := W(p+q+s)W(p-q)W(r+s)W(r) - W(p+r+s)W(p-r)W(q+s)W(q) + W(q+r+s)W(q-r)W(p+s)W(p)`.
-Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, s) = 0` for any
+Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, s) = 0` for all
 `p, q, r, s ∈ ℤ`. By a cyclic permutation of variables, `ER(p, q, r, s) = 0` is essentially the same
 as the symmetric elliptic relation `ERₐ(p, q, r, s) = 0`, where `ERₐ(p, q, r, s) ∈ R` is given for
 all `p, q, r, s ∈ ℤ` by `ERₐ(p, q, r, s) := Wₐ(p, q)Wₐ(r, s) - Wₐ(p, r)Wₐ(q, s) + Wₐ(p, s)Wₐ(q, r)`
 defined in terms of *elliptic atoms* `Wₐ(p, q) := W((p + q) / 2)W((p - q) / 2)` for some `p, q ∈ ℤ`.
 
-As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0) = 0` for any
-`p, q, r ∈ ℤ`. It is a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for any `k, n ∈ ℤ`,
+As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0) = 0` for all
+`p, q, r ∈ ℤ`. It is a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for all `k, n ∈ ℤ`,
 and an *elliptic divisibility sequence* (EDS) if it is a divisibility sequence that is elliptic. If
 `W` is an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be
 normalised such that `W(1) = 1`, in which case it can be characterised completely by
@@ -450,7 +450,7 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     ring1
 
 /-- The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
-`W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for any `k ∈ ℤ`.
+`W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for all `k ∈ ℤ`.
 
 This is defined in terms of `preNormEDS`. -/
 def complEDS₂ (k : ℤ) : R :=
@@ -596,7 +596,7 @@ section ComplEDS
 variable (k : ℤ)
 
 /-- The complement sequence `Wᶜ : ℤ × ℕ → R` for a normalised EDS `W : ℤ → R` that witnesses
-`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for any `k, n ∈ ℤ`.
+`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for all `k, n ∈ ℤ`.
 
 This is defined in terms of `normEDS` and agrees with `complEDS₂` when `n = 2`. -/
 def complEDS' : ℕ → R
@@ -631,7 +631,7 @@ lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
   simp [Nat.mul_add_div two_pos, add_assoc]
 
 /-- The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
-`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for any `k, n ∈ ℤ`.
+`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for all `k, n ∈ ℤ`.
 
 This extends `complEDS'` by defining its values at negative integers. -/
 def complEDS (n : ℤ) : R :=
