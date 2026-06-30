@@ -83,14 +83,14 @@ theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
   unfold Pi.hasLe Prop.le
   grind [Std.Refl]
 
-@[deprecated (since := "2026-06-23")] alias refl_iff_subrelation_eq := refl_iff_eq_le
+@[deprecated (since := "2026-06-30")] alias refl_iff_subrelation_eq := refl_iff_eq_le
 @[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_eq_le
 
 theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   unfold Pi.hasLe Prop.le
   grind [Std.Irrefl]
 
-@[deprecated (since := "2026-06-23")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
+@[deprecated (since := "2026-06-30")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
 @[deprecated (since := "2026-02-12")] alias irreflexive_iff_subrelation_ne := irrefl_iff_le_ne
 
 protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
@@ -850,8 +850,10 @@ theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d �
     | refl => exact ⟨b, hea, hcb⟩
     | single hba => exact ⟨a, hea, hcb.tail hba⟩
 
-theorem join_of_single [Std.Refl r] : r ≤ Join r :=
+theorem le_join_of_refl [Std.Refl r] : r ≤ Join r :=
   fun _ b hab ↦ ⟨b, hab, refl b⟩
+
+@[deprecated (since := "2026-06-30")] alias join_of_single := le_join_of_refl
 
 protected instance Join.symm : Std.Symm (Join r) where
   symm _ _ := fun ⟨c, hac, hcb⟩ ↦ ⟨c, hcb, hac⟩
@@ -880,22 +882,30 @@ theorem equivalence_join_reflTransGen
     Equivalence (Join (ReflTransGen r)) :=
   equivalence_join fun _ _ _ ↦ church_rosser h
 
-theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : r' ≤ r) : Join r' ≤ r :=
+theorem join_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) (h : r' ≤ r) :
+    Join r' ≤ r :=
   fun a b ⟨c, hac, hbc⟩ ↦ hr.trans (h a c hac) (hr.symm <| h b c hbc)
 
-theorem reflTransGen_of_isTrans_reflexive {r' : α → α → Prop} [Std.Refl r] [IsTrans α r]
+@[deprecated (since := "2026-06-30")] alias join_of_equivalence := join_le_of_equivalence_of_le
+
+theorem reflTransGen_le_of_le {r' : α → α → Prop} [Std.Refl r] [IsTrans α r]
     (h : r' ≤ r) : ReflTransGen r' ≤ r := by
   simpa [reflTransGen_eq_self] using ReflTransGen.mono h
 
+@[deprecated (since := "2026-06-30")]
+alias reflTransGen_of_isTrans_reflexive := reflTransGen_le_of_le
+
 @[deprecated (since := "2026-02-21")]
-alias reflTransGen_of_transitive_reflexive := reflTransGen_of_isTrans_reflexive
+alias reflTransGen_of_transitive_reflexive := reflTransGen_le_of_le
 
-@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal :=
-  reflTransGen_of_transitive_reflexive
+@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal := reflTransGen_le_of_le
 
-theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
-    (r' ≤ r) → ReflTransGen r' ≤ r :=
-  @reflTransGen_of_isTrans_reflexive _ _ _ hr.stdRefl hr.isTrans
+theorem reflTransGen_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) :
+    r' ≤ r → ReflTransGen r' ≤ r :=
+  @reflTransGen_le_of_le _ _ _ hr.stdRefl hr.isTrans
+
+@[deprecated (since := "2026-06-30")]
+alias reflTransGen_of_equivalence := reflTransGen_le_of_equivalence_of_le
 
 end Join
 
