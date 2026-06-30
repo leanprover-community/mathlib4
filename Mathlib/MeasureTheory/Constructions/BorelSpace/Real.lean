@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.MeasurableSpace.Prod
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
@@ -573,7 +573,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
   intro s hs
   simpa using mem_of_mem_nhds hs
 
-lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
+lemma tendsto_measure_Icc [NullSingletonClass μ] (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
   rw [← nhdsLT_sup_nhdsGE, tendsto_sup]
   constructor

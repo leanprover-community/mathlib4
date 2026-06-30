@@ -442,7 +442,7 @@ lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
     · simp only [coprodMk_inr, ← Scheme.Hom.comp_apply, coprod.inr_map] at hxy
       cases Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr _ _).1 ⟨y, rfl⟩ ⟨_, rfl⟩ hxy
   · rintro _ ⟨x, rfl⟩
-    exact ⟨f x, by simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]⟩
+    exact ⟨f x, by simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_inr_inr_coprodMap {X Y X' Y' : Scheme.{u}}
