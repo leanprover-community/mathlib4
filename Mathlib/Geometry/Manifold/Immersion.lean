@@ -55,6 +55,9 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.id`: the identity map is an immersion
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
+* `ModelWithCorners.isImmersion`: every model with corners is itself an immersion
+* `IsImmersionOfComplement.sumInl` and `IsImmersionOfComplement.sumInr`: given `C^n` manifolds
+  `M` and `N`, `Sum.inl : M → M ⊕ N` and `Sum.inr : N → M ⊕ N` are `C^n` immersions
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
   in the sense of `ContMDiff`.
@@ -390,6 +393,14 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
   suffices I ((chartAt H ↑y) ((chartAt H y).symm (I.symm x))) = x by simpa +contextual
   simp_all
 
+/-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
+protected lemma _root_.ModelWithCorners.isImmersionAtOfComplement {n : ℕ} {x : H} :
+    IsImmersionAtOfComplement PUnit I 𝓘(𝕜, E) n I x :=
+  Manifold.IsImmersionAtOfComplement.mk_of_continuousAt I.continuousAt
+    (.prodUnique _ _ _) (.refl _) (.refl _) (by simp) (by simp)
+    (IsManifold.subset_maximalAtlas (by simp)) (IsManifold.subset_maximalAtlas (by simp))
+    (by simp [Function.comp_def])
+
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 /-- Prefer using `IsImmersionAtOfComplement.continuousAt` instead -/
@@ -607,6 +618,12 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) 
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
+/-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
+protected lemma _root_.ModelWithCorners.isImmersionAt {n : ℕ} {x : H} :
+    IsImmersionAt I (modelWithCornersSelf 𝕜 E) n I x := by
+  use PUnit, by infer_instance, by infer_instance
+  exact I.isImmersionAtOfComplement
+
 /-- Prefer using `IsImmersionAt.continuousAt` instead -/
 theorem continuousOn (h : IsImmersionAt I J n f x) : ContinuousOn f h.domChart.source :=
   h.isImmersionAtOfComplement_complement.continuousOn
@@ -642,6 +659,7 @@ In other words, `f` is an immersion at each `x ∈ M`.
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`.
 -/
+@[expose]
 def IsImmersionOfComplement (f : M → N) : Prop := ∀ x, IsImmersionAtOfComplement F I J n f x
 
 variable (I J n) in
@@ -723,6 +741,37 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
   fun y ↦ IsImmersionAtOfComplement.of_opens s y
 
+/-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
+protected lemma _root_.ModelWithCorners.isImmersionOfComplement {n : ℕ} :
+    IsImmersionOfComplement PUnit I (modelWithCornersSelf 𝕜 E) n I :=
+  fun _ ↦ I.isImmersionAtOfComplement
+
+/-- Given `C^n` manifolds `M` and `N` over the same model `I`,
+`Sum.inl : M → M ⊕ N` is a `C^n` immersion with complement `Unit` -/
+lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M]
+    [IsManifold I n M'] : IsImmersionOfComplement Unit I I n (@Sum.inl M M') := by
+  intro x
+  apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
+    (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inl x))
+    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (Sum.inl x))
+  intro y hy
+  have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
+    rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
+  simpa
+
+/-- Given `C^n` manifolds `M` and `N` over the same model `I`,
+`Sum.inr : N → M ⊕ N` is a `C^n` immersion with complement `Unit` -/
+lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M]
+    [IsManifold I n M'] : IsImmersionOfComplement Unit I I n (@Sum.inr M M') := by
+  intro x
+  apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
+    (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inr x))
+    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (Sum.inr x))
+  intro y hy
+  have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
+    rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
+  simpa
+
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 /-- A `C^n` immersion is `C^n`. -/
@@ -797,6 +846,12 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
   exact IsImmersionOfComplement.of_opens s
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
+
+/-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
+protected lemma _root_.ModelWithCorners.isImmersion {n : ℕ} :
+    IsImmersion I (modelWithCornersSelf 𝕜 E) n I := by
+  use PUnit, by infer_instance, by infer_instance
+  exact I.isImmersionOfComplement
 
 /-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff
