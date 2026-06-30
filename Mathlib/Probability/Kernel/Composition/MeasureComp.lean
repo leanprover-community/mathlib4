@@ -112,7 +112,7 @@ lemma comp_compProd_comm {η : Kernel (α × β) γ} [SFinite μ] [IsSFiniteKern
     η ∘ₘ (μ ⊗ₘ κ) = ((κ ⊗ₖ η) ∘ₘ μ).snd := by
   by_cases hκ : IsSFiniteKernel κ; swap
   · simp [compProd_of_not_isSFiniteKernel _ _ hκ,
-      Kernel.compProd_of_not_isSFiniteKernel_left _ _ hκ]
+      Kernel.compProd_of_not_isSFiniteKernel_left _ _ hκ, FunLike.coe_zero]
   ext s hs
   rw [Measure.bind_apply hs η.aemeasurable, Measure.snd_apply hs,
     Measure.bind_apply _ (Kernel.aemeasurable _), Measure.lintegral_compProd (η.measurable_coe hs)]
@@ -148,7 +148,7 @@ lemma add_comp : (κ + η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by
 /-- Same as `add_comp` except that it uses `⇑κ + ⇑η` instead of `⇑(κ + η)` in order to have
 a simp-normal form on the left of the equality. -/
 @[simp]
-lemma add_comp' : (⇑κ + ⇑η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by rw [← Kernel.coe_add, add_comp]
+lemma add_comp' : (⇑κ + ⇑η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by rw [← FunLike.coe_add, add_comp]
 
 @[simp]
 lemma comp_smul (a : ℝ≥0∞) : κ ∘ₘ (a • μ) = a • (κ ∘ₘ μ) := by
