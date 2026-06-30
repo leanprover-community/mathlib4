@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Integral.MeanInequalities
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
 public import Mathlib.Analysis.Convex.Integral
+public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
@@ -52,8 +53,10 @@ All results require only that `f` be differentiable (not `C¹`) on the open inte
   unordered-interval variants.
 * `MeasureTheory.poincare_1d_of_exists_eq_zero`: `f` vanishes at *some* point of `[a, b]`; same
   constant `(b - a) ^ p / p`.
-* `MeasureTheory.poincare_1d_of_zero_mem_closure_convexHull`: the most general centering, requiring
-  only `0 ∈ closure (convexHull ℝ (f '' [a, b]))`, with the sharp constant `(b - a) ^ p / p`.
+* `MeasureTheory.poincare_1d_of_zero_mem_closure_convexHull`: the most general statement, on an
+  arbitrary convex set `s ⊆ ℝ` with the weakest centering `0 ∈ closure (convexHull ℝ (f '' s))` and
+  the sharp constant `(volume s) ^ p / p`. A single inequality covers every interval shape, bounded
+  or semi-infinite.
 * `MeasureTheory.poincare_1d_of_integral_eq_zero`: vector-valued `f` with zero average, with
   constant `(b - a) ^ p / p`.
 -/
@@ -315,49 +318,216 @@ theorem MeasureTheory.poincare_1d_of_exists_eq_zero {E : Type*} [NormedAddCommGr
             = ((c - a) ^ p + (b - c) ^ p) / p := by ring
           _ ≤ (b - a) ^ p / p := div_le_div_of_nonneg_right hsuper hp0.le
 
-/-- **Most general one-dimensional `Lᵖ` Poincaré inequality.** It suffices that `0` lies in the
-closure of the convex hull of the image `f '' [a, b]`. This is the weakest possible centering
-condition: it is implied both by `f` vanishing somewhere on `[a, b]` and by `f` having zero
-average, and it makes sense for an arbitrary normed space `E`. The constant is the sharp
-`(b - a) ^ p / p`, matching `poincare_1d_of_exists_eq_zero`: writing `0` as a convex combination
-`∑ wᵢ • f cᵢ` and averaging the per-point estimates `‖f x - f cᵢ‖` against the weights `wᵢ`
-recovers the `1 / p` factor, so the convex-hull hypothesis costs nothing in the constant. -/
-theorem MeasureTheory.poincare_1d_of_zero_mem_closure_convexHull {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] {a b p : ℝ} (hp : 1 ≤ p) {f : ℝ → E}
-    (hcont : ContinuousOn f (Icc a b)) (hdiff : DifferentiableOn ℝ f (Ioo a b))
-    (hmem : 0 ∈ closure (convexHull ℝ (f '' Icc a b))) :
-    ∫⁻ x in Icc a b, ‖f x‖ₑ ^ p
-      ≤ ENNReal.ofReal ((b - a) ^ p / p) * ∫⁻ x in Icc a b, ‖deriv f x‖ₑ ^ p := by
+/-- **Per-point Poincaré estimate on an open interval.** For `c ∈ (a, b)`, the shift `f - f c`
+vanishes at `c`, and the `Lᵖ` norm of `f - f c` on the open interval is controlled with the sharp
+constant `(b - a) ^ p / p`, requiring only differentiability on `(a, b)`. Exhausting `(a, b)` by
+closed subintervals containing `c` reduces this to `poincare_1d_of_exists_eq_zero`, and monotone
+convergence of the integral over the increasing union passes back to the open interval. -/
+private theorem poincare_sub_const_Ioo {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {a b p : ℝ} (hp : 1 ≤ p) {f : ℝ → E} (hdiff : DifferentiableOn ℝ f (Ioo a b))
+    {c : ℝ} (hc : c ∈ Ioo a b) :
+    ∫⁻ x in Ioo a b, ‖f x - f c‖ₑ ^ p
+      ≤ ENNReal.ofReal ((b - a) ^ p / p) * ∫⁻ x in Ioo a b, ‖deriv f x‖ₑ ^ p := by
+  obtain ⟨hac, hcb⟩ := hc
+  set M : ℝ≥0∞ := ∫⁻ x in Ioo a b, ‖deriv f x‖ₑ ^ p with hMdef
+  set A : ℕ → ℝ := fun n => a + (c - a) / ((n : ℝ) + 1) with hAdef
+  set B : ℕ → ℝ := fun n => b - (b - c) / ((n : ℝ) + 1) with hBdef
+  have hden : ∀ n : ℕ, (0 : ℝ) < (n : ℝ) + 1 := fun n => by positivity
+  have hAa : ∀ n, a < A n := fun n => by
+    have : 0 < (c - a) / ((n : ℝ) + 1) := div_pos (by linarith) (hden n)
+    simp only [hAdef]; linarith
+  have hAc : ∀ n, A n ≤ c := fun n => by
+    have : (c - a) / ((n : ℝ) + 1) ≤ c - a := by
+      rw [div_le_iff₀ (hden n)]; nlinarith [Nat.cast_nonneg (α := ℝ) n]
+    simp only [hAdef]; linarith
+  have hBb : ∀ n, B n < b := fun n => by
+    have : 0 < (b - c) / ((n : ℝ) + 1) := div_pos (by linarith) (hden n)
+    simp only [hBdef]; linarith
+  have hcB : ∀ n, c ≤ B n := fun n => by
+    have : (b - c) / ((n : ℝ) + 1) ≤ b - c := by
+      rw [div_le_iff₀ (hden n)]; nlinarith [Nat.cast_nonneg (α := ℝ) n]
+    simp only [hBdef]; linarith
+  have hsub : ∀ n, Icc (A n) (B n) ⊆ Ioo a b := fun n x hx =>
+    ⟨(hAa n).trans_le hx.1, hx.2.trans_lt (hBb n)⟩
+  have hcmem : ∀ n, c ∈ Icc (A n) (B n) := fun n => ⟨hAc n, hcB n⟩
+  -- The closed subintervals increase to the open interval.
+  have hcast : ∀ {m n : ℕ}, m ≤ n → ((m : ℝ) + 1) ≤ (n : ℝ) + 1 := fun {m n} hmn => by
+    have : (m : ℝ) ≤ (n : ℝ) := by exact_mod_cast hmn
+    linarith
+  have hAanti : Antitone A := by
+    intro m n hmn
+    have hnum : (0 : ℝ) ≤ c - a := by linarith
+    have hle := hcast hmn
+    simp only [hAdef]; gcongr
+  have hBmono : Monotone B := by
+    intro m n hmn
+    have hnum : (0 : ℝ) ≤ b - c := by linarith
+    have hle := hcast hmn
+    simp only [hBdef]
+    have : (b - c) / ((n : ℝ) + 1) ≤ (b - c) / ((m : ℝ) + 1) := by gcongr
+    linarith
+  have hmono : Monotone fun n => Icc (A n) (B n) := fun m n hmn =>
+    Icc_subset_Icc (hAanti hmn) (hBmono hmn)
+  have hunion : ⋃ n, Icc (A n) (B n) = Ioo a b := by
+    refine Set.Subset.antisymm (Set.iUnion_subset hsub) fun x hx => ?_
+    obtain ⟨hax, hxb⟩ := hx
+    obtain ⟨n, hn⟩ := exists_nat_gt (max ((c - a) / (x - a)) ((b - c) / (b - x)))
+    refine Set.mem_iUnion.2 ⟨n, ?_, ?_⟩
+    · have hxa : (0 : ℝ) < x - a := by linarith
+      have hcax : (c - a) / (x - a) < (n : ℝ) + 1 :=
+        ((le_max_left _ _).trans_lt hn).trans (by linarith)
+      have hkey : c - a < ((n : ℝ) + 1) * (x - a) := (div_lt_iff₀ hxa).1 hcax
+      simp only [hAdef]
+      have : (c - a) / ((n : ℝ) + 1) ≤ x - a := by rw [div_le_iff₀ (hden n)]; nlinarith
+      linarith
+    · have hbx : (0 : ℝ) < b - x := by linarith
+      have hbcx : (b - c) / (b - x) < (n : ℝ) + 1 :=
+        ((le_max_right _ _).trans_lt hn).trans (by linarith)
+      have hkey : b - c < ((n : ℝ) + 1) * (b - x) := (div_lt_iff₀ hbx).1 hbcx
+      simp only [hBdef]
+      have : (b - c) / ((n : ℝ) + 1) ≤ b - x := by rw [div_le_iff₀ (hden n)]; nlinarith
+      linarith
+  calc ∫⁻ x in Ioo a b, ‖f x - f c‖ₑ ^ p
+      = ∫⁻ x in ⋃ n, Icc (A n) (B n), ‖f x - f c‖ₑ ^ p := by rw [hunion]
+    _ = ⨆ n, ∫⁻ x in Icc (A n) (B n), ‖f x - f c‖ₑ ^ p :=
+        setLIntegral_iUnion_of_directed _ hmono.directed_le
+    _ ≤ ENNReal.ofReal ((b - a) ^ p / p) * M := by
+        refine iSup_le fun n => ?_
+        have hcont_n : ContinuousOn (fun y => f y - f c) (Icc (A n) (B n)) :=
+          ((hdiff.mono (hsub n)).continuousOn).sub continuousOn_const
+        have hdiff_n : DifferentiableOn ℝ (fun y => f y - f c) (Ioo (A n) (B n)) :=
+          (hdiff.mono (Ioo_subset_Icc_self.trans (hsub n))).sub (differentiableOn_const (f c))
+        refine (poincare_1d_of_exists_eq_zero hp hcont_n hdiff_n ⟨c, hcmem n, by simp⟩).trans ?_
+        have hderiv_eq : ∫⁻ x in Icc (A n) (B n), ‖deriv (fun y => f y - f c) x‖ₑ ^ p
+            = ∫⁻ x in Icc (A n) (B n), ‖deriv f x‖ₑ ^ p :=
+          lintegral_congr fun x => by rw [deriv_sub_const]
+        rw [hderiv_eq]
+        have hp0 : (0 : ℝ) < p := one_pos.trans_le hp
+        have hconst : ENNReal.ofReal ((B n - A n) ^ p / p) ≤ ENNReal.ofReal ((b - a) ^ p / p) := by
+          apply ENNReal.ofReal_le_ofReal
+          have hBA0 : 0 ≤ B n - A n := by linarith [hAc n, hcB n]
+          have hBA : B n - A n ≤ b - a := by linarith [hAa n, hBb n]
+          have hrp : (B n - A n) ^ p ≤ (b - a) ^ p := Real.rpow_le_rpow hBA0 hBA hp0.le
+          rw [div_eq_mul_inv, div_eq_mul_inv]
+          exact mul_le_mul_of_nonneg_right hrp (by positivity)
+        exact mul_le_mul' hconst (lintegral_mono_set (hsub n))
+
+/-- A nonempty bounded open convex subset of `ℝ` is the open interval between its bounds. -/
+private theorem open_convex_eq_Ioo {O : Set ℝ} (hO : IsOpen O) (hOc : Convex ℝ O)
+    (hne : O.Nonempty) (hb : BddBelow O) (ha : BddAbove O) :
+    O = Ioo (sInf O) (sSup O) := by
+  refine Set.Subset.antisymm ?_
+    (IsConnected.Ioo_csInf_csSup_subset ⟨hne, Convex.isPreconnected hOc⟩ hb ha)
+  have hsub : O ⊆ interior (Icc (sInf O) (sSup O)) :=
+    interior_maximal (subset_Icc_csInf_csSup hb ha) hO
+  rwa [interior_Icc] at hsub
+
+/-- **Per-point Poincaré estimate on an open convex set.** For an open convex `U ⊆ ℝ` and `c ∈ U`,
+the shift `f - f c` is controlled with the constant `(volume U) ^ p / p`. When `U` is a bounded
+interval this is `poincare_sub_const_Ioo`; when `U` is unbounded the constant is `⊤`, so the bound
+is automatic unless the derivative integral vanishes, in which case `f` is almost everywhere equal
+to `f c` on every bounded subinterval and hence on `U`. -/
+private theorem poincare_sub_const_open {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {p : ℝ} (hp : 1 ≤ p) {f : ℝ → E} {U : Set ℝ} (hUo : IsOpen U) (hUc : Convex ℝ U)
+    (hdiff : DifferentiableOn ℝ f U) {c : ℝ} (hcU : c ∈ U) :
+    ∫⁻ x in U, ‖f x - f c‖ₑ ^ p
+      ≤ volume U ^ p / ENNReal.ofReal p * ∫⁻ x in U, ‖deriv f x‖ₑ ^ p := by
+  have hp0 : (0 : ℝ) < p := one_pos.trans_le hp
+  by_cases hbdd : BddBelow U ∧ BddAbove U
+  · -- Bounded: `U` is an open interval and the interval estimate applies directly.
+    obtain ⟨hbb, hba⟩ := hbdd
+    set a := sInf U with hadef
+    set b := sSup U with hbdef
+    have hUeq : U = Ioo a b := open_convex_eq_Ioo hUo hUc ⟨c, hcU⟩ hbb hba
+    have hcab : c ∈ Ioo a b := hUeq ▸ hcU
+    have hpos : (0 : ℝ) ≤ b - a := by linarith [hcab.1, hcab.2]
+    have hconstU : volume U ^ p / ENNReal.ofReal p = ENNReal.ofReal ((b - a) ^ p / p) := by
+      rw [hUeq, Real.volume_Ioo, ENNReal.ofReal_rpow_of_nonneg hpos hp0.le,
+        ← ENNReal.ofReal_div_of_pos hp0]
+    rw [hconstU, hUeq]
+    exact poincare_sub_const_Ioo hp (hUeq ▸ hdiff) hcab
+  · -- Unbounded: the measure is infinite.
+    have hUtop : volume U = ⊤ := by
+      rw [not_and_or] at hbdd
+      rcases hbdd with hnb | hna
+      · have hIic : Iic c ⊆ U := fun z hz => by
+          obtain ⟨y, hyU, hyz⟩ := not_bddBelow_iff.1 hnb z
+          exact hUc.ordConnected.out hyU hcU ⟨hyz.le, hz⟩
+        exact top_le_iff.1 (Real.volume_Iic ▸ measure_mono hIic)
+      · have hIci : Ici c ⊆ U := fun z hz => by
+          obtain ⟨y, hyU, hzy⟩ := not_bddAbove_iff.1 hna z
+          exact hUc.ordConnected.out hcU hyU ⟨hz, hzy.le⟩
+        exact top_le_iff.1 (Real.volume_Ici ▸ measure_mono hIci)
+    by_cases hM : ∫⁻ x in U, ‖deriv f x‖ₑ ^ p = 0
+    · -- The derivative integral vanishes, so `f = f c` a.e. on each bounded subinterval, then
+      -- on `U`, which forces the left-hand integral to vanish too.
+      have hLHS0 : ∫⁻ x in U, ‖f x - f c‖ₑ ^ p = 0 := by
+        set J : ℕ → Set ℝ := fun n => Ioo (c - ((n : ℝ) + 1)) (c + ((n : ℝ) + 1)) ∩ U with hJdef
+        have hJsub : ∀ n, J n ⊆ U := fun n => Set.inter_subset_right
+        have hcpos : ∀ n : ℕ, (0 : ℝ) < (n : ℝ) + 1 := fun n => by positivity
+        have hcJ : ∀ n, c ∈ J n := fun n =>
+          ⟨⟨by linarith [hcpos n], by linarith [hcpos n]⟩, hcU⟩
+        have hJint : ∀ n, ∫⁻ x in J n, ‖f x - f c‖ₑ ^ p = 0 := by
+          intro n
+          have hJeq : J n = Ioo (sInf (J n)) (sSup (J n)) :=
+            open_convex_eq_Ioo (isOpen_Ioo.inter hUo) ((convex_Ioo _ _).inter hUc) ⟨c, hcJ n⟩
+              (bddBelow_Ioo.mono Set.inter_subset_left) (bddAbove_Ioo.mono Set.inter_subset_left)
+          have hcJab : c ∈ Ioo (sInf (J n)) (sSup (J n)) := hJeq ▸ hcJ n
+          have hkey := poincare_sub_const_Ioo hp (hJeq ▸ (hdiff.mono (hJsub n))) hcJab
+          rw [← hJeq] at hkey
+          have hMJ : ∫⁻ x in J n, ‖deriv f x‖ₑ ^ p = 0 :=
+            le_antisymm (hM ▸ lintegral_mono_set (hJsub n)) zero_le
+          rw [hMJ, mul_zero] at hkey
+          exact le_antisymm hkey zero_le
+        have hJmono : Monotone J := fun m n hmn => by
+          have hmn' : (m : ℝ) ≤ n := by exact_mod_cast hmn
+          simp only [hJdef]
+          exact Set.inter_subset_inter (Ioo_subset_Ioo (by linarith) (by linarith)) subset_rfl
+        have hUunion : U = ⋃ n, J n := by
+          ext x
+          simp only [hJdef, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_Ioo]
+          refine ⟨fun hxU => ?_, fun ⟨_, _, hxU⟩ => hxU⟩
+          obtain ⟨n, hn⟩ := exists_nat_gt (|x - c|)
+          have hlt : |x - c| < (n : ℝ) + 1 := by linarith
+          rw [abs_lt] at hlt
+          exact ⟨n, ⟨by linarith [hlt.1], by linarith [hlt.2]⟩, hxU⟩
+        rw [hUunion, setLIntegral_iUnion_of_directed _ hJmono.directed_le]
+        exact le_antisymm (iSup_le fun n => (hJint n).le) zero_le
+      rw [hLHS0]; exact zero_le
+    · -- The derivative integral is nonzero, so the right-hand side is `⊤`.
+      rw [hUtop, ENNReal.top_rpow_of_pos hp0,
+        ENNReal.div_eq_top.2 (Or.inr ⟨rfl, ENNReal.ofReal_ne_top⟩), ENNReal.top_mul hM]
+      exact le_top
+
+/-- **Convex-combination averaging core.** On a measurable set `D` on which `f` is continuous,
+suppose every per-point shift `f - f c` (for `c ∈ D`) satisfies `∫⁻ x in D, ‖f x - f c‖ₑ ^ p ≤ K`.
+If `0` lies in the closure of the convex hull of `f '' D`, then `∫⁻ x in D, ‖f x‖ₑ ^ p ≤ K`. This is
+the part of the Poincaré argument that turns the per-point estimates into the centred one: a
+convex-hull point is averaged against its weights via the power-mean inequality, and the closure is
+reached by Fatou. The constant `K` is whatever the per-point bound provides, so this lemma keeps the
+sharp constant intact. -/
+private theorem poincare_hull_fatou_aux {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {p : ℝ} (hp : 1 ≤ p) {f : ℝ → E} {D : Set ℝ} (hD : MeasurableSet D)
+    (hcont : ContinuousOn f D) {K : ℝ≥0∞}
+    (hperp : ∀ c ∈ D, ∫⁻ x in D, ‖f x - f c‖ₑ ^ p ≤ K)
+    (hmem : 0 ∈ closure (convexHull ℝ (f '' D))) :
+    ∫⁻ x in D, ‖f x‖ₑ ^ p ≤ K := by
   have hp0 : 0 < p := one_pos.trans_le hp
-  set M : ℝ≥0∞ := ∫⁻ x in Icc a b, ‖deriv f x‖ₑ ^ p with hMdef
-  set K : ℝ≥0∞ := ENNReal.ofReal ((b - a) ^ p / p) * M with hKdef
-  -- Measurability of `x ↦ ‖f x - v‖ₑ` and of its `p`-th power on `[a, b]`.
-  have hmeasE : ∀ v : E, AEMeasurable (fun x => ‖f x - v‖ₑ) (volume.restrict (Icc a b)) :=
+  have hmeasE : ∀ v : E, AEMeasurable (fun x => ‖f x - v‖ₑ) (volume.restrict D) :=
     fun v => (continuous_enorm.comp_aestronglyMeasurable
-      ((hcont.sub continuousOn_const).aestronglyMeasurable measurableSet_Icc)).aemeasurable
-  have hmeasP : ∀ v : E, AEMeasurable (fun x => ‖f x - v‖ₑ ^ p) (volume.restrict (Icc a b)) :=
+      ((hcont.sub continuousOn_const).aestronglyMeasurable hD)).aemeasurable
+  have hmeasP : ∀ v : E, AEMeasurable (fun x => ‖f x - v‖ₑ ^ p) (volume.restrict D) :=
     fun v => ENNReal.continuous_rpow_const.measurable.comp_aemeasurable (hmeasE v)
-  -- Per-point estimate. Shifting `f` by the constant `f c` gives a function vanishing at `c`, so
-  -- the attained-zero inequality applies and keeps the sharp constant `(b - a) ^ p / p`.
-  have perpoint : ∀ c ∈ Icc a b, ∫⁻ x in Icc a b, ‖f x - f c‖ₑ ^ p ≤ K := by
-    intro c hc
-    refine (poincare_1d_of_exists_eq_zero hp
-      (show ContinuousOn (fun y => f y - f c) (Icc a b) from hcont.sub continuousOn_const)
-      (show DifferentiableOn ℝ (fun y => f y - f c) (Ioo a b) from
-        hdiff.sub (differentiableOn_const (f c))) ⟨c, hc, by simp⟩).trans (le_of_eq ?_)
-    rw [hKdef, hMdef]
-    congr 1
-    exact lintegral_congr fun x => by rw [deriv_sub_const]
   -- Estimate at a convex-hull point `v = ∑ wᵢ • z i`: average the per-point bounds.
-  have hull : ∀ v ∈ convexHull ℝ (f '' Icc a b), ∫⁻ x in Icc a b, ‖f x - v‖ₑ ^ p ≤ K := by
+  have hull : ∀ v ∈ convexHull ℝ (f '' D), ∫⁻ x in D, ‖f x - v‖ₑ ^ p ≤ K := by
     intro v hv
     rw [convexHull_eq, Set.mem_setOf_eq] at hv
     obtain ⟨ι, t, w, z, hw0, hw1, hz, hcm⟩ := hv
     have hsum1 : ∑ i ∈ t, ENNReal.ofReal (w i) = 1 := by
       rw [← ENNReal.ofReal_sum_of_nonneg hw0, hw1, ENNReal.ofReal_one]
-    have hzbound : ∀ i ∈ t, ∫⁻ x in Icc a b, ‖f x - z i‖ₑ ^ p ≤ K := fun i hi => by
+    have hzbound : ∀ i ∈ t, ∫⁻ x in D, ‖f x - z i‖ₑ ^ p ≤ K := fun i hi => by
       obtain ⟨c, hc, hfc⟩ := hz i hi
-      rw [← hfc]; exact perpoint c hc
+      rw [← hfc]; exact hperp c hc
     have hptwise : ∀ x, ‖f x - v‖ₑ ≤ ∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ := by
       intro x
       have hvx : f x - v = ∑ i ∈ t, w i • (f x - z i) := by
@@ -368,18 +538,18 @@ theorem MeasureTheory.poincare_1d_of_zero_mem_closure_convexHull {E : Type*}
         _ ≤ ∑ i ∈ t, ‖w i • (f x - z i)‖ₑ := enorm_sum_le _ _
         _ = ∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ :=
             Finset.sum_congr rfl fun i hi => by rw [enorm_smul, Real.enorm_eq_ofReal (hw0 i hi)]
-    calc ∫⁻ x in Icc a b, ‖f x - v‖ₑ ^ p
-        ≤ ∫⁻ x in Icc a b, (∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ) ^ p :=
+    calc ∫⁻ x in D, ‖f x - v‖ₑ ^ p
+        ≤ ∫⁻ x in D, (∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ) ^ p :=
           setLIntegral_mono_ae
             (ENNReal.continuous_rpow_const.measurable.comp_aemeasurable
               (Finset.aemeasurable_fun_sum t fun i _ => (hmeasE (z i)).const_mul _))
             (.of_forall fun x _ => ENNReal.rpow_le_rpow (hptwise x) hp0.le)
-      _ ≤ ∫⁻ x in Icc a b, ∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ ^ p :=
+      _ ≤ ∫⁻ x in D, ∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ ^ p :=
           setLIntegral_mono_ae
             (Finset.aemeasurable_fun_sum t fun i _ => (hmeasP (z i)).const_mul _)
             (.of_forall fun x _ => ENNReal.rpow_arith_mean_le_arith_mean_rpow t
               (fun i => ENNReal.ofReal (w i)) (fun i => ‖f x - z i‖ₑ) hsum1 hp)
-      _ = ∑ i ∈ t, ENNReal.ofReal (w i) * ∫⁻ x in Icc a b, ‖f x - z i‖ₑ ^ p := by
+      _ = ∑ i ∈ t, ENNReal.ofReal (w i) * ∫⁻ x in D, ‖f x - z i‖ₑ ^ p := by
           rw [lintegral_finsetSum' t fun i _ => (hmeasP (z i)).const_mul _]
           exact Finset.sum_congr rfl fun i _ => lintegral_const_mul'' _ (hmeasP (z i))
       _ ≤ ∑ i ∈ t, ENNReal.ofReal (w i) * K := by gcongr with i hi; exact hzbound i hi
@@ -393,14 +563,59 @@ theorem MeasureTheory.poincare_1d_of_zero_mem_closure_convexHull {E : Type*}
         simpa using tendsto_const_nhds.sub hulim
       exact (ENNReal.continuous_rpow_const.tendsto _).comp ((continuous_enorm.tendsto _).comp h1)
     exact htend.liminf_eq.symm
-  calc ∫⁻ x in Icc a b, ‖f x‖ₑ ^ p
-      = ∫⁻ x in Icc a b, Filter.liminf (fun n => ‖f x - u n‖ₑ ^ p) Filter.atTop :=
+  calc ∫⁻ x in D, ‖f x‖ₑ ^ p
+      = ∫⁻ x in D, Filter.liminf (fun n => ‖f x - u n‖ₑ ^ p) Filter.atTop :=
         lintegral_congr hliminf
-    _ ≤ Filter.liminf (fun n => ∫⁻ x in Icc a b, ‖f x - u n‖ₑ ^ p) Filter.atTop :=
+    _ ≤ Filter.liminf (fun n => ∫⁻ x in D, ‖f x - u n‖ₑ ^ p) Filter.atTop :=
         lintegral_liminf_le' fun n => hmeasP (u n)
     _ ≤ Filter.liminf (fun _ : ℕ => K) Filter.atTop :=
         Filter.liminf_le_liminf (.of_forall fun n => hull (u n) (humem n))
     _ = K := Filter.liminf_const K
+
+/-- **Most general one-dimensional `Lᵖ` Poincaré inequality.** For an arbitrary convex set `s ⊆ ℝ`,
+with `f` continuous on `s` and differentiable on its interior, it suffices that `0` lies in the
+closure of the convex hull of the image `f '' s`. The constant is `(volume s) ^ p / p`, where
+`volume s` is the length of `s`. A single statement covers every interval shape — `Icc`, `Ico`,
+`Ioc`, `Ioo`, and the semi-infinite intervals — since these differ only on the null frontier. The
+centring condition is the weakest possible: it is implied both by `f` vanishing somewhere on `s` and
+by `f` having zero average, and it makes sense for an arbitrary normed space `E`. The constant is
+sharp, matching `poincare_1d_of_exists_eq_zero`: writing `0` as a convex combination `∑ wᵢ • f cᵢ`
+and averaging the per-point estimates `‖f x - f cᵢ‖` against the weights `wᵢ` recovers the `1 / p`
+factor, so the convex-hull hypothesis costs nothing in the constant. -/
+theorem MeasureTheory.poincare_1d_of_zero_mem_closure_convexHull {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {p : ℝ} {s : Set ℝ} {f : ℝ → E}
+    (hp : 1 ≤ p) (hs : Convex ℝ s) (hcont : ContinuousOn f s)
+    (hdiff : DifferentiableOn ℝ f (interior s))
+    (hmem : 0 ∈ closure (convexHull ℝ (f '' s))) :
+    ∫⁻ x in s, ‖f x‖ₑ ^ p
+      ≤ volume s ^ p / ENNReal.ofReal p * ∫⁻ x in s, ‖deriv f x‖ₑ ^ p := by
+  -- `s` differs from its open interior only on the null frontier, so reduce to the interior.
+  have hsae : s =ᵐ[volume] interior s := by
+    rw [ae_eq_set]
+    refine ⟨measure_mono_null ?_ (Convex.addHaar_frontier volume hs), ?_⟩
+    · exact fun x hx => ⟨subset_closure hx.1, hx.2⟩
+    · rw [sdiff_eq_empty.2 interior_subset]; exact measure_empty
+  have hLHS : ∫⁻ x in s, ‖f x‖ₑ ^ p = ∫⁻ x in interior s, ‖f x‖ₑ ^ p := by
+    rw [Measure.restrict_congr_set hsae]
+  have hRHS : ∫⁻ x in s, ‖deriv f x‖ₑ ^ p = ∫⁻ x in interior s, ‖deriv f x‖ₑ ^ p := by
+    rw [Measure.restrict_congr_set hsae]
+  rw [hLHS, hRHS, measure_congr hsae]
+  by_cases hUne : (interior s).Nonempty
+  · refine poincare_hull_fatou_aux hp isOpen_interior.measurableSet hdiff.continuousOn
+      (fun c hc => poincare_sub_const_open hp isOpen_interior (Convex.interior hs) hdiff hc) ?_
+    -- Centring transfers from `s` to its interior via `f '' s ⊆ closure (f '' interior s)`.
+    have hC : f '' s ⊆ closure (f '' interior s) := by
+      rintro _ ⟨x, hx, rfl⟩
+      refine ContinuousWithinAt.mem_closure_image ((hcont x hx).mono interior_subset) ?_
+      rw [hs.closure_interior_eq_closure_of_nonempty_interior hUne]
+      exact subset_closure hx
+    have h1 : convexHull ℝ (f '' s) ⊆ closure (convexHull ℝ (f '' interior s)) :=
+      (convexHull_mono hC).trans
+        (convexHull_min (closure_mono (subset_convexHull ℝ _)) (convex_convexHull ℝ _).closure)
+    exact closure_minimal h1 isClosed_closure hmem
+  · rw [Set.not_nonempty_iff_eq_empty] at hUne
+    simp only [hUne, setLIntegral_empty]
+    exact zero_le
 
 /-- **One-dimensional `Lᵖ` Poincaré inequality with zero average, vector-valued.** For a complete
 normed space `E` and `f` whose integral over `[a, b]` vanishes, the inequality holds with the sharp
@@ -415,7 +630,13 @@ theorem MeasureTheory.poincare_1d_of_integral_eq_zero {E : Type*} [NormedAddComm
   rcases eq_or_lt_of_le hab with rfl | hlt
   · rw [Icc_self, setLIntegral_measure_zero _ _ (measure_singleton a)]
     exact zero_le
-  · refine poincare_1d_of_zero_mem_closure_convexHull hp hcont hdiff ?_
+  · have hconst : volume (Icc a b) ^ p / ENNReal.ofReal p = ENNReal.ofReal ((b - a) ^ p / p) := by
+      rw [Real.volume_Icc, ENNReal.ofReal_rpow_of_nonneg (by linarith) (one_pos.trans_le hp).le,
+        ← ENNReal.ofReal_div_of_pos (one_pos.trans_le hp)]
+    rw [← hconst]
+    have hdiff' : DifferentiableOn ℝ f (interior (Icc a b)) := by
+      rw [interior_Icc]; exact hdiff
+    refine poincare_1d_of_zero_mem_closure_convexHull hp (convex_Icc a b) hcont hdiff' ?_
     have havg : ⨍ x in Icc a b, f x = 0 := by
       rw [setAverage_eq, integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le hab, hint,
         smul_zero]
