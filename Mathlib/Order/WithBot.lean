@@ -891,14 +891,8 @@ protected def ofDual : WithBot αᵒᵈ ≃ WithTop α :=
 @[to_dual (attr := simp)]
 theorem toDual_symm : WithBot.toDual.symm = WithTop.ofDual (α := α) := rfl
 
-attribute [deprecated toDual_symm (since := "2025-12-30")] toDual_symm_apply
-attribute [deprecated WithTop.toDual_symm (since := "2025-12-30")] WithTop.toDual_symm_apply
-
 @[to_dual (attr := simp)]
 theorem ofDual_symm : WithBot.ofDual.symm = WithTop.toDual (α := α) := rfl
-
-attribute [deprecated ofDual_symm (since := "2025-12-30")] ofDual_symm_apply
-attribute [deprecated WithTop.ofDual_symm (since := "2025-12-30")] WithTop.ofDual_symm_apply
 
 @[to_dual (attr := simp)]
 theorem toDual_bot : WithBot.toDual (⊥ : WithBot α) = ⊤ := rfl
