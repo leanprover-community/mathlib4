@@ -437,7 +437,7 @@ theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
 -- The `AddMonoid` instance exists to help speedup unification
-instance : AddMonoid (M₁ →SL[σ₁₂] M₂)  := fast_instance% FunLike.addMonoid
+instance : AddMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addMonoid
 
 instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addCommMonoid
 
@@ -861,7 +861,7 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 instance : IsSubApply (M →SL[σ₁₂] M₂) M M₂ where
   sub_apply _ _ _ := rfl
 
-instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂)  := fast_instance% FunLike.addCommGroup
+instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := fast_instance% FunLike.addCommGroup
 
 @[simp, norm_cast]
 theorem toLinearMap_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛₗ[σ₁₂] M₂) = f - g :=
