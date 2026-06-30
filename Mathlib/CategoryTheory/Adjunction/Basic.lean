@@ -799,6 +799,42 @@ instance (priority := 10) isRightAdjoint_of_isEquivalence {F : C ⥤ D} [F.IsEqu
     IsRightAdjoint F :=
   F.asEquivalence.isRightAdjoint_functor
 
+lemma isLeftAdjoint_comp_iff_right {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [F.IsEquivalence] :
+    (F ⋙ G).IsLeftAdjoint ↔ G.IsLeftAdjoint := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let iso : G ≅ F.asEquivalence.inverse ⋙ F ⋙ G :=
+    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight (F.asEquivalence.counitIso).symm _ ≪≫
+      Functor.associator _ _ _
+  exact isLeftAdjoint_of_iso iso.symm
+
+lemma isRightAdjoint_comp_iff_right {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [F.IsEquivalence] :
+    (F ⋙ G).IsRightAdjoint ↔ G.IsRightAdjoint := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let iso : G ≅ F.asEquivalence.inverse ⋙ F ⋙ G :=
+    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight (F.asEquivalence.counitIso).symm _ ≪≫
+      Functor.associator _ _ _
+  exact isRightAdjoint_of_iso iso.symm
+
+lemma isLeftAdjoint_comp_iff_left {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [G.IsEquivalence] :
+    (F ⋙ G).IsLeftAdjoint ↔ F.IsLeftAdjoint := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let iso : F ≅ (F ⋙ G) ⋙ G.asEquivalence.inverse :=
+    (Functor.rightUnitor _).symm ≪≫ Functor.isoWhiskerLeft _ G.asEquivalence.unitIso ≪≫
+      (Functor.associator _ _ _).symm
+  exact isLeftAdjoint_of_iso iso.symm
+
+lemma isRightAdjoint_comp_iff_left {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [G.IsEquivalence] :
+    (F ⋙ G).IsRightAdjoint ↔ F.IsRightAdjoint := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let iso : F ≅ (F ⋙ G) ⋙ G.asEquivalence.inverse :=
+    (Functor.rightUnitor _).symm ≪≫ Functor.isoWhiskerLeft _ G.asEquivalence.unitIso ≪≫
+      (Functor.associator _ _ _).symm
+  exact isRightAdjoint_of_iso iso.symm
+
 end Functor
 
 end CategoryTheory
