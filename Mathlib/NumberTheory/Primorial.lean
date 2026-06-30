@@ -56,7 +56,7 @@ lemma primeFactors_primorial (n : ℕ) : primeFactors (n#) = primesLE n := by
 theorem primorial_pos (n : ℕ) : 0 < n# :=
   prod_pos fun _p hp ↦ (mem_filter.1 hp).2.pos
 
-lemma primorial_ne_zero (n : ℕ) : n# ≠ 0 := _root_.ne_of_gt <| primorial_pos n
+lemma primorial_ne_zero (n : ℕ) : n# ≠ 0 := (primorial_pos n).ne'
 
 theorem primorial_mono {m n : ℕ} (h : m ≤ n) : m# ≤ n# :=
   prod_le_prod_of_subset_of_one_le' (by gcongr) (by grind)
