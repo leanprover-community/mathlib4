@@ -1366,6 +1366,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
+public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Omega
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.ZSMul
 public import Mathlib.AlgebraicGeometry.EllipticCurve.IsomOfJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic

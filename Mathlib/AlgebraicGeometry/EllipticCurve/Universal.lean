@@ -3,12 +3,20 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Point
 
 /-!
-# The universal elliptic curve
+# Additions to Affine.Point and the universal elliptic curve
 
-This file defines the universal Weierstrass curve (`Universal.curve`) over the
+This file provides lemmas missing from the released mathlib that are needed for the
+division polynomial / ZSMul development:
+- `algebraMap_poly_injective` and `algebraMap_injective'` (injectivity of `algebraMap` into
+  the coordinate ring)
+- `some_eq_some_iff` (point equality for nonsingular affine points)
+
+It also defines the universal Weierstrass curve (`Universal.curve`) over the
 polynomial ring `ℤ[A₁,A₂,A₃,A₄,A₆]`, and the universal pointed elliptic curve
 (`Universal.pointedCurve`) over the field of fractions (`Universal.Field`) of
 `Universal.Ring = Universal.Poly/⟨P⟩ = ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩` (where `P` is the Weierstrass
@@ -25,9 +33,41 @@ when `n ≠ 0` by specializing to the cusp curve, which shows that `(X,Y)` is a 
 order on the universal pointed elliptic curve.
 -/
 
+@[expose] public section
 noncomputable section
 
-open scoped PolynomialPolynomial
+/-! ## Point.lean additions -/
+
+namespace WeierstrassCurve.Affine.CoordinateRing
+
+open Polynomial
+
+variable {R : Type*} [CommRing R] {W' : WeierstrassCurve.Affine R}
+
+set_option backward.isDefEq.respectTransparency false in
+lemma algebraMap_poly_injective : Function.Injective (algebraMap R[X] W'.CoordinateRing) :=
+  (injective_iff_map_eq_zero _).mpr fun p hp ↦ And.left <|
+    smul_basis_eq_zero (W' := W') (q := 0) <| by
+      rwa [Algebra.smul_def, mul_one, zero_smul, add_zero]
+
+lemma algebraMap_injective' : Function.Injective (algebraMap R W'.CoordinateRing) :=
+  (CoordinateRing.algebraMap_poly_injective (W' := W')).comp C_injective
+
+end WeierstrassCurve.Affine.CoordinateRing
+
+namespace WeierstrassCurve.Affine.Point
+
+variable {R : Type*} [CommRing R] {W' : WeierstrassCurve.Affine R}
+
+lemma some_eq_some_iff {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Nonsingular x₁ y₁)
+    (h₂ : W'.Nonsingular x₂ y₂) : some x₁ y₁ h₁ = some x₂ y₂ h₂ ↔ x₁ = x₂ ∧ y₁ = y₂ :=
+  ⟨by rintro (_ | _); trivial, by rintro ⟨rfl, rfl⟩; rfl⟩
+
+end WeierstrassCurve.Affine.Point
+
+/-! ## The universal elliptic curve -/
+
+open scoped Polynomial.Bivariate
 
 namespace WeierstrassCurve
 
@@ -37,7 +77,7 @@ inductive Coeff : Type | A₁ : Coeff | A₂ : Coeff | A₃ : Coeff | A₄ : Coe
 
 namespace Universal
 
-open scoped Polynomial PolynomialPolynomial
+open scoped Polynomial Polynomial.Bivariate
 open Coeff
 
 open MvPolynomial (X) in
@@ -86,26 +126,33 @@ lemma algebraMap_ring_eq_comp :
 lemma algebraMap_field_injective :
     Function.Injective (algebraMap (MvPolynomial Coeff ℤ) Universal.Field) :=
   (IsFractionRing.injective Universal.Ring Universal.Field).comp
-    (Affine.CoordinateRing.algebraMap_injective' _)
+    (Affine.CoordinateRing.algebraMap_injective' (W' := curve))
 
 /-- The universal pointed Weierstrass curve is an elliptic curve
-when base-changed to the the universal field. -/
-def pointedCurve : EllipticCurve Universal.Field where
-  __ := baseChange curve Universal.Field
-  Δ' := .mk0 (baseChange curve Universal.Field).Δ <| by
-    simpa only [map_Δ, map_ne_zero_iff _ algebraMap_field_injective] using Δ_curve_ne_zero
-  coe_Δ' := rfl
+when base-changed to the universal field. -/
+abbrev pointedCurve : WeierstrassCurve Universal.Field := baseChange curve Universal.Field
+
+instance : pointedCurve.IsElliptic where
+  isUnit := by
+    rw [show pointedCurve.Δ = _ from map_Δ curve (algebraMap _ Universal.Field)]
+    exact ((map_ne_zero_iff _ algebraMap_field_injective).mpr Δ_curve_ne_zero).isUnit
 
 open Polynomial in
 lemma equation_point : pointedCurve.toAffine.Equation (polyToField (C X)) (polyToField Y) := by
-  simp_rw [Affine.Equation, pointedCurve, baseChange, EllipticCurve.toAffine,
-    algebraMap_field_eq_comp, ← map_map, Affine.map_polynomial_evalEval, Affine.map_polynomial,
-    evalEval, eval_map, eval_C_X_eval₂_map_C_X, polyToField_polynomial]
+  change evalEval (polyToField (C X)) (polyToField Y)
+    ((curve.map (algebraMap _ Universal.Field)).toAffine.polynomial) = 0
+  have h : (evalEvalRingHom (polyToField (C X)) (polyToField Y)).comp
+      (mapRingHom <| mapRingHom (algebraMap _ Universal.Field)) = polyToField := by
+    ext <;> simp [polyToField, algebraMap_field_eq_comp]
+  have : ∀ p, evalEval (polyToField (C X)) (polyToField Y)
+      (p.map (mapRingHom (algebraMap _ Universal.Field))) = polyToField p :=
+    fun p ↦ congr($h p)
+  rw [Affine.map_polynomial, this, polyToField_polynomial]
 
 open Polynomial Affine in
 /-- The distinguished point on the universal pointed Weierstrass curve. -/
-def Affine.point : curve⟮Universal.Field⟯ :=
-  .some (EllipticCurve.Affine.nonsingular pointedCurve equation_point)
+def Affine.point : (curve.baseChange Universal.Field).toAffine.Point :=
+  .mk equation_point
 
 /-- The distinguished point on the universal curve in Jacobian coordinates. -/
 def Jacobian.point : Jacobian.Point (curve.baseChange Universal.Field) :=
@@ -128,14 +175,14 @@ abbrev curveRing : WeierstrassCurve Universal.Ring := curve.baseChange Universal
 (the universal field), where `P` is the Weierstrass polynomial. -/
 abbrev curveField : WeierstrassCurve Universal.Field := curve.baseChange Universal.Field
 
-lemma curveField_eq : curveField = pointedCurve.toWeierstrassCurve := rfl
+lemma curveField_eq : curveField = pointedCurve := rfl
 
 end Universal
 
-/-- The cusp curve $Y^2 = X^3$ over ℤ. -/
-def cusp : Affine ℤ := { a₁ := 0, a₂ := 0, a₃ := 0, a₄ := 0, a₆ := 0 }
+/-- The cusp curve $Y^2 = X^3$ over a commutative ring `R`. -/
+def cusp (R : Type*) [CommRing R] : Affine R := { a₁ := 0, a₂ := 0, a₃ := 0, a₄ := 0, a₆ := 0 }
 
-lemma cusp_equation_one_one : cusp.Equation 1 1 := by
+lemma cusp_equation_one_one : (cusp ℤ).Equation 1 1 := by
   simp [Affine.Equation, Affine.polynomial, cusp, Polynomial.evalEval]
 
 open Universal
@@ -190,8 +237,9 @@ protected lemma Field.two_ne_zero : (2 : Universal.Field) ≠ 0 := by
   intro h; replace h := congr(ringEval cusp_equation_one_one $h)
   rw [map_ofNat, map_zero] at h; cases h
 
-lemma curveRing_map_ringEval : curveRing.map (ringEval eqn) = W := by
-  rw [curveRing, baseChange, map_map, ringEval_comp_eq_specialize, map_specialize]
+lemma curveRing_map_ringEval : curveRing.map (ringEval eqn) = W :=
+  (map_map curve (algebraMap _ _) (ringEval eqn)).symm ▸
+    (ringEval_comp_eq_specialize eqn) ▸ map_specialize W
 
 end Universal
 
