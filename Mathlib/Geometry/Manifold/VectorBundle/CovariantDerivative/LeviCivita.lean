@@ -277,7 +277,6 @@ noncomputable def lcAux₁ [FiniteDimensional ℝ E]
       (fun _Z hZ ↦ leviCivitaAux_tensorial₁ _ _ hY hZ)
       (fun _X hX ↦ leviCivitaAux_tensorial₂ _ _ hY hX))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
@@ -300,7 +299,6 @@ theorem lcAux_apply [FiniteDimensional ℝ E] {x : M}
     ⟪lcAux I Y x (X x), Z x⟫ = leviCivitaAux I X Y Z x := by
   simpa [lcAux, dif_pos hY] using lcAux₁_apply I hX hY hZ
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcAux I (M := M)) where
   add {Y Y'} x hY hY' _ := by
