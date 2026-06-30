@@ -40,7 +40,7 @@ lemma ordHom_of_isUnit {U : X.Opens}
     [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X} (hx : coheight x = 1) (hx' : x ∈ U) :
     ordHom x hx (X.germToFunctionField U f) = 1 := by
   have : Ring.KrullDimLE 1 (X.presheaf.stalk x) := krullDimLE_of_coheight_le hx.le
-  rw [← algebraMap_germ_eq_germToFunctionField hx']
+  rw [← algebraMap_germ_eq_germToFunctionField _ hx']
   exact Ring.ordFrac_of_isUnit (hf.map (X.presheaf.germ U x hx').hom)
 
 /--
@@ -78,19 +78,19 @@ lemma ord_eq_iff {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠
   exact WithZero.toAdd_unzero_eq_iff _ _
 
 @[simp]
-lemma ord_mul {x : X} (hx : coheight x = 1) {f g : X.functionField}
-    (hf : f ≠ 0) (hg : g ≠ 0) : ord (f*g) x = ord f x + ord g x := by
-  have : f * g ≠ 0 := (mul_ne_zero_iff_right hg).mpr hf
-  rw [ord_eq_iff hx this]
-  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| (map_ne_zero (ordHom x hx)).mpr hf
-  obtain ⟨a1, ha2⟩ := WithZero.ne_zero_iff_exists.mp <| (map_ne_zero (ordHom x hx)).mpr hg
-  simp [ord_eq_ordHom_of_coheight_eq_one hx, ← ha1, ← ha2]
+lemma ord_mul {x : X} {f g : X.functionField}
+    (hf : f ≠ 0) (hg : g ≠ 0) : ord (f * g) x = ord f x + ord g x := by
+  by_cases! hx : coheight x ≠ 1
+  · simp [hx]
+  rw [ord_eq_iff hx <| (mul_ne_zero_iff_right hg).mpr hf]
+  simp [hf, hg, ord_eq_ordHom_of_coheight_eq_one hx, unzeroD_eq_unone]
 
 lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X}
-    (hx : coheight x = 1) (hx' : x ∈ U) : ord (X.germToFunctionField U f) x = 0 := by
-  have hf' : X.germToFunctionField U f ≠ 0 :=
-    (map_ne_zero_iff _ (germToFunctionField_injective X U)).mpr <| IsUnit.ne_zero hf
-  simp [ord_eq_iff hx hf', ordHom_of_isUnit hf hx hx']
+    (hx' : x ∈ U) : ord (X.germToFunctionField U f) x = 0 := by
+  by_cases! hx : coheight x ≠ 1
+  · simp [hx]
+  simp [map_ne_zero_iff, germToFunctionField_injective, IsUnit.ne_zero hf,
+    ord_eq_iff hx, ordHom_of_isUnit hf hx hx']
 
 lemma ord_le_ord_iff {x y : X} (hx : coheight x = 1) (hy : coheight y = 1) {f g : X.functionField}
     (hf : f ≠ 0) (hg : g ≠ 0) :
@@ -99,38 +99,37 @@ lemma ord_le_ord_iff {x y : X} (hx : coheight x = 1) (hy : coheight y = 1) {f g 
 
 lemma le_ord_iff {x : X} (hx : coheight x = 1) {f : X.functionField}
     (hf : f ≠ 0) {n : ℤ} :
-    n ≤ ord f x ↔ ↑(Multiplicative.ofAdd n) ≤ ordHom x hx f := by
+    n ≤ ord f x ↔ Multiplicative.ofAdd n ≤ ordHom x hx f := by
   rw [ord_eq_unzero_ordHom hx hf]
   nth_rw 1 [← toAdd_ofAdd n]
   rw [Multiplicative.toAdd_le, le_unzero_iff]
 
-lemma ord_add {x : X} (hx : coheight x = 1) [IsDiscreteValuationRing (X.presheaf.stalk x)]
+lemma ord_add {x : X} [IsDiscreteValuationRing (X.presheaf.stalk x)]
     {f g : X.functionField} (hfg : f + g ≠ 0) :
     min (ord f x) (ord g x) ≤ ord (f + g) x := by
   by_cases hf : f = 0
   · simp [hf]
   by_cases hg : g = 0
   · simp [hg]
-  simp only [inf_le_iff]
-  obtain h | h := inf_le_iff.mp <| Ring.ordFrac_add (R := X.presheaf.stalk x) _ _ hfg
-  · left
-    rwa [ord_le_ord_iff hx hx hf hfg]
-  · right
-    rwa [ord_le_ord_iff hx hx hg hfg]
+  by_cases! hx : coheight x ≠ 1
+  · simp [hx]
+  rw [inf_le_iff, ord_le_ord_iff hx hx hf hfg, ord_le_ord_iff hx hx hg hfg]
+  exact inf_le_iff.mp <| Ring.ordFrac_add (R := X.presheaf.stalk x) _ _ hfg
 
-lemma ord_le_smul {x : X} (hx : coheight x = 1) {U : X.Opens} [Nonempty U] (hxU : x ∈ U)
+lemma ord_le_smul {x : X} {U : X.Opens} [Nonempty U] (hxU : x ∈ U)
     {a : Γ(X, U)} (ha : a ≠ 0) (f : X.functionField) : ord f x ≤ ord (a • f) x := by
+  by_cases! hx : coheight x ≠ 1
+  · simp [hx]
   by_cases hf : f = 0
   · simp [hf]
-  have : a • f ≠ 0 := (mul_ne_zero_iff_right hf).mpr <|
-    (map_ne_zero_iff _ (germToFunctionField_injective _ _)).mpr ha
+  have : a • f ≠ 0 := by simp [ha, Algebra.smul_def, hf, germToFunctionField_injective,
+    RingHom.algebraMap_toAlgebra, map_ne_zero_iff]
   rw [ord_le_ord_iff hx hx hf this]
-  let l : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hxU).hom.toAlgebra
+  algebraize [(X.presheaf.germ U x hxU).hom]
   have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight_le hx.le
   have : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk x) ↑X.functionField :=
     functionField_isScalarTower X U ⟨x, hxU⟩
-  have : (algebraMap Γ(X, U) (X.presheaf.stalk x) a) ≠ 0 :=
-    (map_ne_zero_iff _ (germ_injective_of_isIntegral X x hxU)).mpr ha
-  exact Ring.ordFrac_le_smul a this f
+  simp [ordHom, Ring.ordFrac_le_smul, RingHom.algebraMap_toAlgebra, map_ne_zero_iff,
+    germ_injective_of_isIntegral, ha]
 
 end AlgebraicGeometry.Scheme
