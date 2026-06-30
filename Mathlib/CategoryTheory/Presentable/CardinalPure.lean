@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 /-!
 # Pure subobjects
 
-In this file, we define the notion of `κ`-pure morphism (`IsCardinalPure`)
+In this file, we define the notion of `κ`-pure morphisms (`IsCardinalPure`)
 in a category `C`. This class contains split monomorphisms and is stable
 under `κ`-filtered colimits. When `C` is a `κ`-accessible category, we show
 that `κ`-pure morphisms are monomorphisms.
