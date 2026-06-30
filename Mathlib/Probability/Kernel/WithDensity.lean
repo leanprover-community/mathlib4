@@ -122,8 +122,7 @@ theorem withDensity_add_left (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
     (f : α → β → ℝ≥0∞) : withDensity (κ + η) f = withDensity κ f + withDensity η f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext a s
-    simp only [Kernel.withDensity_apply _ hf, coe_add, Pi.add_apply, withDensity_add_measure,
-      Measure.add_apply]
+    simp only [Kernel.withDensity_apply _ hf, withDensity_add_measure, add_apply]
   · simp_rw [withDensity_of_not_measurable _ hf]
     rw [zero_add]
 

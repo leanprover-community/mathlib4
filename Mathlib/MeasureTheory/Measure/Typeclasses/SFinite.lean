@@ -566,7 +566,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
   ext s hs
   rw [← ENNReal.add_right_inj (measure_mono s.inter_subset_right |>.trans_lt <|
     measure_spanningSets_lt_top μ i).ne]
-  simp only [ext_iff', coe_add, Pi.add_apply] at h
+  simp only [ext_iff', add_apply] at h
   simp [hs, h]
 
 @[simp] lemma add_left_inj (μ ν₁ ν₂ : Measure α) [SigmaFinite μ] :
@@ -641,7 +641,7 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
       set_mem := fun _ ↦ trivial
       finite := by
         intro i
-        simp only [Measure.coe_smul, Pi.smul_apply, nnreal_smul_coe_apply]
+        simp only [smul_apply, nnreal_smul_coe_apply]
         exact ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_spanningSets_lt_top μ i)
       spanning := iUnion_spanningSets μ }⟩
 

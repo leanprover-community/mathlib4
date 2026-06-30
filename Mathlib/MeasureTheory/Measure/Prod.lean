@@ -837,7 +837,7 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
 lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
   ext s hs
-  rw [prod_apply hs, Measure.smul_apply, prod_apply hs]
+  rw [prod_apply hs, smul_apply, prod_apply hs]
   simp
 
 end Measure

@@ -1152,7 +1152,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine fun C₁ hC₁ C₂ hC₂ hC ↦ Set.disjoint_iff.mpr fun x hx ↦ hC <| ?_
       exact subset_antisymm (C_subset_C hC₁ hx) (C_subset_C hC₂ (Set.inter_comm _ _ ▸ hx))
     _ ≤ (M • μ.restrict (⋃ i, s i)) t := by
-      rw [Measure.smul_apply]
+      rw [smul_apply]
       exact nsmul_le_nsmul_right (μ.restrict_mono_set iUnion_P t) M
 
 end Sum

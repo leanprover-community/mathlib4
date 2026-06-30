@@ -96,7 +96,7 @@ theorem measureUnivNNReal_zero : measureUnivNNReal (0 : Measure α) = 0 :=
 
 instance isFiniteMeasureAdd [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ + ν) where
   measure_univ_lt_top := by
-    rw [Measure.coe_add, Pi.add_apply, ENNReal.add_lt_top]
+    rw [add_apply, ENNReal.add_lt_top]
     exact ⟨measure_lt_top _ _, measure_lt_top _ _⟩
 
 instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFiniteMeasure (r • μ) where
@@ -104,7 +104,7 @@ instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFinite
 
 instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
   measure_univ_lt_top := by
-    rw [Measure.smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+    rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]

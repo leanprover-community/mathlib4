@@ -231,7 +231,7 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
   simp only [nonpos_iff_eq_zero, add_eq_zero]
   constructor
   · refine hμν ?_
-    simp only [coe_add, Pi.add_apply, add_eq_zero]
+    simp only [add_apply, add_eq_zero]
     constructor
     · exact measure_mono_null Set.inter_subset_right ht1
     · exact measure_mono_null Set.inter_subset_left hνs
@@ -369,7 +369,7 @@ theorem lintegral_rnDeriv_lt_top_of_measure_ne_top (ν : Measure α) {s : Set α
     rw [← withDensity_apply _ (measurableSet_toMeasurable _ _)]
     calc
       _ ≤ (singularPart μ ν) (toMeasurable μ s) + _ := le_add_self
-      _ = μ s := by rw [← Measure.add_apply, ← haveLebesgueDecomposition_add, measure_toMeasurable]
+      _ = μ s := by rw [← add_apply, ← haveLebesgueDecomposition_add, measure_toMeasurable]
       _ < ⊤ := hs.lt_top
   · simp only [Measure.rnDeriv, dif_neg hl, Pi.zero_apply, lintegral_zero, ENNReal.zero_lt_top]
 
@@ -927,8 +927,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
     -- since `ν.withDensity ξ ≤ μ`, it is clear that `μ = μ₁ + ν.withDensity ξ`
     · rw [hμ₁]
       ext1 A hA
-      rw [Measure.coe_add, Pi.add_apply, Measure.sub_apply hA hle, add_comm,
-        add_tsub_cancel_of_le (hle A)]
+      rw [add_apply, Measure.sub_apply hA hle, add_comm, add_tsub_cancel_of_le (hle A)]
 
 /-- If any finite measure has a Lebesgue decomposition with respect to `ν`,
 then the same is true for any s-finite measure. -/
