@@ -833,7 +833,7 @@ def productUniqueIso [Unique β] (f : β → C) : ∏ᶜ f ≅ f default :=
 lemma productUniqueIso_hom [Unique β] (f : β → C) : (productUniqueIso f).hom = Pi.π f default :=
   rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma productUniqueIso_inv_π [Unique β] (f : β → C) (b : β) :
     (productUniqueIso f).inv ≫ Pi.π f b = eqToHom (congrArg _ <| Subsingleton.allEq _ _) := by
   obtain rfl := Subsingleton.allEq b default
@@ -882,7 +882,7 @@ lemma coproductUniqueIso_inv [Unique β] (f : β → C) :
     (coproductUniqueIso f).inv = Sigma.ι f default :=
   rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma ι_coproductUniqueIso_hom [Unique β] (f : β → C) (b : β) :
     Sigma.ι f b ≫ (coproductUniqueIso f).hom = eqToHom (congrArg _ <| Subsingleton.allEq _ _) := by
   obtain rfl := Subsingleton.allEq b default

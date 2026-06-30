@@ -19,7 +19,7 @@ of a local topos. This is one of the conditions of cohesive sites.
 
 Sheaves of types on any local site form a local topos (i.e. a topos whose global sections functor
 has a fully faithful right adjoint), and a subcanonical site is local if and only if its topos of
-sheaves of types is.
+sheaves of types is (see TODOs).
 
 ## Main definitions / results
 
