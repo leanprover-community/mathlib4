@@ -298,10 +298,4 @@ lemma MorphismProperty.le_isColocal_isColocal (W : MorphismProperty C) :
     W ≤ W.isColocal.isColocal := by
   rw [ObjectProperty.le_isColocal_iff]
 
-namespace Localization.LeftBousfield
-
-open ObjectProperty
-
-end Localization.LeftBousfield
-
 end CategoryTheory
