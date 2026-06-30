@@ -70,7 +70,7 @@ lemma ord_zero : ord (0 : X.functionField) = 0 := by
 
 lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :
     ord f x = (WithZero.unzero ((map_ne_zero (ordHom x hx)).mpr hf)).toAdd := by
-  simp [ord, hx, unZeroD_eq_unZero ((map_ne_zero (ordHom x hx)).mpr hf)]
+  simp [ord, hx, unzeroD_eq_unone ((map_ne_zero (ordHom x hx)).mpr hf)]
 
 lemma ord_eq_iff {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) {n : ℤ} :
     ord f z = n ↔ ordHom z hz f = Multiplicative.ofAdd n := by
