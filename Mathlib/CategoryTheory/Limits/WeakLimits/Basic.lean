@@ -87,7 +87,7 @@ def WeakLimitCone.ofLimitCone {F : J ⥤ C} (c : LimitCone F) : WeakLimitCone F 
 /-- `HasWeakLimit F` represents the mere existence of a weak limit for `F`. -/
 class HasWeakLimit (F : J ⥤ C) : Prop where mk' ::
   /-- There is some weak limit cone for `F` -/
-  exists_weakLimit : Nonempty (WeakLimitCone F)
+  exists_weakLimitCone : Nonempty (WeakLimitCone F)
 
 /--
 If `F` has a limit, then it has a weak limit.
