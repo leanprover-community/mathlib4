@@ -96,7 +96,7 @@ lemma isEllSequence_id : IsEllSequence id :=
 
 /-- The identity sequence is an EDS. -/
 theorem isEllDivSequence_id : IsEllDivSequence id :=
-  ⟨isEllSequence_id, .id⟩
+  ⟨isEllSequence_id, .id ℤ⟩
 
 variable {W}
 
