@@ -193,8 +193,9 @@ theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₀' : f₀.Monic)
   let G := f.Gal
   have := Gal.galAction_isPretransitive f ℂ hf
   have : Set.BijOn (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
-    rw [rootSet, rootSet, aroots_map, ← rootSet, ← rootSet] -- rootSet_map lemma
-    rw [← @hoof.image_rootSet_algebraMap ℤ R K _ _ _ _ _ _ _ f₀ _ _ ?_]
+    rw [rootSet, rootSet, aroots_map] -- rootSet_map lemma?
+    rw [← @hoof.map_aroots_algebraMap ℤ R K _ _ _ _ _ _ _ _ _,
+      Multiset.toFinset_map, Finset.coe_image]
     · exact (FaithfulSMul.algebraMap_injective R K).bijOn_image
     · exact IsScalarTower.of_algebraMap_eq' rfl
   have hφ : Set.MapsTo (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
