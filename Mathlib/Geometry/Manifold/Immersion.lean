@@ -757,8 +757,9 @@ lemma comp_diffeomorph
 
 /-- Given `C^n` manifolds `M` and `N` over the same model `I`,
 `Sum.inl : M → M ⊕ N` is a `C^n` immersion with complement `Unit` -/
-lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M]
-    [IsManifold I n M'] : IsImmersionOfComplement Unit I I n (@Sum.inl M M') := by
+lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+    [IsManifold I n M] [IsManifold I n M'] :
+    IsImmersionOfComplement Unit I I n (@Sum.inl M M') := by
   intro x
   apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
     (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inl x))
@@ -770,22 +771,11 @@ lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold 
 
 /-- Given `C^n` manifolds `M` and `N` over the same model `I`,
 `Sum.inr : N → M ⊕ N` is a `C^n` immersion with complement `Unit` -/
-lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M]
-    [IsManifold I n M'] : IsImmersionOfComplement Unit I I n (@Sum.inr M M') := by
-  have : (@Sum.inr M M') = (Diffeomorph.sumComm I M' n M) ∘ (@Sum.inl M' M) := by ext; simp
-  let a := (Diffeomorph.sumComm I M' n M)
-  let aux := IsImmersionOfComplement.sumInl.comp_diffeomorph a -- TODO: type doesn't quite match!
-  rw [this]
-  apply IsImmersionOfComplement.comp_diffeomorph (F := Unit) (I := I) (J := I) (n := n) (Φ := a)
-  --apply IsImmersionOfComplement.sumInl.comp_diffeomorph  a
-  /-intro x
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
-    (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inr x))
-    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (Sum.inr x))
-  intro y hy
-  have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
-    rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
-  simpa -/
+lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+    [IsManifold I n M] [IsManifold I n M'] :
+    IsImmersionOfComplement Unit I I n (@Sum.inr M M') := by
+  rw [← Diffeomorph.sumComm_inl I M' n M]
+  exact IsImmersionOfComplement.sumInl.comp_diffeomorph (Diffeomorph.sumComm I M' n M)
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
