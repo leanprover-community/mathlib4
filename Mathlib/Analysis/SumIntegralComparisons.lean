@@ -242,10 +242,8 @@ theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
 theorem AntitoneOn.tsum_le_integral (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑' (n : ℕ),  f n ≤ f 0 + ∫ x in Ioi 0, f x  := by
-  rw [(anti.summable_of_integrable integrable nonneg).tsum_eq_zero_add]
-  gcongr
-  · simp
-  · exact anti.tsum_add_one_le_integral integrable nonneg
+  grind [(anti.summable_of_integrable integrable nonneg).tsum_eq_zero_add, 
+    anti.tsum_add_one_le_integral integrable nonneg]
 
 /-- Bounds the difference between a sum and its partial sums by an integral. -/
 theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
@@ -254,7 +252,7 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
     |(∑' (n : ℕ), f n) - ∑ n ∈ Finset.range N, f n| ≤ ∫ x in Ioi (N - 1 : ℝ), f x := by
   rw [← (AntitoneOn.summable_of_integrable_eventually (mod_cast anti) (mod_cast integrable)
     (mod_cast nonneg)).sum_add_tsum_nat_add N, add_sub_cancel_left,
-    abs_of_nonneg (tsum_nonneg fun n ↦ nonneg _ (by simp; norm_cast; grind))]
+    abs_of_nonneg (tsum_nonneg <| by grind)
   convert! AntitoneOn.tsum_comp_add_le_integral (N - 1) (mod_cast anti) (mod_cast integrable)
       (mod_cast nonneg) using 1
   · congr; ext; congr 2; grind
@@ -263,15 +261,13 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
 open Filter in
 /-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/
 theorem AntitoneOn.integrable_of_summable_comp_add {N : ℕ} (anti : AntitoneOn f (Ici (N : ℝ)))
-    (summable : Summable (fun (n : ℕ) ↦ f (n + N : ℕ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
+    (summable : Summable (fun n ↦ f (n + N : ℕ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
     IntegrableOn f (Ioi (N : ℝ)) := by
   refine integrableOn_Ioi_of_intervalIntegral_norm_bounded (∑' (n : ℕ), f (n + N : ℕ)) _ ?_
     (tendsto_atTop_add_const_right atTop (N : ℝ) tendsto_natCast_atTop_atTop) ?_
   · intro n
     rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le (by grind)]
-    refine (anti.mono ?_).intervalIntegrable
-    rw [uIcc_of_le (by grind)]
-    grind
+    exact (anti.mono <| by grind [uIcc_of_le]).intervalIntegrable
   · filter_upwards [eventually_gt_atTop 0] with M hM
     calc
     _ = ∫ x in N..M+N, f x := by
