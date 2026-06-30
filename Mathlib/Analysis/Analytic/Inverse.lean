@@ -173,7 +173,7 @@ noncomputable def rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | 1 => (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm
   | n + 2 =>
     let q : FormalMultilinearSeries 𝕜 F E := fun k => if k < n + 2 then rightInv p i x k else 0;
-    -(i.symm : F →L[𝕜] E).compContinuousMultilinearMap ((p.comp q) (n + 2))
+    -((i.symm : F →L[𝕜] E) ∘ᶠ ((p.comp q) (n + 2)))
 
 @[simp]
 theorem rightInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
@@ -262,9 +262,9 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
 theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)
     (n : ℕ) (hn : 2 ≤ n) :
     p.rightInv i x n =
-      -(i.symm : F →L[𝕜] E).compContinuousMultilinearMap
+      -((i.symm : F →L[𝕜] E) ∘ᶠ
           (∑ c ∈ ({c | 1 < Composition.length c}.toFinset : Finset (Composition n)),
-            p.compAlongComposition (p.rightInv i x) c) := by
+            p.compAlongComposition (p.rightInv i x) c)) := by
   match n with
   | 0 => exact False.elim (zero_lt_two.not_ge hn)
   | 1 => exact False.elim (one_lt_two.not_ge hn)
@@ -442,7 +442,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {x : E} {n : ℕ} (hn : 2 ≤ n +
         a * I +
           ∑ k ∈ Ico 2 (n + 1),
             a ^ k *
-              ‖(i.symm : F →L[𝕜] E).compContinuousMultilinearMap
+              ‖(i.symm : F →L[𝕜] E) ∘ᶠ
                   (∑ c ∈ ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
                     p.compAlongComposition (p.rightInv i x) c)‖ := by
       congr! 2 with j hj

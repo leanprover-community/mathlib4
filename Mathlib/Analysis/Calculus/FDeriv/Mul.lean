@@ -505,8 +505,8 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
     (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (List.getElem_mem ..)) :) ?_
   ext m
-  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
-    proj_apply, pi_apply, Function.comp_def]
+  simp_rw [List.map_take, List.map_drop, List.map_map, ContinuousLinearMap.comp_apply, sum_apply,
+    smul_apply, proj_apply, pi_apply, Function.comp_def]
 
 /--
 Unlike `HasFDerivAt.finsetProd`, supports non-commutative multiply and duplicate elements.
@@ -521,8 +521,8 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
     (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
-  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
-    proj_apply, pi_apply, Function.comp_def]
+  simp_rw [List.map_take, List.map_drop, List.map_map, ContinuousLinearMap.comp_apply, sum_apply,
+    smul_apply, proj_apply, pi_apply, Function.comp_def]
 
 @[fun_prop]
 theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
@@ -534,8 +534,8 @@ theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp_hasFDerivWithinAt x
     (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
-  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
-    proj_apply, pi_apply, Function.comp_def]
+  simp_rw [List.map_take, List.map_drop, List.map_map, ContinuousLinearMap.comp_apply, sum_apply,
+    smul_apply, proj_apply, pi_apply, Function.comp_def]
 
 theorem fderiv_list_prod' {l : List ι} {x : E}
     (h : ∀ i ∈ l, DifferentiableAt 𝕜 (f i ·) x) :

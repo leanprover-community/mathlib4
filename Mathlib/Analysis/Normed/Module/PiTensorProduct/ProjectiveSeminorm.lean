@@ -205,7 +205,7 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
 
 @[simp]
 theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
-    (liftIsometry 𝕜 E F).symm l = l.compContinuousMultilinearMap (tprodL 𝕜) := by
+    (liftIsometry 𝕜 E F).symm l = l ∘ᶠ (tprodL 𝕜 (E := E)) := by
   rfl
 
 @[simp]

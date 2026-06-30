@@ -229,11 +229,11 @@ namespace ContinuousLinearMap
 left gives a new formal multilinear series `f.compFormalMultilinearSeries p` whose general term
 is `f ∘ pₙ`. -/
 def compFormalMultilinearSeries (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F) :
-    FormalMultilinearSeries 𝕜 E G := fun n => f.compContinuousMultilinearMap (p n)
+    FormalMultilinearSeries 𝕜 E G := fun n => f ∘ᶠ (p n)
 
 @[simp]
 theorem compFormalMultilinearSeries_apply (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F)
-    (n : ℕ) : (f.compFormalMultilinearSeries p) n = f.compContinuousMultilinearMap (p n) :=
+    (n : ℕ) : (f.compFormalMultilinearSeries p) n = f ∘ᶠ (p n) :=
   rfl
 
 theorem compFormalMultilinearSeries_apply' (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F)
