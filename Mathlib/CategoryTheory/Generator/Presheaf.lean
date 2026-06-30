@@ -37,19 +37,21 @@ noncomputable def freeYoneda (X : C) (M : A) : Cᵒᵖ ⥤ A where
   obj Y := ∐ (fun (i : (yoneda.obj X).obj Y) ↦ M)
   map f := Sigma.map' ((yoneda.obj X).map f) (fun _ ↦ 𝟙 M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(Presheaf.freeYoneda X M ⟶ F) ≃ (M ⟶ F.obj (op X))`. -/
 noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
     (freeYoneda X M ⟶ F) ≃ (M ⟶ F.obj (op X)) where
   toFun f := Sigma.ι (fun (i : (yoneda.obj X).obj _) ↦ M) (𝟙 _) ≫ f.app (op X)
   invFun g :=
     { app Y := Sigma.desc (fun φ ↦ g ≫ F.map φ.op)
-      naturality _ _ _ := Sigma.hom_ext _ _ (by simp)}
+      naturality _ _ _ := Sigma.hom_ext _ _ (by simp) }
   left_inv f := by
     ext Y
     refine Sigma.hom_ext _ _ (fun φ ↦ ?_)
     simpa using (Sigma.ι _ (𝟙 _) ≫= f.naturality φ.op).symm
   right_inv g := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma freeYonedaHomEquiv_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A}
     (α : freeYoneda X M ⟶ F) (f : F ⟶ G) :
@@ -60,9 +62,8 @@ lemma freeYonedaHomEquiv_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A}
 lemma freeYonedaHomEquiv_symm_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A} (α : M ⟶ F.obj (op X))
     (f : F ⟶ G) :
     freeYonedaHomEquiv.symm α ≫ f = freeYonedaHomEquiv.symm (α ≫ f.app (op X)) := by
-  obtain ⟨β, rfl⟩ := freeYonedaHomEquiv.surjective α
   apply freeYonedaHomEquiv.injective
-  simp only [Equiv.symm_apply_apply, freeYonedaHomEquiv_comp, Equiv.apply_symm_apply]
+  simp only [freeYonedaHomEquiv_comp, Equiv.apply_symm_apply]
 
 variable (C)
 
@@ -86,7 +87,7 @@ variable (A) in
 instance hasSeparator [HasSeparator A] [HasZeroMorphisms A] [HasCoproducts.{u} A] :
     HasSeparator (Cᵒᵖ ⥤ A) where
   hasSeparator := ⟨_, isSeparator C (S := fun (_ : Unit) ↦ separator A)
-      (by simpa using isSeparator_separator A)⟩
+      (by simpa using! isSeparator_separator A)⟩
 
 end Presheaf
 

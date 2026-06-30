@@ -20,7 +20,7 @@ public import Mathlib.Algebra.GCDMonoid.Basic
   `x ^ m ∣ (x + y) ^ p` for sufficiently large `p` (together with many variations for convenience).
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
@@ -50,7 +50,7 @@ lemma pow_dvd_add_pow_of_pow_eq_zero_right (hp : n + m ≤ p + 1) (h_comm : Comm
   apply dvd_nsmul_of_dvd
   rcases le_or_gt m i with (hi : m ≤ i) | (hi : i + 1 ≤ m)
   · exact dvd_mul_of_dvd_left (pow_dvd_pow x hi) _
-  · simp [pow_eq_zero_of_le (by cutsat : n ≤ j) hy]
+  · simp [pow_eq_zero_of_le (by lia : n ≤ j) hy]
 
 lemma pow_dvd_add_pow_of_pow_eq_zero_left (hp : n + m ≤ p + 1) (h_comm : Commute x y)
     (hx : x ^ n = 0) : y ^ m ∣ (x + y) ^ p :=
@@ -112,9 +112,9 @@ lemma dvd_mul_sub_mul_mul_right_of_dvd {p a b c d x y : R}
   (mul_comm a _ ▸ mul_comm c _ ▸ dvd_mul_sub_mul_mul_left_of_dvd
     (add_comm (c * x) _ ▸ h2) (add_comm (a * x) _ ▸ h1))
 
-lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : R} [IsDomain R] [GCDMonoid R]
+lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : R} [GCDMonoid R]
     (h1 : p ∣ a * x + b * y) (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * gcd x y := by
-  rw [← (gcd_mul_left' (a*d - b*c) x y).dvd_iff_dvd_right]
+  rw [← (gcd_mul_left' (a * d - b * c) x y).dvd_iff_dvd_right]
   exact (dvd_gcd_iff _ _ _).2 ⟨dvd_mul_sub_mul_mul_left_of_dvd h1 h2,
     dvd_mul_sub_mul_mul_right_of_dvd h1 h2⟩
 

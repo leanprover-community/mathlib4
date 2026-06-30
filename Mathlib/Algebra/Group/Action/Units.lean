@@ -79,13 +79,21 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
+/-- `Units.mulAction' : MulAction G Mˣ` creates a diamond when `G = Mˣ` and `M` is commutative.
+
+Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
+example {M} [CommMonoid M] :
+    (mulAction'.toSMul : SMul Mˣ Mˣ) = instSMulOfMul := by
+  fail_if_success rfl -- there is an instance diamond here
+  ext
+  rfl
+
 /-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
 
 Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
 @[simp]
 lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
     u₁ • u₂ = u₁ * u₂ := by
-  fail_if_success rfl -- there is an instance diamond here
   ext
   rfl
 
@@ -122,6 +130,36 @@ instance isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [S
 example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTower M N N] :
     MulAction Mˣ Nˣ := Units.mulAction'
 
+section MulDistribMulAction
+variable {M N : Type*} [Monoid M] [Monoid N] [MulDistribMulAction M N]
+
+/-- Note this has different defeqs than `Units.mulAction'`, but doesn't create a diamond
+with it in non-degenerate situations. Indeed, to get a diamond on `MulDistribMulAction G Mˣ`,
+we would need both instances to fire. But `Units.mulAction'` assumes `SMulCommClass G M M`,
+i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`), while
+`Units.instMulDistribMulActionRight` assumes `MulDistribMulAction G M`,
+i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`.
+In particular, if `M` is cancellative, then we obtain `∀ (g : G) (m : M), g • m = m`,
+i.e. the action is trivial!
+
+This however does create a (propeq) diamond for `MulDistribMulAction (ConjAct Mˣ) Mˣ` with
+`ConjAct.unitsMulDistribMulAction` and `ConjAct.instMulDistribMulAction`. Indeed, if we go down
+one way then `u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * v⁻¹ * ofConjAct u⁻¹, _, _⟩`,
+while the other way is
+`u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * (v⁻¹ * ofConjAct u⁻¹), _, _⟩`. -/
+abbrev mulDistribMulActionRight : MulDistribMulAction M Nˣ where
+  smul m u := ⟨m • u, m • u⁻¹, by simp [← smul_mul', smul_one], by simp [← smul_mul', smul_one]⟩
+  one_smul u := Units.ext <| one_smul ..
+  mul_smul m₁ m₂ u := Units.ext <| mul_smul ..
+  smul_mul m₁ u₁ u₂ := Units.ext <| smul_mul' ..
+  smul_one m := Units.ext <| smul_one m
+
+attribute [local instance] mulDistribMulActionRight
+
+@[simp, norm_cast] lemma coe_smul (m : M) (u : Nˣ) : (m • u).val = m • u.val := rfl
+@[simp, norm_cast] lemma coe_inv_smul (m : M) (u : Nˣ) : (m • u)⁻¹.val = m • u⁻¹.val := rfl
+
+end MulDistribMulAction
 end Units
 
 @[to_additive]

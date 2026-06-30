@@ -21,7 +21,7 @@ applies, until one of the lists is exhausted. For example,
 `unzip` undoes `zip`. For example, `unzip [(a₁, b₁), (a₂, b₂)] = ([a₁, a₂], [b₁, b₂])`.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
@@ -33,6 +33,11 @@ open Nat
 namespace List
 
 variable {α : Type u} {β γ δ ε : Type*}
+
+open Function in
+theorem rightInverse_unzip_zip :
+    RightInverse (unzip : List (α × β) → List α × List β) (uncurry zip) := by
+  grind [zip_unzip]
 
 @[simp]
 theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Prod.swap = zip l₂ l₁

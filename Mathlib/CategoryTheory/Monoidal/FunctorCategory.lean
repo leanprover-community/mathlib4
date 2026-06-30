@@ -6,8 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Functor.Category
-public import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 # Monoidal structure on `C ⥤ D` when `D` is monoidal.
@@ -49,6 +47,7 @@ def tensorObj : C ⥤ D where
 variable {F G F' G'}
 variable (α : F ⟶ G) (β : F' ⟶ G')
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (An auxiliary definition for `functorCategoryMonoidal`.)
 Tensor product of natural transformations into `D`, when `D` is monoidal.
 -/
@@ -78,6 +77,7 @@ end FunctorCategory
 
 open CategoryTheory.Monoidal.FunctorCategory
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `C` is any category, and `D` is a monoidal category,
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
 where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
@@ -198,17 +198,19 @@ end SymmetricCategory
 
 end Monoidal
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance Functor.LaxMonoidal.whiskeringRight
-    {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
   ε := { app X := Functor.LaxMonoidal.ε L }
   μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance Functor.OplaxMonoidal.whiskeringRight
-    {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).OplaxMonoidal where
   η := { app X := Functor.OplaxMonoidal.η L }
@@ -216,7 +218,8 @@ instance Functor.OplaxMonoidal.whiskeringRight
   oplax_left_unitality := by aesop
   oplax_right_unitality := by aesop
 
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+set_option backward.defeqAttrib.useBackward true in
+instance {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
@@ -229,9 +232,27 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
 @[deprecated (since := "2025-11-06")] alias η_app := Functor.OplaxMonoidal.whiskeringRight_η_app
 @[deprecated (since := "2025-11-06")] alias δ_app := Functor.OplaxMonoidal.whiskeringRight_δ_app
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
-instance Functor.Monoidal.whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
+instance Functor.Monoidal.whiskeringLeft
+    (E : Type*) [Category* E] [MonoidalCategory E] (F : C ⥤ D) :
     ((whiskeringLeft _ _ E).obj F).Monoidal :=
   CoreMonoidal.toMonoidal { εIso := Iso.refl _, μIso _ _ := Iso.refl _ }
+
+instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).functor.Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.inverse).Monoidal
+
+instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).inverse.Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).IsMonoidal where
+  leftAdjoint_μ X Y := by
+    ext
+    simp [← Functor.map_comp]
 
 end CategoryTheory

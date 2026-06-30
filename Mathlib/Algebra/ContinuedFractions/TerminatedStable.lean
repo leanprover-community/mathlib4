@@ -15,7 +15,7 @@ public import Mathlib.Algebra.ContinuedFractions.Translations
 We show that the continuants and convergents of a gcf stabilise once the gcf terminates.
 -/
 
-@[expose] public section
+public section
 
 
 namespace GenContFract

@@ -40,13 +40,18 @@ def orderEmbeddingToFun : (ι →₀ M) ↪o (ι → M) where
   inj' := DFunLike.coe_injective
   map_rel_iff' := coe_le_coe
 
+/-- `equivFunOnFinite` as an order isomorphism. -/
+def orderIsoFunOnFinite [Finite ι] : (ι →₀ M) ≃o (ι → M) where
+  toEquiv := equivFunOnFinite
+  map_rel_iff' := Iff.rfl
+
 end LE
 
 section Preorder
 variable [Preorder M] {f g : ι →₀ M} {i : ι} {a b : M}
 
 instance preorder : Preorder (ι →₀ M) where
-  le_refl  _ _ := le_rfl
+  le_refl _ _ := le_rfl
   le_trans _ _ _ hfg hgh i := (hfg i).trans (hgh i)
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def

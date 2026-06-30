@@ -38,7 +38,7 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
     if git then
       let mlDir := ml.push pathSeparator   -- for example, `Mathlib/`
       let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
-      return (((allLean.dropRightWhile (· == '\n')).splitOn "\n").map (⟨·⟩)).toArray
+      return (((allLean.dropEndWhile (· == '\n')).copy.splitOn "\n").map (⟨·⟩)).toArray
     else do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
@@ -53,6 +53,6 @@ i.e. names of the form `Mathlib/Algebra/Algebra/Basic.lean`.
 In addition, these names are sorted in a platform-independent order. -/
 def getAllModulesSorted (git : Bool) (ml : String) : IO (Array String) := do
   let files ← getAllFiles git ml
-  let names := ← files.mapM fun f => do
+  let names ← files.mapM fun f => do
      return (← moduleNameOfFileName f none).toString
   return names.qsort (· < ·)

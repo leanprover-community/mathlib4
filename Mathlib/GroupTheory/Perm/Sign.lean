@@ -25,7 +25,7 @@ public import Mathlib.Data.Finset.Sigma
 The main definition of this file is `Equiv.Perm.sign`,
 associating a `ℤˣ` sign with a permutation.
 
-Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Fintype.lean`
+Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Finite.lean`
 
 -/
 
@@ -44,6 +44,7 @@ namespace Equiv.Perm
 We use this to partition permutations in `Matrix.det_zero_of_row_eq`, such that each partition
 sums up to `0`.
 -/
+@[implicit_reducible]
 def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
@@ -113,7 +114,7 @@ theorem swap_induction_on [Finite α] {motive : Perm α → Prop} (f : Perm α)
 theorem mclosure_isSwap [Finite α] : Submonoid.closure { σ : Perm α | IsSwap σ } = ⊤ := by
   cases nonempty_fintype α
   refine top_unique fun x _ ↦ ?_
-  obtain ⟨h1, h2⟩ := Subtype.mem (truncSwapFactors x).out
+  obtain ⟨h1, h2⟩ := (truncSwapFactors x).out.prop
   rw [← h1]
   exact Submonoid.list_prod_mem _ fun y hy ↦ Submonoid.subset_closure (h2 y hy)
 
@@ -242,7 +243,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
   show _ = ∏ x ∈ {(⟨1, 0⟩ : Σ _ : Fin (n + 2), Fin (n + 2))},
       if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1 by
     refine Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
-      simp +contextual [mem_finPairsLT, Fin.zero_lt_one]) fun a ha₁ ha₂ => ?_)
+      simp +contextual [mem_finPairsLT]) fun a ha₁ ha₂ => ?_)
     rcases a with ⟨a₁, a₂⟩
     replace ha₁ : a₂ < a₁ := mem_finPairsLT.1 ha₁
     dsimp only
@@ -348,8 +349,7 @@ theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : 
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
   rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,
     ← signAux_eq_signAux2 _ _ (e.trans e') fun _ _ => hs _]
-  exact congr_arg signAux
-    (Equiv.ext fun x => by simp [symm_trans_apply])
+  simp [trans_assoc]
 
 /-- `SignType.sign` of a permutation returns the signature or parity of a permutation, `1` for even
 permutations, `-1` for odd permutations. It is the unique surjective group homomorphism from
@@ -363,7 +363,7 @@ variable [Fintype α]
 
 @[simp]
 theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
-  MonoidHom.map_mul sign f g
+  map_mul sign f g
 
 @[simp]
 theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
@@ -371,15 +371,15 @@ theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
 
 @[simp]
 theorem sign_one : sign (1 : Perm α) = 1 :=
-  MonoidHom.map_one sign
+  map_one sign
 
 @[simp]
 theorem sign_refl : sign (Equiv.refl α) = 1 :=
-  MonoidHom.map_one sign
+  map_one sign
 
 @[simp]
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
-  rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
+  rw [map_inv sign f, Int.units_inv_eq_self]
 
 @[simp]
 theorem sign_symm (e : Perm α) : sign e.symm = sign e :=
@@ -578,8 +578,8 @@ theorem sign_extendDomain (e : Perm α) {p : β → Prop} [DecidablePred p] (f :
   simp only [Equiv.Perm.extendDomain, sign_subtypeCongr, sign_permCongr, sign_refl, mul_one]
 
 @[simp]
-theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subtype p)) :
-    sign (ofSubtype f) = sign f :=
+theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] [Fintype (Subtype p)]
+    (f : Equiv.Perm (Subtype p)) : sign (ofSubtype f) = sign f :=
   sign_extendDomain f (Equiv.refl (Subtype p))
 
 end congr

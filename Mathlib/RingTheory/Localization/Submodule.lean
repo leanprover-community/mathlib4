@@ -97,14 +97,14 @@ section NonZeroDivisors
 variable {R : Type*} [CommRing R] {M : Submonoid R}
   {S : Type*} [CommRing S] [Algebra R S] [IsLocalization M S]
 
-@[mono]
+@[gcongr, mono]
 theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
     coeSubmodule S I ≤ coeSubmodule S J ↔ I ≤ J :=
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f` here:
   Submodule.map_le_map_iff_of_injective (f := Algebra.linearMap R S) (IsLocalization.injective _ h)
     _ _
 
-@[mono]
+@[gcongr, mono]
 theorem coeSubmodule_strictMono (h : M ≤ nonZeroDivisors R) :
     StrictMono (coeSubmodule S : Ideal R → Submodule R S) :=
   strictMono_of_le_iff_le fun _ _ => (coeSubmodule_le_coeSubmodule h).symm
@@ -113,7 +113,7 @@ variable (S)
 
 theorem coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
     Function.Injective (coeSubmodule S : Ideal R → Submodule R S) :=
-  injective_of_le_imp_le _ fun hl => (coeSubmodule_le_coeSubmodule h).mp hl
+  .of_eq_imp_le fun hl => (coeSubmodule_le_coeSubmodule h).mp hl.le
 
 theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
     (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal := by
@@ -179,19 +179,19 @@ section CommRing
 
 variable [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
 
-@[simp, mono]
+@[simp, mono, gcongr]
 theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :
     coeSubmodule K I ≤ coeSubmodule K J ↔ I ≤ J :=
   IsLocalization.coeSubmodule_le_coeSubmodule le_rfl
 
-@[mono]
+@[gcongr, mono]
 theorem coeSubmodule_strictMono : StrictMono (coeSubmodule K : Ideal R → Submodule R K) :=
   strictMono_of_le_iff_le fun _ _ => coeSubmodule_le_coeSubmodule.symm
 
 variable (R K)
 
 theorem coeSubmodule_injective : Function.Injective (coeSubmodule K : Ideal R → Submodule R K) :=
-  injective_of_le_imp_le _ fun hl => coeSubmodule_le_coeSubmodule.mp hl
+  .of_eq_imp_le fun hl => coeSubmodule_le_coeSubmodule.mp hl.le
 
 @[simp]
 theorem coeSubmodule_isPrincipal {I : Ideal R} : (coeSubmodule K I).IsPrincipal ↔ I.IsPrincipal :=

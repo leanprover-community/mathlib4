@@ -8,6 +8,8 @@ module
 public import Mathlib.Init
 public import Batteries.Util.ExtendedBinder
 
+import Mathlib.Tactic.ToDual
+
 /-!
 # Sets
 
@@ -46,6 +48,18 @@ and predicates.
 -/
 def Set (α : Type u) := α → Prop
 
+/-
+We don't translate the order on sets (i.e. turning `s ⊆ t` into `t ⊆ s`).
+This is because for example the following theorems should be dual
+```
+theorem sSup_le_sSup {s t : Set α} (h : s ⊆ t) : sSup s ≤ sSup t
+theorem sInf_le_sInf {s t : Set α} (h : s ⊆ t) : sInf t ≤ sInf s
+```
+Additionally, dualizing the order on sets would mean that a set is dual to its complement.
+But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `Ioc b a`.
+-/
+attribute [to_dual_dont_translate] Set
+
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
@@ -59,11 +73,9 @@ protected def Mem (s : Set α) (a : α) : Prop :=
 instance : Membership α (Set α) :=
   ⟨Set.Mem⟩
 
+@[ext, grind ext]
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))
-
-attribute [local ext] ext in
-attribute [grind ext] ext
 
 /-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
 

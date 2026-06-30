@@ -18,7 +18,7 @@ In this file we prove that derivatives of polynomials in the analysis sense agre
 derivatives in the algebraic sense.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## TODO
 
@@ -30,7 +30,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, polynomial
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -53,9 +53,9 @@ variable (p : 𝕜[X]) (q : R[X])
 protected theorem hasStrictDerivAt (x : 𝕜) :
     HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x := by
   induction p using Polynomial.induction_on' with
-  | add p q hp hq => simpa using hp.add hq
+  | add p q hp hq => simpa using! hp.add hq
   | monomial n a => simpa [mul_assoc, derivative_monomial]
-                      using (hasStrictDerivAt_pow n x).const_mul a
+                      using! (hasStrictDerivAt_pow n x).const_mul a
 
 protected theorem hasStrictDerivAt_aeval (x : 𝕜) :
     HasStrictDerivAt (fun x => aeval x q) (aeval x (derivative q)) x := by

@@ -19,7 +19,7 @@ This is in some sense a finitary version of the second Borel-Cantelli lemma.
 ## References
 
 [Bergelson, *Sets of recurrence of `ℤᵐ`-actions and properties of sets of differences in
-`ℤᵐ`][bergelson1985]
+`ℤᵐ`*][bergelson1985]
 
 ## TODO
 
@@ -30,7 +30,7 @@ Use the ergodic theorem to deduce the refinement of the Poincaré recurrence the
 Bergelson.
 -/
 
-@[expose] public section
+public section
 
 open Filter Function MeasureTheory Set
 open scoped ENNReal
@@ -78,7 +78,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     simp_rw [hfapp]
     rw [lintegral_const_mul _ <| Finset.measurable_fun_sum _
         fun _ _ ↦ measurable_one.indicator <| hs _,
-      lintegral_finset_sum _ fun _ _ ↦ measurable_one.indicator (hs _)]
+      lintegral_finsetSum _ fun _ _ ↦ measurable_one.indicator (hs _)]
     simp only [lintegral_indicator_one (hs _)]
     rw [← ENNReal.div_eq_inv_mul, ENNReal.le_div_iff_mul_le (by simp) (by simp), ← nsmul_eq_mul']
     simpa using Finset.card_nsmul_le_sum (Finset.range (n + 1)) _ _ fun _ _ ↦ hr _
@@ -103,12 +103,12 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     -- TODO: Separate it out to a lemma once we have a natural density API.
     · refine ENNReal.div_ne_zero.2 ⟨hr₀, by finiteness⟩ <| eq_bot_mono hx <|
         Tendsto.limsup_eq <| tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_left' ?_ _
+        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_right ?_ _
       · simpa using ENNReal.Tendsto.mul_const (ENNReal.tendsto_inv_nat_nhds_zero.comp <|
           tendsto_add_atTop_nat 1) (.inr <| ENNReal.natCast_ne_top _)
       · classical
         simpa only [Finset.sum_apply, indicator_apply, Pi.one_apply, Finset.sum_boole, Nat.cast_le]
-          using Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
+          using! Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
     · simp_rw [← hu.mem_toFinset]
       exact hN₁ _ ⟨x, mem_iInter₂.2 fun n hn ↦ hux <| hu.mem_toFinset.1 hn, hxN⟩
   · refine Eventually.of_forall fun n ↦ ?_

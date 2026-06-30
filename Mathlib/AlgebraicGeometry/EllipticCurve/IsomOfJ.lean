@@ -20,7 +20,7 @@ public import Mathlib.FieldTheory.IsSepClosed
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

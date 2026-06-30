@@ -7,10 +7,14 @@ module
 
 public meta import ProofWidgets.Component.PenroseDiagram
 public meta import ProofWidgets.Component.Panel.Basic
-public meta import ProofWidgets.Presentation.Expr
-public meta import ProofWidgets.Component.HtmlDisplay
-public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+public meta import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+public import ProofWidgets.Component.HtmlDisplay
+public import ProofWidgets.Component.Panel.Basic
+public import ProofWidgets.Component.PenroseDiagram
+public import ProofWidgets.Presentation.Expr
 
 /-!
 # String Diagram Widget
@@ -206,14 +210,12 @@ def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
   | NormalExpr.nil _ _ => return []
   | NormalExpr.cons _ _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
 
-/-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
-def pairs {α : Type} : List α → List (α × α) :=
-  fun l => l.zip (l.drop 1)
+@[deprecated (since := "2026-02-26")] meta alias pairs := List.consecutivePairs
 
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
   let l ← e.nodes
-  (pairs l).mapM fun (x, y) ↦ do
+  (l.consecutivePairs).mapM fun (x, y) ↦ do
     let xs := (x.map (fun n ↦ n.tarList)).flatten
     let ys := (y.map (fun n ↦ n.srcList)).flatten
     -- sanity check
@@ -275,10 +277,10 @@ def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
     | .id _ => do addPenroseVar "Id" x.toPenroseVar
   /- Add constraints. -/
   for l in nodes do
-    for (x₁, x₂) in pairs l do
+    for (x₁, x₂) in l.consecutivePairs do
       addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add constraints. -/
-  for (l₁, l₂) in pairs nodes do
+  for (l₁, l₂) in nodes.consecutivePairs do
     if let some x₁ := l₁.head? then
       if let some x₂ := l₂.head? then
         addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"

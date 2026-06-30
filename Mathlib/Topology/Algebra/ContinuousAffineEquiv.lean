@@ -30,7 +30,7 @@ which are continuous with continuous inverse.
 
 ## TODO
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
-with multiplication corresponding to composition in `AffineEquiv.group`.
+  with multiplication corresponding to composition in `AffineEquiv.group`.
 
 -/
 
@@ -85,11 +85,9 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
-@[deprecated (since := "2025-08-15")] alias coe_injective := toAffineEquiv_injective
-
 instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
-  coe_injective' _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)
+  coe_injective _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)
 
 @[simp, norm_cast]
 theorem coe_coe (e : P₁ ≃ᴬ[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
@@ -98,18 +96,6 @@ theorem coe_coe (e : P₁ ≃ᴬ[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
 @[simp]
 theorem coe_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
-
-/-- See Note [custom simps projection].
-  We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
-def Simps.apply (e : P₁ ≃ᴬ[k] P₂) : P₁ → P₂ :=
-  e
-
-/-- See Note [custom simps projection]. -/
-def Simps.symm_apply (e : P₁ ≃ᴬ[k] P₂) : P₂ → P₁ :=
-  e.symm
-
-initialize_simps_projections ContinuousAffineEquiv (toFun → apply, invFun → symm_apply)
 
 @[ext]
 theorem ext {e e' : P₁ ≃ᴬ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
@@ -123,6 +109,10 @@ protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
   __ := e
   cont := e.continuous_toFun
+
+/-- Coerce continuous linear equivs to continuous linear maps. -/
+instance ContinuousAffineMap.coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ →ᴬ[k] P₂) :=
+  ⟨toContinuousAffineMap⟩
 
 @[simp]
 lemma coe_toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toContinuousAffineMap = e :=
@@ -176,12 +166,20 @@ def symm (e : P₁ ≃ᴬ[k] P₂) : P₂ ≃ᴬ[k] P₁ where
   continuous_toFun := e.continuous_invFun
   continuous_invFun := e.continuous_toFun
 
+/-- See Note [custom simps projection].
+  We need to specify this projection explicitly in this case,
+  because it is a composition of multiple projections. -/
+def Simps.apply (e : P₁ ≃ᴬ[k] P₂) : P₁ → P₂ :=
+  e
+
+/-- See Note [custom simps projection]. -/
+def Simps.symm_apply (e : P₁ ≃ᴬ[k] P₂) : P₂ → P₁ :=
+  e.symm
+
+initialize_simps_projections ContinuousAffineEquiv (toFun → apply, invFun → symm_apply)
+
 @[simp]
 theorem toAffineEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
-  rfl
-
-@[deprecated "use instead `toAffineEquiv_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
   rfl
 
 @[simp]
@@ -189,9 +187,6 @@ theorem coe_symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toAffineEquiv.sy
 
 @[simp]
 theorem toEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm := rfl
-
-@[deprecated "use instead `symm_toEquiv`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : e.toEquiv.symm = e.symm.toEquiv := rfl
 
 @[simp]
 theorem coe_symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv.symm = e.symm := rfl
@@ -250,17 +245,17 @@ protected theorem image_symm_eq_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂
   rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
-theorem image_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' (e ⁻¹' s) = s :=
+theorem image_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' e ⁻¹' s = s :=
   e.surjective.image_preimage s
 
 @[simp]
-theorem preimage_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e ⁻¹' (e '' s) = s :=
+theorem preimage_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e ⁻¹' e '' s = s :=
   e.injective.preimage_image s
 
-theorem symm_image_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e.symm '' (e '' s) = s :=
+theorem symm_image_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e.symm '' e '' s = s :=
   e.toEquiv.symm_image_image s
 
-theorem image_symm_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' (e.symm '' s) = s :=
+theorem image_symm_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' e.symm '' s = s :=
   e.symm.symm_image_image s
 
 @[simp]
@@ -311,6 +306,60 @@ lemma trans_toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) (e' : P₂ ≃ᴬ[k]
   rfl
 
 end ReflSymmTrans
+
+section
+
+variable (k)
+variable [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁]
+
+/-- The affine homeomorphism `V ≃ᴬ[k] P` given by `v ↦ v +ᵥ p`. This is `Equiv.vaddConst`
+as a `ContinuousAffineEquiv`. -/
+@[simps! apply symm_apply]
+def vaddConst (p : P₁) : V₁ ≃ᴬ[k] P₁ where
+  __ := AffineEquiv.vaddConst k p
+  __ := Homeomorph.vaddConst p
+
+@[simp]
+lemma toAffineEquiv_vaddConst {p : P₁} : vaddConst k p = AffineEquiv.vaddConst k p := rfl
+
+/-- The affine homeomorphism given by `p' ↦ p -ᵥ p'`. This is `Equiv.constVSub` as a
+`ContinuousAffineEquiv`. -/
+@[simps! apply symm_apply]
+def constVSub (p : P₁) : P₁ ≃ᴬ[k] V₁ where
+  __ := AffineEquiv.constVSub k p
+  __ := Homeomorph.constVSub p
+
+@[simp]
+lemma toAffineEquiv_constVSub {p : P₁} : constVSub k p = AffineEquiv.constVSub k p := rfl
+
+/-- The affine homeomorphism given by reflection about the point `x`.
+This is `Equiv.pointReflection` as a `ContinuousAffineEquiv`. -/
+def pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ :=
+  (constVSub k x).trans (vaddConst k x)
+
+@[simp]
+lemma coe_pointReflection (x : P₁) :
+    (pointReflection k x : P₁ → P₁) = Equiv.pointReflection x := rfl
+
+theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) +ᵥ x :=
+  rfl
+
+@[simp]
+theorem pointReflection_symm (x : P₁) : (pointReflection k x).symm = pointReflection k x :=
+  toAffineEquiv_injective <| AffineEquiv.pointReflection_symm k x
+
+@[simp]
+theorem toAffineEquiv_pointReflection (x : P₁) :
+    (pointReflection k x).toAffineEquiv = AffineEquiv.pointReflection k x :=
+  rfl
+
+theorem pointReflection_self (x : P₁) : pointReflection k x x = x :=
+  vsub_vadd _ _
+
+theorem pointReflection_involutive (x : P₁) : Involutive (pointReflection k x : P₁ → P₁) :=
+  Equiv.pointReflection_involutive x
+
+end
 
 section
 
@@ -378,7 +427,7 @@ section
 variable (k P₁ P₂ P₃)
 
 /-- Product of affine spaces is commutative up to continuous affine isomorphism. -/
-@[simps! apply symm_apply toAffineEquiv]
+@[simps! apply toAffineEquiv]
 def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
   __ := AffineEquiv.prodComm k P₁ P₂
   continuous_toFun := continuous_swap
@@ -388,8 +437,9 @@ def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Product of affine spaces is associative up to continuous affine isomorphism. -/
-@[simps! apply symm_apply toAffineEquiv]
+@[simps! apply toAffineEquiv]
 def prodAssoc : (P₁ × P₂) × P₃ ≃ᴬ[k] P₁ × (P₂ × P₃) where
   __ := AffineEquiv.prodAssoc k P₁ P₂ P₃
   continuous_toFun := by eta_expand; dsimp; fun_prop

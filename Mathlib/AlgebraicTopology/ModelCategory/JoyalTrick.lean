@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # A trick by Joyal
@@ -23,7 +24,7 @@ namely that cofibrations are stable under composition and cobase change.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits MorphismProperty
 
@@ -31,10 +32,11 @@ namespace HomotopicalAlgebra
 
 namespace ModelCategory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   [CategoryWithCofibrations C] [CategoryWithFibrations C] [CategoryWithWeakEquivalences C]
   [(weakEquivalences C).HasTwoOutOfThreeProperty]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Joyal's trick: that cofibrations have the left lifting property
 with respect to trivial fibrations follows from the left lifting property
 of trivial cofibrations with respect to fibrations and a few other
@@ -63,6 +65,7 @@ lemma hasLiftingProperty_of_joyalTrick
                 simpa only [assoc, comp_id, pushout.condition_assoc] using
                   f ≫= sq'.fac_left }⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Joyal's trick (dual): that trivial cofibrations have the left lifting
 property with respect to fibrations follows from the left lifting property
 of cofibrations with respect to trivial fibrations and a few other
@@ -85,7 +88,7 @@ lemma hasLiftingProperty_of_joyalTrickDual
     rw [← fibration_iff] at h₂
     have : WeakEquivalence (h.p ≫ pullback.snd p g) := by
       rw [weakEquivalence_iff] at h₁ ⊢
-      exact of_precomp _ _ _  h.hi.2 h₁
+      exact of_precomp _ _ _ h.hi.2 h₁
     exact ⟨⟨{ l := sq'.lift ≫ h.p ≫ pullback.fst p g
               fac_right := by
                 rw [assoc, assoc, pullback.condition, reassoc_of% sq'.fac_right] }⟩⟩

@@ -59,7 +59,7 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
 theorem toTensorAlgebra_galgebra_toFun (r : R) :
     TensorPower.toTensorAlgebra (DirectSum.GAlgebra.toFun (R := R) (A := fun n => ⨂[R]^n M) r) =
       algebraMap _ _ r := by
-  rw [TensorPower.galgebra_toFun_def, TensorPower.algebraMap₀_eq_smul_one, LinearMap.map_smul,
+  rw [TensorPower.galgebra_toFun_def, TensorPower.algebraMap₀_eq_smul_one, map_smul,
     TensorPower.toTensorAlgebra_gOne, Algebra.algebraMap_eq_smul_one]
 
 end TensorPower
@@ -87,8 +87,8 @@ def toDirectSum : TensorAlgebra R M →ₐ[R] ⨁ n, ⨂[R]^n M :=
 @[simp]
 theorem toDirectSum_ι (x : M) :
     toDirectSum (ι R x) =
-      DirectSum.of (fun n => ⨂[R]^n M) _ (PiTensorProduct.tprod R fun _ : Fin 1 => x) :=
-  TensorAlgebra.lift_ι_apply _ _
+      DirectSum.of (fun n => ⨂[R]^n M) _ (PiTensorProduct.tprod R fun _ : Fin 1 => x) := by
+  simp [toDirectSum, TensorAlgebra.lift_ι_apply, DirectSum.lof_eq_of]
 
 theorem ofDirectSum_comp_toDirectSum :
     ofDirectSum.comp toDirectSum = AlgHom.id R (TensorAlgebra R M) := by
@@ -113,6 +113,7 @@ theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     (PiTensorProduct.reindex R (fun _ ↦ M) (finCongr h) x) = GradedMonoid.mk n x := by
   rw [finCongr_eq_equivCast, mk_reindex_cast h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of tensor products made of a single vector is the same as a single product of
 all the vectors. -/
 theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :

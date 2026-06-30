@@ -11,14 +11,14 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.FunLike.IsApply
 
 /-!
 # Big operators for Pi Types
 
-This file contains theorems relevant to big operators in binary and arbitrary product
-of monoids and groups
+This file contains theorems relevant to big operators in binary and arbitrary products
+of monoids and groups.
 -/
 
 @[expose] public section
@@ -47,7 +47,7 @@ theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M 
   map_prod (Pi.evalMonoidHom M a) _ _
 
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
-@[to_additive /-- An 'unapplied' analogue of `Finset.sum_apply`. -/]
+@[to_additive (attr := push ←) /-- An 'unapplied' analogue of `Finset.sum_apply`. -/]
 theorem Finset.prod_fn {α : Type*} {M : α → Type*} {ι} [∀ a, CommMonoid (M a)] (s : Finset ι)
     (g : ι → ∀ a, M a) : ∏ c ∈ s, g c = fun a ↦ ∏ c ∈ s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
@@ -72,7 +72,7 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [N
 /-- Decomposing `x : ι → R` as a sum along the canonical basis `Pi.single i 1` for `i : ι`. -/
 theorem pi_eq_sum_univ' {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
     (x : ι → R) : x = ∑ i, (x i) • Pi.single (M := fun _ ↦ R) i 1 := by
-  convert pi_eq_sum_univ x
+  convert! pi_eq_sum_univ x
   aesop
 
 section CommSemiring
@@ -175,7 +175,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
   invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)
   left_inv φ := by
     ext
-    simp only [MonoidHom.finset_prod_apply, MonoidHom.coe_comp, Function.comp_apply,
+    simp only [MonoidHom.finsetProd_apply, MonoidHom.coe_comp, Function.comp_apply,
       evalMonoidHom_apply, MonoidHom.mulSingle_apply, ← map_prod]
     refine congrArg _ <| funext fun _ ↦ ?_
     rw [Fintype.prod_apply]
@@ -183,7 +183,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
   right_inv φ := by
     ext i m
     simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-      MonoidHom.finset_prod_apply, evalMonoidHom_apply, ]
+      MonoidHom.finsetProd_apply, evalMonoidHom_apply, ]
     let φ' i : M i → M' := ⇑(φ i)
     conv =>
       enter [1, 2, j]
@@ -197,11 +197,11 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
 
 end MulEquiv
 
-variable [Finite ι] [DecidableEq ι] {M : Type*}
+variable [Finite ι] [DecidableEq ι] {M : ι → Type*}
 
 -- manually additivized to fix variable names
 -- See https://github.com/leanprover-community/mathlib4/issues/11462
-lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
+lemma Pi.single_induction [∀ i, AddCommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
     (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
     (single : ∀ i m, p (Pi.single i m)) : p f := by
   cases nonempty_fintype ι
@@ -209,7 +209,7 @@ lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι �
   exact Finset.sum_induction _ _ add zero (by simp [single])
 
 @[to_additive existing (attr := elab_as_elim)]
-lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
+lemma Pi.mulSingle_induction [∀ i, CommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
     (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
   cases nonempty_fintype ι
@@ -228,6 +228,24 @@ theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α]
 theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
     Set.EqOn (fun b ↦ ∏ i ∈ v, f i b) (fun b ↦ ∏ i ∈ v, f' i b) s := by
-  convert eqOn_finsetProd h v <;> simp
+  convert! eqOn_finsetProd h v <;> simp
 
 end EqOn
+
+section FunLike
+
+variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
+  [IsOneApply F α β] [IsMulApply F α β]
+
+open Classical in
+@[to_additive (attr := simp, grind =)]
+theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h => simp [his, h]
+
+@[to_additive (attr := norm_cast)]
+theorem FunLike.coe_prod (s : Finset ι) (f : ι → F) : ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) := by
+  ext; simp
+
+end FunLike

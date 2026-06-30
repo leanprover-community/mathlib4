@@ -14,11 +14,11 @@ public import Mathlib.CategoryTheory.WithTerminal.Basic
 These lemmas and instances need more imports.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace WithTerminal
 

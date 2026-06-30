@@ -14,7 +14,7 @@ public import Mathlib.Data.Int.Log
 
 In this file we define `Real.logb` to be the logarithm of a real number in a given base `b`. We
 define this as the division of the natural logarithms of the argument and the base, so that we have
-a globally defined function with `logb b 0 = 0`, `logb b (-x) = logb b x` `logb 0 x = 0` and
+a globally defined function with `logb b 0 = 0`, `logb b (-x) = logb b x`, `logb 0 x = 0`, and
 `logb (-b) x = logb b x`.
 
 We prove some basic properties of this function and its relation to `rpow`.
@@ -74,8 +74,8 @@ theorem logb_abs_base (b x : ℝ) : logb |b| x = logb b x := by rw [logb, logb, 
 theorem logb_abs (b x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
 
 @[simp]
-theorem logb_neg_base_eq_logb (b x : ℝ) : logb (-b) x = logb b x := by
-  rw [← logb_abs_base b x, ← logb_abs_base (-b) x, abs_neg]
+theorem logb_neg_base_eq_logb (b : ℝ) : logb (-b) = logb b := by
+  ext x; rw [← logb_abs_base b x, ← logb_abs_base (-b) x, abs_neg]
 
 @[simp]
 theorem logb_neg_eq_logb (b x : ℝ) : logb b (-x) = logb b x := by
@@ -241,7 +241,7 @@ theorem logb_nonpos_iff (hx : 0 < x) : logb b x ≤ 0 ↔ x ≤ 1 := by
 
 theorem logb_nonpos_iff' (hx : 0 ≤ x) : logb b x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   exact logb_nonpos_iff hb hx
 
 theorem logb_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : logb b x ≤ 0 :=
@@ -405,7 +405,7 @@ theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log 
   · simp
   rw [← Nat.cast_inj (R := ℤ), Int.natCast_floor_eq_floor, floor_logb_natCast (by simp),
     Int.log_natCast]
-  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by cutsat))
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by lia))
 
 @[norm_cast]
 theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
@@ -416,7 +416,7 @@ theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog 
   · simp
   rw [← Nat.cast_inj (R := ℤ), Int.natCast_ceil_eq_ceil, ceil_logb_natCast (by simp),
     Int.clog_natCast]
-  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by cutsat))
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by lia))
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
@@ -505,7 +505,7 @@ theorem logb_nat_eq_sum_factorization (n : ℕ) :
 theorem tendsto_pow_logb_div_mul_add_atTop (a c : ℝ) (n : ℕ) (ha : a ≠ 0) :
     Tendsto (fun x => logb b x ^ n / (a * x + c)) atTop (𝓝 0) := by
   cases eq_or_ne (log b) 0 with
-  | inl h => simpa [logb, h] using ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
+  | inl h => simpa [logb, h] using! ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
   | inr h => apply (tendsto_pow_log_div_mul_add_atTop (a * (log b) ^ n) (c * (log b) ^ n) n
                 (by positivity)).congr fun x ↦ by simp [field, div_pow, logb]
 
@@ -522,6 +522,32 @@ theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b �
   rw [Asymptotics.isLittleO_const_left, or_iff_not_imp_left]
   intro hc
   exact tendsto_abs_logb_atTop hb
+
+theorem isBigO_logb_log : logb b =O[⊤] log := by
+  by_cases! h : b = -1 ∨ b = 0 ∨ b = 1
+  · obtain rfl | rfl | rfl := h
+    all_goals simpa [-Asymptotics.isBigO_top] using! Asymptotics.isBigO_zero log ⊤
+  · simpa [logb, div_eq_mul_inv, mul_comm]
+      using! (Asymptotics.isBigO_refl log ⊤).const_mul_left (log b)⁻¹
+
+theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (fun x ↦ log (c * x)) =O[atTop] log := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa using isLittleO_const_log_atTop.isBigO
+  · calc (fun x ↦ log (c * x))
+      =ᶠ[atTop] (fun x => log c + log x) := by
+          filter_upwards [eventually_gt_atTop 0] with a ha using log_mul hc ha.ne'
+      _ =O[atTop] log :=
+          isLittleO_const_log_atTop.isBigO.add (Asymptotics.isBigO_refl ..)
+
+theorem isBigO_log_mul_const_log_atTop (c : ℝ) : (fun x ↦ log (x * c)) =O[atTop] log := by
+  simpa [mul_comm] using isBigO_log_const_mul_log_atTop c
+
+theorem isBigO_logb_const_mul_log_atTop (c : ℝ) : (fun x ↦ logb b (c * x)) =O[atTop] log := by
+  simpa [logb, div_eq_mul_inv, mul_comm]
+    using (isBigO_log_const_mul_log_atTop c).const_mul_left (log b)⁻¹
+
+theorem isBigO_logb_mul_const_log_atTop (c : ℝ) : (fun x ↦ logb b (x * c)) =O[atTop] log := by
+  simpa [mul_comm] using isBigO_logb_const_mul_log_atTop c
 
 end Real
 
@@ -569,7 +595,7 @@ variable {b : ℝ}
 
 theorem tendsto_logb_comp_add_sub_logb (y : ℝ) :
     Tendsto (fun x : ℝ => logb b (x + y) - logb b x) atTop (𝓝 0) := by
-  simpa [sub_div] using (tendsto_log_comp_add_sub_log y).div_const (log b)
+  simpa [sub_div] using! (tendsto_log_comp_add_sub_log y).div_const (log b)
 
 theorem tendsto_logb_nat_add_one_sub_logb :
     Tendsto (fun k : ℕ => logb b (k + 1) - logb b k) atTop (𝓝 0) :=

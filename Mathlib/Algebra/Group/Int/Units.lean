@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Nat.Units
 # Units in the integers
 -/
 
-@[expose] public section
+public section
 
 
 open Nat
@@ -34,7 +34,7 @@ lemma units_natAbs (u : ℤˣ) : natAbs u = 1 :=
 @[simp] lemma natAbs_of_isUnit (hu : IsUnit u) : natAbs u = 1 := units_natAbs hu.unit
 
 lemma isUnit_eq_one_or (hu : IsUnit u) : u = 1 ∨ u = -1 := by
-  simpa only [natAbs_of_isUnit hu] using natAbs_eq u
+  simpa only [natAbs_of_isUnit hu] using! natAbs_eq u
 
 lemma isUnit_ne_iff_eq_neg (hu : IsUnit u) (hv : IsUnit v) : u ≠ v ↔ u = -v := by
   obtain rfl | rfl := isUnit_eq_one_or hu <;> obtain rfl | rfl := isUnit_eq_one_or hv <;> decide
@@ -86,7 +86,7 @@ lemma isUnit_mul_self (hu : IsUnit u) : u * u = 1 :=
 lemma isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b)
     (hc : IsUnit c) (hd : IsUnit d) : a + b = c + d ↔ a = c ∧ b = d ∨ a = d ∧ b = c := by
   rw [isUnit_iff] at ha hb hc hd
-  cutsat
+  lia
 
 lemma eq_one_or_neg_one_of_mul_eq_neg_one (h : u * v = -1) : u = 1 ∨ u = -1 :=
   Or.elim (eq_one_or_neg_one_of_mul_eq_neg_one' h) (fun H => Or.inl H.1) fun H => Or.inr H.1

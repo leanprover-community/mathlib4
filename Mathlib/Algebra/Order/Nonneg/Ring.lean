@@ -21,10 +21,6 @@ Currently we only state instances and states some `simp`/`norm_cast` lemmas.
 
 When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
-## Main declarations
-
-* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedAddCommMonoid` if `α` is a `LinearOrderedRing`.
-
 ## Implementation Notes
 
 Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
@@ -36,7 +32,7 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -83,9 +79,8 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
   · exact ⟨0, ⟨a, lt.le⟩, Subtype.coe_ne_coe.mp ha.symm⟩
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
-    LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
-  { Nonneg.commSemiring, Nonneg.isOrderedRing with
-    mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
+    LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } where
+  isBot_zero a := a.2
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd { x : α // 0 ≤ x } where
@@ -98,7 +93,7 @@ instance noZeroDivisors [Semiring α] [PartialOrder α] [IsOrderedRing α] [NoZe
     NoZeroDivisors { x : α // 0 ≤ x } :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
-      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
+      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self] }
 
 instance orderedSub [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     OrderedSub { x : α // 0 ≤ x } :=

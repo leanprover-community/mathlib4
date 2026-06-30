@@ -30,7 +30,7 @@ We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log
 the problem that this expression does not type-check.
 -/
 
-@[expose] public section
+public section
 
 open Complex LSeries
 
@@ -67,11 +67,11 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
     fun z _ ↦ (hasDerivAt_term f n _).differentiableAt.differentiableWithinAt
   have h₂ : IsOpen S := isOpen_lt continuous_const continuous_re
   have h₃ (n z) (hz : z ∈ S) : ‖term f z n‖ ≤ ‖term f x n‖ :=
-    norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
+    norm_term_le_of_re_le_re f (by simpa using! (hxy.trans hz).le) n
   have H := hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys
   simp_rw [(hasDerivAt_term f _ _).deriv] at H
   refine ⟨summable_neg_iff.mp H.summable, ?_⟩
-  simpa [← H.tsum_eq, tsum_neg] using ((differentiableOn_tsum_of_summable_norm
+  simpa [← H.tsum_eq, tsum_neg] using! ((differentiableOn_tsum_of_summable_norm
     h₀ h₁ h₂ h₃).differentiableAt <| h₂.mem_nhds hys).hasDerivAt
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then the L-series

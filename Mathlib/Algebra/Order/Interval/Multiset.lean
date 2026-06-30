@@ -14,7 +14,7 @@ public import Mathlib.Order.Interval.Multiset
 This file provides results about the interaction of algebra with `Multiset.Ixx`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

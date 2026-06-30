@@ -87,7 +87,7 @@ instance : InvolutiveNeg (ConjRootClass K L) where
   neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
 
 @[simp]
-theorem carrier_neg (c : ConjRootClass K L) : carrier (- c) = - carrier c := by
+theorem carrier_neg (c : ConjRootClass K L) : carrier (-c) = - carrier c := by
   ext
   simp [mem_carrier, ← mk_neg, neg_eq_iff_eq_neg]
 
@@ -195,7 +195,7 @@ theorem minpoly.map_eq_prod [Normal K L] (c : ConjRootClass K L) [Fintype c.carr
     Finset.toFinset_coe, Multiset.toFinset_val]
   rw [Multiset.dedup_eq_self.mpr (nodup_roots c.separable_minpoly.map),
     prod_multiset_X_sub_C_of_monic_of_roots_card_eq (c.monic_minpoly.map _)]
-  rw [← splits_iff_card_roots, splits_id_iff_splits]
+  rw [← splits_iff_card_roots]
   exact c.splits_minpoly
 
 end IsSeparable

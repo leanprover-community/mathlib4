@@ -12,7 +12,7 @@ public import Mathlib.Topology.DenseEmbedding
 # Additive characters of topological monoids
 -/
 
-@[expose] public section
+public section
 
 lemma DenseRange.addChar_eq_of_eval_one_eq {A M : Type*} [TopologicalSpace A] [AddMonoidWithOne A]
     [Monoid M] [TopologicalSpace M] [T2Space M] (hdr : DenseRange ((↑) : ℕ → A))

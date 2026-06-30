@@ -17,7 +17,7 @@ In this file we show that a σ-compact Hausdorff topological manifold over a fin
 vector space is metrizable.
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace

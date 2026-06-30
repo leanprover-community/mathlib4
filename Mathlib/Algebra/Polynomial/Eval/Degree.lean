@@ -44,7 +44,7 @@ variable [Semiring S] (f : R →+* S) (x : S)
 theorem eval₂_eq_sum_range :
     p.eval₂ f x = ∑ i ∈ Finset.range (p.natDegree + 1), f (p.coeff i) * x ^ i :=
   _root_.trans (congr_arg _ p.as_sum_range)
-    (_root_.trans (eval₂_finset_sum f _ _ x) (congr_arg _ (by simp)))
+    (_root_.trans (eval₂_finsetSum f _ _ x) (congr_arg _ (by simp)))
 
 theorem eval₂_eq_sum_range' (f : R →+* S) {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
     eval₂ f x p = ∑ i ∈ Finset.range n, f (p.coeff i) * x ^ i := by
@@ -80,7 +80,7 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
   rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
     mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
   refine sum_congr rfl fun y _hy => ?_
-  rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.succ_mul_choose_eq, Nat.cast_mul,
+  rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.add_one_mul_choose_eq, Nat.cast_mul,
     Nat.add_sub_cancel]
 
 end Eval
@@ -107,7 +107,7 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
 @[simp] lemma comp_C_mul_X_coeff {r : R} {n : ℕ} :
     (p.comp <| C r * X).coeff n = p.coeff n * r ^ n := by
   simp_rw [comp, eval₂_eq_sum_range, (commute_X _).symm.mul_pow,
-    ← C_pow, finset_sum_coeff, coeff_C_mul, coeff_X_pow]
+    ← C_pow, finsetSum_coeff, coeff_C_mul, coeff_X_pow]
   rw [Finset.sum_eq_single n _ fun h ↦ ?_, if_pos rfl, mul_one]
   · intro b _ h; simp_rw [if_neg h.symm, mul_zero]
   · rw [coeff_eq_zero_of_natDegree_lt, zero_mul]
@@ -129,7 +129,7 @@ variable (f) in
 /-- If `R` and `S` are isomorphic, then so are their polynomial rings. -/
 @[simps!]
 def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
-  RingEquiv.ofHomInv (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
+  RingEquiv.ofRingHom (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
     (by ext; simp)
 
 theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
@@ -203,7 +203,7 @@ section
 variable [Semiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
 
 theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q) p := by
-  rw [comp, p.as_sum_range]; simp [eval₂_finset_sum, eval₂_pow]
+  rw [comp, p.as_sum_range]; simp [eval₂_finsetSum, eval₂_pow]
 
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
@@ -238,7 +238,7 @@ lemma isUnit_of_isUnit_leadingCoeff_of_isUnit_map (hf : IsUnit f.leadingCoeff)
   rw [degree_map_eq_of_leadingCoeff_ne_zero] at dz
   · rw [eq_C_of_degree_eq_zero dz]
     refine IsUnit.map C ?_
-    convert hf
+    convert! hf
     change coeff f 0 = coeff f (natDegree f)
     rw [(degree_eq_iff_natDegree_eq _).1 dz]
     · rfl

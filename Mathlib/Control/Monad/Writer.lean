@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, Edward Ayers
+Authors: Simon Hudon, Edward Ayers, Eric Wieser
 -/
 module
 
@@ -45,7 +45,7 @@ class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
 
 export MonadWriter (tell listen pass)
 
-variable {M : Type u → Type v} {α ω ρ σ : Type u}
+variable {M : Type u → Type v} {α β ω ρ σ : Type u}
 
 instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
   tell w := (tell w : M _)
@@ -54,7 +54,7 @@ instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
 
 instance [Monad M] [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
   tell w := (tell w : M _)
-  listen x s := (fun ((a,w), s) ↦ ((a,s), w)) <$> listen (x s)
+  listen x s := (fun ((a, w), s) ↦ ((a, s), w)) <$> listen (x s)
   pass x s := pass <| (fun ((a, f), s) ↦ ((a, s), f)) <$> (x s)
 
 namespace WriterT
@@ -63,8 +63,10 @@ namespace WriterT
 protected def mk {ω : Type u} (cmd : M (α × ω)) : WriterT ω M α := cmd
 @[inline]
 protected def run {ω : Type u} (cmd : WriterT ω M α) : M (α × ω) := cmd
-@[inline]
-protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
+
+abbrev runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd.run
+
+@[simp] theorem run_mk {ω : Type u} (cmd : M (α × ω)) : (WriterT.mk cmd).run = cmd := rfl
 
 @[ext]
 protected theorem ext {ω : Type u} (x x' : WriterT ω M α) (h : x.run = x'.run) : x = x' := h
@@ -81,16 +83,42 @@ This is used to derive instances for both `[EmptyCollection ω] [Append ω]` and
 -/
 @[reducible, inline]
 def monad (empty : ω) (append : ω → ω → ω) : Monad (WriterT ω M) where
-  map := fun f (cmd : M _) ↦ WriterT.mk <| (fun (a,w) ↦ (f a, w)) <$> cmd
+  map := fun f cmd ↦ WriterT.mk <| (fun (a, w) ↦ (f a, w)) <$> cmd.run
   pure := fun a ↦ pure (f := M) (a, empty)
-  bind := fun (cmd : M _) f ↦
-    WriterT.mk <| cmd >>= fun (a, w₁) ↦
-      (fun (b, w₂) ↦ (b, append w₁ w₂)) <$> (f a)
+  bind := fun cmd f ↦
+    WriterT.mk <| cmd.run >>= fun (a, w₁) ↦
+      (fun (b, w₂) ↦ (b, append w₁ w₂)) <$> (f a).run
+
+@[simp]
+theorem run_pure (empty : ω) (append : ω → ω → ω) (a : α) :
+    letI : Monad (WriterT ω M) := monad empty append
+    (pure a : WriterT ω M α).run = pure (a, empty) :=
+  rfl
+
+@[simp]
+theorem run_map (empty : ω) (append : ω → ω → ω) (f : α → β) (cmd : WriterT ω M α) :
+    letI : Monad (WriterT ω M) := monad empty append
+    (f <$> cmd).run = (fun (a, w) ↦ (f a, w)) <$> cmd.run :=
+  rfl
+
+@[simp]
+theorem run_bind (empty : ω) (append : ω → ω → ω)
+    (cmd : WriterT ω M α) (f : α → WriterT ω M β) :
+    letI : Monad (WriterT ω M) := monad empty append
+    (cmd >>= f).run = cmd.run >>= fun (a, w₁) ↦
+      (fun (b, w₂) ↦ (b, append w₁ w₂)) <$> (f a).run :=
+  rfl
 
 /-- Lift an `M` to a `WriterT ω M`, using the given `empty` as the monoid unit. -/
-@[inline]
+@[inline, implicit_reducible]
 protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
   monadLift := fun cmd ↦ WriterT.mk <| (fun a ↦ (a, empty)) <$> cmd
+
+@[simp]
+theorem run_liftM (empty : ω) (cmd : M α) :
+    letI : MonadLift M (WriterT ω M) := WriterT.liftTell empty
+    (cmd : WriterT ω M α).run = (fun a ↦ (a, empty)) <$> cmd :=
+  rfl
 
 instance [EmptyCollection ω] [Append ω] : Monad (WriterT ω M) := monad ∅ (· ++ ·)
 instance [EmptyCollection ω] : MonadLift M (WriterT ω M) := WriterT.liftTell ∅
@@ -98,20 +126,44 @@ instance [Monoid ω] : Monad (WriterT ω M) := monad 1 (· * ·)
 instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
 
 instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
-  (bind_pure_comp := by
-    simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
-  (id_map := by simp [Functor.map, WriterT.mk])
-  (pure_bind := by simp [Bind.bind, Pure.pure, WriterT.mk])
-  (bind_assoc := by simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
+  (bind_pure_comp := fun _ _ => by ext; simp)
+  (id_map := fun _ => by ext; simp)
+  (pure_bind := fun _ _ => by ext; simp)
+  (bind_assoc := fun _ _ _ => by ext; simp [mul_assoc])
 
 instance : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)
-  listen := fun cmd ↦ WriterT.mk <| (fun (a,w) ↦ ((a,w), w)) <$> cmd
-  pass := fun cmd ↦ WriterT.mk <| (fun ((a,f), w) ↦ (a, f w)) <$> cmd
+  listen := fun cmd ↦ WriterT.mk <| (fun (a, w) ↦ ((a, w), w)) <$> cmd.run
+  pass := fun cmd ↦ WriterT.mk <| (fun ((a, f), w) ↦ (a, f w)) <$> cmd.run
 
-instance {ε : Type*} [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
+@[simp]
+theorem run_tell (w : ω) :
+    WriterT.run (MonadWriter.tell w : WriterT ω M PUnit) = pure (⟨⟩, w) := rfl
+
+@[simp]
+theorem run_listen (cmd : WriterT ω M α) :
+    WriterT.run (MonadWriter.listen cmd) = (fun (a, w) ↦ ((a, w), w)) <$> cmd.run :=
+  rfl
+
+@[simp]
+theorem run_pass (cmd : WriterT ω M (α × (ω → ω))) :
+    WriterT.run (MonadWriter.pass cmd) = (fun ((a, f), w) ↦ (a, f w)) <$> cmd.run :=
+  rfl
+
+instance {ε : Type*} [MonadExceptOf ε M] : MonadExceptOf ε (WriterT ω M) where
   throw := fun e ↦ WriterT.mk <| throw e
-  tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd fun e ↦ (c e).run
+  tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd.run fun e ↦ (c e).run
+
+@[simp]
+theorem run_throw {M} {ε : Type*} [MonadExceptOf ε M] (e : ε) :
+    (throw e : WriterT ω M α).run = throw e :=
+  rfl
+
+@[simp]
+theorem run_tryCatch {M} {ε : Type*} [MonadExceptOf ε M]
+    (cmd : WriterT ω M α) (c : ε → WriterT ω M α) :
+    (tryCatch cmd c : WriterT ω M α).run = tryCatch cmd.run fun e ↦ (c e).run :=
+  rfl
 
 instance [MonadLiftT M (WriterT ω M)] : MonadControl M (WriterT ω M) where
   stM := fun α ↦ α × ω

@@ -8,7 +8,8 @@ module
 public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Message
 
 /-!
 # Linter for `attribute [...] in` declarations
@@ -54,6 +55,7 @@ For *removing* attributes, the `in` works as expected.
 error: failed to synthesize
   Add Nat
 -/
+
 #guard_msgs in
 attribute [-instance] instAddNat in
 #synth Add Nat
@@ -77,7 +79,7 @@ example : False := by simp
 ```
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
@@ -85,7 +87,7 @@ namespace Mathlib.Linter
 
 /-- Lint on any occurrence of `attribute [...] name in` which is not `local` or `scoped`:
 these are a footgun, as the attribute is applied *globally* (despite the `in`). -/
-register_option linter.globalAttributeIn : Bool := {
+public register_option linter.globalAttributeIn : Bool := {
   defValue := true
   descr := "enable the globalAttributeIn linter"
 }

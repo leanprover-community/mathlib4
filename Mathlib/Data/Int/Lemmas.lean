@@ -17,7 +17,7 @@ This file contains lemmas about integers, which require further imports than
 
 -/
 
-@[expose] public section
+public section
 
 
 open Nat
@@ -25,7 +25,7 @@ open Nat
 namespace Int
 
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  cutsat
+  lia
 
 /-! ### `succ` and `pred` -/
 

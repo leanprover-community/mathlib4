@@ -22,19 +22,28 @@ and its faces (numbered from `0` to `2`) are respectively `mk₁ g`,
 
 @[expose] public section
 
-universe v u
-
 namespace CategoryTheory
 
 namespace ComposableArrows
 
-variable {C : Type u} [Category.{v} C]
-  {i j k : C} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k) (h : f ≫ g = fg)
+section
 
+variable {C : Type*} [Category* C]
+  {i j k : C} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
+
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₁ f ⟶ mk₁ fg` when `f ≫ g = fg` for some morphism `g`. -/
-def twoδ₂Toδ₁ :
+def twoδ₂Toδ₁ (h : f ≫ g = fg := by cat_disch) :
     mk₁ f ⟶ mk₁ fg :=
   homMk₁ (𝟙 _) g
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The morphism `mk₁ fg ⟶ mk₁ g` when `f ≫ g = fg` for some morphism `f`. -/
+def twoδ₁Toδ₀ (h : f ≫ g = fg := by cat_disch) :
+    mk₁ fg ⟶ mk₁ g :=
+  homMk₁ f (𝟙 _)
+
+variable (h : f ≫ g = fg)
 
 @[simp]
 lemma twoδ₂Toδ₁_app_zero :
@@ -44,11 +53,6 @@ lemma twoδ₂Toδ₁_app_zero :
 lemma twoδ₂Toδ₁_app_one :
     (twoδ₂Toδ₁ f g fg h).app 1 = g := rfl
 
-/-- The morphism `mk₁ fg ⟶ mk₁ g` when `f ≫ g = fg` for some morphism `f`. -/
-def twoδ₁Toδ₀ :
-    mk₁ fg ⟶ mk₁ g :=
-  homMk₁ f (𝟙 _)
-
 @[simp]
 lemma twoδ₁Toδ₀_app_zero :
     (twoδ₁Toδ₀ f g fg h).app 0 = f := rfl
@@ -56,6 +60,34 @@ lemma twoδ₁Toδ₀_app_zero :
 @[simp]
 lemma twoδ₁Toδ₀_app_one :
     (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := rfl
+
+set_option backward.defeqAttrib.useBackward true in
+instance [IsIso g] : IsIso (twoδ₂Toδ₁ f g fg h) := by
+  rw [isIso_iff₁]
+  constructor <;> dsimp <;> infer_instance
+
+set_option backward.defeqAttrib.useBackward true in
+instance [IsIso f] : IsIso (twoδ₁Toδ₀ f g fg h) := by
+  rw [isIso_iff₁]
+  constructor <;> dsimp <;> infer_instance
+
+end
+
+section
+
+variable {ι : Type*} [Preorder ι] (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂)
+
+/-- Variant of `twoδ₁Toδ₀` for preorders. -/
+abbrev twoδ₁Toδ₀' :
+    mk₁ (homOfLE (hi₀₁.trans hi₁₂)) ⟶ mk₁ (homOfLE hi₁₂) :=
+  twoδ₁Toδ₀ (homOfLE hi₀₁) _ _ rfl
+
+/-- Variant of `twoδ₂Toδ₁` for preorders. -/
+abbrev twoδ₂Toδ₁' :
+     mk₁ (homOfLE hi₀₁) ⟶ mk₁ (homOfLE (hi₀₁.trans hi₁₂)) :=
+  twoδ₂Toδ₁ _ (homOfLE hi₁₂) _ rfl
+
+end
 
 end ComposableArrows
 

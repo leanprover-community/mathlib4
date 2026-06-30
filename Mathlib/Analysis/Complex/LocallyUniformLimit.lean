@@ -54,7 +54,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
     exact (norm_nonneg _).trans (hf w hw)
   have h1 : ∀ w ∈ sphere z r, ‖((w - z) ^ 2)⁻¹ • f w‖ ≤ M / r ^ 2 := by
     intro w hw
-    simp only [mem_sphere_iff_norm] at hw
+    simp only [mem_sphere_iff_norm] at hw hf
     simp only [norm_smul, inv_mul_eq_div, hw, norm_inv, norm_pow]
     exact div_le_div₀ hM (hf w hw) (sq_pos_of_pos hr) le_rfl
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
@@ -65,13 +65,14 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by
   have h1 : ContinuousOn (fun w : ℂ => ((w - z) ^ 2)⁻¹) (sphere z r) := by
-    refine ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => hr.ne ?_
+    refine ((continuous_id'.fun_sub continuous_const).fun_pow 2).continuousOn.inv₀
+      fun w hw h => hr.ne ?_
     rwa [mem_sphere_iff_norm, sq_eq_zero_iff.mp h, norm_zero] at hw
   simp_rw [cderiv, ← smul_sub]
   congr 1
   simpa only [Pi.sub_apply, smul_sub] using
-    circleIntegral.integral_sub ((h1.smul hf).circleIntegrable hr.le)
-      ((h1.smul hg).circleIntegrable hr.le)
+    circleIntegral.integral_sub ((h1.fun_smul hf).circleIntegrable hr.le)
+      ((h1.fun_smul hg).circleIntegrable hr.le)
 
 theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
     (hf : ContinuousOn f (sphere z r)) : ‖cderiv r f z‖ < M / r := by
@@ -92,7 +93,7 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
     TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) φ K := by
   rcases φ.eq_or_neBot with rfl | hne
   · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
-  have e1 : ContinuousOn f (cthickening δ K) := TendstoUniformlyOn.continuousOn hF hFn
+  have e1 : ContinuousOn f (cthickening δ K) := TendstoUniformlyOn.continuousOn hF hFn.frequently
   rw [tendstoUniformlyOn_iff] at hF ⊢
   rintro ε hε
   filter_upwards [hF (ε * δ) (mul_pos hε hδ), hFn] with n h h' z hz
@@ -102,7 +103,7 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
   have e3 := sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ)
   have hf : ContinuousOn f (sphere z δ) :=
     e1.mono (sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ))
-  simpa only [mul_div_cancel_right₀ _ hδ.ne.symm] using norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
+  simpa only [mul_div_cancel_right₀ _ hδ.ne.symm] using! norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
 
 end Cderiv
 
@@ -185,8 +186,10 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) := by
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  convert (hc.deriv (Eventually.of_forall fun s =>
-    DifferentiableOn.fun_sum fun i _ => hf i) hU).tendsto_at hz using 1
+  convert!
+    (hc.deriv (Eventually.of_forall fun s => DifferentiableOn.fun_sum fun i _ => hf i)
+          hU).tendsto_at
+      hz using 1
   ext1 s
   exact (deriv_fun_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
 
@@ -197,11 +200,10 @@ section LogDeriv
 /-- The logarithmic derivative of a sequence of functions converging locally uniformly to a
 function is the logarithmic derivative of the limit function. -/
 theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} {f : ι → ℂ → ℂ} {g : ℂ → ℂ}
-    {s : Set ℂ} (hs : IsOpen s) (x : s) (hF : TendstoLocallyUniformlyOn f g p s)
-    (hf : ∀ᶠ n : ι in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
-    Tendsto (fun n : ι => logDeriv (f n) x) p (𝓝 ((logDeriv g) x)) := by
-  simp_rw [logDeriv]
-  apply Tendsto.div ((hF.deriv hf hs).tendsto_at x.2) (hF.tendsto_at x.2) hg
+    {s : Set ℂ} (hs : IsOpen s) {x : ℂ} (hx : x ∈ s) (hF : TendstoLocallyUniformlyOn f g p s)
+    (hf : ∀ᶠ n in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
+    Tendsto (fun n ↦ logDeriv (f n) x) p (𝓝 (logDeriv g x)) :=
+  ((hF.deriv hf hs).tendsto_at hx).div (hF.tendsto_at hx) hg
 
 end LogDeriv
 

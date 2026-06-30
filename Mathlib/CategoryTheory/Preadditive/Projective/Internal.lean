@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson, Jonas van der Schaaf
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
@@ -32,7 +32,7 @@ open CategoryTheory MonoidalCategory MonoidalClosed Limits Functor
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [MonoidalClosed C]
+variable {C : Type*} [Category* C] [MonoidalCategory C] [MonoidalClosed C]
 
 /--
 An object `P : C` is *internally projective* if the functor `P ⟶[C] -` taking internal homs

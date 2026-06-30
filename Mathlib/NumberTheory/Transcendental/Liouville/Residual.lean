@@ -17,7 +17,7 @@ In this file we prove that the set of Liouville numbers form a dense `Gδ` set. 
 similar statement about irrational numbers.
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Filter
@@ -29,7 +29,7 @@ theorem setOf_liouville_eq_iInter_iUnion :
       ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (_ : 1 < b),
       ball ((a : ℝ) / b) (1 / (b : ℝ) ^ n) \ {(a : ℝ) / b} := by
   ext x
-  simp only [mem_iInter, mem_iUnion, Liouville, mem_setOf_eq, exists_prop, mem_diff,
+  simp only [mem_iInter, mem_iUnion, Liouville, mem_setOf_eq, exists_prop, Set.mem_sdiff,
     mem_singleton_iff, mem_ball, Real.dist_eq, and_comm]
 
 theorem IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by
@@ -46,11 +46,11 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
   refine Subset.antisymm ?_ ?_
   · refine subset_inter (fun x hx => hx.irrational) ?_
     rw [setOf_liouville_eq_iInter_iUnion]
-    exact iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun _hb => diff_subset
+    exact iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun _hb => sdiff_subset
   · simp only [inter_iInter, inter_iUnion, setOf_liouville_eq_iInter_iUnion]
     refine iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun hb => ?_
     rw [inter_comm]
-    exact diff_subset_diff Subset.rfl (singleton_subset_iff.2 ⟨a / b, by norm_cast⟩)
+    exact sdiff_subset_sdiff Subset.rfl (singleton_subset_iff.2 ⟨a / b, by norm_cast⟩)
 
 /-- The set of Liouville numbers is a residual set. -/
 theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x := by
@@ -62,8 +62,8 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
   · rintro _ ⟨r, rfl⟩
     simp only [mem_iInter, mem_iUnion]
     refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩
-    · have := r.pos; cutsat
-    · convert @mem_ball_self ℝ _ (r : ℝ) _ _
+    · have := r.pos; lia
+    · convert! @mem_ball_self ℝ _ (r : ℝ) _ _
       · push_cast
         -- Workaround for https://github.com/leanprover/lean4/pull/6438; this eliminates an
         -- `Expr.mdata` that would cause `norm_cast` to skip a numeral.

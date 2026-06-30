@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Polynomial.Degree.SmallDegree
 # Degree of polynomials that are units
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

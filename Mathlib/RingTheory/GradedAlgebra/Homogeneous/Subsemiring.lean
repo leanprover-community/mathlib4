@@ -48,7 +48,9 @@ theorem toSubsemiring_injective :
 
 instance setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
   coe x := x.carrier
-  coe_injective' _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
+
+instance : PartialOrder (HomogeneousSubsemiring 𝒜) := .ofSetLike (HomogeneousSubsemiring 𝒜) A
 
 theorem isHomogeneous (R : HomogeneousSubsemiring 𝒜) :
     IsHomogeneous 𝒜 R := R.is_homogeneous'
@@ -75,6 +77,7 @@ theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
 
 end HomogeneousSubsemiring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsHomogeneous.subsemiringClosure {s : Set A}
     (h : ∀ (i : ι) ⦃x : A⦄, x ∈ s → (decompose 𝒜 x i : A) ∈ s) :
     IsHomogeneous 𝒜 (Subsemiring.closure s) := fun i x hx ↦ by
@@ -88,18 +91,20 @@ theorem IsHomogeneous.subsemiringClosure {s : Set A}
   | mul x y _ _ h₁ h₂ =>
     classical
     rw [decompose_mul, DirectSum.mul_eq_dfinsuppSum]
-    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]
+    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]
     refine sum_mem fun j _ ↦ ?_
-    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]
+    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]
     refine sum_mem fun k _ ↦ ?_
     obtain rfl | h := eq_or_ne i (j + k) <;> simp [of_eq_of_ne, mul_mem, *]
 
 theorem IsHomogeneous.subsemiringClosure_of_isHomogeneousElem {s : Set A}
     (h : ∀ x ∈ s, IsHomogeneousElem 𝒜 x) :
-    IsHomogeneous 𝒜 (Subsemiring.closure s) :=
-  Subsemiring.closure_insert_zero s ▸ IsHomogeneous.subsemiringClosure fun i x hx ↦
-    hx.elim (by subst ·; simp) fun hx ↦ by
-    obtain ⟨j, hj⟩ := h x hx
+    IsHomogeneous 𝒜 (Subsemiring.closure s) := by
+  rw [← Subsemiring.closure_insert_zero s]
+  refine IsHomogeneous.subsemiringClosure fun i x hx ↦ ?_
+  obtain rfl | hx := mem_insert_iff.mp hx
+  · simp
+  · obtain ⟨j, hj⟩ := h x hx
     obtain rfl | h := eq_or_ne i j <;> simp [decompose_of_mem _ hj, of_eq_of_ne, *]
 
 end HomogeneousDef

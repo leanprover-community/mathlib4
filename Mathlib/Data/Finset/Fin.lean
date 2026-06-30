@@ -78,6 +78,4 @@ lemma attachFin_ssubset_attachFin_iff {s t : Finset ℕ} (hs : ∀ m ∈ s, m < 
 lemma attachFin_ssubset_attachFin {s t : Finset ℕ} (hst : s ⊂ t) (ht : ∀ m ∈ t, m < n) :
     s.attachFin (fun m hm ↦ ht m (hst.subset hm)) ⊂ t.attachFin ht := by simpa
 
-set_option linter.deprecated false
-
 end Finset
