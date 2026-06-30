@@ -11,17 +11,18 @@ public import Mathlib.Data.Matrix.Basis
 /-!
 # Composition of matrices
 
-This file shows that Mₙ(Mₘ(R)) ≃ Mₙₘ(R), Mₙ(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ
-and also different levels of equivalence when R is an AddCommMonoid,
-Semiring, and Algebra over a CommSemiring K.
+This file shows that `Mₙ(Mₘ(R)) ≃ Mₙₘ(R)`, `Mₙ(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ`
+and also different levels of equivalence when `R` is an `AddCommMonoid`,
+`Semiring`, and `Algebra` over a `CommSemiring K`.
 
-## Main results
+## Main definitions
 
 * `Matrix.comp` is an equivalence between `Matrix I J (Matrix K L R)` and
   `I × K` by `J × L` matrices.
-* `Matrix.swap` is an equivalence between `(I × J)` by `(K × L)` matrices and
-  `J × I` by `L × K` matrices.
-
+* `Matrix.compAddEquiv`: `Matrix.comp` as an `AddEquiv`
+* `Matrix.compRingEquiv`: `Matrix.comp` as a `RingEquiv`
+* `Matrix.compLinearEquiv`: `Matrix.comp` as a `LinearEquiv`
+* `Matrix.compAlgEquiv`: `Matrix.comp` as an `AlgEquiv`
 -/
 
 @[expose] public section
@@ -30,8 +31,8 @@ namespace Matrix
 
 variable (I J K L R R' : Type*)
 
-/-- I by J matrix where each entry is a K by L matrix is equivalent to
-    I × K by J × L matrix -/
+/-- An `I` by `J` matrix where each entry is a `K` by `L` matrix is equivalent to
+    an `I × K` by `J × L` matrix -/
 @[simps]
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
@@ -46,6 +47,7 @@ theorem comp_one [DecidableEq I] [DecidableEq J] [Zero R] [One R] : comp I I J J
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
     comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem comp_single_single
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (i j k l r) :
@@ -75,6 +77,7 @@ theorem comp_symm_single
       (single ii.1 jj.1 (single ii.2 jj.2 r)) :=
   (comp I J K L R).symm_apply_eq.2 <| comp_single_single _ _ _ _ _ |>.symm
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
     comp I I J J R (diagonal fun i => diagonal fun j => d i j)
@@ -103,15 +106,19 @@ theorem comp_map_transpose (M : Matrix I J (Matrix K L R)) :
 theorem comp_symm_transpose (M : Matrix (I × K) (J × L) R) :
     (comp J I L K R).symm Mᵀ = (((comp I J K L R).symm M).map (·ᵀ))ᵀ := rfl
 
+theorem transpose_comp (M : Matrix I J (Matrix K L R)) :
+    (comp I J K L R M)ᵀ = comp J I L K R (Mᵀ.map (·ᵀ)) :=
+  rfl
+
 end Basic
 
-section AddCommMonoid
+section Add
 
-variable [AddCommMonoid R]
+variable [Add R]
 
 /-- `Matrix.comp` as `AddEquiv` -/
 def compAddEquiv : Matrix I J (Matrix K L R) ≃+ Matrix (I × K) (J × L) R where
-  __ := Matrix.comp I J K L R
+  __ := comp I J K L R
   map_add' _ _ := rfl
 
 @[simp]
@@ -122,12 +129,16 @@ theorem compAddEquiv_apply (M : Matrix I J (Matrix K L R)) :
 theorem compAddEquiv_symm_apply (M : Matrix (I × K) (J × L) R) :
     (compAddEquiv I J K L R).symm M = (comp I J K L R).symm M := rfl
 
-variable [Mul R] [Fintype I] [Fintype J]
+end Add
+
+section AddCommMonoid
+
+variable [AddCommMonoid R] [Mul R] [Fintype I] [Fintype J]
 
 /-- `Matrix.comp` as `RingEquiv` -/
 def compRingEquiv : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R where
-  __ := Matrix.compAddEquiv I I J J R
-  map_mul' _ _ := by ext; exact (Matrix.sum_apply ..).trans <| .symm <| Fintype.sum_prod_type ..
+  __ := compAddEquiv I I J J R
+  map_mul' _ _ := by ext; exact sum_apply .. |>.trans <| .symm <| Fintype.sum_prod_type ..
 
 @[simp]
 theorem compRingEquiv_apply (M : Matrix I I (Matrix J J R)) :
@@ -151,7 +162,7 @@ variable (R₀ : Type*) [Semiring R₀] [AddCommMonoid R] [Module R₀ R]
 /-- `Matrix.comp` as `LinearEquiv` -/
 @[simps!]
 def compLinearEquiv : Matrix I J (Matrix K L R) ≃ₗ[R₀] Matrix (I × K) (J × L) R where
-  __ := Matrix.compAddEquiv I J K L R
+  __ := compAddEquiv I J K L R
   map_smul' _ _ := rfl
 
 end LinearMap
@@ -164,7 +175,7 @@ variable [DecidableEq I] [DecidableEq J]
 
 /-- `Matrix.comp` as `AlgEquiv` -/
 def compAlgEquiv : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R where
-  __ := Matrix.compRingEquiv I J R
+  __ := compRingEquiv I J R
   commutes' _ := comp_diagonal_diagonal _
 
 @[simp]

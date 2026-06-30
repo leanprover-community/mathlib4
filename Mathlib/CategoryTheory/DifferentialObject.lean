@@ -161,6 +161,7 @@ universe v' u'
 variable (D : Type u') [Category.{v'} D]
 variable [HasZeroMorphisms D] [HasShift D S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `F : C ⥤ D` which commutes with shift functors on `C` and `D` and preserves zero
 morphisms can be lifted to a functor `DifferentialObject S C ⥤ DifferentialObject S D`. -/
 @[simps]
@@ -225,7 +226,7 @@ abbrev HomSubtype (X Y : DifferentialObject S C) :=
 instance (X Y : DifferentialObject S C) :
     FunLike (HomSubtype S C X Y) (CC X.obj) (CC Y.obj) where
   coe f := f.1
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance concreteCategoryOfDifferentialObjects :
     ConcreteCategory (DifferentialObject S C) (HomSubtype S C) where
@@ -253,6 +254,7 @@ variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor on `DifferentialObject S C`. -/
 @[simps]
 def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C where
@@ -273,6 +275,8 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
   map_id X := by ext1; dsimp; rw [Functor.map_id]
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor on `DifferentialObject S C` is additive. -/
 @[simps!]
 nonrec def shiftFunctorAdd (m n : S) :
@@ -290,6 +294,8 @@ nonrec def shiftFunctorAdd (m n : S) :
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
 def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
@@ -301,6 +307,7 @@ def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance : HasShift (DifferentialObject S C) S :=
   hasShiftMk _ _
     { F := shiftFunctor C
@@ -308,16 +315,16 @@ instance : HasShift (DifferentialObject S C) S :=
       add := shiftFunctorAdd C
       assoc_hom_app := fun m₁ m₂ m₃ X => by
         ext1
-        convert shiftFunctorAdd_assoc_hom_app m₁ m₂ m₃ X.obj
+        convert! shiftFunctorAdd_assoc_hom_app m₁ m₂ m₃ X.obj
         dsimp [shiftFunctorAdd']
         simp
       zero_add_hom_app := fun n X => by
         ext1
-        convert shiftFunctorAdd_zero_add_hom_app n X.obj
+        convert! shiftFunctorAdd_zero_add_hom_app n X.obj
         simp
       add_zero_hom_app := fun n X => by
         ext1
-        convert shiftFunctorAdd_add_zero_hom_app n X.obj
+        convert! shiftFunctorAdd_add_zero_hom_app n X.obj
         simp }
 
 end

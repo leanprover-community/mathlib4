@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.Localization.Integral
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Algebraically Closed Field
@@ -19,7 +20,7 @@ and prove some of their properties.
 ## Main Definitions
 
 - `IsAlgClosed k` is the typeclass saying `k` is an algebraically closed field, i.e. every
-polynomial in `k` splits.
+  polynomial in `k` splits.
 
 - `IsAlgClosure R K` is the typeclass saying `K` is an algebraic closure of `R`, where `R` is a
   commutative ring. This means that the map from `R` to `K` is injective, and `K` is

@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Finsupp.Span
-public import Mathlib.Topology.Algebra.Module.WeakBilin
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -31,6 +31,10 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 * `LinearMap.toSeminormFamily.withSeminorms`: the topology of a weak space is induced by the
   family of seminorms `B.toSeminormFamily`.
 * `WeakBilin.locallyConvexSpace`: a space endowed with a weak topology is locally convex.
+* `LinearMap.rightDualEquiv`: When `B` is right-separating, `F` is linearly equivalent to the
+  strong dual of `E` with the weak topology.
+* `LinearMap.leftDualEquiv`: When `B` is left-separating, `E` is linearly equivalent to the
+  strong dual of `F` with the weak topology.
 
 ## References
 
@@ -84,6 +88,11 @@ def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily �
 theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : (B.toSeminormFamily y) x = ‖B x y‖ :=
   rfl
 
+lemma dualEmbedding_injective_of_separatingRight (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) (hr : B.SeparatingRight) :
+    Function.Injective (WeakBilin.eval B) :=
+  (injective_iff_map_eq_zero _).mpr (fun f hf ↦
+    (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
+
 variable {ι 𝕜 E F : Type*}
 
 open Topology TopologicalSpace
@@ -96,7 +105,7 @@ section TopologicalRing
 variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [T0Space 𝕜]
 
-/- A linear functional `φ` can be expressed as a linear combination of linear functionals `f₁,…,fₙ`
+/-- A linear functional `φ` can be expressed as a linear combination of linear functionals `f₁,…,fₙ`
 if and only if `φ` is continuous with respect to the topology induced by `f₁,…,fₙ`. See
 `LinearMap.mem_span_iff_continuous` for a result about arbitrary collections of linear functionals.
 -/
@@ -121,7 +130,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
-/- A linear functional `φ` is in the span of a collection of linear functionals if and only if `φ`
+/-- A linear functional `φ` is in the span of a collection of linear functionals if and only if `φ`
 is continuous with respect to the topology induced by the collection of linear functionals. See
 `LinearMap.mem_span_iff_continuous_of_finite` for a result about finite collections of linear
 functionals. -/
@@ -144,7 +153,7 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
   have t₂_smul (s : Finset ι) : @ContinuousSMul 𝕜 E _ _ (t₂ s) :=
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
-  simp_rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
+  simp_rw [WithSeminorms.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
   conv in Continuous _ => rw [Seminorm.continuous_iff one_pos, nhds_iInf]
   conv in Continuous _ =>
     rw [letI := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
@@ -163,10 +172,32 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
     rfl
   rw [LinearMap.mem_span_iff_continuous]
   constructor <;> intro H
-  · rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const] at H
+  · rw [WithSeminorms.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const] at H
     rcases Seminorm.bound_of_continuous this _ H with ⟨s, C, -, hC⟩
     exact ⟨s, C, hC⟩
-  · exact Seminorm.cont_withSeminorms_normedSpace _ this _ H
+  · exact WithSeminorms.continuous_normedSpace_rng _ this _ H
+
+variable [AddCommGroup F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+
+/-- The Weak Representation Theorem: Every continuous functional on `E` endowed with
+the `σ(E, F; B)`-topology is of the form `x ↦ B(x, y)` for some `y : F`. -/
+theorem dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := fun f ↦ by
+  have : f.toLinearMap ∈
+      Submodule.span 𝕜 (ContinuousLinearMap.coeLM 𝕜 ∘ₗ WeakBilin.eval B).range := by
+    simpa [coe_range, mem_span_iff_continuous, continuous_iff_le_induced, ← induced_to_pi] using!
+      f.continuous.le_induced
+  simpa
+
+/-- When `B` is right-separating, `F` is linearly equivalent to the strong dual of `E` with the
+weak topology. -/
+noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
+  LinearEquiv.ofBijective (WeakBilin.eval B)
+    ⟨dualEmbedding_injective_of_separatingRight B hr, dualEmbedding_surjective B⟩
+
+/-- When `B` is left-separating, `E` is linearly equivalent to the strong dual of `F` with the
+weak topology. -/
+noncomputable def leftDualEquiv (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B.flip) :=
+  rightDualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
 
 end NontriviallyNormedField
 
@@ -187,7 +218,7 @@ theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] �
     (LinearMap.ltoFun 𝕜 F 𝕜 𝕜 ∘ₗ B : (WeakBilin B) →ₗ[𝕜] (F → 𝕜)) |>.congr_equiv e
 
 theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
-    (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basisSets _root_.id :=
+    (𝓝 (0 : WeakBilin B)).HasBasis (· ∈ B.toSeminormFamily.basisSets) _root_.id :=
   LinearMap.weakBilin_withSeminorms B |>.hasBasis
 
 end Topology

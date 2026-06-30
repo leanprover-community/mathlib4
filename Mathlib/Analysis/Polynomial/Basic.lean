@@ -121,13 +121,13 @@ end PolynomialAtTop
 section PolynomialAtBot
 
 theorem isEquivalent_atBot_lead : P.eval ~[atBot] (P.leadingCoeff * · ^ P.natDegree) := by
-  convert (P.comp (-X)).isEquivalent_atTop_lead.comp_tendsto tendsto_neg_atBot_atTop using 2
+  convert! (P.comp (-X)).isEquivalent_atTop_lead.comp_tendsto tendsto_neg_atBot_atTop using 2
   · simp
   · rw [Function.comp_apply, comp_neg_X_leadingCoeff_eq, ← mul_rotate]
     simp [natDegree_comp, ← mul_pow, mul_comm]
 
 theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot atTop := by
-  convert ((P.comp (-X)).abs_tendsto_atTop (by simp [hdeg])).comp tendsto_neg_atBot_atTop using 2
+  convert! ((P.comp (-X)).abs_tendsto_atTop (by simp [hdeg])).comp tendsto_neg_atBot_atTop using 2
   simp
 
 theorem isBoundedUnder_abs_atBot_iff :
@@ -269,7 +269,7 @@ theorem isEquivalent_atBot_div :
 theorem div_tendsto_atBot_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
     Tendsto (fun x ↦ eval x P / eval x Q) atBot (𝓝 0) := by
   rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at hdeg
-  convert (div_tendsto_atTop_zero_of_degree_lt _ _ hdeg).comp tendsto_neg_atBot_atTop using 2
+  convert! (div_tendsto_atTop_zero_of_degree_lt _ _ hdeg).comp tendsto_neg_atBot_atTop using 2
   simp
 
 theorem div_tendsto_atBot_zero_iff_degree_lt (hQ : Q ≠ 0) :
@@ -280,7 +280,7 @@ theorem div_tendsto_atBot_zero_iff_degree_lt (hQ : Q ≠ 0) :
     rw [Ne, comp_eq_zero_iff]
     simp [hQ]
   rw [← div_tendsto_atTop_zero_iff_degree_lt _ _ hQ]
-  convert h.comp tendsto_neg_atTop_atBot using 2
+  convert! h.comp tendsto_neg_atTop_atBot using 2
   simp
 
 theorem div_tendsto_atBot_leadingCoeff_div_of_degree_eq (hdeg : P.degree = Q.degree) :
@@ -294,8 +294,8 @@ theorem abs_div_tendsto_atBot_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (h
   replace hQ : Q.comp (-X) ≠ 0 := by
     rw [Ne, comp_eq_zero_iff]
     simp [hQ]
-  convert (abs_div_tendsto_atTop_atTop_of_degree_gt _ _ hdeg hQ).comp
-    tendsto_neg_atBot_atTop using 2
+  convert! (abs_div_tendsto_atTop_atTop_of_degree_gt _ _ hdeg hQ).comp tendsto_neg_atBot_atTop
+    using 2
   simp
 
 end PolynomialDivAtBot
@@ -310,7 +310,7 @@ theorem isLittleO_atTop_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atTop
 
 theorem isLittleO_atBot_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atBot] Q.eval := by
   rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at h
-  convert (isLittleO_atTop_of_degree_lt _ _ h).comp_tendsto tendsto_neg_atBot_atTop using 2
+  convert! (isLittleO_atTop_of_degree_lt _ _ h).comp_tendsto tendsto_neg_atBot_atTop using 2
   all_goals simp
 
 theorem isBigO_atTop_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atTop] Q.eval := by
@@ -325,9 +325,72 @@ theorem isBigO_atTop_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atTop]
 
 theorem isBigO_atBot_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atBot] Q.eval := by
   rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at h
-  convert (isBigO_atTop_of_degree_le _ _ h).comp_tendsto tendsto_neg_atBot_atTop using 2
+  convert! (isBigO_atTop_of_degree_le _ _ h).comp_tendsto tendsto_neg_atBot_atTop using 2
   all_goals simp
 
 @[deprecated (since := "2026-02-05")] alias isBigO_of_degree_le := isBigO_atTop_of_degree_le
+
+section Cobounded
+
+lemma eventually_cofinite_not_isRoot {R : Type*} [CommRing R] [IsDomain R] {P : R[X]} (hP : P ≠ 0) :
+    ∀ᶠ x in cofinite, ¬P.IsRoot x :=
+  (finite_setOf_isRoot hP).compl_mem_cofinite
+
+open Bornology
+
+variable {R : Type*} [NormedRing R] [NormMulClass R] {P Q : R[X]}
+
+lemma isEquivalent_cobounded_leading_monomial :
+    P.eval ~[cobounded R] (P.leadingCoeff * · ^ P.natDegree) := by
+  by_cases h : P = 0
+  · simp [h, IsEquivalent.refl]
+  · simp only [eval_eq_sum_range, sum_range_succ]
+    exact (IsLittleO.sum fun i hi ↦
+      ((isLittleO_pow_pow_cobounded_of_lt (mem_range.mp hi)).const_mul_right
+        (leadingCoeff_ne_zero.mpr h)).const_mul_left _).add_isEquivalent .refl
+
+theorem isLittleO_cobounded_of_degree_lt (h : P.degree < Q.degree) :
+    P.eval =o[cobounded R] Q.eval := by
+  by_cases hP : P = 0
+  · simp [hP]
+  · refine isEquivalent_cobounded_leading_monomial.trans_isLittleO <|
+      ((IsLittleO.const_mul_right ?_ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
+    · exact leadingCoeff_ne_zero.mpr (ne_zero_of_degree_gt h)
+    · exact isLittleO_pow_pow_cobounded_of_lt (natDegree_lt_natDegree hP h)
+
+theorem isBigO_cobounded_of_degree_le (h : P.degree ≤ Q.degree) :
+    P.eval =O[cobounded R] Q.eval := by
+  by_cases hQ : Q.leadingCoeff = 0
+  · aesop
+  · refine isEquivalent_cobounded_leading_monomial.trans_isBigO <|
+      ((IsBigO.const_mul_right hQ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
+    exact isBigO_pow_pow_cobounded_of_le (natDegree_le_natDegree h)
+
+end Cobounded
+
+/-- If `deg Q < deg P`, there are only finitely many integers `x` where `|P(x)| ≤ |Q(x)|`. -/
+lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
+    {x | |P.eval x| ≤ |Q.eval x|}.Finite := by
+  have o := isLittleO_cobounded_of_degree_lt h
+  rw [IsOrderBornology.cobounded_eq, ← Int.cofinite_eq] at o
+  have nr := eventually_cofinite_not_isRoot (ne_zero_of_degree_gt h)
+  have key := o.eventuallyLT_norm_of_eventually_pos (nr.congr (.of_forall (by simp)))
+  simp_rw [eventually_cofinite, not_lt, Int.norm_eq_abs] at key
+  norm_cast at key
+
+/-- If `Q(x) ∣ P(x)` at infinitely many integers `x` and `Q` is monic, `Q ∣ P`. -/
+theorem dvd_of_infinite_eval_dvd_eval
+    {P Q : ℤ[X]} (mQ : Q.Monic) (h : {a | Q.eval a ∣ P.eval a}.Infinite) : Q ∣ P := by
+  have eqR := modByMonic_add_div P Q
+  have degR := degree_modByMonic_lt P mQ
+  rw [← modByMonic_eq_zero_iff_dvd mQ]
+  set R := P %ₘ Q
+  apply eq_zero_of_infinite_isRoot
+  refine (h.sdiff (finite_abs_eval_le_of_degree_lt degR)).mono fun x mx ↦ ?_
+  simp only [Set.mem_sdiff, Set.mem_setOf_eq, not_le] at mx
+  rw [← eqR, eval_add, eval_mul, Int.dvd_add_self_mul, ← abs_dvd] at mx
+  exact Int.eq_zero_of_abs_lt_dvd mx.1 mx.2
 
 end Polynomial

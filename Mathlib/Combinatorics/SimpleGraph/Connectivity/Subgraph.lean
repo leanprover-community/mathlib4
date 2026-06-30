@@ -6,6 +6,7 @@ Authors: Kyle Miller, Rémi Bottinelli
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -65,12 +66,8 @@ protected lemma Connected.preconnected {H : G.Subgraph} (h : H.Connected) : H.Pr
 protected lemma Connected.nonempty {H : G.Subgraph} (h : H.Connected) : H.verts.Nonempty := by
   rw [H.connected_iff] at h; exact h.2
 
-theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected := by
-  refine ⟨⟨?_⟩⟩
-  rintro ⟨a, ha⟩ ⟨b, hb⟩
-  simp only [singletonSubgraph_verts, Set.mem_singleton_iff] at ha hb
-  subst_vars
-  rfl
+theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected :=
+  ⟨⟨Preconnected.of_subsingleton⟩⟩
 
 @[simp]
 theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
@@ -85,7 +82,7 @@ lemma top_induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
   rw [← subgraphOfAdj_eq_induce huv]
   exact subgraphOfAdj_connected huv
 
-@[mono]
+@[gcongr, mono]
 protected lemma Connected.mono {H H' : G.Subgraph} (hle : H ≤ H') (hv : H.verts = H'.verts)
     (h : H.Connected) : H'.Connected := by
   rw [← Subgraph.copy_eq H' H.verts hv H'.Adj rfl]
@@ -107,12 +104,6 @@ lemma connected_sup {H K : G.Subgraph}
   rintro ⟨v, (hv | hv)⟩
   · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
-
-@[deprecated Subgraph.connected_sup (since := "2025-11-05")]
-protected lemma Connected.sup {H K : G.Subgraph}
-    (hH : H.Connected) (hK : K.Connected) (hn : (H ⊓ K).verts.Nonempty) :
-    (H ⊔ K).Connected :=
-  Subgraph.connected_sup hH.preconnected hK.preconnected hn
 
 lemma Preconnected.degree_zero_iff {H : G.Subgraph} (h : H.Preconnected) (v : H.verts)
     [Fintype (H.neighborSet v)] : H.degree v = 0 ↔ H.verts.Subsingleton := by
@@ -221,7 +212,7 @@ theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
     e ∈ p.toSubgraph.edgeSet ↔ e ∈ p.edges := by induction p <;> simp [*]
 
 @[simp]
-theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = { e | e ∈ p.edges } :=
+theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = p.edgeSet :=
   Set.ext fun _ => p.mem_edges_toSubgraph
 
 @[simp]
@@ -240,13 +231,14 @@ theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgrap
 
 @[simp]
 theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support) :
-    (c.rotate h).toSubgraph = c.toSubgraph := by
+    (c.rotate u h).toSubgraph = c.toSubgraph := by
   rw [rotate, toSubgraph_append, sup_comm, ← toSubgraph_append, take_spec]
 
 @[simp]
 theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
     (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
   simp
@@ -265,7 +257,7 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
 
 lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
-  convert Subgraph.le_induce_top_verts
+  convert! Subgraph.le_induce_top_verts
   exact p.verts_toSubgraph.symm
 
 theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
@@ -274,8 +266,7 @@ theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.leng
   | nil => cases hi
   | cons hxy i' ih =>
     cases i
-    · simp only [Walk.toSubgraph, Walk.getVert_zero, zero_add, getVert_cons_succ, Subgraph.sup_adj,
-        subgraphOfAdj_adj, true_or]
+    · simp
     · simp only [Walk.toSubgraph, getVert_cons_succ, Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq,
         Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
       right
@@ -326,11 +317,19 @@ lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
     p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
   rw [← p.mem_edges_toSubgraph, Subgraph.mem_edgeSet]
 
+theorem toSubgraph_le_iff {w : G.Walk u v} (hnil : ¬w.Nil) {G' : G.Subgraph} :
+    w.toSubgraph ≤ G' ↔ w.edgeSet ⊆ G'.edgeSet := by
+  refine ⟨fun hw e he ↦ Subgraph.edgeSet_mono hw <| w.mem_edges_toSubgraph.mpr he, fun hw ↦ ?_⟩
+  refine ⟨fun v' hv' ↦ ?_, fun u' v' hadj ↦ hw <| w.mem_edges_toSubgraph.mp (hadj : s(_, _) ∈ _)⟩
+  rw [mem_verts_toSubgraph, mem_support_iff_exists_mem_edges_of_not_nil hnil] at hv'
+  have ⟨e, he, hv'e⟩ := hv'
+  exact G'.mem_verts_of_mem_edge (hw he) hv'e
+
 lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
     p.bypass.toSubgraph ≤ p.toSubgraph := by
   constructor
-  · simpa using p.support_bypass_subset
-  · simpa [adj_toSubgraph_iff_mem_edges] using fun _ _ h ↦ p.edges_toPath_subset h
+  · simpa using! p.support_bypass_subset_support
+  · simpa [adj_toSubgraph_iff_mem_edges] using! fun _ _ h ↦ p.edges_toPath_subset_edges h
 
 /-- Map a walk to its own subgraph. -/
 def mapToSubgraph {u v : V} : ∀ w : G.Walk u v, w.toSubgraph.coe.Walk
@@ -341,6 +340,7 @@ def mapToSubgraph {u v : V} : ∀ w : G.Walk u v, w.toSubgraph.coe.Walk
     let h : cons .. |>.toSubgraph.coe.Adj ⟨_, h.fst_mem⟩ ⟨_, h.snd_mem⟩ := h
     cons h <| mapToSubgraph _ |>.map <| Subgraph.inclusion le_sup_right
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a walk to its own subgraph and then to the original graph produces the same walk. -/
 theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.map w.toSubgraph.hom = w
   | nil => rfl
@@ -348,6 +348,7 @@ theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.ma
     rw [mapToSubgraph, Walk.map, map_map]
     exact congrArg₂ _ rfl w.map_mapToSubgraph_hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a walk to its own subgraph and then to `G[s]` where `s` contains the walk's support is
 the same as inducing the walk to `s`. -/
 theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
@@ -365,6 +366,11 @@ theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
     w.mapToSubgraph.map (⟨fun v ↦ ⟨v, w.mem_verts_toSubgraph.mp v.prop⟩, w.toSubgraph.adj_sub⟩ :
       w.toSubgraph.coe →g G.induce _) = w.induce _ (fun _ ↦ id) :=
   w.map_mapToSubgraph_eq_induce ..
+
+theorem isInduced_toSubgraph {w : G.Walk u v} : w.toSubgraph.IsInduced ↔ w.IsChordless := by
+  simp_rw [Subgraph.IsInduced, IsChordless, IsChord, Sym2.forall, Sym2.lift_mk, G.mem_edgeSet,
+    mem_verts_toSubgraph, adj_toSubgraph_iff_mem_edges]
+  grind only
 
 namespace IsPath
 
@@ -496,10 +502,10 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
   · use x, hxs, hx, h.le
   have : (p.takeUntil x hx).length + #(s.erase x) < n := by
     rw [← card_erase_add_one hxs] at hp
-    have := p.length_takeUntil_le hx
+    have := p.length_takeUntil_le_length hx
     lia
   obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
-  use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
+  use y, mem_of_mem_erase hys, support_takeUntil_subset_support p hx hyp
   rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_notMem] at h
   simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
   rintro hxy -
@@ -542,13 +548,7 @@ lemma connected_induce_top_sup {H K : G.Subgraph} (Hconn : H.Preconnected) (Kcon
   · exact ⟨u, by simp [uH]⟩
   · exact ⟨v, by simp [vK]⟩
 
-@[deprecated connected_induce_top_sup (since := "2025-11-05")]
-lemma Connected.adj_union {H K : G.Subgraph}
-    (Hconn : H.Connected) (Kconn : K.Connected) {u v : V} (uH : u ∈ H.verts) (vK : v ∈ K.verts)
-    (huv : G.Adj u v) :
-    ((⊤ : G.Subgraph).induce {u, v} ⊔ H ⊔ K).Connected :=
-  connected_induce_top_sup Hconn.preconnected Kconn.preconnected uH vK huv
-
+set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   constructor
@@ -573,10 +573,12 @@ end Subgraph
 
 section induced_subgraphs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_induce_iff {s : Set V} :
     (G.induce s).Preconnected ↔ ((⊤ : G.Subgraph).induce s).Preconnected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.preconnected_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma connected_induce_iff {s : Set V} :
     (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
@@ -618,13 +620,6 @@ lemma connected_induce_union {v w : V} {s t : Set V}
   · simp only [Subgraph.verts_sup, Subgraph.induce_verts]
     rw [Set.union_assoc]
     simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
-
-@[deprecated connected_induce_union (since := "2025-11-05")]
-lemma induce_connected_adj_union {v w : V} {s t : Set V}
-    (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
-    (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :
-    (G.induce (s ∪ t)).Connected :=
-  connected_induce_union sconn.preconnected tconn.preconnected hv hw ha
 
 lemma induce_connected_of_patches {s : Set V} (u : V) (hu : u ∈ s)
     (patches : ∀ {v}, v ∈ s → ∃ s' ⊆ s, ∃ (hu' : u ∈ s') (hv' : v ∈ s'),

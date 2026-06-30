@@ -67,6 +67,7 @@ abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
@@ -80,10 +81,12 @@ def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A computable instance of `CartesianMonoidalCategory` for `Over X` when `C` has
 chosen pullbacks. Contrast this with the noncomputable instance provided by
 `CategoryTheory.Over.cartesianMonoidalCategory`.
 -/
+@[instance_reducible]
 def cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
     CartesianMonoidalCategory (Over X) :=
   ofChosenFiniteProducts (C := Over X)
@@ -248,13 +251,15 @@ open ChosenPullbacksAlong CartesianMonoidalCategory MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor which maps an object `A` in `C` to the projection `A ⊗ X ⟶ X` in `Over X`.
 This is the computable analogue of the functor `Over.star`. -/
-@[simps! obj_left obj_hom map_left]
+@[simps! obj_left obj_hom]
 def toOver (X : C) : C ⥤ Over X where
   obj A := Over.mk <| CartesianMonoidalCategory.snd A X
   map f := Over.homMk (f ▷ X)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma toOver_map {X : C} {A A' : C} (f : A ⟶ A') :
     (toOver X).map f = Over.homMk (f ▷ X) := by
@@ -268,6 +273,7 @@ def toOverUnit : C ⥤ Over (𝟙_ C) where
   obj X := Over.mk <| toUnit X
   map f := Over.homMk f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The slice category over the terminal unit object is equivalent to the original category. -/
 @[simps]
 def equivToOverUnit : Over (𝟙_ C) ≌ C where
@@ -280,6 +286,7 @@ variable {C}
 
 attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryToUnit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullbacksAlong.pullback (toUnit X)` and
 `toOver X`. -/
 @[simps!]
@@ -287,6 +294,7 @@ def toOverUnitPullback (X : C) :
     toOverUnit C ⋙ pullback (toUnit X) ≅ toOver X :=
   NatIso.ofComponents fun X => Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `toOver X` is the right adjoint to the functor `Over.forget X`. -/
 @[simps! unit_app counit_app]
 def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where

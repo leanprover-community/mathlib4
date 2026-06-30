@@ -98,13 +98,13 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   obtain heq | hlt := hle.eq_or_lt; · simp [← heq]
   have hderiv : ∀ x ∈ Ioo (-r : ℝ) r, HasDerivAt F (2 * f x) x := by
     rintro x ⟨hx1, hx2⟩
-    convert
+    convert!
       ((hasDerivAt_const x ((r : ℝ) ^ 2)).mul
-          ((hasDerivAt_arcsin _ _).comp x
-            ((hasDerivAt_const x (r : ℝ)⁻¹).mul (hasDerivAt_id' x)))).add
-        ((hasDerivAt_id' x).mul ((((hasDerivAt_id' x).fun_pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
-      using 1
-    · have h₁ : (r : ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
+            ((hasDerivAt_arcsin _ _).comp x
+              ((hasDerivAt_const x (r : ℝ)⁻¹).mul (hasDerivAt_id' x)))).add
+        ((hasDerivAt_id' x).mul
+          ((((hasDerivAt_id' x).fun_pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _)) using 1
+    · have h₁ : 0 < (r : ℝ) ^ 2 - x ^ 2 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
       have h : sqrt ((r : ℝ) ^ 2 - x ^ 2) ^ 3 =
           ((r : ℝ) ^ 2 - x ^ 2) * sqrt ((r : ℝ) ^ 2 - x ^ 2) := by
         rw [pow_three, ← mul_assoc, mul_self_sqrt (by positivity)]
