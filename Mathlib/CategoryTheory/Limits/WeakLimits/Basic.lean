@@ -222,7 +222,7 @@ lemma iff_of_cone_equiv {D : Type*} [Category* D] {G : K ⥤ D} (h : Cone G ≌ 
 /-- A cone postcomposed with a natural isomorphism is a weak limit cone
 if and only if the original cone is.
 -/
-lemma iff_of_postcomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) :
+lemma postcompose_hom_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) :
     Nonempty (IsWeakLimit ((Cone.postcompose α.hom).obj c)) ↔ Nonempty (IsWeakLimit c) :=
   iff_of_cone_equiv (Cone.postcomposeEquivalence α)
 
