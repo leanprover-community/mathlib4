@@ -181,8 +181,7 @@ the image of a weak limit cone is a weak limit cone.
 -/
 def ofRightAdjoint {left : Cone F ⥤ Cone G} {right : Cone G ⥤ Cone F}
     (adj : left ⊣ right) {c : Cone G} (t : IsWeakLimit c) : IsWeakLimit (right.obj c) where
-      lift s := (adj.homEquiv s c (t.liftConeMorphism _)).hom
-      fac s j := by simp
+  lift s := (adj.homEquiv s c (t.liftConeMorphism _)).hom
 
 end IsWeakLimit
 
