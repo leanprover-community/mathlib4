@@ -432,7 +432,7 @@ lemma preVariationFun_apply_of_ennreal (s : Set X) : preVariationFun μ s = μ s
 
 theorem variation_eq_ennrealToMeasure : μ.variation = μ.ennrealToMeasure := by
   ext _ hs
-  simp [preVariationFun_apply_of_ENNReal, variation_apply, preVariation_apply,
+  simp [preVariationFun_apply_of_ennreal, variation_apply, preVariation_apply,
     ennrealPreVariation_apply, ennrealToMeasure_apply hs]
 
 @[simp]
