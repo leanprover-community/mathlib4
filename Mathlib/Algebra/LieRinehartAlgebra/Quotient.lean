@@ -77,7 +77,7 @@ instance : Bracket (L ⧸ s) A where
     exact s.isotropic (l - l') a h)
 
 @[simp]
-theorem mk_bracket' (x : L) (a : A) : ⁅x, a⁆ = ⁅(mk x : L ⧸ s), a⁆ := rfl
+theorem mk_bracket' (x : L) (a : A) : ⁅(mk x : L ⧸ s), a⁆ = ⁅x, a⁆ := rfl
 
 instance : LieRingModule (L ⧸ s) A where
   add_lie := by rintro ⟨x⟩ ⟨y⟩ a; exact (add_lie x y a)
