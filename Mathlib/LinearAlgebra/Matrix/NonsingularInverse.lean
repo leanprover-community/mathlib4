@@ -5,9 +5,9 @@ Authors: Anne Baanen, Lu-Ming Zhang
 -/
 module
 
-public import Mathlib.Data.Matrix.Invertible
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Invertible
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 public import Mathlib.LinearAlgebra.Matrix.ToLin
@@ -85,7 +85,7 @@ def invertibleOfDetInvertible [Invertible A.det] : Invertible A where
 
 theorem invOf_eq [Invertible A.det] [Invertible A] : ⅟A = ⅟A.det • A.adjugate := by
   letI := invertibleOfDetInvertible A
-  convert (rfl : ⅟A = _)
+  convert! (rfl : ⅟A = _)
 
 /-- `A.det` is invertible if `A` has a left inverse. -/
 @[implicit_reducible]
@@ -108,7 +108,7 @@ def detInvertibleOfInvertible [Invertible A] : Invertible A.det :=
 
 theorem det_invOf [Invertible A] [Invertible A.det] : (⅟A).det = ⅟A.det := by
   letI := detInvertibleOfInvertible A
-  convert (rfl : _ = ⅟A.det)
+  convert! (rfl : _ = ⅟A.det)
 
 /-- Together `Matrix.detInvertibleOfInvertible` and `Matrix.invertibleOfDetInvertible` form an
 equivalence, although both sides of the equiv are subsingleton anyway. -/
@@ -416,7 +416,7 @@ theorem det_nonsing_inv : A⁻¹.det = A.det⁻¹ʳ := by
     rw [Ring.inverse_invertible, ← invOf_eq_nonsing_inv, det_invOf]
   cases isEmpty_or_nonempty n
   · rw [det_isEmpty, det_isEmpty, Ring.inverse_one]
-  · rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit _ h, det_zero ‹_›]
+  · rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit _ h, det_zero]
 
 theorem isUnit_nonsing_inv_det (h : IsUnit A.det) : IsUnit A⁻¹.det :=
   .of_mul_eq_one _ (A.det_nonsing_inv_mul_det h)
@@ -517,11 +517,12 @@ theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ 
 
 section Diagonal
 
+attribute [local instance] Invertible.map in
 /-- `diagonal v` is invertible if `v` is -/
 @[implicit_reducible]
 def diagonalInvertible {α} [NonAssocSemiring α] (v : n → α) [Invertible v] :
     Invertible (diagonal v) :=
-  Invertible.map (diagonalRingHom n α) v
+  inferInstanceAs <| Invertible (diagonalRingHom n α v)
 
 theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Invertible (diagonal v)] :
     ⅟(diagonal v) = diagonal (⅟v) := by

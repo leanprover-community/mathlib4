@@ -258,9 +258,10 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
     (simpTheorems := #[← ext.getTheorems])
   let discharge := Mathlib.Meta.NormNum.discharge
   let r : Simp.Result := {expr := e}
-  let pre := Simp.preDefault #[] >> fun e =>
+  let matchAndNorm : Simproc := fun e =>
       try return (Simp.Step.done (← matchAndNorm (expensive := expensive) e))
       catch _ => pure .continue
+  let pre := Simp.preDefault #[] >> matchAndNorm
   let post := Simp.postDefault #[]
   let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
 
@@ -296,11 +297,11 @@ elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
   transformAtNondepPropLocation (derive (expensive := false) ·) "reduce_mod_char" loc
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
   transformAtNondepPropLocation (derive (expensive := true) ·) "reduce_mod_char"
-    loc (failIfUnchanged := false)
+    loc (ifUnchanged := .silent)
 
 end ReduceModChar
 

@@ -132,6 +132,17 @@ lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min
 @[grind =]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def a b
 
+theorem min_ind {motive : α → Prop} (ha : a ≤ b → motive a) (hb : b ≤ a → motive b) :
+    motive (min a b) := by
+  rw [min_def]; split_ifs with h
+  exacts [ha h, hb (le_of_not_ge h)]
+
+@[to_dual existing (attr := elab_as_elim)]
+theorem max_ind {motive : α → Prop} (ha : b ≤ a → motive a) (hb : a ≤ b → motive b) :
+    motive (max a b) := by
+  rw [max_def]; split_ifs with h
+  exacts [hb h, ha (le_of_not_ge h)]
+
 @[to_dual existing max_def]
 theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
   obtain h | h | h := lt_trichotomy a b <;> simp [le_of_lt, not_le_of_gt, h, min_def]

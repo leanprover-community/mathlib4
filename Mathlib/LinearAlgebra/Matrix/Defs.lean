@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Matrices
@@ -50,6 +51,7 @@ universe u u' v w
 
 /-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are indexed by `m`
 and whose columns are indexed by `n`. -/
+@[wikidata Q44337]
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 
@@ -146,55 +148,55 @@ theorem transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
 scoped postfix:1024 "ᵀ" => Matrix.transpose
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
-  inferInstanceAs <| Inhabited <| m → n → α
+  inferInstanceAs <| Inhabited (m → n → α)
 
 instance add [Add α] : Add (Matrix m n α) :=
-  fast_instance% Pi.instAdd
+  inferInstanceAs <| Add (m → n → α)
+
+instance smul [SMul R α] : SMul R (Matrix m n α) where
+  smul a b := fun i ↦ a • b i
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
-  fast_instance% Pi.addSemigroup
+  inferInstanceAs <| AddSemigroup (m → n → α)
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) :=
-  fast_instance% Pi.addCommSemigroup
+  inferInstanceAs <| AddCommSemigroup (m → n → α)
 
 instance zero [Zero α] : Zero (Matrix m n α) :=
-  fast_instance% Pi.instZero
+  inferInstanceAs <| Zero (m → n → α)
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
-  fast_instance% Pi.addZeroClass
+  inferInstanceAs <| AddZeroClass (m → n → α)
 
 instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
-  fast_instance% Pi.addMonoid
+  inferInstanceAs <| AddMonoid (m → n → α)
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
-  fast_instance% Pi.addCommMonoid
+  inferInstanceAs <| AddCommMonoid (m → n → α)
 
 instance neg [Neg α] : Neg (Matrix m n α) :=
-  fast_instance% Pi.instNeg
+  inferInstanceAs <| Neg (m → n → α)
 
 instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg (Matrix m n α) :=
-  Pi.involutiveNeg
+  inferInstanceAs <| InvolutiveNeg (m → n → α)
 
 instance sub [Sub α] : Sub (Matrix m n α) :=
-  fast_instance% Pi.instSub
+  inferInstanceAs <| Sub (m → n → α)
 
 instance addGroup [AddGroup α] : AddGroup (Matrix m n α) :=
-  fast_instance% Pi.addGroup
+  inferInstanceAs <| AddGroup (m → n → α)
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
-  fast_instance% Pi.addCommGroup
+  inferInstanceAs <| AddCommGroup (m → n → α)
 
 instance unique [Unique α] : Unique (Matrix m n α) :=
-  fast_instance% Pi.unique
+  inferInstanceAs <| Unique (m → n → α)
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
   inferInstanceAs <| Subsingleton <| m → n → α
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
-
-instance smul [SMul R α] : SMul R (Matrix m n α) :=
-  fast_instance% Pi.instSMul
 
 instance smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
     SMulCommClass R S (Matrix m n α) :=
@@ -209,19 +211,55 @@ instance isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
   Pi.isCentralScalar
 
 instance mulAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) :=
-  fast_instance% Pi.mulAction _
+  inferInstanceAs <| MulAction R (m → n → α)
 
 instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Matrix m n α) :=
-  fast_instance% Pi.distribMulAction _
+  inferInstanceAs <| DistribMulAction R (m → n → α)
 
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
-  fast_instance% Pi.module _ _ _
+  inferInstanceAs <| Module R (m → n → α)
+
+instance [Add α] [IsAddCommutative α] : IsAddCommutative <| Matrix m n α :=
+  inferInstanceAs <| IsAddCommutative <| m → n → α
+
+instance [AddCommMagma α] : AddCommMagma <| Matrix m n α :=
+  inferInstanceAs <| AddCommMagma <| m → n → α
+
+instance [Add α] [IsLeftCancelAdd α] : IsLeftCancelAdd <| Matrix m n α :=
+  inferInstanceAs <| IsLeftCancelAdd <| m → n → α
+
+instance [Add α] [IsRightCancelAdd α] : IsRightCancelAdd <| Matrix m n α :=
+  inferInstanceAs <| IsRightCancelAdd <| m → n → α
+
+instance [Add α] [IsCancelAdd α] : IsCancelAdd <| Matrix m n α :=
+  inferInstanceAs <| IsCancelAdd <| m → n → α
+
+instance [AddLeftCancelSemigroup α] : AddLeftCancelSemigroup <| Matrix m n α :=
+  inferInstanceAs <| AddLeftCancelSemigroup <| m → n → α
+
+instance [AddRightCancelSemigroup α] : AddRightCancelSemigroup <| Matrix m n α :=
+  inferInstanceAs <| AddRightCancelSemigroup <| m → n → α
+
+instance [AddLeftCancelMonoid α] : AddLeftCancelMonoid <| Matrix m n α :=
+  inferInstanceAs <| AddLeftCancelMonoid <| m → n → α
+
+instance [AddRightCancelMonoid α] : AddRightCancelMonoid <| Matrix m n α :=
+  inferInstanceAs <| AddRightCancelMonoid <| m → n → α
+
+instance [AddCancelMonoid α] : AddCancelMonoid <| Matrix m n α :=
+  inferInstanceAs <| AddCancelMonoid <| m → n → α
+
+instance [AddCancelCommMonoid α] : AddCancelCommMonoid <| Matrix m n α :=
+  inferInstanceAs <| AddCancelCommMonoid <| m → n → α
 
 section
 
 @[simp]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
+
+@[simp]
+theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := rfl
 
 @[simp]
 theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :
@@ -239,11 +277,10 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem dite_apply (P : Prop) [Decidable P]
     (A : P → Matrix m n α) (B : ¬P → Matrix m n α) (i : m) (j : n) :
     dite P A B i j = dite P (A · i j) (B · i j) := by
-  rw [dite_apply, dite_apply]
+  by_cases h : P <;> simp [h]
 
 protected theorem ite_apply (P : Prop) [Decidable P]
     (A : Matrix m n α) (B : Matrix m n α) (i : m) (j : n) :

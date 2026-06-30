@@ -110,7 +110,7 @@ variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Idea
 
 instance instFunLike : FunLike (DPMorphism hI hJ) A B where
   coe h := h.toRingHom
-  coe_injective' h h' hh' := by
+  coe_injective h h' hh' := by
     cases h; cases h'; congr
     dsimp at hh'; ext; rw [hh']
 

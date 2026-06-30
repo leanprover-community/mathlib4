@@ -79,6 +79,7 @@ end
 
 variable {S}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (homologyFunctor C (up ℤ) 0).homologySequenceδ (triangleh S.f) n₀ n₁ h =
@@ -97,7 +98,9 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
     (mappingCone S.f).eq_liftCycles_homologyπ_up_to_refinements x n₁ (by simpa using h)
   erw [homologySequenceδ_quotient_mapTriangle_obj_assoc _ _ _ h]
   dsimp
-  rw [comp_id, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
+  -- simp? says
+  simp only [Iso.inv_hom_id_app, HomologicalComplex.homologyFunctor_obj, Iso.inv_hom_id_app_assoc,
+    comp_id]
   erw [comp_id]
   rw [← cancel_epi π, reassoc_of% hx', reassoc_of% hx',
     HomologicalComplex.homologyπ_naturality_assoc,
@@ -128,6 +131,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
 
 open ComposableArrows
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hS in
 lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
@@ -173,6 +177,7 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
 
 variable {D : Type*} [Category* D] [Abelian D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]

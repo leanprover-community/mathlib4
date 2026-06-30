@@ -94,6 +94,13 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
   next_eq w w' := c.prev_eq w w'
   prev_eq w w' := c.next_eq w w'
 
+/-- If `c : ComplexShape α` is such that `c.Rel` is decidable, it is also the
+case of `c.symm.Rel`. -/
+@[implicit_reducible]
+def decidableRelSymm {α : Type*} (c : ComplexShape α) [DecidableRel c.Rel] :
+    DecidableRel c.symm.Rel :=
+  fun a b ↦ decidable_of_iff (c.Rel b a) Iff.rfl
+
 @[simp]
 theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := rfl
 
@@ -196,6 +203,7 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual instDecidableRelRelDown']
 instance instDecidableRelRelUp' (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
   fun _ _ => by dsimp; infer_instance
