@@ -331,7 +331,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("square", ["Even"]),
   ("mconv", ["Conv"]),
   ("irreducible", ["Add", "Irreducible"]),
-  ("mlconvolution", ["LConvolution"])]
+  ("mlconvolution", ["LConvolution"]),
+  ("torsion", ["Add", "Torsion"])]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
 def abbreviationDict : Std.HashMap String String := .ofList [
@@ -342,7 +343,6 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("leftCancelAdd", "AddLeftCancel"),
   ("rightCancelAdd", "AddRightCancel"),
   ("cancelCommAdd", "AddCancelComm"),
-  ("isTorsion", "IsAddTorsion"),
   ("commAdd", "AddComm"),
   ("zero_le", "Nonneg"),
   ("zeroLE", "Nonneg"),
