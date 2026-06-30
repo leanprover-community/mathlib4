@@ -294,13 +294,13 @@ theorem compContinuousLinearMap_apply (g : ContinuousMultilinearMap R M₁' M₄
 
 /-- Composing a continuous multilinear map with a continuous linear map gives again a
 continuous multilinear map. -/
-/-def _root_.ContinuousLinearMap.compContinuousMultilinearMap (g : M₂ →L[R] M₃)
-    (f : ContinuousMultilinearMap R M₁ M₂) : ContinuousMultilinearMap R M₁ M₃ :=
-  { g.toLinearMap.compMultilinearMap f.toMultilinearMap with cont := g.cont.comp f.cont }-/
 instance : FComp (M₂ →L[R] M₃) (ContinuousMultilinearMap R M₁ M₂) (ContinuousMultilinearMap R M₁ M₃)
     where
   comp g f :=
     { g.toLinearMap.compMultilinearMap f.toMultilinearMap with cont := g.cont.comp f.cont }
+
+@[deprecated (since := "2026-06-30")]
+alias _root_.ContinuousLinearMap.compContinuousMultilinearMap := FComp.comp
 
 instance : IsCompApply (M₂ →L[R] M₃) (ContinuousMultilinearMap R M₁ M₂)
     (ContinuousMultilinearMap R M₁ M₃) (∀ i, M₁ i) M₂ M₃ where
@@ -315,8 +315,7 @@ def prodEquiv :
     (ContinuousMultilinearMap R M₁ M₂ × ContinuousMultilinearMap R M₁ M₃) ≃
       ContinuousMultilinearMap R M₁ (M₂ × M₃) where
   toFun f := f.1.prod f.2
-  invFun f := ((ContinuousLinearMap.fst R M₂ M₃) ∘ᶠ f,
-    (ContinuousLinearMap.snd R M₂ M₃) ∘ᶠ f)
+  invFun f := ((ContinuousLinearMap.fst R M₂ M₃) ∘ᶠ f, (ContinuousLinearMap.snd R M₂ M₃) ∘ᶠ f)
   left_inv := by intro; ext; all_goals simp
   right_inv := by intro; ext; all_goals simp
 
