@@ -255,22 +255,25 @@ lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j
     J.homMk (𝟙 _) a (by simp), by simp⟩
 
 set_option backward.defeqAttrib.useBackward true in
-lemma exists_of_j₁_of_j₂ (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
-    ∃ (j : J κ f) (_ : j₁ ⟶ j.fst), Nonempty (j₂ ⟶ j.snd) := by
+lemma exists_of_j₁_of_j₂' (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
+    ∃ (j₂' : J₂ κ f) (a : j₂ ⟶ j₂') (b : F₁.obj j₁.left.obj ⟶ F₂.obj j₂'.left.obj),
+    F₁.map j₁.hom ≫ f.hom = b ≫ F₂.map j₂'.hom := by
   have := Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall F₂ κ
     (J₂ κ f)
-  obtain ⟨j₂', a, ha, ⟨b⟩⟩ :
-      ∃ (j₂' : J₂ κ f) (a : F₁.obj j₁.left.obj ⟶ F₂.obj j₂'.left.obj),
-      a ≫ F₂.map j₂'.hom = F₁.map j₁.hom ≫ f.hom ∧ Nonempty (j₂ ⟶ j₂') := by
-    obtain ⟨k, a, ha⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
-      (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
-      (F₁.map j₁.hom ≫ f.hom)
-    dsimp at ha
-    simp only [Category.id_comp] at ha
-    obtain ⟨j₂', b, c, _⟩ := IsFilteredOrEmpty.cocone_objs j₂ k
-    exact ⟨j₂', a ≫ F₂.map c.left.hom,
-      by simp [← ha, ← Functor.map_comp, dsimp% CostructuredArrow.w c], ⟨b⟩⟩
-  exact ⟨J.mk j₁ j₂' a, 𝟙 _, ⟨b⟩⟩
+  obtain ⟨k, a, ha⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
+    (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
+    (F₁.map j₁.hom ≫ f.hom)
+  dsimp at ha
+  simp only [Category.id_comp] at ha
+  obtain ⟨j₂', b, c, _⟩ := IsFilteredOrEmpty.cocone_objs j₂ k
+  refine ⟨j₂', b, a ≫ F₂.map c.left.hom, ?_⟩
+  simp [← ha, ← Functor.map_comp, dsimp% CostructuredArrow.w c]
+
+set_option backward.defeqAttrib.useBackward true in
+lemma exists_of_j₁_of_j₂ (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
+    ∃ (j : J κ f) (_ : j₁ ⟶ j.fst), Nonempty (j₂ ⟶ j.snd) := by
+  obtain ⟨j₂', a, b, h⟩ := exists_of_j₁_of_j₂' j₁ j₂
+  exact ⟨J.mk j₁ j₂' b h, 𝟙 _, ⟨a⟩⟩
 
 lemma exists_of_j₁ (j₁ : J₁ κ f) :
     ∃ (j : J κ f), Nonempty (j₁ ⟶ j.fst) := by
