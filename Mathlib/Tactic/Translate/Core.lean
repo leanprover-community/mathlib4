@@ -917,7 +917,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     return src
   if cfg.none then
     if cfg.target != .anonymous then
-      logWarning m!"`{t.attrName} private` ignores the provided name {cfg.target}"
+      logWarning m!"`{t.attrName} none` ignores the provided name {cfg.target}"
     return ← withDeclNameForAuxNaming src do
       mkAuxDeclName <| .mkSimple ("_" ++ t.attrName.toString)
   -- When re-tagging an existing translation, simply return that existing translation.
@@ -1149,8 +1149,8 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     (relevantArg : RelevantArg) : TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
-  -- Warn users if the original declaration has an attributee
-  if !cfg.self && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
+  -- Warn users if the original declaration has an attribute
+  if !cfg.existing && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
