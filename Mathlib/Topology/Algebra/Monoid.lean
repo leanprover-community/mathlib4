@@ -179,10 +179,24 @@ protected theorem Inseparable.mul {a b c d : M} (hab : Inseparable a b) (hcd : I
   hab.smul hcd
 
 @[to_additive]
+protected theorem Specializes.ppow {M : Type*} [Semigroup M] [TopologicalSpace M] [ContinuousMul M]
+    {a b : M} (h : a ⤳ b) (n : ℕ+) : (a ^ n) ⤳ (b ^ n) := by
+  induction n using Semigroup.ppow_induction a generalizing b with
+  | h1 => simp [h]
+  | hsucc n IH =>
+    rw [ppow_mk_add_one b]
+    exact (IH h).mul h
+
+@[to_additive]
 protected theorem Specializes.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
     {a b : M} (h : a ⤳ b) (n : ℕ) : (a ^ n) ⤳ (b ^ n) :=
   Nat.recOn n (by simp only [pow_zero, specializes_rfl]) fun _ ihn ↦ by
     simpa only [pow_succ] using ihn.mul h
+
+@[to_additive]
+protected theorem Inseparable.ppow {M : Type*} [Semigroup M] [TopologicalSpace M] [ContinuousMul M]
+    {a b : M} (h : Inseparable a b) (n : ℕ+) : Inseparable (a ^ n) (b ^ n) :=
+  (h.specializes.ppow n).antisymm (h.specializes'.ppow n)
 
 @[to_additive]
 protected theorem Inseparable.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]

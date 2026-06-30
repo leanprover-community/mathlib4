@@ -104,14 +104,25 @@ instance instContinuousMul [Mul M] [ContinuousMul M] : ContinuousMul (Separation
 instance instCommMagma [CommMagma M] [ContinuousMul M] : CommMagma (SeparationQuotient M) :=
   fast_instance% surjective_mk.commMagma mk mk_mul
 
+instance (priority := 900) instPSMul [AddSemigroup M] [ContinuousAdd M] :
+    SMul ℕ+ (SeparationQuotient M) :=
+  inferInstance
+
+@[to_additive existing]
+instance instPPow [Semigroup M] [ContinuousMul M] : Pow (SeparationQuotient M) ℕ+ where
+  pow x n := Quotient.map' (s₁ := inseparableSetoid M) (· ^ n) (fun _ _ h ↦ Inseparable.ppow h n) x
+
+@[to_additive, simp] -- `mk_nsmul` is not a `simp` lemma because we have `mk_smul`
+theorem mk_ppow [Semigroup M] [ContinuousMul M] (x : M) (n : ℕ+) : mk (x ^ n) = (mk x) ^ n := rfl
+
 @[to_additive]
 instance instSemigroup [Semigroup M] [ContinuousMul M] : Semigroup (SeparationQuotient M) :=
-  fast_instance% surjective_mk.semigroup mk mk_mul
+  fast_instance% surjective_mk.semigroup mk mk_mul mk_ppow
 
 @[to_additive]
 instance instCommSemigroup [CommSemigroup M] [ContinuousMul M] :
     CommSemigroup (SeparationQuotient M) :=
-  fast_instance% surjective_mk.commSemigroup mk mk_mul
+  fast_instance% surjective_mk.commSemigroup mk mk_mul mk_ppow
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [ContinuousMul M] :
@@ -138,11 +149,11 @@ theorem mk_pow [Monoid M] [ContinuousMul M] (x : M) (n : ℕ) : mk (x ^ n) = (mk
 
 @[to_additive]
 instance instMonoid [Monoid M] [ContinuousMul M] : Monoid (SeparationQuotient M) :=
-  fast_instance% surjective_mk.monoid mk mk_one mk_mul mk_pow
+  fast_instance% surjective_mk.monoid mk mk_one mk_mul mk_ppow mk_pow
 
 @[to_additive]
 instance instCommMonoid [CommMonoid M] [ContinuousMul M] : CommMonoid (SeparationQuotient M) :=
-  fast_instance% surjective_mk.commMonoid mk mk_one mk_mul mk_pow
+  fast_instance% surjective_mk.commMonoid mk mk_one mk_mul mk_ppow mk_pow
 
 end Monoid
 
@@ -194,11 +205,11 @@ theorem mk_zpow [Group G] [IsTopologicalGroup G] (x : G) (n : ℤ) : mk (x ^ n) 
 
 @[to_additive]
 instance instGroup [Group G] [IsTopologicalGroup G] : Group (SeparationQuotient G) :=
-  fast_instance% surjective_mk.group mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
+  fast_instance% surjective_mk.group mk mk_one mk_mul mk_inv mk_div mk_ppow mk_pow mk_zpow
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [IsTopologicalGroup G] : CommGroup (SeparationQuotient G) :=
-  fast_instance% surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
+  fast_instance% surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_ppow mk_pow mk_zpow
 
 @[to_additive]
 instance instIsTopologicalGroup [Group G] [IsTopologicalGroup G] :
@@ -227,7 +238,7 @@ instance instMulZeroClass [MulZeroClass M₀] [ContinuousMul M₀] :
 
 instance instSemigroupWithZero [SemigroupWithZero M₀] [ContinuousMul M₀] :
     SemigroupWithZero (SeparationQuotient M₀) :=
-  fast_instance% surjective_mk.semigroupWithZero mk mk_zero mk_mul
+  fast_instance% surjective_mk.semigroupWithZero mk mk_zero mk_mul mk_ppow
 
 instance instMulZeroOneClass [MulZeroOneClass M₀] [ContinuousMul M₀] :
     MulZeroOneClass (SeparationQuotient M₀) :=
@@ -235,11 +246,11 @@ instance instMulZeroOneClass [MulZeroOneClass M₀] [ContinuousMul M₀] :
 
 instance instMonoidWithZero [MonoidWithZero M₀] [ContinuousMul M₀] :
     MonoidWithZero (SeparationQuotient M₀) :=
-  fast_instance% surjective_mk.monoidWithZero mk mk_zero mk_one mk_mul mk_pow
+  fast_instance% surjective_mk.monoidWithZero mk mk_zero mk_one mk_mul mk_ppow mk_pow
 
 instance instCommMonoidWithZero [CommMonoidWithZero M₀] [ContinuousMul M₀] :
     CommMonoidWithZero (SeparationQuotient M₀) :=
-  fast_instance% surjective_mk.commMonoidWithZero mk mk_zero mk_one mk_mul mk_pow
+  fast_instance% surjective_mk.commMonoidWithZero mk mk_zero mk_one mk_mul mk_ppow mk_pow
 
 end MonoidWithZero
 
@@ -263,14 +274,14 @@ instance instRightDistribClass [Mul R] [Add R] [RightDistribClass R]
 
 instance instNonUnitalnonAssocSemiring [NonUnitalNonAssocSemiring R]
     [IsTopologicalSemiring R] : NonUnitalNonAssocSemiring (SeparationQuotient R) :=
-  fast_instance% surjective_mk.nonUnitalNonAssocSemiring mk mk_zero mk_add mk_mul mk_smul
+  fast_instance% surjective_mk.nonUnitalNonAssocSemiring mk mk_zero mk_add mk_mul mk_smul mk_smul
 
 instance instIsTopologicalSemiring [NonUnitalNonAssocSemiring R] [IsTopologicalSemiring R] :
     IsTopologicalSemiring (SeparationQuotient R) where
 
 instance instNonUnitalSemiring [NonUnitalSemiring R] [IsTopologicalSemiring R] :
     NonUnitalSemiring (SeparationQuotient R) :=
-  fast_instance% surjective_mk.nonUnitalSemiring mk mk_zero mk_add mk_mul mk_smul
+  fast_instance% surjective_mk.nonUnitalSemiring mk mk_zero mk_add mk_mul mk_smul mk_smul mk_ppow
 
 instance instNatCast [NatCast R] : NatCast (SeparationQuotient R) where
   natCast n := mk n
@@ -291,12 +302,13 @@ theorem mk_intCast [IntCast R] (n : ℤ) : mk (n : R) = n := rfl
 
 instance instNonAssocSemiring [NonAssocSemiring R] [IsTopologicalSemiring R] :
     NonAssocSemiring (SeparationQuotient R) :=
-  fast_instance% surjective_mk.nonAssocSemiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_natCast
+  fast_instance% surjective_mk.nonAssocSemiring mk mk_zero mk_one mk_add mk_mul mk_smul
+    mk_smul mk_natCast
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
     NonUnitalNonAssocRing (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonUnitalNonAssocRing mk mk_zero mk_add mk_mul mk_neg mk_sub
-    mk_smul mk_smul
+    mk_smul mk_smul mk_smul
 
 instance instIsTopologicalRing [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
     IsTopologicalRing (SeparationQuotient R) where
@@ -304,33 +316,37 @@ instance instIsTopologicalRing [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
 instance instNonUnitalRing [NonUnitalRing R] [IsTopologicalRing R] :
     NonUnitalRing (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonUnitalRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
+    mk_smul mk_ppow
 
 instance instNonAssocRing [NonAssocRing R] [IsTopologicalRing R] :
     NonAssocRing (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonAssocRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub
-    mk_smul mk_smul mk_natCast mk_intCast
+    mk_smul mk_smul mk_smul mk_natCast mk_intCast
 
 instance instSemiring [Semiring R] [IsTopologicalSemiring R] :
     Semiring (SeparationQuotient R) :=
-  fast_instance% surjective_mk.semiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_pow mk_natCast
+  fast_instance% surjective_mk.semiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_smul mk_ppow
+    mk_pow mk_natCast
 
 instance instRing [Ring R] [IsTopologicalRing R] :
     Ring (SeparationQuotient R) :=
   fast_instance% surjective_mk.ring mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul
-    mk_smul mk_pow mk_natCast mk_intCast
+    mk_smul mk_smul mk_ppow mk_pow mk_natCast mk_intCast
 
 instance instNonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R]
     [IsTopologicalSemiring R] :
     NonUnitalNonAssocCommSemiring (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonUnitalNonAssocCommSemiring mk mk_zero mk_add mk_mul mk_smul
+    mk_smul
 
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [IsTopologicalSemiring R] :
     NonUnitalCommSemiring (SeparationQuotient R) :=
-  fast_instance% surjective_mk.nonUnitalCommSemiring mk mk_zero mk_add mk_mul mk_smul
+  fast_instance% surjective_mk.nonUnitalCommSemiring mk mk_zero mk_add mk_mul mk_smul mk_smul
+    mk_ppow
 
 instance instCommSemiring [CommSemiring R] [IsTopologicalSemiring R] :
     CommSemiring (SeparationQuotient R) :=
-  fast_instance% surjective_mk.commSemiring mk mk_zero mk_one mk_add mk_mul mk_smul
+  fast_instance% surjective_mk.commSemiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_smul mk_ppow
     mk_pow mk_natCast
 
 instance instHasDistribNeg [Mul R] [HasDistribNeg R] [ContinuousMul R] [ContinuousNeg R] :
@@ -340,17 +356,17 @@ instance instHasDistribNeg [Mul R] [HasDistribNeg R] [ContinuousMul R] [Continuo
 instance instNonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] [IsTopologicalRing R] :
     NonUnitalNonAssocCommRing (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonUnitalNonAssocCommRing mk mk_zero mk_add mk_mul mk_neg mk_sub
-    mk_smul mk_smul
+    mk_smul mk_smul mk_smul
 
 instance instNonUnitalCommRing [NonUnitalCommRing R] [IsTopologicalRing R] :
     NonUnitalCommRing (SeparationQuotient R) :=
   fast_instance% surjective_mk.nonUnitalCommRing mk mk_zero mk_add mk_mul mk_neg mk_sub
-    mk_smul mk_smul
+    mk_smul mk_smul mk_smul mk_ppow
 
 instance instCommRing [CommRing R] [IsTopologicalRing R] :
     CommRing (SeparationQuotient R) :=
   fast_instance% surjective_mk.commRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub
-    mk_smul mk_smul mk_pow mk_natCast mk_intCast
+    mk_smul mk_smul mk_smul mk_ppow mk_pow mk_natCast mk_intCast
 
 /-- `SeparationQuotient.mk` as a `RingHom`. -/
 @[simps]
