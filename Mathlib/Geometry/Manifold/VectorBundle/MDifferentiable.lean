@@ -689,8 +689,7 @@ lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle �
   have : CMDiff[t.baseSet] k (fun (_x : M) ↦ w) := contMDiffOn_const
   exact this.congr (fun x hx ↦ by simp [extend, t, w, hx])
 
-lemma contMDiffAt_extend {x : M} (σ₀ : V x) :
-    CMDiffAt k (T% (extend F σ₀)) x := by
+lemma contMDiffAt_extend {x : M} (σ₀ : V x) : CMDiffAt k (T% (extend F σ₀)) x := by
   rw [contMDiffAt_section]
   set t := trivializationAt F V x
   let w : F := (t ⟨x, σ₀⟩).2
@@ -701,7 +700,8 @@ lemma contMDiffAt_extend {x : M} (σ₀ : V x) :
   · intro x hx
     simp [extend, t, hx, w]
   · exact FiberBundle.mem_baseSet_trivializationAt' x
-@[deprecated (since := "2026-06-23")] alias contMDiffAt_extend' := contMDiffAt_extend
+
+@[deprecated (since := "2026-06-30")] alias contMDiffAt_extend' := contMDiffAt_extend
 
 lemma exists_mdifferentiableOn_extend [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
     [ContMDiffVectorBundle 1 F V I] {x₀ : M} (σ₀ : V x₀) :
