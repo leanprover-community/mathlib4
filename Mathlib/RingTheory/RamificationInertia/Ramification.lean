@@ -92,6 +92,7 @@ theorem ramificationIdx'_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
     IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
   exact Algebra.FormallyUnramified.map_maximalIdeal
 
+variable {q R} in
 theorem ramificationIdx'_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
     [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
     q.ramificationIdx' R = 1 ↔ Algebra.IsUnramifiedAt R q := by
@@ -122,14 +123,11 @@ theorem ramificationIdx'_eq [q.LiesOver p] [q.IsPrime] :
   rw [ramificationIdx'_def, over_def q p]
 
 open Localization IsLocalization.AtPrime in
-theorem ramificationIdx_eq_ramificationIdx'
-    [IsDomain R] [IsDedekindDomain S] [Module.IsTorsionFree R S]
-    [q.LiesOver p] [hq : q.IsPrime] (hp : p ≠ ⊥) :
+theorem ramificationIdx_eq_ramificationIdx'' [IsDedekindDomain S]
+    [q.LiesOver p] [hq : q.IsPrime] (hpS : p.map (algebraMap R S) ≠ ⊥) :
     p.ramificationIdx q = q.ramificationIdx' R := by
-  have : p.IsPrime := isPrime_of_liesOver q p
-  have hq' : q ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp q
+  have hq' : q ≠ ⊥ := ne_bot_of_le_ne_bot hpS (map_le_of_le_comap (q.over_def p).le)
   have : q.IsMaximal := hq.isMaximal hq'
-  have hpS : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp
   obtain ⟨I, hqI, h⟩ := Ideal.eq_prime_pow_mul_coprime hpS q
   replace hqI : ¬ I ≤ q := by
     contrapose! hqI
@@ -141,6 +139,43 @@ theorem ramificationIdx_eq_ramificationIdx'
     map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top, AtPrime.map_eq_maximalIdeal] at h
   have hSq := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
   rw [ramificationIdx'_eq p q, h, hSq.length_quotient_pow_maximalIdeal, ENat.toNat_coe]
+
+theorem ramificationIdx_eq_ramificationIdx' [IsDomain R] [IsDedekindDomain S]
+    [Module.IsTorsionFree R S] [q.LiesOver p] [hq : q.IsPrime] (hp : p ≠ ⊥) :
+    p.ramificationIdx q = q.ramificationIdx' R := by
+  have hpS : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp
+  exact ramificationIdx_eq_ramificationIdx'' p q hpS
+
+namespace IsDedekindDomain
+
+open UniqueFactorizationMonoid
+
+theorem ramificationIdx'_eq_factors_count [IsDedekindDomain S]
+    [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx' R = (factors (p.map (algebraMap R S))).count q := by
+  by_cases hq : q.IsPrime; swap
+  · rw [ramificationIdx'_of_not_isPrime q R hq, eq_comm, Multiset.count_eq_zero]
+    contrapose! hq
+    exact isPrime_of_prime (prime_of_factor q hq)
+  have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
+  rw [← ramificationIdx_eq_ramificationIdx'' p q hp0, ramificationIdx_eq_factors_count hp0 ‹_› hq0]
+
+open UniqueFactorizationMonoid in
+theorem ramificationIdx'_eq_normalizedFactors_count [IsDedekindDomain S]
+    [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx' R = (normalizedFactors (p.map (algebraMap R S))).count q := by
+  rw [← factors_eq_normalizedFactors, ← ramificationIdx'_eq_factors_count p q hp0]
+
+open UniqueFactorizationMonoid in
+theorem ramificationIdx'_eq_multiplicity [IsDedekindDomain S]
+    [q.IsPrime] [q.LiesOver p] (hp : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx' R = multiplicity q (p.map (algebraMap R S)) := by
+  have hq : q ≠ ⊥ := ne_bot_of_le_ne_bot hp (map_le_of_le_comap (q.over_def p).le)
+  rw [ramificationIdx'_eq_normalizedFactors_count p q hp,
+    multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_eq_count_normalizedFactors
+      (prime_of_isPrime hq inferInstance).irreducible hp), normalize_eq]
+
+end IsDedekindDomain
 
 /-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
 theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
@@ -165,6 +200,24 @@ theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
     let := Localization.AtPrime.algebraOfLiesOver q r
     apply ramificationIdx'_tower'
   · rw [ramificationIdx'_of_not_isPrime r R hr, ramificationIdx'_of_not_isPrime r S hr, mul_zero]
+
+theorem ramificationIdx'_below_dvd [r.LiesOver q] [Module.Flat S T] :
+    q.ramificationIdx' R ∣ r.ramificationIdx' R := by
+  use r.ramificationIdx' S
+  rw [← ramificationIdx'_tower]
+
+theorem ramificationIdx'_above_dvd [r.LiesOver q] [Module.Flat S T] :
+    r.ramificationIdx' S ∣ r.ramificationIdx' R := by
+  use q.ramificationIdx' R
+  rw [mul_comm, ← ramificationIdx'_tower]
+
+theorem ramificationIdx'_below_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] [Module.Flat S T] :
+    q.ramificationIdx' R ≤ r.ramificationIdx' R :=
+  Nat.le_of_dvd (r.ramificationIdx'_pos R) (q.ramificationIdx'_below_dvd r)
+
+theorem ramificationIdx'_above_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] [Module.Flat S T] :
+    r.ramificationIdx' S ≤ r.ramificationIdx' R :=
+  Nat.le_of_dvd (r.ramificationIdx'_pos R) (q.ramificationIdx'_above_dvd r)
 
 variable (R) in
 open Pointwise in
