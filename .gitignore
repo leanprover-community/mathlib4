@@ -8,3 +8,5 @@
 **/__pycache__/
 # Progress file from scripts/rm_set_option.py
 scripts/.rm_set_option_progress.jsonl
+# Artifacts from using the devcontainer setup
+.devcontainer/devcontainer-lock.json

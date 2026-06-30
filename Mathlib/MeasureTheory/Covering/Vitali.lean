@@ -366,20 +366,20 @@ theorem exists_disjoint_covering_ae
       intro b hbv _ h'z
       have : z ∈ (s \ ⋃ a ∈ u, B a) ∩ ⋃ a ∈ u, B a :=
         mem_inter (mem_of_mem_inter_left hz) (mem_biUnion (vu hbv) h'z)
-      simpa only [diff_inter_self]
+      simpa only [sdiff_inter_self]
     -- since the elements of `w` are closed and finitely many, one can find a small ball around `z`
     -- not intersecting them
     have : ball x (R x) \ k ∈ 𝓝 z := by
       apply IsOpen.mem_nhds (isOpen_ball.sdiff k_closed) _
-      exact (mem_diff _).2 ⟨mem_of_mem_inter_right hz, z_notmem_k⟩
+      exact (mem_sdiff _).2 ⟨mem_of_mem_inter_right hz, z_notmem_k⟩
     obtain ⟨d, dpos, hd⟩ : ∃ d, 0 < d ∧ closedBall z d ⊆ ball x (R x) \ k :=
       nhds_basis_closedBall.mem_iff.1 this
     -- choose an element `a` of the family `t` contained in this small ball
     obtain ⟨a, hat, ad, rfl⟩ : ∃ a ∈ t, r a ≤ min d (R z) ∧ c a = z :=
-      hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
+      hf z ((mem_sdiff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
     have ax : B a ⊆ ball x (R x) := by
       refine (hB a hat).trans ?_
-      refine Subset.trans ?_ (hd.trans Set.diff_subset)
+      refine Subset.trans ?_ (hd.trans Set.sdiff_subset)
       gcongr
       exact ad.trans (min_le_left _ _)
     -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
@@ -400,7 +400,7 @@ theorem exists_disjoint_covering_ae
         refine ((hB _ hat).trans ?_).trans hd
         gcongr
         exact ad.trans (min_le_left _ _)
-      simpa only [diff_inter_self, Set.not_nonempty_empty]
+      simpa only [sdiff_inter_self, Set.not_nonempty_empty]
     let b'' : { a // a ∉ w } := ⟨b', b'_notmem_w⟩
     -- since `a` and `b` have comparable diameters, it follows that `z` belongs to the
     -- enlargement of `b`

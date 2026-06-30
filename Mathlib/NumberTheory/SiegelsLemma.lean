@@ -126,7 +126,7 @@ lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
   by_contra! h
   apply hA
   ext i j
-  simp only [zero_apply]
+  simp only [Matrix.zero_apply]
   rw [norm_lt_iff Real.zero_lt_one] at h
   specialize h i j
   rw [Int.norm_eq_abs] at h

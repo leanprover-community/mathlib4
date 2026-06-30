@@ -424,7 +424,7 @@ theorem dependsOn_lmarginalPartialTraj [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
   congrm ∫⁻ z : _, ?_ ∂(partialTraj κ a b).map _ (fun i ↦ ?_)
   · exact hxy i.1 i.2
   · refine hf.updateFinset _ ?_
-    rwa [← coe_sdiff, Iic_diff_Ioc_self_of_le hab]
+    rwa [← coe_sdiff, Iic_sdiff_Ioc_self_of_le hab]
 
 end DependsOn
 

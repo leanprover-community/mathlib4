@@ -122,14 +122,11 @@ theorem ramificationIdx'_eq [q.LiesOver p] [q.IsPrime] :
   rw [ramificationIdx'_def, over_def q p]
 
 open Localization IsLocalization.AtPrime in
-theorem ramificationIdx_eq_ramificationIdx'
-    [IsDomain R] [IsDedekindDomain S] [Module.IsTorsionFree R S]
-    [q.LiesOver p] [hq : q.IsPrime] (hp : p ≠ ⊥) :
+theorem ramificationIdx_eq_ramificationIdx'' [IsDedekindDomain S]
+    [q.LiesOver p] [hq : q.IsPrime] (hpS : p.map (algebraMap R S) ≠ ⊥) :
     p.ramificationIdx q = q.ramificationIdx' R := by
-  have : p.IsPrime := isPrime_of_liesOver q p
-  have hq' : q ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp q
+  have hq' : q ≠ ⊥ := ne_bot_of_le_ne_bot hpS (map_le_of_le_comap (q.over_def p).le)
   have : q.IsMaximal := hq.isMaximal hq'
-  have hpS : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp
   obtain ⟨I, hqI, h⟩ := Ideal.eq_prime_pow_mul_coprime hpS q
   replace hqI : ¬ I ≤ q := by
     contrapose! hqI
@@ -141,6 +138,23 @@ theorem ramificationIdx_eq_ramificationIdx'
     map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top, AtPrime.map_eq_maximalIdeal] at h
   have hSq := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
   rw [ramificationIdx'_eq p q, h, hSq.length_quotient_pow_maximalIdeal, ENat.toNat_coe]
+
+theorem ramificationIdx_eq_ramificationIdx' [IsDomain R] [IsDedekindDomain S]
+    [Module.IsTorsionFree R S] [q.LiesOver p] [hq : q.IsPrime] (hp : p ≠ ⊥) :
+    p.ramificationIdx q = q.ramificationIdx' R := by
+  have hpS : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp
+  exact ramificationIdx_eq_ramificationIdx'' p q hpS
+
+open UniqueFactorizationMonoid in
+theorem IsDedekindDomain.ramificationIdx'_eq_factors_count [IsDedekindDomain S]
+    [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx' R = (factors (p.map (algebraMap R S))).count q := by
+  by_cases hq : q.IsPrime; swap
+  · rw [ramificationIdx'_of_not_isPrime q R hq, eq_comm, Multiset.count_eq_zero]
+    contrapose! hq
+    exact isPrime_of_prime (prime_of_factor q hq)
+  have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
+  rw [← ramificationIdx_eq_ramificationIdx'' p q hp0, ramificationIdx_eq_factors_count hp0 ‹_› hq0]
 
 /-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
 theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
