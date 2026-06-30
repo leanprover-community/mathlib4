@@ -190,7 +190,7 @@ def fstSndJointlyReflectColimit {F : J ⥤ Comma L R} {c : Cocone F}
     ext
     · exact h₁.fac ((fst _ _).mapCocone s) j
     · exact h₂.fac ((snd _ _).mapCocone s) j
-  uniq s m hm := by
+  uniq s _ hm := by
     ext
     · exact h₁.uniq ((fst _ _).mapCocone s) _ (fun j ↦ by simp [← hm])
     · exact h₂.uniq ((snd _ _).mapCocone s) _ (fun j ↦ by simp [← hm])
