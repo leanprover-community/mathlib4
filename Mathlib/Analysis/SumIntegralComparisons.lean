@@ -197,7 +197,7 @@ lemma AntitoneOn.sum_range_le_integral {N : ℕ} (anti : AntitoneOn f (Icc 0 (N 
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑ n ∈ Finset.range N, f ((n + 1 : ℕ)) ≤ ∫ x in Ioi 0, f x := by
   rw [Finset.range_eq_Ico]
-  exact_mod_cast AntitoneOn.sum_Ico_le_integral (Nat.zero_le _) (mod_cast anti)
+  exact_mod_cast AntitoneOn.sum_Ico_le_integral (a := 0) (mod_cast anti)
     (mod_cast integrable) (mod_cast nonneg)
 
 /-- **Integral test**: A function which is nonnegative, integrable and antitone
@@ -208,7 +208,7 @@ theorem AntitoneOn.summable_of_integrable_eventually {N : ℕ} (anti : AntitoneO
   rw [← summable_nat_add_iff (N + 1)]
   exact summable_of_sum_range_le (by grind) fun M ↦ calc
     _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by rw [Finset.sum_Ico_eq_sum_range]; grind
-    _ ≤ _ := (anti.mono Icc_subset_Ici_self).sum_Ico_le_integral (by simp) integrable nonneg
+    _ ≤ _ := (anti.mono Icc_subset_Ici_self).sum_Ico_le_integral integrable nonneg
 
 /-- **Integral test**: a nonnegative antitone function is summable if it is integrable. -/
 theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
@@ -228,7 +228,7 @@ theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici
         sum_le_sum_of_subset_of_nonneg ht <| by grind
       _ = ∑ i ∈ Ico N (N + t), f ↑(i + 1) := by rw [Finset.sum_Ico_eq_sum_range]; grind
       _ ≤ ∫ (x : ℝ) in Set.Ioi (N : ℝ), f x :=
-        (anti.mono <| by grind).sum_Ico_le_integral (by grind) integrable nonneg
+        (anti.mono <| by grind).sum_Ico_le_integral integrable nonneg
 
 /-- **Integral test**: bounds the sum from 1 by an integral. -/
 theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
