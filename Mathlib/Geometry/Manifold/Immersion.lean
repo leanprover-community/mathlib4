@@ -9,6 +9,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+public import Mathlib.Geometry.Manifold.Diffeomorph -- TODO: remove once Immersion.comp is proven!
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
 public import Mathlib.Topology.Algebra.Module.TransferInstance
@@ -423,6 +424,25 @@ theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
 theorem contMDiffAt (h : IsImmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
+-- A future PR will show that diffeomorphisms are immersions, and compositions are also immersions
+-- (possibly under additional hypotheses on `𝕜`). The next lemma may be golfed accordingly in the
+-- future.
+/-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
+lemma comp_diffeomorph [IsManifold J n N]
+    (h : IsImmersionAtOfComplement F I J n f x) (Φ : Diffeomorph J J N N n) :
+    IsImmersionAtOfComplement F I J n (Φ ∘ f) x := by
+  -- XXX: right now, `fun_prop` does not prove this (even with added tagging): investigate!
+  apply mk_of_continuousAt (Φ.continuous.continuousAt.comp h.continuousAt)
+    h.equiv (h.domChart) (Φ.symm.toHomeomorph.transOpenPartialHomeomorph h.codChart)
+    h.mem_domChart_source (by simp [h.mem_codChart_source])
+    h.domChart_mem_maximalAtlas ?_
+  · intro x hx
+    simpa using h.writtenInCharts hx
+  · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
+    · have : Φ.symm.symm ⁻¹' Φ.symm ⁻¹' h.codChart.source = h.codChart.source := by ext; simp
+      simpa [this] using contMDiffOn_of_mem_maximalAtlas h.codChart_mem_maximalAtlas
+    · simpa using contMDiffOn_symm_of_mem_maximalAtlas h.codChart_mem_maximalAtlas
+
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
@@ -603,6 +623,13 @@ theorem contMDiffOn (h : IsImmersionAt I J n f x) : CMDiff[h.domChart.source] n 
 theorem contMDiffAt (h : IsImmersionAt I J n f x) : CMDiffAt n f x :=
   h.isImmersionAtOfComplement_complement.contMDiffAt
 
+/-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
+lemma comp_diffeomorph [IsManifold J n N]
+    (h : IsImmersionAt I J n f x) (Φ : Diffeomorph J J N N n) :
+    IsImmersionAt I J n (Φ ∘ f) x := by
+  use h.complement, by infer_instance, by infer_instance
+  exact h.isImmersionAtOfComplement_complement.comp_diffeomorph Φ
+
 end IsImmersionAt
 
 variable (F I J n) in
@@ -703,6 +730,12 @@ theorem contMDiff
     (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
   fun x ↦ (h x).contMDiffAt
 
+/-- Post-composing an immersion with a diffeomorphism still yields an immersion. -/
+lemma comp_diffeomorph [IsManifold J n N]
+    (h : IsImmersionOfComplement F I J n f) (Φ : Diffeomorph J J N N n) :
+    IsImmersionOfComplement F I J n (Φ ∘ f) :=
+  fun x ↦ (h x).comp_diffeomorph Φ
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -769,6 +802,13 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
 theorem contMDiff
     (h : IsImmersion I J n f) : CMDiff n f :=
   h.isImmersionOfComplement_complement.contMDiff
+
+/-- Post-composing an immersion with a diffeomorphism still yields an immersion. -/
+lemma comp_diffeomorph [IsManifold J n N]
+    (h : IsImmersion I J n f) (Φ : Diffeomorph J J N N n) :
+    IsImmersion I J n (Φ ∘ f) := by
+  use h.complement, by infer_instance, by infer_instance
+  exact h.isImmersionOfComplement_complement.comp_diffeomorph Φ
 
 end IsImmersion
 
