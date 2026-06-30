@@ -303,8 +303,6 @@ instance : PreservesColimitsOfShape (J₂ κ f) F₂ :=
   F₂.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
 
 open IsCardinalFiltered in
-
---set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance : IsCardinalFiltered (J κ f) κ := by
   rw [isCardinalFiltered_iff']
@@ -312,17 +310,23 @@ instance : IsCardinalFiltered (J κ f) κ := by
   · obtain ⟨j₁, ⟨a₁⟩⟩ := IsCardinalFiltered.exists_max (fun i ↦ (j i).fst) hι
     obtain ⟨j₂, ⟨a₂⟩⟩ := IsCardinalFiltered.exists_max (fun i ↦ (j i).snd) hι
     obtain ⟨j₂', b, c, h₁⟩ := exists_of_j₁_of_j₂' j₁ j₂
-    have (i : ι) : ∃ (j₂'' : J₂ κ f) (d : j₂' ⟶ j₂''),
-      F₁.map (a₁ i).left.hom ≫ c =
-        (j i).left.obj.hom ≫ F₂.map (a₂ i).left.hom ≫ F₂.map b.left.hom := by
-      sorry
-    choose j₂'' d h₂ using this
+    choose j₂'' d h₂ using
+      fun i ↦ IsCardinalPresentable.exists_eq_of_isColimit' κ
+        (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
+          (F₁.map (a₁ i).left.hom ≫ c)
+            ((j i).left.obj.hom ≫ F₂.map (a₂ i).left.hom ≫ F₂.map b.left.hom) (by
+              dsimp
+              rw [Category.id_comp, Category.assoc, Category.assoc, Category.assoc,
+                ← dsimp% h₁, ← F₁.map_comp_assoc, dsimp% CostructuredArrow.w (a₁ i),
+                ← F₂.map_comp, dsimp% CostructuredArrow.w b, ← F₂.map_comp,
+                dsimp% CostructuredArrow.w (a₂ i), dsimp% (j i).hom.w])
     dsimp at h₁ h₂
+    simp only [Category.assoc] at h₂
     obtain ⟨l, e, g, fac⟩ := wideSpan d hι
     refine ⟨J.mk j₁ l (c ≫ F₂.map g.left.hom) ?_, fun i ↦ ⟨?_⟩⟩
     · dsimp
       rw [h₁, Category.assoc, ← Functor.map_comp, dsimp% CostructuredArrow.w g]
-    · exact J.homMk (a₁ i) (a₂ i ≫ b ≫ g) (by simp [reassoc_of% h₂])
+    · refine J.homMk (a₁ i) (a₂ i ≫ b ≫ g) (by simp [← fac i, reassoc_of% h₂])
   · let g₁ (i : ι) := (π₁ κ f).map (g i)
     let g₂ (i : ι) := (π₂ κ f).map (g i)
     obtain ⟨l, a, ⟨b⟩⟩ :=
