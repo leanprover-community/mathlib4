@@ -155,10 +155,7 @@ only asks for a proof of facts that carry any mathematical content, and allows a
 same `s` for all parts. -/
 def isWeakLimitAux' (t : PullbackCone f g)
     (create :
-      ∀ s : PullbackCone f g,
-        { l //
-          l ≫ t.fst = s.fst ∧
-            l ≫ t.snd = s.snd}) :
+      ∀ s : PullbackCone f g, { l // l ≫ t.fst = s.fst ∧ l ≫ t.snd = s.snd}) :
     Limits.IsWeakLimit t :=
   PullbackCone.isWeakLimitAux t (fun s => (create s).1)
     (fun s => (create s).2.1) (fun s => (create s).2.2)
