@@ -114,8 +114,7 @@ open LieRinehartAlgebra in
 /-- `StrictLieRinehartIdeal.Quotient.mk` as a Lie-Rinehart homomorphism. -/
 def mk' : L →ₗ⁅(AlgHom.id R A)⁆ L ⧸ s :=
   { (s.toSubmodule.restrictScalars R).mkQ with
-    toFun := mk -- this can be removed, but then it stops being 'a constructor application', not
-                -- sure if we want that
+    toFun := mk
     map_lie'  {_ _} := rfl
     map_smul_apply' _ _ := rfl
     apply_lie' _ _ := rfl }
