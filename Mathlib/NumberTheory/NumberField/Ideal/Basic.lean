@@ -124,9 +124,8 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime] [N
   obtain ⟨⟨ζ, hζ₀⟩, hζ₁, hζ₂⟩ := this
   obtain ⟨n, hn, hζ₃⟩ : ∃ n, 2 ≤ n ∧ IsPrimitiveRoot (ζ : K) n := by
     refine ⟨orderOf ζ, ?_, IsPrimitiveRoot.coe_coe_iff.mpr (IsPrimitiveRoot.orderOf ζ)⟩
-    refine (Nat.two_le_iff _).mpr ⟨orderOf_ne_zero_iff.mpr ?_, ?_⟩
-    · exact (CommGroup.mem_torsion ζ).mp hζ₀
-    · simpa [orderOf_eq_one_iff] using hζ₂
+    rw [Nat.two_le_iff, orderOf_ne_zero_iff]
+    exact ⟨hζ₀, by simpa using hζ₂⟩
   have h_cpr := hζ₃.not_coprime_norm_of_mk_eq_one
     (absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP) hn
     (by rwa [Units.ext_iff, torsionMapQuot_apply, val_one] at hζ₁)
