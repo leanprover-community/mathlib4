@@ -59,7 +59,7 @@ def diffeoExtChartAt [IsManifold I n M] {p : M} (hp : I.IsInteriorPoint p) :
     refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr ⟨homeo.continuousOn_toFun, ?_⟩
     set f := homeo ∘ (chartAt H p).symm ∘ I.symm
     set s := (fun a ↦ I ((chartAt H p) a)) '' homeo.source
-    suffices ContDiffOn 𝕜 n f s by simpa
+    change ContDiffOn 𝕜 n f s
     have : ∀ e ∈ s, f e = e := by
       rintro e ⟨w, ⟨hw, _⟩, rfl⟩
       simp [f, homeo, openPartialHomeomorph_of_isInteriorPoint,
@@ -90,10 +90,7 @@ lemma eqOn_diffeoExtChartAt_symm_extChartAt_symm [IsManifold I n M] {p : M}
   graphOn_inj.mp rfl
 
 lemma mem_diffeoExtChartAt_source [IsManifold I n M] {p : M} (hp : I.IsInteriorPoint p) :
-    p ∈ (diffeoExtChartAt n hp).source := by
-  suffices I ((chartAt H p) p) ∈ Classical.choose hp by
-    simpa [diffeoExtChartAt, openPartialHomeomorph_of_isInteriorPoint]
-  exact (Classical.choose_spec hp).2
+    p ∈ (diffeoExtChartAt n hp).source := ⟨mem_chart_source H p, (Classical.choose_spec hp).2⟩
 
 lemma diffeoExtChartAt_source_subset [IsManifold I n M] {p : M} (hp : I.IsInteriorPoint p) :
     (diffeoExtChartAt n hp).source ⊆ (extChartAt I p).source  := by simp [diffeoExtChartAt]
@@ -131,9 +128,9 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
     IsLocalDiffeomorphAt I₁ I₂ n f p := by
   -- obtain that `f p` is an interior point of `M₂`
   have A_nhd : A ∈ nhds p := hA.mem_nhds hpA
-  have hfp : I₂.IsInteriorPoint (f p) := by
-    have f_mdiffat_p := ((hf.contMDiffAt A_nhd).mdifferentiableAt hn)
-    exact f_mdiffat_p.isInteriorPoint_of_surjective_mfderiv (LinearMap.range_eq_top.mp hf'.2) hp
+  have mDiffAt_f_p : MDiffAt f p := ((hf.contMDiffAt A_nhd).mdifferentiableAt hn)
+  have hfp : I₂.IsInteriorPoint (f p) :=
+    mDiffAt_f_p.isInteriorPoint_of_surjective_mfderiv (LinearMap.range_eq_top.mp hf'.2) hp
   -- let `g` be the coordinate representation of `f` and obtain coordinate charts
   set g : E₁ → E₂ := writtenInExtChartAt I₁ I₂ p f
   set φ₀ := extChartAt I₁ p
@@ -159,16 +156,10 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
   have U_nhd : U ∈ nhds (φ₀ p) := mem_nhds_iff.mpr ⟨U, subset_refl _, U_open, φ₀p_mem_U⟩
   -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence
   have ⟨g', hg'⟩ : ∃ g' : E₁ ≃L[𝕜] E₂, HasFDerivAt g (g' : E₁ →L[𝕜] E₂) (φ₀ p) := by
-    have g_diff: DifferentiableWithinAt 𝕜 g (range I₁) (φ₀ p) :=
-      ((hg.differentiableOn hn).differentiableAt U_nhd).differentiableWithinAt
-    rw [mfderiv, if_pos ((hf.contMDiffAt A_nhd).mdifferentiableAt hn), fderivWithin] at hf'
-    by_cases g'_zero: HasFDerivWithinAt g (0 : E₁ →L[𝕜] E₂) (range I₁) (φ₀ p)
-    · rw [if_pos g'_zero] at hf'
-      exact ⟨ContinuousLinearEquiv.ofBijective 0 hf'.1 hf'.2,
-        g'_zero.hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
-    · rw [if_neg g'_zero, dif_pos g_diff] at hf'
-      exact ⟨ContinuousLinearEquiv.ofBijective (Classical.choose g_diff) hf'.1 hf'.2,
-        (Classical.choose_spec g_diff).hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
+    rw [mfderiv, if_pos mDiffAt_f_p] at hf'
+    use ContinuousLinearEquiv.ofBijective (fderivWithin 𝕜 g (range I₁) (φ₀ p)) hf'.1 hf'.2
+    exact mDiffAt_f_p.differentiableWithinAt_writtenInExtChartAt.hasFDerivWithinAt.hasFDerivAt
+      (range_mem_nhds_isInteriorPoint hp)
   -- define `V ⊆ E₁`, the open set where `g'` is a continuous linear equivalence
   set V := (fderiv 𝕜 g) ⁻¹' (range ContinuousLinearEquiv.toContinuousLinearMap)
   have hUV: IsOpen (U ∩ V) :=
@@ -188,7 +179,7 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
     exact (hg.contDiffWithinAt (this hx)).mono this
   -- keep track of membership in `homeo.source`
   have φ₀p_mem_homeo_source : φ₀ p ∈ homeo.source :=
-    ⟨(ContDiffOn.contDiffAt hg U_nhd).mem_toOpenPartialHomeomorph_source hg' hn, φ₀p_mem_UV⟩
+    ⟨(hg.contDiffAt U_nhd).mem_toOpenPartialHomeomorph_source hg' hn, φ₀p_mem_UV⟩
   clear φ₀p_mem_UV
   -- upgrade to a `PartialDiffeomorph` using the properties of `U` and `V`
   set coord_diffeo : PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n := {
@@ -218,7 +209,7 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv (hn : n ≠ 0) {f : M₁ → M
   constructor
   · refine ⟨⟨mem_diffeoExtChartAt_source n hp, φ₀p_mem_homeo_source⟩, ?_⟩
     change (ψ₁ ∘ f ∘ φ₀.symm) (φ₀ p) ∈ ψ₁.target
-    suffices ψ₁ (f p) ∈ ψ₁.target by simpa[φ₀.left_inv (mem_extChartAt_source p)]
+    suffices ψ₁ (f p) ∈ ψ₁.target by simpa [φ₀.left_inv (mem_extChartAt_source p)]
     exact ψ₁.map_source (mem_diffeoExtChartAt_source n hfp)
   · intro m hm
     change f m = ψ₀.symm (ψ₀ (f (φ₀.symm (φ₀ m))))
