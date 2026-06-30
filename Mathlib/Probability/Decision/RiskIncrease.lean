@@ -12,21 +12,29 @@ public import Mathlib.Probability.Kernel.WithDensity
 import Mathlib.Probability.Decision.Risk.Basic
 
 /-!
-# Statistical information
+# Risk increase (or statistical information)
 
-TODO: cite DeGroot and also Duchi et al.
+A way to quantify the information obtained by an experiment is to look at the increase in risk that
+results from discarding the observation of that experiment.
+We call that quantity the **risk increase**. It was called **information** by DeGroot
+in [degroot1962uncertainty], but we opt for a more descriptive name to avoid confusion with other
+notions of information in statistics and information theory.
+See also [duchi2018multiclass] for properties of the risk increase and relations to statistical
+divergences.
 
 ## Main definitions
 
-* `statInfo`
+* `riskIncrease ℓ P π`: the increase in risk that results from discarding the observation in
+  a Bayesian estimation problem.
+  `bayesRisk ℓ (Kernel.discard 𝓧 ∘ₖ P) π - bayesRisk ℓ P π`
 
 ## Main statements
 
-* `statInfo_comp_le`: data-processing inequality
-
-## Notation
-
-## Implementation details
+* `riskIncrease_comp_le`: the data-processing inequality for the risk increase, which states that
+  the risk increase cannot be increased by post-processing the observation (composing the
+  kernel `P` with a Markov kernel): `riskIncrease ℓ (η ∘ₖ P) π ≤ riskIncrease ℓ P π`.
+* `riskIncrease_map_le`: version of the data-processing inequality for a measurable function instead
+  of a Markov kernel. `riskIncrease ℓ (P.map f) π ≤ riskIncrease ℓ P π`.
 
 -/
 
