@@ -26,8 +26,8 @@ Let `R` be a commutative ring, and let `W` be a sequence of elements in `R` inde
 *elliptic relator* `ER(p, q, r, s) ∈ R` associated to `W` is given for all `p, q, r, s ∈ ℤ` by
 `ER(p, q, r, s) := W(p+q+s)W(p-q)W(r+s)W(r) - W(p+r+s)W(p-r)W(q+s)W(q) + W(q+r+s)W(q-r)W(p+s)W(p)`.
 Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, s) = 0` for all
-`p, q, r, s ∈ ℤ`. By a cyclic permutation of variables, `ER(p, q, r, s) = 0` is essentially the same
-as the symmetric elliptic relation `ERₐ(p, q, r, s) = 0`, where `ERₐ(p, q, r, s) ∈ R` is given for
+`p, q, r, s ∈ ℤ`. By a cyclic permutation of variables, the vanishing of `ER` is essentially
+equivalent to the vanishing of symmetric relation `ERₐ`, where `ERₐ(p, q, r, s) ∈ R` is given for
 all `p, q, r, s ∈ ℤ` by `ERₐ(p, q, r, s) := Wₐ(p, q)Wₐ(r, s) - Wₐ(p, r)Wₐ(q, s) + Wₐ(p, s)Wₐ(q, r)`
 defined in terms of *elliptic atoms* `Wₐ(p, q) := W((p + q) / 2)W((p - q) / 2)` for some `p, q ∈ ℤ`.
 
