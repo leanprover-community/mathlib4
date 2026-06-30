@@ -69,16 +69,15 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
   classical
   refine le_antisymm ?_ three_le_egirth
-  have ⟨s, hcard⟩ := Cardinal.exists_finset_eq_card <| Cardinal.ofNat_le_toENat.mp h
-  have ⟨x, y, z, hxy, hxz, hyz, hs⟩ := s.card_eq_three.mp hcard.symm
-  let w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil
-  have : w.IsCycle := {
-    edges_nodup := by simp [w]; grind
-    ne_nil := by simp [w]
-    support_nodup := by grind [Walk.support_nil]
-  }
+  obtain ⟨s, hcard⟩ := Cardinal.exists_finset_eq_card <| Cardinal.ofNat_le_toENat.mp h
+  obtain ⟨x, y, z, hxy, hxz, hyz, -⟩ := s.card_eq_three.mp hcard.symm
+  set w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil with hw
+  have : w.IsCycle :=
+    { edges_nodup := by aesop
+      ne_nil := by aesop
+      support_nodup := by aesop }
   grw [egirth_le_length this]
-  simp [w]
+  simp [hw]
 
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
