@@ -37,6 +37,9 @@ public section
 
 open Polynomial IsLocalRing Ideal UniqueFactorizationMonoid
 
+local notation "𝓀[" R "]" => ResidueField R
+local notation "𝓂[" R "]" => maximalIdeal R
+
 namespace AdjoinRoot
 
 variable {R k : Type*} [CommRing R] [Field k] {p : R[X]} {f : k[X]}
@@ -62,10 +65,9 @@ lemma isMaximal_nilradical_of_isPrimePow_normalize (ne : f ≠ 0) [DecidableEq k
 theorem isLocalRing_iff_isPrimePow_normalize (ne : f ≠ 0) [DecidableEq k] :
     IsLocalRing (AdjoinRoot f) ↔ IsPrimePow (normalize f) := by
   refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
-  · have eq : {J | span {f} ≤ J ∧ J.IsPrime} = {(maximalIdeal (AdjoinRoot f)).comap (mk f)} := by
-      suffices ∀ (I : Ideal k[X]), f ∈ I → I.IsPrime →
-        I = comap (mk f) (maximalIdeal (AdjoinRoot f)) by
-          simpa [Set.eq_singleton_iff_unique_mem, comap_isPrime]
+  · have eq : {J | span {f} ≤ J ∧ J.IsPrime} = {𝓂[AdjoinRoot f].comap (mk f)} := by
+      suffices ∀ (I : Ideal k[X]), f ∈ I → I.IsPrime → I = comap (mk f) 𝓂[AdjoinRoot f] by
+        simpa [Set.eq_singleton_iff_unique_mem, comap_isPrime]
       intro I f_in hI
       replace hI := hI.isMaximal (ne_of_mem_of_not_mem' f_in ne)
       have maximal := hI.map_of_surjective_of_ker_le (f := mk f) mk_surjective (by simpa)
@@ -90,22 +92,20 @@ lemma isPrimePow_map_residue_of_monic_of_isLocalRing (monic : p.Monic) [IsLocalR
   exact of_surjective' f (map_surjective_of_surjective residue_surjective dvd_rfl)
 
 private lemma isLocalRingAux (monic : p.Monic) [IsLocalRing R]
-    (hp : IsPrimePow (p.map (residue R))) :
-    IsLocalRing (AdjoinRoot p ⧸ Ideal.map (of p) (maximalIdeal R)) := by
+    (hp : IsPrimePow (p.map (residue R))) : IsLocalRing (AdjoinRoot p ⧸ 𝓂[R].map (of p)) := by
   classical
-  have : IsLocalRing ((ResidueField R)[X] ⧸ span {p.map (residue R)}) :=
-    (isLocalRing_iff_isPrimePow_normalize (monic.map (residue R)).ne_zero).mpr
-      (by rwa [(monic.map (residue R)).normalize_eq_self])
-  let e : AdjoinRoot p ⧸ Ideal.map (of p) (maximalIdeal R) ≃+*
-    (ResidueField R)[X] ⧸ span {p.map (residue R)} :=
-      quotAdjoinRootEquivQuotPolynomialQuot (maximalIdeal R) p
+  have : IsLocalRing (𝓀[R][X] ⧸ span {p.map (residue R)}) :=
+    (isLocalRing_iff_isPrimePow_normalize (monic.map _).ne_zero).mpr
+      (by rwa [(monic.map _).normalize_eq_self])
+  let e : AdjoinRoot p ⧸ 𝓂[R].map (of p) ≃+* 𝓀[R][X] ⧸ span {p.map (residue R)} :=
+      quotAdjoinRootEquivQuotPolynomialQuot 𝓂[R] p
   exact e.symm.isLocalRing
 
 theorem isLocalRing_of_isPrimePow_map_residue (monic : p.Monic) [IsLocalRing R]
     (hp : IsPrimePow (p.map (residue R))) : IsLocalRing (AdjoinRoot p) := by
-  have : IsLocalRing (AdjoinRoot p ⧸ Ideal.map (of p) (maximalIdeal R)) := isLocalRingAux monic hp
-  suffices IsLocalHom (Ideal.Quotient.mk (Ideal.map (of p) (maximalIdeal R))) from
-    RingHom.domain_isLocalRing (Ideal.Quotient.mk (Ideal.map (of p) (maximalIdeal R)))
+  have : IsLocalRing (AdjoinRoot p ⧸ 𝓂[R].map (of p)) := isLocalRingAux monic hp
+  suffices IsLocalHom (Ideal.Quotient.mk (𝓂[R].map (of p))) from
+    RingHom.domain_isLocalRing (Ideal.Quotient.mk (𝓂[R].map (of p)))
   apply isLocalHom_of_le_jacobson_bot
   simp_rw [jacobson_bot, Ring.jacobson_eq_sInf_isMaximal, le_sInf_iff, Set.mem_setOf]
   intro I hI
@@ -120,5 +120,19 @@ theorem isLocalRing_iff_of_monic (monic : p.Monic) : IsLocalRing (AdjoinRoot p) 
     exact ⟨this, isPrimePow_map_residue_of_monic_of_isLocalRing monic⟩
   · rcases h with ⟨_, h⟩
     exact isLocalRing_of_isPrimePow_map_residue monic h
+
+lemma map_maximalIdeal_eq_iff_prime_map_residue (monic : p.Monic) [IsLocalRing R]
+    [IsLocalRing (AdjoinRoot p)] : 𝓂[R].map (of p) = maximalIdeal (AdjoinRoot p) ↔
+      Prime (p.map (residue R)) := by
+  rw [← prime_span_singleton_iff, prime_iff_isPrime (by simpa using (monic.map _).ne_zero)]
+  let e₁ : AdjoinRoot p ⧸ 𝓂[R].map (of p) ≃+* 𝓀[R][X] ⧸ span {p.map (residue R)} :=
+    quotAdjoinRootEquivQuotPolynomialQuot 𝓂[R] p
+  refine ⟨fun eq ↦ ?_, fun h ↦ eq_maximalIdeal (Quotient.maximal_of_isField _ ?_)⟩
+  · refine IsMaximal.isPrime (Quotient.maximal_of_isField _ ?_)
+    let e₂ : AdjoinRoot p ⧸ Ideal.map (of p) 𝓂[R] ≃+* 𝓀[AdjoinRoot p] := quotEquivOfEq eq
+    exact IsLocalHom.isField (f := e₁.symm.trans e₂) (RingEquiv.injective _) (Field.toIsField _)
+  · replace h := h.isMaximal (by simpa using (monic.map _).ne_zero)
+    rw [Quotient.maximal_ideal_iff_isField_quotient] at h
+    exact IsLocalHom.isField e₁.injective h
 
 end AdjoinRoot
