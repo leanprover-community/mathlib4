@@ -355,7 +355,6 @@ def RKHSEquivOfKernel : H ≃ₗᵢ[𝕜] OfKernel (kernel H) := by
       (h_dense.mono h_sub).closure_eq]
   exact (LinearIsometryEquiv.ofSurjective ofOfKernel h_surj).symm
 
-
 lemma RKHSEquivOfKernel_symm (g : OfKernel (kernel H)) : (RKHSEquivOfKernel H).symm g =
     UniformSpace.Completion.extension (α := H₀ (kernel H))
       ((Finsupp.linearCombination 𝕜 (fun (xv : X × V) => (RKHS.kerFun H xv.1) xv.2))) g := by
@@ -366,7 +365,7 @@ theorem RKHSEquivOfKernel_apply_symm_apply (g : OfKernel (kernel H)) :
   LinearIsometryEquiv.apply_symm_apply _ _
 
 theorem RKHSEquivOfKernel_symm_apply_apply (g : H) :
-    (RKHSEquivOfKernel (H := H)).symm (RKHSEquivOfKernel g) = g :=
+    (RKHSEquivOfKernel (H := H)).symm (RKHSEquivOfKernel H g) = g :=
   LinearIsometryEquiv.symm_apply_apply _ _
 
 lemma kerFun_eq_coe'_single (x : X) (v : V) : kerFun (OfKernel K) x v =
