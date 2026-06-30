@@ -32,7 +32,7 @@ permissions:
 
 env:
   CROSSREFS_REPO: leanprover-community/crossref-exports
-  BUILT_SHA: ${{ github.event.workflow_run.head_sha || github.ref }}
+  BUILT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
 
 jobs:
   export:
@@ -56,7 +56,7 @@ jobs:
         with:
           persist-credentials: false
           # The exact commit CI validated; for manual runs, the dispatched ref.
-          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+          ref: ${{ env.BUILT_SHA }}
 
       - name: Configure Lean and fetch the Mathlib cache
         uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
