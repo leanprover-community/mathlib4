@@ -14,7 +14,9 @@ import Mathlib.Init
 
 The actual linter is defined in `TextBased.lean`.
 
-This file defines the blocklist and other tools used by the linter.
+This file defines the allowlist and other tools used by the linter.
+
+**When changing, make sure to stay in sync with [style guide](https://github.com/leanprover-community/leanprover-community.github.io/blob/lean4/templates/contribute/style.md#unicode-usage)**
 
 -/
 
@@ -156,6 +158,8 @@ def othersInMathlib : Array Char := #[
 
   '┌', '┐', '│', '├', '└', '┬', '┘', '▼', '◄', '⋅', 'ś', '－', '＼', '◥', '／', '◢',
 
+  '╭', '╮', '╰', '╯',
+
   '◿', '◹', 'ő', '⥥', '⤞', '⥢', '╱', '⟋', 'Ž', 'ą', 'Š', 'ầ', '：', '꙳', '⎛',
 
   '⎞', '⎜', '⎟', '⎝', '⎠', 'ă', 'ĝ', 'ᵧ', '▶', '‑', '‾', 'ř', '⏎', '‐', '𐞥',
@@ -184,20 +188,36 @@ public def emojis : Array Char := #[
 /-- Unicode symbols in mathlib that should always be followed by the text variant selector. -/
 public def nonEmojis : Array Char := #[]
 
-/-- Blocklist: If `false`, the character is not allowed in Mathlib.
+/-- Unicode symbols in mathlib that have no restrictions on whether they are followed by a selector
+or which selector they are followed by. -/
+public def unrestricted : Array Char := #[
+  '⚠' -- ⚠️, ⚠. Lake output uses '⚠' and does not include the text selector.
+]
+
+/-- If `false`, the character is not allowed in Mathlib.
+
+Implemented using an allowlist consisting of:
+- certain ASCII characters
+- certain emojis (`emojis`)
+- certain non-emoji variants of emojifiable characters (`nonEmojis`)
+- certain characters with no selector restrictions (`unrestricted`)
+- characters with abbreviations in the VSCode extension (`withVSCodeAbbrev`)
+- "the rest" (`othersInMathlib`)
+
 Note: if `true`, a character might still not be allowed depending on context
 (e.g. misplaced variant selectors).
 -/
 public def isAllowedCharacter (c : Char) : Bool :=
   ASCII.allowed c
   || withVSCodeAbbrev.contains c
+  || othersInMathlib.contains c
   || emojis.contains c
   || nonEmojis.contains c
+  || unrestricted.contains c
   || c == UnicodeVariant.emoji
   || c == UnicodeVariant.text
-  || othersInMathlib.contains c
 
-/-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
+/-- Provide default replacement (`String`) for a disallowed character, or `none` if none defined -/
 public def replaceDisallowed : Char → Option String
 | '\u0009' => "  "    -- "TAB" => "2 spaces"
 | '\u000B' => "\n"    -- "LINE TABULATION" => "Line Feed"

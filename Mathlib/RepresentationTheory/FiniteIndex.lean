@@ -147,7 +147,7 @@ lemma coindToInd_indToCoind : A.indToCoind ∘ₗ A.coindToInd = LinearMap.id :=
   ext g a
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
   conv_lhs => rw [coindToInd_apply]
-  simp only [map_sum, AddSubmonoidClass.coe_finset_sum, Finset.sum_apply]
+  simp only [map_sum, AddSubmonoidClass.coe_finsetSum, Finset.sum_apply]
   rw [Finset.sum_eq_single ⟦a⟧]
   · simp
   · intro b _ hb
@@ -162,7 +162,7 @@ lemma indToCoind_coindToInd : A.coindToInd ∘ₗ A.indToCoind = LinearMap.id :=
   rw [coindToInd_of_support_subset_orbit g]
   · simp
   · intro x hx
-    contrapose! hx
+    contrapose hx
     simpa using indToCoindAux_of_not_rel g x a hx
 
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
@@ -179,7 +179,7 @@ variable (k S)
 
 /-- Given a finite index subgroup `S ≤ G`, this is a natural isomorphism between the `Ind_S^G` and
 `Coind_G^S` functors `Rep k S ⥤ Rep k G`. -/
-@[simps! hom_app inv_app]
+@[implicit_reducible, simps! hom_app inv_app]
 noncomputable def indCoindNatIso :
     indFunctor k S.subtype ≅ coindFunctor.{max w u} k S.subtype :=
   NatIso.ofComponents (fun (A : Rep k S) => indCoindIso A) fun f => by
@@ -192,7 +192,6 @@ noncomputable def indCoindNatIso :
 noncomputable def resIndAdjunction :
     resFunctor.{max w u v} S.subtype ⊣ indFunctor.{max w u v} k S.subtype :=
   (resCoindAdjunction.{max w u v} k S.subtype).ofNatIsoRight (indCoindNatIso.{max w u v} k S).symm
-
 
 omit [DecidableRel (QuotientGroup.rightRel S)] in
 @[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
@@ -214,7 +213,6 @@ lemma resIndAdjunction_unit_app (B : Rep.{max w u v} k G) :
       (resCoindAdjunction.{max w u} k S.subtype).unit.app B ≫
       (indCoindIso.{max w (max u v)} (res S.subtype B)).inv := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G} (f : res S.subtype B ⟶ A) :
     (resIndAdjunction.{w, u, v} k S).homEquiv _ _ f =
@@ -226,7 +224,7 @@ lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G}
     (f : B ⟶ (indFunctor k S.subtype).obj A) :
     ((resIndAdjunction k S).homEquiv _ _).symm f =
-      (resCoindHomEquiv.{max w u v} S.subtype B A).symm (f ≫ (indCoindIso.{max w u v} A).hom) := by
+      (resCoindHomEquiv.{max w u v} S.subtype B A).symm (f ≫ (indCoindIso.{max w u v} A).hom) :=
   rfl
 
 variable (k S) in
@@ -246,7 +244,7 @@ theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
 lemma coindResAdjunction_counit_app (B : Rep.{max w u v} k G) :
     (coindResAdjunction.{w, u, v} k S).counit.app B =
       (indCoindIso.{max w u v} (res S.subtype B)).inv ≫
-      (indResAdjunction k S.subtype).counit.app B := by
+      (indResAdjunction k S.subtype).counit.app B :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -255,8 +253,7 @@ lemma coindResAdjunction_unit_app (A : Rep.{max w u v} k S) :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫
       (resFunctor S.subtype).map (indCoindIso.{max w u v} A).hom := by
   ext
-  simp [coindResAdjunction, Adjunction.ofNatIsoLeft,
-    indResAdjunction, indCoindIso]
+  simp [coindResAdjunction]
 
 lemma coindResAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : coind S.subtype A ⟶ B) :
@@ -268,9 +265,7 @@ lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : A ⟶ res S.subtype B) :
     ((coindResAdjunction.{max w u v} k S).homEquiv _ _).symm f =
       (indCoindIso.{max w u v} A).inv ≫ (indResHomEquiv S.subtype A B).symm f := by
-  simp only [coindResAdjunction, indResAdjunction,
+  simp [coindResAdjunction, indResHomEquiv, indResAdjunction,
     Adjunction.homEquiv_ofNatIsoLeft_symm_apply _]
-  simp
-  rfl
 
 end Rep

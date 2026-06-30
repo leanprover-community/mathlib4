@@ -58,7 +58,7 @@ variable {K}
 
 theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
-  convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
+  convert! (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 
 end IsUnit
@@ -76,6 +76,11 @@ theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
 variable {K}
 
 theorem coe_coe (u : (𝓞 K)ˣ) : ((u : 𝓞 K) : K) = (u : K) := rfl
+
+theorem _root_.IsPrimitiveRoot.coe_coe_iff {ν : (𝓞 K)ˣ} {n : ℕ} :
+    IsPrimitiveRoot (ν : K) n ↔ IsPrimitiveRoot ν n :=
+  IsPrimitiveRoot.map_iff_of_injective
+    (f := (algebraMap (𝓞 K) K).toMonoidHom.comp (Units.coeHom (𝓞 K))) (coe_injective K)
 
 theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
@@ -168,9 +173,9 @@ instance : Fintype (torsion K) := by
 instance : IsCyclic (torsion K) := isCyclic_subgroup_units _
 
 /-- The order of the torsion subgroup. -/
-def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
+def torsionOrder : ℕ := Fintype.card (torsion K)
 
-instance [NumberField K] : NeZero (torsionOrder K) :=
+instance : NeZero (torsionOrder K) :=
   inferInstanceAs (NeZero (Fintype.card (torsion K)))
 
 theorem torsionOrder_ne_zero :
@@ -238,7 +243,7 @@ theorem torsion_eq_one_or_neg_one_of_odd_finrank
     linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc (IsPrimitiveRoot.orderOf (x.1 : K)),
         NumberField.InfinitePlace.nrRealPlaces_pos_of_odd_finrank h]
   · interval_cases hi : orderOf (x : (𝓞 K)ˣ)
-    · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion _ x.1).1 x.2)]
+    · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion x.1).1 x.2)]
     · exact Or.intro_left _ (orderOf_eq_one_iff.1 hi)
     · rw [← orderOf_units, CharP.orderOf_eq_two_iff 0 (by decide)] at hi
       simp [← Units.val_inj, ← Units.val_inj, Units.val_neg, Units.val_one, hi]

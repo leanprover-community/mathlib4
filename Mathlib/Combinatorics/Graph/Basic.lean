@@ -97,15 +97,15 @@ structure Graph (α β : Type*) where
   /-- The edge set. -/
   edgeSet : Set β := {e | ∃ x y, IsLink e x y}
   /-- If `e` goes from `x` to `y`, it goes from `y` to `x`. -/
-  isLink_symm : ∀ ⦃e⦄, e ∈ edgeSet → (Symmetric <| IsLink e)
+  isLink_symm : ∀ ⦃e⦄, e ∈ edgeSet → Std.Symm (IsLink e)
   /-- An edge is incident with at most one pair of vertices. -/
   eq_or_eq_of_isLink_of_isLink : ∀ ⦃e x y v w⦄, IsLink e x y → IsLink e v w → x = v ∨ x = w
   /-- An edge `e` is incident to something if and only if `e` is in the edge set. -/
   edge_mem_iff_exists_isLink : ∀ e, e ∈ edgeSet ↔ ∃ x y, IsLink e x y := by exact fun _ ↦ Iff.rfl
   /-- If some edge `e` is incident to `x`, then `x ∈ V`. -/
-  left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet
+  left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet := by grind
 
-initialize_simps_projections Graph (IsLink → isLink)
+initialize_simps_projections Graph (as_prefix edgeSet, as_prefix vertexSet, IsLink → isLink)
 
 namespace Graph
 
@@ -127,11 +127,13 @@ lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
   mt IsLink.edge_mem he
 
 protected lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=
-  G.isLink_symm h.edge_mem h
+  G.isLink_symm h.edge_mem |>.symm x y h
 
+@[grind →]
 lemma IsLink.left_mem (h : G.IsLink e x y) : x ∈ V(G) :=
   G.left_mem_of_isLink h
 
+@[grind →]
 lemma IsLink.right_mem (h : G.IsLink e x y) : y ∈ V(G) :=
   h.symm.left_mem
 
@@ -352,7 +354,7 @@ to the definition of `Graph`, so it doesn't require equality of the edge sets.) 
 protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
     (h : ∀ e x y, G₁.IsLink e x y ↔ G₂.IsLink e x y) : G₁ = G₂ := by
   rw [← G₁.mk_eq_self G₁.edge_mem_iff_exists_isLink, ← G₂.mk_eq_self G₂.edge_mem_iff_exists_isLink]
-  convert rfl using 2
+  convert! rfl using 2
   · exact hV.symm
   · simp [funext_iff, h]
   simp [edgeSet_eq_setOf_exists_isLink, h]
@@ -365,16 +367,16 @@ lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G
 /-- `Graph.copy` produces a graph equal to `G` but with provided definitional choices
 for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
 definitional equalities while keeping the same underlying graph. -/
-@[simps]
+@[simps -isSimp]
 def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β → α → α → Prop}
     (hvertexSet : V(G) = vertexSet) (hedgeSet : E(G) = edgeSet)
     (hIsLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
   vertexSet := vertexSet
   edgeSet := edgeSet
   IsLink := IsLink
-  isLink_symm e he x y := by
-    simp_rw [← hIsLink]
-    apply G.isLink_symm (hedgeSet ▸ he)
+  isLink_symm e he := by
+    simp_rw [symm_def, ← hIsLink]
+    exact (G.isLink_symm <| hedgeSet ▸ he).symm
   eq_or_eq_of_isLink_of_isLink := by
     simp_rw [← hIsLink]
     exact G.eq_or_eq_of_isLink_of_isLink
@@ -389,7 +391,7 @@ def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β 
 lemma copy_eq (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
     (hV : V(G) = V) (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) :
     G.copy hV hE h_isLink = G := by
-  ext <;> simp_all
+  ext <;> simp_all [copy]
 
 /-! ### Sets of edges or loops incident to a vertex -/
 
@@ -467,7 +469,7 @@ lemma IsNonloopAt.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G
 /-! ### Graphs with no edges -/
 
 /-- The graph with vertex set `vertexSet` and no edges -/
-@[simps (attr := grind =)]
+@[simps (attr := grind =) vertexSet edgeSet]
 def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
   vertexSet := vertexSet
   edgeSet := ∅
@@ -475,12 +477,14 @@ def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
   isLink_symm := by simp
   eq_or_eq_of_isLink_of_isLink := by simp
   edge_mem_iff_exists_isLink := by simp
-  left_mem_of_isLink := by simp
+
+theorem noEdge_isLink (vertexSet : Set α) (β : Type*) (e : β) (x y : α) :
+    (noEdge vertexSet β).IsLink e x y ↔ False := Iff.rfl
 
 variable {vertexSet : Set α} {edgeSet : Set β}
 
 lemma edgeSet_eq_empty : E(G) = ∅ ↔ G = noEdge V(G) β := by
-  refine ⟨fun h ↦ Graph.ext rfl ?_, fun h ↦ by rw [h, noEdge_edgeSet]⟩
+  refine ⟨fun h ↦ Graph.ext rfl ?_, fun h ↦ by rw [h, edgeSet_noEdge]⟩
   simp only [noEdge_isLink, iff_false]
   refine fun e x y he ↦ ?_
   have := h ▸ he.edge_mem
@@ -494,10 +498,9 @@ def banana (u v : α) (edgeSet : Set β) : Graph α β where
   vertexSet := {u, v}
   edgeSet := edgeSet
   IsLink e x y := e ∈ edgeSet ∧ ((x = u ∧ y = v) ∨ (x = v ∧ y = u))
-  isLink_symm _ _ _ := by aesop
+  isLink_symm := by aesop (add simp symm_def)
   eq_or_eq_of_isLink_of_isLink := by aesop
   edge_mem_iff_exists_isLink := by aesop
-  left_mem_of_isLink := by aesop
 
 @[simp]
 lemma banana_inc : (banana u v edgeSet).Inc e x ↔ e ∈ edgeSet ∧ (x = u ∨ x = v) := by
@@ -536,7 +539,9 @@ lemma banana_empty : banana u v ∅ = Graph.noEdge {u, v} β := by
 abbrev bouquet (v : α) (edgeSet : Set β) : Graph α β :=
   banana v v edgeSet
 
-lemma bouquet_vertexSet (v : α) (edgeSet : Set β) : V(bouquet v edgeSet) = {v} := by simp
+lemma vertexSet_bouquet (v : α) (edgeSet : Set β) : V(bouquet v edgeSet) = {v} := by simp
+
+@[deprecated (since := "2026-04-09")] alias bouquet_vertexSet := vertexSet_bouquet
 
 lemma bouquet_isLink (v : α) (edgeSet : Set β) :
     (bouquet v edgeSet).IsLink e x y ↔ e ∈ edgeSet ∧ x = v ∧ y = v := by simp
@@ -565,7 +570,7 @@ lemma eq_bouquet_of_subsingleton (hv : v ∈ V(G)) (hss : V(G).Subsingleton) :
   exact hzw.inc_left
 
 lemma eq_bouquet_iff : G = bouquet v E(G) ↔ V(G) = {v} :=
-  ⟨fun h ↦ h ▸ bouquet_vertexSet v _,
+  ⟨fun h ↦ h ▸ vertexSet_bouquet v _,
     fun h ↦ eq_bouquet_of_subsingleton (by simp [h]) (by simp [h])⟩
 
 /-- Every graph on just one vertex is a bouquet on that vertex. -/

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Dual vector spaces
@@ -17,7 +18,6 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 * Duals and transposes:
   * `Module.Dual R M` defines the dual space of the `R`-module `M`, as `M →ₗ[R] R`.
-  * `Module.dualPairing R M` is the canonical pairing between `Dual R M` and `M`.
   * `Module.Dual.eval R M : M →ₗ[R] Dual R (Dual R)` is the canonical map to the double dual.
   * `Module.Dual.transpose` is the linear map from `M →ₗ[R] M'` to `Dual R M' →ₗ[R] Dual R M`.
   * `LinearMap.dualMap` is `Module.Dual.transpose` of a given linear map, for dot notation.
@@ -38,6 +38,12 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `Module.evalEquiv` is the equivalence `V ≃ₗ[K] Dual K (Dual K V)`
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
     subspaces of `Dual K (Dual K V)`.
+
+## Notes
+
+* The identity map `id` on `Module.Dual R M` can be interpreted as a bilinear pairing when read as
+  `Module.Dual R V →ₗ[R] M →ₗ[R] R`. It is the flipped pairing to `Module.Dual.eval`.
+
 -/
 
 @[expose] public section
@@ -52,17 +58,18 @@ variable (R A M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
+@[wikidata Q752487]
 abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
+@[deprecated LinearMap.id (since := "2026-04-02")]
 def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
     Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
 
-@[simp]
-theorem dualPairing_apply (v x) : dualPairing R M v x = v x :=
-  rfl
+@[deprecated "`Module.dualPairing` has been deprecated" (since := "2026-04-02")]
+theorem dualPairing_apply (v x) : dualPairing R M v x = v x := rfl
 
 namespace Dual
 
@@ -258,7 +265,7 @@ lemma dualMap_dualMap_eq_iff_of_injective
 
 /-- The dual of a reflexive module is reflexive. -/
 instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
-  ⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
+  ⟨by simpa only [← symm_dualMap_evalEquiv] using! (evalEquiv R M).dualMap.symm.bijective⟩
 
 variable {R M N} in
 /-- A direct summand of a reflexive module is reflexive. -/
@@ -392,12 +399,12 @@ theorem dualAnnihilator_top : (⊤ : Submodule R M).dualAnnihilator = ⊥ := by
 theorem dualCoannihilator_bot : (⊥ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊤ :=
   (dualAnnihilator_gc R M).u_top
 
-@[mono]
+@[gcongr, mono]
 theorem dualAnnihilator_anti {U V : Submodule R M} (hUV : U ≤ V) :
     V.dualAnnihilator ≤ U.dualAnnihilator :=
   (dualAnnihilator_gc R M).monotone_l hUV
 
-@[mono]
+@[gcongr, mono]
 theorem dualCoannihilator_anti {U V : Submodule R (Module.Dual R M)} (hUV : U ≤ V) :
     V.dualCoannihilator ≤ U.dualCoannihilator :=
   (dualAnnihilator_gc R M).monotone_u hUV

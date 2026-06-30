@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Functor.Flat
 
-/-! Localization
+/-! # Localization
 
 In this file, given a Grothendieck topology `J` on a category `C` and `X : C`, we construct
 a Grothendieck topology `J.over X` on the category `Over X`. In order to do this,
@@ -25,7 +25,7 @@ is covering for `J`. As a result, the forgetful functor
 
 @[expose] public section
 
-universe v' v u' u
+universe w v' v u' u
 
 namespace CategoryTheory
 
@@ -42,7 +42,7 @@ lemma Presieve.map_functorPullback_overForget {X : C} {Y : Over X} (R : Presieve
 
 namespace Sieve
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Sieve Y ≃ Sieve Y.left` for all `Y : Over X`. -/
 def overEquiv {X : C} (Y : Over X) :
     Sieve Y ≃ Sieve Y.left where
@@ -98,7 +98,7 @@ lemma overEquiv_le_overEquiv_iff {X : C} {Y : Over X} (R₁ R₂ : Sieve Y) :
     Sieve.functorPullback_monotone _ _ h
   simpa using h
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : Sieve Y₂) :
     overEquiv _ (S.pullback f) = (overEquiv _ S).pullback f.left := by
   ext Z g
@@ -123,12 +123,27 @@ lemma overEquiv_symm_iff {X : C} {Y : Over X} (S : Sieve Y.left) {Z : Over X} (f
     (overEquiv Y).symm S f ↔ S f.left := by
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_iff {X : C} {Y : Over X} (S : Sieve Y) {Z : C} (f : Z ⟶ Y.left) :
     overEquiv Y S f ↔ S (Over.homMk f : Over.mk (f ≫ Y.hom) ⟶ Y) := by
   obtain ⟨S, rfl⟩ := (overEquiv Y).symm.surjective S
   simp
 
-set_option backward.isDefEq.respectTransparency false in
+lemma overEquiv_ofArrows {X : C} {Y : Over X} {I : Type*} (Z : I → Over X) (g : ∀ i, Z i ⟶ Y) :
+    overEquiv Y (ofArrows Z g) = ofArrows (fun i => (Z i).left) (fun i => (g i).left) := by
+  simp [Sieve.overEquiv, functorPushforward_ofArrows]
+
+set_option backward.defeqAttrib.useBackward true in
+lemma overEquiv_preOneHypercover_sieve₁ {X : C} {Y : Over X} (E : PreOneHypercover.{w} Y)
+    {i₁ i₂ : E.I₀} {W : Over X} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂) :
+    overEquiv W (E.sieve₁ p₁ p₂) =
+      (E.map (Over.forget X)).sieve₁ p₁.left p₂.left := by
+  ext
+  rw [overEquiv_iff]
+  refine ⟨fun ⟨k, b, hb₁, hb₂⟩ ↦ ⟨k, b.left, congr($(hb₁).left), congr($(hb₂).left)⟩, ?_⟩
+  intro ⟨k, b, hb₁, hb₂⟩
+  exact ⟨k, Over.homMk b (by simpa using (hb₁ =≫ (E.X i₁).hom).symm), by cat_disch, by cat_disch⟩
+
 lemma overEquiv_generate {X : C} {Y : Over X} (R : Presieve Y) :
     overEquiv Y (.generate R) = .generate (Presieve.functorPushforward (Over.forget X) R) := by
   refine le_antisymm (fun Z g hg ↦ ?_) ?_
@@ -139,7 +154,7 @@ lemma overEquiv_generate {X : C} {Y : Over X} (R : Presieve Y) :
     rintro Z g ⟨W, u, v, hu, rfl⟩
     exact (overEquiv_iff _ _).mpr ⟨W, Over.homMk v, u, hu, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
     (overEquiv Y).symm (.generate R) =
       .generate (Presieve.functorPullback (Over.forget X) R) := by
@@ -152,6 +167,7 @@ lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
   · rw [generate_le_iff]
     exact fun Z g hg ↦ le_generate _ _ _ hg
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
     Sieve.functorPushforward (Over.map f) ((Sieve.overEquiv Z).symm S) =
@@ -164,7 +180,7 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
     exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
       Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by cat_disch⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
     (S : Sieve ((Over.map f).obj U)) :
     overEquiv U (S.functorPullback (Over.map f)) =
@@ -181,6 +197,7 @@ lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
   rw [Sieve.overEquiv_iff, Sieve.overEquiv_iff]
   simp [Presieve.functorPullback, heq]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X : C}
     (U : Over X) (S : Sieve ((Over.post F).obj U)) :
@@ -194,7 +211,7 @@ lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X 
   · intro Z g hg
     rw [Sieve.overEquiv_iff]
     dsimp [Presieve.functorPullback]
-    convert (Sieve.overEquiv_iff _ _).mp hg
+    convert! (Sieve.overEquiv_iff _ _).mp hg
     simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -234,13 +251,12 @@ lemma over_forget_coverPreserving (X : C) :
     CoverPreserving (J.over X) J (Over.forget X) where
   cover_preserve hS := hS
 
-set_option backward.isDefEq.respectTransparency false in
 lemma over_forget_compatiblePreserving (X : C) :
     CompatiblePreserving J (Over.forget X) where
   compatible {_ Z _ _ hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
     let W' : Over X := Over.mk (f₁ ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁
-    let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
+    let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using! h.symm =≫ Z.hom)
     exact hx g₁' g₂' hg₁ hg₂ (by ext; exact h)
 
 instance (X : C) : (Over.forget X).IsCocontinuous (J.over X) J where
@@ -262,8 +278,9 @@ lemma over_map_coverPreserving {X Y : C} (f : X ⟶ Y) :
     obtain ⟨S, rfl⟩ := (Sieve.overEquiv U).symm.surjective S
     rw [Sieve.functorPushforward_over_map]
     apply overEquiv_symm_mem_over
-    simpa [mem_over_iff] using hS
+    simpa [mem_over_iff] using! hS
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
     CompatiblePreserving (J.over Y) (Over.map f) where
@@ -271,15 +288,15 @@ lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
     let W' : Over X := Over.mk (f₁.left ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁.left
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂.left
-      (by simpa using (Over.forget _).congr_map h.symm =≫ Z.hom)
+      (by simpa using! (Over.forget _).congr_map h.symm =≫ Z.hom)
     let e : (Over.map f).obj W' ≅ W := Over.isoMk (Iso.refl _)
-      (by simpa [W'] using (Over.w f₁).symm)
+      (by simpa [W'] using! (Over.w f₁).symm)
     convert congr_arg (F.obj.map e.inv.op)
       (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
     all_goals
       dsimp [e, W', g₁', g₂']
-      rw [← FunctorToTypes.map_comp_apply]
-      apply congr_fun
+      rw [← Functor.map_comp_apply]
+      apply ConcreteCategory.congr_hom
       congr 1
       rw [← op_comp]
       congr 1
@@ -313,6 +330,43 @@ lemma _root_.CategoryTheory.CoverPreserving.overPost {D : Type*} [Category* D]
     rw [Sieve.overEquiv_functorPushforward_post]
     exact h.cover_preserve hS
 
+set_option backward.defeqAttrib.useBackward true in
+instance {J : GrothendieckTopology C} (X : C) :
+    (Over.forget X).PreservesOneHypercovers (J.over _) J := by
+  intro Y E
+  refine ⟨?_, ?_⟩
+  · dsimp
+    rw [dsimp% PreZeroHypercover.sieve₀_map (F := Over.forget X)]
+    exact E.mem₀
+  · intro i₁ i₂ W p₁ p₂ w
+    have := w =≫ Over.hom _
+    simp only [Over.forget_obj, Over.forget_map, Category.assoc, Over.w] at this
+    have := E.mem₁ i₁ i₂ (Over.homMk (U := Over.mk (p₁ ≫ Over.hom _)) p₁)
+      (Over.homMk (U := Over.mk (p₁ ≫ Over.hom _)) p₂ this.symm) (by ext; simpa)
+    rwa [GrothendieckTopology.mem_over_iff, Sieve.overEquiv_preOneHypercover_sieve₁] at this
+
+set_option backward.defeqAttrib.useBackward true in
+instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    (F : C ⥤ D) (X : C) [Functor.PreservesOneHypercovers.{w} F J K] :
+    Functor.PreservesOneHypercovers.{w} (Over.post F) (J.over X) (K.over _) := by
+  intro Y E
+  let E' := (E.map (Over.forget X) J).map F K
+  refine ⟨?_, ?_⟩
+  · dsimp [-Over.post_obj]
+    rw [PreZeroHypercover.sieve₀_map, GrothendieckTopology.mem_over_iff,
+      Sieve.functorPushforward_ofArrows, Sieve.overEquiv_ofArrows]
+    exact E'.mem₀
+  · intro i₁ i₂ W p₁ p₂ w
+    simp_rw [GrothendieckTopology.mem_over_iff, Sieve.overEquiv_preOneHypercover_sieve₁,
+      ← PreOneHypercover.map_comp, Over.post_forget_eq_forget_comp, PreOneHypercover.map_comp]
+    exact E'.mem₁ _ _ _ _ congr($(w).left)
+
+instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    {F : C ⥤ D} (X : C) (Y : D) (f : F.obj X ⟶ Y)
+    [(Over.post F).IsContinuous (J.over X) (K.over _)] :
+    (Over.post F ⋙ Over.map f).IsContinuous (J.over X) (K.over Y) :=
+  Functor.isContinuous_comp _ _ _ (K.over _) _
+
 open Limits
 
 lemma coverPreserving_overPullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
@@ -328,6 +382,7 @@ section
 
 variable {C : Type u'} [Category* C] [HasBinaryProducts C] {J : GrothendieckTopology C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem coverPreserving_over_star (X : C) :
     CoverPreserving J (J.over X) (Over.star X) where
@@ -384,6 +439,7 @@ def overMapPullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
       J.overMapPullback A (f ≫ g) :=
   Functor.sheafPushforwardContinuousComp' (Over.mapComp f g).symm _ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma overMapPullback_comp_id {X Y : C} (f : X ⟶ Y) :
     (J.overMapPullbackComp A f (𝟙 Y)).inv ≫
@@ -396,6 +452,7 @@ lemma overMapPullback_comp_id {X Y : C} (f : X ⟶ Y) :
   congr
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma overMapPullback_id_comp {X Y : C} (f : X ⟶ Y) :
     (J.overMapPullbackComp A (𝟙 X) f).inv ≫
@@ -409,6 +466,7 @@ lemma overMapPullback_id_comp {X Y : C} (f : X ⟶ Y) :
   congr
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma overMapPullback_assoc {X Y Z T : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ T) :
     (J.overMapPullbackComp A f (g ≫ h)).inv ≫
@@ -434,6 +492,28 @@ variable {J}
 /-- Given `F : Sheaf J A` and `X : C`, this is the pullback of `F` on `J.over X`. -/
 abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
     Sheaf (J.over X) A := (J.overPullback A X).obj F
+
+variable {A : Type u'} [Category.{v'} A]
+
+set_option backward.defeqAttrib.useBackward true in
+/-- For `f : X ⟶ Y`, `F.over Y` viewed as a sheaf on `Over X` is isomorphic to `F.Over X`. -/
+@[simps! +dsimpLhs]
+def Sheaf.pushforwardOverMapIso (F : Sheaf J A) {X Y : C} (f : X ⟶ Y) :
+    ((Over.map f).sheafPushforwardContinuous A (J.over X) (J.over Y)).obj (F.over Y) ≅
+      F.over X :=
+  ObjectProperty.isoMk _ (NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp))
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- For `f : X ⟶ Y`, this is the morphism from `F.over Y` to the pushforward of `F.over X`
+along `Over.pullback f` induced by `Limits.pullback.fst`. -/
+@[simps]
+noncomputable
+def Sheaf.toPushforwardOverPullback [Limits.HasPullbacks C] (F : Sheaf J A)
+    {X Y : C} (f : X ⟶ Y) :
+    F.over Y ⟶ ((Over.pullback f).sheafPushforwardContinuous A _ _).obj (F.over X) where
+  hom.app U := F.obj.map (.op <| Limits.pullback.fst _ _)
+  hom.naturality := by simp [← Functor.map_comp, ← op_comp]
 
 section
 
@@ -472,6 +552,7 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {X : C} (f : Over X) :
     f.iteratedSliceEquiv.inverse.IsDenseSubsite (J.over _) ((J.over _).over _) where
