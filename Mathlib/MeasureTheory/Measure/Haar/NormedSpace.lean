@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
@@ -25,10 +24,12 @@ namespace MeasureTheory
 
 namespace Measure
 
-/-- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
-an additive Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
+/-- The instance `MeasureTheory.Measure.IsAddHaarMeasure.nullSingletonClass` applies in particular
+to show that an additive Haar measure on a nontrivial finite-dimensional real vector space has no
+atom. -/
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
-    [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
+    [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] :
+    NullSingletonClass μ := by
   infer_instance
 
 section LinearEquiv
