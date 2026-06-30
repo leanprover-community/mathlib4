@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Johns Hopkins Category Theory Seminar. All rights reserved.
+Copyright (c) 2026 Johns Hopkins Category Theory Seminar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
@@ -13,18 +13,18 @@ public import Mathlib.CategoryTheory.CodiscreteCategory
 /-!
 # The Coherent Isomorphism
 
-In this file, we define two related types.
+We define the free walking isomorphism `WalkingIso`; the category with objects `zero` and
+`one` and unique morphisms `zero ⟶ one` and `one ⟶ zero`. We construct an equivalence
+`WalkingIso.equiv` between the type of functors from `WalkingIso` into any category `C` and the type
+`Σ (X : C) (Y : C), (X ≅ Y)` of isomorphisms in that category.
 
-We first define the free walking isomorphism `WalkingIso` as the codiscrete category on `Bool`:
-the category with objects `false` and `true` and unique morphisms `false ⟶ true` and `true ⟶ false`.
-We construct an equivalence `equiv` between the type of functors from `WalkingIso` into any category
-and the type of isomorphisms in that category.
-
-Then we define the simplicial set `coherentIso` as the nerve of `WalkingIso`.
-Lastly, we show that `hom : Edge f t` (where `f` and `t` are the `0`-simplices corresponding to
-`false` and `true`) has an inverse, and `invStructOfEqMapHom` concludes from this that for all
-simplicial sets `X`, and all `g : coherentIso ⟶ X`, `x₀ x₁: X _⦋0⦌` and `f : Edge x₀ x₁`,
-if `g` sends `hom` to `f`, then `f` has an inverse.
+The simplicial set `SSet.coherentIso` is defined as the nerve of `WalkingIso`, with
+`coherentIso.x₀` and `coherentIso.x₁` the `0`-simplices corresponding to `WalkingIso.zero`
+and `WalkingIso.one` respectively, and `coherentIso.hom : Edge x₀ x₁` and
+`coherentIso.inv : Edge x₁ x₀` forward and backward edges corresponding to the morphisms in
+`WalkingIso`. Given any simplicial set `X`, with a morphism `g : coherentIso ⟶ X`, `0`-simplices
+`x₀ x₁: X _⦋0⦌` and an edge between them `f : Edge x₀ x₁`, such that `g` sends `coherentIso.hom` to
+`f`, then `f` has an inverse (in the sense of `Edge.InvStruct`), see `invStructOfEqMapHom`.
 
 -/
 
@@ -54,7 +54,7 @@ def zero : WalkingIso.{w} := .mk (.up false)
 /-- The codomain of the isomorphism -/
 def one : WalkingIso.{w} := .mk (.up true)
 
-/-- The isomorphism at the heart of `WalkingIso` -/
+/-- The isomorphism between `zero` and `one` in `WalkingIso`. -/
 def iso : zero.{w} ≅ one := Codiscrete.iso zero one
 
 lemma eq_iso_hom (f : zero.{w} ⟶ one) : f = iso.{w}.hom := Codiscrete.eq_iso_hom f
@@ -183,7 +183,7 @@ def invStructHom : Edge.InvStruct.{u} coherentIso.hom where
   homInvId := homInvId
   invHomId := invHomId
 
-/-- If an edge is equal to the image of `hom` under a morphism of simplicial sets,
+/-- If X`, withan edge is equal to the image of `hom` under a morphism of simplicial sets,
 this edge has an inverse. -/
 abbrev invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
