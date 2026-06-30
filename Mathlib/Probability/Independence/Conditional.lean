@@ -804,9 +804,8 @@ lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
           ∘ₘ μ.trim hm' := by
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg]
   congr!
-  · rw [Measure.compProd_map (by fun_prop), compProd_trim_condExpKernel,
-      Measure.map_map (by fun_prop) ((measurable_id.mono le_rfl hm').prodMk measurable_id)]
-    rfl
+  · rw [Measure.compProd_map (by fun_prop), compProd_trim_condExpKernel]
+    exact Measure.map_map (by fun_prop) ((measurable_id.mono le_rfl hm').prodMk measurable_id)
   · rw [Measure.compProd_eq_comp_prod]
 
 /-- Two random variables `f, g` are conditionally independent given a third `k` iff the
