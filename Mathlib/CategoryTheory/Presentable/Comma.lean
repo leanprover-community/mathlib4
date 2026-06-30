@@ -173,10 +173,6 @@ instance [ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C₁ κ)]
 namespace isCardinalAccessibleCategory
 
 variable {F₁ F₂}
-  [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
-  [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-  [F₁.PreservesCardinalPresentable κ]
-  [F₂.PreservesCardinalPresentable κ] [LocallySmall.{w} D]
 
 variable (f : Comma F₁ F₂)
 
@@ -184,9 +180,11 @@ abbrev J := CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f
 abbrev J₁ := CostructuredArrow (isCardinalPresentable C₁ κ).ι f.left
 abbrev J₂ := CostructuredArrow (isCardinalPresentable C₂ κ).ι f.right
 
-instance : IsFiltered (J₁ κ f) := isFiltered_of_isCardinalFiltered _ κ
+instance [IsCardinalAccessibleCategory C₁ κ] : IsFiltered (J₁ κ f) :=
+  isFiltered_of_isCardinalFiltered _ κ
 
-instance : IsFiltered (J₂ κ f) := isFiltered_of_isCardinalFiltered _ κ
+instance [IsCardinalAccessibleCategory C₂ κ] : IsFiltered (J₂ κ f) :=
+  isFiltered_of_isCardinalFiltered _ κ
 
 attribute [local instance] IsFiltered.nonempty
 
@@ -208,8 +206,6 @@ def π₂ : J κ f ⥤ J₂ κ f where
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.right))
     (by exact congr_arg CommaMorphism.right (CostructuredArrow.w φ))
 
-section
-
 variable {κ f}
 
 abbrev J.mk (j₁ : J₁ κ f) (j₂ : J₂ κ f) (g : F₁.obj j₁.left.obj ⟶ F₂.obj j₂.left.obj)
@@ -230,33 +226,42 @@ abbrev J.homMk {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.sn
         · simpa using! CostructuredArrow.w g₁
         · simpa using! CostructuredArrow.w g₂)
 
+section
+
+variable [IsCardinalAccessibleCategory C₂ κ] [F₂.IsCardinalAccessible κ]
+  [F₁.PreservesCardinalPresentable κ]
+
+set_option backward.defeqAttrib.useBackward true in
+lemma J.exists_hom'
+    {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.snd) :
+    ∃ (j₂ : J₂ κ f) (a : j'.snd ⟶ j₂),
+        F₁.map g₁.left.hom ≫ j'.left.obj.hom ≫ F₂.map a.left.hom =
+        j.left.obj.hom ≫ F₂.map g₂.left.hom ≫ F₂.map a.left.hom := by
+  have := Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall
+    F₂ κ (J₂ κ f)
+  obtain ⟨j₂, a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
+    (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
+    (i := j'.snd) (F₁.map g₁.left.hom ≫ j'.left.obj.hom)
+    (j.left.obj.hom ≫ F₂.map g₂.left.hom) (by
+      dsimp
+      rw [Category.id_comp, Category.assoc, Category.assoc, ← Functor.map_comp,
+        ← dsimp% j'.hom.w, ← Functor.map_comp_assoc, dsimp% CostructuredArrow.w g₁,
+        dsimp% j.hom.w, dsimp% CostructuredArrow.w g₂])
+  exact ⟨j₂, a, by cat_disch⟩
+
 set_option backward.defeqAttrib.useBackward true in
 lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.snd) :
     ∃ (j'' : J κ f) (a : j ⟶ j'') (b : j' ⟶ j''),
       g₁.left.hom ≫ b.left.hom.left = a.left.hom.left ∧
       g₂.left.hom ≫ b.left.hom.right = a.left.hom.right := by
-  have := Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall
-    F₂ κ (J₂ κ f)
-  obtain ⟨j₂, a, ha⟩ :
-      ∃ (j₂ : J₂ κ f) (a : j'.snd ⟶ j₂),
-        F₁.map g₁.left.hom ≫ j'.left.obj.hom ≫ F₂.map a.left.hom =
-        j.left.obj.hom ≫ F₂.map g₂.left.hom ≫ F₂.map a.left.hom := by
-    obtain ⟨j₂, a, ha⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
-      (isColimitOfPreserves F₂ ((isCardinalPresentable C₂ κ).ι.denseAt f.right))
-      (i := j'.snd) (F₁.map g₁.left.hom ≫ j'.left.obj.hom)
-      (j.left.obj.hom ≫ F₂.map g₂.left.hom) (by
-        dsimp
-        rw [Category.id_comp, Category.assoc, Category.assoc, ← Functor.map_comp,
-          ← dsimp% j'.hom.w, ← Functor.map_comp_assoc, dsimp% CostructuredArrow.w g₁,
-          dsimp% j.hom.w, dsimp% CostructuredArrow.w g₂])
-    exact ⟨j₂, a, by cat_disch⟩
+  obtain ⟨j₂, a, ha⟩ := J.exists_hom' g₁ g₂
   exact ⟨J.mk j'.fst j₂ (j'.left.obj.hom ≫ F₂.map a.left.hom)
     (by simp [← dsimp% (CostructuredArrow.w a)]), J.homMk g₁ (g₂ ≫ a) (by simpa),
     J.homMk (𝟙 _) a (by simp), by simp⟩
 
 set_option backward.defeqAttrib.useBackward true in
 lemma exists_of_j₁_of_j₂' (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
-    ∃ (j₂' : J₂ κ f) (a : j₂ ⟶ j₂') (b : F₁.obj j₁.left.obj ⟶ F₂.obj j₂'.left.obj),
+    ∃ (j₂' : J₂ κ f) (_ : j₂ ⟶ j₂') (b : F₁.obj j₁.left.obj ⟶ F₂.obj j₂'.left.obj),
     F₁.map j₁.hom ≫ f.hom = b ≫ F₂.map j₂'.hom := by
   have := Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall F₂ κ
     (J₂ κ f)
@@ -280,12 +285,16 @@ lemma exists_of_j₁ (j₁ : J₁ κ f) :
   obtain ⟨j, a, _⟩ := exists_of_j₁_of_j₂ j₁ (Classical.arbitrary _)
   exact ⟨j, ⟨a⟩⟩
 
-lemma exists_of_j₂ (j₂ : J₂ κ f) :
+lemma exists_of_j₂ [IsCardinalAccessibleCategory C₁ κ] (j₂ : J₂ κ f) :
     ∃ (j : J κ f), Nonempty (j₂ ⟶ j.snd) := by
   obtain ⟨j, _, ⟨a⟩⟩ := exists_of_j₁_of_j₂ (Classical.arbitrary _) j₂
   exact ⟨j, ⟨a⟩⟩
 
 end
+
+variable [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
+  [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+  [F₁.PreservesCardinalPresentable κ] [LocallySmall.{w} D]
 
 instance : PreservesColimitsOfShape (J₁ κ f) F₁ :=
   F₁.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
@@ -300,7 +309,20 @@ set_option backward.defeqAttrib.useBackward true in
 instance : IsCardinalFiltered (J κ f) κ := by
   rw [isCardinalFiltered_iff']
   refine ⟨fun ι j hι ↦ ?_, fun ι j k g hι hι' ↦ ?_⟩
-  · sorry
+  · obtain ⟨j₁, ⟨a₁⟩⟩ := IsCardinalFiltered.exists_max (fun i ↦ (j i).fst) hι
+    obtain ⟨j₂, ⟨a₂⟩⟩ := IsCardinalFiltered.exists_max (fun i ↦ (j i).snd) hι
+    obtain ⟨j₂', b, c, h₁⟩ := exists_of_j₁_of_j₂' j₁ j₂
+    have (i : ι) : ∃ (j₂'' : J₂ κ f) (d : j₂' ⟶ j₂''),
+      F₁.map (a₁ i).left.hom ≫ c =
+        (j i).left.obj.hom ≫ F₂.map (a₂ i).left.hom ≫ F₂.map b.left.hom := by
+      sorry
+    choose j₂'' d h₂ using this
+    dsimp at h₁ h₂
+    obtain ⟨l, e, g, fac⟩ := wideSpan d hι
+    refine ⟨J.mk j₁ l (c ≫ F₂.map g.left.hom) ?_, fun i ↦ ⟨?_⟩⟩
+    · dsimp
+      rw [h₁, Category.assoc, ← Functor.map_comp, dsimp% CostructuredArrow.w g]
+    · exact J.homMk (a₁ i) (a₂ i ≫ b ≫ g) (by simp [reassoc_of% h₂])
   · let g₁ (i : ι) := (π₁ κ f).map (g i)
     let g₂ (i : ι) := (π₂ κ f).map (g i)
     obtain ⟨l, a, ⟨b⟩⟩ :=
@@ -352,14 +374,17 @@ instance : (π₂ κ f).Final := by
   simp [← h₂, reassoc_of% dsimp% (CostructuredArrow.proj _ _ ⋙
     ObjectProperty.ι _).congr_map ha]
 
+variable (κ f) in
 abbrev functor : J κ f ⥤ Comma F₁ F₂ :=
   CostructuredArrow.proj (Comma.isCardinalPresentable F₁ F₂ κ).ι f ⋙
     (Comma.isCardinalPresentable F₁ F₂ κ).ι
 
+variable (κ f) in
 abbrev cocone : Cocone (functor κ f) :=
   (Functor.LeftExtension.mk (𝟭 (Comma F₁ F₂))
     (Comma.isCardinalPresentable F₁ F₂ κ).ι.rightUnitor.inv).coconeAt f
 
+variable (κ f) in
 noncomputable def isColimitCocone : IsColimit (cocone κ f) := by
   refine Comma.fstSndJointlyReflectColimit ?_ ?_
   · exact (Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).2
@@ -372,10 +397,11 @@ instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
 
 end isCardinalAccessibleCategory
 
-protected lemma isCardinalFilteredGenerator_isCardinalPresentable
-    [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
-    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-    [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ] [LocallySmall.{w} D] :
+variable [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
+  [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
+  [F₁.PreservesCardinalPresentable κ] [LocallySmall.{w} D]
+
+protected lemma isCardinalFilteredGenerator_isCardinalPresentable :
     (Comma.isCardinalPresentable F₁ F₂ κ).IsCardinalFilteredGenerator κ :=
   .mk' (isCardinalPresentable_le _ _ _)
     (fun f ↦ ⟨(CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f), inferInstance,
@@ -383,20 +409,10 @@ protected lemma isCardinalFilteredGenerator_isCardinalPresentable
       ⟨_, _, (Comma.isCardinalPresentable F₁ F₂ κ).ι.denseAt f⟩,
     fun g ↦ g.left.property⟩)
 
-instance [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
-    [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-    [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ] [LocallySmall.{w} D] :
+instance :
     IsCardinalAccessibleCategory (Comma F₁ F₂) κ where
   exists_generator :=
     ⟨_, inferInstance, Comma.isCardinalFilteredGenerator_isCardinalPresentable.{w} F₁ F₂ κ⟩
-
-section
-
-variable
-  [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
-  [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
-  [F₁.PreservesCardinalPresentable κ] [F₂.PreservesCardinalPresentable κ]
-  [LocallySmall.{w} D]
 
 protected lemma isCardinalPresentable_eq :
     Comma.isCardinalPresentable F₁ F₂ κ = isCardinalPresentable (Comma F₁ F₂) κ := by
@@ -420,8 +436,6 @@ instance : (Comma.snd F₁ F₂).PreservesCardinalPresentable κ where
   le_inverseImage_isCardinalPresentable f hf := by
     simp only [Comma.isCardinalPresentable_iff] at hf
     tauto
-
-end
 
 end Comma
 

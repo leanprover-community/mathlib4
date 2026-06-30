@@ -95,6 +95,11 @@ noncomputable def toMax (k : K) :
     S k ⟶ max S hS :=
   (cocone (κ := κ) (Discrete.functor S) (by simpa using hS)).ι.app ⟨k⟩
 
+include hS in
+lemma exists_max :
+    ∃ (j : J), Nonempty (∀ (k : K), S k ⟶ j) :=
+  ⟨max S hS, ⟨toMax S hS⟩⟩
+
 end max
 
 section coeq
