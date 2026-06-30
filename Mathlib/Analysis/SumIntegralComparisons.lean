@@ -203,7 +203,7 @@ lemma AntitoneOn.sum_range_le_integral {N : ℕ} (anti : AntitoneOn f (Icc 0 (N 
 for sufficiently large `n` is summable. -/
 theorem AntitoneOn.summable_of_integrable_eventually {N : ℕ} (anti : AntitoneOn f (Ici (N : ℝ)))
     (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
-    Summable (fun (n : ℕ) ↦ f n ) := by
+    Summable (fun (n : ℕ) ↦ f n) := by
   rw [← summable_nat_add_iff (N + 1)]
   exact summable_of_sum_range_le (by grind) fun M ↦ calc
     _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by rw [Finset.sum_Ico_eq_sum_range]; grind
@@ -212,7 +212,7 @@ theorem AntitoneOn.summable_of_integrable_eventually {N : ℕ} (anti : AntitoneO
 /-- **Integral test**: a nonnegative antitone function is summable if it is integrable. -/
 theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
-    Summable (fun (n : ℕ) ↦ f n ) :=
+    Summable (fun (n : ℕ) ↦ f n) :=
   summable_of_integrable_eventually (N := 0) (mod_cast anti) (mod_cast integrable) (mod_cast nonneg)
 
 open Filter Finset in
