@@ -184,6 +184,10 @@ theorem torsionOrder_ne_zero :
 theorem torsionOrder_pos :
     0 < torsionOrder K := Nat.pos_of_neZero (torsionOrder K)
 
+theorem pow_torsionOrder_eq_one {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
+    ζ ^ torsionOrder K = 1 :=
+  Subtype.ext_iff.mp <| pow_card_eq_one (x := ⟨ζ, hζ⟩)
+
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
   order dividing `k`. -/
 theorem rootsOfUnity_eq_one {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
@@ -204,10 +208,9 @@ theorem rootsOfUnity_eq_torsion :
     rootsOfUnity (torsionOrder K) (𝓞 K) = torsion K := by
   ext ζ
   rw [torsion, mem_rootsOfUnity]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
-    exact ⟨torsionOrder K, torsionOrder_pos K, h⟩
-  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
+  refine ⟨fun h ↦ ?_, fun h ↦ pow_torsionOrder_eq_one K h⟩
+  rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+  exact ⟨torsionOrder K, torsionOrder_pos K, h⟩
 
 /--
 The image of `torsion K` by a complex embedding is the group of complex roots of unity of
