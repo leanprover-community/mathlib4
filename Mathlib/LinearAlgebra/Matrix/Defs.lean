@@ -259,6 +259,9 @@ section
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]
+theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := rfl
+
+@[simp]
 theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :
     (A + B) i j = (A i j) + (B i j) := rfl
 

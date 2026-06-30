@@ -142,7 +142,6 @@ instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
 
-@[simp]
 theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 
