@@ -312,7 +312,5 @@ theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici
 /-- The sum of a nonnegative, antitone function is bounded below by its integral. -/
 theorem AntitoneOn.integral_le_tsum (anti : AntitoneOn f (Ici 0))
     (summable : Summable (fun (n : ℕ) ↦ f n)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
-    ∫ x in Ioi 0, f x ≤ ∑' (n : ℕ),  f n := by
-  convert! AntitoneOn.integral_le_tsum_comp_add 0 (mod_cast anti) (mod_cast summable)
-    (mod_cast nonneg)
-  norm_cast
+    ∫ x in Ioi 0, f x ≤ ∑' (n : ℕ),  f n :=
+  mod_cast AntitoneOn.integral_le_tsum_comp_add 0 (mod_cast anti) summable (mod_cast nonneg)
