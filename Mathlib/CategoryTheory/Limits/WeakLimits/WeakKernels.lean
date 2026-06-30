@@ -37,14 +37,14 @@ abbrev HasWeakKernel : Prop :=
 variable (C) in
 /-- `HasWeakKernels` represents the existence of weak kernels for every morphism. -/
 class HasWeakKernels : Prop where
-  has_weakLimit : ∀ {X Y : C} (f : X ⟶ Y), HasWeakKernel f := by infer_instance
+  hasWeakLimit : ∀ {X Y : C} (f : X ⟶ Y), HasWeakKernel f := by infer_instance
 
-attribute [instance 100] HasWeakKernels.has_weakLimit
+attribute [instance 100] HasWeakKernels.hasWeakLimit
 
 /-- If a category has kernels, then it has weak kernels. -/
 instance (priority := 100) HasWeakKernelsOfHasKernels [HasKernels C] :
     HasWeakKernels C where
-      has_weakLimit _ := inferInstance
+      hasWeakLimit _ := inferInstance
 
 section
 
