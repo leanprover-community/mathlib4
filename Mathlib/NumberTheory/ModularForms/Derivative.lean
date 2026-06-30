@@ -14,16 +14,15 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 # Derivatives of modular forms
 
 This file defines normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$
-and Ramanujan-Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular forms.
+and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular forms.
 
 ## Main Definitions and Theorems
 
 - `normalizedDerivOfComplex`: $D = \frac{1}{2\pi i} \frac{d}{dz}$
-- `ramanujanSerreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
-- `ramanujanSerreDerivative_slash_equivariant`: Ramanujan-Serre derivative is equivariant
-  under the slash action.
-- `ramanujanSerreDerivativeMF`: the Ramanujan-Serre derivative preserves modularity, i.e. it maps
-  a weight `k` level `1` modular form to a weight `k + 2` level `1` modular form.
+- `serreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
+- `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
+- `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. it maps a weight `k`
+  level `1` modular form to a weight `k + 2` level `1` modular form.
 
 TODO:
 - Use the above to prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
@@ -129,53 +128,51 @@ theorem normalizedDerivOfComplex_pow (F : ℍ → ℂ) (n : ℕ) (hF : MDiff F) 
 /--
 Serre derivative of weight $k$.
 -/
-def ramanujanSerreDerivative (k : ℂ) (F : ℍ → ℂ) (z : ℍ) : ℂ :=
+def serreDerivative (k : ℂ) (F : ℍ → ℂ) (z : ℍ) : ℂ :=
   D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
 
 @[simp]
-lemma ramanujanSerreDerivative_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
-    ramanujanSerreDerivative k F z = D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
+lemma serreDerivative_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
+    serreDerivative k F z = D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
 @[simp]
-lemma ramanujanSerreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
-    ramanujanSerreDerivative k F = fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
+lemma serreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
+    serreDerivative k F = fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
 /-!
 Basic properties of Serre derivative.
 -/
-theorem ramanujanSerreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    ramanujanSerreDerivative k (F + G) = ramanujanSerreDerivative k F + ramanujanSerreDerivative k G
-    := by
+theorem serreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative k (F + G) = serreDerivative k F + serreDerivative k G := by
   ext z
-  simp [ramanujanSerreDerivative, normalizedDerivOfComplex_add F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_add F G hF hG]
   ring_nf
 
-theorem ramanujanSerreDerivative_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    ramanujanSerreDerivative k (F - G) = ramanujanSerreDerivative k F - ramanujanSerreDerivative k G
-    := by
+theorem serreDerivative_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative k (F - G) = serreDerivative k F - serreDerivative k G := by
   ext z
-  simp [ramanujanSerreDerivative, normalizedDerivOfComplex_sub F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_sub F G hF hG]
   ring_nf
 
-theorem ramanujanSerreDerivative_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
-    ramanujanSerreDerivative k (c • F) = c • (ramanujanSerreDerivative k F) := by
+theorem serreDerivative_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
+    serreDerivative k (c • F) = c • (serreDerivative k F) := by
   ext z
-  simp [ramanujanSerreDerivative, normalizedDerivOfComplex_smul c F hF, smul_eq_mul]
+  simp [serreDerivative, normalizedDerivOfComplex_smul c F hF, smul_eq_mul]
   ring_nf
 
-theorem ramanujanSerreDerivative_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    ramanujanSerreDerivative (k₁ + k₂) (F * G) =
-      (ramanujanSerreDerivative k₁ F) * G + F * (ramanujanSerreDerivative k₂ G) := by
+theorem serreDerivative_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative (k₁ + k₂) (F * G) =
+      (serreDerivative k₁ F) * G + F * (serreDerivative k₂ G) := by
   ext z
-  simp [ramanujanSerreDerivative, normalizedDerivOfComplex_mul F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_mul F G hF hG]
   ring_nf
 
 /--
 The Serre derivative preserves MDifferentiability.
-If `F : ℍ → ℂ` is MDifferentiable, then `ramanujanSerreDerivative k F` is also MDifferentiable.
+If `F : ℍ → ℂ` is MDifferentiable, then `serreDerivative k F` is also MDifferentiable.
 -/
-theorem ramanujanSerreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) :
-    MDiff (ramanujanSerreDerivative k F) := by
+theorem serreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) :
+    MDiff (serreDerivative k F) := by
   refine (normalizedDerivOfComplex_mdifferentiable hF).sub ?_
   convert!
     (MDifferentiable.mul mdifferentiable_const (E2_mdifferentiable.mul hF) :
@@ -185,73 +182,74 @@ theorem ramanujanSerreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF
 open ModularGroup
 
 /-- How `D` interacts with the slash action. -/
-lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
+lemma normalizedDerivOfComplex_slash {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F)
+    {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) :
+    D (F ∣[k] g) = fun z : ℍ ↦ (g.val.det : ℂ)⁻¹ * (D F ∣[k + 2] g) z -
+      (k : ℂ) * (2 * π * I)⁻¹ * (g 1 0 / denom g z) * (F ∣[k] g) z := by
+  have hdet : g.det.val = g.val.det := Matrix.GeneralLinearGroup.val_det_apply g
+  have hdetℂ : (g.val.det : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr hg.ne'
+  have hσ (x) : σ g x = x := by grind [σ, ContinuousAlgEquiv.refl_apply]
+  ext z
+  simp only [normalizedDerivOfComplex, ModularForm.slash_apply]
+  have hz := denom_ne_zero g z
+  have h_smul : HasDerivAt (fun w ↦ ↑(g • ofComplex w) : ℂ → ℂ)
+      ((g.val.det : ℂ) / denom g z ^ 2) ↑z := (hasStrictDerivAt_smul hg z).hasDerivAt
+  have h_F : HasDerivAt (F ∘ ofComplex) (deriv (F ∘ ofComplex) ↑(g • ofComplex (z : ℂ)))
+      ↑(g • ofComplex (z : ℂ)) :=
+    (ofComplex_apply z).symm ▸ (mdifferentiableAt_iff.mp (hF (g • z))).hasDerivAt
+  have h_denom : HasDerivAt (fun w ↦ (denom g w) ^ (-k))
+      (-k * (g 1 0 : ℂ) * (denom g z) ^ (-k - 1)) ↑z := by
+    simpa using hasDerivAt_denom_zpow g (-k) z
+  have hcomp : ((F ∣[k] g) ∘ ofComplex) =ᶠ[𝓝 ↑z]
+      fun w ↦ (g.val.det : ℂ) ^ (k - 1) *
+        ((F ∘ ofComplex) ↑(g • ofComplex w) * (denom g w) ^ (-k)) := by
+    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
+    grind [ofComplex_apply_of_im_pos, ofComplex_apply, ModularForm.slash_apply]
+  rw [((((h_F.comp (z : ℂ) h_smul).mul h_denom).const_mul _).congr_of_eventuallyEq hcomp).deriv]
+  simp only [hσ, hdet, abs_of_pos hg, ofComplex_apply, Function.comp_apply]
+  rw [show k + 2 - 1 = (k - 1) + 2 by ring, show -(k + 2) = -k + -2 by ring,
+    zpow_add₀ hdetℂ, zpow_add₀ hz, zpow_sub_one₀ hz]
+  field
+
+/-- The `SL(2, ℤ)` case of `normalizedDerivOfComplex_slash`, where the determinant factor is `1`. -/
+lemma normalizedDerivOfComplex_SL_slash {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F) {γ : SL(2, ℤ)} :
     D (F ∣[k] γ) = (D F ∣[k + 2] γ) -
       (fun z : ℍ ↦ (k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
-  ext z
-  unfold normalizedDerivOfComplex
-  simp only [Pi.sub_apply]
-  have hz := denom_ne_zero γ z
-  have hdet : ((↑γ : GL (Fin 2) ℝ)).val.det = 1 := by
+  have hdet : (γ : GL (Fin 2) ℝ).val.det = 1 := by
     rw [← Matrix.GeneralLinearGroup.val_det_apply]; simp
-  have h_smul : HasDerivAt (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (1 / (denom γ z) ^ 2) ↑z := by
-    have h := (hasStrictDerivAt_smul (hdet ▸ one_pos) z).hasDerivAt
-    rwa [hdet, Complex.ofReal_one] at h
-  have h_F : HasDerivAt (F ∘ ofComplex) (deriv (F ∘ ofComplex) ↑(γ • ofComplex (z : ℂ)))
-      ↑(γ • ofComplex (z : ℂ)) :=
-    (ofComplex_apply z).symm ▸ (mdifferentiableAt_iff.mp (hF (γ • z))).hasDerivAt
-  have h_denom : HasDerivAt (fun w ↦ (denom γ w) ^ (-k))
-      (-k * ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) * (denom γ z) ^ (-k - 1)) ↑z := by
-    simpa using (hasStrictDerivAt_denom_zpow ↑γ (-k) z).hasDerivAt
-  have hcomp : ((F ∣[k] γ) ∘ ofComplex) =ᶠ[𝓝 ↑z]
-      fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w) * (denom γ w) ^ (-k) := by
-    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
-    simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw, ofComplex_apply]
-    rw [ModularForm.SL_slash_apply (f := F) (k := k) γ ⟨w, hw⟩]
-  rw [(((h_F.comp (z : ℂ) h_smul).mul h_denom).congr_of_eventuallyEq hcomp).deriv]
-  simp only [ModularForm.SL_slash_apply, Function.comp_apply, ofComplex_apply]
-  rw [Int.neg_add, sub_eq_add_neg, zpow_add₀ hz, zpow_add₀ hz]
-  field_simp
-  ring
+  ext z
+  have := congrFun
+    (normalizedDerivOfComplex_slash (k := k) hF (g := (γ : GL (Fin 2) ℝ)) (by grind)) z
+  rw [hdet] at this
+  simpa [ModularForm.SL_slash] using this
 
 /--
 Serre derivative is equivariant under the slash action. More precisely,
 $\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \in SL(2, \mathbb{Z})$.
 -/
-theorem ramanujanSerreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
-    (γ : SL(2, ℤ)) :
-    ramanujanSerreDerivative k F ∣[k + 2] γ = ramanujanSerreDerivative k (F ∣[k] γ) := by
+theorem serreDerivative_slash_equivariant {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F) {γ : SL(2, ℤ)} :
+    serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
   ext z
-  simp only [ramanujanSerreDerivative_apply]
-  have hLHS : (ramanujanSerreDerivative (k : ℂ) F ∣[k + 2] γ) z =
+  have hLHS : (serreDerivative (k : ℂ) F ∣[k + 2] γ) z =
       (D F ∣[k + 2] γ) z - ↑k * 12⁻¹ * ((EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z * (F ∣[k] γ) z) := by
-    have h := congrFun (ModularForm.mul_slash_SL2 (2 : ℤ) k γ EisensteinSeries.E2 F) z
-    simp only [ModularForm.SL_slash_apply, ramanujanSerreDerivative_apply, Pi.mul_apply] at h ⊢
-    rw [← h]
-    ring_nf
+    grind [ModularForm.SL_slash_apply, serreDerivative_apply, Pi.mul_apply,
+      congrFun (ModularForm.mul_slash_SL2 2 k γ EisensteinSeries.E2 F) z]
   have hDz : (D (F ∣[k] γ)) z = (D F ∣[k + 2] γ) z -
-      ((k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
-    simpa [Pi.sub_apply] using congrFun (normalizedDerivOfComplex_slash k F hF γ) z
+      (k * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
+    simp [normalizedDerivOfComplex_SL_slash hF]
   have hE2z : (EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z =
       EisensteinSeries.E2 z - 1 / (2 * riemannZeta 2) * EisensteinSeries.D2 γ z := by
-    simpa [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] using
-      congrFun (EisensteinSeries.E2_slash_action γ) z
-  rw [hLHS, hDz, hE2z]
-  simp only [EisensteinSeries.D2, riemannZeta_two]
-  field_simp [denom_ne_zero γ z, Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
-  ring_nf
-  simp only [I_sq]
-  ring
+    simp [EisensteinSeries.E2_slash_action]
+  grind [serreDerivative_apply, EisensteinSeries.D2, riemannZeta_two, I_sq]
 
 /--
 As a corollary, if `F` is invariant under the slash action of weight `k`, then
-`ramanujanSerreDerivative k F` is invariant under the slash action of weight `k + 2`.
+`serreDerivative k F` is invariant under the slash action of weight `k + 2`.
 -/
-theorem ramanujanSerreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F)
-    (γ : SL(2, ℤ)) (h : F ∣[k] γ = F) : ramanujanSerreDerivative k F ∣[k + 2] γ =
-      ramanujanSerreDerivative k F := by
-  rw [ramanujanSerreDerivative_slash_equivariant, h]
-  exact hF
+theorem serreDerivative_slash_invariant {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F) {γ : SL(2, ℤ)}
+    (h : F ∣[k] γ = F) :
+    serreDerivative k F ∣[k + 2] γ = serreDerivative k F := by
+  grind [serreDerivative_slash_equivariant]
 
 /-!
 ## Boundedness at infinity
@@ -323,8 +321,8 @@ theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDif
 
 /-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
 infinity. -/
-theorem ramanujanSerreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
-    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (ramanujanSerreDerivative k F) := by
+theorem serreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (serreDerivative k F) := by
   have hE2 : IsBoundedAtImInfty (fun z : ℍ ↦ k * 12⁻¹ * EisensteinSeries.E2 z * F z) :=
     Filter.BoundedAtFilter.mul (Filter.BoundedAtFilter.mul
       (Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)) EisensteinSeries.isBoundedAtImInfty_E2) hb
@@ -334,23 +332,23 @@ theorem ramanujanSerreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) 
     (Filter.BoundedAtFilter.neg hE2)
 
 /--
-The Ramanujan-Serre derivative preserves modularity: if `f` is a modular form of weight `k` and
+The Serre derivative preserves modularity: if `f` is a modular form of weight `k` and
 level `1`, then `∂ₖ f` is a modular form of weight `k + 2` and level `1`.
 -/
-noncomputable def ramanujanSerreDerivativeMF (k : ℤ) (f : ModularForm 𝒮ℒ k) :
+noncomputable def serreDerivativeMF (k : ℤ) (f : ModularForm 𝒮ℒ k) :
     ModularForm 𝒮ℒ (k + 2) where
   toSlashInvariantForm :=
-    { toFun := ramanujanSerreDerivative (k : ℂ) f
+    { toFun := serreDerivative (k : ℂ) f
       slash_action_eq' := fun g hg => by
         obtain ⟨γ, rfl⟩ := hg
         have hf : (f : ℍ → ℂ) ∣[k] γ = f := f.slash_action_eq' _ ⟨γ, rfl⟩
-        exact ramanujanSerreDerivative_slash_invariant k f f.holo' γ hf }
-  holo' := ramanujanSerreDerivative_mdifferentiable (k : ℂ) f.holo'
+        exact serreDerivative_slash_invariant f.holo' hf }
+  holo' := serreDerivative_mdifferentiable (k : ℂ) f.holo'
   bdd_at_cusps' {c} hc := by
     rw [OnePoint.isBoundedAt_iff_forall_SL2Z hc]
     intro γ _
-    rw [ramanujanSerreDerivative_slash_invariant k f f.holo' γ (f.slash_action_eq' _ ⟨γ, rfl⟩)]
-    exact ramanujanSerreDerivative_isBoundedAtImInfty (k : ℂ) f.holo'
+    rw [serreDerivative_slash_invariant (F := (f : ℍ → ℂ)) f.holo' (f.slash_action_eq' _ ⟨γ, rfl⟩)]
+    exact serreDerivative_isBoundedAtImInfty (k : ℂ) f.holo'
       (ModularFormClass.bdd_at_infty f)
 
 end
