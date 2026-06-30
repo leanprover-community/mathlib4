@@ -456,6 +456,14 @@ lemma IsQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V�
     (w ∘ₗ v).IsQuasiInverse u :=
   ⟨hw.1, IsRightQuasiInverse.of_comp_right hv.1 hw.2⟩
 
+lemma isQuasiInverse_subtype_projectionOnto {S T : Submodule K V} [IsNoetherian K T]
+    (S_compl_T : IsCompl S T) :
+    IsQuasiInverse S.subtype (S.projectionOnto T S_compl_T) := by
+  constructor
+  · grw [IsLeftQuasiInverse, ← FiniteRangeSetoid.projection_equiv_id S_compl_T]
+    rfl
+  · simp [IsRightQuasiInverse, projectionOnto_comp_subtype]
+
 end QuasiInverse
 
 end LinearMap
