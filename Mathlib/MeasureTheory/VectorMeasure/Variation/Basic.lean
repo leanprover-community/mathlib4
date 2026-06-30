@@ -424,7 +424,7 @@ lemma iSup_sum_finpartition_parts {s : Set X} (hs : MeasurableSet s) :
   simp_rw [μ.sum_finpartition, iSup_const]
 
 /-- For `μ : VectorMeasure X ℝ≥0∞`, `preVariationFun μ s = μ s` for any `s`. -/
-lemma preVariationFun_apply_of_ENNReal (s : Set X) : preVariationFun μ s = μ s := by
+lemma preVariationFun_apply_of_ennreal (s : Set X) : preVariationFun μ s = μ s := by
   by_cases h : MeasurableSet s
   · rw [preVariationFun_apply]
     exact iSup_sum_finpartition_parts μ h
