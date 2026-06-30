@@ -200,7 +200,7 @@ lemma addMulSub_abs₁ (m n : ℤ) : addMulSub W m |n| = addMulSub W m n := by
 
 lemma addMulSub_swap (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W m n = - addMulSub W n m := by
-  rw [addMulSub, addMulSub, ← neg_sub, Int.neg_tdiv, neg]; ring
+  rw [addMulSub, addMulSub, ← neg_sub, Int.neg_tdiv, neg]; ring_nf
 
 section transf
 
@@ -365,7 +365,7 @@ def EvenRec (m : ℤ) : Prop :=
   W (2 * m) * W 2 * W 1 ^ 2 = W m * (W (m - 1) ^ 2 * W (m + 2) - W (m - 2) * W (m + 1) ^ 2)
 
 lemma rel₃_iff_oddRec (m : ℤ) : Rel₃ W (m + 1) m 1 ↔ OddRec W m := by
-  rw [Rel₃, OddRec]; ring
+  rw [Rel₃, OddRec]; ring_nf
 
 set_option allowUnsafeReducibility true in
 attribute [local reducible] Nat.rawCast Mathlib.Meta.NormNum.instAddMonoidWithOne in
@@ -1038,14 +1038,14 @@ def compl₂EDS : R :=
 
 lemma compl₂EDSAux_neg : compl₂EDSAux b c d (-m) = -compl₂EDS b c d m - compl₂EDSAux b c d m := by
   simp_rw [compl₂EDSAux, compl₂EDS, neg_sub_left, neg_add_eq_sub, ← neg_sub m,
-    preNormEDS_neg, even_neg]; ring
+    preNormEDS_neg, even_neg]; ring_nf
 
 @[simp] lemma compl₂EDS_zero : compl₂EDS b c d 0 = 2 := by simp [compl₂EDS, one_add_one_eq_two]
 @[simp] lemma compl₂EDS_one : compl₂EDS b c d 1 = b := by simp [compl₂EDS]
 @[simp] lemma compl₂EDS_two : compl₂EDS b c d 2 = d := by simp [compl₂EDS]
 
 @[simp] lemma compl₂EDS_neg : compl₂EDS b c d (-m) = compl₂EDS b c d m := by
-  simp_rw [compl₂EDS, neg_sub_left, neg_add_eq_sub, ← neg_sub m, preNormEDS_neg, even_neg]; ring
+  simp_rw [compl₂EDS, neg_sub_left, neg_add_eq_sub, ← neg_sub m, preNormEDS_neg, even_neg]; ring_nf
 
 lemma normEDS_mul_compl₂EDS :
     normEDS b c d m * compl₂EDS b c d m = normEDS b c d (2 * m) := by
@@ -1320,7 +1320,7 @@ lemma IsEllSequence.mul_compl_eq_apply_mul_of_mem_nonZeroDivisors (mem : W m ∈
     simp_rw [compl_ofNat, Nat.cast_add] at this ⊢
     convert this using 1
     · push_cast; ring
-    push_cast; ring
+    push_cast; ring_nf
   | neg hn n => rw [neg_mul, ellW.neg one two, compl_neg, mul_neg, hn n]
 
 omit ellW ellU one two dvd₁₂ dvd₁₃ dvd₂₄ h₁ h₂ in
