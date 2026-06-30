@@ -10,11 +10,11 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 /-!
 # Equivalence of variation definitions for signed measures
 
-For a `SignedMeasure`, two notions of variation are available:
+For a `SignedMeasure`, two definitions of variation are available:
 * the supremum-based `VectorMeasure.variation`,
 * the Hahn–Jordan-based `SignedMeasure.totalVariation`.
 
-This file shows that they coincide.
+In this file the two notions are shown to coincide.
 
 ## Main results
 
