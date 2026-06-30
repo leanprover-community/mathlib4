@@ -7,11 +7,8 @@ module
 
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Dynamics.Minimal
-public import Mathlib.GroupTheory.GroupAction.Hom
-public import Mathlib.MeasureTheory.Group.MeasurableEquiv
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.MeasureTheory.Group.Defs
-public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measures invariant under group actions
