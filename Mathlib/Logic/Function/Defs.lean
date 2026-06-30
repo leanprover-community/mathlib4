@@ -57,6 +57,7 @@ theorem prod_def : Function.prod f g = fun i : ι => (f i, g i) := rfl
 
 @[simp, grind =] lemma prod_apply (i : ι) : Function.prod f g i = (f i, g i) := rfl
 
+variable {f f' g g'} in
 @[simp] theorem prod_inj : Function.prod f g = Function.prod f' g' ↔ f = f' ∧ g = g' := by
   simp [funext_iff, Prod.ext_iff, forall_and]
 
