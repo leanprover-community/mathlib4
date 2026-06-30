@@ -70,7 +70,7 @@ lemma ord_zero : ord (0 : X.functionField) = 0 := by
 
 lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :
     ord f x = (WithZero.unzero ((map_ne_zero (ordHom x hx)).mpr hf)).toAdd := by
-  simp [ord, hx, unzeroD_eq_unone ((map_ne_zero (ordHom x hx)).mpr hf)]
+  simp [ord, hx, unzeroD_eq_unzero ((map_ne_zero (ordHom x hx)).mpr hf)]
 
 lemma ord_eq_iff {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) {n : ℤ} :
     ord f z = n ↔ ordHom z hz f = Multiplicative.ofAdd n := by
@@ -83,7 +83,7 @@ lemma ord_mul {x : X} {f g : X.functionField}
   by_cases! hx : coheight x ≠ 1
   · simp [hx]
   rw [ord_eq_iff hx <| (mul_ne_zero_iff_right hg).mpr hf]
-  simp [hf, hg, ord_eq_ordHom_of_coheight_eq_one hx, unzeroD_eq_unone]
+  simp [hf, hg, ord_eq_ordHom_of_coheight_eq_one hx, unzeroD_eq_unzero]
 
 lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X}
     (hx' : x ∈ U) : ord (X.germToFunctionField U f) x = 0 := by
