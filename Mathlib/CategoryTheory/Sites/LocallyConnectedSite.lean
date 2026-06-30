@@ -125,23 +125,12 @@ instance (A : Type*) [Category* A] [HasColimitsOfShape Cᵒᵖ A] [HasWeakSheafi
     (π₀ J A).IsLeftAdjoint :=
   (π₀ConstantSheafAdj J A).isLeftAdjoint
 
-/-- The colimit of any representable functor is a singleton type. -/
+/-- `Sheaf.π₀` sends representable sheaves to singleton types. In other words, every representable
+sheaf is connected. -/
 @[implicit_reducible]
-noncomputable def unique_colimit_representable {C : Type u} [Category.{v} C]
-    (F : Cᵒᵖ ⥤ Type max u w) [F.IsRepresentable] : Unique (colimit F) :=
-  @Equiv.unique _ _ {
-    default := Quot.mk _ ⟨op F.reprX, F.reprx⟩
-    uniq x := by
-      refine x.out_eq.symm.trans (Quot.eq.2 (.symm _ _ <| .rel _ _ ⟨?_, ?_⟩))
-      · exact (F.representableBy.homEquiv.symm x.out.2).op
-      · exact .trans (by simp) (F.representableBy.homEquiv_comp _ _)
-  } (Types.colimitEquivColimitType F)
-
-/-- `Sheaf.π₀` sends representable sheaves to singleton types. -/
-@[implicit_reducible]
-noncomputable def uniqueπ₀Obj_of_isRepresentable (X : Sheaf J (Type max u v w))
+noncomputable def uniqueπ₀ObjOfIsRepresentable (X : Sheaf J (Type max u v w))
     [X.obj.IsRepresentable] : Unique ((π₀ J _).obj X) :=
-  unique_colimit_representable.{max v w} X.obj
+  Types.uniqueColimitOfIsRepresentable.{max v w} X.obj
 
 /-- On locally connected sites with a terminal object, `Sheaf.π₀` preserves the terminal object. -/
 instance [HasTerminal C] {A : Type*} [Category* A] [HasColimitsOfShape Cᵒᵖ A] [HasTerminal A]
@@ -151,17 +140,8 @@ instance [HasTerminal C] {A : Type*} [Category* A] [HasColimitsOfShape Cᵒᵖ A
   have := isConnected_of_hasTerminal C
   exact (asIso ((π₀ConstantSheafAdj J A).counit.app (⊤_ _)):)
 
-/-- If `C` is sifted, the `colim` functor `(C ⥤ Type max u v w) ⥤ Type max u v w` preserves
-finite products. This is a variant of `IsSifted.colim_preservesFiniteProducts_of_isSifted` with
-more general universe levels. -/
-instance colimPreservesFiniteProductsOfIsSifted {C : Type u} [Category.{v} C] [IsSifted C] :
-    PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type max u v w) := by
-  have _ := IsSifted.isSifted_iff_asSmallIsSifted.{w} (C := C).1 ‹_›
-  exact ⟨fun n ↦ preservesLimitsOfShape_of_natIso (Functor.Final.colimIso AsSmall.equiv.inverse)⟩
-
 /-- Sheaf topoi on cosifted locally connected sites are strongly connected, in the sense that
-`π₀` preserves all finite products.
-TODO: generalise universe levels. -/
+`π₀` preserves all finite products. -/
 instance [IsSifted Cᵒᵖ] :
     PreservesFiniteProducts (π₀ J (Type max u v w)) :=
   comp_preservesFiniteProducts _ _
