@@ -47,8 +47,7 @@ instance (F : C ⥤ D) (G : D ⥤ E) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     infer_instance
 
 lemma PreservesCardinalPresentable.of_iso {F G : C ⥤ D} (e : F ≅ G)
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [F.PreservesCardinalPresentable κ] :
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [F.PreservesCardinalPresentable κ] :
     G.PreservesCardinalPresentable κ where
   le_inverseImage_isCardinalPresentable X _ :=
     isCardinalPresentable_of_iso (e.app X) κ
