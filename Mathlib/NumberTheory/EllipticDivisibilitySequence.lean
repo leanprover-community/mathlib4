@@ -31,7 +31,6 @@ Some examples of EDSs include
 ## Main definitions
 
 * `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
-* `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
 * `IsEllDivSequence`: a sequence indexed by integers is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
