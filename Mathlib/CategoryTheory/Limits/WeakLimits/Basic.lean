@@ -133,7 +133,7 @@ theorem weakLimit.π_comp_eqToHom (F : J ⥤ C) [HasWeakLimit F] {j j' : J} (hj 
   simp
 
 @[simp]
-theorem weakLimit.cone_x {F : J ⥤ C} [HasWeakLimit F] :
+theorem weakLimit.cone_pt {F : J ⥤ C} [HasWeakLimit F] :
     (weakLimit.cone F).pt = weakLimit F := rfl
 
 @[simp]
