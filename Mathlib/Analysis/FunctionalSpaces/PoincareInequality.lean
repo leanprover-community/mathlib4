@@ -53,9 +53,9 @@ All results require only that `f` be differentiable (not `C¹`) on the open inte
 * `MeasureTheory.poincare_1d_of_exists_eq_zero`: `f` vanishes at *some* point of `[a, b]`; same
   constant `(b - a) ^ p / p`.
 * `MeasureTheory.poincare_1d_of_zero_mem_closure_convexHull`: the most general centering, requiring
-  only `0 ∈ closure (convexHull ℝ (f '' [a, b]))`, with constant `(b - a) ^ p`.
+  only `0 ∈ closure (convexHull ℝ (f '' [a, b]))`, with the sharp constant `(b - a) ^ p / p`.
 * `MeasureTheory.poincare_1d_of_integral_eq_zero`: vector-valued `f` with zero average, with
-  constant `(b - a) ^ p`.
+  constant `(b - a) ^ p / p`.
 -/
 
 public section
@@ -318,86 +318,104 @@ theorem MeasureTheory.poincare_1d_of_exists_eq_zero {E : Type*} [NormedAddCommGr
 /-- **Most general one-dimensional `Lᵖ` Poincaré inequality.** It suffices that `0` lies in the
 closure of the convex hull of the image `f '' [a, b]`. This is the weakest possible centering
 condition: it is implied both by `f` vanishing somewhere on `[a, b]` and by `f` having zero
-average, and it makes sense for an arbitrary normed space `E`. The constant is `(b - a) ^ p`
-(coarser than the `(b - a) ^ p / p` of `poincare_1d_of_exists_eq_zero`, whose sharper value
-genuinely uses that the zero is attained at a point). -/
+average, and it makes sense for an arbitrary normed space `E`. The constant is the sharp
+`(b - a) ^ p / p`, matching `poincare_1d_of_exists_eq_zero`: writing `0` as a convex combination
+`∑ wᵢ • f cᵢ` and averaging the per-point estimates `‖f x - f cᵢ‖` against the weights `wᵢ`
+recovers the `1 / p` factor, so the convex-hull hypothesis costs nothing in the constant. -/
 theorem MeasureTheory.poincare_1d_of_zero_mem_closure_convexHull {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] {a b p : ℝ} (hab : a ≤ b) (hp : 1 ≤ p) {f : ℝ → E}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {a b p : ℝ} (hp : 1 ≤ p) {f : ℝ → E}
     (hcont : ContinuousOn f (Icc a b)) (hdiff : DifferentiableOn ℝ f (Ioo a b))
     (hmem : 0 ∈ closure (convexHull ℝ (f '' Icc a b))) :
     ∫⁻ x in Icc a b, ‖f x‖ₑ ^ p
-      ≤ ENNReal.ofReal ((b - a) ^ p) * ∫⁻ x in Icc a b, ‖deriv f x‖ₑ ^ p := by
+      ≤ ENNReal.ofReal ((b - a) ^ p / p) * ∫⁻ x in Icc a b, ‖deriv f x‖ₑ ^ p := by
   have hp0 : 0 < p := one_pos.trans_le hp
-  rcases eq_or_lt_of_le hab with rfl | hlt
-  · rw [Icc_self, setLIntegral_measure_zero _ _ (measure_singleton a)]
-    exact zero_le
-  · have hba : (0 : ℝ) < b - a := by linarith
-    set D : ℝ≥0∞ := ∫⁻ t in Icc a b, ‖deriv f t‖ₑ with hD
-    have hmeasD : AEMeasurable (fun t => ‖deriv f t‖ₑ) (volume.restrict (Icc a b)) := by
-      rw [← Measure.restrict_congr_set (Ioo_ae_eq_Icc (μ := volume))]
-      exact aemeasurable_enorm_deriv_of_differentiableOn_Ioo hdiff
-    -- Oscillation bound: `‖f x - f y‖ₑ ≤ D` for all `x, y ∈ [a, b]`.
-    have hosc : ∀ x ∈ Icc a b, ∀ y ∈ Icc a b, ‖f x - f y‖ₑ ≤ D := by
-      have key : ∀ u ∈ Icc a b, ∀ v ∈ Icc a b, u ≤ v → ‖f v - f u‖ₑ ≤ D := fun u hu v hv huv =>
-        (enorm_sub_le_lintegral_deriv_of_differentiableOn_Ioo
-            (hcont.mono (Icc_subset_Icc hu.1 hv.2)) (hdiff.mono (Ioo_subset_Ioo hu.1 hv.2))
-            huv).trans
-          (lintegral_mono_set (Ioc_subset_Icc_self.trans (Icc_subset_Icc hu.1 hv.2)))
-      intro x hx y hy
-      rcases le_total y x with hyx | hxy
-      · exact key y hy x hx hyx
-      · rw [← enorm_neg, neg_sub]; exact key x hx y hy hxy
-    -- Pointwise bound: `‖f x‖ₑ ≤ D`. The closed ball `B(f x, D)` is closed and convex and, by the
-    -- oscillation bound, contains `f '' [a, b]`, hence its closed convex hull, hence `0`.
-    have hpt : ∀ x ∈ Icc a b, ‖f x‖ₑ ≤ D := by
-      intro x hx
-      rcases eq_top_or_lt_top D with hDtop | hDlt
-      · rw [hDtop]; exact le_top
-      · have hsub : f '' Icc a b ⊆ Metric.closedBall (f x) D.toReal := by
-          rintro _ ⟨y, hy, rfl⟩
-          rw [Metric.mem_closedBall, dist_eq_norm]
-          have h1 := ENNReal.toReal_mono hDlt.ne (hosc y hy x hx)
-          rwa [← ofReal_norm, ENNReal.toReal_ofReal (norm_nonneg _)] at h1
-        have h0 : (0 : E) ∈ Metric.closedBall (f x) D.toReal :=
-          closure_minimal (convexHull_min hsub (convex_closedBall _ _))
-            Metric.isClosed_closedBall hmem
-        rw [Metric.mem_closedBall, dist_eq_norm, zero_sub, norm_neg] at h0
-        rw [← ofReal_norm, ← ENNReal.ofReal_toReal hDlt.ne]
-        exact ENNReal.ofReal_le_ofReal h0
-    -- Integrate the constant bound `D` and apply the power-mean inequality.
-    have hpow : (b - a) * (b - a) ^ (p - 1) = (b - a) ^ p := by
-      rw [mul_comm, ← Real.rpow_add_one hba.ne']
-      congr 1
-      ring
-    calc ∫⁻ x in Icc a b, ‖f x‖ₑ ^ p
-        ≤ ∫⁻ _x in Icc a b, D ^ p := by
-          refine setLIntegral_mono_ae aemeasurable_const (.of_forall fun x hx => ?_)
-          exact ENNReal.rpow_le_rpow (hpt x hx) hp0.le
-      _ = D ^ p * volume (Icc a b) := by rw [setLIntegral_const]
-      _ ≤ (volume (Icc a b) ^ (p - 1) * ∫⁻ t in Icc a b, ‖deriv f t‖ₑ ^ p) * volume (Icc a b) := by
-          gcongr
-          exact ENNReal.rpow_lintegral_le_measure_rpow_mul_lintegral_rpow hp hmeasD
-      _ = ENNReal.ofReal ((b - a) ^ p) * ∫⁻ x in Icc a b, ‖deriv f x‖ₑ ^ p := by
-          have hv1 : volume (Icc a b) ^ (p - 1) = ENNReal.ofReal ((b - a) ^ (p - 1)) := by
-            rw [Real.volume_Icc, ENNReal.ofReal_rpow_of_nonneg hba.le (by linarith)]
-          rw [hv1, Real.volume_Icc, mul_right_comm,
-            ← ENNReal.ofReal_mul (Real.rpow_nonneg hba.le _),
-            mul_comm ((b - a) ^ (p - 1)) (b - a), hpow]
+  set M : ℝ≥0∞ := ∫⁻ x in Icc a b, ‖deriv f x‖ₑ ^ p with hMdef
+  set K : ℝ≥0∞ := ENNReal.ofReal ((b - a) ^ p / p) * M with hKdef
+  -- Measurability of `x ↦ ‖f x - v‖ₑ` and of its `p`-th power on `[a, b]`.
+  have hmeasE : ∀ v : E, AEMeasurable (fun x => ‖f x - v‖ₑ) (volume.restrict (Icc a b)) :=
+    fun v => (continuous_enorm.comp_aestronglyMeasurable
+      ((hcont.sub continuousOn_const).aestronglyMeasurable measurableSet_Icc)).aemeasurable
+  have hmeasP : ∀ v : E, AEMeasurable (fun x => ‖f x - v‖ₑ ^ p) (volume.restrict (Icc a b)) :=
+    fun v => ENNReal.continuous_rpow_const.measurable.comp_aemeasurable (hmeasE v)
+  -- Per-point estimate. Shifting `f` by the constant `f c` gives a function vanishing at `c`, so
+  -- the attained-zero inequality applies and keeps the sharp constant `(b - a) ^ p / p`.
+  have perpoint : ∀ c ∈ Icc a b, ∫⁻ x in Icc a b, ‖f x - f c‖ₑ ^ p ≤ K := by
+    intro c hc
+    refine (poincare_1d_of_exists_eq_zero hp
+      (show ContinuousOn (fun y => f y - f c) (Icc a b) from hcont.sub continuousOn_const)
+      (show DifferentiableOn ℝ (fun y => f y - f c) (Ioo a b) from
+        hdiff.sub (differentiableOn_const (f c))) ⟨c, hc, by simp⟩).trans (le_of_eq ?_)
+    rw [hKdef, hMdef]
+    congr 1
+    exact lintegral_congr fun x => by rw [deriv_sub_const]
+  -- Estimate at a convex-hull point `v = ∑ wᵢ • z i`: average the per-point bounds.
+  have hull : ∀ v ∈ convexHull ℝ (f '' Icc a b), ∫⁻ x in Icc a b, ‖f x - v‖ₑ ^ p ≤ K := by
+    intro v hv
+    rw [convexHull_eq, Set.mem_setOf_eq] at hv
+    obtain ⟨ι, t, w, z, hw0, hw1, hz, hcm⟩ := hv
+    have hsum1 : ∑ i ∈ t, ENNReal.ofReal (w i) = 1 := by
+      rw [← ENNReal.ofReal_sum_of_nonneg hw0, hw1, ENNReal.ofReal_one]
+    have hzbound : ∀ i ∈ t, ∫⁻ x in Icc a b, ‖f x - z i‖ₑ ^ p ≤ K := fun i hi => by
+      obtain ⟨c, hc, hfc⟩ := hz i hi
+      rw [← hfc]; exact perpoint c hc
+    have hptwise : ∀ x, ‖f x - v‖ₑ ≤ ∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ := by
+      intro x
+      have hvx : f x - v = ∑ i ∈ t, w i • (f x - z i) := by
+        rw [← hcm, Finset.centerMass_eq_of_sum_1 t z hw1]
+        simp only [smul_sub]
+        rw [Finset.sum_sub_distrib, ← Finset.sum_smul, hw1, one_smul]
+      calc ‖f x - v‖ₑ = ‖∑ i ∈ t, w i • (f x - z i)‖ₑ := by rw [hvx]
+        _ ≤ ∑ i ∈ t, ‖w i • (f x - z i)‖ₑ := enorm_sum_le _ _
+        _ = ∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ :=
+            Finset.sum_congr rfl fun i hi => by rw [enorm_smul, Real.enorm_eq_ofReal (hw0 i hi)]
+    calc ∫⁻ x in Icc a b, ‖f x - v‖ₑ ^ p
+        ≤ ∫⁻ x in Icc a b, (∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ) ^ p :=
+          setLIntegral_mono_ae
+            (ENNReal.continuous_rpow_const.measurable.comp_aemeasurable
+              (Finset.aemeasurable_fun_sum t fun i _ => (hmeasE (z i)).const_mul _))
+            (.of_forall fun x _ => ENNReal.rpow_le_rpow (hptwise x) hp0.le)
+      _ ≤ ∫⁻ x in Icc a b, ∑ i ∈ t, ENNReal.ofReal (w i) * ‖f x - z i‖ₑ ^ p :=
+          setLIntegral_mono_ae
+            (Finset.aemeasurable_fun_sum t fun i _ => (hmeasP (z i)).const_mul _)
+            (.of_forall fun x _ => ENNReal.rpow_arith_mean_le_arith_mean_rpow t
+              (fun i => ENNReal.ofReal (w i)) (fun i => ‖f x - z i‖ₑ) hsum1 hp)
+      _ = ∑ i ∈ t, ENNReal.ofReal (w i) * ∫⁻ x in Icc a b, ‖f x - z i‖ₑ ^ p := by
+          rw [lintegral_finsetSum' t fun i _ => (hmeasP (z i)).const_mul _]
+          exact Finset.sum_congr rfl fun i _ => lintegral_const_mul'' _ (hmeasP (z i))
+      _ ≤ ∑ i ∈ t, ENNReal.ofReal (w i) * K := by gcongr with i hi; exact hzbound i hi
+      _ = K := by rw [← Finset.sum_mul, hsum1, one_mul]
+  -- Pass from the convex hull to its closure by Fatou: `0` is a sequential limit of hull points.
+  obtain ⟨u, humem, hulim⟩ := mem_closure_iff_seq_limit.mp hmem
+  have hliminf : ∀ x, ‖f x‖ₑ ^ p
+      = Filter.liminf (fun n => ‖f x - u n‖ₑ ^ p) Filter.atTop := fun x => by
+    have htend : Filter.Tendsto (fun n => ‖f x - u n‖ₑ ^ p) Filter.atTop (nhds (‖f x‖ₑ ^ p)) := by
+      have h1 : Filter.Tendsto (fun n => f x - u n) Filter.atTop (nhds (f x)) := by
+        simpa using tendsto_const_nhds.sub hulim
+      exact (ENNReal.continuous_rpow_const.tendsto _).comp ((continuous_enorm.tendsto _).comp h1)
+    exact htend.liminf_eq.symm
+  calc ∫⁻ x in Icc a b, ‖f x‖ₑ ^ p
+      = ∫⁻ x in Icc a b, Filter.liminf (fun n => ‖f x - u n‖ₑ ^ p) Filter.atTop :=
+        lintegral_congr hliminf
+    _ ≤ Filter.liminf (fun n => ∫⁻ x in Icc a b, ‖f x - u n‖ₑ ^ p) Filter.atTop :=
+        lintegral_liminf_le' fun n => hmeasP (u n)
+    _ ≤ Filter.liminf (fun _ : ℕ => K) Filter.atTop :=
+        Filter.liminf_le_liminf (.of_forall fun n => hull (u n) (humem n))
+    _ = K := Filter.liminf_const K
 
 /-- **One-dimensional `Lᵖ` Poincaré inequality with zero average, vector-valued.** For a complete
-normed space `E` and `f` whose integral over `[a, b]` vanishes, the inequality holds with constant
-`(b - a) ^ p`. The average of `f` is `0` and lies in the closed convex hull of the range, so this
-reduces to `poincare_1d_of_zero_mem_closure_convexHull`. -/
+normed space `E` and `f` whose integral over `[a, b]` vanishes, the inequality holds with the sharp
+constant `(b - a) ^ p / p`. The average of `f` is `0` and lies in the closed convex hull of the
+range, so this reduces to `poincare_1d_of_zero_mem_closure_convexHull`. -/
 theorem MeasureTheory.poincare_1d_of_integral_eq_zero {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] {a b p : ℝ} (hab : a ≤ b) (hp : 1 ≤ p) {f : ℝ → E}
     (hcont : ContinuousOn f (Icc a b)) (hdiff : DifferentiableOn ℝ f (Ioo a b))
     (hint : ∫ x in a..b, f x = 0) :
     ∫⁻ x in Icc a b, ‖f x‖ₑ ^ p
-      ≤ ENNReal.ofReal ((b - a) ^ p) * ∫⁻ x in Icc a b, ‖deriv f x‖ₑ ^ p := by
+      ≤ ENNReal.ofReal ((b - a) ^ p / p) * ∫⁻ x in Icc a b, ‖deriv f x‖ₑ ^ p := by
   rcases eq_or_lt_of_le hab with rfl | hlt
   · rw [Icc_self, setLIntegral_measure_zero _ _ (measure_singleton a)]
     exact zero_le
-  · refine poincare_1d_of_zero_mem_closure_convexHull hab hp hcont hdiff ?_
+  · refine poincare_1d_of_zero_mem_closure_convexHull hp hcont hdiff ?_
     have havg : ⨍ x in Icc a b, f x = 0 := by
       rw [setAverage_eq, integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le hab, hint,
         smul_zero]
