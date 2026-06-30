@@ -50,7 +50,7 @@ attribute [reassoc (attr := simp)] IsWeakLimit.fac
 /--
 If `F` has a limit, then it is a retract of any weak limit of `F`.
 -/
-def _root_.Retract.ofIsLimit {t t' : Cone F} (l : IsLimit t) (l' : IsWeakLimit t') :
+def IsWeakLimit.retractOfIsLimit {t t' : Cone F} (l : IsLimit t) (l' : IsWeakLimit t') :
     Retract t.pt t'.pt where
   i := l'.lift t
   r := l.lift t'
@@ -59,7 +59,7 @@ def _root_.Retract.ofIsLimit {t t' : Cone F} (l : IsLimit t) (l' : IsWeakLimit t
 /--
 If `c : Cone F` is a limit, then it is a weak limit.
 -/
-def IsWeakLimit.OfIsLimit {t : Cone F} (l : IsLimit t) : IsWeakLimit t where
+def IsLimit.isWeakLimit {t : Cone F} (l : IsLimit t) : IsWeakLimit t where
   lift := l.lift
   fac := l.fac
 
@@ -77,7 +77,7 @@ lifts.
 -/
 def WeakLimitCone.ofLimitCone {F : J ⥤ C} (c : LimitCone F) : WeakLimitCone F where
   cone := c.cone
-  isWeakLimit := IsWeakLimit.OfIsLimit c.isLimit
+  isWeakLimit := c.isLimit.isWeakLimit
 
 /-- `HasWeakLimit F` represents the mere existence of a weak limit for `F`. -/
 class HasWeakLimit (F : J ⥤ C) : Prop where mk' ::
@@ -105,9 +105,7 @@ class HasWeakLimitsOfShape : Prop where
   /-- All functors `F : J ⥤ C` from `J` have weak limits -/
   hasWeakLimit : ∀ F : J ⥤ C, HasWeakLimit F := by infer_instance
 
-instance (priority := 100) hasWeakLimitOfHasWeakLimitsOfShape
-    [HasWeakLimitsOfShape J C] (F : J ⥤ C) : HasWeakLimit F :=
-  HasWeakLimitsOfShape.hasWeakLimit F
+attribute [instance] HasWeakLimitsOfShape.hasWeakLimit
 
 instance (priority := 100) {J : Type*} [Category* J]
     [HasLimitsOfShape J C] : HasWeakLimitsOfShape J C where
