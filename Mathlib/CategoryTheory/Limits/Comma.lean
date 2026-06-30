@@ -71,26 +71,6 @@ noncomputable def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Con
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
 
-set_option backward.isDefEq.respectTransparency false in
-/-- Provided that `R` preserves the appropriate limit, then the cone in `coneOfPreserves` is a
-limit. -/
-noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c₁ : Cone (F ⋙ fst L R)}
-    (t₁ : IsLimit c₁) {c₂ : Cone (F ⋙ snd L R)} (t₂ : IsLimit c₂) :
-    IsLimit (coneOfPreserves F c₁ t₂) where
-  lift s :=
-    { left := t₁.lift ((fst L R).mapCone s)
-      right := t₂.lift ((snd L R).mapCone s)
-      w :=
-        (isLimitOfPreserves R t₂).hom_ext fun j => by
-          rw [coneOfPreserves_pt_hom, assoc, assoc, (isLimitOfPreserves R t₂).fac,
-            limitAuxiliaryCone_π_app, ← L.map_comp_assoc, t₁.fac, R.mapCone_π_app,
-            ← R.map_comp, t₂.fac]
-          exact (s.π.app j).w }
-  uniq s m w := by
-    apply CommaMorphism.ext
-    · exact t₁.uniq ((fst L R).mapCone s) _ (fun j => by simp [← w])
-    · exact t₂.uniq ((snd L R).mapCone s) _ (fun j => by simp [← w])
-
 set_option backward.defeqAttrib.useBackward true in
 /-- Let `F : J ⥤ Comma L R`. If `R` preserves the limit of
 `F ⋙ snd _ _`, then `Comma.fst L R` and `Comma.snd L R` jointly
@@ -117,6 +97,13 @@ def fstSndJointlyReflectLimit {F : J ⥤ Comma L R} {c : Cone F}
     ext
     · exact h₁.uniq ((fst _ _).mapCone s) _ (by simp [← hm])
     · exact h₂.uniq ((snd _ _).mapCone s) _ (by simp [← hm])
+
+/-- Provided that `R` preserves the appropriate limit, then the cone in `coneOfPreserves` is a
+limit. -/
+noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c₁ : Cone (F ⋙ fst L R)}
+    (t₁ : IsLimit c₁) {c₂ : Cone (F ⋙ snd L R)} (t₂ : IsLimit c₂) :
+    IsLimit (coneOfPreserves F c₁ t₂) :=
+  fstSndJointlyReflectLimit t₁ t₂
 
 /-- (Implementation). An auxiliary cocone which is useful in order to construct colimits
 in the comma category. -/
@@ -147,27 +134,6 @@ noncomputable def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ :
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
 
-set_option backward.isDefEq.respectTransparency false in
-/-- Provided that `L` preserves the appropriate colimit, then the cocone in `coconeOfPreserves` is
-a colimit. -/
-noncomputable def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L]
-    {c₁ : Cocone (F ⋙ fst L R)}
-    (t₁ : IsColimit c₁) {c₂ : Cocone (F ⋙ snd L R)} (t₂ : IsColimit c₂) :
-    IsColimit (coconeOfPreserves F t₁ c₂) where
-  desc s :=
-    { left := t₁.desc ((fst L R).mapCocone s)
-      right := t₂.desc ((snd L R).mapCocone s)
-      w :=
-        (isColimitOfPreserves L t₁).hom_ext fun j => by
-          rw [coconeOfPreserves_pt_hom, (isColimitOfPreserves L t₁).fac_assoc,
-            colimitAuxiliaryCocone_ι_app, assoc, ← R.map_comp, t₂.fac, L.mapCocone_ι_app, ←
-            L.map_comp_assoc, t₁.fac]
-          exact (s.ι.app j).w }
-  uniq s m w := by
-    apply CommaMorphism.ext
-    · exact t₁.uniq ((fst L R).mapCocone s) _ (fun j => by simp [← w])
-    · exact t₂.uniq ((snd L R).mapCocone s) _ (fun j => by simp [← w])
-
 set_option backward.defeqAttrib.useBackward true in
 /-- Let `F : J ⥤ Comma L R`. If `L` preserves the colimit of
 `F ⋙ fst _ _`, then `Comma.fst L R` and `Comma.snd L R` jointly
@@ -194,6 +160,14 @@ def fstSndJointlyReflectColimit {F : J ⥤ Comma L R} {c : Cocone F}
     ext
     · exact h₁.uniq ((fst _ _).mapCocone s) _ (by simp [← hm])
     · exact h₂.uniq ((snd _ _).mapCocone s) _ (by simp [← hm])
+
+/-- Provided that `L` preserves the appropriate colimit, then the cocone in `coconeOfPreserves` is
+a colimit. -/
+noncomputable def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L]
+    {c₁ : Cocone (F ⋙ fst L R)}
+    (t₁ : IsColimit c₁) {c₂ : Cocone (F ⋙ snd L R)} (t₂ : IsColimit c₂) :
+    IsColimit (coconeOfPreserves F t₁ c₂) :=
+  fstSndJointlyReflectColimit t₁ t₂
 
 instance hasLimit (F : J ⥤ Comma L R) [HasLimit (F ⋙ fst L R)] [HasLimit (F ⋙ snd L R)]
     [PreservesLimit (F ⋙ snd L R) R] : HasLimit F :=
