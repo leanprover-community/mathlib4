@@ -118,7 +118,7 @@ greater than `2`, then the map `Ideal.torsionMapQuot` is injective.
 -/
 theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime] [NeZero P]
     (hP₁ : Algebra.IsUnramifiedAt ℤ P) (hP₂ : 2 < absNorm (under ℤ P)) :
-    Function.Injective (P.torsionMapQuot) := by
+    Function.Injective P.torsionMapQuot := by
   rw [injective_iff_map_eq_one]
   by_contra!
   obtain ⟨⟨ζ, hζ₀⟩, hζ₁, hζ₂⟩ := this
