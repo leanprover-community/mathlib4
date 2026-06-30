@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Star.Basic
 
 When a (nonunital, non-associative) semiring is equipped with an involutive automorphism the
 center of the centroid becomes a star ring in a natural way and the natural mapping of the centre of
-the semiring into the centre of the centroid becomes a *-homomorphism.
+the semiring into the centre of the centroid becomes a \*-homomorphism.
 
 ## Tags
 
@@ -61,7 +61,6 @@ instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHo
   star_involutive f := SetCoe.ext (star_involutive f.val)
   star_add f g := SetCoe.ext (star_add f.val g.val)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by
@@ -72,7 +71,7 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
       _ = star (g (star (star (f (star a))))) := by simp only [star_star]
       _ = (star g * star f) a := rfl
 
-/-- The canonical *-homomorphism embedding the center of `CentroidHom α` into `CentroidHom α`. -/
+/-- The canonical \*-homomorphism embedding the center of `CentroidHom α` into `CentroidHom α`. -/
 def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* CentroidHom α where
   toNonUnitalRingHom :=
     (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
@@ -89,8 +88,8 @@ theorem star_centerToCentroidCenter (z : NonUnitalStarSubsemiring.center α) :
       _ = (star z) * a := by rw [(star z).property.comm]
       _ = (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) a := rfl
 
-/-- The canonical *-homomorphism from the center of a non-unital, non-associative *-semiring into
-the center of its centroid. -/
+/-- The canonical \*-homomorphism from the center of a non-unital, non-associative \*-semiring
+into the center of its centroid. -/
 def starCenterToCentroidCenter :
     NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) where
   toNonUnitalRingHom := centerToCentroidCenter

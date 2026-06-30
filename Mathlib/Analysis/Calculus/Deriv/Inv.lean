@@ -65,7 +65,8 @@ theorem differentiableAt_inv_iff : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔
 
 theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
-  · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+  · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+    simp
   · exact (hasDerivAt_inv hne).deriv
 
 @[simp]
@@ -102,7 +103,7 @@ variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 @[to_fun]
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x := by
-  convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
+  convert! (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
   ring
 
 @[to_fun]
@@ -142,7 +143,7 @@ variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 �
 theorem HasDerivWithinAt.fun_div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x)
     (hx : d x ≠ 0) :
     HasDerivWithinAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) s x := by
-  convert hc.fun_mul ((hasDerivAt_inv hx).comp_hasDerivWithinAt x hd) using 1
+  convert hc.fun_mul ((hasDerivAt_inv hx).comp_hasDerivWithinAt x hd)
   · simp only [div_eq_mul_inv, (· ∘ ·)]
   · simp [field]
     ring
@@ -154,7 +155,7 @@ theorem HasDerivWithinAt.div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWith
 
 theorem HasStrictDerivAt.fun_div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)
     (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
-  convert hc.fun_mul ((hasStrictDerivAt_inv hx).comp x hd) using 1
+  convert hc.fun_mul ((hasStrictDerivAt_inv hx).comp x hd)
   · simp only [div_eq_mul_inv, (· ∘ ·)]
   · simp [field]
     ring
@@ -182,32 +183,17 @@ theorem DifferentiableWithinAt.div (hc : DifferentiableWithinAt 𝕜 c s x)
     DifferentiableWithinAt 𝕜 (c / d) s x :=
   hc.fun_div hd hx
 
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x)
-    (hx : d x ≠ 0) : DifferentiableAt 𝕜 (fun x => c x / d x) x :=
-  (hc.hasDerivAt.div hd.hasDerivAt hx).differentiableAt
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem DifferentiableAt.div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x)
     (hx : d x ≠ 0) : DifferentiableAt 𝕜 (c / d) x :=
-  hc.fun_div hd hx
+  (hc.hasDerivAt.div hd.hasDerivAt hx).differentiableAt
 
-@[fun_prop]
-theorem DifferentiableOn.fun_div (hc : DifferentiableOn 𝕜 c s) (hd : DifferentiableOn 𝕜 d s)
-    (hx : ∀ x ∈ s, d x ≠ 0) : DifferentiableOn 𝕜 (fun x => c x / d x) s := fun x h =>
-  (hc x h).div (hd x h) (hx x h)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.div (hc : DifferentiableOn 𝕜 c s) (hd : DifferentiableOn 𝕜 d s)
     (hx : ∀ x ∈ s, d x ≠ 0) : DifferentiableOn 𝕜 (c / d) s := fun x h =>
   (hc x h).div (hd x h) (hx x h)
 
-@[simp, fun_prop]
-theorem Differentiable.fun_div (hc : Differentiable 𝕜 c) (hd : Differentiable 𝕜 d)
-    (hx : ∀ x, d x ≠ 0) :
-    Differentiable 𝕜 (fun x => c x / d x) := fun x => (hc x).div (hd x) (hx x)
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.div (hc : Differentiable 𝕜 c) (hd : Differentiable 𝕜 d) (hx : ∀ x, d x ≠ 0) :
     Differentiable 𝕜 (c / d) := fun x => (hc x).div (hd x) (hx x)
 
@@ -233,5 +219,14 @@ theorem deriv_fun_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt �
 theorem deriv_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) (hx : d x ≠ 0) :
     deriv (c / d) x = (deriv c x * d x - c x * deriv d x) / d x ^ 2 :=
   (hc.hasDerivAt.div hd.hasDerivAt hx).deriv
+
+theorem deriv_const_div (c : 𝕜') (hd : DifferentiableAt 𝕜 d x) (hx : d x ≠ 0) :
+    deriv (fun x => c / d x) x = - c * deriv d x / d x ^ 2 := by
+  simp [deriv_fun_div (differentiableAt_const c) hd hx]
+
+@[simp]
+theorem deriv_const_div_id (c : 𝕜) :
+    deriv (fun x => c / x) x = - c / x ^ 2 := by
+  simp [div_eq_mul_inv]
 
 end Division

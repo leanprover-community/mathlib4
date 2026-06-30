@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Algebraic.Integral
 ## Main definitions
 Working with rational functions as polynomials:
 - `RatFunc.instField` provides a field structure
+
 You can use `IsFractionRing` API to treat `RatFunc` as the field of fractions of polynomials:
 * `algebraMap K[X] K⟮X⟯` maps polynomials to rational functions
 * `IsFractionRing.algEquiv` maps other fields of fractions of `K[X]` to `K⟮X⟯`.
@@ -31,20 +32,21 @@ Working with rational functions as fractions:
 
 Lifting homomorphisms of polynomials to other types, by mapping and dividing, as long
 as the homomorphism retains the non-zero-divisor property:
-  - `RatFunc.liftMonoidWithZeroHom` lifts a `K[X] →*₀ G₀` to
-    a `K⟮X⟯ →*₀ G₀`, where `[CommRing K] [CommGroupWithZero G₀]`
-  - `RatFunc.liftRingHom` lifts a `K[X] →+* L` to a `K⟮X⟯ →+* L`,
-    where `[CommRing K] [Field L]`
-  - `RatFunc.liftAlgHom` lifts a `K[X] →ₐ[S] L` to a `K⟮X⟯ →ₐ[S] L`,
-    where `[CommRing K] [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]`
+- `RatFunc.liftMonoidWithZeroHom` lifts a `K[X] →*₀ G₀` to
+  a `K⟮X⟯ →*₀ G₀`, where `[CommRing K] [CommGroupWithZero G₀]`
+- `RatFunc.liftRingHom` lifts a `K[X] →+* L` to a `K⟮X⟯ →+* L`,
+  where `[CommRing K] [Field L]`
+- `RatFunc.liftAlgHom` lifts a `K[X] →ₐ[S] L` to a `K⟮X⟯ →ₐ[S] L`,
+  where `[CommRing K] [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]`
+
 This is satisfied by injective homs.
 
 We also have lifting homomorphisms of polynomials to other polynomials,
 with the same condition on retaining the non-zero-divisor property across the map:
-  - `RatFunc.map` lifts `K[X] →* R[X]` when `[CommRing K] [CommRing R]`
-  - `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[CommRing K] [CommRing R]`
-  - `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
-    `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
+- `RatFunc.map` lifts `K[X] →* R[X]` when `[CommRing K] [CommRing R]`
+- `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[CommRing K] [CommRing R]`
+- `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
+  `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
 -/
 
 @[expose] public section
@@ -288,10 +290,8 @@ def instAddCommGroup : AddCommGroup K⟮X⟯ where
   add_zero := by frac_tac
   neg_add_cancel := by frac_tac
   sub_eq_add_neg := by frac_tac
-  nsmul := (· • ·)
   nsmul_zero := by smul_tac
   nsmul_succ _ := by smul_tac
-  zsmul := (· • ·)
   zsmul_zero' := by smul_tac
   zsmul_succ' _ := by smul_tac
   zsmul_neg' _ := by smul_tac
@@ -678,7 +678,7 @@ instance : IsFractionRing K[X] K⟮X⟯ where
     exact fun h ↦ IsLocalization.exists_of_eq ((toFractionRingRingEquiv K).symm.injective h)
   surj := by
     rintro ⟨z⟩
-    convert IsLocalization.surj K[X]⁰ z
+    convert! IsLocalization.surj K[X]⁰ z
     simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
       ofFractionRing.injEq]
 
@@ -897,7 +897,7 @@ private theorem num_div' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
   rw [num, numDenom_div _ hq]
 
 @[simp]
-theorem num_zero : num (0 : K⟮X⟯) = 0 := by convert num_div' (0 : K[X]) one_ne_zero <;> simp
+theorem num_zero : num (0 : K⟮X⟯) = 0 := by convert! num_div' (0 : K[X]) one_ne_zero <;> simp
 
 open scoped Classical in
 @[simp]
@@ -909,10 +909,10 @@ theorem num_div (p q : K[X]) :
   · exact num_div' p hq
 
 @[simp]
-theorem num_one : num (1 : K⟮X⟯) = 1 := by convert num_div (1 : K[X]) 1 <;> simp
+theorem num_one : num (1 : K⟮X⟯) = 1 := by convert! num_div (1 : K[X]) 1 <;> simp
 
 @[simp]
-theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert num_div p 1 <;> simp
+theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert! num_div p 1 <;> simp
 
 theorem num_div_dvd (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) ∣ p := by
@@ -951,15 +951,15 @@ theorem denom_ne_zero (x : K⟮X⟯) : denom x ≠ 0 :=
 
 @[simp]
 theorem denom_zero : denom (0 : K⟮X⟯) = 1 := by
-  convert denom_div (0 : K[X]) one_ne_zero <;> simp
+  convert! denom_div (0 : K[X]) one_ne_zero <;> simp
 
 @[simp]
 theorem denom_one : denom (1 : K⟮X⟯) = 1 := by
-  convert denom_div (1 : K[X]) one_ne_zero <;> simp
+  convert! denom_div (1 : K[X]) one_ne_zero <;> simp
 
 @[simp]
 theorem denom_algebraMap (p : K[X]) : denom (algebraMap _ K⟮X⟯ p) = 1 := by
-  convert denom_div p one_ne_zero <;> simp
+  convert! denom_div p one_ne_zero <;> simp
 
 @[simp]
 theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q) ∣ q := by
@@ -1083,12 +1083,12 @@ theorem denom_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := 
 
 theorem associated_num_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
   apply associated_of_dvd_dvd (num_inv_dvd hx)
-  convert denom_inv_dvd (inv_ne_zero hx)
+  convert! denom_inv_dvd (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem associated_denom_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by
   apply Associated.symm
-  convert associated_num_inv (inv_ne_zero hx)
+  convert! associated_num_inv (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]

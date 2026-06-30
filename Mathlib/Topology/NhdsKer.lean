@@ -71,7 +71,7 @@ theorem mem_nhdsKer_iff_specializes : x ∈ nhdsKer s ↔ ∃ y ∈ s, x ⤳ y :
   _ ↔ ∃ y ∈ s, x ⤳ y := by
     simp only [nhdsKer_iUnion, mem_nhdsKer_singleton, mem_iUnion₂, exists_prop]
 
-@[mono] lemma nhdsKer_mono : Monotone (nhdsKer : Set X → Set X) :=
+@[gcongr, mono] lemma nhdsKer_mono : Monotone (nhdsKer : Set X → Set X) :=
   fun _s _t h ↦ ker_mono <| nhdsSet_mono h
 
 /-- This name was used to be used for the `Iff` version,

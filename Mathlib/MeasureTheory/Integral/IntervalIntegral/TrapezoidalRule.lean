@@ -6,6 +6,7 @@ Authors: P. Michael Kielstra
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Field
 
 /-!
@@ -29,6 +30,7 @@ open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
 /-- Integration of `f` from `a` to `b` using the trapezoidal rule with `N+1` total evaluations of
 `f`.  (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of
 evaluations.) -/
+@[wikidata Q833293]
 noncomputable def trapezoidal_integral (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
   ((b - a) / N) * ((f a + f b) / 2 + ∑ k ∈ range (N - 1), f (a + (k + 1) * (b - a) / N))
 
@@ -158,8 +160,9 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
       ∀ t ∈ Icc a b, |φ t| ≤ c / (n + 1) * (t - a) ^ (n + 1) := by
     intro t ht
     have hB (x) : HasDerivAt (fun y ↦ c / (n + 1) * (y - a) ^ (n + 1)) (c * (x - a) ^ n) x := by
-      convert (hasDerivAt_const x (c / (n + 1))).mul
-        (((hasDerivAt_id x).sub (hasDerivAt_const x a)).pow (n + 1)) using 1
+      convert!
+        (hasDerivAt_const x (c / (n + 1))).mul
+          (((hasDerivAt_id x).sub (hasDerivAt_const x a)).pow (n + 1)) using 1
       simp [sub_eq_add_neg, field]
     simpa [Real.norm_eq_abs, h0] using image_norm_le_of_norm_deriv_right_le_deriv_boundary
       (fun x hx ↦ (h x hx).continuousWithinAt)

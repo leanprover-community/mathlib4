@@ -25,11 +25,12 @@ namespace Pi
 /-! ### Lexicographic ordering -/
 
 namespace Lex
-variable [WellFoundedLT ι]
 
 private def inf [WellFoundedLT ι] (s : Set (Πₗ i, α i)) (i : ι) : α i :=
   ⨅ e : {e ∈ s | ∀ j < i, e j = inf s j}, e.1 i
 termination_by wellFounded_lt.wrap i
+
+variable [WellFoundedLT ι]
 
 @[no_expose]
 instance : InfSet (Πₗ i, α i) where
