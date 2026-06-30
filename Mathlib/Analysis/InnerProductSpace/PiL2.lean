@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
 
 /-!
@@ -108,6 +109,7 @@ space use `EuclideanSpace 𝕜 (Fin n)`.
 
 For the case when `n = Fin _`, there is `!₂[x, y, ...]` notation for building elements of this type,
 analogous to `![x, y, ...]` notation. -/
+@[wikidata Q17295]
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
@@ -154,6 +156,7 @@ theorem EuclideanSpace.real_norm_sq_eq {n : Type*} [Fintype n] (x : EuclideanSpa
     ‖x‖ ^ 2 = ∑ i, (x i) ^ 2 := by
   simp [EuclideanSpace.norm_sq_eq]
 
+@[wikidata Q847073]
 theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : dist x y = √(∑ i, dist (x i) (y i) ^ 2) :=
   PiLp.dist_eq_of_L2 x y
@@ -1319,7 +1322,7 @@ open Matrix LinearMap EuclideanSpace in
 theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m]
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
     toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
-  simp [toLpLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
+  simp [toLpLin, toMatrix', ← Matrix.ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
 
 namespace FiniteDimensional
 variable [Unique ι] (h : Module.finrank 𝕜 E = 1) {v : E} (hv : ‖v‖ = 1)
