@@ -240,6 +240,31 @@ lemma fromIncl_comp_cofanPtIsoSelf_inv (i : X.I) :
     Hom.fromIncl i (𝟙 (X.obj i)) ≫ (coproductIsoSelf X).inv = Sigma.ι X.toFun i :=
   (Iso.comp_inv_eq _).2 (ι_comp_coproductIsoSelf_hom _ _).symm
 
+/-- Given an object `X : FormalCoproduct C` and an equality of indices `i = j`, this is
+the induced isomorphism `Xᵢ ≅ Xⱼ`. -/
+def objIsoOfEq (X : FormalCoproduct.{w} C) {i j : X.I} (hij : i = j) :
+    X.obj i ≅ X.obj j :=
+  eqToIso (by rw [hij])
+
+@[simp]
+lemma objIsoOfEq_rfl (X : FormalCoproduct.{w} C) (i : X.I) :
+    X.objIsoOfEq (rfl : i = i) = Iso.refl _ :=
+  rfl
+
+@[simp]
+lemma objIsoOfEq_trans (X : FormalCoproduct.{w} C) {i j k : X.I}
+    (hij : i = j) (hjk : j = k) :
+    X.objIsoOfEq hij ≪≫ X.objIsoOfEq hjk = X.objIsoOfEq (hij.trans hjk) := by
+  subst hij hjk
+  simp
+
+@[simp]
+lemma objIsoOfEq_symm (X : FormalCoproduct.{w} C) {i j : X.I}
+    (hij : i = j) :
+    (X.objIsoOfEq hij).symm = X.objIsoOfEq hij.symm := by
+  subst hij
+  simp
+
 end Coproduct
 
 section Terminal
@@ -374,6 +399,22 @@ instance : PreservesColimit (Discrete.functor f) ((eval.{w} C A).obj F) :=
 
 instance : PreservesColimitsOfShape (Discrete J) ((eval.{w} C A).obj F) :=
   preservesColimitsOfShape_of_discrete _
+
+/-- The yoneda embedding of `FormalCoproduct.{v} C` into `v`-presheaves. -/
+protected noncomputable abbrev yoneda :
+    FormalCoproduct.{v} C ⥤ Cᵒᵖ ⥤ Type v :=
+  (eval _ _).obj yoneda
+
+/-- The yoneda embedding of `FormalCoproduct.{w} C` into `max w v`-presheaves. -/
+protected noncomputable abbrev uliftYoneda :
+    FormalCoproduct.{w} C ⥤ Cᵒᵖ ⥤ Type (max w v) :=
+  (eval _ _).obj uliftYoneda
+
+/-- The yoneda embedding of `FormalCoproduct.{w} C` into `w`-presheaves for a locally
+`w`-small category. -/
+protected noncomputable abbrev shrinkYoneda [LocallySmall.{w} C] :
+    FormalCoproduct.{w} C ⥤ Cᵒᵖ ⥤ Type w :=
+  (eval _ _).obj shrinkYoneda
 
 end HasCoproducts
 
