@@ -47,7 +47,6 @@ attribute [instance 100] HasWeakKernels.hasWeakLimit
 /-- If a category has kernels, then it has weak kernels. -/
 instance (priority := 100) HasWeakKernelsOfHasKernels [HasKernels C] :
     HasWeakKernels C where
-      hasWeakLimit _ := inferInstance
 
 section
 
