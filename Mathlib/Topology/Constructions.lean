@@ -290,7 +290,7 @@ protected def TopologicalSpace.cofinite {X : Type*} : TopologicalSpace X where
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
 finite complements.
 
-For a `Prop` valued version, see `CofiniteTopology`. -/
+For the predicate stating that a particular topological space is the cofinite topology, see `CofiniteTopology`. -/
 abbrev WithCofiniteTopology (X : Type*) :=
   WithTopology X .cofinite
 
