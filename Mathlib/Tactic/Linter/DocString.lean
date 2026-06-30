@@ -5,11 +5,12 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 module
 
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public meta import Std.Data.Iterators.Combinators.Zip
 public import Lean.Parser.Command
 meta import Std.Data.Iterators.Producers.Range
-import Std.Data.Iterators
 
 /-!
 # The "DocString" style linter

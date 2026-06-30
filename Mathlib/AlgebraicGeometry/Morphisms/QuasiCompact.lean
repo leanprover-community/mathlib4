@@ -84,7 +84,7 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens {U : Set X} :
 
 theorem isCompact_iff_finite_and_eq_biUnion_affineOpens {U : X.Opens} :
     IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
-  convert! isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) using 4 with s
+  convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) with s
   · simp [U.isOpen]
   · convert! SetLike.coe_injective.eq_iff.symm; simp
 
@@ -159,6 +159,7 @@ instance quasiCompact_isStableUnderComposition :
 instance : MorphismProperty.IsMultiplicative @QuasiCompact where
   id_mem _ := inferInstance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance quasiCompact_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiCompact := by

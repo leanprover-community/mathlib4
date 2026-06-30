@@ -162,6 +162,9 @@ noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
 lemma subst_def (a : MvPowerSeries τ S) (f : PowerSeries R) :
     subst a f = MvPowerSeries.subst (fun _ ↦ a) f := rfl
 
+lemma subst_X_comp_const {f : R⟦X⟧} {i : τ} :
+    .subst (.X (R := R) ∘ fun _ ↦ i) f = f.subst (.X i) := rfl
+
 variable {a : MvPowerSeries τ S} {b : S⟦X⟧}
 
 /-- Substitution of power series into a power series, as an `AlgHom`. -/
@@ -183,7 +186,7 @@ theorem substAlgHom_eq_aeval
     (ha : HasSubst a) :
     (substAlgHom ha : R⟦X⟧ →ₐ[R] MvPowerSeries τ S) = PowerSeries.aeval ha.hasEval := by
   ext1 f
-  simpa [substAlgHom] using congr_fun (MvPowerSeries.substAlgHom_eq_aeval ha.const) f
+  simpa [substAlgHom] using! congr_fun (MvPowerSeries.substAlgHom_eq_aeval ha.const) f
 
 theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by
@@ -192,6 +195,15 @@ theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
 theorem subst_sub (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f - g) = subst a f - subst a g := by
   rw [← coe_substAlgHom ha, map_sub]
+
+lemma subst_zero_eq_C_constantCoeff {f : PowerSeries R} :
+    f.subst 0 = (MvPowerSeries.C f.constantCoeff (σ := τ)).map (algebraMap R S) :=
+  MvPowerSeries.subst_zero_eq_C_constantCoeff
+
+@[simp]
+theorem subst_zero_of_constantCoeff_zero {f : PowerSeries R} (hf : f.constantCoeff = 0) :
+    subst (0 : MvPowerSeries τ S) f = 0 :=
+  MvPowerSeries.subst_zero_of_constantCoeff_zero hf
 
 theorem subst_pow (ha : HasSubst a) (f : PowerSeries R) (n : ℕ) :
     subst a (f ^ n) = (subst a f) ^ n := by
@@ -359,7 +371,7 @@ end
 theorem HasSubst.comp
     {a : PowerSeries S} (ha : HasSubst a) {b : MvPowerSeries υ T} (hb : HasSubst b) :
     HasSubst (substAlgHom hb a) :=
-  MvPowerSeries.IsNilpotent_subst hb.const ha
+  MvPowerSeries.IsNilpotent_substAlgHom hb.const ha
 
 variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
   {b' : τ → MvPowerSeries υ T} [IsScalarTower R S T]

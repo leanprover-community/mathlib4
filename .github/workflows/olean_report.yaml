@@ -48,7 +48,7 @@ jobs:
 
       - name: Checkout local actions
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -82,18 +82,20 @@ jobs:
       # We fetch full depth so that we can compute the merge base.
       - name: Checkout PR head
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ${{ github.repository }}
           ref: refs/pull/${{ github.event.issue.number }}/head
           fetch-depth: 0
           path: pr-branch
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
 
       # Check out master into tools-branch.  We build the `cache` binary from
       # here so that a single binary can fetch oleans for both checkouts.
       - name: Checkout tools branch (master)
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ${{ github.repository }}
           ref: master
@@ -115,7 +117,7 @@ jobs:
 
       - name: Checkout merge base
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ${{ github.repository }}
           ref: ${{ steps.merge_base.outputs.sha }}
@@ -284,7 +286,7 @@ jobs:
 
       - name: Emit bridge artifact
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        uses: leanprover-community/privilege-escalation-bridge/emit@ea7d63d1c8ece92a8e89b6a6d8fda40603167a91 # v1.3.0
         with:
           artifact: workflow-data
           outputs_file: bridge-outputs.json
