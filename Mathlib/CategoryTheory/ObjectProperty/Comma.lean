@@ -41,6 +41,12 @@ instance [P₁.IsStableUnderRetracts] [P₂.IsStableUnderRetracts] :
     ⟨P₁.prop_of_retract (r.map (Comma.fst _ _)) h.1,
       P₂.prop_of_retract (r.map (Comma.snd _ _)) h.2⟩
 
+instance [P₁.IsClosedUnderIsomorphisms] [P₂.IsClosedUnderIsomorphisms] :
+    (comma F₁ F₂ P₁ P₂).IsClosedUnderIsomorphisms where
+  of_iso e h :=
+    ⟨P₁.prop_of_iso ((Comma.fst _ _).mapIso e) h.1,
+      P₂.prop_of_iso ((Comma.snd _ _).mapIso e) h.2⟩
+
 instance [ObjectProperty.Small.{w} P₁] [ObjectProperty.Small.{w} P₂] [LocallySmall.{w} D] :
     ObjectProperty.Small.{w} (comma F₁ F₂ P₁ P₂) :=
   small_of_surjective
