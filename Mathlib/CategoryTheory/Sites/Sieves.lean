@@ -1440,7 +1440,7 @@ def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C
     fun {U V} f ↦ by
       dsimp
       ext
-      dsimp [Equiv.subtypeEquiv]
+      dsimp [Equiv.subtypeEquiv_apply]
       rw [shrinkYonedaObjObjEquiv_obj_map, shrinkYonedaObjObjEquiv_symm_comp]
       simp
 
@@ -1459,7 +1459,7 @@ variable (S) in
 noncomputable def shrinkFunctorIsoFunctor : (shrinkFunctor.{v₁} S).toFunctor ≅ S.functor :=
   NatIso.ofComponents (fun Y ↦ Equiv.toIso <| Equiv.subtypeEquiv shrinkYonedaObjObjEquiv (by simp))
     fun {U V} f ↦ by
-      dsimp [Equiv.subtypeEquiv]
+      dsimp [Equiv.subtypeEquiv_apply]
       ext
       simp [shrinkYonedaObjObjEquiv_obj_map]
 

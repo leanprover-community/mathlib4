@@ -5,10 +5,7 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
-public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.MeasureTheory.Group.LIntegral
 public import Mathlib.MeasureTheory.Integral.Marginal
 public import Mathlib.MeasureTheory.Measure.Stieltjes
