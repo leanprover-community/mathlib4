@@ -154,7 +154,7 @@ instance lieAlgebra {s : StrictLieRinehartIdeal A L} : LieAlgebra R s where
 
 variable (R) in
 /-- Converts a Lie-Rinehart ideal to the corresponding Lie ideal. -/
-def toLieIdeal {s : StrictLieRinehartIdeal A L} : LieIdeal R L where
+@[expose] def toLieIdeal {s : StrictLieRinehartIdeal A L} : LieIdeal R L where
   toSubmodule := s.toSubmodule.restrictScalars R
   lie_mem {x y} hy := by
     rw [←lie_skew]
@@ -192,7 +192,7 @@ open scoped LieRinehartAlgebra
 variable (R) in
 /-- The embedding of a Lie-Rinehart ideal into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
-def incl {s : StrictLieRinehartIdeal A L} : s →ₗ⁅(AlgHom.id R A)⁆ L where
+@[expose] def incl {s : StrictLieRinehartIdeal A L} : s →ₗ⁅(AlgHom.id R A)⁆ L where
   __ := s.toSubmodule.subtype.restrictScalars R
   map_lie' {x y} := by simp
   map_smul_apply' a x := s.toSubmodule.subtype.map_smul a x

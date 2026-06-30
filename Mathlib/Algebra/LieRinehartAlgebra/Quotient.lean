@@ -112,7 +112,7 @@ instance : LieAlgebra R (L ⧸ s) where
 variable (s R) in
 open LieRinehartAlgebra in
 /-- `StrictLieRinehartIdeal.Quotient.mk` as a Lie-Rinehart homomorphism. -/
-def mk' : L →ₗ⁅(AlgHom.id R A)⁆ L ⧸ s :=
+@[expose] def mk' : L →ₗ⁅(AlgHom.id R A)⁆ L ⧸ s :=
   { (s.toSubmodule.restrictScalars R).mkQ with
     toFun := mk
     map_lie'  {_ _} := rfl
