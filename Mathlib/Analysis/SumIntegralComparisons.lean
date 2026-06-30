@@ -278,10 +278,7 @@ theorem AntitoneOn.integrable_of_summable_comp_add {N : ℕ} (anti : AntitoneOn 
       grind [Real.norm_of_nonneg, uIoo_of_le]
     _ ≤ ∑ n ∈ Finset.range M, f (n + N : ℕ) := by
       convert! AntitoneOn.integral_le_sum (anti.mono _) using 2 <;> grind
-    _ ≤ _ := by
-      refine summable.sum_le_tsum _ fun n hn ↦ nonneg _ ?_
-      simp at hn ⊢
-      linarith
+    _ ≤ _ := by grind [summable.sum_le_tsum, Nat.cast_pos]
 
 /-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/
 theorem AntitoneOn.integrable_of_summable (anti : AntitoneOn f (Ici 0))
