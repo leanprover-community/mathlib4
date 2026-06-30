@@ -312,8 +312,8 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
     assertInstancesCommute
@@ -326,8 +326,8 @@ meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e := do
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity √_]
-meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
     assertInstancesCommute

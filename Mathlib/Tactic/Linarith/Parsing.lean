@@ -62,13 +62,10 @@ local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [
 
 namespace Mathlib.Tactic.Linarith
 
-/-- A local abbreviation for `TreeMap` so we don't need to write `Ord.compare` each time. -/
-abbrev Map (α β) [Ord α] := TreeMap α β Ord.compare
-
 /-! ### Parsing datatypes -/
 
 /-- Variables (represented by natural numbers) map to their power. -/
-abbrev Monom : Type := Map ℕ ℕ
+abbrev Monom : Type := TreeMap ℕ ℕ
 
 /-- `1` is represented by the empty monomial, the product of no variables. -/
 def Monom.one : Monom := TreeMap.empty
@@ -83,7 +80,7 @@ instance : Ord Monom where
   compare x y := if x.lt y then .lt else if x == y then .eq else .gt
 
 /-- Linear combinations of monomials are represented by mapping monomials to coefficients. -/
-abbrev Sum : Type := Map Monom ℤ
+abbrev Sum : Type := TreeMap Monom ℤ
 
 /-- `1` is represented as the singleton sum of the monomial `Monom.one` with coefficient 1. -/
 def Sum.one : Sum := TreeMap.empty.insert Monom.one 1
@@ -200,7 +197,7 @@ The output `TreeMap ℕ ℤ` has the same structure as `s : Sum`,
 but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
 -/
-def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
+def elimMonom (s : Sum) (m : TreeMap Monom ℕ) : TreeMap Monom ℕ × TreeMap ℕ ℤ :=
   s.foldr (fun mn coeff ⟨map, out⟩ ↦
     match map[mn]? with
     | some n => ⟨map, out.insert n coeff⟩
@@ -216,8 +213,8 @@ into a `comp` object.
 `e_map` maps atomic expressions to indices; `monom_map` maps monomials to indices.
 Both of these are updated during processing and returned.
 -/
-def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Map Monom ℕ) :
-    MetaM (Comp × ExprMap × Map Monom ℕ) := do
+def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : TreeMap Monom ℕ) :
+    MetaM (Comp × ExprMap × TreeMap Monom ℕ) := do
   let (iq, e) ← parseCompAndExpr e
   let (m', comp') ← linearFormOfExpr red e_map e
   let ⟨nm, mm'⟩ := elimMonom comp' monom_map
@@ -228,8 +225,8 @@ def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Ma
 `toCompFold red e_map exprs monom_map` folds `toComp` over `exprs`,
 updating `e_map` and `monom_map` as it goes.
 -/
-def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom ℕ →
-    MetaM (List Comp × ExprMap × Map Monom ℕ)
+def toCompFold (red : TransparencyMode) : ExprMap → List Expr → TreeMap Monom ℕ →
+    MetaM (List Comp × ExprMap × TreeMap Monom ℕ)
 | m, [],     mm => return ([], m, mm)
 | m, (h::t), mm => do
     let (c, m', mm') ← toComp red h m mm
