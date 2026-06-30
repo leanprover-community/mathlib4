@@ -112,8 +112,7 @@ class HasWeakLimitsOfShape : Prop where
 
 attribute [instance] HasWeakLimitsOfShape.hasWeakLimit
 
-instance (priority := 100) {J : Type*} [Category* J]
-    [HasLimitsOfShape J C] : HasWeakLimitsOfShape J C where
+instance (priority := 100) [HasLimitsOfShape J C] : HasWeakLimitsOfShape J C where
 
 -- Interface to the `HasWeakLimit` class.
 /-- An arbitrary choice of weak limit cone for a functor. -/
