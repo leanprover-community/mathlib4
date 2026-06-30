@@ -5,10 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
-public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
 
@@ -29,18 +27,14 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 local notation3 "e(" P "|" R ")" =>
-  Ideal.ramificationIdx (Ideal.under R P) P
+  Ideal.ramificationIdx' P R
 
 open IsLocalRing Algebra
 
 lemma Ideal.ramificationIdx_eq_one_of_isUnramifiedAt
-    {p : Ideal S} [p.IsPrime] [IsNoetherianRing S] [IsUnramifiedAt R p]
-    (hp : p ≠ ⊥) [IsDomain S] [EssFiniteType R S] :
+    {p : Ideal S} [p.IsPrime] [IsUnramifiedAt R p] [EssFiniteType R S] :
     e(p|R) = 1 :=
-  let := Localization.AtPrime.algebraOfLiesOver (p.under R) p
-  (Ideal.ramificationIdx_eq_one_of_map_localization Ideal.map_comap_le hp
-    p.primeCompl_le_nonZeroDivisors
-    ((isUnramifiedAt_iff_map_eq R (p.under R) p).mp ‹_›).2)
+  p.ramificationIdx'_eq_one R
 
 variable (R) in
 lemma IsUnramifiedAt.of_liesOver_of_ne_bot
@@ -92,21 +86,15 @@ lemma IsUnramifiedAt.of_liesOver
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 
+
 /-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a Dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`. -/
+@[deprecated "Use `Ideal.ramificationIdx'_eq_one_iff` instead." (since := "2026-06-30")]
 lemma isUnramifiedAt_iff_of_isDedekindDomain
-    {p : Ideal S} [p.IsPrime] [IsDedekindDomain S] [EssFiniteType R S] [IsDomain R]
-    [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S]
-    (hp : p ≠ ⊥) :
-    Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 := by
-  let := Localization.AtPrime.algebraOfLiesOver (p.under R) p
-  rw [isUnramifiedAt_iff_map_eq R (p.under R) p, and_iff_right,
-    Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hp Ideal.map_comap_le]
-  have : Finite (R ⧸ p.under R) :=
-    Ideal.finiteQuotientOfFreeOfNeBot _ (mt Ideal.eq_bot_of_comap_eq_bot hp)
-  have : Finite ((p.under R).ResidueField) := IsLocalization.finite _
-    (nonZeroDivisors (R ⧸ p.under R))
-  infer_instance
+    {p : Ideal S} [p.IsPrime] [EssFiniteType R S] [IsDomain R]
+    [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S] :
+    Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 :=
+  Ideal.ramificationIdx'_eq_one_iff.symm
 
 /-- In characteristic zero the generic point is unramified: if `S` is a domain that is integral
 over a characteristic-zero domain `R` and `R → S` is injective, then `S` is unramified at the zero
@@ -159,25 +147,22 @@ theorem isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDo
 
 /-- For a prime `𝔓` of `S` lying over an unramified prime `𝔭` of `R`, the ramification index
 `e(𝔓 ∣ 𝔭)` equals `1`. -/
-theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S]
-    [Module.IsTorsionFree R S] [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
-    [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) (h𝔭 : 𝔭 ≠ ⊥) {𝔓 : Ideal S}
-    [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx 𝔭 𝔓 = 1 := by
-  rw [(Ideal.liesOver_iff 𝔓 𝔭).mp hP]
-  exact (isUnramifiedAt_iff_of_isDedekindDomain (Ideal.ne_bot_of_liesOver_of_ne_bot h𝔭 𝔓)).mp
+theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R]
+    [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
+    [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) {𝔓 : Ideal S}
+    [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx' 𝔓 R = 1 :=
+  Ideal.ramificationIdx'_eq_one_iff.mpr
     (hunr 𝔓 inferInstance hP)
 
 /-- A nonzero ideal of `R` is unramified in `S` if and only if every prime ideal of `S` lying
 over it has ramification index `1`. -/
-theorem isUnramifiedIn_iff_forall_ramificationIdx_eq_one [IsDomain R] [IsDedekindDomain S]
-    [Module.IsTorsionFree R S] [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
-    [Algebra.IsIntegral R S] {𝔭 : Ideal R} (h𝔭 : 𝔭 ≠ ⊥) :
+theorem isUnramifiedIn_iff_forall_ramificationIdx_eq_one [IsDomain R]
+    [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
+    [Algebra.IsIntegral R S] {𝔭 : Ideal R} :
     IsUnramifiedIn S 𝔭 ↔
-      ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx 𝔭 𝔓 = 1 := by
-  refine ⟨fun hunr 𝔓 _ hP ↦ hunr.ramificationIdx_eq_one h𝔭 hP, fun h 𝔓 _ hP ↦ ?_⟩
-  apply (isUnramifiedAt_iff_of_isDedekindDomain
-    (Ideal.ne_bot_of_liesOver_of_ne_bot h𝔭 𝔓)).mpr
-  rw [← (Ideal.liesOver_iff 𝔓 𝔭).mp hP]
+      ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx' 𝔓 R = 1 := by
+  refine ⟨fun hunr 𝔓 _ hP ↦ hunr.ramificationIdx_eq_one hP, fun h 𝔓 _ hP ↦ ?_⟩
+  rw [← Ideal.ramificationIdx'_eq_one_iff]
   exact h 𝔓 hP
 
 end Algebra

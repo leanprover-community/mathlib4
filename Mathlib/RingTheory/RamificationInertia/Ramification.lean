@@ -92,6 +92,7 @@ theorem ramificationIdx'_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
     IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
   exact Algebra.FormallyUnramified.map_maximalIdeal
 
+variable {q R} in
 theorem ramificationIdx'_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
     [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
     q.ramificationIdx' R = 1 ↔ Algebra.IsUnramifiedAt R q := by
