@@ -101,7 +101,7 @@ variable [Preadditive C] {X Y : C} {f g : X ⟶ Y}
 
 /-- A weak kernel of `f - g` is a weak equalizer of `f` and `g`. -/
 def isWeakLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsWeakLimit c) :
-    IsWeakLimit (forkOfKernelFork (C := C) c) :=
+    IsWeakLimit (forkOfKernelFork c) :=
   Fork.IsWeakLimit.mk' _ fun s => ⟨i.lift (kernelForkOfFork s), i.fac _ _⟩
 
 @[simp]
