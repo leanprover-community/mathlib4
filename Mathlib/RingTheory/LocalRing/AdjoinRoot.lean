@@ -130,7 +130,7 @@ lemma map_maximalIdeal_eq_iff_prime_map_residue (monic : p.Monic) [IsLocalRing R
   refine ⟨fun eq ↦ ?_, fun h ↦ eq_maximalIdeal (Quotient.maximal_of_isField _ ?_)⟩
   · refine IsMaximal.isPrime (Quotient.maximal_of_isField _ ?_)
     let e₂ : AdjoinRoot p ⧸ Ideal.map (of p) 𝓂[R] ≃+* 𝓀[AdjoinRoot p] := quotEquivOfEq eq
-    exact IsLocalHom.isField (f := e₁.symm.trans e₂) (RingEquiv.injective _) (Field.toIsField _)
+    exact IsLocalHom.isField (e₁.symm.trans e₂).injective (Field.toIsField _)
   · replace h := h.isMaximal (by simpa using (monic.map _).ne_zero)
     rw [Quotient.maximal_ideal_iff_isField_quotient] at h
     exact IsLocalHom.isField e₁.injective h
