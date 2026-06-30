@@ -126,9 +126,8 @@ theorem ramificationIdx_span_zeta_sub_one :
     ramificationIdx' (span {hζ.toInteger - 1}) ℤ = p ^ k * (p - 1) := by
   have h := isPrime_span_zeta_sub_one p k hζ
   have hp0 : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
-  rw [← ramificationIdx_eq_ramificationIdx' 𝒑 _ hp0,
-    ← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
-    IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,
+  rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
+    IsDedekindDomain.ramificationIdx'_eq_multiplicity 𝒑, map_eq_span_zeta_sub_one_pow p k hζ,
     multiplicity_pow_self (span_zeta_sub_one_ne_bot p k hζ) (isUnit_iff.not.mpr h.ne_top)]
   exact map_ne_bot_of_ne_bot hp0
 
