@@ -894,6 +894,14 @@ lemma conjStarAlgEquiv_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) :
 @[simp] lemma symm_conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) :
     e.conjStarAlgEquiv.symm = e.symm.conjStarAlgEquiv := rfl
 
+lemma conjStarAlgEquiv_symm_apply_eq (e : H ≃ₗᵢ[𝕜] K) {x y} :
+    e.conjStarAlgEquiv.symm x = y ↔ x = e.conjStarAlgEquiv y :=
+  e.toAlgEquiv.symm_apply_eq
+
+lemma conjStarAlgEquiv_eq_symm_apply (e : H ≃ₗᵢ[𝕜] K) {x y} :
+    y = e.conjStarAlgEquiv.symm x ↔ e.conjStarAlgEquiv y = x :=
+  e.toAlgEquiv.eq_symm_apply
+
 @[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl _ _ := rfl
 
 theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]

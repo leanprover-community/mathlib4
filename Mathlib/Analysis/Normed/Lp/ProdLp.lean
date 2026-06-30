@@ -561,6 +561,22 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
 lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
     (prodContinuousLinearEquiv p 𝕜 α β).symm x = toLp p x := rfl
 
+theorem prodContinuousLinearEquiv_apply_symm_apply {x} :
+    (prodContinuousLinearEquiv p 𝕜 α β) ((prodContinuousLinearEquiv p 𝕜 α β).symm x) = x :=
+  ContinuousLinearEquiv.apply_symm_apply _ _
+
+theorem prodContinuousLinearEquiv_symm_apply_apply {x} :
+    (prodContinuousLinearEquiv p 𝕜 α β).symm ((prodContinuousLinearEquiv p 𝕜 α β) x) = x :=
+  ContinuousLinearEquiv.symm_apply_apply _ _
+
+theorem prodContinuousLinearEquiv_symm_apply_eq {x y} :
+    (prodContinuousLinearEquiv p 𝕜 α β).symm x = y ↔ x = (prodContinuousLinearEquiv p 𝕜 α β) y :=
+  ContinuousLinearEquiv.symm_apply_eq _
+
+theorem prodContinuousLinearEquiv_eq_symm_apply {x y} :
+    y = (prodContinuousLinearEquiv p 𝕜 α β).symm x ↔ (prodContinuousLinearEquiv p 𝕜 α β) y = x :=
+  ContinuousLinearEquiv.eq_symm_apply _
+
 /-- `WithLp.fst` as a continuous linear map. -/
 @[simps! coe apply]
 def fstL : WithLp p (α × β) →L[𝕜] α where
@@ -1112,6 +1128,22 @@ def withLpProdCongr (f : α ≃ᵢ α') (g : β ≃ᵢ β') : WithLp p (α × β
   __ := WithLp.congr p (f.toEquiv.prodCongr g.toEquiv)
   isometry_toFun := f.isometry.withLpProdMap p g.isometry
 
+theorem withLpProdCongr_apply_symm_apply (f : α ≃ᵢ α') (g : β ≃ᵢ β') {x} :
+    (withLpProdCongr p f g) ((withLpProdCongr p f g).symm x) = x :=
+  Equiv.apply_symm_apply _ _
+
+theorem withLpProdCongr_symm_apply_apply (f : α ≃ᵢ α') (g : β ≃ᵢ β') {x} :
+    (withLpProdCongr p f g).symm ((withLpProdCongr p f g) x) = x :=
+  Equiv.symm_apply_apply _ _
+
+theorem withLpProdCongr_symm_apply_eq (f : α ≃ᵢ α') (g : β ≃ᵢ β') {x y} :
+    (withLpProdCongr p f g).symm x = y ↔ x = (withLpProdCongr p f g) y :=
+  Equiv.symm_apply_eq _
+
+theorem withLpProdCongr_eq_symm_apply (f : α ≃ᵢ α') (g : β ≃ᵢ β') {x y} :
+    y = (withLpProdCongr p f g).symm x ↔ (withLpProdCongr p f g) y = x :=
+  Equiv.eq_symm_apply _
+
 /-- Commutativity of the `L^p` product as an isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ᵢ WithLp p (β × α) where
   __ := WithLp.congr p (Equiv.prodComm α β)
@@ -1130,6 +1162,22 @@ theorem withLpProdComm_apply (x : WithLp p (α × β)) :
 theorem withLpProdComm_symm : (withLpProdComm p α β).symm = withLpProdComm p β α :=
   rfl
 
+theorem withLpProdComm_apply_symm_apply {x} :
+    (withLpProdComm p α β) ((withLpProdComm p α β).symm x) = x :=
+  Equiv.apply_symm_apply _ _
+
+theorem withLpProdComm_symm_apply_apply {x} :
+    (withLpProdComm p α β).symm (withLpProdComm p α β x) = x :=
+  Equiv.symm_apply_apply _ _
+
+theorem withLpProdComm_symm_apply_eq {x y} :
+    (withLpProdComm p α β).symm x = y ↔ x = withLpProdComm p α β y :=
+  Equiv.symm_apply_eq _
+
+theorem withLpProdComm_eq_symm_apply {x y} :
+    y = (withLpProdComm p α β).symm x ↔ withLpProdComm p α β y = x :=
+  Equiv.eq_symm_apply _
+
 /-- Associativity of the `L^p` product as an isometric equivalence. -/
 @[simps apply symm_apply]
 def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α × WithLp p (β × γ)) where
@@ -1140,6 +1188,22 @@ def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α �
     · absurd hp.elim; simp
     · simp [WithLp.prod_edist_eq_sup, max_assoc]
     · simp [WithLp.prod_edist_eq_add hp, ENNReal.rpow_inv_rpow hp.ne', add_assoc]
+
+theorem withLpProdAssoc_apply_symm_apply {x} :
+    (withLpProdAssoc p α β γ) ((withLpProdAssoc p α β γ).symm x) = x :=
+  Equiv.apply_symm_apply _ _
+
+theorem withLpProdAssoc_symm_apply_apply {x} :
+    (withLpProdAssoc p α β γ).symm ((withLpProdAssoc p α β γ) x) = x :=
+  Equiv.symm_apply_apply _ _
+
+theorem withLpProdAssoc_symm_apply_eq {x y} :
+    (withLpProdAssoc p α β γ).symm x = y ↔ x = (withLpProdAssoc p α β γ) y :=
+  Equiv.symm_apply_eq _
+
+theorem withLpProdAssoc_eq_symm_apply {x y} :
+    y = (withLpProdAssoc p α β γ).symm x ↔ (withLpProdAssoc p α β γ) y = x :=
+  Equiv.eq_symm_apply _
 
 /-- Right identity of the `L^p` product as an isometric equivalence. -/
 @[simps! apply symm_apply]
@@ -1152,6 +1216,22 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
     · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
         ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
 
+theorem withLpProdUnique_apply_symm_apply [Unique β] {x} :
+    (withLpProdUnique p α β) ((withLpProdUnique p α β).symm x) = x :=
+  Equiv.apply_symm_apply _ _
+
+theorem withLpProdUnique_symm_apply_apply [Unique β] {x} :
+    (withLpProdUnique p α β).symm (withLpProdUnique p α β x) = x :=
+  Equiv.symm_apply_apply _ _
+
+theorem withLpProdUnique_symm_apply_eq [Unique β] {x y} :
+    (withLpProdUnique p α β).symm x = y ↔ x = withLpProdUnique p α β y :=
+  Equiv.symm_apply_eq _
+
+theorem withLpProdUnique_eq_symm_apply [Unique β] {x y} :
+    y = (withLpProdUnique p α β).symm x ↔ withLpProdUnique p α β y = x :=
+  Equiv.eq_symm_apply _
+
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithLp.fst :=
   rfl
 
@@ -1159,6 +1239,22 @@ theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithL
 @[simps! apply symm_apply]
 def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ᵢ β :=
   (withLpProdComm p α β).trans (withLpProdUnique p β α)
+
+theorem withLpUniqueProd_apply_symm_apply [Unique α] {x} :
+    (withLpUniqueProd p α β) ((withLpUniqueProd p α β).symm x) = x :=
+  Equiv.apply_symm_apply _ _
+
+theorem withLpUniqueProd_symm_apply_apply [Unique α] {x} :
+    (withLpUniqueProd p α β).symm (withLpUniqueProd p α β x) = x :=
+  Equiv.symm_apply_apply _ _
+
+theorem withLpUniqueProd_symm_apply_eq [Unique α] {x y} :
+    (withLpUniqueProd p α β).symm x = y ↔ x = withLpUniqueProd p α β y :=
+  Equiv.symm_apply_eq _
+
+theorem withLpUniqueProd_eq_symm_apply [Unique α] {x y} :
+    y = (withLpUniqueProd p α β).symm x ↔ withLpUniqueProd p α β y = x :=
+  Equiv.eq_symm_apply _
 
 theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p α β) = WithLp.snd :=
   rfl
@@ -1211,6 +1307,22 @@ theorem withLpProdComm_apply (x : WithLp p (α × β)) :
 theorem withLpProdComm_symm : (withLpProdComm p 𝕜 α β).symm = withLpProdComm p 𝕜 β α :=
   rfl
 
+theorem withLpProdComm_apply_symm_apply {x} :
+    (withLpProdComm p 𝕜 α β) ((withLpProdComm p 𝕜 α β).symm x) = x :=
+  LinearIsometryEquiv.apply_symm_apply _ _
+
+theorem withLpProdComm_symm_apply_apply {x} :
+    (withLpProdComm p 𝕜 α β).symm (withLpProdComm p 𝕜 α β x) = x :=
+  LinearIsometryEquiv.symm_apply_apply _ _
+
+theorem withLpProdComm_symm_apply_eq {x y} :
+    (withLpProdComm p 𝕜 α β).symm x = y ↔ x = withLpProdComm p 𝕜 α β y :=
+  LinearIsometryEquiv.symm_apply_eq _
+
+theorem withLpProdComm_eq_symm_apply {x y} :
+    y = (withLpProdComm p 𝕜 α β).symm x ↔ withLpProdComm p 𝕜 α β y = x :=
+  LinearIsometryEquiv.eq_symm_apply _
+
 /-- Associativity of the `L^p` product as a linear isometric equivalence. -/
 @[simps! apply symm_apply]
 def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ₗᵢ[𝕜] WithLp p (α × WithLp p (β × γ)) where
@@ -1225,6 +1337,22 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ₗᵢ[𝕜] α where
   __ := (WithLp.linearEquiv _ _ _).trans LinearEquiv.prodUnique
   norm_map' := (IsometryEquiv.withLpProdUnique _ _ _).isometry.norm_map_of_map_zero rfl
 
+theorem withLpProdUnique_apply_symm_apply [Unique β] {x} :
+    (withLpProdUnique p 𝕜 α β) ((withLpProdUnique p 𝕜 α β).symm x) = x :=
+  LinearIsometryEquiv.apply_symm_apply _ _
+
+theorem withLpProdUnique_symm_apply_apply [Unique β] {x} :
+    (withLpProdUnique p 𝕜 α β).symm (withLpProdUnique p 𝕜 α β x) = x :=
+  LinearIsometryEquiv.symm_apply_apply _ _
+
+theorem withLpProdUnique_symm_apply_eq [Unique β] {x y} :
+    (withLpProdUnique p 𝕜 α β).symm x = y ↔ x = withLpProdUnique p 𝕜 α β y :=
+  LinearIsometryEquiv.symm_apply_eq _
+
+theorem withLpProdUnique_eq_symm_apply [Unique β] {x y} :
+    y = (withLpProdUnique p 𝕜 α β).symm x ↔ withLpProdUnique p 𝕜 α β y = x :=
+  LinearIsometryEquiv.eq_symm_apply _
+
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = WithLp.fst :=
   rfl
 
@@ -1232,6 +1360,22 @@ theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = 
 @[simps! apply symm_apply]
 def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ₗᵢ[𝕜] β :=
   (withLpProdComm p 𝕜 α β).trans (withLpProdUnique p 𝕜 β α)
+
+theorem withLpUniqueProd_apply_symm_apply [Unique α] {x} :
+    (withLpUniqueProd p 𝕜 α β) ((withLpUniqueProd p 𝕜 α β).symm x) = x :=
+  LinearIsometryEquiv.apply_symm_apply _ _
+
+theorem withLpUniqueProd_symm_apply_apply [Unique α] {x} :
+    (withLpUniqueProd p 𝕜 α β).symm (withLpUniqueProd p 𝕜 α β x) = x :=
+  LinearIsometryEquiv.symm_apply_apply _ _
+
+theorem withLpUniqueProd_symm_apply_eq [Unique α] {x y} :
+    (withLpUniqueProd p 𝕜 α β).symm x = y ↔ x = withLpUniqueProd p 𝕜 α β y :=
+  LinearIsometryEquiv.symm_apply_eq _
+
+theorem withLpUniqueProd_eq_symm_apply [Unique α] {x y} :
+    y = (withLpUniqueProd p 𝕜 α β).symm x ↔ withLpUniqueProd p 𝕜 α β y = x :=
+  LinearIsometryEquiv.eq_symm_apply _
 
 theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p 𝕜 α β) = WithLp.snd :=
   rfl

@@ -84,6 +84,26 @@ theorem sym_symm : (@sym α).symm = unsym :=
 theorem unsym_symm : (@unsym α).symm = sym :=
   rfl
 
+theorem sym_apply_eq_iff {a : α} {b : αˢʸᵐ} :
+    sym a = b ↔ a = sym.symm b :=
+  sym.apply_eq_iff_eq_symm_apply
+
+theorem sym_symm_apply_eq {a : αˢʸᵐ} {b : α} :
+    sym.symm a = b ↔ a = sym b :=
+  sym.symm_apply_eq
+
+theorem sym_eq_symm_apply {a : αˢʸᵐ} {b : α} :
+    b = sym.symm a ↔ sym b = a :=
+  sym.eq_symm_apply
+
+theorem sym_apply_symm_apply (a : αˢʸᵐ) :
+    sym (sym.symm a) = a :=
+  sym.apply_symm_apply _
+
+theorem sym_symm_apply_apply (a : α) :
+    sym.symm (sym a) = a :=
+  sym.symm_apply_apply _
+
 theorem sym_bijective : Bijective (sym : α → αˢʸᵐ) :=
   sym.bijective
 

@@ -1111,4 +1111,22 @@ protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈
     (Equiv.setSubtypeComm p).symm s = {a | a.val ∈ s.val} :=
   rfl
 
+theorem setSubtypeComm_apply_symm_apply (p : α → Prop) (s : {s : Set α // ∀ a ∈ s, p a}) :
+    Equiv.setSubtypeComm p ((Equiv.setSubtypeComm p).symm s) = s :=
+  Equiv.apply_symm_apply _ _
+
+theorem setSubtypeComm_symm_apply_apply (p : α → Prop) (t : Set {a // p a}) :
+    (Equiv.setSubtypeComm p).symm (Equiv.setSubtypeComm p t) = t :=
+  Equiv.symm_apply_apply _ _
+
+theorem setSubtypeComm_symm_apply_eq (p : α → Prop) (s : {s : Set α // ∀ a ∈ s, p a})
+    (t : Set {a // p a}) :
+    (Equiv.setSubtypeComm p).symm s = t ↔ s = Equiv.setSubtypeComm p t :=
+  Equiv.symm_apply_eq _
+
+theorem setSubtypeComm_eq_symm_apply (p : α → Prop) (s : {s : Set α // ∀ a ∈ s, p a})
+    (t : Set {a // p a}) :
+    t = (Equiv.setSubtypeComm p).symm s ↔ Equiv.setSubtypeComm p t = s :=
+  Equiv.eq_symm_apply _
+
 end Equiv

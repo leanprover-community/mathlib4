@@ -43,6 +43,18 @@ lemma opEquiv_symm_apply {n : ℤ} (f : ShiftedHom (Opposite.op Y) (Opposite.op 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app (Opposite.op X)).unop ≫ f.unop⟦n⟧' :=
   rfl
 
+lemma opEquiv_symm_apply_eq {n : ℤ}
+    (f : ShiftedHom (Opposite.op Y) (Opposite.op X) n)
+    (g : ShiftedHom X Y n) :
+    (opEquiv n).symm f = g ↔ f = opEquiv n g :=
+  (opEquiv n).symm_apply_eq
+
+lemma opEquiv_eq_symm_apply {n : ℤ}
+    (f : ShiftedHom (Opposite.op Y) (Opposite.op X) n)
+    (g : ShiftedHom X Y n) :
+    g = (opEquiv n).symm f ↔ opEquiv n g = f :=
+  (opEquiv n).eq_symm_apply
+
 set_option backward.defeqAttrib.useBackward true in
 lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
     (f : ShiftedHom (Opposite.op X) (Opposite.op Y) a) {b : ℤ} {Z : C}
@@ -95,6 +107,20 @@ lemma opEquiv'_apply {a' : ℤ} (f : ShiftedHom X Y a') (n a : ℤ) (h : n + a =
     opEquiv' n a a' h f =
       opEquiv n (f ≫ (shiftFunctorAdd' C a n a' (by lia)).hom.app Y) := by
   rfl
+
+lemma opEquiv'_symm_apply_eq {n a a' : ℤ} (h : n + a = a')
+    (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧)
+    (g : ShiftedHom X Y a') :
+    (opEquiv' (C := C) (X := X) (Y := Y) n a a' h).symm f = g
+      ↔ f = opEquiv' (C := C) (X := X) (Y := Y) n a a' h g :=
+  (opEquiv' (C := C) (X := X) (Y := Y) n a a' h).symm_apply_eq
+
+lemma opEquiv'_eq_symm_apply {n a a' : ℤ} (h : n + a = a')
+    (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧)
+    (g : ShiftedHom X Y a') :
+    g = (opEquiv' (C := C) (X := X) (Y := Y) n a a' h).symm f
+      ↔ opEquiv' (C := C) (X := X) (Y := Y) n a a' h g = f :=
+  (opEquiv' (C := C) (X := X) (Y := Y) n a a' h).eq_symm_apply
 
 set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv'_symm_op_opShiftFunctorEquivalence_counitIso_inv_app_op_shift
