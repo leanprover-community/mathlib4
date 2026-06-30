@@ -28,8 +28,6 @@ if and only if it has weak kernels.
 
 @[expose] public section
 
-universe u v w
-
 noncomputable section
 
 open CategoryTheory Category Limits
