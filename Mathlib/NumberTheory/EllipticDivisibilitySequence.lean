@@ -36,11 +36,13 @@ As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0)
 and an *elliptic divisibility sequence* (EDS) if it is a divisibility sequence that is elliptic. If
 `W` is an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be
 normalised such that `W(1) = 1`, in which case it can be characterised completely by
-* the *even relations* `ER(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+
+* the *even relations* `ERₐ(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m) = W(m - 1)²W(m)W(m + 2) - W(m - 2)W(m)W(m + 1)²` for all `m ∈ ℤ`, and
-* the *odd relations* `ER(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+* the *odd relations* `ERₐ(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m + 1) = W(m + 2)W(m)³ - W(m - 1)W(m + 1)³` for all `m ∈ ℤ`,
-with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = db` for some
+
+with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b` for some
 `b, c, d ∈ R`. This will be called the *canonical example of a normalised EDS* in this file.
 
 Some examples of EDSs include
@@ -492,7 +494,7 @@ end PreNormEDS
 section NormEDS
 
 /-- The canonical example of a normalised EDS `W : ℤ → R`, with initial values
-`W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = db`.
+`W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b`.
 
 This is defined in terms of `preNormEDS` whose even terms differ by a factor of `b`. -/
 def normEDS (n : ℤ) : R :=
