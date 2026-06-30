@@ -109,7 +109,7 @@ instance (priority := 100) hasWeakLimitOfHasWeakLimitsOfShape
     [HasWeakLimitsOfShape J C] (F : J ⥤ C) : HasWeakLimit F :=
   HasWeakLimitsOfShape.has_weakLimit F
 
-instance (priority := 100) hasWeakLimitsOfShapeOfHasLimitsOfShape {J : Type*} [Category* J]
+instance (priority := 100) {J : Type*} [Category* J]
     [HasLimitsOfShape J C] : HasWeakLimitsOfShape J C where
       has_weakLimit F := HasWeakLimit_of_hasLimit F
 
