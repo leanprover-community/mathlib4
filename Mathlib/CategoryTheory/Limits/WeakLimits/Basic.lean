@@ -17,12 +17,17 @@ condition. In particular, weak limits are not unique, and they are not functoria
 
 We set up some API for weak limits, mostly copied from that for limits, prove that any
 limit cone is a weak limit cone, and that, if a limit exists, then it is a retract of any
-weak limit (see `Retract.ofIsLimit`).
+weak limit (see `IsWeakLimit.retractOfIsLimit`).
 
-We then specialize to weak equalizers, weak kernels and weak pullbacks, and give some API
-for those shapes, again inspired from the non-weak case. We prove that a category with weak
-equalizers and pullbacks has weak pullbacks, and that a preadditive category has weak equalizers
-if and only if it has weak kernels.
+In the files `WeakEqualizers.lean`, `WeakKernels.lean` and `WeakPullbacks.lean`, we specialize
+to weak equalizers, weak kernels and weak pullbacks, and give some API for those shapes,
+again inspired from the non-weak case. We prove that a category with weak equalizers and
+pullbacks has weak pullbacks, and that a preadditive category has weak equalizers if and only
+if it has weak kernels.
+
+## References
+
+* [Peter J Freyd, *Representations in Abelian categories*, p. 99][freyd1966repabelian]
 
 -/
 
