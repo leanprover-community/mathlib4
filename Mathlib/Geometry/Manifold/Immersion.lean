@@ -391,8 +391,6 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
   suffices I ((chartAt H ↑y) ((chartAt H y).symm (I.symm x))) = x by simpa +contextual
   simp_all
 
-@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
-
 /-- Prefer using `IsImmersionAtOfComplement.continuousAt` instead -/
 theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
     ContinuousOn f h.domChart.source := by
@@ -587,8 +585,6 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) 
   use PUnit, by infer_instance, by infer_instance
   apply Manifold.IsImmersionAtOfComplement.of_opens
 
-@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
-
 /-- Prefer using `IsImmersionAt.continuousAt` instead -/
 theorem continuousOn (h : IsImmersionAt I J n f x) : ContinuousOn f h.domChart.source :=
   h.isImmersionAtOfComplement_complement.continuousOn
@@ -725,8 +721,6 @@ lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold 
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
   simpa
 
-@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
-
 /-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff
     (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
@@ -791,8 +785,6 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) := by
   use PUnit, by infer_instance, by infer_instance
   exact IsImmersionOfComplement.of_opens s
-
-@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 /-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff

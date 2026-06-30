@@ -120,8 +120,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mem_span_support (f : k[G]) : f ∈ Submodule.span k (of' k G '' f.support) := by
   simp only [of']; rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported]
 
-@[deprecated (since := "2025-12-08")] alias mem_span_support' := mem_span_support
-
 end Span
 
 end AddMonoidAlgebra

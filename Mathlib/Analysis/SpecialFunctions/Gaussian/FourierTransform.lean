@@ -224,16 +224,10 @@ theorem _root_.fourier_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     simp only [I_sq]
     ring
 
-@[deprecated (since := "2025-11-16")]
-alias _root_.fourierIntegral_gaussian_pi' := _root_.fourier_gaussian_pi'
-
 theorem _root_.fourier_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
     fun t : ℝ ↦ 1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using fourier_gaussian_pi' hb 0
-
-@[deprecated (since := "2025-11-16")]
-alias _root_.fourierIntegral_gaussian_pi := _root_.fourier_gaussian_pi
 
 section InnerProductSpace
 
@@ -354,18 +348,10 @@ theorem _root_.fourier_gaussian_innerProductSpace' (hb : 0 < b.re) (x w : V) :
     simp [mul_pow]
     ring
 
-@[deprecated (since := "2025-11-16")]
-alias _root_.fourierIntegral_gaussian_innerProductSpace' :=
-  _root_.fourier_gaussian_innerProductSpace'
-
 theorem _root_.fourier_gaussian_innerProductSpace (hb : 0 < b.re) (w : V) :
     𝓕 (fun (v : V) ↦ cexp (-b * ‖v‖ ^ 2)) w =
       (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖w‖ ^ 2 / b) := by
   simpa using fourier_gaussian_innerProductSpace' hb 0 w
-
-@[deprecated (since := "2025-11-16")]
-alias _root_.fourierIntegral_gaussian_innerProductSpace :=
-  _root_.fourier_gaussian_innerProductSpace
 
 end InnerProductSpace
 

@@ -69,9 +69,6 @@ theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
       simp [fourier_eq', mul_comm (_ / _)]
 
-@[deprecated (since := "2025-11-16")]
-alias mellin_eq_fourierIntegral := mellin_eq_fourier
-
 theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
     mellinInv σ f x =
     (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := calc
@@ -88,9 +85,6 @@ theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x
     ring_nf
   _ = (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
     simp [fourierInv_eq', mul_comm (Real.log _)]
-
-@[deprecated (since := "2025-11-16")]
-alias mellinInv_eq_fourierIntegralInv := mellinInv_eq_fourierInv
 
 variable [CompleteSpace E]
 
@@ -129,5 +123,3 @@ theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (h
       rw [← smul_assoc, smul_eq_mul, Real.rpow_neg hx.le,
         inv_mul_cancel₀ (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]
 
-@[deprecated (since := "2025-11-16")]
-alias mellin_inversion := mellinInv_mellin_eq

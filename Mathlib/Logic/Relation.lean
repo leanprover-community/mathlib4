@@ -882,9 +882,6 @@ theorem reflTransGen_of_isTrans_reflexive {r' : α → α → Prop} [Std.Refl r]
 @[deprecated (since := "2026-02-21")]
 alias reflTransGen_of_transitive_reflexive := reflTransGen_of_isTrans_reflexive
 
-@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal :=
-  reflTransGen_of_transitive_reflexive
-
 theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
     (∀ a b, r' a b → r a b) → ReflTransGen r' a b → r a b :=
   @reflTransGen_of_isTrans_reflexive _ _ _ _ _ hr.stdRefl hr.isTrans

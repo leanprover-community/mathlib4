@@ -646,9 +646,6 @@ theorem card_filter_add_card_filter_not
   classical
   rw [← card_union_of_disjoint (disjoint_filter_filter_not _ _ _), filter_union_filter_not_eq]
 
-@[deprecated (since := "2025-12-12")]
-alias filter_card_add_filter_neg_card_eq_card := card_filter_add_card_filter_not
-
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
 set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
 lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #t) :

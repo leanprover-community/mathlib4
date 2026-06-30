@@ -602,15 +602,9 @@ def delta (x : E) : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ <|
     (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
 
-@[deprecated (since := "2025-12-23")]
-noncomputable alias _root_.SchwartzMap.delta := delta
-
 @[simp]
 theorem delta_apply (x : E) (f : 𝓢(E, ℂ)) : delta x f = f x :=
   rfl
-
-@[deprecated (since := "2025-12-23")]
-alias _root_.SchwartzMap.delta_apply := delta_apply
 
 open MeasureTheory MeasureTheory.Measure
 
@@ -620,9 +614,6 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 @[simp]
 theorem toTemperedDistribution_dirac_eq_delta (x : E) :
   (dirac x).toTemperedDistribution = delta x := by aesop
-
-@[deprecated (since := "2025-12-23")]
-alias _root_.SchwartzMap.integralCLM_dirac_eq_delta := toTemperedDistribution_dirac_eq_delta
 
 end definition
 

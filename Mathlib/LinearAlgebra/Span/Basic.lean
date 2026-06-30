@@ -743,8 +743,6 @@ lemma smulRight_id : id.smulRight = toSpanSingleton R M := rfl
 theorem toSpanSingleton_apply_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 
-@[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
-
 theorem toSpanSingleton_injective : Function.Injective (toSpanSingleton R M) :=
   fun _ _ eq ↦ by simpa using congr($eq 1)
 
@@ -779,9 +777,6 @@ theorem isIdempotentElem_map_one_iff {f : Module.End R R} :
     LinearMap.ext_iff]
   simp_rw [Module.End.mul_apply]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
-
-@[deprecated (since := "2025-12-05")] alias isIdempotentElem_apply_one_iff :=
-  isIdempotentElem_map_one_iff
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
 theorem range_toSpanSingleton (x : M) :

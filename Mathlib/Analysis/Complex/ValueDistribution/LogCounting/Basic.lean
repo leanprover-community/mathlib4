@@ -246,8 +246,6 @@ theorem logCounting_eventuallyLE {E : Type*} [NormedAddCommGroup E] [ProperSpace
     logCounting f₁ ≤ᶠ[atTop] logCounting f₂ := by
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_le h hr
 
-@[deprecated (since := "2025-12-11")] alias logCounting_eventually_le := logCounting_eventuallyLE
-
 end Function.locallyFinsuppWithin
 
 /-!
@@ -507,8 +505,6 @@ theorem logCounting_mul_zero_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 �
   apply locallyFinsuppWithin.logCounting_le _ hr
   apply locallyFinsuppWithin.posPart_add
 
-@[deprecated (since := "2025-12-11")] alias logCounting_zero_mul_le := logCounting_mul_zero_le
-
 /--
 Asymptotically, the logarithmic counting function for the zeros of `f * g` is less than or equal to
 the sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
@@ -519,9 +515,6 @@ theorem logCounting_mul_zero_eventuallyLE {f₁ f₂ : 𝕜 → 𝕜}
     logCounting (f₁ * f₂) 0 ≤ᶠ[atTop] logCounting f₁ 0 + logCounting f₂ 0 := by
   filter_upwards [eventually_ge_atTop 1] using
     fun _ hr ↦ logCounting_mul_zero_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
-
-@[deprecated (since := "2025-12-11")]
-alias logCounting_zero_mul_eventually_le := logCounting_mul_zero_eventuallyLE
 
 /--
 For `1 ≤ r`, the logarithmic counting function for the poles of `f * g` is less than or equal to the
@@ -537,8 +530,6 @@ theorem logCounting_mul_top_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤
   apply locallyFinsuppWithin.logCounting_le _ hr
   apply locallyFinsuppWithin.negPart_add
 
-@[deprecated (since := "2025-12-11")] alias logCounting_top_mul_le := logCounting_mul_top_le
-
 /--
 Asymptotically, the logarithmic counting function for the zeros of `f * g` is less than or equal to
 the sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
@@ -549,9 +540,6 @@ theorem logCounting_mul_top_eventuallyLE {f₁ f₂ : 𝕜 → 𝕜}
     logCounting (f₁ * f₂) ⊤ ≤ᶠ[atTop] logCounting f₁ ⊤ + logCounting f₂ ⊤ := by
   filter_upwards [eventually_ge_atTop 1] using
     fun _ hr ↦ logCounting_mul_top_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
-
-@[deprecated (since := "2025-12-11")]
-alias logCounting_top_mul_eventually_le := logCounting_mul_top_eventuallyLE
 
 /--
 For natural numbers `n`, the logarithmic counting function for the zeros of `f ^ n` equals `n`

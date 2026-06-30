@@ -193,9 +193,6 @@ theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
 theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective f := by
   simpa [disjoint_iff_inf_le] using disjoint_ker_iff_injOn (f := f) (p := ⊤)
 
-@[deprecated (since := "2025-12-23")]
-alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
-
 @[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
   rw [← LinearMap.ker_eq_bot]
