@@ -475,41 +475,6 @@ lemma contMDiff_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimensional ℝ E
 
 -- TODO: generalise all this discussion to sections of any smooth bundle!
 
--- Move: sections into a bundle with subsingleton fiber are smooth
-section
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ∞ω)
-  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
-  {s : ∀ x, V x} {u : Set M} {x : M}
-
-@[nontriviality]
-lemma contMDiffWithinAt_section_of_subsingleton [Subsingleton F] :
-    CMDiffAt[u] n (T% s) x := by
-  rw [contMDiffWithinAt_section]
-  apply contMDiffWithinAt_const |>.congr
-  · intro y _
-    apply Subsingleton.elim
-  rfl
-
-@[nontriviality]
-lemma contMDiffAt_section_of_subsingleton [Subsingleton F] : CMDiffAt n (T% s) x := by
-  rw [← contMDiffWithinAt_univ]
-  apply contMDiffWithinAt_section_of_subsingleton
-
-@[nontriviality]
-lemma contMDiffOn_section_of_subsingleton [Subsingleton F] : CMDiff[u] n (T% s) :=
-  fun _x _hx ↦ contMDiffWithinAt_section_of_subsingleton ..
-
-@[nontriviality]
-lemma contMDiff_section_of_subsingleton [Subsingleton F] : CMDiff n (T% s) :=
-  fun _x ↦ contMDiffAt_section_of_subsingleton ..
-
-end
-
 -- This version is true. Does it suffice for our purposes? TODO!
 open Module in
 variable {I} in
