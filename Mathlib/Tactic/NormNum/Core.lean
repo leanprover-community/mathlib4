@@ -278,8 +278,8 @@ to simplify the goal. If the goal has the form `A = B`, `A ≠ B`, `A < B` or `A
 primality prover (available if you import `Mathlib.Tactic.NormNum.Prime`).
 
 This tactic is extensible. Extensions can allow `norm_num` to evaluate more kinds of expressions, or
-to prove more kinds of propositions (such as, primality of natural numbers). See the `@[norm_num]` attribute
-for further information on extending `norm_num`.
+to prove more kinds of propositions (such as, primality of natural numbers). See the `@[norm_num]`
+attribute for further information on extending `norm_num`.
 
 * `norm_num at l` normalizes at location(s) `l`.
 * `norm_num [h1, ...]` adds the arguments `h1, ...` to the `simp` set in addition to the default
