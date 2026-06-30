@@ -487,7 +487,7 @@ theorem lift_const_apply {u : W} {x : Homogenization k P} :
     lift (AffineMap.const k P u) x = weight x • u := by
   cases x; simp
 
-/- `Homogenization.ofVector` as a linear equivalence onto the kernel of `Homogenization.weight`. -/
+/-- `Homogenization.ofVector` as a linear equivalence onto the kernel of `Homogenization.weight`. -/
 def ofVectorEquiv : V ≃ₗ[k] (weight : Homogenization k P →ₗ[k] k).ker where
   toLinearMap := ofVector.codRestrict _ (by simp)
   invFun x := Quotient.hrecOn x.1
@@ -515,7 +515,7 @@ def ofVectorEquiv : V ≃ₗ[k] (weight : Homogenization k P →ₗ[k] k).ker wh
 theorem coe_ofVectorEquiv_apply {v : V} : (ofVectorEquiv (k := k) (P := P) v).val = ofVector v :=
   rfl
 
-/- `Homogenization.ofPoint` as an affine equivalence onto its range. -/
+/-- `Homogenization.ofPoint` as an affine equivalence onto its range. -/
 def ofPointEquiv [Nontrivial k] :
     P ≃ᵃ[k] AffineSubspace.map (ofPoint : P →ᵃ[k] Homogenization k P) ⊤ where
   toFun x := ⟨ofPoint x, Set.mem_image_of_mem _ trivial⟩
