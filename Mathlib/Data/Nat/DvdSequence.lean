@@ -37,53 +37,53 @@ lemma smul_dvd_smul [Monoid α] [Monoid β] [SMul α β] [IsScalarTower α β β
   exact ⟨x • y, mul_smul_mul_comm a x c y⟩
 
 /-- A function `f : α → β` is a divisibility sequence if `a ∣ b` implies `f a ∣ f b`. -/
-def IsDvdSeq [Dvd α] [Dvd β] (f : α → β) : Prop :=
+def IsDvdSequence [Dvd α] [Dvd β] (f : α → β) : Prop :=
   ∀ a b, a ∣ b → f a ∣ f b
 
-namespace IsDvdSeq
+namespace IsDvdSequence
 
 variable (α) in
-protected theorem id [Dvd α] : IsDvdSeq (id : α → α) :=
+protected theorem id [Dvd α] : IsDvdSequence (id : α → α) :=
   fun _ _ ↦ id
 
 variable (α) in
-protected theorem const [Dvd α] [Monoid β] (b : β) : IsDvdSeq (fun _ : α ↦ b) := by
-  simp [IsDvdSeq]
+protected theorem const [Dvd α] [Monoid β] (b : β) : IsDvdSequence (fun _ : α ↦ b) := by
+  simp [IsDvdSequence]
 
 protected theorem smul' [Dvd α] [Monoid β] [Monoid γ] {f : α → β} {g : α → γ} [SMul β γ]
     [IsScalarTower β γ γ] [IsScalarTower β β γ] [SMulCommClass β γ γ]
-    (hf : IsDvdSeq f) (hg : IsDvdSeq g) : IsDvdSeq (f • g) :=
+    (hf : IsDvdSequence f) (hg : IsDvdSequence g) : IsDvdSequence (f • g) :=
   fun a b hab ↦ smul_dvd_smul (hf a b hab) (hg a b hab)
 
 protected theorem mul [Dvd α] [CommMonoid β] {f g : α → β}
-    (hf : IsDvdSeq f) (hg : IsDvdSeq g) : IsDvdSeq (f * g) :=
+    (hf : IsDvdSequence f) (hg : IsDvdSequence g) : IsDvdSequence (f * g) :=
   .smul' hf hg
 
 protected theorem smul [Dvd α] [Monoid β] [Monoid γ] {f : α → γ} [SMul β γ]
     [IsScalarTower β γ γ] [IsScalarTower β β γ] [SMulCommClass β γ γ]
-    (b : β) (hg : IsDvdSeq f) : IsDvdSeq (b • f) :=
+    (b : β) (hg : IsDvdSequence f) : IsDvdSequence (b • f) :=
   .smul' (.const α b) hg
 
-end IsDvdSeq
+end IsDvdSequence
 
 namespace Nat
 
 /-- A function `f : ℕ → ℕ` is a strong divisibility sequence if `gcd (f a) (f b) = f (gcd a b)`. -/
-def IsStrongDvdSeq (f : ℕ → ℕ) : Prop :=
+def IsStrongDvdSequence (f : ℕ → ℕ) : Prop :=
   ∀ a b, (f a).gcd (f b) = f (a.gcd b)
 
-namespace IsStrongDvdSeq
+namespace IsStrongDvdSequence
 
-theorem isDvdSeq {f : ℕ → ℕ} (hf : IsStrongDvdSeq f) : IsDvdSeq f := by
+theorem isDvdSequence {f : ℕ → ℕ} (hf : IsStrongDvdSequence f) : IsDvdSequence f := by
   intro a b hab
   simpa [gcd_eq_left hab, gcd_eq_left_iff_dvd] using hf a b
 
-protected theorem id : IsStrongDvdSeq (id : ℕ → ℕ) :=
+protected theorem id : IsStrongDvdSequence (id : ℕ → ℕ) :=
   fun _ _ ↦ rfl
 
-protected theorem const (n : ℕ) : IsStrongDvdSeq (fun _ ↦ n) := by
-  simp [IsStrongDvdSeq]
+protected theorem const (n : ℕ) : IsStrongDvdSequence (fun _ ↦ n) := by
+  simp [IsStrongDvdSequence]
 
-end IsStrongDvdSeq
+end IsStrongDvdSequence
 
 end Nat

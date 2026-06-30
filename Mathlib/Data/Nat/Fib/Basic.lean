@@ -244,13 +244,13 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
     conv_rhs => rw [← mod_add_div' n m]
     rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 
-theorem isStrongDvdSeq_fib : IsStrongDvdSeq fib :=
+theorem isStrongDvdSequence_fib : IsStrongDvdSequence fib :=
   fun m n ↦ (fib_gcd m n).symm
 
-theorem isDvdSeq_fib : IsDvdSeq fib :=
-  isStrongDvdSeq_fib.isDvdSeq
+theorem isDvdSequence_fib : IsDvdSequence fib :=
+  isStrongDvdSequence_fib.isDvdSequence
 
-alias fib_dvd := isDvdSeq_fib
+alias fib_dvd := isDvdSequence_fib
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=

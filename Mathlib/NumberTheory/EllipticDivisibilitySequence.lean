@@ -83,16 +83,16 @@ def IsEllSequence : Prop :=
   ∀ m n r : ℤ, W (m + n) * W (m - n) * W r ^ 2 =
     W (m + r) * W (m - r) * W n ^ 2 - W (n + r) * W (n - r) * W m ^ 2
 
-@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSeq
+@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
 
 /-- The proposition that a sequence indexed by integers is an EDS. -/
 def IsEllDivSequence : Prop :=
-  IsEllSequence W ∧ IsDvdSeq W
+  IsEllSequence W ∧ IsDvdSequence W
 
 lemma isEllSequence_id : IsEllSequence id :=
   fun _ _ _ => by simp_rw [id_eq]; ring1
 
-@[deprecated (since := "2026-06-30")] alias isDivSequence_id := IsDvdSeq.id
+@[deprecated (since := "2026-06-30")] alias isDivSequence_id := IsDvdSequence.id
 
 /-- The identity sequence is an EDS. -/
 theorem isEllDivSequence_id : IsEllDivSequence id :=
@@ -104,7 +104,7 @@ lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W)
   fun m n r => by
     linear_combination (norm := (simp_rw [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
-@[deprecated (since := "2026-06-30")] alias IsDivSequence.smul := IsDvdSeq.smul
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.smul := IsDvdSequence.smul
 
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
