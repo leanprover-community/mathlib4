@@ -274,10 +274,8 @@ theorem AntitoneOn.integrable_of_summable_comp_add {N : ℕ} (anti : AntitoneOn 
   · filter_upwards [eventually_gt_atTop 0] with M hM
     calc
     _ = ∫ x in N..M+N, f x := by
-      refine intervalIntegral.integral_congr_ae ?_
-      filter_upwards with x hx
-      rw [uIoc_of_le (by grind)] at hx
-      exact Real.norm_of_nonneg (nonneg _ (by grind))
+      refine intervalIntegral.integral_congr_uIoo fun x ↦ ?_
+      grind [Real.norm_of_nonneg, uIoo_of_le]
     _ ≤ ∑ n ∈ Finset.range M, f (n + N : ℕ) := by
       convert! AntitoneOn.integral_le_sum (anti.mono _) using 2 <;> grind
     _ ≤ _ := by
