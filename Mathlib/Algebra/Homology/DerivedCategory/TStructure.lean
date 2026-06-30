@@ -193,7 +193,6 @@ lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
   obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
   exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
 
-
 open DerivedCategory.TStructure
 
 variable (C)
