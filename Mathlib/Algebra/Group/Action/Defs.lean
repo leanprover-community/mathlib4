@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Tactic.Spread
@@ -381,6 +382,12 @@ satisfied by `Algebra α β`. -/
 lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
     [IsScalarTower α α β] [SMulCommClass α β β] (a b : α) (c d : β) :
     (a * b) • (c * d) = (a • c) * (b • d) := smul_smul_smul_comm a b c d
+
+lemma smul_dvd_smul [Monoid α] [Monoid β] [SMul α β] [IsScalarTower α β β]
+    [IsScalarTower α α β] [SMulCommClass α β β] {a b : α} {c d : β}
+    (h1 : a ∣ b) (h2 : c ∣ d) : (a • c) ∣ (b • d) := by
+  obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := h1, h2
+  exact ⟨x • y, mul_smul_mul_comm a x c y⟩
 
 variable [SMul M α]
 

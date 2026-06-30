@@ -4182,6 +4182,7 @@ public import Mathlib.Data.Nat.Digits.Defs
 public import Mathlib.Data.Nat.Digits.Div
 public import Mathlib.Data.Nat.Digits.Lemmas
 public import Mathlib.Data.Nat.Dist
+public import Mathlib.Data.Nat.DivSequence
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Factorial.BigOperators
