@@ -283,10 +283,9 @@ theorem AntitoneOn.integrable_of_summable_comp_add {N : ℕ} (anti : AntitoneOn 
 /-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/
 theorem AntitoneOn.integrable_of_summable (anti : AntitoneOn f (Ici 0))
     (summable : Summable (fun (n : ℕ) ↦ f n)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
-    IntegrableOn f (Ioi 0) := by
-  convert ! AntitoneOn.integrable_of_summable_comp_add (N := 0) (mod_cast anti) summable
+    IntegrableOn f (Ioi 0) :=
+  mod_cast AntitoneOn.integrable_of_summable_comp_add (N := 0) (mod_cast anti) summable
     (mod_cast nonneg)
-  norm_cast
 
 open Filter in
 /-- The sum of a nonnegative, antitone function is bounded below by its integral. -/
