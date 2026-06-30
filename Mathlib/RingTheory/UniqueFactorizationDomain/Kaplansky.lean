@@ -70,7 +70,7 @@ theorem span_notMem_kaplanskySet {a : R} (ha : a ≠ 0)
     exact not_prime_zero (hl 0 (Multiset.prod_eq_zero_iff.1 hprod))
   intro h
   rcases exists_mem_kaplanskySet_eq_of_le hzero with ⟨T, hT, hT₂⟩
-  have hT₃ : T ≠ ⊥ := fun h₂ ↦ ha (span_singleton_eq_bot.1 ((h₂ ▸ hT₂) _ h (zero_le _)))
+  have hT₃ : T ≠ ⊥ := fun h₂ ↦ ha (span_singleton_eq_bot.1 ((h₂ ▸ hT₂) _ h zero_le))
   have Tpri := isPrime_of_maximally_disjoint T _ hT (fun J hJ H ↦ hJ.ne (hT₂ J H hJ.le).symm)
   rcases (H T) hT₃ Tpri with ⟨x, H₃, H₄⟩
   rw [mem_kaplanskySet_iff, eq_empty_iff_forall_notMem] at hT

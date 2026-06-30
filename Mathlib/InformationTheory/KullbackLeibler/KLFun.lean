@@ -87,7 +87,7 @@ section Derivatives
 
 /-- The derivative of `klFun` at `x ≠ 0` is `log x`. -/
 lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
-  convert ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
+  convert! ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
   ring
 
 lemma not_differentiableAt_klFun_zero : ¬ DifferentiableAt ℝ klFun 0 := by
@@ -170,7 +170,7 @@ lemma integrable_klFun_rnDeriv_iff (hμν : μ ≪ ν) :
     Integrable (fun x ↦ klFun (μ.rnDeriv ν x).toReal) ν ↔ Integrable (llr μ ν) μ := by
   suffices Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * log (μ.rnDeriv ν x).toReal
       + (1 - (μ.rnDeriv ν x).toReal)) ν ↔ Integrable (llr μ ν) μ by
-    convert this using 3 with x
+    convert! this using 3 with x
     rw [klFun, add_sub_assoc]
   rw [integrable_add_iff_integrable_left', integrable_rnDeriv_mul_log_iff hμν]
   fun_prop

@@ -43,12 +43,6 @@ random variables with this distribution.
 * `MeasureTheory.pdf.IsUniform.integral_eq` : If `X` follows the uniform distribution with
   its pdf having support `s`, then `X` has expectation `(λ s)⁻¹ * ∫ x in s, x dx` where `λ`
   is the Lebesgue measure.
-
-## TODO
-
-Ultimately, we would also like to define characteristic functions to describe distributions as
-it exists for all random variables. However, to define this, we will need Fourier transforms
-which we currently do not have.
 -/
 
 @[expose] public section
@@ -88,7 +82,6 @@ theorem hasPDF_iff_of_aemeasurable (hX : AEMeasurable X ℙ) :
   simp only [hX, true_and]
 
 variable (X ℙ μ) in
-@[measurability]
 theorem HasPDF.aemeasurable [HasPDF X ℙ μ] : AEMeasurable X ℙ := HasPDF.aemeasurable' μ
 
 instance HasPDF.haveLebesgueDecomposition [HasPDF X ℙ μ] : (map X ℙ).HaveLebesgueDecomposition μ :=
@@ -139,14 +132,14 @@ theorem pdf_of_not_haveLebesgueDecomposition {_ : MeasurableSpace Ω} {ℙ : Mea
 
 theorem aemeasurable_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
     (X : Ω → E) (h : ¬pdf X ℙ μ =ᵐ[μ] 0) : AEMeasurable X ℙ := by
-  contrapose! h
+  contrapose h
   exact pdf_of_not_aemeasurable h
 
 theorem hasPDF_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
     (hac : map X ℙ ≪ μ) (hpdf : ¬pdf X ℙ μ =ᵐ[μ] 0) : HasPDF X ℙ μ := by
   refine ⟨?_, ?_, hac⟩
   · exact aemeasurable_of_pdf_ne_zero X hpdf
-  · contrapose! hpdf
+  · contrapose hpdf
     have := pdf_of_not_haveLebesgueDecomposition hpdf
     filter_upwards using congrFun this
 

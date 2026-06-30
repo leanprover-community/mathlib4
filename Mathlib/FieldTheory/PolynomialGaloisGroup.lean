@@ -26,14 +26,14 @@ some results about some extension `E` above `p.SplittingField`.
 - `Polynomial.Gal.galActionHom_injective`: `gal p` acting on the roots of `p` in `E` is faithful.
 - `Polynomial.Gal.restrictProd_injective`: `gal (p * q)` embeds as a subgroup of `gal p × gal q`.
 - `Polynomial.Gal.card_of_separable`: For a separable polynomial, its Galois group has cardinality
-equal to the dimension of its splitting field over `F`.
+  equal to the dimension of its splitting field over `F`.
 - `Polynomial.Gal.galActionHom_bijective_of_prime_degree`:
-An irreducible polynomial of prime degree with two non-real roots has full Galois group.
+  An irreducible polynomial of prime degree with two non-real roots has full Galois group.
 
 ## Other results
 - `Polynomial.Gal.card_complex_roots_eq_card_real_add_card_not_gal_inv`: The number of complex roots
-equals the number of real roots plus the number of roots not fixed by complex conjugation
-(i.e. with some imaginary component).
+  equals the number of real roots plus the number of roots not fixed by complex conjugation
+  (i.e. with some imaginary component).
 
 -/
 
@@ -232,7 +232,7 @@ theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
   classical
   haveI := Fact.mk <|
     (SplittingField.splits q).of_dvd (map_ne_zero hq) ((map_dvd_map' _).mpr hpq)
-  simpa only [restrictDvd_def, dif_neg hq] using restrict_surjective _ _
+  simpa only [restrictDvd_def, dif_neg hq] using! restrict_surjective _ _
 
 variable (p q)
 
@@ -337,7 +337,7 @@ theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
     Function.Surjective (restrictComp p q hq) := by
   haveI : Fact (Splits (p.map (algebraMap F (SplittingField (comp p q))))) :=
     ⟨splits_in_splittingField_of_comp p q hq⟩
-  simpa only [restrictComp] using restrict_surjective _ _
+  simpa only [restrictComp] using! restrict_surjective _ _
 
 variable {p q}
 

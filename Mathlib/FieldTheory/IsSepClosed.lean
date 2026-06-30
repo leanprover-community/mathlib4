@@ -6,6 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 # Separably Closed Field
@@ -104,18 +105,12 @@ theorem exists_root_C_mul_X_pow_add_C_mul_X_add_C
     [IsSepClosed k] {n : ℕ} (a b c : k) (hn : (n : k) = 0) (hn' : 2 ≤ n) (hb : b ≠ 0) :
     ∃ x, a * x ^ n + b * x + c = 0 := by
   let f : k[X] := C a * X ^ n + C b * X + C c
-  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne <| by
+  -- Specify `n := 0` below, otherwise Lean unfolds `0` to `Zero.zero`.
+  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne (n := 0) <| by
+    have : C 0 * X ^ n + C b * X = 0 * X ^ n + C b * X := by grind
     by_cases ha : a = 0
-    · suffices f.natDegree = 1 from this ▸ one_ne_zero
-      simp_rw [f, ha, map_zero, zero_mul, zero_add]
-      compute_degree!
-    · suffices f.natDegree = n from this ▸ (lt_of_lt_of_le zero_lt_two hn').ne'
-      simp_rw [f]
-      have h0 : n ≠ 0 := by linarith only [hn']
-      have h1 : n ≠ 1 := by linarith only [hn']
-      have : 1 ≤ n := le_trans one_le_two hn'
-      compute_degree!
-      simp [h0, h1, ha]
+    · grind [zero_add]
+    · grind [natDegree_add_eq_left_of_natDegree_lt]
   have hsep : f.Separable := separable_C_mul_X_pow_add_C_mul_X_add_C a b c hn hb.isUnit
   obtain ⟨x, hx⟩ := exists_root f hdeg hsep
   exact ⟨x, by simpa [f] using hx⟩
@@ -216,6 +211,10 @@ theorem algebraMap_surjective
     add_eq_zero_iff_eq_neg] at this
   exact (map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
+lemma algebraMap_bijective [IsSepClosed k] [Algebra k K] [Algebra.IsSeparable k K] :
+    Function.Bijective (algebraMap k K) :=
+  ⟨RingHom.injective _, IsSepClosed.algebraMap_surjective _ _⟩
+
 end IsSepClosed
 
 /-- If `k` is separably closed, `K / k` is a field extension, `L / k` is an intermediate field
@@ -313,3 +312,43 @@ noncomputable def equiv : L ≃ₐ[K] M :=
     (IsSepClosed.lift : L →ₐ[K] M) (IsSepClosed.lift : M →ₐ[K] L)).1
 
 end IsSepClosure
+
+section separableClosure
+
+variable (F E : Type*) [Field F] [Field E] [Algebra F E]
+
+/-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
+normal and separable) over `F`. -/
+@[stacks 0EXK]
+instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
+  to_isSeparable := separableClosure.isSeparable F E
+  to_normal := by
+    rw [← separableClosure.normalClosure_eq_self]
+    exact normalClosure.normal F _ E
+
+/-- If `E / F` is a field extension and `E` is separably closed, then the separable closure
+of `F` in `E` is equal to `F` if and only if `F` is separably closed. -/
+theorem IsSepClosed.separableClosure_eq_bot_iff [IsSepClosed E] :
+    separableClosure F E = ⊥ ↔ IsSepClosed F := by
+  refine ⟨fun h ↦ IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ ?_,
+    fun _ ↦ IntermediateField.eq_bot_of_isSepClosed_of_isSeparable _⟩
+  obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
+  obtain ⟨x, rfl⟩ := h ▸ mem_separableClosure_iff.2 (hsep.of_dvd <| minpoly.dvd _ x hx)
+  exact ⟨x, by simpa [Algebra.ofId_apply] using hx⟩
+
+/-- If `E` is separably closed, then the separable closure of `F` in `E` is an absolute
+separable closure of `F`. -/
+instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) :=
+  ⟨(IsSepClosed.separableClosure_eq_bot_iff _ E).mp (separableClosure.separableClosure_eq_bot F E),
+    isSeparable F E⟩
+
+/-- The absolute separable closure is defined to be the relative separable closure inside the
+algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
+`separableClosure.isSepClosure`, and it is Galois (`IsGalois`) by `separableClosure.isGalois`
+or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
+abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
+
+instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
+  (inferInstance : IsSepClosure F (SeparableClosure F)).sep_closed
+
+end separableClosure

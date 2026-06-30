@@ -143,7 +143,7 @@ theorem _root_.HasCompactSupport.convolution_integrand_bound_left (hcf : HasComp
     (hf : Continuous f) {x t : G} {s : Set G} (hx : x ∈ s) :
     ‖L (f (x - t)) (g t)‖ ≤
       (-tsupport f + s).indicator (fun t => (‖L‖ * ⨆ i, ‖f i‖) * ‖g t‖) t := by
-  convert hcf.convolution_integrand_bound_right L.flip hf hx using 1
+  convert! hcf.convolution_integrand_bound_right L.flip hf hx using 1
   simp_rw [L.opNorm_flip, mul_right_comm]
 
 end NoMeasurability
@@ -307,9 +307,11 @@ theorem _root_.HasCompactSupport.convolutionExistsAt {x₀ : G}
       (μ.restrict (tsupport fun t : G => L (f t) (g (x₀ - t)))) := by
     apply (hg.comp v.continuous).continuousOn.aestronglyMeasurable_of_isCompact h
     exact (isClosed_tsupport _).measurableSet
-  convert ((v.continuous.measurable.measurePreserving
-      (μ.restrict (tsupport fun t => L (f t) (g (x₀ - t))))).aestronglyMeasurable_comp_iff
-    v.measurableEmbedding).1 A
+  convert!
+    ((v.continuous.measurable.measurePreserving
+              (μ.restrict (tsupport fun t => L (f t) (g (x₀ - t))))).aestronglyMeasurable_comp_iff
+          v.measurableEmbedding).1
+      A
   ext x
   simp only [v, Homeomorph.neg, sub_eq_add_neg, val_toAddUnits_apply, Homeomorph.trans_apply,
     Equiv.neg_apply, Homeomorph.homeomorph_mk_coe, Homeomorph.coe_addLeft]
@@ -368,7 +370,7 @@ theorem convolutionExistsAt_flip :
 
 theorem ConvolutionExistsAt.integrable_swap (h : ConvolutionExistsAt f g x L μ) :
     Integrable (fun t => L (f (x - t)) (g t)) μ := by
-  convert h.comp_sub_left x
+  convert! h.comp_sub_left x
   simp_rw [sub_sub_self]
 
 theorem convolutionExistsAt_iff_integrable_swap :
@@ -476,7 +478,9 @@ theorem convolution_mono_right {f g g' : G → ℝ} (hfg : ConvolutionExistsAt f
   apply integral_mono hfg hfg'
   simp only [lsmul_apply, smul_eq_mul]
   intro t
-  apply mul_le_mul_of_nonneg_left (hg _) (hf _)
+  dsimp
+  gcongr
+  exacts [hf _, hg _]
 
 theorem convolution_mono_right_of_nonneg {f g g' : G → ℝ}
     (hfg' : ConvolutionExistsAt f g' x (lsmul ℝ ℝ) μ) (hf : ∀ x, 0 ≤ f x) (hg : ∀ x, g x ≤ g' x)
@@ -502,7 +506,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   apply h2x
   simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, notMem_support] at hx
   rw [convolution_def]
-  convert integral_zero G F using 2
+  convert! integral_zero G F using 2
   ext t
   rcases hx (x - t) t with (h | h | h)
   · rw [h, (L _).map_zero]
@@ -574,7 +578,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
       (hf.integrableOn_isCompact k'_comp)
     rintro ⟨p, x⟩ y ⟨hp, hx⟩ hy
     apply hgs p _ hp
-    contrapose! hy
+    contrapose hy
     exact ⟨y - x, by simpa using hy, x, hx, by simp⟩
   apply ContinuousWithinAt.mono_of_mem_nhdsWithin (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
   exact mem_nhdsWithin_prod_iff.2 ⟨s, self_mem_nhdsWithin, t, nhdsWithin_le_nhds ht, Subset.rfl⟩
@@ -738,7 +742,8 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
       specialize hg (x₀ - t)
       rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
       refine ((L (f t)).dist_le_opNorm _ _).trans ?_
-      exact mul_le_mul_of_nonneg_left (hg h2t) (norm_nonneg _)
+      gcongr
+      exact hg h2t
     · rw [notMem_support] at ht
       simp_rw [ht, L.map_zero₂, L.map_zero, norm_zero, zero_mul, dist_self]
       rfl
@@ -748,7 +753,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
   refine (norm_integral_le_of_norm_le ((L.integrable_comp hif).norm.mul_const ε)
     (Eventually.of_forall h2)).trans ?_
   rw [integral_mul_const]
-  refine mul_le_mul_of_nonneg_right ?_ hε
+  gcongr
   have h3 : ∀ t, ‖L (f t)‖ ≤ ‖L‖ * ‖f t‖ := by
     intro t
     exact L.le_opNorm (f t)
@@ -767,7 +772,7 @@ theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} 
     (hmg : AEStronglyMeasurable g μ) (hg : ∀ x ∈ ball x₀ R, dist (g x) z₀ ≤ ε) :
     dist ((f ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) z₀ ≤ ε := by
   have hif : Integrable f μ := integrable_of_integral_eq_one hintf
-  convert (dist_convolution_le' (lsmul ℝ ℝ) hε hif hf hmg hg).trans _
+  convert! (dist_convolution_le' (lsmul ℝ ℝ) hε hif hf hmg hg).trans _
   · simp_rw [lsmul_apply, integral_smul_const, hintf, one_smul]
   · simp_rw [Real.norm_of_nonneg (hnf _), hintf, mul_one]
     exact (mul_le_mul_of_nonneg_right opNorm_lsmul_le hε).trans_eq (one_mul ε)
@@ -901,7 +906,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     (measurePreserving_sub_prod μ ν).map_eq
   suffices Integrable (uncurry fun x y => L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))) (μ.prod ν) by
     rw [← h3] at this
-    convert this.comp_measurable (measurable_sub.prodMk measurable_snd)
+    convert! this.comp_measurable (measurable_sub.prodMk measurable_snd)
     ext ⟨x, y⟩
     simp +unfoldPartialApp only [uncurry, Function.comp_apply,
       sub_sub_sub_cancel_right]
@@ -941,7 +946,7 @@ noncomputable def posConvolution (f : ℝ → E) (g : ℝ → E') (L : E →L[�
   indicator (Ioi (0 : ℝ)) fun x => ∫ t in 0..x, L (f t) (g (x - t)) ∂ν
 
 theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
-    (ν : Measure ℝ := by volume_tac) [NoAtoms ν] :
+    (ν : Measure ℝ := by volume_tac) [NullSingletonClass ν] :
     posConvolution f g L ν = convolution (indicator (Ioi 0) f) (indicator (Ioi 0) g) L ν := by
   ext1 x
   rw [convolution, posConvolution, indicator]
@@ -956,20 +961,20 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
     · rw [indicator_of_notMem (notMem_Ioo_of_le ht), indicator_of_notMem (notMem_Ioi.mpr ht),
-        map_zero, ContinuousLinearMap.zero_apply]
+        map_zero, zero_apply]
     · rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
           indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
     · rw [indicator_of_notMem (notMem_Ioo_of_ge ht),
           indicator_of_notMem (notMem_Ioi.mpr (sub_nonpos_of_le ht)), map_zero]
-  · convert (integral_zero ℝ F).symm with t
+  · convert! (integral_zero ℝ F).symm with t
     by_cases ht : 0 < t
     · rw [indicator_of_notMem (_ : x - t ∉ Ioi 0), map_zero]
       rw [notMem_Ioi] at h ⊢
       exact sub_nonpos.mpr (h.trans ht.le)
-    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), map_zero, ContinuousLinearMap.zero_apply]
+    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), map_zero, zero_apply]
 
 theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ} [SFinite μ]
-    [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)
+    [SFinite ν] [IsAddRightInvariant μ] [NullSingletonClass ν] (hf : IntegrableOn f (Ioi 0) ν)
     (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     Integrable (posConvolution f g L ν) μ := by
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet (Ioi (0 : ℝ)))] at hf hg
@@ -980,13 +985,13 @@ theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Meas
 of their integrals over this set. (Compare `integral_convolution` for the two-sided convolution.) -/
 theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {μ ν : Measure ℝ}
-    [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
+    [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NullSingletonClass ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     ∫ x : ℝ in Ioi 0, ∫ t : ℝ in 0..x, L (f t) (g (x - t)) ∂ν ∂μ =
       L (∫ x : ℝ in Ioi 0, f x ∂ν) (∫ x : ℝ in Ioi 0, g x ∂μ) := by
   rw [← integrable_indicator_iff measurableSet_Ioi] at hf hg
   simp_rw [← integral_indicator measurableSet_Ioi]
-  convert integral_convolution L hf hg using 4 with x
+  convert! integral_convolution L hf hg using 4 with x
   apply posConvolution_eq_convolution_indicator
 
 end Nonneg
