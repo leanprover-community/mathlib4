@@ -75,12 +75,12 @@ abbrev weakPullback.isWeakLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeak
   weakLimit.isWeakLimit (cospan f g)
 
 @[simp]
-theorem WeakPullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+theorem weakLimit.pullbackConeFst_cone_cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasWeakLimit (cospan f g)] :
     PullbackCone.fst (weakLimit.cone (cospan f g)) = weakPullback.fst f g := rfl
 
 @[simp]
-theorem WeakPullbackCone.snd_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+theorem weakLimit.pullbackConeSnd_cone_cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasWeakLimit (cospan f g)] :
     PullbackCone.snd (weakLimit.cone (cospan f g)) = weakPullback.snd f g := rfl
 
