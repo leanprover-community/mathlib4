@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 module
 
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.Cyclotomic.Discriminant
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
@@ -187,6 +188,10 @@ end CharZero
 
 lemma coe_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
 
+@[simp]
+lemma toInteger_coe {k : ℕ} [NeZero k] {x : 𝓞 K} (hx : IsPrimitiveRoot (x : K) k) :
+    hx.toInteger = x := rfl
+
 /-- `𝓞 K ⧸ Ideal.span {ζ - 1}` is finite. -/
 lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ} (hk : 1 < k)
     (hζ : IsPrimitiveRoot ζ k) :
@@ -220,9 +225,7 @@ theorem integralPowerBasisOfPrimePow_gen [hcycl : IsCyclotomicExtension {p ^ k} 
     simp only [adjoinEquivRingOfIntegersOfPrimePow_apply, IsIntegralClosure.algebraMap_lift]
     rfl
 
-set_option linter.unusedVariables false in
-/- We name `hcycl` so it can be used as a named argument, but this is unused in the declaration
-otherwise, so we need to disable the linter. -/
+/- We name `hcycl` so it can be used as a named argument. -/
 @[simp]
 theorem integralPowerBasisOfPrimePow_dim [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) : hζ.integralPowerBasisOfPrimePow.dim = φ (p ^ k) := by
