@@ -5,12 +5,8 @@ Authors: Ben Eltschig
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.Sifted
-public import Mathlib.CategoryTheory.Sites.GlobalSections
-public import Mathlib.CategoryTheory.Adjunction.Triple
-public import Mathlib.CategoryTheory.Limits.Elements
-public import Mathlib.CategoryTheory.Sites.GlobalSections
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
 # Locally connected sites
@@ -66,37 +62,53 @@ instance {C : Type u} [Category.{v} C] : (trivial C).IsLocallyConnectedSite wher
 
 variable [J.IsLocallyConnectedSite]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- On locally connected sites, every constant presheaf is a sheaf. -/
-lemma isSheaf_const_obj {X : Type w} : Presheaf.IsSheaf J ((Functor.const _).obj X) := by
-  refine (isSheaf_iff_isSheaf_of_type J _).2 fun Y S hS x hx ↦ ?_
+lemma isSheaf_const_obj {A : Type*} [Category* A] {X : A} :
+    Presheaf.IsSheaf J ((Functor.const _).obj X) := by
+  intro W Y S hS x hx
   let ⟨f, hf⟩ := (IsLocallyConnectedSite.isConnected_of_mem S hS).is_nonempty
   refine ⟨@x f.left f.hom hf, ?_, ?_⟩
   · intro Z g hg
     have := IsLocallyConnectedSite.isConnected_of_mem S hS
-    refine constant_of_preserves_morphisms (J := S.arrows.category)
-      (fun f ↦ @x f.obj.left f.obj.hom f.property) ?_ ⟨f, hf⟩ ⟨.mk g, hg⟩
-    intro f g h
-    have := hx (𝟙 _) h.hom.left f.property g.property
-    simpa [Functor.const] using hx (𝟙 _) h.hom.left f.property g.property
+    simpa using constant_of_preserves_morphisms (J := S.arrows.category) (α := W ⟶ X)
+      (fun f ↦ @x f.obj.left f.obj.hom f.property) (fun f g h ↦ by
+        simpa [Functor.const] using hx (𝟙 _) h.hom.left f.property g.property) ⟨f, hf⟩ ⟨.mk g, hg⟩
   · intro x hx
-    exact hx f.hom hf
+    simp [← hx f.hom hf]
 
-/-- For constant presheaves on locally connected sites, `toSheafify` is an isomorphism.
-TODO: remove `HasSheafify` instance. -/
-instance {X : Type w} [HasWeakSheafify J (Type w)] :
+/-- For constant presheaves on locally connected sites, `toSheafify` is an isomorphism. -/
+instance {A : Type*} [Category* A] {X : A} [HasWeakSheafify J A] :
     IsIso (toSheafify J ((Functor.const _).obj X)) :=
   isIso_toSheafify J (isSheaf_const_obj J)
 
+/-- The constant sheaf functor composed with the forgetful functor to presheaves is just the
+constant presheaf functor. -/
+noncomputable def constantSheafToPresheafIsoConst (A : Type*) [Category* A] [HasWeakSheafify J A] :
+    constantSheaf J A ⋙ sheafToPresheaf J A ≅ Functor.const _ :=
+  .symm <| NatIso.ofComponents (fun X ↦ (asIso <| toSheafify J ((Functor.const _).obj X):))
+      fun {X Y} f ↦ by
+    erw [toSheafify_naturality]
+    rfl
+
+instance [IsConnected C] {A : Type*} [Category* A] [HasWeakSheafify J A] :
+    (constantSheaf J A).Full :=
+  .of_comp_faithful_iso (constantSheafToPresheafIsoConst J A)
+
+instance [IsConnected C] {A : Type*} [Category* A] [HasWeakSheafify J A] :
+    (constantSheaf J A).Faithful :=
+  .of_comp_iso (constantSheafToPresheafIsoConst J A)
+
 /-- The connected components functor on sheaves of types on any local site, defined as taking
 colimits of the underlying presheaves. -/
-noncomputable def Sheaf.π₀ : Sheaf J (Type max u v w) ⥤ Type max u v w :=
+noncomputable def Sheaf.π₀ (A : Type*) [Category* A] [HasColimitsOfShape Cᵒᵖ A] : Sheaf J A ⥤ A :=
   sheafToPresheaf J _ ⋙ colim
 
-/-- The connected components functor on local sites is left-adjoint to the constant sheaf functor.
-TODO: remove `HasSheafify` instance. -/
-noncomputable def π₀ConstantSheafAdj [HasWeakSheafify J (Type max u v w)] :
-    Sheaf.π₀ J ⊣ constantSheaf J (Type max u v w) := by
+/-- The connected components functor on local sites is left adjoint to the constant sheaf
+functor. -/
+noncomputable def π₀ConstantSheafAdj (A : Type*) [Category* A] [HasColimitsOfShape Cᵒᵖ A]
+    [HasWeakSheafify J A] : Sheaf.π₀ J A ⊣ constantSheaf J A := by
   refine colimConstAdj.restrictFullyFaithful (fullyFaithfulSheafToPresheaf J _) (.id _) ?_ ?_
   · exact (Functor.rightUnitor _).symm
   · refine ((Functor.leftUnitor _).trans ((Functor.rightUnitor _).symm.trans ?_)).trans
@@ -104,6 +116,14 @@ noncomputable def π₀ConstantSheafAdj [HasWeakSheafify J (Type max u v w)] :
     refine @asIso _ _ _ _ (Functor.whiskerLeft _ (toSheafification _ _)) ?_
     rw [NatTrans.isIso_iff_isIso_app]
     exact fun X ↦ isIso_toSheafify J <| isSheaf_const_obj J
+
+instance (A : Type*) [Category* A] [HasColimitsOfShape Cᵒᵖ A] [HasWeakSheafify J A] :
+    (constantSheaf J A).IsRightAdjoint :=
+  (π₀ConstantSheafAdj J A).isRightAdjoint
+
+instance (A : Type*) [Category* A] [HasColimitsOfShape Cᵒᵖ A] [HasWeakSheafify J A] :
+    (π₀ J A).IsLeftAdjoint :=
+  (π₀ConstantSheafAdj J A).isLeftAdjoint
 
 /- A few lemmas for which I haven't found a better place yet.
 TODO: clean up. -/
@@ -196,13 +216,16 @@ end TerminalSheaf
 /-- `Sheaf.π₀` sends representable sheaves to singleton types. -/
 @[implicit_reducible]
 noncomputable def uniqueπ₀Obj_of_isRepresentable (X : Sheaf J (Type max u v w))
-    [X.obj.IsRepresentable] : Unique ((π₀ J).obj X) :=
+    [X.obj.IsRepresentable] : Unique ((π₀ J _).obj X) :=
   unique_colimit_representable.{max v w} X.obj
 
 /-- On locally connected sites with a terminal object, `Sheaf.π₀` preserves the terminal object. -/
-instance [HasTerminal C] : PreservesLimit (Functor.empty.{0} _) (π₀.{w} J) := by
-  refine preservesTerminal_of_iso _ (IsTerminal.uniqueUpToIso ?_ terminalIsTerminal)
-  exact (Types.isTerminalEquivUnique _).2 <| uniqueπ₀Obj_of_isRepresentable _ _
+instance [HasTerminal C] {A : Type*} [Category* A] [HasColimitsOfShape Cᵒᵖ A] [HasTerminal A]
+    [HasWeakSheafify J A] : PreservesLimit (Functor.empty.{0} _) (π₀ J A) := by
+  refine preservesTerminal_of_iso _ ?_
+  refine ((π₀ J A).mapIso (asIso (terminalComparison (constantSheaf J A))).symm).trans ?_
+  have := isConnected_of_hasTerminal C
+  exact (asIso ((π₀ConstantSheafAdj J A).counit.app (⊤_ _)):)
 
 /-- If `C` is sifted, the `colim` functor `(C ⥤ Type max u v w) ⥤ Type max u v w` preserves
 finite products. This is a variant of `IsSifted.colim_preservesFiniteProducts_of_isSifted` with
@@ -216,7 +239,7 @@ instance colimPreservesFiniteProductsOfIsSifted {C : Type u} [Category.{v} C] [I
 `π₀` preserves all finite products.
 TODO: generalise universe levels. -/
 instance [IsSifted Cᵒᵖ] :
-    PreservesFiniteProducts (π₀.{w} J) :=
+    PreservesFiniteProducts (π₀ J (Type max u v w)) :=
   comp_preservesFiniteProducts _ _
 
 end CategoryTheory
