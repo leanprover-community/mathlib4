@@ -91,7 +91,26 @@ lemma withDensity_comp {η : Kernel β γ} [IsSFiniteKernel η] {f : α → ℝ�
   rw [lintegral_withDensity _ (by fun_prop) _ (η.measurable_coe hs),
     Measure.bind_apply hs (Kernel.aemeasurable _), lintegral_const_mul _ (η.measurable_coe hs)]
 
-lemma compProd_withDensity_left {η : Kernel (α × β) γ} [IsSFiniteKernel η]
+lemma sectR_withDensity {η : Kernel (α × β) γ} [IsSFiniteKernel η] {g : α × β → γ → ℝ≥0∞}
+    (hf : Measurable (Function.uncurry g)) (a : α) :
+    (η.withDensity g).sectR a = (η.sectR a).withDensity (fun b c ↦ g (a, b) c) := by
+  ext b s hs
+  simp only [sectR_apply]
+  rw [Kernel.withDensity_apply _ (by fun_prop), Kernel.withDensity_apply _ (by fun_prop)]
+  simp
+
+lemma compProd_withDensity {η : Kernel (α × β) γ} [IsSFiniteKernel η] {g : α × β → γ → ℝ≥0∞}
+    [IsSFiniteKernel (η.withDensity g)] (hf : Measurable (Function.uncurry g)) :
+    κ ⊗ₖ (η.withDensity g) = (κ ⊗ₖ η).withDensity (fun a bc ↦ g (a, bc.1) bc.2) := by
+  ext a : 1
+  rw [compProd_apply_eq_compProd_sectR, Kernel.withDensity_apply _ (by fun_prop),
+    Kernel.compProd_apply_eq_compProd_sectR, sectR_withDensity hf]
+  have : IsSFiniteKernel ((η.sectR a).withDensity fun b c ↦ g (a, b) c) := by
+    rw [← sectR_withDensity (by fun_prop)]
+    infer_instance
+  rw [Measure.compProd_withDensity (by fun_prop)]
+
+lemma withDensity_compProd {η : Kernel (α × β) γ} [IsSFiniteKernel η]
     [IsSFiniteKernel (κ.withDensity g)] (hf : Measurable (Function.uncurry g)) :
     (κ.withDensity g) ⊗ₖ η = (κ ⊗ₖ η).withDensity (fun a bc ↦ g a bc.1) := by
   ext a : 1
