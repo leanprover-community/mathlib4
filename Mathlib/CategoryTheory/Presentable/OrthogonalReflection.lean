@@ -291,9 +291,6 @@ lemma isLocal_isLocal_toSucc :
     exact ⟨Multicoequalizer.desc _ _ (fun ⟨⟩ ↦ pushout.desc (Sigma.desc f) g)
       (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
 
-@[deprecated (since := "2025-11-20")] alias leftBousfieldW_isLocal_toSucc :=
-  isLocal_isLocal_toSucc
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_toSucc_iff :

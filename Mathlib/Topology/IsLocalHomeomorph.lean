@@ -254,8 +254,6 @@ noncomputable def toHomeomorphOfBijective (hf : IsLocalHomeomorph f) (hb : f.Bij
     X ≃ₜ Y :=
   (Equiv.ofBijective f hb).toHomeomorphOfContinuousOpen hf.continuous hf.isOpenMap
 
-@[deprecated (since := "2025-12-19")] alias toHomeomorph_of_bijective := toHomeomorphOfBijective
-
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))
     (cont : Continuous f) : IsOpenEmbedding f :=
