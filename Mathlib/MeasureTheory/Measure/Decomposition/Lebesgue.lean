@@ -226,8 +226,8 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
   rw [haveLebesgueDecomposition_add ν μ] at hμν
   refine AbsolutelyContinuous.mk (fun s _ hνs ↦ ?_)
   obtain ⟨t, _, ht1, ht2⟩ := mutuallySingular_singularPart ν μ
-  rw [← inter_union_compl s]
-  refine le_antisymm ((measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_) (zero_le _)
+  rw [← inter_union_compl s, ← nonpos_iff_eq_zero]
+  refine (measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_
   simp only [nonpos_iff_eq_zero, add_eq_zero]
   constructor
   · refine hμν ?_
@@ -427,12 +427,12 @@ theorem eq_singularPart {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurabl
     have hsinter : s (A ∩ (S ∩ T)) = 0 := by
       rw [← nonpos_iff_eq_zero]
       exact hS₂ ▸ measure_mono (inter_subset_right.trans inter_subset_left)
-    rw [restrict_apply hA, ← diff_eq, AEDisjoint.measure_diff_left hsinter]
+    rw [restrict_apply hA, ← sdiff_eq, AEDisjoint.measure_sdiff_left hsinter]
   ext1 A hA
   have hμinter : μ.singularPart ν (A ∩ (S ∩ T)) = 0 := by
     rw [← nonpos_iff_eq_zero]
     exact hT₂ ▸ measure_mono (inter_subset_right.trans inter_subset_right)
-  rw [heq' A hA, heq, restrict_apply hA, ← diff_eq, AEDisjoint.measure_diff_left hμinter]
+  rw [heq' A hA, heq, restrict_apply hA, ← sdiff_eq, AEDisjoint.measure_sdiff_left hμinter]
 
 theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
     (r • μ).singularPart ν = r • μ.singularPart ν := by
@@ -456,7 +456,7 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
         smul_absolutelyContinuous
     · rw [ENNReal.smul_def r, withDensity_smul_measure, ← withDensity_smul]
       swap; · exact (measurable_rnDeriv _ _).const_smul _
-      convert haveLebesgueDecomposition_add μ ν
+      convert! haveLebesgueDecomposition_add μ ν
       ext x
       simp only [Pi.smul_apply]
       rw [← ENNReal.smul_def, smul_inv_smul₀ hr]
@@ -470,7 +470,7 @@ theorem singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecompositio
     (μ₁ + μ₂).singularPart ν = μ₁.singularPart ν + μ₂.singularPart ν := by
   refine (eq_singularPart ((measurable_rnDeriv μ₁ ν).add (measurable_rnDeriv μ₂ ν))
     ((mutuallySingular_singularPart _ _).add_left (mutuallySingular_singularPart _ _)) ?_).symm
-  rw [← Pi.add_def, withDensity_add_left (measurable_rnDeriv μ₁ ν)]
+  rw [withDensity_add_left (measurable_rnDeriv μ₁ ν)]
   conv_rhs => rw [add_assoc, add_comm (μ₂.singularPart ν), ← add_assoc, ← add_assoc]
   rw [← haveLebesgueDecomposition_add μ₁ ν, add_assoc, add_comm (ν.withDensity (μ₂.rnDeriv ν)),
     ← haveLebesgueDecomposition_add μ₂ ν]
@@ -545,8 +545,8 @@ theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Me
     have hνfinter : ν.withDensity f (A ∩ (S ∩ T)ᶜ) = 0 := by
       rw [← nonpos_iff_eq_zero]
       exact withDensity_absolutelyContinuous ν f hνinter ▸ measure_mono inter_subset_right
-    rw [restrict_apply hA, ← add_zero (ν.withDensity f (A ∩ (S ∩ T))), ← hνfinter, ← diff_eq,
-      measure_inter_add_diff _ (hS₁.inter hT₁)]
+    rw [restrict_apply hA, ← add_zero (ν.withDensity f (A ∩ (S ∩ T))), ← hνfinter, ← sdiff_eq,
+      measure_inter_add_sdiff _ (hS₁.inter hT₁)]
   ext1 A hA
   have hνrn : ν.withDensity (μ.rnDeriv ν) (A ∩ (S ∩ T)ᶜ) = 0 := by
     rw [← nonpos_iff_eq_zero]
@@ -554,7 +554,7 @@ theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Me
       withDensity_absolutelyContinuous ν (μ.rnDeriv ν) hνinter ▸
         measure_mono inter_subset_right
   rw [heq' A hA, heq, ← add_zero ((ν.withDensity (μ.rnDeriv ν)).restrict (S ∩ T) A), ← hνrn,
-    restrict_apply hA, ← diff_eq, measure_inter_add_diff _ (hS₁.inter hT₁)]
+    restrict_apply hA, ← sdiff_eq, measure_inter_add_sdiff _ (hS₁.inter hT₁)]
 
 theorem eq_withDensity_rnDeriv₀ {s : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν) (hadd : μ = s + ν.withDensity f) :
@@ -779,8 +779,8 @@ theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE 
   have h₂ := hA.inter (measurableSet_lt hg.1 hf.1)
   rw [setLIntegral_max hf.1 hg.1]
   refine (add_le_add (hg.2 _ h₁) (hf.2 _ h₂)).trans_eq ?_
-  simp only [← not_le, ← compl_setOf, ← diff_eq]
-  exact measure_inter_add_diff _ (measurableSet_le hf.1 hg.1)
+  simp only [← not_le, ← compl_setOf, ← sdiff_eq]
+  exact measure_inter_add_sdiff _ (measurableSet_le hf.1 hg.1)
 
 theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α) :
     ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a = f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a := by
@@ -812,7 +812,7 @@ theorem iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n �
 
 theorem iSup_mem_measurableLE' (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
     (⨆ (k) (_ : k ≤ n), f k) ∈ measurableLE μ ν := by
-  convert iSup_mem_measurableLE f hf n
+  convert! iSup_mem_measurableLE f hf n
   simp
 
 section SuprLemmas
@@ -863,19 +863,19 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
           fun n ↦ ?_
         · rw [← hf₂ n]
           apply lintegral_mono
-          convert iSup_le_le f n n le_rfl
+          convert! iSup_le_le f n n le_rfl
           simp only [iSup_apply]
         · exact le_sSup ⟨⨆ (k : ℕ) (_ : k ≤ n), f k, iSup_mem_measurableLE' _ hf₁ _, rfl⟩
       · intro n
         refine Measurable.aemeasurable ?_
-        convert (iSup_mem_measurableLE _ hf₁ n).1
+        convert! (iSup_mem_measurableLE _ hf₁ n).1
         simp
       · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [iSup_monotone' f _]
       · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [tendsto_atTop_iSup (iSup_monotone' f a)]
     have hξm : Measurable ξ := by
-      convert Measurable.iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
+      convert! Measurable.iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
       simp [hξ]
     -- we see that `ξ` has the largest integral among all functions in `measurableLE`
     have hξle A (hA : MeasurableSet A) : ∫⁻ a in A, ξ a ∂ν ≤ μ A := by
@@ -911,10 +911,10 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         have : ∫⁻ a in A, (ξ + E.indicator fun _ ↦ (ε : ℝ≥0∞)) a ∂ν =
             ∫⁻ a in A ∩ E, ε + ξ a ∂ν + ∫⁻ a in A \ E, ξ a ∂ν := by
           simp only [lintegral_add_left measurable_const, lintegral_add_left hξm,
-            setLIntegral_const, add_assoc, lintegral_inter_add_diff _ _ hE₁, Pi.add_apply,
+            setLIntegral_const, add_assoc, lintegral_inter_add_sdiff _ _ hE₁, Pi.add_apply,
             lintegral_indicator hE₁, restrict_apply hE₁]
           rw [inter_comm, add_comm]
-        rw [this, ← measure_inter_add_diff A hE₁]
+        rw [this, ← measure_inter_add_sdiff A hE₁]
         exact add_le_add (hε₂ A hA) (hξle (A \ E) (hA.diff hE₁))
       have : (∫⁻ a, ξ a + E.indicator (fun _ ↦ (ε : ℝ≥0∞)) a ∂ν) ≤ sSup (measurableLEEval ν μ) :=
         le_sSup ⟨ξ + E.indicator fun _ ↦ (ε : ℝ≥0∞), hξε, rfl⟩

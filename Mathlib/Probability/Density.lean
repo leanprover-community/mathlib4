@@ -43,12 +43,6 @@ random variables with this distribution.
 * `MeasureTheory.pdf.IsUniform.integral_eq` : If `X` follows the uniform distribution with
   its pdf having support `s`, then `X` has expectation `(λ s)⁻¹ * ∫ x in s, x dx` where `λ`
   is the Lebesgue measure.
-
-## TODO
-
-Ultimately, we would also like to define characteristic functions to describe distributions as
-it exists for all random variables. However, to define this, we will need Fourier transforms
-which we currently do not have.
 -/
 
 @[expose] public section
@@ -88,7 +82,6 @@ theorem hasPDF_iff_of_aemeasurable (hX : AEMeasurable X ℙ) :
   simp only [hX, true_and]
 
 variable (X ℙ μ) in
-@[measurability]
 theorem HasPDF.aemeasurable [HasPDF X ℙ μ] : AEMeasurable X ℙ := HasPDF.aemeasurable' μ
 
 instance HasPDF.haveLebesgueDecomposition [HasPDF X ℙ μ] : (map X ℙ).HaveLebesgueDecomposition μ :=

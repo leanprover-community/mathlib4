@@ -72,6 +72,12 @@ theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
 
+instance LieIdeal.bracket {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+    (I : LieIdeal R L) [Bracket L M] : Bracket I M where
+  bracket x m := ⁅(x : L), m⁆
+
+instance (I : LieIdeal R L) : Bracket I I := inferInstance
+
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
   inferInstanceAs <| LieRing I.toLieSubalgebra
@@ -203,12 +209,12 @@ theorem map_comap_le : map f (comap f J) ≤ J := by rw [map_le_iff_le_comap]
 /-- See also `LieIdeal.map_comap_eq`. -/
 theorem comap_map_le : I ≤ comap f (map f I) := by rw [← map_le_iff_le_comap]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
   unfold map
   gcongr; exact h
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
   rw [← SetLike.coe_subset_coe] at h ⊢
   dsimp only [SetLike.coe]

@@ -29,7 +29,7 @@ some properties of such ideals.
   `I = J`.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R]
 
@@ -68,7 +68,6 @@ lemma Ideal.inf_eq_mul_of_pure (I J : Ideal R) [I.Pure] :
 lemma Ideal.isIdempotentElem_of_pure (I : Ideal R) [I.Pure] : IsIdempotentElem I := by
   simp [IsIdempotentElem, ← Ideal.inf_eq_mul_of_pure]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.Pure.of_isIdempotentElem {I : Ideal R} (h : I.FG) (h' : IsIdempotentElem I) :
     I.Pure := by
   rw [Ideal.isIdempotentElem_iff_of_fg _ h] at h'
@@ -112,7 +111,7 @@ lemma Ideal.le_ker_atPrime_of_forall_exists_eq_mul {I : Ideal R}
 
 lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     RingHom.ker
-      (Pi.ringHom fun p : zeroLocus (I : Set R) ↦
+      (RingHom.pi fun p : zeroLocus (I : Set R) ↦
         algebraMap R (Localization.AtPrime p.val.asIdeal)) = I := by
   refine le_antisymm ?_ fun x hx ↦ ?_
   · rw [Pi.ker_ringHom]
@@ -121,7 +120,7 @@ lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     exact fun i hi hle ↦ iInf_le_of_le ⟨⟨i, hi⟩, hle⟩ le_rfl
   · rw [RingHom.mem_ker]
     ext p
-    rw [Pi.ringHom_apply, Pi.zero_apply]
+    rw [RingHom.pi_apply, Pi.zero_apply]
     exact Ideal.le_ker_atPrime_of_forall_exists_eq_mul
       (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.2 hx
 

@@ -49,7 +49,7 @@ commutative domain.
 
 open Finset Function
 
-open Pointwise
+open scoped Pointwise
 
 noncomputable section
 
@@ -79,7 +79,7 @@ variable [PartialOrder Γ] [AddCommMonoid R]
 
 instance : FunLike (SummableFamily Γ R α) α R⟦Γ⟧ where
   coe := toFun
-  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 @[simp]
 theorem coe_mk (toFun : α → R⟦Γ⟧) (h1 h2) :
@@ -398,8 +398,8 @@ theorem isPWO_iUnion_support_prod_smul {s : α → R⟦Γ⟧} {t : β → V⟦Γ
   have hsupp : ∀ ab : α × β, support ((fun ab ↦ (of R).symm (s ab.1 • (of R) (t ab.2))) ab) ⊆
       (s ab.1).support +ᵥ (t ab.2).support := by
     intro ab
-    refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd
-      (hs := (s ab.1).isPWO_support) (ht := (t ab.2).isPWO_support))
+    refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd fun a ↦
+      Set.VAddAntidiagonal.finite_of_isPWO (s ab.1).isPWO_support (t ab.2).isPWO_support a)
     simp only [Set.mem_setOf_eq]
     contrapose! hx
     rw [mem_support, not_not, HahnModule.coeff_smul, hx, sum_empty]
@@ -412,7 +412,8 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (g : Γ') :
     Finite {(ab : α × β) |
       ((fun (ab : α × β) ↦ (of R).symm (s ab.1 • (of R) (t ab.2))) ab).coeff g ≠ 0} := by
-  apply ((VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
+  apply ((VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support
+    t.isPWO_iUnion_support g)).finite_toSet.biUnion'
     (fun gh _ => hasFiniteSupport_smul s t gh)).subset _
   exact fun ab hab => by
     simp only [ne_eq, Set.mem_setOf_eq] at hab
@@ -420,7 +421,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
     simp only [mem_coe, mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
       Function.mem_support, exists_prop, Prod.exists]
     exact ⟨ij.1, ij.2, ⟨⟨ab.1, left_ne_zero_of_smul hij.2⟩, ⟨ab.2, right_ne_zero_of_smul hij.2⟩,
-      ((mem_vaddAntidiagonal _ _ _).mp hij.1).2.2⟩, hij.2⟩
+      ((mem_vaddAntidiagonal _ _).mp hij.1).2.2⟩, hij.2⟩
 
 /-- An elementwise scalar multiplication of one summable family on another. -/
 @[simps]
@@ -432,9 +433,10 @@ def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) : SummableFa
 
 theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ')
     (a : α × β) :
-    ∑ x ∈ VAddAntidiagonal (s a.1).isPWO_support' (t a.2).isPWO_support' g, (s a.1).coeff x.1 •
-      (t a.2).coeff x.2 = ∑ x ∈ VAddAntidiagonal s.isPWO_iUnion_support' t.isPWO_iUnion_support' g,
-      (s a.1).coeff x.1 • (t a.2).coeff x.2 := by
+    ∑ x ∈ VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO (s a.1).isPWO_support'
+      (t a.2).isPWO_support' g), (s a.1).coeff x.1 • (t a.2).coeff x.2 =
+    ∑ x ∈ VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support'
+      t.isPWO_iUnion_support' g), (s a.1).coeff x.1 • (t a.2).coeff x.2 := by
   refine sum_subset (fun gh hgh => ?_) fun gh hgh h => ?_
   · simp_all only [mem_vaddAntidiagonal, Function.mem_support, Set.mem_iUnion, mem_support]
     exact ⟨Exists.intro a.1 hgh.1, Exists.intro a.2 hgh.2.1, trivial⟩
@@ -445,8 +447,9 @@ theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α) (t : SummableFamily
 set_option backward.isDefEq.respectTransparency false in
 theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ') :
-    (smul s t).hsum.coeff g = ∑ gh ∈ VAddAntidiagonal s.isPWO_iUnion_support
-      t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) • (t.hsum.coeff gh.2) := by
+    (smul s t).hsum.coeff g =
+    ∑ gh ∈ VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support
+      t.isPWO_iUnion_support g), (s.hsum.coeff gh.1) • (t.hsum.coeff gh.2) := by
   rw [coeff_hsum]
   simp only [coeff_hsum_eq_sum, smul_toFun, HahnModule.coeff_smul, Equiv.symm_apply_apply]
   simp_rw [sum_vAddAntidiagonal_eq, Finset.smul_sum, Finset.sum_smul]
@@ -552,7 +555,7 @@ theorem mul_eq_smul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
   rfl
 
 theorem coeff_hsum_mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) (g : Γ) :
-    (mul s t).hsum.coeff g = ∑ gh ∈ addAntidiagonal s.isPWO_iUnion_support
+    (mul s t).hsum.coeff g = ∑ gh ∈ antidiagonal s.isPWO_iUnion_support
       t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) * (t.hsum.coeff gh.2) := by
   simp_rw [← smul_eq_mul, mul_eq_smul]
   exact coeff_smul s t g
@@ -691,17 +694,17 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
   swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
   apply hpwo.isWF.induction hg
   intro y ys hy
-  refine ((((addAntidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion
-    fun ij hij => hy ij.snd (mem_addAntidiagonal.1 (mem_coe.1 hij)).2.1 ?_).image Nat.succ).union
+  refine ((((antidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion
+    fun ij hij => hy ij.snd (mem_antidiagonal.1 (mem_coe.1 hij)).2.1 ?_).image Nat.succ).union
       (Set.finite_singleton 0)).subset ?_
-  · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
+  · obtain ⟨hi, _, rfl⟩ := mem_antidiagonal.1 (mem_coe.1 hij)
     exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le ((zero_lt_orderTop_iff h0).mp hx) <|
       order_le_of_coeff_ne_zero <| Function.mem_support.mp hi
   · rintro (_ | n) hn
     · exact Set.mem_union_right _ (Set.mem_singleton 0)
     · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset hn
       refine Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨?_, hi⟩⟩, rfl⟩
-      simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
+      simp only [mem_coe, mem_antidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive `orderTop`, then

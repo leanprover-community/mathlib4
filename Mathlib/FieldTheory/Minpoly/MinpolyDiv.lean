@@ -5,10 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.FieldTheory.PrimitiveElement
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # Results about `minpoly R x / (X - C x)`
@@ -112,8 +111,8 @@ lemma minpolyDiv_monic : Monic (minpolyDiv R x) := by
   nontriviality S
   have := congr_arg leadingCoeff (minpolyDiv_spec R x)
   rw [leadingCoeff_mul', ((minpoly.monic hx).map (algebraMap R S)).leadingCoeff] at this
-  · simpa using this
-  · simpa using minpolyDiv_ne_zero hx
+  · simpa using! this
+  · simpa using! minpolyDiv_ne_zero hx
 
 lemma natDegree_minpolyDiv_succ [Nontrivial S] :
     natDegree (minpolyDiv R x) + 1 = natDegree (minpoly R x) := by
@@ -204,7 +203,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     AlgHom.ext_of_adjoin_eq_top hxL (fun _ hx ↦ hx ▸ h)
   apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero _ this
   · intro σ
-    simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finset_sum,
+    simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finsetSum,
       eval_smul, eval_map, eval₂_minpolyDiv_self, this.eq_iff, smul_eq_mul, mul_ite, mul_zero,
       Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_X_pow]
     rw [sub_eq_zero, div_mul_cancel₀]

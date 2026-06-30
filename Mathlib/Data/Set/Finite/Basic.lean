@@ -145,11 +145,11 @@ theorem subset_toFinset {s : Finset α} : s ⊆ ht.toFinset ↔ ↑s ⊆ t := by
 theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := by
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
   simp only [← Finset.coe_subset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 
@@ -176,10 +176,12 @@ protected theorem toFinset_union [DecidableEq α] (hs : s.Finite) (ht : t.Finite
   ext
   simp
 
-protected theorem toFinset_diff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
+protected theorem toFinset_sdiff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
     (h : (s \ t).Finite) : h.toFinset = hs.toFinset \ ht.toFinset := by
   ext
   simp
+
+@[deprecated (since := "2026-06-03")] alias toFinset_diff := toFinset_sdiff
 
 open scoped symmDiff in
 protected theorem toFinset_symmDiff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
@@ -374,13 +376,19 @@ lemma «exists» {p : Finset α → Prop} :
   mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
   mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
 
+lemma mem_range_coe_iff {s : Set α} : s ∈ Set.range ((↑) : Finset α → Set α) ↔ s.Finite where
+  mp := by
+    rintro ⟨t, rfl⟩
+    simp
+  mpr hs := ⟨hs.toFinset, by simp⟩
+
 end Finset
 
 namespace Multiset
 
 @[simp]
 theorem finite_toSet (s : Multiset α) : { x | x ∈ s }.Finite := by
-  classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_toSet
+  classical simpa only [← Multiset.mem_toFinset] using! s.toFinset.finite_toSet
 
 @[simp]
 theorem finite_toSet_toFinset [DecidableEq α] (s : Multiset α) :
@@ -450,7 +458,7 @@ instance finite_inter_of_left (s t : Set α) [Finite s] : Finite (s ∩ t : Set 
   Finite.Set.subset s inter_subset_left
 
 instance finite_diff (s t : Set α) [Finite s] : Finite (s \ t : Set α) :=
-  Finite.Set.subset s diff_subset
+  Finite.Set.subset s sdiff_subset
 
 instance finite_insert (a : α) (s : Set α) [Finite s] : Finite (insert a s : Set α) :=
   Finite.Set.finite_union {a} s
@@ -519,13 +527,17 @@ theorem Finite.inf_of_right {s : Set α} (h : s.Finite) (t : Set α) : (t ⊓ s)
 protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
   mt fun ht ↦ ht.subset h
 
-@[simp] theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
+@[simp] theorem Finite.sdiff (hs : s.Finite) : (s \ t).Finite := hs.subset sdiff_subset
 
-theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
-  (hd.union ht).subset <| subset_diff_union _ _
+@[deprecated (since := "2026-06-03")] alias Finite.diff := Finite.sdiff
+
+theorem Finite.of_sdiff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
+  (hd.union ht).subset <| subset_sdiff_union _ _
+
+@[deprecated (since := "2026-06-03")] alias Finite.of_diff := Finite.of_sdiff
 
 @[simp]
-lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.diff.union ht.diff
+lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.sdiff.union ht.sdiff
 
 lemma Finite.symmDiff_congr (hst : (s ∆ t).Finite) : (s ∆ u).Finite ↔ (t ∆ u).Finite where
   mp hsu := (hst.union hsu).subset (symmDiff_comm s t ▸ symmDiff_triangle ..)
@@ -698,8 +710,8 @@ theorem finite_option {s : Set (Option α)} : s.Finite ↔ { x : α | some x ∈
 /-- Induction principle for finite sets: To prove a property `motive` of a finite set `s`, it's
 enough to prove for the empty set and to prove that `motive t → motive ({a} ∪ t)` for all `t`.
 
-See also `Set.Finite.induction_on` for the version requiring to check `motive t → motive ({a} ∪ t)`
-only for `t ⊆ s`. -/
+See also `Set.Finite.induction_on_subset` for the version requiring to check
+`motive t → motive ({a} ∪ t)` only for `t ⊆ s`. -/
 @[elab_as_elim]
 theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α) (hs : s.Finite)
     (empty : motive ∅ finite_empty)
@@ -715,7 +727,7 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
 to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t ⊆ s`.
 
 This is analogous to `Finset.induction_on'`. See also `Set.Finite.induction_on` for the version
-requiring `C t → C ({a} ∪ t)` for all `t`. -/
+requiring `motive t → motive ({a} ∪ t)` for all `t`. -/
 @[elab_as_elim]
 theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α)
     (hs : s.Finite) (empty : motive ∅ finite_empty)
@@ -742,11 +754,11 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   haveI : Nonempty γ := (h ∅ finite_empty).nonempty
   choose! c hc using h
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
-  set u : ℕ → γ := fun n => Nat.strongRecOn' n f
-  refine ⟨u, fun n => ?_⟩
-  convert hc (u '' Iio n) ((finite_lt_nat _).image _)
+  set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
+  refine ⟨u, fun n ↦ ?_⟩
+  convert! hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
-  exact Nat.strongRecOn'_beta
+  exact Nat.strongRecOn_eq f n
 
 end
 
@@ -759,7 +771,6 @@ theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ 
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [Fintype.card_ofFinset]
 
-@[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
     {d : Fintype (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
   rw [← card_fintypeInsertOfNotMem s h]; congr!
@@ -849,12 +860,17 @@ theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) :
 theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.Infinite := fun h =>
   Set.infinite_univ (α := α) (by simpa using hs.union h)
 
-theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
-  hs <| h.of_diff ht
+theorem Infinite.sdiff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) :
+    (s \ t).Infinite := fun h => hs <| h.of_sdiff ht
 
-lemma Infinite.inter_of_finite_diff {α : Type*} {s t : Set α} (hs : s.Infinite)
+@[deprecated (since := "2026-06-03")] alias Infinite.diff := Infinite.sdiff
+
+lemma Infinite.inter_of_finite_sdiff {α : Type*} {s t : Set α} (hs : s.Infinite)
     (ht : (s \ t).Finite) : (s ∩ t).Infinite := by
-  simpa using hs.diff ht
+  simpa using hs.sdiff ht
+
+@[deprecated (since := "2026-06-03")]
+alias Infinite.inter_of_finite_diff := Infinite.inter_of_finite_sdiff
 
 @[simp]
 theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.Infinite := by
@@ -940,6 +956,6 @@ lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → 
 /-- If a set `s` does not contain any triple of elements `x < y < z`, then `s` is finite. -/
 lemma Set.finite_of_forall_not_lt_lt (h : ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ s, x < y → y < z → False) :
     Set.Finite s :=
-  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt <| by simpa only [SetCoe.forall'] using h
+  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt <| by simpa only [SetCoe.forall'] using! h
 
 end LinearOrder
