@@ -42,9 +42,11 @@ def IsDvdSeq [Dvd α] [Dvd β] (f : α → β) : Prop :=
 
 namespace IsDvdSeq
 
+variable (α) in
 protected theorem id [Dvd α] : IsDvdSeq (id : α → α) :=
   fun _ _ ↦ id
 
+variable (α) in
 protected theorem const [Dvd α] [Monoid β] (b : β) : IsDvdSeq (fun _ : α ↦ b) := by
   simp [IsDvdSeq]
 
