@@ -6,10 +6,10 @@ Authors: Joël Riou, Yun Liu, Christian Merten, Robin Carlier, Lyne Moser, Nima 
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Weighted.HasWeightedLimit
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Weighted.HasWeightedLimit
 
 /-!
 # Weighted limits preserve limits on the weight variable

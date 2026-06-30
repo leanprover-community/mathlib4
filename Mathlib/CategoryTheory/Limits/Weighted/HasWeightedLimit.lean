@@ -5,8 +5,8 @@ Authors: Joël Riou, Yun Liu, Christian Merten, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Weighted limits
@@ -53,6 +53,12 @@ and `x : W.obj j`. -/
 protected abbrev π (c : WeightedCone W F) {j : J} (x : W.obj j) :
     c.pt ⟶ F.obj j :=
   (Cone.π c).app (Functor.elementsMk _ _ x)
+
+@[reassoc (attr := simp)]
+protected lemma w (c : WeightedCone W F) {i j : J} (x : W.obj i) (f : i ⟶ j) :
+    c.π x ≫ F.map f = c.π (W.map f x) :=
+  Cone.w c (CategoryOfElements.homMk (Functor.elementsMk _ _ x)
+    (Functor.elementsMk _ _ (W.map f x)) f rfl)
 
 variable (pt : C) (π : ∀ ⦃j : J⦄ (_ : W.obj j), pt ⟶ F.obj j)
   (hπ : ∀ ⦃j₁ j₂ : J⦄ (x : W.obj j₁) (f : j₁ ⟶ j₂),
@@ -115,18 +121,14 @@ protected abbrev coyoneda (F : J ⥤ C) (j : J) :
     WeightedCone (coyoneda.obj (op j)) F where
   pt := F.obj j
   π.app u := F.map u.snd
-  π.naturality _ _ f := by
-    dsimp
-    simp only [← Functor.map_comp, Category.id_comp]
-    congr 1
-    exact f.prop.symm
+  π.naturality _ _ f := by simp [← Functor.map_comp, Category.id_comp, f.prop.symm]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The weighted limit of `F` for the weight `coyoneda.obj (op j)` is `F.obj j`. -/
 def isLimitCoyoneda (F : J ⥤ C) (j : J) : (WeightedCone.coyoneda F j).IsLimit where
   lift s := WeightedCone.π s (𝟙 j)
   fac s x := by
-    simpa using s.w (⟨x.snd, Category.id_comp _⟩ : Functor.elementsMk _ j (𝟙 j) ⟶ x)
+    simpa using s.w (CategoryOfElements.homMk (Functor.elementsMk _ j (𝟙 j)) x x.snd (by simp))
   uniq s m hm := by
     simpa using hm (Functor.elementsMk _ j (𝟙 j))
 
@@ -157,9 +159,10 @@ noncomputable def weightedLimObjObjπ ⦃j : J⦄ (x : W.obj j) :
 lemma weightedLimObjObj_w ⦃j₁ j₂ : J⦄ (x : W.obj j₁)
     (f : j₁ ⟶ j₂) :
     W.weightedLimObjObjπ F x ≫ F.map f =
-      W.weightedLimObjObjπ F (W.map f x) := by
-  let g : Functor.elementsMk _ _ x ⟶ Functor.elementsMk _ _ (W.map f x) := ⟨f, rfl⟩
-  exact limit.w (CategoryOfElements.π W ⋙ F) g
+      W.weightedLimObjObjπ F (W.map f x) :=
+  limit.w (CategoryOfElements.π W ⋙ F)
+    (CategoryOfElements.homMk (Functor.elementsMk _ _ x) (Functor.elementsMk _ _
+      (W.map f x)) f rfl)
 
 /-- A choice of limit weighted cone. -/
 noncomputable abbrev weightedLimCone :
@@ -212,7 +215,7 @@ lemma weightedLimObjMap_id (F : J ⥤ C) [HasWeightedLimit W F] :
 lemma weightedLimObjMap_comp {F₁ F₂ F₃ : J ⥤ C}
     [HasWeightedLimit W F₁] [HasWeightedLimit W F₂] [HasWeightedLimit W F₃]
     (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
-    W.weightedLimObjMap f ≫ W.weightedLimObjMap g = W.weightedLimObjMap (f ≫ g) := by
+    W.weightedLimObjMap (f ≫ g) = W.weightedLimObjMap f ≫ W.weightedLimObjMap g := by
   cat_disch
 
 section
