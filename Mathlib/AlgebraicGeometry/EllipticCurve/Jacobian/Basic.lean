@@ -100,6 +100,7 @@ universe r s u v
 
 variable {R : Type r} {F : Type u}
 
+set_option linter.style.whitespace false in -- linter false positive
 name_poly_vars X, Y, Z over R
 
 namespace WeierstrassCurve

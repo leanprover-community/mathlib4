@@ -151,6 +151,7 @@ variable {D : Type*} [Category* D] (F : C ⥤ D)
   [HasTerminal C] [HasBinaryProducts C]
   [HasTerminal D] [HasBinaryProducts D]
 
+set_option linter.style.whitespace false in -- the linter is wrong, even after lean4#12006
 @[deprecated Functor.OplaxMonoidal.ofChosenFiniteProducts (since := "2025-10-19")]
 instance :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
@@ -200,6 +201,7 @@ instance (X Y : C) :
     let : CartesianMonoidalCategory D := .ofHasFiniteProducts
     IsIso (δ F X Y) := by dsimp [δ_eq]; apply instIsIsoProdComparison
 
+set_option linter.style.whitespace false in -- the linter is wrong, even after lean4#12006
 /-- Promote a functor that preserves finite products to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/
 @[deprecated Functor.Monoidal.ofChosenFiniteProducts (since := "2025-10-19")]

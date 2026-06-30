@@ -29,6 +29,7 @@ namespace SimpleGraph
 
 open Finset
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The Heawood graph, a notable simple graph on 14 vertices. The numbering corresponds to a
 typical [Hamiltonian cycle-and-arcs drawing](https://commons.wikimedia.org/wiki/File:Heawood_Graph.svg). -/
 def heawoodGraph : SimpleGraph (Fin 14) where

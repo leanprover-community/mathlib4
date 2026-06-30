@@ -60,7 +60,7 @@ lemma mem_boundary_iff_notMem_range {n d : ℕ} (s : Δ[n] _⦋d⦌) :
 lemma face_singleton_compl_le_boundary {n : ℕ} (i : Fin (n + 1)) :
     stdSimplex.face.{u} {i}ᶜ ≤ boundary n := by
   rw [boundary_eq_iSup]
-  exact le_iSup (fun (i : Fin (n +1)) ↦ stdSimplex.face {i}ᶜ) i
+  exact le_iSup (fun (i : Fin (n + 1)) ↦ stdSimplex.face {i}ᶜ) i
 
 lemma stdSimplex.notMem_boundary (n : ℕ) :
     stdSimplex.objMk (m := op ⦋n⦌) .id ∉ (boundary.{u} n).obj (op ⦋n⦌) := by

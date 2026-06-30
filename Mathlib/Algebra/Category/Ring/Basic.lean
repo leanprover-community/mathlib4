@@ -150,6 +150,7 @@ lemma hom_inv_apply {R S : SemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
+set_option linter.style.whitespace false in -- the linter is wrong, even after lean4#11780
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`. -/
 unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
   R ≟ R' ⊢
@@ -316,6 +317,7 @@ lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
 
+set_option linter.style.whitespace false in -- the linter is wrong, even after lean4#11780
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
 An example where this is needed is in applying
@@ -492,6 +494,7 @@ lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
 
+set_option linter.style.whitespace false in -- the linter is wrong, even after lean4#11780
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`. -/
 unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
   R ≟ R' ⊢
@@ -667,6 +670,7 @@ instance : Inhabited CommRingCat :=
 @[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
 @[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
+set_option linter.style.whitespace false in -- the linter is wrong, even after lean4#11780
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
 An example where this is needed is in applying `TopCat.Presheaf.restrictOpen` to commutative rings.

@@ -303,6 +303,7 @@ def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
 
 variable (L) (α)
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- `BoundedFormula α n` is the type of formulas with free variables indexed by `α` and `n` in-scope
 bound variables indexed by `Fin n`. -/
 inductive BoundedFormula : ℕ → Type max u v u'

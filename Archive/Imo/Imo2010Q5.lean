@@ -55,6 +55,7 @@ open Pi Equiv Function
 
 namespace Imo2010Q5
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- The predicate defining states of boxes reachable by the given moves. -/
 inductive Reachable : (Fin 6 → ℕ) → Prop
   /-- The starting position with one coin in each box -/

@@ -115,8 +115,14 @@ variable {𝒜 : Finset (Finset α)} {A A₁ A₂ : Finset α} {r r₁ r₂ : �
 /-- The `r`-th slice of a set family is the subset of its elements which have cardinality `r`. -/
 def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) := {A ∈ 𝒜 | #A = r}
 
+-- Adding (priority := high) fixes the `whitespace` linter, but causes failures in dependent files
+-- (e.g. in `Combinatorics/SetFamily/LYM.lean`)
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice
+
+-- TODO: a bug in the linter causes non-desired outside output around Finset.slice;
+-- diagnose and fix (or disable the linter properly around this construct)!
+set_option linter.style.whitespace false
 
 /-- `A` is in the `r`-th slice of `𝒜` iff it's in `𝒜` and has cardinality `r`. -/
 theorem mem_slice : A ∈ 𝒜 # r ↔ A ∈ 𝒜 ∧ #A = r :=

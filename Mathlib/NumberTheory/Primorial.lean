@@ -43,10 +43,15 @@ local notation x "#" => primorial x
 
 lemma primorial_eq_prod_primesLE (n : ℕ) : n # = ∏ p ∈ primesLE n, p := rfl
 
+lemma primorial_eq_prod_primesLE (n : ℕ) : n # = ∏ p ∈ primesLE n, p := rfl
+
+set_option linter.style.whitespace false in -- linter false positive
 @[simp] theorem primorial_zero : 0 # = 1 := by decide
 
+set_option linter.style.whitespace false in -- linter false positive
 @[simp] theorem primorial_one : 1 # = 1 := by decide
 
+set_option linter.style.whitespace false in -- linter false positive
 @[simp] theorem primorial_two : 2 # = 2 := by decide
 
 theorem primorial_pos (n : ℕ) : 0 < n# :=
