@@ -294,9 +294,7 @@ private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
   · exact Nat.pos_of_ne_zero <| inertiaDegIn_ne_zero (stabilizer Gal(L/K) P)
   · rw [ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
       ramificationIdxIn_eq_ramificationIdx _ P (stabilizer Gal(L/K) P)]
-    rw [← ramificationIdx_eq_ramificationIdx' p _ hp,
-      ← ramificationIdx_eq_ramificationIdx' 𝓟D _ h𝓟]
-    exact IsDedekindDomain.ramificationIdx_le_ramificationIdx _ _ _ hp
+    exact 𝓟D.ramificationIdx'_above_le P
   · rw [inertiaDegIn_eq_inertiaDeg p P Gal(L/K),
       inertiaDegIn_eq_inertiaDeg _ P (stabilizer Gal(L/K) P)]
     rw [← inertiaDeg_eq_inertiaDeg' p, ← inertiaDeg_eq_inertiaDeg' 𝓟D]
