@@ -124,10 +124,7 @@ open Function.locallyFinsuppWithin in
 @[simp]
 lemma degree_single [DecidableEq X] (p : X) {r : R} : degree f (single p r) =
     (f.residueDegree p) • r := by
-  simp only [degree]
-  rw [finsum_eq_finsetSum_of_support_subset (s := {p})]
-  · simp
-  · simp
+  simp [degree, finsum_eq_finsetSum_of_support_subset (s := {p})]
 
 end degree
 
