@@ -902,7 +902,7 @@ section NumberField
 
 open Units
 
-theorem NumberField.Units.dvd_torsionOrder_of_isPrimitiveRoot [NeZero n] [NumberField K] {ζ : K}
+theorem NumberField.Units.dvd_torsionOrder_of_isPrimitiveRoot [NeZero n] {ζ : K}
     (hζ : IsPrimitiveRoot ζ n) : n ∣ torsionOrder K := by
   replace hζ := (hζ.toInteger_isPrimitiveRoot).isUnit_unit (NeZero.ne n)
   convert! orderOf_dvd_natCard (⟨(hζ.isUnit (NeZero.ne n)).unit, ?_⟩ : torsion K)
