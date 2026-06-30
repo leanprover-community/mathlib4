@@ -146,6 +146,8 @@ end PartialMap
 
 namespace RationalMap
 
+-- If better def-eqs are required, consider refactoring this by using `Quotient.liftOn₂`
+-- and a bundled structure `DominantPartialMap`.
 /-- Composition of rational maps. Requires `f` to be dominant, so that we may choose
 a dominant representative. -/
 noncomputable def comp (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z) : X ⤏ Z :=
