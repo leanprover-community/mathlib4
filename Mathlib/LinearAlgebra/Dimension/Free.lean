@@ -296,11 +296,8 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 theorem nonempty_linearEquiv_iff_finrank_eq_one :
-    Nonempty (R ≃ₗ[R] M) ↔ Module.finrank R M = 1 where
-  mp := fun ⟨e⟩ ↦ by simp [← LinearEquiv.finrank_eq e]
-  mpr h :=
-    have := Module.finite_of_finrank_eq_succ h
-    FiniteDimensional.nonempty_linearEquiv_of_finrank_eq (by simp [h])
+    Nonempty (R ≃ₗ[R] M) ↔ Module.finrank R M = 1 := by
+  simp [nonempty_equiv_iff_rank_eq_one, finrank]
 
 alias ⟨_, nonempty_linearEquiv_of_finrank_eq_one⟩ := nonempty_linearEquiv_iff_finrank_eq_one
 
