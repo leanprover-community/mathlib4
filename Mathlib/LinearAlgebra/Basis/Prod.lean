@@ -63,7 +63,7 @@ theorem prod_apply_inr_fst (i) : (b.prod b' (Sum.inr i)).1 = 0 :=
     simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
       LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b.repr.apply_symm_apply,
       LinearEquiv.symm_symm, Finsupp.fst_sumFinsuppLEquivProdFinsupp,
-      LinearEquiv.map_zero, Finsupp.zero_apply]
+      map_zero, Finsupp.zero_apply]
     apply Finsupp.single_eq_of_ne Sum.inl_ne_inr
 
 theorem prod_apply_inl_snd (i) : (b.prod b' (Sum.inl i)).2 = 0 :=
@@ -72,7 +72,7 @@ theorem prod_apply_inl_snd (i) : (b.prod b' (Sum.inl i)).2 = 0 :=
     simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
       LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b'.repr.apply_symm_apply,
       LinearEquiv.symm_symm, Finsupp.snd_sumFinsuppLEquivProdFinsupp,
-      LinearEquiv.map_zero, Finsupp.zero_apply]
+      map_zero, Finsupp.zero_apply]
     apply Finsupp.single_eq_of_ne Sum.inr_ne_inl
 
 theorem prod_apply_inr_snd (i) : (b.prod b' (Sum.inr i)).2 = b' i :=

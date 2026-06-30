@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Convolution
 public import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
@@ -25,7 +24,7 @@ integrals over there.
   `∫ x, f x ∂(μ ∗ₘ ν) = ∫ x, ∫ y, f (x + y) ∂ν ∂μ`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

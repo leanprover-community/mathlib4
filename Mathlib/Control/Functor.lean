@@ -5,10 +5,9 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Tactic.TypeStar
-public import Batteries.Tactic.Lint
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Functors
@@ -44,6 +43,7 @@ theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext fun _ => (comp_map _ _ _).symm
 
+set_option linter.overlappingInstances false in
 theorem Functor.ext {F} :
     ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2],
     (∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x) →
@@ -57,12 +57,6 @@ theorem Functor.ext {F} :
     exact E1.trans E2.symm
 
 end Functor
-
-/-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
-`Applicative` or `Functor` is needed, `Id` is the correct definition). -/
-@[deprecated "Use `pure : α → Id α` instead." (since := "2025-05-21")]
-def id.mk {α : Sort u} : α → id α :=
-  id
 
 namespace Functor
 

@@ -6,6 +6,7 @@ Authors: Thomas Browning, Nailin Guan
 module
 
 public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
@@ -79,7 +80,7 @@ variable {A B C D E}
 @[to_additive]
 instance instFunLike : FunLike (A →ₜ* B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
@@ -110,7 +111,8 @@ into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` 
 `AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
-  { MonoidHomClass.toMonoidHom f with }
+  { MonoidHomClass.toMonoidHom f with
+    continuous_toFun := by dsimp; fun_prop }
 
 /-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
 `ContinuousMonoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
@@ -139,7 +141,11 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h
+  ext <| by convert! DFunLike.ext_iff.1 h
+
+@[to_additive]
+theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
+  ext <| by convert! DFunLike.ext_iff.1 h
 
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) /-- Composition of two continuous homomorphisms. -/]
@@ -233,6 +239,16 @@ instance : CommMonoid (A →ₜ* E) where
   mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
   one_mul f := ext fun x => one_mul (f x)
   mul_one f := ext fun x => mul_one (f x)
+
+@[to_additive (attr := simp)]
+theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
+  rfl
+
+@[to_additive (attr := simp)]
+theorem pow_apply (f : A →ₜ* E) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
+  induction n
+  case zero => rw [pow_zero, pow_zero, one_toFun]
+  case succ n ih => rw [pow_succ, pow_succ, ContinuousMonoidHom.mul_apply, ih]
 
 /-- Coproduct of two continuous homomorphisms to the same space. -/
 @[to_additive (attr := simps!) /-- Coproduct of two continuous homomorphisms to the same space. -/]
@@ -359,7 +375,7 @@ theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
 
 /-- Makes a continuous multiplicative isomorphism from
 a homeomorphism which preserves multiplication. -/
-@[to_additive /-- Makes an continuous additive isomorphism from
+@[to_additive /-- Makes a continuous additive isomorphism from
 a homeomorphism which preserves addition. -/]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
@@ -508,8 +524,8 @@ variable {L : Type*} [Mul L] [TopologicalSpace L]
 @[to_additive /-- The composition of two ContinuousAddEquiv. -/]
 def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L where
   __ := cme1.toMulEquiv.trans cme2.toMulEquiv
-  continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
-  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
+  continuous_toFun := by convert! Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
+  continuous_invFun := by convert! Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
 
 @[to_additive (attr := simp)]
 theorem coe_trans (e₁ : M ≃ₜ* N) (e₂ : N ≃ₜ* L) : ↑(e₁.trans e₂) = e₂ ∘ e₁ := rfl
@@ -538,8 +554,6 @@ section unique
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N where
   __ := MulEquiv.ofUnique
-  continuous_toFun := by continuity
-  continuous_invFun := by continuity
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
@@ -580,7 +594,7 @@ lemma toMulEquiv_toContinuousMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) =
 @[to_additive]
 lemma symm_toContinuousMulEquiv :
     (e.toContinuousMulEquiv he).symm = e.symm.toContinuousMulEquiv
-      (fun s ↦ by convert (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
+      (fun s ↦ by convert! (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
   rfl
 
 end MulEquiv

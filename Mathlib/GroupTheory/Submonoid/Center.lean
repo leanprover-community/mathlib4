@@ -49,15 +49,35 @@ theorem coe_center : ↑(center M) = Set.center M :=
 theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
 
+instance {M α : Type*} [Monoid M] [MulAction M α] :
+    SMulCommClass ↥(Submonoid.center M) M α where
+  smul_comm c r v := by
+    have := Semigroup.mem_center_iff.1 c.2
+    simp_rw [Submonoid.smul_def, smul_smul, this]
+
+instance {M α : Type*} [Monoid M] [MulAction M α] :
+    SMulCommClass M (Submonoid.center M) α :=
+  SMulCommClass.symm (Submonoid.center M) M α
+
 variable {M}
 
 /-- The center of a multiplication with unit is commutative and associative.
 
-This is not an instance as it forms an non-defeq diamond with `Submonoid.toMonoid` in the `npow`
+This is not an instance as it forms a non-defeq diamond with `Submonoid.toMonoid` in the `npow`
 field. -/
 @[to_additive /-- The center of an addition with zero is commutative and associative. -/]
 abbrev center.commMonoid' : CommMonoid (center M) :=
   { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
+
+@[to_additive]
+protected theorem center_prod {N : Type*} [MulOneClass N] :
+    center (M × N) = prod (center M) (center N) :=
+  SetLike.coe_injective Set.center_prod
+
+@[to_additive]
+protected theorem center_pi {ι : Type*} {M : ι → Type*} [Π i, MulOneClass (M i)] :
+    center (Π i, M i) = pi .univ fun i ↦ center (M i) :=
+  SetLike.coe_injective Set.center_pi
 
 end MulOneClass
 

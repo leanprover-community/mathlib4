@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -35,7 +36,7 @@ assert_not_exists Finset
 open Function Set
 
 /-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
-denoted as `f: G →+c[a, b] H`.
+denoted as `f : G →+c[a, b] H`.
 
 One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
 structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
@@ -46,7 +47,7 @@ structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   map_add_const' (x : G) : toFun (x + a) = toFun x + b
 
 @[inherit_doc]
-scoped [AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
+scoped[AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
 
 /-- Typeclass for maps satisfying `f (x + a) = f x + b`.
 
@@ -67,7 +68,7 @@ namespace AddConstMapClass
 In this section we prove properties like `f (x + n • a) = f x + n • b`.
 -/
 
-scoped [AddConstMapClass] attribute [simp] map_add_const
+scoped[AddConstMapClass] attribute [simp] map_add_const
 
 variable {F G H : Type*} [FunLike F G H] {a : G} {b : H}
 
@@ -261,7 +262,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
-        _ ≤ l + (0 : ℤ) • a := by gcongr; cutsat
+        _ ≤ l + (0 : ℤ) • a := by gcongr; lia
         _ ≤ x := by simpa using hx.1
     · -- If `n = 0`, then `l < y ≤ l + a`, hence we can apply the assumption
       exact hf x (Ico_subset_Icc_self hx) y (by simpa using Ioc_subset_Icc_self hny) hxy
@@ -322,7 +323,7 @@ variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 
 instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+  coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 @[simp, push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
 @[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl

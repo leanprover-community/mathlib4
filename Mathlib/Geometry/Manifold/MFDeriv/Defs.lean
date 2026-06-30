@@ -33,7 +33,7 @@ Let `f` be a map between manifolds. The following definitions follow the `fderiv
   from the tangent space at `x` to the tangent space at `f x`. If the map is not differentiable
   within `s`, this is `0`.
 * `MDifferentiableAt I I' f x` : Prop expressing whether `f` is differentiable at `x`.
-* `MDifferentiableWithinAt 𝕜 f s x` : Prop expressing whether `f` is differentiable within `s`
+* `MDifferentiableWithinAt I I' f s x` : Prop expressing whether `f` is differentiable within `s`
   at `x`.
 * `HasMFDerivAt I I' f s x f'` : Prop expressing whether `f` has `f'` as a derivative at `x`.
 * `HasMFDerivWithinAt I I' f s x f'` : Prop expressing whether `f` has `f'` as a derivative
@@ -46,9 +46,9 @@ Let `f` be a map between manifolds. The following definitions follow the `fderiv
 Various related results are proven in separate files: see
 - `Basic.lean` for basic properties of the `mfderiv`, mimicking the API of the Fréchet derivative,
 - `FDeriv.lean` for the equivalence of the manifold notions with the usual Fréchet derivative
-for functions between vector spaces,
+  for functions between vector spaces,
 - `SpecificFunctions.lean` for results on the differential of the identity, constant functions,
-products and arithmetic operators (like addition or scalar multiplication),
+  products and arithmetic operators (like addition or scalar multiplication),
 - `Atlas.lean` for differentiability of charts, models with corners and extended charts,
 - `UniqueDifferential.lean` for various properties of unique differentiability sets in manifolds.
 
@@ -126,7 +126,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [TopologicalSpace M'] [ChartedSpace H' M']
 
 variable (I I') in
-/-- Property in the model space of a model with corners of being differentiable within at set at a
+/-- Property in the model space of a model with corners of being differentiable within a set at a
 point, when read in the model vector space. This property will be lifted to manifolds to define
 differentiable functions between manifolds. -/
 def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=
@@ -171,7 +171,7 @@ theorem differentiableWithinAt_localInvariantProp :
       rw [this] at h
       have : I (e x) ∈ I.symm ⁻¹' e.target ∩ Set.range I := by simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-      convert (h.comp' _ (this.differentiableWithinAt le_rfl)).mono_of_mem_nhdsWithin _
+      convert! (h.comp' _ (this.differentiableWithinAt one_ne_zero)).mono_of_mem_nhdsWithin _
         using 1
       · ext y; simp only [mfld_simps]
       refine
@@ -192,7 +192,7 @@ theorem differentiableWithinAt_localInvariantProp :
       have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ Set.range I' := by
         simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-      convert (this.differentiableWithinAt le_rfl).comp _ h _
+      convert! (this.differentiableWithinAt one_ne_zero).comp _ h _
       · ext y; simp only [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 
@@ -316,9 +316,9 @@ def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] Tangen
 
 open Classical in
 variable (I I') in
-/-- Let `f` be a function between two manifolds. Then `mfderivWithin I I' f s x` is the
-derivative of `f` at `x` within `s`, as a continuous linear map from the tangent space at `x` to the
-tangent space at `f x`. -/
+/-- `mfderivWithin I I' f s x`, given a function `f` between two manifolds,
+is the derivative of `f` at `x` within `s`,
+as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableWithinAt I I' f s x then
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
@@ -328,21 +328,22 @@ def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[�
 
 open Classical in
 variable (I I') in
-/-- Let `f` be a function between two manifolds. Then `mfderiv I I' f x` is the derivative of
-`f` at `x`, as a continuous linear map from the tangent space at `x` to the tangent space at
-`f x`. -/
+/-- `mfderiv I I' f x`, given a function `f` between two manifolds, is the derivative of `f` at `x`,
+as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableAt I I' f x then
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) :)
   else 0
 
 variable (I I') in
-/-- The derivative within a set, as a map between the tangent bundles -/
+/-- `tangentMapWithin I I' f s` is the derivative of `f : M → M'` within a set `s`,
+as a map between the tangent bundles `TM` and `TM'`. -/
 def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderivWithin I I' f s p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 
 variable (I I') in
-/-- The derivative, as a map between the tangent bundles -/
+/-- `tangentMap I I' f` is the derivative of `f : M → M'` as a map between the tangent bundles
+`TM` and `TM'`. -/
 def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderiv I I' f p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 

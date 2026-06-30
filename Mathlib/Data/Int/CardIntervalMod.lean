@@ -19,7 +19,7 @@ The theorems in this file generalise `Nat.card_multiples` in
 zero, which reduces to the multiples). Theorems are given for `Ico` and `Ioc` intervals.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Int
@@ -104,7 +104,7 @@ lemma Ioc_filter_modEq_cast {v : ℕ} :
   simp only [mem_map, mem_filter, mem_Ioc, castEmbedding_apply]
   constructor
   · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by cutsat); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · intro h; lift x to ℕ using (by lia); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
 variable (hr : 0 < r)
 include hr

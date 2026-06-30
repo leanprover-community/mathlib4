@@ -18,7 +18,7 @@ This file contains basic results on applying big operators (product and sum) on 
 We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
 since we expect the scope to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -26,7 +26,7 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -43,7 +43,7 @@ variable [DecidableEq α]
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_prod (s : Finset ι) (f : ι → Finset α) :
     ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
-  map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
+  map_prod (coeMonoidHom : Finset α →* Set α) _ _
 
 omit [DecidableEq α]
 variable [DecidableEq ι]

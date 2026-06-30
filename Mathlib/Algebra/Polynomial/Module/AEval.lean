@@ -39,6 +39,7 @@ and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
 @[nolint unusedArguments]
 def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
+  deriving AddCommMonoid, Module R
 
 instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A]
     [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M] :
@@ -49,14 +50,11 @@ variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMon
 
 namespace AEval
 
-instance instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (AddCommMonoid M)
-
-instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
-
 instance instFiniteOrig [Module.Finite R M] : Module.Finite R <| AEval R M a :=
-  ‹Module.Finite R M›
+  inferInstanceAs <| Module.Finite R M
 
-instance instModulePolynomial : Module R[X] <| AEval R M a := compHom M (aeval a).toRingHom
+noncomputable instance instModulePolynomial : Module R[X] <| AEval R M a :=
+  compHom M (aeval a).toRingHom
 
 variable (R M)
 /--
@@ -93,7 +91,7 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
 instance instFinitePolynomial [Module.Finite R M] : Module.Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
-/-- Construct an `R[X]`-linear map out of `AEval R M a` from a `R`-linear map out of `M`. -/
+/-- Construct an `R[X]`-linear map out of `AEval R M a` from an `R`-linear map out of `M`. -/
 def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
     [IsScalarTower R R[X] N] (f : M →ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
     AEval R M a →ₗ[R[X]] N where
@@ -104,7 +102,8 @@ def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
         LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] at h ⊢
       simp_rw [pow_succ, ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
 
-/-- Construct an `R[X]`-linear equivalence out of `AEval R M a` from a `R`-linear map out of `M`. -/
+/-- Construct an `R[X]`-linear equivalence out of `AEval R M a` from an `R`-linear map out of `M`.
+-/
 def _root_.LinearEquiv.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
     [IsScalarTower R R[X] N] (f : M ≃ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
     AEval R M a ≃ₗ[R[X]] N where
@@ -132,8 +131,9 @@ section Submodule
 
 variable (R M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
-def mapSubmodule :
+noncomputable def mapSubmodule :
     (Algebra.lsmul R R M a).invtSubmodule ≃o Submodule R[X] (AEval R M a) where
   toFun p :=
     { toAddSubmonoid := (p : Submodule R M).toAddSubmonoid.map (of R M a)
@@ -143,7 +143,7 @@ def mapSubmodule :
           AddSubmonoid.mem_map, Submodule.mem_toAddSubmonoid]
         exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a p.2, of_aeval_smul a f m⟩ }
   invFun q := ⟨(Submodule.orderIsoMapComap (of R M a)).symm (q.restrictScalars R), fun m hm ↦ by
-    simpa [← X_smul_of] using q.smul_mem (X : R[X]) hm⟩
+    simpa [← X_smul_of] using! q.smul_mem (X : R[X]) hm⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
   map_rel_iff' {p p'} := ⟨fun h x hx ↦ by aesop (rule_sets := [SetLike!]), fun h x hx ↦ by aesop⟩

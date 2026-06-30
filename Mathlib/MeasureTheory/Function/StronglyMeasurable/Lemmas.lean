@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -24,7 +23,7 @@ functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.l
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Set ENNReal NNReal
 
@@ -71,7 +70,7 @@ theorem StronglyMeasurable.apply_continuousLinearMap
     StronglyMeasurable fun a => φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_stronglyMeasurable hφ
 
-@[measurability]
+@[fun_prop]
 theorem MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E}
     (hφ : AEStronglyMeasurable φ μ) (v : F) :
     AEStronglyMeasurable (fun a => φ a v) μ :=

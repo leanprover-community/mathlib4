@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.MeasureTheory.Group.AEStabilizer
 
 /-!
@@ -23,7 +22,7 @@ The file is a place to collect measure-theoretic results about the additive circ
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure Metric

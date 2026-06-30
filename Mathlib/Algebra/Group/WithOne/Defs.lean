@@ -59,7 +59,7 @@ instance [Repr α] : Repr (WithOne α) :=
 
 @[to_additive]
 instance instMonad : Monad WithOne :=
-  instMonadOption
+  inferInstanceAs <| Monad Option
 
 @[to_additive]
 instance instOne : One (WithOne α) :=
@@ -95,10 +95,10 @@ instance instCoeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
 @[to_additive]
-lemma «forall» {p : WithZero α → Prop} : (∀ x, p x) ↔ p 0 ∧ ∀ a : α, p a := Option.forall
+lemma «forall» {p : WithOne α → Prop} : (∀ x, p x) ↔ p 1 ∧ ∀ a : α, p a := Option.forall
 
 @[to_additive]
-lemma «exists» {p : WithZero α → Prop} : (∃ x, p x) ↔ p 0 ∨ ∃ a : α, p a := Option.exists
+lemma «exists» {p : WithOne α → Prop} : (∃ x, p x) ↔ p 1 ∨ ∃ a : α, p a := Option.exists
 
 /-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]

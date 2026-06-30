@@ -6,7 +6,7 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Algebra.Star.Module
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # The star structure on tensor products
@@ -15,7 +15,7 @@ This file defines the `Star` structure on tensor products. This also
 defines the `StarAddMonoid` and `StarModule` instances for tensor products.
 -/
 
-@[expose] public section
+public section
 
 namespace TensorProduct
 variable {R A B : Type*}
@@ -35,13 +35,13 @@ noncomputable instance : InvolutiveStar (A ⊗[R] B) where
   star_involutive x := by
     simp_rw [star]
     rw [congr_congr]
-    convert congr($congr_refl_refl x) <;> ext <;> simp
+    convert! congr($congr_refl_refl x) <;> ext <;> simp
 
 noncomputable instance : StarAddMonoid (A ⊗[R] B) where
-  star_add := LinearMap.map_add _
+  star_add := map_add _
 
 instance : StarModule R (A ⊗[R] B) where
-  star_smul := LinearMap.map_smulₛₗ _
+  star_smul := map_smulₛₗ _
 
 theorem _root_.starLinearEquiv_tensor :
     starLinearEquiv R (A := A ⊗[R] B) = congr (starLinearEquiv R) (starLinearEquiv R) := rfl

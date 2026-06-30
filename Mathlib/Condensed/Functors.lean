@@ -5,11 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-public import Mathlib.CategoryTheory.Sites.Whiskering
-public import Mathlib.Condensed.Basic
-public import Mathlib.Topology.Category.Stonean.Basic
+public import Mathlib.CategoryTheory.Sites.PreservesLimits
+public import Mathlib.Condensed.Explicit
 
 /-!
 # Functors from categories of topological spaces to condensed sets
@@ -34,7 +31,7 @@ section Universes
 
 /-- Increase the size of the target category of condensed sets. -/
 def Condensed.ulift : Condensed.{u} (Type u) ⥤ CondensedSet.{u} :=
-  sheafCompose (coherentTopology CompHaus) uliftFunctor.{u+1, u}
+  sheafCompose (coherentTopology CompHaus) uliftFunctor.{u + 1, u}
 
 instance : Condensed.ulift.Full := show (sheafCompose _ _).Full from inferInstance
 
@@ -78,5 +75,8 @@ instance : compHausToCondensed'.Faithful :=
 instance : compHausToCondensed.Full := inferInstanceAs (_ ⋙ _).Full
 
 instance : compHausToCondensed.Faithful := inferInstanceAs (_ ⋙ _).Faithful
+
+instance : PreservesFiniteCoproducts compHausToCondensed.{u} :=
+  inferInstanceAs <| PreservesFiniteCoproducts (coherentTopology _).uliftYoneda
 
 end Topology

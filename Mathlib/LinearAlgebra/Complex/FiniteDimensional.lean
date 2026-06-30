@@ -18,7 +18,7 @@ This file contains the `FiniteDimensional ℝ ℂ` instance, as well as some res
 (`finrank` and `Module.rank`).
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -44,13 +44,13 @@ theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
 
 end Complex
 
-instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
+instance (priority := 500) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
   FiniteDimensional.trans ℝ ℂ E
 
 theorem rank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module.rank ℝ E = 2 * Module.rank ℂ E :=
-  Cardinal.lift_inj.{_,0}.1 <| by
+  Cardinal.lift_inj.{_, 0}.1 <| by
     rw [← lift_rank_mul_lift_rank ℝ ℂ E, Complex.rank_real_complex']
     simp only [Cardinal.lift_id']
 

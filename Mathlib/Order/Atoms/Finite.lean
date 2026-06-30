@@ -21,7 +21,7 @@ This module contains some results on atoms and simple lattices in the finite con
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}
@@ -54,10 +54,8 @@ open scoped _root_.IsSimpleOrder
 variable [LE α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 
 theorem univ : (Finset.univ : Finset α) = {⊤, ⊥} := by
-  change Finset.map _ (Finset.univ : Finset Bool) = _
-  rw [Fintype.univ_bool]
-  simp only [Finset.map_insert, Function.Embedding.coeFn_mk, Finset.map_singleton]
-  rfl
+  ext
+  simpa using (eq_bot_or_eq_top _).symm
 
 theorem card : Fintype.card α = 2 :=
   (Fintype.ofEquiv_card _).trans Fintype.card_bool
@@ -117,7 +115,7 @@ theorem exists_covby_infinite_Ici_of_infinite_Ici [IsStronglyAtomic α]
     ∃ b, a ⋖ b ∧ (Set.Ici b).Infinite := by
   by_contra! h
   refine ((hfin.biUnion (t := Set.Ici) (by simpa using h)).subset (fun b hb ↦ ?_)).not_infinite
-    (ha.diff (Set.finite_singleton a))
+    (ha.sdiff (Set.finite_singleton a))
   obtain ⟨x, hax, hxb⟩ := ((show a ≤ b from hb.1).lt_of_ne (Ne.symm hb.2)).exists_covby_le
   exact Set.mem_biUnion hax hxb
 

@@ -24,10 +24,9 @@ if `s t : Set α`, then under suitable assumption on `α`, it is shown
 
 @[expose] public section
 
-
 namespace Set
 
-open Pointwise
+open scoped Pointwise
 
 local postfix:max "⋆" => star
 
@@ -36,6 +35,7 @@ variable {α : Type*} {s t : Set α} {a : α}
 /-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the scope `Pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
+@[instance_reducible]
 protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩
 
 scoped[Pointwise] attribute [instance] Set.star
@@ -53,7 +53,7 @@ theorem nonempty_star [InvolutiveStar α] {s : Set α} : s⋆.Nonempty ↔ s.Non
 theorem Nonempty.star [InvolutiveStar α] {s : Set α} (h : s.Nonempty) : s⋆.Nonempty :=
   nonempty_star.2 h
 
-@[simp]
+@[simp, push]
 theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s := Iff.rfl
 
 theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp only [mem_star, star_star]
@@ -89,7 +89,7 @@ instance [InvolutiveStar α] : InvolutiveStar (Set α) where
 
 @[simp]
 theorem star_subset_star [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t⋆ ↔ s ⊆ t :=
-  Equiv.star.surjective.preimage_subset_preimage_iff
+  Equiv.Perm.star.surjective.preimage_subset_preimage_iff
 
 theorem star_subset [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t ↔ s ⊆ t⋆ := by
   rw [← star_subset_star, star_star]
@@ -129,6 +129,5 @@ end Set
 @[simp]
 lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
-  ext x
-  simp only [Set.mem_star, SetLike.mem_coe]
-  exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩
+  ext
+  simpa using star_mem_iff

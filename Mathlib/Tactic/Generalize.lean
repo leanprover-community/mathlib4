@@ -20,7 +20,7 @@ haven't updated their code yet can still use `generalize` with the old setting.
 This file can be removed once all uses of the compatibility shim have been removed from Mathlib.
 
 (Possibly we will instead add a `transparency` argument to `generalize`.
-This would also allow removing this file.
+This would also allow removing this file.)
 -/
 
 public meta section

@@ -61,7 +61,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx using Submodule.pow_induction_on_left' with
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-  | add _ _ _ _ _ ihx ihy => simp_rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
+  | add _ _ _ _ _ ihx ihy => simp_rw [map_add, ihx, ihy, ← map_add]; rfl
   | mem_mul _ hm _ _ _ ih =>
       obtain ⟨_, rfl⟩ := hm
       simp_rw [map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,

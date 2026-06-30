@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Binomial Power Series
@@ -31,7 +32,7 @@ commutative binomial ring `R`.
 
 @[expose] public section
 
-open Finset BigOperators
+open Finset
 
 suppress_compilation
 
@@ -89,7 +90,7 @@ lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
     simp only [invOneSubPow, coeff_mk, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg,
       zsmul_eq_mul, mul_one]
     rw [show (-1 : ℤ) + -d = -(d + 1) by abel, Ring.choose_neg, Nat.choose_symm_add, Units.smul_def,
-      show (d : ℤ) + 1 + n - 1 = d + n by cutsat, ← Nat.cast_add, Ring.choose_natCast]
+      show (d : ℤ) + 1 + n - 1 = d + n by lia, ← Nat.cast_add, Ring.choose_natCast]
     norm_cast
 
 end PowerSeries

@@ -13,7 +13,7 @@ More precisely, we introduce two morphism properties `P_δ` and `P_σ` that
 single out morphisms that are compositions of `δ i` (resp. `σ i`).
 
 The main result of this file is `exists_P_σ_P_δ_factorization`, which asserts that every
-moprhism as a decomposition of a `P_σ` followed by a `P_δ`.
+morphism as a decomposition of a `P_σ` followed by a `P_δ`.
 
 -/
 
@@ -147,7 +147,7 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
   induction n generalizing x with
   | zero => cases hf with
     | of _ h => cases h; exact factor_δ_σ _ _
-    | id  => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
+    | id => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
     | comp_of j f hf hg =>
       obtain ⟨k⟩ := hg
       obtain ⟨rfl, rfl⟩ | hf' := eq_or_len_le_of_P_δ hf

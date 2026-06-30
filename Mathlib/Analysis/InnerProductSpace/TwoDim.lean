@@ -78,10 +78,6 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open Module
 
-lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
-    [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
-  .of_fact_finrank_eq_succ 1
-
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
@@ -112,7 +108,7 @@ theorem areaForm_apply_self (x : E) : ω x x = 0 := by
 
 theorem areaForm_swap (x y : E) : ω x y = -ω y x := by
   simp only [areaForm_to_volumeForm]
-  convert o.volumeForm.map_swap ![y, x] (_ : (0 : Fin 2) ≠ 1)
+  convert! o.volumeForm.map_swap ![y, x] (_ : (0 : Fin 2) ≠ 1)
   · ext i
     fin_cases i <;> rfl
   · simp
@@ -161,7 +157,7 @@ theorem areaForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F
 theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x y : E) :
     o.areaForm (φ x) (φ y) = o.areaForm x y := by
-  convert o.areaForm_map φ (φ x) (φ y)
+  convert! o.areaForm_map φ (φ x) (φ y)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [@Fact.out (finrank ℝ E = 2), Fintype.card_fin]
@@ -175,6 +171,7 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
   simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
@@ -210,7 +207,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : Finset.card {x} = 1 := Finset.card_singleton x
           have : finrank ℝ K + finrank ℝ Kᗮ = finrank ℝ E := K.finrank_add_finrank_orthogonal
           have : finrank ℝ E = 2 := Fact.out
-          omega
+          lia
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
@@ -311,7 +308,7 @@ theorem rightAngleRotation_map {F : Type*} [NormedAddCommGroup F] [InnerProductS
 /-- `J` commutes with any positively-oriented isometric automorphism. -/
 theorem linearIsometryEquiv_comp_rightAngleRotation (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x : E) : φ (J x) = J (φ x) := by
-  convert (o.rightAngleRotation_map φ (φ x)).symm
+  convert! (o.rightAngleRotation_map φ (φ x)).symm
   · simp
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
@@ -391,19 +388,15 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
       simp only [Fin.sum_univ_succ, coe_basisRightAngleRotation, Matrix.cons_val_zero,
         Fin.succ_zero_eq_one', Finset.univ_eq_empty, Finset.sum_empty, areaForm_apply_self,
         map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
-        Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
+        smul_eq_mul, areaForm_rightAngleRotation_right,
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
         real_inner_self_eq_norm_sq]
       exact this
-    rintro ⟨ha, hb⟩
-    have hx' : 0 < ‖x‖ := by simpa using hx
-    have ha' : 0 ≤ a := nonneg_of_mul_nonneg_left ha (by positivity)
-    have hb' : b = 0 := eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 hx'.ne') hb
-    exact (SameRay.sameRay_nonneg_smul_right x ha').add_right <| by simp [hb']
+    simp_all
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
-    simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
-      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, and_true]
+    simp only [inner_smul_right, real_inner_self_eq_norm_sq, map_smulₛₗ, areaForm_apply_self,
+      smul_eq_mul, mul_zero, and_true]
     positivity
 
 /-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.RingTheory.WittVector.Basic
+public meta import Mathlib.Lean.Elab.Tactic.Basic
 /-!
 # The `IsPoly` predicate
 
@@ -183,7 +184,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
-  convert h using 1
+  convert! h using 1
   all_goals
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
@@ -275,7 +276,7 @@ instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
 @[simp]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
-  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
+  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, map_zero]
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
 def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
@@ -343,7 +344,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
-  convert h using 1
+  convert! h using 1
   all_goals
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl

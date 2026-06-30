@@ -26,6 +26,7 @@ This file is about Bochner integrals. See the file `AEEqOfLIntegral` for Lebesgu
 All results listed below apply to two functions `f, g`, together with two main hypotheses,
 * `f` and `g` are integrable on all measurable sets with finite measure,
 * for all measurable sets `s` with finite measure, `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ`.
+
 The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 * `ae_eq_of_forall_setIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
 * `AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq`: for functions which are
@@ -44,7 +45,7 @@ Generally useful lemmas which are not related to integrals:
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory TopologicalSpace NormedSpace Filter
@@ -67,7 +68,7 @@ theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace �
   refine hf'.mono fun x hx => ?_
   rw [Pi.zero_apply, ← @inner_self_eq_zero 𝕜]
   have h_closed : IsClosed {c : E | ⟪c, f x⟫_𝕜 = 0} :=
-    isClosed_eq (continuous_id.inner continuous_const) continuous_const
+    isClosed_eq (by fun_prop) (by fun_prop)
   exact @isClosed_property ℕ E _ s (fun c => ⟪c, f x⟫_𝕜 = 0) hs h_closed hx _
 
 local notation "⟪" x ", " y "⟫" => y x
@@ -99,7 +100,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
     intro h
     apply lt_irrefl ‖s x x‖
     calc
-      ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, ContinuousLinearMap.map_sub]
+      ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, map_sub]
       _ ≤ 1 * ‖(x : E) - a‖ := ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
@@ -114,8 +115,6 @@ theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) : f =ᵐ[μ] 0 :=
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (Eventually.of_forall fun _ => Set.mem_univ _)
-
-variable {𝕜}
 
 end AeEqOfForall
 
@@ -239,7 +238,7 @@ theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero {f : α → E}
     exact ContinuousLinearMap.integrable_comp c (hf_int_finite s hs hμs)
   · intro s hs hμs
     rw [ContinuousLinearMap.integral_comp_comm c (hf_int_finite s hs hμs), hf_zero s hs hμs]
-    exact ContinuousLinearMap.map_zero _
+    exact map_zero _
 
 theorem ae_eq_restrict_of_forall_setIntegral_eq {f g : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -358,27 +357,16 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
     exact hf_zero _ (hs.inter ht_meas) hμs
 
 theorem Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α → E} (hf : Integrable f μ)
-    (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 := by
-  have hf_Lp : MemLp f 1 μ := memLp_one_iff_integrable.mpr hf
-  let f_Lp := hf_Lp.toLp f
-  have hf_f_Lp : f =ᵐ[μ] f_Lp := (MemLp.coeFn_toLp hf_Lp).symm
-  refine hf_f_Lp.trans ?_
-  refine Lp.ae_eq_zero_of_forall_setIntegral_eq_zero f_Lp one_ne_zero ENNReal.coe_ne_top ?_ ?_
-  · exact fun s _ _ => Integrable.integrableOn (L1.integrable_coeFn _)
-  · intro s hs hμs
-    rw [integral_congr_ae (ae_restrict_of_ae hf_f_Lp.symm)]
-    exact hf_zero s hs hμs
+    (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 :=
+  hf.aefinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero
+    (fun _ _ _ => hf.integrableOn) hf_zero
 
 theorem Integrable.ae_eq_of_forall_setIntegral_eq (f g : α → E) (hf : Integrable f μ)
     (hg : Integrable g μ)
     (hfg : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ) :
-    f =ᵐ[μ] g := by
-  rw [← sub_ae_eq_zero]
-  have hfg' : ∀ s : Set α, MeasurableSet s → μ s < ∞ → (∫ x in s, (f - g) x ∂μ) = 0 := by
-    intro s hs hμs
-    rw [integral_sub' hf.integrableOn hg.integrableOn]
-    exact sub_eq_zero.mpr (hfg s hs hμs)
-  exact Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero (hf.sub hg) hfg'
+    f =ᵐ[μ] g :=
+  AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq (fun _ _ _ => hf.integrableOn)
+    (fun _ _ _ => hg.integrableOn) hfg hf.aefinStronglyMeasurable hg.aefinStronglyMeasurable
 
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 

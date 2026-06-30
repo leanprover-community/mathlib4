@@ -17,10 +17,10 @@ additive group.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton Ring
 
 instance Int.instIsOrderedAddMonoid : IsOrderedAddMonoid ℤ where
-  add_le_add_left _ _ := Int.add_le_add_left
+  add_le_add_left _ _ := Int.add_le_add_right

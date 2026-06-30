@@ -71,6 +71,7 @@ open Set
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. We do not forbid this collection to be
 all sets of `α`. -/
+@[to_dual_dont_translate]
 structure Filter (α : Type*) where
   /-- The set of sets that belong to the filter. -/
   sets : Set (Set α)
@@ -106,6 +107,7 @@ protected theorem mem_sets : s ∈ f.sets ↔ s ∈ f :=
 theorem univ_mem : univ ∈ f :=
   f.univ_sets
 
+@[gcongr]
 theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f :=
   f.sets_of_superset hx hxy
 
@@ -240,6 +242,29 @@ instance instInf : Min (Filter α) :=
 instance instSup : Max (Filter α) where
   max f g := .copy (sSup {f, g}) {s | s ∈ f ∧ s ∈ g} <| by simp
 
+/-- The relative complement of two filters `f \ g` contains sets
+whose union with any set in `g` lies in `f`. -/
+instance instSDiff : SDiff (Filter α) where
+  sdiff f g := {
+    sets := {s | ∀ ⦃t⦄, t ∈ g → s ⊆ t → t ∈ f}
+    univ_sets := by simp +contextual
+    sets_of_superset hx hxy t ht hyt := hx ht (hxy.trans hyt)
+    inter_sets hx hy t htg ht := by
+      rw [← union_eq_right.2 ht, inter_union_distrib_right]
+      apply inter_mem
+      · exact hx (mem_of_superset htg subset_union_right) subset_union_left
+      · exact hy (mem_of_superset htg subset_union_right) subset_union_left
+  }
+
+/-- The coheyting negation of a filter is the complement of its kernel. -/
+instance instHNot : HNot (Filter α) where
+  hnot f := 𝓟 f.kerᶜ
+
+theorem mem_sdiff : s ∈ f \ g ↔ ∀ t ∈ g, s ⊆ t → t ∈ f := .rfl
+
+protected theorem hnot_def : ￢f = 𝓟 f.kerᶜ := rfl
+
+
 /-- A filter is `NeBot` if it is not equal to `⊥`, or equivalently the empty set does not belong to
 the filter. Bourbaki include this assumption in the definition of a filter but we prefer to have a
 `CompleteLattice` structure on `Filter _`, so we use a typeclass argument in lemmas instead. -/
@@ -247,6 +272,7 @@ class NeBot (f : Filter α) : Prop where
   /-- The filter is nontrivial: `f ≠ ⊥` or equivalently, `∅ ∉ f`. -/
   ne' : f ≠ ⊥
 
+@[push ←]
 theorem neBot_iff {f : Filter α} : NeBot f ↔ f ≠ ⊥ :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
@@ -275,6 +301,7 @@ def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
 notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
 
 /-- A function `f` is eventually less than or equal to a function `g` at a filter `l`. -/
+@[to_dual self (reorder := f g)]
 def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
 
@@ -300,7 +327,8 @@ equivalent conditions hold.
 1. There exists a set `t ∈ f` such that `m ⁻¹' t ⊆ s`. This is used as a definition.
 2. The set `kernImage m s = {y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `Filter.mem_comap'`.
 3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `Filter.mem_comap_iff_compl` and
-`Filter.compl_mem_comap`. -/
+   `Filter.compl_mem_comap`.
+-/
 def comap (m : α → β) (f : Filter β) : Filter α where
   sets := { s | ∃ t ∈ f, m ⁻¹' t ⊆ s }
   univ_sets := ⟨univ, univ_mem, subset_univ _⟩
@@ -430,7 +458,7 @@ elab_rules : tactic
         return [m.mvarId!]
     liftMetaTactic fun goal => do
       goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
-    evalTactic <|← `(tactic| dsimp -zeta only [Set.mem_setOf_eq])
+    evalTactic <|← `(tactic| try dsimp -zeta only [Set.mem_setOf_eq])
     if let some l := wth then
       evalTactic <|← `(tactic| intro $[$l]*)
     if let some e := usingArg then

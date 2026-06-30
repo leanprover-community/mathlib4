@@ -98,6 +98,7 @@ theorem list_prod_apply {I} (C : Set (I → Bool)) (x : C) (l : List (LocallyCon
     l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by
   rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l, LocallyConstant.evalMonoidHom_apply]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x) :
     (factors C s x).prod y = 1 := by
   rw [list_prod_apply (π C (· ∈ s)) y _]
@@ -177,10 +178,12 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   rw [← factors_prod_eq_basis]
   let l := s.sort (· ≥ ·)
   dsimp [factors]
-  suffices l.IsChain (· > ·) → (l.map (fun i ↦ if x.val i = true then e (π C (· ∈ s)) i
+  suffices l.SortedGT → (l.map (fun i ↦ if x.val i = true then e (π C (· ∈ s)) i
       else (1 - (e (π C (· ∈ s)) i)))).prod ∈
       Submodule.span ℤ ((Products.eval (π C (· ∈ s))) '' {m | m.val ≤ l}) from
-    Submodule.span_mono (Set.image_subset_range _ _) (this (Finset.sort_sorted_gt _).isChain)
+    Submodule.span_mono (Set.image_subset_range _ _)
+      (this (Finset.sortedGT_sort _))
+  rw [List.sortedGT_iff_isChain]
   induction l with
   | nil =>
     intro _

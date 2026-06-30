@@ -34,7 +34,6 @@ instance le : LE (Localization s) :=
         obtain ⟨e, he⟩ := r_iff_exists.1 hab
         obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
         simp only [mul_right_inj] at he hf
-        dsimp
         rw [← mul_le_mul_iff_right, mul_right_comm, ← hf, mul_right_comm, mul_right_comm (a₂ : α),
           mul_le_mul_iff_right, ← mul_le_mul_iff_left, mul_left_comm, he, mul_left_comm,
           mul_left_comm (b₂ : α), mul_le_mul_iff_left]⟩
@@ -47,7 +46,6 @@ instance lt : LT (Localization s) :=
         obtain ⟨e, he⟩ := r_iff_exists.1 hab
         obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
         simp only [mul_right_inj] at he hf
-        dsimp
         rw [← mul_lt_mul_iff_right, mul_right_comm, ← hf, mul_right_comm, mul_right_comm (a₂ : α),
           mul_lt_mul_iff_right, ← mul_lt_mul_iff_left, mul_left_comm, he, mul_left_comm,
           mul_left_comm (b₂ : α), mul_lt_mul_iff_left]⟩
@@ -85,8 +83,8 @@ instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where
   mul_le_mul_left := fun a b =>
     Localization.induction_on₂ a b fun a b hab c =>
       Localization.induction_on c fun c => by
-        simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab ⊢
-        exact mul_le_mul_left' hab _
+        simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ (c.2 : α)] at hab ⊢
+        exact mul_le_mul_left hab _
   le_of_mul_le_mul_left := fun a b c =>
     Localization.induction_on₃ a b c fun a b c hab => by
       simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ a.1] at hab ⊢

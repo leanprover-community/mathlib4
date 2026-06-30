@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Topology.SeparatedMap
 
 /-!
@@ -70,8 +70,12 @@ theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     have ⟨U, hU, eq⟩ := isOpen_discrete {(⟨_, _, x.2, rfl⟩ : e '' s)}
     refine ⟨e.source ∩ e ⁻¹' U, e.continuousOn_toFun.isOpen_inter_preimage e.open_source hU,
       subset_antisymm (fun x' mem ↦ Subtype.ext <| e.injOn mem.1 hx ?_) ?_⟩
-    · exact Subtype.ext_iff.mp (eq.subset (a := ⟨_, x', x'.2, rfl⟩) mem.2)
+    · simpa using Set.subset_singleton_iff.1 eq.subset ⟨_, x', x'.2, rfl⟩ mem.2
     · rintro x rfl; exact ⟨hx, eq.superset rfl⟩
+
+lemma isDiscrete_of_image (h : IsLocalHomeomorphOn f s)
+    (hs : IsDiscrete (f '' s)) : IsDiscrete s :=
+  have := hs.1; ⟨discreteTopology_of_image h⟩
 
 theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
     DiscreteTopology (f '' s) ↔ DiscreteTopology s := by
@@ -82,6 +86,10 @@ theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s)
   refine ⟨e '' {x}, e.isOpen_image_of_subset_source ?_ (Set.singleton_subset_iff.mpr hxe), ?_⟩
   · simpa using hs.isOpenMap_subtype_val _ (hX ⟨x, hx⟩)
   · ext; simp [Subtype.ext_iff]
+
+lemma isDiscrete_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
+    IsDiscrete (f '' s) ↔ IsDiscrete s :=
+  ⟨h.isDiscrete_of_image, fun hs' ↦ ⟨h.discreteTopology_image_iff hs |>.mpr hs'.to_subtype⟩⟩
 
 variable (f s) in
 /-- Proves that `f` satisfies `IsLocalHomeomorphOn f s`. The condition `h` is weaker than the
@@ -156,6 +164,7 @@ end IsLocalHomeomorphOn
 def IsLocalHomeomorph :=
   ∀ x : X, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
+/-- A homeomorphism is a local homeomorphism. -/
 theorem Homeomorph.isLocalHomeomorph (f : X ≃ₜ Y) : IsLocalHomeomorph f :=
   fun _ ↦ ⟨f.toOpenPartialHomeomorph, trivial, rfl⟩
 
@@ -205,9 +214,8 @@ theorem mk (h : ∀ x : X, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
     (IsLocalHomeomorphOn.mk f Set.univ fun x _hx ↦ h x)
 
-/-- A homeomorphism is a local homeomorphism. -/
-lemma Homeomorph.isLocalHomeomorph (h : X ≃ₜ Y) : IsLocalHomeomorph h :=
-  fun _ ↦ ⟨h.toOpenPartialHomeomorph, trivial, rfl⟩
+@[deprecated (since := "2026-06-06")]
+alias Homeomorph.isLocalHomeomorph := _root_.Homeomorph.isLocalHomeomorph
 
 variable {g f}
 
@@ -242,9 +250,11 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
 /-- A bijective local homeomorphism is a homeomorphism. -/
-noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
+noncomputable def toHomeomorphOfBijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
     X ≃ₜ Y :=
   (Equiv.ofBijective f hb).toHomeomorphOfContinuousOpen hf.continuous hf.isOpenMap
+
+@[deprecated (since := "2025-12-19")] alias toHomeomorph_of_bijective := toHomeomorphOfBijective
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))
@@ -269,5 +279,42 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     · apply (f.symm_image_target_inter_eq _).trans
       rw [Set.preimage_inter, ← Set.inter_assoc, Set.inter_eq_self_of_subset_left
         f.source_preimage_target, f.source_inter_preimage_inv_preimage]
+
+variable (hf : IsLocalHomeomorph f) {x : X}
+
+variable (x) in
+/-- A chosen local inverse for a local homeomorphism `f` at a point `x`. -/
+noncomputable def localInverseAt : OpenPartialHomeomorph Y X := (hf x).choose.symm
+
+/-- The point `x` lies in the target of `localInverseAt x`. -/
+@[grind =>, simp] lemma self_mem_localInverseAt_target : x ∈ (hf.localInverseAt x).target :=
+  (hf x).choose_spec.1
+
+variable (x) in
+/-- The inverse function of `localInverseAt x` coincides with `f`. -/
+@[simp] lemma localInverseAt_symm : (hf.localInverseAt x).symm = f :=
+  (hf x).choose_spec.2.symm
+
+/-- The point `f x` lies in the source of `localInverseAt x`. -/
+@[grind =>, simp] lemma apply_self_mem_localInverseAt_source :
+    f x ∈ (hf.localInverseAt x).source := by
+  rw [← congrFun (hf.localInverseAt_symm x)]
+  exact (hf.localInverseAt x).map_target hf.self_mem_localInverseAt_target
+
+/-- The function `f` is injective on the target of `localInverseAt x`. -/
+lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
+  rw [Set.EqOn.injOn_iff (f₂ := (hf.localInverseAt x).symm) (fun y _ ↦ by simp)]
+  exact (hf.localInverseAt x).symm.injOn
+
+/-- If `y` lies in the source of `localInverseAt x`, then `f (localInverseAt x y) = y`. -/
+@[grind .] lemma apply_localInverseAt_of_mem {y : Y} (hx : y ∈ (hf.localInverseAt x).source) :
+    f (hf.localInverseAt x y) = y := by
+  rw [← congrFun (hf.localInverseAt_symm x)]
+  exact (hf.localInverseAt x).left_inv hx
+
+/-- The function `localInverseAt x` sends `f x` back to `x`. -/
+@[simp] lemma localInverseAt_apply_self : hf.localInverseAt x (f x) = x :=
+  hf.injOn_localInverseAt_target (by simp) hf.self_mem_localInverseAt_target <|
+    hf.apply_localInverseAt_of_mem hf.apply_self_mem_localInverseAt_source
 
 end IsLocalHomeomorph

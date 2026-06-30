@@ -8,7 +8,8 @@ module
 public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Message
 
 /-!
 # The `oldObtain` linter, against stream-of-consciousness `obtain`
@@ -42,15 +43,16 @@ from mathlib: in summary,
 - the syntax `obtain foo : type := proof` is slightly shorter;
   particularly so when the first tactic of the proof is `exact`
 - when using the old syntax as `obtain foo : type; · proof`, there is an intermediate state with
-multiple goals right before the focusing dot. This can be confusing.
-(This gets amplified with the in-flight "multiple goal linter", which seems generally desired ---
-for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this
-case... but by now, the "old" syntax is not clearly better.)
+  multiple goals right before the focusing dot. This can be confusing.
+  (This gets amplified with the in-flight "multiple goal linter", which seems generally desired ---
+  for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this
+  case... but by now, the "old" syntax is not clearly better.)
 - the old syntax *could* be slightly nicer when deferring goals: however, this is rare.
-In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
-could also be used, as was in fact clearer. -/
+  In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
+  could also be used, as was in fact clearer.
+-/
 
-public meta section
+meta section
 
 open Lean Elab Linter
 
@@ -65,7 +67,7 @@ def isObtainWithoutProof : Syntax → Bool
 
 /-- The `oldObtain` linter emits a warning upon uses of the "stream-of-consciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
-register_option linter.oldObtain : Bool := {
+public register_option linter.oldObtain : Bool := {
   defValue := false
   descr := "enable the `oldObtain` linter"
 }

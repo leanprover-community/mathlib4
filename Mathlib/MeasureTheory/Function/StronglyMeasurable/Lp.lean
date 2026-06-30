@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 /-!
 # Finitely strongly measurable functions in `Lp`
@@ -26,7 +25,7 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Filter TopologicalSpace Function

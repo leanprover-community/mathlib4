@@ -24,25 +24,28 @@ namespace CategoryTheory
 
 open Functor
 
+open scoped Prod
+
 universe v u
 
-variable (A : Type*) [Category A] (A' : Type*) [Category A']
+variable (A : Type*) [Category* A] (A' : Type*) [Category* A']
   (B : Type u) [Category.{v} B]
 
 namespace Sum
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between functors from a sum and the product of the functor categories. -/
 @[simps]
 def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor :=
     { obj F := ⟨inl_ A A' ⋙ F, inr_ A A' ⋙ F⟩
-      map η := ⟨whiskerLeft (inl_ A A') η, whiskerLeft (inr_ A A') η⟩ }
+      map η := whiskerLeft (inl_ A A') η ×ₘ whiskerLeft (inr_ A A') η }
   inverse :=
     { obj F := Functor.sum' F.1 F.2
       map η := NatTrans.sum' η.1 η.2 }
   unitIso := NatIso.ofComponents <| fun F ↦ F.isoSum
-  counitIso := NatIso.ofComponents <| fun F ↦
-    (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F
+  counitIso := NatIso.ofComponents (fun F ↦
+    (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F)
 
 variable {A A' B}
 
@@ -66,6 +69,7 @@ lemma functorEquiv_unitIso_inv_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
     ((functorEquiv A A' B).unitIso.inv.app X).app (.inr a') = 𝟙 (X.obj (.inr a')) :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composing the forward direction of `functorEquiv` with the first projection is the same as
 precomposition with `inl_ A A'`. -/
 @[simps!]
@@ -74,6 +78,7 @@ def functorEquivFunctorCompFstIso :
     (whiskeringLeft A (A ⊕ A') B).obj (inl_ A A') :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composing the forward direction of `functorEquiv` with the second projection is the same as
 precomposition with `inr_ A A'`. -/
 @[simps!]
@@ -82,6 +87,7 @@ def functorEquivFunctorCompSndIso :
     (whiskeringLeft A' (A ⊕ A') B).obj (inr_ A A') :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composing the backward direction of `functorEquiv` with precomposition with `inl_ A A'`.
 is naturally isomorphic to the first projection. -/
 @[simps!]
@@ -90,6 +96,7 @@ def functorEquivInverseCompWhiskeringLeftInlIso :
     Prod.fst (A ⥤ B) (A' ⥤ B) :=
   NatIso.ofComponents (fun _ ↦ Functor.inlCompSum' _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composing the backward direction of `functorEquiv` with the second projection is the same as
 precomposition with `inr_ A A'`. -/
 @[simps!]
@@ -108,11 +115,13 @@ def natTransOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (Sum.functorEquiv A A' B).inverse.map ((η₁, η₂) :) ≫
       (Sum.functorEquiv A A' B).unitInv.app G
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :
     natTransOfWhiskerLeftInlInr (𝟙 (Sum.inl_ A A' ⋙ F)) (𝟙 (Sum.inr_ A A' ⋙ F)) = 𝟙 F := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ⟶ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ⟶ Sum.inr_ A A' ⋙ G)
@@ -121,6 +130,7 @@ lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
       natTransOfWhiskerLeftInlInr ν₁ ν₂ := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
 @[simps]
@@ -140,6 +150,7 @@ lemma natIsoOfWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
 
 namespace Swap
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `functorEquiv A A' B` transforms `Swap.equivalence` into `Prod.braiding`. -/
 @[simps! hom_app_fst hom_app_snd inv_app_fst inv_app_snd]
 def equivalenceFunctorEquivFunctorIso :
@@ -154,8 +165,9 @@ end Swap
 
 section CompatibilityWithProductAssociator
 
-variable (T : Type*) [Category T]
+variable (T : Type*) [Category* T]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Sum.functorEquiv` sends associativity of sums to associativity of products -/
 @[simps! hom_app_fst hom_app_snd_fst hom_app_snd_snd inv_app_fst inv_app_snd_fst inv_app_snd_snd]
 def associativityFunctorEquivNaturalityFunctorIso :

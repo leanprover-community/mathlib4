@@ -5,12 +5,13 @@ Authors: Robert Y. Lewis
 -/
 module
 
+public meta import Lean.Elab.ConfigEval
 public meta import Mathlib.Control.Basic
-public meta import Mathlib.Tactic.Linarith.Verification
-public meta import Mathlib.Tactic.Linarith.Preprocessing
-public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
-public meta import Mathlib.Tactic.Ring.Basic
-public meta import Mathlib.Util.ElabWithoutMVars
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+public import Mathlib.Tactic.Linarith.Preprocessing
+public import Mathlib.Tactic.Linarith.Verification
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -75,7 +76,7 @@ There are two oracles that can be used in `linarith` so far.
   large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
 
 2. **Simplex Algorithm (default).**
-  This oracle reduces the search for a unsatisfiability certificate to some Linear Programming
+  This oracle reduces the search for an unsatisfiability certificate to some Linear Programming
   problem. The problem is then solved by a standard Simplex Algorithm. We use
   [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
   terminates.
@@ -152,7 +153,8 @@ section
 
 /-- A configuration object for `linarith`. -/
 structure LinarithConfig : Type where
-  /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
+  /-- Discharger to prove that a candidate linear combination of hypothesis is zero.
+  In a tactic configuration, set using `(discharger := by ...)` notation. -/
   -- TODO There should be a def for this, rather than calling `evalTactic`?
   discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
   -- We can't actually store a `Type` here,
@@ -265,7 +267,7 @@ def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId)
     (ls : List (Expr × List (Expr × Nat))) : MetaM (Expr × List Nat) :=
   try
     ls.firstM (fun ⟨α, L⟩ =>
-      withTraceNode `linarith (return m!"{exceptEmoji ·} running on type {α}") do
+      withTraceNode `linarith (fun _ => return m!" running on type {α}") do
         let (pf, idxs) ←
           proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (L.map Prod.fst)
         let idxs := idxs.map fun i => L[i]!.2
@@ -300,7 +302,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
           let (i, vs) ← hyp_set.find t
           hyp_set := hyp_set.eraseIdxIfInBounds i
           pure <|
-            withTraceNode `linarith (return m!"{exceptEmoji ·} running on preferred type {t}") do
+            withTraceNode `linarith (fun _ => return m!" running on preferred type {t}") do
               let (pf, idxs) ←
                 proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (vs.map Prod.fst)
               let idxs := idxs.map fun j => vs[j]!.2
@@ -352,9 +354,9 @@ partial def linarithUsedHyps (only_on : Bool) (hyps : List Expr)
   if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"
     if let some [g₁, g₂] ← try? (g.apply (← mkConst' ``eq_of_not_lt_of_not_gt)) then
-      let h₁ ← withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≥") <|
+      let h₁ ← withTraceNode `linarith (fun _ => return m!" proving ≥") <|
         linarithUsedHyps only_on hyps cfg g₁
-      let h₂ ← withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≤") <|
+      let h₂ ← withTraceNode `linarith (fun _ => return m!" proving ≤") <|
         linarithUsedHyps only_on hyps cfg g₂
       return h₁ ++ h₂
 
@@ -483,9 +485,9 @@ performed.
 -/
 syntax (name := linarith?) "linarith?" "!"? linarithArgsRest : tactic
 
-@[inherit_doc linarith] macro "linarith!" rest:linarithArgsRest : tactic =>
+@[tactic_alt linarith] macro "linarith!" rest:linarithArgsRest : tactic =>
   `(tactic| linarith ! $rest:linarithArgsRest)
-@[inherit_doc linarith?] macro "linarith?!" rest:linarithArgsRest : tactic =>
+@[tactic_alt linarith?] macro "linarith?!" rest:linarithArgsRest : tactic =>
   `(tactic| linarith? ! $rest:linarithArgsRest)
 
 /--
@@ -501,19 +503,46 @@ in `linarith`. The preprocessing is as follows:
   where `R ∈ {<, ≤, =}` is the appropriate comparison derived from `R1, R2`.
 -/
 syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
-@[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
+@[tactic_alt nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
+section
+open scoped Lean.Elab.ConfigEval
+-- Enable using Meta.evalExpr' for `(config := ...)`
+private local derive_eval_expr_instance_using_meta_eval Linarith.LinarithConfig
+-- Enable using Meta.evalExpr' for `(oracle := ...)` option
+private local derive_eval_expr_instance_using_meta_eval Linarith.CertificateOracle
+-- Enable using Meta.evalExpr' for `(preprocessors := ...)` option
+private local derive_eval_expr_instance_using_meta_eval Linarith.GlobalBranchingPreprocessor
 /--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/
-declare_config_elab elabLinarithConfig Linarith.LinarithConfig
+declare_config_elab elabLinarithConfig Linarith.LinarithConfig where
+  option discharger := fun cfg item => do
+    let discharger ← withRef item.value do
+      match item.value with
+      | `(by $tacs:tacticSeq) => pure (evalTactic (← `(tactic| ($tacs:tacticSeq))))
+      | _ => throwError "expecting `by ...` tactic for discharger"
+    return { cfg with discharger }
+end
 
 elab_rules : tactic
   | `(tactic| linarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `linarith)
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
+
+private meta partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
+    (g : MVarId) (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
+  if _h : i < hs.length then
+    let rest := hs.eraseIdx i
+    st.restore
+    try
+      let _ ← Linarith.linarith true rest cfg g
+      minimize cfg st g rest i
+    catch _ => minimize cfg st g hs (i+1)
+  else
+    return hs
 
 elab_rules : tactic
   | `(tactic| linarith?%$tk $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) =>
@@ -530,17 +559,7 @@ elab_rules : tactic
             throwError "linarith? currently only supports named hypothesis, not terms"
           let used ←
             if cfg.minimize then
-              let rec minimize (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
-                if _h : i < hs.length then
-                  let rest := hs.eraseIdx i
-                  st.restore
-                  try
-                    let _ ← Linarith.linarith true rest cfg g
-                    minimize rest i
-                  catch _ => minimize hs (i+1)
-                else
-                  return hs
-              minimize used₀ 0
+              minimize cfg st g used₀ 0
             else
               pure used₀
           st.restore

@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 
-## Idempotents in rings
+# Idempotents in rings
 
-The predicate `IsIdempotentElem` is defined for general monoids in `Algebra/Ring/Idempotents.lean`.
+The predicate `IsIdempotentElem` is defined for general monoids in
+`Mathlib/Algebra/Group/Idempotent.lean`; ring-specific lemmas are in
+`Mathlib/Algebra/Ring/Idempotent.lean`.
 In this file we provide various results regarding idempotent elements in rings.
 
 ## Main definitions
@@ -61,7 +63,7 @@ lemma OrthogonalIdempotents.mul_eq [DecidableEq I] (he : OrthogonalIdempotents e
 
 lemma OrthogonalIdempotents.iff_mul_eq [DecidableEq I] :
     OrthogonalIdempotents e ↔ ∀ i j, e i * e j = if i = j then e i else 0 :=
-  ⟨mul_eq, fun H ↦ ⟨fun i ↦ by simpa using H i i, fun i j e ↦ by simpa [e] using H i j⟩⟩
+  ⟨mul_eq, fun H ↦ ⟨fun i ↦ by simpa using! H i i, fun i j e ↦ by simpa [e] using! H i j⟩⟩
 
 lemma OrthogonalIdempotents.isIdempotentElem_sum (he : OrthogonalIdempotents e) {s : Finset I} :
     IsIdempotentElem (∑ i ∈ s, e i) := by
@@ -77,9 +79,6 @@ lemma OrthogonalIdempotents.mul_sum_of_notMem (he : OrthogonalIdempotents e)
     {i : I} {s : Finset I} (h : i ∉ s) : e i * ∑ j ∈ s, e j = 0 := by
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
-
-@[deprecated (since := "2025-05-23")]
-alias OrthogonalIdempotents.mul_sum_of_not_mem := OrthogonalIdempotents.mul_sum_of_notMem
 
 lemma OrthogonalIdempotents.map (he : OrthogonalIdempotents e) :
     OrthogonalIdempotents (f ∘ e) := by
@@ -114,9 +113,9 @@ lemma OrthogonalIdempotents.option (he : OrthogonalIdempotents e) [Fintype I] (x
     rcases i with - | i <;> rcases j with - | j
     · cases ne rfl
     · simpa only [mul_assoc, Finset.sum_mul, he.mul_eq, Finset.sum_ite_eq', Finset.mem_univ,
-        ↓reduceIte, zero_mul] using congr_arg (· * e j) hx₁
+        ↓reduceIte, zero_mul] using! congr_arg (· * e j) hx₁
     · simpa only [Option.elim_some, Option.elim_none, ← mul_assoc, Finset.mul_sum, he.mul_eq,
-        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, mul_zero] using congr_arg (e i * ·) hx₂
+        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, mul_zero] using! congr_arg (e i * ·) hx₂
     · exact he.ortho (Option.some_inj.ne.mp ne)
 
 variable [Fintype I]
@@ -380,10 +379,10 @@ theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingH
     eq_of_isNilpotent_sub_of_isIdempotentElem hx he₂
       (h _ (by rw [RingHom.mem_ker, map_sub, hx', sub_self]))⟩
 
-/-- A family of orthogonal idempotents induces an surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
+/-- A family of orthogonal idempotents induces a surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
 lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
     (he : OrthogonalIdempotents e) :
-    Function.Surjective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
+    Function.Surjective (RingHom.pi fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
   suffices Pairwise fun i j ↦ IsCoprime (Ideal.span {1 - e i}) (Ideal.span {1 - e j}) by
     intro x
     obtain ⟨x, rfl⟩ := Ideal.quotientInfToPiQuotient_surj this x
@@ -423,12 +422,13 @@ lemma CompleteOrthogonalIdempotents.of_prod_one_sub
 
 /-- A family of complete orthogonal idempotents induces an isomorphism `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
 lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempotents e) :
-    Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
+    Function.Bijective (RingHom.pi fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
   classical
   refine ⟨?_, he.1.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
-  simp [funext_iff, Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton] at hx
+  simp only [funext_iff, RingHom.pi_apply, Pi.zero_apply, Ideal.Quotient.eq_zero_iff_mem,
+    Ideal.mem_span_singleton] at hx
   suffices ∀ s : Finset I, (∏ i ∈ s, (1 - e i)) * x = x by
     rw [← this Finset.univ, he.prod_one_sub, zero_mul]
   refine fun s ↦ Finset.induction_on s (by simp) ?_
@@ -438,15 +438,15 @@ lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempot
   rw [← mul_assoc, (he.idem a).one_sub.eq]
 
 lemma CompleteOrthogonalIdempotents.bijective_pi' (he : CompleteOrthogonalIdempotents (1 - e ·)) :
-    Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {e i})) := by
-  obtain ⟨e', rfl, h⟩ : ∃ e' : I → R, (e' = e) ∧ Function.Bijective (Pi.ringHom fun i ↦
+    Function.Bijective (RingHom.pi fun i ↦ Ideal.Quotient.mk (Ideal.span {e i})) := by
+  obtain ⟨e', rfl, h⟩ : ∃ e' : I → R, (e' = e) ∧ Function.Bijective (RingHom.pi fun i ↦
       Ideal.Quotient.mk (Ideal.span {e' i})) := ⟨_, funext (by simp), he.bijective_pi⟩
   exact h
 
 lemma RingHom.pi_bijective_of_isIdempotentElem (e : I → R)
     (he : ∀ i, IsIdempotentElem (e i))
     (he₁ : ∀ i j, i ≠ j → (1 - e i) * (1 - e j) = 0) (he₂ : ∏ i, e i = 0) :
-    Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {e i})) :=
+    Function.Bijective (RingHom.pi fun i ↦ Ideal.Quotient.mk (Ideal.span {e i})) :=
   (CompleteOrthogonalIdempotents.of_prod_one_sub
       ⟨fun i ↦ (he i).one_sub, he₁⟩ (by simpa using he₂)).bijective_pi'
 
@@ -458,7 +458,7 @@ lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentEle
     | 0 => e
     | 1 => f
   change Function.Bijective
-    (piFinTwoEquiv _ ∘ Pi.ringHom (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
+    (piFinTwoEquiv _ ∘ RingHom.pi (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
   rw [(Equiv.bijective _).of_comp_iff']
   apply pi_bijective_of_isIdempotentElem
   · intro i
@@ -478,6 +478,36 @@ noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem
     S ≃ₐ[R] (S ⧸ Ideal.span {e}) × S ⧸ Ideal.span {f} :=
   AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
     RingHom.prod_bijective_of_isIdempotentElem he hf hef₁ hef₂
+
+/-- One can lift a family of complete orthogonal idempotents of `R/e₀` to get one on `R`.
+
+Note that the lemma itself is stated in terms of surjections (where `T = S / I`)
+instead for syntactic generality. -/
+lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
+    (f : R →+* S) (e₀ : R) (he₀ : IsIdempotentElem e₀) (hfe₀ : RingHom.ker f = .span {e₀})
+    (e : I → S) (he : CompleteOrthogonalIdempotents e) (hef : ∀ i, e i ∈ f.range) :
+    ∃ e', CompleteOrthogonalIdempotents (Option.rec e₀ e') ∧ e = f ∘ e' := by
+  choose e' he' using hef
+  choose k hk using fun i ↦ Ideal.mem_span_singleton.mp
+      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by simp [he', (he.1.1 i).eq]))
+  refine ⟨(1 - e₀) • e', ⟨⟨Option.rec he₀ fun i ↦ ?_, ?_⟩, ?_⟩, ?_⟩
+  · rintro (_|i) (_|j) h
+    · simp at h
+    · dsimp; linear_combination - he₀.eq * e' j
+    · dsimp; linear_combination - he₀.eq * e' i
+    · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
+        (hfe₀.le (show f (e' i * e' j) = 0 by simp [he', he.1.2 (by simpa using h)]))
+      dsimp
+      rw [mul_mul_mul_comm, hk, he₀.one_sub.eq, ← mul_assoc, he₀.one_sub_mul_self, zero_mul]
+  · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
+      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.2))
+    simp only [Fintype.sum_option, Pi.smul_apply, smul_eq_mul, ← Finset.mul_sum,
+      sub_eq_iff_eq_add.mp hk]
+    linear_combination - he₀.eq * k
+  · have : f e₀ = 0 := by simpa using hfe₀.ge (Ideal.mem_span_singleton_self _)
+    aesop
+  · dsimp [IsIdempotentElem]
+    linear_combination congr($(he₀.eq) * ((e' i) ^ 2 - k i) + (1 - e₀) * $(hk i))
 
 end CommRing
 
@@ -537,22 +567,25 @@ def NonUnitalRing.corner [NonUnitalRing R] : NonUnitalSubring R where
   neg_mem' := by rintro _ ⟨a, rfl⟩; exact ⟨-a, by simp_rw [mul_neg, neg_mul]⟩
 
 instance [NonUnitalSemiring R] (idem : IsIdempotentElem e) : Semiring idem.Corner where
-  __ : NonUnitalSemiring (NonUnitalSubsemiring.corner e) := inferInstance
+  __ : NonUnitalSemiring idem.Corner :=
+    inferInstanceAs <| NonUnitalSemiring (NonUnitalSubsemiring.corner e)
   one := ⟨e, e, by simp_rw [idem.eq]⟩
   one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).1
   mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).2
 
 instance [NonUnitalCommSemiring R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
-  __ : NonUnitalCommSemiring (NonUnitalSubsemiring.corner e) := inferInstance
   __ : Semiring idem.Corner := inferInstance
+  __ : NonUnitalCommSemiring idem.Corner :=
+    inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.corner e)
 
 instance [NonUnitalRing R] (idem : IsIdempotentElem e) : Ring idem.Corner where
-  __ : NonUnitalRing (NonUnitalRing.corner e) := inferInstance
   __ : Semiring idem.Corner := inferInstance
+  __ : NonUnitalRing idem.Corner := inferInstanceAs <| NonUnitalRing (NonUnitalRing.corner e)
 
 instance [NonUnitalCommRing R] (idem : IsIdempotentElem e) : CommRing idem.Corner where
-  __ : NonUnitalCommRing (NonUnitalRing.corner e) := inferInstance
-  __ : Semiring idem.Corner := inferInstance
+  __ : Ring idem.Corner := inferInstance
+  __ : NonUnitalCommRing idem.Corner :=
+    inferInstanceAs <| NonUnitalCommRing (NonUnitalRing.corner e)
 
 variable {I : Type*} [Fintype I] {e : I → R}
 
@@ -579,12 +612,22 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
      _ = e i * r₁ * e i * (e i * r₂ * e i) := by
       conv in (r₁ * _ * r₂) => rw [← (he.idem i).eq]
       simp_rw [mul_assoc]
-  map_add' r₁ r₂ := funext fun i ↦ Subtype.ext <| by simpa [mul_add] using add_mul ..
+  map_add' r₁ r₂ := funext fun i ↦ Subtype.ext <| by simpa [mul_add] using! add_mul ..
 
 /-- A complete orthogonal family of idempotents in a commutative semiring
 give rise to a direct product decomposition. -/
 def CompleteOrthogonalIdempotents.ringEquivOfComm [CommSemiring R]
     (he : CompleteOrthogonalIdempotents e) : R ≃+* Π i, (he.idem i).Corner :=
   he.ringEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
+
+lemma Ideal.mem_map_span_singleton_iff_of_isIdempotentElem
+    [CommRing R] {e r : R} (he : IsIdempotentElem e) {I : Ideal R} :
+    Ideal.Quotient.mk _ r ∈ I.map (Ideal.Quotient.mk (Ideal.span {e})) ↔ (1 - e) * r ∈ I := by
+  simp only [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective,
+    Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton]
+  refine ⟨?_, fun H ↦ ⟨_, H, by simp [sub_mul]⟩⟩
+  intro ⟨s, hs, t, hrst⟩
+  convert I.mul_mem_left (1 - e) hs using 1
+  linear_combination he.eq * t - (1 - e) * hrst
 
 end corner

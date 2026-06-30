@@ -6,8 +6,8 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Data.Set.Card.Arithmetic
@@ -70,20 +70,29 @@ def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w,
 noncomputable def IsMatching.toEdge (h : M.IsMatching) (v : M.verts) : M.edgeSet :=
   ⟨s(v, (h v.property).choose), (h v.property).choose_spec.1⟩
 
-theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hv : v ∈ M.verts) (hvw : M.Adj v w) :
-    h.toEdge ⟨v, hv⟩ = ⟨s(v, w), hvw⟩ := by
-  simp only [IsMatching.toEdge, Subtype.mk_eq_mk]
-  congr
-  exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm
+theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hvw : M.Adj v w) :
+    h.toEdge ⟨v, hvw.fst_mem⟩ = ⟨s(v, w), hvw⟩ := by
+  rw [IsMatching.toEdge, Subtype.mk_eq_mk, ← h hvw.fst_mem |>.choose_spec.right w hvw]
 
 theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge := by
   rintro ⟨⟨x, y⟩, he⟩
-  exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
+  exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj he⟩
 
-theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
-    (hv : v ∈ M.verts) (hw : w ∈ M.verts) (ha : M.Adj v w) :
-    h.toEdge ⟨v, hv⟩ = h.toEdge ⟨w, hw⟩ := by
-  rw [h.toEdge_eq_of_adj hv ha, h.toEdge_eq_of_adj hw (M.symm ha), Subtype.mk_eq_mk, Sym2.eq_swap]
+theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching) (ha : M.Adj v w) :
+    h.toEdge ⟨v, ha.fst_mem⟩ = h.toEdge ⟨w, ha.snd_mem⟩ := by
+  rw [h.toEdge_eq_of_adj ha, h.toEdge_eq_of_adj ha.symm, Subtype.mk_eq_mk, Sym2.eq_swap]
+
+theorem IsMatching.mem_coe_toEdge (h : M.IsMatching) {v : V} (hv : v ∈ M.verts) :
+    v ∈ (h.toEdge ⟨v, hv⟩ : Sym2 V) :=
+  ⟨h hv |>.choose, rfl⟩
+
+theorem IsMatching.toEdge_preimage_singleton (h : M.IsMatching) (huv : M.Adj u v) :
+    h.toEdge ⁻¹' {⟨s(u, v), huv⟩} = {⟨u, huv.fst_mem⟩, ⟨v, huv.snd_mem⟩} := by
+  refine Set.ext fun w ↦ ⟨fun hw ↦ ?_, fun hw ↦ ?_⟩
+  · grind [h.mem_coe_toEdge w.property]
+  · rcases hw with rfl | rfl
+    · simp [h.toEdge_eq_of_adj huv]
+    · simp [h.toEdge_eq_of_adj huv.symm]
 
 lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
     (M.map (Hom.ofLE hGG')).IsMatching := by
@@ -109,7 +118,7 @@ lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
   intro v hv
   have aux {N N' : Subgraph G} (hN : N.IsMatching) (hd : Disjoint N.support N'.support)
-    (hmN: v ∈ N.verts) : ∃! w, (N ⊔ N').Adj v w := by
+    (hmN : v ∈ N.verts) : ∃! w, (N ⊔ N').Adj v w := by
     obtain ⟨w, hw⟩ := hN hmN
     use w
     refine ⟨sup_adj.mpr (.inl hw.1), ?_⟩
@@ -171,7 +180,7 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
       obtain (⟨hv, rfl⟩ | ⟨hw, rfl⟩) := h
       · exact hadj ⟨v, _⟩
       · exact (hadj ⟨w, _⟩).symm
-    edge_vert := by aesop }
+    edge_vert := by grind }
   simp only [Subgraph.IsMatching, Set.mem_union, true_and]
   intro v hv
   rcases hv with hl | hr
@@ -202,6 +211,20 @@ lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching where
   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
   mpr := .map f.toHom f.injective
+
+theorem IsMatching.verts_eq_biUnion_edgeSet {M : G.Subgraph} (h : M.IsMatching) :
+    M.verts = ⋃ e ∈ M.edgeSet, (e : Set V) := by
+  refine Set.ext fun v ↦ .trans ⟨fun hv ↦ ?_, fun ⟨e, he, hv⟩ ↦ ?_⟩ Set.mem_iUnion₂.symm
+  · have ⟨u, he, _⟩ := h hv
+    exact ⟨s(v, u), he, Sym2.mem_mk_left ..⟩
+  · exact mem_verts_of_mem_edge he hv
+
+theorem IsMatching.injOn_edgeSet : (setOf IsMatching).InjOn (edgeSet (G := G)) := by
+  refine fun M₁ h₁ M₂ h₂ h ↦ Subgraph.ext ?_ <| Sym2.fromRel_eq_fromRel_iff_eq .. |>.mp h
+  rw [h₁.verts_eq_biUnion_edgeSet, h₂.verts_eq_biUnion_edgeSet, h]
+
+theorem IsMatching.strictMonoOn_edgeSet : StrictMonoOn (edgeSet (G := G)) (setOf IsMatching) :=
+  edgeSet_monotone.monotoneOn _ |>.strictMonoOn_of_injOn injOn_edgeSet
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
@@ -265,7 +288,7 @@ lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
   refine ⟨fun h ↦ ?_, by
     rintro ⟨M, rfl, hMr⟩
     simpa [Set.ncard_eq_toFinset_card _ hu, Set.toFinite_toFinset,
-      ← Set.toFinset_card] using @hMr.even_card _ _ _ hu.fintype⟩
+      ← Set.toFinset_card] using! @hMr.even_card _ _ _ hu.fintype⟩
   obtain ⟨t, u, rfl, hd, hcard⟩ := Set.exists_union_disjoint_ncard_eq_of_even h
   obtain ⟨f⟩ : Nonempty (t ≃ u) := by
     rw [← Cardinal.eq, ← t.cast_ncard (Set.finite_union.mp hu).1,
@@ -287,7 +310,9 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion. -/
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
-  simpa using (hM.induce_connectedComponent_isMatching c).even_card
+  have := (hM.induce_connectedComponent_isMatching c).even_card
+  simp only [Subgraph.induce_verts, Set.toFinset_card] at this
+  exact this
 
 lemma odd_matches_node_outside [Finite V] {u : Set V}
     (hM : M.IsPerfectMatching) (c : (Subgraph.deleteVerts ⊤ u).coe.oddComponents) :
@@ -301,16 +326,15 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
     have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ (hw.1) hv
     refine ⟨⟨⟨⟨v', hv'⟩, hv, rfl⟩, ?_, hw.1⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
     apply ConnectedComponent.mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
-    simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.mem_diff, Set.mem_univ, true_and,
+    simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.mem_sdiff, Set.mem_univ, true_and,
       Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
       and_true] at hv' ⊢
     trivial
   apply Nat.not_even_iff_odd.2 c.prop
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
-  haveI : Fintype (c.val.supp) := Fintype.ofFinite _
-  simpa [Subgraph.induce_verts, Subgraph.verts_top, Nat.card_eq_fintype_card, Set.toFinset_card,
-    Finset.card_image_of_injective, ← Nat.card_coe_set_eq] using hMmatch.even_card
+  haveI := Fintype.ofFinite c.val.supp
+  simpa [Finset.card_image_of_injective] using hMmatch.even_card
 
 end Finite
 end ConnectedComponent
@@ -355,7 +379,7 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
     ∃ w', w ≠ w' ∧ G.Adj v w' := by
   simp_rw [← SimpleGraph.mem_neighborSet] at hadj ⊢
   have := h ⟨w, hadj⟩
-  obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by cutsat) w
+  obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by lia) w
   exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
 lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
@@ -366,7 +390,7 @@ lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   intro y ⟨hwy, hwy'⟩
   obtain ⟨x, y', hxy'⟩ := Set.ncard_eq_two.mp (h ⟨w, hadj⟩)
   simp_rw [← SimpleGraph.mem_neighborSet] at *
-  aesop
+  grind
 
 lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
     c.toSimpleGraph.spanningCoe.IsCycles := by
@@ -377,8 +401,6 @@ lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
   ext w'
   simp only [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
 
-@[deprecated (since := "2025-06-08")] alias IsCycles.induce_supp := IsCycles.toSimpleGraph
-
 lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.spanningCoe.IsCycles := by
   intro v hv
@@ -386,6 +408,7 @@ lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc
   obtain ⟨_, hw⟩ := hv
   exact p.mem_verts_toSubgraph.mp <| p.toSubgraph.edge_vert hw
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v} (hp : p.IsPath)
     (h : u ≠ v) (hs : s(v, u) ∉ p.edges) : (p.toSubgraph.spanningCoe ⊔ edge v u).IsCycles := by
   let c := (p.mapLe (OrderTop.le_top G)).cons (by simp [h.symm] : (completeGraph V).Adj v u)
@@ -393,20 +416,20 @@ lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v
     ext w x
     simp only [sup_adj, Subgraph.spanningCoe_adj, completeGraph_eq_top, edge_adj, c,
       Walk.toSubgraph, Subgraph.sup_adj, subgraphOfAdj_adj, adj_toSubgraph_mapLe]
-    aesop
+    grind
   exact this ▸ IsCycle.isCycles_spanningCoe_toSubgraph (by simp [Walk.cons_isCycle_iff, c, hp, hs])
 
 lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.Walk u u}
     (hp : p.IsCycle) (hcyc : G.IsCycles) (hv : v ∈ p.toSubgraph.verts) :
     ∀ w, p.toSubgraph.Adj v w ↔ G.Adj v w := by
-  refine fun w ↦ Subgraph.adj_iff_of_neighborSet_equiv (?_ : Inhabited _).default (Set.toFinite _)
-  apply Classical.inhabited_of_nonempty
+  refine fun w ↦ Subgraph.adj_iff_of_neighborSet_equiv (?_ : Nonempty _).some (Set.toFinite _)
+  have := hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)
   rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _),
-      ← Set.cast_ncard (finite_neighborSet_toSubgraph p), hcyc
-        (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
-          Set.nonempty_of_ncard_ne_zero <| by simp [
-          hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]),
-      hp.ncard_neighborSet_toSubgraph_eq_two (by simp_all)]
+    ← Set.cast_ncard (finite_neighborSet_toSubgraph p),
+    hcyc
+      (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
+        Set.nonempty_of_ncard_ne_zero <| by simp [this]),
+    this]
 
 open scoped symmDiff
 
@@ -437,12 +460,12 @@ lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Finite V] {v w w' : V}
   have e : G.neighborSet (p.getVert n) ≃ p.toSubgraph.neighborSet (p.getVert n) := by
     refine @Classical.ofNonempty _ ?_
     rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
-        hp.ncard_neighborSet_toSubgraph_internal_eq_two (by cutsat) (by cutsat),
+        hp.ncard_neighborSet_toSubgraph_internal_eq_two (by lia) (by lia),
         hcyc (Set.nonempty_of_mem hadj.symm)]
   rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _)]
   exact hadj.symm
 
-private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v w : V}
+private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Finite V] {v w : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hp : p.IsPath) :
     (G \ p.toSubgraph.spanningCoe).Reachable w v := by
   classical
@@ -460,7 +483,7 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
   -- If w = w', then the reachability can be proved with just one edge
   by_cases hww' : w = w'
   · subst hww'
-    have : (G \  p.toSubgraph.spanningCoe).Adj w v := by
+    have : (G \ p.toSubgraph.spanningCoe).Adj w v := by
       simp only [sdiff_adj, Subgraph.spanningCoe_adj]
       exact ⟨hw'2.symm, fun h ↦ hnpvw' h.symm⟩
     exact this.reachable
@@ -478,11 +501,12 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
     exact hnpvw' h.symm
   use (((hcyc.reachable_sdiff_toSubgraph_spanningCoe_aux
     (p.cons hw'2.symm) hp'p).some).mapLe hle).append this.toWalk
-termination_by Fintype.card V + 1 - p.length
+termination_by Nat.card V + 1 - p.length
 decreasing_by
+  have := Fintype.ofFinite V
   simp_wf
   have := Walk.IsPath.length_lt hp
-  cutsat
+  lia
 
 lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc : G.IsCycles)
     (p : G.Walk v w) (hp : p.IsPath) : (G \ p.toSubgraph.spanningCoe).Reachable w v := by
@@ -516,7 +540,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
         rw [Walk.mem_verts_toSubgraph] at hv
         refine (Set.nonempty_of_ncard_ne_zero ?_).mono (p.toSubgraph.neighborSet_subset v)
         rw [hp.1.ncard_neighborSet_toSubgraph_eq_two hv]
-        omega
+        lia
       refine @Classical.ofNonempty _ ?_
       rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
         h this, hp.1.ncard_neighborSet_toSubgraph_eq_two (p.mem_verts_toSubgraph.mp hv)])
@@ -525,7 +549,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
       rw [← hc', Walk.mem_verts_toSubgraph]
       exact hvp
     simp_all
-  use p.rotate hvp
+  use p.rotate v hvp
   rw [← this]
   exact ⟨hp.1.rotate _, by simp⟩
 
@@ -539,7 +563,7 @@ which we do not want in this case. This is why this property, just like `IsCycle
 for `SimpleGraph` rather than `SimpleGraph.Subgraph`.
 -/
 def IsAlternating (G G' : SimpleGraph V) :=
-  ∀ ⦃v w w': V⦄, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
+  ∀ ⦃v w w' : V⦄, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
 
 lemma IsAlternating.mono {G'' : SimpleGraph V} (halt : G.IsAlternating G') (h : G'' ≤ G) :
     G''.IsAlternating G' := fun _ _ _ hww' hvw hvw' ↦ halt hww' (h hvw) (h hvw')
@@ -559,20 +583,19 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
   simp only [sup_adj, edge_adj] at hvw hvv'
   obtain hl | hr := hvw <;> obtain h1 | h2 := hvv'
   · exact halt hww' hl h1
-  · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w') = s(u, x))]
+  · rw [G'.adj_congr_of_sym2 (by grind : s(v, w') = s(u, x))]
     simp only [hnadj, not_false_eq_true, iff_true]
-    rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1,h2r2⟩
-    · subst h2l1 h2l2
-      exact (hx' _ hww' hl.symm).symm
+    rcases h2.1 with ⟨rfl, rfl⟩ | ⟨h2r1, h2r2⟩
+    · exact (hx' _ hww' hl.symm).symm
     · simp_all
-  · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w) = s(u, x))]
+  · rw [G'.adj_congr_of_sym2 (by grind : s(v, w) = s(u, x))]
     simp only [hnadj, false_iff, not_not]
-    rcases hr.1 with ⟨hrl1, hrl2⟩ | ⟨hrr1, hrr2⟩
-    · subst hrl1 hrl2
-      exact (hx' _ hww'.symm h1.symm).symm
-    · aesop
-  · aesop
+    rcases hr.1 with ⟨rfl, rfl⟩ | ⟨hrr1, hrr2⟩
+    · exact (hx' _ hww'.symm h1.symm).symm
+    · grind
+  · grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
     (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles) :
     (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
@@ -582,12 +605,12 @@ lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatc
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   by_cases h : G'.Adj v w
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h
-    have hmadj :  M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
+    have hmadj : M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
     use w'
     simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj,
       hmadj.mp hw.1, hw'.2, not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
     rintro y (hl | hr)
-    · aesop
+    · grind
     · obtain ⟨w'', hw''⟩ := hG'cyc.other_adj_of_adj hr.1
       by_contra! hc
       simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2]

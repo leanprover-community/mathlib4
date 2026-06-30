@@ -122,7 +122,7 @@ The following results are related to the equivalent characterizations in
 - `Subalgebra.LinearDisjoint.inf_eq_bot_of_commute`, `Subalgebra.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, under suitable technical conditions, they are disjoint.
 
-The results with name containing "of_commute" also have corresponding specialized versions
+The results with name containing "`of_commute`" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags
@@ -204,8 +204,8 @@ theorem include_range (A : Type v) [Semiring A] (B : Type w) [Semiring B]
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range := by
   rw [Subalgebra.LinearDisjoint, Submodule.linearDisjoint_iff]
   change Function.Injective <|
-    Submodule.mulMap (LinearMap.range Algebra.TensorProduct.includeLeft)
-      (LinearMap.range Algebra.TensorProduct.includeRight)
+    Submodule.mulMap (LinearMap.range Algebra.TensorProduct.includeLeft.toLinearMap)
+      (LinearMap.range Algebra.TensorProduct.includeRight.toLinearMap)
   rw [← Algebra.TensorProduct.linearEquivIncludeRange_symm_toLinearMap]
   exact LinearEquiv.injective _
 
@@ -640,7 +640,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   replace htb : Function.Injective gb := transcendental_iff_injective.1 htb
   have htab : Function.Injective gab := hfa.comp hta
   algebraize_only [ga.toRingHom, gb.toRingHom]
-  let f := Algebra.TensorProduct.mapOfCompatibleSMul R[X] R A B
+  let f := Algebra.TensorProduct.mapOfCompatibleSMul R[X] R R A B
   haveI := Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain R[X] A B hta htb
   have hf : Function.Injective f := RingHom.injective _
   have key2 : gab.range ≤ fa.range ⊓ fb.range := by
@@ -651,7 +651,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
     refine ⟨⟨a, by simp [fa]⟩, ⟨b, hf ?_⟩⟩
     simp_rw [fb, Algebra.TensorProduct.includeRight_apply, f,
       Algebra.TensorProduct.mapOfCompatibleSMul_tmul]
-    convert ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
+    convert! ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
       (simp_rw [Algebra.smul_def, mul_one]; exact aeval_X _)
   have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
     |>.toLinearMap.lift_rank_le_of_injective
@@ -706,7 +706,7 @@ include H in
 free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
 theorem finrank_sup_of_free [Module.Free R A] [Module.Free R B] :
     Module.finrank R ↥(A ⊔ B) = Module.finrank R A * Module.finrank R B := by
-  simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup_of_free))
+  simpa only [map_mul] using! congr(Cardinal.toNat $(H.rank_sup_of_free))
 
 /-- In a commutative ring, if `A` and `B` are subalgebras which are free modules of finite rank,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
@@ -782,13 +782,13 @@ theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
   intro x y hxy
   obtain ⟨M', hM, hf, h⟩ :=
     TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
-  obtain ⟨s, hs⟩ := Module.Finite.iff_fg.1 hf
+  obtain ⟨s, hs⟩ : M'.FG := .of_finite
   have hs' : (s : Set S) ⊆ A := by rwa [← hs, Submodule.span_le] at hM
   let A' := Algebra.adjoin R (s : Set S)
   have hf' : Submodule.FG (toSubmodule A') := fg_adjoin_of_finite s.finite_toSet fun x hx ↦
     (isIntegral_algHom_iff A.val Subtype.val_injective).2
       (Algebra.IsIntegral.isIntegral (R := R) (A := A) ⟨x, hs' hx⟩)
-  replace hf' : Module.Finite R A' := Module.Finite.iff_fg.2 hf'
+  replace hf' : Module.Finite R A' := .of_fg hf'
   have hA : toSubmodule A' ≤ toSubmodule A := Algebra.adjoin_le_iff.2 hs'
   replace h : {x, y} ⊆ (LinearMap.range (LinearMap.rTensor (toSubmodule B)
       (Submodule.inclusion hA)) : Set _) := fun _ hx ↦ by

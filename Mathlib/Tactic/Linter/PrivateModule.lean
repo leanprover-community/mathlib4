@@ -6,11 +6,10 @@ Authors: Thomas R. Murrills
 module
 
 public meta import Lean.Elab.Command
-public import Lean.Linter.Basic
 public import Lean.Environment
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # Private module linter
@@ -24,8 +23,33 @@ This linter lints against nonempty modules that have only private declarations, 
 declarations are added. By linting (only) the `eoi` token, we can capture all constants defined in
 the file.
 
-Note that private declarations are exactly those which satisfy `isPrivateName`, whether private due
-to an explicit `private` or due to not being made `public`.
+Note that private declarations from the current module are exactly those which satisfy
+`isPrivateName`, whether private due to an explicit `private` or due to not being made `public`.
+
+Since initializers have downstream effects regardless of whether they're `private` or `public`, any
+module which registers an initializer is considered non-private.
+
+We also do not count declarations which satisfy `isReservedName` as public declarations *from the
+current module*. While they might indeed be public, the declarations associated with reserved names
+are generated automatically and lazily, sometimes in downstream modules from the one in which the
+name was reserved.
+
+For example, Lean might reserve the name `foo.eq_1` in one module, but only add a declaration with
+the name `foo.eq_1` to the environment in some downstream module, when Lean attempts to
+realize the name. If the original module is a `public import` of the downstream module, then this
+new declaration `foo.eq_1` will be added to the public scope, as it would be if it had been
+declared in the original module.
+
+As such, if e.g. `simp` realized the public declaration `foo.eq_1` in some module `M.Bar`
+downstream of the module in which `foo` was declared, but `M.Bar` did not add any other public
+declarations, the linter should still fire on `M.Bar`. Ignoring reserved names ensures this.
+
+See also the type `Lean.ReservedNameAction`, invocations of `registerReservedNameAction` and
+`registerReservedNamePredicate` for examples, and the module `Lean.ResolveName` for further insight.
+
+Note that metaprograms should not add public declarations when run in private scopes. Doing so would
+likely be a bug in the metaprogram. As such, we do not perform further checks for automatically
+generated declarations such as those detected by `isAutoDecl` or `isInternalDetail`.
 -/
 
 meta section
@@ -53,18 +77,22 @@ def privateModule : Linter where run stx := do
   if stx.isOfKind ``Parser.Command.eoi then
     unless getLinterValue linter.privateModule (← getLinterOptions) do
       return
-    if (← getEnv).header.isModule then
+    if (← getEnv).header.isModule
+      -- If there are new initializers, this module has a downstream effect and is not private.
+      && (regularInitAttr.ext.getState (← getEnv)).1.isEmpty
       -- Don't lint an imports-only module:
-      if !(← getEnv).constants.map₂.isEmpty then
-        -- Exit if any declaration is public:
-        for (decl, _) in (← getEnv).constants.map₂ do
-          if !isPrivateName decl then return
-        -- Lint if all names are private:
-        let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
-        logLint linter.privateModule topOfFileRef
-          "The current module only contains private declarations.\n\n\
-          Consider adding `@[expose] public section` at the beginning of the module, \
-          or selectively marking declarations as `public`."
+      && !(← getEnv).constants.map₂.isEmpty
+    then
+      -- Exit if any declaration from the current module is public:
+      for (decl, _) in (← getEnv).constants.map₂ do
+        -- Ignore both private and reserved names; see implementation notes
+        if !isPrivateName decl && !isReservedName (← getEnv) decl then return
+      -- Lint if all names are private:
+      let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
+      logLint linter.privateModule topOfFileRef
+        "The current module only contains private declarations.\n\n\
+        Consider adding `@[expose] public section` at the beginning of the module, \
+        or selectively marking declarations as `public`."
 
 initialize addLinter privateModule
 

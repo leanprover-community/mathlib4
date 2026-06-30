@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Evaluating a polynomial
@@ -79,7 +80,7 @@ theorem eval₂_monomial {n : ℕ} {r : R} : (monomial n r).eval₂ f x = f r * 
 @[simp]
 theorem eval₂_X_pow {n : ℕ} : (X ^ n).eval₂ f x = x ^ n := by
   rw [X_pow_eq_monomial]
-  convert eval₂_monomial f x (n := n) (r := 1)
+  convert! eval₂_monomial f x (n := n) (r := 1)
   simp
 
 @[simp]
@@ -128,9 +129,11 @@ theorem eval₂_multiset_sum (s : Multiset R[X]) (x : S) :
     eval₂ f x s.sum = (s.map (eval₂ f x)).sum :=
   map_multiset_sum (eval₂AddMonoidHom f x) s
 
-theorem eval₂_finset_sum (s : Finset ι) (g : ι → R[X]) (x : S) :
+theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∑ i ∈ s, g i).eval₂ f x = ∑ i ∈ s, (g i).eval₂ f x :=
   map_sum (eval₂AddMonoidHom f x) _ _
+
+@[deprecated (since := "2026-04-08")] alias eval₂_finset_sum := eval₂_finsetSum
 
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
@@ -159,7 +162,7 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
   intro k
   by_cases hk : k = 0
   · simp only [hk, h, coeff_C_zero]
-  · simp only [coeff_C_ne_zero hk, RingHom.map_zero, Commute.zero_left]
+  · simp only [coeff_C_of_ne_zero hk, map_zero, Commute.zero_left]
 
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
@@ -216,6 +219,11 @@ def eval₂RingHom (f : R →+* S) (x : S) : R[X] →+* S :=
 theorem coe_eval₂RingHom (f : R →+* S) (x) : ⇑(eval₂RingHom f x) = eval₂ f x :=
   rfl
 
+@[simp]
+theorem eval₂RingHom_comp_C (f : R →+* S) (x : S) : (eval₂RingHom f x).comp C = f := by
+  ext
+  simp
+
 theorem eval₂_pow (n : ℕ) : (p ^ n).eval₂ f x = p.eval₂ f x ^ n :=
   (eval₂RingHom _ _).map_pow _ _
 
@@ -257,13 +265,13 @@ theorem eval₂_at_apply {S : Type*} [Semiring S] (f : R →+* S) (r : R) :
 
 @[simp]
 theorem eval₂_at_one {S : Type*} [Semiring S] (f : R →+* S) : p.eval₂ f 1 = f (p.eval 1) := by
-  convert eval₂_at_apply (p := p) f 1
+  convert! eval₂_at_apply (p := p) f 1
   simp
 
 @[simp]
 theorem eval₂_at_natCast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
     p.eval₂ f n = f (p.eval n) := by
-  convert eval₂_at_apply (p := p) f n
+  convert! eval₂_at_apply (p := p) f n
   simp
 
 @[simp]
@@ -322,6 +330,9 @@ theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
   | zero => simp
   | succ k ih => simp [pow_succ, ← mul_assoc, ih]
 
+theorem eval_mul_C_of_commute (h : Commute a x) : (p * C a).eval x = p.eval x * a := by
+  rw [eval, eval₂_mul_C'] <;> simp [h]
+
 /-- Polynomial evaluation commutes with `List.sum`. -/
 theorem eval_listSum (l : List R[X]) (x : R) : eval x l.sum = (l.map (eval x)).sum :=
   eval₂_list_sum ..
@@ -334,16 +345,18 @@ theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
     (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
   eval₂_sum _ _ _ _
 
-theorem eval_finset_sum (s : Finset ι) (g : ι → R[X]) (x : R) :
+theorem eval_finsetSum (s : Finset ι) (g : ι → R[X]) (x : R) :
     (∑ i ∈ s, g i).eval x = ∑ i ∈ s, (g i).eval x :=
-  eval₂_finset_sum _ _ _ _
+  eval₂_finsetSum _ _ _ _
+
+@[deprecated (since := "2026-04-08")] alias eval_finset_sum := eval_finsetSum
 
 /-- `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
 def IsRoot (p : R[X]) (a : R) : Prop :=
   p.eval a = 0
 
-instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := by
-  unfold IsRoot; infer_instance
+instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) :=
+  inferInstanceAs <| Decidable (eval a p = 0)
 
 @[simp]
 theorem IsRoot.def : IsRoot p a ↔ p.eval a = 0 :=
@@ -451,6 +464,11 @@ theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
   eval₂_mul _ _
 
 @[simp]
+theorem mul_comp_neg_X {R : Type*} [Ring R] (p q : R[X]) :
+    (p * q).comp (-X) = p.comp (-X) * q.comp (-X) :=
+  eval₂_mul_noncomm C (-X) fun _ ↦ Commute.symm (commute_X _).neg_left
+
+@[simp]
 theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
     (p ^ n).comp q = p.comp q ^ n :=
   (MonoidHom.mk (OneHom.mk (fun r : R[X] => r.comp q) one_comp) fun r s => mul_comp r s q).map_pow
@@ -463,7 +481,7 @@ theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
       simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
 
 @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
-    (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
+    (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finsetSum _ _ _ _
 
 end Comp
 
@@ -538,6 +556,9 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
   _root_.map_dvd (mapRingHom f)
 
+lemma associated_map_map (f : R →+* S) {x y : R[X]} :
+    Associated x y → Associated (x.map f) (y.map f) := .map (mapRingHom f)
+
 lemma mapRingHom_comp_C {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) :
     (mapRingHom f).comp C = C.comp f := by ext; simp
 
@@ -564,13 +585,16 @@ protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
   map_sum (mapRingHom f) _ _
 
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
-  Polynomial.induction_on p (by simp only [map_C, forall_const, C_comp])
+  Polynomial.induction_on p (by simp)
     (by
       simp +contextual only [Polynomial.map_add, add_comp, forall_const,
         imp_true_iff])
     (by
       simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
         eval₂_mul_X, imp_true_iff, map_X, Polynomial.map_mul])
+
+theorem eval_X_pow {x : R} (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
+  simp [eval]
 
 end Map
 
@@ -599,9 +623,6 @@ theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
 @[simp]
 theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
   eval₂_pow _ _ _
-
-theorem eval_X_pow (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
-  simp
 
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
@@ -633,9 +654,11 @@ theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
     eval₂ f x s.prod = (s.map (eval₂ f x)).prod :=
   map_multiset_prod (eval₂RingHom f x) s
 
-theorem eval₂_finset_prod (s : Finset ι) (g : ι → R[X]) (x : S) :
+theorem eval₂_finsetProd (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∏ i ∈ s, g i).eval₂ f x = ∏ i ∈ s, (g i).eval₂ f x :=
   map_prod (eval₂RingHom f x) _ _
+
+@[deprecated (since := "2026-04-08")] alias eval₂_finset_prod := eval₂_finsetProd
 
 /-- Polynomial evaluation commutes with `List.prod`
 -/
@@ -678,7 +701,7 @@ theorem eval_eq_zero_of_dvd_of_eval_eq_zero : p ∣ q → eval x p = 0 → eval 
 
 @[simp]
 theorem eval_geom_sum {R} [CommSemiring R] {n : ℕ} {x : R} :
-    eval x (∑ i ∈ range n, X ^ i) = ∑ i ∈ range n, x ^ i := by simp [eval_finset_sum]
+    eval x (∑ i ∈ range n, X ^ i) = ∑ i ∈ range n, x ^ i := by simp [eval_finsetSum]
 
 variable [NoZeroDivisors R]
 
@@ -760,7 +783,7 @@ theorem intCast_comp (i : ℤ) : comp (i : R[X]) p = i := by cases i <;> simp
 @[simp]
 theorem eval₂_at_intCast {S : Type*} [Ring S] (f : R →+* S) (n : ℤ) :
     p.eval₂ f n = f (p.eval n) := by
-  convert eval₂_at_apply (p := p) f n
+  convert! eval₂_at_apply (p := p) f n
   simp
 
 theorem mul_X_sub_intCast_comp {n : ℕ} :

@@ -5,7 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 ## (Unoriented) bordism theory
@@ -24,7 +25,7 @@ and is called the `n`-th (unoriented) bordism group.
 
 This construction can be generalised one step further, to produce an extraordinary homology theory.
 Given a topological space `X`, a **singular manifold** on `X` is a closed smooth manifold `M`
-together with a continuous map `M → F`. (The word *singular* does not refer to singularities,
+together with a continuous map `M → X`. (The word *singular* does not refer to singularities,
 but is by analogy to singular chains in the definition of singular homology.)
 
 Given two `n`-dimensional singular manifolds `s` and `t`, an (oriented) bordism between `s` and `t`
@@ -44,8 +45,8 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
   a closed `C^k`-manifold `M` modelled on `I` together with a continuous map `M → X`.
   We don't assume `M` to be modelled on `ℝⁿ`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
-  If we wish to emphasize the model, with will speak of a singular `I`-manifold.
-  To define a disjoint unions of singular manifolds, we require their domains to be manifolds
+  If we wish to emphasize the model, we will speak of a singular `I`-manifold.
+  To define a disjoint union of singular manifolds, we require their domains to be manifolds
   over the same model with corners: this is why we make the model explicit.
 
 ## Main results
@@ -91,7 +92,7 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
 singular manifold, bordism, bordism group
 -/
 
-@[expose] public section
+public section
 
 open scoped Manifold
 open Module Set
@@ -100,7 +101,7 @@ suppress_compilation
 
 /-- A **singular manifold** on a topological space `X` is a pair `(M, f)` of a closed
 `C^k`-manifold `M` modelled on `I` together with a continuous map `M → X`.
-If we wish to emphasize the model, with will speak of a singular `I`-manifold.
+If we wish to emphasize the model, we will speak of a singular `I`-manifold.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.)
@@ -143,7 +144,7 @@ instance {s : SingularManifold X k I} : BoundarylessManifold I s.M := s.boundary
 
 /-- A map of topological spaces induces a corresponding map of singular manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
-def map.{u} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {k : WithTop ℕ∞}
+@[expose] def map.{u} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {k : WithTop ℕ∞}
     {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [TopologicalSpace H] {I : ModelWithCorners ℝ E H} (s : SingularManifold.{u} X k I)
     {φ : X → Y} (hφ : Continuous φ) : SingularManifold.{u} Y k I where
@@ -177,7 +178,7 @@ noncomputable def refl : SingularManifold M k I where
 
 /-- If `(N, f)` is a singular manifold on `X` and `M` another `C^k` manifold,
 a continuous map `φ : M → N` induces a singular manifold structure `(M, f ∘ φ)` on `X`. -/
-noncomputable def comap (s : SingularManifold X k I)
+@[expose] noncomputable def comap (s : SingularManifold X k I)
     {φ : M → s.M} (hφ : Continuous φ) : SingularManifold X k I where
   M := M
   f := s.f ∘ φ
@@ -195,7 +196,7 @@ lemma comap_f (s : SingularManifold X k I) {φ : M → s.M} (hφ : Continuous φ
 
 variable (X) in
 /-- The canonical singular manifold associated to the empty set (seen as a smooth manifold) -/
-def empty.{u} (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
+@[expose] def empty.{u} (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [IsManifold I k M] [IsEmpty M] : SingularManifold X k I where
   M := M
   f x := (IsEmpty.false x).elim
@@ -205,15 +206,14 @@ def empty.{u} (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
 
 omit [CompactSpace M] [BoundarylessManifold I M] in
 @[simp, mfld_simps]
-lemma empty_M [IsEmpty M] : (empty X M I (k := k)).M = M := rfl
+lemma empty_M [IsEmpty M] : (empty X M I (k := k)).M = M := (rfl)
 
-instance [IsEmpty M] : IsEmpty (SingularManifold.empty X M I (k := k)).M := by
-  unfold SingularManifold.empty
-  infer_instance
+instance [IsEmpty M] : IsEmpty (SingularManifold.empty X M I (k := k)).M :=
+  inferInstanceAs <| IsEmpty M
 
 variable (M I) in
 /-- A smooth manifold induces a singular manifold on the one-point space. -/
-def toPUnit : SingularManifold PUnit k I where
+@[expose] def toPUnit : SingularManifold PUnit k I where
   M := M
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
@@ -235,7 +235,7 @@ with its induced map into `X`.
 arbitrarily small perturbation `f'` so `f'` and `g` are transverse. One can prove that different
 perturbations yield bordant manifolds.)
 -/
-def prod (s : SingularManifold PUnit k I) (t : SingularManifold PUnit k I') :
+@[expose] def prod (s : SingularManifold PUnit k I) (t : SingularManifold PUnit k I') :
     SingularManifold PUnit k (I.prod I') where
   M := s.M × t.M
   f := fun _ ↦ PUnit.unit
@@ -244,15 +244,15 @@ def prod (s : SingularManifold PUnit k I) (t : SingularManifold PUnit k I') :
 variable (s t : SingularManifold X k I)
 
 /-- The disjoint union of two singular `I`-manifolds on `X` is a singular `I`-manifold on `X`. -/
-def sum (s t : SingularManifold X k I) : SingularManifold X k I where
+@[expose] def sum (s t : SingularManifold X k I) : SingularManifold X k I where
   M := s.M ⊕ t.M
   f := Sum.elim s.f t.f
   hf := s.hf.sumElim t.hf
 
 @[simp, mfld_simps]
-lemma sum_M (s t : SingularManifold X k I) : (s.sum t).M = (s.M ⊕ t.M) := rfl
+lemma sum_M (s t : SingularManifold X k I) : (s.sum t).M = (s.M ⊕ t.M) := (rfl)
 
 @[simp, mfld_simps]
-lemma sum_f (s t : SingularManifold X k I) : (s.sum t).f = Sum.elim s.f t.f := rfl
+lemma sum_f (s t : SingularManifold X k I) : (s.sum t).f = Sum.elim s.f t.f := (rfl)
 
 end SingularManifold

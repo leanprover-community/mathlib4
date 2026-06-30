@@ -6,7 +6,8 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
@@ -34,7 +35,7 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists NormedSpace
 
@@ -46,6 +47,7 @@ section Semimodule
 
 /-- A `LocallyConvexSpace` is a topological semimodule over an ordered semiring in which convex
 neighborhoods of a point form a neighborhood basis at that point. -/
+@[wikidata Q1572357]
 class LocallyConvexSpace (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜]
     [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] : Prop where
   convex_basis : ∀ x : E, (𝓝 x).HasBasis (fun s : Set E => s ∈ 𝓝 x ∧ Convex 𝕜 s) id
@@ -100,14 +102,14 @@ theorem locallyConvexSpace_iff_exists_convex_subset_zero :
   (locallyConvexSpace_iff_zero 𝕜 E).trans hasBasis_self
 
 -- see Note [lower instance priority]
-instance (priority := 100) LocallyConvexSpace.toLocPathConnectedSpace [Module ℝ E]
-    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocPathConnectedSpace E :=
+instance (priority := 100) LocallyConvexSpace.toLocallyPathConnectedSpace [Module ℝ E]
+    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocallyPathConnectedSpace E :=
   .of_bases (fun x ↦ convex_basis (𝕜 := ℝ) x)
     fun _ _ hs ↦ hs.2.isPathConnected <| nonempty_of_mem <| mem_of_mem_nhds hs.1
 
 /-- Convex subsets of locally convex spaces are locally path-connected. -/
-theorem Convex.locPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
-    {S : Set E} (hS : Convex ℝ S) : LocPathConnectedSpace S := by
+theorem Convex.locallyPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
+    {S : Set E} (hS : Convex ℝ S) : LocallyPathConnectedSpace S := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨t, ht⟩ ↦ mem_of_superset ht.1.1 ht.2⟩⟩⟩
   let ⟨t, ht⟩ := (mem_nhds_subtype S x s).mp hs
   let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.1).mem_iff.mp ht.1
@@ -116,11 +118,14 @@ theorem Convex.locPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [Loca
   · refine Subtype.preimage_coe_self_inter _ _ ▸ IsPathConnected.preimage_coe ?_ inter_subset_left
     exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.2, mem_of_mem_nhds ht'.1.1⟩
 
+@[deprecated (since := "2026-06-21")]
+alias Convex.locPathConnectedSpace := Convex.locallyPathConnectedSpace
+
 end Module
 
 section LinearOrderedField
 
-variable (𝕜 E : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable (𝕜 E : Type*) [Field 𝕜] [PartialOrder 𝕜] [ZeroLEOneClass 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
@@ -157,9 +162,6 @@ lemma exists_open_convex_of_notMem (hx : x ∉ s) (hsconv : Convex 𝕜 s) (hscl
       IsOpen U ∧ IsOpen V ∧ Convex 𝕜 U ∧ Convex 𝕜 V ∧ x ∈ U ∧ s ⊆ V ∧ Disjoint U V := by
   simpa [*] using Disjoint.exists_open_convexes (s := {x}) (t := s) (𝕜 := 𝕜)
 
-@[deprecated (since := "2025-05-23")]
-alias exists_open_convex_of_not_mem := exists_open_convex_of_notMem
-
 end LinearOrderedField
 
 section LatticeOps
@@ -179,16 +181,10 @@ protected theorem LocallyConvexSpace.sInf {ts : Set (TopologicalSpace E)}
   rw [nhds_sInf, ← iInf_subtype'']
   exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ ↑i).mp (h (↑i) i.2) x
 
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_sInf := LocallyConvexSpace.sInf
-
 protected theorem LocallyConvexSpace.iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ _ (ts' i)) :
     @LocallyConvexSpace 𝕜 E _ _ _ _ (⨅ i, ts' i) :=
   .sInf <| by rwa [forall_mem_range]
-
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_iInf := LocallyConvexSpace.iInf
 
 protected theorem LocallyConvexSpace.inf {t₁ t₂ : TopologicalSpace E}
     (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ _ t₁)
@@ -196,9 +192,6 @@ protected theorem LocallyConvexSpace.inf {t₁ t₂ : TopologicalSpace E}
   rw [inf_eq_iInf]
   refine .iInf fun b => ?_
   cases b <;> assumption
-
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_inf := LocallyConvexSpace.inf
 
 protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
     (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ _ (t.induced f) := by
@@ -209,8 +202,15 @@ protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyCo
   rw [nhds_induced]
   exact (LocallyConvexSpace.convex_basis <| f x).comap f
 
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_induced := LocallyConvexSpace.induced
+theorem Topology.IsInducing.locallyConvexSpace [TopologicalSpace F] [LocallyConvexSpace 𝕜 F]
+    [TopologicalSpace E] {f : E →ₗ[𝕜] F} (hf : IsInducing f) :
+    LocallyConvexSpace 𝕜 E := by
+  rw [hf.eq_induced]
+  exact .induced f
+
+instance [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] {S : Submodule 𝕜 E} :
+    LocallyConvexSpace 𝕜 S :=
+  IsInducing.locallyConvexSpace (f := S.subtype) .subtypeVal
 
 instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
