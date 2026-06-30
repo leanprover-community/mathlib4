@@ -6,7 +6,7 @@ Authors: Leonid Ryvkin
 -/
 module
 
-public import Mathlib.Algebra.LieRinehartAlgebra.Defs
+public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
 
 /-!
 # Lie-Rinehart ideals
@@ -199,9 +199,7 @@ def comap (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartId
     StrictLieRinehartIdeal A L₁ := {
   s₂.toSubmodule.comap (f.toLinearMap') with
   ideal' {x y} h := by
-    change f.toLinearMap' ⁅x, y⁆ ∈ s₂-- for some reason using simp to get here yields an
-                                     -- identically looking expression on which the next rw
-                                     -- can not be applied
+    change f.toLinearMap' ⁅x, y⁆ ∈ s₂
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply, LieHom.map_lie]
     change f.toLinearMap' x ∈ s₂ at h
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
@@ -219,20 +217,20 @@ def comap (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartId
 end StrictLieRinehartIdeal
 
 namespace LieRinehartAlgebra
+
 namespace Hom
 
 variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRing L₁] [Module A L₁]
   [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
   [LieAlgebra R L₂] (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂)
 
-def ker : StrictLieRinehartIdeal A L₁ :=
-  StrictLieRinehartIdeal.comap f 0
+def ker : StrictLieRinehartIdeal A L₁ := StrictLieRinehartIdeal.comap f 0
 
 @[simp]
 theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := Iff.rfl
 
 end Hom
-end LieRinehartAlgebra
 
+end LieRinehartAlgebra
 
 end

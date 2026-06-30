@@ -127,7 +127,6 @@ theorem mk_eq_zero {l : L} : mk' s R l = 0 ↔ l ∈ s := Submodule.Quotient.mk_
 theorem mk'_ker : (mk' s R).ker = s := by ext l; simp
 
 end Quotient
-
 end StrictLieRinehartIdeal
 
 end
