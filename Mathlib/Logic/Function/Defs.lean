@@ -91,7 +91,7 @@ theorem prod_comp_comp (h : α → γ) (k : β → δ) :
 
 theorem prod_comp_prod (h : α × β → γ) (k : α × β → δ) :
     Function.prod h k ∘ Function.prod f g =
-    Function.prod (h ∘ Function.prod f g) (k ∘ Function.prod f g) := rfl
+      Function.prod (h ∘ Function.prod f g) (k ∘ Function.prod f g) := rfl
 
 @[simp] theorem swap_comp_prod : Prod.swap ∘ Function.prod f g = Function.prod g f := rfl
 
