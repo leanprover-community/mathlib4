@@ -169,6 +169,7 @@ theorem weakLimit.lift_π {F : J ⥤ C} [HasWeakLimit F] (c : Cone F) (j : J) :
 namespace IsWeakLimit
 
 /-- Transport evidence that a cone is a limit cone across an isomorphism of cones. -/
+@[simps]
 def ofIsoWeakLimit {r t : Cone F} (P : IsWeakLimit r) (i : r ≅ t) : IsWeakLimit t where
   lift s := P.lift s ≫ i.hom.hom
 
