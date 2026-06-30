@@ -16,7 +16,7 @@ public import Mathlib.Data.Fintype.Card
 
 ## Main definitions
 
-* `SimpleGraph.TutteViolator G u` is a set of vertices `u` such that the amount of
+* `SimpleGraph.IsTutteViolator G u` is a set of vertices `u` such that the amount of
   odd components left after deleting `u` from `G` is larger than the number of vertices in `u`.
   This certifies non-existence of a perfect matching.
 
