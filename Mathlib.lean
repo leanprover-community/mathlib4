@@ -2021,6 +2021,7 @@ public import Mathlib.Analysis.Fourier.Notation
 public import Mathlib.Analysis.Fourier.PoissonSummation
 public import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
 public import Mathlib.Analysis.Fourier.ZMod
+public import Mathlib.Analysis.FredholmOperators
 public import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
 public import Mathlib.Analysis.Hofer
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
@@ -7606,7 +7607,6 @@ public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
-public import Mathlib.Topology.Algebra.Module.FredholmOperators
 public import Mathlib.Topology.Algebra.Module.IsWeak
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
