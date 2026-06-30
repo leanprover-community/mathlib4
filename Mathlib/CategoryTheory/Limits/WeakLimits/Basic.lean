@@ -231,7 +231,7 @@ if and only if the original cone is.
 -/
 lemma postcompose_inv_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) (c : Cone G) :
     Nonempty (IsWeakLimit ((Cone.postcompose α.inv).obj c)) ↔ Nonempty (IsWeakLimit c) :=
-  iff_of_postcomposeHomEquiv α.symm c
+  postcompose_hom_iff_of_iso α.symm c
 
 /-- Constructing an equivalence between `Nonempty (IsWeakLimit c)` and `Nonempty (IsWeakLimit d)`
 from a natural isomorphism between the underlying functors, and then an isomorphism between `c`
@@ -240,7 +240,7 @@ transported along this and `d`.
 lemma iff_of_natIso_of_iso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) (d : Cone G)
     (w : (Cone.postcompose α.hom).obj c ≅ d) :
     Nonempty (IsWeakLimit c) ↔  Nonempty (IsWeakLimit d) :=
-  (iff_of_postcomposeHomEquiv α _).symm.trans (IsWeakLimit.equivIsoWeakLimit w).nonempty_congr
+  (postcompose_hom_iff_of_iso α _).symm.trans (IsWeakLimit.equivIsoWeakLimit w).nonempty_congr
 
 end IsWeakLimit
 
@@ -250,7 +250,7 @@ theorem hasWeakLimit_of_iso {F G : J ⥤ C} [HasWeakLimit F] (α : F ≅ G) : Ha
   HasWeakLimit.mk
     { cone := (Cone.postcompose α.hom).obj (weakLimit.cone F)
       isWeakLimit :=
-        Nonempty.some ((IsWeakLimit.iff_of_postcomposeHomEquiv α _ ).mpr
+        Nonempty.some ((IsWeakLimit.postcompose_hom_iff_of_iso α _ ).mpr
         (Nonempty.intro (weakLimit.isWeakLimit F)))
       }
 
