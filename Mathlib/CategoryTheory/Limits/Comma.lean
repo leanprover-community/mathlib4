@@ -115,8 +115,8 @@ def fstSndJointlyReflectLimit {F : J ⥤ Comma L R} {c : Cone F}
     · exact h₂.fac ((snd _ _).mapCone s) j
   uniq s _ hm := by
     ext
-    · exact h₁.uniq ((fst _ _).mapCone s) _ (fun _ ↦ by simp [← hm])
-    · exact h₂.uniq ((snd _ _).mapCone s) _ (fun _ ↦ by simp [← hm])
+    · exact h₁.uniq ((fst _ _).mapCone s) _ (by simp [← hm])
+    · exact h₂.uniq ((snd _ _).mapCone s) _ (by simp [← hm])
 
 /-- (Implementation). An auxiliary cocone which is useful in order to construct colimits
 in the comma category. -/
@@ -192,8 +192,8 @@ def fstSndJointlyReflectColimit {F : J ⥤ Comma L R} {c : Cocone F}
     · exact h₂.fac ((snd _ _).mapCocone s) j
   uniq s _ hm := by
     ext
-    · exact h₁.uniq ((fst _ _).mapCocone s) _ (fun _ ↦ by simp [← hm])
-    · exact h₂.uniq ((snd _ _).mapCocone s) _ (fun j ↦ by simp [← hm])
+    · exact h₁.uniq ((fst _ _).mapCocone s) _ (by simp [← hm])
+    · exact h₂.uniq ((snd _ _).mapCocone s) _ (by simp [← hm])
 
 instance hasLimit (F : J ⥤ Comma L R) [HasLimit (F ⋙ fst L R)] [HasLimit (F ⋙ snd L R)]
     [PreservesLimit (F ⋙ snd L R) R] : HasLimit F :=
