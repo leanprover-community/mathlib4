@@ -62,7 +62,7 @@ protected theorem mul [Dvd α] [CommMonoid β] {f g : α → β}
 protected theorem smul [Dvd α] [Monoid β] [Monoid γ] {f : α → γ} [SMul β γ]
     [IsScalarTower β γ γ] [IsScalarTower β β γ] [SMulCommClass β γ γ]
     (b : β) (hg : IsDvdSeq f) : IsDvdSeq (b • f) :=
-  .smul' (.const b) hg
+  .smul' (.const α b) hg
 
 end IsDvdSeq
 
