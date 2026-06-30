@@ -305,7 +305,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
   have : P.IsMaximal := .of_liesOver_isMaximal P 𝒑
-  rw [← inertiaDeg_eq_inertiaDeg' 𝒑]
   rw [h₃, natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
   · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
   · refine dvd_trans h₂.2.2 ?_
@@ -327,7 +326,7 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  rw [← ramificationIdx_eq_ramificationIdx' 𝒑 P (by simpa using hp.out.ne_zero), h₃]
+  rw [h₃]
   refine multiplicity_eq_of_emultiplicity_eq_some (le_antisymm ?_ ?_)
   · apply emultiplicity_le_one_of_separable
     · exact isUnit_iff_degree_eq_zero.not.mpr (Irreducible.degree_pos h₂.1).ne'

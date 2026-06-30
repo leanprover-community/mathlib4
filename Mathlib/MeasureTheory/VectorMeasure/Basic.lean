@@ -6,7 +6,6 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Measure.Real
-public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
