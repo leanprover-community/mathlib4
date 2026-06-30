@@ -216,7 +216,7 @@ a weak limit cone across the equivalence.
 lemma ofConeEquiv {D : Type*} [Category* D] {G : K ⥤ D} (h : Cone G ≌ Cone F) {c : Cone G} :
     Nonempty (IsWeakLimit (h.functor.obj c)) ↔ Nonempty (IsWeakLimit c) :=
   ⟨fun P ↦ Nonempty.intro (IsWeakLimit.ofIsoWeakLimit
-   (IsWeakLimit.ofRightAdjoint h.toAdjunction P.some) (h.unitIso.symm.app c)),
+    (IsWeakLimit.ofRightAdjoint h.toAdjunction P.some) (h.unitIso.symm.app c)),
    fun P ↦ Nonempty.intro (IsWeakLimit.ofRightAdjoint h.symm.toAdjunction P.some)⟩
 
 /-- A cone postcomposed with a natural isomorphism is a weak limit cone
