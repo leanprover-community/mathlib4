@@ -36,6 +36,11 @@ variable [TopologicalSpace Z] {proj : Z → B} (e : Trivialization F proj)
 lemma baseSet_mem_nhds {x : B} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
   e.open_baseSet.mem_nhds_iff.mpr hx
 
+lemma eventually {x : B} (hx : x ∈ e.baseSet) {P : B → Prop}
+  (h : ∀ x' ∈ e.baseSet, P x') : ∀ᶠ x' in 𝓝 x, P x' := by
+  filter_upwards [e.baseSet_mem_nhds hx] with x' hx'
+  exact h x' hx'
+
 lemma baseSet_prod_univ_mem_nhds {v : Z}
     (hv : proj v ∈ e.baseSet) : e.baseSet ×ˢ univ ∈ 𝓝 (e v) := by
   rw [← e.mk_proj_snd' hv]
@@ -284,42 +289,49 @@ variable (R : Type*) {B F : Type*} {E : B → Type*}
   [(x : B) → TopologicalSpace (E x)]
   [FiberBundle F E] (e : Trivialization F (π F E))
 
-lemma symm_map_add [Trivialization.IsLinear R e] {x : B}
+lemma symm_map_add [Trivialization.IsLinear R e] {x : B} (hx : x ∈ e.baseSet)
   (f f' : F) :
-    e.symm x (f + f') = e.symm x f + e.symm x f' :=
-  (e.symmL R x).map_add f f'
+    e.symm x (f + f') = e.symm x f + e.symm x f' := by
+  simpa [hx] using (e.symmL R x).map_add f f'
 
-lemma funToSec_map_add [Trivialization.IsLinear R e] {s s' : B → F} :
-    e.funToSec (s + s') = e.funToSec s + e.funToSec s' := by
-  ext b
-  simp [funToSec, e.symm_map_add R]
+lemma funToSec_map_add [Trivialization.IsLinear R e] {s s' : B → F}
+    {x : B} (hx : x ∈ e.baseSet) :
+    e.funToSec (s + s') x = e.funToSec s x + e.funToSec s' x := by
+  simp [funToSec, e.symm_map_add R, hx]
+
+lemma funToSec_map_add_eventuallyEq [Trivialization.IsLinear R e] (s s' : B → F)
+    {x : B} (hx : x ∈ e.baseSet) :
+    ∀ᶠ x' in 𝓝 x, e.funToSec (s + s') x' = e.funToSec s x' + e.funToSec s' x' :=
+  e.eventually hx fun _ ↦ e.funToSec_map_add R
 
 @[simp]
-lemma symm_map_zero [Trivialization.IsLinear R e] {x : B} :
-    e.symm x 0 = 0 :=
-  (e.symmL R x).map_zero
+lemma symm_map_zero [Trivialization.IsLinear R e] {x : B} (hx : x ∈ e.baseSet) :
+    e.symm x 0 = 0 := by
+  simpa [hx] using (e.symmL R x).map_zero
 
 @[simp]
-lemma funToSec_map_zero [Trivialization.IsLinear R e] :
-    e.funToSec (0 : B → F) = 0 := by
-  ext b
-  simp [funToSec, e.symm_map_zero R]
+lemma funToSec_map_zero [Trivialization.IsLinear R e] {x : B} (hx : x ∈ e.baseSet) :
+    e.funToSec (0 : B → F) x = 0 :=
+  e.symm_map_zero R hx
+
+lemma funToSec_map_zero_eventuallyEq [Trivialization.IsLinear R e] {x : B} (hx : x ∈ e.baseSet) :
+    ∀ᶠ x' in 𝓝 x, e.funToSec (0 : B → F) x' = 0 :=
+  e.eventually hx fun _ ↦ e.funToSec_map_zero R
 
 variable {R}
 
-lemma symm_map_smul [Trivialization.IsLinear R e] {x : B} (a : R) (f : F) :
-    e.symm x (a • f) = a • e.symm x f :=
-  (e.symmL R x).map_smul a f
+lemma symm_map_smul [Trivialization.IsLinear R e] {x : B} (hx : x ∈ e.baseSet)
+    (a : R) (f : F) : e.symm x (a • f) = a • e.symm x f := by
+  simpa only [symmL_apply _ hx] using (e.symmL R x).map_smul a f
 
-lemma funToSec_map_smul_const [Trivialization.IsLinear R e] (a : R) (s : B → F) :
-    e.funToSec (a • s) = a • e.funToSec s := by
-  ext b
-  simp [funToSec, e.symm_map_smul]
+lemma funToSec_map_smul_const [Trivialization.IsLinear R e] {x : B} (hx : x ∈ e.baseSet)
+    (a : R) (s : B → F) :
+    e.funToSec (a • s) x = a • e.funToSec s x :=
+  e.symm_map_smul hx ..
 
-lemma funToSec_map_smul [Trivialization.IsLinear R e] (a : B → R) (s : B → F) :
-    e.funToSec (a • s) = a • e.funToSec s := by
-  ext b
-  simp [funToSec, e.symm_map_smul]
+lemma funToSec_map_smul [Trivialization.IsLinear R e] {x : B} (hx : x ∈ e.baseSet)
+    (a : B → R) (s : B → F) : e.funToSec (a • s) x = a x • e.funToSec s x :=
+  e.symm_map_smul hx ..
 
 end
 

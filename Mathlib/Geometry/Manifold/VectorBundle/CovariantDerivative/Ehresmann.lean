@@ -170,19 +170,37 @@ omit [IsManifold I 1 M] in
 lemma pushCovDer_isCovariantDerivativeOn
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
     [ContMDiffVectorBundle 1 F V I]
-    {u : Set M} (hu : u ⊆ e.baseSet)
+    {u : Set M} (u_op : IsOpen u) (hu : u ⊆ e.baseSet)
     (hcov : IsCovariantDerivativeOn F cov u) :
     IsCovariantDerivativeOn F (e.pushCovDer cov) u where
   add {σ σ' x} hσ hσ' hx := by
     have hs := mdifferentiableAt_funToSec' e (hu hx) hσ
     have hs' := mdifferentiableAt_funToSec' e (hu hx) hσ'
     unfold Trivialization.pushCovDer
-    rw [← ContinuousLinearMap.comp_add, ← hcov.add hs hs' hx, e.funToSec_map_add 𝕜]
+    rw [← ContinuousLinearMap.comp_add, ← hcov.add hs hs' hx]
+    congr 1
+    have : MDiffAt (T% fun b ↦ e.funToSec σ b + e.funToSec σ' b) x :=
+      mdifferentiableAt_add_section hs hs'
+    apply hcov.congr_of_eventuallyEq
+    · apply this.congr_of_eventuallyEq
+      filter_upwards [e.funToSec_map_add_eventuallyEq 𝕜 σ σ' (hu hx)] with m hm
+      rw [hm]
+    · exact this
+    · exact u_op.mem_nhds_iff.mpr hx
+    · exact e.funToSec_map_add_eventuallyEq 𝕜 σ σ' (hu hx)
   leibniz {σ g x} hσ hg hx := by
     have hs := mdifferentiableAt_funToSec' e (hu hx) hσ
-    ext u
+    ext v
     unfold Trivialization.pushCovDer
-    rw [e.funToSec_map_smul g]
+    have : cov (e.funToSec (g • σ)) x = cov (g • e.funToSec σ) x := by
+      have D₁ : MDiffAt (T% (e.funToSec (g • σ))) x := by
+        exact mdifferentiableAt_funToSec' e (hu hx) (hg.fun_smul_section hσ)
+      have D₂ : MDiffAt (T% (g • e.funToSec σ)) x := by
+        exact hg.fun_smul_section
+          <| mdifferentiableAt_funToSec' e (hu hx) hσ
+      exact hcov.congr_of_eventuallyEq D₁ D₂ (u_op.mem_nhds_iff.mpr hx)
+        <| e.eventually (hu hx) fun x' hx' ↦ e.funToSec_map_smul_const hx' ..
+    rw [this] -- e.funToSec_map_smul (hu hx) g]
     rw [hcov.leibniz hs hg hx]
     simp [e.linearMapAt_funToSec (hu hx)]
 
@@ -234,17 +252,30 @@ noncomputable
 def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     TangentSpace% v →L[𝕜] V v.proj :=
   letI t := trivializationAt F V v.proj
-  haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn (u := t.baseSet) subset_rfl
+  haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn t.open_baseSet subset_rfl
     cov.isCovariantDerivativeOn
   letI tproj := d_covDerOn.projection v.proj (t v).2
   letI Tvt := t.deriv I v
   t.symmL 𝕜 v.proj ∘L tproj ∘L Tvt
 
+lemma coe_proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
+    letI t := trivializationAt F V v.proj
+    haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn t.open_baseSet subset_rfl
+      cov.isCovariantDerivativeOn
+    letI tproj := d_covDerOn.projection v.proj (t v).2
+    letI Tvt := t.deriv I v
+    (cov.proj v : TangentSpace (I.prod 𝓘(𝕜, F)) v → V v.proj) =
+      t.symm v.proj ∘ tproj ∘ Tvt := by
+  ext u
+  rw [proj, ContinuousLinearMap.comp_apply,
+      Trivialization.symmL_apply _ (FiberBundle.mem_baseSet_trivializationAt' v.proj)]
+  rfl
+
 omit [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] in
 lemma isCovariantDerivativeOn_pushCovDer
     (cov : CovariantDerivative I F V) (e : Trivialization F (π F V)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn F (e.pushCovDer cov) e.baseSet :=
-  e.pushCovDer_isCovariantDerivativeOn subset_rfl
+  e.pushCovDer_isCovariantDerivativeOn e.open_baseSet subset_rfl
       (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
 
 lemma snd_triv_proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) (u : TangentSpace (I.prod
@@ -277,7 +308,12 @@ lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalS
   let tproj := hcov.projection v.proj (t v).2
   let t' := t.continuousLinearEquivAt 𝕜 v.proj (mem_baseSet_trivializationAt F V v.proj)
   ext u
-  change t'.symm (tproj (Tvt u)) = 0 ↔ tproj (Tvt u) = 0
+  change _ = 0 ↔ tproj (Tvt u) = 0
+  suffices t'.symm (tproj (Tvt u)) = 0 ↔ tproj (Tvt u) = 0 by
+    simp only [proj, t, ContinuousLinearMap.toLinearMap_comp, LinearMap.coe_comp,
+      ContinuousLinearMap.coe_coe, Function.comp_apply,
+      t.symmL_apply (FiberBundle.mem_baseSet_trivializationAt' v.proj)]
+    exact this
   simp
 
 omit [ContMDiffVectorBundle 1 F V I] in
@@ -350,7 +386,7 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
       erw [this, Tvt_def, t.funToSec_proj_eq hvproj sval]
       exact t.derivInv_deriv_apply hvproj w
     · rw [ContinuousLinearMap.coe_coe] at covs
-      simp [t.pushCovDer_funToSec cov, ← hTvtw, covs, t.symm_map_zero 𝕜]
+      simp [t.pushCovDer_funToSec cov, ← hTvtw, covs]
   · rintro ⟨σ, σdiff, σval, mfderivσ, covσ⟩
     use t.secToFun σ, ?_, ?_, ?_
     · rw [t.pushCovDer_secToFun cov.isCovariantDerivativeOn σdiff]

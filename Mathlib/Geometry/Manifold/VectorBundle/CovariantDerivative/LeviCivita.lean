@@ -674,6 +674,7 @@ instance leviCivitaConnection_bar [FiniteDimensional ℝ E] :
   contMDiff := by
     refine ⟨fun {σ} hσ ↦ ?_⟩
     rw [contMDiffOn_univ] at hσ ⊢
+    stop -- it seems this used to work
     apply ContMDiff.clm_bundle_of_apply
     intro τ hτ
     apply step2 k (fun {Z} hZ ↦ ?_)

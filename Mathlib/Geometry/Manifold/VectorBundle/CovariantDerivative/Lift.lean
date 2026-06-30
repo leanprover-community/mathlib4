@@ -108,10 +108,9 @@ lemma CovariantDerivative.lift_vec_mem_horiz {v : TotalSpace F V} (u : TangentSp
   rw [lift_vec_apply, CovariantDerivative.mem_horiz_iff_proj]
   -- TODO: cleanup
   simp only [proj, IsCovariantDerivativeOn.lift_vec_apply, ContinuousLinearMap.coe_comp,
-             Trivialization.symmL_apply, Function.comp_apply]
+             Function.comp_apply]
   rw [t.deriv_derivInv_apply (FiberBundle.mem_baseSet_trivializationAt' v.proj)]
-  suffices t.symm v.proj 0 = 0 by simpa
-  exact (t.symmL 𝕜 v.proj).map_zero
+  simp
 
 @[simp]
 lemma CovariantDerivative.proj_lift_vec {v : TotalSpace F V} (u : TangentSpace% v.proj) :
@@ -143,10 +142,9 @@ lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace
     rw [t.deriv_derivInv_apply mem]
     rw [hcov.lift_vec_eq_iff]
     constructor
-    · change t.symm v.proj ((hcov.projection v.proj (t v).2) ((t.deriv I v) w)) = 0 at h
+    · rw [cov.coe_proj, Function.comp_apply, Function.comp_apply] at h
       apply t.injective_symm mem
-      refold_let t
-      simp [h, t.symm_map_zero 𝕜]
+      rw [h, t.symm_map_zero 𝕜 mem]
     · rw [← h', t.mfderiv_proj_fst_deriv mem]
 
 lemma CovariantDerivative.lift_vec_eq_iff' {v : TotalSpace F V} (u : TangentSpace% v.proj)
@@ -188,8 +186,7 @@ lemma CovariantDerivative.lift_vec_eq [IsManifold I 1 M] [FiniteDimensional 𝕜
         erw [mfderivs]
         simp
     · rw [proj_lift] at covs
-      simp [e.pushCovDer_funToSec cov, e.mfderiv_proj_fst_deriv hv, e.deriv_derivInv_apply hv, covs,
-            e.symm_map_zero 𝕜]
+      simp [e.pushCovDer_funToSec cov, e.mfderiv_proj_fst_deriv hv, e.deriv_derivInv_apply hv, covs]
   · simp [hv]
 
 end
