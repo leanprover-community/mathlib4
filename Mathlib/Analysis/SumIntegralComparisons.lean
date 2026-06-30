@@ -208,8 +208,8 @@ theorem AntitoneOn.summable_of_integrable_eventually {N : ℕ} (anti : AntitoneO
   rw [← summable_nat_add_iff (N + 1)]
   refine summable_of_sum_range_le (c := ∫ t in Ioi (N : ℝ), f t) (by grind) fun M ↦ ?_
   calc
-  _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by rw [Finset.sum_Ico_eq_sum_range]; grind
-  _ ≤ _ := (anti.mono Icc_subset_Ici_self).sum_Ico_le_integral integrable nonneg
+    _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by rw [Finset.sum_Ico_eq_sum_range]; grind
+    _ ≤ _ := (anti.mono Icc_subset_Ici_self).sum_Ico_le_integral integrable nonneg
 
 /-- **Integral test**: a nonnegative antitone function is summable if it is integrable. -/
 theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
@@ -270,12 +270,12 @@ theorem AntitoneOn.integrable_of_summable_comp_add {N : ℕ} (anti : AntitoneOn 
     exact (anti.mono <| by grind [uIcc_of_le]).intervalIntegrable
   · filter_upwards [eventually_gt_atTop 0] with M hM
     calc
-    _ = ∫ x in N..M+N, f x := by
-      refine intervalIntegral.integral_congr_uIoo fun x ↦ ?_
-      grind [Real.norm_of_nonneg, uIoo_of_le]
-    _ ≤ ∑ n ∈ Finset.range M, f (n + N : ℕ) := by
-      convert! AntitoneOn.integral_le_sum (anti.mono _) using 2 <;> grind
-    _ ≤ _ := by grind [summable.sum_le_tsum, Nat.cast_pos]
+      _ = ∫ x in N..M+N, f x := by
+        refine intervalIntegral.integral_congr_uIoo fun x ↦ ?_
+        grind [Real.norm_of_nonneg, uIoo_of_le]
+      _ ≤ ∑ n ∈ Finset.range M, f (n + N : ℕ) := by
+        convert! AntitoneOn.integral_le_sum (anti.mono _) using 2 <;> grind
+      _ ≤ _ := by grind [summable.sum_le_tsum, Nat.cast_pos]
 
 /-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/
 theorem AntitoneOn.integrable_of_summable (anti : AntitoneOn f (Ici 0))
@@ -296,11 +296,11 @@ theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici
   refine le_of_tendsto_of_tendsto (intervalIntegral_tendsto_integral_Ioi N integrable this) lim ?_
   filter_upwards with M
   calc
-  _ ≤ ∑ n ∈ Finset.Ico N (N + M), f n := by
-    convert!  AntitoneOn.integral_le_sum_Ico _ _ using 2 <;> grind [anti.mono]
-  _ = _ := by
-    rw [Finset.sum_Ico_eq_sum_range]
-    grind
+    _ ≤ ∑ n ∈ Finset.Ico N (N + M), f n := by
+      convert!  AntitoneOn.integral_le_sum_Ico _ _ using 2 <;> grind [anti.mono]
+    _ = _ := by
+      rw [Finset.sum_Ico_eq_sum_range]
+      grind
 
 /-- The sum of a nonnegative, antitone function is bounded below by its integral. -/
 theorem AntitoneOn.integral_le_tsum (anti : AntitoneOn f (Ici 0))
