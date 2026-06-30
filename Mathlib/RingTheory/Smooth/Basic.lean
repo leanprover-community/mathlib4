@@ -74,9 +74,6 @@ class FormallySmooth : Prop where
 attribute [instance] FormallySmooth.projective_kaehlerDifferential
   FormallySmooth.subsingleton_h1Cotangent
 
-@[deprecated (since := "2025-10-25")]
-alias FormallySmooth.iff_subsingleton_and_projective := Algebra.formallySmooth_iff
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
