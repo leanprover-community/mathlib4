@@ -156,6 +156,15 @@ theorem IsDedekindDomain.ramificationIdx'_eq_factors_count [IsDedekindDomain S]
   have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
   rw [← ramificationIdx_eq_ramificationIdx'' p q hp0, ramificationIdx_eq_factors_count hp0 ‹_› hq0]
 
+open UniqueFactorizationMonoid in
+theorem IsDedekindDomain.ramificationIdx'_eq_multiplicity [IsDedekindDomain S]
+    [q.IsPrime] [q.LiesOver p] (hp : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx' R = multiplicity q (p.map (algebraMap R S)) := by
+  have hq : q ≠ ⊥ := ne_bot_of_le_ne_bot hp (map_le_of_le_comap (q.over_def p).le)
+  rw [ramificationIdx'_eq_factors_count p q hp, factors_eq_normalizedFactors,
+    multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_eq_count_normalizedFactors
+      (prime_of_isPrime hq inferInstance).irreducible hp), normalize_eq]
+
 /-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
 theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     [Algebra (Localization.AtPrime q) (Localization.AtPrime r)]
