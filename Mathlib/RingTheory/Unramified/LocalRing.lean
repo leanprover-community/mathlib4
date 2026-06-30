@@ -141,7 +141,7 @@ lemma isUnramifiedAt_iff_map_eq :
       fun _ ↦ Algebra.FormallyUnramified.comp _ (Localization.AtPrime p) _⟩
   rw [FormallyUnramified.iff_map_maximalIdeal_eq]
   congr!
-  rw [Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq,
+  rw [Localization.AtPrime.algebraMap_eq,
     ← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_map, Localization.localRingHom,
     IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
 
@@ -202,7 +202,7 @@ lemma localRingHom_surjective_of_primesOver_eq_singleton
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :
     Function.Surjective (localRingHom p q (algebraMap R S) (q.over_def p)) := by
   have := Localization.finite_of_primesOver_eq_singleton hq
-  rw [← Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
+  rw [← Localization.AtPrime.algebraMap_eq]
   change Function.Surjective (Algebra.linearMap _ _)
   rw [← LinearMap.range_eq_top, ← top_le_iff]
   apply Submodule.le_of_le_smul_of_le_jacobson_bot Module.Finite.fg_top (maximalIdeal_le_jacobson _)

@@ -176,7 +176,7 @@ variable (J : Ideal A) (K : Ideal B) [J.IsPrime] [K.IsPrime]
   [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime K)]
 
 instance : IsLocalHom (algebraMap (Localization.AtPrime I) (Localization.AtPrime J)) := by
-  rw [IsLiesOverAlgebra.algebraMap_eq]
+  rw [algebraMap_eq]
   exact isLocalHom_localRingHom _ _ _ (J.over_def I)
 
 /-- An isomorphism of rings induces an isomorphism of residue fields. -/

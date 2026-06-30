@@ -50,7 +50,7 @@ theorem inertiaDeg'_def [hq : q.IsPrime]
     [IsScalarTower R (Localization.AtPrime (q.under R)) (Localization.AtPrime q)] :
     q.inertiaDeg' R = Module.finrank (q.under R).ResidueField q.ResidueField := by
   convert! dif_pos hq
-  simp [Algebra.algebra_ext_iff, Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
+  simp [Algebra.algebra_ext_iff, Localization.AtPrime.algebraMap_eq]
 
 theorem inertiaDeg'_of_not_isPrime (hq : ¬ q.IsPrime) : q.inertiaDeg' R = 0 :=
   dif_neg hq
