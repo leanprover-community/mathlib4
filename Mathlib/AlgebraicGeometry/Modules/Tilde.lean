@@ -451,6 +451,9 @@ def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
 instance : (tilde M).IsQuasicoherent :=
   (presentationTilde.{u} _ .univ (by simp) _ (Submodule.span_eq _)).isQuasicoherent
 
+instance : ((tilde.functor R).obj M).IsQuasicoherent :=
+  inferInstanceAs <| (tilde M).IsQuasicoherent
+
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_fromTildeΓ_of_presentation (M : (Spec R).Modules) (P : M.Presentation) :
     IsIso M.fromTildeΓ := by
@@ -869,6 +872,27 @@ lemma essImage_tilde : (tilde.functor R).essImage =
       (by dsimp; infer_instance)
   · intro M (h : M.IsQuasicoherent)
     exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)), ⟨asIso <| M.fromTildeΓ⟩⟩
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- `M ↦ M^~` is an equivalence of categories from `ModuleCat R` to the full subcategory
+of quasi-coherent `𝒪_{Spec R}`-modules. -/
+@[simps! functor inverse unitIso counitIso_hom_app_hom]
+def tildeEquiv :
+    ModuleCat R ≌ (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).FullSubcategory where
+  functor := ObjectProperty.lift _ (tilde.functor R) fun _ ↦ by
+    dsimp [SheafOfModules.isQuasicoherent]
+    infer_instance
+  inverse := ObjectProperty.ι _ ⋙ moduleSpecΓFunctor (R := R)
+  unitIso := tilde.toTildeΓNatIso
+  counitIso :=
+    haveI (M : (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).FullSubcategory) :
+      IsIso (Scheme.Modules.fromTildeΓ M.obj) := inferInstance
+    NatIso.ofComponents
+      (fun M ↦ ObjectProperty.isoMk _ (asIso <| Scheme.Modules.fromTildeΓ M.obj))
+      fun f ↦ ObjectProperty.hom_ext _ (tilde.adjunction (R := R).counit.naturality f.hom)
+  functor_unitIso_comp M :=
+    ObjectProperty.hom_ext _ (tilde.adjunction (R := R).left_triangle_components M)
 
 end IsQuasicoherent
 
