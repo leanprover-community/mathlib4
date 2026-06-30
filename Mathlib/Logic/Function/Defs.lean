@@ -80,17 +80,20 @@ theorem const_prod : const ι p = Function.prod (const ι p.1) (const ι p.2) :=
 
 theorem prod_comp (h : κ → ι) : Function.prod f g ∘ h = Function.prod (f ∘ h) (g ∘ h) := rfl
 
-theorem comp_prod_comp (h : α → γ) (k : β → δ) :
-    Function.prod (h ∘ f) (k ∘ g) =
-    Function.prod (h ∘ Prod.fst) (k ∘ Prod.snd) ∘ Function.prod f g := rfl
-
-theorem map_comp_prod (h : α → γ) (k : β → δ) :
-    Prod.map h k ∘ Function.prod f g = Function.prod (h ∘ f) (k ∘ g) := rfl
-
-@[simp] theorem swap_comp_prod : Prod.swap ∘ Function.prod f g = Function.prod g f := rfl
-
 @[simp] theorem prod_comp_fst_comp_snd {α₁ α₂ β₁ β₂} (f : α₁ → α₂) (g : β₁ → β₂) :
     Function.prod (f ∘ Prod.fst) (g ∘ Prod.snd) = Prod.map f g := rfl
+
+theorem prod_comp_comp (h : α → γ) (k : β → δ) :
+    Function.prod (h ∘ f) (k ∘ g) = Prod.map h k ∘ Function.prod f g := rfl
+
+@[simp] theorem map_comp_prod (h : α → γ) (k : β → δ) :
+    Prod.map h k ∘ Function.prod f g = Function.prod (h ∘ f) (k ∘ g) := rfl
+
+theorem prod_comp_prod (h : α × β → γ) (k : α × β → δ) :
+    Function.prod h k ∘ Function.prod f g =
+    Function.prod (h ∘ Function.prod f g) (k ∘ Function.prod f g) := rfl
+
+@[simp] theorem swap_comp_prod : Prod.swap ∘ Function.prod f g = Function.prod g f := rfl
 
 end Prod
 
