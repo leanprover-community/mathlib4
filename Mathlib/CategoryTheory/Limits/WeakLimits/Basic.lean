@@ -93,7 +93,7 @@ class HasWeakLimit (F : J ⥤ C) : Prop where mk' ::
 If `F` has a limit, then it has a weak limit.
 -/
 instance (F : J ⥤ C) [HasLimit F] : HasWeakLimit F where
-  exists_weakLimit := Nonempty.intro (WeakLimitCone.ofLimitCone (getLimitCone F))
+  exists_weakLimitCone := Nonempty.intro (WeakLimitCone.ofLimitCone (getLimitCone F))
 
 theorem HasWeakLimit.mk {F : J ⥤ C} (d : WeakLimitCone F) : HasWeakLimit F :=
   ⟨Nonempty.intro d⟩
@@ -101,7 +101,7 @@ theorem HasWeakLimit.mk {F : J ⥤ C} (d : WeakLimitCone F) : HasWeakLimit F :=
 /-- Use the axiom of choice to extract explicit `WeakLimitCone F` from `HasWeakLimit F`. -/
 @[no_expose]
 def getWeakLimitCone (F : J ⥤ C) [HasWeakLimit F] : WeakLimitCone F :=
-  Classical.choice <| HasWeakLimit.exists_weakLimit
+  Classical.choice <| HasWeakLimit.exists_weakLimitCone
 
 variable (J C) in
 /-- `C` has weak limits of shape `J` if there exists a weak limit for every functor
@@ -200,7 +200,7 @@ providing a morphism of cones rather than a morphism between the cone points
 and separately the factorisation condition.
 -/
 @[simps]
-def mkConeMorphism {t : Cone F} (lift : ∀ s : Cone F, s ⟶ t) : IsWeakLimit t where
+def mkOfConeMorphism {t : Cone F} (lift : ∀ s : Cone F, s ⟶ t) : IsWeakLimit t where
   lift s := (lift s).hom
 
 /-- Given a right adjoint functor between categories of cones,
@@ -208,12 +208,12 @@ the image of a weak limit cone is a weak limit cone.
 -/
 def ofRightAdjoint {left : Cone F ⥤ Cone G} {right : Cone G ⥤ Cone F}
     (adj : left ⊣ right) {c : Cone G} (t : IsWeakLimit c) : IsWeakLimit (right.obj c) :=
-  mkConeMorphism (fun s => adj.homEquiv s c (t.liftConeMorphism _))
+  mkOfConeMorphism (fun s => adj.homEquiv s c (t.liftConeMorphism _))
 
 /-- Given two functors which have equivalent categories of cones, we can transport evidence of
 a weak limit cone across the equivalence.
 -/
-lemma ofConeEquiv {D : Type*} [Category* D] {G : K ⥤ D} (h : Cone G ≌ Cone F) {c : Cone G} :
+lemma iff_of_cone_equiv {D : Type*} [Category* D] {G : K ⥤ D} (h : Cone G ≌ Cone F) {c : Cone G} :
     Nonempty (IsWeakLimit (h.functor.obj c)) ↔ Nonempty (IsWeakLimit c) :=
   ⟨fun P ↦ Nonempty.intro (IsWeakLimit.ofIsoWeakLimit
     (IsWeakLimit.ofRightAdjoint h.toAdjunction P.some) (h.unitIso.symm.app c)),
@@ -222,25 +222,25 @@ lemma ofConeEquiv {D : Type*} [Category* D] {G : K ⥤ D} (h : Cone G ≌ Cone F
 /-- A cone postcomposed with a natural isomorphism is a weak limit cone
 if and only if the original cone is.
 -/
-lemma postcomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) :
+lemma iff_of_postcomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) :
     Nonempty (IsWeakLimit ((Cone.postcompose α.hom).obj c)) ↔ Nonempty (IsWeakLimit c) :=
-  ofConeEquiv (Cone.postcomposeEquivalence α)
+  iff_of_cone_equiv (Cone.postcomposeEquivalence α)
 
 /-- A cone postcomposed with the inverse of a natural isomorphism is a weak limit cone
 if and only if the original cone is.
 -/
-lemma postcomposeInvEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone G) :
+lemma iff_of_postcomposeInvEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone G) :
     Nonempty (IsWeakLimit ((Cone.postcompose α.inv).obj c)) ↔ Nonempty (IsWeakLimit c) :=
-  postcomposeHomEquiv α.symm c
+  iff_of_postcomposeHomEquiv α.symm c
 
 /-- Constructing an equivalence between `Nonempty (IsWeakLimit c)` and `Nonempty (IsWeakLimit d)`
 from a natural isomorphism between the underlying functors, and then an isomorphism between `c`
 transported along this and `d`.
 -/
-lemma equivOfNatIsoOfIso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) (d : Cone G)
+lemma iff_of_natIso_of_iso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) (d : Cone G)
     (w : (Cone.postcompose α.hom).obj c ≅ d) :
     Nonempty (IsWeakLimit c) ↔  Nonempty (IsWeakLimit d) :=
-  (postcomposeHomEquiv α _).symm.trans (IsWeakLimit.equivIsoWeakLimit w).nonempty_congr
+  (iff_of_postcomposeHomEquiv α _).symm.trans (IsWeakLimit.equivIsoWeakLimit w).nonempty_congr
 
 end IsWeakLimit
 
@@ -250,7 +250,7 @@ theorem hasWeakLimit_of_iso {F G : J ⥤ C} [HasWeakLimit F] (α : F ≅ G) : Ha
   HasWeakLimit.mk
     { cone := (Cone.postcompose α.hom).obj (weakLimit.cone F)
       isWeakLimit :=
-        Nonempty.some ((IsWeakLimit.postcomposeHomEquiv α _ ).mpr
+        Nonempty.some ((IsWeakLimit.iff_of_postcomposeHomEquiv α _ ).mpr
         (Nonempty.intro (weakLimit.isWeakLimit F)))
       }
 
