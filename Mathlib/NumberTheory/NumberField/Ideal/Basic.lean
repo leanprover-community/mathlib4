@@ -123,11 +123,10 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime] [N
   by_contra!
   obtain ⟨⟨ζ, hζ₀⟩, hζ₁, hζ₂⟩ := this
   obtain ⟨n, hn, hζ₃⟩ : ∃ n, 2 ≤ n ∧ IsPrimitiveRoot (ζ : K) n := by
-    refine ⟨orderOf (ζ : K), (Nat.two_le_iff _).mpr ⟨?_, ?_⟩, IsPrimitiveRoot.orderOf _⟩
-    · rw [orderOf_ne_zero_iff, isOfFinOrder_iff_pow_eq_one]
-      exact ⟨torsionOrder K, torsionOrder_pos K,
-        (by rw [← map_pow, ← val_pow_eq_pow_val, pow_torsionOrder_eq_one _ hζ₀, val_one, map_one])⟩
-    · simpa [ne_eq, orderOf_eq_one_iff] using hζ₂
+    refine ⟨orderOf ζ, ?_, IsPrimitiveRoot.coe_coe_iff.mpr (IsPrimitiveRoot.orderOf ζ)⟩
+    refine (Nat.two_le_iff _).mpr ⟨orderOf_ne_zero_iff.mpr ?_, ?_⟩
+    · exact (CommGroup.mem_torsion ζ).mp hζ₀
+    · simpa [orderOf_eq_one_iff] using hζ₂
   have h_cpr := hζ₃.not_coprime_norm_of_mk_eq_one
     (absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP) hn
     (by rwa [Units.ext_iff, torsionMapQuot_apply, val_one] at hζ₁)
@@ -135,7 +134,7 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime] [N
   have hp := Nat.absNorm_under_prime P
   have : Fact p.Prime := ⟨hp⟩
   rw [P.absNorm_eq_pow_inertiaDeg' hp, Nat.coprime_pow_left_iff (Ideal.inertiaDeg_pos _ _),
-    (Nat.Prime.coprime_iff_not_dvd hp).not, not_not] at h_cpr
+    ← Nat.Prime.dvd_iff_not_coprime hp] at h_cpr
   obtain ⟨c, hc⟩ := h_cpr
   have hζ_pow := IsPrimitiveRoot.pow (by grind) hζ₃ (by rwa [mul_comm])
   let F := ℚ⟮(ζ : K) ^ c⟯
@@ -167,9 +166,7 @@ greater than `2`, then the norm of `P` is congruent to `1` modulo `torsionOrder 
 theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP : P.IsPrime] [NeZero P]
     (hP₁ : Algebra.IsUnramifiedAt ℤ P) (hP₂ : 2 < absNorm (under ℤ P)) :
     torsionOrder K ∣ absNorm P - 1 := by
-  have hP₀ : P ≠ ⊥ := by
-    contrapose! hP₂
-    simp [hP₂]
+  have hP₀ : P ≠ ⊥ := fun h ↦ by simp [h] at hP₂
   have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP
   let _ := Ideal.Quotient.field P
   have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective' hP₁ hP₂)
