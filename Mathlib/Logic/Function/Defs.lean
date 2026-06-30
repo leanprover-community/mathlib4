@@ -66,8 +66,9 @@ section Prod
 
 variable {α β : Type*} {ι : Sort*} (f : ι → α) (g : ι → β)
 
-theorem prod_ext_iff (h h' : ι → α × β) : h = h' ↔ (Prod.fst ∘ h) = (Prod.fst ∘ h') ∧
-    (Prod.snd ∘ h) = (Prod.snd ∘ h') := prod_inj _ _ _ _
+theorem prod_ext_iff (h h' : ι → α × β) :
+    h = h' ↔ (Prod.fst ∘ h) = (Prod.fst ∘ h') ∧ (Prod.snd ∘ h) = (Prod.snd ∘ h') :=
+  prod_inj _ _ _ _
 
 @[simp] lemma prod_fst_snd : Function.prod (Prod.fst : _ → α) (Prod.snd : _ → β) = id := rfl
 @[simp] lemma prod_snd_fst : Function.prod (Prod.snd : _ → β) (Prod.fst : _ → α) = .swap := rfl
