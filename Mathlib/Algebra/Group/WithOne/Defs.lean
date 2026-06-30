@@ -202,11 +202,11 @@ Specialization of `Option.getD` to values in `WithOne α` that respects API boun
 def unoneD (d : α) (x : WithOne α) : α := recOneCoe d id x
 
 @[to_additive (attr := simp)]
-theorem unoneD_one {α} (d : α) : unoneD d (1 : WithOne α) = d :=
+theorem unoneD_one (d : α) : unoneD d 1 = d :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem unoneD_coe {α} (d x : α) : unoneD d (x : WithOne α) = x :=
+theorem unoneD_coe (d x : α) : unoneD d x = x :=
   rfl
 
 @[to_additive]
@@ -223,7 +223,7 @@ theorem unoneD_eq_unoneD_iff {d : α} {x y : WithOne α} :
   induction y <;> simp [unoneD_eq_iff, or_comm]
 
 @[to_additive]
-lemma unOneD_eq_unOne {d : α} {x : WithOne α} (hx : x ≠ 1) : unoneD d x = unone hx := by
+lemma unoneD_eq_unone {d : α} {x : WithOne α} (hx : x ≠ 1) : unoneD d x = unone hx := by
   simp [unoneD_eq_iff]
 
 end WithOne
