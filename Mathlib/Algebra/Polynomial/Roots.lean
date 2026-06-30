@@ -158,14 +158,14 @@ theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = e
   apply eq_zero_of_infinite_isRoot
   simpa only [IsRoot, eval_sub, sub_eq_zero]
 
-/-- A nonconstant polynomial over a domain has the property that every fibre is finite. -/
-lemma TendstoCofinite_of_nonconst_polynomial {R : Type} [CommRing R] [IsDomain R] (p : R[X])
-    (hp : p.natDegree ≠ 0) : Filter.TendstoCofinite (fun x : R ↦ p.eval x) := by
+/-- Non-constant polynomials have finite fibres, provided the coefficients are a domain. -/
+lemma tendstoCofinite_of_natDegree_ne_zero {R : Type} [CommRing R] [IsDomain R] (p : R[X])
+    (hp : p.natDegree ≠ 0) : Filter.TendstoCofinite p.eval := by
   rw [Filter.tendstoCofinite_iff_finite_preimage_singleton]
-  intro b
-  by_contra! hb
-  have := p.eq_of_infinite_eval_eq (C b) (by simpa)
-  grind
+  intro x
+  by_contra! hx
+  obtain ⟨rfl⟩ : p = C x := p.eq_of_infinite_eval_eq (C x) (by simpa)
+  simp at hp
 
 theorem roots_mul {p q : R[X]} (hpq : p * q ≠ 0) : (p * q).roots = p.roots + q.roots := by
   classical
