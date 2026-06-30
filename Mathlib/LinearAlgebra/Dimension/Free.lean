@@ -334,6 +334,7 @@ theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
     (f : M →ₗ[R] M') (hf : Function.Surjective f) (h : Module.finrank R M ≤ Module.finrank R M') :
     Function.Bijective f := by
   cases subsingleton_or_nontrivial R
+  -- TODO : figure out how to make `nontriviality` work here nicely
   · have := Module.subsingleton R M
     exact ⟨Function.injective_of_subsingleton f, hf⟩
   rcases finrank_le_iff_exists_linearMap.mp h with ⟨_, hi⟩
