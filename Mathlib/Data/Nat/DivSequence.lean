@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Action.Pi
 
 /-!
@@ -27,6 +28,13 @@ API for these definitions.
 @[expose] public section
 
 variable {α β γ : Type*}
+
+-- this lemma regarding interaction between `smul` and `dvd` does not have a good home in mathlib
+lemma smul_dvd_smul [Monoid α] [Monoid β] [SMul α β] [IsScalarTower α β β]
+    [IsScalarTower α α β] [SMulCommClass α β β] {a b : α} {c d : β}
+    (hab : a ∣ b) (hcd : c ∣ d) : (a • c) ∣ (b • d) := by
+  obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := hab, hcd
+  exact ⟨x • y, mul_smul_mul_comm a x c y⟩
 
 /-- A function `f : α → β` is a divisibility sequence if `a ∣ b` implies `f a ∣ f b`. -/
 def IsDvdSeq [Dvd α] [Dvd β] (f : α → β) : Prop :=
