@@ -385,8 +385,8 @@ lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
 
 lemma smul_dvd_smul [Monoid α] [Monoid β] [SMul α β] [IsScalarTower α β β]
     [IsScalarTower α α β] [SMulCommClass α β β] {a b : α} {c d : β}
-    (h1 : a ∣ b) (h2 : c ∣ d) : (a • c) ∣ (b • d) := by
-  obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := h1, h2
+    (hab : a ∣ b) (hcd : c ∣ d) : (a • c) ∣ (b • d) := by
+  obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := hab, hcd
   exact ⟨x • y, mul_smul_mul_comm a x c y⟩
 
 variable [SMul M α]

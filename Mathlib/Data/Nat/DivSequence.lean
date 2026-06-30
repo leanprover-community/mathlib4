@@ -14,7 +14,7 @@ A sequence `f : ℕ → ℕ` is a divisibility sequence if it satisfies `f a ∣
 
 A sequence `f : ℕ → ℕ` is a strong divisibility sequence if `gcd (f a) (f b) = f (gcd a b)`.
 
-This file defines divisibility sequences and strong divisibility sequences and proves some basic
+This file defines divisibility sequences and strong divisibility sequences and provides some basic
 API for these definitions.
 
 ## Main definitions
@@ -22,7 +22,6 @@ API for these definitions.
 - `IsDvdSeq`: A function `f` is a divisibility sequence if `a ∣ b` implies `f a ∣ f b`.
 - `Nat.IsStrongDvdSeq`: A function `f : ℕ → ℕ` is a strong divisibility sequence if `f` satisfies
   `gcd (f a) (f b) = f (gcd a b)`.
-
 -/
 
 @[expose] public section

@@ -105,8 +105,7 @@ lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W)
   fun m n r => by
     linear_combination (norm := (simp_rw [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
-lemma IsDivSequence.smul (h : IsDvdSeq W) (x : R) : IsDvdSeq (x • W) :=
-  fun m n r => mul_dvd_mul_left x <| h m n r
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.smul := IsDvdSeq.smul
 
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
