@@ -52,9 +52,9 @@ If `F` has a limit, then it is a retract of any weak limit of `F`.
 -/
 def _root_.Retract.ofIsLimit {t t' : Cone F} (l : IsLimit t) (l' : IsWeakLimit t') :
     Retract t.pt t'.pt where
-      i := l'.lift t
-      r := l.lift t'
-      retract := l.hom_ext (fun _ ↦ by rw [assoc, id_comp, l.fac t', l'.fac t])
+  i := l'.lift t
+  r := l.lift t'
+  retract := l.hom_ext (fun _ ↦ by rw [assoc, id_comp, l.fac t', l'.fac t])
 
 /--
 If `c : Cone F` is a limit, then it is a weak limit.
