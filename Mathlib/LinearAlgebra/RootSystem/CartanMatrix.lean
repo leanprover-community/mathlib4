@@ -184,7 +184,7 @@ lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem
       (2 : ℤ) • (P.posRootForm ℤ).posForm.toMatrix b.toWeightBasisInt := by
   ext i j
   apply algebraMap_injective ℤ R
-  simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, smul_apply,
+  simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, Matrix.smul_apply,
     LinearMap.BilinForm.toMatrix_apply, Int.zsmul_eq_mul]
   simpa [← algebraMap_pairingIn P ℤ i j] using
     congr_fun₂ (cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j

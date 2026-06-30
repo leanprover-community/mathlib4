@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury G. Kudryashov, Edison Xie
 -/
 module
 
@@ -17,11 +17,22 @@ In this file we define `Matrix.ProjGenLinGroup n R` as the quotient of `GL n R` 
 We introduce notation `PGL(n, R)` for this group,
 which works if `n` is either a finite type or a natural number.
 If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
+
+## Main definitions
+
+* `Matrix.SpecialLinearGroup.toPGL` is the natural map from `SL(n, R)` to `PGL(n, R)`.
+
+* `Matrix.ProjectiveSpecialLinearGroup.toPGL` is the natural
+  inclusion from `PSL(n, R)` to `PGL(n, R)`.
+
+* `Matrix.ProjectiveSpecialLinearGroup.isoPSLOfAlgClosed` is an isomorphism between
+  `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field.
+
 -/
 
 open scoped MatrixGroups
 
-public section
+@[expose] public section
 
 namespace Matrix
 
@@ -62,6 +73,9 @@ theorem mk_eq_one {g : GL n R} : mk g = 1 ↔ g ∈ Subgroup.center (GL n R) := 
   rw [← MonoidHom.mem_ker, ker_mk]
 
 @[simp]
+lemma mk_one : mk (1 : GL n R) = 1 := rfl
+
+@[simp]
 theorem mk_scalar (u : Rˣ) : mk (.scalar n u) = 1 := by
   rw [← MonoidHom.mem_ker, ker_mk, GeneralLinearGroup.center_eq_range_scalar]
   simp
@@ -71,41 +85,43 @@ theorem induction_on {motive : PGL(n, R) → Prop} (g : PGL(n, R))
     (mk : ∀ g : GL n R, motive (ProjGenLinGroup.mk g)) : motive g :=
   Quotient.inductionOn g mk
 
+end ProjGenLinGroup
+
 section isoPSL
+
+variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
+
+open Matrix.ProjGenLinGroup
+
+namespace SpecialLinearGroup
+
+/-- The natural map from `SL(n, R)` to `PGL(n, R)` by composing the maps from `SL` to `GL` and the
+  quotient map from `GL` to `PGL`. -/
+abbrev toPGL : SpecialLinearGroup n R →* PGL(n, R) := mk.comp toGL
+
+lemma toPGL_ker : toPGL.ker = Subgroup.center (SpecialLinearGroup n R) := by
+  ext; simp [toGL_mem_center_iff]
+
+end SpecialLinearGroup
+
+namespace ProjectiveSpecialLinearGroup
 
 open Matrix.SpecialLinearGroup
 
 /-- The natural inclusion map from `PSL(n, R)` to `PGL(n, R)` induced by the inclusion
   map from `SL(n, R)` to `GL(n, R)`. -/
-@[expose]
-def _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL :
-    ProjectiveSpecialLinearGroup n R →* PGL(n, R) :=
-  QuotientGroup.lift _ (mk.comp toGL) fun x hx ↦ by
-    simp only [mem_center_iff, scalar_apply, MonoidHom.mem_ker, MonoidHom.coe_comp,
-      Function.comp_apply, mk_eq_one, GeneralLinearGroup.mem_center_iff_val_mem_range_scalar,
-      coe_GL_coe_matrix, Set.mem_range] at hx ⊢
-    exact ⟨hx.choose, hx.choose_spec.2⟩
+def toPGL : ProjectiveSpecialLinearGroup n R →* PGL(n, R) :=
+  QuotientGroup.lift _ SpecialLinearGroup.toPGL <| le_of_eq toPGL_ker.symm
 
 @[simp]
-lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_mk (g : SpecialLinearGroup n R) :
+lemma toPGL_mk (g : SpecialLinearGroup n R) :
     ProjectiveSpecialLinearGroup.toPGL g = mk (toGL g) := rfl
 
-lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_injective :
-    Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun x y h ↦ by
-  induction x using QuotientGroup.induction_on with | H x =>
-  induction y using QuotientGroup.induction_on with | H y =>
-  simp only [ProjectiveSpecialLinearGroup.toPGL_mk, mk_eq_mk_iff] at h
-  rw [← QuotientGroup.mk'_apply, ← QuotientGroup.mk'_apply]
-  simp only [QuotientGroup.mk'_eq_mk', mem_center_iff]
-  obtain ⟨u, hu'⟩ := h
-  have hu : u.1 ^ Fintype.card n = 1 := by
-    simpa [Units.ext_iff] using congr(Matrix.GeneralLinearGroup.det $hu')
-  set z : SpecialLinearGroup n R := ⟨scalar n u.1, by simpa using hu⟩ with hz_eq
-  have hz : (GeneralLinearGroup.scalar n) u = toGL z := by ext; simp [hz_eq]
-  refine ⟨z, ⟨u.1, hu, by simp [hz_eq]⟩, ?_⟩
-  rwa [hz, ← map_mul, toGL_inj] at hu'
+lemma toPGL_injective :
+    Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) :=
+  QuotientGroup.injective_lift_iff _ _ _ |>.2 toPGL_ker.symm
 
-lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots
+lemma toPGL_surj_of_roots
     (hR : ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r) :
     Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun g ↦ by
   induction g using Matrix.ProjGenLinGroup.induction_on with | mk g =>
@@ -117,10 +133,10 @@ lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots
   use QuotientGroup.mk ⟨r.1 • g.1, hr⟩
   simp only [ProjectiveSpecialLinearGroup.toPGL_mk, mk_eq_mk_iff]
   refine ⟨r⁻¹, Units.ext ?_⟩
-  simp only [Units.val_mul, coe_GL_coe_matrix,GeneralLinearGroup.val_scalar_apply]
+  simp only [Units.val_mul, coe_GL_coe_matrix, GeneralLinearGroup.coe_scalar]
   simp [← Matrix.mul_smul, ← Matrix.diagonal_smul, Pi.smul_def, smul_eq_mul]
 
-lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_iff [Nonempty n] :
+lemma toPGL_surj_iff [Nonempty n] :
     Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) ↔
       ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r := by
   refine ⟨fun h r ↦ ?_, ProjectiveSpecialLinearGroup.toPGL_surj_of_roots⟩
@@ -156,9 +172,13 @@ noncomputable def isoPSLOfAlgClosed {F : Type*} [Field F] [IsAlgClosed F] :
   MulEquiv.symm (MulEquiv.ofBijective Matrix.ProjectiveSpecialLinearGroup.toPGL
     ⟨Matrix.ProjectiveSpecialLinearGroup.toPGL_injective, Function.surjective_to_subsingleton _⟩)
 
+end ProjectiveSpecialLinearGroup
+
 end isoPSL
 
-variable {M : Type*} [Monoid M]
+namespace ProjGenLinGroup
+
+variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R] {M : Type*} [Monoid M]
 
 /-- Lift a monoid homomorphism `f : GL n R →* M` that vanishes on all scalar matrices
 to a homomorphism from `PGL(n, R)`. -/
@@ -190,6 +210,23 @@ theorem mk_smul {α : Type*} [MulAction (GL n R) α] (h) (g : GL n R) (a : α) :
     letI : MulAction (PGL(n, R)) α := mulActionOfGL h
     mk g • a = g • a := by
   rfl
+
+/-- The monoid hom between `PGL(n, R)` and `PGL(n, S)` induced by a
+  ring homomorphism `f : R →+* S`. -/
+def map {S : Type*} [CommRing S] (f : R →+* S) : PGL(n, R) →* PGL(n, S) :=
+  QuotientGroup.map _ _ (GeneralLinearGroup.map (n := n) f) <| GeneralLinearGroup.map_center_le f
+
+@[simp]
+lemma map_id : map (RingHom.id R) = MonoidHom.id (PGL(n, R)) := QuotientGroup.map_id _
+
+@[simp]
+lemma map_mk {S : Type*} [CommRing S] (f : R →+* S) (g : GL n R) :
+    map f (mk g) = mk (GeneralLinearGroup.map f g) := rfl
+
+lemma map_comp {S T : Type*} [CommRing S] [CommRing T] (f : R →+* S) (g : S →+* T) :
+    map (n := n) (g.comp f) = (map g).comp (map f) := by
+  ext g
+  induction g using Matrix.ProjGenLinGroup.induction_on with | mk g => simp
 
 variable [Fact (Even (Fintype.card n))] [LinearOrder R] [IsStrictOrderedRing R]
 
