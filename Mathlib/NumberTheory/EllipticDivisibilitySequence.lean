@@ -99,9 +99,8 @@ elliptic net, elliptic divisibility sequence
 
 @[expose] public section
 
-universe u v
-
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : ℤ → R) (f : R →+* S)
+variable {R S : Type*} [CommRing R] [CommRing S] (W : ℤ → R)
+  {F : Type*} [FunLike F R S] [RingHomClass F R S] (f : F)
 
 namespace IsEllipticNet
 
@@ -565,7 +564,7 @@ Strong recursion principle for a normalised EDS: if we have
 then we have `P n` for all `n : ℕ`.
 -/
 @[elab_as_elim]
-noncomputable def normEDSRec' {P : ℕ → Sort u}
+noncomputable def normEDSRec' {P : ℕ → Sort*}
     (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
@@ -581,7 +580,7 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
 
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
-noncomputable def normEDSRec {P : ℕ → Sort u}
+noncomputable def normEDSRec {P : ℕ → Sort*}
     (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
@@ -689,7 +688,7 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
 
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
-noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
+noncomputable def complEDSRec' {P : ℕ → Sort*} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 1), P k) → P (2 * (m + 1)))
     (odd : ∀ m : ℕ, (∀ k < 2 * (m + 1) + 1, P k) → P (2 * (m + 1) + 1)) (n : ℕ) : P n :=
   n.evenOddStrongRec (by rintro (_ | _) h; exacts [zero, even _ h])
@@ -704,7 +703,7 @@ noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
 
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
-noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)
+noncomputable def complEDSRec {P : ℕ → Sort*} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, P (m + 1) → P (2 * (m + 1)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (2 * (m + 1) + 1)) (n : ℕ) : P n :=
   complEDSRec' zero one (fun _ ih => even _ <| ih _ <| by linarith only)
