@@ -515,14 +515,14 @@ variable [IsDomain R]
 theorem zpowers_eq {k : ℕ} [NeZero k] {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     Subgroup.zpowers ζ = rootsOfUnity k R := by
   apply SetLike.coe_injective
-  have F : Fintype (Subgroup.zpowers ζ) := Fintype.ofEquiv _ h.zmodEquivZPowers.toEquiv
+  have : Finite (rootsOfUnity k R : Set Rˣ) := inferInstanceAs (Finite (rootsOfUnity k R))
   refine
-    @Set.eq_of_subset_of_card_le Rˣ _ _ F (rootsOfUnity.fintype R k)
+    Set.eq_of_subset_of_ncard_le
       (Subgroup.zpowers_le_of_mem <| show ζ ∈ rootsOfUnity k R from h.pow_eq_one) ?_
   calc
-    Fintype.card (rootsOfUnity k R) ≤ k := card_rootsOfUnity R k
-    _ = Fintype.card (ZMod k) := (ZMod.card k).symm
-    _ = Fintype.card (Subgroup.zpowers ζ) := Fintype.card_congr h.zmodEquivZPowers.toEquiv
+    Nat.card (rootsOfUnity k R) ≤ k := card_rootsOfUnity R k
+    _ = Nat.card (ZMod k) := (Nat.card_zmod k).symm
+    _ = Nat.card (Subgroup.zpowers ζ) := Nat.card_congr h.zmodEquivZPowers.toEquiv
 
 lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S]
     {ζ : R} {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) {f : F} (hf : Function.Injective f) :
