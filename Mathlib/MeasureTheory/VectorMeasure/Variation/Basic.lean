@@ -436,7 +436,7 @@ theorem variation_eq_ennrealToMeasure : μ.variation = μ.ennrealToMeasure := by
     ennrealPreVariation_apply, ennrealToMeasure_apply hs]
 
 @[simp]
-theorem ennrealVariation_eq : μ.ennrealVariation = μ := by
+theorem ennrealVariation_eq_self : μ.ennrealVariation = μ := by
   simp [variation_eq_ennrealToMeasure, ennrealVariation]
 
 end ENNReal
