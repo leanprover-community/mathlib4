@@ -137,6 +137,12 @@ theorem prod {I : Ideal A} {ι} {s : Finset ι} {x y : ι → A}
       ih (fun j hj ↦ hxy j (Finset.mem_cons_of_mem hj))]
 
 @[gcongr]
+lemma ppow {I : Ideal A} {x y : A} (n : ℕ+) (hxy : x ≡ y [SMOD I]) :
+    x ^ n ≡ y ^ n [SMOD I] := by
+  simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_ppow] at hxy ⊢
+  rw [hxy]
+
+@[gcongr]
 lemma pow {I : Ideal A} {x y : A} (n : ℕ) (hxy : x ≡ y [SMOD I]) :
     x ^ n ≡ y ^ n [SMOD I] := by
   simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_pow] at hxy ⊢

@@ -60,6 +60,11 @@ theorem transitionMap_map_mul {m n : ℕ} (hmn : m ≤ n) (x y : R ⧸ (I ^ n �
   Quotient.inductionOn₂' x y (fun _ _ ↦ rfl)
 
 @[local simp]
+theorem transitionMap_map_ppow {m n : ℕ} {a : ℕ+} (hmn : m ≤ n) (x : R ⧸ (I ^ n • ⊤ : Ideal R)) :
+    transitionMap I R hmn (x ^ a) = transitionMap I R hmn x ^ a :=
+  Quotient.inductionOn' x (fun _ ↦ rfl)
+
+@[local simp]
 theorem transitionMap_map_pow {m n a : ℕ} (hmn : m ≤ n) (x : R ⧸ (I ^ n • ⊤ : Ideal R)) :
     transitionMap I R hmn (x ^ a) = transitionMap I R hmn x ^ a :=
   Quotient.inductionOn' x (fun _ ↦ rfl)
@@ -91,6 +96,9 @@ instance : NatCast (AdicCompletion I R) where
 instance : IntCast (AdicCompletion I R) where
   intCast n := ⟨n, fun _ ↦ rfl⟩
 
+instance : Pow (AdicCompletion I R) ℕ+ where
+  pow x n := ⟨x.val ^ n, fun hmn ↦ by simp [x.property, transitionMap_map_ppow I hmn]⟩
+
 instance : Pow (AdicCompletion I R) ℕ where
   pow x n := ⟨x.val ^ n, fun hmn ↦ by simp [x.property, transitionMap_map_pow I hmn]⟩
 
@@ -98,7 +106,7 @@ instance : CommRing (AdicCompletion I R) :=
   let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
   Subtype.val_injective.commRing f rfl rfl
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 instance [Algebra S R] : Algebra S (AdicCompletion I R) where
   algebraMap :=
@@ -215,6 +223,9 @@ instance : NatCast (AdicCauchySequence I R) where
 instance : IntCast (AdicCauchySequence I R) where
   intCast n := ⟨n, fun _ ↦ rfl⟩
 
+instance : Pow (AdicCauchySequence I R) ℕ+ where
+  pow x n := ⟨x.val ^ n, fun hmn ↦ SModEq.ppow n (x.property hmn)⟩
+
 instance : Pow (AdicCauchySequence I R) ℕ where
   pow x n := ⟨x.val ^ n, fun hmn ↦ SModEq.pow n (x.property hmn)⟩
 
@@ -222,7 +233,7 @@ instance : CommRing (AdicCauchySequence I R) :=
   let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
   Subtype.val_injective.commRing f rfl rfl
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 instance : Algebra R (AdicCauchySequence I R) where
   algebraMap :=
