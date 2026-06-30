@@ -103,7 +103,7 @@ variable (J C) in
 `F : J ⥤ C`. -/
 class HasWeakLimitsOfShape : Prop where
   /-- All functors `F : J ⥤ C` from `J` have weak limits -/
-  has_weakLimit : ∀ F : J ⥤ C, HasWeakLimit F := by infer_instance
+  hasWeakLimit : ∀ F : J ⥤ C, HasWeakLimit F := by infer_instance
 
 instance (priority := 100) hasWeakLimitOfHasWeakLimitsOfShape
     [HasWeakLimitsOfShape J C] (F : J ⥤ C) : HasWeakLimit F :=
