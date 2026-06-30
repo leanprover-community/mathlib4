@@ -597,9 +597,9 @@ lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
   field_simp
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add_isBigO :
-    (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - Real.eulerMascheroniConstant)
+    (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - γ)
     =O[𝓝[≠] 1] (· - 1) := by
-  suffices (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s) - Real.eulerMascheroniConstant)
+  suffices (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s) - γ)
       =O[𝓝 1] (· - 1) by
     refine (this.mono nhdsWithin_le_nhds).congr' ?_ (.refl ..)
     filter_upwards [log_deriv_riemannZeta_eq_neg_inv_sub_add] with s hs
@@ -610,7 +610,7 @@ lemma log_deriv_riemannZeta_eq_neg_inv_sub_add_isBigO :
   fun_prop (disch := simp)
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add_isLittleO :
-    (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - Real.eulerMascheroniConstant)
+    (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - γ)
     =o[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
   log_deriv_riemannZeta_eq_neg_inv_sub_add_isBigO.trans_isLittleO
   ((continuousAt_iff_isLittleO.mp continuous_id.continuousAt).mono nhdsWithin_le_nhds)
