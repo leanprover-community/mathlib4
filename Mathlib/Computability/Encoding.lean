@@ -25,7 +25,7 @@ It also contains several examples:
 - `unaryEncodingNat` : a unary encoding of `ℕ`
 - `encodingBoolBool` : an encoding of `Bool`.
 - `encodingList`     : an encoding of `List α` in the alphabet `α`.
-- `encodingPair`     : an encoding of `α × β` from encodings of `α` and `β`.
+- `encodingProd`     : an encoding of `α × β` from encodings of `α` and `β`.
 -/
 
 @[expose] public section
@@ -199,7 +199,7 @@ constructs an `Encoding` of `α × β` by concatenating the encodings,
 mapping the symbols from the first encoding with `Sum.inl`
 and those from the second with `Sum.inr`.
 -/
-def encodingPair {α β Γ₁ Γ₂ : Type*} (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :
+def encodingProd {α β Γ₁ Γ₂ : Type*} (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :
     Encoding (α × β) (Γ₁ ⊕ Γ₂) where
   encode x := (ea.encode x.1).map .inl ++ (eb.encode x.2).map .inr
   decode x := Option.map₂ Prod.mk (ea.decode (x.filterMap Sum.getLeft?))
@@ -251,12 +251,12 @@ abbrev finEncodingBoolBool := encodingBoolBool
   deprecated encodingList (since := "2026-05-07")]
 def finEncodingList (α : Type) [Fintype α] := encodingList α
 
-/-- Deprecated alias for `encodingPair`. -/
+/-- Deprecated alias for `encodingProd`. -/
 @[reducible, nolint unusedArguments,
-  deprecated encodingPair (since := "2026-05-07")]
+  deprecated encodingProd (since := "2026-05-07")]
 def finEncodingPair {α β Γ₁ Γ₂ : Type*} [Fintype Γ₁] [Fintype Γ₂]
     (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :=
-  encodingPair ea eb
+  encodingProd ea eb
 
 /-- Deprecated alias for `Encoding.card_le_aleph0`. -/
 @[deprecated Encoding.card_le_aleph0 (since := "2026-05-07")]
