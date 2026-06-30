@@ -37,7 +37,6 @@ product measure, Fubini's theorem, Fubini-Tonelli theorem
 
 public section
 
-
 noncomputable section
 
 open scoped Topology ENNReal MeasureTheory
@@ -60,12 +59,6 @@ functions. We show that if `f` is a binary measurable function, then the functio
 along one of the variables (using either the Lebesgue or Bochner integral) is measurable.
 -/
 
-
-theorem measurableSet_integrable [SFinite ν] ⦃f : α → β → E⦄
-    (hf : StronglyMeasurable (uncurry f)) : MeasurableSet {x | Integrable (f x) ν} := by
-  simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
-  exact measurableSet_lt (Measurable.lintegral_prod_right hf.enorm) measurable_const
-
 section
 
 variable [NormedSpace ℝ E]
@@ -75,49 +68,10 @@ variable [NormedSpace ℝ E]
   This version has `f` in curried form. -/
 theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂ν := by
-  classical
-  by_cases hE : CompleteSpace E; swap; · simp [integral, hE, stronglyMeasurable_const]
-  borelize E
-  haveI : SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
-    hf.separableSpace_range_union_singleton
-  let s : ℕ → SimpleFunc (α × β) E :=
-    SimpleFunc.approxOn _ hf.measurable (range (uncurry f) ∪ {0}) 0 (by simp)
-  let s' : ℕ → α → SimpleFunc β E := fun n x => (s n).comp (Prod.mk x) measurable_prodMk_left
-  let f' : ℕ → α → E := fun n => {x | Integrable (f x) ν}.indicator fun x => (s' n x).integral ν
-  have hf' : ∀ n, StronglyMeasurable (f' n) := by
-    intro n; refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
-    have : ∀ x, ((s' n x).range.filter fun x => x ≠ 0) ⊆ (s n).range := by
-      intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) ?_; intro y
-      simp_rw [SimpleFunc.mem_range]; rintro ⟨z, rfl⟩; exact ⟨(x, z), rfl⟩
-    simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
-    refine Finset.stronglyMeasurable_fun_sum _ fun x _ => ?_
-    refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
-    simp only [s', SimpleFunc.coe_comp, preimage_comp]
-    apply measurable_measure_prodMk_left
-    exact (s n).measurableSet_fiber x
-  have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂ν) := by
-    rw [tendsto_pi_nhds]; intro x
-    by_cases hfx : Integrable (f x) ν
-    · have (n : _) : Integrable (s' n x) ν := by
-        apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
-        filter_upwards with y
-        simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-      simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
-        mem_setOf_eq]
-      refine
-        tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
-          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
-      · refine fun n => Eventually.of_forall fun y =>
-          SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
-        · exact hf.measurable
-        · simp
-      · refine Eventually.of_forall fun y => SimpleFunc.tendsto_approxOn ?_ ?_ ?_
-        · exact hf.measurable.of_uncurry_left
-        · simp
-        apply subset_closure
-        simp [-uncurry_apply_pair]
-    · simp [f', hfx, integral_undef]
-  exact stronglyMeasurable_of_tendsto _ hf' h2f'
+  simp only [integral_eq_setToFun]
+  apply StronglyMeasurable.setToFun_prod_right _ (fun s hs ↦ ?_) hf
+  refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
+  exact measurable_measure_prodMk_left hs
 
 /-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
   Fubini's theorem is measurable. -/
@@ -380,13 +334,11 @@ end
 variable [NormedSpace ℝ E]
 
 theorem Integrable.integral_prod_left ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
-    Integrable (fun x => ∫ y, f (x, y) ∂ν) μ :=
-  Integrable.mono hf.integral_norm_prod_left hf.aestronglyMeasurable.integral_prod_right' <|
-    Eventually.of_forall fun x =>
-      (norm_integral_le_integral_norm _).trans_eq <|
-        (norm_of_nonneg <|
-            integral_nonneg_of_ae <|
-              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) :)).symm
+    Integrable (fun x => ∫ y, f (x, y) ∂ν) μ := by
+  apply Integrable.mono hf.integral_norm_prod_left hf.aestronglyMeasurable.integral_prod_right'
+  filter_upwards with x
+  grw [norm_integral_le_integral_norm]
+  exact le_abs_self _
 
 theorem Integrable.integral_prod_right [SFinite μ] ⦃f : α × β → E⦄
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, f (x, y) ∂μ) ν :=
@@ -478,9 +430,6 @@ theorem continuous_integral_integral :
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  change
-    Tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ) (𝓝 g)
-      (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
   simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
@@ -546,6 +495,15 @@ lemma intervalIntegral_integral_swap {a b : ℝ} {f : ℝ → α → E}
   · simp_rw [intervalIntegral.integral_of_ge hab]
     simp only [hab, Set.uIoc_of_ge] at h_int
     rw [integral_integral_swap h_int, integral_neg]
+
+/-- Change the order of integration for interval integrals. -/
+lemma intervalIntegral_intervalIntegral_swap {F : ℝ → ℝ → E} {a b c d : ℝ}
+    (h : IntegrableOn F.uncurry (uIoc a b ×ˢ uIoc c d)) :
+    ∫ x in a..b, ∫ y in c..d, F x y = ∫ y in c..d, ∫ x in a..b, F x y := by
+  rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, ← intervalIntegral_integral_swap,
+    ← intervalIntegral.integral_smul]
+  · simp_rw [intervalIntegral.intervalIntegral_eq_integral_uIoc]
+  · rwa [← integrable_swap_iff, Measure.prod_restrict, ← Measure.volume_eq_prod, ← IntegrableOn]
 
 /-- **Fubini's Theorem** for set integrals. -/
 theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}

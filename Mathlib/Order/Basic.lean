@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.FastInstance
 
 /-!
@@ -177,11 +179,26 @@ theorem le_imp_le_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c 
 theorem lt_imp_lt_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
   fun hab ↦ (h₁.trans_lt hab).trans_le h₂
 
+/-- monotonicity of `≥` with respect to `→` -/
+@[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
+theorem ge_imp_ge_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a ≥ b → c ≥ d :=
+  fun hab ↦ (h₂.trans hab).trans h₁
+
+/-- monotonicity of `>` with respect to `→` -/
+@[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
+theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d :=
+  fun hab ↦ (h₂.trans_lt hab).trans_le h₁
+
 namespace Mathlib.Tactic.GCongr
+open Lean Meta
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] meta def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
+  eval h goal := do
+    let le_of_lt := .const ``le_of_lt [← mkFreshLevelMVar]
+    let (mvars, _, _) ← forallMetaTelescope (← inferType le_of_lt)
+    mvars[4]!.mvarId!.assignIfDefEq h
+    goal.assignIfDefEq (mkAppN le_of_lt mvars)
 
 end Mathlib.Tactic.GCongr
 
@@ -532,15 +549,6 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
   simp [compl]
 
 /-! ### Order instances on the function space -/
-
-
-instance Pi.hasLe [∀ i, LE (π i)] :
-    LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
-
-@[to_dual self]
-theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
-    x ≤ y ↔ ∀ i, x i ≤ y i :=
-  Iff.rfl
 
 instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
   __ := (inferInstance : LE (∀ i, π i))
@@ -1081,14 +1089,6 @@ instance : DenselyOrdered PUnit :=
 end PUnit
 
 section «Prop»
-
-/-- Propositions form a complete Boolean algebra, where the `≤` relation is given by implication. -/
-instance Prop.le : LE Prop :=
-  ⟨(· → ·)⟩
-
-@[simp]
-theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (· → ·) :=
-  rfl
 
 theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r ≤ s :=
   Iff.rfl
