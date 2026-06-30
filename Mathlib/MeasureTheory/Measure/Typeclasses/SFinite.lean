@@ -381,7 +381,7 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
       MeasurableSet.iInter (fun i ↦ measurableSet_toMeasurable (m i) t)
     refine ⟨⋂ n, w n, T, M, fun u hu ↦ ?_⟩
     refine le_antisymm ?_ (by gcongr)
-    rw [hμ, sum_apply _ (M.inter hu)]
+    rw [hμ, Measure.sum_apply _ (M.inter hu)]
     apply le_trans _ (le_sum_apply _ _)
     apply ENNReal.tsum_le_tsum (fun i ↦ ?_)
     calc
@@ -622,7 +622,7 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
   have : ∀ n, MeasurableSet (⋂ i : ι, spanningSets (μ i) n) := fun n =>
     MeasurableSet.iInter fun i => measurableSet_spanningSets (μ i) n
   refine ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun _ => trivial, fun n => ?_, ?_⟩⟩⟩
-  · rw [sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top]
+  · rw [Measure.sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top]
     rintro i -
     exact (measure_mono <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)
   · rw [iUnion_iInter_of_monotone]

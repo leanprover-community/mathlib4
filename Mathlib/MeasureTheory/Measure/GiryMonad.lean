@@ -149,7 +149,7 @@ theorem join_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ �
 lemma join_sum {ι : Type*} (m : ι → Measure (Measure α)) :
     (sum m).join = sum fun (i : ι) ↦ (m i).join := by
   ext s hs
-  simp_rw [sum_apply _ hs, join_apply hs, lintegral_sum_measure]
+  simp_rw [Measure.sum_apply _ hs, join_apply hs, lintegral_sum_measure]
 
 @[simp]
 theorem join_dirac (μ : Measure α) : join (dirac μ) = μ := by

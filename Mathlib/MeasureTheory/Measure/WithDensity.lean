@@ -118,7 +118,7 @@ theorem withDensity_add_measure {m : MeasurableSpace α} (μ ν : Measure α) (f
 theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
     (sum μ).withDensity f = sum fun n => (μ n).withDensity f := by
   ext1 s hs
-  simp_rw [sum_apply _ hs, withDensity_apply f hs, restrict_sum μ hs, lintegral_sum_measure]
+  simp [hs]
 
 theorem withDensity_smul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurable f) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
@@ -185,7 +185,7 @@ theorem withDensity_const (c : ℝ≥0∞) : μ.withDensity (fun _ ↦ c) = c �
 theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     μ.withDensity (∑' n, f n) = sum fun n => μ.withDensity (f n) := by
   ext1 s hs
-  simp_rw [sum_apply _ hs, withDensity_apply _ hs]
+  simp_rw [Measure.sum_apply _ hs, withDensity_apply _ hs]
   change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
   exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)

@@ -1294,7 +1294,7 @@ theorem le_sum_apply (f : ι → Measure α) (s : Set α) : ∑' i, f i s ≤ su
   le_toMeasure_apply _ _ _
 
 @[simp]
-theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
+protected theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
     sum f s = ∑' i, f i s :=
   toMeasure_apply _ _ hs
 
@@ -1304,7 +1304,7 @@ theorem sum_apply₀ (f : ι → Measure α) {s : Set α} (hs : NullMeasurableSe
   rcases hs.exists_measurable_subset_ae_eq with ⟨t, ts, t_meas, ht⟩
   calc
   sum f s = sum f t := measure_congr ht.symm
-  _ = ∑' i, f i t := sum_apply _ t_meas
+  _ = ∑' i, f i t := Measure.sum_apply _ t_meas
   _ ≤ ∑' i, f i s := ENNReal.tsum_le_tsum fun i ↦ measure_mono ts
 
 /-! For the next theorem, the countability assumption is necessary. For a counterexample, consider
@@ -1322,11 +1322,11 @@ theorem sum_apply_of_countable [Countable ι] (f : ι → Measure α) (s : Set �
   rcases exists_measurable_superset_forall_eq f s with ⟨t, hst, htm, ht⟩
   calc
   sum f s ≤ sum f t := measure_mono hst
-  _ = ∑' i, f i t := sum_apply _ htm
+  _ = ∑' i, f i t := Measure.sum_apply _ htm
   _ = ∑' i, f i s := by simp [ht]
 
 theorem le_sum (μ : ι → Measure α) (i : ι) : μ i ≤ sum μ :=
-  le_iff.2 fun s hs ↦ by simpa only [sum_apply μ hs] using ENNReal.le_tsum i
+  le_iff.2 fun s hs ↦ by simpa only [Measure.sum_apply μ hs] using ENNReal.le_tsum i
 
 @[simp]
 theorem sum_apply_eq_zero [Countable ι] {μ : ι → Measure α} {s : Set α} :
@@ -1342,17 +1342,17 @@ theorem sum_apply_eq_zero' {μ : ι → Measure α} {s : Set α} (hs : Measurabl
 @[simp]
 lemma sum_zero : Measure.sum (fun (_ : ι) ↦ (0 : Measure α)) = 0 := by
   ext s hs
-  simp [Measure.sum_apply _ hs]
+  simp [hs]
 
 theorem sum_sum {ι' : Type*} (μ : ι → ι' → Measure α) :
     (sum fun n => sum (μ n)) = sum (fun (p : ι × ι') ↦ μ p.1 p.2) := by
   ext1 s hs
-  simp [sum_apply _ hs, ENNReal.tsum_prod']
+  simp [hs, ENNReal.tsum_prod']
 
 theorem sum_comm {ι' : Type*} (μ : ι → ι' → Measure α) :
     (sum fun n => sum (μ n)) = sum fun m => sum fun n => μ n m := by
   ext1 s hs
-  simp_rw [sum_apply _ hs]
+  simp_rw [Measure.sum_apply _ hs]
   rw [ENNReal.tsum_comm]
 
 theorem ae_sum_iff [Countable ι] {μ : ι → Measure α} {p : α → Prop} :
@@ -1383,12 +1383,12 @@ theorem sum_cond (μ ν : Measure α) : (sum fun b => cond b μ ν) = μ + ν :=
 
 @[simp]
 theorem sum_of_isEmpty [IsEmpty ι] (μ : ι → Measure α) : sum μ = 0 := by
-  rw [← measure_univ_eq_zero, sum_apply _ MeasurableSet.univ, tsum_empty]
+  rw [← measure_univ_eq_zero, Measure.sum_apply _ MeasurableSet.univ, tsum_empty]
 
 theorem sum_add_sum_compl (s : Set ι) (μ : ι → Measure α) :
     ((sum fun i : s => μ i) + sum fun i : ↥sᶜ => μ i) = sum μ := by
   ext1 t ht
-  simp only [add_apply, sum_apply _ ht]
+  simp only [add_apply, Measure.sum_apply _ ht]
   exact ENNReal.summable.tsum_add_tsum_compl (f := fun i => μ i t) ENNReal.summable
 
 theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ = sum ν :=
@@ -1396,7 +1396,7 @@ theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ
 
 theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
   ext1 s hs
-  simp only [add_apply, sum_apply _ hs,
+  simp only [add_apply, Measure.sum_apply _ hs,
     ENNReal.summable.tsum_add ENNReal.summable]
 
 @[simp] lemma sum_comp_equiv {ι ι' : Type*} (e : ι' ≃ ι) (m : ι → Measure α) :

@@ -154,7 +154,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
   let points : measurableAtoms → α := fun s ↦ (h_nonempty s).some
   have h_points_mem (s : measurableAtoms) : points s ∈ s.1 := (h_nonempty s).some_mem
   refine ⟨Set.range points, ext_of_measurableAtoms fun x ↦ ?_⟩
-  rw [sum_apply _ (MeasurableSet.measurableAtom_of_countable x)]
+  rw [Measure.sum_apply _ (MeasurableSet.measurableAtom_of_countable x)]
   simp only [smul_apply, smul_eq_mul]
   simp_rw [dirac_apply' _ (MeasurableSet.measurableAtom_of_countable x)]
   rw [tsum_eq_single ⟨points ⟨measurableAtom x, by simp [measurableAtoms]⟩, by simp⟩]
@@ -358,7 +358,7 @@ lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a}
     simp_rw [Finset.mem_coe, Set.inter_iUnion]
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
       (by measurability)]
-    · simp only [_root_.sum_apply, smul_apply]
+    · simp only [sum_apply, smul_apply]
       congr with a
       by_cases ha : a ∈ t <;> simp [*]
     simpa

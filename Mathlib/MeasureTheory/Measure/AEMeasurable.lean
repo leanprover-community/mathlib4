@@ -434,7 +434,7 @@ namespace Measure
 lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasurable f (Measure.sum m)) :
     Measure.map f (Measure.sum m) = Measure.sum (fun i ↦ Measure.map f (m i)) := by
   ext s hs
-  rw [map_apply_of_aemeasurable hf hs, sum_apply₀ _ (hf.nullMeasurable hs), sum_apply _ hs]
+  rw [map_apply_of_aemeasurable hf hs, sum_apply₀ _ (hf.nullMeasurable hs), Measure.sum_apply _ hs]
   have M i : AEMeasurable f (m i) := hf.mono_measure (le_sum m i)
   simp_rw [map_apply_of_aemeasurable (M _) hs]
 
