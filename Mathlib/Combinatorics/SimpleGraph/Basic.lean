@@ -1043,6 +1043,9 @@ def IsUniversal (G : SimpleGraph V) (v : V) : Prop := ∀ ⦃w⦄, v ≠ w → G
 @[simp] lemma neighborSet_eq_compl_singleton : G.neighborSet v = {v}ᶜ ↔ G.IsUniversal v := by
   grind [insert_neighborSet_eq_univ, notMem_neighborSet_self]
 
+protected alias ⟨IsUniversal.of_neighborSet_eq, IsUniversal.neighborSet_eq⟩ :=
+  neighborSet_eq_compl_singleton
+
 @[simp]
 theorem IsUniversal.of_subsingleton [Subsingleton V] : G.IsUniversal v :=
   fun _ hne ↦ False.elim <| hne (Subsingleton.elim ..)
