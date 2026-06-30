@@ -75,7 +75,7 @@ structure WeakLimitCone (F : J ⥤ C) where
 Any limit cone defines a weak limit cone with the same underlying cone over `F` and the same
 lifts.
 -/
-def WeakLimitCone.OfLimitCone {F : J ⥤ C} (c : LimitCone F) : WeakLimitCone F where
+def WeakLimitCone.ofLimitCone {F : J ⥤ C} (c : LimitCone F) : WeakLimitCone F where
   cone := c.cone
   isWeakLimit := IsWeakLimit.OfIsLimit c.isLimit
 
