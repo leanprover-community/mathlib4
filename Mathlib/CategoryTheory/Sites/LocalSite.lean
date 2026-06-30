@@ -83,17 +83,24 @@ noncomputable def IsLocalSite.pointPresheafFiberIso [LocallySmall.{w} C] [J.IsLo
     (colimitOfDiagramTerminal (Functor.Elements.isInitialOfCorepresentableBy
       <| shrinkCoyonedaCorepresentableBy <| op (⊤_ C)).op _)
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+lemma IsLocalSite.toPresheafFiber_pointPresheafFiberIso_hom [LocallySmall.{w} C] [J.IsLocalSite]
+    {A : Type u'} [Category.{v', u'} A] [HasColimitsOfSize.{w, w, v', u'} A]
+    {P : Cᵒᵖ ⥤ A} (X : C) (x : (point J).fiber.obj X) :
+    (Point.toPresheafFiber (point J) _ x _) ≫ (pointPresheafFiberIso J P).hom =
+      P.map (.op <| shrinkCoyonedaObjObjEquiv x) := by
+  simp [Point.toPresheafFiber, pointPresheafFiberIso]
+  rfl
+
+@[reassoc (attr := simp)]
 lemma IsLocalSite.pointPresheafFiberIso_naturality [LocallySmall.{w} C] [J.IsLocalSite]
     {A : Type u'} [Category.{v', u'} A] [HasColimitsOfSize.{w, w, v', u'} A]
     {P P' : Cᵒᵖ ⥤ A} (F : P ⟶ P') :
     (point J).presheafFiber.map F ≫ (pointPresheafFiberIso J P').hom =
       (pointPresheafFiberIso J P).hom ≫ F.app (op (⊤_ C)) := by
-  refine (IsColimit.coconePointUniqueUpToIso_naturality _ _
-    (colimitOfDiagramTerminal (Functor.Elements.isInitialOfCorepresentableBy
-      <| shrinkCoyonedaCorepresentableBy <| op (⊤_ C)).op _) _
-      (((CategoryOfElements.π (shrinkCoyoneda.{w}.obj (op (⊤_ C)))).op.whiskerLeft F))).trans ?_
-  congr
-  exact IsColimit.colimitOfDiagramTerminal_map _ _
+  cat_disch
 
 /-- The presheaf fibre functor of `IsLocalSite.point J` is given by evaluation at the terminal
 object. -/
