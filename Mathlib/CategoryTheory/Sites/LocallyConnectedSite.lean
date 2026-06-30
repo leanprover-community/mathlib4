@@ -125,80 +125,6 @@ instance (A : Type*) [Category* A] [HasColimitsOfShape Cᵒᵖ A] [HasWeakSheafi
     (π₀ J A).IsLeftAdjoint :=
   (π₀ConstantSheafAdj J A).isLeftAdjoint
 
-/- A few lemmas for which I haven't found a better place yet.
-TODO: clean up. -/
-section TerminalSheaf
-
-/-- Morphisms to a terminal object are unique. -/
-@[implicit_reducible]
-noncomputable def Limits.IsTerminal.uniqueHom {C : Type u} [Category.{v} C]
-    {T : C} (hT : IsTerminal T) (X : C) : Unique (X ⟶ T) :=
-  ⟨⟨hT.from X⟩, fun _ ↦ hT.hom_ext _ _⟩
-
-/- A few lemmas for which I haven't found a better place yet.
-TODO: clean up. -/
-section TerminalSheaf
-
-/-- Evaluating a terminal functor yields terminal objects.
-TODO: move somewhere else -/
-noncomputable def Limits.IsTerminal.isTerminalObj_functor {C : Type u} [Category.{v} C]
-    {D : Type u'} [Category.{v'} D] [HasLimits D] {F : C ⥤ D} (hF : IsTerminal F) (X : C) :
-    IsTerminal (F.obj X) :=
-  hF.isTerminalObj ((evaluation C D).obj X)
-
-/-- A terminal sheaf is also terminal as a presheaf. -/
-noncomputable def Limits.IsTerminal.isTerminalSheafVal {C : Type u} [Category.{v} C]
-    {J : GrothendieckTopology C} {A : Type u'} [Category.{v'} A] [HasLimits A]
-    {X : Sheaf J A} (hX : IsTerminal X) : IsTerminal X.obj :=
-  hX.isTerminalObj (sheafToPresheaf J A)
-
-/-- Sections of a terminal sheaf are terminal objects. -/
-noncomputable def Limits.IsTerminal.isTerminalSheafValObj {C : Type u} [Category.{v} C]
-    {J : GrothendieckTopology C} {A : Type u'} [Category.{v'} A] [HasLimits A]
-    {X : Sheaf J A} (hX : IsTerminal X) (Y : Cᵒᵖ) : IsTerminal (X.obj.obj Y) :=
-  hX.isTerminalSheafVal.isTerminalObj_functor Y
-
-/-- For sheaves valued in a concrete category whose terminal object is a point,
-sections of the terminal sheaf are unique. -/
-noncomputable instance Sheaf.instUniqueTerminalValObjForget {C : Type u} [Category.{v} C]
-    {J : GrothendieckTopology C} {A : Type u'} [Category.{v'} A] [HasLimits A]
-    {FA : outParam (A → A → Type w)} {CA : outParam (A → Type w)}
-    [outParam ((X Y : A) → FunLike (FA X Y) (CA X) (CA Y))] [ConcreteCategory A FA]
-    [PreservesLimit (Functor.empty _) (forget A)] (Y : Cᵒᵖ) :
-    Unique (CA ((⊤_ Sheaf J A).obj.obj Y)) :=
-  (Types.isTerminalEquivUnique _).1 <|
-    (terminalIsTerminal.isTerminalSheafValObj Y).isTerminalObj (forget _) _
-
-/-- Terminal types are singletons. -/
-@[implicit_reducible]
-noncomputable def Limits.IsTerminal.unique {X : Type u} (h : IsTerminal X) : Unique X :=
-  Types.isTerminalEquivUnique _ h
-
-/-- Sections of the terminal sheaf are unique. -/
-noncomputable instance Sheaf.instUniqueTerminalValObj {C : Type u} [Category.{v} C]
-    {J : GrothendieckTopology C} (Y : Cᵒᵖ) :
-    Unique ((⊤_ Sheaf J (Type w)).obj.obj Y) :=
-  (terminalIsTerminal.isTerminalSheafValObj Y).unique
-
-end TerminalSheaf
-
-/-- Terminal functors are represented by any terminal object. -/
-noncomputable def Limits.IsTerminal.representableBy_isTerminal {C : Type u} [Category.{v} C]
-    {F : Cᵒᵖ ⥤ Type w} (hF : IsTerminal F) {T : C} (hT : IsTerminal T) :
-    F.RepresentableBy T where
-  homEquiv {_} := @Equiv.ofUnique _ _ (hT.uniqueHom _) (hF.isTerminalObj_functor _).unique
-  homEquiv_comp _ _ := ((hF.isTerminalObj_functor _).unique.instSubsingleton).elim _ _
-
-/-- On categories with a terminal object, the terminal presheaf is representable. -/
-instance {C : Type u} [Category.{v} C] [HasTerminal C] : (⊤_ Cᵒᵖ ⥤ Type w).IsRepresentable :=
-  (terminalIsTerminal.representableBy_isTerminal terminalIsTerminal).isRepresentable
-
-/-- On sites with a terminal object, the terminal sheaf is representable. -/
-instance Sheaf.isRepresentable_terminal {C : Type u} [Category.{v} C] [HasTerminal C]
-    {J : GrothendieckTopology C} : (⊤_ Sheaf J (Type w)).obj.IsRepresentable :=
-  (terminalIsTerminal.isTerminalSheafVal.representableBy_isTerminal
-    terminalIsTerminal).isRepresentable
-
 /-- The colimit of any representable functor is a singleton type. -/
 @[implicit_reducible]
 noncomputable def unique_colimit_representable {C : Type u} [Category.{v} C]
@@ -210,8 +136,6 @@ noncomputable def unique_colimit_representable {C : Type u} [Category.{v} C]
       · exact (F.representableBy.homEquiv.symm x.out.2).op
       · exact .trans (by simp) (F.representableBy.homEquiv_comp _ _)
   } (Types.colimitEquivColimitType F)
-
-end TerminalSheaf
 
 /-- `Sheaf.π₀` sends representable sheaves to singleton types. -/
 @[implicit_reducible]
