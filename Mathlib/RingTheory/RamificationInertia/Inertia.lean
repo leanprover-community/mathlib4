@@ -120,59 +120,32 @@ theorem inertiaDeg'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulComm
     let e₂ := Ideal.residueFieldAlgEquiv' p (g • q) q f₀.symm (comap_symm f₀.toRingEquiv).symm
     exact e₂.toLinearEquiv.finrank_eq
 
-lemma cardQuot_pow_inertiaDeg' [Module.Finite R S] [p.IsMaximal] [q.IsMaximal] [q.LiesOver p] :
+theorem cardQuot_pow_inertiaDeg' [Module.Finite R S] [p.IsMaximal] [q.IsMaximal] [q.LiesOver p] :
     p.cardQuot ^ q.inertiaDeg' R = q.cardQuot := by
   let _ : Field (R ⧸ p) := Quotient.field p
   rw [← inertiaDeg_eq_inertiaDeg' p q, inertiaDeg_algebraMap p q]
   exact Module.natCard_eq_pow_finrank.symm
 
-lemma absNorm_pow_inertiaDeg' [Module.Finite R S] [p.IsPrime] [q.IsPrime]
-    [IsDedekindDomain R] [IsDedekindDomain S] [Module.Free ℤ R] [Module.Free ℤ S]
-    [q.LiesOver p] : p.absNorm ^ q.inertiaDeg' R = q.absNorm := by
-
+theorem absNorm_pow_inertiaDeg' [Module.Finite R S] [q.IsPrime] [q.LiesOver p]
+    [IsDedekindDomain R] [IsDedekindDomain S] [Module.Free ℤ R] [Module.Free ℤ S] :
+    p.absNorm ^ q.inertiaDeg' R = q.absNorm := by
   by_cases hp : p = ⊥
   · subst hp
-    have hq : q = ⊥ := by
-      apply eq_bot_of_liesOver_bot R
-    simp [hq]
-    apply (inertiaDeg'_pos _ _).ne'
+    simpa [eq_bot_of_liesOver_bot R q] using (inertiaDeg'_pos q R).ne'
+  have := isPrime_of_liesOver q p
+  have := isMaximal_of_isPrime_of_ne_bot p hp
+  have := IsMaximal.of_liesOver_isMaximal q p
   exact cardQuot_pow_inertiaDeg' p q
 
-open Module UniqueFactorizationMonoid
+theorem natAbs_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] (p : ℤ)
+    (P : Ideal R) [P.IsPrime] [P.LiesOver (span {p})] :
+    p.natAbs ^ P.inertiaDeg' ℤ = absNorm P := by
+  simpa using absNorm_pow_inertiaDeg' (span {p}) P
 
-
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) (P : Ideal S)
-
-lemma absNorm_eq_pow_inertiaDeg'_of_liesOver' {S : Type*} [CommRing S]
-    [Algebra S R] [Module.Finite S R]
-    (P : Ideal R) (p : Ideal S) [P.LiesOver p] [p.IsMaximal] [P.IsMaximal] :
-    P.cardQuot = p.cardQuot ^ (P.inertiaDeg' S) := by
-  let _ : Field (S ⧸ p) := Quotient.field p
-  rw [← inertiaDeg_eq_inertiaDeg' p P, inertiaDeg_algebraMap p P]
-  exact Module.natCard_eq_pow_finrank (K := S ⧸ p) (V := R ⧸ P)
-
-lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekindDomain S]
-    [Module.Free ℤ S] [IsDedekindDomain R] [Module.Free ℤ R] [Algebra S R] [Module.Finite S R]
-    (P : Ideal R) (p : Ideal S) [P.LiesOver p] [p.IsMaximal] [P.IsMaximal] :
-    absNorm P = absNorm p ^ (P.inertiaDeg' S) := by
-  apply absNorm_eq_pow_inertiaDeg'_of_liesOver'
-
-/-- The absolute norm of an ideal `P` above a rational prime `p` is
-`|p| ^ ((span {p}).inertiaDeg P)`.
-See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
-lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
-    (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
-    absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
-  simpa using absNorm_eq_pow_inertiaDeg_of_liesOver P (span {p})
-    (by rwa [span_singleton_prime hp.ne_zero]) (by simpa using hp.ne_zero)
-
-/-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
-`p ^ ((span {p}).inertiaDeg P)`.
-See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
-lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
-    (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
-    absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg P) :=
-  absNorm_eq_pow_inertiaDeg P (Nat.prime_iff_prime_int.mp hp)
+theorem pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] (p : ℕ)
+    (P : Ideal R) [P.IsPrime] [P.LiesOver (span {(p : ℤ)})] :
+    p ^ P.inertiaDeg' ℤ = absNorm P :=
+  natAbs_pow_inertiaDeg' p P
 
 end
 
