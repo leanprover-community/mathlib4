@@ -50,25 +50,15 @@ protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β 
     α i × β i := (f i, g i)
 
 section DProd
+
 variable {ι} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i) (h h' : ∀ i, α i × β i) (i : ι)
 
 theorem prod_def : Function.prod f g = fun i : ι => (f i, g i) := rfl
 
 @[simp, grind =] lemma prod_apply : Function.prod f g i = (f i, g i) := rfl
 
-lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = .swap :=
-  rfl
-
-@[simp] theorem fst_dcomp_prod : Prod.fst ∘' Function.prod f g = f := rfl
-@[simp] theorem snd_dcomp_prod : Prod.snd ∘' Function.prod f g = g := rfl
-@[simp] theorem prod_fst_dcomp_snd_dcomp : Function.prod (Prod.fst ∘' h) (Prod.snd ∘' h) = h := rfl
-
 @[simp] theorem prod_inj : Function.prod f g = Function.prod f' g' ↔ f = f' ∧ g = g' := by
   simp [funext_iff, Prod.ext_iff, forall_and]
-
-@[simp] theorem swap_dcomp_prod : Prod.swap ∘' Function.prod f g = Function.prod g f := rfl
 
 end DProd
 
@@ -77,14 +67,16 @@ section Prod
 variable {α β γ δ : Type*} {ι κ : Sort*} (f : ι → α) (g : ι → β) (h h' : ι → α × β)
   (a : α) (b : β) (p : α × β)
 
-@[simp] theorem fst_prod_snd : Function.prod (Prod.fst : _ → α) (Prod.snd : _ → β) = id := rfl
-@[simp] theorem snd_prod_fst : Function.prod (Prod.snd : _ → β) (Prod.fst : _ → α) = .swap := rfl
+@[simp] lemma prod_fst_snd : Function.prod (Prod.fst : _ → α) (Prod.snd : _ → β) = id := rfl
+@[simp] lemma prod_snd_fst : Function.prod (Prod.snd : _ → β) (Prod.fst : _ → α) = .swap := rfl
 
 @[simp] theorem fst_comp_prod : Prod.fst ∘ Function.prod f g = f := rfl
 @[simp] theorem snd_comp_prod : Prod.snd ∘ Function.prod f g = g := rfl
+
 @[simp] theorem prod_fst_comp_snd_comp : Function.prod (Prod.fst ∘ h) (Prod.snd ∘ h) = h := rfl
 
-@[simp] theorem const_prod : const ι p = Function.prod (const ι p.1) (const ι p.2) := rfl
+theorem const_prod : const ι p = Function.prod (const ι p.1) (const ι p.2) := rfl
+@[simp] theorem prod_const_const : Function.prod (const ι a) (const ι b) = const ι (a, b) := rfl
 
 theorem prod_comp (h : κ → ι) : Function.prod f g ∘ h = Function.prod (f ∘ h) (g ∘ h) := rfl
 
@@ -101,35 +93,6 @@ theorem map_comp_prod (h : α → γ) (k : β → δ) :
     Function.prod (f ∘ Prod.fst) (g ∘ Prod.snd) = Prod.map f g := rfl
 
 end Prod
-
-/- ### The diagonal map -/
-
-/-- The diagonal map into `Prod`. -/
-@[inline] protected def diag {α} : α → α × α := Function.prod id id
-
-@[inherit_doc] notation:max "△(" x:min ")" => Function.diag x
-
-section Diag
-
-variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
-
-theorem diag_def : Function.diag = fun a : α => (a, a) := rfl
-
-@[simp, grind =] theorem diag_apply : △(a)  = (a, a) := rfl
-
-@[simp] theorem prod_id_id : Function.prod id id = Function.diag (α := α) := rfl
-@[simp] theorem fst_comp_diag : Prod.fst ∘ Function.diag (α := α) = id := rfl
-@[simp] theorem snd_comp_diag : Prod.snd ∘ Function.diag (α := α) = id := rfl
-
-@[simp] theorem diag_comp : Function.diag ∘ f = Function.prod f f := rfl
-
-@[simp] theorem map_comp_diag : Prod.map f g ∘ Function.diag = Function.prod f g := rfl
-
-theorem injective_diag : Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
-
-@[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
-
-end Diag
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
