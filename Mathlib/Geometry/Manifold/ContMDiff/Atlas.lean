@@ -170,16 +170,10 @@ lemma OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn [IsManifold I n M]
     (StructureGroupoid.subset_maximalAtlas _ he)
   refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
   all_goals apply I.contMDiff.comp_contMDiffOn
-  · apply he'.comp (hφ'.comp (I.contMDiffOn_symm.mono (by simp)) ?_) (fun z hz ↦ by simp_all)
-    rw [inter_assoc]; exact inter_subset_left
-  · apply hφ.comp ?_ (fun z hz ↦ by simp_all)
-    apply he''.comp (I.contMDiffOn_symm.mono (by simp))
-    rw [inter_assoc]; exact inter_subset_left
-  · apply hφ.comp ?_ (fun z hz ↦ by simp_all)
-    apply he''.comp (I.contMDiffOn_symm.mono (by simp))
-    rw [inter_assoc]; exact inter_subset_left
-  · apply he'.comp (hφ'.comp (I.contMDiffOn_symm.mono (by simp)) ?_) (fun z hz ↦ by simp_all)
-    rw [inter_assoc]; exact inter_subset_left
+  · apply he'.comp (hφ'.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
+  · apply hφ.comp (he''.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
+  · exact hφ.comp (he''.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
+  · exact he'.comp (hφ'.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
 
 lemma IsManifold.mem_maximalAtlas_iff_contMDiffOn [IsManifold I n M]
     (φ : OpenPartialHomeomorph M H) :
