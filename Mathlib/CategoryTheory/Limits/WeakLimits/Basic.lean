@@ -73,7 +73,7 @@ a weak limit. -/
 structure WeakLimitCone (F : J ⥤ C) where
   /-- The cone itself -/
   cone : Cone F
-  /-- The proof that is the limit cone -/
+  /-- The proof that is the weak limit cone -/
   isWeakLimit : IsWeakLimit cone
 
 /--
@@ -171,12 +171,12 @@ theorem weakLimit.lift_π {F : J ⥤ C} [HasWeakLimit F] (c : Cone F) (j : J) :
 
 namespace IsWeakLimit
 
-/-- Transport evidence that a cone is a limit cone across an isomorphism of cones. -/
+/-- Transport evidence that a cone is a weak limit cone across an isomorphism of cones. -/
 @[simps]
 def ofIsoWeakLimit {r t : Cone F} (P : IsWeakLimit r) (i : r ≅ t) : IsWeakLimit t where
   lift s := P.lift s ≫ i.hom.hom
 
-/-- Isomorphism of cones preserves whether or not they are limiting cones. -/
+/-- Isomorphism of cones preserves whether or not they are weak limit cones. -/
 def equivIsoWeakLimit {r t : Cone F} (i : r ≅ t) : IsWeakLimit r ≃ IsWeakLimit t where
   toFun h := h.ofIsoWeakLimit i
   invFun h := h.ofIsoWeakLimit i.symm
@@ -212,8 +212,8 @@ def ofRightAdjoint {left : Cone F ⥤ Cone G} {right : Cone G ⥤ Cone F}
     (adj : left ⊣ right) {c : Cone G} (t : IsWeakLimit c) : IsWeakLimit (right.obj c) :=
   mkConeMorphism (fun s => adj.homEquiv s c (t.liftConeMorphism _))
 
-/-- Given two functors which have equivalent categories of cones, we can transport a limiting cone
-across the equivalence.
+/-- Given two functors which have equivalent categories of cones, we can transport evidence of
+a weak limit cone across the equivalence.
 -/
 lemma ofConeEquiv {D : Type*} [Category* D] {G : K ⥤ D} (h : Cone G ≌ Cone F) {c : Cone G} :
     Nonempty (IsWeakLimit (h.functor.obj c)) ↔ Nonempty (IsWeakLimit c) :=
@@ -221,22 +221,23 @@ lemma ofConeEquiv {D : Type*} [Category* D] {G : K ⥤ D} (h : Cone G ≌ Cone F
    (IsWeakLimit.ofRightAdjoint h.toAdjunction P.some) (h.unitIso.symm.app c)),
    fun P ↦ Nonempty.intro (IsWeakLimit.ofRightAdjoint h.symm.toAdjunction P.some)⟩
 
-/-- A cone postcomposed with a natural isomorphism is a limit cone
+/-- A cone postcomposed with a natural isomorphism is a weak limit cone
 if and only if the original cone is.
 -/
 lemma postcomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) :
     Nonempty (IsWeakLimit ((Cone.postcompose α.hom).obj c)) ↔ Nonempty (IsWeakLimit c) :=
   ofConeEquiv (Cone.postcomposeEquivalence α)
 
-/-- A cone postcomposed with the inverse of a natural isomorphism is a limit cone
+/-- A cone postcomposed with the inverse of a natural isomorphism is a weak limit cone
 if and only if the original cone is.
 -/
 lemma postcomposeInvEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone G) :
     Nonempty (IsWeakLimit ((Cone.postcompose α.inv).obj c)) ↔ Nonempty (IsWeakLimit c) :=
   postcomposeHomEquiv α.symm c
 
-/-- Constructing an equivalence `IsLimit c ≃ IsLimit d` from a natural isomorphism
-between the underlying functors, and then an isomorphism between `c` transported along this and `d`.
+/-- Constructing an equivalence between `Nonempty (IsWeakLimit c)` and `Nonempty (IsWeakLimit d)`
+from a natural isomorphism between the underlying functors, and then an isomorphism between `c`
+transported along this and `d`.
 -/
 lemma equivOfNatIsoOfIso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) (d : Cone G)
     (w : (Cone.postcompose α.hom).obj c ≅ d) :
