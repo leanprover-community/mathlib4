@@ -115,7 +115,7 @@ def fstSndJointlyReflectLimit {F : J ⥤ Comma L R} {c : Cone F}
     · exact h₂.fac ((snd _ _).mapCone s) j
   uniq s m hm := by
     ext
-    · exact h₁.uniq ((fst _ _).mapCone s) _ (fun j ↦ by simp [← hm])
+    · exact h₁.uniq ((fst _ _).mapCone s) _ (fun _ ↦ by simp [← hm])
     · exact h₂.uniq ((snd _ _).mapCone s) _ (fun j ↦ by simp [← hm])
 
 /-- (Implementation). An auxiliary cocone which is useful in order to construct colimits
