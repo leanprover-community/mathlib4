@@ -798,10 +798,6 @@ noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
 
 end Module.Flat
 
-namespace Module.Invertible
-
-end Module.Invertible
-
 section PicardGroup
 
 variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]

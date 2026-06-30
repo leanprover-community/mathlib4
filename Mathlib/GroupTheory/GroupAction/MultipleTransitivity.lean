@@ -663,7 +663,3 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end alternatingGroup
-
-namespace AlternatingGroup
-
-end AlternatingGroup

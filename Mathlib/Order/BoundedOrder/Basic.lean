@@ -246,12 +246,6 @@ instance [LE α] [h : OrderBot α] : OrderTop αᵒᵈ where
 
 end OrderDual
 
-section OrderBot
-
-variable [PartialOrder α] [OrderBot α] [Preorder β] {a b : α}
-
-end OrderBot
-
 
 /-! ### Bounded order -/
 

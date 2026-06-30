@@ -232,8 +232,4 @@ instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFinite
     ((isAddUnit_detp_smul_mul_adjp hAB).add
       ((isAddUnit_detp_mul_detp hAB).smul_right _)).add_left_inj] at h
 
-variable (A B)
-
-variable {A B}
-
 end Matrix
