@@ -183,13 +183,14 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
 
 /-- The partial sums of a nonnegative antitone function are bounded
 by the integral over `(a, ∞)`. -/
-lemma AntitoneOn.sum_Ico_le_integral {a b : ℕ} (hab : a ≤ b) (anti : AntitoneOn f (Icc a (b : ℝ)))
-    (integrable : IntegrableOn f (Ioi (a : ℝ))) (nonneg : ∀ t ∈ Ioi (a : ℝ), 0 ≤ f t) :
-    ∑ n ∈ Finset.Ico a b, f ((n + 1 : ℕ)) ≤ ∫ x in Ioi (a : ℝ), f x := by
-  apply AntitoneOn.sum_le_integral_Ico hab anti|>.trans
-  rw [intervalIntegral.integral_of_le (mod_cast hab)]
+lemma AntitoneOn.sum_Ico_le_integral {a b : ℕ} (anti : AntitoneOn f (Icc a b))
+    (integrable : IntegrableOn f (Ioi a)) (nonneg : ∀ t ∈ Ioi (a : ℝ), 0 ≤ f t) :
+    ∑ n ∈ .Ico a b, f ↑(n + 1) ≤ ∫ x in Ioi (a : ℝ), f x := by
+  by_cases! hab : b < a
+  · simpa [Finset.Ico_eq_empty_of_le hab.le] using setIntegral_nonneg measurableSet_Ioi nonneg
+  grw [anti.sum_le_integral_Ico hab, integral_of_le (mod_cast hab)]
   apply setIntegral_mono_set integrable _ (Ioc_subset_Ioi_self.eventuallyLE)
-  filter_upwards [ae_restrict_mem (by measurability)] with t ht using nonneg t ht
+  exact ae_restrict_of_forall_mem measurableSet_Ioi nonneg
 
 /-- The partial sums of a nonnegative function are bounded by the integral over `(0, ∞)`. -/
 lemma AntitoneOn.sum_range_le_integral {N : ℕ} (anti : AntitoneOn f (Icc 0 (N : ℝ)))
