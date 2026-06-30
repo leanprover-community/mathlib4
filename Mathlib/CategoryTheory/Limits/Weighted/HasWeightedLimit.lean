@@ -115,11 +115,7 @@ protected abbrev coyoneda (F : J ⥤ C) (j : J) :
     WeightedCone (coyoneda.obj (op j)) F where
   pt := F.obj j
   π.app u := F.map u.snd
-  π.naturality _ _ f := by
-    dsimp
-    simp only [← Functor.map_comp, Category.id_comp]
-    congr 1
-    exact f.prop.symm
+  π.naturality _ _ f := by simp [← Functor.map_comp, Category.id_comp, f.prop.symm]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The weighted limit of `F` for the weight `coyoneda.obj (op j)` is `F.obj j`. -/
