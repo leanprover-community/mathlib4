@@ -80,6 +80,7 @@ theorem prod_ext_iff (h h' : ι → α × β) :
     Function.prod (Prod.fst ∘ h) (Prod.snd ∘ h) = h := rfl
 
 theorem const_prod (p : α × β) : const ι p = Function.prod (const ι p.1) (const ι p.2) := rfl
+
 @[simp] theorem prod_const_const (a : α) (b : β) :
     Function.prod (const ι a) (const ι b) = const ι (a, b) := rfl
 
