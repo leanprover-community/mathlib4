@@ -55,7 +55,7 @@ Some examples of EDSs include
 * `IsEllipticNet.rel`: the elliptic relator `ER(p, q, r, s)` indexed by `ℤ`.
 * `IsEllipticNet`: a sequence indexed by `ℤ` is an elliptic net.
 * `IsEllSequence`: a sequence indexed by `ℤ` is an elliptic sequence.
-* `IsEllDivSequence`: a sequence indexed by `ℤ` is an EDS.
+* `IsEllDvdSequence`: a sequence indexed by `ℤ` is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
 * `complEDS₂`: the 2-complement sequence for a normalised EDS indexed by `ℕ`.
@@ -65,8 +65,8 @@ Some examples of EDSs include
 
 ## Main statements
 
-* TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
-* TODO: prove that a sequence satisfying `IsEllDivSequence` can be normalised to give `normEDS`.
+* TODO: prove that `normEDS` satisfies `IsEllDvdSequence`.
+* TODO: prove that a sequence satisfying `IsEllDvdSequence` can be normalised to give `normEDS`.
 
 ## Implementation notes
 
@@ -292,7 +292,7 @@ def IsEllSequence : Prop :=
 @[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
 
 /-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
-def IsEllDivSequence : Prop :=
+def IsEllDvdSequence : Prop :=
   IsEllSequence W ∧ IsDvdSequence W
 
 variable {W} in
@@ -310,7 +310,7 @@ lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence <| x • 
     x ^ 4 * h m n r
 
 variable {W} in
-lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
+lemma IsEllDvdSequence.smul (h : IsEllDvdSequence W) (x : R) : IsEllDvdSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
 
 lemma isEllipticNet_id : IsEllipticNet id :=
@@ -319,10 +319,10 @@ lemma isEllipticNet_id : IsEllipticNet id :=
 lemma isEllSequence_id : IsEllSequence id :=
   isEllipticNet_id.isEllSequence
 
-@[deprecated (since := "2026-06-30")] alias isDivSequence_id := IsDvdSequence.id
+@[deprecated (since := "2026-06-30")] alias isDvdSequence_id := IsDvdSequence.id
 
 /-- The identity sequence is an EDS. -/
-theorem isEllDivSequence_id : IsEllDivSequence id :=
+theorem isEllDvdSequence_id : IsEllDvdSequence id :=
   ⟨isEllSequence_id, .id ℤ⟩
 
 variable (b c d : R)
