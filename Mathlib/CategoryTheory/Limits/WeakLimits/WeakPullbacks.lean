@@ -250,7 +250,7 @@ weak pullbacks. As usual, this is not an instance, since there may be a more dir
 construct weak pullbacks. -/
 theorem hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakKernels
     [HasBinaryProducts C] [HasWeakEqualizers C] : HasWeakPullbacks C where
-      has_weakLimit F := hasWeakLimit_of_iso (diagramIsoCospan F).symm
+      hasWeakLimit F := hasWeakLimit_of_iso (diagramIsoCospan F).symm
 
 end
 

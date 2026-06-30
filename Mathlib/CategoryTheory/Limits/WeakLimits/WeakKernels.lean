@@ -34,10 +34,6 @@ variable [HasZeroMorphisms C] {X Y : C} (f g : X ⟶ Y)
 abbrev HasWeakKernel : Prop :=
   HasWeakLimit (parallelPair f 0)
 
-/-- If a morphism `f` has a kernel, then it has a weak kernel. -/
-lemma HasWeakKernelOfHasKernel [HasKernel f] : HasWeakKernel f :=
-  HasWeakLimit_of_hasLimit _
-
 variable (C) in
 /-- `HasWeakKernels` represents the existence of weak kernels for every morphism. -/
 class HasWeakKernels : Prop where
@@ -48,7 +44,7 @@ attribute [instance 100] HasWeakKernels.has_weakLimit
 /-- If a category has kernels, then it has weak kernels. -/
 instance (priority := 100) HasWeakKernelsOfHasKernels [HasKernels C] :
     HasWeakKernels C where
-      has_weakLimit _ := HasWeakKernelOfHasKernel _
+      has_weakLimit _ := inferInstance
 
 section
 

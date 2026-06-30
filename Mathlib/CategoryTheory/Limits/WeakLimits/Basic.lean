@@ -88,7 +88,7 @@ class HasWeakLimit (F : J ⥤ C) : Prop where mk' ::
 If `F` has a limit, then it has a weak limit.
 -/
 instance (F : J ⥤ C) [HasLimit F] : HasWeakLimit F where
-  exists_weakLimit := Nonempty.intro (WeakLimitCone.OfLimitCone (getLimitCone F))
+  exists_weakLimit := Nonempty.intro (WeakLimitCone.ofLimitCone (getLimitCone F))
 
 theorem HasWeakLimit.mk {F : J ⥤ C} (d : WeakLimitCone F) : HasWeakLimit F :=
   ⟨Nonempty.intro d⟩
@@ -107,11 +107,11 @@ class HasWeakLimitsOfShape : Prop where
 
 instance (priority := 100) hasWeakLimitOfHasWeakLimitsOfShape
     [HasWeakLimitsOfShape J C] (F : J ⥤ C) : HasWeakLimit F :=
-  HasWeakLimitsOfShape.has_weakLimit F
+  HasWeakLimitsOfShape.hasWeakLimit F
 
 instance (priority := 100) {J : Type*} [Category* J]
     [HasLimitsOfShape J C] : HasWeakLimitsOfShape J C where
-  has_weakLimit F := HasWeakLimit_of_hasLimit F
+  hasWeakLimit _ := inferInstance
 
 -- Interface to the `HasWeakLimit` class.
 /-- An arbitrary choice of weak limit cone for a functor. -/
@@ -193,7 +193,7 @@ theorem hasWeakLimit_of_iso {F G : J ⥤ C} [HasWeakLimit F] (α : F ≅ G) : Ha
       isWeakLimit := {
         lift s := (weakLimit.isWeakLimit F).lift ((Cone.postcompose α.inv).obj s)
         fac s j := by
-          simp only [Cone.postcompose_obj_π, weakLimit.cone_x, NatTrans.comp_app, weakLimit.cone_π]
+          simp only [Cone.postcompose_obj_π, weakLimit.cone_pt, NatTrans.comp_app, weakLimit.cone_π]
           refine (weakLimit.lift_π_assoc ((Cone.postcompose α.inv).obj s) j (α.hom.app j)).trans ?_
           simp only [Cone.postcompose_obj_π, NatTrans.comp_app]
           change (_ ≫ _) ≫ _ = _

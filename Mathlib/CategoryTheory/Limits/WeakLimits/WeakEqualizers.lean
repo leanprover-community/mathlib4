@@ -102,7 +102,7 @@ instance (priority := 100) HasWeakEqualizersOfHasEqualizers [HasEqualizers C] :
 /-- If `C` has all weak limits of diagrams `parallelPair f g`, then it has all weak equalizers -/
 theorem hasWeakEqualizers_of_hasWeakLimit_parallelPair
     [∀ {X Y : C} {f g : X ⟶ Y}, HasWeakLimit (parallelPair f g)] : HasWeakEqualizers C :=
-  { has_weakLimit := fun F => hasWeakLimit_of_iso (diagramIsoParallelPair F).symm }
+  { hasWeakLimit := fun F => hasWeakLimit_of_iso (diagramIsoParallelPair F).symm }
 
 variable {C}
 
