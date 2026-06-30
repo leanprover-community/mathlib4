@@ -7,9 +7,6 @@ module
 
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 public import Mathlib.RingTheory.RamificationInertia.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
-public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 
@@ -152,8 +149,8 @@ theorem isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDo
 theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) {𝔓 : Ideal S}
-    [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx' 𝔓 R = 1 := by
-  exact isUnramifiedAt_iff_of_isDedekindDomain.mp
+    [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx' 𝔓 R = 1 :=
+  isUnramifiedAt_iff_of_isDedekindDomain.mp
     (hunr 𝔓 inferInstance hP)
 
 /-- A nonzero ideal of `R` is unramified in `S` if and only if every prime ideal of `S` lying
