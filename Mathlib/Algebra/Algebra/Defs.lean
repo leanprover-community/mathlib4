@@ -396,10 +396,6 @@ variable {R A}
 @[simp] lemma algebraMap_self : algebraMap R R = .id _ := rfl
 lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
 
-namespace id
-
-end id
-
 end Semiring
 
 end Algebra
