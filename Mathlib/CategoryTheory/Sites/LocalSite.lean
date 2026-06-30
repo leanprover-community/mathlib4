@@ -15,9 +15,7 @@ public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 
 A site is called local if it has a terminal object whose only covering sieve is trivial -
 this makes it possible to define coconstant sheaves on it, giving its sheaf topos the structure
-of a local topos. This makes them an important stepping stone to cohesive sites.
-
-See https://ncatlab.org/nlab/show/local+site.
+of a local topos. This is one of the conditions of cohesive sites.
 
 Sheaves of types on any local site form a local topos (i.e. a topos whose global sections functor
 has a fully faithful right adjoint), and a subcanonical site is local if and only if its topos of
@@ -36,6 +34,10 @@ sheaves of types is.
   `coconstantSheaf J A`.
 * `fullyFaithfulCoconstantSheaf`: `coconstantSheaf` is fully faithful.
 * `fullyFaithfulConstantSheaf`: on local sites, the constant sheaf functor is fully faithful.
+
+## References
+
+* https://ncatlab.org/nlab/show/local+site
 
 ## TODO
 
