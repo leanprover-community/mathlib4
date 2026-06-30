@@ -171,7 +171,6 @@ namespace IsWeakLimit
 /-- Transport evidence that a cone is a limit cone across an isomorphism of cones. -/
 def ofIsoWeakLimit {r t : Cone F} (P : IsWeakLimit r) (i : r ≅ t) : IsWeakLimit t where
   lift s := P.lift s ≫ i.hom.hom
-  fac s j := by simp
 
 theorem ofIsoWeakLimit_lift {r t : Cone F} (P : IsWeakLimit r) (i : r ≅ t) (s) :
     (P.ofIsoWeakLimit i).lift s = P.lift s ≫ i.hom.hom :=
