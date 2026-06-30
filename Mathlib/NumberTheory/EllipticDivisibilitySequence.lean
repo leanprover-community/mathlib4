@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
@@ -54,7 +55,6 @@ Some examples of EDSs include
 * `IsEllipticNet.rel`: the elliptic relator `ER(p, q, r, s)` indexed by `ℤ`.
 * `IsEllipticNet`: a sequence indexed by `ℤ` is an elliptic net.
 * `IsEllSequence`: a sequence indexed by `ℤ` is an elliptic sequence.
-* `IsDivSequence`: a sequence indexed by `ℤ` is a divisibility sequence.
 * `IsEllDivSequence`: a sequence indexed by `ℤ` is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
@@ -289,13 +289,11 @@ def IsEllipticNet : Prop :=
 def IsEllSequence : Prop :=
   ∀ p q r : ℤ, IsEllipticNet.rel W p q r 0 = 0
 
-/-- The proposition that a sequence indexed by `ℤ` is a divisibility sequence. -/
-def IsDivSequence : Prop :=
-  ∀ m n : ℤ, m ∣ n → W m ∣ W n
+@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
 
 /-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
 def IsEllDivSequence : Prop :=
-  IsEllSequence W ∧ IsDivSequence W
+  IsEllSequence W ∧ IsDvdSequence W
 
 variable {W} in
 lemma IsEllipticNet.isEllSequence (h : IsEllipticNet W) : IsEllSequence W :=
@@ -312,10 +310,6 @@ lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence <| x • 
     x ^ 4 * h m n r
 
 variable {W} in
-lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence <| x • W :=
-  (mul_dvd_mul_left x <| h · · ·)
-
-variable {W} in
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
 
@@ -325,12 +319,11 @@ lemma isEllipticNet_id : IsEllipticNet id :=
 lemma isEllSequence_id : IsEllSequence id :=
   isEllipticNet_id.isEllSequence
 
-lemma isDivSequence_id : IsDivSequence id :=
-  fun _ _ => by simp_rw [id_eq, imp_self]
+@[deprecated (since := "2026-06-30")] alias isDivSequence_id := IsDvdSequence.id
 
 /-- The identity sequence is an EDS. -/
 theorem isEllDivSequence_id : IsEllDivSequence id :=
-  ⟨isEllSequence_id, isDivSequence_id⟩
+  ⟨isEllSequence_id, .id ℤ⟩
 
 variable (b c d : R)
 
