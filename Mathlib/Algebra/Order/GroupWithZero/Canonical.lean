@@ -193,18 +193,6 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     simpa [← ofAdd_add, ← toDual_add]
       using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
 
-@[deprecated "Use simp" (since := "2025-11-17")]
-theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
-
-@[deprecated "Use simp" (since := "2025-11-17")]
-theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
-
-@[deprecated bot_eq_zero (since := "2025-11-17")]
-theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
-    Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
-
 @[simp]
 theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
     OrderDual.ofDual (0 : Multiplicative αᵒᵈ).toAdd = ⊤ := rfl

@@ -120,9 +120,6 @@ Ordinal.ToType.toOrd : o.ToType → Iio o
 def Ordinal.ToType (o : Ordinal.{u}) : Type u :=
   o.out.α
 
-@[deprecated (since := "2025-12-04")]
-alias Ordinal.toType := Ordinal.ToType
-
 @[no_expose]
 instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
@@ -358,17 +355,6 @@ instance : OrderBot Ordinal where
 theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
 
-@[deprecated nonpos_iff_eq_zero (since := "2025-11-21")]
-protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
-  le_bot_iff
-
-@[deprecated not_neg (since := "2025-11-21")]
-protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
-  not_lt_bot
-
-@[deprecated eq_zero_or_pos (since := "2025-11-21")]
-protected theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a := eq_bot_or_bot_lt
-
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ≼i s) :=
   Iff.rfl
@@ -547,8 +533,6 @@ def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
   left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
-
-@[deprecated (since := "2025-12-04")] noncomputable alias enumIsoToType := ToType.mk
 
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
 abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
@@ -891,12 +875,6 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal where
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
   le_add_self a b := by simpa using add_le_add_left bot_le a
   le_self_add a b := by simpa using add_le_add_right bot_le a
-
-@[deprecated le_self_add (since := "2025-11-21")]
-protected theorem le_add_right (a b : Ordinal) : a ≤ a + b := le_self_add
-
-@[deprecated le_add_self (since := "2025-11-21")]
-protected theorem le_add_left (a b : Ordinal) : a ≤ b + a := le_add_self
 
 @[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
@@ -1410,4 +1388,3 @@ theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : Li
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_pairwise_cons hm.pairwise hi)
           (List.head_le_of_lt hmltl))
 
-@[deprecated (since := "2025-11-27")] alias List.Sorted.lt_ord_of_lt := List.SortedGT.lt_ord_of_lt
