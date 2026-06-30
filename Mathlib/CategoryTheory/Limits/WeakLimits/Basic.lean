@@ -111,7 +111,7 @@ instance (priority := 100) hasWeakLimitOfHasWeakLimitsOfShape
 
 instance (priority := 100) {J : Type*} [Category* J]
     [HasLimitsOfShape J C] : HasWeakLimitsOfShape J C where
-      has_weakLimit F := HasWeakLimit_of_hasLimit F
+  has_weakLimit F := HasWeakLimit_of_hasLimit F
 
 -- Interface to the `HasWeakLimit` class.
 /-- An arbitrary choice of weak limit cone for a functor. -/
