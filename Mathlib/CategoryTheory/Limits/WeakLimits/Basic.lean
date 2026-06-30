@@ -229,7 +229,7 @@ lemma postcompose_hom_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) :
 /-- A cone postcomposed with the inverse of a natural isomorphism is a weak limit cone
 if and only if the original cone is.
 -/
-lemma iff_of_postcomposeInvEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone G) :
+lemma postcompose_inv_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) (c : Cone G) :
     Nonempty (IsWeakLimit ((Cone.postcompose α.inv).obj c)) ↔ Nonempty (IsWeakLimit c) :=
   iff_of_postcomposeHomEquiv α.symm c
 
