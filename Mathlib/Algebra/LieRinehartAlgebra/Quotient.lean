@@ -66,7 +66,6 @@ instance : LieRing (L ⧸ s) where
   lie_self := by rintro ⟨x⟩; exact congrArg mk (lie_self x)
   leibniz_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (leibniz_lie x y z)
 
-@[simp]
 theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ s), (mk y : L ⧸ s)⁆ := rfl
 
 instance : Bracket (L ⧸ s) A where
@@ -76,7 +75,6 @@ instance : Bracket (L ⧸ s) A where
     rw [← sub_eq_zero, ←sub_lie]
     exact s.isotropic (l - l') a h)
 
-@[simp]
 theorem mk_bracket' (x : L) (a : A) : ⁅(mk x : L ⧸ s), a⁆ = ⁅x, a⁆ := rfl
 
 instance : LieRingModule (L ⧸ s) A where
