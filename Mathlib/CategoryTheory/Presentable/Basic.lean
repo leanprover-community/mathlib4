@@ -246,6 +246,13 @@ lemma Limits.exists_hom_of_preservesColimit_coyoneda {c : Cocone D} (hc : IsColi
     ∃ (j : J) (p : X ⟶ D.obj j), p ≫ c.ι.app j = f :=
   Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f
 
+lemma Limits.exists_hom₂_of_preservesColimit_coyoneda
+    [IsFiltered J] {c : Cocone D} (hc : IsColimit c) {X : C}
+    [PreservesColimit D (coyoneda.obj (.op X))] (f g : X ⟶ c.pt) :
+    ∃ (j : J) (p q : X ⟶ D.obj j), p ≫ c.ι.app j = f ∧ q ≫ c.ι.app j = g :=
+  Types.FilteredColimit.jointly_surjective_of_isColimit₂
+    (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g
+
 lemma Limits.exists_eq_of_preservesColimit_coyoneda [IsFiltered J] {c : Cocone D}
     (hc : IsColimit c) {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
     {i j : J} (f : X ⟶ D.obj i) (g : X ⟶ D.obj j) (h : f ≫ c.ι.app i = g ≫ c.ι.app j) :
@@ -289,6 +296,15 @@ lemma IsCardinalPresentable.exists_hom_of_isColimit [IsCardinalPresentable X κ]
     ∃ (j : J) (f' : X ⟶ F.obj j), f' ≫ c.ι.app j = f := by
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   exact exists_hom_of_preservesColimit_coyoneda hc f
+
+variable {X} in
+lemma IsCardinalPresentable.exists_hom₂_of_isColimit [IsCardinalPresentable X κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f g : X ⟶ c.pt) :
+    ∃ (j : J) (f' g' : X ⟶ F.obj j), f' ≫ c.ι.app j = f ∧ g' ≫ c.ι.app j = g := by
+  have := isFiltered_of_isCardinalFiltered J κ
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  exact exists_hom₂_of_preservesColimit_coyoneda hc f g
 
 variable {X} in
 lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
