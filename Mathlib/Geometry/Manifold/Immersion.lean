@@ -432,7 +432,7 @@ lemma comp_diffeomorph [IsManifold J n N]
     (h : IsImmersionAtOfComplement F I J n f x) (Φ : Diffeomorph J J N N n) :
     IsImmersionAtOfComplement F I J n (Φ ∘ f) x := by
   -- XXX: right now, `fun_prop` does not prove this (even with added tagging): investigate!
-  apply mk_of_continuousAt (Φ.continuous.continuousAt.comp h.continuousAt)
+  apply mk_of_continuousAt (by fun_prop) -- fails!
     h.equiv (h.domChart) (Φ.symm.toHomeomorph.transOpenPartialHomeomorph h.codChart)
     h.mem_domChart_source (by simp [h.mem_codChart_source])
     h.domChart_mem_maximalAtlas ?_
