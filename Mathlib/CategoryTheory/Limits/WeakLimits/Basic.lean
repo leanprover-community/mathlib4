@@ -94,6 +94,7 @@ theorem HasWeakLimit.mk {F : J ⥤ C} (d : WeakLimitCone F) : HasWeakLimit F :=
   ⟨Nonempty.intro d⟩
 
 /-- Use the axiom of choice to extract explicit `WeakLimitCone F` from `HasWeakLimit F`. -/
+@[no_expose]
 def getWeakLimitCone (F : J ⥤ C) [HasWeakLimit F] : WeakLimitCone F :=
   Classical.choice <| HasWeakLimit.exists_weakLimit
 
