@@ -96,7 +96,7 @@ lemma IsCardinalAccessibleCategory.mono_iff [IsCardinalAccessibleCategory C κ]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- In a `κ`-accessible category, `κ`-pure morphisms are monomorphisms.
-(This proposition 2.29 in [Adamek_Rosicky_1994].) -/
+(This is proposition 2.29 in [Adamek_Rosicky_1994].) -/
 lemma IsCardinalPure.mono [IsCardinalAccessibleCategory C κ]
     {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ f] :
     Mono f := by
@@ -127,7 +127,7 @@ lemma isCardinalPure_le_monomorphisms [IsCardinalAccessibleCategory C κ] :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `κ`-pure morphisms are stable under `κ`-filtered colimits.
-(This proposition 2.30 (i) in [Adamek_Rosicky_1994].) -/
+(This is proposition 2.30 (i) in [Adamek_Rosicky_1994].) -/
 instance (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     (isCardinalPure C κ).IsStableUnderColimitsOfShape J := by
   have := isFiltered_of_isCardinalFiltered J κ
