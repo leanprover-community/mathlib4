@@ -242,7 +242,7 @@ theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
 theorem AntitoneOn.tsum_le_integral (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑' (n : ℕ),  f n ≤ f 0 + ∫ x in Ioi 0, f x  := by
-  grind [(anti.summable_of_integrable integrable nonneg).tsum_eq_zero_add, 
+  grind [(anti.summable_of_integrable integrable nonneg).tsum_eq_zero_add,
     anti.tsum_add_one_le_integral integrable nonneg]
 
 /-- Bounds the difference between a sum and its partial sums by an integral. -/
