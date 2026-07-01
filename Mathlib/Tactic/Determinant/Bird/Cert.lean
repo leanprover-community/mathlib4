@@ -249,9 +249,13 @@ This corresponds to the `else 0` branch of:
 ```
 sumFrom n lo f = if lo < n then f lo + sumFrom n (lo + 1) f else 0
 ```
+
+Throws a meta-level error if called with `lo` such that `lo < ctx.dimension`.
 -/
 def certSumFromStop (lo : ℕ) (f : Q(ℕ → $α)) : CertM rα (Cert rα) := do
   let ctx ← read
+  if lo < ctx.dimension then
+    throwError "certSumFromStop called with {lo} such that {lo} < {ctx.dimension}"
   have dimLit : Q(ℕ) := ctx.dimensionLit
   let hNot : Q(¬ $lo < $dimLit) ← mkDecideProofQ q(¬ $lo < $dimLit)
   return zeroCertOfProof q(BirdDet.sumFrom_stop $dimLit $lo $f $hNot)
@@ -263,11 +267,15 @@ This corresponds to the `lo < n` branch of:
 ```
 sumFrom n lo f = if lo < n then f lo + sumFrom n (lo + 1) f else 0
 ```
+
+Throws a meta-level error if called with `lo` such that `¬ lo < ctx.dimension`.
 -/
 def certSumFromStep
     (lo : ℕ) (f : Q(ℕ → $α))
     (headCert tailCert : CertM rα (Cert rα)) : CertM rα (Cert rα) := do
   let ctx ← read
+  unless lo < ctx.dimension do
+    throwError "certSumFromStep called with {lo} such that ¬ {lo} < {ctx.dimension}"
   have dim : Q(ℕ) := ctx.dimensionLit
   let hLt : Q($lo < $dim) ← mkDecideProofQ q($lo < $dim)
   let sumCert ← certAdd (← headCert) (← tailCert)
