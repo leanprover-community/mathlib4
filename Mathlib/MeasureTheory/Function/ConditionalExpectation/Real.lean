@@ -80,7 +80,7 @@ lemma condExp_le_nonneg_const [PartialOrder E] [ClosedIciTopology E] [IsOrderedA
 
 variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
 
-theorem ae_condExp_abs_le_abs_condExp (f : α → E) : |(μ[f | m])| ≤ᵐ[μ] μ[|f| | m] := by
+theorem abs_condExp_ae_le_condExp_abs (f : α → E) : |(μ[f | m])| ≤ᵐ[μ] μ[|f| | m] := by
   by_cases! hfint : ¬Integrable f μ
   · simp only [condExp_of_not_integrable hfint, abs_zero]
     apply condExp_nonneg
