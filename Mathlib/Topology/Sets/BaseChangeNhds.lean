@@ -34,7 +34,8 @@ a map sending compacts inside `U` to the ones inside `V` -/
 def baseChangeCompactInsd {U V : Opens α} (h : U ⟶ V) : U.compactInsd → V.compactInsd :=
   fun ⟨K, hK⟩ ↦ ⟨K, fun _ hx ↦ Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
 
-lemma baseChangeCompactInsd_mono {U V : Opens α} (h : U ⟶ V) : Monotone <| baseChangeCompactInsd h :=
+lemma baseChangeCompactInsd_mono {U V : Opens α} (h : U ⟶ V) :
+    Monotone <| baseChangeCompactInsd h :=
   fun _ _ hKL _ hx ↦ SetLike.mem_coe.mpr (hKL hx)
 
 @[simp]
