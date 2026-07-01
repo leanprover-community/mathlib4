@@ -416,9 +416,23 @@ section Equiv
 variable {H₁ : Type*} [NormedAddCommGroup H₁] [InnerProductSpace 𝕜 H₁] [CompleteSpace H₁]
 variable [RKHS 𝕜 H₁ X V]
 
-/-- If the two RKHS have the same kernel, they are isometrically isomorphic. -/
+/-- If the two RKHS have the same kernel, then they are isometrically isomorphic. -/
 def Equiv (h : kernel H = kernel H₁) : H ≃ₗᵢ[𝕜] H₁ :=
   (OfKernel.EquivOfKernel H).trans (OfKernel.equiv_aux h)
+
+theorem Equiv_kerFun_eq_kerFun (h : kernel H = kernel H₁) (x : X) (v : V) :
+    Equiv h (kerFun H x v) = kerFun H₁ x v := by
+  simp [Equiv, OfKernel.EquivOfKernel_kerFun_eq_coe'_single, OfKernel.equiv_aux,
+    UniformSpace.Completion.extension_coe (OfKernel.toH₁ H h).isometry.uniformContinuous]
+  simp [OfKernel.toH₁]
+
+/-- If the two RKHS have the same kernel, then the functions in the RKHSs agree as functions on
+`X → V`. -/
+theorem coe_Equiv (h : kernel H = kernel H₁) (f : H) : ⇑(Equiv h f) = ⇑f := by
+  ext
+  apply ext_inner_left 𝕜
+  intro v
+  simp_rw [← kerFun_inner, ← LinearIsometryEquiv.inner_map_map (Equiv h), Equiv_kerFun_eq_kerFun]
 
 end Equiv
 
