@@ -3498,6 +3498,7 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 public import Mathlib.CategoryTheory.Triangulated.Triangulated
+public import Mathlib.CategoryTheory.Triangulated.WeakKernels
 public import Mathlib.CategoryTheory.Triangulated.Yoneda
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.CategoryTheory.Types.Epimorphisms
