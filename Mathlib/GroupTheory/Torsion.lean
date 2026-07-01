@@ -61,7 +61,7 @@ def IsMulTorsion :=
 
 /-- A monoid is not a torsion monoid if it has an element of infinite order. -/
 @[to_additive (attr := simp)
-/-- An additive monoid is not a torsion monoid if it has an element of infinite order. -/]
+/-- An additive monoid is not a torsion additive monoid if it has an element of infinite order. -/]
 theorem not_isMulTorsion_iff : ¬IsMulTorsion G ↔ ∃ g : G, ¬IsOfFinOrder g :=
   not_forall
 
@@ -74,7 +74,7 @@ open Monoid
 
 /-- Torsion monoids are really groups. -/
 @[to_additive (attr := implicit_reducible)
-/-- Torsion additive monoids are really additive groups -/]
+/-- Torsion additive monoids are really additive groups. -/]
 noncomputable def IsMulTorsion.group [Monoid G] (tG : IsMulTorsion G) : Group G :=
   { ‹Monoid G› with
     inv g := g ^ (orderOf g - 1)
@@ -90,7 +90,7 @@ section Group
 variable [Group G] {N : Subgroup G} [Group H]
 
 /-- Subgroups of torsion groups are torsion groups. -/
-@[to_additive /-- Subgroups of additive torsion groups are additive torsion groups. -/]
+@[to_additive /-- Subgroups of torsion additive groups are torsion additive groups. -/]
 theorem IsMulTorsion.subgroup (tG : IsMulTorsion G) (H : Subgroup G) : IsMulTorsion H := fun h ↦
   Submonoid.isOfFinOrder_coe.1 <| tG h
 
@@ -99,7 +99,7 @@ theorem IsMulTorsion.subgroup (tG : IsMulTorsion G) (H : Subgroup G) : IsMulTors
 
 /-- The image of a surjective torsion group homomorphism is torsion. -/
 @[to_additive
-/-- The image of a surjective additive torsion group homomorphism is torsion. -/]
+/-- The image of a surjective torsion additive group homomorphism is torsion. -/]
 theorem IsMulTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG : IsMulTorsion G) :
     IsMulTorsion H := fun h ↦ by
   obtain ⟨g, rfl⟩ := hf h
@@ -110,7 +110,7 @@ theorem IsMulTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (
 
 /-- Torsion groups are closed under extensions. -/
 @[to_additive
-/-- Additive torsion groups are closed under extensions. -/]
+/-- Torsion additive groups are closed under extensions. -/]
 theorem IsMulTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsMulTorsion H)
     (tN : IsMulTorsion N) : IsMulTorsion G := fun g ↦ by
   obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
@@ -127,7 +127,7 @@ theorem IsMulTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsMu
 
 /-- The image of a quotient is torsion iff the group is torsion. -/
 @[to_additive
-/-- The image of a quotient is additively torsion iff the group is torsion. -/]
+/-- The image of a quotient is torsion iff the additive group is torsion. -/]
 theorem IsMulTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN : N = f.ker)
     (tN : IsMulTorsion N) : IsMulTorsion H ↔ IsMulTorsion G :=
   ⟨fun tH ↦ IsMulTorsion.extension_closed hN tH tN, fun tG ↦ IsMulTorsion.of_surjective hf tG⟩
@@ -137,7 +137,7 @@ theorem IsMulTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (h
 
 /-- If a group exponent exists, the group is torsion. -/
 @[to_additive
-/-- If a group exponent exists, the group is additively torsion. -/]
+/-- If a group exponent exists, the additive group is torsion. -/]
 theorem ExponentExists.isMulTorsion (h : ExponentExists G) : IsMulTorsion G := fun g ↦ by
   obtain ⟨n, npos, hn⟩ := h
   exact isOfFinOrder_iff_pow_eq_one.mpr ⟨n, npos, hn g⟩
@@ -148,7 +148,7 @@ theorem ExponentExists.isMulTorsion (h : ExponentExists G) : IsMulTorsion G := f
 
 /-- The group exponent exists for any bounded torsion group. -/
 @[to_additive
-/-- The group exponent exists for any bounded additive torsion group. -/]
+/-- The group exponent exists for any bounded torsion additive group. -/]
 theorem IsMulTorsion.exponentExists (tG : IsMulTorsion G)
     (bounded : (Set.range fun g : G ↦ orderOf g).Finite) : ExponentExists G :=
   exponent_ne_zero.mp <|
@@ -157,7 +157,7 @@ theorem IsMulTorsion.exponentExists (tG : IsMulTorsion G)
 @[deprecated (since := "2026-07-01")] alias IsTorsion.exponentExists := IsMulTorsion.exponentExists
 
 /-- Finite groups are torsion groups. -/
-@[to_additive /-- Finite additive groups are additive torsion groups. -/]
+@[to_additive /-- Finite additive groups are torsion additive groups. -/]
 theorem isMulTorsion_of_finite [Finite G] : IsMulTorsion G :=
   ExponentExists.isMulTorsion .of_finite
 
@@ -170,7 +170,7 @@ section CommGroup
 variable [CommGroup G]
 
 /-- A nontrivial torsion abelian group is not torsion-free. -/
-@[to_additive /-- A nontrivial additive torsion abelian group is not torsion-free. -/]
+@[to_additive /-- A nontrivial torsion additive abelian group is not torsion-free. -/]
 lemma not_isMulTorsionFree_of_isMulTorsion [Nontrivial G] (hG : IsMulTorsion G) :
     ¬ IsMulTorsionFree G :=
   not_isMulTorsionFree_iff_isOfFinOrder.2 <| let ⟨x, hx⟩ := exists_ne (1 : G); ⟨x, hx, hG x⟩
@@ -181,7 +181,7 @@ lemma not_isMulTorsionFree_of_isMulTorsion [Nontrivial G] (hG : IsMulTorsion G) 
   not_isAddTorsionFree_of_isAddTorsion
 
 /-- A nontrivial torsion-free abelian group is not torsion. -/
-@[to_additive /-- A nontrivial additive torsion-free abelian group is not torsion. -/]
+@[to_additive /-- A nontrivial torsion additive-free abelian group is not torsion. -/]
 lemma not_isMulTorsion_of_isMulTorsionFree [Nontrivial G] [IsMulTorsionFree G] : ¬ IsMulTorsion G :=
   (not_isMulTorsionFree_of_isMulTorsion · ‹_›)
 
@@ -197,7 +197,7 @@ section Module
 -- A (semi/)ring of scalars and a commutative monoid of elements
 variable (R M : Type*) [AddCommMonoid M]
 
-/-- A module whose scalars are additively torsion is additively torsion. -/
+/-- A module whose scalars are torsion is torsion. -/
 theorem IsAddTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsAddTorsion R) :
     IsAddTorsion M :=
   fun f ↦ isOfFinAddOrder_iff_nsmul_eq_zero.mpr <| by
@@ -207,7 +207,7 @@ theorem IsAddTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsAddTors
 @[deprecated (since := "2026-07-01")] alias AddMonoid.IsTorsion.module_of_torsion :=
   IsAddTorsion.module_of_torsion
 
-/-- A module with a finite ring of scalars is additively torsion. -/
+/-- A module with a finite ring of scalars is torsion. -/
 theorem IsAddTorsion.module_of_finite [Ring R] [Finite R] [Module R M] : IsAddTorsion M :=
   (isAddTorsion_of_finite : IsAddTorsion R).module_of_torsion _ _
 
@@ -242,7 +242,7 @@ lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
 variable {G}
 
 /-- Torsion submonoids are torsion. -/
-@[to_additive /-- Additive torsion submonoids are additively torsion. -/]
+@[to_additive /-- Torsion additive submonoids are torsion. -/]
 theorem torsion.isMulTorsion : IsMulTorsion <| torsion G := fun ⟨x, n, npos, hn⟩ ↦
   ⟨n, npos,
     Subtype.ext <| by
@@ -317,12 +317,12 @@ variable {G}
 
 /-- The torsion submonoid of a torsion monoid is `⊤`. -/
 @[to_additive (attr := simp)
-/-- The additive torsion submonoid of an additive torsion monoid is `⊤`. -/]
+/-- The torsion additive submonoid of an torsion additive monoid is `⊤`. -/]
 theorem torsion_eq_top (tG : IsMulTorsion G) : torsion G = ⊤ := by ext; tauto
 
 /-- A torsion monoid is isomorphic to its torsion submonoid. -/
 @[to_additive (attr := simps!)
-/-- An additive torsion monoid is isomorphic to its torsion submonoid. -/]
+/-- An torsion additive monoid is isomorphic to its torsion submonoid. -/]
 def torsionMulEquiv (tG : IsMulTorsion G) : torsion G ≃* G :=
   (MulEquiv.submonoidCongr tG.torsion_eq_top).trans Submonoid.topEquiv
 
@@ -350,8 +350,8 @@ end IsMulTorsion
 
 /-- Torsion submonoids of a torsion submonoid are isomorphic to the submonoid. -/
 @[to_additive (attr := simp)
-/-- Additive torsion submonoids of an additive torsion submonoid are
-isomorphic to the submonoid. -/]
+/-- Torsion additive submonoids of an torsion additive submonoid are
+isomorphic to the additive submonoid. -/]
 def CommMonoid.Torsion.ofTorsion : torsion (torsion G) ≃* torsion G :=
   IsMulTorsion.torsionMulEquiv CommMonoid.torsion.isMulTorsion
 
@@ -372,7 +372,7 @@ def torsion : Subgroup G :=
 
 /-- The torsion submonoid of an abelian group equals the torsion subgroup as a submonoid. -/
 @[to_additive add_torsion_eq_add_torsion_submonoid
-/-- The additive torsion submonoid of an abelian group equals the torsion
+/-- The torsion additive submonoid of an abelian group equals the torsion
 subgroup as a submonoid. -/]
 theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubmonoid :=
   rfl
@@ -508,7 +508,7 @@ open CommGroup (torsion)
 
 /-- Quotienting a group by its torsion subgroup yields a torsion-free group. -/
 @[to_additive
-/-- Quotienting a group by its additive torsion subgroup yields an additive torsion-free group. -/]
+/-- Quotienting a group by its torsion additive subgroup yields an torsion-free additive group. -/]
 instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
   obtain ⟨g⟩ := g
