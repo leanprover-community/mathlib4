@@ -43,15 +43,6 @@ variable {m}
 
 section conjugation
 
-@[simp] lemma discr_conj : (g.val * m * g.val⁻¹).discr = m.discr := by
-  simp only [discr_fin_two, ← Matrix.coe_units_inv, trace_units_conj, det_units_conj]
-
-@[simp] lemma discr_conj' : (g.val⁻¹ * m * g.val).discr = m.discr := by
-  simpa using discr_conj g⁻¹
-
-@[deprecated (since := "2025-10-20")] alias disc_conj := discr_conj
-@[deprecated (since := "2025-10-20")] alias disc_conj' := discr_conj'
-
 @[simp] lemma isParabolic_conj_iff : (g.val * m * g.val⁻¹).IsParabolic ↔ IsParabolic m := by
   simp_rw [IsParabolic, discr_conj, Set.mem_range, ← Matrix.coe_units_inv,
     Units.eq_mul_inv_iff_mul_eq, scalar_apply, ← smul_eq_diagonal_mul, smul_eq_mul_diagonal,
@@ -59,6 +50,18 @@ section conjugation
 
 @[simp] lemma isParabolic_conj'_iff : (g.val⁻¹ * m * g.val).IsParabolic ↔ m.IsParabolic := by
   simpa using isParabolic_conj_iff g⁻¹
+
+lemma IsParabolic.neg (h : IsParabolic m) : IsParabolic (-m) := by
+  constructor
+  · rw [← RingHom.coe_range, SetLike.mem_coe, neg_mem_iff]
+    exact h.1
+  · -- TODO: prove `discr_neg` for a matrix of any size, use it here
+    simpa [discr_fin_two, det_neg] using h.2
+
+lemma IsParabolic.of_neg (h : IsParabolic (-m)) : IsParabolic m := by
+  simpa using h.neg
+
+@[simp] lemma isParabolic_neg_iff : IsParabolic (-m) ↔ IsParabolic m := ⟨.of_neg, .neg⟩
 
 end conjugation
 
@@ -94,8 +97,6 @@ lemma sub_scalar_sq_eq_discr [NeZero (2 : K)] :
   fin_cases j <;>
   · simp [Matrix.mul_apply]
     field
-
-@[deprecated (since := "2025-10-20")] alias sub_scalar_sq_eq_disc := sub_scalar_sq_eq_discr
 
 variable (m) in
 /-- The unique eigenvalue of a parabolic matrix (junk if `m` is not parabolic). -/
@@ -152,7 +153,37 @@ lemma isElliptic_conj_iff : (g.val * m * g.val⁻¹).IsElliptic ↔ m.IsElliptic
 lemma isElliptic_conj'_iff : (g.val⁻¹ * m * g.val).IsElliptic ↔ m.IsElliptic := by
   simpa using isElliptic_conj_iff g⁻¹
 
+@[simp]
+theorem isHyperbolic_neg_iff : (-m).IsHyperbolic ↔ m.IsHyperbolic := by
+  simp [IsHyperbolic, discr_fin_two, det_neg]
+
+protected alias ⟨IsHyperbolic.of_neg, IsHyperbolic.neg⟩ := isHyperbolic_neg_iff
+
+@[simp]
+theorem isElliptic_neg_iff : (-m).IsElliptic ↔ m.IsElliptic := by
+  simp [IsElliptic, discr_fin_two, det_neg]
+
+protected alias ⟨IsElliptic.of_neg, IsElliptic.neg⟩ := isElliptic_neg_iff
+
 end Preorder
+
+section LinearOrder
+
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsOrderedRing R] {m : Matrix (Fin 2) (Fin 2) R}
+
+theorem IsElliptic.bc_ne_zero (hm : m.IsElliptic) : m 0 1 * m 1 0 ≠ 0 := by
+  intro hc
+  rw [IsElliptic, discr_fin_two, trace_fin_two, det_fin_two, hc] at hm
+  refine hm.not_ge ?_
+  linear_combination sq_nonneg (m 0 0 - m 1 1)
+
+theorem IsElliptic.b_ne_zero (hm : m.IsElliptic) : m 0 1 ≠ 0 :=
+  left_ne_zero_of_mul hm.bc_ne_zero
+
+theorem IsElliptic.c_ne_zero (hm : m.IsElliptic) : m 1 0 ≠ 0 :=
+  right_ne_zero_of_mul hm.bc_ne_zero
+
+end LinearOrder
 
 namespace GeneralLinearGroup
 
@@ -234,7 +265,7 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     | base => simp
     | succ n hn IH =>
       simp only [pow_succ, IH, add_mul, Nat.add_sub_cancel, mul_add, ← map_mul, add_assoc]
-      simp only [scalar_apply, ← smul_eq_mul_diagonal, ← SemigroupAction.mul_smul,
+      simp only [scalar_apply, ← smul_eq_mul_diagonal, ← mul_smul,
         ← smul_eq_diagonal_mul, smul_mul, ← sq, hmsq, smul_zero, add_zero, ← add_smul,
         Nat.cast_add_one, add_mul, one_mul]
       rw [(by lia : n = n - 1 + 1), pow_succ, (by lia : n - 1 + 1 = n)]
@@ -243,18 +274,17 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     refine fun ha ↦ (g ^ 2).det_ne_zero ?_
     rw [ha, map_zero, zero_add] at hg
     rw [← hg] at hmsq
-    rw [Units.val_pow_eq_pow_val, hmsq, det_zero ⟨0⟩]
+    rw [Units.val_pow_eq_pow_val, hmsq, det_zero]
 
 lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
     g.IsParabolic ↔ g 0 0 = g 1 1 ∧ g 0 1 ≠ 0 :=
   Matrix.isParabolic_iff_of_upperTriangular hg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Specialized version of `isParabolic_iff_of_upperTriangular` intended for use with
 discrete subgroups of `GL(2, ℝ)`. -/
 lemma isParabolic_iff_of_upperTriangular_of_det [LinearOrder K] [IsStrictOrderedRing K]
     {g : GL (Fin 2) K} (h_det : g.det = 1 ∨ g.det = -1) (hg10 : g 1 0 = 0) :
-    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) := by
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ (0 : K), g = -upperRightHom x) := by
   rw [isParabolic_iff_of_upperTriangular hg10]
   constructor
   · rintro ⟨hg00, hg01⟩

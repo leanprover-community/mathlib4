@@ -68,7 +68,7 @@ protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
 protected theorem semiconjBy {a b : S} (h : Commute a b) : SemiconjBy a b b :=
   h
 
-@[to_additive]
+@[to_additive (attr := grind =)]
 protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
   ⟨Commute.symm, Commute.symm⟩
 
@@ -198,3 +198,11 @@ theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
 end Group
 
 end Commute
+
+@[to_additive] protected lemma IsLeftRegular.commute_mul_left_iff [Semigroup S] {a b : S}
+    (reg : IsLeftRegular a) : Commute (a * b) a ↔ Commute a b := by
+  simp [commute_iff_eq, mul_assoc, reg.eq_iff, eq_comm]
+
+@[to_additive] protected lemma IsRightRegular.commute_mul_right_iff [Semigroup S] {a b : S}
+    (reg : IsRightRegular a) : Commute (b * a) a ↔ Commute a b := by
+  simp [commute_iff_eq, ← mul_assoc, reg.eq_iff, eq_comm]

@@ -43,7 +43,7 @@ variable {M : Type*} [Monoid M]
 
 open Units
 
-open Pointwise in
+open scoped Pointwise in
 /-- The units of `S`, packaged as a subgroup of `Mˣ`. -/
 @[to_additive /-- The additive units of `S`, packaged as an additive subgroup of `AddUnits M`. -/]
 def Submonoid.units (S : Submonoid M) : Subgroup Mˣ where
@@ -177,7 +177,7 @@ lemma units_surjective : Function.Surjective (units (M := M)) :=
 @[to_additive]
 lemma units_left_inverse :
     Function.LeftInverse (units (M := M)) (Subgroup.ofUnits (M := M)) :=
-  ofUnits_units_gci.u_l_leftInverse
+  ofUnits_units_gci.leftInverse_u_l
 
 /-- The equivalence between the subgroup of units of `S` and the submonoid of unit
 elements of `S`. -/
@@ -299,7 +299,7 @@ lemma ofUnits_inf_units (S T : Subgroup Mˣ) : (S.ofUnits ⊓ T.ofUnits).units =
 @[to_additive]
 lemma ofUnits_right_inverse :
     Function.RightInverse (ofUnits (M := M)) (Submonoid.units (M := M)) :=
-  ofUnits_units_gci.u_l_leftInverse
+  ofUnits_units_gci.leftInverse_u_l
 
 @[to_additive]
 lemma ofUnits_strictMono : StrictMono (ofUnits (M := M)) := ofUnits_units_gci.strictMono_l
@@ -339,3 +339,17 @@ def unitsEquivSelf (H : Subgroup G) : H.units ≃* H :=
   H.unitsEquivUnitsType.trans (toUnits (G := H)).symm
 
 end Subgroup
+
+@[to_additive]
+theorem MonoidHom.isUnit_eqLocusM_mk_iff {N : Type*} [Monoid N] (f g : M →* N) {r : M}
+    (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocusM g) ↔ IsUnit r := by
+  refine ⟨fun h ↦ h.map (SubmonoidClass.subtype _), fun h ↦ ?_⟩
+  obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h
+  suffices ∃ a, r * a = 1 ∧ f a = g a ∧ a * r = 1 by
+    simpa [isUnit_iff_exists, ← Subtype.val_inj]
+  refine ⟨s, hs.left, ?_, hs.right⟩
+  rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← hr, ← map_mul,
+    hs.right, map_one, one_mul]
+
+instance {N : Type*} [Monoid N] (f g : M →* N) : IsLocalHom (f.eqLocusM g).subtype where
+  map_nonunit r := f.isUnit_eqLocusM_mk_iff g r.prop |>.2

@@ -122,7 +122,6 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     · exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hk htQ)
   exact P.eq_zero_iff_forall_coroot'_eq_zero.mpr h_ker
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
@@ -160,11 +159,15 @@ instance [P.IsIrreducible] : P.flip.IsIrreducible where
   eq_top_of_invtSubmodule_reflection := IsIrreducible.eq_top_of_invtSubmodule_coreflection (P := P)
   eq_top_of_invtSubmodule_coreflection := IsIrreducible.eq_top_of_invtSubmodule_reflection (P := P)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule :=
   have := IsIrreducible.nontrivial P
   P.isSimpleModule_weylGroupRootRep_iff.mpr IsIrreducible.eq_top_of_invtSubmodule_reflection
+
+@[nontriviality]
+lemma not_isIrreducible_of_subsingleton [Subsingleton M] :
+    ¬ P.IsIrreducible :=
+  fun contra ↦ not_nontrivial _ contra.nontrivial
 
 /-- A nonempty irreducible root pairing is a root system. -/
 instance [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : P.IsRootSystem where
@@ -269,10 +272,10 @@ lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
     q = ⊤ := by
   obtain ⟨Φ, b, c⟩ := P.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q h₁
   rcases Φ.eq_empty_or_nonempty with rfl | hΦ
-  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using c
+  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using! c
     simp [h₀, ← P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot'] at c
   · replace b : P.root '' Φ ⊆ q := by
-      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using b
-    simpa [h₂ Φ hΦ b c, ← span_le] using b
+      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using! b
+    simpa [h₂ Φ hΦ b c, ← span_le] using! b
 
 end RootPairing

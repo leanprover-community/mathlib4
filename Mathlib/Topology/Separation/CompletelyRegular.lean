@@ -11,6 +11,8 @@ public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Analysis.Real.Cardinality
 
+import Mathlib.Topology.Algebra.Indicator
+
 /-!
 # Completely regular topological spaces.
 
@@ -52,7 +54,7 @@ space.
 * [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -193,6 +195,15 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
 
+theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
+    (h : TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s}) :
+    CompletelyRegularSpace X where
+  completely_regular x K hK hx := by
+    obtain ⟨s, hs, hx, hsK⟩ := h.exists_subset_of_mem_open hx hK.isOpen_compl
+    refine ⟨sᶜ.indicator 1, ?_, by simpa, fun x hx ↦ indicator_of_mem ?_ _⟩
+    · exact hs.compl.continuous_indicator continuous_const
+    · exact (mem_compl_iff s x).mpr fun hs ↦ hsK hs hx
+
 open TopologicalSpace Cardinal in
 theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
     [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
@@ -212,7 +223,7 @@ theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_conti
   refine ⟨f ⁻¹' Iio r, ⟨hrclopen ▸ isClosed_Iic.preimage hfc, isOpen_Iio.preimage hfc⟩, ?_, ?_⟩
   · simp [hf₀, hrclopen]
   · refine preimage_subset_iff.mpr (fun x ↦ ?_)
-    contrapose!; intro hxs
+    contrapose; intro hxs
     simpa [hf₁ hxs] using le_one'
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/

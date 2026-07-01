@@ -115,12 +115,12 @@ theorem transcendental_iff_ker_eq_bot {x : A} :
 theorem Algebra.isAlgebraic_of_not_injective (h : ¬ Function.Injective (algebraMap R A)) :
     Algebra.IsAlgebraic R A where
   isAlgebraic a := isAlgebraic_iff_not_injective.mpr
-    fun inj ↦ h <| by convert inj.comp C_injective; ext; simp
+    fun inj ↦ h <| by convert! inj.comp C_injective; ext; simp
 
 theorem Algebra.injective_of_transcendental [h : Algebra.Transcendental R A] :
     Function.Injective (algebraMap R A) := by
   rw [transcendental_iff_not_isAlgebraic] at h
-  contrapose! h
+  contrapose h
   exact isAlgebraic_of_not_injective h
 
 end
@@ -343,7 +343,7 @@ theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : IsAlgebraic (⊥ : Subalg
 theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
     IsAlgebraic (⊥ : Subalgebra R S) x ↔ IsAlgebraic R x :=
   isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h).symm (RingHom.id S)
-    Function.injective_id (by rfl)
+    Function.injective_id rfl
 
 variable (R S) in
 theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot_left
@@ -532,6 +532,8 @@ variable {R S : Type*} [CommRing R]
 
 section
 
+open Algebra
+
 variable [Ring S] [Algebra R S]
 
 theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
@@ -544,7 +546,7 @@ theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
   exact ⟨q, hq, (S⁰.pow_mem hs (rootMultiplicity 0 p)).2 (aeval s q) hp⟩
 
 theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
-    ∃ᵉ (t ∈ Algebra.adjoin R {s}) (r ≠ (0 : R)), s * t = algebraMap R S r := by
+    ∃ᵉ (t ∈ R[s]) (r ≠ (0 : R)), s * t = algebraMap R S r := by
   have ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
   have ⟨p, hp⟩ := X_dvd_sub_C (p := q)
   refine ⟨aeval s p, aeval_mem_adjoin_singleton _ _, _, neg_ne_zero.mpr hq0, ?_⟩
@@ -564,7 +566,7 @@ theorem IsAlgebraic.exists_smul_eq_mul
     (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ S⁰) :
     ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
   have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
-  ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
+  ⟨s * a, r, hr, by rw [smul_def, h, mul_assoc]⟩
 
 variable (R)
 
@@ -578,46 +580,46 @@ theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlg
 namespace Polynomial
 
 /-- Given a transcendental element `s : S` over `R`, the `R`-algebra equivalence
-between `R[X]` and `Algebra.adjoin R {s}` given by sending `X` to `s`. -/
+between `R[X]` and `R[s]` given by sending `X` to `s`. -/
 noncomputable def algEquivOfTranscendental (s : S) (h : Transcendental R s) :
-    R[X] ≃ₐ[R] (Algebra.adjoin R {s}) :=
-  AlgEquiv.ofBijective (aeval ⟨s, Algebra.self_mem_adjoin_singleton R s⟩) <| by
+    R[X] ≃ₐ[R] R[s] :=
+  AlgEquiv.ofBijective (aeval ⟨s, self_mem_adjoin_singleton R s⟩) <| by
     refine ⟨transcendental_iff_injective.mp ?_, ?_⟩
     · rwa [Subalgebra.transcendental_iff_transcendental_val]
-    rw [← AlgHom.range_eq_top, eq_top_iff]
+    rw [← AlgHom.range_eq_top, _root_.eq_top_iff]
     rintro ⟨t, ht⟩ _
-    obtain ⟨r, rfl⟩ := Algebra.adjoin_mem_exists_aeval _ _ ht
+    obtain ⟨r, rfl⟩ := adjoin_mem_exists_aeval _ _ ht
     exact ⟨r, by ext; simp⟩
 
 @[simp]
 theorem algEquivOfTranscendental_coe (s : S) (h : Transcendental R s) :
-    (algEquivOfTranscendental R s h : R[X] →+* (Algebra.adjoin R {s})) =
-    aeval (R := R) (A := Algebra.adjoin R {s}) ⟨s, Algebra.self_mem_adjoin_singleton R s⟩ := rfl
+    (algEquivOfTranscendental R s h : R[X] →+* R[s]) =
+    aeval (R := R) (A := R[s]) ⟨s, self_mem_adjoin_singleton R s⟩ := rfl
 
 @[simp]
 theorem algEquivOfTranscendental_apply (s : S) (h : Transcendental R s) (f : R[X]) :
-    algEquivOfTranscendental R s h f = aeval (⟨s, Algebra.self_mem_adjoin_singleton R s⟩) f := rfl
+    algEquivOfTranscendental R s h f = aeval (⟨s, self_mem_adjoin_singleton R s⟩) f := rfl
 
 lemma algEquivOfTranscendental_apply_X (s : S) (h : Transcendental R s) :
-    algEquivOfTranscendental R s h X = ⟨s, Algebra.self_mem_adjoin_singleton R s⟩ := by simp
+    algEquivOfTranscendental R s h X = ⟨s, self_mem_adjoin_singleton R s⟩ := by simp
 
 @[simp]
 theorem algEquivOfTranscendental_symm_aeval (s : S) (h : Transcendental R s) (f : R[X]) :
     (algEquivOfTranscendental R s h).symm
-      (aeval (⟨s, Algebra.self_mem_adjoin_singleton R s⟩) f) = f := by
+      (aeval (⟨s, self_mem_adjoin_singleton R s⟩) f) = f := by
   apply (algEquivOfTranscendental R s h).toEquiv.injective
   simp
 
 @[simp]
 theorem algEquivOfTranscendental_symm_gen (s : S) (h : Transcendental R s) :
-    (algEquivOfTranscendental R s h).symm ⟨s, Algebra.self_mem_adjoin_singleton R s⟩ = X := by
+    (algEquivOfTranscendental R s h).symm ⟨s, self_mem_adjoin_singleton R s⟩ = X := by
   apply (algEquivOfTranscendental R s h).toEquiv.injective
   simp
 
 end Polynomial
 
 theorem Transcendental.uniqueFactorizationMonoid_adjoin [UniqueFactorizationMonoid R] {s : S}
-      (h : Transcendental R s) : UniqueFactorizationMonoid (Algebra.adjoin R {s}) :=
+      (h : Transcendental R s) : UniqueFactorizationMonoid (R[s]) :=
   (algEquivOfTranscendental R s h).toMulEquiv.uniqueFactorizationMonoid inferInstance
 
 end
@@ -657,11 +659,12 @@ theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (div
 
 theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)
     (coeff_zero_ne : p.coeff 0 ≠ 0) : x⁻¹ = -(aeval x (divX p) / algebraMap _ _ (p.coeff 0)) := by
-  convert inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
-    (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
+  convert!
+    inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
+      (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
   · rw [aeval_eq, zero_sub, div_neg]
   rw [RingHom.map_zero]
-  convert aeval_eq
+  convert! aeval_eq
   conv_rhs => rw [← divX_mul_X_add p]
   rw [map_add, map_mul, h, zero_mul, zero_add, aeval_C]
 

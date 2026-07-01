@@ -9,32 +9,35 @@ public import Mathlib.Order.GaloisConnection.Basic
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.WellFounded
 
+import Mathlib.Data.Set.Lattice
+
 /-!
 # Cofinal sets
 
 A set `s` in an ordered type `α` is cofinal when for every `a : α` there exists an element of `s`
 greater or equal to it. This file provides a basic API for the `IsCofinal` predicate.
 
-For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality.lean`.
+For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality/Basic.lean`.
 
 ## TODO
 
-- Define `Order.cof` in terms of `Cofinal`.
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
-@[expose] public section
+public section
+
+open Set
 
 variable {α β : Type*}
 
 section LE
 variable [LE α]
 
-theorem IsCofinal.of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
+theorem IsCofinal.of_isEmpty [IsEmpty α] {s : Set α} : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
 theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty _⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty⟩
   simpa using h a
 
 @[simp]
@@ -49,12 +52,18 @@ theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofin
   obtain ⟨b, hb, hb'⟩ := hs a
   exact ⟨b, h hb, hb'⟩
 
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (h : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  obtain ⟨x, hx, _⟩ := h default
+  exact ⟨x, hx⟩
+
 end LE
 
 section Preorder
 variable [Preorder α] [Preorder β]
 
-theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
+@[simp]
+theorem IsCofinal.univ : IsCofinal (@univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
 instance : Inhabited {s : Set α // IsCofinal s} :=
@@ -65,7 +74,7 @@ theorem IsCofinal.image {f : α → β} {s : Set α} (hs : IsCofinal s)
   intro a
   obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
   obtain ⟨c, hc, hc'⟩ := hs b
-  exact ⟨_, Set.mem_image_of_mem f hc, hb.trans (hf hc')⟩
+  exact ⟨_, mem_image_of_mem f hc, hb.trans (hf hc')⟩
 
 /-- A cofinal subset of a cofinal subset is cofinal. -/
 theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
@@ -73,8 +82,8 @@ theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofi
   ht.image (Subtype.mono_coe _) (by simpa)
 
 theorem GaloisConnection.isCofinal_range {f : β → α} {g : α → β} (h : GaloisConnection f g) :
-    IsCofinal (.range g) :=
-  fun a ↦ ⟨_, Set.mem_range_self _, le_u_l h a⟩
+    IsCofinal (range g) :=
+  fun a ↦ ⟨_, mem_range_self _, le_u_l h a⟩
 
 theorem GaloisConnection.map_isCofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
@@ -86,8 +95,29 @@ alias GaloisConnection.map_cofinal := GaloisConnection.map_isCofinal
 theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
   e.symm.to_galoisConnection.map_isCofinal hs
 
+@[simp]
+theorem OrderIso.map_isCofinal_iff (e : α ≃o β) {s : Set α} : IsCofinal (e '' s) ↔ IsCofinal s :=
+  ⟨fun hs ↦ by simpa using e.symm.map_isCofinal hs, e.map_isCofinal⟩
+
 @[deprecated (since := "2026-03-15")]
 alias OrderIso.map_cofinal := OrderIso.map_isCofinal
+
+theorem isCofinal_iff_iUnion_Iic_eq_univ {s : Set α} :
+    IsCofinal s ↔ ⋃ i ∈ s, Iic i = univ := by
+  simp [IsCofinal, eq_univ_iff_forall]
+
+theorem isCofinal_iff_iUnion_Iio_eq_univ [NoMaxOrder α] {s : Set α} :
+    IsCofinal s ↔ ⋃ i ∈ s, Iio i = univ where
+  mpr hs := by
+    rw [isCofinal_iff_iUnion_Iic_eq_univ, ← univ_subset_iff, ← hs]
+    gcongr
+    exact Iio_subset_Iic_self
+  mp hs := by
+    simp_rw [eq_univ_iff_forall, mem_iUnion, exists_prop]
+    intro x
+    obtain ⟨y, hy⟩ := exists_gt x
+    obtain ⟨z, hz, hz'⟩ := hs y
+    exact ⟨z, hz, hy.trans_le hz'⟩
 
 end Preorder
 
@@ -119,7 +149,7 @@ theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s
   exact ⟨x, fun y hy ↦ (h y hy).le⟩
 
 theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
-  contrapose! h
+  contrapose h
   exact .of_not_isCofinal h
 
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/

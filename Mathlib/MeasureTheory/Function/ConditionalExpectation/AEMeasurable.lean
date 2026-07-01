@@ -134,14 +134,9 @@ theorem memLp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
     MemLp (mem_lpMeasSubgroup_iff_aestronglyMeasurable.mp hf_meas).choose p (μ.trim hm) := by
   have hf : AEStronglyMeasurable[m] f μ :=
     mem_lpMeasSubgroup_iff_aestronglyMeasurable.mp hf_meas
-  let g := hf.choose
-  obtain ⟨hg, hfg⟩ := hf.choose_spec
-  change MemLp g p (μ.trim hm)
-  refine ⟨hg.aestronglyMeasurable, ?_⟩
-  have h_eLpNorm_fg : eLpNorm g p (μ.trim hm) = eLpNorm f p μ := by
-    rw [eLpNorm_trim hm hg]
-    exact eLpNorm_congr_ae hfg.symm
-  rw [h_eLpNorm_fg]
+  change MemLp (hf.mk f) p (μ.trim hm)
+  refine ⟨hf.stronglyMeasurable_mk.aestronglyMeasurable, ?_⟩
+  rw [eLpNorm_trim hm hf.stronglyMeasurable_mk, eLpNorm_congr_ae hf.ae_eq_mk.symm]
   exact Lp.eLpNorm_lt_top f
 
 /-- If `f` belongs to `Lp` for the measure `μ.trim hm`, then it belongs to the subgroup
@@ -258,7 +253,6 @@ theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
     eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), ← Lp.norm_def]
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
     Isometry (lpMeasSubgroupToLpTrim F p μ hm) :=
   Isometry.of_dist_eq fun f g => by
@@ -436,9 +430,9 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   let f' := (s_f \ s_g).indicator (hfm.mk f)
   have hff' : f =ᵐ[μ] f' := by
     have : s_f \ s_g =ᵐ[μ] s_f := by
-      rw [← Set.diff_inter_self_eq_diff, Set.inter_comm]
+      rw [← Set.sdiff_inter_self_eq_sdiff, Set.inter_comm]
       refine ((ae_eq_refl s_f).diff h_inter_empty).trans ?_
-      rw [Set.diff_empty]
+      rw [Set.sdiff_empty]
     refine ((indicator_ae_eq_of_ae_eq_set this).trans ?_).symm
     rw [Set.indicator_support]
     exact hfm.ae_eq_mk.symm
@@ -447,9 +441,9 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   let g' := (s_g \ s_f).indicator (hgm.mk g)
   have hgg' : g =ᵐ[μ] g' := by
     have : s_g \ s_f =ᵐ[μ] s_g := by
-      rw [← Set.diff_inter_self_eq_diff]
+      rw [← Set.sdiff_inter_self_eq_sdiff]
       refine ((ae_eq_refl s_g).diff h_inter_empty).trans ?_
-      rw [Set.diff_empty]
+      rw [Set.sdiff_empty]
     refine ((indicator_ae_eq_of_ae_eq_set this).trans ?_).symm
     rw [Set.indicator_support]
     exact hgm.ae_eq_mk.symm

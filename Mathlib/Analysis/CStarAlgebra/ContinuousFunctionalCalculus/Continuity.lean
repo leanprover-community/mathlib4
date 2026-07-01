@@ -182,7 +182,7 @@ lemma lipschitzOnWith_cfc_fun_of_subset (a : A) {s : Set R} (hs : spectrum R a �
   have h₁ := lipschitzOnWith_cfc_fun R a
   have h₂ := lipschitzWith_one_ofFun_toFun' (𝔖 := {spectrum R a}) (𝔗 := {s}) (β := R) (by simpa)
   have h₃ := h₂.lipschitzOnWith (s := {f | ContinuousOn (toFun {s} f) (s)})
-  simpa using h₁.comp h₃ (fun f hf ↦ hf.mono hs)
+  simpa using! h₁.comp h₃ (fun f hf ↦ hf.mono hs)
 
 end Isometric
 
@@ -207,15 +207,15 @@ theorem continuous_cfcHomSuperset_left
   induction f using ContinuousMap.induction_on_of_compact with
   | const r =>
     have : ContinuousMap.const s r = algebraMap 𝕜 C(s, 𝕜) r := rfl
-    simpa only [this, AlgHomClass.commutes] using continuous_const
+    simpa only [this, AlgHomClass.commutes] using! continuous_const
   | id =>
     simp only [cfcHomSuperset_id]
     fun_prop
   | star_id =>
     simp only [map_star, cfcHomSuperset_id]
     fun_prop
-  | add f g hf hg => simpa using hf.add hg
-  | mul f g hf hg => simpa using hf.mul hg
+  | add f g hf hg => simpa using! hf.add hg
+  | mul f g hf hg => simpa using! hf.mul hg
   | frequently f hf =>
     apply continuous_of_uniform_approx_of_continuous
     rw [Metric.uniformity_basis_dist_le.forall_iff (by aesop)]
@@ -236,8 +236,10 @@ theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     (hf : ContinuousOn f s := by cfc_cont_tac) :
     ContinuousOn (cfc f) {a | p a ∧ spectrum 𝕜 a ⊆ s} :=
   continuousOn_iff_continuous_restrict.mpr <| by
-    convert continuous_cfcHomSuperset_left hs ⟨_, hf.restrict⟩
-      ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A) continuous_subtype_val (fun x ↦ x.2.2) with x
+    convert!
+      continuous_cfcHomSuperset_left hs ⟨_, hf.restrict⟩ ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A)
+        continuous_subtype_val (fun x ↦ x.2.2) with
+      x
     rw [cfcHomSuperset_apply, Set.restrict_apply, cfc_apply _ _ x.2.1 (hf.mono x.2.2)]
     congr!
 
@@ -254,6 +256,23 @@ theorem continuousOn_cfc_setProd {s : Set 𝕜} (hs : IsCompact s) :
   continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
     (fun f hf ↦ continuousOn_cfc A hs ((toFun {s}) f) hf)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
+
+open UniformOnFun in
+theorem continuousOn_cfc_setProd_nhdsSet [CompleteSpace A] {s : Set 𝕜} :
+    ContinuousOn (fun fa : (𝕜 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] 𝕜) × A ↦ cfc (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s} ×ˢ
+        {a | p a ∧ s ∈ 𝓝ˢ (spectrum 𝕜 a)}) := by
+  refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
+  have hs := ContinuousFunctionalCalculus.isCompact_spectrum (R := 𝕜) a
+  obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
+  have := (upperHemicontinuous_spectrum 𝕜 A).isOpen k
+  refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (spectrum 𝕜 x)}, isOpen_univ.prod this, by simpa, ?_⟩
+  conv in cfc _ => equals cfc (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
+  refine continuousOn_cfc_setProd hk |>.comp'
+    (uniformContinuous_ofFun_toFun_of_mem 𝕜 {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
+  intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
+  exact ⟨hf.mono hks, ha.1, subset_of_mem_nhdsSet ha'⟩
 
 /-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `a : X → A` tends to `a₀ : A` along a
 filter `l` (such that eventually `a x` satisfies the predicate `p` associated to `𝕜` and has
@@ -387,9 +406,8 @@ section NNReal
 variable {X A : Type*} [NormedRing A] [StarRing A]
     [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [ContinuousStar A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [IsTopologicalRing A]
+    [T2Space A] [IsSemitopologicalRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- A version of `continuousOn_cfc` over `ℝ≥0` instead of `RCLike 𝕜`. -/
 theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
@@ -422,6 +440,23 @@ theorem continuousOn_cfc_nnreal_setProd {s : Set ℝ≥0} (hs : IsCompact s) :
   continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
     (fun f hf ↦ continuousOn_cfc_nnreal A hs ((toFun {s}) f) hf)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
+
+open UniformOnFun in
+theorem continuousOn_cfc_nnreal_setProd_nhdsSet [CompleteSpace A] {s : Set ℝ≥0} :
+    ContinuousOn (fun fa : (ℝ≥0 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] ℝ≥0) × A ↦ cfc (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s} ×ˢ
+        {a | 0 ≤ a ∧ s ∈ 𝓝ˢ (spectrum ℝ≥0 a)}) := by
+  refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
+  have hs := ContinuousFunctionalCalculus.isCompact_spectrum (R := ℝ≥0) a
+  obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
+  have := (upperHemicontinuous_spectrum_nnreal A).isOpen k
+  refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (spectrum ℝ≥0 x)}, isOpen_univ.prod this, by simpa, ?_⟩
+  conv in cfc _ => equals cfc (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
+  refine continuousOn_cfc_nnreal_setProd hk |>.comp'
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
+  intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
+  exact ⟨hf.mono hks, ha.1, subset_of_mem_nhdsSet ha'⟩
 
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `a : X → A` tends to `a₀ : A` along a
 filter `l` (such that eventually `0 ≤ a x` and has spectrum contained in `s`, as does `a₀`), then
@@ -686,7 +721,7 @@ lemma lipschitzOnWith_cfcₙ_fun_of_subset (a : A) {s : Set R} (hs : quasispectr
   have h₂ := lipschitzWith_one_ofFun_toFun' (𝔖 := {quasispectrum R a}) (𝔗 := {s}) (β := R)
     (by simpa)
   have h₃ := h₂.lipschitzOnWith (s := {f | ContinuousOn (toFun {s} f) (s) ∧ f 0 = 0})
-  simpa using lipschitzOnWith_cfcₙ_fun R a |>.comp h₃ (fun f ↦ .imp_left fun hf ↦ hf.mono hs)
+  simpa using! lipschitzOnWith_cfcₙ_fun R a |>.comp h₃ (fun f ↦ .imp_left fun hf ↦ hf.mono hs)
 
 end Isometric
 
@@ -709,12 +744,12 @@ theorem continuous_cfcₙHomSuperset_left
     Continuous (fun x ↦ cfcₙHomSuperset (ha' x) (ha x) f) := by
   have : CompactSpace s := by rwa [isCompact_iff_compactSpace] at hs
   induction f using ContinuousMapZero.induction_on_of_compact with
-  | zero => simpa [map_zero] using continuous_const
+  | zero => simpa [map_zero] using! continuous_const
   | id => simpa only [cfcₙHomSuperset_id]
   | star_id => simp only [map_star, cfcₙHomSuperset_id]; fun_prop
-  | add f g hf hg => simpa only [map_add] using hf.add hg
-  | mul f g hf hg => simpa only [map_mul] using hf.mul hg
-  | smul r f hf => simpa only [map_smul] using hf.const_smul r
+  | add f g hf hg => simpa only [map_add] using! hf.add hg
+  | mul f g hf hg => simpa only [map_mul] using! hf.mul hg
+  | smul r f hf => simpa only [map_smul] using! hf.const_smul r
   | frequently f hf =>
     apply continuous_of_uniform_approx_of_continuous
     rw [Metric.uniformity_basis_dist_le.forall_iff (by aesop)]
@@ -737,11 +772,13 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
     ContinuousOn (cfcₙ f · : A → A) {a | p a ∧ quasispectrum 𝕜 a ⊆ s} := by
   by_cases hs0 : 0 ∈ s
   · rw [continuousOn_iff_continuous_restrict]
-    convert continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩
-      (X := {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtype_val (fun x ↦ x.2.2) with x
+    convert!
+      continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩ (X :=
+        {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtype_val (fun x ↦ x.2.2) with
+      x
     rw [cfcₙHomSuperset_apply, Set.restrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
     congr!
-  · convert continuousOn_empty _
+  · convert! continuousOn_empty _
     rw [Set.eq_empty_iff_forall_notMem]
     exact fun a ha ↦ hs0 <| ha.2 <| quasispectrum.zero_mem 𝕜 a
 
@@ -758,6 +795,24 @@ theorem continuousOn_cfcₙ_setProd {s : Set 𝕜} (hs : IsCompact s) :
   continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
     (fun f hf ↦ continuousOn_cfcₙ A hs ((toFun {s}) f) hf.1 hf.2)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfcₙ_fun_of_subset a ha')
+
+open UniformOnFun in
+theorem continuousOn_cfcₙ_setProd_nhdsSet [CompleteSpace A] {s : Set 𝕜} :
+    ContinuousOn (fun fa : (𝕜 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] 𝕜) × A ↦ cfcₙ (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s ∧ f 0 = 0} ×ˢ
+        {a | p a ∧ s ∈ 𝓝ˢ (quasispectrum 𝕜 a)}) := by
+  refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
+  have hs := NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (R := 𝕜) a
+  obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
+  have := (upperHemicontinuous_quasispectrum 𝕜 A).isOpen k
+  refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (quasispectrum 𝕜 x)}, isOpen_univ.prod this, by simpa, ?_⟩
+  conv in cfcₙ _ =>
+    equals cfcₙ (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
+  refine continuousOn_cfcₙ_setProd hk |>.comp'
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
+  intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
+  exact ⟨⟨hf.1.mono hks, hf.2⟩, ha.1, subset_of_mem_nhdsSet ha'⟩
 
 /-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
 `a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
@@ -901,9 +956,8 @@ variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
     [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [IsTopologicalRing A]
+    [T2Space A] [IsSemitopologicalRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- A version of `continuousOn_cfcₙ` over `ℝ≥0` instead of `RCLike 𝕜`. -/
 theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0)
@@ -924,7 +978,6 @@ theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ
   rw [← ha.1.2.algebraMap_image]
   exact Set.image_mono ha.2
 
-set_option backward.isDefEq.respectTransparency false in
 open UniformOnFun in
 /-- Let `s : Set ℝ≥0` be a compact set and consider pairs `(f, a) : (ℝ≥0 → ℝ≥0) × A` where `f` is
 continuous on `s`, maps zero to itself, `spectrum ℝ≥0 a ⊆ s` and `0 ≤ a`.
@@ -938,7 +991,24 @@ theorem continuousOn_cfcₙ_nnreal_setProd {s : Set ℝ≥0} (hs : IsCompact s) 
     (fun f hf ↦ continuousOn_cfcₙ_nnreal A hs ((toFun {s}) f) hf.1 hf.2)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfcₙ_fun_of_subset a ha')
 
-set_option backward.isDefEq.respectTransparency false in
+open UniformOnFun in
+theorem continuousOn_cfcₙ_nnreal_setProd_nhdsSet [CompleteSpace A] {s : Set ℝ≥0} :
+    ContinuousOn (fun fa : (ℝ≥0 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] ℝ≥0) × A ↦ cfcₙ (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s ∧ f 0 = 0} ×ˢ
+        {a | 0 ≤ a ∧ s ∈ 𝓝ˢ (quasispectrum ℝ≥0 a)}) := by
+  refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
+  have hs := NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (R := ℝ≥0) a
+  obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
+  have := (upperHemicontinuous_quasispectrum_nnreal A).isOpen k
+  refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (quasispectrum ℝ≥0 x)}, isOpen_univ.prod this, by simpa, ?_⟩
+  conv in cfcₙ _ =>
+    equals cfcₙ (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
+  refine continuousOn_cfcₙ_nnreal_setProd hk |>.comp'
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
+  intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
+  exact ⟨⟨hf.1.mono hks, hf.2⟩, ha.1, subset_of_mem_nhdsSet ha'⟩
+
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
 `a₀ : A` along a filter `l` (such that eventually `0 ≤ a x` and has quasispectrum contained in `s`,
 as does `a₀`), then `fun x ↦ cfcₙ f (a x)` tends to `cfcₙ f a₀`. -/
@@ -952,7 +1022,6 @@ theorem Filter.Tendsto.cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : �
   rw [tendsto_nhdsWithin_iff]
   exact ⟨ha_tendsto, ha'.and ha⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is
 continuous at `x₀`, and eventually `0 ≤ a x` and has quasispectrum contained in `s`, then
 `fun x ↦ cfcₙ f (a x)` is continuous at `x₀`. -/
@@ -963,7 +1032,6 @@ theorem ContinuousAt.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0}
     ContinuousAt (fun x ↦ cfcₙ f (a x)) x₀ :=
   ha_cont.tendsto.cfcₙ_nnreal hs f ha ha' ha.self_of_nhds ha'.self_of_nhds
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is
 continuous at `x₀` within a set `t : Set X`, and eventually `0 ≤ a x` and has quasispectrum
 contained in `s`, then `fun x ↦ cfcₙ f (a x)` is continuous at `x₀` within `t`. -/
@@ -975,7 +1043,6 @@ theorem ContinuousWithinAt.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0}
     ContinuousWithinAt (fun x ↦ cfcₙ f (a x)) t x₀ :=
   ha_cont.tendsto.cfcₙ_nnreal hs f ha ha' (ha.self_of_nhdsWithin hx₀) (ha'.self_of_nhdsWithin hx₀)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `a : X → Set A` is continuous on `t : Set X` and `0 ≤ a x` for all `x ∈ t`.
 Suppose further that `s : X → Set ℝ≥0` is a family of sets with `s x` compact when
 `x ∈ t` such that `s x₀` contains the spectrum of `a x` for all sufficiently close `x ∈ t`.
@@ -991,7 +1058,6 @@ theorem ContinuousOn.cfcₙ_nnreal [TopologicalSpace X] {s : X → Set ℝ≥0} 
   all_goals filter_upwards [ha x hx, self_mem_nhdsWithin] with x hx hxt
   exacts [hx, ha' x hxt]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is
 continuous on `t : Set X`, and `0 ≤ a x` and has quasispectrum contained in `s` for all `x ∈ t`,
 then `fun x ↦ cfcₙ f (a x)` is continuous on `t`. -/
@@ -1004,7 +1070,6 @@ theorem ContinuousOn.cfcₙ_nnreal' [TopologicalSpace X] {s : Set ℝ≥0} (hs :
   filter_upwards [self_mem_nhdsWithin] with x hx
   exact ha x hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on `s` and `f 0 = 0` and `a : X → A` is continuous on
 `t : Set X`, and `a x` is nonnegative for all `x ∈ t` and `s` is a common neighborhood of the
 quasispectra of `a x` for all `x ∈ t`, then `fun x ↦ cfcₙ f (a x)` is continuous on `t`.
@@ -1035,7 +1100,6 @@ theorem ContinuousOn.cfcₙ_nnreal_of_mem_nhdsSet [CompleteSpace A] [Topological
   · exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₂ ⟨x₀, hx₀⟩
   · exact fun x hx ↦ hf.mono <| hS₃ ⟨x, hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `a : X → Set A` is a continuous family of nonnegative elements.
 Suppose further that `s : X → Set ℝ≥0` is a family of compact sets such that `s x₀` contains the
 spectrum of `a x` for all sufficiently close `x`. If `f : ℝ≥0 → ℝ≥0` is continuous on each `s x`
@@ -1049,7 +1113,6 @@ theorem Continuous.cfcₙ_nnreal [TopologicalSpace X] {s : X → Set ℝ≥0} (f
   rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfcₙ_nnreal f (fun x _ ↦ hs x) (fun x _ ↦ by simpa using ha x) (fun x _ ↦ ha' x)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `cfcₙ` is continuous in the variable `a : A` when `s : Set ℝ≥0` is compact and `a` varies over
 nonnegative elements whose quasispectrum is contained in `s`, and the function `f` is
 continuous on `s` and `f 0 = 0`. -/
@@ -1061,7 +1124,6 @@ theorem Continuous.cfcₙ_nnreal' [TopologicalSpace X] {s : Set ℝ≥0} (hs : I
   rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfcₙ_nnreal' hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on `s` and `f 0 = 0` and `a : X → A` is continuous and `a x` is
 nonnegative for all `x` and `s` is a common neighborhood of the quasispectra of `a x` for all `x`,
 then `fun x ↦ cfcₙ f (a x)` is continuous.

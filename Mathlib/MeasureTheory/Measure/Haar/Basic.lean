@@ -180,7 +180,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
     change g ∈ (∅ : Set G)
-    convert h1t (interior_subset hg); symm
+    convert! h1t (interior_subset hg); symm
     simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
 
@@ -252,8 +252,9 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
 theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set G}
     (hV : (interior V).Nonempty) : index ((fun h => g * h) '' K) V = index K V := by
   refine le_antisymm (mul_left_index_le hK hV g) ?_
-  convert mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
-  rw [image_image]; symm; convert image_id' _ with h; apply inv_mul_cancel_left
+  convert! mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
+  rw [image_image]
+  simp
 
 /-!
 ### Lemmas about `prehaar`
@@ -483,7 +484,7 @@ theorem haarContent_self {K₀ : PositiveCompacts G} : haarContent K₀ K₀.toC
 @[to_additive /-- The variant of `is_left_invariant_addCHaar` for `addHaarContent` -/]
 theorem is_left_invariant_haarContent {K₀ : PositiveCompacts G} (g : G) (K : Compacts G) :
     haarContent K₀ (K.map _ <| continuous_const_mul g) = haarContent K₀ K := by
-  simpa only [ENNReal.coe_inj, ← NNReal.coe_inj, haarContent_apply] using
+  simpa only [ENNReal.coe_inj, ← NNReal.coe_inj, haarContent_apply] using!
     is_left_invariant_chaar g K
 
 @[to_additive]
@@ -586,7 +587,7 @@ but `E / E` does not contain a neighborhood of zero. On the other hand, it is al
 inner regular Haar measures (and in particular for any Haar measure on a second countable group).
 -/
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerRegularCompactLTTop]
@@ -601,7 +602,8 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
     obtain ⟨K, hKE, hK_comp, hK_meas⟩ := hEapprox
     exact ⟨closure K, hK_comp.closure_subset_measurableSet hE hKE, hK_comp.closure,
       isClosed_closure, by rwa [hK_comp.measure_closure]⟩
-  filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
+  filter_upwards [eventually_nhds_one_measure_smul_sdiff_lt hK K_closed hKpos.ne' (μ := μ)]
+    with g hg
   obtain ⟨_, ⟨x, hxK, rfl⟩, hgxK⟩ : ∃ x ∈ g • K, x ∈ K :=
      not_disjoint_iff.1 fun hd ↦ by simp [hd.symm.sdiff_eq_right, measure_smul] at hg
   simpa using div_mem_div (hKE hgxK) (hKE hxK)

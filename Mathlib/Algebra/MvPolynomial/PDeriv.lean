@@ -76,7 +76,6 @@ theorem pderiv_monomial {i : σ} :
   · rw [Finsupp.notMem_support_iff] at hi; simp [hi]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
     X i * pderiv i (monomial m r) = m i • monomial m r := by
   rw [pderiv_monomial, X, monomial_mul, smul_monomial]
@@ -118,6 +117,21 @@ theorem pderiv_pow {i : σ} {f : MvPolynomial σ R} {n : ℕ} :
 
 theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
   rw [C_mul', Derivation.map_smul, C_mul']
+
+theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
+    coeff m (pderiv i p) = coeff (m + single i 1) p * (m i + 1) := by
+  classical
+  induction p using MvPolynomial.induction_on' with
+  | add p q hp hq => simp [hp, hq, add_mul]
+  | monomial n a =>
+    rw [pderiv_monomial, coeff_monomial, coeff_monomial]
+    by_cases h : n = m + single i 1
+    · simp [h]
+    simp only [h, ↓reduceIte, zero_mul]
+    by_cases hn : n i = 0
+    · simp [hn]
+    apply if_neg
+    rwa [tsub_eq_iff_eq_add_of_le (fun _ ↦ by grind)]
 
 theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
     pderiv i (map φ f) = map φ (pderiv i f) := by

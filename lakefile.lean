@@ -9,11 +9,10 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.92" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "main"
   with NameMap.empty.insert `errorOnBuild
-    "ProofWidgets not up-to-date. \
-    Please run `lake exe cache get` to fetch the latest ProofWidgets. \
-    If this does not work, report your issue on the Lean Zulip."
+    "ProofWidgets failed to reuse pre-built JS code. \
+    Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
@@ -49,6 +48,14 @@ abbrev mathlibLeanOptions := #[
 
 package mathlib where
   testDriver := "MathlibTest"
+  lintDriver := "batteries/runLinter"
+  lintDriverArgs := #["Mathlib"]
+  -- A version of Mathlib only supports the toolchain it is built with.
+  fixedToolchain := true
+  -- Mathlib oleans are built on Linux CI and used across platforms.
+  platformIndependent := true
+  -- Mathlib currently expects artifacts to be in the build directory.
+  restoreAllArtifacts := true
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -100,6 +107,12 @@ lean_exe autolabel where
 lean_exe cache where
   root := `Cache.Main
 
+/-- `lake exe cache-test` runs the cache tool's unit tests (container URL
+construction, per-repo trust-ordered allowlist, `--cache-from` parsing).
+Runnable standalone — does not require building Mathlib or `MathlibTest`. -/
+lean_exe «cache-test» where
+  root := `Cache.Test
+
 /-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe «check-yaml» where
   srcDir := "scripts"
@@ -122,6 +135,10 @@ lean_exe «lint-style» where
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check_title_labels» where
+  srcDir := "scripts"
+
+/-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
+lean_exe «nightly-testing-checklist» where
   srcDir := "scripts"
 
 lean_exe mathlib_test_executable where

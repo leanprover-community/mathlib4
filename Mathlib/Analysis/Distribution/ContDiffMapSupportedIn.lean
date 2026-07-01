@@ -6,6 +6,9 @@ Authors: Anatole Dedecker, Luigi Massacci
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.Sets.Compacts
 
@@ -89,7 +92,7 @@ variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
   [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
-  {n k : ℕ∞} {K : Compacts E}
+  {n n₁ n₂ k : ℕ∞} {K K₁ K₂ : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
 compact set `K`. -/
@@ -148,7 +151,7 @@ namespace ContDiffMapSupportedIn
 instance toContDiffMapSupportedInClass :
     ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
   map_zero_on_compl f := f.zero_on_compl'
 
@@ -192,63 +195,70 @@ theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
 
 section AddCommGroup
 
-@[simps -fullyApplied]
 instance : Zero 𝓓^{n}_{K}(E, F) where
   zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
-@[simps -fullyApplied]
+instance : IsZeroApply 𝓓^{n}_{K}(E, F) E F where
+  zero_apply _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
+
 instance : Add 𝓓^{n}_{K}(E, F) where
   add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-@[simps -fullyApplied]
+instance : IsAddApply 𝓓^{n}_{K}(E, F) E F where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
+
 instance : Neg 𝓓^{n}_{K}(E, F) where
   neg f := .mk (-f) (f.contDiff.neg) <| by
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
-@[simps -fullyApplied]
+instance : IsNegApply 𝓓^{n}_{K}(E, F) E F where
+  neg_apply _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
+
 instance instSub : Sub 𝓓^{n}_{K}(E, F) where
   sub f g := .mk (f - g) (f.contDiff.sub g.contDiff) <| by
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-@[simps -fullyApplied]
+instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
+  sub_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
+
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
    SMul R 𝓓^{n}_{K}(E, F) where
   smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
-instance : AddCommGroup 𝓓^{n}_{K}(E, F) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    IsSMulApply R 𝓓^{n}_{K}(E, F) E F where
+  smul_apply _ _ _ := rfl
 
-variable (E F K n)
+@[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 
-/-- Coercion as an additive homomorphism. -/
-def coeHom : 𝓓^{n}_{K}(E, F) →+ E → F where
-  toFun f := f
-  map_zero' := coe_zero
-  map_add' _ _ := rfl
+instance : AddCommGroup 𝓓^{n}_{K}(E, F) := fast_instance% FunLike.addCommGroup
 
-variable {E F}
+@[deprecated (since := "2026-06-15")] alias coeHom := FunLike.coeAddMonoidHom
 
-theorem coe_coeHom : (coeHom E F n K : 𝓓^{n}_{K}(E, F) → E → F) = DFunLike.coe :=
-  rfl
+@[deprecated (since := "2026-06-15")] alias coe_coeHom := FunLike.coe_coeAddMonoidHom
 
-theorem coeHom_injective : Function.Injective (coeHom E F n K) := by
-  rw [coe_coeHom]
-  exact DFunLike.coe_injective
+@[deprecated (since := "2026-06-15")] alias coeHom_injective := FunLike.coeAddMonoidHom_injective
 
 end AddCommGroup
 
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}_{K}(E, F) := fast_instance%
-  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
+    Module R 𝓓^{n}_{K}(E, F) := fast_instance% FunLike.module
 
 end Module
 
@@ -260,6 +270,10 @@ protected theorem tsupport_subset (f : 𝓓^{n}_{K}(E, F)) : tsupport f ⊆ K :=
 
 protected theorem hasCompactSupport (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport f :=
   HasCompactSupport.intro K.isCompact f.zero_on_compl
+
+@[fun_prop]
+protected theorem continuous (f : 𝓓^{n}_{K}(E, F)) : Continuous f :=
+  f.contDiff.continuous
 
 /-- Inclusion of unbundled `n`-times continuously differentiable function with support included
 in a compact `K` into the space `𝓓^{n}_{K}`. -/
@@ -321,6 +335,43 @@ lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜
     postcompLM T f = T ∘ f :=
   rfl
 
+open scoped Classical in
+/-- If `n₁ ≥ n₂` and `K₁ ⊆ K₂`, `monoLM 𝕜` is the `𝕜`-linear inclusion of
+`𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{n₂}_{K₂}(E, F)`. Otherwise, this is the zero map.
+
+This is in fact continuous (see `monoCLM`). Furthermore:
+* it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib as of March 2026).
+* it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib as of
+March 2026).
+
+The parameters `n₁, n₂, K₁, K₂` are implicit as they can often be inferred from context, or
+specified by a type ascription.
+-/
+noncomputable def monoLM :
+    𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
+  toFun f :=
+    if h : n₂ ≤ n₁ ∧ K₁ ≤ K₂ then
+      .of_support_subset (f.contDiff.of_le (mod_cast h.1)) (f.support_subset.trans h.2)
+    else 0
+  map_add' f g := by split_ifs <;> ext <;> simp
+  map_smul' c f := by split_ifs <;> ext <;> simp
+
+open scoped Classical in
+@[simp]
+lemma monoLM_apply (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    ((monoLM 𝕜 f : 𝓓^{n₂}_{K₂}(E, F)) : E → F) = if n₂ ≤ n₁ ∧ K₁ ≤ K₂ then f else 0 := by
+  rw [monoLM]
+  split_ifs <;> rfl
+
+lemma monoLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
+    (monoLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (monoLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) → 𝓓^{n₂}_{K₂}(E, F)) = monoLM 𝕜' :=
+  rfl
+
 variable (n k) in
 /-- `fderivLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
@@ -337,16 +388,17 @@ noncomputable def fderivLM :
     else 0
   map_add' f g := by
     split_ifs with hk
-    · have hk' : 0 < (n : WithTop ℕ∞) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
       simp [fderiv_add (f.contDiff.differentiable hk'.ne').differentiableAt
-                       (g.contDiff.differentiable hk'.ne').differentiableAt]
+                       (g.contDiff.differentiable hk'.ne').differentiableAt, FunLike.coe_add]
     · simp
   map_smul' c f := by
     split_ifs with hk
-    · have hk' : 0 < (n : WithTop ℕ∞) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
-      simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt]
+      simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt,
+        FunLike.coe_smul]
     · simp
 
 @[simp]
@@ -394,15 +446,15 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
     else 0
   map_add' f g := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+    · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
-      simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
+      simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi'), FunLike.coe_add]
     · simp
   map_smul' c f := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+    · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
-      simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
+      simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt, FunLike.coe_smul]
     · simp
 
 @[simp]
@@ -632,7 +684,7 @@ protected theorem seminorm_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{
   by_cases hi : i ≤ n
   · simp [hi, forall_const, ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply,
       BoundedContinuousFunction.norm_le hC, this]
-  · push_neg at hi
+  · push Not at hi
     simp [hi, ContDiffMapSupportedIn.seminorm_eq_bot_of_gt _ hi, hC]
 
 protected theorem seminorm_top_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓_{K}(E, F)) :
@@ -656,7 +708,7 @@ theorem norm_iteratedFDeriv_apply_le_seminorm_top {i : ℕ}
 theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
     ‖f x‖ ≤ N[𝕜]_{K, n, 0} f := by
   rw [← norm_iteratedFDeriv_zero (𝕜 := ℝ) (f := f) (x := x)]
-  exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 (zero_le _)
+  exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 zero_le
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
@@ -681,6 +733,10 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [Nontrivially
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
+
+instance : ContinuousEval 𝓓^{n}_{K}(E, F) E F :=
+  ContinuousEval.of_continuous_forget
+    (toBoundedContinuousFunctionCLM ℝ).continuous
 
 instance : T3Space 𝓓^{n}_{K}(E, F) :=
   have : Injective (toBoundedContinuousFunctionCLM ℝ : 𝓓^{n}_{K}(E, F) →L[ℝ] E →ᵇ F) :=
@@ -723,8 +779,56 @@ lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[�
     postcompCLM T f = T ∘ f :=
   rfl
 
+theorem seminorm_monoLM_le {i : ℕ} (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    N[𝕜]_{K₂, n₂, i} (monoLM 𝕜 f) ≤ N[𝕜]_{K₁, n₁, i} f := by
+  by_cases H : n₂ ≤ n₁ ∧ K₁ ≤ K₂
+  · simp (discharger := positivity) only [ContDiffMapSupportedIn.seminorm_le_iff, monoLM_apply, H,
+      and_self, ↓reduceIte]
+    intro hik _ _
+    exact norm_iteratedFDeriv_apply_le_seminorm _ (hik.trans (mod_cast H.1))
+  · simp [monoLM_eq_zero, H]
+
+theorem seminorm_monoLM_eq {i : ℕ} (h₁ : n₁ = n₂) (h₂ : K₁ ≤ K₂) (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    N[𝕜]_{K₂, n₂, i} (monoLM 𝕜 f) = N[𝕜]_{K₁, n₁, i} f := by
+  simp [BoundedContinuousFunction.norm_eq_iSup_norm, ContDiffMapSupportedIn.seminorm_apply,
+    structureMapCLM_apply, h₁, h₂]
+
+/-- If `n₁ ≥ n₂` and `K₁ ⊆ K₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
+`𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{n₂}_{K₂}(E, F)`. Otherwise, this is the zero map.
+
+Furthermore:
+* it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib as of March 2026).
+* it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib as of
+March 2026).
+
+The parameters `n₁, n₂, K₁, K₂` are implicit as they can often be inferred from context, or
+specified by a type ascription.
+-/
+noncomputable def monoCLM :
+    𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
+  toLinearMap := monoLM 𝕜
+  cont := show Continuous (monoLM 𝕜) by
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, 1, fun f ↦ ?_⟩)
+    simpa using seminorm_monoLM_le 𝕜 f
+
+open scoped Classical in
+@[simp]
+lemma monoCLM_apply (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    ((monoCLM 𝕜 f : 𝓓^{n₂}_{K₂}(E, F)) : E → F) = if n₂ ≤ n₁ ∧ K₁ ≤ K₂ then f else 0 :=
+  monoLM_apply 𝕜 f
+
+lemma monoCLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
+    (monoCLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (monoCLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) → 𝓓^{n₂}_{K₂}(E, F)) = monoCLM 𝕜' :=
+  rfl
+
 theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
-    N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i+1} f := by
+    N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i + 1} f := by
   by_cases! hk : k + 1 ≤ n
   · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg ..)]
     intro hi x hx
@@ -734,7 +838,7 @@ theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   · simp [fderivLM_apply_of_gt 𝕜 f hk]
 
 theorem seminorm_fderivLM_top {i : ℕ} (f : 𝓓_{K}(E, F)) :
-    N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i+1} f := by
+    N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i + 1} f := by
   simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm,
     norm_iteratedFDeriv_fderiv]
 
@@ -769,5 +873,132 @@ lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
   rfl
 
 end Topology
+
+section Integral
+
+open MeasureTheory
+
+variable {𝕜} {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+
+@[fun_prop]
+protected theorem stronglyMeasurable (f : 𝓓^{n}_{K}(E, F)) :
+    StronglyMeasurable f := by
+  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+
+@[fun_prop]
+protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}_{K}(E, F)) :
+    AEStronglyMeasurable f μ :=
+  f.stronglyMeasurable.aestronglyMeasurable
+
+protected theorem memLp_top {μ : Measure E} (f : 𝓓^{n}_{K}(E, F)) :
+    MemLp f ⊤ μ :=
+  f.continuous.memLp_top_of_hasCompactSupport f.hasCompactSupport μ
+
+protected theorem integrable {μ : Measure E} [μ_finite : IsFiniteMeasure (μ.restrict K)]
+    (f : 𝓓^{n}_{K}(E, F)) :
+    Integrable f μ := by
+  rw [← integrableOn_iff_integrable_of_support_subset f.support_subset]
+  exact f.continuous.integrable_of_hasCompactSupport f.hasCompactSupport
+
+protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {μ : Measure E} {φ : E → F₂}
+    (hφ : IntegrableOn φ K μ) (f : 𝓓^{n}_{K}(E, F₁)) :
+    Integrable (fun x ↦ B (f x) (φ x)) μ := by
+  suffices IntegrableOn (fun x ↦ B (f x) (φ x)) K μ by
+    rwa [integrableOn_iff_integrable_of_support_subset] at this
+    refine subset_trans ?_ f.support_subset
+    exact fun x hx hfx ↦ hx (by simp [hfx])
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
+  exact B.memLp_of_bilin 1 f.memLp_top hφ
+
+variable [SMulCommClass ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [SMulCommClass ℝ 𝕜 F₃]
+
+-- TODO: semilinearize
+/-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
+and a function `φ : E → F₂` which is `μ`-integrable on `K`, this is the `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`. Otherwise, this is the zero map.
+
+You should probably use `integralAgainstBilinCLM`, which bundles the continuity. -/
+noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
+    𝓓^{n}_{K}(E, F₁) →ₗ[𝕜] F₃ where
+  toFun f := open scoped Classical in
+    if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0
+  map_add' f g := by
+    split_ifs with hφ
+    · simp_rw [add_apply, map_add, add_apply,
+        integral_add (f.integrable_bilin B hφ) (g.integrable_bilin B hφ)]
+    · simp
+  map_smul' c f := by
+    split_ifs with hφ
+    · simp_rw [smul_apply, map_smul, smul_apply, integral_smul c, RingHom.id_apply]
+    · simp
+
+@[simp]
+lemma integralAgainstBilinLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinLM B μ φ f = open scoped Classical in
+      if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0 := by
+  rfl
+
+lemma integralAgainstBilinLM_eq_integral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinLM B μ φ f = ∫ x, B (f x) (φ x) ∂μ := by
+  simp [hφ]
+
+lemma integralAgainstBilinLM_eq_setIntegral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinLM B μ φ f = ∫ x in K, B (f x) (φ x) ∂μ := by
+  rw [integralAgainstBilinLM_eq_integral hφ, setIntegral_eq_integral_of_forall_compl_eq_zero]
+  intro x hx
+  rw [f.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply]
+
+lemma norm_integralAgainstBilinLM_le {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    {f : 𝓓^{n}_{K}(E, F₁)} :
+    ‖integralAgainstBilinLM B μ φ f‖ ≤
+      (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖ * N[𝕜]_{K, n, 0} f := by
+  by_cases hφ : IntegrableOn φ K μ
+  · have h : ∀ᵐ x ∂(μ.restrict K), ‖B (f x) (φ x)‖ ≤ ‖φ x‖ * ‖B‖ * N[𝕜]_{K, n, 0} f := by
+      filter_upwards [] with x
+      grw [ContinuousLinearMap.le_opNorm, ContinuousLinearMap.le_opNorm, norm_apply_le_seminorm 𝕜,
+        mul_comm, mul_assoc]
+    rw [integralAgainstBilinLM_eq_setIntegral hφ]
+    apply le_trans (norm_integral_le_of_norm_le ((hφ.norm.mul_const _).mul_const _) h)
+    rw [integral_mul_const, integral_mul_const]
+  · simp only [integralAgainstBilinLM, hφ, ↓reduceIte, LinearMap.coe_mk, AddHom.coe_mk, norm_zero]
+    positivity
+
+-- TODO: semilinearize
+/-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
+and a function `φ : E → F₂` which is integrable on `K`, this is the *continuous* `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`. Otherwise, this is the zero map. -/
+noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
+    𝓓^{n}_{K}(E, F₁) →L[𝕜] F₃ where
+  toLinearMap := integralAgainstBilinLM B μ φ
+  cont := show Continuous (integralAgainstBilinLM B μ φ) by
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
+      (norm_withSeminorms 𝕜 _) _
+      (.of_real fun _ ↦ ⟨{0}, (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖, fun f ↦ ?_⟩)
+    simpa using! norm_integralAgainstBilinLM_le
+
+@[simp]
+lemma integralAgainstBilinCLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinCLM B μ φ f = open scoped Classical in
+      if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0 :=
+  integralAgainstBilinLM_apply
+
+lemma integralAgainstBilinCLM_eq_integral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinCLM B μ φ f = ∫ x, B (f x) (φ x) ∂μ :=
+  integralAgainstBilinLM_eq_integral hφ
+
+lemma integralAgainstBilinCLM_eq_setIntegral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinCLM B μ φ f = ∫ x in K, B (f x) (φ x) ∂μ :=
+  integralAgainstBilinLM_eq_setIntegral hφ
+
+end Integral
 
 end ContDiffMapSupportedIn

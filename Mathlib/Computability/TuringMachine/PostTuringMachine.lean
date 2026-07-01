@@ -134,9 +134,7 @@ instance Stmt.inhabited [Inhabited Γ] : Inhabited (Stmt Γ) :=
 @[nolint unusedArguments] -- this is a deliberate addition, see comment
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × (Stmt Γ))
-
-instance Machine.inhabited [Inhabited Λ] : Inhabited (Machine Γ Λ) := by
-  unfold Machine; infer_instance
+deriving Inhabited
 
 /-- The configuration state of a Turing machine during operation
   consists of a label (machine state), and a tape.
@@ -770,13 +768,13 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
       (Tape.move Dir.left)^[l₁.length]
       (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       Tape.mk' L' (ListBlank.append (List.Vector.toList (enc a)) R') by
-    simpa only [List.length_reverse, Vector.toList_length] using this (List.reverse_reverse _).symm
+    simpa only [List.length_reverse, Vector.toList_length] using! this (List.reverse_reverse _).symm
   intro _ _ l₁ l₂ e
   induction l₁ generalizing l₂ with
   | nil => cases e; rfl
   | cons b l₁ IH =>
     simp only [List.length, iterate_succ_apply]
-    convert IH e
+    convert! IH e
     simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
 
 theorem trTape'_move_right (L R : ListBlank Γ) :
@@ -826,8 +824,7 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
     exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
       (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
   clear f L a R
-  intro i f L' R' l₁ l₂ _
-  subst i
+  rintro _ f L' R' l₁ l₂ rfl
   induction l₂ generalizing l₁ with
   | nil => rfl
   | cons a l₂ IH =>
@@ -866,7 +863,7 @@ theorem tr_respects :
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
         trTape'_move_left enc0]
-      simpa using IH ..
+      simpa using! IH ..
     | load a q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH
@@ -1011,16 +1008,7 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
         | TM0.Stmt.write a => T.write a⟩ := by
       cases s <;> rfl
     intro e
-    refine TransGen.head ?_ (TransGen.head' this ?_)
-    · simp only [TM1.step, TM1.stepAux, tr]
-      rw [e]
-      rfl
-    cases e' : M q' _
-    · apply ReflTransGen.single
-      simp only [TM1.step, TM1.stepAux, tr]
-      rw [e']
-      rfl
-    · rfl
+    refine TransGen.head ?_ (TransGen.head' this ?_) <;> grind [TM1.step, TM1.stepAux, tr]
 
 end TM0to1
 

@@ -277,7 +277,7 @@ lemma one_le_finprod {M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneC
 theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : HasFiniteMulSupport <| g ∘ PLift.down) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by
   rw [finprod_eq_prod_plift_of_mulSupport_subset h.coe_toFinset.ge,
-    finprod_eq_prod_plift_of_mulSupport_subset, map_prod]
+    finprod_eq_prod_plift_of_mulSupport_subset, _root_.map_prod]
   rw [h.coe_toFinset]
   exact mulSupport_comp_subset f.map_one (g ∘ PLift.down)
 
@@ -336,7 +336,7 @@ variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
     ∏ᶠ _ : a ∈ s, f a = mulIndicator s f a := by
-  classical convert finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
+  classical convert! finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
 
 @[to_additive (attr := simp)]
 theorem finprod_apply_ne_one (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
@@ -374,11 +374,17 @@ theorem finprod_eq_prod_of_mulSupport_subset_of_finite (f : α → M) {s : Set �
   finprod_eq_prod_of_mulSupport_subset f <| by rwa [Set.Finite.coe_toFinset]
 
 @[to_additive]
-theorem finprod_eq_finset_prod_of_mulSupport_subset (f : α → M) {s : Finset α}
+theorem finprod_eq_finsetProd_of_mulSupport_subset (f : α → M) {s : Finset α}
     (h : mulSupport f ⊆ (s : Set α)) : ∏ᶠ i, f i = ∏ i ∈ s, f i :=
   haveI h' : (s.finite_toSet.subset h).toFinset ⊆ s := by
     simpa [← Finset.coe_subset, Set.coe_toFinset]
   finprod_eq_prod_of_mulSupport_toFinset_subset _ _ h'
+
+@[deprecated (since := "2026-04-08")]
+alias finsum_eq_finset_sum_of_support_subset := finsum_eq_finsetSum_of_support_subset
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias finprod_eq_finset_prod_of_mulSupport_subset := finprod_eq_finsetProd_of_mulSupport_subset
 
 @[to_additive]
 theorem finprod_def (f : α → M) [Decidable (HasFiniteMulSupport f)] :
@@ -432,10 +438,22 @@ theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :
 theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, f i = ∏ i, f i :=
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
 
+theorem finprod_ne_zero {M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    {f : α → M₀} (h : ∀ i, f i ≠ 0) :
+    ∏ᶠ i, f i ≠ 0 := by
+  by_cases h₂ : Set.Finite f.mulSupport
+  · grind [finprod_eq_prod f h₂, Finset.prod_ne_zero_iff]
+  · simp [finprod_of_infinite_mulSupport h₂]
+
 @[to_additive]
-theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
+theorem map_finsetProd {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
   simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
+
+@[deprecated (since := "2026-04-08")] alias map_finset_sum := map_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias map_finset_prod := map_finsetProd
 
 @[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
@@ -586,8 +604,8 @@ lemma finprod_le_finprod' [PartialOrder M] [MulLeftMono M] (hf : HasFiniteMulSup
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
   have : Fintype ↑(f.mulSupport ∪ g.mulSupport) := (hf.union hg).fintype
   let s := (f.mulSupport ∪ g.mulSupport).toFinset
-  rw [finprod_eq_finset_prod_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
-    finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
+  rw [finprod_eq_finsetProd_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
+    finprod_eq_finsetProd_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod' fun i _ ↦ h i
 
 /-- Monotonicity of `finprod`. See `finprod_le_finprod'` for a variant where
@@ -598,9 +616,18 @@ lemma finprod_le_finprod {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [Ze
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
   have : Fintype ↑(f.mulSupport ∪ g.mulSupport) := (hf.union hg).fintype
   let s := (f.mulSupport ∪ g.mulSupport).toFinset
-  rw [finprod_eq_finset_prod_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
-    finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
+  rw [finprod_eq_finsetProd_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
+    finprod_eq_finsetProd_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod (fun i _ ↦ hf₀ i) fun i _ ↦ h i
+
+lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
+    [ZeroLEOneClass M] [PosMulMono M] :
+    ∏ᶠ _ : α, (0 : M) ≤ 1 := by
+  rw [← finprod_one (α := α)]
+  by_cases H : (fun _ : α ↦ (0 : M)).HasFiniteMulSupport
+  · exact finprod_le_finprod H (fun _ ↦ le_rfl) (by fun_prop) fun _ ↦ zero_le_one
+  · rw [finprod_of_not_hasFiniteMulSupport H]
+    exact finprod_one.symm.le
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
@@ -962,35 +989,45 @@ theorem finprod_subtype_eq_finprod_cond (p : α → Prop) :
   finprod_set_coe_eq_finprod_mem { i | p i }
 
 @[to_additive]
-theorem finprod_mem_inter_mul_diff' (t : Set α) (h : (s ∩ mulSupport f).Finite) :
+theorem finprod_mem_inter_mul_sdiff' (t : Set α) (h : (s ∩ mulSupport f).Finite) :
     ((∏ᶠ i ∈ s ∩ t, f i) * ∏ᶠ i ∈ s \ t, f i) = ∏ᶠ i ∈ s, f i := by
-  rw [← finprod_mem_union', inter_union_diff]
+  rw [← finprod_mem_union', inter_union_sdiff]
   · rw [disjoint_iff_inf_le]
     exact fun x hx => hx.2.2 hx.1.2
   exacts [h.subset fun x hx => ⟨hx.1.1, hx.2⟩, h.subset fun x hx => ⟨hx.1.1, hx.2⟩]
 
+@[deprecated (since := "2026-06-03")]
+alias finprod_mem_inter_mul_diff' := finprod_mem_inter_mul_sdiff'
+
 @[to_additive]
-theorem finprod_mem_inter_mul_diff (t : Set α) (h : s.Finite) :
+theorem finprod_mem_inter_mul_sdiff (t : Set α) (h : s.Finite) :
     ((∏ᶠ i ∈ s ∩ t, f i) * ∏ᶠ i ∈ s \ t, f i) = ∏ᶠ i ∈ s, f i :=
-  finprod_mem_inter_mul_diff' _ <| h.inter_of_left _
+  finprod_mem_inter_mul_sdiff' _ <| h.inter_of_left _
+
+@[deprecated (since := "2026-06-03")]
+alias finprod_mem_inter_mul_diff := finprod_mem_inter_mul_sdiff
 
 /-- A more general version of `finprod_mem_mul_diff` that requires `t ∩ mulSupport f` rather than
 `t` to be finite. -/
 @[to_additive
       /-- A more general version of `finsum_mem_add_diff` that requires `t ∩ support f` rather
       than `t` to be finite. -/]
-theorem finprod_mem_mul_diff' (hst : s ⊆ t) (ht : (t ∩ mulSupport f).Finite) :
+theorem finprod_mem_mul_sdiff' (hst : s ⊆ t) (ht : (t ∩ mulSupport f).Finite) :
     ((∏ᶠ i ∈ s, f i) * ∏ᶠ i ∈ t \ s, f i) = ∏ᶠ i ∈ t, f i := by
-  rw [← finprod_mem_inter_mul_diff' _ ht, inter_eq_self_of_subset_right hst]
+  rw [← finprod_mem_inter_mul_sdiff' _ ht, inter_eq_self_of_subset_right hst]
+
+@[deprecated (since := "2026-06-03")] alias finprod_mem_mul_diff' := finprod_mem_mul_sdiff'
 
 /-- Given a finite set `t` and a subset `s` of `t`, the product of `f i` over `i ∈ s`
 times the product of `f i` over `t \ s` equals the product of `f i` over `i ∈ t`. -/
 @[to_additive
       /-- Given a finite set `t` and a subset `s` of `t`, the sum of `f i` over `i ∈ s` plus
       the sum of `f i` over `t \ s` equals the sum of `f i` over `i ∈ t`. -/]
-theorem finprod_mem_mul_diff (hst : s ⊆ t) (ht : t.Finite) :
+theorem finprod_mem_mul_sdiff (hst : s ⊆ t) (ht : t.Finite) :
     ((∏ᶠ i ∈ s, f i) * ∏ᶠ i ∈ t \ s, f i) = ∏ᶠ i ∈ t, f i :=
-  finprod_mem_mul_diff' hst (ht.inter_of_left _)
+  finprod_mem_mul_sdiff' hst (ht.inter_of_left _)
+
+@[deprecated (since := "2026-06-03")] alias finprod_mem_mul_diff := finprod_mem_mul_sdiff
 
 /-- Given a family of pairwise disjoint finite sets `t i` indexed by a finite type, the product of
 `f a` over the union `⋃ i, t i` is equal to the product over all indexes `i` of the products of
@@ -1038,8 +1075,8 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
 lemma finprod_option {f : Option α → M} (hf : HasFiniteMulSupport (f ∘ some)) :
     ∏ᶠ o, f o = f none * ∏ᶠ a, f (some a) := by
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
-  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by simp)
-    (hf.subset inter_subset_right)
+  convert!
+    finprod_mem_insert' f (show none ∉ Set.range Option.some by simp) (hf.subset inter_subset_right)
   · simp
   · rw [finprod_mem_range]
     exact Option.some_injective _
@@ -1052,12 +1089,15 @@ lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs :
     finprod_mem_image (powerset_insert_injOn has)]
 
 @[to_additive]
-lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+lemma finprod_mem_powerset_sdiff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
     (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
     * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
-  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearance hidden by notation
-  exact finprod_mem_powerset_insert (hs.subset Set.diff_subset)
-    (notMem_diff_of_mem (Set.mem_singleton a))
+  nth_rw 1 2 [← Set.insert_sdiff_self_of_mem has] -- second appearance hidden by notation
+  exact finprod_mem_powerset_insert (hs.subset Set.sdiff_subset)
+    (notMem_sdiff_of_mem (Set.mem_singleton a))
+
+@[deprecated (since := "2026-06-03")]
+alias finprod_mem_powerset_diff_elem := finprod_mem_powerset_sdiff_elem
 
 @[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : HasFiniteMulSupport f) :
@@ -1143,7 +1183,7 @@ theorem prod_finprod_comm (s : Finset α) (f : α → β → M) (h : ∀ a ∈ s
 @[to_additive]
 theorem finprod_prod_filter [DecidableEq α] (f : β → α) (s : Finset β) (g : β → M) :
     ∏ᶠ x, ∏ y ∈ s with f y = x, g y = ∏ k ∈ s, g k := by
-  rw [finprod_eq_finset_prod_of_mulSupport_subset]
+  rw [finprod_eq_finsetProd_of_mulSupport_subset]
   · rw [Finset.prod_image']
     exact fun _ _ ↦ rfl
   · intro x hx

@@ -274,7 +274,6 @@ instance Int.instBinomialRing : BinomialRing ℤ where
 
 attribute [local instance] IsAddTorsionFree.of_module_nnrat
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
@@ -462,8 +461,6 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
   rw [Nat.factorial_succ, mul_smul,
     ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
 
-@[deprecated (since := "2025-08-17")] alias choose_eq_nat_choose := choose_natCast
-
 theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by
   rw [← nsmul_right_inj (Nat.factorial_ne_zero n),
@@ -526,7 +523,7 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
     ← descPochhammer_eq_factorial_smul_choose, smul_sum, descPochhammer_smeval_add _ h]
   refine sum_congr rfl ?_
   intro x hx
-  rw [← Nat.choose_mul_factorial_mul_factorial (antidiagonal.fst_le hx),
+  rw [← Nat.choose_mul_factorial_mul_factorial (HasAntidiagonal.antidiagonal.fst_le hx),
     tsub_eq_of_eq_add_rev (List.Nat.mem_antidiagonal.mp hx).symm, mul_assoc, nsmul_eq_mul,
     Nat.cast_mul, Nat.cast_mul, ← mul_assoc _ (x.1.factorial : R), mul_assoc _ (x.2.factorial : R),
     ← mul_assoc (x.2.factorial : R), Nat.cast_commute x.2.factorial,
@@ -536,7 +533,7 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
 lemma map_choose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRing S]
     [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
     f (Ring.choose a n) = Ring.choose (f a) n := by
-  simpa using Ring.map_multichoose f (a - n + 1) n
+  simpa using! Ring.map_multichoose f (a - n + 1) n
 
 end Ring
 

@@ -7,8 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.Topology.GDelta.MetrizableSpace
-public import Mathlib.Topology.Instances.EReal.Lemmas
-public import Mathlib.Topology.Instances.Rat
 
 /-!
 # Borel (measurable) space
@@ -500,7 +498,8 @@ is ae-measurable. -/
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 
-theorem IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) : Measurable f :=
+theorem Topology.IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) :
+    Measurable f :=
   hf.continuous.measurable
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
@@ -515,7 +514,7 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
     rw [hu]
     exact u_open.measurableSet.inter hs
   · rcases _root_.continuousOn_iff'.1 hg t ht with ⟨u, u_open, hu⟩
-    rw [diff_eq_compl_inter, inter_comm, hu]
+    rw [sdiff_eq_compl_inter, inter_comm, hu]
     exact u_open.measurableSet.inter hs.compl
 
 @[to_additive]
@@ -587,9 +586,6 @@ theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
 instance (priority := 100) ContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
     [ContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
-
-@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.measurableInv :=
-  ContinuousInv₀.measurableInv
 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]
@@ -704,10 +700,10 @@ instance Real.borelSpace : BorelSpace ℝ :=
   ⟨rfl⟩
 
 instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
-  Subtype.instMeasurableSpace
+  inferInstanceAs <| MeasurableSpace (Subtype _)
 
 instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
-  Subtype.borelSpace _
+  inferInstanceAs <| BorelSpace (Subtype _)
 
 instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
   borel ℝ≥0∞

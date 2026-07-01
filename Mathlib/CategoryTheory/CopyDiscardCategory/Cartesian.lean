@@ -27,7 +27,7 @@ Every cartesian monoidal category is a copy-discard category where:
 cartesian, copy-discard, comonoid, symmetric monoidal
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
