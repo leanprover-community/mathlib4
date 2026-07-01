@@ -100,9 +100,8 @@ theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Na
 alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
-  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card hn⟩
-  have ⟨n, hn⟩ := h.exists_card_dvd_pow
-  exact Nat.dvd_prime_pow Fact.out |>.mp hn |>.imp fun _ ↦ And.right
+  simp_rw [isPGroup_iff_card_dvd_pow, Nat.dvd_prime_pow Fact.out]
+  exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
 
 alias ⟨exists_card_eq, _⟩ := iff_card
 
