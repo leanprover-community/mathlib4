@@ -28,11 +28,23 @@ open scoped ENNReal
 
 namespace MeasureTheory
 
-variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {f g : α → EReal}
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  {μ : Measure α} {ν : Measure β} [SFinite ν]
+
+lemma eintegral_prod_of_nonneg
+    (f : α × β → EReal) (hf : AEMeasurable f (μ.prod ν)) (hf_nonneg : ∀ x, 0 ≤ f x) :
+    ∫ᵉ z, f z ∂(μ.prod ν) = ∫ᵉ x, ∫ᵉ y, f (x, y) ∂ν ∂μ := by
+  have hf_nonneg' x : ∀ y, 0 ≤ f (x, y) := fun y ↦ hf_nonneg (x, y)
+  rw [eintegral_of_nonneg hf_nonneg, eintegral_of_nonneg (fun x ↦ eintegral_nonneg (hf_nonneg' x))]
+  simp_rw [eintegral_of_nonneg (hf_nonneg' _)]
+  congr
+  rw [lintegral_prod _ (by fun_prop)]
+  congr with x
+  rw [EReal.toENNReal_coe]
 
 /-- Fubini's theorem for extended reals: the integral over the product equals the iterated
 integral. -/
-lemma eintegral_prod {β : Type*} {mβ : MeasurableSpace β} {ν : Measure β} [SFinite ν]
+lemma eintegral_prod
     (f : α × β → EReal) (hf : AEMeasurable f (μ.prod ν)) (hf_int : EIntegrable f (μ.prod ν)) :
     ∫ᵉ z, f z ∂(μ.prod ν) = ∫ᵉ x, ∫ᵉ y, f (x, y) ∂ν ∂μ := by
   set u : α × β → ℝ≥0∞ := fun z => (f z).toENNReal
@@ -61,8 +73,7 @@ lemma eintegral_prod {β : Type*} {mβ : MeasurableSpace β} {ν : Measure β} [
       | inl h => left; convert h; rw [lintegral_prod _ (by fun_prop)]
       | inr h => right; convert h; rw [lintegral_prod _ (by fun_prop)]
 
-lemma eintegral_prod_symm {β : Type*} {mβ : MeasurableSpace β} [SFinite μ]
-    {ν : Measure β} [SFinite ν]
+lemma eintegral_prod_symm [SFinite μ]
     (f : α × β → EReal) (hf : AEMeasurable f (μ.prod ν)) (hf_int : EIntegrable f (μ.prod ν)) :
     ∫ᵉ z, f z ∂(μ.prod ν) = ∫ᵉ y, ∫ᵉ x, f (x, y) ∂μ ∂ν := by
   calc ∫ᵉ z, f z ∂(μ.prod ν)
