@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Defs
 # A division-free determinant algorithm
 
 This file defines `birdDet`, an implementation of an division-free algorithm for
-computing determinants.
+computing determinants. The algorithm runs in O(n^4) for an n-by-n matrix.
 
 This determinant algorithm comes from:
 
