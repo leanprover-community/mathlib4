@@ -600,14 +600,15 @@ noncomputable def Spec.homEquivRingHom {R S : Type u} [CommRing R] [CommRing S] 
     (Spec (.of S) ⟶ Spec (.of R)) ≃ (R →+* S) :=
   homEquiv.trans <| CategoryTheory.ConcreteCategory.homEquiv.trans <| .refl _
 
-open ConcreteCategory renaming hom_injective → hi, homEquiv → hE in
+open ConcreteCategory in
 /-- The bijection between the set of scheme morphisms `Spec B ⟶ Spec A` commuting with their scheme
 morphisms to `Spec R` and the set of concrete algebra homomorphisms `A →ₐ[R] B`. -/
 noncomputable def Spec.homEquivAlgHom {R : Type u} [CommRing R] {A B : Type u} [CommRing A]
-    [CommRing B] [Algebra R A] [Algebra R B] : {f : Spec (.of B) ⟶ Spec (.of A) //
-      f ≫ Spec.algebraMap R A = Spec.algebraMap R B} ≃ (A →ₐ[R] B) :=
-  (homEquiv.subtypeEquiv fun _ ↦ by simp [← preimage_inj, ← hi.eq_iff]).trans <|
-    (CommAlgCat.homEquivCommRingCat (.of R A) (.of R B)).symm.trans <| hE.trans <| .refl _
+    [CommRing B] [Algebra R A] [Algebra R B] :
+    {f : Spec (.of B) ⟶ Spec (.of A) // f ≫ Spec.algebraMap R A = Spec.algebraMap R B} ≃
+      (A →ₐ[R] B) :=
+  (homEquiv.subtypeEquiv fun _ ↦ by simp [← preimage_inj, ← hom_injective.eq_iff]).trans <|
+    (CommAlgCat.homEquivCommRingCat (.of R A) (.of R B)).symm.trans <| homEquiv.trans <| .refl _
 
 end
 
