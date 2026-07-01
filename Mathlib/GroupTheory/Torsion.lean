@@ -181,7 +181,7 @@ lemma not_isMulTorsionFree_of_isMulTorsion [Nontrivial G] (hG : IsMulTorsion G) 
   not_isAddTorsionFree_of_isAddTorsion
 
 /-- A nontrivial torsion-free abelian group is not torsion. -/
-@[to_additive /-- A nontrivial torsion additive-free abelian group is not torsion. -/]
+@[to_additive /-- A nontrivial torsion-free additive abelian group is not torsion. -/]
 lemma not_isMulTorsion_of_isMulTorsionFree [Nontrivial G] [IsMulTorsionFree G] : ¬ IsMulTorsion G :=
   (not_isMulTorsionFree_of_isMulTorsion · ‹_›)
 
