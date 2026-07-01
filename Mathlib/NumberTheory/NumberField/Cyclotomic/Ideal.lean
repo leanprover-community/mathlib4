@@ -47,9 +47,9 @@ namespace IsCyclotomicExtension.Rat
 open Ideal NumberField RingOfIntegers
 
 variable (n m p k : ℕ) [hp : Fact (Nat.Prime p)] (K : Type*) [Field K] [NumberField K]
-  (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver (Ideal.span {(p : ℤ)})]
+  (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver (span {(p : ℤ)})]
 
-local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
+local notation3 "𝒑" => (span {(p : ℤ)})
 
 section PrimePow
 
@@ -57,7 +57,7 @@ variable {K} [hK : IsCyclotomicExtension {p ^ (k + 1)} ℚ K] {ζ : K}
   (hζ : IsPrimitiveRoot ζ (p ^ (k + 1)))
 
 instance isPrime_span_zeta_sub_one : IsPrime (span {hζ.toInteger - 1}) := by
-  rw [Ideal.span_singleton_prime]
+  rw [span_singleton_prime]
   · exact hζ.zeta_sub_one_prime
   · exact Prime.ne_zero hζ.zeta_sub_one_prime
 
@@ -72,12 +72,20 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
+/-- An integer `n` is divisible by `ζ - 1` in `𝓞 K` if and only if it is divisible by `p`,
+where `ζ` is a primitive `p ^ (k + 1)`-th root of unity. -/
+theorem zeta_sub_one_dvd_intCast_iff {n : ℤ} :
+    hζ.toInteger - 1 ∣ (n : 𝓞 K) ↔ (p : ℤ) ∣ n := by
+  have h := associated_norm_zeta_sub_one p k hζ
+  rw [← Ideal.norm_dvd_iff (h.symm.prime (Nat.prime_iff_prime_int.mp hp.out))]
+  exact h.dvd_iff_dvd_left
+
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
   simpa using congr_arg absNorm <|
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
 
 theorem p_mem_span_zeta_sub_one : (p : 𝓞 K) ∈ span {hζ.toInteger - 1} := by
-  convert! Ideal.absNorm_mem _
+  convert! absNorm_mem _
   exact (absNorm_span_zeta_sub_one ..).symm
 
 theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
@@ -85,7 +93,7 @@ theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
 
 instance liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 := by
   rw [liesOver_iff]
-  refine Ideal.IsMaximal.eq_of_le (Int.ideal_span_isMaximal_of_prime p) IsPrime.ne_top' ?_
+  refine IsMaximal.eq_of_le (Int.ideal_span_isMaximal_of_prime p) IsPrime.ne_top' ?_
   rw [span_singleton_le_iff_mem, mem_comap, algebraMap_int_eq, map_natCast]
   exact p_mem_span_zeta_sub_one p k hζ
 
@@ -118,9 +126,8 @@ theorem ramificationIdx_span_zeta_sub_one :
     ramificationIdx' (span {hζ.toInteger - 1}) ℤ = p ^ k * (p - 1) := by
   have h := isPrime_span_zeta_sub_one p k hζ
   have hp0 : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
-  rw [← ramificationIdx_eq_ramificationIdx' 𝒑 _ hp0,
-    ← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
-    IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,
+  rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
+    IsDedekindDomain.ramificationIdx'_eq_multiplicity 𝒑, map_eq_span_zeta_sub_one_pow p k hζ,
     multiplicity_pow_self (span_zeta_sub_one_ne_bot p k hζ) (isUnit_iff.not.mpr h.ne_top)]
   exact map_ne_bot_of_ne_bot hp0
 
@@ -182,6 +189,46 @@ instance isPrime_span_zeta_sub_one' : IsPrime (span {hζ.toInteger - 1}) := by
   rw [← pow_one p] at hK hζ
   exact isPrime_span_zeta_sub_one p 0 hζ
 
+/-- If `2 < p`, then `2` is not in the ideal `(ζ - 1)`, where `ζ` is a primitive `p`-th root of
+unity. -/
+theorem two_not_mem_span_zeta_sub_one' (h : 2 < p) : (2 : 𝓞 K) ∉ span {hζ.toInteger - 1} := by
+  rw [mem_span_singleton]
+  rw [← pow_one p] at hK hζ
+  exact hζ.toInteger_sub_one_not_dvd_two h.ne'
+
+omit hp hK [NumberField K] in
+lemma associated_sub_one_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimitiveRoot η p) :
+    Associated (hζ.toInteger - 1) (hη.toInteger - 1) := by
+  obtain ⟨i, -, hi, hζη⟩ := hζ.isPrimitiveRoot_iff.mp hη
+  rw [show hη.toInteger = hζ.toInteger ^ i from RingOfIntegers.ext hζη.symm]
+  exact hζ.toInteger_isPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime hi
+
+omit [NumberField K] hK in
+open Polynomial in
+/-- `(ζ - 1) ^ (p - 1)` is associated to `p`, where `ζ` is a primitive `p`-th root of unity and
+`p` is prime. -/
+theorem associated_zeta_sub_one_pow_prime :
+    Associated ((hζ.toInteger - 1) ^ (p - 1)) (p : 𝓞 K) := by
+  rw [← eval_one_cyclotomic_prime (R := 𝓞 K) (p := p),
+    cyclotomic_eq_prod_X_sub_primitiveRoots hζ.toInteger_isPrimitiveRoot, eval_prod]
+  simp only [eval_sub, eval_X, eval_C]
+  rw [← Nat.totient_prime hp.out, ← hζ.toInteger_isPrimitiveRoot.card_primitiveRoots,
+    ← Finset.prod_const]
+  refine Associated.prod _ _ _ fun η hη ↦ ?_
+  have hη' : IsPrimitiveRoot (η : K) p :=
+    (isPrimitiveRoot_of_mem_primitiveRoots hη).map_of_injective RingOfIntegers.coe_injective
+  simpa using (associated_sub_one_of_isPrimitiveRoot p hζ hη').neg_right
+
+/-- If `ζ - 1` does not divide `x`, then `p` and `x` are coprime, where `ζ` is a primitive `p`-th
+root of unity and `p` is prime. -/
+theorem isCoprime_of_not_zeta_sub_one_dvd {x : 𝓞 K} (hx : ¬ hζ.toInteger - 1 ∣ x) :
+    IsCoprime (p : 𝓞 K) x := by
+  rwa [← isCoprime_span_singleton_iff,  ← span_singleton_eq_span_singleton.mpr
+    (associated_zeta_sub_one_pow_prime p hζ), ← span_singleton_pow,
+    IsCoprime.pow_left_iff (by grind [hp.out.one_lt]), isCoprime_iff_gcd,
+    (prime_span_singleton_iff.mpr
+    hζ.zeta_sub_one_prime').irreducible.gcd_eq_one_iff, dvd_span_singleton, mem_span_singleton]
+
 theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
   rw [← pow_one p] at hK hζ
   exact inertiaDeg_span_zeta_sub_one p 0 hζ
@@ -190,6 +237,13 @@ theorem ramificationIdx_span_zeta_sub_one' :
     ramificationIdx' (span {hζ.toInteger - 1}) ℤ = p - 1 := by
   rw [← pow_one p] at hK hζ
   rw [ramificationIdx_span_zeta_sub_one p 0 hζ, pow_zero, one_mul]
+
+/-- An integer `n` is divisible by `ζ - 1` in `𝓞 K` if and only if it is divisible by `p`,
+where `ζ` is a primitive `p`-th root of unity. -/
+theorem zeta_sub_one_dvd_intCast_iff' {n : ℤ} :
+    hζ.toInteger - 1 ∣ (n : 𝓞 K) ↔ (p : ℤ) ∣ n := by
+  rw [← pow_one p] at hK hζ
+  exact zeta_sub_one_dvd_intCast_iff p 0 hζ
 
 variable (K)
 
@@ -250,7 +304,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
   have : P.IsMaximal := .of_liesOver_isMaximal P 𝒑
-  rw [← inertiaDeg_eq_inertiaDeg' 𝒑]
   rw [h₃, natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
   · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
   · refine dvd_trans h₂.2.2 ?_
@@ -272,7 +325,7 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  rw [← ramificationIdx_eq_ramificationIdx' 𝒑 P (by simpa using hp.out.ne_zero), h₃]
+  rw [h₃]
   refine multiplicity_eq_of_emultiplicity_eq_some (le_antisymm ?_ ?_)
   · apply emultiplicity_le_one_of_separable
     · exact isUnit_iff_degree_eq_zero.not.mpr (Irreducible.degree_pos h₂.1).ne'
@@ -347,7 +400,7 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 Fₘ) Gal(Fₘ/ℚ),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 Fₚ) Gal(Fₚ/ℚ),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 K) Gal(K/ℚ),
-    ← ncard_primesOver_mul_ncard_primesOver Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₘ),
+    ← ncard_primesOver_mul_ncard_primesOver Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ),
     ramificationIdxIn_eq_of_not_dvd p Fₘ hm, inertiaDegIn_eq_of_prime_pow p k Fₚ,
     ncard_primesOver_of_prime_pow p k Fₚ, one_mul, one_mul, mul_one, mul_assoc, mul_assoc,
     mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero 𝒑 _), ← mul_assoc,
