@@ -251,6 +251,69 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
   linear_combination - (eq1a + eq1b + eq2a + eq2b - eq3a - eq3b) / 2
 
 /-- Suppose `(M, g)` is a `C^{k+2}` manifold with a `C^{k+1}` Riemannian metric.
+Then Levi-Civita connection, applied to `C^{k+1}` vector fields near `x`,
+yields a `C^k` vector field near `x`. -/
+lemma IsLeviCivitaConnection.eventually_contMDiffAt_apply (k : ℕ∞) [FiniteDimensional ℝ E]
+    [IsManifold I (k + 2) M]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    (h : cov.IsLeviCivitaConnection)
+    {X Y Z : (x : M) → TangentSpace% x} {x : M}
+    (hX : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% X) b)
+    (hY : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Y) b)
+    (hZ : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Z) b) :
+    ∀ᶠ (b : M) in nhds x, CMDiffAt k (fun x ↦ ⟪(cov Y x) (X x), Z x⟫) b := by
+  have a : IsManifold I ((k + 1) + 1) M := by
+    rw [show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]; infer_instance
+  have : IsManifold I (minSmoothness ℝ 2) M := by simpa
+  have : IsManifold I (↑(k + 1) + 1) M := by simpa
+  have : IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x) :=
+    IsContMDiffRiemannianBundle.of_le (n := k + 1) (by simp)
+  suffices computation : ∀ᶠ (b : M) in nhds x, CMDiffAt k
+      (fun x ↦ (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
+      - ⟪Y, VectorField.mlieBracket I X Z⟫ x
+      - ⟪Z, VectorField.mlieBracket I Y X⟫ x
+      + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2) b by
+    -- FIXME: is there a nicer way to write this?
+    rw [← eventually_eventually_nhds] at hX hY hZ computation
+    filter_upwards [hX, hY, hZ, computation] with x' hX hY hZ computation
+    apply computation.self_of_nhds.congr_of_eventuallyEq
+    filter_upwards [hX, hY, hZ] with x'' hX hY hZ
+    exact h.apply_eq (hX.mdifferentiableAt (by simp)) (hY.mdifferentiableAt (by simp))
+      (hZ.mdifferentiableAt (by simp))
+  filter_upwards [hX, hY, hZ] with x hX hY hZ
+  -- Future: automate this using fun_prop!
+  apply ContMDiffAt.div_const
+  repeat apply ContMDiffAt.add
+  all_goals
+    try apply ContMDiffAt.neg
+    try apply ContMDiffAt.mvfderiv
+  all_goals try assumption
+  · exact hY.inner_bundle' hZ
+  · exact hZ.inner_bundle' hX
+  · exact hX.inner_bundle' hY
+  · apply ContMDiffAt.inner_bundle'
+    · exact hY.of_le (by simp)
+    · exact ContMDiffAt.mlieBracket_vectorField (n := k + 1) hX hZ (by simp)
+  · apply ContMDiffAt.inner_bundle'
+    · exact hZ.of_le (by simp)
+    · exact ContMDiffAt.mlieBracket_vectorField (n := k + 1) hY hX (by norm_num)
+  · apply ContMDiffAt.inner_bundle'
+    · exact hX.of_le (by simp)
+    · exact ContMDiffAt.mlieBracket_vectorField (n := k + 1) hZ hY (by norm_num)
+
+lemma IsLeviCivitaConnection.contMDiffAt_apply (k : ℕ∞) [FiniteDimensional ℝ E]
+    [IsManifold I (k + 2) M]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    (h : cov.IsLeviCivitaConnection)
+    {X Y Z : (x : M) → TangentSpace% x} {x : M}
+    (hX : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% X) b)
+    (hY : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Y) b)
+    (hZ : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Z) b) :
+    CMDiffAt k (fun x ↦ ⟪(cov Y x) (X x), Z x⟫) x :=
+  h.eventually_contMDiffAt_apply k hX hY hZ |>.self_of_nhds
+
+-- TODO: this proof can be drastically golfed to use the above lemma!
+/-- Suppose `(M, g)` is a `C^{k+2}` manifold with a `C^{k+1}` Riemannian metric.
 Then Levi-Civita connection, applied to `C^{k+1}` vector fields, yields a `C^k` vector field. -/
 lemma IsLeviCivitaConnection.contMDiff_apply (k : ℕ∞) [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
@@ -463,6 +526,17 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
 public lemma leviCivitaConnection_isLeviCivitaConnection [FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).IsLeviCivitaConnection :=
   ⟨leviCivitaConnection_isMetricCompatible I, leviCivitaConnection_torsion_eq_zero I⟩
+
+variable {I} in
+lemma eventually_contMDiff_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimensional ℝ E]
+    [IsManifold I (k + 2) M]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    {X Y Z : (x : M) → TangentSpace% x}
+    (hX : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% X) b)
+    (hY : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Y) b)
+    (hZ : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Z) b) :
+    ∀ᶠ (b : M) in nhds x, CMDiffAt k (fun x ↦ ⟪((leviCivitaConnection I M) Y x) (X x), Z x⟫) b :=
+  (leviCivitaConnection_isLeviCivitaConnection I).eventually_contMDiffAt_apply k hX hY hZ
 
 variable {I} in
 lemma contMDiff_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimensional ℝ E]
