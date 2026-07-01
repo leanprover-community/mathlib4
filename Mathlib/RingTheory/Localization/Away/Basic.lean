@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
@@ -310,6 +310,10 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
   ext x
   simp
 
+theorem isDomain [IsDomain R] {x : R} (hx : x ≠ 0) [IsLocalization.Away x S] : IsDomain S :=
+  IsLocalization.isDomain_of_le_nonZeroDivisors S
+    (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
+
 end Away
 
 end Away
@@ -589,6 +593,10 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
   refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.1).pow N).mul_left_inj.mp ?_⟩
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),
     ← Finset.mul_sum, ← smul_eq_mul (a := c _), eq1, mul_one]
+
+/-- If `x ≠ 0`, then the localization of a domain away from `x` is again a domain. -/
+theorem Away.isDomain [IsDomain R] {x : R} (hx : x ≠ 0) : IsDomain (Localization.Away x) :=
+  IsLocalization.Away.isDomain (Localization.Away x) hx
 
 end Localization
 

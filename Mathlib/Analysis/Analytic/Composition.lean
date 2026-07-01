@@ -277,7 +277,7 @@ theorem removeZero_comp_of_pos (q : FormalMultilinearSeries 𝕜 F G)
     q.removeZero.comp p n = q.comp p n := by
   ext v
   simp only [FormalMultilinearSeries.comp, compAlongComposition,
-    ContinuousMultilinearMap.compAlongComposition_apply, ContinuousMultilinearMap.sum_apply]
+    ContinuousMultilinearMap.compAlongComposition_apply, sum_apply]
   refine Finset.sum_congr rfl fun c _hc => ?_
   rw [removeZero_of_pos _ (c.length_pos_of_pos hn)]
 
@@ -395,10 +395,10 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     let j : Fin b.length := ⟨i.val, b.blocks_length ▸ i.prop⟩
     have A : 1 < b.blocksFun j := by convert! lt_k
     ext v
-    rw [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
+    rw [compAlongComposition_apply, _root_.zero_apply]
     apply ContinuousMultilinearMap.map_coord_zero _ j
     dsimp [applyComposition]
-    rw [id_apply_of_one_lt _ _ _ A, ContinuousMultilinearMap.zero_apply]
+    rw [id_apply_of_one_lt _ _ _ A, _root_.zero_apply]
   · simp
 
 @[simp]
@@ -427,8 +427,8 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
         have : 0 < b.length := Composition.length_pos_of_pos b n_pos
         lia
       ext v
-      rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A,
-        ContinuousMultilinearMap.zero_apply, ContinuousMultilinearMap.zero_apply]
+      rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A, _root_.zero_apply,
+        _root_.zero_apply]
     · simp
 
 /-- Variant of `id_comp` in which the zero coefficient is given by an equality hypothesis instead
@@ -813,8 +813,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   have E : HasSum (fun n => (q.comp p) n fun _j => y) (g (f (x + y))) := by
     apply D.sigma
     intro n
-    simp only [compAlongComposition_apply, FormalMultilinearSeries.comp,
-      ContinuousMultilinearMap.sum_apply]
+    simp only [compAlongComposition_apply, FormalMultilinearSeries.comp, sum_apply]
     exact hasSum_fintype _
   rw [Function.comp_apply]
   exact E
@@ -850,31 +849,26 @@ lemma AnalyticOn.comp {f : F → G} {g : E → F} {s : Set F}
     AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp (hg x m) h
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
+attribute [local push ←] Function.comp_def
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt 𝕜 g (f x))
     (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (g ∘ f) x := by
   rw [← analyticWithinAt_univ] at hg hf ⊢
   apply hg.comp hf (by simp)
 
-/-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
-analytic at `x`. -/
-@[fun_prop]
-theorem AnalyticAt.comp' {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt 𝕜 g (f x))
-    (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z ↦ g (f z)) x :=
-  hg.comp hf
+@[deprecated (since := "2026-01-24")] alias AnalyticAt.comp' := AnalyticAt.fun_comp
 
 /-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
+@[to_fun]
 theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
     (hf : AnalyticAt 𝕜 f x) (hy : f x = y) : AnalyticAt 𝕜 (g ∘ f) x := by
   rw [← hy] at hg
   exact hg.comp hf
-
-/-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
-theorem AnalyticAt.comp_of_eq' {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
-    (hf : AnalyticAt 𝕜 f x) (hy : f x = y) : AnalyticAt 𝕜 (fun z ↦ g (f z)) x := by
-  apply hg.comp_of_eq hf hy
+@[deprecated (since := "2026-05-18")] alias AnalyticAt.comp_of_eq' := AnalyticAt.fun_comp_of_eq
 
 theorem AnalyticAt.comp_analyticWithinAt {g : F → G} {f : E → F} {x : E} {s : Set E}
     (hg : AnalyticAt 𝕜 g (f x)) (hf : AnalyticWithinAt 𝕜 f s x) :
@@ -915,7 +909,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
   apply Finset.sum_eq_zero
   rintro c -
   ext v
-  simp only [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
+  simp only [compAlongComposition_apply, _root_.zero_apply]
   rcases le_or_gt m c.length with hc | hc
   · simp [hg.finite _ hc]
   obtain ⟨j, hj⟩ : ∃ j, n ≤ c.blocksFun j := by
@@ -939,6 +933,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
 
 /-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
 then `g ∘ f` is continuously polynomial at `x`. -/
+@[to_fun]
 theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
     (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
     CPolynomialAt 𝕜 (g ∘ f) x := by
@@ -947,24 +942,12 @@ theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
   refine ⟨q.comp p, m * (n + 1), ?_⟩
   exact hm.comp (hn.of_le (Nat.le_succ n)) (Nat.zero_lt_succ n)
 
-/-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
-then `g ∘ f` is continuously polynomial at `x`. -/
-theorem CPolynomialAt.fun_comp {g : F → G} {f : E → F} {x : E}
-    (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
-    CPolynomialAt 𝕜 (fun z ↦ g (f z)) x :=
-  hg.comp hf
-
 /-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
+@[to_fun]
 theorem CPolynomialAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
     (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (g ∘ f) x := by
   rw [← hy] at hg
   exact hg.comp hf
-
-/-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
-theorem CPolynomialAt.fun_comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E}
-    (hg : CPolynomialAt 𝕜 g y) (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) :
-    CPolynomialAt 𝕜 (fun z ↦ g (f z)) x :=
-  hg.comp_of_eq hf hy
 
 /-- If two functions `g` and `f` are continuously polynomial respectively on `s.image f` and `s`,
 then `g ∘ f` is continuously polynomial on `s`. -/
@@ -1272,9 +1255,9 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     r c.1.length fun i : Fin c.1.length =>
       q (c.2 i).length (applyComposition p (c.2 i) (v ∘ c.1.embedding i))
   suffices ∑ c, f c = ∑ c, g c by
-    simpa +unfoldPartialApp only [FormalMultilinearSeries.comp,
-      ContinuousMultilinearMap.sum_apply, compAlongComposition_apply, Finset.sum_sigma',
-      applyComposition, ContinuousMultilinearMap.map_sum]
+    simpa +unfoldPartialApp only [FormalMultilinearSeries.comp, sum_apply,
+      compAlongComposition_apply, Finset.sum_sigma', applyComposition,
+      ContinuousMultilinearMap.map_sum]
   /- Now, we use `Composition.sigmaEquivSigmaPi n` to change
     variables in the second sum, and check that we get exactly the same sums. -/
   rw [← (sigmaEquivSigmaPi n).sum_comp]

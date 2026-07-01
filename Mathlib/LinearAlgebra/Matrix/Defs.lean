@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Matrices
@@ -50,6 +51,7 @@ universe u u' v w
 
 /-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are indexed by `m`
 and whose columns are indexed by `n`. -/
+@[wikidata Q44337]
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 
@@ -133,7 +135,16 @@ theorem map_injective {f : α → β} (hf : Function.Injective f) :
 theorem map_involutive {f : α → α} (hf : Function.Involutive f) :
     Function.Involutive fun M : Matrix m n α ↦ M.map f := by intro; simp [hf]
 
-/-- The transpose of a matrix. -/
+/-- The transpose of a matrix.
+
+This is available in bundled forms as:
+* `Matrix.transposeAddEquiv`
+* `Matrix.transposeLinearEquiv`
+* `Matrix.transposeRingEquiv`
+* `Matrix.transposeAlgEquiv`
+* `RingEquiv.mopMatrix`
+* `AlgEquiv.mopMatrix`
+-/
 def transpose (M : Matrix m n α) : Matrix n m α :=
   of fun x y => M y x
 
@@ -151,6 +162,9 @@ instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
 instance add [Add α] : Add (Matrix m n α) :=
   inferInstanceAs <| Add (m → n → α)
 
+instance smul [SMul R α] : SMul R (Matrix m n α) where
+  smul a b := fun i ↦ a • b i
+
 instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
   inferInstanceAs <| AddSemigroup (m → n → α)
 
@@ -163,9 +177,8 @@ instance zero [Zero α] : Zero (Matrix m n α) :=
 instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
   inferInstanceAs <| AddZeroClass (m → n → α)
 
-instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) where
-  __ : AddMonoid (Matrix m n α) := inferInstanceAs <| AddMonoid (m → n → α)
-  nsmul a b := fun i ↦ a • b i
+instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
+  inferInstanceAs <| AddMonoid (m → n → α)
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
   inferInstanceAs <| AddCommMonoid (m → n → α)
@@ -179,9 +192,8 @@ instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg (Matrix m n α) :=
 instance sub [Sub α] : Sub (Matrix m n α) :=
   inferInstanceAs <| Sub (m → n → α)
 
-instance addGroup [AddGroup α] : AddGroup (Matrix m n α) where
-  __ : AddGroup (Matrix m n α) := inferInstanceAs <| AddGroup (m → n → α)
-  zsmul a b := fun i ↦ a • b i
+instance addGroup [AddGroup α] : AddGroup (Matrix m n α) :=
+  inferInstanceAs <| AddGroup (m → n → α)
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
   inferInstanceAs <| AddCommGroup (m → n → α)
@@ -194,9 +206,6 @@ instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
-
-instance smul [SMul R α] : SMul R (Matrix m n α) where
-  smul a b := fun i ↦ a • b i
 
 instance smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
     SMulCommClass R S (Matrix m n α) :=
@@ -257,6 +266,9 @@ section
 
 @[simp]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
+
+@[simp]
+theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := rfl
 
 @[simp]
 theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :

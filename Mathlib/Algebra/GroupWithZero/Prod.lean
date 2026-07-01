@@ -56,9 +56,9 @@ end Prod
 
 variable (M₀) in
 @[simp]
-lemma WithZero.toMonoidWithZeroHom_withZeroUnitsEquiv [GroupWithZero M₀]
+lemma WithZero.ofClass_withZeroUnitsEquiv [GroupWithZero M₀]
     [DecidablePred fun x : M₀ ↦ x = 0] :
-    MonoidWithZeroHomClass.toMonoidWithZeroHom WithZero.withZeroUnitsEquiv =
+    .ofClass WithZero.withZeroUnitsEquiv =
       WithZero.lift' (Units.coeHom M₀) :=
   rfl
 
