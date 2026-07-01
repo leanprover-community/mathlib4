@@ -674,6 +674,10 @@ open Mathlib.Linter.Style.nameCheck
 #guard !isWronglyCased "Ioo'"
 #guard !isWronglyCased "Ioc₀"
 #guard !isWronglyCased "Ioi₀"
+#guard isWronglyCased "Ioi₁" -- bug!
+#guard isWronglyCased "Ioi₀_bar" -- bug!
+#guard isWronglyCased "Ioi₁_bar" -- bug!
+#guard isWronglyCased "Ioi₁_bar" -- bug!
 #guard !isWronglyCased "L1"
 #guard !isWronglyCased "L1H'"
 #guard !isWronglyCased "L1"
