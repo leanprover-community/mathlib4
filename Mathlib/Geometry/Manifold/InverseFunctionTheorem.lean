@@ -194,10 +194,10 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv {p : M₁} (hp : I₁.IsInteri
     mDiffAt_f_p.isInteriorPoint_of_surjective_mfderiv (LinearMap.range_eq_top.mp hf'.2) hp
   -- let `g` be the coordinate representation of `f` and obtain coordinate charts
   set g : E₁ → E₂ := writtenInExtChartAt I₁ I₂ p f
-  set φ₀ := extChartAt I₁ p
-  set φ₁ := diffeoExtChartAt n hp
-  set ψ₀ := extChartAt I₂ (f p)
-  set ψ₁ := diffeoExtChartAt n hfp
+  set φ₀ : PartialEquiv M₁ E₁ := extChartAt I₁ p
+  set ψ₀ : PartialEquiv M₂ E₂ := extChartAt I₂ (f p)
+  set φ₁ : PartialDiffeomorph I₁ 𝓘(𝕜, E₁) M₁ E₁ n := diffeoExtChartAt n hp
+  set ψ₁ : PartialDiffeomorph I₂ 𝓘(𝕜, E₂) M₂ E₂ n := diffeoExtChartAt n hfp
   -- define `U ⊆ E₁`, an open set where we can easily show that `g` is ContDiff
   set U : Set E₁ := φ₁ '' (φ₁.source ∩ (A ∩ f ⁻¹' ψ₁.source))
   have U_open : IsOpen U := by
