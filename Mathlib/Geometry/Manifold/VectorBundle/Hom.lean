@@ -352,6 +352,42 @@ lemma Bundle.Trivialization.ContMDiffAt_symm {k}
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (Trivialization.symmL 𝕜 e m)) x := by
   sorry
 
+-- TODO: should we also have a version for `e.toOpenPartialHomoemorph`?
+
+-- TODO: can this be proven without assuming `E₁` is a C¹ vector bundle?
+omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
+  [ContMDiffVectorBundle 1 F₁ E₁ IB] in
+lemma contMDiffOn_symm_of_memTrivializationAtlas {k}
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] :
+    CMDiff[e.target] k e.toOpenPartialHomeomorph.symm :=
+  e.contMDiffOn_symm
+
+-- is this true?
+lemma foobar (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] :
+    e.target = e.baseSet ×ˢ (univ : Set F₁) := by
+  ext x
+  simp
+  sorry
+
+-- TODO: can this be proven without assuming `E₁` is a C¹ vector bundle?
+-- trivialization analogue of `contMDiffAt_symm_of_mem_maximalAtlas`
+omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
+  [ContMDiffVectorBundle 1 F₁ E₁ IB] in
+lemma contMDiffAt_symm_of_memTrivializationAtlas {k}
+    [IsManifold IB k B]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
+    CMDiffAt k e.toOpenPartialHomeomorph.symm (x, u) := by
+  apply e.contMDiffOn_symm |>.contMDiffAt (e.open_target.mem_nhds ?_)
+  rw [foobar]
+  simp [hx]
+
 -- Conjecture: one can prove the lemma below directly, skipping the above lemma
 lemma Bundle.Trivialization.ContMDiffAt_symm_const {k}
     [IsManifold IB k B]
@@ -368,10 +404,7 @@ lemma Bundle.Trivialization.ContMDiffAt_symm_const {k}
       refine ContMDiffAt.prodMk ?_ ?_
       · apply contMDiffAt_id -- Note: apply? never works for such goals
       · apply contMDiffAt_const
-    apply ContMDiffAt.comp x _ this
-    simp
-    #check contMDiffAt_symm_of_mem_maximalAtlas
-    sorry
+    exact (contMDiffAt_symm_of_memTrivializationAtlas e hx _).comp x this
   apply this.congr_of_eventuallyEq
   filter_upwards [e.open_baseSet.mem_nhds hx] with x' hx'
   simp [hx', e.mk_symm]
