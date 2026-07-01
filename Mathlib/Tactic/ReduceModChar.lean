@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Util.AtLocation
 public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.RingTheory.Polynomial.Basic  -- shake: keep (Qq dependency)
+import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
 public import Mathlib.Tactic.NormNum.PowMod
 public import Mathlib.Tactic.ReduceModChar.Ext
 
@@ -65,9 +66,9 @@ attribute [local instance] Mathlib.Meta.monadLiftOptionMetaM in
 def normBareNumeral {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
     (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
   let ⟨ze, ne, pe⟩ ← Result.toInt _ (← Mathlib.Meta.NormNum.derive e)
-  let zr := ze % n'.natLit!
-  have nr : Q(ℤ) := mkRawIntLit zr
-  let pr ← mkDecideProofQ q(IsInt ($ne % ($n' : ℤ)) $nr)
+  let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
+    .isNat q(instAddMonoidWithOne) _ q(isNat_natCast _ _ (IsNat.raw_refl $n'))
+  let ⟨zr, nr, pr⟩ ← rr.toInt _
   return .isInt _ nr zr q(CharP.isInt_of_mod $instCharP $pe $pn $pr)
 
 mutual
