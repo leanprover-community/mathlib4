@@ -48,6 +48,8 @@ see their statements.
 * `le_of_tendsto`, `ge_of_tendsto` : if `f` converges to `a` and eventually `f x ≤ b`
   (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a`); we also provide primed versions
   that assume the inequalities to hold for all `x`.
+* `monotone_of_frequently_monotone_of_tendsto`, `antitone_of_frequently_antitone_of_tendsto` : the
+  pointwise limit of frequently monotone functions is monotone or antitone.
 
 ### Min, max, `sSup` and `sInf`
 
