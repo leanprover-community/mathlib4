@@ -5,7 +5,7 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Simple
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
@@ -54,25 +54,7 @@ variable (K : Type u) [Field K]
 
 lemma IsSimpleModule.functor
     (R S : Type*) [Ring R] [Ring S] (e : ModuleCat R ≌ ModuleCat S)
-    (M : ModuleCat R) [simple_module : IsSimpleModule R M] :
+    (M : ModuleCat R) [IsSimpleModule R M] :
     IsSimpleModule S (e.functor.obj M) := by
-  rw [isSimpleModule_iff_injective_or_eq_zero] at simple_module ⊢
-  rcases simple_module with ⟨nontriv, H⟩
-  refine ⟨e.nontrivialModuleTransfer (h := nontriv), fun N _ _ f => ?_⟩
-  let F := e.unit.app M ≫ e.inverse.map (ModuleCat.ofHom f)
-  rcases H _ F.hom with H | H
-  · simp only [Functor.id_obj, ModuleCat.hom_comp, F] at H
-    change _ ∘ₗ (e.unitIso.app M).toLinearEquiv.toLinearMap = 0 at H
-    rw [eq_comm, ← LinearEquiv.comp_toLinearMap_symm_eq, LinearMap.zero_comp,
-      ← ModuleCat.hom_zero, ← ModuleCat.hom_ext_iff, eq_comm] at H
-    left
-    apply_fun ModuleCat.ofHom using fun _ _ h ↦ by simpa [ModuleCat.hom_ext_iff] using h
-    apply e.inverse.map_injective
-    rw [H, ModuleCat.ofHom_zero, Functor.map_zero]
-    rfl
-  · simp only [Functor.id_obj, F] at H
-    refine Or.inr ?_
-    change Function.Injective (_ ∘ (e.unitIso.app M).toLinearEquiv.toLinearMap) at H
-    have := Function.Injective.of_comp_right H <| (e.unitIso.app M).toLinearEquiv.surjective
-    exact ModuleCat.mono_iff_injective _|>.1 <| Functor.mono_of_mono_map e.inverse <|
-      (ModuleCat.mono_iff_injective (e.inverse.map (ModuleCat.ofHom f))).2 this
+  rw [← simple_iff_isSimpleModule'] at *
+  exact (equiv_simple_iff e M).1 inferInstance
