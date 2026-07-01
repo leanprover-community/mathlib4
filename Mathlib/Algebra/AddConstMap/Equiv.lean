@@ -76,10 +76,6 @@ initialize_simps_projections AddConstEquiv (toFun → apply, invFun → symm_app
 
 @[simp] lemma symm_symm (e : G ≃+c[a, b] H) : e.symm.symm = e := rfl
 
-theorem sym_apply_eq_iff (e : G ≃+c[a, b] H) {a b} :
-    e a = b ↔ a = e.symm b :=
-  e.apply_eq_iff_eq_symm_apply
-
 theorem sym_symm_apply_eq (e : G ≃+c[a, b] H) {a b} :
     e.symm a = b ↔ a = e b :=
   e.symm_apply_eq
