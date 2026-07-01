@@ -404,7 +404,7 @@ lemma Bundle.Trivialization.ContMDiffWithinAt_apply {k}
 -- to `CMDiffAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
 omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
   [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
-lemma ContMDiff.clm_bundle_of_apply {k}
+lemma ContMDiffAt.clm_bundle_of_apply {k}
     [FiniteDimensional 𝕜 EB]
     [IsManifold IB k B]
     [ContMDiffVectorBundle k F₁ E₁ IB]
@@ -415,35 +415,39 @@ lemma ContMDiff.clm_bundle_of_apply {k}
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
     x := by
   refine (contMDiffAt_hom_bundle fun x ↦ ⟨x, φ x⟩).mpr ⟨contMDiffAt_id, ?_⟩
-  dsimp only
-  unfold inCoordinates
-  rw [contMDiffAt_iff_source]
-  rw [contMDiffWithinAt_iff_contDiffWithinAt]
+  rw [contMDiffAt_iff_source, contMDiffWithinAt_iff_contDiffWithinAt]
   set t₁ := trivializationAt F₁ E₁ x
   set t₁inv := Trivialization.symmL 𝕜 t₁
   set t₂ := trivializationAt F₂ E₂ x
-  set t₂clm := Trivialization.continuousLinearMapAt 𝕜 t₂
+  set t₂clm := t₂.continuousLinearMapAt 𝕜
   apply contDiffWithinAt_clm_apply.mpr
   set ψ := extChartAt IB x
   intro u
-  set σ : Π b : B, E₁ b := fun b ↦ t₁inv b u
-  change ContDiffWithinAt 𝕜 k
-    ((fun b ↦ t₂clm b (φ b (σ b))) ∘'' ψ.symm)
-    (range IB)
-    (ψ x)
-  have C₀ : ContMDiffAt IB 𝓘(𝕜, F₂) k (fun b ↦ t₂clm b (φ b (σ b))) x := by
+  have C₀ : ContMDiffAt IB 𝓘(𝕜, F₂) k (fun b ↦ t₂clm b (φ b (t₁inv b u))) x := by
     apply t₂.ContMDiffWithinAt_apply
     · exact FiberBundle.mem_baseSet_trivializationAt' x
     · apply h
       filter_upwards [t₁.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)] with
         x' hx'
-      unfold σ
       apply t₁.ContMDiffAt_symm_const hx'
   rw [show x = ψ.symm (ψ x) from (extChartAt_to_inv x).symm] at C₀
   have C₂ : CMDiffAt[range IB] k (ψ.symm) (ψ x) :=
     contMDiffWithinAt_extChartAt_symm_range_self x
   have := (ContMDiffWithinAt.comp' (ψ x) C₀ C₂).contDiffWithinAt
   simpa
+
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+lemma ContMDiff.clm_bundle_of_apply {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB]
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ x, (∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x)) :
+    ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) :=
+  fun x ↦ ContMDiffAt.clm_bundle_of_apply fun σ ↦ h σ x
 
 set_option linter.unusedSectionVars false in
 lemma TensorialAt.apply_clm
@@ -478,7 +482,7 @@ theorem TensorialAt.contMDiff_mkHom
   have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
   have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
   intro b
-  apply ContMDiff.clm_bundle_of_apply fun σ hσ ↦ ?_
+  apply ContMDiffAt.clm_bundle_of_apply fun σ hσ ↦ ?_
   have : ∀ᶠ x in 𝓝 b, TensorialAt.mkHom (φ · x) x (hφ x) (σ x) = φ σ x := by
     filter_upwards [hσ] with x hx
     apply TensorialAt.apply_clm (hφ x)
