@@ -17,7 +17,7 @@ attached to `X`.
 
 ## TODO
 
-* Redefine the stalks functors in `Mathlib/Topology/Sheaves/Stalks.lean`
+* Redefine the stalk functors in `Mathlib/Topology/Sheaves/Stalks.lean`
   using `GrothendieckTopology.Point.presheafFiber`.
 
 -/
@@ -75,7 +75,7 @@ instance (U : Opens X) (Φ : Point.{u} (grothendieckTopology X)) :
 instance : Quiver.IsThin (Point.{u} (grothendieckTopology X)) :=
   fun _ _ ↦ ⟨fun _ _ ↦ by ext; subsingleton⟩
 
-/-- A point `x` of a topological space `X` specializes to `y` if and only iff
+/-- A point `x` of a topological space `X` specializes to `y` if and only if
 there is a (unique) morphism between the corresponding points of the site
 `(Opens X, grothendieckTopology X)`. -/
 def pointGrothendieckTopologyHomEquiv {x y : X} :

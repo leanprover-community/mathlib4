@@ -16,21 +16,21 @@ public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 We give an equivalent formulation of the sheaf condition.
 
-Given any indexed type `ι`, we define `overlap ι`,
+Given any indexed type `ι`, we define `Pairwise ι`,
 a category with objects corresponding to
 * individual open sets, `single i`, and
 * intersections of pairs of open sets, `pair i j`,
   with morphisms from `pair i j` to both `single i` and `single j`.
 
-Any open cover `U : ι → Opens X` provides a functor `diagram U : overlap ι ⥤ (Opens X)ᵒᵖ`.
+Any open cover `U : ι → Opens X` provides a functor `diagram U : Pairwise ι ⥤ (Opens X)ᵒᵖ`.
 
-There is a canonical cone over this functor, `cone U`, whose cone point is `isup U`,
+There is a canonical cone over this functor, `cone U`, whose cone point is `iSup U`,
 and in fact this is a limit cone.
 
 A presheaf `F : Presheaf C X` is a sheaf precisely if it preserves this limit.
 We express this in two equivalent ways, as
-* `isLimit (F.mapCone (cone U))`, or
-* `preservesLimit (diagram U) F`
+* `IsLimit (F.mapCone (cone U))`, or
+* `PreservesLimit (diagram U) F`
 
 We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf condition, and
 thereby also equivalent to the default sheaf condition.
@@ -274,7 +274,7 @@ theorem IsSheaf.isSheafPairwiseIntersections (h : F.IsSheaf) :
     Nonempty (IsLimit (F.mapCone (Pairwise.cocone U).op)) :=
   (h.isSheafOpensLeCover U).map (F.isLimitOpensLeCoverEquivPairwise _)
 
-/-- The sheaf condition in terms of an equalizer diagram is equivalent
+/-- The default sheaf condition is equivalent
 to the reformulation in terms of a limit diagram over `U i` and `U i ⊓ U j`.
 -/
 theorem isSheaf_iff_isSheafPairwiseIntersections : F.IsSheaf ↔ F.IsSheafPairwiseIntersections := by
@@ -286,7 +286,7 @@ theorem IsSheaf.isSheafPreservesLimitPairwiseIntersections (h : F.IsSheaf) :
   preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op
     (h.isSheafPairwiseIntersections U).some
 
-/-- The sheaf condition in terms of an equalizer diagram is equivalent
+/-- The default sheaf condition is equivalent
 to the reformulation in terms of the presheaf preserving the limit of the diagram
 consisting of the `U i` and `U i ⊓ U j`.
 -/

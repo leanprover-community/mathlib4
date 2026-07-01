@@ -184,7 +184,7 @@ The main theorem of this file.
 If `X` is a topological space and preorder whose topology is the `UpperSet` topology associated
 with the preorder, `F : X ⥤ C` is a functor into a complete category from the preorder category,
 and `P : (Opens X)ᵒᵖ ⥤ C` denotes the right Kan extension of `F` along the
-functor `X ⥤ (Open X)ᵒᵖ` which sends `x : X` to `{y | x ≤ y}`, then `P` is a sheaf.
+functor `X ⥤ (Opens X)ᵒᵖ` which sends `x : X` to `{y | x ≤ y}`, then `P` is a sheaf.
 -/
 theorem Topology.IsUpperSet.isSheaf_of_isRightKanExtension
     (P : (Opens X)ᵒᵖ ⥤ C)

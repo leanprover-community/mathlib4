@@ -12,11 +12,11 @@ public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 # Sheaf conditions for presheaves of (continuous) functions.
 
 We show that
-* `Top.Presheaf.toType_isSheaf`: not-necessarily-continuous functions into a type form a sheaf
-* `Top.Presheaf.toTypes_isSheaf`: in fact, these may be dependent functions into a type family
+* `TopCat.Presheaf.toType_isSheaf`: not-necessarily-continuous functions into a type form a sheaf
+* `TopCat.Presheaf.toTypes_isSheaf`: in fact, these may be dependent functions into a type family
 
 For
-* `Top.sheafToTop`: continuous functions into a topological space form a sheaf
+* `TopCat.sheafToTop`: continuous functions into a topological space form a sheaf
 
 please see `Mathlib/Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework
 for constructing sub(pre)sheaves of the sheaf of dependent functions.
