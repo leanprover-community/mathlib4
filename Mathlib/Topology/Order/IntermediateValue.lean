@@ -794,6 +794,8 @@ variable {α β : Type*}
 variable [TopologicalSpace α]
 variable [LinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] [Group β] [MulLeftMono β]
 
+/-- On a preconnected set, if a continuous map has multiplicative absolute value bounded
+below by `L > 1`, then it is either `≥ L` everywhere or its inverse is `≥ L` everywhere. -/
 @[to_additive
 /-- On a preconnected set, if a continuous map has absolute value bounded below by `L > 0`,
 then it is either `≥ L` everywhere or its negative is `≥ L` everywhere. -/]

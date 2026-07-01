@@ -20,6 +20,17 @@ import Mathlib.Tactic.Cases
 We prove van der Corput's lemma for oscillatory integrals of the first kind
 in one real variable, following Stein.
 
+Let $k\ge 1$ be an integer and $\phi$ a $k$-times continuously differentiable real-valued
+function on an interval $[a,b]$.
+Assume that $|\phi^{(k)}(x)|\ge L>0$ for all $x\in [a,b]$ and if $k=1$, additionally assume
+that $\phi'$ is monotone on $[a,b]$.
+Let $\psi$ be a continuously differentiable function on $[a,b]$ taking values in a Banach space.
+Then
+$$
+\Big|\int_a^b e^{i\phi(t)} \psi(t)\,dt\Big| \le c_k L^{-1/k} (\|\psi\|_\infty + \|\psi'\|_1),
+$$
+where $c_k = 5\cdot 2^{k-1} - 2$.
+
 ## Main definitions
 
 * `Oscillatory.VanDerCorput.c`: the constant `5 * 2 ^ (k - 1) - 2` appearing in the bound.
@@ -42,8 +53,8 @@ and then extend to arbitrary amplitudes.
 
 ## References
 
-* E. M. Stein, *Harmonic Analysis: Real-Variable Methods, Orthogonality and Oscillatory
-  Integrals*, Ch. VIII.1, Prop. 2, pp. 332–334.
+* [Elias M. Stein, *Real-Variable Methods, Orthogonality and Oscillatory Integrals*][stein93]
+  (Ch. VIII.1, Prop. 2, pp. 332–334.)
 
 -/
 
