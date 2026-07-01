@@ -141,9 +141,7 @@ lemma Sphere.radius_nonneg_of_mem {s : Sphere P} {p : P} (h : p ∈ s) : 0 ≤ s
 /-- A point of a sphere that differs from another point of the sphere is not its center. -/
 lemma Sphere.ne_center_of_mem_of_mem_of_ne {s : Sphere P} {p q : P}
     (hp : p ∈ s) (hq : q ∈ s) (hpq : p ≠ q) : p ≠ s.center := by
-  rintro rfl
-  rw [Sphere.center_mem_iff] at hp
-  exact hpq (dist_eq_zero.mp (by rw [mem_sphere.mp hq, hp])).symm
+  grind [dist_eq_zero, mem_sphere']
 
 /-- A set of points is cospherical if they are equidistant from some
 point. In two dimensions, this is the same thing as being
