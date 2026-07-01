@@ -33,7 +33,7 @@ The lemmas in this file are unfolding equations.
 
 -/
 
-@[expose] public section
+public section
 
 namespace BirdDet
 
@@ -45,12 +45,12 @@ stored in `A` in row-major order.
 
 The function does not check the matrix index bounds.
 -/
-def get (n : ℕ) (A : Array R) (i j : ℕ) : R :=
+@[expose] protected def get (n : ℕ) (A : Array R) (i j : ℕ) : R :=
   A.getD (i * n + j) 0
 
 /-- Sum `f lo + ... + f (n - 1)`. Returns zero when `n <= lo`. -/
-def sumFrom (n lo : ℕ) (f : ℕ → R) : R :=
-  if lo < n then f lo + sumFrom n (lo + 1) f else 0
+@[expose] protected def sumFrom (n lo : ℕ) (f : ℕ → R) : R :=
+  if lo < n then f lo + BirdDet.sumFrom n (lo + 1) f else 0
 
 /--
 # Scalar formula for one recurrence step.
@@ -83,46 +83,46 @@ F_{t+1} i j =
   + ∑ k from i+1 to n-1, (F_t i k) * (A k j)
 ```
 -/
-def iter (n : ℕ) (A : Array R) (t : ℕ) (F : ℕ → ℕ → R) : ℕ → ℕ → R :=
+@[expose] protected def iter (n : ℕ) (A : Array R) (t : ℕ) (F : ℕ → ℕ → R) : ℕ → ℕ → R :=
   match t with
   | 0 => F
   | t + 1 => fun i j =>
-    -(sumFrom n (i + 1) fun k => iter n A t F k k) * get n A i j
-    + sumFrom n (i + 1) fun k => iter n A t F i k * get n A k j
+    -(BirdDet.sumFrom n (i + 1) fun k => BirdDet.iter n A t F k k) * BirdDet.get n A i j
+    + BirdDet.sumFrom n (i + 1) fun k => BirdDet.iter n A t F i k * BirdDet.get n A k j
 
 /--
 `birdDet n A` computes the determinant of the `n × n` matrix whose entries are
 stored in `A` in row-major order.
 -/
-def birdDet (n : ℕ) (A : Array R) : R :=
+@[expose] def birdDet (n : ℕ) (A : Array R) : R :=
   match n with
   | 0 => 1
-  | k + 1 => (-1 : R) ^ k * iter n A k (get n A) 0 0
+  | k + 1 => (-1 : R) ^ k * BirdDet.iter n A k (BirdDet.get n A) 0 0
 
 /- Unfolding lemmas -/
 
 theorem sumFrom_step (n lo : ℕ) (f : ℕ → R) (h : lo < n) :
-    sumFrom n lo f = f lo + sumFrom n (lo + 1) f := by
-      rw [sumFrom]
+    BirdDet.sumFrom n lo f = f lo + BirdDet.sumFrom n (lo + 1) f := by
+      rw [BirdDet.sumFrom]
       simp [h]
 
 theorem sumFrom_stop (n lo : ℕ) (f : ℕ → R) (h : ¬ lo < n) :
-    sumFrom n lo f = 0 := by
-      rw [sumFrom]
+    BirdDet.sumFrom n lo f = 0 := by
+      rw [BirdDet.sumFrom]
       simp [h]
 
 theorem iter_zero (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
-    iter n A 0 F i j = F i j := rfl
+    BirdDet.iter n A 0 F i j = F i j := rfl
 
 theorem iter_succ (n : ℕ) (A : Array R) (t : ℕ) (F : ℕ → ℕ → R) (i j : ℕ) :
-    iter n A (t + 1) F i j =
-    -(sumFrom n (i + 1) fun k => iter n A t F k k) * get n A i j
-    + sumFrom n (i + 1) fun k => iter n A t F i k * get n A k j := rfl
+    BirdDet.iter n A (t + 1) F i j =
+    -(BirdDet.sumFrom n (i + 1) fun k => BirdDet.iter n A t F k k) * BirdDet.get n A i j
+    + BirdDet.sumFrom n (i + 1) fun k => BirdDet.iter n A t F i k * BirdDet.get n A k j := rfl
 
 theorem birdDet_zero (A : Array R) : birdDet 0 A = 1 := rfl
 
 theorem birdDet_eq (n k : ℕ) (A : Array R) (hn : n = k + 1) :
-    birdDet n A = (-1 : R) ^ k * iter n A k (get n A) 0 0 := by
+    birdDet n A = (-1 : R) ^ k * BirdDet.iter n A k (BirdDet.get n A) 0 0 := by
       subst hn
       rfl
 
