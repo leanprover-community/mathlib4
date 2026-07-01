@@ -41,9 +41,9 @@ def arrayLiteral? (e : Expr) : MetaM (Option (Array Expr)) := do
 /-- The matrix data parsed from a `birdDet` call. -/
 structure BirdDetData {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
   /-- The dimension of the reified matrix -/
-  dimension : Nat
+  dimension : ℕ
   /-- The quoted dimension expression from the reified determinant call. -/
-  dimensionLit : Q(Nat)
+  dimensionLit : Q(ℕ)
   /-- The array of matrix entries as an Expr -/
   arrayExpr : Q(Array $α)
   /-- An array of matrix entry `Expr`s` -/
@@ -69,10 +69,10 @@ def reifyBirdDet (e : Expr) : MetaM BirdDetInfo := do
   let some rα ← checkTypeQ birdRingInst q(CommRing $α)
     | throwError "expected `birdDet` ring instance to have type {q(CommRing $α)}"
   let dimensionExpr ← whnf dimensionExpr
-  let some dimensionLit ← checkTypeQ dimensionExpr q(Nat)
-    | throwError "expected the dimension to have type `Nat`, got {dimensionExpr}"
+  let some dimensionLit ← checkTypeQ dimensionExpr q(ℕ)
+    | throwError "expected the dimension to have type `ℕ`, got {dimensionExpr}"
   let some dimension ← getNatValue? dimensionLit
-    | throwError "expected the dimension to be a `Nat` literal, got {dimensionLit}"
+    | throwError "expected the dimension to be a `ℕ` literal, got {dimensionLit}"
   let some arrayExpr ← checkTypeQ arrayExpr q(Array $α)
     | throwError "expected the array to have type {q(Array $α)}"
   let some arrayEntries ← arrayLiteral? arrayExpr

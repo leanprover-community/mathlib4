@@ -118,14 +118,14 @@ def ofBirdDetInfo (info : BirdDetInfo) : Ctx info.rα :=
     info := info.data }
 
 /-- Return an expression for the partially applied function `iter n A t (get n A)` -/
-def iterP (ctx : Ctx rα) (t : Nat) : Q(Nat → Nat → $α) :=
-  let dim : Q(Nat) := ctx.info.dimensionLit
+def iterP (ctx : Ctx rα) (t : ℕ) : Q(ℕ → ℕ → $α) :=
+  let dim : Q(ℕ) := ctx.info.dimensionLit
   let A : Q(Array $α) := ctx.info.arrayExpr
   q(BirdDet.iter $dim $A $t (BirdDet.get $dim $A))
 
 /-- Return an expression `sumFrom n lo f` -/
-def sumFrom (ctx : Ctx rα) (lo : Nat) (f : Q(Nat → $α)) : Q($α) :=
-  let dim : Q(Nat) := ctx.info.dimensionLit
+def sumFrom (ctx : Ctx rα) (lo : ℕ) (f : Q(ℕ → $α)) : Q($α) :=
+  let dim : Q(ℕ) := ctx.info.dimensionLit
   q(BirdDet.sumFrom $dim $lo $f)
 
 end Ctx
@@ -181,11 +181,11 @@ end Cert
 /-- Cache certificates that are reused by the recursive Bird evaluator. -/
 structure CertCache {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
   /-- Cache for entry certificates, keyed by matrix indices. -/
-  entryCache : Std.HashMap (Nat × Nat) (Cert rα) := {}
+  entryCache : Std.HashMap (ℕ × ℕ) (Cert rα) := {}
   /-- Cache for `iter` certificates, keyed by recursion index and matrix indices. -/
-  iterCache : Std.HashMap (Nat × Nat × Nat) (Cert rα) := {}
+  iterCache : Std.HashMap (ℕ × ℕ × ℕ) (Cert rα) := {}
   /-- Cache for diagonal-tail certificates, keyed by recursion index and lower bound. -/
-  diagCache : Std.HashMap (Nat × Nat) (Cert rα) := {}
+  diagCache : Std.HashMap (ℕ × ℕ) (Cert rα) := {}
 
 /-- The monad used by the certificate-chaining evaluator -/
 abbrev CertM {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) :=
@@ -255,11 +255,11 @@ def certNeg (a : Cert rα) : CertM rα (Cert rα) := do
   return c.chainProof h
 
 /-- Certify the sign factor `(-1)^k` from `BirdDet.birdDet_eq`. -/
-def certBirdSign (k : Nat) : CertM rα (Cert rα) := do
+def certBirdSign (k : ℕ) : CertM rα (Cert rα) := do
   certEval q((-1 : $α) ^ $k)
 
 /-- Certify one matrix entry lookup `BirdDet.get n A i j`. -/
-def certEntry (i j : Nat) : CertM rα (Cert rα) := do
+def certEntry (i j : ℕ) : CertM rα (Cert rα) := do
   if let some c := (← get).entryCache[(i, j)]? then
     return c
   let ctx ← read
@@ -283,9 +283,9 @@ This corresponds to the `else 0` branch of:
 sumFrom n lo f = if lo < n then f lo + sumFrom n (lo + 1) f else 0
 ```
 -/
-def certSumFromStop (lo : Nat) (f : Q(Nat → $α)) : CertM rα (Cert rα) := do
+def certSumFromStop (lo : ℕ) (f : Q(ℕ → $α)) : CertM rα (Cert rα) := do
   let ctx ← read
-  have dimLit : Q(Nat) := ctx.info.dimensionLit
+  have dimLit : Q(ℕ) := ctx.info.dimensionLit
   let hNot : Q(¬ $lo < $dimLit) ← mkDecideProofQ q(¬ $lo < $dimLit)
   return zeroCertOfProof q(BirdDet.sumFrom_stop $dimLit $lo $f $hNot)
 
@@ -298,10 +298,10 @@ sumFrom n lo f = if lo < n then f lo + sumFrom n (lo + 1) f else 0
 ```
 -/
 def certSumFromStep
-    (lo : Nat) (f : Q(Nat → $α))
+    (lo : ℕ) (f : Q(ℕ → $α))
     (headCert tailCert : CertM rα (Cert rα)) : CertM rα (Cert rα) := do
   let ctx ← read
-  have dim : Q(Nat) := ctx.info.dimensionLit
+  have dim : Q(ℕ) := ctx.info.dimensionLit
   let hLt : Q($lo < $dim) ← mkDecideProofQ q($lo < $dim)
   let sumCert ← certAdd (← headCert) (← tailCert)
   return sumCert.chainProof q(BirdDet.sumFrom_step $dim $lo $f $hLt)
@@ -309,7 +309,7 @@ def certSumFromStep
 mutual
 
 /-- Certify a `BirdDet.iter` call. -/
-partial def certIter (t i j : Nat) : CertM rα (Cert rα) := do
+partial def certIter (t i j : ℕ) : CertM rα (Cert rα) := do
   if let some c := (← get).iterCache[(t, i, j)]? then
     return c
   let ctx ← read
@@ -352,7 +352,7 @@ partial def certIter (t i j : Nat) : CertM rα (Cert rα) := do
 sumFrom n (i + 1) fun k => iter n A t F k k)
 ```
 -/
-partial def certDiag (t lo : Nat) : CertM rα (Cert rα) := do
+partial def certDiag (t lo : ℕ) : CertM rα (Cert rα) := do
   if let some c := (← get).diagCache[(t, lo)]? then
     return c
   let ctx ← read
@@ -378,7 +378,7 @@ partial def certDiag (t lo : Nat) : CertM rα (Cert rα) := do
 sumFrom n (i + 1) fun k => iter n A t F i k * get n A k j
 ```
 -/
-partial def certTail (t i j lo : Nat) : CertM rα (Cert rα) := do
+partial def certTail (t i j lo : ℕ) : CertM rα (Cert rα) := do
   let ctx ← read
   let {dimensionLit := dimLit, arrayExpr := A, ..} := ctx.info
   let tailSummand :=
