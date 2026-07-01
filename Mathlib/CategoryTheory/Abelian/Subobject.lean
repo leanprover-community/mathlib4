@@ -98,6 +98,13 @@ def Subobject.sup_isoImage {A : C} (f g : Subobject A) : underlying.obj (f ⊔ g
     Limits.image (biprod.desc f.arrow g.arrow) :=
   IsImage.isoExt (sup_isImage ..) <| Image.isImage _
 
+lemma Subobject.sup_eq_imageSubobject {A : C} (X Y : Subobject A) :
+    X ⊔ Y = imageSubobject (biprod.desc X.arrow Y.arrow) := by
+  refine eq_mk_of_comm (Limits.image.ι (biprod.desc X.arrow Y.arrow)) ?_ ?_
+  · exact (sup_isoImage X Y)
+  · simp only [sup_isoImage_hom]
+    apply ofLEMk_comp
+
 end Sup
 
 noncomputable section Image
@@ -170,39 +177,30 @@ variable {X Y : C} (f : X ⟶ Y)
 @[simp]
 noncomputable
 def Subobject.image {X Y : C} (f : X ⟶ Y) : Subobject X ⥤ Subobject Y where
-  obj X' := abImageSubobject (X'.arrow ≫ f)
-  map := by
-    intro X' X'' h
-    refine homOfLE (le_of_comm (kernelSubobjectMap (Arrow.homMk' ?_ ?_ ?_)) ?_)
-    · exact 𝟙 _
-    · apply cokernel.desc _ (cokernel.π (X''.arrow ≫ f))
-      · simp
-        sorry
-    · simp
-    · simp only [kernelSubobjectMap_arrow, Arrow.homMk'_left]
-      exact Category.comp_id (kernelSubobject (cokernel.π (X'.arrow ≫ f))).arrow
+  obj X' := imageSubobject (X'.arrow ≫ f)
+  map {X' X''} h := by
+    apply homOfLE
+    exact (Eq.le (by simp)).trans (imageSubobject_comp_le (X'.ofLE X'' h.le) (X''.arrow ≫ f))
 
 @[simp]
 noncomputable
 def Subobject.image_map {X Y : C} (f : X ⟶ Y) (X' : Subobject X) :
-    underlying.obj X' ⟶ underlying.obj (abImageSubobject (X'.arrow ≫ f)) :=
-  factorThruAbImageSubobject (X'.arrow ≫ f)
-  --Abelian.coimage.π (X'.arrow ≫ f) ≫ Abelian.coimageImageComparison (X'.arrow ≫ f)
+    underlying.obj X' ⟶ underlying.obj (imageSubobject (X'.arrow ≫ f)) :=
+  factorThruImageSubobject (X'.arrow ≫ f)
 
 @[simp]
 noncomputable
 def Subobject.inverseImage {X Y : C} (f : X ⟶ Y) : Subobject Y ⥤ Subobject X where
   obj Y' := kernelSubobject (f ≫ cokernel.π Y'.arrow)
-  map := sorry
-  map_id := sorry
-  map_comp := sorry
+  map {Y' Y''} h := by
+    apply homOfLE
+    refine mk_le_mk_of_comm ?_ ?_
+    · exact kernel.map (f ≫ cokernel.π Y'.arrow) (f ≫ cokernel.π Y''.arrow) (𝟙 _)
+        (cokernel.map Y'.arrow Y''.arrow (underlying.map h) (𝟙 _) (by simp)) (by simp)
+    · simp
 
-@[simp]
-noncomputable
-def Subobject.inverseImage' {X Y : C} (f : X ⟶ Y) : Subobject Y ⥤ Subobject X := pullback f
-
-def Subobject.inverseImage_inc (Y' : Subobject Y) :
-    kernel f ⟶ kernel (f ≫ cokernel.π Y'.arrow) := by
+def Subobject.inverseImage_inc {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :
+    kernel (f ≫ cokernel.π Y'.arrow) ⟶ underlying.obj Y' := by
   sorry
 
 lemma Subobject.inverseImage_comp {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :

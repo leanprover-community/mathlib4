@@ -362,6 +362,13 @@ theorem imageSubobject_comp_le {X' : C} (h : X' ⟶ X) (f : X ⟶ Y) [HasImage f
     imageSubobject (h ≫ f) ≤ imageSubobject f :=
   Subobject.mk_le_mk_of_comm (image.preComp h f) (by simp)
 
+theorem imageSubobject_epi_comp [HasStrongEpiMonoFactorisations C] {X Y X' : C}
+    (e : X' ⟶ X) (f : X ⟶ Y) [StrongEpi e] [Mono f] :
+    imageSubobject (e ≫ f) = imageSubobject f :=
+  mk_eq_mk_of_comm (image.ι (e ≫ f)) (image.ι f)
+  ((image.isoStrongEpiMono e f rfl).symm ≪≫
+    (image.isoStrongEpiMono (𝟙 _) f (Category.id_comp _))) (by simp)
+
 section
 
 open ZeroObject
