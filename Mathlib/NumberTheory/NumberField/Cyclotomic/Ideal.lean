@@ -126,9 +126,8 @@ theorem ramificationIdx_span_zeta_sub_one :
     ramificationIdx' (span {hζ.toInteger - 1}) ℤ = p ^ k * (p - 1) := by
   have h := isPrime_span_zeta_sub_one p k hζ
   have hp0 : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
-  rw [← ramificationIdx_eq_ramificationIdx' 𝒑 _ hp0,
-    ← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
-    IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,
+  rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
+    IsDedekindDomain.ramificationIdx'_eq_multiplicity 𝒑, map_eq_span_zeta_sub_one_pow p k hζ,
     multiplicity_pow_self (span_zeta_sub_one_ne_bot p k hζ) (isUnit_iff.not.mpr h.ne_top)]
   exact map_ne_bot_of_ne_bot hp0
 
@@ -305,7 +304,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
   have : P.IsMaximal := .of_liesOver_isMaximal P 𝒑
-  rw [← inertiaDeg_eq_inertiaDeg' 𝒑]
   rw [h₃, natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
   · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
   · refine dvd_trans h₂.2.2 ?_
@@ -327,7 +325,7 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  rw [← ramificationIdx_eq_ramificationIdx' 𝒑 P (by simpa using hp.out.ne_zero), h₃]
+  rw [h₃]
   refine multiplicity_eq_of_emultiplicity_eq_some (le_antisymm ?_ ?_)
   · apply emultiplicity_le_one_of_separable
     · exact isUnit_iff_degree_eq_zero.not.mpr (Irreducible.degree_pos h₂.1).ne'
@@ -402,7 +400,7 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 Fₘ) Gal(Fₘ/ℚ),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 Fₚ) Gal(Fₚ/ℚ),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 K) Gal(K/ℚ),
-    ← ncard_primesOver_mul_ncard_primesOver Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₘ),
+    ← ncard_primesOver_mul_ncard_primesOver Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ),
     ramificationIdxIn_eq_of_not_dvd p Fₘ hm, inertiaDegIn_eq_of_prime_pow p k Fₚ,
     ncard_primesOver_of_prime_pow p k Fₚ, one_mul, one_mul, mul_one, mul_assoc, mul_assoc,
     mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero 𝒑 _), ← mul_assoc,
