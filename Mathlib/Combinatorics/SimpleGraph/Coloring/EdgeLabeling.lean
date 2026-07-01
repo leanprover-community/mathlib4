@@ -235,6 +235,7 @@ lemma _root_.SimpleGraph.TopEdgeLabeling.monochromaticOf_iff_ne_imp_get_eq
 
 namespace MonochromaticBetween
 
+@[symm]
 protected theorem symm (hXY : C.MonochromaticBetween X Y k) : C.MonochromaticBetween Y X k := by
   intro y hy x hx h
   rw [get_comm _ _ h]
