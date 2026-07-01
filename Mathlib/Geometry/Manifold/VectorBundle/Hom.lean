@@ -361,10 +361,20 @@ lemma Bundle.Trivialization.ContMDiffAt_symm_const {k}
     [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k
       (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x := by
-  apply ContMDiffAt.clm_bundle_apply_trivial_source
-  · exact e.ContMDiffAt_symm hx
-  · exact contMDiffAt_id
-  · exact contMDiffAt_const
+  have : ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k (fun m : B ↦ e.toPartialHomeomorph.symm ⟨m, u⟩) x := by
+    change ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k
+      (e.toPartialHomeomorph.symm ∘ (fun m : B ↦  (m, u))) x
+    have : CMDiffAt k (fun m : B ↦ (m, u)) x := by
+      refine ContMDiffAt.prodMk ?_ ?_
+      · apply contMDiffAt_id -- Note: apply? never works for such goals
+      · apply contMDiffAt_const
+    apply ContMDiffAt.comp x _ this
+    simp
+    #check contMDiffAt_symm_of_mem_maximalAtlas
+    sorry
+  apply this.congr_of_eventuallyEq
+  filter_upwards [e.open_baseSet.mem_nhds hx] with x' hx'
+  simp [hx', e.mk_symm]
 
 omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
      [ContMDiffVectorBundle 1 F₁ E₁ IB] in
