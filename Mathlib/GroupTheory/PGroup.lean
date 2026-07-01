@@ -50,6 +50,18 @@ theorem of_card_dvd_pow {n : ℕ} (hG : Nat.card G ∣ p ^ n) : IsPGroup p G := 
   refine fun g ↦ ⟨n, ?_⟩
   grw [← orderOf_dvd_iff_pow_eq_one, ← hG, orderOf_dvd_natCard]
 
+theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card_dvd_pow hn⟩
+  rcases eq_or_ne p 0 with rfl | hp
+  · exact ⟨1, by simp⟩
+  refine ⟨Nat.card G, Nat.dvd_pow_self_iff Nat.card_pos.ne' hp |>.mpr fun q hq ↦ ?_⟩
+  have ⟨hqp, hqdvd, _⟩ := Nat.mem_primeFactors.mp hq
+  have ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q (hp := ⟨hqp⟩) hqdvd
+  have ⟨k, hk⟩ := h.exists_orderOf_dvd_pow g
+  exact Nat.mem_primeFactors.mpr ⟨hqp, hqp.dvd_of_dvd_pow <| hg ▸ hk, hp⟩
+
+alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
+
 theorem dvd_orderOf [Fact p.Prime] (hG : IsPGroup p G) {g : G} (hg : g ≠ 1) : p ∣ orderOf g := by
   have ⟨k, hk⟩ := hG.exists_orderOf_eq_pow g
   rw [hk]
@@ -86,18 +98,6 @@ protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup 
 
 theorem of_pow {n : ℕ} (h : IsPGroup (p ^ n) G) : IsPGroup p G :=
   fun g ↦ h g |>.imp' (n * ·) <| by simp [pow_mul]
-
-theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
-  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card_dvd_pow hn⟩
-  rcases eq_or_ne p 0 with rfl | hp
-  · exact ⟨1, by simp⟩
-  refine ⟨Nat.card G, Nat.dvd_pow_self_iff Nat.card_pos.ne' hp |>.mpr fun q hq ↦ ?_⟩
-  have ⟨hqp, hqdvd, _⟩ := Nat.mem_primeFactors.mp hq
-  have ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q (hp := ⟨hqp⟩) hqdvd
-  have ⟨k, hk⟩ := h.exists_orderOf_dvd_pow g
-  exact Nat.mem_primeFactors.mpr ⟨hqp, hqp.dvd_of_dvd_pow <| hg ▸ hk, hp⟩
-
-alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
   simp_rw [isPGroup_iff_card_dvd_pow, Nat.dvd_prime_pow Fact.out]
