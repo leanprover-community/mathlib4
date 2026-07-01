@@ -5,7 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Subsheaf
+public import Mathlib.CategoryTheory.Sites.Subsheaf -- This is redundant but crucial for performance
 public import Mathlib.CategoryTheory.Sites.LocallyInjective
 /-!
 
