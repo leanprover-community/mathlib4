@@ -502,7 +502,8 @@ lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
   have : ContMDiffVectorBundle (k + 1) E (fun (x : M) ↦ TangentSpace% x) I :=
     TangentBundle.contMDiffVectorBundle
   have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k + 1) t (IB := I)
-  have hs' : IsOrthonormalFrameOn I E k (b.orthonormalFrame t) t.baseSet := sorry -- easy, missing API lemma
+  -- easy, missing API lemma
+  have hs' : IsOrthonormalFrameOn I E k (b.orthonormalFrame t) t.baseSet := sorry
   rw [hs'.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
   intro i
   simp_rw [real_inner_comm]
@@ -627,8 +628,9 @@ instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
     apply ContMDiff.clm_bundle_of_apply
     intro τ hτ
     apply step2 0 (fun {Z} hZ ↦ ?_)
-    stop
-    exact contMDiff_leviCivitaConnection_apply 0 hτ (hσ.of_le (by simp)) hZ
+    -- TODO: need a weaker version of step2 here!
+    -- apply contMDiff_leviCivitaConnection_apply
+    sorry
 
 section
 
@@ -642,11 +644,14 @@ instance leviCivitaConnection_bar [FiniteDimensional ℝ E] :
   contMDiff := by
     refine ⟨fun {σ} hσ ↦ ?_⟩
     rw [contMDiffOn_univ] at hσ ⊢
-    stop -- it seems this used to work
+    intro x
+    have : ContMDiffVectorBundle (↑k + 1) E (TangentSpace (M := M) I) I := sorry
+    have : IsManifold I (↑k + 1) M := sorry
     apply ContMDiff.clm_bundle_of_apply
     intro τ hτ
     apply step2 k (fun {Z} hZ ↦ ?_)
-    exact contMDiff_leviCivitaConnection_apply k hτ (hσ.of_le (by simp)) hZ
+    sorry -- same issue as above, `leviCivitaConnection_apply` is too global!
+    -- exact contMDiff_leviCivitaConnection_apply k hτ (hσ.of_le (by simp)) hZ
 
 end
 

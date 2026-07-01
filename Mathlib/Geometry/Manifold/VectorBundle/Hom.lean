@@ -400,10 +400,10 @@ lemma Bundle.Trivialization.ContMDiffWithinAt_apply {k}
     simp [hx']
   · simp [hx]
 
-
 -- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b` is almost equivalent
 -- to `CMDiffAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
-omit [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
 lemma ContMDiff.clm_bundle_of_apply {k}
     [FiniteDimensional 𝕜 EB]
     [IsManifold IB k B]
