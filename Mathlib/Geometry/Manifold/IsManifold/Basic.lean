@@ -455,6 +455,22 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
   rintro x s ⟨-, hsc⟩
   exact (hsc.inter_right I.isClosed_range).image I.continuous_symm
 
+def toOpenPartialHomeomorph (I : ModelWithCorners 𝕜 E H) {s : Set E} (hs₁ : IsOpen s)
+    (hs₂ : s ⊆ I.target) :
+    OpenPartialHomeomorph H E where
+  toFun := I.toFun
+  invFun := I.invFun
+  source := I.toFun ⁻¹' s
+  target := I.target ∩ s
+  map_source' := by simp
+  map_target' := by simp
+  left_inv' := by simp
+  right_inv' := by simp
+  open_source := I.continuous_toFun.isOpen_preimage _ hs₁
+  open_target := (right_eq_inter.mpr hs₂) ▸ hs₁
+  continuousOn_toFun := I.continuous_toFun.continuousOn
+  continuousOn_invFun := I.continuous_invFun.continuousOn
+
 open TopologicalSpace
 
 protected theorem secondCountableTopology [SecondCountableTopology E] (I : ModelWithCorners 𝕜 E H) :

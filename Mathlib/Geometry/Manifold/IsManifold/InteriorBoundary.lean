@@ -444,24 +444,6 @@ lemma Diffeomorph.boundarylessManifold_iff (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, 
     BoundarylessManifold I M ↔ BoundarylessManifold I' N :=
   ⟨fun _ ↦ Φ.boundarylessManifold hn, fun _ ↦ Φ.symm.boundarylessManifold hn⟩
 
--- not really sure what to call this/where to put it
-def openPartialHomeomorph_of_isInteriorPoint {p : M} (hp : I.IsInteriorPoint p) :
-    OpenPartialHomeomorph H E where
-  toFun := I.toFun
-  invFun := I.invFun
-  source := I.toFun ⁻¹' (Classical.choose hp)
-  target := I.target ∩ (Classical.choose hp)
-  map_source' := by simp
-  map_target' := by simp
-  left_inv' := by simp
-  right_inv' := by simp
-  open_source := I.continuous_toFun.isOpen_preimage _ (Classical.choose_spec hp).1.1
-  open_target := by
-    rw [target_eq, ← right_eq_inter.mpr (Classical.choose_spec hp).1.2]
-    exact (Classical.choose_spec hp).1.1
-  continuousOn_toFun := I.continuous_toFun.continuousOn
-  continuousOn_invFun := I.continuous_invFun.continuousOn
-
 end Diffeomorph
 
 namespace ModelWithCorners

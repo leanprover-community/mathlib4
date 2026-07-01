@@ -51,39 +51,42 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 on which it becomes a `PartialDiffeomorph` (viewing `E` as a manifold modeled on itself trivially)
 -/
 def diffeoExtChartAt [IsManifold I n M] {p : M} (hp : I.IsInteriorPoint p) :
-    PartialDiffeomorph I 𝓘(𝕜, E) M E n where
-  toPartialEquiv :=
-    ((chartAt H p).trans (openPartialHomeomorph_of_isInteriorPoint hp)).toPartialEquiv
-  open_source := ((chartAt H p).trans (openPartialHomeomorph_of_isInteriorPoint hp)).open_source
-  open_target := ((chartAt H p).trans (openPartialHomeomorph_of_isInteriorPoint hp)).open_target
-  contMDiffOn_toFun := by
-    set homeo := (chartAt H p).trans (openPartialHomeomorph_of_isInteriorPoint hp)
-    -- this is just the identity in coordinates
-    have h₁: homeo.source ⊆ (chartAt H p).source := by simp [homeo]
-    have h₂ : MapsTo homeo homeo.source (chartAt E (homeo p)).source := by simp [MapsTo]
-    refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr ⟨homeo.continuousOn_toFun, ?_⟩
-    set f := homeo ∘ (chartAt H p).symm ∘ I.symm
-    set s := (fun a ↦ I ((chartAt H p) a)) '' homeo.source
-    change ContDiffOn 𝕜 n f s
-    have : ∀ e ∈ s, f e = e := by
-      rintro e ⟨w, ⟨hw, _⟩, rfl⟩
-      simp [f, homeo, openPartialHomeomorph_of_isInteriorPoint,
-        (chartAt H p).right_inv ((chartAt H p).map_source hw)]
-    exact contDiffOn_id.congr this
-  contMDiffOn_invFun := by
-    set homeo := (chartAt H p).trans (openPartialHomeomorph_of_isInteriorPoint hp)
-    -- this is also just the identity in coordinates
-    have h₁ : homeo.target ⊆ (chartAt E (homeo p)).source := by simp [homeo]
-    have h₂ : MapsTo homeo.invFun homeo.target  (chartAt H p).source :=
-      fun _ he ↦ (homeo.map_target he).1
-    refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr ⟨homeo.continuousOn_invFun, ?_⟩
-    set f := (↑I ∘ ↑(chartAt H p)) ∘ ↑homeo.symm
-    suffices ContDiffOn 𝕜 n f homeo.target by simpa
-    have : ∀ e ∈ homeo.target, f e = e := by
-      intro e he
-      simp [f, homeo, openPartialHomeomorph_of_isInteriorPoint] at he ⊢
-      simp [(chartAt H p).right_inv he.2, I.right_inv he.1.1]
-    exact contDiffOn_id.congr this
+    PartialDiffeomorph I 𝓘(𝕜, E) M E n := by
+  let s : Set E := Classical.choose hp
+  have hs₁ : IsOpen s := (Classical.choose_spec hp).1.1
+  have hs₂ : s ⊆ I.target := (I.range_eq_target ▸ (Classical.choose_spec hp).1.2)
+  let homeo := (chartAt H p).trans (I.toOpenPartialHomeomorph hs₁ hs₂)
+  exact {
+    toPartialEquiv := homeo.toPartialEquiv
+    open_source := homeo.open_source
+    open_target := homeo.open_target
+    contMDiffOn_toFun := by
+      -- this is just the identity in coordinates
+      have h₁: homeo.source ⊆ (chartAt H p).source := by simp [homeo]
+      have h₂ : MapsTo homeo homeo.source (chartAt E (homeo p)).source := by simp [MapsTo]
+      refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr ⟨homeo.continuousOn_toFun, ?_⟩
+      let f := homeo ∘ (chartAt H p).symm ∘ I.symm
+      let s := (fun a ↦ I ((chartAt H p) a)) '' homeo.source
+      change ContDiffOn 𝕜 n f s
+      have : ∀ e ∈ s, f e = e := by
+        rintro e ⟨w, ⟨hw, _⟩, rfl⟩
+        simp [f, homeo, ModelWithCorners.toOpenPartialHomeomorph,
+          (chartAt H p).right_inv ((chartAt H p).map_source hw)]
+      exact contDiffOn_id.congr this
+    contMDiffOn_invFun := by
+      -- this is also just the identity in coordinates
+      have h₁ : homeo.target ⊆ (chartAt E (homeo p)).source := by simp [homeo]
+      have h₂ : MapsTo homeo.invFun homeo.target  (chartAt H p).source :=
+        fun _ he ↦ (homeo.map_target he).1
+      refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr ⟨homeo.continuousOn_invFun, ?_⟩
+      let f := I ∘ (chartAt H p) ∘ homeo.symm
+      suffices ContDiffOn 𝕜 n f homeo.target by simpa
+      have : ∀ e ∈ homeo.target, f e = e := by
+        intro e he
+        simp [f, homeo, ModelWithCorners.toOpenPartialHomeomorph] at he ⊢
+        simp [(chartAt H p).right_inv he.2, I.right_inv he.1.1]
+      exact contDiffOn_id.congr this
+  }
 
 lemma eqOn_diffeoExtChartAt_extChartAt [IsManifold I n M] {p : M} (hp : I.IsInteriorPoint p) :
     EqOn (diffeoExtChartAt n hp) (extChartAt I p) (diffeoExtChartAt n hp).source :=
@@ -131,13 +134,13 @@ but there is not currently a normed vector space version of `PartialDiffeomorph`
 noncomputable def toPartialDiffeomorph : PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n := by
   have U_nhd : U ∈ nhds p := hU.mem_nhds hpU
   -- define `V ⊆ E₁`, the open set where `g'` is a continuous linear equivalence
-  set V := (fderiv 𝕜 f) ⁻¹' (range ContinuousLinearEquiv.toContinuousLinearMap)
+  let V := (fderiv 𝕜 f) ⁻¹' (range ContinuousLinearEquiv.toContinuousLinearMap)
   have hUV: IsOpen (U ∩ V) :=
     (hg.continuousOn_fderiv_of_isOpen hU (ENat.one_le_iff_ne_zero_withTop.mpr hn)
-    ).isOpen_inter_preimage hU (ContinuousLinearEquiv.isOpen)
+    ).isOpen_inter_preimage hU ContinuousLinearEquiv.isOpen
   /- obtain an `OpenPartialHomeomorph E → F` using the standard inverse function theorem. We must
   restrict to `U ∩ V` so that we can later show ContDiff of the forward and inverse function -/
-  set homeo := ((hg.contDiffAt U_nhd).toOpenPartialHomeomorph f hg' hn).restrOpen _ hUV
+  let homeo := ((hg.contDiffAt U_nhd).toOpenPartialHomeomorph f hg' hn).restrOpen _ hUV
   have homeo_contdiff : ContDiffOn 𝕜 n homeo.toFun homeo.source := by
     intro x hx
     have : homeo.source ⊆ U := subset_trans inter_subset_right inter_subset_left
@@ -193,16 +196,13 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv {p : M₁} (hp : I₁.IsInteri
   have hfp : I₂.IsInteriorPoint (f p) :=
     mDiffAt_f_p.isInteriorPoint_of_surjective_mfderiv (LinearMap.range_eq_top.mp hf'.2) hp
   -- let `g` be the coordinate representation of `f` and obtain coordinate charts
-  set g : E₁ → E₂ := writtenInExtChartAt I₁ I₂ p f
-  set φ₀ : PartialEquiv M₁ E₁ := extChartAt I₁ p
-  set ψ₀ : PartialEquiv M₂ E₂ := extChartAt I₂ (f p)
-  set φ₁ : PartialDiffeomorph I₁ 𝓘(𝕜, E₁) M₁ E₁ n := diffeoExtChartAt n hp
-  set ψ₁ : PartialDiffeomorph I₂ 𝓘(𝕜, E₂) M₂ E₂ n := diffeoExtChartAt n hfp
+  let g : E₁ → E₂ := writtenInExtChartAt I₁ I₂ p f
+  let φ₀ : PartialEquiv M₁ E₁ := extChartAt I₁ p
+  let ψ₀ : PartialEquiv M₂ E₂ := extChartAt I₂ (f p)
+  let φ₁ : PartialDiffeomorph I₁ 𝓘(𝕜, E₁) M₁ E₁ n := diffeoExtChartAt n hp
+  let ψ₁ : PartialDiffeomorph I₂ 𝓘(𝕜, E₂) M₂ E₂ n := diffeoExtChartAt n hfp
   -- define `U ⊆ E₁`, an open set where we can easily show that `g` is ContDiff
-  set U : Set E₁ := φ₁ '' (φ₁.source ∩ (A ∩ f ⁻¹' ψ₁.source))
-  have U_open : IsOpen U := by
-    refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
-    exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
+  let U : Set E₁ := φ₁ '' (φ₁.source ∩ (A ∩ f ⁻¹' ψ₁.source))
   have hg : ContDiffOn 𝕜 n g U := by
     refine ((contMDiffOn_iff.mp hf).2 p (f p)).mono ?_
     rintro e ⟨m, ⟨hm₁, hm₂, hm₃⟩, rfl⟩
@@ -211,9 +211,11 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv {p : M₁} (hp : I₁.IsInteri
     rw [eqOn_diffeoExtChartAt_extChartAt n hp hm₁,
       φ₀.left_inv (diffeoExtChartAt_source_subset n hp hm₁)]
     exact ⟨hm₂, diffeoExtChartAt_source_subset n hfp hm₃⟩
+  have U_open : IsOpen U := by
+    refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
+    exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
   have φ₀p_mem_U : φ₀ p ∈ U := mem_image_of_mem _ ⟨mem_diffeoExtChartAt_source n hp, hpA,
-    mem_diffeoExtChartAt_source (n := n) hfp⟩
-  have U_nhd : U ∈ nhds (φ₀ p) := mem_nhds_iff.mpr ⟨U, subset_refl _, U_open, φ₀p_mem_U⟩
+    mem_diffeoExtChartAt_source n hfp⟩
   -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence
   have ⟨g', hg'⟩ : ∃ g' : E₁ ≃L[𝕜] E₂, HasFDerivAt g (g' : E₁ →L[𝕜] E₂) (φ₀ p) := by
     rw [mfderiv, if_pos mDiffAt_f_p] at hf'
@@ -222,8 +224,8 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv {p : M₁} (hp : I₁.IsInteri
       (range_mem_nhds_isInteriorPoint hp)
   /- obtain partial diffeomorphism in coordinates and compose with the charts to obtain a partial
   diffeomorphism `M₁ → M₂` -/
-  set coord_diffeo := hg.toPartialDiffeomorph U_open φ₀p_mem_U  hg' hn
-  set diffeo := (φ₁.trans coord_diffeo).trans ψ₁.symm
+  let coord_diffeo := hg.toPartialDiffeomorph U_open φ₀p_mem_U  hg' hn
+  let diffeo := (φ₁.trans coord_diffeo).trans ψ₁.symm
   use diffeo
   constructor
   · refine ⟨⟨mem_diffeoExtChartAt_source n hp,
