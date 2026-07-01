@@ -650,7 +650,7 @@ lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
     exact r
   have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
-  have : IsManifold I (↑k + 1 + 1) M := by sorry -- simpa
+  have : IsManifold I (↑k + 1 + 1) M := by rwa [show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]
   have : ContMDiffVectorBundle (k + 1) E (fun (x : M) ↦ TangentSpace% x) I :=
     TangentBundle.contMDiffVectorBundle
   have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k + 1) t (IB := I)
