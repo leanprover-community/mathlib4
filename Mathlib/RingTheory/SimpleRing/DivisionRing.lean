@@ -50,11 +50,9 @@ lemma isSimpleModule_iff_eq_zero_or_injective (R : Type u) (M : Type v) [Ring R]
   (fun h ↦ Or.inr <| by simpa [Submodule.ext_iff, LinearMap.ext_iff] using h)
   (fun h ↦ Or.inl <| eq_bot_iff.2 fun x hx ↦ h (by simp [hx]))⟩⟩
 
-variable (K : Type u) [Field K]
-
 lemma IsSimpleModule.obj_of_isEquivalence
-    {R S : Type*} [Ring R] [Ring S] (e : ModuleCat R ≌ ModuleCat S)
-    (M : ModuleCat R) [IsSimpleModule R M] :
-    IsSimpleModule S (e.functor.obj M) := by
+    {R S : Type*} [Ring R] [Ring S] (e : ModuleCat R ⥤ ModuleCat S)
+    [e.IsEquivalence] (M : ModuleCat R) [IsSimpleModule R M] :
+    IsSimpleModule S (e.obj M) := by
   rw [← simple_iff_isSimpleModule'] at *
-  exact (equiv_simple_iff e M).1 inferInstance
+  exact simple_map e M

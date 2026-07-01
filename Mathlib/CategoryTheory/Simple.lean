@@ -58,22 +58,30 @@ class Simple (X : C) : Prop where
 theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w : f ≠ 0) : IsIso f :=
   (Simple.mono_isIso_iff_nonzero f).mpr w
 
-theorem equiv_simple_iff {D : Type*} [Category* D] [HasZeroMorphisms D] (e : C ≌ D) (X : C) :
-    Simple X ↔ Simple (e.functor.obj X) := by
-  constructor
-  · refine fun _ ↦ .mk fun {Y} f hf => ?_
-    have hiso : IsIso f ↔ IsIso (e.functor.preimage (e.counit.app Y ≫ f)) := by
-      rw [← isIso_iff_of_reflects_iso _ e.functor, e.functor.map_preimage _]
-      exact (isIso_comp_left_iff (e.counit.app Y) f).symm
-    have : Mono (e.functor.preimage (e.counit.app Y ≫ f)) := e.functor.mono_of_mono_map <| by
-      rw [e.functor.map_preimage (e.counit.app Y ≫ f)]
-      exact @mono_comp _ _ _ _ _ (e.counit.app Y) _ f hf
-    rw [hiso, Simple.mono_isIso_iff_nonzero (e.functor.preimage (e.counit.app Y ≫ f))]
-    simpa [not_iff_not, ← e.functor.map_eq_zero_iff] using! epi_comp_eq_zero_iff (e.counit.app Y)
-  · refine fun _ ↦ .mk fun {Y} g _ => ?_
-    haveI : Mono (e.functor.map g) := e.functor.map_mono g
-    rw [← isIso_iff_of_reflects_iso g e.functor, Simple.mono_isIso_iff_nonzero (e.functor.map g),
-      ne_eq, ne_eq, not_iff_not, e.functor.map_eq_zero_iff]
+theorem Functor.preserves_simple {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.PreservesMonomorphisms] [F.PreservesZeroMorphisms] [F.ReflectsIsomorphisms] [F.Faithful]
+    (X : C) [Simple (F.obj X)] : Simple X :=
+  .mk fun {Y} g _ => by
+    rw [← isIso_iff_of_reflects_iso g F, Simple.mono_isIso_iff_nonzero (F.map g),
+      ne_eq, ne_eq, not_iff_not, F.map_eq_zero_iff]
+
+theorem simple_map {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.IsEquivalence] (X : C) [Simple X] : Simple (F.obj X) := by
+  let e := F.asEquivalence
+  refine .mk fun {Y} f hf => ?_
+  have hiso : IsIso f ↔ IsIso (e.functor.preimage (e.counit.app Y ≫ f)) := by
+    rw [← isIso_iff_of_reflects_iso _ e.functor, e.functor.map_preimage _]
+    exact (isIso_comp_left_iff (e.counit.app Y) f).symm
+  have : Mono (e.functor.preimage (e.counit.app Y ≫ f)) := e.functor.mono_of_mono_map <| by
+    rw [e.functor.map_preimage (e.counit.app Y ≫ f)]
+    exact @mono_comp _ _ _ _ _ (e.counit.app Y) _ f hf
+  rw [hiso, Simple.mono_isIso_iff_nonzero (e.functor.preimage (e.counit.app Y ≫ f))]
+  simpa [not_iff_not, ← e.functor.map_eq_zero_iff] using! epi_comp_eq_zero_iff (e.counit.app Y)
+
+theorem simple_iff_functor {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.IsEquivalence] (X : C) :
+    Simple X ↔ Simple (F.obj X) :=
+  ⟨fun _ => simple_map F X, fun _ => Functor.preserves_simple F X⟩
 
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
   { mono_isIso_iff_nonzero := fun f m => by
