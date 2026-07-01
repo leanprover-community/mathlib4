@@ -5955,8 +5955,12 @@ public import Mathlib.Order.Category.LinOrd
 public import Mathlib.Order.Category.NonemptyFinLinOrd
 public import Mathlib.Order.Category.OmegaCompletePartialOrder
 public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Category.PartOrd.CartesianClosed
+public import Mathlib.Order.Category.PartOrd.Distributive
 public import Mathlib.Order.Category.PartOrdEmb
 public import Mathlib.Order.Category.Preord
+public import Mathlib.Order.Category.Preord.CartesianClosed
+public import Mathlib.Order.Category.Preord.Distributive
 public import Mathlib.Order.Category.Semilat
 public import Mathlib.Order.Circular
 public import Mathlib.Order.Circular.ZMod
