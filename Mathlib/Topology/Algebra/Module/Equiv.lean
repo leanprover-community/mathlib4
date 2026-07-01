@@ -667,7 +667,7 @@ theorem equivOfInverse_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ 
     equivOfInverse f₁ f₂ h₁ h₂ x = f₁ x :=
   rfl
 
-@[simp, deprecated ofContinuousLinearMap_symm (since := "2026-07-01")]
+@[simp, deprecated symm_ofContinuousLinearMap (since := "2026-07-01")]
 theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
   rfl
