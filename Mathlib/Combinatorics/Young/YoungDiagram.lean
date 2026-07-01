@@ -504,6 +504,7 @@ def ofPartition {n : ℕ} (p : Nat.Partition n) : YoungDiagram :=
     (p.parts.sort (· ≥ ·))
     (Multiset.pairwise_sort p.parts (· ≥ ·)).sortedGE
 
+@[simp]
 theorem rowLens_ofPartition_eq_sort_parts {n : ℕ} (p : Nat.Partition n) :
     (ofPartition p).rowLens = p.parts.sort (· ≥ ·) := by
   grind [ofPartition, rowLens_ofRowLens_eq_self, Multiset.mem_sort]
