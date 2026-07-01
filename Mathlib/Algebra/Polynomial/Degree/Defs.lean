@@ -73,11 +73,11 @@ theorem Monic.leadingCoeff {p : R[X]} (hp : p.Monic) : leadingCoeff p = 1 :=
 theorem Monic.coeff_natDegree {p : R[X]} (hp : p.Monic) : p.coeff p.natDegree = 1 :=
   hp
 
-@[simp]
+@[simp, grind =]
 theorem degree_zero : degree (0 : R[X]) = ⊥ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem natDegree_zero : natDegree (0 : R[X]) = 0 :=
   rfl
 
@@ -161,18 +161,18 @@ theorem degree_C_lt : degree (C a) < 1 :=
 
 theorem degree_one_le : degree (1 : R[X]) ≤ (0 : WithBot ℕ) := by rw [← C_1]; exact degree_C_le
 
-@[simp]
+@[simp, grind =]
 theorem natDegree_C (a : R) : natDegree (C a) = 0 := by
   by_cases ha : a = 0
   · have : C a = 0 := by rw [ha, C_0]
     rw [natDegree, degree_eq_bot.2 this, WithBot.unbotD_bot]
   · rw [natDegree, degree_C ha, WithBot.unbotD_zero]
 
-@[simp]
+@[simp, grind =]
 theorem natDegree_one : natDegree (1 : R[X]) = 0 :=
   natDegree_C 1
 
-@[simp]
+@[simp, grind =]
 theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
   simp only [← C_eq_natCast, natDegree_C]
 
