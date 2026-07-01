@@ -140,9 +140,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
       by_cases htriv : Y = ⊤
       · have hℓ : ℓ = 0 := by
           have h' := LinearMap.ker_eq_top.mp htriv
-          rw [← coe_zero] at h'
-          apply coe_injective
-          exact h'
+          norm_cast at h'
         exact ⟨0, by simp [hℓ]⟩
       · rw [← Submodule.orthogonal_eq_bot_iff] at htriv
         change Yᗮ ≠ ⊥ at htriv
@@ -204,8 +202,7 @@ theorem continuousLinearMapOfBilin_zero : (0 : E →L⋆[𝕜] E →L[𝕜] 𝕜
 
 @[simp]
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
-  rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
+  simp [continuousLinearMapOfBilin]
 
 theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
     f = B♯ v := by
@@ -221,7 +218,7 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
   continuous_uncurry := continuous_inner
   bijective_left := (toDual ℝ E).bijective
   bijective_right := by
-    convert (toDual ℝ E).bijective
+    convert! (toDual ℝ E).bijective
     ext y
     simp
 

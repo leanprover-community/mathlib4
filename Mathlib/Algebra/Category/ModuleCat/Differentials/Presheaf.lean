@@ -54,13 +54,14 @@ variable {S : Cᵒᵖ ⥤ CommRingCat.{u}} {F : C ⥤ D} {G : D ⥤ E}
   (M N : PresheafOfModules.{v} (R ⋙ forget₂ _ _))
   (φ : S ⟶ F.op ⋙ R) (φ' : S' ⟶ R)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a morphism of presheaves of commutative rings `φ : S ⟶ F.op ⋙ R`,
 this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`. -/
 @[ext]
 structure Derivation where
   /-- the underlying additive map `R.obj X →+ M.obj X` of a derivation -/
   d {X : Dᵒᵖ} : R.obj X →+ M.obj X
-  d_mul {X : Dᵒᵖ} (a b : R.obj X) : d (a * b) = a • d b + b • d a := by cat_disch
+  d_mul {X : Dᵒᵖ} (a b : R.obj X) : dsimp% d (a * b) = a • d b + b • d a := by cat_disch
   d_map {X Y : Dᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
     d (R.map f x) = M.map f (d x) := by cat_disch
   d_app {X : Cᵒᵖ} (a : S.obj X) :
@@ -73,39 +74,43 @@ attribute [simp] d_mul d_map d_app
 
 section AddCommGroup
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Zero (M.Derivation φ) where
   zero :=
     { d := 0
-      d_map := sorry }
+      d_map f _ := by simp [dsimp% (M.map f).hom.map_zero] }
 
 @[simp] lemma zero_d_apply {X : Dᵒᵖ} (x : R.obj X) :
     (0 : M.Derivation φ).d x = 0 := rfl
 
 variable {M φ}
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Neg (M.Derivation φ) where
   neg d :=
     { d := -d.d
-      d_mul := fun a b ↦ by dsimp; simp only [d_mul, smul_neg]; abel
-      d_map := sorry }
+      d_mul a b := by dsimp; simp only [d_mul, smul_neg]; abel
+      d_map f _ := by simp [dsimp% (M.map f).hom.map_neg] }
 
 @[simp] lemma neg_d_apply (d : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
     (-d).d x = -d.d x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Add (M.Derivation φ) where
   add d₁ d₂ :=
     { d := d₁.d + d₂.d
       d_mul := by intros; dsimp; simp only [d_mul, smul_add]; abel
-      d_map := sorry }
+      d_map f _ := by simp [dsimp% (M.map f).hom.map_add] }
 
 @[simp] lemma add_d_apply (d d' : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
     (d + d').d x = d.d x + d'.d x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Sub (M.Derivation φ) where
   sub d₁ d₂ :=
     { d := d₁.d - d₂.d
       d_mul := by intros; dsimp; simp only [d_mul, smul_sub]; abel
-      d_map := by sorry } --simp }
+      d_map f _ := by simp [dsimp% (M.map f).hom.map_sub] }
 
 @[simp] lemma sub_d_apply (d d' : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
     (d - d').d x = d.d x - d'.d x := rfl
@@ -149,6 +154,8 @@ lemma d_ulift_int_eq_zero (X : Dᵒᵖ) (f : CommRingCat.of (ULift.{u} ℤ) ⟶ 
     (CommRingCat.ofHom ((Int.castRingHom (R.obj X)).comp ULift.ringEquiv.toRingHom))
   apply d_int_eq_zero
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The postcomposition of a derivation by a morphism of presheaves of modules. -/
 @[simps! d_apply]
 def postcomp (f : M ⟶ N) : N.Derivation φ where
@@ -275,7 +282,7 @@ def ofCorepresentableBy : M.Derivation φ := h.homEquiv (𝟙 _)
 
 lemma ofCorepresentableBy_postcomp {M' : PresheafOfModules.{v} (R ⋙ forget₂ _ _)} (f : M ⟶ M') :
     (ofCorepresentableBy h).postcomp f = h.homEquiv f := by
-  simpa using (h.homEquiv_comp f (𝟙 _)).symm
+  simpa using! (h.homEquiv_comp f (𝟙 _)).symm
 
 def universalOfCorepresentableBy : (ofCorepresentableBy h).Universal where
   desc d := h.homEquiv.symm d
@@ -283,7 +290,7 @@ def universalOfCorepresentableBy : (ofCorepresentableBy h).Universal where
     rw [ofCorepresentableBy_postcomp]
     apply Equiv.apply_symm_apply
   postcomp_injective H :=
-    h.homEquiv.injective (by simpa only [ofCorepresentableBy_postcomp] using H)
+    h.homEquiv.injective (by simpa only [ofCorepresentableBy_postcomp] using! H)
 
 end Derivation
 
@@ -313,6 +320,7 @@ section
 
 variable (d : ∀ (X : Dᵒᵖ), (M.obj X).Derivation (φ'.app X))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism of presheaves of commutative rings `φ'`, this is the
 in derivation `M.Derivation' φ'` that is given by a compatible family of derivations
@@ -345,6 +353,7 @@ end Derivation'
 
 namespace DifferentialsConstruction
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf of relative differentials of a morphism of presheaves of
 commutative rings. -/
@@ -374,6 +383,7 @@ noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' :=
   Derivation'.mk (fun X ↦ CommRingCat.KaehlerDifferential.D (φ'.app X))
     (fun _ _ f x ↦ (relativeDifferentials'_map_d φ' f x).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The derivation `Derivation' φ'` is universal. -/
 noncomputable def isUniversal' : (derivation' φ').Universal :=
@@ -427,6 +437,7 @@ local notation "adjunctionψ" =>
 
 variable (dφψ : P.Derivation φψ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 protected noncomputable def pushforward : ((pushforwardψ).obj P).Derivation φ where
   d {X} := AddMonoidHom.mk' (fun a ↦ dφψ.d (ψ.app _ a)) (fun a b ↦ by
@@ -505,6 +516,7 @@ lemma π_homEquivInvFun (d : M'.Derivation ψ) :
     c.π ≫ homEquivInvFun hc hdφψ d = hdφψ.desc (Derivation.induced fac d) :=
   (CokernelCofork.IsColimit.desc' _ _ _).2
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homEquiv_left_inv (f : c.pt ⟶ M') :
     homEquivInvFun hc hdφψ (homEquivToFun f) = f := by
@@ -554,12 +566,13 @@ lemma hasDifferentials_of_tower
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 def absoluteDerivationEquiv
     (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R)
     {M : PresheafOfModules.{u} (R ⋙ forget₂ _ _)} :
     M.Derivation φ ≃ M.Derivation (F := 𝟭 D)
       (S := (Functor.const Dᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ))) (R := R)
-      { app := fun X ↦ CommRingCat.isInitial.{u}.to _ } where
+      { app X := CommRingCat.isInitial.{u}.to _ } where
   toFun d :=
     { d := d.d
       d_mul := by simp
@@ -574,12 +587,13 @@ def absoluteDerivationEquiv
   left_inv _ := rfl
   right_inv _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 def absoluteDerivationUniversalEquiv
     (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R)
     (M : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
     (d : M.Derivation (F := 𝟭 D)
       (S := (Functor.const Dᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ))) (R := R)
-      { app := fun X ↦ CommRingCat.isInitial.{u}.to _ }) :
+      { app X := CommRingCat.isInitial.{u}.to _ }) :
     d.Universal ≃ ((absoluteDerivationEquiv φ).symm d).Universal where
   toFun hd :=
     { desc := fun d' ↦ hd.desc (absoluteDerivationEquiv φ d')
@@ -601,6 +615,7 @@ instance hasAbsoluteDifferentials
     HasDifferentials φ :=
   ((absoluteDerivationUniversalEquiv φ _ _) (universalUniversalDerivation _)).hasDifferentials
 
+set_option backward.defeqAttrib.useBackward true in
 instance hasDifferentials
     [(pushforward.{u} (F := F) (R := R ⋙ forget₂ _ _)
       (whiskerRight φ (forget₂ _ RingCat))).IsRightAdjoint] : HasDifferentials φ := by

@@ -53,6 +53,14 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
+theorem finrank_le_iff_rank_le [FiniteDimensional K V] {n : ℕ} :
+    finrank K V ≤ n ↔ Module.rank K V ≤ n := by
+  simp [← Cardinal.toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K V), finrank]
+
+theorem finrank_lt_iff_rank_lt [FiniteDimensional K V] {n : ℕ} :
+    finrank K V < n ↔ Module.rank K V < n := by
+  simp [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0 (rank_lt_aleph0 K V), finrank]
+
 theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [FiniteDimensional K V]
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
@@ -658,3 +666,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 end End
 
 end Module
+
+theorem AlgHom.bijective {K S : Type*} [Field K] [Ring S] [IsSimpleRing S]
+    [Algebra K S] [FiniteDimensional K S] (f : S →ₐ[K] S) : Function.Bijective f :=
+  ⟨f.toRingHom.injective, f.toLinearMap.injective_iff_surjective.mp f.toRingHom.injective⟩

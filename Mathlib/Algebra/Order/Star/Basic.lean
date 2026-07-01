@@ -29,8 +29,8 @@ rather the entire `≤` relation with `StarOrderedRing.le_iff`. However, notice 
 `NonUnitalRing`, these are equivalent (see `StarOrderedRing.nonneg_iff` and
 `StarOrderedRing.of_nonneg_iff`).
 
-It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMonoid` it is often
-*not* an `OrderedSemiring`.
+It is important to note that while a `StarOrderedRing` often satisfies `IsOrderedAddMonoid`,
+it usually does *not* satisfy `IsOrderedRing`.
 
 ## TODO
 
@@ -80,6 +80,24 @@ class StarOrderedRing (R : Type*) [NonUnitalSemiring R] [PartialOrder R] [StarRi
   /-- characterization of the order in terms of the `StarRing` structure. -/
   le_iff :
     ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
+
+/-- A class to encode that self-adjoint elements may be expressed as the
+difference of nonnegative elements. This is satisfied by any type with a
+`NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint` instance.
+However, it can also be satisfied by continuous linear functionals equipped
+with the intrinsic star operation.
+
+This type class can be used to guarantee `PositiveLinearMap` is a `StarHomClass`. -/
+class SelfAdjointDecompose (R : Type*) [AddGroup R] [Star R]
+    [PartialOrder R] where
+  /-- Every self-adjoint element is the difference of nonnegative elements. -/
+  exists_nonneg_sub_nonneg {a : R} (ha : IsSelfAdjoint a) :
+    ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c
+
+lemma IsSelfAdjoint.exists_nonneg_sub_nonneg {R : Type*} [AddGroup R] [Star R]
+    [PartialOrder R] [SelfAdjointDecompose R] {a : R} (ha : IsSelfAdjoint a) :
+    ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c :=
+  SelfAdjointDecompose.exists_nonneg_sub_nonneg ha
 
 namespace StarOrderedRing
 section NonUnitalSemiring
@@ -171,7 +189,7 @@ section NonUnitalSemiring
 
 variable [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
-lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
+lemma IsSelfAdjoint.of_ge {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
   rw [StarOrderedRing.le_iff] at h
   obtain ⟨d, hd, rfl⟩ := h
   rw [IsSelfAdjoint, star_add, hx.star_eq]
@@ -180,9 +198,11 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   rintro - ⟨s, rfl⟩
   simp
 
+@[deprecated (since := "2026-06-12")] alias IsSelfAdjoint.mono := IsSelfAdjoint.of_ge
+
 @[aesop 10% apply, grind ←]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
-  .mono hx <| .zero R
+  .of_ge hx <| .zero R
 
 /-- An alias of `IsSelfAdjoint.of_nonneg` for use with dot notation. -/
 alias LE.le.isSelfAdjoint := IsSelfAdjoint.of_nonneg
@@ -204,6 +224,7 @@ protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) :
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
 /-- A star projection is non-negative in a star-ordered ring. -/
+@[grind →, aesop safe forward (rule_sets := [CStarAlgebra])]
 theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
   hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
 
@@ -213,7 +234,7 @@ theorem star_left_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c
   refine AddSubmonoid.closure_induction (fun x hx => ?_)
     (by rw [mul_zero, zero_mul]) (fun x y _ _ hx hy => ?_) ha
   · obtain ⟨x, rfl⟩ := hx
-    convert star_mul_self_nonneg (x * c) using 1
+    convert! star_mul_self_nonneg (x * c) using 1
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
   · calc
       0 ≤ star c * x * c + 0 := by rw [add_zero]; exact hx
@@ -315,6 +336,19 @@ theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * st
   simpa using star_mul_self_pos hx.star
 
 end NonUnitalSemiring
+
+section NonUnitalRing
+
+variable [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+
+lemma IsSelfAdjoint.iff_of_le {a b : R} (hab : a ≤ b) :
+    IsSelfAdjoint a ↔ IsSelfAdjoint b := by
+  replace hab := (sub_nonneg.mpr hab).isSelfAdjoint
+  aesop (add simp IsSelfAdjoint)
+
+alias ⟨_, IsSelfAdjoint.of_le⟩ := IsSelfAdjoint.iff_of_le
+
+end NonUnitalRing
 
 section Semiring
 variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
@@ -436,6 +470,24 @@ instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S
     rw [← f_inv_f x, ← f_inv_f y]
     exact NonUnitalStarRingHom.map_le_map_of_map_star f_inv h
 
+/-- While `IsSelfAdjoint.map` assumes the map is star-preserving, this lemma instead assumes the
+map is an order-preserving additive map from a space where self-adjoint elements can be expressed as
+differences of nonnegative elemens, and whose codomain is a star-ordered ring. When such maps are
+linear over `ℂ`, they are also star-preserving, and this lemma is used to establish that one by
+splitting into real and imaginary parts. -/
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+lemma IsSelfAdjoint.map' {F E R : Type*} [AddCommGroup E] [PartialOrder E] [StarAddMonoid E]
+    [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+    [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F E R]
+    {a : E} (ha : IsSelfAdjoint a) (f : F) :
+    IsSelfAdjoint (f a) := by
+  obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonneg
+  have h₁ := OrderHomClass.mono f hb
+  have h₂ := OrderHomClass.mono f hc
+  cfc_tac
+
+@[deprecated (since := "2026-06-12")] alias map_isSelfAdjoint := IsSelfAdjoint.map'
+
 end OrderClass
 
 instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
@@ -471,6 +523,13 @@ theorem le_of_mul_eq_left (hp : IsStarProjection p) (hq : IsStarProjection q)
 /-- A star projection `p` is less than or equal to a star projection `q` when `q * p = p`. -/
 theorem le_of_mul_eq_right (hp : IsStarProjection p) (hq : IsStarProjection q)
     (hpq : q * p = p) : p ≤ q := sub_nonneg.mp (hp.sub_of_mul_eq_right hq hpq).nonneg
+
+instance {R : Type*} [NonUnitalRing R] [LinearOrder R] [StarRing R] [StarOrderedRing R] :
+    TrivialStar R where
+  star_trivial r := by
+    obtain (hr | hr) : 0 ≤ r ∨ 0 ≤ -r := by grind
+    · exact hr.star_eq
+    · simpa using hr.star_eq
 
 end NonUnitalRing
 

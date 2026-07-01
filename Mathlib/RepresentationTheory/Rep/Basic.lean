@@ -436,7 +436,7 @@ end setup
 
 variable (k G) in
 /-- The functor equipping a module with the trivial representation. -/
-@[simps! obj_V map_hom]
+@[implicit_reducible, simps! obj_V map_hom]
 def trivialFunctor : ModuleCat.{w} k ⥤ Rep.{w} k G where
   obj V := trivial k G V
   map f := ofHom ⟨f.hom, fun _ ↦ rfl⟩
@@ -739,6 +739,7 @@ protected noncomputable def ihom : Rep k G ⥤ Rep k G where
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
