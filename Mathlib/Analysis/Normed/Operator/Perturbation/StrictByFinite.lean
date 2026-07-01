@@ -34,9 +34,24 @@ These three results show up crucially when developping the theory of Fredholm op
 between topological vector spaces. Note that none of the results here use the Hahn-Banach
 theorem, so there is no significant restriction on the field.
 
+## Implementation details
+
+There are two notable changes compared to Bourbaki.
+* We treat all topological vector spaces over complete nontrivially normed fields,
+  where Bourbaki restricts to locally convex spaces over `ℝ` or `ℂ`. To do so, we have to
+  tweak one statement by assuming that a finite dimensional subspace is complemented, which
+  is always the case when you have Hahn-Banach available.
+* We give a different proof, where we reduce the statement to
+  `AddMonoidHom.isStrictMap_prodMap_iff`. This gives a slightly longer proof, but we
+  claim that it is more natural.
+
+Note that these two changes are independent: the extra generality could have been achieved
+with Bourbaki's proof.
+
 ## References
 
 * [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]
+
 -/
 
 open Topology Set Submodule Function ContinuousLinearMap
@@ -256,7 +271,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
   have strict_iff : IsStrictMap u ↔ IsStrictMap v := by
     rw [← v_comp_π_eq_u, coe_comp, ← π_quot.isQuotientMap.isStrictMap_iff]
   -- Now, recall the equality `A = comap π B`; it ensures that the restriction
-  -- `π' : A → B` of the open quotient map `π` is *still* an (open quotient map).
+  -- `π' : A → B` of the open quotient map `π` is *still* an (open) quotient map.
   set π' : A →L[𝕜] B := π.restrict A_mapsTo_B
   have π'_quot : IsOpenQuotientMap π' := by
     let φ : (N.mkQL ⁻¹' B) ≃ₜ A := .setCongr congr(SetLike.coe $comap_B)
@@ -293,7 +308,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Spa
 
 open LinearMap.FiniteRangeSetoid
 
-/-- If `u, v : E →L[𝕜] F` differ by a finite rank continuous linear map (recall that this is
+/-- If `u, v : E →L[𝕜] F` differ by a finite rank linear map (recall that this is
 denoted `u.toLinearMap ≈ v.toLinearMap` in scope `LinearMap.FiniteRangeSetoid`), then `u` is
 strict with closed range if and only if `v` is strict with closed range.
 
@@ -313,7 +328,7 @@ section FiniteDimQuotient
 
 open LinearMap.FiniteRangeSetoid
 
-/-- Consider `u : E →L[𝕜] F` and `B` a *complemented* finite dimensional subspace `F`. We have
+/-- Consider `u : E →L[𝕜] F` and `B` a *complemented* finite dimensional subspace of `F`. We have
 that `u` is strict with closed range if and only if `B.mkQL ∘L u` is strict with closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 2][bourbaki2023]. -/
