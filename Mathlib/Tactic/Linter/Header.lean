@@ -7,7 +7,7 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Init
+public meta import Std.Sync.Mutex
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
 
@@ -23,7 +23,9 @@ Authors ...
 -/
 
 import statements*
+
 module doc-string*
+
 remaining file
 ```
 It emits a warning if
@@ -181,7 +183,9 @@ public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String)
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
+  -- We also allow the "All rights reserved" line to be on a separate line.
   let preprocessCopyright := (copyright.replace ",\n  " ", ").replace ",\n" ","
+    |>.replace ".\nAll rights reserved." ". All rights reserved."
   -- Filter out everything after the first isolated `-/`.
   let pieces := preprocessCopyright.splitOn "\n-/"
   let copyright := (pieces.getD 0 "") ++ "\n-/"
@@ -245,25 +249,29 @@ public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String)
   return output
 
 /--
-`isInMathlib modName` returns `true` if `Mathlib.lean` imports the file `modName` and `false`
-otherwise.
-This is used by the `Header` linter as a heuristic of whether it should inspect the file or not.
+`isInLibraryRoot modName` returns `true` if `<root>.lean` imports the file `modName`, where
+`<root>` is the top-level component of `modName`. For example, for `Mathlib.Foo.Bar` this checks
+`Mathlib.lean`; for `Cslib.Foo.Bar` this checks `Cslib.lean`.
+This is used by the `Header` linter as a heuristic of whether it should inspect the file or not,
+so that the linter works in any project whose library root follows the standard Lean convention
+of being named after the top-level module.
 -/
-def isInMathlib (modName : Name) : IO Bool := do
-  let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
-  if ← mlPath.pathExists then
-    let res ← parseImports' (← IO.FS.readFile mlPath) ""
-    return (res.imports.map (·.module == modName)).any (·)
+def isInLibraryRoot (modName : Name) : IO Bool := do
+  let rootPath := (modName.getRoot.toString : System.FilePath).addExtension "lean"
+  if ← rootPath.pathExists then
+    let res ← parseImports' (← IO.FS.readFile rootPath) ""
+    return res.imports.any (·.module == modName)
   else return false
 
-/-- `inMathlibRef` is
+/-- `inLibraryRootMutex` caches whether the current file is imported in the library root file
+(e.g. `Mathlib.lean`), as computed by `isInLibraryRoot`. It is
 * `none` at initialization time;
 * `some true` if the `header` linter has already discovered that the current file
-  is imported in `Mathlib.lean`;
+  is imported in the library root file;
 * `some false` if the `header` linter has already discovered that the current file
-  is *not* imported in `Mathlib.lean`.
+  is *not* imported in the library root file.
 -/
-initialize inMathlibRef : IO.Ref (Option Bool) ← IO.mkRef none
+initialize inLibraryRootMutex : Std.Mutex (Option Bool) ← Std.Mutex.new none
 
 /--
 The "header" style linter checks that a file starts with
@@ -298,8 +306,10 @@ namespace Style.header
 def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.getId with
-    | `Mathlib.Tactic =>
-      Linter.logLint linter.style.header i "Files in mathlib cannot import the whole tactic folder."
+    | `Mathlib.Tactic | `Lean | `Lean.Meta | `Lean.Elab | `Lean.Elab.Tactic | `Std =>
+      Linter.logLint linter.style.header i
+        s!"Files in mathlib cannot import the whole `{i.getId}` folder. \
+        Doing so would cause imports to be unnecessarily slow."
     | `Mathlib.Tactic.Replace =>
       if mainModule != `Mathlib.Tactic then
         Linter.logLint linter.style.header i
@@ -361,24 +371,27 @@ def headerTestFiles : NameSet := .ofList
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
-  let inMathlib? := ← match ← inMathlibRef.get with
-    | some d => return d
-    | none => do
-      let val ← isInMathlib mainModule
-      -- We store the answer to the question "is this file in `Mathlib.lean`?" in `inMathlibRef`
-      -- to avoid recomputing its value on every command. This is a performance optimisation.
-      inMathlibRef.set (some val)
-      return val
-  -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
-  -- It is however active in the test files for the linter itself.
-  unless inMathlib? || headerTestFiles.contains mainModule do return
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
-  -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
-  -- Since that file is imports-only, we can simply skip linting it.
-  if mainModule == `Mathlib then return
+  let inLibraryRoot? ← inLibraryRootMutex.atomically do
+    match ← get with
+    | some d => return d
+    | none =>
+      let val ← isInLibraryRoot mainModule
+      -- We cache the answer to avoid recomputing it on every command. The fill runs under the mutex
+      -- so that concurrent (async) linter runs don't all miss the cache and each redundantly parse
+      -- the library root file; `mainModule` is fixed for the duration of the elaboration.
+      set (some val)
+      return val
+  -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
+  -- linting "scratch files". It is however active in the test files for the linter itself.
+  unless inLibraryRoot? || headerTestFiles.contains mainModule do return
+  -- Skip linting the library root file itself.
+  -- In practice, the `inLibraryRoot?` check above already covers this (a well-formed `<root>.lean`
+  -- does not import itself), but a root module could appear in `headerTestFiles`.
+  if mainModule == mainModule.getRoot then return
   let fm ← getFileMap
   let mdDocs := (getMainModuleDoc (← getEnv)).toArray
   let versoDocs := (getMainVersoModuleDocs (← getEnv)).snippets
@@ -404,6 +417,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   let imports := getImports upToStx
+  let afterImports := firstNonImport? upToStx
+  -- Deprecated module files are exempt from all header style checks (copyright, doc-string,
+  -- directory dependency, etc.) since they are just import-redirect stubs.
+  if let some (.node _ ``Lean.Parser.Command.deprecated_module _) := afterImports then return
   -- Report on broad or duplicate imports.
   broadImportsCheck importIds mainModule
   duplicateImportsCheck imports
@@ -413,19 +430,19 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for msg in errors do
       msgs := msgs ++ "\n\n" ++ (← msg.toString)
     Linter.logLint linter.directoryDependency stx msgs.trimAsciiStart.copy
-  let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with
     | .original lead .. => lead.toString
     | _ => ""
   -- Report any errors about the copyright line.
-  if mainModule != `Mathlib.Init then
+  if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- Report a missing module doc-string.
   match afterImports with
     | none => return
     | some (.node _ ``Lean.Parser.Command.moduleDoc _) => return
+    | some (.node _ ``Lean.Parser.Command.eoi _) => return
     | some rest =>
     Linter.logLint linter.style.header rest
       m!"The module doc-string for a file should be the first command after the imports.\n\

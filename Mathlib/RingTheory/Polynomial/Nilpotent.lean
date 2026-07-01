@@ -23,7 +23,7 @@ This file is a place for results related to nilpotency in (single-variable) poly
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
@@ -128,7 +128,6 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     · simp_rw [P₁, eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
     · simp_rw [coeff_eq_zero_of_natDegree_lt H, IsNilpotent.zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.
 

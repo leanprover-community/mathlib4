@@ -117,7 +117,7 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (NonUnitalStarSubalgebra R A) := .ofSetLike (NonUnitalStarSubalgebra R A) A
 
@@ -215,12 +215,12 @@ theorem copy_eq (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) : 
 variable (S : NonUnitalStarSubalgebra R A)
 
 /-- A non-unital star subalgebra over a ring is also a `Subring`. -/
+@[reducible]
 def toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     [Star A] (S : NonUnitalStarSubalgebra R A) : NonUnitalSubring A where
   toNonUnitalSubsemiring := S.toNonUnitalSubsemiring
   neg_mem' := neg_mem (s := S)
 
-@[simp]
 theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     [Star A] {S : NonUnitalStarSubalgebra R A} {x} : x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
   Iff.rfl
@@ -299,7 +299,6 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
   Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
@@ -344,6 +343,7 @@ def map (f : F) (S : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgebra R B 
   toNonUnitalSubalgebra := S.toNonUnitalSubalgebra.map (f : A →ₙₐ[R] B)
   star_mem' := by rintro _ ⟨a, ha, rfl⟩; exact ⟨star a, star_mem (s := S) ha, map_star f a⟩
 
+@[gcongr]
 theorem map_mono {S₁ S₂ : NonUnitalStarSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalStarSubalgebra R B) ≤ map f S₂ :=
   Set.image_mono
@@ -636,7 +636,7 @@ theorem starClosure_le_iff {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalSta
     S₁.starClosure ≤ S₂ ↔ S₁ ≤ S₂.toNonUnitalSubalgebra :=
   ⟨fun h => le_sup_left.trans h, starClosure_le⟩
 
-@[mono]
+@[gcongr, mono]
 theorem starClosure_mono : Monotone (starClosure (R := R) (A := A)) :=
   fun _ _ h => starClosure_le <| h.trans le_sup_left
 
@@ -1038,6 +1038,17 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
     (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem isMulCommutative_iSup [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, NonUnitalSubsemiring.coe_iSup_of_directed dir,
+    coe_iSup_of_directed dir] using NonUnitalSubsemiring.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o NonUnitalStarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 /-- Define a non-unital star algebra homomorphism on a directed supremum of non-unital star
 subalgebras by defining it on each non-unital star subalgebra, and proving that it agrees on the
 intersection of non-unital star subalgebras. -/
@@ -1051,7 +1062,6 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
         Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
           (fun i j x hxi hxj => by
             let ⟨k, hik, hjk⟩ := dir i j
-            simp only
             rw [hf i k hik, hf j k hjk]
             rfl)
           _ (by rw [coe_iSup_of_directed dir])
@@ -1150,14 +1160,18 @@ theorem center_eq_top (A : Type*) [StarRing R] [NonUnitalCommSemiring A] [StarRi
 variable {R A}
 
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  NonUnitalSubalgebra.center.instNonUnitalCommSemiring
+  fast_instance% NonUnitalSubalgebra.center.instNonUnitalCommSemiring
 
 instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
-  NonUnitalSubalgebra.center.instNonUnitalCommRing
+  fast_instance% NonUnitalSubalgebra.center.instNonUnitalCommRing
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
+
+protected theorem center_prod [IsScalarTower R B B] [SMulCommClass R B B] :
+    center R (A × B) = prod (center R A) (center R B) :=
+  SetLike.coe_injective Set.center_prod
 
 end Center
 
@@ -1214,7 +1228,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ centralizer R (centralizer R s) := by
   rw [← toNonUnitalSubalgebra_le_iff, centralizer_toNonUnitalSubalgebra,
     adjoin_toNonUnitalSubalgebra]
-  convert NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  convert! NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
   rw [StarMemClass.star_coe_eq]
   simp
 
@@ -1235,31 +1249,59 @@ lemma commute_of_mem_adjoin_self {a b : A} [IsStarNormal a] (hb : b ∈ adjoin R
 
 variable (R) in
 /-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
+is commutative. -/
+theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x)
+    (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) :
+    IsMulCommutative (adjoin R s) := by
+  have := adjoin_le_centralizer_centralizer R s
+  refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
+  have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
+    Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
+      (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
+  apply this at h₁
+  apply this at h₂
+  rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
+  exact Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂
+
+variable (R) in
+instance isMulCommutative_adjoin_singleton (a : A) [IsStarNormal a] :
+    IsMulCommutative (adjoin R ({a} : Set A)) :=
+  isMulCommutative_adjoin R (by simp) (by grind)
+
+open scoped IsMulCommutative in
+variable (R) in
+/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
 is a non-unital commutative semiring.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
     (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) :
     NonUnitalCommSemiring (adjoin R s) :=
-  { (adjoin R s).toNonUnitalSemiring with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦ by
-      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
-        Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
-          (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
-      have := adjoin_le_centralizer_centralizer R s
-      apply this at h₁
-      apply this at h₂
-      rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
-      exact Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂ }
+  have := isMulCommutative_adjoin R hcomm hcomm_star
+  inferInstance
 
+instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] [StarMemClass S A]
+    (s : S) [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
+  isMulCommutative_adjoin R
+    (fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂)
+    (fun _ h₁ _ h₂ => setLike_mul_comm h₁ (star_mem h₂))
+
+open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
 is a non-unital commutative ring.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarRing R]
     [NonUnitalRing A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [StarModule R A] {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
     (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) : NonUnitalCommRing (adjoin R s) :=
-  { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm hcomm_star with }
+  have := isMulCommutative_adjoin R hcomm hcomm_star
+  inferInstance
+
+instance isMulCommutative_toNonUnitalSubalgebra (S : NonUnitalStarSubalgebra R A)
+    [IsMulCommutative S] : IsMulCommutative S.toNonUnitalSubalgebra :=
+  ‹IsMulCommutative S›
 
 end NonUnitalStarAlgebra

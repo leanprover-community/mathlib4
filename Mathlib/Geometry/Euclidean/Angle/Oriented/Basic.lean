@@ -77,7 +77,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
   rw [oangle, kahler_apply_self, ← ofReal_pow]
-  convert QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
+  convert! QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
   apply arg_ofReal_of_nonneg
   positivity
 
@@ -180,14 +180,14 @@ theorem oangle_add_oangle_rev (x y : V) : o.oangle x y + o.oangle y x = 0 := by
 theorem oangle_neg_left {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     o.oangle (-x) y = o.oangle x y + π := by
   simp only [oangle, map_neg]
-  convert Complex.arg_neg_coe_angle _
+  convert! Complex.arg_neg_coe_angle _
   exact o.kahler_ne_zero hx hy
 
 /-- Negating the second vector passed to `oangle` adds `π` to the angle. -/
 theorem oangle_neg_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     o.oangle x (-y) = o.oangle x y + π := by
   simp only [oangle, map_neg]
-  convert Complex.arg_neg_coe_angle _
+  convert! Complex.arg_neg_coe_angle _
   exact o.kahler_ne_zero hx hy
 
 /-- Negating the first vector passed to `oangle` does not change twice the angle. -/
@@ -248,7 +248,6 @@ negated, results in 0. -/
 theorem oangle_add_oangle_rev_neg_right (x y : V) : o.oangle x (-y) + o.oangle y (-x) = 0 := by
   rw [o.oangle_rev (-x), oangle_neg_left_eq_neg_right, add_neg_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying the first vector passed to `oangle` by a positive real does not change the
 angle. -/
 @[simp]
@@ -510,7 +509,7 @@ theorem oangle_eq_pi_sub_two_zsmul_oangle_sub_of_norm_eq {x y : V} (hn : x ≠ y
     rw [norm_zero, norm_eq_zero] at h
     exact hn h
   have hx : x ≠ 0 := norm_ne_zero_iff.1 (h.symm ▸ norm_ne_zero_iff.2 hy)
-  convert o.oangle_add_cyc3_neg_right (neg_ne_zero.2 hy) hx (sub_ne_zero_of_ne hn.symm) using 1
+  convert! o.oangle_add_cyc3_neg_right (neg_ne_zero.2 hy) hx (sub_ne_zero_of_ne hn.symm) using 1
   simp
 
 /-- The angle between two vectors, with respect to an orientation given by `Orientation.map`
@@ -521,13 +520,11 @@ theorem oangle_map (x y : V') (f : V ≃ₗᵢ[ℝ] V') :
     (Orientation.map (Fin 2) f.toLinearEquiv o).oangle x y = o.oangle (f.symm x) (f.symm y) := by
   simp [oangle, o.kahler_map]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem _root_.Complex.oangle (w z : ℂ) :
     Complex.orientation.oangle w z = Complex.arg (conj w * z) := by
   simp [oangle, mul_comm z]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The oriented angle on an oriented real inner product space of dimension 2 can be evaluated in
 terms of a complex-number representation of the space. -/
 theorem oangle_map_complex (f : V ≃ₗᵢ[ℝ] ℂ)
@@ -718,7 +715,7 @@ theorem eq_zero_or_oangle_eq_iff_inner_eq_zero {x y : V} :
   rw [InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two, or_iff_right hx, or_iff_right hy]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rwa [o.angle_eq_abs_oangle_toReal hx hy, Real.Angle.abs_toReal_eq_pi_div_two_iff]
-  · convert o.oangle_eq_angle_or_eq_neg_angle hx hy using 2 <;> rw [h]
+  · convert! o.oangle_eq_angle_or_eq_neg_angle hx hy using 2 <;> rw [h]
     simp only [neg_div, Real.Angle.coe_neg]
 
 /-- If the oriented angle between two vectors is `π / 2`, the inner product of those vectors
@@ -824,10 +821,10 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     · simpa [hz] using (h' r').1
   have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by grind
   have hx : (x, y) ∈ s := by
-    convert Set.mem_image_of_mem (fun r' : ℝ => (x, r' • x + y)) (Set.mem_univ 0)
+    convert! Set.mem_image_of_mem (fun r' : ℝ => (x, r' • x + y)) (Set.mem_univ 0)
     simp
   have hy : (x, r • x + y) ∈ s := Set.mem_image_of_mem _ (Set.mem_univ _)
-  convert Real.Angle.sign_eq_of_continuousOn hc hf hs hx hy
+  convert! Real.Angle.sign_eq_of_continuousOn hc hf hs hx hy
 
 /-- Adding a multiple of the second vector passed to `oangle` to the first vector does not change
 the sign of the angle. -/

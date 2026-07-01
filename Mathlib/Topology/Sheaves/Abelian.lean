@@ -18,11 +18,11 @@ We provide instances for categories of sheaves over Abelian categories.
 ## Main Results
 
 * `TopCat.Sheaf.exact_iff_stalkFunctor_map_exact`: A complex of sheaves over a concrete abelian
-category is exact if and only if it is exact on stalks.
+  category is exact if and only if it is exact on stalks.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v v₁ v₂
 
@@ -76,7 +76,7 @@ instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
     simp only [(forget C X ⋙ stalkFunctor C p₀).exact_tfae.out 2 0]
     intro S h
     have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 3 0).mp
-      (inferInstanceAs (PreservesFiniteColimits _))
+      (inferInstance : (PreservesFiniteColimits _))
     refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
     have := h.2
     exact Functor.map_mono (forget C X ⋙ stalkFunctor C p₀) _
@@ -92,7 +92,7 @@ lemma isZero_iff_stalkFunctor_obj_isZero (F : Sheaf C X) :
   intro h
   let f : F ⟶ 0 := (isZero_zero (Sheaf C X)).from_ F
   have : IsIso f := by
-    rw[Presheaf.isIso_iff_stalkFunctor_map_iso]
+    rw [Presheaf.isIso_iff_stalkFunctor_map_iso]
     exact fun x => isIso_of_source_target_iso_zero _ (h x).isoZero
       ((forget C X ⋙ stalkFunctor C x).map_isZero (isZero_zero _)).isoZero
   exact (isZero_zero _).of_iso (asIso f)

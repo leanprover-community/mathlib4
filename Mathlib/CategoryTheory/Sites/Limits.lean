@@ -53,6 +53,7 @@ noncomputable section
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An auxiliary definition to be used below.
 
 Whenever `E` is a cone of shape `K` of sheaves, and `S` is the multifork associated to a
@@ -89,6 +90,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
 
 variable [HasLimitsOfShape K D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a cone of shape `K` of sheaves, which is a limit on the level of presheaves,
 this definition shows that the limit presheaf satisfies the multifork variant of the sheaf
@@ -185,10 +187,11 @@ over a functor which factors through sheaves.
 In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is a colimit. -/
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F :=
-  (Cocones.precompose
+  (Cocone.precompose
     (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma sheafifyCocone_ι_app_val
@@ -232,13 +235,14 @@ creates colimits of the diagram.
 Note: this almost never holds in sheaf categories in general, but it does for the extensive
 topology (see `Mathlib/CategoryTheory/Sites/Coherent/ExtensiveColimits.lean`).
 -/
+@[implicit_reducible]
 def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
     (h : ∀ (c : Cocone (F ⋙ sheafToPresheaf J D)) (_ : IsColimit c), Presheaf.IsSheaf J c.pt) :
     CreatesColimit F (sheafToPresheaf J D) :=
   createsColimitOfReflectsIso fun E hE =>
     { liftedCocone := ⟨⟨E.pt, h _ hE⟩,
         ⟨fun _ => ⟨E.ι.app _⟩, fun _ _ _ => Sheaf.hom_ext <| E.ι.naturality _⟩⟩
-      validLift := Cocones.ext (eqToIso rfl) fun j => by simp
+      validLift := Cocone.ext (eqToIso rfl) fun j => by simp
       makesColimit :=
         { desc := fun S => ⟨hE.desc ((sheafToPresheaf J D).mapCocone S)⟩
           fac := fun S j => by ext1; dsimp; rw [hE.fac]; rfl

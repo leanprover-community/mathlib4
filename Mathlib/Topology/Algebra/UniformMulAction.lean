@@ -100,7 +100,7 @@ lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuous
     UniformContinuousConstSMul M X where
   uniformContinuous_const_smul c := by
     simpa only [hf.uniformContinuous_iff, Function.comp_def, hsmul]
-      using hf.uniformContinuous.const_smul c
+      using! hf.uniformContinuous.const_smul c
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
@@ -238,7 +238,7 @@ noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M 
     MulAction M (Completion X) where
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=
-    ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by
+    ext' (continuous_const_smul _) ((continuous_const_smul _).fun_const_smul _) fun a => by
       simp only [← coe_smul, mul_smul]
 
 end Completion

@@ -14,7 +14,7 @@ public import Mathlib.Data.Finite.Prod
 # The category of finite types.
 
 We define the category of finite types, denoted `FintypeCat` as
-(bundled) types with a `Fintype` instance.
+the full subcategory of types with a `Finite` instance.
 
 We also define `FintypeCat.Skeleton`, the standard skeleton of `FintypeCat` whose objects
 are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
@@ -28,57 +28,41 @@ We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat
 open CategoryTheory
 
 /-- The category of finite types. -/
-structure FintypeCat where
-  /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
-  of ::
-  /-- The underlying type. -/
-  carrier : Type*
-  [str : Fintype carrier]
-
-section Notation
-
-open Lean.PrettyPrinter.Delaborator
-
-/-- This prevents `FintypeCat.of X` being printed as `{ carrier := X, str := ... }` by
-`delabStructureInstance`. -/
-@[app_delab FintypeCat.of]
-meta def FintypeCat.delabOf : Delab := delabApp
-
-end Notation
-
-attribute [instance] FintypeCat.str
+abbrev FintypeCat := ObjectProperty.FullSubcategory (C := Type*) Finite
 
 namespace FintypeCat
 
+/-- Construct a term of `FintypeCat` from a type endowed with a `Finite` instance. -/
+abbrev of (X : Type*) [Finite X] : FintypeCat :=
+  ⟨X, inferInstance⟩
+
 instance instCoeSort : CoeSort FintypeCat Type* :=
-  ⟨carrier⟩
+  ⟨fun X ↦ X.obj⟩
 
 instance : Inhabited FintypeCat :=
   ⟨of PEmpty⟩
 
-instance {X : FintypeCat} : Fintype X :=
-  X.2
+instance {X : FintypeCat} : Finite X :=
+  X.property
 
-instance : Category FintypeCat :=
-  inferInstanceAs (Category (InducedCategory _ carrier))
+/-- A `Fintype` instance on objects on `FintypeCat`, that should be turned on as needed.
+Prefer the `Finite` instance if possible. -/
+@[implicit_reducible]
+noncomputable def fintype {X : FintypeCat} : Fintype X :=
+  Fintype.ofFinite X.obj
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
 @[simps!]
-def incl : FintypeCat ⥤ Type* :=
-  inducedFunctor _
+abbrev incl : FintypeCat ⥤ Type* := ObjectProperty.ι _
 
-instance : incl.Full := InducedCategory.full _
-instance : incl.Faithful := InducedCategory.faithful _
+instance : incl.Full := ObjectProperty.full_ι _
+instance : incl.Faithful := ObjectProperty.faithful_ι _
 
-instance (X Y : FintypeCat) : FunLike (X ⟶ Y) X Y where
-  coe f := f.hom
-  coe_injective' _ _ h := InducedCategory.homEquiv.injective h
+example : ConcreteCategory FintypeCat
+    (fun X Y ↦ TypeCat.Fun X.obj Y.obj) :=
+  inferInstance
 
-instance concreteCategoryFintype : ConcreteCategory FintypeCat (· ⟶ ·) where
-  hom f := f
-  ofHom f := f
-
-/- Help typeclass inference infer fullness of forgetful functor. -/
+/-- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
 @[simp]
@@ -95,30 +79,30 @@ lemma hom_apply {X Y : FintypeCat} (f : X ⟶ Y) (x : X) :
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  DFunLike.congr_fun f.hom_inv_id x
+  ConcreteCategory.congr_hom f.hom_inv_id x
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  DFunLike.congr_fun f.inv_hom_id y
+  ConcreteCategory.congr_hom f.inv_hom_id y
 
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g :=
-  DFunLike.ext _ _ h
+  ConcreteCategory.hom_ext _ _ h
 
 /-- Constructor for morphisms in `FintypeCat`. -/
 def homMk {X Y : FintypeCat} (f : X → Y) : X ⟶ Y where
-  hom := f
+  hom := ↾f
 
 @[simp]
 lemma homMk_apply {X Y : FintypeCat} (f : X → Y) (x : X) :
     homMk f x = f x := rfl
 
 @[simp]
-lemma id_hom (X : FintypeCat) : InducedCategory.Hom.hom (𝟙 X) = id := rfl
+lemma id_hom (X : FintypeCat) : 𝟙 X.obj = ↾id := rfl
 
 @[simp, reassoc]
 lemma comp_hom {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom ∘ f.hom := rfl
+    f.hom ≫ g.hom = ↾(g.hom ∘ f.hom) := rfl
 
 @[simp]
 lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
@@ -156,7 +140,8 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
   right_inv := by cat_disch
 
 instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
-  Finite.of_equiv _ (show (X ⟶ Y) ≃ (X → Y) from InducedCategory.homEquiv).symm
+  Finite.of_equiv _ (show (X ⟶ Y) ≃ (X → Y) from
+    InducedCategory.homEquiv.trans TypeCat.homEquiv).symm
 
 instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
@@ -169,23 +154,23 @@ universe u
 /--
 The "standard" skeleton for `FintypeCat`. This is the full subcategory of `FintypeCat`
 spanned by objects of the form `ULift (Fin n)` for `n : ℕ`. We parameterize the objects
-of `Fintype.Skeleton` directly as `ULift ℕ`, as the type `ULift (Fin m) ≃ ULift (Fin n)`
+of `FintypeCat.Skeleton` directly as `ULift ℕ`, as the type `ULift (Fin m) ≃ ULift (Fin n)`
 is nonempty if and only if `n = m`. Specifying universes, `Skeleton : Type u` is a small
-skeletal category equivalent to `Fintype.{u}`.
+skeletal category equivalent to `FintypeCat.{u}`.
 -/
 def Skeleton : Type u :=
   ULift ℕ
 
 namespace Skeleton
 
-/-- Given any natural number `n`, this creates the associated object of `Fintype.Skeleton`. -/
+/-- Given any natural number `n`, this creates the associated object of `FintypeCat.Skeleton`. -/
 def mk : ℕ → Skeleton :=
   ULift.up
 
 instance : Inhabited Skeleton :=
   ⟨mk 0⟩
 
-/-- Given any object of `Fintype.Skeleton`, this returns the associated natural number. -/
+/-- Given any object of `FintypeCat.Skeleton`, this returns the associated natural number. -/
 def len : Skeleton → ℕ :=
   ULift.down
 
@@ -219,18 +204,20 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
             simp
             rfl }
 
-/-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
+/-- The canonical fully faithful embedding of `FintypeCat.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
   obj X := FintypeCat.of (ULift (Fin X.len))
   map f := homMk f
 
-instance : incl.Full where map_surjective f := ⟨f.hom, rfl⟩
+instance : incl.Full where map_surjective _ := ⟨_, rfl⟩
 
 instance : incl.Faithful where
-  map_injective h := InducedCategory.homEquiv.symm.injective h
+  map_injective h := by
+    simpa using TypeCat.homEquiv.symm.injective (InducedCategory.homEquiv.symm.injective h)
 
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>
+    letI := X.fintype
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
       Nonempty.intro
@@ -239,18 +226,21 @@ instance : incl.EssSurj :=
 
 noncomputable instance : incl.IsEquivalence where
 
-/-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/
+/-- The equivalence between `FintypeCat.Skeleton` and `FintypeCat`. -/
 noncomputable def equivalence : Skeleton ≌ FintypeCat :=
   incl.asEquivalence
 
+attribute [local instance] FintypeCat.fintype in
 @[simp]
-theorem incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
-  convert Finset.card_fin n
-  apply Fintype.ofEquiv_card
+theorem incl_mk_nat_card (n : ℕ) :
+    Fintype.card (incl.obj (mk n)) = n := by
+  convert! Finset.card_fin n
+  dsimp [incl, mk, len]
+  convert! (Fintype.ofEquiv_card Equiv.ulift).symm
 
 end Skeleton
 
-/-- `Fintype.Skeleton` is a skeleton of `Fintype`. -/
+/-- `FintypeCat.Skeleton` is a skeleton of `FintypeCat`. -/
 lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
@@ -259,6 +249,7 @@ section Universes
 
 universe v
 
+attribute [local instance] FintypeCat.fintype in
 /-- If `u` and `v` are two arbitrary universes, we may construct a functor
 `uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
@@ -267,6 +258,7 @@ noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
   map {X Y} f :=
     homMk (ULift.up ∘ Fintype.equivFin Y ∘ f.hom ∘ (Fintype.equivFin X).symm ∘ ULift.down)
 
+attribute [local instance] FintypeCat.fintype in
 /-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
 of types. This is natural in the sense that it commutes with `uSwitch.map f` for
 any `f : X ⟶ Y` in `FintypeCat.{u}`. -/
@@ -293,6 +285,7 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
       Y.uSwitchEquiv)).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] uSwitch_map_uSwitch_map in
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
@@ -322,6 +315,6 @@ variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
 
 lemma naturality (σ : F ⟶ G) (f : X ⟶ Y) (x : F.obj X) :
     σ.app Y (F.map f x) = G.map f (σ.app X x) :=
-  DFunLike.congr_fun (σ.naturality f) x
+  (σ.naturality_apply f) x
 
 end FunctorToFintypeCat

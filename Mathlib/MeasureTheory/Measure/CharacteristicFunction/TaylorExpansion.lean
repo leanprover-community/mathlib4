@@ -31,7 +31,7 @@ public section
 
 
 open ProbabilityTheory Complex Set VectorFourier
-open scoped Nat RealInnerProductSpace
+open scoped Nat RealInnerProductSpace Topology
 
 namespace MeasureTheory
 
@@ -41,7 +41,6 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   {μ : Measure E} [IsFiniteMeasure μ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a finite measure with a moment of order `n` is `C^n`.
 See `contDiff_charFun'` for the version proving `C^∞` by assuming all moments exist. -/
 @[fun_prop]
@@ -81,8 +80,8 @@ theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin
     exact contDiff_fourierIntegral _ hint'
   simp only [mul_inv_rev, neg_smul]
   rw [h, iteratedFDeriv_fourierIntegral _ hint' (by fun_prop) le_rfl]
-  simp only [ContinuousMultilinearMap.smul_apply, real_smul, ofReal_pow, ofReal_neg, ofReal_mul,
-    ofReal_inv, ofReal_ofNat, ofReal_prod]
+  simp only [smul_apply, real_smul, ofReal_pow, ofReal_neg, ofReal_mul, ofReal_inv, ofReal_ofNat,
+    ofReal_prod]
   rw [fourierIntegral_continuousMultilinearMap_apply Real.continuous_fourierChar]
   swap;
   · exact integrable_fourierPowSMulRight _ (by simpa using hint.integrable_norm_pow') (by fun_prop)
@@ -102,19 +101,16 @@ section Real
 
 variable {μ : Measure ℝ} [IsFiniteMeasure μ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_charFun {n : ℕ} {t : ℝ} (hint : MemLp id n μ) :
     iteratedDeriv n (charFun μ) t = I ^ n * ∫ x, x ^ n * exp (t * x * I) ∂μ := by
   rw [iteratedDeriv, iteratedFDeriv_charFun hint]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_charFun_zero {n : ℕ} (hint : MemLp id n μ) :
     iteratedDeriv n (charFun μ) 0 = I ^ n * ∫ x, x ^ n ∂μ := by
   simp [iteratedDeriv_charFun hint]
   norm_cast
 
-set_option backward.isDefEq.respectTransparency false in
 lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : MemLp id n μ) (t : ℝ) :
     taylorWithinEval (charFun μ) n univ 0 t
       = ∑ k ∈ Finset.range (n + 1), (k ! : ℂ)⁻¹ * (t * I) ^ k * ∫ x, x ^ k ∂μ := by
@@ -132,7 +128,7 @@ lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t =
       1 + (P[X] : ℝ) * t * I - (P[X ^ 2] : ℝ) * t ^ 2 / 2 := by
   have : IsProbabilityMeasure (P.map X) := Measure.isProbabilityMeasure_map hX
-  convert taylorWithinEval_charFun_zero hint t with x
+  convert! taylorWithinEval_charFun_zero hint t with x
   simp only [Pi.pow_apply, Nat.reduceAdd, Finset.sum_range_succ, Finset.range_one,
     Finset.sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, mul_one,
     integral_const, probReal_univ, smul_eq_mul, ofReal_one, Nat.factorial_one, pow_one, one_mul,
@@ -151,6 +147,17 @@ lemma taylorWithinEval_charFun_two_zero' (hX : AEMeasurable X P)
   rw [integral_map]
   any_goals fun_prop
   simp [← Pi.pow_apply, h1]
+
+lemma taylor_charFun_two (hX : AEMeasurable X P) (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) :
+    (fun t ↦ charFun (P.map X) t - (1 - t ^ 2 / 2)) =o[𝓝 0] fun t ↦ t ^ 2 := by
+  simp_rw [← taylorWithinEval_charFun_two_zero' (by fun_prop) h0 h1]
+  convert! taylor_isLittleO_univ ?_
+  · simp
+  refine contDiff_charFun <|
+    (memLp_two_iff_integrable_sq (by fun_prop)).2 (.of_integral_ne_zero ?_)
+  rw [integral_map]
+  any_goals fun_prop
+  simp_all
 
 end Real
 

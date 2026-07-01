@@ -87,10 +87,7 @@ theorem updateFinset_updateFinset (hst : Disjoint s t) :
 lemma updateFinset_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t)
     (x : Π i, π i) (y : Π i : s, π i) (z : Π i : t, π i) :
     updateFinset (updateFinset x s y) t z = updateFinset x t z := by
-  ext i
-  simp only [updateFinset]
-  split_ifs with h1 h2 <;> try rfl
-  exact (h1 (hst h2)).elim
+  grind [updateFinset]
 
 lemma restrict_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i)
     (y : Π i : t, π i) : s.restrict (updateFinset x t y) = restrict₂ hst y := by

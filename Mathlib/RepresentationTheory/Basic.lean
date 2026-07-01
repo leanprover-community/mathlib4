@@ -101,6 +101,10 @@ theorem self_inv_apply (g : G) (x : V) :
     ρ g (ρ g⁻¹ x) = x := by
   simp [← Module.End.mul_apply, ← map_mul]
 
+lemma inv_apply_eq_iff {g : G} {x y : V} :
+    ρ g⁻¹ x = y ↔ x = ρ g y := by
+  constructor <;> rintro rfl <;> simp
+
 lemma apply_bijective (g : G) :
     Function.Bijective (ρ g) :=
   Equiv.bijective ⟨ρ g, ρ g⁻¹, inv_self_apply ρ g, self_inv_apply ρ g⟩
@@ -366,11 +370,10 @@ end OfQuotient
 
 section AddCommGroup
 
-variable {k G V : Type*} [Ring k] [Monoid G] [I : AddCommGroup V] [Module k V]
+variable {k G V : Type*} [Ring k] [Monoid G] [AddCommGroup V] [Module k V]
 variable (ρ : Representation k G V)
 
-instance : AddCommGroup ρ.asModule :=
-  I
+instance : AddCommGroup ρ.asModule := inferInstanceAs <| AddCommGroup V
 
 /- Given a representation `(V, ρ)` of a monoid `G`, this says
 `(ρ(g) - Id)(x + ρ(g)(x) + ... + ρ(gⁿ)(x)) = ρ(gⁿ⁺¹)(x) - x` for all `n : ℕ, g : G` and `x : V`. -/
@@ -532,7 +535,7 @@ lemma leftRegular_norm_apply :
       linearCombination _ (fun _ => 1) := by
   ext i : 2
   simpa [Representation.norm] using Finset.sum_bijective _
-    (Group.mulRight_bijective i) (by simp_all) (by simp_all)
+    (Group.mulRight_bijective i) (by simp) (by simp)
 
 lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
     (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ => (1 : k)) = 0 := by
@@ -725,7 +728,7 @@ noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*)
 
 noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
     AddCommGroup (free k G α).asModule :=
-  Finsupp.instAddCommGroup
+  inferInstanceAs <| AddCommGroup (α →₀ G →₀ k)
 
 lemma free_single_single (g h : G) (i : α) (r : k) :
     free k G α g (single i (single h r)) = single i (single (g * h) r) := by

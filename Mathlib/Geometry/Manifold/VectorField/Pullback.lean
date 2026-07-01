@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.Notation
 /-!
 # Vector fields in manifolds
 
-We study functions of the form `V : Π (x : M) → TangentSpace I x` on a manifold, i.e.,
+We study functions of the form `V : Π (x : M), TangentSpace I x` on a manifold, i.e.,
 vector fields.
 
 We define the pullback of a vector field under a map, as
@@ -92,7 +92,7 @@ section Pullback
 open ContinuousLinearMap
 
 variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
-variable {c : 𝕜} {m n : WithTop ℕ∞} {t : Set M'} {y₀ : M'}
+variable {c : 𝕜} {m n : ℕ∞ω} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds, within a set `s`. If the
@@ -111,14 +111,22 @@ def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
 lemma mpullbackWithin_apply :
     mpullbackWithin I I' f V s x = (mfderiv[s] f x).inverse (V (f x)) := rfl
 
-lemma mpullbackWithin_smul_apply :
+lemma mpullbackWithin_const_smul_apply :
     mpullbackWithin I I' f (c • V) s x = c • mpullbackWithin I I' f V s x := by
   simp [mpullbackWithin_apply]
 
-lemma mpullbackWithin_smul :
+lemma mpullbackWithin_smul_apply {g : M' → 𝕜} :
+    mpullbackWithin I I' f (g • V) s x = g (f x) • mpullbackWithin I I' f V s x := by
+  simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_const_smul :
     mpullbackWithin I I' f (c • V) s = c • mpullbackWithin I I' f V s := by
   ext x
   simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_smul {g : M' → 𝕜} :
+    mpullbackWithin I I' f (g • V) s = (g ∘ f) • mpullbackWithin I I' f V s := by
+  ext; simp [mpullbackWithin_apply]
 
 lemma mpullbackWithin_add_apply :
     mpullbackWithin I I' f (V + V₁) s x =
@@ -146,19 +154,28 @@ lemma mpullbackWithin_neg :
   simp [mpullbackWithin_apply]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma mpullbackWithin_id {V : Π (x : M), TangentSpace I x} (h : UniqueMDiffWithinAt I s x) :
+lemma mpullbackWithin_id {V : Π (x : M), TangentSpace I x} (h : UniqueMDiffAt[s] x) :
     mpullbackWithin I I id V s x = V x := by
   simp [mpullbackWithin_apply, mfderivWithin_id h]
 
 lemma mpullback_apply :
     mpullback I I' f V x = (mfderiv% f x).inverse (V (f x)) := rfl
 
-lemma mpullback_smul_apply :
+lemma mpullback_const_smul_apply :
     mpullback I I' f (c • V) x = c • mpullback I I' f V x := by
   simp [mpullback]
 
-lemma mpullback_smul :
+lemma mpullback_const_smul :
     mpullback I I' f (c • V) = c • mpullback I I' f V := by
+  ext x
+  simp [mpullback_apply]
+
+lemma mpullback_smul_apply {g : M' → 𝕜} :
+    mpullback I I' f (g • V) x = g (f x) • mpullback I I' f V x := by
+  simp [mpullback]
+
+lemma mpullback_smul {g : M' → 𝕜} :
+    mpullback I I' f (g • V) = (g ∘ f) • mpullback I I' f V := by
   ext x
   simp [mpullback_apply]
 
@@ -205,7 +222,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mpullbackWithin_comp_of_left
     {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
     {x₀ : M} (hf : MDiffAt[s] f x₀) (h : Set.MapsTo f s t)
-    (hu : UniqueMDiffWithinAt I s x₀) (hg' : (mfderiv[t] g (f x₀)).IsInvertible) :
+    (hu : UniqueMDiffAt[s] x₀) (hg' : (mfderiv[t] g (f x₀)).IsInvertible) :
     mpullbackWithin I I'' (g ∘ f) V s x₀ =
       mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
   simp only [mpullbackWithin]
@@ -218,7 +235,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mpullbackWithin_comp_of_right
     {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
     {x₀ : M} (hg : MDiffAt[t] g (f x₀)) (h : Set.MapsTo f s t)
-    (hu : UniqueMDiffWithinAt I s x₀) (hf' : (mfderiv[s] f x₀).IsInvertible) :
+    (hu : UniqueMDiffAt[s] x₀) (hf' : (mfderiv[s] f x₀).IsInvertible) :
     mpullbackWithin I I'' (g ∘ f) V s x₀ =
       mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
   simp only [mpullbackWithin]
@@ -243,7 +260,7 @@ variable [IsManifold I 2 M] [IsManifold I' 2 M'] [CompleteSpace E]
 differentiable. Version within a set at a point. -/
 protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
     (hV : MDiffAt[t] (T% V) (f x₀)) (hf : CMDiffAt[s] n f x₀) (hf' : (mfderiv[s] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : 2 ≤ n) :
     MDiffAt[s ∩ f ⁻¹' t] (T% (mpullbackWithin I I' f V s)) x₀ := by
   /- We want to apply the theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
   stating that applying linear maps to vector fields gives a smooth result when the linear map and
@@ -307,8 +324,8 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
 lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter_of_eq
     (hV : MDiffAt[t] (T% V) y₀) (hf : CMDiffAt[s] n f x₀)
     (hf' : (mfderiv[s] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) (h : y₀ = f x₀) :
-    MDiffAt[s ∩ f⁻¹' t] (T% (mpullbackWithin I I' f V s)) x₀ := by
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : 2 ≤ n) (h : y₀ = f x₀) :
+    MDiffAt[s ∩ f ⁻¹' t] (T% (mpullbackWithin I I' f V s)) x₀ := by
   subst h
   exact hV.mpullbackWithin_vectorField_inter hf hf' hx₀ hs hmn
 
@@ -317,8 +334,8 @@ differentiable. Version on a set. -/
 protected lemma _root_.MDifferentiableOn.mpullbackWithin_vectorField_inter
     (hV : MDiff[t] (T% V)) (hf : CMDiff[s] n f)
     (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderiv[s] f x).IsInvertible)
-    (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
-    MDiff[(s ∩ f ⁻¹' t)] (T% (mpullbackWithin I I' f V s))  :=
+    (hs : UniqueMDiff[s]) (hmn : 2 ≤ n) :
+    MDiff[(s ∩ f ⁻¹' t)] (T% (mpullbackWithin I I' f V s)) :=
   fun _ hx₀ ↦ MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
     (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀) hx₀.1 hs hmn
 
@@ -356,7 +373,7 @@ protected lemma _root_.MDifferentiableAt.mpullback_vectorField
     (hV : MDiffAt (T% V) (f x₀)) (hf : CMDiffAt n f x₀)
     (hf' : (mfderiv% f x₀).IsInvertible) (hmn : 2 ≤ n) :
     MDiffAt (T% (mpullback I I' f V)) x₀ := by
-  simpa using MDifferentiableWithinAt.mpullback_vectorField_preimage hV hf hf' hmn
+  simpa using! MDifferentiableWithinAt.mpullback_vectorField_preimage hV hf hf' hmn
 
 /-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
 differentiable. -/
@@ -378,7 +395,7 @@ Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     (hV : CMDiffAt[t] m (T% V) (f x₀)) (hf : CMDiffAt[s] n f x₀)
     (hf' : (mfderiv[s] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) :
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n) :
     CMDiffAt[s ∩ f ⁻¹' t] m (T% (mpullbackWithin I I' f V s)) x₀ := by
   /- We want to apply the theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
   that applying linear maps to vector fields gives a smooth result when the linear map and the
@@ -411,7 +428,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
   have : CMDiffAt[s] m
       (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
-        x₀ x (f x₀) (f x) (mfderiv[s]f x))) x₀ := by
+        x₀ x (f x₀) (f x) (mfderiv[s] f x))) x₀ := by
     apply ContMDiffAt.comp_contMDiffWithinAt _ _ this
     apply ContDiffAt.contMDiffAt
     apply IsInvertible.contDiffAt_map_inverse
@@ -437,8 +454,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
 
 lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter_of_eq
     (hV : CMDiffAt[t] m (T% V) y₀) (hf : CMDiffAt[s] n f x₀) (hf' : (mfderiv[s] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (h : f x₀ = y₀) :
-    CMDiffAt[s ∩ f⁻¹' t] m (T% (mpullbackWithin I I' f V s)) x₀ := by
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n) (h : f x₀ = y₀) :
+    CMDiffAt[s ∩ f ⁻¹' t] m (T% (mpullbackWithin I I' f V s)) x₀ := by
   subst h
   exact ContMDiffWithinAt.mpullbackWithin_vectorField_inter hV hf hf' hx₀ hs hmn
 
@@ -448,7 +465,7 @@ Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem
     (hV : CMDiffAt[t] m (T% V) (f x₀)) (hf : CMDiffAt[s] n f x₀)
     (hf' : (mfderiv[s] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : f ⁻¹' t ∈ 𝓝[s] x₀) :
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n) (hst : f ⁻¹' t ∈ 𝓝[s] x₀) :
     CMDiffAt[s] m (T% (mpullbackWithin I I' f V s)) x₀ := by
   apply (ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     hV hf hf' hx₀ hs hmn).mono_of_mem_nhdsWithin
@@ -459,7 +476,7 @@ with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem_of_eq
     (hV : CMDiffAt[t] m (T% V) y₀) (hf : CMDiffAt[s] n f x₀) (hf' : (mfderiv[s] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : f ⁻¹' t ∈ 𝓝[s] x₀)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n) (hst : f ⁻¹' t ∈ 𝓝[s] x₀)
     (hy₀ : f x₀ = y₀) :
     CMDiffAt[s] m (T% (mpullbackWithin I I' f V s)) x₀ := by
   subst hy₀
@@ -471,7 +488,7 @@ Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField
     (hV : CMDiffAt[t] m (T% V) (f x₀)) (hf : CMDiffAt[s] n f x₀)
     (hf' : (mfderiv[s] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : MapsTo f s t) :
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n) (hst : MapsTo f s t) :
     CMDiffAt[s] m (T% (mpullbackWithin I I' f V s)) x₀ :=
   ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem hV hf hf' hx₀ hs hmn
     hst.preimage_mem_nhdsWithin
@@ -481,7 +498,7 @@ with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq
     (hV : CMDiffAt[t] m (T% V) y₀) (hf : CMDiffAt[s] n f x₀) (hf' : (mfderiv[s] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : MapsTo f s t) (h : f x₀ = y₀) :
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n) (hst : MapsTo f s t) (h : f x₀ = y₀) :
     CMDiffAt[s] m (T% (mpullbackWithin I I' f V s)) x₀ := by
   subst h
   exact ContMDiffWithinAt.mpullbackWithin_vectorField hV hf hf' hx₀ hs hmn hst
@@ -492,12 +509,12 @@ Version within a set at a point, with a set used for the pullback possibly large
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField' {u : Set M}
     (hV : CMDiffAt[t] m (T% V) (f x₀))
     (hf : CMDiffAt[u] n f x₀) (hf' : (mfderiv[u] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n)
     (hst : f ⁻¹' t ∈ 𝓝[s] x₀) (hu : s ⊆ u) :
     CMDiffAt[s] m (T% (mpullbackWithin I I' f V u)) x₀ := by
   have hn : 1 ≤ n := le_trans (by simp) hmn
   have hh : (mfderiv[s] f x₀).IsInvertible := by
-    convert hf' using 1
+    convert! hf' using 1
     exact (hf.mdifferentiableWithinAt <| by positivity).mfderivWithin_mono (hs _ hx₀) hu
   apply (hV.mpullbackWithin_vectorField_of_mem (hf.mono hu) hh hx₀ hs hmn
     hst).congr_of_eventuallyEq_of_mem _ hx₀
@@ -513,7 +530,7 @@ with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, with a set used for the pullback possibly larger. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq' {u : Set M}
     (hV : CMDiffAt[t] m (T% V) y₀) (hf : CMDiffAt[u] n f x₀) (hf' : (mfderiv[u] f x₀).IsInvertible)
-    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (hst : f ⁻¹' t ∈ 𝓝[s] x₀)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n) (hst : f ⁻¹' t ∈ 𝓝[s] x₀)
     (hu : s ⊆ u) (hy₀ : f x₀ = y₀) :
     CMDiffAt[s] m (T% (mpullbackWithin I I' f V u)) x₀ := by
   subst hy₀
@@ -525,8 +542,8 @@ Version on a set. -/
 protected lemma _root_.ContMDiffOn.mpullbackWithin_vectorField_inter
     (hV : CMDiff[t] m (T% V)) (hf : CMDiff[s] n f)
     (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderiv[s] f x).IsInvertible)
-    (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) :
-    CMDiff[s ∩ f ⁻¹' t] m (T% (mpullbackWithin I I' f V s))  :=
+    (hs : UniqueMDiff[s]) (hmn : m + 1 ≤ n) :
+    CMDiff[s ∩ f ⁻¹' t] m (T% (mpullbackWithin I I' f V s)) :=
   fun _ hx₀ ↦ ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀) hx₀.1 hs hmn
 
@@ -599,7 +616,7 @@ protected lemma _root_.ContMDiff.mpullback_vectorField
 
 lemma contMDiffWithinAt_mpullbackWithin_extChartAt_symm
     {V : Π (x : M), TangentSpace I x} (hV : CMDiffAt[s] m (T% V) x)
-    (hs : UniqueMDiffOn I s) (hx : x ∈ s) (hmn : m + 1 ≤ n) :
+    (hs : UniqueMDiff[s]) (hx : x ∈ s) (hmn : m + 1 ≤ n) :
     CMDiffAt[(extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s] m
       (T% (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I))) (extChartAt I x x) :=
   ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq' hV
@@ -611,7 +628,7 @@ lemma contMDiffWithinAt_mpullbackWithin_extChartAt_symm
 
 lemma eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm
     {V : Π (x : M), TangentSpace I x} (hV : CMDiffAt[s] m (T% V) x)
-    (hs : UniqueMDiffOn I s) (hx : x ∈ s) (hmn : m + 1 ≤ n) (hm : m ≠ ∞) :
+    (hs : UniqueMDiff[s]) (hx : x ∈ s) (hmn : m + 1 ≤ n) (hm : m ≠ ∞) :
     ∀ᶠ y in 𝓝[s] x, CMDiffAt[(extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s] m
     (T% (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I))) (extChartAt I x y) := by
   have T := nhdsWithin_mono _ (subset_insert _ _)

@@ -45,7 +45,7 @@ primitive spectrum of the lattice of M-ideals of a Banach space.
 ## References
 
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
-* [Henriksen et al, *Joincompact spaces, continuous lattices and C*-algebras*][henriksen_et_al1997]
+* [Henriksen et al, *Joincompact spaces, continuous lattices and C⋆-algebras*][henriksen_et_al1997]
 
 ## Tags
 
@@ -76,12 +76,7 @@ variable {T : Set α}
 pairwise union. -/
 lemma hull_inf (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     hull T (a ⊓ b) = hull T a ∪ hull T b := by
-  ext p
-  constructor <;> intro h
-  · exact (hT p p.2).2 h
-  · rcases h with (h1 | h3)
-    · exact inf_le_of_left_le h1
-    · exact inf_le_of_right_le h3
+  grind [InfPrime.inf_le]
 
 variable [OrderTop α]
 
@@ -110,14 +105,13 @@ lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Fin
 
 variable [TopologicalSpace α] [IsLower α]
 
-set_option backward.isDefEq.respectTransparency false in
-/-
+/--
 The relative-open sets of the form `(hull T a)ᶜ` for `a` in `α` form a basis for the relative
 Lower topology.
 -/
 lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
     IsTopologicalBasis { S : Set T | ∃ (a : α), (hull T a)ᶜ = S } := by
-  convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
+  convert! isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
   ext R
   simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
   constructor <;> intro ha
@@ -125,9 +119,9 @@ lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
     use {a}
     rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
     simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,
-      Subtype.image_preimage_coe, diff_self_inter, preimage_diff, Subtype.coe_preimage_self,
+      Subtype.image_preimage_coe, sdiff_self_inter, preimage_sdiff, Subtype.coe_preimage_self,
       true_and]
-    exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
+    exact compl_eq_univ_sdiff (Subtype.val ⁻¹' Ici a)
   · obtain ⟨F, hF⟩ := ha
     lift F to Finset α using hF.1
     use Finset.inf F id
@@ -147,8 +141,8 @@ lemma hull_iSup {ι : Sort v} (s : ι → α) : hull T (iSup s) = ⋂ i, hull T 
 
 lemma hull_sSup (S : Set α) : hull T (sSup S) = ⋂₀ { hull T a | a ∈ S } := by aesop
 
-/- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
-`(hull T a)ᶜ` for some `a` in `α`.-/
+/-- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
+`(hull T a)ᶜ` for some `a` in `α`. -/
 lemma isOpen_iff [TopologicalSpace α] [IsLower α] (hT : ∀ p ∈ T, InfPrime p)
     (S : Set T) : IsOpen S ↔ ∃ (a : α), S = (hull T a)ᶜ := by
   constructor <;> intro h
@@ -159,8 +153,8 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] (hT : ∀ p ∈ T, InfPrime 
   · obtain ⟨a, ha⟩ := h
     exact ⟨(Ici a)ᶜ, isClosed_Ici.isOpen_compl, ha.symm⟩
 
-/- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the
-form `hull T a` for some `a` in `α`.-/
+/-- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the
+form `hull T a` for some `a` in `α`. -/
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] (hT : ∀ p ∈ T, InfPrime p)
     {S : Set T} : IsClosed S ↔ ∃ (a : α), S = hull T a := by
   simp only [← isOpen_compl_iff, isOpen_iff hT, compl_inj_iff]
@@ -168,9 +162,9 @@ lemma isClosed_iff [TopologicalSpace α] [IsLower α] (hT : ∀ p ∈ T, InfPrim
 /-- For a subset `S` of `T`, `kernel S` is the infimum of `S` (considered as a set of `α`) -/
 abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
 
-/- The pair of maps `kernel` and `hull` form an antitone Galois connection between the
-subsets of `T` and `α`. -/
 open OrderDual in
+/-- The pair of maps `kernel` and `hull` form an antitone Galois connection between the
+subsets of `T` and `α`. -/
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
     (fun S => toDual (kernel S)) (fun a => hull T (ofDual a)) := fun S a => by
   simp [Set.subset_def]
