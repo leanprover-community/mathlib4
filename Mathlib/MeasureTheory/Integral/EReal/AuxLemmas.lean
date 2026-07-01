@@ -21,85 +21,6 @@ noncomputable
 instance : ENorm EReal where
   enorm x := (max x 0).toENNReal + (max (-x) 0).toENNReal
 
-lemma EReal.add_sub_add_comm {a b c d : EReal} (h1 : c ≠ ⊥ ∨ d ≠ ⊤) (h2 : c ≠ ⊤ ∨ d ≠ ⊥) :
-    (a + b) - (c + d) = (a - c) + (b - d) := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, sub_eq_add_neg, EReal.neg_add h1 h2, sub_eq_add_neg]
-  grind
-
-lemma EReal.mul_sub_of_eq_zero {a b c : EReal} (h : b = 0 ∨ c = 0) :
-    a * (b - c) = a * b - a * c := by
-  cases h with
-  | inl hb => simp [hb]
-  | inr hc => simp [hc]
-
-lemma EReal.add_sub_add (a b : EReal) {c d : EReal} (hc : c ≠ ⊥) (hd : d ≠ ⊥) :
-    a + b - (c + d) = (a - c) + (b - d) := by
-  cases a <;> cases b <;> cases c <;> cases d
-  -- 81 goals
-  any_goals simp [hc, hd]
-  any_goals simp at hc
-  any_goals simp at hd
-  · norm_cast
-    ring
-  · norm_cast
-  · norm_cast
-  · norm_cast
-
-lemma EReal.ne_bot_of_nonneg {a : EReal} (ha : 0 ≤ a) : a ≠ ⊥ := by
-  intro h_false
-  simp [h_false] at ha
-
-lemma EReal.mul_sub_of_nonneg_of_ne_top {a b c : EReal} (ha : 0 ≤ a) (ha' : a ≠ ⊤) :
-    a * (b - c) = a * b - a * c := by
-  by_cases ha_zero : a = 0
-  · simp [ha_zero]
-  have ha_pos : 0 < a := lt_of_le_of_ne ha (Ne.symm ha_zero)
-  have ha_ne_bot : a ≠ ⊥ := fun h_eq ↦ by simp [h_eq] at ha
-  lift a to ℝ using ⟨ha', ha_ne_bot⟩
-  cases b <;> cases c
-  · simp [EReal.mul_bot_of_pos ha_pos]
-  · simp [EReal.mul_bot_of_pos ha_pos]
-  · simp [EReal.mul_bot_of_pos ha_pos]
-  · simp only [ne_eq, EReal.coe_ne_bot, not_false_eq_true, EReal.sub_bot,
-      EReal.mul_top_of_pos ha_pos, EReal.mul_bot_of_pos ha_pos]
-    rw [EReal.sub_bot]
-    rw [← EReal.coe_mul]
-    exact EReal.coe_ne_bot _
-  · norm_cast
-    ring
-  · simp [EReal.mul_bot_of_pos ha_pos, EReal.mul_top_of_pos ha_pos]
-  · simp [EReal.mul_top_of_pos ha_pos, EReal.mul_bot_of_pos ha_pos]
-  · simp only [ne_eq, EReal.coe_ne_top, not_false_eq_true, EReal.top_sub,
-      EReal.mul_top_of_pos ha_pos]
-    rw [EReal.top_sub]
-    rw [← EReal.coe_mul]
-    exact EReal.coe_ne_top _
-  · simp [EReal.mul_bot_of_pos ha_pos, EReal.mul_top_of_pos ha_pos]
-
-lemma EReal.sub_lt_sub_of_le_of_lt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
-  (hy_top : y ≠ ⊤) (hy_bot : y ≠ ⊥) : x - t < y - z := by
-  refine sub_lt_of_lt_add' ?_
-  rw [add_sub_assoc', add_comm, add_sub_assoc]
-  by_cases hxy : x = y
-  · rw [hxy]
-    lift y to ℝ using ⟨hy_top, hy_bot⟩
-    by_cases htz_top : t - z = ⊤
-    · simp_all
-    rw [← coe_toReal htz_top <| ne_bot_of_nonneg (sub_pos.mpr h').le]
-    norm_cast
-    refine lt_add_of_pos_right y ?_
-    exact EReal.toReal_pos (sub_pos.mpr h') htz_top
-  · rw [← add_zero x]
-    refine add_lt_add ?_ ?_
-    · grind
-    · exact sub_pos.mpr h'
-
-lemma EReal.top_sub_eq_top_or_bot {a : EReal} : ⊤ - a = ⊤ ∨ ⊤ - a = ⊥ := by
-  cases a with
-  | bot => simp
-  | coe a => simp
-  | top => simp
-
 section limsup_liminf
 
 open Filter
@@ -139,49 +60,41 @@ section PosNeg
 
 open MeasureTheory
 
-variable {α : Type*} {mα : MeasurableSpace α} {f : α → EReal} {μ : Measure α}
-
-noncomputable instance : PosPart (α → EReal) where
-  posPart f := fun x ↦ max (f x) 0
-
-noncomputable instance : NegPart (α → EReal) where
-  negPart f := fun x ↦ max (- f x) 0
-
-lemma posPartFun_def (f : α → EReal) : f⁺ = fun x ↦ max (f x) 0 := rfl
-
-lemma negPartFun_def (f : α → EReal) : f⁻ = fun x ↦ max (- f x) 0 := rfl
+variable {α β : Type*} {mα : MeasurableSpace α} {μ : Measure α} [SubNegMonoid β] [Lattice β]
 
 @[simp]
-lemma posPartFun_nonneg (f : α → EReal) (x : α) : 0 ≤ f⁺ x := by simp [posPartFun_def]
+lemma posPartFun_nonneg (f : α → β) (x : α) : 0 ≤ f⁺ x := posPart_nonneg f x
 
 @[simp]
-lemma negPartFun_nonneg (f : α → EReal) (x : α) : 0 ≤ f⁻ x := by simp [negPartFun_def]
+lemma negPartFun_nonneg (f : α → β) (x : α) : 0 ≤ f⁻ x := negPart_nonneg f x
 
 lemma posPartFun_sub_negPartFun (f : α → EReal) (x : α) : f⁺ x - f⁻ x = f x := by
-  rcases le_total 0 (f x) with h | h <;> simp [posPartFun_def, negPartFun_def, h]
+  rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
 
 lemma posPartFun_eq_zero_or_negPartFun_eq_zero (f : α → EReal) (x : α) :
     f⁺ x = 0 ∨ f⁻ x = 0 := by
-  rcases le_total 0 (f x) with h | h <;> simp [posPartFun_def, negPartFun_def, h]
+  rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
+
+variable {f : α → EReal}
 
 @[fun_prop]
 lemma Measurable.posPartFun (hf : Measurable f) : Measurable (fun x ↦ f⁺ x) := by
-  simp only [posPartFun_def]
+  simp only [posPart_def]
   fun_prop
 
 @[fun_prop]
 lemma Measurable.negPartFun (hf : Measurable f) : Measurable (fun x ↦ f⁻ x) := by
-  simp only [negPartFun_def]
+  simp only [negPart_def]
   fun_prop
 
 @[fun_prop]
 lemma AEMeasurable.posPartFun (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ f⁺ x) μ := by
-  simp only [posPartFun_def]
+  simp only [posPart_def]
   fun_prop
 
 @[fun_prop]
 lemma AEMeasurable.negPartFun (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ f⁻ x) μ := by
-  simp only [negPartFun_def]
+  simp only [negPart_def]
   fun_prop
 
 end PosNeg
