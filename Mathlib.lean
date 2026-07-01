@@ -5905,6 +5905,10 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 public import Mathlib.NumberTheory.Transcendental.Liouville.Measure
 public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+public import Mathlib.NumberTheory.Transcendental.poly
+public import Mathlib.NumberTheory.Transcendental.polyDvdCert
+public import Mathlib.NumberTheory.Transcendental.polyReflectKernel
+public import Mathlib.NumberTheory.Transcendental.polyTactics
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 public import Mathlib.NumberTheory.WellApproximable
