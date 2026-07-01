@@ -226,20 +226,17 @@ set_option backward.isDefEq.respectTransparency false in
 weak pullback of `f` and `g` exists: it is given by composing the equalizer with the projections. -/
 theorem hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair [HasLimit (pair X Y)]
     [HasWeakLimit (parallelPair (prod.fst ≫ f) (prod.snd ≫ g))] : HasWeakLimit (cospan f g) :=
-  let π₁ : X ⨯ Y ⟶ X := prod.fst
-  let π₂ : X ⨯ Y ⟶ Y := prod.snd
-  let e := weakEqualizer.ι (π₁ ≫ f) (π₂ ≫ g)
   HasWeakLimit.mk
     { cone :=
-        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by
+        PullbackCone.mk (weakEqualizer.ι (prod.fst ≫ f) (prod.snd ≫ g) ≫ prod.fst)
+          (weakEqualizer.ι _ _ ≫ prod.snd) <| by
           rw [Category.assoc, weakEqualizer.condition]
-          simp [e]
+          simp 
       isWeakLimit :=
-        PullbackCone.IsWeakLimit.mk _ (fun s => weakEqualizer.lift
-          (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
-            rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π]
-            exact PullbackCone.condition _)
-          (by simp [π₁, e]) (by simp [π₂, e])}
+        PullbackCone.IsWeakLimit.mk _ (fun s ↦ weakEqualizer.lift
+          (prod.lift (s.π.app .left) (s.π.app .right)) <| by
+            simp [limit.lift_π_assoc, PullbackCone.condition])
+          (by simp) (by simp) }
 
 section
 
