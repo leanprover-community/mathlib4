@@ -138,7 +138,7 @@ instance (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
   dsimp at f' hf' fac
   refine ⟨fun {X' Y' t l r _ _} sq ↦ ?_⟩
   dsimp at r
-  obtain ⟨j', l', r', hl', hr', sq'⟩ :
+  obtain ⟨j', l', r', _, _, sq'⟩ :
       ∃ (j' : J) (l' : X' ⟶ X.obj j') (r' : Y' ⟶ Y.obj j'),
         l' ≫ c₁.ι.app j' = l ∧ r' ≫ c₂.ι.app j' = r ∧ CommSq t l' r' (f.app j') := by
     obtain ⟨j₁, l', hl'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hc₁ l
