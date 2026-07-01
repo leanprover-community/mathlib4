@@ -44,6 +44,7 @@ variable {α M : Type*} {f : α → α} {g : α → M} {n : ℕ} {x : α}
 @[expose]
 public section BirkhoffMax
 
+/-- The maximum of the Birkhoff sums of `g` along orbits of `f` from `0` to `n`. -/
 def birkhoffMax [AddCommMonoid M] [SemilatticeSup M]
     (f : α → α) (g : α → M) : ℕ →o (α → M) :=
   partialSups (birkhoffSum f g)
@@ -152,6 +153,10 @@ noncomputable section BirkhoffSup
 public def birkhoffSumSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
   ⨆ n, ↑(birkhoffSum f g n x)
 
+@[fun_prop]
+lemma measurable_birkhoffSumSup [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
+    Measurable (birkhoffSumSup f g) := by fun_prop [birkhoffSumSup]
+
 lemma birkhoffSumSup_eq_iSup_birkhoffMax :
     birkhoffSumSup f g x = ⨆ n, ↑(birkhoffMax f g n x) := by
   simp [birkhoffMax, Pi.partialSups_apply, ←map_partialSups' EReal.coe_max, birkhoffSumSup]
@@ -160,6 +165,10 @@ lemma birkhoffSumSup_eq_iSup_birkhoffMax :
 @[expose]
 public def birkhoffAverageSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
   ⨆ n, ↑(birkhoffAverage ℝ f g n x)
+
+@[fun_prop]
+lemma measurable_birkhoffAverageSup [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
+    Measurable (birkhoffAverageSup f g) := by fun_prop [birkhoffAverageSup]
 
 end BirkhoffSup
 
