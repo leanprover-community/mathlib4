@@ -74,10 +74,7 @@ public meta section
 open Lean Meta Qq
 open Mathlib.Tactic.Ring
 
-variable
-  {u : Level}
-  {α : Q(Type u)}
-  {rα : Q(CommRing $α)}
+variable {u : Level} {α : Q(Type u)} {rα : Q(CommRing $α)}
 
 namespace Mathlib.Tactic.Determinant
 
