@@ -247,8 +247,9 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 
 variable [Sub ι] [OrderedSub ι] [AddLeftReflectLE ι]
 
-/- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for the above typeclasses for convenience. -/
+/-! The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
+state them for the above typeclasses for convenience. -/
+
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -319,7 +320,7 @@ theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [CommSemiring S] [Sem
 theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     DirectSum.coeAlgHom A (DirectSum.of (fun i => A i) i x) = x :=
-  DirectSum.toSemiring_of _ (by rfl) (fun _ _ => (by rfl)) _ _
+  DirectSum.toSemiring_of _ rfl (fun _ _ => rfl) _ _
 
 end DirectSum
 
@@ -455,7 +456,7 @@ theorem listProd_apply_eq_zero' {l : List ((⨁ i, A i) × ι)}
     (hl : ∀ xn ∈ l, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < (l.map Prod.snd).sum) :
     (l.map Prod.fst).prod n = 0 := by
   induction l generalizing n with
-  | nil => simp [(zero_le n).not_gt] at hn
+  | nil => simp at hn
   | cons head tail ih =>
     simp only [List.mem_cons, forall_eq_or_imp, List.map_cons, List.sum_cons,
       List.prod_cons] at hl hn ⊢
@@ -466,7 +467,7 @@ theorem listProd_apply_eq_zero {l : List (⨁ i, A i)} {m : ι}
     l.prod n = 0 := by
   -- a proof which uses `DirectSum.listProd_apply_eq_zero'` is actually more work
   induction l generalizing n with
-  | nil => simp [(zero_le n).not_gt] at hn
+  | nil => simp at hn
   | cons head tail ih =>
     simp only [List.mem_cons, forall_eq_or_imp, List.length_cons, List.prod_cons] at hl hn ⊢
     refine mul_apply_eq_zero hl.1 (ih hl.2) ?_

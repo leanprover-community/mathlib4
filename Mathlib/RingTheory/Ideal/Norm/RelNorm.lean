@@ -99,7 +99,7 @@ theorem map_spanIntNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
   nth_rw 2 [map]
   simp [map_span, Set.image_image]
 
-@[mono]
+@[gcongr, mono]
 theorem spanNorm_mono {I J : Ideal S} (h : I ≤ J) : spanNorm R I ≤ spanNorm R J :=
   Ideal.span_mono (Set.monotone_image h)
 
@@ -191,6 +191,8 @@ theorem spanNorm_le_comap (I : Ideal S) : spanNorm R I ≤ comap (algebraMap R S
   | zero => simp
   | add _ _ _ _ hx hy => exact Submodule.add_mem _ hx hy
   | smul _ _ _ hx => exact Submodule.smul_mem _ _ hx
+
+set_option linter.overlappingInstances false
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
 theorem spanNorm_mul [IsDedekindDomain R] [IsDedekindDomain S] (I J : Ideal S) :
@@ -302,7 +304,7 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
     map f (relNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) :=
   map_spanIntNorm R I f
 
-@[mono]
+@[gcongr, mono]
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
@@ -320,7 +322,7 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
     [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) = relNorm R I := by
   refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
-  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
+  convert! relNorm_map_algEquiv_aux σ.symm (I.map σ)
   change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
   simp [map_mapₐ]
 
@@ -396,21 +398,22 @@ See `Ideal.relNorm_eq_pow_of_isMaximal` for a statement that does not require th
 be Galois.
 -/
 theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
-    [IsGalois (FractionRing R) (FractionRing S)] : relNorm R P = p ^ p.inertiaDeg P := by
+    [IsGalois (FractionRing R) (FractionRing S)] : relNorm R P = p ^ P.inertiaDeg' R := by
+  have : P.IsMaximal := IsMaximal.of_liesOver_isMaximal P p
   let G := Gal(FractionRing S/FractionRing R)
   let := IsIntegralClosure.MulSemiringAction R (FractionRing R) (FractionRing S) S
   have := IsGaloisGroup.of_isFractionRing G R S (FractionRing R) (FractionRing S)
   by_cases hp : p = ⊥
-  · have h : p.inertiaDeg P ≠ 0 := Nat.ne_zero_iff_zero_lt.mpr <| inertiaDeg_pos p P
+  · have h : P.inertiaDeg' R ≠ 0 := (inertiaDeg'_pos P R).ne'
     have hP : P = ⊥ := by
       rw [hp] at hPp
       exact eq_bot_of_liesOver_bot R P
     rw [hp, hP, relNorm_bot, bot_pow]
-    rwa [hp, hP] at h
+    rwa [hP] at h
   obtain ⟨s, hs⟩ := exists_relNorm_eq_pow_of_isPrime P p
-  suffices s = p.inertiaDeg P by rwa [this] at hs
+  suffices s = P.inertiaDeg' R by rwa [this] at hs
   have h₀ : ∀ Q ∈ (p.primesOver S).toFinset,
-      relNorm R Q ^ ramificationIdx p Q = p ^ ((p.ramificationIdxIn S) * s) := by
+      relNorm R Q ^ Q.ramificationIdx' R = p ^ ((p.ramificationIdxIn S) * s) := by
     intro Q hQ
     rw [Set.mem_toFinset] at hQ
     have : Q.IsPrime := hQ.1
@@ -422,17 +425,16 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     map_algebraMap_eq_finsetProd_pow hp).symm.trans <| relNorm_algebraMap S p
   simp +contextual only [map_prod, map_pow, h₀, Finset.prod_const, ← pow_mul] at h
   rwa [← IsGaloisGroup.card_eq_finrank G (FractionRing R) (FractionRing S),
-    ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G, mul_comm,
+    ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p S G, mul_comm,
     ← Set.ncard_eq_toFinset_card',
     ((IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hp).pow_injective _).eq_iff,
     mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero p S),
-    mul_right_inj' (ramificationIdxIn_ne_zero G hp),
-    inertiaDegIn_eq_inertiaDeg p P G] at h
+    mul_right_inj' (ramificationIdxIn_ne_zero G), inertiaDegIn_eq_inertiaDeg p P G] at h
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 
 theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
-    relNorm R P = p ^ p.inertiaDeg P := by
+    relNorm R P = p ^ P.inertiaDeg' R := by
   let T := Ring.NormalClosure R S
   obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=
     exists_maximal_ideal_liesOver_of_isIntegral P
@@ -441,8 +443,7 @@ theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal
   have : IsGalois (FractionRing S) (FractionRing T) :=
     IsGalois.tower_top_of_isGalois (FractionRing R) (FractionRing S) (FractionRing T)
   rwa [← relNorm_relNorm R S, relNorm_eq_pow_of_isPrime_isGalois Q P, map_pow,
-    inertiaDeg_algebra_tower p P Q, pow_mul, pow_left_inj] at h
-  exact Nat.ne_zero_iff_zero_lt.mpr <| inertiaDeg_pos P Q
+    inertiaDeg'_tower (R := R) P Q, pow_mul, pow_left_inj (inertiaDeg'_pos Q S).ne'] at h
 
 end relNorm_prime
 
@@ -473,7 +474,8 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
     have : Fact (p.Prime) := ⟨Nat.absNorm_under_prime _⟩
     have hp : Prime (p : ℤ) := Nat.prime_iff_prime_int.mp <| Nat.absNorm_under_prime _
     rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, absNorm_eq_pow_inertiaDeg Q hp,
-      absNorm_eq_pow_inertiaDeg P hp, inertiaDeg_algebra_tower (span {(p : ℤ)}) P Q, pow_mul]
+      absNorm_eq_pow_inertiaDeg P hp, inertiaDeg_algebra_tower (span {(p : ℤ)}) P Q, pow_mul,
+      ← inertiaDeg_eq_inertiaDeg' P]
 
 theorem relNorm_int (I : Ideal S) :
     relNorm ℤ I = Ideal.span {(absNorm I : ℤ)} := by

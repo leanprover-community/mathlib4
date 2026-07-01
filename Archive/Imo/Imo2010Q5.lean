@@ -79,7 +79,7 @@ lemma push {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 5) :
     Reachable (B - single i (B i) + single (i + 1) (2 * B i)) := by
   obtain hc | hc := (B i).eq_zero_or_pos
   · rwa [hc, mul_zero, single_zero, single_zero, add_zero, tsub_zero]
-  · convert (rB.move1 hi hc).push hi using 1
+  · convert! (rB.move1 hi hc).push hi using 1
     ext k; simp only [add_apply, sub_apply]
     rcases eq_or_ne k i with rfl | hk
     · simp_rw [single_eq_same, tsub_self, single_succ]
@@ -92,29 +92,29 @@ termination_by B i
 /-- `(0, 0, 5, 11, 0, 0)` is reachable. -/
 lemma five_eleven : Reachable (single 2 5 + single 3 11) := by
   have R : Reachable (single 1 3 + single 2 1 + single 3 1 + single 4 1 + single 5 1) := by
-    convert base.push (show 0 < 5 by decide) using 1; decide
+    convert! base.push (show 0 < 5 by decide) using 1; decide
   replace R : Reachable (single 2 7 + single 3 1 + single 4 1 + single 5 1) := by
-    convert R.push (show 1 < 5 by decide) using 1; decide
+    convert! R.push (show 1 < 5 by decide) using 1; decide
   replace R : Reachable (single 2 7 + single 4 3 + single 5 1) := by
-    convert R.push (show 3 < 5 by decide) using 1; decide
+    convert! R.push (show 3 < 5 by decide) using 1; decide
   replace R : Reachable (single 2 7 + single 5 7) := by
-    convert R.push (show 4 < 5 by decide) using 1; decide
+    convert! R.push (show 4 < 5 by decide) using 1; decide
   replace R : Reachable (single 2 6 + single 3 2 + single 5 7) := by
-    convert R.move1 (show 2 < 5 by decide) (by decide) using 1; decide
+    convert! R.move1 (show 2 < 5 by decide) (by decide) using 1; decide
   replace R : Reachable (single 2 6 + single 3 1 + single 4 2 + single 5 7) := by
-    convert R.move1 (show 3 < 5 by decide) (by decide) using 1; decide
+    convert! R.move1 (show 3 < 5 by decide) (by decide) using 1; decide
   replace R : Reachable (single 2 6 + single 3 1 + single 5 11) := by
-    convert R.push (show 4 < 5 by decide) using 1; decide
+    convert! R.push (show 4 < 5 by decide) using 1; decide
   replace R : Reachable (single 2 6 + single 4 11) := by
-    convert R.move2 (show 3 < 4 by decide) (by decide) using 1; decide
-  convert R.move2 (show 2 < 4 by decide) (by decide) using 1; decide
+    convert! R.move2 (show 3 < 4 by decide) (by decide) using 1; decide
+  convert! R.move2 (show 2 < 4 by decide) (by decide) using 1; decide
 
 /-- Decrement $B_i$ and double $B_{i+1}$, assuming $B_{i+2} = 0$, by doing `push, move2`. -/
 lemma double {B : Fin 6 → ℕ} {i : Fin 6}
     (rB : Reachable B) (hi : i < 4) (pB : 0 < B i) (zB : B (i + 2) = 0) :
     Reachable (B + single (i + 1) (B (i + 1)) - single i 1) := by
-  convert (rB.push (show i + 1 < 5 by grind)).move2 hi (by
-    rw [add_apply, sub_apply, single_succ]; grind)
+  convert!
+    (rB.push (show i + 1 < 5 by grind)).move2 hi (by rw [add_apply, sub_apply, single_succ]; grind)
   ext k; simp only [comp_apply, add_apply, sub_apply]
   have (j : Fin 6) : j + 1 + 1 = j + 2 := by grind
   rcases eq_or_ne k i with rfl | hk
@@ -132,7 +132,7 @@ lemma doubles {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 4) (z
     Reachable (update (B - single i (B i)) (i + 1) (B (i + 1) * 2 ^ B i)) := by
   obtain hc | hc := (B i).eq_zero_or_pos
   · rwa [hc, single_zero, tsub_zero, pow_zero, mul_one, update_eq_self]
-  · convert (rB.double hi hc zB).doubles hi (by
+  · convert! (rB.double hi hc zB).doubles hi (by
       rw [sub_apply, add_apply, single_eq_of_ne (by simp), zB, zero_add, zero_tsub]) using 1
     ext k
     simp_rw [sub_apply, add_apply, single_eq_same, single_succ, single_succ', add_zero, tsub_zero,
@@ -149,9 +149,9 @@ termination_by B i
 lemma exp {B : Fin 6 → ℕ} {i : Fin 6}
     (rB : Reachable B) (hi : i < 4) (pB : 0 < B i) (zB : B (i + 1) = 0) (zB' : B (i + 2) = 0) :
     Reachable (B - single i (B i) + single (i + 1) (2 ^ B i)) := by
-  convert (rB.move1 (show i < 5 by grind) pB).doubles hi (by
+  convert! (rB.move1 (show i < 5 by grind) pB).doubles hi (by
     rw [add_apply, sub_apply, zB', single_eq_of_ne (by simp), tsub_zero,
-      single_eq_of_ne (by simp), zero_add]) using 1
+        single_eq_of_ne (by simp), zero_add]) using 1
   simp_rw [add_apply, sub_apply, single_eq_same, single_succ, single_succ', zB, zero_tsub, zero_add,
     add_zero, ← pow_succ', Nat.sub_add_cancel pB]
   ext k; simp only [add_apply, sub_apply]
@@ -167,7 +167,7 @@ lemma exp_mid {k n : ℕ} (h : Reachable (single 2 (k + 1) + single 3 n)) (hn : 
     Reachable (single 2 k + single 3 (2 ^ n)) := by
   have md := h.exp (show 3 < 4 by decide) (by simp [hn])
     (by simp [add_apply, single_eq_of_ne]) (by simp [add_apply, single_eq_of_ne])
-  convert md.move2 (show 2 < 4 by decide) (by
+  convert! md.move2 (show 2 < 4 by decide) (by
     simp only [add_apply, sub_apply, single_eq_same]
     iterate 3 rw [single_eq_of_ne (by decide)]
     simp) using 1
@@ -192,7 +192,7 @@ lemma reduce {m n : ℕ} (h : Reachable (single 3 n)) (hmn : m ≤ n) : Reachabl
   | base => exact h
   | succ k _ ih =>
     apply ih
-    convert h.move2 (show 3 < 4 by decide) k.succ_pos
+    convert! h.move2 (show 3 < 4 by decide) k.succ_pos
     ext i; simp only [sub_apply, comp_apply]
     rcases eq_or_ne i 3 with rfl | i3
     · rw [swap_apply_of_ne_of_ne (by decide) (by decide)]
@@ -231,7 +231,7 @@ theorem result : Reachable (single 5 (2010 ^ 2010 ^ 2010)) := by
   -- See https://github.com/leanprover/lean4/issues/11713
   set m : ℕ := 2010
   have hm : m = 2010 := by rfl
-  convert ((quarter_target hm).push (show 3 < 5 by decide)).push (show 4 < 5 by decide)
+  convert! ((quarter_target hm).push (show 3 < 5 by decide)).push (show 4 < 5 by decide)
   simp only [single_eq_same, tsub_self, Fin.reduceAdd, zero_add, single_inj]
   rw [← mul_assoc, show 2 * 2 = 4 by rfl, mul_comm, Nat.div_mul_cancel]
   trans 2010 ^ 2

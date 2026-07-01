@@ -230,7 +230,7 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h'] with ω hs_eq ht_eq hst_eq h'
     rw [← hst_eq, Pi.mul_apply, ← hs_eq, ← ht_eq, h', ENNReal.toReal_mul]
   · refine ((stronglyMeasurable_condExpKernel ((hs1 s hs).inter (hs2 t ht))).ae_eq_trim_iff hm'
-      ((measurable_condExpKernel (hs1 s hs)).mul
+      ((measurable_condExpKernel (hs1 s hs)).fun_mul
         (measurable_condExpKernel (hs2 t ht))).stronglyMeasurable).mpr ?_
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h] with ω hs_eq ht_eq hst_eq h
     have h_ne_top : condExpKernel μ m' ω (s ∩ t) ≠ ∞ := measure_ne_top (condExpKernel μ m' ω) _
@@ -255,7 +255,7 @@ theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
     {s t : Set Ω} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     CondIndepSets m' hm' {s} {t} μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] (μ⟦s | m'⟧) * (μ⟦t | m'⟧) := by
   rw [condIndepSets_iff _ _ _ _ ?_ ?_]
-  · simp only [Set.mem_singleton_iff, forall_eq_apply_imp_iff, forall_eq]
+  · simp
   · intro s' hs'
     rw [Set.mem_singleton_iff] at hs'
     rwa [hs']
@@ -405,8 +405,6 @@ theorem CondIndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     {u : Set ι} (hyp : ∀ n ∈ u, CondIndepSets m' hm' (s n) s' μ) :
     CondIndepSets m' hm' (⋃ n ∈ u, s n) s' μ :=
   Kernel.IndepSets.biUnion hyp
-
-@[deprecated (since := "2025-11-02")] alias CondIndepSets.bUnion := CondIndepSets.biUnion
 
 theorem CondIndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω))
     (h₁ : CondIndepSets m' hm' s₁ s' μ) :
@@ -690,7 +688,7 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
         intro i hi
         rw [(h_sets i hi).choose_spec.2.symm]
         simp only [g, dif_pos hi]
-      convert h with i hi i hi <;> exact hg i hi
+      convert! h with i hi i hi <;> exact hg i hi
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : Measurable f) (hg : Measurable g) :
@@ -853,11 +851,11 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     rw [@Measure.dirac_apply' _ (mγ.comap k) _ _ (hk_meas hs)]
     congr
   refine ⟨fun h s t u hs ht hu ↦ ?_, fun h ↦ ?_⟩
-  · convert h (hk_meas hs) ht hu
+  · convert! h (hk_meas hs) ht hu
     · exact h_left hs ht hu
     · exact h_right hs ht hu
   · rintro - t u ⟨s, hs, rfl⟩ ht hu
-    convert h hs ht hu
+    convert! h hs ht hu
     · exact (h_left hs ht hu).symm
     · exact (h_right hs ht hu).symm
 
@@ -1002,6 +1000,10 @@ theorem iCondIndepFun.condIndepFun_finsetProd_of_notMem
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
 
 @[deprecated (since := "2026-04-08")]
+alias iCondIndepFun.condIndepFun_finset_sum_of_notMem :=
+  iCondIndepFun.condIndepFun_finsetSum_of_notMem
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias iCondIndepFun.condIndepFun_finset_prod_of_notMem :=
   iCondIndepFun.condIndepFun_finsetProd_of_notMem
 

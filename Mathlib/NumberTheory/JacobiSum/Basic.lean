@@ -140,7 +140,7 @@ theorem jacobiSum_nontrivial_inv {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
   classical
   rw [jacobiSum]
   conv => enter [1, 2, x]; rw [MulChar.inv_apply', ← map_mul, ← div_eq_mul_inv]
-  rw [sum_eq_sum_diff_singleton_add (mem_univ (1 : F)), sub_self, div_zero, χ.map_zero, add_zero]
+  rw [sum_eq_sum_sdiff_singleton_add (mem_univ (1 : F)), sub_self, div_zero, χ.map_zero, add_zero]
   have : ∑ x ∈ univ \ {1}, χ (x / (1 - x)) = ∑ x ∈ univ \ {-1}, χ x := by
     refine sum_bij' (fun a _ ↦ a / (1 - a)) (fun b _ ↦ b / (1 + b)) (fun x hx ↦ ?_)
       (fun y hy ↦ ?_) (fun x hx ↦ ?_) (fun y hy ↦ ?_) (fun _ _ ↦ rfl)
@@ -157,7 +157,7 @@ theorem jacobiSum_nontrivial_inv {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hy
       rw [eq_comm, neg_eq_iff_eq_neg, ← sub_eq_zero, sub_neg_eq_add] at hy
       simp [field]
-  rw [this, ← add_eq_zero_iff_eq_neg, ← sum_eq_sum_diff_singleton_add (mem_univ (-1 : F))]
+  rw [this, ← add_eq_zero_iff_eq_neg, ← sum_eq_sum_sdiff_singleton_add (mem_univ (-1 : F))]
   exact MulChar.sum_eq_zero_of_ne_one hχ
 
 /-- If `χ` and `φ` are multiplicative characters on a finite field `F` such that
@@ -165,7 +165,7 @@ theorem jacobiSum_nontrivial_inv {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
 theorem jacobiSum_mul_nontrivial {χ φ : MulChar F R} (h : χ * φ ≠ 1) (ψ : AddChar F R) :
     gaussSum (χ * φ) ψ * jacobiSum χ φ = gaussSum χ ψ * gaussSum φ ψ := by
   classical
-  rw [gaussSum_mul _ _ ψ, sum_eq_sum_diff_singleton_add (mem_univ (0 : F))]
+  rw [gaussSum_mul _ _ ψ, sum_eq_sum_sdiff_singleton_add (mem_univ (0 : F))]
   conv =>
     enter [2, 2, 2, x]
     rw [zero_sub, neg_eq_neg_one_mul x, map_mul, mul_left_comm (χ x) (φ (-1)),
@@ -179,7 +179,7 @@ theorem jacobiSum_mul_nontrivial {χ φ : MulChar F R} (h : χ * φ ≠ 1) (ψ :
   simp_rw [← sum_mul, sum_congr rfl sum_eq, ← mul_one_sub, map_mul, mul_assoc]
   conv => enter [2, 2, t, 1, 2, x, 2]; rw [← mul_assoc, mul_comm (χ x) (φ t)]
   simp_rw [← mul_assoc, ← MulChar.mul_apply, mul_assoc, ← mul_sum, mul_right_comm]
-  rw [← jacobiSum, ← sum_mul, gaussSum, sum_eq_sum_diff_singleton_add (mem_univ (0 : F)),
+  rw [← jacobiSum, ← sum_mul, gaussSum, sum_eq_sum_sdiff_singleton_add (mem_univ (0 : F)),
     (χ * φ).map_zero, zero_mul, add_zero]
 
 end FiniteField
