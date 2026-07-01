@@ -526,8 +526,8 @@ assuming `s` does not contain any underscores. -/
 def isWronglyCased (s : String.Slice) : Bool :=
   -- The string starts with an uppercase character, is not like an acronym
   -- and (after removing any trailing primes and subscript 0) is not an allowed exception.
- s.front.isUpper && !(isAcronymLike s) &&
- (!allowed.contains (s.dropEndWhile (fun c : Char ↦ "'₀".contains c)))
+  s.front.isUpper && !(isAcronymLike s) &&
+    (!allowed.contains (s.dropEndWhile (fun c : Char ↦ "'₀".contains c)))
 
 /-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
 def isWronglyCasedName (s : String) : Bool :=
@@ -579,8 +579,8 @@ rule 5 of mathlib's naming convention. -/
     if bad.isEmpty then return none
     let aux := ", ".intercalate bad
     return m!"The component(s) `{aux}` of `{declName}` start(s) in uppercase, but is not an acronym. \
-        Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
-        depending on the type of this declaration."
+      Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
+      depending on the type of this declaration."
 
 initialize addLinter doubleUnderscore
 
