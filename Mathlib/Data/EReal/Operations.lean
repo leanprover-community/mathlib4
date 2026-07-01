@@ -842,11 +842,6 @@ lemma sub_mul_of_nonneg_of_ne_top {a b c : EReal} (ha : 0 ≤ a) (ha' : a ≠ �
   rw [sub_eq_add_neg, right_distrib_of_nonneg_of_ne_top ha ha']
   simp [← neg_mul, sub_eq_add_neg]
 
-lemma mul_sub_of_eq_zero {a b c : EReal} (h : b = 0 ∨ c = 0) : a * (b - c) = a * b - a * c := by
-  cases h with
-  | inl hb => simp [hb]
-  | inr hc => simp [hc]
-
 @[simp]
 lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
   induction n with
