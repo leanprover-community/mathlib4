@@ -45,9 +45,8 @@ def kernelForkOfDistTriangleIsWeakLimit (T : Triangle C) (dT : T ∈ distTriang 
 
 /-- A pretriangulated category has weak kernels. -/
 instance : HasWeakKernels C where
-  hasWeakLimit f := {
-    exists_weakLimitCone :=
-      Nonempty.intro ⟨_, kernelForkOfDistTriangleIsWeakLimit _
-      (distinguished_cocone_triangle₁ f).choose_spec.choose_spec.choose_spec⟩ }
+  hasWeakLimit f := ⟨by
+    obtain ⟨K, i, p, h⟩ := distinguished_cocone_triangle₁ f
+    exact ⟨_, kernelForkOfDistTriangleIsWeakLimit _ h⟩⟩
 
 end CategoryTheory.Pretriangulated
