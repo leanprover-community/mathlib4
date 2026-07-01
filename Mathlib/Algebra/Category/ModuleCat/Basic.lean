@@ -668,7 +668,7 @@ end Bilinear
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp
 
-instance CategoryTheory.Equivalence.nontrivialModuleTransfer {R S : Type*} [Ring R] [Ring S]
+instance {R S : Type*} [Ring R] [Ring S]
     (e : ModuleCat R ≌ ModuleCat S) (M : ModuleCat R) [h : Nontrivial M] :
     Nontrivial (e.functor.obj M) := by
   by_contra! inst1
