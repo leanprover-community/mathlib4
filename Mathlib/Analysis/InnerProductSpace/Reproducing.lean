@@ -383,13 +383,12 @@ lemma kerFun_eq_coe'_single (x : X) (v : V) : kerFun (OfKernel K) x v =
 
 lemma EquivOfKernel_kerFun_eq_coe'_single (x : X) (v : V) : EquivOfKernel H (kerFun H x v) =
     UniformSpace.Completion.coe' (α := H₀ (kernel H)) (Finsupp.single (x, v) 1) := by
-  apply Eq.symm
-  apply ((EquivOfKernel H).symm_apply_eq).mp
+  apply ((EquivOfKernel H).eq_symm_apply).mp
   have h_uni : UniformContinuous
       (Finsupp.linearCombination 𝕜 (fun (xv : X × V) => RKHS.kerFun H xv.1 xv.2)) :=
     (toH₁ H rfl).isometry.uniformContinuous
-  simp_rw [LinearIsometryEquiv.coe_symm_toLinearEquiv, EquivOfKernel_symm]
-  rw [UniformSpace.Completion.extension_coe h_uni _, Finsupp.linearCombination_single, one_smul]
+  simp [EquivOfKernel_symm, UniformSpace.Completion.extension_coe h_uni _,
+    Finsupp.linearCombination_single, one_smul]
 
 lemma EquivOfKernel_kerFun_eq (x : X) (v : V) : EquivOfKernel H (kerFun H x v) =
     kerFun (OfKernel (kernel H)) x v := by
