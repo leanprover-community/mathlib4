@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.RingTheory.Finiteness.Cofinite
-public import Mathlib.Topology.Maps.Strict.Basic
+public import Mathlib.Topology.Maps.Strict.Module
 public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Algebra.Module.LinearMap.FiniteRange
@@ -121,10 +121,8 @@ theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     rwa [u_restr_eq, u_eq, ← (isEmbedding_subtypeL _).isStrictMap_iff,
       ← Ψ.isHomeomorph.isEmbedding.isStrictMap_iff,
       ← Φ.symm.isHomeomorph.isQuotientMap.isStrictMap_iff]
-  -- TODO: we should think of a way to avoid this
-  change IsStrictMap (uₛ.toAddMonoidHom.prodMap uₐ.toAddMonoidHom) ↔ IsStrictMap uₐ
-  simp_rw [AddMonoidHom.isStrictMap_prodMap_iff, LinearMap.toAddMonoidHom_coe, coe_coe,
-    uₛ.isStrictMap_of_finiteDimensional, true_and]
+  simp_rw [← coe_coe, ContinuousLinearMap.coe_prodMap, LinearMap.isStrictMap_prodMap_iff,
+    coe_coe, uₛ.isStrictMap_of_finiteDimensional, true_and]
 
 /-!
 ### Step 2
