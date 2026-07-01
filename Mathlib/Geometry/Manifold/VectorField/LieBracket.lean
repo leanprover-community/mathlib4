@@ -583,7 +583,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
       rw [inter_comm]
       apply hu.uniqueDiffWithinAt_range_inter
       exact ⟨h'''y, hy.1⟩
-    simp only [mpullbackWithin_apply, hF, comp_apply]
+    simp only [mpullbackWithin_apply, hF, Function.comp_apply]
     rw [mfderivWithin_comp (I' := I) (u := s)]; rotate_left
     · apply (mdifferentiableAt_extChartAt h''y).comp_mdifferentiableWithinAt (I' := I')
       exact (hf _ hy.1).mdifferentiableWithinAt two_ne_zero
