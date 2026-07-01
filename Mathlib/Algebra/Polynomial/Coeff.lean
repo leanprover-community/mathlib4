@@ -86,9 +86,11 @@ theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
   rfl
 
 @[simp]
-theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
+theorem finsetSum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
     coeff (∑ b ∈ s, f b) n = ∑ b ∈ s, coeff (f b) n :=
   map_sum (lcoeff R n) _ _
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_coeff := finsetSum_coeff
 
 lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
     l.sum.coeff n = (l.map (lcoeff R n)).sum :=
@@ -194,7 +196,7 @@ open Finset
 
 theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     support (C x * X ^ k + C y * X ^ m) = {k, m} := by
-  apply subset_antisymm (support_binomial' k m x y)
+  apply subset_antisymm (support_binomial_subset k m x y)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
     add_zero, Ne, hx, hy, not_false_eq_true, and_true]
@@ -202,7 +204,7 @@ theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (h
 theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) :
     support (C x * X ^ k + C y * X ^ m + C z * X ^ n) = {k, m, n} := by
-  apply subset_antisymm (support_trinomial' k m n x y z)
+  apply subset_antisymm (support_trinomial_subset k m n x y z)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
     if_neg hmn.ne', if_neg (hkm.trans hmn).ne, if_neg (hkm.trans hmn).ne', mul_zero, add_zero,
@@ -320,7 +322,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       let ψ : R[X] := ∑ i ∈ φ.support, monomial i (c' i)
       use ψ
       ext i
-      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
+      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finsetSum_coeff,
         Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]

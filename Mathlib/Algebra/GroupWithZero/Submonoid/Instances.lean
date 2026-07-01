@@ -12,7 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 # Instances for the range submonoid of a monoid with zero hom
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
@@ -43,7 +43,7 @@ instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
     obtain ⟨y, hy⟩ := x.prop
     use y⁻¹
     simp [← hy]⟩
-  exists_pair_ne := ⟨⟨f 0, 0, rfl⟩, ⟨f 1, by simp [- map_one]⟩, by simp⟩
+  exists_pair_ne := ⟨⟨f 0, 0, rfl⟩, ⟨f 1, by simp [-map_one]⟩, by simp⟩
   inv_zero := Subtype.ext inv_zero
   mul_inv_cancel := by
     rintro ⟨a, ha⟩ h

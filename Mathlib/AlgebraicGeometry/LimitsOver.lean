@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
 # (Co)limits in over categories
@@ -16,7 +16,7 @@ colimits in `P.Over ⊤ X` for `X : Scheme` of locally directed diagrams of open
 exist and agree with the colimit in `Scheme`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -51,8 +51,8 @@ instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
       (WidePushoutShape.Hom.init i)) := by
   rw [mono_iff_injective]
   cases i
-  · simpa using f.left.isOpenEmbedding.injective
-  · simpa using g.left.isOpenEmbedding.injective
+  · simpa using! f.left.isOpenEmbedding.injective
+  · simpa using! g.left.isOpenEmbedding.injective
 
 instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f.left] [IsOpenImmersion g.left]
@@ -93,7 +93,7 @@ noncomputable instance : CreatesColimit F (MorphismProperty.Over.forget P ⊤ S)
     (Scheme.IsLocallyDirected.openCover _).pushforwardIso e.inv
   rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) 𝒰]
   intro i
-  simpa [𝒰, e] using (F.obj i).prop
+  simpa [𝒰, e] using! (F.obj i).prop
 
 instance : HasColimit F := hasColimit_of_created _ (MorphismProperty.Over.forget P ⊤ S)
 
@@ -118,6 +118,24 @@ instance : HasFiniteCoproducts (P.Over ⊤ S) where
 
 noncomputable instance (J : Type*) [Small.{u} J] :
     CreatesColimitsOfShape (Discrete J) (MorphismProperty.Over.forget P ⊤ S) where
+
+variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
+
+instance IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete {ι : Type*} [Small.{u} ι]
+    {C : Type*} [Category* C] [HasColimitsOfShape (Discrete ι) C] (L : C ⥤ Scheme.{u})
+    [PreservesColimitsOfShape (Discrete ι) L] (X : Scheme.{u}) :
+    (P.costructuredArrowObj L (X := X)).IsClosedUnderColimitsOfShape (Discrete ι) :=
+  CostructuredArrow.isClosedUnderColimitsOfShape _ (fun _ ↦ coproductIsCoproduct' _)
+    (fun _ _ _ _ h ↦ IsZariskiLocalAtSource.sigmaDesc (h ⟨·⟩)) _
+
+variable [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] [P.IsMultiplicative]
+
+instance : HasFiniteCoproducts (P.CostructuredArrow ⊤ Scheme.Spec S) where
+  out n := by
+    have : (MorphismProperty.commaObj Scheme.Spec (.fromPUnit S) P).IsClosedUnderColimitsOfShape
+        (Discrete (Fin n)) :=
+      IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete _ _
+    apply MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape
 
 end OverProp
 

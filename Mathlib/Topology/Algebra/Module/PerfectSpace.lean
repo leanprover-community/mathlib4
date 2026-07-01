@@ -10,7 +10,7 @@ public import Mathlib.Topology.Perfect
 
 /-! # Vector spaces over nontrivially normed fields are perfect spaces -/
 
-@[expose] public section
+public section
 
 open Filter Set
 open scoped Topology

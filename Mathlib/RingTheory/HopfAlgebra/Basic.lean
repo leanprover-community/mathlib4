@@ -19,6 +19,9 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
 * `HopfAlgebra.antipode` : the `R`-linear map `A →ₗ[R] A`.
+* `HopfAlgebra.ofConvInverse` : construct a Hopf algebra from a two-sided convolution inverse
+  of the identity.
+* `HopfAlgebra.ofAlgHom` : the same for commutative `A`, with `AlgHom` hypotheses.
 
 ## Main results
 
@@ -47,7 +50,7 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 
 -/
 
-@[expose] public section
+public section
 
 open Bialgebra
 
@@ -75,7 +78,8 @@ namespace HopfAlgebra
 
 export HopfAlgebraStruct (antipode)
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A] {a : A}
+variable {R : Type u} {A : Type v} {ι : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
+  {a : A}
 
 @[simp]
 theorem mul_antipode_rTensor_comul_apply (a : A) :
@@ -96,22 +100,22 @@ theorem antipode_one :
 
 open Coalgebra
 
-lemma sum_antipode_mul_eq_algebraMap_counit (repr : Repr R a) :
+lemma sum_antipode_mul_eq_algebraMap_counit (repr : Repr R a ι) :
     ∑ i ∈ repr.index, antipode R (repr.left i) * repr.right i =
       algebraMap R A (counit a) := by
   simpa [← repr.eq, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
 
-lemma sum_mul_antipode_eq_algebraMap_counit (repr : Repr R a) :
+lemma sum_mul_antipode_eq_algebraMap_counit (repr : Repr R a ι) :
     ∑ i ∈ repr.index, repr.left i * antipode R (repr.right i) =
       algebraMap R A (counit a) := by
   simpa [← repr.eq, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
 
-lemma sum_antipode_mul_eq_smul (repr : Repr R a) :
+lemma sum_antipode_mul_eq_smul (repr : Repr R a ι) :
     ∑ i ∈ repr.index, antipode R (repr.left i) * repr.right i =
       counit (R := R) a • 1 := by
   rw [sum_antipode_mul_eq_algebraMap_counit, Algebra.smul_def, mul_one]
 
-lemma sum_mul_antipode_eq_smul (repr : Repr R a) :
+lemma sum_mul_antipode_eq_smul (repr : Repr R a ι) :
     ∑ i ∈ repr.index, repr.left i * antipode R (repr.right i) =
       counit (R := R) a • 1 := by
   rw [sum_mul_antipode_eq_algebraMap_counit, Algebra.smul_def, mul_one]
@@ -125,91 +129,6 @@ lemma sum_mul_antipode_eq_smul (repr : Repr R a) :
 
 @[simp] lemma counit_comp_antipode : counit ∘ₗ antipode R = counit (A := A) := by
   ext; exact counit_antipode _
-
-/-! ### The antipode is an antihomomorphism
-
-We prove that `antipode (a * b) = antipode b * antipode a`. The proof uses the "left inverse
-equals right inverse" trick in the convolution algebra `(A ⊗ A) →ₗ[R] A`.
--/
-
-open scoped TensorProduct
-open WithConv
-
-/-- The antipode reverses multiplication: `S(ab) = S(b)S(a)`. -/
-theorem antipode_mul (a b : A) :
-    antipode R (a * b) = antipode R b * antipode R a := by
-  -- We show that the linear maps `S ∘ μ` and `μ ∘ (S ⊗ S) ∘ comm` are equal,
-  -- by proving they are both convolution inverses of `μ`.
-  suffices h : antipode R ∘ₗ LinearMap.mul' R A =
-      LinearMap.mul' R A ∘ₗ TensorProduct.map (antipode R) (antipode R) ∘ₗ
-        TensorProduct.comm R A A by
-    exact congr(($h) (a ⊗ₜ b))
-  -- Use `left_inv_eq_right_inv` in the convolution algebra `WithConv ((A ⊗ A) →ₗ[R] A)`.
-  refine toConv_injective
-    (left_inv_eq_right_inv
-      (b := toConv (antipode R ∘ₗ LinearMap.mul' R A))
-      (a := toConv (LinearMap.mul' R A))
-      (c := toConv (LinearMap.mul' R A ∘ₗ TensorProduct.map (antipode R) (antipode R) ∘ₗ
-        TensorProduct.comm R A A))
-      ?_ ?_)
-  · -- Left inverse: `(S ∘ μ) * μ = 1`.
-    refine WithConv.ext (TensorProduct.ext' fun x y => ?_)
-    -- Unfold convolution product: `(f * g)(x ⊗ y) = μ(f ⊗ g)(Δ(x ⊗ y))`.
-    simp only [LinearMap.convMul_apply, LinearMap.convOne_apply]
-    -- The coalgebra on `A ⊗ A: Δ(x ⊗ y) = σ (Δx ⊗ Δy)` where `σ = tensorTensorTensorComm`.
-    rw [TensorProduct.comul_tmul]
-    -- Use Sweedler representations for `x` and `y`.
-    let ℛx := ℛ R x; let ℛy := ℛ R y
-    conv_lhs => rw [← ℛx.eq, ← ℛy.eq]
-    simp only [TensorProduct.sum_tmul, TensorProduct.tmul_sum, map_sum,
-      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_tmul, TensorProduct.map_tmul,
-      LinearMap.mul'_apply, LinearMap.comp_apply]
-    rw [Finset.sum_comm]
-    -- The counit on `A ⊗ A`: `ε(x ⊗ y) = ε(y) • ε(x) = ε(x)ε(y)` since `R` is commutative.
-    simp only [TensorProduct.counit_tmul, Algebra.algebraMap_eq_smul_one]
-    -- Use the bialgebra comultiplication axiom: `Δ(xy) = Δ(x)Δ(y)`.
-    have key := mul_antipode_rTensor_comul_apply (R := R) (x * y)
-    rw [Bialgebra.comul_mul, ← ℛx.eq, ← ℛy.eq] at key
-    simp only [Finset.sum_mul, Finset.mul_sum, Algebra.TensorProduct.tmul_mul_tmul,
-      map_sum, LinearMap.rTensor_tmul, LinearMap.mul'_apply, Bialgebra.counit_mul] at key
-    rw [Finset.sum_comm] at key
-    simpa [Algebra.algebraMap_eq_smul_one, mul_comm (counit x) (counit y)] using key
-  · -- Right inverse: `μ * (μ ∘ (S ⊗ S) ∘ comm) = 1`.
-    refine WithConv.ext (TensorProduct.ext' fun x y => ?_)
-    simp only [LinearMap.convMul_apply, LinearMap.convOne_apply]
-    rw [TensorProduct.comul_tmul]
-    let ℛx := ℛ R x; let ℛy := ℛ R y
-    conv_lhs => rw [← ℛx.eq, ← ℛy.eq]
-    simp only [TensorProduct.sum_tmul, TensorProduct.tmul_sum, map_sum,
-      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_tmul, TensorProduct.map_tmul,
-      LinearMap.mul'_apply, LinearMap.comp_apply]
-    rw [Finset.sum_comm]
-    simp only [TensorProduct.counit_tmul, Algebra.algebraMap_eq_smul_one]
-    -- Rearrange the sum using antipode axioms.
-    calc ∑ i ∈ ℛx.index, ∑ j ∈ ℛy.index,
-        (ℛx.left i * ℛy.left j) * (antipode R (ℛy.right j) * antipode R (ℛx.right i))
-      _ = ∑ i ∈ ℛx.index, ∑ j ∈ ℛy.index,
-          ℛx.left i * (ℛy.left j * antipode R (ℛy.right j) * antipode R (ℛx.right i)) := by
-        simp [mul_assoc]
-      _ = ∑ i ∈ ℛx.index, ℛx.left i *
-          ((∑ j ∈ ℛy.index, ℛy.left j * antipode R (ℛy.right j)) * antipode R (ℛx.right i)) := by
-        simp [Finset.sum_mul, Finset.mul_sum]
-      _ = ∑ i ∈ ℛx.index, ℛx.left i *
-          (counit y • 1 * antipode R (ℛx.right i)) := by
-        rw [sum_mul_antipode_eq_smul ℛy]
-      _ = ∑ i ∈ ℛx.index, ℛx.left i *
-          (algebraMap R A (counit y) * antipode R (ℛx.right i)) := by
-        simp [Algebra.smul_def]
-      _ = ∑ i ∈ ℛx.index, algebraMap R A (counit y) * (ℛx.left i * antipode R (ℛx.right i)) := by
-        congr 1; ext i; rw [← mul_assoc, ← mul_assoc, Algebra.commutes]
-      _ = algebraMap R A (counit y) * ∑ i ∈ ℛx.index, ℛx.left i * antipode R (ℛx.right i) := by
-        rw [← Finset.mul_sum]
-      _ = algebraMap R A (counit y) * (counit (R := R) x • (1 : A)) := by
-        rw [sum_mul_antipode_eq_smul ℛx]
-      _ = (counit (R := R) x * counit y) • (1 : A) := by
-        simp only [Algebra.smul_def, mul_one, ← map_mul, mul_comm (counit x)]
-      _ = (counit (R := R) y • counit x) • (1 : A) := by
-        simp only [smul_eq_mul, mul_comm (counit y)]
 
 end HopfAlgebra
 
@@ -229,3 +148,40 @@ instance toHopfAlgebra : HopfAlgebra R R where
 theorem antipode_eq_id : antipode R (A := R) = .id := rfl
 
 end CommSemiring
+
+namespace HopfAlgebra
+
+variable {R A : Type*}
+
+open Coalgebra WithConv LinearMap
+
+/-- Upgrade a bialgebra to a Hopf algebra by specifying a convolution inverse of the identity. -/
+noncomputable abbrev ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
+    (antipode : A →ₗ[R] A)
+    (antipode_convMul_id : toConv antipode * toConv LinearMap.id = 1)
+    (id_convMul_antipode : toConv LinearMap.id * toConv antipode = 1) :
+    HopfAlgebra R A where
+  antipode := antipode
+  mul_antipode_rTensor_comul := by simpa using! congr(($antipode_convMul_id).ofConv)
+  mul_antipode_lTensor_comul := by simpa using! congr(($id_convMul_antipode).ofConv)
+
+/-- Upgrade a commutative bialgebra to a Hopf algebra by specifying the antipode `A →ₐ[R] A`
+with appropriate conditions. -/
+noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
+    (antipode : A →ₐ[R] A)
+    (mul_antipode_rTensor_comul :
+      ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ Commute.all _).comp
+        (Bialgebra.comulAlgHom R A)) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A))
+    (mul_antipode_lTensor_comul :
+      (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ Commute.all _ _).comp
+        (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
+    HopfAlgebra R A :=
+  ofConvInverse antipode.toLinearMap
+    (WithConv.ext <| by
+      simpa [← Algebra.TensorProduct.lmul'_comp_map]
+        using! congr(($mul_antipode_rTensor_comul).toLinearMap))
+    (WithConv.ext <| by
+      simpa [← Algebra.TensorProduct.lmul'_comp_map]
+        using! congr(($mul_antipode_lTensor_comul).toLinearMap))
+
+end HopfAlgebra

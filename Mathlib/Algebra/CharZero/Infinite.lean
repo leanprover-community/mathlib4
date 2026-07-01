@@ -10,7 +10,7 @@ public import Mathlib.Data.Fintype.EquivFin
 
 /-! # A characteristic-zero semiring is infinite -/
 
-@[expose] public section
+public section
 
 
 open Set
