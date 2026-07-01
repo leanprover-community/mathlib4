@@ -291,15 +291,15 @@ lemma ContMDiffAt.clm_bundle_apply
   ContMDiffWithinAt.clm_bundle_apply hϕ hv
 
 
--- The next two lemmas should be special cases of the previous one
-
 lemma ContMDiffAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
     (hψ : CMDiffAt n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)) x)
     {w : M → F₁}
-    (hv : CMDiffAt n w x) :
+    (hb : CMDiffAt n b x) (hw : CMDiffAt n w x) :
     CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x := by
-  sorry
+  apply ContMDiffAt.clm_bundle_apply (E₁ := Bundle.Trivial B F₁) (F₁ := F₁)
+  · apply hψ
+  · simp [contMDiffAt_totalSpace, hb, hw]
 
 -- unused but nice for symmetry
 lemma ContMDiffAt.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x) →L[𝕜] F₂)}
@@ -394,6 +394,7 @@ lemma ContMDiff.clm_bundle_of_apply {k}
     · apply h
       apply ContMDiffAt.clm_bundle_apply_trivial_source
       · exact t₁.ContMDiffAt_symm (FiberBundle.mem_baseSet_trivializationAt' x)
+      · exact contMDiffAt_id
       · exact contMDiffAt_const
   rw [show x = ψ.symm (ψ x) from (extChartAt_to_inv x).symm] at C₀
   have C₂ : CMDiffAt[range IB] k (ψ.symm) (ψ x) :=
