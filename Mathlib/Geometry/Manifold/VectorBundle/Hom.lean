@@ -456,7 +456,7 @@ end
 /-- Criterion for a section of a Hom-bundle constructed using the tensoriality criterion to be
 smooth. -/
 theorem TensorialAt.contMDiff_mkHom
-    [CompleteSpace 𝕜] {k} (hk : k ≠ 0) [IsManifold IB k B]
+    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k) [IsManifold IB k B]
     [FiniteDimensional 𝕜 EB]
     [FiniteDimensional 𝕜 F₁]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
@@ -467,21 +467,19 @@ theorem TensorialAt.contMDiff_mkHom
     (hφ : ∀ x, TensorialAt IB F₁ (φ · x) x)
     (φ_contMDiff : ∀ (σ : Π x : B, E₁ x), ∀ x, CMDiffAt k (T% σ) x → CMDiffAt k (T% (φ σ)) x) :
     -- elaborators not working here
-    haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := sorry
+    haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
     letI T (x : B) : TotalSpace (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) :=
       ⟨x, TensorialAt.mkHom (φ · x) x (hφ x)⟩
     ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k T := by
-  have : IsManifold IB 1 B := by
-    have : 1 ≤ k := by sorry
-    refine IsManifold.of_le this
-  haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := sorry
-  haveI : ContMDiffVectorBundle 1 F₂ E₂ IB := sorry
+  have : IsManifold IB 1 B := IsManifold.of_le hk
+  have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
+  have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
   intro b
   apply ContMDiff.clm_bundle_of_apply' fun σ hσ ↦ ?_
   have : ∀ᶠ x in 𝓝 b, TensorialAt.mkHom (φ · x) x (hφ x) (σ x) = φ σ x := by
     filter_upwards [hσ] with x hx
     apply TensorialAt.apply_clm (hφ x)
-    exact hx.mdifferentiableAt hk
+    exact hx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp hk)
   filter_upwards [this.eventually_nhds, hσ] with x hx h'x
   apply (φ_contMDiff σ x (contMDiffWithinAt_univ.mp h'x)).congr_of_eventuallyEq
   filter_upwards [hx] with x' hx'
