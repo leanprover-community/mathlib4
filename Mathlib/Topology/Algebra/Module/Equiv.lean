@@ -15,6 +15,7 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
+set_option linter.style.longFile 1700
 
 @[expose] public section
 
@@ -612,38 +613,41 @@ protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [Uni
 
 section ofContinuousLinearMap
 
-variable (f : M₁ →SL[σ₁₂] M₂) (g : M₂ →SL[σ₂₁] M₁)
+variable (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
 
 /-- If a continuous linear map has a continuous inverse, then it is a continuous linear equivalence.
 This is the continuous version of `LinearEquiv.ofLinear`.
 
 See also `ofContinuousLinearMap'`. -/
-def ofContinuousLinearMap (h₁ : f ∘SL g = .id R₂ M₂) (h₂ : g ∘SL f = .id R₁ M₁) :
+def ofContinuousLinearMap (h₁ : Function.LeftInverse f₂ f₁) (h₂ : Function.RightInverse f₂ f₁) :
     M₁ ≃SL[σ₁₂] M₂ where
-  toLinearEquiv := .ofLinear f g
-    (ContinuousLinearMap.coe_inj.mpr h₁) (ContinuousLinearMap.coe_inj.mpr h₂)
+  __ := f₁
+  invFun := f₂
+  left_inv := h₁
+  right_inv := h₂
 
 @[simp]
-theorem coe_ofContinuousLinearMap (h₁ h₂) : ⇑(ofContinuousLinearMap f g h₁ h₂) = f := rfl
+theorem coe_ofContinuousLinearMap (h₁ h₂) : ⇑(ofContinuousLinearMap f₁ f₂ h₁ h₂) = f₁ := rfl
 
 /-- The inverse of `ofContinuousLinearMap` is obtained by swapping the order of its parameters. -/
 @[simp]
 theorem ofContinuousLinearMap_symm (h₁ h₂) :
-    (ofContinuousLinearMap f g h₁ h₂).symm = ofContinuousLinearMap g f h₂ h₁ :=
+    (ofContinuousLinearMap f₁ f₂ h₁ h₂).symm = ofContinuousLinearMap f₂ f₁ h₂ h₁ :=
   rfl
 
 @[simp]
 theorem toContinuousLinearMap_ofContinuousLinearMap (h₁ h₂) :
-    (ofContinuousLinearMap f g h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f :=
+    (ofContinuousLinearMap f₁ f₂ h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f₁ :=
   rfl
 
 @[simp]
 theorem toLinearEquiv_ofContinuousLinearMap (h₁ h₂) :
-    (ofContinuousLinearMap f g h₁ h₂ : M₁ ≃ₛₗ[σ₁₂] M₂) =
-      .ofLinear f g ((f ∘SL g).coe_inj.mpr h₁) ((g ∘SL f).coe_inj.mpr h₂) := rfl
+    (ofContinuousLinearMap f₁ f₂ h₁ h₂ : M₁ ≃ₛₗ[σ₁₂] M₂) =
+      .ofLinear f₁ f₂ (LinearMap.ext h₂) (LinearMap.ext h₁) := rfl
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other. See also `equivOfInverse'`. -/
+@[deprecated ofContinuousLinearMap (since := "2026-07-01")]
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   { f₁ with
@@ -651,12 +655,12 @@ def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂�
     left_inv := h₁
     right_inv := h₂ }
 
-@[simp]
+@[simp, deprecated coe_ofContinuousLinearMap (since := "2026-07-01")]
 theorem equivOfInverse_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
     equivOfInverse f₁ f₂ h₁ h₂ x = f₁ x :=
   rfl
 
-@[simp]
+@[simp, deprecated ofContinuousLinearMap_symm (since := "2026-07-01")]
 theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
   rfl
@@ -665,13 +669,13 @@ theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) 
 This is the continuous version of `LinearEquiv.ofLinear`.
 
 See also `ofContinuousLinearMap'`. -/
-def ofContinuousLinearMap' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
-    (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
-  equivOfInverse f₁ f₂
-    (fun x ↦ by simpa using congr($(h₂) x)) (fun x ↦ by simpa using congr($(h₁) x))
+def ofContinuousLinearMap' (h₁ : f₁ ∘SL f₂ = .id R₂ M₂) (h₂ : f₂ ∘SL f₁ = .id R₁ M₁) :
+    M₁ ≃SL[σ₁₂] M₂ where
+  toLinearEquiv := .ofLinear f₁ f₂
+    (ContinuousLinearMap.coe_inj.mpr h₁) (ContinuousLinearMap.coe_inj.mpr h₂)
 
 @[simp]
-theorem coe_ofContinuousLinearMap' (h₁ h₂) : ⇑(ofContinuousLinearMap' f g h₁ h₂) = f := rfl
+theorem coe_ofContinuousLinearMap' (h₁ h₂) : ⇑(ofContinuousLinearMap' f₁ f₂ h₁ h₂) = f₁ := rfl
 
 /-- The inverse of `ofContinuousLinearMap'` is obtained by swapping the order of its parameters. -/
 @[simp]
@@ -681,13 +685,13 @@ theorem ofContinuousLinearMap'_symm (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h�
 
 @[simp]
 theorem toContinuousLinearMap_ofContinuousLinearMap' (h₁ h₂) :
-    (ofContinuousLinearMap' f g h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f :=
+    (ofContinuousLinearMap' f₁ f₂ h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f₁ :=
   rfl
 
 @[simp]
 theorem toLinearEquiv_ofContinuousLinearMap' (h₁ h₂) :
-    (ofContinuousLinearMap' f g h₁ h₂ : M₁ ≃ₛₗ[σ₁₂] M₂) =
-      .ofLinear f g ((f ∘SL g).coe_inj.mpr h₁) ((g ∘SL f).coe_inj.mpr h₂) := rfl
+    (ofContinuousLinearMap' f₁ f₂ h₁ h₂ : M₁ ≃ₛₗ[σ₁₂] M₂) =
+      .ofLinear f₁ f₂ ((f₁ ∘SL f₂).coe_inj.mpr h₁) ((f₂ ∘SL f₁).coe_inj.mpr h₂) := rfl
 
 theorem eq_comp_symm_toContinuousLinearMap (e₁₂ : M₁ ≃SL[σ₁₂] M₂) [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
     (f : M₂ →SL[σ₂₃] M₃) (g : M₁ →SL[σ₁₃] M₃) :
@@ -701,27 +705,30 @@ theorem eq_symm_toContinuousLinearMap_comp {e₁₂ : M₁ ≃SL[σ₁₂] M₂}
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`. -/
+@[deprecated ofContinuousLinearMap' (since := "2026-07-01")]
 def equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
     (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
   equivOfInverse f₁ f₂
     (fun x ↦ by simpa using congr($(h₂) x)) (fun x ↦ by simpa using congr($(h₁) x))
 
-@[simp]
+@[simp, deprecated coe_ofContinuousLinearMap' (since := "2026-07-01")]
 theorem equivOfInverse'_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
     equivOfInverse' f₁ f₂ h₁ h₂ x = f₁ x :=
   rfl
 
 /-- The inverse of `equivOfInverse'` is obtained by swapping the order of its parameters. -/
-@[simp]
+@[simp, deprecated ofContinuousLinearMap'_symm (since := "2026-07-01")]
 theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
   rfl
 
+@[deprecated eq_comp_symm_toContinuousLinearMap (since := "2026-07-01")]
 theorem eq_comp_toContinuousLinearMap_symm (e₁₂ : M₁ ≃SL[σ₁₂] M₂) [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
     (f : M₂ →SL[σ₂₃] M₃) (g : M₁ →SL[σ₁₃] M₃) :
     f = g.comp e₁₂.symm.toContinuousLinearMap ↔ f.comp e₁₂.toContinuousLinearMap = g := by
   aesop
 
+@[deprecated eq_symm_toContinuousLinearMap_comp (since := "2026-07-01")]
 theorem eq_toContinuousLinearMap_symm_comp {e₁₂ : M₁ ≃SL[σ₁₂] M₂} [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂]
     (f : M₃ →SL[σ₃₁] M₁) (g : M₃ →SL[σ₃₂] M₂) :
     f = e₁₂.symm.toContinuousLinearMap.comp g ↔ e₁₂.toContinuousLinearMap.comp f = g := by
@@ -924,7 +931,7 @@ variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
 def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
   toFun u :=
-    equivOfInverse (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u)
+    ofContinuousLinearMap (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u)
       (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u⁻¹) (fun x => by simp) fun x => by simp
   invFun e :=
     ⟨e 1, e.symm 1, by rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, symm_apply_apply], by
@@ -1068,7 +1075,7 @@ linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x
 `(e x).1 = f₁ x`, and `(e (f₂ y)).2 = 0`. The map is given by `e x = (f₁ x, x - f₂ (f₁ x))`. -/
 def equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) :
     M ≃L[R] M₂ × f₁.ker :=
-  equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod f₁.ker.subtypeL)
+  ofContinuousLinearMap (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod f₁.ker.subtypeL)
     (fun x => by simp) fun ⟨x, y⟩ => by simp [h x]
 
 @[simp]
@@ -1177,12 +1184,12 @@ lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
 lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
     (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.IsInvertible :=
-  ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
+  ⟨ContinuousLinearEquiv.ofContinuousLinearMap' _ _ hf hg, rfl⟩
 
 lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
     (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.inverse = g := by
-  have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
+  have : f = ContinuousLinearEquiv.ofContinuousLinearMap' f g hf hg := rfl
   rw [this, inverse_equiv]
   rfl
 
