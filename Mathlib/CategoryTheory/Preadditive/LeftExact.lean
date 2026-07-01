@@ -188,7 +188,7 @@ lemma preservesCoequalizer_of_preservesCokernels
       (Cofork.ext (Iso.refl _) (by simp [p]))
 
 /-- A functor between preadditive categories preserves all coequalizers if it preserves all
-cokernels.-/
+cokernels. -/
 lemma preservesCoequalizers_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] :
     PreservesColimitsOfShape WalkingParallelPair F where
