@@ -642,6 +642,6 @@ lemma inv_riemannZeta_sub_sub_isLittleO :
   suffices (· - 1) =o[𝓝 1] (fun _ : ℂ ↦ (1 : ℂ)) by
     convert! ((isBigO_refl (· - 1) ..).mul_isLittleO this).mono nhdsWithin_le_nhds using 1
     <;> grind
-  simpa using continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds
+  exact ContinuousAt.isLittleO (by fun_prop)
 
 end near_one
