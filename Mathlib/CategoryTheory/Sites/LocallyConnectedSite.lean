@@ -37,8 +37,9 @@ See https://ncatlab.org/nlab/show/locally+connected+site.
 
 ## TODO
 
-* Show that a topological space is locally connected in the usual sense if and only if it is
-  locally connected as a site.
+* Define the site of connected open subsets of a topological space, prove that it is
+  locally connected and prove that it is a dense sub-site of the site of opens if and only if the
+  space is locally connected.
 -/
 
 universe w u v u' v'
