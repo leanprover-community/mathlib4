@@ -220,7 +220,7 @@ instance : Group (symplecticGroup l R) :=
 
 section Determinant
 
-variable {A B C D U V : Matrix l l R}
+variable {A B C D : Matrix l l R}
 
 theorem fromBlocks_mem_iff :
     fromBlocks A B C D ∈ symplecticGroup l R ↔
