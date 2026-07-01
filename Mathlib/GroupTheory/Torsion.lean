@@ -224,7 +224,7 @@ namespace CommMonoid
 
 /-- The torsion submonoid of a commutative monoid.
 
-(Note that by `Monoid.IsTorsion.group` torsion monoids are truthfully groups.)
+(Note that by `Monoid.IsMulTorsion.group` torsion monoids are truthfully groups.)
 -/
 @[to_additive addTorsion /-- The torsion submonoid of an additive commutative monoid. -/]
 def torsion : Submonoid G where
@@ -371,11 +371,15 @@ def torsion : Subgroup G :=
   { CommMonoid.torsion G with inv_mem' := fun hx ↦ IsOfFinOrder.inv hx }
 
 /-- The torsion submonoid of an abelian group equals the torsion subgroup as a submonoid. -/
-@[to_additive add_torsion_eq_add_torsion_submonoid
+@[to_additive
 /-- The torsion additive submonoid of an abelian group equals the torsion
 subgroup as a submonoid. -/]
 theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubmonoid :=
   rfl
+
+@[deprecated (since := "2026-07-01")] alias
+    _root_.AddCommGroup.add_torsion_eq_add_torsion_submonoid :=
+  AddCommGroup.torsion_eq_torsion_addSubmonoid
 
 variable {G}
 
