@@ -529,6 +529,8 @@ end AddCommGroup
 
 section AddCommGroup
 
+-- TODO: Multiple lemmas in this section should be in earlier files
+
 variable [Semiring R] [Semiring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
@@ -538,6 +540,11 @@ theorem comap_map_eq (f : M →ₛₗ[τ₁₂] M₂) (p : Submodule R M) :
   refine le_antisymm ?_ (sup_le (le_comap_map _ _) (comap_mono bot_le))
   rintro x ⟨y, hy, e⟩
   exact mem_sup.2 ⟨y, hy, x - y, by simpa using sub_eq_zero.2 e.symm, by simp⟩
+
+theorem map_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M} :
+    map f p = f.range ↔ Codisjoint p f.ker := by
+  simp_rw [le_antisymm_iff, LinearMap.map_le_range, true_and, ← map_top, map_le_iff_le_comap,
+    comap_map_eq, codisjoint_iff_le_sup]
 
 theorem map_lt_map_of_le_of_sup_lt_sup {p p' : Submodule R M} {f : M →ₛₗ[τ₁₂] M₂} (hab : p ≤ p')
     (h : p ⊔ LinearMap.ker f < p' ⊔ LinearMap.ker f) : Submodule.map f p < Submodule.map f p' := by
@@ -588,20 +595,8 @@ lemma comap_covBy_of_surjective {f : M →ₛₗ[τ₁₂] M₂} (hf : Surjectiv
   refine (LinearMap.ker_le_comap (f : M →ₛₗ[τ₁₂] M₂)).trans h₁.le
 
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
-    LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [eq_top_iff]
-    intro x _
-    have : f x ∈ LinearMap.range f := LinearMap.mem_range_self f x
-    rw [← h] at this
-    obtain ⟨y, hy⟩ : ∃ y : S, f.domRestrict S y = f x := this
-    have : (y : M) + (x - y) ∈ S ⊔ (LinearMap.ker f) := Submodule.add_mem_sup y.2 (by simp [← hy])
-    simpa using this
-  · refine le_antisymm (LinearMap.range_domRestrict_le_range f S) ?_
-    rintro x ⟨y, rfl⟩
-    obtain ⟨s, hs, t, ht, rfl⟩ : ∃ s, s ∈ S ∧ ∃ t, t ∈ LinearMap.ker f ∧ s + t = y :=
-      Submodule.mem_sup.1 (by simp [h])
-    exact ⟨⟨s, hs⟩, by simp [LinearMap.mem_ker.1 ht]⟩
+    LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ Codisjoint S f.ker := by
+  simp [LinearMap.range_domRestrict, map_eq_range_iff]
 
 @[simp] lemma _root_.LinearMap.surjective_domRestrict_iff
     {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} (hf : Surjective f) :
