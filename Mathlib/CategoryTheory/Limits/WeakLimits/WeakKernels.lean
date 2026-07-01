@@ -95,8 +95,6 @@ end Limits
 
 namespace Preadditive
 
-open Preadditive
-
 variable [Preadditive C] {X Y : C} {f g : X ⟶ Y}
 
 /-- A weak kernel of `f - g` is a weak equalizer of `f` and `g`. -/
