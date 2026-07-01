@@ -544,6 +544,13 @@ theorem _root_.exists_prime_orderOf_dvd_card' {G : Type*} [Group G] [Finite G] (
   rw [Nat.card_eq_fintype_card] at hdvd
   exact exists_prime_orderOf_dvd_card p hdvd
 
+variable {G} in
+@[to_additive]
+theorem _root_.Group.exists_orderOf_of_mem_primeFactors [Finite G] {p : ℕ}
+    (hp : p ∈ (Nat.card G).primeFactors) : ∃ x : G, orderOf x = p :=
+  have : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
+  exists_prime_orderOf_dvd_card' p <| Nat.dvd_of_mem_primeFactors hp
+
 end Cauchy
 
 theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}

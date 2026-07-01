@@ -5,12 +5,13 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.Tactic.Peel
+
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Data.Nat.Factorization.LCM
+import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.Tactic.Peel
 
 /-!
 # Exponent of a group
@@ -527,6 +528,19 @@ theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card
 @[to_additive]
 theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
   Monoid.exponent_dvd.mpr orderOf_dvd_natCard
+
+variable (G) in
+@[to_additive]
+theorem Group.primeFactors_exponent_eq_primeFactors_card [Finite G] :
+    (Monoid.exponent G).primeFactors = (Nat.card G).primeFactors := by
+  refine Nat.primeFactors_mono exponent_dvd_nat_card Nat.card_pos.ne' |>.antisymm fun p hp ↦ ?_
+  obtain ⟨g, rfl⟩ := exists_orderOf_of_mem_primeFactors hp
+  exact Nat.prime_of_mem_primeFactors hp |>.mem_primeFactors' <| Monoid.order_dvd_exponent g
+
+variable (G) in
+@[to_additive]
+theorem Group.card_dvd_exponent_pow [Finite G] : Nat.card G ∣ Monoid.exponent G ^ Nat.card G := by
+  rw [Nat.dvd_pow_self_iff Nat.card_pos.ne' NeZero.out, primeFactors_exponent_eq_primeFactors_card]
 
 @[to_additive]
 theorem Subgroup.exponent_toSubmonoid (H : Subgroup G) :
