@@ -304,9 +304,8 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
   ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
 
 @[simp] lemma sqrt_le_self : √x ≤ x ↔ x = 0 ∨ 1 ≤ x := by
-  obtain hx | hx := le_or_gt x 0
-  · simp [sqrt_eq_zero_of_nonpos hx, le_antisymm_iff, hx, not_le.2 (hx.trans_lt zero_lt_one)]
-  · simp [sqrt_le_iff, sq, le_mul_iff_one_le_right hx, hx.le, hx.ne']
+  rw [sqrt_le_iff, ← sub_nonneg (a := x ^ 2), sq, ← mul_sub_one]
+  grind [mul_nonneg_iff]
 
 @[simp] lemma le_sqrt_self : x ≤ √x ↔ x ≤ 1 := by
   obtain hx | hx := le_or_gt x 0
