@@ -700,6 +700,24 @@ open Mathlib.Linter.Style.nameCheck
 #guard !isWronglyCasedName "Ioc_LE"
 #guard !isWronglyCasedName "foo₀_TFAE"
 
+-- Tests for theorem names starting in uppercase.
+-- The first *component* being capitalized is fine,
+public theorem Foo.my_lemma_name : True := sorry
+-- we only care about the last component.
+public theorem Foo.My_lemma_name : True := sorry
+public theorem MyConcept_some_lemma : True := sorry
+public theorem Nat.Ioc_something : True := sorry
+/--
+error: -- Found 2 errors in 4 declarations (plus 12 automatically generated ones) in the current file with 1 linters
+
+/- The `badNamingUppercaseComponent` linter reports:
+FOUND declaration(s) with underscores with an uppercase middle component. These names violate rule 5 of mathlib's naming convention.
+This linter can be disabled with `@[nolint badNamingUppercaseComponent]`. -/
+#check Foo.My_lemma_name /- The theorem `Foo.My_lemma_name` has an upper-case name: this certainly violates the naming convention: please use `snake_case` instead -/
+#check MyConcept_some_lemma /- The theorem `MyConcept_some_lemma` has an upper-case name: this certainly violates the naming convention: please use `snake_case` instead -/
+-/
+#guard_msgs in
+#lint only badNamingUppercaseComponent
 end nameCheck
 
 /-! Tests for linters defined in `TextBased.lean`. -/

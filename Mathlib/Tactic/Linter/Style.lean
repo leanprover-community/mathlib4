@@ -568,14 +568,24 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
 -- Sadly, we cannot disable this environment linter by default while enabling it in mathlib.
 -- Rewriting this as a syntax linter will fix it!
 open Batteries.Tactic.Lint in
-/-- Linter that checks for declarations with uppercase middle components: such naming violates
-rule 5 of mathlib's naming convention. -/
+/-- Linter that checks for theorems starting with an uppercase name, and for declarations with
+uppercase middle components: such naming violates rules 1 and 5 of mathlib's naming convention,
+respectively. -/
 @[env_linter] public def badNamingUppercaseComponent : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "no declarations with uppercase middle components found."
-  errorsFound := "FOUND declaration(s) with underscores with an uppercase middle component.\
+  errorsFound := "FOUND declaration(s) with underscores with an uppercase middle component. \
     These names violate rule 5 of mathlib's naming convention."
   test declName := do
     if (← isAutoDecl declName) then return none
+    -- If a theorem name is uppercased, this is an error (unless it the name starts with an acronym).
+    if ((← getEnv).find? declName).get!.isTheorem then
+      -- Get the last component of the theorem name (i.e., without any namespaces).
+      -- If it is uppercase and (the first component before an underscore) is not an acronym,
+      -- this is definitely an error.
+      let bareName := declName.components.getLast!.toString
+      if isWronglyCasedName (bareName.split "_"|>.toList.head!.toString) then
+        return m!"The theorem `{declName}` has an upper-case name: \
+          this certainly violates the naming convention: please use `snake_case` instead"
     let parts := declName.toString.splitOn "_" |>.drop 1
     let bad := parts.filter (isWronglyCasedName ·)
     if bad.isEmpty then return none
