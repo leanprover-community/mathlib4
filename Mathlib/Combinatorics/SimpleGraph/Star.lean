@@ -50,8 +50,8 @@ lemma isUniversal_starGraph_self {r : V} : (starGraph r).IsUniversal r := by
 
 variable {G} in
 theorem starGraph_le_iff {r : V} : starGraph r ≤ G ↔ G.IsUniversal r := by
-  refine ⟨fun h u hne ↦ h <| by simpa [starGraph], fun h a b hadj ↦ ?_⟩
-  grind [starGraph, fromRel, IsUniversal, Adj.symm]
+  refine ⟨fun h u hne ↦ h <| by simpa, fun h a b hadj ↦ ?_⟩
+  grind [starGraph_adj, IsUniversal, Adj.symm]
 
 /-- On (starGraph r), r is adjacent to v iff v ≠ r. -/
 lemma starGraph_adj_center_iff {r v : V} : (starGraph r).Adj r v ↔ r ≠ v := by simp
