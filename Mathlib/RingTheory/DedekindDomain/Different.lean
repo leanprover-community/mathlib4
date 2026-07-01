@@ -947,8 +947,8 @@ theorem not_dvd_differentIdeal_iff
           simpa [Ideal.dvd_iff_le] using H
   · intro H
     obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
-    rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hp' ‹_› hPbot,
-      Ideal.ramificationIdx_eq_one_of_isUnramifiedAt hPbot, pow_one] at h₂
+    rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count _ _ hp',
+      Ideal.ramificationIdx_eq_one_of_isUnramifiedAt, pow_one] at h₂
     obtain ⟨h₃, h₄⟩ := (Algebra.isUnramifiedAt_iff_map_eq (p := P.under A) _ _).mp H
     exact not_dvd_differentIdeal_of_isCoprime_of_isSeparable
       A P Q (Ideal.isCoprime_iff_sup_eq.mpr h₁) h₂.symm
