@@ -415,6 +415,24 @@ theorem coeFn_smul (a : S) (Q : QuadraticMap R M N) : ⇑(a • Q) = a • ⇑Q 
 theorem smul_apply (a : S) (Q : QuadraticMap R M N) (x : M) : (a • Q) x = a • Q x :=
   rfl
 
+instance : SMul ℕ+ (QuadraticMap R M N) :=
+  ⟨fun a Q =>
+    { toFun := a • ⇑Q
+      toFun_smul := fun b x => by
+        rw [Pi.smul_apply, Q.map_smul, Pi.smul_apply, smul_comm]
+      exists_companion' :=
+        let ⟨B, h⟩ := Q.exists_companion
+        letI := SMulCommClass.symm S R N
+        ⟨a • B, by simp [h]⟩ }⟩
+
+@[simp, norm_cast]
+theorem coeFn_psmul (a : ℕ+) (Q : QuadraticMap R M N) : ⇑(a • Q) = a • ⇑Q :=
+  rfl
+
+@[simp]
+theorem psmul_apply (a : ℕ+) (Q : QuadraticMap R M N) (x : M) : (a • Q) x = a • Q x :=
+  rfl
+
 instance [SMulCommClass S T N] : SMulCommClass S T (QuadraticMap R M N) where
   smul_comm _s _t _q := ext fun _ => smul_comm _ _ _
 
@@ -458,7 +476,8 @@ theorem add_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q + Q') x = Q x + Q' x 
   rfl
 
 instance : AddCommMonoid (QuadraticMap R M N) :=
-  DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
+  DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add (fun _ _ => coeFn_psmul _ _)
+    fun _ _ => coeFn_smul _ _
 
 /-- `@CoeFn (QuadraticMap R M)` as an `AddMonoidHom`.
 
@@ -543,7 +562,7 @@ theorem sub_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q - Q') x = Q x - Q' x 
 
 instance : AddCommGroup (QuadraticMap R M N) :=
   DFunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
-    (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
+    (fun _ _ => coeFn_psmul _ _) (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 
 end RingOperators
 
