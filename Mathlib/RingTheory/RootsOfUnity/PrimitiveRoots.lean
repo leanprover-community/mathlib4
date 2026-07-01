@@ -514,11 +514,7 @@ variable [IsDomain R]
 
 theorem zpowers_eq {k : ℕ} [NeZero k] {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     Subgroup.zpowers ζ = rootsOfUnity k R := by
-  apply SetLike.coe_injective
-  have : Finite (rootsOfUnity k R : Set Rˣ) := inferInstanceAs (Finite (rootsOfUnity k R))
-  refine
-    Set.eq_of_subset_of_ncard_le
-      (Subgroup.zpowers_le_of_mem <| show ζ ∈ rootsOfUnity k R from h.pow_eq_one) ?_
+  apply Subgroup.eq_of_le_of_card_ge (Subgroup.zpowers_le_of_mem h.pow_eq_one)
   calc
     Nat.card (rootsOfUnity k R) ≤ k := card_rootsOfUnity R k
     _ = Nat.card (ZMod k) := (Nat.card_zmod k).symm
