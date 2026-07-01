@@ -87,18 +87,22 @@ protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup 
 theorem of_pow {n : ℕ} (h : IsPGroup (p ^ n) G) : IsPGroup p G :=
   fun g ↦ h g |>.imp' (n * ·) <| by simp [pow_mul]
 
+theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card_dvd_pow hn⟩
+  rcases eq_or_ne p 0 with rfl | hp
+  · exact ⟨1, by simp⟩
+  refine ⟨Nat.card G, Nat.dvd_pow_self_iff Nat.card_pos.ne' hp |>.mpr fun q hq ↦ ?_⟩
+  have ⟨hqp, hqdvd, _⟩ := Nat.mem_primeFactors.mp hq
+  have ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q (hp := ⟨hqp⟩) hqdvd
+  have ⟨k, hk⟩ := h.exists_orderOf_dvd_pow g
+  exact Nat.mem_primeFactors.mpr ⟨hqp, hqp.dvd_of_dvd_pow <| hg ▸ hk, hp⟩
+
+alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
+
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
-  have hG : Nat.card G ≠ 0 := Nat.card_pos.ne'
-  refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
-  suffices ∀ q ∈ (Nat.card G).primeFactorsList, q = p by
-    use (Nat.card G).primeFactorsList.length
-    rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_primeFactorsList hG]
-  intro q hq
-  obtain ⟨hq1, hq2⟩ := (Nat.mem_primeFactorsList hG).mp hq
-  haveI : Fact q.Prime := ⟨hq1⟩
-  obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q hq2
-  obtain ⟨k, hk⟩ := (iff_orderOf.mp h) g
-  exact (hq1.pow_eq_iff.mp (hg.symm.trans hk).symm).1.symm
+  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card hn⟩
+  have ⟨n, hn⟩ := h.exists_card_dvd_pow
+  exact Nat.dvd_prime_pow Fact.out |>.mp hn |>.imp fun _ ↦ And.right
 
 alias ⟨exists_card_eq, _⟩ := iff_card
 
