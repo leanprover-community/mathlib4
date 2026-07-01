@@ -6,7 +6,6 @@ Authors: Kim Morrison, Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Functor.Basic
-public import Mathlib.Util.AddRelatedDecl
 
 /-!
 # The `reassoc` attribute

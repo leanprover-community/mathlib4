@@ -5,7 +5,6 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Int.SuccPred

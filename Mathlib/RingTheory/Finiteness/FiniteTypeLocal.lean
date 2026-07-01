@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Finiteness
-public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 

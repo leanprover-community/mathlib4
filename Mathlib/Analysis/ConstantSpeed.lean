@@ -5,7 +5,6 @@ Authors: Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Data.Set.Function
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 

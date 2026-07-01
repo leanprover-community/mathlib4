@@ -5,8 +5,6 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!

@@ -9,7 +9,6 @@ public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Lex
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Logic.Relation
 
 /-!
 # Relation chain

@@ -6,13 +6,10 @@ Authors: Andrew Yang, Christian Merten
 module
 
 public import Mathlib.Algebra.Category.Ring.FinitePresentation
-public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
-public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 public import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
-public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 

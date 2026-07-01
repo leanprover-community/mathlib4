@@ -6,7 +6,6 @@ Authors: Jz Pan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 

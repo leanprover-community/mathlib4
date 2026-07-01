@@ -8,7 +8,6 @@ module
 public import Mathlib.GroupTheory.Archimedean
 public import Mathlib.Topology.Algebra.Order.Group
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.Topology.Order.Basic
 
 /-!
 # Topology on archimedean groups and fields

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Logic.Embedding.Set
 

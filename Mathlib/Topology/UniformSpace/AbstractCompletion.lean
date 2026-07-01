@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!

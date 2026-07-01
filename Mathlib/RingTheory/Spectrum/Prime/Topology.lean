@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Idempotent
 public import Mathlib.Order.Heyting.Hom
-public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.KrullDimension

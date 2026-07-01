@@ -10,7 +10,6 @@ public import Mathlib.Data.Nat.Count
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Order.OrderIsoNat
-public import Mathlib.Order.WellFounded
 public import Mathlib.Data.Finset.Sort
 
 /-!

@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Polynomial.BigOperators
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.Tactic.ComputeDegree
 

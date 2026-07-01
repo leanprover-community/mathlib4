@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Homology.Homotopy
-public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 public import Mathlib.CategoryTheory.Quotient.Linear
 public import Mathlib.CategoryTheory.Quotient.Preadditive

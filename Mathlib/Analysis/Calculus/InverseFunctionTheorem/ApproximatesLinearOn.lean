@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!

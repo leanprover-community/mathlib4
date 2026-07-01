@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Convex combinations in strictly convex sets and spaces.

@@ -6,12 +6,10 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Data.List.Dedup
 public import Mathlib.Data.List.Flatten
 public import Mathlib.Data.List.Pairwise
-public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.List.Range
 public import Mathlib.Data.List.Rotate
 public import Mathlib.Data.List.ProdSigma

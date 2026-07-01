@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Frobenius
 public import Mathlib.Algebra.CharP.Pi
 public import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.Algebra.CharP.Subring

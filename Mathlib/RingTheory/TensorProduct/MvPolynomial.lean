@@ -6,8 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
-public import Mathlib.Algebra.MvPolynomial.Eval
-public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.IsTensorProduct
 

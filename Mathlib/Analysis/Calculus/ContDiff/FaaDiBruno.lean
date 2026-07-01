@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!

@@ -5,7 +5,6 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
 public import Mathlib.Algebra.Polynomial.OfFn
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Polynomial.MahlerMeasure

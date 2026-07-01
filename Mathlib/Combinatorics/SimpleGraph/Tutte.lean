@@ -5,11 +5,8 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Matching
 public import Mathlib.Combinatorics.SimpleGraph.Metric
-public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
-public import Mathlib.Data.Fintype.Card
 
 /-!
 # Tutte's theorem

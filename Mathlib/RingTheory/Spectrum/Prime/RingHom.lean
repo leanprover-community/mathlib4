@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Functoriality of the prime spectrum

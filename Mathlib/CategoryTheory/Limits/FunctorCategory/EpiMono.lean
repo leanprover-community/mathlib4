@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Monomorphisms and epimorphisms in functor categories

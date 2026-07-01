@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Data.Finsupp.Basic
 
 /-!
 # Monoid algebras and the opposite ring

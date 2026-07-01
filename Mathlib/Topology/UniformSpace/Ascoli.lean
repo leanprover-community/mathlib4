@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 public import Mathlib.Topology.UniformSpace.Equicontinuity
-public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Ascoli Theorem

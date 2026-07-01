@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Grp.EpiMono
 public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # The concrete (co)kernels in the category of abelian groups are categorical (co)kernels.

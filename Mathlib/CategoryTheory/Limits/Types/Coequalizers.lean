@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.Logic.Function.Coequalizer
-public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Coequalizers in Type

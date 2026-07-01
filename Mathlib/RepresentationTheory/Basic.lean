@@ -6,7 +6,6 @@ Authors: Antoine Labelle
 module
 
 public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.Algebra.Group.Equiv.TypeTags
 
 /-!
 # Monoid representations

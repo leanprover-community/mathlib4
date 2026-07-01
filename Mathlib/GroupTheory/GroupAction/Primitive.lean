@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Setoid.Partition.Card
 public import Mathlib.GroupTheory.GroupAction.Blocks

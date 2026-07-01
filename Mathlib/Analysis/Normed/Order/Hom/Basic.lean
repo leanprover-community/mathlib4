@@ -5,7 +5,6 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!

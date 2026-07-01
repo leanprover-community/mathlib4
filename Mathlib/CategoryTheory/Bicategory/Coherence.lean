@@ -6,7 +6,6 @@ Authors: Yuma Mizuno, Junyan Xu
 module
 
 public import Mathlib.CategoryTheory.PathCategory.Basic
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.GroupTheory.Congruence.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings

@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Separation.Regular
 
 /-!

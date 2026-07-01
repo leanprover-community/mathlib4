@@ -9,8 +9,6 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 public import Mathlib.Topology.Category.LightProfinite.AsLimit
 public import Mathlib.Topology.Category.CompHausLike.Limits
 public import Mathlib.CategoryTheory.Functor.OfSequence
-public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Order.RelClasses
 
 /-!
 

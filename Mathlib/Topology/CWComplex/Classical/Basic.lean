@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Util.AliasIn
 

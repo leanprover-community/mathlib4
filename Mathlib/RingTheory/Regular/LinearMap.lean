@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Regular.IsSMulRegular
-public import Mathlib.RingTheory.Support
 
 /-!
 

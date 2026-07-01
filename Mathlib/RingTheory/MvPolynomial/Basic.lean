@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Data.DFinsupp.Small
-public import Mathlib.Data.Fintype.Pi
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!

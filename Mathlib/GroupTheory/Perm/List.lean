@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.List.Rotate
 public import Mathlib.GroupTheory.Perm.Support
 
 /-!

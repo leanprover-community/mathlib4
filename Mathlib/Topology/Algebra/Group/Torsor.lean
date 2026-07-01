@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Topological torsors of groups

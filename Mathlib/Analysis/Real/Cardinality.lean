@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.Rat

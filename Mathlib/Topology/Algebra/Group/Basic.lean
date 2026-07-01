@@ -7,13 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Group.Submonoid.Units
-public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.Order.Filter.Bases.Finite
-public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological groups

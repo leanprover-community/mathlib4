@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Support
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Derivative of `f x * g x`

@@ -6,11 +6,9 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Colimit.DirectLimit
-public import Mathlib.Data.Finset.Order
 public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of rings, and fields

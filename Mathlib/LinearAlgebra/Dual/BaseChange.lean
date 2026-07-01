@@ -5,9 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 /-!
 # Base change for the dual of a module

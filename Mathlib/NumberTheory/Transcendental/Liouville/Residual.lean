@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
-public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Baire.LocallyCompactRegular
 public import Mathlib.Topology.Instances.Irrational
 

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 public import Mathlib.Algebra.Homology.Functor
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.CategoryTheory.Action.Limits
 public import Mathlib.Topology.ContinuousMap.Algebra
 

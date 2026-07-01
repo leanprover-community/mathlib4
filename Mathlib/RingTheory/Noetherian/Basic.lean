@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.SuccPred.PartialSups
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.RingTheory.Finiteness.Finsupp

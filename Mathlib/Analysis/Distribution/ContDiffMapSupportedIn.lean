@@ -6,11 +6,8 @@ Authors: Anatole Dedecker, Luigi Massacci
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Function.Holder
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
-public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Continuously differentiable functions supported in a given compact set

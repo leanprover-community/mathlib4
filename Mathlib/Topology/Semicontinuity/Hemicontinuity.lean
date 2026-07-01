@@ -6,11 +6,9 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
 import Mathlib.Topology.Sequences
-import Mathlib.Topology.ContinuousOn
 
 /-! # Hemicontinuity
 

@@ -6,11 +6,8 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Range
-public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.Tactic.TFAE
 
 /-!
 

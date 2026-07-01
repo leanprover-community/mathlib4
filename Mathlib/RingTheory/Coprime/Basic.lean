@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Logic.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Ring
 
 /-!

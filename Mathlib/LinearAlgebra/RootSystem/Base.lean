@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Chain
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Bases for root pairings / systems

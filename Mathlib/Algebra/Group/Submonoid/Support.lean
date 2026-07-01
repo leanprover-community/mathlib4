@@ -6,9 +6,7 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Algebra.Group.Subgroup.Lattice
 
-import Mathlib.Tactic.ApplyFun
 
 /-!
 # Supports of submonoids
