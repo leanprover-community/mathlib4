@@ -74,8 +74,8 @@ def diagonalStrongDualPi (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] Strong
     simp only [LinearMap.mk₂_apply, g]
     grw [norm_sum_le, sum_mul, sum_mul]
     gcongr with i _
-    grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_single_le_one]
-    simp
+    grw [le_opNorm₂]
+    gcongr <;> grw [opNorm_comp_le, norm_single_le_one, mul_one]
 
 lemma diagonalStrongDualPi_apply (x y : StrongDual ℝ (Π i, E i)) :
     diagonalStrongDualPi L x y = ∑ i, L i (x ∘L (.single ℝ E i)) (y ∘L (.single ℝ E i)) := rfl
@@ -123,10 +123,10 @@ def diagonalStrongDualProd
     simp only [LinearMap.mk₂_apply, g]
     grw [norm_add_le, add_mul, add_mul]
     gcongr
-    · grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_inl_le_one]
-      simp
-    · grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_inr_le_one]
-      simp
+    · grw [le_opNorm₂]
+      gcongr <;> grw [opNorm_comp_le, norm_inl_le_one, mul_one]
+    · grw [le_opNorm₂]
+      gcongr <;> grw [opNorm_comp_le, norm_inr_le_one, mul_one]
 
 lemma diagonalStrongDualProd_apply (x y : StrongDual ℝ (E × F)) :
     diagonalStrongDualProd L₁ L₂ x y =
@@ -316,7 +316,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [Norm
   rw [indepFun_iff_charFunDual_prod hXY.fst.aemeasurable hXY.snd.aemeasurable]
   intro L
   have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
-    ext; simp [-coe_comp', ← comp_inl_add_comp_inr]
+    ext; simp [-comp_apply, ← comp_inl_add_comp_inr]
   rw [hXY.charFunDual_map_eq, hXY.fst.charFunDual_map_eq, hXY.snd.charFunDual_map_eq, ← exp_add,
     sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
     variance_add, h, mul_zero, add_zero]

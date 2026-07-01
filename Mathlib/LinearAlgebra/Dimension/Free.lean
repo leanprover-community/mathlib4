@@ -14,7 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Finsupp
 # Rank of free modules
 
 ## Main result
-- `LinearEquiv.nonempty_equiv_iff_lift_rank_eq`:
+- `Module.nonempty_equiv_iff_lift_rank_eq`:
   Two free modules are isomorphic iff they have the same dimension.
 - `Module.finBasis`:
   An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
@@ -193,14 +193,20 @@ def LinearEquiv.ofRankEq (cond : Module.rank R M = Module.rank R M₁) : M ≃�
 end
 
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
-theorem LinearEquiv.nonempty_equiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') ↔
+theorem Module.nonempty_linearEquiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') ↔
     Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} (Module.rank R M') :=
   ⟨fun ⟨h⟩ => LinearEquiv.lift_rank_eq h, fun h => nonempty_linearEquiv_of_lift_rank_eq h⟩
 
+@[deprecated (since := "2026-06-30")]
+alias LinearEquiv.nonempty_equiv_iff_lift_rank_eq := Module.nonempty_linearEquiv_iff_lift_rank_eq
+
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
-theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
+theorem Module.nonempty_linearEquiv_iff_rank_eq :
     Nonempty (M ≃ₗ[R] M₁) ↔ Module.rank R M = Module.rank R M₁ :=
   ⟨fun ⟨h⟩ => LinearEquiv.rank_eq h, fun h => nonempty_linearEquiv_of_rank_eq h⟩
+
+@[deprecated (since := "2026-06-30")]
+alias LinearEquiv.nonempty_equiv_iff_rank_eq := Module.nonempty_linearEquiv_iff_rank_eq
 
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 theorem FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
@@ -327,6 +333,18 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
   ⟨fun hv =>
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, map_zero, Finsupp.zero_apply]⟩
+
+omit [StrongRankCondition R] in
+theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
+    [OrzechProperty R] [Module.Finite R M] [Module.Finite R M']
+    (f : M →ₗ[R] M') (hf : Function.Surjective f) (h : Module.finrank R M ≤ Module.finrank R M') :
+    Function.Bijective f := by
+  cases subsingleton_or_nontrivial R
+  -- TODO : figure out how to make `nontriviality` work here nicely
+  · have := Module.subsingleton R M
+    exact ⟨Function.injective_of_subsingleton f, hf⟩
+  rcases finrank_le_iff_exists_linearMap.mp h with ⟨_, hi⟩
+  exact OrzechProperty.bijective_of_surjective_of_injective _ _ hi hf
 
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]

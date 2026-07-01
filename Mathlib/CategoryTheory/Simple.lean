@@ -142,7 +142,7 @@ theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso
         have hx := cokernel.π_of_epi f
         by_contra h
         subst h
-        exact (h _).mp (cokernel.π_of_zero _ _) hx
+        exact (h _).mp inferInstance hx
       · intro hf
         suffices Epi f by exact isIso_of_mono_of_epi _
         apply Preadditive.epi_of_cokernel_zero
