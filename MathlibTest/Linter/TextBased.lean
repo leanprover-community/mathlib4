@@ -662,11 +662,19 @@ open Mathlib.Linter.Style.nameCheck
 #guard !isWronglyCased "myDeclaration"
 #guard !isWronglyCased "lowerCamelCase"
 #guard isWronglyCased "Foo"
--- Acronyms
+-- Acronyms and acronym-like names.
 #guard !isWronglyCased "ofLE"
 #guard !isWronglyCased "LE"
 #guard isWronglyCased "LEOne"
 #guard !isWronglyCased "leOne"
+#guard !isWronglyCasedName "GL"
+#guard !isWronglyCasedName "SL"
+#guard !isWronglyCased "L1"
+#guard !isWronglyCased "L2"
+#guard !isWronglyCased "L1H'"
+#guard !isWronglyCased "L1"
+#guard !isWronglyCased "L₁"
+#guard !isWronglyCased "I₀'"
 -- One-letter names are not acronyms.
 #guard isWronglyCasedName "A"
 #guard isWronglyCasedName "A_b"
@@ -686,11 +694,6 @@ open Mathlib.Linter.Style.nameCheck
 #guard !isWronglyCasedName "Ioi₀_bar"
 #guard !isWronglyCasedName "Ioi₁_bar"
 #guard !isWronglyCasedName "Ioi₁₂_bar₀"
-#guard !isWronglyCased "L1"
-#guard !isWronglyCased "L1H'"
-#guard !isWronglyCased "L1"
-#guard !isWronglyCased "L₁"
-#guard !isWronglyCased "I₀'"
 
 -- False negative, TODO fix!
 #guard !isWronglyCased "myDef_LE"
