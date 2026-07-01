@@ -310,7 +310,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Spa
 
 open LinearMap.FiniteRangeSetoid
 
-/-- If `u, v : E →L[𝕜] F` differ by a finite rank continuous linear map (recall that this is
+/-- If `u, v : E →L[𝕜] F` differ by a finite rank linear map (recall that this is
 denoted `u.toLinearMap ≈ v.toLinearMap` in scope `LinearMap.FiniteRangeSetoid`), then `u` is
 strict with closed range if and only if `v` is strict with closed range.
 
