@@ -114,7 +114,7 @@ public def validateTitle (title : String) : Array String := Id.run do
       if scope.endsWith ".lean" then
         errors := errors.push s!"error: a PR's scope must not end with '.lean'"
       else if scope.contains '.' then
-        -- Exception: file endings `.md`, `.yml`, `.yaml` are fine.
+        -- Exception: many file endings (like `.md`, `.yml`, `.yaml`) are fine.
         let extensions := #["bib", "json", "md", "py", "sh", "toml", "txt", "yaml", "yml"]
         let allOccurrences := scope.count '.'
         let mut recognised := 0
