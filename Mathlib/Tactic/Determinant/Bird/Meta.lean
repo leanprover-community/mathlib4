@@ -6,26 +6,33 @@ Authors: Paul Cadman
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
+public meta import Mathlib.Tactic.Ring
 public meta import Mathlib.Util.Qq
 
 /-!
 # Reification support for the determinant tactic
 
-This file contains the meta-level parser used by `normalizeBirdDet` to parse
-`BirdDet.birdDet` calls into `BirdDetInfo`, that is used by the
-certificate-chaining evaluator.
+This file contains the meta-level parser, `refiyBirdDet`,  used by
+`normalizeBirdDet` to turn `BirdDet.birdDet` calls into the context used by the
+certificate-chain evaluator.
 
 ## Main definitions
 
-- `reifyBirdDet`: Parse a call to `BirdDet.birdDet` into `BirdDetInfo`
+- `reifyBirdDet`: Parse a call to `BirdDet.birdDet`.
 
 -/
 
 public meta section
 
 open Lean Meta Qq
+open Mathlib.Tactic.Ring
 
 namespace Mathlib.Tactic.Determinant
+
+/-- Construct a `CommSemiring` instance expression from a `CommRing` instance expression -/
+abbrev commSemiringOfCommRing {u : Level} {α : Q(Type u)}
+    (rα : Q(CommRing $α)) : Q(CommSemiring $α) :=
+  q(CommRing.toCommSemiring (α := $α) (s := $rα))
 
 /-- Parse an array literal into an array of element expressions.
 
@@ -38,8 +45,12 @@ def arrayLiteral? (e : Expr) : MetaM (Option (Array Expr)) := do
   | Array.mk _ xs => getListLit? xs
   | _ => return none
 
-/-- The matrix data parsed from a `birdDet` call. -/
-structure BirdDetData {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
+/-- The context for a certificate evaluation. -/
+structure Ctx {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
+  /-- `Ring` evaluation cache for the scalar ring. -/
+  cα : Common.Cache (commSemiringOfCommRing rα)
+  /-- Proof-producing ring arithmetic. -/
+  rc : Common.RingCompute RatCoeff (commSemiringOfCommRing rα)
   /-- The dimension of the reified matrix -/
   dimension : ℕ
   /-- The quoted dimension expression from the reified determinant call. -/
@@ -49,19 +60,19 @@ structure BirdDetData {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
   /-- An array of matrix entry `Expr`s` -/
   arrayEntries : Array Q($α)
 
-/-- Information parsed by `reifyBirdDet`. -/
-structure BirdDetInfo where
+/-- The ring instance and evaluator context parsed by `reifyBirdDet`. -/
+structure ReifiedBirdDet where
   /-- The universe level associated with the `birdDet` call -/
   {u : Level}
   /-- The type of a matrix entry -/
   {α : Q(Type u)}
   /-- The `CommRing` instance for matrix entries -/
   rα : Q(CommRing $α)
-  /-- The typed matrix data parsed from the determinant expression. -/
-  data : BirdDetData rα
+  /-- The evaluator context for the parsed determinant expression. -/
+  ctx : Ctx rα
 
-/-- Recognise a `birdDet` call and reify the matrix argument into `BirdDetInfo`. -/
-def reifyBirdDet (e : Expr) : MetaM BirdDetInfo := do
+/-- Recognise a `birdDet` call and reify it into an evaluator context. -/
+def reifyBirdDet (e : Expr) : MetaM ReifiedBirdDet := do
   let e ← instantiateMVars e
   let ⟨_, α, _⟩ ← inferTypeQ' e
   let_expr BirdDet.birdDet _ birdRingInst dimensionExpr arrayExpr := e
@@ -84,9 +95,17 @@ def reifyBirdDet (e : Expr) : MetaM BirdDetInfo := do
     let some entry ← checkTypeQ entry α
       | throwError "expected array entry to have type {α}"
     return entry
+  let sα := commSemiringOfCommRing rα
+  let cα : Common.Cache sα := {
+    rα := some rα
+    dsα := none
+    czα := none
+  }
   return {
     rα
-    data := {
+    ctx := {
+      cα
+      rc := ringCompute cα
       dimension
       dimensionLit
       arrayExpr

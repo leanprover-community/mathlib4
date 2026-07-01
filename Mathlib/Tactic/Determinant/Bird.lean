@@ -20,9 +20,8 @@ open Mathlib.Tactic.Determinant
 
 /-- reify a `BirdDet` call and normalize it using the certificate-chain evaluator -/
 def normalizeBirdDet (e : Expr) : MetaM Simp.Result := do
-  let info ← reifyBirdDet e
-  let ctx := Ctx.ofBirdDetInfo info
-  let detNorm ← certBirdDet.run' {} |>.run ctx |>.run .reducible
+  let ⟨rα, ctx⟩ ← reifyBirdDet e
+  let detNorm ← certBirdDet (rα := rα) |>.run' {} |>.run ctx |>.run .reducible
   Mathlib.Tactic.RingNF.cleanup {} {expr := detNorm.norm, proof? := some detNorm.proof}
 
 /-- Normalize a literal `birdDet` call using the certificate-chain evaluator. -/

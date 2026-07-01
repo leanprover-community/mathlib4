@@ -81,11 +81,6 @@ variable
 
 namespace Mathlib.Tactic.Determinant
 
-/-- Construct a `CommSemiring` instance expression from a `CommRing` instance expression -/
-abbrev commSemiringOfCommRing {u : Level} {α : Q(Type u)}
-    (rα : Q(CommRing $α)) : Q(CommSemiring $α) :=
-  q(CommRing.toCommSemiring (α := $α) (s := $rα))
-
 /-- The ring tactic normal-form value. -/
 abbrev CertVal {u : Level} {α : Q(Type u)}
     (rα : Q(CommRing $α)) (e : Q($α)) :=
@@ -96,36 +91,17 @@ abbrev CertResult {u : Level} {α : Q(Type u)}
     (rα : Q(CommRing $α)) (subject : Q($α)) :=
   Common.Result (CertVal rα) subject
 
-/-- The context for a certificate evaluation -/
-structure Ctx {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
-  /-- `Ring` evaluation cache for the scalar ring. -/
-  cα : Common.Cache (commSemiringOfCommRing rα)
-  /-- Proof-producing ring arithmetic. -/
-  rc : Common.RingCompute RatCoeff (commSemiringOfCommRing rα)
-  /-- The reified determinant payload. -/
-  info : BirdDetData rα
-
 namespace Ctx
-
-/-- Construct a `Ctx` from a `BirdDetInfo` -/
-def ofBirdDetInfo (info : BirdDetInfo) : Ctx info.rα :=
-  let sα := commSemiringOfCommRing info.rα
-  let cα : Common.Cache sα := { rα := some info.rα
-                                dsα := none
-                                czα := none }
-  { cα
-    rc := ringCompute cα
-    info := info.data }
 
 /-- Return an expression for the partially applied function `iter n A t (get n A)` -/
 def iterP (ctx : Ctx rα) (t : ℕ) : Q(ℕ → ℕ → $α) :=
-  let dim : Q(ℕ) := ctx.info.dimensionLit
-  let A : Q(Array $α) := ctx.info.arrayExpr
+  let dim : Q(ℕ) := ctx.dimensionLit
+  let A : Q(Array $α) := ctx.arrayExpr
   q(BirdDet.iter $dim $A $t (BirdDet.get $dim $A))
 
 /-- Return an expression `sumFrom n lo f` -/
 def sumFrom (ctx : Ctx rα) (lo : ℕ) (f : Q(ℕ → $α)) : Q($α) :=
-  let dim : Q(ℕ) := ctx.info.dimensionLit
+  let dim : Q(ℕ) := ctx.dimensionLit
   q(BirdDet.sumFrom $dim $lo $f)
 
 end Ctx
@@ -254,7 +230,7 @@ def certEntry (i j : ℕ) : CertM rα (Cert rα) := do
   if let some c := (← get).entryCache[(i, j)]? then
     return c
   let ctx ← read
-  let {dimension := dim, dimensionLit := dimLit, arrayExpr := A, arrayEntries, ..} := ctx.info
+  let {dimension := dim, dimensionLit := dimLit, arrayExpr := A, arrayEntries, ..} := ctx
   let lhs : Q($α) := q(BirdDet.get $dimLit $A $i $j)
   -- The index of the matrix entry (i, j) in arrayEntries
   let idx := i * dim + j
@@ -276,7 +252,7 @@ sumFrom n lo f = if lo < n then f lo + sumFrom n (lo + 1) f else 0
 -/
 def certSumFromStop (lo : ℕ) (f : Q(ℕ → $α)) : CertM rα (Cert rα) := do
   let ctx ← read
-  have dimLit : Q(ℕ) := ctx.info.dimensionLit
+  have dimLit : Q(ℕ) := ctx.dimensionLit
   let hNot : Q(¬ $lo < $dimLit) ← mkDecideProofQ q(¬ $lo < $dimLit)
   return zeroCertOfProof q(BirdDet.sumFrom_stop $dimLit $lo $f $hNot)
 
@@ -292,7 +268,7 @@ def certSumFromStep
     (lo : ℕ) (f : Q(ℕ → $α))
     (headCert tailCert : CertM rα (Cert rα)) : CertM rα (Cert rα) := do
   let ctx ← read
-  have dim : Q(ℕ) := ctx.info.dimensionLit
+  have dim : Q(ℕ) := ctx.dimensionLit
   let hLt : Q($lo < $dim) ← mkDecideProofQ q($lo < $dim)
   let sumCert ← certAdd (← headCert) (← tailCert)
   return sumCert.chainProof q(BirdDet.sumFrom_step $dim $lo $f $hLt)
@@ -304,7 +280,7 @@ partial def certIter (t i j : ℕ) : CertM rα (Cert rα) := do
   if let some c := (← get).iterCache[(t, i, j)]? then
     return c
   let ctx ← read
-  let {dimensionLit := dimLit, arrayExpr := A, ..} := ctx.info
+  let {dimensionLit := dimLit, arrayExpr := A, ..} := ctx
   let cert ← match t with
     -- The t=0 branch of `BirdDet.iter`, unfold using `BirdDet.iter_zero`
     | 0 => do
@@ -349,7 +325,7 @@ partial def certDiag (t lo : ℕ) : CertM rα (Cert rα) := do
   let ctx ← read
   let diagonalSummand := q(fun k => $(ctx.iterP t) k k)
   let cert ←
-    if lo < ctx.info.dimension
+    if lo < ctx.dimension
     then do
       let headCert := certIter t lo lo
       let tailCert := certDiag t (lo + 1)
@@ -371,12 +347,12 @@ sumFrom n (i + 1) fun k => iter n A t F i k * get n A k j
 -/
 partial def certTail (t i j lo : ℕ) : CertM rα (Cert rα) := do
   let ctx ← read
-  let {dimensionLit := dimLit, arrayExpr := A, ..} := ctx.info
+  let {dimensionLit := dimLit, arrayExpr := A, ..} := ctx
   let tailSummand :=
     q(fun k =>
       $(ctx.iterP t) $i k *
         BirdDet.get $dimLit $A k $j)
-  if lo < ctx.info.dimension
+  if lo < ctx.dimension
   then do
     -- headCert certifies `iter n A t F i lo * get n A lo j`
     let headCert := do
@@ -405,7 +381,7 @@ end
 /-- Certify a `BirdDet.birdDet n A` call. -/
 def certBirdDet : CertM rα (Cert rα) := do
   let ctx ← read
-  let {dimension := dim, dimensionLit := dimLit, arrayExpr, ..} := ctx.info
+  let {dimension := dim, dimensionLit := dimLit, arrayExpr, ..} := ctx
   if dim == 0
   then
     let ce ← certEval q(1 : $α)
@@ -415,7 +391,7 @@ def certBirdDet : CertM rα (Cert rα) := do
     return ce.chainProof h
   else
     -- The non-zero `BirdDet.birdDet_eq` branch matches `k + 1`
-    -- so we set k := `ctx.info.dimension - 1`.
+    -- so we set k := `ctx.dimension - 1`.
     let k := dim - 1
     let cs ← certBirdSign k
     let ci ← certIter k 0 0
