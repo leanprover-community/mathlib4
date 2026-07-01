@@ -52,7 +52,7 @@ namespace CategoryTheory.Limits
 
 open CategoryTheory
 
-universe w v u u₂
+universe w w' v u u₂
 
 variable {J : Type w}
 
@@ -148,6 +148,27 @@ theorem parallelFamily_obj_one : (parallelFamily f).obj one = Y :=
 @[simp]
 theorem parallelFamily_map_left {j : J} : (parallelFamily f).map (line j) = f j :=
   rfl
+
+/-- A bijection between types gives an equivalence between `WalkingParallelFamily` categories. -/
+@[simps]
+def WalkingParallelFamily.equivalenceOfEquiv {J' : Type w'} (e : J ≃ J') :
+    WalkingParallelFamily J ≌ WalkingParallelFamily J' where
+  functor :=
+    parallelFamily (X := .zero) (Y := .one) (fun j ↦ .line (e j))
+  inverse :=
+    parallelFamily (X := .zero) (Y := .one) (fun j ↦ .line (e.symm j))
+  unitIso :=
+    NatIso.ofComponents
+      (fun x ↦ match x with
+        | zero => Iso.refl _
+        | one => Iso.refl _)
+      (fun f ↦ by induction f <;> cat_disch)
+  counitIso :=
+    NatIso.ofComponents
+      (fun x ↦ match x with
+        | zero => Iso.refl _
+        | one => Iso.refl _)
+      (fun f ↦ by induction f <;> cat_disch)
 
 /-- Every functor indexing a wide (co)equalizer is naturally isomorphic (actually, equal) to a
     `parallelFamily` -/
