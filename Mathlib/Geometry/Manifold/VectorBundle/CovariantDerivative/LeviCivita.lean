@@ -658,9 +658,11 @@ instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
       simpa only [zero_add]
     refine ⟨fun {σ} hσ ↦ ?_⟩
     rw [contMDiffOn_univ] at hσ ⊢
+    intro x
     apply ContMDiff.clm_bundle_of_apply
     intro τ hτ
     apply step2 0 (fun {Z} hZ ↦ ?_)
+    stop
     exact contMDiff_leviCivitaConnection_apply 0 hτ (hσ.of_le (by simp)) hZ
 
 section
