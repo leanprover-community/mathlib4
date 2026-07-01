@@ -585,7 +585,7 @@ lemma log_riemannZeta_eq_neg_log_sub_add_isBigO :
 lemma log_riemannZeta_eq_neg_log_sub_add_isLittleO :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =o[𝓝[>] (1 : ℝ)] (fun _ ↦ (1 : ℝ)) :=
   log_riemannZeta_eq_neg_log_sub_add_isBigO.trans_isLittleO
-  ((continuousAt_iff_isLittleO.mp continuous_id.continuousAt).mono nhdsWithin_le_nhds)
+  continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
     ∀ᶠ s in 𝓝[≠] 1, (deriv riemannZeta s) / (riemannZeta s)
@@ -613,7 +613,7 @@ lemma log_deriv_riemannZeta_eq_neg_inv_sub_add_isLittleO :
     (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - γ)
     =o[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
   log_deriv_riemannZeta_eq_neg_inv_sub_add_isBigO.trans_isLittleO
-  ((continuousAt_iff_isLittleO.mp continuous_id.continuousAt).mono nhdsWithin_le_nhds)
+  (continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add_bounded :
     (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹)
@@ -642,6 +642,6 @@ lemma inv_riemannZeta_sub_sub_isLittleO :
   suffices (· - 1) =o[𝓝 1] (fun _ : ℂ ↦ (1 : ℂ)) by
     convert! ((isBigO_refl (· - 1) ..).mul_isLittleO this).mono nhdsWithin_le_nhds using 1
     <;> grind
-  simpa using (continuousAt_iff_isLittleO (f := (id : ℂ → ℂ))).mp (by fun_prop)
+  simpa using continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds
 
 end near_one
