@@ -9,9 +9,14 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-! # Presentable objects in discrete categories
 
+The purpose of this file is to show that a category with a single
+object and a single morphism is locally presentable.
+
 -/
 
-universe w v u
+@[expose] public section
+
+universe w
 
 namespace CategoryTheory
 
@@ -48,6 +53,16 @@ protected instance (priority := low) isCardinalAccessible
 
 instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [Subsingleton C] [Nonempty C] :
+    IsCardinalFiltered C κ where
+  nonempty_cocone F _ :=
+    ⟨Cocone.mk (Classical.arbitrary _)
+      { app _ := eqToHom (by subsingleton) }⟩
+
+instance (α : Type*) [Preorder α] [Subsingleton α] : IsDiscrete α where
+  eq_of_hom _ := by subsingleton
+
+instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [Subsingleton C] [Nonempty C] :
     IsCardinalLocallyPresentable C κ where
   has_colimits_of_shape J := ⟨fun F ↦
     ⟨Cocone.mk (Classical.arbitrary C)
@@ -57,9 +72,12 @@ instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     let X : C := Classical.arbitrary _
     refine ⟨.ofObj (fun (_ : PUnit.{w + 1}) ↦ X), inferInstance,
       fun _ _ ↦ IsDiscrete.isCardinalPresentable _ _,
-      fun Y ↦ ⟨Discrete PUnit.{w + 1}, inferInstance, ?_, sorry⟩⟩
+      fun Y ↦ ?_⟩
     obtain rfl := Subsingleton.elim X Y
-    sorry
+    exact ⟨PUnit.{w + 1}, inferInstance, inferInstance,
+      { diag := (Functor.const _).obj X
+        ι := 𝟙 _
+        isColimit.desc _ := eqToHom (by subsingleton) }, fun _ ↦ ⟨⟨⟩⟩⟩
 
 end IsDiscrete
 
