@@ -249,16 +249,24 @@ theorem nonempty_of_nonempty_colimit {F : J ⥤ Type u} [HasColimit F] :
     Nonempty (colimit F) → Nonempty J :=
   Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivColimitType F).toFun
 
-/-- The colimit of any representable functor is a singleton type. -/
+/-- Any colimit of a representable functor is a singleton type. -/
 @[implicit_reducible]
-noncomputable def uniqueColimitOfIsRepresentable (F : Jᵒᵖ ⥤ Type max u' v) [F.IsRepresentable] :
-    Unique (colimit F) :=
+noncomputable def uniqueOfIsColimitOfIsRepresentable {F : Jᵒᵖ ⥤ Type u'} [F.IsRepresentable]
+    {s : Cocone F} (hs : IsColimit s) : Unique (s.pt) :=
+  letI := HasColimit.mk ⟨s, hs⟩
   @Equiv.unique _ _ {
     default := Quot.mk _ ⟨Opposite.op F.reprX, F.reprx⟩
     uniq x := by
       refine x.out_eq.symm.trans (Quot.eq.2 (.symm _ _ <| .rel _ _ ⟨?_, ?_⟩))
       · exact (F.representableBy.homEquiv.symm x.out.2).op
       · exact .trans (by simp) (F.representableBy.homEquiv_comp _ _)
-  } (Types.colimitEquivColimitType F)
+  } <| (IsColimit.coconePointUniqueUpToIso
+    (hs) (colimitCoconeIsColimit F)).toEquiv.trans (equivShrink _).symm
+
+/-- The colimit of any representable functor is a singleton type. -/
+@[implicit_reducible]
+noncomputable def uniqueColimitOfIsRepresentable
+    (F : Jᵒᵖ ⥤ Type u') [F.IsRepresentable] [HasColimit F] : Unique (colimit F) :=
+  uniqueOfIsColimitOfIsRepresentable (colimit.isColimit F)
 
 end CategoryTheory.Limits.Types

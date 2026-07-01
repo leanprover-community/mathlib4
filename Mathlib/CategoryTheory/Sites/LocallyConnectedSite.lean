@@ -133,7 +133,7 @@ sheaf is connected. -/
 @[implicit_reducible]
 noncomputable def uniqueπ₀ObjOfIsRepresentable (X : Sheaf J (Type max u v w))
     [X.obj.IsRepresentable] : Unique ((π₀ J _).obj X) :=
-  Types.uniqueColimitOfIsRepresentable.{max v w} X.obj
+  Types.uniqueColimitOfIsRepresentable X.obj
 
 /-- On connected locally connected sites, `Sheaf.π₀` preserves the terminal object. -/
 instance [IsConnected C] [HasColimitsOfShape Cᵒᵖ A] [HasTerminal A] [HasWeakSheafify J A] :
