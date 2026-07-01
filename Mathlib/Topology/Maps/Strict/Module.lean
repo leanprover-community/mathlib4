@@ -32,13 +32,14 @@ variable {R S M N Nₗ M' Nₗ' : Type*} [Ring R] [Ring S] {σ : R →+* S}
   (f : M →ₛₗ[σ] N) (fₗ : M →ₗ[R] Nₗ) (gₗ : M' →ₗ[R] Nₗ')
   [TopologicalSpace M] [TopologicalSpace N] [TopologicalSpace Nₗ]
 
-/-- A group homomorphism is strict if and only if its `QuotientGroup.kerLift` is an embedding. -/
+/-- A linear map `f : E → F` is strict if and only the induced map `E ⧸ f.ker → F` is an
+embedding. -/
 protected lemma isStrictMap_iff_isEmbedding_liftQ_ker :
     IsStrictMap f ↔ IsEmbedding (f.ker.liftQ f le_rfl) :=
   f.toAddMonoidHom.isStrictMap_iff_isEmbedding_kerLift
 
-/-- A group homomorphism is strict if and only if the canonical isomorphism
-`G ⧸ f.ker ≃ f.range` is a homeomorphism. -/
+/-- A linear map `f : E → F` is strict if and only if the canonical isomorphism
+`E ⧸ f.ker ≃ f.range` is a homeomorphism. -/
 protected lemma isStrictMap_iff_isHomeomorph_quotKerEquivRange :
     IsStrictMap fₗ ↔ IsHomeomorph (fₗ.quotKerEquivRange) := by
   simp_rw [isHomeomorph_iff_isStrictMap_bijective, EquivLike.bijective, and_true,
@@ -46,28 +47,28 @@ protected lemma isStrictMap_iff_isHomeomorph_quotKerEquivRange :
   rfl
 
 variable {f} in
-/-- The isomorphism of topological groups `G ⧸ f.ker ≃ f.range` given by a strict group
-homomorphism `f`. This is an avatar of the first isomorphism theorem. -/
+/-- The isomorphism of topological modules `E ⧸ f.ker ≃ f.range` given by a strict linear
+map `f : E → F`. This is an avatar of the first isomorphism theorem. -/
 noncomputable def _root_.ContinuousLinearEquiv.quotKerEquivRange
     (hf : IsStrictMap fₗ) : (M ⧸ fₗ.ker) ≃L[R] fₗ.range :=
   .ofIsHomeomorph fₗ.quotKerEquivRange (fₗ.isStrictMap_iff_isHomeomorph_quotKerEquivRange.mp hf)
 
 variable [IsTopologicalAddGroup M]
 
-/-- A group homomorphism is strict if and only if its `rangeRestrict` is an open quotient map. -/
+/-- A linear map is strict if and only if its `rangeRestrict` is an open quotient map. -/
 protected lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict [RingHomSurjective σ] :
     IsStrictMap f ↔ IsOpenQuotientMap f.rangeRestrict :=
   f.toAddMonoidHom.isStrictMap_iff_isOpenQuotientMap_rangeRestrict
 
 variable {f fₗ gₗ} [TopologicalSpace M'] [IsTopologicalAddGroup M'] [TopologicalSpace Nₗ']
 
-/-- The product (in the sense of `Prod.map`) of group homomorphisms is strict if and only if each
-of the homomorphisms is strict. -/
+/-- The product (in the sense of `LinearMap.prodMap`) of linear maps is strict if and only if each
+of the maps is strict. -/
 protected lemma isStrictMap_prodMap_iff :
     IsStrictMap (fₗ.prodMap gₗ) ↔ IsStrictMap fₗ ∧ IsStrictMap gₗ :=
   AddMonoidHom.isStrictMap_prodMap_iff (f := fₗ.toAddMonoidHom) (g := gₗ.toAddMonoidHom)
 
-/-- The product (in the sense of `Prod.map`) of strict group homomorphisms is strict. -/
+/-- The product (in the sense of `LinearMap.prodMap`) of strict linear maps is strict. -/
 protected lemma isStrictMap_prodMap (hf : IsStrictMap fₗ)
     (hg : IsStrictMap gₗ) : IsStrictMap (fₗ.prodMap gₗ) :=
   LinearMap.isStrictMap_prodMap_iff.mpr ⟨hf, hg⟩
