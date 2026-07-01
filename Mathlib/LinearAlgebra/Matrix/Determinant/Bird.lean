@@ -103,13 +103,13 @@ stored in `A` in row-major order.
 
 theorem sumFrom_step (n lo : ℕ) (f : ℕ → R) (h : lo < n) :
     BirdDet.sumFrom n lo f = f lo + BirdDet.sumFrom n (lo + 1) f := by
-      rw [BirdDet.sumFrom]
-      simp [h]
+  rw [BirdDet.sumFrom]
+  simp [h]
 
 theorem sumFrom_stop (n lo : ℕ) (f : ℕ → R) (h : ¬ lo < n) :
     BirdDet.sumFrom n lo f = 0 := by
-      rw [BirdDet.sumFrom]
-      simp [h]
+  rw [BirdDet.sumFrom]
+  simp [h]
 
 theorem iter_zero (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
     BirdDet.iter n A 0 F i j = F i j := rfl
@@ -123,8 +123,8 @@ theorem birdDet_zero (A : Array R) : birdDet 0 A = 1 := rfl
 
 theorem birdDet_eq (n k : ℕ) (A : Array R) (hn : n = k + 1) :
     birdDet n A = (-1 : R) ^ k * BirdDet.iter n A k (BirdDet.get n A) 0 0 := by
-      subst hn
-      rfl
+  subst hn
+  rfl
 
 end BirdDet
 
