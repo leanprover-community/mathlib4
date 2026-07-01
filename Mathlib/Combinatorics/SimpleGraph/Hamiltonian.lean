@@ -219,8 +219,7 @@ lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
 protected alias ⟨IsHamiltonianCycle.of_rotate, IsHamiltonianCycle.rotate⟩ :=
   isHamiltonianCycle_rotate
 
-theorem cycleGraph_EulerianCircuit_isHamiltonianCycle {n : ℕ} :
-    (cycleGraph.cycle n).IsHamiltonianCycle :=
+lemma isHamiltonianCycle_cycleGraph {n : ℕ} : (cycleGraph.cycle n).IsHamiltonianCycle :=
   isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨cycleGraph.isCycle_cycle, by simp⟩
 
 end Walk
@@ -295,9 +294,9 @@ theorem isHamiltonian_iff_cycleGraph_isContained (h : 2 < Fintype.card α) :
     exact fun _ ↦ ⟨a, p, Walk.isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨hp₁, hp₂⟩⟩
 
 @[simp]
-theorem isHamiltonian_cycleGraph (n : ℕ) (hn : 2 < n) : (cycleGraph n).IsHamiltonian := by
-  apply isHamiltonian_iff_cycleGraph_isContained (by simp [hn]) |>.mpr
-  exact Fintype.card_fin _ ▸ IsContained.rfl
+theorem isHamiltonian_cycleGraph {n : ℕ} (hn : 2 < n) : (cycleGraph n).IsHamiltonian :=
+  isHamiltonian_iff_cycleGraph_isContained (by simp [hn]) |>.mpr <|
+    Fintype.card_fin _ ▸ IsContained.rfl
 
 @[simp]
 theorem isHamiltonian_top (h : 2 < Fintype.card α) : (completeGraph α).IsHamiltonian :=
