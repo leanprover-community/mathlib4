@@ -36,12 +36,12 @@ These are used to prove a version of the integral test for antitone functions.
   by the integral of `f x * g (x - 1)` if `f` is monotone and `g` is antitone.
 * `integral_le_sum_mul_Ico_of_antitone_monotone`: the sum of `f i * g i` on an interval is bounded
   below by the integral of `f x * g (x - 1)` if `f` is antitone and `g` is monotone.
-* `AntitoneOn.summable_of_integrable` and `AntitoneOn.tsum_le_integral`, the integral test
-  for antitone functions.
+* `AntitoneOn.summable_of_integrableOn_Ioi_zero` and `AntitoneOn.tsum_le_integral`, the
+  integral test for antitone functions.
 * `AntitoneOn.abs_tsum_sub_sum_range_le_integral`: an error estimate for the difference
   between a sum and its partial sums in terms of an integral.
-* `AntitoneOn.integrable_of_summable` and `AntitoneOn.integral_le_tsum`, the converse to the
-  integral test.
+* `AntitoneOn.integrableOn_Ioi_zero_of_summable` and `AntitoneOn.integral_le_tsum`, the converse to
+  the integral test.
 ## Tags
 
 analysis, comparison, asymptotics
@@ -215,7 +215,7 @@ theorem AntitoneOn.summable_of_integrableOn_Ioi {N : ℕ} (anti : AntitoneOn f (
 theorem AntitoneOn.summable_of_integrableOn_Ioi_zero (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     Summable (fun (n : ℕ) ↦ f n) :=
-  summable_of_integrable_eventually (N := 0) (mod_cast anti) (mod_cast integrable) (mod_cast nonneg)
+  summable_of_integrableOn_Ioi (N := 0) (mod_cast anti) (mod_cast integrable) (mod_cast nonneg)
 
 open Filter Finset in
 theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici (N : ℝ)))
@@ -242,7 +242,7 @@ theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
 theorem AntitoneOn.tsum_le_integral (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑' (n : ℕ),  f n ≤ f 0 + ∫ x in Ioi 0, f x  := by
-  grind [(anti.summable_of_integrable integrable nonneg).tsum_eq_zero_add,
+  grind [(anti.summable_of_integrableOn_Ioi_zero integrable nonneg).tsum_eq_zero_add,
     anti.tsum_add_one_le_integral integrable nonneg]
 
 /-- Bounds the difference between a sum and its partial sums by an integral. -/
@@ -250,7 +250,7 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
     (anti : AntitoneOn f (Ici (N - 1 : ℝ)))
     (integrable : IntegrableOn f (Ioi (N - 1 : ℝ))) (nonneg : ∀ t ∈ Ioi (N - 1 : ℝ), 0 ≤ f t) :
     |(∑' (n : ℕ), f n) - ∑ n ∈ Finset.range N, f n| ≤ ∫ x in Ioi (N - 1 : ℝ), f x := by
-  rw [← (AntitoneOn.summable_of_integrable_eventually (mod_cast anti) (mod_cast integrable)
+  rw [← (AntitoneOn.summable_of_integrableOn_Ioi (mod_cast anti) (mod_cast integrable)
     (mod_cast nonneg)).sum_add_tsum_nat_add N, add_sub_cancel_left,
     abs_of_nonneg (tsum_nonneg <| by grind)]
   convert! AntitoneOn.tsum_comp_add_le_integral (N - 1) (mod_cast anti) (mod_cast integrable)
@@ -281,7 +281,7 @@ theorem AntitoneOn.integrableOn_Ioi_of_summable_comp_add {N : ℕ} (anti : Antit
 theorem AntitoneOn.integrableOn_Ioi_zero_of_summable (anti : AntitoneOn f (Ici 0))
     (summable : Summable (fun (n : ℕ) ↦ f n)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     IntegrableOn f (Ioi 0) :=
-  mod_cast AntitoneOn.integrable_of_summable_comp_add (N := 0) (mod_cast anti) summable
+  mod_cast AntitoneOn.integrableOn_Ioi_of_summable_comp_add (N := 0) (mod_cast anti) summable
     (mod_cast nonneg)
 
 open Filter in
@@ -292,7 +292,7 @@ theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici
   rw [← summable_nat_add_iff N] at summable
   have lim := summable.tendsto_sum_tsum_nat
   have  := tendsto_atTop_add_const_right atTop (N : ℝ) tendsto_natCast_atTop_atTop
-  have integrable := anti.integrable_of_summable_comp_add summable nonneg
+  have integrable := anti.integrableOn_Ioi_of_summable_comp_add summable nonneg
   refine le_of_tendsto_of_tendsto (intervalIntegral_tendsto_integral_Ioi N integrable this) lim ?_
   filter_upwards with M
   calc
