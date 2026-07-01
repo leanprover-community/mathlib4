@@ -5,12 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-! # Presentable objects
 
@@ -297,7 +293,8 @@ lemma IsCardinalPresentable.exists_hom_of_isColimit [IsCardinalPresentable X κ]
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   exact exists_hom_of_preservesColimit_coyoneda hc f
 
-variable {X} in
+variable {X}
+
 lemma IsCardinalPresentable.exists_hom₂_of_isColimit [IsCardinalPresentable X κ]
     [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
     {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f g : X ⟶ c.pt) :
@@ -306,7 +303,6 @@ lemma IsCardinalPresentable.exists_hom₂_of_isColimit [IsCardinalPresentable X 
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   exact exists_hom₂_of_preservesColimit_coyoneda hc f g
 
-variable {X} in
 lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
     [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
     {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i₁ i₂ : J} (f₁ : X ⟶ F.obj i₁)
@@ -316,7 +312,6 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
   have := isFiltered_of_isCardinalFiltered J κ
   exact exists_eq_of_preservesColimit_coyoneda hc f₁ f₂ hf
 
-variable {X} in
 lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
     [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
     {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i : J} (f₁ f₂ : X ⟶ F.obj i)

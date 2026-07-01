@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.Dense
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Presentable.Dense
 
 /-!
 # Pure subobjects
