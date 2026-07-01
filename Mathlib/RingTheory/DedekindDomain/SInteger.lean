@@ -23,8 +23,8 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 
 * `Set.integer`: `S`-integers.
 * `Set.unit`: `S`-units.
-* `Set.Submonoid`: the submonoid of non-zero elements of `R` that are not contained in any prime
-    ideal in `S`.
+* `Set.submonoid`: the submonoid of non-zero elements of `R` that are not contained in any prime
+    ideal away from `S`.
 
 ## Main statements
 
@@ -83,14 +83,15 @@ theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv
     v.valuation K x ≤ 1 :=
   x.property v hv
 
-/-- The submonoid of non-zero elements of `R` that are not contained in any prime ideal in `S`. -/
-def Submonoid : Submonoid R := {
+/-- The submonoid of non-zero elements of `R` that are not contained in any prime ideal away from
+    `S`. -/
+def submonoid : Submonoid R := {
   carrier := (⋂ (v : HeightOneSpectrum R) (_ : v ∉ S), (v.asIdeal.carrier)ᶜ) ∩ (nonZeroDivisors R)
   mul_mem' := by
     rintro _ _ ⟨ha, ha0⟩ ⟨hb, hb0⟩
     simp only [mem_iInter, mem_inter_iff] at ha hb ⊢
     exact ⟨fun v hv ↦ v.isPrime.mul_notMem (ha v hv) (hb v hv), (nonZeroDivisors R).mul_mem ha0 hb0⟩
-  one_mem' := by simpa using fun i (_ : i ∉ S) ↦ i.asIdeal.one_notMem
+  one_mem' := by simpa using fun v (_ : v ∉ S) ↦ v.asIdeal.one_notMem
 }
 
 end Set
@@ -115,7 +116,7 @@ just `R` itself, via `Algebra.botEquivOfInjective` and `IsFractionRing.injective
 
 open Ideal IsDedekindDomain.HeightOneSpectrum Set in
 private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
-    ∀ z : S.integer K, ∃ x : R × S.Submonoid,
+    ∀ z : S.integer K, ∃ x : R × S.submonoid,
     z * algebraMap R (S.integer K) x.2 = algebraMap R (S.integer K) x.1 := by
   intro z
   simp only [Prod.exists, Subtype.exists]
@@ -161,9 +162,9 @@ private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
       mem_range.mp <| mem_integers_of_valuation_le_one (K := K) (algebraMap R K α * z)
         hαz_valuation_le_one
   refine ⟨β, α, ?_, SetLike.coe_eq_coe.mp hβ⟩
-  -- we are left to prove that `α ∈ S.Submonoid`, i.e. that `α` is non-zero and not contained in any
+  -- we are left to prove that `α ∈ S.submonoid`, i.e. that `α` is non-zero and not contained in any
   -- prime ideal not in `S`.
-  simp only [Set.Submonoid, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_inter_iff, mem_iInter,
+  simp only [Set.submonoid, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_inter_iff, mem_iInter,
     mem_compl_iff, SetLike.mem_coe, mem_nonZeroDivisors_iff_ne_zero]
   refine ⟨?_, fun hα0 ↦ hI_ne_zero <| eq_zero_of_pow_eq_zero (by simpa [hα0] using hα)⟩
   intro v hvS _
@@ -179,14 +180,14 @@ private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
 
 /-- The ring of `S`-integers is a localization of `R` at the multiplicative set `S`. -/
 instance IsLocalizationSInteger [Fact (Monoid.IsTorsion (ClassGroup R))] :
-    IsLocalization S.Submonoid <| S.integer K where
+    IsLocalization S.submonoid <| S.integer K where
   map_units y := by
     obtain ⟨r, hr⟩ := y
     have h₀ : algebraMap R K r ≠ 0 :=
       IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hr.2
     refine ⟨⟨⟨_, fun v _ ↦ v.valuation_le_one r⟩,
               ⟨(algebraMap R K r)⁻¹,
-              fun _ _ ↦ by simp_all [Set.Submonoid, HeightOneSpectrum.valuation_of_algebraMap,
+              fun _ _ ↦ by simp_all [Set.submonoid, HeightOneSpectrum.valuation_of_algebraMap,
                 HeightOneSpectrum.intValuation_eq_one_iff.2 ]⟩,
       by simp [Subtype.ext_iff, h₀], by simp [Subtype.ext_iff, h₀]⟩, rfl⟩
   surj := sur R S K
@@ -196,7 +197,7 @@ instance IsLocalizationSInteger [Fact (Monoid.IsTorsion (ClassGroup R))] :
 /-- The ring of `S`-integers is a Dedekind domain. -/
 instance isDedekindDomainSInteger [Fact (Monoid.IsTorsion (ClassGroup R))] :
     IsDedekindDomain (S.integer K) :=
-  IsLocalization.isDedekindDomain _ (fun _ h ↦ h.2 : S.Submonoid ≤ nonZeroDivisors R) _
+  IsLocalization.isDedekindDomain _ (fun _ h ↦ h.2 : S.submonoid ≤ nonZeroDivisors R) _
 
 end IsDedekindDomain
 /-! ## `S`-units -/
