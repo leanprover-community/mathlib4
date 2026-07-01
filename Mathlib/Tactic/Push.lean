@@ -7,6 +7,7 @@ Jireh Loreaux
 module
 
 public meta import Lean.Elab.Tactic.Conv.Simp
+public meta import Lean.Elab.ConfigEval
 public import Mathlib.Logic.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Push.Attr
@@ -126,8 +127,12 @@ def pushCore (head : Head) (cfg : Config) (disch? : Option Simp.Discharge) (tgt 
       (simpTheorems := #[])
       (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
-    | none => { pre := pushStep head cfg }
-    | some disch => { pre := pushStep head cfg, discharge? := disch, wellBehavedDischarge := false }
+    | none => { pre := pushStep head cfg, post _ := return .continue }
+    | some disch => {
+      pre := pushStep head cfg,
+      post _ := return .continue,
+      discharge? := disch,
+      wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Try to rewrite using a `pull` lemma. -/
@@ -197,7 +202,7 @@ def elabHead (stx : Term) : TermElabM Head := withRef stx do
   | _ =>
     match ← resolvePushId? stx with
     | some (.const c _) => return .const c
-    | _ => throwError "Could not resolve `push` argument {stx}. \
+    | _ => throwError "Could not resolve `push` argument `{stx}`. \
       Expected either a constant, e.g. `push Not`, \
       or notation with underscores, e.g. `push ¬ _`"
 
@@ -209,9 +214,9 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 
 /-- Run the `push` tactic. -/
 def push (cfg : Config) (disch? : Option Simp.Discharge) (head : Head) (loc : Location)
-    (failIfUnchanged : Bool := true) : TacticM Unit := do
+    (ifUnchanged : BehaviorIfUnchanged := .error) : TacticM Unit := do
   let cfg := { distrib := cfg.distrib || (← getBoolOption `push_neg.use_distrib) }
-  transformAtLocation (pushCore head cfg disch? ·) s!"push {head}" loc failIfUnchanged
+  transformAtLocation (pushCore head cfg disch? ·) s!"push {head}" loc ifUnchanged
 
 /--
 `push c` rewrites the goal by pushing the constant `c` deeper into an expression.
@@ -318,7 +323,7 @@ elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(l
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
+  transformAtLocation (pullCore head · disch?) "pull" loc (ifUnchanged := .error) false
 
 /-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
 simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda {}

@@ -19,7 +19,7 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
@@ -321,8 +321,10 @@ instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 universe u in
-instance Module.finite_shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
+instance shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
   Module.Finite.equiv (Shrink.linearEquiv R M).symm
+
+@[deprecated (since := "2026-04-18")] alias Module.finite_shrink := shrink
 
 /-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := finite_def.trans N.fg_top
@@ -339,6 +341,12 @@ variable (R M)
 instance bot : Module.Finite R (⊥ : Submodule R M) := .of_fg fg_bot
 
 instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_fg fg_top
+
+instance top_left [Module.Finite R M] : Module.Finite (⊤ : Subsemiring R) M :=
+  have : RingHomSurjective (Subsemiring.topEquiv (R := R)).symm.toRingHom :=
+    RingHomSurjective.instToRingHomRingEquiv Subsemiring.topEquiv.symm
+  of_surjective (σ := (Subsemiring.topEquiv (R := R)).symm.toRingHom)
+      ⟨⟨id, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ Function.surjective_id
 
 variable {M}
 
@@ -367,6 +375,7 @@ theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
         Finite.image2 _ s.finite_toSet t.finite_toSet,
         by rw [image2_smul, span_smul_of_span_eq_top hs (↑t : Set M), ht, restrictScalars_top]⟩⟩
 
+/-- See also `Module.Finite.of_surjective` and `LinearMap.finite_iff_of_bijective`. -/
 lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemiring B₁]
     [CommSemiring A₂] [Semiring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂)
     (e₂ : B₁ ≃+* B₂)
@@ -458,6 +467,9 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
 lemma _root_.RingEquiv.finite (e : A ≃+* B) : e.toRingHom.Finite :=
   .of_surjective _ e.surjective
 
+instance (h : A ≃+* B) : letI := h.toRingHom.toAlgebra; Module.Finite A B :=
+  h.finite
+
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
   algebraize [f, g, g.comp f]
   exact .trans B C
@@ -503,7 +515,6 @@ variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
-set_option backward.isDefEq.respectTransparency false in
 private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   simp_rw [Module.finite_def, Submodule.fg_def, Submodule.eq_top_iff']
   refine ⟨{1, -1}, by simp, fun x ↦ ?_⟩
@@ -513,7 +524,6 @@ private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   · simpa using Submodule.smul_mem (M := R) (.span R≥0 {1, -1}) ⟨-x, neg_nonneg.mpr hx⟩ (x := -1)
       (Submodule.subset_span <| by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a module is finite over a linearly ordered ring, then it is also finite over the non-negative
 scalars. -/
 instance instModuleFinite [Module.Finite R E] : Module.Finite R≥0 E := .trans R E

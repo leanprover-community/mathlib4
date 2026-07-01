@@ -5,10 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
@@ -50,7 +50,7 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 open Finset
 
-/-- The Schnirelmann density is defined as the infimum of |A ∩ {1, ..., n}| / n as n ranges over
+/-- The Schnirelmann density is defined as the infimum of $|A ∩ {1, ..., n}| / n$ as n ranges over
 the positive naturals. -/
 noncomputable def schnirelmannDensity (A : Set ℕ) [DecidablePred (· ∈ A)] : ℝ :=
   ⨅ n : {n : ℕ // 0 < n}, #{a ∈ Ioc 0 n | a ∈ A} / n
@@ -123,7 +123,7 @@ lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ 
     simp only [Set.not_subset, forall_exists_index, and_imp]
     intro x hx hx'
     apply (schnirelmannDensity_le_of_notMem hx').trans_lt
-    simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx
+    simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using! hx
   · intro h
     refine le_ciInf fun ⟨n, hn⟩ => ?_
     rw [one_le_div (Nat.cast_pos.2 hn), Nat.cast_le, filter_true_of_mem, Nat.card_Ioc, Nat.sub_zero]
@@ -166,9 +166,12 @@ lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
   schnirelmannDensity_congr' (by aesop)
 
 /-- The Schnirelmann density is unaffected by removing `0`. -/
-lemma schnirelmannDensity_diff_singleton_zero [DecidablePred (· ∈ A \ {0})] :
+lemma schnirelmannDensity_sdiff_singleton_zero [DecidablePred (· ∈ A \ {0})] :
     schnirelmannDensity (A \ {0}) = schnirelmannDensity A :=
   schnirelmannDensity_congr' (by aesop)
+
+@[deprecated (since := "2026-06-03")]
+alias schnirelmannDensity_diff_singleton_zero := schnirelmannDensity_sdiff_singleton_zero
 
 lemma schnirelmannDensity_congr {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A = B) :
     schnirelmannDensity A = schnirelmannDensity B :=
@@ -269,7 +272,7 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
   simp only [h]
   rw [schnirelmannDensity_setOf_mod_eq_one (by norm_num1), Nat.cast_two]
 
-open Pointwise
+open scoped Pointwise
 
 /-- If two sets `A` and `B` have Schnirelmann densities with sum at least 1, and both sets
 contain zero, then every natural number is sum of an element of `A` and an element of `B`.

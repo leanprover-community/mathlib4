@@ -85,6 +85,7 @@ lemma isomorphic_distinguished (T₁ : Triangle Cᵒᵖ)
   exact Pretriangulated.isomorphic_distinguished _ hT₁ _
     ((triangleOpEquivalence C).inverse.mapIso e).unop.symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Up to rotation, the contractible triangle `X ⟶ X ⟶ 0 ⟶ X⟦1⟧` for `X : Cᵒᵖ` corresponds
 to the contractible triangle for `X.unop` in `C`. -/
@@ -106,6 +107,7 @@ lemma contractible_distinguished (X : Cᵒᵖ) :
   exact ⟨_, inv_rot_of_distTriang _ (Pretriangulated.contractible_distinguished X.unop),
     ⟨contractibleTriangleIso X⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphism expressing a compatibility of the equivalence `triangleOpEquivalence C`
 with the rotation of triangles. -/
@@ -122,6 +124,7 @@ lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
     ((triangleOpEquivalence C).inverse.obj (T.rotate)).unop]
   exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnopIso T).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
@@ -134,6 +137,7 @@ lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
     (Quiver.Hom.op_inj (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
     (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)

@@ -333,7 +333,7 @@ namespace CompactExhaustion
 
 instance : FunLike (CompactExhaustion X) ℕ (Set X) where
   coe := toFun
-  coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
 instance : RelHomClass (CompactExhaustion X) LE.le HasSubset.Subset where
   map_rel f _ _ h := monotone_nat_of_le_succ
@@ -350,7 +350,7 @@ protected theorem isCompact (n : ℕ) : IsCompact (K n) :=
 theorem subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
   K.subset_interior_succ' n
 
-@[mono]
+@[gcongr, mono]
 protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 
@@ -403,9 +403,11 @@ theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by
   classical
   exact Nat.find_comp_succ _ _ (notMem_empty _)
 
-theorem mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
+theorem mem_sdiff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,
     mt K.shiftr.mem_iff_find_le.1 <| by simp only [find_shiftr, not_le, Nat.lt_succ_self]⟩
+
+@[deprecated (since := "2026-06-03")] alias mem_diff_shiftr_find := mem_sdiff_shiftr_find
 
 /-- A choice of an
 [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets)

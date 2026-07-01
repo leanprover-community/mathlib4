@@ -108,7 +108,7 @@ instance : Membership (OpenPartialHomeomorph H H) (StructureGroupoid H) :=
 instance (H : Type*) [TopologicalSpace H] :
     SetLike (StructureGroupoid H) (OpenPartialHomeomorph H H) where
   coe s := s.members
-  coe_injective' N O h := by cases N; cases O; congr
+  coe_injective N O h := by cases N; cases O; congr
 
 instance : Min (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
@@ -208,7 +208,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
     rcases (mem_union _ _ _).1 he with E | E
     · simp [mem_singleton_iff.mp E]
     · right
-      simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using E
+      simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using! E
   id_mem' := mem_union_left _ rfl
   locality' e he := by
     rcases e.source.eq_empty_or_nonempty with h | h
@@ -222,7 +222,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
         exact ⟨hx, xs⟩
       rcases hs with hs | hs
       · replace hs : OpenPartialHomeomorph.restr e s = OpenPartialHomeomorph.refl H := by
-          simpa only using hs
+          simpa only using! hs
         have : (e.restr s).source = univ := by
           rw [hs]
           simp
@@ -231,7 +231,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
           rw [← this]
           exact inter_subset_right
         have : s = univ := by rwa [open_s.interior_eq, univ_subset_iff] at this
-        simpa only [this, restr_univ] using hs
+        simpa only [this, restr_univ] using! hs
       · exfalso
         rw [mem_setOf_eq] at hs
         rwa [hs] at x's
@@ -303,7 +303,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
     · refine PG.locality e.open_source fun x xu ↦ ?_
       rcases he x xu with ⟨s, s_open, xs, hs⟩
       refine ⟨s, s_open, xs, ?_⟩
-      convert hs.1 using 1
+      convert! hs.1 using 1
       dsimp [OpenPartialHomeomorph.restr]
       rw [s_open.interior_eq]
     · refine PG.locality e.open_target fun x xu ↦ ?_
@@ -311,7 +311,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       refine ⟨e.target ∩ e.symm ⁻¹' s, ?_, ⟨xu, xs⟩, ?_⟩
       · exact ContinuousOn.isOpen_inter_preimage e.continuousOn_invFun e.open_target s_open
       · rw [← inter_assoc, inter_self]
-        convert hs.2 using 1
+        convert! hs.2 using 1
         dsimp [OpenPartialHomeomorph.restr]
         rw [s_open.interior_eq]
   mem_of_eqOnSource' e e' he ee' := by
@@ -320,7 +320,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      convert he.2 using 1
+      convert! he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : OpenPartialHomeomorph H H} :
@@ -434,7 +434,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
-    convert closedUnderRestriction' G.id_mem hs
+    convert! closedUnderRestriction' G.id_mem hs
     ext <;> simp [hs.interior_eq]
   · intro h
     constructor

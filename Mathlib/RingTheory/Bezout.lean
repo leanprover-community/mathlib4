@@ -50,7 +50,7 @@ theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →
   use f (gcd x y)
   trans Ideal.map f (Ideal.span {gcd x y})
   · rw [span_gcd, Ideal.map_span, Set.image_insert_eq, Set.image_singleton]
-  · rw [Ideal.map_span, Set.image_singleton]; rfl
+  · rw [Ideal.map_span, Set.image_singleton]
 
 theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE

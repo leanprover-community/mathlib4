@@ -5,7 +5,7 @@ Authors: Boris Bilich, Alexei Piskunov, Jonathan Shneyer
 -/
 module
 
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 
 /-!
 # The class group of a Unique Factorization Domain is trivial
@@ -26,7 +26,7 @@ open scoped nonZeroDivisors
 
 open FractionalIdeal Ideal
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)]
 namespace NormalizedGCDMonoid
@@ -38,7 +38,7 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
   obtain ⟨K, hJK0, hK⟩ := hJ
   rcases hK.principal with ⟨x, hJK⟩
-  have hxmemJK : x ∈ J * K := by simp [hJK, mem_span_singleton_self]
+  have hxmemJK : x ∈ J * K := by simp [hJK]
   -- Shrink `K` to a finitely generated subideal `K'` witnessing `x ∈ J * K'`.
   have : ∃ T : Finset R, (T : Set R) ⊆ K ∧ x ∈ J * span T := by
     obtain ⟨S, T, hSJ, hTK, hx⟩ := Submodule.mem_span_mul_finite_of_mem_mul hxmemJK
@@ -98,7 +98,6 @@ private theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
           (fun t =>
             spanSingleton R⁰ ((algebraMap R (FractionRing R)) a) * I * t)
           h.symm
-      dsimp only at h
       rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0', one_mul, mul_assoc, hI, mul_one] at h
   refine isPrincipal_of_exists_mul_ne_zero_isPrincipal (J := I) ?_
   refine ⟨K, ?_, ?_⟩
