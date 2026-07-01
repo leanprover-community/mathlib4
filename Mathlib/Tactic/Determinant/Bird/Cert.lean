@@ -328,7 +328,7 @@ partial def certIter (t i j : Nat) : CertM rα (Cert rα) := do
       let negDiagSum := q(-$(ctx.sumFrom (i + 1) diagSummand))
       let entryCert ← certEntry i j
       let diagProdCert ←
-        -- If `get n A i j= 0` then we can skip computation of
+        -- If `get n A i j = 0` then we can skip computation of
         --  `-(sumFrom n (i + 1) fun k => F_t k k)`
         if entryCert.isZero then
           zeroProdCert negDiagSum entryCert
