@@ -84,10 +84,6 @@ theorem sym_symm : (@sym α).symm = unsym :=
 theorem unsym_symm : (@unsym α).symm = sym :=
   rfl
 
-theorem sym_apply_eq_iff {a : α} {b : αˢʸᵐ} :
-    sym a = b ↔ a = sym.symm b :=
-  sym.apply_eq_iff_eq_symm_apply
-
 theorem sym_symm_apply_eq {a : αˢʸᵐ} {b : α} :
     sym.symm a = b ↔ a = sym b :=
   sym.symm_apply_eq
