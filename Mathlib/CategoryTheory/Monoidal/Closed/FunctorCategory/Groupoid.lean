@@ -54,7 +54,6 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
       simp }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The counit for the adjunction `(tensorLeft F) ⊣ (ihom F)`. -/
 @[simps]

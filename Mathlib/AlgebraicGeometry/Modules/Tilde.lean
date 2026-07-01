@@ -291,8 +291,8 @@ lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
       NatTrans.naturality, ← Category.assoc, this, ← Functor.map_comp, ← op_comp, homOfLE_comp]
     simp
   subst hU
-  simp only [fromTildeΓ,
-    homOfLE_leOfHom, Functor.FullyFaithful.map_preimage, TopCat.Sheaf.extend_hom_app]
+  simp only [fromTildeΓ, inducedFunctor_obj, homOfLE_leOfHom, Functor.FullyFaithful.map_preimage,
+    TopCat.Sheaf.extend_hom_app]
   ext x
   refine (IsLocalizedModule.lift_apply (.powers (M := R) 1)
     (tilde.toOpen _ (PrimeSpectrum.basicOpen (R := R) 1)).hom

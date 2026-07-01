@@ -238,7 +238,6 @@ variable {L' : A' ⥤ T'} {R' : B' ⥤ T'}
   {F₁ : A ⥤ A'} {F₂ : B ⥤ B'} {F : T ⥤ T'}
   (α : F₁ ⋙ L' ⟶ L ⋙ F) (β : R ⋙ F ⟶ F₂ ⋙ R')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Comma L R ⥤ Comma L' R'` induced by three functors `F₁`, `F₂`, `F`
 and two natural transformations `F₁ ⋙ L' ⟶ L ⋙ F` and `R ⋙ F ⟶ F₂ ⋙ R'`. -/
 @[simps, to_dual self (reorder := A B, 2 4, A' B', 8 10, L R, L' R', F₁ F₂, α β)]

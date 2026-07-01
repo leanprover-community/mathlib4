@@ -99,7 +99,6 @@ noncomputable def triangleω₁δ : C ⥤ Triangle C :=
     (t.ω₁.map (twoδ₁Toδ₀' a b c hab hbc)) (t.ω₁δ a b c hab hbc)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `(t.triangleω₁δ a b c hab hbc).obj X` is isomorphic to
 the (distinguished) triangle obtained by applying the functor `t.eTriangleLTGE.obj b`
 to the object `(t.eTruncGE.obj a).obj ((t.eTruncLT.obj c).obj X)`. -/

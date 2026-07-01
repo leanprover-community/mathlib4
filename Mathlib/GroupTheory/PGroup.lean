@@ -379,7 +379,7 @@ theorem isMulCommutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : IsMulCo
 
 /-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commutative_of_card_eq_prime_sq`
 for just the proof that `∀ a b, a * b = b * a` -/
-@[implicit_reducible]
+@[instance_reducible]
 def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
   commGroupOfCyclicCenterQuotient _ (QuotientGroup.ker_mk' <| center G).le

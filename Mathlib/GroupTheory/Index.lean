@@ -536,7 +536,7 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   exact Nat.card_pos.ne'
 
 /-- Finite index implies finite quotient. -/
-@[to_additive (attr := implicit_reducible) /-- Finite index implies finite quotient. -/]
+@[to_additive (attr := instance_reducible) /-- Finite index implies finite quotient. -/]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
   @Fintype.ofFinite _ (Nat.finite_of_card_ne_zero hH)
 
@@ -712,7 +712,7 @@ lemma isFiniteRelIndex_top_iff : H.IsFiniteRelIndex ⊤ ↔ H.FiniteIndex := by
   rw [finiteIndex_iff, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_top_right]
 
 /-- A finite index subgroup has finite quotient. -/
-@[to_additive (attr := implicit_reducible) /-- A finite index subgroup has finite quotient -/]
+@[to_additive (attr := instance_reducible) /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
   fintypeOfIndexNeZero FiniteIndex.index_ne_zero
 

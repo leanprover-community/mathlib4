@@ -230,7 +230,7 @@ variable (G) in
 If `F` is comonadic, it creates limits of `F`-cosplit pairs. This is the "boring" direction of
 Beck's comonadicity theorem, the converse is given in `comonadicOfCreatesFSplitEqualizers`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g : A ⟶ B)
     [F.IsCosplitPair f g] : CreatesLimit (parallelPair f g) F := by
   apply +allowSynthFailures comonadicCreatesLimitOfPreservesLimit
@@ -279,7 +279,7 @@ instance [ReflectsLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
 /-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects `F`-split
 equalizers, and `C` has them.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair F]
     [PreservesLimitOfIsCosplitPair F] [ReflectsLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F where
@@ -327,7 +327,7 @@ Beck's comonadicity theorem. If `F` has a right adjoint and creates equalizers o
 then it is comonadic.
 This is the converse of `createsFSplitEqualizersOfComonadic`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
   have I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
@@ -341,7 +341,7 @@ def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
 /-- An alternate version of Beck's comonadicity theorem. If `F` reflects isomorphisms, preserves
 equalizers of `F`-cosplit pairs and `C` has equalizers of `F`-cosplit pairs, then it is comonadic.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms [F.ReflectsIsomorphisms]
     [HasEqualizerOfIsCosplitPair F] [PreservesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
@@ -371,11 +371,10 @@ instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coreflexive (crude) comonadicity theorem. If `F` has a right adjoint, `C` has and `F` preserves
 coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
     ComonadicLeftAdjoint F where
   R := G

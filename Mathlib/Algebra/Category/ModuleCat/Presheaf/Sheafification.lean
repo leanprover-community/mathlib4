@@ -118,7 +118,6 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/

@@ -121,7 +121,7 @@ instance ObjectProperty.FullSubcategory.hasForget₂ (P : ObjectProperty C) :
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
 it suffices to ensure that compositions agree with `forget₂ C D ⋙ forget D = forget C`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def HasForget₂.mk' (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, (forget D).map (map f) ≍ (forget C).map f) :

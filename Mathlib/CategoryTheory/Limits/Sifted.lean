@@ -98,8 +98,8 @@ instance [IsSifted C] : IsConnected C :=
           · simpa using Zag.of_inv X.hom.snd
         · rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A category with binary coproducts is sifted or empty. -/
 instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     constructor
@@ -162,8 +162,8 @@ open scoped MonoidalCategory.ExternalProduct
 
 variable (X Y : C ⥤ Type u)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
 `externalProductCompDiagIso`, the comparison map `colimit.pre (X ⊠ Y) (diag C)` identifies with the
 product comparison map for the colimit functor. -/

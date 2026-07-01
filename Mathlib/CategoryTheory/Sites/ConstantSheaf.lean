@@ -97,7 +97,6 @@ lemma isConstant_iff_mem_essImage {L : D ⥤ Sheaf J D} {T : C} (hT : IsTerminal
   rw [essImage_eq_of_natIso (adj.leftAdjointUniq (constantSheafAdj J D hT))]
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isConstant_of_isIso_counit_app (F : Sheaf J D) [HasTerminal C]
     [IsIso <| (constantSheafAdj J D terminalIsTerminal).counit.app F] : IsConstant J F where
   mem_essImage := ⟨_, ⟨asIso <| (constantSheafAdj J D terminalIsTerminal).counit.app F⟩⟩
@@ -108,7 +107,6 @@ instance [(constantSheaf J D).Faithful] [(constantSheaf J D).Full] (F : Sheaf J 
   rw [isIso_counit_app_iff_mem_essImage]
   exact F.mem_essImage_of_isConstant
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the constant sheaf functor is fully faithful, then a sheaf is constant if and only if the
 counit of the constant sheaf adjunction applied to it is an isomorphism.

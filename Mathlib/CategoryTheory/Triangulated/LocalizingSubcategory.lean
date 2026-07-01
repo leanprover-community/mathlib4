@@ -157,7 +157,7 @@ and `B : ObjectProperty C`, this is the inclusion functor
 `A.ι : A.FullSubcategory ⥤ C`, considered as a localizer morphism,
 where `C` is equipped with the property of morphisms `B.trW`
 and `A.FullSubcategory` with the property of morphisms `(B.inverseImage A.ι).trW`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def triangulatedLocalizerMorphism [A.IsTriangulated] :
     LocalizerMorphism (B.inverseImage A.ι).trW B.trW where
   functor := A.ι

@@ -467,7 +467,7 @@ instance : BoundedOrder (Subgraph G) where
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
 /-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph where
   le_top G' := ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
@@ -772,7 +772,7 @@ instance finiteAt {G' : Subgraph G} (v : G'.verts) [DecidableRel G'.Adj]
 /-- If a subgraph is locally finite at a vertex, then so are subgraphs of that subgraph.
 
 This is not an instance because `G''` cannot be inferred. -/
-@[implicit_reducible]
+@[instance_reducible]
 def finiteAtOfSubgraph {G' G'' : Subgraph G} [DecidableRel G'.Adj] (h : G' ≤ G'') (v : G'.verts)
     [Fintype (G''.neighborSet v)] : Fintype (G'.neighborSet v) :=
   Set.fintypeSubset (G''.neighborSet v) (neighborSet_subset_of_subgraph h v)
