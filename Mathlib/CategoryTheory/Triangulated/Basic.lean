@@ -492,10 +492,10 @@ category of triangles. -/
 @[simps]
 def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     (hom₂ : A ⋙ π₂ ⟶ B ⋙ π₂) (hom₃ : A ⋙ π₃ ⟶ B ⋙ π₃)
-    (comm₁ : whiskerLeft A π₁Toπ₂ ≫ hom₂ = hom₁ ≫ whiskerLeft B π₁Toπ₂ := by intros; ext <;> simp)
+    (comm₁ : whiskerLeft A π₁Toπ₂ ≫ hom₂ = hom₁ ≫ whiskerLeft B π₁Toπ₂ := by cat_disch)
     (comm₂ : whiskerLeft A π₂Toπ₃ ≫ hom₃ = hom₂ ≫ whiskerLeft B π₂Toπ₃ := by cat_disch)
     (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) =
-      hom₃ ≫ whiskerLeft B π₃Toπ₁ := by intros; ext <;> simp) : A ⟶ B where
+      hom₃ ≫ whiskerLeft B π₃Toπ₁ := by cat_disch) : A ⟶ B where
   app j :=
     { hom₁ := hom₁.app j
       hom₂ := hom₂.app j
