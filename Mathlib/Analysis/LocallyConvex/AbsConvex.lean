@@ -346,7 +346,8 @@ variable (𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
 variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
-@[simp] lemma totallyBounded_absConvexHull : TotallyBounded (absConvexHull ℝ s) ↔ TotallyBounded s := by
+@[simp]
+lemma totallyBounded_absConvexHull : TotallyBounded (absConvexHull ℝ s) ↔ TotallyBounded s := by
   simp [← convexHull_union_neg_eq_absConvexHull]
 
 protected alias ⟨_, TotallyBounded.absConvexHull⟩ := totallyBounded_absConvexHull
