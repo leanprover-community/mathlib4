@@ -223,8 +223,29 @@ theorem toAlternatingMap_add (f g : M [⋀^ι]→L[R] N) :
     (f + g).toAlternatingMap = f.toAlternatingMap + g.toAlternatingMap :=
   rfl
 
+instance : SMul ℕ+ (M [⋀^ι]→L[R] N) :=
+  ⟨fun c f => ⟨c • f.1, (c • f.toAlternatingMap).map_eq_zero_of_eq⟩⟩
+
+@[simp]
+theorem coe_psmul (f : M [⋀^ι]→L[R] N) (c : ℕ+) : ⇑(c • f) = c • ⇑f :=
+  rfl
+
+theorem psmul_apply (f : M [⋀^ι]→L[R] N) (c : ℕ+) (v : ι → M) : (c • f) v = c • f v :=
+  rfl
+
+@[simp]
+theorem toContinuousMultilinearMap_psmul (c : ℕ+) (f : M [⋀^ι]→L[R] N) :
+    (c • f).toContinuousMultilinearMap = c • f.toContinuousMultilinearMap :=
+  rfl
+
+@[simp]
+theorem toAlternatingMap_psmul (c : ℕ+) (f : M [⋀^ι]→L[R] N) :
+    (c • f).toAlternatingMap = c • f.toAlternatingMap :=
+  rfl
+
 instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) := fast_instance%
-  toContinuousMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  toContinuousMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousAlternatingMap` at a vector as an `AddMonoidHom`. -/
 def applyAddHom (v : ι → M) : M [⋀^ι]→L[R] N →+ N :=
@@ -496,7 +517,7 @@ theorem sub_apply (m : ι → M) : (f - g) m = f m - g m := rfl
 
 instance : AddCommGroup (M [⋀^ι]→L[R] N) := fast_instance%
   toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 end IsTopologicalAddGroup
 
