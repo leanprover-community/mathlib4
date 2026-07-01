@@ -105,6 +105,48 @@ theorem inertiaDeg'_tower [r.LiesOver q] :
     apply Module.finrank_mul_finrank
   · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
 
+variable (R) in
+open Pointwise in
+@[simp]
+theorem inertiaDeg'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+    (g : G) : (g • q).inertiaDeg' R = q.inertiaDeg' R := by
+  by_cases hq : q.IsPrime; swap
+  · rw [inertiaDeg'_of_not_isPrime, inertiaDeg'_of_not_isPrime] <;> simpa
+  · let p := q.under R
+    let f₀ := MulSemiringAction.toAlgAut G R S g
+    let := Localization.AtPrime.algebraOfLiesOver p q
+    let := Localization.AtPrime.algebraOfLiesOver p (g • q)
+    rw [inertiaDeg'_eq p q, inertiaDeg'_eq p (g • q)]
+    let e₂ := Ideal.residueFieldAlgEquiv' p (g • q) q f₀.symm (comap_symm f₀.toRingEquiv).symm
+    exact e₂.toLinearEquiv.finrank_eq
+
+theorem cardQuot_pow_inertiaDeg' [Module.Finite R S] [p.IsMaximal] [q.IsMaximal] [q.LiesOver p] :
+    p.cardQuot ^ q.inertiaDeg' R = q.cardQuot := by
+  let _ : Field (R ⧸ p) := Quotient.field p
+  rw [← inertiaDeg_eq_inertiaDeg' p q, inertiaDeg_algebraMap p q]
+  exact Module.natCard_eq_pow_finrank.symm
+
+theorem absNorm_pow_inertiaDeg' [Module.Finite R S] [q.IsPrime] [q.LiesOver p]
+    [IsDedekindDomain R] [IsDedekindDomain S] [Module.Free ℤ R] [Module.Free ℤ S] :
+    p.absNorm ^ q.inertiaDeg' R = q.absNorm := by
+  by_cases hp : p = ⊥
+  · subst hp
+    simpa [eq_bot_of_liesOver_bot R q] using (inertiaDeg'_pos q R).ne'
+  have := isPrime_of_liesOver q p
+  have := isMaximal_of_isPrime_of_ne_bot p hp
+  have := IsMaximal.of_liesOver_isMaximal q p
+  exact cardQuot_pow_inertiaDeg' p q
+
+theorem natAbs_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] (p : ℤ)
+    (P : Ideal R) [P.IsPrime] [P.LiesOver (span {p})] :
+    p.natAbs ^ P.inertiaDeg' ℤ = absNorm P := by
+  simpa using absNorm_pow_inertiaDeg' (span {p}) P
+
+theorem pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] (p : ℕ)
+    (P : Ideal R) [P.IsPrime] [P.LiesOver (span {(p : ℤ)})] :
+    p ^ P.inertiaDeg' ℤ = absNorm P :=
+  natAbs_pow_inertiaDeg' p P
+
 end
 
 end Ideal
