@@ -149,16 +149,11 @@ theorem circleIntegrable_logCounting (h : Meromorphic f) :
     CircleIntegrable (logCounting f · R) 0 1 := by
   by_cases hR : R = 0
   · simp [hR, ValueDistribution.logCounting_eval_zero]
-  let H1 := fun a ↦ circleAverage (log ‖f · - a‖) 0 R + logCounting f ⊤ R
-  let H2 := fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖
-  have : (fun a : ℂ ↦ logCounting f a R) = H1 - H2 := by
-    ext a
-    simpa [Pi.sub_apply, H1, H2] using eq_sub_of_add_eq
-      (logCounting_add_log_trailingCoeff_eq_circleAverage_add_logCounting_top h hR a)
-  rw [this]
-  exact CircleIntegrable.sub ((circleIntegrable_circleAverage_log_norm_sub h).add
-      (circleIntegrable_const (logCounting f ⊤ R) 0 1))
+  convert circleIntegrable_circleAverage_log_norm_sub h |>.add
+    (circleIntegrable_const (logCounting f ⊤ R) 0 1) |>.sub
     circleIntegrable_log_meromorphicTrailingCoeffAt
+  simpa using eq_sub_of_add_eq
+    (logCounting_add_log_trailingCoeff_eq_circleAverage_add_logCounting_top h hR _)
 
 /-!
 ## Cartan's formula
@@ -173,9 +168,9 @@ facts that the summands are actually circle integrable.
 -/
 theorem characteristic_top_eq_circleAverage_add_circleAverage (h : Meromorphic f) (hR : R ≠ 0) :
     characteristic f ⊤ R = circleAverage (logCounting f · R) 0 1
-      + circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1 := by
-  calc characteristic f ⊤ R
-    _ = circleAverage (fun a ↦ circleAverage (log ‖f · - a‖) 0 R + logCounting f ⊤ R) 0 1 := by
+      + circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1 := calc
+  characteristic f ⊤ R
+      = circleAverage (fun a ↦ circleAverage (log ‖f · - a‖) 0 R + logCounting f ⊤ R) 0 1 := by
       simp only [characteristic, proximity, ↓reduceDIte, Pi.add_apply]
       rw [← proximity_top, ← circleAverage_circleAverage_eq_proximity_top h,
         circleAverage_fun_add (circleIntegrable_circleAverage_log_norm_sub h)
@@ -218,8 +213,7 @@ theorem characteristic_monotoneOn (h : Meromorphic f) :
   intro a ha b hb hab
   rw [characteristic_top_eq_circleAverage_add_circleAverage h ha.ne',
     characteristic_top_eq_circleAverage_add_circleAverage h hb.ne']
-  gcongr
-  <;> try exact circleIntegrable_logCounting h
+  gcongr <;> try exact circleIntegrable_logCounting h
   exact logCounting_monotoneOn ha hb hab
 
 end ValueDistribution
