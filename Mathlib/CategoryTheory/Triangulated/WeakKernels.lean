@@ -38,7 +38,7 @@ def kernelForkOfDistTriangle (T : Triangle C) (dT : T ∈ distTriang C) :
 
 /-- If `T` is a distinguished triangle, then the kernel fork for `T.mor₂` defined in
 `kernelForkOfDistTriangle` is a weak kernel fork. -/
-def kernelForkOfDistTriangleIsWeakLimit (T : Triangle C) (dT : T ∈ distTriang C) :
+def isWeakLimitKernelForkOfDistTriangle (T : Triangle C) (dT : T ∈ distTriang C) :
     IsWeakLimit (kernelForkOfDistTriangle _ dT) :=
   Fork.IsWeakLimit.mk' _
   (fun s ↦ ⟨_, (T.coyoneda_exact₂ dT _ (KernelFork.condition s)).choose_spec.symm⟩)
