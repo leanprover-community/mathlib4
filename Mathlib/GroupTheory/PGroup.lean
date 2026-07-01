@@ -67,14 +67,16 @@ theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
   .of_subsingleton p _
 
 variable (G) in
+@[simp]
 protected theorem zero : IsPGroup 0 G :=
   fun g ↦ ⟨1, by simp⟩
 
+@[simp]
 theorem _root_.isPGroup_one_iff_subsingleton : IsPGroup 1 G ↔ Subsingleton G := by
   refine ⟨?_, fun h ↦ .of_subsingleton 1 G⟩
   simpa [isPGroup_iff_pow_pow_eq_one] using subsingleton_of_forall_eq 1
 
-protected theorem natCard : IsPGroup (Nat.card G) G :=
+protected theorem card : IsPGroup (Nat.card G) G :=
   fun g ↦ ⟨1, by simp⟩
 
 @[gcongr]
