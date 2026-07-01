@@ -49,7 +49,8 @@ set_option backward.defeqAttrib.useBackward true
 
 open CategoryTheory Functor ContinuousMap
 
-variable (R G : Type*) [CommRing R] [Group G] [TopologicalSpace R]
+universe w u v
+variable (R : Type u) (G : Type v) [CommRing R] [Group G] [TopologicalSpace R]
 
 namespace ContinuousCohomology
 
@@ -58,7 +59,7 @@ variable [TopologicalSpace G] [IsTopologicalGroup G]
 variable {R G} in
 /-- The `G` representation `C(G, rep)` given a representation `rep`.
 The `G` action is defined by `g • f := x ↦ g • f (g⁻¹ * x)`. -/
-abbrev Iobj (rep : Action (TopModuleCat R) G) : Action (TopModuleCat R) G where
+abbrev Iobj (rep : Action (TopModuleCat.{w} R) G) : Action (TopModuleCat.{max w v} R) G where
   V := .of R C(G, rep.V)
   ρ :=
   { toFun g := TopModuleCat.ofHom
@@ -73,7 +74,7 @@ lemma Iobj_ρ_apply (rep : Action (TopModuleCat R) G) (g f x) :
 
 /-- The functor taking a representation `rep` to the representation `C(G, rep)`. -/
 @[simps]
-def I : Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G where
+def I : Action (TopModuleCat.{w} R) G ⥤ Action (TopModuleCat.{max w v} R) G where
   obj := Iobj
   map {M N} φ :=
   { hom := TopModuleCat.ofHom (ContinuousLinearMap.compLeftContinuous _ _ φ.hom.hom)
@@ -98,7 +99,7 @@ namespace MultiInd
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The n-th functor taking `M` to `C(G, C(G,...,C(G, M)))` (with n `G`s).
 These functors form a complex, see `MultiInd.complex`. -/
-def functor : ℕ → Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G
+def functor : ℕ → Action (TopModuleCat.{max w v} R) G ⥤ Action (TopModuleCat.{max w v} R) G
   | 0     => 𝟭 _
   | n + 1 => functor n ⋙ I R G
 
@@ -132,13 +133,14 @@ lemma d_comp_d (n : ℕ) :
 /-- The complex of functors whose behaviour pointwise takes an `R`-linear `G`-representation `M`
 to the complex `M → C(G, M) → ⋯ → C(G, C(G,...,C(G, M))) → ⋯`
 The `G`-invariant submodules of it is the homogeneous cochains (shifted by one). -/
-def complex : CochainComplex (Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G) ℕ :=
+def complex :
+    CochainComplex (Action (TopModuleCat.{max w v} R) G ⥤ Action (TopModuleCat.{max w v} R) G) ℕ :=
   CochainComplex.of (functor R G) (d R G) (d_comp_d R G)
 
 end MultiInd
 
 /-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
-def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
+def invariants : Action (TopModuleCat.{max w v} R) G ⥤ TopModuleCat.{max w v} R where
   obj M := .of R
     { carrier := { x | ∀ g : G, (M.ρ g).hom x = x }
       add_mem' hx hy g := by simp [hx g, hy g]
@@ -152,14 +154,16 @@ instance : (invariants R G).Additive where
 
 /-- `homogeneousCochains R G` is the functor taking
 an `R`-linear `G`-representation to the complex of homogeneous cochains. -/
-def homogeneousCochains : Action (TopModuleCat R) G ⥤ CochainComplex (TopModuleCat R) ℕ :=
+def homogeneousCochains :
+    Action (TopModuleCat.{max v w} R) G ⥤ CochainComplex (TopModuleCat.{max v w} R) ℕ :=
   (MultiInd.complex R G).asFunctor ⋙ (invariants R G).mapHomologicalComplex _ ⋙
     (ComplexShape.embeddingUp'Add 1 1).restrictionFunctor _
 
 /-- `continuousCohomology R G n` is the functor taking
 an `R`-linear `G`-representation to its `n`-th continuous cohomology. -/
 noncomputable
-def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopModuleCat R :=
+def _root_.continuousCohomology (n : ℕ) :
+    Action (TopModuleCat.{max v w} R) G ⥤ TopModuleCat.{max v w} R :=
   homogeneousCochains R G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
 set_option backward.isDefEq.respectTransparency false in
