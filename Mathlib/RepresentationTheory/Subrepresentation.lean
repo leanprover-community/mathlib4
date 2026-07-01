@@ -56,6 +56,12 @@ def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSub
   map_one' := by ext; simp
   map_mul' x y := by ext; simp
 
+@[simp]
+lemma toRepresentation_apply_mk {ρ' : Subrepresentation ρ} {g : G} {v w : W} {hv : v ∈ ρ'}
+    {hw : w ∈ ρ'}
+    : ρ'.toRepresentation g ⟨v, hv⟩ = ⟨w, hw⟩ ↔ ρ g v = w := by
+  simp [Subrepresentation.toRepresentation, Subtype.ext_iff]
+
 instance : Max (Subrepresentation ρ) where
   max ρ₁ ρ₂ := .mk (ρ₁.toSubmodule ⊔ ρ₂.toSubmodule) <| by
       simp only [Submodule.forall_mem_sup, map_add]
@@ -95,6 +101,22 @@ instance : BoundedOrder (Subrepresentation ρ) where
   bot_le _ := bot_le (α := Submodule A W)
 
 end non_comm
+
+section quotient
+
+variable {A G W : Type*} [Ring A] [Group G] [AddCommGroup W] [Module A W]
+
+/-- The quotient representation associated to a subrepresentation. -/
+def quotient {ρ : Representation A G W} (ρ' : Subrepresentation ρ) :
+    Representation A G (W ⧸ ρ'.toSubmodule) :=
+  ρ.quotient ρ'.toSubmodule (fun g _ hw => ρ'.apply_mem_toSubmodule g hw)
+
+lemma quotient_apply_mk {ρ : Representation A G W} (ρ' : Subrepresentation ρ)
+    (g : G) (w : W) :
+    ρ'.quotient g ⟦w⟧ = ⟦ρ g w⟧ := by
+  rfl
+
+end quotient
 
 variable [CommSemiring A] [Monoid G] [AddCommMonoid W] [Module A W]
   {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
