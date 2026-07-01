@@ -45,7 +45,10 @@ namespace MeasureTheory
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {f g : α → EReal}
 
 /-- The integral of an `EReal`-valued function with respect to a measure `μ`, defined as the
-difference of two lower Lebesgue integrals. -/
+difference of the Lebesgue integrals of its positive and negative parts.
+
+If both integrals are infinite, the result is `⊥`. See also `EIntegrable`, which is the property
+that at least one of the integrals is finite. -/
 noncomputable def eintegral (μ : Measure α) (f : α → EReal) : EReal :=
     ∫⁻ x, (f x).toENNReal ∂μ - ∫⁻ x, (-f x).toENNReal ∂μ
 
@@ -76,35 +79,31 @@ lemma eintegrable_of_eintegral_ne_bot (hf : ∫ᵉ x, f x ∂μ ≠ ⊥) : EInte
 lemma eintegral_zero (μ : Measure α) : ∫ᵉ _, (0 : EReal) ∂μ = 0 := by simp [eintegral]
 
 @[simp]
-lemma eintegral_zero_measure (f : α → EReal) : ∫ᵉ x, f x ∂(0 : Measure α) = 0 := by
-  simp [eintegral]
+lemma eintegral_zero_measure (f : α → EReal) : ∫ᵉ x, f x ∂(0 : Measure α) = 0 := by simp [eintegral]
 
-lemma eintegral_congr (h : ∀ x, f x = g x) : ∫ᵉ x, f x ∂μ = ∫ᵉ x, g x ∂μ := by
-  simp_rw [h]
+lemma eintegral_congr (h : ∀ x, f x = g x) : ∫ᵉ x, f x ∂μ = ∫ᵉ x, g x ∂μ := by simp_rw [h]
 
 /-- The extended integral is compatible with almost-everywhere equality. -/
 lemma eintegral_congr_ae (h : ∀ᵐ x ∂μ, f x = g x) : ∫ᵉ x, f x ∂μ = ∫ᵉ x, g x ∂μ := by
   simp_rw [eintegral]
   congr 2 <;> exact lintegral_congr_ae <| by filter_upwards [h] with x hx using by rw [hx]
 
-lemma eintegral_of_nonneg (hf : ∀ x, 0 ≤ f x) :
-    ∫ᵉ x, f x ∂μ = ∫⁻ x, (f x).toENNReal ∂μ := by
+lemma eintegral_of_nonneg (hf : ∀ x, 0 ≤ f x) : ∫ᵉ x, f x ∂μ = ∫⁻ x, (f x).toENNReal ∂μ := by
   simp [eintegral, hf]
 
-lemma eintegral_of_ae_nonneg (hf : AEMeasurable f μ)
-    (hf_nonneg : ∀ᵐ x ∂μ, 0 ≤ f x) : ∫ᵉ x, f x ∂μ = ∫⁻ x, (f x).toENNReal ∂μ := by
+lemma eintegral_of_ae_nonneg (hf : AEMeasurable f μ) (hf_nonneg : ∀ᵐ x ∂μ, 0 ≤ f x) :
+    ∫ᵉ x, f x ∂μ = ∫⁻ x, (f x).toENNReal ∂μ := by
   rw [eintegral]
   suffices ∫⁻ x, (-f x).toENNReal ∂μ = 0 by simp [this]
   rw [lintegral_eq_zero_iff']
   · filter_upwards [hf_nonneg] with x hx using by simp [hx]
   · fun_prop
 
-lemma eintegral_of_nonpos (hf : ∀ x, f x ≤ 0) :
-    ∫ᵉ x, f x ∂μ = - ∫⁻ x, (-f x).toENNReal ∂μ := by
+lemma eintegral_of_nonpos (hf : ∀ x, f x ≤ 0) : ∫ᵉ x, f x ∂μ = - ∫⁻ x, (-f x).toENNReal ∂μ := by
   simp [eintegral, hf]
 
-lemma eintegral_of_ae_nonpos (hf : AEMeasurable f μ)
-    (hf_nonpos : ∀ᵐ x ∂μ, f x ≤ 0) : ∫ᵉ x, f x ∂μ = - ∫⁻ x, (-f x).toENNReal ∂μ := by
+lemma eintegral_of_ae_nonpos (hf : AEMeasurable f μ) (hf_nonpos : ∀ᵐ x ∂μ, f x ≤ 0) :
+    ∫ᵉ x, f x ∂μ = - ∫⁻ x, (-f x).toENNReal ∂μ := by
   rw [eintegral]
   suffices ∫⁻ x, (f x).toENNReal ∂μ = 0 by simp [this]
   rw [lintegral_eq_zero_iff']
