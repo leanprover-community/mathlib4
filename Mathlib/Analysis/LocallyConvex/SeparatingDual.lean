@@ -185,8 +185,8 @@ theorem _root_.ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
     f.conjContinuousAlgEquiv = g.conjContinuousAlgEquiv ↔ ∃ α : Rˣ, f = α • g := by
   conv_lhs => rw [eq_comm]
   simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply,
-    ← eq_toContinuousLinearMap_symm_comp, ← ContinuousLinearMap.comp_assoc,
-    eq_comp_toContinuousLinearMap_symm, ContinuousLinearMap.comp_assoc,
+    ← eq_symm_toContinuousLinearMap_comp, ← ContinuousLinearMap.comp_assoc,
+    eq_comp_symm_toContinuousLinearMap, ContinuousLinearMap.comp_assoc,
     ← ContinuousLinearMap.comp_assoc _ f.toContinuousLinearMap, comp_coe, ← mul_def,
     ← Subalgebra.mem_center_iff (R := R), Algebra.IsCentral.center_eq_bot, ← comp_coe,
     Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one, ContinuousLinearEquiv.ext_iff]
