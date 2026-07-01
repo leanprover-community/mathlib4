@@ -16,8 +16,8 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 
 ## TODO
 
-- Prove that `G.egirth ≤ 2 * G.ediam + 1` and `G.girth ≤ 2 * G.diam + 1` when the diameter is
-  non-zero.
+- Prove that `G.egirth ≤ 2 * G.ediam + 1` when `G` is not acyclic
+- Prove that `G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero
 
 -/
 
@@ -73,7 +73,7 @@ lemma exists_egirth_eq_length :
     exact ciInf_mem _
 
 lemma three_le_egirth : 3 ≤ G.egirth := by
-  simpa using fun _ _ a ↦ Walk.IsCycle.three_le_length a
+  simpa using fun _ _ h ↦ h.three_le_length
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 

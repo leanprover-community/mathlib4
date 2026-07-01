@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
@@ -24,22 +25,24 @@ canonical example of a normalised elliptic divisibility sequence.
 Let `R` be a commutative ring, and let `W` be a sequence of elements in `R` indexed by `ℤ`. The
 *elliptic relator* `ER(p, q, r, s) ∈ R` associated to `W` is given for all `p, q, r, s ∈ ℤ` by
 `ER(p, q, r, s) := W(p+q+s)W(p-q)W(r+s)W(r) - W(p+r+s)W(p-r)W(q+s)W(q) + W(q+r+s)W(q-r)W(p+s)W(p)`.
-Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, s) = 0` for any
-`p, q, r, s ∈ ℤ`. By a cyclic permutation of variables, `ER(p, q, r, s) = 0` is essentially the same
-as the symmetric elliptic relation `ERₐ(p, q, r, s) = 0`, where `ERₐ(p, q, r, s) ∈ R` is given for
+Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, s) = 0` for all
+`p, q, r, s ∈ ℤ`. By a cyclic permutation of variables, the vanishing of `ER` is essentially
+equivalent to the vanishing of symmetric relation `ERₐ`, where `ERₐ(p, q, r, s) ∈ R` is given for
 all `p, q, r, s ∈ ℤ` by `ERₐ(p, q, r, s) := Wₐ(p, q)Wₐ(r, s) - Wₐ(p, r)Wₐ(q, s) + Wₐ(p, s)Wₐ(q, r)`
-defined in terms of *elliptic atoms* `Wₐ(p, q) := W((p + q) / 2)W((p - q) / 2)` for some `p, q ∈ ℤ`.
+defined in terms of *elliptic atoms* `Wₐ(p, q) := W((p + q) / 2)W((p - q) / 2)`.
 
-As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0) = 0` for any
-`p, q, r ∈ ℤ`. It is a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for any `k, n ∈ ℤ`,
+As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0) = 0` for all
+`p, q, r ∈ ℤ`. It is a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for all `k, n ∈ ℤ`,
 and an *elliptic divisibility sequence* (EDS) if it is a divisibility sequence that is elliptic. If
 `W` is an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be
 normalised such that `W(1) = 1`, in which case it can be characterised completely by
-* the *even relations* `ER(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+
+* the *even relations* `ERₐ(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m) = W(m - 1)²W(m)W(m + 2) - W(m - 2)W(m)W(m + 1)²` for all `m ∈ ℤ`, and
-* the *odd relations* `ER(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+* the *odd relations* `ERₐ(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m + 1) = W(m + 2)W(m)³ - W(m - 1)W(m + 1)³` for all `m ∈ ℤ`,
-with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = db` for some
+
+with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b` for some
 `b, c, d ∈ R`. This will be called the *canonical example of a normalised EDS* in this file.
 
 Some examples of EDSs include
@@ -54,8 +57,7 @@ Some examples of EDSs include
 * `IsEllipticNet.rel`: the elliptic relator `ER(p, q, r, s)` indexed by `ℤ`.
 * `IsEllipticNet`: a sequence indexed by `ℤ` is an elliptic net.
 * `IsEllSequence`: a sequence indexed by `ℤ` is an elliptic sequence.
-* `IsDivSequence`: a sequence indexed by `ℤ` is a divisibility sequence.
-* `IsEllDivSequence`: a sequence indexed by `ℤ` is an EDS.
+* `IsEllDvdSequence`: a sequence indexed by `ℤ` is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
 * `complEDS₂`: the 2-complement sequence for a normalised EDS indexed by `ℕ`.
@@ -65,8 +67,8 @@ Some examples of EDSs include
 
 ## Main statements
 
-* TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
-* TODO: prove that a sequence satisfying `IsEllDivSequence` can be normalised to give `normEDS`.
+* TODO: prove that `normEDS` satisfies `IsEllDvdSequence`.
+* TODO: prove that a sequence satisfying `IsEllDvdSequence` can be normalised to give `normEDS`.
 
 ## Implementation notes
 
@@ -99,9 +101,8 @@ elliptic net, elliptic divisibility sequence
 
 @[expose] public section
 
-universe u v
-
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : ℤ → R) (f : R →+* S)
+variable {R S : Type*} [CommRing R] [CommRing S] (W : ℤ → R)
+  {F : Type*} [FunLike F R S] [RingHomClass F R S] (f : F)
 
 namespace IsEllipticNet
 
@@ -289,13 +290,11 @@ def IsEllipticNet : Prop :=
 def IsEllSequence : Prop :=
   ∀ p q r : ℤ, IsEllipticNet.rel W p q r 0 = 0
 
-/-- The proposition that a sequence indexed by `ℤ` is a divisibility sequence. -/
-def IsDivSequence : Prop :=
-  ∀ m n : ℤ, m ∣ n → W m ∣ W n
+@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
 
 /-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
-def IsEllDivSequence : Prop :=
-  IsEllSequence W ∧ IsDivSequence W
+def IsEllDvdSequence : Prop :=
+  IsEllSequence W ∧ IsDvdSequence W
 
 variable {W} in
 lemma IsEllipticNet.isEllSequence (h : IsEllipticNet W) : IsEllSequence W :=
@@ -312,11 +311,7 @@ lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence <| x • 
     x ^ 4 * h m n r
 
 variable {W} in
-lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence <| x • W :=
-  (mul_dvd_mul_left x <| h · · ·)
-
-variable {W} in
-lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
+lemma IsEllDvdSequence.smul (h : IsEllDvdSequence W) (x : R) : IsEllDvdSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
 
 lemma isEllipticNet_id : IsEllipticNet id :=
@@ -325,12 +320,11 @@ lemma isEllipticNet_id : IsEllipticNet id :=
 lemma isEllSequence_id : IsEllSequence id :=
   isEllipticNet_id.isEllSequence
 
-lemma isDivSequence_id : IsDivSequence id :=
-  fun _ _ => by simp_rw [id_eq, imp_self]
+@[deprecated (since := "2026-06-30")] alias isDvdSequence_id := IsDvdSequence.id
 
 /-- The identity sequence is an EDS. -/
-theorem isEllDivSequence_id : IsEllDivSequence id :=
-  ⟨isEllSequence_id, isDivSequence_id⟩
+theorem isEllDvdSequence_id : IsEllDvdSequence id :=
+  ⟨isEllSequence_id, .id ℤ⟩
 
 variable (b c d : R)
 
@@ -457,7 +451,7 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     ring1
 
 /-- The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
-`W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for any `k ∈ ℤ`.
+`W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for all `k ∈ ℤ`.
 
 This is defined in terms of `preNormEDS`. -/
 def complEDS₂ (k : ℤ) : R :=
@@ -500,7 +494,7 @@ end PreNormEDS
 section NormEDS
 
 /-- The canonical example of a normalised EDS `W : ℤ → R`, with initial values
-`W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = db`.
+`W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b`.
 
 This is defined in terms of `preNormEDS` whose even terms differ by a factor of `b`. -/
 def normEDS (n : ℤ) : R :=
@@ -572,7 +566,7 @@ Strong recursion principle for a normalised EDS: if we have
 then we have `P n` for all `n : ℕ`.
 -/
 @[elab_as_elim]
-noncomputable def normEDSRec' {P : ℕ → Sort u}
+noncomputable def normEDSRec' {P : ℕ → Sort*}
     (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
@@ -588,7 +582,7 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
 
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
-noncomputable def normEDSRec {P : ℕ → Sort u}
+noncomputable def normEDSRec {P : ℕ → Sort*}
     (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
@@ -603,7 +597,7 @@ section ComplEDS
 variable (k : ℤ)
 
 /-- The complement sequence `Wᶜ : ℤ × ℕ → R` for a normalised EDS `W : ℤ → R` that witnesses
-`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for any `k, n ∈ ℤ`.
+`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for all `k, n ∈ ℤ`.
 
 This is defined in terms of `normEDS` and agrees with `complEDS₂` when `n = 2`. -/
 def complEDS' : ℕ → R
@@ -638,7 +632,7 @@ lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
   simp [Nat.mul_add_div two_pos, add_assoc]
 
 /-- The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
-`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for any `k, n ∈ ℤ`.
+`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for all `k, n ∈ ℤ`.
 
 This extends `complEDS'` by defining its values at negative integers. -/
 def complEDS (n : ℤ) : R :=
@@ -696,7 +690,7 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
 
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
-noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
+noncomputable def complEDSRec' {P : ℕ → Sort*} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 1), P k) → P (2 * (m + 1)))
     (odd : ∀ m : ℕ, (∀ k < 2 * (m + 1) + 1, P k) → P (2 * (m + 1) + 1)) (n : ℕ) : P n :=
   n.evenOddStrongRec (by rintro (_ | _) h; exacts [zero, even _ h])
@@ -711,7 +705,7 @@ noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
 
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
-noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)
+noncomputable def complEDSRec {P : ℕ → Sort*} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, P (m + 1) → P (2 * (m + 1)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (2 * (m + 1) + 1)) (n : ℕ) : P n :=
   complEDSRec' zero one (fun _ ih => even _ <| ih _ <| by linarith only)
