@@ -183,6 +183,7 @@ theorem torsionOrder_ne_zero : torsionOrder K ≠ 0 :=
 instance : NeZero (torsionOrder K) :=
   ⟨torsionOrder_ne_zero K⟩
 
+omit [NumberField K] in
 theorem pow_torsionOrder_eq_one {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     ζ ^ torsionOrder K = 1 :=
   Subtype.ext_iff.mp <| @pow_card_eq_one' (torsion K) _ ⟨ζ, hζ⟩

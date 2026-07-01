@@ -163,7 +163,7 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀
 If the prime ideal `P` is unramified over `ℤ` and the norm of the prime of `ℤ` lying under `P` is
 greater than `2`, then the norm of `P` is congruent to `1` modulo `torsionOrder K`.
 -/
-theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP : P.IsPrime] [NeZero P]
+theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
     (hP₁ : Algebra.IsUnramifiedAt ℤ P) (hP₂ : 2 < absNorm (under ℤ P)) :
     torsionOrder K ∣ absNorm P - 1 := by
   have hP₀ : P ≠ ⊥ := fun h ↦ by simp [h] at hP₂
