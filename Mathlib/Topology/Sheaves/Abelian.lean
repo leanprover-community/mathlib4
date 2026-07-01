@@ -58,7 +58,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance (p₀ : X) {C : Type v} [Category.{u} C] [Abelian C] [HasColimits C] :
     (Presheaf.stalkFunctor C p₀).Additive := by
   dsimp [Presheaf.stalkFunctor]
-  have : ((Functor.whiskeringLeft _ _ C).obj (OpenNhds.inclusion p₀).op).Additive := ⟨by cat_disch⟩
+  have : ((Functor.whiskeringLeft _ _ C).obj (OpenNhds.inclusion p₀).op).Additive := ⟨by intros; ext <;> simp⟩
   infer_instance
 
 namespace Sheaf

@@ -32,8 +32,8 @@ Set `TopCat.pathEquiv` for the relation with `_root_.Path x y`. -/
 protected structure Path (x y : X) where
   /-- a morphism from the unit interval -/
   hom : I ⟶ X
-  hom₀ : hom 0 = x := by cat_disch
-  hom₁ : hom 1 = y := by cat_disch
+  hom₀ : hom 0 = x := by intros; ext <;> simp
+  hom₁ : hom 1 = y := by intros; ext <;> simp
 
 attribute [simp] Path.hom₀ Path.hom₁
 

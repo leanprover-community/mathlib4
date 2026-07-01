@@ -48,7 +48,7 @@ structure Algebra (T : Monad C) : Type max u₁ v₁ where
   /-- The unit axiom associated to an algebra. -/
   unit : T.η.app A ≫ a = 𝟙 A := by cat_disch
   /-- The associativity axiom associated to an algebra. -/
-  assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by cat_disch
+  assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by intros; ext <;> simp
 
 attribute [reassoc] Algebra.unit Algebra.assoc
 
@@ -265,7 +265,7 @@ structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   /-- The counit axiom associated to a coalgebra. -/
   counit : a ≫ G.ε.app A = 𝟙 A := by cat_disch
   /-- The coassociativity axiom associated to a coalgebra. -/
-  coassoc : a ≫ G.δ.app A = a ≫ G.map a := by cat_disch
+  coassoc : a ≫ G.δ.app A = a ≫ G.map a := by intros; ext <;> simp
 
 
 attribute [reassoc] Coalgebra.counit Coalgebra.coassoc
@@ -329,7 +329,7 @@ commutes with the structure morphisms.
 -/
 @[simps]
 def isoMk {A B : Coalgebra G} (h : A.A ≅ B.A)
-    (w : A.a ≫ (G : C ⥤ C).map h.hom = h.hom ≫ B.a := by cat_disch) : A ≅ B where
+    (w : A.a ≫ (G : C ⥤ C).map h.hom = h.hom ≫ B.a := by intros; ext <;> simp) : A ≅ B where
   hom := { f := h.hom }
   inv :=
     { f := h.inv
