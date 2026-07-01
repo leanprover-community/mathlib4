@@ -5,11 +5,6 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Group.Pointwise
-public import Mathlib.MeasureTheory.Measure.Doubling
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!

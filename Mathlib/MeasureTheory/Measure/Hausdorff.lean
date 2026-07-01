@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Topology.MetricSpace.Holder
 public import Mathlib.Topology.MetricSpace.MetricSeparated
