@@ -5,6 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Sites.Subsheaf
 public import Mathlib.CategoryTheory.Sites.LocallyInjective
 /-!
 
