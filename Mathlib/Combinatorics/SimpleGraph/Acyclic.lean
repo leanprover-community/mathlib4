@@ -632,6 +632,9 @@ lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber �
 lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
 
+protected theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n :=
+  cliqueFree_of_chromaticNumber_lt <| h.chromaticNumber_le_two.trans_lt <| by norm_cast
+
 lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ} (hn : 2 ≤ n)
     (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
   classical

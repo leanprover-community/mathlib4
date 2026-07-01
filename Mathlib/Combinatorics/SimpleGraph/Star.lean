@@ -89,14 +89,8 @@ lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
   simp
 
-theorem cliqueFree_starGraph_three (r : V) : starGraph r |>.CliqueFree 3 := by
-  classical
-  intro s ⟨hc, hcard⟩
-  obtain ⟨a, b, c, hab, hac, hbc, rfl⟩ := s.card_eq_three.mp hcard
-  have := hc (by simp) (by simp) hab
-  have := hc (by simp) (by simp) hbc
-  have := hc (by simp) (by simp) hac
-  grind [starGraph_adj]
+theorem cliqueFree_starGraph_three (r : V) : starGraph r |>.CliqueFree 3 :=
+  isAcyclic_starGraph r |>.cliqueFree le_rfl
 
 theorem eq_starGraph_of_isUniversal_of_cliqueFree_three {v : V} (hv : G.IsUniversal v)
     (h3 : G.CliqueFree 3) : G = starGraph v := by
