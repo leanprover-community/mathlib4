@@ -245,12 +245,13 @@ theorem comap_inf (f : M →ₛₗ[σ₁₂] M₂) : comap f (q ⊓ q') = comap 
   rfl
 
 @[simp]
-theorem comap_iInf [RingHomSurjective σ₁₂] {ι : Sort*} (f : M →ₛₗ[σ₁₂] M₂)
-    (p : ι → Submodule R₂ M₂) : comap f (⨅ i, p i) = ⨅ i, comap f (p i) :=
-  (gc_map_comap f).u_iInf
+theorem comap_iInf {ι : Sort*} (f : M →ₛₗ[σ₁₂] M₂)
+    (p : ι → Submodule R₂ M₂) : comap f (⨅ i, p i) = ⨅ i, comap f (p i) := by
+  ext
+  simp
 
 @[simp]
-theorem comap_finsetInf [RingHomSurjective σ₁₂] {ι : Type*} (f : M →ₛₗ[σ₁₂] M₂)
+theorem comap_finsetInf {ι : Type*} (f : M →ₛₗ[σ₁₂] M₂)
     (s : Finset ι) (p : ι → Submodule R₂ M₂) : comap f (s.inf p) = s.inf fun i ↦ comap f (p i) := by
   simp [Finset.inf_eq_iInf]
 
@@ -599,22 +600,25 @@ end Submodule
 
 namespace Submodule
 
-variable {N N₂ : Type*}
-variable [CommSemiring R] [CommSemiring R₂]
+variable {S N N₂ : Type*}
+variable [CommSemiring S] [Semiring R] [CommSemiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
-variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
-variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
+variable [AddCommMonoid N] [AddCommMonoid N₂] [Module S N] [Module S N₂]
+variable {τ₁₂ : R →+* R₂}
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
-variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
+variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
 
-theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
+theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
   simp only [SetLike.le_def, mem_comap, LinearMap.smul_apply]
   exact fun _ h ↦ smul_mem _ _ h
 
+theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) :
+    map (c • f) p ≤ map f p := by
+  grw [map_le_iff_le_comap, ← comap_le_comap_smul (map f p) f c, ← map_le_iff_le_comap]
+
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
-def compatibleMaps : Submodule R (N →ₗ[R] N₂) where
+def compatibleMaps : Submodule S (N →ₗ[S] N₂) where
   carrier := { fₗ | pₗ ≤ comap fₗ qₗ }
   zero_mem' := by simp
   add_mem' {f₁ f₂} h₁ h₂ := by
@@ -694,8 +698,8 @@ theorem map_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q :
     map (f.restrict h) p' = comap q.subtype (map f (map p.subtype p')) := by
   rw [restrict_eq_codRestrict_domRestrict, map_codRestrict, map_domRestrict]
 
-theorem comap_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q : Submodule R M}
-    {f : M₂ →ₛₗ[σ₂₁] M} (h : ∀ x ∈ p, f x ∈ q) (p') :
+theorem comap_restrict {p : Submodule R₂ M₂} {q : Submodule R M} {f : M₂ →ₛₗ[σ₂₁] M}
+    (h : ∀ x ∈ p, f x ∈ q) (p') :
     comap (f.restrict h) p' = comap p.subtype (comap f (map q.subtype p')) := by
   rw [restrict_eq_codRestrict_domRestrict, comap_codRestrict, comap_domRestrict]
 
