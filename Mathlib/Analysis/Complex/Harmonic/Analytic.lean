@@ -38,9 +38,8 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
   refine differentiableAt_complex_iff_differentiableAt_real.2 ⟨by fun_prop, ?_⟩
   rw [fderiv_sub (by fun_prop) (by fun_prop), fderiv_const_smul (by fun_prop)]
   repeat rw [fderiv_comp]; all_goals try fun_prop
-  simp only [ContinuousLinearMap.fderiv, ContinuousLinearMap.coe_sub',
-    ContinuousLinearMap.coe_comp', ContinuousLinearMap.coe_smul', Pi.sub_apply,
-    Function.comp_apply, ofRealCLM_apply, Pi.smul_apply, smul_eq_mul, mul_sub]
+  simp only [ContinuousLinearMap.fderiv, sub_apply, ContinuousLinearMap.comp_apply, ofRealCLM_apply,
+    smul_apply, smul_eq_mul]
   ring_nf
   rw [fderiv_clm_apply (by fun_prop) (by fun_prop), fderiv_clm_apply (by fun_prop) (by fun_prop)]
   simp only [fderiv_fun_const, Pi.zero_apply, ContinuousLinearMap.comp_zero, zero_add,
@@ -64,7 +63,6 @@ theorem HarmonicAt.analyticAt_complex_partial (hf : HarmonicAt f x) :
     (fun _ hy ↦ (HarmonicAt.differentiableAt_complex_partial hy).differentiableWithinAt)
     ((isOpen_setOf_harmonicAt f).mem_nhds hf)
 
-set_option backward.isDefEq.respectTransparency false in
 /-
 If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the real part of a function
 `F : ℂ → ℂ` that is holomorphic on the ball.
@@ -105,7 +103,6 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq {z : ℂ
 alias harmonic_is_realOfHolomorphic :=
   InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If a function `f : ℂ → ℝ` is harmonic, then `f` is the real part of a holomorphic function.
 -/
@@ -139,7 +136,6 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq {f : ℂ
 alias InnerProductSpace.harmonic_is_realOfHolomorphic_univ :=
   InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /-
 Harmonic functions are real analytic.
 TODO: Prove this for harmonic functions on an arbitrary f.d. inner product space (not just on `ℂ`).

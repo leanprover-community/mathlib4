@@ -5,7 +5,7 @@ Authors: John Talbot, Lian Bremner Tattersall
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
@@ -61,7 +61,7 @@ open Finset Fintype Function
 
 universe u
 namespace SimpleGraph
-variable {α : Type u}
+variable {α : Type u} {G : SimpleGraph α} {s : Set α}
 
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
 def IsCompleteMultipartite (G : SimpleGraph α) : Prop := IsTrans α (¬ G.Adj · ·)
@@ -69,7 +69,9 @@ def IsCompleteMultipartite (G : SimpleGraph α) : Prop := IsTrans α (¬ G.Adj �
 theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultipartite :=
   ⟨by simp⟩
 
-variable {G : SimpleGraph α}
+protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
+    (G.induce s).IsCompleteMultipartite where trans _u _v _w := hG.trans _ _ _
+
 /-- The setoid given by non-adjacency -/
 @[implicit_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
@@ -104,7 +106,7 @@ lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u
 lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsCompleteMultipartite)
     (hc : G.CliqueFree n) : G.Colorable (n - 1) :=
   (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩) <|
-    hc.comap h.iso.symm.toEmbedding).of_hom h.iso
+    hc.comap h.iso.symm.isContained).of_hom h.iso
 
 variable (G) in
 /--
@@ -365,7 +367,7 @@ theorem nonempty_of_eq_zero_or_eq_zero (h : r = 0 ∨ t = 0) :
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
 theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
   fun _ h₁ _ h₂ hne ↦ Finset.disjoint_left.mpr fun _ h₁' h₂' ↦
-    (G.loopless.irrefl _) (K.isCompleteBetween h₁ h₂ hne h₁' h₂')
+    G.irrefl <| K.isCompleteBetween h₁ h₂ hne h₁' h₂'
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
 def verts : Finset V := K.parts.disjiUnion id K.disjoint
@@ -436,7 +438,7 @@ def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSu
       rw [← h₁', ← h₂']
       apply f.toHom.map_adj
       simp_rw [completeEquipartiteGraph_adj]
-      contrapose! hne with heq
+      contrapose hne with heq
       simp_rw [← h₁, ← h₂, heq]
 
 end CompleteEquipartiteSubgraph
@@ -478,19 +480,18 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
       exact ⟨K, s, K'.card_mem_parts hs_mem,
         fun _ h ↦ K'.isCompleteBetween (hparts_sub h) hs_mem (ne_of_mem_of_not_mem h nhs_mem)⟩
     · refine ⟨K.parts.cons s ?_, ?_, ?_, ?_⟩
-      · by_contra! hs_mem
+      · intro hs_mem
         obtain ⟨v, hv⟩ : s.Nonempty := by
           rw [← Finset.card_pos, hs]
           exact Nat.pos_of_ne_zero ht
-        absurd hadj s hs_mem hv hv
-        exact G.loopless.irrefl v
+        exact G.irrefl <| hadj s hs_mem hv hv
       · rw [Finset.card_cons, K.card_parts.resolve_right ht]
         exact .inl rfl
       · simp_rw [mem_cons, forall_eq_or_imp]
         exact ⟨hs, fun p ↦ K.card_mem_parts⟩
       · rw [coe_cons]
-        refine K.isCompleteBetween.insert_of_symmetric ?_ (fun p hp _ ↦ (hadj p hp).symm)
-        simp_rw [Symmetric, isCompleteBetween_comm, imp_self, implies_true]
+        have : Std.Symm G.IsCompleteBetween := by simp [symm_def, isCompleteBetween_comm]
+        exact K.isCompleteBetween.insert_of_symm fun p hp _ ↦ hadj p hp |>.symm
 
 end CompleteEquipartiteSubgraph
 

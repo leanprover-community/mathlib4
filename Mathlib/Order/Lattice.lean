@@ -270,6 +270,14 @@ theorem sup_sup_sup_comm (a b c d : α) : a ⊔ b ⊔ (c ⊔ d) = a ⊔ c ⊔ (b
   rw [sup_assoc, sup_left_comm b, ← sup_assoc]
 
 @[to_dual]
+theorem sup_rotate (a b c : α) : a ⊔ b ⊔ c = b ⊔ c ⊔ a := by
+  rw [sup_assoc, sup_comm]
+
+@[to_dual]
+theorem sup_rotate' (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (c ⊔ a) := by
+  rw [sup_comm, sup_assoc]
+
+@[to_dual]
 theorem sup_sup_distrib_left (a b c : α) : a ⊔ (b ⊔ c) = a ⊔ b ⊔ (a ⊔ c) := by
   rw [sup_sup_sup_comm, sup_idem]
 
@@ -1064,11 +1072,11 @@ instance Bool.instDistribLattice : DistribLattice Bool := inferInstance
 
 variable [LinearOrder α] {p : α → α → Prop}
 
-lemma pairwise_iff_lt (hp : Symmetric p) : Pairwise p ↔ ∀ ⦃a b⦄, a < b → p a b := by
-  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp <| h _ _ hab
+lemma pairwise_iff_lt [Std.Symm p] : Pairwise p ↔ ∀ ⦃a b⦄, a < b → p a b := by
+  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ symm <| h _ _ hab
 
-lemma pairwise_iff_gt (hp : Symmetric p) : Pairwise p ↔ ∀ ⦃a b⦄, b < a → p a b := by
-  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp <| h _ _ hab
+lemma pairwise_iff_gt [Std.Symm p] : Pairwise p ↔ ∀ ⦃a b⦄, b < a → p a b := by
+  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ symm <| h _ _ hab
 
 alias ⟨_, Pairwise.of_lt⟩ := pairwise_iff_lt
 alias ⟨_, Pairwise.of_gt⟩ := pairwise_iff_gt

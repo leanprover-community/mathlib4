@@ -189,7 +189,7 @@ variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
 @[to_dual (attr := simp) le_map_inv_iff]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert (map_le_map_iff f).symm
+  convert! (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
 @[to_dual self]
@@ -223,7 +223,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
 instance : FunLike (α →o β) α β where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance : OrderHomClass (α →o β) α β where
   map_rel f _ _ h := f.monotone' h
@@ -284,6 +284,14 @@ def id : α →o α :=
 
 instance : Inhabited (α →o α) :=
   ⟨id⟩
+
+variable (α β) in
+/-- Order homomorphisms are equivalent to relation homomorphisms between `LE` relations. -/
+def equivRelHom : (α →o β) ≃ @RelHom α β (· ≤ ·) (· ≤ ·) where
+  toFun f := ⟨f, @f.monotone⟩
+  invFun f := ⟨f, @f.map_rel⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
 instance : Preorder (α →o β) :=
@@ -348,6 +356,9 @@ theorem comp_id (f : α →o β) : comp f id = f := by
 @[simp]
 theorem id_comp (f : α →o β) : comp id f = f := by
   ext
+  rfl
+
+theorem comp_assoc (f : γ →o δ) (g : β →o γ) (h : α →o β) : (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
 /-- Constant function bundled as an `OrderHom`. -/
@@ -558,6 +569,49 @@ theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [Partia
 
 namespace OrderEmbedding
 
+section LE
+
+variable [LE α] [LE β] [LE γ] [LE δ]
+
+variable (α) in
+/-- Identity order embedding -/
+abbrev id : α ↪o α :=
+  RelEmbedding.refl (· ≤ ·)
+
+@[simp]
+theorem coe_id : ⇑(id α) = _root_.id :=
+  rfl
+
+@[simp]
+theorem id_toEmbedding : (id α).toEmbedding = Function.Embedding.refl α :=
+  rfl
+
+/-- Composition of two order embeddings is an order embedding -/
+abbrev comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
+  RelEmbedding.trans f g
+
+@[simp]
+theorem coe_comp (f : α ↪o β) (g : β ↪o γ) : f.comp g = g ∘ f :=
+  rfl
+
+@[simp]
+theorem id_comp (f : α ↪o β) : (id α).comp f = f := by
+  ext
+  rfl
+
+@[simp]
+theorem comp_id (f : α ↪o β) : f.comp (id β) = f := by
+  ext
+  rfl
+
+theorem comp_assoc (f : α ↪o β) (g : β ↪o γ) (h : γ ↪o δ) :
+    (f.comp g).comp h = f.comp (g.comp h) :=
+  rfl
+
+end LE
+
+section Preorder
+
 variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
@@ -658,6 +712,8 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
 @[simp, norm_cast]
 lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
 
+end Preorder
+
 end OrderEmbedding
 
 section Disjoint
@@ -716,17 +772,10 @@ namespace OrderIso
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β] [LE γ] [LE δ]
 
-instance : EquivLike (α ≃o β) α β where
-  coe f := f.toFun
-  inv f := f.invFun
-  left_inv f := f.left_inv
-  right_inv f := f.right_inv
-  coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨_, _⟩, _⟩ := f
-    obtain ⟨⟨_, _⟩, _⟩ := g
-    congr
+instance : EquivLike (α ≃o β) α β :=
+  inferInstance
 
 instance : OrderIsoClass (α ≃o β) α β where
   map_le_map_iff f _ _ := f.map_rel_iff'
@@ -858,6 +907,10 @@ theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
 theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
   RelIso.symm_trans_self e
 
+theorem trans_assoc (f : α ≃o β) (g : β ≃o γ) (h : γ ≃o δ) :
+    (f.trans g).trans h = f.trans (g.trans h) :=
+  rfl
+
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
 @[simps apply symm_apply]
@@ -883,6 +936,52 @@ from `α` and `β` to themselves are order-isomorphic. -/
 @[simps! apply symm_apply]
 def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
   arrowCongr f f
+
+/-- Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
+
+This is `Equiv.embeddingCongr`/`RelIso.relEmbeddingCongr` for `OrderEmbedding`. -/
+abbrev orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
+  RelIso.relEmbeddingCongr f g
+
+@[simp]
+theorem orderEmbeddingCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ↪o β) :
+    orderEmbeddingCongr f g h = .trans (.trans f.symm h) g :=
+  rfl
+
+@[simp]
+theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ↪o δ) :
+    (orderEmbeddingCongr f g).symm h = .trans (.trans f h) g.symm :=
+  rfl
+
+/-- Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
+
+This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
+abbrev orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
+  RelIso.relIsoCongr f g
+
+@[simp]
+theorem orderIsoCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ≃o β) :
+    orderIsoCongr f g h = .trans (.trans f.symm h) g :=
+  rfl
+
+@[simp]
+theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o δ) :
+    (orderIsoCongr f g).symm h = .trans (.trans f h) g.symm :=
+  rfl
+
+/-- A surjective order embedding is an order isomorphism. -/
+@[simps!]
+noncomputable def ofSurjective (f : α ↪o β) (hf : Function.Surjective f) : α ≃o β :=
+  RelIso.ofSurjective f hf
+
+/-- Surjective order embeddings are equivalent to order isomorphisms. -/
+@[simps apply symm_apply]
+noncomputable def equivEmbeddingSurjective :
+    α ≃o β ≃ { f : α ↪o β // Function.Surjective f } where
+  toFun f := ⟨f, f.surjective⟩
+  invFun f := ofSurjective f f.prop
+  left_inv _ := by ext; rfl
+  right_inv _ := rfl
 
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
@@ -963,25 +1062,22 @@ theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x 
   rw [← e.lt_iff_lt, e.apply_symm_apply]
 
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
-@[to_dual toRelIsoGT /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
+@[to_dual /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=
   ⟨e.toEquiv, lt_iff_lt e⟩
 
-@[to_dual (attr := simp) toRelIsoGT_apply]
+@[to_dual (attr := simp)]
 theorem toRelIsoLT_apply (e : α ≃o β) (x : α) : e.toRelIsoLT x = e x :=
   rfl
 
+@[to_dual]
 theorem toRelIsoLT_symm (e : α ≃o β) : e.symm.toRelIsoLT = e.toRelIsoLT.symm :=
   rfl
 
-@[to_dual existing toRelIsoLT_symm] -- TODO: `to_dual` should be able to generate this by itself.
-theorem toRelIsoGT_symm (e : α ≃o β) : e.symm.toRelIsoGT = e.toRelIsoGT.symm :=
-  rfl
-
-@[to_dual (attr := simp) coe_toRelIsoGT]
+@[to_dual (attr := simp)]
 theorem coe_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT = e := rfl
 
-@[to_dual (attr := simp) coe_symm_toRelIsoGT]
+@[to_dual (attr := simp)]
 theorem coe_symm_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT.symm = e.symm := rfl
 
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
@@ -1026,7 +1122,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
     map_rel_iff' := by
       intro a b
       apply le_iff_le_of_cmp_eq_cmp
-      convert (h a (f b)).symm
+      convert! (h a (f b)).symm
       apply gf }
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show

@@ -62,7 +62,7 @@ def onExponent (l : qNF M) (f : ℤ → ℤ) : qNF M :=
 
 /-- Build a transparent expression for the product of powers represented by `l : qNF M`. -/
 def evalPrettyMonomial (iM : Q(GroupWithZero $M)) (r : ℤ) (x : Q($M)) :
-    MetaM (Σ e : Q($M), Q(zpow' $x $r = $e)) := do
+    MetaM (Σ e : Q($M), Q(zpow' $x $r = $e)) :=
   match r with
   | 0 => /- If an exponent is zero then we must not have been able to prove that x is nonzero.  -/
     return ⟨q($x / $x), q(zpow'_zero_eq_div ..)⟩
@@ -111,10 +111,10 @@ def removeZeros
 of) the negative powers. -/
 def split (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
     MetaM (Σ l_n l_d : qNF M, Q(NF.eval $(l.toNF)
-      = NF.eval $(l_n.toNF) / NF.eval $(l_d.toNF))) := do
+      = NF.eval $(l_n.toNF) / NF.eval $(l_d.toNF))) :=
   match l with
   | [] => return ⟨[], [], q(Eq.symm (div_one (1:$M)))⟩
-  | ((r, x), i) :: t =>
+  | ((r, x), i) :: t => do
     let ⟨t_n, t_d, pf⟩ ← split iM t
     if r > 0 then
       return ⟨((r, x), i) :: t_n, t_d, (q(NF.cons_eq_div_of_eq_div $r $x $pf):)⟩
@@ -125,13 +125,13 @@ def split (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
       return ⟨t_n, ((r', x), i) :: t_d, (q(NF.cons_eq_div_of_eq_div' $r' $x $pf):)⟩
 
 private def evalPrettyAux (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
-    MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) := do
+    MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) :=
   match l with
   | [] => return ⟨q(1), q(rfl)⟩
-  | [((r, x), _)] =>
+  | [((r, x), _)] => do
     let ⟨e, pf⟩ ← evalPrettyMonomial q(inferInstance) r x
     return ⟨e, q(by rw [NF.eval_cons]; exact Eq.trans (one_mul _) $pf)⟩
-  | ((r, x), k) :: t =>
+  | ((r, x), k) :: t => do
     let ⟨e, pf_e⟩ ← evalPrettyMonomial q(inferInstance) r x
     let ⟨t', pf⟩ ← evalPrettyAux iM t
     have pf'' : Q(NF.eval $(qNF.toNF (((r, x), k) :: t)) = (NF.eval $(qNF.toNF t)) * zpow' $x $r) :=
@@ -144,7 +144,7 @@ def evalPretty (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
   let ⟨l_n, l_d, pf⟩ ← split iM l
   let ⟨num, pf_n⟩ ← evalPrettyAux q(inferInstance) l_n
   let ⟨den, pf_d⟩ ← evalPrettyAux q(inferInstance) l_d
-  match l_d with
+  match (dependent := true) l_d with
   | [] => return ⟨num, q(eq_div_of_eq_one_of_subst $pf $pf_n)⟩
   | _ =>
     let pf_n : Q(NF.eval $(l_n.toNF) = $num) := pf_n
@@ -281,14 +281,14 @@ def mkDenomConditionProofSucc {iM : Q(CommGroupWithZero $M)}
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     {cond : DenomCondition (M := M) q(inferInstance)}
     {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
-    MetaM (Q($e ≠ 0) × cond.proof (((r, e), i) :: L)) := do
+    MetaM (Q($e ≠ 0) × cond.proof (((r, e), i) :: L)) :=
   match cond with
   | .none => return (← disch q($e ≠ 0), Unit.unit)
-  | .nonzero =>
+  | .nonzero => do
     let pf ← disch q($e ≠ 0)
     let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := hL
     return (pf, q(NF.cons_ne_zero $r $pf $pf₀))
-  | .positive _ _ _ _ =>
+  | .positive _ _ _ _ => do
     let pf ← disch q(0 < $e)
     let pf₀ : Q(0 < NF.eval $(qNF.toNF L)) := hL
     let pf' := q(NF.cons_pos $r (x := $e) $pf $pf₀)
@@ -301,14 +301,14 @@ def mkDenomConditionProofSucc' {iM : Q(CommGroupWithZero $M)}
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     {cond : DenomCondition (M := M) q(inferInstance)}
     {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
-    MetaM (cond.proof (((r, e), i) :: L)) := do
+    MetaM (cond.proof (((r, e), i) :: L)) :=
   match cond with
   | .none => return Unit.unit
-  | .nonzero =>
+  | .nonzero => do
     let pf ← disch q($e ≠ 0)
     let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := hL
     return q(NF.cons_ne_zero $r $pf $pf₀)
-  | .positive _ _ _ _ =>
+  | .positive _ _ _ _ => do
     let pf ← disch q(0 < $e)
     let pf₀ : Q(0 < NF.eval $(qNF.toNF L)) := hL
     return q(NF.cons_pos $r (x := $e) $pf $pf₀)
@@ -318,7 +318,7 @@ namespace qNF
 /-- Extract a common factor `L` of two products-of-powers `l₁` and `l₂` in `M`, in the sense that
 both `l₁` and `l₂` are quotients by `L` of products of *positive* powers.
 
-The variable `cond` specifies whether we extract a *certified nonzero[/positive]* (and therefore
+The variable `cond` specifies whether we extract a *certified nonzero(/positive)* (and therefore
 potentially smaller) common factor. If so, the metaprogram returns a "proof" that this common factor
 is nonzero/positive, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)` / `Q(0 < NF.eval $(L.toNF))`. -/
 partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
@@ -433,7 +433,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     let ⟨y₂, ⟨g₂, pf₂_sgn⟩, l₂, pf₂⟩ ← normalize disch iM x₂
     -- build the new list and proof
     have pf := qNF.mkMulProof iM l₁ l₂
-    let ⟨G, pf_y⟩ := ← Sign.mul iM y₁ y₂ g₁ g₂
+    let ⟨G, pf_y⟩ ← Sign.mul iM y₁ y₂ g₁ g₂
     pure ⟨q($y₁ * $y₂), ⟨G, q(Eq.trans (congr_arg₂ HMul.hMul $pf₁_sgn $pf₂_sgn) $pf_y)⟩,
       qNF.mul l₁ l₂, q(NF.mul_eq_eval $pf₁ $pf₂ $pf)⟩
   /- normalize a division: `x₁ / x₂` -/
@@ -442,7 +442,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     let ⟨y₂, ⟨g₂, pf₂_sgn⟩, l₂, pf₂⟩ ← normalize disch iM x₂
     -- build the new list and proof
     let pf := qNF.mkDivProof iM l₁ l₂
-    let ⟨G, pf_y⟩ := ← Sign.div iM y₁ y₂ g₁ g₂
+    let ⟨G, pf_y⟩ ← Sign.div iM y₁ y₂ g₁ g₂
     pure ⟨q($y₁ / $y₂), ⟨G, q(Eq.trans (congr_arg₂ HDiv.hDiv $pf₁_sgn $pf₂_sgn) $pf_y)⟩,
       qNF.div l₁ l₂, q(NF.div_eq_eval $pf₁ $pf₂ $pf)⟩
   /- normalize an inversion: `y⁻¹` -/
@@ -665,10 +665,10 @@ def parseDischarger (d : Option (TSyntax ``discharger)) (args : Option (TSyntax 
     | _ => throwError "could not parse the provided discharger {d}"
 
 /--
-`field_simp` normalizes expressions in (semi-)fields by rewriting them to a common denominator,
-i.e. to reduce them to expressions of the form `n / d` where neither `n` nor `d` contains any
-division symbol. The `field_simp` tactic will also clear denominators in field *(in)equalities*, by
-cross-multiplying.
+`field_simp` normalizes expressions in (semi-)fields (i.e., does not require additive inverses)
+by rewriting them to a common denominator, i.e. to reduce them to expressions of the form `n / d`
+where neither `n` nor `d` contains any division symbol. The `field_simp` tactic will also clear
+denominators in field *(in)equalities*, by cross-multiplying.
 
 A very common pattern is `field_simp; ring` (clear denominators, then the resulting goal is
 solvable by the axioms of a commutative ring). The finishing tactic `field` is a shorthand for this
@@ -711,8 +711,7 @@ elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(loca
   let m := AtomM.recurse s { contextual := true } (wellBehavedDischarge := false)
     (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation
-    (m ·) "`field_simp`" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
+  transformAtLocation (m ·) "field_simp" (ifUnchanged := .error) (mayCloseGoalFromHyp := true) loc
 
 /--
 `field_simp` normalizes an expression in a (semi-)field by rewriting it to a common denominator,

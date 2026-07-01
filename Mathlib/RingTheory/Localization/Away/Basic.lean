@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
@@ -60,7 +60,7 @@ noncomputable def invSelf : S :=
 
 @[simp]
 theorem mul_invSelf : algebraMap R S x * invSelf x = 1 := by
-  convert IsLocalization.mk'_mul_mk'_eq_one (M := Submonoid.powers x) (S := S) _ 1
+  convert! IsLocalization.mk'_mul_mk'_eq_one (M := Submonoid.powers x) (S := S) _ 1
   symm
   apply IsLocalization.mk'_one
 
@@ -306,9 +306,13 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
     [IsLocalization.Away x S₁] [IsLocalization.Away y S₂]
     [IsLocalization.Away (algebraMap R S₂ x) T] :
     IsLocalization.Away (algebraMap R S₁ y) T := by
-  convert IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
+  convert! IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
   simp
+
+theorem isDomain [IsDomain R] {x : R} (hx : x ≠ 0) [IsLocalization.Away x S] : IsDomain S :=
+  IsLocalization.isDomain_of_le_nonZeroDivisors S
+    (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
 
 end Away
 
@@ -332,16 +336,7 @@ noncomputable def atOne [IsLocalization.Away (1 : R) S] : R ≃ₐ[R] S :=
 theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
     [Algebra R S] {r : R} (hr : IsUnit r) (H : Function.Bijective (algebraMap R S)) :
     IsLocalization.Away r S :=
-  { map_units := by
-      rintro ⟨_, n, rfl⟩
-      exact (algebraMap R S).isUnit_map (hr.pow _)
-    surj := fun z => by
-      obtain ⟨z', rfl⟩ := H.2 z
-      exact ⟨⟨z', 1⟩, by simp⟩
-    exists_of_eq := fun {x y} => by
-      rw [H.1.eq_iff]
-      rintro rfl
-      exact ⟨1, rfl⟩ }
+  .of_le_isUnit_of_bijective (by simpa [Submonoid.powers_le] using! hr.map (algebraMap R S)) H
 
 variable {R S}
 
@@ -422,7 +417,7 @@ section
 
 variable {S T : Type*} [CommRing S] [CommRing T] [Algebra S T]
 
-open Pointwise in
+open scoped Pointwise in
 /-- Suppose `I` is an ideal of `R`, then `R / I` is the localization away from `r : R`
 if `r - 1 ∈ I` and for some `n`, `r ^ n • I = ⊥`.
 For sake of usability, we state this for surjective ring maps instead of ideals.
@@ -437,7 +432,7 @@ lemma Away.of_surjective (h₁ : Function.Surjective (algebraMap S T))
   · rw [← sub_eq_zero, ← mul_sub]
     exact hn ⟨x - y, by simp [h]⟩
 
-open Pointwise in
+open scoped Pointwise in
 /-- Suppose `J ≤ I` are ideals of `R`, then `R / I` is the localization away from `r : R / J`
 if `r - 1 ∈ I` and for some `n`, `r ^ n • I ≤ J`.
 For sake of usability, we state this for surjective ring maps instead of ideals. -/
@@ -599,6 +594,10 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),
     ← Finset.mul_sum, ← smul_eq_mul (a := c _), eq1, mul_one]
 
+/-- If `x ≠ 0`, then the localization of a domain away from `x` is again a domain. -/
+theorem Away.isDomain [IsDomain R] {x : R} (hx : x ≠ 0) : IsDomain (Localization.Away x) :=
+  IsLocalization.Away.isDomain (Localization.Away x) hx
+
 end Localization
 
 end CommSemiring
@@ -692,11 +691,9 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
   constructor
   · intro h
     have := congr_arg (fun s : B => s * selfZPow x B d) h
-    simp only at this
     rwa [mul_assoc, mul_assoc, selfZPow_neg_mul, mul_one, mul_comm b _] at this
   · intro h
     have := congr_arg (fun s : B => s * selfZPow x B (-d)) h
-    simp only at this
     rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
 
 variable {R : Type*} [CommRing R] (x : R) (B : Type*) [CommRing B]

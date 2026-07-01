@@ -49,7 +49,7 @@ The inverse morphism is bundled.
 
 See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
 the role of morphisms. -/
-@[stacks 0017]
+@[stacks 0017, wikidata Q189112]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The forward direction of an isomorphism. -/
   hom : X ⟶ Y
@@ -63,7 +63,6 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
 
 attribute [to_dual existing inv] Iso.hom
 attribute [to_dual self] Iso.mk Iso.casesOn
-attribute [to_dual none] Iso.mk.hcongr_8 -- needed in `Iso.ext`
 
 attribute [reassoc +to_dual (attr := simp), grind =] Iso.hom_inv_id Iso.inv_hom_id
 
@@ -118,7 +117,6 @@ def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing refl_inv] refl_hom
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
@@ -134,7 +132,6 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing trans_inv] trans_hom
 
 @[simps]
@@ -312,12 +309,8 @@ variable {f : X ⟶ Y} {h : Y ⟶ Z}
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
   (asIso f).isIso_inv
 
-/- The following instance has lower priority for the following reason:
-Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
-Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
-because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/
 @[to_dual self (reorder := X Z, f h, 8 9)]
-instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
+instance comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   (asIso f ≪≫ asIso h).isIso_hom
 
 /--
@@ -397,6 +390,9 @@ theorem inv_comp_eq_id (g : X ⟶ Y) [IsIso g] {f : X ⟶ Y} : inv g ≫ f = �
 theorem isIso_of_hom_comp_eq_id (g : X ⟶ Y) [IsIso g] {f : Y ⟶ X} (h : g ≫ f = 𝟙 X) : IsIso f := by
   rw [(hom_comp_eq_id _).mp h]
   infer_instance
+
+lemma isIso_iff_of_thin [Quiver.IsThin C] {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Nonempty (Y ⟶ X) :=
+  ⟨fun _ ↦ ⟨inv f⟩, fun g ↦ ⟨g.some, Subsingleton.elim _ _, Subsingleton.elim _ _⟩⟩
 
 namespace Iso
 
@@ -478,7 +474,6 @@ def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing mapIso_inv] mapIso_hom
 
 @[simp]
@@ -506,6 +501,15 @@ theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) 
 @[to_dual (attr := reassoc) map_inv_hom]
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
+
+-- The following two lemmas are needed to generate good elementwise lemmas
+@[reassoc]
+theorem map_hom_inv' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
+    F.map f.hom ≫ F.map f.inv = 𝟙 (F.obj X) := by simp
+
+@[reassoc]
+theorem map_inv_hom' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
+    F.map f.inv ≫ F.map f.hom = 𝟙 (F.obj Y) := by simp
 
 end Functor
 

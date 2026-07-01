@@ -47,7 +47,7 @@ theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb
 @[to_dual (attr := simp)]
 theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
-    convert h.compl
+    convert! h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 
 @[to_dual]
@@ -139,13 +139,9 @@ theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
 theorem IsLowerSet.ordConnected (h : IsLowerSet s) : s.OrdConnected :=
   ⟨fun _ _ _ hb => Icc_subset_Iic_self.trans <| h.Iic_subset hb⟩
 
+@[to_dual]
 theorem IsUpperSet.preimage (hs : IsUpperSet s) {f : β → α} (hf : Monotone f) :
     IsUpperSet (f ⁻¹' s : Set β) := fun _ _ h => hs <| hf h
-
--- `to_dual` cannot yet reorder arguments of arguments
-@[to_dual existing]
-theorem IsLowerSet.preimage (hs : IsLowerSet s) {f : β → α} (hf : Monotone f) :
-    IsLowerSet (f ⁻¹' s : Set β) := fun _ _ h => hs <| hf h
 
 @[to_dual]
 theorem IsUpperSet.image (hs : IsUpperSet s) (f : α ≃o β) : IsUpperSet (f '' s : Set β) := by
