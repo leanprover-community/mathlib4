@@ -835,6 +835,11 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousSMul ℕ A :=
   ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 
+@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
+theorem Continuous.ppow {M : Type*} [TopologicalSpace M] [Semigroup M] [ContinuousMul M] {f : X → M}
+    (h : Continuous f) (n : ℕ+) : Continuous fun b => f b ^ n :=
+  (continuous_ppow n).comp h
+
 -- We register `Continuous.pow` as a `continuity` lemma with low penalty (so
 -- `continuity` will try it before other `continuity` lemmas). This is a
 -- workaround for goals of the form `Continuous fun x => x ^ 2`, where
