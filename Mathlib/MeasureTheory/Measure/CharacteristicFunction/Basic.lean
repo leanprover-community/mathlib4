@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Group.IntegralConvolution
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
@@ -373,8 +371,7 @@ lemma charFun_toDual_symm_eq_charFunDual {E : Type*} [NormedAddCommGroup E] [Com
 lemma charFunDual_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F)
     (L' : StrongDual ℝ F) : charFunDual (μ.map L) L' = charFunDual μ (L'.comp L) := by
   rw [charFunDual_eq_charFun_map_one, charFunDual_eq_charFun_map_one,
-    Measure.map_map (by fun_prop) (by fun_prop)]
-  simp
+    Measure.map_map (by fun_prop) (by fun_prop), ContinuousLinearMap.coe_comp]
 
 @[simp]
 lemma charFunDual_dirac [OpensMeasurableSpace E] {x : E} (L : StrongDual ℝ E) :
