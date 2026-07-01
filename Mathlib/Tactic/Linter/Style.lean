@@ -525,9 +525,9 @@ def allowed : Array String.Slice := #[
 assuming `s` does not contain any underscores. -/
 def isWronglyCased (s : String.Slice) : Bool :=
   -- The string starts with an uppercase character, is not like an acronym
-  -- and (after removing any trailing primes and subscript 0) is not an allowed exception.
+  -- and (after removing any trailing primes and subscript digits) is not an allowed exception.
   s.front.isUpper && !(isAcronymLike s) &&
-    (!allowed.contains (s.dropEndWhile (fun c : Char ↦ "'₀".contains c)))
+    (!allowed.contains (s.dropEndWhile (fun c : Char ↦ "'₀₁₂₃₄₅₆₇₈₉".contains c)))
 
 /-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
 def isWronglyCasedName (s : String) : Bool :=
