@@ -114,7 +114,7 @@ def Fork.IsWeakLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
   { lift
     fac s j :=
       WalkingParallelPair.casesOn j (fac s) <| by
-        simp [← Category.assoc, fac]}
+        simp [← Category.assoc, fac] }
 
 /-- This is another convenient method to verify that a fork is a weak limit cone. It
 only asks for a proof of facts that carry any mathematical content, and allows access to the
