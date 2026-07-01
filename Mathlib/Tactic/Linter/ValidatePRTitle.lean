@@ -118,7 +118,7 @@ public def validateTitle (title : String) : Array String := Id.run do
       let firstWord := subject.takeWhile (!·.isWhitespace)
       let withoutSuffix := firstWord.dropSuffix "'s" |>.dropSuffix "s" |>.dropSuffix "'ed"
       if !(withoutSuffix.all (·.isUpper)) then
-        errors := errors.push "error: the PR subject should be lowercased"
+        errors := errors.push "error: the PR subject `{withoutSuffix}` should be lowercased"
     if subject.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
     else if subject.endsWith " " then
