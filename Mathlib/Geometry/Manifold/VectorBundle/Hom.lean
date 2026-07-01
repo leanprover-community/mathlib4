@@ -337,8 +337,9 @@ variable [CompleteSpace 𝕜] [IsManifold IB 1 B]
     [FiniteDimensional 𝕜 F₁]
     [ContMDiffVectorBundle 1 F₁ E₁ IB]
     [FiniteDimensional 𝕜 F₂]
-    [VectorBundle 𝕜 F₂ E₂] [ContMDiffVectorBundle 1 F₂ E₂ IB]
+     [ContMDiffVectorBundle 1 F₂ E₂ IB]
     {φ : Π x : B, E₁ x →L[𝕜] E₂ x}
+
 
 -- This one and the next one make me a bit nervous, but I’m very tired
 lemma Bundle.Trivialization.ContMDiffAt_symm {k}
@@ -351,6 +352,22 @@ lemma Bundle.Trivialization.ContMDiffAt_symm {k}
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (Trivialization.symmL 𝕜 e m)) x := by
   sorry
 
+-- Conjecture: one can prove the lemma below directly, skipping the above lemma
+lemma Bundle.Trivialization.ContMDiffAt_symm_const {k}
+    [IsManifold IB k B]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k
+      (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x := by
+  apply ContMDiffAt.clm_bundle_apply_trivial_source
+  · exact e.ContMDiffAt_symm hx
+  · exact contMDiffAt_id
+  · exact contMDiffAt_const
+
+omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
+     [ContMDiffVectorBundle 1 F₁ E₁ IB] in
 lemma Bundle.Trivialization.ContMDiffWithinAt_apply {k}
     [IsManifold IB k B]
     [ContMDiffVectorBundle k F₁ E₁ IB]
@@ -358,17 +375,24 @@ lemma Bundle.Trivialization.ContMDiffWithinAt_apply {k}
     [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) {s : Set B}
     {σ : Π b, E₁ b} (hσ : CMDiffAt[s] k (T% σ) x) :
     CMDiffAt[s] k (fun b ↦ e.continuousLinearMapAt 𝕜 b (σ b)) x := by
-  sorry
+  apply (contMDiffWithinAt_section s hx).mp hσ |>.congr_of_eventuallyEq
+  · apply mem_nhdsWithin_of_mem_nhds
+    filter_upwards [e.open_baseSet.mem_nhds hx] with x' hx'
+    simp [hx']
+  · simp [hx]
 
+
+-- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b` is almost equivalent
+-- to `CMDiffAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
+omit [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
 lemma ContMDiff.clm_bundle_of_apply {k}
     [FiniteDimensional 𝕜 EB]
     [IsManifold IB k B]
     [ContMDiffVectorBundle k F₁ E₁ IB]
     [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
-    [FiniteDimensional 𝕜 F₁]
-    [FiniteDimensional 𝕜 F₂]
     [ContMDiffVectorBundle k F₂ E₂ IB] {x : B}
-    (h : ∀ (σ : Π x : B, E₁ x), CMDiffAt k (T% σ) x → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x) :
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
     x := by
   refine (contMDiffAt_hom_bundle fun x ↦ ⟨x, φ x⟩).mpr ⟨contMDiffAt_id, ?_⟩
@@ -392,35 +416,15 @@ lemma ContMDiff.clm_bundle_of_apply {k}
     apply t₂.ContMDiffWithinAt_apply
     · exact FiberBundle.mem_baseSet_trivializationAt' x
     · apply h
-      apply ContMDiffAt.clm_bundle_apply_trivial_source
-      · exact t₁.ContMDiffAt_symm (FiberBundle.mem_baseSet_trivializationAt' x)
-      · exact contMDiffAt_id
-      · exact contMDiffAt_const
+      filter_upwards [t₁.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)] with
+        x' hx'
+      unfold σ
+      apply t₁.ContMDiffAt_symm_const hx'
   rw [show x = ψ.symm (ψ x) from (extChartAt_to_inv x).symm] at C₀
   have C₂ : CMDiffAt[range IB] k (ψ.symm) (ψ x) :=
     contMDiffWithinAt_extChartAt_symm_range_self x
   have := (ContMDiffWithinAt.comp' (ψ x) C₀ C₂).contDiffWithinAt
   simpa
-
-lemma ContMDiff.clm_bundle_of_apply' {k}
-    [FiniteDimensional 𝕜 EB]
-    [IsManifold IB k B]
-    [ContMDiffVectorBundle k F₁ E₁ IB]
-    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
-    [FiniteDimensional 𝕜 F₁]
-    [FiniteDimensional 𝕜 F₂]
-    [ContMDiffVectorBundle k F₂ E₂ IB] {x : B}
-    (h : ∀ (σ : Π x : B, E₁ x),
-      (∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b) → ∀ᶠ b in 𝓝 x, CMDiffAt k (T% (fun x ↦ φ x (σ x))) b) :
-    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
-    x := by
-  sorry
-
--- We should have this somewhere already
-lemma ContMDiff.mdifferentiableAt_section {σ : (x : B) → E₁ x} {k}
-    (hσ : ContMDiff IB (IB.prod 𝓘(𝕜, F₁)) k (T% σ)) (x : B) :
-    MDiffAt (T% σ) x := by
-  sorry
 
 set_option linter.unusedSectionVars false in
 lemma TensorialAt.apply_clm
@@ -455,15 +459,16 @@ theorem TensorialAt.contMDiff_mkHom
   have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
   have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
   intro b
-  apply ContMDiff.clm_bundle_of_apply' fun σ hσ ↦ ?_
+  apply ContMDiff.clm_bundle_of_apply fun σ hσ ↦ ?_
   have : ∀ᶠ x in 𝓝 b, TensorialAt.mkHom (φ · x) x (hφ x) (σ x) = φ σ x := by
     filter_upwards [hσ] with x hx
     apply TensorialAt.apply_clm (hφ x)
     exact hx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp hk)
-  filter_upwards [this.eventually_nhds, hσ] with x hx h'x
-  apply (φ_contMDiff σ x (contMDiffWithinAt_univ.mp h'x)).congr_of_eventuallyEq
-  filter_upwards [hx] with x' hx'
-  rw [hx']
+  have : ∀ᶠ x in 𝓝 b,
+      (⟨x, TensorialAt.mkHom (φ · x) x (hφ x) (σ x)⟩ : TotalSpace F₂ E₂) = ⟨x, φ σ x⟩ := by
+    filter_upwards [this] with x hx
+    simp [hx]
+  exact (φ_contMDiff σ b hσ.self_of_nhds).congr_of_eventuallyEq this
 
 end OneVariable
 
@@ -657,7 +662,8 @@ variable {B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
 
 -- Note there is a closely related  exists_contMDiff_support_eq_eq_one_iff but it assumes a smooth
 -- manifold and talks about support, not tsupport.
-lemma exists_bumpFunction [IsManifold IB n B] {U V : Set B} (hU : IsClosed U) (hV : IsOpen V) (hUV : U ⊆ V) :
+lemma exists_bumpFunction [IsManifold IB n B] {U V : Set B} (hU : IsClosed U) (hV : IsOpen V)
+    (hUV : U ⊆ V) :
     ∃ f : B → ℝ, CMDiff n f ∧ range f ⊆ Icc 0 1 ∧ tsupport f ⊆ V ∧ (∀ x ∈ U, f x = 1) := by
   sorry
 
