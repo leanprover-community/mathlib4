@@ -251,8 +251,7 @@ theorem hasWeakLimit_of_iso {F G : J ⥤ C} [HasWeakLimit F] (α : F ≅ G) : Ha
     { cone := (Cone.postcompose α.hom).obj (weakLimit.cone F)
       isWeakLimit :=
         Nonempty.some ((IsWeakLimit.postcompose_hom_iff_of_iso α _ ).mpr
-        (Nonempty.intro (weakLimit.isWeakLimit F)))
-      }
+        (Nonempty.intro (weakLimit.isWeakLimit F))) }
 
 theorem hasWeakLimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasWeakLimit F ↔ HasWeakLimit G :=
   ⟨fun _ ↦ hasWeakLimit_of_iso α, fun _ ↦ hasWeakLimit_of_iso α.symm⟩
