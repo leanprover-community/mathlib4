@@ -27,7 +27,10 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Determinant
 
-/-- Parse an array literal into an array of element expressions. -/
+/-- Parse an array literal into an array of element expressions.
+
+Compared to `getArrayLit?`, this also performs `whnf` and zeta-reduction.
+-/
 def arrayLiteral? (e : Expr) : MetaM (Option (Array Expr)) := do
   if let some elems ← getArrayLit? e then return some elems
   let e ← zetaReduce (← whnf e)
