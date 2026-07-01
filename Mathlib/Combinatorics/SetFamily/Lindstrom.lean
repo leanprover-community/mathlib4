@@ -3,12 +3,14 @@ Copyright (c) 2025 Strahinja Gvozdić, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Strahinja Gvozdić, Bhavik Mehta
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Qify
 
 /-!
 # Lindström
@@ -48,7 +50,7 @@ private lemma biUnion_eq_empty (s : Finset α) (f : α → Finset β) :
 /-- **Lindström's theorem** Suppose we are given a finite base set of size `n` and nonempty subsets
 `f₁,...,fₘ` of the base set. If `n + 1 ≤ m`, then there exist disjoint nonempty sets of indices
 `I, J ⊆ {1,...,m}` such that `⋃ i ∈ I, fᵢ = ⋃ j ∈ J, fⱼ`. -/
-theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion (f : α → Finset β)
+public theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion (f : α → Finset β)
     (h : Fintype.card β + 1 ≤ Fintype.card α) (hf : ∀ i, (f i).Nonempty) :
     ∃ I J : Finset α, Disjoint I J ∧ I.Nonempty ∧ J.Nonempty ∧ I.biUnion f = J.biUnion f := by
   -- We define the family of characteristic vectors of the given sets. Since the number of
@@ -91,12 +93,11 @@ theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion (f : α → Finset β)
   have : J.Nonempty := by grind [biUnion_empty, biUnion_eq_empty, not_nonempty_iff_eq_empty]
   exact ⟨I, J, by grind [disjoint_left]⟩
 
---set_option maxHeartbeats 400000
 /-- Strengthening of the Lindström's theorem. Suppose we are given a finite base set of size `n`
 and nonempty subsets `f₁,...,fₘ` of the base set. If `n + 2 ≤ m`, then there exist disjoint
 nonempty sets of indices `I, J ⊆ {1,...,m}` such that `⋃ i ∈ I, fᵢ = ⋃ j ∈ J, fⱼ` and
 `⋂ i ∈ I, fᵢ = ⋂ j ∈ J, fⱼ`. -/
-theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion_inf_eq_inf (f : α → Finset β)
+public theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion_inf_eq_inf (f : α → Finset β)
     (h : Fintype.card β + 2 ≤ Fintype.card α) (hf : ∀ i, (f i).Nonempty) :
     ∃ I J : Finset α, Disjoint I J ∧ I.Nonempty ∧ J.Nonempty ∧ I.biUnion f = J.biUnion f
     ∧ I.inf f = J.inf f := by
