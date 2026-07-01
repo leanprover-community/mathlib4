@@ -515,11 +515,10 @@ lemma differentiable_riemannZeta₀ : Differentiable ℂ riemannZeta₀ := by
     · convert! differentiableOn_riemannZeta.sub (.inv ?_ ?_) using 1
       · aesop
       · fun_prop
-      ·grind
+      · grind
     simp +contextual [riemannZeta₀]
   convert tendsto_nhdsWithin_congr ?_ tendsto_riemannZeta_sub_one_div
-  · simp
-  · simp +contextual [riemannZeta₀]
+  <;> simp +contextual [riemannZeta₀]
 
 @[fun_prop]
 lemma differentiable_riemannZeta₁ : Differentiable ℂ riemannZeta₁ := by
@@ -575,7 +574,7 @@ lemma log_riemannZeta_add_log_sub_add_isBigO :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =O[𝓝[>] 1] (· - 1) := by
   suffices (fun (s : ℝ) ↦ (riemannZeta₁ s).re.log) =O[𝓝 1] (· - 1) by
     refine (this.mono nhdsWithin_le_nhds).congr'
-      (eventually_nhdsWithin_of_forall (fun s hs ↦ ?_)) (.refl ..)
+      (eventually_nhdsWithin_of_forall (fun s hs ↦ ?_)) .rfl
     simp [log_riemannZeta_eq_neg_log_sub_add hs]
   suffices DifferentiableAt ℝ (fun (s : ℝ) ↦ (riemannZeta₁ s).re.log) 1 by
     simpa using this.isBigO_sub
@@ -599,12 +598,12 @@ lemma log_deriv_riemannZeta_add_inv_sub_sub_isBigO :
     =O[𝓝[≠] 1] (· - 1) := by
   suffices (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s) - γ)
       =O[𝓝 1] (· - 1) by
-    refine (this.mono nhdsWithin_le_nhds).congr' ?_ (.refl ..)
+    refine (this.mono nhdsWithin_le_nhds).congr' ?_ .rfl
     filter_upwards [log_deriv_riemannZeta_eq_neg_inv_sub_add] with s hs
     simp [hs]
   suffices DifferentiableAt ℂ (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s)) 1 by
     simpa using this.isBigO_sub
-  have : Differentiable ℂ (deriv riemannZeta₁) := differentiable_riemannZeta₁.deriv
+  have := differentiable_riemannZeta₁.deriv
   fun_prop (disch := simp)
 
 lemma log_deriv_riemannZeta_add_inv_sub_sub_isLittleO :
@@ -627,7 +626,7 @@ lemma inv_riemannZeta_eq_sub_mul :
 lemma inv_riemannZeta_sub_sub_isBigO :
     (fun s ↦ (riemannZeta s)⁻¹ - (s - 1)) =O[𝓝[≠] 1] (fun s ↦ (s - 1)^2) := by
   suffices (fun s ↦ (s - 1) * ((riemannZeta₁ s)⁻¹ - 1)) =O[𝓝 1] (fun s ↦ (s - 1)^2) by
-    refine (this.mono nhdsWithin_le_nhds).congr' ?_ (.refl ..)
+    refine (this.mono nhdsWithin_le_nhds).congr' ?_ .rfl
     filter_upwards [inv_riemannZeta_eq_sub_mul] with s hs
     simp [hs, field]
   suffices (fun s ↦ ((riemannZeta₁ s)⁻¹ - 1)) =O[𝓝 1] (· - 1) by
