@@ -242,7 +242,7 @@ lemma forall_finset_card_le_card_biUnion {α : Type*} [DecidableEq α] {n : Type
   have hcount : ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
     have hk : s.inf' (by grind [Finset.one_le_card]) (fun j ↦ Finset.card (B j)) = k := by
       simp_rw [h₂, Finset.inf'_const]
-    have h := Finset.exists_mem_biUnion_inf'_card_lt (s := s) (f := B)
+    have h := Finset.exists_mem_exists_mem_inf'_card_lt (s := s) (f := B)
       (by grind [Finset.one_le_card]) (by grind) (by grind)
     simp only [Finset.mem_biUnion]
     grind
