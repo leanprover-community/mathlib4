@@ -592,9 +592,7 @@ lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
     = - (s - 1)⁻¹ + (deriv riemannZeta₁ s) / (riemannZeta₁ s) := by
   filter_upwards [eventually_mem_nhdsWithin,
     riemannZeta₁_ne_zero_of_near_one.filter_mono nhdsWithin_le_nhds] with s h1 h2
-  simp at h1
-  simp [h1, deriv_riemannZeta_eq_neg_inv_sub_sq_mul_add, riemannZeta_eq_inv_sub_mul]
-  field_simp
+  grind [deriv_riemannZeta_eq_neg_inv_sub_sq_mul_add, riemannZeta_eq_inv_sub_mul]
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add_isBigO :
     (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - γ)
