@@ -192,8 +192,10 @@ theorem characteristic_top_eq_circleAverage_of_meromorphicOrderAt_pos
   simp [circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_pos h₂f]
 
 /--
-Qualitative version of **Cartan's formula**: Away from `0`, the difference between
-`characteristic f ⊤` and `circleAverage (logCounting f · ·) 0 1` is constant.
+Qualitative version of **Cartan's formula**: Away from the point `0`, the difference between
+`characteristic f ⊤` and `circleAverage (logCounting f · ·) 0 1` is constant. This qualitative
+version of Cartan's formula exists because the specific value of the constant does not matter in
+practise.
 -/
 theorem characteristic_top_eq_circleAverage_add_const (h : Meromorphic f) :
     ∃ const, ∀ R ≠ 0, characteristic f ⊤ R = circleAverage (logCounting f · R) 0 1 + const :=
