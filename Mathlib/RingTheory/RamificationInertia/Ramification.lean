@@ -214,7 +214,7 @@ theorem ramificationIdx_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_tower' := ramificationIdx_tower'
 
-/-- See `ramificationIdx'_tower'` for a version that only assumes local flatness. -/
+/-- See `ramificationIdx_tower'` for a version that only assumes local flatness. -/
 theorem ramificationIdx_tower [r.LiesOver q] [Module.Flat S T] :
     r.ramificationIdx R = q.ramificationIdx R * r.ramificationIdx S := by
   by_cases hr : r.IsPrime
