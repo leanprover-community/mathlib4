@@ -9,34 +9,7 @@ public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
-# Extended Real Integral
-
-This file defines integration for functions taking values in `EReal` (the extended reals).
-
-## Main definitions
-
-* `eintegral`: The integral of an `EReal`-valued function, defined as the difference
-  between the lower Lebesgue integrals of the positive and negative parts.
-* `EIntegrable`: A condition ensuring the integral is well-defined (avoiding `⊤ - ⊤`).
-* instances for positive and negative parts of an `EReal`-valued function.
-
-## Main statements
-
-* `eintegral_add`: The integral of a sum is the sum of integrals (under suitable integrability
-  conditions to avoid indeterminate forms).
-* `eintegral_sub`: The integral of a difference is the difference of integrals (under suitable
-  integrability conditions).
-* `eintegral_prod`: Fubini's theorem for extended real-valued functions on product measures,
-  allowing interchange of integration order.
-* `limsup_eintegral_le`: A Fatou-type lemma for the extended integral, relating the limsup of
-  integrals to the integral of the limsup.
-* `eintegral_liminf_le`: A Fatou-type lemma for the extended integral, relating the liminf of
-  integrals to the integral of the liminf.
-
-## Notation
-
-* `∫ᵉ x, f x ∂μ`: The extended integral of `f` with respect to measure `μ`.
-* `f⁺` and `f⁻`: Positive and negative parts of a function.
+# Aux lemmas: move them elsewhere
 
 -/
 
