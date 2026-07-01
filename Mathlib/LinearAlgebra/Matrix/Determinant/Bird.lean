@@ -37,9 +37,7 @@ The lemmas in this file are unfolding equations.
 
 namespace BirdDet
 
-variable
-  {R : Type*}
-  [CommRing R]
+variable {R : Type*} [CommRing R]
 
 /--
 `get n A i j` returns the (i, j)th entry of the `n × n` matrix whose entries are
