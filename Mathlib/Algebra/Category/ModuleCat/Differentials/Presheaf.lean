@@ -179,7 +179,7 @@ structure Universal where
   fac {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
     (d' : M'.Derivation φ) : d.postcomp (desc d') = d' := by cat_disch
   postcomp_injective {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
-    {φ φ' : M ⟶ M'} (h : d.postcomp φ = d.postcomp φ') : φ = φ' := by aesop_cat
+    {φ φ' : M ⟶ M'} (h : d.postcomp φ = d.postcomp φ') : φ = φ' := by cat_disch
 
 attribute [simp] Universal.fac
 
@@ -205,6 +205,8 @@ lemma desc_postcomp {M' : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat Rin
     (f : M ⟶ M') : hd.desc (d.postcomp f) = f :=
   hd.postcomp_injective (by simp)
 
+/-- If a derivation of a presheaf of modules `M` is universal,
+then morphisms `M ⟶ M'` identify to derivations of `M'`. -/
 @[simps]
 def homEquiv {M' : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat)} :
     (M ⟶ M') ≃ M'.Derivation φ where
@@ -235,12 +237,18 @@ section
 
 variable [HasDifferentials φ]
 
+/-- Given a morphism `φ : S ⟶ F.op ⋙ R` where `F` is a functor, and `S` and `R`
+are presheaves of commutative rings, this is the presheaf of relative differentials. -/
 noncomputable def relativeDifferentials : PresheafOfModules.{u} (R ⋙ forget₂ _ _) :=
   (HasDifferentials.exists_universal_derivation (φ := φ)).choose
 
+/-- Given a morphism `φ : S ⟶ F.op ⋙ R` where `F` is a functor, and `S` and `R`
+are presheaves of commutative rings, this is the universal derivation. -/
 noncomputable def universalDerivation : (relativeDifferentials φ).Derivation φ :=
   (HasDifferentials.exists_universal_derivation (φ := φ)).choose_spec.choose
 
+/-- Given a morphism `φ : S ⟶ F.op ⋙ R` where `F` is a functor, and `S` and `R`
+are presheaves of commutative rings, the universal derivation is indeed universal. -/
 noncomputable def universalUniversalDerivation : (universalDerivation φ).Universal :=
   (HasDifferentials.exists_universal_derivation (φ := φ)).choose_spec.choose_spec.some
 
@@ -252,15 +260,7 @@ this is functor which sends a presheaf of modules `M` to the abelian group `M.De
 def derivationFunctor :
     PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat) ⥤ Ab where
   obj M := AddCommGrpCat.of (M.Derivation φ)
-  map f := AddCommGrpCat.ofHom (AddMonoidHom.mk' (fun d ↦ d.postcomp f) (by aesop_cat))
-
---@[simp]
---lemma derivationFunctor_map_apply
---    {M N : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat)} (f : M ⟶ N)
---    (d : M.Derivation φ) :
---    0 = 1 := sorry
-    --DFunLike.coe (α := M.Derivation φ) (β := fun _ ↦ N.Derivation φ)
-    --  ((derivationFunctor φ).map f) d = d.postcomp f := rfl
+  map f := AddCommGrpCat.ofHom (AddMonoidHom.mk' (fun d ↦ d.postcomp f) (by cat_disch))
 
 namespace Derivation
 
@@ -268,6 +268,8 @@ variable {M φ}
 
 namespace Universal
 
+/-- If `d : M.Derivation φ` is universal, the presheaf of modules `M`
+corepresents functor `M' ↦ M'.Derivation φ`. -/
 @[simps]
 def corepresentableBy {d : M.Derivation φ} (hd : d.Universal) :
     (derivationFunctor.{v} φ ⋙ forget _).CorepresentableBy M where
@@ -278,15 +280,21 @@ end Universal
 
 variable (h : (derivationFunctor.{v} φ ⋙ forget _).CorepresentableBy M)
 
+/-- The (universal) derivation which corresponds to a `CorepresentableBy`
+structure for the functor `M' ↦ M'.Derivation φ`. -/
 def ofCorepresentableBy : M.Derivation φ := h.homEquiv (𝟙 _)
 
 lemma ofCorepresentableBy_postcomp {M' : PresheafOfModules.{v} (R ⋙ forget₂ _ _)} (f : M ⟶ M') :
     (ofCorepresentableBy h).postcomp f = h.homEquiv f := by
   simpa using! (h.homEquiv_comp f (𝟙 _)).symm
 
+/--
+If a presheaf of modules `M` represents the functor `M' ↦ M'.Derivation φ`,
+then the derivation in `M.Derivation φ` given by `Derivation.ofCorepresentableBy`
+is universal. -/
 def universalOfCorepresentableBy : (ofCorepresentableBy h).Universal where
-  desc d := h.homEquiv.symm d
-  fac {M'} d := by
+  desc := h.homEquiv.symm
+  fac _ := by
     rw [ofCorepresentableBy_postcomp]
     apply Equiv.apply_symm_apply
   postcomp_injective H :=
@@ -295,8 +303,10 @@ def universalOfCorepresentableBy : (ofCorepresentableBy h).Universal where
 end Derivation
 
 /-- Given a morphism of presheaves of commutative rings `φ : S ⟶ R`,
-this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`. -/
-abbrev Derivation' : Type _ := M.Derivation (F := 𝟭 D) φ'
+this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`.
+(This is the particular cas of `Derivation` when `S` and `R` are presheaves
+of commutative rings over the same category.) -/
+abbrev Derivation' : Type max u₂ u v := M.Derivation (F := 𝟭 D) φ'
 
 namespace Derivation'
 
@@ -417,6 +427,10 @@ variable {φ M} {dφ : M.Derivation φ} (hdφ : dφ.Universal)
 
 namespace Derivation
 
+/-- Given morphisms `φ : S ⟶ F.op ⋙ R` and `ψ : R ⟶ G.op ⋙ T`
+where `F` and `G` are functors, and `S`, `R`, and `T` are presheaves
+of commutative rings. For any `ψ`-derivation of a presheaf of modules `M'`
+over `T`, this is the induced `φψ`-derivation. -/
 @[simps]
 def induced {M' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
     (d : M'.Derivation ψ) : M'.Derivation φψ where
@@ -439,13 +453,18 @@ variable (dφψ : P.Derivation φψ)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+/-- Given morphisms `φ : S ⟶ F.op ⋙ R` and `ψ : R ⟶ G.op ⋙ T`
+where `F` and `G` are functors, and `S`, `R`, and `T` are presheaves
+of commutative rings. Denote `φψ` the composition of `φ` and `ψ`.
+For any `φψ`-derivation of a presheaf of modules `P` over `T`,
+this is the `φ`-derivation that is deduced on the pushforward of `P` by `ψ`. -/
 protected noncomputable def pushforward : ((pushforwardψ).obj P).Derivation φ where
   d {X} := AddMonoidHom.mk' (fun a ↦ dφψ.d (ψ.app _ a)) (fun a b ↦ by
     dsimp
-    rw [dsimp% _root_.map_add (ψ.app X).hom, _root_.map_add dφψ.d] )
+    rw [dsimp% map_add (ψ.app X).hom, map_add dφψ.d] )
   d_mul {X} a b := by
     dsimp
-    rw [dsimp% _root_.map_mul (ψ.app X).hom, dφψ.d_mul]
+    rw [dsimp% map_mul (ψ.app X).hom, dφψ.d_mul]
   d_map {X Y} f a :=
     (congr_arg dφψ.d (ConcreteCategory.congr_hom (ψ.naturality f) a)).trans
       (dφψ.d_map _ _)
@@ -466,12 +485,21 @@ lemma pushforward_induced {M' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)} (d 
 
 namespace Universal
 
+/-- Given morphisms `φ : S ⟶ F.op ⋙ R` and `ψ : R ⟶ G.op ⋙ T`
+where `F` and `G` are functors, and `S`, `R`, and `T` are presheaves
+of commutative rings. Denote `φψ` the composition of `φ` and `ψ`.
+Assume we have a presheaf of modules `M` over `R` and a universal derivation
+`M.Derivation φ`. Given a `φψ`-derivation of a presheaf of modules
+`P` over `T`, this is the morphism from `M` to the pushforward of `P`
+by `ψ` which correspond to the pushforward of this derivation.
+-/
 noncomputable def pushforwardMap : M ⟶ (pushforwardψ).obj P :=
   hdφ.desc (Derivation.pushforward fac dφψ)
 
 variable [(pushforward (F := G) (R := T ⋙ forget₂ _ _)
   (whiskerRight ψ (forget₂ _ RingCat))).IsRightAdjoint]
 
+/-- The adjoint map of `pushforwardMap`. -/
 noncomputable def pullbackMap : (pullbackψ).obj M ⟶ P :=
   ((adjunctionψ).homEquiv M P).symm (hdφ.pushforwardMap fac dφψ)
 
@@ -501,6 +529,7 @@ namespace corepresentableByOfIsColimitCokernelCofork
 
 variable {M' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
 
+/-- Auxiliary definition for `corepresentableByOfIsColimitCokernelCofork`. -/
 @[simps]
 noncomputable def homEquivToFun (f : c.pt ⟶ M') : M'.Derivation ψ where
   d := (dφψ.postcomp (c.π ≫ f)).d
@@ -508,6 +537,7 @@ noncomputable def homEquivToFun (f : c.pt ⟶ M') : M'.Derivation ψ where
   d_mul := by simp
   d_app := congr_d ((pullbackMap_comp_eq_zero_iff hdφ fac dφψ (c.π ≫ f)).1 (by simp))
 
+/-- Auxiliary definition for `corepresentableByOfIsColimitCokernelCofork`. -/
 noncomputable def homEquivInvFun (d : M'.Derivation ψ) : c.pt ⟶ M' :=
   (CokernelCofork.IsColimit.desc' hc (hdφψ.desc (Derivation.induced fac d)) (by simp)).1
 
@@ -536,15 +566,23 @@ lemma homEquiv_right_inv (d : M'.Derivation ψ) :
 end corepresentableByOfIsColimitCokernelCofork
 
 open corepresentableByOfIsColimitCokernelCofork in
+/-- Given morphisms `φ : S ⟶ F.op ⋙ R` and `ψ : R ⟶ G.op ⋙ T`
+where `F` and `G` are functors, and `S`, `R`, and `T` are presheaves
+of commutative rings. Assume that a presheaf of modules `M` over `R` is
+the presheaf of differentials for `φ`, and that a presheaf of modules `P`
+over `T` is the presheaf of differentials for the composition `φψ`,
+then the cokernel of the canonical morphism `Derivation.IsUniversal.pullbackMap`
+from the pullback of `M` by `ψ` to `P` is the presheaf of differentials
+of `ψ`. -/
 noncomputable def corepresentableByOfIsColimitCokernelCofork :
     (derivationFunctor ψ ⋙ forget _).CorepresentableBy c.pt where
   homEquiv {M'} :=
     { toFun := homEquivToFun
       invFun := homEquivInvFun hc hdφψ
-      left_inv := fun _ ↦ by simp
-      right_inv := fun _ ↦ by simp }
-  homEquiv_comp _ _ := rfl
+      left_inv _ := by simp
+      right_inv _ := by simp }
 
+@[inherit_doc corepresentableByOfIsColimitCokernelCofork]
 noncomputable def ofIsColimitCokernelCofork :
     (ofCorepresentableBy (corepresentableByOfIsColimitCokernelCofork hc hdφψ)).Universal :=
   universalOfCorepresentableBy (corepresentableByOfIsColimitCokernelCofork hc hdφψ)
@@ -567,11 +605,19 @@ lemma hasDifferentials_of_tower
 end
 
 set_option backward.defeqAttrib.useBackward true in
+/-- Let `F : C ⥤ D` be a functor and `R` a presheaf of commutative
+rings on `D`. Assume `φ` if the (unique) morphism from the constant
+presheaf on `C` with values `ULift ℤ` to `F.op ⋙ R`.
+Then, for any presheaf of modules `M` over `R`, this is the bijection
+between `φ`-derivations of `M`, and `φ'`-derivations of `M`
+where `φ'` is the (unique) morphism from the constant presheaf on `D`
+with values `ULift ℤ` to `R`. (The former depends on `F`,
+while the latter does not.) -/
 def absoluteDerivationEquiv
     (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R)
     {M : PresheafOfModules.{u} (R ⋙ forget₂ _ _)} :
-    M.Derivation φ ≃ M.Derivation (F := 𝟭 D)
-      (S := (Functor.const Dᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ))) (R := R)
+    M.Derivation φ ≃ M.Derivation'
+      (S' := (Functor.const Dᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ))) (R := R)
       { app X := CommRingCat.isInitial.{u}.to _ } where
   toFun d :=
     { d := d.d
@@ -588,6 +634,8 @@ def absoluteDerivationEquiv
   right_inv _ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
+/-- Universal derivations correspond to each other via the bijection
+`absoluteDerivationEquiv`. -/
 def absoluteDerivationUniversalEquiv
     (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R)
     (M : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
