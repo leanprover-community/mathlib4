@@ -377,14 +377,6 @@ lemma EquivOfKernel_symm (g : OfKernel (kernel H)) : (EquivOfKernel H).symm g =
       ((Finsupp.linearCombination 𝕜 (fun (xv : X × V) => (RKHS.kerFun H xv.1) xv.2))) g := by
   simp [EquivOfKernel]; rfl
 
-theorem EquivOfKernel_apply_symm_apply (g : OfKernel (kernel H)) :
-    EquivOfKernel H ((EquivOfKernel H).symm g) = g :=
-  LinearIsometryEquiv.apply_symm_apply _ _
-
-theorem EquivOfKernel_symm_apply_apply (g : H) :
-    (EquivOfKernel (H := H)).symm (EquivOfKernel H g) = g :=
-  LinearIsometryEquiv.symm_apply_apply _ _
-
 lemma kerFun_eq_coe'_single (x : X) (v : V) : kerFun (OfKernel K) x v =
     UniformSpace.Completion.coe' (Finsupp.single (x, v) 1 : H₀ K) := by
   simp [RKHS.kerFun, coeCLM, kerFunAux]
