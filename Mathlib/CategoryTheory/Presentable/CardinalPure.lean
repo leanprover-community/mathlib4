@@ -33,7 +33,7 @@ open Limits
 variable {C : Type*} [Category* C]
 
 /-- Given a regular cardinal `κ`, we say that a morphism `f : X ⟶ Y`
-if `κ`-pure for any commutative square:
+is `κ`-pure if for any commutative square:
 ```
       t
  X' -----> Y'
