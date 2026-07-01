@@ -246,6 +246,4 @@ theorem hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakKernels
     [HasBinaryProducts C] [HasWeakEqualizers C] : HasWeakPullbacks C where
   hasWeakLimit F := hasWeakLimit_of_iso (diagramIsoCospan F).symm
 
-end
-
 end CategoryTheory.Limits
