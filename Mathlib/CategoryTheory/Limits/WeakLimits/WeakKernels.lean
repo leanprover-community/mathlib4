@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.Preadditive.Basic
 
 These are weak equalizes for functors of the form `ParallelPair f 0`.
 
+If the category is preadditive, then weak equalizers exist if and only if weak kernels exist.
+(See `hasWeakEqualizer_of_hasWeakKernel` and `hasWeakKernel_of_hasWeakEqualizer`.)
+
 -/
 
 @[expose] public section
@@ -34,21 +37,16 @@ variable [HasZeroMorphisms C] {X Y : C} (f g : X ⟶ Y)
 abbrev HasWeakKernel : Prop :=
   HasWeakLimit (parallelPair f 0)
 
-/-- If a morphism `f` has a kernel, then it has a weak kernel. -/
-lemma HasWeakKernelOfHasKernel [HasKernel f] : HasWeakKernel f :=
-  HasWeakLimit_of_hasLimit _
-
 variable (C) in
 /-- `HasWeakKernels` represents the existence of weak kernels for every morphism. -/
 class HasWeakKernels : Prop where
-  has_weakLimit : ∀ {X Y : C} (f : X ⟶ Y), HasWeakKernel f := by infer_instance
+  hasWeakLimit : ∀ {X Y : C} (f : X ⟶ Y), HasWeakKernel f := by infer_instance
 
-attribute [instance 100] HasWeakKernels.has_weakLimit
+attribute [instance 100] HasWeakKernels.hasWeakLimit
 
 /-- If a category has kernels, then it has weak kernels. -/
 instance (priority := 100) HasWeakKernelsOfHasKernels [HasKernels C] :
     HasWeakKernels C where
-      has_weakLimit _ := HasWeakKernelOfHasKernel _
 
 section
 
@@ -97,13 +95,11 @@ end Limits
 
 namespace Preadditive
 
-open Preadditive
-
 variable [Preadditive C] {X Y : C} {f g : X ⟶ Y}
 
 /-- A weak kernel of `f - g` is a weak equalizer of `f` and `g`. -/
 def isWeakLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsWeakLimit c) :
-    IsWeakLimit (forkOfKernelFork (C := C) c) :=
+    IsWeakLimit (forkOfKernelFork c) :=
   Fork.IsWeakLimit.mk' _ fun s => ⟨i.lift (kernelForkOfFork s), i.fac _ _⟩
 
 @[simp]
@@ -134,8 +130,8 @@ theorem hasWeakKernel_of_hasWeakEqualizer [HasWeakEqualizer f g] : HasWeakKernel
 
 /-- If a preadditive category has all weak kernels, then it also has all weak equalizers. -/
 theorem hasWeakEqualizers_of_hasWeakKernels [HasWeakKernels C] : HasWeakEqualizers C :=
-  @hasWeakEqualizers_of_hasWeakLimit_parallelPair _ _
-  fun {_} {_} f g => hasWeakEqualizer_of_hasWeakKernel f g
+  have {X Y : C} (f g : X ⟶ Y) := hasWeakEqualizer_of_hasWeakKernel f g
+  hasWeakEqualizers_of_hasWeakLimit_parallelPair C
 
 end Preadditive
 

@@ -101,8 +101,8 @@ instance (priority := 100) HasWeakEqualizersOfHasEqualizers [HasEqualizers C] :
 
 /-- If `C` has all weak limits of diagrams `parallelPair f g`, then it has all weak equalizers -/
 theorem hasWeakEqualizers_of_hasWeakLimit_parallelPair
-    [∀ {X Y : C} {f g : X ⟶ Y}, HasWeakLimit (parallelPair f g)] : HasWeakEqualizers C :=
-  { has_weakLimit := fun F => hasWeakLimit_of_iso (diagramIsoParallelPair F).symm }
+    [∀ {X Y : C} {f g : X ⟶ Y}, HasWeakLimit (parallelPair f g)] : HasWeakEqualizers C where
+      hasWeakLimit F := hasWeakLimit_of_iso (diagramIsoParallelPair F).symm
 
 variable {C}
 
@@ -112,9 +112,9 @@ only asks for a proof of facts that carry any mathematical content -/
 def Fork.IsWeakLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
     (fac : ∀ s : Fork f g, lift s ≫ Fork.ι t = Fork.ι s) : IsWeakLimit t :=
   { lift
-    fac := fun s j =>
+    fac s j :=
       WalkingParallelPair.casesOn j (fac s) <| by
-        simp [← Category.assoc, fac]}
+        simp [← Category.assoc, fac] }
 
 /-- This is another convenient method to verify that a fork is a weak limit cone. It
 only asks for a proof of facts that carry any mathematical content, and allows access to the

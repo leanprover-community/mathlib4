@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
 
 These are weak limits for diagrams of shape `WalkingCospan`.
 
+If a category has binary products and weak equalizers, then it has weak kernels
+(see `hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakKernels`).
+
 -/
 
 @[expose] public section
@@ -72,12 +75,12 @@ abbrev weakPullback.isWeakLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeak
   weakLimit.isWeakLimit (cospan f g)
 
 @[simp]
-theorem WeakPullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+theorem weakLimit.pullbackConeFst_cone_cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasWeakLimit (cospan f g)] :
     PullbackCone.fst (weakLimit.cone (cospan f g)) = weakPullback.fst f g := rfl
 
 @[simp]
-theorem WeakPullbackCone.snd_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+theorem weakLimit.pullbackConeSnd_cone_cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasWeakLimit (cospan f g)] :
     PullbackCone.snd (weakLimit.cone (cospan f g)) = weakPullback.snd f g := rfl
 
@@ -152,10 +155,7 @@ only asks for a proof of facts that carry any mathematical content, and allows a
 same `s` for all parts. -/
 def isWeakLimitAux' (t : PullbackCone f g)
     (create :
-      ∀ s : PullbackCone f g,
-        { l //
-          l ≫ t.fst = s.fst ∧
-            l ≫ t.snd = s.snd}) :
+      ∀ s : PullbackCone f g, { l // l ≫ t.fst = s.fst ∧ l ≫ t.snd = s.snd}) :
     Limits.IsWeakLimit t :=
   PullbackCone.isWeakLimitAux t (fun s => (create s).1)
     (fun s => (create s).2.1) (fun s => (create s).2.2)
@@ -226,32 +226,24 @@ set_option backward.isDefEq.respectTransparency false in
 weak pullback of `f` and `g` exists: it is given by composing the equalizer with the projections. -/
 theorem hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair [HasLimit (pair X Y)]
     [HasWeakLimit (parallelPair (prod.fst ≫ f) (prod.snd ≫ g))] : HasWeakLimit (cospan f g) :=
-  let π₁ : X ⨯ Y ⟶ X := prod.fst
-  let π₂ : X ⨯ Y ⟶ Y := prod.snd
-  let e := weakEqualizer.ι (π₁ ≫ f) (π₂ ≫ g)
   HasWeakLimit.mk
     { cone :=
-        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by
+        PullbackCone.mk (weakEqualizer.ι (prod.fst ≫ f) (prod.snd ≫ g) ≫ prod.fst)
+          (weakEqualizer.ι _ _ ≫ prod.snd) <| by
           rw [Category.assoc, weakEqualizer.condition]
-          simp [e]
+          simp
       isWeakLimit :=
-        PullbackCone.IsWeakLimit.mk _ (fun s => weakEqualizer.lift
-          (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
-            rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π]
-            exact PullbackCone.condition _)
-          (by simp [π₁, e]) (by simp [π₂, e])}
+        PullbackCone.IsWeakLimit.mk _ (fun s ↦ weakEqualizer.lift
+          (prod.lift (s.π.app .left) (s.π.app .right)) <| by
+            simp [limit.lift_π_assoc, PullbackCone.condition])
+          (by simp) (by simp) }
 
-section
-
-attribute [local instance] hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair
-
+attribute [local instance] hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair in
 /-- If a category has all binary products and all weak equalizers, then it also has all
 weak pullbacks. As usual, this is not an instance, since there may be a more direct way to
 construct weak pullbacks. -/
 theorem hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakKernels
     [HasBinaryProducts C] [HasWeakEqualizers C] : HasWeakPullbacks C where
-      has_weakLimit F := hasWeakLimit_of_iso (diagramIsoCospan F).symm
-
-end
+  hasWeakLimit F := hasWeakLimit_of_iso (diagramIsoCospan F).symm
 
 end CategoryTheory.Limits
