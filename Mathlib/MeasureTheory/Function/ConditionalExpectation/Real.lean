@@ -146,7 +146,7 @@ lemma setIntegral_condExp_le_of_ae_nonneg {s : Set α} (hs : MeasurableSet[m] s)
 
 /-- If `|f|` is bounded almost everywhere by `R`, then so is its conditional expectation. -/
 theorem ae_bdd_abs_condExp_of_ae_bdd_abs {R : E} {f : α → E} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
-    ∀ᵐ x ∂μ,  |μ[f | m] x| ≤ R := by
+    ∀ᵐ x ∂μ, |μ[f | m] x| ≤ R := by
   by_cases! hn : {x | |f x| ≤ R} = ∅
   · exact measure_mono_null (by simp) <| ae_eq_empty.1 (hn ▸ (ae_eq_univ.2 hbdd).symm)
   have hR : 0 ≤ R := (abs_nonneg _).trans hn.some_mem
