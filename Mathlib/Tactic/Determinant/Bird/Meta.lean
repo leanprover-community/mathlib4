@@ -29,11 +29,11 @@ namespace Mathlib.Tactic.Determinant
 
 /-- Parse an array literal into an array of element expressions.
 
-Compared to `getArrayLit?`, this also performs `whnf` and zeta-reduction.
+Compared to `getArrayLit?`, this also performs `whnf`.
 -/
 def arrayLiteral? (e : Expr) : MetaM (Option (Array Expr)) := do
   if let some elems ← getArrayLit? e then return some elems
-  let e ← zetaReduce (← whnf e)
+  let e ← whnf e
   match_expr e with
   | Array.mk _ xs => getListLit? xs
   | _ => return none

@@ -206,6 +206,9 @@ example : birdDet 1 #[-1] = -1 := by
 example : birdDet 2 #[1, 2, 3, 4] = -2 := by
   eval_det
 
+example : birdDet 2 (let A := #[1, 2, 3, 4]; A) = -2 := by
+  eval_det
+
 example (a b c d : R) :
     birdDet 2 #[a, b, c, d] = a * d - b * c := by
   eval_det
