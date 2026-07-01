@@ -18,10 +18,10 @@ public import Mathlib.RingTheory.Extension.Basic
 ## Main definition
 
 - `Algebra.Generators`: A family of generators of an `R`-algebra `S` consists of
-  1. `vars`: The type of variables.
-  2. `val : vars → S`: The assignment of each variable to a value.
+  1. `ι`: The type of variables.
+  2. `val : ι → S`: The assignment of each variable to a value.
   3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
-     write `R[X]` for `R[vars]`.
+     write `R[X]` for `R[ι]`.
 
 - `Algebra.Generators.Hom`: Given a commuting square
   ```
@@ -35,13 +35,16 @@ public import Mathlib.RingTheory.Extension.Basic
 - `Algebra.Generators.Cotangent`: The cotangent space w.r.t. `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
+- `Algebra.Generators.mvPolynomial`: The canonical `R`-generators of the polynomial algebra
+  `MvPolynomial ι R`, indexed by `ι` via the variables `X`.
+
 ## TODOs
 
-Currently, Lean does not see through the `vars` field of terms of `Generators R S` obtained
+Currently, Lean does not see through the `ι` field of terms of `Generators R S` obtained
 from constructions, e.g. composition. This causes fragile and cumbersome proofs, because
 `simp` and `rw` often don't work properly. `Generators R S` (and `Presentation R S`, etc.) should
 be refactored in a way that makes these equalities reducibly def-eq, for example
-by unbundling the `vars` field or making the field globally reducible in constructions using
+by unbundling the `ι` field or making the field globally reducible in constructions using
 unification hints.
 
 -/
@@ -55,8 +58,8 @@ open TensorProduct MvPolynomial
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- A family of generators of an `R`-algebra `S` consists of
-1. `vars`: The type of variables.
-2. `val : vars → S`: The assignment of each variable to a value in `S`.
+1. `ι`: The type of variables.
+2. `val : ι → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
 structure Algebra.Generators where
   /-- The assignment of each variable to a value in `S`. -/
@@ -138,6 +141,15 @@ noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R 
 noncomputable def id : Generators R R PEmpty.{w + 1} := ofSurjectiveAlgebraMap <| by
   rw [algebraMap_self]
   exact RingHomSurjective.is_surjective
+
+variable (R ι) in
+/-- The canonical `R`-generators of the polynomial algebra `MvPolynomial ι R`,
+indexed by `ι` via the variables `X`. -/
+@[simps σ, simps -fullyApplied val]
+noncomputable def mvPolynomial : Generators R (MvPolynomial ι R) ι where
+  val := X
+  σ' f := f
+  aeval_val_σ' := aeval_X_left_apply
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
@@ -268,6 +280,7 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     use (a + b)
     rw [map_add, ha, hb]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (T) in
 set_option backward.isDefEq.respectTransparency false in
 /-- The forwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
@@ -279,11 +292,13 @@ noncomputable def baseChangeFromBaseChange :
     ext
     simp [RingHom.algebraMap_toAlgebra]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma baseChangeFromBaseChange_apply (x : P.toExtension.baseChange.Ring) :
     dsimp% (P.baseChangeFromBaseChange T).toRingHom x = MvPolynomial.algebraTensorAlgEquiv R T x :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable (T) in
 set_option backward.isDefEq.respectTransparency false in
 /-- The backwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
@@ -295,6 +310,7 @@ noncomputable def baseChangeToBaseChange :
     ext
     simp [RingHom.algebraMap_toAlgebra]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma baseChangeToBaseChange_apply (x : (baseChange T P).toExtension.Ring) :
     dsimp% (P.baseChangeToBaseChange T).toRingHom x =
@@ -315,7 +331,7 @@ lemma extend_val_inl (P : Generators R S ι) (b : ι' → S) (i : ι) :
 lemma extend_val_inr (P : Generators R S ι) (b : ι' → S) (i : ι') :
     (P.extend b).val (.inr i) = b i := rfl
 
-/-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
+/-- Given generators `P` with variable type `ι'` and an equivalence `ι ≃ ι'`, these
 are the induced generators indexed by `ι`. -/
 noncomputable def reindex (P : Generators R S ι') (e : ι ≃ ι') :
     Generators R S ι where
@@ -531,7 +547,7 @@ lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T ι') (P : Generators 
 lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) (j a) :
     (Q.toComp P).toAlgHom (monomial j a) =
       monomial (Finsupp.sumElim 0 j) a := by
-  convert rename_monomial _ _ _
+  convert! rename_monomial _ _ _
   ext f (i₁ | i₂) <;>
     simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
 
@@ -570,6 +586,7 @@ def toExtendScalars (P : Generators R T ι) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {P P'} in
 /-- Reinterpret a hom between generators as a hom between extensions. -/
@@ -581,10 +598,12 @@ def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S
   toRingHom_algebraMap x := by simp
   algebraMap_toRingHom x := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
@@ -601,10 +620,14 @@ lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
   simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
   rfl
+
+lemma ker_mvPolynomial : (mvPolynomial R ι).ker = ⊥ := by
+  simp [ker_eq_ker_aeval_val, SetLike.ext_iff, aeval_X_left]
 
 variable {P} in
 lemma aeval_val_eq_zero {x} (hx : x ∈ P.ker) : aeval P.val x = 0 := by rwa [← algebraMap_apply]
@@ -614,19 +637,16 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- FIXME: `simpNF` times out synthesizing
--- `FaithfulSMul (Algebra.Generators.ofAlgHom f h).toExtension.Ring S`.
-@[simp, nolint simpNF]
+@[simp]
 lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
     (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
   change RingHom.ker _ = _
   congr
   exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
 
--- FIXME: `simpNF` times out synthesizing
--- `FaithfulSMul (P.ofAlgEquiv e).toExtension.Ring T`.
-@[simp, nolint simpNF]
+@[simp]
 lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
   rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
@@ -651,7 +671,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     suffices ∑ v ∈ (support x).map e, (monomial (e.symm v)) (coeff (e.symm v) x) ∈
         Ideal.map (Q.toComp P).toAlgHom.toRingHom P.ker by
       simpa only [AlgHom.toRingHom_eq_coe, Finset.sum_map, Equiv.coe_toEmbedding,
-        EquivLike.coe_coe, AddEquiv.symm_apply_apply, support_sum_monomial_coeff] using this
+        EquivLike.coe_coe, AddEquiv.symm_apply_apply, support_sum_monomial_coeff] using! this
     rw [← Finset.sum_fiberwise_of_maps_to (fun i ↦ Finset.mem_image_of_mem Prod.fst)]
     refine sum_mem fun i hi ↦ ?_
     convert_to monomial (e.symm (i, 0)) 1 * (Q.toComp P).toAlgHom.toRingHom
@@ -700,9 +720,9 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         simp only [coeff_add, map_add, ite_add_zero]
         rw [finsum_add_distrib, hp, hq]
         · refine (((support p).map e).finite_toSet.subset ?_)
-          convert this p
+          convert! this p
         · refine (((support q).map e).finite_toSet.subset ?_)
-          convert this q
+          convert! this q
 
 /--
 Given `R[X] → S` and `S[Y] → T`, this is the lift of an element in `ker(S[Y] → T)`
@@ -713,7 +733,7 @@ def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker)
     (Q.comp P).ker := by
   refine ⟨x.1.sum fun n r ↦ ?_, ?_⟩
   · -- The use of `refine` is intentional to control the elaboration order
-    -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.vars ⊕ P.vars) R`
+    -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.ι ⊕ P.ι) R`
     refine rename ?_ (P.σ r) * monomial ?_ 1
     exacts [Sum.inr, n.mapDomain Sum.inl]
   · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
@@ -774,3 +794,16 @@ lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
 end Hom
 
 end Algebra.Generators
+
+namespace Algebra.Extension
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- The canonical homomorphism of extensions from the universal extension `R[S] → S`
+(given by `Generators.self R S`) to any extension `P` defined via the designated section `P.σ`. -/
+@[simps!]
+noncomputable
+def defaultHom (P : Extension.{w} R S) : (Generators.self R S).toExtension.Hom P :=
+  .ofAlgHom (MvPolynomial.aeval P.σ) (by dsimp; ext; simp)
+
+end Algebra.Extension

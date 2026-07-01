@@ -58,7 +58,7 @@ This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the s
 theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
-  convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
+  convert! lift_rank_mul_lift_rank F K A <;> rw [lift_id]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
@@ -328,6 +328,18 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, map_zero, Finsupp.zero_apply]⟩
 
+omit [StrongRankCondition R] in
+theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
+    [OrzechProperty R] [Module.Finite R M] [Module.Finite R M']
+    (f : M →ₗ[R] M') (hf : Function.Surjective f) (h : Module.finrank R M ≤ Module.finrank R M') :
+    Function.Bijective f := by
+  cases subsingleton_or_nontrivial R
+  -- TODO : figure out how to make `nontriviality` work here nicely
+  · have := Module.subsingleton R M
+    exact ⟨Function.injective_of_subsingleton f, hf⟩
+  rcases finrank_le_iff_exists_linearMap.mp h with ⟨_, hi⟩
+  exact OrzechProperty.bijective_of_surjective_of_injective _ _ hi hf
+
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
 
@@ -366,8 +378,8 @@ end StrongRankCondition
 
 namespace Algebra
 
-instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
-    [IsQuadraticExtension R S] :
+instance (priority := 100) (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Algebra R S] [IsQuadraticExtension R S] :
     Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticExtension.finrank_eq_two R S
 
 end Algebra

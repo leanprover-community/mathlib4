@@ -117,7 +117,7 @@ namespace TestFunction
 
 instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
@@ -171,55 +171,68 @@ theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : 
 
 section AddCommGroup
 
-@[simps -fullyApplied]
 instance : Zero 𝓓^{n}(Ω, F) where
   zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
 
-@[simps -fullyApplied]
+instance : IsZeroApply 𝓓^{n}(Ω, F) E F where
+  zero_apply _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
+
 instance : Add 𝓓^{n}(Ω, F) where
   add f g := ⟨f + g, f.contDiff.add g.contDiff, f.hasCompactSupport.add g.hasCompactSupport,
     tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsAddApply 𝓓^{n}(Ω, F) E F where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
+
 instance : Neg 𝓓^{n}(Ω, F) where
   neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsNegApply 𝓓^{n}(Ω, F) E F where
+  neg_apply _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
+
 instance : Sub 𝓓^{n}(Ω, F) where
   sub f g := ⟨f - g, f.contDiff.sub g.contDiff, f.hasCompactSupport.sub g.hasCompactSupport,
     tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsSubApply 𝓓^{n}(Ω, F) E F where
+  sub_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
+
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     SMul R 𝓓^{n}(Ω, F) where
   smul c f := ⟨c • f, f.contDiff.const_smul c, f.hasCompactSupport.smul_left,
     tsupport_smul_subset_right _ _ |>.trans f.tsupport_subset⟩
 
-instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    IsSMulApply R 𝓓^{n}(Ω, F) E F where
+  smul_apply _ _ _ := rfl
 
-variable (Ω F n) in
-/-- Coercion as an additive homomorphism. -/
-@[simps -fullyApplied]
-def coeFnAddMonoidHom : 𝓓^{n}(Ω, F) →+ E → F where
-  toFun f := f
-  map_zero' := coe_zero
-  map_add' _ _ := rfl
+@[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
+
+instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance% FunLike.addCommGroup
+
+@[deprecated (since := "2026-06-15")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
+
+@[deprecated (since := "2026-06-15")] alias coeFnAddMonoidHom_apply := FunLike.coeAddMonoidHom_apply
 
 end AddCommGroup
 
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}(Ω, F) := fast_instance%
-  DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
+    Module R 𝓓^{n}(Ω, F) := fast_instance% FunLike.module
 
 instance {R S} [Semiring R] [Semiring S] [Module R F] [Module S F] [SMulCommClass ℝ R F]
     [SMulCommClass ℝ S F] [ContinuousConstSMul R F] [ContinuousConstSMul S F] [SMul R S]
     [IsScalarTower R S F] :
-    IsScalarTower R S 𝓓^{n}(Ω, F) where
-  smul_assoc _ _ _ := by ext; simp
+    IsScalarTower R S 𝓓^{n}(Ω, F) := FunLike.isScalarTower
 
 end Module
 
@@ -567,7 +580,7 @@ lemma lineDerivCLM_apply {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
     (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
   rw [lineDerivCLM_eq_fderivCLM, fderivCLM_apply]
   split_ifs with hk
-  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
     rw [(f.contDiff.differentiable hk'.ne').differentiableAt.lineDeriv_eq_fderiv]
   · rfl
 
