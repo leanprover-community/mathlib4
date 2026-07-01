@@ -246,7 +246,7 @@ jobs:
       - name: Add comment to PR
         if: ${{ steps.authorized.outputs.authorized == 'true' }}
         continue-on-error: true
-        uses: GrantBirki/comment@3439715f0cf3b8fc29bf47be0e3226679c06c41a # v3.0.0
+        uses: GrantBirki/comment@937820f3623fd0e300294bcc64ac7577fc0ad4cc # v3.0.3
         with:
           # if a comment triggers the action, then `issue.number` is set
           # if a review or review comment triggers the action, then `pull_request.number` is set

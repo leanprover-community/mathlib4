@@ -961,7 +961,7 @@ jobs:
             contains(steps.actorTeams.outputs.teams, 'bot-users')
           )
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
-        uses: GrantBirki/comment@3439715f0cf3b8fc29bf47be0e3226679c06c41a # v3.0.0
+        uses: GrantBirki/comment@937820f3623fd0e300294bcc64ac7577fc0ad4cc # v3.0.3
         with:
           # This token is masked by the token minting action and will not be logged accidentally.
           token: ${{ steps.auto-merge-app-token.outputs.token }}
