@@ -23,7 +23,8 @@ cardinals `κ₁ < κ₂`, this condition can be described in different ways:
   of cardinality `< κ₂`, there exists a `κ₁`-directed subset `B` of `X` containing `A`
   that is of cardinality `< κ₂`.
 The equivalence of these conditions (i)-(iv) is Theorem 2.11 in the book by Adámek and Rosický
-(TODO @joelriou). Here, we take (i) as the definition.
+((i) → (iii) → (iv) are proven below, (ii) → (i) is obvious; the rest is TODO @joelriou).
+Here, we take (i) as the definition.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
