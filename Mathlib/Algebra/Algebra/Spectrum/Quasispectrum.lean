@@ -156,13 +156,13 @@ def unitsFstOne_mulEquiv_quasiregular : unitsFstOne R A ≃* (PreQuasiregular A)
       { val := 1 + PreQuasiregular.equiv.symm x.val
         inv := 1 + PreQuasiregular.equiv.symm x⁻¹.val
         val_inv := by
-          convert! congr((1 + $(inv_add_add_mul_eq_zero x) : Unitization R A)) using 1
+          convert congr((1 + $(inv_add_add_mul_eq_zero x) : Unitization R A))
           · simp only [mul_one, PreQuasiregular.equiv_symm_apply, one_mul, mul_add,
               add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero]
         inv_val := by
-          convert! congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A)) using 1
+          convert congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A))
           · simp only [mul_one, PreQuasiregular.equiv_symm_apply, one_mul, mul_add,
               add_mul, inr_add, inr_mul]
             abel
@@ -216,8 +216,8 @@ lemma IsQuasiregular.isUnit_one_add {R : Type*} [Semiring R] {x : R} (hx : IsQua
     IsUnit (1 + x) := by
   obtain ⟨y, hy₁, hy₂⟩ := isQuasiregular_iff.mp hx
   refine ⟨⟨1 + x, 1 + y, ?_, ?_⟩, rfl⟩
-  · convert! congr(1 + $(hy₁)) using 1 <;> [noncomm_ring; simp]
-  · convert! congr(1 + $(hy₂)) using 1 <;> [noncomm_ring; simp]
+  · convert congr(1 + $(hy₁)) <;> [noncomm_ring; simp]
+  · convert congr(1 + $(hy₂)) <;> [noncomm_ring; simp]
 
 lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
     IsQuasiregular x ↔ IsUnit (1 + x) := by
@@ -229,7 +229,7 @@ lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
   case' h.right => have := congr($(hx.val_inv_mul) - 1)
   all_goals
     rw [← sub_add_cancel (↑hx.unit⁻¹ : R) 1, sub_self] at this
-    convert! this using 1
+    convert this
     noncomm_ring
 
 -- interestingly, this holds even in the semiring case.
