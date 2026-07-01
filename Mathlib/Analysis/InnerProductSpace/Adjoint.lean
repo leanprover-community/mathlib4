@@ -905,8 +905,8 @@ theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
     f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ α : unitary 𝕜, f = α • g := by
   conv_lhs => rw [eq_comm]
   simp_rw [StarAlgEquiv.ext_iff, LinearIsometryEquiv.ext_iff, conjStarAlgEquiv_apply,
-    ← eq_symm_toContinuousLinearMap_comp, ← comp_assoc, toContinuousLinearEquiv_symm,
-    eq_comp_symm_toContinuousLinearMap,
+    ← eq_toContinuousLinearMap_symm_comp, ← comp_assoc, toContinuousLinearEquiv_symm,
+    eq_comp_toContinuousLinearMap_symm,
     comp_assoc, ← comp_assoc _ (f : H →L[𝕜] K), comp_coe, ← ContinuousLinearMap.mul_def,
     ← Subalgebra.mem_center_iff (R := 𝕜), Algebra.IsCentral.center_eq_bot, ← comp_coe,
     Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one]

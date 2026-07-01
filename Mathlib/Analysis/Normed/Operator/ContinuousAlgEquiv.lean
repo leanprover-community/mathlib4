@@ -57,7 +57,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
     · exact ⟨{ toLinearEquiv := 0 }, ext <| Subsingleton.allEq _ _⟩
     simpa using congr(f $(Subsingleton.allEq 0 1))
   simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply, ← comp_assoc,
-    eq_comp_symm_toContinuousLinearMap]
+    eq_comp_toContinuousLinearMap_symm]
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := SeparatingDual.exists_ne_zero (R := 𝕜) hu
   obtain ⟨z, hz⟩ : ∃ z : W, ¬ f (smulRight v u) z = (0 : W →L[𝕜] W) z := by
