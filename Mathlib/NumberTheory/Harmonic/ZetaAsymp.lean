@@ -585,7 +585,7 @@ lemma log_riemannZeta_eq_neg_log_sub_add_isBigO :
 lemma log_riemannZeta_eq_neg_log_sub_add_isLittleO :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =o[𝓝[>] (1 : ℝ)] (fun _ ↦ (1 : ℝ)) :=
   log_riemannZeta_eq_neg_log_sub_add_isBigO.trans_isLittleO
-  ((continuousAt_iff_isLittleO.mp continuous_id.continuousAt).mono nhdsWithin_le_nhds)
+  (continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
     ∀ᶠ s in 𝓝[≠] 1, (deriv riemannZeta s) / (riemannZeta s)
