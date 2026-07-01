@@ -5,8 +5,8 @@ Authors: Snir Broshi
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Order.Interval.Set.Nat
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Mex lemmas
