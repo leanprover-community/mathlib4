@@ -18,86 +18,63 @@ invariants of a representation.
 
 namespace ContinuousCohomology
 
-open CategoryTheory Functor TopRep TopRep.MultiInd ContRepresentation
+open CategoryTheory Functor TopRep ContRepresentation
 
 variable {k G : Type*} [CommRing k] [Group G] [TopologicalSpace k] [IsTopologicalRing k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-/-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
-def kerHomogeneousCochainsZeroEquiv
-    (rep : TopRep k G) (n : ℕ) (hn : n = 1) :
-    (((homogeneousCochains k G).obj rep).d 0 n).hom.ker ≃L[k] (invariants k G).obj rep where
-  toFun σ :=
-  { val := DFunLike.coe (F := C(G, _)) σ.1.1 1
-    property g := by
-      subst hn
-      obtain ⟨⟨σ : C(G, _), hσ⟩, hσ'⟩ := σ
-      have : (rep.ρ g) (σ (g⁻¹ * 1)) = σ 1 := congr(DFunLike.coe (F := C(G, _)) $(hσ g) 1)
-      have hx' : σ (g⁻¹ * 1) - σ 1 = 0 := by
-        rw [LinearMap.mem_ker] at hσ'
-        simp only [ComplexShape.embeddingUp'Add_f, Nat.reduceAdd,
-          HomologicalComplex.asFunctor_obj_X, ContinuousLinearMap.coe_coe] at hσ'
-        rw [homogeneousCochains.d_eq, MultiInd.complex_d, MultiInd.d_succ, MultiInd.d_zero] at hσ'
-        simp only [comp_obj, ComplexShape.Embedding.restrictionFunctor_obj,
-          HomologicalComplex.restriction_X, ComplexShape.embeddingUp'Add_f, Nat.reduceAdd,
-          mapHomologicalComplex_obj_X, HomologicalComplex.asFunctor_obj_X, id_obj, NatTrans.app_sub,
-          whiskerLeft_app, coind₁ι_app, NatTrans.comp_app, rightUnitor_hom_app, whiskerRight_app,
-          ConcreteCategory.hom_ofHom, Category.id_comp, hom_sub, Subtype.ext_iff,
-          ContIntertwiningMap.mk_invariants_apply, ContIntertwiningMap.sub_apply, coind₁ι_toFun,
-          coind₁Map_toFun, ZeroMemClass.coe_zero, sub_eq_zero] at hσ'
-        have := DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hσ' g⁻¹) 1
-        simpa using sub_eq_zero.2 this.symm
-      rw [sub_eq_zero] at hx'
-      exact congr((rep.ρ g) $hx').symm.trans this
-  }
+lemma cocycles₀IsoAux (X : TopRep k G) (σ : (homogeneousCochains X).X 0)
+    (hσ : σ ∈ ((homogeneousCochains X).d 0 1).hom.ker) : σ.1 1 ∈ X.ρ.invariants := by
+  simp only [Nat.reduceAdd, LinearMap.mem_ker, ContinuousLinearMap.coe_coe,
+    Subtype.ext_iff, homogeneousCochains.d₀₁_apply _] at hσ
+  simp only [Nat.reduceAdd, mem_invariants]
+  intro g
+  rw [d_succ, hom_sub, hom_ofHom, ContIntertwiningMap.sub_apply, d_zero,
+    ZeroMemClass.coe_zero, sub_eq_zero] at hσ
+  replace hσ := DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hσ 1) g⁻¹
+  simp only [Nat.reduceAdd, coind₁ι_toFun, ContinuousMap.const_apply, ConcreteCategory.hom_ofHom,
+    coind₁Map_toFun, ContinuousMap.comp_apply, ContinuousMap.coe_mk] at hσ
+  simpa [hσ] using DFunLike.ext_iff.1 (σ.2 g) 1
+
+lemma hah (X : TopRep k G) (x : X) (hx : x ∈ X.ρ.invariants) :
+    ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants :=
+  ContRepresentation.mem_invariants _|>.1 fun _ ↦ ContinuousMap.ext fun _ ↦ hx _
+
+lemma cocycles₀IsoAux' (X : TopRep k G) (x : X)
+    (h : ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants) :
+    ⟨ContinuousMap.const G x, h⟩ ∈ ((homogeneousCochains X).d 0 1).hom.ker := by
+  rw [LinearMap.mem_ker, Subtype.ext_iff, ContinuousLinearMap.coe_coe,
+    homogeneousCochains.d₀₁_apply]
+  simp [d_succ, hom_sub, ContIntertwiningMap.sub_apply, d_zero]
+
+/-- The isomorphism between the kernel of the zeroth differential and
+the invariants of a representation. -/
+def cocycles₀Iso (X : TopRep k G) :
+    ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants where
+  toFun := fun ⟨σ, hσ⟩ ↦ ⟨σ.val 1, cocycles₀IsoAux X σ hσ⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun x := by
-    refine ⟨⟨ContinuousLinearMap.const k _ x.1, fun g ↦ ContinuousMap.ext fun a ↦
-      by subst hn; exact x.2 g⟩, ?_⟩
-    subst hn
-    apply Subtype.ext
-    apply ContinuousMap.ext
-    intro g
-    apply ContinuousMap.ext
-    intro g'
-    rw [homogeneousCochains.d_eq, MultiInd.complex_d]
-    simp only [id_obj, comp_obj, ComplexShape.embeddingUp'Add_f, Nat.reduceAdd,
-      HomologicalComplex.asFunctor_obj_X, ComplexShape.Embedding.restrictionFunctor_obj,
-      HomologicalComplex.restriction_X, mapHomologicalComplex_obj_X, ConcreteCategory.hom_ofHom,
-      ContinuousLinearMap.coe_coe, ContIntertwiningMap.mk_invariants_apply, ZeroMemClass.coe_zero,
-      ContinuousMap.zero_apply]
-    rw [d_succ, CategoryTheory.NatTrans.app_sub, TopRep.hom_sub]
-    simp [functor, ContIntertwiningMap.sub_apply]
-  left_inv x := by
-    subst hn
-    obtain ⟨⟨x : C(G, _), hx⟩, hx'⟩ := x
-    refine Subtype.ext (Subtype.ext <| ContinuousMap.ext fun a ↦ ?_)
-    have hx' : x 1 - x a = 0 :=
-      congr(DFunLike.coe (F := C(G, _)) (DFunLike.coe (F := C(G, _)) ($hx').1 a) 1)
-    rwa [sub_eq_zero] at hx'
+  invFun := fun ⟨x, hx⟩ ↦ ⟨⟨ContinuousMap.const G x, hah X x hx⟩, cocycles₀IsoAux' X x (hah X x hx)⟩
+  left_inv := fun ⟨⟨(x : C(G, X)), hx'⟩, hx⟩ ↦ by
+    ext g
+    simp only [Nat.reduceAdd, homogeneousCochains.d₀₁ X, d_succ, d_zero, ConcreteCategory.hom_ofHom,
+      hom_sub, LinearMap.mem_ker, ContinuousLinearMap.coe_coe, Subtype.ext_iff,
+      ContIntertwiningMap.mk_invariants_apply, ContIntertwiningMap.sub_apply, coind₁ι_toFun,
+      coind₁Map_toFun, ZeroMemClass.coe_zero, sub_eq_zero, ContinuousMap.const_apply] at hx ⊢
+    simpa using DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hx g) 1
   right_inv _ := rfl
-  continuous_toFun := continuous_induced_rng.mpr ((continuous_eval_const (F := C(G, _)) 1).comp
-      (continuous_subtype_val.comp continuous_subtype_val))
-  continuous_invFun := continuous_induced_rng.mpr
-    (continuous_induced_rng.mpr ((ContinuousLinearMap.const k G).cont.comp continuous_subtype_val))
+  continuous_toFun := continuous_induced_rng.2 <| (continuous_eval_const 1).comp <|
+    (continuous_subtype_val.comp continuous_subtype_val)
+  continuous_invFun := continuous_induced_rng.2 <| continuous_induced_rng.2 <|
+    ContinuousMap.continuous_const'.comp continuous_subtype_val
 
-set_option maxHeartbeats 400000 in -- debt, will fix later
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-open ShortComplex HomologyData in
-/-- `H⁰_cont(G, X) ≅ Xᴳ`. -/
-noncomputable def continuousCohomologyZeroIso :
-    (continuousCohomologyFunctor k G 0) ≅ invariants k G :=
-  NatIso.ofComponents (fun X ↦ (ofIsLimitKernelFork _ (by simp) _
-    (TopModuleCat.isLimitKer _)).left.homologyIso ≪≫ TopModuleCat.ofIso
-      (kerHomogeneousCochainsZeroEquiv X _ (by simp))) fun {X Y} f ↦ by
-  dsimp [continuousCohomologyFunctor, HomologicalComplex.homologyMap]
-  rw [Category.assoc, ← Iso.inv_comp_eq]
-  rw [LeftHomologyData.leftHomologyIso_inv_naturality_assoc, Iso.inv_hom_id_assoc,
-    ← cancel_epi (LeftHomologyData.π _), leftHomologyπ_naturality'_assoc]
-  rfl
+/-- The isomorphism between the zeroth continuous cohomology group and
+the invariants of a representation. -/
+noncomputable def zeroIso (A : TopRep k G) :
+    continuousCohomology 0 A ≅ TopModuleCat.of k A.ρ.invariants :=
+  ((homogeneousCochains A).isoHomologyπ₀.symm ≪≫ Limits.KernelFork.mapIsoOfIsLimit
+    ((homogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (TopModuleCat.isLimitKer _) (Iso.refl _)
+    : continuousCohomology 0 A ≅ TopModuleCat.of k ((homogeneousCochains A).d 0 1).hom.ker)
+  ≪≫ TopModuleCat.ofIso (cocycles₀Iso A)
 
 end ContinuousCohomology

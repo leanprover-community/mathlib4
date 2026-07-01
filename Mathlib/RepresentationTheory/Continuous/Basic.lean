@@ -501,7 +501,7 @@ def coind₁Map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R
 /-- The naturality of the transformation from `𝟭 ⟶ coind₁`. -/
 @[simps]
 def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
-  toFun := .const G
+  toFun := ContinuousMap.const G
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   isIntertwining' := by aesop

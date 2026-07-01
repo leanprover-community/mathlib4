@@ -6,10 +6,9 @@ Authors: Richard Hill, Andrew Yang, Edison Xie
 
 module
 
-public import Mathlib.RepresentationTheory.Continuous.TopRep
-public import Mathlib.Algebra.Homology.Embedding.Basic
-public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+public import Mathlib.RepresentationTheory.Continuous.TopRep
 
 /-!
 
@@ -42,67 +41,99 @@ See `ContinuousCohomology.MultiInd.d`.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
 
-universe u₁ u₂ u₃
-
 @[expose] public section
 
-open CategoryTheory Functor ContinuousMap TopRep
+universe w u v
 
-variable (k : Type u₁) (G : Type u₂) [CommRing k] [Group G] [TopologicalSpace k]
-  [IsTopologicalRing k]
+variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k] [IsTopologicalRing k]
+  [TopologicalSpace G] [IsTopologicalGroup G]
 
-namespace ContinuousCohomology
-open TopRep.MultiInd ContRepresentation
-variable [TopologicalSpace G] [IsTopologicalGroup G]
+open CategoryTheory ContRepresentation Limits
 
-/--
-The functor which removes the zeroth
-term in a cochain complex and shufts the other terms down by one.
--/
-abbrev crop (C : Type*) [Category C] [Limits.HasZeroMorphisms C]:=
-  (ComplexShape.embeddingUp'Add 1 1).restrictionFunctor C
+namespace TopRep
 
-/-- `homogeneousCochains R G` is the functor taking
-an `k`-linear `G`-representation to the complex of homogeneous cochains. -/
-abbrev homogeneousCochains : TopRep k G ⥤ CochainComplex (TopModuleCat k) ℕ :=
-  (MultiInd.complex k G).asFunctor ⋙ (invariants k G).mapHomologicalComplex _
-  ⋙ crop (TopModuleCat k)
+/-- The `n`-th term in the resolution of a topological representation induced by `TopRep.coind₁`. -/
+abbrev resolutionX (X : TopRep k G) : ℕ → TopRep k G
+  | 0 => X
+  | n + 1 => (resolutionX X n).coind₁
 
-instance {n : ℕ} {rep : TopRep k G} : FunLike (((homogeneousCochains k G).obj rep).X n) G
-    ((MultiInd.functor k G n).obj rep) where
-  coe σ := σ.val.toFun
-  coe_injective _ _ _ := by simp_all
+/-- The boundary map in the resolution of a topological representation induced
+by `TopRep.coind₁Functor`. -/
+def d (X : TopRep k G) : (n : ℕ) → resolutionX X n ⟶ resolutionX X (n + 1)
+  | 0 => ofHom X.ρ.coind₁ι
+  | n + 1 => ofHom (resolutionX X (n + 1)).ρ.coind₁ι - (coind₁Functor k G).map (d X n)
 
-lemma homogeneousCochains_coe_apply {n : ℕ} {rep : TopRep k G}
-    (σ : ((homogeneousCochains k G).obj rep).X n) (g : G) :
-    σ.val.toFun g = σ g := rfl
+lemma d_zero (X : TopRep k G) : d X 0 = ofHom X.ρ.coind₁ι := rfl
 
-lemma homogeneousCochains.d_eq (n : ℕ) (rep : TopRep k G) :
-    ((homogeneousCochains k G).obj rep).d n (n + 1)
-    = (invariants k G).map (((MultiInd.complex k G).asFunctor.obj rep).d (n + 1) (n + 2)) := rfl
+lemma d_succ (X : TopRep k G) (n : ℕ) :
+    d X (n + 1) = ofHom (resolutionX X (n + 1)).ρ.coind₁ι - (coind₁Functor k G).map (d X n) :=
+  rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-lemma homogeneousCochains.property {n : ℕ} {rep : TopRep k G}
-    (σ : ((homogeneousCochains k G).obj rep).X n) (g₁ g₂ : G) :
-    σ (g₁ * g₂) = ((MultiInd.functor k G n).obj rep).ρ g₁ (σ g₂) := by
-  have := σ.2 g₁⁻¹
-  simp only [ComplexShape.embeddingUp'Add_f, HomologicalComplex.asFunctor_obj_X] at this
-  apply_fun DFunLike.coe (F := ((MultiInd.functor k G (n + 1)).obj rep)) at this
-  have := congr_fun this g₂
-  simp only [functor, comp_obj, coind₁_apply_apply, inv_inv, ContinuousMap.comp_apply, coe_mulLeft,
-    coe_mk] at this
-  have key := congrArg (((MultiInd.functor k G n).obj rep).ρ g₁) this
-  rwa [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self] at key
+lemma hom_d_succ (X : TopRep k G) (n : ℕ) :
+    (d X (n + 1)).hom = (resolutionX X (n + 1)).ρ.coind₁ι -
+      ContRepresentation.coind₁Map _ _ (d X n).hom :=
+  rfl
 
-/-- `continuousCohomologyFunctor k G n` is the functor taking
-an `k`-linear `G`-representation to its `n`-th continuous cohomology. -/
-noncomputable def _root_.continuousCohomologyFunctor (n : ℕ) : TopRep k G ⥤ TopModuleCat k :=
-  homogeneousCochains k G ⋙ HomologicalComplex.homologyFunctor _ _ n
+@[reassoc (attr := simp)]
+lemma d_comp_d (X : TopRep k G) (n : ℕ) : d X n ≫ d X (n + 1) = 0 := by
+  induction n with
+  | zero =>
+    ext
+    simp [d_succ, ContIntertwiningMap.toContinuousLinearMap_apply, d_zero, hom_sub]
+  | succ n ih =>
+    nth_rw 2 [d_succ]
+    rw [Preadditive.comp_sub]
+    nth_rw 2 [d_succ]
+    rw [Preadditive.sub_comp, ← Functor.map_comp, ih, Functor.map_zero, sub_zero, sub_eq_zero]
+    rfl -- lack a lemma here
+
+/-- The complex of functors whose behaviour pointwise takes an `R`-linear `G`-representation `M`
+to the complex `M → C(G, M) → ⋯ → C(G, C(G,...,C(G, M))) → ⋯`
+The `G`-invariant submodules of it is the homogeneous cochains (shifted by one). -/
+abbrev resolution (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
+  CochainComplex.of (resolutionX X) (d X) (d_comp_d X)
+
+/-- The shifted boundary map of the resolution. -/
+def resolution'd (X : TopRep k G) :
+    (n : ℕ) → resolutionX X (n + 1) ⟶ resolutionX X (n + 1 + 1) := fun n ↦ d X (n + 1)
+
+/-- The shifted resolution of a topological representation by `1` degree. -/
+abbrev resolution' (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
+  CochainComplex.of (fun i ↦ (resolution X).X (i + 1))
+    (resolution'd X) (fun n ↦ d_comp_d X (n + 1))
+
+/-- we should refactor this in mathlib -/
+abbrev _root_.CategoryTheory.Functor.mapHomologicalComplex' {ι : Type*} {W₁ : Type*} {W₂ : Type*}
+    [Category* W₁] [Category* W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂] (F : W₁ ⥤ W₂)
+    [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
+    HomologicalComplex W₁ c ⥤ HomologicalComplex W₂ c where
+  obj C :=
+    { X := fun i => F.obj (C.X i)
+      d := fun i j => F.map (C.d i j)
+      shape := fun i j w => by
+        rw [C.shape _ _ w, F.map_zero]
+      d_comp_d' := fun i j k _ _ => by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
+  map f :=
+    { f := fun i => F.map (f.f i)
+      comm' := fun i j _ => by
+        dsimp
+        rw [← F.map_comp, ← F.map_comp, f.comm] }
+
+/-- The homogeneous cochains of a topological representation. -/
+abbrev homogeneousCochains (X : TopRep k G) :
+    CochainComplex (TopModuleCat k) ℕ :=
+  ((invariantsFunctor k G).mapHomologicalComplex' _).obj (resolution' X)
+
+lemma homogeneousCochains.d₀₁ (X : TopRep k G) :
+    ((homogeneousCochains X).d 0 1).hom =
+    (d X 1).hom.invariants := rfl
+
+lemma homogeneousCochains.d₀₁_apply (X : TopRep k G) (σ : (homogeneousCochains X).X 0) :
+    ((homogeneousCochains X).d 0 1).hom σ = (d X 1).hom σ := rfl
 
 /-- The continuous cohomology of a continuous representation defined
 by `continuousCohomologyFunctor`. -/
 noncomputable abbrev _root_.continuousCohomology (n : ℕ) (A : TopRep k G) :
-    TopModuleCat k := (continuousCohomologyFunctor k G n).obj A
+    TopModuleCat k := (homogeneousCochains A).homology n
 
-end ContinuousCohomology
+end TopRep
