@@ -103,9 +103,8 @@ theorem eq_starGraph_of_isUniversal_of_cliqueFree_three {v : V} (hv : G.IsUniver
   by_contra! hne
   have := hne.lt_of_le' <| starGraph_le_iff.mpr hv
   obtain ⟨⟨a, b⟩, he, he'⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono this
-  have hva : v ≠ a := (· ▸ he' <| isUniversal_starGraph_self he.ne)
-  have hvb : v ≠ b := (· ▸ he' <| .symm <| isUniversal_starGraph_self he.ne')
   classical
-  exact h3 {v, a, b} <| is3Clique_triple_iff.mpr ⟨hv hva, hv hvb, he⟩
+  refine h3 {v, a, b} <| is3Clique_triple_iff.mpr ⟨hv ?_, hv ?_, he⟩ <;>
+    intro rfl <;> simp [he.ne] at he'
 
 end SimpleGraph
