@@ -121,14 +121,13 @@ section subject
 #guard_msgs in
 #check_title "feat: RPC acronyms are fine"
 #guard_msgs in #check_title "feat: `ℕ` is countable"
--- We also allow a `s` suffix, as manual heuristic.
+-- We also allow a `s`, `'s` or `'ed` suffix, as manual heuristic.
 #guard_msgs in #check_title "feat: RPCs are yellow"
 #guard_msgs in #check_title "chore: LLMs require adjusting our policies"
-
--- This is not quite an abbreviation. One may add an exception for the first kind,
-/-- info: Message: 'error: the PR subject should be lowercased' -/
+#guard_msgs in #check_title "chore: PR'ed lemmas"
+#guard_msgs in #check_title "feat(CI): PR's to be deleted"
 #guard_msgs in #check_title "chore: FCP'ed decisions should be listed separately"
--- this version is also a grammar error (so should perhaps stay).
+-- This is not quite an abbreviation (and a grammar error).
 /-- info: Message: 'error: the PR subject should be lowercased' -/
 #guard_msgs in #check_title "chore: FCPed decisions should be listed separately"
 
