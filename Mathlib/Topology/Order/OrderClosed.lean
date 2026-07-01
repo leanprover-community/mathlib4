@@ -49,7 +49,7 @@ see their statements.
   (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a`); we also provide primed versions
   that assume the inequalities to hold for all `x`.
 * `monotone_of_frequently_monotone_of_tendsto`, `antitone_of_frequently_antitone_of_tendsto` : the
-  pointwise limit of frequently monotone functions is monotone or antitone.
+  pointwise limit of frequently monotone or antitone functions is monotone or antitone.
 
 ### Min, max, `sSup` and `sInf`
 
