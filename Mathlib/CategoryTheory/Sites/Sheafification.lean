@@ -177,7 +177,6 @@ theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
   rw [Adjunction.homEquiv_counit]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     toSheafify J P ≫ sheafifyLift J η hQ = η := by

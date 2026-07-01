@@ -31,7 +31,6 @@ namespace LeftResolution
 open Functor
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport `LeftResolution` via equivalences of categories. -/
 def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}
     (eA : A' ≌ A) (eC : C' ≌ C) (e : ι' ⋙ eA.functor ≅ eC.functor ⋙ ι) :
@@ -48,7 +47,6 @@ def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}
           (rightUnitor _).hom) _) ≫ eA.unitIso.inv
   epi_π_app _ := by dsimp; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If we have an isomorphism `e : G ⋙ ι' ≅ ι`, then any `Λ : LeftResolution ι`
 induces `Λ.ofCompIso e : LeftResolution ι'`. -/
 def ofCompIso {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A} {G : C ⥤ C'}

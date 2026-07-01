@@ -496,7 +496,7 @@ theorem rank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S]
   rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_algebraMap h]
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
   have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
   have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]

@@ -716,7 +716,6 @@ def LeftExtension.isUniversalPrecomp₂Equiv
   right_inv x := by subsingleton
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
     {F₂ : D' ⥤ H} (L'' : C ⥤ D') (e : L ⋙ L' ≅ L'') (β : F₁ ⟶ L' ⋙ F₂)
     (γ : F₀ ⟶ L'' ⋙ F₂)
@@ -864,7 +863,6 @@ variable (F₀) in
 instance isRightKanExtensionId : F₀.IsRightKanExtension F₀.leftUnitor.hom where
   nonempty_isUniversal := ⟨CostructuredArrow.mkIdTerminal⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
     F₁.IsLeftKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩

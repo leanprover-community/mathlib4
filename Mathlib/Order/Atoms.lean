@@ -758,7 +758,7 @@ instance OrderDual.instIsSimpleOrder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
     IsSimpleOrder αᵒᵈ := isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
     Preorder α where
   le_refl a := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
@@ -771,7 +771,7 @@ protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
 
 /-- A simple partial ordered `BoundedOrder` induces a linear order.
 This is not an instance to prevent loops. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
@@ -828,14 +828,14 @@ variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
 /-- A simple partial ordered `BoundedOrder` induces a lattice.
 This is not an instance to prevent loops -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def lattice {α} [DecidableEq α] [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α] :
     Lattice α :=
   @LinearOrder.toLattice α IsSimpleOrder.linearOrder
 
 /-- A lattice that is a `BoundedOrder` is a distributive lattice.
 This is not an instance to prevent loops -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def distribLattice : DistribLattice α :=
   { (inferInstance : Lattice α) with
     le_sup_inf := fun x y z => by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
@@ -874,7 +874,7 @@ def orderIsoBool : α ≃o Bool :=
         · simp }
 
 /-- A simple `BoundedOrder` is also a `BooleanAlgebra`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
     BooleanAlgebra α :=
   { (inferInstance : BoundedOrder α), IsSimpleOrder.distribLattice with
@@ -894,7 +894,7 @@ variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
 open Classical in
 /-- A simple `BoundedOrder` is also complete. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
     (inferInstance : BoundedOrder α) with
@@ -923,7 +923,7 @@ protected noncomputable def completeLattice : CompleteLattice α :=
 
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
     __ := IsSimpleOrder.booleanAlgebra }

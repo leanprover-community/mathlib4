@@ -325,7 +325,7 @@ algebraic extension `L` is finite if there is an admissible absolute value.
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
 extension of `K = Frac(R)`, supplying most of the required assumptions automatically.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
     [Algebra.IsAlgebraic R S] : Fintype (ClassGroup S) :=
   @Fintype.ofSurjective _ _ _
@@ -347,7 +347,7 @@ absolute value.
 See also `ClassGroup.fintypeOfAdmissibleOfAlgebraic` where `L` is an
 algebraic extension of `R`, that includes some extra assumptions.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfAdmissibleOfFinite [IsIntegralClosure S R L] :
     Fintype (ClassGroup S) := by
   letI := Classical.decEq L

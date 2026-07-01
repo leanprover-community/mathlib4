@@ -359,7 +359,7 @@ variable {A B C : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebr
 /-- If `P` lies over `p`, then `Localization.AtPrime P` is an algebra over `Localization.AtPrime p`.
 This is not an instance for performance reasons and to avoid diamonds in the situation where the top
 ring is already an algebra over `Localization.AtPrime p` (e.g., this happens for `Ideal.Fiber`). -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def algebraOfLiesOver
     (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
