@@ -420,22 +420,9 @@ lemma toENNReal_sub {x y : EReal} (hy : 0 ≤ y) :
     simp
 
 lemma add_sub_add_comm {a b c d : EReal} (h1 : c ≠ ⊥ ∨ d ≠ ⊤) (h2 : c ≠ ⊤ ∨ d ≠ ⊥) :
-    (a + b) - (c + d) = (a - c) + (b - d) := by
+    a + b - (c + d) = (a - c) + (b - d) := by
   rw [sub_eq_add_neg, sub_eq_add_neg, sub_eq_add_neg, EReal.neg_add h1 h2, sub_eq_add_neg]
   grind
-
-lemma add_sub_add (a b : EReal) {c d : EReal} (hc : c ≠ ⊥) (hd : d ≠ ⊥) :
-    a + b - (c + d) = (a - c) + (b - d) := by
-  cases a <;> cases b <;> cases c <;> cases d
-  -- 81 goals
-  any_goals simp [hc, hd]
-  any_goals simp at hc
-  any_goals simp at hd
-  · norm_cast
-    ring
-  · norm_cast
-  · norm_cast
-  · norm_cast
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   cases a <;> norm_cast
