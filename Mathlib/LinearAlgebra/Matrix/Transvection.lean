@@ -219,7 +219,7 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
       by simpa [Matrix.mul_assoc]
     simp_rw [IH, Matrix.mul_one, t.mul_inv]
 
-theorem isUnit_prod_mul_reverse (L : List (TransvectionStruct n R)) :
+theorem isUnit_prod_comp_inverse (L : List (TransvectionStruct n R)) :
     IsUnit (L.map (toMatrix ∘ .inv)).prod := by
   refine IsUnit.of_mul_eq_one (L.reverse.map toMatrix).prod ?_
   rw [← reverse_inv_prod_mul_prod L.reverse, L.reverse_reverse]

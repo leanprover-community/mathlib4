@@ -329,7 +329,9 @@ theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) 
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
 open TransvectionStruct in
-/-- Every square matrix over a field admits a rank normal form. -/
+/-- Every square matrix over a field can be brought, by left and right multiplication by
+invertible matrices, into the block form `fromBlocks 1 0 0 0`, where the identity block has size
+equal to the rank of the matrix. -/
 theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
     ∃ (V U : Matrix m m R) (e : m ≃ Fin M.rank ⊕ Fin (Fintype.card m - M.rank)),
       IsUnit V ∧ IsUnit U ∧
@@ -340,11 +342,11 @@ theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
   set s : Finset m := .filter (fun i ↦ D i ≠ 0) .univ with s_def
   set V := diagonal E * (L.reverse.map (toMatrix ∘ .inv)).prod with V_def
   set U := (L'.reverse.map (toMatrix ∘ .inv)).prod with U_def
-  have hUdet : IsUnit U.det := (isUnit_iff_isUnit_det _).1 <| isUnit_prod_mul_reverse _
+  have hUdet : IsUnit U.det := (isUnit_iff_isUnit_det _).1 <| isUnit_prod_comp_inverse _
   have hVdet : IsUnit V.det := by
     rw [V_def, det_mul, det_diagonal]
     exact IsUnit.mk0 _ (Finset.prod_ne_zero_iff.2 (by grind)) |>.mul <|
-      (isUnit_iff_isUnit_det _).1 (isUnit_prod_mul_reverse _)
+      (isUnit_iff_isUnit_det _).1 (isUnit_prod_comp_inverse _)
   have hM : V * M * U = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
     rw [V_def, U_def, hM0, mul_assoc, mul_assoc _ (L'.map _).prod, prod_mul_reverse_inv_prod,
       mul_one, ← mul_assoc, mul_assoc _ (L.reverse.map _).prod, reverse_inv_prod_mul_prod, mul_one]
@@ -358,7 +360,7 @@ theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
   set e : m ≃ Fin M.rank ⊕ Fin (Fintype.card m - M.rank) :=
     (Equiv.sumCompl (· ∈ s)).symm.trans <| (Finset.equivFinOfCardEq hs).sumCongr <|
       Fintype.equivFinOfCardEq <| by rw [Fintype.card_subtype_compl, Fintype.card_coe, hs] with he
-  refine ⟨V, U, e, (isUnit_iff_isUnit_det _).2 hVdet, isUnit_prod_mul_reverse _, ?_⟩
+  refine ⟨V, U, e, (isUnit_iff_isUnit_det _).2 hVdet, isUnit_prod_comp_inverse _, ?_⟩
   rw [hM, ← diagonal_one, ← diagonal_zero, fromBlocks_diagonal, submatrix_diagonal_equiv]
   refine congrArg _ (funext fun i ↦ ?_)
   split_ifs with hi <;> simp [he, hi]
