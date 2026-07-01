@@ -197,7 +197,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
     {L : V →L[ℝ] W →L[ℝ] ℝ} {f : V → E} {μ : Measure V}
     (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun v ↦ fourierSMulRight L f v) μ := by
-  apply AEStronglyMeasurable.const_smul'
+  apply AEStronglyMeasurable.fun_const_smul
   have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
     (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
@@ -224,7 +224,7 @@ theorem hasFDerivAt_fourierIntegral
   have h1 : ∀ᶠ w' in 𝓝 w, AEStronglyMeasurable (F w') μ :=
     Eventually.of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
   have h3 : AEStronglyMeasurable (F' w) μ := by
-    refine .smul ?_ hf.1.fourierSMulRight
+    refine .fun_smul ?_ hf.1.fourierSMulRight
     refine (continuous_fourierChar.comp ?_).aestronglyMeasurable
     fun_prop
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
@@ -433,7 +433,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
     (hf : AEStronglyMeasurable f μ) (n : ℕ) :
     AEStronglyMeasurable (fun v ↦ fourierPowSMulRight L f v n) μ := by
   simp_rw [fourierPowSMulRight_eq_comp]
-  apply AEStronglyMeasurable.const_smul'
+  apply AEStronglyMeasurable.fun_const_smul
   apply (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).continuous₂.comp_aestronglyMeasurable₂ _ hf
   apply Continuous.aestronglyMeasurable
   exact Continuous.comp (map_continuous _) (continuous_pi (fun _ ↦ L.continuous))

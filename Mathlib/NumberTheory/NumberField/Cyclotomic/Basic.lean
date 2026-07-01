@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 module
 
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.Cyclotomic.Discriminant
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
