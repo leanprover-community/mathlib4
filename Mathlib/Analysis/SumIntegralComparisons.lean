@@ -212,7 +212,7 @@ theorem AntitoneOn.summable_of_integrableOn_Ioi {N : ℕ} (anti : AntitoneOn f (
     _ ≤ _ := (anti.mono Icc_subset_Ici_self).sum_Ico_le_integral integrable nonneg
 
 /-- **Integral test**: a nonnegative antitone function is summable if it is integrable. -/
-theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
+theorem AntitoneOn.summable_of_integrableOn_Ioi_zero (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     Summable (fun (n : ℕ) ↦ f n) :=
   summable_of_integrable_eventually (N := 0) (mod_cast anti) (mod_cast integrable) (mod_cast nonneg)
