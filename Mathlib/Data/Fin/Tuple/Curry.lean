@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Logic.Function.Init
 public import Mathlib.Logic.Function.OfArity
 
 /-!

@@ -5306,6 +5306,7 @@ public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.DependsOn
 public import Mathlib.Logic.Function.FiberPartition
 public import Mathlib.Logic.Function.FromTypes
+public import Mathlib.Logic.Function.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Function.OfArity
 public import Mathlib.Logic.Function.ULift
