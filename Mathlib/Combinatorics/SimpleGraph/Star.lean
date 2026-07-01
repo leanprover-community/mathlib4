@@ -90,7 +90,7 @@ lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
   simp
 
 theorem cliqueFree_starGraph_three (r : V) : starGraph r |>.CliqueFree 3 :=
-  isAcyclic_starGraph r |>.cliqueFree le_rfl
+  isAcyclic_starGraph r |>.cliqueFree_three
 
 theorem eq_starGraph_of_isUniversal_of_cliqueFree_three {v : V} (hv : G.IsUniversal v)
     (h3 : G.CliqueFree 3) : G = starGraph v := by
