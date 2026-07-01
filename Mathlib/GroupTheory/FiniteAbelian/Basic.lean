@@ -162,7 +162,7 @@ theorem finite_of_fg_isAddTorsion [hG' : AddGroup.FG G] (hG : IsAddTorsion G) : 
   @Module.finite_of_fg_torsion _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG') <|
     isAddTorsion_iff_isTorsion_int.mp hG
 
-@[deprecated (since := "2026-07-01")] alias finite_of_fg_isMulTorsion := finite_of_fg_isAddTorsion
+@[deprecated (since := "2026-07-01")] alias finite_of_fg_torsion := finite_of_fg_isAddTorsion
 
 end AddCommGroup
 
