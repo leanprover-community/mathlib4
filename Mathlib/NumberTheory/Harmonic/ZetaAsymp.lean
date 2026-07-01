@@ -558,7 +558,7 @@ lemma deriv_riemannZeta_eq_neg_inv_sub_sq_add_bounded :
     (fun s ↦ deriv riemannZeta s + ((s - 1)⁻¹) ^ 2) =O[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
   (differentiable_riemannZeta₀.deriv.continuous.continuousAt.isBigO.mono nhdsWithin_le_nhds).congr'
   (eventually_nhdsWithin_of_forall (by simp +contextual [deriv_riemannZeta_eq_neg_inv_sub_sq_add]))
-  (.refl ..)
+  .rfl
 
 lemma log_riemannZeta_eq_neg_log_sub_add {s : ℝ} (hs : s > 1) :
     (riemannZeta s).re.log = - (s - 1).log + (riemannZeta₁ s).re.log := by
