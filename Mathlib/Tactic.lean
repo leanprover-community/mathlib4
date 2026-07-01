@@ -209,6 +209,7 @@ public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UpstreamableDecl
 public import Mathlib.Tactic.Linter.ValidatePRTitle
+public import Mathlib.Tactic.Linter.WellTypedAtReducibility
 public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.Measurability
 public import Mathlib.Tactic.Measurability.Init
