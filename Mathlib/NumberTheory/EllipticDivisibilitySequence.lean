@@ -23,16 +23,16 @@ canonical example of a normalised elliptic divisibility sequence.
 ## Mathematical background
 
 Let `R` be a commutative ring, and let `W` be a sequence of elements in `R` indexed by `ℤ`. The
-*elliptic relator* `ER(p, q, r, s) ∈ R` associated to `W` is given for all `p, q, r, s ∈ ℤ` by
-`ER(p, q, r, s) := W(p+q+s)W(p-q)W(r+s)W(r) - W(p+r+s)W(p-r)W(q+s)W(q) + W(q+r+s)W(q-r)W(p+s)W(p)`.
-Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, s) = 0` for all
-`p, q, r, s ∈ ℤ`. By a cyclic permutation of variables, the vanishing of `ER` is essentially
-equivalent to the vanishing of symmetric relation `ERₐ`, where `ERₐ(p, q, r, s) ∈ R` is given for
-all `p, q, r, s ∈ ℤ` by `ERₐ(p, q, r, s) := Wₐ(p, q)Wₐ(r, s) - Wₐ(p, r)Wₐ(q, s) + Wₐ(p, s)Wₐ(q, r)`
+*elliptic relator* `ER(a, b, c, d) ∈ R` associated to `W` is given for all `a, b, c, d ∈ ℤ` by
+`ER(a, b, c, d) := W(a+b+d)W(a-b)W(c+d)W(c) - W(a+c+d)W(a-c)W(b+d)W(b) + W(b+c+d)W(b-c)W(a+d)W(a)`.
+Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(a, b, c, d) = 0` for all
+`a, b, c, d ∈ ℤ`. By a permutation of variables, the vanishing of `ER` is essentially equivalent to
+the vanishing of symmetric relation `ERₐ`, where `ERₐ(p, q, r, s) ∈ R` is given for all
+`p, q, r, s ∈ ℤ` by `ERₐ(p, q, r, s) := Wₐ(p, q)Wₐ(r, s) - Wₐ(p, r)Wₐ(q, s) + Wₐ(p, s)Wₐ(q, r)`
 defined in terms of *elliptic atoms* `Wₐ(p, q) := W((p + q) / 2)W((p - q) / 2)`.
 
-As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0) = 0` for all
-`p, q, r ∈ ℤ`. It is a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for all `k, n ∈ ℤ`,
+As a special case, `W` is an *elliptic sequence* if it satisfies `ER(a, b, c, 0) = 0` for all
+`a, b, c ∈ ℤ`. It is a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for all `k, n ∈ ℤ`,
 and an *elliptic divisibility sequence* (EDS) if it is a divisibility sequence that is elliptic. If
 `W` is an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be
 normalised such that `W(1) = 1`, in which case it can be characterised completely by
@@ -54,7 +54,7 @@ Some examples of EDSs include
 
 * `IsEllipticNet.atom`: the elliptic atom `Wₐ(p, q)` indexed by `ℤ`.
 * `IsEllipticNet.atomRel`: the elliptic relator `ERₐ(p, q, r, s)` indexed by `ℤ`.
-* `IsEllipticNet.rel`: the elliptic relator `ER(p, q, r, s)` indexed by `ℤ`.
+* `IsEllipticNet.rel`: the elliptic relator `ER(a, b, c, d)` indexed by `ℤ`.
 * `IsEllipticNet`: a sequence indexed by `ℤ` is an elliptic net.
 * `IsEllSequence`: a sequence indexed by `ℤ` is an elliptic sequence.
 * `IsEllDvdSequence`: a sequence indexed by `ℤ` is an EDS.
@@ -155,8 +155,8 @@ lemma atom_odd (p q : ℤ) : atom W (2 * p + 1) (2 * q + 1) = W (p + q + 1) * W 
 lemma map_atom (p q : ℤ) : f (atom W p q) = atom (f ∘ W) p q := by
   simp_rw [atom, map_mul, Function.comp]
 
-/-- The elliptic relator `ERₐ(p, q, r, s)` obtained by a cyclic permutation of variables in
-`ER(p, q, r, s)`. Note that this is defined in terms of elliptic atoms, and hence should only be
+/-- The elliptic relator `ERₐ(p, q, r, s)` obtained by a permutation of variables in
+`ER(a, b, c, d)`. Note that this is defined in terms of elliptic atoms, and hence should only be
 used when `p`, `q`, `r`, and `s` all have the same parity. -/
 def atomRel (p q r s : ℤ) : R :=
   atom W p q * atom W r s - atom W p r * atom W q s + atom W p s * atom W q r
@@ -241,15 +241,15 @@ lemma atomRel_avg_sub {p q r s : ℤ} (parity : s % 2 = p % 2 ∧ s % 2 = q % 2 
 lemma map_atomRel (p q r s : ℤ) : f (atomRel W p q r s) = atomRel (f ∘ W) p q r s := by
   simp_rw [atomRel, map_add, map_sub, map_mul, map_atom]
 
-/-- The elliptic relator `ER(p, q, r, s)` that defines an elliptic net. -/
-def rel (p q r s : ℤ) : R :=
-  W (p + q + s) * W (p - q) * W (r + s) * W r - W (p + r + s) * W (p - r) * W (q + s) * W q +
-    W (q + r + s) * W (q - r) * W (p + s) * W p
+/-- The elliptic relator `ER(a, b, c, d)` that defines an elliptic net. -/
+def rel (a b c d : ℤ) : R :=
+  W (a + b + d) * W (a - b) * W (c + d) * W c - W (a + c + d) * W (a - c) * W (b + d) * W b +
+    W (b + c + d) * W (b - c) * W (a + d) * W a
 
-lemma rel_eq (p q r s : ℤ) : rel W p q r s = atomRel W (2 * p + s) (2 * q + s) (2 * r + s) s := by
-  simp_rw [rel, atomRel, atom, add_add_add_comm _ s, add_assoc _ s, ← two_mul, ← mul_add,
+lemma rel_eq (a b c d : ℤ) : rel W a b c d = atomRel W (2 * a + d) (2 * b + d) (2 * c + d) d := by
+  simp_rw [rel, atomRel, atom, add_add_add_comm _ d, add_assoc _ d, ← two_mul, ← mul_add,
     add_sub_add_comm, add_sub_assoc, sub_self, add_zero, ← mul_sub,
-    Int.mul_tdiv_cancel_left _ two_ne_zero, mul_comm <| _ * W p, mul_assoc]
+    Int.mul_tdiv_cancel_left _ two_ne_zero, mul_comm <| _ * W a, mul_assoc]
 
 lemma atomRel_two_mul (p q r s : ℤ) :
     atomRel W (2 * p) (2 * q) (2 * r) (2 * s) = rel W (p - s) (q - s) (r - s) (2 * s) := by
@@ -262,7 +262,7 @@ lemma atomRel_eq {p q r s : ℤ} (parity : s % 2 = p % 2 ∧ s % 2 = q % 2 ∧ s
 
 variable {W} in
 @[simp]
-lemma rel_neg (odd : W.Odd) (p q r s : ℤ) : rel W (-p) (-q) (-r) (-s) = rel W p q r s := by
+lemma rel_neg (odd : W.Odd) (a b c d : ℤ) : rel W (-a) (-b) (-c) (-d) = rel W a b c d := by
   simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg₁ odd, atomRel_neg₂ odd, atomRel_neg₃ odd,
     atomRel_neg₄]
 
@@ -277,42 +277,43 @@ lemma rel_odd (m : ℤ) : rel W (m + 1) m 1 0 =
   ring_nf
 
 @[simp]
-lemma map_rel (p q r s : ℤ) : f (rel W p q r s) = rel (f ∘ W) p q r s := by
+lemma map_rel (a b c d : ℤ) : f (rel W a b c d) = rel (f ∘ W) a b c d := by
   simp_rw [rel, map_add, map_sub, map_mul, Function.comp]
 
 end IsEllipticNet
 
 /-- The proposition that a sequence indexed by `ℤ` is an elliptic net. -/
 def IsEllipticNet : Prop :=
-  ∀ p q r s : ℤ, IsEllipticNet.rel W p q r s = 0
+  ∀ a b c d : ℤ, IsEllipticNet.rel W a b c d = 0
 
 /-- The proposition that a sequence indexed by `ℤ` is an elliptic sequence. -/
 def IsEllSequence : Prop :=
-  ∀ p q r : ℤ, IsEllipticNet.rel W p q r 0 = 0
-
-@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
+  ∀ a b c : ℤ, IsEllipticNet.rel W a b c 0 = 0
 
 /-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
 def IsEllDvdSequence : Prop :=
   IsEllSequence W ∧ IsDvdSequence W
+
+@[deprecated (since := "2026-06-30")] alias IsEllDivSequence := IsEllDvdSequence
 
 variable {W} in
 lemma IsEllipticNet.isEllSequence (h : IsEllipticNet W) : IsEllSequence W :=
   (h · · · 0)
 
 variable {W} in
-lemma IsEllipticNet.smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W := fun m n r s => by
-  linear_combination (norm := (simp_rw [rel, Pi.smul_apply, smul_eq_mul]; ring1))
-    x ^ 4 * h m n r s
+lemma IsEllipticNet.smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W := fun a b c d ↦ by
+  linear_combination (norm := (simp_rw [rel, Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h a b c d
 
 variable {W} in
-lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence <| x • W := fun m n r => by
+lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence <| x • W := fun a b c ↦ by
   linear_combination (norm := (simp_rw [IsEllipticNet.rel, Pi.smul_apply, smul_eq_mul]; ring1))
-    x ^ 4 * h m n r
+    x ^ 4 * h a b c
 
 variable {W} in
 lemma IsEllDvdSequence.smul (h : IsEllDvdSequence W) (x : R) : IsEllDvdSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
+
+@[deprecated (since := "2026-06-30")] alias IsEllDivSequence.smul := IsEllDvdSequence.smul
 
 lemma isEllipticNet_id : IsEllipticNet id :=
   fun _ _ _ _ ↦ by simp_rw [IsEllipticNet.rel, id_eq]; ring1
@@ -325,6 +326,8 @@ lemma isEllSequence_id : IsEllSequence id :=
 /-- The identity sequence is an EDS. -/
 theorem isEllDvdSequence_id : IsEllDvdSequence id :=
   ⟨isEllSequence_id, .id ℤ⟩
+
+@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := isEllDvdSequence_id
 
 variable (b c d : R)
 
@@ -587,8 +590,8 @@ noncomputable def normEDSRec {P : ℕ → Sort*}
     (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
     P n :=
-  normEDSRec' zero one two three four (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
-    (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n
+  normEDSRec' zero one two three four (fun _ ih ↦ by apply even <;> exact ih _ <| by linarith only)
+    (fun _ ih ↦ by apply odd <;> exact ih _ <| by linarith only) n
 
 end NormEDS
 
@@ -708,8 +711,8 @@ then we have `P n` for all `n : ℕ`. -/
 noncomputable def complEDSRec {P : ℕ → Sort*} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, P (m + 1) → P (2 * (m + 1)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (2 * (m + 1) + 1)) (n : ℕ) : P n :=
-  complEDSRec' zero one (fun _ ih => even _ <| ih _ <| by linarith only)
-    (fun _ ih => odd _ (ih _ <| by linarith only) <| ih _ <| by linarith only) n
+  complEDSRec' zero one (fun _ ih ↦ even _ <| ih _ <| by linarith only)
+    (fun _ ih ↦ odd _ (ih _ <| by linarith only) <| ih _ <| by linarith only) n
 
 end ComplEDS
 

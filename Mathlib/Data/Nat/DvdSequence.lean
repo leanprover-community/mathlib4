@@ -40,6 +40,8 @@ lemma smul_dvd_smul [Monoid α] [Monoid β] [SMul α β] [IsScalarTower α β β
 def IsDvdSequence [Dvd α] [Dvd β] (f : α → β) : Prop :=
   ∀ a b, a ∣ b → f a ∣ f b
 
+@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
+
 namespace IsDvdSequence
 
 variable (α) in
@@ -66,11 +68,20 @@ protected theorem smul [Dvd α] [Monoid β] [Monoid γ] {f : α → γ} [SMul β
 
 end IsDvdSequence
 
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.id := IsDvdSequence.id
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.const := IsDvdSequence.const
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.smul' := IsDvdSequence.smul'
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.mul := IsDvdSequence.mul
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.smul := IsDvdSequence.smul
+@[deprecated (since := "2026-06-30")] alias isDivSequence_id := IsDvdSequence.id
+
 namespace Nat
 
 /-- A function `f : ℕ → ℕ` is a strong divisibility sequence if `gcd (f a) (f b) = f (gcd a b)`. -/
 def IsStrongDvdSequence (f : ℕ → ℕ) : Prop :=
   ∀ a b, (f a).gcd (f b) = f (a.gcd b)
+
+@[deprecated (since := "2026-06-30")] alias IsStrongDivSequence := IsStrongDvdSequence
 
 namespace IsStrongDvdSequence
 
@@ -85,5 +96,10 @@ protected theorem const (n : ℕ) : IsStrongDvdSequence (fun _ ↦ n) := by
   simp [IsStrongDvdSequence]
 
 end IsStrongDvdSequence
+
+@[deprecated (since := "2026-06-30")]
+alias IsStrongDivSequence.isDivSequence := IsStrongDvdSequence.isDvdSequence
+@[deprecated (since := "2026-06-30")] alias IsStrongDivSequence.id := IsStrongDvdSequence.id
+@[deprecated (since := "2026-06-30")] alias IsStrongDivSequence.const := IsStrongDvdSequence.const
 
 end Nat
