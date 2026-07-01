@@ -41,7 +41,7 @@ lemma division_ring_exists_unique_isSimpleModule (N : Type*) [AddCommGroup N] [M
   obtain ⟨I, hI, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp ‹_›
   exact ⟨e ≪≫ₗ I.quotEquivOfEqBot ((eq_bot_or_eq_top I).resolve_right hI.ne_top)⟩
 
-lemma isSimpleModule_iff_injective_or_eq_zero (R : Type u) (M : Type v) [Ring R] [AddCommGroup M]
+lemma isSimpleModule_iff_eq_zero_or_injective (R : Type u) (M : Type v) [Ring R] [AddCommGroup M]
     [Module R M] : IsSimpleModule R M ↔ (Nontrivial M ∧ ∀ (N : Type v) [AddCommGroup N]
     [Module R N] (f : M →ₗ[R] N), f = 0 ∨ Function.Injective f) :=
   ⟨fun hM ↦ ⟨Submodule.nontrivial_iff _|>.1 hM.1.1, fun N _ _ f ↦ hM.1.2 (LinearMap.ker f)|>.elim
