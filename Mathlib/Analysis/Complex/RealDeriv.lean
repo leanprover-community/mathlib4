@@ -134,7 +134,8 @@ lemma DifferentiableAt.real_of_complex (hf : DifferentiableAt ℂ f z) : Differe
 
 @[fun_prop]
 lemma DifferentiableWithinAt.real_of_complex (hf : DifferentiableWithinAt ℂ f s z) :
-    DifferentiableWithinAt ℝ f s z := hf.restrictScalars (𝕜 := ℝ)
+    DifferentiableWithinAt ℝ f s z :=
+  hf.restrictScalars (𝕜 := ℝ)
 
 @[fun_prop]
 lemma DifferentiableOn.real_of_complex (hf : DifferentiableOn ℂ f s) : DifferentiableOn ℝ f s :=
