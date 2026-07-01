@@ -58,7 +58,7 @@ open scoped Classical in
   maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
 noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
-  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.ramificationIdx' A
+  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.ramificationIdx A
   else 0
 
 open scoped Classical in
@@ -138,9 +138,9 @@ instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesO
 include p G in
 /-- All the `Ideal.ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
-    P.ramificationIdx' A = Q.ramificationIdx' A := by
+    P.ramificationIdx A = Q.ramificationIdx A := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
-  rw [ramificationIdx'_smul]
+  rw [ramificationIdx_smul]
 
 include p G in
 /-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
@@ -152,7 +152,7 @@ theorem inertiaDeg_eq_of_isGaloisGroup :
 include p G in
 /-- The `ramificationIdxIn` is equal to any ramification index over the same ideal. -/
 theorem ramificationIdxIn_eq_ramificationIdx :
-    ramificationIdxIn p B = P.ramificationIdx' A := by
+    ramificationIdxIn p B = P.ramificationIdx A := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
   rw [ramificationIdxIn, dif_pos h]
@@ -163,7 +163,7 @@ theorem ramificationIdxIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Id
     p.ramificationIdxIn B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [ramificationIdxIn_eq_ramificationIdx p P G]
-  exact (P.1.ramificationIdx'_pos A).ne'
+  exact (P.1.ramificationIdx_pos A).ne'
 
 include G in
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
@@ -203,7 +203,7 @@ theorem ramificationIdxIn_mul_ramificationIdxIn [Flat B C] :
   obtain ⟨⟨Q, _, hQ⟩⟩ := (inferInstance : Nonempty (primesOver P C))
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
-    ramificationIdxIn_eq_ramificationIdx P Q GBC, ← ramificationIdx'_tower P Q]
+    ramificationIdxIn_eq_ramificationIdx P Q GBC, ← ramificationIdx_tower P Q]
 
 @[deprecated (since := "2026-06-18")] alias ramificationIdxIn_mul_ramificationIdxIn' :=
   ramificationIdxIn_mul_ramificationIdxIn
