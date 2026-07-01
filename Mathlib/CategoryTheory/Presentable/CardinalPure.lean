@@ -158,7 +158,7 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
     (isCardinalPure C κ).IsStableUnderColimitsOfShape J := by
   rw [isStableUnderColimitsOfShape_iff_colimitsOfShape_le,
     colimitsOfShape_eq_of_equivalence _ (equivSmallModel.{w} J),
-    ← MorphismProperty.isStableUnderColimitsOfShape_iff_colimitsOfShape_le]
+    ← isStableUnderColimitsOfShape_iff_colimitsOfShape_le]
   have : IsCardinalFiltered (SmallModel.{w} J) κ :=
     IsCardinalFiltered.of_equivalence _ (equivSmallModel.{w} J)
   infer_instance
