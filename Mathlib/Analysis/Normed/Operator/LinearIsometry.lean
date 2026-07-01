@@ -649,9 +649,6 @@ theorem apply_symm_apply (x : E₂) : e (e.symm x) = x :=
 theorem symm_apply_apply (x : E) : e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply x
 
-theorem apply_eq_iff_symm_apply {x y} : e x = y ↔ x = e.symm y :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
-
 theorem symm_apply_eq {x y} : e.symm x = y ↔ x = e y :=
   e.toEquiv.symm_apply_eq
 
