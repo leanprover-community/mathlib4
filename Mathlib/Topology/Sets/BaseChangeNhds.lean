@@ -88,7 +88,7 @@ instance {K : Compacts α} [T2Space α] : K.oRcNhdsToCompactNhds_mono.functor.In
   obtain ⟨U, h1, h2⟩ := exists_open_nhds_sub_compact_nhds L
   have h3 : closure (U : Set α) ⊆ L := (IsClosed.closure_subset_iff
     (IsCompact.isClosed L.1.isCompact') ).2 h2
-  exact ⟨⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
+  exact ⟨⟨U, ⟨IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
 
 end Compacts
 
