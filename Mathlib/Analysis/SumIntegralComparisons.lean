@@ -278,7 +278,7 @@ theorem AntitoneOn.integrableOn_Ioi_of_summable_comp_add {N : ℕ} (anti : Antit
       _ ≤ _ := by grind [summable.sum_le_tsum, Nat.cast_pos]
 
 /-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/
-theorem AntitoneOn.integrable_of_summable (anti : AntitoneOn f (Ici 0))
+theorem AntitoneOn.integrableOn_Ioi_zero_of_summable (anti : AntitoneOn f (Ici 0))
     (summable : Summable (fun (n : ℕ) ↦ f n)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     IntegrableOn f (Ioi 0) :=
   mod_cast AntitoneOn.integrable_of_summable_comp_add (N := 0) (mod_cast anti) summable
