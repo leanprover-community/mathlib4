@@ -197,12 +197,6 @@ theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [One 
     (ContinuousAt f x) ↔ (f · - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : F)) := by
   simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
 
-<<<<<<< zeta-asymptotics
-theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
-    [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
-    f =O[𝓝 x] (fun _ ↦ (1 : E)) :=
-  (continuousAt_iff_isLittleO.mp hcont).isBigO.congr_of_sub.mpr (isBigO_const_one ..)
-=======
 theorem _root_.ContinuousAt.isLittleO {α : Type*} {E : Type*} [NormedRing E] [One F]
     [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
     (f · - f x) =o[𝓝 x] (fun _ ↦ (1 : F)) :=
@@ -212,7 +206,6 @@ theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedRing E] [One 
     [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
     f =O[𝓝 x] (fun _ ↦ (1 : F)) :=
   hcont.isLittleO.isBigO.congr_of_sub.mpr (isBigO_const_one ..)
->>>>>>> master
 
 /-! ### Multiplication -/
 
