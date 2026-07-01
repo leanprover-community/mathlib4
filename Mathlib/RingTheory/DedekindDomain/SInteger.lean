@@ -5,10 +5,8 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
-public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 # `S`-integers and `S`-units of fraction fields of Dedekind domains
