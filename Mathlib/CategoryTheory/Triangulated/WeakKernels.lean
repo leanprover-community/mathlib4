@@ -41,7 +41,7 @@ def kernelForkOfDistTriangle (T : Triangle C) (dT : T ∈ distTriang C) :
 def isWeakLimitKernelForkOfDistTriangle (T : Triangle C) (dT : T ∈ distTriang C) :
     IsWeakLimit (kernelForkOfDistTriangle _ dT) :=
   Fork.IsWeakLimit.mk' _
-  (fun s ↦ ⟨_, (T.coyoneda_exact₂ dT _ (KernelFork.condition s)).choose_spec.symm⟩)
+    (fun s ↦ ⟨_, (T.coyoneda_exact₂ dT _ (KernelFork.condition s)).choose_spec.symm⟩)
 
 /-- A pretriangulated category has weak kernels. -/
 instance : HasWeakKernels C where
