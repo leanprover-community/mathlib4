@@ -460,8 +460,7 @@ lemma isQuasiInverse_subtype_projectionOnto {S T : Submodule K V} [IsNoetherian 
     (hST : IsCompl S T) :
     IsQuasiInverse S.subtype (S.projectionOnto T hST) := by
   constructor
-  · grw [IsLeftQuasiInverse, ← FiniteRangeSetoid.projection_equiv_id hST]
-    rfl
+  · grw [IsLeftQuasiInverse, ← FiniteRangeSetoid.projection_equiv_id hST, projection]
   · simp [IsRightQuasiInverse, projectionOnto_comp_subtype]
 
 end QuasiInverse
