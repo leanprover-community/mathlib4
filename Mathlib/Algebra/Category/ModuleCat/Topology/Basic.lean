@@ -104,7 +104,7 @@ abbrev ofHom {X Y : Type v}
 @[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) : ofHom f.hom = f := rfl
 
 @[simp] lemma hom_comp {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
+    (f ≫ g).hom = g.hom ∘L f.hom := rfl
 
 @[simp] lemma hom_id (X : TopModuleCat R) : hom (𝟙 X) = .id _ _ := rfl
 
@@ -136,7 +136,7 @@ instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
 
 instance : Preadditive (TopModuleCat R) where
   add_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
-  comp_add _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
+  comp_add _ _ _ _ _ _ := ConcreteCategory.ext rfl
 
 section
 
@@ -160,12 +160,12 @@ instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
   __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
 
-instance : Linear S (TopModuleCat S) where
-  smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
-  comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
-
 @[simp]
 lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) : (s • φ).hom = s • φ.hom := rfl
+
+instance : Linear S (TopModuleCat S) where
+  smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
+  comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (by simp)
 
 end CommRing
 
