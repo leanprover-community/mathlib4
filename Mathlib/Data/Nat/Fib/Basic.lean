@@ -247,12 +247,8 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
 theorem isStrongDvdSequence_fib : IsStrongDvdSequence fib :=
   fun m n ↦ (fib_gcd m n).symm
 
-@[deprecated (since := "2026-06-30")] alias isStrongDivSequence_fib := isStrongDvdSequence_fib
-
 theorem isDvdSequence_fib : IsDvdSequence fib :=
   isStrongDvdSequence_fib.isDvdSequence
-
-@[deprecated (since := "2026-06-30")] alias isDivSequence_fib := isDvdSequence_fib
 
 alias fib_dvd := isDvdSequence_fib
 
