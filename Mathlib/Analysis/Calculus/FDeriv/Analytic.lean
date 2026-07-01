@@ -88,7 +88,7 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
   refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right ?_)
   refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
   apply Tendsto.mono_left _ nhdsWithin_le_nhds
-  refine (continuous_id.sub continuous_const).norm.tendsto' _ _ ?_
+  refine (continuous_id.fun_sub continuous_const).norm.tendsto' _ _ ?_
   rw [_root_.id, sub_self, norm_zero]
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -330,11 +330,11 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   rw [this] at Z
   convert! Z with n
   ext v
-  simp only [FormalMultilinearSeries.derivSeries, ContinuousLinearMap.coe_sum', Finset.sum_apply,
+  simp only [FormalMultilinearSeries.derivSeries, sum_apply,
     ContinuousLinearMap.compFormalMultilinearSeries_apply,
     FormalMultilinearSeries.changeOriginSeries,
     ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum]
+    LinearIsometryEquiv.coe_coe, Function.comp_apply, sum_apply, map_sum]
   rfl
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. Version
@@ -591,12 +591,13 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   cases isEmpty_or_nonempty ι
   · have (l : _) : 1 + l ≠ Fintype.card ι := by
       rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
-    simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
+    simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), _root_.zero_apply _,
+      tsum_zero]; rfl
   rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]; swap
   · intro m hm
     rw [Ne, eq_tsub_iff_add_eq_of_le (by exact Fintype.card_pos), add_comm] at hm
-    rw [f.changeOriginSeries_support hm, zero_apply]
-  rw [sum_apply, ContinuousMultilinearMap.sum_apply, Fin.snoc_zero]
+    rw [f.changeOriginSeries_support hm, _root_.zero_apply]
+  rw [_root_.sum_apply, _root_.sum_apply, Fin.snoc_zero]
   simp_rw [changeOriginSeriesTerm_apply]
   refine (Fintype.sum_bijective (?_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
     Fintype.card_pos).symm) (.comp ?_ <| Equiv.bijective _) _ _ fun i ↦ ?_).symm
@@ -741,8 +742,8 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     ext v m
     simp only [ContinuousMultilinearMap.iteratedFDeriv, curryLeft_apply, sum_apply,
       iteratedFDerivComponent_apply, Finset.univ_sigma_univ,
-      Pi.compRightL_apply, ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-      Finset.sum_apply, Function.comp_apply, linearDeriv_apply, Finset.sum_sigma']
+      Pi.compRightL_apply, _root_.sum_apply, ContinuousLinearMap.comp_apply, linearDeriv_apply,
+      Finset.sum_sigma']
     rw [← (Equiv.embeddingFinSucc n ι).sum_comp]
     congr with e
     congr with k
@@ -795,8 +796,8 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
     derivSeries p n (fun _ ↦ x) x = (n + 1) • p (n + 1) fun _ ↦ x := by
   simp only [derivSeries, compFormalMultilinearSeries_apply, changeOriginSeries,
     compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe,
-    Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum, coe_sum', Finset.sum_apply,
-    continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
+    Function.comp_apply, map_sum, _root_.sum_apply, continuousMultilinearCurryFin1_apply,
+    Matrix.zero_empty]
   convert! Finset.sum_const _
   · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]
   · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,
@@ -830,7 +831,7 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
   induction n with | zero => _ | succ n ih => _ <;> intro F _ _ _ p f h
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
   · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
-      ← ContinuousLinearMap.smul_apply, ih h.fderiv, iteratedFDeriv_succ_apply_right]
+      ← _root_.smul_apply, ih h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
 variable [CompleteSpace F]
@@ -845,7 +846,7 @@ theorem factorial_smul (n : ℕ) :
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
   · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
-      ← ContinuousLinearMap.smul_apply, factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
+      ← _root_.smul_apply, factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
 theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ Metric.eball 0 r) :

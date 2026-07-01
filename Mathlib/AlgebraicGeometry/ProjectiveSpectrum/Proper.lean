@@ -53,17 +53,17 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
   let x0 : NumDenSameDeg 𝒜 (.powers f) :=
   { deg := j * (d * (e + 1))
     num := ⟨a * g ^ (j * (d - 1)), by
-      convert! SetLike.mul_mem_graded ha (SetLike.pow_mem_graded _ hg) using 2
+      convert SetLike.mul_mem_graded ha (SetLike.pow_mem_graded _ hg)
       rw [this]
       cases d
       · contradiction
       · simp; ring⟩
-    den := ⟨f ^ (j * (e + 1)), by convert! SetLike.pow_mem_graded _ hf using 2; ring⟩
+    den := ⟨f ^ (j * (e + 1)), by convert SetLike.pow_mem_graded _ hf; ring⟩
     den_mem := ⟨_,rfl⟩ }
   let y0 : NumDenSameDeg 𝒜 (.powers g) :=
   { deg := j * (d * e)
-    num := ⟨f ^ (j * e), by convert! SetLike.pow_mem_graded _ hf using 2; ring⟩
-    den := ⟨g ^ (j * d), by convert! SetLike.pow_mem_graded _ hg using 2; ring⟩
+    num := ⟨f ^ (j * e), by convert SetLike.pow_mem_graded _ hf; ring⟩
+    den := ⟨g ^ (j * d), by convert SetLike.pow_mem_graded _ hg; ring⟩
     den_mem := ⟨_,rfl⟩ }
   use mk x0 ⊗ₜ mk y0
   ext
