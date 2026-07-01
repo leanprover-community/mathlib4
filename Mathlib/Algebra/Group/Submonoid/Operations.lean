@@ -719,6 +719,9 @@ theorem domRestrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [Submonoid
 
 @[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
 
+@[deprecated (since := "2026-02-10")]
+alias _root_.AddMonoidHom.restrict_apply := _root_.AddMonoidHom.domRestrict_apply
+
 @[to_additive (attr := simp)]
 theorem domRestrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [SetLike S M]
     [SubmonoidClass S M] {s : S} :
@@ -727,11 +730,17 @@ theorem domRestrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [Set
 
 @[deprecated (since := "2026-02-10")] alias restrict_eq_one_iff := domRestrict_eq_one_iff
 
+@[deprecated (since := "2026-02-10")]
+alias _root_.AddMonoidHom.restrict_eq_zero_iff := _root_.AddMonoidHom.domRestrict_eq_zero_iff
+
 @[to_additive (attr := simp)]
 theorem domRestrict_mrange (f : M →* N) : mrange (f.domRestrict S) = S.map f := by
   simp [SetLike.ext_iff]
 
 @[deprecated (since := "2026-02-10")] alias restrict_mrange := domRestrict_mrange
+
+@[deprecated (since := "2026-02-10")]
+alias _root_.AddMonoidHom.restrict_mrange := _root_.AddMonoidHom.domRestrict_mrange
 
 /-- A version of `MonoidHom.domRestrict` as an homomorphism. -/
 @[to_additive (attr := simps apply)
@@ -743,6 +752,14 @@ def domRestrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : 
   map_mul' _ _ := by ext; simp
 
 @[deprecated (since := "2026-02-10")] alias restrictHom := domRestrictHom
+
+@[deprecated (since := "2026-02-10")]
+alias _root_.AddMonoidHom.restrictHom := _root_.AddMonoidHom.domRestrictHom
+
+@[deprecated (since := "2026-02-10")] alias restrictHom_apply := domRestrictHom_apply
+
+@[deprecated (since := "2026-02-10")]
+alias _root_.AddMonoidHom.restrictHom_apply := _root_.AddMonoidHom.domRestrictHom_apply
 
 /-- Restriction of a `MonoidHom` to a `Submonoid` of the codomain. -/
 @[to_additive (attr := simps apply)
@@ -805,6 +822,11 @@ theorem comap_bot' (f : F) : (⊥ : Submonoid N).comap f = mker f :=
 theorem domRestrict_mker (f : M →* N) :
     mker (f.domRestrict S) = (MonoidHom.mker f).comap S.subtype :=
   rfl
+
+@[deprecated (since := "2026-02-10")] alias restrict_mker := domRestrict_mker
+
+@[deprecated (since := "2026-02-10")]
+alias _root_.AddMonoidHom.restrict_mker := _root_.AddMonoidHom.domRestrict_mker
 
 @[to_additive]
 theorem mrangeRestrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f := by
