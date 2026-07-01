@@ -55,7 +55,7 @@ variable [SemilatticeInf X] {n m : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (n : Nucleus X) : X → X := n
@@ -168,8 +168,9 @@ instance : InfSet (Nucleus X) where
   rw [iInf, sInf_apply, iInf_range]
 
 instance : CompleteSemilatticeInf (Nucleus X) where
-  sInf_le := by simp +contextual [← coe_le_coe, Pi.le_def, iInf_le_iff]
-  le_sInf := by simp +contextual [← coe_le_coe, Pi.le_def]
+  isGLB_sInf _ :=
+    ⟨by simp +contextual [mem_lowerBounds, ← coe_le_coe, Pi.le_def, iInf_le_iff],
+      by simp +contextual [mem_lowerBounds, mem_upperBounds, ← coe_le_coe, Pi.le_def]⟩
 
 instance : CompleteLattice (Nucleus X) where
   __ : SemilatticeInf (Nucleus X) := inferInstance

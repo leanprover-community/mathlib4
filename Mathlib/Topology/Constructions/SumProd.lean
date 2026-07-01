@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Homeomorph.Defs
-public import Mathlib.Topology.Maps.Basic
+public import Mathlib.Topology.Maps.OpenQuotient
 public import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!
@@ -151,7 +151,7 @@ theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fu
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
 lemma IsClosed.setOf_mapsTo {α : Type*} {f : X → α → Z} {s : Set α} {t : Set Z} (ht : IsClosed t)
     (hf : ∀ a ∈ s, Continuous (f · a)) : IsClosed {x | MapsTo (f x) s t} := by
-  simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
+  simpa only [MapsTo, setOf_forall] using! isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
 
 theorem Continuous.comp₂ {g : X × Y → Z} (hg : Continuous g) {e : W → X} (he : Continuous e)
     {f : W → Y} (hf : Continuous f) : Continuous fun w => g (e w, f w) :=
@@ -216,6 +216,7 @@ theorem Filter.Eventually.prodMk_nhds {px : X → Prop} {x} (hx : ∀ᶠ x in �
     {y} (hy : ∀ᶠ y in 𝓝 y, py y) : ∀ᶠ p in 𝓝 (x, y), px (p : X × Y).1 ∧ py p.2 :=
   (hx.prod_inl_nhds y).and (hy.prod_inr_nhds x)
 
+@[fun_prop]
 theorem continuous_swap : Continuous (Prod.swap : X × Y → Y × X) :=
   continuous_snd.prodMk continuous_fst
 
@@ -357,6 +358,16 @@ theorem ContinuousAt.prodMap' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : 
     (hg : ContinuousAt g y) : ContinuousAt (Prod.map f g) (x, y) :=
   hf.prodMap hg
 
+@[simp]
+theorem continuousAt_prodMap_iff {f : X → Z} {g : Y → W} {x : X} {y : Y} :
+    ContinuousAt (Prod.map f g) (x, y) ↔ ContinuousAt f x ∧ ContinuousAt g y := by
+  simp [ContinuousAt, nhds_prod_eq, tendsto_iff_comap, comap_prodMap_prod]
+
+@[simp]
+theorem continuous_prodMap_iff [Nonempty Z] [Nonempty W] {f : Z → X} {g : W → Y} :
+    Continuous (Prod.map f g) ↔ Continuous f ∧ Continuous g := by
+  simp [continuous_iff_continuousAt, forall_and]
+
 theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
     (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
     ContinuousAt (fun x ↦ f (g x, h x)) x :=
@@ -416,10 +427,10 @@ theorem prod_eq_generateFrom :
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
   le_antisymm (le_generateFrom fun _ ⟨_, _, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
-      (forall_mem_image.2 fun t ht =>
-        GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
-      (forall_mem_image.2 fun t ht =>
-        GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
+      (coinduced_le_iff_le_induced.mp fun U hU ↦
+        .basic _ ⟨U, univ, hU, isOpen_univ, prod_univ.symm⟩)
+      (coinduced_le_iff_le_induced.mp fun U hU ↦
+        .basic _ ⟨univ, U, isOpen_univ, hU, univ_prod.symm⟩))
 
 -- TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
@@ -493,11 +504,17 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
       simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
       exact H.1.prod H.2
 
+theorem isOpenQuotientMap_fst [Nonempty Y] : IsOpenQuotientMap (Prod.fst : X × Y → X) :=
+  ⟨Prod.fst_surjective, continuous_fst, isOpenMap_fst⟩
+
+theorem isOpenQuotientMap_snd [Nonempty X] : IsOpenQuotientMap (Prod.snd : X × Y → Y) :=
+  ⟨Prod.snd_surjective, continuous_snd, isOpenMap_snd⟩
+
 theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
-  isOpenMap_fst.isQuotientMap continuous_fst Prod.fst_surjective
+  isOpenQuotientMap_fst.isQuotientMap
 
 theorem isQuotientMap_snd [Nonempty X] : IsQuotientMap (Prod.snd : X × Y → Y) :=
-  isOpenMap_snd.isQuotientMap continuous_snd Prod.snd_surjective
+  isOpenQuotientMap_snd.isQuotientMap
 
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
   ext fun ⟨a, b⟩ => by
@@ -508,7 +525,7 @@ theorem interior_prod_eq (s : Set X) (t : Set Y) : interior (s ×ˢ t) = interio
 
 theorem frontier_prod_eq (s : Set X) (t : Set Y) :
     frontier (s ×ˢ t) = closure s ×ˢ frontier t ∪ frontier s ×ˢ closure t := by
-  simp only [frontier, closure_prod_eq, interior_prod_eq, prod_diff_prod]
+  simp only [frontier, closure_prod_eq, interior_prod_eq, prod_sdiff_prod]
 
 @[simp]
 theorem frontier_prod_univ_eq (s : Set X) :
@@ -551,7 +568,7 @@ theorem Dense.prod {s : Set X} {t : Set Y} (hs : Dense s) (ht : Dense t) : Dense
 /-- If `f` and `g` are maps with dense range, then `Prod.map f g` has dense range. -/
 theorem DenseRange.prodMap {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → Z} (hf : DenseRange f)
     (hg : DenseRange g) : DenseRange (Prod.map f g) := by
-  simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
+  simpa only [DenseRange, prod_range_range_eq] using! hf.prod hg
 
 lemma Topology.IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f) (hg : IsInducing g) :
     IsInducing (Prod.map f g) :=
@@ -588,9 +605,24 @@ protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap 
   rw [nhds_prod_eq, nhds_prod_eq, ← Filter.prod_map_map_eq']
   exact Filter.prod_mono (hf.nhds_le a) (hg.nhds_le b)
 
+@[simp]
+theorem isOpenMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
+    IsOpenMap (Prod.map f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.prodMap hg⟩
+  · rw [(isOpenQuotientMap_fst (Y := Z)).isOpenMap_iff]
+    exact isOpenMap_fst.comp h
+  · rw [(isOpenQuotientMap_snd (X := X)).isOpenMap_iff]
+    exact isOpenMap_snd.comp h
+
 protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenEmbedding f)
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   .of_isEmbedding_isOpenMap (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
+
+protected lemma Topology.IsClosedEmbedding.prodMap {f : X → Y} {g : Z → W}
+    (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) :
+    IsClosedEmbedding (Prod.map f g) :=
+  { hf.isEmbedding.prodMap hg.isEmbedding with
+    isClosed_range := range_prodMap ▸ hf.isClosed_range.prod hg.isClosed_range }
 
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
@@ -605,6 +637,13 @@ theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotie
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
 
+@[simp]
+theorem isOpenQuotientMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
+    IsOpenQuotientMap (Prod.map f g) ↔ IsOpenQuotientMap f ∧ IsOpenQuotientMap g := by
+  have : Nonempty Y := .map f inferInstance
+  have : Nonempty W := .map g inferInstance
+  grind [isOpenQuotientMap_iff, continuous_prodMap_iff, isOpenMap_prodMap_iff, Prod.map_surjective]
+
 theorem TopologicalSpace.prod_mono {α β : Type*} {σ₁ σ₂ : TopologicalSpace α}
     {τ₁ τ₂ : TopologicalSpace β} (hσ : σ₁ ≤ σ₂) (hτ : τ₁ ≤ τ₂) :
     @instTopologicalSpaceProd α β σ₁ τ₁ ≤ @instTopologicalSpaceProd α β σ₂ τ₂ :=
@@ -617,11 +656,10 @@ namespace Homeomorph
 
 variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
-  continuous_toFun := by dsimp; fun_prop
-  continuous_invFun := by dsimp; fun_prop
 
 @[simp]
 theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
@@ -636,8 +674,6 @@ variable (W X Y Z)
 
 /-- `X × Y` is homeomorphic to `Y × X`. -/
 def prodComm : X × Y ≃ₜ Y × X where
-  continuous_toFun := continuous_snd.prodMk continuous_fst
-  continuous_invFun := continuous_snd.prodMk continuous_fst
   toEquiv := Equiv.prodComm X Y
 
 @[simp]
@@ -650,8 +686,6 @@ theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
 
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
-  continuous_toFun := continuous_fst.fst.prodMk (continuous_fst.snd.prodMk continuous_snd)
-  continuous_invFun := (continuous_fst.prodMk continuous_snd.fst).prodMk continuous_snd.snd
   toEquiv := Equiv.prodAssoc X Y Z
 
 @[simp]
@@ -660,14 +694,6 @@ lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := r
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
 def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
   toEquiv := Equiv.prodProdProdComm X Y W Z
-  continuous_toFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
-  continuous_invFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
 
 @[simp]
 theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
@@ -677,8 +703,6 @@ theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdCo
 @[simps! -fullyApplied apply]
 def prodPUnit : X × PUnit ≃ₜ X where
   toEquiv := Equiv.prodPUnit X
-  continuous_toFun := continuous_fst
-  continuous_invFun := .prodMk_left _
 
 /-- `{*} × X` is homeomorphic to `X`. -/
 def punitProd : PUnit × X ≃ₜ X :=
@@ -808,7 +832,7 @@ theorem IsOpenMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : I
     IsOpenMap (Sum.elim f g) :=
   isOpenMap_sumElim.2 ⟨hf, hg⟩
 
-lemma IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
+lemma Topology.IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g) (h : Injective (Sum.elim f g)) :
     IsOpenEmbedding (Sum.elim f g) := by
   rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
@@ -821,7 +845,7 @@ theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     exact ⟨h.comp IsClosedEmbedding.inl.isClosedMap, h.comp IsClosedEmbedding.inr.isClosedMap⟩
   · rintro h Z hZ
     rw [isClosed_sum_iff] at hZ
-    convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
+    convert! (h.1 _ hZ.1).union (h.2 _ hZ.2)
     ext
     simp only [mem_image, Sum.exists, mem_union, mem_preimage]
 
@@ -838,7 +862,7 @@ theorem IsClosedMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg
     IsClosedMap (Sum.elim f g) :=
   isClosedMap_sumElim.2 ⟨hf, hg⟩
 
-lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
+lemma Topology.IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) (h : Injective (Sum.elim f g)) :
     IsClosedEmbedding (Sum.elim f g) := by
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
@@ -850,10 +874,9 @@ namespace Homeomorph
 
 variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
-  continuous_toFun := h₁.continuous.sumMap h₂.continuous
-  continuous_invFun := h₁.symm.continuous.sumMap h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
 
 @[simp]
@@ -877,8 +900,6 @@ variable (W X Y Z)
 /-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
 def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
   toEquiv := Equiv.sumComm X Y
-  continuous_toFun := continuous_sum_swap
-  continuous_invFun := continuous_sum_swap
 
 @[simp]
 theorem sumComm_symm : (sumComm X Y).symm = sumComm Y X :=
@@ -899,22 +920,14 @@ lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
 /-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
 def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumAssoc X Y Z
-  continuous_toFun := continuous_sumAssoc X Y Z
-  continuous_invFun := continuous_sumAssoc_symm X Y Z
 
 @[simp]
 lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumSumSumComm X Y W Z
-  continuous_toFun := by
-    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Homeomorph.sumComm Y W)) (@id Z)) := by fun_prop
-    fun_prop
-  continuous_invFun := by
-    have : Continuous (Sum.map (Sum.map (@id X) (Homeomorph.sumComm Y W).symm) (@id Z)) := by
-      fun_prop
-    fun_prop
 
 @[simp]
 lemma sumSumSumComm_toEquiv : (sumSumSumComm W X Y Z).toEquiv = (Equiv.sumSumSumComm W X Y Z) := rfl
@@ -926,8 +939,6 @@ lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z
 @[simps! -fullyApplied apply]
 def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
   toEquiv := Equiv.sumEmpty X Y
-  continuous_toFun := Continuous.sumElim continuous_id (by fun_prop)
-  continuous_invFun := continuous_inl
 
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
 def emptySum [IsEmpty Y] : Y ⊕ X ≃ₜ X := (sumComm Y X).trans (sumEmpty X Y)
@@ -975,7 +986,7 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
   obtain x | x := x <;>
   simp only [comap_sumElim_eq, nhds_inl, nhds_inr, elim_inl, elim_inr, ← hf.nhds_eq_comap,
     ← hg.nhds_eq_comap, sup_le_iff, le_rfl, true_and, and_true] <;>
-  convert bot_le (α := Filter (X ⊕ Y)) <;>
+  convert! bot_le (α := Filter (X ⊕ Y)) <;>
   rw [map_eq_bot_iff, comap_eq_bot_iff_compl_range]
   · rw [← disjoint_principal_right]
     exact hfG.mono_left (nhds_le_nhdsSet (mem_range_self x))
@@ -995,16 +1006,17 @@ theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f 
     exact disjoint_image_inl_image_inr
   exact B.mono_left A
 
-theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap X Y) :=
+theorem Topology.IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap X Y) :=
   (Homeomorph.sumComm X Y).isOpenEmbedding
 
-theorem IsInducing.sumSwap : IsInducing (@Sum.swap X Y) := IsOpenEmbedding.sumSwap.isInducing
+theorem Topology.IsInducing.sumSwap : IsInducing (@Sum.swap X Y) :=
+  IsOpenEmbedding.sumSwap.isInducing
 
 theorem isInducing_sumElim :
     IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
       Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) :=
   ⟨fun h ↦ ⟨h.sumElim_left, h.sumElim_right, h.disjoint_of_sumElim_aux,
-    ((Sum.elim_swap ▸ h.comp IsInducing.sumSwap).disjoint_of_sumElim_aux ).symm⟩,
+    ((Sum.elim_swap ▸ h.comp .sumSwap).disjoint_of_sumElim_aux ).symm⟩,
     fun ⟨hf, hg, hFg, hfG⟩ ↦ hf.sumElim hg hFg hfG⟩
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds

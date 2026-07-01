@@ -176,6 +176,9 @@ nonrec def mk (A M N : Type*) [Semiring A]
 
 variable {R A B M N P Q}
 
+/-- The heterobasic version of `mk` coincides with the regular version. -/
+lemma mk_eq : mk R R M N = TensorProduct.mk R M N := rfl
+
 /-- Heterobasic version of `TensorProduct.map` -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
   lift <|
@@ -468,6 +471,20 @@ theorem distribBaseChange_symm_tmul
   rw [tmul_eq_smul_one_tmul b, ← smul_tmul, smul_tmul', mul_comm]
   simp
 
+lemma cancelBaseChange_self_eq_lid :
+    cancelBaseChange R A A A N = TensorProduct.lid A (A ⊗[R] N) := by
+  ext x
+  induction x using TensorProduct.induction_on with
+  | zero => simp only [map_zero]
+  | tmul b y =>
+    induction y using TensorProduct.induction_on with
+    | zero => simp
+    | tmul a m =>
+      simp only [cancelBaseChange_tmul, lid_tmul, smul_tmul', smul_eq_mul, mul_comm]
+    | add x y hx hy =>
+      simp only [tmul_add, map_add, lid_tmul, hx, hy]
+  | add x y hx hy => simp [hx, hy]
+
 end cancelBaseChange
 
 section leftComm
@@ -589,6 +606,30 @@ theorem tensorTensorTensorComm_eq :
 
 end tensorTensorTensorComm
 
+section
+
+universe u₁ u₂ u₃ u₄
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` commutes with tensor products. -/
+def uliftEquiv : ULift.{u₁} (M ⊗[R] N) ≃ₗ[A] ULift.{u₂} M ⊗[ULift.{u₃} R] ULift.{u₄} N :=
+  ULift.moduleEquiv ≪≫ₗ
+    AlgebraTensorModule.congr ULift.moduleEquiv.symm ULift.moduleEquiv.symm ≪≫ₗ
+    (equivOfCompatibleSMul _ _ _ _ _)
+
+variable {M N}
+
+@[simp]
+lemma down_uliftEquiv_symm_tmul (m : ULift M) (n : ULift N) :
+    ((uliftEquiv R A M N).symm (m ⊗ₜ n)).down = m.down ⊗ₜ n.down :=
+  rfl
+
+@[simp]
+lemma uliftEquiv_tmul (m : M) (n : N) : uliftEquiv R A M N ⟨m ⊗ₜ n⟩ = ⟨m⟩ ⊗ₜ ⟨n⟩ :=
+  rfl
+
+end
+
 end CommSemiring
 
 end AlgebraTensorModule
@@ -692,11 +733,15 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
 
 @[simp]
 theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
-    (f.baseChange R A M N) = f.toLinearMap.baseChange A :=
+    f.baseChange R A M N = f.toLinearMap.baseChange A :=
    rfl
 
-theorem _root_.LinearEquiv.baseChange_tmul (e : M ≃ₗ[R] N) (a : A) (m : M) :
-    LinearEquiv.baseChange R A M N e (a ⊗ₜ[R] m) = a ⊗ₜ e m :=
+@[simp] lemma _root_.LinearEquiv.baseChange_tmul {e : M ≃ₗ[R] N} (a : A) (m : M) :
+    e.baseChange R A M N (a ⊗ₜ m) = a ⊗ₜ e m :=
+  rfl
+
+@[simp] lemma _root_.LinearEquiv.baseChange_symm_tmul {e : M ≃ₗ[R] N} (a : A) (n : N) :
+    (e.baseChange R A).symm (a ⊗ₜ n) = a ⊗ₜ e.symm n :=
   rfl
 
 @[simp]
@@ -776,7 +821,7 @@ namespace Submodule
 open TensorProduct
 
 variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-  [AddCommMonoid M] [Module R M] (p : Submodule R M)
+  [AddCommMonoid M] [Module R M] (p q : Submodule R M)
 
 /-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
 an `A`-submodule of `A ⊗ M`.
@@ -808,9 +853,51 @@ lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
+variable {p q} in
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
+  rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
+    ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
+  apply LinearMap.range_comp_le_range
+
 @[simp]
 lemma baseChange_span (s : Set M) :
     (span R s).baseChange A = span A (TensorProduct.mk R A M 1 '' s) := by
   rw [baseChange_eq_span, map_span, span_span_of_tower]
 
+/-- Given an `R`-submodule `p` of `M`, and `R`-algebra `A`, we obtain an `A`-submodule of
+`A ⊗[R] M` by `p.baseChange A`. This is then the surjective `A`-linear map
+`A ⊗[R] M → p.baseChange A`. -/
+def toBaseChange : A ⊗[R] p →ₗ[A] p.baseChange A :=
+  LinearMap.rangeRestrict _
+
+@[simp] lemma coe_toBaseChange_tmul (a : A) (x : p) :
+    (p.toBaseChange A (a ⊗ₜ x) : A ⊗[R] M) = a ⊗ₜ (x : M) := rfl
+
+lemma toBaseChange_surjective : Function.Surjective (p.toBaseChange A) :=
+  LinearMap.surjective_rangeRestrict _
+
+/-- This version enables better pattern matching via the tactic `obtain`. -/
+lemma toBaseChange_surjective' {y : A ⊗[R] M} (hy : y ∈ p.baseChange A) :
+    ∃ x : A ⊗[R] p, p.toBaseChange A x = y := by
+  obtain ⟨x, hx⟩ := toBaseChange_surjective A p ⟨y, hy⟩
+  exact ⟨x, congr($hx)⟩
+
 end Submodule
+
+namespace TensorProduct.AlgebraTensorModule
+
+variable {R A M N : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module A N]
+
+lemma baseChange_comp_cancelBaseChange_symm_self (f : (A ⊗[R] M) →ₗ[A] N) :
+    f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm = (TensorProduct.lid A N).symm ∘ₗ f := by
+  rw [cancelBaseChange_self_eq_lid]
+  ext x
+  simp
+
+lemma ker_baseChange_comp_cancelBaseChange_symm (f : (A ⊗[R] M) →ₗ[A] N) :
+    (f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm).ker = f.ker := by
+  rw [baseChange_comp_cancelBaseChange_symm_self, LinearMap.ker_comp,
+    LinearEquiv.ker, Submodule.comap_bot]
+
+end TensorProduct.AlgebraTensorModule

@@ -40,6 +40,7 @@ open Limits Opposite Category Functor Sheaf Adjunction
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
@@ -188,18 +189,23 @@ noncomputable def constantCommuteCompose :
     (sheafComposeNatIso J U (sheafificationAdjunction J D) (sheafificationAdjunction J B)).symm) ≪≫
       isoWhiskerRight (compConstIso _ _).symm _
 
-lemma constantCommuteCompose_hom_app_val (X : D) : ((constantCommuteCompose J U).hom.app X).val =
+lemma constantCommuteCompose_hom_app_hom (X : D) : ((constantCommuteCompose J U).hom.app X).hom =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
+@[deprecated (since := "2026-03-05")]
+alias constantCommuteCompose_hom_app_val := constantCommuteCompose_hom_app_hom
+
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
-    ((constantCommuteCompose J U).hom.app (F.val.obj ⟨T⟩)) ≫
+    ((constantCommuteCompose J U).hom.app (F.obj.obj ⟨T⟩)) ≫
       ((constantSheafAdj J B hT).counit.app ((sheafCompose J U).obj F)) =
         ((sheafCompose J U).map ((constantSheafAdj J D hT).counit.app F)) := by
   apply Sheaf.hom_ext
-  rw [comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
-  apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
+  dsimp
+  rw [constantCommuteCompose_hom_app_hom, assoc, Iso.inv_comp_eq]
+  apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).property
   ext x
   simp [NatTrans.comp_app] -- simp [NatTrans.comp_app] to unfold some definitions
   simp [← map_comp, ← NatTrans.comp_app] -- simp [← NatTrans.comp_app] to simplify some compositions

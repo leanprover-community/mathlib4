@@ -67,8 +67,6 @@ lemma SpecMap_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x
     Spec.map (X.residue x) s = closedPoint (X.presheaf.stalk x) :=
   IsLocalRing.PrimeSpectrum.comap_residue _ s
 
-@[deprecated (since := "2025-10-07")] alias Spec_map_residue_apply := SpecMap_residue_apply
-
 lemma residue_surjective (X : Scheme.{u}) (x) : Function.Surjective (X.residue x) :=
   Ideal.Quotient.mk_surjective
 
@@ -142,6 +140,20 @@ lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
     (f ≫ g).residueFieldMap x = g.residueFieldMap (f x) ≫ f.residueFieldMap x :=
   LocallyRingedSpace.residueFieldMap_comp _ _ _
 
+/--
+Degree of `f` at a point `x` is defined to be the degree of the associated field extension
+from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is infinite.
+-/
+def Hom.residueDegree (f : X ⟶ Y) (x : X) : ℕ :=
+  letI := (f.residueFieldMap x).hom.toAlgebra
+  Module.finrank (Y.residueField (f x)) (X.residueField x)
+
+@[simp]
+lemma Hom.residueDegree_id (x : X) : (𝟙 _ : X ⟶ X).residueDegree x = 1 := by
+  dsimp [residueDegree]
+  rw [residueFieldMap_id]
+  exact CommSemiring.finrank_self _
+
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f x ∈ V) :
     Y.evaluation V (f x) hx ≫ f.residueFieldMap x =
@@ -210,6 +222,13 @@ lemma Hom.residueFieldMap_congr {f g : X ⟶ Y} (e : f = g) (x : X) :
     f.residueFieldMap x = (Y.residueFieldCongr (by subst e; rfl)).hom ≫ g.residueFieldMap x := by
   subst e; simp
 
+@[reassoc]
+lemma Hom.residueFieldMap_congr' {f : X ⟶ Y} {x₁ x₂ : X} (e : x₁ = x₂) :
+    f.residueFieldMap x₁ ≫ (X.residueFieldCongr e).hom =
+      (Y.residueFieldCongr (congrArg f e)).hom ≫ f.residueFieldMap x₂ := by
+  subst e
+  simp
+
 end congr
 
 section fromResidueField
@@ -246,13 +265,6 @@ lemma Hom.SpecMap_residueFieldMap_fromSpecResidueField (x : X) :
   rw [Category.assoc, ← SpecMap_stalkMap_fromSpecStalk, ← Spec.map_comp_assoc,
     ← Spec.map_comp_assoc]
   rfl
-
-@[deprecated (since := "2025-10-07")]
-alias Hom.Spec_map_residueFieldMap_fromSpecResidueField :=
-  Hom.SpecMap_residueFieldMap_fromSpecResidueField
-@[deprecated (since := "2025-10-07")]
-alias Hom.Spec_map_residueFieldMap_fromSpecResidueField_assoc :=
-  Hom.SpecMap_residueFieldMap_fromSpecResidueField_assoc
 
 instance [X.Over Y] (x : X) : Spec.map ((X ↘ Y).residueFieldMap x) |>.IsOver Y where
 
@@ -326,6 +338,7 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
 
 /-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
 to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
+@[simps]
 def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     (Spec (.of K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
   toFun f :=
@@ -340,6 +353,12 @@ def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     grind [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField,
       Scheme.fromSpecResidueField_apply,
       Scheme.residueFieldCongr_fromSpecResidueField]
+
+@[simp]
+lemma descResidueField_stalkClosedPointTo_comp {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
+    dsimp% descResidueField (stalkClosedPointTo (g ≫ f)) =
+      Hom.residueFieldMap f (g (closedPoint K)) ≫ descResidueField (stalkClosedPointTo g) := by
+  simp [← cancel_epi (Y.residue _), stalkClosedPointTo_comp, residue_residueFieldMap_assoc]
 
 end Scheme
 

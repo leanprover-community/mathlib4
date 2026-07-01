@@ -127,16 +127,7 @@ theorem Separable.map {p : R[X]} (h : p.Separable) {f : R →+* S} : (p.map f).S
 
 theorem _root_.Associated.separable {f g : R[X]}
     (ha : Associated f g) (h : f.Separable) : g.Separable := by
-  obtain ⟨⟨u, v, h1, h2⟩, ha⟩ := ha
-  obtain ⟨a, b, h⟩ := h
-  refine ⟨a * v + b * derivative v, b * v, ?_⟩
-  replace h := congr($h * $(h1))
-  have h3 := congr(derivative $(h1))
-  simp only [← ha, derivative_mul, derivative_one] at h3 ⊢
-  calc
-    _ = (a * f + b * derivative f) * (u * v)
-      + (b * f) * (derivative u * v + u * derivative v) := by ring1
-    _ = 1 := by rw [h, h3]; ring1
+  grind [Separable.of_dvd, Associated.dvd']
 
 theorem _root_.Associated.separable_iff {f g : R[X]}
     (ha : Associated f g) : f.Separable ↔ g.Separable := ⟨ha.separable, ha.symm.separable⟩
@@ -170,7 +161,7 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
       (q * (derivative q * p + derivative q * p + q * derivative p)) := by
     simp only [← mul_assoc, mul_add]
     dsimp only [Separable] at hp
-    convert hp using 1
+    convert! hp using 1
     rw [derivative_mul, derivative_mul]
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
@@ -281,7 +272,6 @@ theorem separable_C_mul_X_pow_add_C_mul_X_add_C'
     (C a * X ^ n + C b * X + C c).Separable :=
   separable_C_mul_X_pow_add_C_mul_X_add_C a b c ((CharP.cast_eq_zero_iff R p n).2 hn) hb
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
     (x : R) : rootMultiplicity x p ≤ 1 := by
   classical
@@ -356,7 +346,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
   exact if H : derivative f = 0 then by
     rcases p.eq_zero_or_pos with (rfl | hp)
     · haveI := CharP.charP_to_charZero F
-      have := natDegree_eq_zero_of_derivative_eq_zero H
+      have := derivative_eq_zero.1 H
       have := (natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_irreducible hf).ne'
       contradiction
     haveI := isLocalHom_expand F hp
@@ -525,9 +515,9 @@ end Splits
 
 theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) :
     f.Separable := by
-  rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
+  rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative]
   · rintro ⟨⟩
-  exact Irreducible.natDegree_pos hf
+  exact hf.natDegree_pos.ne'
 
 end Field
 
@@ -604,7 +594,6 @@ lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : F
     (H : IsSeparable F x) : IsSeparable F (f x) :=
   (isSeparable_map_iff f hf).mpr H
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Subalgebra.isSeparable_iff [Ring L] [Algebra F L] {S : Subalgebra F L} :
     Algebra.IsSeparable F S ↔ ∀ x ∈ S, IsSeparable F x := by
   simp_rw [Algebra.isSeparable_def, Subtype.forall,
@@ -665,7 +654,7 @@ variable [Ring K] [Algebra F K]
 variable {F} in
 theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
   Polynomial.Separable.of_dvd (Polynomial.separable_X_sub_C (x := x))
-    (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
+    (minpoly.dvd F (algebraMap F K x) (by simp))
 
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
   ⟨isSeparable_algebraMap⟩
@@ -727,11 +716,9 @@ namespace IntermediateField
 
 variable [Field K] [Algebra F K] (M : IntermediateField F K)
 
-set_option backward.isDefEq.respectTransparency false in
 instance isSeparable_tower_bot [Algebra.IsSeparable F K] : Algebra.IsSeparable F M :=
   Algebra.isSeparable_tower_bot_of_isSeparable F M K
 
-set_option backward.isDefEq.respectTransparency false in
 instance isSeparable_tower_top [Algebra.IsSeparable F K] : Algebra.IsSeparable M K :=
   Algebra.isSeparable_tower_top_of_isSeparable F M K
 
@@ -761,12 +748,19 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun x ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x) }
+        simpa [RingHom.algebraMap_toAlgebra] using! DFunLike.congr_fun he.symm (e₁.symm x) }
   (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
 lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
+
+lemma Algebra.IsSeparable.iff_of_equiv_equiv :
+    Algebra.IsSeparable A₁ B₁ ↔ Algebra.IsSeparable A₂ B₂ :=
+  ⟨fun _ ↦ Algebra.IsSeparable.of_equiv_equiv e₁ e₂ he,
+    fun _ ↦ Algebra.IsSeparable.of_equiv_equiv e₁.symm e₂.symm (by
+      ext x
+      simpa [RingEquiv.eq_symm_apply] using (RingHom.ext_iff.mp he (e₁.symm x)).symm)⟩
 
 end AlgEquiv
 

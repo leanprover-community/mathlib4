@@ -22,7 +22,7 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
   finite type `R' = M⁻¹R`-algebra.
 * `finiteType_ofLocalizationSpan` : `S` is a finite type `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite type `Rᵣ`-algebra.
-*`RingHom.finiteType_isLocal`: `RingHom.FiniteType` is a local property.
+* `RingHom.finiteType_isLocal`: `RingHom.FiniteType` is a local property.
 
 -/
 
@@ -53,8 +53,7 @@ theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType
   · exact finiteType_respectsIso
   · introv h
     rw [finiteType_algebraMap] at h
-    suffices Algebra.FiniteType S (S ⊗[R] T) by
-      rw [RingHom.FiniteType]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
+    apply finiteType_algebraMap.mpr
     infer_instance
 
 /-- If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a finite type `R' = M⁻¹R`-algebra. -/
@@ -82,7 +81,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   introv R hs H
   algebraize [f]
   replace H : ∀ r ∈ s, Algebra.FiniteType R (Localization.Away (r : S)) := by
-    intro r hr; simp_rw [RingHom.FiniteType] at H; convert H ⟨r, hr⟩; ext
+    intro r hr; simp_rw [RingHom.FiniteType] at H; convert! H ⟨r, hr⟩; ext
     simp_rw [Algebra.smul_def]; rfl
   exact Algebra.FiniteType.of_span_eq_top_target s hs H
 

@@ -16,7 +16,7 @@ public import Mathlib.Data.Fintype.Card
 
 ## Main definitions
 
-* `SimpleGraph.TutteViolator G u` is a set of vertices `u` such that the amount of
+* `SimpleGraph.IsTutteViolator G u` is a set of vertices `u` such that the amount of
   odd components left after deleting `u` from `G` is larger than the number of vertices in `u`.
   This certifies non-existence of a perfect matching.
 
@@ -59,10 +59,14 @@ variable [Finite V]
 
 lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u) :
     G.IsTutteViolator u := by
-  simp only [IsTutteViolator, Subgraph.induce_verts, Subgraph.verts_top] at *
+  simp only [IsTutteViolator] at *
   have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
-  lia
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `lia` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `lia` -/
+  exact lt_of_lt_of_le ht this
 
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
@@ -86,7 +90,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
   have exists_complMatch (K : G.deleteUniversalVerts.coe.ConnectedComponent) :
       ∃ M : Subgraph G, M.verts = Subtype.val '' K.supp \ M1.verts ∧ M.IsMatching := by
     have : G.IsClique (Subtype.val '' K.supp \ M1.verts) :=
-      ((h' K).of_induce).subset Set.diff_subset
+      ((h' K).of_induce).subset Set.sdiff_subset
     rw [← this.even_iff_exists_isMatching (Set.toFinite _), hM1.1]
     exact even_ncard_image_val_supp_sdiff_image_val_rep_union _ ht hrep
   choose complMatch hcomplMatch_compl hcomplMatch_match using exists_complMatch
@@ -95,7 +99,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     refine .iSup hcomplMatch_match fun i j hij ↦ (?_ : Disjoint _ _)
     rw [(hcomplMatch_match i).support_eq_verts, hcomplMatch_compl i,
         (hcomplMatch_match j).support_eq_verts, hcomplMatch_compl j]
-    exact Set.disjoint_of_subset Set.diff_subset Set.diff_subset <|
+    exact Set.disjoint_of_subset Set.sdiff_subset Set.sdiff_subset <|
       Set.disjoint_image_of_injective Subtype.val_injective <|
         SimpleGraph.pairwise_disjoint_supp_connectedComponent _ hij
   have disjointM12 : Disjoint M1.support M2.support := by
@@ -104,12 +108,12 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     exact fun K ↦ hcomplMatch_compl K ▸ Set.disjoint_sdiff_right
   -- The only vertices left are indeed contained in universalVerts
   have : (M1.verts ∪ M2.verts)ᶜ ⊆ G.universalVerts := by
-    rw [Set.compl_subset_comm, Set.compl_eq_univ_diff]
+    rw [Set.compl_subset_comm, Set.compl_eq_univ_sdiff]
     intro v hv
     by_cases h : v ∈ M1.verts
     · exact M1.verts.mem_union_left _ h
     right
-    simp only [deleteUniversalVerts_verts, Subgraph.verts_iSup, Set.mem_iUnion, M2,
+    simp only [Subgraph.verts_iSup, Set.mem_iUnion, M2,
       hcomplMatch_compl]
     use G.deleteUniversalVerts.coe.connectedComponentMk ⟨v, hv⟩
     aesop
@@ -145,12 +149,11 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
   have hfinj : f.Injective := fun c d hcd ↦ by
     replace hcd : g c = g d := Subtype.val_injective <| hM.1.eq_of_adj_right (hgf c) (hcd ▸ hgf d)
     exact Subtype.val_injective <| ConnectedComponent.eq_of_common_vertex (hg c) (hcd ▸ hg d)
-  simpa [IsTutteViolator] using
+  simpa [IsTutteViolator] using!
     Nat.card_le_card_of_injective (fun c ↦ ⟨f c, hf c⟩) (fun c d ↦ by simp [hfinj.eq_iff])
 
 open scoped symmDiff
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma constructs a perfect matching on `G` from two near-matchings. -/
 private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     {M1 : Subgraph (G ⊔ edge x b)} {M2 : Subgraph (G ⊔ edge a c)} (hxa : G.Adj x a)
@@ -169,7 +172,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   -- Neither matching contains the edge that would make the other matching of G perfect
   have hM1nac : ¬M1.Adj a c := fun h ↦ by simpa [hnGac, edge_adj, hnac, hxa.ne, hnbc.symm, hab.ne]
     using h.adj_sub
-  have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by aesop
+  have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by grind
   -- We state conditions for our cycle that hold in all cases and show that this suffices
   suffices ∃ (G' : SimpleGraph V), G'.IsAlternating M2.spanningCoe ∧ G'.IsCycles ∧ ¬G'.Adj x b ∧
       G'.Adj a c ∧ G' ≤ G ⊔ edge a c by
@@ -228,7 +231,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
       apply Walk.toSubgraph_adj_snd
       rw [Walk.nil_takeUntil]
-      aesop
+      grind
     rwa [Walk.snd_takeUntil, hp'.2.1] at this
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx'
     obtain rfl | rfl := hx'
@@ -281,7 +284,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
   · -- Deleting universal vertices splits the graph into cliques
     rw [Fintype.card_eq_nat_card] at hc
     simp_rw [Fintype.card_eq_nat_card, Nat.card_coe_set_eq] at hc
-    push_neg at hc
+    push Not at hc
     obtain ⟨M, hM⟩ := Subgraph.IsPerfectMatching.exists_of_isClique_supp hvEven
       (by simpa [IsTutteViolator] using hc) h'
     exact hMatchingFree M hM
@@ -292,7 +295,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
     simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts, ne_eq,
-      Subgraph.induce_verts, Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
+      Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
       Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and]
       at hxa hxb hnadjxb
     obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj c a := by

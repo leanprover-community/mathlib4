@@ -24,21 +24,13 @@ e : Prime (2 * n + 1)
 ⊢ Prime (n + n + 1)
 ```
 
-the tactic `convert e using 2` will change the goal to
+the tactic `convert e` will change the goal to
 
 ```lean
 ⊢ n + n = 2 * n
 ```
 
 In this example, the new goal can be solved using `ring`.
-
-The `using 2` indicates it should iterate the congruence algorithm up to two times,
-where `convert e` would use an unrestricted number of iterations and lead to two
-impossible goals: `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
-
-A variant configuration is `convert (config := .unfoldSameFun) e`, which only equates function
-applications for the same function (while doing so at the higher `default` transparency).
-This gives the same goal of `⊢ n + n = 2 * n` without needing `using 2`.
 
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
@@ -47,7 +39,7 @@ def p (n : ℕ) := True
 example (h : p 0) : p 1 := by exact h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
-Limiting the depth of recursion can help with this. For example, `convert h using 1` will work
+Limiting the depth of recursion can help with this. For example, `convert h using 0` will work
 in this case.
 
 The syntax `convert ← e` will reverse the direction of the new goals
@@ -77,6 +69,54 @@ public meta section
 
 open Lean Meta Elab Tactic
 
+/-- Configuration for the `convert` family of tactics.
+This is `Congr!.Config` with different, less aggressive, defaults.
+
+To elaborate config options for `convert`, use `Convert.elabConfig` which chooses
+between `Convert.CheapConfig` and `Convert.ExpensiveConfig` based on other flags.
+-/
+structure Convert.CheapConfig extends Congr!.Config where
+  postTransparency := .reducible
+  partialApp := false
+  sameFun := true
+
+/-- Internal elaborator for `Convert.CheapConfig`: use `Convert.elabConfig` instead. -/
+declare_config_elab Convert.elabCheapConfig Convert.CheapConfig
+
+/-- Configuration for the `convert!` family of tactics.
+This is `Convert.CheapConfig` (used by `convert` without exclamation mark) with different,
+more aggressive, defaults.
+
+To elaborate config options for `convert`, use `Convert.elabConfig` which chooses
+between `Convert.CheapConfig` and `Convert.ExpensiveConfig` based on other flags.
+
+We separate out the two structures to allow the user to explicitly set options in the call, so for
+example the following call runs at `.instances` transparency.
+```
+convert! (postTransparency := .instances)
+```
+-/
+structure Convert.ExpensiveConfig extends Congr!.Config where
+  -- TODO: also enable this in the future?
+  -- preTransparency := .default
+  -- transparency := .default
+
+/-- Internal elaborator for `Convert.ExpensiveConfig`: use `Convert.elabConfig` instead. -/
+declare_config_elab Convert.elabExpensiveConfig Convert.ExpensiveConfig
+
+/-- Configuration elaborator for the `convert`/`convert!` family of tactics.
+
+If `expensive` is true, we're elaborating for `convert!`, and will configure to run at default
+transparency (unless explicitly overridden by the user saying e.g. `(transparency := .instances)`.)
+-/
+def Convert.elabConfig (expensive : Bool) (stx : Syntax) : TacticM Congr!.Config := do
+  -- Implement overridable fields by choosing to elaborate one of two structures,
+  -- which have different defaults (that can later be overridden by the user).
+  if expensive then
+    pure { ← Convert.elabExpensiveConfig stx with }
+  else
+    pure { ← Convert.elabCheapConfig stx with }
+
 /--
 Close the goal `g` using `Eq.mp v e`,
 where `v` is a metavariable asserting that the type of `g` and `e` are equal.
@@ -88,7 +128,7 @@ With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max rec
 -/
 def Lean.MVarId.convert (e : Expr) (symm : Bool)
     (depth : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) (g : MVarId) :
+    (patterns : List (TSyntax `rintroPat) := []) (g : MVarId) :
     MetaM (List MVarId) := g.withContext do
   let src ← inferType e
   let tgt ← g.getType
@@ -109,7 +149,7 @@ With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max rec
 -/
 def Lean.MVarId.convertLocalDecl (g : MVarId) (fvarId : FVarId) (typeNew : Expr) (symm : Bool)
     (depth : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) :
+    (patterns : List (TSyntax `rintroPat) := []) :
     MetaM (MVarId × List MVarId) := g.withContext do
   let typeOld ← fvarId.getType
   let v ← mkFreshExprMVar (← mkAppM ``Eq
@@ -132,8 +172,10 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 See also `convert_to t`, where `t` specifies the expected type, instead of a proof term of type `t`.
 In other words, `convert_to t` works like `convert (?_ : t)`. Both tactics use the same options.
 
+* `convert! e` uses default transparency, rather than reducible, when solving side goals, and
+  it tries to apply congruence even if the two expressions do not have the same head constant.
 * `convert ← e` creates equality goals in the opposite direction (with the goal type on the right).
-* `convert e using n`, where `n` is a positive numeral, controls the depth with which congruence is
+* `convert e using n`, where `n` is a numeral, controls the depth with which congruence is
   applied. For example, if the main goal is `⊢ Prime (n + n + 1)` and `e : Prime (2 * n + 1)`, then
   `convert e using 2` results in one goal, `⊢ n + n = 2 * n`, and `convert e using 3` (or more)
   results in two (impossible) goals `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
@@ -146,34 +188,40 @@ In other words, `convert_to t` works like `convert (?_ : t)`. Both tactics use t
 Examples:
 
 ```lean
--- `convert using` controls the depth of congruence.
 example {n : ℕ} (e : Prime (2 * n + 1)) :
     Prime (n + n + 1) := by
-  convert e using 2
+  convert e
   -- One goal: ⊢ n + n = 2 * n
   ring
-```
 
-```lean
 -- `convert` can fail where `exact` succeeds.
+def p (n : ℕ) := True
 example (h : p 0) : p 1 := by
   fail_if_success
     convert h -- fails, left-over goal 1 = 0
     done
   exact h -- succeeds
 
-```lean
 -- `convert with` names introduced variables.
 example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
     ∀ ε > 0, q ε := by
-  convert h using 2 with ε hε
+  convert h with ε hε
   -- Goal now looks like:
   -- hε : ε > 0
   -- ⊢ q ε ↔ p ε
   sorry
+```
 -/
-syntax (name := convert) "convert" Lean.Parser.Tactic.optConfig " ←"? ppSpace term (" using " num)?
-  (" with" (ppSpace colGt rintroPat)*)? : tactic
+syntax (name := convert) "convert" "!"? Lean.Parser.Tactic.optConfig " ←"? ppSpace term
+  (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
+
+@[tactic_alt convert]
+syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
+  (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
+
+macro_rules
+| `(tactic| convert! $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
+    `(tactic| convert ! $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
 
 /--
 Elaborates `term` ensuring the expected type, allowing stuck metavariables.
@@ -192,10 +240,10 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $[!%$expensive]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
-    let config ← Congr!.elabConfig (mkOptionalNode cfg)
-    let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+    let config ← Convert.elabConfig expensive.isSome cfg
+    let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
     liftMetaTactic fun g ↦
@@ -213,6 +261,7 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 `convert e`, where `e` is a term of type `t`, uses `e` to close the new main goal. In other words,
 `convert e` works like `convert_to t; refine e`. Both tactics use the same options.
 
+* `convert_to! t` uses default transparency, rather than reducible, when solving side goals.
 * `convert_to ty at h` changes the type of the local hypothesis `h` to `ty`. If later local
   hypotheses or the goal depend on `h`, then `convert_to t at h` may leave a copy of `h`.
 * `convert_to ← t` creates equality goals in the opposite direction (with the original goal type on
@@ -228,15 +277,23 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 * `convert_to (config := cfg) t` uses the configuration options in `cfg` to control the congruence
   rules (see `Congr!.Config`).
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
-  (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
+syntax (name := convertTo) "convert_to" ("!")? Lean.Parser.Tactic.optConfig " ←"? ppSpace term
+  (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
+
+@[tactic_alt convertTo]
+syntax (name := convert_to!) "convert_to!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
+  (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
+
+macro_rules
+| `(tactic| convert_to! $cfg $[←%$l]? $t $[using $n]? $[with $w]? $[$loc]?) =>
+    `(tactic| convert_to ! $cfg $[←%$l]? $t:term $[using $n]? $[with $w]? $[$loc]?)
 
 elab_rules : tactic
-| `(tactic| convert_to $[$cfg:config]? $[←%$sym]? $newType $[using $n]?
+| `(tactic| convert_to $[!%$expensive]? $cfg $[←%$sym]? $newType $[using $n]?
     $[with $ps?*]? $[$loc?:location]?) => do
   let n : ℕ := n |>.map (·.getNat) |>.getD 1
-  let config ← Congr!.elabConfig (mkOptionalNode cfg)
-  let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+  let config ← Convert.elabConfig expensive.isSome cfg
+  let patterns := (ps?.getD #[]).toList
   withLocation (expandOptLocation (mkOptionalNode loc?))
     (atLocal := fun fvarId ↦ do
       let (e, gs) ← elabTermForConvert newType (← inferType (← fvarId.getType))
@@ -261,6 +318,7 @@ into new goals, using the hole's name, if any, as the goal case name.
 Like `congr!`, `convert_to` introduces variables while applying congruence rules. These can be
 pattern-matched, like `rintro` would, using the `with` keyword.
 
+* `ac_change! t` uses default transparency, rather than reducible, when solving side goals.
 * `ac_change t using n`, where `n` is a positive numeral, controls the depth with which congruence
   is applied. For example, if the main goal is `⊢ Prime ((a * b + 1) + c)`,
   then `ac_change Prime ((1 + a * b) + c) using 2` solves the side goals, and
@@ -276,8 +334,13 @@ example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
 ```
 -/
 syntax (name := acChange) "ac_change " term (" using " num)? : tactic
+@[tactic_alt acChange]
+syntax (name := acChange!) "ac_change! " term (" using " num)? : tactic
 
 macro_rules
-| `(tactic| ac_change $t $[using $n]?) => `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change $t $[using $n]?) =>
+    `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change! $t $[using $n]?) =>
+    `(tactic| convert_to! $t:term $[using $n]? <;> try ac_rfl)
 
 end Mathlib.Tactic

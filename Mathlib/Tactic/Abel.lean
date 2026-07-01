@@ -377,11 +377,11 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₁, p₁) ← eval e
     let (e₂, p₂) ← evalNeg e₁
     return (e₂, ← iapp `Mathlib.Tactic.Abel.subst_into_neg #[e, e₁, e₂, p₁, p₂])
-  | (``AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
+  | (``NSMul.nsmul, #[_, _, e₁, e₂]) => do
     let n ← if (← read).isGroup then mkAppM ``Int.ofNat #[e₁] else pure e₁
     let (e', p) ← eval <| ← iapp ``smul #[n, e₂]
     return (e', ← iapp ``unfold_smul #[e₁, e₂, e', p])
-  | (``SubNegMonoid.zsmul, #[_, _, e₁, e₂]) => do
+  | (``ZSMul.zsmul, #[_, _, e₁, e₂]) => do
       if ¬ (← read).isGroup then failure
       let (e', p) ← eval <| ← iapp ``smul #[e₁, e₂]
       return (e', (← read).app ``unfold_zsmul (← read).inst #[e₁, e₂, e', p])
@@ -411,8 +411,8 @@ def isAtom (e : Expr) : Bool :=
   | (``HAdd.hAdd, #[_, _, _, _, _, _])
   | (``HSub.hSub, #[_, _, _, _, _, _])
   | (``Neg.neg, #[_, _, _])
-  | (``AddMonoid.nsmul, #[_, _, _, _])
-  | (``SubNegMonoid.zsmul, #[_, _, _, _])
+  | (``NSMul.nsmul, #[_, _, _, _])
+  | (``ZSMul.zsmul, #[_, _, _, _])
   | (``SMul.smul, #[.const ``Int _, _, _, _, _])
   | (``SMul.smul, #[.const ``Nat _, _, _, _, _])
   | (``HSMul.hSMul, #[.const ``Int _, _, _, _, _, _])
@@ -430,18 +430,21 @@ def isAtom (e : Expr) : Bool :=
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let tm := if tk.isSome then .default else .reducible
   let some (_, e₁, e₂) := (← whnfR <| ← getMainTarget).eq?
-    | throwError "abel1 requires an equality goal"
+    | throwError "`abel1` requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
-  closeMainGoal `abel1 <| ← AtomM.run tm <| ReaderT.run (r := c) do
+  let proof ← AtomM.run tm <| ReaderT.run (r := c) do
     let (e₁', p₁) ← eval e₁
     trace[abel] "found `{p₁}`, a proof that `{e₁} = {e₁'.e}`"
     let (e₂', p₂) ← eval e₂
     trace[abel] "found `{p₂}`, a proof that `{e₂} = {e₂'.e}`"
     unless ← isDefEq e₁' e₂' do
-      throwError "abel1 found that the two sides were not equal"
+      throwError "`abel1` found that the two sides were not equal"
     trace[abel] "verified that the simplified forms are identical"
     mkEqTrans p₁ (← mkEqSymm p₂)
+  let type ← getMainTarget
+  let proof ← Lean.Meta.mkAuxTheorem type proof (zetaDelta := true) (kind? := `_abel)
+  closeMainGoal `abel1 proof
 
 @[tactic_alt abel]
 macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
@@ -506,7 +509,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
-  transformAtLocation (m ·) "abel_nf" loc (failIfUnchanged := true) false
+  transformAtLocation (m ·) "abel_nf" loc (ifUnchanged := .error) false
 
 @[tactic_alt abel]
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>

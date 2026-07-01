@@ -5,10 +5,6 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Init.Data.ULift
-public import Init.Data.Fin.Fold
-public import Init.Data.List.Nat.Pairwise
-public import Init.Data.List.Nat.Range
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Localization.NormTrace
 
@@ -45,13 +41,11 @@ theorem discr_ne_zero : discr K ≠ 0 := by
   rw [← (Int.cast_injective (α := ℚ)).ne_iff, coe_discr]
   exact Algebra.discr_not_zero_of_basis ℚ (integralBasis K)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ (𝓞 K)) :
     Algebra.discr ℤ b = discr K := by
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
     discr K = discr L := by
   let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (f.restrictScalars ℤ).mapIntegralClosure.toLinearEquiv
@@ -81,7 +75,7 @@ theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
   calc NumberField.discr ℚ
-    _ = Algebra.discr ℤ b := by convert (discr_eq_discr ℚ b).symm
+    _ = Algebra.discr ℤ b := by convert! (discr_eq_discr ℚ b).symm
     _ = Algebra.trace ℤ (𝓞 ℚ) (b default * b default) := by
       rw [Algebra.discr_def, Matrix.det_unique, Algebra.traceMatrix_apply, Algebra.traceForm_apply]
     _ = Algebra.trace ℤ (𝓞 ℚ) 1 := by
@@ -105,7 +99,7 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
   replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j) := by
     intro i j
-    convert h' i ((b.indexEquiv b').symm j)
+    convert! h' i ((b.indexEquiv b').symm j)
     simp [Basis.toMatrix_apply]
   classical
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,

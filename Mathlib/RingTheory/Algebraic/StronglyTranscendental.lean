@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.LocalProperties.Reduced
 # Strongly transcendental elements
 
 In this file, we provide basic properties for strongly transcendental elements in an algebra.
-This is a relatively niche notion, but is useful for proving Zarkisi's main theorem.
+This is a relatively niche notion, but is useful for proving Zariski's main theorem.
 
 ## Reference
 - https://stacks.math.columbia.edu/tag/00PZ
@@ -51,7 +51,7 @@ lemma isStronglyTranscendental_iff_of_field {K : Type*} [Field K] [Algebra R K] 
 lemma IsStronglyTranscendental.of_map {x : S} {f : S →ₐ[R] T} (hf : Function.Injective f)
     (h : IsStronglyTranscendental R (f x)) :
     IsStronglyTranscendental R x := by
-  refine fun u p hp ↦ ?_
+  intro u p hp
   have := h (f u) p (by rw [aeval_algHom_apply, ← map_mul, hp, map_zero])
   rwa [← f.comp_algebraMap, ← map_map, ← f.coe_toRingHom, ← map_C, ← Polynomial.map_mul,
     ← coe_mapRingHom, map_eq_zero_iff] at this
@@ -61,7 +61,7 @@ lemma IsStronglyTranscendental.of_isLocalization [Algebra S T] (M : Submonoid S)
     [IsLocalization M T] [IsScalarTower R S T]
     {x : S} (h : IsStronglyTranscendental R x) :
     IsStronglyTranscendental R (algebraMap S T x) := by
-  refine fun u p hp ↦ ?_
+  intro u p hp
   obtain ⟨u, s, rfl⟩ := IsLocalization.exists_mk'_eq M u
   obtain ⟨a, haM, e⟩ : ∃ a ∈ M, a * ((aeval x) p * u) = 0 := by
     simpa [aeval_algebraMap_apply, ← Algebra.smul_def, IsLocalization.smul_mk',
@@ -119,7 +119,6 @@ lemma IsStronglyTranscendental.of_transcendental {K : Type*} [Field K] [Algebra 
   rw [← isStronglyTranscendental_iff_of_field] at H
   exact .of_map (f := IsScalarTower.toAlgHom R S K) (FaithfulSMul.algebraMap_injective _ _) H
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00Q0]
 lemma isStronglyTranscendental_mk_of_mem_minimalPrimes [IsReduced S]
     {x : S} (hx : IsStronglyTranscendental R x) (q : Ideal S) (hq : q ∈ minimalPrimes S) :
