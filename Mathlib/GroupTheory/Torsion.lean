@@ -177,6 +177,8 @@ lemma not_isMulTorsionFree_of_isMulTorsion [Nontrivial G] (hG : IsMulTorsion G) 
 
 @[deprecated (since := "2026-07-01")] alias not_isMulTorsionFree_of_isTorsion :=
   not_isMulTorsionFree_of_isMulTorsion
+@[deprecated (since := "2026-07-01")] alias not_isAddTorsionFree_of_isTorsion :=
+  not_isAddTorsionFree_of_isAddTorsion
 
 /-- A nontrivial torsion-free abelian group is not torsion. -/
 @[to_additive /-- A nontrivial additive torsion-free abelian group is not torsion. -/]
@@ -185,6 +187,8 @@ lemma not_isMulTorsion_of_isMulTorsionFree [Nontrivial G] [IsMulTorsionFree G] :
 
 @[deprecated (since := "2026-07-01")] alias not_isTorsion_of_isMulTorsionFree :=
   not_isMulTorsion_of_isMulTorsionFree
+@[deprecated (since := "2026-07-01")] alias not_isTorsion_of_isAddTorsionFree :=
+  not_isAddTorsion_of_isAddTorsionFree
 
 end CommGroup
 
@@ -249,6 +253,8 @@ theorem torsion.isMulTorsion : IsMulTorsion <| torsion G := fun ⟨x, n, npos, h
         (isPeriodicPt_mul_iff_pow_eq_one _).mp hn]⟩
 
 @[deprecated (since := "2026-07-01")] alias torsion.isTorsion := torsion.isMulTorsion
+@[deprecated (since := "2026-07-01")] alias _root_.AddCommMonoid.addTorsion.isTorsion :=
+  AddCommMonoid.addTorsion.isAddTorsion
 
 variable (G) (p : ℕ)
 
@@ -348,6 +354,8 @@ end IsMulTorsion
 isomorphic to the submonoid. -/]
 def CommMonoid.Torsion.ofTorsion : torsion (torsion G) ≃* torsion G :=
   IsMulTorsion.torsionMulEquiv CommMonoid.torsion.isMulTorsion
+
+@[deprecated (since := "2026-07-01")] alias Torsion.ofTorsion := CommMonoid.Torsion.ofTorsion
 
 end CommMonoid
 
