@@ -642,7 +642,7 @@ lemma inv_riemannZeta_sub_sub_isLittleO :
   exact ContinuousAt.isLittleO (by fun_prop)
 
 lemma inv_riemannZeta_isBigO :
-    (fun s ↦ (riemannZeta s)⁻¹) =O[𝓝[≠] 1] (· - 1) := 
+    (fun s ↦ (riemannZeta s)⁻¹) =O[𝓝[≠] 1] (· - 1) :=
   (isBigO_refl ..).sub_iff_left.mp inv_riemannZeta_sub_sub_isLittleO.isBigO
 
 end near_one
