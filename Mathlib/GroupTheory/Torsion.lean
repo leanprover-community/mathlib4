@@ -46,35 +46,44 @@ periodic group, aperiodic group, torsion subgroup, torsion abelian group
 
 variable {G H : Type*}
 
-namespace Monoid
+section
 
 variable (G) [Monoid G]
 
 /-- A predicate on a monoid saying that all elements are of finite order. -/
 @[to_additive
 /-- A predicate on an additive monoid saying that all elements are of finite order. -/]
-def IsTorsion :=
+def IsMulTorsion :=
   ∀ g : G, IsOfFinOrder g
+
+@[deprecated (since := "2026-07-01")] alias Monoid.IsTorsion := IsMulTorsion
+@[deprecated (since := "2026-07-01")] alias AddMonoid.IsTorsion := IsAddTorsion
 
 /-- A monoid is not a torsion monoid if it has an element of infinite order. -/
 @[to_additive (attr := simp)
 /-- An additive monoid is not a torsion monoid if it has an element of infinite order. -/]
-theorem not_isTorsion_iff : ¬IsTorsion G ↔ ∃ g : G, ¬IsOfFinOrder g :=
+theorem not_isMulTorsion_iff : ¬IsMulTorsion G ↔ ∃ g : G, ¬IsOfFinOrder g :=
   not_forall
 
-end Monoid
+@[deprecated (since := "2026-07-01")] alias Monoid.not_isTorsion_iff := not_isMulTorsion_iff
+@[deprecated (since := "2026-07-01")] alias AddMonoid.not_isTorsion_iff := not_isAddTorsion_iff
+
+end
 
 open Monoid
 
 /-- Torsion monoids are really groups. -/
 @[to_additive (attr := implicit_reducible)
 /-- Torsion additive monoids are really additive groups -/]
-noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
+noncomputable def IsMulTorsion.group [Monoid G] (tG : IsMulTorsion G) : Group G :=
   { ‹Monoid G› with
     inv g := g ^ (orderOf g - 1)
     inv_mul_cancel g := by
       rw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
+
+@[deprecated (since := "2026-07-01")] alias IsTorsion.group := IsMulTorsion.group
+@[deprecated (since := "2026-07-01")] alias IsTorsion.addGroup := IsAddTorsion.addGroup
 
 section Group
 
@@ -82,25 +91,28 @@ variable [Group G] {N : Subgroup G} [Group H]
 
 /-- Subgroups of torsion groups are torsion groups. -/
 @[to_additive /-- Subgroups of additive torsion groups are additive torsion groups. -/]
-theorem IsTorsion.subgroup (tG : IsTorsion G) (H : Subgroup G) : IsTorsion H := fun h ↦
+theorem IsMulTorsion.subgroup (tG : IsMulTorsion G) (H : Subgroup G) : IsMulTorsion H := fun h ↦
   Submonoid.isOfFinOrder_coe.1 <| tG h
+
+@[deprecated (since := "2026-07-01")] alias IsTorsion.subgroup := IsMulTorsion.subgroup
+@[deprecated (since := "2026-07-01")] alias IsTorsion.addSubgroup := IsAddTorsion.addSubgroup
 
 /-- The image of a surjective torsion group homomorphism is torsion. -/
 @[to_additive
 /-- The image of a surjective additive torsion group homomorphism is torsion. -/]
-theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG : IsTorsion G) :
-    IsTorsion H := fun h ↦ by
+theorem IsMulTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG : IsMulTorsion G) :
+    IsMulTorsion H := fun h ↦ by
   obtain ⟨g, rfl⟩ := hf h
   exact f.isOfFinOrder (tG g)
 
-@[deprecated (since := "2026-06-30")] alias AddIsTorsion.of_surjective :=
-  IsAddTorsion.of_surjective
+@[deprecated (since := "2026-06-30")] alias IsTorsion.of_surjective := IsMulTorsion.of_surjective
+@[deprecated (since := "2026-06-30")] alias AddIsTorsion.of_surjective := IsAddTorsion.of_surjective
 
 /-- Torsion groups are closed under extensions. -/
-@[to_additive AddIsTorsion.extension_closed
+@[to_additive
 /-- Additive torsion groups are closed under extensions. -/]
-theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
-    (tN : IsTorsion N) : IsTorsion G := fun g ↦ by
+theorem IsMulTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsMulTorsion H)
+    (tN : IsMulTorsion N) : IsMulTorsion G := fun g ↦ by
   obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
   have hmem := MonoidHom.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
   lift g ^ ngn to N using hN.symm ▸ hmem with gn h
@@ -108,44 +120,49 @@ theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsi
   exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
     rw [pow_mul, ← h, ← Subgroup.coe_pow, hnn, Subgroup.coe_one]⟩
 
+@[deprecated (since := "2026-06-30")] alias IsTorsion.extension_closed :=
+  IsMulTorsion.extension_closed
 @[deprecated (since := "2026-06-30")] alias AddIsTorsion.extension_closed :=
   IsAddTorsion.extension_closed
 
 /-- The image of a quotient is torsion iff the group is torsion. -/
 @[to_additive
 /-- The image of a quotient is additively torsion iff the group is torsion. -/]
-theorem IsTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN : N = f.ker)
-    (tN : IsTorsion N) : IsTorsion H ↔ IsTorsion G :=
-  ⟨fun tH ↦ IsTorsion.extension_closed hN tH tN, fun tG ↦ IsTorsion.of_surjective hf tG⟩
+theorem IsMulTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN : N = f.ker)
+    (tN : IsMulTorsion N) : IsMulTorsion H ↔ IsMulTorsion G :=
+  ⟨fun tH ↦ IsMulTorsion.extension_closed hN tH tN, fun tG ↦ IsMulTorsion.of_surjective hf tG⟩
 
-@[deprecated (since := "2026-06-30")] alias AddIsTorsion.quotient_iff :=
-  IsAddTorsion.quotient_iff
+@[deprecated (since := "2026-06-30")] alias IsTorsion.quotient_iff := IsMulTorsion.quotient_iff
+@[deprecated (since := "2026-06-30")] alias AddIsTorsion.quotient_iff := IsAddTorsion.quotient_iff
 
 /-- If a group exponent exists, the group is torsion. -/
 @[to_additive
 /-- If a group exponent exists, the group is additively torsion. -/]
-theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g ↦ by
+theorem ExponentExists.isMulTorsion (h : Monoid.ExponentExists G) : IsMulTorsion G := fun g ↦ by
   obtain ⟨n, npos, hn⟩ := h
   exact isOfFinOrder_iff_pow_eq_one.mpr ⟨n, npos, hn g⟩
 
+@[deprecated (since := "2026-06-30")] alias ExponentExists.isTorsion := ExponentExists.isMulTorsion
 @[deprecated (since := "2026-06-30")] alias ExponentExists.is_add_torsion :=
   ExponentExists.isAddTorsion
 
 /-- The group exponent exists for any bounded torsion group. -/
 @[to_additive
 /-- The group exponent exists for any bounded additive torsion group. -/]
-theorem IsTorsion.exponentExists (tG : IsTorsion G)
-    (bounded : (Set.range fun g : G ↦ orderOf g).Finite) : ExponentExists G :=
-  exponent_ne_zero.mp <|
-    (exponent_ne_zero_iff_range_orderOf_finite fun g ↦ (tG g).orderOf_pos).mpr bounded
+theorem IsMulTorsion.exponentExists (tG : IsMulTorsion G)
+    (bounded : (Set.range fun g : G ↦ orderOf g).Finite) : Monoid.ExponentExists G :=
+  Monoid.exponent_ne_zero.mp <|
+    (Monoid.exponent_ne_zero_iff_range_orderOf_finite fun g ↦ (tG g).orderOf_pos).mpr bounded
+
+@[deprecated (since := "2026-07-01")] alias IsTorsion.exponentExists := IsMulTorsion.exponentExists
 
 /-- Finite groups are torsion groups. -/
 @[to_additive /-- Finite additive groups are additive torsion groups. -/]
-theorem isTorsion_of_finite [Finite G] : IsTorsion G :=
-  ExponentExists.isTorsion .of_finite
+theorem isMulTorsion_of_finite [Finite G] : IsMulTorsion G :=
+  ExponentExists.isMulTorsion .of_finite
 
-@[deprecated (since := "2026-06-30")] alias is_add_torsion_of_finite :=
-  isAddTorsion_of_finite
+@[deprecated (since := "2026-06-30")] alias isTorsion_of_finite := isMulTorsion_of_finite
+@[deprecated (since := "2026-06-30")] alias is_add_torsion_of_finite := isAddTorsion_of_finite
 
 end Group
 
@@ -154,13 +171,20 @@ variable [CommGroup G]
 
 /-- A nontrivial torsion abelian group is not torsion-free. -/
 @[to_additive /-- A nontrivial additive torsion abelian group is not torsion-free. -/]
-lemma not_isMulTorsionFree_of_isTorsion [Nontrivial G] (hG : IsTorsion G) : ¬ IsMulTorsionFree G :=
+lemma not_isMulTorsionFree_of_isMulTorsion [Nontrivial G] (hG : IsMulTorsion G) :
+    ¬ IsMulTorsionFree G :=
   not_isMulTorsionFree_iff_isOfFinOrder.2 <| let ⟨x, hx⟩ := exists_ne (1 : G); ⟨x, hx, hG x⟩
+
+@[deprecated (since := "2026-07-01")] alias not_isMulTorsionFree_of_isTorsion :=
+  not_isMulTorsionFree_of_isMulTorsion
 
 /-- A nontrivial torsion-free abelian group is not torsion. -/
 @[to_additive /-- A nontrivial additive torsion-free abelian group is not torsion. -/]
-lemma not_isTorsion_of_isMulTorsionFree [Nontrivial G] [IsMulTorsionFree G] : ¬ IsTorsion G :=
-  (not_isMulTorsionFree_of_isTorsion · ‹_›)
+lemma not_isMulTorsion_of_isMulTorsionFree [Nontrivial G] [IsMulTorsionFree G] : ¬ IsMulTorsion G :=
+  (not_isMulTorsionFree_of_isMulTorsion · ‹_›)
+
+@[deprecated (since := "2026-07-01")] alias not_isTorsion_of_isMulTorsionFree :=
+  not_isMulTorsion_of_isMulTorsionFree
 
 end CommGroup
 
@@ -169,19 +193,22 @@ section Module
 -- A (semi/)ring of scalars and a commutative monoid of elements
 variable (R M : Type*) [AddCommMonoid M]
 
-namespace AddMonoid
-
 /-- A module whose scalars are additively torsion is additively torsion. -/
-theorem IsTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsTorsion R) : IsTorsion M :=
+theorem IsAddTorsion.to_module [Semiring R] [Module R M] (tR : IsAddTorsion R) :
+    IsAddTorsion M :=
   fun f ↦ isOfFinAddOrder_iff_nsmul_eq_zero.mpr <| by
     obtain ⟨n, npos, hn⟩ := (tR 1).exists_nsmul_eq_zero
     exact ⟨n, npos, by simp only [← Nat.cast_smul_eq_nsmul R _ f, ← nsmul_one, hn, zero_smul]⟩
 
-/-- A module with a finite ring of scalars is additively torsion. -/
-theorem IsTorsion.module_of_finite [Ring R] [Finite R] [Module R M] : IsTorsion M :=
-  (isAddTorsion_of_finite : IsTorsion R).module_of_torsion _ _
+@[deprecated (since := "2026-07-01")] alias AddMonoid.IsTorsion.module_of_torsion :=
+  IsAddTorsion.to_module
 
-end AddMonoid
+/-- A module with a finite ring of scalars is additively torsion. -/
+theorem IsAddTorsion.to_module_of_finite [Ring R] [Finite R] [Module R M] : IsAddTorsion M :=
+  (isAddTorsion_of_finite : IsAddTorsion R).to_module _ _
+
+@[deprecated (since := "2026-07-01")] alias AddMonoid.IsTorsion.module_of_finite :=
+  IsAddTorsion.to_module_of_finite
 
 end Module
 
@@ -195,7 +222,7 @@ namespace CommMonoid
 
 (Note that by `Monoid.IsTorsion.group` torsion monoids are truthfully groups.)
 -/
-@[to_additive addTorsion /-- The torsion submonoid of an additive commutative monoid. -/]
+@[to_additive /-- The torsion submonoid of an additive commutative monoid. -/]
 def torsion : Submonoid G where
   carrier := { x | IsOfFinOrder x }
   one_mem' := IsOfFinOrder.one
@@ -212,7 +239,7 @@ variable {G}
 
 /-- Torsion submonoids are torsion. -/
 @[to_additive /-- Additive torsion submonoids are additively torsion. -/]
-theorem torsion.isTorsion : IsTorsion <| torsion G := fun ⟨x, n, npos, hn⟩ ↦
+theorem torsion.isMulTorsion : IsMulTorsion <| torsion G := fun ⟨x, n, npos, hn⟩ ↦
   ⟨n, npos,
     Subtype.ext <| by
       dsimp
@@ -220,6 +247,8 @@ theorem torsion.isTorsion : IsTorsion <| torsion G := fun ⟨x, n, npos, hn⟩ �
       change _ * 1 = 1
       rw [_root_.mul_one, SubmonoidClass.coe_pow, Subtype.coe_mk,
         (isPeriodicPt_mul_iff_pow_eq_one _).mp hn]⟩
+
+@[deprecated (since := "2026-07-01")] alias torsion.isTorsion := torsion.isMulTorsion
 
 variable (G) (p : ℕ)
 
