@@ -61,7 +61,7 @@ public instance : TopologicalSpace (BasedPath x₀) :=
 
 public instance : FunLike (BasedPath x₀) I X where
   coe γ := γ.1
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 /-- Evaluation `BasedPath x₀ × I → X` is jointly continuous (the compact-open topology on a
 subspace of `C(I, X)` with locally compact domain). This also provides the
@@ -265,7 +265,7 @@ public theorem continuous_append_initialSegmentFamily {x₀ z : X}
 
 /-- Extract an open path-connected endpoint neighborhood and a terminal interval avoiding the
 subbasic compact sets that do not contain `1`. -/
-theorem exists_endpointNeighborhood_of_basicNeighborhood [LocPathConnectedSpace X]
+theorem exists_endpointNeighborhood_of_basicNeighborhood [LocallyPathConnectedSpace X]
     {x₀ : X} (γ : BasedPath x₀) (Tgood Tbad : Finset (Set I × Set X))
     (hTgood_open_mem : ∀ KU ∈ Tgood, IsOpen KU.2 ∧ endpoint γ ∈ KU.2)
     (hTbad_closed : ∀ KU ∈ Tbad, IsClosed KU.1)
@@ -388,7 +388,7 @@ theorem exists_deformTerminal_mem_basicNeighborhood
     exact (hSdata K U hKU).2.2 ht
 
 /-- The endpoint map `BasedPath x₀ → X` is an open map when `X` is locally path-connected. -/
-public theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
+public theorem isOpenMap_endpoint [LocallyPathConnectedSpace X] (x₀ : X) :
     IsOpenMap (endpoint (x₀ := x₀)) := by
   classical
   refine IsOpenMap.of_nhds_le ?_
@@ -484,7 +484,7 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
   exact h_start.trans h_move
 
 theorem exists_refined_terminal_vertex
-    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
+    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X]
     {x₀ : X} {n' : ℕ} {U : Set X} (hU_open : IsOpen U)
     (α : BasedPath x₀) (hα : endpoint α ∈ U)
     (part : IntervalPartition (n' + 1)) (T : TubeData X x₀ (endpoint α) (n' + 1))
@@ -522,7 +522,7 @@ endpoint in an open set `U`, then `α` has an open neighborhood `N` in `BasedPat
 every element of `N` has endpoint in `U` and lies in the same path component of
 `endpoint ⁻¹' U` as `α`. -/
 public theorem exists_open_nhds_pathComponent_preimage
-    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
+    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X]
     {U : Set X} (hU_open : IsOpen U)
     (α : BasedPath x₀) (hα : endpoint α ∈ U) :
     ∃ N : Set (BasedPath x₀), IsOpen N ∧ α ∈ N ∧
@@ -640,7 +640,7 @@ public theorem exists_open_nhds_pathComponent_preimage
 
 /-- For an open neighborhood `U`, path components of `endpoint ⁻¹' U` are open. -/
 public theorem isOpen_pathComponent_preimage
-    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
+    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X]
     {U : Set X} (hU_open : IsOpen U) (α : BasedPath x₀) :
     IsOpen (pathComponentIn (endpoint (x₀ := x₀) ⁻¹' U) α) := by
   apply isOpen_iff_mem_nhds.mpr

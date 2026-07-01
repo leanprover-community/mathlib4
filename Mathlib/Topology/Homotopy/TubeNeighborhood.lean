@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Subpath
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.UnitInterval
 
@@ -138,7 +138,7 @@ public lemma PathInTube.subpath_range_subset {X : Type*} [TopologicalSpace X] {x
 
 /-- Given segment neighborhoods covering each subpath of `γ`, construct the vertex neighborhoods
 as path components of the finite intersections of adjacent segment neighborhoods. -/
-private theorem Path.exists_vertexNeighborhood_family [LocPathConnectedSpace X]
+private theorem Path.exists_vertexNeighborhood_family [LocallyPathConnectedSpace X]
     {x y : X} {γ : Path x y} {n : ℕ}
     {t : Fin (n + 1) → unitInterval} {U : Fin n → Set X}
     (h_mono : Monotone t) (hU_open : ∀ i, IsOpen (U i))
@@ -191,7 +191,7 @@ private theorem Path.exists_vertexNeighborhood_family [LocPathConnectedSpace X]
 every path fits in a tube: there is a partition of `[0, 1]` and tube data such that the path
 stays in the segment neighborhoods and passes through the vertex neighborhoods. This uses
 compactness of the path's image and the Lebesgue number lemma. -/
-public theorem Path.exists_pathInTube [LocPathConnectedSpace X] {x y : X} (γ : Path x y)
+public theorem Path.exists_pathInTube [LocallyPathConnectedSpace X] {x y : X} (γ : Path x y)
     (h : ∀ z : X, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ IsPathConnected U ∧ IsPathHomotopyTrivial U) :
     ∃ (n : ℕ) (part : IntervalPartition n) (T : TubeData X x y n), PathInTube γ part T := by
   -- Apply the generic partition lemma with the property:
@@ -326,10 +326,11 @@ private theorem Path.Homotopic.Quotient.cast_mk_subpath_part_endpoints
     (h₁ : x = p (part.t 0)) (h₂ : y = p (part.t (Fin.last n))) :
     (Path.Homotopic.Quotient.mk (p.subpath (part.t 0) (part.t (Fin.last n)))).cast h₁ h₂ =
       Path.Homotopic.Quotient.mk p := by
-  convert congrArg (fun q ↦ q.cast p.source.symm p.target.symm)
-    (Path.Homotopic.Quotient.subpath_zero_one p)
-  · simp [part.t_zero]
-  · simp [part.t_last]
+  revert h₁ h₂
+  rw [part.t_zero, part.t_last]
+  intro h₁ h₂
+  rw [Path.Homotopic.Quotient.subpath_zero_one]
+  simp
 
 /-- The pasting lemma for segment homotopies. Works directly with path restrictions.
 

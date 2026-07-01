@@ -151,7 +151,7 @@ theorem proj_surjective [PathConnectedSpace X] :
 /-- **Proper discontinuity** of the action (in the local form `IsQuotientCoveringMap`
 consumes): every point of the universal cover has a neighborhood whose non-identity
 translates are disjoint from it. -/
-theorem exists_nhds_smul_disjoint [LocPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
+theorem exists_nhds_smul_disjoint [LocallyPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
     (e : UniversalCover x₀) :
     ∃ U ∈ 𝓝 e, ∀ g : FundamentalGroup X x₀,
       ((g • ·) '' U ∩ U).Nonempty → g = 1 := by
@@ -172,7 +172,7 @@ theorem exists_nhds_smul_disjoint [LocPathConnectedSpace X] [SemilocallySimplyCo
 `π₁(X, x₀)`-action. Combines the action's continuity, transitivity on fibers, and proper
 discontinuity into the standard `IsQuotientCoveringMap` package. -/
 theorem isQuotientCoveringMap
-    [LocPathConnectedSpace X] [PathConnectedSpace X] [SemilocallySimplyConnectedSpace X] :
+    [LocallyPathConnectedSpace X] [PathConnectedSpace X] [SemilocallySimplyConnectedSpace X] :
     IsQuotientCoveringMap (proj : UniversalCover x₀ → X) (FundamentalGroup X x₀) where
   __ := (isCoveringMap x₀).isOpenMap.isQuotientMap (continuous_proj x₀) proj_surjective
   apply_eq_iff_mem_orbit := proj_eq_iff_mem_orbit

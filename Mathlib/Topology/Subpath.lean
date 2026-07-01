@@ -239,12 +239,10 @@ theorem subpath_trans (γ : Path a b) (t₀ t₁ t₂ : I) :
   rw [← mk_trans, eq]
   exact ⟨Homotopy.subpathTransSubpath γ t₀ t₁ t₂⟩
 
-@[simp]
 theorem subpath_self (γ : Path a b) (t : I) :
     mk (γ.subpath t t) = refl (γ t) := by
   rw [Path.subpath_self, mk_refl]
 
-@[simp]
 theorem subpath_zero_one (γ : Path a b) :
     mk (γ.subpath 0 1) = (mk γ).cast γ.source γ.target := by
   rw [Path.subpath_zero_one, mk_cast]

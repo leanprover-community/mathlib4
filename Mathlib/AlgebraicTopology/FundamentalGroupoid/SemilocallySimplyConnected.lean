@@ -13,7 +13,7 @@ public import Mathlib.Topology.Homotopy.TubeNeighborhood
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Order
 public import Mathlib.Topology.Defs.Induced
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -212,7 +212,7 @@ ambient space. This recovers Brazas' unbased variant of semilocal simple connect
 take the path component of `x` in a based neighborhood, and conjugate a loop at any of its
 points back to `x` along a path inside the component. -/
 public theorem SemilocallySimplyConnectedAt.exists_isPathHomotopyTrivial_neighborhood
-    [LocPathConnectedSpace X] {x : X} (h : SemilocallySimplyConnectedAt x) :
+    [LocallyPathConnectedSpace X] {x : X} (h : SemilocallySimplyConnectedAt x) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧ IsPathHomotopyTrivial U := by
   obtain ⟨U, hU_open, hxU, hU_loops⟩ := semilocallySimplyConnectedAt_iff.mp h
   refine ⟨pathComponentIn U x, hU_open.pathComponentIn x, mem_pathComponentIn_self hxU,
@@ -233,7 +233,7 @@ public theorem SemilocallySimplyConnectedAt.exists_isPathHomotopyTrivial_neighbo
 neighborhood `U` with the `IsPathHomotopyTrivial U` property: any two paths in `U` with the
 same endpoints are homotopic (so path homotopy classes are determined by endpoints). -/
 public theorem exists_uniquePath_neighborhood [SemilocallySimplyConnectedSpace X]
-    [LocPathConnectedSpace X] (x : X) :
+    [LocallyPathConnectedSpace X] (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathHomotopyTrivial U :=
   let ⟨U, hU_open, hxU, _, hU⟩ :=
     (SemilocallySimplyConnectedAt.of_semilocallySimplyConnectedSpace
@@ -243,7 +243,7 @@ public theorem exists_uniquePath_neighborhood [SemilocallySimplyConnectedSpace X
 /-- In a semilocally simply connected, locally path-connected space, every point has an open,
 path-connected, path-homotopy-trivial neighborhood. -/
 public theorem exists_pathConnected_slsc_neighborhood [SemilocallySimplyConnectedSpace X]
-    [LocPathConnectedSpace X] (x : X) :
+    [LocallyPathConnectedSpace X] (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧ IsPathHomotopyTrivial U :=
   (SemilocallySimplyConnectedAt.of_semilocallySimplyConnectedSpace
     x).exists_isPathHomotopyTrivial_neighborhood
@@ -251,7 +251,7 @@ public theorem exists_pathConnected_slsc_neighborhood [SemilocallySimplyConnecte
 /-- In a semilocally simply connected, locally path-connected space, every path fits in a
 tube of path-homotopy-trivial neighborhoods. -/
 public theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyConnectedSpace X]
-    [LocPathConnectedSpace X] {x y : X} (γ : Path x y) :
+    [LocallyPathConnectedSpace X] {x y : X} (γ : Path x y) :
     ∃ (n : ℕ) (part : IntervalPartition n) (T : TubeData X x y n), PathInTube γ part T :=
   γ.exists_pathInTube fun z ↦ exists_pathConnected_slsc_neighborhood z
 
@@ -263,7 +263,7 @@ This shows that the SLSC property gives us not just any open set around p, but s
 an open set where ALL paths are homotopic to p. This is what makes homotopy classes open.
 -/
 public theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
-    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
+    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X]
     {x y : X} (p : Path x y) :
     ∃ (T : Set (Path x y)), IsOpen T ∧ p ∈ T ∧ T ⊆ {p' | Path.Homotopic p' p} := by
   obtain ⟨n, part, T_data, hp_in_tube⟩ := Path.exists_partition_in_slsc_neighborhoods p
@@ -273,7 +273,7 @@ public theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
 /-- In an SLSC locally path-connected space, for any path `p`, the set of paths homotopic to `p`
 is open. -/
 public theorem Path.isOpen_setOf_homotopic [SemilocallySimplyConnectedSpace X]
-    [LocPathConnectedSpace X] {x y : X} (p : Path x y) :
+    [LocallyPathConnectedSpace X] {x y : X} (p : Path x y) :
     IsOpen {p' : Path x y | Path.Homotopic p' p} := by
   apply isOpen_iff_mem_nhds.mpr
   intro q hq
@@ -285,7 +285,7 @@ public theorem Path.isOpen_setOf_homotopic [SemilocallySimplyConnectedSpace X]
 /-- In a semilocally simply connected, locally path-connected space, the quotient of paths by
 homotopy has the discrete topology. -/
 public instance Path.Homotopic.Quotient.discreteTopology
-    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X] {x y : X} :
+    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X] {x y : X} :
     DiscreteTopology (Path.Homotopic.Quotient x y) := by
   rw [discreteTopology_iff_isOpen_singleton]
   intro a

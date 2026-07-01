@@ -69,11 +69,9 @@ namespace UniversalCover
 variable {x₀ x : X}
 
 /-- Two `mk` values with the same endpoint are equal iff their homotopy classes are equal. -/
-@[simp]
 theorem mk_inj {x : X} {q₁ q₂ : Path.Homotopic.Quotient x₀ x} :
     mk x q₁ = mk x q₂ ↔ q₁ = q₂ := by
   simp [UniversalCover.mk.injEq]
-
 
 /-- The quotient map from based paths to endpoint/path-homotopy classes. -/
 @[expose] def ofBasedPath (x₀ : X) (α : BasedPath x₀) : UniversalCover x₀ :=
@@ -110,7 +108,6 @@ theorem isQuotientMap_ofBasedPath (x₀ : X) : IsQuotientMap (ofBasedPath x₀) 
   ⟨⟨rfl⟩, surjective_ofBasedPath x₀⟩
 
 /-- The projection of a pair in the universal cover is its endpoint. -/
-@[simp]
 theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
     proj (mk x q) = x := rfl
 
@@ -118,7 +115,7 @@ theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
 @[simp]
 theorem proj_ofBasedPath (x₀ : X) (γ : BasedPath x₀) :
     proj (ofBasedPath x₀ γ) = BasedPath.endpoint γ :=
-  (rfl)
+  rfl
 
 /-- Equal images under `ofBasedPath` have equal endpoints. -/
 theorem endpoint_eq_of_ofBasedPath_eq {α β : BasedPath x₀}
@@ -164,7 +161,7 @@ theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
 
 /-- The endpoint projection `UniversalCover x₀ → X` is an open map when `X` is locally
 path-connected. -/
-theorem isOpenMap_proj [LocPathConnectedSpace X] (x₀ : X) :
+theorem isOpenMap_proj [LocallyPathConnectedSpace X] (x₀ : X) :
     IsOpenMap (proj (x₀ := x₀)) := by
   intro s hs
   have hs_pre : IsOpen (ofBasedPath x₀ ⁻¹' s) :=
@@ -284,7 +281,7 @@ theorem ofBasedPath_mem_sheet_iff {U : Set X} {hxU : x ∈ U}
     ofBasedPath x₀ α ∈ sheet U hxU q ↔ α ∈ basedPathSheet U hxU q := by
   rw [← ofBasedPath_preimage_sheet U hxU q]; rfl
 
-theorem isOpen_sheet [LocPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
+theorem isOpen_sheet [LocallyPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
     (U : Set X) (hU_open : IsOpen U) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) :
     IsOpen (sheet U hxU q) := by
@@ -299,7 +296,7 @@ theorem mem_sheet_self {U : Set X} (hxU : x ∈ U) (p : Path x₀ x) :
     (by simpa [BasedPath.ofPath, BasedPath.endpoint_def, p.target] using hxU), rfl⟩
 
 /-- Sheet surjection onto `U`: every point of `U` is the projection of a point of the sheet. -/
-theorem sheet_surjOn [LocPathConnectedSpace X]
+theorem sheet_surjOn
     {U : Set X} (hU_pathConn : IsPathConnected U)
     (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
     (sheet U hxU q).SurjOn (proj (x₀ := x₀)) U := by
@@ -325,7 +322,7 @@ theorem sheet_surjOn [LocPathConnectedSpace X]
 
 /-- Sheets over the same good neighborhood, indexed by `Path.Homotopic.Quotient`, are pairwise
 disjoint. -/
-theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
+theorem sheet_pairwise_disjoint
     {U : Set X} (hU_slsc : IsPathHomotopyTrivial U) (hxU : x ∈ U) :
     Pairwise fun (q₁ q₂ : Path.Homotopic.Quotient x₀ x) ↦
       Disjoint (sheet U hxU q₁) (sheet U hxU q₂) := by
@@ -355,7 +352,7 @@ theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
       exact eq_of_heq ((UniversalCover.mk.injEq _ _ _ _).mp h_uc_eq).2
 
 /-- Sheets exhaust `proj ⁻¹' U`: every element of the preimage lies in some sheet. -/
-theorem sheet_exhaustive [LocPathConnectedSpace X]
+theorem sheet_exhaustive
     {U : Set X} (hU_pathConn : IsPathConnected U)
     (hxU : x ∈ U) :
     (proj (x₀ := x₀) ⁻¹' U) ⊆ ⋃ q : Path.Homotopic.Quotient x₀ x, sheet U hxU q := by
@@ -377,7 +374,7 @@ theorem sheet_exhaustive [LocPathConnectedSpace X]
   exact ⟨α, h_join.symm, rfl⟩
 
 /-- In a good neighborhood `U`, the projection `proj` is injective on each sheet. -/
-theorem sheet_proj_injOn [LocPathConnectedSpace X]
+theorem sheet_proj_injOn
     {U : Set X} (hU_slsc : IsPathHomotopyTrivial U)
     (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
     (sheet U hxU q).InjOn (proj (x₀ := x₀)) := by
