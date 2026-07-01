@@ -677,9 +677,9 @@ This is the continuous version of `LinearEquiv.ofLinear`.
 
 See also `ofContinuousLinearMap'`. -/
 def ofContinuousLinearMap' (h₁ : f₁ ∘SL f₂ = .id R₂ M₂) (h₂ : f₂ ∘SL f₁ = .id R₁ M₁) :
-    M₁ ≃SL[σ₁₂] M₂ where
-  toLinearEquiv := .ofLinear f₁ f₂
-    (ContinuousLinearMap.coe_inj.mpr h₁) (ContinuousLinearMap.coe_inj.mpr h₂)
+    M₁ ≃SL[σ₁₂] M₂ :=
+  ofContinuousLinearMap f₁ f₂
+    (fun x ↦ by simpa using congr($h₂ x)) (fun x ↦ by simpa using congr($h₁ x))
 
 @[simp]
 theorem coe_ofContinuousLinearMap' (h₁ h₂) : ⇑(ofContinuousLinearMap' f₁ f₂ h₁ h₂) = f₁ := rfl
