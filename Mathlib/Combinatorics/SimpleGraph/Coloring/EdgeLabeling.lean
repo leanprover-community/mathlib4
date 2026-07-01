@@ -305,16 +305,16 @@ theorem monochromaticBetween_compRight_iff_of_injective (e : K → K') (he : Fun
 
 namespace MonochromaticOf
 
-theorem of_subsingleton_set (hm : X.Subsingleton) : C.MonochromaticOf X k :=
+theorem of_setSubsingleton (hm : X.Subsingleton) : C.MonochromaticOf X k :=
   fun _ hx _ hy h ↦ (h.ne (hm hx hy)).elim
 
 @[simp]
 protected theorem empty : C.MonochromaticOf ∅ k :=
-  .of_subsingleton_set Set.subsingleton_empty
+  .of_setSubsingleton Set.subsingleton_empty
 
 @[simp]
 protected theorem singleton {x : V} : C.MonochromaticOf {x} k :=
-  .of_subsingleton_set Set.subsingleton_singleton
+  .of_setSubsingleton Set.subsingleton_singleton
 
 theorem of_subsingleton [Subsingleton K] : C.MonochromaticOf X k :=
   MonochromaticBetween.of_subsingleton
