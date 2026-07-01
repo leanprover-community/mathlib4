@@ -150,14 +150,12 @@ structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGr
   [Module k V] [AffineSpace V P] where
   /-- The affine subspace seen as a subset. -/
   carrier : Set P
-  smul_vsub_vadd_mem :
-    ∀ (c : k) {p₁ p₂ p₃ : P},
-      p₁ ∈ carrier → p₂ ∈ carrier → p₃ ∈ carrier → c • (p₁ -ᵥ p₂ : V) +ᵥ p₃ ∈ carrier
+  protected smul_vsub_vadd_mem' (c : k) {p₁ p₂ p₃ : P} :
+    p₁ ∈ carrier → p₂ ∈ carrier → p₃ ∈ carrier → c • (p₁ -ᵥ p₂ : V) +ᵥ p₃ ∈ carrier
 
 namespace AffineSubspace
 
-variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
-  [AffineSpace V P]
+variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 instance : SetLike (AffineSubspace k P) P where
   coe := carrier
@@ -167,11 +165,13 @@ instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) 
 
 @[simp] lemma carrier_eq_coe (s : AffineSubspace k P) : s.carrier = s := rfl
 
+lemma smul_vsub_vadd_mem (s : AffineSubspace k P) (c : k) {p₁ p₂ p₃ : P} :
+    p₁ ∈ s → p₂ ∈ s → p₃ ∈ s → c • (p₁ -ᵥ p₂ : V) +ᵥ p₃ ∈ s :=
+  s.smul_vsub_vadd_mem' c
+
 /-- A point is in an affine subspace coerced to a set if and only if it is in that affine
 subspace. -/
 theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s := by simp
-
-variable {k P}
 
 /-- Two affine subspaces are equal if they have the same points. -/
 theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P) :=
@@ -193,7 +193,7 @@ variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
 /-- Reinterprets `p : Submodule k V` as an `AffineSubspace k V`. -/
 @[coe] def toAffineSubspace (p : Submodule k V) : AffineSubspace k V where
   carrier := p
-  smul_vsub_vadd_mem _ _ _ _ h₁ h₂ h₃ := p.add_mem (p.smul_mem _ (p.sub_mem h₁ h₂)) h₃
+  smul_vsub_vadd_mem' _ _ _ _ h₁ h₂ h₃ := p.add_mem (p.smul_mem _ (p.sub_mem h₁ h₂)) h₃
 
 instance : Coe (Submodule k V) (AffineSubspace k V) := ⟨toAffineSubspace⟩
 
@@ -252,7 +252,8 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
     rintro _ _ ⟨p₁, hp₁, p₂, hp₂, rfl⟩ ⟨p₃, hp₃, p₄, hp₄, rfl⟩
     rw [← vadd_vsub_assoc]
     refine vsub_mem_vsub ?_ hp₄
-    convert! s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp₃
+    rw [mem_coe]
+    convert s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp₃
     rw [one_smul]
   smul_mem' := by
     rintro c _ ⟨p₁, hp₁, p₂, hp₂, rfl⟩
@@ -287,7 +288,7 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
   rw [mem_direction_iff_eq_vsub ⟨p, hp⟩] at hv
   rcases hv with ⟨p₁, hp₁, p₂, hp₂, hv⟩
   rw [hv]
-  convert! s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp
+  convert s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp
   rw [one_smul]
 
 /-- Subtracting two points in the subspace produces a vector in the direction. -/
@@ -386,7 +387,7 @@ theorem eq_iff_direction_eq_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h�
 /-- Construct an affine subspace from a point and a direction. -/
 def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P where
   carrier := { q | q -ᵥ p ∈ direction }
-  smul_vsub_vadd_mem c p₁ p₂ p₃ hp₁ hp₂ hp₃ := by
+  smul_vsub_vadd_mem' c p₁ p₂ p₃ hp₁ hp₂ hp₃ := by
     simpa [vadd_vsub_assoc] using
       direction.add_mem (direction.smul_mem c (direction.sub_mem hp₁ hp₂)) hp₃
 
@@ -463,7 +464,7 @@ variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 (Actually defined here in terms of spans in modules.) -/
 def affineSpan (s : Set P) : AffineSubspace k P where
   carrier := spanPoints k s
-  smul_vsub_vadd_mem c _ _ _ hp₁ hp₂ hp₃ :=
+  smul_vsub_vadd_mem' c _ _ _ hp₁ hp₂ hp₃ :=
     vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan k hp₃
       ((vectorSpan k s).smul_mem c
         (vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints k hp₁ hp₂))
@@ -542,11 +543,11 @@ instance : CompleteLattice (AffineSubspace k P) where
   inf_le_right := fun _ _ => Set.inter_subset_right
   top :=
     { carrier := Set.univ
-      smul_vsub_vadd_mem := fun _ _ _ _ _ _ _ => Set.mem_univ _ }
+      smul_vsub_vadd_mem' _ _ _ _ _ _ _ := Set.mem_univ _ }
   le_top := fun _ _ _ => Set.mem_univ _
   bot :=
     { carrier := ∅
-      smul_vsub_vadd_mem := fun _ _ _ _ => False.elim }
+      smul_vsub_vadd_mem' _ _ _ _ := False.elim }
   bot_le := fun _ _ => False.elim
   sSup := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
   sInf := fun s =>
