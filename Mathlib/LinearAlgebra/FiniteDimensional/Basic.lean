@@ -96,11 +96,11 @@ theorem _root_.Submodule.exists_linearEquiv_restrict_eq
   let eQ' := W'.prodEquivOfIsCompl Q' hQ'
   suffices Nonempty (Q ≃ₗ[K] Q') from
     ⟨eQ.symm ≪≫ₗ (LinearEquiv.prodCongr f this.some) ≪≫ₗ eQ', by aesop⟩
-  refine LinearEquiv.nonempty_equiv_iff_rank_eq.mpr ?_
+  refine Module.nonempty_linearEquiv_iff_rank_eq.mpr ?_
   rw [← Cardinal.add_right_inj_of_lt_aleph0 (γ := Module.rank K W),
-    add_comm, ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ⟩,
-    add_comm, LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨f⟩,
-    ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ'⟩]
+    add_comm, ← rank_prod', Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨eQ⟩,
+    add_comm, Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨f⟩,
+    ← rank_prod', Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨eQ'⟩]
   exact Module.rank_lt_aleph0 K ↥W
 
 section
