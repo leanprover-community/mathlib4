@@ -127,6 +127,26 @@ theorem eq_bot_of_one (H : Sylow 1 G) : (H : Subgroup G) = ⊥ :=
   have := isPGroup_one_iff_subsingleton.mp H.isPGroup'
   eq_bot_of_subsingleton _
 
+def equivProdPrimeFactors (h : p ≠ 0) : Sylow p G ≃ Sylow (p.primeFactors.prod id) G where
+  toFun H := { H with
+    isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mp H.isPGroup',
+    is_maximal' hQ := H.is_maximal' <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr hQ }
+  invFun H := { H with
+    isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr H.isPGroup',
+    is_maximal' hQ := H.is_maximal' <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mp hQ }
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simp]
+theorem coe_equivProdPrimeFactors_apply (h : p ≠ 0) (H : Sylow p G) :
+    (equivProdPrimeFactors h H : Subgroup G) = H :=
+  rfl
+
+@[simp]
+theorem coe_symm_equivProdPrimeFactors_apply (h : p ≠ 0) (H : Sylow (p.primeFactors.prod id) G) :
+    (equivProdPrimeFactors h |>.symm H : Subgroup G) = H :=
+  rfl
+
 variable (P : Sylow p G)
 
 variable {K : Type*} [Group K] (ϕ : K →* G) {N : Subgroup G}

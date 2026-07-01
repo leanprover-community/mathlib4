@@ -135,6 +135,20 @@ theorem _root_.isPGroup_off_exponent_eq_pow [Finite G] [Fact p.Prime] :
 
 alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_off_exponent_eq_pow
 
+theorem _root_.isPGroup_iff_isPGroup_prod_primeFactors (h : p ≠ 0) :
+    IsPGroup p G ↔ IsPGroup (p.primeFactors.prod id) G :=
+  ⟨(.of_pow <| ·.mono <| p.dvd_prod_primeFactors_pow_self h), .mono p.prod_primeFactors_dvd⟩
+
+theorem _root_.isPGroup_iff_primeFactors_card_subset [Finite G] (h : p ≠ 0) :
+    IsPGroup p G ↔ (Nat.card G).primeFactors ⊆ p.primeFactors := by
+  refine isPGroup_iff_card_dvd_pow.trans ⟨fun ⟨n, hn⟩ ↦ ?_, fun hG ↦ ?_⟩
+  · rcases eq_or_ne n 0 with (rfl | hn0)
+    · simp_all
+    grw [← Nat.primeFactors_pow p hn0, Nat.primeFactors_mono hn <| pow_ne_zero n h]
+  · refine ⟨Nat.card G, dvd_trans (Nat.dvd_prod_primeFactors_pow_self Nat.card_pos.ne') ?_⟩
+    apply pow_dvd_pow_of_dvd
+    exact dvd_trans (Finset.prod_dvd_prod_of_subset _ _ id hG) p.prod_primeFactors_dvd
+
 section GIsPGroup
 
 variable (hG : IsPGroup p G)
