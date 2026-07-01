@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.Diam
-public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Girth of a simple graph
