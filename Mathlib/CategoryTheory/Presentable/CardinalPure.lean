@@ -128,39 +128,16 @@ lemma isCardinalPure_le_monomorphisms [IsCardinalAccessibleCategory C κ] :
 set_option backward.defeqAttrib.useBackward true in
 /-- `κ`-pure morphisms are stable under `κ`-filtered colimits.
 (This is proposition 2.30 (i) in [Adamek_Rosicky_1994].) -/
-instance (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
+instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
     (isCardinalPure C κ).IsStableUnderColimitsOfShape J := by
   have := isFiltered_of_isCardinalFiltered J κ
   rw [MorphismProperty.isStableUnderColimitsOfShape_iff_colimitsOfShape_le]
   rintro _ _ f ⟨X, Y, c₁, c₂, hc₁, hc₂, f, hf⟩
-  generalize hf' : hc₁.desc (Cocone.mk c₂.pt (f ≫ c₂.ι)) = f'
-  have fac (j : J) : f.app j ≫ c₂.ι.app j = c₁.ι.app j ≫ f' := by simp [← hf']
-  dsimp at f' hf' fac
   refine ⟨fun {X' Y' t l r _ _} sq ↦ ?_⟩
-  dsimp at r
-  obtain ⟨j', l', r', _, _, sq'⟩ :
-      ∃ (j' : J) (l' : X' ⟶ X.obj j') (r' : Y' ⟶ Y.obj j'),
-        l' ≫ c₁.ι.app j' = l ∧ r' ≫ c₂.ι.app j' = r ∧ CommSq t l' r' (f.app j') := by
-    obtain ⟨j₁, l', hl'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hc₁ l
-    obtain ⟨j₂, r', hr'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hc₂ r
-    obtain ⟨j₃, a, b, _⟩ := IsFilteredOrEmpty.cocone_objs j₁ j₂
-    obtain ⟨j₄, c, hc⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
-      hc₂ (t ≫ r' ≫ Y.map b) (l' ≫ X.map a ≫ f.app j₃) (by
-        simp [dsimp% hr', fac, reassoc_of% dsimp% hl', sq.w])
-    exact ⟨j₄, l' ≫ X.map a ≫ X.map c, r' ≫ Y.map b ≫ Y.map c,
-      by cat_disch, by cat_disch, { }⟩
+  obtain ⟨j', l', r', _, _, sq'⟩ :=
+    IsCardinalPresentable.exists_commSq_of_isColimit κ f hc₁ hc₂ _ (by cat_disch) sq
   have := hf j'
   obtain ⟨ρ, hρ⟩ := IsCardinalPure.exists_of_commSq κ sq'
   exact ⟨ρ ≫ c₁.ι.app j', by cat_disch⟩
-
-open MorphismProperty in
-instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
-    (isCardinalPure C κ).IsStableUnderColimitsOfShape J := by
-  rw [isStableUnderColimitsOfShape_iff_colimitsOfShape_le,
-    colimitsOfShape_eq_of_equivalence _ (equivSmallModel.{w} J),
-    ← isStableUnderColimitsOfShape_iff_colimitsOfShape_le]
-  have : IsCardinalFiltered (SmallModel.{w} J) κ :=
-    IsCardinalFiltered.of_equivalence _ (equivSmallModel.{w} J)
-  infer_instance
 
 end CategoryTheory
