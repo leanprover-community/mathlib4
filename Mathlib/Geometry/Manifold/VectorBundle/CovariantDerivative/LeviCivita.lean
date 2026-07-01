@@ -262,10 +262,10 @@ lemma IsLeviCivitaConnection.eventually_contMDiffAt_apply (k : ℕ∞) [FiniteDi
     (hY : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Y) b)
     (hZ : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Z) b) :
     ∀ᶠ (b : M) in nhds x, CMDiffAt k (fun x ↦ ⟪(cov Y x) (X x), Z x⟫) b := by
-  have a : IsManifold I ((k + 1) + 1) M := by
-    rw [show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]; infer_instance
   have : IsManifold I (minSmoothness ℝ 2) M := by simpa
-  have : IsManifold I (↑(k + 1) + 1) M := by simpa
+  have : IsManifold I (↑(k + 1) + 1) M := by
+    rw [WithTop.coe_add, WithTop.coe_one, show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]
+    infer_instance
   have : IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x) :=
     IsContMDiffRiemannianBundle.of_le (n := k + 1) (by simp)
   suffices computation : ∀ᶠ (b : M) in nhds x, CMDiffAt k
@@ -293,14 +293,17 @@ lemma IsLeviCivitaConnection.eventually_contMDiffAt_apply (k : ℕ∞) [FiniteDi
   · exact hX.inner_bundle' hY
   · apply ContMDiffAt.inner_bundle'
     · exact hY.of_le (by simp)
-    · exact ContMDiffAt.mlieBracket_vectorField (n := k + 1) hX hZ (by simp)
+    · exact ContMDiffAt.mlieBracket_vectorField hX hZ (by simp)
   · apply ContMDiffAt.inner_bundle'
     · exact hZ.of_le (by simp)
-    · exact ContMDiffAt.mlieBracket_vectorField (n := k + 1) hY hX (by norm_num)
+    · exact ContMDiffAt.mlieBracket_vectorField hY hX (by norm_num)
   · apply ContMDiffAt.inner_bundle'
     · exact hX.of_le (by simp)
-    · exact ContMDiffAt.mlieBracket_vectorField (n := k + 1) hZ hY (by norm_num)
+    · exact ContMDiffAt.mlieBracket_vectorField hZ hY (by norm_num)
 
+/-- Suppose `(M, g)` is a `C^{k+2}` manifold with a `C^{k+1}` Riemannian metric.
+Then Levi-Civita connection, applied to `C^{k+1}` vector fields near `x`,
+yields a `C^k` vector field at `x`. -/
 lemma IsLeviCivitaConnection.contMDiffAt_apply (k : ℕ∞) [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
     [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
@@ -312,7 +315,6 @@ lemma IsLeviCivitaConnection.contMDiffAt_apply (k : ℕ∞) [FiniteDimensional �
     CMDiffAt k (fun x ↦ ⟪(cov Y x) (X x), Z x⟫) x :=
   h.eventually_contMDiffAt_apply k hX hY hZ |>.self_of_nhds
 
--- TODO: this proof can be drastically golfed to use the above lemma!
 /-- Suppose `(M, g)` is a `C^{k+2}` manifold with a `C^{k+1}` Riemannian metric.
 Then Levi-Civita connection, applied to `C^{k+1}` vector fields, yields a `C^k` vector field. -/
 lemma IsLeviCivitaConnection.contMDiff_apply (k : ℕ∞) [FiniteDimensional ℝ E]
@@ -321,35 +323,8 @@ lemma IsLeviCivitaConnection.contMDiff_apply (k : ℕ∞) [FiniteDimensional ℝ
     (h : cov.IsLeviCivitaConnection)
     {X Y Z : (x : M) → TangentSpace% x}
     (hX : CMDiff (k + 1) (T% X)) (hY : CMDiff (k + 1) (T% Y)) (hZ : CMDiff (k + 1) (T% Z)) :
-    CMDiff k (fun x ↦ ⟪(cov Y x) (X x), Z x⟫) := by
-  have a : IsManifold I ((k + 1) + 1) M := by
-    rw [show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]; infer_instance
-  have : IsManifold I (minSmoothness ℝ 2) M := by simpa
-  have : IsManifold I (↑(k + 1) + 1) M := by simpa
-  have : IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x) :=
-    IsContMDiffRiemannianBundle.of_le (n := k + 1) (by simp)
-  have a (x) := h.apply_eq (hX.mdifferentiableAt (by simp))
-    (hY.mdifferentiableAt (by simp)) (hZ.mdifferentiableAt (by simp) (x := x))
-  simp_rw [a]
-  -- Future: automate this using fun_prop!
-  apply ContMDiff.div_const
-  repeat apply ContMDiff.add
-  all_goals
-    try apply ContMDiff.neg
-    try apply ContMDiff.mvfderiv
-  all_goals try assumption
-  · exact hY.inner_bundle' hZ
-  · exact hZ.inner_bundle' hX
-  · exact hX.inner_bundle' hY
-  · apply ContMDiff.inner_bundle'
-    · exact hY.of_le (by simp)
-    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hX hZ (by simp)
-  · apply ContMDiff.inner_bundle'
-    · exact hZ.of_le (by simp)
-    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hY hX (by norm_num)
-  · apply ContMDiff.inner_bundle'
-    · exact hX.of_le (by simp)
-    · exact ContDiff.mlieBracket_vectorField (n := k + 1) hZ hY (by norm_num)
+    CMDiff k (fun x ↦ ⟪(cov Y x) (X x), Z x⟫) :=
+  fun _ ↦ h.contMDiffAt_apply k (Filter.univ_mem' hX) (Filter.univ_mem' hY) (Filter.univ_mem' hZ)
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
 
