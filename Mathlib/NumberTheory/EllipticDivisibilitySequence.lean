@@ -56,8 +56,8 @@ Some examples of EDSs include
 * `IsEllipticNet.atomRel`: the elliptic relator `ERₐ(p, q, r, s)` indexed by `ℤ`.
 * `IsEllipticNet.rel`: the elliptic relator `ER(a, b, c, d)` indexed by `ℤ`.
 * `IsEllipticNet`: a sequence indexed by `ℤ` is an elliptic net.
-* `IsEllSequence`: a sequence indexed by `ℤ` is an elliptic sequence.
-* `IsEllDvdSequence`: a sequence indexed by `ℤ` is an EDS.
+* `IsEllipticSequence`: a sequence indexed by `ℤ` is an elliptic sequence.
+* `IsEllipticDvdSequence`: a sequence indexed by `ℤ` is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
 * `complEDS₂`: the 2-complement sequence for a normalised EDS indexed by `ℕ`.
@@ -67,8 +67,8 @@ Some examples of EDSs include
 
 ## Main statements
 
-* TODO: prove that `normEDS` satisfies `IsEllDvdSequence`.
-* TODO: prove that a sequence satisfying `IsEllDvdSequence` can be normalised to give `normEDS`.
+* TODO: prove that `normEDS` satisfies `IsEllipticDvdSequence`.
+* TODO: prove that a sequence satisfying `IsEllipticDvdSequence` can be normalised to give `normEDS`.
 
 ## Implementation notes
 
@@ -287,47 +287,60 @@ def IsEllipticNet : Prop :=
   ∀ a b c d : ℤ, IsEllipticNet.rel W a b c d = 0
 
 /-- The proposition that a sequence indexed by `ℤ` is an elliptic sequence. -/
-def IsEllSequence : Prop :=
+def IsEllipticSequence : Prop :=
   ∀ a b c : ℤ, IsEllipticNet.rel W a b c 0 = 0
 
-/-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
-def IsEllDvdSequence : Prop :=
-  IsEllSequence W ∧ IsDvdSequence W
+@[deprecated (since := "2026-07-01")] alias IsEllSequence := IsEllipticSequence
 
-@[deprecated (since := "2026-06-30")] alias IsEllDivSequence := IsEllDvdSequence
+/-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
+def IsEllipticDvdSequence : Prop :=
+  IsEllipticSequence W ∧ IsDvdSequence W
+
+@[deprecated (since := "2026-07-01")] alias IsEllDvdSequence := IsEllipticDvdSequence
+@[deprecated (since := "2026-06-30")] alias IsEllipticDivSequence := IsEllipticDvdSequence
+@[deprecated (since := "2026-06-30")] alias IsEllDivSequence := IsEllipticDvdSequence
 
 variable {W} in
-lemma IsEllipticNet.isEllSequence (h : IsEllipticNet W) : IsEllSequence W :=
+lemma IsEllipticNet.isEllipticSequence (h : IsEllipticNet W) : IsEllipticSequence W :=
   (h · · · 0)
+
+@[deprecated (since := "2026-07-01")] alias IsEllipticNet.isEllSequence :=
+  IsEllipticNet.isEllipticSequence
 
 variable {W} in
 lemma IsEllipticNet.smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W := fun a b c d ↦ by
   linear_combination (norm := (simp_rw [rel, Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h a b c d
 
 variable {W} in
-lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence <| x • W := fun a b c ↦ by
-  linear_combination (norm := (simp_rw [IsEllipticNet.rel, Pi.smul_apply, smul_eq_mul]; ring1))
-    x ^ 4 * h a b c
+lemma IsEllipticSequence.smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| x • W :=
+  fun a b c ↦ by linear_combination (norm := (simp [IsEllipticNet.rel]; ring1)) x ^ 4 * h a b c
+
+@[deprecated (since := "2026-07-01")] alias IsEllSequence.smul := IsEllipticSequence.smul
 
 variable {W} in
-lemma IsEllDvdSequence.smul (h : IsEllDvdSequence W) (x : R) : IsEllDvdSequence (x • W) :=
+lemma IsEllipticDvdSequence.smul (h : IsEllipticDvdSequence W) (x : R) :
+    IsEllipticDvdSequence <| x • W :=
   ⟨h.left.smul x, h.right.smul x⟩
 
-@[deprecated (since := "2026-06-30")] alias IsEllDivSequence.smul := IsEllDvdSequence.smul
+@[deprecated (since := "2026-07-01")] alias IsEllDvdSequence.smul := IsEllipticDvdSequence.smul
+@[deprecated (since := "2026-06-30")] alias IsEllipticDivSequence.smul := IsEllipticDvdSequence.smul
+@[deprecated (since := "2026-06-30")] alias IsEllDivSequence.smul := IsEllipticDvdSequence.smul
 
 lemma isEllipticNet_id : IsEllipticNet id :=
   fun _ _ _ _ ↦ by simp_rw [IsEllipticNet.rel, id_eq]; ring1
 
-lemma isEllSequence_id : IsEllSequence id :=
-  isEllipticNet_id.isEllSequence
+lemma isEllipticSequence_id : IsEllipticSequence id :=
+  isEllipticNet_id.isEllipticSequence
 
-@[deprecated (since := "2026-06-30")] alias isDvdSequence_id := IsDvdSequence.id
+@[deprecated (since := "2026-07-01")] alias isEllSequence_id := isEllipticSequence_id
 
 /-- The identity sequence is an EDS. -/
-theorem isEllDvdSequence_id : IsEllDvdSequence id :=
-  ⟨isEllSequence_id, .id ℤ⟩
+theorem isEllipticDvdSequence_id : IsEllipticDvdSequence id :=
+  ⟨isEllipticSequence_id, .id ℤ⟩
 
-@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := isEllDvdSequence_id
+@[deprecated (since := "2026-07-01")] alias isEllDvdSequence_id := isEllipticDvdSequence_id
+@[deprecated (since := "2026-06-30")] alias isEllipticDivSequence_id := isEllipticDvdSequence_id
+@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := isEllipticDvdSequence_id
 
 variable (b c d : R)
 
