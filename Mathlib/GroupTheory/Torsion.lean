@@ -90,7 +90,7 @@ section Group
 variable [Group G] {N : Subgroup G} [Group H]
 
 /-- Subgroups of torsion groups are torsion groups. -/
-@[to_additive /-- Subgroups of torsion additive groups are torsion additive groups. -/]
+@[to_additive /-- Additive subgroups of torsion additive groups are torsion additive groups. -/]
 theorem IsMulTorsion.subgroup (tG : IsMulTorsion G) (H : Subgroup G) : IsMulTorsion H := fun h ↦
   Submonoid.isOfFinOrder_coe.1 <| tG h
 
@@ -224,9 +224,9 @@ namespace CommMonoid
 
 /-- The torsion submonoid of a commutative monoid.
 
-(Note that by `Monoid.IsMulTorsion.group` torsion monoids are truthfully groups.)
+(Note that by `IsMulTorsion.group` torsion monoids are truthfully groups.)
 -/
-@[to_additive addTorsion /-- The torsion submonoid of an additive commutative monoid. -/]
+@[to_additive addTorsion /-- The torsion additive submonoid of an additive commutative monoid. -/]
 def torsion : Submonoid G where
   carrier := { x | IsOfFinOrder x }
   one_mem' := IsOfFinOrder.one
@@ -317,12 +317,12 @@ variable {G}
 
 /-- The torsion submonoid of a torsion monoid is `⊤`. -/
 @[to_additive (attr := simp)
-/-- The torsion additive submonoid of an torsion additive monoid is `⊤`. -/]
+/-- The torsion additive submonoid of a torsion additive monoid is `⊤`. -/]
 theorem torsion_eq_top (tG : IsMulTorsion G) : torsion G = ⊤ := by ext; tauto
 
 /-- A torsion monoid is isomorphic to its torsion submonoid. -/
 @[to_additive (attr := simps!)
-/-- An torsion additive monoid is isomorphic to its torsion submonoid. -/]
+/-- A torsion additive monoid is isomorphic to its torsion additive submonoid. -/]
 def torsionMulEquiv (tG : IsMulTorsion G) : torsion G ≃* G :=
   (MulEquiv.submonoidCongr tG.torsion_eq_top).trans Submonoid.topEquiv
 
@@ -350,7 +350,7 @@ end IsMulTorsion
 
 /-- Torsion submonoids of a torsion submonoid are isomorphic to the submonoid. -/
 @[to_additive (attr := simp)
-/-- Torsion additive submonoids of an torsion additive submonoid are
+/-- Torsion additive submonoids of a torsion additive submonoid are
 isomorphic to the additive submonoid. -/]
 def CommMonoid.Torsion.ofTorsion : torsion (torsion G) ≃* torsion G :=
   IsMulTorsion.torsionMulEquiv CommMonoid.torsion.isMulTorsion
@@ -366,14 +366,14 @@ variable (G) [CommGroup G] [CommGroup H]
 namespace CommGroup
 
 /-- The torsion subgroup of an abelian group. -/
-@[to_additive /-- The torsion subgroup of an additive abelian group. -/]
+@[to_additive /-- The torsion additive subgroup of an additive abelian group. -/]
 def torsion : Subgroup G :=
   { CommMonoid.torsion G with inv_mem' := fun hx ↦ IsOfFinOrder.inv hx }
 
 /-- The torsion submonoid of an abelian group equals the torsion subgroup as a submonoid. -/
 @[to_additive
 /-- The torsion additive submonoid of an abelian group equals the torsion
-subgroup as a submonoid. -/]
+additive subgroup as an additive submonoid. -/]
 theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubmonoid :=
   rfl
 
@@ -512,7 +512,8 @@ open CommGroup (torsion)
 
 /-- Quotienting a group by its torsion subgroup yields a torsion-free group. -/
 @[to_additive
-/-- Quotienting a group by its torsion additive subgroup yields an torsion-free additive group. -/]
+/-- Quotienting an additive group by its torsion additive subgroup yields a torsion-free additive
+group. -/]
 instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
   obtain ⟨g⟩ := g

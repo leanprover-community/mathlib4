@@ -175,7 +175,7 @@ theorem finite_of_fg_isMulTorsion [CommGroup G] [Group.FG G] (hG : IsMulTorsion 
 @[deprecated (since := "2026-07-01")] alias finite_of_fg_torsion := finite_of_fg_isMulTorsion
 
 /-- The **Structure Theorem For Finite Abelian Groups** in a multiplicative version:
-A finite commutative group `G` is isomorphic to a finite product of finite cyclic groups. -/
+A finite abelian group `G` is isomorphic to a finite product of finite cyclic groups. -/
 theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (n : ι → ℕ),
        (∀ (i : ι), 1 < n i) ∧ Nonempty (G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) := by
@@ -183,9 +183,9 @@ theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Fini
   exact ⟨ι, inst, n, h₁, ⟨MulEquiv.toAdditive.symm <| h₂.some.trans <|
     (DirectSum.addEquivProd _).trans (MulEquiv.piMultiplicative _).toAdditiveRight⟩⟩
 
-/-- The **Structure theorem of finitely generated abelian groups** in a multiplicative version :
-    Any finitely generated abelian group is the product of a power of `ℤ`
-    and a direct product of some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
+/-- The **Structure theorem of finitely generated abelian groups** in a multiplicative version:
+Any finitely generated abelian group is the product of a power of `ℤ`
+and a direct product of some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
 theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [CommGroup G] [hG : Group.FG G] :
     ∃ (ι j : Type) (_ : Fintype ι) (_ : Fintype j) (p : ι → ℕ)
     (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
