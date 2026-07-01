@@ -844,11 +844,11 @@ end Basic
 
 -- TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
 
-nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
+theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]
 
-nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
+theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
     (∫ x in a..b, (f x : ℂ) ∂μ) = ↑(∫ x in a..b, f x ∂μ) :=
   RCLike.intervalIntegral_ofReal
 
@@ -959,7 +959,7 @@ theorem integral_comp_add_right (d) : (∫ x in a..b, f (x + d)) = ∫ x in a + 
     _ = ∫ x in a + d..b + d, f x := by rw [map_add_right_eq_self]
 
 @[simp]
-nonrec theorem integral_comp_add_left (d) :
+theorem integral_comp_add_left (d) :
     (∫ x in a..b, f (d + x)) = ∫ x in d + a..d + b, f x := by
   simpa only [add_comm d] using integral_comp_add_right f d
 

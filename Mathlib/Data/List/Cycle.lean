@@ -750,7 +750,7 @@ nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α)
   Quotient.inductionOn' s prev_reverse_eq_next
 
 @[simp]
-nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
+theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
     (hx : x ∈ s.reverse) :
     s.reverse.prev hs x hx = s.next (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) :=
   prev_reverse_eq_next s (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx)
@@ -797,7 +797,7 @@ unsafe instance [Repr α] : Repr (Cycle α) :=
 /-- `chain R s` means that `R` holds between adjacent elements of `s`.
 
 `chain R ([a, b, c] : Cycle α) ↔ R a b ∧ R b c ∧ R c a` -/
-nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
+def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
   Quotient.liftOn' c
     (fun l =>
       match l with

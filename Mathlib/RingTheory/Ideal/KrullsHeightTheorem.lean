@@ -181,7 +181,7 @@ open IsLocalRing in
 /-- **Krull's height theorem** (also known as **Krullscher Höhensatz**) :
   In a commutative Noetherian ring `R`, any prime ideal that is minimal over an ideal generated
   by `n` elements has height at most `n`. -/
-nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
+lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
     (I : Ideal R) (p : Ideal R) (hp : p ∈ I.minimalPrimes) :
     p.height ≤ I.spanRank.toENat := by
   classical

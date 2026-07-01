@@ -431,7 +431,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
   exact ⟨fun _ ↦ .trans _ (Localization.AtPrime (x.asIdeal.under R)) _,
     fun _ ↦ .of_restrictScalars R _ _⟩
 
-nonrec lemma Scheme.Hom.QuasiFiniteAt.isClopen_singleton_asFiber
+lemma Scheme.Hom.QuasiFiniteAt.isClopen_singleton_asFiber
     [LocallyOfFiniteType f] {x : X} (hx : f.QuasiFiniteAt x) : IsClopen {f.asFiber x} := by
   have := Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber.mp ‹_›
   exact ⟨isClosed_singleton_of_isLocallyClosed_singleton this.isLocallyClosed, this⟩

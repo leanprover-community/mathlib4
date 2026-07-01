@@ -191,7 +191,7 @@ section FDerivProperties
 
 /-! ### Basic properties of the derivative -/
 
-nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' L₂) (hst : L₁ ≤ L₂) :
+theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' L₂) (hst : L₁ ≤ L₂) :
     HasFDerivAtFilter f f' L₁ :=
   .of_isLittleOTVS <| h.isLittleOTVS.mono hst
 

@@ -439,7 +439,7 @@ theorem IsPathConnected.inv {G : Type*} [InvolutiveInv G] [TopologicalSpace G] [
   ⟨a⁻¹, inv_mem_inv.mpr ha_mem, fun x hx ↦ by simpa using ha (mem_inv.mp hx) |>.map continuous_inv⟩
 
 /-- If `f : X → Y` is an inducing map, `f(F)` is path-connected iff `F` is. -/
-nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
+theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   simp only [IsPathConnected, forall_mem_image, exists_mem_image]
   refine exists_congr fun x ↦ and_congr_right fun hx ↦ forall₂_congr fun y hy ↦ ?_

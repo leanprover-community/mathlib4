@@ -213,8 +213,8 @@ protected nonrec theorem ContinuousWithinAt.nhds (h : ContinuousWithinAt f s x) 
 protected nonrec theorem ContinuousAt.nhds (h : ContinuousAt f x) : ContinuousAt (𝓝 ∘ f) x :=
   h.nhds
 
-protected nonrec theorem ContinuousOn.nhds (h : ContinuousOn f s) : ContinuousOn (𝓝 ∘ f) s :=
+protected theorem ContinuousOn.nhds (h : ContinuousOn f s) : ContinuousOn (𝓝 ∘ f) s :=
   fun x hx => (h x hx).nhds
 
-protected nonrec theorem Continuous.nhds (h : Continuous f) : Continuous (𝓝 ∘ f) :=
+protected theorem Continuous.nhds (h : Continuous f) : Continuous (𝓝 ∘ f) :=
   Filter.continuous_nhds.comp h

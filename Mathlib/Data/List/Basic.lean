@@ -720,7 +720,7 @@ nonrec theorem _root_.Function.RightInverse.list_map {f : α → β} {g : β →
     (h : RightInverse f g) : RightInverse (map f) (map g) :=
   h.list_map
 
-nonrec theorem _root_.Function.Involutive.list_map {f : α → α}
+theorem _root_.Function.Involutive.list_map {f : α → α}
     (h : Involutive f) : Involutive (map f) :=
   Function.LeftInverse.list_map h
 
