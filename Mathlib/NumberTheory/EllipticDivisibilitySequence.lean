@@ -68,7 +68,7 @@ Some examples of EDSs include
 ## Main statements
 
 * TODO: prove that `normEDS` satisfies `IsEllipticDvdSequence`.
-* TODO: prove that a sequence satisfying `IsEllipticDvdSequence` can be normalised to give `normEDS`.
+* TODO: prove that a sequence satisfying `IsEllipticDvdSequence` can be normalised to a `normEDS`.
 
 ## Implementation notes
 
