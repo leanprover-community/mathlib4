@@ -363,12 +363,6 @@ lemma sub_bot {x : EReal} (h : x ≠ ⊥) : x - ⊥ = ⊤ := by
 lemma top_sub {x : EReal} (hx : x ≠ ⊤) : ⊤ - x = ⊤ := by
   cases x <;> tauto
 
-lemma top_sub_eq_top_or_bot {a : EReal} : ⊤ - a = ⊤ ∨ ⊤ - a = ⊥ := by
-  cases a with
-  | bot => simp
-  | coe a => simp
-  | top => simp
-
 @[simp]
 lemma sub_self {x : EReal} (h_top : x ≠ ⊤) (h_bot : x ≠ ⊥) : x - x = 0 := by
   cases x <;> simp_all [← coe_sub]

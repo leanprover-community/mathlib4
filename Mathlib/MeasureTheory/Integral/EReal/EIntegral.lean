@@ -258,7 +258,7 @@ lemma eintegral_strict_mono_ae (hμ : μ ≠ 0) (hg : AEMeasurable g μ) (hf : A
         · exact EReal.neg_lt_neg_iff.mpr (h_neg hxs).2
     · by_contra! h
       simp_all only [ne_eq, eintegral, EReal.coe_ennreal_eq_top_iff]
-      cases EReal.top_sub_eq_top_or_bot (a := ∫⁻ (x : α), (-g x).toENNReal ∂μ) <;> simp_all
+      by_cases h_neg_top : ∫⁻ x, (-g x).toENNReal ∂μ = ∞ <;> simp_all
   · refine EReal.sub_lt_sub_of_lt_of_le ?_ ?_ (by simp) (by simpa)
     · norm_cast
       refine lintegral_strict_mono_of_ae_le_of_ae_lt_on (by fun_prop) ?_ ?_ hμs ?_
