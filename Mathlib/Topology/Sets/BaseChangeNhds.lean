@@ -100,8 +100,6 @@ variable {β : Type u_1} [TopologicalSpace β] {f : α → β} (proper_f : IsPro
 def properPreimage (K : Compacts β) : Compacts α :=
   ⟨f ⁻¹' K.carrier, IsProperMap.isCompact_preimage proper_f K.isCompact'⟩
 
-#find_home! properPreimage
-
 lemma properPreimage_mono : Monotone (properPreimage proper_f) :=
   fun _ _ h ↦ preimage_mono (f := f) h
 
