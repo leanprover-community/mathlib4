@@ -231,7 +231,7 @@ theorem hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair [HasLi
         PullbackCone.mk (weakEqualizer.ι (prod.fst ≫ f) (prod.snd ≫ g) ≫ prod.fst)
           (weakEqualizer.ι _ _ ≫ prod.snd) <| by
           rw [Category.assoc, weakEqualizer.condition]
-          simp 
+          simp
       isWeakLimit :=
         PullbackCone.IsWeakLimit.mk _ (fun s ↦ weakEqualizer.lift
           (prod.lift (s.π.app .left) (s.π.app .right)) <| by
