@@ -329,8 +329,7 @@ refined by replacing the colimit map in the bottom by a morphism
 `f.app j : X.obj j ⟶ Y.obj j` for a big enough `j`. -/
 lemma IsCardinalPresentable.exists_commSq_of_isColimit
     {J : Type*} [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
-    {X Y : J ⥤ C} (f : X ⟶ Y)
-    {c₁ : Cocone X} {c₂ : Cocone Y}
+    {X Y : J ⥤ C} (f : X ⟶ Y) {c₁ : Cocone X} {c₂ : Cocone Y}
     (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂)
     (f' : c₁.pt ⟶ c₂.pt) (hf' : ∀ (j : J), c₁.ι.app j ≫ f' = f.app j ≫ c₂.ι.app j)
     ⦃X' Y' : C⦄ ⦃t : X' ⟶ Y'⦄ ⦃l : X' ⟶ c₁.pt⦄ ⦃r : Y' ⟶ c₂.pt⦄
