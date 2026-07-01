@@ -260,7 +260,7 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
 
 open Filter in
 /-- Converse to the integral test: a nonnegative, integrable, summable function is integrable. -/
-theorem AntitoneOn.integrable_of_summable_comp_add {N : ℕ} (anti : AntitoneOn f (Ici (N : ℝ)))
+theorem AntitoneOn.integrableOn_Ioi_of_summable_comp_add {N : ℕ} (anti : AntitoneOn f (Ici (N : ℝ)))
     (summable : Summable (fun n ↦ f (n + N : ℕ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
     IntegrableOn f (Ioi (N : ℝ)) := by
   refine integrableOn_Ioi_of_intervalIntegral_norm_bounded (∑' (n : ℕ), f (n + N : ℕ)) _ ?_
