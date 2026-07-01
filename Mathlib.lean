@@ -6975,6 +6975,7 @@ public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.RingTheory.SimpleRing.Congr
 public import Mathlib.RingTheory.SimpleRing.Defs
+public import Mathlib.RingTheory.SimpleRing.DivisionRing
 public import Mathlib.RingTheory.SimpleRing.Field
 public import Mathlib.RingTheory.SimpleRing.Matrix
 public import Mathlib.RingTheory.SimpleRing.Principal
