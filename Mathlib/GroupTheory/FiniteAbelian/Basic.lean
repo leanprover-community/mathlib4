@@ -158,16 +158,20 @@ lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
   rintro ⟨i, hi⟩
   exact one_lt_pow₀ (hp _).one_lt hi
 
-theorem finite_of_fg_torsion [hG' : AddGroup.FG G] (hG : IsAddTorsion G) : Finite G :=
+theorem finite_of_fg_isAddTorsion [hG' : AddGroup.FG G] (hG : IsAddTorsion G) : Finite G :=
   @Module.finite_of_fg_torsion _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG') <|
     isAddTorsion_iff_isTorsion_int.mp hG
+
+@[deprecated (since := "2026-07-01")] alias finite_of_fg_isMulTorsion := finite_of_fg_isAddTorsion
 
 end AddCommGroup
 
 namespace CommGroup
 
-theorem finite_of_fg_torsion [CommGroup G] [Group.FG G] (hG : IsMulTorsion G) : Finite G :=
-  @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_torsion (Additive G) hG) Multiplicative.ofAdd
+theorem finite_of_fg_isMulTorsion [CommGroup G] [Group.FG G] (hG : IsMulTorsion G) : Finite G :=
+  @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_isAddTorsion (Additive G) hG) Multiplicative.ofAdd
+
+@[deprecated (since := "2026-07-01")] alias finite_of_fg_torsion := finite_of_fg_isMulTorsion
 
 /-- The **Structure Theorem For Finite Abelian Groups** in a multiplicative version:
 A finite commutative group `G` is isomorphic to a finite product of finite cyclic groups. -/
@@ -199,7 +203,7 @@ namespace Subgroup
 lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A] {n : ℕ}
     (hn : n ≠ 0) :
     (powMonoidHom (α := A) n).range.FiniteIndex :=
-  finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ <|
+  finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_isMulTorsion _ <|
     CommGroup.isMulTorsion_quotient_range_powMonoidHom A hn
 
 @[to_additive]
