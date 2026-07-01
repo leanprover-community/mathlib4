@@ -669,9 +669,9 @@ open Mathlib.Linter.Style.nameCheck
 #guard !isWronglyCased "leOne"
 -- One-letter names are not acronyms.
 #guard isWronglyCasedName "A"
-#guard !isWronglyCasedName "A_b" -- bug!
-#guard !isWronglyCasedName "a_B" -- bug!
-#guard !isWronglyCasedName "a_BE" -- bug!
+#guard isWronglyCasedName "A_b"
+#guard isWronglyCasedName "a_B"
+#guard !isWronglyCasedName "a_BE"
 -- False negative.
 #guard !isWronglyCased "a_BA"
 

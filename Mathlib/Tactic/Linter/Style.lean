@@ -533,7 +533,7 @@ def isWronglyCased (s : String.Slice) : Bool :=
 
 /-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
 def isWronglyCasedName (s : String) : Bool :=
-  (s.split "_").toList.all (fun t ↦ isWronglyCased t)
+  (s.split "_").toList.any (fun t ↦ isWronglyCased t)
 
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
