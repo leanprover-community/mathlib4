@@ -512,7 +512,9 @@ should indeed be lower-cased as `_le` and `_tfae` following the style convention
 See #34440 for more details.
 -/
 def isAcronymLike (s : String.Slice) : Bool :=
-  s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || "'₀₁₂₃₄₅₆₇₈₉".contains c)
+  -- A single letter is not an acronym.
+  s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || "'₀₁₂₃₄₅₆₇₈₉".contains c) &&
+    s.positions.length != 1
 
 /-- Explicit allow-list of naming components which are allowed to be in uppercase. -/
 def allowed : Array String.Slice := #[
