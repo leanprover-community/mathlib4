@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 import Mathlib.Analysis.Normed.Module.HahnBanach
-import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # The semivariation of a vector measure
@@ -74,7 +73,7 @@ lemma semivariation_le_variation : μ.semivariation s ≤ μ.variation s := by
   apply variation_le_of_forall_enorm_le (fun t ht ↦ ?_)
   simp only [mapRange_apply, AddMonoidHom.coe_coe]
   apply le_trans ?_ (enorm_measure_le_variation _ _)
-  exact (ContinuousLinearMap.le_opNorm_enorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
+  exact (ContinuousLinearMap.le_opENorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
 
 lemma enorm_apply_le_semivariation : ‖μ s‖ₑ ≤ μ.semivariation s := by
   by_cases hs : MeasurableSet s; swap
@@ -102,7 +101,7 @@ lemma exists_subset_lt_enorm_apply_of_lt_semivariation (hs : MeasurableSet s)
     SignedMeasure.exists_subset_lt_enorm_apply_of_lt_variation _ hs h'ℓ
   refine ⟨t, ts, t_meas, ht.trans_le ?_⟩
   gcongr
-  exact (ContinuousLinearMap.le_opNorm_enorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
+  exact (ContinuousLinearMap.le_opENorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
 
 private lemma exists_one_le_enorm_apply_of_semivariation_eq_top
     (hs : MeasurableSet s) (h's : μ.semivariation s = ∞) :

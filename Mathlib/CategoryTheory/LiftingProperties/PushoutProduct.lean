@@ -68,7 +68,7 @@ lemma hasLiftingProperty_mk_iff' [HasPushouts C] [HasPullbacks C]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `(∅ ⟶ B) □ g` lifts against `X ⟶ Y` if and only if `g` lifts against `B ⟹ X ⟶ B ⟹ Y`. -/
-lemma hasLiftingProperty_mk_isInitial_iff [HasPushouts C] [HasPullbacks C]
+lemma hasLiftingProperty_mk_isInitial_iff [HasPushouts C]
     [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     {A B K L X Y : C} {g : K ⟶ L} {h : X ⟶ Y}
     (i : IsInitial A) :
@@ -80,7 +80,7 @@ lemma hasLiftingProperty_mk_isInitial_iff [HasPushouts C] [HasPullbacks C]
   exact Adjunction.hasLiftingProperty_iff (ihom.adjunction B) g h
 
 /-- `f □ (∅ ⟶ L)` lifts against `X ⟶ Y` if and only if `f` lifts against `L ⟹ X ⟶ L ⟹ Y`. -/
-lemma hasLiftingProperty_mk_isInitial_iff' [HasPushouts C] [HasPullbacks C]
+lemma hasLiftingProperty_mk_isInitial_iff' [HasPushouts C]
     [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     {A B K L X Y : C} {f : A ⟶ B} {h : X ⟶ Y}
     (i : IsInitial K) :
@@ -100,7 +100,7 @@ lemma hasLiftingProperty_mk_isTerminal_iff [HasPushouts C] [HasPullbacks C]
   exact HasLiftingProperty.iff_of_arrow_iso_right g (PullbackHom.isTerminalIso _ t)
 
 /-- `(∅ ⟶ B) □ g` lifts against `X ⟶ ⋆` if and only if `g` lifts against `(B ⟹ X) ⟶ ⋆`. -/
-lemma hasLiftingProperty_mk_isInitial_isTerminal_iff [HasPushouts C] [HasPullbacks C]
+lemma hasLiftingProperty_mk_isInitial_isTerminal_iff [HasPushouts C]
     [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     {A B K L X Y : C} {g : K ⟶ L}
     (i : IsInitial A) (t : IsTerminal Y) :
@@ -112,7 +112,7 @@ lemma hasLiftingProperty_mk_isInitial_isTerminal_iff [HasPushouts C] [HasPullbac
       (t.hom_ext _ _))
 
 /-- `f □ (∅ ⟶ L)` lifts against `X ⟶ ⋆` if and only if `f` lifts against `(L ⟹ X) ⟶ ⋆`. -/
-lemma hasLiftingProperty_mk_isInitial_isTerminal_iff' [HasPushouts C] [HasPullbacks C]
+lemma hasLiftingProperty_mk_isInitial_isTerminal_iff' [HasPushouts C]
     [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     {A B K L X Y : C} {f : A ⟶ B}
     (i : IsInitial K) (t : IsTerminal Y) :
