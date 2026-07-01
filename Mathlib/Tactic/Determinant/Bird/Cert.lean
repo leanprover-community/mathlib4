@@ -167,13 +167,9 @@ def chainProof {lhs rhs : Q($α)} (c : Cert rα) (h : Q($lhs = $rhs)) : Cert rα
   have : $rhs =Q $c.subject := ⟨⟩
   let hProof : Q($lhs = $c.subject) := h
   let proof : Q($lhs = $c.norm) := q(Eq.trans $hProof $c.proof)
-  {
-    result := {
-      expr := c.norm
-      val := c.val
-      proof
-    }
-    isZero := c.isZero
+  { c with
+    subject := lhs
+    result.proof := proof
   }
 
 end Cert
@@ -203,16 +199,11 @@ def toCert {e : Q($α)} (res : Common.Result (CertVal rα) e) : Cert rα :=
     isZero := isZeroVal res.val }
 
 /-- Build a zero certificate from a proof `lhs = 0`. -/
-def zeroCertOfProof {lhs : Q($α)} (h : Q($lhs = 0)) : Cert rα :=
-  {
-    result := {
-      expr := q(0)
-      val := .zero
-      proof := h
-
-    }
-    isZero := true
-  }
+def zeroCertOfProof {lhs : Q($α)} (h : Q($lhs = 0)) : Cert rα where
+  result.expr := q(0)
+  result.val := .zero
+  result.proof := h
+  isZero := true
 
 /-- If c.norm = 0, return a certificate with proof `x * c.subject = 0` without
 recursively certifying `x`. -/
