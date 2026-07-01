@@ -697,6 +697,18 @@ lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
     CMDiff (k + 1) (T% W) := by
   sorry
 
+open Module in
+variable {I} in
+lemma step2b (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+    [IsManifold I (k + 2) M]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
+    {x : M}
+    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Z) b),
+      CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
+    CMDiffAt k (T% W) x := by
+  sorry
+
 /-- If `M` is endowed with a `C^k` metric, its Levi-Civita connection is a `C^k` connection. -/
 instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
     ContMDiffCovariantDerivative (leviCivitaConnection I M) 1 where
@@ -706,13 +718,17 @@ instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
       simpa only [zero_add]
     refine ⟨fun {σ} hσ ↦ ?_⟩
     rw [contMDiffOn_univ] at hσ ⊢
-    intro x
-    apply ContMDiffAt.clm_bundle_of_apply
-    intro τ hτ
-    apply step2 0 (fun {Z} hZ ↦ ?_)
-    -- TODO: need a weaker version of step2 here!
-    -- apply contMDiff_leviCivitaConnection_apply
-    sorry
+    have : IsManifold I (↑1 + 2) M := sorry
+    have : IsContMDiffRiemannianBundle I (↑1 + 1) E (fun (x : M) ↦ TangentSpace I x) := sorry
+    apply ContMDiff.clm_bundle_of_apply
+    intro τ x hτ
+    -- TODO: upgrade clm_bundle_of_apply to provide stronger hypotheses on τ!
+    have hτ' : ∀ᶠ (b : M) in nhds x, CMDiffAt 2 (T% τ) b := sorry
+    apply step2b 1 (fun {Z} hZ ↦ ?_)
+    have hσ' : ∀ᶠ (b : M) in nhds x, CMDiffAt (1 + 1) (T% σ) b := by
+      sorry -- holds on Set.univ
+    apply Filter.Eventually.self_of_nhds
+    apply eventually_contMDiff_leviCivitaConnection_apply 1 hτ' hσ' hZ
 
 section
 
