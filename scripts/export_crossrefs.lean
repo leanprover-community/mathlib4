@@ -62,7 +62,7 @@ open ExportCrossRefs in
 -- (see also environment linter internals, which may eventually do the latter)
 run_cmd do
   let entries := buildEntries (← getEnv)
-  let now ← IO.Process.run { cmd := "date", args := #["-u", "+%Y-%m-%dT%H:%M:%SZ"] }
+  let now := (Std.Time.DateTime.ofTimestamp (← Std.Time.Timestamp.now) .UTC).toISO8601String
   let json := json% {
     generated :  $(now.trimAscii.toString),
     commit : $((← IO.getEnv "CROSSREFS_COMMIT").getD "unknown"),
