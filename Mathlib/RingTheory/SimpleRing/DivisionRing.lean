@@ -52,7 +52,7 @@ lemma isSimpleModule_iff_eq_zero_or_injective (R : Type u) (M : Type v) [Ring R]
 
 variable (K : Type u) [Field K]
 
-lemma IsSimpleModule.functor
+lemma IsSimpleModule.obj_of_isEquivalence
     {R S : Type*} [Ring R] [Ring S] (e : ModuleCat R ≌ ModuleCat S)
     (M : ModuleCat R) [IsSimpleModule R M] :
     IsSimpleModule S (e.functor.obj M) := by
