@@ -6,6 +6,7 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.Data.Set.Image
 
 /-!
 # Discrete categories
@@ -62,6 +63,9 @@ def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   invFun := Discrete.mk
   left_inv := by cat_disch
   right_inv := by cat_disch
+
+lemma Discrete.as_bijective {α : Type*} : (Discrete.as (α := α)).Bijective :=
+  discreteEquiv.bijective
 
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
@@ -178,6 +182,10 @@ theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i)
 theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
     (Discrete.functor F).obj X = F X.as :=
   rfl
+
+@[simp]
+lemma range_functor {I : Type*} (X : I → C) : Set.range (Discrete.functor X).obj = Set.range X := by
+  simp [Discrete.functor, Set.range_comp, Discrete.as_bijective.surjective.range_eq]
 
 @[ext]
 lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.obj ⟨i⟩ = F.obj ⟨i⟩) :

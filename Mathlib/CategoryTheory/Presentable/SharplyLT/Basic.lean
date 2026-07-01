@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -14,6 +14,23 @@ public import Mathlib.Order.TransfiniteIteration
 /-!
 # Sharply smaller regular cardinals
 
+In this file, we introduce the predicate `Cardinal.SharplyLT`. Given two regular
+cardinals `κ₁ < κ₂`, this condition can be described in different ways:
+(i) the category `CardinalDirectedPoset κ₁` (of `κ₁`-directed partially ordered
+  types, with order embeddings as morphisms), is `κ₂`-accessible;
+(ii) any `κ₁`-accessible category is `κ₂`-accessible.
+(iii) for any type `X` of cardinality `< κ₂`, there exists a cofinal set of
+  cardinality `< κ₂` in the subtype of subsets of `X` of cardinality `< κ₁`;
+(iv) for any `κ₁`-directed partially ordered type `X` and any subset `A` of `X`
+  of cardinality `< κ₂`, there exists a `κ₁`-directed subset `B` of `X` containing `A`
+  that is of cardinality `< κ₂`.
+The equivalence of these conditions (i)-(iv) is Theorem 2.11 in the book by Adámek and Rosický.
+Here, we take (i) as the definition, and the equivalences between the various definitions
+is stated as `Cardinal.SharplyLT.tfae`.
+
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
+
 -/
 
 @[expose] public section
@@ -27,31 +44,46 @@ namespace Cardinal
 variable {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
 
 variable (κ₁ κ₂) in
-structure SharplyLT : Prop where
+/-- If `κ₁ < κ₂` are two regular cardinals, we say that `κ₁` is sharply
+smaller than `κ₂` if the category `CardinalDirectedPoset κ₁`
+is `κ₂`-accessible. There are other characterizations (TODO @joelriou),
+including the property that any `κ₁`-accessible category is
+also `κ₂`-accessible. -/
+public structure SharplyLT : Prop where
   lt : κ₁ < κ₂
   isCardinalAccessible_cardinalDirectedPoset :
-    IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂
+    IsCardinalAccessibleCategory (CardinalDirectedPoset κ₁) κ₂
 
 namespace SharplyLT
 
-lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
+public lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 
 set_option backward.defeqAttrib.useBackward true in
-open CardinalFilteredPoset in
-lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
-    (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂]
+open CardinalDirectedPoset in
+/-- This is the implication (i) → (iii) in the characterizations
+of `SharplyLT κ₁ κ₂` in the docstring of this file. -/
+public lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalDirectedPoset
+    (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalDirectedPoset κ₁) κ₂]
     {X : Type w} (hX : HasCardinalLT X κ₂) :
-    ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A := by
+    ∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y := by
+  -- We write the partially ordered type `SetCardinalLT κ₁ X` of subsets
+  -- of `X` of cardinality `< κ₁` as a `κ₂`-filtered colimit (with index
+  -- category `J`) of `κ₂`-presentable objects (i.e. partially ordered
+  -- types of cardinality `< κ₂`.)
   obtain ⟨J, _, _, ⟨p⟩⟩ := (isCardinalFilteredGenerator_isCardinalPresentable
-    (CardinalFilteredPoset κ₁) κ₂).exists_colimitsOfShape (setCardinalLT κ₁ X)
+    (CardinalDirectedPoset κ₁) κ₂).exists_colimitsOfShape (setCardinalLT κ₁ X)
   have : IsCardinalFiltered J κ₁ := .of_le _ h
   have hp (j : J) : HasCardinalLT (p.diag.obj j).obj κ₂ := by
-    rw [← CardinalFilteredPoset.isCardinalPresentable_iff _ h]
+    rw [← CardinalDirectedPoset.isCardinalPresentable_iff _ h]
     exact p.prop_diag_obj j
+  -- For each `x : X`, we choose `j : J` in such a way that the singleton
+  -- `{x}` belongs to the image of `p.diag.obj j` in `SetCardinalLT κ₁ X`.
   choose j y hy using fun x ↦ Types.jointly_surjective_of_isColimit
-    (isColimitOfPreserves (forget (CardinalFilteredPoset κ₁)) p.isColimit)
+    (isColimitOfPreserves (forget (CardinalDirectedPoset κ₁)) p.isColimit)
     (SetCardinalLT.singleton κ₁ x)
   dsimp at y hy
+  -- The expected cofinal set `A` will be the range of `p.ι.app j'`
+  -- where `j' : J` is such that for any `x : X`, there is a map `j x ⟶ j'`
   let j' := IsCardinalFiltered.max j hX
   let y' (x : X) : (p.diag.obj j').obj :=
     p.diag.map (IsCardinalFiltered.toMax j hX x) (y x)
@@ -69,23 +101,39 @@ lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
 
 section
 
-open CardinalFilteredPoset
+open CardinalDirectedPoset
 
 namespace existsIsCardinalFilteredSetOfExistsCofinal
 
+/-! The definitions in this section are part of the proof of the
+lemma `exists_isCardinalFiltered_set_of_exists_cofinal` below,
+which is the implication (iii) → (iv) in the characterizations
+of `SharplyLT κ₁ κ₂` which appear in the docstring of this file. -/
+
 variable (h₀ : κ₁ < κ₂)
   {X : Type w} [PartialOrder X]
+  -- The variables `Y`, `hY` and `hY'` below can be obtained by applying
+  -- the `choose` tactic to an assumption of the form
+  -- `∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y)`
+  -- e.g. when the condition (iii) in the docstring of this file is satisfied
   (Y : ∀ (B : Set X) (_ : HasCardinalLT B κ₂), Set (SetCardinalLT κ₁ B))
   (hY : ∀ (B : Set X) (hB : HasCardinalLT B κ₂), HasCardinalLT (Y B hB) κ₂)
   (hY' : ∀ (B : Set X) (hB : HasCardinalLT B κ₂), IsCofinal (Y B hB))
+  -- In the proof of `exists_isCardinalFiltered_set_of_exists_cofinal` below,
+  -- we shall show that we can find such `m` and `hm`, i.e.
+  -- for any `B : Set X`, `hB : HasCardinalLT B κ₂`, `C : SetCardinalLT κ₁ B`,
+  -- if `C ∈ Y B hB`, then there exists `m : X` such that all the elements
+  -- of `C` are less than or equal to `m`.
   (m : ∀ (B : Set X) (hB : HasCardinalLT B κ₂) (C : SetCardinalLT κ₁ B),
     C ∈ Y B hB → X)
   (hm : ∀ (B : Set X) (hB : HasCardinalLT B κ₂) (C : SetCardinalLT κ₁ B)
     (hC : C ∈ Y B hB) (b : B), b ∈ C.val → b ≤ m B hB C hC)
   (A : Set X) (hA : HasCardinalLT A κ₂)
 
+/-- The subset of `X` given by the union over all `C : Y B hB` of
+`C` and `{m B hB C _}`. -/
 def φ₀ (B : Set X) (hB : HasCardinalLT B κ₂) : Set X :=
-    ⋃ (C : Y B hB), Subtype.val '' C.val.val ∪ {m B hB _ C.prop}
+    ⋃ (C : Y B hB), Subtype.val '' C.val.val ∪ {m B hB C C.prop}
 
 omit [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] in
 include hY' hm in
@@ -99,6 +147,7 @@ lemma hφ₀ (B : Set X) (hB : HasCardinalLT B κ₂) {T : Type w} (f : T → B)
     fun t ↦ hm B hB C hC (f t) (hC' (by simp [C₀]))⟩
 
 open Classical in
+/-- This coincides with `φ₀` when `HasCardinalLT B κ₂` holds. -/
 def φ (B : Set X) : Set X :=
   if hB : HasCardinalLT B κ₂ then φ₀ Y m B hB else B
 
@@ -116,23 +165,19 @@ lemma le_φ (B : Set X) : B ≤ φ Y m B := by
       hasCardinalLT_of_finite _ _ (IsRegular.aleph0_le Fact.out)⟩
     refine Set.subset_iUnion _ ⟨C, hC⟩ (Or.inl ?_)
     simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-    refine ⟨hb, @hC' ⟨b, hb⟩ (by simp)⟩
+    exact ⟨hb, @hC' ⟨b, hb⟩ (by simp)⟩
   · simp
-
-variable (κ₁) in
-noncomputable abbrev orderBot : OrderBot κ₁.ord.ToType :=
-  have : Nonempty κ₁.ord.ToType := by
-    rw [Ordinal.nonempty_toType_iff, ne_eq, ord_eq_zero]
-    exact IsRegular.ne_zero Fact.out
-  WellFoundedLT.toOrderBot _
 
 include h₀ hA hY in
 omit [PartialOrder X] in
+/-- By iterating `φ` to the power `j : κ₁.ord.ToType` and evaluating
+on `A`, we get a subset that is of cardinality `< κ₂`. -/
 lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
     HasCardinalLT (transfiniteIterate (φ Y m) j A :) κ₂ := by
   induction j using SuccOrder.limitRecOn with
   | isMin j hj =>
-    letI := orderBot κ₁
+    have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
+    letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
     simpa [hj.eq_bot]
   | succ j hj hj' =>
     have hκ₂ : κ₂.IsRegular := Fact.out
@@ -155,12 +200,14 @@ include hY' in
 omit [Fact κ₂.IsRegular] [PartialOrder X] in
 lemma monotone_transfiniteIterate_φ :
     Monotone (fun (j : κ₁.ord.ToType) ↦ transfiniteIterate (φ Y m) j A) :=
-  letI := orderBot κ₁
+  have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
+  letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
   monotone_transfiniteIterate _ _ (le_φ _ hY' _)
 
 omit [PartialOrder X] [Fact κ₂.IsRegular] in
 lemma subset_iUnion : A ⊆ ⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A := by
-  letI := orderBot κ₁
+  have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
+  letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
   exact subset_trans (by simp) (Set.subset_iUnion _ ⊥)
 
 include h₀ hY hY' hm hA in
@@ -180,7 +227,6 @@ lemma isCardinalFiltered_iUnion :
           (leOfHom (IsCardinalFiltered.toMax a hK k)) (ha k)⟩) hK
     exact ⟨⟨z, Set.subset_iUnion _ _ hz⟩, hz'⟩
   intro K j f hK
-  have := hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A
   obtain ⟨⟨x, hx⟩, hx'⟩ := hφ₀ Y hY' m hm _
     (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA _) f hK
   refine ⟨⟨x, ?_⟩, hx'⟩
@@ -191,9 +237,11 @@ lemma isCardinalFiltered_iUnion :
 end existsIsCardinalFilteredSetOfExistsCofinal
 
 open existsIsCardinalFilteredSetOfExistsCofinal in
-lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
+/-- This is the implication (iii) → (iv) in the characterizations
+of `SharplyLT κ₁ κ₂` in the docstring of this file. -/
+public lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
     (h : ∀ (X : Type w) (_ : HasCardinalLT X κ₂),
-    ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A)
+      ∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y)
     {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
     (A : Set X) (hA : HasCardinalLT A κ₂) :
     ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂ := by
@@ -205,7 +253,10 @@ lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
         fun b hb ↦ leOfHom (IsCardinalFiltered.toMax
           (fun (c : C.val) ↦ c.val.val) C.prop ⟨_, hb⟩)⟩
   choose m hm using hY''
-  exact ⟨_, subset_iUnion Y m A,
+  -- The expected subset `B` is obtained as the union over
+  -- all `j : κ₁.ord.ToType` of the transfinite iterations
+  -- of the map `φ`
+  exact ⟨⋃ j, transfiniteIterate (φ Y m) j A, subset_iUnion Y m A,
     isCardinalFiltered_iUnion h₀ Y hY hY' m hm A hA,
     hasCardinalLT_iUnion _ (by simpa [hasCardinalLT_iff_cardinal_mk_lt])
       (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA)⟩
@@ -447,11 +498,11 @@ end
 
 lemma tfae (h : κ₁ < κ₂) :
     List.TFAE [SharplyLT κ₁ κ₂,
-      IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂,
+      IsCardinalAccessibleCategory (CardinalDirectedPoset κ₁) κ₂,
       ∀ (C : Type (w + 1)) [Category.{w} C] [IsCardinalAccessibleCategory C κ₁],
         IsCardinalAccessibleCategory C κ₂,
       ∀ (X : Type w) (_ : HasCardinalLT X κ₂),
-        ∃ (A : Set (CardinalFilteredPoset.SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A,
+        ∃ (A : Set (CardinalDirectedPoset.SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A,
       ∀ ⦃X : Type w⦄ [PartialOrder X] [IsCardinalFiltered X κ₁] (A : Set X)
           (_ : HasCardinalLT A κ₂),
         ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂] := by
@@ -459,7 +510,7 @@ lemma tfae (h : κ₁ < κ₂) :
     ⟨fun h ↦ h.isCardinalAccessible_cardinalDirectedPoset, fun _ ↦ ⟨h, inferInstance⟩⟩
   tfae_have 3 → 2 := fun h' ↦ h' _
   tfae_have 2 → 4 := fun _ X hX ↦
-    exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset h.le hX
+    exists_cofinal_of_isCardinalAccessibleCategory_cardinalDirectedPoset h.le hX
   tfae_have 4 → 5 := fun h' X _ _ A hA ↦
     exists_isCardinalFiltered_set_of_exists_cofinal h h' _ hA
   tfae_have 5 → 3 := fun h' C _ _ ↦ isCardinalAccessibleCategory' h (fun A hA ↦ h' A hA) C
@@ -467,14 +518,14 @@ lemma tfae (h : κ₁ < κ₂) :
 
 lemma exists_cofinal (h : SharplyLT κ₁ κ₂)
     {X : Type w} (hX : HasCardinalLT X κ₂) :
-    ∃ (A : Set (CardinalFilteredPoset.SetCardinalLT κ₁ X)),
+    ∃ (A : Set (CardinalDirectedPoset.SetCardinalLT κ₁ X)),
       HasCardinalLT A κ₂ ∧ IsCofinal A := by
   have := (tfae h.lt).out 1 3
   exact this.1 h.isCardinalAccessible_cardinalDirectedPoset X hX
 
 lemma of_exists_cofinal (h₀ : κ₁ < κ₂)
     (h : ∀ (X : Type w) (_ : HasCardinalLT X κ₂),
-      ∃ (A : Set (CardinalFilteredPoset.SetCardinalLT κ₁ X)),
+      ∃ (A : Set (CardinalDirectedPoset.SetCardinalLT κ₁ X)),
       HasCardinalLT A κ₂ ∧ IsCofinal A) :
     SharplyLT κ₁ κ₂ :=
   ((tfae h₀).out 3 0).1 h

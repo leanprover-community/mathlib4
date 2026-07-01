@@ -25,7 +25,7 @@ lemma Cardinal.mk_iio_le_lift (κ : Cardinal.{u}) :
   rw [Cardinal.le_def]
   exact ⟨⟨fun ⟨a, ha⟩ ↦ ⟨a.ord, by simpa⟩, fun _ _ h ↦ by aesop⟩⟩
 
-namespace CategoryTheory.CardinalFilteredPoset.SetCardinalLT
+namespace CategoryTheory.CardinalDirectedPoset.SetCardinalLT
 
 variable (κ : Cardinal.{u}) (X : Type u)
 
@@ -45,11 +45,11 @@ lemma fromSigma_surjective : Function.Surjective (fromSigma κ X) := by
   rw [Subtype.mk_eq_mk]
   simp [fromSigma]
 
-end CategoryTheory.CardinalFilteredPoset.SetCardinalLT
+end CategoryTheory.CardinalDirectedPoset.SetCardinalLT
 
 namespace Cardinal.SharplyLT
 
-open CardinalFilteredPoset
+open CardinalDirectedPoset
 
 lemma of_pow_lt {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
     (h₀ : κ₁ < κ₂) (h : ∀ (α β : Cardinal.{u}), α < κ₁ → β < κ₂ → β ^ α < κ₂) :
