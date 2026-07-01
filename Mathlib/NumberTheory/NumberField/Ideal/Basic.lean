@@ -157,7 +157,7 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀
   let _ := Ideal.Quotient.field P
   have hP₃ : absNorm P ≠ 1 := absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP₁
   have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective hP₃ hP₂)
-  rwa [Nat.card_eq_fintype_card, Nat.card_units] at h
+  rwa [Nat.card_units] at h
 
 /--
 If the prime ideal `P` is unramified over `ℤ` and the norm of the prime of `ℤ` lying under `P` is
@@ -170,7 +170,7 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP :
   have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP
   let _ := Ideal.Quotient.field P
   have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective' hP₁ hP₂)
-  rwa [Nat.card_eq_fintype_card, Nat.card_units] at h
+  rwa [Nat.card_units] at h
 
 end torsionMapQuot
 
