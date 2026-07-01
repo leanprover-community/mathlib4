@@ -101,8 +101,10 @@ theorem inter_mem_iff {s t : Set α} : s ∩ t ∈ f ↔ s ∈ f ∧ t ∈ f :=
   ⟨fun h => ⟨mem_of_superset h inter_subset_left, mem_of_superset h inter_subset_right⟩,
     and_imp.2 inter_mem⟩
 
-theorem diff_mem {s t : Set α} (hs : s ∈ f) (ht : tᶜ ∈ f) : s \ t ∈ f :=
+theorem sdiff_mem {s t : Set α} (hs : s ∈ f) (ht : tᶜ ∈ f) : s \ t ∈ f :=
   inter_mem hs ht
+
+@[deprecated (since := "2026-06-03")] alias diff_mem := sdiff_mem
 
 theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f :=
   ⟨fun hs => mp_mem hs (mem_of_superset h fun _ => Iff.mp), fun hs =>
@@ -570,7 +572,7 @@ theorem principal_sdiff_principal {s t : Set α} : 𝓟 s \ 𝓟 t = 𝓟 (s \ t
 
 @[simp]
 theorem hnot_principal {s : Set α} : ￢𝓟 s = 𝓟 sᶜ := by
-  simpa [← compl_eq_univ_diff] using @principal_sdiff_principal _ univ s
+  simpa [← compl_eq_univ_sdiff] using @principal_sdiff_principal _ univ s
 
 @[simp]
 theorem principal_eq_bot_iff {s : Set α} : 𝓟 s = ⊥ ↔ s = ∅ :=
@@ -604,9 +606,12 @@ theorem inf_principal_eq_bot {f : Filter α} {s : Set α} : f ⊓ 𝓟 s = ⊥ �
 theorem mem_of_eq_bot {f : Filter α} {s : Set α} (h : f ⊓ 𝓟 sᶜ = ⊥) : s ∈ f := by
   rwa [inf_principal_eq_bot, compl_compl] at h
 
-theorem diff_mem_inf_principal_compl {f : Filter α} {s : Set α} (hs : s ∈ f) (t : Set α) :
+theorem sdiff_mem_inf_principal_compl {f : Filter α} {s : Set α} (hs : s ∈ f) (t : Set α) :
     s \ t ∈ f ⊓ 𝓟 tᶜ :=
   inter_mem_inf hs <| mem_principal_self tᶜ
+
+@[deprecated (since := "2026-06-03")]
+alias diff_mem_inf_principal_compl := sdiff_mem_inf_principal_compl
 
 theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V ∈ f, s ⊆ V := by
   simp_rw [le_def, mem_principal]

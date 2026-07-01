@@ -407,6 +407,7 @@ theorem exists_lt_of_lt_csSup (hs : s.Nonempty) (hb : b < sSup s) : ∃ a ∈ s,
 
 /-- When `sInf s < b`, there is an element `a` in `s` with `a < b`, if `s` is nonempty and the order
 is a linear order. -/
+@[to_dual existing exists_lt_of_lt_csSup]
 theorem exists_lt_of_csInf_lt (hs : s.Nonempty) (hb : sInf s < b) : ∃ a ∈ s, a < b :=
   exists_lt_of_lt_csSup (α := αᵒᵈ) hs hb
 
@@ -765,16 +766,17 @@ end Preorder
 
 section ConditionallyCompleteLattice
 
-variable [ConditionallyCompleteLattice α] {f : α → β} (hmono : Monotone f)
-include hmono
+variable [ConditionallyCompleteLattice α]
+variable {f : α → β} {s : Set α} (hs : s.Nonempty) (hf : Monotone f)
+include hs hf
 
-theorem csSup_image_le_csSup {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
+theorem csSup_image_le_map_csSup (hbdd : BddAbove s := by bddDefault) :
     sSup (f '' s) ≤ f (sSup s) :=
-  csSup_image_le hmono hne <| isLUB_csSup hne hbdd |>.left
+  csSup_image_le hf hs <| isLUB_csSup hs hbdd |>.left
 
-theorem csInf_le_csInf_image {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
+theorem map_csInf_le_csInf_image (hbdd : BddBelow s := by bddDefault) :
     f (sInf s) ≤ sInf (f '' s) :=
-  le_csInf_image hmono hne <| isGLB_csInf hne hbdd |>.left
+  le_csInf_image hf hs <| isGLB_csInf hs hbdd |>.left
 
 end ConditionallyCompleteLattice
 

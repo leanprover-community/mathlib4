@@ -47,7 +47,7 @@ variable [AddMonoidWithOne α] [AddLeftMono α] [ZeroLEOneClass α] [CharZero α
 theorem Set.Finite.csInf_coe_compl_le_coe_ncard' {s : Set α} (hfin : s.Finite) :
     sInf sᶜ ≤ (s.ncard : α) := by
   rw [← csSup_Iic (a := s.ncard)]
-  grw [← Monotone.csSup_image_le_csSup Nat.mono_cast nonempty_Iic bddAbove_Iic]
+  grw [← Monotone.csSup_image_le_map_csSup nonempty_Iic Nat.mono_cast bddAbove_Iic]
   refine csInf_le_csSup_of_nonempty_inter ?_ (ht := finite_Iic _ |>.image _ |>.bddAbove)
   rw [← not_disjoint_iff_nonempty_inter, disjoint_compl_left_iff_subset.not]
   apply (ncard_le_ncard · hfin).mt
