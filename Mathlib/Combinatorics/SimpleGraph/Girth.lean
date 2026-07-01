@@ -77,6 +77,19 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
+theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
+  classical
+  refine le_antisymm ?_ three_le_egirth
+  obtain ⟨s, hcard⟩ := Cardinal.exists_finset_eq_card <| Cardinal.ofNat_le_toENat.mp h
+  obtain ⟨x, y, z, hxy, hxz, hyz, -⟩ := s.card_eq_three.mp hcard.symm
+  set w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil with hw
+  have : w.IsCycle :=
+    { edges_nodup := by aesop
+      ne_nil := by aesop
+      support_nodup := by aesop }
+  grw [egirth_le_length this]
+  simp [hw]
+
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
   by_cases hacyc : G.IsAcyclic
@@ -128,6 +141,9 @@ lemma exists_girth_eq_length :
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
+
+theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
+  simp [girth, egirth_top h]
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
