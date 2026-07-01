@@ -17,8 +17,8 @@ import Mathlib.Data.Int.ModEq
 /-!
 # Elliptic divisibility sequences
 
-This file defines the types of elliptic nets and elliptic divisibility sequences, as well as the
-canonical example of a normalised elliptic divisibility sequence.
+This file defines the predicates for a sequence to be an elliptic net or an elliptic divisibility
+sequence, as well as the canonical example of a normalised elliptic divisibility sequence.
 
 ## Mathematical background
 
