@@ -202,7 +202,7 @@ lemma AntitoneOn.sum_range_le_integral {N : ℕ} (anti : AntitoneOn f (Icc 0 (N 
 
 /-- **Integral test**: A function which is nonnegative, integrable and antitone
 for sufficiently large `n` is summable. -/
-theorem AntitoneOn.summable_of_integrable_eventually {N : ℕ} (anti : AntitoneOn f (Ici (N : ℝ)))
+theorem AntitoneOn.summable_of_integrableOn_Ioi {N : ℕ} (anti : AntitoneOn f (Ici (N : ℝ)))
     (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
     Summable (fun (n : ℕ) ↦ f n) := by
   rw [← summable_nat_add_iff (N + 1)]
