@@ -160,7 +160,7 @@ lemma le_φ (B : Set X) : B ≤ φ Y m B := by
       hasCardinalLT_of_finite _ _ (IsRegular.aleph0_le Fact.out)⟩
     refine Set.subset_iUnion _ ⟨C, hC⟩ (Or.inl ?_)
     simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-    refine ⟨hb, @hC' ⟨b, hb⟩ (by simp)⟩
+    exact ⟨hb, @hC' ⟨b, hb⟩ (by simp)⟩
   · simp
 
 include h₀ hA hY in
