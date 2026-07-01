@@ -510,11 +510,6 @@ theorem rowLens_ofPartition_eq_sort_parts {n : ℕ} (p : Nat.Partition n) :
   grind [ofPartition, rowLens_ofRowLens_eq_self, Multiset.mem_sort]
 
 @[simp]
-theorem rowLens_ofPartition_eq_parts {n : ℕ} (p : Nat.Partition n) :
-    ↑(ofPartition p).rowLens = p.parts := by
-  rw [rowLens_ofPartition_eq_sort_parts, Multiset.sort_eq]
-
-@[simp]
 theorem card_ofPartition {n : ℕ} (p : Nat.Partition n) :
     (ofPartition p).card = n := by
   rw [← sum_rowLens_eq_card, rowLens_ofPartition_eq_sort_parts]
