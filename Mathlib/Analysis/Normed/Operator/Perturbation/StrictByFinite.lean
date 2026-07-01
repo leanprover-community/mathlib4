@@ -330,7 +330,7 @@ section FiniteDimQuotient
 
 open LinearMap.FiniteRangeSetoid
 
-/-- Consider `u : E →L[𝕜] F` and `B` a *complemented* finite dimensional subspace `F`. We have
+/-- Consider `u : E →L[𝕜] F` and `B` a *complemented* finite dimensional subspace of `F`. We have
 that `u` is strict with closed range if and only if `B.mkQL ∘L u` is strict with closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 2][bourbaki2023]. -/
