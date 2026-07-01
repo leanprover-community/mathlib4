@@ -413,7 +413,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   obtain ⟨s, hs⟩ := exists_relNorm_eq_pow_of_isPrime P p
   suffices s = P.inertiaDeg' R by rwa [this] at hs
   have h₀ : ∀ Q ∈ (p.primesOver S).toFinset,
-      relNorm R Q ^ Q.ramificationIdx' R = p ^ ((p.ramificationIdxIn S) * s) := by
+      relNorm R Q ^ Q.ramificationIdx R = p ^ ((p.ramificationIdxIn S) * s) := by
     intro Q hQ
     rw [Set.mem_toFinset] at hQ
     have : Q.IsPrime := hQ.1
