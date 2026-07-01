@@ -64,19 +64,21 @@ theorem aeval_toPolynomialAdjoinImageCompl_eq_zero
   simp_rw [toPolynomialAdjoinImageCompl, ← AlgEquiv.coe_toAlgHom, ← AlgHom.comp_apply]
   congr; ext; aesop (add simp optionEquivLeft_X_some) (add simp optionEquivLeft_X_none)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : Irreducible F) (i : ι)
     (H : AlgebraicIndependent k fun x : {j | j ≠ i} ↦ a x) :
     Irreducible (toPolynomialAdjoinImageCompl F a i) := by
-  have : a '' {i}ᶜ = Set.range (fun x : {j | j ≠ i} ↦ a x) := by ext; simp
-  delta toPolynomialAdjoinImageCompl
-  convert!
-    hF.map (renameEquiv k (Equiv.optionSubtypeNe i).symm) |>.map (optionEquivLeft k _) |>.map
-      (Polynomial.mapAlgEquiv
-        (H.aevalEquiv.trans (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $this.symm))))
-  rw [← AlgEquiv.coe_toAlgHom]
-  congr
-  aesop
+  classical
+  unfold toPolynomialAdjoinImageCompl
+  have hc : a '' {i}ᶜ = Set.range (fun x : {j | j ≠ i} ↦ a x) := by ext; simp
+  let d : {j // j ≠ i} ≃ {j | j ≠ i} := .subtypeEquivRight (by simp)
+  refine (congrArg Irreducible ?_).mp <|
+    hF.map (renameEquiv k ((Equiv.optionSubtypeNe i).symm)) |>.map
+      (optionEquivLeft k _) |>.map (Polynomial.mapAlgEquiv <|
+        (renameEquiv k d).trans <| H.aevalEquiv.trans
+        (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $hc.symm)))
+  rw [Polynomial.coe_mapAlgEquiv, Polynomial.coe_mapAlgHom]
+  refine congrFun (congrArg Polynomial.map ?_) _
+  ext <;> simp [d]
 
 -- Suppose `F` has minimal total degree among the relations of `a`.
 variable {F : MvPolynomial ι k}

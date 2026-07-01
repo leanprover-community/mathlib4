@@ -298,25 +298,27 @@ lemma IsPath.ne_of_mem_support_of_append {p : G.Walk u v} {q : G.Walk v w}
   exact IsPath.disjoint_support_of_append hpq hq hx hx'
 
 @[simp]
-theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
+theorem not_isCircuit_nil {u : V} : ¬(nil : G.Walk u u).IsCircuit :=
+  (·.ne_nil rfl)
 
-lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
-  | nil, hp => by cases hp.ne_nil rfl
+@[simp]
+theorem not_isCycle_nil {u : V} : ¬(nil : G.Walk u u).IsCycle :=
+  (·.ne_nil rfl)
+
+@[deprecated (since := "2026-06-16")] alias IsCycle.not_of_nil := not_isCycle_nil
+
+lemma IsCircuit.ne_bot : ∀ {p : G.Walk u u}, p.IsCircuit → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
 
-lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ p.length := by
-  have ⟨⟨hp, hp'⟩, _⟩ := hp
+lemma IsCircuit.three_le_length {p : G.Walk v v} (hp : p.IsCircuit) : 3 ≤ p.length := by
   match p with
-  | .nil => simp at hp'
-  | .cons h .nil => simp at h
-  | .cons _ (.cons _ .nil) => simp at hp
-  | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; lia
+  | .cons hadj .nil => simp at hadj
+  | .cons _ <| .cons _ .nil => simpa using hp.isTrail
+  | .cons _ <| .cons _ <| .cons _ _ => grind [length_cons]
 
 lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
-  have := Walk.length_cons _ _ ▸ Walk.IsCycle.three_le_length hc
-  rw [Walk.not_nil_iff_lt_length]
-  lia
+  grind [not_nil_iff_lt_length, hc.three_le_length, length_cons]
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ s(u, v) ∉ p.edges := by
@@ -904,6 +906,10 @@ lemma bypass_eq_self_of_length_le_length_bypass (p : G.Walk u v) (h : p.length �
 
 @[deprecated (since := "2026-05-25")]
 alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
+
+@[grind →]
+lemma IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := by
+  induction p <;> simp_all [cons_isPath_iff, bypass]
 
 theorem darts_toPath_subset_darts (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   p.darts_bypass_subset_darts
