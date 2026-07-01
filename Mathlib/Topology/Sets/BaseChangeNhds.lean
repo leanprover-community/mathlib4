@@ -39,8 +39,6 @@ def baseChangeCompactInsd {U V : Opens α} (h : U ⟶ V) : U.compactInsd → V.c
 
 lemma baseChangeCompactInsd_mono {U V : Opens α} (h : U ⟶ V) :
     Monotone <| baseChangeCompactInsd h :=
-lemma baseChangeCompactInsd_mono {U V : Opens α} (h : U ⟶ V) :
-    Monotone <| baseChangeCompactInsd h :=
   fun _ _ hKL _ hx ↦ SetLike.mem_coe.mpr (hKL hx)
 
 @[simp]
@@ -102,10 +100,12 @@ variable {β : Type u_1} [TopologicalSpace β] {f : α → β} (proper_f : IsPro
 def properPreimage (K : Compacts β) : Compacts α :=
   ⟨f ⁻¹' K.carrier, IsProperMap.isCompact_preimage proper_f K.isCompact'⟩
 
+#find_home! properPreimage
+
 lemma properPreimage_mono : Monotone (properPreimage proper_f) :=
   fun _ _ h ↦ preimage_mono (f := f) h
 
-/-- The base change of compactNhds induced by properPreimage -/
+/-- The base change of compactNhds induced by `properPreimage` -/
 @[simps]
 def nhdsMap (K : Compacts β) (L : K.compactNhds) : (properPreimage proper_f K).compactNhds :=
   ⟨properPreimage proper_f L,

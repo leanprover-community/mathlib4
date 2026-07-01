@@ -82,16 +82,17 @@ def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
     dsimp
     rw [← P.map_comp, Category.comp_id]
     rfl
-/-- For P a KPresheaf, and K a compact subset then P(K) is equiped with a
-structure of cocone over the diagramm defined by the P(closure U) for U an open
-neighbourhood of K -/
+
+/-- For `P` a KPresheaf, and `K` a compact subset then `P.obj (op K)` is equiped with a
+structure of cocone over the diagramm defined by the `P.obj (op (closure (U : Set X)))` for `U`
+an open neighbourhood of `K` -/
 def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X) :=
   Cocone.whisker K.oRcNhdsToCompactNhds_mono.functor.op <| P.coconeOfCompacts K
 
 variable [T2Space X]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- For`K`a compact and `P`a KPresheaf verifying the third axiom of KSheaves, this is
+/-- For`K` a compact and `P`a KPresheaf verifying the third axiom of KSheaves, this is
 a recipi to build maps from `P.obj(op K)` by only using the open relatively
 comapct neighbourhoods and not all the compacts neighbourhoods. -/
 noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X)
@@ -172,12 +173,10 @@ lemma isKSheafPushforwardObj : (F.obj.pushforwardObj pf).IsKSheaf where
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
     (pf : IsProperMap f.hom')
 
-/--
-The pushforward of a Ksheaf by a proper map as a sheaf -/
+/-- The pushforward of a Ksheaf by a proper map as a sheaf -/
 def pushforwardObj (F : KSheaf A X) : (KSheaf A Y) := ⟨_, F.isKSheafPushforwardObj pf⟩
 
-/--
-The pushforward of a KSheaf as a functor -/
+/-- The pushforward of a KSheaf as a functor -/
 def pushforward : KSheaf A X ⥤ KSheaf A Y :=
   ObjectProperty.lift _
   (ObjectProperty.ι KPresheaf.IsKSheaf ⋙ (KPresheaf.pushforward pf))
