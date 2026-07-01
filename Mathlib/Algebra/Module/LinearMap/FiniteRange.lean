@@ -235,6 +235,13 @@ lemma equiv_iff_hasFiniteRange [IsNoetherianRing K] {u v : V →ₗ[K] V₂} :
     u ≈ v ↔ (u - v).HasFiniteRange := by
   rw [equiv_iff_hasNoetherianRange, hasNoetherianRange_iff_hasFiniteRange]
 
+lemma equiv_zero_iff_hasNoetherianRange {u : V →ₗ[K] V₂} : u ≈ 0 ↔ u.HasNoetherianRange := by
+  simp [equiv_iff_hasNoetherianRange]
+
+lemma equiv_zero_iff_hasFiniteRange [IsNoetherianRing K] {u : V →ₗ[K] V₂} :
+    u ≈ 0 ↔ u.HasFiniteRange := by
+  simp [equiv_iff_hasFiniteRange]
+
 lemma equiv_iff_isNoetherian_quotient_eqLocus {u v : V →ₗ[K] V₂} :
     u ≈ v ↔ IsNoetherian K (V ⧸ eqLocus u v) := by
   rw [equiv_iff_hasNoetherianRange, hasNoetherianRange_iff_quotient_ker, eqLocus_eq_ker_sub]
@@ -268,6 +275,23 @@ lemma equiv_comp_left {u v : V →ₗ[K] V₂} {u' : V₂ →ₗ[K] V₃} (h : u
 lemma equiv_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h : u ≈ v) (h' : u' ≈ v') :
     u' ∘ₗ u ≈ v' ∘ₗ v := by
   grw [equiv_comp_right h', equiv_comp_left h]
+
+lemma projection_equiv_zero_iff_isNoetherian {S T : Submodule K V} (S_compl_T : IsCompl S T) :
+    S.projection T S_compl_T ≈ 0 ↔ IsNoetherian K S := by
+  rw [equiv_zero_iff_hasNoetherianRange, hasNoetherianRange_iff_range, range_projection]
+
+lemma projection_equiv_zero {S T : Submodule K V} [IsNoetherian K S] (S_compl_T : IsCompl S T) :
+    S.projection T S_compl_T ≈ 0 :=
+  projection_equiv_zero_iff_isNoetherian S_compl_T |>.mpr inferInstance
+
+lemma projection_equiv_id_iff_isNoetherian {S T : Submodule K V} (S_compl_T : IsCompl S T) :
+    S.projection T S_compl_T ≈ id ↔ IsNoetherian K T := by
+  rw [Setoid.comm, equiv_iff_hasNoetherianRange, ← projection_eq_id_sub_projection,
+    hasNoetherianRange_iff_range, range_projection]
+
+lemma projection_equiv_id {S T : Submodule K V} [IsNoetherian K T] (S_compl_T : IsCompl S T) :
+    S.projection T S_compl_T ≈ id :=
+  projection_equiv_id_iff_isNoetherian S_compl_T |>.mpr inferInstance
 
 end FiniteRangeSetoid
 
@@ -431,6 +455,14 @@ lemma IsQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V�
     (hw : w.IsQuasiInverse (v ∘ₗ u)) :
     (w ∘ₗ v).IsQuasiInverse u :=
   ⟨hw.1, IsRightQuasiInverse.of_comp_right hv.1 hw.2⟩
+
+lemma isQuasiInverse_subtype_projectionOnto {S T : Submodule K V} [IsNoetherian K T]
+    (S_compl_T : IsCompl S T) :
+    IsQuasiInverse S.subtype (S.projectionOnto T S_compl_T) := by
+  constructor
+  · grw [IsLeftQuasiInverse, ← FiniteRangeSetoid.projection_equiv_id S_compl_T]
+    rfl
+  · simp [IsRightQuasiInverse, projectionOnto_comp_subtype]
 
 end QuasiInverse
 
