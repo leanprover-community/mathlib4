@@ -38,27 +38,6 @@ def Function.dcomp' {α β : Sort*} {γ : β → Sort*} (f : (y : β) → γ y)
 
 noncomputable section
 
-section
-variable {𝕜 E F₁ F₂ M : Type*} {n : WithTop ℕ∞}
-    [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [FiniteDimensional 𝕜 F₁]
-    [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [FiniteDimensional 𝕜 F₂]
-    {k}
-
--- The lemma below is a variant of
-#check contDiff_clm_apply_iff
-#check contDiffOn_clm_apply
-
-lemma contDiffWithinAt_clm_apply {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type*} [NormedAddCommGroup D]
-  [NormedSpace 𝕜 D] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {n : WithTop ℕ∞} [CompleteSpace 𝕜] {f : D → E →L[𝕜] F} {s : Set D}
-  [FiniteDimensional 𝕜 E] {x} :
-  ContDiffWithinAt 𝕜 n f s x ↔ ∀ (y : E), ContDiffWithinAt 𝕜 n (fun x ↦ (f x) y) s x := by
-    sorry
-
-end
-
 open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization
 
 open scoped Manifold Bundle Topology
