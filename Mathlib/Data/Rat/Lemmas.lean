@@ -262,7 +262,7 @@ theorem intCast_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   by_cases hn : n = 0
   · subst hn
     simp
-  · have : (n : ℚ) ≠ 0 := by rwa [← coe_int_inj] at hn
+  · have : (n : ℚ) ≠ 0 := by rwa [← intCast_inj]  at hn
     simp only [Int.ediv_self hn, Int.cast_one, div_self this]
 
 @[norm_cast]
