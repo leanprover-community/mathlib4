@@ -104,13 +104,13 @@ def continuousLinearMap :
   left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ ↦ by
     simp only [TotalSpace.mk_inj]
     ext (v : E₁ x)
-    dsimp only [comp_apply]
+    dsimp only [ContinuousLinearMap.comp_apply]
     rw [Trivialization.symmL_continuousLinearMapAt, Trivialization.symmL_continuousLinearMapAt]
     exacts [h₁, h₂]
   right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ ↦ by
     simp only [Prod.mk_right_inj]
     ext v
-    dsimp only [comp_apply]
+    dsimp only [ContinuousLinearMap.comp_apply]
     rw [Trivialization.continuousLinearMapAt_symmL, Trivialization.continuousLinearMapAt_symmL]
     exacts [h₁, h₂]
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ

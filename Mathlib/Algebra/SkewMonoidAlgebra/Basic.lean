@@ -1254,12 +1254,12 @@ theorem coe_algebraMap [MulSemiringAction G A] [SMulCommClass G k A] :
 
 theorem single_eq_algebraMap_mul_of [MulSemiringAction G k] [SMulCommClass G k k] (a : G) (b : k) :
     single a b = algebraMap k (SkewMonoidAlgebra k G) b * of k G a := by
-  simp [coe_algebraMap, comp_apply, of_apply, single_mul_single, one_mul, smul_one, mul_one]
+  simp [coe_algebraMap, of_apply, single_mul_single, one_mul, smul_one, mul_one]
 
 theorem single_algebraMap_eq_algebraMap_mul_of (a : G) (b : k) [MulSemiringAction G A]
     [SMulCommClass G k A] :
     single a (algebraMap k A b) = algebraMap k (SkewMonoidAlgebra A G) b * of A G a := by
-  simp [coe_algebraMap, comp_apply, of_apply, single_mul_single, one_mul, smul_one, mul_one]
+  simp [coe_algebraMap, of_apply, single_mul_single, one_mul, smul_one, mul_one]
 
 /- Hypotheses needed for `k`-algebra homomorphism from `SkewMonoidAlgebra k G`-/
 variable [MulSemiringAction G k] [SMulCommClass G k k]
