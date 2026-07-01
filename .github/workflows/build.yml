@@ -70,5 +70,7 @@ jobs:
                && 'cache-upload-forks'
           || ''
         }}
+      # the single producer: the master `push` build
+      publish_cache: ${{ github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       runs_on: pr
     secrets: inherit
