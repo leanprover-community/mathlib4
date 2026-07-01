@@ -336,7 +336,6 @@ private def toH₁ (h : kernel H = kernel H₁) : H₀ (kernel H) →ₗᵢ[𝕜
 }
 
 private def equiv_aux (h : kernel H = kernel H₁) : OfKernel (kernel H) ≃ₗᵢ[𝕜] H₁ := by
-  have h_iso := Isometry.completion_extension (toH₁ H h).isometry
   have h_lin := UniformSpace.Completion.isLinearMap_extension
     (toH₁ H h).isometry.uniformContinuous
   let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H₁ := {
@@ -344,7 +343,7 @@ private def equiv_aux (h : kernel H = kernel H₁) : OfKernel (kernel H) ≃ₗ�
     map_add' := h_lin.map_add
     map_smul' := h_lin.map_smul
     norm_map' x := by
-      have h := h_iso.dist_eq x 0
+      have h := (toH₁ H h).isometry.completion_extension.dist_eq x 0
       have h' := h_lin.map_zero
       simp_all
   }
@@ -352,8 +351,7 @@ private def equiv_aux (h : kernel H = kernel H₁) : OfKernel (kernel H) ≃ₗ�
     apply Set.range_eq_univ.mp
     have h_sub : Set.range (toH₁ H h) ⊆ Set.range ⇑ofOfKernel := by
       rintro _ ⟨f, rfl⟩
-      exact ⟨(f : OfKernel (kernel H)),
-        UniformSpace.Completion.extension_coe (toH₁ H h).isometry.uniformContinuous f⟩
+      exact ⟨f, UniformSpace.Completion.extension_coe (toH₁ H h).isometry.uniformContinuous f⟩
     have h_dense : Dense (Set.range (toH₁ H h)) := by
       convert dense_iff_topologicalClosure_eq_top.mpr (kerFun_dense H₁)
       simp only [LinearIsometry.coe_mk, toH₁]
