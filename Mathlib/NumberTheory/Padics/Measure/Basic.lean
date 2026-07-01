@@ -174,7 +174,7 @@ section LocallyCompact
 variable [LocallyCompactSpace X] [LocallyCompactSpace Y]
 
 /-- `AbstractMeasure.contractSnd` bundled with continuity in the function argument. -/
-private def contractSndCLM : D(Y, R) →ₗ[R] C(X × Y, R) →L[R] C(X, R) where
+def contractSndCLM : D(Y, R) →ₗ[R] C(X × Y, R) →L[R] C(X, R) where
   toFun ν := ⟨contractSnd ν, by
     refine continuous_of_continuous_uncurry _ (ν.continuous.comp ?_)
     apply continuous_of_continuous_uncurry
@@ -184,7 +184,7 @@ private def contractSndCLM : D(Y, R) →ₗ[R] C(X × Y, R) →L[R] C(X, R) wher
   map_smul' _ _ := ContinuousLinearMap.coe_injective.eq_iff.mp <| contractSnd.map_smul _ _
 
 /-- `AbstractMeasure.contractFst` bundled with continuity in the function argument. -/
-private def contractFstCLM : D(X, R) →ₗ[R] C(X × Y, R) →L[R] C(Y, R) :=
+def contractFstCLM : D(X, R) →ₗ[R] C(X × Y, R) →L[R] C(Y, R) :=
   ((ContinuousMap.prodSwap.compCLM R R).lcomp _).comp contractSndCLM
 
 /-- "Left-handed" version of the natural product map on measures (acting on functions
