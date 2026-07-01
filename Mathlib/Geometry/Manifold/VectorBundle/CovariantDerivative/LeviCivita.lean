@@ -473,52 +473,9 @@ lemma contMDiff_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimensional ℝ E
     CMDiff k (fun x ↦ ⟪((leviCivitaConnection I M) Y x) (X x), Z x⟫) :=
   (leviCivitaConnection_isLeviCivitaConnection I).contMDiff_apply k hX hY hZ
 
--- TODO: generalise all this discussion to sections of any smooth bundle!
-
--- This version is true. Does it suffice for our purposes? TODO!
-open Module in
-variable {I} in
-lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
-    [IsManifold I (k + 2) M]
-    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
-    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] {x : M}
-    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiffAt (k + 1) (T% Z) x),
-      CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
-    CMDiffAt k (T% W) x := by
-  nontriviality E
-  -- Take an orthonormal frame.
-  let b := Basis.ofVectorSpace ℝ E
-  let t := trivializationAt E (TangentSpace I : M → Type _) x
-  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-  -- The linear ordering on the indexing set of `b` is only used in this proof,
-  -- so our choice does not matter.
-  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-    choose r wo using exists_wellFoundedLT _
-    exact r
-  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
-  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
-  have : IsManifold I (↑k + 1 + 1) M := by sorry -- simpa
-  have : ContMDiffVectorBundle (k + 1) E (fun (x : M) ↦ TangentSpace% x) I :=
-    TangentBundle.contMDiffVectorBundle
-  have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k + 1) t (IB := I)
-  -- easy, missing API lemma
-  have hs' : IsOrthonormalFrameOn I E k (b.orthonormalFrame t) t.baseSet := sorry
-  rw [hs'.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
-  intro i
-  simp_rw [real_inner_comm]
-  exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx)
-
--- TODO: can I use step2a above to prove this?
--- or is a variant true, with just C^n at x in the condition?
-variable {I} in
-lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
-    [IsManifold I (k + 2) M]
-    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
-    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiff (k + 1) (T% Z)),
-      CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
-    CMDiff (k + 1) (T% W) := by
-  sorry
+-- TODO: can these results be generalized to sections of any smooth Riemannian bundle?
+-- or even further?
+section
 
 open Module in
 -- Variant of `contMDiffAt_of_inner` --- with slightly stronger requirements on differentiability,
@@ -615,6 +572,57 @@ lemma contMDiff_of_contMDiffAt_inner (k : ℕ∞) {W : (x : M) → TangentSpace%
   intro Z₀ hZ₀
   exact hW hZ₀
 
+end
+
+-- TODO: can these versions be generalized to sections of Riemannian bundles?
+
+open Module in
+variable {I} in
+lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+    [IsManifold I (k + 2) M]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] {x : M}
+    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiffAt (k + 1) (T% Z) x),
+      CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
+    CMDiffAt k (T% W) x := by
+  -- This does not quite match, because clm_bundle_of_apply requires the fiber to be a space of
+  -- F →L[𝕜] F --- not merely a normed space E.
+  --#check' ContMDiffAt.clm_bundle_of_apply (IB := I) (B := M) (x := x)
+  nontriviality E
+  -- Take an orthonormal frame.
+  let b := Basis.ofVectorSpace ℝ E
+  let t := trivializationAt E (TangentSpace I : M → Type _) x
+  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+  -- The linear ordering on the indexing set of `b` is only used in this proof,
+  -- so our choice does not matter.
+  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+    choose r wo using exists_wellFoundedLT _
+    exact r
+  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
+  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  have : IsManifold I (↑k + 1 + 1) M := by sorry -- simpa
+  have : ContMDiffVectorBundle (k + 1) E (fun (x : M) ↦ TangentSpace% x) I :=
+    TangentBundle.contMDiffVectorBundle
+  have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k + 1) t (IB := I)
+  -- easy, missing API lemma
+  have hs' : IsOrthonormalFrameOn I E k (b.orthonormalFrame t) t.baseSet := sorry
+  rw [hs'.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
+  intro i
+  simp_rw [real_inner_comm]
+  exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx)
+
+-- TODO: can I use step2a above to prove this?
+-- or is a variant true, with just C^n at x in the condition?
+variable {I} in
+lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+    [IsManifold I (k + 2) M]
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
+    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiff (k + 1) (T% Z)),
+      CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
+    CMDiff (k + 1) (T% W) := by
+  sorry
+
 /-- If `M` is endowed with a `C^k` metric, its Levi-Civita connection is a `C^k` connection. -/
 instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
     ContMDiffCovariantDerivative (leviCivitaConnection I M) 1 where
@@ -625,7 +633,7 @@ instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
     refine ⟨fun {σ} hσ ↦ ?_⟩
     rw [contMDiffOn_univ] at hσ ⊢
     intro x
-    apply ContMDiff.clm_bundle_of_apply
+    apply ContMDiffAt.clm_bundle_of_apply
     intro τ hτ
     apply step2 0 (fun {Z} hZ ↦ ?_)
     -- TODO: need a weaker version of step2 here!
@@ -647,7 +655,7 @@ instance leviCivitaConnection_bar [FiniteDimensional ℝ E] :
     intro x
     have : ContMDiffVectorBundle (↑k + 1) E (TangentSpace (M := M) I) I := sorry
     have : IsManifold I (↑k + 1) M := sorry
-    apply ContMDiff.clm_bundle_of_apply
+    apply ContMDiffAt.clm_bundle_of_apply
     intro τ hτ
     apply step2 k (fun {Z} hZ ↦ ?_)
     sorry -- same issue as above, `leviCivitaConnection_apply` is too global!
