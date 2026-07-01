@@ -93,7 +93,6 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff [Nontrivial R]
     intro w i' h
     specialize p w ((↑) : w → A) i' (fun i => ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
     have q := congr_arg (fun s => ((↑) : w → A) '' s) p.range_eq
-    dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
 
@@ -556,7 +555,7 @@ variable {R S} [FaithfulSMul R S] [NoZeroDivisors S] (s : Set ι) (i j : ι) (v 
 
 /-- If `s` is a transcendence basis and `j` is algebraic over `s ∪ {i} \ {j}`,
 then `s ∪ {i} \ {j}` is also a transcendence basis. -/
-lemma of_isAlgebraic_adjoin_insert_diff (hj : j ∈ insert i s)
+lemma of_isAlgebraic_adjoin_insert_sdiff (hj : j ∈ insert i s)
     (H₁ : IsTranscendenceBasis R fun x : s ↦ v x)
     (H₂ : IsAlgebraic (Algebra.adjoin R (v '' (insert i s \ {j}))) (v j)) :
     IsTranscendenceBasis R fun x : ↥(insert i s \ {j}) ↦ v x := by
@@ -568,10 +567,10 @@ lemma of_isAlgebraic_adjoin_insert_diff (hj : j ∈ insert i s)
   have inj := injOn_iff_injective.mpr H₁.1.injective
   have H' := image_eq_range .. ▸ matroid_isBase_iff.mpr H₁.to_subtype_range
   obtain hj' | hj := (em (j ∈ s)).symm
-  · cases hj.resolve_right hj'; rwa [insert_diff_self_of_notMem hj']
-  have Hj := H'.indep.notMem_closure_diff_of_mem ⟨j, hj, rfl⟩
+  · cases hj.resolve_right hj'; rwa [insert_sdiff_self_of_notMem hj']
+  have Hj := H'.indep.notMem_closure_sdiff_of_mem ⟨j, hj, rfl⟩
   have hi : i ∉ s := fun hi ↦ Hj <| by
-    rw [← image_singleton, ← inj.image_diff_subset (singleton_subset_iff.mpr hj)]
+    rw [← image_singleton, ← inj.image_sdiff_subset (singleton_subset_iff.mpr hj)]
     rwa [insert_eq_of_mem hi] at H₂
   obtain eq | ne := eq_or_ne (v i) (v j)
   · classical
@@ -589,11 +588,15 @@ lemma of_isAlgebraic_adjoin_insert_diff (hj : j ∈ insert i s)
     · exact ⟨his, ne⟩
     · exact ⟨⟨k, hks, rfl⟩, inj.ne hks hj hkj⟩
   have : (insert i s).InjOn v := (injOn_insert hi).mpr ⟨inj, hi'⟩
-  rw [← isTranscendenceBasis_subtype_range (by exact injOn_iff_injective.1 (this.mono diff_subset)),
+  rw [← isTranscendenceBasis_subtype_range
+    (by exact injOn_iff_injective.1 (this.mono sdiff_subset)),
     ← matroid_isBase_iff, ← image_eq_range]
-  rw [this.image_diff_subset (singleton_subset_iff.mpr (.inr hj)), image_singleton,
+  rw [this.image_sdiff_subset (singleton_subset_iff.mpr (.inr hj)), image_singleton,
     image_insert_eq] at H₂ ⊢
-  exact H'.isBase_insert_diff_of_mem_closure H₂ (.inr ⟨j, hj, rfl⟩)
+  exact H'.isBase_insert_sdiff_of_mem_closure H₂ (.inr ⟨j, hj, rfl⟩)
+
+@[deprecated (since := "2026-06-03")]
+alias of_isAlgebraic_adjoin_insert_diff := of_isAlgebraic_adjoin_insert_sdiff
 
 lemma of_isAlgebraic_adjoin_image_compl
     (H₁ : IsTranscendenceBasis R fun x : {x // x ≠ i} ↦ v x)
@@ -601,8 +604,8 @@ lemma of_isAlgebraic_adjoin_image_compl
     IsTranscendenceBasis R fun x : {x // x ≠ j} ↦ v x := by
   obtain rfl | ne := eq_or_ne j i
   · exact H₁
-  have := H₁.of_isAlgebraic_adjoin_insert_diff {i}ᶜ i j v (.inr ne)
-  rw [compl_eq_univ_diff, insert_diff_self_of_mem (mem_univ _), ← compl_eq_univ_diff] at this
+  have := H₁.of_isAlgebraic_adjoin_insert_sdiff {i}ᶜ i j v (.inr ne)
+  rw [compl_eq_univ_sdiff, insert_sdiff_self_of_mem (mem_univ _), ← compl_eq_univ_sdiff] at this
   exact this H₂
 
 end IsTranscendenceBasis

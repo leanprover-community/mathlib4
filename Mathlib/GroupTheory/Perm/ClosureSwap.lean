@@ -144,7 +144,7 @@ theorem surjective_of_isSwap_of_isPretransitive' [Finite α] (S : Set G)
     (hS2 : Subgroup.closure S = ⊤) [h : MulAction.IsPretransitive G α] :
     Function.Surjective (MulAction.toPermHom G α) := by
   have h : closure ((toPermHom G α '' S) \ {1}) = (toPermHom G α).range := by
-    rw [closure_diff_one, ← MonoidHom.map_closure, hS2, ← MonoidHom.range_eq_map]
+    rw [closure_sdiff_one, ← MonoidHom.map_closure, hS2, ← MonoidHom.range_eq_map]
   have := IsPretransitive.of_compHom (α := α) (toPermHom G α).rangeRestrict
   rw [← h] at this
   rw [← MonoidHom.range_eq_top, ← h, closure_of_isSwap_of_isPretransitive]

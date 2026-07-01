@@ -98,7 +98,7 @@ theorem image_circleMap_Ioc (c : ℂ) (R : ℝ) : circleMap c R '' Ioc 0 (2 * π
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
   simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
-    using (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
+    using! (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
 
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
@@ -295,7 +295,7 @@ Circle integrability is invariant when taking negative radius.
   rw [intervalIntegrable_congr (f := fun θ ↦ f (circleMap c (-R) θ))
     (g := fun θ ↦ (f ∘ (circleMap c R)) (θ + π)) (fun _ _ ↦ by simp [circleMap_neg_radius]),
     IntervalIntegrable.comp_add_right_iff (c := π), add_comm (2 * π) π]
-  simpa using ((periodic_circleMap c R).comp f).intervalIntegrable_iff (t₂ := 0)
+  simpa using! ((periodic_circleMap c R).comp f).intervalIntegrable_iff (t₂ := 0)
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
 theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
@@ -327,7 +327,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
   · have H : ∀ {θ}, circleMap 0 R θ * I ≠ 0 := fun {θ} => by simp [h₀, I_ne_zero]
     simpa only [inv_smul_smul₀ H]
       using ((continuous_circleMap 0 R).aestronglyMeasurable.mul_const
-        I).aemeasurable.inv.aestronglyMeasurable.smul h.aestronglyMeasurable
+        I).aemeasurable.fun_inv.aestronglyMeasurable.fun_smul h.aestronglyMeasurable
   · simp [norm_smul, h₀]
 
 theorem ContinuousOn.circleIntegrable' {f : ℂ → E} {c : ℂ} {R : ℝ}

@@ -59,7 +59,7 @@ namespace Coinvariants
 
 instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
 
-instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (V ⧸ Coinvariants.ker ρ)
+instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
 
 instance [Module.Finite k V] : Module.Finite k (Coinvariants ρ) :=
   inferInstanceAs <| Module.Finite k (V ⧸ Coinvariants.ker ρ)
@@ -343,7 +343,7 @@ end
 variable (k G) [Monoid G] (A B : Rep.{w} k G)
 
 /-- The functor sending a representation to its coinvariants. -/
-@[simps! obj_carrier map_hom]
+@[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.Coinvariants
   map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
@@ -377,7 +377,7 @@ variable (k G)
 instance : (coinvariantsFunctor k G).Additive where
 instance : (coinvariantsFunctor k G).Linear k where
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
 @[simps]
@@ -392,7 +392,7 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleC
     ((coinvariantsMk k G).app X ≫ f).hom := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
     (f : X ⟶ (trivialFunctor k G).obj Y) :
@@ -435,7 +435,6 @@ section
 
 variable (k : Type u) {G : Type v} [CommRing k] [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
 @[simps! obj_V map_hom_toLinearMap]
@@ -464,7 +463,6 @@ noncomputable def coinvariantsTensorFreeToFinsupp :
 
 variable {α}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A.V)
@@ -484,7 +482,7 @@ noncomputable def finsuppToCoinvariantsTensorFree :
 
 variable {A α}
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     DFunLike.coe (F := (α →₀ A.V) →ₗ[k] (A.ρ.tprod (Representation.free k G α)).Coinvariants)

@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
@@ -110,6 +111,7 @@ theorem tendstoUniformlyOn_iff_tendsto :
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` with respect to a
 filter `p` if, for any entourage of the diagonal `u`, one has `p`-eventually
 `(f x, Fₙ x) ∈ u` for all `x`. -/
+@[wikidata Q1411887]
 def TendstoUniformly (F : ι → α → β) (f : α → β) (p : Filter ι) :=
   ∀ u ∈ 𝓤 β, ∀ᶠ n in p, ∀ x : α, (f x, F n x) ∈ u
 
@@ -262,7 +264,7 @@ theorem TendstoUniformlyOnFilter.prodMap {ι' α' β' : Type*} [UniformSpace β'
       (p' ×ˢ q') := by
   rw [tendstoUniformlyOnFilter_iff_tendsto] at h h' ⊢
   rw [uniformity_prod_eq_comap_prod, tendsto_comap_iff, ← map_swap4_prod, tendsto_map'_iff]
-  simpa using h.prodMap h'
+  simpa using! h.prodMap h'
 
 theorem TendstoUniformlyOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {p' : Filter ι'} {s' : Set α'} (h : TendstoUniformlyOn F f p s)
@@ -331,7 +333,7 @@ theorem tendstoUniformlyOn_singleton_iff_tendsto :
 theorem Filter.Tendsto.tendstoUniformlyOnFilter_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
     (p' : Filter α) :
     TendstoUniformlyOnFilter (fun n : ι => fun _ : α => g n) (fun _ : α => b) p p' := by
-  simpa only [nhds_eq_comap_uniformity, tendsto_comap_iff] using hg.comp (tendsto_fst (g := p'))
+  simpa only [nhds_eq_comap_uniformity, tendsto_comap_iff] using! hg.comp (tendsto_fst (g := p'))
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
 `fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s`. -/
