@@ -6,8 +6,9 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 public import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -534,3 +535,24 @@ lemma angle_lt_pi_div_three_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ :
       linarith [angle_add_angle_add_angle_eq_pi p₃ h]
 
 end EuclideanGeometry
+
+namespace Affine.Triangle
+open Simplex EuclideanGeometry
+
+variable {V P : Type*}
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
+
+/-- The height of a triangle is equal to the sine of a side angle times the same side. -/
+theorem height_eq_dist_mul_sin (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    t.height i₁ = Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) *
+      dist (t.points i₁) (t.points i₂) := by
+  refine dist_orthogonalProjection_eq_sin_mul_dist_of_collinear ?_ ?_ ?_ ?_
+  · simp [h₁₂.symm]
+  · simp [h₁₃.symm]
+  · apply collinear_insert_of_mem_affineSpan_pair
+    convert! t.altitudeFoot_mem_affineSpan_image_compl i₁
+    grind
+  · exact t.independent.injective.ne h₂₃
+
+end Affine.Triangle
