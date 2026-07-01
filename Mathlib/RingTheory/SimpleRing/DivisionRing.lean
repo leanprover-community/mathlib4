@@ -36,8 +36,8 @@ open CategoryTheory
 
 variable (R S : Type*) [DivisionRing R] [DivisionRing S] (e : ModuleCat R ≌ ModuleCat S)
 
-lemma nonempty_linearEquiv_of_divisionRing_of_isSimpleModule (N : Type*) [AddCommGroup N] [Module S N]
-    [IsSimpleModule S N] : Nonempty (N ≃ₗ[S] S) := by
+lemma nonempty_linearEquiv_of_divisionRing_of_isSimpleModule (N : Type*) [AddCommGroup N]
+    [Module S N] [IsSimpleModule S N] : Nonempty (N ≃ₗ[S] S) := by
   obtain ⟨I, hI, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp ‹_›
   exact ⟨e ≪≫ₗ I.quotEquivOfEqBot ((eq_bot_or_eq_top I).resolve_right hI.ne_top)⟩
 
