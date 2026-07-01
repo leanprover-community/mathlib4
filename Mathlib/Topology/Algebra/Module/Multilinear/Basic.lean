@@ -387,7 +387,8 @@ variable [ContinuousAdd M₂] [DecidableEq ι] [Fintype ι] (x y : ∀ i, M₁ i
 
 /-- The derivative of a continuous multilinear map, as a continuous linear map
 from `∀ i, M₁ i` to `M₂`; see `ContinuousMultilinearMap.hasFDerivAt`. -/
-def linearDeriv : (∀ i, M₁ i) →L[R] M₂ := ∑ i : ι, (f.toContinuousLinearMap x i).comp (.proj i)
+def linearDeriv : (∀ i, M₁ i) →L[R] M₂ :=
+    ∑ i : ι, (f.toContinuousLinearMap x i) ∘L (.proj i : (∀ i, M₁ i) →L[R] M₁ i)
 
 @[simp]
 lemma linearDeriv_apply : f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by

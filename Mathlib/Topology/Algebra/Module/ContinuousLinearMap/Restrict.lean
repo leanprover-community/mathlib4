@@ -168,7 +168,7 @@ theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
 open Set in
 lemma restrict_comp {p : Submodule R₁ M₁} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
     {f : M₁ →SL[σ₁₂] M₂} {g : M₂ →SL[σ₂₃] M₃}
-    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘SL f) p p₃ := hg.comp hf) :
+    (hf : ∀ x ∈ p, f x ∈ p₂) (hg : ∀ x ∈ p₂, g x ∈ p₃) (hfg : ∀ x ∈ p, (g ∘SL f) x ∈ p₃) :
     (g ∘SL f).restrict hfg = (g.restrict hg) ∘SL (f.restrict hf) :=
   rfl
 

@@ -209,7 +209,7 @@ theorem coe_linear_eq_coe_contLinear (f : P →ᴬ[R] Q) :
 
 @[simp]
 theorem comp_contLinear (f : P →ᴬ[R] Q) (g : Q →ᴬ[R] Q₂) :
-    (g.comp f).contLinear = g.contLinear.comp f.contLinear :=
+    (g.comp f).contLinear = g.contLinear ∘L f.contLinear :=
   rfl
 
 @[simp]
