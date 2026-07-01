@@ -235,11 +235,7 @@ theorem apply_coe_mem_map (f : F) (S : Submonoid M) (x : S) : f x ∈ S.map f :=
 theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| image_image _ _ _
 
--- The simpNF linter says that the LHS can be simplified via `Submonoid.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp 1100, nolint simpNF)]
+@[to_additive (attr := simp 1100)]
 theorem mem_map_iff_mem {f : F} (hf : Function.Injective f) {S : Submonoid M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image
@@ -268,11 +264,11 @@ theorem le_comap_map {f : F} : S ≤ (S.map f).comap f :=
 theorem map_comap_le {S : Submonoid N} {f : F} : (S.comap f).map f ≤ S :=
   (gc_map_comap f).l_u_le _
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem monotone_map {f : F} : Monotone (map f) :=
   (gc_map_comap f).monotone_l
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem monotone_comap {f : F} : Monotone (comap f) :=
   (gc_map_comap f).monotone_u
 
@@ -599,8 +595,7 @@ lemma closure_prod_one (s : Set M) : closure (s ×ˢ ({1} : Set N)) = (closure s
   le_antisymm
     (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨subset_closure, .rfl⟩)
     (prod_le_iff.2 ⟨
-      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩,
-      by simp⟩)
+      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩, by simp⟩)
 
 @[to_additive (attr := simp) closure_zero_prod]
 lemma closure_one_prod (t : Set N) : closure (({1} : Set M) ×ˢ t) = .prod ⊥ (closure t) :=
@@ -680,6 +675,12 @@ theorem map_mrange (g : N →* P) (f : M →* N) : (mrange f).map g = mrange (co
 @[to_additive]
 theorem mrange_eq_top {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_mrange, coe_top]) Set.range_eq_univ
+
+@[to_additive (attr := simp) mrange_prodMap]
+lemma mrange_prodMap {M' N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
+    (g : M' →* N') :
+    MonoidHom.mrange (f.prodMap g) = (MonoidHom.mrange f).prod (MonoidHom.mrange g) :=
+  SetLike.coe_injective Set.range_prodMap
 
 /-- The range of a surjective `MonoidHom` is the whole of the codomain. -/
 @[to_additive (attr := simp)
@@ -875,6 +876,11 @@ theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
     Function.Surjective (f.submonoidMap M') := by
   rintro ⟨_, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
+
+@[to_additive (attr := grind inj)]
+theorem submonoidMap_injective {f : M →* N} (hf : Injective f) (M' : Submonoid M) :
+    Injective (f.submonoidMap M') := by
+  grind [Injective, submonoidMap_apply_coe]
 
 end MonoidHom
 
@@ -1116,9 +1122,6 @@ theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e :
     (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
   rfl
 
-@[deprecated (since := "2025-08-20")]
-alias _root_.AddEquiv.add_submonoid_map_symm_apply := AddEquiv.addSubmonoidMap_symm_apply
-
 end MulEquiv
 
 @[to_additive (attr := simp)]
@@ -1140,7 +1143,8 @@ namespace Submonoid
 elements of `M`. -/
 @[to_additive (attr := simps!) /-- The additive equivalence between the type of additive units of
 `M` and the additive submonoid whose elements are the additive units of `M`. -/]
-noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
+noncomputable def unitsTypeEquivIsUnitSubmonoid {M : Type*} [Monoid M] :
+    Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
   left_inv _ := IsUnit.unit_of_val_units _

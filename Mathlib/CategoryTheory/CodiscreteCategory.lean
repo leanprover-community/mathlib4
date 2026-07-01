@@ -87,8 +87,8 @@ def natIso {F G : C ⥤ Codiscrete A} : F ≅ G where
   hom := natTrans
   inv := natTrans
 
-/-- Every functor `F` to a codiscrete category is naturally isomorphic {(actually, equal)} to
-  `Codiscrete.as ∘ F.obj`. -/
+/-- Every functor `F` to a codiscrete category is naturally isomorphic (actually, equal) to
+`Codiscrete.as ∘ F.obj`. -/
 @[simps!]
 def natIsoFunctor {F : C ⥤ Codiscrete A} : F ≅ functor (Codiscrete.as ∘ F.obj) := Iso.refl _
 
@@ -124,7 +124,7 @@ def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
 /-- The functor that turns a type into a codiscrete category is right adjoint to the objects
 functor. -/
 def adj : objects ⊣ functorToCat := mkOfHomEquiv {
-  homEquiv _ _ := equivFunctorToCodiscrete.trans (Functor.equivCatHom _ _)
+  homEquiv _ _ := TypeCat.homEquiv.trans (equivFunctorToCodiscrete.trans (Functor.equivCatHom _ _))
   homEquiv_naturality_left_symm _ _ := rfl
   homEquiv_naturality_right _ _ := rfl }
 
@@ -138,7 +138,7 @@ lemma adj_unit_app (X : Cat.{0, u}) :
     adj.unit.app X = (unitApp X).toCatHom := rfl
 
 lemma adj_counit_app (A : Type u) :
-    adj.counit.app A = counitApp A := rfl
+    adj.counit.app A = ↾(counitApp A) := rfl
 
 /-- Left triangle equality of the adjunction `Cat.objects ⊣ Codiscrete.functorToCat`,
 as a universe polymorphic statement. -/

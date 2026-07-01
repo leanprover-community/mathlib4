@@ -24,11 +24,11 @@ Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible 
 * `MonomialOrder.div hb f` furnishes
   - a finitely supported family `g : ι →₀ MvPolynomial σ R`
   - and a “remainder” `r : MvPolynomial σ R`
-such that the three properties hold:
-  (1) One has `f = ∑ (g i) * (b i) + r`
-  (2) For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
-  (3) For every `i`, every monomial in the support of `r` is strictly smaller
-    than the leading term of `b i`,
+    such that the three properties hold:
+    1. One has `f = ∑ (g i) * (b i) + r`
+    2. For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
+    3. For every `i`, every monomial in the support of `r` is strictly smaller
+       than the leading term of `b i`,
 
 The proof is done by induction, using two standard constructions
 
@@ -198,7 +198,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · intro c hc i
         by_cases hc' : c ∈ r'.support
         · exact H'.2.2 c hc' i
-        · convert hf i
+        · convert! hf i
           classical
           have := MvPolynomial.support_add hc
           rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this
@@ -212,13 +212,20 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
 termination_by WellFounded.wrap
   ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
 decreasing_by
-· exact deg_reduce
-· apply degree_sub_LTerm_lt
-  intro hf0
-  apply hf'0
-  simp only [subLTerm, sub_eq_zero]
-  nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
-  simp
+  · exact deg_reduce
+  · apply degree_sub_LTerm_lt
+    intro hf0
+    apply hf'0
+    simp only [subLTerm, sub_eq_zero]
+    nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
+    simp
+
+/-!
+Module doc as workaround for a parser error that prevents using `set_option`
+after a `decreasing_by` block with focus dots.
+
+See https://github.com/leanprover/lean4/issues/12573
+-/
 
 /-- Division by a *set* of multivariate polynomials
 whose leading coefficients are invertible with respect to a monomial order -/

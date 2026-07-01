@@ -144,7 +144,7 @@ variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E]
 
 instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'
@@ -316,7 +316,7 @@ variable {s : Set X} (f : BumpCovering ι X s)
 
 instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[simp] lemma toFun_eq_coe : f.toFun = f := rfl
 
@@ -526,7 +526,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
   refine Finset.sum_congr rfl fun i _ => ?_
-  convert f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
+  convert! f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
   rwa [Finite.mem_toFinset]
 
 open Classical in
@@ -562,7 +562,7 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_eq_self]
     apply finprod_eq_zero (fun i => 1 - f i x) (f.ind x hx)
     · simp only [f.ind_apply x hx, sub_self]
-    · rw [mulSupport_one_sub]
+    · rw [HasFiniteMulSupport, mulSupport_one_sub]
       exact f.point_finite x
   sum_le_one' x := by
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_le_self_iff]

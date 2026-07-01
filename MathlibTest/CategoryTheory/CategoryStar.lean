@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CategoryTheory.CategoryStar
 import Mathlib.CategoryTheory.Functor.Category
 
@@ -65,7 +66,9 @@ universe u₁ u₂
 variable (E : Sort (imax (u₁ + 1) (u₂ + 1))) [Category* E]
 variable (F : Sort (max (u₁ + 1) (u₂ + 1))) [Category* F]
 
+set_option linter.checkUnivs false in
 def barE := E ⥤ E
+set_option linter.checkUnivs false in
 def barF := F ⥤ F
 
 /--
@@ -130,7 +133,7 @@ variable (D : Sort*) [Category* D]
 
 /--
 error: stuck at solving universe constraint
-  max u_1 (u_2+1) =?= _+1
+  max u_1 (u_2 + 1) =?= _ + 1
 while trying to unify
   Sort (max u_1 (u_2 + 1)) : Type (max u_1 (u_2 + 1))
 with
@@ -141,7 +144,7 @@ variable (E : Sort*) (F : Type*) [Category* (E → F)]
 
 /--
 error: stuck at solving universe constraint
-  imax (u_2+1) u_1 =?= _+1
+  imax (u_2 + 1) u_1 =?= _ + 1
 while trying to unify
   Sort (imax (u_2 + 1) u_1) : Type (imax (u_2 + 1) u_1)
 with

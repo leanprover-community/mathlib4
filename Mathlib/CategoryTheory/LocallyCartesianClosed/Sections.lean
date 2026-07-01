@@ -77,15 +77,18 @@ open ChosenPullbacksAlong
 
 variable [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The currying operation `Hom ((toOver I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
   ChosenPullbacksAlong.lift (curry ((β_ I A).hom ≫ u.left)) (toUnit A) (by
-    rw [curry_natural_right, Category.assoc, ← Functor.map_comp, w, toOver_obj_hom,
+    rw [curry_natural_right, Category.assoc, ← Functor.map_comp, w,
       ← curry_natural_right, toUnit_comp_curryRightUnitorHom]
     congr
     simp [braiding_hom_snd])
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The uncurrying operation `Hom A (section X) → Hom ((toOver I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     (toOver I).obj A ⟶ X :=
@@ -101,12 +104,14 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     dsimp [uncurry] at *
     rw [Category.assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sectionsCurry_sectionUncurry {X : Over I} {A : C} {v : A ⟶ (sections I).obj X} :
     sectionsCurry (sectionsUncurry v) = v := by
   dsimp [sectionsCurry, sectionsUncurry]
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sectionsUncurry_sectionsCurry {X : Over I} {A : C} {u : (toOver I).obj A ⟶ X} :
     sectionsUncurry (sectionsCurry u) = u := by
@@ -118,6 +123,7 @@ open Adjunction
 
 variable (I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition which is used to define the adjunction between the star functor
 and the sections functor. See `starSectionsAdjunction`. -/
 @[simps homEquiv]

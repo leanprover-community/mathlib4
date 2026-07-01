@@ -338,7 +338,7 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_range {p : P}
     orthogonalProjectionSpan]
   · simp_rw [range_faceOpposite_points]
   rw [affineSpan_insert_affineSpan]
-  convert h
+  convert! h
   exact Set.insert_image_compl_eq_range s.points i
 
 end Simplex

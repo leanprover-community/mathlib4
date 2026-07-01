@@ -26,7 +26,7 @@ while the impact on writing code is minimal as `convexHull 𝕜 s` is automatica
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {𝕜 E F : Type*}
 
@@ -90,8 +90,6 @@ theorem convexHull_eq_empty : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
   · rintro rfl
     exact convexHull_empty
 
-@[deprecated (since := "2025-08-09")] alias convexHull_empty_iff := convexHull_eq_empty
-
 @[simp]
 theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
@@ -147,7 +145,7 @@ theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Conv
     exact convex_convexHull 𝕜 _
   exact
     Subset.antisymm (subset_convexHull 𝕜 _) fun y hy =>
-      ⟨convexHull_min diff_subset hs hy, by
+      ⟨convexHull_min sdiff_subset hs hy, by
         rintro (rfl : y = x)
         exact hx hy⟩
 

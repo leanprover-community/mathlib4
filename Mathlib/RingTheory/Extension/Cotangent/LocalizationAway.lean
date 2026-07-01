@@ -68,6 +68,7 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway T g).comp P).Ring
       (fun _ ↦ IsLocalization.Away.invSelf <| (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)))
       (fun i : ι ↦ algebraMap P.Ring _ (X i)))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
     compLocalizationAwayAlgHom T g P (((localizationAway T g).toComp P).toAlgHom x) =
@@ -116,6 +117,7 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
       intro x hx y hy
       simp [hsple hx]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `R → S → T` be algebras such that `T` is the localization of `S` away from one
 element, where `S` is generated over `R` by `P` with kernel `I` and `Q` is the
@@ -145,13 +147,13 @@ lemma liftBaseChange_injective_of_isLocalizationAway :
     simp only [Submonoid.smul_def]
     rw [show g = algebraMap P.Ring S (P.σ g) by simp, ← map_pow, algebraMap_smul, ← map_smul,
       Extension.Cotangent.mk_eq_zero_iff]
-    simpa using hm
+    simpa using! hm
   rw [← compLocalizationAwayAlgHom_toAlgHom_toComp (T := T)]
   apply sq_ker_comp_le_ker_compLocalizationAwayAlgHom
   simpa only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply,
     mk_apply, lift.tmul, LinearMap.coe_restrictScalars, LinearMap.coe_smulRight,
     Module.End.one_apply, LinearMap.smul_apply, one_smul, Algebra.Extension.Cotangent.map_mk,
-    Extension.Cotangent.mk_eq_zero_iff] using hx
+    Extension.Cotangent.mk_eq_zero_iff] using! hx
 
 /--
 In the notation of the module docstring: Since `T` is standard smooth

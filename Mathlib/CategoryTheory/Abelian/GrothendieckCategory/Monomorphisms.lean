@@ -17,7 +17,7 @@ monomorphisms are stable under transfinite composition.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

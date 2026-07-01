@@ -352,28 +352,17 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
       (Algebra.ofId _ _, ι (R := R) _ 1),
       ι_mul_ι (1 : R) 1,
       fun _ => (Algebra.commutes _ _).symm⟩)
-    (by
-      ext : 1
-      -- This used to be a single `simp` before https://github.com/leanprover/lean4/pull/2644
-      simp only [QuadraticMap.zero_apply, AlgHom.coe_comp, Function.comp_apply, lift_apply_eps,
-        AlgHom.coe_id, id_eq]
-      erw [lift_ι_apply]
-      simp)
-    -- This used to be a single `simp` before https://github.com/leanprover/lean4/pull/2644
-    (by
-      ext : 2
-      simp only [QuadraticMap.zero_apply, AlgHom.comp_toLinearMap, LinearMap.coe_comp,
-        Function.comp_apply, AlgHom.toLinearMap_apply, AlgHom.toLinearMap_id, LinearMap.id_comp]
-      erw [lift_ι_apply]
-      simp)
+    (by ext : 1; simp) (by ext : 2; simp)
 
 @[simp]
-theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε :=
-  (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
+theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε := by
+  dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
+  exact (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
 
 @[simp]
 theorem equiv_symm_eps :
-    CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 :=
-  DualNumber.lift_apply_eps _
+    CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 := by
+  dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
+  exact DualNumber.lift_apply_eps _
 
 end CliffordAlgebraDualNumber

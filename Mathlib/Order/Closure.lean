@@ -73,7 +73,7 @@ namespace ClosureOperator
 
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   map_rel f _ _ h := f.mono h
@@ -102,9 +102,9 @@ lemma conjBy_trans {α β γ} [Preorder α] [Preorder β] [Preorder γ]
     (e₁ : α ≃o β) (e₂ : β ≃o γ) (c : ClosureOperator α) :
     c.conjBy (e₁.trans e₂) = (c.conjBy e₁).conjBy e₂ := rfl
 
-section PartialOrder
+section Preorder
 
-variable [PartialOrder α]
+variable [Preorder α]
 
 /-- The identity function as a closure operator. -/
 @[simps!]
@@ -117,12 +117,59 @@ def id : ClosureOperator α where
 instance : Inhabited (ClosureOperator α) :=
   ⟨id α⟩
 
-variable {α}
-variable (c : ClosureOperator α)
+variable {α} (c : ClosureOperator α)
 
 @[ext]
 theorem ext : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
   DFunLike.ext
+
+@[gcongr, mono]
+theorem monotone : Monotone c :=
+  c.monotone'
+
+/-- Every element is less than its closure. This property is sometimes referred to as extensivity or
+inflationarity. -/
+theorem le_closure (x : α) : x ≤ c x :=
+  c.le_closure' x
+
+@[simp]
+theorem idempotent (x : α) : c (c x) = c x :=
+  c.idempotent' x
+
+@[simp] lemma isClosed_closure (x : α) : c.IsClosed (c x) := c.isClosed_iff.2 <| c.idempotent x
+
+/-- The type of elements closed under a closure operator. -/
+abbrev Closeds := {x // c.IsClosed x}
+
+/-- Send an element to a closed element (by taking the closure). -/
+def toCloseds (x : α) : c.Closeds := ⟨c x, c.isClosed_closure x⟩
+
+variable {c} {x y : α}
+
+theorem IsClosed.closure_eq : c.IsClosed x → c x = x := c.isClosed_iff.1
+
+/-- The set of closed elements for `c` is exactly its range. -/
+theorem setOf_isClosed_eq_range_closure : {x | c.IsClosed x} = Set.range c := by
+  ext x; exact ⟨fun hx ↦ ⟨x, hx.closure_eq⟩, by rintro ⟨y, rfl⟩; exact c.isClosed_closure _⟩
+
+theorem le_closure_iff : x ≤ c y ↔ c x ≤ c y :=
+  ⟨fun h ↦ c.idempotent y ▸ c.monotone h, (c.le_closure x).trans⟩
+
+@[simp]
+theorem IsClosed.closure_le_iff (hy : c.IsClosed y) : c x ≤ y ↔ x ≤ y := by
+  rw [← hy.closure_eq, ← le_closure_iff]
+
+lemma closure_min (hxy : x ≤ y) (hy : c.IsClosed y) : c x ≤ y := hy.closure_le_iff.2 hxy
+
+lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) where
+  left _ := and_imp.mpr closure_min
+  right _ h := h ⟨c.le_closure x, c.isClosed_closure x⟩
+
+end Preorder
+
+section PartialOrder
+
+variable {α} [PartialOrder α] {c : ClosureOperator α} {x y : α}
 
 /-- Constructor for a closure operator using the weaker idempotency axiom: `f (f x) ≤ f x`. -/
 @[simps]
@@ -152,62 +199,19 @@ def ofPred (f : α → α) (p : α → Prop) (hf : ∀ x, x ≤ f x) (hfp : ∀ 
   IsClosed := p
   isClosed_iff := ⟨fun hx ↦ (hmin le_rfl hx).antisymm <| hf _, fun hx ↦ hx ▸ hfp _⟩
 
-@[mono]
-theorem monotone : Monotone c :=
-  c.monotone'
-
-/-- Every element is less than its closure. This property is sometimes referred to as extensivity or
-inflationarity. -/
-theorem le_closure (x : α) : x ≤ c x :=
-  c.le_closure' x
-
-@[simp]
-theorem idempotent (x : α) : c (c x) = c x :=
-  c.idempotent' x
-
-@[simp] lemma isClosed_closure (x : α) : c.IsClosed (c x) := c.isClosed_iff.2 <| c.idempotent x
-
-/-- The type of elements closed under a closure operator. -/
-abbrev Closeds := {x // c.IsClosed x}
-
-/-- Send an element to a closed element (by taking the closure). -/
-def toCloseds (x : α) : c.Closeds := ⟨c x, c.isClosed_closure x⟩
-
-variable {c} {x y : α}
-
-theorem IsClosed.closure_eq : c.IsClosed x → c x = x := c.isClosed_iff.1
-
 theorem isClosed_iff_closure_le : c.IsClosed x ↔ c x ≤ x :=
   ⟨fun h ↦ h.closure_eq.le, fun h ↦ c.isClosed_iff.2 <| h.antisymm <| c.le_closure x⟩
 
-/-- The set of closed elements for `c` is exactly its range. -/
-theorem setOf_isClosed_eq_range_closure : {x | c.IsClosed x} = Set.range c := by
-  ext x; exact ⟨fun hx ↦ ⟨x, hx.closure_eq⟩, by rintro ⟨y, rfl⟩; exact c.isClosed_closure _⟩
-
-theorem le_closure_iff : x ≤ c y ↔ c x ≤ c y :=
-  ⟨fun h ↦ c.idempotent y ▸ c.monotone h, (c.le_closure x).trans⟩
-
-@[simp]
-theorem IsClosed.closure_le_iff (hy : c.IsClosed y) : c x ≤ y ↔ x ≤ y := by
-  rw [← hy.closure_eq, ← le_closure_iff]
-
-lemma closure_min (hxy : x ≤ y) (hy : c.IsClosed y) : c x ≤ y := hy.closure_le_iff.2 hxy
-
-lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) where
-  left _ := and_imp.mpr closure_min
-  right _ h := h ⟨c.le_closure x, c.isClosed_closure x⟩
-
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
-    (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
+  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <| by simpa [h] using c₂.closure_isGLB x
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
 theorem eq_ofPred_closed (c : ClosureOperator α) :
     c = ofPred c c.IsClosed c.le_closure c.isClosed_closure fun _ _ ↦ closure_min := by
   ext
-  rfl
+  simp
 
 end PartialOrder
 
@@ -337,7 +341,7 @@ theorem ext : ∀ l₁ l₂ : LowerAdjoint u, (l₁ : α → β) = (l₂ : α �
   | ⟨l₁, _⟩, ⟨l₂, _⟩, h => by
     congr
 
-@[mono]
+@[gcongr, mono]
 theorem monotone : Monotone (u ∘ l) :=
   l.gc.monotone_u.comp l.gc.monotone_l
 
@@ -386,7 +390,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PartialOrder β] {u : β → α} (l : LowerAdjoint u)
+variable [PartialOrder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 theorem mem_closed_iff_closure_le (x : α) : x ∈ l.closed ↔ u (l x) ≤ x :=
   l.closureOperator.isClosed_iff_closure_le
@@ -404,7 +408,7 @@ def toClosed (x : α) : l.closed :=
   ⟨u (l x), l.closure_is_closed x⟩
 
 @[simp]
-theorem closure_le_closed_iff_le (x : α) {y : α} (hy : l.closed y) : u (l x) ≤ y ↔ x ≤ y :=
+theorem closure_le_closed_iff_le (x : α) {y : α} (hy : y ∈ l.closed) : u (l x) ≤ y ↔ x ≤ y :=
   (show l.closureOperator.IsClosed y from hy).closure_le_iff
 
 end PartialOrder

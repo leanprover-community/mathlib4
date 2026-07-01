@@ -5,6 +5,7 @@ Authors: Nikolas Tapia
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.NonAssoc.PreLie.Basic
 /-!
@@ -84,13 +85,11 @@ instance instLieAlgebra [LieAdmissibleRing L] [LieAdmissibleAlgebra R L] : LieAl
 
 end LieAdmissibleAlgebra
 
-end instances
-
 namespace LeftPreLieRing
 
-variable {L : Type*} [LeftPreLieRing L]
+variable [LeftPreLieRing L]
 
-/-- `LeftPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on the
+/-- `LeftPreLieRings` are examples of `LieAdmissibleRings` by the commutativity assumption on the
 associator. -/
 instance instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def x y z := by
@@ -103,7 +102,7 @@ end LeftPreLieRing
 
 namespace LeftPreLieAlgebra
 
-variable {R L : Type*} [CommRing R] [LeftPreLieRing L] [LeftPreLieAlgebra R L]
+variable [LeftPreLieRing L] [LeftPreLieAlgebra R L]
 
 instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
 
@@ -111,9 +110,9 @@ end LeftPreLieAlgebra
 
 namespace RightPreLieRing
 
-variable {L : Type*} [RightPreLieRing L]
+variable [RightPreLieRing L]
 
-/-- `RightPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on
+/-- `RightPreLieRings` are examples of `LieAdmissibleRings` by the commutativity assumption on
 the associator. -/
 instance instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def x y z := by
@@ -126,8 +125,35 @@ end RightPreLieRing
 
 namespace RightPreLieAlgebra
 
-variable {R L : Type*} [CommRing R] [RightPreLieRing L] [RightPreLieAlgebra R L]
+variable [RightPreLieRing L] [RightPreLieAlgebra R L]
 
 instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
 
 end RightPreLieAlgebra
+
+namespace Ring
+
+variable [Ring L]
+
+/-- Every ring is Lie-admissible.
+See note [reducible non-instances]. -/
+abbrev instLieAdmissibleRing : LieAdmissibleRing L where
+  assoc_def := by
+    suffices ∀ a b c : L, associator a b c = 0 by simp
+    simp
+
+end Ring
+
+namespace Algebra
+
+variable [Ring L] [Algebra R L]
+attribute [local instance] Ring.instLieAdmissibleRing
+
+/-- Every algebra is Lie-admissible.
+See note [reducible non-instances]. -/
+abbrev instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
+  smul_comm := by simp
+
+end Algebra
+
+end instances

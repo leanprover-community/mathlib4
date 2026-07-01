@@ -43,8 +43,8 @@ lemma iSup_set_eq_univ (hu : IsOpenCover u) : ⋃ i, (u i : Set X) = univ := by
 
 /-- Pullback of a covering of `Y` by a continuous map `X → Y`, giving a covering of `X` with the
 same index type. -/
-lemma comap (hv : IsOpenCover v) (f : C(X, Y)) : IsOpenCover fun k ↦ (v k).comap f :=
-  by simp [IsOpenCover, ← preimage_iUnion, hv.iSup_set_eq_univ]
+lemma comap (hv : IsOpenCover v) (f : C(X, Y)) : IsOpenCover fun k ↦ (v k).comap f := by
+  simp [IsOpenCover, ← preimage_iUnion, hv.iSup_set_eq_univ]
 
 lemma exists_mem (hu : IsOpenCover u) (a : X) : ∃ i, a ∈ u i := by
   simpa [← hu.iSup_set_eq_univ] using mem_univ a
@@ -60,6 +60,14 @@ lemma isTopologicalBasis (hu : IsOpenCover u)
     {B : ∀ i, Set (Set (u i))} (hB : ∀ i, IsTopologicalBasis (B i)) :
     IsTopologicalBasis (⋃ i, (Subtype.val '' ·) '' B i) :=
   isTopologicalBasis_of_cover (fun i ↦ (u i).2) hu.iSup_set_eq_univ hB
+
+lemma exists_finite_of_compactSpace (hu : IsOpenCover u) [CompactSpace X] :
+    ∃ (s : Finset ι), IsOpenCover (fun i : s ↦ u i.1) := by
+  rw [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe] at hu
+  obtain ⟨s, hs⟩ := IsCompact.elim_finite_subcover isCompact_univ _ (fun i ↦ (u i).2)
+    (by simpa using hu)
+  use s
+  simpa [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe, Set.iUnion_subtype] using hs
 
 end IsOpenCover
 

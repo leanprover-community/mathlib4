@@ -56,17 +56,12 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
-set_option backward.privateInPublic true in
-/-- Bilinear map for the inner product on tensor products.
-On pure tensors: `inner_ (a ⊗ₜ b) (c ⊗ₜ d) = ⟪a, c⟫ * ⟪b, d⟫`. -/
-private abbrev inner_ : E ⊗[𝕜] F →ₗ⋆[𝕜] E ⊗[𝕜] F →ₗ[𝕜] 𝕜 :=
-  (lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
+instance instInner : Inner 𝕜 (E ⊗[𝕜] F) where inner x y :=
+  ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
-
-private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
+lemma inner_def (x y : E ⊗[𝕜] F) :
+    inner 𝕜 x y = ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂
+      (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y := rfl
 
 variable (𝕜) in
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
@@ -84,7 +79,7 @@ lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y
 open scoped ComplexOrder
 open Module
 
-/- This holds in any inner product space, but we need this to set up the instance.
+/-- This holds in any inner product space, but we need this to set up the instance.
 This is a helper lemma for showing that this inner product is positive definite. -/
 private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E ⊗[𝕜] F)
     (e : OrthonormalBasis ι 𝕜 E) (f : OrthonormalBasis ι' 𝕜 F) :
@@ -204,7 +199,7 @@ section isometry
 
 /-- The tensor product map of two linear isometries is a linear isometry. In particular, this is
 the linear isometry version of `TensorProduct.map f g` when `f` and `g` are linear isometries. -/
-def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
+noncomputable def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
     E ⊗[𝕜] F →ₗᵢ[𝕜] G ⊗[𝕜] H :=
   map f.toLinearMap g.toLinearMap |>.isometryOfInner <| inner_map_map _ _
 
@@ -226,12 +221,12 @@ def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
 
 variable (E) in
 /-- This is the natural linear isometry induced by `f : F ≃ₗᵢ G`. -/
-def _root_.LinearIsometry.lTensor (f : F →ₗᵢ[𝕜] G) :
+noncomputable def _root_.LinearIsometry.lTensor (f : F →ₗᵢ[𝕜] G) :
     E ⊗[𝕜] F →ₗᵢ[𝕜] E ⊗[𝕜] G := mapIsometry .id f
 
 variable (G) in
 /-- This is the natural linear isometry induced by `f : E ≃ₗᵢ F`. -/
-def _root_.LinearIsometry.rTensor (f : E →ₗᵢ[𝕜] F) :
+noncomputable def _root_.LinearIsometry.rTensor (f : E →ₗᵢ[𝕜] F) :
     E ⊗[𝕜] G →ₗᵢ[𝕜] F ⊗[𝕜] G := mapIsometry f .id
 
 lemma _root_.LinearIsometry.lTensor_def (f : F →ₗᵢ[𝕜] G) :
@@ -255,7 +250,7 @@ lemma _root_.LinearIsometry.rTensor_def (f : E →ₗᵢ[𝕜] F) :
 /-- The tensor product of two linear isometry equivalences is a linear isometry equivalence.
 In particular, this is the linear isometry equivalence version of `TensorProduct.congr f g` when `f`
 and `g` are linear isometry equivalences. -/
-def congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
+noncomputable def congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     E ⊗[𝕜] F ≃ₗᵢ[𝕜] G ⊗[𝕜] H :=
   congr f.toLinearEquiv g.toLinearEquiv |>.isometryOfInner <|
     inner_map_map f.toLinearIsometry g.toLinearIsometry
@@ -275,12 +270,12 @@ lemma congrIsometry_symm (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
 
 variable (E) in
 /-- This is the natural linear isometric equivalence induced by `f : F ≃ₗᵢ G`. -/
-def _root_.LinearIsometryEquiv.lTensor (f : F ≃ₗᵢ[𝕜] G) :
+noncomputable def _root_.LinearIsometryEquiv.lTensor (f : F ≃ₗᵢ[𝕜] G) :
     E ⊗[𝕜] F ≃ₗᵢ[𝕜] E ⊗[𝕜] G := congrIsometry (.refl 𝕜 E) f
 
 variable (G) in
 /-- This is the natural linear isometric equivalence induced by `f : E ≃ₗᵢ F`. -/
-def _root_.LinearIsometryEquiv.rTensor (f : E ≃ₗᵢ[𝕜] F) :
+noncomputable def _root_.LinearIsometryEquiv.rTensor (f : E ≃ₗᵢ[𝕜] F) :
     E ⊗[𝕜] G ≃ₗᵢ[𝕜] F ⊗[𝕜] G := congrIsometry f (.refl 𝕜 G)
 
 lemma _root_.LinearIsometryEquiv.lTensor_def (f : F ≃ₗᵢ[𝕜] G) :
@@ -314,7 +309,7 @@ lemma _root_.LinearIsometryEquiv.symm_rTensor (f : E ≃ₗᵢ[𝕜] F) :
     f.rTensor G x = f.toLinearEquiv.rTensor G x := rfl
 
 /-- The linear isometry version of `TensorProduct.mapIncl`. -/
-def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
+noncomputable def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
     E' ⊗[𝕜] F' →ₗᵢ[𝕜] E ⊗[𝕜] F :=
   mapIsometry E'.subtypeₗᵢ F'.subtypeₗᵢ
 
@@ -333,7 +328,7 @@ def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
 
 variable (𝕜 E F) in
 /-- The linear isometry equivalence version of `TensorProduct.comm`. -/
-def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
+noncomputable def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
   TensorProduct.comm 𝕜 E F |>.isometryOfInner inner_comm_comm
 
 @[simp] lemma commIsometry_apply (x : E ⊗[𝕜] F) :
@@ -360,7 +355,7 @@ def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
 
 variable (𝕜 E) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
-def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
+noncomputable def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
   TensorProduct.lid 𝕜 E |>.isometryOfInner inner_lid_lid
 
 @[simp] lemma lidIsometry_apply (x : 𝕜 ⊗[𝕜] E) :
@@ -391,11 +386,12 @@ def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
 
 variable (𝕜 E F G) in
 /-- The linear isometry equivalence version of `TensorProduct.assoc`. -/
-def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[𝕜] (F ⊗[𝕜] G) :=
+noncomputable def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[𝕜] (F ⊗[𝕜] G) :=
   TensorProduct.assoc 𝕜 E F G |>.isometryOfInner inner_assoc_assoc
 
 @[simp] lemma assocIsometry_apply (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     assocIsometry 𝕜 E F G x = TensorProduct.assoc 𝕜 E F G x := rfl
+
 @[simp] lemma assocIsometry_symm_apply (x : E ⊗[𝕜] (F ⊗[𝕜] G)) :
     (assocIsometry 𝕜 E F G).symm x = (TensorProduct.assoc 𝕜 E F G).symm x := rfl
 
@@ -404,8 +400,10 @@ def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[𝕜] (F ⊗
 
 @[simp] lemma norm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     ‖TensorProduct.assoc 𝕜 E F G x‖ = ‖x‖ := assocIsometry 𝕜 E F G |>.norm_map x
+
 @[simp] lemma nnnorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     ‖TensorProduct.assoc 𝕜 E F G x‖₊ = ‖x‖₊ := assocIsometry 𝕜 E F G |>.nnnorm_map x
+
 @[simp] lemma enorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     ‖TensorProduct.assoc 𝕜 E F G x‖ₑ = ‖x‖ₑ := assocIsometry 𝕜 E F G |>.toLinearIsometry.enorm_map x
 
@@ -466,7 +464,7 @@ theorem Orthonormal.tmul
 theorem Orthonormal.basisTensorProduct
     {b₁ : Basis ι₁ 𝕜 E} {b₂ : Basis ι₂ 𝕜 F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
     Orthonormal 𝕜 (b₁.tensorProduct b₂) := by
-  convert hb₁.tmul hb₂
+  convert! hb₁.tmul hb₂
   exact b₁.tensorProduct_apply' b₂ _
 
 namespace OrthonormalBasis
