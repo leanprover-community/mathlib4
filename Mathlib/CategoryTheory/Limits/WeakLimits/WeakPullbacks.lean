@@ -238,10 +238,7 @@ theorem hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair [HasLi
             simp [limit.lift_π_assoc, PullbackCone.condition])
           (by simp) (by simp) }
 
-section
-
-attribute [local instance] hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair
-
+attribute [local instance] hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair in
 /-- If a category has all binary products and all weak equalizers, then it also has all
 weak pullbacks. As usual, this is not an instance, since there may be a more direct way to
 construct weak pullbacks. -/
