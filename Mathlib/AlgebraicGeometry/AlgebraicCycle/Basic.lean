@@ -82,10 +82,12 @@ section degree
 variable {Y : Scheme.{u}} (f : X ⟶ Y) (D : AlgebraicCycle X R)
 
 /--
-The degree of a Weil divisor on a (complete) curve. Note that whilst this is defined for more
-general cycles on more general schemes, this is not a very useful notion outside of the usecase of
-divisors on curves. More generally, one can only define degree with respect to an embedding.
+The degree of a zero-cycle `D` with respect to a morphism `f : X ⟶ Y`.
+Note that this definition is closely related to the pushforward of `D` along `f` (see stacks 0AZ1).
+In applications, typically `f` is proper (so the pushforward respects rational equivalence) and `Y`
+is `Spec k` for some field `k`.
 -/
+@[stacks 0AZ2]
 noncomputable def degree : R := ∑ᶠ (x : X), (f.residueDegree x) • (D x)
 
 @[simp]
