@@ -34,9 +34,24 @@ These three results show up crucially when developping the theory of Fredholm op
 between topological vector spaces. Note that none of the results here use the Hahn-Banach
 theorem, so there is no significant restriction on the field.
 
+## Implementation details
+
+There are two notable changes compared to Bourbaki.
+* We treat all topological vector spaces over complete nontrivially normed fields,
+  where Bourbaki restricts to locally convex spaces over `ℝ` or `ℂ`. To do so, we have to
+  tweak one statement by assuming that a finite dimensional subspace is complemented, which
+  is always the case when you have Hahn-Banach available.
+* We give a different proof, where we reduce the statement to
+  `AddMonoidHom.isStrictMap_prodMap_iff`. This gives a slightly longer proof, but we
+  claim that it is more natural.
+
+Note that these two changes are independent: the extra generality could have been achieved
+with Bourbaki's proof.
+
 ## References
 
 * [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]
+
 -/
 
 open Topology Set Submodule Function ContinuousLinearMap
