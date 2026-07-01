@@ -168,6 +168,7 @@ end AddCommGroup
 
 namespace CommGroup
 
+@[to_additive existing]
 theorem finite_of_fg_isMulTorsion [CommGroup G] [Group.FG G] (hG : IsMulTorsion G) : Finite G :=
   @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_isAddTorsion (Additive G) hG) Multiplicative.ofAdd
 
