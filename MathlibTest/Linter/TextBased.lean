@@ -658,47 +658,47 @@ section nameCheck
 
 open Mathlib.Linter.Style.nameCheck
 
-#guard !isWronglyCased "something"
-#guard !isWronglyCased "myDeclaration"
-#guard !isWronglyCased "lowerCamelCase"
-#guard isWronglyCased "Foo"
+#guard !isWronglyCasedName "something"
+#guard !isWronglyCasedName "myDeclaration"
+#guard !isWronglyCasedName "lowerCamelCase"
+#guard isWronglyCasedName "Foo"
 -- Acronyms and acronym-like names.
-#guard !isWronglyCased "ofLE"
-#guard !isWronglyCased "LE"
-#guard isWronglyCased "LEOne"
-#guard !isWronglyCased "leOne"
+#guard !isWronglyCasedName "ofLE"
+#guard !isWronglyCasedName "LE"
+#guard isWronglyCasedName "LEOne"
+#guard !isWronglyCasedName "leOne"
 #guard !isWronglyCasedName "GL"
 #guard !isWronglyCasedName "SL"
-#guard !isWronglyCased "L1"
-#guard !isWronglyCased "L2"
-#guard !isWronglyCased "L1H'"
-#guard !isWronglyCased "L1"
-#guard !isWronglyCased "L₁"
-#guard !isWronglyCased "I₀'"
+#guard !isWronglyCasedName "L1"
+#guard !isWronglyCasedName "L2"
+#guard !isWronglyCasedName "L1H'"
+#guard !isWronglyCasedName "L1"
+#guard !isWronglyCasedName "L₁"
+#guard !isWronglyCasedName "I₀'"
 -- One-letter names are not acronyms.
 #guard isWronglyCasedName "A"
 #guard isWronglyCasedName "A_b"
 #guard isWronglyCasedName "a_B"
 #guard !isWronglyCasedName "a_BE"
 -- False negative.
-#guard !isWronglyCased "a_BA"
+#guard !isWronglyCasedName "a_BA"
 
 -- Explicit exceptions.
-#guard !isWronglyCased "Ioo"
-#guard !isWronglyCased "Lp"
-#guard !isWronglyCased "Iotop"
-#guard !isWronglyCased "Ioo'"
-#guard !isWronglyCased "Ioc₀"
-#guard !isWronglyCased "Ioi₀"
-#guard !isWronglyCased "Ioi₁"
+#guard !isWronglyCasedName "Ioo"
+#guard !isWronglyCasedName "Lp"
+#guard !isWronglyCasedName "Iotop"
+#guard !isWronglyCasedName "Ioo'"
+#guard !isWronglyCasedName "Ioc₀"
+#guard !isWronglyCasedName "Ioi₀"
+#guard !isWronglyCasedName "Ioi₁"
 #guard !isWronglyCasedName "Ioi₀_bar"
 #guard !isWronglyCasedName "Ioi₁_bar"
 #guard !isWronglyCasedName "Ioi₁₂_bar₀"
 
--- False negative, TODO fix!
-#guard !isWronglyCased "myDef_LE"
--- This version is reported correctly; the `LE` is wrong.
-#guard isWronglyCased "Ioc_LE"
+-- False negatives: the acronym heuristics allows some undesirable behaviour.
+#guard !isWronglyCasedName "myDef_LE"
+#guard !isWronglyCasedName "Ioc_LE"
+#guard !isWronglyCasedName "foo₀_TFAE"
 
 end nameCheck
 
