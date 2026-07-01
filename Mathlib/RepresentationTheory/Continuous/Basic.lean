@@ -66,6 +66,7 @@ namespace ContIntertwiningMap
 open ContRepresentation
 
 variable {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
+  {π₃ : ContRepresentation R G U}
 
 /-- Any continuous intertwining map is an intertwining map. -/
 abbrev toIntertwiningMap (f : π₁ →ⁱL π₂) :
@@ -78,15 +79,24 @@ def id : π₁ →ⁱL π₁ where
   __ := ContinuousLinearMap.id R V
   isIntertwining' g := by simp
 
+@[simp]
+lemma toContinuousLinearMap_id :
+    (id : π₁ →ⁱL π₁).toContinuousLinearMap = ContinuousLinearMap.id R V := rfl
+
 @[ext]
 lemma ext {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     {f g : π₁ →ⁱL π₂} (h : f.toContinuousLinearMap = g.toContinuousLinearMap) : f = g := by
   cases f; cases g; congr
 
-lemma toIntertwiningMap_injective {π₁ : ContRepresentation R G V}
+lemma toContinuousLinearMap_injective {π₁ : ContRepresentation R G V}
     {π₂ : ContRepresentation R G W} :
     Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toContinuousLinearMap :=
   fun _ _ ↦ ext
+
+lemma toIntertwiningMap_injective {π₁ : ContRepresentation R G V}
+    {π₂ : ContRepresentation R G W} :
+    Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toIntertwiningMap :=
+  fun _ _ _ ↦ by ext; simp_all
 
 lemma toFun_injective {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toFun := fun f g h ↦ by
@@ -96,6 +106,11 @@ instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     FunLike (π₁ →ⁱL π₂) V W where
   coe f := f.toFun
   coe_injective := toFun_injective
+
+lemma id_apply (v : V) : (.id : π₁ →ⁱL π₁) v = v := rfl
+
+lemma toContinuousLinearMap_apply (f : π₁ →ⁱL π₂) (v : V) :
+  f.toContinuousLinearMap v = f v := rfl
 
 lemma isIntertwining {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     (f : π₁ →ⁱL π₂) (g : G) (v : V) : f (π₁ g v) = π₂ g (f v) :=
@@ -113,6 +128,116 @@ def comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     {π₃ : ContRepresentation R G U} (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : π₁ →ⁱL π₃ where
   __ := f.toContinuousLinearMap.comp g.toContinuousLinearMap
   isIntertwining' h := by rw [comp_assoc, g.2, ← comp_assoc, f.2, comp_assoc]
+
+@[simp]
+lemma toContinuousLinearMap_comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
+    {π₃ : ContRepresentation R G U} (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) :
+    (f.comp g).toContinuousLinearMap = f.toContinuousLinearMap.comp g.toContinuousLinearMap := rfl
+
+instance : Add (π₁ →ⁱL π₂) where
+  add f g := ⟨f.toContinuousLinearMap + g.toContinuousLinearMap, by simp [g.2, f.2]⟩
+
+@[simp]
+lemma toContinuousLinearMap_add (f g : π₁ →ⁱL π₂) :
+    (f + g).toContinuousLinearMap = f.toContinuousLinearMap + g.toContinuousLinearMap := rfl
+
+lemma add_apply (f g : π₁ →ⁱL π₂) (v : V) : (f + g) v = f v + g v := rfl
+
+lemma comp_add (f : π₂ →ⁱL π₃) (g h : π₁ →ⁱL π₂) :
+    f.comp (g + h) = f.comp g + f.comp h := by ext; simp
+
+lemma add_comp (f g : π₂ →ⁱL π₃) (h : π₁ →ⁱL π₂) :
+    (f + g).comp h = f.comp h + g.comp h := by ext; simp
+
+instance : One (π₁ →ⁱL π₁) where one := .id
+
+lemma one_def : (1 : π₁ →ⁱL π₁) = .id := rfl
+
+@[simp]
+lemma toContinuousLinearMap_one : (1 : π₁ →ⁱL π₁).toContinuousLinearMap = 1 := rfl
+
+lemma one_apply (v : V) : (1 : π₁ →ⁱL π₁) v = v := rfl
+
+instance : Zero (π₁ →ⁱL π₂) where zero := ⟨0, by simp⟩
+
+@[simp]
+lemma toContinuousLinearMap_zero : (0 : π₁ →ⁱL π₂).toContinuousLinearMap = 0 := rfl
+
+lemma zero_apply (v : V) : (0 : π₁ →ⁱL π₂) v = 0 := rfl
+
+instance : AddZeroClass (π₁ →ⁱL π₂) :=
+  fast_instance% toContinuousLinearMap_injective.addZeroClass _
+    toContinuousLinearMap_zero toContinuousLinearMap_add
+
+instance : AddCommSemigroup (π₁ →ⁱL π₂) :=
+  fast_instance% toContinuousLinearMap_injective.addCommSemigroup _
+    toContinuousLinearMap_add
+
+instance : Neg (π₁ →ⁱL π₂) where
+  neg f := ⟨-f.toContinuousLinearMap, by simp [f.2]⟩
+
+@[simp]
+lemma toContinuousLinearMap_neg (f : π₁ →ⁱL π₂) :
+    (-f).toContinuousLinearMap = -f.toContinuousLinearMap := rfl
+
+lemma neg_apply (f : π₁ →ⁱL π₂) (v : V) : (-f) v = -f v := rfl
+
+instance : Sub (π₁ →ⁱL π₂) where
+  sub f g := ⟨f.toContinuousLinearMap - g.toContinuousLinearMap, by simp [g.2, f.2]⟩
+
+@[simp]
+lemma toContinuousLinearMap_sub (f g : π₁ →ⁱL π₂) :
+    (f - g).toContinuousLinearMap = f.toContinuousLinearMap - g.toContinuousLinearMap := rfl
+
+lemma sub_apply (f g : π₁ →ⁱL π₂) (v : V) : (f - g) v = f v - g v := rfl
+
+instance instSMul {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
+    [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R] :
+    SMul S (π₁ →ⁱL π₂) where
+  smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
+    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
+
+section addcommgroup
+
+variable {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
+  [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R]
+
+@[simp]
+lemma toContinuousLinearMap_smul (s : S) (f : π₁ →ⁱL π₂) :
+    (s • f).toContinuousLinearMap = s • f.toContinuousLinearMap := rfl
+
+lemma smul_apply (s : S) (f : π₁ →ⁱL π₂) (v : V) : (s • f) v = s • f v := rfl
+
+lemma smul_comp {S : Type*} [Monoid S] [DistribMulAction S U] [SMulCommClass R S U]
+    [ContinuousConstSMul S U] [LinearMap.CompatibleSMul U U S R]
+    (s : S) (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : (s • f).comp g = s • (f.comp g) := by
+  ext; simp
+
+lemma comp_smul {S : Type*} [Monoid S] [DistribMulAction S U] [SMulCommClass R S U]
+    [ContinuousConstSMul S U] [LinearMap.CompatibleSMul U U S R]
+    [DistribMulAction S W] [SMulCommClass R S W] [ContinuousConstSMul S W]
+    [LinearMap.CompatibleSMul W W S R] [LinearMap.CompatibleSMul W U S R]
+    (s : S) (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : f.comp (s • g) = s • (f.comp g) := by
+  ext; simp
+
+instance : AddCommGroup (π₁ →ⁱL π₂) :=
+  fast_instance% toContinuousLinearMap_injective.addCommGroup _ toContinuousLinearMap_zero
+    toContinuousLinearMap_add toContinuousLinearMap_neg toContinuousLinearMap_sub
+    (fun _ _ ↦ toContinuousLinearMap_smul _ _) (fun _ _ ↦ toContinuousLinearMap_smul _ _)
+
+instance : DistribMulAction S (π₁ →ⁱL π₂) where
+  one_smul _ := by ext; simp
+  mul_smul _ _ _ := by ext; simp [mul_smul]
+  smul_zero _ := by ext; simp
+  smul_add _ _ _ := by ext; simp [smul_add]
+
+instance instModule {S : Type*} [Ring S] [Module S W] [SMulCommClass R S W]
+    [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R] :
+    Module S (π₁ →ⁱL π₂) where
+  add_smul _ _ _ := by ext; simp [add_smul]
+  zero_smul _ := by ext; simp
+
+end addcommgroup
 
 end ContIntertwiningMap
 
@@ -279,6 +404,17 @@ lemma trivial_apply (g : G) (v : V) : trivial R G V g v = v := rfl
 def restrict {H : Type*} [Monoid H] (π : ContRepresentation R G V) (φ : H →* G) :
     ContRepresentation R H V := .comp π φ
 
+/-- The submodule of `G`-invariant elements of a continuous representation. -/
+def invariants (π : ContRepresentation R G V) : Submodule R V where
+  carrier := {v | ∀ g, π g v = v}
+  zero_mem' := by simp
+  add_mem' _ _ := by simp_all
+  smul_mem' _ _ hv g := by simp [hv g]
+
+@[simp]
+lemma mem_invariants {π : ContRepresentation R G V} (v : V) :
+    v ∈ π.invariants ↔ ∀ g, π g v = v := Iff.rfl
+
 -- TODO : define `IsTopologicalMonoid` and then replace `Homeomorph.mulLeft g⁻¹` with the
 -- `ContinuousMap.mulRight g` to make `coind₁` work for monoids.
 variable {G H : Type*} [Group G] [TopologicalSpace G] [TopologicalSpace R]
@@ -336,7 +472,7 @@ def coind₁ (π : ContRepresentation R G V) :
 
 /-- The functoriality of `coind₁`. -/
 @[simps]
-def coind₁_map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W) (f : π₁ →ⁱL π₂) :
+def coind₁Map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W) (f : π₁ →ⁱL π₂) :
     coind₁ π₁ →ⁱL coind₁ π₂ where
   toFun := (f : ContinuousMap _ _).comp
   map_add' _ _ := by ext; simp
@@ -346,7 +482,7 @@ def coind₁_map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation 
 
 /-- The naturality of the transformation from `𝟭 ⟶ coind₁`. -/
 @[simps]
-def coind₁_ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
+def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
   toFun := .const G
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
