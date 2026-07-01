@@ -669,7 +669,7 @@ lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
     [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
     (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiff (k + 1) (T% Z)),
       CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
-    CMDiff (k + 1) (T% W) := by
+    CMDiff k (T% W) := by
   sorry
 
 open Module in
@@ -684,47 +684,61 @@ lemma step2b (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
     CMDiffAt k (T% W) x := by
   sorry
 
+-- omit [IsManifold I 2 M] [IsContMDiffRiemannianBundle I 1 E (TangentSpace I (M := M))] in
 /-- If `M` is endowed with a `C^k` metric, its Levi-Civita connection is a `C^k` connection. -/
-instance leviCivitaConnection_foo [FiniteDimensional ℝ E] :
+instance leviCivitaConnection_foo [FiniteDimensional ℝ E]
+    [IsManifold I 3 M] [IsContMDiffRiemannianBundle I 2 E (TangentSpace I (M := M))] :
     ContMDiffCovariantDerivative (leviCivitaConnection I M) 1 where
   contMDiff := by
     have : IsManifold I (↑0 + 2) M := by simpa only [zero_add]
     have : IsContMDiffRiemannianBundle I (↑0 + 1) E (fun (x : M) ↦ TangentSpace% x) := by
       simpa only [zero_add]
+    have : IsContMDiffRiemannianBundle I 0 E (fun (x : M) ↦ TangentSpace% x) :=
+      IsContMDiffRiemannianBundle.of_le zero_le_one
+    have : IsManifold I (↑1 + 2) M := by simpa
+    have : IsContMDiffRiemannianBundle I (↑1 + 1) E (fun (x : M) ↦ TangentSpace I x) := by simpa
     refine ⟨fun {σ} hσ ↦ ?_⟩
     rw [contMDiffOn_univ] at hσ ⊢
-    have : IsManifold I (↑1 + 2) M := sorry
-    have : IsContMDiffRiemannianBundle I (↑1 + 1) E (fun (x : M) ↦ TangentSpace I x) := sorry
-    apply ContMDiff.clm_bundle_of_apply
-    intro τ x hτ
-    -- TODO: upgrade clm_bundle_of_apply to provide stronger hypotheses on τ!
+    intro x
+    apply ContMDiffAt.clm_bundle_of_apply
+    intro τ hτ
+    -- TODO: upgrade `ContMDiffAt.clm_bundle_of_apply` to provide stronger hypotheses on τ!
     have hτ' : ∀ᶠ (b : M) in nhds x, CMDiffAt 2 (T% τ) b := sorry
     apply step2b 1 (fun {Z} hZ ↦ ?_)
-    have hσ' : ∀ᶠ (b : M) in nhds x, CMDiffAt (1 + 1) (T% σ) b := by
-      sorry -- holds on Set.univ
     apply Filter.Eventually.self_of_nhds
-    apply eventually_contMDiff_leviCivitaConnection_apply 1 hτ' hσ' hZ
+    exact eventually_contMDiff_leviCivitaConnection_apply 1 hτ' (Filter.univ_mem' hσ) hZ
 
 section
 
+-- TODO: have a stale `IsManifold I 2 M` hypothesis lying around...
 variable {k : ℕ∞}
-  [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)] [IsManifold I (k + 2) M]
+  [IsContMDiffRiemannianBundle I (k + 2) E (fun (x : M) ↦ TangentSpace% x)] [IsManifold I (k + 3) M]
 
 /-- If `M` is `C^{k+2}` and endowed with a `C^{k+1}` metric,
 its Levi-Civita connection is a `C^k` connection. -/
 instance leviCivitaConnection_bar [FiniteDimensional ℝ E] :
     ContMDiffCovariantDerivative (leviCivitaConnection I M) (k + 1) where
   contMDiff := by
+    have : IsManifold I (↑(k + 1) + 2) M := by
+      simpa only [WithTop.coe_add, WithTop.coe_one, show (k : ℕ∞ω) + 1 + 2 = k + 3 by ring]
+    have : IsManifold I (↑k + 1) M := IsManifold.of_le (n := k + 3) (by gcongr; norm_num)
+    have : IsContMDiffRiemannianBundle I (↑(k + 1) + 1) E (TangentSpace I (M := M)) := by
+      simpa only [WithTop.coe_add, WithTop.coe_one, show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]
+    have : IsContMDiffRiemannianBundle I (↑(k + 1)) E (TangentSpace I (M := M)) :=
+      IsContMDiffRiemannianBundle.of_le (n := k + 2)
+        (by simp only [WithTop.coe_add, WithTop.coe_one]; gcongr; norm_num)
+    have : ContMDiffVectorBundle (↑k + 1) E (TangentSpace (M := M) I) I := by
+      sorry
     refine ⟨fun {σ} hσ ↦ ?_⟩
     rw [contMDiffOn_univ] at hσ ⊢
     intro x
-    have : ContMDiffVectorBundle (↑k + 1) E (TangentSpace (M := M) I) I := sorry
-    have : IsManifold I (↑k + 1) M := sorry
     apply ContMDiffAt.clm_bundle_of_apply
     intro τ hτ
-    apply step2 k (fun {Z} hZ ↦ ?_)
-    sorry -- same issue as above, `leviCivitaConnection_apply` is too global!
-    -- exact contMDiff_leviCivitaConnection_apply k hτ (hσ.of_le (by simp)) hZ
+    -- TODO: upgrade `ContMDiffAt.clm_bundle_of_apply` to provide stronger hypotheses on τ!
+    have hτ' : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1 + 1) (T% τ) b := sorry
+    apply step2b (k + 1) (fun {Z} hZ ↦ ?_)
+    apply Filter.Eventually.self_of_nhds
+    exact eventually_contMDiff_leviCivitaConnection_apply (k + 1) hτ' (Filter.univ_mem' hσ) hZ
 
 end
 
