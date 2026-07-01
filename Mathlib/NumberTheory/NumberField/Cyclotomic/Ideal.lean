@@ -99,8 +99,7 @@ instance liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 :
 
 theorem inertiaDeg_span_zeta_sub_one : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
   have : IsMaximal (span {hζ.toInteger - 1}) := .of_liesOver_isMaximal _ 𝒑
-  rw [← inertiaDeg_eq_inertiaDeg' 𝒑]
-  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, ← absNorm_eq_pow_inertiaDeg' _ hp.out,
+  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, pow_inertiaDeg',
     absNorm_span_zeta_sub_one]
 
 attribute [local instance] FractionRing.liftAlgebra in
