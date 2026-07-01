@@ -223,11 +223,8 @@ bound to an `atBot` bound (`Function.Even.isBigO_atTop_iff_isBigO_atBot`).
 variable
   {E₁ E₂ : Type*} [SeminormedAddCommGroup E₁] [SeminormedAddCommGroup E₂]
   {D : Type*} [TopologicalSpace D]
-  {α : Type*} [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
   {β : Type*} [TopologicalSpace β] [LinearOrder β] [OrderClosedTopology β] [CompactIccSpace β]
     [NoMaxOrder β] [NoMinOrder β]
-  {γ : Type*} [AddCommGroup γ] [LinearOrder γ] [IsOrderedAddMonoid γ] [TopologicalSpace γ]
-    [OrderClosedTopology γ] [CompactIccSpace γ] [NoMaxOrder γ] [NoMinOrder γ]
 
 /--
 A continuous function `f` has bounded range if and only if it is `O(1)` with respect to the
@@ -255,19 +252,6 @@ theorem Continuous.isBounded_range_iff_isBigO {f : D → E₁} (hf : Continuous 
       obtain ⟨y, hy, rfl⟩ := hx
       simpa using mem_of_mem_of_subset hy h
 
-/-- For even functions `f` and `g`, we have `f =O[atTop] g` if and only if `f =O[atBot] g`. -/
-theorem Function.Even.isBigO_atTop_iff_isBigO_atBot {f : α → E₁} {g : α → E₂} (hf : f.Even)
-    (hg : g.Even) :
-    f =O[atTop] g ↔ f =O[atBot] g := by
-  rw [← Filter.map_neg_atBot, Asymptotics.isBigO_map]
-  simp [comp_def, hf.eq, hg.eq]
-
-/-- For odd functions `f` and `g`, we have `f =O[atTop] g` if and only if `f =O[atBot] g`. -/
-theorem Function.Odd.isBigO_atTop_iff_isBigO_atBot {f : α → E₁} {g : α → E₂} (hf : f.Odd)
-    (hg : g.Odd) :
-    f =O[atTop] g ↔ f =O[atBot] g := by
-  rw [← Filter.map_neg_atBot, Asymptotics.isBigO_map]
-  simp [comp_def, hf.eq, hg.eq]
 
 /--
 A continuous function `f` on an unbounded linear order with compact intervals has bounded range if
@@ -278,11 +262,11 @@ theorem Continuous.isBounded_range_iff_isBigO_atTop_atBot {f : β → E₁} (hf 
   rw [hf.isBounded_range_iff_isBigO, cocompact_eq_atBot_atTop, isBigO_sup, and_comm]
 
 /-- A continuous even function has bounded range if and only if `f =O[atTop] 1`. -/
-theorem Continuous.isBounded_range_iff_isBigO_atTop_of_even {f : γ → E₁} (hf : Continuous f)
-    (heven : Function.Even f) :
-    IsBounded (range f) ↔ f =O[atTop] (1 : γ → ℝ) :=
+theorem Continuous.isBounded_range_iff_isBigO_atTop_of_even [AddCommGroup β] [IsOrderedAddMonoid β]
+    {f : β → E₁} (hf : Continuous f) (heven : Function.Even f) :
+    IsBounded (range f) ↔ f =O[atTop] (1 : β → ℝ) :=
   ⟨fun h ↦ (hf.isBounded_range_iff_isBigO_atTop_atBot.mp h).1,
    fun h ↦ hf.isBounded_range_iff_isBigO_atTop_atBot.mpr
-     ⟨h, (heven.isBigO_atTop_iff_isBigO_atBot (by exact Function.Even.const 1)).mp h⟩⟩
+     ⟨h, by simpa only [← neg_atTop, ← Filter.map_neg, isBigO_map, Function.comp_def, heven.eq]⟩⟩
 
 end boundedRange
