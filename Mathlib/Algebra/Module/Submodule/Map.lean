@@ -700,8 +700,8 @@ theorem map_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q :
   rw [restrict_eq_codRestrict_domRestrict, map_codRestrict, map_domRestrict]
 
 set_option backward.isDefEq.respectTransparency.types false in
-theorem comap_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q : Submodule R M}
-    {f : M₂ →ₛₗ[σ₂₁] M} (h : ∀ x ∈ p, f x ∈ q) (p') :
+theorem comap_restrict {p : Submodule R₂ M₂} {q : Submodule R M} {f : M₂ →ₛₗ[σ₂₁] M}
+    (h : ∀ x ∈ p, f x ∈ q) (p') :
     comap (f.restrict h) p' = comap p.subtype (comap f (map q.subtype p')) := by
   rw [restrict_eq_codRestrict_domRestrict, comap_codRestrict, comap_domRestrict]
 

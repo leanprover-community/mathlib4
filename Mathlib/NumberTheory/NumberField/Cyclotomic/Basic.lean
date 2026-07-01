@@ -187,6 +187,10 @@ end CharZero
 
 lemma coe_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
 
+@[simp]
+lemma toInteger_coe {k : ℕ} [NeZero k] {x : 𝓞 K} (hx : IsPrimitiveRoot (x : K) k) :
+    hx.toInteger = x := rfl
+
 /-- `𝓞 K ⧸ Ideal.span {ζ - 1}` is finite. -/
 lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ} (hk : 1 < k)
     (hζ : IsPrimitiveRoot ζ k) :

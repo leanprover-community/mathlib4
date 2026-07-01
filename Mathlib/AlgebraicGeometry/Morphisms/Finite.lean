@@ -167,8 +167,7 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite
 end IsFinite
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma Scheme.Hom.finite_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine X] [IsAffine Y]
-    [IsFinite f] :
+lemma Scheme.Hom.finite_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] [IsFinite f] :
     f.appTop.hom.Finite :=
   (HasAffineProperty.iff_of_isAffine (P := @IsFinite).mp inferInstance).2
 

@@ -127,6 +127,9 @@ theorem IsLocalization.for_id (hW : W ≤ MorphismProperty.isomorphisms C) : (�
   IsLocalization.mk' _ _ (Localization.strictUniversalPropertyFixedTargetId W _ hW)
     (Localization.strictUniversalPropertyFixedTargetId W _ hW)
 
+instance : (𝟭 C).IsLocalization (MorphismProperty.isomorphisms C) :=
+  IsLocalization.for_id _ (by rfl)
+
 end Functor
 
 namespace Localization

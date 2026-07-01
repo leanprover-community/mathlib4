@@ -63,8 +63,7 @@ namespace Fill
 
 instance : TopologicalSpace (Fill α) := Preorder.topology _
 
-instance [TopologicalSpace α] [OrderTopology α] : OrderTopology (Fill α) :=
-  ⟨rfl⟩
+instance : OrderTopology (Fill α) := ⟨rfl⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A continuous embedding of `α` into `Fill α`. -/

@@ -701,6 +701,12 @@ def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
 @[inherit_doc]
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
 
+lemma mulVec_apply [Fintype n] (M : Matrix m n α) (v : n → α) (i : m) :
+    (M *ᵥ v) i = M.row i ⬝ᵥ v := rfl
+
+lemma mulVec_apply_eq_sum [Fintype n] (M : Matrix m n α) (v : n → α) (i : m) :
+    (M *ᵥ v) i = ∑ j : n, M i j * v j := rfl
+
 /--
 `v ᵥ* M` (notation for `vecMul v M`) is the vector-matrix product of vector `v` and matrix `M`,
 where `v` is seen as a row vector.
@@ -713,6 +719,12 @@ def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
 
 @[inherit_doc]
 scoped infixl:73 " ᵥ* " => Matrix.vecMul
+
+lemma vecMul_apply [Fintype m] (v : m → α) (M : Matrix m n α) (i : n) :
+    (v ᵥ* M) i = v ⬝ᵥ M.col i := rfl
+
+lemma vecMul_apply_eq_sum [Fintype m] (v : m → α) (M : Matrix m n α) (i : n) :
+    (v ᵥ* M) i = ∑ j : m, v j * M j i := rfl
 
 /-- Left multiplication by a matrix, as an `AddMonoidHom` from vectors to vectors. -/
 @[simps]

@@ -59,6 +59,8 @@ instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestric
 @[simps! over] instance : U.toScheme.CanonicallyOver X where
   hom := U.ι
 
+lemma ι_comp_over (S : Scheme.{u}) [X.Over S] : U.ι ≫ X ↘ S = U.toScheme ↘ S := rfl
+
 instance (U : X.Opens) : U.ι.IsOver X where
 
 lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
@@ -522,6 +524,12 @@ def basicOpenIsoSpecAway {R : CommRingCat.{u}} (f : R) :
     (by
       simp only [Scheme.Opens.range_ι]
       exact (PrimeSpectrum.localization_away_comap_range _ _).symm)
+
+@[reassoc (attr := simp)]
+lemma basicOpenIsoSpecAway_hom_SpecMap {R : CommRingCat.{u}} (f : R) :
+    (basicOpenIsoSpecAway f).hom ≫ Spec.map (CommRingCat.ofHom (algebraMap R _)) =
+        Scheme.Opens.ι (X := Spec R) (PrimeSpectrum.basicOpen f) := by
+  simp [basicOpenIsoSpecAway]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
