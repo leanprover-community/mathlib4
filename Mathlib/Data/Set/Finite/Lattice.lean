@@ -269,7 +269,7 @@ variable {s t : Set α}
 theorem infinite_iUnion {ι : Type*} [Infinite ι] {s : ι → Set α} (hs : Function.Injective s) :
     (⋃ i, s i).Infinite :=
   fun hfin ↦ @not_injective_infinite_finite ι _ _ hfin.finite_subsets.to_subtype
-    (fun i ↦ ⟨s i, subset_iUnion _ _⟩) fun i j h_eq ↦ hs (by simpa using h_eq)
+    (fun i ↦ ⟨s i, subset_iUnion _ _⟩) fun _ _ h_eq ↦ hs (Subtype.ext_iff.1 h_eq)
 
 theorem Infinite.biUnion {ι : Type*} {s : ι → Set α} {a : Set ι} (ha : a.Infinite)
     (hs : a.InjOn s) : (⋃ i ∈ a, s i).Infinite := by
