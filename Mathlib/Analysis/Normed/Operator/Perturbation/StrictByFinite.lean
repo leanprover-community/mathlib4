@@ -273,7 +273,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
   have strict_iff : IsStrictMap u ↔ IsStrictMap v := by
     rw [← v_comp_π_eq_u, coe_comp, ← π_quot.isQuotientMap.isStrictMap_iff]
   -- Now, recall the equality `A = comap π B`; it ensures that the restriction
-  -- `π' : A → B` of the open quotient map `π` is *still* an (open quotient map).
+  -- `π' : A → B` of the open quotient map `π` is *still* an (open) quotient map.
   set π' : A →L[𝕜] B := π.restrict A_mapsTo_B
   have π'_quot : IsOpenQuotientMap π' := by
     let φ : (N.mkQL ⁻¹' B) ≃ₜ A := .setCongr congr(SetLike.coe $comap_B)
