@@ -111,14 +111,12 @@ def mk : M ≃ Mᵈᵐᵃ := MulOpposite.opEquiv
 ### Copy instances from `Mᵐᵒᵖ`
 -/
 
-set_option hygiene false in
 run_cmd
   for n in [``Mul, ``One, ``Inv, ``Semigroup, ``CommSemigroup, ``MulOneClass, ``Monoid,
-    ``CommMonoid, ``CancelMonoid, ``CancelCommMonoid, ``InvolutiveInv, ``DivInvMonoid,
-    ``DivisionMonoid, ``DivisionCommMonoid, ``Group, ``CommGroup].map Lean.mkIdent do
-  Lean.Elab.Command.elabCommand (← `(
-    @[to_additive] instance [$n M] : $n Mᵈᵐᵃ := inferInstanceAs <| $n Mᵐᵒᵖ
-  ))
+      ``CommMonoid, ``CancelMonoid, ``CancelCommMonoid, ``InvolutiveInv, ``DivInvMonoid,
+      ``DivisionMonoid, ``DivisionCommMonoid, ``Group, ``CommGroup].map Lean.mkIdent do
+    Lean.Elab.Command.elabCommand (← `(
+      @[to_additive] instance [$n M] : $n Mᵈᵐᵃ := inferInstanceAs <| $n Mᵐᵒᵖ))
 
 @[to_additive] instance [Mul M] [IsRightCancelMul M] : IsLeftCancelMul Mᵈᵐᵃ :=
   inferInstanceAs <| IsLeftCancelMul Mᵐᵒᵖ
