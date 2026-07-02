@@ -144,7 +144,7 @@ NB. We don't know the particular atlasses used for `M` and `N`, so asking for `�
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E''` in `E`:
-being an submersion at `x` includes a choice of linear isomorphism between `E'' × F` and `E`.
+being a submersion at `x` includes a choice of linear isomorphism between `E'' × F` and `E`.
 While the particular choice of complement is often not important, choosing a complement is useful
 in some settings, such as proving that embedded submanifolds are locally given either by an
 immersion or a submersion.
@@ -515,9 +515,9 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     |>.isSubmersionAt
 
 /-- If `f` is a submersion at `x`, then `f` is `C^n` on its domain chart's source,
-in particular on an open neighbourhood of `x`.`
+in particular on an open neighbourhood of `x`.
 
-Prefer using `IsSubmersionAt.contMDiffAt` instead -/
+Prefer using `IsSubmersionAt.contMDiffAt` instead. -/
 theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=
   h.isSubmersionAtOfComplement_complement.contMDiffOn
 
@@ -648,7 +648,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
   (hf.isSubmersionOfComplement_complement.prodMap
     hg.isSubmersionOfComplement_complement ).isSubmersion
 
-/-- The identity map is an submersion. -/
+/-- The identity map is a submersion. -/
 protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) := by
   use PUnit, by infer_instance, by infer_instance
   exact IsSubmersionOfComplement.id
