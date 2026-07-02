@@ -119,6 +119,16 @@ variable {F}
 
 namespace IsCovariantDerivativeOn
 
+-- TODO: think about this version!
+lemma contMDiffAt (k : ℕ∞ω) [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)} {s t : Set M} {x : M} -- hx : x ∈ t ?
+    (hcov : IsCovariantDerivativeOn F cov s)
+    (hov' : ContMDiffCovariantDerivativeOn F k cov t)
+    {σ : Π x : M, V x} (hσ : CMDiffAt[t] (k + 1) (T% σ) x) :
+    letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+    CMDiffAt[t] k covσ x := by
+  sorry
+
 /-! ### Changing set
 
 In this section, we change `s` in `IsCovariantDerivativeOn F cov s`, proving the condition is
