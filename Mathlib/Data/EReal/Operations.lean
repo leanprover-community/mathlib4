@@ -420,22 +420,9 @@ lemma toENNReal_sub {x y : EReal} (hy : 0 ≤ y) :
     simp
 
 lemma add_sub_add_comm {a b c d : EReal} (h1 : c ≠ ⊥ ∨ d ≠ ⊤) (h2 : c ≠ ⊤ ∨ d ≠ ⊥) :
-    (a + b) - (c + d) = (a - c) + (b - d) := by
+    a + b - (c + d) = (a - c) + (b - d) := by
   rw [sub_eq_add_neg, sub_eq_add_neg, sub_eq_add_neg, EReal.neg_add h1 h2, sub_eq_add_neg]
   grind
-
-lemma add_sub_add (a b : EReal) {c d : EReal} (hc : c ≠ ⊥) (hd : d ≠ ⊥) :
-    a + b - (c + d) = (a - c) + (b - d) := by
-  cases a <;> cases b <;> cases c <;> cases d
-  -- 81 goals
-  any_goals simp [hc, hd]
-  any_goals simp at hc
-  any_goals simp at hd
-  · norm_cast
-    ring
-  · norm_cast
-  · norm_cast
-  · norm_cast
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   cases a <;> norm_cast
@@ -506,11 +493,15 @@ lemma sub_lt_of_lt_add {a b c : EReal} (h : a < b + c) : a - c < b :=
 lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
   sub_lt_of_lt_add <| by rwa [add_comm]
 
-lemma sub_lt_sub_of_le_of_lt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
-  (hy_top : y ≠ ⊤) (hy_bot : y ≠ ⊥) :
-  x - t < y - z := by
+lemma sub_lt_sub_of_le_of_gt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
+    (hx_top : x ≠ ⊤) (hy_bot : y ≠ ⊥) :
+    x - t < y - z := by
   refine sub_lt_of_lt_add' ?_
   rw [add_sub_assoc', add_comm, add_sub_assoc]
+  by_cases hy_top : y = ⊤
+  · rw [hy_top, top_add_of_ne_bot]
+    · exact hx_top.lt_top
+    · exact ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le
   by_cases hxy : x = y
   · rw [hxy]
     lift y to ℝ using ⟨hy_top, hy_bot⟩
@@ -854,11 +845,6 @@ lemma sub_mul_of_nonneg_of_ne_top {a b c : EReal} (ha : 0 ≤ a) (ha' : a ≠ �
     (b - c) * a = b * a - c * a := by
   rw [sub_eq_add_neg, right_distrib_of_nonneg_of_ne_top ha ha']
   simp [← neg_mul, sub_eq_add_neg]
-
-lemma mul_sub_of_eq_zero {a b c : EReal} (h : b = 0 ∨ c = 0) : a * (b - c) = a * b - a * c := by
-  cases h with
-  | inl hb => simp [hb]
-  | inr hc => simp [hc]
 
 @[simp]
 lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
