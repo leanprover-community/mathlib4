@@ -1090,6 +1090,14 @@ theorem tendsto_div_nhds_one_iff {α : Type*} {l : Filter α} {x : G} {u : α �
   haveI A : Tendsto (fun _ : α => x) l (𝓝 x) := tendsto_const_nhds
   ⟨fun h => by simpa using h.mul A, fun h => by simpa using h.div' A⟩
 
+/-- If `f → a` and `g → b` along a nontrivial filter on the domain, valued in a
+Hausdorff topological group, and `f / g → 1`, then `a = b`. -/
+@[to_additive]
+theorem eq_of_tendsto_div_nhds_one {α : Type*} {l : Filter α} [l.NeBot] [T2Space G]
+    {f g : α → G} {a b : G} (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b))
+    (hfg : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) : a = b :=
+  div_eq_one.mp (tendsto_nhds_unique (hf.div' hg) hfg)
+
 @[to_additive]
 theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
   simpa only [div_eq_mul_inv] using nhds_translation_mul_inv x
