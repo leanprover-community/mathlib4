@@ -29,6 +29,8 @@ example : ((X + 1) * (X + 2) : Polynomial ℤ) = X ^ 2 + 3 * X + 2 := by poly_de
 
 -- The trust check: only the three standard axioms — no `Lean.ofReduceBool`.
 theorem sq_expand : ((X + C 1) ^ 2 : Polynomial ℤ) = X ^ 2 + C 2 * X + C 1 := by poly_decide
+/-- info: 'sq_expand' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
 #print axioms sq_expand
 
 /-! ## `poly_dvd_cert` — divisibility by symbolic certificate -/
@@ -68,6 +70,8 @@ example {R : Type*} [CommRing R] (u : R) (hu : IsUnit u) :
 
 -- A bigger one, instantly (compiled `MetaM` search; only the `ring` check is verified):
 theorem big_dvd : (X - 1 : Polynomial ℚ) ∣ (X ^ 6 - 1) := by poly_dvd_cert
+/-- info: 'big_dvd' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
 #print axioms big_dvd
 
 /-! ## `poly_eval` and `poly_dvd` — kernel evaluation and divisibility -/
@@ -77,10 +81,14 @@ example : Polynomial.eval 2 (X ^ 2 + 1 : Polynomial ℤ) = 5 := by poly_eval
 
 -- A root: `2` is a root of `X² − 4`:
 theorem root_demo : Polynomial.eval 2 (X ^ 2 - 4 : Polynomial ℤ) = 0 := by poly_eval
+/-- info: 'root_demo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
 #print axioms root_demo
 
 -- Divisibility over `ℤ` (kernel reduces `ℤ` literal arithmetic; with a monic divisor the long
 -- division is exact). `ℚ` would get stuck — `Rat` doesn't reduce cheaply in the kernel.
 example : (X - 1 : Polynomial ℤ) ∣ (X ^ 2 - 1) := by poly_dvd
 theorem dvd_demo : (X + 1 : Polynomial ℤ) ∣ (X ^ 3 + 1) := by poly_dvd
+/-- info: 'dvd_demo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
 #print axioms dvd_demo
