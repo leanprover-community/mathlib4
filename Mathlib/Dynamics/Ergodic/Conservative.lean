@@ -11,33 +11,33 @@ public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Measure-theoretic recurrence and conservative systems
-In this file, we implement notions of measure-theoretic recurrence of sets as weel as conservative
+In this file, we implement notions of measure-theoretic recurrence of sets as well as conservative
 dynamical systems.
 
 ## Main definitions
-- `IsRecurrent`: given a map `f : α → α` and a measure `μ`, a set `s` is said to be *recurrent* if
+* `IsRecurrent`: given a map `f : α → α` and a measure `μ`, a set `s` is said to be *recurrent* if
   `μ`-almost every point in `s` returns to `s` after some number of iterations of `f`.
-- `Conservative`: a map `f : α → α` is said to be a *conservative* system with respect to a measure
+* `Conservative`: a map `f : α → α` is said to be a *conservative* system with respect to a measure
   `μ` if `f` is non-singular (`QuasiMeasurePreserving`) and all measurable sets are recurrent.
 
 ## Main results
 There are several properties that look like they are stronger than recurrence but actually
 follow from it for non-singular maps:
-- `IsRecurrent.frequently_measure_inter_ne_zero`: if a subset `t ⊆ s` has positive measure, then
+* `IsRecurrent.frequently_measure_inter_ne_zero`: if a subset `t ⊆ s` has positive measure, then
   for infinitely many `n`, the measure of `t ∩ f^[n] ⁻¹' s` is positive.
-- `IsRecurrent.ae_mem_imp_frequently_image_mem`: `μ`-almost every every point of `s` visits `s`
+* `IsRecurrent.ae_mem_imp_frequently_image_mem`: `μ`-almost every every point of `s` visits `s`
   infinitely many times.
-- `isRecurrent_iff_ae_sub_limsup_preimage`: `μ`-almost everywhere, if a point visits `s`, then it
-  visits `s` infinitely many times.
+* `isRecurrent_iff_ae_sub_limsup_preimage`: `μ`-almost everywhere, if a point ever visits `s`,
+  then it visits `s` infinitely many times.
 
-Another definition of conservative systems is that any measurable set `s` of positive measure
+Another common definition of conservative systems is that any measurable set `s` of positive measure
 contains a point which returns to `s` after some number of iterations of `f`. The equivalence
 between these definitions is proven in lemma `conservative_iff_exists_mem_iterate_mem`.
 
 We also prove:
-- `MeasurePreserving.conservative`: a map preserving a finite measure is conservative.
-- `Conservative.iterate`: iterates of conservative maps are conservative.
-- `Conservative.ae_frequently_mem_of_mem_nhds`: the topological Poincaré recurrence theorem. Let
+* `MeasurePreserving.conservative`: a map preserving a finite measure is conservative.
+* `Conservative.iterate`: iterates of conservative maps are conservative.
+* `Conservative.ae_frequently_mem_of_mem_nhds`: the topological Poincaré recurrence theorem. Let
   `f : α → α` be a conservative dynamical system on a topological space with second countable
   topology and measurable open sets. Then almost every point `x : α` is topologically recurrent: it
   visits every neighborhood `s ∈ 𝓝 x` infinitely many times.
