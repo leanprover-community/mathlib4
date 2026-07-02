@@ -209,9 +209,8 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 open Polynomial in
 /-- A variable change over the fraction field between integral Weierstrass equations descends to the
 base ring if its `u` coefficient descends to a unit of the base ring. -/
-theorem exists_variableChange_lift {W W' : WeierstrassCurve K}
-    [IsIntegral R W] [IsIntegral R W'] (Ch : VariableChange K) (hCh : Ch • W = W')
-    (uR : Rˣ) (huR : algebraMap R K uR = Ch.u) :
+theorem exists_variableChange_lift {W W' : WeierstrassCurve K} [IsIntegral R W] [IsIntegral R W']
+    (Ch : VariableChange K) (hCh : Ch • W = W') (uR : Rˣ) (huR : algebraMap R K uR = Ch.u) :
     ∃ CR : VariableChange R, CR.baseChange K = Ch := by
   let I := integralModel R W
   let I' := integralModel R W'
@@ -221,18 +220,17 @@ theorem exists_variableChange_lift {W W' : WeierstrassCurve K}
     simpa [map_ofNat, huR, I, I', integralModel_b₄_eq, integralModel_b₆_eq, integralModel_b₈_eq,
       ← hCh, I, I'] using variableChange_r_relation W Ch
   obtain ⟨sR, hsR⟩ : ∃ sR : R, algebraMap R K sR = Ch.s := by
-    refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + Polynomial.C I.a₁ * X +
-      Polynomial.C ((uR : R) ^ 2 * I'.a₂ - I.a₂ - 3 * rR), by monicity!, ?_⟩
+    refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + C I.a₁ * X +
+      C (uR ^ 2 * I'.a₂ - I.a₂ - 3 * rR), by monicity!, ?_⟩
     simpa [map_ofNat, huR, hrR, I, I', integralModel_a₁_eq, integralModel_a₂_eq, ← hCh]
       using variableChange_s_relation W Ch
   obtain ⟨tR, htR⟩ : ∃ tR : R, algebraMap R K tR = Ch.t := by
-    refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + Polynomial.C (I.a₃ + rR * I.a₁) * X +
-      Polynomial.C ((uR : R) ^ 6 * I'.a₆ - I.a₆ - rR * I.a₄ - rR ^ 2 * I.a₂ - rR ^ 3),
-      by monicity!, ?_⟩
+    refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + C (I.a₃ + rR * I.a₁) * X +
+      C (uR ^ 6 * I'.a₆ - I.a₆ - rR * I.a₄ - rR ^ 2 * I.a₂ - rR ^ 3), by monicity!, ?_⟩
     simpa [huR, hrR, I, I', integralModel_a₁_eq, integralModel_a₂_eq, integralModel_a₃_eq,
       integralModel_a₄_eq, integralModel_a₆_eq, ← hCh] using variableChange_t_relation W Ch
   refine ⟨⟨uR, rR, sR, tR⟩, ?_⟩
-  ext <;> simp [VariableChange.baseChange, VariableChange.map, huR, hrR, hsR, htR]
+  ext <;> simp_all [VariableChange.baseChange, VariableChange.map]
 
 end VariableChangeLift
 
