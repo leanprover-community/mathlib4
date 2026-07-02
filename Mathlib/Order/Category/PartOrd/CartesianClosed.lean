@@ -31,7 +31,7 @@ def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
     fun _ _ => ext fun _ => Subsingleton.elim _ _
 
 /-- The chosen terminal cone of `PartOrd`. -/
-def terminalCone : LimitCone (Functor.empty.{0} PartOrd.{u}) :=
+def terminalCone : LimitCone (Functor.empty PartOrd.{u}) :=
   ⟨_, isTerminalPUnit⟩
 
 /-- The binary product of partial orders is their product order. -/

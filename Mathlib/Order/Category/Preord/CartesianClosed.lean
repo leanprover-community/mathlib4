@@ -31,7 +31,7 @@ def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
     fun _ _ => ext fun _ => Subsingleton.elim _ _
 
 /-- The chosen terminal cone of `Preord`. -/
-def terminalCone : LimitCone (Functor.empty.{0} Preord.{u}) :=
+def terminalCone : LimitCone (Functor.empty Preord.{u}) :=
   ⟨_, isTerminalPUnit⟩
 
 /-- The binary product of preorders is their product order. -/
