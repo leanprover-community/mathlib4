@@ -21,6 +21,7 @@ namespace Equiv
 
 variable (e : R ≃ S)
 
+-- See note [instance transfer via equivalence]
 /-- Transfer `Star` across an `Equiv`. See note [reducible non-instances].
 
 For `star : R → R` bundled as an `Equiv`, see `Equiv.Perm.star`. -/

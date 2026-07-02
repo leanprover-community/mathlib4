@@ -64,6 +64,7 @@ protected abbrev nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α
   let nsmul := e.smul ℕ
   apply e.injective.nonUnitalSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
+-- See note [instance transfer via equivalence]
 /-- Transfer `AddMonoidWithOne` across an `Equiv` -/
 protected abbrev addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
   { e.addMonoid, e.one with

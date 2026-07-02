@@ -22,6 +22,7 @@ variable {R α β : Type*} [CommSemiring R]
 namespace Equiv
 variable (e : α ≃ β)
 
+-- See note [instance transfer via equivalence]
 variable (R) in
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :

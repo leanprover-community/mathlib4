@@ -21,6 +21,7 @@ variable {R α β : Type*}
 
 namespace Equiv
 
+-- See note [instance transfer via equivalence]
 /-- Transfer a `TopologicalSpace` across an `Equiv` -/
 protected abbrev topologicalSpace [TopologicalSpace β] (e : α ≃ β) :
     TopologicalSpace α :=

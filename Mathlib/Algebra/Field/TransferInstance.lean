@@ -21,6 +21,7 @@ assert_not_exists Module
 namespace Equiv
 variable {α β : Type*} (e : α ≃ β)
 
+-- See note [instance transfer via equivalence]
 /-- Transfer `NNRatCast` across an `Equiv` -/
 protected abbrev nnratCast [NNRatCast β] : NNRatCast α where nnratCast q := e.invFun q
 

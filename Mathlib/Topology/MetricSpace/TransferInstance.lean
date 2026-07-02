@@ -22,6 +22,7 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
+-- See note [instance transfer via equivalence]
 /-- Transfer a `Dist` across an `Equiv` -/
 protected abbrev dist (e : α ≃ β) [Dist β] : Dist α := ⟨fun x y ↦ dist (e.toFun x) (e.toFun y)⟩
 
