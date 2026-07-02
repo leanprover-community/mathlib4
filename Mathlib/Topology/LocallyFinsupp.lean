@@ -134,14 +134,6 @@ lemma coe_mk [Zero Y] (f : X → Y) (h : f.support ⊆ U)
     (h' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)) :
     ⇑(Function.locallyFinsuppWithin.mk f h h') = f := rfl
 
-@[simp]
-lemma toFun_eq_coe [Zero Y] (c : locallyFinsuppWithin U Y) : c.toFun = ⇑c := rfl
-
-@[simp]
-lemma coe_mk [Zero Y] (f : X → Y) (h : f.support ⊆ U)
-    (h' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)) :
-    ⇑(Function.locallyFinsuppWithin.mk f h h') = f := rfl
-
 /-- This allows writing `D.support` instead of `Function.support D` -/
 abbrev support [Zero Y] (D : locallyFinsuppWithin U Y) := Function.support D
 
