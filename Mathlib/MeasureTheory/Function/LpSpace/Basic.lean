@@ -883,7 +883,7 @@ noncomputable def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν
     ext
     grw [MemLp.coeFn_toLp, Lp.coeFn_add, MemLp.coeFn_toLp, MemLp.coeFn_toLp]
     have : μ ≪ ν := Measure.absolutelyContinuous_of_le_smul h
-    apply Measure.AbsolutelyContinuous.ae_eq this
+    apply this.ae_eq
     grw [Lp.coeFn_add]
   map_smul' c f := by
     ext
@@ -901,7 +901,7 @@ lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
     (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ₑ ≤ c ^ (1 / p).toReal * ‖f‖ₑ := by
   simp only [Lp.enorm_def]
-  grw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
+  rw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
   exact eLpNorm_le_of_measure_le_smul h
 
 lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
@@ -909,8 +909,7 @@ lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ ≤ c.toReal ^ (1 / p).toReal * ‖f‖ := by
   simp only [← toReal_enorm]
   rw [ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
-  apply (ENNReal.toReal_le_toReal (by simp only [ne_eq, enorm_ne_top, not_false_eq_true]) _).2
-    (enorm_LpToLpOfMeasureLeSMulₗ_apply_le hc h)
+  grw [enorm_LpToLpOfMeasureLeSMulₗ_apply_le]
   simp [ENNReal.mul_eq_top, hc]
 
 /-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a multiple of `ν`. -/
