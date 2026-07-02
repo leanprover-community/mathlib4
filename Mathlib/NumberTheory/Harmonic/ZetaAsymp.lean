@@ -584,7 +584,7 @@ lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
     ∀ᶠ s in 𝓝[≠] 1, (deriv riemannZeta s) / (riemannZeta s)
     = - (s - 1)⁻¹ + (deriv riemannZeta₁ s) / (riemannZeta₁ s) := by
   filter_upwards [eventually_mem_nhdsWithin,
-    riemannZeta₁_ne_zero_of_near_one.filter_mono nhdsWithin_le_nhds] with s h1 h2
+    riemannZeta₁_ne_zero_of_near_one.filter_mono nhdsWithin_le_nhds]
   grind [deriv_riemannZeta_eq_neg_inv_sub_sq_mul_add, riemannZeta_eq_inv_sub_mul]
 
 lemma log_deriv_riemannZeta_add_inv_sub_sub_isBigO :
@@ -592,8 +592,8 @@ lemma log_deriv_riemannZeta_add_inv_sub_sub_isBigO :
     =O[𝓝[≠] 1] (· - 1) := by
   suffices (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s) - γ) =O[𝓝 1] (· - 1) by
     refine (this.mono nhdsWithin_le_nhds).congr' ?_ .rfl
-    filter_upwards [log_deriv_riemannZeta_eq_neg_inv_sub_add] with s hs
-    simp [hs]
+    filter_upwards [log_deriv_riemannZeta_eq_neg_inv_sub_add]
+    simp +contextual
   suffices DifferentiableAt ℂ (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s)) 1 by
     simpa using this.isBigO_sub
   fun_prop (disch := simp)
@@ -612,15 +612,15 @@ lemma log_deriv_riemannZeta_add_inv_sub_bounded :
 lemma inv_riemannZeta_eq_sub_mul :
     ∀ᶠ s in 𝓝[≠] 1, (riemannZeta s)⁻¹ = (s - 1) * (riemannZeta₁ s)⁻¹ := by
   filter_upwards [eventually_mem_nhdsWithin,
-    riemannZeta₁_ne_zero_of_near_one.filter_mono nhdsWithin_le_nhds] with s h1 h2
-  simp [riemannZeta_eq_inv_sub_mul h1, field]
+    riemannZeta₁_ne_zero_of_near_one.filter_mono nhdsWithin_le_nhds] with s hs
+  simp [riemannZeta_eq_inv_sub_mul hs, field]
 
 lemma inv_riemannZeta_sub_sub_isBigO :
     (fun s ↦ (riemannZeta s)⁻¹ - (s - 1)) =O[𝓝[≠] 1] (fun s ↦ (s - 1) ^ 2) := by
   suffices (fun s ↦ (s - 1) * ((riemannZeta₁ s)⁻¹ - 1)) =O[𝓝 1] (fun s ↦ (s - 1) ^ 2) by
     refine (this.mono nhdsWithin_le_nhds).congr' ?_ .rfl
-    filter_upwards [inv_riemannZeta_eq_sub_mul] with s hs
-    simp [hs, field]
+    filter_upwards [inv_riemannZeta_eq_sub_mul]
+    simp +contextual [field]
   suffices (fun s ↦ ((riemannZeta₁ s)⁻¹ - 1)) =O[𝓝 1] (· - 1) by
     simpa [pow_two] using (isBigO_refl ..).mul this
   simpa using ((differentiable_riemannZeta₁.differentiableAt (x := 1)).inv (by simp)).isBigO_sub
