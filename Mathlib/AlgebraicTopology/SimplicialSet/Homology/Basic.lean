@@ -38,7 +38,7 @@ variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 The chain complex associated to a simplicial set, with coefficients in `R : C`.
 It computes the simplicial homology of a simplicial sets with coefficients
 in `R`. One can recover the ordinary simplicial chain complex when `C := Ab`
-and `X := ℤ`.
+and `R := ℤ`.
 -/
 noncomputable def chainComplexFunctor : C ⥤ SSet.{w} ⥤ ChainComplex C ℕ :=
   (Functor.postcompose₂.obj (AlgebraicTopology.alternatingFaceMapComplex _)).obj
