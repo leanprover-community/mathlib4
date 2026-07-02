@@ -207,12 +207,12 @@ lemma P_eq_secondInter :
 
 lemma sOppSide_CB_A_P : line[ℝ, cfg.C, cfg.B].SOppSide cfg.A cfg.P := by
   rw [P_eq_secondInter]
-  convert cfg.triangleABC.circumsphere.sOppSide_faceOpposite_secondInter_of_mem_interior
+  convert! cfg.triangleABC.circumsphere.sOppSide_faceOpposite_secondInter_of_mem_interior
     (sx := cfg.triangleABC) (i := 0) cfg.A_mem_circumsphere
     (fun j ↦ (cfg.triangleABC.dist_circumcenter_eq_circumradius j).le)
     cfg.triangleABC.incenter_mem_interior using 1
   · exact cfg.CB_eq_affineSpan_faceOpposite
-  · convert rfl
+  · convert! rfl
     exact cfg.incenter_eq_I
 
 lemma K_ne_I : cfg.K ≠ cfg.I := by
@@ -310,7 +310,7 @@ lemma pi_div_three_lt_BAC : π / 3 < ∠ cfg.B cfg.A cfg.C :=
 
 lemma pi_div_six_lt_PAB : π / 6 < ∠ cfg.P cfg.A cfg.B := by
   rw [PAB_eq_BAC_div_two, lt_div_iff₀ (by norm_num)]
-  convert cfg.pi_div_three_lt_BAC using 1
+  convert! cfg.pi_div_three_lt_BAC using 1
   ring
 
 variable [hf2 : Fact (finrank ℝ V = 2)]
@@ -344,7 +344,7 @@ lemma circumradius_lt_PB : cfg.triangleABC.circumradius < dist cfg.P cfg.B := by
     (angle_lt_pi_of_not_collinear hnc)), mul_assoc]
   refine lt_mul_right (dist_pos.2 cfg.P_ne_B) ?_
   rw [← div_lt_iff₀' (by norm_num)]
-  convert Real.sin_lt_sin_of_lt_of_le_pi_div_two (x := π / 6) (by linarith [Real.pi_pos]) ?_
+  convert! Real.sin_lt_sin_of_lt_of_le_pi_div_two (x := π / 6) (by linarith [Real.pi_pos]) ?_
     cfg.pi_div_six_lt_PAB using 1
   · simp
   · rw [le_div_iff₀ (by norm_num), PAB_eq_BAC_div_two]
@@ -373,11 +373,10 @@ lemma sbtw_A_A'_P : Sbtw ℝ cfg.A cfg.A' cfg.P := by
     have hn : cfg.A ≠ (cfg.I -ᵥ cfg.A) +ᵥ cfg.I := by
       rw [← vsub_ne_zero, vsub_vadd_eq_vsub_sub, sub_eq_add_neg, neg_vsub_eq_vsub_rev, ← two_smul ℝ,
         ← incenter_eq_I]
-      simpa using (cfg.triangleABC.incenter_ne_point 0).symm
-    simp only [AffineEquiv.pointReflection_apply_eq_equivPointReflection_apply,
-      Equiv.pointReflection_apply, ne_eq, AffineMap.lineMap_eq_right_iff, hn, false_or,
-      AffineMap.lineMap_lineMap_left, AffineMap.lineMap_apply_one_sub, Set.mem_image, Set.mem_Ioi,
-      hn.symm]
+      simpa using! (cfg.triangleABC.incenter_ne_point 0).symm
+    simp only [AffineEquiv.coe_pointReflection, Equiv.pointReflection_apply, ne_eq,
+      AffineMap.lineMap_eq_right_iff, hn, false_or, AffineMap.lineMap_lineMap_left,
+      AffineMap.lineMap_apply_one_sub, Set.mem_image, Set.mem_Ioi, hn.symm]
     refine ⟨by linarith, 1 - (1 - r / 2)⁻¹, ?_, by grind⟩
     rw [← sub_pos, sub_sub_cancel_left, Left.neg_pos_iff, inv_neg'']
     linarith
