@@ -182,43 +182,48 @@ noncomputable
 def Abelian.Subobject.biprod_m {A : C} {X Y : Subobject A} :=
   (Abelian.imageStrongEpiMonoFactorisation (biprod.desc X.arrow Y.arrow)).m
 
-instance {A : C} {X Y : Subobject A} : StrongEpi (Abelian.Subobject.biprod_e (X := X) (Y := Y)) :=
+instance {A : C} {X Y : Subobject A} : StrongEpi (Abelian.Subobject.biprod_e X Y) :=
   (Abelian.imageStrongEpiMonoFactorisation (biprod.desc X.arrow Y.arrow)).e_strong_epi
 
 instance {A : C} {X Y : Subobject A} : Mono (Abelian.Subobject.biprod_m (X := X) (Y := Y)) :=
   (Abelian.imageStrongEpiMonoFactorisation (biprod.desc X.arrow Y.arrow)).m_mono
 
 noncomputable
-abbrev Abelian.Subobject.biprod_fac {A : C} {X Y : Subobject A} :=
+abbrev Abelian.Subobject.biprod_fac {A : C} {X Y : Subobject A} : biprod_e X Y ≫ biprod_m =
+    biprod.desc X.arrow Y.arrow :=
   (Abelian.imageStrongEpiMonoFactorisation (biprod.desc X.arrow Y.arrow)).fac
 
 lemma Abelian.Subobject.arrow_fac_biprod_inl {A : C} (X Y : Subobject A) : X.arrow =
-    (biprod.inl ≫ biprod_e X Y) ≫ biprod_m := by
-  simp only [Category.assoc, biprod_e, biprod_m, biprod_fac, biprod.inl_desc X.arrow Y.arrow]
+    biprod.inl ≫ biprod_e X Y ≫ biprod_m := by
+  simp only [biprod_fac, biprod.inl_desc]
 
 lemma Abelian.Subobject.arrow_fac_biprod_inr {A : C} (X Y : Subobject A) : Y.arrow =
-    (biprod.inr ≫ biprod_e X Y) ≫ biprod_m := by
-  simp only [Category.assoc, biprod_e, biprod_m, biprod_fac, biprod.inr_desc X.arrow Y.arrow]
+    biprod.inr ≫ biprod_e X Y ≫ biprod_m := by
+  simp only [biprod_fac, biprod.inr_desc]
 
 instance {A : C} (X Y : Subobject A) :
-    Mono (biprod.inl ≫ Abelian.Subobject.biprod_e (X := X) (Y := Y)) :=
-  mono_of_mono_fac (Abelian.Subobject.arrow_fac_biprod_inl _ _).symm
+    Mono (biprod.inl ≫ Abelian.Subobject.biprod_e X Y) := by
+  have := (Abelian.Subobject.arrow_fac_biprod_inl X Y).symm
+  rw [← Category.assoc] at this
+  exact mono_of_mono_fac this
 
 instance {A : C} (X Y : Subobject A) :
-    Mono (biprod.inr ≫ Abelian.Subobject.biprod_e (X := X) (Y := Y)) :=
-  mono_of_mono_fac (Abelian.Subobject.arrow_fac_biprod_inr _ _).symm
+    Mono (biprod.inr ≫ Abelian.Subobject.biprod_e X Y) := by
+  have := (Abelian.Subobject.arrow_fac_biprod_inr X Y).symm
+  rw [← Category.assoc] at this
+  exact mono_of_mono_fac this
 
 noncomputable
 def Abelian.Subobject.s {A : C} (X Y : Subobject A) : Limits.pullback X.arrow Y.arrow ⟶
-    kernel (biprod.inr ≫ biprod_e X Y ≫ cokernel.π (biprod.inl ≫ biprod_e (X := X) (Y := Y))) := by
-  refine kernel.lift (biprod.inr ≫ _ ≫ cokernel.π (biprod.inl ≫ _)) (pullback.snd _ _) ?_
+    kernel (biprod.inr ≫ biprod_e X Y ≫ cokernel.π (biprod.inl ≫ biprod_e X Y)) := by
+  refine kernel.lift _ (pullback.snd _ _) ?_
   have p := pullback.condition (f := X.arrow) (g := Y.arrow)
   simp only [Abelian.Subobject.arrow_fac_biprod_inl X Y, Abelian.Subobject.arrow_fac_biprod_inr X Y,
     ← Category.assoc, biprod_m, cancel_mono _] at p
   have := (p =≫ (cokernel.π (biprod.inl ≫ biprod_e X Y))).symm
   simp only [← Category.assoc]
   rw [this]
-  have := cokernel.condition (biprod.inl ≫ biprod_e (X := X) (Y := Y))
+  have := cokernel.condition (biprod.inl ≫ biprod_e X Y)
   simp only [Category.assoc] at this ⊢
   cat_disch
 
@@ -272,7 +277,7 @@ def Abelian.Subobject.t {A : C} (X Y : Subobject A) : kernel (biprod.inr ≫ bip
 open Subobject in
 noncomputable
 def Abelian.Subobject.kerneliso₁ {A : C} (X Y : Subobject A) :
-    kernel (biprod.inr ≫ (biprod_e X Y) ≫ cokernel.π (biprod.inl ≫ (biprod_e X Y))) ≅
+    kernel (biprod.inr ≫ biprod_e X Y ≫ cokernel.π (biprod.inl ≫ biprod_e X Y)) ≅
       underlying.obj (X ⊓ Y) := by
   refine ?_ ≪≫ (inf_isPullback _ _).isoPullback.symm
   refine Iso.mk ?_ ?_ ?_ ?_
@@ -295,6 +300,7 @@ def Abelian.Subobject.kerneliso₁ {A : C} (X Y : Subobject A) :
 
 --refine Subobject.eq_of_comp_arrow_eq_iff.mpr ?_
 
+set_option linter.style.emptyLine false in
 open Subobject Abelian.Subobject in
 instance {A : C} : JordanHolderLattice (Subobject A) where
   IsMaximal := (· ⋖ ·)
@@ -307,114 +313,20 @@ instance {A : C} : JordanHolderLattice (Subobject A) where
   iso_trans := fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
   second_iso {X} {Y} _ := by
     constructor
-    dsimp
 
-    let h₁ := X.ofLE (X ⊔ Y) le_sup_left
-    let h₁' := (X ⊓ (X ⊔ Y)).ofLE (X ⊔ Y) inf_le_right
+    have h₁iso : cokernel (X.ofLE (X ⊔ Y) le_sup_left) ≅
+        cokernel ((X ⊓ (X ⊔ Y)).ofLE (X ⊔ Y) inf_le_right) := by
+      refine cokernel.mapIso _ _ ?_ (Iso.refl _) ?_
+      · refine X.isoOfEq (X ⊓ (X ⊔ Y)) (by simp only [le_sup_left, inf_of_le_left])
+      · simp
 
-    let h₂ := (X ⊓ Y).ofLE Y inf_le_right
-    let h₂' := (X ⊓ Y ⊓ Y).ofLE Y inf_le_right
+    have h₂iso : cokernel ((X ⊓ Y).ofLE Y inf_le_right) ≅
+        cokernel ((X ⊓ Y ⊓ Y).ofLE Y inf_le_right) := by
+      refine cokernel.mapIso _ _ ?_ (Iso.refl _) ?_
+      · refine (X ⊓ Y).isoOfEq (X ⊓ Y ⊓ Y) (by simp only [_root_.inf_le_right, inf_of_le_left])
+      · simp
 
-    have : cokernel h₁ ≅ cokernel h₁' := by
-      dsimp [h₁, h₁']
-
-      sorry
-    suffices cokernel h₁ ≅ cokernel h₂ by sorry
-
-    dsimp [h₁, h₂]
-/-
-    let f := biprod.desc X.arrow Y.arrow
-    obtain ⟨⟨I, m, e, fac_f⟩, _⟩ := Abelian.imageStrongEpiMonoFactorisation f
-
-    let u' := biprod.inl ≫ e
-    let v' := biprod.inr ≫ e
-    let fac_x : X.arrow = u' ≫ m := by
-      simp [u', fac_f, f]
-    have : Mono u' := mono_of_mono_fac fac_x.symm
-    let fac_y : Y.arrow = v' ≫ m := by
-      simp [v', fac_f, f]
-    have eq : biprod.fst (Y := (Y : C)) ≫ u' + biprod.snd (X := (X : C)) ≫ v' = e := by
-      have := biprod.total (X := (X : C)) (Y := Y) =≫ e
-      rw [Category.id_comp] at this
-      rw [Preadditive.add_comp] at this
-      simpa
-
-    have iso : I ≅ underlying.obj (X ⊔ Y) :=
-      image.isoStrongEpiMono e m fac_f ≪≫ (Abelian.Subobject.sup_isoImage X Y).symm
-
-    --let q := cokernel.π (X.ofLE (X ⊔ Y) le_sup_left)
-    let q' := cokernel.π u'
-
-    --let u := (X.ofLE (X ⊔ Y) le_sup_left)
-    --let v := (Y.ofLE (X ⊔ Y) le_sup_right)
-
-    have : Epi (v' ≫ q') := by
-      have := eq =≫ q'
-      simp only [Preadditive.add_comp, Category.assoc, cokernel.condition u', comp_zero, zero_add,
-        q'] at this
-      exact epi_of_epi_fac this
-
-    have : Epi (biprod.inr ≫ e ≫ cokernel.π (biprod.inl ≫ e)) := by
-      have := eq =≫ q'
-      simp only [Preadditive.add_comp, Category.assoc, cokernel.condition u', comp_zero, zero_add,
-        q', u', v'] at this
-      exact epi_of_epi_fac this
-
-    --have : Epi (v ≫ q) := sorry
-
-    have eq_zero : pullback.snd X.arrow Y.arrow ≫ biprod.inr ≫ e ≫ cokernel.π (biprod.inl ≫ e) = 0 := by
-      have := pullback.condition (f := X.arrow) (g := Y.arrow)
-      simp only [fac_x, fac_y, ← Category.assoc, cancel_mono m] at this
-      have := (this =≫ q').symm
-      simpa [q', cokernel.condition u', v', u'] using this
-
-    let s := kernel.lift (biprod.inr ≫ e ≫ cokernel.π (biprod.inl ≫ e)) _ eq_zero
-
-    let k := kernel.ι (biprod.inr ≫ e ≫ cokernel.π (biprod.inl ≫ e))
-
-    let P := (Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (biprod.inl ≫ e)))
-    let Q := (kernelIsKernel (cokernel.π (biprod.inl ≫ e)))
-
-    let Xiso : underlying.obj X ≅ kernel (cokernel.π (biprod.inl ≫ e)) := by
-      have := P.conePointUniqueUpToIso Q
-      exact this
-
-    let w := (kernel.lift (cokernel.π (biprod.inl ≫ e)) (k ≫ v') (by simp only [Category.assoc,
-      kernel.condition, k, v'])) ≫ Xiso.inv
-
-    have w_u_fac : w ≫ u' = k ≫ v' := by
-      have := kernel.lift_ι (cokernel.π (biprod.inl ≫ e)) (k ≫ v') (by simp [k, v'])
-      rw [← this]
-      simp only [Category.assoc, w, k, v', u']
-      have : kernel.ι (cokernel.π (biprod.inl ≫ e)) =  Xiso.inv ≫ biprod.inl ≫ e := by
-        refine (Iso.eq_inv_comp (P.conePointUniqueUpToIso Q)).2 ?_
-        simpa using (P.conePointUniqueUpToIso_hom_comp Q) WalkingParallelPair.zero
-      rw [this]
-
-    let t : kernel (biprod.inr ≫ e ≫ cokernel.π (biprod.inl ≫ e)) ⟶
-        pullback X.arrow Y.arrow := by
-      refine pullback.lift ?_ ?_ ?_
-      · exact w
-      · exact k
-      · simp [fac_x, fac_y, ← Category.assoc k v' m, ← w_u_fac]
--/
-
-/-
-    have : cokernel u' ≅ cokernel (kernel.ι q') := by
-      have := (Abelian.epiIsCokernelOfKernel _ (kernelIsKernel q')).coconePointUniqueUpToIso (cokernelIsCokernel _)
-      simpa [u', q']
--/
-
-/-
-    have : (pullback.snd X.arrow Y.arrow) ≫ v ≫ q = 0 := by
-      sorry
--/
-
-/-
-    have := (Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (v' ≫ q'))).coconePointUniqueUpToIso
-      (cokernelIsCokernel _)
-    simp [u'] at this
--/
+    refine h₁iso.symm ≪≫ ?_ ≪≫ h₂iso
 
     have eq : biprod.fst (Y := (Y : C)) ≫ (biprod.inl ≫ biprod_e X Y) + biprod.snd (X := (X : C))
         ≫ (biprod.inr ≫ biprod_e X Y) = (biprod_e X Y) := by
@@ -429,28 +341,27 @@ instance {A : C} : JordanHolderLattice (Subobject A) where
         cokernel.condition (biprod.inl ≫ biprod_e X Y), comp_zero, zero_add] at this
       exact epi_of_epi_fac this
 
-/-
-    let H : kernel (biprod.inr ≫ e ≫ cokernel.π (biprod.inl ≫ e)) ≅ underlying.obj (X ⊓ Y) := by
-      refine ?_ ≪≫ (inf_isPullback _ _).isoPullback.symm
-      refine Iso.mk ?_ ?_ ?_ ?_
-      · exact t
-      · exact s
-      · simp [s, t, w, k, v', Xiso]
-        sorry
-      ·
-        sorry
-    --have := Subobject.eq_of_comp_arrow_eq_iff
--/
-
-    have cokeriso₁ : cokernel (kernel.ι (biprod.inr ≫ (Abelian.Subobject.biprod_e X Y) ≫ cokernel.π (biprod.inl ≫ (Abelian.Subobject.biprod_e X Y)))) ≅ cokernel ((X ⊓ Y).ofLE Y inf_le_right) := by
-      refine cokernel.mapIso (kernel.ι (biprod.inr ≫ (Abelian.Subobject.biprod_e X Y) ≫ cokernel.π (biprod.inl ≫ (Abelian.Subobject.biprod_e X Y)))) ((X ⊓ Y).ofLE Y _) ?_ (Iso.refl _) ?_
-      · exact (Abelian.Subobject.kerneliso₁ X Y)
-      · simp [Abelian.Subobject.kerneliso₁]
+    have cokeriso₁ : cokernel (kernel.ι (biprod.inr ≫ biprod_e X Y ≫
+        cokernel.π (biprod.inl ≫ biprod_e X Y))) ≅ cokernel ((X ⊓ Y).ofLE Y inf_le_right) := by
+      refine cokernel.mapIso (kernel.ι (biprod.inr ≫ biprod_e X Y ≫
+          cokernel.π (biprod.inl ≫ biprod_e X Y))) ((X ⊓ Y).ofLE Y _) (kerneliso₁ X Y)
+          (Iso.refl _) ?_
+      · simp only [Iso.refl_hom, Category.comp_id, kerneliso₁, Iso.trans_hom, Iso.symm_hom,
+          Category.assoc, IsPullback.isoPullback_inv_snd]
         exact (pullback.lift_snd _ _ _).symm
 
-    refine ?_ ≪≫ ((Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (biprod.inr ≫ (Abelian.Subobject.biprod_e X Y) ≫ cokernel.π (biprod.inl ≫ (Abelian.Subobject.biprod_e X Y))))).coconePointUniqueUpToIso
+    refine ?_ ≪≫ ((Abelian.epiIsCokernelOfKernel _ (kernelIsKernel _)).coconePointUniqueUpToIso
       (cokernelIsCokernel _)) ≪≫ cokeriso₁
-    simp
-    sorry
+    simp only [Fork.ι_ofι, Cofork.ofπ_pt]
+
+    refine cokernel.mapIso (X.ofLE (X ⊔ Y) le_sup_left) (biprod.inl ≫ biprod_e X Y) (Iso.refl _)
+        ?_ ?_
+    · exact (Abelian.Subobject.sup_isoImage X Y) ≪≫ (Abelian.imageIsoImage _).symm
+    · simp only [Iso.trans_hom, Abelian.Subobject.sup_isoImage_hom, Iso.symm_hom,
+        IsImage.isoExt_inv, image.isImage_lift, Iso.refl_hom, Category.id_comp]
+      rw [← cancel_mono biprod_m, Category.assoc, Category.assoc, Category.assoc,
+        ← arrow_fac_biprod_inl X Y, biprod_m, image.lift_fac]
+      erw [ofLEMk_comp]
+      simp
 
 end CategoryTheory
