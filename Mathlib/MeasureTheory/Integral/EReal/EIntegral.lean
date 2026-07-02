@@ -240,7 +240,7 @@ lemma eintegral_strict_mono_ae (hμ : μ ≠ 0) (hg : AEMeasurable g μ) (hf : A
       filter_upwards [hfg] with x hx
       refine EReal.toENNReal_le_toENNReal ?_
       exact EReal.neg_le_neg_iff.mpr hx.le
-  · refine EReal.sub_lt_sub_of_le_of_lt ?_ ?_ ?_ (by simp)
+  · refine EReal.sub_lt_sub_of_le_of_gt ?_ ?_ ?_ (by simp)
     · norm_cast
       refine lintegral_mono_ae ?_
       filter_upwards [hfg] with x hx
@@ -434,8 +434,10 @@ lemma eintegral_real_const_mul_of_nonneg (c : ℝ) (hf : ∀ x, 0 ≤ f x) :
 
 lemma eintegral_real_const_mul (c : ℝ) (hf : EIntegrable f μ) :
     ∫ᵉ x, c * f x ∂μ = c * ∫ᵉ x, f x ∂μ := by
+  have h_mul x : c * (f⁺ x - f⁻ x) = c * f⁺ x - c * f⁻ x := by
+    rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
   simp_rw [eintegral_eq_posPartFun_sub_negPartFun f, ← EReal.posPart_fun_sub_negPart_fun_apply f,
-    EReal.mul_sub_of_eq_zero (EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero f _)]
+    h_mul]
   rcases le_total 0 c with hc | hc
   · have hc' : 0 ≤ (c : EReal) := mod_cast hc
     rw [eintegral_sub_of_nonneg_of_eq_zero (fun x ↦ ?_) (fun x ↦ ?_) (fun x ↦ ?_),
@@ -630,11 +632,13 @@ lemma eintegral_sub_of_nonneg (hf : ∀ x, 0 ≤ f x) (hg : ∀ x, 0 ≤ g x)
   rotate_left
   · filter_upwards with x using by simp [hf, hg]
   · filter_upwards with x using by simp [hf, hg]
-  rw [EReal.add_sub_add]
+  rw [EReal.add_sub_add_comm]
   rotate_left
-  · refine ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg' ?_ hg'
+  · left
+    refine ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg' ?_ hg'
     simp only [g']; fun_prop
-  · exact ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg (by simp [hf, hg])
+  · right
+    exact ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg (by simp [hf, hg])
   rw [EReal.sub_self hfg]
   · simp
   · exact ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg (by simp [hf, hg])
@@ -666,9 +670,9 @@ lemma eintegral_add (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
   have hf_add_g : ∀ x, f x + g x = (f⁺ x + g⁺ x) - (f⁻ x + g⁻ x) := by
     intro x
     rw [← EReal.posPart_fun_sub_negPart_fun_apply f x,
-      ← EReal.posPart_fun_sub_negPart_fun_apply g x, EReal.add_sub_add]
-    · exact ne_bot_of_le_ne_bot (by simp) (negPart_nonneg f x)
-    · exact ne_bot_of_le_ne_bot (by simp) (negPart_nonneg g x)
+      ← EReal.posPart_fun_sub_negPart_fun_apply g x, EReal.add_sub_add_comm]
+    · left; exact ne_bot_of_le_ne_bot (by simp) (negPart_nonneg f x)
+    · right; exact ne_bot_of_le_ne_bot (by simp) (negPart_nonneg g x)
   simp_rw [hf_add_g, ← EReal.posPart_fun_sub_negPart_fun_apply f,
     ← EReal.posPart_fun_sub_negPart_fun_apply g]
   rw [eintegral_sub_of_nonneg_of_eq_zero (by simp) (by simp)
@@ -677,9 +681,9 @@ lemma eintegral_add (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
       (EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero g)]
   have : ∫ᵉ x, f⁺ x ∂μ - ∫ᵉ x, f⁻ x ∂μ + (∫ᵉ x, g⁺ x ∂μ - ∫ᵉ x, g⁻ x ∂μ)
       = ∫ᵉ x, f⁺ x ∂μ + ∫ᵉ x, g⁺ x ∂μ - (∫ᵉ x, f⁻ x ∂μ + ∫ᵉ x, g⁻ x ∂μ) := by
-    rw [EReal.add_sub_add]
-    · exact ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg (by simp)
-    · exact ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg (by simp)
+    rw [EReal.add_sub_add_comm]
+    · left; exact ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg (by simp)
+    · right; exact ne_bot_of_le_ne_bot (by simp) <| eintegral_nonneg (by simp)
   rw [this, ← eintegral_add_of_nonneg (by fun_prop) (by simp) (by simp),
     ← eintegral_add_of_nonneg (by fun_prop) (by simp) (by simp),
     ← eintegral_sub_of_nonneg _ _ (by fun_prop) (by fun_prop)]
@@ -749,9 +753,9 @@ lemma eintegral_add' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
   have hf_add_g : ∀ x, f x + g x = (f⁺ x + g⁺ x) - (f⁻ x + g⁻ x) := by
     intro x
     rw [← EReal.posPart_fun_sub_negPart_fun_apply f x,
-      ← EReal.posPart_fun_sub_negPart_fun_apply g x, EReal.add_sub_add]
-    · exact ne_bot_of_le_ne_bot (b := 0) (by simp) (by simp)
-    · exact ne_bot_of_le_ne_bot (b := 0) (by simp) (by simp)
+      ← EReal.posPart_fun_sub_negPart_fun_apply g x, EReal.add_sub_add_comm]
+    · left; exact ne_bot_of_le_ne_bot (b := 0) (by simp) (by simp)
+    · right; exact ne_bot_of_le_ne_bot (b := 0) (by simp) (by simp)
   simp_rw [hf_add_g]
   rw [eintegral_sub_of_nonneg (fun _ ↦ add_nonneg (by simp) (by simp))
     (fun _ ↦ add_nonneg (by simp) (by simp)) (by fun_prop) (by fun_prop)]
@@ -840,7 +844,7 @@ theorem eintegral_map' {β : Type*} {mβ : MeasurableSpace β} {f : β → EReal
 lemma eintegral_add_measure {ν : Measure α} (f : α → EReal) :
     ∫ᵉ x, f x ∂(μ + ν) = ∫ᵉ x, f x ∂μ + ∫ᵉ x, f x ∂ν := by
   simp only [eintegral, lintegral_add_measure, EReal.coe_ennreal_add]
-  rw [EReal.add_sub_add _ _ (by simp) (by simp)]
+  rw [EReal.add_sub_add_comm (by simp) (by simp)]
 
 lemma eintegral_smul_measure {c : ℝ≥0∞} (hc : c ≠ ∞) (f : α → EReal) :
     ∫ᵉ x, f x ∂(c • μ) = c * ∫ᵉ x, f x ∂μ := by

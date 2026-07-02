@@ -130,11 +130,23 @@ lemma EIntegrable.add_real_const [IsFiniteMeasure μ] {c : ℝ} {f : α → ERea
     simp_rw [sub_eq_add_neg]
     exact EReal.toENNReal_add_le
 
+lemma EIntegrable.real_const_add [IsFiniteMeasure μ] {c : ℝ} {f : α → EReal}
+    (hf : EIntegrable f μ) :
+    EIntegrable (fun x ↦ c + f x) μ := by
+  simp_rw [add_comm]
+  exact hf.add_real_const
+
 lemma EIntegrable.add_const [IsFiniteMeasure μ] {c : EReal} {f : α → EReal}
     (hf : EIntegrable f μ) (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) :
     EIntegrable (fun x ↦ f x + c) μ := by
   lift c to ℝ using ⟨hc_top, hc_bot⟩
   exact hf.add_real_const
+
+lemma EIntegrable.const_add [IsFiniteMeasure μ] {c : EReal} {f : α → EReal}
+    (hf : EIntegrable f μ) (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) :
+    EIntegrable (fun x ↦ c + f x) μ := by
+  lift c to ℝ using ⟨hc_top, hc_bot⟩
+  exact hf.real_const_add
 
 lemma EIntegrable.sub_real_const [IsFiniteMeasure μ] {c : ℝ} {f : α → EReal}
     (hf : EIntegrable f μ) :
@@ -147,6 +159,18 @@ lemma EIntegrable.sub_const [IsFiniteMeasure μ] {c : EReal} {f : α → EReal}
     EIntegrable (fun x ↦ f x - c) μ := by
   simp_rw [sub_eq_add_neg]
   exact hf.add_const (by simp [hc_top]) (by simp [hc_bot])
+
+lemma EIntegrable.real_const_sub [IsFiniteMeasure μ] {c : ℝ} {f : α → EReal}
+    (hf : EIntegrable f μ) :
+    EIntegrable (fun x ↦ c - f x) μ := by
+  simp_rw [sub_eq_add_neg]
+  exact hf.neg.real_const_add
+
+lemma EIntegrable.const_sub [IsFiniteMeasure μ] {c : EReal} {f : α → EReal}
+    (hf : EIntegrable f μ) (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) :
+    EIntegrable (fun x ↦ c - f x) μ := by
+  simp_rw [sub_eq_add_neg]
+  exact hf.neg.const_add hc_bot hc_top
 
 lemma EIntegrable.smul_measure {X : α → EReal} (hX : EIntegrable X μ) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     EIntegrable X (c • μ) := by
