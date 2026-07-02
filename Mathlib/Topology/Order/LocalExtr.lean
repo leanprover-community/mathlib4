@@ -187,53 +187,53 @@ theorem isLocalExtr_const {b : β} : IsLocalExtr (fun _ => b) a :=
 
 /-! ### Composition with (anti)monotone functions -/
 
-theorem IsLocalMin.comp_mono (hf : IsLocalMin f a) {g : β → γ} (hg : Monotone g) :
+nonrec theorem IsLocalMin.comp_mono (hf : IsLocalMin f a) {g : β → γ} (hg : Monotone g) :
     IsLocalMin (g ∘ f) a :=
-  IsMinFilter.comp_mono hf hg
+  hf.comp_mono hg
 
-theorem IsLocalMax.comp_mono (hf : IsLocalMax f a) {g : β → γ} (hg : Monotone g) :
+nonrec theorem IsLocalMax.comp_mono (hf : IsLocalMax f a) {g : β → γ} (hg : Monotone g) :
     IsLocalMax (g ∘ f) a :=
-  IsMaxFilter.comp_mono hf hg
+  hf.comp_mono hg
 
-theorem IsLocalExtr.comp_mono (hf : IsLocalExtr f a) {g : β → γ} (hg : Monotone g) :
+nonrec theorem IsLocalExtr.comp_mono (hf : IsLocalExtr f a) {g : β → γ} (hg : Monotone g) :
     IsLocalExtr (g ∘ f) a :=
-  IsExtrFilter.comp_mono hf hg
+  hf.comp_mono hg
 
-theorem IsLocalMin.comp_antitone (hf : IsLocalMin f a) {g : β → γ} (hg : Antitone g) :
+nonrec theorem IsLocalMin.comp_antitone (hf : IsLocalMin f a) {g : β → γ} (hg : Antitone g) :
     IsLocalMax (g ∘ f) a :=
-  IsMinFilter.comp_antitone hf hg
+  hf.comp_antitone hg
 
-theorem IsLocalMax.comp_antitone (hf : IsLocalMax f a) {g : β → γ} (hg : Antitone g) :
+nonrec theorem IsLocalMax.comp_antitone (hf : IsLocalMax f a) {g : β → γ} (hg : Antitone g) :
     IsLocalMin (g ∘ f) a :=
-  IsMaxFilter.comp_antitone hf hg
+  hf.comp_antitone hg
 
-theorem IsLocalExtr.comp_antitone (hf : IsLocalExtr f a) {g : β → γ} (hg : Antitone g) :
+nonrec theorem IsLocalExtr.comp_antitone (hf : IsLocalExtr f a) {g : β → γ} (hg : Antitone g) :
     IsLocalExtr (g ∘ f) a :=
-  IsExtrFilter.comp_antitone hf hg
+  hf.comp_antitone hg
 
-theorem IsLocalMinOn.comp_mono (hf : IsLocalMinOn f s a) {g : β → γ} (hg : Monotone g) :
+nonrec theorem IsLocalMinOn.comp_mono (hf : IsLocalMinOn f s a) {g : β → γ} (hg : Monotone g) :
     IsLocalMinOn (g ∘ f) s a :=
-  IsMinFilter.comp_mono hf hg
+  hf.comp_mono hg
 
-theorem IsLocalMaxOn.comp_mono (hf : IsLocalMaxOn f s a) {g : β → γ} (hg : Monotone g) :
+nonrec theorem IsLocalMaxOn.comp_mono (hf : IsLocalMaxOn f s a) {g : β → γ} (hg : Monotone g) :
     IsLocalMaxOn (g ∘ f) s a :=
-  IsMaxFilter.comp_mono hf hg
+  hf.comp_mono hg
 
-theorem IsLocalExtrOn.comp_mono (hf : IsLocalExtrOn f s a) {g : β → γ} (hg : Monotone g) :
+nonrec theorem IsLocalExtrOn.comp_mono (hf : IsLocalExtrOn f s a) {g : β → γ} (hg : Monotone g) :
     IsLocalExtrOn (g ∘ f) s a :=
-  IsExtrFilter.comp_mono hf hg
+  hf.comp_mono hg
 
-theorem IsLocalMinOn.comp_antitone (hf : IsLocalMinOn f s a) {g : β → γ} (hg : Antitone g) :
+nonrec theorem IsLocalMinOn.comp_antitone (hf : IsLocalMinOn f s a) {g : β → γ} (hg : Antitone g) :
     IsLocalMaxOn (g ∘ f) s a :=
-  IsMinFilter.comp_antitone hf hg
+  hf.comp_antitone hg
 
-theorem IsLocalMaxOn.comp_antitone (hf : IsLocalMaxOn f s a) {g : β → γ} (hg : Antitone g) :
+nonrec theorem IsLocalMaxOn.comp_antitone (hf : IsLocalMaxOn f s a) {g : β → γ} (hg : Antitone g) :
     IsLocalMinOn (g ∘ f) s a :=
-  IsMaxFilter.comp_antitone hf hg
+  hf.comp_antitone hg
 
-theorem IsLocalExtrOn.comp_antitone (hf : IsLocalExtrOn f s a) {g : β → γ}
+nonrec theorem IsLocalExtrOn.comp_antitone (hf : IsLocalExtrOn f s a) {g : β → γ}
     (hg : Antitone g) : IsLocalExtrOn (g ∘ f) s a :=
-  IsExtrFilter.comp_antitone hf hg
+  hf.comp_antitone hg
 
 open scoped Relator
 
@@ -315,21 +315,21 @@ section OrderedAddCommMonoid
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
   {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
-theorem IsLocalMin.add (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
+nonrec theorem IsLocalMin.add (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => f x + g x) a :=
-  IsMinFilter.add hf hg
+  hf.add hg
 
-theorem IsLocalMax.add (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
+nonrec theorem IsLocalMax.add (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
     IsLocalMax (fun x => f x + g x) a :=
-  IsMaxFilter.add hf hg
+  hf.add hg
 
-theorem IsLocalMinOn.add (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
+nonrec theorem IsLocalMinOn.add (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
     IsLocalMinOn (fun x => f x + g x) s a :=
-  IsMinFilter.add hf hg
+  hf.add hg
 
-theorem IsLocalMaxOn.add (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
+nonrec theorem IsLocalMaxOn.add (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
     IsLocalMaxOn (fun x => f x + g x) s a :=
-  IsMaxFilter.add hf hg
+  hf.add hg
 
 end OrderedAddCommMonoid
 
@@ -341,39 +341,39 @@ section OrderedAddCommGroup
 variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
   {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
-theorem IsLocalMin.neg (hf : IsLocalMin f a) : IsLocalMax (fun x => -f x) a :=
-  IsMinFilter.neg hf
+nonrec theorem IsLocalMin.neg (hf : IsLocalMin f a) : IsLocalMax (fun x => -f x) a :=
+  hf.neg
 
-theorem IsLocalMax.neg (hf : IsLocalMax f a) : IsLocalMin (fun x => -f x) a :=
-  IsMaxFilter.neg hf
+nonrec theorem IsLocalMax.neg (hf : IsLocalMax f a) : IsLocalMin (fun x => -f x) a :=
+  hf.neg
 
-theorem IsLocalExtr.neg (hf : IsLocalExtr f a) : IsLocalExtr (fun x => -f x) a :=
-  IsExtrFilter.neg hf
+nonrec theorem IsLocalExtr.neg (hf : IsLocalExtr f a) : IsLocalExtr (fun x => -f x) a :=
+  hf.neg
 
-theorem IsLocalMinOn.neg (hf : IsLocalMinOn f s a) : IsLocalMaxOn (fun x => -f x) s a :=
-  IsMinFilter.neg hf
+nonrec theorem IsLocalMinOn.neg (hf : IsLocalMinOn f s a) : IsLocalMaxOn (fun x => -f x) s a :=
+  hf.neg
 
-theorem IsLocalMaxOn.neg (hf : IsLocalMaxOn f s a) : IsLocalMinOn (fun x => -f x) s a :=
-  IsMaxFilter.neg hf
+nonrec theorem IsLocalMaxOn.neg (hf : IsLocalMaxOn f s a) : IsLocalMinOn (fun x => -f x) s a :=
+  hf.neg
 
-theorem IsLocalExtrOn.neg (hf : IsLocalExtrOn f s a) : IsLocalExtrOn (fun x => -f x) s a :=
-  IsExtrFilter.neg hf
+nonrec theorem IsLocalExtrOn.neg (hf : IsLocalExtrOn f s a) : IsLocalExtrOn (fun x => -f x) s a :=
+  hf.neg
 
-theorem IsLocalMin.sub (hf : IsLocalMin f a) (hg : IsLocalMax g a) :
+nonrec theorem IsLocalMin.sub (hf : IsLocalMin f a) (hg : IsLocalMax g a) :
     IsLocalMin (fun x => f x - g x) a :=
-  IsMinFilter.sub hf hg
+  hf.sub hg
 
-theorem IsLocalMax.sub (hf : IsLocalMax f a) (hg : IsLocalMin g a) :
+nonrec theorem IsLocalMax.sub (hf : IsLocalMax f a) (hg : IsLocalMin g a) :
     IsLocalMax (fun x => f x - g x) a :=
-  IsMaxFilter.sub hf hg
+  hf.sub hg
 
-theorem IsLocalMinOn.sub (hf : IsLocalMinOn f s a) (hg : IsLocalMaxOn g s a) :
+nonrec theorem IsLocalMinOn.sub (hf : IsLocalMinOn f s a) (hg : IsLocalMaxOn g s a) :
     IsLocalMinOn (fun x => f x - g x) s a :=
-  IsMinFilter.sub hf hg
+  hf.sub hg
 
-theorem IsLocalMaxOn.sub (hf : IsLocalMaxOn f s a) (hg : IsLocalMinOn g s a) :
+nonrec theorem IsLocalMaxOn.sub (hf : IsLocalMaxOn f s a) (hg : IsLocalMinOn g s a) :
     IsLocalMaxOn (fun x => f x - g x) s a :=
-  IsMaxFilter.sub hf hg
+  hf.sub hg
 
 end OrderedAddCommGroup
 
@@ -384,21 +384,21 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
-theorem IsLocalMin.sup (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
+nonrec theorem IsLocalMin.sup (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => f x ⊔ g x) a :=
-  IsMinFilter.sup hf hg
+  hf.sup hg
 
-theorem IsLocalMax.sup (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
+nonrec theorem IsLocalMax.sup (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
     IsLocalMax (fun x => f x ⊔ g x) a :=
-  IsMaxFilter.sup hf hg
+  hf.sup hg
 
-theorem IsLocalMinOn.sup (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
+nonrec theorem IsLocalMinOn.sup (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
     IsLocalMinOn (fun x => f x ⊔ g x) s a :=
-  IsMinFilter.sup hf hg
+  hf.sup hg
 
-theorem IsLocalMaxOn.sup (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
+nonrec theorem IsLocalMaxOn.sup (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
     IsLocalMaxOn (fun x => f x ⊔ g x) s a :=
-  IsMaxFilter.sup hf hg
+  hf.sup hg
 
 end SemilatticeSup
 
@@ -406,21 +406,21 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
-theorem IsLocalMin.inf (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
+nonrec theorem IsLocalMin.inf (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => f x ⊓ g x) a :=
-  IsMinFilter.inf hf hg
+  hf.inf hg
 
-theorem IsLocalMax.inf (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
+nonrec theorem IsLocalMax.inf (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
     IsLocalMax (fun x => f x ⊓ g x) a :=
-  IsMaxFilter.inf hf hg
+  hf.inf hg
 
-theorem IsLocalMinOn.inf (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
+nonrec theorem IsLocalMinOn.inf (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
     IsLocalMinOn (fun x => f x ⊓ g x) s a :=
-  IsMinFilter.inf hf hg
+  hf.inf hg
 
-theorem IsLocalMaxOn.inf (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
+nonrec theorem IsLocalMaxOn.inf (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
     IsLocalMaxOn (fun x => f x ⊓ g x) s a :=
-  IsMaxFilter.inf hf hg
+  hf.inf hg
 
 end SemilatticeInf
 
@@ -431,37 +431,37 @@ section LinearOrder
 
 variable [LinearOrder β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
-theorem IsLocalMin.min (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
+nonrec theorem IsLocalMin.min (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => min (f x) (g x)) a :=
-  IsMinFilter.min hf hg
+  hf.min hg
 
-theorem IsLocalMax.min (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
+nonrec theorem IsLocalMax.min (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
     IsLocalMax (fun x => min (f x) (g x)) a :=
-  IsMaxFilter.min hf hg
+  hf.min hg
 
-theorem IsLocalMinOn.min (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
+nonrec theorem IsLocalMinOn.min (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
     IsLocalMinOn (fun x => min (f x) (g x)) s a :=
-  IsMinFilter.min hf hg
+  hf.min hg
 
-theorem IsLocalMaxOn.min (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
+nonrec theorem IsLocalMaxOn.min (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
     IsLocalMaxOn (fun x => min (f x) (g x)) s a :=
-  IsMaxFilter.min hf hg
+  hf.min hg
 
-theorem IsLocalMin.max (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
+nonrec theorem IsLocalMin.max (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => max (f x) (g x)) a :=
-  IsMinFilter.max hf hg
+  hf.max hg
 
-theorem IsLocalMax.max (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
+nonrec theorem IsLocalMax.max (hf : IsLocalMax f a) (hg : IsLocalMax g a) :
     IsLocalMax (fun x => max (f x) (g x)) a :=
-  IsMaxFilter.max hf hg
+  hf.max hg
 
-theorem IsLocalMinOn.max (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
+nonrec theorem IsLocalMinOn.max (hf : IsLocalMinOn f s a) (hg : IsLocalMinOn g s a) :
     IsLocalMinOn (fun x => max (f x) (g x)) s a :=
-  IsMinFilter.max hf hg
+  hf.max hg
 
-theorem IsLocalMaxOn.max (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
+nonrec theorem IsLocalMaxOn.max (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s a) :
     IsLocalMaxOn (fun x => max (f x) (g x)) s a :=
-  IsMaxFilter.max hf hg
+  hf.max hg
 
 end LinearOrder
 
@@ -476,9 +476,9 @@ theorem Filter.EventuallyLE.isLocalMaxOn {f g : α → β} {a : α} (hle : g ≤
     (hfga : f a = g a) (h : IsLocalMaxOn f s a) : IsLocalMaxOn g s a :=
   hle.isMaxFilter hfga h
 
-theorem IsLocalMaxOn.congr {f g : α → β} {a : α} (h : IsLocalMaxOn f s a)
+nonrec theorem IsLocalMaxOn.congr {f g : α → β} {a : α} (h : IsLocalMaxOn f s a)
     (heq : f =ᶠ[𝓝[s] a] g) (hmem : a ∈ s) : IsLocalMaxOn g s a :=
-  IsMaxFilter.congr h heq <| heq.eq_of_nhdsWithin hmem
+  h.congr heq <| heq.eq_of_nhdsWithin hmem
 
 theorem Filter.EventuallyEq.isLocalMaxOn_iff {f g : α → β} {a : α} (heq : f =ᶠ[𝓝[s] a] g)
     (hmem : a ∈ s) : IsLocalMaxOn f s a ↔ IsLocalMaxOn g s a :=
@@ -488,17 +488,17 @@ theorem Filter.EventuallyLE.isLocalMinOn {f g : α → β} {a : α} (hle : f ≤
     (hfga : f a = g a) (h : IsLocalMinOn f s a) : IsLocalMinOn g s a :=
   hle.isMinFilter hfga h
 
-theorem IsLocalMinOn.congr {f g : α → β} {a : α} (h : IsLocalMinOn f s a)
+nonrec theorem IsLocalMinOn.congr {f g : α → β} {a : α} (h : IsLocalMinOn f s a)
     (heq : f =ᶠ[𝓝[s] a] g) (hmem : a ∈ s) : IsLocalMinOn g s a :=
-  IsMinFilter.congr h heq <| heq.eq_of_nhdsWithin hmem
+  h.congr heq <| heq.eq_of_nhdsWithin hmem
 
 theorem Filter.EventuallyEq.isLocalMinOn_iff {f g : α → β} {a : α} (heq : f =ᶠ[𝓝[s] a] g)
     (hmem : a ∈ s) : IsLocalMinOn f s a ↔ IsLocalMinOn g s a :=
   heq.isMinFilter_iff <| heq.eq_of_nhdsWithin hmem
 
-theorem IsLocalExtrOn.congr {f g : α → β} {a : α} (h : IsLocalExtrOn f s a)
+nonrec theorem IsLocalExtrOn.congr {f g : α → β} {a : α} (h : IsLocalExtrOn f s a)
     (heq : f =ᶠ[𝓝[s] a] g) (hmem : a ∈ s) : IsLocalExtrOn g s a :=
-  IsExtrFilter.congr h heq <| heq.eq_of_nhdsWithin hmem
+  h.congr heq <| heq.eq_of_nhdsWithin hmem
 
 theorem Filter.EventuallyEq.isLocalExtrOn_iff {f g : α → β} {a : α} (heq : f =ᶠ[𝓝[s] a] g)
     (hmem : a ∈ s) : IsLocalExtrOn f s a ↔ IsLocalExtrOn g s a :=
@@ -508,9 +508,9 @@ theorem Filter.EventuallyLE.isLocalMax {f g : α → β} {a : α} (hle : g ≤�
     (h : IsLocalMax f a) : IsLocalMax g a :=
   hle.isMaxFilter hfga h
 
-theorem IsLocalMax.congr {f g : α → β} {a : α} (h : IsLocalMax f a) (heq : f =ᶠ[𝓝 a] g) :
+nonrec theorem IsLocalMax.congr {f g : α → β} {a : α} (h : IsLocalMax f a) (heq : f =ᶠ[𝓝 a] g) :
     IsLocalMax g a :=
-  IsMaxFilter.congr h heq heq.eq_of_nhds
+  h.congr heq heq.eq_of_nhds
 
 theorem Filter.EventuallyEq.isLocalMax_iff {f g : α → β} {a : α} (heq : f =ᶠ[𝓝 a] g) :
     IsLocalMax f a ↔ IsLocalMax g a :=
@@ -520,17 +520,17 @@ theorem Filter.EventuallyLE.isLocalMin {f g : α → β} {a : α} (hle : f ≤�
     (h : IsLocalMin f a) : IsLocalMin g a :=
   hle.isMinFilter hfga h
 
-theorem IsLocalMin.congr {f g : α → β} {a : α} (h : IsLocalMin f a) (heq : f =ᶠ[𝓝 a] g) :
+nonrec theorem IsLocalMin.congr {f g : α → β} {a : α} (h : IsLocalMin f a) (heq : f =ᶠ[𝓝 a] g) :
     IsLocalMin g a :=
-  IsMinFilter.congr h heq heq.eq_of_nhds
+  h.congr heq heq.eq_of_nhds
 
 theorem Filter.EventuallyEq.isLocalMin_iff {f g : α → β} {a : α} (heq : f =ᶠ[𝓝 a] g) :
     IsLocalMin f a ↔ IsLocalMin g a :=
   heq.isMinFilter_iff heq.eq_of_nhds
 
-theorem IsLocalExtr.congr {f g : α → β} {a : α} (h : IsLocalExtr f a) (heq : f =ᶠ[𝓝 a] g) :
+nonrec theorem IsLocalExtr.congr {f g : α → β} {a : α} (h : IsLocalExtr f a) (heq : f =ᶠ[𝓝 a] g) :
     IsLocalExtr g a :=
-  IsExtrFilter.congr h heq heq.eq_of_nhds
+  h.congr heq heq.eq_of_nhds
 
 theorem Filter.EventuallyEq.isLocalExtr_iff {f g : α → β} {a : α} (heq : f =ᶠ[𝓝 a] g) :
     IsLocalExtr f a ↔ IsLocalExtr g a :=

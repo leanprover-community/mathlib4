@@ -520,9 +520,9 @@ theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) 
   by_contra hn
   exact (notMem_of_mem_sdiff (hl <| by simp [hn])) (mem_singleton _)
 
-lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) (a : R)
+nonrec lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) (a : R)
     (ha : a • v i ∈ span R (v '' (s \ {i}))) : a = 0 :=
-  LinearIndependent.eq_zero_of_smul_mem_span hv ⟨i, hi⟩ _ <| by
+  hv.eq_zero_of_smul_mem_span ⟨i, hi⟩ _ <| by
     simpa [← comp_def, image_comp, image_sdiff Subtype.val_injective]
 
 variable [Nontrivial R]

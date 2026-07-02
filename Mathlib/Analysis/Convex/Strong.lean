@@ -139,11 +139,11 @@ nonrec lemma StrongConcaveOn.mono (hmn : m ≤ n) (hf : StrongConcaveOn s n f) :
 @[simp] lemma strongConcaveOn_zero : StrongConcaveOn s 0 f ↔ ConcaveOn ℝ s f := by
   simp [StrongConcaveOn, ← Pi.zero_def]
 
-lemma StrongConvexOn.strictConvexOn (hf : StrongConvexOn s m f) (hm : 0 < m) :
-    StrictConvexOn ℝ s f := UniformConvexOn.strictConvexOn hf fun r hr ↦ by positivity
+nonrec lemma StrongConvexOn.strictConvexOn (hf : StrongConvexOn s m f) (hm : 0 < m) :
+    StrictConvexOn ℝ s f := hf.strictConvexOn fun r hr ↦ by positivity
 
-lemma StrongConcaveOn.strictConcaveOn (hf : StrongConcaveOn s m f) (hm : 0 < m) :
-    StrictConcaveOn ℝ s f := UniformConcaveOn.strictConcaveOn hf fun r hr ↦ by positivity
+nonrec lemma StrongConcaveOn.strictConcaveOn (hf : StrongConcaveOn s m f) (hm : 0 < m) :
+    StrictConcaveOn ℝ s f := hf.strictConcaveOn fun r hr ↦ by positivity
 
 end NormedSpace
 

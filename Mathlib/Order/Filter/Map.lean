@@ -312,22 +312,22 @@ theorem _root_.Function.LeftInverse.filter_comap {f : α → β} {g : β → α}
     RightInverse (comap g) (comap f) := fun F ↦ by
   rw [comap_comap, hfg.comp_eq_id, comap_id]
 
-theorem _root_.Function.RightInverse.filter_map {f : α → β} {g : β → α}
+nonrec theorem _root_.Function.RightInverse.filter_map {f : α → β} {g : β → α}
     (hfg : RightInverse g f) : RightInverse (map g) (map f) :=
-  LeftInverse.filter_map hfg
+  hfg.filter_map
 
-theorem _root_.Function.RightInverse.filter_comap {f : α → β} {g : β → α}
+nonrec theorem _root_.Function.RightInverse.filter_comap {f : α → β} {g : β → α}
     (hfg : RightInverse g f) : LeftInverse (comap g) (comap f) :=
-  LeftInverse.filter_comap hfg
+  hfg.filter_comap
 
 theorem _root_.Set.LeftInvOn.filter_map_Iic {f : α → β} {g : β → α} (hfg : LeftInvOn g f s) :
     LeftInvOn (map g) (map f) (Iic <| 𝓟 s) := fun F (hF : F ≤ 𝓟 s) ↦ by
   have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using! hfg
   rw [map_map, map_congr (this.filter_mono hF), map_id]
 
-theorem _root_.Set.RightInvOn.filter_map_Iic {f : α → β} {g : β → α}
+nonrec theorem _root_.Set.RightInvOn.filter_map_Iic {f : α → β} {g : β → α}
     (hfg : RightInvOn g f t) : RightInvOn (map g) (map f) (Iic <| 𝓟 t) :=
-  LeftInvOn.filter_map_Iic hfg
+  hfg.filter_map_Iic
 
 end
 

@@ -667,16 +667,16 @@ theorem iIndepFun_congr {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)
 
 alias ⟨iIndepFun.congr, _⟩ := iIndepFun_congr
 
-lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+nonrec lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
     (h : iIndepFun f μ) (g : ∀ i, β i → γ i) (hg : ∀ i, Measurable (g i)) :
-    iIndepFun (fun i ↦ g i ∘ f i) μ := Kernel.iIndepFun.comp h _ hg
+    iIndepFun (fun i ↦ g i ∘ f i) μ := h.comp _ hg
 
-lemma iIndepFun.comp₀ {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+nonrec lemma iIndepFun.comp₀ {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
     (h : iIndepFun f μ) (g : ∀ i, β i → γ i)
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ i, AEMeasurable (g i) (μ.map (f i))) :
-    iIndepFun (fun i ↦ g i ∘ f i) μ := Kernel.iIndepFun.comp₀ h _ (by simp [hf]) (by simp [hg])
+    iIndepFun (fun i ↦ g i ∘ f i) μ := h.comp₀ _ (by simp [hf]) (by simp [hg])
 
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
@@ -708,8 +708,8 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
 alias ⟨IndepFun.map_prod_eq_prod_map_map, _⟩ := indepFun_iff_map_prod_eq_prod_map_map
 
 @[symm]
-theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
-    (hfg : f ⟂ᵢ[μ] g) : g ⟂ᵢ[μ] f := Kernel.IndepFun.symm hfg
+nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
+    (hfg : f ⟂ᵢ[μ] g) : g ⟂ᵢ[μ] f := hfg.symm
 
 theorem IndepFun.congr {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {f' : Ω → β} {g' : Ω → β'} (hfg : f ⟂ᵢ[μ] g) (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') :

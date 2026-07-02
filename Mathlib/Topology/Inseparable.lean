@@ -513,10 +513,10 @@ theorem of_eq (e : x = y) : Inseparable x y :=
   e ▸ refl x
 
 @[symm]
-theorem symm (h : x ~ᵢ y) : y ~ᵢ x := Eq.symm h
+nonrec theorem symm (h : x ~ᵢ y) : y ~ᵢ x := h.symm
 
 @[trans]
-theorem trans (h₁ : x ~ᵢ y) (h₂ : y ~ᵢ z) : x ~ᵢ z := Eq.trans h₁ h₂
+nonrec theorem trans (h₁ : x ~ᵢ y) (h₂ : y ~ᵢ z) : x ~ᵢ z := h₁.trans h₂
 
 theorem nhds_eq (h : x ~ᵢ y) : 𝓝 x = 𝓝 y := h
 

@@ -72,9 +72,9 @@ theorem _root_.SemiconjBy.tprod {a₁ a₂ a₃ : Π i, A i}
     SemiconjBy (tprod R a₁) (tprod R a₂) (tprod R a₃) := by
   rw [SemiconjBy, tprod_mul_tprod, tprod_mul_tprod, ha]
 
-theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a₂) :
+nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a₂) :
     Commute (tprod R a₁) (tprod R a₂) :=
-  SemiconjBy.tprod ha
+  ha.tprod
 
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by

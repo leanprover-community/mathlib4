@@ -93,14 +93,14 @@ theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf :
 variable [TopologicalSpace β] {g : β → α} {b : β} {s : Set β}
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
-theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
+nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
     ContinuousWithinAt (c • g) s b :=
-  Tendsto.const_smul hg c
+  hg.const_smul c
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
-theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
+nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
     ContinuousAt (c • g) b :=
-  Tendsto.const_smul hg c
+  hg.const_smul c
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :

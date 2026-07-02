@@ -118,15 +118,15 @@ theorem Filter.Tendsto.enatSub {α : Type*} {l : Filter α} {f g : α → ℕ∞
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → ℕ∞} {s : Set X} {x : X}
 
-theorem ContinuousWithinAt.enatSub
+nonrec theorem ContinuousWithinAt.enatSub
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) (h : f x ≠ ⊤ ∨ g x ≠ ⊤) :
     ContinuousWithinAt (fun x ↦ f x - g x) s x :=
-  Tendsto.enatSub hf hg h
+  hf.enatSub hg h
 
-theorem ContinuousAt.enatSub
+nonrec theorem ContinuousAt.enatSub
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) (h : f x ≠ ⊤ ∨ g x ≠ ⊤) :
     ContinuousAt (fun x ↦ f x - g x) x :=
-  Tendsto.enatSub hf hg h
+  hf.enatSub hg h
 
 theorem ContinuousOn.enatSub
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h : ∀ x ∈ s, f x ≠ ⊤ ∨ g x ≠ ⊤) :

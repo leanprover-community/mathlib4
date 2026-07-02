@@ -57,16 +57,16 @@ theorem Continuous.sdiv {f g : α → P} (hf : Continuous f) (hg : Continuous g)
   continuous_sdiv.comp₂ hf hg
 
 @[to_additive (attr := fun_prop)]
-theorem ContinuousAt.sdiv {f g : α → P} {x : α} (hf : ContinuousAt f x)
+nonrec theorem ContinuousAt.sdiv {f g : α → P} {x : α} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) :
     ContinuousAt (fun x ↦ f x /ₛ g x) x :=
-  Filter.Tendsto.sdiv hf hg
+  hf.sdiv hg
 
 @[to_additive (attr := fun_prop)]
-theorem ContinuousWithinAt.sdiv {f g : α → P} {x : α} {s : Set α}
+nonrec theorem ContinuousWithinAt.sdiv {f g : α → P} {x : α} {s : Set α}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (fun x ↦ f x /ₛ g x) s x :=
-  Filter.Tendsto.sdiv hf hg
+  hf.sdiv hg
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.sdiv {f g : α → P} {s : Set α} (hf : ContinuousOn f s)

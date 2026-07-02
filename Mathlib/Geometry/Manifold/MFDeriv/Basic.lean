@@ -69,10 +69,9 @@ theorem uniqueMDiffWithinAt_iff {s : Set M} {x : M} :
   apply uniqueDiffWithinAt_congr
   rw [nhdsWithin_inter, nhdsWithin_inter, nhdsWithin_extChartAt_target_eq]
 
-theorem UniqueMDiffWithinAt.mono_nhds {s t : Set M} {x : M} (hs : UniqueMDiffAt[s] x)
+nonrec theorem UniqueMDiffWithinAt.mono_nhds {s t : Set M} {x : M} (hs : UniqueMDiffAt[s] x)
     (ht : 𝓝[s] x ≤ 𝓝[t] x) : UniqueMDiffAt[t] x :=
-  UniqueDiffWithinAt.mono_nhds hs <| by
-    simpa only [← map_extChartAt_nhdsWithin] using Filter.map_mono ht
+  hs.mono_nhds <| by simpa only [← map_extChartAt_nhdsWithin] using Filter.map_mono ht
 
 theorem UniqueMDiffWithinAt.mono_of_mem_nhdsWithin {s t : Set M} {x : M}
     (hs : UniqueMDiffAt[s] x) (ht : t ∈ 𝓝[s] x) : UniqueMDiffAt[t] x :=
@@ -102,9 +101,9 @@ theorem IsOpen.uniqueMDiffOn (hs : IsOpen s) : UniqueMDiff[s] :=
 theorem uniqueMDiffOn_univ : UniqueMDiff[(univ : Set M)] :=
   isOpen_univ.uniqueMDiffOn
 
-theorem UniqueMDiffWithinAt.prod {x : M} {y : M'} {s : Set M} {t : Set M'}
+nonrec theorem UniqueMDiffWithinAt.prod {x : M} {y : M'} {s : Set M} {t : Set M'}
     (hs : UniqueMDiffAt[s] x) (ht : UniqueMDiffAt[t] y) : UniqueMDiffAt[s ×ˢ t] (x, y) := by
-  refine (UniqueDiffWithinAt.prod hs ht).mono ?_
+  refine (hs.prod ht).mono ?_
   rw [ModelWithCorners.range_prod, ← prod_inter_prod]
   rfl
 
@@ -519,10 +518,10 @@ variable {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `UniqueMDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
-protected theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffAt[s] x)
+protected nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffAt[s] x)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' := by
   -- `by apply` because the instances can be found in the term but not in the goal.
-  apply UniqueDiffWithinAt.eq U h.2 h₁.2
+  apply U.eq h.2 h₁.2
 
 protected theorem UniqueMDiffOn.eq (U : UniqueMDiff[s]) (hx : x ∈ s)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' :=

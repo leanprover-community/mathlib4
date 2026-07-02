@@ -65,14 +65,14 @@ theorem ContMDiffWithinAt.prodMk_space {f : M → E'} {g : M → F'}
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
-theorem ContMDiffAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffAt I I' n f x)
+nonrec theorem ContMDiffAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffAt I I' n f x)
     (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (fun x => (f x, g x)) x :=
-  ContMDiffWithinAt.prodMk hf hg
+  hf.prodMk hg
 
-theorem ContMDiffAt.prodMk_space {f : M → E'} {g : M → F'}
+nonrec theorem ContMDiffAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffAt I 𝓘(𝕜, E') n f x) (hg : ContMDiffAt I 𝓘(𝕜, F') n g x) :
     ContMDiffAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) x :=
-  ContMDiffWithinAt.prodMk_space hf hg
+  hf.prodMk_space hg
 
 theorem ContMDiffOn.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffOn I I' n f s)
     (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (fun x => (f x, g x)) s :=

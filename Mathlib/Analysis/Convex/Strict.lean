@@ -67,9 +67,9 @@ theorem strictConvex_univ : StrictConvex 𝕜 (univ : Set E) := by
   rw [interior_univ]
   exact mem_univ _
 
-protected theorem StrictConvex.eq (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s)
+protected nonrec theorem StrictConvex.eq (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s)
     (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (h : a • x + b • y ∉ interior s) : x = y :=
-  Set.Pairwise.eq hs hx hy fun H => h <| H ha hb hab
+  hs.eq hx hy fun H => h <| H ha hb hab
 
 protected theorem StrictConvex.inter {t : Set E} (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
     StrictConvex 𝕜 (s ∩ t) := by

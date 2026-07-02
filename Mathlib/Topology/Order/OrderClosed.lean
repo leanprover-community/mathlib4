@@ -687,9 +687,9 @@ theorem Filter.Tendsto.eventually_lt {l : Filter γ} {f g : γ → α} {y z : α
     h _ h₁ _ h₂
 
 @[to_dual self (reorder := f g, hf hg)]
-theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀) (hg : ContinuousAt g x₀)
+nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀) (hg : ContinuousAt g x₀)
     (hfg : f x₀ < g x₀) : ∀ᶠ x in 𝓝 x₀, f x < g x :=
-  Tendsto.eventually_lt hf hg hfg
+  hf.eventually_lt hg hfg
 
 @[to_dual (attr := continuity, fun_prop)]
 protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :

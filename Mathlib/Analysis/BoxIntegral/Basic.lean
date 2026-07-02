@@ -239,9 +239,9 @@ theorem HasIntegral.integrable (h : HasIntegral I l f vol y) : Integrable I l f 
 theorem HasIntegral.integral_eq (h : HasIntegral I l f vol y) : integral I l f vol = y :=
   h.integrable.hasIntegral.unique h
 
-theorem HasIntegral.add (h : HasIntegral I l f vol y) (h' : HasIntegral I l g vol y') :
+nonrec theorem HasIntegral.add (h : HasIntegral I l f vol y) (h' : HasIntegral I l g vol y') :
     HasIntegral I l (f + g) vol (y + y') := by
-  simpa only [HasIntegral, ← integralSum_add] using Tendsto.add h h'
+  simpa only [HasIntegral, ← integralSum_add] using h.add h'
 
 theorem Integrable.add (hf : Integrable I l f vol) (hg : Integrable I l g vol) :
     Integrable I l (f + g) vol :=
@@ -251,8 +251,8 @@ theorem integral_add (hf : Integrable I l f vol) (hg : Integrable I l g vol) :
     integral I l (f + g) vol = integral I l f vol + integral I l g vol :=
   (hf.hasIntegral.add hg.hasIntegral).integral_eq
 
-theorem HasIntegral.neg (hf : HasIntegral I l f vol y) : HasIntegral I l (-f) vol (-y) := by
-  simpa only [HasIntegral, ← integralSum_neg] using Tendsto.neg hf
+nonrec theorem HasIntegral.neg (hf : HasIntegral I l f vol y) : HasIntegral I l (-f) vol (-y) := by
+  simpa only [HasIntegral, ← integralSum_neg] using hf.neg
 
 theorem Integrable.neg (hf : Integrable I l f vol) : Integrable I l (-f) vol :=
   hf.hasIntegral.neg.integrable

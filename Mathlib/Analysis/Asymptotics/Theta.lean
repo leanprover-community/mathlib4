@@ -48,8 +48,8 @@ theorem isTheta_rfl : f =Θ[l] f :=
   isTheta_refl _ _
 
 @[symm]
-theorem IsTheta.symm (h : f =Θ[l] g) : g =Θ[l] f :=
-  And.symm h
+nonrec theorem IsTheta.symm (h : f =Θ[l] g) : g =Θ[l] f :=
+  h.symm
 
 theorem isTheta_comm : f =Θ[l] g ↔ g =Θ[l] f :=
   ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩

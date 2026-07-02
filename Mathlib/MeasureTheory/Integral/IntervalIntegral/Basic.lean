@@ -194,8 +194,8 @@ section
 variable {f : ℝ → ε} {a b c d : ℝ} {μ ν : Measure ℝ}
 
 @[symm]
-theorem symm (h : IntervalIntegrable f μ a b) : IntervalIntegrable f μ b a :=
-  And.symm h
+nonrec theorem symm (h : IntervalIntegrable f μ a b) : IntervalIntegrable f μ b a :=
+  h.symm
 
 theorem symm_iff : IntervalIntegrable f μ a b ↔ IntervalIntegrable f μ b a := ⟨.symm, .symm⟩
 

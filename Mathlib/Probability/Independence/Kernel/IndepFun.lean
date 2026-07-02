@@ -225,8 +225,8 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
   · rwa [← indepSet_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
 
 @[symm]
-theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
-    (hfg : IndepFun f g κ μ) : IndepFun g f κ μ := Indep.symm hfg
+nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
+    (hfg : IndepFun f g κ μ) : IndepFun g f κ μ := hfg.symm
 
 theorem IndepFun.congr' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {f' : Ω → β} {g' : Ω → β'} (hfg : IndepFun f g κ μ)

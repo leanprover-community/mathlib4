@@ -77,13 +77,13 @@ theorem Continuous.inv (hf : Continuous f) : Continuous f⁻¹ :=
   continuous_inv.comp hf
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
-theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
+nonrec theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt f⁻¹ s x :=
-  Filter.Tendsto.inv hf
+  hf.inv
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
-theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt f⁻¹ x :=
-  Filter.Tendsto.inv hf
+nonrec theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt f⁻¹ x :=
+  hf.inv
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn f⁻¹ s := fun x hx ↦

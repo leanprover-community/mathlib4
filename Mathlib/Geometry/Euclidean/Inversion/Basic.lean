@@ -210,15 +210,15 @@ protected theorem Filter.Tendsto.inversion {α : Type*} {x c : P} {R : ℝ} {l :
 
 variable {X : Type*} [TopologicalSpace X] {c x : X → P} {R : X → ℝ} {a₀ : X} {s : Set X}
 
-protected theorem ContinuousWithinAt.inversion (hc : ContinuousWithinAt c s a₀)
+protected nonrec theorem ContinuousWithinAt.inversion (hc : ContinuousWithinAt c s a₀)
     (hR : ContinuousWithinAt R s a₀) (hx : ContinuousWithinAt x s a₀) (hne : x a₀ ≠ c a₀) :
     ContinuousWithinAt (fun a ↦ inversion (c a) (R a) (x a)) s a₀ :=
-  Filter.Tendsto.inversion hc hR hx hne
+  hc.inversion hR hx hne
 
-protected theorem ContinuousAt.inversion (hc : ContinuousAt c a₀) (hR : ContinuousAt R a₀)
+protected nonrec theorem ContinuousAt.inversion (hc : ContinuousAt c a₀) (hR : ContinuousAt R a₀)
     (hx : ContinuousAt x a₀) (hne : x a₀ ≠ c a₀) :
     ContinuousAt (fun a ↦ inversion (c a) (R a) (x a)) a₀ :=
-  Filter.Tendsto.inversion hc hR hx hne
+  hc.inversion hR hx hne
 
 protected theorem ContinuousOn.inversion (hc : ContinuousOn c s) (hR : ContinuousOn R s)
     (hx : ContinuousOn x s) (hne : ∀ a ∈ s, x a ≠ c a) :

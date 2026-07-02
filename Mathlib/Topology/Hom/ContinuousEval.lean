@@ -60,13 +60,13 @@ protected theorem Filter.Tendsto.eval {α : Type*} {l : Filter α} {f : α → F
     Tendsto (fun a ↦ f a (g a)) l (𝓝 (f₀ x₀)) :=
   (ContinuousEval.continuous_eval.tendsto _).comp (hf.prodMk_nhds hg)
 
-protected theorem ContinuousAt.eval (hf : ContinuousAt f z) (hg : ContinuousAt g z) :
+protected nonrec theorem ContinuousAt.eval (hf : ContinuousAt f z) (hg : ContinuousAt g z) :
     ContinuousAt (fun z ↦ f z (g z)) z :=
-  Tendsto.eval hf hg
+  hf.eval hg
 
-protected theorem ContinuousWithinAt.eval (hf : ContinuousWithinAt f s z)
+protected nonrec theorem ContinuousWithinAt.eval (hf : ContinuousWithinAt f s z)
     (hg : ContinuousWithinAt g s z) : ContinuousWithinAt (fun z ↦ f z (g z)) s z :=
-  Tendsto.eval hf hg
+  hf.eval hg
 
 protected theorem ContinuousOn.eval (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun z ↦ f z (g z)) s :=

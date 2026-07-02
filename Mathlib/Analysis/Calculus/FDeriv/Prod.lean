@@ -60,15 +60,15 @@ protected theorem HasStrictFDerivAt.prodMk (hf₁ : HasStrictFDerivAt f₁ f₁'
   HasFDerivAtFilter.prodMk hf₁ hf₂
 
 @[fun_prop]
-theorem HasFDerivWithinAt.prodMk (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
+nonrec theorem HasFDerivWithinAt.prodMk (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasFDerivWithinAt f₂ f₂' s x) :
     HasFDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') s x :=
-  HasFDerivAtFilter.prodMk hf₁ hf₂
+  hf₁.prodMk hf₂
 
 @[fun_prop]
-theorem HasFDerivAt.prodMk (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
+nonrec theorem HasFDerivAt.prodMk (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
-  HasFDerivAtFilter.prodMk hf₁ hf₂
+  hf₁.prodMk hf₂
 
 @[fun_prop]
 theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
@@ -139,9 +139,9 @@ theorem hasFDerivAt_fst : HasFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
   hasFDerivAtFilter_fst
 
 @[fun_prop]
-protected theorem HasFDerivAt.fst (h : HasFDerivAt f₂ f₂' x) :
+protected nonrec theorem HasFDerivAt.fst (h : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
-  HasFDerivAtFilter.fst h
+  h.fst
 
 @[fun_prop]
 theorem hasFDerivWithinAt_fst {s : Set (E × F)} :
@@ -149,9 +149,9 @@ theorem hasFDerivWithinAt_fst {s : Set (E × F)} :
   hasFDerivAtFilter_fst
 
 @[fun_prop]
-protected theorem HasFDerivWithinAt.fst (h : HasFDerivWithinAt f₂ f₂' s x) :
+protected nonrec theorem HasFDerivWithinAt.fst (h : HasFDerivWithinAt f₂ f₂' s x) :
     HasFDerivWithinAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') s x :=
-  HasFDerivAtFilter.fst h
+  h.fst
 
 @[fun_prop]
 theorem differentiableAt_fst : DifferentiableAt 𝕜 Prod.fst p :=

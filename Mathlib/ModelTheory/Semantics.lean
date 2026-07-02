@@ -1115,12 +1115,12 @@ end Cardinality
 namespace ElementarilyEquivalent
 
 @[symm]
-theorem symm (h : M ≅[L] N) : N ≅[L] M :=
-  Eq.symm h
+nonrec theorem symm (h : M ≅[L] N) : N ≅[L] M :=
+  h.symm
 
 @[trans]
-theorem trans (MN : M ≅[L] N) (NP : N ≅[L] P) : M ≅[L] P :=
-  Eq.trans MN NP
+nonrec theorem trans (MN : M ≅[L] N) (NP : N ≅[L] P) : M ≅[L] P :=
+  MN.trans NP
 
 theorem completeTheory_eq (h : M ≅[L] N) : L.completeTheory M = L.completeTheory N :=
   h

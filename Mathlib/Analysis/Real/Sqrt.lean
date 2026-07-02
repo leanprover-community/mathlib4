@@ -448,13 +448,13 @@ theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tend
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
-theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
+nonrec theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x => √(f x)) s x :=
-  Tendsto.sqrt h
+  h.sqrt
 
 @[fun_prop]
-theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x => √(f x)) x :=
-  Tendsto.sqrt h
+nonrec theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x => √(f x)) x :=
+  h.sqrt
 
 @[fun_prop]
 theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x => √(f x)) s :=

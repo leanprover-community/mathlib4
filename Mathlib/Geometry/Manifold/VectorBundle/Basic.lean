@@ -337,10 +337,10 @@ protected theorem ContMDiffWithinAt.coordChangeL
     ContMDiffWithinAt IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
   (contMDiffAt_coordChangeL he he').comp_contMDiffWithinAt _ hf
 
-protected theorem ContMDiffAt.coordChangeL
+protected nonrec theorem ContMDiffAt.coordChangeL
     (hf : ContMDiffAt IM IB n f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffAt IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
-  ContMDiffWithinAt.coordChangeL hf he he'
+  hf.coordChangeL he he'
 
 protected theorem ContMDiffOn.coordChangeL
     (hf : ContMDiffOn IM IB n f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
@@ -363,11 +363,11 @@ protected theorem ContMDiffWithinAt.coordChange
     exact (Trivialization.coordChangeL_apply' e e' hy (g y)).symm
   · exact (Trivialization.coordChangeL_apply' e e' ⟨he, he'⟩ (g x)).symm
 
-protected theorem ContMDiffAt.coordChange
+protected nonrec theorem ContMDiffAt.coordChange
     (hf : ContMDiffAt IM IB n f x) (hg : ContMDiffAt IM 𝓘(𝕜, F) n g x) (he : f x ∈ e.baseSet)
     (he' : f x ∈ e'.baseSet) :
     ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) x :=
-  ContMDiffWithinAt.coordChange hf hg he he'
+  hf.coordChange hg he he'
 
 protected theorem ContMDiffOn.coordChange (hf : ContMDiffOn IM IB n f s)
     (hg : ContMDiffOn IM 𝓘(𝕜, F) n g s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :

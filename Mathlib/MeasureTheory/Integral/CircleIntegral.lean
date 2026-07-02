@@ -226,8 +226,8 @@ protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleI
   · rw [finsum_of_infinite_support h₁]
     apply circleIntegrable_const
 
-theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
-  IntervalIntegrable.neg hf
+nonrec theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
+  hf.neg
 
 /-- If `f` is circle integrable, then so are its scalar multiples. -/
 theorem const_smul {f : ℂ → A} (h : CircleIntegrable f c R) : CircleIntegrable (a • f) c R :=

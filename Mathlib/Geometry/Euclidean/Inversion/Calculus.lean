@@ -49,10 +49,10 @@ protected theorem ContDiffOn.inversion (hc : ContDiffOn ℝ n c s) (hR : ContDif
     ContDiffOn ℝ n (fun a ↦ inversion (c a) (R a) (x a)) s := fun a ha ↦
   (hc a ha).inversion (hR a ha) (hx a ha) (hne a ha)
 
-protected theorem ContDiffAt.inversion (hc : ContDiffAt ℝ n c a) (hR : ContDiffAt ℝ n R a)
+protected nonrec theorem ContDiffAt.inversion (hc : ContDiffAt ℝ n c a) (hR : ContDiffAt ℝ n R a)
     (hx : ContDiffAt ℝ n x a) (hne : x a ≠ c a) :
     ContDiffAt ℝ n (fun a ↦ inversion (c a) (R a) (x a)) a :=
-  ContDiffWithinAt.inversion hc hR hx hne
+  hc.inversion hR hx hne
 
 protected theorem ContDiff.inversion (hc : ContDiff ℝ n c) (hR : ContDiff ℝ n R)
     (hx : ContDiff ℝ n x) (hne : ∀ a, x a ≠ c a) :

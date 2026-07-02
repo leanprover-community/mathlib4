@@ -239,12 +239,12 @@ theorem refl (f : Ω^ N X x) : Homotopic f f :=
   ContinuousMap.HomotopicRel.refl _
 
 @[symm]
-theorem symm (H : Homotopic f g) : Homotopic g f :=
-  ContinuousMap.HomotopicRel.symm H
+nonrec theorem symm (H : Homotopic f g) : Homotopic g f :=
+  H.symm
 
 @[trans]
-theorem trans (H0 : Homotopic f g) (H1 : Homotopic g h) : Homotopic f h :=
-  ContinuousMap.HomotopicRel.trans H0 H1
+nonrec theorem trans (H0 : Homotopic f g) (H1 : Homotopic g h) : Homotopic f h :=
+  H0.trans H1
 
 theorem equiv : Equivalence (@Homotopic N X _ x) :=
   ⟨Homotopic.refl, Homotopic.symm, Homotopic.trans⟩

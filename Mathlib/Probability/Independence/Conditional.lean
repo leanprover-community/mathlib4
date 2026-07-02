@@ -697,10 +697,10 @@ theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' 
   simp only [CondIndepFun, CondIndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg]
 
 @[symm]
-theorem CondIndepFun.symm {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+nonrec theorem CondIndepFun.symm {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {f : Ω → β} {g : Ω → β'} (hfg : CondIndepFun m' hm' f g μ) :
     CondIndepFun m' hm' g f μ :=
-  Kernel.IndepFun.symm hfg
+  hfg.symm
 
 theorem CondIndepFun.comp {γ γ' : Type*} {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
     {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}

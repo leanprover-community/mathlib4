@@ -343,8 +343,8 @@ section LinearOrderedCommRing
 variable [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
   [TopologicalSpace α] [OrderTopology α] {f : ι → α} {x : α}
 
-theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
-  simpa only [HasProd, ← abs_prod] using Tendsto.abs hfx
+nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
+  simpa only [HasProd, ← abs_prod] using hfx.abs
 
 theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
   let ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩

@@ -930,9 +930,9 @@ theorem _root_.Dense.exists_dist_lt {s : Set α} (hs : Dense s) (x : α) {ε : �
   have : (ball x ε).Nonempty := by simp [hε]
   simpa only [mem_ball'] using hs.exists_mem_open isOpen_ball this
 
-theorem _root_.DenseRange.exists_dist_lt {β : Type*} {f : β → α} (hf : DenseRange f) (x : α)
+nonrec theorem _root_.DenseRange.exists_dist_lt {β : Type*} {f : β → α} (hf : DenseRange f) (x : α)
     {ε : ℝ} (hε : 0 < ε) : ∃ y, dist x (f y) < ε :=
-  exists_range_iff.1 (Dense.exists_dist_lt hf x hε)
+  exists_range_iff.1 (hf.exists_dist_lt x hε)
 
 /-- (Pseudo) metric space has discrete `UniformSpace` structure
 iff the distances between distinct points are uniformly bounded away from zero. -/

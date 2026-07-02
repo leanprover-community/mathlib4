@@ -887,7 +887,7 @@ theorem _root_.MeasurableEmbedding.eLpNorm_map_measure (hf : MeasurableEmbedding
     exact hf.essSup_map_measure
   · simp [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp, hf.lintegral_map]
 
-theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : Measur<eableEmbedding f) :
+theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : MeasurableEmbedding f) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
   simp_rw [MemLp, hf.aestronglyMeasurable_map_iff, hf.eLpNorm_map_measure]
 
