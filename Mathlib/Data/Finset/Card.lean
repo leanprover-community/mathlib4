@@ -39,7 +39,7 @@ variable {α β R : Type*}
 
 namespace Finset
 
-variable {s t : Finset α} {a b : α}
+variable {s t : Finset α} {a b c : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality.
 
@@ -135,8 +135,17 @@ theorem card_insert_eq_ite : #(insert a s) = if a ∈ s then #s else #s + 1 := b
 @[simp]
 theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by grind
 
-theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
-  simp [h]
+/-- A two-element finset `{a, b}` has cardinality `2` iff `a ≠ b`. The reverse direction is
+`Finset.card_pair`. -/
+theorem card_pair_eq_two_iff : #{a, b} = 2 ↔ a ≠ b := by
+  aesop (add simp card_insert_eq_ite)
+
+alias ⟨_, card_pair⟩ := card_pair_eq_two_iff
+
+/-- A three-element finset `{a, b, c}` has cardinality `3` iff `a`, `b`, `c` are pairwise
+distinct. -/
+theorem card_triple_eq_three_iff : #{a, b, c} = 3 ↔ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
+  aesop (add simp card_insert_eq_ite)
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp, grind =]
@@ -214,7 +223,7 @@ theorem length_toList (s : Finset α) : s.toList.length = #s := by
   rw [toList, ← Multiset.coe_card, Multiset.coe_toList, card_def]
 
 theorem card_image_le [DecidableEq β] : #(s.image f) ≤ #s := by
-  simpa only [card_map] using (s.1.map f).toFinset_card_le
+  simpa only [card_map] using! (s.1.map f).toFinset_card_le
 
 grind_pattern card_image_le => #(s.image f)
 grind_pattern card_image_le => s.image f, #s
@@ -378,7 +387,7 @@ The difference with `Finset.card_bij` is that the bijection is a non-dependent f
 being allowed to use membership of the domain. -/
 lemma card_nbij (i : α → β) (hi : Set.MapsTo i s t) (i_inj : (s : Set α).InjOn i)
     (i_surj : (s : Set α).SurjOn i t) : #s = #t :=
-  card_bij (fun a _ ↦ i a) hi i_inj (by simpa using i_surj)
+  card_bij (fun a _ ↦ i a) hi i_inj (by simpa using! i_surj)
 
 /-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
 are equal.
@@ -671,6 +680,9 @@ theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
   cases s
   simp only [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
 
+theorem card_eq_one_iff_existsUnique : #s = 1 ↔ ∃! a, a ∈ s := by
+  simp [card_eq_one, Finset.singleton_iff_unique_mem]
+
 theorem exists_eq_insert_iff [DecidableEq α] :
     (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ #s + 1 = #t := by
   constructor
@@ -728,6 +740,16 @@ theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
+
+/-- Given an injective map `f : α → β` for finite sets `s ⊂ α` and `t ⊂ β` such that `t` has
+    cardinality one more than `s`, there exists a unique element of `t` not in `f(s)`. -/
+theorem existsUnique_notMem_image_of_injOn_of_card_eq_add_one
+    {t : Finset β} [DecidableEq β]
+    (hf : Set.InjOn f s) (hf' : Set.MapsTo f s t) (h : #t = #s + 1) :
+    ∃! x, x ∈ t ∧ x ∉ s.image f := by
+  have : #(t \ s.image f) = 1 := by
+    grind [card_sdiff_of_subset hf'.finsetImage_subset, card_image_of_injOn hf]
+  simpa [card_eq_one_iff_existsUnique] using this
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
   its projection to some factor is nontrivial, and the fibers of the projection

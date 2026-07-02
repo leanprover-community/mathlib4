@@ -106,11 +106,11 @@ theorem app_hom {P Q : C} (f : P ⟶ Q) (a : Over P) : (app f a).hom = a.hom ≫
 def PseudoEqual (P : C) (f g : Over P) : Prop :=
   ∃ (R : C) (p : R ⟶ f.1) (q : R ⟶ g.1) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
 
-theorem pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
+instance pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
   refl f := ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
 
-theorem pseudoEqual_symm {P : C} : Symmetric (PseudoEqual P) :=
-  fun _ _ ⟨R, p, q, ep, Eq, comm⟩ => ⟨R, q, p, Eq, ep, comm.symm⟩
+instance pseudoEqual_symm {P : C} : Std.Symm (PseudoEqual P) where
+  symm _ _ := fun ⟨R, p, q, ep, Eq, comm⟩ ↦ ⟨R, q, p, Eq, ep, comm.symm⟩
 
 variable [Abelian.{v} C]
 
@@ -118,7 +118,7 @@ section
 
 /-- Pseudoequality is transitive: Just take the pullback. The pullback morphisms will
 be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
-theorem pseudoEqual_trans {P : C} : IsTrans (Over P) (PseudoEqual P) := by
+instance pseudoEqual_trans {P : C} : IsTrans (Over P) (PseudoEqual P) := by
   refine ⟨fun f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩ ↦ ?_⟩
   refine ⟨pullback q p', pullback.fst _ _ ≫ p, pullback.snd _ _ ≫ q',
     epi_comp _ _, epi_comp _ _, ?_⟩
@@ -130,7 +130,7 @@ end
 /-- The arrows with codomain `P` equipped with the equivalence relation of being pseudo-equal. -/
 @[instance_reducible]
 def Pseudoelement.setoid (P : C) : Setoid (Over P) :=
-  ⟨_, ⟨pseudoEqual_refl.refl, @pseudoEqual_symm _ _ _, pseudoEqual_trans.trans _ _ _⟩⟩
+  ⟨_, ⟨pseudoEqual_refl.refl, pseudoEqual_symm.symm _ _, pseudoEqual_trans.trans _ _ _⟩⟩
 
 attribute [local instance] Pseudoelement.setoid
 
@@ -243,6 +243,7 @@ end Zero
 
 open Pseudoelement
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]
 theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 := by
@@ -272,7 +273,8 @@ theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Inj
   intro abar abar'
   induction abar, abar' using Quotient.inductionOn₂ with | _ a a'
   refine fun ha ↦ Quotient.sound ?_
-  have : (⟦(a.hom ≫ f : Over Q)⟧ : Quotient (setoid Q)) = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
+  have : (⟦(a.hom ≫ f : Over Q)⟧ : Quotient (setoid Q)) = ⟦↑(a'.hom ≫ f)⟧ := by convert!
+    ha
   have ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
   exact ⟨R, p, q, ep, Eq, (cancel_mono f).1 <| by
     simp only [Category.assoc]
@@ -352,6 +354,7 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
   fun h => by simp [over_coe_def, pseudoApply_mk', h]
 

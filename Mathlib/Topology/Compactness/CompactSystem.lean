@@ -172,7 +172,7 @@ theorem isCompactSystem_isCompact_isClosed (α : Type*) [TopologicalSpace α] :
 /-- In a `T2Space` the set of compact sets is a compact system. -/
 theorem isCompactSystem_isCompact (α : Type*) [TopologicalSpace α] [T2Space α] :
     IsCompactSystem {s : Set α | IsCompact s} := by
-  convert isCompactSystem_isCompact_isClosed α with s
+  convert! isCompactSystem_isCompact_isClosed α with s
   simpa using IsCompact.isClosed
 
 /-- The set of sets which are either compact and closed, or `univ`, is a compact system. -/

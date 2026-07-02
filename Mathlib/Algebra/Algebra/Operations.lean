@@ -367,6 +367,16 @@ lemma restrictScalars_pow {A B C : Type*} [Semiring A] [Semiring B]
   | n + 2, _ => by
     simp [Submodule.pow_succ (n := n + 1), restrictScalars_mul, restrictScalars_pow n.succ_ne_zero]
 
+instance instIsReduced [IsReduced A] : IsReduced (Submodule R A) where
+  eq_zero M hM := by
+    rw [Submodule.zero_eq_bot, Submodule.eq_bot_iff]
+    rintro m hm
+    obtain ⟨n, hn⟩ := hM
+    exact eq_zero_of_pow_eq_zero <| (M ^ n).eq_bot_iff.mp hn _ (pow_mem_pow M hm n)
+
+theorem pow_eq_bot [IsReduced A] {M : Submodule R A} {n : ℕ} (hn : n ≠ 0) :
+    M ^ n = ⊥ ↔ M = ⊥ := by refine ⟨eq_zero_of_pow_eq_zero, by aesop⟩
+
 end Module
 
 variable {ι : Sort uι}
@@ -902,7 +912,7 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
   · rintro hx
     refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
-    convert xz_mem
+    convert! xz_mem
     apply h.injective
     rw [map_mul, h.apply_symm_apply, hxz]
 
