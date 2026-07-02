@@ -557,7 +557,7 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
   dsimp [functor]
   simp only [Subtype.forall, shrinkYonedaObjObjEquiv.forall_congr_left, Equiv.apply_symm_apply]
   congr!
-  simp [Equiv.subtypeEquiv]
+  simp
 
 /--
 If `P` is a sheaf for the sieve `S` on `X`, a natural transformation from `S` (viewed as a functor)
