@@ -133,10 +133,7 @@ theorem adjoin_le_integralClosure {x : A} (hx : IsIntegral R x) :
 theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
     S ≤ integralClosure R A ↔ Algebra.IsIntegral R S :=
   SetLike.forall.symm.trans <|
-    (forall_congr' fun x =>
-      show IsIntegral R (algebraMap S A x) ↔ IsIntegral R x from
-        isIntegral_algebraMap_iff Subtype.coe_injective).trans
-      Algebra.isIntegral_def.symm
+    (forall_congr' fun _ ↦ isIntegral_algebraMap_iff).trans Algebra.isIntegral_def.symm
 
 theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x) :
     Algebra.IsIntegral R (adjoin R S) :=
@@ -353,8 +350,9 @@ variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
 variable (R B)
 
-protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsIntegral R x :=
-  (isIntegral_algebraMap_iff (algebraMap_injective A R B)).mp <|
+protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsIntegral R x := by
+  have := faithfulSMul R A B
+  exact (isIntegral_algebraMap_iff).mp <|
     show IsIntegral R (algebraMap A B x) from isIntegral_iff.mpr ⟨x, rfl⟩
 
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=

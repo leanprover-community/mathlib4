@@ -96,8 +96,7 @@ theorem IsGaloisGroup.of_isFractionRing [hGKL : IsGaloisGroup G K L]
   · obtain ⟨b, hb⟩ := hGKL.isInvariant.isInvariant (algebraMap B L x)
       (by simpa [← algebraMap.coe_smul'])
     have hx : IsIntegral A (algebraMap B L x) := (Algebra.IsIntegral.isIntegral x).algebraMap
-    rw [← hb, isIntegral_algebraMap_iff (algebraMap K L).injective,
-      IsIntegrallyClosedIn.isIntegral_iff] at hx
+    rw [← hb, isIntegral_algebraMap_iff, IsIntegrallyClosedIn.isIntegral_iff] at hx
     obtain ⟨a, rfl⟩ := hx
     exact ⟨a, by rwa [hc, IsFractionRing.coe_inj] at hb⟩
 

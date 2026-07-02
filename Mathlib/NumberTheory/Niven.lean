@@ -29,7 +29,7 @@ variable {α R : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
 
 @[simp]
 theorem ratCast_iff : IsIntegral ℤ (q : α) ↔ IsIntegral ℤ q :=
-  isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective ℚ α)
+  isIntegral_algebraMap_iff (A := ℚ)
 
 theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = q) ↔ ∃ k : ℤ, x = k := by
   refine ⟨?_, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
@@ -93,12 +93,12 @@ namespace Real
 
 /-- `2 sin(q * π)` for `q : ℚ` is integral over `ℤ`, using the real `sin` function. -/
 theorem isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) :=
-  isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
+  isIntegral_algebraMap_iff (B := ℂ) |>.mp <| by
     simp [Complex.isIntegral_two_mul_sin_rat_mul_pi]
 
 /-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the real `cos` function. -/
 theorem isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) :=
-  isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
+  isIntegral_algebraMap_iff (B := ℂ) |>.mp <| by
     simp [Complex.isIntegral_two_mul_cos_rat_mul_pi]
 
 /-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `sin` function. -/

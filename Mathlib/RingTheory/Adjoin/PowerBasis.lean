@@ -29,10 +29,8 @@ where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     Basis (Fin (minpoly K x).natDegree) K (K[(x : S)]) := by
   have hST : Function.Injective (algebraMap (K[(x : S)]) S) := Subtype.coe_injective
-  have hx' :
-    IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : K[(x : S)]) := by
-    apply (isIntegral_algebraMap_iff hST).mp
-    convert! hx
+  have hx' : IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : K[(x : S)]) :=
+    isIntegral_algebraMap_iff.mp hx
   apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ))
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : K[x])
