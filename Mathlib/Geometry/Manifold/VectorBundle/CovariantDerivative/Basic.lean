@@ -110,24 +110,36 @@ is `C^k`.
 class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] (k : ℕ∞ω)
     (cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x))
     (u : Set M) where
-  contMDiff : ∀ {σ : Π x : M, V x}, CMDiff[u] (k + 1) (T% σ) →
+  contMDiff : ∀ {σ : Π x : M, V x} {x}, x ∈ u → CMDiffAt[u] (k + 1) (T% σ) x →
     letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
-    CMDiff[u] k covσ
+    CMDiffAt[u] k covσ x
+  -- contMDiff : ∀ {σ : Π x : M, V x}, CMDiff[u] (k + 1) (T% σ) →
+  --  letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+  --  CMDiff[u] k covσ
     -- TODO elaborator not working here: want to use `T% (cov σ)`
+
+-- TODO: think about this version!
+lemma ContMDiffCovariantDerivativeOn.contMDiffAt_of_isOpen (k : ℕ∞ω)
+    [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
+    {u : Set M} {x : M} (ht : IsOpen u) (hx : x ∈ u)
+    (hcov : ContMDiffCovariantDerivativeOn F k cov u)
+    {σ : Π x : M, V x} (hσ : CMDiffAt (k + 1) (T% σ) x) :
+    letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+    CMDiffAt k covσ x :=
+  (hcov.contMDiff hx hσ.contMDiffWithinAt).contMDiffAt (ht.mem_nhds hx)
+
+lemma ContMDiffCovariantDerivativeOn.contMDiffOn (k : ℕ∞ω) [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
+    {u : Set M} (hcov : ContMDiffCovariantDerivativeOn F k cov u)
+    {σ : Π x : M, V x} (hσ : CMDiff[u] (k + 1) (T% σ)) :
+    letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+    CMDiff[u] k covσ :=
+  fun x hx ↦ hcov.contMDiff hx (hσ x hx)
 
 variable {F}
 
 namespace IsCovariantDerivativeOn
-
--- TODO: think about this version!
-lemma contMDiffAt (k : ℕ∞ω) [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)} {s t : Set M} {x : M} -- hx : x ∈ t ?
-    (hcov : IsCovariantDerivativeOn F cov s)
-    (hov' : ContMDiffCovariantDerivativeOn F k cov t)
-    {σ : Π x : M, V x} (hσ : CMDiffAt[t] (k + 1) (T% σ) x) :
-    letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
-    CMDiffAt[t] k covσ x := by
-  sorry
 
 /-! ### Changing set
 
@@ -291,10 +303,10 @@ lemma _root_.ContMDiffCovariantDerivativeOn.affine_combination [IsManifold I 1 M
     (Hcov : ContMDiffCovariantDerivativeOn F n cov u)
     (Hcov' : ContMDiffCovariantDerivativeOn F n cov' u) :
     ContMDiffCovariantDerivativeOn F n (fun σ ↦ (f • (cov σ)) + (1 - f) • (cov' σ)) u where
-  contMDiff hσ := by
-    apply ContMDiffOn.add_section
-    · exact hf.smul_section <| Hcov.contMDiff hσ
-    · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hσ
+  contMDiff {σ x} hx hσ := by
+    apply ContMDiffWithinAt.add_section
+    · exact (hf x hx).smul_section <| Hcov.contMDiff hx hσ
+    · exact (contMDiffWithinAt_const.sub (hf x hx)).smul_section <| Hcov'.contMDiff hx hσ
 
 /-- A finite affine combination of covariant derivatives is a covariant derivative. -/
 lemma finite_affine_combination {ι : Type*} {s : Finset ι}
@@ -324,9 +336,8 @@ lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifol
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivativeOn F n (cov i) u)
     {f : ι → M → 𝕜} (hf : ∀ i ∈ s, CMDiff[u] n (f i)) :
     ContMDiffCovariantDerivativeOn F n (fun σ x ↦ ∑ i ∈ s, (f i x) • (cov i) σ x) u where
-  contMDiff {σ} hσ := by
-    simpa using ContMDiffOn.sum_section
-      (fun i hi ↦ (hf i hi).smul_section <| (hcov i hi).contMDiff hσ)
+  contMDiff {_ x} hx hσ := ContMDiffWithinAt.sum_section
+    (fun i hi ↦ (hf i hi x hx).smul_section ((hcov i hi).contMDiff hx hσ))
 
 /-- Adding a one-form taking values in the endomorphisms of the vector bundle to a covariant
   derivative gives a covariant derivative. -/
