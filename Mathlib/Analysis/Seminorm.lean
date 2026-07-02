@@ -183,10 +183,10 @@ theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
   rfl
 
 instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
+  DFunLike.coe_injective.addMonoid _ rfl coe_add (fun _ _ => by rfl) fun _ _ => by rfl
 
 instance instAddCommMonoid : AddCommMonoid (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.addCommMonoid _ rfl coe_add fun _ _ => by rfl
+  DFunLike.coe_injective.addCommMonoid _ rfl coe_add (fun _ _ => by rfl) fun _ _ => by rfl
 
 instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
