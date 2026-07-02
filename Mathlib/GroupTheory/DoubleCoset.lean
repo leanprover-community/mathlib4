@@ -55,6 +55,14 @@ lemma doubleCoset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doubleCoset
     mul_assoc, mul_assoc, Subgroup.singleton_mul_subgroup hk, ← mul_assoc, ← mul_assoc,
     Subgroup.subgroup_mul_singleton hh]
 
+lemma doubleCoset_mul_left {H : Subgroup G} (K : Subgroup G) {h : G} (hh : h ∈ H) (a : G) :
+    doubleCoset (h * a) H K = doubleCoset a H K :=
+  doubleCoset_eq_of_mem (mem_doubleCoset.mpr ⟨h, hh, 1, K.one_mem, (mul_one _).symm⟩)
+
+lemma doubleCoset_mul_right (H : Subgroup G) {K : Subgroup G} {k : G} (hk : k ∈ K) (a : G) :
+    doubleCoset (a * k) H K = doubleCoset a H K :=
+  doubleCoset_eq_of_mem (mem_doubleCoset.mpr ⟨1, H.one_mem, k, hk, by rw [one_mul]⟩)
+
 lemma mem_doubleCoset_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doubleCoset a H K) (doubleCoset b H K)) : b ∈ doubleCoset a H K := by
   rw [Set.not_disjoint_iff] at h
@@ -190,6 +198,26 @@ lemma doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, inv_mul_cancel_right]
 
 open Quotient QuotientGroup
+
+/-- A double coset `HaK` is the union of the left cosets `(h * a) • K` where `h` ranges over
+representatives of the quotient of `H` by the stabiliser `H ∩ aKa⁻¹`. -/
+lemma doubleCoset_eq_iUnion_leftCosets (H K : Subgroup G) (a : G) :
+    doubleCoset a H K =
+      ⋃ i : H ⧸ (ConjAct.toConjAct a • K).subgroupOf H, ((i.out : G) * a) • (K : Set G) := by
+  ext x
+  simp only [Set.mem_iUnion, mem_doubleCoset, mem_leftCoset_iff, SetLike.mem_coe]
+  constructor
+  · rintro ⟨h, hh, k, hk, rfl⟩
+    refine ⟨QuotientGroup.mk ⟨h, hh⟩, ?_⟩
+    obtain ⟨n, hn⟩ := QuotientGroup.mk_out_eq_mul ((ConjAct.toConjAct a • K).subgroupOf H) ⟨h, hh⟩
+    have hn' : a⁻¹ * ((n : H) : G) * a ∈ K :=
+      Subgroup.mem_conjAct_pointwise_smul_iff.mp (Subgroup.mem_subgroupOf.mp n.2)
+    rw [hn, show (((⟨h, hh⟩ : H) * (n : H) : H) : G) = h * ((n : H) : G) from rfl,
+      show (h * ((n : H) : G) * a)⁻¹ * (h * a * k) = (a⁻¹ * ((n : H) : G) * a)⁻¹ * k by
+        simp [mul_assoc]]
+    exact K.mul_mem (K.inv_mem hn') hk
+  · rintro ⟨i, hx⟩
+    exact ⟨(i.out : G), i.out.2, ((i.out : G) * a)⁻¹ * x, hx, (mul_inv_cancel_left _ _).symm⟩
 
 lemma left_bot_eq_left_quot (H : Subgroup G) :
     Quotient (⊥ : Subgroup G) (H : Set G) = (G ⧸ H) := by
