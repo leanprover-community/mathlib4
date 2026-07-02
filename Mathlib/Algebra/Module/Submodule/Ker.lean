@@ -197,8 +197,8 @@ theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective 
 alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
 
 @[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
-    Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
-  rw [← LinearMap.ker_eq_bot]
+    Injective (f.domRestrict S) ↔ Disjoint S (LinearMap.ker f) := by
+  rw [disjoint_iff, ← LinearMap.ker_eq_bot]
   refine ⟨fun h ↦ le_bot_iff.1 ?_, fun h ↦ le_bot_iff.1 ?_⟩
   · intro x ⟨hx, h'x⟩
     have : ⟨x, hx⟩ ∈ LinearMap.ker (LinearMap.domRestrict f S) := by simpa using h'x
@@ -212,8 +212,7 @@ alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
 @[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {f : M →ₗ[R] M}
     (hf : ∀ x ∈ p, f x ∈ p) :
     Injective (f.restrict hf) ↔ Disjoint p (ker f) := by
-  rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
-    disjoint_iff]
+  rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff]
 
 end Ring
 
