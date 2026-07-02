@@ -26,25 +26,21 @@ nonstandard definition.
 
 @[expose] public section
 
-open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
-  CategoryTheory
 namespace AlgebraicGeometry
 
-open CategoryTheory
+open CategoryTheory Set Function
 
 universe u v
 variable {X Y : Scheme.{u}} {R : Type*}
 
 /--
 Algebraic cycle on a scheme `X` with coefficients in a type `Z` is just a function from `X` to `Z`
-with locally finite support (see the module docstring for more details).
-
-Note: currently this is an abbrev to save some effort in duplicating API. This seems fine for now,
-but be aware of this if there is ever an instance clash involving algebraic cycles.
+with locally finite support.
+(see the module docstring for more details).
 -/
 @[stacks 02QR]
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
-  Function.locallyFinsupp X R
+    Function.locallyFinsupp X R
 
 variable (f : X ⟶ Y)
 
@@ -54,7 +50,8 @@ section restrict
 variable [Zero R] (D : AlgebraicCycle X R) (t : Set X)
 /--
 Restriction of an algebraic cycle to some set. This is distinct from `Function.locallyFinsuppWithin`
-because here we get something which is still just a locally finsupp function on the whole space.
+because here we get something which is locally of finite support on the whole space rather than just
+within the set we're restricting to.
 -/
 noncomputable
 def restrict : AlgebraicCycle X R where
@@ -93,24 +90,10 @@ lemma restrict_eqOn_compl : Set.EqOn (D.restrict t) 0 tᶜ := by
 lemma restrict_eq_zero_of_eq_zero {z : X} (hD : D z = 0) : (D.restrict t) z = 0 := by
   by_cases o : z ∈ t <;> simp_all
 
-variable {D t}
-lemma restrict_support_subset_support : (D.restrict t).support ⊆ D.support := by
-  simp_all only [Function.support_subset_iff, ne_eq, Function.mem_support]
-  intro x hx
-  contrapose hx
-  simp_all
-
-lemma restrict_support_subset : (D.restrict t).support ⊆ t := by
-  intro z
-  by_cases o : z ∈ t <;> simp_all
-
-lemma restrict_support_of_subset {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R}
-    {t s : Set X} (h : D.support ⊆ s) : (D.restrict t).support ⊆ s :=
-  Subset.trans restrict_support_subset_support h
-
-lemma restrict_support_subset_inter {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R}
-    {t s : Set X} (h : D.support ⊆ s) : (D.restrict t).support ⊆ s ∩ t :=
-  subset_inter_iff.mpr ⟨Subset.trans restrict_support_subset_support h, restrict_support_subset⟩
+@[simp]
+lemma restrict_support : (D.restrict t).support = D.support ∩ t := by
+  ext z
+  simp [restrict, And.comm]
 
 @[simp]
 lemma restrict_univ {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R} :
@@ -123,8 +106,7 @@ lemma restrict_subset {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle 
 
 end restrict
 
-variable (f : X ⟶ Y) [Semiring R] (c : AlgebraicCycle X R) (x : X) (z : Y)
-namespace AlgebraicCycle
+variable [Semiring R] (c : AlgebraicCycle X R)
 
 /--
 Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the
@@ -143,26 +125,28 @@ dimension is `Order.height`, and the most common notion of codimension is `Order
 more sophisticated notions exist in the literature which are useful when sufficient
 equidimensionality hypotheses cannot be assumed.
 -/
+@[stacks 02R3]
 noncomputable
-def pushforward [QuasiCompact f] {N : Type*} [DecidableEq N] (c : AlgebraicCycle X R)
-    (wx : X → N) (wy : Y → N) : AlgebraicCycle Y R :=
-  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) c
-  f.isSpectralMap (f.preimageSupportFinite c)
+def map [QuasiCompact f] {N : Type*} [DecidableEq N]
+    (wx : X → N) (wy : Y → N) (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
+  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapCoeff f wx wy ·) f.isSpectralMap c
 
-lemma homgeneous_ext {R : Type*} [Zero R] {D₁ D₂ : AlgebraicCycle X R}
-    {t : Set X} (hD₁ : D₁.support ⊆ t) (hD₂ : D₂.support ⊆ t)
-    (h : ∀ a ∈ t, D₁ a = D₂ a) : D₁ = D₂ :=
-  have h' : ∀ a, D₁ a = D₂ a := by
-    intro a
-    by_cases o : a ∈ t
-    · exact h a o
-    rw [support_subset_iff] at hD₁ hD₂
-    specialize hD₁ a
-    specialize hD₂ a
-    simp_all
-  DFunLike.ext _ _ h'
+lemma map_apply [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
+    (c : AlgebraicCycle X R) (y : Y) :
+  map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapCoeff f wx wy x) := rfl
 
-lemma homogeneous_le_iff {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : AlgebraicCycle X R}
+@[simp]
+lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
+    map (𝟙 _) wx wx c = c := by
+  apply Function.locallyFinsupp.map_id
+  simp [mapCoeff]
+
+@[ext]
+lemma ext {R : Type*} [Zero R] {D₁ D₂ : AlgebraicCycle X R}
+    (h : ∀ a ∈ D₁.support ∪ D₂.support, D₁ a = D₂ a) : D₁ = D₂ :=
+  DFunLike.ext' <| ext_iff_support_union.mpr h
+
+lemma le_iff_of_support_subset {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : AlgebraicCycle X R}
     {t : Set X} (hD₁ : D₁.support ⊆ t) (hD₂ : ∀ z ∈ tᶜ, D₂ z ≥ 0) :
     D₁ ≤ D₂ ↔ ∀ z ∈ t, D₁ z ≤ D₂ z := by
   peel with z
@@ -176,17 +160,5 @@ lemma homogeneous_le_iff {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : Algebrai
   specialize hD₁ p
   contradiction
 
-end AlgebraicCycle
-@[stacks 02R3]
-noncomputable
-def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
-    (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
-  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapCoeff f wx wy ·) f.isSpectralMap c
-
-@[simp]
-lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
-    map (𝟙 _) wx wx c = c := by
-  apply Function.locallyFinsupp.map_id
-  simp [mapCoeff]
 
 end AlgebraicGeometry.AlgebraicCycle

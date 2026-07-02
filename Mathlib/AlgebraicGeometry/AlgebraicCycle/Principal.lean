@@ -36,7 +36,7 @@ lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionF
   by_cases hf : f = 0
   · use ⊤
     simp [hf]
-  obtain ⟨U, hU, g, (hUne : Nonempty U), hgf, hg⟩ := exists_isUnit_germ_eq f hf
+  obtain ⟨U, hU, g, (hUne : Nonempty U), hgf, hg⟩ := exists_isUnit_germ_eq X f hf
   obtain ⟨W, hWa, hzW, -⟩ := exists_isAffineOpen_mem_and_subset (x := z) (U := ⊤) (by simp)
   have : IsNoetherianRing Γ(X, W) := IsLocallyNoetherian.component_noetherian ⟨W, hWa⟩
   have : NoetherianSpace W.1 := noetherianSpace_of_isAffineOpen W hWa
@@ -58,7 +58,9 @@ lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionF
     by_contra!
     have := ord_eq_zero_of_coheight_neq_one this f
     contradiction
-  refine ⟨⟨hxW, fun a ↦ hxsup (hgf ▸ ord_of_isUnit hg this a)⟩, this⟩
+  refine ⟨⟨hxW, fun a ↦ hxsup ?_⟩, this⟩
+  rw [← hgf]
+  exact ord_of_isUnit hg this a
 
 /--
 On an locally Noetherian integral scheme, given `f : X.functionField` and `hf : x ≠ 0`,
@@ -94,12 +96,15 @@ theorem div_support [IsIntegral X] [IsLocallyNoetherian X] {f : X.functionField}
 
 theorem div_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.Opens} [Nonempty U]
     {g : Γ(X, U)} (hg : IsUnit g) : (div (X.germToFunctionField U g)).restrict U = 0 := by
-  apply AlgebraicCycle.homgeneous_ext (AlgebraicCycle.restrict_support_subset_inter div_support)
-    (by simp)
-  intro z hz
-  simp_all only [mem_inter_iff, mem_setOf_eq, SetLike.mem_coe, AlgebraicCycle.restrict_eq_of_mem,
-    Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply]
-  apply ord_of_isUnit hg hz.1 hz.2
+  ext z hz
+  have : coheight z = 1 := by
+    apply div_support (f := (X.germToFunctionField U g))
+    simp_all
+  simp_all only [AlgebraicCycle.restrict_support, mem_union, mem_inter_iff, Function.mem_support,
+    div_eq_ord, ne_eq, SetLike.mem_coe, Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply,
+    not_true_eq_false, or_false, AlgebraicCycle.restrict_eq_of_mem]
+  have := ord_of_isUnit hg this hz.2
+  exact hz.1 this
 
 lemma div_eq_zero_of_isUnit_top
     [IsIntegral X] [IsLocallyNoetherian X] {g : Γ(X, ⊤)} (hg : IsUnit g) :
