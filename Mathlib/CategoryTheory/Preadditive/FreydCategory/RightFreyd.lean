@@ -214,22 +214,16 @@ def CandidateCokernelCofork : CokernelCofork ((quotient V).map f) :=
 set_option backward.isDefEq.respectTransparency false in
 /-- For `f` a morphism in `Arrow V`, the cokernel cofork of `(quotient V).map f` constructed
 in `CandidateCokernelCofork` is a colimit cofork. -/
-def candidateCokernelCoforkIsCokernel : IsColimit (CandidateCokernelCofork f) where
-  desc s := desc f (CokernelCofork.condition s)
-  fac s j :=
-    match j with
-    | WalkingParallelPair.zero => by simp
-    | WalkingParallelPair.one => π_desc f (CokernelCofork.condition s)
-  uniq s m eq :=
-    (cancel_epi ((quotient V).map (Candidate.π f))).mp ((eq WalkingParallelPair.one).trans
-    (π_desc f (CokernelCofork.condition s)).symm)
+def candidateCokernelCoforkIsCokernel : IsColimit (CandidateCokernelCofork f) :=
+  CokernelCofork.IsColimit.ofπ' ((quotient V).map (Candidate.π f))
+    (eq_of_rightHomotopy _ _ (Candidate.condition f)) (fun _ eq ↦ ⟨desc f eq, π_desc f eq⟩)
 
 /-- The category `RightFreyd V` has all cokernels if `V` has finite products. -/
 instance : HasCokernels (RightFreyd V) where
   has_colimit {X Y} f := {
     exists_colimit := by
       obtain ⟨f, rfl⟩ := (quotient V).map_surjective f
-      exact Nonempty.intro ⟨CandidateCokernelCofork f, candidateCokernelCoforkIsCokernel f⟩ }
+      exact Nonempty.intro ⟨_, candidateCokernelCoforkIsCokernel f⟩ }
 
 end RightFreyd
 
