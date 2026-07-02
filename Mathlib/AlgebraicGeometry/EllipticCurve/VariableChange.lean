@@ -207,6 +207,25 @@ lemma variableChange_b₈ : (C • W).b₈ = C.u⁻¹ ^ 8 *
     variableChange_a₄, variableChange_a₆]
   ring1
 
+lemma variableChange_r_relation :
+    C.r ^ 4 - W.b₄ * C.r ^ 2 - ((C.u : R) ^ 6 * (C • W).b₆ + 2 * W.b₆) * C.r -
+      (W.b₈ - (C.u : R) ^ 8 * (C • W).b₈) = 0 := by
+  rw [variableChange_b₆, variableChange_b₈]
+  grind [C.u.mul_inv]
+
+lemma variableChange_s_relation :
+    C.s ^ 2 + W.a₁ * C.s +
+      ((C.u : R) ^ 2 * (C • W).a₂ - W.a₂ - 3 * C.r) = 0 := by
+  rw [variableChange_a₂]
+  grind [C.u.mul_inv]
+
+lemma variableChange_t_relation :
+    C.t ^ 2 + (W.a₃ + C.r * W.a₁) * C.t +
+      ((C.u : R) ^ 6 * (C • W).a₆ - W.a₆ - C.r * W.a₄ - C.r ^ 2 * W.a₂ -
+        C.r ^ 3) = 0 := by
+  rw [variableChange_a₆]
+  grind [C.u.mul_inv]
+
 lemma variableChange_c₄ : (C • W).c₄ = C.u⁻¹ ^ 4 * W.c₄ := by
   simp only [c₄, variableChange_b₂, variableChange_b₄]
   ring1
