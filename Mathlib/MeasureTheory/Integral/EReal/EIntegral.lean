@@ -354,8 +354,8 @@ and negative parts of the function. -/
 lemma eintegral_eq_posPartFun_sub_negPartFun (f : α → EReal) :
     ∫ᵉ x, f x ∂μ = ∫ᵉ x, f⁺ x ∂μ - ∫ᵉ x, f⁻ x ∂μ := by
   rw [← eintegral_sub_of_nonneg_of_eq_zero (posPart_nonneg f) (negPart_nonneg f)
-      (posPartFun_eq_zero_or_negPartFun_eq_zero f)]
-  simp_rw [← posPartFun_sub_negPartFun f]
+    (EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero f)]
+  simp_rw [← EReal.posPart_fun_sub_negPart_fun_apply f]
 
 lemma EIntegrable.eintegral_posPartFun_ne_top_or_eintegral_negPartFun_ne_top
     (hf : EIntegrable f μ) :
@@ -434,8 +434,8 @@ lemma eintegral_real_const_mul_of_nonneg (c : ℝ) (hf : ∀ x, 0 ≤ f x) :
 
 lemma eintegral_real_const_mul (c : ℝ) (hf : EIntegrable f μ) :
     ∫ᵉ x, c * f x ∂μ = c * ∫ᵉ x, f x ∂μ := by
-  simp_rw [eintegral_eq_posPartFun_sub_negPartFun f, ← posPartFun_sub_negPartFun f,
-    EReal.mul_sub_of_eq_zero (posPartFun_eq_zero_or_negPartFun_eq_zero f _)]
+  simp_rw [eintegral_eq_posPartFun_sub_negPartFun f, ← EReal.posPart_fun_sub_negPart_fun_apply f,
+    EReal.mul_sub_of_eq_zero (EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero f _)]
   rcases le_total 0 c with hc | hc
   · have hc' : 0 ≤ (c : EReal) := mod_cast hc
     rw [eintegral_sub_of_nonneg_of_eq_zero (fun x ↦ ?_) (fun x ↦ ?_) (fun x ↦ ?_),
@@ -446,7 +446,7 @@ lemma eintegral_real_const_mul (c : ℝ) (hf : EIntegrable f μ) :
       positivity
     · have : 0 ≤ f⁻ x := negPart_nonneg f x
       positivity
-    · rcases posPartFun_eq_zero_or_negPartFun_eq_zero f x with h | h <;> simp [h]
+    · rcases EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero f x with h | h <;> simp [h]
   · have hc' : (c : EReal) ≤ 0 := mod_cast hc
     have h_sub x : c * f⁺ x - c * f⁻ x = (-c) * f⁻ x - (-c) * f⁺ x := by
       rw [EReal.neg_mul, EReal.neg_mul, sub_eq_add_neg, sub_eq_add_neg, add_comm, neg_neg]
@@ -460,7 +460,7 @@ lemma eintegral_real_const_mul (c : ℝ) (hf : EIntegrable f μ) :
       rw [EReal.mul_nonneg_iff]
       simp [hc]
     · intro x
-      rcases posPartFun_eq_zero_or_negPartFun_eq_zero f x with h | h <;> simp [h]
+      rcases EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero f x with h | h <;> simp [h]
     simp_rw [← EReal.coe_neg]
     rw [eintegral_real_const_mul_of_nonneg _ (by simp),
       eintegral_real_const_mul_of_nonneg _ (by simp)]
@@ -665,14 +665,16 @@ lemma eintegral_add (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     ∫ᵉ x, f x + g x ∂μ = ∫ᵉ x, f x ∂μ + ∫ᵉ x, g x ∂μ := by
   have hf_add_g : ∀ x, f x + g x = (f⁺ x + g⁺ x) - (f⁻ x + g⁻ x) := by
     intro x
-    rw [← posPartFun_sub_negPartFun f x, ← posPartFun_sub_negPartFun g x, EReal.add_sub_add]
+    rw [← EReal.posPart_fun_sub_negPart_fun_apply f x,
+      ← EReal.posPart_fun_sub_negPart_fun_apply g x, EReal.add_sub_add]
     · exact ne_bot_of_le_ne_bot (by simp) (negPart_nonneg f x)
     · exact ne_bot_of_le_ne_bot (by simp) (negPart_nonneg g x)
-  simp_rw [hf_add_g, ← posPartFun_sub_negPartFun f, ← posPartFun_sub_negPartFun g]
+  simp_rw [hf_add_g, ← EReal.posPart_fun_sub_negPart_fun_apply f,
+    ← EReal.posPart_fun_sub_negPart_fun_apply g]
   rw [eintegral_sub_of_nonneg_of_eq_zero (by simp) (by simp)
-      (posPartFun_eq_zero_or_negPartFun_eq_zero f),
+      (EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero f),
     eintegral_sub_of_nonneg_of_eq_zero (by simp) (by simp)
-      (posPartFun_eq_zero_or_negPartFun_eq_zero g)]
+      (EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero g)]
   have : ∫ᵉ x, f⁺ x ∂μ - ∫ᵉ x, f⁻ x ∂μ + (∫ᵉ x, g⁺ x ∂μ - ∫ᵉ x, g⁻ x ∂μ)
       = ∫ᵉ x, f⁺ x ∂μ + ∫ᵉ x, g⁺ x ∂μ - (∫ᵉ x, f⁻ x ∂μ + ∫ᵉ x, g⁻ x ∂μ) := by
     rw [EReal.add_sub_add]
@@ -682,8 +684,8 @@ lemma eintegral_add (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     ← eintegral_add_of_nonneg (by fun_prop) (by simp) (by simp),
     ← eintegral_sub_of_nonneg _ _ (by fun_prop) (by fun_prop)]
   · have h_le x : min (f⁺ x + g⁺ x) (f⁻ x + g⁻ x) ≤ min (f⁺ x) (g⁻ x) + min (f⁻ x) (g⁺ x) := by
-      rcases posPartFun_eq_zero_or_negPartFun_eq_zero f x with hf | hf
-        <;> rcases posPartFun_eq_zero_or_negPartFun_eq_zero g x with hg | hg
+      rcases EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero f x with hf | hf
+        <;> rcases EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero g x with hg | hg
         <;> simp [hf, hg]
     refine ne_of_lt ?_
     refine lt_of_le_of_lt (eintegral_mono h_le) ?_
@@ -746,7 +748,8 @@ lemma eintegral_add' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     simp at hg_ne_top
   have hf_add_g : ∀ x, f x + g x = (f⁺ x + g⁺ x) - (f⁻ x + g⁻ x) := by
     intro x
-    rw [← posPartFun_sub_negPartFun f x, ← posPartFun_sub_negPartFun g x, EReal.add_sub_add]
+    rw [← EReal.posPart_fun_sub_negPart_fun_apply f x,
+      ← EReal.posPart_fun_sub_negPart_fun_apply g x, EReal.add_sub_add]
     · exact ne_bot_of_le_ne_bot (b := 0) (by simp) (by simp)
     · exact ne_bot_of_le_ne_bot (b := 0) (by simp) (by simp)
   simp_rw [hf_add_g]
@@ -758,8 +761,8 @@ lemma eintegral_add' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     _ = ∫ᵉ x, f⁻ x ∂μ := by rw [hf₂_int]
     _ ≤ ∫ᵉ x, f⁻ x + g⁻ x ∂μ := eintegral_mono (fun _ ↦ le_add_of_nonneg_right (by simp))
   · have h_le x : min (f⁺ x + g⁺ x) (f⁻ x + g⁻ x) ≤ min (f⁺ x) (g⁻ x) + min (f⁻ x) (g⁺ x) := by
-      rcases posPartFun_eq_zero_or_negPartFun_eq_zero f x with hf | hf <;>
-        rcases posPartFun_eq_zero_or_negPartFun_eq_zero g x with hg | hg <;>
+      rcases EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero f x with hf | hf <;>
+        rcases EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero g x with hg | hg <;>
         simp [hf, hg]
     refine (lt_of_le_of_lt (eintegral_mono h_le) ?_).ne
     rw [eintegral_add_of_nonneg_ae (by fun_prop) (by fun_prop) (by simp) (by simp)]
