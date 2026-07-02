@@ -747,6 +747,9 @@ theorem top_prod (s : Subring S) : (⊤ : Subring R).prod s = s.comap (RingHom.s
 theorem top_prod_top : (⊤ : Subring R).prod (⊤ : Subring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
+
 /-- Product of subrings is isomorphic to their product as rings. -/
 def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
@@ -782,7 +785,7 @@ theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → Subring R}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : Subring R) := by
   simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+    Subsemigroup.coe_iSup_of_directed dir] using! Subsemigroup.isMulCommutative_iSup dir
 
 instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
     {S : ι →o Subring R} [hS : ∀ i, IsMulCommutative (S i)] :
@@ -838,6 +841,11 @@ theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) 
 theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
     (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
   rfl
+
+@[simp]
+theorem range_prodMap {R' S' : Type*} [Ring R'] [Ring S'] (f : R →+* S) (g : R' →+* S') :
+    (f.prodMap g).range = f.range.prod g.range :=
+  SetLike.coe_injective Set.range_prodMap
 
 section eqLocus
 
@@ -1163,5 +1171,5 @@ end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
-  convert! AddSubgroup.zsmul_mem G h k using 1
+  convert AddSubgroup.zsmul_mem G h k
   rw [zsmul_eq_mul]

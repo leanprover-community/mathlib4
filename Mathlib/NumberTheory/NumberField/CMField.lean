@@ -41,7 +41,7 @@ subfield `F` is (isomorphic to) the maximal real subfield `K⁺` of `K`.
 
 * `NumberField.IsCMField.of_isMulCommutative`: A totally complex abelian extension of `ℚ` is CM.
 
-* `IsCyclotomicExtension.Rat.isCMField`: A nontrivial abelian extension of `ℚ` is CM.
+* `IsCyclotomicExtension.Rat.isCMField`: A nontrivial cyclotomic extension of `ℚ` is CM.
 
 ## Implementation note
 
@@ -349,7 +349,7 @@ theorem index_unitsMulComplexConjInv_range_dvd :
     refine this ▸ Subgroup.index_dvd_of_le ?_
     rintro _ ⟨ζ, _, rfl⟩
     exact ⟨ζ, Subtype.ext_iff.mpr (by simp [pow_two])⟩
-  rw [IsCyclic.index_powMonoidHom_range, Nat.gcd_eq_right_iff_dvd, Nat.card_eq_fintype_card]
+  rw [IsCyclic.index_powMonoidHom_range, Nat.gcd_eq_right_iff_dvd]
   exact Even.two_dvd <| even_torsionOrder K
 
 /--
@@ -364,7 +364,6 @@ theorem indexRealUnits_mul_eq :
   convert! (Subgroup.index_map (torsion K) (unitsMulComplexConjInv K)).symm
   · rw [unitsMulComplexConjInv_ker]
   · rw [map_unitsMulComplexConjInv_torsion, IsCyclic.index_powMonoidHom_range, Nat.gcd_eq_right]
-    rw [Nat.card_eq_fintype_card]
     exact even_iff_two_dvd.mp (even_torsionOrder K)
 
 /--
@@ -496,7 +495,7 @@ theorem equivMaximalRealSubfield_apply (x : F) :
 theorem algebraMap_equivMaximalRealSubfield_symm_apply (x : maximalRealSubfield K) :
     algebraMap F K ((CMExtension.equivMaximalRealSubfield F K).symm x) =
       algebraMap (maximalRealSubfield K) K x := by
-  simpa using (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
+  simpa using! (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
 
 end CMExtension
 
@@ -561,7 +560,7 @@ variable (K : Type*) [Field K] [CharZero K]
 
 open IntermediateField in
 /--
-A nontrivial abelian extension of `ℚ` is CM.
+A nontrivial cyclotomic extension of `ℚ` is CM.
 -/
 theorem isCMField {S : Set ℕ} (hS : ∃ n ∈ S, 2 < n) [IsCyclotomicExtension S ℚ K] :
     IsCMField K := by

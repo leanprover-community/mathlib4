@@ -56,6 +56,12 @@ open scoped Classical in
 def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
 
+@[simp]
+theorem toFinset_normalizedFactors [DecidableEq M] :
+    (normalizedFactors a).toFinset = primeFactors a := by
+  unfold primeFactors
+  convert rfl
+
 lemma mem_primeFactors : a ∈ primeFactors b ↔ a ∈ normalizedFactors b := by
   simp only [primeFactors, Multiset.mem_toFinset]
 
@@ -296,6 +302,22 @@ theorem radical_dvd_iff_primeFactors_subset (hb : b ≠ 0) :
   rw [← dvd_radical_iff isRadical_radical hb,
     radical_dvd_radical_iff_primeFactors_subset_primeFactors]
 
+theorem exists_dvd_pow_iff_radical_dvd (ha : a ≠ 0) : (∃ n, a ∣ b ^ n) ↔ radical a ∣ b := by
+  rcases eq_or_ne b 0 with (rfl | hb)
+  · exact ⟨by simp, fun _ ↦ ⟨1, by simp⟩⟩
+  refine ⟨fun ⟨n, hdvd⟩ ↦ ?_, fun h ↦ ⟨normalizedFactors a |>.card, ?_⟩⟩
+  · rcases eq_or_ne n 0 with (rfl | hn)
+    · simp [radical_of_isUnit <| isUnit_of_dvd_one <| pow_zero b ▸ hdvd]
+    grw [radical_dvd_radical hdvd <| pow_ne_zero _ hb, radical_pow b hn, radical_dvd_self]
+  · classical
+    rwa [dvd_iff_normalizedFactors_le_normalizedFactors ha <| pow_ne_zero _ hb,
+      normalizedFactors_pow, Multiset.le_card_smul_iff_subset, ← Multiset.toFinset_subset,
+      toFinset_normalizedFactors, toFinset_normalizedFactors,
+      ← radical_dvd_iff_primeFactors_subset hb]
+
+theorem exists_dvd_radical_self_pow (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n := by
+  rw [exists_dvd_pow_iff_radical_dvd ha]
+
 /-- Radical is multiplicative for relatively prime elements. -/
 theorem radical_mul (hc : IsRelPrime a b) :
     radical (a * b) = radical a * radical b := by
@@ -309,8 +331,7 @@ theorem radical_prod {ι : Type*} {f : ι → M} (s : Finset ι)
   | empty => simp
   | cons i s his ih =>
     simp only [Finset.prod_cons]
-    rw [Finset.coe_cons,
-      Set.pairwise_insert_of_symmetric_of_notMem (symmetric_isRelPrime.comap _) (by simpa)] at h
+    rw [Finset.coe_cons, Set.pairwise_insert_of_symm_of_notMem <| by simpa] at h
     rw [radical_mul, ih h.1]
     exact IsRelPrime.prod_right h.2
 

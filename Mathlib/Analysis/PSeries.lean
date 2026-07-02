@@ -460,7 +460,7 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
       rw [abs_of_pos]
       linarith [lt_of_abs_lt ((abs_neg a).symm ▸ Nat.lt_of_ceil_lt hn)]
   rw [← summable_one_div_nat_rpow, Asymptotics.IsEquivalent.summable_iff_nat]
-  simpa [one_div] using (IsEquivalent.rpow (fun n ↦ by positivity) h_abs).inv
+  simpa [one_div] using! (IsEquivalent.rpow (fun n ↦ by positivity) h_abs).inv
 
 lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℤ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by

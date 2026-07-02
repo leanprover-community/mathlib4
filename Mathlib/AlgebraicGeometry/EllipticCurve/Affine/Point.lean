@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.LinearAlgebra.FreeModule.Norm
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
@@ -127,11 +127,11 @@ lemma basis_apply (n : Fin 2) :
 
 @[simp]
 lemma basis_zero : CoordinateRing.basis W' 0 = 1 := by
-  simpa only [basis_apply] using pow_zero _
+  simpa only [basis_apply] using! pow_zero _
 
 @[simp]
 lemma basis_one : CoordinateRing.basis W' 1 = mk W' Y := by
-  simpa only [basis_apply] using pow_one _
+  simpa only [basis_apply] using! pow_one _
 
 lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1, mk W' Y] := by
   ext n
@@ -271,8 +271,6 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
 
 -- Non-terminal simp, used to be field_simp
 set_option linter.flexible false in
--- see https://github.com/leanprover-community/mathlib4/issues/29041
-set_option linter.unusedSimpArgs false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
@@ -281,7 +279,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
     · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
       rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
       simp [linePolynomial]
-    · simp [field, linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
+    · simp [field, linePolynomial, slope_of_X_ne hx]
       ring1
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
@@ -795,7 +793,7 @@ noncomputable def map : (W'⁄F).Point →+ (W'⁄K).Point where
     by_cases hxy : x₁ = x₂ ∧ y₁ = (W'⁄F).negY x₂ y₂
     · rw [add_of_Y_eq hxy.left hxy.right,
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
-    · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using
+    · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using!
         (add_some fun h ↦ hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩).symm
 
 lemma map_zero : map f (0 : (W'⁄F).Point) = 0 :=

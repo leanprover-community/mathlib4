@@ -6,6 +6,7 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
+public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
 
@@ -62,7 +63,6 @@ lemma ofSubmodule_le_ofSubmodule {S T : Submodule R E} : ofSubmodule S ≤ ofSub
 lemma ofSubmodule_lt_ofSubmodule {S T : Submodule R E} : ofSubmodule S < ofSubmodule T ↔ S < T :=
   .rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as an order embedding. -/
 abbrev ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
   restrictScalarsEmbedding ..
@@ -92,7 +92,6 @@ lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s,
 variable {R E : Type*}
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma neg_ofSubmodule (S : Submodule R E) : -(ofSubmodule S) = ofSubmodule (-S) :=
   neg_restrictScalars S
 
@@ -129,6 +128,11 @@ lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.conv
 @[aesop 90% (rule_sets := [SetLike])]
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
+
+lemma smul_mem_iff {𝕜 M : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [AddCommMonoid M] [Module 𝕜 M] (C : PointedCone 𝕜 M)
+    {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
+  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
 def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
@@ -188,7 +192,6 @@ lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 @[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
 alias subset_span := subset_hull
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma hull_le_span (s : Set E) : hull R s ≤ span R s := span_le_restrictScalars R≥0 R s
 
@@ -281,8 +284,10 @@ variable [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module R E] 
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
-def positive : PointedCone R E :=
-  (ConvexCone.positive R E).toPointedCone ConvexCone.pointed_positive
+@[simps!]
+def positive : PointedCone R E where
+  __ := AddSubmonoid.nonneg E
+  smul_mem' c _ hx := by simpa using smul_nonneg c.property hx
 
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive R E ↔ 0 ≤ x :=
