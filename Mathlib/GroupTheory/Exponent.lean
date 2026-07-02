@@ -530,7 +530,7 @@ theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
   Monoid.exponent_dvd.mpr orderOf_dvd_natCard
 
 variable (G) in
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem Group.primeFactors_exponent_eq_primeFactors_card [Finite G] :
     (Monoid.exponent G).primeFactors = (Nat.card G).primeFactors := by
   refine Nat.primeFactors_mono exponent_dvd_nat_card NeZero.out |>.antisymm fun p hp ↦ ?_
