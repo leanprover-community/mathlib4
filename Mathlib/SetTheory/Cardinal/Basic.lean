@@ -133,7 +133,7 @@ theorem lift_sInf (s : Set Cardinal) : lift.{u, v} (sInf s) = sInf (lift.{u, v} 
 @[simp]
 theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lift.{u, v} (f i) := by
   unfold iInf
-  convert lift_sInf (range f)
+  convert! lift_sInf (range f)
   simp_rw [← comp_apply (f := lift), range_comp]
 
 end Cardinal
@@ -285,7 +285,7 @@ lemma lt_natCast_add_one_iff {n : ℕ} {c : Cardinal} : c < n + 1 ↔ c ≤ n :=
   rw [← Order.lt_succ_iff, succ_natCast]
 
 lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
-  convert natCast_add_one_le_iff
+  convert! natCast_add_one_le_iff
   norm_cast
 
 @[simp]
@@ -877,21 +877,27 @@ theorem mk_strictMono [Finite α] : StrictMono (α := Set α) (mk ∘ (↑)) :=
 theorem mk_strictMonoOn : StrictMonoOn (mk ∘ (↑)) {s : Set α | s.Finite} :=
   fun _ _ _ ↦ card_lt_card_of_right_finite
 
-theorem le_mk_diff_add_mk (S T : Set α) : #S ≤ #(S \ T : Set α) + #T :=
-  (mk_le_mk_of_subset <| subset_diff_union _ _).trans <| mk_union_le _ _
+theorem le_mk_sdiff_add_mk (S T : Set α) : #S ≤ #(S \ T : Set α) + #T :=
+  (mk_le_mk_of_subset <| subset_sdiff_union _ _).trans <| mk_union_le _ _
 
-theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #S := by
-  refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [diff_union_of_subset h]
+@[deprecated (since := "2026-06-03")] alias le_mk_diff_add_mk := le_mk_sdiff_add_mk
+
+theorem mk_sdiff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #S := by
+  refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [sdiff_union_of_subset h]
   exact disjoint_sdiff_self_left
 
-lemma diff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
+@[deprecated (since := "2026-06-03")] alias mk_diff_add_mk := mk_sdiff_add_mk
+
+lemma sdiff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
   rw [← mk_set_ne_zero_iff]
   intro h'
-  exact h.not_ge ((le_mk_diff_add_mk T S).trans (by simp [h']))
+  exact h.not_ge ((le_mk_sdiff_add_mk T S).trans (by simp [h']))
+
+@[deprecated (since := "2026-06-03")] alias diff_nonempty_of_mk_lt_mk := sdiff_nonempty_of_mk_lt_mk
 
 lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := by
   rw [← mk_univ (α := α)] at h
-  simpa [Set.compl_eq_univ_diff] using diff_nonempty_of_mk_lt_mk h
+  simpa [Set.compl_eq_univ_sdiff] using sdiff_nonempty_of_mk_lt_mk h
 
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     #(P ∪ Q : Set α) ≤ ℵ₀ ↔ #P ≤ ℵ₀ ∧ #Q ≤ ℵ₀ := by
@@ -919,7 +925,7 @@ theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → 
 
 theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h : Injective f)
     (h2 : s ⊆ range f) : #(f ⁻¹' s) = #s := by
-  convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
+  convert! mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
 
 @[simp]
 theorem mk_preimage_equiv_lift {β : Type v} (f : α ≃ β) (s : Set β) :
@@ -945,14 +951,14 @@ theorem mk_preimage_of_subset_range (f : α → β) (s : Set β) (h : s ⊆ rang
 theorem mk_subset_ge_of_subset_image_lift {α : Type u} {β : Type v} (f : α → β) {s : Set α}
     {t : Set β} (h : t ⊆ f '' s) : lift.{u} #t ≤ lift.{v} #({ x ∈ s | f x ∈ t } : Set α) := by
   rw [image_eq_range] at h
-  convert mk_preimage_of_subset_range_lift _ _ h using 1
+  convert! mk_preimage_of_subset_range_lift _ _ h using 1
   rw [mk_sep]
   rfl
 
 theorem mk_subset_ge_of_subset_image (f : α → β) {s : Set α} {t : Set β} (h : t ⊆ f '' s) :
     #t ≤ #({ x ∈ s | f x ∈ t } : Set α) := by
   rw [image_eq_range] at h
-  convert mk_preimage_of_subset_range _ _ h using 1
+  convert! mk_preimage_of_subset_range _ _ h using 1
   rw [mk_sep]
   rfl
 
@@ -1053,7 +1059,7 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 
 @[simp]
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
-  convert Cardinal.iSup_of_empty _
+  convert! Cardinal.iSup_of_empty _
   exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr not_lt_zero
 
 /-- The cardinality of a set is an upper-bound for the amount of elements before the set's mex

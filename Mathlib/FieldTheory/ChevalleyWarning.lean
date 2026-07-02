@@ -178,7 +178,7 @@ theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fin
     p ∣ Fintype.card { x : σ → K // eval x f = 0 } := by
   let F : Unit → MvPolynomial σ K := fun _ => f
   have : (∑ i : Unit, (F i).totalDegree) < Fintype.card σ := h
-  convert char_dvd_card_solutions_of_sum_lt p this
+  convert! char_dvd_card_solutions_of_sum_lt p this
   aesop
 
 /-- The **Chevalley–Warning theorem**, binary version.
@@ -191,6 +191,6 @@ theorem char_dvd_card_solutions_of_add_lt {f₁ f₂ : MvPolynomial σ K}
     p ∣ Fintype.card { x : σ → K // eval x f₁ = 0 ∧ eval x f₂ = 0 } := by
   let F : Bool → MvPolynomial σ K := fun b => cond b f₂ f₁
   have : (∑ b : Bool, (F b).totalDegree) < Fintype.card σ := (add_comm _ _).trans_lt h
-  simpa only [Bool.forall_bool] using char_dvd_card_solutions_of_fintype_sum_lt p this
+  simpa only [Bool.forall_bool] using! char_dvd_card_solutions_of_fintype_sum_lt p this
 
 end FiniteField

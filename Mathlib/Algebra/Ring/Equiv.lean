@@ -312,8 +312,6 @@ lemma coe_coe_toMulEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃* S).symm = ⇑e.sy
 @[simp]
 lemma coe_coe_toAddEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃+ S).symm = ⇑e.symm := rfl
 
-@[deprecated (since := "2025-11-05")] alias image_eq_preimage := image_eq_preimage_symm
-
 theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
     e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
 
@@ -703,6 +701,10 @@ theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f 
 theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
   rfl
 
+@[simp]
+theorem coe_toNonUnitalRingHom' (f : R ≃+* S) : ⇑f.toNonUnitalRingHom = f :=
+  rfl
+
 theorem coe_nonUnitalRingHom_inj_iff {R S : Type*} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f g : R ≃+* S) : f = g ↔ (f : R →ₙ+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| NonUnitalRingHom.ext_iff.mp h⟩
@@ -712,12 +714,12 @@ theorem toNonUnitalRingHom_refl :
     (RingEquiv.refl R).toNonUnitalRingHom = NonUnitalRingHom.id R :=
   rfl
 
-@[simp]
+@[deprecated apply_symm_apply (since := "2026-06-16")]
 theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toNonUnitalRingHom (e.symm.toNonUnitalRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 
-@[simp]
+@[deprecated symm_apply_apply (since := "2026-06-16")]
 theorem symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toNonUnitalRingHom (e.toNonUnitalRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
