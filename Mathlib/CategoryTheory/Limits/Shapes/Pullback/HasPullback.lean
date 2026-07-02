@@ -204,8 +204,7 @@ def pushout.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h 
     { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
   ⟨pushout.desc h k w, pushout.inl_desc _ _ _, pushout.inr_desc _ _ _⟩
 
-@[deprecated (since := "2026-06-25")]
-alias CategoryTheory.Limits.pullback.desc' := pushout.desc'
+@[deprecated (since := "2026-06-25")] alias pullback.desc' := pushout.desc'
 
 @[reassoc]
 theorem pullback.condition {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] :
