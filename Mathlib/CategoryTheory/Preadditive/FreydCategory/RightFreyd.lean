@@ -88,9 +88,8 @@ lemma isEpi_of_right_iso [IsIso f.right] : Epi ((quotient V).map f) where
   left_cancellation g₁ g₂ eq := by
     obtain ⟨g₁, rfl⟩ := (quotient V).map_surjective g₁
     obtain ⟨g₂, rfl⟩ := (quotient V).map_surjective g₂
-    apply eq_of_rightHomotopy
     set h : RightHomotopy (f ≫ g₁) (f ≫ g₂) := homotopyOfEq _ _ eq
-    exact ⟨inv f.right ≫ h.hom, by simp [dsimp% h.comm]⟩
+    exact eq_of_rightHomotopy _ _ ⟨inv f.right ≫ h.hom, by simp [dsimp% h.comm]⟩
 
 section Functor
 
