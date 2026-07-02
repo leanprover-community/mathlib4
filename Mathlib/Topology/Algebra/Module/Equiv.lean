@@ -685,7 +685,7 @@ theorem coe_ofContinuousLinearMap' (h₁ h₂) : ⇑(ofContinuousLinearMap' f₁
 
 /-- The inverse of `ofContinuousLinearMap'` is obtained by swapping the order of its parameters. -/
 @[simp]
-theorem ofContinuousLinearMap'_symm (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+theorem symm_ofContinuousLinearMap' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (ofContinuousLinearMap' f₁ f₂ h₁ h₂).symm = ofContinuousLinearMap' f₂ f₁ h₂ h₁ :=
   rfl
 
@@ -713,7 +713,7 @@ theorem equivOfInverse'_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂
   rfl
 
 /-- The inverse of `equivOfInverse'` is obtained by swapping the order of its parameters. -/
-@[simp, deprecated ofContinuousLinearMap'_symm (since := "2026-07-01")]
+@[simp, deprecated symm_ofContinuousLinearMap' (since := "2026-07-01")]
 theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
   rfl
