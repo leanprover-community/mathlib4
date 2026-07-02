@@ -579,11 +579,9 @@ end Transport
 
 section
 
-variable (X Y)
-
 /-- The kernel morphism of a zero morphism is an isomorphism -/
-theorem kernel.ι_of_zero : IsIso (kernel.ι (0 : X ⟶ Y)) :=
-  equalizer.ι_of_self _
+theorem kernel.ι_of_zero {f : X ⟶ Y} [HasKernel f] (eq : f = 0) :
+    IsIso (kernel.ι f) := equalizer.ι_of_eq eq
 
 end
 
@@ -1118,11 +1116,9 @@ end HasImage
 
 section
 
-variable (X Y)
-
 /-- The cokernel of a zero morphism is an isomorphism -/
-theorem cokernel.π_of_zero : IsIso (cokernel.π (0 : X ⟶ Y)) :=
-  coequalizer.π_of_self _
+theorem cokernel.π_of_zero {f : X ⟶ Y} [HasCokernel f] (eq : f = 0) :
+    IsIso (cokernel.π f) := coequalizer.π_of_eq eq
 
 end
 
