@@ -157,20 +157,22 @@ def character (V : FDRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
 
 theorem char_mul_comm (V : FDRep k G) (g : G) (h : G) :
-    V.character (h * g) = V.character (g * h) := Representation.char_mul_comm ..
+    V.character (h * g) = V.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
 
 @[simp]
-theorem char_one (V : FDRep k G) : V.character 1 = Module.finrank k V :=
-  Representation.char_one ..
+theorem char_one (V : FDRep k G) : V.character 1 = Module.finrank k V := by
+  simp only [character, map_one, trace_one]
 
 /-- The character is multiplicative under the tensor product. -/
 @[simp]
-theorem char_tensor (V W : FDRep k G) : (V ⊗ W).character = V.character * W.character :=
-  Representation.char_tensor V.ρ W.ρ
+theorem char_tensor (V W : FDRep k G) : (V ⊗ W).character = V.character * W.character := by
+  ext g; convert! trace_tensorProduct' (V.ρ g) (W.ρ g)
 
 /-- The character of isomorphic representations is the same. -/
-theorem char_iso {V W : FDRep k G} (i : V ≅ W) : V.character = W.character :=
-  Representation.char_iso <| Representation.equivOfIso <| (forget₂ ..).mapIso i
+theorem char_iso {V W : FDRep k G} (i : V ≅ W) : V.character = W.character := by
+  ext g
+  simp only [character, FDRep.Iso.conj_ρ i]
+  exact (trace_conj' (V.ρ g) _).symm
 
 end Monoid
 
@@ -180,23 +182,26 @@ variable {G : Type v} [Group G]
 
 /-- The character of a representation is constant on conjugacy classes. -/
 @[simp]
-theorem char_conj (V : FDRep k G) (g : G) (h : G) : V.character (h * g * h⁻¹) = V.character g :=
-  Representation.char_conj ..
+theorem char_conj (V : FDRep k G) (g : G) (h : G) : V.character (h * g * h⁻¹) = V.character g := by
+  rw [char_mul_comm, inv_mul_cancel_left]
 
 @[simp]
 theorem char_dual (V : FDRep k G) (g : G) : (of (dual V.ρ)).character g = V.character g⁻¹ :=
-  Representation.char_dual ..
+  trace_transpose' (V.ρ g⁻¹)
 
 @[simp]
 theorem char_linHom (V W : FDRep k G) (g : G) :
-    (of (linHom V.ρ W.ρ)).character g = V.character g⁻¹ * W.character g :=
-  Representation.char_linHom ..
+    (of (linHom V.ρ W.ρ)).character g = V.character g⁻¹ * W.character g := by
+  rw [← char_iso (dualTensorIsoLinHom _ _), char_tensor, Pi.mul_apply, char_dual]
 
 variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
-    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g = finrank k (invariants V.ρ) :=
-  Representation.card_inv_mul_sum_char_eq_finrank _
+    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
+  have : Invertible (Fintype.card G : k) := by
+    rwa [Fintype.card_eq_nat_card]
+  rw [← (isProj_averageMap V.ρ).trace]
+  simp [character, GroupAlgebra.average, _root_.map_sum]
 
 /--
 If `V` and `W` are finite-dimensional representations of a finite group, then the
