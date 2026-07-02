@@ -44,10 +44,10 @@ structure LeftHomotopy where
 /-- A right homotopy on morphisms in the category of arrows of a preadditive category. -/
 @[ext]
 structure RightHomotopy where
-/-- A "diagonal" morphism from the right object of `u` to the left object of `v`. -/
+  /-- A "diagonal" morphism from the right object of `u` to the left object of `v`. -/
   hom : u.right ⟶ v.left
-/-- The difference of the right morphisms factors through `hom`. -/
-comm : f.right - g.right = hom ≫ v.hom := by cat_disch
+  /-- The difference of the right morphisms factors through `hom`. -/
+  comm : f.right - g.right = hom ≫ v.hom := by cat_disch
 
 variable {f g}
 
