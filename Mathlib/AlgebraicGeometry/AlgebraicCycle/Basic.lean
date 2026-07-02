@@ -110,8 +110,8 @@ lemma degree_sum (D D' : AlgebraicCycle X ℤ) [CompactSpace X] :
     exact Set.Finite.inter_of_right this _
 
 @[simp]
-lemma degree_neg (D : AlgebraicCycle X ℤ)
-    : degree f (-D) = - degree f D := by simp [degree, finsum_neg_distrib]
+lemma degree_neg (D : AlgebraicCycle X ℤ) :
+    degree f (-D) = - degree f D := by simp [degree, finsum_neg_distrib]
 
 @[simp]
 lemma degree_minus (D D' : AlgebraicCycle X ℤ) [CompactSpace X] : degree f (D - D') =
