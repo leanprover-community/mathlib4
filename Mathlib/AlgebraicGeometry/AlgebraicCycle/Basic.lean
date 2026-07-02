@@ -116,11 +116,7 @@ lemma degree_neg (D : AlgebraicCycle X ℤ) :
 @[simp]
 lemma degree_minus (D D' : AlgebraicCycle X ℤ) [CompactSpace X] : degree f (D - D') =
     degree f D - degree f D' := by
-  have := degree_sum f D (-D')
-  simp [-degree_sum] at this
-  ring_nf at this
-  rw [← this]
-  congr
+  simp [sub_eq_add_neg]
 
 open Function.locallyFinsuppWithin in
 @[simp]
