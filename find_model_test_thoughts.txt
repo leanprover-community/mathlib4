@@ -1,0 +1,23 @@
+request by Heather?
+
+`mfderiv%? f x` should expand to mfderiv I J f x
+
+
+
+quick version of that logic; comment out the other version (or put into scratch file)
+
+check 1: self
+if E and H are the same,
+  try finding a normed space (if so: synthesize the self model with corners), otherwise a normed field instance (if so, also done)
+  xxx: can we guess a wrong instance? if there could not be another good instance, perhaps yes...
+
+(opens: ignore for now, perhaps don't matter)
+(self + products: handled above)
+
+check 2: assumption
+check 3: normed space - handled above!
+check 4: combination of these?
+
+
+
+test: identity, functions from assumption, composition of functions, product of functions

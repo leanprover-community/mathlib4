@@ -56,7 +56,7 @@ def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := 
   -- parser now attaches to the first token (see leanprover/lean4#12662).
   let some substring := imports.getSubstring? (withLeading := false) |
     throw <| .userError "No substring: we have a problem!"
-  return substring.toString
+  return (if substring.toString.contains "public" then "module\n\n" else "") ++ substring.toString
 
 /--
 `getHeaderFromFileName fname keepTrailing` is similar to `getHeader`, except that it assumes that
@@ -161,6 +161,8 @@ def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
           and a similarity percentage.\nFull git line: '{git}'"
       continue
     let some pctNat := (pct.drop 1).toNat? | continue
+    -- We skip renames of files in `MathlibTest`.
+    if oldName.startsWith "MathlibTest/" then continue
     -- This looks like a rename with a similarity index at least as big as our threshold:
     -- we add the rename to our dictionary.
     if percent ≤ pctNat then
@@ -236,7 +238,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   let fileHeader ← match rename with
     | some rename => do
       let modName := mkModName rename
-      pure s!"import {modName}"
+      pure s!"module\n\npublic import {modName}"
     | none => getHeader fname file false
   let deprecatedFile := s!"{fileHeader.trimAsciiEnd}\n\n{deprecation.pretty.trimAsciiEnd}\n"
   msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
@@ -335,12 +337,20 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
     let fnameStx := Syntax.mkStrLit fname
     let stx ← if let some newName := dict[fname]? then
       let newNameStx := Syntax.mkStrLit newName
-      `(command|#create_deprecated_module $fnameStx rename_to $newNameStx)
+      `(command|#create_deprecated_module $fnameStx rename_to $newNameStx write)
     else
       `(command|#create_deprecated_module $fnameStx)
     suggestions := suggestions.push {
       suggestion := (⟨stx.raw.updateTrailing "hello".toRawSubstring⟩ : TSyntax `command)
     }
+  for fname in dict.keys do
+    if !onlyPastFiles.contains fname then
+      let fnameStx := Syntax.mkStrLit fname
+      let newNameStx := Syntax.mkStrLit dict[fname]!
+      let stx ← `(command|#create_deprecated_module $fnameStx rename_to $newNameStx write)
+      suggestions := suggestions.push {
+        suggestion := (⟨stx.raw.updateTrailing "hello".toRawSubstring⟩ : TSyntax `command)
+      }
   let suggestionsText :=
     if suggestions.size == 1 then ("the suggestion", "")
     else (s!"any of the {suggestions.size} suggestions", ", so you can click several of them")
@@ -376,7 +386,7 @@ replaced by the suggestion, which means that you can click on multiple suggestio
 the deprecations later on.
 -/
 
-#find_deleted_files 500 10%
+#find_deleted_files 1500
 
 /--
 info: import Std.Time.Format
