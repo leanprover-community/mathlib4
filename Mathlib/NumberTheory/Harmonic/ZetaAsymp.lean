@@ -587,8 +587,7 @@ lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
 lemma log_deriv_riemannZeta_add_inv_sub_sub_isBigO :
     (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - γ)
     =O[𝓝[≠] 1] (· - 1) := by
-  suffices (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s) - γ)
-      =O[𝓝 1] (· - 1) by
+  suffices (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s) - γ) =O[𝓝 1] (· - 1) by
     refine (this.mono nhdsWithin_le_nhds).congr' ?_ .rfl
     filter_upwards [log_deriv_riemannZeta_eq_neg_inv_sub_add] with s hs
     simp [hs]
