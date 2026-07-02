@@ -127,6 +127,7 @@ theorem eq_bot_of_one (H : Sylow 1 G) : (H : Subgroup G) = ⊥ :=
   have := isPGroup_one_iff_subsingleton.mp H.isPGroup'
   eq_bot_of_subsingleton _
 
+/-- The type of Sylow `p`-subgroups depends only on the prime factors of `p`. -/
 def equivProdPrimeFactors (h : p ≠ 0) : Sylow p G ≃ Sylow (p.primeFactors.prod id) G where
   toFun H := { H with
     isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mp H.isPGroup',
