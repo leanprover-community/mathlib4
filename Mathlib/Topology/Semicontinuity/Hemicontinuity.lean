@@ -430,7 +430,6 @@ lemma hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl :
     simp [Set.ext_iff, Iic, Set.mem_compl_iff]
   simp_rw [h, hasOpenLowerSections_iff_isOpen]
 
-omit [TopologicalSpace β] in
 /-- A correspondence `f : α → Set β` has open lower sections if and only if its *upper inverse*
 (i.e., `b : β ↦ f ⁻¹' (Iic {b}ᶜ) = {x | b ∉ f x}`) sends every point to a closed set. -/
 lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
@@ -442,7 +441,7 @@ lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
 
 /-- A lower hemicontinuous function intersected with a function with an open graph is lower
 hemicontinuous. -/
-lemma LowerHemicontinuous.inter_hasOpenCGraph {f g : α → Set β}
+lemma LowerHemicontinuous.inter_hasOpenCGraph [TopologicalSpace β] {f g : α → Set β}
     (hf : LowerHemicontinuous f) (hg : HasOpenCGraph g) :
     LowerHemicontinuous (fun x ↦ f x ∩ g x) := by
   simp_rw [lowerHemicontinuous_iff_isOpen_inter_nonempty] at ⊢ hf
