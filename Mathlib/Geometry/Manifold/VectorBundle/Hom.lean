@@ -425,6 +425,44 @@ lemma Bundle.Trivialization.contMDiffWithinAt_apply {k}
     simp [hx']
   · simp [hx]
 
+-- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffWithinAt k (T% σ) b` is almost
+-- equivalent to `CMDiffWithinAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+lemma ContMDiffWithinAt.clm_bundle_of_apply {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB] {x : B} {s : Set B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ b in 𝓝 x, CMDiffAt[s] k (T% σ) b) → CMDiffAt[s] k (T% (fun x ↦ φ x (σ x))) x) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k
+      (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) s x := by
+  refine (contMDiffWithinAt_hom_bundle fun x ↦ ⟨x, φ x⟩).mpr ⟨contMDiffWithinAt_id, ?_⟩
+  rw [contMDiffWithinAt_iff_source, contMDiffWithinAt_iff_contDiffWithinAt]
+  set t₁ := trivializationAt F₁ E₁ x
+  set t₁inv := Trivialization.symmL 𝕜 t₁
+  set t₂ := trivializationAt F₂ E₂ x
+  set t₂clm := t₂.continuousLinearMapAt 𝕜
+  apply contDiffWithinAt_clm_apply.mpr
+  set ψ := extChartAt IB x
+  intro u
+  have C₀ : ContMDiffWithinAt IB 𝓘(𝕜, F₂) k (fun b ↦ t₂clm b (φ b (t₁inv b u))) s x := by
+    apply t₂.ContMDiffWithinAt_apply
+    · exact FiberBundle.mem_baseSet_trivializationAt' x
+    · apply h
+      filter_upwards [t₁.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)] with
+        x' hx'
+      apply ContMDiffAt.contMDiffWithinAt
+      apply (t₁.ContMDiffAt_symm_const hx')
+  rw [show x = ψ.symm (ψ x) from (extChartAt_to_inv x).symm] at C₀
+  have C₂ : CMDiffAt[range IB] k (ψ.symm) (ψ x) :=
+    contMDiffWithinAt_extChartAt_symm_range_self x
+  have := ContMDiffWithinAt.comp' (ψ x) C₀ C₂
+  rw [inter_comm]
+  sorry
+
 -- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b` is almost equivalent
 -- to `CMDiffAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
 omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
