@@ -514,4 +514,3 @@ elab "mv_mem" : tactic => withMainContext do
   evalTactic (← `(tactic| decide +kernel))
 
 attribute [nolint defsWithUnderscore] tacticMv_decide tacticMv_compute tacticMv_mem
-
