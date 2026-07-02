@@ -97,6 +97,28 @@ info:
 /-- info: Q42 -/
 #guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q42"
 
+namespace LMFDB
+
+@[lmfdb lmfdb.tag "A comment"]
+theorem lmfdbTagged : 1 + 1 = 2 := by
+  rfl
+
+/-- info: some ([LMFDB lmfdb.tag](https://www.lmfdb.org/knowledge/show/lmfdb.tag) (A comment)) -/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `LMFDB.lmfdbTagged}"
+
+/-- error: <input>:1:9: LMFDB ids must consist only of lowecase letters, and periods. -/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB.tag"
+
+/-- error: <input>:1:11: LMFDB ids must consist only of lowecase letters, and periods. -/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "lmfdb.tag99"
+
+/-- error: <input>:1:5: LMFDB ids must consist only of lowecase letters, and periods. -/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB&tag"
+
+end LMFDB
+
 section errors
 
 open Lean Parser Mathlib.CrossRef

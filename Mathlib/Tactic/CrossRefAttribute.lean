@@ -17,6 +17,7 @@ to entries in external mathematical databases:
 * `@[stacks TAG]` — [Stacks Project](https://stacks.math.columbia.edu/tags)
 * `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
 * `@[wikidata QID]` — [Wikidata](https://www.wikidata.org)
+* `@[lmfdb ID]` — [LMFDB](https://www.lmfdb.org/knowledge/show/)
 
 Each attribute records the cross-reference in an environment extension and appends
 a link to the declaration's docstring.
@@ -35,6 +36,7 @@ namespace Mathlib.CrossRef
 /-- The supported external databases -/
 inductive Database where
   | kerodon
+  | lmfdb
   | stacks
   | wikidata
   deriving BEq, Hashable
@@ -42,12 +44,14 @@ inductive Database where
 /-- The base URL for an external database's tag pages. Always ends with `/`. -/
 def databaseURL : Database → String
   | .kerodon => "https://kerodon.net/tag/"
+  | .lmfdb => "https://www.lmfdb.org/knowledge/show/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
   | .wikidata => "https://www.wikidata.org/wiki/"
 
 /-- The display label used in docstring links and trace output. -/
 def databaseLabel : Database → String
   | .kerodon => "Kerodon Tag"
+  | .lmfdb => "LMFDB"
   | .stacks => "Stacks Tag"
   | .wikidata => "Wikidata"
 
@@ -159,6 +163,36 @@ def wikidataIdNoAntiquot : Parser := {
 def wikidataIdParser : Parser :=
   withAntiquot (mkAntiquot "wikidataId" wikidataIdKind) wikidataIdNoAntiquot
 
+/-! # LMFDB parser -/
+
+/-- `lmfdbId` is the node kind of LMFDB identifiers: the letter `Q` followed by digits. -/
+abbrev lmfdbIdKind : SyntaxNodeKind := `lmfdbId
+
+/-- The main parser for LMFDB identifiers: it accepts `Q` followed by one or more digits. -/
+def lmfdbIdFn : ParserFn := fun c s =>
+  let i := s.pos
+  let s := takeWhileFn (fun c => c.isAlphanum || c == '.') c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "lmfdb id"
+  else
+    if !(c.extract i s.pos).toList.all (fun c => c.isLower || c == '.') then
+      ParserState.mkUnexpectedError s
+        "LMFDB ids must consist only of lowecase letters, and periods."
+    else
+      mkNodeToken lmfdbIdKind i true c s
+
+@[inherit_doc lmfdbIdFn]
+def lmfdbIdNoAntiquot : Parser := {
+  fn   := lmfdbIdFn
+  info := mkAtomicInfo "lmfdbId"
+}
+
+@[inherit_doc lmfdbIdFn]
+def lmfdbIdParser : Parser :=
+  withAntiquot (mkAntiquot "lmfdbId" lmfdbIdKind) lmfdbIdNoAntiquot
+
 end Mathlib.CrossRef
 
 open Mathlib.CrossRef
@@ -173,6 +207,11 @@ def Lean.TSyntax.getWikidataId (stx : TSyntax wikidataIdKind) : CoreM String := 
   let some val := Syntax.isLit? wikidataIdKind stx | throwError "Malformed Wikidata id"
   return val
 
+/-- Extract the underlying identifier as a string from a `lmfdbId` node. -/
+def Lean.TSyntax.getLmfdbId (stx : TSyntax lmfdbIdKind) : CoreM String := do
+  let some val := Syntax.isLit? lmfdbIdKind stx | throwError "Malformed LMFDB id"
+  return val
+
 namespace Lean.PrettyPrinter
 
 namespace Formatter
@@ -185,6 +224,10 @@ namespace Formatter
 @[combinator_formatter wikidataIdNoAntiquot] def wikidataIdNoAntiquot.formatter :=
   visitAtom wikidataIdKind
 
+/-- The formatter for LMFDB identifier syntax. -/
+@[combinator_formatter lmfdbIdNoAntiquot] def lmfdbIdNoAntiquot.formatter :=
+  visitAtom lmfdbIdKind
+
 end Formatter
 
 namespace Parenthesizer
@@ -194,6 +237,9 @@ namespace Parenthesizer
 
 /-- The parenthesizer for Wikidata identifier syntax. -/
 @[combinator_parenthesizer wikidataIdNoAntiquot] def wikidataIdAntiquot.parenthesizer := visitToken
+
+/-- The parenthesizer for LMFDB identifier syntax. -/
+@[combinator_parenthesizer lmfdbIdNoAntiquot] def lmfdbIdAntiquot.parenthesizer := visitToken
 
 end Lean.PrettyPrinter.Parenthesizer
 
@@ -251,6 +297,26 @@ initialize Lean.registerBuiltinAttribute {
       | `(attr| wikidata $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax
     addCrossRefDoc .wikidata decl (← id.getWikidataId) ((comment.map (·.getString)).getD "")
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
+}
+
+/-! ### LMFDB attribute -/
+
+/-- The `lmfdb` attribute.
+Use it as `@[lmfdb foo.bar "Optional comment"]` to associate a Mathlib declaration with
+the corresponding [LMFDB](https://www.lmfdb.org) item.
+-/
+syntax (name := lmfdbTag) "lmfdb" lmfdbIdParser ppSpace (str)? : attr
+
+initialize Lean.registerBuiltinAttribute {
+  name := `lmfdbTag
+  descr := "Apply a LMFDB identifier to a declaration."
+  add := fun decl stx _attrKind => do
+    let (id, comment) ← match stx with
+      | `(attr| lmfdb $id $[$comment]?) => pure (id, comment)
+      | _ => throwUnsupportedSyntax
+    addCrossRefDoc .lmfdb decl (← id.getLmfdbId) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
@@ -325,5 +391,18 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 -/
 elab (name := wikidataTags) "#wikidata_tags" tk:("!")? : command =>
   traceCrossRefs .wikidata (tk.isSome)
+
+
+/-- The `#lmfdb_tags` command retrieves all declarations that have the `lmfdb` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#lmfdb_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
+-/
+elab (name := lmfdbTags) "#lmfdb_tags" tk:("!")? : command =>
+  traceCrossRefs .lmfdb (tk.isSome)
 
 end Mathlib.CrossRef
