@@ -12,6 +12,7 @@ public import Mathlib.Data.Finsupp.PWO
 
 /-!
 # Comparison between Hahn series and power series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
 `Γ`, we can add further structure on `R⟦Γ⟧`.  When `R` is a semiring and `Γ = ℕ`, then
