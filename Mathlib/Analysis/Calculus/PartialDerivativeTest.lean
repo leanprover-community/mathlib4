@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bjørn Kjos-Hanssen
+Authors: Bjørn Kjos-Hanssen, Jireh Loreaux
 -/
 module
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
@@ -22,17 +22,6 @@ analytic functions `f : V → ℝ`, where `V` is a finite-dimensional vector spa
     at `x₀`. If the second Frechét derivative is positive definite at `x₀` then
     `f` has  local minimum at `x₀`.
 
-second_derivative_test
-   |
-   +--> isLocalMin_of_posDef_of_littleo_c2
-   |
-   +--> littleO_of_contDiffAt
-   |       |
-   |       +--> fderiv_fderiv_symm_of_contDiffAt
-   |       |
-   |       +--> isLittleO_sq_of_hasFDerivAt
-   +--> ...
-
 ## Tags
 partial derivative test, calculus
 -/
@@ -51,55 +40,30 @@ lemma Function.update₁ {α : Type*} {a b c : α} : Function.update ![a,b] 1 c 
 
 open Nat ContinuousMultilinearMap Finset Function QuadraticMap
 
+-- this can even be upgraded to a linear isometry equiv quite easily.
+noncomputable def continuousMultilinearCurryFin2 (𝕜 G G' : Type*) [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G'] :
+    (G [×2]→L[𝕜] G') ≃L[𝕜] (G →L[𝕜] G →L[𝕜] G') :=
+  continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin 2 ↦ G) G' |>.toContinuousLinearEquiv.trans <|
+    (ContinuousLinearEquiv.refl 𝕜 G |>.arrowCongr
+      (continuousMultilinearCurryFin1 𝕜 G G').toContinuousLinearEquiv)
+
 
 
 /-- The Hessian companion as a bilinear map. -/
 noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
-    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V →ₗ[ℝ] V →ₗ[ℝ] ℝ := by
-  apply LinearMap.mk₂ ℝ (fun a b => iteratedFDeriv ℝ 2 f x₀ ![a,b] + iteratedFDeriv ℝ 2 f x₀ ![b,a])
-  all_goals intro x y z; simp_rw [Matrix.vecCons]
-  · simp_rw [succ_eq_add_one, reduceAdd, ← curryLeft_apply,
-      map_add]
-    simp only [curryLeft_apply, succ_eq_add_one, reduceAdd, Matrix.Fin.cons_vecEmpty,
-      ContinuousMultilinearMap.add_apply, Matrix.Fin.cons_vecCons]
-    abel
-  · simp_rw [← curryLeft_apply]
-    simp only [map_smul, curryLeft_apply, succ_eq_add_one, reduceAdd,
-      ContinuousMultilinearMap.smul_apply, smul_eq_mul]
-    ring_nf
-  · simp_rw [succ_eq_add_one, reduceAdd, ← curryLeft_apply,
-      map_add]
-    simp only [curryLeft_apply, succ_eq_add_one, reduceAdd, Matrix.Fin.cons_vecEmpty,
-      ContinuousMultilinearMap.add_apply, Matrix.Fin.cons_vecCons]
-    abel
-  · simp_rw [← curryLeft_apply]
-    simp only [map_smul, ContinuousMultilinearMap.smul_apply, curryLeft_apply, succ_eq_add_one,
-      reduceAdd, smul_eq_mul]
-    simp_rw [← mul_add]
+    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V →ₗ[ℝ] V →ₗ[ℝ] ℝ :=
+  ContinuousLinearMap.coeLM ℝ |>.compRight ℝ <| (
+      letI f'' : V →L[ℝ] V →L[ℝ] ℝ := continuousMultilinearCurryFin2 ℝ V ℝ (iteratedFDeriv ℝ 2 f x₀)
+      f'' + f''.flip).coeLM ℝ
 
 
 /-- The second iterated Frechét derivative as a quadratic map. -/
 noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
-    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : QuadraticMap ℝ V ℝ := {
-  toFun := fun y => iteratedFDeriv ℝ 2 f x₀ ![y,y]
-  exists_companion' := ⟨hessianBilinearCompanion f x₀, fun x y => by
-    have ha (u v b) := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![u,v] b x y
-    have ha₀ := ha x (x + y) 0
-    have ha₁ (u) := ha u x 1
-    simp only [update₀, MultilinearMap.toFun_eq_coe, coe_coe, update₁, hessianBilinearCompanion]
-        at ha₀ ha₁ ha ⊢
-    rw [ha₀, ha₁, ha₁, add_assoc, add_assoc]
-    apply add_left_cancel_iff.mpr
-    rw [← add_assoc, add_comm]
-    simp⟩
-  toFun_smul := fun u v => by
-    have hsm (b c) := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![b,v] c u v
-    have hsm₀ := hsm v 0
-    have hsm₁ := hsm (u • v) 1
-    simp only [update₀, update₁, MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul]
-        at hsm₀ hsm₁ hsm
-    rw [smul_eq_mul, mul_assoc, ← hsm₀, hsm₁]}
-
+    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : QuadraticMap ℝ V ℝ :=
+ LinearMap.BilinMap.toQuadraticMap
+    (ContinuousLinearMap.coeLM ℝ |>.compRight ℝ <|
+      (continuousMultilinearCurryFin2 ℝ V ℝ (iteratedFDeriv ℝ 2 f x₀)).coeLM ℝ)
 
 /-- A continuous multilinear map is bilinear. -/
 noncomputable def continuousBilinearMapOfContinuousMultilinearMap
@@ -120,6 +84,29 @@ noncomputable def continuousBilinearMapOfContinuousMultilinearMap
 
 
 namespace QuadraticMap
+
+-- -- I think we're missing the non-continuous analogue of `continuousMultilinearCurryFin1`
+-- -- (and `continuousMultilinearCurryFin0`) which we would use to implement this, but add those is
+-- -- straightforward.
+-- noncomputable def multilinearCurryFin2 (𝕜 G G' : Type*) [Field 𝕜]
+--     [AddCommGroup G] [Module 𝕜 G] [AddCommGroup G'] [Module 𝕜 G'] :
+--     (MultilinearMap 𝕜 (fun _ : Fin 2 ↦ G) G') ≃ₗ[𝕜] (G →ₗ[𝕜] G →ₗ[𝕜] G') := {
+--       toFun := fun f => {
+--         toFun := fun x => {
+--           toFun := by intro y; exact f ![x,y]
+--           map_add' := by sorry
+--           map_smul' := by sorry
+--         }
+--         map_add' := by sorry
+--         map_smul' := by sorry
+--       }
+--       map_add' := by sorry
+--       map_smul' := by sorry
+--       invFun := by sorry
+
+--       left_inv := by sorry
+--       right_inv := by sorry
+--     }
 
 /-- Half of `QuadraticMap.polar` as a multilinear map. -/
 noncomputable def toMultilinearMapHalfPolarBilin
@@ -276,10 +263,24 @@ lemma polarBilin_iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V] [
     (f : V → ℝ) (x₀ : V) (x y : V) :
     (iteratedFDerivQuadraticMap f x₀).polarBilin x y
       = iteratedFDeriv ℝ 2 f x₀ ![x, y] + iteratedFDeriv ℝ 2 f x₀ ![y, x] := by
-  unfold iteratedFDerivQuadraticMap
-  simp [polarBilin, polar]
-  simp [iteratedFDeriv_succ_apply_right, sub_eq_iff_eq_add]
-  simp [Fin.init]
+  simp only [polarBilin, iteratedFDerivQuadraticMap, continuousMultilinearCurryFin2,
+    succ_eq_add_one, reduceAdd, ContinuousLinearEquiv.trans_apply,
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv, ContinuousLinearMap.coeLM_apply,
+    LinearMap.compRight_apply, LinearMap.mk₂_apply]
+  simp only [iteratedFDeriv_two_apply f x₀, Fin.isValue,
+    Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
+  simp only [ContinuousLinearMap.coeLM_apply,
+    polar, LinearMap.BilinMap.toQuadraticMap_apply, LinearMap.coe_comp,
+    ContinuousLinearMap.coe_coe, Function.comp_apply, map_add,
+    LinearMap.add_apply]
+  simp only [succ_eq_add_one, reduceAdd,
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv,
+    ContinuousLinearEquiv.arrowCongr_apply, ContinuousLinearEquiv.refl_symm,
+    ContinuousLinearEquiv.refl_apply, continuousMultilinearCurryFin1_apply, Matrix.zero_empty,
+    Matrix.Fin.snoc_vecEmpty, continuousMultilinearCurryLeftEquiv_apply, Matrix.Fin.cons_vecCons
+    ]
+  repeat rw [iteratedFDeriv_two_apply f x₀]
+  simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
   ring
 
 /--
@@ -349,7 +350,9 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
   use iteratedFDeriv ℝ 2 f x₀ ![m, m]
   rw [continuousBilinearMapOfContinuousMultilinearMap]
   constructor
-  · exact hf' m (by intro hc;simp [hc] at hm)
+  · convert hf' m (by intro hc;simp [hc] at hm)
+    · rfl
+    · simp [iteratedFDerivQuadraticMap, continuousMultilinearCurryFin2]
   · intro u
     by_cases hu : u = 0
     · simp [hu, iteratedFDeriv_succ_apply_left]
