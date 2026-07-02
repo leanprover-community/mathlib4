@@ -112,6 +112,9 @@ def ConvexSpace.ofAddTorsor : ConvexSpace R P where
   sConvexComb_single := AddTorsor.convexCombination_single
   assoc := AddTorsor.convexCombination_assoc
 
+@[deprecated (since := "2026-07-02")]
+alias _root_.AddTorsor.toConvexSpace := ConvexSpace.ofAddTorsor
+
 variable (R V P) [ConvexSpace R P] in
 /-- Typeclass for a convex space structure on an affine space to be given by affine
 combinations. -/
