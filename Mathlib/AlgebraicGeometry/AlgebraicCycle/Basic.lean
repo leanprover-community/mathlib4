@@ -91,8 +91,8 @@ is `Spec k` for some field `k`.
 noncomputable def degree : R := ∑ᶠ (x : X), (f.residueDegree x) • (D x)
 
 @[simp]
-lemma degree_sum (D D' : AlgebraicCycle X ℤ) [CompactSpace X]
-    : degree f (D + D') = degree f D + degree f D' := by
+lemma degree_sum (D D' : AlgebraicCycle X ℤ) [CompactSpace X] :
+    degree f (D + D') = degree f D + degree f D' := by
   simp [degree]
   ring_nf
   rw [finsum_add_distrib]
