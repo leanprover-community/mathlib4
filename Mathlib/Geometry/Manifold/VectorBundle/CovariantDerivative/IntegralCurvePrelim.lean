@@ -3,7 +3,7 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 
-
+set_option linter.style.header false
 /-!
 # Preliminaries about integral curves of vector fiels
 

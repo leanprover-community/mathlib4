@@ -49,6 +49,8 @@ noncomputable def ChristoffelSymbol
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
   (LinearMap.piApply (hs.coeff k)) (fun x ↦ f (s i) x (s j x))
 
+omit [RiemannianBundle fun x : M ↦ TangentSpace I x]
+     [IsContMDiffRiemannianBundle I 1 E fun x : M ↦ TangentSpace I x] in
 -- special case of `foobar` below; needed?
 lemma ChristoffelSymbol.sum_eq
     (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x))
@@ -63,7 +65,7 @@ variable {U : Set M}
   {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
 
 -- Note that this result is false if `{s i}` is merely a local frame.
-lemma eq_product_apply [Fintype ι]
+lemma eq_product_apply -- [Fintype ι]
     (hf : IsCovariantDerivativeOn E f U)
     (hs : IsOrthonormalFrameOn I E n s U)
     (i j k : ι) (hx : x ∈ U) :
