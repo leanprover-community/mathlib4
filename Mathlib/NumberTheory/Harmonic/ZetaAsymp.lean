@@ -560,7 +560,7 @@ lemma log_riemannZeta_eq_neg_log_sub_add_ofReal {s : ℝ} (hs : s > 1) :
   rw [this, Real.log_mul, Real.log_inv] <;>
   grind [riemannZeta_re_pos_of_one_lt hs]
 
-lemma log_riemannZeta_add_log_sub_add_isBigO_ofReal :
+lemma log_riemannZeta_add_log_sub_isBigO_ofReal :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =O[𝓝[>] 1] (· - 1) := by
   suffices (fun (s : ℝ) ↦ (riemannZeta₁ s).re.log) =O[𝓝 1] (· - 1) by
     refine (this.mono nhdsWithin_le_nhds).congr'
@@ -571,9 +571,9 @@ lemma log_riemannZeta_add_log_sub_add_isBigO_ofReal :
   have : Differentiable ℝ riemannZeta₀ := by fun_prop
   fun_prop (disch := simp)
 
-lemma log_riemannZeta_add_log_sub_add_isLittleO_ofReal :
+lemma log_riemannZeta_add_log_sub_isLittleO_ofReal :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =o[𝓝[>] (1 : ℝ)] (fun _ ↦ (1 : ℝ)) :=
-  log_riemannZeta_add_log_sub_add_isBigO_ofReal.trans_isLittleO
+  log_riemannZeta_add_log_sub_isBigO_ofReal.trans_isLittleO
     (continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
