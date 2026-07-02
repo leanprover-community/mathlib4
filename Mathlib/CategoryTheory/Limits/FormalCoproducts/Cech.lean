@@ -51,11 +51,12 @@ abbrev power'Fan :
     Fan (fun (_ : α) ↦ U) :=
   Fan.mk (U.power' fan) (U.power'π fan)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `U.power' fan` identifies to the product of copies of `U` indexed by `α`. -/
 def isLimitPower'Fan (hfan : ∀ i, IsLimit (fan i)) :
     IsLimit (U.power'Fan fan) :=
-  mkFanLimit _
+  Fan.IsLimit.mk _
     (fun s ↦
       { f i a := (s.proj a).f i
         φ i := Fan.IsLimit.lift (hfan _) (fun a ↦ (s.proj a).φ i) })
@@ -124,12 +125,14 @@ noncomputable def powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V) (α : Typ
   f i := f.f ∘ i
   φ i := Pi.map (fun a ↦ f.φ (i a))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma powerMap_id (U : FormalCoproduct.{w} C) (α : Type t) [HasProductsOfShape α C] :
     powerMap (𝟙 U) α = 𝟙 _ := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma powerMap_comp {U V W : FormalCoproduct.{w} C} (f : U ⟶ V) (g : V ⟶ W) (α : Type t)
@@ -161,6 +164,7 @@ noncomputable def mapPower (U : FormalCoproduct.{w} C) {α β : Type t}
   f i := i ∘ f
   φ _ := Pi.lift (fun _ ↦ Pi.π _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
@@ -168,6 +172,7 @@ lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
     U.mapPower (id : α → α) = 𝟙 _ := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
@@ -178,10 +183,9 @@ lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
   · cat_disch
   · dsimp
     ext
-    dsimp
-    simp only [Category.comp_id, Category.assoc, Pi.lift_π]
-    apply Pi.lift_π
+    simp [Function.comp_def]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
@@ -191,10 +195,9 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
   · cat_disch
   · dsimp
     ext
-    simp only [Function.comp_apply, limit.lift_map, Cones.postcompose, Fan.mk_pt, Category.comp_id,
-      Category.assoc, limit.lift_π, Fan.mk_π_app, Pi.map_π]
-    apply limit.lift_π
+    simp [Function.comp_def]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
@@ -204,15 +207,16 @@ lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
 
 attribute [local simp] mapPower_comp mapPower_powerMap
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `(Type t)ᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C`
 which sends a type `α` and `U : FormalCoproduct C` to `U.power α`. -/
 @[simps]
 noncomputable def powerBifunctor [HasProducts.{t} C] :
-    (Type t)ᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C where
+    Type tᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C where
   obj α := powerFunctor α.unop
   map f := { app _ := mapPower _ f.unop }
-  map_comp _ _ := by ext : 2; dsimp; apply mapPower_comp
+  map_comp _ _ := by ext : 2; simp [types_comp]
 
 variable [HasFiniteProducts C]
 
@@ -224,6 +228,7 @@ noncomputable def cech (U : FormalCoproduct.{w} C) :
   obj n := U.power (ToType n.unop)
   map f := U.mapPower f.unop.toOrderHom.toFun
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `FormalCoproduct C ⥤ SimplicialObject (FormalCoproduct C)`
 which sends a formal coproduct to its Cech object. -/
 @[simps]
@@ -231,6 +236,5 @@ noncomputable def cechFunctor :
     FormalCoproduct.{w} C ⥤ SimplicialObject (FormalCoproduct.{w} C) where
   obj U := U.cech
   map f := { app _ := powerMap f _ }
-  map_comp _ _ := by ext : 1; simp
 
 end CategoryTheory.Limits.FormalCoproduct

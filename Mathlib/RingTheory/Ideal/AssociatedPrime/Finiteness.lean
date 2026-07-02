@@ -63,7 +63,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
   · obtain ⟨⟨x, hx⟩, hx'⟩ := Submodule.mkQ_surjective _ (e.symm 1)
     have hx'' : N₁.mkQ x = f (e.symm 1) := by simp [f, ← hx']
     refine ⟨x, ?_, ?_⟩
-    · convert p.2
+    · convert! p.2
       ext r
       simp [hx'', ← map_smul, Algebra.smul_def, show f _ = 0 ↔ _ from congr(_ ∈ $hf₁),
         Ideal.Quotient.eq_zero_iff_mem]
@@ -85,7 +85,6 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
 
 variable (A M) [IsNoetherianRing A] [Module.Finite A M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is a Noetherian ring and `M` is a finitely generated `A`-module, then there exists
 a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, such that for each `0 ≤ i < n`,
 `Mᵢ₊₁ / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`. -/
@@ -200,7 +199,7 @@ theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
   rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at h
   obtain ⟨prime, x, rfl⟩ := h
   exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
-    simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using hP,
+    simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using! hP,
       fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
 
 theorem Ideal.nonempty_inter_nonZeroDivisors_of_faithfulSMul {I : Ideal A} [FaithfulSMul A I] :

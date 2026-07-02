@@ -6,8 +6,8 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Tactic.FinCases
@@ -426,6 +426,7 @@ noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fi
 lemma ringEquivOfPrime_eq_ringEquiv [Fintype R] {p : ℕ} [CharP R p] (hp : p.Prime)
     (hR : Fintype.card R = p) : ringEquivOfPrime R hp hR = ringEquiv R hR := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
@@ -665,8 +666,8 @@ theorem val_add_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.v
 
 theorem val_add_le {n : ℕ} (a b : ZMod n) : (a + b).val ≤ a.val + b.val := by
   cases n
-  · simpa [ZMod.val] using Int.natAbs_add_le _ _
-  · simpa [ZMod.val_add] using Nat.mod_le _ _
+  · simpa [ZMod.val] using! Int.natAbs_add_le _ _
+  · simpa [ZMod.val_add] using! Nat.mod_le _ _
 
 theorem val_mul {n : ℕ} (a b : ZMod n) : (a * b).val = a.val * b.val % n := by
   cases n
@@ -718,9 +719,7 @@ theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
   | 0 => Int.sign_zero
   | n + 1 =>
     show (Nat.gcdA _ (n + 1) : ZMod (n + 1)) = 0 by
-      rw [val_zero]
-      unfold Nat.gcdA Nat.xgcd Nat.xgcdAux
-      rfl
+      simp [Nat.gcdA, Nat.xgcd, Nat.xgcdAux, Nat.strongRec_eq]
 
 theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := by
   rcases n with - | n
@@ -755,9 +754,6 @@ alias ⟨_, _root_.Even.intCast_zmod_two⟩ := intCast_eq_zero_iff_even
 theorem natCast_eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
   mod_cast intCast_eq_zero_iff_even (n := n)
 
-@[deprecated (since := "2025-08-25")]
-alias eq_zero_iff_even := natCast_eq_zero_iff_even
-
 alias ⟨_, _root_.Even.natCast_zmod_two⟩ := natCast_eq_zero_iff_even
 
 theorem intCast_eq_one_iff_odd {n : ℤ} : (n : ZMod 2) = 1 ↔ Odd n := by
@@ -769,16 +765,10 @@ alias ⟨_, _root_.Odd.intCast_zmod_two⟩ := intCast_eq_one_iff_odd
 theorem natCast_eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n :=
   mod_cast intCast_eq_one_iff_odd (n := n)
 
-@[deprecated (since := "2025-08-25")]
-alias eq_one_iff_odd := natCast_eq_one_iff_odd
-
 alias ⟨_, _root_.Odd.natCast_zmod_two⟩ := natCast_eq_one_iff_odd
 
 theorem natCast_ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
   simp [natCast_eq_zero_iff_even]
-
-@[deprecated (since := "2025-08-25")]
-alias ne_zero_iff_odd := natCast_ne_zero_iff_odd
 
 theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     ((x : ZMod n) * (x : ZMod n)⁻¹) = 1 := by
@@ -833,16 +823,23 @@ lemma isUnit_prime_iff_not_dvd {n p : ℕ} (hp : p.Prime) : IsUnit (p : ZMod n) 
 lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUnit (p : ZMod n) :=
   (isUnit_prime_iff_not_dvd hp).mpr h
 
+/-- In `ZMod (p ^ d)` with `0 < d`, a natural number is a unit iff `p` does not divide it. -/
+theorem isUnit_natCast_iff_not_dvd_pow {p d a : ℕ} (hp : p.Prime) (hd : 0 < d) :
+    IsUnit (a : ZMod (p ^ d)) ↔ ¬ p ∣ a := by
+  rw [isUnit_iff_coprime, Nat.coprime_pow_right_iff hd, Nat.coprime_comm,
+    hp.coprime_iff_not_dvd]
+
+/-- In `ZMod (p ^ d)` with `0 < d`, the prime `p` is not a unit. -/
+theorem prime_natCast_not_isUnit_pow {p d : ℕ} (hp : p.Prime) (hd : 0 < d) :
+    ¬ IsUnit ((p : ℕ) : ZMod (p ^ d)) := by
+  simp [isUnit_prime_iff_not_dvd hp]
+  lia
+
 @[simp]
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
   have := congr_arg ((↑) : ℕ → ZMod n) (val_coe_unit_coprime u)
   rw [← mul_inv_eq_gcd, Nat.cast_one] at this
-  let u' : (ZMod n)ˣ := ⟨u, (u : ZMod n)⁻¹, this, by rwa [mul_comm]⟩
-  have h : u = u' := by
-    apply Units.ext
-    rfl
-  rw [h]
-  rfl
+  exact (Units.inv_eq_of_mul_eq_one_right this).symm
 
 theorem mul_inv_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a * a⁻¹ = 1 := by
   rcases h with ⟨u, rfl⟩
@@ -1239,7 +1236,7 @@ lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
-    simpa [char_nsmul_eq_zero, IsPeriodicPt] using isFixedPt_id _⟩
+    simpa [char_nsmul_eq_zero, IsPeriodicPt] using! isFixedPt_id _⟩
 
 end general
 

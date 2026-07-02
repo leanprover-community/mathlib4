@@ -121,6 +121,10 @@ protected lemma inr [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
   fun _ _ => (hg _ _).trans (hf _ _)
 
+omit [PseudoEMetricSpace α] in
+lemma postcomp_pi [Fintype α] {g : β → γ} (hg : Isometry g) : Isometry (fun f : α → β ↦ g ∘ f) :=
+  fun _ _ ↦ by simp [edist_pi_def, hg.edist_eq]
+
 /-- An isometry from a metric space is a uniform continuous map -/
 protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
   hf.lipschitz.uniformContinuous
@@ -181,6 +185,8 @@ alias mapsTo_emetric_closedBall := mapsTo_closedEBall
 
 /-- The injection from a subtype is an isometry -/
 theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
+
+theorem _root_.NNReal.isometry_coe : Isometry ((↑) : NNReal → ℝ) := fun _ _ ↦ rfl
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
     ContinuousOn (f ∘ g) s ↔ ContinuousOn g s :=

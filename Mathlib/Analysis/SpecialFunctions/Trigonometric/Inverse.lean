@@ -40,7 +40,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_arcsin : range arcsin = Icc (-(π / 2)) (π / 2) := by
   rw [arcsin, range_comp Subtype.val]
-  simp [Icc]
+  ext
+  simp
 
 theorem arcsin_le_pi_div_two (x : ℝ) : arcsin x ≤ π / 2 :=
   (arcsin_mem_Icc x).2
@@ -291,8 +292,6 @@ theorem arccos_pos {x : ℝ} : 0 < arccos x ↔ x < 1 := by simp [arccos]
 theorem cos_arccos {x : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) : cos (arccos x) = x := by
   rw [arccos, cos_pi_div_two_sub, sin_arcsin hx₁ hx₂]
 
--- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
-set_option linter.flexible false in
 theorem arccos_cos {x : ℝ} (hx₁ : 0 ≤ x) (hx₂ : x ≤ π) : arccos (cos x) = x := by
   rw [arccos, ← sin_pi_div_two_sub, arcsin_sin] <;> simp [sub_eq_add_neg] <;> linarith
 
@@ -305,7 +304,7 @@ theorem strictAntiOn_arccos : StrictAntiOn arccos (Icc (-1) 1) := fun _ hx _ hy 
 @[gcongr]
 lemma arccos_lt_arccos {x y : ℝ} (hx : -1 ≤ x) (hlt : x < y) (hy : y ≤ 1) :
     arccos y < arccos x := by
-  unfold arccos; gcongr <;> assumption
+  unfold arccos; gcongr
 
 @[gcongr]
 lemma arccos_le_arccos {x y : ℝ} (hlt : x ≤ y) : arccos y ≤ arccos x := by unfold arccos; gcongr
@@ -448,7 +447,7 @@ def cosPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   continuousOn_invFun := continuous_arccos.continuousOn
 
 /-- `Real.cos` and `Real.arccos` as a (partial) equivalence from `[0, π]` to `[-1, 1]` -/
-@[simps, expose]
+@[simps]
 noncomputable def cosPartialEquiv : PartialEquiv ℝ ℝ where
   toFun θ := cos θ
   invFun x := arccos x

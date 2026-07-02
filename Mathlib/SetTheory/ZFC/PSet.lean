@@ -193,9 +193,7 @@ theorem mem_def {x y : PSet} : x ∈ y ↔ ∃ b, Equiv x (y.Func b) :=
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩
 
-theorem func_mem (x : PSet) (i : x.Type) : x.Func i ∈ x := by
-  cases x
-  apply Mem.mk
+theorem func_mem (x : PSet) (i : x.Type) : x.Func i ∈ x := Mem.mk _ _
 
 theorem Mem.ext : ∀ {x y : PSet.{u}}, (∀ w : PSet.{u}, w ∈ x ↔ w ∈ y) → Equiv x y
   | ⟨_, A⟩, ⟨_, B⟩, h =>
@@ -443,8 +441,8 @@ protected def Lift : PSet.{u} → PSet.{max u v}
   | ⟨α, A⟩ => ⟨ULift.{v, u} α, fun ⟨x⟩ => PSet.Lift (A x)⟩
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- Embedding of one universe in another -/
-@[nolint checkUnivs]
 def embed : PSet.{max (u + 1) v} :=
   ⟨ULift.{v, u + 1} PSet, fun ⟨x⟩ => PSet.Lift.{u, max (u + 1) v} x⟩
 

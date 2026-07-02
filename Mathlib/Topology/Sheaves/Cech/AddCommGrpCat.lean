@@ -9,6 +9,11 @@ public import Mathlib.CategoryTheory.Sites.SheafCohomology.CechAddCommGrpCat
 public import Mathlib.CategoryTheory.Sites.Spaces
 public import Mathlib.CategoryTheory.Limits.Preorder
 
+/-!
+# ...
+
+-/
+
 @[expose] public section
 
 open CategoryTheory

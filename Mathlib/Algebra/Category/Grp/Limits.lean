@@ -39,6 +39,7 @@ variable (F : J ⥤ GrpCat.{u})
 instance groupObj (j) : Group ((F ⋙ forget GrpCat).obj j) :=
   inferInstanceAs <| Group (F.obj j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `GrpCat` form a subgroup of all sections. -/
 @[to_additive
 /-- The flat sections of a functor into `AddGrpCat` form an additive subgroup of all sections. -/]
@@ -492,7 +493,7 @@ def fan : Fan X :=
   Fan.mk (P := .of (∀ i, X i)) (fun i ↦ AddCommGrpCat.ofHom (Pi.evalAddMonoidHom _ i))
 
 def isLimitFan : IsLimit (fan X) :=
-  mkFanLimit _
+  Fan.IsLimit.mk _
     (fun s ↦ AddCommGrpCat.ofHom
       { toFun x i := s.proj i x
         map_zero' := by aesop
@@ -501,7 +502,7 @@ def isLimitFan : IsLimit (fan X) :=
     (fun s m hm ↦ by
       ext x
       funext i
-      exact congr_fun ((forget _).congr_map (hm i)) _)
+      exact ConcreteCategory.congr_hom (hm i) _)
 
 def piIso : ∏ᶜ X ≅ .of (∀ i, X i) :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (isLimitFan X)
@@ -510,14 +511,14 @@ variable {X} in
 @[simp]
 lemma piIso_hom_apply (x : (∏ᶜ X :)) (i : ι) :
     (piIso X).hom x i = Pi.π X i x :=
-  congr_fun ((forget AddCommGrpCat).congr_map
-    (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) (isLimitFan X) ⟨i⟩)) x
+  ConcreteCategory.congr_hom
+    (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) (isLimitFan X) ⟨i⟩) x
 
 @[simp]
 lemma piIso_inv_π (x : ∀ i, X i) (i : ι) :
     Pi.π X i ((piIso X).inv x) = x i :=
-  congr_fun ((forget AddCommGrpCat).congr_map
-    (IsLimit.conePointUniqueUpToIso_inv_comp (limit.isLimit _) (isLimitFan X) ⟨i⟩)) x
+  ConcreteCategory.congr_hom
+    (IsLimit.conePointUniqueUpToIso_inv_comp (limit.isLimit _) (isLimitFan X) ⟨i⟩) x
 
 end
 

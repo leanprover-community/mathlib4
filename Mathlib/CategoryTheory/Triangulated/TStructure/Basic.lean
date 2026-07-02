@@ -29,9 +29,7 @@ use depending on the context.
 
 ## TODO
 
-* promote these truncations to a (functorial) spectral object
-* define triangulated subcategories `t.plus`, `t.minus`, `t.bounded` and show
-  that there are induced t-structures on these full subcategories
+* show that the heart of `t` is an abelian category
 
 ## References
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
@@ -76,6 +74,7 @@ attribute [instance] le_isClosedUnderIsomorphisms ge_isClosedUnderIsomorphisms
 variable {C}
 variable (t : TStructure C)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     ∃ (X Y : C) (_ : t.le n₀ X) (_ : t.ge n₁ Y) (f : X ⟶ A) (g : A ⟶ Y)
       (h : Y ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by

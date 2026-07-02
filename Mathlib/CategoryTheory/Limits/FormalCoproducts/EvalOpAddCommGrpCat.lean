@@ -29,6 +29,7 @@ section
 variable {A : Type u'} [Category.{v} A]
   [Preadditive A] [HasProducts.{v} A] (F : Cᵒᵖ ⥤ A) (P : A)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def evalOpCoyonedaObjObj : (FormalCoproduct.{v} C)ᵒᵖ ⥤ AddCommGrpCat.{v} where
   obj X := .of (∀ (i : X.unop.I), P ⟶ F.obj (op (X.unop.obj i)))
@@ -37,6 +38,7 @@ def evalOpCoyonedaObjObj : (FormalCoproduct.{v} C)ᵒᵖ ⥤ AddCommGrpCat.{v} w
       map_zero' := by aesop
       map_add' := by aesop }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def evalOpObjCompPreadditiveCoyonedaObjIso :
     (evalOp.{v} C A).obj F ⋙ preadditiveCoyoneda.obj (op P) ≅ evalOpCoyonedaObjObj F P :=
@@ -49,6 +51,7 @@ noncomputable def evalOpObjCompPreadditiveCoyonedaObjIso :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 @[simps obj_obj obj_map map_app]
 def evalOpAddCommGrpCat :
@@ -65,6 +68,7 @@ def evalOpAddCommGrpCat :
           map_zero' := by aesop
           map_add' := by aesop } }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 noncomputable def evalOpAddCommGrpCatIso :

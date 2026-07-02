@@ -64,7 +64,7 @@ variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance instFunLike : FunLike (α →ᵇ β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -152,6 +152,7 @@ theorem dist_coe_le_dist (x : α) : dist (f x) (g x) ≤ dist f g :=
 /- This lemma will be needed in the proof of the metric space instance, but it will become
 useless afterwards as it will be superseded by the general result that the distance is nonnegative
 in metric spaces. -/
+
 set_option backward.privateInPublic true in
 private theorem dist_nonneg' : 0 ≤ dist f g :=
   le_csInf dist_set_exists fun _ => And.left
@@ -179,7 +180,7 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
   · by_cases h : Nonempty α
     · exact dist_lt_of_nonempty_compact
     · rintro -
-      convert C0
+      convert! C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
       exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
@@ -510,19 +511,13 @@ theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : �
 theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
     (f * g) x = f x * g x := rfl
 
-@[simp]
+@[deprecated "dont use `nsmulRec` directly" (since := "2026-03-06")]
 theorem coe_nsmulRec [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
     (f : α →ᵇ β) : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
   | 0 => by rw [nsmulRec, zero_smul, coe_zero]
   | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec _ n]
 
-instance instSMulNat [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] :
-    SMul ℕ (α →ᵇ β) where
-  smul n f :=
-    { toContinuousMap := n • f.toContinuousMap
-      map_bounded' := by simpa [coe_nsmulRec] using (nsmulRec n f).map_bounded' }
-
-@[to_additive existing instSMulNat]
+@[to_additive]
 instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
   pow f n :=
     { toFun := fun x ↦ (f x) ^ n
@@ -542,12 +537,12 @@ theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α 
 @[to_additive]
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
     Monoid (α →ᵇ R) := fast_instance%
-  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Injective.monoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
     CommMonoid (α →ᵇ R) := fast_instance%
-  Injective.commMonoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Injective.commMonoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- Coercion of a `BoundedContinuousFunction` is a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) /-- Coercion of a `BoundedContinuousFunction` is an `AddMonoidHom`.
@@ -556,8 +551,6 @@ def coeFnMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) �
   toFun := (⇑)
   map_one' := coe_one
   map_mul' := coe_mul
-
-@[deprecated (since := "2025-10-30")] alias coeFnAddHom := coeFnAddMonoidHom
 
 variable (α R) in
 /-- The multiplicative map forgetting that a bounded continuous function is bounded. -/
@@ -570,8 +563,6 @@ def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α �
     intros
     ext
     simp
-
-@[deprecated (since := "2025-10-30")] alias toContinuousMapAddHom := toContinuousMapAddMonoidHom
 
 @[to_additive (attr := simp)]
 lemma coe_prod {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
@@ -686,7 +677,7 @@ end casts
 instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
     [Semiring R] [BoundedMul R] [ContinuousMul R] [BoundedAdd R] [ContinuousAdd R] :
     Semiring (α →ᵇ R) := fast_instance%
-  Injective.semiring _ DFunLike.coe_injective'
+  Injective.semiring _ DFunLike.coe_injective
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
 section IsBoundedSMul

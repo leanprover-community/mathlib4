@@ -86,7 +86,6 @@ lemma lift_mk {N : Submodule R M} (hN : N ≤ Q.radical) (m : M) :
     Q.lift N hN (Submodule.Quotient.mk m) = Q m :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Universal property of the radical of a quadratic form:
 `Q.radical` is the largest subspace `N` such that
@@ -139,7 +138,7 @@ the radical of a quadratic map is the kernel of its associated bilinear map. -/
 lemma radical_eq_ker_associated : Q.radical = (QuadraticMap.associated Q).ker := by
   rw [radical_eq_ker_polarBilin]
   ext m
-  simp [LinearMap.ext_iff, QuadraticMap.polar, -smul_eq_mul, invOf_smul_eq_iff]
+  simp [associated_apply, LinearMap.ext_iff, QuadraticMap.polar, invOf_smul_eq_iff]
 
 /--
 If `2` is invertible in the coefficient ring,

@@ -120,14 +120,20 @@ theorem integrableOn_const {C : ε'} (hs : μ s ≠ ∞ := by finiteness)
     (hC : ‖C‖ₑ ≠ ∞ := by finiteness) : IntegrableOn (fun _ ↦ C) s μ :=
   (integrableOn_const_iff hC).2 <| Or.inr <| lt_top_iff_ne_top.2 hs
 
+@[gcongr]
 theorem IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_mono hs hμ
 
+@[gcongr]
 theorem IntegrableOn.mono_set (h : IntegrableOn f t μ) (hst : s ⊆ t) : IntegrableOn f s μ :=
   h.mono hst le_rfl
 
 theorem IntegrableOn.mono_measure (h : IntegrableOn f s ν) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono (Subset.refl _) hμ
+
+theorem IntegrableOn.mono_measure' (h : IntegrableOn f s ν) (hμ : μ.restrict s ≤ ν.restrict s) :
+    IntegrableOn f s μ :=
+  Integrable.mono_measure h hμ
 
 theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ≤ᵐ[μ] t) : IntegrableOn f s μ :=
   h.integrable.mono_measure <| Measure.restrict_mono_ae hst
@@ -142,6 +148,7 @@ theorem IntegrableOn.congr_fun_ae (h : IntegrableOn f s μ) (hst : f =ᵐ[μ.res
     IntegrableOn g s μ :=
   Integrable.congr h hst
 
+@[gcongr]
 theorem integrableOn_congr_fun_ae (hst : f =ᵐ[μ.restrict s] g) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
   ⟨fun h => h.congr_fun_ae hst, fun h => h.congr_fun_ae hst.symm⟩
@@ -255,6 +262,29 @@ theorem IntegrableOn.add_measure [PseudoMetrizableSpace ε]
     IntegrableOn f s (μ + ν) := by
   delta IntegrableOn; rw [Measure.restrict_add]; exact hμ.integrable.add_measure hν
 
+@[to_fun]
+theorem IntegrableOn.add [ContinuousAdd ε'] {f g : α → ε'}
+    (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) : IntegrableOn (f + g) s μ :=
+  Integrable.add hf hg
+
+@[to_fun]
+theorem IntegrableOn.sub {f g : α → E}
+    (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) : IntegrableOn (f - g) s μ :=
+  Integrable.sub hf hg
+
+@[to_fun]
+theorem IntegrableOn.neg {f : α → E} (hf : IntegrableOn f s μ) : IntegrableOn (-f) s μ :=
+  Integrable.neg hf
+
+@[simp]
+theorem integrableOn_neg_iff {f : α → E} : IntegrableOn (-f) s μ ↔ IntegrableOn f s μ :=
+  integrable_neg_iff
+
+@[simp]
+theorem integrableOn_fun_neg_iff {f : α → E} :
+    IntegrableOn (fun x ↦ -f x) s μ ↔ IntegrableOn f s μ :=
+  integrable_neg_iff
+
 @[simp]
 theorem integrableOn_add_measure [PseudoMetrizableSpace ε] :
     IntegrableOn f s (μ + ν) ↔ IntegrableOn f s μ ∧ IntegrableOn f s ν :=
@@ -338,6 +368,10 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
 
+theorem integrableOn_indicator_iff (hs : MeasurableSet s) :
+    IntegrableOn (indicator s f) t μ ↔ IntegrableOn f (s ∩ t) μ := by
+  simp_rw [IntegrableOn, integrable_indicator_iff hs, IntegrableOn, Measure.restrict_restrict hs]
+
 end indicator
 
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
@@ -368,7 +402,7 @@ variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] [PseudoMetr
 -- by merely assuming ‖f x‖ₑ vanishes on t \ s
 /-- If a function is integrable on a set `s`, and its enorm vanishes on `t \ s`,
 then it is integrable on `t` if `t` is null-measurable. -/
-theorem IntegrableOn.of_ae_diff_eq_zero {f : α → ε'}
+theorem IntegrableOn.of_ae_sdiff_eq_zero {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
     (h't : ∀ᵐ x ∂μ, x ∈ t \ s → f x = 0) : IntegrableOn f t μ := by
   let u := { x ∈ s | f x ≠ 0 }
@@ -387,22 +421,28 @@ theorem IntegrableOn.of_ae_diff_eq_zero {f : α → ε'}
       exact hx.2 (subset_toMeasurable μ u ⟨h'x, Ne.symm H⟩)
     · exact (hxt ⟨hx.1, h'x⟩).symm
   apply (A.union B).mono_set _
-  rw [union_diff_self]
+  rw [union_sdiff_self]
   exact subset_union_right
+
+@[deprecated (since := "2026-06-03")]
+alias IntegrableOn.of_ae_diff_eq_zero := IntegrableOn.of_ae_sdiff_eq_zero
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is measurable. -/
-theorem IntegrableOn.of_forall_diff_eq_zero {f : α → ε'}
+theorem IntegrableOn.of_forall_sdiff_eq_zero {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
-  hf.of_ae_diff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
+  hf.of_ae_sdiff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
+
+@[deprecated (since := "2026-06-03")]
+alias IntegrableOn.of_forall_diff_eq_zero := IntegrableOn.of_forall_sdiff_eq_zero
 
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_ae_notMem_eq_zero
     {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ᵐ x ∂μ, x ∉ s → f x = 0) : Integrable f μ := by
   rw [← integrableOn_univ]
-  apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
+  apply hf.of_ae_sdiff_eq_zero nullMeasurableSet_univ
   filter_upwards [h't] with x hx h'x using hx h'x.2
 
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
@@ -414,7 +454,7 @@ theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
 theorem IntegrableOn.of_inter_support {f : α → ε'}
     (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
     IntegrableOn f s μ := by
-  simpa using hf.of_forall_diff_eq_zero hs
+  simpa using hf.of_forall_sdiff_eq_zero hs
 
 theorem integrableOn_iff_integrable_of_support_subset
     {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by
@@ -442,6 +482,13 @@ theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
 theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : IntegrableOn f s μ) :
     (∫⁻ x in s, ENNReal.ofReal (f x) ∂μ) < ∞ :=
   Integrable.lintegral_lt_top hf
+
+theorem _root_.ContinuousLinearMap.integrableOn_comp {E H 𝕜 𝕜' : Type*}
+    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} (L : H →SL[σ] E) (hf : IntegrableOn f s μ) :
+    IntegrableOn (L ∘ f) s μ :=
+  L.integrable_comp hf
 
 /-- We say that a function `f` is *integrable at filter* `l` if it is integrable on some
 set `s ∈ l`. Equivalently, it is eventually integrable on `s` in `l.smallSets`. -/
@@ -484,6 +531,30 @@ theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirectedOrder α] [Nonempt
     IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ :=
   integrableAtFilter_atBot_iff (α := αᵒᵈ)
 
+@[gcongr]
+lemma IntegrableAtFilter.mono_measure (hf : IntegrableAtFilter f l μ) (h : ν ≤ μ) :
+    IntegrableAtFilter f l ν :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.mono_measure h⟩
+
+@[gcongr]
+lemma IntegrableAtFilter.congr (hf : IntegrableAtFilter f l μ) (h : f =ᵐ[μ] g) :
+    IntegrableAtFilter g l μ :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr h.restrict⟩
+
+lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
+    IntegrableAtFilter f l μ ↔ IntegrableAtFilter g l μ :=
+  ⟨(·.congr h), (·.congr h.symm)⟩
+
+lemma IntegrableAtFilter.congr'_enorm {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε'']
+    {g : α → ε''} (hf : IntegrableAtFilter f l μ) (hg : AEStronglyMeasurable g μ)
+    (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+    IntegrableAtFilter g l μ :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_enorm hg.restrict (ae_restrict_le h)⟩
+
+@[simp]
+lemma integrableAtFilter_zero : IntegrableAtFilter (0 : α → E) l μ :=
+  ⟨univ, by simp, integrableOn_univ.mpr (integrable_zero ..)⟩
+
 protected theorem IntegrableAtFilter.add [ContinuousAdd ε'] {f g : α → ε'}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f + g) l μ := by
@@ -497,6 +568,12 @@ protected theorem IntegrableAtFilter.neg {f : α → E} (hf : IntegrableAtFilter
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.neg⟩
 
+@[simp]
+protected theorem integrableAtFilter_neg_iff {f : α → E} :
+    IntegrableAtFilter (-f) l μ ↔ IntegrableAtFilter f l μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.neg⟩
+  convert! h.neg; simp
+
 protected theorem IntegrableAtFilter.sub {f g : α → E}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f - g) l μ := by
@@ -508,6 +585,21 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩
+
+-- See `integrableAtFilter_smul_iff` below for the fully general version.
+private theorem integrableAtFilter_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : α → E} {c : 𝕜} (hc : c ≠ 0) :
+    IntegrableAtFilter (c • f) l μ ↔ IntegrableAtFilter f l μ := by
+  refine ⟨fun hf ↦ ?_, fun h ↦ h.smul c⟩
+  convert! hf.smul c⁻¹
+  simp [← smul_assoc, inv_mul_cancel₀ hc]
+
+theorem integrableAtFilter_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : α → E} (c : 𝕜) :
+    IntegrableAtFilter (c • f) l μ ↔ c = 0 ∨ IntegrableAtFilter f l μ := by
+  by_cases hc : c = 0
+  · simp [hc]
+  · simpa [hc] using MeasureTheory.integrableAtFilter_smul_iff' hc
 
 protected theorem IntegrableAtFilter.enorm (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖ₑ) l μ :=
@@ -553,6 +645,13 @@ theorem IntegrableAtFilter.sup_iff [PseudoMetrizableSpace ε'] {f : α → ε'} 
   constructor
   · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
   · exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
+
+theorem _root_.ContinuousLinearMap.integrableAtFilter_comp {E H 𝕜 𝕜' : Type*}
+    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} (L : H →SL[σ] E)
+    (hf : IntegrableAtFilter f l μ) : IntegrableAtFilter (L ∘ f) l μ :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, L.integrableOn_comp hf⟩
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
@@ -751,7 +850,7 @@ theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [Meas
 /-! ### Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the measure being finite at the endpoint, while
-the unprimed ones use `[NoAtoms μ]`.
+the unprimed ones use `[NullSingletonClass μ]`.
 -/
 
 
@@ -767,7 +866,7 @@ theorem integrableOn_Icc_iff_integrableOn_Ioc'
   by_cases hab : a ≤ b
   · rw [← Ioc_union_left hab, integrableOn_union, eq_true (integrableOn_singleton ha'), and_true]
   · rw [Icc_eq_empty hab, Ioc_eq_empty]
-    contrapose! hab
+    contrapose hab
     exact hab.le
 
 theorem integrableOn_Icc_iff_integrableOn_Ico'
@@ -776,7 +875,7 @@ theorem integrableOn_Icc_iff_integrableOn_Ico'
   by_cases hab : a ≤ b
   · rw [← Ico_union_right hab, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
   · rw [Icc_eq_empty hab, Ico_eq_empty]
-    contrapose! hab
+    contrapose hab
     exact hab.le
 
 theorem integrableOn_Ico_iff_integrableOn_Ioo'
@@ -809,7 +908,7 @@ theorem integrableOn_Iic_iff_integrableOn_Iio'
     IntegrableOn f (Iic b) μ ↔ IntegrableOn f (Iio b) μ := by
   rw [← Iio_union_right, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ :=
