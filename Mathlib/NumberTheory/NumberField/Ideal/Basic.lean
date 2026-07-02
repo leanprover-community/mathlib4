@@ -142,9 +142,8 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
     hζ_pow.intermediateField_adjoin_isCyclotomicExtension ℚ
   suffices 1 < P.ramificationIdx ℤ by
     rwa [P.ramificationIdx_eq_one ℤ, lt_self_iff_false] at this
-  rw [Ideal.ramificationIdx_tower (P.under (𝓞 F)) P,
-    IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime p F]
-  exact one_lt_mul_of_lt_of_le (by rwa [Nat.lt_sub_iff_add_lt']) <| P.ramificationIdx_pos (𝓞 F)
+  refine lt_of_lt_of_le ?_ <| ramificationIdx_below_le (P.under (𝓞 F)) P
+  rwa [IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime p F, Nat.lt_sub_iff_add_lt']
 
 /--
 If the norm of the (nonzero) prime ideal `P` is coprime with the order of the torsion of `K`, then
