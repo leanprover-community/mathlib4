@@ -126,6 +126,7 @@ lemma ιNormalizedChainComplex_fromNormalizedChainComplex_f (x : X _⦋n⦌) :
   rw [Category.assoc, toNormalizedChainComplex_f_fromNormalizedChainComplex_f]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ιNormalizedChainComplex_eq_zero (x : X _⦋n⦌) (hx : x ∈ X.degenerate n) :
     X.ιNormalizedChainComplex (R := R) x = 0 := by
@@ -223,6 +224,7 @@ noncomputable def normalizedChainComplexFunctorObj : SSet.{w} ⥤ ChainComplex C
   obj X := X.normalizedChainComplex R
   map f := normalizedChainComplexMap f R
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `X.toNormalizedChainComplex R` for any simplicial set `X`,
 as a natural transformation. -/
 @[simps]

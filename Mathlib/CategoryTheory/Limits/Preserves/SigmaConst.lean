@@ -28,6 +28,7 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /- If the morphisms in `C` were in `Type w`, the functor
 `sigmaConst.{w}`
@@ -73,6 +74,7 @@ noncomputable def sigmaConstCokernelCofork :
       if hb : b ∈ (Set.range f)ᶜ then Sigma.ι (fun _ ↦ R) ⟨b, hb⟩ else 0))
     (by ext; simp [Sigma.ι_desc])
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
     dsimp% Sigma.ι (fun _ ↦ R) b ≫ (sigmaConstCokernelCofork R f).π =
@@ -81,6 +83,7 @@ lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
   rw [Sigma.ι_desc]
   apply dif_pos
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
     dsimp% Sigma.ι (fun _ ↦ R) (f a) ≫ (sigmaConstCokernelCofork R f).π = 0 := by
@@ -88,6 +91,7 @@ lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
   rw [Sigma.ι_desc]
   exact dif_neg (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cokernel of the map `∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced
 by a map `f : α → β` identifies to the coproduct of copies of `R`
@@ -113,6 +117,7 @@ instance :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasZeroMorphisms C] (R : C) [HasCoproducts.{w} C] {α β : Type w} (f : α ⟶ β) :
     HasCokernel ((sigmaConst.obj R).map f) := by
   dsimp; infer_instance
@@ -122,6 +127,7 @@ section
 variable [HasCoproducts.{w} C] [HasCoproducts.{w} D]
   (F : C ⥤ D) [∀ (T : Type w), PreservesColimitsOfShape (Discrete T) F] (X : C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomophism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
 preserves coproducts. -/
 noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X) :=
@@ -134,6 +140,7 @@ noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.o
     ext
     simp [Sigma.ι_desc, Sigma.ι_desc_assoc])
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ι_sigmaConstObjCompIso_hom_app {T : Type w} (t : T) :
     dsimp% F.map (Sigma.ι (fun (_ : T) ↦ X) t) ≫ (sigmaConstObjCompIso F X).hom.app T =

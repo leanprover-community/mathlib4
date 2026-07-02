@@ -202,7 +202,7 @@ theorem IsIntegral.of_mul_unit {x y : B} {r : R} (hr : algebraMap R B r * y = 1)
     (hx : IsIntegral R (x * y)) : IsIntegral R x := by
   obtain ⟨p, p_monic, hp⟩ := hx
   refine ⟨scaleRoots p r, (monic_scaleRoots_iff r).2 p_monic, ?_⟩
-  convert scaleRoots_aeval_eq_zero hp
+  convert! scaleRoots_aeval_eq_zero hp
   rw [Algebra.commutes] at hr ⊢
   rw [mul_assoc, hr, mul_one]; rfl
 
@@ -485,7 +485,7 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
   let p' : S[X] := p.toSubring S.toSubring subset_adjoin
   have hSx : IsIntegral S x := ⟨p', (p.monic_toSubring _ _).mpr pmonic, by
     rw [IsScalarTower.algebraMap_eq S A B, ← eval₂_map]
-    convert hp; apply p.map_toSubring S.toSubring⟩
+    convert! hp; apply p.map_toSubring S.toSubring⟩
   let Sx := Subalgebra.toSubmodule (S[x])
   let MSx : Module S Sx := SMulMemClass.toModule _ -- the next line times out without this
   have : Module.Finite S Sx := .of_fg hSx.fg_adjoin_singleton
@@ -579,7 +579,7 @@ theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
   rintro ⟨x⟩
   obtain ⟨p, p_monic, hpx⟩ := hf x
   refine ⟨p.map (Ideal.Quotient.mk _), p_monic.map _, ?_⟩
-  simpa only [hom_eval₂, eval₂_map] using congr_arg (Ideal.Quotient.mk I) hpx
+  simpa only [hom_eval₂, eval₂_map] using! congr_arg (Ideal.Quotient.mk I) hpx
 
 instance {I : Ideal A} [Algebra.IsIntegral R A] : Algebra.IsIntegral R (A ⧸ I) :=
   Algebra.IsIntegral.trans A
@@ -598,6 +598,9 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   refine ⟨fun h => ?_, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
+
+theorem RingHom.IsIntegral.kerLift {f : S →+* T} (hf : f.IsIntegral) : f.kerLift.IsIntegral :=
+  RingHom.IsIntegral.tower_top (Ideal.Quotient.mk (RingHom.ker f)) f.kerLift hf
 
 theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
     (inj : Function.Injective f) : IsLocalHom f where

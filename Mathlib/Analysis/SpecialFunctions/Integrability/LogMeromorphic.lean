@@ -12,6 +12,8 @@ public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+
 /-!
 # Integrability for Logarithms of Meromorphic Functions
 

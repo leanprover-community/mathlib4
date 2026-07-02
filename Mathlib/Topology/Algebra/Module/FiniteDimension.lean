@@ -10,6 +10,7 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -384,8 +385,7 @@ theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLin
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
-    (e.toContinuousLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm :=
-  rfl
+    (e.toContinuousLinearEquiv.toLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm := rfl
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
@@ -635,7 +635,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
     exact ⟨f, Submodule.subset_span hf, y, hy, rfl⟩
   have h_ind (n : ℕ) : U ⊆ M + c ^ n • U := by
     induction n with
-    | zero => simpa using fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
+    | zero => simpa using! fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
     | succ n ih =>
       calc
         U ⊆ M + c ^ n • U := ih
@@ -655,7 +655,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
       intro W hW
       exact (tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
     have hm_tendsto : Tendsto m atTop (𝓝 x) := by
-      simpa [show m = fun n ↦ x - u n by grind] using tendsto_const_nhds.sub hu_tendsto
+      simpa [show m = fun n ↦ x - u n by grind] using! tendsto_const_nhds.sub hu_tendsto
     exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
   have hM_top : M = ⊤ := absorbent_nhds_zero (𝕜 := 𝕜) hU_nhds |>.mono hU_sub_M |>.submodule_eq_top
   exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
@@ -739,6 +739,14 @@ theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodul
 @[deprecated (since := "2026-05-09")]
 alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
   Submodule.ClosedComplemented.of_finiteDimensional_quotient
+
+theorem Submodule.ClosedComplemented.of_disjoint_of_finiteDimensional_quotient
+    {A B : Submodule 𝕜 E} [B_cofg : FiniteDimensional 𝕜 (E ⧸ B)] (hB : IsClosed (B : Set E))
+    (hAB : Disjoint A B) : A.ClosedComplemented := by
+  obtain ⟨C, B_le_C, C_compl_A⟩ := hAB.symm.exists_isCompl
+  have C_cofg : FiniteDimensional 𝕜 (E ⧸ C) := CoFG.of_le B_le_C B_cofg
+  have hC : IsClosed (C : Set E) := isClosed_mono_of_finiteDimensional_quotient hB B_le_C
+  exact C_compl_A.isTopCompl_of_finiteDimensional_quotient hC |>.symm.closedComplemented
 
 lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
     {A B : Submodule 𝕜 E} [FiniteDimensional 𝕜 A] (hA : A.ClosedComplemented) [T2Space A]

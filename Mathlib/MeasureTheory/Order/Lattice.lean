@@ -120,23 +120,18 @@ section MeasurableSup₂
 
 variable [MeasurableSup₂ M]
 
-@[fun_prop]
-theorem Measurable.sup' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊔ g) :=
+@[to_fun (attr := fun_prop)]
+theorem Measurable.sup (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊔ g) :=
   measurable_sup.comp (hf.prodMk hg)
 
-@[fun_prop]
-theorem Measurable.sup (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊔ g a :=
-  measurable_sup.comp (hf.prodMk hg)
+@[deprecated (since := "2026-06-26")] alias Measurable.sup' := Measurable.sup
 
-@[fun_prop]
-theorem AEMeasurable.sup' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+@[to_fun (attr := fun_prop)]
+theorem AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⊔ g) μ :=
   measurable_sup.comp_aemeasurable (hf.prodMk hg)
 
-@[fun_prop]
-theorem AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a ⊔ g a) μ :=
-  measurable_sup.comp_aemeasurable (hf.prodMk hg)
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.sup' := AEMeasurable.sup
 
 instance (priority := 100) MeasurableSup₂.toMeasurableSup : MeasurableSup M where
 
@@ -176,23 +171,18 @@ section MeasurableInf₂
 
 variable [MeasurableInf₂ M]
 
-@[fun_prop]
-theorem Measurable.inf' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊓ g) :=
+@[to_fun (attr := fun_prop)]
+theorem Measurable.inf (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊓ g) :=
   measurable_inf.comp (hf.prodMk hg)
 
-@[fun_prop]
-theorem Measurable.inf (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊓ g a :=
-  measurable_inf.comp (hf.prodMk hg)
+@[deprecated (since := "2026-06-26")] alias Measurable.inf' := Measurable.inf
 
-@[fun_prop]
-theorem AEMeasurable.inf' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+@[to_fun (attr := fun_prop)]
+theorem AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⊓ g) μ :=
   measurable_inf.comp_aemeasurable (hf.prodMk hg)
 
-@[fun_prop]
-theorem AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a ⊓ g a) μ :=
-  measurable_inf.comp_aemeasurable (hf.prodMk hg)
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.inf' := AEMeasurable.inf
 
 instance (priority := 100) MeasurableInf₂.to_hasMeasurableInf : MeasurableInf M where
 
@@ -220,7 +210,7 @@ theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀
 @[fun_prop]
 theorem Finset.measurable_range_sup'' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
     Measurable fun x => (range (n + 1)).sup' nonempty_range_add_one fun k => f k x := by
-  convert Finset.measurable_range_sup' hf using 1
+  convert! Finset.measurable_range_sup' hf using 1
   ext x
   simp
 
