@@ -49,7 +49,7 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
   by_cases hf : f =ᵐ[μ] 0
   -- We will need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
-    simpa [HasCompactSupport.zero, eLpNorm_congr_ae hf] using contDiff_const
+    simpa [HasCompactSupport.zero, eLpNorm_congr_ae hf] using! contDiff_const
   have hs₁ : μ (tsupport f) ≠ ⊤ := h₁.measure_lt_top.ne
   have hs₂ : 0 < (μ <| tsupport f).toReal := by
     -- Since `f` is not the zero function `tsupport f` has positive measure
@@ -105,7 +105,7 @@ theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞
   use ⟨g, hg₄.coeFn_toLp, hg₁, hg₂⟩
   rw [Metric.mem_closedBall, dist_comm, Lp.dist_def,
     ← le_ofReal_iff_toReal_le ((Lp.memLp f).sub (Lp.memLp hg₄.toLp)).eLpNorm_ne_top hε.le]
-  convert hg₃ using 1
+  convert! hg₃ using 1
   apply eLpNorm_congr_ae
   gcongr
   exact hg₄.coeFn_toLp

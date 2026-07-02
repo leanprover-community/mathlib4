@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Data.ENat.Lattice
 
@@ -232,7 +233,7 @@ theorem HasFTaylorSeriesUpToOn.hasFDerivWithinAt (h : HasFTaylorSeriesUpToOn n f
     (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) s x from H.congr A (A x hx)
   rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff']
   have : ((0 : ℕ) : ℕ∞) < n := pos_iff_ne_zero.mpr hn
-  convert h.fderivWithin _ this x hx
+  convert! h.fderivWithin _ this x hx
   ext y v
   change (p x 1) (snoc 0 y) = (p x 1) (cons y v)
   congr with i
@@ -301,7 +302,7 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     change HasFDerivWithinAt (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
       (p x m.succ.succ).curryRight.curryLeft s x
     rw [(continuousMultilinearCurryRightEquiv' 𝕜 m E F).comp_hasFDerivWithinAt_iff']
-    convert H.fderivWithin _ A x hx
+    convert! H.fderivWithin _ A x hx
     ext y v
     change p x (m + 2) (snoc (cons y (init v)) (v (last _))) = p x (m + 2) (cons y v)
     rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
@@ -338,7 +339,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
         rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'
             (f' := ((p x).shift m.succ).curryLeft)] at this
-        convert this
+        convert! this
         ext y v
         change
           (p x (Nat.succ (Nat.succ m))) (cons y v) =
@@ -828,6 +829,14 @@ theorem iteratedFDeriv_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
     (iteratedFDeriv 𝕜 (n + 1) f x : (Fin (n + 1) → E) → F) m =
       (fderiv 𝕜 (iteratedFDeriv 𝕜 n f) x : E → E [×n]→L[𝕜] F) (m 0) (tail m) :=
   rfl
+
+/-- The iterated derivative is given by the derivative of the `n-1` iterated derivative. -/
+theorem DifferentiableAt.iteratedFDeriv_succ_apply_left' {n : ℕ} {m : Fin (n + 1) → E}
+    (hf : DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 n f) x) :
+    iteratedFDeriv 𝕜 (n + 1) f x m =
+    fderiv 𝕜 (fun y ↦ iteratedFDeriv 𝕜 n f y (Fin.tail m)) x (m 0) := by
+  convert iteratedFDeriv_succ_apply_left m
+  simp [fderiv_continuousMultilinear_apply_const hf]
 
 /-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
 and the derivative of the `n`-th derivative. -/

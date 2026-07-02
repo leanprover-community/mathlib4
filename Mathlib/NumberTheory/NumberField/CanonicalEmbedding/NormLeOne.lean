@@ -149,7 +149,7 @@ theorem norm_normAtAllPlaces (x : mixedSpace K) :
 
 theorem normAtAllPlaces_mem_fundamentalCone_iff {x : mixedSpace K} :
     mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
-  simp_rw [fundamentalCone, Set.mem_diff, Set.mem_preimage, logMap_normAtAllPlaces,
+  simp_rw [fundamentalCone, Set.mem_sdiff, Set.mem_preimage, logMap_normAtAllPlaces,
     Set.mem_setOf_eq, norm_normAtAllPlaces]
 
 end normAtAllPlaces
@@ -231,7 +231,7 @@ abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
 
 theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
     HasDerivAt (expMap_single w) (deriv_expMap_single w x) x := by
-  simpa [expMap_single, mul_comm] using
+  simpa [expMap_single, mul_comm] using!
     (HasDerivAt.comp x (Real.hasDerivAt_exp _) (hasDerivAt_mul_const (w.mult : ℝ)⁻¹))
 
 
@@ -248,12 +248,13 @@ variable (K)
 
 theorem expMap_source :
     expMap.source = (Set.univ : Set (realSpace K)) := by
-  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_source, expMap_single,
-    Set.pi_univ Set.univ]
+  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialHomeomorph,
+    PartialEquiv.pi_source, expMap_single, Set.pi_univ Set.univ]
 
 theorem expMap_target :
     expMap.target = Set.univ.pi fun (_ : InfinitePlace K) ↦ Set.Ioi 0 := by
-  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_target, expMap_single]
+  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialHomeomorph,
+    PartialEquiv.pi_target, expMap_single]
 
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
@@ -313,7 +314,7 @@ abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
 
 theorem hasFDerivAt_expMap (x : realSpace K) : HasFDerivAt expMap (fderiv_expMap x) x := by
   simpa [expMap, fderiv_expMap, hasFDerivAt_pi', OpenPartialHomeomorph.pi_apply,
-    ContinuousLinearMap.proj_pi] using
+    ContinuousLinearMap.proj_pi] using!
     fun w ↦ (hasDerivAt_expMap_single w _).hasFDerivAt.comp x (hasFDerivAt_apply w x)
 
 end expMap
@@ -395,7 +396,7 @@ theorem linearIndependent_completeFamily :
   have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1) := by
     refine LinearIndependent.of_comp realSpaceToLogSpace ?_
     simp_rw [Function.comp_def, realSpaceToLogSpace_completeFamily_of_ne]
-    convert (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex equivFinRank).linearIndependent
+    convert! (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex equivFinRank).linearIndependent
     simp
   have h₂ : completeFamily K w₀ ∉ Submodule.span ℝ
       (Set.range (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) := by
@@ -542,10 +543,10 @@ theorem logMap_expMapBasis (x : realSpace K) :
   conv_lhs =>
     enter [2, 1, 2, w, 2, i]
     rw [if_neg i.prop]
-  simp_rw [sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
+  simp_rw [Finset.sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
     completeBasis_apply_of_ne, expMap_symm_apply, normAtAllPlaces_mixedEmbedding,
     ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finsetSum, Finsupp.coe_smul,
-    sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
+    Finset.sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero,
     smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
 
@@ -588,9 +589,10 @@ theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
       Real.exp (x w₀ * Module.finrank ℚ K) *
       (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ * 2⁻¹ ^ nrComplexPlaces K *
         (Module.finrank ℚ K) * regulator K := by
-  simp_rw [fderiv_expMapBasis, det, coe_comp, LinearMap.det_comp, fderiv_expMap, coe_pi, coe_comp,
-    coe_proj, LinearMap.det_pi, LinearMap.det_ring, ContinuousLinearMap.coe_coe, smulRight_apply,
-    one_apply, one_smul, abs_mul, abs_det_completeBasis_equivFunL_symm, prod_deriv_expMap_single]
+  simp_rw [fderiv_expMapBasis, det, toLinearMap_comp, LinearMap.det_comp, fderiv_expMap, coe_pi,
+    toLinearMap_comp, coe_proj, LinearMap.det_pi, LinearMap.det_ring, ContinuousLinearMap.coe_coe,
+    smulRight_apply, one_apply_eq_self, one_smul, abs_mul, abs_det_completeBasis_equivFunL_symm,
+    prod_deriv_expMap_single]
   simp_rw [abs_mul, Real.exp_mul, abs_pow, Real.rpow_natCast, abs_of_nonneg (Real.exp_nonneg _),
     abs_inv, abs_prod, abs_of_nonneg (expMapBasis_nonneg _ _), Nat.abs_ofNat]
   ring
@@ -867,7 +869,7 @@ theorem volume_interior_eq_volume_closure :
 open scoped Classical in
 theorem volume_frontier_normLeOne :
      volume (frontier (normLeOne K)) = 0 := by
-  rw [frontier, measure_diff, volume_interior_eq_volume_closure, tsub_self]
+  rw [frontier, measure_sdiff, volume_interior_eq_volume_closure, tsub_self]
   · exact interior_subset_closure
   · exact measurableSet_interior.nullMeasurableSet
   · refine lt_top_iff_ne_top.mp <| lt_of_le_of_lt (measure_mono interior_subset) ?_
