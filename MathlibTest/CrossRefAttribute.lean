@@ -117,6 +117,13 @@ run_cmd
 /-- error: <input>:1:5: LMFDB ids must consist only of lowecase letters, and periods. -/
 #guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB&tag"
 
+/--
+info:
+[LMFDB lmfdb.tag](https://www.lmfdb.org/knowledge/show/lmfdb.tag) corresponds to declaration 'lmfdbTagged'. (A comment)
+-/
+#guard_msgs in
+#lmfdb_tags
+
 end LMFDB
 
 section errors
