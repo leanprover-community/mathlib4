@@ -108,13 +108,17 @@ theorem lmfdbTagged : 1 + 1 = 2 := by
 run_cmd
   Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `LMFDB.lmfdbTagged}"
 
-/-- error: <input>:1:9: LMFDB ids must consist only of lowecase letters, and periods. -/
+/--
+error: <input>:1:9: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
 #guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB.tag"
 
-/-- error: <input>:1:11: LMFDB ids must consist only of lowecase letters, and periods. -/
-#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "lmfdb.tag99"
+/-- info: lmfdb.tag_99 -/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "lmfdb.tag_99"
 
-/-- error: <input>:1:5: LMFDB ids must consist only of lowecase letters, and periods. -/
+/--
+error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
 #guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB&tag"
 
 /--

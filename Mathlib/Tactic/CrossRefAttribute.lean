@@ -165,21 +165,24 @@ def wikidataIdParser : Parser :=
 
 /-! # LMFDB parser -/
 
-/-- `lmfdbId` is the node kind of LMFDB identifiers: lower words with `.` in between. -/
+/-- `lmfdbId` is the node kind of LMFDB identifiers: lower words with `.` in between.
+The words can also contain underscores and digits. -/
 abbrev lmfdbIdKind : SyntaxNodeKind := `lmfdbId
 
-/-- The main parser for LMFDB identifiers: it accepts lower case words with `.` in between. -/
+/-- The main parser for LMFDB identifiers: it accepts lower case words with `.` in between.
+The words can also contain underscores and digits. -/
 def lmfdbIdFn : ParserFn := fun c s =>
   let i := s.pos
-  let s := takeWhileFn (fun c => c.isAlphanum || c == '.') c s
+  let s := takeWhileFn (fun c => c.isAlphanum || c == '.' || c == '_') c s
   if s.hasError then
     s
   else if s.pos == i then
     ParserState.mkError s "lmfdb id"
   else
-    if !(c.extract i s.pos).toList.all (fun c => c.isLower || c == '.') then
+    if !(c.extract i s.pos).toList.all
+      (fun c => c.isLower || c.isDigit || c == '.' || c == '_') then
       ParserState.mkUnexpectedError s
-        "LMFDB ids must consist only of lowecase letters, and periods."
+        "LMFDB ids must consist only of lowercase letters, digits, periods, and underscores."
     else
       mkNodeToken lmfdbIdKind i true c s
 
@@ -307,11 +310,11 @@ initialize Lean.registerBuiltinAttribute {
 Use it as `@[lmfdb foo.bar "Optional comment"]` to associate a Mathlib declaration with
 the corresponding [LMFDB](https://www.lmfdb.org) item.
 -/
-syntax (name := lmfdbTag) "lmfdb" lmfdbIdParser ppSpace (str)? : attr
+syntax (name := lmfdbTag) "lmfdb" lmfdbIdParser (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `lmfdbTag
-  descr := "Apply a LMFDB identifier to a declaration."
+  descr := "Apply an LMFDB identifier to a declaration."
   add := fun decl stx _attrKind => do
     let (id, comment) ← match stx with
       | `(attr| lmfdb $id $[$comment]?) => pure (id, comment)
@@ -391,7 +394,6 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 -/
 elab (name := wikidataTags) "#wikidata_tags" tk:("!")? : command =>
   traceCrossRefs .wikidata (tk.isSome)
-
 
 /-- The `#lmfdb_tags` command retrieves all declarations that have the `lmfdb` attribute.
 
