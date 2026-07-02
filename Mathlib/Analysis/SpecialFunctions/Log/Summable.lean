@@ -40,7 +40,6 @@ lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (
     cexp (∑' i, log (f i)) = ∏' i, f i :=
   (hasProd_of_hasSum_log hfn hf.hasSum).tprod_eq.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
     Summable (fun i ↦ log (1 + f i)) := by
   apply (hf.norm.mul_left (3 / 2)).of_norm_bounded_eventually
@@ -174,7 +173,7 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   obtain ⟨r₁, hr₁, s₁, hs₁⟩ :=
     (multipliable_norm_one_add_of_summable_norm hf).eventually_bounded_finsetProd
   obtain ⟨s₂, hs₂⟩ := prod_vanishing_of_summable_norm hf (show 0 < ε / (2 * r₁) by positivity)
-  simp only [unconditional, Filter.mem_map, mem_atTop_sets, ge_iff_le, le_eq_subset,
+  simp only [unconditional, Filter.mem_map, mem_atTop_sets, le_eq_subset,
     Set.mem_preimage]
   let s := s₁ ∪ s₂
   -- The idea here is that if `s` is a large enough finset, then the product over `s` is bounded

@@ -96,7 +96,7 @@ theorem of_mul_inv_t (a : A) :
 /-- Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t` -/
 def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     HNNExtension G A B φ →* H :=
-  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le <| by
+  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le.2 <| by
     rintro _ _ ⟨a, rfl, rfl⟩
     simp [hx])
 
@@ -160,7 +160,7 @@ and `toSubgroupEquiv` is the group isomorphism from `toSubgroup A B u` to `toSub
 It is defined to be `φ` when `u = 1` and `φ⁻¹` when `u = -1`. -/
 def toSubgroupEquiv (u : ℤˣ) : toSubgroup A B u ≃* toSubgroup A B (-u) :=
   if hu : u = 1 then hu ▸ φ else by
-    convert φ.symm <;>
+    convert! φ.symm <;>
     cases Int.units_eq_one_or u <;> simp_all
 
 @[simp]
@@ -418,6 +418,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
+set_option backward.defeqAttrib.useBackward true in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
@@ -440,17 +441,8 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
       cases hcan2.2
       have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1
-      apply NormalWord.ext
-      · -- This used to `simp [this]` before https://github.com/leanprover/lean4/pull/2644
-        dsimp
-        conv_lhs => erw [IsComplement.equiv_mul_left]
-        rw [map_mul, Submonoid.coe_mul, toSubgroupEquiv_neg_apply, this]
-        simp
-      · -- The next two lines were not needed before https://github.com/leanprover/lean4/pull/2644
-        dsimp
-        conv_lhs => erw [IsComplement.equiv_mul_left]
-        simp [Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this,
-          -SetLike.coe_sort_coe]
+      simpa [NormalWord.ext_iff, (d.compl (-u)).equiv_mul_left, Units.ext_iff,
+        (d.compl (-u)).equiv_snd_eq_inv_mul]
 
 /-- the equivalence given by multiplication on the left by `t` -/
 @[simps]
@@ -458,7 +450,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
     invFun := unitsSMul φ (-1),
     left_inv := fun _ => by rw [unitsSMul_neg]
-    right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
+    right_inv := fun w => by convert! unitsSMul_neg _ _ w; simp }
 
 set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
@@ -660,11 +652,7 @@ theorem exists_normalWord_prod_eq
             (List.head?_eq_some_head _) hS
           rwa [List.head?_eq_some_head hl, Option.map_some, ← this, Option.some_inj] at hx'
         simp at this
-      rw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
-        t_pow_smul_eq_unitsSMul, unitsSMul]
-      erw [dif_neg this]
-      rw [← hw'2]
-      simp [mul_assoc, unitsSMulGroup]
+      simp [mul_smul, of_smul_eq_smul, t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
 
 /-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
 length corresponding list, with the same pattern of occurrences of `t^1` and `t^(-1)`,

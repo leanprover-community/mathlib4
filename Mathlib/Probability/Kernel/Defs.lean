@@ -75,7 +75,7 @@ namespace Kernel
 
 instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
@@ -294,12 +294,10 @@ lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y
   ext s hs
   exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
-@[nontriviality]
 lemma eq_zero_of_isEmpty_left (κ : Kernel α β) [h : IsEmpty α] : κ = 0 := by
   ext a
   exact h.elim a
 
-@[nontriviality]
 lemma eq_zero_of_isEmpty_right (κ : Kernel α β) [IsEmpty β] : κ = 0 := by
   ext a
   simp [Measure.eq_zero_of_isEmpty (κ a)]
@@ -312,7 +310,7 @@ protected noncomputable def sum [Countable ι] (κ : ι → Kernel α β) : Kern
   measurable' := by
     refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
     simp_rw [Measure.sum_apply _ hs]
-    exact Measurable.ennreal_tsum fun n => Kernel.measurable_coe (κ n) hs
+    exact Measurable.tsum fun n => Kernel.measurable_coe (κ n) hs
 
 theorem sum_apply [Countable ι] (κ : ι → Kernel α β) (a : α) :
     Kernel.sum κ a = Measure.sum fun n => κ n a :=

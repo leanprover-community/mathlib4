@@ -96,7 +96,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
     exact eVariationOn.edist_le _ (by grind) (by grind)
   have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := by
     borelize α
-    convert borel_eq_generateFrom_Ioc_le α using 2
+    convert! borel_eq_generateFrom_Ioc_le α using 2
     grind only
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     IsSetSemiring.Ioc A B with ⟨m', hm', h'm'⟩
@@ -139,8 +139,7 @@ lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     have A : hf.exists_vectorMeasure_le_measureAux.choose {a} = 0 := by
       rw [← botSet_eq_singleton_of_isBot ha]
       exact hf.exists_vectorMeasure_le_measureAux.choose_spec.2.1
-    simp only [vectorMeasure, h, ↓reduceDIte, VectorMeasure.coe_add, Pi.add_apply, A,
-      zero_add]
+    simp only [vectorMeasure, h, ↓reduceDIte, add_apply, A, zero_add]
     rw [VectorMeasure.dirac_apply_of_mem (MeasurableSet.singleton a)]
     · simpa only [heqa, sub_right_inj] using (leftLim_eq_of_isBot ha).symm
     · simp [heqa]
@@ -164,7 +163,7 @@ lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     apply tendsto_const_nhds.sub
     have : Tendsto u atTop (𝓝[<] a) := tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       u_lim (Eventually.of_forall u_lt_a)
-    convert (hf.rightLim.tendsto_leftLim a).comp this using 2
+    convert! (hf.rightLim.tendsto_leftLim a).comp this using 2
     have : (𝓝[<] a).NeBot := by
       rw [← mem_closure_iff_nhdsWithin_neBot, closure_Iio' ⟨b, hb⟩]
       exact self_mem_Iic

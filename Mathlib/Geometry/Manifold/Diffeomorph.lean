@@ -254,11 +254,11 @@ nonrec theorem range_comp {α} (h : M ≃ₘ^n⟮I, J⟯ N) (f : α → M) :
   rw [range_comp, image_eq_preimage_symm]
 
 @[simp]
-theorem image_symm_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h '' (h.symm '' s) = s :=
+theorem image_symm_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h '' h.symm '' s = s :=
   h.toEquiv.image_symm_image s
 
 @[simp]
-theorem symm_image_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h.symm '' (h '' s) = s :=
+theorem symm_image_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h.symm '' h '' s = s :=
   h.toEquiv.symm_image_image s
 
 /-- A diffeomorphism is a homeomorphism. -/
@@ -338,19 +338,19 @@ theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
 
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) {s : Set M}
-    (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
-  convert hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
+    (hs : UniqueMDiff[s]) : UniqueMDiff[h '' s] := by
+  convert! hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
   simp [h.image_eq_preimage_symm]
 
 @[simp]
 theorem uniqueMDiffOn_image (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) {s : Set M} :
-    UniqueMDiffOn J (h '' s) ↔ UniqueMDiffOn I s :=
+    UniqueMDiff[h '' s] ↔ UniqueMDiff[s] :=
   ⟨fun hs => h.symm_image_image s ▸ h.symm.uniqueMDiffOn_image_aux hn hs,
     h.uniqueMDiffOn_image_aux hn⟩
 
 @[simp]
 theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) {s : Set N} :
-    UniqueMDiffOn I (h ⁻¹' s) ↔ UniqueMDiffOn J s :=
+    UniqueMDiff[h ⁻¹' s] ↔ UniqueMDiff[s] :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueMDiffOn_image hn
 
 @[simp]
