@@ -56,7 +56,7 @@ with Bourbaki's proof.
 
 open Topology Set Submodule Function ContinuousLinearMap
 
-variable {𝕜}
+variable {𝕜 : Type*}
   [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 
 variable {E F : Type*}
