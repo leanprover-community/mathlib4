@@ -3,7 +3,9 @@ Copyright (c) 2026 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.Tactic.ComputablePolynomial.Reflect
+module
+
+public import Mathlib.Tactic.ComputablePolynomial.Reflect
 
 /-!
 # Axiom-free evaluation tactic for univariate `Polynomial R`
@@ -14,6 +16,8 @@ Adds, all **axiom-free** (kernel `decide +kernel`, no `native_decide`):
 * `poly_dvd` — proves `p ∣ q` by **kernel-reducible long division** (`SparsePoly.Kernel.divMod`,
   fuel-structural so the kernel reduces it), deciding the remainder is `0`. Cleanest over a field.
 -/
+
+@[expose] public section
 
 open Lean Elab Tactic Meta
 
@@ -51,6 +55,8 @@ theorem eval_of_core {p : Polynomial R} (l : List (ℕ × R)) (a v : R)
   rw [← h1, ← evalCore_eq]; exact h2
 
 end SparsePoly
+
+public meta section
 
 /-! ### The tactic -/
 

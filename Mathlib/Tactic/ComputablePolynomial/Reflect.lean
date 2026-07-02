@@ -3,8 +3,10 @@ Copyright (c) 2026 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.Tactic.ComputablePolynomial.SparsePoly
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Tactic.ComputablePolynomial.SparsePoly
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Axiom-free reflection for **univariate** `Polynomial R`
@@ -22,6 +24,8 @@ no need for the `addDegK` workaround. Full ring identities (`+`, `-`, `*`, `^`) 
 Trade-off (as always for kernel reflection): `decide +kernel` runs in the kernel interpreter, so it
 is for small/medium goals.
 -/
+
+@[expose] public section
 
 open Lean Elab Tactic Meta
 
@@ -43,12 +47,17 @@ def insertK (t : ℕ × R) : TL R → TL R
     | .eq => (j, t.2 + b) :: rest
     | .lt => (j, b) :: insertK t rest
 
-private def kAdd (a b : TL R) : TL R := a.foldr insertK b
-private def kNeg (a : TL R) : TL R := a.map (fun t => (t.1, -t.2))
-private def kSub (a b : TL R) : TL R := kAdd a (kNeg b)
-private def kMul (a b : TL R) : TL R :=
+/-- Structural (kernel-reducible) addition of raw coefficient lists. -/
+def kAdd (a b : TL R) : TL R := a.foldr insertK b
+/-- Structural (kernel-reducible) negation of a raw coefficient list. -/
+def kNeg (a : TL R) : TL R := a.map (fun t => (t.1, -t.2))
+/-- Structural (kernel-reducible) subtraction of raw coefficient lists. -/
+def kSub (a b : TL R) : TL R := kAdd a (kNeg b)
+/-- Structural (kernel-reducible) multiplication of raw coefficient lists. -/
+def kMul (a b : TL R) : TL R :=
   a.foldr (fun t acc => kAdd (b.flatMap (fun s => [(t.1 + s.1, t.2 * s.2)])) acc) []
-private def kPow (a : TL R) : ℕ → TL R
+/-- Structural (kernel-reducible) power of a raw coefficient list. -/
+def kPow (a : TL R) : ℕ → TL R
   | 0 => (1 : SparsePoly R).coeffs
   | k + 1 => kMul a (kPow a k)
 
@@ -230,6 +239,8 @@ theorem dvd_of_divMod [Div R] {p q : Polynomial R} (l_p l_q : TL R)
   rw [← h_q, ← h_p, toPolyCore_divMod l_q l_p, hrem, add_zero]
 
 end SparsePoly.Kernel
+
+public meta section
 
 /-! ## The axiom-free tactic -/
 

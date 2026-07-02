@@ -3,10 +3,12 @@ Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, James Davenport, Michail Karatarakis
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Ring
 
 /-!
 # Computable univariate polynomials (`SparsePoly`)
@@ -36,6 +38,8 @@ original Lean prototype by James Davenport
 (https://github.com/JamesHDavenport/Dagstuhl23401, `verify-irred/VerifyIrred`); the
 multivariate analogue (`MvSparsePoly`) and the reflection tactics were developed subsequently.
 -/
+
+@[expose] public section
 
 /-- A computable univariate polynomial over `R`, stored as a list of `(exponent, coefficient)`
 pairs with exponents in strictly decreasing order and all coefficients nonzero (so the zero
@@ -1060,7 +1064,8 @@ lemma toPolyCore_map_smul (c : R) (l : List (ℕ × R)) :
     rw [ih, mul_add, map_mul]
     ring
 
-private def coeffCore : List (ℕ × R) → ℕ → R
+/-- The coefficient of `X ^ n` read off a raw `(exponent, coefficient)` list (`0` if absent). -/
+def coeffCore : List (ℕ × R) → ℕ → R
   | [], _ => 0
   | (i, a) :: tl, n => if n = i then a else coeffCore tl n
 

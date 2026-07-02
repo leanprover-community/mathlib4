@@ -3,11 +3,13 @@ Copyright (c) 2026 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Linarith
 
 /-!
 # `poly_dvd_cert`: divisibility of `Polynomial K` by **symbolic certificate**
@@ -33,6 +35,8 @@ symbolic
 non-monic divisor needs its leading coefficient `≠ 0`). Monic divisors need nothing — they even work
 over any commutative ring.
 -/
+
+public meta section
 
 open Lean Elab Tactic Meta
 
