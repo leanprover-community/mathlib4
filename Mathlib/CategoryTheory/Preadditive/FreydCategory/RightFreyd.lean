@@ -150,9 +150,7 @@ instance : (functor V).Faithful where
 
 end Functor
 
-variable [HasFiniteProducts V]
-
-local instance : HasBinaryBiproducts V := HasBinaryBiproducts.of_hasBinaryProducts
+variable [HasBinaryBiproducts V]
 
 variable {u v : Arrow V} (f : u ⟶ v)
 
