@@ -54,7 +54,7 @@ def ihomFunctor (A : Preord.{u}) : Preord.{u} ⥤ Preord.{u} where
   obj B := of (A →o B)
   map f := ofHom ⟨(f.hom.comp ·), fun _ _ h a => f.hom.monotone (h a)⟩
 
-/-- Currying: monotone maps `A × B → C` correspond to monotone maps `B → (A →o C)`. -/
+/-- Currying, as an equivalence between `A × B →o C` and `B →o A →o C`. -/
 def ihomEquiv (A B C : Preord.{u}) : (A ⊗ B ⟶ C) ≃ (B ⟶ (ihomFunctor A).obj C) where
   toFun h := ofHom
     ⟨fun b => ⟨fun a => h.hom (a, b), fun _ _ ha => h.hom.monotone ⟨ha, le_rfl⟩⟩,
