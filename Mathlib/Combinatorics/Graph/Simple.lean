@@ -6,6 +6,7 @@ Authors: Jun Kwon, Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Graph.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
 # Simple graphs
@@ -15,14 +16,18 @@ This file defines two type classes for graphs `Graph α β`: `Loopless` and `Sim
 ## Main definitions
 - `Loopless`: a graph is loopless if it has no loops
 - `Simple`: a graph is simple if it has no multiple edges between the same pair of vertices
+- `toSimpleGraph`: a function that constructs a `SimpleGraph V(G)` from a Graph `G`
+- `ofSimpleGraph`: a function that constructs a `Graph α (Sym2 α)` from a `SimpleGraph α`
 
+TODO: Show `ofSimpleGraph (toSimpleGraph G)` is isomorphic to `G` when isomorphism on `Graph` is
+defined.
 -/
 
 public section
 
 variable {α β : Type*} {G H : Graph α β} {u v : α} {e f : β} {X Y : Set α}
 
-open Set
+open Set SimpleGraph
 
 namespace Graph
 
@@ -66,7 +71,7 @@ end Loopless
 section Simple
 
 /-- A `Simple` graph is a `Loopless` graph where no pair of vertices are the ends of more than one
-  edge. -/
+edge. -/
 @[mk_iff]
 class Simple (G : Graph α β) : Prop extends G.Loopless where
   eq_of_isLink : ∀ ⦃e f x y⦄, G.IsLink e x y → G.IsLink f x y → e = f
@@ -87,5 +92,48 @@ instance (V : Set α) : (Graph.noEdge V β).Simple where
 instance : (⊥ : Graph α β).Simple := inferInstanceAs (Graph.noEdge _ β).Simple
 
 end Simple
+
+section toSimpleGraph
+
+/-- Construct a simple graph from a graph. -/
+@[expose, simps (attr := grind =)]
+def toSimpleGraph (G : Graph α β) : SimpleGraph V(G) where
+  Adj u v := u ≠ v ∧ G.Adj u v
+  symm u v := by grind [adj_comm]
+
+lemma toSimpleGraph_adj_iff [G.Loopless] (u v : V(G)) : G.toSimpleGraph.Adj u v ↔ G.Adj u v := by
+  grind [Adj.ne]
+
+lemma toSimpleGraph_mono (h : G ≤s H) : G.toSimpleGraph ≤ h.vertexSet_eq ▸ H.toSimpleGraph := by
+  rintro u v hadj
+  match G, H with
+  | ⟨GV, GL, GE, _, _, _, _⟩, ⟨HV, HL, HE, _, _, _, _⟩ =>
+    obtain ⟨hne, hadj⟩ := toSimpleGraph_adj .. ▸ hadj
+    obtain ⟨hle, h⟩ := h
+    simp only at h
+    subst GV
+    simp [toSimpleGraph_adj, hne, hadj.mono hle]
+
+/-- Construct a graph from a simple graph. It has every element of the vertex type as a vertex. -/
+@[expose, simps (attr := grind =)]
+def ofSimpleGraph (G : SimpleGraph α) : Graph α (Sym2 α) where
+  vertexSet := Set.univ
+  edgeSet := G.edgeSet
+  IsLink e x y := e = s(x, y) ∧ e ∈ G.edgeSet
+  isLink_symm e he u v := by simp [Sym2.eq_swap]
+  eq_or_eq_of_isLink_of_isLink e u v x y he hf := by grind
+  edge_mem_iff_exists_isLink e := by induction e with | h u v => grind
+
+@[simp]
+lemma ofSimpleGraph_adj_iff {G : SimpleGraph α} (u v : α) :
+    (ofSimpleGraph G).Adj u v ↔ G.Adj u v := by simp [Adj]
+
+def toSimpleGraphOfSimpleGraphIso (G : SimpleGraph α) :
+    (toSimpleGraph (ofSimpleGraph G)) ≃g G := by
+  use Equiv.Set.univ α
+  refine ⟨fun h ↦ ⟨fun h' ↦ h.ne (congrArg Subtype.val h'), ?_⟩, fun ⟨_, h⟩ ↦ ?_⟩ <;>
+    simpa [ofSimpleGraph_adj_iff] using h
+
+end toSimpleGraph
 
 end Graph
