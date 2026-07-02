@@ -215,25 +215,21 @@ variable {N : ℕ} {f : ℍ → ℂ}
 lemma galoisProd_periodic_one (hN : 0 < N)
     (hf_per : Function.Periodic (f ∘ ofComplex) (N : ℝ)) :
     Function.Periodic (galoisProd N f ∘ ofComplex) 1 := by
-  intro w
-  simp only [Function.comp_apply, galoisProd_apply]
+  refine periodic_comp_ofComplex_iff.mpr fun τ ↦ ?_
+  simp only [galoisProd_apply, coe_vadd, Complex.ofReal_one]
   obtain ⟨n, rfl⟩ : ∃ n, N = n + 1 := ⟨N - 1, by lia⟩
-  by_cases hw : 0 < w.im
-  · rw [ofComplex_apply_of_im_pos (by simpa using hw), ofComplex_apply_of_im_pos hw,
-      Finset.prod_range_succ' (fun j ↦ f (ofComplex (w + 1 - ↑j))),
-      Finset.prod_range_succ (fun j ↦ f (ofComplex (w - ↑j)))]
-    have hinner : ∏ j ∈ Finset.range n, f (ofComplex (w + 1 - ↑(j + 1))) =
-        ∏ j ∈ Finset.range n, f (ofComplex (w - ↑j)) :=
-      Finset.prod_congr rfl fun j _ ↦ by
-        congr 2
-        push_cast
-        ring
-    have hbdry : f (ofComplex (w + 1 - ↑(0 : ℕ))) = f (ofComplex (w - ↑n)) := by
-      rw [show w + 1 - ↑(0 : ℕ) = (w - ↑n) + ↑(n + 1 : ℕ) by push_cast; ring]
-      exact hf_per (w - ↑n)
-    rw [hinner, hbdry]
-  · rw [ofComplex_apply_of_im_nonpos (by simpa using not_lt.mp hw),
-      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
+  rw [Finset.prod_range_succ' (fun j ↦ f (ofComplex (1 + ↑τ - ↑j))),
+    Finset.prod_range_succ (fun j ↦ f (ofComplex (↑τ - ↑j)))]
+  have hinner : ∏ j ∈ Finset.range n, f (ofComplex (1 + ↑τ - ↑(j + 1))) =
+      ∏ j ∈ Finset.range n, f (ofComplex ((τ : ℂ) - ↑j)) :=
+    Finset.prod_congr rfl fun j _ ↦ by
+      congr 2
+      push_cast
+      ring
+  have hbdry : f (ofComplex (1 + ↑τ - ↑(0 : ℕ))) = f (ofComplex ((τ : ℂ) - ↑n)) := by
+    rw [show 1 + (τ : ℂ) - ↑(0 : ℕ) = ((τ : ℂ) - ↑n) + ↑(n + 1 : ℕ) by push_cast; ring]
+    exact hf_per ((τ : ℂ) - ↑n)
+  rw [hinner, hbdry]
 
 /-- If `f` is holomorphic on `ℍ`, so is `galoisProd N f`. -/
 lemma galoisProd_mdiff (hf_mdiff : MDiff f) : MDiff (galoisProd N f) := by
