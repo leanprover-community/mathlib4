@@ -19,47 +19,31 @@ open scoped ENNReal
 
 noncomputable
 instance : ENorm EReal where
-  enorm x := (max x 0).toENNReal + (max (-x) 0).toENNReal
+  enorm x := x⁺.toENNReal + x⁻.toENNReal
 
 section PosNeg
 
 open MeasureTheory
 
-variable {α β : Type*} {mα : MeasurableSpace α} {μ : Measure α} [SubNegMonoid β] [Lattice β]
+lemma EReal.posPart_sub_negPart (x : EReal) : x⁺ - x⁻ = x := by
+  rcases le_total 0 x with h | h <;> simp [negPart_def, h]
 
-@[simp]
-lemma posPartFun_nonneg (f : α → β) (x : α) : 0 ≤ f⁺ x := posPart_nonneg f x
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  [DivInvMonoid β] [Lattice β] [MeasurableSup β]
+  {μ : Measure α} {f : α → β}
 
-@[simp]
-lemma negPartFun_nonneg (f : α → β) (x : α) : 0 ≤ f⁻ x := negPart_nonneg f x
+@[to_additive (attr := fun_prop)]
+lemma Measurable.oneLePart (hf : Measurable f) : Measurable f⁺ᵐ := hf.sup_const 1
 
-lemma posPartFun_sub_negPartFun (f : α → EReal) (x : α) : f⁺ x - f⁻ x = f x := by
-  rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
+@[to_additive (attr := fun_prop)]
+lemma Measurable.leOnePart [MeasurableInv β] (hf : Measurable f) : Measurable f⁻ᵐ :=
+  hf.inv.sup_const 1
 
-lemma posPartFun_eq_zero_or_negPartFun_eq_zero (f : α → EReal) (x : α) :
-    f⁺ x = 0 ∨ f⁻ x = 0 := by
-  rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
+@[to_additive (attr := fun_prop)]
+lemma AEMeasurable.oneLePart (hf : AEMeasurable f μ) : AEMeasurable f⁺ᵐ μ := hf.sup_const 1
 
-variable {f : α → EReal}
-
-@[fun_prop]
-lemma Measurable.posPartFun (hf : Measurable f) : Measurable (fun x ↦ f⁺ x) := by
-  simp only [posPart_def]
-  fun_prop
-
-@[fun_prop]
-lemma Measurable.negPartFun (hf : Measurable f) : Measurable (fun x ↦ f⁻ x) := by
-  simp only [negPart_def]
-  fun_prop
-
-@[fun_prop]
-lemma AEMeasurable.posPartFun (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ f⁺ x) μ := by
-  simp only [posPart_def]
-  fun_prop
-
-@[fun_prop]
-lemma AEMeasurable.negPartFun (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ f⁻ x) μ := by
-  simp only [negPart_def]
-  fun_prop
+@[to_additive (attr := fun_prop)]
+lemma AEMeasurable.leOnePart [MeasurableInv β] (hf : AEMeasurable f μ) : AEMeasurable f⁻ᵐ μ :=
+  hf.inv.sup_const 1
 
 end PosNeg
