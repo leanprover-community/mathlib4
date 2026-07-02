@@ -52,7 +52,7 @@ def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ �
   left_inv := by
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [Nat.mem_divisorsAntidiagonal] at h
-    ext <;> simp [divisorsAntidiagonalFactors, ← PNat.coe_injective.eq_iff, h.1]
+    ext <;> simp [divisorsAntidiagonalFactors, h.1]
   right_inv _ := rfl
 
 lemma sigmaAntidiagonalEquivProd_symm_apply_fst (x : ℕ+ × ℕ+) :
