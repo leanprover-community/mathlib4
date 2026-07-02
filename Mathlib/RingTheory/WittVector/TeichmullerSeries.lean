@@ -59,7 +59,7 @@ theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
       simp only [hind]
       by_contra! ⟨m, hma, hmS'⟩
       have := Finset.sum_eq_zero.mt hmS'
-      push_neg at this
+      push Not at this
       choose b hb hb' using this
       have : a = b :=
         congrArg (fun x ↦ x.1) <|
@@ -97,7 +97,7 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
       ← le_coeff_eq_iff_le_sub_coeff_eq_zero]
   intro i hi
   rw [WittVector.sum_coeff_eq_coeff_sum]
-  · rw [Finset.sum_eq_add_sum_diff_singleton_of_mem (Finset.mem_Iic.mpr (Nat.lt_succ_iff.mp hi))]
+  · rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem (Finset.mem_Iic.mpr (Nat.lt_succ_iff.mp hi))]
     let g := fun x : ℕ ↦ (0 : R)
     rw [Finset.sum_congr rfl (g := g)]
     · simp [g]

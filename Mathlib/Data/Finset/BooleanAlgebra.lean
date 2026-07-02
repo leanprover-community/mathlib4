@@ -21,7 +21,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 
@@ -58,6 +58,10 @@ theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
 theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
   rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
+
+lemma univ_neq_empty (α : Type*) [Fintype α] [Nonempty α] :
+    (Finset.univ : Finset α) ≠ ∅ :=
+  fun h ↦ (Finset.univ_eq_empty_iff.1 h).elim (Classical.arbitrary _)
 
 theorem univ_nontrivial [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=
@@ -103,6 +107,8 @@ instance booleanAlgebra [DecidableEq α] : BooleanAlgebra (Finset α) :=
 section BooleanAlgebra
 variable [DecidableEq α] {a : α}
 
+open symmDiff
+
 theorem sdiff_eq_inter_compl (s t : Finset α) : s \ t = s ∩ tᶜ :=
   sdiff_eq
 
@@ -113,6 +119,14 @@ theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
 theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
+
+@[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := by simp [himp_eq, imp_iff_or_not]
+
+protected theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq ..
+
+@[simp] theorem mem_bihimp_iff : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
+
+protected theorem bihimp_def : s ⇔ t = (s ∪ tᶜ) ∩ (t ∪ sᶜ) := bihimp_eq ..
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
@@ -269,8 +283,7 @@ section DecEq
 
 variable [Fintype α] [DecidableEq α]
 
-@[simp]
-lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp [filter_mem_eq_inter]
+lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp
 
 instance decidableCodisjoint : Decidable (Codisjoint s t) :=
   decidable_of_iff _ codisjoint_left.symm

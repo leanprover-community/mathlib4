@@ -56,7 +56,7 @@ lemma meromorphicOrderAt_of_not_meromorphicAt (hf : ¬ MeromorphicAt f x) :
 
 lemma meromorphicAt_of_meromorphicOrderAt_ne_zero (hf : meromorphicOrderAt f x ≠ 0) :
     MeromorphicAt f x := by
-  contrapose! hf
+  contrapose hf
   simp [hf]
 
 /-- The order of a meromorphic function `f` at a `z₀` is infinity iff `f` vanishes locally around
@@ -66,7 +66,7 @@ lemma meromorphicOrderAt_eq_top_iff :
   by_cases hf : MeromorphicAt f x; swap
   · simp only [hf, not_false_eq_true, meromorphicOrderAt_of_not_meromorphicAt, WithTop.zero_ne_top,
       false_iff]
-    contrapose! hf
+    contrapose hf
     exact (MeromorphicAt.const 0 x).congr (EventuallyEq.symm hf)
   simp only [meromorphicOrderAt, hf, ↓reduceDIte, sub_eq_top_iff, ENat.map_eq_top_iff,
     WithTop.natCast_ne_top, or_false]
@@ -77,7 +77,7 @@ lemma meromorphicOrderAt_eq_top_iff :
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
   · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp h
     simp only [← hm, ENat.coe_ne_top, false_iff]
-    contrapose! h
+    contrapose h
     rw [analyticOrderAt_eq_top]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
     apply Eventually.frequently
@@ -262,7 +262,7 @@ theorem meromorphicOrderAt_congr (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
     meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x := by
   by_cases hf₁ : MeromorphicAt f₁ x; swap
   · have : ¬ MeromorphicAt f₂ x := by
-      contrapose! hf₁
+      contrapose hf₁
       exact hf₁.congr hf₁₂.symm
     simp [hf₁, this]
   by_cases h₁f₁ : meromorphicOrderAt f₁ x = ⊤
@@ -358,7 +358,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 -/
 @[simp] theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
     meromorphicOrderAt (ofNat(n) : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) := by
-  convert meromorphicOrderAt_const z₀ (n : 𝕜)
+  convert! meromorphicOrderAt_const z₀ (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
 /-- The order of `(· - x) ^ n` at `x` is `n`. -/
@@ -370,7 +370,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 /-- The order of `(· - x) ^ n` at `x` is `n`. -/
 @[simp, to_fun] theorem meromorphicOrderAt_pow_id_sub_const {n : ℕ} :
     meromorphicOrderAt ((· - x) ^ n) x = n := by
-  convert meromorphicOrderAt_zpow_id_sub_const
+  convert! meromorphicOrderAt_zpow_id_sub_const
   simp only [zpow_natCast]
 
 /-- The order of `· - x` at `x` is `1`. -/
@@ -383,6 +383,25 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 
 We establish additivity of the order under multiplication and taking powers.
 -/
+
+/-- The order of a function `f` equals the order of `-f`. -/
+theorem meromorphicOrderAt_neg {f : 𝕜 → E} :
+    meromorphicOrderAt f x = meromorphicOrderAt (-f) x := by
+  by_cases h₁ : ¬MeromorphicAt f x
+  · aesop
+  rw [not_not] at h₁
+  by_cases h₂ : meromorphicOrderAt f x = ⊤
+  · rw [h₂, eq_comm]
+    simp_all [meromorphicOrderAt_eq_top_iff]
+  lift meromorphicOrderAt f x to ℤ using h₂ with n hn
+  rw [eq_comm, meromorphicOrderAt_eq_int_iff (by fun_prop)] at *
+  obtain ⟨g, hg⟩ := hn
+  use -g
+  simp_all
+
+/-- The order of a function `f` equals the order of `-f`. -/
+theorem meromorphicOrderAt_fun_neg {f : 𝕜 → E} :
+    meromorphicOrderAt f x = meromorphicOrderAt (fun z ↦ -f z) x := meromorphicOrderAt_neg
 
 /-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
 @[to_fun] theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
@@ -437,8 +456,19 @@ The order is additive in products of meromorphic functions.
 theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (hf : ∀ i ∈ s, MeromorphicAt (f i) x) :
     meromorphicOrderAt (fun a ↦ ∏ i ∈ s, f i a) x = ∑ i ∈ s, meromorphicOrderAt (f i) x := by
-  convert meromorphicOrderAt_prod hf
+  convert! meromorphicOrderAt_prod hf
   exact (Finset.prod_apply _ s f).symm
+
+/--
+A finprod of functions that do not vanish locally does not vanish locally.
+-/
+lemma meromorphicOrderAt_finprod_ne_top {x : 𝕜} {ι : Type*} {F : ι → 𝕜 → 𝕜}
+    (h₁ : ∀ c, MeromorphicAt (F c) x) (h₂ : ∀ c, meromorphicOrderAt (F c) x ≠ ⊤) :
+    meromorphicOrderAt (∏ᶠ c, F c) x ≠ ⊤ := by
+  classical
+  by_cases hF : F.HasFiniteMulSupport
+  · simpa [finprod_eq_prod F hF, meromorphicOrderAt_prod (fun x _ ↦ h₁ x)] using fun x _ ↦ h₂ x
+  simp [finprod_of_not_hasFiniteMulSupport hF]
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
 @[to_fun] theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
@@ -492,7 +522,7 @@ theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f :
     meromorphicOrderAt (f⁻¹) x = -meromorphicOrderAt f x := by
   by_cases hf : MeromorphicAt f x; swap
   · have : ¬ MeromorphicAt (f⁻¹) x := by
-      contrapose! hf
+      contrapose hf
       simpa using hf.inv
     simp [hf, this]
   by_cases h₂f : meromorphicOrderAt f x = ⊤
@@ -574,14 +604,14 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   exact le_add_of_nonneg_right h₁g.meromorphicOrderAt_nonneg
 
 /--
-Helper lemma for meromorphicOrderAt_add_of_ne.
+Helper lemma for `meromorphicOrderAt_add_of_ne`.
 -/
 lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
     meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₁ x := by
   by_cases hf₁ : MeromorphicAt f₁ x; swap
   · have : ¬ (MeromorphicAt (f₁ + f₂) x) := by
-      contrapose! hf₁
+      contrapose hf₁
       simpa using hf₁.sub hf₂
     simp [this, hf₁]
   -- Trivial case: f₂ vanishes identically around z₀
@@ -604,7 +634,7 @@ lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
 
 /--
-Helper lemma for meromorphicOrderAt_add_of_ne.
+Helper lemma for `meromorphicOrderAt_add_of_ne`.
 -/
 lemma meromorphicOrderAt_add_eq_right_of_lt (hf₁ : MeromorphicAt f₁ x)
     (h : meromorphicOrderAt f₂ x < meromorphicOrderAt f₁ x) :
@@ -675,14 +705,20 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · rw [h₁w]
       tauto
     -- Nontrivial case: w ≠ z
-    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_diff h₁y) (mem_of_mem_inter_right h₁y)
+    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
     constructor
     · exact h₂t'.sdiff isClosed_singleton
-    · apply (mem_diff w).1
+    · apply (mem_sdiff w).1
       exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
-/-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
-`f` has finite order at every point. -/
+/--
+On a connected set, there exists a point where a meromorphic function `f` has finite order iff `f`
+has finite order at every point.
+
+See `Meromorphic.exists_meromorphicOrderAt_ne_top_iff_forall` in file
+`Mathlib/Analysis/Meromorphic/RCLike` for a related result assuming that `f` is meromorphic on all
+of `𝕜`.
+-/
 theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU : IsConnected U) :
     (∃ u : U, meromorphicOrderAt f u ≠ ⊤) ↔ (∀ u : U, meromorphicOrderAt f u ≠ ⊤) := by
   constructor
@@ -700,6 +736,16 @@ theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU
   · intro h₂f
     obtain ⟨v, hv⟩ := hU.nonempty
     use ⟨v, hv⟩, h₂f ⟨v, hv⟩
+
+/--
+Variant of `MeromorphicOn.exists_meromorphicOrderAt_ne_top_iff_forall`, with membership in lieu of
+subtypes.
+-/
+theorem exists_meromorphicOrderAt_ne_top_iff_forall_mem (hf : MeromorphicOn f U)
+    (hU : IsConnected U) :
+    (∃ u ∈ U, meromorphicOrderAt f u ≠ ⊤) ↔ (∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) := by
+  convert exists_meromorphicOrderAt_ne_top_iff_forall hf hU
+  <;> simp
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
@@ -758,13 +804,25 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
     rw [eventually_nhdsWithin_iff, eventually_nhds_iff] at h₁a ⊢
     obtain ⟨t, h₁t, h₂t, h₃t⟩ := h₁a
     use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
-    exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_diff_of_mem h₃t hax⟩
+    exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_sdiff_of_mem h₃t hax⟩
   · filter_upwards [hf.eventually_analyticAt_or_mem_compl hx, h₁f] with a h₁a h'₁a
-    simp only [mem_compl_iff, mem_diff, mem_image, mem_setOf_eq, Subtype.exists, exists_and_right,
-      exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
+    simp only [mem_compl_iff, Set.mem_sdiff, mem_image, mem_setOf_eq, Subtype.exists,
+      exists_and_right, exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
     rcases h₁a with h' | h'
     · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
     · exact fun ha ↦ (h' ha).elim
+
+/--
+Variant of `codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top`: The set where a meromorphic
+function has zero or infinite order is codiscrete within its domain of meromorphicity.
+-/
+theorem codiscreteWithin_setOf_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
+    (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
+    {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
+  convert!
+    mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
+      h₁f.codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top
+  aesop
 
 end MeromorphicOn
 
@@ -834,3 +892,43 @@ lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt �
   meromorphicOrderAt_smul_of_ne_zero hg hg'
 
 end smul
+
+/-!
+## Order at a Point of the Derivative
+-/
+
+section deriv
+
+/-- The meromorphic order of the derivative is one less than the order of the original function.
+This however is not true if the characteristic of the domain field divides the original order,
+where the order of the derivative can rise to a larger integer. -/
+lemma meromorphicOrderAt_deriv_eq_sub_one [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
+    (hn : (n : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑n) :
+    meromorphicOrderAt (deriv f) x = ↑(n - 1) := by
+  have hmero : MeromorphicAt f x := meromorphicAt_of_meromorphicOrderAt_ne_zero (by aesop)
+  rw [meromorphicOrderAt_eq_int_iff hmero] at hf
+  rw [meromorphicOrderAt_eq_int_iff hmero.deriv]
+  obtain ⟨g, hga, hg0, (hg : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z)⟩ := hf
+  refine ⟨fun z ↦ (n : 𝕜) • g z + (z - x) • deriv g z, by fun_prop, by simpa using ⟨hn, hg0⟩, ?_⟩
+  filter_upwards [hga.eventually_analyticAt.filter_mono (nhdsWithin_le_nhds),
+    eventually_mem_nhdsWithin, hg.nhdsNE_deriv] with z hgz hmem hz
+  have hzx : z - x ≠ 0 := by simpa [sub_eq_zero] using hmem
+  calc
+    deriv f z = deriv (fun z ↦ (z - x) ^ n • g z) z :=
+      hz
+    _ = (z - x) ^ n • deriv g z + deriv ((· ^ n) ∘ (· - x)) z • g z :=
+      deriv_fun_smul (by fun_prop (disch := grind)) hgz.differentiableAt
+    _ = (z - x) ^ n • deriv g z + (n * (z - x) ^ (n - 1)) • g z := by
+      rw [deriv_comp _ (by fun_prop (disch := grind)) (by fun_prop)]
+      simp [deriv_zpow]
+    _ = (z - x) ^ (n - 1) • ((n : 𝕜) • g z + (z - x) • deriv g z) := by
+      simp [smul_smul, ← zpow_add_one₀ hzx, add_comm, mul_comm]
+
+/-- Equivalent to `meromorphicOrderAt_deriv_eq_sub_one` with a slightly different statement so the
+conclusion matches more targets -/
+lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
+    (hn : (↑(n + 1) : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑(n + 1)) :
+    meromorphicOrderAt (deriv f) x = ↑n := by
+  simpa using meromorphicOrderAt_deriv_eq_sub_one hn hf
+
+end deriv

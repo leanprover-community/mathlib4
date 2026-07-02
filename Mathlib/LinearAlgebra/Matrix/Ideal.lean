@@ -96,7 +96,7 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
   obtain rfl | qj := eq_or_ne q j
   · by_cases iq : i = q
     · simp [iq, N, zMx, single, mul_apply, sum_apply, ite_and, sub_mul]
-    · convert I.mul_mem_left (-M i p * x) zMx
+    · convert! I.mul_mem_left (-M i p * x) zMx
       simp [iq, N, single, mul_apply, sum_apply, ite_and, sub_mul]
       simp [sub_add, mul_add, mul_sub, mul_assoc]
   · simp [N, qj, sum_apply, mul_apply]
@@ -131,7 +131,7 @@ def matrix (c : RingCon R) : RingCon (Matrix n n R) where
   iseqv.symm h := fun _ _ ↦ c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ ↦ c.trans (h₁ _ _) (h₂ _ _)
   add' h₁ h₂ := fun _ _ ↦ c.add (h₁ _ _) (h₂ _ _)
-  mul' h₁ h₂ := fun _ _ ↦ c.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ := fun _ _ ↦ c.finsetSum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
 
 @[simp low]
 theorem matrix_apply {c : RingCon R} {M N : Matrix n n R} :
@@ -214,7 +214,7 @@ theorem matrix_ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) :
   constructor
   · intro h
     rw [matrix_eq_sum_single x, matrix_eq_sum_single y]
-    refine c.finset_sum _ fun i _ ↦ c.finset_sum _ fun j _ ↦ h i j i j
+    refine c.finsetSum _ fun i _ ↦ c.finsetSum _ fun j _ ↦ h i j i j
   · intro h i' j' i j
     simpa using c.mul (c.mul (c.refl <| single i i' 1) h) (c.refl <| single j' j 1)
 
@@ -261,7 +261,7 @@ theorem matrix_monotone : Monotone (matrix (R := R) n) :=
 theorem matrix_strictMono_of_nonempty [h : Nonempty n] :
     StrictMono (matrix (R := R) n) :=
   matrix_monotone n |>.strictMono_of_injective <|
-    .comp (fun _ _ => mk.inj) <| (RingCon.matrix_injective n).comp ringCon_injective
+    .comp (fun _ _ => ofRingCon.inj) <| (RingCon.matrix_injective n).comp ringCon_injective
 
 @[simp]
 theorem matrix_bot : (⊥ : TwoSidedIdeal R).matrix n = ⊥ :=
@@ -295,7 +295,7 @@ theorem coe_equivMatrix_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j : n) 
   ext r
   constructor
   · intro h
-    exact ⟨single i j r, by simpa using h i j, by simp⟩
+    exact ⟨single i j r, by simpa using! h i j, by simp⟩
   · rintro ⟨n, hn, rfl⟩
     rw [SetLike.mem_coe, mem_iff, equivMatrix_symm_apply_ringCon,
       RingCon.coe_ofMatrix_eq_relationMap i j]
@@ -337,7 +337,6 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
-set_option backward.privateInPublic true in
 private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
     (I.matrix n).jacobson ≤ I.jacobson.matrix n := by
   -- Proof generalized from example 8 in
@@ -351,7 +350,7 @@ private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
   specialize Mmem (y • single p p 1)
   have ⟨N, NxMI⟩ := Mmem
   use N p p
-  simpa [mul_apply, single, ite_and] using NxMI p p
+  simpa [mul_apply, single, ite_and] using! NxMI p p
 
 /-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/
 theorem jacobson_matrix (I : TwoSidedIdeal R) :

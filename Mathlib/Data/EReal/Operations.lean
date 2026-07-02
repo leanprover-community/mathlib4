@@ -127,7 +127,6 @@ lemma toENNReal_add_le {x y : EReal} : (x + y).toENNReal ≤ x.toENNReal + y.toE
   induction x <;> induction y <;> try {· simp}
   exact ENNReal.ofReal_add_le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | _, ⊤, _ => le_top
   | ⊥, _, _ => bot_le
@@ -150,7 +149,6 @@ theorem add_lt_add {x y z t : EReal} (h1 : x < y) (h2 : z < t) : x + z < y + t :
     calc (x : EReal) + z < x + t := add_lt_add_left_coe h2 _
     _ ≤ y + t := by gcongr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hbot : t ≠ ⊥)
     (htop : t = ⊤ → z = ⊤ → x = ⊥) : x + z < y + t := by
   rcases h'.eq_or_lt with (rfl | hlt)
@@ -372,20 +370,16 @@ lemma sub_self {x : EReal} (h_top : x ≠ ⊤) (h_bot : x ≠ ⊥) : x - x = 0 :
 lemma sub_self_le_zero {x : EReal} : x - x ≤ 0 := by
   cases x <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sub_nonneg {x y : EReal} (h_top : x ≠ ⊤ ∨ y ≠ ⊤) (h_bot : x ≠ ⊥ ∨ y ≠ ⊥) :
     0 ≤ x - y ↔ y ≤ x := by
   cases x <;> cases y <;> simp_all [← EReal.coe_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sub_nonpos {x y : EReal} : x - y ≤ 0 ↔ x ≤ y := by
   cases x <;> cases y <;> simp [← EReal.coe_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sub_pos {x y : EReal} : 0 < x - y ↔ y < x := by
   cases x <;> cases y <;> simp [← EReal.coe_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sub_neg {x y : EReal} (h_top : x ≠ ⊤ ∨ y ≠ ⊤) (h_bot : x ≠ ⊥ ∨ y ≠ ⊥) :
     x - y < 0 ↔ x < y := by
   cases x <;> cases y <;> simp_all [← EReal.coe_sub]
@@ -442,7 +436,6 @@ lemma sub_add_cancel_right {a : EReal} {b : Real} : b - (a + b) = -a := by
 lemma sub_add_cancel_left {a : EReal} {b : Real} : b - (b + a) = -a := by
   rw [add_comm, sub_add_cancel_right]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_sub_iff_add_le {a b c : EReal} (hb : b ≠ ⊥ ∨ c ≠ ⊥) (ht : b ≠ ⊤ ∨ c ≠ ⊤) :
     a ≤ c - b ↔ a + b ≤ c := by
   induction b with
@@ -637,7 +630,6 @@ instance : NoZeroDivisors EReal where
     · rcases lt_or_gt_of_ne h.2 with (h | h)
         <;> simp [EReal.top_mul_of_pos, EReal.top_mul_of_neg, h]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul_pos_iff {a b : EReal} : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   induction a, b using EReal.induction₂_symm with
   | symm h => simp [EReal.mul_comm, h, and_comm]
@@ -724,7 +716,6 @@ lemma mul_nonpos_iff {a b : EReal} : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a �
   nth_rw 1 [← neg_zero]
   rw [EReal.le_neg, ← mul_neg, mul_nonneg_iff, EReal.neg_le, EReal.le_neg, neg_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul_eq_top (a b : EReal) :
     a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
   induction a, b using EReal.induction₂_symm with
@@ -737,7 +728,7 @@ lemma mul_eq_top (a b : EReal) :
   | pos_bot _ hx => simp [hx.le, EReal.coe_mul_bot_of_pos hx]
   | coe_coe x y =>
     simpa only [EReal.coe_ne_bot, EReal.coe_neg', false_and, and_false, EReal.coe_ne_top,
-      EReal.coe_pos, or_self, iff_false, EReal.coe_mul] using EReal.coe_ne_top _
+      EReal.coe_pos, or_self, iff_false, EReal.coe_mul] using! EReal.coe_ne_top _
   | zero_bot => simp
   | neg_bot _ hx => simp [hx, EReal.coe_mul_bot_of_neg hx]
   | bot_bot => simp
@@ -747,7 +738,7 @@ lemma mul_ne_top (a b : EReal) :
   rw [ne_eq, mul_eq_top]
   -- push the negation while keeping the disjunctions, that is converting `¬(p ∧ q)` into `¬p ∨ ¬q`
   -- rather than `p → ¬q`, since we already have disjunctions in the rhs
-  push_neg +distrib
+  push +distrib Not
   rfl
 
 lemma mul_eq_bot (a b : EReal) :
@@ -759,7 +750,7 @@ lemma mul_eq_bot (a b : EReal) :
 lemma mul_ne_bot (a b : EReal) :
     a * b ≠ ⊥ ↔ (a ≠ ⊥ ∨ b ≤ 0) ∧ (a ≤ 0 ∨ b ≠ ⊥) ∧ (a ≠ ⊤ ∨ 0 ≤ b) ∧ (0 ≤ a ∨ b ≠ ⊤) := by
   rw [ne_eq, mul_eq_bot]
-  push_neg +distrib
+  push +distrib Not
   rfl
 
 /-- `EReal.toENNReal` is multiplicative. For the version with the nonnegativity
@@ -820,7 +811,7 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
   | zero => rw [zero_smul, Nat.cast_zero, zero_mul]
   | succ n ih =>
     rw [succ_nsmul, ih, Nat.cast_succ]
-    convert (EReal.right_distrib_of_nonneg _ _).symm <;> simp
+    convert! (EReal.right_distrib_of_nonneg _ _).symm <;> simp
 
 end EReal
 
@@ -830,7 +821,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
 @[positivity (_ + _ : EReal)]
-meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealAdd : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a + $b) =>
     assertInstancesCommute
@@ -849,7 +841,8 @@ meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: product of two `EReal`s. -/
 @[positivity (_ * _ : EReal)]
-meta def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealMul : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a * $b) =>
     assertInstancesCommute

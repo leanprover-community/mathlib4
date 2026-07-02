@@ -76,7 +76,7 @@ def genEigenspace (f : End R M) (μ : R) : ℕ∞ →o Submodule R M where
 
 lemma mem_genEigenspace {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
     x ∈ f.genEigenspace μ k ↔ ∃ l : ℕ, l ≤ k ∧ x ∈ LinearMap.ker ((f - μ • 1) ^ l) := by
-  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le _⟩⟩
+  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le⟩⟩
   have : Directed (ι := { i : ℕ // i ≤ k }) (· ≤ ·) fun i ↦ LinearMap.ker ((f - μ • 1) ^ (i : ℕ)) :=
     Monotone.directed_le fun m n h ↦ by simpa using (f - μ • 1).iterateKer.monotone h
   simp_rw [genEigenspace, OrderHom.coe_mk, LinearMap.mem_ker, iSup_subtype',
@@ -280,7 +280,7 @@ lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R 
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
     (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
-  convert this using 1
+  convert! this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
@@ -307,7 +307,7 @@ lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
     (hm : k ≤ m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
   unfold HasUnifEigenvalue at *
-  contrapose! hk
+  contrapose hk
   rw [← le_bot_iff, ← hk]
   exact (f.genEigenspace _).monotone hm
 
@@ -747,14 +747,10 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
     simp_rw [mem_genEigenspace, ← mem_genEigenspace_nat, this,
       Submodule.mem_comap, mem_genEigenspace (k := k), mem_genEigenspace_nat]
   intro l
-  simp only [genEigenspace_nat, ← LinearMap.ker_comp]
-  induction l with
-  | zero =>
-    rw [pow_zero, pow_zero, Module.End.one_eq_id]
-    apply (Submodule.ker_subtype _).symm
-  | succ l ih =>
-    erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
-      LinearMap.comp_assoc]
+  rw [genEigenspace_nat, genEigenspace_nat, ← LinearMap.restrict_smul_one μ,
+    LinearMap.restrict_sub hfp, Module.End.pow_restrict _,
+    ← LinearMap.ker_comp_of_ker_eq_bot _ (Submodule.ker_subtype p),
+    LinearMap.subtype_comp_restrict, LinearMap.domRestrict, ← LinearMap.ker_comp]
 
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ∞} {μ : R}
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
@@ -888,6 +884,36 @@ lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [IsDomain R] [IsTorsionFre
   apply Disjoint.mono_left (genEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) k k (h x y))
   simp only [g, map_add]
   exact disjoint_genEigenspace (f x + f y) (Ne.symm contra) _ k
+
+section Arithmetic
+
+variable {f : End R M} {μ ρ : R}
+
+lemma hasEigenvalue_neg_iff :
+    HasEigenvalue (-f) μ ↔ HasEigenvalue f (-μ) := by
+  simp only [hasEigenvalue_iff, eigenspace_def]
+  rw [← LinearMap.ker_neg]
+  simp [add_comm]
+
+lemma hasEigenvalue_add_iff :
+    HasEigenvalue (f + ρ • .id) μ ↔ HasEigenvalue f (μ - ρ) := by
+  have aux : f + ρ • .id - μ • 1 = f - (μ - ρ) • 1 := by module
+  simp only [hasEigenvalue_iff, eigenspace_def, aux]
+
+lemma hasEigenvalue_add'_iff :
+    HasEigenvalue (ρ • .id + f) μ ↔ HasEigenvalue f (μ - ρ) := by
+  have aux : ρ • .id + f - μ • 1 = f - (μ - ρ) • 1 := by module
+  simp only [hasEigenvalue_iff, eigenspace_def, aux]
+
+lemma hasEigenvalue_sub_iff :
+    HasEigenvalue (f - ρ • .id) μ ↔ HasEigenvalue f (μ + ρ) := by
+  rw [sub_eq_add_neg, ← neg_smul, hasEigenvalue_add_iff, sub_neg_eq_add]
+
+lemma hasEigenvalue_sub'_iff :
+    HasEigenvalue (ρ • .id - f) μ ↔ HasEigenvalue f (ρ - μ) := by
+  rw [sub_eq_add_neg, hasEigenvalue_add'_iff, hasEigenvalue_neg_iff, neg_sub]
+
+end Arithmetic
 
 end End
 

@@ -29,7 +29,7 @@ If `α` is moreover a distributive lattice:
   elements.
 * `OrderEmbedding.birkhoffSet`, `OrderEmbedding.birkhoffFinset`: Order embedding of `α` into the
   powerset lattice of its irreducible elements.
-* `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinet`: Same as the previous two, but bundled as
+* `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinset`: Same as the previous two, but bundled as
   an injective lattice homomorphism.
 * `exists_birkhoff_representation`: `α` embeds into some powerset algebra. You should prefer using
   this over the explicit Birkhoff embedding because the Birkhoff embedding is littered with
@@ -202,8 +202,7 @@ noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a 
         refine ⟨fun ha ↦ ?_, fun ha ↦ ?_⟩
         · obtain ⟨i, hi, ha⟩ := a.2.supPrime.le_finset_sup.1 ha
           exact s.lower ha (Set.mem_toFinset.1 hi)
-        · dsimp
-          exact le_sup (Set.mem_toFinset.2 ha) }
+        · exact le_sup (Set.mem_toFinset.2 ha) }
     (fun _ _ hbc _ ↦ le_trans' hbc) fun _ _ hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 namespace OrderEmbedding

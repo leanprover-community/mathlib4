@@ -70,7 +70,7 @@ instance (x : X) : Inhabited (OpenNhds x) :=
 
 instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
   coe f := Set.inclusion f.le
-  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
+  coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
 @[simp] lemma apply_mk (f : U ⟶ V) (y : X) (hy) : f ⟨y, hy⟩ = ⟨y, f.le hy⟩ := rfl
 
@@ -122,12 +122,10 @@ theorem map_id_obj' (x : X) (U) (p) (q) : (map (𝟙 X) x).obj ⟨⟨U, p⟩, q�
 theorem map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj (unop U) = unop U := by
   simp
 
-@[simp]
 theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
 
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)
 with the inclusion functors into `Opens X`. -/
-@[simps! hom_app inv_app]
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
   NatIso.ofComponents fun U => { hom := 𝟙 _, inv := 𝟙 _ }
 

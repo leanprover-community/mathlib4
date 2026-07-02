@@ -5,6 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
+public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
@@ -30,7 +31,6 @@ Some examples of EDSs include
 ## Main definitions
 
 * `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
-* `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
 * `IsEllDivSequence`: a sequence indexed by integers is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
@@ -83,23 +83,20 @@ def IsEllSequence : Prop :=
   ∀ m n r : ℤ, W (m + n) * W (m - n) * W r ^ 2 =
     W (m + r) * W (m - r) * W n ^ 2 - W (n + r) * W (n - r) * W m ^ 2
 
-/-- The proposition that a sequence indexed by integers is a divisibility sequence. -/
-def IsDivSequence : Prop :=
-  ∀ m n : ℕ, m ∣ n → W m ∣ W n
+@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
 
 /-- The proposition that a sequence indexed by integers is an EDS. -/
 def IsEllDivSequence : Prop :=
-  IsEllSequence W ∧ IsDivSequence W
+  IsEllSequence W ∧ IsDvdSequence W
 
 lemma isEllSequence_id : IsEllSequence id :=
   fun _ _ _ => by simp_rw [id_eq]; ring1
 
-lemma isDivSequence_id : IsDivSequence id :=
-  fun _ _ => Int.ofNat_dvd.mpr
+@[deprecated (since := "2026-06-30")] alias isDivSequence_id := IsDvdSequence.id
 
 /-- The identity sequence is an EDS. -/
 theorem isEllDivSequence_id : IsEllDivSequence id :=
-  ⟨isEllSequence_id, isDivSequence_id⟩
+  ⟨isEllSequence_id, .id ℤ⟩
 
 variable {W}
 
@@ -107,8 +104,7 @@ lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W)
   fun m n r => by
     linear_combination (norm := (simp_rw [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
-lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W) :=
-  fun m n r => mul_dvd_mul_left x <| h m n r
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.smul := IsDvdSequence.smul
 
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
@@ -329,14 +325,9 @@ lemma normEDS_dvd_normEDS_two_mul (k : ℤ) : normEDS b c d k ∣ normEDS b c d 
 lemma complEDS₂_mul_b (k : ℤ) : complEDS₂ b c d k * b =
     normEDS b c d (k - 1) ^ 2 * normEDS b c d (k + 2) -
       normEDS b c d (k - 2) * normEDS b c d (k + 1) ^ 2 := by
-  induction k using Int.negInduction with
-  | nat k =>
-    simp_rw [complEDS₂, normEDS, Int.even_add, Int.even_sub, even_two, iff_true, Int.not_even_one,
-      iff_false]
-    split_ifs <;> ring1
-  | neg ih =>
-    simp_rw [complEDS₂_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', normEDS_neg, ih]
-    ring1
+  simp_rw [complEDS₂, normEDS, Int.even_add, Int.even_sub, even_two, iff_true, Int.not_even_one,
+    iff_false]
+  split_ifs <;> ring1
 
 lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
     normEDS b c d (m - 1) ^ 2 * normEDS b c d m * normEDS b c d (m + 2) -
@@ -356,7 +347,8 @@ Strong recursion principle for a normalised EDS: if we have
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
-  then we have `P n` for all `n : ℕ`.
+
+then we have `P n` for all `n : ℕ`.
 -/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
@@ -372,6 +364,7 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort u}
@@ -455,7 +448,7 @@ lemma complEDS_even (m : ℤ) :
     rcases m with _ | _
     · simp
     norm_cast
-    simpa only [complEDS_ofNat] using complEDS'_even ..
+    simpa only [complEDS_ofNat] using! complEDS'_even ..
   | neg ih => simp_rw [mul_neg, complEDS_neg, ih, neg_mul, complEDS₂_neg]
 
 lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
@@ -466,7 +459,7 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
     rcases m with _ | _
     · simp
     norm_cast
-    simpa only [complEDS_ofNat] using complEDS'_odd ..
+    simpa only [complEDS_ofNat] using! complEDS'_odd ..
   | neg ih m =>
     rcases m with _ | m
     · simp
@@ -479,6 +472,7 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
 * `P 0`, `P 1`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
@@ -493,6 +487,7 @@ noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)

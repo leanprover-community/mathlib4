@@ -18,10 +18,7 @@ Additionally, two linear maps are exact in the categorical sense iff `range f = 
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 noncomputable section
 

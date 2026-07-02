@@ -32,7 +32,7 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
   have hx' :
     IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : K[(x : S)]) := by
     apply (isIntegral_algebraMap_iff hST).mp
-    convert hx
+    convert! hx
   apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ))
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : K[x])
@@ -74,10 +74,6 @@ theorem _root_.PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral K x)
 theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) :
     (PowerBasis.ofAdjoinEqTop hx hx').dim = (minpoly K x).natDegree := rfl
-
-@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
-  deprecated definition" (since := "2025-09-29")] alias PowerBasis.ofGenMemAdjoin :=
-  PowerBasis.ofAdjoinEqTop
 
 end Algebra
 
