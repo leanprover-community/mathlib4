@@ -95,7 +95,7 @@ lemma quotient_map_eq_zero_iff : (quotient V).map f = 0 ↔ Nonempty (RightHomot
 
 /-- If `f` is a morphism of `Arrow V` such that `f.right` is an isomorphism, then the image of `f`
 in the right Freyd category is an epimorphism. -/
-lemma isEpi_of_right_iso [IsIso f.right] : Epi ((quotient V).map f) where
+lemma epi_of_isIso_right [IsIso f.right] : Epi ((quotient V).map f) where
   left_cancellation g₁ g₂ eq := by
     obtain ⟨g₁, rfl⟩ := (quotient V).map_surjective g₁
     obtain ⟨g₂, rfl⟩ := (quotient V).map_surjective g₂
