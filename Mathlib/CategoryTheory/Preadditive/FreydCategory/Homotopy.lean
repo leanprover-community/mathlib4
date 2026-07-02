@@ -44,10 +44,10 @@ structure LeftHomotopy where
 /-- A right homotopy on morphisms in the category of arrows of a preadditive category. -/
 @[ext]
 structure RightHomotopy where
-/-- A "diagonal" morphism from the right object of `u` to the left object of `v`. -/
+  /-- A "diagonal" morphism from the right object of `u` to the left object of `v`. -/
   hom : u.right ⟶ v.left
-/-- The difference of the right morphisms factors through `hom`. -/
-comm : f.right - g.right = hom ≫ v.hom := by cat_disch
+  /-- The difference of the right morphisms factors through `hom`. -/
+  comm : f.right - g.right = hom ≫ v.hom := by cat_disch
 
 variable {f g}
 
@@ -64,12 +64,12 @@ def equivSubZero : LeftHomotopy f g ≃ LeftHomotopy (f - g) 0 where
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-/-- Equal chain maps are left homotopic. -/
+/-- Equal maps of arrows are left homotopic. -/
 @[simps]
 def ofEq (h : f = g) : LeftHomotopy f g where
   hom := 0
 
-/-- Every chain map is left homotopic to itself. -/
+/-- Every map of arrows is left homotopic to itself. -/
 @[simps!, refl]
 def refl (f : u ⟶ v) : LeftHomotopy f f :=
   ofEq (rfl : f = f)
@@ -139,12 +139,12 @@ def equivSubZero : RightHomotopy f g ≃ RightHomotopy (f - g) 0 where
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-/-- Equal chain maps are right homotopic. -/
+/-- Equal maps of arrows are right homotopic. -/
 @[simps]
 def ofEq (h : f = g) : RightHomotopy f g where
   hom := 0
 
-/-- Every chain map is right homotopic to itself. -/
+/-- Every map of arrows is right homotopic to itself. -/
 @[simps!, refl]
 def refl (f : u ⟶ v) : RightHomotopy f f :=
   ofEq (rfl : f = f)
