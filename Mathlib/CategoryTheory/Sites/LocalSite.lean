@@ -83,7 +83,7 @@ noncomputable def point [LocallySmall.{w} C] [J.IsLocalSite] : Point.{w} J where
         rw [shrinkCoyoneda_obj_map_shrinkCoyonedaObjObjEquiv_symm]
         simp⟩
 
-variable [LocallySmall.{w} C] [J.IsLocalSite] (A : Type u') [Category.{v', u'} A]
+variable [LocallySmall.{w} C] [J.IsLocalSite] (A : Type u') [Category.{v'} A]
 
 /-- The right adjoint to the global sections functor that exists over any local site. This is
 implemented as the skyscraper functor associated to `point.{w} J`, but can be thought of
@@ -143,7 +143,7 @@ noncomputable def ΓCoconstantSheafAdj : Γ J A ⊣ coconstantSheaf.{w} J A :=
   (point.{w} J).skyscraperSheafAdjunction.ofNatIsoLeft (pointSheafFiberIso J A)
 
 /-- On any locally `w`-small local site, the global sections functor to any category with colimits
-and products of size `w` is a left adulljoint. A variant of this without the universe parameter `w`
+and products of size `w` is a left adjoint. A variant of this without the universe parameter `w`
 is registered as an instance. -/
 lemma Γ_isLeftAdjoint : (Γ J A).IsLeftAdjoint :=
   ⟨coconstantSheaf.{w} J A, ⟨ΓCoconstantSheafAdj J A⟩⟩
@@ -152,7 +152,7 @@ lemma Γ_isLeftAdjoint : (Γ J A).IsLeftAdjoint :=
 with colimits and products of size `v` is a left adjoint. See `ΓIsLeftAdjoint` for a
 version for `w`-locally small sites that can't be registered as an instance because of the extra
 universe parameter `w`. -/
-instance (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{v, v, v', u'} A]
+instance (A : Type u') [Category.{v'} A] [HasColimitsOfSize.{v, v} A]
     [HasProducts.{v} A] [HasWeakSheafify J A] : (Γ J A).IsLeftAdjoint :=
   Γ_isLeftAdjoint.{v} J A
 
@@ -198,13 +198,13 @@ lemma faithful_constantSheaf : (constantSheaf J A).Faithful :=
 
 /-- See `IsLocalSite.full_constantSheaf` for a version for `w`-locally small sites. -/
 instance {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{v, v, v', u'} A]
+    (A : Type u') [Category.{v'} A] [HasColimitsOfSize.{v, v} A]
     [HasProducts.{v} A] [HasWeakSheafify J A] : (constantSheaf J A).Full :=
   full_constantSheaf.{v} J A
 
 /-- See `IsLocalSite.faithful_constantSheaf` for a version for `w`-locally small sites. -/
 instance {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [J.IsLocalSite]
-    (A : Type u') [Category.{v', u'} A] [HasColimitsOfSize.{v, v, v', u'} A]
+    (A : Type u') [Category.{v'} A] [HasColimitsOfSize.{v, v} A]
     [HasProducts.{v} A] [HasWeakSheafify J A] : (constantSheaf J A).Faithful :=
   faithful_constantSheaf.{v} J A
 
