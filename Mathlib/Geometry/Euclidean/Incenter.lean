@@ -1420,9 +1420,9 @@ lemma tangentsFrom_eq_pair_affineSpan_pair [hf : Fact (Module.finrank ℝ V = 2)
   · rw [Set.insert_subset_iff, Set.singleton_subset_iff]
     exact ⟨t.affineSpan_pair_mem_tangentsFrom _ h₁₂, t.affineSpan_pair_mem_tangentsFrom _ h₁₃⟩
   · rw [ncard_tangentsFrom]
-    suffices 1 < Set.ncard {line[ℝ, t.points i₁, t.points i₂],
+    suffices 2 ≤ Set.ncard {line[ℝ, t.points i₁, t.points i₂],
       line[ℝ, t.points i₁, t.points i₃]} by simpa using this
-    rw [Set.one_lt_ncard_iff]
+    rw [Nat.succ_le_iff, Set.one_lt_ncard_iff]
     refine ⟨line[ℝ, t.points i₁, t.points i₂], line[ℝ, t.points i₁, t.points i₃], by grind,
       by grind, ?_⟩
     simp_rw [← Set.image_pair]

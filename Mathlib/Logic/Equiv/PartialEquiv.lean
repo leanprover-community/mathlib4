@@ -180,8 +180,10 @@ theorem map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 
 /-- Variant of `e.map_source` and `map_source'`, stated for images of subsets of `source`. -/
-lemma map_source'' : e '' e.source ⊆ e.target :=
+lemma image_source_subset : e '' e.source ⊆ e.target :=
   fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+
+@[deprecated (since := "2026-06-17")] alias map_source'' := image_source_subset
 
 @[simp, mfld_simps]
 theorem map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=
@@ -267,7 +269,7 @@ def copy (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α
 theorem copy_eq (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) (hg : ⇑e.symm = g)
     (s : Set α) (hs : e.source = s) (t : Set β) (ht : e.target = t) :
     e.copy f hf g hg s hs t ht = e := by
-  substs f g s t
+  subst f g s t
   cases e
   rfl
 

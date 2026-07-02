@@ -362,6 +362,7 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N + 1)
     add_right_inj] at h' ⊢
   exact h'
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: develop API for `optionEquivLeft` and get rid of the `[Fintype σ]` assumption
 lemma coeff_isHomogeneous_of_optionEquivLeft_symm
     [hσ : Finite σ] {p : Polynomial (MvPolynomial σ R)}
@@ -430,13 +431,13 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     use 0
     contrapose hF₀
     ext d
-    simpa only [Subsingleton.elim d 0, eval_zero, coeff_zero] using hF₀
+    simpa only [Subsingleton.elim d 0, eval_zero, coeff_zero] using! hF₀
   | succ N IH =>
     have hdeg : natDegree (finSuccEquiv R N F) < n + 1 := by
       linarith [natDegree_finSuccEquiv F, degreeOf_le_totalDegree F 0, hF.totalDegree hF₀]
     obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv R N F).coeff i ≠ 0 := by
       contrapose! hF₀
-      exact (finSuccEquiv _ _).injective <| Polynomial.ext <| by simpa using hF₀
+      exact (finSuccEquiv _ _).injective <| Polynomial.ext <| by simpa using! hF₀
     have hin : i ≤ n := by
       contrapose! hi
       exact coeff_eq_zero_of_natDegree_lt <| (Nat.le_of_lt_succ hdeg).trans_lt hi
@@ -456,7 +457,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       suffices (finSuccEquiv _ _ F).natDegree ≠ n by lia
       rintro rfl
       refine leadingCoeff_ne_zero.mpr ?_ hFn
-      simpa using (finSuccEquiv R N).injective.ne hF₀
+      simpa using! (finSuccEquiv R N).injective.ne hF₀
     obtain ⟨r₀, hr₀⟩ : ∃ r₀, Polynomial.eval r₀ φ ≠ 0 :=
       φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR
     use Fin.cons r₀ r

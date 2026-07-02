@@ -30,6 +30,7 @@ variable {J : Type u} [Category.{v} J] {F : J ⥤ AddCommGrpCat.{w}} (c : Cocone
 
 open Colimits
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 If `c` is a cocone of `F` such that `Quot.desc F c` is bijective, then `c` is a colimit
@@ -45,7 +46,7 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
     apply ofHom_injective
     refine hc.hom_ext (fun j ↦ ?_)
     ext x
-    rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
+    erw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
     exact DFunLike.congr_fun eq (Quot.ι F j x)
   · set c' : Cocone F :=
       { pt := AddCommGrpCat.of (ULift (AddCircle (1 : ℚ)))
