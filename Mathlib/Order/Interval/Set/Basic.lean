@@ -464,6 +464,9 @@ section matched_intervals
 
 end matched_intervals
 
+@[to_additive (attr := simp)]
+lemma Ici_one_eq_univ [One α] [IsBotOneClass α] : Ici (1 : α) = univ := by ext; simp
+
 end Preorder
 
 section PartialOrder

@@ -902,9 +902,8 @@ section NumberField
 
 open Units
 
-theorem NumberField.Units.dvd_torsionOrder_of_isPrimitiveRoot [NeZero n] [NumberField K] {ζ : K}
+theorem NumberField.Units.dvd_torsionOrder_of_isPrimitiveRoot [NeZero n] {ζ : K}
     (hζ : IsPrimitiveRoot ζ n) : n ∣ torsionOrder K := by
-  rw [torsionOrder, Fintype.card_eq_nat_card]
   replace hζ := (hζ.toInteger_isPrimitiveRoot).isUnit_unit (NeZero.ne n)
   convert! orderOf_dvd_natCard (⟨(hζ.isUnit (NeZero.ne n)).unit, ?_⟩ : torsion K)
   · rw [Subgroup.orderOf_mk]
@@ -923,7 +922,6 @@ theorem IsCyclotomicExtension.Rat.torsionOrder_eq [NeZero n] [NumberField K]
   have hζ := hK.zeta_spec
   -- We first prove that `K` contains a primitive root of order `torsionOrder K`
   obtain ⟨μ, hμ⟩ : ∃ μ : torsion K, orderOf μ = torsionOrder K := by
-    rw [torsionOrder, Fintype.card_eq_nat_card]
     exact IsCyclic.exists_ofOrder_eq_natCard
   rw [← IsPrimitiveRoot.iff_orderOf, ← IsPrimitiveRoot.coe_submonoidClass_iff,
     ← IsPrimitiveRoot.coe_units_iff] at hμ
