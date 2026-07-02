@@ -692,37 +692,18 @@ lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U
   simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
   aesop
 
-lemma eventually_nhdsWithin_support_specializes_of_mem
-    [Zero Y] (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
-    ∀ᶠ x in 𝓝[f.support] p, x ⤳ p := by
+lemma disjoint_nhdsWithin_cofinite_of_mem [Zero Y]
+    (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
+    Disjoint (𝓝[f.support] p) cofinite := by
+  rw [disjoint_cofinite_right]
   obtain ⟨t, h₁t, h₂t⟩ := f.supportLocallyFiniteWithinDomain p hp
-  set S := {y ∈ t ∩ f.support | ¬(y ⤳ p)}
-  have hS_nhds (y) (hy : y ∈ S) : (closure ({y} : Set X))ᶜ ∈ 𝓝 p :=
-    isClosed_closure.isOpen_compl.mem_nhds <| by
-      simpa [specializes_iff_mem_closure] using hy.2
-  rw [eventually_nhdsWithin_iff]
-  filter_upwards [h₁t, (biInter_mem <| h₂t.subset (by grind)).mpr hS_nhds] with x hxt hxS
-  contrapose
-  refine fun hxp hxf ↦ mem_iInter₂.mp hxS x ⟨⟨hxt, hxf⟩, hxp⟩ ?_
-  grind [subset_closure]
+  refine ⟨t ∩ f.support, ?_, h₂t⟩
+  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
+  grind
 
-lemma nhdsWithin_support_of_mem [Zero Y] (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
-    𝓝[f.support] p = 𝓟 ({x | x ⤳ p} ∩ f.support) := by
-  apply le_antisymm
-  · simpa using ⟨eventually_nhdsWithin_support_specializes_of_mem f p hp, self_mem_nhdsWithin⟩
-  · rw [← inf_principal, nhdsWithin]
-    gcongr
-    rw [Filter.principal_le_iff]
-    exact fun s hs x hx ↦ mem_of_mem_nhds (hx hs)
-
-lemma _root_.Function.locallyFinsupp.eventually_nhdsWithin_support_specializes
+lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
     [Zero Y] (f : locallyFinsupp X Y) (p : X) :
-    ∀ᶠ x in 𝓝[f.support] p, x ⤳ p :=
-  eventually_nhdsWithin_support_specializes_of_mem f p <| mem_univ _
-
-lemma _root_.Function.locallyFinsupp.nhdsWithin_support
-    [Zero Y] (f : locallyFinsupp X Y) (p : X) :
-    𝓝[f.support] p = 𝓟 ({x | x ⤳ p} ∩ f.support) :=
-  nhdsWithin_support_of_mem f p (mem_univ _)
+    Disjoint (𝓝[f.support] p) cofinite :=
+  disjoint_nhdsWithin_cofinite_of_mem f p (mem_univ _)
 
 end Function.locallyFinsuppWithin
