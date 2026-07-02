@@ -643,7 +643,7 @@ theorem symm_ofContinuousLinearMap (h₁ h₂) :
 
 @[simp]
 theorem toContinuousLinearMap_ofContinuousLinearMap (h₁ h₂) :
-    (ofContinuousLinearMap f₁ f₂ h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f₁ :=
+    ofContinuousLinearMap f₁ f₂ h₁ h₂ = f₁ :=
   rfl
 
 @[simp]
@@ -670,7 +670,6 @@ theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) 
 
 /-- If a continuous linear map has a continuous inverse, then it is a continuous linear equivalence.
 This is the continuous version of `LinearEquiv.ofLinear`.
-
 See also `ofContinuousLinearMap'`. -/
 def ofContinuousLinearMap' (h₁ : f₁ ∘SL f₂ = .id R₂ M₂) (h₂ : f₂ ∘SL f₁ = .id R₁ M₁) :
     M₁ ≃SL[σ₁₂] M₂ :=
@@ -688,7 +687,7 @@ theorem symm_ofContinuousLinearMap' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h�
 
 @[simp]
 theorem toContinuousLinearMap_ofContinuousLinearMap' (h₁ h₂) :
-    (ofContinuousLinearMap' f₁ f₂ h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f₁ :=
+    ofContinuousLinearMap' f₁ f₂ h₁ h₂ = f₁ :=
   rfl
 
 @[simp]
