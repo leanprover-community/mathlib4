@@ -29,6 +29,40 @@ Indeed, semilinear maps are typically not smooth. For instance, complex conjugat
 
 public section
 
+section -- By John McCarthy
+open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization
+open scoped Manifold Bundle Topology
+variable {𝕜 B F₁ : Type*} [NontriviallyNormedField 𝕜]
+  {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B]
+  {E₁ : B → Type*} [∀ x, AddCommGroup (E₁ x)]
+  [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
+  [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+
+
+lemma Bundle.Trivialization.ContMDiffAt_symm {k}
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) k
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (Trivialization.symmL 𝕜 e m)) x := by
+  have hx' : x ∈ (trivializationAt F₁ E₁ x).baseSet := mem_baseSet_trivializationAt F₁ E₁ x
+  refine contMDiffAt_totalSpace.mpr ⟨contMDiffAt_id, ?_⟩
+  apply (contMDiffAt_coordChangeL hx hx').congr_of_eventuallyEq
+  filter_upwards [(e.open_baseSet.inter (trivializationAt F₁ E₁ x).open_baseSet).mem_nhds
+    ⟨hx, hx'⟩] with b hb
+  ext v
+  change ((trivializationAt F₁ E₁ x).continuousLinearMapAt 𝕜 b)
+      ((e.symmL 𝕜 b) ((Bundle.Trivial.trivialization B F₁).symmL 𝕜 b v)) =
+    (e.coordChangeL 𝕜 (trivializationAt F₁ E₁ x) b) v
+  simp [e.symmL_apply hb.1, continuousLinearMapAt_apply_of_mem 𝕜 _ hb.2,
+    coordChangeL_apply' e _ hb, e.mk_symm hb.1]
+end
+
 /-- Composition of a function followed by a dependent function. -/
 @[inline, reducible]
 def Function.dcomp' {α β : Sort*} {γ : β → Sort*} (f : (y : β) → γ y)
@@ -301,6 +335,19 @@ lemma ContMDiffAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E
   · apply hψ
   · simp [contMDiffAt_totalSpace, hb, hw]
 
+lemma Bundle.Trivialization.ContMDiffAt_symm_const {k}
+    [IsManifold IB k B]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k
+      (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x := by
+  apply ContMDiffAt.clm_bundle_apply_trivial_source
+  · exact e.ContMDiffAt_symm hx
+  · exact contMDiffAt_id
+  · exact contMDiffAt_const
+
 -- unused but nice for symmetry
 lemma ContMDiffAt.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x) →L[𝕜] F₂)}
     (hψ : CMDiffAt n
@@ -362,28 +409,6 @@ lemma contMDiffAt_symm_of_memTrivializationAtlas {k}
     CMDiffAt k e.toOpenPartialHomeomorph.symm (x, u) := by
   apply e.contMDiffOn_symm |>.contMDiffAt (e.open_target.mem_nhds ?_)
   simp [e.target_eq, hx]
-
-omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
-     [ContMDiffVectorBundle 1 F₁ E₁ IB] in
-lemma Bundle.Trivialization.ContMDiffAt_symm_const {k}
-    [IsManifold IB k B]
-    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
-    [ContMDiffVectorBundle k F₁ E₁ IB]
-    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
-    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
-    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k
-      (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x := by
-  have : ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k (fun m : B ↦ e.toPartialHomeomorph.symm ⟨m, u⟩) x := by
-    change ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k
-      (e.toPartialHomeomorph.symm ∘ (fun m : B ↦  (m, u))) x
-    have : CMDiffAt k (fun m : B ↦ (m, u)) x := by
-      refine ContMDiffAt.prodMk ?_ ?_
-      · apply contMDiffAt_id -- Note: apply? never works for such goals
-      · apply contMDiffAt_const
-    exact (contMDiffAt_symm_of_memTrivializationAtlas e hx _).comp x this
-  apply this.congr_of_eventuallyEq
-  filter_upwards [e.open_baseSet.mem_nhds hx] with x' hx'
-  simp [hx', e.mk_symm]
 
 omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
      [ContMDiffVectorBundle 1 F₁ E₁ IB] in
