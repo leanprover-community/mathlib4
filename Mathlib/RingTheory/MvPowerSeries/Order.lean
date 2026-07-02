@@ -491,7 +491,7 @@ theorem one_le_order_iff_constCoeff_eq_zero :
 
 theorem order_ne_zero_iff_constCoeff_eq_zero :
     f.order ≠ 0 ↔ f.constantCoeff = 0 := by
-  rw [← ENat.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
+  rw [← Order.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
 
 theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : f.constantCoeff = 0) :
     n ≤ (f ^ n).order := by
