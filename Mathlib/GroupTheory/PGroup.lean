@@ -128,12 +128,12 @@ theorem _root_.isPGroup_iff_exponent_dvd_pow [Finite G] :
 
 alias ⟨exists_exponent_dvd_pow, _⟩ := isPGroup_iff_exponent_dvd_pow
 
-theorem _root_.isPGroup_off_exponent_eq_pow [Finite G] [Fact p.Prime] :
+theorem _root_.isPGroup_iff_exponent_eq_pow [Finite G] [Fact p.Prime] :
     IsPGroup p G ↔ ∃ n, Monoid.exponent G = p ^ n := by
   simp_rw [isPGroup_iff_exponent_dvd_pow, Nat.dvd_prime_pow Fact.out]
   exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
 
-alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_off_exponent_eq_pow
+alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_iff_exponent_eq_pow
 
 theorem _root_.isPGroup_iff_isPGroup_prod_primeFactors (h : p ≠ 0) :
     IsPGroup p G ↔ IsPGroup (p.primeFactors.prod id) G :=
