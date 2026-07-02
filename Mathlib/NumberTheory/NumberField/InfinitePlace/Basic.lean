@@ -309,6 +309,7 @@ open scoped Classical in
 protected noncomputable instance fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]
 alias NumberField.InfinitePlace.fintype := InfinitePlace.fintype
 
