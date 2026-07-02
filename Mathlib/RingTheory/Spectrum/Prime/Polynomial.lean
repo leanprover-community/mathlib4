@@ -46,15 +46,13 @@ lemma isNilpotent_tensor_residueField_iff
   · have := (algebraMap R (A ⊗[R] I.ResidueField)).codomain_trivial
     simp [Subsingleton.elim I ⊤, Subsingleton.elim (f ⊗ₜ[R] (1 : I.ResidueField)) 0]
   have : Module.finrank I.ResidueField (I.ResidueField ⊗[R] A) = Module.finrank R A := by
-    rw [Module.finrank_tensorProduct]
-    erw [Module.finrank_self]
-    rw [one_mul]
+    rw [Module.finrank_tensorProduct, Module.finrank_self, one_mul]
   rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm R A I.ResidueField).injective]
   simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
   rw [← IsNilpotent.map_iff (Algebra.lmul_injective (R := I.ResidueField)),
-    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange]
-  erw [this]
+    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange,
+    this]
   simp_rw [← ((LinearMap.mul R A) f).charpoly_natDegree]
   constructor
   · intro e i hi
@@ -120,7 +118,7 @@ lemma mem_image_comap_basicOpen (f : A) (x) :
     rw [Ideal.span_empty]
     exact { __ := (RingEquiv.quotientBot A).symm, __ := Algebra.ofId _ _ }
   rw [← IsNilpotent.map_iff e.injective, AlgEquiv.commutes,
-    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_diff,
+    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_sdiff,
     basicOpen_eq_zeroLocus_compl]
 
 /-- Let `A` be an `R`-algebra. If `A ⧸ I` is finite free over `R`,
