@@ -494,10 +494,14 @@ lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
   sub_lt_of_lt_add <| by rwa [add_comm]
 
 lemma sub_lt_sub_of_le_of_gt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
-    (hy_top : y ≠ ⊤) (hy_bot : y ≠ ⊥) :
+    (hx_top : x ≠ ⊤) (hy_bot : y ≠ ⊥) :
     x - t < y - z := by
   refine sub_lt_of_lt_add' ?_
   rw [add_sub_assoc', add_comm, add_sub_assoc]
+  by_cases hy_top : y = ⊤
+  · rw [hy_top, top_add_of_ne_bot]
+    · exact hx_top.lt_top
+    · exact ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le
   by_cases hxy : x = y
   · rw [hxy]
     lift y to ℝ using ⟨hy_top, hy_bot⟩
