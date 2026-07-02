@@ -278,8 +278,8 @@ lemma _root_.ContMDiffCovariantDerivativeOn.affine_combination [IsManifold I 1 M
     [VectorBundle 𝕜 F V]
     {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
     {u : Set M} {f : M → 𝕜} {n : ℕ∞ω} (hf : CMDiff[u] n f)
-    (Hcov : ContMDiffCovariantDerivativeOn (F := F) n cov u)
-    (Hcov' : ContMDiffCovariantDerivativeOn (F := F) n cov' u) :
+    (Hcov : ContMDiffCovariantDerivativeOn F n cov u)
+    (Hcov' : ContMDiffCovariantDerivativeOn F n cov' u) :
     ContMDiffCovariantDerivativeOn F n (fun σ ↦ (f • (cov σ)) + (1 - f) • (cov' σ)) u where
   contMDiff hσ := by
     apply ContMDiffOn.add_section
