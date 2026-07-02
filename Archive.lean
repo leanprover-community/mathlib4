@@ -66,6 +66,7 @@ import Archive.MinimalSheffer
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf
+import Archive.NamedGraphs
 import Archive.OxfordInvariants.Summer2021.Week3P1
 import Archive.Sensitivity
 import Archive.Wiedijk100Theorems.AbelRuffini
