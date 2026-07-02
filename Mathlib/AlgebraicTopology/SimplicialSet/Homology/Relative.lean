@@ -5,11 +5,12 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Homology.HomologicalComplexKernels
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.SSetPair
-public import Mathlib.Algebra.Homology.HomologicalComplexKernels
-public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
 # Relative simplicial homology
@@ -19,7 +20,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Kernels
 
 @[expose] public section
 
-open Simplicial CategoryTheory Limits
+open Simplicial CategoryTheory Limits Opposite
 
 universe w v u
 
@@ -33,7 +34,8 @@ chain complex of `X` with coefficients in `R` (the usual one is for `C := Ab`
 and `R := ℤ`.). -/
 noncomputable abbrev chainComplexFunctorLeft :
     C ⥤ SSetPair.{w} ⥤ ChainComplex C ℕ :=
-  (SSetPair.forget ⋙ Arrow.leftFunc ⋙ (SSet.chainComplexFunctor _).flip).flip
+  SSet.chainComplexFunctor.{w} C ⋙ (Functor.whiskeringLeft ..).obj
+    (SSetPair.forget ⋙ Arrow.leftFunc)
 
 /-- The bifunctor which sends `R : C` and a pair of simplicial sets `i : X ⟶ Y`
 (with `i` a monomorphism) to `Y.chainComplex R`, which is the
@@ -41,16 +43,31 @@ chain complex of `Y` with coefficients in `R` (the usual one is for `C := Ab`
 and `R := ℤ`.). -/
 noncomputable abbrev chainComplexFunctorRight :
     C ⥤ SSetPair.{w} ⥤ ChainComplex C ℕ :=
-  (SSetPair.forget ⋙ Arrow.rightFunc ⋙ (SSet.chainComplexFunctor _).flip).flip
+  SSet.chainComplexFunctor.{w} C ⋙ (Functor.whiskeringLeft ..).obj
+    (SSetPair.forget ⋙ Arrow.rightFunc)
 
 /-- The map `X.chainComplex R ⟶ Y.chainComplex R` for each pair of simplicial
 sets `i : X ⟶ Y` (with `i` a monomorphism), and `R : C`, as a natural transformation of
 bifunctors `C ⥤ SSetPair ⥤ ChainComplex C ℕ`. -/
 noncomputable abbrev chainComplexFunctorLeftToRight :
     chainComplexFunctorLeft.{w} C ⟶ chainComplexFunctorRight.{w} C :=
-  (flipFunctor ..).map
-    (Functor.whiskerLeft SSetPair.forget.{w}
-      (Functor.whiskerRight Arrow.leftToRight (SSet.chainComplexFunctor C).flip))
+  Functor.whiskerLeft _ ((Functor.whiskeringLeft ..).map
+    (Functor.whiskerLeft _ Arrow.leftToRight))
+
+set_option backward.defeqAttrib.useBackward true in
+instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
+    Mono ((((chainComplexFunctorLeftToRight C).app R).app P).f n) :=
+  inferInstanceAs (Mono ((sigmaConst.obj R).map (P.hom.app (op ⦋n⦌))))
+
+instance (R : C) (P : SSetPair.{w}) :
+    Mono (((chainComplexFunctorLeftToRight C).app R).app P) :=
+  HomologicalComplex.mono_of_mono_f _ inferInstance
+
+instance (R : C) : Mono ((chainComplexFunctorLeftToRight C).app R) :=
+  NatTrans.mono_of_mono_app _
+
+instance : Mono (chainComplexFunctorLeftToRight C) :=
+  NatTrans.mono_of_mono_app _
 
 set_option backward.defeqAttrib.useBackward true in
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
@@ -92,6 +109,8 @@ as a natural transformation of bifunctors `C ⥤ SSetPair ⥤ ChainComplex C ℕ
 noncomputable def chainComplexFunctorπ :
     chainComplexFunctorRight.{w} C ⟶ chainComplexFunctor.{w} C :=
   cokernel.π _
+
+instance : Epi (chainComplexFunctorπ.{w} C) := coequalizer.π_epi
 
 @[reassoc (attr := simp)]
 lemma chainComplexFunctor_condition :
@@ -144,16 +163,6 @@ instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
   preservesColimit_of_iso_diagram
     (K₁ := parallelPair (((chainComplexFunctorLeftToRight.{w} C).app R).app P) 0) _
       (parallelPair.ext (Iso.refl _) (Iso.refl _))
-
-example (R : C) (P : SSetPair.{w}) :
-    PreservesColimit (parallelPair (chainComplexFunctorLeftToRight.{w} C) 0)
-      ((evaluation ..).obj R ⋙ (evaluation ..).obj P) := by
-  infer_instance
-
-example (R : C) (P : SSetPair.{w}) (n : ℕ) :
-    PreservesColimit (parallelPair (chainComplexFunctorLeftToRight.{w} C) 0)
-      (((evaluation ..).obj R ⋙ (evaluation ..).obj P) ⋙ HomologicalComplex.eval _ _ n) := by
-  infer_instance
 
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     PreservesColimit (parallelPair (chainComplexFunctorLeftToRight.{w} C) 0)
@@ -215,6 +224,9 @@ noncomputable def isColimitCokernelCoforkChainComplex :
       (isColimitOfPreserves ((evaluation ..).obj R ⋙ (evaluation ..).obj P)
     (isColimitCokernelCoforkChainComplexFunctorLeftToRight.{w} C))
 
+instance : Epi (P.chainComplexπ R) :=
+  Cofork.IsColimit.epi (P.isColimitCokernelCoforkChainComplex R)
+
 /--
 Given a pair of simplicial sets `i : X ⟶ Y` (with `i` a monomorphism),
 `R : C` (e.g. `C := Ab` and `R := ℤ`) and `n : ℕ`, this is the cokernel cofork
@@ -237,5 +249,8 @@ noncomputable def isColimitCokernelCoforkChainComplexX (n : ℕ) :
     IsColimit (P.cokernelCoforkChainComplexX R n) :=
   CokernelCofork.mapIsColimit _ (P.isColimitCokernelCoforkChainComplex R)
     (HomologicalComplex.eval _ _ n)
+
+instance (n : ℕ) : Epi ((P.chainComplexπ R).f n) :=
+  Cofork.IsColimit.epi (P.isColimitCokernelCoforkChainComplexX R n)
 
 end SSetPair
