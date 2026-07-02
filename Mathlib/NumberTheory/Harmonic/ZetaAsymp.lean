@@ -558,13 +558,9 @@ lemma deriv_riemannZeta_eq_neg_inv_sub_sq_add_bounded :
 lemma log_riemannZeta_eq_neg_log_sub_add {s : ℝ} (hs : s > 1) :
     (riemannZeta s).re.log = - (s - 1).log + (riemannZeta₁ s).re.log := by
   have : (riemannZeta s).re = (s - 1)⁻¹ * (riemannZeta₁ s).re := by
-    rw [riemannZeta_eq_inv_sub_mul (mod_cast (by linarith))]
-    norm_cast
-    rw [re_ofReal_mul]
-  rw [this, Real.log_mul, Real.log_inv]
-  · positivity
-  · have : 0 < (riemannZeta s).re := riemannZeta_re_pos_of_one_lt hs
-    grind
+    rw_mod_cast [riemannZeta_eq_inv_sub_mul (by aesop), re_ofReal_mul]
+  rw [this, Real.log_mul, Real.log_inv] <;>
+  grind [riemannZeta_re_pos_of_one_lt hs]
 
 lemma log_riemannZeta_add_log_sub_add_isBigO :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =O[𝓝[>] 1] (· - 1) := by
