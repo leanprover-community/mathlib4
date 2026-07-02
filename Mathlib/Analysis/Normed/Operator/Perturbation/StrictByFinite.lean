@@ -23,7 +23,7 @@ More precisely, we prove the following statements:
 * `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`: given a closed
   subspace `A` of `E` of finite codimension, we have that `u` is strict with closed range
   if and only if `u.domRestrict A` is strict with closed range.
-* `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`: if `u, v : E →L[𝕜] F`
+* `ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid`: if `u, v : E →L[𝕜] F`
   differ by a finite rank continuous linear map, then `u` is strict with closed range if and only
   if `v` is strict with closed range.
 * `ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient`: given a *complemented*
