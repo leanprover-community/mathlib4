@@ -54,16 +54,12 @@ end
 section
 variable [ModularFormClass F 𝒢 k]
 
-/-- Each `quotientFunc f q` is holomorphic on the upper half plane. -/
-lemma quotientFunc_mdiff (q : 𝒬) :
-    MDiff (quotientFunc f q) :=
-  Quotient.inductionOn q fun r => (ModularForm.translate f r.val⁻¹).holo'
+lemma quotientFunc_mdiff (q : 𝒬) : MDiff (quotientFunc f q) :=
+  Quotient.inductionOn q fun r ↦ (ModularForm.translate f r.val⁻¹).holo'
 
-/-- Each `quotientFunc f q` is bounded at `∞`. -/
-lemma quotientFunc_isBoundedAtImInfty [𝒢.IsFiniteRelIndex ℋ]
-    [Fact (IsCusp OnePoint.infty ℋ)] (q : 𝒬) :
-    IsBoundedAtImInfty (quotientFunc f q) :=
-  Quotient.inductionOn q fun ⟨_, hr⟩ => OnePoint.isBoundedAt_infty_iff.mp <|
+lemma quotientFunc_isBoundedAtImInfty [𝒢.IsFiniteRelIndex ℋ] [Fact (IsCusp OnePoint.infty ℋ)]
+    (q : 𝒬) : IsBoundedAtImInfty (quotientFunc f q) :=
+  Quotient.inductionOn q fun ⟨_, hr⟩ ↦ OnePoint.isBoundedAt_infty_iff.mp <|
     (ModularForm.translate f _).bdd_at_cusps'
       ((Fact.out : IsCusp _ _).of_isFiniteRelIndex_conj hr)
 
