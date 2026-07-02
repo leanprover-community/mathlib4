@@ -165,7 +165,7 @@ def wikidataIdParser : Parser :=
 
 /-! # LMFDB parser -/
 
-/-- `lmfdbId` is the node kind of LMFDB identifiers: lower words with `.` in between.
+/-- `lmfdbId` is the node kind of LMFDB identifiers: lower case words with `.` in between.
 The words can also contain underscores and digits. -/
 abbrev lmfdbIdKind : SyntaxNodeKind := `lmfdbId
 
