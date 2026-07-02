@@ -335,7 +335,7 @@ lemma ContMDiffAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E
   · apply hψ
   · simp [contMDiffAt_totalSpace, hb, hw]
 
-lemma Bundle.Trivialization.ContMDiffAt_symm_const {k}
+lemma Bundle.Trivialization.contMDiffAt_symm_const {k}
     [IsManifold IB k B]
     [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
     [ContMDiffVectorBundle k F₁ E₁ IB]
@@ -412,7 +412,7 @@ lemma contMDiffAt_symm_of_memTrivializationAtlas {k}
 
 omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
      [ContMDiffVectorBundle 1 F₁ E₁ IB] in
-lemma Bundle.Trivialization.ContMDiffWithinAt_apply {k}
+lemma Bundle.Trivialization.contMDiffWithinAt_apply {k}
     [IsManifold IB k B]
     [ContMDiffVectorBundle k F₁ E₁ IB]
     (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
@@ -442,20 +442,19 @@ lemma ContMDiffAt.clm_bundle_of_apply {k}
   refine (contMDiffAt_hom_bundle fun x ↦ ⟨x, φ x⟩).mpr ⟨contMDiffAt_id, ?_⟩
   rw [contMDiffAt_iff_source, contMDiffWithinAt_iff_contDiffWithinAt]
   set t₁ := trivializationAt F₁ E₁ x
-  set t₁inv := Trivialization.symmL 𝕜 t₁
   set t₂ := trivializationAt F₂ E₂ x
-  set t₂clm := t₂.continuousLinearMapAt 𝕜
   apply contDiffWithinAt_clm_apply.mpr
   set ψ := extChartAt IB x
   intro u
-  have C₀ : ContMDiffAt IB 𝓘(𝕜, F₂) k (fun b ↦ t₂clm b (φ b (t₁inv b u))) x := by
-    apply t₂.ContMDiffWithinAt_apply
+  have C₀ : CMDiffAt k (fun b ↦ t₂.continuousLinearMapAt 𝕜 b (φ b (t₁.symmL 𝕜 b u)))
+      (ψ.symm (ψ x)) := by
+    rw [extChartAt_to_inv x]
+    apply t₂.contMDiffWithinAt_apply
     · exact FiberBundle.mem_baseSet_trivializationAt' x
     · apply h
       filter_upwards [t₁.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)] with
         x' hx'
-      apply t₁.ContMDiffAt_symm_const hx'
-  rw [show x = ψ.symm (ψ x) from (extChartAt_to_inv x).symm] at C₀
+      apply t₁.contMDiffAt_symm_const hx'
   have C₂ : CMDiffAt[range IB] k (ψ.symm) (ψ x) :=
     contMDiffWithinAt_extChartAt_symm_range_self x
   have := (ContMDiffWithinAt.comp' (ψ x) C₀ C₂).contDiffWithinAt
