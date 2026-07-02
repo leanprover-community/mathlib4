@@ -593,7 +593,6 @@ lemma log_deriv_riemannZeta_add_inv_sub_sub_isBigO :
     simp [hs]
   suffices DifferentiableAt ℂ (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s)) 1 by
     simpa using this.isBigO_sub
-  have := differentiable_riemannZeta₁.deriv
   fun_prop (disch := simp)
 
 lemma log_deriv_riemannZeta_add_inv_sub_sub_isLittleO :
