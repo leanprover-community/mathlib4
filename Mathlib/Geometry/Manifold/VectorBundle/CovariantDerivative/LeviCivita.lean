@@ -704,6 +704,25 @@ instance leviCivitaConnection_foo [FiniteDimensional ℝ E]
     apply Filter.Eventually.self_of_nhds
     exact eventually_contMDiff_leviCivitaConnection_apply 1 hτ (Filter.univ_mem' hσ) hZ
 
+-- TODO: have a stale `IsManifold I 2 M` hypothesis lying around...
+/-- If `M` is endowed with a `C^k` metric, its Levi-Civita connection is a `C^k` connection. -/
+instance leviCivitaConnection_foo_experiment [FiniteDimensional ℝ E]
+    [IsManifold I 3 M] [IsContMDiffRiemannianBundle I 2 E (TangentSpace I (M := M))] :
+    ContMDiffCovariantDerivativeOn' E 1 (leviCivitaConnection I M) Set.univ where
+  contMDiffWithinAt := by
+    have : IsManifold I (↑1 + 2) M := by simpa
+    have : IsContMDiffRiemannianBundle I (↑1 + 1) E (fun (x : M) ↦ TangentSpace I x) := by simpa
+    have : ContMDiffVectorBundle (1 + 1) E (TangentSpace I (M := M)) I :=
+      TangentBundle.contMDiffVectorBundle (h := by rwa [show ((1 : ℕ∞ω) + 1 + 1 = 3) by norm_num])
+    have : IsManifold I (1 + 1) M := by simpa
+    simp_rw [contMDiffWithinAt_univ, nhdsWithin_univ]
+    intro σ x _hx hσ
+    apply ContMDiffAt.clm_bundle_of_apply'
+    intro τ hτ
+    apply step2b 1 (fun {Z} hZ ↦ ?_)
+    apply Filter.Eventually.self_of_nhds
+    exact eventually_contMDiff_leviCivitaConnection_apply 1 hτ hσ hZ
+
 section
 
 -- TODO: have a stale `IsManifold I 2 M` hypothesis lying around...

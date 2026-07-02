@@ -115,19 +115,44 @@ class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] 
     CMDiff[u] k covσ
     -- TODO elaborator not working here: want to use `T% (cov σ)`
 
+-- EXPERIMENT: can this version with worked with better?
+class ContMDiffCovariantDerivativeOn' [IsManifold I 1 M] [VectorBundle 𝕜 F V] (k : ℕ∞ω)
+    (cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x))
+    (u : Set M) where
+  contMDiffWithinAt : ∀ {σ : Π x : M, V x} {x}, x ∈ u →
+    -- TEACHING EXAMPLE: omitting the brackets changes the statement
+    (∀ᶠ (y : M) in nhdsWithin x u, CMDiffAt[u] (k + 1) (T% σ) y) →
+    letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+    CMDiffAt[u] k covσ x
+    -- TODO elaborator not working here: want to use `T% (cov σ)`
+
 variable {F}
 
-namespace IsCovariantDerivativeOn
-
--- TODO: think about this version!
-lemma contMDiffAt (k : ℕ∞ω) [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)} {s t : Set M} {x : M} -- hx : x ∈ t ?
-    (hcov : IsCovariantDerivativeOn F cov s)
-    (hov' : ContMDiffCovariantDerivativeOn F k cov t)
-    {σ : Π x : M, V x} (hσ : CMDiffAt[t] (k + 1) (T% σ) x) :
+lemma ContMDiffCovariantDerivativeOn'.contMDiffAt_of_isOpen (k : ℕ∞ω)
+    [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
+    {u : Set M} {x : M} (ht : IsOpen u) (hx : x ∈ u)
+    (hcov : ContMDiffCovariantDerivativeOn' F k cov u)
+    {σ : Π x : M, V x} (hσ : ∀ᶠ (y : M) in 𝓝 x, CMDiffAt (k + 1) (T% σ) y) :
     letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
-    CMDiffAt[t] k covσ x := by
-  sorry
+    CMDiffAt k covσ x := by
+  apply (hcov.contMDiffWithinAt hx ?_).contMDiffAt (ht.mem_nhds hx)
+  rw [ht.nhdsWithin_eq hx]
+  filter_upwards [hσ] with x hσ using hσ.contMDiffWithinAt
+  -- proof was (given `(hσ : CMDiffAt (k + 1) (T% σ) x)`)
+  -- (hcov.contMDiffWithinAt hx hσ.contMDiffWithinAt).contMDiffAt (ht.mem_nhds hx)
+
+-- agrees with the above version for open sets; we only want to apply it for `Set.univ`
+-- open Set
+-- lemma ContMDiffCovariantDerivativeOn.contMDiff' [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+--     {k : WithTop ℕ∞} {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
+--     (hcov : IsCovariantDerivativeOn F cov) [hcov' : ContMDiffCovariantDerivativeOn F k cov univ]
+--     {σ : Π x : M, V x} {x : M} (hσ : CMDiffAt (k + 1) (T% σ) x) :
+--     letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+--     CMDiffAt k covσ x := by
+--   sorry
+
+namespace IsCovariantDerivativeOn
 
 /-! ### Changing set
 

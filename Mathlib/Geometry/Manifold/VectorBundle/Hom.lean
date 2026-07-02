@@ -608,7 +608,7 @@ theorem TensorialAt.contMDiff_mkHom
     haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
     letI T (x : B) : TotalSpace (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) :=
       ⟨x, TensorialAt.mkHom (φ · x) x (hφ x)⟩
-    ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k T := by
+    CMDiff k T := by
   have : IsManifold IB 1 B := IsManifold.of_le hk
   have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
   have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk

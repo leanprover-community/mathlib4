@@ -109,26 +109,50 @@ noncomputable def curvatureTensorAux :
       (Π x : M, V x) → (Π x : M, V x) :=
   fun X Y σ ↦ (∇ X (∇ Y σ)) - (∇ Y (∇ X σ)) - ∇ (VectorField.mlieBracket I X Y) σ
 
+section
+
+variable {F}
+-- TODO: move to `CovariantDerivative.Basic`
+lemma temp_general (k : ℕ∞)
+    {cov : ((x : M) → V x) → (x : M) → TangentSpace% x →L[𝕜] V x}
+    [IsManifold I 1 M] [hcov : ContMDiffCovariantDerivativeOn' F k cov univ]
+    {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace% x}
+    (hσ : ∀ᶠ (y : M) in nhds x, CMDiffAt (k + 1) (T% σ) y) (hX : CMDiffAt k (T% X) x) :
+    CMDiffAt k (T% (fun x ↦ (cov σ x) (X x))) x :=
+  (hcov.contMDiffAt_of_isOpen k isOpen_univ (by simp) hσ).clm_bundle_apply hX
+
+lemma temp_mdiff_general (k : ℕ∞)
+    {cov : ((x : M) → V x) → (x : M) → TangentSpace% x →L[𝕜] V x}
+    -- (hcov : IsCovariantDerivativeOn F cov)
+    [IsManifold I 1 M] [hcov' : ContMDiffCovariantDerivativeOn F k cov univ]
+    {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace% x}
+    (hσ : ∀ᶠ (y : M) in nhds x, CMDiffAt 2 (T% σ) y) (hX : MDiffAt (T% X) x) :
+    MDiffAt (T% (fun x ↦ (cov σ x) (X x))) x :=
+  -- requires adapting `ContMDiffAt.clm_bundle_apply` to `MDifferentiableAt` hypotheses
+  sorry
+
+end
+
 variable [IsManifold I 2 M]
   {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
   {X X' Y Z : Π x : M, TangentSpace% x}
 
--- TODO: generalise to C^(k + 1) (not just C^2), and move to `CovariantDerivative.Basic`
+-- special case of the above
 lemma temp
     {cov : ((x : M) → V x) → (x : M) → TangentSpace% x →L[𝕜] V x}
-    (hcov : IsCovariantDerivativeOn F cov)
-    [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ] -- is this the right regularity?
+    [hcov : ContMDiffCovariantDerivativeOn' F 1 cov univ]
     {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace% x}
-    (hσ : CMDiffAt 2 (T% σ) x) (hX : CMDiffAt 1 (T% X) x) :
+    (hσ : ∀ᶠ (y : M) in nhds x, CMDiffAt 2 (T% σ) y) (hX : CMDiffAt 1 (T% X) x) :
     CMDiffAt 1 (T% (fun x ↦ (cov σ x) (X x))) x :=
-  (hcov'.contMDiff' hcov hσ).clm_bundle_apply hX
+  (hcov.contMDiffAt_of_isOpen 1 isOpen_univ (by simp) hσ).clm_bundle_apply hX
 
+-- special case of the above
 lemma temp_mdiff
     {cov : ((x : M) → V x) → (x : M) → TangentSpace% x →L[𝕜] V x}
     (hcov : IsCovariantDerivativeOn F cov)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ] -- is this the right regularity?
     {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace% x}
-    (hσ : CMDiffAt 2 (T% σ) x) (hX : MDiffAt (T% X) x) :
+    (hσ : ∀ᶠ (y : M) in nhds x, CMDiffAt 2 (T% σ) y) (hX : MDiffAt (T% X) x) :
     MDiffAt (T% (fun x ↦ (cov σ x) (X x))) x :=
   -- requires adapting `ContMDiffAt.clm_bundle_apply` to `MDifferentiableAt` hypotheses
   sorry
@@ -185,8 +209,10 @@ theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn F cov) (
     set B := cov (fun x ↦ (cov τ x) (Y x)) x (X' x)
     set C := cov (fun x ↦ (cov τ x) (X x)) x
     set D := cov (fun x ↦ (cov τ x) (X' x)) x
-    have hτX : MDiffAt (T% (fun x ↦ cov τ x (X x))) x := temp_mdiff F hcov hτ hX
-    have hτX' : MDiffAt (T% (fun x ↦ cov τ x (X' x))) x := temp_mdiff F hcov hτ hX'
+    -- TODO: temp_mdiff expects a stronger hypothesis on τ than we have
+    -- need to adapt the definition of tensoriality!
+    have hτX : MDiffAt (T% (fun x ↦ cov τ x (X x))) x := sorry -- temp_mdiff F hcov hτ hX
+    have hτX' : MDiffAt (T% (fun x ↦ cov τ x (X' x))) x := sorry -- temp_mdiff F hcov hτ hX'
     conv =>
       enter [1, 1, 2]
       equals (cov (fun x ↦ (cov τ x) (X x)) x) (Y x)
