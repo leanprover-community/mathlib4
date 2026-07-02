@@ -142,7 +142,8 @@ theorem IsRecurrent.preimage (n : ℕ) (hf : QuasiMeasurePreserving f μ μ) (hs
   refine iUnion₂_congr fun m _ ↦ ?_
   rw [← preimage_comp, ← iterate_add, add_comm, iterate_add, preimage_comp]
 
-theorem isRecurrent_iff_isReccurent_iUnion_preimage (s : Set α) (hf : QuasiMeasurePreserving f μ μ) :
+theorem isRecurrent_iff_isReccurent_iUnion_preimage (s : Set α)
+    (hf : QuasiMeasurePreserving f μ μ) :
     IsRecurrent f μ s ↔ IsRecurrent f μ (⋃ n, f^[n] ⁻¹' s) := by
   constructor <;> intro hs
   · exact isRecurrent_iUnion fun n ↦ hs.preimage n hf
@@ -248,30 +249,28 @@ structure Conservative (f : α → α) (μ : Measure α) : Prop extends QuasiMea
   then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
   isRecurrent : ∀ ⦃s⦄, MeasurableSet s → IsRecurrent f μ s
 
-theorem _root_.MeasureTheory.conservative_iff_exists_mem_iterate_mem
-    (hf : QuasiMeasurePreserving f μ μ) :
+theorem conservative_iff_exists_mem_iterate_mem (hf : QuasiMeasurePreserving f μ μ) :
     Conservative f μ ↔ ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
-  refine ⟨fun h s s_m s_0 ↦ (h.isRecurrent s_m).exists_mem_iterate_mem s_0, fun h ↦ ?_⟩
+  refine ⟨fun h s s_m s₀ ↦ (h.isRecurrent s_m).exists_mem_iterate_mem s₀, fun h ↦ ?_⟩
   refine ⟨hf, fun s hs ↦ ae_le_set.2 ?_⟩
   suffices ht : μ (s ∩ ⋂ n ≠ 0, f^[n] ⁻¹' sᶜ) = 0 by
     rw [← ht]; congr; ext x
     simp only [Set.mem_sdiff, mem_iUnion, not_exists, preimage_compl, mem_inter_iff, mem_iInter,
       mem_compl_iff]
-  by_contra t_0
-  have t_m : MeasurableSet (s ∩ ⋂ n ≠ 0, f^[n] ⁻¹' sᶜ) := by
+  by_contra t₀
+  have tm : MeasurableSet (s ∩ ⋂ n ≠ 0, f^[n] ⁻¹' sᶜ) := by
     refine MeasurableSet.inter hs (MeasurableSet.iInter fun n ↦ ?_)
     exact MeasurableSet.iInter fun _ ↦ ((hf.iterate n).measurable hs).compl
-  obtain ⟨x, x_t, n, n_0, x_n⟩ := h t_m t_0
-  exact notMem_of_mem_compl (mem_iInter₂.1 x_t.2 n n_0) x_n.1
+  obtain ⟨x, xt, n, n₀, xn⟩ := h tm t₀
+  exact notMem_of_mem_compl (mem_iInter₂.1 xt.2 n n₀) xn.1
 
 /-- A self-map preserving a finite measure is conservative. -/
-protected theorem _root_.MeasurePreserving.conservative [IsFiniteMeasure μ]
-    (h : MeasurePreserving f μ μ) :
+protected theorem MeasurePreserving.conservative [IsFiniteMeasure μ] (h : MeasurePreserving f μ μ) :
     Conservative f μ :=
   ⟨h.quasiMeasurePreserving, fun _ hs ↦ h.isRecurrent hs.nullMeasurableSet⟩
 namespace Conservative
 
-/-- The identity map is conservative with respect to any measure. -/
+/-- The identity map is conservative w.r.t. any measure. -/
 protected theorem id (μ : Measure α) : Conservative id μ :=
   { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
     isRecurrent := fun _ _ ↦ isRecurrent_id }
@@ -285,8 +284,8 @@ theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν :
 formulated in terms of the restriction of the measure. -/
 theorem measureRestrict (h : Conservative f μ) (hs : MapsTo f s s) :
     Conservative f (μ.restrict s) :=
-  h.of_absolutelyContinuous (absolutelyContinuous_of_le restrict_le_self) <|
-    h.toQuasiMeasurePreserving.restrict hs
+  h.of_absolutelyContinuous (absolutelyContinuous_of_le restrict_le_self)
+    (h.toQuasiMeasurePreserving.restrict hs)
 
 theorem congr_ae {ν : Measure α} (hf : Conservative f μ) (h : ae μ = ae ν) :
     Conservative f ν :=
@@ -313,7 +312,8 @@ theorem exists_mem_iterate_mem (hf : Conservative f μ) (hsm : NullMeasurableSet
 for infinitely many values of `m` a positive measure of points `x ∈ s` returns back to `s`
 after `m` iterations of `f`. -/
 theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeasurableSet s μ)
-    (h0 : μ s ≠ 0) : ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 :=
+    (h0 : μ s ≠ 0) :
+    ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 :=
   (hf.nullMeasurableSet_isRecurrent hs).frequently_measure_inter_ne_zero hf.toQuasiMeasurePreserving
     (subset_refl s) h0
 
@@ -321,7 +321,8 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeas
 for an arbitrarily large `m` a positive measure of points `x ∈ s` returns back to `s`
 after `m` iterations of `f`. -/
 theorem exists_gt_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeasurableSet s μ)
-    (h0 : μ s ≠ 0) (N : ℕ) : ∃ m > N, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 := by
+    (h0 : μ s ≠ 0) (N : ℕ) :
+    ∃ m > N, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 := by
   obtain ⟨m, N_m, hm⟩ := (hf.frequently_measure_inter_ne_zero hs h0).forall_exists_of_atTop (N + 1)
   exact ⟨m, by linarith, hm⟩
 
