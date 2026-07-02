@@ -5096,6 +5096,7 @@ public import Mathlib.LinearAlgebra.Matrix.Circulant
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
@@ -7278,6 +7279,9 @@ public import Mathlib.Tactic.DeriveCountable
 public import Mathlib.Tactic.DeriveEncodable
 public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Tactic.DeriveTraversable
+public import Mathlib.Tactic.Determinant.Bird
+public import Mathlib.Tactic.Determinant.Bird.Cert
+public import Mathlib.Tactic.Determinant.Bird.Meta
 public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
