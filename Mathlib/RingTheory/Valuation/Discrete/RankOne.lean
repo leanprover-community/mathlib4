@@ -67,7 +67,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
     (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).lt_iff_lt]
 
 /-- A discrete valuation has rank one. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
   hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp
       (.ofClass (valueGroup₀_equiv_withZeroMulInt v))

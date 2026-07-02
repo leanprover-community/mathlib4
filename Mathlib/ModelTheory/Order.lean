@@ -205,7 +205,7 @@ variable (L M)
 
 /-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
 This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
-@[implicit_reducible]
+@[instance_reducible]
 def orderStructure [LE M] : Language.order.Structure M where
   RelMap | .le => (fun x => x 0 ≤ x 1)
 
@@ -354,7 +354,7 @@ section structure_to_order
 variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
-@[implicit_reducible]
+@[instance_reducible]
 def leOfStructure : LE M where
   le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
@@ -375,7 +375,7 @@ def decidableLEOfStructure
     DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
-@[implicit_reducible]
+@[instance_reducible]
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
   __ := L.leOfStructure M
   le_refl := (Relations.realize_reflexive.mp <|
@@ -384,14 +384,14 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
     Theory.model_iff _ |>.mp h _ <| by simp [preorderTheory]).trans
 
 /-- Any model of a theory of partial orders is a partial order. -/
-@[implicit_reducible]
+@[instance_reducible]
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
   le_antisymm := (Relations.realize_antisymmetric.mp <|
     Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
 /-- Any model of a theory of linear orders is a linear order. -/
-@[implicit_reducible]
+@[instance_reducible]
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where

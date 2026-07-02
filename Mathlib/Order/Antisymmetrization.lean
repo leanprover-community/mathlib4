@@ -116,7 +116,7 @@ section IsPreorder
 variable (α) (r : α → α → Prop) [IsPreorder α r]
 
 /-- The antisymmetrization relation as an equivalence relation. -/
-@[simps, implicit_reducible]
+@[simps, instance_reducible]
 def AntisymmRel.setoid : Setoid α :=
   ⟨AntisymmRel r, .refl r, .symm, .trans⟩
 

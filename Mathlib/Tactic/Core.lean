@@ -33,7 +33,7 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc.map (·, doc.verso.get (← getOptions))
+  { docString? := newDoc
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
