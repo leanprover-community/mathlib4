@@ -69,9 +69,8 @@ instance (s : Sphere P) (p : P) : Nonempty (s.polar p) := by
   · refine Submodule.span_singleton_smul_eq ?_ _
     simp [hs, h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pole_polar {s : Sphere P} (hs : s.radius ≠ 0) (p : P) : s.pole (s.polar p) = p := by
-  simp [pole, polar, hs]
+  simp! [pole, polar, hs]
 
 lemma orthRadius_eq_polar_inversion {s : Sphere P} (hs : s.radius ≠ 0) (p : P) :
     s.orthRadius p = s.polar (inversion s.center s.radius p) := by
