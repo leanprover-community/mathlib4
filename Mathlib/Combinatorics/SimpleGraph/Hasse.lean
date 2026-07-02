@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Order.SuccPred.Relation
@@ -120,6 +121,17 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
+
+theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
+  match n with
+  | 0 | 1 => simp
+  | n + 2 =>
+    intro u v h
+    rw [pathGraph_adj] at h
+    rw [cycleGraph_adj']
+    cases h with
+    | inl h | inr h =>
+      simp [Fin.coe_sub_iff_le.mpr (Nat.lt_of_succ_le h.le).le, Nat.eq_sub_of_add_eq' h]
 
 namespace Walk
 
