@@ -64,7 +64,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   have P_cont : Continuous P := LinearMap.continuous_of_finiteDimensional _
   have I : Function.Bijective (LinearMap.domRestrict L T) :=
     ⟨LinearMap.injective_domRestrict_iff.2 (IsCompl.inf_eq_bot hT.symm),
-    (LinearMap.surjective_domRestrict_iff h).2 hT.symm.sup_eq_top⟩
+    (LinearMap.surjective_domRestrict_iff h).2 hT.symm.codisjoint⟩
   let L' : T ≃ₗ[𝕜] F := LinearEquiv.ofBijective (LinearMap.domRestrict L T) I
   have L'_cont : Continuous L' := LinearMap.continuous_of_finiteDimensional _
   have A : L = (L' : T →ₗ[𝕜] F).comp (P.comp (M.symm : E →ₗ[𝕜] (S × T))) := by
