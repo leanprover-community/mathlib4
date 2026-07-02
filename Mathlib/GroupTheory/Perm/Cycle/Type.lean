@@ -546,8 +546,9 @@ theorem _root_.exists_prime_orderOf_dvd_card' {G : Type*} [Group G] [Finite G] (
 
 variable {G} in
 @[to_additive]
-theorem _root_.Group.exists_orderOf_of_mem_primeFactors [Finite G] {p : ℕ}
+theorem _root_.Group.exists_orderOf_of_mem_primeFactors {p : ℕ}
     (hp : p ∈ (Nat.card G).primeFactors) : ∃ x : G, orderOf x = p :=
+  have : Finite G := Nat.finite_of_card_ne_zero <| Nat.mem_primeFactors.mp hp |>.right.right
   have : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
   exists_prime_orderOf_dvd_card' p <| Nat.dvd_of_mem_primeFactors hp
 
