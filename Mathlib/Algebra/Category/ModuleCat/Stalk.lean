@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-
 # Module structure on stalks
+
 Let `M` be a presheaf of `R`-modules on a topological space. We endow `M.presheaf.stalk x` with
 an `R.stalk x`-module structure.
 
