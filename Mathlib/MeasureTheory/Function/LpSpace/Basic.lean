@@ -873,10 +873,10 @@ section LpToLpOfMeasureLeSMul
 
 variable [NormedSpace ℝ E] {ν : Measure α} {c : ℝ≥0∞}
 
-/-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a multiple of `ν`.
+/-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a finite multiple of `ν`.
 This is the linear map version. Use instead the continuous linear map
 version `LpToLpOfMeasureLeSMul` -/
-noncomputable def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+private noncomputable def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) :
     Lp E p ν →ₗ[ℝ] Lp E p μ where
   toFun f := ((Lp.memLp f).of_measure_le_smul hc h).toLp f
   map_add' f g := by
@@ -893,18 +893,18 @@ noncomputable def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν
     grw [Lp.coeFn_smul]
     rfl
 
-lemma coeFn_LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) (f : Lp E p ν) :
+private lemma coeFn_LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) (f : Lp E p ν) :
     LpToLpOfMeasureLeSMulₗ hc h f =ᵐ[μ] f := by
   simp [LpToLpOfMeasureLeSMulₗ, MemLp.coeFn_toLp]
 
-lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
+private lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
     (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ₑ ≤ c ^ (1 / p).toReal * ‖f‖ₑ := by
   simp only [Lp.enorm_def]
   rw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
   exact eLpNorm_le_of_measure_le_smul h
 
-lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
+private lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
     (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ ≤ c.toReal ^ (1 / p).toReal * ‖f‖ := by
   simp only [← toReal_enorm]
@@ -912,7 +912,8 @@ lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
   grw [enorm_LpToLpOfMeasureLeSMulₗ_apply_le]
   simp [ENNReal.mul_eq_top, hc]
 
-/-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a multiple of `ν`. -/
+/-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a finite multiple of `ν`. -/
+@[no_expose]
 noncomputable def LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
     Lp E p ν →L[ℝ] Lp E p μ :=
   LinearMap.mkContinuous (LpToLpOfMeasureLeSMulₗ hc h) (c.toReal ^ (1 / p).toReal)
