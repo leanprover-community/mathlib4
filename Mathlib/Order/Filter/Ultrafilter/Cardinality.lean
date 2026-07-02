@@ -106,11 +106,7 @@ public theorem Cardinal.mk_ultrafilter_of_infinite :
     #(Ultrafilter α) = 2 ^ (2 ^ #α : Cardinal) := by
   rw [← Cardinal.mk_set, ← Cardinal.mk_set]
   apply le_antisymm
-  · suffices h : Function.Injective Filter.sets from
-      Cardinal.mk_le_of_injective (h.comp Ultrafilter.coe_injective)
-    intro f g h
-    ext s
-    rw [← Filter.mem_sets, ← Filter.mem_sets, h]
+  · exact Cardinal.mk_le_of_injective (Filter.sets_injective.comp Ultrafilter.coe_injective)
   · obtain ⟨e⟩ : Nonempty (Finset α × Finset (Finset α) ≃ α) := Cardinal.eq.1 (by simp)
     let f (s : Set (Set α)) : Ultrafilter α := Ultrafilter.of ((interPairsFilter s).map e)
     suffices hf : f.Injective from Cardinal.mk_le_of_injective hf
@@ -127,10 +123,7 @@ public theorem Cardinal.mk_filter_of_infinite :
     #(Filter α) = 2 ^ (2 ^ #α : Cardinal) := by
   apply le_antisymm
   · rw [← Cardinal.mk_set, ← Cardinal.mk_set]
-    suffices h : Function.Injective Filter.sets from Cardinal.mk_le_of_injective h
-    intro f g h
-    ext s
-    rw [← Filter.mem_sets, ← Filter.mem_sets, h]
+    exact Cardinal.mk_le_of_injective Filter.sets_injective
   · rw [← Cardinal.mk_ultrafilter_of_infinite]
     exact Cardinal.mk_le_of_injective Ultrafilter.coe_injective
 

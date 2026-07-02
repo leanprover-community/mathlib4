@@ -110,6 +110,11 @@ theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f
   ⟨fun hs => mp_mem hs (mem_of_superset h fun _ => Iff.mp), fun hs =>
     mp_mem hs (mem_of_superset h fun _ => Iff.mpr)⟩
 
+theorem sets_injective : Injective (Filter.sets : Filter α → Set (Set α)) := by
+  intro f g h
+  ext s
+  rw [← Filter.mem_sets, ← Filter.mem_sets, h]
+
 lemma copy_eq {S} (hmem : ∀ s, s ∈ S ↔ s ∈ f) : f.copy S hmem = f := Filter.ext hmem
 
 /-- Weaker version of `Filter.biInter_mem` that assumes `Subsingleton β` rather than `Finite β`. -/
