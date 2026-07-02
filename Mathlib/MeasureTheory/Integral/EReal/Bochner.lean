@@ -27,9 +27,9 @@ lemma eintegral_eq_integral {f : α → ℝ} (hf : Integrable f μ) :
     ∫ᵉ x, f x ∂μ = ∫ x, f x ∂μ := by
   rw [eintegral_eq_posPartFun_sub_negPartFun, eintegral_of_nonneg (by simp),
     eintegral_of_nonneg (by simp)]
-  simp only [posPartFun_def, ne_eq, max_eq_top, EReal.coe_ne_top, EReal.zero_ne_top, or_self,
-    not_false_eq_true, EReal.toENNReal_of_ne_top, negPartFun_def, EReal.neg_eq_top_iff,
-    EReal.coe_ne_bot]
+  simp only [posPart_def, Pi.sup_apply, Pi.zero_apply, ne_eq, max_eq_top, EReal.coe_ne_top,
+    EReal.zero_ne_top, or_self, not_false_eq_true, EReal.toENNReal_of_ne_top, negPart_def,
+    Pi.neg_apply, EReal.neg_eq_top_iff, EReal.coe_ne_bot]
   have h_int_max : Integrable (fun x ↦ (max (f x : EReal) 0).toReal) μ := by
     refine hf.mono ?_ ?_
     · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
@@ -68,9 +68,9 @@ lemma eintegral_eq_integral {f : α → ℝ} (hf : Integrable f μ) :
 lemma EReal.enorm_ereal_toReal {x : EReal} (h_top : x ≠ ⊤) (h_bot : x ≠ ⊥) :
     ‖x.toReal‖ₑ = ‖x‖ₑ := by
   lift x to ℝ using ⟨h_top, h_bot⟩ with r
-  simp only [enorm, nnnorm, EReal.toReal_coe, Real.norm_eq_abs, abs, ne_eq, max_eq_top,
+  simp only [enorm, nnnorm, EReal.toReal_coe, Real.norm_eq_abs, abs, posPart_def, ne_eq, max_eq_top,
     EReal.coe_ne_top, EReal.zero_ne_top, or_self, not_false_eq_true, EReal.toENNReal_of_ne_top,
-    EReal.neg_eq_top_iff, EReal.coe_ne_bot]
+    negPart_def, EReal.neg_eq_top_iff, EReal.coe_ne_bot]
   rcases le_total 0 r with h | h <;> simp [ENNReal.ofReal, Real.toNNReal, h]
 
 lemma lintegral_enorm_ereal_toReal (hf_ne_bot : ∀ᵐ x ∂μ, f x ≠ ⊥) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ⊤) :
@@ -104,8 +104,8 @@ lemma integrable_ereal_toReal_iff (hf_meas : AEMeasurable f μ)
   rw [lintegral_enorm_ereal_toReal h_bot h_top] at h_lintegral
   rw [eintegral_eq_posPartFun_sub_negPartFun]
   have := lintegral_enorm_eq_posPartFun_add_negPartFun hf_meas
-  have h_pos_ne_bot : ∫ᵉ x, f⁺ x ∂μ ≠ ⊥ := by simp [eintegral_of_nonneg (posPartFun_nonneg _)]
-  have h_neg_ne_bot : ∫ᵉ x, f⁻ x ∂μ ≠ ⊥ := by simp [eintegral_of_nonneg (negPartFun_nonneg _)]
+  have h_pos_ne_bot : ∫ᵉ x, f⁺ x ∂μ ≠ ⊥ := by simp [eintegral_of_nonneg (posPart_fun_nonneg _)]
+  have h_neg_ne_bot : ∫ᵉ x, f⁻ x ∂μ ≠ ⊥ := by simp [eintegral_of_nonneg (negPart_fun_nonneg _)]
   have h_pos_ne_top : ∫ᵉ x, f⁺ x ∂μ ≠ ⊤ := by
     intro h_contra
     simp only [h_contra] at this

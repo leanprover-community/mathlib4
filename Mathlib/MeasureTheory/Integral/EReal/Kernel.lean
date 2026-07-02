@@ -45,10 +45,10 @@ theorem eintegral_comp_measure {β : Type*} {mβ : MeasurableSpace β} {κ : Ker
   rotate_left
   · exact fun _ ↦ eintegral_nonneg (by simp)
   · exact fun _ ↦ eintegral_nonneg (by simp)
-  · simp_rw [eintegral_of_nonneg (posPartFun_nonneg f)]
+  · simp_rw [eintegral_of_nonneg (posPart_fun_nonneg f)]
     suffices AEMeasurable (fun a ↦ ∫⁻ x, (f⁺ x).toENNReal ∂κ a) μ by fun_prop
     exact (Measurable.lintegral_kernel (by fun_prop)).aemeasurable
-  · simp_rw [eintegral_of_nonneg (negPartFun_nonneg f)]
+  · simp_rw [eintegral_of_nonneg (negPart_fun_nonneg f)]
     suffices AEMeasurable (fun a ↦ ∫⁻ x, (f⁻ x).toENNReal ∂κ a) μ by fun_prop
     exact (Measurable.lintegral_kernel (by fun_prop)).aemeasurable
   · refine ne_of_lt ?_
@@ -57,18 +57,16 @@ theorem eintegral_comp_measure {β : Type*} {mβ : MeasurableSpace β} {κ : Ker
       calc ∫ᵉ x, min (∫ᵉ y, f⁺ y ∂κ x) (∫ᵉ y, f⁻ y ∂κ x) ∂μ
       _ ≤ ∫ᵉ x, ∫ᵉ y, f⁺ y ∂κ x ∂μ := eintegral_mono (fun _ ↦ min_le_left _ _)
       _ = ∫ᵉ p, f⁺ p ∂(κ ∘ₘ μ) := by
-        rw [eintegral_bind_of_nonneg (posPartFun_nonneg f) κ.aemeasurable (by fun_prop)]
+        rw [eintegral_bind_of_nonneg (posPart_fun_nonneg f) κ.aemeasurable (by fun_prop)]
       _ < ⊤ := h.lt_top
     | inr h =>
       calc ∫ᵉ x, min (∫ᵉ y, f⁺ y ∂κ x) (∫ᵉ y, f⁻ y ∂κ x) ∂μ
       _ ≤ ∫ᵉ x, ∫ᵉ y, f⁻ y ∂κ x ∂μ := eintegral_mono (fun _ ↦ min_le_right _ _)
       _ = ∫ᵉ p, f⁻ p ∂(κ ∘ₘ μ) := by
-        rw [eintegral_bind_of_nonneg (negPartFun_nonneg f) κ.aemeasurable (by fun_prop)]
+        rw [eintegral_bind_of_nonneg (negPart_fun_nonneg f) κ.aemeasurable (by fun_prop)]
       _ < ⊤ := h.lt_top
   congr with x
-  rw [← eintegral_sub_of_nonneg_of_eq_zero (by simp) (by simp)
-    (posPartFun_eq_zero_or_negPartFun_eq_zero f)]
-  simp_rw [posPartFun_sub_negPartFun f]
+  rw [← eintegral_eq_posPartFun_sub_negPartFun]
 
 lemma eintegral_comp_measure_le {β : Type*} {mβ : MeasurableSpace β} {κ : Kernel α β}
     {f : β → EReal} (hf : Measurable f) :
