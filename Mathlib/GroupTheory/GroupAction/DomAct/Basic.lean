@@ -113,19 +113,19 @@ def mk : M ≃ Mᵈᵐᵃ := MulOpposite.opEquiv
 
 set_option hygiene false in
 run_cmd
-  for n in [`Mul, `One, `Inv, `Semigroup, `CommSemigroup, `LeftCancelSemigroup,
-    `RightCancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
-    `RightCancelMonoid, `CancelMonoid, `CancelCommMonoid, `InvolutiveInv, `DivInvMonoid,
-    `InvOneClass, `DivInvOneMonoid, `DivisionMonoid, `DivisionCommMonoid, `Group,
-    `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `Semiring,
-    `Ring, `CommRing].map Lean.mkIdent do
+  for n in [``Mul, ``One, ``Inv, ``Semigroup, ``CommSemigroup, ``MulOneClass, ``Monoid,
+    ``CommMonoid, ``CancelMonoid, ``CancelCommMonoid, ``InvolutiveInv, ``DivInvMonoid,
+    ``DivisionMonoid, ``DivisionCommMonoid, ``Group, ``CommGroup].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
-    @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵐᵃ := ‹_›
+    @[to_additive] instance [$n M] : $n Mᵈᵐᵃ := inferInstanceAs <| $n Mᵐᵒᵖ
   ))
 
-@[to_additive] instance [Mul Mᵐᵒᵖ] [IsLeftCancelMul Mᵐᵒᵖ] : IsLeftCancelMul Mᵈᵐᵃ := ‹_›
-@[to_additive] instance [Mul Mᵐᵒᵖ] [IsRightCancelMul Mᵐᵒᵖ] : IsRightCancelMul Mᵈᵐᵃ := ‹_›
-@[to_additive] instance [Mul Mᵐᵒᵖ] [IsCancelMul Mᵐᵒᵖ] : IsCancelMul Mᵈᵐᵃ := ‹_›
+@[to_additive] instance [Mul M] [IsRightCancelMul M] : IsLeftCancelMul Mᵈᵐᵃ :=
+  inferInstanceAs <| IsLeftCancelMul Mᵐᵒᵖ
+@[to_additive] instance [Mul M] [IsLeftCancelMul M] : IsRightCancelMul Mᵈᵐᵃ :=
+  inferInstanceAs <| IsRightCancelMul Mᵐᵒᵖ
+@[to_additive] instance [Mul M] [IsCancelMul M] : IsCancelMul Mᵈᵐᵃ :=
+  inferInstanceAs <| IsCancelMul Mᵐᵒᵖ
 
 @[to_additive (attr := simp)]
 lemma mk_one [One M] : mk (1 : M) = 1 := rfl
