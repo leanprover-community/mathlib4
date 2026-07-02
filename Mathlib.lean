@@ -3241,6 +3241,7 @@ public import Mathlib.CategoryTheory.Preadditive.CommGrp_
 public import Mathlib.CategoryTheory.Preadditive.Comma
 public import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 public import Mathlib.CategoryTheory.Preadditive.EndoFunctor
+public import Mathlib.CategoryTheory.Preadditive.FreydCategory.Homotopy
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
 public import Mathlib.CategoryTheory.Preadditive.Indization
