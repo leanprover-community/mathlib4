@@ -31,7 +31,7 @@ open Cardinal Order Set
 
 variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
-/-- A club set is closed under suprema and cofinal. -/
+/-- A club set is a set that is closed under suprema and that is cofinal. -/
 @[mk_iff]
 structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
   /-- Club sets are closed under suprema. If `α` is a well-order with the order topology, this
