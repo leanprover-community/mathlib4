@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 -- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Order.Defs.Unbundled
 
 /-!
@@ -79,6 +79,14 @@ protected theorem isTrans : IsTrans S fun a b ↦ ∃ c, SemiconjBy c a b :=
 protected alias _root_.AddSemiconjBy.transitive := AddSemiconjBy.isTrans
 @[to_additive existing, deprecated (since := "2026-02-20")]
 protected alias transitive := SemiconjBy.isTrans
+
+@[to_additive (attr := simp)]
+theorem ppow_right {a x y : S} (h : SemiconjBy a x y) (n : ℕ+) : SemiconjBy a (x ^ n) (y ^ n) := by
+  induction n using Semigroup.ppow_induction x with
+  | h1 => simp [h]
+  | hsucc n IH =>
+    rw [ppow_mk_add_one y]
+    exact IH.mul_right h
 
 end Semigroup
 

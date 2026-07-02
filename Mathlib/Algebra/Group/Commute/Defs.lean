@@ -111,6 +111,39 @@ protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
 protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
     a * b * (c * d) = a * c * (b * d) := by simp only [hbc.left_comm, mul_assoc]
 
+@[to_additive (attr := simp)]
+theorem ppow_right (h : Commute a b) (n : ℕ+) : Commute a (b ^ n) :=
+  SemiconjBy.ppow_right h n
+
+@[to_additive (attr := simp)]
+theorem ppow_left (h : Commute a b) (n : ℕ+) : Commute (a ^ n) b :=
+  (h.symm.ppow_right n).symm
+
+-- todo: should nat ppower be called `nsmul` here?
+@[to_additive]
+theorem ppow_ppow (h : Commute a b) (m n : ℕ+) : Commute (a ^ m) (b ^ n) := by
+  simp [h]
+
+@[to_additive]
+theorem self_ppow (a : S) (n : ℕ+) : Commute a (a ^ n) :=
+  (Commute.refl a).ppow_right n
+
+@[to_additive]
+theorem ppow_self (a : S) (n : ℕ+) : Commute (a ^ n) a :=
+  (Commute.refl a).ppow_left n
+
+@[to_additive]
+theorem ppow_ppow_self (a : S) (m n : ℕ+) : Commute (a ^ m) (a ^ n) :=
+  (Commute.refl a).ppow_ppow m n
+
+@[to_additive] lemma mul_ppow (h : Commute a b) (n : ℕ+) : (a * b) ^ n = a ^ n * b ^ n := by
+  induction n using Semigroup.ppow_induction a generalizing b with
+  | h1 => simp
+  | hsucc n IH =>
+    rw [ppow_mk_add_one, IH h, eq_comm, ppow_mk_add_one b, mul_assoc _ (b ^ _), ← mul_assoc (b ^ _),
+      mul_assoc _ a, h.right_comm, (ppow_self b _).eq, h.mul_right (h.ppow_right _),
+      (self_ppow b _).eq]
+
 end Semigroup
 
 @[to_additive]

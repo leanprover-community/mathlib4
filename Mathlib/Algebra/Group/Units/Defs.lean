@@ -228,6 +228,13 @@ theorem inv_mul_eq_iff_eq_mul {b c : α} : ↑a⁻¹ * b = c ↔ b = a * c :=
 instance instMonoid : Monoid αˣ :=
   { (inferInstance : MulOneClass αˣ) with
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
+    ppow n hn a :=
+      { val := a ^ PNat.mk n hn
+        inv := a⁻¹ ^ PNat.mk n hn
+        val_inv := by rw [← a.commute_coe_inv.mul_ppow]; simp
+        inv_val := by rw [← a.commute_inv_coe.mul_ppow]; simp }
+    ppow_one a := by ext; simp
+    ppow_succ n a := by ext; simp [ppow_mk_add_one]
     npow := fun n a ↦
       { val := a ^ n
         inv := a⁻¹ ^ n
@@ -265,6 +272,9 @@ instance instGroup : Group αˣ where
 an additive commutative group. -/]
 instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ where
   mul_comm := fun _ _ => ext <| mul_comm _ _
+
+@[to_additive (attr := simp, norm_cast)]
+lemma val_ppow_eq_ppow_val (n : ℕ+) : ↑(a ^ n) = (a ^ n : α) := rfl
 
 @[to_additive (attr := simp, norm_cast)]
 lemma val_pow_eq_pow_val (n : ℕ) : ↑(a ^ n) = (a ^ n : α) := rfl
