@@ -625,12 +625,10 @@ identify to subsets of `Fin (n + 1)` of cardinality `d + 1`. -/
     (Δ[n] : SSet.{u}).nonDegenerate d ≃ { S : Finset (Fin (n + 1)) | S.card = d + 1 } :=
   Equiv.ofBijective _ (bijective_image_objEquiv_toOrderHom_univ n d)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nonDegenerateEquiv'_iff {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate d) (j : Fin (n + 1)) :
     j ∈ (nonDegenerateEquiv' x).val ↔ ∃ (i : Fin (d + 1)), x.val i = j := by
-  simp only [Set.mem_setOf_eq, Set.coe_setOf]
-  dsimp [nonDegenerateEquiv']
-  aesop
+  unfold nonDegenerateEquiv'
+  simp
 
 set_option backward.defeqAttrib.useBackward true in
 /-- If `x` is a nondegenerate `d`-simplex of `Δ[n]`, this is the order isomorphism

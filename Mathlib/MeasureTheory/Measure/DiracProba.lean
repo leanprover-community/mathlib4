@@ -52,13 +52,11 @@ variable {X : Type*} [MeasurableSpace X]
 noncomputable def diracProba (x : X) : ProbabilityMeasure X :=
   ⟨Measure.dirac x, Measure.dirac.isProbabilityMeasure⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The assignment `x ↦ diracProba x` is injective if all singletons are measurable. -/
 lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSpace.SeparatesPoints X] :
     Function.Injective (fun (x : X) ↦ diracProba x) := by
   intro x y x_eq_y
-  rw [← dirac_eq_dirac_iff]
-  rwa [Subtype.ext_iff] at x_eq_y
+  simpa [diracProba, dirac_eq_dirac_iff] using congr(ProbabilityMeasure.toMeasure $x_eq_y)
 
 @[simp] lemma diracProba_toMeasure_apply' (x : X) {A : Set X} (A_mble : MeasurableSet A) :
     (diracProba x).toMeasure A = A.indicator 1 x := Measure.dirac_apply' x A_mble
@@ -98,8 +96,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
           hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
-  rw [f_vanishes_outside x
-        (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]
+  rw [f_vanishes_outside x (compl_subset_compl.mpr interior_subset x_notin_U)]
   simp only [ENNReal.coe_zero, mem_Ioi, lt_self_iff_false, not_false_eq_true]
 
 lemma tendsto_diracProba_iff_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X) :
