@@ -53,7 +53,7 @@ private lemma qExpansion_order_le_qExpansion_norm_order [DiscreteTopology 𝒢.s
       ((integerCuspWidth 𝒢 : ℕ) : ℝ) := by
     rw [hnRw]
     exact_mod_cast hf_w_per.nat_mul m'
-  obtain ⟨rest, _, h_rest_an, h_decomp⟩ := analyticAt_cuspFunction_one_norm_rest f
+  obtain ⟨rest, _, h_rest_an, h_decomp⟩ := exists_norm_decomposition f
   rw [show qExpansion 1 (ModularForm.norm 𝒮ℒ f) =
         qExpansion 1 (galoisProd (integerCuspWidth 𝒢) f) * qExpansion 1 rest by
       rw [funext h_decomp]
@@ -61,7 +61,7 @@ private lemma qExpansion_order_le_qExpansion_norm_order [DiscreteTopology 𝒢.s
         (galoisProd_periodic_one hn_pos hf_n_per) (galoisProd_mdiff f.holo')
         (galoisProd_isBoundedAtImInfty hf_bdd)) h_rest_an,
     PowerSeries.order_mul,
-    qExpansion_one_galoisProd_order_eq_qExpansion_self_order hn_pos hf_n_per hf_bdd f.holo']
+    qExpansion_one_galoisProd_order_eq hn_pos hf_n_per hf_bdd f.holo']
   refine le_trans ?_ le_self_add
   rw [hnRw]
   exact qExpansion_order_le_qExpansion_nat_mul_order
