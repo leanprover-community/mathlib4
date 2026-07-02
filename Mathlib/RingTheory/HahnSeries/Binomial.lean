@@ -592,7 +592,7 @@ theorem coeff_single_mul_of_no_add [IsOrderedCancelAddMonoid Γ] {x : HahnSeries
   trans Finset.sum ∅ fun (ij : Γ × Γ) => x.coeff ij.fst * (single a r).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
-    simp_all [mem_addAntidiagonal, coeff_single]
+    simp_all [Finset.mem_antidiagonal, coeff_single]
   · exact sum_empty
 --#find_home! coeff_single_mul_of_no_add --[Mathlib.RingTheory.HahnSeries.Multiplication]
 /-!

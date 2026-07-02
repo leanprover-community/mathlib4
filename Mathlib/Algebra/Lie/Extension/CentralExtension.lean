@@ -113,7 +113,7 @@ section ofTwoCocycle
 open LieModule.Cohomology
 
 variable [LieRing M] [LieAlgebra R M] [LieRing N] [LieAlgebra R N] [LieRingModule M N]
-[LieModule R M N] (h : IsLieAbelian N) (c : twoCocycle R M N)
+  [LieModule R M N] (h : IsLieAbelian N) (c : twoCocycle R M N)
 
 /-- The Lie algebra map inclusion of a central extension derived from a 2-cocycle. -/
 @[simps]
@@ -221,7 +221,7 @@ section TwoCocycle
 open LieModule.Cohomology
 
 variable [LieRing N] [LieAlgebra R N] [LieRing M] [LieAlgebra R M] (E : Extension R N M)
-[LieRingModule M N] [LieModule R M N] [LieModule.IsTrivial M N]
+  [LieRingModule M N] [LieModule R M N] [LieModule.IsTrivial M N]
     (hE : E.IsCentral) {s : M →ₗ[R] E.L}
     (hs : Function.LeftInverse E.proj s) (p : E.L →ₗ[R] N)
 

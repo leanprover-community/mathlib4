@@ -137,6 +137,9 @@ variable [PartialOrder Γ] [Zero V] [SMul R V]
   toFun x := ⟨x⟩
   invFun x := x.carrier
 
+@[simp] lemma of_carrier (x : HahnModule Γ R V) : (of R) x.carrier = x := rfl
+@[simp] lemma carrier_of (x : HahnSeries Γ V) : (of R x).carrier = x := rfl
+
 lemma eq_of (R : Type*) [SMul R V] (x : V⟦Γ⟧) : {carrier := x} = of R x := rfl
 
 @[ext]
@@ -178,22 +181,36 @@ instance {V} [Zero V] [SMulZeroClass R V] : SMul R (HahnModule Γ R V) where
     (x - y).carrier = x.carrier - y.carrier := rfl
 
 instance [AddCommMonoid V] : AddCommMonoid (HahnModule Γ R V) where
-  add_assoc a b c := by ext; simp [add_assoc]
-  zero_add a := by ext; simp
-  add_zero a := by ext; simp
+  add_assoc _ _ _ := by ext; simp [add_assoc]
+  zero_add _ := by ext; simp
+  add_zero _ := by ext; simp
   nsmul n a := of R (n • a.carrier)
-  add_comm a b := by ext; simp [add_comm]
-  nsmul_zero n := by simp
-  nsmul_succ n x := by ext; simp [add_smul]
+  add_comm _ _ := by ext; simp [add_comm]
+  nsmul_zero a := by
+    simp only [(· • ·), SMul.smul]
+    simp
+  nsmul_succ n x := by
+    simp only [(· • ·), SMul.smul]
+    simp only [nsmul_eq_smul]
+    rw [add_smul, of_add]
+    simp
 
 instance [AddCommGroup V] : AddCommGroup (HahnModule Γ R V) where
   neg x := ⟨-x.carrier⟩
-  zsmul z x := ⟨z • x.carrier⟩
+  zsmul z x := of R (z • x.carrier)
   neg_add_cancel x := by ext; simp
   sub_eq_add_neg x y := by ext; simp [sub_eq_add_neg]
-  zsmul_zero' x := by simp [eq_of]
-  zsmul_succ' z x := by ext; simp [add_smul]
-  zsmul_neg' n x := by ext; simp [add_smul]
+  zsmul_zero' x := by
+    simp only [(· • ·), SMul.smul]
+    simp [← of_zero]
+  zsmul_succ' z x := by
+    simp only [(· • ·), SMul.smul]
+    rw [Int.natCast_add_one, zsmul_eq_smul, add_smul, of_add]
+    simp
+  zsmul_neg' n x := by
+    simp only [(· • ·), SMul.smul]
+    rw [eq_of, of_neg, of_carrier, of_carrier, eq_of, Int.natCast_add_one, zsmul_eq_smul,
+      negSucc_zsmul, zsmul_eq_smul, of_neg, ← Int.natCast_add_one, natCast_zsmul]
 
 @[simp] theorem of_nsmul [AddCommMonoid V] (n : ℕ) (x : HahnSeries Γ V) :
     (of R) (n • x) = n • (of R) x := rfl
@@ -763,7 +780,7 @@ instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring R⟦Γ⟧ where
   mul_comm x y := by
     ext
     simp_rw [coeff_mul, mul_comm]
-    exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_addAntidiagonal.symm) <| by simp
+    exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_antidiagonal.symm) <| by simp
 
 instance [CommSemiring R] : CommSemiring R⟦Γ⟧ where
 

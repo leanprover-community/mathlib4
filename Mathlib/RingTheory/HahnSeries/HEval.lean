@@ -291,11 +291,11 @@ theorem finsum_antidiagonal_prod [AddCommMonoid α] [HasAntidiagonal α] (f : α
     · exact fun x _ y _ hxy => by simp_all
     · intro x hx
       simp_all only [mem_coe, Finsupp.mem_support_iff, ne_eq, coe_sigma, coe_image,
-        Set.mem_sigma_iff, Set.mem_image, Prod.exists, mem_antidiagonal, and_true]
+        Set.mem_sigma_iff, Set.mem_image, Prod.exists, HasAntidiagonal.mem_antidiagonal, and_true]
       use x.1, x.2
     · intro x hx h
       simp_all only [mem_sigma, mem_image, Finsupp.mem_support_iff, ne_eq, Prod.exists,
-        mem_antidiagonal, Set.mem_image, mem_coe, not_exists, not_and]
+        HasAntidiagonal.mem_antidiagonal, Set.mem_image, mem_coe, not_exists, not_and]
       have h0 : ∀ i j : α, ⟨i + j, (i, j)⟩ = x → f (i, j) = 0 := by
         intro i j
         contrapose!
@@ -309,7 +309,7 @@ theorem finsum_antidiagonal_prod [AddCommMonoid α] [HasAntidiagonal α] (f : α
     have h1 := exists_ne_zero_of_sum_ne_zero hx
     use h1.choose.1, h1.choose.2
     refine ⟨h1.choose_spec.2, ?_⟩
-    · rw [← @mem_antidiagonal]
+    · rw [← HasAntidiagonal.mem_antidiagonal]
       exact h1.choose_spec.1
 
 --#find_home! finsum_antidiagonal_prod --[Mathlib.RingTheory.Adjoin.Basic]

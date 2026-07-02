@@ -241,8 +241,8 @@ class OrderedMulActionSemiEquivClass (F : Type*) {M N : outParam Type*} (φ : ou
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 
-export OrderedMulActionSemiEquivClass (map_smulₛₗ)
-export OrderedAddActionSemiEquivClass (map_vaddₛₗ)
+--export OrderedMulActionSemiEquivClass (map_smulₛₗ)
+--export OrderedAddActionSemiEquivClass (map_vaddₛₗ)
 
 @[to_additive]
 instance (F : Type*) [EquivLike F X Y] [OrderIsoClass F X Y]

@@ -645,7 +645,7 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
         ∏ i ∈ s', (if h : i ∈ cons a s' has then t i (b i h) else 1) =
         ∏ i ∈ s', if h : i ∈ s' then t i (b i (mem_cons_of_mem h)) else 1 :=
       fun b => prod_congr rfl fun x hx => (by simp [*])
-    apply ((addAntidiagonal (htp a) (pi_PWO_iUnion_support s' α htp) g).finite_toSet.biUnion'
+    apply ((antidiagonal (htp a) (pi_PWO_iUnion_support s' α htp) g).finite_toSet.biUnion'
       _).subset _
     · exact fun ij _ => {b : (i : σ) → i ∈ (cons a s' has) → α i |
         (t a (b a (mem_cons_self a s'))).coeff ij.1 *
@@ -666,7 +666,7 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
           exact right_ne_zero_of_mul hy.1
       · refine Injective.injOn ?_
         intro x y hxy
-        simp_all only [dite_true, cons_eq_insert, mem_insert, or_true, mem_coe, mem_addAntidiagonal,
+        simp_all only [dite_true, cons_eq_insert, mem_insert, or_true, mem_coe, mem_antidiagonal,
           Set.mem_iUnion, mem_support, ne_eq, Prod.mk.injEq]
         ext i hi
         by_cases hhi : i = a
@@ -675,13 +675,13 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
     · intro x hx
       simp only [Set.mem_setOf_eq] at hx
       have hhx := exists_ne_zero_of_sum_ne_zero hx
-      simp only [mem_coe, mem_addAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
+      simp only [mem_coe, mem_antidiagonal, Set.mem_iUnion, mem_support, ne_eq,
         mem_cons, Set.mem_setOf_eq, exists_prop, Prod.exists]
       use hhx.choose.1, hhx.choose.2
       refine ⟨⟨?_, ?_⟩, hhx.choose_spec.2⟩
       · use x a (mem_cons_self a s')
         exact left_ne_zero_of_mul hhx.choose_spec.2
-      · refine ⟨?_, (Finset.mem_addAntidiagonal.mp hhx.choose_spec.1).2.2⟩
+      · refine ⟨?_, (Finset.mem_antidiagonal.mp hhx.choose_spec.1).2.2⟩
         use fun i hi => x i (mem_cons_of_mem hi)
         have h := right_ne_zero_of_mul hhx.choose_spec.2
         have hpr :

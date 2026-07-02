@@ -727,7 +727,6 @@ public import Mathlib.Algebra.Lie.ChevalleyEilenberg
 public import Mathlib.Algebra.Lie.Classical
 public import Mathlib.Algebra.Lie.Cochain
 public import Mathlib.Algebra.Lie.Cocycle
-public import Mathlib.Algebra.Lie.Derivation.AdjointAction
 public import Mathlib.Algebra.Lie.Derivation.BaseChange
 public import Mathlib.Algebra.Lie.Derivation.Basic
 public import Mathlib.Algebra.Lie.Derivation.Killing
