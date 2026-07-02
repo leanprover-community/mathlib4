@@ -410,7 +410,7 @@ theorem rank_sup (H : A.LinearDisjoint B) :
 /-- If `A` and `B` are linearly disjoint over `F`, then the `Module.finrank` of
 `A ⊔ B` is equal to the product of that of `A` and `B`. -/
 theorem finrank_sup (H : A.LinearDisjoint B) : finrank F ↥(A ⊔ B) = finrank F A * finrank F B := by
-  simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup))
+  simpa only [map_mul] using! congr(Cardinal.toNat $(H.rank_sup))
 
 /-- If `A` and `B` are finite extensions of `F`,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
@@ -685,7 +685,7 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
       (AlgEquiv.ofInjective fa fa.injective) (AlgEquiv.ofInjective fb fb.injective)) := by
     ext <;> simp [fa, fb]
   replace H : Function.Injective i := by simpa only
-    [hi, AlgHom.coe_comp, AlgEquiv.coe_algHom, EquivLike.injective_comp, fa, this, K, fb]
+    [hi, AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EquivLike.injective_comp, fa, this, K, fb]
   change Function.Injective (Ideal.Quotient.mk M) at H
   rwa [RingHom.injective_iff_ker_eq_bot, Ideal.mk_ker] at H
 

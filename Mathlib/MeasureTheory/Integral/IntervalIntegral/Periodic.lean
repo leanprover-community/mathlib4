@@ -7,9 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Measure.Haar.Quotient
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Topology.Algebra.Order.Floor
-public import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Integrals of periodic functions
@@ -48,7 +46,7 @@ theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_left_strictMono hT).injective).bijective
   refine this.existsUnique_iff.2 ?_
-  simpa only [add_comm x] using existsUnique_add_zsmul_mem_Ioc hT x t
+  simpa only [add_comm x] using! existsUnique_add_zsmul_mem_Ioc hT x t
 
 theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) (Ioc t (t + T)) μ := by
@@ -56,7 +54,7 @@ theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measu
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_left_strictMono hT).injective).bijective
   refine (AddSubgroup.equivOp _).bijective.comp this |>.existsUnique_iff.2 ?_
-  simpa using existsUnique_add_zsmul_mem_Ioc hT x t
+  simpa using! existsUnique_add_zsmul_mem_Ioc hT x t
 
 namespace AddCircle
 
@@ -122,8 +120,8 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
 
 instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
   refine ⟨⟨Real.toNNReal 2, Filter.Eventually.of_forall fun ε x => ?_⟩⟩
-  simp only [volume_closedBall]
-  erw [← ENNReal.ofReal_mul zero_le_two]
+  rw [volume_closedBall, volume_closedBall, ENNReal.ofNNReal_toNNReal 2,
+    ← ENNReal.ofReal_mul zero_le_two]
   apply ENNReal.ofReal_le_ofReal
   rw [mul_min_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
   exact min_le_min (by linarith [hT.out]) (le_refl _)

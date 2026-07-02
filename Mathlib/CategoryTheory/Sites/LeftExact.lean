@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
 # Left exactness of sheafification
+
 In this file we show that sheafification commutes with finite limits.
 -/
 
@@ -31,6 +32,7 @@ namespace CategoryTheory.GrothendieckTopology
 variable {D : Type w} [Category.{t} D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
@@ -67,6 +69,7 @@ lemma liftToDiagramLimitObjAux_fac {X : C} {K : Type s} [SmallCategory K]
       Multiequalizer.ι ((unop W).index (F.obj k)) i :=
   IsLimit.fac _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
@@ -79,11 +82,11 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type s} [SmallCategory K] [HasLimitsOf
       intro i
       dsimp
       ext k
-      dsimp
       simp only [Category.assoc, NatTrans.naturality, liftToDiagramLimitObjAux_fac_assoc]
       erw [Multiequalizer.condition]
       rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance preservesLimit_diagramFunctor
     (X : C) (K : Type s) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
@@ -155,6 +158,7 @@ def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
         rfl)
   limit.lift _ S ≫ (HasLimit.isoOfNatIso s.symm).hom ≫ e.inv ≫ p.inv
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- This lemma should not be used directly. Instead, one should use the fact that
 -- `J.plusFunctor D` preserves finite limits, along with the fact that
@@ -184,6 +188,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type s} [SmallCategory K] [FinCategory K]
   erw [colimit.ι_desc]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance preservesLimitsOfShape_plusFunctor
     (K : Type t) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
@@ -289,6 +294,7 @@ def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
