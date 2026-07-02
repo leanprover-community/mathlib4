@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
@@ -142,7 +141,7 @@ from the space `α →ᵇ E` of bounded continuous functions, so this constructi
 transferring the structure from `BoundedContinuousFunction.toLp` along the isometry. -/
 noncomputable def toLp : C(α, E) →L[𝕜] Lp E p μ :=
   (BoundedContinuousFunction.toLp p μ 𝕜).comp
-    (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
+    (linearIsometryBoundedOfCompact α E 𝕜).toContinuousLinearEquiv.toContinuousLinearMap
 
 variable {𝕜}
 

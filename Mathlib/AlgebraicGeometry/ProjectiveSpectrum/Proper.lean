@@ -53,17 +53,17 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
   let x0 : NumDenSameDeg 𝒜 (.powers f) :=
   { deg := j * (d * (e + 1))
     num := ⟨a * g ^ (j * (d - 1)), by
-      convert! SetLike.mul_mem_graded ha (SetLike.pow_mem_graded _ hg) using 2
+      convert SetLike.mul_mem_graded ha (SetLike.pow_mem_graded _ hg)
       rw [this]
       cases d
       · contradiction
       · simp; ring⟩
-    den := ⟨f ^ (j * (e + 1)), by convert! SetLike.pow_mem_graded _ hf using 2; ring⟩
+    den := ⟨f ^ (j * (e + 1)), by convert SetLike.pow_mem_graded _ hf; ring⟩
     den_mem := ⟨_,rfl⟩ }
   let y0 : NumDenSameDeg 𝒜 (.powers g) :=
   { deg := j * (d * e)
-    num := ⟨f ^ (j * e), by convert! SetLike.pow_mem_graded _ hf using 2; ring⟩
-    den := ⟨g ^ (j * d), by convert! SetLike.pow_mem_graded _ hg using 2; ring⟩
+    num := ⟨f ^ (j * e), by convert SetLike.pow_mem_graded _ hf; ring⟩
+    den := ⟨g ^ (j * d), by convert SetLike.pow_mem_graded _ hg; ring⟩
     den_mem := ⟨_,rfl⟩ }
   use mk x0 ⊗ₜ mk y0
   ext
@@ -107,7 +107,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   rw [← cancel_mono (pullbackSpecIso ..).inv]
   apply pullback.hom_ext
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, e₂, e₁,
+      limit.lift_π, PullbackCone.mk_π_app, e₂, e₁,
       pullbackSpecIso_inv_fst, ← Spec.map_comp]
     erw [pullbackDiagonalMapIdIso_inv_snd_fst]
     erw [pullbackAwayιIso_inv_fst]
@@ -116,7 +116,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeLeft
       (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
+      limit.lift_π, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
       ← Spec.map_comp, e₂, e₁]
     erw [pullbackDiagonalMapIdIso_inv_snd_snd]
     erw [pullbackAwayιIso_inv_snd]
@@ -267,7 +267,7 @@ theorem valuativeCriterion_existence_aux
       · cases (hdi j).ne' h
       · rw [Nat.add_sub_cancel]; ring
     rw [map_div₀, div_le_iff₀ ((pow_pos ((Valuation.pos_iff _).mpr hunit.ne_zero) _).trans_eq
-      (Valuation.map_pow _ _ _).symm), one_mul, ← pow_le_pow_iff_left₀ zero_le' zero_le'
+      (Valuation.map_pow _ _ _).symm), one_mul, ← pow_le_pow_iff_left₀ zero_le zero_le
         (mul_pos (hdi j) (Finset.prod_pos fun i _ => hdi i)).ne.symm]
     calc
       _ = (∏ i, ψ i ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
@@ -295,7 +295,7 @@ theorem valuativeCriterion_existence_aux
           · ext i; congr 1; ring
           · ring
       _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
-          gcongr with i; exacts [fun i _ ↦ zero_le', zero_le', hi₀ i]
+          gcongr with i; exacts [fun i _ ↦ zero_le, zero_le, hi₀ i]
       _ = ψ i₀ ^ (d i₀ * a * d j) := by
           rw [Finset.prod_pow_eq_pow_sum, ← pow_add]
           simp_rw [mul_comm (d _) (ai _), hai]

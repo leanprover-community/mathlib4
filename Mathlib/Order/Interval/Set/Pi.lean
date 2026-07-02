@@ -115,25 +115,25 @@ theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
   refine ⟨?_, fun h => ⟨x i, ?_, ?_⟩⟩
   · rintro ⟨c, hc, rfl⟩
     simpa [update_le_update_iff]
-  · simpa only [Function.update_self] using h i (mem_univ i)
+  · simpa only [Function.update_self] using! h i (mem_univ i)
   · ext j
     obtain rfl | hij := eq_or_ne i j
     · exact Function.update_self ..
-    · simpa only [Function.update_of_ne hij.symm, le_antisymm_iff] using h j (mem_univ j)
+    · simpa only [Function.update_of_ne hij.symm, le_antisymm_iff] using! h j (mem_univ j)
 
 theorem image_update_Ico (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Ico a b = Ico (update f i a) (update f i b) := by
-  rw [← Icc_diff_right, ← Icc_diff_right, image_diff (update_injective _ _), image_singleton,
+  rw [← Icc_sdiff_right, ← Icc_sdiff_right, image_sdiff (update_injective _ _), image_singleton,
     image_update_Icc]
 
 theorem image_update_Ioc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Ioc a b = Ioc (update f i a) (update f i b) := by
-  rw [← Icc_diff_left, ← Icc_diff_left, image_diff (update_injective _ _), image_singleton,
+  rw [← Icc_sdiff_left, ← Icc_sdiff_left, image_sdiff (update_injective _ _), image_singleton,
     image_update_Icc]
 
 theorem image_update_Ioo (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Ioo a b = Ioo (update f i a) (update f i b) := by
-  rw [← Ico_diff_left, ← Ico_diff_left, image_diff (update_injective _ _), image_singleton,
+  rw [← Ico_sdiff_left, ← Ico_sdiff_left, image_sdiff (update_injective _ _), image_singleton,
     image_update_Ico]
 
 theorem image_update_Icc_left (f : ∀ i, α i) (i : ι) (a : α i) :
@@ -284,7 +284,7 @@ is covered by the union of the following boxes: for each `i : ι`, we take
 E.g., if `x' = x` and `y' = y`, then this lemma states that the difference between a closed box
 `[x, y]` and the corresponding open box `{z | ∀ i, x i < z i < y i}` is covered by the union
 of the faces of `[x, y]`. -/
-theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
+theorem Icc_sdiff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
@@ -295,6 +295,9 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
   apply Exists.intro w
   cases lt_or_ge (x' w) (a w) <;> simp_all
 
+@[deprecated (since := "2026-06-03")]
+alias Icc_diff_pi_univ_Ioo_subset := Icc_sdiff_pi_univ_Ioo_subset
+
 /-- If `x`, `y`, `z` are functions `Π i : ι, α i`, then
 the set difference between the box `[x, z]` and the product of the intervals `(y i, z i]`
 is covered by the union of the boxes `[x, update z i (y i)]`.
@@ -302,9 +305,12 @@ is covered by the union of the boxes `[x, update z i (y i)]`.
 E.g., if `x = y`, then this lemma states that the difference between a closed box
 `[x, y]` and the product of half-open intervals `{z | ∀ i, x i < z i ≤ y i}` is covered by the union
 of the faces of `[x, y]` adjacent to `x`. -/
-theorem Icc_diff_pi_univ_Ioc_subset (x y z : ∀ i, α i) :
+theorem Icc_sdiff_pi_univ_Ioc_subset (x y z : ∀ i, α i) :
     (Icc x z \ pi univ fun i ↦ Ioc (y i) (z i)) ⊆ ⋃ i : ι, Icc x (update z i (y i)) := by
   rintro a ⟨⟨hax, haz⟩, hay⟩
   simpa [not_and_or, hax, le_update_iff, haz _] using hay
+
+@[deprecated (since := "2026-06-03")]
+alias Icc_diff_pi_univ_Ioc_subset := Icc_sdiff_pi_univ_Ioc_subset
 
 end Set

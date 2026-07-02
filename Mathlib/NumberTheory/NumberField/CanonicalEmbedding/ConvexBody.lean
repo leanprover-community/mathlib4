@@ -62,7 +62,7 @@ abbrev convexBodyLT : Set (mixedSpace K) :=
 theorem convexBodyLT_mem {x : K} :
     mixedEmbedding K x ∈ (convexBodyLT K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
-    forall_true_left, mem_ball_zero_iff, Pi.ringHom_apply, ← Complex.norm_real,
+    forall_true_left, mem_ball_zero_iff, RingHom.pi_apply, ← Complex.norm_real,
     embedding_of_isReal_apply, Subtype.forall, ← forall₂_or_left, ← not_isReal_iff_isComplex, em,
     forall_true_left, norm_embedding_eq]
 
@@ -110,7 +110,7 @@ theorem convexBodyLT_volume :
       simp_rw [convexBodyLTFactor, coe_mul, ENNReal.coe_pow]
       ring
     _ = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finsetProd, mult_isReal, mult_isComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, ofNNReal_finsetProd, mult_isReal, mult_isComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal]
 
 variable {f}
@@ -155,7 +155,7 @@ theorem convexBodyLT'_mem {x : K} :
       (∀ w : InfinitePlace K, w ≠ w₀ → w x < f w) ∧
       |(w₀.val.embedding x).re| < 1 ∧ |(w₀.val.embedding x).im| < (f w₀ : ℝ) ^ 2 := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
-    forall_true_left, Pi.ringHom_apply, mem_ball_zero_iff, ← Complex.norm_real,
+    forall_true_left, RingHom.pi_apply, mem_ball_zero_iff, ← Complex.norm_real,
     embedding_of_isReal_apply, norm_embedding_eq, Subtype.forall]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨fun w h_ne ↦ ?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ⟨fun w hw ↦ ?_, fun w hw ↦ ?_⟩⟩
   · by_cases hw : IsReal w
@@ -241,7 +241,7 @@ theorem convexBodyLT'_volume :
       simp_rw [coe_mul, ENNReal.coe_pow]
       ring
     _ = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finsetProd, mult_isReal, mult_isComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, ofNNReal_finsetProd, mult_isReal, mult_isComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal, mul_assoc]
 
 end convexBodyLT'

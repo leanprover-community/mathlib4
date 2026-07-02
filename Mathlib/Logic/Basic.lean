@@ -713,7 +713,7 @@ theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
   mt Exists.fst
 
-/- See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
+/-! See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
 
 theorem forall_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
     (∀ h, q h) ↔ ∀ h : p', q' (hp.2 h) :=
@@ -734,7 +734,7 @@ lemma eq_true_intro {a : Prop} (h : a) : a = True := propext (iff_true_intro h)
 lemma eq_false_intro {a : Prop} (h : ¬a) : a = False := propext (iff_false_intro h)
 
 -- FIXME: `alias` creates `def Iff.eq := propext` instead of `lemma Iff.eq := propext`
-@[nolint defLemma] alias Iff.eq := propext
+alias Iff.eq := propext
 
 lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
 
