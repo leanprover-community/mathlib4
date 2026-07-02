@@ -17,7 +17,7 @@ targets for homomorphisms from groups of exponent (dividing) `n`; for example,
 the homomorphisms can then be used to separate elements of the source group.
 -/
 
-@[expose] public section
+public section
 
 /-- This is a type class recording that a commutative monoid `M` contains primitive `n`th
 roots of unity and such that the group of `n`th roots of unity is cyclic.
@@ -80,7 +80,7 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     rw [← Units.val_inj, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
 lemma of_card_le {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} [NeZero n]
-    (h : n ≤ Fintype.card (rootsOfUnity n R)) : HasEnoughRootsOfUnity R n where
+    (h : n ≤ Nat.card (rootsOfUnity n R)) : HasEnoughRootsOfUnity R n where
   prim := card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot.mp (le_antisymm (card_rootsOfUnity R n) h)
   cyc := rootsOfUnity.isCyclic R n
 

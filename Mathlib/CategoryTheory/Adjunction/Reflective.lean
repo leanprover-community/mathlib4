@@ -140,11 +140,13 @@ def unitCompPartialBijective [Reflective i] (A : C) {B : C} (hB : i.essImage B) 
     _ ≃ (i.obj ((reflector i).obj A) ⟶ B) :=
       Iso.homCongr (Iso.refl _) (Functor.essImage.getIso hB)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem unitCompPartialBijective_symm_apply [Reflective i] (A : C) {B : C} (hB : i.essImage B)
     (f) : (unitCompPartialBijective A hB).symm f = (reflectorAdjunction i).unit.app A ≫ f := by
   simp [unitCompPartialBijective, unitCompPartialBijectiveAux_symm_apply]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem unitCompPartialBijective_symm_natural [Reflective i] (A : C) {B B' : C} (h : B ⟶ B')
     (hB : i.essImage B) (hB' : i.essImage B') (f : i.obj ((reflector i).obj A) ⟶ B) :
     (unitCompPartialBijective A hB').symm (f ≫ h) = (unitCompPartialBijective A hB).symm f ≫ h := by
@@ -159,6 +161,7 @@ instance [Reflective i] (X : Functor.EssImageSubcategory i) :
     IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
   Functor.essImage.unit_isIso X.property
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- These attributes are necessary to make automation work in `equivEssImageOfReflective`.
 -- Making them global doesn't break anything elsewhere, but this is enough for now.

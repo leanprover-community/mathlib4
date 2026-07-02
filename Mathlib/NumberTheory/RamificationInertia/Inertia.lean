@@ -24,6 +24,7 @@ Often the above theory is set up in the case where:
 * `S` is the integral closure of `R` in `L`,
 * `p` and `P` are maximal ideals,
 * `P` is an ideal lying over `p`
+
 We will try to relax the above hypotheses as much as possible.
 
 ## Notation
@@ -63,6 +64,8 @@ We do not assume `P` lies over `p` in the definition; we return `0` instead.
 
 See `inertiaDeg_algebraMap` for the common case where `f = algebraMap R S`
 and there is an algebra structure `R / p → S / P`.
+
+Note: This definition of inertia degree will eventually be replaced by `Ideal.inertiaDeg'`.
 -/
 noncomputable def inertiaDeg : ℕ :=
   if hPp : comap f P = p then
@@ -87,6 +90,11 @@ theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < in
   have : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
 
+/-- Variant with a weaker constraint, but on the prime upstairs instead. -/
+theorem inertiaDeg_pos' [P.IsPrime] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
+  have : p.IsPrime := Ideal.over_def P p ▸ inferInstance
+  Module.finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
+
 theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg p P ≠ 0 :=
   (Nat.ne_of_lt (inertiaDeg_pos p P)).symm
 
@@ -103,8 +111,8 @@ lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
 lemma inertiaDeg_map_eq (P : Ideal S)
     {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁] (e : E) :
     inertiaDeg p (P.map e) = inertiaDeg p P := by
-  rw [show P.map e = _ from map_comap_of_equiv (e : S ≃+* S₁)]
-  exact p.inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁).symm P
+  rw [show P.map e = _ from map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
+  exact p.inertiaDeg_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
 
 theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     [hP : P.LiesOver (⊥ : Ideal R)] :
@@ -114,6 +122,16 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
   rfl
+
+theorem inertiaDeg_le_inertiaDeg {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
+    [p.IsPrime] : inertiaDeg P Q ≤ inertiaDeg p Q := by
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+  have : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ Q) := IsScalarTower.of_algebraMap_eq <| by
+    rintro ⟨x⟩
+    simp [Submodule.Quotient.quot_mk_eq_mk, IsScalarTower.algebraMap_apply R (S ⧸ P) (T ⧸ Q)]
+  exact finrank_top_le_finrank_of_isScalarTower ..
 
 end DecEq
 
@@ -127,7 +145,6 @@ lemma absNorm_eq_pow_inertiaDeg_of_liesOver {S : Type*} [CommRing S] [IsDedekind
   let _ : Field (S ⧸ p) := Quotient.field p
   simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/

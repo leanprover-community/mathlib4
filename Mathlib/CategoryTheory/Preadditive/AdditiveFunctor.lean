@@ -103,6 +103,10 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
     NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
+omit [F.Additive] in
+lemma additive_iff_of_iso {G : C ⥤ D} (e : F ≅ G) : F.Additive ↔ G.Additive :=
+  ⟨fun _ => additive_of_iso e, fun _ => additive_of_iso e.symm⟩
+
 variable (F)
 
 lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
@@ -143,6 +147,27 @@ lemma Additive.of_isZero {F : C ⥤ D} (hF : IsZero F) :
 
 instance [HasZeroObject D] : Functor.Additive (0 : C ⥤ D) :=
   .of_isZero (isZero_zero _)
+
+omit [Preadditive C] in
+instance (F : D ⥤ E) [F.Additive] : ((Functor.whiskeringRight C D E).obj F).Additive where
+
+omit [Preadditive C] [Preadditive D] in
+instance : (Functor.whiskeringRight C D E).Additive where
+
+omit [Preadditive C] [Preadditive D] in
+instance (F : C ⥤ D) : ((Functor.whiskeringLeft C D E).obj F).Additive where
+
+set_option backward.defeqAttrib.useBackward true in
+omit [Preadditive D] in
+instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E ⥤ E')
+    [F.Additive] [G.Additive] : ((Functor.postcompose₂.obj F).obj G).Additive := by
+  dsimp [Functor.postcompose₂]
+  infer_instance
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+universe w in
+instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
 
 end
 
@@ -193,6 +218,12 @@ instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
     PreservesFiniteProducts F where
   preserves _ := preservesProductsOfShape_of_preservesBiproductsOfShape F
 
+lemma hasFiniteProducts_of_additive_of_essSurj [HasFiniteProducts C] [Additive F]
+    [EssSurj F] : HasFiniteProducts D :=
+  ⟨fun _ ↦ ⟨fun K ↦ hasLimit_of_iso
+    (F := Discrete.functor (fun i ↦ F.objPreimage (K.obj ⟨i⟩)) ⋙ F)
+      (Discrete.natIso (fun _ ↦ F.objObjPreimageIso _))⟩⟩
+
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
   map_add {X Y f g} := by
@@ -217,6 +248,7 @@ namespace Equivalence
 
 variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
+set_option backward.defeqAttrib.useBackward true in
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
 

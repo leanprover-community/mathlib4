@@ -13,7 +13,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 # Separation properties: profinite spaces
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -28,7 +28,7 @@ theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
     (h : IsTopologicalBasis { s : Set X | IsClopen s }) : TotallySeparatedSpace X := by
   constructor
   rintro x - y - hxy
-  choose U hU using exists_isOpen_xor'_mem hxy
+  choose U hU using exists_isOpen_xor_mem hxy
   obtain ⟨hU₀, hU₁⟩ := hU
   rcases hU₁ with hx | hy
   · choose V hV using h.isOpen_iff.mp hU₀ x hx.1
@@ -174,16 +174,16 @@ lemma exists_clopen_partition_of_clopen_cover
     have U_open : IsOpen U := IsOpen.sdiff (D_clopen none).2
       (isClosed_iUnion_of_finite (fun i ↦ Z_closed (some i)))
     have Z0_subset_U : Z none ⊆ U := by
-      rw [subset_diff]
+      rw [subset_sdiff]
       simpa using ⟨Z_subset_D none, fun i ↦ (by apply Z_disj; all_goals simp)⟩
     obtain ⟨V, V_clopen, Z0_subset_V, V_subset_U⟩ :=
       exists_clopen_of_closed_subset_open (Z_closed none) U_open Z0_subset_U
-    have V_subset_D0 : V ⊆ D none := subset_trans V_subset_U diff_subset
+    have V_subset_D0 : V ⊆ D none := subset_trans V_subset_U sdiff_subset
     -- choose `Z' i ⊆ C' i ⊆ D' i = D i.succ \ V` using the inductive hypothesis
     let D' : I → Set X := fun i ↦ D (some i) \ V
     have D'_clopen (i : I) : IsClopen (D' i) := (D_clopen (some i)).diff V_clopen
     have Z'_subset_D' (i : I) : Z' i ⊆ D' i := by
-      rw [subset_diff]
+      rw [subset_sdiff]
       refine ⟨by grind, Disjoint.mono_right V_subset_U ?_⟩
       exact Disjoint.mono_left (subset_iUnion_of_subset i fun _ h ↦ h) (by grind)
     obtain ⟨C', C'_clopen, Z'_subset_C', C'_subset_D', C'_cover_D', C'_disj⟩ :=
@@ -192,7 +192,7 @@ lemma exists_clopen_partition_of_clopen_cover
     let C0 : Set X := D none \ ⋃ i, C' i
     have : IsClopen C0 := (D_clopen none).diff (isClopen_iUnion_of_finite C'_clopen)
     have : Z none ⊆ C0 := by
-      simp only [C0, subset_diff]
+      simp only [C0, subset_sdiff]
       exact ⟨by grind, Disjoint.mono_left Z0_subset_V (by simp; grind)⟩
     -- patch together to define `C none := C0`, `C (some i) := C' i`
     -- and verify the needed properties

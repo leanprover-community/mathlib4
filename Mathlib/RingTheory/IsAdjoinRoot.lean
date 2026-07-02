@@ -5,9 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # A predicate on adjoining roots of polynomial
@@ -591,10 +590,10 @@ end lift
 section mkOfAdjoinEqTop
 
 variable [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyClosed R]
-    {α : S} {hα : IsIntegral R α} {hα₂ : Algebra.adjoin R {α} = ⊤}
+    {α : S} (hα : IsIntegral R α) (hα₂ : Algebra.adjoin R {α} = ⊤)
 
-variable (hα hα₂) in
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
+@[simps]
 def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
   map := aeval α
   map_surjective := by
@@ -604,7 +603,6 @@ def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
     ext
     simpa [Ideal.mem_span_singleton] using minpoly.isIntegrallyClosed_dvd_iff hα _
 
-variable (hα hα₂) in
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
 abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
   __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
@@ -612,7 +610,7 @@ abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R
 
 @[simp]
 theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = α := by
-  simp [IsAdjoinRoot.mkOfAdjoinEqTop, IsAdjoinRoot.root]
+  simp [IsAdjoinRoot.root]
 
 end mkOfAdjoinEqTop
 
@@ -641,11 +639,39 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
   let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root_self
   symm <|
     eq_of_monic_of_associated h.monic (minpoly.monic h.isIntegral_root) <| by
-      convert
+      convert!
         Associated.mul_left (minpoly R h.root) <|
           associated_one_iff_isUnit.2 <|
             (hirr.isUnit_or_isUnit hq).resolve_left <| minpoly.not_isUnit R h.root
       rw [mul_one]
+
+/-- If `α` generates `S` as an algebra and `S` is free and finite,
+then `S` is given by adjoining a root of `minpoly R α`.
+Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop`. -/
+@[simps]
+def mkOfAdjoinEqTop' [Module.Finite R S] [Module.Free R S] {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
+    IsAdjoinRootMonic S (minpoly R α) where
+  __ : IsAdjoinRoot S (minpoly R α) :=
+    have monic := minpoly.monic (Algebra.IsIntegral.isIntegral (R := R) α)
+    haveI := monic.free_adjoinRoot
+    haveI := monic.finite_adjoinRoot
+    let φ := AdjoinRoot.liftAlgHom _ (Algebra.ofId R S) _ (minpoly.aeval R α)
+    IsAdjoinRoot.ofAdjoinRootEquiv <| AlgEquiv.ofBijective φ <| by
+      refine OrzechProperty.bijective_of_surjective_of_finrank_le φ.toLinearMap (fun s ↦ ?_) ?_
+      · rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
+        rcases hα s with ⟨p, hp⟩
+        exact ⟨AdjoinRoot.mk (minpoly R α) p, by simp [φ, ← aeval_def, hp]⟩
+      · nontriviality R
+        exact finrank_quotient_span_eq_natDegree' monic ▸ minpoly.natDegree_le α
+  map := aeval α
+  monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
+
+@[simp]
+theorem mkOfAdjoinEqTop'_root
+    [Module.Finite R S] [Module.Free R S]
+    {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
+      (mkOfAdjoinEqTop' hα).root = α := by
+  simp [IsAdjoinRoot.root]
 
 end IsAdjoinRootMonic
 

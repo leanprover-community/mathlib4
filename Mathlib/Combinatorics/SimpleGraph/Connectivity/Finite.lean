@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Ring.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Counting
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -23,7 +23,7 @@ can also be useful as a recursive description of this set when `V` is finite.
 TODO: should this be extended further?
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -57,7 +57,7 @@ instance : DecidableRel G.Reachable := fun u v =>
   decidable_of_iff' _ (reachable_iff_exists_finsetWalkLength_nonempty G u v)
 
 instance : Fintype G.ConnectedComponent :=
-  @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
+  fast_instance% @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
 
 instance : Decidable G.Preconnected :=
   inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)
@@ -85,7 +85,6 @@ end Fintype
 infinite components. -/
 abbrev oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd {c ∈ G.oddComponents | c.supp ⊆ c'.supp}.ncard ↔ Odd c'.supp.ncard := by
@@ -115,9 +114,9 @@ lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
      G'.oddComponents.ncard ≤ G.oddComponents.ncard := by
   have aux (c : G'.ConnectedComponent) (hc : Odd c.supp.ncard) :
       {c' : G.ConnectedComponent | Odd c'.supp.ncard ∧ c'.supp ⊆ c.supp}.Nonempty := by
-    refine Set.nonempty_of_ncard_ne_zero fun h' ↦ ?_
-    simpa [-Nat.card_eq_fintype_card, -Set.coe_setOf, h']
-      using (c.odd_oddComponents_ncard_subset_supp _ h).2 hc
+    refine Set.nonempty_of_ncard_ne_zero fun h' ↦ Nat.not_odd_zero ?_
+    rw [← h']
+    exact (c.odd_oddComponents_ncard_subset_supp _ h).2 hc
   let f : G'.oddComponents → G.oddComponents :=
     fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.1⟩
   refine Nat.card_le_card_of_injective f fun c c' fcc' ↦ ?_

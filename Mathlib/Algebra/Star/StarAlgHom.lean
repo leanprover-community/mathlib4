@@ -101,7 +101,7 @@ variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
 instance : FunLike (A →⋆ₙₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B where
   map_smulₛₗ f := f.map_smul'
@@ -145,13 +145,11 @@ theorem coe_copy (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : ⇑(f.c
 theorem copy_eq (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
+/-- `coe_mk'` below applies in more cases -/
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
     ((⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
   rfl
 
--- this is probably the more useful lemma for Lean 4 and should likely replace `coe_mk` above
 @[simp]
 theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
     ((⟨f, h⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
@@ -310,7 +308,7 @@ variable [StarHomClass F A B]
 actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
 @[coe]
 def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
-  { (f : A →ₐ[R] B) with
+  { (AlgHomClass.toAlgHom f) with
     map_star' := map_star f }
 
 instance : CoeTC F (A →⋆ₐ[R] B) :=
@@ -325,7 +323,7 @@ variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Star
 
 instance : FunLike (A →⋆ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
 
 instance : AlgHomClass (A →⋆ₐ[R] B) R A B where
   map_mul f := f.map_mul'
@@ -344,6 +342,11 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
   rfl
 
 initialize_simps_projections StarAlgHom (toFun → apply)
+
+attribute [coe] StarAlgHom.toAlgHom
+
+instance : Coe (A →⋆ₐ[R] B) (A →ₐ[R] B) :=
+  ⟨toAlgHom⟩
 
 @[simp]
 theorem coe_toAlgHom {f : A →⋆ₐ[R] B} : (f.toAlgHom : A → B) = f :=
@@ -485,13 +488,13 @@ def snd : A × B →⋆ₙₐ[R] B :=
 
 variable {R A B C}
 
-/-- The `Pi.prod` of two morphisms is a morphism. -/
+/-- The `Function.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : A →⋆ₙₐ[R] B × C :=
   { f.toNonUnitalAlgHom.prod g.toNonUnitalAlgHom with
-    map_star' := fun x => by simp [map_star, Prod.star_def] }
+    map_star' := fun x => by simp [map_star, Prod.ext_iff] }
 
-theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -504,7 +507,7 @@ theorem snd_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : (snd R B 
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  DFunLike.coe_injective Pi.prod_fst_snd
+  DFunLike.coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
@@ -590,12 +593,12 @@ def snd : A × B →⋆ₐ[R] B :=
 
 variable {R A B C}
 
-/-- The `Pi.prod` of two morphisms is a morphism. -/
+/-- The `Function.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : A →⋆ₐ[R] B × C :=
   { f.toAlgHom.prod g.toAlgHom with map_star' := fun x => by simp [Prod.star_def, map_star] }
 
-theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -608,7 +611,7 @@ theorem snd_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : (snd R B C).com
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  DFunLike.coe_injective Pi.prod_fst_snd
+  DFunLike.coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
@@ -667,7 +670,7 @@ an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `
 def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
     [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
     (f : F) : A ≃⋆ₐ[R] B :=
-  { (f : A ≃+* B) with
+  { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f
     map_smul' := map_smul f }
 
@@ -708,7 +711,7 @@ instance : StarRingEquivClass (A ≃⋆ₐ[R] B) A B where
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
 instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 @[simp]
 theorem toStarRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = e := rfl
@@ -720,17 +723,18 @@ theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
 theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
+variable (R A) in
 /-- The identity map is a star algebra isomorphism. -/
 @[refl]
-def refl : A ≃⋆ₐ[R] A :=
+protected def refl : A ≃⋆ₐ[R] A :=
   { StarRingEquiv.refl (A := A) with
     map_smul' := fun _ _ => rfl }
 
 instance : Inhabited (A ≃⋆ₐ[R] A) :=
-  ⟨refl⟩
+  ⟨.refl R A⟩
 
 @[simp]
-theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
+theorem coe_refl : ⇑(StarAlgEquiv.refl R A) = id :=
   rfl
 
 /-- The inverse of a star algebra isomorphism is a star algebra isomorphism. -/
@@ -738,7 +742,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
     map_smul' := fun r b => by
-      simpa only [apply_inv_apply, inv_apply_apply] using
+      simpa only [apply_inv_apply, inv_apply_apply] using!
         congr_arg (inv e) (map_smul e r (inv e b)).symm }
 
 /-- See Note [custom simps projection] -/
@@ -764,28 +768,22 @@ theorem coe_mk (e h) : ⇑(⟨e, h⟩ : A ≃⋆ₐ[R] B) = e := rfl
 theorem mk_coe (e : A ≃⋆ₐ[R] B) (e' h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
-protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :=
-  (⟨⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm
-
 @[simp]
-theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm =
-      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ h₆ with
-        toFun := f'
-        invFun := f } :=
+theorem symm_mk (e : A ≃⋆+* B) (h₁) : dsimp%
+    (⟨e, h₁⟩ : A ≃⋆ₐ[R] B).symm =
+      { (⟨e, h₁⟩ : A ≃⋆ₐ[R] B).symm with
+        toStarRingEquiv := e.symm } :=
   rfl
 
 @[simp]
-theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.refl :=
+theorem refl_symm : (StarAlgEquiv.refl R A).symm = .refl R A :=
   rfl
 
 @[simp]
 theorem toStarRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃⋆+* A) = (e : A ≃⋆+* B).symm := rfl
 
 @[simp]
-theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
-  rfl
+theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e : A ≃⋆+* B).symm = (e : A ≃+* B).symm := rfl
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
@@ -848,7 +846,7 @@ theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv (R := R) (A := A) 
   fun _ _ h => ext <| AlgEquiv.congr_fun h
 
 @[simp]
-theorem toAlgEquiv_refl : (refl : A ≃⋆ₐ[R] A).toAlgEquiv = AlgEquiv.refl := rfl
+theorem toAlgEquiv_refl : (StarAlgEquiv.refl R A).toAlgEquiv = AlgEquiv.refl := rfl
 
 /-- Upgrade an algebra equivalence to a ⋆-algebra equivalence given that it preserves the
 `star` operation. -/
@@ -879,6 +877,190 @@ end AlgEquiv
 
 end Basic
 
+section NonUnitalArrowCongr
+
+variable {R A₁ A₂ A₃ A₁' A₂' A₃' : Type*} [Monoid R]
+  [NonUnitalNonAssocSemiring A₁] [DistribMulAction R A₁] [Star A₁]
+  [NonUnitalNonAssocSemiring A₂] [DistribMulAction R A₂] [Star A₂]
+  [NonUnitalNonAssocSemiring A₃] [DistribMulAction R A₃] [Star A₃]
+  [NonUnitalNonAssocSemiring A₁'] [DistribMulAction R A₁'] [Star A₁']
+  [NonUnitalNonAssocSemiring A₂'] [DistribMulAction R A₂'] [Star A₂']
+  [NonUnitalNonAssocSemiring A₃'] [DistribMulAction R A₃'] [Star A₃']
+  (e : A₁ ≃⋆ₐ[R] A₂)
+
+/-- Reintrepret a star algebra equivalence as a non-unital star algebra homomorphism. -/
+@[simps]
+def toNonUnitalStarAlgHom : A₁ →⋆ₙₐ[R] A₂ :=
+  { e with
+    toFun := e
+    map_zero' := map_zero e }
+
+@[simp]
+lemma toNonUnitalStarAlgHom_refl : (StarAlgEquiv.refl R A₁).toNonUnitalStarAlgHom = .id R A₁ :=
+  rfl
+
+@[simp]
+lemma toNonUnitalStarAlgHom_comp (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₂ : A₂ ≃⋆ₐ[R] A₃) :
+    e₂.toNonUnitalStarAlgHom.comp e₁.toNonUnitalStarAlgHom =
+      (e₁.trans e₂).toNonUnitalStarAlgHom := rfl
+
+/-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'` as star algebras, then the type
+of maps `A₁ →⋆ₙₐ[R] A₂` is equivalent to the type of maps `A₁' →⋆ₙₐ[R] A₂'`.
+
+For unital star algebra homomorphisms, see `StarAlgEquiv.arrowCongr`. -/
+@[simps apply]
+def arrowCongr' (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
+    (A₁ →⋆ₙₐ[R] A₂) ≃ (A₁' →⋆ₙₐ[R] A₂') where
+  toFun f := (e₂.toNonUnitalStarAlgHom.comp f).comp e₁.symm.toNonUnitalStarAlgHom
+  invFun f := (e₂.symm.toNonUnitalStarAlgHom.comp f).comp e₁.toNonUnitalStarAlgHom
+  left_inv f := by ext; simp
+  right_inv f := by ext; simp
+
+theorem arrowCongr'_comp (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂')
+    (e₃ : A₃ ≃⋆ₐ[R] A₃') (f : A₁ →⋆ₙₐ[R] A₂) (g : A₂ →⋆ₙₐ[R] A₃) :
+    arrowCongr' e₁ e₃ (g.comp f) = (arrowCongr' e₂ e₃ g).comp (arrowCongr' e₁ e₂ f) := by
+  ext
+  simp
+
+@[simp]
+theorem arrowCongr'_refl : arrowCongr' (.refl _ _) (.refl _ _) = Equiv.refl (A₁ →⋆ₙₐ[R] A₂) :=
+  rfl
+
+@[simp]
+theorem arrowCongr'_trans (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₁' : A₁' ≃⋆ₐ[R] A₂')
+    (e₂ : A₂ ≃⋆ₐ[R] A₃) (e₂' : A₂' ≃⋆ₐ[R] A₃') :
+    arrowCongr' (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr' e₁ e₁').trans (arrowCongr' e₂ e₂') :=
+  rfl
+
+@[simp]
+theorem symm_arrowCongr' (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
+    (arrowCongr' e₁ e₂).symm = arrowCongr' e₁.symm e₂.symm :=
+  rfl
+
+/-- Construct a star algebra equivalence from a pair of non-unital star algebra homomorphisms. -/
+@[simps]
+def ofNonUnitalStarAlgHom (f : A₁ →⋆ₙₐ[R] A₂) (g : A₂ →⋆ₙₐ[R] A₁) (h₁ : g.comp f = .id R A₁)
+    (h₂ : f.comp g = .id R A₂) : A₁ ≃⋆ₐ[R] A₂ :=
+  { f with
+    toFun := f
+    invFun := g
+    left_inv x := congr($h₁ x)
+    right_inv x := congr($h₂ x) }
+
+@[simp]
+lemma toNonUnitalStarAlgHom_ofNonUnitalStarAlgHom (f : A₁ →⋆ₙₐ[R] A₂) (g : A₂ →⋆ₙₐ[R] A₁)
+    (h₁ : g.comp f = .id R A₁) (h₂ : f.comp g = .id R A₂) :
+    (ofNonUnitalStarAlgHom f g h₁ h₂).toNonUnitalStarAlgHom = f :=
+  rfl
+
+lemma symm_ofNonUnitalStarAlgHom (f : A₁ →⋆ₙₐ[R] A₂) (g : A₂ →⋆ₙₐ[R] A₁)
+    (h₁ : g.comp f = .id R A₁) (h₂ : f.comp g = .id R A₂) :
+    (ofNonUnitalStarAlgHom f g h₁ h₂).symm = ofNonUnitalStarAlgHom g f h₂ h₁ :=
+  rfl
+
+@[simp]
+lemma toNonUnitalStarAlgHom_symm_ofNonUnitalStarAlgHom (f : A₁ →⋆ₙₐ[R] A₂) (g : A₂ →⋆ₙₐ[R] A₁)
+    (h₁ : g.comp f = .id R A₁) (h₂ : f.comp g = .id R A₂) :
+    (ofNonUnitalStarAlgHom f g h₁ h₂).symm.toNonUnitalStarAlgHom = g :=
+  rfl
+
+end NonUnitalArrowCongr
+
+section Unital
+
+variable {R A₁ A₂ A₃ A₁' A₂' A₃' : Type*}
+  [CommSemiring R] [Semiring A₁] [Semiring A₂] [Semiring A₃]
+  [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
+  [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
+  [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
+  [Star A₁] [Star A₂] [Star A₃]
+  [Star A₁'] [Star A₂'] [Star A₃']
+  (e : A₁ ≃⋆ₐ[R] A₂)
+
+/-- Reintrepret a star algebra equivalence as a star algebra homomorphism. -/
+@[simps]
+def toStarAlgHom : A₁ →⋆ₐ[R] A₂ :=
+  { e with
+    toFun := e
+    __ := e.toAlgEquiv.toAlgHom }
+
+@[simp]
+lemma toNonUnitalStarAlgHom_toStarAlgHom (e : A₁ ≃⋆ₐ[R] A₂) :
+    e.toStarAlgHom.toNonUnitalStarAlgHom = e.toNonUnitalStarAlgHom :=
+  rfl
+
+@[simp]
+lemma toStarAlgHom_refl : (StarAlgEquiv.refl R A₁).toStarAlgHom = .id R A₁ :=
+  rfl
+
+@[simp]
+lemma toStarAlgHom_comp (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₂ : A₂ ≃⋆ₐ[R] A₃) :
+    e₂.toStarAlgHom.comp e₁.toStarAlgHom = (e₁.trans e₂).toStarAlgHom := rfl
+
+/-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'` as star algebras, then the type
+of maps `A₁ →⋆ₐ[R] A₂` is equivalent to the type of maps `A₁' →⋆ₐ[R] A₂'`.
+
+For non-unital star algebra homomorphisms, see `StarAlgEquiv.arrowCongr'`. -/
+@[simps apply]
+def arrowCongr (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') : (A₁ →⋆ₐ[R] A₂) ≃ (A₁' →⋆ₐ[R] A₂') where
+  toFun f := (e₂.toStarAlgHom.comp f).comp e₁.symm.toStarAlgHom
+  invFun f := (e₂.symm.toStarAlgHom.comp f).comp e₁.toStarAlgHom
+  left_inv f := by ext; simp
+  right_inv f := by ext; simp
+
+theorem arrowCongr_comp (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂')
+    (e₃ : A₃ ≃⋆ₐ[R] A₃') (f : A₁ →⋆ₐ[R] A₂) (g : A₂ →⋆ₐ[R] A₃) :
+    arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
+  ext
+  simp
+
+@[simp]
+theorem arrowCongr_refl : arrowCongr (.refl _ _) (.refl _ _) = Equiv.refl (A₁ →⋆ₐ[R] A₂) :=
+  rfl
+
+@[simp]
+theorem arrowCongr_trans (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₁' : A₁' ≃⋆ₐ[R] A₂')
+    (e₂ : A₂ ≃⋆ₐ[R] A₃) (e₂' : A₂' ≃⋆ₐ[R] A₃') :
+    arrowCongr (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂') :=
+  rfl
+
+@[simp]
+theorem symm_arrowCongr (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
+    (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm :=
+  rfl
+
+/-- Construct a star algebra equivalence from a pair of star algebra homomorphisms. -/
+@[simps]
+def ofStarAlgHom {R A B : Type*} [CommSemiring R]
+    [Semiring A] [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
+    (f : A →⋆ₐ[R] B) (g : B →⋆ₐ[R] A) (h₁ : g.comp f = .id R A) (h₂ : f.comp g = .id R B) :
+    A ≃⋆ₐ[R] B :=
+  { f with
+    toFun := f
+    invFun := g
+    left_inv x := congr($h₁ x)
+    right_inv x := congr($h₂ x)
+    map_smul' := map_smul f }
+
+@[simp]
+lemma toStarAlgHom_ofStarAlgHom (f : A₁ →⋆ₐ[R] A₂) (g : A₂ →⋆ₐ[R] A₁)
+    (h₁ : g.comp f = .id R A₁) (h₂ : f.comp g = .id R A₂) :
+    (ofStarAlgHom f g h₁ h₂).toStarAlgHom = f :=
+  rfl
+
+lemma symm_ofStarAlgHom (f : A₁ →⋆ₐ[R] A₂) (g : A₂ →⋆ₐ[R] A₁)
+    (h₁ : g.comp f = .id R A₁) (h₂ : f.comp g = .id R A₂) :
+    (ofStarAlgHom f g h₁ h₂).symm = ofStarAlgHom g f h₂ h₁ :=
+  rfl
+
+@[simp]
+lemma toStarAlgHom_symm_ofStarAlgHom (f : A₁ →⋆ₐ[R] A₂) (g : A₂ →⋆ₐ[R] A₁)
+    (h₁ : g.comp f = .id R A₁) (h₂ : f.comp g = .id R A₂) :
+    (ofStarAlgHom f g h₁ h₂).symm.toStarAlgHom = g :=
+  rfl
+
+end Unital
+
 section Bijective
 
 variable {F G R A B : Type*} [Monoid R]
@@ -886,19 +1068,6 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [StarHomClass G B A]
-
-/-- If a (unital or non-unital) star algebra morphism has an inverse, it is an isomorphism of
-star algebras. -/
-@[simps]
-def ofStarAlgHom (f : F) (g : G) (h₁ : ∀ x, g (f x) = x) (h₂ : ∀ x, f (g x) = x) : A ≃⋆ₐ[R] B where
-  toFun := f
-  invFun := g
-  left_inv := h₁
-  right_inv := h₂
-  map_add' := map_add f
-  map_mul' := map_mul f
-  map_smul' := map_smul f
-  map_star' := map_star f
 
 /-- Promote a bijective star algebra homomorphism to a star algebra equivalence. -/
 noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[R] B :=
@@ -925,7 +1094,7 @@ variable {S R : Type*} [Mul R] [Add R] [Star R] [SMul S R]
 
 @[simps -isSimp one mul]
 instance aut : Group (R ≃⋆ₐ[S] R) where
-  one := refl
+  one := .refl _ _
   mul a b := b.trans a
   one_mul _ := rfl
   mul_one _ := rfl

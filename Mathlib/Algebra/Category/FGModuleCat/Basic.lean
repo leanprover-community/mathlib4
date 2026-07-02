@@ -99,12 +99,6 @@ abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGMod
 lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] :
     of R V = V := rfl
 
-/-
-The reduction done by `simpVarHead` is stronger than the one actually used by `simp`,
-so we get a false positive here
--/
-attribute [nolint simpVarHead] of_carrier
-
 variable {R} in
 /-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/
 abbrev ofHom {V W : Type v} [AddCommGroup V] [Module R V] [Module.Finite R V]
@@ -281,15 +275,13 @@ end FGModuleCat
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
+@[simp]
 theorem LinearMap.comp_id_fgModuleCat
     {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
     (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
   ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
+@[simp]
 theorem LinearMap.id_fgModuleCat_comp
     {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
     (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=

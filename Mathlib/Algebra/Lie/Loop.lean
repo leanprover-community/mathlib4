@@ -126,7 +126,7 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     set s := (F f).support ∪ (F f).support.image (Equiv.neg A) with hs
     have hs' : (F f).support ⊆ s := Finset.subset_union_left
     rw [Finsupp.sum_of_support_subset _ hs' _ (by simp)]
-    refine Function.Odd.finset_sum_eq_zero (fun n ↦ by simp [hΦ.eq]) (Finset.map_eq_of_subset ?_)
+    refine Function.Odd.finsetSum_eq_zero (fun n ↦ by simp [hΦ.eq]) (Finset.map_eq_of_subset ?_)
     intro x hx
     rw [Finset.mem_union]
     replace hx : -x ∈ (F f).support ∨ -x ∈ (F f).support.image Neg.neg := by simpa [hs] using hx
@@ -155,7 +155,8 @@ def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
         b • Φ (Finsupp.single (a + c) ⁅x, z⁆ (-b)) y =
         c • Φ (Finsupp.single (a + b) ⁅x, y⁆ (-c)) z +
         a • Φ (Finsupp.single (b + c) ⁅y, z⁆ (-a)) x by
-      simpa [sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add, -LinearEquiv.map_add]
+      simpa [trivial_lie_zero, sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add,
+        -LinearEquiv.map_add]
     by_cases h0 : a + b + c = 0
     · suffices b • Φ ⁅x, z⁆ y = c • Φ ⁅x, y⁆ z + a • Φ ⁅y, z⁆ x by
         simpa only [show a + b = -c by grind, show a + c = -b by grind, show b + c = -a by grind,

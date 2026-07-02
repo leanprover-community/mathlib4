@@ -154,7 +154,7 @@ open Subalgebra in
 @[simp]
 theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
     (sSup S).toSubsemiring = sSup (toSubsemiring '' S) := by
-  have h : toSubsemiring '' S = Subsemiring.closure '' (SetLike.coe '' S) := by
+  have h : toSubsemiring '' S = Subsemiring.closure '' SetLike.coe '' S := by
     rw [Set.image_image]
     congr! with x
     exact x.toSubsemiring.closure_eq.symm
@@ -369,20 +369,19 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*}
-
-variable [FunLike F A B] [AlgHomClass F R A B]
 
 @[simp]
-theorem equalizer_eq_top {φ ψ : F} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
+theorem equalizer_eq_top {φ ψ : A →ₐ[R] B} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
   simp [SetLike.ext_iff, DFunLike.ext_iff]
 
 @[simp]
-theorem equalizer_same (φ : F) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
+theorem equalizer_same (φ : A →ₐ[R] B) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
+
+variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
 
 theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) :
     Set.EqOn φ ψ ↑(S ⊔ T) := by
-  rw [← le_equalizer] at hS hT ⊢
+  rw [← AlgHom.coe_coe φ, ← AlgHom.coe_coe ψ, ← le_equalizer] at hS hT ⊢
   exact sup_le hS hT
 
 theorem ext_on_codisjoint {φ ψ : F} {S T : Subalgebra R A} (hST : Codisjoint S T)
@@ -516,6 +515,34 @@ theorem subset_adjoin : s ⊆ adjoin R s :=
 
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
+
+/-
+The following set-up allows one to write `xₖ : R[x₁, ..., xₙ]` instead of
+`(⟨xₖ, "membership proof"⟩ : R[x₁, ..., xₙ])`.
+
+The idea is to recurse through the list of `x₁, ..., xₙ` until we find the appropriate `xₖ`.
+By design, it only triggers if the set is of the form `insert x₁ (insert x₂ (...(s)))` or
+`{x₁, ..., xₙ}`.
+-/
+
+variable {α : Type*}
+
+/-- Supporting class for coercions `xₖ : R[x₁, ..., xₙ]`. -/
+class CoeAdjoinAux (x : α) (s : Set α) : Prop where mem : x ∈ s
+
+scoped instance (x : α) : CoeAdjoinAux x {x} := ⟨Set.mem_singleton x⟩
+
+scoped instance (x : α) (s : Set α) : CoeAdjoinAux x (insert x s) := ⟨Set.mem_insert x s⟩
+
+scoped instance (x y : α) (s : Set α) [CoeAdjoinAux x s] : CoeAdjoinAux x (insert y s) :=
+  ⟨Set.mem_insert_of_mem y CoeAdjoinAux.mem⟩
+
+/-- Enables notation `xₖ : R[x₁, ..., xₙ]` instead of
+`(⟨xₖ, "membership proof"⟩ : R[x₁, ..., xₙ])`. -/
+scoped instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
+    (s : Set B) (x : B) [CoeAdjoinAux x s] :
+    CoeDep B x (adjoin A s) where
+  coe := ⟨x, mem_adjoin_of_mem CoeAdjoinAux.mem⟩
 
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
@@ -700,19 +727,11 @@ theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin
   le_antisymm (adjoin_le (span_le_adjoin _ _)) (adjoin_mono Submodule.subset_span)
 
 theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
-  le_antisymm (adjoin_le <| Set.image_mono subset_adjoin) <|
-    Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
-      simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
-        Subalgebra.coe_comap]
-      exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
+  eq_of_forall_ge_iff fun t ↦ by simp [Subalgebra.map_le, adjoin_le_iff]
 
 @[simp]
 theorem adjoin_insert_adjoin (x : A) : adjoin R (insert x ↑(adjoin R s)) = adjoin R (insert x s) :=
-  le_antisymm
-    (adjoin_le
-      (Set.insert_subset_iff.mpr
-        ⟨subset_adjoin (Set.mem_insert _ _), adjoin_mono (Set.subset_insert _ _)⟩))
-    (Algebra.adjoin_mono (Set.insert_subset_insert Algebra.subset_adjoin))
+  eq_of_forall_ge_iff fun t ↦ by simp [adjoin_le_iff, Set.insert_subset_iff]
 
 theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂)
     (h : x ∈ adjoin R s) : f x ∈ adjoin R (f '' (s ∪ {1})) := by
@@ -721,7 +740,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
   | algebraMap r =>
     have : f 1 ∈ adjoin R (f '' (s ∪ {1})) :=
       subset_adjoin ⟨1, ⟨Set.subset_union_right <| Set.mem_singleton 1, rfl⟩⟩
-    convert Subalgebra.smul_mem (adjoin R (f '' (s ∪ {1}))) this r
+    convert! Subalgebra.smul_mem (adjoin R (f '' (s ∪ { 1 }))) this r
     rw [algebraMap_eq_smul_one]
     exact f.map_smul _ _
   | add y z _ _ hy hz => simpa [hy, hz] using Subalgebra.add_mem _ hy hz
@@ -731,13 +750,31 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ Subalgebra.centralizer R (Subalgebra.centralizer R s) :=
   adjoin_le Set.subset_centralizer_centralizer
 
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin s` is a commutative semiring. -/
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is commutative. -/
+theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+    IsMulCommutative (adjoin R s) :=
+  have := adjoin_le_centralizer_centralizer R s
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
+
+instance isMulCommutative_adjoin_singleton (x : A) :
+    IsMulCommutative (adjoin R ({x} : Set A)) :=
+  isMulCommutative_adjoin R (by simp)
+
+open scoped IsMulCommutative in
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
+semiring.
+
+See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemiring (adjoin R s) :=
-  { (adjoin R s).toSemiring with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
-      have := adjoin_le_centralizer_centralizer R s
-      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+  have := isMulCommutative_adjoin R hcomm
+  inferInstance
+
+instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
+  isMulCommutative_adjoin R fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 variable {R}
 
@@ -806,11 +843,14 @@ theorem mem_adjoin_iff {s : Set A} {x : A} :
 
 variable (R)
 
+open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring. -/
+@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinCommRingOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (adjoin R s) :=
-  { (adjoin R s).toRing, adjoinCommSemiringOfComm R hcomm with }
+  have := isMulCommutative_adjoin R hcomm
+  inferInstance
 
 end Ring
 
@@ -847,8 +887,8 @@ theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
 theorem adjoin_ext {s : Set A} ⦃φ₁ φ₂ : adjoin R s →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin hx⟩ = φ₂ ⟨x, subset_adjoin hx⟩) : φ₁ = φ₂ :=
   ext fun ⟨x, hx⟩ ↦ adjoin_induction h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
 
 theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) ⦃φ₁ φ₂ : S →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin hx)⟩) :
@@ -964,7 +1004,7 @@ theorem comap_map_eq (f : A →ₐ[R] B) (S : Subalgebra R A) :
 
 theorem comap_map_eq_self {f : A →ₐ[R] B} {S : Subalgebra R A}
     (h : f ⁻¹' {0} ⊆ S) : (S.map f).comap f = S := by
-  convert comap_map_eq f S
+  convert! comap_map_eq f S
   rwa [left_eq_sup, Algebra.adjoin_le_iff]
 
 end Subalgebra

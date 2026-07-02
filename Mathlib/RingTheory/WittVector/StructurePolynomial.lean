@@ -75,6 +75,7 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
   - `WittVector.wittAdd`
   - `WittVector.wittMul`
   - `WittVector.wittNeg`
+
   (We also define `WittVector.wittSub`, and later we will prove that it describes subtraction,
   which is defined as `fun a b ↦ a + -b`. See `WittVector.sub_coeff` for this proof.)
 
@@ -321,7 +322,7 @@ theorem wittStructureInt_existsUnique (Φ : MvPolynomial idx ℤ) :
 theorem witt_structure_prop (Φ : MvPolynomial idx ℤ) (n) :
     aeval (fun i => map (Int.castRingHom R) (wittStructureInt p Φ i)) (wittPolynomial p ℤ n) =
       aeval (fun i => rename (Prod.mk i) (W n)) Φ := by
-  convert congr_arg (map (Int.castRingHom R)) (wittStructureInt_prop p Φ n) using 1 <;>
+  convert! congr_arg (map (Int.castRingHom R)) (wittStructureInt_prop p Φ n) using 1 <;>
       rw [hom_bind₁] <;>
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   · rfl

@@ -120,7 +120,7 @@ theorem mem_find_carrier_iff {c : Set (PartialRefinement u s p)} {i : ι} (ne : 
   split_ifs with h
   · have := h.choose_spec
     exact iff_of_true this.2 (mem_iUnion₂.2 ⟨_, this.1, this.2⟩)
-  · push_neg at h
+  · push Not at h
     refine iff_of_false (h _ ne.some_mem) ?_
     simpa only [chainSupCarrier, mem_iUnion₂, not_exists]
 

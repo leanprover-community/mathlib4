@@ -119,7 +119,7 @@ variable (M) in
 @[to_additive]
 instance : SetLike (SaturatedSubmonoid M) M where
   coe := (·.carrier)
-  coe_injective' _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
 
 @[to_additive]
 instance : PartialOrder (SaturatedSubmonoid M) := .ofSetLike ..
@@ -158,7 +158,7 @@ instance : InfSet (SaturatedSubmonoid M) where
     mul_mem' hx hy := by rw [Set.mem_iInter₂] at *; exact fun s hs ↦ mul_mem (hx s hs) (hy s hs)
     one_mem' := Set.mem_iInter₂.mpr fun _ _ ↦ one_mem _
     mulSaturated := by
-      convert Submonoid.MulSaturated.sInf (f := toSubmonoid '' f) (by simp)
+      convert! Submonoid.MulSaturated.sInf (f := toSubmonoid '' f) (by simp)
       ext; simp [Submonoid.mem_sInf] }
 
 @[to_additive]

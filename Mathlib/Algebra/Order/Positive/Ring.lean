@@ -12,12 +12,12 @@ public import Mathlib.Tactic.FastInstance
 /-!
 # Algebraic structures on the set of positive numbers
 
-In this file we define various instances (`AddSemigroup`, `OrderedCommMonoid` etc) on the
+In this file we define various instances (`AddSemigroup`, `IsOrderedMonoid` etc) on the
 type `{x : R // 0 < x}`. In each case we try to require the weakest possible typeclass
 assumptions on `R` but possibly, there is a room for improvements.
 -/
 
-@[expose] public section
+public section
 
 
 open Function
@@ -64,11 +64,11 @@ instance addLeftReflectLT [AddLeftReflectLT M] : AddLeftReflectLT { x : M // 0 <
 instance addRightReflectLT [AddRightReflectLT M] : AddRightReflectLT { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_right h⟩
 
-instance addLeftReflectLE [AddLeftReflectLE M] : AddLeftReflectLE { x : M // 0 < x } :=
-  ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_left h⟩
+instance addLeftReflectLE [AddLeftReflectLE M] : AddLeftReflectLE { x : M // 0 < x } where
+  le_of_add_le_add_left h := Subtype.coe_le_coe.mp <| le_of_add_le_add_left h
 
-instance addRightReflectLE [AddRightReflectLE M] : AddRightReflectLE { x : M // 0 < x } :=
-  ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_right h⟩
+instance addRightReflectLE [AddRightReflectLE M] : AddRightReflectLE { x : M // 0 < x } where
+  le_of_add_le_add_right h := Subtype.coe_le_coe.mp <| le_of_add_le_add_right h
 
 end AddBasic
 

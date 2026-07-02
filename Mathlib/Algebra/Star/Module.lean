@@ -103,14 +103,34 @@ instance StarAddMonoid.toStarModuleRat [AddCommGroup R] [Module ℚ R] [StarAddM
 
 end SMulLemmas
 
+section starLinearEquiv
+
+variable (R : Type*) {A : Type*}
+  [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A] [Module R A] [StarModule R A]
+
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
-@[simps]
-def starLinearEquiv (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid A]
-    [StarAddMonoid A] [Module R A] [StarModule R A] : A ≃ₗ⋆[R] A :=
-  { starAddEquiv with
-    toFun := star
-    map_smul' := star_smul }
+@[simps! apply]
+def starLinearEquiv : A ≃ₗ⋆[R] A where
+  __ := starAddEquiv
+  map_smul' := star_smul
+
+@[simp]
+theorem toAddEquiv_starLinearEquiv :
+    (starLinearEquiv R : A ≃ₗ⋆[R] A).toAddEquiv = starAddEquiv :=
+  rfl
+
+@[simp]
+theorem symm_starLinearEquiv : (starLinearEquiv R : A ≃ₗ⋆[R] A).symm = starLinearEquiv R :=
+  rfl
+
+@[deprecated "Use `symm_starLinearEquiv` and `starLinearEquiv_apply` instead"
+  (since := "2026-06-03")]
+theorem starLinearEquiv_symm_apply (x : A) :
+    (starLinearEquiv R).symm x = starAddEquiv.invFun x := by
+  simp
+
+end starLinearEquiv
 
 section SelfSkewAdjoint
 
@@ -220,7 +240,7 @@ theorem algebraMap_star_comm (r : R) : algebraMap R A (star r) = star (algebraMa
 variable (A) in
 protected lemma IsSelfAdjoint.algebraMap {r : R} (hr : IsSelfAdjoint r) :
     IsSelfAdjoint (algebraMap R A r) := by
-  simpa using congr(algebraMap R A $(hr.star_eq))
+  simpa using! congr(algebraMap R A $(hr.star_eq))
 
 lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R A)) :
     IsSelfAdjoint (algebraMap R A r) ↔ IsSelfAdjoint r :=
