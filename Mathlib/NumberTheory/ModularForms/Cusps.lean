@@ -302,15 +302,13 @@ lemma _root_.ModularGroup.mapGL_T_eq_upperRightHom {S : Type*} [CommRing S] :
   ext i j
   fin_cases i <;> fin_cases j <;> simp [mapGL_coe_matrix, ModularGroup.coe_T]
 
-/-- The image of `T^n : SL(2, ℤ)` in `GL(2, S)` for any commutative ring `S` is the
+/-- The image of `T ^ n : SL(2, ℤ)` in `GL(2, S)` for any commutative ring `S` is the
 upper-triangular matrix `[1, n; 0, 1]`. -/
 lemma _root_.ModularGroup.mapGL_T_zpow_eq_upperRightHom {S : Type*} [CommRing S] (n : ℤ) :
     Matrix.SpecialLinearGroup.mapGL S ((ModularGroup.T : SL(2, ℤ))^n) =
       Matrix.GeneralLinearGroup.upperRightHom (n : S) := by
   rw [map_zpow, ModularGroup.mapGL_T_eq_upperRightHom, ← AddChar.map_zsmul_eq_zpow, zsmul_one]
 
-/-- The image of `T^n : SL(2, ℤ)` in `GL(2, S)` for any commutative ring `S` is the
-upper-triangular matrix `[1, n; 0, 1]`. -/
 lemma _root_.ModularGroup.mapGL_T_pow_eq_upperRightHom {S : Type*} [CommRing S] (n : ℕ) :
     Matrix.SpecialLinearGroup.mapGL S ((ModularGroup.T : SL(2, ℤ))^n) =
       Matrix.GeneralLinearGroup.upperRightHom (n : S) := by
@@ -466,21 +464,16 @@ noncomputable def integerCuspWidth (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsFi
 
 variable {𝒢} [𝒢.IsFiniteRelIndex 𝒮ℒ]
 
-/-- The integer cusp width is positive. -/
 lemma integerCuspWidth_pos : 0 < integerCuspWidth 𝒢 := by
   classical exact (Nat.find_spec (exists_pos_nat_mem_strictPeriods 𝒢)).1
 
-/-- The integer cusp width, viewed in `ℝ`, lies in the strict-periods subgroup of `𝒢`. -/
 lemma integerCuspWidth_mem_strictPeriods : (integerCuspWidth 𝒢 : ℝ) ∈ 𝒢.strictPeriods := by
   classical exact (Nat.find_spec (exists_pos_nat_mem_strictPeriods 𝒢)).2
 
-/-- Minimality of `integerCuspWidth`: any positive natural number whose image in `ℝ` lies in
-the strict periods of `𝒢` is at least `integerCuspWidth 𝒢`. -/
 lemma integerCuspWidth_le {n : ℕ} (hpos : 0 < n) (hmem : (n : ℝ) ∈ 𝒢.strictPeriods) :
     integerCuspWidth 𝒢 ≤ n := by
   classical exact Nat.find_le ⟨hpos, hmem⟩
 
-/-- The matrix `T ^ integerCuspWidth 𝒢` lies in `𝒢`. -/
 lemma T_pow_integerCuspWidth_mem :
     ((ModularGroup.T : SL(2, ℤ))^(integerCuspWidth 𝒢 : ℕ) : GL (Fin 2) ℝ) ∈ 𝒢 := by
   change (mapGL ℝ ModularGroup.T)^(integerCuspWidth 𝒢 : ℕ) ∈ 𝒢
@@ -493,7 +486,6 @@ lemma quotient_T_pow_injective_integerCuspWidth [DiscreteTopology 𝒢.strictPer
     Function.Injective (fun j : Fin (integerCuspWidth 𝒢) ↦
       (⟦(mapGL ℝ).rangeRestrict ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
         𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) := by
-  -- For `a ≤ b < integerCuspWidth 𝒢`, if `(b - a : ℝ) ∈ strictPeriods` then `a = b`.
   suffices key : ∀ {a b : ℕ}, a ≤ b → b < integerCuspWidth 𝒢 →
       ((b : ℝ) - (a : ℝ)) ∈ 𝒢.strictPeriods → a = b by
     intro j₁ j₂ hj

@@ -49,11 +49,6 @@ lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
   rw [SL_slash_apply, modular_S_smul]
   simp [ModularGroup.S, denom]
 
-/-- The denominator of an `upperRightHom x = [[1, x], [0, 1]]` matrix at any `τ` is `1`. -/
-lemma denom_upperRightHom (x : ℝ) (τ : ℂ) :
-    denom (Matrix.GeneralLinearGroup.upperRightHom x) τ = 1 := by
-  simp [denom]
-
 /-- The Möbius action of `upperRightHom x` on `τ : ℍ` is the shift `x +ᵥ τ`. -/
 lemma upperRightHom_smul (x : ℝ) (τ : ℍ) :
     (Matrix.GeneralLinearGroup.upperRightHom x) • τ = x +ᵥ τ := by
@@ -61,19 +56,13 @@ lemma upperRightHom_smul (x : ℝ) (τ : ℍ) :
   rw [coe_smul_of_det_pos (by simp)]
   simp [num, denom, Matrix.GeneralLinearGroup.upperRightHom_apply, add_comm]
 
-/-- The automorphism `σ (upperRightHom x)` is the identity: `σ (upperRightHom x) z = z`. -/
-lemma σ_upperRightHom_apply (x : ℝ) (z : ℂ) :
-    σ (Matrix.GeneralLinearGroup.upperRightHom x) z = z := by
-  simp [σ]
-
-/-- The action of `T^j` on a function `g : ℍ → ℂ` via the slash action of weight `k` is the
-shift `g((j : ℝ) +ᵥ τ)`. -/
-lemma slash_T_zpow_apply_general (k : ℤ) (j : ℤ) (g : ℍ → ℂ) (τ : ℍ) :
+/-- Acting on a function `g : ℍ → ℂ` by `T ^ j` via the weight `k` slash action is the shift
+`τ ↦ g ((j : ℝ) +ᵥ τ)`. -/
+lemma slash_T_zpow_apply (k j : ℤ) (g : ℍ → ℂ) (τ : ℍ) :
     (g ∣[k] ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ)) τ = g ((j : ℝ) +ᵥ τ) := by
   change (g ∣[k] ((mapGL ℝ (ModularGroup.T : SL(2, ℤ)))^j)) τ = _
-  rw [← map_zpow, ModularGroup.mapGL_T_zpow_eq_upperRightHom,
-    slash_apply, σ_upperRightHom_apply, upperRightHom_smul, denom_upperRightHom]
-  simp
+  rw [← map_zpow, ModularGroup.mapGL_T_zpow_eq_upperRightHom, slash_apply, upperRightHom_smul]
+  simp [σ, denom]
 
 section Generators
 
