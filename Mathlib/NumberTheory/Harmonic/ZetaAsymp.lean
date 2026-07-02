@@ -511,14 +511,11 @@ lemma differentiable_riemannZeta₀ : Differentiable ℂ riemannZeta₀ := by
   rw [← differentiableOn_univ, ← differentiableOn_compl_singleton_and_continuousAt_iff
     (univ_mem : _ ∈ nhds (1 : ℂ)), continuousAt_iff_punctured_nhds]
   constructor
-  · apply DifferentiableOn.congr (f := fun s ↦ riemannZeta s - (s - 1)⁻¹)
-    · convert! differentiableOn_riemannZeta.sub (.inv ?_ ?_) using 1
-      · aesop
-      · fun_prop
-      · grind
+  · refine .congr (f := fun s ↦ riemannZeta s - (s - 1)⁻¹) ?_ (by simp +contextual [riemannZeta₀])
+    rw [← Set.compl_eq_univ_sdiff]
+    exact differentiableOn_riemannZeta.fun_sub (by fun_prop (disch := grind))
+  · convert tendsto_nhdsWithin_congr ?_ tendsto_riemannZeta_sub_one_div <;>
     simp +contextual [riemannZeta₀]
-  convert tendsto_nhdsWithin_congr ?_ tendsto_riemannZeta_sub_one_div
-  <;> simp +contextual [riemannZeta₀]
 
 @[fun_prop]
 lemma differentiable_riemannZeta₁ : Differentiable ℂ riemannZeta₁ := by
@@ -540,8 +537,7 @@ lemma deriv_riemannZeta_eq_neg_inv_sub_sq_add {s : ℂ} (hs : s ≠ 1) :
   convert EventuallyEq.deriv_eq (f := fun s ↦ (s - 1)⁻¹ + riemannZeta₀ s) ?_
   · rw [deriv_fun_add (by fun_prop) (by fun_prop), deriv_fun_inv'' (by fun_prop) (by exact this)]
     simp [field]
-  · apply eventually_of_mem (compl_singleton_mem_nhds hs)
-    simp +contextual [riemannZeta₀]
+  · filter_upwards [compl_singleton_mem_nhds hs] using by grind [riemannZeta_eq_inv_sub_add]
 
 lemma deriv_riemannZeta_eq_neg_inv_sub_sq_mul_add {s : ℂ} (hs : s ≠ 1) :
     deriv riemannZeta s =
@@ -550,8 +546,7 @@ lemma deriv_riemannZeta_eq_neg_inv_sub_sq_mul_add {s : ℂ} (hs : s ≠ 1) :
   convert EventuallyEq.deriv_eq (f := fun s ↦ (s - 1)⁻¹ * riemannZeta₁ s) ?_
   · rw [deriv_fun_mul (by fun_prop) (by fun_prop), deriv_fun_inv'' (by fun_prop) (by exact this)]
     simp [field]
-  · apply eventually_of_mem (compl_singleton_mem_nhds hs)
-    simp +contextual [riemannZeta_eq_inv_sub_mul]
+  · filter_upwards [compl_singleton_mem_nhds hs] using by grind [riemannZeta_eq_inv_sub_mul]
 
 lemma deriv_riemannZeta_add_inv_sub_sq_bounded :
     (fun s ↦ deriv riemannZeta s + ((s - 1)⁻¹) ^ 2) =O[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
@@ -562,13 +557,9 @@ lemma deriv_riemannZeta_add_inv_sub_sq_bounded :
 lemma log_riemannZeta_eq_neg_log_sub_add_ofReal {s : ℝ} (hs : s > 1) :
     (riemannZeta s).re.log = - (s - 1).log + (riemannZeta₁ s).re.log := by
   have : (riemannZeta s).re = (s - 1)⁻¹ * (riemannZeta₁ s).re := by
-    rw [riemannZeta_eq_inv_sub_mul (mod_cast (by linarith))]
-    norm_cast
-    rw [re_ofReal_mul]
-  rw [this, Real.log_mul, Real.log_inv]
-  · positivity
-  · have : 0 < (riemannZeta s).re := riemannZeta_re_pos_of_one_lt hs
-    grind
+    rw_mod_cast [riemannZeta_eq_inv_sub_mul (by aesop), re_ofReal_mul]
+  rw [this, Real.log_mul, Real.log_inv] <;>
+  grind [riemannZeta_re_pos_of_one_lt hs]
 
 lemma log_riemannZeta_add_log_sub_add_isBigO_ofReal :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =O[𝓝[>] 1] (· - 1) := by
@@ -584,7 +575,7 @@ lemma log_riemannZeta_add_log_sub_add_isBigO_ofReal :
 lemma log_riemannZeta_add_log_sub_add_isLittleO_ofReal :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =o[𝓝[>] (1 : ℝ)] (fun _ ↦ (1 : ℝ)) :=
   log_riemannZeta_add_log_sub_add_isBigO_ofReal.trans_isLittleO
-  (continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
+    (continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
     ∀ᶠ s in 𝓝[≠] 1, (deriv riemannZeta s) / (riemannZeta s)
@@ -596,21 +587,19 @@ lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
 lemma log_deriv_riemannZeta_add_inv_sub_sub_isBigO :
     (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - γ)
     =O[𝓝[≠] 1] (· - 1) := by
-  suffices (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s) - γ)
-      =O[𝓝 1] (· - 1) by
+  suffices (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s) - γ) =O[𝓝 1] (· - 1) by
     refine (this.mono nhdsWithin_le_nhds).congr' ?_ .rfl
     filter_upwards [log_deriv_riemannZeta_eq_neg_inv_sub_add] with s hs
     simp [hs]
   suffices DifferentiableAt ℂ (fun s ↦ (deriv riemannZeta₁ s) / (riemannZeta₁ s)) 1 by
     simpa using this.isBigO_sub
-  have := differentiable_riemannZeta₁.deriv
   fun_prop (disch := simp)
 
 lemma log_deriv_riemannZeta_add_inv_sub_sub_isLittleO :
     (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹ - γ)
     =o[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
   log_deriv_riemannZeta_add_inv_sub_sub_isBigO.trans_isLittleO
-  (continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
+    (continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
 
 lemma log_deriv_riemannZeta_add_inv_sub_bounded :
     (fun s ↦ (deriv riemannZeta s) / (riemannZeta s) + (s - 1)⁻¹)
@@ -630,15 +619,18 @@ lemma inv_riemannZeta_sub_sub_isBigO :
     filter_upwards [inv_riemannZeta_eq_sub_mul] with s hs
     simp [hs, field]
   suffices (fun s ↦ ((riemannZeta₁ s)⁻¹ - 1)) =O[𝓝 1] (· - 1) by
-    convert! (isBigO_refl ..).mul this; ring
+    simpa [pow_two] using (isBigO_refl ..).mul this
   simpa using ((differentiable_riemannZeta₁.differentiableAt (x := 1)).inv (by simp)).isBigO_sub
 
 lemma inv_riemannZeta_sub_sub_isLittleO :
     (fun s ↦ (riemannZeta s)⁻¹ - (s - 1)) =o[𝓝[≠] 1] (· - 1) := by
   apply inv_riemannZeta_sub_sub_isBigO.trans_isLittleO
   suffices (· - 1) =o[𝓝 1] (fun _ : ℂ ↦ (1 : ℂ)) by
-    convert! ((isBigO_refl (· - 1) ..).mul_isLittleO this).mono nhdsWithin_le_nhds using 1
-    <;> grind
+    simpa [pow_two] using (this.mul_isBigO <| isBigO_refl ..).mono nhdsWithin_le_nhds
   exact ContinuousAt.isLittleO (by fun_prop)
+
+lemma inv_riemannZeta_isBigO :
+    (fun s ↦ (riemannZeta s)⁻¹) =O[𝓝[≠] 1] (· - 1) :=
+  (isBigO_refl ..).sub_iff_left.mp inv_riemannZeta_sub_sub_isLittleO.isBigO
 
 end near_one
