@@ -22,6 +22,7 @@ We prove the maximal ergodic theorem for a measure-preserving map `f` and an int
 
 ## Main definitions
 
+* `birkhoffSumSup f g`: the maximum of `birkhoffSum f g i` for `i` ranging from `0` to `n`.
 * `birkhoffSumSup f g`: the supremum of the Birkhoff sums of `g` along orbits of `f`.
 * `birkhoffAverageSup f g`: the maximal ergodic operator, defined as the supremum of the
   Birkhoff averages of `g` along orbits of `f`.
@@ -44,6 +45,7 @@ variable {α M : Type*} {f : α → α} {g : α → M} {n : ℕ} {x : α}
 @[expose]
 public section BirkhoffMax
 
+/-- The maximum of the Birkhoff sums of `g` along orbits of `f` from `0` to `n`. -/
 def birkhoffMax [AddCommMonoid M] [SemilatticeSup M]
     (f : α → α) (g : α → M) : ℕ →o (α → M) :=
   partialSups (birkhoffSum f g)
