@@ -160,6 +160,14 @@ lemma Bundle.Trivialization.contMDiffAt_symmL [IsManifold IB n B] [ContMDiffVect
     coordChangeL_apply' e _ ⟨hb, hb'⟩, coe_linearMapAt_of_mem _ hb',
     e.symmL_apply hb, e.mk_symm hb]
 
+/-- Variant of `Bundle.Trivialization.contMDiffAt_symmL` on the whole base set: the section
+`m ↦ e.symmL 𝕜 m` of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` is `C^n` on `e.baseSet`. -/
+lemma Bundle.Trivialization.contMDiffOn_symmL [IsManifold IB n B] [ContMDiffVectorBundle n F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e] :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (e.symmL 𝕜 m)) e.baseSet :=
+  fun _ hx ↦ (e.contMDiffAt_symmL hx).contMDiffWithinAt
+
 end symmL
 
 section
