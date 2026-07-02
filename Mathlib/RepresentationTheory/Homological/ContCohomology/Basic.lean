@@ -102,31 +102,18 @@ abbrev resolution' (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
   CochainComplex.of (fun i ↦ (resolution X).X (i + 1))
     (resolution'd X) (fun n ↦ d_comp_d X (n + 1))
 
-/-- we should refactor this in mathlib -/
-abbrev _root_.CategoryTheory.Functor.mapHomologicalComplex' {ι : Type*} {W₁ : Type*} {W₂ : Type*}
-    [Category* W₁] [Category* W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂] (F : W₁ ⥤ W₂)
-    [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
-    HomologicalComplex W₁ c ⥤ HomologicalComplex W₂ c where
-  obj C :=
-    { X := fun i => F.obj (C.X i)
-      d := fun i j => F.map (C.d i j)
-      shape := fun i j w => by
-        rw [C.shape _ _ w, F.map_zero]
-      d_comp_d' := fun i j k _ _ => by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
-  map f :=
-    { f := fun i => F.map (f.f i)
-      comm' := fun i j _ => by
-        dsimp
-        rw [← F.map_comp, ← F.map_comp, f.comm] }
+set_option allowUnsafeReducibility true
+attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
 
 /-- The homogeneous cochains of a topological representation. -/
 abbrev homogeneousCochains (X : TopRep k G) :
     CochainComplex (TopModuleCat k) ℕ :=
-  ((invariantsFunctor k G).mapHomologicalComplex' _).obj (resolution' X)
+  ((invariantsFunctor k G).mapHomologicalComplex _).obj (resolution' X)
 
-lemma homogeneousCochains.d₀₁ (X : TopRep k G) :
-    ((homogeneousCochains X).d 0 1).hom =
-    (d X 1).hom.invariants := rfl
+-- set_option trace.profiler.useHeartbeats true in
+-- set_option trace.profiler true in
+-- lemma homogeneousCochains.d₀₁ (X : TopRep k G) :
+--     ((homogeneousCochains X).d 0 1).hom = (d X 1).hom.invariants := sorry
 
 lemma homogeneousCochains.d₀₁_apply (X : TopRep k G) (σ : (homogeneousCochains X).X 0) :
     ((homogeneousCochains X).d 0 1).hom σ = (d X 1).hom σ := rfl

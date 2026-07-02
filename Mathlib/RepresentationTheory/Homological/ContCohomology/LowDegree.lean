@@ -23,6 +23,9 @@ open CategoryTheory Functor TopRep ContRepresentation
 variable {k G : Type*} [CommRing k] [Group G] [TopologicalSpace k] [IsTopologicalRing k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
+set_option allowUnsafeReducibility true
+attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
+
 lemma cocycles₀IsoAux (X : TopRep k G) (σ : (homogeneousCochains X).X 0)
     (hσ : σ ∈ ((homogeneousCochains X).d 0 1).hom.ker) : σ.1 1 ∈ X.ρ.invariants := by
   simp only [Nat.reduceAdd, LinearMap.mem_ker, ContinuousLinearMap.coe_coe,
@@ -57,10 +60,11 @@ def cocycles₀Iso (X : TopRep k G) :
   invFun := fun ⟨x, hx⟩ ↦ ⟨⟨ContinuousMap.const G x, hah X x hx⟩, cocycles₀IsoAux' X x (hah X x hx)⟩
   left_inv := fun ⟨⟨(x : C(G, X)), hx'⟩, hx⟩ ↦ by
     ext g
-    simp only [Nat.reduceAdd, homogeneousCochains.d₀₁ X, d_succ, d_zero, ConcreteCategory.hom_ofHom,
-      hom_sub, LinearMap.mem_ker, ContinuousLinearMap.coe_coe, Subtype.ext_iff,
-      ContIntertwiningMap.mk_invariants_apply, ContIntertwiningMap.sub_apply, coind₁ι_toFun,
-      coind₁Map_toFun, ZeroMemClass.coe_zero, sub_eq_zero, ContinuousMap.const_apply] at hx ⊢
+    rw [LinearMap.mem_ker, Subtype.ext_iff, ContinuousLinearMap.coe_coe,
+      homogeneousCochains.d₀₁_apply] at hx
+    simp only [Nat.reduceAdd, d_succ, d_zero, ConcreteCategory.hom_ofHom, hom_sub,
+      ContIntertwiningMap.sub_apply, coind₁ι_toFun, coind₁Map_toFun, ZeroMemClass.coe_zero,
+      sub_eq_zero, ContinuousMap.const_apply] at hx ⊢
     simpa using DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hx g) 1
   right_inv _ := rfl
   continuous_toFun := continuous_induced_rng.2 <| (continuous_eval_const 1).comp <|
