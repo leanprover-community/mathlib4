@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
-public import Mathlib.MeasureTheory.Function.LpSpace.Complete
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-!

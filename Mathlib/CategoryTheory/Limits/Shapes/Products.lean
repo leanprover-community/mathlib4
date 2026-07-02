@@ -826,9 +826,20 @@ instance (priority := 100) hasProduct_unique [Nonempty β] [Subsingleton β] (f 
   let ⟨_⟩ := nonempty_unique β; HasLimit.mk (limitConeOfUnique f)
 
 /-- A product over an index type with exactly one term is just the object over that term. -/
-@[simps!]
 def productUniqueIso [Unique β] (f : β → C) : ∏ᶜ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
+
+@[simp]
+lemma productUniqueIso_hom [Unique β] (f : β → C) : (productUniqueIso f).hom = Pi.π f default :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma productUniqueIso_inv_π [Unique β] (f : β → C) (b : β) :
+    (productUniqueIso f).inv ≫ Pi.π f b = eqToHom (congrArg _ <| Subsingleton.allEq _ _) := by
+  obtain rfl := Subsingleton.allEq b default
+  simp [Iso.inv_comp_eq]
+
+@[deprecated (since := "2026-06-30")] alias productUniqueIso_inv := productUniqueIso_inv_π
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Any isomorphism is the projection from a single object product. -/
@@ -863,9 +874,22 @@ instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (
   let ⟨_⟩ := nonempty_unique β; HasColimit.mk (colimitCoconeOfUnique f)
 
 /-- A coproduct over an index type with exactly one term is just the object over that term. -/
-@[simps!]
 def coproductUniqueIso [Unique β] (f : β → C) : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit
+
+@[simp]
+lemma coproductUniqueIso_inv [Unique β] (f : β → C) :
+    (coproductUniqueIso f).inv = Sigma.ι f default :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma ι_coproductUniqueIso_hom [Unique β] (f : β → C) (b : β) :
+    Sigma.ι f b ≫ (coproductUniqueIso f).hom = eqToHom (congrArg _ <| Subsingleton.allEq _ _) := by
+  obtain rfl := Subsingleton.allEq b default
+  symm
+  simp [← Iso.comp_inv_eq]
+
+@[deprecated (since := "2026-06-30")] alias coproductUniqueIso_hom := ι_coproductUniqueIso_hom
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Any isomorphism is the projection from a single object product. -/
