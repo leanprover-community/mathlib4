@@ -253,7 +253,7 @@ theorem smoothingFun_nonneg (hμ1 : μ 1 ≤ 1) (x : R) : 0 ≤ smoothingFun μ 
 /-- If `μ 1 ≤ 1`, then `smoothingFun μ 1 ≤ 1`. -/
 theorem smoothingFun_one_le (hμ1 : μ 1 ≤ 1) : smoothingFun μ 1 ≤ 1 := by
   apply le_of_tendsto (tendsto_smoothingFun_of_map_one_le_one μ hμ1 (1 : R))
-  simp only [eventually_atTop, ge_iff_le]
+  simp only [eventually_atTop]
   use 1
   rintro n hn
   simp only [smoothingSeminormSeq]
@@ -303,7 +303,7 @@ private theorem μ_bddBelow (s : ℕ → ℕ) {x : R} (ψ : ℕ → ℕ) :
     BddBelow {a : ℝ |
       ∀ᶠ n : ℝ in map (fun n : ℕ => μ x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop, n ≤ a} := by
   use 0
-  simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq,
+  simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_setOf_eq,
     forall_exists_index]
   intro r m hm
   exact le_trans (rpow_nonneg (apply_nonneg μ _) _) (hm m (le_refl _))
@@ -339,11 +339,11 @@ private theorem μ_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {
       n ≤ a}.Nonempty := by
   by_cases hμx : μ x < 1
   · use 1
-    simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq]
+    simp only [eventually_map, eventually_atTop, Set.mem_setOf_eq]
     exact ⟨0, fun _ _ ↦ rpow_le_one (apply_nonneg _ _) (le_of_lt hμx)
       (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))⟩
   · use μ x
-    simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq]
+    simp only [eventually_map, eventually_atTop, Set.mem_setOf_eq]
     use 0
     intro b _
     nth_rw 2 [← rpow_one (μ x)]
@@ -357,7 +357,7 @@ private theorem μ_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤
   simp only [limsup, limsSup]
   rw [csInf_le_iff (μ_bddBelow μ s ψ) (μ_nonempty μ hs_le ψ)]
   · intro c hc_bd
-    simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq,
+    simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_setOf_eq,
       forall_exists_index] at hc_bd
     by_cases hμx : μ x < 1
     · apply hc_bd (1 : ℝ) 0
@@ -389,7 +389,7 @@ private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ 
           limsup (fun n : ℕ => μ x ^ ((s (ψ n) : ℝ) * (1 / (ψ n : ℝ)))) atTop := by
           apply csInf_le_csInf _ (μ_nonempty μ hs_le ψ)
           · intro b hb
-            simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq] at hb ⊢
+            simp only [eventually_map, eventually_atTop, Set.mem_setOf_eq] at hb ⊢
             obtain ⟨m, hm⟩ := hb
             use m
             intro k hkm
@@ -398,7 +398,7 @@ private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ 
             gcongr
             exact map_pow_le_pow' hμ1 x _
           · use 0
-            simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le,
+            simp only [mem_lowerBounds, eventually_map, eventually_atTop,
               Set.mem_setOf_eq, forall_exists_index]
             exact fun _ m hm ↦ le_trans (by positivity) (hm m (le_refl _))
       _ ≤ 1 := (μ_limsup_le_one μ hs_le hψ_lim)
@@ -447,7 +447,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
   set b := 1 - a with hb
   have hb_lim : Tendsto ((fun n : ℕ => (nu n : ℝ) / ↑n) ∘ ψ) atTop (𝓝 b) := by
     apply Tendsto.congr' _ (Tendsto.const_sub 1 hψ_lim)
-    simp only [EventuallyEq, Function.comp_apply, eventually_atTop, ge_iff_le]
+    simp only [EventuallyEq, Function.comp_apply, eventually_atTop]
     use 1
     intro m hm
     have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr
@@ -522,7 +522,7 @@ def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSemi
   map_zero' := by
     apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingFun_of_map_one_le_one μ hμ1 0)
       tendsto_const_nhds
-    simp only [EventuallyEq, eventually_atTop, ge_iff_le]
+    simp only [EventuallyEq, eventually_atTop]
     use 1
     intro n hn
     simp only [smoothingSeminormSeq]
@@ -574,7 +574,7 @@ theorem smoothingFun_of_powMul (hμ1 : μ 1 ≤ 1) {x : R}
     (hx : ∀ (n : ℕ) (_hn : 1 ≤ n), μ (x ^ n) = μ x ^ n) : smoothingFun μ x = μ x := by
   apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingFun_of_map_one_le_one μ hμ1 x)
     tendsto_const_nhds
-  simp only [EventuallyEq, eventually_atTop, ge_iff_le]
+  simp only [EventuallyEq, eventually_atTop]
   use 1
   intro n hn
   simp only [smoothingSeminormSeq]
@@ -586,7 +586,7 @@ theorem smoothingFun_apply_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) {x : R}
     (hx : ∀ y : R, μ (x * y) = μ x * μ y) : smoothingFun μ x = μ x := by
   apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingFun_of_map_one_le_one μ hμ1 x)
     tendsto_const_nhds
-  simp only [EventuallyEq, eventually_atTop, ge_iff_le]
+  simp only [EventuallyEq, eventually_atTop]
   use 1
   intro n hn
   simp only [smoothingSeminormSeq]
@@ -617,7 +617,7 @@ theorem smoothingFun_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) {x : R} (hx : ∀ y :
     exact Tendsto.const_mul _ (tendsto_smoothingFun_of_map_one_le_one μ hμ1 y)
   apply tendsto_nhds_unique_of_eventuallyEq (tendsto_smoothingFun_of_map_one_le_one μ hμ1 (x * y))
     hlim
-  simp only [EventuallyEq, eventually_atTop, ge_iff_le]
+  simp only [EventuallyEq, eventually_atTop]
   use 1
   intro n hn1
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_lt_of_le zero_lt_one hn1))

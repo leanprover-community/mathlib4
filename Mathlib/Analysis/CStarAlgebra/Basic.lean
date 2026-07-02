@@ -90,8 +90,7 @@ class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 
 instance : CStarRing ℝ where
-  norm_mul_self_le x := by
-    simp only [Real.norm_eq_abs, abs_mul_abs_self, star, id, norm_mul, le_refl]
+  norm_mul_self_le x := by simp
 
 namespace CStarRing
 
@@ -288,9 +287,17 @@ theorem starₗᵢ_apply {x : E} : starₗᵢ 𝕜 x = star x :=
   rfl
 
 @[simp]
+theorem symm_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).symm = starₗᵢ 𝕜 :=
+  rfl
+
+@[simp]
 theorem starₗᵢ_toContinuousLinearEquiv :
     (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = (starL 𝕜 : E ≃L⋆[𝕜] E) :=
   ContinuousLinearEquiv.ext rfl
+
+@[simp]
+theorem toLinearEquiv_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toLinearEquiv = starLinearEquiv 𝕜 :=
+  rfl
 
 end starₗᵢ
 
