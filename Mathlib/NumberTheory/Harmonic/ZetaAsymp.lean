@@ -536,8 +536,7 @@ lemma deriv_riemannZeta_eq_neg_inv_sub_sq_add {s : ℂ} (hs : s ≠ 1) :
   convert EventuallyEq.deriv_eq (f := fun s ↦ (s - 1)⁻¹ + riemannZeta₀ s) ?_
   · rw [deriv_fun_add (by fun_prop) (by fun_prop), deriv_fun_inv'' (by fun_prop) (by exact this)]
     simp [field]
-  · apply eventually_of_mem (compl_singleton_mem_nhds hs)
-    simp +contextual [riemannZeta₀]
+  · filter_upwards [compl_singleton_mem_nhds hs] using by grind [riemannZeta_eq_inv_sub_mul]
 
 lemma deriv_riemannZeta_eq_neg_inv_sub_sq_mul_add {s : ℂ} (hs : s ≠ 1) :
     deriv riemannZeta s =
