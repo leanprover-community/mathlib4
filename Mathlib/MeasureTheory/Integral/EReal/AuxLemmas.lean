@@ -21,41 +21,6 @@ noncomputable
 instance : ENorm EReal where
   enorm x := (max x 0).toENNReal + (max (-x) 0).toENNReal
 
-section limsup_liminf
-
-open Filter
-
-lemma EReal.coe_ennreal_limsup {α : Type} (F : Filter α) [F.NeBot] (g : α → ℝ≥0∞) :
-    (limsup g F).toEReal = limsup (fun x => (g x).toEReal) F := by
-  refine Monotone.map_limsup_of_continuousAt ?_ _ ?_
-  · intro x y hxy
-    simp [hxy]
-  · exact continuous_coe_ennreal_ereal.continuousAt
-
-lemma EReal.limsup_coe_ennreal {α : Type} (F : Filter α) [F.NeBot] (g : α → EReal) :
-    (limsup g F).toENNReal = limsup (fun x => (g x).toENNReal) F := by
-  refine Monotone.map_limsup_of_continuousAt ?_ _ ?_
-  · intro x y hxy
-    exact EReal.toENNReal_le_toENNReal hxy
-  · exact EReal.continuous_toENNReal.continuousAt
-
-lemma EReal.coe_ennreal_liminf {α : Type} (F : Filter α) [F.NeBot] (g : α → ℝ≥0∞) :
-    (liminf g F).toEReal = liminf (fun x => (g x).toEReal) F := by
-  refine Monotone.map_liminf_of_continuousAt ?_ _ ?_
-  · intro x y hxy
-    simp [hxy]
-  · exact continuous_coe_ennreal_ereal.continuousAt
-
-lemma EReal.liminf_coe_ennreal {α : Type} (F : Filter α) [F.NeBot] (g : α → EReal) :
-    (liminf g F).toENNReal = liminf (fun x => (g x).toENNReal) F := by
-  refine Monotone.map_liminf_of_continuousAt ?_ _ ?_
-  · intro x y hxy
-    exact EReal.toENNReal_le_toENNReal hxy
-  · exact EReal.continuous_toENNReal.continuousAt
-
-end limsup_liminf
-
-
 section PosNeg
 
 open MeasureTheory
