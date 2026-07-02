@@ -69,19 +69,6 @@ lemma evalE₄E₆_monomial (a b : ℕ) :
         DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b := by
   simp [map_mul, map_pow]
 
-private lemma evalE₄E₆_X_sq :
-    evalE₄E₆ (MvPolynomial.X 0 ^ 2) = DirectSum.of (ModularForm 𝒮ℒ) 8 (E₄.mul E₄) := by
-  rw [map_pow, evalE₄E₆_X0, pow_two, DirectSum.of_mul_of]
-  exact DirectSum.of_eq_of_gradedMonoid_eq
-    (ModularForm.gradedMonoid_eq_of_cast (show ((4 : ℤ) + 4 : ℤ) = 8 by norm_num).symm rfl)
-
-private lemma evalE₄E₆_X0_X1 :
-    evalE₄E₆ (MvPolynomial.X 0 * MvPolynomial.X 1) =
-      DirectSum.of (ModularForm 𝒮ℒ) 10 (E₄.mul E₆) := by
-  rw [map_mul, evalE₄E₆_X0, evalE₄E₆_X1, DirectSum.of_mul_of]
-  exact DirectSum.of_eq_of_gradedMonoid_eq
-    (ModularForm.gradedMonoid_eq_of_cast (show ((4 : ℤ) + 6 : ℤ) = 10 by norm_num).symm rfl)
-
 private lemma exists_monomial_weight {k : ℕ} (hk : 4 ≤ k) (hkeven : Even k) :
     ∃ a b : ℕ, 4 * a + 6 * b = k := by
   obtain ⟨m, rfl⟩ := hkeven
@@ -219,14 +206,20 @@ private lemma surj_at_small_weight {n : ℕ} (hn12 : n < 12) (hk_even : Even (n 
   · exact surj_of_rank_one ModularForm.levelOne_weight_six_rank_one
       (E_ne_zero (k := 6) (by norm_num) ⟨3, rfl⟩)
       (MvPolynomial.X 1) evalE₄E₆_X1 f
-  · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨4, rfl⟩ (by norm_num))
+  · refine surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨4, rfl⟩ (by norm_num))
       (ModularForm.mul_ne_zero one_pos one_mem_strictPeriods_SL (f := E₄) (g := E₄)
         (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨2, rfl⟩))
-      (MvPolynomial.X 0 ^ 2) evalE₄E₆_X_sq f
-  · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨5, rfl⟩ (by norm_num))
+      (MvPolynomial.X 0 ^ 2) ?_ f
+    rw [map_pow, evalE₄E₆_X0, pow_two, DirectSum.of_mul_of]
+    exact DirectSum.of_eq_of_gradedMonoid_eq
+      (ModularForm.gradedMonoid_eq_of_cast (by norm_num : (4 : ℤ) + 4 = 8) rfl)
+  · refine surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨5, rfl⟩ (by norm_num))
       (ModularForm.mul_ne_zero one_pos one_mem_strictPeriods_SL (f := E₄) (g := E₆)
         (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨3, rfl⟩))
-      (MvPolynomial.X 0 * MvPolynomial.X 1) evalE₄E₆_X0_X1 f
+      (MvPolynomial.X 0 * MvPolynomial.X 1) ?_ f
+    rw [map_mul, evalE₄E₆_X0, evalE₄E₆_X1, DirectSum.of_mul_of]
+    exact DirectSum.of_eq_of_gradedMonoid_eq
+      (ModularForm.gradedMonoid_eq_of_cast (by norm_num : (4 : ℤ) + 6 = 10) rfl)
 
 private lemma surj_of_weight : ∀ (k : ℤ) (f : ModularForm 𝒮ℒ k),
     DirectSum.of (ModularForm 𝒮ℒ) k f ∈ Set.range evalE₄E₆ := by
