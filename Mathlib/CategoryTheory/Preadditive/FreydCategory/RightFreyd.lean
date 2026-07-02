@@ -173,7 +173,7 @@ def condition : RightHomotopy (f ≫ π f) 0 where
 set_option backward.isDefEq.respectTransparency false in
 instance isEpi_π : Epi ((quotient V).map (π f)) :=
   have : IsIso ((π f).right) := by simp only [π, homMk_right]; infer_instance
-  isEpi_of_right_iso _
+  epi_of_isIso_right _
 
 variable {w : Arrow V} (g : v ⟶ w) (h : RightHomotopy (f ≫ g) 0)
 
