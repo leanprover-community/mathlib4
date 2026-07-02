@@ -146,7 +146,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
             exact hw.symm
   counitIso :=
     NatIso.ofComponents
-      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
+      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) rfl)
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
@@ -174,5 +174,5 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
     fun f =>
     Pointed.Hom.ext <|
       funext fun a => Option.recOn a rfl fun a => by
-        convert Part.some_toOption _
+        convert! Part.some_toOption _
         simpa using! (Part.get_eq_iff_mem (by trivial)).mp rfl

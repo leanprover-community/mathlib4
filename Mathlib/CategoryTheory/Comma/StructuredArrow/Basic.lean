@@ -5,6 +5,7 @@ Authors: Adam Topaz, Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Functor.EpiMono
@@ -1270,5 +1271,44 @@ def CostructuredArrow.prodEquivalence :
 end
 
 end Prod
+
+namespace Comma
+
+variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
+  {T : Type u₃} [Category.{v₃} T] (L : A ⥤ T) (R : B ⥤ T)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The functor from the costructured arrow category on `snd L R` over `b : B` to the
+costructured arrow category on `L` over `R.obj b`. It is left adjoint to
+`costructuredArrowSndInclusion`, see `costructuredArrowSndAdjunction`. -/
+@[simps]
+def costructuredArrowSndProj (b : B) :
+    CostructuredArrow (snd L R) b ⥤ CostructuredArrow L (R.obj b) where
+  obj X := CostructuredArrow.mk (X.left.hom ≫ R.map X.hom)
+  map f := CostructuredArrow.homMk f.left.left <| by
+    dsimp
+    rw [reassoc_of% f.left.w, ← R.map_comp, dsimp% CostructuredArrow.w f]
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The functor from the costructured arrow category on `L` over `R.obj b` to the costructured
+arrow category on `snd L R` over `b : B`. -/
+@[simps]
+def costructuredArrowSndInclusion (b : B) :
+    CostructuredArrow L (R.obj b) ⥤ CostructuredArrow (snd L R) b where
+  obj X := ⟨⟨X.left, b, X.hom⟩, ⟨⟨⟩⟩, 𝟙 b⟩
+  map f := CostructuredArrow.homMk ⟨f.left, 𝟙 b, by simp⟩ (by simp)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The functor `costructuredArrowSndProj` is left adjoint to `costructuredArrowSndInclusion`. -/
+@[simps]
+def costructuredArrowSndAdjunction (b : B) :
+    costructuredArrowSndProj L R b ⊣ costructuredArrowSndInclusion L R b where
+  unit.app X := CostructuredArrow.homMk ⟨𝟙 X.left.left, X.hom, by simp⟩ (by simp)
+  unit.naturality _ _ f := by
+    have := CostructuredArrow.w f
+    cat_disch
+  counit.app X := CostructuredArrow.homMk (𝟙 X.left) (by simp)
+
+end Comma
 
 end CategoryTheory

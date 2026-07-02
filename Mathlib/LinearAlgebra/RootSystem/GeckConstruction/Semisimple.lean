@@ -161,6 +161,8 @@ omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
   let σ : ι ≃ ι := Function.Involutive.toPerm _ neg_involutive
   exact σ.sum_comp (P.pairingIn ℤ · i)
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 open LinearMap LieModule in
 /-- This is the main result of lemma 4.1 from [Geck](Geck2017). -/
 lemma trace_toEnd_eq_zero (x : lieAlgebra b) :
@@ -350,9 +352,7 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
     rintro ⟨⟨x, -⟩, hx⟩
     exact ⟨1, funext fun j ↦ by simpa using apply_sum_inl_eq_zero_of_mem_span_h i j hx⟩
 
--- TODO Turn this `Fact` into a lemma: it is always true and may be proved via Perron-Frobenius
--- See https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Eigenvalues.20of.20Cartan.20matrices/near/516844801
-variable [Fact ((4 - b.cartanMatrix).det ≠ 0)] [P.IsReduced] [P.IsIrreducible]
+variable [P.IsReduced] [P.IsIrreducible]
 
 /-- Lemma 4.2 from [Geck](Geck2017). -/
 instance instIsIrreducible [Nonempty ι] :
@@ -367,7 +367,8 @@ instance instIsIrreducible [Nonempty ι] :
   obtain ⟨c, hc⟩ : ∃ c : b.support → K, ∑ i, c i • u i = x :=
     (mem_span_range_iff_exists_fun K).mp <| hU hx
   suffices c = 0 by simp [this, ← hc]
-  have hCM : (4 - b.cartanMatrix).det ≠ 0 := Fact.out
+  have hCM : (4 - b.cartanMatrix).det ≠ 0 :=
+    RootPairing.Base.det_four_sub_cartanMatrix_ne_zero b
   contrapose! hCM
   suffices ((Int.castRingHom K).mapMatrix (4 - b.cartanMatrix)).det = 0 by
     simpa only [← RingHom.map_det, eq_intCast, Int.cast_eq_zero] using this
