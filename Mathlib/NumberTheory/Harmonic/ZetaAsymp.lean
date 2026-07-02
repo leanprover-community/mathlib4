@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
+Authors: David Loeffler, Terence Tao
 -/
 module
 
@@ -21,6 +21,8 @@ The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s →
 * `deriv_riemannZeta_zero`: `ζ'(0) = -log(2π) / 2`, which derives from the above.
 * `riemannZeta_one_ne_zero`: with our definition of `ζ 1` (which is characterised as the limit of
   `ζ s - 1 / (s - 1) / Gammaℝ s` as `s → 1`), we have `ζ 1 ≠ 0`.
+* Representation of `riemannZeta s` as `(s-1)⁻¹ + riemannZeta₀ s` or `(s-1)⁻¹ * riemannZeta₁ s` for certain entire functions `riemannZeta₀` and `riemannZeta₁`.
+* Asymptotics for `deriv riemannZeta s`, `log (riemannZeta s)`, `(deriv riemannZeta s) / (riemannZeta s)` and `(riemannZeta s)⁻¹` as `s → 1`.
 
 ### Outline of arguments
 
@@ -509,7 +511,7 @@ lemma riemannZeta_eq_inv_sub_mul {s : ℂ} (hs : s ≠ 1) :
 @[fun_prop]
 lemma differentiable_riemannZeta₀ : Differentiable ℂ riemannZeta₀ := by
   rw [← differentiableOn_univ, ← differentiableOn_compl_singleton_and_continuousAt_iff
-    (univ_mem : _ ∈ nhds (1 : ℂ)), continuousAt_iff_punctured_nhds, ← compl_eq_univ_sdiff]
+    (univ_mem : _ ∈ 𝓝 (1 : ℂ)), continuousAt_iff_punctured_nhds, ← compl_eq_univ_sdiff]
   constructor
   · refine .congr (f := fun s ↦ riemannZeta s - (s - 1)⁻¹) ?_ (by simp +contextual [riemannZeta₀])
     exact differentiableOn_riemannZeta.fun_sub (by fun_prop (disch := grind))
@@ -612,8 +614,8 @@ lemma inv_riemannZeta_eq_sub_mul :
   simp [riemannZeta_eq_inv_sub_mul h1, field]
 
 lemma inv_riemannZeta_sub_sub_isBigO :
-    (fun s ↦ (riemannZeta s)⁻¹ - (s - 1)) =O[𝓝[≠] 1] (fun s ↦ (s - 1)^2) := by
-  suffices (fun s ↦ (s - 1) * ((riemannZeta₁ s)⁻¹ - 1)) =O[𝓝 1] (fun s ↦ (s - 1)^2) by
+    (fun s ↦ (riemannZeta s)⁻¹ - (s - 1)) =O[𝓝[≠] 1] (fun s ↦ (s - 1) ^ 2) := by
+  suffices (fun s ↦ (s - 1) * ((riemannZeta₁ s)⁻¹ - 1)) =O[𝓝 1] (fun s ↦ (s - 1) ^ 2) by
     refine (this.mono nhdsWithin_le_nhds).congr' ?_ .rfl
     filter_upwards [inv_riemannZeta_eq_sub_mul] with s hs
     simp [hs, field]
