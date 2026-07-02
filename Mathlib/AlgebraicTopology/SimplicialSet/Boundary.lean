@@ -117,7 +117,7 @@ lemma subcomplex_hasDimensionLT_of_neq_top (h : A ≠ ⊤) :
   degenerate_eq_top i hi := by
     ext ⟨a, ha⟩
     rw [A.mem_degenerate_iff]
-    simp only [Subfunctor.toFunctor_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+    simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
     obtain hi | rfl := hi.lt_or_eq
     · simp [Δ[n].degenerate_eq_univ_of_hasDimensionLT (n + 1) i]
     · rw [mem_degenerate_iff_notMem_nonDegenerate, nonDegenerate_top_dim]
@@ -138,6 +138,14 @@ lemma le_boundary_iff :
     · simp [boundary_obj_eq_univ m n h₃]
     · simp [← A.mem_nonDegenerate_iff ⟨x, h₂⟩,
         nonDegenerate_eq_empty_of_hasDimensionLT _ _ _ h₃] at h₁
+
+lemma eq_boundary_iff :
+    A = boundary n ↔ boundary n ≤ A ∧ A ≠ ⊤ := by
+  constructor
+  · rintro rfl
+    exact ⟨by rfl, (boundary_lt_top n).ne⟩
+  · rintro ⟨h₁, h₂⟩
+    exact le_antisymm (by rwa [le_boundary_iff]) h₁
 
 end stdSimplex
 

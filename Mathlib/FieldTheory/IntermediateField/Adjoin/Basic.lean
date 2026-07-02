@@ -287,14 +287,14 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 @[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
   rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
 
-@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+@[simp]
 theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
   congr(Cardinal.toNat $(rank_bot'))
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
 
-@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+@[simp]
 protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
   rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
@@ -387,7 +387,7 @@ theorem minpoly_gen (α : E) :
 
 theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α) = 0 := by
   ext
-  convert minpoly.aeval F α
+  convert! minpoly.aeval F α
   conv in aeval α => rw [← AdjoinSimple.algebraMap_gen F α]
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 
@@ -504,8 +504,9 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     simp_all
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
-  convert natDegree_le_of_dvd dvd_g
-    ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
+  convert!
+    natDegree_le_of_dvd dvd_g
+      ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
 
 instance : Module.Finite F (⊥ : IntermediateField F E) := Subalgebra.finite_bot
@@ -783,3 +784,8 @@ theorem AdjoinPair.algebraMap_gen₂ : (algebraMap (↥K⟮x, y⟯) L) (gen₂ K
 end AdjoinPair
 
 end IntermediateField
+
+instance (R : Type*) [CommSemiring R] (K : Type*) [Field K] [Algebra R K]
+    (S : Type*) [Semiring S] [Algebra R S] [Module.Finite R S] :
+    Finite (S →ₐ[R] K) :=
+  .of_equiv _ (Algebra.TensorProduct.liftEquivRight _ K _ _).symm
