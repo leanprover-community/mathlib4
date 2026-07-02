@@ -21,8 +21,10 @@ The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s →
 * `deriv_riemannZeta_zero`: `ζ'(0) = -log(2π) / 2`, which derives from the above.
 * `riemannZeta_one_ne_zero`: with our definition of `ζ 1` (which is characterised as the limit of
   `ζ s - 1 / (s - 1) / Gammaℝ s` as `s → 1`), we have `ζ 1 ≠ 0`.
-* Representation of `riemannZeta s` as `(s-1)⁻¹ + riemannZeta₀ s` or `(s-1)⁻¹ * riemannZeta₁ s` for certain entire functions `riemannZeta₀` and `riemannZeta₁`.
-* Asymptotics for `deriv riemannZeta s`, `log (riemannZeta s)`, `(deriv riemannZeta s) / (riemannZeta s)` and `(riemannZeta s)⁻¹` as `s → 1`.
+* Representation of `riemannZeta s` as `(s-1)⁻¹ + riemannZeta₀ s` or `(s-1)⁻¹ * riemannZeta₁ s`
+  for certain entire functions `riemannZeta₀` and `riemannZeta₁`.
+* Asymptotics for `deriv riemannZeta s`, `log (riemannZeta s)`,
+  `(deriv riemannZeta s) / (riemannZeta s)` and `(riemannZeta s)⁻¹` as `s → 1`.
 
 ### Outline of arguments
 
