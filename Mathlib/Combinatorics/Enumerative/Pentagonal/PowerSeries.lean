@@ -142,8 +142,8 @@ end WithPiTopology
 of the product `∏ n, 1 - X ^ (n + 1)` are eventually constants as `pentagonalCoeff`. -/
 theorem coeff_prod_one_sub_X_pow_eventually_eq (n : ℕ) :
     ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff n = pentagonalCoeff R n := by
-  let _ : TopologicalSpace R := ⊥
-  have _ : DiscreteTopology R := ⟨rfl⟩
+  let : TopologicalSpace R := ⊥
+  have : DiscreteTopology R := ⟨rfl⟩
   have h := (multipliable_one_sub_X_pow R).hasProd
   rw [tprod_one_sub_X_pow' R, HasProd, tendsto_iff_coeff_tendsto] at h
   simpa using h n
