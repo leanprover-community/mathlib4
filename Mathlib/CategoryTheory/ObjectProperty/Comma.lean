@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
@@ -23,6 +22,11 @@ variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
   (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D)
   (P₁ : ObjectProperty C₁) (P₂ : ObjectProperty C₂)
 
+/-- Given functors `F₁ : C₁ ⥤ D` and `F₂ : C₂ ⥤ D`, and properties
+of objects `P₁ : ObjectProperty C₁` and `P₂ : ObjectProperty C₂`,
+this is the property of objects in `Comma F₁ F₂` satisfying
+by the objects corresponding to morphisms `F₁.obj X₁ ⟶ F₂.obj X₂`
+where `P₁ X₁` and `P₂ X₂` hold. -/
 def comma : ObjectProperty (Comma F₁ F₂) :=
   P₁.inverseImage (Comma.fst _ _) ⊓ P₂.inverseImage (Comma.snd _ _)
 
@@ -51,8 +55,7 @@ instance [ObjectProperty.Small.{w} P₁] [ObjectProperty.Small.{w} P₂] [Locall
     (fun f ↦ ⟨⟨⟨_, f.prop.1⟩, ⟨_, f.prop.2⟩, f.val.hom⟩, rfl⟩)
 
 instance [ObjectProperty.EssentiallySmall.{w} P₁]
-    [ObjectProperty.EssentiallySmall.{w} P₂]
-    [LocallySmall.{w} D] :
+    [ObjectProperty.EssentiallySmall.{w} P₂] [LocallySmall.{w} D] :
     ObjectProperty.EssentiallySmall.{w} (comma F₁ F₂ P₁ P₂) := by
   obtain ⟨Q₁, _, h₁, h₁'⟩ := EssentiallySmall.exists_small_le.{w} P₁
   obtain ⟨Q₂, _, h₂, h₂'⟩ := EssentiallySmall.exists_small_le.{w} P₂
