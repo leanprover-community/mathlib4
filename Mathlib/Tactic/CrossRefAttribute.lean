@@ -165,10 +165,10 @@ def wikidataIdParser : Parser :=
 
 /-! # LMFDB parser -/
 
-/-- `lmfdbId` is the node kind of LMFDB identifiers: the letter `Q` followed by digits. -/
+/-- `lmfdbId` is the node kind of LMFDB identifiers: lower words with `.` in between. -/
 abbrev lmfdbIdKind : SyntaxNodeKind := `lmfdbId
 
-/-- The main parser for LMFDB identifiers: it accepts `Q` followed by one or more digits. -/
+/-- The main parser for LMFDB identifiers: it accepts lower case words with `.` in between. -/
 def lmfdbIdFn : ParserFn := fun c s =>
   let i := s.pos
   let s := takeWhileFn (fun c => c.isAlphanum || c == '.') c s
