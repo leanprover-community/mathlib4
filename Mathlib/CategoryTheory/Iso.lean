@@ -117,7 +117,6 @@ def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing refl_inv] refl_hom
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
@@ -133,7 +132,6 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing trans_inv] trans_hom
 
 @[simps]
@@ -393,6 +391,9 @@ theorem isIso_of_hom_comp_eq_id (g : X ⟶ Y) [IsIso g] {f : Y ⟶ X} (h : g ≫
   rw [(hom_comp_eq_id _).mp h]
   infer_instance
 
+lemma isIso_iff_of_thin [Quiver.IsThin C] {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Nonempty (Y ⟶ X) :=
+  ⟨fun _ ↦ ⟨inv f⟩, fun g ↦ ⟨g.some, Subsingleton.elim _ _, Subsingleton.elim _ _⟩⟩
+
 namespace Iso
 
 @[aesop apply safe (rule_sets := [CategoryTheory]), to_dual none]
@@ -473,7 +474,6 @@ def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing mapIso_inv] mapIso_hom
 
 @[simp]
