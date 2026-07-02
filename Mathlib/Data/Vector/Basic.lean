@@ -522,7 +522,7 @@ def casesOn₃ {motive : ∀ {n}, Vector α n → Vector β n → Vector γ n �
 
 /-- Cast a vector to an array. -/
 def toArray : Vector α n → Array α
-  | ⟨xs, _⟩ => cast (by rfl) xs.toArray
+  | ⟨xs, _⟩ => xs.toArray
 
 section InsertIdx
 
@@ -743,7 +743,6 @@ variable (ys : Vector β n)
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
-  clear * - v₁ v₂
   induction v₁, v₂ using inductionOn₂ with
   | nil =>
     exact Fin.elim0 i

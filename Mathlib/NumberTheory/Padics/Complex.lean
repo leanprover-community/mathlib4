@@ -92,7 +92,7 @@ instance valued : Valued (PadicAlgCl p) ℝ≥0 := NormedField.toValued
 theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
 
 /-- The coercion of the valuation of `x : PadicAlgCl p` to `ℝ` agrees with its norm. -/
-@[simp] theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x‖ := rfl
+theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x‖ := rfl
 
 /-- The valuation of `p : PadicAlgCl p` is `1/p`. -/
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by
@@ -184,7 +184,7 @@ theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embed
 instance normedField : NormedField ℂ_[p] := inferInstance
 
 -- Ensure that the norm instance on `ℂ_[p]` is extended from `PadicAlgCl p`.
-example : (‖·‖ : ℂ_[p] → ℝ)  = (UniformSpace.Completion.instNorm (PadicAlgCl p)).norm := by
+example : (‖·‖ : ℂ_[p] → ℝ) = (UniformSpace.Completion.instNorm (PadicAlgCl p)).norm := by
   with_reducible_and_instances rfl
 
 /-- The norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`. -/
@@ -211,8 +211,8 @@ theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
     simp only [Valued.v.norm_def, RankOne.hom_eq_embedding]
-    erw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends]
-    exact (PadicAlgCl.valuation_coe p x).symm
+    rw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends,
+      ← PadicAlgCl.valuation_coe]
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
 theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.v.norm x := by

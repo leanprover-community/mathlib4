@@ -71,8 +71,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     rw [addHaar_smul_of_nonneg μ (by simp : 0 ≤ (2 : ℝ)⁻¹) s,
       ← ENNReal.mul_lt_mul_iff_left (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (by finiteness),
       mul_right_comm, ofReal_pow (by simp : 0 ≤ (2 : ℝ)⁻¹), ofReal_inv_of_pos zero_lt_two]
-    norm_num
-    rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top, one_pow, one_mul]
+    simpa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
   obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h
@@ -83,7 +82,6 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
   refine h_conv hw (h_symm _ hv) ?_ ?_ ?_ <;> norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric
 domain of `E` whose volume is large enough compared to the covolume of a lattice `L` of `E`, then it
 contains a non-zero lattice point of `L`. Compared to

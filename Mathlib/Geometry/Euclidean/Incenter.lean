@@ -229,10 +229,10 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
   intro i hi
   rw [← Finset.add_sum_erase _ _ (Finset.mem_univ 0),
     ← Finset.add_sum_erase _ _ (Finset.mem_erase.2 ⟨hi, Finset.mem_univ _⟩), ← add_assoc]
-  convert add_zero _
-  · convert Finset.sum_const_zero with j hj
+  convert! add_zero _
+  · convert! Finset.sum_const_zero with j hj
     rw [real_inner_smul_right]
-    convert mul_zero _
+    convert! mul_zero _
     rw [← Submodule.mem_orthogonal_singleton_iff_inner_right]
     refine SetLike.le_def.1 (Submodule.orthogonal_le ?_)
       (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
@@ -270,7 +270,7 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
   apply_fun fun v ↦ (s.height i)⁻¹ * ⟪s.points i -ᵥ s.altitudeFoot i, v⟫ at h
   rw [inner_sum, Finset.mul_sum] at h
   simp only [inner_zero_right, mul_zero, inner_smul_right, height] at h
-  convert h using 2 with j
+  convert! h using 2 with j
   ring
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
@@ -296,7 +296,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
   rw [← Finset.sum_add_sum_compl {i}, Finset.sum_singleton]
   nth_rw 1 [excenterWeightsUnnorm]
   simp only [Finset.mem_singleton, ↓reduceIte, neg_mul, one_mul, lt_neg_add_iff_add_lt, add_zero]
-  convert s.inv_height_lt_sum_inv_height i using 2 with j h
+  convert! s.inv_height_lt_sum_inv_height i using 2 with j h
   · ext j
     simp
   · rw [Finset.mem_filter_univ] at h
@@ -305,7 +305,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
 lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     SignType.sign (s.excenterWeights {i} i) = -1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
-  convert one_mul _
+  convert! one_mul _
   · rw [sign_eq_one_iff, inv_pos]
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm]
@@ -313,7 +313,7 @@ lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
 lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
     SignType.sign (s.excenterWeights {i} j) = 1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
-  convert one_mul _
+  convert! one_mul _
   · rw [sign_eq_one_iff, inv_pos]
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm, h.symm]
@@ -336,7 +336,7 @@ lemma excenterWeights_empty_lt_inv_two [n.AtLeastTwo] (i : Fin (n + 1)) :
     rwa [two_mul, sum_singleton]
   replace h : (s.height i)⁻¹ / ∑ i, (s.height i)⁻¹ < 2⁻¹ := by
     rwa [sum_add_sum_compl, ← lt_inv_mul_iff₀ zero_lt_two, ← div_lt_iff₀ (by positivity)] at h
-  convert h
+  convert! h
   simp [excenterWeights, excenterWeightsUnnorm, div_eq_inv_mul]
 
 /-- The exsphere with signs determined by the given set of indices (for the empty set, this is
@@ -567,13 +567,13 @@ lemma ExcenterExists.sign_signedInfDist_excenter {signs : Finset (Fin (n + 1))}
       SignType.sign (s.excenterWeights signs i) := by
   rw [excenter_eq_affineCombination,
     signedInfDist_affineCombination _ _ h.sum_excenterWeights_eq_one, sign_mul]
-  convert mul_one _
+  convert! mul_one _
   rw [sign_eq_one_iff, ← dist_eq_norm_vsub]
   exact s.height_pos _
 
 lemma sign_signedInfDist_incenter (i : Fin (n + 1)) :
     SignType.sign (s.signedInfDist i s.incenter) = 1 := by
-  convert s.excenterExists_empty.sign_signedInfDist_excenter i
+  convert! s.excenterExists_empty.sign_signedInfDist_excenter i
   simp
 
 variable {s} in
@@ -639,7 +639,8 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
   · simp only [hij, Set.mem_singleton_iff, Set.insert_eq_of_mem,
       AffineSubspace.mem_affineSpan_singleton]
     exact h.excenter_ne_point j
-  · convert h.excenter_notMem_affineSpan_face (fs := {i, j}) (m := 1) (by simp_all)
+  · convert!
+    h.excenter_notMem_affineSpan_face (fs := { i, j }) (m := 1) (by simp_all)
       Nat.AtLeastTwo.ne_one.symm
     simp [Set.image_insert_eq]
 
@@ -986,7 +987,7 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
 lemma exists_forall_signedInfDist_eq_iff_eq_incenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) :
     (∃ r : ℝ, ∀ i, s.signedInfDist i p = r) ↔ p = s.incenter := by
-  convert s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp (signs := ∅)
+  convert! s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp (signs := ∅)
   · simp
   · simp [excenterExists_empty]
 
@@ -1018,7 +1019,7 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
   · subst hn1
     rw [s.touchpoint_eq_point_rev signs i, s.touchpoint_eq_point_rev signs j] at hij
     apply s.independent.injective.ne hne
-    convert hij.symm <;> clear hij <;> decide +revert
+    convert! hij.symm <;> clear hij <;> decide +revert
   · suffices s.excenter signs -ᵥ s.touchpoint signs i ∈ (vectorSpan ℝ (Set.range s.points))ᗮ by
       have h' : s.excenter signs -ᵥ s.touchpoint signs i ∈ (vectorSpan ℝ (Set.range s.points)) := by
         rw [← direction_affineSpan]
@@ -1034,7 +1035,7 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
     have hu : Set.range s.points =
         Set.range (s.faceOpposite i).points ∪ Set.range (s.faceOpposite j).points := by
       simp only [range_faceOpposite_points, ← Set.image_union, ← Set.compl_inter]
-      convert Set.image_univ.symm
+      convert! Set.image_univ.symm
       simp [Ne.symm hne]
     rw [hu, range_faceOpposite_points, range_faceOpposite_points,
       AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ (p := s.points k)
@@ -1091,7 +1092,7 @@ lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Fin
       exact ContinuousAffineMap.cont _
   refine ((isConnected_Icc zero_le_one).image _ hc).isPreconnected.subsingleton
     (Set.mem_image_of_mem _ hr) ?_
-  convert Set.mem_image_of_mem _ (Set.left_mem_Icc.2 (zero_le_one' ℝ))
+  convert! Set.mem_image_of_mem _ (Set.left_mem_Icc.2 (zero_le_one' ℝ))
   simp
 
 lemma sign_signedInfDist_lineMap_incenter_touchpoint {i j : Fin (n + 1)} (hne : i ≠ j) {r : ℝ}
@@ -1183,7 +1184,7 @@ lemma ExcenterExists.sign_touchpointWeights {signs : Finset (Fin (n + 1))}
   rw [← s.affineCombination_touchpointWeights signs i, h.sign_signedInfDist_excenter,
     s.signedInfDist_affineCombination j (by simp)] at hs
   rw [← hs, sign_mul]
-  convert (mul_one _).symm
+  convert! (mul_one _).symm
   rw [sign_eq_one_iff, ← dist_eq_norm_vsub]
   exact s.height_pos _
 
@@ -1199,7 +1200,7 @@ variable {s} in
     (s.sum_touchpointWeights signs i) ?_ (Finset.mem_univ _)
     (Set.notMem_compl_iff.2 (Set.mem_singleton _))
   rw [s.affineCombination_touchpointWeights]
-  convert s.touchpoint_mem_affineSpan _ _
+  convert! s.touchpoint_mem_affineSpan _ _
   simp
 
 lemma touchpointWeights_empty_pos {i j : Fin (n + 1)} (hne : i ≠ j) :
@@ -1248,22 +1249,15 @@ variable {s} in
 lemma ExcenterExists.touchpoint_ne_point [Nat.AtLeastTwo n] {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i j : Fin (n + 1)) : s.touchpoint signs i ≠ s.points j := by
   intro he
-  rw [eq_comm, ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ s.points
-    (Finset.mem_univ _), affineCombination_eq_touchpoint_iff
-    (Finset.univ.sum_affineCombinationSingleWeights ℝ (Finset.mem_univ _))] at he
+  rw [eq_comm, ← Finset.univ.affineCombination_piSingle ℝ s.points (Finset.mem_univ _),
+    affineCombination_eq_touchpoint_iff (Fintype.sum_pi_single' _ _)] at he
   have : 1 < n := Nat.AtLeastTwo.one_lt
   obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
-  have he' : Finset.affineCombinationSingleWeights ℝ j k = s.touchpointWeights signs i k := by
-    rw [he]
-  simp only [ne_eq, hkj, not_false_eq_true,
-    Finset.affineCombinationSingleWeights_apply_of_ne] at he'
-  rw [eq_comm] at he'
-  apply_fun SignType.sign at he'
-  rw [h.sign_touchpointWeights hki.symm, excenterWeights] at he'
-  have h' := h
-  rw [ExcenterExists] at h'
-  simp only [Pi.smul_apply, smul_eq_mul, sign_zero, sign_eq_zero_iff, mul_eq_zero, inv_eq_zero,
-    h', false_or] at he'
+  have he' := congr(SignType.sign ($he k))
+  rw [Pi.single_eq_of_ne hkj, sign_zero, eq_comm, h.sign_touchpointWeights hki.symm,
+    sign_eq_zero_iff, excenterWeights] at he'
+  rw [ExcenterExists] at h
+  simp only [Pi.smul_apply, smul_eq_mul, mul_eq_zero, inv_eq_zero, h, false_or] at he'
   rw [excenterWeightsUnnorm] at he'
   by_cases hk : k ∈ signs <;> simp [hk, (s.height_pos k).ne'] at he'
 
@@ -1328,42 +1322,42 @@ lemma excenter_eq_incenter_or_excenter_singleton_of_ne (signs : Finset (Fin 3)) 
 lemma sSameSide_affineSpan_pair_incenter_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
     line[ℝ, t.points i₂, t.points i₃].SSameSide t.incenter (t.points i₁) := by
-  convert t.sSameSide_incenter_point i₁
+  convert! t.sSameSide_incenter_point i₁
   simp
   grind
 
 lemma sSameSide_affineSpan_pair_point_incenter {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) :
     line[ℝ, t.points i₂, t.points i₃].SSameSide (t.points i₁) t.incenter := by
-  convert t.sSameSide_point_incenter i₁
+  convert! t.sSameSide_point_incenter i₁
   simp
   grind
 
 lemma sOppSide_affineSpan_pair_excenter_singleton_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     line[ℝ, t.points i₂, t.points i₃].SOppSide (t.excenter {i₁}) (t.points i₁) := by
-  convert t.sOppSide_excenter_singleton_point i₁
+  convert! t.sOppSide_excenter_singleton_point i₁
   simp
   grind
 
 lemma sOppSide_affineSpan_pair_point_excenter_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     line[ℝ, t.points i₂, t.points i₃].SOppSide (t.points i₁) (t.excenter {i₁}) := by
-  convert t.sOppSide_point_excenter_singleton i₁
+  convert! t.sOppSide_point_excenter_singleton i₁
   simp
   grind
 
 lemma sSameSide_affineSpan_pair_excenter_singleton_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     line[ℝ, t.points i₂, t.points i₃].SSameSide (t.excenter {i₂}) (t.points i₁) := by
-  convert t.sSameSide_excenter_singleton_point h₁₂
+  convert! t.sSameSide_excenter_singleton_point h₁₂
   simp
   grind
 
 lemma sSameSide_affineSpan_pair_point_excenter_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     line[ℝ, t.points i₂, t.points i₃].SSameSide (t.points i₁) (t.excenter {i₂}) := by
-  convert t.sSameSide_point_excenter_singleton h₁₂
+  convert! t.sSameSide_point_excenter_singleton h₁₂
   simp
   grind
 
@@ -1371,7 +1365,7 @@ lemma affineSpan_pair_eq_orthRadius [Fact (Module.finrank ℝ V = 2)] (signs : F
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     line[ℝ, t.points i₂, t.points i₃] =
       (t.exsphere signs).orthRadius (t.touchpoint signs i₁) := by
-  convert (t.excenterExists signs).affineSpan_faceOpposite_eq_orthRadius i₁
+  convert! (t.excenterExists signs).affineSpan_faceOpposite_eq_orthRadius i₁
   have hc : {i₁}ᶜ = ({i₂, i₃} : Set (Fin 3)) := by grind
   simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
 
@@ -1444,17 +1438,17 @@ lemma tangentsFrom_insphere_eq_pair_affineSpan_pair [hf : Fact (Module.finrank �
 lemma sbtw_touchpoint_empty {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     Sbtw ℝ (t.points i₁) (t.touchpoint ∅ i₂) (t.points i₃) := by
   rw [← t.mem_interior_face_iff_sbtw h₁₃]
-  convert t.touchpoint_empty_mem_interior_faceOpposite i₂
+  convert! t.touchpoint_empty_mem_interior_faceOpposite i₂
   rw [Affine.Simplex.faceOpposite]
-  convert rfl using 2
+  convert! rfl using 2
   decide +revert
 
 lemma sbtw_touchpoint_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     Sbtw ℝ (t.points i₁) (t.touchpoint {i₂} i₂) (t.points i₃) := by
   rw [← t.mem_interior_face_iff_sbtw h₁₃]
-  convert t.touchpoint_singleton_mem_interior_faceOpposite i₂
+  convert! t.touchpoint_singleton_mem_interior_faceOpposite i₂
   rw [Affine.Simplex.faceOpposite]
-  convert rfl using 2
+  convert! rfl using 2
   decide +revert
 
 lemma touchpoint_singleton_sbtw {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :

@@ -55,7 +55,8 @@ This file contains basic results on dual vector spaces.
     antitone Galois coinsertion.
   * `Subspace.quotAnnihilatorEquiv` is the equivalence
     `Dual K V ⧸ W.dualAnnihilator ≃ₗ[K] Dual K W`.
-  * `LinearMap.dualPairing_nondegenerate` says that `Module.dualPairing` is nondegenerate.
+  * `LinearMap.id_nondegenerate` says that `LinearMap.id` is nondegenerate as a bilinear pairing.
+  * `LinearMap.eval_nondegenerate` says that `Dual.eval` is nondegenerate.
   * `Subspace.is_compl_dualAnnihilator` says that the dual annihilator carries complementary
     subspaces to complementary subspaces.
 * Finite-dimensional vector spaces:
@@ -282,7 +283,9 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
 instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
   equiv ULift.moduleEquiv.symm
 
-instance instFiniteDimensionalOfIsReflexive (K V : Type*)
+-- Very low priority because instance resolution will often end up using the instances above
+-- to prove `IsReflexive`, which require proving `Finite` again.
+instance (priority := 90) instFiniteDimensionalOfIsReflexive (K V : Type*)
     [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
     FiniteDimensional K V := by
   rw [FiniteDimensional, ← rank_lt_aleph0_iff]
@@ -294,7 +297,7 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
     exact lt_irrefl _ this
   have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
   have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
-    convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
+    convert! lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
     rw [lift_id']
   exact lt_trans h₁ h₂
 
@@ -382,7 +385,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
   rw [← p.liftQ_mkQ K h]
   ext x
-  convert LinearMap.congr_fun hK' (p.mkQ x)
+  convert! LinearMap.congr_fun hK' (p.mkQ x)
   simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
@@ -395,14 +398,13 @@ open Submodule LinearMap
 -- We work in vector spaces because `exists_isCompl` only hold for vector spaces
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
   refine le_antisymm (fun v ↦ Function.mtr ?_) (le_dualAnnihilator_dualCoannihilator _)
   simp only [mem_dualAnnihilator, mem_dualCoannihilator]
   rw [← Quotient.mk_eq_zero W, ← Module.forall_dual_apply_eq_zero_iff K]
-  push_neg
+  push Not
   refine fun ⟨φ, hφ⟩ ↦ ⟨φ.comp W.mkQ, fun w hw ↦ ?_, hφ⟩
   rw [comp_apply, mkQ_apply, (Quotient.mk_eq_zero W).mpr hw, φ.map_zero]
 
@@ -568,16 +570,14 @@ simultaneously restricting to `W.dualAnnihilator`.
 
 See `Subspace.dualCopairing_nondegenerate`. -/
 def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →ₗ[R] R :=
-  LinearMap.flip <|
-    W.liftQ ((Module.dualPairing R M).domRestrict W.dualAnnihilator).flip
-      (by
-        intro w hw
-        ext ⟨φ, hφ⟩
-        exact (mem_dualAnnihilator φ).mp hφ w hw)
+  LinearMap.flip <| W.liftQ W.dualAnnihilator.subtype.flip (by
+    intro w hw
+    ext ⟨φ, hφ⟩
+    exact (mem_dualAnnihilator φ).mp hφ w hw)
 
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
-  coe_injective' φ ψ h := by
+  coe_injective φ ψ h := by
     ext
     simp only [funext_iff] at h
     exact h _
@@ -703,7 +703,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have rr_surj : Function.Surjective f.rangeRestrict := by
     rw [← range_eq_top, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
-  convert this using 1
+  convert! this using 1
   · calc
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
       _ = _ := ?_
@@ -780,13 +780,33 @@ end Module.Dual
 
 end
 
-variable {K V₁ V₂ : Type*} [Field K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
-
 namespace LinearMap
 
-theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
-  ⟨separatingLeft_iff_ker_eq_bot.mpr ker_id, fun x => (forall_dual_apply_eq_zero_iff K x).mp⟩
+variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
+
+theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
+  separatingLeft_iff_ker_eq_bot.mpr ker_id
+
+theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
+
+variable [Module.Projective K V]
+
+theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
+  fun x => (forall_dual_apply_eq_zero_iff K x).mp
+
+theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
+
+theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
+  ⟨id_separatingLeft, id_separatingRight⟩
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
+
+theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
+  ⟨eval_separatingLeft, eval_separatingRight⟩
+
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function.Injective f) :
     Function.Surjective f.dualMap := fun φ ↦
@@ -807,6 +827,9 @@ theorem dualMap_surjective_iff {f : V₁ →ₗ[K] V₂} :
 
 end LinearMap
 
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
+
 namespace Subspace
 
 open Submodule
@@ -826,7 +849,6 @@ theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegen
     simpa only [Submodule.dualPairing_apply, dualLift_of_subtype] using
       h (Submodule.Quotient.mk (W.dualLift φ))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dualCopairing_nondegenerate (W : Subspace K V₁) : W.dualCopairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualCopairing_eq]
