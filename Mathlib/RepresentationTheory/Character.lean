@@ -27,7 +27,7 @@ Irreducible representations are implemented categorically, using the `CategoryTh
 defined in `Mathlib/CategoryTheory/Simple.lean`
 
 ## TODO
-* Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
+* Once we have the monoidal closed structure on `FDRep k G` and a better API for the rigid
   structure, `char_dual` and `char_linHom` should probably be stated
   in terms of `Vᘁ` and `ihom V W`.
 -/
@@ -109,7 +109,7 @@ theorem card_inv_mul_sum_char_eq_finrank :
 
 /--
 If `V` and `W` are finite-dimensional representations of a finite group, then the
-product of their characters is equal to the dimension of the space of
+scalar product of their characters is equal to the dimension of the space of
 equivariant maps from `V` to `W`.
 -/
 theorem card_inv_mul_sum_char_mul_char_eq_finrank :
@@ -207,7 +207,7 @@ theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
     (Nat.card G : k)⁻¹ * ∑ g : G, W.character g * V.character g⁻¹ =
     Module.finrank k (V ⟶ W) := by
   conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
-  -- The product is the character of `Hom(V, W).`
+  -- The scalar product is the character of `Hom(V, W).`
   rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
     (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']
   -- The average over the group of the character of a representation equals the dimension of the
@@ -229,7 +229,7 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
     (Nat.card G : k)⁻¹ * ∑ g : G, V.character g * W.character g⁻¹ =
       if Nonempty (V ≅ W) then ↑1 else ↑0 := by
   rw [scalar_product_char_eq_finrank_equivariant]
-  -- The product of the characters is equal to the dimension of the space of
+  -- The scalar product of the characters is equal to the dimension of the space of
   -- equivariant maps `W ⟶ V`.
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
   -- By Schur's Lemma, the dimension of `Hom_G(W, V)` is `1` if `V ≅ W` and `0` otherwise.
