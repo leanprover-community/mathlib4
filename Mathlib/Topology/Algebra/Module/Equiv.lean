@@ -628,9 +628,9 @@ variable (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
 /-- If a continuous linear map has a continuous inverse, then it is a continuous linear equivalence.
 This is the continuous version of `LinearEquiv.ofLinear`.
 See also `ofContinuousLinearMap'`. -/
-def ofContinuousLinearMap (h₁ : Function.LeftInverse f₂ f₁) (h₂ : Function.RightInverse f₂ f₁) :
+def ofContinuousLinearMap (h₁ : Function.RightInverse f₂ f₁) (h₂ : Function.LeftInverse f₂ f₁) :
     M₁ ≃SL[σ₁₂] M₂ where
-  toLinearEquiv := .ofLinear f₁ f₂ (LinearMap.ext h₂) (LinearMap.ext h₁)
+  toLinearEquiv := .ofLinear f₁ f₂ (LinearMap.ext h₁) (LinearMap.ext h₂)
 
 @[simp]
 theorem coe_ofContinuousLinearMap (h₁ h₂) : ⇑(ofContinuousLinearMap f₁ f₂ h₁ h₂) = f₁ := rfl
@@ -649,14 +649,14 @@ theorem toContinuousLinearMap_ofContinuousLinearMap (h₁ h₂) :
 @[simp]
 theorem toLinearEquiv_ofContinuousLinearMap (h₁ h₂) :
     (ofContinuousLinearMap f₁ f₂ h₁ h₂ : M₁ ≃ₛₗ[σ₁₂] M₂) =
-      .ofLinear f₁ f₂ (LinearMap.ext h₂) (LinearMap.ext h₁) := rfl
+      .ofLinear f₁ f₂ (LinearMap.ext h₁) (LinearMap.ext h₂) := rfl
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other. See also `equivOfInverse'`. -/
 @[deprecated ofContinuousLinearMap (since := "2026-07-01")]
 abbrev equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
-  .ofContinuousLinearMap f₁ f₂ h₁ h₂
+  .ofContinuousLinearMap f₁ f₂ h₂ h₁
 
 @[simp, deprecated coe_ofContinuousLinearMap (since := "2026-07-01")]
 theorem equivOfInverse_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
@@ -675,7 +675,7 @@ See also `ofContinuousLinearMap'`. -/
 def ofContinuousLinearMap' (h₁ : f₁ ∘SL f₂ = .id R₂ M₂) (h₂ : f₂ ∘SL f₁ = .id R₁ M₁) :
     M₁ ≃SL[σ₁₂] M₂ :=
   ofContinuousLinearMap f₁ f₂
-    (fun x ↦ by simpa using congr($h₂ x)) (fun x ↦ by simpa using congr($h₁ x))
+    (fun x ↦ by simpa using congr($h₁ x)) (fun x ↦ by simpa using congr($h₂ x))
 
 @[simp]
 theorem coe_ofContinuousLinearMap' (h₁ h₂) : ⇑(ofContinuousLinearMap' f₁ f₂ h₁ h₂) = f₁ := rfl
