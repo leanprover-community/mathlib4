@@ -39,6 +39,8 @@ example : ((X 0 + X 1) ^ 2 * (X 0 - X 1) : MvPolynomial (Fin 2) ℤ)
 -- `Lean.ofReduceBool` (which `native_decide` would add).
 theorem sq_expand : ((X 0 + X 1) ^ 2 : MvPolynomial (Fin 2) ℤ)
     = X 0 ^ 2 + C 2 * (X 0 * X 1) + X 1 ^ 2 := by mv_decide
+/-- info: 'sq_expand' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
 #print axioms sq_expand
 
 -- bare numerals (no `C`) also work, axiom-free:
@@ -52,4 +54,6 @@ example : (X 0 * X 1 + X 1 : MvPolynomial (Fin 2) ℤ) ∈ Ideal.span {X 0, X 1}
 
 -- `x² − y ∈ ⟨x, y⟩` (reduces by `x` then by `y`):
 theorem mem_demo : (X 0 ^ 2 - X 1 : MvPolynomial (Fin 2) ℤ) ∈ Ideal.span {X 0, X 1} := by mv_mem
+/-- info: 'mem_demo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
 #print axioms mem_demo
