@@ -1,4 +1,7 @@
 import Archive.Arithcc
+import Archive.BolzaSurface
+import Archive.ClayworthSabidussi
+import Archive.ClayworthSurface
 import Archive.Examples.Eisenstein
 import Archive.Examples.IfNormalization.Result
 import Archive.Examples.IfNormalization.Statement
@@ -7,6 +10,7 @@ import Archive.Examples.Kuratowski
 import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
 import Archive.Hairer
+import Archive.HeawoodSurface
 import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1959Q2
 import Archive.Imo.Imo1960Q1
@@ -61,6 +65,7 @@ import Archive.Imo.Imo2024Q3
 import Archive.Imo.Imo2024Q5
 import Archive.Imo.Imo2024Q6
 import Archive.Imo.Imo2025Q3
+import Archive.KleinSurface
 import Archive.Kuratowski
 import Archive.MinimalSheffer
 import Archive.MiuLanguage.Basic
@@ -68,6 +73,7 @@ import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf
 import Archive.OxfordInvariants.Summer2021.Week3P1
 import Archive.Sensitivity
+import Archive.VoltageGraphs
 import Archive.Wiedijk100Theorems.AbelRuffini
 import Archive.Wiedijk100Theorems.AreaOfACircle
 import Archive.Wiedijk100Theorems.AscendingDescendingSequences
@@ -83,3 +89,4 @@ import Archive.Wiedijk100Theorems.PerfectNumbers
 import Archive.Wiedijk100Theorems.SolutionOfCubicQuartic
 import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
 import Archive.ZagierTwoSquares
+import Archive.ZhouGraph
