@@ -606,13 +606,13 @@ end AddGroupWithOne
 
 section Mul
 
-/- Interaction of `sum` and `•` assuming some multiplication structure. -/
+/-- Interaction of `sum` and `•` assuming some multiplication structure. -/
 theorem sum_smul_index {N : Type*} [AddCommMonoid N] [NonUnitalNonAssocSemiring k]
     {g : SkewMonoidAlgebra k G} {b : k} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b * ·) := by
   simp [sum_def, Finsupp.sum_smul_index' h0]
 
-/- Variant of the interaction of `sum` and `•` assuming some scalar multiplication structure. -/
+/-- Variant of the interaction of `sum` and `•` assuming some scalar multiplication structure. -/
 theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
     [DistribSMul R k] [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : R} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
@@ -1062,7 +1062,7 @@ theorem mapDomain_one [MonoidHomClass F α α₂] (f : F) :
       (1 : SkewMonoidAlgebra β α₂) := by
   simp_rw [one_def, mapDomain_single, map_one]
 
-/- Like `mapDomain_add`, but for the skewed convolutive multiplication we define in this
+/-- Like `mapDomain_add`, but for the skewed convolutive multiplication we define in this
   file. This theorem holds assuming that `(hf : ∀ (a : α) (x : β), a • x = (f a) • x)`. -/
 theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
     [MulHomClass F α α₂] {f : F} (x y : SkewMonoidAlgebra β α)

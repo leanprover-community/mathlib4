@@ -142,7 +142,6 @@ instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
 
-@[simp]
 theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 
@@ -371,11 +370,13 @@ theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
 theorem nonempty_of_ssubset (ht : s ⊂ t) : (t \ s).Nonempty :=
   nonempty_of_not_subset ht.2
 
-theorem Nonempty.of_diff (h : (s \ t).Nonempty) : s.Nonempty :=
+theorem Nonempty.of_sdiff (h : (s \ t).Nonempty) : s.Nonempty :=
   h.imp fun _ => And.left
 
+@[deprecated (since := "2026-06-03")] alias Nonempty.of_diff := Nonempty.of_sdiff
+
 theorem nonempty_of_ssubset' (ht : s ⊂ t) : t.Nonempty :=
-  (nonempty_of_ssubset ht).of_diff
+  (nonempty_of_ssubset ht).of_sdiff
 
 theorem Nonempty.inl (hs : s.Nonempty) : (s ∪ t).Nonempty :=
   hs.imp fun _ => Or.inl
@@ -503,6 +504,14 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
 
 theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
+
+theorem Nonempty.forall_const (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
+  let ⟨x, hx⟩ := h
+  ⟨fun h ↦ h x hx, fun h _ _ ↦ h⟩
+
+@[simp]
+theorem forall_mem_const {p : Prop} [Nonempty s] : (∀ x ∈ s, p) ↔ p :=
+  (nonempty_coe_sort.mp ‹_›).forall_const
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩

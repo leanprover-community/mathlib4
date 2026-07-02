@@ -557,7 +557,7 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
   dsimp [functor]
   simp only [Subtype.forall, shrinkYonedaObjObjEquiv.forall_congr_left, Equiv.apply_symm_apply]
   congr!
-  simp [Equiv.subtypeEquiv]
+  simp
 
 /--
 If `P` is a sheaf for the sieve `S` on `X`, a natural transformation from `S` (viewed as a functor)
@@ -1062,10 +1062,10 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type*) (R S : Sieve X)
   apply Presieve.isSheafFor_subsieve_aux P this
   · apply isSheafFor_bind _ _ _ hR hS
     intro Y f hf Z g
-    rw [← pullback_comp]
+    rw [← Sieve.pullback_comp]
     apply (hS (R.downward_closed hf _)).isSeparatedFor
   · intro Y f hf
-    have : Sieve.pullback f (Sieve.bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) =
+    have : Sieve.pullback f (Sieve.bind R fun T (k : T ⟶ X) (_ : R k) => Sieve.pullback k S) =
         R.pullback f := by
       ext Z g
       constructor
