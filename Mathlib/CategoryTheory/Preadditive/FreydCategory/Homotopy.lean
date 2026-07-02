@@ -36,14 +36,18 @@ variable {u v w : Arrow V} (f g : u ⟶ v)
 /-- A left homotopy on morphisms in the category of arrows of a preadditive category. -/
 @[ext]
 structure LeftHomotopy where
+/-- A "diagonal" morphism from the right object of `u` to the left object of `v`. -/
   hom : u.right ⟶ v.left
+/-- The difference of the left morphisms factors through `hom`. -/
   comm : f.left - g.left = u.hom ≫ hom := by cat_disch
 
 /-- A right homotopy on morphisms in the category of arrows of a preadditive category. -/
 @[ext]
 structure RightHomotopy where
+/-- A "diagonal" morphism from the right object of `u` to the left object of `v`. -/
   hom : u.right ⟶ v.left
-  comm : f.right - g.right = hom ≫ v.hom := by cat_disch
+/-- The difference of the right morphisms factors through `hom`. -/
+comm : f.right - g.right = hom ≫ v.hom := by cat_disch
 
 variable {f g}
 
@@ -199,6 +203,7 @@ end RightHomotopy
 
 variable (V)
 
+/-- The left homotopy relation on morphisms of `Arrow V`. -/
 def leftHomotopic : HomRel (Arrow V) := fun _ _ f g => Nonempty (LeftHomotopy f g)
 
 instance leftHomotopy_congruence : Congruence (leftHomotopic V) where
@@ -209,6 +214,7 @@ instance leftHomotopy_congruence : Congruence (leftHomotopic V) where
   comp_left := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
   comp_right := fun _ ⟨i⟩ => ⟨i.compRight _⟩
 
+/-- The left homotopy relation on morphisms of `Arrow V`. -/
 def rightHomotopic : HomRel (Arrow V) := fun _ _ f g => Nonempty (RightHomotopy f g)
 
 instance rightHomotopy_congruence : Congruence (rightHomotopic V) where
