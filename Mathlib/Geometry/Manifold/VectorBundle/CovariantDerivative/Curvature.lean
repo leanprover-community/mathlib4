@@ -66,7 +66,7 @@ lemma ContMDiffCovariantDerivativeOn.contMDiff' [IsManifold I 1 M] [VectorBundle
     letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
     CMDiffAt k covσ x := by
   obtain ⟨σ', hσ', heqs, hdiffx⟩ := exists_contMDiff_of_one_form F hσ
-  --have aux := contMDiffOn_univ.mp sorry (hcov'.contMDiff hσ'.contMDiff)
+  have aux := contMDiffOn_univ.mp (hcov'.contMDiff hσ'.contMDiffOn)
   -- know: ∇ σ and ∇ σ' agree at x
   have aux' := hcov.congr_of_eq_one_jet (Filter.univ_mem)
     (hσ.mdifferentiableAt (by simp)) (hσ'.mdifferentiableAt (by simp))

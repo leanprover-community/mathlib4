@@ -514,17 +514,6 @@ lemma eventually_contMDiff_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimens
   (leviCivitaConnection_isLeviCivitaConnection I).eventually_contMDiffAt_apply k hX hY hZ
 
 variable {I} in
-lemma contMDiffAt_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimensional ℝ E]
-    [IsManifold I (k + 2) M]
-    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
-    {X Y Z : (x : M) → TangentSpace% x}
-    (hX : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% X) b)
-    (hY : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Y) b)
-    (hZ : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Z) b) :
-    CMDiffAt k (fun x ↦ ⟪((leviCivitaConnection I M) Y x) (X x), Z x⟫) x :=
-  sorry -- (leviCivitaConnection_isLeviCivitaConnection I).eventually_contMDiffAt_apply k hX hY hZ
-
-variable {I} in
 lemma contMDiff_leviCivitaConnection_apply (k : ℕ∞) [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
     [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
@@ -706,15 +695,14 @@ instance leviCivitaConnection_foo [FiniteDimensional ℝ E]
     have : ContMDiffVectorBundle (1 + 1) E (TangentSpace I (M := M)) I :=
       TangentBundle.contMDiffVectorBundle (h := by rwa [show ((1 : ℕ∞ω) + 1 + 1 = 3) by norm_num])
     have : IsManifold I (1 + 1) M := by simpa
-    refine ⟨fun {σ} x _ hσ ↦ ?_⟩
-    rw [contMDiffWithinAt_univ] at hσ ⊢
+    refine ⟨fun {σ} hσ ↦ ?_⟩
+    rw [contMDiffOn_univ] at hσ ⊢
+    intro x
     apply ContMDiffAt.clm_bundle_of_apply'
     intro τ hτ
     apply step2b 1 (fun {Z} hZ ↦ ?_)
-    apply contMDiffAt_leviCivitaConnection_apply 1 hτ ?_ hZ
-    --apply Filter.Eventually.self_of_nhds
-    --apply eventually_contMDiff_leviCivitaConnection_apply 1 hτ ?_ hZ
-    -- (Filter.univ_mem' hσ)
+    apply Filter.Eventually.self_of_nhds
+    exact eventually_contMDiff_leviCivitaConnection_apply 1 hτ (Filter.univ_mem' hσ) hZ
 
 section
 
