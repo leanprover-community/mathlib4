@@ -143,8 +143,8 @@ variable {𝕜 B F₁ : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ�
   [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
 
 /-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
-defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` on `B`, and this section is
-`C^n` at every point of `e.baseSet`. -/
+defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section
+is `C^n` at every point of `e.baseSet`. -/
 lemma Bundle.Trivialization.contMDiffAt_symmL [IsManifold IB n B] [ContMDiffVectorBundle n F₁ E₁ IB]
     (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
     {x : B} (hx : x ∈ e.baseSet) :
