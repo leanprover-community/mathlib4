@@ -551,7 +551,7 @@ lemma dist_secondInter_point_eq_dist_secondInter_excenter (signs : Finset (Fin 3
       (t'.points i₂) =
       dist ((t'.circumsphere.secondInter (t'.points i₁) (t'.excenter signs -ᵥ t'.points i₁)) : P)
         (t'.excenter signs) by
-    simpa [t', Sphere.coe_secondInter, t.excenterExists] using this
+    simpa [t', Sphere.coe_secondInter, t.excenterExists] using! this
   simp_rw [← Subtype.dist_eq]
   obtain ⟨i₃, h₁₃, h₂₃⟩ : ∃ i₃, i₁ ≠ i₃ ∧ i₂ ≠ i₃ := by decide +revert
   exact t'.dist_secondInter_point_eq_dist_secondInter_excenter_aux signs h₁₂ h₁₃ h₂₃
