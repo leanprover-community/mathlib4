@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Sets.BaseChangeNhds
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Ksheaves
@@ -157,7 +158,7 @@ open Compacts
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
     (pf : IsProperMap f.hom') (F : KSheaf A X)
 
-lemma isKSheafPushforwardObj : (F.obj.pushforwardObj pf).IsKSheaf where
+lemma pushforwardObj_isKSheaf : (F.obj.pushforwardObj pf).IsKSheaf where
   nonempty_isTerminal := by
     exact F.property.nonempty_isTerminal
   isPullback h:=
@@ -166,21 +167,21 @@ lemma isKSheafPushforwardObj : (F.obj.pushforwardObj pf).IsKSheaf where
     (fun _ _ ↦ Compacts.ext rfl) (fun _ _ ↦ Compacts.ext rfl)
   nonempty_isColimit_coconeOfCompacts K :=
     Nonempty.intro <|
-    (Functor.Final.isColimitWhiskerEquiv ((nhdsMap_mono pf K).functor.op)
+    (Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsOfProperMap_mono pf K).functor.op)
       _ ).invFun
     (Classical.choice (F.property.nonempty_isColimit_coconeOfCompacts (properPreimage pf K)))
 
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
     (pf : IsProperMap f.hom')
 
-/-- The pushforward of a Ksheaf by a proper map as a sheaf -/
-def pushforwardObj (F : KSheaf A X) : (KSheaf A Y) := ⟨_, F.isKSheafPushforwardObj pf⟩
+/-- The pushforward of a Ksheaf by a proper map as a Ksheaf -/
+def pushforwardObj (F : KSheaf A X) : (KSheaf A Y) := ⟨_, F.pushforwardObj_isKSheaf pf⟩
 
 /-- The pushforward of a KSheaf as a functor -/
 def pushforward : KSheaf A X ⥤ KSheaf A Y :=
   ObjectProperty.lift _
   (ObjectProperty.ι KPresheaf.IsKSheaf ⋙ (KPresheaf.pushforward pf))
-  (fun F ↦ F.isKSheafPushforwardObj pf)
+  (fun F ↦ F.pushforwardObj_isKSheaf pf)
 
 end KSheaf
 

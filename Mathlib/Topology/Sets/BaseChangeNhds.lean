@@ -107,30 +107,31 @@ lemma properPreimage_mono : Monotone (properPreimage proper_f) :=
 
 /-- The base change of compactNhds induced by `properPreimage` -/
 @[simps]
-def nhdsMap (K : Compacts β) (L : K.compactNhds) : (properPreimage proper_f K).compactNhds :=
+def baseChangeCompactNhdsOfProperMap (K : Compacts β) (L : K.compactNhds) :
+    (properPreimage proper_f K).compactNhds :=
   ⟨properPreimage proper_f L,
   by
-    obtain ⟨U, hU1, hU2⟩ := exists_open_nhds_sub_compact_nhds L
-    exact (compactNhdsOfExistsOpenSubsetBetween _
+    obtain ⟨U, hU1, hU2⟩ := exists_open_set_nhds_of_compactsNhds L
+    exact (compactNhdsMkOfOpens _
       ((Opens.map (TopCat.ofHom ( ContinuousMap.mk f proper_f.toContinuous))).obj U)
       (preimage_mono (f := f) hU1)
       (preimage_mono (f := f) hU2)).property⟩
 
-lemma nhdsMap_mono (K : Compacts β) : Monotone (nhdsMap proper_f K) :=
+lemma baseChangeCompactNhdsOfProperMap_mono (K : Compacts β) :
+    Monotone (baseChangeCompactNhdsOfProperMap proper_f K) :=
   fun _ _ h ↦ properPreimage_mono proper_f h
 
 instance [T2Space β] [LocallyCompactSpace β] (K : Compacts β) :
-    (nhdsMap_mono proper_f K).functor.Initial
-    := by
+    (baseChangeCompactNhdsOfProperMap_mono proper_f K).functor.Initial := by
   rw [Monotone.initial_functor_iff]
   intro L
-  obtain ⟨U, hU1, hU2⟩ := exists_open_nhds_sub_compact_nhds L
+  obtain ⟨U, hU1, hU2⟩ := exists_open_set_nhds_of_compactsNhds L
   obtain ⟨M, hM1, hM2, hM3⟩ :=
     exists_compact_between K.isCompact'
     (IsClosedMap.isOpen_kernImage (IsProperMap.isClosedMap proper_f) U.isOpen)
     (Set.subset_kernImage_iff.2 hU1)
   use ⟨⟨M, hM1⟩,
-    (compactNhdsOfExistsOpenSubsetBetween _ ⟨interior M, isOpen_interior⟩
+    (compactNhdsMkOfOpens _ ⟨interior M, isOpen_interior⟩
     hM2 interior_subset).property⟩
   exact (Set.subset_kernImage_iff.1 hM3).trans hU2
 
