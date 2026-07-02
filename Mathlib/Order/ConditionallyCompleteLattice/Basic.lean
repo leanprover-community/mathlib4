@@ -746,37 +746,48 @@ variable [ConditionallyCompleteLattice β]
 
 section Preorder
 
-variable [Preorder α] {f : α → β} (h_mono : Monotone f)
-include h_mono
+variable [Preorder α] {f : α → β}
 
 /-! A monotone function into a conditionally complete lattice preserves the ordering properties of
 `sSup` and `sInf`. -/
 
 @[to_dual csInf_image_le]
-theorem le_csSup_image {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddAbove s) :
-    f c ≤ sSup (f '' s) :=
+theorem le_csSup_image (h_mono : Monotone f) {s : Set α} {c : α} (hcs : c ∈ s)
+    (h_bdd : BddAbove s) : f c ≤ sSup (f '' s) :=
   le_csSup (map_bddAbove h_mono h_bdd) (mem_image_of_mem f hcs)
 
+@[to_dual csInf_image_le]
+theorem _root_.Antitone.le_csSup_image (hf : Antitone f) {s : Set α} {c : α} (hcs : c ∈ s)
+    (h_bdd : BddBelow s) : f c ≤ sSup (f '' s) :=
+  le_csSup (hf.map_bddBelow h_bdd) (mem_image_of_mem f hcs)
+
 @[to_dual le_csInf_image]
-theorem csSup_image_le {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ upperBounds s) :
-    sSup (f '' s) ≤ f B :=
+theorem csSup_image_le (h_mono : Monotone f) {s : Set α} (hs : s.Nonempty) {B : α}
+    (hB : B ∈ upperBounds s) : sSup (f '' s) ≤ f B :=
   csSup_le (Nonempty.image f hs) (h_mono.mem_upperBounds_image hB)
+
+@[to_dual le_csInf_image]
+theorem _root_.Antitone.csSup_image_le (hf : Antitone f) {s : Set α} (hs : s.Nonempty) {B : α}
+    (hB : B ∈ lowerBounds s) : sSup (f '' s) ≤ f B :=
+  csSup_le (hs.image f) (hf.mem_upperBounds_image hB)
 
 end Preorder
 
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α]
-variable {f : α → β} {s : Set α} (hs : s.Nonempty) (hf : Monotone f)
-include hs hf
+variable {f : α → β} {s : Set α} (hs : s.Nonempty)
+include hs
 
-theorem csSup_image_le_map_csSup (hbdd : BddAbove s := by bddDefault) :
+@[to_dual map_csInf_le_csInf_image]
+theorem csSup_image_le_map_csSup (hf : Monotone f) (hbdd : BddAbove s := by bddDefault) :
     sSup (f '' s) ≤ f (sSup s) :=
-  csSup_image_le hf hs <| isLUB_csSup hs hbdd |>.left
+  hf.csSup_image_le hs <| isLUB_csSup hs hbdd |>.left
 
-theorem map_csInf_le_csInf_image (hbdd : BddBelow s := by bddDefault) :
-    f (sInf s) ≤ sInf (f '' s) :=
-  le_csInf_image hf hs <| isGLB_csInf hs hbdd |>.left
+@[to_dual map_csSup_le_csInf_image]
+theorem _root_.Antitone.csSup_image_le_map_csInf (hf : Antitone f)
+    (hbdd : BddBelow s := by bddDefault) : sSup (f '' s) ≤ f (sInf s) :=
+  hf.csSup_image_le hs <| isGLB_csInf hs hbdd |>.left
 
 end ConditionallyCompleteLattice
 
