@@ -283,10 +283,14 @@ lemma subset_of_mem_compactNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) 
     (K : Set α) ⊆ K' :=
   fun x hx ↦ mem_of_mem_nhds (h ⟨x, hx⟩)
 
-lemma exists_open_nhds_sub_compact_nhds {K : Compacts α} (L : K.compactNhds) :
+lemma exists_open_set_nhds_of_compactsNhds {K : Compacts α} (L : K.compactNhds) :
     ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ L := by
   obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.2 ⟨x, hx⟩)
   exact ⟨⟨U, openU⟩, KsubU, UsubL⟩
+
+lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) :
+    ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ K' :=
+  exists_open_set_nhds_of_compactsNhds ⟨K', h⟩
 
 /-- The compact neigbourhood induced by the existence of an open subset between two compacts -/
 def compactNhdsOfExistsOpenSubsetBetween {K : Compacts α} (L : Compacts α) (U : Opens α)
