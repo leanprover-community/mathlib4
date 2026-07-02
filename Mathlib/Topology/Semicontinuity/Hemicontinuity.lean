@@ -466,11 +466,11 @@ section limits
 variable {ι : Type*} {F : ι → α → Set β} {l : Filter ι} [NeBot l]
 variable [UniformSpace β]
 open UniformSpace
+attribute [local instance] UniformSpace.hausdorff
 
 /-- A net of lower hemicontinuous set-valued functions converging uniformly on `s` (along a
 filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit on `s` -/
-theorem TendstoUniformlyOn.lowerHemicontinuousOn
-    (htendsto : @TendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f l s)
+theorem TendstoUniformlyOn.lowerHemicontinuousOn (htendsto : TendstoUniformlyOn F f l s)
     (hF : ∀ n, LowerHemicontinuousOn (F n) s) : LowerHemicontinuousOn f s := by
   rw [lowerHemicontinuousOn_iff]
   intro x₀ hx₀s
@@ -500,8 +500,7 @@ theorem TendstoUniformlyOn.lowerHemicontinuousOn
 
 /-- A net of upper hemicontinuous compact-valued set-valued functions converging uniformly on `s`
 (along a filter `l`) in the Hausdorff uniformity has an upper hemicontinuous limit on `s` -/
-theorem TendstoUniformlyOn.upperHemicontinuousOn
-    (htendsto : @TendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f l s)
+theorem TendstoUniformlyOn.upperHemicontinuousOn (htendsto : TendstoUniformlyOn F f l s)
     (hF : ∀ n, UpperHemicontinuousOn (F n) s) (hf_compact : ∀ x ∈ s, IsCompact (f x)) :
     UpperHemicontinuousOn f s := by
   rw [upperHemicontinuousOn_iff_forall_isOpen]
@@ -524,22 +523,18 @@ theorem TendstoUniformlyOn.upperHemicontinuousOn
 
 /-- A net of lower hemicontinuous set-valued functions converging uniformly (along a
 filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit -/
-theorem TendstoUniformly.lowerHemicontinuous
-    (htendsto : @TendstoUniformly _ _ _ (UniformSpace.hausdorff (α := β)) F f l)
-    (hF : ∀ n, LowerHemicontinuous (F n)) :
-    LowerHemicontinuous f := by
+theorem TendstoUniformly.lowerHemicontinuous (htendsto : TendstoUniformly F f l)
+    (hF : ∀ n, LowerHemicontinuous (F n)) : LowerHemicontinuous f := by
   rw [← lowerHemicontinuousOn_univ_iff]
-  exact (@htendsto.tendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f Set.univ l)
-    |>.lowerHemicontinuousOn (fun n ↦ (hF n).lowerHemicontinuousOn _)
+  exact htendsto.tendstoUniformlyOn.lowerHemicontinuousOn (fun n ↦ (hF n).lowerHemicontinuousOn _)
 
 /-- A net of upper hemicontinuous compact-valued set-valued functions converging uniformly
 (along a filter `l`) in the Hausdorff uniformity has an upper hemicontinuous limit -/
-theorem TendstoUniformly.upperHemicontinuous
-    (htendsto : @TendstoUniformly _ _ _ (UniformSpace.hausdorff (α := β)) F f l)
+theorem TendstoUniformly.upperHemicontinuous (htendsto : TendstoUniformly F f l)
     (hF : ∀ n, UpperHemicontinuous (F n)) (hf_compact : ∀ x, IsCompact (f x)) :
     UpperHemicontinuous f := by
   rw [← upperHemicontinuousOn_univ_iff]
-  exact (@htendsto.tendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f Set.univ l)
-    |>.upperHemicontinuousOn (fun n ↦ (hF n).upperHemicontinuousOn _) (fun x _ ↦ hf_compact x)
+  exact htendsto.tendstoUniformlyOn.upperHemicontinuousOn
+    (fun n ↦ (hF n).upperHemicontinuousOn _) (fun x _ ↦ hf_compact x)
 
 end limits
