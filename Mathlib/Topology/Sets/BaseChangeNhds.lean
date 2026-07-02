@@ -34,20 +34,22 @@ namespace Opens
 
 /-- For `U` an open subset included in a open subset `V`, there is
 a map sending compacts inside `U` to the ones inside `V` -/
-def baseChangeCompactInsd {U V : Opens α} (h : U ⟶ V) : U.compactInsd → V.compactInsd :=
-  fun ⟨K,  hK⟩ ↦ ⟨K, fun _ hx ↦ Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
+def baseChangeCompactsInside {U V : Opens α} (h : U ⟶ V) : U.compactsInside → V.compactsInside :=
+  fun ⟨K, hK⟩ ↦ ⟨K, fun _ hx ↦ Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
 
-lemma baseChangeCompactInsd_mono {U V : Opens α} (h : U ⟶ V) :
-    Monotone <| baseChangeCompactInsd h :=
+lemma baseChangeCompactsInside_mono {U V : Opens α} (h : U ⟶ V) :
+    Monotone <| baseChangeCompactsInside h :=
   fun _ _ hKL _ hx ↦ SetLike.mem_coe.mpr (hKL hx)
 
 @[simp]
-lemma baseChangeCompactInsd_comp {U V W : Opens α} (h : U ⟶ V) (k : V ⟶ W) (K : U.compactInsd) :
-  baseChangeCompactInsd (h ≫ k) K = baseChangeCompactInsd k (baseChangeCompactInsd h K) := by rfl
+lemma baseChangeCompactsInside_comp {U V W : Opens α} (h : U ⟶ V) (k : V ⟶ W)
+    (K : U.compactsInside) :
+    baseChangeCompactsInside (h ≫ k) K = baseChangeCompactsInside k (baseChangeCompactsInside h K)
+  := by rfl
 
 @[simp]
-lemma baseChangeOpenNhds_id {U : Opens α} (K : U.compactInsd) :
-  baseChangeCompactInsd (𝟙 U) K = K := by rfl
+lemma baseChangeOpenNhds_id {U : Opens α} (K : U.compactsInside) :
+  baseChangeCompactsInside (𝟙 U) K = K := by rfl
 
 end Opens
 
@@ -75,7 +77,7 @@ def isInitialBotOpensOpenNhdsBot : IsInitial (⊥ : (⊥ : Compacts α).openNhds
   (fun _ _ ↦ eq_of_comp_right_eq <| by tauto)
 
 instance {K : Compacts α} [T2Space α] [LocallyCompactSpace α] :
-    K.oRcNhdsToOpenNhds_mono.functor.Initial := by
+    K.openRelativelyCompactNhdsToOpenNhds_mono.functor.Initial := by
   rw [Monotone.initial_functor_iff]
   intro U
   obtain ⟨L, h1, h2, h3⟩ := exists_compact_between K.isCompact U.val.isOpen U.property
@@ -88,7 +90,7 @@ instance {K : Compacts α} [T2Space α] [LocallyCompactSpace α] :
 instance {K : Compacts α} [T2Space α] : K.oRcNhdsToCompactNhds_mono.functor.Initial := by
   rw [Monotone.initial_functor_iff]
   intro L
-  obtain ⟨U, h1, h2⟩ := exists_open_nhds_sub_compact_nhds L
+  obtain ⟨U, h1, h2⟩ := exists_open_set_nhds_of_compactsNhds L
   have h3 : closure (U : Set α) ⊆ L := (IsClosed.closure_subset_iff
     (IsCompact.isClosed L.1.isCompact') ).2 h2
   exact ⟨⟨U, ⟨IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩

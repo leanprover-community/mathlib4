@@ -283,13 +283,17 @@ lemma subset_of_mem_compactNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) 
     (K : Set α) ⊆ K' :=
   fun x hx ↦ mem_of_mem_nhds (h ⟨x, hx⟩)
 
-lemma exists_open_nhds_sub_compact_nhds {K : Compacts α} (L : K.compactNhds) :
+lemma exists_open_set_nhds_of_compactsNhds {K : Compacts α} (L : K.compactNhds) :
     ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ L := by
   obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.2 ⟨x, hx⟩)
   exact ⟨⟨U, openU⟩, KsubU, UsubL⟩
 
+lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) :
+    ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ K' :=
+  exists_open_set_nhds_of_compactsNhds ⟨K', h⟩
+
 /-- The compact neigbourhood induced by the existence of an open subset between two compacts -/
-def compactNhdsOfExistsOpenSubsetBetween {K : Compacts α} (L : Compacts α) (U : Opens α)
+def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
     (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
     K.compactNhds :=
   ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
@@ -321,11 +325,12 @@ lemma subset_of_mem_openRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.ope
     (K : Set α) ⊆ U :=
   fun _ hx ↦ h.right hx
 
-lemma compactclosure_of_mem_openRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.openRcNhds) :
+lemma isCompact_closure_of_mem_openRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.openRcNhds) :
   IsCompact (closure (U : Set α)) := h.left
 
-lemma is_compactNhds_of_isOpenRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.openRcNhds) :
-    ⟨closure (U : Set α), compactclosure_of_mem_openRcNhds h⟩ ∈ K.compactNhds := by
+lemma closure_mem_compactNhds_of_mem_openRcNhds {K : Compacts α} {U : Opens α}
+    (h : U ∈ K.openRcNhds) :
+    ⟨closure (U : Set α), isCompact_closure_of_mem_openRcNhds h⟩ ∈ K.compactNhds := by
   intro x
   have H : (U : Set α) ∈ 𝓝 (x : α) :=
     U.isOpen.mem_nhds <| Compacts.subset_of_mem_openRcNhds h (by simp)
@@ -333,22 +338,24 @@ lemma is_compactNhds_of_isOpenRcNhds {K : Compacts α} {U : Opens α} (h : U ∈
 
 /-- The converting map from relatively compact opens
 neighbourhood of a compact subset to its opens neighbourhoods -/
-def oRcNhdsToOpenNhds (K : Compacts α) : K.openRcNhds → K.openNhds := fun U ↦ ⟨_, U.property.2⟩
+def openRelativelyCompactNhdsToOpenNhds (K : Compacts α) : K.openRcNhds → K.openNhds :=
+  fun U ↦ ⟨_, U.property.2⟩
 
-lemma oRcNhdsToOpenNhds_mono (K : Compacts α) : Monotone K.oRcNhdsToOpenNhds := fun _ _ h ↦ h
+lemma openRelativelyCompactNhdsToOpenNhds_mono (K : Compacts α) :
+    Monotone K.openRelativelyCompactNhdsToOpenNhds := fun _ _ h ↦ h
 
 /-- An open relatively compact neighbourhood of `K` induces a compact neighbourhood by taking
 the closure
 -/
 def oRcNhdsToCompactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :=
-  fun U ↦ ⟨_, is_compactNhds_of_isOpenRcNhds (Subtype.coe_prop U)⟩
+  fun U ↦ ⟨_, closure_mem_compactNhds_of_mem_openRcNhds (Subtype.coe_prop U)⟩
 
 lemma oRcNhdsToCompactNhds_mono (K : Compacts α) : Monotone K.oRcNhdsToCompactNhds :=
   fun _ _ h ↦ closure_mono h
 
 instance [T2Space α] (K : Compacts α) : IsCodirectedOrder K.openRcNhds where
-  directed U1 U2 := ⟨⟨U1 ⊓ U2, (compactclosure_of_mem_openRcNhds (Subtype.coe_prop U1) |>.inter
-    <| compactclosure_of_mem_openRcNhds U2.coe_prop).of_isClosed_subset
+  directed U1 U2 := ⟨⟨U1 ⊓ U2, (isCompact_closure_of_mem_openRcNhds (Subtype.coe_prop U1) |>.inter
+    <| isCompact_closure_of_mem_openRcNhds U2.coe_prop).of_isClosed_subset
       isClosed_closure <| closure_inter_subset_inter_closure ..,
       le_inf (subset_of_mem_openRcNhds (Subtype.coe_prop U1))
       <| subset_of_mem_openRcNhds (Subtype.coe_prop U2)⟩,
@@ -360,16 +367,17 @@ end Compacts
 namespace Opens
 
 /-- The set of compacts inside an open subset -/
-def compactInsd (U : Opens α) : Set (Compacts α) := {K | (K : Set α) ⊆ U}
+def compactsInside (U : Opens α) : Set (Compacts α) := {K | (K : Set α) ⊆ U}
 
 /-- For `K` a compact subset insde an open subset `U`, `U` has a structure of open neighbourhood
 of `K` -/
-def toOpenNhds {U : Opens α} (K : U.compactInsd) : (K.val).openNhds := ⟨U, K.property⟩
+def openNhdsOfCompactInside {U : Opens α} (K : U.compactsInside) : (K.val).openNhds :=
+  ⟨U, K.property⟩
 
 end Opens
 
 /-- For `U` an open neighbourhood of `K`, `K` has a structure of compact insde `U` -/
-def Compacts.toCompactInsd {K : Compacts α} (U : K.openNhds) : (U.val).compactInsd :=
+def Compacts.compactsInsideOfOpenNhds {K : Compacts α} (U : K.openNhds) : (U.val).compactsInside :=
   ⟨K, U.property⟩
 
 /-! ### Nonempty compact sets -/
