@@ -246,7 +246,7 @@ abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvarian
 variable (k G)
 
 /-- The functor sending a representation to its submodule of invariants. -/
-@[simps! obj_carrier map_hom]
+@[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
@@ -258,7 +258,6 @@ instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 instance : (invariantsFunctor k G).Additive where
 instance : (invariantsFunctor k G).Linear k where
 
-set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
@@ -266,7 +265,7 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
-    fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext x; simp [hom_comm_apply]⟩
+    fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext; simp [hom_comm_apply]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and
