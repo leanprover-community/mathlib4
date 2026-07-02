@@ -96,17 +96,19 @@ class my_has_scalar (M : Type u) (α : Type v) where
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
+set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
-  {α : Type ?u.2} → {β : Type ?u.1} → [self : my_has_scalar β α] → α → β → α
+  {α : Type _} → {β : Type _} → [self : my_has_scalar β α] → α → β → α
 but 'Test.my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
 attribute [to_additive existing] my_has_pow.pow
+set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
-  {β : Type ?u.1} → {α : Type ?u.2} → [self : my_has_scalar β α] → α → β → α
+  {β : Type _} → {α : Type _} → [self : my_has_scalar β α] → α → β → α
 but 'Test.my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
