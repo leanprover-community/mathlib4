@@ -40,19 +40,21 @@ quotiented out by. -/
 inductive TensorAlgebra.SymRel : TensorAlgebra R M → TensorAlgebra R M → Prop where
   | mul_comm (x y : M) : SymRel (ι R x * ι R y) (ι R y * ι R x)
 
+/-- `SymRel` as a ring congruence, used to build the quotient. -/
+@[no_expose] def TensorAlgebra.symRingCon : RingCon (TensorAlgebra R M) := ringConGen (SymRel R M)
+
 open TensorAlgebra
 
 /-- Concrete construction of the symmetric algebra of `M` by quotienting out
 the tensor algebra by the commutativity relation. -/
-abbrev SymmetricAlgebra := RingQuot (SymRel R M)
+abbrev SymmetricAlgebra := symRingCon R M |>.Quotient
 
 namespace SymmetricAlgebra
 
 /-- Algebra homomorphism from the tensor algebra over `M` to the symmetric algebra over `M`. -/
-abbrev algHom : TensorAlgebra R M →ₐ[R] SymmetricAlgebra R M := RingQuot.mkAlgHom R (SymRel R M)
+abbrev algHom : TensorAlgebra R M →ₐ[R] SymmetricAlgebra R M := RingCon.mkₐ R _
 
-lemma algHom_surjective : Function.Surjective (algHom R M) :=
-  RingQuot.mkAlgHom_surjective _ _
+lemma algHom_surjective : Function.Surjective (algHom R M) := Quotient.mk_surjective
 
 /-- Canonical inclusion of `M` into the symmetric algebra `SymmetricAlgebra R M`. -/
 def ι : M →ₗ[R] SymmetricAlgebra R M := algHom R M ∘ₗ TensorAlgebra.ι R
@@ -78,7 +80,9 @@ instance : CommSemiring (SymmetricAlgebra R M) where
     | algebraMap r => exact Algebra.commute_algebraMap_right _ _
     | ι x => induction a using SymmetricAlgebra.induction with
       | algebraMap r => exact Algebra.commute_algebraMap_left _ _
-      | ι y => simp [commute_iff_eq, ι, ← map_mul, RingQuot.mkAlgHom_rel _ (SymRel.mul_comm x y)]
+      | ι y =>
+        have := RingCon.le_ringConGen (r := SymRel R M) _ _ <| SymRel.mul_comm y x
+        simpa [commute_iff_eq, ι, ← RingCon.coe_mul]
       | mul a b ha hb => exact ha.mul_left hb
       | add a b ha hb => exact ha.add_left hb
     | mul b c hb hc => exact hb.mul_right hc
@@ -86,29 +90,32 @@ instance : CommSemiring (SymmetricAlgebra R M) where
 
 instance (R M) [CommRing R] [AddCommMonoid M] [Module R M] : CommRing (SymmetricAlgebra R M) where
   __ := (inferInstance : CommSemiring (SymmetricAlgebra R M))
-  __ := (inferInstance : Ring (RingQuot (SymRel R M)))
+  __ := (inferInstance : Ring (SymmetricAlgebra R M))
 
 variable {R M} {A : Type*} [CommSemiring A] [Algebra R A]
 
 /-- For any linear map `f : M →ₗ[R] A`, `SymmetricAlgebra.lift f` lifts the linear map to an
 R-algebra homomorphism from `SymmetricAlgebra R M` to `A`. -/
-def lift : (M →ₗ[R] A) ≃ (SymmetricAlgebra R M →ₐ[R] A) := by
+def lift : (M →ₗ[R] A) ≃ (SymmetricAlgebra R M →ₐ[R] A) :=
   let equiv : (TensorAlgebra R M →ₐ[R] A) ≃
-    {f : TensorAlgebra R M →ₐ[R] A // ∀ {x y}, (TensorAlgebra.SymRel R M) x y → f x = f y} := by
-    refine (Equiv.subtypeUnivEquiv fun h _ _ h' ↦ ?_).symm
-    induction h' with | mul_comm x y => rw [map_mul, map_mul, mul_comm]
-  exact (TensorAlgebra.lift R).trans <| equiv.trans <| RingQuot.liftAlgHom R
+    {f : TensorAlgebra R M →ₐ[R] A // TensorAlgebra.symRingCon R M ≤ RingCon.ker f.toRingHom} :=
+      (Equiv.subtypeUnivEquiv fun h _ _ h' ↦ ?_).symm
+  (TensorAlgebra.lift R).trans <| equiv.trans <| RingCon.liftₐEquiv (symRingCon R M)
+where finally
+  refine RingCon.ringConGen_le.2 (fun x y h' => ?_) h'
+  induction h' with | mul_comm x y
+  rw [RingCon.ker_apply, map_mul, map_mul, mul_comm]
 
 variable (f : M →ₗ[R] A)
 
 @[simp]
 lemma lift_ι_apply (a : M) : lift f (ι R M a) = f a := by
-  simp [lift, ι, algHom]
+  simp [lift, ι, algHom, RingCon.liftₐEquiv]
 
 @[simp]
 lemma lift_comp_ι : lift f ∘ₗ ι R M = f := LinearMap.ext <| lift_ι_apply f
 
-@[ext 1100]
+@[ext 1200]
 theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
     (h : F ∘ₗ ι R M = (G ∘ₗ ι R M : M →ₗ[R] A)) : F = G := by
   ext x
@@ -124,6 +131,8 @@ lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
   lift (0 : M →ₗ[R] R)
+
+theorem algebraMapInv_ι (x : M) : algebraMapInv (ι R M x) = 0 := lift_ι_apply 0 x
 
 variable (M)
 
@@ -184,7 +193,7 @@ lemma equiv_symm_apply (a : M) : h.equiv.symm (f a) = SymmetricAlgebra.ι R M a 
   h.equiv.injective (by simp)
 
 @[simp]
-lemma equiv_symm_comp : h.equiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
+lemma equiv_symm_comp : h.equiv.toLinearEquiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
   LinearMap.ext fun x ↦ equiv_symm_apply h x
 
 lemma of_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A)

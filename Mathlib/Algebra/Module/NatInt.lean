@@ -90,17 +90,18 @@ variable (R) in
 structure.
 See note [reducible non-instances]. -/
 abbrev Module.addCommMonoidToAddCommGroup
-    [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
-  { (inferInstance : AddCommMonoid M) with
-    neg := fun a => (-1 : R) • a
-    neg_add_cancel := fun a =>
-      show (-1 : R) • a + a = 0 by
-        nth_rw 2 [← one_smul R a]
-        rw [← add_smul, neg_add_cancel, zero_smul]
-    zsmul := fun z a => (z : R) • a
-    zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
-    zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [← smul_assoc] }
+    [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M where
+  neg := fun a => (-1 : R) • a
+  neg_add_cancel := fun a =>
+    show (-1 : R) • a + a = 0 by
+      nth_rw 2 [← one_smul R a]
+      rw [← add_smul, neg_add_cancel, zero_smul]
+  zsmul z a := (z : R) • a
+  zsmul_zero' a := by simp_rw [HSMul.hSMul, SMul.smul, Int.cast_zero]; exact zero_smul R a
+  zsmul_succ' z a := by simp_rw [HSMul.hSMul, SMul.smul]; simp [add_comm, add_smul]
+  zsmul_neg' z a := by
+    change (Int.negSucc z : R) • a = -1 • ((z.succ : ℤ) : R) • a
+    simp [← smul_assoc]
 
 section AddCommMonoid
 
@@ -134,7 +135,7 @@ should normally have exactly one `ℕ`-module structure by design. -/
 @[implicit_reducible]
 def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := inferInstance
-  uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
+  uniq P := (Module.ext' P _) fun n => by convert! nat_smul_eq_nsmul P n
 
 /-- All `ℕ`-module structures are equal. See also `AddCommMonoid.uniqueNatModule`. -/
 instance AddCommMonoid.subsingletonNatModule : Subsingleton (Module ℕ M) :=
@@ -186,7 +187,7 @@ should normally have exactly one `ℤ`-module structure by design. -/
 @[implicit_reducible]
 def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := inferInstance
-  uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
+  uniq P := (Module.ext' P _) fun n => by convert! int_smul_eq_zsmul P n
 
 end AddCommGroup
 

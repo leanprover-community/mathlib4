@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.Algebra.Torsor.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
@@ -117,22 +117,22 @@ theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : T
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
-    ContinuousWithinAt (fun x => f x • g x) s b :=
+    ContinuousWithinAt (f • g) s b :=
   Filter.Tendsto.smul hf hg
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousAt.smul (hf : ContinuousAt f b) (hg : ContinuousAt g b) :
-    ContinuousAt (fun x => f x • g x) b :=
+    ContinuousAt (f • g) b :=
   Filter.Tendsto.smul hf hg
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x • g x) s := fun x hx => (hf x hx).smul (hg x hx)
+    ContinuousOn (f • g) s := fun x hx => (hf x hx).smul (hg x hx)
 
-@[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
+@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
+theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous (f • g) :=
   continuous_smul.comp (hf.prodMk hg)
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
@@ -191,7 +191,7 @@ lemma Topology.IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpac
     ContinuousSMul N Y where
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
-      using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
+      using (hf.comp continuous_fst).fun_smul <| hg.continuous.comp continuous_snd
 
 @[to_additive]
 instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
@@ -257,10 +257,10 @@ theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
   have hU : IsOpen U := by
     by_cases hU' : U ≠ ∅
     · obtain ⟨m, (hm : m • y = x)⟩ := Set.nonempty_iff_empty_ne.mpr hU'.symm
-      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
+      convert! (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
       ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
     simp_all
-  simpa using hU
+  simpa using! hU
 
 end IsTopologicalGroup
 
@@ -330,6 +330,7 @@ theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
     (h : ∀ i, @ContinuousSMul M X _ _ (ts' i)) : @ContinuousSMul M X _ _ (⨅ i, ts' i) :=
   continuousSMul_sInf <| Set.forall_mem_range.mpr h
 
+set_option linter.overlappingInstances false in
 @[to_additive]
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by
@@ -349,7 +350,7 @@ include G in
 it loops for a group as a torsor over itself. -/
 protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
   { isPreconnected_univ := by
-      convert
+      convert!
         isPreconnected_univ.image (Equiv.vaddConst (Classical.arbitrary P) : G → P)
           (continuous_id.vadd continuous_const).continuousOn
       rw [Set.image_univ, Equiv.range_eq_univ]

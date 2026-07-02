@@ -75,6 +75,10 @@ theorem isNoetherian_of_surjective {σ : R →+* S} [RingHomSurjective σ] (f : 
     have : (s.comap f).map f = s := Submodule.map_comap_eq_self <| hf.symm ▸ le_top
     this ▸ (IsNoetherian.noetherian _).map _⟩
 
+instance isNoetherian_map {σ : R →+* S} [RingHomSurjective σ] {s : Submodule R M}
+    (f : M →ₛₗ[σ] P) [IsNoetherian R s] : IsNoetherian S (Submodule.map f s) :=
+  isNoetherian_of_surjective (f.submoduleMap s) (by simp [LinearMap.submoduleMap])
+
 instance isNoetherian_range {σ : R →+* S} [RingHomSurjective σ] (f : M →ₛₗ[σ] P)
     [IsNoetherian R M] : IsNoetherian S (LinearMap.range f) :=
   isNoetherian_of_surjective _ f.range_rangeRestrict
@@ -377,6 +381,12 @@ theorem FG.of_le_of_isNoetherian {S T : Submodule R M} [IsNoetherian R T] (hST :
 lemma FG.of_le [IsNoetherianRing R] {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG := by
   rw [← Module.Finite.iff_fg] at hT
   exact FG.of_le_of_isNoetherian hST
+
+/-- If `S` is disjoint from `T` and `M ⧸ T` is a noetherian module, then `S` is FG.
+See also `Submodule.CoFG.fg_of_disjoint`. -/
+theorem FG.of_disjoint_of_isNoetherian_quotient {S T : Submodule R M} [IsNoetherian R (M ⧸ T)]
+    (hST : Disjoint S T) : S.FG :=
+  Module.Finite.iff_fg.mp <| .of_injective (T.mkQ.domRestrict S) (by simp [hST.eq_bot])
 
 end Submodule
 

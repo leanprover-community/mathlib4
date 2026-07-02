@@ -230,7 +230,7 @@ theorem hasStrictFDerivAt_implicitFunction_fderiv :
       (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt)) (φ.rightFun φ.pt) := by
   have := φ.hasStrictFDerivAt.to_localInverse.comp (φ.rightFun φ.pt)
     ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _))
-  convert this
+  convert! this
   exact this.hasFDerivAt.fderiv
 
 theorem differentiableAt_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G) :
@@ -261,7 +261,7 @@ theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
-  convert φ.hasStrictFDerivAt_implicitFunction_fderiv
+  convert! φ.hasStrictFDerivAt_implicitFunction_fderiv
   ext1 x
   rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
   simp_all [DFunLike.ext_iff]
@@ -415,7 +415,7 @@ theorem eq_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
 theorem implicitFunctionOfComplemented_apply_image (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) (hker : f'.ker.ClosedComplemented) :
     hf.implicitFunctionOfComplemented f f' hf' hker (f a) 0 = a := by
-  simpa only [implicitToOpenPartialHomeomorphOfComplemented_self] using
+  simpa only [implicitToOpenPartialHomeomorphOfComplemented_self] using!
       (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).left_inv
       (hf.mem_implicitToOpenPartialHomeomorphOfComplemented_source hf' hker)
 
@@ -423,8 +423,9 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (hker : f'.ker.ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
       f'.ker.subtypeL 0 := by
-  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
-    f'.ker.subtypeL _ _
+  convert!
+    (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
+      f'.ker.subtypeL _ _
   swap
   · ext
     simp only [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
@@ -433,7 +434,7 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
   swap
   · ext
     simp only [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL, Submodule.coe_subtype,
-      ContinuousLinearMap.apply_val_ker, ContinuousLinearMap.zero_apply]
+      ContinuousLinearMap.apply_val_ker, zero_apply]
   simp only [implicitFunctionDataOfComplemented, map_sub, sub_self]
 
 end Complemented

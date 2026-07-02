@@ -69,7 +69,7 @@ lemma isIntegral_coeff_of_dvd (p : R[X]) (q : S[X]) (hp : p.Monic) (hq : q.Monic
   rw [IsScalarTower.coe_toAlgHom', ← coeff_map]
   refine Polynomial.isIntegral_coeff_of_factors _ (by simp [hq.map, isIntegral_one]) hqT ?_ i
   intro x hx
-  exact ⟨p, hp, by simpa using aeval_eq_zero_of_dvd_aeval_eq_zero (a := x) H (by simp_all)⟩
+  exact ⟨p, hp, by simpa using! aeval_eq_zero_of_dvd_aeval_eq_zero (x := x) H (by simp_all)⟩
 
 end Polynomial
 
@@ -199,7 +199,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
     simp_rw [monomial_eq]
     refine IsIntegral.sum _ fun n _ ↦ .mul ((H n).map (Algebra.ofId _ _)).tower_top
       (.prod _ fun i _ ↦ .pow ?_ _)
-    convert isIntegral_algebraMap (x := MvPolynomial.X i)
+    convert! isIntegral_algebraMap (x := MvPolynomial.X i)
     simp only [algebraMap_def, map_X]
   unfold IsIntegral at H
   wlog hσ : Finite σ generalizing σ
@@ -212,8 +212,10 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
         (g := (rename ((↑) : f.vars → σ)).toRingHom) (rename_injective _ Subtype.val_injective)
         (.of_comp (f := (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective).toRingHom) <| by
         simp only [AlgHom.toRingHom_eq_coe, algebraMap_def, RingHom.coe_coe, hg]
-        convert H.map ((rename Subtype.val).comp
-          (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
+        convert!
+          H.map
+            ((rename Subtype.val).comp
+                (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
         · exact RingHom.ext (by simp [MvPolynomial.killCompl_map])
         · nth_rw 1 12 [← hg]; simp)) n (.of_fintype _)
     · rw [← hg, coeff_rename_eq_zero _ _ _ (by grind)]
@@ -224,23 +226,23 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
     have := @IH (rename e.symm f) (.of_map (g := (rename e).toRingHom)
       (rename_injective _ e.injective) <| .of_comp (f := (rename e.symm).toRingHom)
         (by convert H <;> aesop)) (n.embDomain e.symm)
-    simpa [Finsupp.embDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective] using this
+    simpa [Finsupp.embDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective] using! this
   · intro f H n
     refine .of_map (g := (isEmptyAlgEquiv _ PEmpty).symm.toRingHom)
       (isEmptyAlgEquiv _ PEmpty).symm.injective
       (.of_comp (f := (isEmptyAlgEquiv _ PEmpty).toRingHom) ?_)
-    convert H
+    convert! H
     · aesop (add simp MvPolynomial.isEmptyAlgEquiv)
     · obtain rfl := Subsingleton.elim n 0
       have : constantCoeff = (isEmptyAlgEquiv S PEmpty).toRingHom := by aesop
-      simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using
+      simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using!
         congr((isEmptyAlgEquiv S PEmpty.{w + 1}).symm ($this f))
   · intro α _ IH f H n
     have := IH (IsIntegral.coeff (R := MvPolynomial α R)
       (p := optionEquivLeft _ _ f) (.of_map
       (g := (optionEquivLeft _ _).symm.toRingHom) (optionEquivLeft _ _).symm.injective
       (.of_comp (f := (optionEquivLeft _ _).toRingHom) (by
-        convert H
+        convert! H
         · ext i m
           · aesop
           · cases i <;> aesop
