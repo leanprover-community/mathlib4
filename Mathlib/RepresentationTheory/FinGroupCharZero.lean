@@ -125,10 +125,7 @@ lemma simple_iff_char_is_norm_one [CharZero k] [Fintype G] (V : FDRep k G) :
     exact NeZero.charZero
   have := invertibleOfNonzero (NeZero.ne (Nat.card G : k))
   constructor <;> intro h
-  · have : (Nat.card G : k)⁻¹ * ∑ g, V.character g * V.character g⁻¹ = 1 := by
-      simpa [Nonempty.intro (Iso.refl V)] using char_orthonormal V V
-    apply_fun (· * (Nat.card G : k)) at this
-    rwa [one_mul, mul_comm, ← mul_assoc, mul_inv_cancel_of_invertible, one_mul] at this
+  · symm; simpa [Nonempty.intro (Iso.refl V), inv_mul_eq_one₀] using char_orthonormal V V
   · have eq := FDRep.scalar_product_char_eq_finrank_equivariant V V
     rw [h, inv_mul_cancel_of_invertible] at eq
     rw [simple_iff_end_is_rank_one, ← Nat.cast_inj (R := k), ← eq, Nat.cast_one]
