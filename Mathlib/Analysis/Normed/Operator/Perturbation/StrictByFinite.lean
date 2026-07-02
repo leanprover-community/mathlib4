@@ -250,8 +250,6 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
   have v_ker : Disjoint v.ker B := by
     simp [disjoint_iff, v, B, toLinearMap_liftQL, ker_liftQ,
       map_inf_eq_map_inf_comap, comap_map_mkQ, N, inf_comm]
-  have v_restr_inj : Injective (Set.restrict B v) :=
-    injOn_iff_injective.mp <| LinearMap.injOn_of_disjoint_ker subset_rfl v_ker.symm
   -- Because `A` contains `N`, we have `A = comap π B`. In particular, `B` is closed.
   have comap_B : comap π.toLinearMap B = A := by simp [B, N, π]
   have A_mapsTo_B : MapsTo π A B := fun _ ↦ by simp [← comap_B]
