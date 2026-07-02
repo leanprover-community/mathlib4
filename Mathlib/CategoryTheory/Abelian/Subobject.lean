@@ -182,10 +182,14 @@ def Subobject.image {X Y : C} (f : X ⟶ Y) : Subobject X ⥤ Subobject Y where
     apply homOfLE
     exact (Eq.le (by simp)).trans (imageSubobject_comp_le (X'.ofLE X'' h.le) (X''.arrow ≫ f))
 
+lemma Subobject.image_le {X Y : C} (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
+    (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : (image f).obj X' ≤ Y' :=
+  imageSubobject_le (X'.arrow ≫ f) u h
+
 @[simp]
 noncomputable
 def Subobject.image_map {X Y : C} (f : X ⟶ Y) (X' : Subobject X) :
-    underlying.obj X' ⟶ underlying.obj (imageSubobject (X'.arrow ≫ f)) :=
+    (X' : C) ⟶ (image f).obj X' :=
   factorThruImageSubobject (X'.arrow ≫ f)
 
 @[simp]
@@ -199,16 +203,80 @@ def Subobject.inverseImage {X Y : C} (f : X ⟶ Y) : Subobject Y ⥤ Subobject X
         (cokernel.map Y'.arrow Y''.arrow (underlying.map h) (𝟙 _) (by simp)) (by simp)
     · simp
 
-def Subobject.inverseImage_inc {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :
-    kernel (f ≫ cokernel.π Y'.arrow) ⟶ underlying.obj Y' := by
-  sorry
+def Subobject.isoKernelCokernel {X Y : C} {A : Subobject X} (f : (A : C) ⟶ Y) [Mono f] :
+    (A : C) ≅ kernel (cokernel.π f) := by
+  have := ((monoIsKernelOfCokernel _ (cokernelIsCokernel f)).conePointUniqueUpToIso
+    (kernelIsKernel (cokernel.π f)))
+  exact this
 
+@[simp]
+lemma Subobject.isoKernelCokernel_hom_arrow {X Y : C} {A : Subobject X} (f : (A : C) ⟶ Y) [Mono f] :
+    (isoKernelCokernel f).hom ≫ kernel.ι (cokernel.π f) = f :=
+  (IsLimit.conePointUniqueUpToIso_hom_comp _ _) WalkingParallelPair.zero
+
+@[simp]
+lemma Subobject.isoKernelCokernel_inv_arrow {A Y : C} {X : Subobject A} (f : (X : C) ⟶ Y) [Mono f] :
+    (isoKernelCokernel f).inv ≫ f = kernel.ι (cokernel.π f) :=
+  (IsLimit.conePointUniqueUpToIso_inv_comp _ _) WalkingParallelPair.zero
+
+/-
+@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_inv_desc]
+theorem lift_comp_conePointUniqueUpToIso_hom {r s t : Cone F} (P : IsLimit s) (Q : IsLimit t) :
+    P.lift r ≫ (conePointUniqueUpToIso P Q).hom = Q.lift r :=
+  Q.uniq _ _ (by simp)
+
+@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_hom_desc]
+theorem lift_comp_conePointUniqueUpToIso_inv {r s t : Cone F} (P : IsLimit s) (Q : IsLimit t) :
+    Q.lift r ≫ (conePointUniqueUpToIso P Q).inv = P.lift r :=
+  P.uniq _ _ (by simp)
+-/
+
+
+@[simp]
+def Subobject.inverseImage_map {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :
+    (((inverseImage f).obj Y') : C) ⟶ Y' := (kernelSubobjectIso _).hom ≫
+  kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp) ≫
+  (isoKernelCokernel _).inv
+
+lemma Subobject.le_inverseImage {X Y : C} (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
+    (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : X' ≤ (inverseImage f).obj Y' := by
+  refine le_kernelSubobject (f ≫ cokernel.π Y'.arrow) X' ?_
+  rw [← Category.assoc]
+  simp [← h]
+
+lemma Subobject.inverseImage_image_le {X Y : C} (f : X ⟶ Y) (X' : Subobject X) :
+    X' ≤ (inverseImage f).obj ((image f).obj X') :=
+  le_inverseImage _ (factorThruImageSubobject _) (by simp)
+
+lemma Subobject.image_inverseImage_le {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :
+    (image f).obj ((inverseImage f).obj Y') ≤ Y' :=
+  image_le _ (inverseImage_map f Y') (by simp)
+
+@[simp]
+lemma Subobject.mono_inverseImage_image {X Y : C} (f : X ⟶ Y) (X' : Subobject X) [Mono f] :
+    (inverseImage f).obj ((image f).obj X') = X' := by
+  apply le_antisymm
+  · refine mk_le_of_comm ?_ ?_
+    · simp only [image, homOfLE_leOfHom]
+      sorry
+    · sorry
+  · exact inverseImage_image_le f X'
+
+@[simp]
+lemma Subobject.epi_image_inverseImage {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) [Epi f] :
+    (image f).obj ((inverseImage f).obj Y') = Y' := by
+  apply le_antisymm
+  · exact image_inverseImage_le f Y'
+  · refine le_of_comm ?_ ?_
+    · simp
+      sorry
+    · sorry
+
+/-
 lemma Subobject.inverseImage_comp {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :
-    sorry ≫ Y'.arrow = ((inverseImage f).obj Y').arrow ≫ f := by
+    (inverseImage_map f Y') ≫ Y'.arrow = ((inverseImage f).obj Y').arrow ≫ f := by
   simp
-  have : kernel (f ≫ cokernel.π Y'.arrow) ⟶ Y' := by
-    sorry
-  sorry
+-/
 
 end
 

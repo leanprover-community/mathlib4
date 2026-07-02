@@ -17,17 +17,24 @@ variable {C : Type u} [Category.{v} C] [Abelian C] {X Y : C} {x : Subobject X} (
 /-
 Given `Y ⊆ X` correspondence `{ subobjects of X/Y } ↔ { subobjects of X containing Y }`
 -/
+open Subobject in
 noncomputable
-def Subobject.cokernelOrderIso (Y : Subobject X) : Subobject (cokernel Y.arrow) ≃o Set.Ici Y where
-  toFun p := ⟨(Abelian.Subobject.inverseImage (cokernel.π Y.arrow)).obj p,
-    le_kernelSubobject (cokernel.π Y.arrow ≫ cokernel.π p.arrow) Y (by simp)⟩
-  invFun q := (Abelian.Subobject.image (cokernel.π Y.arrow)).obj (q : Subobject X)
+def Abelian.Subobject.cokernelOrderIso (Y : Subobject X) :
+    Subobject (cokernel Y.arrow) ≃o Set.Ici Y where
+  toFun p := ⟨(inverseImage (cokernel.π Y.arrow)).obj p, le_kernelSubobject _ _ (by simp)⟩
+  invFun q := (image (cokernel.π Y.arrow)).obj q
   left_inv p := by
     simp
     sorry
-  right_inv q := by
-    simp
-    sorry
+  right_inv := by
+    rintro ⟨q, hq : Y ≤ q⟩
+    dsimp only
+    congr
+    apply le_antisymm
+    · simp
+      sorry
+    · exact inverseImage_image_le ..
+    --have := cokernelImageι (q.arrow ≫ cokernel.π Y.arrow)
   map_rel_iff' := by cat_disch
 
 variable (X Y : C)
@@ -45,30 +52,31 @@ theorem IsSimpleSubobject_iff_isAtom : IsSimpleSubobject (x : C) ↔ IsAtom x :=
 
 theorem IsSimpleSubobject_iff_isCoatom : IsSimpleSubobject (cokernel x.arrow) ↔ IsCoatom x := by
   rw [← Set.isSimpleOrder_Ici_iff_isCoatom, isSimpleSubobject_iff]
-  exact (Subobject.cokernelOrderIso _).isSimpleOrder_iff
+  exact (Abelian.Subobject.cokernelOrderIso _).isSimpleOrder_iff
 
 theorem IsSimpleSubobject_iff_iso (e : X ≅ Y) : IsSimpleSubobject X ↔ IsSimpleSubobject Y := by
-  sorry
+  constructor
+  · exact fun _ ↦ IsSimpleSubobject.congr _ _ e
+  · exact fun _ ↦ IsSimpleSubobject.congr _ _ e.symm
 
+open Subobject in
 theorem covBy_iff_cokernel_is_simple {A B : Subobject X} (hAB : A ≤ B) :
     A ⋖ B ↔ IsSimpleSubobject (cokernel (A.ofLE B hAB)) := by
   set f : Subobject (B : C) ≃o Set.Iic B := B.subobjectOrderIso with hf
   rw [covBy_iff_coatom_Iic hAB]
-  have : (cokernel (A.ofLE B hAB)) ≅ cokernel ((Subobject.mk (A.ofLE B hAB)).arrow) := sorry
+  have : (cokernel (A.ofLE B hAB)) ≅ cokernel ((Subobject.mk (A.ofLE B hAB)).arrow) :=
+    cokernel.mapIso (A.ofLE B hAB) (mk (A.ofLE B hAB)).arrow ((underlyingIso _).symm) (Iso.refl _)
+    (by simp)
   rw [IsSimpleSubobject_iff_iso _ _ this]
   rw [IsSimpleSubobject_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
-  dsimp [Subobject.subobjectOrderIso]
-  have : Subobject.mk ((Subobject.mk (A.ofLE B hAB)).arrow ≫ B.arrow) = A := by
-    refine Subobject.mk_eq_of_comm ((Subobject.mk (A.ofLE B hAB)).arrow ≫ B.arrow) ?_ ?_
-    · exact Subobject.underlyingIso (A.ofLE B hAB)
-    ·
-      sorry
+  dsimp [subobjectOrderIso]
+  have : mk ((Subobject.mk (A.ofLE B hAB)).arrow ≫ B.arrow) = A := by
+    refine mk_eq_of_comm ((mk (A.ofLE B hAB)).arrow ≫ B.arrow) ?_ ?_
+    · exact underlyingIso (A.ofLE B hAB)
+    · rw [← underlyingIso_hom_comp_eq_mk, Category.assoc, Iso.cancel_iso_hom_left, ofLE_arrow]
+  simp [this]
 
-  sorry
-  --simp
-  --simp [-OrderIso.isCoatom_iff, Submodule.map_comap_subtype, inf_eq_right.2 hAB]
-
--- omit Abelian
+-- change to omit Abelian
 lemma Subobject.sup_eq_imageSubobject [HasImages C] [HasBinaryCoproducts C] {A : C}
     (X Y : Subobject A) :
     X ⊔ Y = imageSubobject (coprod.desc X.arrow Y.arrow) := by
@@ -227,16 +235,6 @@ def Abelian.Subobject.s {A : C} (X Y : Subobject A) : Limits.pullback X.arrow Y.
   simp only [Category.assoc] at this ⊢
   cat_disch
 
-@[simps!]
-noncomputable
-def Abelian.Subobject.biprodInlIso {A : C} (X Y : Subobject A) :
-    (X : C) ≅
-      kernel (cokernel.π (biprod.inl ≫ biprod_e X Y)) := by
-  have := (monoIsKernelOfCokernel _
-    (cokernelIsCokernel (biprod.inl ≫ biprod_e X Y))).conePointUniqueUpToIso
-      (kernelIsKernel _)
-  exact this
-
 noncomputable
 def Abelian.Subobject.w {A : C} (X Y : Subobject A) : kernel (biprod.inr ≫ biprod_e X Y ≫
     cokernel.π (biprod.inl ≫ biprod_e X Y)) ⟶
@@ -245,7 +243,7 @@ def Abelian.Subobject.w {A : C} (X Y : Subobject A) : kernel (biprod.inr ≫ bip
     ((kernel.ι (biprod.inr ≫ biprod_e X Y ≫
       cokernel.π (biprod.inl ≫ biprod_e X Y))) ≫
       (biprod.inr ≫ biprod_e X Y)) ?_) ≫
-      (Abelian.Subobject.biprodInlIso X Y).inv
+      (isoKernelCokernel (biprod.inl ≫ biprod_e X Y)).inv
   simp only [Category.assoc, kernel.condition]
 
 lemma Abelian.Subobject.w_u_fac {A : C} (X Y : Subobject A) :
@@ -257,14 +255,7 @@ lemma Abelian.Subobject.w_u_fac {A : C} (X Y : Subobject A) :
       (biprod.inr ≫ biprod_e X Y))
     (by simp only [Category.assoc, kernel.condition])
   rw [← this]
-  simp only [Category.assoc, w]
-  let P := (Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (biprod.inl ≫ biprod_e X Y)))
-  let Q := (kernelIsKernel (cokernel.π (biprod.inl ≫ biprod_e X Y)))
-  have : kernel.ι (cokernel.π (biprod.inl ≫ biprod_e X Y)) =
-      (biprodInlIso X Y).inv ≫ biprod.inl ≫ biprod_e X Y := by
-    refine (Iso.eq_inv_comp (P.conePointUniqueUpToIso Q)).2 ?_
-    simpa using (P.conePointUniqueUpToIso_hom_comp Q) WalkingParallelPair.zero
-  rw [this]
+  simp [w]
 
 noncomputable
 def Abelian.Subobject.t {A : C} (X Y : Subobject A) : kernel (biprod.inr ≫ biprod_e X Y ≫
