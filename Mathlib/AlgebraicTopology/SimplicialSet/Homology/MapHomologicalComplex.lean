@@ -44,19 +44,18 @@ noncomputable def chainComplexFunctorObjCompMapIso :
     (chainComplexFunctor C).obj R ⋙ F.mapHomologicalComplex (.down ℕ) ≅
     (chainComplexFunctor D).obj (F.obj R) :=
   calc
-    ((whiskering _ _).obj (sigmaConst.obj R) ⋙
-      alternatingFaceMapComplex C) ⋙ F.mapHomologicalComplex _ ≅
-    (whiskering _ _).obj (sigmaConst.obj R) ⋙
-      alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ := associator _ _ _
-    _ ≅ (whiskering _ _).obj (sigmaConst.obj R) ⋙
-      (whiskering _ _).obj F ⋙ alternatingFaceMapComplex D :=
+    _ ≅ (whiskering ..).obj (sigmaConst.obj R) ⋙
+      alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ := associator ..
+    _ ≅ (whiskering ..).obj (sigmaConst.obj R) ⋙
+        (whiskering ..).obj F ⋙ alternatingFaceMapComplex D :=
       isoWhiskerLeft _ (alternatingFaceMapComplexCompMapHomologicalComplexIso _)
-    _ ≅ ((whiskering _ _).obj (sigmaConst.obj R) ⋙
-      (whiskering _ _).obj F) ⋙ alternatingFaceMapComplex D := (associator _ _ _).symm
-    _ ≅ (whiskering _ _).obj (sigmaConst.obj R ⋙ F) ⋙ alternatingFaceMapComplex D :=
-      isoWhiskerRight (Functor.whiskeringRightObjCompIso _ _) _
-    _ ≅ (whiskering _ _).obj (sigmaConst.obj (F.obj R)) ⋙ alternatingFaceMapComplex D :=
-      isoWhiskerRight ((whiskering _ _).mapIso (sigmaConstObjCompIso F R)) _
+    _ ≅ ((whiskering ..).obj (sigmaConst.obj R) ⋙
+        (whiskering ..).obj F) ⋙ alternatingFaceMapComplex D :=
+      (associator ..).symm
+    _ ≅ (whiskering ..).obj (sigmaConst.obj R ⋙ F) ⋙ alternatingFaceMapComplex D :=
+      isoWhiskerRight (whiskeringRightObjCompIso ..) _
+    _ ≅ (whiskering ..).obj (sigmaConst.obj (F.obj R)) ⋙ alternatingFaceMapComplex D :=
+      isoWhiskerRight ((whiskering ..).mapIso (sigmaConstObjCompIso F R)) _
 
 set_option backward.defeqAttrib.useBackward true in
 variable {R} in
