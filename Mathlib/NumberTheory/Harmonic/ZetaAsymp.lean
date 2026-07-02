@@ -536,7 +536,7 @@ lemma deriv_riemannZeta₁_one : deriv riemannZeta₁ 1 = γ := by
 
 lemma deriv_riemannZeta_eq_neg_inv_sub_sq_add {s : ℂ} (hs : s ≠ 1) :
     deriv riemannZeta s = - ((s - 1)⁻¹) ^ 2 + deriv riemannZeta₀ s := by
-  have : s - 1 ≠ 0 := by grind
+  have : s - 1 ≠ 0 := sub_ne_zero_of_ne hs
   convert EventuallyEq.deriv_eq (f := fun s ↦ (s - 1)⁻¹ + riemannZeta₀ s) ?_
   · rw [deriv_fun_add (by fun_prop) (by fun_prop), deriv_fun_inv'' (by fun_prop) (by exact this)]
     simp [field]
@@ -545,7 +545,7 @@ lemma deriv_riemannZeta_eq_neg_inv_sub_sq_add {s : ℂ} (hs : s ≠ 1) :
 lemma deriv_riemannZeta_eq_neg_inv_sub_sq_mul_add {s : ℂ} (hs : s ≠ 1) :
     deriv riemannZeta s =
       - ((s - 1)⁻¹) ^ 2 * (riemannZeta₁ s) + (s - 1)⁻¹ * deriv riemannZeta₁ s := by
-  have : s - 1 ≠ 0 := by grind
+  have : s - 1 ≠ 0 := sub_ne_zero_of_ne hs
   convert EventuallyEq.deriv_eq (f := fun s ↦ (s - 1)⁻¹ * riemannZeta₁ s) ?_
   · rw [deriv_fun_mul (by fun_prop) (by fun_prop), deriv_fun_inv'' (by fun_prop) (by exact this)]
     simp [field]
