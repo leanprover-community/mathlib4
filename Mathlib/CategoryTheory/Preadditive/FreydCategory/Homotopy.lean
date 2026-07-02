@@ -36,7 +36,9 @@ variable {u v w : Arrow V} (f g : u ⟶ v)
 /-- A left homotopy on morphisms in the category of arrows of a preadditive category. -/
 @[ext]
 structure LeftHomotopy where
+/-- A "diagonal" morphism from the right object of `u` to the left object of `v`. -/
   hom : u.right ⟶ v.left
+/-- The different of the left morphisms factors through `hom`. -/
   comm : f.left - g.left = u.hom ≫ hom := by cat_disch
 
 /-- A right homotopy on morphisms in the category of arrows of a preadditive category. -/
