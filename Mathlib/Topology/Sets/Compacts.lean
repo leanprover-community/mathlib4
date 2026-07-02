@@ -338,11 +338,11 @@ lemma closure_mem_compactNhds_of_mem_openRcNhds {K : Compacts α} {U : Opens α}
 
 /-- The converting map from relatively compact opens
 neighbourhood of a compact subset to its opens neighbourhoods -/
-def openRelativelyCompactNhdsToOpenNhds (K : Compacts α) : K.openRcNhds → K.openNhds :=
+def openRcNhdsToOpenNhds (K : Compacts α) : K.openRcNhds → K.openNhds :=
   fun U ↦ ⟨_, U.property.2⟩
 
-lemma openRelativelyCompactNhdsToOpenNhds_mono (K : Compacts α) :
-    Monotone K.openRelativelyCompactNhdsToOpenNhds := fun _ _ h ↦ h
+lemma openRcNhdsToOpenNhds_mono (K : Compacts α) :
+    Monotone K.openRcNhdsToOpenNhds := fun _ _ h ↦ h
 
 /-- An open relatively compact neighbourhood of `K` induces a compact neighbourhood by taking
 the closure
