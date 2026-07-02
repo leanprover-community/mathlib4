@@ -595,13 +595,9 @@ def rTensor (f : N ≃ₗ[R] P) : N ⊗[R] M ≃ₗ[R] P ⊗[R] M := TensorProdu
 
 variable (g : P ≃ₗ[R] Q) (f : N ≃ₗ[R] P) (m : M) (n : N) (p : P) (x : M ⊗[R] N) (y : N ⊗[R] M)
 
-lemma lTensor_apply : f.lTensor M x = f.toLinearMap.lTensor M x := rfl
+theorem symm_lTensor : (f.lTensor M).symm = f.symm.lTensor M := rfl
 
-lemma rTensor_apply : f.rTensor M y = f.toLinearMap.rTensor M y := rfl
-
-theorem lTensor_symm : (f.lTensor M).symm = f.symm.lTensor M := rfl
-
-theorem rTensor_symm : (f.rTensor M).symm = f.symm.rTensor M := rfl
+theorem symm_rTensor : (f.rTensor M).symm = f.symm.rTensor M := rfl
 
 @[simp] theorem coe_lTensor : lTensor M f = (f : N →ₗ[R] P).lTensor M := rfl
 

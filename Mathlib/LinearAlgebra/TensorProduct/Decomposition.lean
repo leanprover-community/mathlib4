@@ -106,7 +106,8 @@ lemma coe_decomposeTensor_apply (x : (⨁ (i : ι), decomposeTensor ℳ N i)) :
   | of i x =>
     obtain ⟨x, y, h⟩ := x
     simp only [← h, coeAddMonoidHom_of]
-    rw [LinearEquiv.eq_symm_apply, LinearEquiv.eq_symm_apply, LinearEquiv.rTensor_apply,
+    rw [LinearEquiv.eq_symm_apply, LinearEquiv.eq_symm_apply,
+      ← LinearEquiv.coe_coe (LinearEquiv.rTensor N _), LinearEquiv.coe_rTensor,
       ← rTensor_comp_apply, decomposeLinearEquiv_comp_subtype]
     have : (rTensor N (lof R ι (fun i ↦ ↥(ℳ i)) i)) y =
         (directSumLeft R R (fun i ↦ ℳ i) N).symm ((of (fun i ↦ ℳ i ⊗[R] N) i) y) :=
