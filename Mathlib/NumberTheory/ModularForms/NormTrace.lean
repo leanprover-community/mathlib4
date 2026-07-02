@@ -471,15 +471,8 @@ lemma exists_norm_decomposition [DiscreteTopology 𝒢.strictPeriods] :
   have h_rest_eq : rest =
       ∏ q ∈ Finset.univ.filter (· ∉ tPowCosets 𝒢), SlashInvariantForm.quotientFunc f q :=
     funext fun _ ↦ (Finset.prod_apply ..).symm
-  have h_rest_periodic : Function.Periodic (rest ∘ ofComplex) 1 := fun w ↦ by
-    simp only [Function.comp_apply]
-    by_cases! hw : 0 < w.im
-    · have hw1 : 0 < (w + 1).im := by simpa using hw
-      rw [ofComplex_apply_of_im_pos hw1, ofComplex_apply_of_im_pos hw,
-        show (⟨w + 1, hw1⟩ : ℍ) = ((1 : ℝ) +ᵥ (⟨w, hw⟩ : ℍ) : ℍ) from
-          UpperHalfPlane.ext (by simp [add_comm])]
-      exact prod_quotientFunc_one_vadd f ⟨w, hw⟩
-    · rw [ofComplex_apply_eq_of_im_nonpos (by simpa using hw) hw]
+  have h_rest_periodic : Function.Periodic (rest ∘ ofComplex) 1 :=
+    periodic_comp_ofComplex_iff.mpr fun τ ↦ prod_quotientFunc_one_vadd f τ
   refine ⟨rest, h_rest_periodic, analyticAt_cuspFunction_zero one_pos h_rest_periodic
     (h_rest_eq ▸ MDifferentiable.prod fun q _ ↦ SlashInvariantForm.quotientFunc_mdiff f q)
     (h_rest_eq ▸ Filter.BoundedAtFilter.prod _ fun q _ ↦
