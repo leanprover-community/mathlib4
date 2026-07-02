@@ -472,31 +472,16 @@ lemma eintegral_real_const_mul (c : ℝ) (hf : EIntegrable f μ) :
           -c * b - -c * a = -(-c * a - -c * b) from
         this _ _ (eintegral_nonneg (by simp)) (eintegral_nonneg (by simp))
           hf.eintegral_posPartFun_ne_top_or_eintegral_negPartFun_ne_top
-      rcases eq_or_lt_of_le hc with rfl | hc
-      · simp
       intro a b ha hb h_or
-      cases a <;> cases b
-      · simp at ha
-      · simp at ha
-      · simp at ha
-      · simp at hb
-      · rw [EReal.neg_sub, sub_eq_add_neg, neg_mul, neg_mul, neg_neg, add_comm]
-        · left
-          rw [neg_mul, ← EReal.coe_mul]
-          simp only [ne_eq, EReal.neg_eq_bot_iff]
-          exact EReal.coe_ne_top _
-        · left
-          rw [neg_mul, ← EReal.coe_mul]
-          exact EReal.coe_ne_top _
-      · rw [EReal.mul_top_of_pos (by simp [hc]), EReal.top_sub, EReal.sub_top, EReal.neg_bot]
-        rw [neg_mul, ← EReal.coe_mul]
-        simp only [EReal.coe_mul, ne_eq, EReal.neg_eq_top_iff]
-        exact EReal.coe_ne_bot _
-      · simp at hb
-      · rw [EReal.mul_top_of_pos (by simp [hc]), EReal.sub_top, EReal.top_sub, EReal.neg_top]
-        rw [neg_mul, ← EReal.coe_mul]
-        exact EReal.coe_ne_top _
-      · simp at h_or
+      cases h_or with
+      | inl h =>
+        rw [EReal.neg_sub, add_comm, ← sub_eq_add_neg]
+        · left; rw [EReal.mul_ne_bot]; simp [hc, ne_bot_of_le_ne_bot (by simp) ha]
+        · left; rw [EReal.mul_ne_top]; simp [hc, h]
+      | inr h =>
+        rw [EReal.neg_sub, add_comm, ← sub_eq_add_neg]
+        · left; rw [EReal.mul_ne_bot]; simp [hc, ne_bot_of_le_ne_bot (by simp) ha]
+        · right; rw [EReal.mul_ne_top]; simp [hc, h]
 
 lemma eintegral_const_mul {c : EReal} (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) (hf : EIntegrable f μ) :
     ∫ᵉ x, c * f x ∂μ = c * ∫ᵉ x, f x ∂μ := by
