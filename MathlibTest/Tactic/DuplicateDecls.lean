@@ -8,6 +8,9 @@ open Lean Mathlib.Tactic.DuplicateDecls
 int_nat_add_comm : ∀ (m : Int) (n : Nat), ↑n + m = m + ↑n
 nat_int_add_comm : ∀ (n : Nat) (m : Int), ↑n + m = m + ↑n
 
+Eq.trans : ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
+Eq.trans_Type : ∀ {α : Type u} {a b c : α}, a = b → b = c → a = c
+
 of_one_add_one_of_two_add_two : 1 + 1 = 2 → 2 + 2 = 4 → True
 of_two_add_two_of_one_add_one : 2 + 2 = 4 → 1 + 1 = 2 → True
 
