@@ -889,7 +889,7 @@ private noncomputable def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ 
     ext
     grw [MemLp.coeFn_toLp, Lp.coeFn_smul, MemLp.coeFn_toLp]
     have : μ ≪ ν := Measure.absolutelyContinuous_of_le_smul h
-    apply Measure.AbsolutelyContinuous.ae_eq this
+    apply this.ae_eq
     grw [Lp.coeFn_smul]
     rfl
 
