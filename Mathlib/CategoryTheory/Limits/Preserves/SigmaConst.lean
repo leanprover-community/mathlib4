@@ -150,6 +150,13 @@ lemma map_ι_sigmaConstObjCompIso_hom_app {T : Type w} (t : T) :
     Category.assoc, Iso.hom_inv_id]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+lemma ι_sigmaConstObjCompIso_inv_app {T : Type w} (t : T) :
+    Sigma.ι (fun (_ : T) ↦ F.obj X) t ≫ (sigmaConstObjCompIso F X).inv.app T =
+      F.map (Sigma.ι (fun (_ : T) ↦ X) t) := by
+  simp [sigmaConstObjCompIso]
+
 end
 
 end CategoryTheory.Limits
