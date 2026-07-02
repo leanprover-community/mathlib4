@@ -108,8 +108,8 @@ theorem card_inv_mul_sum_char_eq_finrank :
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
 /--
-If `V` are `W` are finite-dimensional representations of a finite group, then the
-scalar product of their characters is equal to the dimension of the space of
+If `V` and `W` are finite-dimensional representations of a finite group, then the
+product of their characters is equal to the dimension of the space of
 equivariant maps from `V` to `W`.
 -/
 theorem card_inv_mul_sum_char_mul_char_eq_finrank :
