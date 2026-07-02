@@ -19,27 +19,60 @@ public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 open Simplicial CategoryTheory Limits
 
+namespace HomologicalComplex
+
+variable {C ι : Type*} [Category* C] {c : ComplexShape ι} [HasZeroMorphisms C]
+
+lemma hasCokernel_of_hasCokernel_f {K L : HomologicalComplex C c} (f : K ⟶ L)
+    [∀ i, HasCokernel (f.f i)] :
+    HasCokernel f := sorry
+
+end HomologicalComplex
+
+namespace CategoryTheory.Limits
+
+variable {J C : Type*} [Category* J] [Category* C]
+  [HasZeroMorphisms C]
+
+lemma hasCokernel_of_hasCokernel_app {F G : J ⥤ C} (f : F ⟶ G)
+    [∀ j, HasCokernel (f.app j)] :
+    HasCokernel f := by
+  sorry
+
+
+end CategoryTheory.Limits
+
 universe w v u
 
 namespace SSetPair
 
 variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
-noncomputable def chainComplexFunctor₁ : C ⥤ SSetPair.{w} ⥤ ChainComplex C ℕ :=
+noncomputable def chainComplexFunctorNatTransSrc :
+    C ⥤ SSetPair.{w} ⥤ ChainComplex C ℕ :=
   (SSetPair.forget ⋙ Arrow.leftFunc ⋙ (SSet.chainComplexFunctor _).flip).flip
 
-noncomputable def chainComplexFunctor₂ : C ⥤ SSetPair.{w} ⥤ ChainComplex C ℕ :=
+noncomputable def chainComplexFunctorNatTransTgt :
+    C ⥤ SSetPair.{w} ⥤ ChainComplex C ℕ :=
   (SSetPair.forget ⋙ Arrow.rightFunc ⋙ (SSet.chainComplexFunctor _).flip).flip
 
-noncomputable def chainComplexFunctorTrans :
-    chainComplexFunctor₁.{w} C ⟶ chainComplexFunctor₂.{w} C :=
-  (flipFunctor ..).map
-    (Functor.whiskerLeft  _ (Functor.whiskerRight Arrow.leftToRight _))
+noncomputable def chainComplexFunctorNatTrans :
+    chainComplexFunctorNatTransSrc.{w} C ⟶ chainComplexFunctorNatTransTgt.{w} C :=
+  (flipFunctor _ _ _).map
+    (Functor.whiskerLeft SSetPair.forget.{w}
+      (Functor.whiskerRight Arrow.leftToRight (SSet.chainComplexFunctor C).flip))
 
-instance : HasCokernel (chainComplexFunctorTrans.{w} C) := by
-  sorry
+set_option backward.defeqAttrib.useBackward true in
+instance : HasCokernel (chainComplexFunctorNatTrans.{w} C) := by
+  apply +allowSynthFailures hasCokernel_of_hasCokernel_app
+  intro X
+  apply +allowSynthFailures hasCokernel_of_hasCokernel_app
+  intro P
+  apply +allowSynthFailures HomologicalComplex.hasCokernel_of_hasCokernel_f
+  intro i
+  apply CategoryTheory.Limits.instHasCokernelMap'Id
 
 noncomputable def chainComplexFunctor : C ⥤ SSetPair.{w} ⥤ ChainComplex C ℕ :=
-  cokernel (chainComplexFunctorTrans.{w} C)
+  cokernel (chainComplexFunctorNatTrans.{w} C)
 
 end SSetPair
