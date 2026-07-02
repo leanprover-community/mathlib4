@@ -3,9 +3,11 @@ Copyright (c) 2026 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.Tactic.ComputablePolynomial.MvSparsePoly
-import Mathlib.Tactic.LinearCombination
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Tactic.ComputablePolynomial.MvSparsePoly
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Axiom-free reflection: kernel-reducible normal forms for `MvPolynomial`
@@ -29,10 +31,11 @@ One subtlety, already handled: building *product* monomials needs exponent-vecto
 `toPolyCore` proofs are unaffected. With that in place, full ring identities (`+`, `-`, `*`, `^`)
 decide axiom-free.
 
-The trade-off is the usual one for kernel reflection (the same one WuProver lives with): `decide`
-runs in the kernel interpreter, so it is only practical for small/medium goals — but it is
-**axiom-free**.
+The trade-off is the usual one for kernel reflection: `decide` runs in the kernel interpreter, so it
+is only practical for small/medium goals — but it is **axiom-free**.
 -/
+
+@[expose] public section
 
 namespace MvSparsePoly.Kernel
 
@@ -365,6 +368,8 @@ theorem mem_span_of_mReduce [Div R] {p : MvPolynomial (Fin nvars) R}
   exact foldr_mem_span _ fun s hs => h_gs s.2 (mReduceK_gens_mem _ _ _ s hs)
 
 end MvSparsePoly.Kernel
+
+public meta section
 
 /-! ## The axiom-free tactic -/
 

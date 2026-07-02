@@ -3,11 +3,13 @@ Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, James Davenport, Michail Karatarakis
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Data.List.Sort
-import Mathlib.Data.DFinsupp.WellFounded
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.DFinsupp.WellFounded
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Ring
 
 /-! # Computable multivariate polynomials (`MvSparsePoly`)
 
@@ -33,6 +35,8 @@ June 2024, with design notes and an original Lean prototype by James Davenport
 -/
 
 set_option linter.style.longFile 1600
+
+@[expose] public section
 
 /-- An exponent vector for a monomial in `nvars` variables: an array of length `nvars` giving each
 variable's exponent, together with its (cached) total degree. -/
@@ -863,7 +867,9 @@ already sorted). The building block of the fast Johnson/Monagan–Pearce multipl
 def monomialMul (i : MvDegrees nvars) (a : R) (y : MvSparsePoly R nvars) : MvSparsePoly R nvars :=
   ofSortedList (y.terms.map (fun t => (i + t.1, a * t.2))) (monomialMul_sorted i a y)
 
-private def balancedSumGo : ℕ → List (MvSparsePoly R nvars) → MvSparsePoly R nvars
+/-- Fuel-recursive worker for `balancedSum`: split the list in half and recurse, summing the two
+halves. -/
+def balancedSumGo : ℕ → List (MvSparsePoly R nvars) → MvSparsePoly R nvars
   | _, [] => 0
   | _, [p] => p
   | 0, l => l.foldl (· + ·) 0
