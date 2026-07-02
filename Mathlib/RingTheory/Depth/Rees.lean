@@ -62,7 +62,7 @@ if `Ext N M i = 0` for all `i < n`,
 then there exists an `M`-regular sequence of length `n` contained in `I`. -/
 lemma exists_isRegular_of_exists_subsingleton_ext [Small.{v} R] [IsNoetherianRing R] (I : Ideal R)
     (n : ℕ) (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
-    (N : ModuleCat.{v} R) [Nontrivial N] [Module.Finite R N]
+    (N : ModuleCat.{v} R) [Module.Finite R N]
     (h_supp : Module.support R N = PrimeSpectrum.zeroLocus I)
     (h_ext : ∀ i < n, Subsingleton (Ext N M i)) :
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs := by
