@@ -122,7 +122,7 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
   have h₀ : IsPrimitiveRoot (Ideal.Quotient.mk P hζ.toInteger) n := by
     refine hζ.toInteger_isPrimitiveRoot.idealQuotient_mk
       (by simpa using IsMaximal.ne_top inferInstance) ?_
-    rw [Ideal.absNorm_eq_pow_inertiaDeg' _ hp.out]
+    rw [← pow_inertiaDeg' p]
     exact Nat.Coprime.pow_left _ hn
   have h₁ := IsFractionRing.stabilizerHom_apply_apply_mk Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
       (ℤ ⧸ span {(p : ℤ)}) (𝓞 K ⧸ P) ⟨σ, hσ⟩ hζ.toInteger
@@ -146,10 +146,9 @@ theorem galEquivZMod_stabilizer :
     rw [Fintype.card_eq_nat_card, Fintype.card_eq_nat_card, SetLike.coe_sort_coe, Nat.card_zpowers,
       MulEquiv.mapSubgroup_apply, Subgroup.coe_map]
     change _ ≤ Nat.card ((galEquivZMod n K).toEquiv '' _)
-    rw [Nat.card_image_equiv, SetLike.coe_sort_coe, Ideal.card_stabilizer_eq (span {(p : ℤ)})
-      (by simp [hp.out.ne_zero]), inertiaDegIn_eq_of_not_dvd p K hn,
+    rw [Nat.card_image_equiv, SetLike.coe_sort_coe, Ideal.card_stabilizer_eq (span {(p : ℤ)}),
       ramificationIdxIn_eq_of_not_dvd p K hn, one_mul, ← orderOf_injective _ Units.coeHom_injective,
-      Units.coeHom_apply, ZMod.coe_unitOfCoprime]
+      Units.coeHom_apply, ZMod.coe_unitOfCoprime, inertiaDegIn_eq_of_not_dvd p K hn]
 
 end stabilizer
 

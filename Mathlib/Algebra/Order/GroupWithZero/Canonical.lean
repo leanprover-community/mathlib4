@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Algebra.Order.Group.Units
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Algebra.Order.Monoid.TypeTags
 public import Mathlib.Data.Int.Basic
@@ -530,6 +530,9 @@ instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α]
 
 instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
+
+-- Add a shortcut instance for the common case, to speed up unification.
+instance : LinearOrderedCommGroupWithZero ℤᵐ⁰ := inferInstance
 
 /-! ### Exponential and logarithm -/
 
