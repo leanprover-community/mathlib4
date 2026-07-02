@@ -35,7 +35,7 @@ example {r : ℕ → Prop} : ∀ n : ℕ, p ∨ r n ∧ q ∧ n = 1 := by
   guard_target =ₛ ∀ n : ℕ, p ∨ r n ∧ q ∧ n = 1
   exact test_sorry
 
-/-- info: ∃ f, (∀ (x : Nat) (x_1 : x > 0), f x x_1 > 0) ∧ ∀ (x : Nat) (x_1 : x > 0), x = f x x_1 -/
+/-- info: ∃ f, (∀ (x : ℕ) (x_1 : x > 0), f x x_1 > 0) ∧ ∀ (x : ℕ) (x_1 : x > 0), x = f x x_1 -/
 #guard_msgs in
 #push ∀ _, _ => ∀ ε > 0, ∃ δ > 0, ε = δ
 
