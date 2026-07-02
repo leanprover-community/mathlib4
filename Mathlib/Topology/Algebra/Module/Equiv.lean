@@ -658,12 +658,12 @@ abbrev equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ�
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   .ofContinuousLinearMap f₁ f₂ h₂ h₁
 
-@[simp, deprecated coe_ofContinuousLinearMap (since := "2026-07-01")]
+@[deprecated coe_ofContinuousLinearMap (since := "2026-07-01")]
 theorem equivOfInverse_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
     equivOfInverse f₁ f₂ h₁ h₂ x = f₁ x :=
   rfl
 
-@[simp, deprecated symm_ofContinuousLinearMap (since := "2026-07-01")]
+@[deprecated symm_ofContinuousLinearMap (since := "2026-07-01")]
 theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
   rfl
