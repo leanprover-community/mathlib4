@@ -703,13 +703,13 @@ abbrev equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ�
     (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
   .ofContinuousLinearMap' f₁ f₂ h₁ h₂
 
-@[simp, deprecated coe_ofContinuousLinearMap' (since := "2026-07-01")]
+@[deprecated coe_ofContinuousLinearMap' (since := "2026-07-01")]
 theorem equivOfInverse'_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
     equivOfInverse' f₁ f₂ h₁ h₂ x = f₁ x :=
   rfl
 
 /-- The inverse of `equivOfInverse'` is obtained by swapping the order of its parameters. -/
-@[simp, deprecated symm_ofContinuousLinearMap' (since := "2026-07-01")]
+@[deprecated symm_ofContinuousLinearMap' (since := "2026-07-01")]
 theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
   rfl
