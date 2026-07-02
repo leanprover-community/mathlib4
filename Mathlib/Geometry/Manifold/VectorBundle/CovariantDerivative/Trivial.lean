@@ -156,18 +156,30 @@ lemma eq_one_form {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
     {σ : M → F}
     {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
-    letI d : TangentSpace% x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
-    cov σ x = d + hcov.one_form x (σ x) :=
+    cov σ x = mvfderiv I σ x + hcov.one_form x (σ x) :=
   hcov.exists_one_form.choose_spec σ x hx hσ
 
 lemma _root_.CovariantDerivative.exists_one_form
     (cov : CovariantDerivative I F (Bundle.Trivial M F)) :
     ∃ (A : (x : M) → F →L[𝕜] TangentSpace% x →L[𝕜] F),
     ∀ σ : M → F, ∀ x, MDiffAt (T% σ) x →
-    letI d : TangentSpace% x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
-    cov σ x = d + A x (σ x) := by
+    cov σ x = mvfderiv I σ x + A x (σ x) := by
   simpa using! cov.isCovariantDerivativeOnUniv.exists_one_form
 
+lemma ContMDiffAt_one_form [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDimensional 𝕜 E]
+    {cov : (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
+    (hcov' : ContMDiffCovariantDerivativeOn F n cov s) :
+    letI V : M → Type _ := fun m ↦ F →L[𝕜] TangentSpace% m →L[𝕜] F
+    CMDiff[s] n (fun m ↦ TotalSpace.mk' (E := V) (F →L[𝕜] E →L[𝕜] F) m (hcov.one_form m)) := by
+  have : IsManifold I n M := IsManifold.of_le  (by norm_num : n ≤ n + 1)
+  have : ContMDiffVectorBundle n E (fun x : M ↦ TangentSpace I x) I :=
+    TangentBundle.contMDiffVectorBundle -- TODO: understand why this is needed
+  intro x hx
+  apply ContMDiffWithinAt.clm_bundle_of_apply
+  intro σ hσ
+  have (x' : M) (hx' : x' ∈ s) := hcov.eq_one_form (x := x') (σ := σ)
+  sorry
 end classification
 
 end IsCovariantDerivativeOn
