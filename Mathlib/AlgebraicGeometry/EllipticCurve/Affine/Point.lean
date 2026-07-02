@@ -157,6 +157,7 @@ end CoordinateRing
 namespace FunctionField
 
 variable (W') in
+/-- The natural ring homomorphism mapping `R[X][Y]` to `R(W)`. -/
 protected noncomputable abbrev mk : R[X][Y] →+* W'.FunctionField :=
   (algebraMap ..).comp (CoordinateRing.mk W')
 
