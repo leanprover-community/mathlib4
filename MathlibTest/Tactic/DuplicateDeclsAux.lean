@@ -1,5 +1,7 @@
 import Mathlib.Tactic.DuplicateDecls
 
+/-! Theorems-/
+
 theorem one_add_one : 1 + 1 = 2 := rfl
 theorem one_add_one' : 1 + 1 = 2 := rfl
 theorem one_add_one_alias : 1 + 1 = 2 := one_add_one -- this is an alias, so it won't be flagged
@@ -16,3 +18,16 @@ theorem nat_add_comm' (m n : Nat) : n + m = m + n := by grind
 
 theorem nat_le_trans (a b c : Nat) : a ≤ b → b ≤ c → a ≤ c := Nat.le_trans
 theorem nat_ge_trans (a b c : Nat) : b ≤ a → c ≤ b → c ≤ a := by lia
+
+/-! Instances -/
+-- The value is not looked at, because instances are meant to be canonical.
+-- We check whether a definition is an instance based on its type. We might want to change this.
+@[implicit_reducible] def instAddNat' : Add Nat := ⟨Nat.sub⟩
+@[implicit_reducible] def instAddNat'' : Add Nat := ⟨Nat.mul⟩
+
+/-! Definitions -/
+
+-- For definitions that are not instances, we look at both the type and the value.
+def addTen (n : Nat) := n + 10
+def addTen' (n : Nat) := n + 10
+def addTwenty (n : Nat) := n + 20

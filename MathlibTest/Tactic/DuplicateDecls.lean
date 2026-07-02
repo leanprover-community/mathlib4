@@ -16,3 +16,22 @@ one_add_one' : 1 + 1 = 2
 -/
 #guard_msgs (substring := true) in
 run_meta do logInfo m!"{← lintDuplicateDeclarations .theorems}"
+
+/--
+-- MathlibTest.Tactic.DuplicateDeclsAux
+
+instAddNat : Add Nat
+instAddNat' : Add Nat
+instAddNat'' : Add Nat
+-/
+#guard_msgs (substring := true) in
+run_meta do logInfo m!"{← lintDuplicateDeclarations .instances}"
+
+/--
+-- MathlibTest.Tactic.DuplicateDeclsAux
+
+addTen : Nat → Nat
+addTen' : Nat → Nat
+-/
+#guard_msgs (substring := true) in
+run_meta do logInfo m!"{← lintDuplicateDeclarations .defs}"
