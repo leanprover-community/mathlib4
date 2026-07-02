@@ -26,7 +26,6 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 ## TODO
 
-* Use this for `RingQuot` too.
 * Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
@@ -159,6 +158,26 @@ def comap (J : RingCon R') (f : F) :
 theorem comap_rel {J : RingCon R'} {f : F} {x y : R} :
     J.comap f x y ↔ J (f x) (f y) := Iff.rfl
 
+@[simp]
+theorem comap_nonUnitalRingHomId {R} [NonUnitalNonAssocSemiring R] (J : RingCon R) :
+    J.comap (NonUnitalRingHom.id _) = J := rfl
+
+@[simp]
+theorem comap_nonUnitalRingHomComp {R R' R''}
+    [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring R'']
+    (J : RingCon R) (g : R' →ₙ+* R) (f : R'' →ₙ+* R') :
+    J.comap (g.comp f) = (J.comap g).comap f := rfl
+
+@[simp]
+theorem comap_ringHomId {R} [NonAssocSemiring R] (J : RingCon R) :
+    J.comap (RingHom.id _) = J := rfl
+
+@[simp]
+theorem comap_ringHomComp {R R' R''}
+    [NonAssocSemiring R] [NonAssocSemiring R'] [NonAssocSemiring R'']
+    (J : RingCon R) (g : R' →+* R) (f : R'' →+* R') :
+    J.comap (g.comp f) = (J.comap g).comap f := rfl
+
 end Basic
 
 section Quotient
@@ -252,6 +271,13 @@ theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
 
 end One
 
+/-- A function used to define scalar actions on `RingCon.Quotient`. To make sure such actions coming
+from different sources are reducibly defeq, they should all go through this function. -/
+def smulAux [Add R] [Mul R] {α : Type*} [SMul α R]
+    (c : RingCon R) (h : ∀ (a : α) (x y : R), c x y → c (a • x) (a • y))
+    (a : α) (x : c.Quotient) : c.Quotient :=
+  Quotient.map' (a • ·) (h a) x
+
 section NegSubZSMul
 
 variable [AddGroup R] [Mul R] (c : RingCon R)
@@ -268,7 +294,7 @@ instance : Sub c.Quotient := inferInstanceAs (Sub c.toAddCon.Quotient)
 theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
 
-instance hasZSMul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
+instance hasZSMul : SMul ℤ c.Quotient := ⟨c.smulAux (RingCon.zsmul c)⟩
 
 @[simp, norm_cast]
 theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
@@ -280,7 +306,7 @@ section NSMul
 
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
-instance hasNSMul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
+instance hasNSMul : SMul ℕ c.Quotient := ⟨c.smulAux (RingCon.nsmul c)⟩
 
 @[simp, norm_cast]
 theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
@@ -353,14 +379,16 @@ instance [AddCommMagma R] [Mul R] (c : RingCon R) : AddCommMagma c.Quotient :=
 instance [AddCommSemigroup R] [Mul R] (c : RingCon R) : AddCommSemigroup c.Quotient :=
   inferInstanceAs <| AddCommSemigroup c.toAddCon.Quotient
 
-instance [AddMonoid R] [Mul R] (c : RingCon R) : AddMonoid c.Quotient :=
-  inferInstanceAs <| AddMonoid c.toAddCon.Quotient
+instance [AddMonoid R] [Mul R] (c : RingCon R) : AddMonoid c.Quotient where
+  nsmul n x := n • x
+  __ : AddMonoid c.Quotient := inferInstanceAs <| AddMonoid c.toAddCon.Quotient
 
 instance [AddCommMonoid R] [Mul R] (c : RingCon R) : AddCommMonoid c.Quotient :=
   inferInstanceAs <| AddCommMonoid c.toAddCon.Quotient
 
-instance [AddGroup R] [Mul R] (c : RingCon R) : AddGroup c.Quotient :=
-  inferInstanceAs <| AddGroup c.toAddCon.Quotient
+instance [AddGroup R] [Mul R] (c : RingCon R) : AddGroup c.Quotient where
+  zsmul n x := n • x
+  __ : AddGroup c.Quotient := inferInstanceAs <| AddGroup c.toAddCon.Quotient
 
 instance [AddCommGroup R] [Mul R] (c : RingCon R) : AddCommGroup c.Quotient :=
   inferInstanceAs <| AddCommGroup c.toAddCon.Quotient
@@ -381,8 +409,10 @@ instance [Add R] [CommMagma R] (c : RingCon R) : CommMagma c.Quotient :=
 instance [Add R] [CommSemigroup R] (c : RingCon R) : CommSemigroup c.Quotient :=
   inferInstanceAs <| CommSemigroup c.toCon.Quotient
 
-instance [Add R] [Monoid R] (c : RingCon R) : Monoid c.Quotient :=
-  inferInstanceAs <| Monoid c.toCon.Quotient
+instance [Add R] [Monoid R] (c : RingCon R) : Monoid c.Quotient := fast_instance%
+  { __ : Monoid c.toCon.Quotient := inferInstanceAs _
+    -- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/inferInstanceAs.20creates.20non-reducible.20diamonds/near/603969174
+    npow n x := x ^ n }
 
 instance [Add R] [CommMonoid R] (c : RingCon R) : CommMonoid c.Quotient :=
   inferInstanceAs <| CommMonoid c.toCon.Quotient

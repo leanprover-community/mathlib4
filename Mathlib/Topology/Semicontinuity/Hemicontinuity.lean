@@ -69,7 +69,7 @@ alias ⟨UpperHemicontinuous.forall_isOpen, UpperHemicontinuous.of_forall_isOpen
 /-! ### Characterization in terms of preimages of intervals of sets -/
 
 lemma upperHemicontinuousWithinAt_iff_preimage_Iic :
-    UpperHemicontinuousWithinAt f s x ↔ ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' (Iic u) ∈ 𝓝[s] x := by
+    UpperHemicontinuousWithinAt f s x ↔ ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' Iic u ∈ 𝓝[s] x := by
   simp_rw [upperHemicontinuousWithinAt_iff]
   rw [hasBasis_nhdsSet (f x) |>.forall_iff ?h₁, hasBasis_nhdsSet (f x) |>.forall_iff ?h₂]
   case h₂ =>
@@ -83,24 +83,24 @@ lemma upperHemicontinuousWithinAt_iff_preimage_Iic :
   simp [hu.mem_nhdsSet, eventually_iff, Iic]
 
 lemma upperHemicontinuousAt_iff_preimage_Iic :
-    UpperHemicontinuousAt f x ↔ ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' (Iic u) ∈ 𝓝 x := by
+    UpperHemicontinuousAt f x ↔ ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' Iic u ∈ 𝓝 x := by
   simpa [upperHemicontinuousWithinAt_univ_iff] using
     upperHemicontinuousWithinAt_iff_preimage_Iic (s := univ)
 
 lemma upperHemicontinuousOn_iff_preimage_Iic :
-    UpperHemicontinuousOn f s ↔ ∀ x ∈ s, ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' (Iic u) ∈ 𝓝[s] x := by
+    UpperHemicontinuousOn f s ↔ ∀ x ∈ s, ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' Iic u ∈ 𝓝[s] x := by
   simp [upperHemicontinuousOn_iff, upperHemicontinuousWithinAt_iff_preimage_Iic]
 
 lemma upperHemicontinuous_iff_preimage_Iic :
-    UpperHemicontinuous f ↔ ∀ x, ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' (Iic u) ∈ 𝓝 x := by
+    UpperHemicontinuous f ↔ ∀ x, ∀ u ∈ 𝓝ˢ (f x), f ⁻¹' Iic u ∈ 𝓝 x := by
   simp [upperHemicontinuous_iff, upperHemicontinuousAt_iff_preimage_Iic]
 
 /-- A correspondence `f : α → Set β` is upper hemicontinuous if and only if its *upper inverse*
 (i.e., `u : Set β ↦ f ⁻¹' (Iic u)`, note that `f ⁻¹' (Iic u) = {x | f x ⊆ u}`) sends open sets
 to open sets. -/
 lemma upperHemicontinuous_iff_isOpen_preimage_Iic :
-    UpperHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen (f ⁻¹' (Iic u)) := by
-  simp_rw [upperHemicontinuous_iff_preimage_Iic, isOpen_iff_mem_nhds (s := f ⁻¹' (Iic _))]
+    UpperHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen (f ⁻¹' Iic u) := by
+  simp_rw [upperHemicontinuous_iff_preimage_Iic, isOpen_iff_mem_nhds (s := f ⁻¹' Iic _)]
   conv =>
     enter [1, x]
     rw [hasBasis_nhdsSet (f x) |>.forall_iff <|
@@ -111,7 +111,7 @@ lemma upperHemicontinuous_iff_isOpen_preimage_Iic :
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
 sends closed sets to closed sets. -/
 lemma upperHemicontinuous_iff_isClosed_compl_preimage_Iic_compl :
-    UpperHemicontinuous f ↔ ∀ u, IsClosed u → IsClosed (f ⁻¹' (Iic uᶜ))ᶜ := by
+    UpperHemicontinuous f ↔ ∀ u, IsClosed u → IsClosed (f ⁻¹' Iic uᶜ)ᶜ := by
   conv_rhs =>
     rw [compl_surjective.forall]
     simp [← isOpen_compl_iff]
@@ -131,7 +131,7 @@ lemma lowerHemicontinuous_iff_isOpen_inter_nonempty :
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
 sends open sets to open sets. -/
 lemma lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl :
-    LowerHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen (f ⁻¹' (Iic uᶜ))ᶜ := by
+    LowerHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen (f ⁻¹' Iic uᶜ)ᶜ := by
   have (u : Set β) : (f ⁻¹' (Iic uᶜ))ᶜ = {x | (f x ∩ u).Nonempty} := by
     simp [Set.ext_iff, Iic, Set.mem_compl_iff, Set.not_subset, Set.Nonempty]
   simpa [this] using lowerHemicontinuous_iff_isOpen_inter_nonempty
@@ -140,7 +140,7 @@ lemma lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl :
 (i.e., `u : Set β ↦ f ⁻¹' (Iic u)`, note that `f ⁻¹' (Iic u) = {x | f x ⊆ u}`) sends closed sets
 to closed sets. -/
 lemma lowerHemicontinuous_iff_isClosed_preimage_Iic :
-    LowerHemicontinuous f ↔ ∀ u, IsClosed u → IsClosed (f ⁻¹' (Iic u)) := by
+    LowerHemicontinuous f ↔ ∀ u, IsClosed u → IsClosed (f ⁻¹' Iic u) := by
   conv_rhs =>
     rw [compl_surjective.forall]
     simp [← isOpen_compl_iff]
@@ -178,20 +178,29 @@ lemma upperHemicontinuousWithinAt_singleton_iff :
   filter_upwards [h t ht] with x
   exact mem_of_mem_nhds
 
+alias ⟨_, ContinuousWithinAt.upperHemicontinuousWithinAt⟩ :=
+  upperHemicontinuousWithinAt_singleton_iff
+
 @[simp]
 lemma upperHemicontinuousAt_singleton_iff :
     UpperHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
   simp [← upperHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
+
+alias ⟨_, ContinuousAt.upperHemicontinuousAt⟩ := upperHemicontinuousAt_singleton_iff
 
 @[simp]
 lemma upperHemicontinuousOn_singleton_iff :
     UpperHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
   forall₂_congr <| fun _ _ ↦ upperHemicontinuousWithinAt_singleton_iff
 
+alias ⟨_, ContinuousOn.upperHemicontinuousOn⟩ := upperHemicontinuousOn_singleton_iff
+
 @[simp]
 lemma upperHemicontinuous_singleton_iff :
     UpperHemicontinuous ({f ·}) ↔ Continuous f := by
   simp [← upperHemicontinuousOn_univ_iff]
+
+alias ⟨_, Continuous.upperHemicontinuous⟩ := upperHemicontinuous_singleton_iff
 
 lemma lowerHemicontinuous_singleton_id : LowerHemicontinuous ({·} : α → Set α) := by
   intro x t ⟨ht, hne⟩
@@ -209,47 +218,26 @@ lemma lowerHemicontinuousWithinAt_singleton_iff :
   obtain ⟨u, hut, huo, hux⟩ := mem_nhds_iff.mp ht
   exact (h u huo hux).mono fun _ hx' ↦ hut hx'
 
+alias ⟨_, ContinuousWithinAt.lowerHemicontinuousWithinAt⟩ :=
+  lowerHemicontinuousWithinAt_singleton_iff
+
 @[simp]
 lemma lowerHemicontinuousAt_singleton_iff : LowerHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
   simp [← lowerHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
+
+alias ⟨_, ContinuousAt.lowerHemicontinuousAt⟩ := lowerHemicontinuousAt_singleton_iff
 
 @[simp]
 lemma lowerHemicontinuousOn_singleton_iff : LowerHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
   forall₂_congr <| fun _ _ ↦ lowerHemicontinuousWithinAt_singleton_iff
 
+alias ⟨_, ContinuousOn.lowerHemicontinuousOn⟩ := lowerHemicontinuousOn_singleton_iff
+
 @[simp]
 lemma lowerHemicontinuous_singleton_iff : LowerHemicontinuous ({f ·}) ↔ Continuous f := by
   simp [← lowerHemicontinuousOn_univ_iff]
 
-lemma ContinuousWithinAt.upperHemicontinuousWithinAt (hf : ContinuousWithinAt f s x) :
-    UpperHemicontinuousWithinAt ({f ·}) s x :=
-  upperHemicontinuousWithinAt_singleton_iff.mpr hf
-
-lemma ContinuousWithinAt.lowerHemicontinuousWithinAt (hf : ContinuousWithinAt f s x) :
-    LowerHemicontinuousWithinAt ({f ·}) s x :=
-  lowerHemicontinuousWithinAt_singleton_iff.mpr hf
-
-lemma ContinuousAt.upperHemicontinuousAt (hf : ContinuousAt f x) :
-    UpperHemicontinuousAt ({f ·}) x :=
-  upperHemicontinuousAt_singleton_iff.mpr hf
-
-lemma ContinuousAt.lowerHemicontinuousAt (hf : ContinuousAt f x) :
-    LowerHemicontinuousAt ({f ·}) x :=
-  lowerHemicontinuousAt_singleton_iff.mpr hf
-
-lemma ContinuousOn.upperHemicontinuousOn (hf : ContinuousOn f s) :
-    UpperHemicontinuousOn ({f ·}) s :=
-  upperHemicontinuousOn_singleton_iff.mpr hf
-
-lemma ContinuousOn.lowerHemicontinuousOn (hf : ContinuousOn f s) :
-    LowerHemicontinuousOn ({f ·}) s :=
-  lowerHemicontinuousOn_singleton_iff.mpr hf
-
-lemma Continuous.upperHemicontinuous (hf : Continuous f) : UpperHemicontinuous ({f ·}) :=
-  upperHemicontinuous_singleton_iff.mpr hf
-
-lemma Continuous.lowerHemicontinuous (hf : Continuous f) : LowerHemicontinuous ({f ·}) :=
-  lowerHemicontinuous_singleton_iff.mpr hf
+alias ⟨_, Continuous.lowerHemicontinuous⟩ := lowerHemicontinuous_singleton_iff
 
 end singleton_maps
 
@@ -435,17 +423,18 @@ end facts
 /-! ### Open lower sections -/
 
 /-- A correspondence `f : α → Set β` has open lower sections if and only if its *lower inverse*
-(i.e., `b : β ↦ (f ⁻¹' (Iic {b}ᶜ))ᶜ = {x | b ∈ f x}`) sends every point to an open set. -/
+(i.e., `b : β ↦ (f ⁻¹' Iic {b}ᶜ)ᶜ = {x | b ∈ f x}`) sends every point to an open set. -/
 lemma hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl :
-    HasOpenLowerSections f ↔ ∀ b, IsOpen (f ⁻¹' (Iic {b}ᶜ))ᶜ := by
+    HasOpenLowerSections f ↔ ∀ b, IsOpen (f ⁻¹' Iic {b}ᶜ)ᶜ := by
   have h (b : β) : (f ⁻¹' (Iic {b}ᶜ))ᶜ = {x | b ∈ f x} := by
     simp [Set.ext_iff, Iic, Set.mem_compl_iff]
   simp_rw [h, hasOpenLowerSections_iff_isOpen]
 
+omit [TopologicalSpace β] in
 /-- A correspondence `f : α → Set β` has open lower sections if and only if its *upper inverse*
 (i.e., `b : β ↦ f ⁻¹' (Iic {b}ᶜ) = {x | b ∉ f x}`) sends every point to a closed set. -/
 lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
-    HasOpenLowerSections f ↔ ∀ b, IsClosed (f ⁻¹' (Iic {b}ᶜ)) := by
+    HasOpenLowerSections f ↔ ∀ b, IsClosed (f ⁻¹' Iic {b}ᶜ) := by
   simp_rw [← isOpen_compl_iff]
   exact hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl
 
@@ -453,7 +442,7 @@ lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
 
 /-- A lower hemicontinuous function intersected with a function with an open graph is lower
 hemicontinuous. -/
-lemma LowerHemicontinuous.inter_hasOpenCGraph [TopologicalSpace β]
+lemma LowerHemicontinuous.inter_hasOpenCGraph {f g : α → Set β}
     (hf : LowerHemicontinuous f) (hg : HasOpenCGraph g) :
     LowerHemicontinuous (fun x ↦ f x ∩ g x) := by
   simp_rw [lowerHemicontinuous_iff_isOpen_inter_nonempty] at ⊢ hf
