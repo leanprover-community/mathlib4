@@ -61,10 +61,11 @@ attribute [simp] sConvexComb_eq_sum
 alias _root_.convexCombination_eq_sum := sConvexComb_eq_sum
 
 attribute [local instance] ConvexSpace.ofModule in
-protected lemma IsModuleConvexSpace.ofModule : IsModuleConvexSpace R M where
+instance IsModuleConvexSpace.ofModule : IsModuleConvexSpace R M where
   sConvexComb_eq_sum _ := rfl
 
-instance isModuleConvexSpace_self : IsModuleConvexSpace R R := .ofModule
+@[deprecated "Implied by `IsModuleConvexSpace.ofModule`" (since := "2026-07-02")]
+lemma isModuleConvexSpace_self : IsModuleConvexSpace R R := inferInstance
 
 section IsModuleConvexSpace
 variable [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace R N] [IsModuleConvexSpace R N]

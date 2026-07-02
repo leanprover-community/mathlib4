@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 
@@ -30,9 +30,9 @@ variable {R V P I : Type*}
 variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable [AddCommGroup V] [Module R V] [AddTorsor V P]
 
-open Convexity
-
 namespace AddTorsor
+
+open Convexity
 
 /-- The convex combination of points in an affine space, given a probability distribution. -/
 @[expose]
@@ -108,6 +108,9 @@ def toConvexSpace : ConvexSpace R P where
   sConvexComb_single := convexCombination_single
   assoc := convexCombination_assoc
 
+@[implicit_reducible]
+alias _root_.ConvexSpace.ofAddTorsor := AddTorsor.toConvexSpace
+
 attribute [local instance] toConvexSpace
 
 /-- `ConvexSpace.sConvexComb` in an affine space is the affine combination. -/
@@ -158,3 +161,26 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
   simp [vsub_self]
 
 end AddTorsor
+
+namespace Convexity
+
+variable (R V P) [ConvexSpace R P] in
+/-- Typeclass for a convex space structure on an affine space to be given by affine
+combinations. -/
+class IsAffineConvexSpace : Prop where
+  sConvexComb_eq_convexComb (w : StdSimplex R P) : w.sConvexComb = AddTorsor.convexCombination w
+
+export IsAffineConvexSpace (sConvexComb_eq_convexComb)
+attribute [simp] sConvexComb_eq_convexComb
+
+attribute [local instance] ConvexSpace.ofAddTorsor in
+instance IsAffineConvexSpace.ofAddTorsor : IsAffineConvexSpace R V P where
+  sConvexComb_eq_convexComb _ := rfl
+
+instance [ConvexSpace R V] [IsModuleConvexSpace R V] : IsAffineConvexSpace R V V where
+  sConvexComb_eq_convexComb w := by
+    rw [IsModuleConvexSpace.sConvexComb_eq_sum, AddTorsor.convexCombination,
+      Finset.affineCombination_eq_linear_combination _ _ _ w.total]
+    rfl
+
+end Convexity
