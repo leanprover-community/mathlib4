@@ -33,6 +33,7 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `LinearEquiv.isHomeomorph_iff`: A linear equivalence between topological modules is a
   homeomorphism if and only if it is continuous in both directions.
 -/
+
 set_option linter.style.longFile 1700
 
 @[expose] public section
