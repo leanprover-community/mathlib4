@@ -18,8 +18,8 @@ preserves kernels. The dual result holds for right exact functors and cokernels.
 ## Main results
 
 * We first derive preservation of binary products in the lemma
-  `preservesBinaryProductsOfPreservesKernels`,
-* then show the preservation of equalizers in `preservesEqualizerOfPreservesKernels`,
+  `preservesBinaryProducts_of_preservesKernels`,
+* then show the preservation of equalizers in `preservesEqualizer_of_preservesKernels`,
 * and then derive the preservation of all finite limits with the usual construction.
 
 -/
