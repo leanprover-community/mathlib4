@@ -100,12 +100,12 @@ theorem char_linHom (g : G) :
 
 theorem isIntegral_character [Finite G] (g : G) : IsIntegral ℤ (ρ.character g) := by
   refine (isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective k (AlgebraicClosure k))).1 ?_
-  rw [character, ← trace_baseChange ..,
+  rw [character, ← trace_baseChange,
     End.trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.splits _)]
   refine IsIntegral.multiset_sum fun x hx ↦ ?_
   obtain ⟨v, hv⟩ := End.hasEigenvalue_iff_isRoot_charpoly .. |>.2
     (Polynomial.isRoot_of_mem_roots hx) |>.exists_hasEigenvector
-  have hxn : x ^ orderOf g = 1 := (smul_left_injective (R := AlgebraicClosure k) hv.2) <| by
+  have hxn : x ^ orderOf g = 1 := smul_left_injective (R := AlgebraicClosure k) hv.2 <| by
     simp [← hv.pow_apply, ← baseChange_pow, ← map_pow]
   exact IsIntegral.of_pow (orderOf_pos g) (hxn ▸ isIntegral_one)
 
