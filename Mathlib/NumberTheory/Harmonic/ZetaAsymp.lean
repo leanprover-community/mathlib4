@@ -553,13 +553,13 @@ lemma deriv_riemannZeta_eq_neg_inv_sub_sq_mul_add {s : ℂ} (hs : s ≠ 1) :
   · apply eventually_of_mem (compl_singleton_mem_nhds hs)
     simp +contextual [riemannZeta_eq_inv_sub_mul]
 
-lemma deriv_riemannZeta_eq_neg_inv_sub_sq_add_bounded :
+lemma deriv_riemannZeta_add_inv_sub_sq_bounded :
     (fun s ↦ deriv riemannZeta s + ((s - 1)⁻¹) ^ 2) =O[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
   (differentiable_riemannZeta₀.deriv.continuous.continuousAt.isBigO.mono nhdsWithin_le_nhds).congr'
   (eventually_nhdsWithin_of_forall (by simp +contextual [deriv_riemannZeta_eq_neg_inv_sub_sq_add]))
   .rfl
 
-lemma log_riemannZeta_eq_neg_log_sub_add {s : ℝ} (hs : s > 1) :
+lemma log_riemannZeta_eq_neg_log_sub_add_ofReal {s : ℝ} (hs : s > 1) :
     (riemannZeta s).re.log = - (s - 1).log + (riemannZeta₁ s).re.log := by
   have : (riemannZeta s).re = (s - 1)⁻¹ * (riemannZeta₁ s).re := by
     rw [riemannZeta_eq_inv_sub_mul (mod_cast (by linarith))]
@@ -570,20 +570,20 @@ lemma log_riemannZeta_eq_neg_log_sub_add {s : ℝ} (hs : s > 1) :
   · have : 0 < (riemannZeta s).re := riemannZeta_re_pos_of_one_lt hs
     grind
 
-lemma log_riemannZeta_add_log_sub_add_isBigO :
+lemma log_riemannZeta_add_log_sub_add_isBigO_ofReal :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =O[𝓝[>] 1] (· - 1) := by
   suffices (fun (s : ℝ) ↦ (riemannZeta₁ s).re.log) =O[𝓝 1] (· - 1) by
     refine (this.mono nhdsWithin_le_nhds).congr'
       (eventually_nhdsWithin_of_forall (fun s hs ↦ ?_)) .rfl
-    simp [log_riemannZeta_eq_neg_log_sub_add hs]
+    simp [log_riemannZeta_eq_neg_log_sub_add_ofReal hs]
   suffices DifferentiableAt ℝ (fun (s : ℝ) ↦ (riemannZeta₁ s).re.log) 1 by
     simpa using this.isBigO_sub
   have : Differentiable ℝ riemannZeta₀ := by fun_prop
   fun_prop (disch := simp)
 
-lemma log_riemannZeta_add_log_sub_add_isLittleO :
+lemma log_riemannZeta_add_log_sub_add_isLittleO_ofReal :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =o[𝓝[>] (1 : ℝ)] (fun _ ↦ (1 : ℝ)) :=
-  log_riemannZeta_add_log_sub_add_isBigO.trans_isLittleO
+  log_riemannZeta_add_log_sub_add_isBigO_ofReal.trans_isLittleO
   (continuous_id.continuousAt.isLittleO.mono nhdsWithin_le_nhds)
 
 lemma log_deriv_riemannZeta_eq_neg_inv_sub_add :
