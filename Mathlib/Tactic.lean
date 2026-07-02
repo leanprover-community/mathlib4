@@ -2,6 +2,7 @@ module  -- shake: keep-all --deprecated_module: ignore
 
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Algebra.AlgebraNF
 public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Algebraize
@@ -258,6 +259,8 @@ public import Mathlib.Tactic.Order.ToInt
 public import Mathlib.Tactic.PNatToNat
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Polynomial.Basic
+public import Mathlib.Tactic.Polynomial.Core
 public import Mathlib.Tactic.Polyrith
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Positivity.Basic
