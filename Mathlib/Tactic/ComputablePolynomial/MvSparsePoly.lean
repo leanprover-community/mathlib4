@@ -6,7 +6,8 @@ Authors: Mario Carneiro, James Davenport, Michail Karatarakis
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.List.Sort
 import Mathlib.Data.DFinsupp.WellFounded
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Ring
 
 /-! # Computable multivariate polynomials (`MvSparsePoly`)
 
@@ -27,7 +28,8 @@ extra case analysis, and one may wish to rethink whether to allow it.
 ## Provenance
 
 Based on the univariate `SparsePoly`, started by Mario Carneiro at the Hausdorff Institute,
-June 2024, with design notes by James Davenport.
+June 2024, with design notes and an original Lean prototype by James Davenport
+(https://github.com/JamesHDavenport/Dagstuhl23401, `verify-irred/VerifyIrred`).
 -/
 
 set_option linter.style.longFile 1600

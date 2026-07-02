@@ -3,7 +3,9 @@ Copyright (c) 2026 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.Transcendental.mvpoly
+import Mathlib.Tactic.ComputablePolynomial.MvSparsePoly
+import Mathlib.Tactic.LinearCombination
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Axiom-free reflection: kernel-reducible normal forms for `MvPolynomial`
@@ -506,54 +508,5 @@ elab "mv_mem" : tactic => withMainContext do
   setGoals [m_h]
   evalTactic (← `(tactic| decide +kernel))
 
-/-!
-## Examples — `MvPolynomial` identities proved **axiom-free** (no `native_decide`)
-
-Full ring identities now decide in the kernel: addition, subtraction, cancellation, **and**
-multiplication / powers (the latter via the kernel-reducible `addDegK` exponent addition above).
--/
-
 attribute [nolint defsWithUnderscore] tacticMv_decide tacticMv_compute tacticMv_mem
-
-namespace MvPolyKernelDemo
-
-open MvPolynomial
-
--- Reordering and cancellation (additive):
-example : (X 0 + X 1 + X 2 : MvPolynomial (Fin 3) ℤ) = X 2 + X 0 + X 1 := by mv_decide
-example : (X 0 + X 1 - X 1 : MvPolynomial (Fin 2) ℤ) = X 0 := by mv_decide
-
--- Multiplication, with like terms merging to coefficient `2`:
-example : ((X 0 + X 1) ^ 2 : MvPolynomial (Fin 2) ℤ) = X 0 ^ 2 + C 2 * (X 0 * X 1) + X 1 ^ 2 := by
-  mv_decide
-
--- Difference of squares — the cross terms cancel to a *zero* coefficient (dropped by the
--- `filter (·.2 ≠ 0)` in `eq_of_core`):
-example : ((X 0 + X 1) * (X 0 - X 1) : MvPolynomial (Fin 2) ℤ) = X 0 ^ 2 - X 1 ^ 2 := by mv_decide
-
--- A factored form equals its expansion:
-example : ((X 0 + X 1) ^ 2 * (X 0 - X 1) : MvPolynomial (Fin 2) ℤ)
-    = (X 0 + X 1) * (X 0 ^ 2 - X 1 ^ 2) := by mv_decide
-
--- The trust check: this proof depends only on the standard logical axioms — crucially **not**
--- `Lean.ofReduceBool` (which `native_decide` would add).
-theorem sq_expand : ((X 0 + X 1) ^ 2 : MvPolynomial (Fin 2) ℤ)
-    = X 0 ^ 2 + C 2 * (X 0 * X 1) + X 1 ^ 2 := by mv_decide
-
-#print axioms sq_expand
-
--- bare numerals (no `C`) now work, axiom-free:
-example : ((X 0 + 1) * (X 0 + 2) : MvPolynomial (Fin 1) ℤ) = X 0 ^ 2 + 3 * X 0 + 2 := by
-  mv_decide
-
-/-! ### Ideal membership, axiom-free (`mv_mem`) -/
-
--- `x·y + y` is in `⟨x, y⟩` (reduces: `−y·x` then `−1·y` to `0`):
-example : (X 0 * X 1 + X 1 : MvPolynomial (Fin 2) ℤ) ∈ Ideal.span {X 0, X 1} := by mv_mem
-
--- `x² − y ∈ ⟨x, y⟩` (reduces by `x` then by `y`):
-theorem mem_demo : (X 0 ^ 2 - X 1 : MvPolynomial (Fin 2) ℤ) ∈ Ideal.span {X 0, X 1} := by mv_mem
-#print axioms mem_demo   -- [propext, Classical.choice, Quot.sound] — axiom-free
-
-end MvPolyKernelDemo
 
