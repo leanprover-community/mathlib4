@@ -207,6 +207,8 @@ variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open Polynomial in
+/-- A variable change over the fraction field between integral Weierstrass equations descends to the
+base ring if its `u` coefficient descends to a unit of the base ring. -/
 theorem exists_variableChange_lift {W W' : WeierstrassCurve K}
     [IsIntegral R W] [IsIntegral R W'] (Ch : VariableChange K) (hCh : Ch • W = W')
     (uR : Rˣ) (huR : algebraMap R K uR = Ch.u) :
