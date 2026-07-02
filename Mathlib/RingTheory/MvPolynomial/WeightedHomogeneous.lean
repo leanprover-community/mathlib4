@@ -261,10 +261,9 @@ theorem sub {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
 
 /-- A weighted homogeneous polynomial of degree `n` is zero if no monomial has weight `n`. -/
 theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
-    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 := by
-  rw [← support_eq_empty, ← Finset.not_nonempty_iff_eq_empty]
-  rintro ⟨d, hd⟩
-  exact hno _ (hφ (mem_support_iff.mp hd))
+    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 :=
+  support_eq_empty.mp <| Finset.eq_empty_of_forall_notMem
+    fun _ hd ↦ hno _ (hφ (mem_support_iff.mp hd))
 
 /-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
 fixed `d₀` is a single monomial. -/
