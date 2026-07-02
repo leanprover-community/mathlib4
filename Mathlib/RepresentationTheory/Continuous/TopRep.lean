@@ -6,6 +6,7 @@ Authors: Edison Xie, Richard Hill
 module
 
 public import Mathlib.CategoryTheory.Action.Basic
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.RepresentationTheory.Continuous.Basic
 
 /-!
@@ -128,7 +129,9 @@ variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
   simpa using! congr($(f.hom.2 g) a)
 
-instance : AddCommGroup (A ⟶ B) := ConcreteCategory.homEquiv.addCommGroup
+instance : AddCommGroup (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.addCommGroup
+
+@[simp] lemma hom_zero : (0 : A ⟶ B).hom = 0 := rfl
 
 lemma hom_add (f g : A ⟶ B) : (f + g).hom = f.hom + g.hom := rfl
 
@@ -157,7 +160,7 @@ variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}
 
-instance : Module k (A ⟶ B) := ConcreteCategory.homEquiv.module k
+instance : Module k (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.module k
 
 lemma hom_smul (r : k) (f : A ⟶ B) : (r • f).hom = r • f.hom := rfl
 
@@ -218,5 +221,41 @@ instance : (fromActionTopModFunc (k := k) (G := G)).IsEquivalence :=
   TopRepEquivActionTop (k := k) (G := G).isEquivalence_inverse
 
 end equivAction
+
+variable {G : Type v} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+/-- The `G`-invariant topologicalsubmodule of a topological representation. -/
+abbrev invariants (X : TopRep k G) : TopModuleCat k := .of k X.ρ.invariants
+
+variable (k G) in
+/-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
+abbrev invariantsFunctor : TopRep k G ⥤ TopModuleCat k where
+  obj A := .of k A.ρ.invariants
+  map f := TopModuleCat.ofHom f.hom.mapInvariants
+
+instance : (invariantsFunctor k G).Additive where
+
+instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
+    (invariantsFunctor k G).Linear k where
+
+/-- The top rep induced by the coinduced representation. -/
+abbrev coind₁ (A : TopRep k G) : TopRep k G := of A.ρ.coind₁
+
+variable (k G) in
+/-- The functor taking a representation `rep` to the representation `C(G, rep)`.
+The `G` action is defined by `g • f := x ↦ g • f (g⁻¹ * x)`. -/
+abbrev coind₁Functor : TopRep k G ⥤ TopRep k G where
+  obj := coind₁
+  map φ := ofHom <| ContRepresentation.coind₁Map _ _ φ.hom
+
+instance : (TopRep.coind₁Functor k G).Additive where
+
+instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
+    (coind₁Functor k G).Linear k where
+
+/-- The constant function `rep ⟶ C(G, rep)` as a natural transformation. -/
+@[implicit_reducible, simps]
+def coind₁ι : 𝟭 (TopRep k G) ⟶ coind₁Functor k G where
+  app rep := ofHom rep.ρ.coind₁ι
 
 end TopRep
