@@ -1042,14 +1042,19 @@ alias sInter_mono := sInter_subset_sInter
 theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι, s ⊆ ⋃ _ : ι₂, s :=
   iSup_const_mono (α := Set α) h
 
-@[simp]
-theorem iUnion_singleton_eq_range (f : ι → β) : ⋃ x : ι, {f x} = range f := by
+/-- More general version of `iUnion_singleton_eq_range`, which can't be marked as `@[simp]`
+because it would interfere with `biUnion_of_singleton`. -/
+theorem iUnion_singleton_eq_range' (f : ι → β) : ⋃ x : ι, {f x} = range f := by
   ext x
-  simp [@eq_comm _ x]
+  simp [eq_comm]
+
+@[simp]
+theorem iUnion_singleton_eq_range (f : α → β) : ⋃ x : α, {f x} = range f :=
+  iUnion_singleton_eq_range' f
 
 theorem iUnion_insert_eq_range_union_iUnion (x : ι → β) (t : ι → Set β) :
     ⋃ i, insert (x i) (t i) = range x ∪ ⋃ i, t i := by
-  simp_rw [← union_singleton, iUnion_union_distrib, union_comm, iUnion_singleton_eq_range]
+  simp_rw [← union_singleton, iUnion_union_distrib, union_comm, iUnion_singleton_eq_range']
 
 theorem iUnion_of_singleton (α : Type*) : (⋃ x, {x} : Set α) = univ := by simp [Set.ext_iff]
 
