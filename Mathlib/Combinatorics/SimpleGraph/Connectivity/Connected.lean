@@ -159,6 +159,16 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
   }
   exact aux hu hr.some
 
+lemma Reachable.of_walk_mem {u v x y} (w : G.Walk u v) (hx : x ∈ w.support) (hy : y ∈ w.support) :
+    G.Reachable x y := by
+  obtain ⟨n, hn⟩ := Walk.mem_support_iff_exists_getVert.mp hx
+  obtain ⟨m, hm⟩ := Walk.mem_support_iff_exists_getVert.mp hy
+  wlog h : n ≤ m generalizing n m x y
+  · exact this hy hx m hm n hn (by lia) |>.symm
+  let := (w.drop n).take (m - n)
+  simp only [hn, Walk.drop_getVert, Nat.add_sub_of_le h, hm] at this
+  use this
+
 variable (G)
 
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
