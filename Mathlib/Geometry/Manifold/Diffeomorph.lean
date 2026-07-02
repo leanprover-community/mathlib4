@@ -249,9 +249,9 @@ theorem symm_image_eq_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h.symm
   h.symm.image_eq_preimage_symm s
 
 @[simp, mfld_simps]
-nonrec theorem range_comp {α} (h : M ≃ₘ^n⟮I, J⟯ N) (f : α → M) :
+theorem range_comp {α} (h : M ≃ₘ^n⟮I, J⟯ N) (f : α → M) :
     range (h ∘ f) = h.symm ⁻¹' range f := by
-  rw [range_comp, image_eq_preimage_symm]
+  rw [Set.range_comp, image_eq_preimage_symm]
 
 @[simp]
 theorem image_symm_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h '' h.symm '' s = s :=

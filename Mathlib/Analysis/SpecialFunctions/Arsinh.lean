@@ -207,13 +207,13 @@ section Continuous
 
 variable {X : Type*} [TopologicalSpace X] {f : X → ℝ} {s : Set X} {a : X}
 
-nonrec theorem ContinuousAt.arsinh (h : ContinuousAt f a) :
+theorem ContinuousAt.arsinh (h : ContinuousAt f a) :
     ContinuousAt (fun x => arsinh (f x)) a :=
-  h.arsinh
+  Tendsto.arsinh h
 
-nonrec theorem ContinuousWithinAt.arsinh (h : ContinuousWithinAt f s a) :
+theorem ContinuousWithinAt.arsinh (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (fun x => arsinh (f x)) s a :=
-  h.arsinh
+  Tendsto.arsinh h
 
 theorem ContinuousOn.arsinh (h : ContinuousOn f s) : ContinuousOn (fun x => arsinh (f x)) s :=
   fun x hx => (h x hx).arsinh

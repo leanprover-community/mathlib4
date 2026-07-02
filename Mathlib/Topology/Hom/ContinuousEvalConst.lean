@@ -67,21 +67,21 @@ protected theorem Filter.Tendsto.coeFun {ι : Type*} {l : Filter ι} {f : ι →
     (hf : Tendsto f l (𝓝 g)) : Tendsto (fun i ↦ ⇑(f i)) l (𝓝 ⇑g) :=
   (continuous_id.coeFun.tendsto _).comp hf
 
-protected nonrec theorem ContinuousAt.eval_const (hf : ContinuousAt f z) (x : α) :
+protected theorem ContinuousAt.eval_const (hf : ContinuousAt f z) (x : α) :
     ContinuousAt (f · x) z :=
-  hf.eval_const x
+  Tendsto.eval_const hf x
 
-protected nonrec theorem ContinuousAt.coeFun (hf : ContinuousAt f z) :
+protected theorem ContinuousAt.coeFun (hf : ContinuousAt f z) :
     ContinuousAt (fun z ↦ ⇑(f z)) z :=
-  hf.coeFun
+  Tendsto.coeFun hf
 
-protected nonrec theorem ContinuousWithinAt.eval_const (hf : ContinuousWithinAt f s z) (x : α) :
+protected theorem ContinuousWithinAt.eval_const (hf : ContinuousWithinAt f s z) (x : α) :
     ContinuousWithinAt (f · x) s z :=
-  hf.eval_const x
+  Tendsto.eval_const hf x
 
-protected nonrec theorem ContinuousWithinAt.coeFun (hf : ContinuousWithinAt f s z) :
+protected theorem ContinuousWithinAt.coeFun (hf : ContinuousWithinAt f s z) :
     ContinuousWithinAt (fun z ↦ ⇑(f z)) s z :=
-  hf.coeFun
+  Tendsto.coeFun hf
 
 protected theorem ContinuousOn.eval_const (hf : ContinuousOn f s) (x : α) :
     ContinuousOn (f · x) s :=

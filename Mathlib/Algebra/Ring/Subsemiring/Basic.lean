@@ -64,9 +64,9 @@ theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Subsemiring R → AddSu
   toAddSubmonoid_strictMono.monotone
 
 /-- Product of a list of elements in a `Subsemiring` is in the `Subsemiring`. -/
-nonrec theorem list_prod_mem {R : Type*} [Semiring R] (s : Subsemiring R) {l : List R} :
+theorem list_prod_mem {R : Type*} [Semiring R] (s : Subsemiring R) {l : List R} :
     (∀ x ∈ l, x ∈ s) → l.prod ∈ s :=
-  list_prod_mem
+  _root_.list_prod_mem
 
 /-- Sum of a list of elements in a `Subsemiring` is in the `Subsemiring`. -/
 protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum ∈ s :=

@@ -97,22 +97,22 @@ theorem Filter.Tendsto.const_cpow {l : Filter α} {f : α → ℂ} {a b : ℂ} (
 
 variable [TopologicalSpace α] {f g : α → ℂ} {s : Set α} {a : α}
 
-nonrec theorem ContinuousWithinAt.cpow (hf : ContinuousWithinAt f s a)
+theorem ContinuousWithinAt.cpow (hf : ContinuousWithinAt f s a)
     (hg : ContinuousWithinAt g s a) (h0 : f a ∈ slitPlane) :
     ContinuousWithinAt (fun x => f x ^ g x) s a :=
-  hf.cpow hg h0
+  Tendsto.cpow hf hg h0
 
-nonrec theorem ContinuousWithinAt.const_cpow {b : ℂ} (hf : ContinuousWithinAt f s a)
+theorem ContinuousWithinAt.const_cpow {b : ℂ} (hf : ContinuousWithinAt f s a)
     (h : b ≠ 0 ∨ f a ≠ 0) : ContinuousWithinAt (fun x => b ^ f x) s a :=
-  hf.const_cpow h
+  Tendsto.const_cpow hf h
 
-nonrec theorem ContinuousAt.cpow (hf : ContinuousAt f a) (hg : ContinuousAt g a)
+theorem ContinuousAt.cpow (hf : ContinuousAt f a) (hg : ContinuousAt g a)
     (h0 : f a ∈ slitPlane) : ContinuousAt (fun x => f x ^ g x) a :=
-  hf.cpow hg h0
+  Tendsto.cpow hf hg h0
 
-nonrec theorem ContinuousAt.const_cpow {b : ℂ} (hf : ContinuousAt f a) (h : b ≠ 0 ∨ f a ≠ 0) :
+theorem ContinuousAt.const_cpow {b : ℂ} (hf : ContinuousAt f a) (h : b ≠ 0 ∨ f a ≠ 0) :
     ContinuousAt (fun x => b ^ f x) a :=
-  hf.const_cpow h
+  Tendsto.const_cpow hf h
 
 theorem ContinuousOn.cpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
     (h0 : ∀ a ∈ s, f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ g x) s := fun a ha =>
@@ -250,14 +250,14 @@ theorem Filter.Tendsto.rpow_const_nhds_zero {l : Filter α} {f : α → ℝ} {p 
 
 variable [TopologicalSpace α] {f g : α → ℝ} {s : Set α} {x : α} {p : ℝ}
 
-nonrec theorem ContinuousAt.rpow (hf : ContinuousAt f x) (hg : ContinuousAt g x)
+theorem ContinuousAt.rpow (hf : ContinuousAt f x) (hg : ContinuousAt g x)
     (h : f x ≠ 0 ∨ 0 < g x) : ContinuousAt (fun t => f t ^ g t) x :=
-  hf.rpow hg h
+  Tendsto.rpow hf hg h
 
-nonrec theorem ContinuousWithinAt.rpow (hf : ContinuousWithinAt f s x)
+theorem ContinuousWithinAt.rpow (hf : ContinuousWithinAt f s x)
     (hg : ContinuousWithinAt g s x) (h : f x ≠ 0 ∨ 0 < g x) :
     ContinuousWithinAt (fun t => f t ^ g t) s x :=
-  hf.rpow hg h
+  Tendsto.rpow hf hg h
 
 theorem ContinuousOn.rpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
     (h : ∀ x ∈ s, f x ≠ 0 ∨ 0 < g x) : ContinuousOn (fun t => f t ^ g t) s := fun t ht =>
@@ -267,13 +267,13 @@ theorem Continuous.rpow (hf : Continuous f) (hg : Continuous g) (h : ∀ x, f x 
     Continuous fun x => f x ^ g x :=
   continuous_iff_continuousAt.2 fun x => hf.continuousAt.rpow hg.continuousAt (h x)
 
-nonrec theorem ContinuousWithinAt.rpow_const (hf : ContinuousWithinAt f s x) (h : f x ≠ 0 ∨ 0 ≤ p) :
+theorem ContinuousWithinAt.rpow_const (hf : ContinuousWithinAt f s x) (h : f x ≠ 0 ∨ 0 ≤ p) :
     ContinuousWithinAt (fun x => f x ^ p) s x :=
-  hf.rpow_const h
+  Tendsto.rpow_const hf h
 
-nonrec theorem ContinuousAt.rpow_const (hf : ContinuousAt f x) (h : f x ≠ 0 ∨ 0 ≤ p) :
+theorem ContinuousAt.rpow_const (hf : ContinuousAt f x) (h : f x ≠ 0 ∨ 0 ≤ p) :
     ContinuousAt (fun x => f x ^ p) x :=
-  hf.rpow_const h
+  Tendsto.rpow_const hf h
 
 theorem ContinuousOn.rpow_const (hf : ContinuousOn f s) (h : ∀ x ∈ s, f x ≠ 0 ∨ 0 ≤ p) :
     ContinuousOn (fun x => f x ^ p) s := fun x hx => (hf x hx).rpow_const (h x hx)

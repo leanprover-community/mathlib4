@@ -325,9 +325,10 @@ protected theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
   have := hf.hasFDerivAtFilter.iterate hL n
   rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
-protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x)
+protected theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasDerivAt f^[n] (f' ^ n) x :=
-  hf.iterate (by simpa [hx] using hf.continuousAt.tendsto.prodMap <| tendsto_pure_pure f x) _
+  HasDerivAtFilter.iterate hf (by simpa [hx] using hf.continuousAt.tendsto.prodMap
+    <| tendsto_pure_pure f x) _
 
 protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivWithinAt f f' s x)
     (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt f^[n] (f' ^ n) s x := by

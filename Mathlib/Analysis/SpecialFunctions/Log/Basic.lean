@@ -498,13 +498,13 @@ theorem Continuous.log (hf : Continuous f) (h₀ : ∀ x, f x ≠ 0) : Continuou
   continuousOn_log.comp_continuous hf h₀
 
 @[fun_prop]
-nonrec theorem ContinuousAt.log (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
+theorem ContinuousAt.log (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
     ContinuousAt (fun x => log (f x)) a :=
-  hf.log h₀
+  Tendsto.log hf h₀
 
-nonrec theorem ContinuousWithinAt.log (hf : ContinuousWithinAt f s a) (h₀ : f a ≠ 0) :
+theorem ContinuousWithinAt.log (hf : ContinuousWithinAt f s a) (h₀ : f a ≠ 0) :
     ContinuousWithinAt (fun x => log (f x)) s a :=
-  hf.log h₀
+  Tendsto.log hf h₀
 
 @[fun_prop]
 theorem ContinuousOn.log (hf : ContinuousOn f s) (h₀ : ∀ x ∈ s, f x ≠ 0) :

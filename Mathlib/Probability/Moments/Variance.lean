@@ -405,13 +405,13 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
     rfl
 
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
-nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
+theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
     (hY : MemLp Y 2 μ) (h : X ⟂ᵢ[μ] Y) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
   by_cases h' : X =ᵐ[μ] 0
   · rw [variance_congr h', variance_congr h'.add_right]
     simp
   have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
-  rw [variance_add hX hY, h.covariance_eq_zero hX hY]
+  rw [ProbabilityTheory.variance_add hX hY, h.covariance_eq_zero hX hY]
   simp
 
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/

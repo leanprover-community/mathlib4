@@ -131,8 +131,8 @@ theorem comp_right (h : Commute f g) (h' : Commute f g') : Commute f (g ∘ g') 
   Semiconj.comp_right h h'
 
 /-- If `f` and `f'` commute with `g`, then `f ∘ f'` commutes with `g` as well. -/
-nonrec theorem comp_left (h : Commute f g) (h' : Commute f' g) : Commute (f ∘ f') g :=
-  h.comp_left h'
+theorem comp_left (h : Commute f g) (h' : Commute f' g) : Commute (f ∘ f') g :=
+  Semiconj.comp_left h h'
 
 /-- Any self-map commutes with the identity map. -/
 theorem id_right : Commute f id := Semiconj.id_right
@@ -142,8 +142,8 @@ theorem id_left : Commute id f :=
   Semiconj.id_left
 
 /-- If `f` commutes with `g`, then `Option.map f` commutes with `Option.map g`. -/
-nonrec theorem option_map {f g : α → α} (h : Commute f g) : Commute (Option.map f) (Option.map g) :=
-  h.option_map
+theorem option_map {f g : α → α} (h : Commute f g) : Commute (Option.map f) (Option.map g) :=
+  Semiconj.option_map h
 
 end Commute
 

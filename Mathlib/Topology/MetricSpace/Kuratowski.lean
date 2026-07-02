@@ -112,10 +112,10 @@ protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [S
   Classical.choose_spec (exists_isometric_embedding α)
 
 /-- Version of the Kuratowski embedding for nonempty compacts -/
-nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [CompactSpace α]
+def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [CompactSpace α]
     [Nonempty α] : NonemptyCompacts ℓ^∞(ℕ, ℝ) where
-  carrier := range (kuratowskiEmbedding α)
-  isCompact' := isCompact_range (kuratowskiEmbedding.isometry α).continuous
+  carrier := range (_root_.kuratowskiEmbedding α)
+  isCompact' := isCompact_range (_root_.kuratowskiEmbedding.isometry α).continuous
   nonempty' := range_nonempty _
 
 /--

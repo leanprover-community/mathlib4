@@ -108,17 +108,17 @@ theorem torusIntegrable_const (a : E) (c : ℂⁿ) (R : ℝⁿ) : TorusIntegrabl
   simp [TorusIntegrable, measure_Icc_lt_top]
 
 /-- If `f` is torus integrable then `-f` is torus integrable. -/
-protected nonrec theorem neg (hf : TorusIntegrable f c R) : TorusIntegrable (-f) c R := hf.neg
+protected theorem neg (hf : TorusIntegrable f c R) : TorusIntegrable (-f) c R := IntegrableOn.neg hf
 
 /-- If `f` and `g` are two torus integrable functions, then so is `f + g`. -/
-protected nonrec theorem add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
+protected theorem add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     TorusIntegrable (f + g) c R :=
-  hf.add hg
+  IntegrableOn.add hf hg
 
 /-- If `f` and `g` are two torus integrable functions, then so is `f - g`. -/
-protected nonrec theorem sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
+protected theorem sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     TorusIntegrable (f - g) c R :=
-  hf.sub hg
+  IntegrableOn.sub hf hg
 
 theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusIntegrable f c 0 := by
   rw [TorusIntegrable, torusMap_zero_radius]

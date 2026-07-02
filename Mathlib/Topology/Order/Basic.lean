@@ -313,10 +313,10 @@ theorem induced_orderTopology {α β : Type*} [Preorder α] [ta : TopologicalSpa
 
 /-- The topology induced by a strictly monotone function with order-connected range is the preorder
 topology. -/
-nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type*} [LinearOrder α]
+theorem StrictMono.induced_topology_eq_preorder {α β : Type*} [LinearOrder α]
     [LinearOrder β] [t : TopologicalSpace β] [OrderTopology β] {f : α → β}
     (hf : StrictMono f) (hc : OrdConnected (range f)) : t.induced f = Preorder.topology α := by
-  refine induced_topology_eq_preorder hf.lt_iff_lt (fun h₁ h₂ => ?_) fun h₁ h₂ => ?_
+  refine _root_.induced_topology_eq_preorder hf.lt_iff_lt (fun h₁ h₂ => ?_) fun h₁ h₂ => ?_
   · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨not_lt.1 h₂, h₁.le⟩ with ⟨y, rfl⟩
     exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
   · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨h₁.le, not_lt.1 h₂⟩ with ⟨y, rfl⟩

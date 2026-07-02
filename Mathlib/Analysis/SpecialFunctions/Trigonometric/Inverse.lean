@@ -503,21 +503,21 @@ end Filter.Tendsto
 
 variable {X : Type*} [TopologicalSpace X] {f : X → ℝ} {s : Set X} {x : X}
 
-protected nonrec theorem ContinuousWithinAt.arcsin (h : ContinuousWithinAt f s x) :
+protected theorem ContinuousWithinAt.arcsin (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (arcsin <| f ·) s x :=
-  h.arcsin
+  Tendsto.arcsin h
 
-protected nonrec theorem ContinuousWithinAt.arccos (h : ContinuousWithinAt f s x) :
+protected theorem ContinuousWithinAt.arccos (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (arccos <| f ·) s x :=
-  h.arccos
+  Tendsto.arccos h
 
-protected nonrec theorem ContinuousAt.arcsin (h : ContinuousAt f x) :
+protected theorem ContinuousAt.arcsin (h : ContinuousAt f x) :
     ContinuousAt (arcsin <| f ·) x :=
-  h.arcsin
+  Tendsto.arcsin h
 
-protected nonrec theorem ContinuousAt.arccos (h : ContinuousAt f x) :
+protected theorem ContinuousAt.arccos (h : ContinuousAt f x) :
     ContinuousAt (arccos <| f ·) x :=
-  h.arccos
+  Tendsto.arccos h
 
 protected theorem ContinuousOn.arcsin (h : ContinuousOn f s) : ContinuousOn (arcsin <| f ·) s :=
   fun x hx ↦ (h x hx).arcsin

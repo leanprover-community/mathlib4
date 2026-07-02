@@ -264,7 +264,7 @@ open MeasureTheory Measure
 
 variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} {μ ν : Measure α}
 
-nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set β) :
+theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set β) :
     μ.map f s = μ (f ⁻¹' s) := by
   refine le_antisymm ?_ (le_map_apply hf.measurable.aemeasurable s)
   set t := f '' toMeasurable μ (f ⁻¹' s) ∪ (range f)ᶜ
@@ -279,7 +279,7 @@ nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set
       hf.injective.preimage_image]
   calc
     μ.map f s ≤ μ.map f t := by gcongr
-    _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
+    _ = μ (f ⁻¹' s) := by rw [Measure.map_apply hf.measurable htm, hft, measure_toMeasurable]
 
 theorem map_injective (hf : MeasurableEmbedding f) : Function.Injective (Measure.map f) := by
   intro μ ν h

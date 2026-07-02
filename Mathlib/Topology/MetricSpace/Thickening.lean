@@ -594,10 +594,10 @@ theorem cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α] [P
       (((congr_arg ENNReal.ofReal hy.symm).le.trans ENNReal.ofReal_toReal_le).trans hx)
   exact mem_biUnion yE hy
 
-nonrec theorem _root_.IsClosed.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α]
+theorem _root_.IsClosed.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α]
     [ProperSpace α] {E : Set α} (hE : IsClosed E) (hδ : 0 ≤ δ) :
     cthickening δ E = ⋃ x ∈ E, closedBall x δ := by
-  rw [cthickening_eq_biUnion_closedBall E hδ, hE.closure_eq]
+  rw [Metric.cthickening_eq_biUnion_closedBall E hδ, hE.closure_eq]
 
 /-- For the equality, see `infEDist_cthickening`. -/
 theorem infEDist_le_infEDist_cthickening_add :

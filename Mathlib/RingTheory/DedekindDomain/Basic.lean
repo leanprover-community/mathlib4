@@ -79,9 +79,9 @@ theorem of_isIntegral (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
 
 @[deprecated (since := "2026-05-08")] alias isIntegralClosure := of_isIntegral
 
-nonrec instance integralClosure [Nontrivial R] [IsDomain A] [Algebra R A] [DimensionLEOne R] :
-    DimensionLEOne (integralClosure R A) :=
-  DimensionLEOne.of_isIntegral R (integralClosure R A)
+instance integralClosure [Nontrivial R] [IsDomain A] [Algebra R A] [DimensionLEOne R] :
+    DimensionLEOne (_root_.integralClosure R A) :=
+  DimensionLEOne.of_isIntegral R (_root_.integralClosure R A)
 
 variable {R}
 

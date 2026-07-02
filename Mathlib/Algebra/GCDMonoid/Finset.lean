@@ -208,20 +208,20 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
         split_ifs with h1 <;> simp [h, h1]
     simp only [gcd_zero_left, normalize_gcd]
 
-nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
+theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
   classical
     refine s.induction_on ?_ ?_
     · simp
     · intro b t _ h
-      rw [gcd_insert, gcd_insert, h, ← gcd_mul_left]
+      rw [gcd_insert, gcd_insert, h, ← _root_.gcd_mul_left]
       apply ((normalize_associated a).mul_right _).gcd_eq_right
 
-nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
+theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
   classical
     refine s.induction_on ?_ ?_
     · simp
     · intro b t _ h
-      rw [gcd_insert, gcd_insert, h, ← gcd_mul_right]
+      rw [gcd_insert, gcd_insert, h, ← _root_.gcd_mul_right]
       apply ((normalize_associated a).mul_left _).gcd_eq_right
 
 theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)

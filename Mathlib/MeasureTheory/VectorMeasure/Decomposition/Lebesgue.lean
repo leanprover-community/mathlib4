@@ -139,11 +139,12 @@ theorem singularPart_totalVariation (s : SignedMeasure α) (μ : Measure α) :
     rw [toSignedMeasure_toJordanDecomposition, singularPart, JordanDecomposition.toSignedMeasure]
   rw [totalVariation, this]
 
-nonrec theorem mutuallySingular_singularPart (s : SignedMeasure α) (μ : Measure α) :
+theorem mutuallySingular_singularPart (s : SignedMeasure α) (μ : Measure α) :
     singularPart s μ ⟂ᵥ μ.toENNRealVectorMeasure := by
   rw [mutuallySingular_ennreal_iff, singularPart_totalVariation,
     VectorMeasure.ennrealToMeasure_toENNRealVectorMeasure]
-  exact (mutuallySingular_singularPart _ _).add_left (mutuallySingular_singularPart _ _)
+  exact (_root_.MeasureTheory.Measure.mutuallySingular_singularPart _ _).add_left
+    (_root_.MeasureTheory.Measure.mutuallySingular_singularPart _ _)
 
 end
 
@@ -318,7 +319,7 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
     · congr
       rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
 
-nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
+theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   cases le_or_gt 0 r with
   | inl hr =>
@@ -330,10 +331,12 @@ nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : �
       congr
       · congr
         · rw [toJordanDecomposition_smul_real,
-            JordanDecomposition.real_smul_posPart_neg _ _ hr, singularPart_smul]
+            JordanDecomposition.real_smul_posPart_neg _ _ hr,
+              _root_.MeasureTheory.Measure.singularPart_smul]
       · congr
         · rw [toJordanDecomposition_smul_real,
-            JordanDecomposition.real_smul_negPart_neg _ _ hr, singularPart_smul]
+            JordanDecomposition.real_smul_negPart_neg _ _ hr,
+              _root_.MeasureTheory.Measure.singularPart_smul]
     rw [toSignedMeasure_smul, toSignedMeasure_smul, ← neg_sub, ← smul_sub, NNReal.smul_def,
       ← neg_smul, Real.coe_toNNReal _ (le_of_lt (neg_pos.mpr hr)), neg_neg]
 

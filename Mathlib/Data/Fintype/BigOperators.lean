@@ -157,8 +157,8 @@ theorem prod_sigma' {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fi
     (f : (i : ι) → α i → M) : ∏ x : Sigma α, f x.1 x.2 = ∏ x, ∏ y, f x y :=
   prod_sigma ..
 
-@[simp] nonrec lemma card_sigma {ι} {α : ι → Type*} [Fintype ι] [∀ i, Fintype (α i)] :
-    card (Sigma α) = ∑ i, card (α i) := card_sigma _ _
+@[simp] lemma card_sigma {ι} {α : ι → Type*} [Fintype ι] [∀ i, Fintype (α i)] :
+    card (Sigma α) = ∑ i, card (α i) := Finset.card_sigma _ _
 
 /-- The number of dependent maps `f : Π j, s j` for which the `i` component is `a` is the product
 over all `j ≠ i` of `#(s j)`.
@@ -243,11 +243,11 @@ theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] 
   rw [← Finset.prod_subtype]
   simp_rw [Set.mem_toFinset]; intro; rfl
 
-nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
+theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
-  simp only [prod_dite]
+  simp only [Finset.prod_dite]
   congr 1
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.2
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2

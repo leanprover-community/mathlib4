@@ -663,9 +663,9 @@ theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 theorem uniformContinuous_const {b : β} : UniformContinuous fun _ : α => b :=
   uniformContinuous_of_const fun _ _ => rfl
 
-nonrec theorem UniformContinuous.comp [UniformSpace γ] {g : β → γ} {f : α → β}
+theorem UniformContinuous.comp [UniformSpace γ] {g : β → γ} {f : α → β}
     (hg : UniformContinuous g) (hf : UniformContinuous f) : UniformContinuous (g ∘ f) :=
-  hg.comp hf
+  Tendsto.comp hg hf
 
 /-- If a function `T` is uniformly continuous in a uniform space `β`,
 then its `n`-th iterate `T^[n]` is also uniformly continuous. -/

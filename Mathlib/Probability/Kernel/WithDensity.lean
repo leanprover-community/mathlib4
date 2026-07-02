@@ -69,19 +69,20 @@ protected theorem withDensity_apply' (κ : Kernel α β) [IsSFiniteKernel κ]
     withDensity κ f a s = ∫⁻ b in s, f a b ∂κ a := by
   rw [Kernel.withDensity_apply κ hf, withDensity_apply' _ s]
 
-nonrec lemma withDensity_congr_ae (κ : Kernel α β) [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
+lemma withDensity_congr_ae (κ : Kernel α β) [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
     (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
     (hfg : ∀ a, f a =ᵐ[κ a] g a) :
     withDensity κ f = withDensity κ g := by
   ext a
-  rw [Kernel.withDensity_apply _ hf, Kernel.withDensity_apply _ hg, withDensity_congr_ae (hfg a)]
+  rw [Kernel.withDensity_apply _ hf, Kernel.withDensity_apply _ hg,
+    MeasureTheory.withDensity_congr_ae (hfg a)]
 
-nonrec lemma withDensity_absolutelyContinuous [IsSFiniteKernel κ]
+lemma withDensity_absolutelyContinuous [IsSFiniteKernel κ]
     (f : α → β → ℝ≥0∞) (a : α) :
     Kernel.withDensity κ f a ≪ κ a := by
   by_cases hf : Measurable (Function.uncurry f)
   · rw [Kernel.withDensity_apply _ hf]
-    exact withDensity_absolutelyContinuous _ _
+    exact MeasureTheory.withDensity_absolutelyContinuous _ _
   · rw [withDensity_of_not_measurable _ hf]
     simp [Measure.AbsolutelyContinuous.zero]
 
@@ -248,9 +249,9 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
 
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0∞` which is everywhere finite,
 `withDensity κ f` is s-finite. -/
-nonrec theorem IsSFiniteKernel.withDensity (κ : Kernel α β) [IsSFiniteKernel κ]
-    (hf_ne_top : ∀ a b, f a b ≠ ∞) : IsSFiniteKernel (withDensity κ f) := by
-  have h_eq_sum : withDensity κ f = Kernel.sum fun i => withDensity (seq κ i) f := by
+theorem IsSFiniteKernel.withDensity (κ : Kernel α β) [IsSFiniteKernel κ]
+    (hf_ne_top : ∀ a b, f a b ≠ ∞) : IsSFiniteKernel (Kernel.withDensity κ f) := by
+  have h_eq_sum : Kernel.withDensity κ f = Kernel.sum fun i => Kernel.withDensity (seq κ i) f := by
     rw [← withDensity_kernel_sum _ _]
     congr
     exact (kernel_sum_seq κ).symm
@@ -263,7 +264,7 @@ instance (κ : Kernel α β) [IsSFiniteKernel κ] (f : α → β → ℝ≥0) :
     IsSFiniteKernel (withDensity κ fun a b => f a b) :=
   IsSFiniteKernel.withDensity κ fun _ _ => ENNReal.coe_ne_top
 
-nonrec lemma withDensity_mul [IsSFiniteKernel κ] {f : α → β → ℝ≥0} {g : α → β → ℝ≥0∞}
+lemma withDensity_mul [IsSFiniteKernel κ] {f : α → β → ℝ≥0} {g : α → β → ℝ≥0∞}
     (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g)) :
     withDensity κ (fun a x ↦ f a x * g a x)
       = withDensity (withDensity κ fun a x ↦ f a x) g := by
@@ -272,7 +273,7 @@ nonrec lemma withDensity_mul [IsSFiniteKernel κ] {f : α → β → ℝ≥0} {g
   swap; · fun_prop
   change (Measure.withDensity (κ a) ((fun x ↦ (f a x : ℝ≥0∞)) * (fun x ↦ (g a x : ℝ≥0∞)))) =
       (withDensity (withDensity κ fun a x ↦ f a x) g) a
-  rw [withDensity_mul]
+  rw [MeasureTheory.withDensity_mul]
   · rw [Kernel.withDensity_apply _ hg, Kernel.withDensity_apply]
     exact measurable_coe_nnreal_ennreal.comp hf
   · fun_prop

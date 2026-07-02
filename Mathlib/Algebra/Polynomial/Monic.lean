@@ -146,9 +146,9 @@ theorem degree_mul_comm (hp : p.Monic) (q : R[X]) : (p * q).degree = (q * p).deg
   · exact add_comm _ _
   · rwa [hp.leadingCoeff, one_mul, leadingCoeff_ne_zero]
 
-nonrec theorem natDegree_mul' (hp : p.Monic) (hq : q ≠ 0) :
+theorem natDegree_mul' (hp : p.Monic) (hq : q ≠ 0) :
     (p * q).natDegree = p.natDegree + q.natDegree := by
-  rw [natDegree_mul']
+  rw [Polynomial.natDegree_mul']
   simpa [hp.leadingCoeff, leadingCoeff_ne_zero]
 
 theorem natDegree_mul_comm (hp : p.Monic) (q : R[X]) : (p * q).natDegree = (q * p).natDegree := by

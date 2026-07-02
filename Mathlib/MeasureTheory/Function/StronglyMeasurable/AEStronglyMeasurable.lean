@@ -839,10 +839,10 @@ theorem _root_.aestronglyMeasurable_const_smul_iff (c : G) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.fun_const_smul c⁻¹, fun h => h.const_smul c⟩
 
-nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
+theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   let ⟨u, hu⟩ := hc
-  hu ▸ aestronglyMeasurable_const_smul_iff u
+  hu ▸ _root_.aestronglyMeasurable_const_smul_iff u
 
 theorem _root_.aestronglyMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=

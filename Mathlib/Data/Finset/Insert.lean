@@ -170,7 +170,7 @@ protected abbrev Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
 @[grind =]
 theorem nontrivial_def {s : Finset α} : s.Nontrivial ↔ ∃ a, a ∈ s ∧ ∃ b, b ∈ s ∧ a ≠ b := Iff.rfl
 
-nonrec lemma Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty := hs.nonempty
+lemma Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty := Set.Nontrivial.nonempty hs
 
 @[simp]
 theorem not_nontrivial_empty : ¬(∅ : Finset α).Nontrivial := by simp [Finset.Nontrivial]
@@ -181,7 +181,8 @@ theorem not_nontrivial_singleton : ¬({a} : Finset α).Nontrivial := by simp [Fi
 theorem Nontrivial.ne_singleton (hs : s.Nontrivial) : s ≠ {a} := by
   rintro rfl; exact not_nontrivial_singleton hs
 
-nonrec lemma Nontrivial.exists_ne (hs : s.Nontrivial) (a : α) : ∃ b ∈ s, b ≠ a := hs.exists_ne _
+lemma Nontrivial.exists_ne (hs : s.Nontrivial) (a : α) : ∃ b ∈ s, b ≠ a :=
+  Set.Nontrivial.exists_ne hs _
 
 theorem eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial := by
   rw [← coe_eq_singleton]; exact Set.eq_singleton_or_nontrivial ha

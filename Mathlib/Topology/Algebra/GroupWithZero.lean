@@ -58,13 +58,13 @@ theorem Filter.Tendsto.div_const {x : G₀} (hf : Tendsto f l (𝓝 x)) (y : G�
 
 variable [TopologicalSpace α]
 
-nonrec theorem ContinuousAt.div_const {a : α} (hf : ContinuousAt f a) (y : G₀) :
+theorem ContinuousAt.div_const {a : α} (hf : ContinuousAt f a) (y : G₀) :
     ContinuousAt (fun x => f x / y) a :=
-  hf.div_const y
+  Tendsto.div_const hf y
 
-nonrec theorem ContinuousWithinAt.div_const {a} (hf : ContinuousWithinAt f s a) (y : G₀) :
+theorem ContinuousWithinAt.div_const {a} (hf : ContinuousWithinAt f s a) (y : G₀) :
     ContinuousWithinAt (fun x => f x / y) s a :=
-  hf.div_const _
+  Tendsto.div_const hf _
 
 theorem ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
     ContinuousOn (fun x => f x / y) s := by
@@ -113,14 +113,14 @@ theorem Filter.Tendsto.inv₀ {a : G₀} (hf : Tendsto f l (𝓝 a)) (ha : a ≠
 variable [TopologicalSpace α]
 
 @[to_fun (attr := fun_prop)]
-nonrec theorem ContinuousWithinAt.inv₀ (hf : ContinuousWithinAt f s a) (ha : f a ≠ 0) :
+theorem ContinuousWithinAt.inv₀ (hf : ContinuousWithinAt f s a) (ha : f a ≠ 0) :
     ContinuousWithinAt f⁻¹ s a :=
-  hf.inv₀ ha
+  Tendsto.inv₀ hf ha
 
 @[to_fun (attr := fun_prop)]
-nonrec theorem ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
+theorem ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
     ContinuousAt f⁻¹ a :=
-  hf.inv₀ ha
+  Tendsto.inv₀ hf ha
 
 @[to_fun (attr := continuity, fun_prop)]
 theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous f⁻¹ :=
@@ -202,18 +202,18 @@ theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l 
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α} {a : α}
 
-nonrec theorem ContinuousWithinAt.div (hf : ContinuousWithinAt f s a)
+theorem ContinuousWithinAt.div (hf : ContinuousWithinAt f s a)
     (hg : ContinuousWithinAt g s a) (h₀ : g a ≠ 0) : ContinuousWithinAt (f / g) s a :=
-  hf.div hg h₀
+  Tendsto.div hf hg h₀
 
 theorem ContinuousOn.div (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
     ContinuousOn (f / g) s := fun x hx => (hf x hx).div (hg x hx) (h₀ x hx)
 
 /-- Continuity at a point of the result of dividing two functions continuous at that point, where
 the denominator is nonzero. -/
-nonrec theorem ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
+theorem ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
     ContinuousAt (f / g) a :=
-  hf.div hg h₀
+  Tendsto.div hf hg h₀
 
 @[continuity]
 theorem Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
@@ -356,13 +356,13 @@ theorem Filter.Tendsto.zpow₀ {f : α → G₀} {l : Filter α} {a : G₀} (hf 
 variable {X : Type*} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
 
 @[fun_prop]
-nonrec theorem ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
+theorem ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => f x ^ m) a :=
-  hf.zpow₀ m h
+  Tendsto.zpow₀ hf m h
 
-nonrec theorem ContinuousWithinAt.zpow₀ (hf : ContinuousWithinAt f s a) (m : ℤ)
+theorem ContinuousWithinAt.zpow₀ (hf : ContinuousWithinAt f s a) (m : ℤ)
     (h : f a ≠ 0 ∨ 0 ≤ m) : ContinuousWithinAt (fun x => f x ^ m) s a :=
-  hf.zpow₀ m h
+  Tendsto.zpow₀ hf m h
 
 @[fun_prop]
 theorem ContinuousOn.zpow₀ (hf : ContinuousOn f s) (m : ℤ) (h : ∀ a ∈ s, f a ≠ 0 ∨ 0 ≤ m) :

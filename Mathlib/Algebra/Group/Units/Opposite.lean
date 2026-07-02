@@ -41,14 +41,14 @@ theorem Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
   rfl
 
 @[to_additive]
-nonrec theorem IsUnit.op {M} [Monoid M] {m : M} (h : IsUnit m) : IsUnit (op m) :=
+theorem IsUnit.op {M} [Monoid M] {m : M} (h : IsUnit m) : IsUnit (MulOpposite.op m) :=
   let ⟨u, hu⟩ := h
-  hu ▸ ⟨Units.opEquiv.symm (op u), rfl⟩
+  hu ▸ ⟨Units.opEquiv.symm (MulOpposite.op u), rfl⟩
 
 @[to_additive]
-nonrec theorem IsUnit.unop {M} [Monoid M] {m : Mᵐᵒᵖ} (h : IsUnit m) : IsUnit (unop m) :=
+theorem IsUnit.unop {M} [Monoid M] {m : Mᵐᵒᵖ} (h : IsUnit m) : IsUnit (MulOpposite.unop m) :=
   let ⟨u, hu⟩ := h
-  hu ▸ ⟨unop (Units.opEquiv u), rfl⟩
+  hu ▸ ⟨MulOpposite.unop (Units.opEquiv u), rfl⟩
 
 @[to_additive (attr := simp)]
 theorem isUnit_op {M} [Monoid M] {m : M} : IsUnit (op m) ↔ IsUnit m :=

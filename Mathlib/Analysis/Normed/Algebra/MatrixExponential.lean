@@ -127,25 +127,25 @@ section Normed
 variable [Fintype m] [DecidableEq m] [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
 set_option backward.isDefEq.respectTransparency false in
-nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
+theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp (A + B) = exp A * exp B :=
-  open scoped Norms.Operator in exp_add_of_commute h
+  open scoped Norms.Operator in NormedSpace.exp_add_of_commute h
 
 set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
-nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
+theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp :=
-  open scoped Norms.Operator in exp_sum_of_commute s f h
+  open scoped Norms.Operator in NormedSpace.exp_sum_of_commute s f h
 
 set_option backward.isDefEq.respectTransparency false in
-nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp (n • A) = exp A ^ n :=
-  open scoped Norms.Operator in exp_nsmul n A
+theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp (n • A) = exp A ^ n :=
+  open scoped Norms.Operator in NormedSpace.exp_nsmul n A
 
 set_option backward.isDefEq.respectTransparency false in
-nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) :=
-  open scoped Norms.Operator in isUnit_exp A
+theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) :=
+  open scoped Norms.Operator in NormedSpace.isUnit_exp A
 
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: without disabling this instance we get a timeout, see lean4#10414:
@@ -153,9 +153,9 @@ set_option backward.isDefEq.respectTransparency false in
 -- and zulip discussion at
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Coercion.20instance.20problems.20with.20matrix.20exponential/with/539770030
 attribute [-instance] Matrix.SpecialLinearGroup.hasCoeToGeneralLinearGroup in
-nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
+theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp (U * A * U⁻¹) = U * exp A * U⁻¹ :=
-  open scoped Norms.Operator in exp_units_conj U A
+  open scoped Norms.Operator in NormedSpace.exp_units_conj U A
 
 -- TODO: without disabling this instance we get a timeout, see lean4#10414:
 -- https://github.com/leanprover/lean4/issues/10414

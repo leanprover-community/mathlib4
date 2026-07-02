@@ -99,8 +99,8 @@ protected lemma congr {g} (h : EventuallyConst f l) (hg : f =ᶠ[l] g) : Eventua
 @[nontriviality]
 lemma of_subsingleton_right [Subsingleton β] : EventuallyConst f l := .of_subsingleton
 
-nonrec lemma anti {l'} (h : EventuallyConst f l) (hl' : l' ≤ l) : EventuallyConst f l' :=
-  h.anti (map_mono hl')
+lemma anti {l'} (h : EventuallyConst f l) (hl' : l' ≤ l) : EventuallyConst f l' :=
+  Subsingleton.anti h (map_mono hl')
 
 @[nontriviality]
 lemma of_subsingleton_left [Subsingleton α] : EventuallyConst f l :=

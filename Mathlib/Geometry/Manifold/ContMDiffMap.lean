@@ -76,8 +76,8 @@ instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where
   map_continuous f := f.contMDiff.continuous
 
 /-- The identity as a `C^n` map. -/
-nonrec def id : C^n⟮I, M; I, M⟯ :=
-  ⟨id, contMDiff_id⟩
+def id : C^n⟮I, M; I, M⟯ :=
+  ⟨_root_.id, contMDiff_id⟩
 
 /-- The composition of `C^n` maps, as a `C^n` map. -/
 def comp (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) : C^n⟮I, M; I'', M''⟯ where

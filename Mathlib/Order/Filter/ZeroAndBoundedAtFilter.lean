@@ -37,14 +37,14 @@ theorem zero_zeroAtFilter [Zero β] [TopologicalSpace β] (l : Filter α) :
     ZeroAtFilter l (0 : α → β) :=
   tendsto_const_nhds
 
-nonrec theorem ZeroAtFilter.add [TopologicalSpace β] [AddZeroClass β] [ContinuousAdd β]
+theorem ZeroAtFilter.add [TopologicalSpace β] [AddZeroClass β] [ContinuousAdd β]
     {l : Filter α} {f g : α → β} (hf : ZeroAtFilter l f) (hg : ZeroAtFilter l g) :
     ZeroAtFilter l (f + g) := by
-  simpa using! hf.add hg
+  simpa using! Tendsto.add hf hg
 
-nonrec theorem ZeroAtFilter.neg [TopologicalSpace β] [SubtractionMonoid β] [ContinuousNeg β]
+theorem ZeroAtFilter.neg [TopologicalSpace β] [SubtractionMonoid β] [ContinuousNeg β]
     {l : Filter α} {f : α → β} (hf : ZeroAtFilter l f) : ZeroAtFilter l (-f) := by
-  simpa using! hf.neg
+  simpa using! Tendsto.neg hf
 
 theorem ZeroAtFilter.smul [TopologicalSpace β] [Zero β]
     [SMulZeroClass 𝕜 β] [ContinuousConstSMul 𝕜 β] {l : Filter α} {f : α → β} (c : 𝕜)
@@ -85,9 +85,9 @@ theorem const_boundedAtFilter [Norm β] (l : Filter α) (c : β) :
 
 -- TODO(https://github.com/leanprover-community/mathlib4/issues/19288): Remove all Comm in the next
 -- three lemmas. This would require modifying the corresponding general asymptotics lemma.
-nonrec theorem BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
+theorem BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f + g) := by
-  simpa using! hf.add hg
+  simpa using! Asymptotics.IsBigO.add hf hg
 
 theorem BoundedAtFilter.neg [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
     (hf : BoundedAtFilter l f) : BoundedAtFilter l (-f) :=
@@ -98,9 +98,9 @@ theorem BoundedAtFilter.smul
     {l : Filter α} {f : α → β} (c : 𝕜) (hf : BoundedAtFilter l f) : BoundedAtFilter l (c • f) :=
   hf.const_smul_left c
 
-nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α → β}
+theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f * g) := by
-  refine (hf.mul hg).trans ?_
+  refine (Asymptotics.IsBigO.mul hf hg).trans ?_
   convert! Asymptotics.isBigO_refl (E := ℝ) _ l
   simp
 

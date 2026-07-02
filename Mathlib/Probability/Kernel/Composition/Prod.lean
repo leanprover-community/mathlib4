@@ -140,12 +140,12 @@ theorem id_prod_apply' (κ : Kernel α β) [IsSFiniteKernel κ] (a : α) {s : Se
 instance IsMarkovKernel.prod (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel α γ)
     [IsMarkovKernel η] : IsMarkovKernel (κ ×ₖ η) := by rw [Kernel.prod]; infer_instance
 
-nonrec instance IsZeroOrMarkovKernel.prod (κ : Kernel α β) [h : IsZeroOrMarkovKernel κ]
+instance IsZeroOrMarkovKernel.prod (κ : Kernel α β) [h : IsZeroOrMarkovKernel κ]
     (η : Kernel α γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ×ₖ η) := by
   rcases eq_zero_or_isMarkovKernel κ with rfl | h
-  · simp only [prod]; infer_instance
+  · simp only [Kernel.prod]; infer_instance
   rcases eq_zero_or_isMarkovKernel η with rfl | h'
-  · simp only [prod]; infer_instance
+  · simp only [Kernel.prod]; infer_instance
   infer_instance
 
 instance IsFiniteKernel.prod (κ : Kernel α β) [IsFiniteKernel κ] (η : Kernel α γ)

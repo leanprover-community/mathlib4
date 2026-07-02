@@ -55,9 +55,9 @@ theorem MellinConvergent.cpow_smul {f : ℝ → E} {s a : ℂ} :
   refine integrableOn_congr_fun (fun t ht => ?_) measurableSet_Ioi
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 
-nonrec theorem MellinConvergent.div_const {f : ℝ → ℂ} {s : ℂ} (hf : MellinConvergent f s) (a : ℂ) :
+theorem MellinConvergent.div_const {f : ℝ → ℂ} {s : ℂ} (hf : MellinConvergent f s) (a : ℂ) :
     MellinConvergent (fun t => f t / a) s := by
-  simpa only [MellinConvergent, smul_eq_mul, ← mul_div_assoc] using! hf.div_const a
+  simpa only [MellinConvergent, smul_eq_mul, ← mul_div_assoc] using! Integrable.div_const hf a
 
 theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : 0 < a) :
     MellinConvergent (fun t => f (a * t)) s ↔ MellinConvergent f s := by

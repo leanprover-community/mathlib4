@@ -438,9 +438,9 @@ theorem addVal_mul {a b : R} :
 theorem addVal_pow (a : R) (n : ℕ) : addVal R (a ^ n) = n • addVal R a :=
   (addVal R).map_pow _ _
 
-nonrec theorem _root_.Irreducible.addVal_pow {ϖ : R} (h : Irreducible ϖ) (n : ℕ) :
+theorem _root_.Irreducible.addVal_pow {ϖ : R} (h : Irreducible ϖ) (n : ℕ) :
     addVal R (ϖ ^ n) = n := by
-  rw [addVal_pow, addVal_uniformizer h, nsmul_one]
+  rw [IsDiscreteValuationRing.addVal_pow, addVal_uniformizer h, nsmul_one]
 
 theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
   have hi := (Classical.choose_spec (exists_prime R)).irreducible

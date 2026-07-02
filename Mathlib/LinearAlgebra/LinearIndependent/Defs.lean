@@ -520,9 +520,9 @@ theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) 
   by_contra hn
   exact (notMem_of_mem_sdiff (hl <| by simp [hn])) (mem_singleton _)
 
-nonrec lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) (a : R)
+lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) (a : R)
     (ha : a • v i ∈ span R (v '' (s \ {i}))) : a = 0 :=
-  hv.eq_zero_of_smul_mem_span ⟨i, hi⟩ _ <| by
+  LinearIndependent.eq_zero_of_smul_mem_span hv ⟨i, hi⟩ _ <| by
     simpa [← comp_def, image_comp, image_sdiff Subtype.val_injective]
 
 variable [Nontrivial R]
@@ -636,10 +636,10 @@ theorem not_linearIndependent_iffₒₛ :
   · exact ⟨s, t, f, hst, heq, i, hi, hfi⟩
   · exact ⟨t, s, f, hst.symm, heq.symm, i, hi, hgi⟩
 
-nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
+theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
     LinearIndependent R v ↔ ∀ t, ∀ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∉ t, f i • v i → ∀ i, f i = 0 := by
-  rw [linearIndependent_iffₒₛ]
+  rw [_root_.linearIndependent_iffₒₛ]
   refine ⟨fun h t f heq i => ?_, fun h t₁ t₂ f ht₁t₂ heq => ?_⟩
   · specialize h t tᶜ f disjoint_compl_right heq
     by_cases hi : i ∈ t

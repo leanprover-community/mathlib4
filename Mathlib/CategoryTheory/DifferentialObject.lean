@@ -279,11 +279,11 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor on `DifferentialObject S C` is additive. -/
 @[simps!]
-nonrec def shiftFunctorAdd (m n : S) :
+def shiftFunctorAdd (m n : S) :
     shiftFunctor C (m + n) ≅ shiftFunctor C m ⋙ shiftFunctor C n := by
   refine NatIso.ofComponents (fun X => mkIso (shiftAdd X.obj _ _) ?_) (fun f => ?_)
   · dsimp
-    rw [← cancel_epi ((shiftFunctorAdd C m n).inv.app X.obj)]
+    rw [← cancel_epi ((CategoryTheory.shiftFunctorAdd C m n).inv.app X.obj)]
     simp only [Category.assoc, Iso.inv_hom_id_app_assoc]
     rw [← NatTrans.naturality_assoc]
     dsimp

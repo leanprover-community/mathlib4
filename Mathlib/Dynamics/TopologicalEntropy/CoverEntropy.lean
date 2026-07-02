@@ -87,8 +87,8 @@ lemma IsDynCoverOf.of_entourage_subset (U_V : U ⊆ V) (h : IsDynCoverOf T F U n
 
 @[simp] lemma isDynCoverOf_empty_right : IsDynCoverOf T F U n ∅ ↔ F = ∅ := by simp [IsDynCoverOf]
 
-nonrec lemma IsDynCoverOf.nonempty (h : F.Nonempty) (h' : IsDynCoverOf T F U n s) : s.Nonempty :=
-  h'.nonempty h
+lemma IsDynCoverOf.nonempty (h : F.Nonempty) (h' : IsDynCoverOf T F U n s) : s.Nonempty :=
+  IsCover.nonempty h' h
 
 lemma isDynCoverOf_zero (T : X → X) (F : Set X) (U : SetRel X X) (h : s.Nonempty) :
     IsDynCoverOf T F U 0 s := by simp [IsDynCoverOf, h]

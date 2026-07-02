@@ -338,7 +338,7 @@ instance hasCoeToTopCat : CoeOut Scheme TopCat where
 unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢ forgetToTop.obj X ≟ (X : TopCat)
 
 /-- The forgetful functor from `Scheme` to `Type`. -/
-nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
+def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ CategoryTheory.forget TopCat
 
 lemma forgetToTop_comp_forget : forgetToTop ⋙ CategoryTheory.forget TopCat = forget := rfl
 

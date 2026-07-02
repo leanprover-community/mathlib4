@@ -78,12 +78,12 @@ theorem Ici_le_Ioi (a : α) : Ici a ≤ Ioi a :=
   Ioi_subset_Ici_self
 
 @[to_dual (attr := simp)]
-nonrec theorem Ici_bot [OrderBot α] : Ici (⊥ : α) = ⊥ :=
-  SetLike.coe_injective Ici_bot
+theorem Ici_bot [OrderBot α] : Ici (⊥ : α) = ⊥ :=
+  SetLike.coe_injective Set.Ici_bot
 
 @[to_dual (attr := simp)]
-nonrec theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ⊤ :=
-  SetLike.coe_injective Ioi_top
+theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ⊤ :=
+  SetLike.coe_injective Set.Ioi_top
 
 @[to_dual (attr := simp)]
 lemma Ici_ne_top : Ici a ≠ ⊤ := SetLike.coe_ne_coe.1 nonempty_Ici.ne_empty

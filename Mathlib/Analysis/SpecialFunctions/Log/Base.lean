@@ -571,13 +571,13 @@ theorem Continuous.logb (hf : Continuous f) (h₀ : ∀ x, f x ≠ 0) :
   continuousOn_logb.comp_continuous hf h₀
 
 @[fun_prop]
-nonrec theorem ContinuousAt.logb (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
+theorem ContinuousAt.logb (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
     ContinuousAt (fun x => logb b (f x)) a :=
-  hf.logb h₀
+  Tendsto.logb hf h₀
 
-nonrec theorem ContinuousWithinAt.logb (hf : ContinuousWithinAt f s a) (h₀ : f a ≠ 0) :
+theorem ContinuousWithinAt.logb (hf : ContinuousWithinAt f s a) (h₀ : f a ≠ 0) :
     ContinuousWithinAt (fun x => logb b (f x)) s a :=
-  hf.logb h₀
+  Tendsto.logb hf h₀
 
 @[fun_prop]
 theorem ContinuousOn.logb (hf : ContinuousOn f s) (h₀ : ∀ x ∈ s, f x ≠ 0) :

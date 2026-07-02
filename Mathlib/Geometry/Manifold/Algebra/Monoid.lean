@@ -129,8 +129,8 @@ theorem ContMDiffWithinAt.mul (hf : CMDiffAt[s] n f x) (hg : CMDiffAt[s] n g x) 
   (contMDiff_mul I n).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
 
 @[to_additive]
-nonrec theorem ContMDiffAt.mul (hf : CMDiffAt n f x) (hg : CMDiffAt n g x) : CMDiffAt n (f * g) x :=
-  hf.mul hg
+theorem ContMDiffAt.mul (hf : CMDiffAt n f x) (hg : CMDiffAt n g x) : CMDiffAt n (f * g) x :=
+  ContMDiffWithinAt.mul hf hg
 
 @[to_additive]
 theorem ContMDiffOn.mul (hf : CMDiff[s] n f) (hg : CMDiff[s] n g) : CMDiff[s] n (f * g) :=
@@ -467,9 +467,9 @@ theorem ContMDiffWithinAt.pow (hg : CMDiffAt[s] n g x) (m : ℕ) :
   (contMDiff_pow m).contMDiffAt.comp_contMDiffWithinAt x hg
 
 @[to_additive]
-nonrec theorem ContMDiffAt.pow (hg : CMDiffAt n g x) (m : ℕ) :
+theorem ContMDiffAt.pow (hg : CMDiffAt n g x) (m : ℕ) :
     CMDiffAt n (fun x ↦ g x ^ m) x :=
-  hg.pow m
+  ContMDiffWithinAt.pow hg m
 
 @[to_additive]
 theorem ContMDiffOn.pow (hg : CMDiff[s] n g) (m : ℕ) :

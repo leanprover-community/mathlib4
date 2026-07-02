@@ -72,10 +72,10 @@ theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
       simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod.map_apply, mem_setOf]
 
-nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
+theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ := by
-  rw [isUniformEmbedding_iff, and_comm, isUniformInducing_iff]
+  rw [_root_.isUniformEmbedding_iff, and_comm, isUniformInducing_iff]
 
 /-- If a map between pseudometric spaces is a uniform inducing map then the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`. -/

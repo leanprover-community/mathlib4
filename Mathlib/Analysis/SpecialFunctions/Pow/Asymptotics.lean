@@ -137,11 +137,11 @@ theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (s : ℝ) (b : ℝ) (hb : 0
   refine (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' ?_
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
 
-nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
+theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop := by
   rw [Filter.tendsto_atTop_atTop]
   intro b
-  obtain ⟨c, hc⟩ := tendsto_atTop_atTop.mp (tendsto_rpow_atTop hy) b
+  obtain ⟨c, hc⟩ := tendsto_atTop_atTop.mp (_root_.tendsto_rpow_atTop hy) b
   use c.toNNReal
   intro a ha
   exact mod_cast hc a (Real.toNNReal_le_iff_le_coe.mp ha)

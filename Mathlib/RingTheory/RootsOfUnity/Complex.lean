@@ -102,9 +102,9 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
 
 /-- The complex `n`-th roots of unity are exactly the
 complex numbers of the form `exp (2 * Real.pi * Complex.I * (i / n))` for some `i < n`. -/
-nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
+theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     x ∈ rootsOfUnity n ℂ ↔ ∃ i < n, exp (2 * π * I * (i / n)) = x := by
-  rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
+  rw [_root_.mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
   have hn0 : (n : ℂ) ≠ 0 := mod_cast NeZero.out
   constructor
   · intro h

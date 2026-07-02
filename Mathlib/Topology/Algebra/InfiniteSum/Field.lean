@@ -24,9 +24,9 @@ section NormMulClass
 variable {α E : Type*} [SeminormedCommRing E] [NormMulClass E] [NormOneClass E]
  {f : α → E} {x : E}
 
-nonrec theorem HasProd.norm (hfx : HasProd f x) : HasProd (‖f ·‖) ‖x‖ := by
+theorem HasProd.norm (hfx : HasProd f x) : HasProd (‖f ·‖) ‖x‖ := by
   simp only [HasProd, ← norm_prod]
-  exact hfx.norm
+  exact Filter.Tendsto.norm hfx
 
 theorem Multipliable.norm (hf : Multipliable f) : Multipliable (‖f ·‖) :=
   let ⟨x, hx⟩ := hf; ⟨‖x‖, hx.norm⟩

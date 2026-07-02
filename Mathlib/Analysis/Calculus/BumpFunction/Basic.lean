@@ -187,11 +187,11 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
   · exact (hR.div hr (f x).rIn_pos.ne').prodMk ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
 
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
-protected nonrec theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
+protected theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
     {x : X} (hc : ContDiffAt ℝ n c x) (hr : ContDiffAt ℝ n (fun x => (f x).rIn) x)
     (hR : ContDiffAt ℝ n (fun x => (f x).rOut) x) (hg : ContDiffAt ℝ n g x) :
     ContDiffAt ℝ n (fun x => f x (g x)) x :=
-  hc.contDiffBump hr hR hg
+  ContDiffWithinAt.contDiffBump hc hr hR hg
 
 theorem _root_.ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
     (hc : ContDiff ℝ n c) (hr : ContDiff ℝ n fun x => (f x).rIn)

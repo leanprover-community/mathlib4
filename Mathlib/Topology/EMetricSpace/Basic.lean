@@ -74,10 +74,10 @@ theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
       simp only [subset_def, Prod.forall]; rfl
 
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
-nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
+theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
+  (_root_.isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
 
 /-- If a map between pseudoemetric spaces is a uniform inducing map then the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`. -/

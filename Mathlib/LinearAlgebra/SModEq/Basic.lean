@@ -73,14 +73,14 @@ instance : Std.Refl (SModEq U) :=
   ⟨SModEq.refl⟩
 
 @[symm]
-nonrec theorem symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
-  hxy.symm
+theorem symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
+  Eq.symm hxy
 
 theorem comm : x ≡ y [SMOD U] ↔ y ≡ x [SMOD U] := ⟨symm, symm⟩
 
 @[trans]
-nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
-  hxy.trans hyz
+theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
+  Eq.trans hxy hyz
 
 instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
   trans := trans

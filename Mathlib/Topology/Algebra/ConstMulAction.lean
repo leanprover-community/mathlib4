@@ -93,14 +93,14 @@ theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf :
 variable [TopologicalSpace β] {g : β → α} {b : β} {s : Set β}
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
-nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
+theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
     ContinuousWithinAt (c • g) s b :=
-  hg.const_smul c
+  Tendsto.const_smul hg c
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
-nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
+theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
     ContinuousAt (c • g) b :=
-  hg.const_smul c
+  Tendsto.const_smul hg c
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
@@ -432,40 +432,40 @@ namespace IsUnit
 
 variable [Monoid M] [TopologicalSpace α] [MulAction M α] [ContinuousConstSMul M α]
 
-nonrec theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} (hc : IsUnit c) :
+theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} (hc : IsUnit c) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
-  tendsto_const_smul_iff hc.unit
+  _root_.tendsto_const_smul_iff hc.unit
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {c : M} {s : Set β}
 
-nonrec theorem continuousWithinAt_const_smul_iff (hc : IsUnit c) :
+theorem continuousWithinAt_const_smul_iff (hc : IsUnit c) :
     ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
-  continuousWithinAt_const_smul_iff hc.unit
+  _root_.continuousWithinAt_const_smul_iff hc.unit
 
-nonrec theorem continuousOn_const_smul_iff (hc : IsUnit c) :
+theorem continuousOn_const_smul_iff (hc : IsUnit c) :
     ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
-  continuousOn_const_smul_iff hc.unit
+  _root_.continuousOn_const_smul_iff hc.unit
 
-nonrec theorem continuousAt_const_smul_iff (hc : IsUnit c) :
+theorem continuousAt_const_smul_iff (hc : IsUnit c) :
     ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
-  continuousAt_const_smul_iff hc.unit
+  _root_.continuousAt_const_smul_iff hc.unit
 
-nonrec theorem continuous_const_smul_iff (hc : IsUnit c) :
+theorem continuous_const_smul_iff (hc : IsUnit c) :
     (Continuous fun x => c • f x) ↔ Continuous f :=
-  continuous_const_smul_iff hc.unit
+  _root_.continuous_const_smul_iff hc.unit
 
-nonrec theorem isHomeomorph_smul (hc : IsUnit c) : IsHomeomorph fun x : α ↦ c • x :=
-  isHomeomorph_smul hc.unit
+theorem isHomeomorph_smul (hc : IsUnit c) : IsHomeomorph fun x : α ↦ c • x :=
+  _root_.isHomeomorph_smul hc.unit
 
-nonrec theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
-  isOpenMap_smul hc.unit
+theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
+  _root_.isOpenMap_smul hc.unit
 
-nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c • x :=
-  isClosedMap_smul hc.unit
+theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c • x :=
+  _root_.isClosedMap_smul hc.unit
 
-nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
+theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
     c • s ∈ 𝓝 (c • a) ↔ s ∈ 𝓝 a :=
-  smul_mem_nhds_smul_iff hc.unit
+  _root_.smul_mem_nhds_smul_iff hc.unit
 
 theorem isQuotientMap_smul {S β} [SMul S M] [SMul S α] [IsScalarTower S M α]
     [SMul S β] (f : α →[S] β) [TopologicalSpace β] (hf : IsQuotientMap f)

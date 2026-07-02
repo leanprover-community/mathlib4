@@ -219,9 +219,9 @@ theorem _root_.Commute.op [Mul α] {x y : α} (h : Commute x y) : Commute (op x)
   SemiconjBy.op h
 
 @[to_additive]
-nonrec theorem _root_.Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) :
+theorem _root_.Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) :
     Commute (unop x) (unop y) :=
-  h.unop
+  SemiconjBy.unop h
 
 @[to_additive (attr := simp)]
 theorem commute_op [Mul α] {x y : α} : Commute (op x) (op y) ↔ Commute x y :=

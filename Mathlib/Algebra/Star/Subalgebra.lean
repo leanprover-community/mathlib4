@@ -318,9 +318,9 @@ theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s)
   rfl
 
 open Set in
-nonrec theorem mem_centralizer_iff {s : Set A} {z : A} :
+theorem mem_centralizer_iff {s : Set A} {z : A} :
     z ∈ centralizer R s ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g := by
-  simp [← SetLike.mem_coe, centralizer_union, ← image_star, mem_centralizer_iff, forall_and]
+  simp [← SetLike.mem_coe, centralizer_union, ← image_star, Set.mem_centralizer_iff, forall_and]
 
 theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
   Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)

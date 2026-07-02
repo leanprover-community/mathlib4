@@ -485,9 +485,9 @@ theorem toLp_smul (f : α →ₛ E) (hf : MemLp f p μ) (c : 𝕜) :
     toLp (c • f) (hf.const_smul c) = c • toLp f hf :=
   rfl
 
-nonrec theorem norm_toLp [Fact (1 ≤ p)] (f : α →ₛ E) (hf : MemLp f p μ) :
+theorem norm_toLp [Fact (1 ≤ p)] (f : α →ₛ E) (hf : MemLp f p μ) :
     ‖toLp f hf‖ = ENNReal.toReal (eLpNorm f p μ) :=
-  norm_toLp f hf
+  Lp.norm_toLp f hf
 
 end ToLp
 

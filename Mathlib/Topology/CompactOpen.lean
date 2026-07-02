@@ -214,13 +214,13 @@ lemma _root_.Filter.Tendsto.compCM {α : Type*} {l : Filter α} {g : α → C(Y,
 variable {X' : Type*} [TopologicalSpace X'] {a : X'} {g : X' → C(Y, Z)} {f : X' → C(X, Y)}
   {s : Set X'}
 
-nonrec lemma _root_.ContinuousAt.compCM (hg : ContinuousAt g a) (hf : ContinuousAt f a) :
+lemma _root_.ContinuousAt.compCM (hg : ContinuousAt g a) (hf : ContinuousAt f a) :
     ContinuousAt (fun x ↦ (g x).comp (f x)) a :=
-  hg.compCM hf
+  Tendsto.compCM hg hf
 
-nonrec lemma _root_.ContinuousWithinAt.compCM (hg : ContinuousWithinAt g s a)
+lemma _root_.ContinuousWithinAt.compCM (hg : ContinuousWithinAt g s a)
     (hf : ContinuousWithinAt f s a) : ContinuousWithinAt (fun x ↦ (g x).comp (f x)) s a :=
-  hg.compCM hf
+  Tendsto.compCM hg hf
 
 lemma _root_.ContinuousOn.compCM (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ (g x).comp (f x)) s := fun a ha ↦

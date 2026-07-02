@@ -920,8 +920,8 @@ theorem lintegral_coeFn (f : α →ₘ[μ] ℝ≥0∞) : ∫⁻ a, f a ∂μ = f
   rw [← lintegral_mk (hf := f.aestronglyMeasurable), mk_coeFn]
 
 @[simp]
-nonrec theorem lintegral_zero : lintegral (0 : α →ₘ[μ] ℝ≥0∞) = 0 :=
-  lintegral_zero
+theorem lintegral_zero : lintegral (0 : α →ₘ[μ] ℝ≥0∞) = 0 :=
+  MeasureTheory.lintegral_zero
 
 @[simp]
 theorem lintegral_eq_zero_iff {f : α →ₘ[μ] ℝ≥0∞} : lintegral f = 0 ↔ f = 0 :=

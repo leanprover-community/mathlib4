@@ -206,12 +206,12 @@ end Filter
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} {x : X} {s : Set X}
 
-protected nonrec theorem ContinuousWithinAt.nhds (h : ContinuousWithinAt f s x) :
+protected theorem ContinuousWithinAt.nhds (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (𝓝 ∘ f) s x :=
-  h.nhds
+  Tendsto.nhds h
 
-protected nonrec theorem ContinuousAt.nhds (h : ContinuousAt f x) : ContinuousAt (𝓝 ∘ f) x :=
-  h.nhds
+protected theorem ContinuousAt.nhds (h : ContinuousAt f x) : ContinuousAt (𝓝 ∘ f) x :=
+  Tendsto.nhds h
 
 protected theorem ContinuousOn.nhds (h : ContinuousOn f s) : ContinuousOn (𝓝 ∘ f) s :=
   fun x hx => (h x hx).nhds

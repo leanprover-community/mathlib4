@@ -200,9 +200,9 @@ theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     HasFDerivWithinAt f f' s x :=
   h.mono <| prod_mono_left _ (nhdsWithin_le_iff.mpr hst)
 
-nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
+theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
-  h.mono <| by gcongr
+  HasFDerivAtFilter.mono h <| by gcongr
 
 theorem HasFDerivAt.hasFDerivAtFilter (h : HasFDerivAt f f' x) (hL : L ≤ 𝓝 x ×ˢ pure x) :
     HasFDerivAtFilter f f' L :=

@@ -99,10 +99,10 @@ theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
 
 instance : IsTopologicalRing ℚ := inferInstance
 
-nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
+theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc]
     using totallyBounded_preimage Rat.isUniformEmbedding_coe_real.isUniformInducing
-      (totallyBounded_Icc (a : ℝ) b)
+      (_root_.totallyBounded_Icc (a : ℝ) b)
 
 end Rat
 

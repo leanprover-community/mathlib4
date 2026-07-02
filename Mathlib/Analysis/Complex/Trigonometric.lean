@@ -71,39 +71,39 @@ noncomputable section
 
 /-- The real sine function, defined as the real part of the complex sine -/
 @[pp_nodot]
-nonrec def sin (x : ℝ) : ℝ :=
-  (sin x).re
+def sin (x : ℝ) : ℝ :=
+  (Complex.sin x).re
 
 /-- The real cosine function, defined as the real part of the complex cosine -/
 @[pp_nodot]
-nonrec def cos (x : ℝ) : ℝ :=
-  (cos x).re
+def cos (x : ℝ) : ℝ :=
+  (Complex.cos x).re
 
 /-- The real tangent function, defined as the real part of the complex tangent -/
 @[pp_nodot]
-nonrec def tan (x : ℝ) : ℝ :=
-  (tan x).re
+def tan (x : ℝ) : ℝ :=
+  (Complex.tan x).re
 
 /-- The real cotangent function, defined as the real part of the complex cotangent -/
-nonrec def cot (x : ℝ) : ℝ :=
-  (cot x).re
+def cot (x : ℝ) : ℝ :=
+  (Complex.cot x).re
 
 /-- The real hyperbolic sine function, defined as the real part of the complex hyperbolic sine -/
 @[pp_nodot]
-nonrec def sinh (x : ℝ) : ℝ :=
-  (sinh x).re
+def sinh (x : ℝ) : ℝ :=
+  (Complex.sinh x).re
 
 /-- The real hyperbolic cosine function, defined as the real part of the complex hyperbolic cosine
 -/
 @[pp_nodot]
-nonrec def cosh (x : ℝ) : ℝ :=
-  (cosh x).re
+def cosh (x : ℝ) : ℝ :=
+  (Complex.cosh x).re
 
 /-- The real hyperbolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
 @[pp_nodot]
-nonrec def tanh (x : ℝ) : ℝ :=
-  (tanh x).re
+def tanh (x : ℝ) : ℝ :=
+  (Complex.tanh x).re
 
 end
 
@@ -588,8 +588,8 @@ theorem sin_zero : sin 0 = 0 := by simp [sin]
 @[simp]
 theorem sin_neg : sin (-x) = -sin x := by simp [sin]
 
-nonrec theorem sin_add : sin (x + y) = sin x * cos y + cos x * sin y :=
-  ofReal_injective <| by simp [sin_add]
+theorem sin_add : sin (x + y) = sin x * cos y + cos x * sin y :=
+  ofReal_injective <| by simp [Complex.sin_add]
 
 @[simp]
 theorem cos_zero : cos 0 = 1 := by simp [cos]
@@ -601,8 +601,8 @@ theorem cos_neg : cos (-x) = cos x := by simp [cos]
 theorem cos_abs : cos |x| = cos x := by
   cases le_total x 0 <;> simp only [*, abs_of_nonneg, abs_of_nonpos, cos_neg]
 
-nonrec theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y :=
-  ofReal_injective <| by simp [cos_add]
+theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y :=
+  ofReal_injective <| by simp [Complex.cos_add]
 
 theorem sin_sub : sin (x - y) = sin x * cos y - cos x * sin y := by
   simp [sub_eq_add_neg, sin_add, sin_neg, cos_neg]
@@ -610,17 +610,17 @@ theorem sin_sub : sin (x - y) = sin x * cos y - cos x * sin y := by
 theorem cos_sub : cos (x - y) = cos x * cos y + sin x * sin y := by
   simp [sub_eq_add_neg, cos_add, sin_neg, cos_neg]
 
-nonrec theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) :=
-  ofReal_injective <| by simp [sin_add_sin]
+theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) :=
+  ofReal_injective <| by simp [Complex.sin_add_sin]
 
-nonrec theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) :=
-  ofReal_injective <| by simp [sin_sub_sin]
+theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) :=
+  ofReal_injective <| by simp [Complex.sin_sub_sin]
 
-nonrec theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) :=
-  ofReal_injective <| by simp [cos_add_cos]
+theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) :=
+  ofReal_injective <| by simp [Complex.cos_add_cos]
 
-nonrec theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) :=
-  ofReal_injective <| by simp [cos_sub_cos]
+theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) :=
+  ofReal_injective <| by simp [Complex.cos_sub_cos]
 
 theorem two_mul_sin_mul_sin (x y : ℝ) : 2 * sin x * sin y = cos (x - y) - cos (x + y) := by
   simp [cos_add, cos_sub]
@@ -634,12 +634,12 @@ theorem two_mul_sin_mul_cos (x y : ℝ) : 2 * sin x * cos y = sin (x - y) + sin 
   simp [sin_add, sin_sub]
   ring
 
-nonrec theorem tan_eq_sin_div_cos : tan x = sin x / cos x :=
-  ofReal_injective <| by simp only [ofReal_tan, tan_eq_sin_div_cos, ofReal_div, ofReal_sin,
+theorem tan_eq_sin_div_cos : tan x = sin x / cos x :=
+  ofReal_injective <| by simp only [ofReal_tan, Complex.tan_eq_sin_div_cos, ofReal_div, ofReal_sin,
     ofReal_cos]
 
-nonrec theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
-  ofReal_injective <| by simp [cot_eq_cos_div_sin]
+theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
+  ofReal_injective <| by simp [Complex.cot_eq_cos_div_sin]
 
 theorem tan_mul_cos {x : ℝ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
@@ -659,8 +659,8 @@ theorem tan_zero : tan 0 = 0 := by simp [tan]
 theorem tan_neg : tan (-x) = -tan x := by simp [tan]
 
 @[simp]
-nonrec theorem sin_sq_add_cos_sq : sin x ^ 2 + cos x ^ 2 = 1 :=
-  ofReal_injective (by simp [sin_sq_add_cos_sq])
+theorem sin_sq_add_cos_sq : sin x ^ 2 + cos x ^ 2 = 1 :=
+  ofReal_injective (by simp [Complex.sin_sq_add_cos_sq])
 
 @[simp]
 theorem cos_sq_add_sin_sq : cos x ^ 2 + sin x ^ 2 = 1 := by rw [add_comm, sin_sq_add_cos_sq]
@@ -689,20 +689,20 @@ theorem neg_one_le_sin : -1 ≤ sin x :=
 theorem neg_one_le_cos : -1 ≤ cos x :=
   (abs_le.1 (abs_cos_le_one _)).1
 
-nonrec theorem cos_two_mul : cos (2 * x) = 2 * cos x ^ 2 - 1 :=
-  ofReal_injective <| by simp [cos_two_mul]
+theorem cos_two_mul : cos (2 * x) = 2 * cos x ^ 2 - 1 :=
+  ofReal_injective <| by simp [Complex.cos_two_mul]
 
-nonrec theorem cos_two_mul' : cos (2 * x) = cos x ^ 2 - sin x ^ 2 :=
-  ofReal_injective <| by simp [cos_two_mul']
+theorem cos_two_mul' : cos (2 * x) = cos x ^ 2 - sin x ^ 2 :=
+  ofReal_injective <| by simp [Complex.cos_two_mul']
 
-nonrec theorem cos_two_mul_eq_one_sub : cos (2 * x) = 1 - 2 * sin x ^ 2 :=
-  ofReal_injective <| by simp [cos_two_mul_eq_one_sub]
+theorem cos_two_mul_eq_one_sub : cos (2 * x) = 1 - 2 * sin x ^ 2 :=
+  ofReal_injective <| by simp [Complex.cos_two_mul_eq_one_sub]
 
-nonrec theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x :=
-  ofReal_injective <| by simp [sin_two_mul]
+theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x :=
+  ofReal_injective <| by simp [Complex.sin_two_mul]
 
-nonrec theorem cos_sq : cos x ^ 2 = 1 / 2 + cos (2 * x) / 2 :=
-  ofReal_injective <| by simp [cos_sq]
+theorem cos_sq : cos x ^ 2 = 1 / 2 + cos (2 * x) / 2 :=
+  ofReal_injective <| by simp [Complex.cos_sq]
 
 theorem cos_sq' : cos x ^ 2 = 1 - sin x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_cancel_left]
 
@@ -737,11 +737,11 @@ theorem tan_div_sqrt_one_add_tan_sq {x : ℝ} (hx : 0 < cos x) :
     tan x / √(1 + tan x ^ 2) = sin x := by
   rw [← tan_mul_cos hx.ne', ← inv_sqrt_one_add_tan_sq hx, div_eq_mul_inv]
 
-nonrec theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
-  rw [← ofReal_inj]; simp [cos_three_mul]
+theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
+  rw [← ofReal_inj]; simp [Complex.cos_three_mul]
 
-nonrec theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
-  rw [← ofReal_inj]; simp [sin_three_mul]
+theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
+  rw [← ofReal_inj]; simp [Complex.sin_three_mul]
 
 /-- The definition of `sinh` in terms of `exp`. -/
 theorem sinh_eq (x : ℝ) : sinh x = (exp x - exp (-x)) / 2 :=
@@ -753,8 +753,8 @@ theorem sinh_zero : sinh 0 = 0 := by simp [sinh]
 @[simp]
 theorem sinh_neg : sinh (-x) = -sinh x := by simp [sinh]
 
-nonrec theorem sinh_add : sinh (x + y) = sinh x * cosh y + cosh x * sinh y := by
-  rw [← ofReal_inj]; simp [sinh_add]
+theorem sinh_add : sinh (x + y) = sinh x * cosh y + cosh x * sinh y := by
+  rw [← ofReal_inj]; simp [Complex.sinh_add]
 
 /-- The definition of `cosh` in terms of `exp`. -/
 theorem cosh_eq (x : ℝ) : cosh x = (exp x + exp (-x)) / 2 :=
@@ -773,8 +773,8 @@ theorem cosh_neg : cosh (-x) = cosh x :=
 theorem cosh_abs : cosh |x| = cosh x := by
   cases le_total x 0 <;> simp [*, abs_of_nonneg, abs_of_nonpos]
 
-nonrec theorem cosh_add : cosh (x + y) = cosh x * cosh y + sinh x * sinh y := by
-  rw [← ofReal_inj]; simp [cosh_add]
+theorem cosh_add : cosh (x + y) = cosh x * cosh y + sinh x * sinh y := by
+  rw [← ofReal_inj]; simp [Complex.cosh_add]
 
 theorem sinh_sub : sinh (x - y) = sinh x * cosh y - cosh x * sinh y := by
   simp [sub_eq_add_neg, sinh_add, sinh_neg, cosh_neg]
@@ -782,8 +782,8 @@ theorem sinh_sub : sinh (x - y) = sinh x * cosh y - cosh x * sinh y := by
 theorem cosh_sub : cosh (x - y) = cosh x * cosh y - sinh x * sinh y := by
   simp [sub_eq_add_neg, cosh_add, sinh_neg, cosh_neg]
 
-nonrec theorem tanh_eq_sinh_div_cosh : tanh x = sinh x / cosh x :=
-  ofReal_inj.1 <| by simp [tanh_eq_sinh_div_cosh]
+theorem tanh_eq_sinh_div_cosh : tanh x = sinh x / cosh x :=
+  ofReal_inj.1 <| by simp [Complex.tanh_eq_sinh_div_cosh]
 
 /-- The definition of `tanh` in terms of `exp`. -/
 theorem tanh_eq (x : ℝ) : tanh x = (exp x - exp (-x)) / (exp x + exp (-x)) := by
@@ -820,24 +820,24 @@ theorem sinh_sub_cosh : sinh x - cosh x = -exp (-x) := by rw [← neg_sub, cosh_
 @[simp]
 theorem cosh_sq_sub_sinh_sq (x : ℝ) : cosh x ^ 2 - sinh x ^ 2 = 1 := by rw [← ofReal_inj]; simp
 
-nonrec theorem cosh_sq : cosh x ^ 2 = sinh x ^ 2 + 1 := by rw [← ofReal_inj]; simp [cosh_sq]
+theorem cosh_sq : cosh x ^ 2 = sinh x ^ 2 + 1 := by rw [← ofReal_inj]; simp [Complex.cosh_sq]
 
 theorem cosh_sq' : cosh x ^ 2 = 1 + sinh x ^ 2 :=
   (cosh_sq x).trans (add_comm _ _)
 
-nonrec theorem sinh_sq : sinh x ^ 2 = cosh x ^ 2 - 1 := by rw [← ofReal_inj]; simp [sinh_sq]
+theorem sinh_sq : sinh x ^ 2 = cosh x ^ 2 - 1 := by rw [← ofReal_inj]; simp [Complex.sinh_sq]
 
-nonrec theorem cosh_two_mul : cosh (2 * x) = cosh x ^ 2 + sinh x ^ 2 := by
-  rw [← ofReal_inj]; simp [cosh_two_mul]
+theorem cosh_two_mul : cosh (2 * x) = cosh x ^ 2 + sinh x ^ 2 := by
+  rw [← ofReal_inj]; simp [Complex.cosh_two_mul]
 
-nonrec theorem sinh_two_mul : sinh (2 * x) = 2 * sinh x * cosh x := by
-  rw [← ofReal_inj]; simp [sinh_two_mul]
+theorem sinh_two_mul : sinh (2 * x) = 2 * sinh x * cosh x := by
+  rw [← ofReal_inj]; simp [Complex.sinh_two_mul]
 
-nonrec theorem cosh_three_mul : cosh (3 * x) = 4 * cosh x ^ 3 - 3 * cosh x := by
-  rw [← ofReal_inj]; simp [cosh_three_mul]
+theorem cosh_three_mul : cosh (3 * x) = 4 * cosh x ^ 3 - 3 * cosh x := by
+  rw [← ofReal_inj]; simp [Complex.cosh_three_mul]
 
-nonrec theorem sinh_three_mul : sinh (3 * x) = 4 * sinh x ^ 3 + 3 * sinh x := by
-  rw [← ofReal_inj]; simp [sinh_three_mul]
+theorem sinh_three_mul : sinh (3 * x) = 4 * sinh x ^ 3 + 3 * sinh x := by
+  rw [← ofReal_inj]; simp [Complex.sinh_three_mul]
 
 open IsAbsoluteValue Nat
 

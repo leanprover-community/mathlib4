@@ -125,9 +125,9 @@ theorem ContMDiffWithinAt.smul (hf : CMDiffAt[s] n f x) (hg : CMDiffAt[s] n g x)
   (contMDiff_smul (I := I) (I' := I')).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
 
 @[to_additive]
-nonrec theorem ContMDiffAt.smul (hf : CMDiffAt n f x) (hg : CMDiffAt n g x) :
+theorem ContMDiffAt.smul (hf : CMDiffAt n f x) (hg : CMDiffAt n g x) :
     CMDiffAt n (f • g) x :=
-  hf.smul hg
+  ContMDiffWithinAt.smul hf hg
 
 @[to_additive]
 theorem ContMDiffOn.smul (hf : CMDiff[s] n f) (hg : CMDiff[s] n g) :

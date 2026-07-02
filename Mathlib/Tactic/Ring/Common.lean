@@ -1109,7 +1109,7 @@ theorem inv_mul {R} [Semifield R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : b₃ * (b₁ ^ a₂ * (nat_lit 1).rawCast) = c) :
     (a₁ ^ a₂ * a₃ : R)⁻¹ = c := by subst_vars; simp
 
-nonrec theorem inv_zero {R} [Semifield R] : (0 : R)⁻¹ = 0 := inv_zero
+theorem inv_zero {R} [Semifield R] : (0 : R)⁻¹ = 0 := _root_.inv_zero
 
 theorem inv_single {R} [Semifield R] {a b : R}
     (_ : (a : R)⁻¹ = b) : (a + 0)⁻¹ = b + 0 := by simp [*]

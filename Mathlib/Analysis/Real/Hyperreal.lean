@@ -654,8 +654,8 @@ theorem infinite_neg {x : ℝ*} : Infinite (-x) ↔ Infinite x :=
   or_comm.trans <| infiniteNeg_neg.or infinitePos_neg
 
 @[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
-nonrec theorem Infinitesimal.not_infinite {x : ℝ*} (h : Infinitesimal x) : ¬Infinite x :=
-  h.not_infinite
+theorem Infinitesimal.not_infinite {x : ℝ*} (h : Infinitesimal x) : ¬Infinite x :=
+  IsSt.not_infinite h
 
 @[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
 theorem Infinite.not_infinitesimal {x : ℝ*} (h : Infinite x) : ¬Infinitesimal x := fun h' ↦
@@ -857,20 +857,20 @@ theorem infinitesimal_real_iff {r : ℝ} : Infinitesimal r ↔ r = 0 :=
   isSt_real_iff_eq
 
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
-nonrec theorem Infinitesimal.add {x y : ℝ*} (hx : Infinitesimal x) (hy : Infinitesimal y) :
-    Infinitesimal (x + y) := by simpa only [add_zero] using! hx.add hy
+theorem Infinitesimal.add {x y : ℝ*} (hx : Infinitesimal x) (hy : Infinitesimal y) :
+    Infinitesimal (x + y) := by simpa only [add_zero] using! IsSt.add hx hy
 
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
-nonrec theorem Infinitesimal.neg {x : ℝ*} (hx : Infinitesimal x) : Infinitesimal (-x) := by
-  simpa only [neg_zero] using! hx.neg
+theorem Infinitesimal.neg {x : ℝ*} (hx : Infinitesimal x) : Infinitesimal (-x) := by
+  simpa only [neg_zero] using! IsSt.neg hx
 
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_neg {x : ℝ*} : Infinitesimal (-x) ↔ Infinitesimal x :=
   ⟨fun h => neg_neg x ▸ h.neg, Infinitesimal.neg⟩
 
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
-nonrec theorem Infinitesimal.mul {x y : ℝ*} (hx : Infinitesimal x) (hy : Infinitesimal y) :
-    Infinitesimal (x * y) := by simpa only [mul_zero] using! hx.mul hy
+theorem Infinitesimal.mul {x y : ℝ*} (hx : Infinitesimal x) (hy : Infinitesimal y) :
+    Infinitesimal (x * y) := by simpa only [mul_zero] using! IsSt.mul hx hy
 
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_of_tendsto_zero {f : ℕ → ℝ} (h : Tendsto f atTop (𝓝 0)) :

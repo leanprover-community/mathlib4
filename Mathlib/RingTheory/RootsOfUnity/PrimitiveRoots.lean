@@ -420,9 +420,9 @@ theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n :
     frobenius_inj R p ?_).elim
   rw [frobenius_def, ← pow_mul', hζ.1, map_one]
 
-nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
+theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
     ζ ∈ nthRootsFinset k (1 : R) :=
-  (mem_nthRootsFinset hk (1 : R)).2 hζ.pow_eq_one
+  (Polynomial.mem_nthRootsFinset hk (1 : R)).2 hζ.pow_eq_one
 
 end IsDomain
 

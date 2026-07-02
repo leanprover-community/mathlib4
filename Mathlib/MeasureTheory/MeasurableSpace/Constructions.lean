@@ -165,9 +165,9 @@ theorem QuotientGroup.measurable_coe {G} [Group G] [MeasurableSpace G] {S : Subg
   measurable_quotient_mk''
 
 @[to_additive]
-nonrec theorem QuotientGroup.measurable_from_quotient {G} [Group G] [MeasurableSpace G]
+theorem QuotientGroup.measurable_from_quotient {G} [Group G] [MeasurableSpace G]
     {S : Subgroup G} {f : G ⧸ S → α} : Measurable f ↔ Measurable (f ∘ ((↑) : G → G ⧸ S)) :=
-  measurable_from_quotient
+  _root_.measurable_from_quotient
 
 instance Quotient.instDiscreteMeasurableSpace {α} {s : Setoid α} [MeasurableSpace α]
     [DiscreteMeasurableSpace α] : DiscreteMeasurableSpace (Quotient s) where

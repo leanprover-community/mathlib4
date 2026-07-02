@@ -220,19 +220,19 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
-private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
+private theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
   suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [mulHom_of_of]
-  exact of_eq_of_gradedMonoid_eq (one_mul <| GradedMonoid.mk i xi)
+  exact of_eq_of_gradedMonoid_eq (_root_.one_mul <| GradedMonoid.mk i xi)
 
-private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
+private theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [flip_apply, mulHom_of_of]
-  exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
+  exact of_eq_of_gradedMonoid_eq (_root_.mul_one <| GradedMonoid.mk i xi)
 
 set_option backward.defeqAttrib.useBackward true in
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by

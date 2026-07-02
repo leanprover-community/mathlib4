@@ -126,8 +126,8 @@ theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointe
 lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.convex
 
 @[aesop 90% (rule_sets := [SetLike])]
-nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
-  C.smul_mem ⟨r, hr⟩ hx
+lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
+  Submodule.smul_mem C ⟨r, hr⟩ hx
 
 lemma smul_mem_iff {𝕜 M : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [AddCommMonoid M] [Module 𝕜 M] (C : PointedCone 𝕜 M)

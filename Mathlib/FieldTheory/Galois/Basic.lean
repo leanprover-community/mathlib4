@@ -227,8 +227,8 @@ theorem finrank_fixedField_eq_card [FiniteDimensional F E] :
   exact FixedPoints.finrank_eq_card H E
 
 /-- The subgroup fixing an intermediate field. -/
-nonrec def fixingSubgroup : Subgroup Gal(E/F) :=
-  fixingSubgroup Gal(E/F) (K : Set E)
+def fixingSubgroup : Subgroup Gal(E/F) :=
+  _root_.fixingSubgroup Gal(E/F) (K : Set E)
 
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩

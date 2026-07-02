@@ -1198,12 +1198,12 @@ end Basis
 
 open Matrix
 
-nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
+theorem basis_toMatrix_basisFun_mul [Fintype ι]
     {𝕜} [SeminormedCommRing 𝕜] (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
     (A : Matrix ι ι 𝕜) :
     b.toMatrix (PiLp.basisFun _ _ _) * A =
       Matrix.of fun i j => b.repr (toLp p (Aᵀ j)) i := by
-  have := basis_toMatrix_basisFun_mul (b.map (WithLp.linearEquiv _ 𝕜 _)) A
+  have := _root_.basis_toMatrix_basisFun_mul (b.map (WithLp.linearEquiv _ 𝕜 _)) A
   simp_rw [← PiLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,
     WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp_def, Basis.map_apply,
     LinearEquiv.symm_apply_apply] at this

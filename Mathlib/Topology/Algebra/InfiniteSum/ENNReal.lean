@@ -446,10 +446,11 @@ theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i => ∑' k, f 
   convert! _root_.tendsto_sum_nat_add fun i => (f i : ℝ)
   norm_cast
 
-nonrec theorem hasSum_lt {f g : α → ℝ≥0} {sf sg : ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g a)
+theorem hasSum_lt {f g : α → ℝ≥0} {sf sg : ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g a)
     (hi : f i < g i) (hf : HasSum f sf) (hg : HasSum g sg) : sf < sg := by
   have A : ∀ a : α, (f a : ℝ) ≤ g a := fun a => NNReal.coe_le_coe.2 (h a)
-  have : (sf : ℝ) < sg := hasSum_lt A (NNReal.coe_lt_coe.2 hi) (hasSum_coe.2 hf) (hasSum_coe.2 hg)
+  have : (sf : ℝ) < sg :=
+    _root_.hasSum_lt A (NNReal.coe_lt_coe.2 hi) (hasSum_coe.2 hf) (hasSum_coe.2 hg)
   exact NNReal.coe_lt_coe.1 this
 
 @[mono]
