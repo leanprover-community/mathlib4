@@ -31,9 +31,9 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 - `Finsupp.le_weight` says that `f s ≤ f.weight w` when `M = ℕ`
 
 - `Finsupp.le_weight_of_ne_zero` says that `w s ≤ f.weight w`
-  for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
+  for `IsOrderedAddMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 
-- `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
+- `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAdd M`.
 
 - `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
 
