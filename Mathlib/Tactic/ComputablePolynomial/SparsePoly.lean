@@ -5,7 +5,8 @@ Authors: Mario Carneiro, James Davenport, Michail Karatarakis
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Tactic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Ring
 
 /-!
 # Computable univariate polynomials (`SparsePoly`)
@@ -30,9 +31,10 @@ extra case analysis, and one may wish to rethink whether to allow it.
 
 ## Provenance
 
-Started by Mario Carneiro at the Hausdorff Institute, June 2024, with design notes by
-James Davenport; the multivariate analogue (`MvSparsePoly`) and the reflection tactics were
-developed subsequently.
+Started by Mario Carneiro at the Hausdorff Institute, June 2024, with design notes and an
+original Lean prototype by James Davenport
+(https://github.com/JamesHDavenport/Dagstuhl23401, `verify-irred/VerifyIrred`); the
+multivariate analogue (`MvSparsePoly`) and the reflection tactics were developed subsequently.
 -/
 
 /-- A computable univariate polynomial over `R`, stored as a list of `(exponent, coefficient)`
@@ -1295,8 +1297,6 @@ lemma degree_mul [IsDomain R] (a b : SparsePoly R)
 
 instance : DecidableEq (SparsePoly R) := fun a b =>
   decidable_of_iff' (a.coeffs = b.coeffs) (SparsePoly.ext_iff ..)
-
-#eval (X * (C X * X + C (X + 2) : SparsePoly (SparsePoly ℤ))) / X
 
 /-- Bridge: the sparse variable `X` translates to the Mathlib variable `X`. -/
 theorem toPoly_X_fixed : toPoly (X : SparsePoly R) = Polynomial.X := by

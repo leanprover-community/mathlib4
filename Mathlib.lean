@@ -5905,10 +5905,6 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 public import Mathlib.NumberTheory.Transcendental.Liouville.Measure
 public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
-public import Mathlib.NumberTheory.Transcendental.poly
-public import Mathlib.NumberTheory.Transcendental.polyDvdCert
-public import Mathlib.NumberTheory.Transcendental.polyReflectKernel
-public import Mathlib.NumberTheory.Transcendental.polyTactics
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 public import Mathlib.NumberTheory.WellApproximable
@@ -7239,6 +7235,10 @@ public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import Mathlib.Tactic.ClickSuggestions.Util
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.ComputablePolynomial.DvdCert
+public import Mathlib.Tactic.ComputablePolynomial.Reflect
+public import Mathlib.Tactic.ComputablePolynomial.SparsePoly
+public import Mathlib.Tactic.ComputablePolynomial.Tactics
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
