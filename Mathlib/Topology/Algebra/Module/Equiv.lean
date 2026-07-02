@@ -652,8 +652,7 @@ theorem toLinearEquiv_ofContinuousLinearMap (h₁ h₂) :
       .ofLinear f₁ f₂ (LinearMap.ext h₂) (LinearMap.ext h₁) := rfl
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
-inverse of each other. See also `equivOfInverse'`.
-*ToDo*: Improve the naiming to make it match `LinearMap.ofLinear`. -/
+inverse of each other. See also `equivOfInverse'`. -/
 @[deprecated ofContinuousLinearMap (since := "2026-07-01")]
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
@@ -701,8 +700,7 @@ theorem toLinearEquiv_ofContinuousLinearMap' (h₁ h₂) :
       .ofLinear f₁ f₂ ((f₁ ∘SL f₂).coe_inj.mpr h₁) ((f₂ ∘SL f₁).coe_inj.mpr h₂) := rfl
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
-inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`.
-*ToDo*: Improve the naiming to make it match `LinearMap.ofLinear` -/
+inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`. -/
 @[deprecated ofContinuousLinearMap' (since := "2026-07-01")]
 def equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
     (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
