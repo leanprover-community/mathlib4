@@ -67,25 +67,10 @@ protected abbrev Field : Type := Affine.FunctionField curve
 
 /-- The obvious ring homomorphism from the polynomial ring in 7 variables to the universal
 function field. -/
-def polyToField : Poly →+* Universal.Field := (algebraMap Universal.Ring _).comp <| AdjoinRoot.mk _
-
-lemma polyToField_apply (p : Poly) :
-    polyToField p = algebraMap Universal.Ring _ (AdjoinRoot.mk _ p) := rfl
-
-lemma algebraMap_field_eq_comp :
-    algebraMap (MvPolynomial Coeff ℤ) Universal.Field = polyToField.comp (algebraMap ..) := rfl
-
-lemma algebraMap_ring_eq_comp :
-    algebraMap (MvPolynomial Coeff ℤ) Universal.Ring = (AdjoinRoot.mk _).comp (algebraMap ..) :=
-  rfl
+abbrev polyToField : Poly →+* Universal.Field := Affine.FunctionField.mk curve
 
 @[simp] lemma polyToField_polynomial : polyToField (Affine.polynomial curve) = 0 := by
-  rw [polyToField_apply, AdjoinRoot.mk_self, map_zero]
-
-lemma algebraMap_field_injective :
-    Function.Injective (algebraMap (MvPolynomial Coeff ℤ) Universal.Field) :=
-  (IsFractionRing.injective Universal.Ring Universal.Field).comp
-    (FaithfulSMul.algebraMap_injective ..)
+  rw [polyToField, Affine.FunctionField.mk_apply, AdjoinRoot.mk_self, map_zero]
 
 /-- The base change of the universal curve from `ℤ[A₁,⋯,A₆]` to `ℤ[A₁,⋯,A₆,X,Y]`. -/
 abbrev curvePoly : WeierstrassCurve Poly := curve.baseChange Poly
@@ -99,15 +84,15 @@ abbrev curveRing : WeierstrassCurve Universal.Ring := curve.baseChange Universal
 abbrev curveField : WeierstrassCurve Universal.Field := curve.baseChange Universal.Field
 
 instance : curveField.IsElliptic where
-  isUnit := isUnit_iff_ne_zero.mpr <| by
-    simpa only [curveField, baseChange, map_Δ, map_ne_zero_iff _ algebraMap_field_injective]
-      using Δ_curve_ne_zero
+  isUnit := isUnit_iff_ne_zero.mpr <| by simpa only
+    [curveField, baseChange, map_Δ, map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective ..)]
+    using Δ_curve_ne_zero
 
-open Polynomial in
-lemma equation_point : Affine.Equation curveField (polyToField (C X)) (polyToField Y) := by
-  simp_rw [Affine.Equation, curveField, baseChange,
-    algebraMap_field_eq_comp, ← map_map, Affine.map_polynomial, map_mapRingHom_evalEval,
-    evalEval, eval_map, eval_C_X_eval₂_map_C_X, polyToField_polynomial]
+open Polynomial Affine in
+lemma equation_point : Equation curveField (polyToField (C X)) (polyToField Y) := by
+  simp_rw [Equation, curveField, baseChange, FunctionField.algebraMap_eq_comp]
+  rw [← map_map, map_polynomial, map_mapRingHom_evalEval, evalEval,
+    map_polynomial, eval_map, eval_C_X_eval₂_map_C_X, polyToField_polynomial]
 
 open Polynomial Affine in
 /-- The distinguished point on the universal pointed Weierstrass curve. -/
@@ -173,9 +158,11 @@ lemma polyEval_comp_eq_specialize : (polyEval W x y).comp (algebraMap ..) = W.sp
   ext <;> simp [polyEval]
 
 lemma ringEval_comp_eq_specialize : (ringEval eqn).comp (algebraMap ..) = W.specialize := by
-  rw [algebraMap_ring_eq_comp, ← RingHom.comp_assoc, ringEval_comp_mk, polyEval_comp_eq_specialize]
+  rw [Affine.CoordinateRing.algebraMap_eq_comp,
+    ← RingHom.comp_assoc, ringEval_comp_mk, polyEval_comp_eq_specialize]
 
-instance : CharZero Universal.Field := charZero_of_injective_algebraMap algebraMap_field_injective
+instance : CharZero Universal.Field :=
+  charZero_of_injective_algebraMap (FaithfulSMul.algebraMap_injective (MvPolynomial Coeff ℤ) _)
 
 lemma curveRing_map_ringEval : curveRing.map (ringEval eqn) = W := by
   rw [curveRing, baseChange, map_map, ringEval_comp_eq_specialize, map_specialize]

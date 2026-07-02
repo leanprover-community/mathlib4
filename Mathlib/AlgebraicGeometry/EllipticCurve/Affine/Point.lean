@@ -91,11 +91,19 @@ abbrev CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
 
 variable (W') in
+/-- The natural ring homomorphism mapping `R[X][Y]` to `R[W]`. -/
+noncomputable abbrev CoordinateRing.mk : R[X][Y] →+* W'.CoordinateRing :=
+  AdjoinRoot.mk W'.polynomial
+
+variable (W') in
 /-- The function field `R(W) := Frac(R[W])` of a Weierstrass curve `W`. -/
 abbrev FunctionField : Type r :=
   FractionRing W'.CoordinateRing
 
 namespace CoordinateRing
+
+lemma algebraMap_eq_comp :
+    algebraMap R W'.CoordinateRing = (CoordinateRing.mk _).comp (algebraMap ..) := rfl
 
 noncomputable instance : Algebra R W'.CoordinateRing := inferInstance
 
@@ -105,11 +113,6 @@ instance : IsScalarTower R R[X] W'.CoordinateRing := inferInstance
 
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
-
-variable (W') in
-/-- The natural ring homomorphism mapping `R[X][Y]` to `R[W]`. -/
-noncomputable abbrev mk : R[X][Y] →+* W'.CoordinateRing :=
-  AdjoinRoot.mk W'.polynomial
 
 open scoped Classical in
 variable (W') in
@@ -148,6 +151,28 @@ instance [Nontrivial R] : Nontrivial W'.CoordinateRing :=
 instance : FaithfulSMul R[X] W'.CoordinateRing := by nontriviality R; infer_instance
 
 instance : FaithfulSMul R W'.CoordinateRing := .trans R R[X] _
+
+end CoordinateRing
+
+namespace FunctionField
+
+variable (W') in
+protected noncomputable abbrev mk : R[X][Y] →+* W'.FunctionField :=
+  (algebraMap ..).comp (CoordinateRing.mk W')
+
+lemma mk_apply (p : R[X][Y]) : FunctionField.mk W' p = algebraMap _ _ (CoordinateRing.mk W' p) :=
+  rfl
+
+lemma algebraMap_eq_comp :
+    algebraMap R W'.FunctionField = (FunctionField.mk W').comp (algebraMap ..) := rfl
+
+instance : FaithfulSMul R[X] W'.FunctionField := .trans _ W'.CoordinateRing _
+
+instance : FaithfulSMul R W'.FunctionField := .trans _ W'.CoordinateRing _
+
+end FunctionField
+
+namespace CoordinateRing
 
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm
