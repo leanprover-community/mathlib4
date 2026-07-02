@@ -27,6 +27,8 @@ we define `W.polyEval x y : Universal.Poly →+* R`, which factors through
 
 noncomputable section
 
+@[expose] public section
+
 open scoped Polynomial.Bivariate
 
 namespace WeierstrassCurve
