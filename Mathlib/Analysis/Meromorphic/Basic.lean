@@ -429,6 +429,20 @@ lemma meromorphicAt_mul_iff_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜
     MeromorphicAt (g * f) x ↔ MeromorphicAt f x :=
   meromorphicAt_smul_iff_of_ne_zero hg hg'
 
+/-- MeromorphicAt is invariant under scaling. -/
+@[simp] theorem meromorphicAt_const_smul_iff_meromorphicAt {f : 𝕜 → E} {s : 𝕜} (hs : s ≠ 0) :
+    MeromorphicAt (s • f) x ↔ MeromorphicAt f x := by
+  constructor
+  <;> intro hf
+  · rw [((eq_inv_smul_iff₀ hs).mpr rfl : f = s⁻¹ • s • f)]
+    fun_prop
+  · fun_prop
+
+/-- MeromorphicAt is invariant under scaling. -/
+@[simp] theorem meromorphicAt_fun_const_smul_iff_meromorphicAt {f : 𝕜 → E} {s : 𝕜} (hs : s ≠ 0) :
+    MeromorphicAt (fun x ↦ s • f x) x ↔ MeromorphicAt f x :=
+  meromorphicAt_const_smul_iff_meromorphicAt hs
+
 end smul_iff
 
 section composition
@@ -559,6 +573,17 @@ include hf in
 
 include hf in
 @[to_fun] lemma const_smul (c : R) : MeromorphicOn (c • f) U := fun x hx ↦ (hf x hx).const_smul c
+
+/-- MeromorphicOn is invariant under scaling. -/
+@[simp] theorem meromorphicOn_const_smul_iff_meromorphicOn {s : 𝕜} (hs : s ≠ 0) :
+    MeromorphicOn (s • f) U ↔ MeromorphicOn f U :=
+  ⟨fun hf x hx ↦ (meromorphicAt_const_smul_iff_meromorphicAt hs).mp (hf x hx),
+    fun hf x hx ↦ (meromorphicAt_const_smul_iff_meromorphicAt hs).mpr (hf x hx)⟩
+
+/-- MeromorphicOn is invariant under scaling. -/
+@[simp] theorem meromorphicOn_fun_const_smul_iff_meromorphicOn {s : 𝕜} (hs : s ≠ 0) :
+    MeromorphicOn (fun x ↦ s • f x) U ↔ MeromorphicOn f U :=
+  meromorphicOn_const_smul_iff_meromorphicOn hs
 
 include hs ht in
 @[to_fun] lemma mul : MeromorphicOn (s * t) U := fun x hx ↦ (hs x hx).mul (ht x hx)
@@ -708,6 +733,17 @@ lemma smul {f : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
 @[to_fun (attr := fun_prop)]
 lemma const_smul (hf : Meromorphic f) (c : R) :
     Meromorphic (c • f) := fun x ↦ (hf x).const_smul c
+
+/-- Meromorphic is invariant under scaling. -/
+@[simp] theorem _root_.meromorphic_const_smul_iff_meromorphic {s : 𝕜} (hs : s ≠ 0) :
+    Meromorphic (s • f) ↔ Meromorphic f :=
+  ⟨fun hf x ↦ (meromorphicAt_const_smul_iff_meromorphicAt hs).mp (hf x),
+    fun hf x ↦ (meromorphicAt_const_smul_iff_meromorphicAt hs).mpr (hf x)⟩
+
+/-- Meromorphic is invariant under scaling. -/
+@[simp] theorem _root_.meromorphic_fun_const_smul_iff_meromorphic {s : 𝕜} (hs : s ≠ 0) :
+    Meromorphic (fun x ↦ s • f x) ↔ Meromorphic f :=
+  meromorphic_const_smul_iff_meromorphic hs
 
 @[to_fun (attr := fun_prop)]
 lemma mul {f g : 𝕜 → 𝕜'} (hf : Meromorphic f) (hg : Meromorphic g) :

@@ -54,6 +54,10 @@ theorem hasFPowerSeriesAt_const {c : F} {e : E} :
 theorem analyticAt_const {v : F} {x : E} : AnalyticAt 𝕜 (fun _ => v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, hasFPowerSeriesAt_const⟩
 
+/-- Special case of `analyticAt_const`, required for `fun_prop` 1to work. -/
+@[fun_prop] theorem analyticAt_zero {x : E} :
+    AnalyticAt 𝕜 (0 : E → F) x := analyticAt_const
+
 theorem analyticOnNhd_const {v : F} {s : Set E} : AnalyticOnNhd 𝕜 (fun _ => v) s :=
   fun _ _ => analyticAt_const
 
