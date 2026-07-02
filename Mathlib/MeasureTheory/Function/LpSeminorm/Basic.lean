@@ -657,11 +657,11 @@ theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α 
   · simp [*]
   exact eLpNorm_smul_measure_of_ne_zero_of_ne_top hp0 hp_top c
 
-theorem eLpNorm_smul_measure_le (c : ℝ≥0∞) (f : α → ε) (p : ℝ≥0∞)
-    (μ : Measure α) : eLpNorm f p (c • μ) ≤ c ^ (1 / p).toReal • eLpNorm f p μ := by
+theorem eLpNorm_smul_measure_le (c : ℝ≥0∞) (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) :
+    eLpNorm f p (c • μ) ≤ c ^ (1 / p).toReal • eLpNorm f p μ := by
   rcases eq_or_ne c 0 with rfl | hc
   · simp
-  · exact (eLpNorm_smul_measure_of_ne_zero hc f p μ ).le
+  · exact (eLpNorm_smul_measure_of_ne_zero hc f p μ).le
 
 /-- See `eLpNorm_smul_measure_of_ne_zero` for a version with scalar multiplication by `ℝ≥0∞`. -/
 lemma eLpNorm_smul_measure_of_ne_zero' {c : ℝ≥0} (hc : c ≠ 0) (f : α → ε) (p : ℝ≥0∞)
