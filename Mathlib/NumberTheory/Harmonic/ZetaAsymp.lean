@@ -626,7 +626,7 @@ lemma inv_riemannZeta_sub_sub_isBigO :
     filter_upwards [inv_riemannZeta_eq_sub_mul] with s hs
     simp [hs, field]
   suffices (fun s ↦ ((riemannZeta₁ s)⁻¹ - 1)) =O[𝓝 1] (· - 1) by
-    convert! (isBigO_refl ..).mul this; ring
+    simpa [pow_two] using (isBigO_refl ..).mul this
   simpa using ((differentiable_riemannZeta₁.differentiableAt (x := 1)).inv (by simp)).isBigO_sub
 
 lemma inv_riemannZeta_sub_sub_isLittleO :
