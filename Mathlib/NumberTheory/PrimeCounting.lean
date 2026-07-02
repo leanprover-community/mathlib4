@@ -193,6 +193,14 @@ lemma primesLE_eq_filter_Icc_zero (n : ℕ) : primesLE n = filter Nat.Prime (Icc
   ext p
   simp [primesLE_eq_filter_range]
 
+lemma primesBelow_eq_filter_Ioo_zero (n : ℕ) : primesBelow n = filter Nat.Prime (Ioo 0 n) := by
+  ext p
+  simp +contextual [primesBelow_eq_filter_range, Nat.Prime.pos]
+
+lemma primesLE_eq_filter_Ioc_zero (n : ℕ) : primesLE n = filter Nat.Prime (Ioc 0 n) := by
+  ext p
+  simp +contextual [primesLE_eq_filter_range, Nat.Prime.pos]
+
 lemma primesBelow_eq_filter_Ico_one (n : ℕ) : primesBelow n = filter Nat.Prime (Ico 1 n) := by
   ext p
   simp +contextual [primesBelow_eq_filter_range, Nat.Prime.one_le]
@@ -200,6 +208,14 @@ lemma primesBelow_eq_filter_Ico_one (n : ℕ) : primesBelow n = filter Nat.Prime
 lemma primesLE_eq_filter_Icc_one (n : ℕ) : primesLE n = filter Nat.Prime (Icc 1 n) := by
   ext p
   simp +contextual [primesLE_eq_filter_range, Nat.Prime.one_le]
+
+lemma primesBelow_eq_filter_Ioo_one (n : ℕ) : primesBelow n = filter Nat.Prime (Ioo 1 n) := by
+  ext p
+  simp +contextual [primesBelow_eq_filter_range, Nat.Prime.one_lt]
+
+lemma primesLE_eq_filter_Ioc_one (n : ℕ) : primesLE n = filter Nat.Prime (Ioc 1 n) := by
+  ext p
+  simp +contextual [primesLE_eq_filter_range, Nat.Prime.one_lt]
 
 lemma primesBelow_eq_filter_Ico_two (n : ℕ) : primesBelow n = filter Nat.Prime (Ico 2 n) := by
   ext p

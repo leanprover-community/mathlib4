@@ -77,7 +77,6 @@ between `Convert.CheapConfig` and `Convert.ExpensiveConfig` based on other flags
 -/
 structure Convert.CheapConfig extends Congr!.Config where
   postTransparency := .reducible
-  partialApp := false
   sameFun := true
 
 /-- Internal elaborator for `Convert.CheapConfig`: use `Convert.elabConfig` instead. -/

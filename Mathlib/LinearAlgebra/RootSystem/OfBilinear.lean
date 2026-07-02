@@ -160,8 +160,8 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
       right_inv := by
         intro y
         simp [involutive_reflection (coroot_apply_self B x.2) y] }
-  reflectionPerm_root x y := by
-    simp [Module.reflection_apply]
+  reflectionPerm_root := by
+    simp [coe_setOf, Module.reflection_apply]
   reflectionPerm_coroot x y := by
     simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.subtype_apply,
       Dual.eval_apply, Equiv.coe_fn_mk]
