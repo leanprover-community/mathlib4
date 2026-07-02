@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Data.Bundle
 public import Mathlib.Geometry.Manifold.HasGroupoid
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -1070,6 +1071,7 @@ variable (M) in
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
+@[wikidata Q746550]
 abbrev TangentBundle := Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 end TangentSpace

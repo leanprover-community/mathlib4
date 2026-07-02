@@ -568,8 +568,8 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
       simp only [pow_succ, ← ValueGroupWithZero.mk_mul_mk, ih]
       apply congrArg (_ * ·)
       exact ValueGroupWithZero.sound h₁ h₂
-  npow_zero := ValueGroupWithZero.ind (by simp)
-  npow_succ n := ValueGroupWithZero.ind (by simp [pow_succ])
+  npow_zero := ValueGroupWithZero.ind (by simp_rw [HPow.hPow, Pow.pow]; simp)
+  npow_succ n := ValueGroupWithZero.ind (by simp_rw [HPow.hPow, Pow.pow]; simp [pow_succ])
 
 instance : LE (ValueGroupWithZero R) where
   le := ValueGroupWithZero.lift₂ (fun a s b t => a * t ≤ᵥ b * s) <| by
@@ -1333,7 +1333,7 @@ lemma leftInverse_embedding_orderMonoidIso : Function.LeftInverse embedding
   embedding_orderMonoidIso_valuation_eq
 
 /-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
-@[deprecated "use ValueGroupWithZero.embed (valuation R) instead" (since := "2026-03-17")]
+@[deprecated "use ValueGroupWithZero.orderMonoidIso instead" (since := "2026-03-17")]
 def valueGroupWithZero_equiv_valueGroup₀ := orderMonoidIso (valuation R)
 
 end ValueGroupWithZero

@@ -71,6 +71,7 @@ attribute [to_dual existing] Semilattice.toSemilatticeSup
 
 -- when reordering arguments in arguments that are being reordered,
 -- there is a convenient syntax to specify this at the same time:
+set_option linter.defProp false in
 @[to_dual self (reorder := h₁ h₂ (a b))]
 def SemilatticeSup.foo {α} [Semilattice α]
     (h₁ : ∀ a b : α, a ⊔ b ≤ b) (h₂ : ∀ a b : α, a ≤ b ⊓ a) (my_sorry : ∀ {p : Prop}, p) : False :=
@@ -310,6 +311,7 @@ info: theorem Cov.Ioc_def : ∀ {α : Type} [inst : PartialOrder α] {a b x : α
 
 /-! Test that translated autoparams are marked with `meta`. -/
 
+set_option linter.defProp false in
 @[to_dual]
 def Top.autoParamTest {a b : α} (h : a ≤ b := by grind) : a ≤ b := h
 
@@ -362,6 +364,7 @@ private theorem WithBotPrivate.coe_le_top : WithTop.coe a ≤ .top := .le_top (W
 
 run_meta guard <| (← getEnv).contains ``WithTopPrivate.coe_le_bot
 
+set_option linter.defProp false in
 set_option linter.unusedVariables false in
 @[to_dual (rename := x → y, Pbot ↔ Ptop) renameTest']
 def renameTest [Top α] [Bot α] (x : α) {P : α → Prop} (Ptop : P ⊤) (Pbot : P ⊥) : True := trivial
@@ -388,36 +391,31 @@ info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x :
 theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b → a ≤ b) ∧ (c < d → c ≤ d) :=
   ⟨le_of_lt, (fun γ [Preorder γ] (c d : γ) ↦ @le_of_lt γ _ c d) β c d⟩
 
--- Test the reordering of universes
-@[to_dual (reorder := α β γ) universeTest1']
-def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+/-! Test the reordering of universes -/
 
-/-- info: universeTest1'.{w, u, v} (γ : Type w) (α : Type u) (β : Type v) : Type (max u w v) -/
-#guard_msgs in
-#check universeTest1'
+def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+@[to_dual existing (reorder := α β γ) universeTest1]
+def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+@[to_dual none] alias universeTest1'' := universeTest1
 
 @[to_dual (reorder := u₁ u₂) universeTest2']
 def universeTest2.{u,v} (u₁ : PUnit.{u}) (u₂ : PUnit.{v}) := PProd.mk u₁ u₂
 
-/-- info: universeTest2'.{v, u} (u₂ : PUnit) (u₁ : PUnit) : PUnit ×' PUnit -/
+/-- info: universeTest2'.{u, v} (u₂ : PUnit) (u₁ : PUnit) : PUnit ×' PUnit -/
 #guard_msgs in
 #check universeTest2'
-
-@[to_dual (reorder := u₁ u₂) universeTest3']
-def universeTest3.{u,u',v,v'} (u₁ : PProd PUnit.{u} PUnit.{u'}) (u₂ : PProd PUnit.{v} PUnit.{v'}) :=
-  PProd.mk u₁ u₂
-
-/--
-info: universeTest3'.{v, v', u, u'} (u₂ : PUnit ×' PUnit) (u₁ : PUnit ×' PUnit) : (PUnit ×' PUnit) ×' PUnit ×' PUnit
--/
-#guard_msgs in
-#check universeTest3'
 
 class Category.{v,u} (c : Type u) where
   bla : Type v
 
 @[to_dual self (reorder := A B, 2 4)]
 structure Comma {A : Type u} [Category.{v} A] {B : Type u'} [Category.{v'} B] where
+
+@[to_dual self (reorder := α β, 3 4)]
+axiom HLE {α β : Type*} : α → β → Prop
+
+@[to_dual self (reorder := α γ, a c, 7 8)]
+axiom hle_trans {α β γ : Type*} (a : α) (b : β) (c : γ) : HLE a b → HLE b c → HLE a c
 
 open Mathlib.Tactic Translate ToDual
 
