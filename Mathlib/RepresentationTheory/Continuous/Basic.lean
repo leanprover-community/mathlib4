@@ -416,22 +416,23 @@ lemma mem_invariants {π : ContRepresentation R G V} (v : V) :
     v ∈ π.invariants ↔ ∀ g, π g v = v := Iff.rfl
 
 /-- The map induced on `G`-invariant elements by a continuous intertwining map. -/
-def _root_.ContIntertwiningMap.invariants
+def _root_.ContIntertwiningMap.mapInvariants
     {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
     (f : π →ⁱL π') : π.invariants →L[R] π'.invariants :=
   f.toContinuousLinearMap.restrict <| by
     simp +contextual [f.toContinuousLinearMap_apply, ← f.isIntertwining]
 
-lemma _root_.ContIntertwiningMap.invariants_apply
+-- provided for rewrite
+lemma _root_.ContIntertwiningMap.mapInvariants_apply
     {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
     (f : π →ⁱL π') (v : π.invariants) :
-    f.invariants v = f v := rfl
+    f.mapInvariants v = f v := rfl
 
 @[simp]
-lemma _root_.ContIntertwiningMap.mk_invariants_apply
+lemma _root_.ContIntertwiningMap.mk_mapInvariants_apply
     {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
     (f : π →ⁱL π') (v : V) (hv : v ∈ π.invariants) :
-    f.invariants ⟨v, hv⟩ = f v := rfl
+    f.mapInvariants ⟨v, hv⟩ = f v := rfl
 
 -- TODO : define `IsTopologicalMonoid` and then replace `Homeomorph.mulLeft g⁻¹` with the
 -- `ContinuousMap.mulRight g` to make `coind₁` work for monoids.

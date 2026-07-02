@@ -231,7 +231,7 @@ variable (k G) in
 /-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
 abbrev invariantsFunctor : TopRep k G ⥤ TopModuleCat k where
   obj A := .of k A.ρ.invariants
-  map f := TopModuleCat.ofHom f.hom.invariants
+  map f := TopModuleCat.ofHom f.hom.mapInvariants
 
 instance : (invariantsFunctor k G).Additive where
 

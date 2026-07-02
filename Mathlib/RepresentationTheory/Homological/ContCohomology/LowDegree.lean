@@ -11,7 +11,7 @@ public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 ## Low degree continuous cohomology
 
 In this file we show that the zeroth continuous cohomology is isomorphic to the
-invariants of a representation.
+invariants of the representation.
 -/
 
 @[expose] public section
@@ -23,10 +23,12 @@ open CategoryTheory Functor TopRep ContRepresentation
 variable {k G : Type*} [CommRing k] [Group G] [TopologicalSpace k] [IsTopologicalRing k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
-set_option allowUnsafeReducibility true
+set_option allowUnsafeReducibility true in
 attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
 
-lemma cocycles₀IsoAux (X : TopRep k G) (σ : (homogeneousCochains X).X 0)
+variable (X : TopRep k G)
+
+lemma cocycles₀IsoAux (σ : (homogeneousCochains X).X 0)
     (hσ : σ ∈ ((homogeneousCochains X).d 0 1).hom.ker) : σ.1 1 ∈ X.ρ.invariants := by
   simp only [Nat.reduceAdd, LinearMap.mem_ker, ContinuousLinearMap.coe_coe,
     Subtype.ext_iff, homogeneousCochains.d₀₁_apply _] at hσ
@@ -39,25 +41,30 @@ lemma cocycles₀IsoAux (X : TopRep k G) (σ : (homogeneousCochains X).X 0)
     coind₁Map_toFun, ContinuousMap.comp_apply, ContinuousMap.coe_mk] at hσ
   simpa [hσ] using DFunLike.ext_iff.1 (σ.2 g) 1
 
-lemma hah (X : TopRep k G) (x : X) (hx : x ∈ X.ρ.invariants) :
+lemma mem_const_resol₀ (x : X) (hx : x ∈ X.ρ.invariants) :
     ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants :=
   ContRepresentation.mem_invariants _|>.1 fun _ ↦ ContinuousMap.ext fun _ ↦ hx _
 
-lemma cocycles₀IsoAux' (X : TopRep k G) (x : X)
-    (h : ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants) :
+lemma cocycles₀IsoAux' (x : X) (h : ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants) :
     ⟨ContinuousMap.const G x, h⟩ ∈ ((homogeneousCochains X).d 0 1).hom.ker := by
   rw [LinearMap.mem_ker, Subtype.ext_iff, ContinuousLinearMap.coe_coe,
     homogeneousCochains.d₀₁_apply]
   simp [d_succ, hom_sub, ContIntertwiningMap.sub_apply, d_zero]
 
+/-- The isomorphism between the zeroth cocycles and the kernel of the zeroth differential. -/
+noncomputable abbrev cocycles₀Iso : cocycles X 0 ≅
+    TopModuleCat.of k ((homogeneousCochains X).d 0 1).hom.ker :=
+  Limits.KernelFork.mapIsoOfIsLimit ((homogeneousCochains X).cyclesIsKernel 0 1 (by simp))
+    (TopModuleCat.isLimitKer _) (Iso.refl _)
+
 /-- The isomorphism between the kernel of the zeroth differential and
 the invariants of a representation. -/
-def cocycles₀Iso (X : TopRep k G) :
-    ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants where
+def d₀kerIso : ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants where
   toFun := fun ⟨σ, hσ⟩ ↦ ⟨σ.val 1, cocycles₀IsoAux X σ hσ⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun := fun ⟨x, hx⟩ ↦ ⟨⟨ContinuousMap.const G x, hah X x hx⟩, cocycles₀IsoAux' X x (hah X x hx)⟩
+  invFun := fun ⟨x, hx⟩ ↦ ⟨⟨ContinuousMap.const G x, mem_const_resol₀ X x hx⟩,
+    cocycles₀IsoAux' X x (mem_const_resol₀ X x hx)⟩
   left_inv := fun ⟨⟨(x : C(G, X)), hx'⟩, hx⟩ ↦ by
     ext g
     rw [LinearMap.mem_ker, Subtype.ext_iff, ContinuousLinearMap.coe_coe,
@@ -76,9 +83,7 @@ def cocycles₀Iso (X : TopRep k G) :
 the invariants of a representation. -/
 noncomputable def zeroIso (A : TopRep k G) :
     continuousCohomology 0 A ≅ TopModuleCat.of k A.ρ.invariants :=
-  ((homogeneousCochains A).isoHomologyπ₀.symm ≪≫ Limits.KernelFork.mapIsoOfIsLimit
-    ((homogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (TopModuleCat.isLimitKer _) (Iso.refl _)
-    : continuousCohomology 0 A ≅ TopModuleCat.of k ((homogeneousCochains A).d 0 1).hom.ker)
-  ≪≫ TopModuleCat.ofIso (cocycles₀Iso A)
+  (homogeneousCochains A).isoHomologyπ₀.symm ≪≫ cocycles₀Iso A ≪≫
+    TopModuleCat.ofIso (d₀kerIso A)
 
 end ContinuousCohomology
