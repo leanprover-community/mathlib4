@@ -25,8 +25,9 @@ some `ring_nf` invocations.
 - Surface non-progress-related errors from `repeat`.
 - Allow `group`s `ifUnchanged` behavior to be configurable.
 - Use cycling to normalise expressions further. For instance:
-  `b ^ 17 * c⁻¹ * d * b ^ 3 = 1` to `b^20 * c⁻¹ * d = 1` and
-  `(a * b *c)^m * a * b * (c * a * b)^n * c = (a * b * c)^(n + m +1)`
+  `b ^ 17 * c⁻¹ * d * b ^ 3 = 1` to `b ^ 20 * c⁻¹ * d = 1` and
+  `(a * b *c) ^ m * a * b * (c * a * b) ^ n * c = (a * b * c) ^ (n + m + 1)`
+
 
 ## Tags
 
