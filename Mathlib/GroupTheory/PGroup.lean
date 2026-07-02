@@ -54,7 +54,7 @@ theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Na
   refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card_dvd_pow hn⟩
   rcases eq_or_ne p 0 with rfl | hp
   · exact ⟨1, by simp⟩
-  refine ⟨Nat.card G, Nat.dvd_pow_self_iff Nat.card_pos.ne' hp |>.mpr fun q hq ↦ ?_⟩
+  refine ⟨Nat.card G, Nat.dvd_pow_self_iff NeZero.out hp |>.mpr fun q hq ↦ ?_⟩
   have ⟨hqp, hqdvd, _⟩ := Nat.mem_primeFactors.mp hq
   have ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q (hp := ⟨hqp⟩) hqdvd
   have ⟨k, hk⟩ := h.exists_orderOf_dvd_pow g
@@ -145,9 +145,8 @@ theorem _root_.isPGroup_iff_primeFactors_card_subset [Finite G] (h : p ≠ 0) :
   · rcases eq_or_ne n 0 with (rfl | hn0)
     · simp_all
     grw [← Nat.primeFactors_pow p hn0, Nat.primeFactors_mono hn <| pow_ne_zero n h]
-  · refine ⟨Nat.card G, dvd_trans (Nat.dvd_prod_primeFactors_pow_self Nat.card_pos.ne') ?_⟩
-    apply pow_dvd_pow_of_dvd
-    exact dvd_trans (Finset.prod_dvd_prod_of_subset _ _ id hG) p.prod_primeFactors_dvd
+  · refine ⟨Nat.card G, Nat.dvd_prod_primeFactors_pow_self NeZero.out |>.trans ?_⟩
+    grw [Finset.prod_dvd_prod_of_subset _ _ (·) hG, p.prod_primeFactors_dvd]
 
 section GIsPGroup
 
