@@ -114,7 +114,7 @@ lemma degree_neg (D : AlgebraicCycle X ℤ) :
     degree f (-D) = - degree f D := by simp [degree, finsum_neg_distrib]
 
 @[simp]
-lemma degree_minus (D D' : AlgebraicCycle X ℤ) [CompactSpace X] : degree f (D - D') =
+lemma degree_sub (D D' : AlgebraicCycle X ℤ) [CompactSpace X] : degree f (D - D') =
     degree f D - degree f D' := by
   simp [sub_eq_add_neg]
 
