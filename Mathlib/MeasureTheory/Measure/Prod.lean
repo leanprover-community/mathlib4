@@ -85,7 +85,7 @@ theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α 
     have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
       rw [preimage_iUnion, measure_iUnion]
       exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prodMk_left (hfm i)]
-    simpa only [this] using Measurable.ennreal_tsum ihf
+    simpa only [this] using Measurable.tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
 is a measurable function.
@@ -98,7 +98,7 @@ theorem measurable_measure_prodMk_left [SFinite ν] {s : Set (α × β)} (hs : M
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   rw [← sum_sfiniteSeq ν]
   simp_rw [Measure.sum_apply_of_countable]
-  exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
+  exact Measurable.tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
 
 /-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/
@@ -202,16 +202,16 @@ theorem prod_prod_le (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) ≤ μ s 
         restrict_apply_univ, mul_comm]
     _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
 
-instance prod.instNoAtoms_fst [NoAtoms μ] :
-    NoAtoms (Measure.prod μ ν) where
+instance prod.instNullSingletonClass_fst [NullSingletonClass μ] :
+    NullSingletonClass (Measure.prod μ ν) where
   measure_singleton
   | (x, y) => nonpos_iff_eq_zero.mp <| calc
     μ.prod ν {(x, y)} = μ.prod ν ({x} ×ˢ {y}) := by rw [singleton_prod_singleton]
     _ ≤ μ {x} * ν {y} := prod_prod_le _ _
     _ = 0 := by simp
 
-instance prod.instNoAtoms_snd [NoAtoms ν] :
-    NoAtoms (Measure.prod μ ν) where
+instance prod.instNullSingletonClass_snd [NullSingletonClass ν] :
+    NullSingletonClass (Measure.prod μ ν) where
   measure_singleton
   | (x, y) => nonpos_iff_eq_zero.mp <| calc
     μ.prod ν {(x, y)} = μ.prod ν ({x} ×ˢ {y}) := by rw [singleton_prod_singleton]
@@ -418,6 +418,14 @@ theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ �
   apply measure_prod_null_of_ae_null hs
   rw [measure_prod_null hs] at h2s
   exact (h2s.filter_mono h1.ae_le).mono fun _ h => h2 h
+
+omit [SFinite ν] in
+@[gcongr] theorem prod_mono [SFinite ν'] (h1 : μ ≤ μ') (h2 : ν ≤ ν') : μ.prod ν ≤ μ'.prod ν' := by
+  apply Measure.le_iff.2 (fun s hs ↦ ?_)
+  calc μ.prod ν s
+  _ ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := prod_apply_le hs
+  _ ≤ ∫⁻ x, ν' (Prod.mk x ⁻¹' s) ∂μ' := by gcongr
+  _ = (μ'.prod ν') s := (prod_apply hs).symm
 
 /-- Note: the converse is not true. For a counterexample, see
   Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. It is true if the set is
@@ -835,9 +843,10 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
 
 -- `prod_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
-lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
+lemma prod_smul_left {μ : Measure α} {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) : (c • μ).prod ν = c • (μ.prod ν) := by
   ext s hs
-  rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs]
+  rw [prod_apply hs, Measure.smul_apply, prod_apply hs]
   simp
 
 end Measure
@@ -873,7 +882,7 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
     infer_instance
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
   ext s hs
-  rw [map_apply this hs, prod_apply (this hs), prod_apply hs,
+  rw [map_apply this hs, Measure.prod_apply (this hs), Measure.prod_apply hs,
     ← hf.lintegral_comp (measurable_measure_prodMk_left hs)]
   apply lintegral_congr_ae
   filter_upwards [hg] with a ha
@@ -898,7 +907,7 @@ theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} 
     QuasiMeasurePreserving f (μ.prod ν) τ := by
   refine ⟨hf, ?_⟩
   refine AbsolutelyContinuous.mk fun s hs h2s => ?_
-  rw [map_apply hf hs, prod_apply (hf hs)]; simp_rw [preimage_preimage]
+  rw [map_apply hf hs, Measure.prod_apply (hf hs)]; simp_rw [preimage_preimage]
   rw [lintegral_congr_ae (h2f.mono fun x hx => hx.preimage_null h2s), lintegral_zero]
 
 theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
@@ -907,7 +916,8 @@ theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [Measu
     (h2f : ∀ᵐ y ∂ν, QuasiMeasurePreserving (fun x => f (x, y)) μ τ) :
     QuasiMeasurePreserving f (μ.prod ν) τ := by
   rw [← prod_swap]
-  convert (QuasiMeasurePreserving.prod_of_right (hf.comp measurable_swap) h2f).comp
+  convert!
+    (QuasiMeasurePreserving.prod_of_right (hf.comp measurable_swap) h2f).comp
       ((measurable_swap.measurePreserving (ν.prod μ)).symm
           MeasurableEquiv.prodComm).quasiMeasurePreserving
 
@@ -1038,7 +1048,7 @@ theorem setLIntegral_prod_symm [SFinite μ] {s : Set α} {t : Set β} (f : α ×
     setLIntegral_prod]
   · rfl
   · refine AEMeasurable.comp_measurable ?_ measurable_swap
-    convert hf
+    convert! hf
     rw [← Measure.prod_restrict, Measure.prod_swap, Measure.prod_restrict]
 
 /-- The reversed version of **Tonelli's Theorem**. In this version `f` is in curried form, which
@@ -1222,8 +1232,9 @@ theorem _root_.MeasureTheory.measurePreserving_prodAssoc (μa : Measure α) (μb
     have A (x : α) : MeasurableSet (Prod.mk x ⁻¹' s) := measurable_prodMk_left hs
     have B : MeasurableSet (MeasurableEquiv.prodAssoc ⁻¹' s) :=
       MeasurableEquiv.prodAssoc.measurable hs
-    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, prod_apply hs, prod_apply (A _),
-      prod_apply B, lintegral_prod _ (measurable_measure_prodMk_left B).aemeasurable]
+    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, Measure.prod_apply hs,
+    Measure.prod_apply (A _), Measure.prod_apply B,
+    lintegral_prod _ (measurable_measure_prodMk_left B).aemeasurable]
     rfl
 
 theorem _root_.MeasureTheory.volume_preserving_prodAssoc {α₁ β₁ γ₁ : Type*} [MeasureSpace α₁]

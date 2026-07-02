@@ -769,6 +769,7 @@ def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dArrowIso₀₁ A)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesIso₀_hom_comp_f :
     (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f = iCocycles A 0 ≫ (cochainsIso₀ A).hom := by
@@ -782,7 +783,6 @@ lemma cocyclesIso₀_inv_comp_iCocycles :
       (shortComplexH0 A).f ≫ (cochainsIso₀ A).inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, cocyclesIso₀_hom_comp_f]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
     cocyclesMk ((cochainsIso₀ A).inv x.1) (by ext g; simp [cochainsIso₀, x.2 (g 0),
@@ -808,6 +808,7 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
 def isoCocycles₁ : cocycles A 1 ≅ ModuleCat.of k (cocycles₁ A) :=
   cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_hom_comp_i :
@@ -861,6 +862,7 @@ def isoShortComplexH2 :
 def isoCocycles₂ : cocycles A 2 ≅ ModuleCat.of k (cocycles₂ A) :=
   cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_hom_comp_i :
@@ -882,7 +884,6 @@ lemma toCocycles_comp_isoCocycles₂_hom :
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₁₂_eq,
     shortComplexH2_f]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cocyclesMk₂_eq (x : cocycles₂ A) :
     cocyclesMk ((cochainsIso₂ A).inv x) (by
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← inhomogeneousCochains.d_def,
@@ -961,6 +962,7 @@ instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundaries₁ A := by
   have h := leftHomologyπ_naturality'_assoc (isoShortComplexH1 A).inv
@@ -1000,7 +1002,6 @@ section IsTrivial
 
 variable [A.IsTrivial]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 def H1IsoOfIsTrivial :
@@ -1042,6 +1043,7 @@ instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundaries₂ A := by
   have h := leftHomologyπ_naturality'_assoc (isoShortComplexH2 A).inv

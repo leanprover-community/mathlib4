@@ -347,7 +347,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
           (‖a.2 - x‖⁻¹ : 𝕜) • (f a.1 a.2 - f a.1 x - ((f' a.1 x) a.2 - (f' a.1 x) x))) +
         fun a : ι × E => (‖a.2 - x‖⁻¹ : 𝕜) • (f' a.1 x - g' x) (a.2 - x) := by
     ext; simp only [Pi.add_apply]; rw [← smul_add, ← smul_add]; congr
-    simp only [map_sub, sub_add_sub_cancel, ContinuousLinearMap.coe_sub', Pi.sub_apply]
+    simp only [map_sub, sub_add_sub_cancel, FunLike.coe_sub, Pi.sub_apply]
     abel
   simp_rw [this]
   have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp only [add_zero]
@@ -360,7 +360,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     apply ((this ε hε).filter_mono curry_le_prod).mono
     intro n hn
     rw [dist_eq_norm] at hn ⊢
-    convert hn using 2
+    convert! hn using 2
     module
   · -- (Almost) the definition of the derivatives
     rw [Metric.tendsto_nhds]

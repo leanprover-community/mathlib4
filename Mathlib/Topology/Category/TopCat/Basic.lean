@@ -67,15 +67,19 @@ variable {X} in
 /-- The type of morphisms in `TopCat`. -/
 @[ext]
 structure Hom (X Y : TopCat.{u}) where
-  --private mk ::
+  private mk ::
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category TopCat where
   Hom X Y := Hom X Y
   id X := ⟨ContinuousMap.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -157,7 +161,6 @@ def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
   toFun f := f.hom
   invFun f := ofHom f
 
-set_option linter.deprecated false in
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
 equal function coercion for a continuous map `C(X, Y)`.
@@ -246,7 +249,7 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor
   · intro h
-    convert h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
+    convert! h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
     exact congr_arg (DFunLike.coe ∘ ConcreteCategory.hom) (IsIso.inv_hom_id_assoc f g).symm
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 
@@ -256,9 +259,17 @@ theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : 
   simp only
   exact isOpenEmbedding_iff_isIso_comp f g
 
+/-- The `MorphismProperty` in `TopCat` of a morphism being an embedding. -/
+abbrev isEmbedding : MorphismProperty TopCat :=
+  fun ⦃A X : TopCat⦄ (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom
+
+@[simp]
+lemma isEmbedding_iff ⦃A X : TopCat⦄ (f : A ⟶ X) : isEmbedding f ↔ Topology.IsEmbedding f.hom :=
+  .rfl
+
 /-- The constant morphism `X ⟶ Y` in `TopCat` given by `y : Y`. -/
 def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
-  ofHom ⟨fun _ ↦ y, by continuity⟩
+  ofHom ⟨fun _ ↦ y, by fun_prop⟩
 
 @[simp]
 lemma const_apply {X Y : TopCat.{u}} (y : Y) (x : X) :

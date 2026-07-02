@@ -120,8 +120,8 @@ theorem derivative_succ_aux (n ν : ℕ) :
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
     norm_cast
     congr 1
-    convert (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
-    · convert mul_comm _ _ using 2
+    convert! (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
+    · convert! mul_comm _ _ using 2
       simp
     · apply mul_comm
 
@@ -150,7 +150,7 @@ theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
       intro h
       apply mul_eq_zero_of_right
       rw [ih _ _ (Nat.le_of_succ_le h), sub_zero]
-      convert ih _ _ (Nat.pred_le_pred h)
+      convert! ih _ _ (Nat.pred_le_pred h)
       exact (Nat.succ_pred_eq_of_pos (k.succ_pos.trans_le h)).symm
 
 @[simp]

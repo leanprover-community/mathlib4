@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+
 /-!
 # Gauss norm for multivariate power series
 
@@ -29,15 +31,26 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
   is zero.
 
 * `MvPowerSeries.gaussNorm_add_le_max`: if `v` is a non-negative non-archimedean function and the
-  set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarily for `g`), then
+  set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarly for `g`), then
   the Gauss norm has the non-archimedean property.
+
+* `MvPowerSeries.AchievesGaussNorm`: a type `i` is said to achieve gauss norm if
+  `v (coeff i f) * i.prod (c · ^ ·) = gaussNorm v c f`.
+
+* `MvPowerSeries.gaussNorm_neg`: if `v` has the property that `∀ i, v i = v (-i)` then
+  `gaussNorm v c (-f) = gaussNorm v c f `.
+
 -/
 
 @[expose] public section
 
 namespace MvPowerSeries
 
-variable {R σ : Type*} [Semiring R] (v : R → ℝ) (c : σ → ℝ) (f : MvPowerSeries σ R)
+variable {R σ : Type*} (v : R → ℝ) (c : σ → ℝ) (f : MvPowerSeries σ R)
+
+section Semiring
+
+variable [Semiring R]
 
 /-- Given a multivariate power series `f` in, a function `v : R → ℝ` and a tuple `c` of real
   numbers, the Gauss norm is defined as the supremum of the set of all values of
@@ -61,7 +74,7 @@ lemma gaussNorm_nonneg (vNonneg : ∀ a, v a ≥ 0) : 0 ≤ gaussNorm v c f := b
   by_cases h : HasGaussNorm v c f
   · trans v (constantCoeff f)
     · simp [vNonneg]
-    · convert (le_gaussNorm v c f h 0)
+    · convert! (le_gaussNorm v c f h 0)
       simp
   · simp [h]
 
@@ -81,7 +94,7 @@ lemma gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
   _ ≤ _ := le_gaussNorm v c f hbd n
 
 lemma gaussNorm_add_le_max (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
-    (vNonneg : ∀ a, v a ≥ 0) (hv : ∀ x y, v (x + y) ≤ max (v x) (v y))
+    (vNonneg : ∀ a, v a ≥ 0) (hv : IsNonarchimedean v)
     (hbfd : HasGaussNorm v c f) (hbgd : HasGaussNorm v c g) :
     gaussNorm v c (f + g) ≤ max (gaussNorm v c f) (gaussNorm v c g) := by
   have H (t : σ →₀ ℕ) : 0 ≤ ∏ i ∈ t.support, c i ^ t i :=
@@ -113,11 +126,143 @@ lemma gaussNorm_add_le_max (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
       rcases max_choice (v ((coeff t) f) * ∏ i ∈ t.support, c i ^ t i)
         (v ((coeff t) g) * ∏ i ∈ t.support, c i ^ t i) with h | h
       · left
-        simpa [h] using le_gaussNorm v c f hbfd t
+        simpa [h] using! le_gaussNorm v c f hbfd t
       · right
-        simpa [h] using le_gaussNorm v c g hbgd t
+        simpa [h] using! le_gaussNorm v c g hbgd t
   · simp only [le_sup_iff]
     left
     exact gaussNorm_nonneg v c f vNonneg
+
+private lemma c_prod_nonneg (hc : 0 ≤ c) (t : σ →₀ ℕ) : 0 ≤ t.prod (c · ^ ·) :=
+  Finset.prod_nonneg (fun i _ ↦ pow_nonneg (hc i) (t i))
+
+lemma gaussNorm_mul_le (f g : MvPowerSeries σ R) (hc : 0 ≤ c) (vNonneg : ∀ a, v a ≥ 0)
+    (vMul : ∀ a b, v (a * b) ≤ v a * v b) (vna : IsNonarchimedean v)
+    (vZero : v 0 = 0) (hbfd : HasGaussNorm v c f) (hbgd : HasGaussNorm v c g) :
+    gaussNorm v c (f * g) ≤ gaussNorm v c f * gaussNorm v c g := by
+  classical
+  refine Real.iSup_le ?_ ?_
+  · intro t
+    obtain ⟨k, hk, hsum⟩ := IsNonarchimedean.finset_image_add vZero vNonneg vna
+      (fun a ↦ coeff a.1 f * coeff a.2 g) (Finset.antidiagonal t)
+    have hk' : k.1 + k.2 = t := by
+      simpa [Finset.mem_antidiagonal] using hk (Finset.nonempty_def.mpr ⟨(t, 0), by simp⟩)
+    have hprod : t.prod (c · ^ ·) = k.1.prod (c · ^ ·) * k.2.prod (c · ^ ·) := by
+      simp [← hk', Finsupp.prod_add_index' (h := (c · ^ ·)) (by grind) (by grind)]
+    rw [hprod]
+    refine (mul_le_mul hsum (by rfl) (mul_nonneg (c_prod_nonneg c hc k.1) (c_prod_nonneg c hc k.2))
+      (vNonneg _)).trans ?_
+    have : v ((coeff k.1) f * (coeff k.2) g) * (k.1.prod (c · ^ ·) * k.2.prod (c · ^ ·)) ≤
+        (v (coeff k.1 f) * k.1.prod (c · ^ ·)) * (v (coeff k.2 g) * k.2.prod (c · ^ ·)) := by
+      calc
+      _ ≤ v (coeff k.1 f) * v (coeff k.2 g) * (k.1.prod (c · ^ ·) * k.2.prod (c · ^ ·)) :=
+        mul_le_mul (vMul _ _) (by rfl) (mul_nonneg (c_prod_nonneg c hc k.1)
+          (c_prod_nonneg c hc k.2)) (mul_nonneg (vNonneg _) (vNonneg _))
+      _ = _ := by ring
+    exact this.trans (mul_le_mul (le_gaussNorm v c f hbfd k.1) (le_gaussNorm v c g hbgd k.2)
+      (mul_nonneg (vNonneg _) (c_prod_nonneg c hc k.2)) (gaussNorm_nonneg v c f vNonneg))
+  · exact mul_nonneg (gaussNorm_nonneg v c f vNonneg) (gaussNorm_nonneg v c g vNonneg)
+
+end Semiring
+
+variable [Ring R]
+
+/-- Predicate for when the gaussNorm is achieved by an index. -/
+abbrev AchievesGaussNorm (i : σ →₀ ℕ) : Prop :=
+  v (coeff i f) * i.prod (c · ^ ·) = gaussNorm v c f
+
+lemma gaussNorm_neg (vNeg : ∀ x, v (-x) = v x) (f : MvPowerSeries σ R) :
+    gaussNorm v c (-f) = gaussNorm v c f  := by
+  simp_rw [gaussNorm]
+  have (t : σ →₀ ℕ) : (coeff t) (-f) = - (coeff t) f := by rfl
+  simp_rw [this, vNeg]
+
+section absoluteValue
+
+variable {α S : Type*} [LinearOrder S] [AddCommGroup α] (f : α → S)
+
+lemma ultrametric_strict (na : IsNonarchimedean f)
+    (Neg : ∀ a, f a = f (-a)) {a b : α} (hne : f a ≠ f b) : f (a + b) = max (f a) (f b) := by
+  wlog hab : f a > f b generalizing a b with H
+  · simpa [add_comm, max_comm] using (H hne.symm ((not_lt.mp hab).lt_of_ne hne))
+  apply le_antisymm (na a b)
+  rcases le_max_iff.mp (na (a + b) (-b)) with h | h
+  · simpa [max_eq_left (le_of_lt hab)] using h
+  · exact absurd h (not_le.mpr (by simpa [Neg b] using hab))
+
+variable [Semiring S]
+
+lemma Finset.Nonempty.map_sum_le_sup'_map
+    {α S : Type*} [LinearOrder S] [AddCommMonoid α] (g : α → S)
+    {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (f : ι → α)
+    (na : ∀ a b, g (a + b) ≤ max (g a) (g b)) :
+    g (∑ i ∈ s, f i) ≤ s.sup' hs fun x ↦ g (f x) := by
+  simp only [Finset.le_sup'_iff]
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton j => simp only [Finset.mem_singleton, Finset.sum_singleton, exists_eq_left, le_refl]
+  | cons j s hj _ IH =>
+      simp only [Finset.sum_cons, Finset.mem_cons, exists_eq_or_imp]
+      refine (le_total (g (∑ i ∈ s, f i)) (g (f j))).imp ?_ ?_ <;> intro h
+      · exact (na _ _).trans (max_eq_left h).le
+      · exact ⟨_, IH.choose_spec.left, (na _ _).trans <|
+          ((max_eq_right h).le.trans IH.choose_spec.right)⟩
+
+variable [DecidableEq σ] (f g : MvPowerSeries σ R)
+
+lemma antidiagonal_dominant (i j : σ →₀ ℕ) (vna : IsNonarchimedean v)
+    (vMulEq : ∀ a b, v (a * b) = v a * v b) (vNeg : ∀ a, v a = v (-a))
+    (hdom : ∀ p ∈ Finset.antidiagonal (i + j), p ≠ (i, j) →
+      v (coeff p.1 f * coeff p.2 g) < v (coeff i f) * v (coeff j g)) :
+    v (coeff (i + j) (f * g))  = v (coeff i f * coeff j g) := by
+  rw [← vMulEq] at hdom
+  rw [coeff_mul, IsNonarchimedean.apply_sum_eq_of_lt vna (by grind) (k := (i, j))
+    (s := Finset.antidiagonal (i + j)) (Finset.mem_antidiagonal.mpr rfl) hdom]
+
+lemma gaussNorm_le_mul (vMulEq : ∀ a b, v (a * b) = v a * v b)
+    (vna : IsNonarchimedean v) (vNeg : ∀ a, v a = v (-a))
+    (hbfg : HasGaussNorm v c (f * g))
+    (hdom : ∃ i j, AchievesGaussNorm v c f i ∧ AchievesGaussNorm v c g j ∧
+      ∀ p ∈ Finset.antidiagonal (i + j), p ≠ (i, j) →
+        v (coeff p.1 f * coeff p.2 g) < v (coeff i f) * v (coeff j g)) :
+    gaussNorm v c f * gaussNorm v c g ≤ gaussNorm v c (f * g) := by
+  obtain ⟨i₀, j₀, hi₀, hj₀, hdom'⟩ := hdom
+  unfold AchievesGaussNorm at hi₀ hj₀
+  calc
+    _  = (v (coeff i₀ f) * i₀.prod (c · ^ ·)) * (v (coeff j₀ g) * j₀.prod (c · ^ ·)) := by
+          rw [← hi₀, ← hj₀]
+    _ = v (coeff i₀ f) * v (coeff j₀ g) * ((i₀ + j₀).prod (c · ^ ·)) := by
+          have hprod : (i₀ + j₀).prod (c · ^ ·) = i₀.prod (c · ^ ·) * j₀.prod (c · ^ ·) := by
+            simp [Finsupp.prod_add_index', pow_add]
+          rw [hprod]; ring
+    _ = v (coeff i₀ f * coeff j₀ g) * (i₀ + j₀).prod (c · ^ ·) := by rw [vMulEq]
+    _ = v (coeff (i₀ + j₀) (f * g)) * (i₀ + j₀).prod (c · ^ ·) := by
+      rw [antidiagonal_dominant v f g i₀ j₀ vna vMulEq vNeg hdom']
+    _ ≤ gaussNorm v c (f * g) := le_gaussNorm v c (f * g) hbfg (i₀ + j₀)
+
+lemma gaussNorm_mul_eq_mul (f g : MvPowerSeries σ R) (hf : HasGaussNorm v c f)
+    (hg : HasGaussNorm v c g) (hfg : HasGaussNorm v c (f * g))
+    (vNonneg : ∀ a, v a ≥ 0) (vZero : v 0 = 0) (vNA : IsNonarchimedean v)
+    (vMulEq : ∀ (a b : R), v (a * b) = v a * v b) (vNeg : ∀ (a : R), v (-a) = v a)
+    (h_eq_zero : ∀ (x : R), v x = 0 → x = 0) (hc : ∀ (i : σ), 0 < c i)
+    (hdom : ∃ i j, AchievesGaussNorm v c f i ∧ AchievesGaussNorm v c g j ∧
+      ∀ p ∈ Finset.antidiagonal (i + j), p ≠ (i, j) → v (coeff p.1 f * coeff p.2 g) <
+      v (coeff i f) * v (coeff j g)) :
+    gaussNorm v c (f * g) = gaussNorm v c f * gaussNorm v c g := by
+  by_cases hf' : f = 0
+  · simp [hf', gaussNorm_zero v c vZero]
+  by_cases hg' : g = 0
+  · simp [hg', gaussNorm_zero v c vZero]
+  have hf1 : gaussNorm v c f ≠ 0 := by
+    convert gaussNorm_eq_zero_iff v c f vZero vNonneg h_eq_zero hc hf
+    grind
+  have hg1 : gaussNorm v c g ≠ 0 := by
+    convert gaussNorm_eq_zero_iff v c g vZero vNonneg h_eq_zero hc hg
+    grind
+  apply ge_antisymm_iff.mpr
+  constructor
+  · exact gaussNorm_le_mul v c f g vMulEq vNA (by grind) hfg hdom
+  · exact gaussNorm_mul_le v c f g (StrongLT.le hc) vNonneg (by grind) vNA vZero hf hg
+
+end absoluteValue
 
 end MvPowerSeries
