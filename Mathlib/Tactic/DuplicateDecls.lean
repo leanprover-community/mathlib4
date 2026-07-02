@@ -148,7 +148,7 @@ def duplicateDeclarations (cfg : Target) : CoreM (Array (Array Name)) := MetaM.r
 
 /-- Given a module name, return a number that can be used for sorting. -/
 def libraryNumber (module : Name) : Nat :=
-  #[`Init, `Lean, `Std, `Batteries, `Mathlib].idxOf module.getRoot
+  #[`Init, `Std, `Lean, `Batteries, `Mathlib].idxOf module.getRoot
 
 /-- Structure used for sorting imported modules:
 1. The number given by `libraryNumber`.
@@ -160,6 +160,7 @@ def ModuleKey := Nat × String
 instance : Ord ModuleKey := ⟨fun a b ↦ (compare a.1 b.1).then (compare a.2 b.2)⟩
 instance : LT ModuleKey := ltOfOrd
 instance : LE ModuleKey := leOfOrd
+instance : Max ModuleKey := maxOfLe
 
 /-- Return the object by which to sort the module that `name` is from.
 That is, the `libraryNumber` followed by the module as a string. -/
@@ -167,18 +168,17 @@ def mkModuleKey! (name : Name) (env : Environment) : ModuleKey :=
   let mod := (env.getModuleFor? name).get!
   (libraryNumber mod, mod.toString)
 
-/-- Return the list of pairs of duplicate declarations, grouped by the name of the module
-of one of the two lemmas. -/
+/-- Return the list of duplicate declarations, grouped by the name of the module
+with the biggest `ModuleKey`. -/
 def sortedDuplicateDeclarations (cfg : Target) :
     CoreM (Array (String × Array (Array Name))) := do
   let env ← getEnv
   let dups ← duplicateDeclarations cfg
-  let mut result : Std.TreeMap (Array ModuleKey) (Array (Array Name)) := {}
+  let mut result : Std.TreeMap ModuleKey (Array (Array Name)) := {}
   for names in dups do
-    let names := names.map fun x ↦ (x, mkModuleKey! x env)
-    let names := names.qsort (·.2 > ·.2)
-    result := result.alter (names.map (·.2)) (·.getD #[] |>.push (names.map (·.1)))
-  return result.toArray.map fun (a, dups) ↦ (a[0]!.2, dups)
+    let moduleKey := names.map (mkModuleKey! · env) |>.max?.get!
+    result := result.alter moduleKey (·.getD #[] |>.push (names.qsort Name.lt))
+  return result.toArray.map fun (a, dups) ↦ (a.2, dups)
 
 /-- The duplicate declarations linter. It tells you which duplicate declarations there are
 in the current environment. -/
@@ -191,7 +191,7 @@ public def lintDuplicateDeclarations (tgt : Target) : CoreM MessageData := do
     msg := msg ++ s!"\n\n-- {module}"
     for names in dups do
       msg := msg ++ "\n"
-      for name in names.qsort Name.lt do
+      for name in names do
         msg := msg ++ m!"\n{.ofConstName name} : {(← getConstInfo name).type}"
   return msg
 
