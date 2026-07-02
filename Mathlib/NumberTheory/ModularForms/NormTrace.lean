@@ -54,15 +54,11 @@ end
 section
 variable [ModularFormClass F 𝒢 k]
 
-/-- Each `quotientFunc f q` is holomorphic on the upper half plane. -/
-lemma quotientFunc_mdiff (q : 𝒬) :
-    MDiff (quotientFunc f q) :=
+lemma quotientFunc_mdiff (q : 𝒬) : MDiff (quotientFunc f q) :=
   Quotient.inductionOn q fun r ↦ (ModularForm.translate f r.val⁻¹).holo'
 
-/-- Each `quotientFunc f q` is bounded at `∞`. -/
-lemma quotientFunc_isBoundedAtImInfty [𝒢.IsFiniteRelIndex ℋ]
-    [Fact (IsCusp OnePoint.infty ℋ)] (q : 𝒬) :
-    IsBoundedAtImInfty (quotientFunc f q) :=
+lemma quotientFunc_isBoundedAtImInfty [𝒢.IsFiniteRelIndex ℋ] [Fact (IsCusp OnePoint.infty ℋ)]
+    (q : 𝒬) : IsBoundedAtImInfty (quotientFunc f q) :=
   Quotient.inductionOn q fun ⟨_, hr⟩ ↦ OnePoint.isBoundedAt_infty_iff.mp <|
     (ModularForm.translate f _).bdd_at_cusps'
       ((Fact.out : IsCusp _ _).of_isFiniteRelIndex_conj hr)
@@ -209,34 +205,6 @@ variable {N f}
 lemma galoisProd_apply (τ : ℍ) :
     galoisProd N f τ = ∏ j ∈ Finset.range N, f (ofComplex ((τ : ℂ) - j)) := rfl
 
-/-- The Galois product of the zero function is zero when `N > 0`. -/
-@[simp]
-lemma galoisProd_zero {β : Type*} [CommMonoidWithZero β] (hN : 0 < N) :
-    galoisProd N (0 : ℍ → β) = 0 :=
-  funext fun _ ↦ Finset.prod_eq_zero (Finset.mem_range.mpr hN) rfl
-
-/-- The Galois product over an empty range is the constant function `1`. -/
-@[simp]
-lemma galoisProd_zero_eq_one {g : ℍ → α} : galoisProd 0 g = 1 :=
-  funext fun _ ↦ Finset.prod_range_zero _
-
-/-- The Galois product of a constant function `c` is `c^N`. -/
-lemma galoisProd_const (c : α) (τ : ℍ) :
-    galoisProd N (fun _ ↦ c) τ = c ^ N := by
-  simp
-
-/-- The Galois product distributes over pointwise multiplication of functions. -/
-lemma galoisProd_mul (g h : ℍ → α) :
-    galoisProd N (g * h) = galoisProd N g * galoisProd N h := by
-  ext τ
-  simp [Finset.prod_mul_distrib]
-
-/-- The Galois product distributes over multiplication by a constant function. -/
-lemma galoisProd_const_mul (c : α) (g : ℍ → α) :
-    galoisProd N (fun τ ↦ c * g τ) = fun τ ↦ c ^ N * galoisProd N g τ := by
-  ext τ
-  simp [Finset.prod_mul_distrib]
-
 end GaloisProd
 
 section GaloisProdComplex
@@ -296,33 +264,24 @@ lemma galoisProd_isBoundedAtImInfty (hf_bdd : IsBoundedAtImInfty f) :
     simp [Complex.sub_im, Complex.natCast_im, τ.im_pos]
   simp [ofComplex_apply_of_im_pos him]
 
-/-- The cusp function of `galoisProd N f` (period `1`) at `q^N` factors as a product of `N` shifted
-copies of the cusp function of `f` (period `N`). -/
-lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
+private lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
     (hf_per : Function.Periodic (f ∘ ofComplex) (N : ℝ))
     (hf_bdd : IsBoundedAtImInfty f) (hf_mdiff : MDiff f) :
-    (fun q : ℂ ↦ cuspFunction 1 (galoisProd N f) (q ^ N))
-      =ᶠ[𝓝 0]
-    (fun q : ℂ ↦ ∏ j ∈ Finset.range N,
-      cuspFunction (N : ℝ) f (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) := by
+    (fun q : ℂ ↦ cuspFunction 1 (galoisProd N f) (q ^ N)) =ᶠ[𝓝 0]
+      fun q : ℂ ↦ ∏ j ∈ Finset.range N,
+        cuspFunction (N : ℝ) f (q * Complex.exp (-2 * Real.pi * Complex.I * j / N)) := by
   have hNR : (0 : ℝ) < N := by exact_mod_cast hN
   have hNR_ne : (N : ℝ) ≠ 0 := hNR.ne'
-  have hNC_ne : (N : ℂ) ≠ 0 := mod_cast hN.ne'
   have hRHS_an : AnalyticAt ℂ (cuspFunction (N : ℝ) f) 0 :=
     analyticAt_cuspFunction_zero hNR hf_per hf_mdiff hf_bdd
-  have hLHS_cts : ContinuousAt
-      (fun q : ℂ ↦ cuspFunction 1 (galoisProd N f) (q ^ N)) 0 :=
+  have hLHS_cts : ContinuousAt (fun q : ℂ ↦ cuspFunction 1 (galoisProd N f) (q ^ N)) 0 :=
     (analyticAt_cuspFunction_zero one_pos (galoisProd_periodic_one hN hf_per)
       (galoisProd_mdiff hf_mdiff) (galoisProd_isBoundedAtImInfty hf_bdd)).continuousAt.comp_of_eq
       (by fun_prop) (by simp [zero_pow hN.ne'])
-  have h_factor_cts : ∀ j ∈ Finset.range N, ContinuousAt
-      (fun q : ℂ ↦ cuspFunction (N : ℝ) f
-        (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 := fun _ _ ↦
-    hRHS_an.continuousAt.comp_of_eq (by fun_prop) (by simp)
-  have hRHS_cts : ContinuousAt
-      (fun q : ℂ ↦ ∏ j ∈ Finset.range N,
-        cuspFunction (N : ℝ) f (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 :=
-    tendsto_finsetProd _ fun j hj ↦ (h_factor_cts j hj).tendsto
+  have hRHS_cts : ContinuousAt (fun q : ℂ ↦ ∏ j ∈ Finset.range N,
+      cuspFunction (N : ℝ) f (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 :=
+    tendsto_finsetProd _ fun j _ ↦
+      (hRHS_an.continuousAt.comp_of_eq (by fun_prop) (by simp)).tendsto
   rw [← hLHS_cts.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE hRHS_cts,
     eventuallyEq_nhdsWithin_iff]
   filter_upwards [Metric.ball_mem_nhds (0 : ℂ) zero_lt_one] with q hq_lt hq_ne
@@ -332,11 +291,7 @@ lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
   have hτq : Function.Periodic.qParam (N : ℝ) τ = q :=
     Function.Periodic.qParam_right_inv hNR_ne hq_ne
   have hqN : q ^ N = Function.Periodic.qParam 1 (τ : ℂ) := by
-    rw [← hτq]
-    simp only [Function.Periodic.qParam, ← Complex.exp_nat_mul, Complex.ofReal_one, div_one,
-      Complex.ofReal_natCast]
-    congr 1
-    field_simp [hNC_ne]
+    rw [← hτq, ← mul_one (N : ℝ), Function.Periodic.qParam_nat_mul_pow hN.ne']
   rw [hqN, eq_cuspFunction τ one_ne_zero (galoisProd_periodic_one hN hf_per), galoisProd_apply]
   refine Finset.prod_congr rfl fun j _ ↦ ?_
   have him : 0 < ((τ : ℂ) - ↑j).im := by
@@ -347,9 +302,9 @@ lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
       ← Function.Periodic.qParam_sub (h := (N : ℝ)) τ j]
   rw [hqj, eq_cuspFunction ⟨(τ : ℂ) - j, him⟩ hNR_ne hf_per, ofComplex_apply_of_im_pos him]
 
-/-- The q-expansion of `galoisProd N f` (period `1`) and that of `f` (period `N`) have the same
+/-- The `q`-expansion of `galoisProd N f` (period `1`) and that of `f` (period `N`) have the same
 order at `0`. -/
-lemma qExpansion_one_galoisProd_order_eq_qExpansion_self_order (hN : 0 < N)
+lemma qExpansion_one_galoisProd_order_eq (hN : 0 < N)
     (hf_per : Function.Periodic (f ∘ ofComplex) (N : ℝ))
     (hf_bdd : IsBoundedAtImInfty f) (hf_mdiff : MDiff f) :
     (qExpansion 1 (galoisProd N f)).order = (qExpansion (N : ℝ) f).order := by
@@ -376,7 +331,9 @@ lemma qExpansion_one_galoisProd_order_eq_qExpansion_self_order (hN : 0 < N)
       analyticOrderAt_congr (cuspFunction_one_galoisProd_pow_eq hN hf_per hf_bdd hf_mdiff),
       ← Finset.prod_fn, analyticOrderAt_prod h_factor_an,
       Finset.sum_congr rfl h_factor_order, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
-  exact (ENat.mul_right_inj (mod_cast hN.ne') (ENat.coe_ne_top _)).mp (mul_comm ML _ ▸ h_combine)
+  have hN0 : (N : ℕ∞) ≠ 0 := mod_cast hN.ne'
+  exact (WithTop.mul_right_strictMono (pos_iff_ne_zero.mpr hN0) (ENat.coe_ne_top N)).injective
+    (mul_comm ML _ ▸ h_combine)
 
 end GaloisProdComplex
 
