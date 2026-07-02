@@ -126,7 +126,7 @@ theorem support_map_subset (f : V → W) (G : SimpleGraph V) :
 
 theorem map_top {f : V → W} (hf : f.Surjective) : (completeGraph V).map f = completeGraph W := by
   ext u v
-  exact ⟨And.left, fun h ↦ ⟨h, Relation.le_map_of_onFun_le hf (fun hne heq ↦ hne congr(f $heq)) h⟩⟩
+  exact ⟨And.left, fun h ↦ ⟨h, Relation.le_map_of_onFun_le hf (fun _ _ ↦ ne_of_apply_ne f) u v h⟩⟩
 
 @[simp]
 theorem map_bot (f : V → W) : (emptyGraph V).map f = emptyGraph W := by
