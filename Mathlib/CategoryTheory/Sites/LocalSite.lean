@@ -96,7 +96,7 @@ referring to this functor, as in e.g. `coconstantSheaf.{w} J A`. -/
 noncomputable def coconstantSheaf [HasProducts.{w} A] : A ⥤ Sheaf J A :=
   (point.{w} J).skyscraperSheafFunctor
 
-variable [HasColimitsOfSize.{w, w, v', u'} A]
+variable [HasColimitsOfSize.{w, w} A]
 
 variable {A} in
 /-- The fibre of any presheaf `P : Cᵒᵖ ⥤ A` at `point J` is just `P` evaluated at
