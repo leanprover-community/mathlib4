@@ -78,11 +78,11 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 
 open Walk in
 lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
-  obtain ⟨u, w, hw, hwl⟩ := exists_egirth_eq_length.mpr h
+  obtain ⟨u, w, _, hwl⟩ := exists_egirth_eq_length.mpr h
   have half_g_le_edist : ↑(w.length / 2) ≤ G.edist u (w.getVert (w.length / 2)) := by
     have ⟨p, _⟩ := ((w.take (w.length / 2)).reachable).exists_walk_length_eq_edist
     by_contra! hlt; classical
-    have ⟨x, _, _, c, c_cycle, c_len⟩ := IsPath.exists_isCycle_length_le_add_of_ne
+    have ⟨_, _, _, _, _, _⟩ := IsPath.exists_isCycle_length_le_add_of_ne
       p.bypass_isPath (w.drop (w.length / 2)).reverse.bypass_isPath (by grind [take_length,
       length_reverse, length_append, length_bypass_le_length, ENat.coe_lt_coe,
       IsPath.bypass_eq_self, IsCircuit.three_le_length, length_eq_zero_iff,
