@@ -57,6 +57,7 @@ private lemma smul_top_quotSMulTop_ne_top_of_smul_top_ne_top {M : Type*} [AddCom
 
 namespace ModuleCat
 
+/-- The implication `(3) → (4)` of `exists_isRegular_tfae`. -/
 lemma exists_isRegular_of_exists_subsingleton_ext [Small.{v} R] [IsNoetherianRing R] (I : Ideal R)
     (n : ℕ) (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (N : ModuleCat.{v} R) [Nontrivial N] [Module.Finite R N]
@@ -91,6 +92,7 @@ lemma exists_isRegular_of_exists_subsingleton_ext [Small.{v} R] [IsNoetherianRin
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
+/-- The implication `(4) → (1)` of `exists_isRegular_tfae`. -/
 lemma subsingleton_ext_of_exists_isRegular [Small.{v} R] [IsNoetherianRing R] (I : Ideal R)
     (N : ModuleCat.{v} R) [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
