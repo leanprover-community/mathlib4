@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.FreydCategory.Homotopy
 public import Mathlib.CategoryTheory.Quotient.Preadditive
-public import Mathlib.CategoryTheory.Preadditive.LeftExact
-public import Mathlib.CategoryTheory.Limits.Comma
 
 /-!
 # The right Freyd category
