@@ -312,6 +312,9 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
   · simp [hx.trans]
   · rw [le_sqrt' hx, sq, mul_le_iff_le_one_left hx]
 
+@[simp] lemma sqrt_lt_self : √x < x ↔ 1 < x := by simp [← not_le]
+@[simp] lemma lt_sqrt_self : x < √x ↔ x ≠ 0 ∧ x < 1 := by simp [← not_le]
+
 end Real
 
 namespace Mathlib.Meta.Positivity
