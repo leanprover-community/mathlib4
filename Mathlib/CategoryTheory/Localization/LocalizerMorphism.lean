@@ -64,6 +64,9 @@ def id : LocalizerMorphism W₁ W₁ where
   functor := 𝟭 C₁
   map _ _ _ hf := hf
 
+instance : (id W₁).functor.IsEquivalence :=
+  inferInstanceAs (𝟭 C₁).IsEquivalence
+
 variable {W₁ W₂ W₃}
 
 /-- The composition of two localizers morphisms. -/
@@ -381,6 +384,7 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_counitIso_hom_app
   Functor.asEquivalence_counitIso_inv_app in
 /-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
@@ -396,10 +400,12 @@ noncomputable def inv : LocalizerMorphism W₂ W₁ where
       (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
         (Φ.functor.asEquivalence.counitIso.app _))).2 hf
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_inverse
   Functor.asEquivalence_counitIso_hom_app Functor.asEquivalence_counitIso_inv_app in
 instance : Φ.inv.IsInduced where
@@ -410,6 +416,7 @@ instance : Φ.inv.IsInduced where
       (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
         (Φ.functor.asEquivalence.counitIso.app _))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLocalizedEquivalence_of_isInduced :
     Φ.IsLocalizedEquivalence := by
   refine IsLocalizedEquivalence.of_equivalence _ (fun X Y f hf ↦ ?_)

@@ -139,7 +139,7 @@ variable {s : Set M} (f : SmoothPartitionOfUnity ι I M s) {n : ℕ∞}
 
 instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'
@@ -460,7 +460,7 @@ theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
         fs i * ∏ j ∈ t with WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
-  simpa using fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
+  simpa using! fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
 
 theorem toSmoothPartitionOfUnity_zero_of_zero {i : ι} {x : M} (h : fs i x = 0) :
     fs.toSmoothPartitionOfUnity i x = 0 :=
@@ -697,7 +697,7 @@ theorem Metric.exists_contMDiffMap_forall_closedEBall_subset
     ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
       (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedEBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
   simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_comm ι M]
-    using exists_contMDiffMap_forall_mem_convex_of_local_const I
+    using! exists_contMDiffMap_forall_mem_convex_of_local_const I
       Metric.exists_forall_closedEBall_subset_aux₂
       (Metric.exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
 
@@ -736,7 +736,7 @@ lemma IsOpen.exists_contMDiff_support_eq_aux {s : Set H} (hs : IsOpen s) :
   refine ⟨f ∘ I, ?_, ?_, ?_⟩
   · rw [support_comp_eq_preimage, f_supp, ← preimage_comp]
     simp only [ModelWithCorners.symm_comp_self, preimage_id_eq, id_eq]
-  · exact f_diff.comp_contMDiff contMDiff_model
+  · exact f_diff.comp_contMDiff I.contMDiff
   · exact Subset.trans (range_comp_subset_range _ _) f_range
 
 @[deprecated (since := "2025-12-17")]
@@ -771,7 +771,7 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
       apply (f.locallyFinite.point_finite x).subset
       apply compl_subset_compl.2
       rintro c (hc : f c x = 0)
-      simpa only [mul_eq_zero] using Or.inl hc
+      simpa only [mul_eq_zero] using! Or.inl hc
     · apply finsum_eq_zero_of_forall_eq_zero
       intro c
       by_cases Hx : x ∈ tsupport (f c)

@@ -16,7 +16,7 @@ intervals as finsets and fintypes.
 
 ## TODO
 
-Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
+Some lemmas can be generalized using `IsOrderedAddMonoid`, `CanonicallyOrderedAdd` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
@@ -141,7 +141,6 @@ theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a b.succ = insert b (Ic
   simp_rw [mem_insert, mem_Ico]
   lia
 
-set_option linter.deprecated false in
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction n with
   | zero =>

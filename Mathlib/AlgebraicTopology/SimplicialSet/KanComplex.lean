@@ -62,7 +62,6 @@ lemma exists_lift_of_kanComplex [KanComplex X]
 /-- If `X` is a Kan complex and `f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ X`
 is a compatible family of morphisms (which defines a morphism `Λ[n + 1, i] ⟶ X`),
 then this is a lifting `Δ[n + 1] ⟶ X`. -/
-@[no_expose]
 noncomputable def liftOfKanComplex [KanComplex X] (hf : horn.IsCompatible f) :
     Δ[n + 1] ⟶ X :=
   hf.exists_lift_of_kanComplex.choose

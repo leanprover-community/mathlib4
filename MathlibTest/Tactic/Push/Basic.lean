@@ -1,4 +1,5 @@
 module
+
 import Mathlib.Tactic.Push
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Set.Basic
@@ -22,6 +23,10 @@ variable {p q r : Prop}
 /-- info: (p ∧ q ∨ q) ∨ p ∧ r ∨ r -/
 #guard_msgs in
 #push _ ∧ _ => (p ∨ True) ∧ (q ∨ r)
+
+/-- info: (∃ x x_1, x ≠ x_1) ∨ True -/
+#guard_msgs in
+#push ∃ _, _ => ∃ a : Nat, ∃ b, a ≠ b ∨ True
 
 example {r : ℕ → Prop} : ∀ n : ℕ, p ∨ r n ∧ q ∧ n = 1 := by
   push ∀ n, _

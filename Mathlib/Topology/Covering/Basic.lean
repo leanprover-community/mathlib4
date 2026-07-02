@@ -143,7 +143,7 @@ theorem restrictPreimage {x : X} (hxs : x ∈ s) (h : IsEvenlyCovered f x I) :
     IsEvenlyCovered (s.restrictPreimage f) ⟨x, hxs⟩ I :=
   have ⟨inst, U, hxU, hU, hfU, H, hH⟩ := h
   ⟨inst, Subtype.val ⁻¹' U, hxU, hU.preimage (by fun_prop), hfU.preimage continuous_subtype_val,
-    { toFun e := (⟨⟨(H ⟨e, e.2⟩).1, hH _ ▸ e.1.2⟩, by simpa only [hH] using e.2⟩, (H ⟨e, e.2⟩).2)
+    { toFun e := (⟨⟨(H ⟨e, e.2⟩).1, hH _ ▸ e.1.2⟩, by simpa only [hH] using! e.2⟩, (H ⟨e, e.2⟩).2)
       invFun x := ⟨⟨H.symm (⟨x.1, x.1.2⟩, x.2), by simp [← hH]⟩, by simp [← hH]⟩
       left_inv _ := by simp, right_inv _ := by simp }, fun _ ↦ by ext; apply hH⟩
 
@@ -497,7 +497,7 @@ variable (f) in
 theorem IsDiscrete.of_openPartialHomeomorph {t : Set E} {x : X}
     (htx : t ⊆ f ⁻¹' {x}) (hf : ∀ e ∈ t, ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
     IsDiscrete t :=
-  isDiscrete_iff_forall_exists_isOpen.mpr fun e he ↦ by
+  isDiscrete_iff_forall_mem_exists_isOpen.mpr fun e he ↦ by
     obtain ⟨φ, hφ, rfl⟩ := hf e he
     exact ⟨_, φ.open_source, subset_antisymm (fun e' he' ↦ φ.injOn he'.1 hφ <|
       (htx he'.2).trans (htx he).symm) <| Set.singleton_subset_iff.mpr ⟨hφ, he⟩⟩
@@ -555,11 +555,18 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
 /-- If `f : E → X` is a closed map between topological spaces with `E` Hausdorff, and `s` is
 a subset of `X` on which `f` has finite fibers, such that `f` restricts to a homeomorphism on
 a neighborhood of every point of `f ⁻¹' s`, then `f` is a covering map on `s`. -/
-theorem IsClosedMap.isCoveringMapOn_of_openPartialHomeomorph [T2Space E]
+theorem IsClosedMap.isCoveringMapOn_of_isLocalHomeomorphOn [T2Space E]
     (hf : IsClosedMap f) (hs : ∀ x ∈ s, (f ⁻¹' {x}).Finite)
-    (h : ∀ e ∈ f ⁻¹' s, ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
-    IsCoveringMapOn f s :=
-  fun x hx ↦ hf.isEvenlyCovered_of_openPartialHomeomorph (hs x hx) fun e he ↦ h e (by apply he ▸ hx)
+    (h : IsLocalHomeomorphOn f (f ⁻¹' s)) :
+    IsCoveringMapOn f s := by
+  intro x hx
+  refine hf.isEvenlyCovered_of_openPartialHomeomorph (hs x hx) fun e he ↦ ?_
+  obtain ⟨φ, hφ, rfl⟩ := h e (by aesop)
+  aesop
+
+@[deprecated (since := "2026-06-25")]
+alias IsClosedMap.isCoveringMapOn_of_openPartialHomeomorph :=
+  IsClosedMap.isCoveringMapOn_of_isLocalHomeomorphOn
 
 /-- If `f : E → X` is a continuous map between Hausdorff spaces with `E` compact,
 and `f` restricts to a homeomorphism on a neighborhood of every point of a fiber `f ⁻¹' {x}`,
@@ -578,8 +585,27 @@ then `f` is a covering map on `s`.
 For example, `s` can be taken to be the set of regular values of a C¹ map `f : E → X`
 where `E` and `X` are manifolds of the same dimension with `E` compact, according to
 the inverse function theorem (see `ContDiffAt.toOpenPartialHomeomorph`). -/
-theorem IsCoveringMapOn.of_openPartialHomeomorph
+theorem IsCoveringMapOn.of_isLocalHomeomorphOn
     [T2Space E] [T2Space X] [CompactSpace E] (hf : Continuous f)
-    (h : ∀ e ∈ f ⁻¹' s, ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
-    IsCoveringMapOn f s :=
-  fun x hx ↦ .of_openPartialHomeomorph hf fun e he ↦ h e (by apply he ▸ hx)
+    (h : IsLocalHomeomorphOn f (f ⁻¹' s)) :
+    IsCoveringMapOn f s := by
+  intro x hx
+  refine .of_openPartialHomeomorph hf fun e he ↦ ?_
+  obtain ⟨φ, hφ, rfl⟩ := h e (by aesop)
+  aesop
+
+@[deprecated (since := "2026-06-25")]
+alias IsCoveringMapOn.of_openPartialHomeomorph := IsCoveringMapOn.of_isLocalHomeomorphOn
+
+@[simp]
+lemma isLocalHomeomorph_iff_isCoveringMap [T2Space E] [T2Space X] [CompactSpace E] :
+    IsLocalHomeomorph f ↔ IsCoveringMap f := by
+  refine ⟨fun h ↦ ?_, IsCoveringMap.isLocalHomeomorph⟩
+  have hf : Continuous f := by
+    rw [continuous_iff_continuousAt]
+    intro e
+    obtain ⟨φ, hφ, rfl⟩ := h e
+    exact φ.continuousAt hφ
+  rw [isCoveringMap_iff_isCoveringMapOn_univ]
+  apply IsCoveringMapOn.of_isLocalHomeomorphOn hf
+  simpa [← isLocalHomeomorph_iff_isLocalHomeomorphOn_univ]
