@@ -30,7 +30,7 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
   letI := Equiv.semiring e
   letI := e.smul R
   { algebraMap :=
-    { toFun r := e.symm (algebraMap R β r)
+    { toFun r := e.invFun (algebraMap R β r)
       __ := e.ringEquiv.symm.toRingHom.comp (algebraMap R β) }
     commutes' r x :=
       show e.symm ((e (e.symm (algebraMap R β r)) * e x)) =
