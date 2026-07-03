@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.Tactic.TFAE
 public import Mathlib.Topology.Order.IsNormal
@@ -141,6 +142,7 @@ theorem isClosed_iff_bsup :
 theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a :=
   SuccOrder.isSuccLimit_of_mem_frontier ha
 
+@[deprecated isNormal_enum_iff_dirSupClosed (since := "2026-05-25")]
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enumOrd_strictMono hs

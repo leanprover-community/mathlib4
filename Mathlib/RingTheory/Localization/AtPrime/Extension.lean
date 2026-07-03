@@ -177,12 +177,12 @@ theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
 
 include p in
 theorem ramificationIdx_map_eq_ramificationIdx [P.IsPrime] :
-    (P.map (algebraMap S Sₚ)).ramificationIdx' Rₚ = P.ramificationIdx' R := by
+    (P.map (algebraMap S Sₚ)).ramificationIdx Rₚ = P.ramificationIdx R := by
   have := liesOver_map_of_liesOver p Rₚ Sₚ P
   have := IsLocalization.liesOver_map_of_isPrime_disjoint (algebraMapSubmonoid S p.primeCompl) Sₚ
     (Set.disjoint_image_left.mpr (Set.disjoint_compl_left_iff_subset.mpr hPp.over.ge))
   have := isPrime_map_of_liesOver S p Sₚ P
-  rw [ramificationIdx'_eq (maximalIdeal Rₚ) (P.map (algebraMap S Sₚ)), ramificationIdx'_eq p P]
+  rw [ramificationIdx_eq (maximalIdeal Rₚ) (P.map (algebraMap S Sₚ)), ramificationIdx_eq p P]
   let R₁ := Localization.AtPrime (P.map (algebraMap S Sₚ))
   let R₂ := Localization.AtPrime P
   let : Algebra R₂ R₁ := Localization.AtPrime.algebraOfLiesOver P (P.map (algebraMap S Sₚ))
@@ -247,8 +247,8 @@ theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) 
   exact inertiaDeg_map_eq_inertiaDeg p _ _ _
 
 theorem primesOverEquivPrimesOver_ramificationIdx_eq (hp : p ≠ ⊥) (P : p.primesOver S) :
-    (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ).ramificationIdx' Rₚ =
-      P.val.ramificationIdx' R :=
+    (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ).ramificationIdx Rₚ =
+      P.val.ramificationIdx R :=
   ramificationIdx_map_eq_ramificationIdx p _ _ _
 
 end IsDedekindDomain
