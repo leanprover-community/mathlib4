@@ -192,8 +192,9 @@ variable {X : RightFreyd V} {a : (quotient V).obj v ⟶ X} (eq : (quotient V).ma
 a morphism in `RightFreyd V` such that `(quotient V).map f ≫ a = 0`. This is the morphism
 `(quotient V).obj (Candidate.cokernel f) ⟶ X` that will serve as `cokernel.desc f`. -/
 def desc : (quotient V).obj (Candidate.cokernel f) ⟶ X := by
-  rw [← ((quotient V).map_surjective a).choose_spec] at eq
-  exact (quotient V).map (Candidate.desc _ _ (homotopyOfEq _ _ eq))
+  (quotient V).map (Candidate.desc _ ((quotient V).map_surjective a).choose
+    (homotopyOfEq _ _ (by
+      rwa [← ((quotient V).map_surjective a).choose_spec] at eq)))
 
 lemma π_desc : (quotient V).map (Candidate.π f) ≫ desc f eq = a := by
   rw [← ((quotient V).map_surjective a).choose_spec] at eq
