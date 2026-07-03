@@ -58,6 +58,10 @@ def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := 
   -- parser now attaches to the first token (see leanprover/lean4#12662).
   let some substring := imports.getSubstring? (withLeading := false) |
     throw <| .userError "No substring: we have a problem!"
+  -- This implementation is geared for to create a deprecated module:
+  -- since imports there are unused by definition, we need to tell shake to keep them.
+  -- For a general-purpose implementation, whether to add the `--keep-all` flag
+  -- should be made configurable.
   return (if isModule then "module -- shake: keep-all\n\n" else "") ++ substring.toString
 
 /--
