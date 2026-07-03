@@ -43,6 +43,11 @@ instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj :=
 lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r ∨ y = r) := by
   simp [starGraph, fromRel]
 
+@[simp]
+lemma isUniversal_starGraph_self {r : V} : (starGraph r).IsUniversal r := by
+  intro _ _
+  simpa
+
 /-- On (starGraph r), r is adjacent to v iff v ≠ r. -/
 lemma starGraph_adj_center_iff {r v : V} : (starGraph r).Adj r v ↔ r ≠ v := by simp
 
@@ -52,12 +57,8 @@ lemma starGraph_center_adj {r v : V} (h : r ≠ v) : (starGraph r).Adj r v :=
 lemma starGraph_center_adj' {r v : V} (h : r ≠ v) : (starGraph r).Adj v r :=
   (starGraph_center_adj h).symm
 
-lemma connected_starGraph (r : V) : (starGraph r).Connected := by
-  have (v : V) : (starGraph r).Reachable r v := by
-    by_cases! h : r = v
-    · exact h ▸ Reachable.rfl
-    · exact (starGraph_center_adj h).reachable
-  exact connected_iff _ |>.mpr ⟨fun u v ↦ (this u).symm.trans (this v), ⟨r⟩⟩
+lemma connected_starGraph (r : V) : (starGraph r).Connected :=
+  .of_isUniversal isUniversal_starGraph_self
 
 lemma isAcyclic_starGraph (r : V) : (starGraph r).IsAcyclic := by
   refine isAcyclic_iff_forall_adj_isBridge.mpr fun v w hadj ↦ ?_
@@ -81,6 +82,6 @@ lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v
 /-- The center vertex of a starGraph has degree (card V) - 1. -/
 lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
-  simp [degree, neighborFinset_eq_filter (starGraph r), starGraph_adj, Finset.univ.filter_ne r]
+  simp
 
 end SimpleGraph
