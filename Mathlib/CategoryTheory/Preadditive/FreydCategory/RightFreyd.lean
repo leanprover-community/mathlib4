@@ -13,6 +13,11 @@ public import Mathlib.CategoryTheory.Quotient.Preadditive
 
 Let `V` be a preadditive category. The right Freyd category of `V` is the quotient of
 `Arrow V` by the right homotopy relation.
+
+
+## References
+* [Posur, S., *A constructive approach to Freyd categories*][posur2021Freyd]
+
 -/
 
 @[expose] public section
