@@ -96,12 +96,6 @@ theorem inertiaDeg'_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
     IsScalarTower.algebraMap_apply R S q.ResidueField,
     ← IsScalarTower.algebraMap_apply R K L, ← IsScalarTower.algebraMap_apply R S L]
 
-theorem inertiaDeg'_eq' [q.LiesOver p] [q.IsPrime] [p.IsPrime]
-    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
-    q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
-  exact inertiaDeg'_eq_of_isFractionRing p q p.ResidueField q.ResidueField
-
 theorem inertiaDeg'_eq_of_isMaximal [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     q.inertiaDeg' R = Module.finrank (R ⧸ p) (S ⧸ q) := by
   let : Field (R ⧸ p) := Quotient.field p
