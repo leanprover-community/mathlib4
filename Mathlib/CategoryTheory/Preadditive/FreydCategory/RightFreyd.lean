@@ -125,12 +125,12 @@ instance : (functor V).Full where
     obtain ⟨u, rfl⟩ := (quotient V).map_surjective a
     exact ⟨u.right, (quotient V).congr_map (by cat_disch)⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (functor V).Faithful where
-  map_injective {_ _} _ _ eq := by
-    refine eq_of_sub_eq_zero (((quotient_map_eq_iff _ _).mp eq).some.comm.trans ?_)
-    convert comp_zero
-    · exact HasZeroObject.from_zero_ext _ _
-    · rfl
+  map_injective {_ _} f g eq := by
+    dsimp at eq
+    rw [quotient_map_eq_iff] at eq
+    simpa [← sub_eq_zero] using! eq.some.comm
 
 end Functor
 
