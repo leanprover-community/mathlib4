@@ -37,12 +37,15 @@ theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
   suffices (Σ x : ConjClasses G, x.carrier) ≃ G by simpa using! (Fintype.card_congr this)
   simpa [carrier_eq_preimage_mk] using! Equiv.sigmaFiberEquiv ConjClasses.mk
 
-/-- Summing `f (g * h)` over `h` in the conjugacy class of `g` equals summing `f (h * g)`. -/
-theorem ConjClasses.sum_carrier_mul_left {G H} [Group G] [Fintype G] [DecidableEq G]
-    [AddCommMonoid H] (g : G) (f : G → H) :
-    ∑ h ∈ (ConjClasses.mk g).carrier, f (g * h) = ∑ h ∈ (ConjClasses.mk g).carrier, f (h * g) := by
-  rw [← Finset.sum_set_coe, ← Finset.sum_set_coe]
-  refine Fintype.sum_equiv (bijOn_conj g _).equiv _ _ fun x ↦ ?_
+/-- Multiplying `f (g * h)` over `h` in the conjugacy class of `g` equals multiplying
+`f (h * g)` over `h`. -/
+@[to_additive (dont_translate := G) ConjClasses.sum_carrier_mul_left /-- Summing `f (g * h)`
+over `h` in the conjugacy class of `g` equals summing `f (h * g)` over `h`.-/]
+theorem ConjClasses.prod_carrier_mul_left {G H} [Group G] [Fintype G] [DecidableEq G]
+    [CommMonoid H] (g : G) (f : G → H) :
+    ∏ h ∈ (ConjClasses.mk g).carrier, f (g * h) = ∏ h ∈ (ConjClasses.mk g).carrier, f (h * g) := by
+  rw [← Finset.prod_set_coe, ← Finset.prod_set_coe]
+  refine Fintype.prod_equiv (bijOn_conj g _).equiv _ _ fun x ↦ ?_
   change f (g * x) = f (MulAut.conj g x * g)
   rw [MulAut.conj_apply, mul_assoc, inv_mul_cancel, mul_one]
 
