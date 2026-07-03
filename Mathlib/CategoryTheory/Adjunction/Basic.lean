@@ -573,12 +573,12 @@ def compUliftCoyonedaIso (adj : F ⊣ G) :
 
 section
 
-variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
+variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ C} {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of adjunctions. -/
-@[simps! -isSimp unit counit, stacks 0DV0]
+@[to_dual self (reorder := C E, 2 6, F I, G H, adj₁ adj₂), simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
@@ -587,13 +587,12 @@ def comp : F ⋙ H ⊣ I ⋙ G :=
     counit := (associator _ _ _).inv ≫ whiskerRight ((associator _ _ _).hom ≫
       whiskerLeft _ adj₁.counit ≫ I.rightUnitor.hom) _ ≫ adj₂.counit }
 
-@[simp, reassoc]
-lemma comp_unit_app (X : C) :
+lemma comp_unit_app (X : C) : dsimp%
     (adj₁.comp adj₂).unit.app X = adj₁.unit.app X ≫ G.map (adj₂.unit.app (F.obj X)) := by
   simp [Adjunction.comp]
 
-@[simp, reassoc]
-lemma comp_counit_app (X : E) :
+@[to_dual existing (attr := simp, reassoc) comp_unit_app]
+lemma comp_counit_app (X : E) : dsimp%
     (adj₁.comp adj₂).counit.app X = H.map (adj₁.counit.app (I.obj X)) ≫ adj₂.counit.app X := by
   simp [Adjunction.comp]
 
@@ -796,6 +795,42 @@ instance (priority := 10) isLeftAdjoint_of_isEquivalence {F : C ⥤ D} [F.IsEqui
 instance (priority := 10) isRightAdjoint_of_isEquivalence {F : C ⥤ D} [F.IsEquivalence] :
     IsRightAdjoint F :=
   F.asEquivalence.isRightAdjoint_functor
+
+lemma isLeftAdjoint_comp_iff_right {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [F.IsEquivalence] :
+    (F ⋙ G).IsLeftAdjoint ↔ G.IsLeftAdjoint := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let iso : G ≅ F.asEquivalence.inverse ⋙ F ⋙ G :=
+    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight (F.asEquivalence.counitIso).symm _ ≪≫
+      Functor.associator _ _ _
+  exact isLeftAdjoint_of_iso iso.symm
+
+lemma isRightAdjoint_comp_iff_right {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [F.IsEquivalence] :
+    (F ⋙ G).IsRightAdjoint ↔ G.IsRightAdjoint := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let iso : G ≅ F.asEquivalence.inverse ⋙ F ⋙ G :=
+    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight (F.asEquivalence.counitIso).symm _ ≪≫
+      Functor.associator _ _ _
+  exact isRightAdjoint_of_iso iso.symm
+
+lemma isLeftAdjoint_comp_iff_left {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [G.IsEquivalence] :
+    (F ⋙ G).IsLeftAdjoint ↔ F.IsLeftAdjoint := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let iso : F ≅ (F ⋙ G) ⋙ G.asEquivalence.inverse :=
+    (Functor.rightUnitor _).symm ≪≫ Functor.isoWhiskerLeft _ G.asEquivalence.unitIso ≪≫
+      (Functor.associator _ _ _).symm
+  exact isLeftAdjoint_of_iso iso.symm
+
+lemma isRightAdjoint_comp_iff_left {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [G.IsEquivalence] :
+    (F ⋙ G).IsRightAdjoint ↔ F.IsRightAdjoint := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let iso : F ≅ (F ⋙ G) ⋙ G.asEquivalence.inverse :=
+    (Functor.rightUnitor _).symm ≪≫ Functor.isoWhiskerLeft _ G.asEquivalence.unitIso ≪≫
+      (Functor.associator _ _ _).symm
+  exact isRightAdjoint_of_iso iso.symm
 
 end Functor
 

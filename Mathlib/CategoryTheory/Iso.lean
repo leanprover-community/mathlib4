@@ -391,6 +391,9 @@ theorem isIso_of_hom_comp_eq_id (g : X ⟶ Y) [IsIso g] {f : Y ⟶ X} (h : g ≫
   rw [(hom_comp_eq_id _).mp h]
   infer_instance
 
+lemma isIso_iff_of_thin [Quiver.IsThin C] {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Nonempty (Y ⟶ X) :=
+  ⟨fun _ ↦ ⟨inv f⟩, fun g ↦ ⟨g.some, Subsingleton.elim _ _, Subsingleton.elim _ _⟩⟩
+
 namespace Iso
 
 @[aesop apply safe (rule_sets := [CategoryTheory]), to_dual none]
