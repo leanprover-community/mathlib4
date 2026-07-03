@@ -67,27 +67,24 @@ private theorem continuous_of_measurable_of_mul_aux {f : ℝ → 𝕜} (hmeas : 
   -- The modulus is continuous, via the additive theorem applied to `t ↦ Real.log ‖f t‖`.
   have hbadd : ∀ x y, Real.log ‖f (x + y)‖ = Real.log ‖f x‖ + Real.log ‖f y‖ := fun x y ↦ by
     rw [hmul, norm_mul, Real.log_mul (hpos x).ne' (hpos y).ne']
-  have hbmeas : Measurable fun t ↦ Real.log ‖f t‖ :=
-    Real.measurable_log.comp (continuous_norm.measurable.comp hmeas)
+  have hbmeas : Measurable fun t ↦ Real.log ‖f t‖ := by fun_prop
   have hbcont : Continuous fun t ↦ Real.log ‖f t‖ :=
     Measure.AddMonoidHom.continuous_of_measurable
       (AddMonoidHom.mk' (fun t ↦ Real.log ‖f t‖) hbadd) hbmeas
   have hnormcont : Continuous fun t ↦ ‖f t‖ :=
     (Real.continuous_exp.comp hbcont).congr fun t ↦ Real.exp_log (hpos t)
-  -- `f` is interval integrable on every interval, dominated by the continuous modulus.
+  -- `f` is dominated by the continuous modulus, hence locally integrable and interval integrable.
   have haesm : AEStronglyMeasurable f volume := hmeas.aestronglyMeasurable
-  have hii : ∀ a b : ℝ, IntervalIntegrable f volume a b := fun a b ↦ by
-    rw [intervalIntegrable_iff]
-    exact (intervalIntegrable_iff.mp (hnormcont.intervalIntegrable a b)).mono'
-      haesm.restrict (ae_of_all _ fun _ ↦ le_rfl)
+  have hloc : LocallyIntegrable f volume :=
+    hnormcont.locallyIntegrable.mono haesm (ae_of_all _ fun x ↦ (norm_norm (f x)).ge)
+  have hii : ∀ a b : ℝ, IntervalIntegrable f volume a b := fun a b ↦
+    (hloc.integrableOn_isCompact isCompact_uIcc).intervalIntegrable
   -- The primitive of `f` is continuous.
   set F : ℝ → 𝕜 := fun y ↦ ∫ t in (0 : ℝ)..y, f t with hFdef
   have hFcont : Continuous F := intervalIntegral.continuous_primitive hii 0
   -- Some window `[0, a]` has nonzero integral, by the Lebesgue differentiation theorem.
   have hExists : ∃ a : ℝ, F a ≠ 0 := by
     by_contra! hcon
-    have hloc : LocallyIntegrable f volume :=
-      hnormcont.locallyIntegrable.mono haesm (ae_of_all _ fun x ↦ (norm_norm (f x)).ge)
     have hzero : ∀ᵐ x : ℝ, f x = 0 := by
       have hF0 : F = fun _ ↦ (0 : 𝕜) := funext hcon
       filter_upwards [LocallyIntegrable.ae_hasDerivAt_integral hloc] with x hx
