@@ -23,6 +23,8 @@ we show that they interact with the composition of morphisms similarly as pseudo
 
 @[expose] public section
 
+set_option backward.isDefEq.instanceTypes false
+
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
 open CategoryTheory Functor

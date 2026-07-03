@@ -1001,6 +1001,7 @@ lemma ringEquivOfRingEquiv_refl :
     val_eq_coe, RingEquiv.refl_apply, ← mem_coe]
   simp [semilinearEquivOfRingEquiv]
 
+set_option backward.isDefEq.instanceTypes false in
 lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
     FractionalIdeal.ringEquivOfRingEquiv K L f (spanSingleton R⁰ x) =
       spanSingleton S⁰ (IsFractionRing.ringEquivOfRingEquiv (L := L) f x) := by

@@ -54,6 +54,8 @@ This file introduces notation in the scope `Isocrystal`.
 
 @[expose] public section
 
+set_option backward.isDefEq.instanceTypes false
+
 noncomputable section
 
 open Module

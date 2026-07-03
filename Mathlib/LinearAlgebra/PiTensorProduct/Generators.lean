@@ -47,6 +47,7 @@ noncomputable def equivPiTensorComplSingletonTensor (i₀ : ι) :
 
 variable (i₀ : ι)
 
+set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivPiTensorComplSingletonTensor_tprod (i₀ : ι) (m : ∀ i, M i) :

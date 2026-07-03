@@ -27,6 +27,8 @@ lie ring, lie algebra, extension of scalars, restriction of scalars, base change
 
 @[expose] public section
 
+set_option backward.isDefEq.instanceTypes false
+
 open scoped TensorProduct
 
 variable (R A L M : Type*)

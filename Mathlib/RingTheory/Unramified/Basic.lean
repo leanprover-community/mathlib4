@@ -80,6 +80,7 @@ theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
           (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
   exact Subtype.ext_iff.mp (@Subsingleton.elim _ this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
 
+set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 theorem iff_comp_injective_of_small [Small.{w} A] :
     FormallyUnramified R A ↔

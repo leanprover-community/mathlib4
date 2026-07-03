@@ -33,6 +33,8 @@ appearing in the introduction of
 
 @[expose] public section
 
+set_option backward.isDefEq.instanceTypes false
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Preadditive

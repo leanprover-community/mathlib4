@@ -138,7 +138,7 @@ instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
 end Fin
 
 /-- The integers modulo `n : ℕ`. -/
-@[to_additive_dont_translate]
+@[to_additive_dont_translate, implicit_reducible]
 def ZMod : ℕ → Type
   | 0 => ℤ
   | n + 1 => Fin (n + 1)

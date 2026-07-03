@@ -26,6 +26,8 @@ and the presheaf of modules.
 
 @[expose] public section
 
+set_option backward.isDefEq.instanceTypes false
+
 universe w v v₁ u₁ u
 
 open CategoryTheory Functor

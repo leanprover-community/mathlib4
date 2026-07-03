@@ -232,6 +232,8 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
   simp only [AlgEquiv.commutes, RingEquiv.symm_apply_eq, AlgEquiv.coe_ringEquiv]
   exact stalkMap_toStalk_apply f p x
 
+attribute [local instance_reducible] Ideal.comap PrimeSpectrum.comap in
+-- set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
@@ -246,6 +248,8 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     have : IsLocalHom (stalkIso S p) := isLocalHom_equiv _
     have : IsLocalHom (stalkIso R (p.comap f.hom)).symm := isLocalHom_equiv _
     exact ((ha.of_map (stalkIso S p)).of_map _).of_map (stalkIso R (p.comap f.hom)).symm
+
+#exit
 
 @[simp]
 theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :

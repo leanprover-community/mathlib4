@@ -50,6 +50,8 @@ Lawson topology, preorder
 
 @[expose] public section
 
+set_option backward.isDefEq.instanceTypes false
+
 open Set TopologicalSpace
 
 variable {α : Type*}

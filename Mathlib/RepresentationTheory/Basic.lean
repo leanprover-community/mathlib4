@@ -748,7 +748,7 @@ noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (fre
       | single_add _ _ _ _ _ h =>
         rw [smul_add, h]
         change _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
-        simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
+        simp only [smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
           asAlgebraHom_def, MonoidAlgebra.lift_apply]
         simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
 

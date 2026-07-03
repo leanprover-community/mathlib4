@@ -454,6 +454,7 @@ instance : (tilde M).IsQuasicoherent :=
 instance : ((tilde.functor R).obj M).IsQuasicoherent :=
   inferInstanceAs <| (tilde M).IsQuasicoherent
 
+attribute [local instance_reducible] Scheme.Modules in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_fromTildeΓ_of_presentation (M : (Spec R).Modules) (P : M.Presentation) :
     IsIso M.fromTildeΓ := by

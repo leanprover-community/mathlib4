@@ -33,6 +33,8 @@ Show the analogous results for functors which reflect or create (co)limits.
 @[expose] public section
 
 
+set_option backward.isDefEq.instanceTypes false
+
 open CategoryTheory
 
 open Opposite

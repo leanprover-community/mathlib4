@@ -59,6 +59,8 @@ pushouts of coproducts of morphisms in `I`.
 
 @[expose] public section
 
+set_option backward.isDefEq.instanceTypes false
+
 universe w v v' u u'
 
 namespace CategoryTheory

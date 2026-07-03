@@ -57,7 +57,8 @@ instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedM
     let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (one_lt_inv'.2 hy)
     ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
 
-instance Additive.instArchimedean [CommGroup G] [PartialOrder G] [MulArchimedean G] :
+attribute [local instance] Additive.partialOrderAdditiveToPartialOrder in
+instance Additive.instArchimedean [CommGroup G] [PartialOrder (Additive G)] [MulArchimedean G] :
     Archimedean (Additive G) :=
   ⟨fun x _ hy ↦ MulArchimedean.arch x.toMul hy⟩
 

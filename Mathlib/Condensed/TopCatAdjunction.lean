@@ -90,6 +90,7 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet
       rw [continuous_coinduced_dom]
       continuity }
 
+set_option backward.isDefEq.instanceTypes false in
 /-- `simp`-normal form of the lemma that `@[simps]` would generate. -/
 @[simp] lemma topCatAdjunctionCounit_hom_apply (X : TopCat) (x) :
     -- We have to specify here to not infer the `TopologicalSpace` instance on `C(PUnit, X)`,

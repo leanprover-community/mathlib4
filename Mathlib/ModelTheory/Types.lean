@@ -41,6 +41,7 @@ This file defines the space of complete types over a first-order theory.
 @[expose] public section
 
 
+set_option backward.isDefEq.instanceTypes false
 
 universe u v w w'
 

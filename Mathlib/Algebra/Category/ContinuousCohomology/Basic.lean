@@ -44,6 +44,7 @@ See `ContinuousCohomology.MultiInd.d`.
 -/
 
 set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.instanceTypes false
 
 @[expose] public section
 
