@@ -70,6 +70,14 @@ variable {A : Type*} [AddCommGroup A] [Module 𝕜 A]
 
 /-- An operation `Φ` on sections of a vector bundle `V` over `M` is *tensorial* at `x : M`, if it
 respects addition and scalar multiplication by germs of differentiable functions at `f`. -/
+structure TensorialNear (Φ : (Π x : M, V x) → A) (x : M) : Prop where
+  smul {f : M → 𝕜} {σ : Π x : M, V x} (hf : ∀ᶠ x' in 𝓝 x, MDiffAt f x')
+    (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x') : Φ (f • σ) = f x • Φ σ
+  add {σ σ'} (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x') (hσ' : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ') x') :
+    Φ (σ + σ') = Φ σ + Φ σ'
+
+/-- An operation `Φ` on sections of a vector bundle `V` over `M` is *tensorial* at `x : M`, if it
+respects addition and scalar multiplication by germs of differentiable functions at `f`. -/
 structure TensorialAt (Φ : (Π x : M, V x) → A) (x : M) : Prop where
   smul : ∀ {f : M → 𝕜} {σ : Π x : M, V x}, MDiffAt f x → MDiffAt (T% σ) x → Φ (f • σ) = f x • Φ σ
   add : ∀ {σ σ'}, MDiffAt (T% σ) x → MDiffAt (T% σ') x → Φ (σ + σ') = Φ σ + Φ σ'
@@ -77,7 +85,135 @@ structure TensorialAt (Φ : (Π x : M, V x) → A) (x : M) : Prop where
 variable {Φ : (Π x : M, V x) → A} {x : M}
 variable {I F F' F''}
 
+namespace TensorialNear
+
+/-- If the operation `Φ` on sections of a vector bundle `V` is tensorial near `x`, then it depends
+only on the germ of the section at `x`.
+
+This is later superseded by `TensorialAt.pointwise`, showing that `Φ` depends only on the value at
+`x` itself. -/
+protected theorem «local» (hΦ : TensorialNear I F Φ x) {σ σ' : Π x : M, V x}
+    (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x') (hσ' : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ') x')
+    (hσσ' : ∀ᶠ x' in 𝓝 x, σ x' = σ' x') :
+    Φ σ = Φ σ' := by
+  classical
+  -- Introduce the indicator function of a neighbourhood `t` of `x` on which equality holds,
+  -- and cut off the two sections `σ` and `σ'` using this indicator function.
+  let ψ (x' : M) : 𝕜 := if σ x' = σ' x' then 1 else 0
+  have hψx : ψ x = 1 := by simp [ψ, hσσ'.self_of_nhds]
+  have (x' : M) : (ψ • σ) x' = (ψ • σ') x' := by
+    dsimp [ψ]
+    split_ifs with hx' <;> simp [hx']
+  have hψ' : ∀ᶠ x' in 𝓝 x, MDiffAt ψ x' := by
+    have : ∀ᶠ x' in 𝓝 x, MDiffAt (fun (_ : M) ↦ (1 : 𝕜)) x' :=
+      Filter.Eventually.of_forall fun x ↦ mdifferentiableAt_const
+    filter_upwards [this, hσσ'.eventually_nhds] with x' h h'
+    apply h.congr_of_eventuallyEq
+    filter_upwards [h'] with x'' hx''
+    simp [ψ, hx'']
+  calc Φ σ
+    _ = Φ (ψ • σ) := by simp [hΦ.smul hψ' hσ, hψx]
+    _ = Φ (ψ • σ') := by rw [funext this]
+    _ = Φ σ' := by simp [hΦ.smul hψ' hσ', hψx]
+
+variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V'] [VectorBundle 𝕜 F'' V'']
+
+open Filter Eventually in
+/-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
+multiplication). -/
+theorem zero (hΦ : TensorialNear I F Φ x) : Φ 0 = 0 := by
+  calc
+    Φ 0 = Φ ((0 : M → 𝕜) • (0 : Π x, V x)) := by simp
+    _   = 0 • Φ 0 := hΦ.smul (of_forall fun _ ↦ mdifferentiableAt_const)
+                             (of_forall fun _ ↦ mdifferentiableAt_zeroSection ..)
+    _   = 0 := by simp
+
+/-- A tensorial operation on sections of a vector bundle respects sums (since it respects binary
+addition). -/
+theorem sum (hΦ : TensorialNear I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι → Π x : M, V x)
+    (hσ : ∀ i ∈ s, ∀ᶠ x' in 𝓝 x, MDiffAt (T% (σ i)) x') :
+    Φ (fun x' ↦ ∑ i ∈ s, σ i x') = ∑ i ∈ s, Φ (σ i) := by
+  classical
+  replace hσ : ∀ᶠ x' in 𝓝 x, ∀ i ∈ s, MDiffAt (T% (σ i)) x' :=
+    (Finset.eventually_all s).mpr hσ
+  -- FIXME: there is a delaborator bug at `hσ` which should be
+  -- `∀ᶠ (x' : M) in 𝓝 x, ∀ i ∈ s, MDiffAt (T% (σ i)) x'`
+  induction s using Finset.induction_on with
+  | empty =>
+      rw [Finset.sum_empty]
+      exact hΦ.zero
+  | insert a s ha h =>
+      simp only [Finset.sum_insert ha, ← Pi.add_def]
+      simp only [Finset.mem_insert, forall_eq_or_imp] at hσ
+      rw [hΦ.add]
+      · rw [h]
+        filter_upwards [hσ] with x' ⟨_, hx'⟩ using hx'
+      · filter_upwards [hσ] with x' ⟨hx', _⟩ using hx'
+      · filter_upwards [hσ] with x' ⟨_, H⟩ using .sum_section H
+
+variable [CompleteSpace 𝕜]
+  [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 F'] [FiniteDimensional 𝕜 F'']
+  [ContMDiffVectorBundle 1 F V I] [ContMDiffVectorBundle 1 F' V' I]
+  [ContMDiffVectorBundle 1 F'' V'' I]
+
+/-- If the operation `Φ` on sections of a vector bundle `V` is tensorial near `x`, then it depends
+only on the value of the section at `x`. -/
+lemma pointwise (hΦ : TensorialNear I F Φ x) {σ σ' : Π x : M, V x}
+    (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x') (hσ' : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ') x')
+    (hσσ' : σ x = σ' x) :
+    Φ σ = Φ σ' := by
+  -- Select a local frame `s` for the bundle `V` near `x`,
+  -- and let `c` be the family of linear maps evaluating the coefficients of a section relative to
+  -- this frame
+  let t := trivializationAt F V x
+  have x_mem : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt F V x
+  let b := Basis.ofVectorSpace 𝕜 F
+  let s := t.localFrame b
+  let c := t.localFrame_coeff I b
+  have mem := t.open_baseSet.mem_nhds x_mem
+  have hs : ∀ᶠ x' in 𝓝 x, ∀ i, MDiffAt (T% (s i)) x' := by
+    filter_upwards [mem] with x' hx'
+    exact fun i ↦ (contMDiffAt_localFrame_of_mem 1 _ b i hx').mdifferentiableAt (by simp)
+  have hc {σ : (x : M) → V x} (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x') :
+      ∀ᶠ x' in 𝓝 x, ∀ i, MDiffAt (LinearMap.piApply (c i) σ) x' :=
+    (hσ.and mem).mono fun x' ⟨hx', hx''⟩ i ↦
+      mdifferentiableAt_localFrame_coeff b hx'' hx' i
+  -- By the locality of the operation `(Φ · x)`, its value on `σ` agrees with the value of `Φ` on
+  -- the expansion of `σ` into coefficients relative to the frame.
+  have hΦ_eq {σ : (x : M) → V x} (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x') :
+      Φ σ = Φ (fun x' ↦ ∑ i, c i x' (σ x') • s i x') := by
+    apply hΦ.local hσ
+    · filter_upwards [hc hσ, hs] with x' H H'
+      exact .sum_section fun i _ ↦ (H i).smul_section (H' i)
+    · exact t.eventually_eq_localFrame_sum_coeff_smul b x_mem
+  -- Now evaluate using the tensoriality properties.
+  rw [hΦ_eq hσ, hΦ_eq hσ', hΦ.sum, hΦ.sum]
+  · congr! 1 with i
+    replace hσ : ∀ i, ∀ᶠ x' in 𝓝 x, MDiffAt ((LinearMap.piApply (c i)) σ) x' :=
+      fun i ↦ (hc hσ).mono fun _ a ↦ a i
+    replace hσ' : ∀ i, ∀ᶠ x' in 𝓝 x, MDiffAt ((LinearMap.piApply (c i)) σ') x' :=
+      fun i ↦ (hc hσ').mono fun _ a ↦ a i
+    replace hs : ∀ i, ∀ᶠ x' in 𝓝 x, MDiffAt (T% (s i)) x' :=
+      fun i ↦ Filter.Eventually.mono hs fun _ a ↦ a i
+    calc Φ ((LinearMap.piApply (c i) σ) • (s i))
+        = c i x (σ x) • Φ (s i) := hΦ.smul (hσ i) (hs i)
+      _ = c i x (σ' x) • Φ (s i) := by rw [hσσ']
+      _ = Φ ((LinearMap.piApply (c i) σ') • (s i)) :=
+          hΦ.smul (hσ' i) (hs i) |>.symm
+  · intro i _
+    filter_upwards [hc hσ', hs] with x' hx' hx''
+    exact (hx' i).smul_section (hx'' i)
+  · intro i _
+    filter_upwards [hc hσ, hs] with x' hx' hx''
+    exact (hx' i).smul_section (hx'' i)
+
+end TensorialNear
+
 namespace TensorialAt
+
+lemma TensorialNear (hΦ : TensorialAt I F Φ x) : TensorialNear I F Φ x where
+  smul hf hσ := hΦ.smul hf.self_of_nhds hσ.self_of_nhds
+  add hσ hσ' := hΦ.add hσ.self_of_nhds hσ'.self_of_nhds
 
 /-- If the operation `Φ` on sections of a vector bundle `V` is tensorial at `x`, then it depends
 only on the germ of the section at `x`.
@@ -126,7 +262,7 @@ theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι �
   | insert a s ha h =>
       simp only [Finset.mem_insert, forall_eq_or_imp] at hσ
       simp only [Finset.sum_insert ha, ← h hσ.2]
-      exact hΦ.add (hσ.1) (.sum_section hσ.2)
+      exact hΦ.add hσ.1 <| .sum_section hσ.2
 
 variable [CompleteSpace 𝕜]
   [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 F'] [FiniteDimensional 𝕜 F'']
