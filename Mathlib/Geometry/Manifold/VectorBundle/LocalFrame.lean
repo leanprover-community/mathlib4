@@ -176,6 +176,9 @@ lemma mono (hs : IsLocalFrameOn I F n s u) (hu'u : u' ⊆ u) : IsLocalFrameOn I 
     exact hs.generating (hu'u hx)
   contMDiffOn i := (hs.contMDiffOn i).mono hu'u
 
+lemma of_le (hs : IsLocalFrameOn I F n s u) {m : ℕ∞ω} (hmn : m ≤ n) : IsLocalFrameOn I F m s u :=
+  ⟨hs.linearIndependent, hs.generating, fun i ↦ (hs.contMDiffOn i).of_le hmn⟩
+
 lemma contMDiffAt (hs : IsLocalFrameOn I F n s u) (hu : IsOpen u) (hx : x ∈ u) (i : ι) :
     CMDiffAt n (T% (s i)) x :=
   (hs.contMDiffOn i).contMDiffAt <| hu.mem_nhds hx

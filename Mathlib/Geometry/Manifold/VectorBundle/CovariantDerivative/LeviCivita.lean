@@ -557,7 +557,7 @@ lemma contMDiffAt_of_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [Finit
   let frame := b.orthonormalFrame t
   have : ContMDiffVectorBundle k E (fun (x : M) ↦ TangentSpace% x) I :=
     TangentBundle.contMDiffVectorBundle
-  have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k) t (IB := I)
+  have hs := t.isOrthonormalFrameOn_orthonormalFrame_baseSet (n := k) b (IB := I)
   rw [hs.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
   intro i
   simp_rw [real_inner_comm]
@@ -653,10 +653,9 @@ lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
   have : IsManifold I (↑k + 1 + 1) M := by rwa [show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]
   have : ContMDiffVectorBundle (k + 1) E (fun (x : M) ↦ TangentSpace% x) I :=
     TangentBundle.contMDiffVectorBundle
-  have hs := b.orthonormalFrame_isOrthonormalFrameOn (n := k + 1) t (IB := I)
-  -- easy, missing API lemma
-  have hs' : IsOrthonormalFrameOn I E k (b.orthonormalFrame t) t.baseSet := sorry
-  rw [hs'.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
+  have hs := t.isOrthonormalFrameOn_orthonormalFrame_baseSet (n := k + 1) b (IB := I)
+  rw [(hs.of_le (m := k) (by norm_num)).contMDiffAt_iff_inner
+    (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
   intro i
   simp_rw [real_inner_comm]
   exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx)

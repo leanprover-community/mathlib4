@@ -46,6 +46,11 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 variable {ι : Type*} {s : ι → (x : B) → E x} {u u' : Set B}
 
 variable (IB F n) in
+/--
+A family of sections `s i` of `V → M` is called a **`C^k` orthonormal frame** on a set `U ⊆ M` iff
+- the section values `s i x` form an orthonormal basis for each `x ∈ U`,
+- each section `s i` is `C^k` on `U`.
+-/
 structure IsOrthonormalFrameOn (s : ι → (x : B) → E x) (u : Set B)
     extends IsLocalFrameOn IB F n s u where
   orthonormal {x} : x ∈ u → Orthonormal ℝ (s · x)
@@ -57,6 +62,10 @@ lemma IsOrthonormalFrameOn.mono (hs : IsOrthonormalFrameOn IB F n s u) (huu' : u
     IsOrthonormalFrameOn IB F n s u' where
   toIsLocalFrameOn := hs.toIsLocalFrameOn.mono huu'
   orthonormal hx := hs.orthonormal (huu' hx)
+
+lemma IsOrthonormalFrameOn.of_le (hs : IsOrthonormalFrameOn IB F n s u) {m : ℕ∞ω} (hmn : m ≤ n) :
+    IsOrthonormalFrameOn IB F m s u :=
+  ⟨hs.toIsLocalFrameOn.of_le hmn, hs.orthonormal⟩
 
 variable [VectorBundle ℝ F E] [IsContMDiffRiemannianBundle IB n F E]
   [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
@@ -198,7 +207,7 @@ noncomputable def orthonormalFrame : ι → (x : B) → E x :=
 omit [IsManifold IB n B] in
 variable (b e) in
 /-- An orthonormal frame w.r.t. a local trivialisation is an orthonormal local frame. -/
-lemma orthonormalFrame_isOrthonormalFrameOn :
+lemma _root_.Bundle.Trivialization.isOrthonormalFrameOn_orthonormalFrame_baseSet :
     IsOrthonormalFrameOn IB F n (b.orthonormalFrame e) e.baseSet :=
   (e.isLocalFrameOn_localFrame_baseSet IB n b).gramSchmidtNormed
 
@@ -209,7 +218,7 @@ trivialisation `e`, is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_orthonormalFrame_baseSet (i : ι) :
     CMDiff[e.baseSet] n (T% (b.orthonormalFrame e i)) := by
   apply IsLocalFrameOn.contMDiffOn
-  exact (b.orthonormalFrame_isOrthonormalFrameOn e).toIsLocalFrameOn
+  exact (e.isOrthonormalFrameOn_orthonormalFrame_baseSet b).toIsLocalFrameOn
 
 omit [IsManifold IB n B] in
 variable (b e) in
