@@ -72,7 +72,8 @@ open Stream'.Seq
 
 theorem exists_toEuler : ∃ ρ, g.toEuler = euler g.h ρ := ⟨_, rfl⟩
 
-theorem terminatedAt_euler_iff_terminatedAt : (euler h ρ).TerminatedAt n ↔ ρ.TerminatedAt n := by
+@[simp]
+theorem terminatedAt_euler : (euler h ρ).TerminatedAt n ↔ ρ.TerminatedAt n := by
   simp [euler, TerminatedAt, Stream'.Seq.TerminatedAt]
 
 theorem exists_euler_s_of_not_terminatedAt_zero
@@ -85,8 +86,9 @@ theorem exists_euler_s_of_not_terminatedAt_succ
     ∃ a, (euler h ρ).s.get? (n + 1) = some ⟨-a, 1 + a⟩ := by
   simpa [euler] using Option.ne_none_iff_exists'.mp not_terminatedAt_n_succ
 
-theorem terminatedAt_toEuler_iff_terminatedAt : g.toEuler.TerminatedAt n ↔ g.TerminatedAt n := by
-  rw [toEuler, terminatedAt_euler_iff_terminatedAt, TerminatedAt]
+@[simp]
+theorem terminatedAt_toEuler : g.toEuler.TerminatedAt n ↔ g.TerminatedAt n := by
+  rw [toEuler, terminatedAt_euler, TerminatedAt]
   simp [Stream'.Seq.TerminatedAt]
 
 theorem toEuler_s_zero : (toEuler g).s.get? 0 = (g.s.get? 0).map fun ⟨a, b⟩ => ⟨a / b, 1⟩ := by
@@ -113,7 +115,7 @@ private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
       (dens_stable_of_terminated (Nat.zero_le 1) <| terminatedAt_zero) ▸ zeroth_den_eq_one)
     (fun not_terminatedAt_zero =>
       first_den_eq <| exists_euler_s_of_not_terminatedAt_zero
-        (terminatedAt_euler_iff_terminatedAt (K := K) |>.eq ▸ not_terminatedAt_zero) |>.choose_spec)
+        (terminatedAt_euler (K := K) |>.eq ▸ not_terminatedAt_zero) |>.choose_spec)
 
 /-- The denominators of an Euler continued fraction are all 1. -/
 @[simp]
@@ -126,7 +128,7 @@ theorem dens_euler : (euler h ρ).dens n = 1 := by
   rcases Decidable.em <| g.TerminatedAt n with terminatedAt_n | not_terminatedAt_n
   · specialize ih n n.lt_add_one
     rwa [dens_stable_of_terminated n.le_succ terminatedAt_n]
-  rw [terminatedAt_euler_iff_terminatedAt] at not_terminatedAt_n
+  rw [terminatedAt_euler] at not_terminatedAt_n
   match n with
   | 0 => exact dens_euler_one
   | n + 1 =>
@@ -137,8 +139,7 @@ theorem dens_euler : (euler h ρ).dens n = 1 := by
 private theorem nums_euler_one : (euler h ρ).nums 1 = h + (ρ.get? 0).getD 0 := by
   set g := euler h ρ
   rcases Decidable.em <| ρ.TerminatedAt 0 with terminatedAt_zero | not_terminatedAt_zero
-  · rw [g.nums_stable_of_terminated zero_le_one <|
-      terminatedAt_euler_iff_terminatedAt.mpr terminatedAt_zero]
+  · rw [g.nums_stable_of_terminated zero_le_one <| terminatedAt_euler.mpr terminatedAt_zero]
     simp [show ρ.get? 0 = none from terminatedAt_zero, g, euler_h]
   · obtain ⟨a, g_zeroth_eq⟩ : ∃ a, (euler h ρ).s.get? 0 = some ⟨a, 1⟩ :=
       exists_euler_s_of_not_terminatedAt_zero not_terminatedAt_zero
@@ -154,8 +155,8 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
   | succ n ih =>
   rw [Finset.prod_range_succ, ← ih]
   rcases Decidable.em <| ρ.TerminatedAt n.succ with terminatedAt_n_succ | not_terminatedAt_n_succ
-  · rw [nums_stable_of_terminated n.succ.le_succ <| terminatedAt_euler_iff_terminatedAt.mpr
-      terminatedAt_n_succ, terminatedAt_n_succ]
+  · rw [nums_stable_of_terminated n.succ.le_succ <| terminatedAt_euler.mpr terminatedAt_n_succ,
+      terminatedAt_n_succ]
     grind
   · obtain ⟨a, g_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
       exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n_succ
@@ -205,9 +206,9 @@ theorem toEuler_toEuler :
     rcases hρ₀ : ρ.get? 0 with _ | a <;> simp [hρ₀]
   | n' + 1 =>
     rcases Decidable.em <| ρ.TerminatedAt (n' + 1) with hρₙ | hρₙ
-    · rw [← terminatedAt_euler_iff_terminatedAt (h := h)] at hρₙ
+    · rw [← terminatedAt_euler (h := h)] at hρₙ
       rw [hρₙ]
-      rw [← terminatedAt_toEuler_iff_terminatedAt] at hρₙ
+      rw [← terminatedAt_toEuler] at hρₙ
       rw [hρₙ]
     · rw [toEuler_s_succ]
       obtain ⟨a, g_n_succ_eq⟩ : ∃ a, (euler h ρ).s.get? (n' + 1) = some ⟨-a, 1 + a⟩ :=
@@ -228,8 +229,8 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
   replace ih := fun m hm => ih m hm <| by omega
   rw [← sub_left_inj (a := g.convs m), ← ih m m.lt_add_one]
   rcases Decidable.em <| TerminatedAt g m with terminatedAt_m | not_terminatedAt_m
-  · rw [nums_stable_of_terminated m.le_succ <| terminatedAt_toEuler_iff_terminatedAt.mpr
-      terminatedAt_m, sub_self, ih m m.lt_add_one,
+  · rw [nums_stable_of_terminated m.le_succ <| terminatedAt_toEuler.mpr terminatedAt_m,
+      sub_self, ih m m.lt_add_one,
       g.convs_stable_of_terminated m.lt_add_one.le terminatedAt_m, sub_self]
   obtain ⟨⟨a, b⟩, g_mth_eq⟩ : ∃ gp, g.s.get? m = some gp :=
     Option.ne_none_iff_exists'.mp not_terminatedAt_m
