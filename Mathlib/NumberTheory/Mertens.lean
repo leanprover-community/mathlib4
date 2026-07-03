@@ -59,7 +59,7 @@ https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
 namespace Mertens
 
 open Nat hiding log log_pos
-open Finset Filter Real Chebyshev intervalIntegral Asymptotics MeasureTheory
+open Finset Filter Real Chebyshev intervalIntegral Asymptotics MeasureTheory Topology
 open ArithmeticFunction hiding log
 open scoped Nat.Prime
 
@@ -443,6 +443,57 @@ theorem second_theorem_asymp_nat :
     (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n) ~[atTop] fun N ↦ log (log N) := by
   convert! f.second_theorem_asymp.comp_tendsto tendsto_natCast_atTop_atTop
   simp
+
+theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
+    ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) = - log (s - 1) + M
+    + ∫ x in .Ioi 1, (E₂ x ^ s⁻¹) * x⁻¹ := calc
+  _ = ∑' n : ℕ, ∫ x in .Ioi 1, (log n)⁻¹ * f n * (Set.Ioi (n : ℝ)).indicator
+      (fun x ↦ ((s - 1) * x ^ (-s))) x := by
+    congr! with n
+    rcases eq_or_ne n 0 with rfl | hn
+    · simp
+    have : max 1  (n : ℝ) = n := mod_cast (by omega)
+    simp only [MeasureTheory.integral_const_mul, measurableSet_Ioi, setIntegral_indicator,
+      Set.Ioi_inter_Ioi, this, mul_eq_mul_left_iff, _root_.mul_eq_zero, inv_eq_zero, log_eq_zero,
+      cast_eq_zero, cast_eq_one]
+    rw [integral_Ioi_rpow_of_lt] <;> grind
+  _ = ∫ x in .Ioi 1, ∑' n : ℕ, (log n)⁻¹ * f n * (Set.Ioi (n : ℝ)).indicator
+      (fun x ↦ ((s - 1) * x ^ (-s))) x := by
+    rw [integral_tsum]
+    · exact fun n ↦ Measurable.aestronglyMeasurable (by fun_prop (disch := measurability))
+    · simp_rw [enorm_mul, ne_eq, ←lt_top_iff_ne_top, enorm_indicator_eq_indicator_enorm]
+      calc
+        _ = ∑' (i : ℕ), ENNReal.ofReal (|(log ↑i)⁻¹| * |toFun i| * (i:ℝ)^(1-s)) := by
+          congr! with n
+          rcases eq_or_ne n 0 with rfl | hn
+          · simp
+          have : max (n : ℝ) 1 = n := mod_cast (by omega)
+          rw [lintegral_const_mul' _ _ (by finiteness), setLIntegral_indicator measurableSet_Ioi,
+            Set.Ioi_inter_Ioi, this, ←ofReal_integral_norm_eq_lintegral_enorm]
+          · simp only [enorm_eq_ofReal_abs, abs_inv, norm_mul, norm_eq_abs,
+            MeasureTheory.integral_const_mul]
+            rw [setIntegral_congr_fun (g := fun x ↦ x ^ (- s)) (by measurability),
+              integral_Ioi_rpow_of_lt (by linarith) (by positivity)]
+            · rw [← ENNReal.ofReal_mul (by positivity), ← ENNReal.ofReal_mul (by positivity),
+                abs_of_nonneg (by linarith : 0 ≤ s - 1)]
+              grind
+            · intro x hx
+              have : 0 ≤ x := by grind
+              exact abs_of_nonneg (by positivity)
+          · apply (IntegrableOn.integrable _).const_mul
+            apply integrableOn_Ioi_rpow_of_lt <;> grind
+        _ < ⊤ := by
+          sorry
+  _ = ∫ x in .Ioi 1, (∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n) * ((s - 1) * x ^ (-s)) := by
+    sorry
+  _ = (s - 1) * ∫ x in .Ioi 1, log (log x) * x ^ (-s) + M * x ^ (-s) + E₂ x * x ^ (-s) := by
+    sorry
+  _ = _ := by
+    sorry
+
+theorem sum_div_log_mul_pow_add_tendsto :
+  Tendsto (fun s ↦ ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) + log (s - 1)) (𝓝[>] 1) (𝓝 M) := by
+  sorry
 
 end Weight
 
