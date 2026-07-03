@@ -389,7 +389,6 @@ theorem integral_inv_div_log_sq (ha : 1 < a) (hb : 1 < b) :
     simp [field]
   fun_prop (disch := grind [log_pos, Set.uIcc])
 
-
 section RpowCpow
 
 open Complex
