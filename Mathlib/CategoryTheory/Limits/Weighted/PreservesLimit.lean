@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Weighted.HasWeightedLimit
 
 /-!
-# Weighted limits preserve limits on the weight variable
+# Weighted limits preserve limits
 
 -/
 
@@ -104,6 +104,51 @@ lemma preservesLimit
 
 end weightedLimFlipObj'
 
+namespace weightedLimObj
+
+variable (W : J ⥤ Type w) [HasWeightedLimObj.{w} W C] [HasLimitsOfShape K C]
+  {G : K ⥤ J ⥤ C} {c : Cone G} (hc : IsLimit c)
+
+namespace preservesLimit
+
+variable (s : Cone (G ⋙ W.weightedLimObj))
+
+set_option backward.defeqAttrib.useBackward true in
+noncomputable def coneEval ⦃j : J⦄ (x : W.obj j) :
+    Cone (G ⋙ (evaluation J C).obj j) where
+  pt := s.pt
+  π.app k := s.π.app k ≫ W.weightedLimObjObjπ (G.obj k) x
+  π.naturality k₁ k₂ f := by simp [← s.w f]
+
+noncomputable def liftAux ⦃j : J⦄ (x : W.obj j) : s.pt ⟶ c.pt.obj j :=
+  (isLimitOfPreserves ((evaluation _ _).obj j) hc).lift (coneEval W s x)
+
+@[reassoc (attr := simp)]
+lemma liftAux_π_app_app ⦃j : J⦄ (x : W.obj j) (k) :
+    liftAux W hc s x ≫ (c.π.app k).app j =
+      s.π.app k ≫ W.weightedLimObjObjπ (G.obj k) x :=
+  (isLimitOfPreserves ((evaluation _ _).obj j) hc).fac (coneEval W s x) k
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+noncomputable def isLimitMapCone : IsLimit (W.weightedLimObj.mapCone c) where
+  lift s :=
+    (isLimitWeightedLimCone W c.pt).lift
+      (fun j x ↦ liftAux W hc s x)
+      (fun j₁ j₂ x f ↦ (isLimitOfPreserves ((evaluation _ _).obj j₂) hc).hom_ext (by simp))
+  uniq s m hm := by
+    dsimp
+    ext j x
+    refine (isLimitOfPreserves ((evaluation _ _).obj j) hc).hom_ext ?_
+    simp [← hm]
+
+end preservesLimit
+
+instance preservesLimit : PreservesLimit G (weightedLimObj.{w} W (C := C)) where
+  preserves hc := ⟨preservesLimit.isLimitMapCone _ hc⟩
+
+end weightedLimObj
+
 instance [HasColimitsOfShape Kᵒᵖ (Type w)]
     (F : J ⥤ C) [HasWeightedLimFlipObj.{w} F] :
     PreservesLimitsOfShape K (weightedLimFlipObj'.{w} F) where
@@ -121,6 +166,12 @@ instance [HasColimitsOfSize.{v'', u''} (Type w)]
 instance [HasColimitsOfSize.{v'', u''} (Type w)]
     (F : J ⥤ C) [HasWeightedLimFlipObj.{w} F] :
     PreservesLimitsOfSize.{v'', u''} (weightedLimFlipObj.{w} F) where
+
+instance [HasLimitsOfShape K C] (W : J ⥤ Type w) [HasWeightedLimObj.{w} W (C := C)] :
+    PreservesLimitsOfShape K (weightedLimObj.{w} W (C := C)) where
+
+instance [HasLimitsOfSize.{v'', u''} C] (W : J ⥤ Type w) [HasWeightedLimObj.{w} W C] :
+    PreservesLimitsOfSize.{v'', u''} (W.weightedLimObj (C := C)) where
 
 end Functor
 
