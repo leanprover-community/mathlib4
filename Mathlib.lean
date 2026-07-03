@@ -1538,6 +1538,7 @@ public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictBicategory
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncated
+public import Mathlib.AlgebraicTopology.Reedy.Basic
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Basic
@@ -3284,6 +3285,7 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Retracts
+public import Mathlib.CategoryTheory.Presentable.SharplyLT.Basic
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.Products.Associator
@@ -6507,6 +6509,7 @@ public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.DedekindDomain.SInteger
 public import Mathlib.RingTheory.DedekindDomain.SelmerGroup
+public import Mathlib.RingTheory.Depth.Rees
 public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.Derivation.DifferentialRing
 public import Mathlib.RingTheory.Derivation.Lie
@@ -8117,6 +8120,7 @@ public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Separation.SeparatedNhds
 public import Mathlib.Topology.Sequences
+public import Mathlib.Topology.Sets.BaseChangeNhds
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.CompactOpenCovered
 public import Mathlib.Topology.Sets.Compacts
