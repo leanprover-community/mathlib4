@@ -11,7 +11,7 @@ public import Mathlib.NumberTheory.HeckeRing.MultiplicityUnit
 # Hecke rings: the support of the multiplicity
 
 Shimura's multiplicity `m(g, h; d)` is nonzero exactly when `d` lies in the product set
-`Γ₁gΓ₂hΓ₃` of the two double cosets. For a Hecke coset module datum this identifies the support
+`Γ₁gΓ₂hΓ₃` of the two double cosets. For a Hecke triple this identifies the support
 of the structure constants of the Hecke product with the image of `HeckeCoset.mulMap`, which is
 a finite set; this is what makes the convolution product of Hecke coset modules well-defined in
 the next file.
@@ -76,7 +76,7 @@ variable {G : Type*} [Group G] {Δ : Submonoid G} {H₁ H₂ H₃ : Subgroup G}
 of `HeckeCoset.mulMap`: the multiplicity of a double coset `D` in the product `H₁g₁H₂ * H₂g₂H₃`
 is nonzero exactly when `D` is the double coset of `σᵢ g₁ τⱼ g₂` for some pair of coset
 representatives. -/
-theorem mem_image_mulMap_iff [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+theorem mem_image_mulMap_iff [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     [DecidableEq (HeckeCoset Δ H₁ H₃)] (g₁ g₂ : Δ) (D : HeckeCoset Δ H₁ H₃) :
     D ∈ Finset.univ.image (mulMap H₁ H₂ H₃ g₁ g₂) ↔
       multiplicity H₁ H₂ H₃ (g₁ : G) (g₂ : G) (D.rep : G) ≠ 0 := by

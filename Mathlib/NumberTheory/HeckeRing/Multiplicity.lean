@@ -95,16 +95,16 @@ variable {G : Type*} [Group G] {Δ : Submonoid G}
 
 /-- The map sending a pair of coset representatives `(σᵢ, τⱼ)` to the mixed double coset
 `H₁ (σᵢ g₁ τⱼ g₂) H₃` of their product. -/
-noncomputable def mulMap (H₁ H₂ H₃ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂]
-    [IsHeckeCosetModule Δ H₂ H₃] (g₁ g₂ : Δ)
+noncomputable def mulMap (H₁ H₂ H₃ : Subgroup G) [IsHeckeTriple Δ H₁ H₂]
+    [IsHeckeTriple Δ H₂ H₃] (g₁ g₂ : Δ)
     (p : DecompQuotient H₁ H₂ (g₁ : G) × DecompQuotient H₂ H₃ (g₂ : G)) : HeckeCoset Δ H₁ H₃ :=
   mk H₁ H₃ ⟨(p.1.out : G) * g₁ * ((p.2.out : G) * g₂),
-    Δ.mul_mem (Δ.mul_mem (IsHeckeCosetModule.mem_left H₂ p.1.out.2) g₁.2)
-      (Δ.mul_mem (IsHeckeCosetModule.mem_left H₃ p.2.out.2) g₂.2)⟩
+    Δ.mul_mem (Δ.mul_mem (IsHeckeTriple.mem_left H₂ p.1.out.2) g₁.2)
+      (Δ.mul_mem (IsHeckeTriple.mem_left H₃ p.2.out.2) g₂.2)⟩
 
 /-- If `σᵢ g₁ τⱼ g₂ H₃ = d H₃` then the double coset of `σᵢ g₁ τⱼ g₂` equals that of `d`. -/
-lemma mulMap_eq_of_mk_eq {H₁ H₂ H₃ : Subgroup G} [IsHeckeCosetModule Δ H₁ H₂]
-    [IsHeckeCosetModule Δ H₂ H₃] {g₁ g₂ d : Δ}
+lemma mulMap_eq_of_mk_eq {H₁ H₂ H₃ : Subgroup G} [IsHeckeTriple Δ H₁ H₂]
+    [IsHeckeTriple Δ H₂ H₃] {g₁ g₂ d : Δ}
     {p : DecompQuotient H₁ H₂ (g₁ : G) × DecompQuotient H₂ H₃ (g₂ : G)}
     (h : ((p.1.out : G) * g₁ * ((p.2.out : G) * g₂) : G ⧸ H₃) = ((d : G) : G ⧸ H₃)) :
     mulMap H₁ H₂ H₃ g₁ g₂ p = mk H₁ H₃ d := by
