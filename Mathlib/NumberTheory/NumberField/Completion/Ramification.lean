@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
-public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.RamificationInertia.Inertia
 
 /-!
 # Ramification theory of completions of number fields
@@ -86,16 +86,15 @@ variable (w)
 open scoped Classical in
 /-- The inertia degree of `w` over `v`. -/
 protected noncomputable def inertiaDeg : ℕ :=
-  if _ : w.1.LiesOver v.1 then (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) else 0
+  if _ : w.1.LiesOver v.1 then (⊥ : Ideal w.Completion).inertiaDeg' v.Completion else 0
 
 theorem inertiaDeg_of_liesOver [w.1.LiesOver v.1] :
-    v.inertiaDeg w = (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) := by
+    v.inertiaDeg w = (⊥ : Ideal w.Completion).inertiaDeg' v.Completion := by
   simp only [InfinitePlace.inertiaDeg, dif_pos]
 
 theorem inertiaDeg_eq_finrank [w.1.LiesOver v.1] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
-  simp only [inertiaDeg_of_liesOver, Ideal.inertiaDeg, Ideal.comap_bot_of_injective _ <|
-    FaithfulSMul.algebraMap_injective v.Completion w.Completion]
+  rw [inertiaDeg_of_liesOver, Ideal.inertiaDeg'_eq_of_isMaximal ⊥]
   exact Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
     (RingEquiv.quotientBot w.Completion) (by ext; simp [RingHom.algebraMap_toAlgebra])
 

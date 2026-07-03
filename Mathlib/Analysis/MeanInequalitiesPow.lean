@@ -366,7 +366,7 @@ theorem rpow_add_le_mul_rpow_add_rpow'' (z₁ z₂ : ℝ≥0∞) {p : ℝ≥0∞
       LpAddConst p * (z₁ ^ p.toReal⁻¹ + z₂ ^ p.toReal⁻¹) := by
   by_cases p_zero : p = 0
   · simp [p_zero, LpAddConst_zero]
-  convert! rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity) using 1
+  convert rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity)
   rw [← ENNReal.toReal_inv, ENNReal.ofReal_toReal (by simpa), inv_inv]
 
 end ENNReal
