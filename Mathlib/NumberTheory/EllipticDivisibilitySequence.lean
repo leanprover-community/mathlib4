@@ -289,9 +289,13 @@ def IsEllipticNet : Prop :=
 def IsEllipticSequence : Prop :=
   ∀ p q r : ℤ, IsEllipticNet.rel W p q r 0 = 0
 
+@[deprecated (since := "2026-07-01")] alias IsEllSequence := IsEllipticSequence
+
 /-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
 def IsEllipticDvdSequence : Prop :=
   IsEllipticSequence W ∧ IsDvdSequence W
+
+@[deprecated (since := "2026-06-30")] alias IsEllDivSequence := IsEllipticDvdSequence
 
 namespace IsEllipticNet
 
@@ -320,7 +324,7 @@ protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| 
 
 end IsEllipticSequence
 
-@[deprecated (since := "2026-07-01")] alias isEllSequence_id := IsEllipticSequence.id
+@[deprecated (since := "2026-07-01")] alias IsEllSequence.smul := IsEllipticSequence.smul
 
 namespace IsEllipticDvdSequence
 
@@ -334,9 +338,6 @@ protected lemma smul (h : IsEllipticDvdSequence W) (x : R) : IsEllipticDvdSequen
   ⟨h.left.smul x, h.right.smul x⟩
 
 end IsEllipticDvdSequence
-
-@[deprecated (since := "2026-06-30")] alias IsEllDivSequence.smul := IsEllipticDvdSequence.smul
-@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := IsEllipticDvdSequence.id
 
 variable (b c d : R)
 
