@@ -76,6 +76,10 @@ theorem hasDerivAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ 
 theorem differentiableOn_inv_log : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) (.Ioi 1) :=
   (differentiableOn_log.mono (by grind)).inv (by simp; grind)
 
+theorem inv_log_eq_o_one : (fun x ↦ (log x)⁻¹) =o[atTop] fun _ ↦ (1:ℝ) := by
+  rw [isLittleO_one_iff]
+  convert tendsto_log_atTop.inv_tendsto_atTop; simp
+
 /- ## Derivative of the iterated logarithm -/
 
 lemma not_continuousAt_log_log_zero : ¬ ContinuousAt (fun x ↦ log (log x)) 0 := by
@@ -114,15 +118,10 @@ theorem differentiableAt_log_log {x : ℝ} (hx : 1 < x) :
 
 theorem hasDerivAt_log_log {x : ℝ} (hx : 1 < x) :
     HasDerivAt (fun x ↦ log (log x)) (x⁻¹ / log x) x := by
-  simpa [deriv_log_log] using (differentiableAt_log_log hx).hasDerivAt
+  simpa using (differentiableAt_log_log hx).hasDerivAt
 
 theorem differentiableOn_log_log : DifferentiableOn ℝ (fun x ↦ log (log x)) (.Ioi 1) :=
   (differentiableOn_log.mono (by grind)).log (by simp; grind)
-
-theorem inv_log_eq_o_one : (fun x ↦ (log x)⁻¹) =o[atTop] fun _ ↦ (1:ℝ) := by
-  rw [isLittleO_one_iff]
-  convert tendsto_log_atTop.inv_tendsto_atTop using 1
-  ext; simp
 
 theorem one_eq_o_log_log : (fun _ ↦ (1:ℝ)) =o[atTop] fun x ↦ log (log x) := by
   simp only [isLittleO_one_left_iff, norm_eq_abs]
