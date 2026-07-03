@@ -81,13 +81,16 @@ lemma detp_submatrix_equiv (e : m ≃ n) : (A.submatrix e e).detp s = A.detp s :
 
 variable {A}
 
-lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A.row p = A.row q) :
-    A.detp 1 = A.detp (-1) :=
-  sum_equiv (.mulRight <| swap p q) (by simp [hpq]) fun _ _ ↦
-    prod_equiv (swap p q) (by simp) (by aesop (add simp row))
+lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A.row p = A.row q)
+    (s : ℤˣ := 1) (t : ℤˣ := -1) : A.detp s = A.detp t := by
+  have : A.detp 1 = A.detp (-1) := sum_equiv (.mulRight <| swap p q) (by simp [hpq])
+    fun _ _ ↦ prod_equiv (swap p q) (by simp) (by aesop (add simp row))
+  obtain rfl | rfl := Int.units_eq_one_or s <;> obtain rfl | rfl := Int.units_eq_one_or t <;>
+    first | rfl | rw [this]
 
-lemma detp_eq_of_col_eq {p q : n} (hpq : p ≠ q) (hcol : A.col p = A.col q) :
-    A.detp 1 = A.detp (-1) := by simpa using detp_eq_of_row_eq (A := Aᵀ) hpq hcol
+lemma detp_eq_of_col_eq {p q : n} (hpq : p ≠ q) (hcol : A.col p = A.col q)
+    (s : ℤˣ := 1) (t : ℤˣ := -1) : A.detp s = A.detp t := by
+  simpa using detp_eq_of_row_eq (A := Aᵀ) hpq hcol s t
 
 lemma detp_eq_of_row_eq_zero {p : n} (hrow : A.row p = 0) : A.detp s = 0 :=
   sum_eq_zero fun _ _ ↦ prod_eq_zero (mem_univ p) congr($hrow _)
