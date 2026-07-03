@@ -71,99 +71,46 @@ theorem digamma_apply_add_nat {s : ℂ} (hs : ∀ m : ℕ, s ≠ -(m : ℂ)) (n 
   induction n with
   | zero => simp
   | succ n ih =>
-    have hsn : ∀ m : ℕ, s + (n : ℂ) ≠ -(m : ℂ) := by
-      intro m h
-      exact hs (m + n) (by push_cast at h ⊢; linear_combination h)
-    have estep : s + ((n + 1 : ℕ) : ℂ) = (s + (n : ℂ)) + 1 := by push_cast; ring
-    rw [estep, digamma_apply_add_one _ hsn, ih, Finset.sum_range_succ]
+    have hsn (m : ℕ) : s + (n : ℂ) ≠ -(m : ℂ) := fun h ↦
+      hs (m + n) (by push_cast at h ⊢; linear_combination h)
+    rw [show s + ((n + 1 : ℕ) : ℂ) = (s + (n : ℂ)) + 1 by push_cast; ring,
+      digamma_apply_add_one _ hsn, ih, Finset.sum_range_succ]
     ring
+
+/-- The logarithmic derivative of `Gamma ∘ g` at `s` is `deriv g s * digamma (g s)`.
+Auxiliary lemma used to prove the reflection and duplication formulas below. -/
+private lemma logDeriv_Gamma_comp {g : ℂ → ℂ} {a s : ℂ} (hg : HasDerivAt g a s)
+    (h : ∀ m : ℕ, g s ≠ -(m : ℂ)) :
+    logDeriv (fun z ↦ Gamma (g z)) s = a * digamma (g s) := by
+  rw [show (fun z ↦ Gamma (g z)) = Gamma ∘ g from rfl,
+    logDeriv_comp (differentiableAt_Gamma _ h) hg.differentiableAt, hg.deriv, digamma_def]
+  exact mul_comm _ _
 
 /-- **The digamma reflection formula** `ψ(1 - s) - ψ(s) = π cot (π s)`, for `s ∉ ℤ`.
 Proved from `Complex.Gamma_mul_Gamma_one_sub` by taking logarithmic derivatives. -/
 theorem digamma_reflection {s : ℂ} (hs : ∀ m : ℤ, s ≠ m) :
     digamma (1 - s) - digamma s = (Real.pi : ℂ) * Complex.cot ((Real.pi : ℂ) * s) := by
-  rw [Complex.cot_eq_cos_div_sin]
-  have hs_not_nat (m : ℕ) : s ≠ -m := by
-    intro h
-    exact hs (-m) (by push_cast; exact h)
-  have hs_one_not_nat (m : ℕ) : 1 - s ≠ -m := by
-    intro h
-    have : s = 1 + m := by linear_combination -h
-    exact hs (1 + m) (by push_cast; exact this)
-  have hΓs : Complex.Gamma s ≠ 0 := Complex.Gamma_ne_zero hs_not_nat
-  have hΓ1s : Complex.Gamma (1 - s) ≠ 0 := Complex.Gamma_ne_zero hs_one_not_nat
-  have hdΓs : DifferentiableAt ℂ Complex.Gamma s := Complex.differentiableAt_Gamma s hs_not_nat
-  have h1 : DifferentiableAt ℂ Complex.Gamma (1 - s) :=
-    Complex.differentiableAt_Gamma (1 - s) hs_one_not_nat
-  have h2 : DifferentiableAt ℂ (fun z : ℂ => 1 - z) s := by fun_prop
-  have hdΓ1s : DifferentiableAt ℂ (fun z => Complex.Gamma (1 - z)) s := h1.comp s h2
-  have h_mul_deriv := logDeriv_mul s hΓs hΓ1s hdΓs hdΓ1s
-  have h_comp_deriv : logDeriv (fun z => Complex.Gamma (1 - z)) s = - digamma (1 - s) := by
-    have key := logDeriv_comp (f := Complex.Gamma) (g := fun z : ℂ => 1 - z) h1 h2
-    have hd : deriv (fun z : ℂ => 1 - z) s = -1 :=
-      ((hasDerivAt_id s).const_sub 1).deriv
-    rw [hd, mul_neg_one] at key
-    exact key
-  have h_LHS : logDeriv (fun z => Complex.Gamma z * Complex.Gamma (1 - z)) s
-      = digamma s - digamma (1 - s) := by
-    rw [h_mul_deriv, h_comp_deriv, sub_eq_add_neg]
-    rfl
-  have h_eq : (fun z => Complex.Gamma z * Complex.Gamma (1 - z))
-      = fun z => (Real.pi : ℂ) / Complex.sin ((Real.pi : ℂ) * z) := by
-    ext z
-    exact Complex.Gamma_mul_Gamma_one_sub z
-  have hs_sin : Complex.sin ((Real.pi : ℂ) * s) ≠ 0 := by
-    intro h
-    rw [Complex.sin_eq_zero_iff] at h
-    rcases h with ⟨k, hk⟩
-    have hk_eq : (Real.pi : ℂ) * s = (Real.pi : ℂ) * k := by
-      calc
-        (Real.pi : ℂ) * s = (k : ℂ) * (Real.pi : ℂ) := hk
-        _ = (Real.pi : ℂ) * (k : ℂ) := mul_comm _ _
-    have h_pi : (Real.pi : ℂ) ≠ 0 := by norm_cast; exact Real.pi_ne_zero
-    have h_eq_k : s = k := mul_left_cancel₀ h_pi hk_eq
-    exact hs k h_eq_k
-  have hd_sin_comp : DifferentiableAt ℂ (fun z => Complex.sin ((Real.pi : ℂ) * z)) s := by fun_prop
-  have hd_pi : DifferentiableAt ℂ (fun _ : ℂ => (Real.pi : ℂ)) s := by fun_prop
-  have h_div_deriv := logDeriv_div s (by norm_cast; exact Real.pi_ne_zero) hs_sin hd_pi hd_sin_comp
-  have h_logDeriv_pi : logDeriv (fun _ : ℂ => (Real.pi : ℂ)) s = 0 := by
-    rw [logDeriv_apply, deriv_const, zero_div]
-  have h_sin_comp_deriv : logDeriv (fun z => Complex.sin ((Real.pi : ℂ) * z)) s
-      = (Real.pi : ℂ) * (Complex.cos ((Real.pi : ℂ) * s) / Complex.sin ((Real.pi : ℂ) * s)) := by
-    have h1_sin : DifferentiableAt ℂ Complex.sin ((Real.pi : ℂ) * s) := by fun_prop
-    have h2_sin : DifferentiableAt ℂ (fun z : ℂ => (Real.pi : ℂ) * z) s := by fun_prop
-    have key := logDeriv_comp (f := Complex.sin) (g := fun z : ℂ => (Real.pi : ℂ) * z) h1_sin h2_sin
-    have hd_inner : deriv (fun z : ℂ => (Real.pi : ℂ) * z) s = (Real.pi : ℂ) := by
-      rw [deriv_const_mul]
-      · simp
-      · fun_prop
-    rw [hd_inner] at key
-    have h_logDeriv_sin : logDeriv Complex.sin ((Real.pi : ℂ) * s)
-        = Complex.cos ((Real.pi : ℂ) * s) / Complex.sin ((Real.pi : ℂ) * s) := by
-      rw [logDeriv_apply]
-      have hds : deriv Complex.sin ((Real.pi : ℂ) * s) = Complex.cos ((Real.pi : ℂ) * s) := by simp
-      rw [hds]
-    rw [h_logDeriv_sin] at key
-    calc
-      logDeriv (fun z => Complex.sin ((Real.pi : ℂ) * z)) s
-          = logDeriv (Complex.sin ∘ fun z => (Real.pi : ℂ) * z) s := rfl
-      _ = Complex.cos ((Real.pi : ℂ) * s) / Complex.sin ((Real.pi : ℂ) * s) * (Real.pi : ℂ) := key
-      _ = (Real.pi : ℂ) * (Complex.cos ((Real.pi : ℂ) * s) / Complex.sin ((Real.pi : ℂ) * s)) := by
-            ring
-  have h_RHS : logDeriv (fun z => (Real.pi : ℂ) / Complex.sin ((Real.pi : ℂ) * z)) s
-      = - ((Real.pi : ℂ)
-          * (Complex.cos ((Real.pi : ℂ) * s) / Complex.sin ((Real.pi : ℂ) * s))) := by
-    rw [h_div_deriv, h_logDeriv_pi, h_sin_comp_deriv, zero_sub]
-  have h_final : digamma s - digamma (1 - s)
-      = - ((Real.pi : ℂ)
-          * (Complex.cos ((Real.pi : ℂ) * s) / Complex.sin ((Real.pi : ℂ) * s))) := by
-    calc
-      digamma s - digamma (1 - s)
-          = logDeriv (fun z => Complex.Gamma z * Complex.Gamma (1 - z)) s := h_LHS.symm
-      _ = logDeriv (fun z => (Real.pi : ℂ) / Complex.sin ((Real.pi : ℂ) * z)) s := by rw [h_eq]
-      _ = - ((Real.pi : ℂ)
-            * (Complex.cos ((Real.pi : ℂ) * s) / Complex.sin ((Real.pi : ℂ) * s))) := h_RHS
-  linear_combination -h_final
+  have hπ : (Real.pi : ℂ) ≠ 0 := ofReal_ne_zero.mpr Real.pi_ne_zero
+  have hs₀ (m : ℕ) : s ≠ -m := fun h ↦ hs (-m) (by push_cast; exact h)
+  have hs₁ (m : ℕ) : 1 - s ≠ -m := fun h ↦ hs (1 + m) (by push_cast; linear_combination -h)
+  have hsin : sin ((Real.pi : ℂ) * s) ≠ 0 := fun h ↦ by
+    obtain ⟨k, hk⟩ := sin_eq_zero_iff.mp h
+    exact hs k (mul_left_cancel₀ hπ (hk.trans (mul_comm _ _)))
+  -- take logarithmic derivatives of Euler's reflection formula `Γ(s) Γ(1 - s) = π / sin (π s)`
+  have key : logDeriv (fun z ↦ Gamma z * Gamma (1 - z)) s
+      = logDeriv (fun z ↦ (Real.pi : ℂ) / sin ((Real.pi : ℂ) * z)) s := by
+    rw [funext Gamma_mul_Gamma_one_sub]
+  rw [logDeriv_mul (f := Gamma) (g := fun z ↦ Gamma (1 - z)) s (Gamma_ne_zero hs₀)
+      (Gamma_ne_zero hs₁) (differentiableAt_Gamma s hs₀)
+      ((differentiableAt_Gamma _ hs₁).comp s (by fun_prop)),
+    logDeriv_Gamma_comp ((hasDerivAt_id' (x := s)).const_sub 1) hs₁,
+    logDeriv_div (f := fun _ ↦ (Real.pi : ℂ)) (g := fun z ↦ sin ((Real.pi : ℂ) * z)) s hπ hsin
+      (by fun_prop) (differentiableAt_sin.comp s (by fun_prop)),
+    logDeriv_const, Pi.zero_apply,
+    show (fun z : ℂ ↦ sin ((Real.pi : ℂ) * z)) = sin ∘ ((Real.pi : ℂ) * ·) from rfl,
+    logDeriv_comp differentiableAt_sin (by fun_prop), logDeriv_sin, deriv_const_mul_id,
+    ← digamma_def] at key
+  linear_combination -key
 
 /-- **The digamma duplication formula** `ψ(2s) = ½(ψ(s) + ψ(s + ½)) + log 2`, for
 `s, s + ½ ∉ {0, -1, -2, …}`. Proved from Legendre's doubling
@@ -171,68 +118,33 @@ theorem digamma_reflection {s : ℂ} (hs : ∀ m : ℤ, s ≠ m) :
 theorem digamma_two_mul {s : ℂ} (hs : ∀ m : ℕ, s ≠ -(m : ℂ))
     (hsh : ∀ m : ℕ, s + 1 / 2 ≠ -(m : ℂ)) :
     digamma (2 * s) = (1 / 2) * (digamma s + digamma (s + 1 / 2)) + Complex.log 2 := by
-  have h2s : ∀ m : ℕ, 2 * s ≠ -(m : ℂ) := by
-    intro m h
+  have h2s (m : ℕ) : 2 * s ≠ -(m : ℂ) := fun h ↦ by
     rcases Nat.even_or_odd m with ⟨k, hk⟩ | ⟨k, hk⟩
     · exact hs k (by subst hk; push_cast at h ⊢; linear_combination h / 2)
     · exact hsh k (by subst hk; push_cast at h ⊢; linear_combination h / 2)
-  have hΓs : Complex.Gamma s ≠ 0 := Complex.Gamma_ne_zero hs
-  have hΓsh : Complex.Gamma (s + 1 / 2) ≠ 0 := Complex.Gamma_ne_zero hsh
-  have hdΓs : DifferentiableAt ℂ Complex.Gamma s := Complex.differentiableAt_Gamma s hs
-  have hdΓsh : DifferentiableAt ℂ Complex.Gamma (s + 1 / 2) := Complex.differentiableAt_Gamma _ hsh
-  have hdΓ2s : DifferentiableAt ℂ Complex.Gamma (2 * s) := Complex.differentiableAt_Gamma _ h2s
   have hsqrt : ((Real.sqrt Real.pi : ℝ) : ℂ) ≠ 0 := by
     simpa using Real.sqrt_ne_zero'.mpr Real.pi_pos
-  have hfun : logDeriv (fun z : ℂ => Complex.Gamma z * Complex.Gamma (z + 1 / 2)) s
-            = logDeriv (fun z : ℂ => Complex.Gamma (2 * z) * (2 : ℂ) ^ (1 - 2 * z)
-                * ((Real.sqrt Real.pi : ℝ) : ℂ)) s := by
-    congr 1; funext z; exact Complex.Gamma_mul_Gamma_add_half z
-  have hg_sh : DifferentiableAt ℂ (fun z : ℂ => Complex.Gamma (z + 1 / 2)) s :=
-    hdΓsh.comp s (by fun_prop)
-  have hLHS_comp : logDeriv (fun z : ℂ => Complex.Gamma (z + 1 / 2)) s = digamma (s + 1 / 2) := by
-    have key := logDeriv_comp (f := Complex.Gamma) (g := fun z : ℂ => z + 1 / 2) hdΓsh (by fun_prop)
-    have hd : deriv (fun z : ℂ => z + 1 / 2) s = 1 := by simp
-    rw [hd, mul_one] at key
-    simpa [digamma_def, Function.comp_def] using key
-  have hLHS : logDeriv (fun z : ℂ => Complex.Gamma z * Complex.Gamma (z + 1 / 2)) s
-            = digamma s + digamma (s + 1 / 2) := by
-    rw [logDeriv_mul s hΓs hΓsh hdΓs hg_sh, hLHS_comp]; rfl
-  have hexp_eq : (fun z : ℂ => (2 : ℂ) ^ (1 - 2 * z))
-             = (fun z : ℂ => Complex.exp (Complex.log 2 * (1 - 2 * z))) := by
-    funext z; rw [Complex.cpow_def_of_ne_zero (by norm_num : (2 : ℂ) ≠ 0)]
-  have hcpow : logDeriv (fun z : ℂ => (2 : ℂ) ^ (1 - 2 * z)) s = -2 * Complex.log 2 := by
-    rw [hexp_eq]
-    have h2z : HasDerivAt (fun z : ℂ => 2 * z) 2 s := by simpa using (hasDerivAt_id s).const_mul 2
-    have h1 : HasDerivAt (fun z : ℂ => 1 - 2 * z) (-2) s := by simpa using h2z.const_sub 1
-    have hd : HasDerivAt (fun z : ℂ => Complex.log 2 * (1 - 2 * z)) (Complex.log 2 * -2) s :=
-      h1.const_mul (Complex.log 2)
-    have hf := hd.cexp
-    rw [logDeriv_apply, hf.deriv]
-    field_simp
-  have hG2 : logDeriv (fun z : ℂ => Complex.Gamma (2 * z)) s = 2 * digamma (2 * s) := by
-    have key := logDeriv_comp (f := Complex.Gamma) (g := fun z : ℂ => 2 * z) hdΓ2s (by fun_prop)
-    have hd : deriv (fun z : ℂ => 2 * z) s = 2 := by simp
-    rw [hd] at key
-    simp only [digamma_def, Function.comp_def] at key ⊢
-    rw [key]; ring
-  have hΓ2s_ne : Complex.Gamma (2 * s) ≠ 0 := Complex.Gamma_ne_zero h2s
-  have hcpow_ne : (2 : ℂ) ^ (1 - 2 * s) ≠ 0 := by
-    rw [Complex.cpow_def_of_ne_zero (by norm_num : (2 : ℂ) ≠ 0)]; exact Complex.exp_ne_zero _
-  have hd1 : DifferentiableAt ℂ (fun z : ℂ => Complex.Gamma (2 * z)) s := hdΓ2s.comp s (by fun_prop)
-  have hd2 : DifferentiableAt ℂ (fun z : ℂ => (2 : ℂ) ^ (1 - 2 * z)) s := by
-    rw [hexp_eq]
-    have h2z : HasDerivAt (fun z : ℂ => 2 * z) 2 s := by simpa using (hasDerivAt_id s).const_mul 2
-    have h1 : HasDerivAt (fun z : ℂ => 1 - 2 * z) (-2) s := by simpa using h2z.const_sub 1
-    exact ((h1.const_mul (Complex.log 2)).cexp).differentiableAt
-  have hRHS : logDeriv (fun z : ℂ => Complex.Gamma (2 * z) * (2 : ℂ) ^ (1 - 2 * z)
-                * ((Real.sqrt Real.pi : ℝ) : ℂ)) s = 2 * digamma (2 * s) - 2 * Complex.log 2 := by
-    rw [logDeriv_mul_const s ((Real.sqrt Real.pi : ℝ) : ℂ) hsqrt,
-        logDeriv_mul (f := fun z : ℂ => Complex.Gamma (2 * z))
-          (g := fun z : ℂ => (2 : ℂ) ^ (1 - 2 * z)) s hΓ2s_ne hcpow_ne hd1 hd2,
-        hG2, hcpow]
+  have hpow : (2 : ℂ) ^ (1 - 2 * s) ≠ 0 := by simp [cpow_eq_zero_iff]
+  have hd2 := (((hasDerivAt_id' (x := s)).const_mul 2).const_sub 1).const_cpow
+    (Or.inl (by norm_num : (2 : ℂ) ≠ 0))
+  have hcpow : logDeriv (fun z : ℂ ↦ (2 : ℂ) ^ (1 - 2 * z)) s = -2 * Complex.log 2 := by
+    rw [logDeriv_apply, hd2.deriv, div_eq_iff hpow]
     ring
-  have key : digamma s + digamma (s + 1 / 2) = 2 * digamma (2 * s) - 2 * Complex.log 2 := by
-    rw [← hLHS, hfun, hRHS]
+  -- take logarithmic derivatives of Legendre's formula `Γ(s) Γ(s + 1/2) = Γ(2s) 2^(1-2s) √π`
+  have key : logDeriv (fun z ↦ Gamma z * Gamma (z + 1 / 2)) s
+      = logDeriv (fun z ↦ Gamma (2 * z) * (2 : ℂ) ^ (1 - 2 * z)
+        * ((Real.sqrt Real.pi : ℝ) : ℂ)) s := by
+    rw [funext Gamma_mul_Gamma_add_half]
+  rw [logDeriv_mul (f := Gamma) (g := fun z ↦ Gamma (z + 1 / 2)) s (Gamma_ne_zero hs)
+      (Gamma_ne_zero hsh) (differentiableAt_Gamma s hs)
+      ((differentiableAt_Gamma _ hsh).comp s (by fun_prop)),
+    logDeriv_Gamma_comp ((hasDerivAt_id' (x := s)).add_const (1 / 2)) hsh,
+    logDeriv_mul_const s _ hsqrt,
+    logDeriv_mul (f := fun z ↦ Gamma (2 * z)) (g := fun z ↦ (2 : ℂ) ^ (1 - 2 * z)) s
+      (Gamma_ne_zero h2s) hpow ((differentiableAt_Gamma _ h2s).comp s (by fun_prop))
+      hd2.differentiableAt,
+    logDeriv_Gamma_comp ((hasDerivAt_id' (x := s)).const_mul 2) h2s, hcpow,
+    ← digamma_def] at key
   linear_combination (-1 / 2 : ℂ) * key
 
 theorem meromorphic_digamma : Meromorphic digamma :=
