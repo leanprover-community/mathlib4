@@ -16,12 +16,12 @@ Let `V` be a preadditive category. The right Freyd category of `V` is the quotie
 in the reference.) This is a preadditive category with a fully
 faithful additive functor `RightFreyd.functor : V ⥤ RightFreyd V`.
 
-We also show that, if `V` has finite products, then `RightFreyd V` has cokernels. In fact
+We also show that, if `V` has binaray biproducts, then `RightFreyd V` has cokernels. In fact
 we construct, given a morphism `f : u ⟶ v` in `Arrow V`, a morphism
 `Candidate.π f : v ⟶ Candidate.cokernel f` in `Arrow V` such that
 `f ≫ Candidate.π f` is right homotopic to `0` (see `Candidate.condition`).
 This allows us to define a cokernel cofork for `(quotient V).map f` (see
-`CandidateCokernelCofork`), and we show in `candidateCokernelCoforkIsCokernel` that this is
+`Candidate.cokernelCofork`), and we show in `Candidate.isColimitCokernelCofork` that this is
 a cokernel cofork.
 
 ## References
@@ -202,7 +202,7 @@ def isColimitCokernelCofork : IsColimit (cokernelCofork f) :=
 
 end Candidate
 
-/-- The category `RightFreyd V` has all cokernels if `V` has finite products. -/
+/-- The category `RightFreyd V` has all cokernels if `V` has binary biproducts. -/
 instance : HasCokernels (RightFreyd V) where
   has_colimit f := ⟨by
     obtain ⟨f, rfl⟩ := (quotient V).map_surjective f
