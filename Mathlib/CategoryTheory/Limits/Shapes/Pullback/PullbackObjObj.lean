@@ -78,11 +78,17 @@ structure PushoutObjObj where
   /-- the second inclusion -/
   inr : (F.obj X₁).obj Y₂ ⟶ pt
   isPushout : IsPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂) inl inr
+  /-- the Leibniz pushout -/
+  ι : pt ⟶ (F.obj Y₁).obj Y₂ := isPushout.desc ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (by simp)
+  inl_ι : inl ≫ ι = (F.obj Y₁).map f₂ := by cat_disch
+  inr_ι : inr ≫ ι = (F.map f₁).app Y₂ := by cat_disch
 
 namespace PushoutObjObj
 
+attribute [reassoc (attr := simp)] inl_ι inr_ι
+
 /-- The `PushoutObjObj` structure given by the pushout of the colimits API. -/
-@[simps -isSimp]
+@[simps]
 noncomputable def ofHasPushout
     [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
     F.PushoutObjObj f₁ f₂ where
@@ -90,25 +96,18 @@ noncomputable def ofHasPushout
   inl := pushout.inl _ _
   inr := pushout.inr _ _
   isPushout := IsPushout.of_hasPushout _ _
+  ι := pushout.desc ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (by simp)
+  inl_ι := pushout.inl_desc ..
+  inr_ι := pushout.inr_desc ..
 
 variable {F f₁ f₂} (sq : F.PushoutObjObj f₁ f₂)
-
-/-- The "inclusion" `sq.pt ⟶ (F.obj Y₁).obj Y₂` when
-`sq : F.PushoutObjObj f₁ f₂`. -/
-noncomputable def ι : sq.pt ⟶ (F.obj Y₁).obj Y₂ :=
-  sq.isPushout.desc ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (by simp)
-
-@[reassoc (attr := simp)]
-lemma inl_ι : sq.inl ≫ sq.ι = (F.obj Y₁).map f₂ := by simp [ι]
-
-@[reassoc (attr := simp)]
-lemma inr_ι : sq.inr ≫ sq.ι = (F.map f₁).app Y₂ := by simp [ι]
 
 @[ext]
 lemma hom_ext {X₃ : C₃} {f g : sq.pt ⟶ X₃} (hₗ : sq.inl ≫ f = sq.inl ≫ g)
     (hᵣ : sq.inr ≫ f = sq.inr ≫ g) : f = g :=
   sq.isPushout.hom_ext hₗ hᵣ
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `sq : F.PushoutObjObj f₁ f₂`, flipping the pushout square gives
 `sq.flip : F.flip.PushoutObjObj f₂ f₁`. -/
 @[simps]
@@ -117,13 +116,9 @@ def flip : F.flip.PushoutObjObj f₂ f₁ where
   inl := sq.inr
   inr := sq.inl
   isPushout := sq.isPushout.flip
+  ι := sq.ι
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma ι_flip : sq.flip.ι = sq.ι := by
-  apply sq.flip.isPushout.hom_ext
-  · rw [inl_ι, flip_inl, inr_ι, flip_obj_map]
-  · rw [inr_ι, flip_inr, inl_ι, flip_map_app]
+@[deprecated (since := "2026-06-19")] alias ι_flip := flip_ι
 
 section
 
@@ -138,22 +133,9 @@ def ofNatIso : F'.PushoutObjObj f₁ f₂ where
   isPushout :=
     sq.isPushout.of_iso ((e.app _).app _) ((e.app _).app _) ((e.app _).app _) (Iso.refl _)
       (by simp) (by simp) (by simp) (by simp)
-
-set_option backward.defeqAttrib.useBackward true in
-@[simp, reassoc]
-lemma ofNatIso_ι :
-    (sq.ofNatIso e).ι = sq.ι ≫ (e.hom.app _).app _ := by
-  apply sq.hom_ext
-  · simp [← (sq.ofNatIso e).inl_ι]
-  · simp [← (sq.ofNatIso e).inr_ι]
+  ι := sq.ι ≫ (e.hom.app _).app _
 
 end
-
-set_option backward.isDefEq.respectTransparency false in
-lemma ofHasPushout_ι [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
-    (ofHasPushout F f₁ f₂).ι =
-      pushout.desc ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (by simp) := by
-  ext <;> simp [PushoutObjObj.ι, ofHasPushout_inl, ofHasPushout_inr]
 
 section
 
@@ -162,6 +144,7 @@ variable (F f₁ f₂)
   [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.flip.obj Y₂)]
   (h : IsInitial X₁)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A `Functor.PushoutObjObj` structure for a functor `F : C₁ ⥤ C₂ ⥤ C₃` and
 morphisms `f₁ : X₁ ⟶ Y₁` and `f₂ : X₂ ⟶ Y₂` when `X₁` is initial and both
 `F.flip.obj X₂` and `F.flip.obj Y₂` preserve the initial object. -/
@@ -176,11 +159,8 @@ noncomputable def ofIsInitialLeft : F.PushoutObjObj f₁ f₂ where
     apply +allowSynthFailures IsPushout.of_vert_isIso
     · exact isIso_of_isInitial hX₂ hY₂ _
     · exact ⟨hX₂.hom_ext _ _⟩
-
-set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma ofIsInitialLeft_ι : (ofIsInitialLeft F f₁ f₂ h).ι = (F.obj Y₁).map f₂ := by
-  simpa using (ofIsInitialLeft F f₁ f₂ h).inl_ι
+  ι := (F.obj Y₁).map f₂
+  inr_ι := (IsInitial.isInitialObj (F.flip.obj Y₂) _ h).hom_ext ..
 
 end
 
@@ -205,11 +185,8 @@ noncomputable def ofIsInitialRight : F.PushoutObjObj f₁ f₂ where
     apply +allowSynthFailures IsPushout.of_horiz_isIso
     · exact isIso_of_isInitial hX₁ hY₁ _
     · exact ⟨hX₁.hom_ext _ _⟩
-
-set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma ofIsInitialRight_ι : (ofIsInitialRight F f₁ f₂ h).ι = (F.map f₁).app Y₂ := by
-  simpa using (ofIsInitialRight F f₁ f₂ h).inr_ι
+  ι := (F.map f₁).app Y₂
+  inl_ι := (IsInitial.isInitialObj (F.obj Y₁) _ h).hom_ext ..
 
 end
 
@@ -360,11 +337,19 @@ structure PullbackObjObj where
   snd : pt ⟶ (G.obj (op Y₁)).obj Y₃
   isPullback : IsPullback fst snd ((G.obj (op X₁)).map f₃)
     ((G.map f₁.op).app Y₃)
+  /-- the Leibniz pullback -/
+  π : (G.obj (op Y₁)).obj X₃ ⟶ pt :=
+    isPullback.lift ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) (by simp)
+  π_fst : π ≫ fst = (G.map f₁.op).app X₃ := by cat_disch
+  π_snd : π ≫ snd = (G.obj (op Y₁)).map f₃ := by cat_disch
 
 namespace PullbackObjObj
 
+attribute [reassoc (attr := simp)] π_fst π_snd
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The `PullbackObjObj` structure given by the pullback of the limits API. -/
-@[simps -isSimp]
+@[simps]
 noncomputable def ofHasPullback
     [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
     G.PullbackObjObj f₁ f₃ where
@@ -372,31 +357,14 @@ noncomputable def ofHasPullback
   fst := pullback.fst _ _
   snd := pullback.snd _ _
   isPullback := IsPullback.of_hasPullback _ _
+  π := pullback.lift ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) (by simp)
 
 variable {G f₁ f₃} (sq : G.PullbackObjObj f₁ f₃)
-
-/-- The projection `(G.obj (op Y₁)).obj X₃ ⟶ sq.pt` when
-`sq : G.PullbackObjObj f₁ f₃`. -/
-noncomputable def π : (G.obj (op Y₁)).obj X₃ ⟶ sq.pt :=
-  sq.isPullback.lift ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) (by simp)
-
-@[reassoc (attr := simp)]
-lemma π_fst : sq.π ≫ sq.fst = (G.map f₁.op).app X₃ := by simp [π]
-
-@[reassoc (attr := simp)]
-lemma π_snd : sq.π ≫ sq.snd = (G.obj (op Y₁)).map f₃ := by simp [π]
 
 @[ext]
 lemma hom_ext {X₂ : C₂} {f g : X₂ ⟶ sq.pt} (h₁ : f ≫ sq.fst = g ≫ sq.fst)
     (h₂ : f ≫ sq.snd = g ≫ sq.snd) : f = g :=
   sq.isPullback.hom_ext h₁ h₂
-
-set_option backward.isDefEq.respectTransparency false in
-lemma ofHasPullback_π
-    [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
-    (ofHasPullback G f₁ f₃).π =
-      pullback.lift ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) (by simp) := by
-  ext <;> simp [PullbackObjObj.π, ofHasPullback_fst, ofHasPullback_snd]
 
 section
 
@@ -419,11 +387,8 @@ noncomputable def ofIsInitial : G.PullbackObjObj f₁ f₃ where
     apply +allowSynthFailures IsPullback.of_vert_isIso
     · exact isIso_of_isTerminal hX₃ hY₃ _
     · exact ⟨hY₃.hom_ext _ _⟩
-
-set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma ofIsInitial_π : (ofIsInitial G f₁ f₃ h).π = (G.obj (op Y₁)).map f₃ := by
-  simpa using (ofIsInitial G f₁ f₃ h).π_snd
+  π := (G.obj (op Y₁)).map f₃
+  π_fst := (IsTerminal.isTerminalObj (G.flip.obj X₃) _ h.op).hom_ext _ _
 
 end
 
@@ -448,11 +413,8 @@ noncomputable def ofIsTerminal : G.PullbackObjObj f₁ f₃ where
     apply +allowSynthFailures IsPullback.of_horiz_isIso
     · exact isIso_of_isTerminal hY₁ hX₁ _
     · exact ⟨hX₁.hom_ext _ _⟩
-
-set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma ofIsTerminal_π : (ofIsTerminal G f₁ f₃ h).π = (G.map f₁.op).app X₃ := by
-  simpa using (ofIsTerminal G f₁ f₃ h).π_fst
+  π := (G.map f₁.op).app X₃
+  π_snd := (IsTerminal.isTerminalObj (G.obj (op Y₁)) _ h).hom_ext _ _
 
 end
 
