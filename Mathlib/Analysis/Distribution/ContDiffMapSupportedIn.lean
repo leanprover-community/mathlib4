@@ -5,27 +5,10 @@ Authors: Anatole Dedecker, Luigi Massacci
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.Analysis.Calculus.ContDiff.Bounds
+public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Function.Holder
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
-public import Mathlib.Topology.Sets.Compacts
-
-
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Tactic.FunProp
-public import Mathlib.Topology.Algebra.UniformFilterBasis
-
-import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Normed.Lp.SmoothApprox
-import Mathlib.Tactic.MoveAdd
-import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Continuously differentiable functions supported in a given compact set
@@ -1090,3 +1073,5 @@ end bilin
 end Multiplication
 
 end ContDiffMapSupportedIn
+
+#min_imports
