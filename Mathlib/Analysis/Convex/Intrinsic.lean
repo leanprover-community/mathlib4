@@ -224,9 +224,8 @@ theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalS
   let e : affineSpan 𝕜 (s ×ˢ t) ≃ₜ affineSpan 𝕜 s × affineSpan 𝕜 t :=
     (Homeomorph.setCongr (coe_affineSpan_prod s t)).trans
       (Homeomorph.Set.prod (affineSpan 𝕜 s : Set P) (affineSpan 𝕜 t : Set Q))
-  have himage : e '' ((↑) ⁻¹' (s ×ˢ t)) = ((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t) := by
-    refine ext fun ⟨a, b⟩ ↦ ⟨fun ⟨z, hz, heq⟩ ↦ heq ▸ hz, fun h ↦ ⟨e.symm (a, b), ?_⟩⟩
-    exact ⟨mem_preimage.mpr h, by simp⟩
+  have himage : e '' ((↑) ⁻¹' (s ×ˢ t)) = ((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t) :=
+    ext fun ⟨a, b⟩ ↦ ⟨fun ⟨z, hz, heq⟩ ↦ heq ▸ hz, fun h ↦ ⟨e.symm (a, b), by simpa⟩⟩
   have hfst (x : affineSpan 𝕜 (s ×ˢ t)) : ((e x).1 : P) = (x : P × Q).1 := rfl
   have hsnd (x : affineSpan 𝕜 (s ×ˢ t)) : ((e x).2 : Q) = (x : P × Q).2 := rfl
   simp only [intrinsicInterior, Set.ext_iff, mem_image, Set.mem_prod]
