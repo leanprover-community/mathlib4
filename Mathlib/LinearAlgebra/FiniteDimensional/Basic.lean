@@ -383,7 +383,7 @@ theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p]
     p.comap f = p ⊔ ker f := by
   refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
   obtain ⟨⟨y, hy⟩, hxy⟩ :=
-    surjective_of_injective ((injective_restrict_iff_disjoint h).mpr h') ⟨f x, hx⟩
+    surjective_of_injective ((injective_restrict_iff h).mpr h') ⟨f x, hx⟩
   replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
   exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel y x⟩
 

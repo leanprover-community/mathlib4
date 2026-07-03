@@ -13,6 +13,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!
 # Schur's lemma
+
 We first prove the part of Schur's Lemma that holds in any preadditive category with kernels,
 that any nonzero morphism between simple objects
 is an isomorphism.
