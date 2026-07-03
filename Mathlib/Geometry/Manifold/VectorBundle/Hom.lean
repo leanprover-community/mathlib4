@@ -6,9 +6,15 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Topology.VectorBundle.Hom
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.LocalDiffeomorph
+public import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
+public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-! # Homs of `C^n` vector bundles over the same base space
 
@@ -22,6 +28,47 @@ Indeed, semilinear maps are typically not smooth. For instance, complex conjugat
 -/
 
 public section
+
+section -- By John McCarthy
+open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization
+open scoped Manifold Bundle Topology
+variable {𝕜 B F₁ : Type*} [NontriviallyNormedField 𝕜]
+  {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B]
+  {E₁ : B → Type*} [∀ x, AddCommGroup (E₁ x)]
+  [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
+  [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+
+
+lemma Bundle.Trivialization.ContMDiffAt_symm {k}
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) k
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (Trivialization.symmL 𝕜 e m)) x := by
+  have hx' : x ∈ (trivializationAt F₁ E₁ x).baseSet := mem_baseSet_trivializationAt F₁ E₁ x
+  refine contMDiffAt_totalSpace.mpr ⟨contMDiffAt_id, ?_⟩
+  apply (contMDiffAt_coordChangeL hx hx').congr_of_eventuallyEq
+  filter_upwards [(e.open_baseSet.inter (trivializationAt F₁ E₁ x).open_baseSet).mem_nhds
+    ⟨hx, hx'⟩] with b hb
+  ext v
+  change ((trivializationAt F₁ E₁ x).continuousLinearMapAt 𝕜 b)
+      ((e.symmL 𝕜 b) ((Bundle.Trivial.trivialization B F₁).symmL 𝕜 b v)) =
+    (e.coordChangeL 𝕜 (trivializationAt F₁ E₁ x) b) v
+  simp [e.symmL_apply hb.1, continuousLinearMapAt_apply_of_mem 𝕜 _ hb.2,
+    coordChangeL_apply' e _ hb, e.mk_symm hb.1]
+end
+
+/-- Composition of a function followed by a dependent function. -/
+@[inline, reducible]
+def Function.dcomp' {α β : Sort*} {γ : β → Sort*} (f : (y : β) → γ y)
+    (g : α → β) := fun x => f (g x)
+
+@[inherit_doc] infixr:80 " ∘'' " => Function.dcomp'
 
 noncomputable section
 
@@ -277,6 +324,38 @@ lemma ContMDiffAt.clm_bundle_apply
     CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
   ContMDiffWithinAt.clm_bundle_apply hϕ hv
 
+
+lemma ContMDiffAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
+    (hψ : CMDiffAt n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)) x)
+    {w : M → F₁}
+    (hb : CMDiffAt n b x) (hw : CMDiffAt n w x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x := by
+  apply ContMDiffAt.clm_bundle_apply (E₁ := Bundle.Trivial B F₁) (F₁ := F₁)
+  · apply hψ
+  · simp [contMDiffAt_totalSpace, hb, hw]
+
+lemma Bundle.Trivialization.contMDiffAt_symm_const {k}
+    [IsManifold IB k B]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁)) k
+      (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x := by
+  apply ContMDiffAt.clm_bundle_apply_trivial_source
+  · exact e.ContMDiffAt_symm hx
+  · exact contMDiffAt_id
+  · exact contMDiffAt_const
+
+-- unused but nice for symmetry
+lemma ContMDiffAt.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x) →L[𝕜] F₂)}
+    (hψ : CMDiffAt n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] F₂)) (b m) (ψ m)) x)
+    (hv : CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
+    CMDiffAt n (fun m ↦ ψ m (v m)) x := by
+  sorry
+
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
@@ -298,6 +377,252 @@ lemma ContMDiff.clm_bundle_apply
     (hv : CMDiff n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
+
+
+section
+variable [CompleteSpace 𝕜] [IsManifold IB 1 B]
+    [FiniteDimensional 𝕜 F₁]
+    [ContMDiffVectorBundle 1 F₁ E₁ IB]
+    [FiniteDimensional 𝕜 F₂]
+     [ContMDiffVectorBundle 1 F₂ E₂ IB]
+    {φ : Π x : B, E₁ x →L[𝕜] E₂ x}
+
+
+omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
+  [ContMDiffVectorBundle 1 F₁ E₁ IB] in
+lemma contMDiffOn_symm_of_memTrivializationAtlas {k}
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] :
+    CMDiff[e.target] k e.toOpenPartialHomeomorph.symm :=
+  e.contMDiffOn_symm
+
+omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
+  [ContMDiffVectorBundle 1 F₁ E₁ IB] in
+lemma contMDiffAt_symm_of_memTrivializationAtlas {k}
+    [IsManifold IB k B]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
+    CMDiffAt k e.toOpenPartialHomeomorph.symm (x, u) := by
+  apply e.contMDiffOn_symm |>.contMDiffAt (e.open_target.mem_nhds ?_)
+  simp [e.target_eq, hx]
+
+omit [CompleteSpace 𝕜] [IsManifold IB 1 B] [FiniteDimensional 𝕜 F₁]
+     [ContMDiffVectorBundle 1 F₁ E₁ IB] in
+lemma Bundle.Trivialization.contMDiffWithinAt_apply {k}
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))
+    [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) {s : Set B}
+    {σ : Π b, E₁ b} (hσ : CMDiffAt[s] k (T% σ) x) :
+    CMDiffAt[s] k (fun b ↦ e.continuousLinearMapAt 𝕜 b (σ b)) x := by
+  apply (contMDiffWithinAt_section s hx).mp hσ |>.congr_of_eventuallyEq
+  · apply mem_nhdsWithin_of_mem_nhds
+    filter_upwards [e.open_baseSet.mem_nhds hx] with x' hx'
+    simp [hx']
+  · simp [hx]
+
+-- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffWithinAt k (T% σ) b` is almost
+-- equivalent to `CMDiffWithinAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+lemma ContMDiffWithinAt.clm_bundle_of_apply {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB] {s : Set B} {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ b in 𝓝 x, CMDiffAt[s] k (T% σ) b) → CMDiffAt[s] k (T% (fun x ↦ φ x (σ x))) x) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k
+      (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) s x := by
+  refine (contMDiffWithinAt_hom_bundle fun x ↦ ⟨x, φ x⟩).mpr ⟨contMDiffWithinAt_id, ?_⟩
+  rw [contMDiffWithinAt_iff_source, contMDiffWithinAt_iff_contDiffWithinAt]
+  set t₁ := trivializationAt F₁ E₁ x
+  set t₂ := trivializationAt F₂ E₂ x
+  apply contDiffWithinAt_clm_apply.mpr
+  set ψ := extChartAt IB x
+  intro u
+  have C₀ : CMDiffAt[s] k (fun b ↦ t₂.continuousLinearMapAt 𝕜 b (φ b (t₁.symmL 𝕜 b u)))
+      (ψ.symm (ψ x)) := by
+    rw [extChartAt_to_inv x]
+    apply t₂.contMDiffWithinAt_apply (FiberBundle.mem_baseSet_trivializationAt' x)
+    apply h
+    filter_upwards [t₁.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)] with
+      x' hx'
+    exact (t₁.contMDiffAt_symm_const hx' _).contMDiffWithinAt
+  have := ContMDiffWithinAt.comp' (ψ x) C₀ (contMDiffWithinAt_extChartAt_symm_range_self x)
+  simpa [inter_comm, t₁, t₂, contMDiffWithinAt_iff_contDiffWithinAt, inCoordinates]
+
+-- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b` is almost equivalent
+-- to `CMDiffAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+lemma ContMDiffAt.clm_bundle_of_apply {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB] {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
+    x := by
+  simp_rw [← contMDiffWithinAt_univ] at h ⊢
+  exact ContMDiffWithinAt.clm_bundle_of_apply (fun σ hσ ↦ h σ hσ)
+
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+lemma ContMDiffOn.clm_bundle_of_apply {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB] {s : Set B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ x ∈ s, (∀ᶠ b in 𝓝 x, CMDiffAt[s] k (T% σ) b) → CMDiffAt[s] k (T% (fun x ↦ φ x (σ x))) x)) :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
+    s :=
+  fun x hx ↦ ContMDiffWithinAt.clm_bundle_of_apply (fun σ hσ ↦ h σ x hx hσ)
+
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+lemma ContMDiff.clm_bundle_of_apply {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB k B]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB]
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ x, (∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x)) :
+    ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) :=
+  fun x ↦ ContMDiffAt.clm_bundle_of_apply fun σ ↦ h σ x
+
+-- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffWithinAt k (T% σ) b` is almost
+-- equivalent to `CMDiffWithinAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+/-- Version allowing for the loss of a single derivative: we assume that applying `φ` to a
+`C^{k+1}` section near `x` within a set `s` produces a `C^k` section near `x` within `s` -/
+lemma ContMDiffWithinAt.clm_bundle_of_apply' {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB (k + 1) B] [ContMDiffVectorBundle (k + 1) F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB] {s : Set B} {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ b in 𝓝 x, CMDiffAt[s] (k + 1) (T% σ) b) → CMDiffAt[s] k (T% (fun x ↦ φ x (σ x))) x) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k
+      (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) s x := by
+  have : IsManifold IB k B := IsManifold.of_le (m := k) (n := k + 1) (by simp)
+  refine (contMDiffWithinAt_hom_bundle fun x ↦ ⟨x, φ x⟩).mpr ⟨contMDiffWithinAt_id, ?_⟩
+  rw [contMDiffWithinAt_iff_source, contMDiffWithinAt_iff_contDiffWithinAt]
+  set t₁ := trivializationAt F₁ E₁ x
+  set t₂ := trivializationAt F₂ E₂ x
+  apply contDiffWithinAt_clm_apply.mpr
+  set ψ := extChartAt IB x
+  intro u
+  have C₀ : CMDiffAt[s] k (fun b ↦ t₂.continuousLinearMapAt 𝕜 b (φ b (t₁.symmL 𝕜 b u)))
+      (ψ.symm (ψ x)) := by
+    rw [extChartAt_to_inv x]
+    apply t₂.contMDiffWithinAt_apply (FiberBundle.mem_baseSet_trivializationAt' x)
+    apply h
+    filter_upwards [t₁.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)] with
+      x' hx'
+    exact (t₁.contMDiffAt_symm_const hx' _).contMDiffWithinAt
+  have := ContMDiffWithinAt.comp' (ψ x) C₀ (contMDiffWithinAt_extChartAt_symm_range_self x)
+  simpa [inter_comm, t₁, t₂, contMDiffWithinAt_iff_contDiffWithinAt, inCoordinates]
+
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+/-- Version allowing for the loss of a single derivative: we assume that applying `φ` to a
+`C^{k+1}` section near `x` produces a `C^k` section near `x` -/
+lemma ContMDiffAt.clm_bundle_of_apply' {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB (k + 1) B] [ContMDiffVectorBundle (k + 1) F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB] {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ b in 𝓝 x, CMDiffAt (k + 1) (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
+    x := by
+  simp_rw [← contMDiffWithinAt_univ] at h ⊢
+  exact ContMDiffWithinAt.clm_bundle_of_apply' (fun σ hσ ↦ h σ hσ)
+
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+/-- Version allowing for the loss of a single derivative: we assume that applying `φ` to a
+`C^{k+1}` section on `s` produces a `C^k` section on `s` -/
+lemma ContMDiffOn.clm_bundle_of_apply' {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB (k + 1) B] [ContMDiffVectorBundle (k + 1) F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB] {s : Set B}
+    (h : ∀ (σ : Π x : B, E₁ x), (∀ x ∈ s, (∀ᶠ b in 𝓝 x, CMDiffAt[s] (k + 1) (T% σ) b) →
+      CMDiffAt[s] k (T% (fun x ↦ φ x (σ x))) x)) :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
+    s :=
+  fun x hx ↦ ContMDiffWithinAt.clm_bundle_of_apply' (fun σ hσ ↦ h σ x hx hσ)
+
+omit [IsManifold IB 1 B] [ContMDiffVectorBundle 1 F₁ E₁ IB]
+  [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
+/-- Version allowing for the loss of a single derivative: we assume that applying `φ` to a
+`C^{k+1}` section produces a `C^k` section -/
+lemma ContMDiff.clm_bundle_of_apply' {k}
+    [FiniteDimensional 𝕜 EB]
+    [IsManifold IB (k + 1) B] [ContMDiffVectorBundle (k + 1) F₁ E₁ IB]
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₂ E₂ IB]
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ x, (∀ᶠ b in 𝓝 x, CMDiffAt (k + 1) (T% σ) b) → CMDiffAt k (T% (fun x ↦ φ x (σ x))) x)) :
+    ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) :=
+  fun x ↦ ContMDiffAt.clm_bundle_of_apply' fun σ ↦ h σ x
+
+set_option linter.unusedSectionVars false in
+lemma TensorialAt.apply_clm
+    {φ : (Π x : B, E₁ x) → (Π x, E₂ x)} {x : B}
+    (hφ : TensorialAt IB F₁ (φ · x) x)
+    {σ : Π x : B, E₁ x} (hσ : MDiffAt (T% σ) x) :
+    TensorialAt.mkHom (φ · x) x hφ (σ x) = φ σ x := by
+  rw [mkHom_apply_eq_extend]
+  exact hφ.pointwise (FiberBundle.mdifferentiableAt_extend ..) hσ
+    <| FiberBundle.extend_apply_self F₁ (σ x)
+end
+
+/-- Criterion for a section of a Hom-bundle constructed using the tensoriality criterion to be
+smooth. -/
+theorem TensorialAt.contMDiff_mkHom
+    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k) [IsManifold IB k B]
+    [FiniteDimensional 𝕜 EB]
+    [FiniteDimensional 𝕜 F₁]
+    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle k F₁ E₁ IB]
+    [FiniteDimensional 𝕜 F₂]
+    [ContMDiffVectorBundle k F₂ E₂ IB]
+    (φ : (Π x : B, E₁ x) → (Π x, E₂ x))
+    (hφ : ∀ x, TensorialAt IB F₁ (φ · x) x)
+    (φ_contMDiff : ∀ (σ : Π x : B, E₁ x), ∀ x, CMDiffAt k (T% σ) x → CMDiffAt k (T% (φ σ)) x) :
+    -- elaborators not working here
+    haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
+    letI T (x : B) : TotalSpace (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) :=
+      ⟨x, TensorialAt.mkHom (φ · x) x (hφ x)⟩
+    CMDiff k T := by
+  have : IsManifold IB 1 B := IsManifold.of_le hk
+  have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
+  have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
+  intro b
+  apply ContMDiffAt.clm_bundle_of_apply fun σ hσ ↦ ?_
+  have : ∀ᶠ x in 𝓝 b, TensorialAt.mkHom (φ · x) x (hφ x) (σ x) = φ σ x := by
+    filter_upwards [hσ] with x hx
+    apply TensorialAt.apply_clm (hφ x)
+    exact hx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp hk)
+  have : ∀ᶠ x in 𝓝 b,
+      (⟨x, TensorialAt.mkHom (φ · x) x (hφ x) (σ x)⟩ : TotalSpace F₂ E₂) = ⟨x, φ σ x⟩ := by
+    filter_upwards [this] with x hx
+    simp [hx]
+  exact (φ_contMDiff σ b hσ.self_of_nhds).congr_of_eventuallyEq this
 
 end OneVariable
 
@@ -470,3 +795,56 @@ lemma MDifferentiable.clm_bundle_apply₂
 end TwoVariables'
 
 end
+
+section real_bundles
+variable {B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
+  {E₁ : B → Type*} {E₂ : B → Type*}
+  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module ℝ (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
+  [∀ x, Module ℝ (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace ℝ F₂]
+  [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
+  {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace ℝ EB] {HB : Type*} [TopologicalSpace HB]
+  (IB : ModelWithCorners ℝ EB HB) [TopologicalSpace B] [ChartedSpace HB B]
+   [SigmaCompactSpace B] [T2Space B]
+  {EM : Type*}
+  [NormedAddCommGroup EM] [NormedSpace ℝ EM] {HM : Type*} [TopologicalSpace HM]
+  {IM : ModelWithCorners ℝ EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+  [FiberBundle F₁ E₁] [VectorBundle ℝ F₁ E₁]
+  [FiberBundle F₂ E₂] [VectorBundle ℝ F₂ E₂] {e₁ e₁' : Trivialization F₁ (π F₁ E₁)}
+  {e₂ e₂' : Trivialization F₂ (π F₂ E₂)}
+
+-- Note there is a closely related  exists_contMDiff_support_eq_eq_one_iff but it assumes a smooth
+-- manifold and talks about support, not tsupport.
+lemma exists_bumpFunction [IsManifold IB n B] {U V : Set B} (hU : IsClosed U) (hV : IsOpen V)
+    (hUV : U ⊆ V) :
+    ∃ f : B → ℝ, CMDiff n f ∧ range f ⊆ Icc 0 1 ∧ tsupport f ⊆ V ∧ (∀ x ∈ U, f x = 1) := by
+  sorry
+
+include IB in
+lemma weakLocallyCompact_of_manifold [FiniteDimensional ℝ EB] : WeaklyLocallyCompactSpace B := by
+  sorry
+
+-- Warning: the next lemma is false for general fields
+lemma exists_contMDiff_extension
+    [FiniteDimensional ℝ EB] [IsManifold IB n B]
+    {σ : Π x : B, E₁ x} {b₀ : B} {k : ℕ∞} (hσ : ∀ᶠ b in 𝓝 b₀, CMDiffAt k (T% σ) b) (hk : k ≤ n) :
+    ∃ (σ' : Π x : B, E₁ x), CMDiff k (T% σ') ∧ ∀ᶠ b in 𝓝 b₀, σ' b = σ b := by
+  have : WeaklyLocallyCompactSpace B := weakLocallyCompact_of_manifold IB
+  rcases (nhds_basis_opens b₀).mem_iff.1 hσ with ⟨V, ⟨b₀V, V_open⟩, hσV⟩
+  rcases (closed_nhds_basis b₀).mem_iff.1 (V_open.mem_nhds b₀V) with ⟨U, ⟨U_mem, U_closed⟩, UV⟩
+  obtain ⟨f, f_diff, range_f, support_f, f_one⟩ := exists_bumpFunction IB
+    U_closed V_open UV (n := n)
+  use fun b ↦ f b • σ b, ?_, ?_
+  · intro x
+    by_cases hx : x ∈ V
+    · exact ((f_diff x).of_le hk).smul_section (hσV hx)
+    · have : ∀ᶠ x' in 𝓝 x, TotalSpace.mk' F₁ x' (f x' • σ x') = ⟨x', 0⟩ := by
+        replace hx : x ∉ tsupport f := by tauto
+        filter_upwards [notMem_tsupport_iff_eventuallyEq.1 hx] with x' hx'
+        simp [hx']
+      exact (contMDiffAt_zeroSection ℝ E₁).congr_of_eventuallyEq this
+  filter_upwards [U_mem] with x hx
+  simp [f_one x hx]
+
+end real_bundles

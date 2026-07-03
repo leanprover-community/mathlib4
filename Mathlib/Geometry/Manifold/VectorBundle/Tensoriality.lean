@@ -40,7 +40,7 @@ open Bundle FiberBundle Topology Module
 
 open scoped Manifold ContDiff
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -60,6 +60,12 @@ variable
   [∀ x, AddCommGroup (V' x)] [∀ x, Module 𝕜 (V' x)] [∀ x : M, TopologicalSpace (V' x)]
   [FiberBundle F' V']
 
+variable
+  (F'' : Type*) [NormedAddCommGroup F''] [NormedSpace 𝕜 F'']
+  {V'' : M → Type*} [TopologicalSpace (TotalSpace F'' V'')]
+  [∀ x, AddCommGroup (V'' x)] [∀ x, Module 𝕜 (V'' x)] [∀ x : M, TopologicalSpace (V'' x)]
+  [FiberBundle F'' V'']
+
 variable {A : Type*} [AddCommGroup A] [Module 𝕜 A]
 
 /-- An operation `Φ` on sections of a vector bundle `V` over `M` is *tensorial* at `x : M`, if it
@@ -69,7 +75,7 @@ structure TensorialAt (Φ : (Π x : M, V x) → A) (x : M) : Prop where
   add : ∀ {σ σ'}, MDiffAt (T% σ) x → MDiffAt (T% σ') x → Φ (σ + σ') = Φ σ + Φ σ'
 
 variable {Φ : (Π x : M, V x) → A} {x : M}
-variable {I F F'}
+variable {I F F' F''}
 
 namespace TensorialAt
 
@@ -97,7 +103,7 @@ protected theorem «local» (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x
     _ = Φ (ψ • σ') := by rw [funext this]
     _ = Φ σ' := by simp [hΦ.smul hψ' hσ', hψx]
 
-variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V']
+variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V'] [VectorBundle 𝕜 F'' V'']
 
 /-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
 multiplication). -/
@@ -110,7 +116,7 @@ theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
 /-- A tensorial operation on sections of a vector bundle respects sums (since it respects binary
 addition). -/
 theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι → Π x : M, V x)
-    (hσ : ∀ i, MDiffAt (T% (σ i)) x) :
+    (hσ : ∀ i ∈ s, MDiffAt (T% (σ i)) x) :
     Φ (fun x' ↦ ∑ i ∈ s, σ i x') = ∑ i ∈ s, Φ (σ i) := by
   classical
   induction s using Finset.induction_on with
@@ -118,11 +124,14 @@ theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι �
       rw [Finset.sum_empty]
       exact hΦ.zero
   | insert a s ha h =>
-      simp only [Finset.sum_insert ha, ← h]
-      exact hΦ.add (hσ a) (.sum_section hσ)
+      simp only [Finset.mem_insert, forall_eq_or_imp] at hσ
+      simp only [Finset.sum_insert ha, ← h hσ.2]
+      exact hΦ.add (hσ.1) (.sum_section hσ.2)
 
-variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 F']
+variable [CompleteSpace 𝕜]
+  [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 F'] [FiniteDimensional 𝕜 F'']
   [ContMDiffVectorBundle 1 F V I] [ContMDiffVectorBundle 1 F' V' I]
+  [ContMDiffVectorBundle 1 F'' V'' I]
 
 /-- If the operation `Φ` on sections of a vector bundle `V` is tensorial at `x`, then it depends
 only on the value of the section at `x`. -/
@@ -147,7 +156,7 @@ lemma pointwise (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
   have hΦ_eq {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) :
       Φ σ = Φ (fun x' ↦ ∑ i, c i x' (σ x') • s i x') :=
     hΦ.local hσ
-      (.sum_section fun i ↦ (hc hσ i).smul_section (hs i))
+      (.sum_section fun i _ ↦ (hc hσ i).smul_section (hs i))
       (t.eventually_eq_localFrame_sum_coeff_smul b x_mem)
   -- Now evaluate using the tensoriality properties.
   rw [hΦ_eq hσ, hΦ_eq hσ', hΦ.sum, hΦ.sum]
@@ -157,8 +166,8 @@ lemma pointwise (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
       _ = c i x (σ' x) • Φ (s i) := by rw [hσσ']
       _ = Φ ((LinearMap.piApply (c i) σ') • (s i)) :=
           hΦ.smul (hc hσ' i) (hs i) |>.symm
-  · exact fun i ↦ (hc hσ' i).smul_section (hs i)
-  · exact fun i ↦ (hc hσ i).smul_section (hs i)
+  · exact fun i _ ↦ (hc hσ' i).smul_section (hs i)
+  · exact fun i _ ↦ (hc hσ i).smul_section (hs i)
 
 /-- If the operation `Φ` on sections of vector bundles `V` and `V'` is tensorial at `x` in each
 argument, then it depends only on the value of the sections at `x`. -/
@@ -210,7 +219,7 @@ theorem mkHom_apply {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F (Φ 
 
 theorem mkHom_apply_eq_extend {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F Φ x) (σ : V x) :
     mkHom Φ x hΦ σ = Φ (extend F σ) :=
-  rfl
+  (rfl)
 
 /-- Given an `A`-valued operation `Φ` on sections of vector bundles `V` and `V'` which is tensorial
 at `x` in each argument, the construction `TensorialAt.mkHom₂` provides the associated continuous
@@ -284,6 +293,40 @@ theorem mkHom₂_apply_eq_extend
     (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x)
     (σ : V x) (τ : V' x) :
     mkHom₂ Φ x hΦ₁ hΦ₂ σ τ = Φ (extend F σ) (extend F' τ) :=
-  rfl
+  (rfl)
+
+/-- Given an `A`-valued operation `Φ` on sections of vector bundles `V`, `V'` and `V''` which is
+tensorial at `x` in each argument, the construction `TensorialAt.mkHom₃` provides the associated
+continuous linear map `V x →L[𝕜] V' x →L[𝕜] V'' x →L[𝕜] A`. -/
+noncomputable def mkHom₃
+    -- `Φ` and `x` explicit to make it easier to generate the side conditions at point of use
+    (Φ : (Π x : M, V x) → (Π x : M, V' x) → (Π x : M, V'' x) → A) (x : M)
+    -- TODO: may require further differentiability conditions here, or not!
+    -- if so, propagate down below
+    (hΦ₁ : ∀ τ υ, MDiffAt (T% τ) x → MDiffAt (T% υ) x → TensorialAt I F (Φ · τ υ) x)
+    (hΦ₂ : ∀ σ υ, MDiffAt (T% σ) x → MDiffAt (T% υ) x → TensorialAt I F' (Φ σ · υ) x)
+    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → MDiffAt (T% τ) x → TensorialAt I F'' (Φ σ τ ·) x) :
+    V x →L[𝕜] V' x →L[𝕜] V'' x →L[𝕜] A :=
+  sorry -- TODO: prove mutatis mutandis
+
+theorem mkHom₃_apply
+    {Φ : (Π x : M, V x) → (Π x : M, V' x) → (Π x : M, V'' x) → A} {x}
+    (hΦ₁ : ∀ τ υ, MDiffAt (T% τ) x → MDiffAt (T% υ) x → TensorialAt I F (Φ · τ υ) x)
+    (hΦ₂ : ∀ σ υ, MDiffAt (T% σ) x → MDiffAt (T% υ) x → TensorialAt I F' (Φ σ · υ) x)
+    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → MDiffAt (T% τ) x → TensorialAt I F'' (Φ σ τ ·) x)
+    {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) {τ : Π x : M, V' x} (hτ : MDiffAt (T% τ) x)
+    {τ' : Π x : M, V'' x} (hτ : MDiffAt (T% τ') x) :
+    mkHom₃ Φ x hΦ₁ hΦ₂ hΦ₃ (σ x) (τ x) (τ' x) = Φ σ τ τ' :=
+  sorry -- mkHom₂_apply mutatis mutandis
+
+theorem mkHom₃_apply_eq_extend
+    {Φ : (Π x : M, V x) → (Π x : M, V' x) → (Π x : M, V'' x) → A} {x}
+    (hΦ₁ : ∀ τ υ, MDiffAt (T% τ) x → MDiffAt (T% υ) x → TensorialAt I F (Φ · τ υ) x)
+    (hΦ₂ : ∀ σ υ, MDiffAt (T% σ) x → MDiffAt (T% υ) x → TensorialAt I F' (Φ σ · υ) x)
+    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → MDiffAt (T% τ) x → TensorialAt I F'' (Φ σ τ ·) x)
+    (σ : V x) (τ : V' x) (τ' : V'' x) :
+    mkHom₃ Φ x hΦ₁ hΦ₂ hΦ₃ σ τ τ' =
+      Φ (FiberBundle.extend F σ) (FiberBundle.extend F' τ) (FiberBundle.extend F'' τ') :=
+  sorry -- once the above proofs are filled in, this should be try by `rfl`
 
 end TensorialAt

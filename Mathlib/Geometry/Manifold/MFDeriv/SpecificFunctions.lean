@@ -799,6 +799,20 @@ theorem mfderivWithin_add (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
       (by exact mfderiv[s] f z) + (by exact mfderiv[s] g z) :=
   (hf.hasMFDerivWithinAt.add hg.hasMFDerivWithinAt).mfderivWithin hs
 
+open NormedSpace in
+theorem fromTangentSpace_mfderiv_add (hf : MDiffAt f z) (hg : MDiffAt g z) :
+    (fromTangentSpace _).toContinuousLinearMap ∘L (mfderiv% (f + g) z)
+    = (fromTangentSpace _).toContinuousLinearMap ∘L (mfderiv% f z)
+    + (fromTangentSpace _).toContinuousLinearMap ∘L (mfderiv% g z) :=
+  (hf.hasMFDerivAt.add hg.hasMFDerivAt).mfderiv
+
+open NormedSpace in
+theorem fromTangentSpace_mfderiv_add_apply (hf : MDiffAt f z) (hg : MDiffAt g z)
+    (v : TangentSpace I x) :
+    fromTangentSpace _ (mfderiv% (f + g) z v)
+    = fromTangentSpace _ (mfderiv% f z v) + fromTangentSpace _ (mfderiv% g z v) :=
+  congr($(fromTangentSpace_mfderiv_add hf hg) v)
+
 section sum
 variable {ι : Type} {t : Finset ι} {f : ι → M → E'} {f' : ι → TangentSpace% z →L[𝕜] E'}
 
