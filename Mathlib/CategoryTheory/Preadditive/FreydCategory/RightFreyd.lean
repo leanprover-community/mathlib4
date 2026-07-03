@@ -115,7 +115,7 @@ instance : (rightFunctor V).Additive where
 
 /-- The fully faithful additive functor from  `V` to `RightFreyd V` sending an object `X` of `V`
 to the class of the arrow `0 ⟶ X`. -/
-def functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
+abbrev functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
 
 instance : (functor V).Additive := by dsimp [functor]; infer_instance
 
