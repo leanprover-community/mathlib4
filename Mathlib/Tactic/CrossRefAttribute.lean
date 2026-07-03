@@ -17,7 +17,7 @@ to entries in external mathematical databases:
 * `@[stacks TAG]` — [Stacks Project](https://stacks.math.columbia.edu/tags)
 * `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
 * `@[wikidata QID]` — [Wikidata](https://www.wikidata.org)
-* `@[lmfdb ID]` — [LMFDB](https://www.lmfdb.org/knowledge/show/)
+* `@[lmfdb ID]` — [LMFDB](https://www.lmfdb.org)
 
 Each attribute records the cross-reference in an environment extension and appends
 a link to the declaration's docstring.
@@ -44,7 +44,7 @@ inductive Database where
 /-- The base URL for an external database's tag pages. Always ends with `/`. -/
 def databaseURL : Database → String
   | .kerodon => "https://kerodon.net/tag/"
-  | .lmfdb => "https://www.lmfdb.org/knowledge/"
+  | .lmfdb => "https://www.lmfdb.org/knowledge/show/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
   | .wikidata => "https://www.wikidata.org/wiki/"
 
@@ -83,11 +83,10 @@ def addTagEntry {m : Type → Type} [MonadEnv m]
 
 /-- Append a cross-reference link to the docstring of `decl` and record it in `tagExt`.
 This is the database-agnostic core of every cross-reference attribute's `add` handler. -/
-def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String)
-    (urlModifier : String := "") : CoreM Unit := do
+def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : CoreM Unit := do
   let oldDoc := (← findDocString? (← getEnv) decl).getD ""
   let commentInDoc := if comment.isEmpty then "" else s!" ({comment})"
-  let link := s!"[{databaseLabel db} {idStr}]({databaseURL db}{urlModifier ++ idStr}){commentInDoc}"
+  let link := s!"[{databaseLabel db} {idStr}]({databaseURL db}{idStr}){commentInDoc}"
   addDocStringCore decl <| "\n\n".intercalate ([oldDoc, link].filter (· != ""))
   addTagEntry decl db idStr comment
 
@@ -320,7 +319,7 @@ initialize Lean.registerBuiltinAttribute {
     let (id, comment) ← match stx with
       | `(attr| lmfdb $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax
-    addCrossRefDoc .lmfdb decl (← id.getLmfdbId) ((comment.map (·.getString)).getD "") "show/"
+    addCrossRefDoc .lmfdb decl (← id.getLmfdbId) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
@@ -341,7 +340,7 @@ namespace Mathlib.CrossRef
 
 /-- `traceCrossRefs db verbose` prints the cross-references of database `db` and
 inlines the declaration types if `verbose` is `true`. -/
-def traceCrossRefs (db : Database) (verbose : Bool := false) (urlModifier : String := "") :
+def traceCrossRefs (db : Database) (verbose : Bool := false) :
     Command.CommandElabM Unit := do
   let env ← getEnv
   let entries := env.getSortedCrossRefs |>.filter (·.database == db)
@@ -351,7 +350,7 @@ def traceCrossRefs (db : Database) (verbose : Bool := false) (urlModifier : Stri
     let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
     let cmt := parL ++ d.comment ++ parR
     msgs := msgs.push
-      m!"[{databaseLabel db} {d.tag}]({databaseURL db ++ urlModifier ++ d.tag}) \
+      m!"[{databaseLabel db} {d.tag}]({databaseURL db ++ d.tag}) \
         corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
     if verbose then
       let dType := ((env.find? d.declName).getD default).type
@@ -406,6 +405,6 @@ The variant `#lmfdb_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := lmfdbTags) "#lmfdb_tags" tk:("!")? : command =>
-  traceCrossRefs .lmfdb (tk.isSome) ("show/")
+  traceCrossRefs .lmfdb (tk.isSome)
 
 end Mathlib.CrossRef
