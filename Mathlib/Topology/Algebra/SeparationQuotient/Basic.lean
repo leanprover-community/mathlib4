@@ -35,7 +35,7 @@ variable {M X : Type*} [TopologicalSpace X] [SMul M X] [ContinuousConstSMul M X]
 
 @[to_additive]
 instance instSMul : SMul M (SeparationQuotient X) where
-  smul c := Quotient.map' (c • ·) fun _ _ h ↦ h.const_smul c
+  smul c := id <| Quotient.map' (c • ·) fun _ _ h ↦ h.const_smul c
 
 @[to_additive (attr := simp)]
 theorem mk_smul (c : M) (x : X) : mk (c • x) = c • mk x := rfl
@@ -125,7 +125,11 @@ def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M 
   map_mul' := mk_mul
   map_one' := mk_one
 
-@[to_additive instNSMul]
+instance (priority := 900) instNSMul [AddMonoid M] [ContinuousAdd M] :
+    SMul ℕ (SeparationQuotient M) :=
+  inferInstance
+
+@[to_additive existing]
 instance instPow [Monoid M] [ContinuousMul M] : Pow (SeparationQuotient M) ℕ where
   pow x n := Quotient.map' (s₁ := inseparableSetoid M) (· ^ n) (fun _ _ h ↦ Inseparable.pow h n) x
 
@@ -178,7 +182,10 @@ theorem mk_div [Div G] [ContinuousDiv G] (x y : G) : mk (x / y) = mk x / mk y :=
 instance instContinuousDiv [Div G] [ContinuousDiv G] : ContinuousDiv (SeparationQuotient G) where
   continuous_div' := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
 
-@[to_additive]
+instance instZSMul [AddGroup G] [IsTopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
+  inferInstance
+
+@[to_additive existing]
 instance instZPow [Group G] [IsTopologicalGroup G] : Pow (SeparationQuotient G) ℤ where
   pow x n := Quotient.map' (s₁ := inseparableSetoid G) (· ^ n) (fun _ _ h ↦ Inseparable.zpow h n) x
 
