@@ -94,7 +94,7 @@ theorem simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
   have := Simple.of_iso <| Functor.preimageIso _ this
   exact Functor.simple_of_simple_obj e.inverse _
 
-theorem simple_iff_functor {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+theorem simple_obj_iff {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] (X : C) :
     Simple X ↔ Simple (F.obj X) :=
   ⟨fun _ => simple_obj F X, fun _ => Functor.simple_of_simple_obj F X⟩
