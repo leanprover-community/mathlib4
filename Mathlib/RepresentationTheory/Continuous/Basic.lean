@@ -479,7 +479,8 @@ def _root_.ContIntertwiningMap.mapInvariants
   f.toContinuousLinearMap.restrict <| by
     simp +contextual [f.toContinuousLinearMap_apply, ← f.isIntertwining]
 
--- provided for rewrite
+-- provided for rewrite, this lemma should be used when `mapInvariants` is
+-- applied to `(homogeneousCochains X).X 0`
 lemma _root_.ContIntertwiningMap.mapInvariants_apply
     {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
     (f : π →ⁱL π') (v : π.invariants) :
