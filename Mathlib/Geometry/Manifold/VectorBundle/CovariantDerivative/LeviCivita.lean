@@ -666,12 +666,11 @@ open Module in
 variable {I} in
 lemma step2b (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
-    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
-    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
-    {x : M}
-    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : ∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Z) b),
-      CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)] {x : M}
+    (hW : ∀ {Z : (x : M) → TangentSpace% x},
+      (∀ᶠ (b : M) in nhds x, CMDiffAt (k + 1) (T% Z) b) → CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
     CMDiffAt k (T% W) x := by
+  -- stronger statement than step2a; hypotheses hW is weaker!
   sorry
 
 -- TODO: have a stale `IsManifold I 2 M` hypothesis lying around...
