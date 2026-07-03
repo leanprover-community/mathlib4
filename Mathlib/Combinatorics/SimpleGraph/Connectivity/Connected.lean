@@ -164,7 +164,7 @@ lemma Reachable.of_walk_mem {u v x y} (w : G.Walk u v) (hx : x ∈ w.support) (h
   obtain ⟨n, hn⟩ := Walk.mem_support_iff_exists_getVert.mp hx
   obtain ⟨m, hm⟩ := Walk.mem_support_iff_exists_getVert.mp hy
   wlog h : n ≤ m generalizing n m x y
-  · exact this hy hx m hm n hn (by lia) |>.symm
+  · exact this hy hx m hm n hn (Nat.le_of_not_le h) |>.symm
   let := (w.drop n).take (m - n)
   simp only [hn, Walk.drop_getVert, Nat.add_sub_of_le h, hm] at this
   use this

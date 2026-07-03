@@ -47,11 +47,11 @@ theorem cycleGraph_zero_eq_top : cycleGraph 0 = ⊤ := Subsingleton.elim _ _
 theorem cycleGraph_one_eq_top : cycleGraph 1 = ⊤ := Subsingleton.elim _ _
 
 theorem cycleGraph_eq_top_of_le_three {n : ℕ} (hn : n ≤ 3) : cycleGraph n = ⊤ := by
-  rcases show n = 0 ∨ n = 1 ∨ n = 2 ∨ n = 3 by lia with rfl | rfl | rfl | rfl
-  all_goals simp only [SimpleGraph.ext_iff, funext_iff]; decide
+  match n with
+  | 0 | 1 | 2 | 3 => simp only [SimpleGraph.ext_iff, funext_iff]; decide
+  | n + 4 => contradiction
 
 theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := cycleGraph_eq_top_of_le_three (by simp)
-
 theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := cycleGraph_eq_top_of_le_three (by simp)
 
 theorem cycleGraph_one_adj {u v : Fin 1} : ¬(cycleGraph 1).Adj u v := by
@@ -153,18 +153,15 @@ theorem cycleGraph.isCycle_cycle : (cycleGraph.cycle n).IsCycle :=
 theorem cycleGraph.mem_support_cycle {n : ℕ} (u : Fin (n + 3)) :
     u ∈ (cycleGraph.cycle n).support := by
   refine mem_support_iff_exists_getVert.mpr ⟨n + 3 - u, ?_, by simp⟩
-  rw [cycleGraph.getVert_cycle (by simp)]
-  ext
-  simp [show n + 3 - (n + 3 - u) = u by lia]
+  simp [cycleGraph.getVert_cycle (Nat.sub_le _ _), Fin.ext_iff, Nat.sub_sub_self]
 
 end cycle
 
 theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected := by
-  by_cases h : n ≤ 3
-  · simp [cycleGraph_eq_top_of_le_three h]
-  rw [show n = n - 3 + 3 by lia]
-  intro u v
-  exact Reachable.of_walk_mem _ (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
+  match n with
+  | 0 | 1 | 2 => simp [cycleGraph_eq_top_of_le_three]
+  | n + 3 =>
+    exact fun _ _ ↦ .of_walk_mem _ (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
 
 theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   SimpleGraph.connected_iff _ |>.mpr ⟨cycleGraph_preconnected, inferInstance⟩
