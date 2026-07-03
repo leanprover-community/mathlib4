@@ -58,7 +58,7 @@ class Simple (X : C) : Prop where
 theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w : f ≠ 0) : IsIso f :=
   (Simple.mono_isIso_iff_nonzero f).mpr w
 
-theorem Functor.preserves_simple {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+theorem Functor.simple_of_simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.PreservesMonomorphisms] [F.PreservesZeroMorphisms] [F.ReflectsIsomorphisms] [F.Faithful]
     (X : C) [Simple (F.obj X)] : Simple X :=
   .mk fun {Y} g _ => by
