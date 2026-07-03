@@ -31,16 +31,25 @@ theorem `MeasureTheory.Measure.AddMonoidHom.continuous_of_measurable`.
 
 ## Implementation notes
 
-If `f 0 = 0` then `f` vanishes identically (since `f x = f x * f 0`) and is continuous, so we may
-assume `f` is nowhere zero. The modulus `‖f‖` is multiplicative, so `t ↦ Real.log ‖f t‖` is an
-additive measurable map `ℝ → ℝ`, hence continuous by
-`MeasureTheory.Measure.AddMonoidHom.continuous_of_measurable`; thus `‖f‖` is continuous and `f` is
-locally bounded, so interval integrable. The primitive `F y = ∫ t in 0..y, f t` is continuous, and
-the Lebesgue differentiation theorem (`LocallyIntegrable.ae_hasDerivAt_integral`) forces `F a ≠ 0`
-for some `a` (otherwise `f = 0` almost everywhere, impossible since `f` never vanishes). The
-homomorphism property gives the sliding-window identity
-`f s * F a = ∫ t in s..(s + a), f t = F (s + a) - F s`, so `f s = (F (s + a) - F s) / F a` is
-continuous in `s`.
+The theorem `continuous_of_measurable_of_mul` splits on `f 0`. If `f 0 = 0` then `f` vanishes
+identically (as `f x = f x * f 0`) and is continuous; otherwise `f` is nowhere zero and we appeal to
+`continuous_of_measurable_of_mul_aux`, whose proof runs as follows.
+
+1. **Nowhere zero.** From `f 0 ≠ 0` and multiplicativity, `f x ≠ 0` for every `x`.
+2. **Continuous modulus** (`continuous_norm_of_measurable_of_mul`, the crucial reduction to the
+   additive case). As `‖f‖` is multiplicative and positive, `t ↦ Real.log ‖f t‖` is a measurable
+   *additive* map `ℝ → ℝ`, hence continuous by the additive theorem
+   `MeasureTheory.Measure.AddMonoidHom.continuous_of_measurable`; exponentiating shows `‖f‖` is
+   continuous.
+3. **Integrability.** Being dominated by its continuous modulus, `f` is locally integrable, and so
+   interval integrable on every interval.
+4. **Continuous primitive.** Hence the primitive `F y = ∫ t in 0..y, f t` is continuous
+   (`intervalIntegral.continuous_primitive`).
+5. **A nonzero window.** `F a ≠ 0` for some `a`: were `F` identically zero, the Lebesgue
+   differentiation theorem (`LocallyIntegrable.ae_hasDerivAt_integral`) would force `f = 0` almost
+   everywhere, contradicting that `f` never vanishes.
+6. **Sliding window.** Multiplicativity rewrites `∫ t in s..(s + a), f t` as both `f s * F a` and
+   `F (s + a) - F s`, giving `f s = (F (s + a) - F s) / F a`, which is continuous in `s`.
 
 These results are the `ℝ`-domain analytic special case of the classical fact that a measurable
 homomorphism between locally compact, second-countable groups is continuous.
