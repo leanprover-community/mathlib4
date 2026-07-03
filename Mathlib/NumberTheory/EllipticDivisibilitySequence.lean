@@ -289,57 +289,49 @@ def IsEllipticNet : Prop :=
 def IsEllipticSequence : Prop :=
   ∀ p q r : ℤ, IsEllipticNet.rel W p q r 0 = 0
 
-@[deprecated (since := "2026-07-01")] alias IsEllSequence := IsEllipticSequence
-
 /-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
 def IsEllipticDvdSequence : Prop :=
   IsEllipticSequence W ∧ IsDvdSequence W
 
-@[deprecated (since := "2026-07-01")] alias IsEllDvdSequence := IsEllipticDvdSequence
-@[deprecated (since := "2026-06-30")] alias IsEllipticDivSequence := IsEllipticDvdSequence
-@[deprecated (since := "2026-06-30")] alias IsEllDivSequence := IsEllipticDvdSequence
+namespace IsEllipticNet
 
-variable {W} in
-lemma IsEllipticNet.isEllipticSequence (h : IsEllipticNet W) : IsEllipticSequence W :=
+variable {W}
+
+lemma isEllipticSequence (h : IsEllipticNet W) : IsEllipticSequence W :=
   (h · · · 0)
 
-@[deprecated (since := "2026-07-01")] alias IsEllipticNet.isEllSequence :=
-  IsEllipticNet.isEllipticSequence
+protected lemma id : IsEllipticNet (id : ℤ → ℤ) :=
+  fun _ _ _ _ ↦ by simp_rw [rel, id_eq]; ring1
 
-variable {W} in
-lemma IsEllipticNet.smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W := fun p q r s ↦ by
+protected lemma smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W := fun p q r s ↦ by
   linear_combination (norm := (simp_rw [rel, Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h p q r s
 
-variable {W} in
-lemma IsEllipticSequence.smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| x • W :=
+end IsEllipticNet
+
+namespace IsEllipticSequence
+
+variable {W}
+
+protected lemma id : IsEllipticSequence (id : ℤ → ℤ) :=
+  IsEllipticNet.id.isEllipticSequence
+
+protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| x • W :=
   fun p q r ↦ by linear_combination (norm := (simp [IsEllipticNet.rel]; ring1)) x ^ 4 * h p q r
 
-@[deprecated (since := "2026-07-01")] alias IsEllSequence.smul := IsEllipticSequence.smul
+end IsEllipticSequence
 
-variable {W} in
-lemma IsEllipticDvdSequence.smul (h : IsEllipticDvdSequence W) (x : R) :
-    IsEllipticDvdSequence <| x • W :=
-  ⟨h.left.smul x, h.right.smul x⟩
+namespace IsEllipticDvdSequence
 
-@[deprecated (since := "2026-07-01")] alias IsEllDvdSequence.smul := IsEllipticDvdSequence.smul
-@[deprecated (since := "2026-06-30")] alias IsEllipticDivSequence.smul := IsEllipticDvdSequence.smul
-@[deprecated (since := "2026-06-30")] alias IsEllDivSequence.smul := IsEllipticDvdSequence.smul
-
-lemma isEllipticNet_id : IsEllipticNet id :=
-  fun _ _ _ _ ↦ by simp_rw [IsEllipticNet.rel, id_eq]; ring1
-
-lemma isEllipticSequence_id : IsEllipticSequence id :=
-  isEllipticNet_id.isEllipticSequence
-
-@[deprecated (since := "2026-07-01")] alias isEllSequence_id := isEllipticSequence_id
+variable {W}
 
 /-- The identity sequence is an EDS. -/
-theorem isEllipticDvdSequence_id : IsEllipticDvdSequence id :=
-  ⟨isEllipticSequence_id, .id ℤ⟩
+protected theorem id : IsEllipticDvdSequence (id : ℤ → ℤ) :=
+  ⟨IsEllipticSequence.id, .id ℤ⟩
 
-@[deprecated (since := "2026-07-01")] alias isEllDvdSequence_id := isEllipticDvdSequence_id
-@[deprecated (since := "2026-06-30")] alias isEllipticDivSequence_id := isEllipticDvdSequence_id
-@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := isEllipticDvdSequence_id
+protected lemma smul (h : IsEllipticDvdSequence W) (x : R) : IsEllipticDvdSequence <| x • W :=
+  ⟨h.left.smul x, h.right.smul x⟩
+
+end IsEllipticDvdSequence
 
 variable (b c d : R)
 

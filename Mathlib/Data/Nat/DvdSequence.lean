@@ -57,13 +57,13 @@ protected theorem smul' [Dvd α] [Monoid β] [Monoid γ] {f : α → β} {g : α
     (hf : IsDvdSequence f) (hg : IsDvdSequence g) : IsDvdSequence (f • g) :=
   fun a b hab ↦ smul_dvd_smul (hf a b hab) (hg a b hab)
 
-protected theorem mul [Dvd α] [CommMonoid β] {f g : α → β}
-    (hf : IsDvdSequence f) (hg : IsDvdSequence g) : IsDvdSequence (f * g) :=
+protected theorem mul [Dvd α] [CommMonoid β] {f g : α → β} (hf : IsDvdSequence f)
+    (hg : IsDvdSequence g) : IsDvdSequence (f * g) :=
   .smul' hf hg
 
-protected theorem smul [Dvd α] [Monoid β] [Monoid γ] {f : α → γ} [SMul β γ]
-    [IsScalarTower β γ γ] [IsScalarTower β β γ] [SMulCommClass β γ γ]
-    (b : β) (hg : IsDvdSequence f) : IsDvdSequence (b • f) :=
+protected theorem smul [Dvd α] [Monoid β] [Monoid γ] {f : α → γ} [SMul β γ] [IsScalarTower β γ γ]
+    [IsScalarTower β β γ] [SMulCommClass β γ γ] (b : β) (hg : IsDvdSequence f) :
+    IsDvdSequence (b • f) :=
   .smul' (.const α b) hg
 
 end IsDvdSequence
