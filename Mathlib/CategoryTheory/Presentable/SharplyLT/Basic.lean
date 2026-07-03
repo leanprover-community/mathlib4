@@ -344,7 +344,7 @@ lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
     (j := ⟨a, ha⟩) (j' := ⟨b, hb⟩) (homOfLE hab)
 
 set_option backward.defeqAttrib.useBackward true in
-/-- The functoriality of `colimimt` with respect to the subset `A`. -/
+/-- The functoriality of `colimit` with respect to the subset `A`. -/
 noncomputable def colimit.map
     {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)} (hA : A₁ ≤ A₂) :
     colimit κ₁ κ₂ p A₁ ⟶ colimit κ₁ κ₂ p A₂ :=
@@ -477,10 +477,11 @@ end IsCardinalFilteredAndHasCardinalLT
 variable (C : Type u) [Category.{v} C]
 
 variable (κ₁ κ₂) in
-/-- This is the closure of `κ₁`-presentable objects in category `C` with respect
-to colimits indexed by categories `J` such that `Arrow J` is of cardinality `κ₂`.
+/-- This is the closure of `κ₁`-presentable objects in the category `C` with respect
+to colimits indexed by categories `J` such that `Arrow J` is of cardinality < `κ₂`.
 When `C` is `κ₁`-accessible and `κ₁` is sharply smaller than `κ₂`, then any
-object of `C` is a `κ₂`-filtered colimit of objects in this closure. -/
+object of `C` is a `κ₂`-filtered colimit of objects in this closure,
+see `Cardinal.SharplyLT.isCardinalFilteredGenerator` below. -/
 public abbrev generator : ObjectProperty C :=
   (isCardinalPresentable C κ₁).colimitsCardinalClosure κ₂
 
@@ -493,6 +494,11 @@ lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
 
 open IsCardinalFilteredAndHasCardinalLT in
 include hκ hκ' in
+/-- This is part of the proof of the implication (iv) → (ii) in the
+characterizations of `SharplyLT κ₁ κ₂` in the docstring of this file.
+See the lemma `Cardinal.SharplyLT.isCardinalFilteredGenerator` for the
+version of this lemma with the assumption `SharplyLT κ₁ κ₂` instead of the
+condition (iv). -/
 lemma isCardinalFilteredGenerator'
     [IsCardinalAccessibleCategory C κ₁] :
     (generator κ₁ κ₂ C).IsCardinalFilteredGenerator κ₂ where
@@ -518,7 +524,10 @@ lemma isCardinalFilteredGenerator'
 
 include hκ hκ' in
 /-- This is the implication (iv) → (ii) in the characterizations
-of `SharplyLT κ₁ κ₂` in the docstring of this file. -/
+of `SharplyLT κ₁ κ₂` in the docstring of this file.
+See the lemma `Cardinal.SharplyLT.isCardinalAccessibleCategory`
+for the version of the lemma with the assumption `SharplyLT κ₁ κ₂`
+instead of the condition (iv). -/
 lemma isCardinalAccessibleCategory'
     (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
     IsCardinalAccessibleCategory C κ₂ where
@@ -569,8 +578,7 @@ public lemma exists_isCardinalFiltered_set (h : SharplyLT κ₁ κ₂)
   exact this.1 h.isCardinalAccessible_cardinalDirectedPoset A hA
 
 public lemma isCardinalFilteredGenerator (h : SharplyLT κ₁ κ₂)
-    (C : Type u) [Category.{v} C]
-    [IsCardinalAccessibleCategory C κ₁] :
+    (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
     (generator κ₁ κ₂ C).IsCardinalFilteredGenerator κ₂ :=
   isCardinalFilteredGenerator' h.lt (h.exists_isCardinalFiltered_set) C
 
