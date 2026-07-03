@@ -61,7 +61,7 @@ theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w 
 theorem Functor.simple_of_simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.PreservesMonomorphisms] [F.PreservesZeroMorphisms] [F.ReflectsIsomorphisms] [F.Faithful]
     (X : C) [Simple (F.obj X)] : Simple X :=
-  .mk fun {Y} g _ => by
+  .mk fun {Y} g _ ↦ by
     rw [← isIso_iff_of_reflects_iso g F, Simple.mono_isIso_iff_nonzero (F.map g),
       ne_eq, ne_eq, not_iff_not, F.map_eq_zero_iff]
 
