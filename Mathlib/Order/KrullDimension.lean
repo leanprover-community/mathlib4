@@ -934,6 +934,58 @@ lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [Krul
 
 instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
 
+lemma krullDimLE_iff_orderDual {n : ℕ} {α : Type*} [Preorder α] :
+    Order.KrullDimLE n α ↔ Order.KrullDimLE n αᵒᵈ := by
+  rw [Order.krullDimLE_iff, Order.krullDimLE_iff, krullDim_orderDual]
+
+lemma bango {X : Type*} [PartialOrder X] {n : ℕ} [h : Order.KrullDimLE n X]
+    {x y : X} (hx : n = height x) (hy : x ≤ y) : y = x := by
+  rw [Order.krullDimLE_iff] at h
+  by_contra hne
+  have hlt : x < y :=  lt_of_le_not_ge hy fun hxy => hne (hy.antisymm hxy).symm
+  have h2 : (n + 1 : ℕ) ≤ height y := by
+    have hstep : n + 1 ≤ height x + 1 := by simp_all
+    exact hstep.trans (height_add_one_le hlt)
+  have h3 : n + 1 ≤ (n : WithBot ℕ∞) :=
+    (le_trans (by exact_mod_cast h2) (height_le_krullDim y)).trans h
+  have : n + 1 ≤ n := by exact_mod_cast h3
+  omega
+
+lemma bingo {X : Type*} [PartialOrder X] {n : ℕ} [h : Order.KrullDimLE n X]
+    {x y : X} (hx : n = height x) (hy : x ≤ y) : y = x := by sorry
+
+
+lemma krullDimLE_iff_coheight_le_implies_eq {X : Type*} [PartialOrder X] {n : ℕ} :
+    Order.KrullDimLE n X ↔ (∀ x : X, n ≤ coheight x → ∀ y, y ≤ x → y = x) := by
+  rw [Order.krullDimLE_iff]
+  refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ?_⟩
+  · by_contra hne
+    have hlt : y < x :=  lt_of_le_not_ge hy fun hxy => hne (hy.antisymm hxy)
+    have h2 : (n + 1 : ℕ) ≤ coheight y := by
+      have hstep : n + 1 ≤ coheight x + 1 := by gcongr
+      exact hstep.trans (coheight_add_one_le hlt)
+    have h3 : n + 1 ≤ (n : WithBot ℕ∞) :=
+      (le_trans (by exact_mod_cast h2) (coheight_le_krullDim y)).trans h
+    have : n + 1 ≤ n := by exact_mod_cast h3
+    omega
+  · by_contra! hcon
+    have hn1 : ((n + 1 : ℕ) : WithBot ℕ∞) ≤ krullDim X := ENat.WithBot.add_one_le_iff.mpr hcon
+    obtain ⟨l, hl⟩ := le_krullDim_iff.mp hn1
+    have hidx : 1 < l.length + 1 := by omega
+    have hcoh : (n : ℕ∞) ≤ coheight (l ⟨1, hidx⟩) := by
+      have hrev := rev_index_le_coheight l ⟨1, hidx⟩
+      have hval : ((⟨1, hidx⟩ : Fin (l.length + 1)).rev : ℕ) = n := by
+        simp only [Fin.val_rev]; omega
+      calc (n : ℕ∞) = (((⟨1, hidx⟩ : Fin (l.length + 1)).rev : ℕ) : ℕ∞) := by rw [hval]
+        _ ≤ coheight (l ⟨1, hidx⟩) := by exact_mod_cast hrev
+    have h0lt : l ⟨0, by omega⟩ < l ⟨1, hidx⟩ := l.strictMono (by simp [Fin.lt_def])
+    exact absurd (h _ hcoh _ h0lt.le) (ne_of_lt h0lt)
+
+lemma krullDimLE_iff_height_le_implies_eq {X : Type*} [PartialOrder X] {n : ℕ} :
+    Order.KrullDimLE n X ↔ (∀ x : X, n ≤ height x → ∀ y, x ≤ y → y = x) := by
+  rw [krullDimLE_iff_orderDual]
+  exact krullDimLE_iff_coheight_le_implies_eq
+
 end typeclass
 
 /-!
