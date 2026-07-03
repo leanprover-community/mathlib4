@@ -67,7 +67,7 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
       if ← isDefEq le.appFn!.appFn! relation then
         let lt ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
         result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
-   return result
+  return result
 
 /-- This function is passed to `MVarId.gcongr` as the main discharger.
 It doesn't try to prove the goal, but instead observes what the goal is,
