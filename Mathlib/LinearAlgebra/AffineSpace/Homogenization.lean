@@ -487,6 +487,10 @@ theorem lift_const_apply {u : W} {x : Homogenization k P} :
     lift (AffineMap.const k P u) x = weight x • u := by
   cases x; simp
 
+theorem weight_surjective : Function.Surjective (weight (k := k) (P := P)) :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  fun c => ⟨c • ofPoint p, by simp⟩
+
 /-- `Homogenization.ofVector` as a linear equivalence onto the kernel of `Homogenization.weight`. -/
 def ofVectorEquiv : V ≃ₗ[k] (weight : Homogenization k P →ₗ[k] k).ker where
   toLinearMap := ofVector.codRestrict _ (by simp)
