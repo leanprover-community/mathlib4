@@ -56,24 +56,30 @@ open MeasureTheory
 
 variable {𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace 𝕜] [BorelSpace 𝕜]
 
-/-- Nonvanishing case of `continuous_of_measurable_of_mul`: a Borel-measurable `f : ℝ → 𝕜` with
-`f (x + y) = f x * f y` and `f 0 ≠ 0` (equivalently, `f` nowhere zero) is continuous. -/
-private theorem continuous_of_measurable_of_mul_aux {f : ℝ → 𝕜} (hmeas : Measurable f)
-    (hmul : ∀ x y, f (x + y) = f x * f y) (h0 : f 0 ≠ 0) : Continuous f := by
-  -- The hypotheses force `f` to vanish nowhere.
-  have hne : ∀ x, f x ≠ 0 := fun x hx ↦
-    h0 <| by rw [← add_neg_cancel x, hmul, hx, zero_mul]
+/-- The modulus of a Borel-measurable multiplicative map `f : ℝ → 𝕜` that vanishes nowhere is
+continuous. This is the key reduction to the additive case: `t ↦ Real.log ‖f t‖` is a measurable
+*additive* map `ℝ → ℝ`, hence continuous by `Measure.AddMonoidHom.continuous_of_measurable`, and
+`‖f t‖ = Real.exp (Real.log ‖f t‖)`. -/
+private theorem continuous_norm_of_measurable_of_mul {f : ℝ → 𝕜} (hmeas : Measurable f)
+    (hmul : ∀ x y, f (x + y) = f x * f y) (hne : ∀ x, f x ≠ 0) : Continuous fun t ↦ ‖f t‖ := by
   have hpos : ∀ t, 0 < ‖f t‖ := fun t ↦ norm_pos_iff.mpr (hne t)
-  -- The modulus is continuous, via the additive theorem applied to `t ↦ Real.log ‖f t‖`.
   have hbadd : ∀ x y, Real.log ‖f (x + y)‖ = Real.log ‖f x‖ + Real.log ‖f y‖ := fun x y ↦ by
     rw [hmul, norm_mul, Real.log_mul (hpos x).ne' (hpos y).ne']
   have hbmeas : Measurable fun t ↦ Real.log ‖f t‖ := by fun_prop
   have hbcont : Continuous fun t ↦ Real.log ‖f t‖ :=
     Measure.AddMonoidHom.continuous_of_measurable
       (AddMonoidHom.mk' (fun t ↦ Real.log ‖f t‖) hbadd) hbmeas
-  have hnormcont : Continuous fun t ↦ ‖f t‖ :=
-    (Real.continuous_exp.comp hbcont).congr fun t ↦ Real.exp_log (hpos t)
-  -- `f` is dominated by the continuous modulus, hence locally integrable and interval integrable.
+  exact (Real.continuous_exp.comp hbcont).congr fun t ↦ Real.exp_log (hpos t)
+
+/-- Nonvanishing case of `continuous_of_measurable_of_mul`: a Borel-measurable `f : ℝ → 𝕜` with
+`f (x + y) = f x * f y` and `f 0 ≠ 0` (equivalently, `f` nowhere zero) is continuous. -/
+private theorem continuous_of_measurable_of_mul_aux {f : ℝ → 𝕜} (hmeas : Measurable f)
+    (hmul : ∀ x y, f (x + y) = f x * f y) (h0 : f 0 ≠ 0) : Continuous f := by
+  -- The hypotheses force `f` to vanish nowhere; then its modulus is continuous.
+  have hne : ∀ x, f x ≠ 0 := fun x hx ↦
+    h0 <| by rw [← add_neg_cancel x, hmul, hx, zero_mul]
+  have hnormcont : Continuous fun t ↦ ‖f t‖ := continuous_norm_of_measurable_of_mul hmeas hmul hne
+  -- `f` is dominated by that continuous modulus, hence locally integrable and interval integrable.
   have haesm : AEStronglyMeasurable f volume := hmeas.aestronglyMeasurable
   have hloc : LocallyIntegrable f volume :=
     hnormcont.locallyIntegrable.mono haesm (ae_of_all _ fun x ↦ (norm_norm (f x)).ge)
