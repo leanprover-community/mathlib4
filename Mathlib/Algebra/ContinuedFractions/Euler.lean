@@ -41,7 +41,7 @@ public section
 
 namespace GenContFract
 
-variable {K : Type*} [Field K]
+variable {α K : Type*} [Field K]
 
 variable {n : ℕ} {h : K} {ρ : Stream'.Seq K} {g : GenContFract K}
 
@@ -53,7 +53,11 @@ $$
                                            {1 + \rho_2 - \cfrac{\rho_3}
                                                                {1 + \rho_3 - \dots}}}}
 $$
-`euler h ρ` constructs an Euler continued fraction whose coefficients are obtained
+-/
+def IsEuler (g : GenContFract α) [One α] [Add α] : Prop :=
+  ∀ (n : ℕ) (aₙ bₙ : α), g.s.get? n = some ⟨aₙ, bₙ⟩ -> if n = 0 then bₙ = 1 else aₙ + bₙ = 1
+
+/-- `euler h ρ` constructs an Euler continued fraction whose coefficients are obtained
 from the stream `ρ` with head term `h`.
 -/
 def euler (h : K) (ρ : Stream'.Seq K) : GenContFract K :=
@@ -70,8 +74,6 @@ section Translation
 
 open Stream'.Seq
 
-theorem exists_toEuler : ∃ ρ, g.toEuler = euler g.h ρ := ⟨_, rfl⟩
-
 @[simp]
 theorem terminatedAt_euler : (euler h ρ).TerminatedAt n ↔ ρ.TerminatedAt n := by
   simp [euler, TerminatedAt, Stream'.Seq.TerminatedAt]
@@ -85,6 +87,16 @@ theorem exists_euler_s_of_not_terminatedAt_succ
     (not_terminatedAt_n_succ : ¬ρ.TerminatedAt (n + 1)) :
     ∃ a, (euler h ρ).s.get? (n + 1) = some ⟨-a, 1 + a⟩ := by
   simpa [euler] using Option.ne_none_iff_exists'.mp not_terminatedAt_n_succ
+
+theorem isEuler_euler : IsEuler (euler h ρ) := by
+  intro n a b hn
+  rcases n with _ | n'
+  · simp [euler] at hn; simp [hn]
+  · replace hn : ∃ ρₙ, ρ.get? (n' + 1) = some ρₙ ∧ -ρₙ = a ∧ 1 + ρₙ = b := by simp_all [euler]
+    obtain ⟨ρ, ⟨_, rfl, rfl⟩⟩ := hn
+    simp
+
+theorem isEuler_toEuler : IsEuler (toEuler g) := isEuler_euler
 
 @[simp]
 theorem terminatedAt_toEuler : g.toEuler.TerminatedAt n ↔ g.TerminatedAt n := by
