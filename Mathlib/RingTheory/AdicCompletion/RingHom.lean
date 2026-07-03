@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.AdicCompletion.Algebra
 
 /-!
 # Lift of ring homomorphisms to adic completions
+
 Let `R`, `S` be rings, `I` be an ideal of `S`.
 In this file we prove that a compatible family of ring homomorphisms from a ring `R` to
 `S ⧸ I ^ n` can be lifted to a ring homomorphism `R →+* AdicCompletion I S`.
