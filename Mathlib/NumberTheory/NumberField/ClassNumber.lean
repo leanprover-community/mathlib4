@@ -161,8 +161,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     refine le_floor ?_
     have : P.IsMaximal := hP.isMaximal (by simpa using HP.2)
     have : (span {p}).IsMaximal := (hpprime (.under ℤ P)).isMaximal_span_singleton
-    simpa only [hspan, ← cast_pow, absNorm_eq_pow_inertiaDeg P (hpprime (hP.under _)),
-      inertiaDeg_eq_inertiaDeg'] using hPN
+    simpa only [hspan, ← cast_pow, ← natAbs_pow_inertiaDeg' p P] using hPN
   have hpabsprime := Int.prime_iff_natAbs_prime.mp (hpprime (hP.under _))
   refine h _ ?_ hpabsprime _ ⟨hP, ?_⟩ hple
   · suffices 0 < P.inertiaDeg' ℤ by
