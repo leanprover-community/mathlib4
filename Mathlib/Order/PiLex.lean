@@ -81,8 +81,11 @@ theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFoun
 
 @[deprecated (since := "2026-01-24")] alias isTrichotomous_lex := trichotomous_lex
 
--- We would like to mark these instances `@[semireducible]`, but the linter doesn't allow this,
--- so we wrap them in `id` instead.
+/-
+These instances are leaky, because they define the relation on `∀ i, β i` instead of
+`Lex (∀ i, β i)`/`Colex (∀ i, β i)`. So, we would like to mark them `@[semireducible]`.
+But the linter doesn't allow this, so we wrap them in `id` instead.
+-/
 instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
   id ⟨Pi.Lex (· < ·) (· < ·)⟩
 
