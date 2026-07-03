@@ -61,11 +61,8 @@ variable {𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace 𝕜] [BorelSpace 𝕜]
 private theorem continuous_of_measurable_of_mul_aux {f : ℝ → 𝕜} (hmeas : Measurable f)
     (hmul : ∀ x y, f (x + y) = f x * f y) (h0 : f 0 ≠ 0) : Continuous f := by
   -- The hypotheses force `f` to vanish nowhere.
-  have hne : ∀ x, f x ≠ 0 := by
-    intro x hx
-    apply h0
-    have hfac : f 0 = f x * f (-x) := by rw [← hmul x (-x), add_neg_cancel]
-    rw [hfac, hx, zero_mul]
+  have hne : ∀ x, f x ≠ 0 := fun x hx ↦
+    h0 <| by rw [← add_neg_cancel x, hmul, hx, zero_mul]
   have hpos : ∀ t, 0 < ‖f t‖ := fun t ↦ norm_pos_iff.mpr (hne t)
   -- The modulus is continuous, via the additive theorem applied to `t ↦ Real.log ‖f t‖`.
   have hbadd : ∀ x y, Real.log ‖f (x + y)‖ = Real.log ‖f x‖ + Real.log ‖f y‖ := fun x y ↦ by
@@ -109,14 +106,11 @@ private theorem continuous_of_measurable_of_mul_aux {f : ℝ → 𝕜} (hmeas : 
   have h2 : (∫ u in (0 : ℝ)..a, f (s + u)) = f s * ∫ u in (0 : ℝ)..a, f u := by
     simp_rw [hmul s, intervalIntegral.integral_const_mul]
   have hsub : f s * F a = ∫ t in s..(s + a), f t := by
-    have hFa : F a = ∫ u in (0 : ℝ)..a, f u := rfl
-    rw [hFa, ← h2, intervalIntegral.integral_comp_add_left f s, add_zero]
-  have hadj : F (s + a) - F s = ∫ t in s..(s + a), f t := by
-    have h := intervalIntegral.integral_add_adjacent_intervals (hii 0 s) (hii s (s + a))
-    have hFsa : F (s + a) = ∫ t in (0 : ℝ)..(s + a), f t := rfl
-    have hFs : F s = ∫ t in (0 : ℝ)..s, f t := rfl
-    rw [hFsa, hFs, ← h]; ring
-  rw [eq_div_iff ha, hsub, hadj]
+    rw [show F a = ∫ u in (0 : ℝ)..a, f u from rfl, ← h2,
+      intervalIntegral.integral_comp_add_left f s, add_zero]
+  have hadj : F (s + a) - F s = ∫ t in s..(s + a), f t :=
+    intervalIntegral.integral_interval_sub_left (hii 0 (s + a)) (hii 0 s)
+  rw [eq_div_iff ha]; exact hsub.trans hadj.symm
 
 /-- **Automatic continuity for the multiplicative Cauchy equation.** A Borel-measurable
 `f : ℝ → 𝕜` (`RCLike 𝕜`, e.g. `ℝ` or `ℂ`) with `f (x + y) = f x * f y` is continuous. No
@@ -125,8 +119,7 @@ the multiplicative companion of `MeasureTheory.Measure.AddMonoidHom.continuous_o
 theorem continuous_of_measurable_of_mul {f : ℝ → 𝕜} (hmeas : Measurable f)
     (hmul : ∀ x y, f (x + y) = f x * f y) : Continuous f := by
   rcases eq_or_ne (f 0) 0 with h0 | h0
-  · have hf0 : f = fun _ ↦ (0 : 𝕜) := funext fun x ↦ by
-      have := hmul x 0; rwa [add_zero, h0, mul_zero] at this
+  · have hf0 : f = fun _ ↦ (0 : 𝕜) := funext fun x ↦ by simpa [h0] using hmul x 0
     rw [hf0]; exact continuous_const
   · exact continuous_of_measurable_of_mul_aux hmeas hmul h0
 
