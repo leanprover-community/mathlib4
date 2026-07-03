@@ -52,6 +52,7 @@ open Limits MonoidalCategory Functor PushoutObjObj
 variable {C : Type u} [Category.{v} C]
 
 attribute [local simp] PushoutObjObj.ι ofHasPushout_pt ofHasPushout_inl ofHasPushout_inr
+  PullbackObjObj.ofHasPullback_π
 
 namespace MonoidalCategory
 
@@ -102,6 +103,7 @@ section Monoidal
 
 variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `W ◁ X₁` and `X₂`. -/
@@ -117,9 +119,10 @@ def whiskerLeftIso
       (associator_inv_naturality_middle W _ _).symm (associator_inv_naturality_right W _ _).symm))
     (α_ W _ _).symm
     (((tensorLeft W).map_isPushout
-      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext (by
-      simp) (by simp))
+      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext
+        (by simp [← whiskerLeft_comp_assoc]) (by simp [← whiskerLeft_comp_assoc]))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Right-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `X₁` and `X₂ ▷ W`. -/
@@ -135,7 +138,8 @@ def whiskerRightIso
       (associator_naturality_left _ _ W).symm (associator_naturality_middle _ _ W).symm))
     (α_ _ _ W)
     (((tensorRight W).map_isPushout
-      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext (by simp) (by simp))
+      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext
+      (by simp [← comp_whiskerRight_assoc]) (by simp [← comp_whiskerRight_assoc]))
 
 -- helper instance for `PushoutProduct.associator`
 local instance {F : C ⥤ C}
@@ -144,6 +148,7 @@ local instance {F : C ⥤ C}
       (((curriedTensor C).obj X₁.left).map X₂.hom)) F := by
   simpa only [curriedTensor_obj_obj, curriedTensor_map_app, curriedTensor_obj_map]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The pushout-product is associative: `(X₁ □ X₂) □ X₃ ≅ X₁ □ X₂ □ X₃`. -/
 @[simps!]
@@ -161,16 +166,19 @@ def associator
           pushout.desc (_ ◁ pushout.inr _ _ ≫ pushout.inl _ _) (pushout.inr _ _)
           (by simp [Limits.pushout.associator_naturality_left_condition]))
         (((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-          (by simp [Limits.pushout.whiskerLeft_condition_assoc, ← whisker_exchange_assoc])
-          (by simp [← whisker_exchange_assoc, Limits.pushout.associator_naturality_left_condition]))
+          (by simp [Limits.pushout.whiskerLeft_condition_assoc, ← whisker_exchange_assoc,
+            ← comp_whiskerRight_assoc])
+          (by simp [← whisker_exchange_assoc, Limits.pushout.associator_naturality_left_condition,
+            ← comp_whiskerRight_assoc]))
     · exact pushout.desc ((whiskerLeftIso _ _).hom.left ≫
           pushout.desc (pushout.inl _ _) ((pushout.inl _ _ ▷ _) ≫ pushout.inr _ _)
           (by simp [Limits.pushout.associator_inv_naturality_right_condition]))
         ((α_ _ _ _).inv ≫ (pushout.inr _ _) ▷ _ ≫ pushout.inr _ _)
         (((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
           (by simp [whisker_exchange_assoc,
-            Limits.pushout.associator_inv_naturality_right_condition])
-          (by simp [whisker_exchange_assoc, Limits.pushout.condition_whiskerRight_assoc]))
+            Limits.pushout.associator_inv_naturality_right_condition, ← whiskerLeft_comp_assoc])
+          (by simp [whisker_exchange_assoc, Limits.pushout.condition_whiskerRight_assoc,
+            ← whiskerLeft_comp_assoc]))
     · apply pushout.hom_ext (by simp)
       apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
     · refine pushout.hom_ext ?_ (by simp)
@@ -180,6 +188,7 @@ def associator
       · simp [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.comp_whiskerRight_assoc]
       · simp [← MonoidalCategory.comp_whiskerRight_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The pushout-product is commutative: `X₁ □ X₂ ≅ X₂ □ X₁`. -/
 @[simps!]
@@ -194,8 +203,61 @@ end Monoidal
 
 section CartesianMonoidalClosed
 
-variable [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
+variable [CartesianMonoidalCategory C] [MonoidalClosed C]
 
+noncomputable section
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The arrow isomorphism `X □ (∅ ⟶ W) ≅ X ▷ W` in a CCC with pushouts and an
+initial object. -/
+@[simps!]
+def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
+    (X □ i.to W) ≅ X.hom ▷ W :=
+  haveI : IsIso (X.hom ▷ I) :=
+    isIso_of_isInitial (i.ofIso (zeroMul i).symm) (i.ofIso (zeroMul i).symm) _
+  haveI : IsPushout (X.hom ▷ I) (_ ◁ i.to W) ((i.ofIso (zeroMul i).symm).to _) (𝟙 _) :=
+    .of_horiz_isIso (sq := ⟨(i.ofIso (zeroMul i).symm).hom_ext ..⟩)
+  Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
+    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext ..) (by simp [pushout.inr_desc]))
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The arrow isomorphism `(∅ ⟶ W) □ X ≅ W ◁ X` in a braided CCC with pushouts and
+an initial object. -/
+@[simps!]
+def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
+    (i.to W □ X) ≅ Arrow.mk (W ◁ X.hom) :=
+  haveI : IsIso (I ◁ X.hom) :=
+    isIso_of_isInitial (i.ofIso (mulZero i).symm) (i.ofIso (mulZero i).symm) _
+  haveI : IsPushout (i.to W ▷ _) (I ◁ X.hom) (𝟙 _) ((i.ofIso (mulZero i).symm).to _) :=
+    .of_vert_isIso (sq := ⟨(i.ofIso (mulZero i).symm).hom_ext ..⟩)
+  Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
+    (pushout.hom_ext (by simp [pushout.inl_desc]) ((i.ofIso (mulZero i).symm).hom_ext _ _))
+
+/-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
+terminal object. -/
+@[simps!]
+def isInitialIsTerminalIso (X : Arrow C) {I : C} (i : IsInitial I) {T : C} (t : IsTerminal T) :
+    (X □ i.to T) ≅ X :=
+  (isInitialIso X i) ≪≫ Arrow.isoMk' _ _
+    (MonoidalCategory.whiskerLeftIso X.left
+      (t.uniqueUpToIso CartesianMonoidalCategory.isTerminalTensorUnit) ≪≫ ρ_ X.left)
+    (MonoidalCategory.whiskerLeftIso X.right
+      (t.uniqueUpToIso CartesianMonoidalCategory.isTerminalTensorUnit) ≪≫ ρ_ X.right)
+    (by simp [← whisker_exchange_assoc])
+
+/-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
+terminal object. -/
+@[simps!]
+def isInitialIsTerminalIso' (X : Arrow C) {I : C} (i : IsInitial I) {T : C} (t : IsTerminal T) :
+    (X □ t.from I) ≅ X :=
+  (mapIso _ (Arrow.isoMk' _ _ (Iso.refl _) (Iso.refl _) (i.hom_ext _ _))) ≪≫
+    (isInitialIsTerminalIso X i t)
+
+end
+
+variable [HasInitial C]
+
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a CCC with pushouts and an initial object, then `X □ (⊥_ C ⟶ 𝟙_ C) ≅ X`. -/
 @[simp]
@@ -225,5 +287,50 @@ end CartesianMonoidalClosed
 end
 
 end PushoutProduct
+
+namespace PullbackHom
+
+variable [HasPullbacks C]
+
+noncomputable section
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- The arrow isomorphism `(f : A ⟶ B) ⋔ (W ⟶ ⋆) ≅ (B ⟹ W ⟶ A ⟹ W)` in a monoidal closed
+category with pullbacks and a terminal object. -/
+@[simps!]
+def isTerminalIso [MonoidalCategory C] [MonoidalClosed C]
+    (X : Arrow C) {T : C} (t : IsTerminal T) {W : C} :
+    ((Opposite.op X) ⋔ Arrow.mk (t.from W)) ≅ Arrow.mk ((MonoidalClosed.pre X.hom).app W) :=
+  haveI : IsIso ((MonoidalClosed.pre X.hom).app T) :=
+    isIso_of_isTerminal (IsTerminal.isTerminalObj (ihom _) _ t)
+      (IsTerminal.isTerminalObj (ihom _) _ t) _
+  haveI : IsPullback (𝟙 _) ((IsTerminal.isTerminalObj (ihom _) _ t).from _)
+      ((ihom X.left).map (t.from W)) ((MonoidalClosed.pre X.hom).app T) :=
+    .of_horiz_isIso (sq := ⟨(IsTerminal.isTerminalObj (ihom _) _ t).hom_ext ..⟩)
+  Arrow.isoMk' _ _ (Iso.refl _) this.isoPullback.symm ((this.isoPullback).eq_comp_inv.2
+    (pullback.hom_ext (by simp) ((IsTerminal.isTerminalObj (ihom _) _ t).hom_ext ..)))
+
+open CartesianMonoidalCategory in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- The arrow isomorphism `(∅ ⟶ W) ⋔ (f : A ⟶ B) ≅ (W ⟹ A ⟶ W ⟹ B)` in a braided CCC with
+pullbacks and an initial object. -/
+@[simps!]
+def isInitialIso [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
+    (Opposite.op (Arrow.mk (i.to W)) ⋔ X) ≅ Arrow.mk ((ihom W).map X.hom) :=
+  haveI : IsIso ((ihom I).map X.hom) :=
+    isIso_of_isTerminal (isTerminalTensorUnit.ofIso (powZero i).symm)
+      (isTerminalTensorUnit.ofIso (powZero i).symm) _
+  haveI : IsPullback ((isTerminalTensorUnit.ofIso (powZero i).symm).from _) (𝟙 _)
+      ((ihom I).map X.hom) ((MonoidalClosed.pre (i.to W)).app X.right) :=
+    .of_vert_isIso (sq := ⟨(isTerminalTensorUnit.ofIso (powZero i).symm).hom_ext ..⟩)
+  Arrow.isoMk' _ _ (Iso.refl _) this.isoPullback.symm ((this.isoPullback).eq_comp_inv.2
+    (pullback.hom_ext ((isTerminalTensorUnit.ofIso (powZero i).symm).hom_ext ..) (by simp)))
+
+end
+
+end PullbackHom
 
 end CategoryTheory.MonoidalCategory.Arrow

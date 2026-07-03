@@ -64,11 +64,14 @@ open Manifold Set TopologicalSpace
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {H : Type*} [TopologicalSpace H]
-  {G : Type*} [TopologicalSpace G]
-  (I : ModelWithCorners 𝕜 E H) (J : ModelWithCorners 𝕜 F G)
-  (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-  (N : Type*) [TopologicalSpace N] [ChartedSpace G N] (n : WithTop ℕ∞)
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  {H₁ : Type*} [TopologicalSpace H₁]
+  {H₂ : Type*} [TopologicalSpace H₂]
+  {H₃ : Type*} [TopologicalSpace H₃]
+  (I : ModelWithCorners 𝕜 E H₁) (J : ModelWithCorners 𝕜 F H₂) (K : ModelWithCorners 𝕜 F' H₃)
+  (M : Type*) [TopologicalSpace M] [ChartedSpace H₁ M]
+  (N : Type*) [TopologicalSpace N] [ChartedSpace H₂ N]
+  (P : Type*) [TopologicalSpace P] [ChartedSpace H₃ P] (n : WithTop ℕ∞)
 
 section PartialDiffeomorph
 /-- A partial diffeomorphism on `s` is a function `f : M → N` such that `f` restricts to a
@@ -86,7 +89,7 @@ as `toFun` doesn't determine `invFun` outside of `target`. -/
 instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
   ⟨fun Φ => Φ.toFun⟩
 
-variable {I J M N n}
+variable {I J K M N P n}
 
 /-- A diffeomorphism is a partial diffeomorphism. -/
 def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) :
@@ -102,6 +105,7 @@ namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n)
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
+@[expose, simps toPartialHomeomorph_toPartialEquiv]
 def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   toPartialEquiv := Φ.toPartialEquiv
   open_source := Φ.open_source
@@ -110,6 +114,7 @@ def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
 
 /-- The inverse of a local diffeomorphism. -/
+@[expose, simps toPartialEquiv]
 protected def symm : PartialDiffeomorph J I N M n where
   toPartialEquiv := Φ.toPartialEquiv.symm
   open_source := Φ.open_target
@@ -126,17 +131,27 @@ protected theorem mdifferentiableAt (hn : n ≠ 0) {x : M} (hx : x ∈ Φ.source
     MDiffAt Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
 
+/-- Composition of partial diffeomorphisms. -/
+@[expose, simps toPartialEquiv]
+protected def trans (Ψ : PartialDiffeomorph J K N P n) : PartialDiffeomorph I K M P n where
+  __ := Φ.toOpenPartialHomeomorph.trans Ψ.toOpenPartialHomeomorph
+  contMDiffOn_toFun :=
+    Ψ.contMDiffOn_toFun.comp (Φ.contMDiffOn_toFun.mono inter_subset_left) inter_subset_right
+  contMDiffOn_invFun :=
+    Φ.contMDiffOn_invFun.comp (Ψ.contMDiffOn_invFun.mono inter_subset_left) inter_subset_right
+
 /- We could add lots of additional API (following `Diffeomorph` and `OpenPartialHomeomorph`),
 such as
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
+
 As this declaration is meant for internal use only, we keep it simple. -/
 end PartialDiffeomorph
 end PartialDiffeomorph
 
 variable {M N}
 
-/-- `f : M → N` is called a **`C^n` local diffeomorphism at *x*** iff there exist
+/-- `f : M → N` is called a **`C^n` local diffeomorphism at `x`** iff there exist
 open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
@@ -221,9 +236,19 @@ lemma localInverse_mdifferentiableAt (hf : IsLocalDiffeomorphAt I J n f x) (hn :
     MDiffAt hf.localInverse (f x) :=
   hf.localInverse_contMDiffAt.mdifferentiableAt hn
 
+lemma comp (hf : IsLocalDiffeomorphAt I J n f x) {g : N → P}
+    (hg : IsLocalDiffeomorphAt J K n g (f x)) :
+    IsLocalDiffeomorphAt I K n (g ∘ f) x := by
+  obtain ⟨Φ, hx, heq⟩ := hf
+  obtain ⟨Ψ, hy, heq'⟩ := hg
+  refine ⟨Φ.trans Ψ, by simp [hx, ← heq.eq_of_mem hx, hy], ?_⟩
+  intro y ⟨hyl, hyr⟩
+  have hfy : f y ∈ Ψ.source := by rwa [heq.eq_of_mem hyl]
+  simp [← heq.eq_of_mem hyl, ← heq'.eq_of_mem hfy]
+
 end IsLocalDiffeomorphAt
 
-/-- `f : M → N` is called a **`C^n` local diffeomorphism on *s*** iff it is a local diffeomorphism
+/-- `f : M → N` is called a **`C^n` local diffeomorphism on `s`** iff it is a local diffeomorphism
 at each `x : s`. -/
 @[expose] def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=
   ∀ x : s, IsLocalDiffeomorphAt I J n f x
@@ -339,7 +364,7 @@ def IsLocalDiffeomorph.diffeomorphOfBijective
   have aux (x) : EqOn g (Φ x).symm (Φ x).target :=
     eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
       (LeftInvOn.congr_left ((Φ x).toOpenPartialHomeomorph).rightInvOn
-        ((Φ x).toOpenPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
+        ((Φ x).toOpenPartialHomeomorph).mapsTo_symm (hyp x).2.symm)
       (fun _y hy ↦ (Φ x).map_target hy)
   exact {
     toFun := f

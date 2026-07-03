@@ -42,5 +42,5 @@ theorem imo1977_q6 (f : ℕ+ → ℕ+) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n,
     refine imo1977_q6_nat (fun m => if 0 < m then f m.toPNat' else 0) ?_ n
     intro x; cases x
     · simp
-    · simpa using h _
+    · simpa using! h _
   simpa

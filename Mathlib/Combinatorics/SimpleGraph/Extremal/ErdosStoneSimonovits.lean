@@ -83,7 +83,7 @@ lemma degree_between_verts_lt_of_mem_sdiff
   conv =>
     enter [1, 1, 2]
     unfold CompleteEquipartiteSubgraph.verts
-  rw [filter_disjiUnion, card_disjiUnion, sum_eq_sum_diff_singleton_add hp]
+  rw [filter_disjiUnion, card_disjiUnion, sum_eq_sum_sdiff_singleton_add hp]
   apply add_lt_add_of_le_of_lt
   · conv_rhs =>
       rw [K.card_verts, ← Nat.sub_one_mul, ← K.card_parts.resolve_right ht'_pos.ne',
@@ -354,8 +354,7 @@ lemma exists_induce_minDegree_ge_and_card_edgeFinset_ge {V : Type*} [Fintype V]
   -- if `minDegree` is less than `c * card G.support`
   · replace hδ : (G.induce G.support).minDegree < c * (card G.support) := by
       rw [G.support.toFinset_card] at hδ
-      convert hδ
-      all_goals exact G.support.coe_toFinset.symm
+      exact hδ.trans_eq' (by convert rfl <;> exact G.support.coe_toFinset.symm)
     have hcard_support_pos : 0 < card G.support := by
       contrapose! hδ
       rw [Nat.eq_zero_of_le_zero hδ, Nat.cast_zero, mul_zero]
@@ -369,7 +368,7 @@ lemma exists_induce_minDegree_ge_and_card_edgeFinset_ge {V : Type*} [Fintype V]
     have ⟨s, hs', ihδ', ih_card_edges'⟩ :=
       exists_induce_minDegree_ge_and_card_edgeFinset_ge hc_nonneg G'
     have ⟨hs, hx_notMem⟩ : ↑s ⊆ G.support ∧ ↑x ∉ (s : Set V) := by
-      rw [← Set.disjoint_singleton_right, ← Set.subset_diff]
+      rw [← Set.disjoint_singleton_right, ← Set.subset_sdiff]
       exact hs'.trans (G.support_deleteIncidenceSet_subset ↑x)
     have ihδ : c * #s ≤ (G.induce s).minDegree := by
       simpa [← induce_deleteIncidenceSet_of_notMem G hx_notMem] using ihδ'
@@ -456,7 +455,7 @@ theorem eventually_completeEquipartiteGraph_isContained_of_card_edgeFinset
   have ⟨N', ih⟩ := eventually_atTop.mp <|
     eventually_completeEquipartiteGraph_isContained_of_minDegree hε' r t
   refine eventually_atTop.mpr ⟨⌈c / ε' + N' / √ε'⌉₊, fun n hn {G} _ h ↦ ?_⟩
-  rw [ge_iff_le, Nat.ceil_le] at hn
+  rw [Nat.ceil_le] at hn
   -- find `s` such that `G.induce s` has appropriate minimal-degree
   conv_rhs at h =>
     rw [← add_halves ε, ← add_assoc, ← Fintype.card_fin n]

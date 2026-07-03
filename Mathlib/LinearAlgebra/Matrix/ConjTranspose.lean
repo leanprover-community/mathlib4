@@ -151,6 +151,10 @@ theorem transpose_conjTranspose [Star α] (M : Matrix m n α) :
     Mᵀᴴ = M.map star :=
   rfl
 
+theorem conjTranspose_transpose_eq_transpose_conjTranspose [Star α] (M : Matrix m n α) :
+    Mᵀᴴ = Mᴴᵀ :=
+  rfl
+
 theorem conjTranspose_injective [InvolutiveStar α] :
     Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
   (map_injective star_injective).comp transpose_injective
@@ -416,22 +420,19 @@ theorem star_apply [Star α] (M : Matrix n n α) (i j) : (star M) i j = star (M 
 instance [InvolutiveStar α] : InvolutiveStar (Matrix n n α) where
   star_involutive := conjTranspose_conjTranspose
 
-/-- When `α` is a `*`-additive monoid, `Matrix.star` is also a `*`-additive monoid. -/
+/-- When `α` is a \*-additive monoid, `Matrix.star` is also a \*-additive monoid. -/
 instance [AddMonoid α] [StarAddMonoid α] : StarAddMonoid (Matrix n n α) where
   star_add := conjTranspose_add
 
 instance [Star α] [Star β] [SMul α β] [StarModule α β] : StarModule α (Matrix n n β) where
   star_smul := conjTranspose_smul
 
-/-- When `α` is a `*`-(semi)ring, `Matrix.star` is also a `*`-(semi)ring. -/
-instance [Fintype n] [NonUnitalSemiring α] [StarRing α] : StarRing (Matrix n n α) where
+/-- When `α` is a \*-(semi)ring, `Matrix.star` is also a \*-(semi)ring. -/
+instance [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] : StarRing (Matrix n n α) where
   star_add := conjTranspose_add
   star_mul := conjTranspose_mul
 
-/-- A version of `star_mul` for `*` instead of `*`. -/
-theorem star_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M N : Matrix n n α) :
-    star (M * N) = star N * star M :=
-  conjTranspose_mul _ _
+@[deprecated (since := "2026-04-20")] protected alias star_mul := StarMul.star_mul
 
 end Star
 

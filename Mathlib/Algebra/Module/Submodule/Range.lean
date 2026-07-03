@@ -114,7 +114,7 @@ theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semirin
   change range ((-LinearMap.id : M₂ →ₗ[R₂] M₂).comp f) = _
   rw [range_comp, Submodule.map_neg, Submodule.map_id]
 
-@[simp] lemma range_domRestrict [Module R M₂] (K : Submodule R M) (f : M →ₗ[R] M₂) :
+@[simp] lemma range_domRestrict [RingHomSurjective τ₁₂] (K : Submodule R M) (f : M →ₛₗ[τ₁₂] M₂) :
     range (domRestrict f K) = K.map f := by ext; simp
 
 lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (S : Submodule R M) :
@@ -261,6 +261,17 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
 
 end Ring
 
+section CommSemiring
+
+variable [Semiring R] [CommSemiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
+
+theorem range_smul_le_range (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : range (c • f) ≤ range f := by
+  simpa only [range_eq_map] using Submodule.map_smul_le_map _ _ _
+
+end CommSemiring
+
 section Semifield
 
 variable [Semifield K]
@@ -292,6 +303,7 @@ open LinearMap
 @[simp]
 theorem map_top [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : map f ⊤ = range f :=
   (range_eq_map f).symm
+
 @[simp]
 theorem range_subtype : range p.subtype = p := by simpa using map_comap_subtype p ⊤
 
@@ -443,12 +455,25 @@ variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂)
 theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
   rw [← range_eq_top, range_rangeRestrict]
 
-@[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
+theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
 
 @[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
   Set.injective_codRestrict _
 
 end rangeRestrict
+
+section restrict
+
+open Submodule
+
+variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+
+@[simp]
+theorem range_restrict (h : ∀ x ∈ p, f x ∈ q) :
+    range (f.restrict h) = comap q.subtype (map f p) := by
+  rw [← Submodule.map_top, map_restrict, Submodule.map_top, p.range_subtype]
+
+end restrict
 
 end Semiring
 
