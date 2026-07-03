@@ -68,6 +68,8 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   (p : Ideal R) (q : Ideal S) (r : Ideal T)
 
+/-- Inertia degree for prime ideals equals degree of the residue fields.
+See `inertiaDeg'_eq'` for the maximal ideal version. -/
 theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [Localization.AtPrime.IsLiesOverAlgebra p q] :
@@ -76,12 +78,40 @@ theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
   subst this
   exact inertiaDeg'_def q R
 
-theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
-    p.inertiaDeg q = q.inertiaDeg' R := by
+theorem inertiaDeg'_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
+    (K L : Type*) [Field K] [Field L] [Algebra (R ⧸ p) K] [Algebra (S ⧸ q) L]
+    [IsFractionRing (R ⧸ p) K] [IsFractionRing (S ⧸ q) L] [Algebra K L]
+    [Algebra (R ⧸ p) L] [IsScalarTower (R ⧸ p) K L] [IsScalarTower (R ⧸ p) (S ⧸ q) L] :
+    q.inertiaDeg' R = Module.finrank K L := by
+  let := Localization.AtPrime.algebraOfLiesOver p q
+  rw [inertiaDeg'_eq p q]
+  let f : (R ⧸ p) ≃ₐ[R ⧸ p] (R ⧸ p) := AlgEquiv.refl
+  let g : (S ⧸ q) ≃ₐ[S ⧸ q] (S ⧸ q) := AlgEquiv.refl
+  let f' : p.ResidueField ≃ₐ[R ⧸ p] K := IsFractionRing.algEquivOfAlgEquiv f
+  let g' : q.ResidueField ≃ₐ[S ⧸ q] L := IsFractionRing.algEquivOfAlgEquiv g
+  apply Algebra.finrank_eq_of_equiv_equiv f' g'
+  apply IsFractionRing.ringHom_ext (A := R ⧸ p)
+  intro x
+  suffices (algebraMap p.ResidueField q.ResidueField) ((algebraMap (R ⧸ p) p.ResidueField) x) =
+      ((algebraMap (S ⧸ q) q.ResidueField) ((algebraMap (R ⧸ p) (S ⧸ q)) x)) by
+    simp [← IsScalarTower.algebraMap_apply, this]
+  obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
+  simp
+  rw [IsScalarTower.algebraMap_apply R (Localization.AtPrime p),
+    ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply (Localization.AtPrime p) (Localization.AtPrime q)]
+  sorry
+
+  -- just transfer degree across the isomorphism!
+
+/-- Inertia degree for maximal ideals equals degree of the quotient fields.
+See `inertiaDeg'_eq'` for the prime ideal version. -/
+theorem inertiaDeg'_eq' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
+    q.inertiaDeg' R = Module.finrank (R ⧸ p) (S ⧸ q) := by
   let : Field (R ⧸ p) := Quotient.field p
   let : Field (S ⧸ q) := Quotient.field q
   let := Localization.AtPrime.algebraOfLiesOver p q
-  rw [inertiaDeg'_eq p q, inertiaDeg_algebraMap]
+  rw [inertiaDeg'_eq p q]
   let f := (algebraMap (S ⧸ q) q.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ q))
   let g := (algebraMap p.ResidueField q.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField)
   have h : f = g := by ext; simp [f, g, ← IsScalarTower.algebraMap_apply]
@@ -92,6 +122,10 @@ theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     ← Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField q),
     Module.finrank_mul_finrank, ← Module.finrank_mul_finrank (R ⧸ p) p.ResidueField q.ResidueField,
     Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField p), one_mul]
+
+theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
+    p.inertiaDeg q = q.inertiaDeg' R := by
+  rw [inertiaDeg'_eq' p q, inertiaDeg_algebraMap]
 
 theorem inertiaDeg'_tower [r.LiesOver q] :
     r.inertiaDeg' R = q.inertiaDeg' R * r.inertiaDeg' S := by
@@ -104,6 +138,24 @@ theorem inertiaDeg'_tower [r.LiesOver q] :
     rw [inertiaDeg'_def, inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
     apply Module.finrank_mul_finrank
   · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
+
+theorem inertiaDeg'_below_dvd [r.LiesOver q] :
+    q.inertiaDeg' R ∣ r.inertiaDeg' R := by
+  use r.inertiaDeg' S
+  rw [← inertiaDeg'_tower]
+
+theorem inertiaDeg'_above_dvd [r.LiesOver q] :
+    r.inertiaDeg' S ∣ r.inertiaDeg' R := by
+  use q.inertiaDeg' R
+  rw [mul_comm, ← inertiaDeg'_tower]
+
+theorem inertiaDeg'_below_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] :
+    q.inertiaDeg' R ≤ r.inertiaDeg' R :=
+  Nat.le_of_dvd (r.inertiaDeg'_pos R) (q.inertiaDeg'_below_dvd r)
+
+theorem inertiaDeg'_above_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] :
+    r.inertiaDeg' S ≤ r.inertiaDeg' R :=
+  Nat.le_of_dvd (r.inertiaDeg'_pos R) (q.inertiaDeg'_above_dvd r)
 
 variable (R) in
 open Pointwise in
