@@ -304,4 +304,3 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
 end WeakSpace
 
 end Ring
-#lint
