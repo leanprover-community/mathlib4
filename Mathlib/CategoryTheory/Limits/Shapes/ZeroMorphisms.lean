@@ -131,7 +131,7 @@ theorem zero_of_epi_comp {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] (h : f 
   rw [← comp_zero, cancel_epi] at h
   exact h
 
-lemma epi_comp_eq_zero_iff {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] :
+lemma comp_eq_zero_iff_of_epi {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] :
     f ≫ g = 0 ↔ g = 0 :=
   ⟨zero_of_epi_comp _, by simp +contextual⟩
 
