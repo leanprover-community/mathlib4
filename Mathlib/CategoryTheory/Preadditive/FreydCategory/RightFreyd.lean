@@ -118,14 +118,11 @@ def functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
 
 instance : (functor V).Additive := by dsimp [functor]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (functor V).Full where
   map_surjective a := by
     obtain ⟨u, rfl⟩ := (quotient V).map_surjective a
-    use u.right
-    apply congrArg (quotient V).map
-    ext
-    · exact HasZeroObject.from_zero_ext _ _
-    · rfl
+    exact ⟨u.right, (quotient V).congr_map (by cat_disch)⟩
 
 instance : (functor V).Faithful where
   map_injective {_ _} _ _ eq := by
