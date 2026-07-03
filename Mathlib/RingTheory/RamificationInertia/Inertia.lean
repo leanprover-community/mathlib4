@@ -92,40 +92,24 @@ theorem inertiaDeg'_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
   apply Algebra.finrank_eq_of_equiv_equiv f' g'
   apply IsFractionRing.ringHom_ext (A := R ⧸ p)
   intro x
-  suffices (algebraMap p.ResidueField q.ResidueField) ((algebraMap (R ⧸ p) p.ResidueField) x) =
+  suffices ∀ x, (algebraMap p.ResidueField q.ResidueField) ((algebraMap (R ⧸ p) p.ResidueField) x) =
       ((algebraMap (S ⧸ q) q.ResidueField) ((algebraMap (R ⧸ p) (S ⧸ q)) x)) by
     simp [← IsScalarTower.algebraMap_apply, this]
+  intro x
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
-  simp
-  rw [IsScalarTower.algebraMap_apply R (Localization.AtPrime p),
-    ← IsScalarTower.algebraMap_apply,
-    IsScalarTower.algebraMap_apply (Localization.AtPrime p) (Localization.AtPrime q)]
-  sorry
-
-  -- just transfer degree across the isomorphism!
+  simp [← IsScalarTower.algebraMap_apply]
 
 /-- Inertia degree for maximal ideals equals degree of the quotient fields.
 See `inertiaDeg'_eq'` for the prime ideal version. -/
-theorem inertiaDeg'_eq' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
+theorem inertiaDeg'_eq_of_isMaximal [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     q.inertiaDeg' R = Module.finrank (R ⧸ p) (S ⧸ q) := by
   let : Field (R ⧸ p) := Quotient.field p
   let : Field (S ⧸ q) := Quotient.field q
-  let := Localization.AtPrime.algebraOfLiesOver p q
-  rw [inertiaDeg'_eq p q]
-  let f := (algebraMap (S ⧸ q) q.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ q))
-  let g := (algebraMap p.ResidueField q.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField)
-  have h : f = g := by ext; simp [f, g, ← IsScalarTower.algebraMap_apply]
-  let : Algebra (R ⧸ p) q.ResidueField := f.toAlgebra
-  have : IsScalarTower (R ⧸ p) (S ⧸ q) q.ResidueField := IsScalarTower.of_algebraMap_eq' rfl
-  have : IsScalarTower (R ⧸ p) p.ResidueField q.ResidueField := IsScalarTower.of_algebraMap_eq' h
-  rw [← mul_one (Module.finrank (R ⧸ p) (S ⧸ q)),
-    ← Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField q),
-    Module.finrank_mul_finrank, ← Module.finrank_mul_finrank (R ⧸ p) p.ResidueField q.ResidueField,
-    Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField p), one_mul]
+  exact inertiaDeg'_eq_of_isFractionRing p q (R ⧸ p) (S ⧸ q)
 
 theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     p.inertiaDeg q = q.inertiaDeg' R := by
-  rw [inertiaDeg'_eq' p q, inertiaDeg_algebraMap]
+  rw [inertiaDeg_algebraMap, inertiaDeg'_eq_of_isMaximal p q]
 
 theorem inertiaDeg'_tower [r.LiesOver q] :
     r.inertiaDeg' R = q.inertiaDeg' R * r.inertiaDeg' S := by
