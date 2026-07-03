@@ -234,7 +234,7 @@ jobs:
         # The metrics script emits a summary line "Decrease in '<level>' tech debt:" for each
         # level (strong/weak) that went down (and "Increase ..."/"No changes ..." otherwise),
         # so matching either of those two lines means the PR reduced some tech debt.
-        if grep -qE "Decrease in '(strong|weak)' tech debt" <<< "${techDebtVar}"
+        if grep -qE "Decrease in (strong|weak) tech debt" <<< "${techDebtVar}"
         then
           gh pr edit "${PR}" --add-label "tech debt"
         fi
