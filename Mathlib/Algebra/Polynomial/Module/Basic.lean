@@ -40,12 +40,15 @@ for the full discussion.
 -/
 @[nolint unusedArguments]
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
-deriving Inhabited, FunLike, AddCommGroup
+deriving Inhabited, FunLike
 
 variable (R : Type*) {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
+
+-- The `SMul` instance exists to avoid nsmul and zsmul diamonds.
+deriving instance SMul S, AddCommGroup for PolynomialModule R M
 
 /-- Workaround to defeq problems: if we interpret a `PolynomialModule` as a `Finsupp`, also transfer
 the `DFunLike` instance. -/
