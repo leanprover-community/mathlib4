@@ -181,19 +181,15 @@ namespace CuspForm
 variable [CuspFormClass F Γ k]
 
 /-- A `StrongFEPair` structure associated to a cusp form. -/
-noncomputable def strongFEPair : StrongFEPair ℂ where
-  __ := weakFEPair hk f
+lemma isStrongFEPair : IsStrongFEPair (weakFEPair hk f) where
   hf₀ := by exact (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
   hg₀ := by exact (CuspFormClass.zero_at_infty <| translate f ModularGroup.S).valueAtInfty_eq_zero
 
-@[simp] lemma strongFEPair_toWeakFEPair : (strongFEPair hk f).toWeakFEPair = weakFEPair hk f :=
-  rfl
-
 lemma differentiable_Λ : Differentiable ℂ (Λ hk f) :=
-  (strongFEPair hk f).differentiable_Λ
+  (isStrongFEPair hk f).differentiable_Λ
 
 lemma Λ_eq_mellin : Λ hk f = mellin (fun t ↦ f (ofComplex (I * t))) :=
-  (strongFEPair hk f).Λ_eq
+  (isStrongFEPair hk f).Λ_eq
 
 lemma hasSum_Λ (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
     HasSum (fun n ↦ π ^ (-s) * Gamma s *
