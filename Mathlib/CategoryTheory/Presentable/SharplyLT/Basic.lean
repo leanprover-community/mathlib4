@@ -476,7 +476,7 @@ end IsCardinalFilteredAndHasCardinalLT
 variable (C : Type u) [Category.{v} C]
 
 variable (κ₁ κ₂) in
-/-- This is the closure of `κ₁`-presentable objects in category `C` with respect
+/-- This is the closure of `κ₁`-presentable objects in the category `C` with respect
 to colimits indexed by categories `J` such that `Arrow J` is of cardinality < `κ₂`.
 When `C` is `κ₁`-accessible and `κ₁` is sharply smaller than `κ₂`, then any
 object of `C` is a `κ₂`-filtered colimit of objects in this closure. -/
