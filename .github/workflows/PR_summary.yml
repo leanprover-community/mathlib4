@@ -236,6 +236,7 @@ jobs:
         # so matching either of those two lines means the PR reduced some tech debt.
         if grep -qE "Decrease in (strong|weak) tech debt" <<< "${techDebtVar}"
         then
+          printf $'Adding "tech debt" label to PR %s\n' "${PR}"
           gh pr edit "${PR}" --add-label "tech debt"
         fi
 
