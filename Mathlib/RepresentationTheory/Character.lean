@@ -204,8 +204,8 @@ theorem char_linHom (V W : FDRep k G) (g : G) :
     (of (linHom V.ρ W.ρ)).character g = V.character g⁻¹ * W.character g := by
   rw [← char_iso (dualTensorIsoLinHom _ _), char_tensor, Pi.mul_apply, char_dual]
 
-theorem isIntegral_character [Finite G] (V : FDRep k G) (g : G) : IsIntegral ℤ (V.character g) :=
-  Representation.isIntegral_character V.ρ g
+theorem isIntegral_character [Finite G] (V : FDRep k G) (g : G) : IsIntegral ℤ (V.character g) := by
+  rw [character, ← Representation.character]; exact Representation.isIntegral_character ..
 
 variable [Fintype G] [Invertible (Nat.card G : k)]
 
