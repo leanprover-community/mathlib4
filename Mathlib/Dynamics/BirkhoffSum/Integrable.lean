@@ -16,6 +16,7 @@ open MeasureTheory
 
 variable {α : Type*} [MeasurableSpace α] {f : α → α} {g : α → ℝ} {n : ℕ} {μ : Measure α}
 
+@[fun_prop]
 public lemma birkhoffSum_integrable (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
     Integrable (birkhoffSum f g n) μ :=
   integrable_finsetSum _ fun _ _ ↦ (hf.iterate _).integrable_comp_of_integrable hg

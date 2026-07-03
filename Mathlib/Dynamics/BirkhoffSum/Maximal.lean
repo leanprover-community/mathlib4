@@ -105,6 +105,7 @@ public lemma birkhoffMax_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
 
 include hg
 
+@[fun_prop]
 public lemma birkhoffMax_integrable : Integrable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
   induction n with
