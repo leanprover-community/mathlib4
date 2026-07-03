@@ -319,11 +319,10 @@ lemma isCardinalFiltered_iff' :
   refine ⟨fun h ↦ ⟨h.1, by tauto⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun ι j k f hι ↦ ?_⟩⟩
   by_cases hι' : Nonempty ι
   · exact h₂ f hι hι'
-  · have := h₁ (fun (x : ULift.{w} (Fin 2)) ↦ match x with
+  · obtain ⟨l, hl⟩ := h₁ (fun (x : ULift.{w} (Fin 2)) ↦ match x with
       | ULift.up 0 => j
       | ULift.up 1 => k)
       (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
-    obtain ⟨l, hl⟩ := this
     exact ⟨l, (hl ⟨1⟩).some, (hl ⟨0⟩).some, by tauto⟩
 
 end

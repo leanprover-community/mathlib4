@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Generator.StrongGenerator
 public import Mathlib.CategoryTheory.Presentable.Limits
 public import Mathlib.CategoryTheory.Presentable.Retracts
-public import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Presentable generators
@@ -41,6 +40,10 @@ variable {C : Type u} [Category.{v} C]
 
 namespace Limits.ColimitPresentation
 
+/-- If an object `X` admits a presentation `p` as a colimit of
+a functor `p.diag : J ⥤ C` with values in `κ`-presentable objects,
+then `X` is `κ'`-presentable if `κ ≤ κ'` and the cardinality
+of `Arrow J` is `< κ'`. -/
 lemma isCardinalPresentable {X : C} {J : Type w} [SmallCategory J]
     (p : ColimitPresentation J X) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (h : ∀ (j : J), IsCardinalPresentable (p.diag.obj j) κ) [LocallySmall.{w} C]
@@ -58,6 +61,11 @@ namespace ObjectProperty
 
 variable {P : ObjectProperty C}
 
+/-- If an object `X` admits a presentation `p : P.ColimitsOfShape J X`
+as a colimit of a functor `p.diag : J ⥤ C` with values in objects
+satisfying a property `P` such that `P ≤ isCardinalPresentable C κ`,
+then `X` is `κ'`-presentable if `κ ≤ κ'` and the cardinality
+of `Arrow J` is `< κ'`. -/
 lemma ColimitOfShape.isCardinalPresentable {X : C} {J : Type w} [SmallCategory J]
     (p : P.ColimitOfShape J X) {κ : Cardinal.{w}} [Fact κ.IsRegular]
     (hP : P ≤ isCardinalPresentable C κ) [LocallySmall.{w} C]

@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.Dense
+public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Final
@@ -24,53 +25,6 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 namespace CategoryTheory
 
 open Limits
-
--- to be moved
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
-open IsFiltered in
-lemma IsCardinalPresentable.mk
-    {C : Type*} [Category* C] {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular]
-    (h : ∀ (J : Type w) (_ : Category.{w} J) (_ : IsCardinalFiltered J κ)
-      (F : J ⥤ C) (c : Cocone F) (_ : IsColimit c),
-      (∀ (g : X ⟶ c.pt), ∃ (j : J) (f : X ⟶ F.obj j), f ≫ c.ι.app j = g) ∧
-      (∀ (j : J) (f₁ f₂ : X ⟶ F.obj j) (_ : f₁ ≫ c.ι.app j = f₂ ≫ c.ι.app j),
-        ∃ (j' : J) (a : j ⟶ j'), f₁ ≫ F.map a = f₂ ≫ F.map a)) :
-    IsCardinalPresentable X κ where
-  preservesColimitOfShape J _ _ :=
-    ⟨fun {F} ↦ ⟨fun {c} hc ↦ by
-      have := isFiltered_of_isCardinalFiltered J κ
-      rw [Types.isColimit_iff_coconeTypesIsColimit]
-      refine ⟨fun f₁ f₂ hf ↦ ?_, fun g ↦ ?_⟩
-      · obtain ⟨j₁, f₁, rfl⟩ := Functor.ιColimitType_jointly_surjective _ f₁
-        obtain ⟨j₂, f₂, rfl⟩ := Functor.ιColimitType_jointly_surjective _ f₂
-        dsimp at f₁ f₂ hf
-        obtain ⟨j', a, ha⟩ := (h J _ inferInstance F c hc).2 _ (f₁ ≫ F.map (leftToMax j₁ j₂))
-          (f₂ ≫ F.map (rightToMax j₁ j₂)) (by simpa)
-        simp only [Category.assoc] at ha
-        exact Functor.ιColimitType_eq_of_map_eq_map _ _ _
-          (leftToMax j₁ j₂ ≫ a) (rightToMax j₁ j₂ ≫ a) (by simpa)
-      · obtain ⟨j, f, rfl⟩ := (h J _ inferInstance F c hc).1 g
-        exact ⟨Functor.ιColimitType _ j f, rfl⟩⟩⟩
-
-namespace Functor
-
-variable {C D : Type*} [Category* C] [Category* D]
-
--- to be moved
-class PreservesCardinalPresentable
-    (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
-  le_inverseImage_isCardinalPresentable (F κ) :
-    isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F
-
-export PreservesCardinalPresentable (le_inverseImage_isCardinalPresentable)
-
-instance (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] (X : C)
-    [IsCardinalPresentable X κ] [F.PreservesCardinalPresentable κ] :
-    IsCardinalPresentable (F.obj X) κ :=
-  le_inverseImage_isCardinalPresentable F κ _ (by assumption)
-
-end Functor
 
 namespace Comma
 
