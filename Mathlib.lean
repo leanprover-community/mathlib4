@@ -5735,7 +5735,7 @@ public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.NumberTheory.Harmonic.Int
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.HeckeRing.Associativity
-import Mathlib.NumberTheory.HeckeRing.Basic
+public import Mathlib.NumberTheory.HeckeRing.Basic
 public import Mathlib.NumberTheory.HeckeRing.Defs
 public import Mathlib.NumberTheory.HeckeRing.Multiplication
 public import Mathlib.NumberTheory.HeckeRing.Multiplicity
