@@ -152,6 +152,28 @@ lemma ContMDiffCovariantDerivativeOn'.contMDiffAt_of_isOpen (k : ℕ∞ω)
 --     CMDiffAt k covσ x := by
 --   sorry
 
+-- TODO: is that a good name?
+lemma ContMDiffCovariantDerivativeOn'.mdifferentiableWithinAt_of_eventually {k : ℕ∞ω}
+    [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
+    {u : Set M} {x : M} (hx : x ∈ u)
+    (hcov : ContMDiffCovariantDerivativeOn' F k cov u)
+    {σ : Π x : M, V x} (hσ : ∀ᶠ (y : M) in 𝓝[u] x, CMDiffAt[u] (k + 1) (T% σ) y)
+    {X : Π x : M, TangentSpace% x} (hX : MDiffAt[u] (T% X) x) (hk : k ≠ 0) :
+    MDiffAt[u] (T% (fun x ↦ cov σ x (X x))) x :=
+  ((hcov.contMDiffWithinAt hx hσ).mdifferentiableWithinAt hk).clm_bundle_apply hX
+
+-- TODO: is that a good name?
+lemma ContMDiffCovariantDerivativeOn'.mdifferentiableAt_of_eventually {k : ℕ∞ω}
+    [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace% x →L[𝕜] V x)}
+    {u : Set M} {x : M} (ht : IsOpen u) (hx : x ∈ u)
+    (hcov : ContMDiffCovariantDerivativeOn' F k cov u)
+    {σ : Π x : M, V x} (hσ : ∀ᶠ (y : M) in 𝓝 x, CMDiffAt (k + 1) (T% σ) y)
+    {X : Π x : M, TangentSpace% x} (hX : MDiffAt (T% X) x) (hk : k ≠ 0) :
+    MDiffAt (T% (fun x ↦ cov σ x (X x))) x :=
+  ((hcov.contMDiffAt_of_isOpen k ht hx hσ).mdifferentiableAt hk).clm_bundle_apply  hX
+
 namespace IsCovariantDerivativeOn
 
 /-! ### Changing set
