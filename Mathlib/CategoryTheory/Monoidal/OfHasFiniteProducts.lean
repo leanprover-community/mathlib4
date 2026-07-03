@@ -181,6 +181,7 @@ variable [PreservesLimit (Functor.empty.{0} C) F]
   [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
 set_option backward.defeqAttrib.useBackward true in
+set_option linter.deprecated false in
 @[deprecated inferInstance (since := "2025-10-19")]
 instance :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
@@ -190,6 +191,7 @@ instance :
     IsIso (η F) := by dsimp [η_eq]; apply instIsIsoTerminalComparison
 
 set_option backward.defeqAttrib.useBackward true in
+set_option linter.deprecated false in
 @[deprecated inferInstance (since := "2025-10-19")]
 instance (X Y : C) :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal

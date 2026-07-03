@@ -31,6 +31,7 @@ variable [Preorder α]
 
 variable (α) in
 /-- The cofinality of a preorder is the smallest cardinality of a cofinal subset. -/
+@[wikidata Q1283623]
 def cof : Cardinal :=
   ⨅ s : {s : Set α // IsCofinal s}, #s
 

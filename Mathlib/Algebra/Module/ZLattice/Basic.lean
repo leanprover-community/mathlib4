@@ -412,14 +412,14 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
-  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_diff, Set.mem_setOf_eq,
+  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_sdiff, Set.mem_setOf_eq,
     mem_fundamentalDomain, Set.mem_Ico, not_forall, not_and, not_lt] at hx
   obtain ⟨i, hi⟩ := hx.2
   have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
   rw [← b.sum_repr x, ← Finset.sum_erase_add _ _ (Finset.mem_univ i), this, one_smul, ← vadd_eq_add]
   refine Set.mem_iUnion.mpr ⟨i, AffineSubspace.vadd_mem_mk' _
     (sum_smul_mem _ _ (fun i hi ↦ Submodule.subset_span ?_))⟩
-  exact ⟨i, Set.mem_diff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩
+  exact ⟨i, Set.mem_sdiff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩
 
 end Real
 
@@ -562,18 +562,18 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
       rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
       contrapose! h
-      rw [Set.toFinset_diff, Finset.sdiff_eq_empty_iff_subset] at h
+      rw [Set.toFinset_sdiff, Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h
       rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
       contrapose this
       refine this.mono ?_
-      exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [e, ht_inc])
+      exact Set.insert_subset (Set.mem_of_mem_sdiff hv) (by simp [e, ht_inc])
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
     -- not ℚ-linear independent by showing that `v ∈ span ℚ e`.
     rw [LinearIndepOn, LinearIndependent.iff_fractionRing ℤ ℚ, ← LinearIndepOn,
-      linearIndepOn_id_insert (Set.notMem_of_mem_diff hv), not_and, not_not]
+      linearIndepOn_id_insert (Set.notMem_of_mem_sdiff hv), not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
     -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ ZSpan.fract e (n • v)`
@@ -584,7 +584,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (norm_fract_le e _), fun _ => ?_⟩
       · rw [← h_spanL]
         refine sub_mem ?_ ?_
-        · exact zsmul_mem (subset_span (Set.diff_subset hv)) _
+        · exact zsmul_mem (subset_span (Set.sdiff_subset hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       change ((_ : Set E) ∩ L.toAddSubgroup).Finite
@@ -594,7 +594,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     obtain ⟨n, -, m, -, h_ne, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by
-      rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]
+      rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.intCast_inj, ← Ne]
     apply (smul_mem_iff _ h_nz).mp
     refine span_subset_span ℤ ℚ _ ?_
     rwa [add_smul, neg_smul, SetLike.mem_coe, ← fract_eq_fract, Int.cast_smul_eq_zsmul ℚ,

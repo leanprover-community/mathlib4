@@ -8,26 +8,47 @@ module
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.Algebra.Module.SnakeLemma
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
 # The Jacobi-Zariski exact sequence
 
-Given `R → S → T`, the Jacobi-Zariski exact sequence is
-```
-H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0
-```
-The maps are
+Given algebras $R \to S \to T$, the Jacobi-Zariski exact sequence is a long exact sequence
+relating the first homology of the naive cotangent complexes and the Kähler differentials of
+the respective algebras. It takes the form:
+$$
+H_1(L_{T/R}) \to H_1(L_{T/S}) \to T \otimes_S \Omega_{S/R} \to \Omega_{T/R} \to \Omega_{T/S} \to 0
+$$
+The maps in the sequence are
 - `Algebra.H1Cotangent.map`
 - `Algebra.H1Cotangent.δ`
 - `KaehlerDifferential.mapBaseChange`
 - `KaehlerDifferential.map`
 
-and the exactness lemmas are
+The exactness lemmas are
 - `Algebra.H1Cotangent.exact_map_δ`
 - `Algebra.H1Cotangent.exact_δ_mapBaseChange`
 - `KaehlerDifferential.exact_mapBaseChange_map`
 - `KaehlerDifferential.map_surjective`
+
+When $T$ is flat over $S$, the left bottom part of the snake lemma diagram used in
+the construction of the connecting homomorphism `Algebra.Generators.H1Cotangent.δ`
+naturally extends via a base change map. The exactness lemma is
+`Algebra.Generators.H1Cotangent.exact_liftBaseChange_map_of_flat`. Globally, this extends
+the Jacobi-Zariski exact sequence to the left via a natural base change map, taking the form
+$$
+T \otimes_S H_1(L_{S/R}) \to H_1(L_{T/R}) \to H_1(L_{T/S})
+$$
+The exactness lemma is `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`.
+
+# TODO
+
+The flatness assumption in `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`
+is stronger than the `Tor`-vanishing conditions required in the full statement of
+[Stacks Project, 00S2], this should be refactored and generalized once more API
+for `Tor` modules is available.
+
 -/
 
 @[expose] public section
@@ -129,12 +150,6 @@ def CotangentSpace.compEquiv :
       Q.toExtension.CotangentSpace × (T ⊗[S] P.toExtension.CotangentSpace) :=
   (Q.comp P).cotangentSpaceBasis.repr.trans
     (Q.cotangentSpaceBasis.prod (P.cotangentSpaceBasis.baseChange T)).repr.symm
-
-section instanceProblem
-
--- Note: these instances are needed to prevent instance search timeouts.
-attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass instAddZeroClassTensorProduct AddZero.toZero
 
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
@@ -400,6 +415,11 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
+lemma δ_C {r : S} (hr : C r ∈ Q.ker) :
+    δ Q P ⟨Extension.Cotangent.mk ⟨C r, hr⟩, Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
+      = 1 ⊗ₜ[S] D R S r := by
+  rw [δ_eq_δAux, δAux_C]
+
 lemma δ_eq_δ : δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -441,9 +461,68 @@ lemma exact_map_δ' (f : Hom W Q) :
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
 
-end H1Cotangent
+open LinearMap in
+lemma liftBaseChange_range_le :
+    (liftBaseChange T (Extension.H1Cotangent.map (Q.toComp P).toExtensionHom)).range ≤
+      (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom).ker := by
+  rw [range_liftBaseChange, coe_range, Submodule.span_le, Set.range_subset_iff]
+  rintro ⟨x, _⟩
+  obtain ⟨⟨(x : P.Ring), x_in⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
+  ext; suffices (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom x) ∈ Q.toExtension.ker ^ 2 by
+    simpa [Ideal.toCotangent_eq_zero]
+  rw [← Generators.ker, Generators.ker_eq_ker_aeval_val] at x_in
+  rw [toComp_toAlgHom, toAlgHom_ofComp_rename, Generators.algebraMap_eq, RingHom.coe_coe,
+    x_in, RingHom.map_zero]
+  exact Ideal.zero_mem _
 
-end instanceProblem
+private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
+    LinearMap.liftBaseChange T (Extension.Cotangent.map (Q.toComp P).toExtensionHom)
+      ((LinearMap.lTensor T Extension.h1Cotangentι) z) ∈
+        (Q.comp P).toExtension.cotangentComplex.ker := by
+  induction z with
+  | zero => simp
+  | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
+  | add x y hx hy => simpa using Submodule.add_mem _ hx hy
+
+open LinearMap in
+/-- When $T$ is flat over $S$, the left bottom part of the snake lemma diagram used in
+the construction of the connecting homomorphism `Algebra.Generators.H1Cotangent.δ`
+naturally extends via a base change map. -/
+theorem exact_liftBaseChange_map_of_flat [Module.Flat S T] :
+    Function.Exact ((Extension.H1Cotangent.map (toComp Q P).toExtensionHom).liftBaseChange T)
+      (Extension.H1Cotangent.map (ofComp Q P).toExtensionHom) := by
+  rw [exact_iff]
+  refine le_antisymm ?_ (liftBaseChange_range_le Q P)
+  rintro ⟨x, x_in⟩ hx
+  replace hx : Extension.Cotangent.map (Q.ofComp P).toExtensionHom x = 0 := by
+    simpa [← Extension.h1Cotangentι_injective.eq_iff] using hx
+  rw [← mem_ker, (Cotangent.exact Q P).linearMap_ker_eq] at hx
+  rcases hx with ⟨x, rfl⟩
+  rw [mem_ker, ← comp_apply, ← map_comp_cotangentComplex_baseChange, comp_apply,
+    ← mem_ker, ker_eq_bot.mpr (CotangentSpace.map_toComp_injective Q P), Submodule.mem_bot,
+    baseChange_eq_ltensor, ← mem_ker, (Module.Flat.lTensor_exact T
+      P.toExtension.exact_hCotangentι_cotangentComplex).linearMap_ker_eq] at x_in
+  rcases x_in with ⟨x, rfl⟩
+  use x; induction x with
+  | zero => ext; simp
+  | tmul x y => ext; simp
+  | add x y hx hy => ext; simp [hx (auxMemKer Q P x), hy (auxMemKer Q P y)]
+
+/-- A variant of `exact_liftBaseChange_map_of_flat` that takes in
+arbitrary maps between generators. -/
+theorem exact_liftBaseChange_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : Hom P W) :
+    Function.Exact ((Extension.H1Cotangent.map g.toExtensionHom).liftBaseChange T)
+      (Extension.H1Cotangent.map f.toExtensionHom) := by
+  rw [← LinearEquiv.conj_exact_iff_exact _ _ (H1Cotangent.equiv W (Q.comp P))]
+  convert! exact_liftBaseChange_map_of_flat Q P
+  · change Extension.H1Cotangent.map (W.defaultHom (Q.comp P)).toExtensionHom ∘ₗ _ = _
+    rw [LinearMap.liftBaseChange_comp, ← Extension.H1Cotangent.map_comp,
+      Extension.H1Cotangent.map_eq]
+  · change (Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
+      (Extension.H1Cotangent.map _) = _
+    rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq]
+
+end H1Cotangent
 
 end Generators
 
@@ -456,13 +535,29 @@ noncomputable
 def H1Cotangent.δ : H1Cotangent S T →ₗ[T] T ⊗[S] Ω[S⁄R] :=
   Generators.H1Cotangent.δ (Generators.self S T) (Generators.self R S)
 
-/-- Given algebras `R → S → T`, `H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R]` is exact. -/
+/-- Given algebras $R \to S \to T$, the sequence
+$H_1(L_{T/R}) \to H_1(L_{T/S}) \to T \otimes_S \Omega_{S/R}$
+is exact. -/
+@[stacks 00S2]
 lemma H1Cotangent.exact_map_δ : Function.Exact (map R S T T) (δ R S T) :=
   Generators.H1Cotangent.exact_map_δ' (Generators.self S T)
     (Generators.self R S) (Generators.self R T) (Generators.defaultHom _ _)
 
-/-- Given algebras `R → S → T`, `H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R]` is exact. -/
+/-- Given algebras $R \to S \to T$, the sequence
+$H_1(L_{T/S}) \to T \otimes_S \Omega_{S/R} \to \Omega_{T/R}$
+is exact. -/
+@[stacks 00S2]
 lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseChange R S T) :=
   Generators.H1Cotangent.exact_δ_map (Generators.self S T) (Generators.self R S)
+
+/-- Given algebras $R \to S \to T$ and $T$ flat over $S$, the sequence
+$T \otimes_S H_1(L_{S/R}) \to H_1(L_{T/R}) \to H_1(L_{T/S})$
+is exact. -/
+@[stacks 00S2]
+lemma H1Cotangent.exact_liftBaseChange_map_of_flat [Module.Flat S T] :
+    Function.Exact ((map R R S T).liftBaseChange T) (map R S T T) :=
+  Generators.H1Cotangent.exact_liftBaseChange_map_of_flat'
+    (Generators.self S T) (Generators.self R S) (Generators.self R T)
+    (Generators.defaultHom _ _) (Generators.defaultHom _ _)
 
 end Algebra
