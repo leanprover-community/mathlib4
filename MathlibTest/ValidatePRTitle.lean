@@ -114,7 +114,7 @@ section subject
 #guard_msgs in
 #check_title "feat: bad title."
 
-/-- info: Message: 'error: the PR subject should be lowercased' -/
+/-- info: Message: 'error: the PR subject `My Bad Title` should be lowercased' -/
 #guard_msgs in
 #check_title "feat: My Bad Title"
 -- Starting with an acronym is fine, however.
@@ -127,13 +127,22 @@ section subject
 #guard_msgs in #check_title "chore: PR'ed lemmas"
 #guard_msgs in #check_title "feat(CI): PR's to be deleted"
 #guard_msgs in #check_title "chore: FCP'ed decisions should be listed separately"
+-- We only remove at most one suffix.
+/-- info: Message: 'error: the PR subject `PR'ed's lemmas` should be lowercased' -/
+#guard_msgs in #check_title "chore: PR'ed's lemmas"
+/-- info: Message: 'error: the PR subject `PRs's something` should be lowercased' -/
+#guard_msgs in #check_title "chore: PRs's something"
 -- This is not quite an abbreviation (and a grammar error).
-/-- info: Message: 'error: the PR subject should be lowercased' -/
+/--
+info: Message: 'error: the PR subject `FCPed decisions should be listed separately` should be lowercased'
+-/
 #guard_msgs in #check_title "chore: FCPed decisions should be listed separately"
 
 -- This PR title is arguably not very bad (Lindelöf is a proper name),
 -- a better fix is to start with a verb (which you should do anyway.)
-/-- info: Message: 'error: the PR subject should be lowercased' -/
+/--
+info: Message: 'error: the PR subject `Lindelöf spaces something something` should be lowercased'
+-/
 #guard_msgs in
 #check_title "feat: Lindelöf spaces something something"
 
@@ -206,13 +215,13 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 #guard_msgs in
 #check_title "feat(ModuleForm): 2e is less than 6"
 
-/-- info: Message: 'error: the PR subject should be lowercased' -/
+/-- info: Message: 'error: the PR subject `W3c` should be lowercased' -/
 #guard_msgs in
 #check_title "feat(ModuleForm): W3c"
 
 #guard_msgs in
 #check_title "feat(ModuleForm): W3C"
 
-/-- info: Message: 'error: the PR subject should be lowercased' -/
+/-- info: Message: 'error: the PR subject `A new lemma` should be lowercased' -/
 #guard_msgs in
 #check_title "feat(ModuleForm): A new lemma"

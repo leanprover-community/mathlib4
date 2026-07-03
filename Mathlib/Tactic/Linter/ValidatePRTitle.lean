@@ -121,9 +121,14 @@ public def validateTitle (title : String) : Array String := Id.run do
     -- Titles should be lower-cased (but we allow abbreviations, or a `s` or `'ed` suffix).
     if subject.front.toLower != subject.front then
       let firstWord := subject.takeWhile (!·.isWhitespace)
-      let withoutSuffix := firstWord.dropSuffix "'s" |>.dropSuffix "s" |>.dropSuffix "'ed"
+      let suffixes := ["'s", "s", "'ed"]
+      let mut withoutSuffix := firstWord
+      for suff in suffixes do
+        if firstWord.endsWith suff then
+          withoutSuffix := firstWord.dropSuffix suff
+          break
       if !(isAbbreviation withoutSuffix) then
-        errors := errors.push "error: the PR subject `{withoutSuffix}` should be lowercased"
+        errors := errors.push s!"error: the PR subject `{subject}` should be lowercased"
     if subject.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
     else if subject.endsWith " " then
