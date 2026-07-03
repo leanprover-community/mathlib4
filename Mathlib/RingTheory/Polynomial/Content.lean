@@ -321,7 +321,6 @@ theorem content_mul_aux {p q : R[X]} :
 @[simp]
 theorem associated_content_mul (p q : R[X]) :
     Associated ((p * q).content) (p.content * q.content) := by
-  rw [Associated] -- to remove
   nontriviality R
   classical
     suffices h : ∀ (n : ℕ) (p q : R[X]),
