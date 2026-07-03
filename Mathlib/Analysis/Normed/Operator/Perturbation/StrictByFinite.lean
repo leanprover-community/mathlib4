@@ -30,7 +30,7 @@ More precisely, we prove the following statements:
   finite dimensional subspace `B` of `F`, we have that `u` is strict with closed range
   if and only if `B.mkQL ∘L u` is strict with closed range.
 
-These three results show up crucially when developping the theory of Fredholm operators
+These three results show up crucially when developing the theory of Fredholm operators
 between topological vector spaces. Note that none of the results here use the Hahn-Banach
 theorem, so there is no significant restriction on the field.
 
