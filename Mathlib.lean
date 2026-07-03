@@ -3256,7 +3256,6 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 public import Mathlib.CategoryTheory.Preadditive.LeftExact
 public import Mathlib.CategoryTheory.Preadditive.LiftToFinset
 public import Mathlib.CategoryTheory.Preadditive.Mat
-public import Mathlib.CategoryTheory.Preadditive.MonoCoprod
 public import Mathlib.CategoryTheory.Preadditive.OfBiproducts
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
