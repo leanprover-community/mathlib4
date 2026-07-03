@@ -354,7 +354,6 @@ where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
       else return none
     | _ => pure none
 
-set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -431,7 +430,7 @@ where
         let some K ← guessBaseFieldForNormedSpace F
           | throwError "Couldn't find a `NormedSpace` structure on `{F}`"
         let tgtMod ← mkAppOptM ``modelWithCornersSelf #[K, none, F, none, none]
-        mkAppM ``ModelWithCorners.prod  #[baseModel, tgtMod]
+        mkAppM ``ModelWithCorners.prod #[baseModel, tgtMod]
       | _ =>
         throwError s!"{e} is a TotalSpace {F} {V}, but {V} is not a pi type --- \
           could not infer base of the bundle"
@@ -441,18 +440,14 @@ where
     match_expr V with
     | TangentSpace _k _ _E _ _ _H _ I M _ _ => do
       trace[Elab.DiffGeo.MDiff] "`{V}` is the total space of the `TangentBundle` of `{M}`"
-      let srcIT : Term ← Term.exprToSyntax I
-      let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
-      Term.elabTerm resTerm none
+      mkAppM ``ModelWithCorners.tangent #[I]
     | _ => throwError "`{V}` is not a `TangentSpace`"
   /-- Attempt to find a model on a `TangentBundle` -/
   fromTangentBundle : TermElabM Expr := do
     match_expr e with
     | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
       trace[Elab.DiffGeo.MDiff] "`{e}` is a `TangentBundle` over model `{I}` on `{M}`"
-      let srcIT : Term ← Term.exprToSyntax I
-      let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
-      Term.elabTerm resTerm none
+      mkAppM ``ModelWithCorners.tangent #[I]
     | _ => throwError "`{e}` is not a `TangentBundle`"
   /-- Attempt to find the trivial model on a normed space. -/
   fromNormedSpace : TermElabM FindModelResult := do
@@ -535,18 +530,13 @@ where
     -- the standard model with corners.
     -- Therefore, we only check definitional equality at reducible transparency.
     let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
-    let eK : Term ← Term.exprToSyntax k
-    let eT : Term ← Term.exprToSyntax e
-    let iTerm : Term ← ``(𝓘($eK, $eT))
-    Term.elabTerm iTerm none
+    mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
   /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
     -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
     match (← instantiateMVars e).cleanupAnnotations with
     | mkApp2 (.const `EuclideanSpace _) k _n =>
-      let eK : Term ← Term.exprToSyntax k
-      let eT : Term ← Term.exprToSyntax e
-      Term.elabTerm (← ``(𝓘($eK, $eT))) none
+      mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
     | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
       mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
     | mkApp (.const `EuclideanQuadrant _) n =>
@@ -607,9 +597,7 @@ where
           | _ => return none
       if let some (k, R) := searchNormedAlgebra then
         trace[Elab.DiffGeo.MDiff] "found a normed algebra: `{α}` is a normed `{k}`-algebra"
-        let eK : Term ← Term.exprToSyntax k
-        let eR : Term ← Term.exprToSyntax R
-        Term.elabTerm (← ``(𝓘($eK, $eR))) none
+        mkAppOptM ``modelWithCornersSelf #[k, none, R, none, none]
       else
         trace[Elab.DiffGeo.MDiff] "`{α}` is not a normed algebra on the nose: try via a space of \
           continuous linear maps"
@@ -634,9 +622,7 @@ where
           match normedSpace? with
           | some (k, _R) =>
             trace[Elab.DiffGeo.MDiff] "found a normed space: `{V}` is a normed space over `{k}`"
-            let eK : Term ← Term.exprToSyntax k
-            let eα : Term ← Term.exprToSyntax α
-            Term.elabTerm (← ``(𝓘($eK, $eα))) none
+            mkAppOptM ``modelWithCornersSelf #[k, none, α, none, none]
           | _ => throwError  "Found no `NormedSpace` structure on `{V}` among local instances"
         else
           -- NB. If further instances of `NormedAlgebra` arise in practice, adding another check
@@ -725,12 +711,8 @@ where
     | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
-  fromNormedField : TermElabM Expr := do
-    let eT : Term ← Term.exprToSyntax e
-    let iTerm : Term ← ``(𝓘($eT, $eT))
-    Term.elabTerm iTerm none
+  fromNormedField : TermElabM Expr := mkAppOptM ``modelWithCornersSelf #[e, none, e, none, none]
 
-set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance.
 This supports all `ModelWithCorners` instances that are currently defined in mathlib.
@@ -804,10 +786,7 @@ where
         throwError "`{e}` is a product of normed spaces, so there are two potential models with \
         corners\nFor now, please specify the model by hand."
       -- Otherwise, we are not a normed space, and normally form the product model.
-      let eTerm : Term ← Term.exprToSyntax srcE
-      let fTerm : Term ← Term.exprToSyntax srcF
-      let iTerm : Term ← ``(ModelWithCorners.prod $eTerm $fTerm)
-      return some { model := ← Term.elabTerm iTerm none }
+      return some { model := ← mkAppM ``ModelWithCorners.prod #[srcE, srcF] }
     | Sum E F =>
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
         We assume the models match, and only look into the first summand"
@@ -1102,7 +1081,25 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withAppArg delab
     `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
--- TODO: add a delaborator for mfderivWithin (with a test)
+/-- Delaborator for `mfderivWithin` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab mfderivWithin] meta def delabMFDerivWithin : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let ss ← withAppArg delab
+  try
+    let fe := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `(T% $σs) >>= annotateGoToSyntaxDef
+    `(mfderiv[$ss] ($Tσs)) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(mfderiv[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `MDifferentiable` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
@@ -1182,6 +1179,53 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
+/-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab HasMFDerivWithinAt] meta def delabHasMFDerivWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 24 do
+  let ss ← withNaryArg 21 delab
+  let xs ← withNaryArg 22 delab
+  let f' ← withNaryArg 23 delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(HasMFDerivAt[$ss] $Tσs $xs $f') >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(HasMFDerivAt[$ss] $fs $xs $f') >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab HasMFDerivAt] meta def delabHasMFDerivAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 23 do
+  let xs ← withNaryArg 21 delab
+  let f' ← withNaryArg 22 delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(HasMFDerivAt% $Tσs $xs $f') >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 delab
+    `(HasMFDerivAt% $fs $xs $f') >>= annotateGoToSyntaxDef
+
 /-- Delaborator for `UniqueMDiffOn` using the custom elaborator. -/
 @[app_delab UniqueMDiffOn] meta def delabUniqueMDiffOn : Delab := do
   whenPPOption getPPNotation do
@@ -1197,7 +1241,7 @@ arguments that can use the `T%` elaborator. -/
   `(UniqueMDiffAt[$ss]) >>= annotateGoToSyntaxDef
 
 -- TODO: add more delaborators (and tests) for
--- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
+-- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt
 
 -- TODO: when adding more elaborators, also add the corresponding delaborators
 
