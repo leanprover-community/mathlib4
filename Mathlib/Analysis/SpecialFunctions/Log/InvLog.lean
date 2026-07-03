@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
-# Multiplicative inverse of real logarithm
+# Multiplicative inverse and iteration of real logarithm
 
 We prove properties of the functions `x ↦ (log x)⁻¹` and `x ↦ log (log x)`.
 
@@ -25,7 +25,9 @@ public section
 
 namespace Real
 
-open Filter Asymptotics
+open Filter Asymptotics Bornology Metric IsOrderBornology DifferentiableAt
+
+/- ## Derivative of the inverse logarithm -/
 
 lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) 0 := by
   simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero,
@@ -39,8 +41,8 @@ lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (lo
   apply log_neg_eq_log x ▸ log_neg <;> grind
 
 lemma not_continuousAt_inv_log_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹) 1 := by
-  suffices Tendsto (fun x ↦ (log x)⁻¹) (nhdsWithin 1 {1}ᶜ) (Bornology.cobounded ℝ) from
-    not_continuousAt_of_tendsto this nhdsWithin_le_nhds (Metric.disjoint_nhds_cobounded _)
+  suffices Tendsto (fun x ↦ (log x)⁻¹) (nhdsWithin 1 {1}ᶜ) (cobounded ℝ) from
+    not_continuousAt_of_tendsto this nhdsWithin_le_nhds (disjoint_nhds_cobounded _)
   exact tendsto_inv₀_nhdsNE_zero.comp <| log_one ▸
     HasDerivAt.tendsto_nhdsNE (by simpa using hasDerivAt_log one_ne_zero) one_ne_zero
 
@@ -53,29 +55,58 @@ theorem deriv_inv_log {x : ℝ} : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / l
   · simpa using deriv_zero_of_not_differentiableAt not_differentiableAt_inv_log_zero
   rcases eq_or_ne x 1 with rfl | _
   · simpa using deriv_zero_of_not_differentiableAt <|
-      mt DifferentiableAt.continuousAt not_continuousAt_inv_log_one
+      mt continuousAt not_continuousAt_inv_log_one
   rcases eq_or_ne x (-1) with rfl | _
   · simpa using deriv_zero_of_not_differentiableAt <|
-      mt DifferentiableAt.continuousAt not_continuousAt_inv_log_neg_one
+      mt continuousAt not_continuousAt_inv_log_neg_one
   simp_all
 
 @[simp]
 theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / log x ^ 2 :=
   funext fun _ ↦ deriv_inv_log
 
-theorem differentiableAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1)
+theorem differentiableAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1)
     : DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x :=
   by fun_prop (disch := grind [log_ne_zero])
 
-theorem hasDerivAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1) :
+theorem hasDerivAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1) :
     HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
-  simpa using (differentiableAt_inv_log hx hx').hasDerivAt
+  simpa using (differentiableAt_inv_log hx₀ hx₁ hx₂).hasDerivAt
 
 theorem differentiableOn_inv_log : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) (.Ioi 1) :=
   (differentiableOn_log.mono (by grind)).inv (by simp; grind)
 
-theorem deriv_log_log {x : ℝ} (hx : 1 < x) : deriv (fun x ↦ log (log x)) x = x⁻¹ / log x := by
-  rw [deriv.log (differentiableAt_log (by linarith)) (by simp; grind), deriv_log]
+/- ## Derivative of the iterated logarithm -/
+
+lemma not_continuousAt_log_log_zero : ¬ ContinuousAt (fun x ↦ log (log x)) 0 := by
+  suffices Tendsto (fun x ↦ log (log x)) (nhdsWithin 0 {0}ᶜ) (cobounded ℝ) from
+    not_continuousAt_of_tendsto this nhdsWithin_le_nhds (disjoint_nhds_cobounded _)
+  have : Tendsto log atBot atTop := by
+    convert tendsto_log_atTop.comp tendsto_neg_atBot_atTop; ext; simp
+  exact (this.mono_right atTop_le_cobounded).comp tendsto_log_nhdsNE_zero
+
+lemma not_continuousAt_log_log_one : ¬ ContinuousAt (fun x ↦ log (log x)) 1 := by
+  suffices Tendsto (fun x ↦ log (log x)) (nhdsWithin 1 {1}ᶜ) (cobounded ℝ) from
+    not_continuousAt_of_tendsto this nhdsWithin_le_nhds (disjoint_nhds_cobounded _)
+  exact (tendsto_log_nhdsNE_zero.mono_right atBot_le_cobounded).comp <| log_one ▸
+    HasDerivAt.tendsto_nhdsNE (by simpa using hasDerivAt_log one_ne_zero) one_ne_zero
+
+lemma not_continuousAt_log_log_neg_one : ¬ ContinuousAt (fun x ↦ log (log x)) (-1) :=
+  fun H ↦ not_continuousAt_log_log_one
+    (by simpa only [log_neg_eq_log] using H.comp' continuousAt_neg)
+
+@[simp]
+theorem deriv_log_log {x : ℝ} : deriv (fun x ↦ log (log x)) x = x⁻¹ / log x := by
+  rcases eq_or_ne x 0 with rfl | _
+  · simpa using deriv_zero_of_not_differentiableAt <|
+      mt continuousAt not_continuousAt_log_log_zero
+  rcases eq_or_ne x 1 with rfl | _
+  · simpa using deriv_zero_of_not_differentiableAt <|
+      mt continuousAt not_continuousAt_log_log_one
+  rcases eq_or_ne x (-1) with rfl | _
+  · simpa using deriv_zero_of_not_differentiableAt <|
+      mt continuousAt not_continuousAt_log_log_neg_one
+  rw [deriv.log (differentiableAt_log (by grind)) (by simp; grind), deriv_log]
 
 theorem differentiableAt_log_log {x : ℝ} (hx : 1 < x) :
     DifferentiableAt ℝ (fun x ↦ log (log x)) x :=
@@ -83,7 +114,7 @@ theorem differentiableAt_log_log {x : ℝ} (hx : 1 < x) :
 
 theorem hasDerivAt_log_log {x : ℝ} (hx : 1 < x) :
     HasDerivAt (fun x ↦ log (log x)) (x⁻¹ / log x) x := by
-  simpa [deriv_log_log hx] using (differentiableAt_log_log hx).hasDerivAt
+  simpa [deriv_log_log] using (differentiableAt_log_log hx).hasDerivAt
 
 theorem differentiableOn_log_log : DifferentiableOn ℝ (fun x ↦ log (log x)) (.Ioi 1) :=
   (differentiableOn_log.mono (by grind)).log (by simp; grind)
