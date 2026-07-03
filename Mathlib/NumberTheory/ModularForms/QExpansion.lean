@@ -273,6 +273,7 @@ theorem isBoundedAtImInfty_of_hasSum_qExpansion {f : ℍ → ℂ} {c : ℕ → �
     simpa [update_self, Function.comp_def] using
       (hasFPowerSeriesOnBall_update hh hf).hasFPowerSeriesAt.continuousAt.tendsto.comp
         (qParam_tendsto_atImInfty hh)
+  -- `IsBoundedAtImInfty f = BoundedAtFilter atImInfty f = (f =O[atImInfty] 1)` by definition.
   exact htend.isBigO_one ℝ
 
 lemma hasFPowerSeriesOnBall_cuspFunction {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
