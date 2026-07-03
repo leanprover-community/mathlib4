@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Data.Nat.Choose.Cast
-public import Mathlib.Data.Real.Sqrt
 
 /-!
 # The Erdős-Stone-Simonovits theorem
