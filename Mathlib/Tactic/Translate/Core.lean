@@ -981,6 +981,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
+  -- Process any remaining universe contraints, to assign all universe metavariables.
+  discard <| processPostponed (mayPostpone := false) (exceptionOnFailure := true)
   let params ← levels.mapM fun level ↦ do match ← instantiateLevelMVars level with
     | .param u => return u
     | _ => throwError "inferred universe `{level}` in `{srcType}` is not a parameter."
