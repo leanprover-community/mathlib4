@@ -22,7 +22,7 @@ We prove the maximal ergodic theorem for a measure-preserving map `f` and an int
 
 ## Main definitions
 
-* `birkhoffSumSup f g`: the maximum of `birkhoffSum f g i` for `i` ranging from `0` to `n`.
+* `birkhoffMax f g n`: the maximum of `birkhoffSum f g i` for `i` ranging from `0` to `n`.
 * `birkhoffSumSup f g`: the supremum of the Birkhoff sums of `g` along orbits of `f`.
 * `birkhoffAverageSup f g`: the maximal ergodic operator, defined as the supremum of the
   Birkhoff averages of `g` along orbits of `f`.
