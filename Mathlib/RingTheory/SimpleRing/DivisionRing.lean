@@ -55,4 +55,4 @@ lemma IsSimpleModule.obj_of_isEquivalence
     [e.IsEquivalence] (M : ModuleCat R) [IsSimpleModule R M] :
     IsSimpleModule S (e.obj M) := by
   rw [← simple_iff_isSimpleModule'] at *
-  exact simple_map e M
+  exact simple_obj e M
