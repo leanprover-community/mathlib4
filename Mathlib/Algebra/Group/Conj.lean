@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Semiconj.Units
+public import Mathlib.Data.Set.Function
 
 /-!
 # Conjugacy of group elements
@@ -293,5 +294,20 @@ theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
 @[to_additive]
 theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk ⁻¹' {a} :=
   Set.ext fun _ => mem_carrier_iff_mk_eq
+
+lemma mk_mulAut {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (MulAut.conj m x) = ConjClasses.mk x := by
+  rw [mk_eq_mk_iff_isConj, MulAut.conj_apply]
+  exact (isConj_iff.2 ⟨m, rfl⟩).symm
+
+theorem bijOn_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
+    Set.BijOn (MulAut.conj k) c.carrier c.carrier := by
+  refine ⟨fun a ha ↦ ?_, (MulAut.conj k).injective.injOn, fun b hb ↦ ?_⟩
+  · rw [mem_carrier_iff_mk_eq] at ha ⊢
+    rw [mk_mulAut, ha]
+  · rw [mem_carrier_iff_mk_eq] at hb
+    refine ⟨MulAut.conj k⁻¹ b, ?_, ?_⟩
+    · rw [mem_carrier_iff_mk_eq, mk_mulAut, hb]
+    · rw [← MulAut.mul_apply, ← map_mul, mul_inv_cancel, map_one, MulAut.one_apply]
 
 end ConjClasses

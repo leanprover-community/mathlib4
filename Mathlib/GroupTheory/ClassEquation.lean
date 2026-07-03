@@ -37,6 +37,15 @@ theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
   suffices (Σ x : ConjClasses G, x.carrier) ≃ G by simpa using! (Fintype.card_congr this)
   simpa [carrier_eq_preimage_mk] using! Equiv.sigmaFiberEquiv ConjClasses.mk
 
+/-- Summing `f (g * h)` over `h` in the conjugacy class of `g` equals summing `f (h * g)`. -/
+theorem ConjClasses.sum_carrier_mul_left {G H} [Group G] [Fintype G] [DecidableEq G]
+    [AddCommMonoid H] (g : G) (f : G → H) :
+    ∑ h ∈ (ConjClasses.mk g).carrier, f (g * h) = ∑ h ∈ (ConjClasses.mk g).carrier, f (h * g) := by
+  rw [← Finset.sum_set_coe, ← Finset.sum_set_coe]
+  refine Fintype.sum_equiv (bijOn_conj g _).equiv _ _ fun x ↦ ?_
+  change f (g * x) = f (MulAut.conj g x * g)
+  rw [MulAut.conj_apply, mul_assoc, inv_mul_cancel, mul_one]
+
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
 theorem Group.sum_card_conj_classes_eq_card [Finite G] :
     ∑ᶠ x : ConjClasses G, x.carrier.ncard = Nat.card G := by
