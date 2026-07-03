@@ -178,7 +178,7 @@ homotopic to `0`, this is the morphism from the "candidate cokernel" of `f` to `
 from the right homotopy. -/
 def desc : cokernel f ⟶ w :=
   Arrow.homMk (biprod.desc g.left h.hom) g.right (biprod.hom_ext' _ _ (by simp)
-  (by simp [h.comm.symm]))
+    (by simp [← h.comm]))
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
