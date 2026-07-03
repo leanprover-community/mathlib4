@@ -88,7 +88,7 @@ def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
 structure of cocone over the diagramm defined by the `P.obj (op (closure (U : Set X)))` for `U`
 an open neighbourhood of `K` -/
 def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X) :=
-  Cocone.whisker K.oRcNhdsToCompactNhds_mono.functor.op <| P.coconeOfCompacts K
+  Cocone.whisker K.openRcNhdsToCompactNhds_mono.functor.op <| P.coconeOfCompacts K
 
 variable [T2Space X]
 
@@ -98,7 +98,7 @@ a recipi to build maps from `P.obj(op K)` by only using the open relatively
 comapct neighbourhoods and not all the compacts neighbourhoods. -/
 noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X)
     (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G)
-    (α : (K.oRcNhdsToCompactNhds_mono.functor.op ⋙ (Subtype.mono_coe _).functor.op ⋙ P) ⟶ G) :
+    (α : (K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Subtype.mono_coe _).functor.op ⋙ P) ⟶ G) :
     P.obj (op K) ⟶ t.pt :=
   ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).map t α
 
@@ -140,8 +140,8 @@ set_option backward.isDefEq.respectTransparency false in
 all the compacts neighbourhoods. -/
 noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.openRcNhds)ᵒᵖ ⥤ A}
     (t : Cocone G)
-    (α : (K.oRcNhdsToCompactNhds_mono.functor.op ⋙ (Subtype.mono_coe _).functor.op ⋙ P.obj) ⟶ G) :
-    P.obj.obj (op K) ⟶ t.pt :=
+    (α : (K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Subtype.mono_coe _).functor.op ⋙ P.obj) ⟶ G)
+    : P.obj.obj (op K) ⟶ t.pt :=
   ((Functor.Final.isColimitWhiskerEquiv _ _).invFun
   (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K) ).map t α
 

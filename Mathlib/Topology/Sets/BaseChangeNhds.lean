@@ -14,11 +14,10 @@ public import Mathlib.Topology.Sets.Compacts
 /-!
 # Base changes among different families of neighbourhoods
 
-This file builds base changes for `.compactInsd`, `openNhds`.
-`Compact.nhdMap`
+This file builds base changes for `.compactsInside`, `openNhds`.
 
-It also contains the evidences that `oRcNhds_to_openNhds`,
- `oRcNhds_to_compactNhds` and `Compact.nhdMap`are initials functors.
+It also contains the evidences that `openRcNhds_to_openNhds`and
+ `openRcNhds_to_compactNhds` are initials functors.
 
 -/
 
@@ -77,7 +76,7 @@ def isInitialBotOpensOpenNhdsBot : IsInitial (⊥ : (⊥ : Compacts α).openNhds
   (fun _ _ ↦ eq_of_comp_right_eq <| by tauto)
 
 instance {K : Compacts α} [T2Space α] [LocallyCompactSpace α] :
-    K.openRelativelyCompactNhdsToOpenNhds_mono.functor.Initial := by
+    K.openRcNhdsToOpenNhds_mono.functor.Initial := by
   rw [Monotone.initial_functor_iff]
   intro U
   obtain ⟨L, h1, h2, h3⟩ := exists_compact_between K.isCompact U.val.isOpen U.property
@@ -87,13 +86,13 @@ instance {K : Compacts α} [T2Space α] [LocallyCompactSpace α] :
     h2⟩⟩
   exact Subset.trans interior_subset h3
 
-instance {K : Compacts α} [T2Space α] : K.oRcNhdsToCompactNhds_mono.functor.Initial := by
+instance {K : Compacts α} [T2Space α] : K.openRcNhdsToCompactNhds_mono.functor.Initial := by
   rw [Monotone.initial_functor_iff]
   intro L
   obtain ⟨U, h1, h2⟩ := exists_open_set_nhds_of_compactsNhds L
   have h3 : closure (U : Set α) ⊆ L := (IsClosed.closure_subset_iff
     (IsCompact.isClosed L.1.isCompact') ).2 h2
-  exact ⟨⟨U, ⟨IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
+  exact ⟨⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
 
 variable {β : Type u_1} [TopologicalSpace β] {f : α → β} (proper_f : IsProperMap f)
 

@@ -530,7 +530,7 @@ end Tactic
 end Mathlib.Tactic.ComputeDegree
 
 /-!
- We register `compute_degree` with the `hint` tactic.
- -/
+We register `compute_degree` with the `hint` tactic.
+-/
 register_hint 1000 compute_degree
 register_try?_tactic (priority := 1000) compute_degree

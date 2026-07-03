@@ -39,6 +39,20 @@ variable {n i j p : ℕ} {A K : Type*} {ζ : A}
 
 variable [CommRing A] [IsDomain A] {R : Type*} [CommRing R] [Algebra R A]
 
+/-- If `ζ ^ n = 1` and `ζ ≠ 1`, then `ζ - 1` divides `n`. This does not require `ζ` to be a
+  primitive root of unity, only a root of unity different from `1`. -/
+theorem sub_one_dvd_natCast_of_pow_eq_one (hζ : ζ ^ n = 1) (hζ1 : ζ ≠ 1) : ζ - 1 ∣ (n : A) := by
+  have key : (n : A) = ∑ i ∈ range n, (1 - ζ ^ i) := by
+    have hgs : ∑ i ∈ range n, ζ ^ i = 0 := by
+      have := geom_sum_mul ζ n
+      rw [hζ, sub_self] at this
+      exact (mul_eq_zero.1 this).resolve_right fun h ↦ hζ1 (sub_eq_zero.1 h)
+    rw [Finset.sum_sub_distrib, hgs, sub_zero, Finset.sum_const, card_range, nsmul_eq_mul, mul_one]
+  rw [key]
+  refine Finset.dvd_sum fun i _ ↦ ?_
+  have h : ζ - 1 ∣ ζ ^ i - 1 := by simpa using sub_dvd_pow_sub_pow ζ 1 i
+  rwa [← dvd_neg, neg_sub] at h
+
 namespace IsPrimitiveRoot
 
 /-- Given an `n`-th primitive root of unity `ζ,` we have that `ζ - 1` and `ζ ^ j - 1` are associated
@@ -135,5 +149,21 @@ lemma nthRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitive
 @[deprecated (since := "2026-06-23")]
 alias ntRootsFinset_pairwise_associated_sub_one_sub_of_prime :=
   nthRootsFinset_pairwise_associated_sub_one_sub_of_prime
+
+/-- If `p` is prime and `ζ` is a `p`-th primitive root of unity, then `ζ - 1` divides `η₁ - η₂`
+for all `p`-th roots of unity `η₁` and `η₂`. -/
+lemma sub_one_dvd_sub (hζ : IsPrimitiveRoot ζ p) (hp : p.Prime)
+    {η₁ : A} (hη₁ : η₁ ∈ nthRootsFinset p (1 : A))
+    {η₂ : A} (hη₂ : η₂ ∈ nthRootsFinset p (1 : A)) :
+    ζ - 1 ∣ η₁ - η₂ := by
+  rcases eq_or_ne η₁ η₂ with rfl | h
+  · simp
+  · exact (hζ.nthRootsFinset_pairwise_associated_sub_one_sub_of_prime hp hη₁ hη₂ h).dvd
+
+/-- Given an `n`-th primitive root of unity `ζ`, where `1 < n`, we have that `ζ - 1` divides `n`.
+  In particular, if `ζ` is a `p`-th primitive root of unity with `p` prime, then `ζ - 1` divides
+  `p`. -/
+theorem sub_one_dvd_natCast (hζ : IsPrimitiveRoot ζ n) (hn : 1 < n) : ζ - 1 ∣ (n : A) :=
+  sub_one_dvd_natCast_of_pow_eq_one hζ.pow_eq_one (hζ.ne_one hn)
 
 end IsPrimitiveRoot

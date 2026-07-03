@@ -347,10 +347,10 @@ lemma openRcNhdsToOpenNhds_mono (K : Compacts α) :
 /-- An open relatively compact neighbourhood of `K` induces a compact neighbourhood by taking
 the closure
 -/
-def oRcNhdsToCompactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :=
+def openRcNhdsToCompactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :=
   fun U ↦ ⟨_, closure_mem_compactNhds_of_mem_openRcNhds (Subtype.coe_prop U)⟩
 
-lemma oRcNhdsToCompactNhds_mono (K : Compacts α) : Monotone K.oRcNhdsToCompactNhds :=
+lemma openRcNhdsToCompactNhds_mono (K : Compacts α) : Monotone K.openRcNhdsToCompactNhds :=
   fun _ _ h ↦ closure_mono h
 
 instance [T2Space α] (K : Compacts α) : IsCodirectedOrder K.openRcNhds where
@@ -371,7 +371,7 @@ def compactsInside (U : Opens α) : Set (Compacts α) := {K | (K : Set α) ⊆ U
 
 /-- For `K` a compact subset insde an open subset `U`, `U` has a structure of open neighbourhood
 of `K` -/
-def openNhdsOfCompactInside {U : Opens α} (K : U.compactsInside) : (K.val).openNhds :=
+def openNhdsOfCompactsInside {U : Opens α} (K : U.compactsInside) : (K.val).openNhds :=
   ⟨U, K.property⟩
 
 end Opens
