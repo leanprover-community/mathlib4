@@ -161,7 +161,7 @@ variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
 lemma pushforwardObj_isKSheaf : (F.obj.pushforwardObj pf).IsKSheaf where
   nonempty_isTerminal := by
     exact F.property.nonempty_isTerminal
-  isPullback h:=
+  isPullback h :=
     F.property.isPullback <|
     Lattice.BicartSq.pushforward h (properPreimage pf)
     (fun _ _ ↦ Compacts.ext rfl) (fun _ _ ↦ Compacts.ext rfl)
