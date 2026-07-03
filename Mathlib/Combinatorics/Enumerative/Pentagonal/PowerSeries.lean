@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.Enumerative.Pentagonal.Basic
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 
 import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
+import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Pentagonal number theorem for power series
@@ -72,14 +73,27 @@ end Pentagonal
 public section Public
 namespace PowerSeries
 
-/-- The power series $\sum_{k=-\infty}^{\infty}(-1)^k x^{f(k)}$, defined using `pentagonalCoeff`
-as coefficients. -/
+open Classical in
+/-- The power series $\sum_{k=-\infty}^{\infty}(-1)^k x^{k * (3k - 1) / 2}$. -/
 noncomputable
-def pentagonalSeries : R⟦X⟧ := .mk (pentagonalCoeff R)
+def pentagonalSeries : R⟦X⟧ :=
+  .mk fun n ↦ if h : ∃ k, pentagonal k = n then
+    Int.negOnePow h.choose
+  else
+    0
+
+theorem coeff_pentagonalSeries_eq_zero {n : ℕ} (h : n ∉ Set.range pentagonal) :
+    (pentagonalSeries R).coeff n = 0 := dif_neg <| by simpa using h
 
 @[simp]
-theorem coeff_pentagonalSeries (n : ℕ) : (pentagonalSeries R).coeff n = pentagonalCoeff R n := by
+theorem coeff_pentagonalSeries_pentagonal (k : ℤ) :
+    (pentagonalSeries R).coeff (pentagonal k) = Int.negOnePow k := by
   simp [pentagonalSeries]
+
+@[simp]
+theorem coeff_pentagonalSeries_eq_zero_iff [Nontrivial R] {n : ℕ} :
+    (pentagonalSeries R).coeff n = 0 ↔ n ∉ Set.range pentagonal := by
+  grind [pentagonalSeries, coeff_mk, neg_one_pow_ne_zero, Int.coe_negOnePow]
 
 namespace WithPiTopology
 variable [TopologicalSpace R]
@@ -87,10 +101,11 @@ variable [TopologicalSpace R]
 /-- `PowerSeries.pentagonalSeries` as an infinite sum over integers -/
 theorem hasSum_pentagonalSeries :
     HasSum (fun k : ℤ ↦ (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal k) (pentagonalSeries R) := by
-  suffices HasSum ((fun n ↦ C (pentagonalCoeff R n) * X ^ n) ∘ pentagonal) (pentagonalSeries R) by
+  suffices HasSum ((fun n ↦ C ((pentagonalSeries R).coeff n) * X ^ n) ∘ pentagonal)
+      (pentagonalSeries R) by
     convert this
     simp
-  rw [pentagonal_injective.hasSum_iff fun n hn ↦ by simp [pentagonalCoeff_eq_zero R hn]]
+  rw [pentagonal_injective.hasSum_iff fun n hn ↦ by simp [coeff_pentagonalSeries_eq_zero R hn]]
   simpa [monomial_eq_C_mul_X_pow] using (pentagonalSeries R).hasSum_of_monomials_self
 
 theorem pentagonalSeries_eq_tsum [T2Space R] :
@@ -139,9 +154,9 @@ private theorem tprod_one_sub_X_pow' [IsTopologicalRing R] [T2Space R] :
 end WithPiTopology
 
 /-- **Pentagonal number theorem** for power series, expressed as the statement that the coefficients
-of the product `∏ n, 1 - X ^ (n + 1)` are eventually constants as `pentagonalCoeff`. -/
+of the product `∏ n, 1 - X ^ (n + 1)` are eventually constants as `(pentagonalSeries R).coeff`. -/
 theorem coeff_prod_one_sub_X_pow_eventually_eq (n : ℕ) :
-    ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff n = pentagonalCoeff R n := by
+    ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff n = (pentagonalSeries R).coeff n := by
   let : TopologicalSpace R := ⊥
   have : DiscreteTopology R := ⟨rfl⟩
   have h := (multipliable_one_sub_X_pow R).hasProd
