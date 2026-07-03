@@ -9,14 +9,19 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
 
 
 /-!
-# TODO
+# Integrable functions with values in `EReal`
+
+The integral of a function with values in `EReal` is defined as the difference of the Lebesgue
+integrals of its positive and negative parts. This definition is meaningful only if at least one of
+these integrals is finite (if not, it has value `⊤ - ⊤ = ⊥` in Lean, but that value is not useful).
+The `EIntegrable` predicate we introduce in this file states that at least one of the integrals
+of the positive and negative parts is finite.
 
 ## Main definitions
 
-* `EIntegrable`: A condition ensuring the integral is well-defined (avoiding `⊤ - ⊤`).
-
-## Main statements
-
+* `EIntegrable f μ`: A condition ensuring the integral of `f : α → EReal` with respect to `μ` is
+  well-defined (avoiding `⊤ - ⊤`), which is that at least one of the integrals of the positive and
+  negative parts of the function is finite.
 
 -/
 
