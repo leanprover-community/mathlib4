@@ -189,6 +189,9 @@ theorem smulLeftCLM (hf : IsVanishingOn f s) {g : E → ℂ} (hg : g.HasTemperat
   rw [SchwartzMap.smulLeftCLM_apply hg]
   exact (tsupport_smul_subset_right g u).trans hu
 
+@[deprecated (since := "2026-07-01")] alias _root_.Distribution.IsVanishingOn.smulLeftCLM :=
+  Distribution.TemperedDistribution.IsVanishingOn.smulLeftCLM
+
 open LineDeriv
 
 @[fun_prop]
@@ -222,6 +225,9 @@ theorem dsupport_smulLeftCLM_subset {g : E → ℂ} (hg : g.HasTemperateGrowth) 
     dsupport (smulLeftCLM F g f) ⊆ dsupport f := by
   gcongr; fun_prop
 
+@[deprecated (since := "2026-07-01")] alias _root_.Distribution.dsupport_smulLeftCLM_subset :=
+  Distribution.TemperedDistribution.dsupport_smulLeftCLM_subset
+
 open LineDeriv
 
 theorem dsupport_lineDerivOp_subset (m : E) : dsupport (∂_{m} f : 𝓢'(E, F)) ⊆ dsupport f := by
@@ -251,7 +257,7 @@ end Support
 
 end TemperedDistribution
 
-/-! ## Distributions -/
+/-! ## Classical distributions -/
 
 open TopologicalSpace Distributions
 
@@ -319,7 +325,7 @@ theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) (hx : x ∈ Ω) :
   have htx : x ∈ t := Set.mem_inter hxs hx
   obtain ⟨u, h₁, h₂, h₃, -, h₄⟩ :=
     exists_contDiff_tsupport_subset (n := n) ((IsOpen.mem_nhds_iff ht).mpr htx)
-  refine ⟨⟨u, h₃, h₂, by aesop⟩, ⟨by aesop, by simp [h₄]⟩⟩
+  exact ⟨⟨u, h₃, h₂, by aesop⟩, ⟨by aesop, by simp [h₄]⟩⟩
 
 end Support
 
