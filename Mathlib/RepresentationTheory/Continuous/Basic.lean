@@ -440,6 +440,7 @@ lemma restrict_apply {H : Type*} [Monoid H] (π : ContRepresentation R G V) (φ 
 lemma restrict_apply_apply {H : Type*} [Monoid H] (π : ContRepresentation R G V) (φ : H →* G)
     (h : H) (v : V) : π.restrict φ h v = π (φ h) v := rfl
 
+/-- The restriction of a continuous intertwining map along a monoid homomorphism. -/
 def _root_.ContIntertwiningMap.restrict {H : Type*} [Monoid H] {π : ContRepresentation R G V}
     {π' : ContRepresentation R G W} (φ : H →* G) (f : π →ⁱL π') :
     π.restrict φ →ⁱL π'.restrict φ where

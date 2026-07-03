@@ -90,6 +90,7 @@ The `G`-invariant submodules of it is the homogeneous cochains (shifted by one).
 abbrev resolution (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
   CochainComplex.of (resolutionX X) (d X) (d_comp_d X)
 
+/-- The shifted object in resolution by `1` degree. -/
 abbrev resolution'X (X : TopRep k G) (n : ℕ) : TopRep k G := resolutionX X (n + 1)
 
 /-- The shifted boundary map of the resolution. -/

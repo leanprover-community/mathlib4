@@ -265,11 +265,12 @@ instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
 def coind₁ι : 𝟭 (TopRep k G) ⟶ coind₁Functor k G where
   app rep := ofHom rep.ρ.coind₁ι
 
-abbrev res {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] (φ : H →* G)
-    (A : TopRep k G) : TopRep k H :=
-  of (A.ρ.restrict φ)
+/-- The restriction of a topological representation along a monoid homomorphism. -/
+abbrev res {H : Type*} [Monoid H] (φ : H →* G) (A : TopRep k G) : TopRep k H := of (A.ρ.restrict φ)
 
-abbrev resFunctor {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] (φ : H →* G) :
+/-- The functor taking a topological `G`-representation to a topological `H`-representation
+along a monoid homomorphism `φ : H →* G`. -/
+abbrev resFunctor {H : Type*} [Monoid H] (φ : H →* G) :
     TopRep k G ⥤ TopRep k H where
   obj := res φ
   map f := ofHom <| f.hom.restrict φ
@@ -278,7 +279,7 @@ section invariantsResMap
 
 omit [TopologicalSpace G] [IsTopologicalGroup G]
 
-variable {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
+variable {H : Type*} [Group H]
 
 @[simp]
 lemma resFunctor_map_hom (φ : H →* G) {A B : TopRep k G} (f : A ⟶ B) :
