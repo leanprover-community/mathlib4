@@ -974,68 +974,100 @@ end Walk
 
 namespace Walk
 
-variable {G G'}
-variable (f : G →g G') {u v : V} (p : G.Walk u v)
-variable {p f}
+variable {G G'} {f : G →g G'} {u v : V} {p : G.Walk u v}
 
-theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
-    (p.map f).IsPath := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih =>
-    rw [Walk.cons_isPath_iff] at hp
-    simp only [map_cons, cons_isPath_iff, ih hp.1, support_map, List.mem_map, not_exists, not_and,
-      true_and]
-    intro x hx hf
-    cases hinj hf
-    exact hp.2 hx
+protected theorem IsTrail.of_map (hp : (p.map f).IsTrail) : p.IsTrail := by
+  rw [isTrail_def]
+  rw [isTrail_def, edges_map] at hp
+  exact hp.of_map
 
-protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPath := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih => grind [map_cons, Walk.cons_isPath_iff, support_map]
-
-theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
-  ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
-
-theorem map_isTrail_iff_of_injective (hinj : Function.Injective f) :
+theorem isTrail_map_iff_of_injective (hinj : Function.Injective f) :
     (p.map f).IsTrail ↔ p.IsTrail := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih =>
-    rw [map_cons, isTrail_cons, ih, isTrail_cons]
-    apply and_congr_right'
-    rw [← Sym2.map_mk, edges_map, ← List.mem_map_of_injective (Sym2.map.injective hinj)]
+  rw [isTrail_def, isTrail_def, edges_map, List.nodup_map_iff <| Sym2.map.injective hinj]
 
-alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
+@[deprecated (since := "2026-06-16")]
+alias map_isTrail_iff_of_injective := isTrail_map_iff_of_injective
 
-theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
+alias ⟨_, IsTrail.map⟩ := isTrail_map_iff_of_injective
+
+@[deprecated (since := "2026-06-16")] alias isTrmap_ail_of_injective := IsTrail.map
+
+protected theorem IsPath.of_map (hp : (p.map f).IsPath) : p.IsPath := by
+  rw [isPath_def]
+  rw [isPath_def, support_map] at hp
+  exact hp.of_map
+
+theorem isPath_map_iff_of_injective (hinj : Function.Injective f) :
+    (p.map f).IsPath ↔ p.IsPath := by
+  rw [isPath_def, isPath_def, support_map, List.nodup_map_iff hinj]
+
+@[deprecated (since := "2026-06-16")]
+alias map_isPath_iff_of_injective := isPath_map_iff_of_injective
+
+alias ⟨_, IsPath.map⟩ := isPath_map_iff_of_injective
+
+@[deprecated (since := "2026-06-16")] alias isPmap_ath_of_injective := IsPath.map
+
+protected theorem IsCircuit.of_map {p : G.Walk u u} (hp : (p.map f).IsCircuit) : p.IsCircuit := by
+  rw [isCircuit_def, ne_eq, eq_nil_iff_nil]
+  rw [isCircuit_def, ne_eq, eq_nil_iff_nil, nil_map_iff] at hp
+  exact hp.imp_left .of_map
+
+theorem isCircuit_map_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
+    (p.map f).IsCircuit ↔ p.IsCircuit := by
+  rw [isCircuit_def, isCircuit_def, isTrail_map_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
+    eq_nil_iff_nil, nil_map_iff]
+
+alias ⟨_, IsCircuit.map⟩ := isCircuit_map_iff_of_injective
+
+protected theorem IsCycle.of_map {p : G.Walk u u} (hp : (p.map f).IsCycle) : p.IsCycle := by
+  rw [isCycle_def, ne_eq, eq_nil_iff_nil]
+  rw [isCycle_def, ne_eq, eq_nil_iff_nil, nil_map_iff, support_map, ← List.map_tail] at hp
+  exact hp.imp .of_map <| .imp_right <| .of_map f
+
+theorem isCycle_map_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
+  rw [isCycle_def, isCycle_def, isTrail_map_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
     eq_nil_iff_nil, nil_map_iff, support_map, ← List.map_tail, List.nodup_map_iff hinj]
 
-alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
+@[deprecated (since := "2026-06-16")]
+alias map_isCycle_iff_of_injective := isCycle_map_iff_of_injective
+
+alias ⟨_, IsCycle.map⟩ := isCycle_map_iff_of_injective
 
 @[simp]
-theorem mapLe_isTrail {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
+theorem isTrail_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
     (p.mapLe h).IsTrail ↔ p.IsTrail :=
-  map_isTrail_iff_of_injective Function.injective_id
+  isTrail_map_iff_of_injective Function.injective_id
 
-alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := mapLe_isTrail
+@[deprecated (since := "2026-06-16")] alias mapLe_isTrail := isTrail_mapLe
+
+alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := isTrail_mapLe
 
 @[simp]
-theorem mapLe_isPath {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
+theorem isPath_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
     (p.mapLe h).IsPath ↔ p.IsPath :=
-  map_isPath_iff_of_injective Function.injective_id
+  isPath_map_iff_of_injective Function.injective_id
 
-alias ⟨IsPath.of_mapLe, IsPath.mapLe⟩ := mapLe_isPath
+@[deprecated (since := "2026-06-16")] alias mapLe_isPath := isPath_mapLe
+
+alias ⟨IsPath.of_mapLe, IsPath.mapLe⟩ := isPath_mapLe
 
 @[simp]
-theorem mapLe_isCycle {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
-    (p.mapLe h).IsCycle ↔ p.IsCycle :=
-  map_isCycle_iff_of_injective Function.injective_id
+theorem isCircuit_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
+    (p.mapLe h).IsCircuit ↔ p.IsCircuit :=
+  isCircuit_map_iff_of_injective Function.injective_id
 
-alias ⟨IsCycle.of_mapLe, IsCycle.mapLe⟩ := mapLe_isCycle
+alias ⟨IsCircuit.of_mapLe, IsCircuit.mapLe⟩ := isCircuit_mapLe
+
+@[simp]
+theorem isCycle_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
+    (p.mapLe h).IsCycle ↔ p.IsCycle :=
+  isCycle_map_iff_of_injective Function.injective_id
+
+@[deprecated (since := "2026-06-16")] alias mapLe_isCycle := isCycle_mapLe
+
+alias ⟨IsCycle.of_mapLe, IsCycle.mapLe⟩ := isCycle_mapLe
 
 end Walk
 
@@ -1047,7 +1079,7 @@ variable {G G'}
 @[simps]
 protected def map (f : G →g G') (hinj : Function.Injective f) {u v : V} (p : G.Path u v) :
     G'.Path (f u) (f v) :=
-  ⟨Walk.map f p, Walk.map_isPath_of_injective hinj p.2⟩
+  ⟨Walk.map f p, p.isPath.map hinj⟩
 
 theorem map_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Path.map f hinj : G.Path u v → G'.Path (f u) (f v)) := by
