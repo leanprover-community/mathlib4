@@ -150,7 +150,8 @@ def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G)
 space of `G` as a simplicial set, augmented by the map from `Fin 1 → G` to the terminal object
 in `Type u`. -/
 def compForgetAugmented.toModule : SimplicialObject.Augmented (ModuleCat.{u} k) :=
-  ((SimplicialObject.Augmented.whiskering _ _).obj (ModuleCat.free k)).obj (compForgetAugmented G)
+  ((SimplicialObject.Augmented.whiskering _ _).obj (ModuleCat.monoidAlgebraFree k)).obj
+    (compForgetAugmented G)
 
 /-- If we augment the universal cover of the classifying space of `G` as a simplicial set by the
 map from `Fin 1 → G` to the terminal object in `Type u`, then apply the free functor
@@ -158,7 +159,7 @@ map from `Fin 1 → G` to the terminal object in `Type u`, then apply the free f
 degeneracy. -/
 def extraDegeneracyCompForgetAugmentedToModule :
     ExtraDegeneracy (compForgetAugmented.toModule k G) :=
-  ExtraDegeneracy.map (extraDegeneracyCompForgetAugmented G) (ModuleCat.free k)
+  .map (extraDegeneracyCompForgetAugmented G) (ModuleCat.monoidAlgebraFree k)
 
 end classifyingSpaceUniversalCover
 
@@ -176,25 +177,23 @@ open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
 /-- The `k`-linear map underlying the differential in the standard resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`. -/
-def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n → G) →₀ k :=
-  Finsupp.lift ((Fin n → G) →₀ k) k (Fin (n + 1) → G) fun g =>
+def d (G : Type u) (n : ℕ) : k[Fin (n + 1) → G] →ₗ[k] k[Fin n → G] :=
+  (Finsupp.lift k[Fin n → G] k (Fin (n + 1) → G) fun g =>
     (@Finset.univ (Fin (n + 1)) _).sum fun p =>
-      Finsupp.single (g ∘ p.succAbove) ((-1 : k) ^ (p : ℕ))
+      .single (g ∘ p.succAbove) ((-1 : k) ^ (p : ℕ))) ∘ₗ
+    (MonoidAlgebra.coeffLinearEquiv k).toLinearMap
 
 variable {k G}
 
 @[simp]
 theorem d_of {n : ℕ} (c : Fin (n + 1) → G) :
-    d k G n (Finsupp.single c 1) =
-      Finset.univ.sum fun p : Fin (n + 1) =>
-        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
+    d k G n (.single c 1) = ∑ p : Fin (n + 1), .single (c ∘ p.succAbove) ((-1 : k) ^ p.val) := by
   simp [d]
 
 lemma d_single {n : ℕ} (c : Fin (n + 1) → G) (r : k) :
-    d k G n (Finsupp.single c r) =
-      Finset.univ.sum fun p : Fin (n + 1) =>
-        Finsupp.single (c ∘ p.succAbove) (r * (-1 : k) ^ (p : ℕ)) := by
-  rw [← mul_one r, ← smul_eq_mul, ← smul_single, map_smul, d_of]
+    d k G n (.single c r) =
+      ∑ p : Fin (n + 1), .single (c ∘ p.succAbove) (r * (-1 : k) ^ p.val) := by
+  rw [← mul_one r, ← smul_eq_mul, ← MonoidAlgebra.smul_single, map_smul, d_of]
   simp [Finset.smul_sum]
 
 variable (k G) [Monoid G]
@@ -215,14 +214,14 @@ set_option backward.isDefEq.respectTransparency false in
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
     d k G (n + 1) := by
-  refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
+  refine MonoidAlgebra.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
   simp [standardComplex, Action.ofMulAction_V, SimplicialObject.δ, SimplexCategory.δ,
     Fin.succAboveOrderEmb, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), ← ofHom_smul, ← ofHom_sum,
     Representation.IntertwiningMap.coe_toLinearMap, Representation.IntertwiningMap.sum_apply,
-    Representation.IntertwiningMap.smul_apply, (Representation.linearizeMap_single), smul_single,
+    Representation.IntertwiningMap.smul_apply, (Representation.linearizeMap_single),
     smul_eq_mul, mul_one]
 
-lemma d_apply {n : ℕ} (f : (Fin (n + 1 + 1) → G) →₀ k) :
+lemma d_apply {n : ℕ} (f : k[Fin (n + 1 + 1) → G]) :
     ((standardComplex k G).d (n + 1) n).hom f = d k G (n + 1) f := by
   rw [← Representation.IntertwiningMap.toLinearMap_apply, d_eq]; rfl
 
@@ -254,14 +253,17 @@ def forget₂ToModuleCatHomotopyEquiv :
           (extraDegeneracyCompForgetAugmentedToModule k G)).trans
       (HomotopyEquiv.ofIso <|
         (ChainComplex.single₀ (ModuleCat.{u} k)).mapIso
-          (@Finsupp.uniqueLinearEquiv k (⊤_ Type u) k _ _ _ _
-            Types.terminalIso.toEquiv.unique.default).toModuleIso)
+          (letI : Unique (⊤_ Type u) := Types.terminalIso.toEquiv.unique
+           ((MonoidAlgebra.coeffLinearEquiv k (M := ⊤_ Type u)).trans
+             (Finsupp.uniqueLinearEquiv k k default)).toModuleIso))
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom
-  ⟨Finsupp.linearCombination _ fun _ ↦ (1 : k), fun _ ↦ Finsupp.lhom_ext'
-    fun _ => LinearMap.ext_ring <| by simp⟩
+  ⟨(Finsupp.linearCombination _ fun _ ↦ (1 : k)) ∘ₗ (MonoidAlgebra.coeffLinearEquiv k).toLinearMap,
+    fun _ ↦ MonoidAlgebra.lhom_ext' fun _ => LinearMap.ext_ring <| by simp⟩
 
+set_option maxHeartbeats 800000 in
+-- became slow after the `MonoidAlgebra` refactor
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
@@ -269,12 +271,13 @@ a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere
 `∑ nᵢgᵢ ↦ ∑ nᵢ : k[G¹] → k` at 0. -/
 theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
-  refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun (x : Fin 1 → G) r => ?_
-  change mapDomain _ _ _ = Finsupp.linearCombination _ _ _
-  simp only [HomotopyEquiv.ofIso, Iso.symm_hom, compForgetAugmented, compForgetAugmentedIso,
-    eqToIso.inv, HomologicalComplex.eqToHom_f]
-  change mapDomain _ (single x r) _ = _
-  simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
+  refine ModuleCat.hom_ext <| MonoidAlgebra.lhom_ext' fun (x : Fin 1 → G) => LinearMap.ext_ring ?_
+  simp [forget₂ToModuleCatHomotopyEquiv, HomotopyEquiv.ofIso, HomotopyEquiv.trans,
+    SimplicialObject.Augmented.ExtraDegeneracy.homotopyEquiv, ChainComplex.single₀_map_f_zero,
+    AlgebraicTopology.AlternatingFaceMapComplex.ε_app_f_zero, compForgetAugmentedIso, eqToIso.inv,
+    HomologicalComplex.eqToHom_f, compForgetAugmented, compForgetAugmented.toModule, ε,
+    SimplicialObject.augment, Unique.eq_default (terminal.from _), MonoidAlgebra.coeff_single,
+    Finsupp.single_apply, if_pos (Subsingleton.elim _ _)]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
@@ -343,55 +346,54 @@ variable (n)
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ..., n - 1`. -/
 def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
-  freeLift k G _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
-    Finset.univ.sum fun j : Fin (n + 1) =>
-      single (Fin.contractNth j (· * ·) g) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
+  freeLift k G _ fun g => single (fun i => g i.succ) (.single (g 0) 1) +
+    ∑ j : Fin (n + 1), single (j.contractNth (· * ·) g) (.single (1 : G) ((-1 : k) ^ (j.val + 1)))
 
 variable {k G} in
 lemma d_single (x : Gⁿ⁺¹) :
-    (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
-      Finset.univ.sum fun j : Fin (n + 1) =>
-        single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
+    (d k G n).hom (single x (.single 1 1)) = single (fun i => x i.succ) (.single (x 0) 1) +
+      ∑ j : Fin (n + 1),
+        single (j.contractNth (· * ·) x) (.single (1 : G) ((-1 : k) ^ (j.val + 1))) := by
   simp [d, ← Representation.IntertwiningMap.toLinearMap_apply]
-
--- the reason the following two horrible lemmas exist is again because `Action` has bad DefEq and
--- we should be able to remove them as soon as we get rid of the use of `Action` in this file.
-open scoped MonoidalCategory in
-@[simp]
-private lemma _root_.Representation.μ_apply_single_single_leftRegular (m : ℕ) (g : G) (r s : k)
-    (f : Fin m → G) : @DFunLike.coe _ (TensorProduct k ((Action.leftRegular G).V →₀ k) _)
-    (fun _ ↦ (Action.leftRegular G).V ⊗ (Fin m → G) →₀ k) _
-    (Representation.LinearizeMonoidal.μ (Action.leftRegular G) (Action.trivial G (Fin m → G)))
-    (single g r ⊗ₜ[k] single f s) = single (g, f) (r * s) :=
-  Representation.LinearizeMonoidal.μ_apply_single_single
-    (X := Action.leftRegular G) (Y := Action.trivial G (Fin m → G)) g f r s
-
-open scoped MonoidalCategory in
-@[simp]
-private lemma _root_.Representation.linearizeMap_single_diagonal (m : ℕ) (g : G) (f : Fin m → G)
-    (r : k) : @DFunLike.coe _ ((Action.leftRegular G).V ⊗ (Fin m → G) →₀ k)
-    (fun _ ↦ (Action.diagonal G (m + 1)).V →₀ k) _
-    (Representation.linearizeMap (Action.diagonalSuccIsoTensorTrivial G m).inv) (single (g, f) r)
-    = single ((Action.diagonalSuccIsoTensorTrivial G m).inv.hom (g, f)) r :=
-  Representation.linearizeMap_single (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) r
 
 set_option backward.defeqAttrib.useBackward true in
 unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X in
-unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ ((Fin (n + 1) → G) →₀ k) in
+unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ k[Fin (n + 1) → G] in
 set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
   free_ext k G _ _ _ fun i ↦ by
-    have eq3 : single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
-      single (Fin.partialProd i ∘ Fin.succ) 1 := by
+    have eq3 : MonoidAlgebra.single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
+        MonoidAlgebra.single (Fin.partialProd i ∘ Fin.succ) 1 := by
       congr; exact funext fun j ↦ Fin.partialProd_succ' i j |>.symm
-    simp [μ_hom, d_single (k := k),
-      Representation.linearizeOfMulActionIso_symm_apply,
-      Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
-      Representation.μ_apply_single_single_leftRegular _,
-      Representation.linearizeMap_single_diagonal _]
-    simp [Fin.partialProd_contractNth, Fin.sum_univ_succ, Action.ofMulAction_V, eq3]
+    simp only [Rep.hom_comp, Representation.IntertwiningMap.comp_apply]
+    rw [d_single (k := k), map_add, map_sum]
+    -- in-context `have`: at `Action` carriers, only locally re-elaborated statements key-match
+    have H : ∀ (m : ℕ) (f : Fin m → G) (g : G) (r : k),
+        (diagonalSuccIsoFree k G m).inv.hom (single f (MonoidAlgebra.single g r)) =
+          MonoidAlgebra.single (g • Fin.partialProd f) r := by
+      intro m f g r
+      simp only [diagonalSuccIsoFree, diagonalSuccIsoTensorTrivial, Iso.trans_inv, Rep.hom_comp,
+        Representation.IntertwiningMap.comp_apply]
+      have step1 : (Hom.hom (leftRegularTensorTrivialIsoFree k G (Fin m → G)).inv)
+          (single f (.single g r)) = .single g 1 ⊗ₜ[k] .single f r :=
+        Representation.leftRegularTensorTrivialIsoFree_symm_apply_single_single f g r
+      rw [step1]
+      simp only [mkIso_inv, Representation.linearizeOfMulActionIso, Representation.Equiv.mk_symm,
+        LinearEquiv.refl_symm, ConcreteCategory.hom_ofHom, Action.tensorObj_V, Action.trivial_V,
+        Functor.mapIso_inv, tensor_V, tensor_ρ, Iso.symm_inv, Functor.Monoidal.μIso_hom, μ_hom,
+        MonoidalCategory.tensorIso_inv, Representation.linearizeTrivialIso, hom_tensorHom,
+        Representation.IntertwiningMap.tensor_apply, Representation.Equiv.coe_toIntertwiningMap,
+        Representation.Equiv.mk_apply, LinearEquiv.refl_apply]
+      have key₁ := Representation.linearizeMap_single (k := k)
+        (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) ((1 : k) * r)
+      have key₂ := Representation.LinearizeMonoidal.μ_apply_single_single (k := k)
+        (X := Action.leftRegular G) (Y := Action.trivial G (Fin m → G)) g f 1 r
+      exact ((congrArg (fun z => (Representation.linearizeMap
+        (Action.diagonalSuccIsoTensorTrivial G m).inv) z) key₂).trans key₁).trans (by simp)
+    simp only [H, one_smul]
+    simp [d_apply (k := k), Fin.partialProd_contractNth, Fin.sum_univ_succ, eq3]
 
 end barComplex
 
