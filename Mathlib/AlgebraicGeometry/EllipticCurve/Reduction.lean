@@ -201,38 +201,47 @@ theorem exists_isIntegral (W : WeierstrassCurve K) :
 
 end Integral
 
-section VariableChangeLift
+section UIntegral
 
-variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
-variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+open Polynomial
 
-open Polynomial in
+variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] {K : Type*} [Field K]
+  [Algebra R K] [IsFractionRing R K] {W W' : WeierstrassCurve K} [IsIntegral R W] [IsIntegral R W']
+  {CK : VariableChange K} (hCK : CK • W = W') {u : Rˣ} (hu : algebraMap R K u = CK.u)
+
+include hCK hu
+
+lemma r_integral_of_u_integral : ∃ r : R, algebraMap R K r = CK.r := by
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 4 - C (integralModel R W).b₄ * X ^ 2 -
+    C (u ^ 6 * (integralModel R W').b₆ + 2 * (integralModel R W).b₆) * X -
+    C ((integralModel R W).b₈ - u ^ 8 * (integralModel R W').b₈), by monicity!, ?_⟩
+  simp [map_ofNat, hu, ← hCK, variableChange_b₆, variableChange_b₈]
+  grind
+
+lemma s_integral_of_u_integral : ∃ s : R, algebraMap R K s = CK.s := by
+  rcases r_integral_of_u_integral hCK hu with ⟨r, hr⟩
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + C (integralModel R W).a₁ * X +
+    C (u ^ 2 * (integralModel R W').a₂ - (integralModel R W).a₂ - 3 * r), by monicity!, ?_⟩
+  simp [map_ofNat, hu, hr, ← hCK, variableChange_a₂]
+  grind
+
+lemma t_integral_of_u_integral : ∃ t : R, algebraMap R K t = CK.t := by
+  rcases r_integral_of_u_integral hCK hu with ⟨r, hr⟩
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 +
+    C ((integralModel R W).a₃ + r * (integralModel R W).a₁) * X +
+    C (u ^ 6 * (integralModel R W').a₆ - (integralModel R W).a₆ - r * (integralModel R W).a₄
+      - r ^ 2 * (integralModel R W).a₂ - r ^ 3), by monicity!, ?_⟩
+  simp [hu, hr, ← hCK, variableChange_a₆]
+  grind
+
 /-- A variable change over the fraction field between integral Weierstrass equations descends to the
 base ring if its `u` coefficient descends to a unit of the base ring. -/
-theorem exists_variableChange_lift {W W' : WeierstrassCurve K} [IsIntegral R W] [IsIntegral R W']
-    (Ch : VariableChange K) (hCh : Ch • W = W') (uR : Rˣ) (huR : algebraMap R K uR = Ch.u) :
-    ∃ CR : VariableChange R, CR.baseChange K = Ch := by
-  let I := integralModel R W
-  let I' := integralModel R W'
-  obtain ⟨rR, hrR⟩ : ∃ rR : R, algebraMap R K rR = Ch.r := by
-    refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 4 - C I.b₄ * X ^ 2 -
-      C (uR ^ 6 * I'.b₆ + 2 * I.b₆) * X - C (I.b₈ - uR ^ 8 * I'.b₈), by monicity!, ?_⟩
-    simpa [map_ofNat, huR, I, I', integralModel_b₄_eq, integralModel_b₆_eq, integralModel_b₈_eq,
-      ← hCh, I, I'] using variableChange_r_relation W Ch
-  obtain ⟨sR, hsR⟩ : ∃ sR : R, algebraMap R K sR = Ch.s := by
-    refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + C I.a₁ * X +
-      C (uR ^ 2 * I'.a₂ - I.a₂ - 3 * rR), by monicity!, ?_⟩
-    simpa [map_ofNat, huR, hrR, I, I', integralModel_a₁_eq, integralModel_a₂_eq, ← hCh]
-      using variableChange_s_relation W Ch
-  obtain ⟨tR, htR⟩ : ∃ tR : R, algebraMap R K tR = Ch.t := by
-    refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + C (I.a₃ + rR * I.a₁) * X +
-      C (uR ^ 6 * I'.a₆ - I.a₆ - rR * I.a₄ - rR ^ 2 * I.a₂ - rR ^ 3), by monicity!, ?_⟩
-    simpa [huR, hrR, I, I', integralModel_a₁_eq, integralModel_a₂_eq, integralModel_a₃_eq,
-      integralModel_a₄_eq, integralModel_a₆_eq, ← hCh] using variableChange_t_relation W Ch
-  refine ⟨⟨uR, rR, sR, tR⟩, ?_⟩
-  ext <;> simp_all [VariableChange.baseChange, VariableChange.map]
+theorem variableChange_integral_of_u_integral : ∃ CR : VariableChange R, CR.baseChange K = CK := by
+  rcases r_integral_of_u_integral hCK hu, s_integral_of_u_integral hCK hu,
+    t_integral_of_u_integral hCK hu with ⟨⟨r, hr⟩, ⟨s, hs⟩, ⟨t, ht⟩⟩
+  exact ⟨⟨u, r, s, t⟩, by ext <;> simpa⟩
 
-end VariableChangeLift
+end UIntegral
 
 section Minimal
 
