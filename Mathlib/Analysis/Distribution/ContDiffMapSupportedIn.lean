@@ -1015,6 +1015,8 @@ variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [IsScalarTower �
 
 open ContinuousLinearMap Finset
 
+/-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_{K}(E, F₁),
+where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
 noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
     𝓓^{n}_{K}(E, F₁) →L[𝕜] 𝓓^{n}_{K}(E, F₃) :=
   letI T : 𝓓^{n}_{K}(E, F₁) →ₗ[𝕜] 𝓓^{n}_{K}(E, F₃) := {
