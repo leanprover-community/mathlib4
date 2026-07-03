@@ -454,12 +454,12 @@ lemma riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
 Since `ζ` has real Dirichlet coefficients, `conj (ζ (conj z)) = ζ z` holds termwise for
 `1 < re z`, and the identity principle propagates this to all `s ≠ 1`; the junk value `ζ 1` is
 real, so the identity also holds at `s = 1`. -/
+@[simp]
 theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s) := by
   rcases eq_or_ne s 1 with rfl | hs
   · have h : riemannZeta 1 = ((γ - Real.log (4 * π)) / 2 : ℝ) := by
       rw [riemannZeta_one, ofReal_div, ofReal_sub, ofReal_log (by positivity : (0 : ℝ) ≤ 4 * π)]
-      push_cast
-      rfl
+      norm_cast
     rw [map_one, h, conj_ofReal]
   · -- `conj ∘ ζ ∘ conj` is analytic on `{1}ᶜ` and agrees with `ζ` termwise on `1 < re z`, so
     -- the identity principle propagates the equality to the connected set `{1}ᶜ`.
@@ -476,17 +476,10 @@ theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s)
     have heq : EqOn (fun z ↦ conj (riemannZeta (conj z))) riemannZeta {1}ᶜ :=
       hg_an.eqOn_of_preconnected_of_eventuallyEq analyticOn_riemannZeta
         (isConnected_compl_singleton_of_one_lt_rank (by simp) 1).isPreconnected
-        (by norm_num : (2 : ℂ) ∈ ({1}ᶜ : Set ℂ))
+        (by norm_num : (2 : ℂ) ∈ _)
         (eventuallyEq_of_mem
           ((isOpen_lt continuous_const continuous_re).mem_nhds (by norm_num)) hgz)
     simpa using congrArg (starRingEnd ℂ) (heq hs)
-
-/-- The zeros of `riemannZeta` are symmetric under complex conjugation:
-`ζ (conj s) = 0 ↔ ζ s = 0`. -/
-theorem riemannZeta_conj_eq_zero_iff {s : ℂ} :
-    riemannZeta (conj s) = 0 ↔ riemannZeta s = 0 := by
-  rw [riemannZeta_conj]
-  simp
 
 lemma riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
   filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
