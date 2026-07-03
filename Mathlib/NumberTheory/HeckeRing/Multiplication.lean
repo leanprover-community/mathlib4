@@ -44,14 +44,14 @@ open Classical in
 /-- The structure constants of the Hecke product: `structureConstants H₁ H₂ H₃ R g₁ g₂` is the
 formal sum `∑_D m(g₁, g₂; D) [D]` over mixed double cosets, with Shimura's multiplicities cast
 into `R`. -/
-noncomputable def structureConstants (H₁ H₂ H₃ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂]
-    [IsHeckeCosetModule Δ H₂ H₃] (g₁ g₂ : Δ) : 𝕋 Δ H₁ H₃ R :=
+noncomputable def structureConstants (H₁ H₂ H₃ : Subgroup G) [IsHeckeTriple Δ H₁ H₂]
+    [IsHeckeTriple Δ H₂ H₃] (g₁ g₂ : Δ) : 𝕋 Δ H₁ H₃ R :=
   Finsupp.onFinset (Finset.univ.image (HeckeCoset.mulMap H₁ H₂ H₃ g₁ g₂))
     (fun D ↦ (multiplicity H₁ H₂ H₃ (g₁ : G) (g₂ : G) (D.rep : G) : R))
     (fun D hD ↦ (HeckeCoset.mem_image_mulMap_iff g₁ g₂ D).mpr
       fun h0 ↦ hD (by rw [h0, Nat.cast_zero]))
 
-@[simp] lemma structureConstants_apply [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+@[simp] lemma structureConstants_apply [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (g₁ g₂ : Δ) (D : HeckeCoset Δ H₁ H₃) :
     structureConstants R H₁ H₂ H₃ g₁ g₂ D =
       (multiplicity H₁ H₂ H₃ (g₁ : G) (g₂ : G) (D.rep : G) : R) := rfl
@@ -61,21 +61,21 @@ noncomputable instance : Module R (𝕋 Δ H₁ H₂ R) :=
 
 /-- The convolution product of Hecke coset modules, defined via the structure constants. The
 diagonal case is the multiplication of the Hecke ring; see the `Mul (𝕋 Δ H H R)` instance. -/
-noncomputable def mul [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+noncomputable def mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (f : 𝕋 Δ H₁ H₂ R) (g : 𝕋 Δ H₂ H₃ R) : 𝕋 Δ H₁ H₃ R :=
   f.sum fun D₁ b₁ ↦ g.sum fun D₂ b₂ ↦ b₁ • b₂ • structureConstants R H₁ H₂ H₃ D₁.rep D₂.rep
 
-lemma mul_eq_sum [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+lemma mul_eq_sum [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (f : 𝕋 Δ H₁ H₂ R) (g : 𝕋 Δ H₂ H₃ R) : mul R f g =
       f.sum fun D₁ b₁ ↦ g.sum fun D₂ b₂ ↦ b₁ • b₂ • structureConstants R H₁ H₂ H₃ D₁.rep D₂.rep :=
   rfl
 
 /-- The multiplication of the Hecke ring: the diagonal case of the convolution product
 `HeckeCosetModule.mul`. -/
-noncomputable instance {H : Subgroup G} [IsHeckeCosetModule Δ H H] : Mul (𝕋 Δ H H R) where
+noncomputable instance {H : Subgroup G} [IsHeckeTriple Δ H H] : Mul (𝕋 Δ H H R) where
   mul f g := mul R f g
 
-lemma mul_def {H : Subgroup G} [IsHeckeCosetModule Δ H H] (f g : 𝕋 Δ H H R) :
+lemma mul_def {H : Subgroup G} [IsHeckeTriple Δ H H] (f g : 𝕋 Δ H H R) :
     f * g = mul R f g := rfl
 
 /-- A basis element of the Hecke coset module: `single R D b` is the formal sum `b • [D]`. As
@@ -92,7 +92,7 @@ lemma smul_single_one (D : HeckeCoset Δ H₁ H₂) (b : R) : b • single R D 1
 lemma sum_single (f : 𝕋 Δ H₁ H₂ R) : f.sum (single R) = f := Finsupp.sum_single f
 
 /-- The convolution product of two basis elements. -/
-lemma mul_single_single [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+lemma mul_single_single [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (D₁ : HeckeCoset Δ H₁ H₂) (D₂ : HeckeCoset Δ H₂ H₃) (a b : R) :
     mul R (single R D₁ a) (single R D₂ b) =
       a • b • structureConstants R H₁ H₂ H₃ D₁.rep D₂.rep := by
@@ -100,13 +100,13 @@ lemma mul_single_single [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ
   simp [single, Finsupp.sum_single_index]
 
 /-- The product of two basis elements of the Hecke ring. -/
-lemma single_mul_single {H : Subgroup G} [IsHeckeCosetModule Δ H H]
+lemma single_mul_single {H : Subgroup G} [IsHeckeTriple Δ H H]
     (D₁ D₂ : HeckeCoset Δ H H) (a b : R) :
     single R D₁ a * single R D₂ b = a • b • structureConstants R H H H D₁.rep D₂.rep :=
   mul_single_single R D₁ D₂ a b
 
 /-- The convolution product distributes over addition on the right. -/
-lemma mul_add [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+lemma mul_add [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (f : 𝕋 Δ H₁ H₂ R) (g h : 𝕋 Δ H₂ H₃ R) : mul R f (g + h) = mul R f g + mul R f h := by
   classical
   simp only [mul_eq_sum]
@@ -115,7 +115,7 @@ lemma mul_add [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃
     (fun _ _ b b' ↦ by rw [add_smul, smul_add])
 
 /-- The convolution product distributes over addition on the left. -/
-lemma add_mul [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+lemma add_mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (f g : 𝕋 Δ H₁ H₂ R) (h : 𝕋 Δ H₂ H₃ R) : mul R (f + g) h = mul R f h + mul R g h := by
   classical
   simp only [mul_eq_sum]
@@ -124,20 +124,20 @@ lemma add_mul [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃
     exact Finsupp.sum_congr fun D₂ _ ↦ by rw [add_smul]
 
 /-- The convolution product vanishes on the left zero. -/
-lemma zero_mul [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+lemma zero_mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (f : 𝕋 Δ H₂ H₃ R) : mul R (0 : 𝕋 Δ H₁ H₂ R) f = 0 := by
   simp only [mul_eq_sum]
   exact Finsupp.sum_zero_index
 
 /-- The convolution product vanishes on the right zero. -/
-lemma mul_zero [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+lemma mul_zero [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (f : 𝕋 Δ H₁ H₂ R) : mul R f (0 : 𝕋 Δ H₂ H₃ R) = 0 := by
   simp only [mul_eq_sum]
   exact (congrArg (Finsupp.sum f) (funext₂ fun _ _ ↦ Finsupp.sum_zero_index)).trans
     (Finsupp.sum_fun_zero f)
 
 /-- The Hecke ring is a non-unital non-associative semiring (distributivity and zero laws). -/
-noncomputable instance {H : Subgroup G} [IsHeckeCosetModule Δ H H] :
+noncomputable instance {H : Subgroup G} [IsHeckeTriple Δ H H] :
     NonUnitalNonAssocSemiring (𝕋 Δ H H R) :=
   { (inferInstance : AddCommMonoid (𝕋 Δ H H R)), (inferInstance : Mul (𝕋 Δ H H R)) with
     left_distrib := fun f g h ↦ mul_add R f g h

@@ -168,7 +168,7 @@ open Classical in
 indicator of containing a fixed element recovers the multiplicity of that element: the double
 cosets in the support are pairwise disjoint, each contributing its (constant) multiplicity, and
 elements outside every double coset of the support have multiplicity zero. -/
-private lemma sum_ite_mem_multiplicity [IsHeckeCosetModule Δ H₂ H₃] [IsHeckeCosetModule Δ H₃ H₄]
+private lemma sum_ite_mem_multiplicity [IsHeckeTriple Δ H₂ H₃] [IsHeckeTriple Δ H₃ H₄]
     [DecidableEq (HeckeCoset Δ H₂ H₄)] (g₂ g₃ : Δ) (x : G) :
     ∑ F ∈ Finset.univ.image (mulMap H₂ H₃ H₄ g₂ g₃),
         (if x ∈ doubleCoset (F.rep : G) H₂ H₄ then
@@ -190,8 +190,8 @@ private lemma sum_ite_mem_multiplicity [IsHeckeCosetModule Δ H₂ H₃] [IsHeck
     obtain ⟨w, hw, y, hy, rfl⟩ := mem_doubleCoset.mp (multiplicity_ne_zero_iff.mp hne)
     obtain ⟨β, hβ, c, hc, rfl⟩ := mem_doubleCoset.mp hw
     have hxΔ : β * (g₂ : G) * c * (g₃ : G) * y ∈ Δ :=
-      Δ.mul_mem (Δ.mul_mem (Δ.mul_mem (Δ.mul_mem (IsHeckeCosetModule.mem_left H₃ hβ) g₂.2)
-        (IsHeckeCosetModule.mem_left H₄ hc)) g₃.2) (IsHeckeCosetModule.mem_right H₃ hy)
+      Δ.mul_mem (Δ.mul_mem (Δ.mul_mem (Δ.mul_mem (IsHeckeTriple.mem_left H₃ hβ) g₂.2)
+        (IsHeckeTriple.mem_left H₄ hc)) g₃.2) (IsHeckeTriple.mem_right H₃ hy)
     set xΔ : Δ := ⟨β * (g₂ : G) * c * (g₃ : G) * y, hxΔ⟩
     have hrep : ((HeckeCoset.mk H₂ H₄ xΔ).rep : G) ∈ doubleCoset (xΔ : G) H₂ H₄ := by
       have h1 := HeckeCoset.rep_mem (HeckeCoset.mk H₂ H₄ xΔ)
@@ -206,15 +206,15 @@ open Classical in
 /-- The right-handed Fubini step: summing the structure constants against a further
 multiplicity over the double cosets of the product `H₂g₂H₃g₃H₄` counts, for each representative
 `σᵢ` of `H₁g₁H₂`, the multiplicity of `(σᵢg₁)⁻¹d`. -/
-lemma sum_image_mulMap_multiplicity_right [IsHeckeCosetModule Δ H₁ H₂]
-    [IsHeckeCosetModule Δ H₂ H₃] [IsHeckeCosetModule Δ H₃ H₄]
+lemma sum_image_mulMap_multiplicity_right [IsHeckeTriple Δ H₁ H₂]
+    [IsHeckeTriple Δ H₂ H₃] [IsHeckeTriple Δ H₃ H₄]
     [DecidableEq (HeckeCoset Δ H₂ H₄)] (g₁ g₂ g₃ d : Δ) :
     ∑ F ∈ Finset.univ.image (mulMap H₂ H₃ H₄ g₂ g₃),
         multiplicity H₂ H₃ H₄ (g₂ : G) (g₃ : G) (F.rep : G) *
           multiplicity H₁ H₂ H₄ (g₁ : G) (F.rep : G) (d : G) =
       ∑ i : DecompQuotient H₁ H₂ (g₁ : G),
         multiplicity H₂ H₃ H₄ (g₂ : G) (g₃ : G) (((i.out : G) * g₁)⁻¹ * d) := by
-  haveI : IsHeckeCosetModule Δ H₂ H₄ := IsHeckeCosetModule.trans (H₂ := H₃)
+  haveI : IsHeckeTriple Δ H₂ H₄ := IsHeckeTriple.trans (H₂ := H₃)
   have hstep : ∀ F ∈ Finset.univ.image (mulMap H₂ H₃ H₄ g₂ g₃),
       multiplicity H₂ H₃ H₄ (g₂ : G) (g₃ : G) (F.rep : G) *
         multiplicity H₁ H₂ H₄ (g₁ : G) (F.rep : G) (d : G) =
@@ -230,8 +230,8 @@ lemma sum_image_mulMap_multiplicity_right [IsHeckeCosetModule Δ H₁ H₂]
 
 /-- Joining the right-handed Fubini step with the one-sided count: the right association counts
 pairs of representatives whose product moves `d` into `H₃g₃H₄`. -/
-lemma sum_multiplicity_eq_card [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
-    [IsHeckeCosetModule Δ H₃ H₄] (g₁ g₂ g₃ d : Δ) :
+lemma sum_multiplicity_eq_card [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
+    [IsHeckeTriple Δ H₃ H₄] (g₁ g₂ g₃ d : Δ) :
     ∑ i : DecompQuotient H₁ H₂ (g₁ : G),
         multiplicity H₂ H₃ H₄ (g₂ : G) (g₃ : G) (((i.out : G) * g₁)⁻¹ * d) =
       Nat.card {p : DecompQuotient H₁ H₂ (g₁ : G) × DecompQuotient H₂ H₃ (g₂ : G) |
@@ -253,15 +253,15 @@ open Classical in
 /-- The left-handed Fubini step: the left association also counts pairs of representatives
 whose product moves `d` into `H₃g₃H₄`, using the invariance of the multiplicity across the
 left cosets of a double coset. -/
-lemma sum_image_mulMap_multiplicity_left [IsHeckeCosetModule Δ H₁ H₂]
-    [IsHeckeCosetModule Δ H₂ H₃] [IsHeckeCosetModule Δ H₃ H₄]
+lemma sum_image_mulMap_multiplicity_left [IsHeckeTriple Δ H₁ H₂]
+    [IsHeckeTriple Δ H₂ H₃] [IsHeckeTriple Δ H₃ H₄]
     [DecidableEq (HeckeCoset Δ H₁ H₃)] (g₁ g₂ g₃ d : Δ) :
     ∑ E ∈ Finset.univ.image (mulMap H₁ H₂ H₃ g₁ g₂),
         multiplicity H₁ H₂ H₃ (g₁ : G) (g₂ : G) (E.rep : G) *
           multiplicity H₁ H₃ H₄ (E.rep : G) (g₃ : G) (d : G) =
       Nat.card {p : DecompQuotient H₁ H₂ (g₁ : G) × DecompQuotient H₂ H₃ (g₂ : G) |
         ((p.1.out : G) * g₁ * ((p.2.out : G) * g₂))⁻¹ * d ∈ doubleCoset (g₃ : G) H₃ H₄} := by
-  haveI h13 : IsHeckeCosetModule Δ H₁ H₃ := IsHeckeCosetModule.trans (H₂ := H₂)
+  haveI h13 : IsHeckeTriple Δ H₁ H₃ := IsHeckeTriple.trans (H₂ := H₂)
   have hA : ∀ E ∈ Finset.univ.image (mulMap H₁ H₂ H₃ g₁ g₂),
       multiplicity H₁ H₂ H₃ (g₁ : G) (g₂ : G) (E.rep : G) *
         multiplicity H₁ H₃ H₄ (E.rep : G) (g₃ : G) (d : G) =
@@ -294,8 +294,8 @@ lemma sum_image_mulMap_multiplicity_left [IsHeckeCosetModule Δ H₁ H₂]
   -- product of the representatives of `p`.
   set wG : G := (p.1.out : G) * g₁ * ((p.2.out : G) * g₂) with hwG
   have hwΔ : wG ∈ Δ :=
-    Δ.mul_mem (Δ.mul_mem (IsHeckeCosetModule.mem_left H₂ p.1.out.2) g₁.2)
-      (Δ.mul_mem (IsHeckeCosetModule.mem_left H₃ p.2.out.2) g₂.2)
+    Δ.mul_mem (Δ.mul_mem (IsHeckeTriple.mem_left H₂ p.1.out.2) g₁.2)
+      (Δ.mul_mem (IsHeckeTriple.mem_left H₃ p.2.out.2) g₂.2)
   set E₀ : HeckeCoset Δ H₁ H₃ := HeckeCoset.mk H₁ H₃ ⟨wG, hwΔ⟩ with hE₀def
   have hE₀mem : E₀ ∈ Finset.univ.image (mulMap H₁ H₂ H₃ g₁ g₂) :=
     Finset.mem_image.mpr ⟨p, Finset.mem_univ p, rfl⟩
@@ -350,8 +350,8 @@ lemma sum_image_mulMap_multiplicity_left [IsHeckeCosetModule Δ H₁ H₂]
 /-- Associativity of the structure constants of the Hecke product (Proposition 3.2 of
 [Shimura][shimura1971]): both associations of a triple product of double cosets have the same
 structure constants. -/
-theorem sum_multiplicity_assoc [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
-    [IsHeckeCosetModule Δ H₃ H₄] [DecidableEq (HeckeCoset Δ H₁ H₃)]
+theorem sum_multiplicity_assoc [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
+    [IsHeckeTriple Δ H₃ H₄] [DecidableEq (HeckeCoset Δ H₁ H₃)]
     [DecidableEq (HeckeCoset Δ H₂ H₄)] (g₁ g₂ g₃ d : Δ) :
     ∑ E ∈ Finset.univ.image (mulMap H₁ H₂ H₃ g₁ g₂),
         multiplicity H₁ H₂ H₃ (g₁ : G) (g₂ : G) (E.rep : G) *
@@ -373,8 +373,8 @@ variable {G : Type*} [Group G] {Δ : Submonoid G} {H₁ H₂ H₃ H₄ : Subgrou
 
 open Classical in
 /-- The support of the structure constants is contained in the image of `mulMap`. -/
-private lemma support_structureConstants_subset [IsHeckeCosetModule Δ H₁ H₂]
-    [IsHeckeCosetModule Δ H₂ H₃] (g₁ g₂ : Δ) :
+private lemma support_structureConstants_subset [IsHeckeTriple Δ H₁ H₂]
+    [IsHeckeTriple Δ H₂ H₃] (g₁ g₂ : Δ) :
     (structureConstants R H₁ H₂ H₃ g₁ g₂).support ⊆
       Finset.univ.image (HeckeCoset.mulMap H₁ H₂ H₃ g₁ g₂) :=
   Finsupp.support_onFinset_subset
@@ -412,7 +412,7 @@ private lemma sum_apply_T {H₁ H₂ H₃ H₄ : Subgroup G} (f : 𝕋 Δ H₁ H
 
 /-- The convolution product commutes with scalar multiplication on the left factor. (Note
 that the corresponding statement for the right factor fails over a noncommutative `R`.) -/
-lemma smul_mul [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃] (a : R)
+lemma smul_mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃] (a : R)
     (f : 𝕋 Δ H₁ H₂ R) (g : 𝕋 Δ H₂ H₃ R) : mul R (a • f) g = a • mul R f g := by
   rw [mul_eq_sum, mul_eq_sum, sum_smul_index_T R a f _ fun D₁ ↦ by simp,
     Finsupp.sum, Finsupp.sum, Finset.smul_sum]
@@ -421,7 +421,7 @@ lemma smul_mul [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H�
   exact Finset.sum_congr rfl fun D₂ _ ↦ by rw [mul_smul]
 
 /-- Evaluation of the convolution product against a basis element on the left. -/
-lemma single_mul [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+lemma single_mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (D₁ : HeckeCoset Δ H₁ H₂) (b₁ : R) (g : 𝕋 Δ H₂ H₃ R) :
     mul R (single R D₁ b₁) g =
       g.sum fun D₂ b₂ ↦ b₁ • b₂ • structureConstants R H₁ H₂ H₃ D₁.rep D₂.rep := by
@@ -429,7 +429,7 @@ lemma single_mul [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H
   exact Finsupp.sum_single_index (by simp)
 
 /-- Evaluation of the convolution product against a basis element on the right. -/
-lemma mul_single [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
+lemma mul_single [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     (f : 𝕋 Δ H₁ H₂ R) (D₂ : HeckeCoset Δ H₂ H₃) (b₂ : R) :
     mul R f (single R D₂ b₂) =
       f.sum fun D₁ b₁ ↦ b₁ • b₂ • structureConstants R H₁ H₂ H₃ D₁.rep D₂.rep := by
@@ -445,8 +445,8 @@ private lemma induction_linear {p : 𝕋 Δ H₁ H₂ R → Prop} (f : 𝕋 Δ H
 
 /-- Associativity of the convolution product of Hecke coset modules, at mixed levels
 (Proposition 3.2 of [Shimura][shimura1971]). -/
-theorem mul_assoc' [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃]
-    [IsHeckeCosetModule Δ H₃ H₄] [IsHeckeCosetModule Δ H₁ H₃] [IsHeckeCosetModule Δ H₂ H₄]
+theorem mul_assoc' [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
+    [IsHeckeTriple Δ H₃ H₄] [IsHeckeTriple Δ H₁ H₃] [IsHeckeTriple Δ H₂ H₄]
     (f : 𝕋 Δ H₁ H₂ R) (g : 𝕋 Δ H₂ H₃ R) (h : 𝕋 Δ H₃ H₄ R) :
     mul R (mul R f g) h = mul R f (mul R g h) := by
   classical
@@ -498,7 +498,7 @@ theorem mul_assoc' [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂
           (HeckeCoset.sum_multiplicity_assoc D₁.rep D₂.rep D₃.rep D.rep)
 
 /-- The Hecke ring is a semiring: the convolution product is associative. -/
-noncomputable instance {H : Subgroup G} [IsHeckeCosetModule Δ H H] : Semiring (𝕋 Δ H H R) :=
+noncomputable instance {H : Subgroup G} [IsHeckeTriple Δ H H] : Semiring (𝕋 Δ H H R) :=
   { (inferInstance : NonAssocSemiring (𝕋 Δ H H R)) with
     mul_assoc := fun f g h ↦ mul_assoc' R f g h }
 

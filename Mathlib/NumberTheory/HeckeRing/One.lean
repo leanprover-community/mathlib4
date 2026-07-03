@@ -36,7 +36,7 @@ variable {G : Type*} [Group G] {Δ : Submonoid G} {H₁ H₂ : Subgroup G} (R : 
 
 /-- The multiplicity for right convolution by the identity double coset vanishes off the
 diagonal. -/
-lemma multiplicity_one_right_eq_zero [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₂]
+lemma multiplicity_one_right_eq_zero [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₂]
     (g : Δ) {A : HeckeCoset Δ H₁ H₂} (hA : A ≠ HeckeCoset.mk H₁ H₂ g) :
     multiplicity H₁ H₂ H₂ (g : G) ((1 : HeckeCoset Δ H₂ H₂).rep : G) (A.rep : G) = 0 := by
   by_contra h0
@@ -47,7 +47,7 @@ lemma multiplicity_one_right_eq_zero [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeC
 
 /-- The multiplicity for left convolution by the identity double coset vanishes off the
 diagonal. -/
-lemma multiplicity_one_left_eq_zero [IsHeckeCosetModule Δ H₁ H₁] [IsHeckeCosetModule Δ H₁ H₂]
+lemma multiplicity_one_left_eq_zero [IsHeckeTriple Δ H₁ H₁] [IsHeckeTriple Δ H₁ H₂]
     (g : Δ) {A : HeckeCoset Δ H₁ H₂} (hA : A ≠ HeckeCoset.mk H₁ H₂ g) :
     multiplicity H₁ H₁ H₂ ((1 : HeckeCoset Δ H₁ H₁).rep : G) (g : G) (A.rep : G) = 0 := by
   by_contra h0
@@ -58,7 +58,7 @@ lemma multiplicity_one_left_eq_zero [IsHeckeCosetModule Δ H₁ H₁] [IsHeckeCo
 
 /-- The structure constants for right convolution by the identity double coset collapse to
 a single basis element. -/
-lemma structureConstants_one_right [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₂]
+lemma structureConstants_one_right [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₂]
     (g : Δ) : structureConstants R H₁ H₂ H₂ g (1 : HeckeCoset Δ H₂ H₂).rep =
       single R (HeckeCoset.mk H₁ H₂ g) 1 := by
   classical
@@ -70,7 +70,7 @@ lemma structureConstants_one_right [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCos
 
 /-- The structure constants for left convolution by the identity double coset collapse to
 a single basis element. -/
-lemma structureConstants_one_left [IsHeckeCosetModule Δ H₁ H₁] [IsHeckeCosetModule Δ H₁ H₂]
+lemma structureConstants_one_left [IsHeckeTriple Δ H₁ H₁] [IsHeckeTriple Δ H₁ H₂]
     (g : Δ) : structureConstants R H₁ H₁ H₂ (1 : HeckeCoset Δ H₁ H₁).rep g =
       single R (HeckeCoset.mk H₁ H₂ g) 1 := by
   classical
@@ -88,7 +88,7 @@ theorem one_def {H : Subgroup G} : (1 : 𝕋 Δ H H R) = single R 1 1 := rfl
 
 /-- The identity of the Hecke ring at the left level is a left unit for the convolution
 product of Hecke coset modules. -/
-theorem one_mul' [IsHeckeCosetModule Δ H₁ H₁] [IsHeckeCosetModule Δ H₁ H₂]
+theorem one_mul' [IsHeckeTriple Δ H₁ H₁] [IsHeckeTriple Δ H₁ H₂]
     (f : 𝕋 Δ H₁ H₂ R) : mul R (1 : 𝕋 Δ H₁ H₁ R) f = f := by
   classical
   rw [one_def, mul_eq_sum, single, Finsupp.sum_single_index (by simp)]
@@ -101,7 +101,7 @@ theorem one_mul' [IsHeckeCosetModule Δ H₁ H₁] [IsHeckeCosetModule Δ H₁ H
 
 /-- The identity of the Hecke ring at the right level is a right unit for the convolution
 product of Hecke coset modules. -/
-theorem mul_one' [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₂]
+theorem mul_one' [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₂]
     (f : 𝕋 Δ H₁ H₂ R) : mul R f (1 : 𝕋 Δ H₂ H₂ R) = f := by
   classical
   rw [one_def, mul_eq_sum, single]
@@ -116,7 +116,7 @@ theorem mul_one' [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H
 
 /-- The Hecke ring is a non-associative semiring: the identity double coset is a two-sided
 identity. -/
-noncomputable instance {H : Subgroup G} [IsHeckeCosetModule Δ H H] :
+noncomputable instance {H : Subgroup G} [IsHeckeTriple Δ H H] :
     NonAssocSemiring (𝕋 Δ H H R) :=
   { (inferInstance : NonUnitalNonAssocSemiring (𝕋 Δ H H R)),
     (inferInstance : One (𝕋 Δ H H R)) with
