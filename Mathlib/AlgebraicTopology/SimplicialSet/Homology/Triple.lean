@@ -61,6 +61,7 @@ end splittingTripleShortComplexMapEval
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 open Classical in
+@[no_expose]
 noncomputable def splittingTripleShortComplexMapEval (n : ℕ) :
     ((tripleShortComplex i j ij fac R).map (HomologicalComplex.eval _ _ n)).Splitting := by
   let ρ (z : Z _⦋n⦌) : R ⟶ ((of i).chainComplex R).X n :=
@@ -89,10 +90,8 @@ noncomputable def splittingTripleShortComplexMapEval (n : ℕ) :
         SSet.ι_chainComplexMap_f_assoc, NatTrans.id_app, Category.comp_id]
       by_cases hz' : z ∈ Set.range (j.app _)
       · obtain ⟨y, rfl⟩ := hz'
-        dsimp
-        -- needs cleanup
-        erw [ι_chainComplexπ_f_eq_zero_assoc]
-        simp [hρ]
+        change _ + Z.ιChainComplex (j.app _ y) ≫ _ = _
+        simp [ι_chainComplexπ_f_eq_zero'_assoc j y (R := R), hρ]
         rfl
       · rw [ρ_eq_zero _ hz', ι_chainComplexDesc' _ _ _ hz']
         cat_disch) }
