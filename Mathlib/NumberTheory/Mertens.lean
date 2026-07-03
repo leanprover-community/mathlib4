@@ -454,6 +454,7 @@ theorem second_theorem_asymp_nat :
   convert! f.second_theorem_asymp.comp_tendsto tendsto_natCast_atTop_atTop
   simp
 
+open ENNReal in
 theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) = - log (s - 1) + M
     + ∫ x in .Ioi 1, (E₂ x ^ s⁻¹) * x⁻¹ := calc
@@ -484,7 +485,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
             MeasureTheory.integral_const_mul]
             rw [setIntegral_congr_fun (g := fun x ↦ x ^ (- s)) (by measurability),
               integral_Ioi_rpow_of_lt (by linarith) (by positivity)]
-            · rw [← ENNReal.ofReal_mul (by positivity), ← ENNReal.ofReal_mul (by positivity),
+            · rw [← ofReal_mul (by positivity), ← ofReal_mul (by positivity),
                 abs_of_nonneg (by linarith : 0 ≤ s - 1)]
               grind
             · intro x hx
@@ -492,8 +493,21 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
               exact abs_of_nonneg (by positivity)
           · apply (IntegrableOn.integrable _).const_mul
             apply integrableOn_Ioi_rpow_of_lt <;> grind
+        _ ≤ ∑' (i : ℕ), ENNReal.ofReal (C₀ * (i:ℝ)^(-s)) := by
+          refine ENNReal.tsum_le_tsum (fun n ↦ ofReal_le_ofReal ?_)
+          rcases eq_or_ne n 0 with rfl | _
+          · simp [zero_rpow (by grind : -s ≠ 0)]
+          rcases eq_or_ne n 1 with rfl | _
+          · simp [C₀_nonneg]
+          have : 0 < log n := log_pos (mod_cast (by lia))
+          grw [apply_bound n, abs_of_nonneg (by positivity)]
+          field_simp
+          rw [mul_assoc, ← rpow_one_add' (by positivity) (by linarith)]
+          grind
         _ < ⊤ := by
-          sorry
+          simp_rw [ofReal_mul C₀_nonneg, ENNReal.tsum_mul_left]
+          suffices ∑' (i : ℕ), ENNReal.ofReal (↑i ^ (-s)) < ⊤ by finiteness
+          exact (summable_nat_rpow.mpr (by linarith)).tsum_ofReal_lt_top
   _ = ∫ x in .Ioi 1, (∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n) * ((s - 1) * x ^ (-s)) := by
     sorry
   _ = (s - 1) * ∫ x in .Ioi 1, log (log x) * x ^ (-s) + M * x ^ (-s) + E₂ x * x ^ (-s) := by
