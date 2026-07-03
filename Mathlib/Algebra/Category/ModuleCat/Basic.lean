@@ -668,11 +668,9 @@ end Bilinear
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp
 
-instance {R S : Type*} [Ring R] [Ring S]
-    (e : ModuleCat R ⥤ ModuleCat S) [e.IsEquivalence] (M : ModuleCat R) [h : Nontrivial M] :
-    Nontrivial (e.obj M) := by
+instance {R S : Type*} [Ring R] [Ring S] (F : ModuleCat R ⥤ ModuleCat S) [F.Full] [F.Faithful]
+    (M : ModuleCat R) [h : Nontrivial M] : Nontrivial (F.obj M) := by
   by_contra! inst1
-  have hM : Limits.IsZero M := Functor.id_obj M ▸ CategoryTheory.Iso.isZero_iff
-    (e.unitIso.app M)|>.2 <| Functor.map_isZero e.inverse <| ModuleCat.isZero_of_subsingleton <|
-    e.functor.obj M
-  exact (@not_nontrivial M <| ModuleCat.subsingleton_of_isZero hM) h
+  exact ((not_iff_not.2 ModuleCat.isZero_iff_subsingleton).2 <|
+    not_subsingleton_iff_nontrivial.2 h) <| IsZero.of_full_of_faithful_of_isZero F _ <|
+    ModuleCat.isZero_of_subsingleton <| F.obj M
