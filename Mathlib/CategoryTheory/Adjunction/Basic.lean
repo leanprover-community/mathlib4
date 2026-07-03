@@ -591,7 +591,7 @@ lemma comp_unit_app (X : C) : dsimp%
     (adj₁.comp adj₂).unit.app X = adj₁.unit.app X ≫ G.map (adj₂.unit.app (F.obj X)) := by
   simp [Adjunction.comp]
 
-@[to_dual existing (attr := simp, reassoc) comp_unit_app]
+@[to_dual existing (attr := simp, reassoc)]
 lemma comp_counit_app (X : E) : dsimp%
     (adj₁.comp adj₂).counit.app X = H.map (adj₁.counit.app (I.obj X)) ≫ adj₂.counit.app X := by
   simp [Adjunction.comp]
