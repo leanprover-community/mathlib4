@@ -15,13 +15,14 @@ This file contains some results about simple modules over division rings.
 
 # Main results
 
-* `division_ring_exists_unique_isSimpleModule` : There is an unique simple module over a division
-  ring, up to isomorphism.
-* `isSimpleModule_iff_injective_or_eq_zero` : A module is simple if and only if it is nontrivial
-  and every linear map from it is either injective or zero, this is the module analogue of
+* `nonempty_linearEquiv_of_divisionRing_of_isSimpleModule` : There is an unique simple module over
+  a division ring, up to isomorphism.
+* `isSimpleModule_iff_eq_zero_or_injective` : A module is simple if and only if it is nontrivial
+  and every linear map from it is either zero or injective, this is the module analogue of
   `RingHom.Injective`
-* `IsSimpleModule.functor` : If `M` is a simple module over a ring `R`, and `e : ModuleCat R ≌
-  ModuleCat S` is an equivalence of categories, then `e(M)` is a simple module over `S`.
+* `IsSimpleModule.obj_of_isEquivalence` : If `M` is a simple module over a ring `R`, and
+  `e : ModuleCat R ⥤ ModuleCat S` is an equivalence of categories,
+  then `e(M)` is a simple module over `S`.
 
 ## Tags
 Noncommutative algebra, simple module, division ring

@@ -96,8 +96,8 @@ theorem simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
 
 theorem simple_iff_functor {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] (X : C) :
-    Simple X ↔ Simple (F.obj X) :=
-  ⟨fun _ => simple_obj F X, fun _ => Functor.simple_of_simple_obj F X⟩
+    Simple (F.obj X) ↔ Simple X :=
+  ⟨fun _ => Functor.simple_of_simple_obj F X, fun _ => simple_obj F X⟩
 
 theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
     (w : f ≠ 0) : kernel.ι f = 0 := by
