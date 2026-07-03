@@ -23,18 +23,17 @@ def Abelian.Subobject.cokernelOrderIso (Y : Subobject X) :
     Subobject (cokernel Y.arrow) ≃o Set.Ici Y where
   toFun p := ⟨(inverseImage (cokernel.π Y.arrow)).obj p, le_kernelSubobject _ _ (by simp)⟩
   invFun q := (image (cokernel.π Y.arrow)).obj q
-  left_inv p := by
-    simp
-    sorry
+  left_inv p := epi_image_inverseImage (cokernel.π Y.arrow) p
   right_inv := by
-    rintro ⟨q, hq : Y ≤ q⟩
+    rintro ⟨X', hX' : Y ≤ X'⟩
     dsimp only
     congr
-    apply le_antisymm
-    · simp
-      sorry
-    · exact inverseImage_image_le ..
+    have t : cokernel (Y.ofLE X' hX') ⟶ cokernel (Y.arrow) :=
+      cokernel.map _ _ (𝟙 _) X'.arrow (by simp)
+    have : Mono t := sorry
+    dsimp only [image]
     --have := cokernelImageι (q.arrow ≫ cokernel.π Y.arrow)
+    sorry
   map_rel_iff' := by cat_disch
 
 variable (X Y : C)

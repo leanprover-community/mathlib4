@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 public import Mathlib.CategoryTheory.Subobject.Limits
 public import Mathlib.CategoryTheory.Abelian.Basic
 
@@ -107,69 +108,6 @@ lemma Subobject.sup_eq_imageSubobject {A : C} (X Y : Subobject A) :
 
 end Sup
 
-noncomputable section Image
-
-variable {X Y : C} (f : X ⟶ Y)
-
-/-- The image of a morphism `f g : X ⟶ Y` as a `Subobject Y`. -/
-abbrev abImageSubobject : Subobject Y :=
-  Subobject.mk (Abelian.image.ι f)
-
-/-- The underlying object of `abImageSubobject f` is (up to isomorphism!)
-the same as the chosen object `Abelian.image f`. -/
-def abImageSubobjectIso : (abImageSubobject f : C) ≅ Abelian.image f :=
-  Subobject.underlyingIso (Abelian.image.ι f)
-
-@[reassoc (attr := simp)]
-theorem abImageSubobject_arrow :
-    (abImageSubobjectIso f).hom ≫ Abelian.image.ι f =
-      (abImageSubobject f).arrow := by simp [abImageSubobjectIso]
-
-@[reassoc (attr := simp)]
-theorem abImageSubobject_arrow' :
-    (abImageSubobjectIso f).inv ≫ (abImageSubobject f).arrow = Abelian.image.ι f := by
-  simp [abImageSubobjectIso]
-
-/-- A factorisation of `f : X ⟶ Y` through `abImageSubobject f`. -/
-def factorThruAbImageSubobject : X ⟶ abImageSubobject f :=
-  Abelian.factorThruImage f ≫ (abImageSubobjectIso f).inv
-
-instance : Epi (factorThruAbImageSubobject f) := by
-  dsimp [factorThruAbImageSubobject]
-  apply epi_comp
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-theorem abImageSubobject_arrow_comp :
-    factorThruAbImageSubobject f ≫ (abImageSubobject f).arrow = f := by
-  simp [factorThruAbImageSubobject]
-
-theorem abImageSubobject_arrow_comp_eq_zero {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (h : f ≫ g = 0) :
-    (abImageSubobject f).arrow ≫ g = 0 :=
-  zero_of_epi_comp (factorThruAbImageSubobject f) <| by simp [h]
-
-theorem abImageSubobject_factors_comp_self {W : C} (k : W ⟶ X) :
-    (abImageSubobject f).Factors (k ≫ f) :=
-  ⟨k ≫ Abelian.factorThruImage f, by simp⟩
-
-@[simp]
-theorem factorThruAbImageSubobject_comp_self {W : C} (k : W ⟶ X) (h) :
-    (abImageSubobject f).factorThru (k ≫ f) h = k ≫ factorThruAbImageSubobject f := by
-  ext
-  simp
-
-@[simp]
-theorem factorThruAbImageSubobject_comp_self_assoc {W W' : C} (k : W ⟶ W') (k' : W' ⟶ X) (h) :
-    (abImageSubobject f).factorThru (k ≫ k' ≫ f) h = k ≫ k' ≫ factorThruAbImageSubobject f := by
-  ext
-  simp
-
-/-- The image of `h ≫ f` is always a smaller subobject than the image of `f`. -/
-theorem abImageSubobject_comp_le {X' : C} (h : X' ⟶ X) (f : X ⟶ Y) :
-    abImageSubobject (h ≫ f) ≤ abImageSubobject f := by
-  refine Subobject.mk_le_mk_of_comm (kernel.lift _ (Abelian.image.ι (h ≫ f)) (by simp)) (by simp)
-
-end Image
-
 section
 
 variable {X Y : C} (f : X ⟶ Y)
@@ -181,6 +119,24 @@ def Subobject.image {X Y : C} (f : X ⟶ Y) : Subobject X ⥤ Subobject Y where
   map {X' X''} h := by
     apply homOfLE
     exact (Eq.le (by simp)).trans (imageSubobject_comp_le (X'.ofLE X'' h.le) (X''.arrow ≫ f))
+
+lemma Subobject.image_mono {X Y : C} (f : X ⟶ Y) [Mono f] {X' : Subobject X} :
+    (image f).obj X' = Subobject.mk (X'.arrow ≫ f) := by
+  simp [imageSubobject_mono]
+
+/-
+lemma Limits.imageSubobject_eq_of_arrowIso {X Y A : C} {f : X ⟶ Y} {g : A ⟶ Y}
+    (e : Arrow.mk f ≅ Arrow.mk g) :imageSubobject f = imageSubobject g := by
+  rw [Arrow.iso_w' e]
+  have := Arrow.iso_w' e.symm
+  simp at this
+  erw [imageSubobject_iso_comp (Arrow.Hom.left e.inv) (f ≫ Arrow.Hom.right e.hom)]
+  sorry
+-/
+
+lemma Subobject.image_mk_eq {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ X) [Mono g] :
+    (image f).obj (Subobject.mk g) = imageSubobject (g ≫ f) := by
+  simp only [← underlyingIso_arrow g =≫ f, Category.assoc, image, imageSubobject_iso_comp]
 
 lemma Subobject.image_le {X Y : C} (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
     (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : (image f).obj X' ≤ Y' :=
@@ -202,6 +158,13 @@ def Subobject.inverseImage {X Y : C} (f : X ⟶ Y) : Subobject Y ⥤ Subobject X
     · exact kernel.map (f ≫ cokernel.π Y'.arrow) (f ≫ cokernel.π Y''.arrow) (𝟙 _)
         (cokernel.map Y'.arrow Y''.arrow (underlying.map h) (𝟙 _) (by simp)) (by simp)
     · simp
+
+lemma Subobject.inverseImage_mk_eq {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ Y) [Mono g] :
+    (inverseImage f).obj (Subobject.mk g) = kernelSubobject (f ≫ cokernel.π g) :=
+  mk_eq_mk_of_comm _ _
+    (kernel.mapIso _ _ (Iso.refl _)
+      (cokernel.mapIso _ _ (underlyingIso _) (Iso.refl _) (by simp)) (by simp))
+    (by simp)
 
 def Subobject.isoKernelCokernel {X Y : C} {A : Subobject X} (f : (A : C) ⟶ Y) [Mono f] :
     (A : C) ≅ kernel (cokernel.π f) := by
@@ -256,27 +219,48 @@ lemma Subobject.image_inverseImage_le {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y)
 lemma Subobject.mono_inverseImage_image {X Y : C} (f : X ⟶ Y) (X' : Subobject X) [Mono f] :
     (inverseImage f).obj ((image f).obj X') = X' := by
   apply le_antisymm
-  · refine mk_le_of_comm ?_ ?_
-    · simp only [image, homOfLE_leOfHom]
-      sorry
-    · sorry
+  · rw [image_mono f, inverseImage_mk_eq]
+    have := kernel.condition (f ≫ cokernel.π (X'.arrow ≫ f))
+    rw [← Category.assoc] at this
+    refine mk_le_of_comm (kernel.lift _ _ this ≫ (isoKernelCokernel (X'.arrow ≫ f)).inv) ?_
+    rw [← cancel_mono f]
+    simp
   · exact inverseImage_image_le f X'
 
 @[simp]
 lemma Subobject.epi_image_inverseImage {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) [Epi f] :
     (image f).obj ((inverseImage f).obj Y') = Y' := by
-  apply le_antisymm
-  · exact image_inverseImage_le f Y'
-  · refine le_of_comm ?_ ?_
-    · simp
-      sorry
-    · sorry
+  apply le_antisymm (image_inverseImage_le f Y')
+  dsimp only [inverseImage, kernelSubobject]
+  rw [Subobject.image_mk_eq]
+  let k : kernel (f ≫ cokernel.π Y'.arrow) ⟶ X := kernel.ι (f ≫ cokernel.π Y'.arrow)
 
-/-
-lemma Subobject.inverseImage_comp {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :
-    (inverseImage_map f Y') ≫ Y'.arrow = ((inverseImage f).obj Y').arrow ≫ f := by
-  simp
--/
+  let v : kernel (f ≫ cokernel.π Y'.arrow) ⟶ Y' :=
+    (kernel.lift (cokernel.π Y'.arrow) (k ≫ f) (by simp [k]) ≫ (isoKernelCokernel Y'.arrow).inv)
+
+  have : IsLimit (PullbackCone.mk k v (show k ≫ f = v ≫ Y'.arrow by simp [k, v])) := by
+    refine Limits.PullbackCone.IsLimit.mk ?_ ?_ ?_ ?_ ?_
+    · intro s
+      exact kernel.lift (f ≫ cokernel.π Y'.arrow) s.fst
+        (by simpa using s.condition =≫ cokernel.π Y'.arrow)
+    · cat_disch
+    · intro s
+      simp [v, k, ← cancel_mono Y'.arrow, s.condition]
+    · cat_disch
+
+  have : Epi v := epi_snd_of_isLimit _ _ this
+
+  have : Epi
+      (kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp)) := by
+    dsimp [v] at this
+    cat_disch
+
+  have := strongEpi_of_epi
+    (kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) _)
+
+  rw [← kernel.lift_ι (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp),
+    imageSubobject_epi_comp, imageSubobject_mono]
+  exact le_kernelSubobject (cokernel.π Y'.arrow) Y' (cokernel.condition Y'.arrow)
 
 end
 
