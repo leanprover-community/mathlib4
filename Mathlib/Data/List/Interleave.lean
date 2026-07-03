@@ -18,7 +18,7 @@ This file defines interleaving of lists as a relation.
 
 ## See also
 
-Interleaving of lists as an operation is defined in `Batteries/Data/List/Interleave`.
+Interleaving of lists as an operation is defined in `Batteries/Data/List/Interleave.lean`.
 -/
 
 public section
