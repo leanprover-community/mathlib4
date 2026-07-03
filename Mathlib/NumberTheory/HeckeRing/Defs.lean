@@ -59,6 +59,7 @@ subsemigroup loses no generality, since `H₁ ≤ Δ` already forces `1 ∈ Δ`.
 @[expose] public section
 
 open Subgroup Subgroup.Commensurable
+open scoped Pointwise
 
 variable {G : Type*} [Group G]
 
@@ -101,6 +102,32 @@ theorem le_commensurator_left [IsHeckeCosetModule Δ H₁ H₂] :
     Δ ≤ (commensurator H₁).toSubmonoid := by
   rw [Subgroup.Commensurable.eq (commensurable (Δ := Δ) (H₁ := H₁) (H₂ := H₂))]
   exact le_commensurator H₁
+
+/-- Elements of `Δ` lie in the commensurator of the right subgroup. The left subgroup is
+explicit, since it cannot be inferred. -/
+theorem mem_commensurator_right (H₁ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) :
+    (g : G) ∈ commensurator H₂ :=
+  le_commensurator H₁ g.2
+
+/-- Elements of `Δ` lie in the commensurator of the left subgroup. The right subgroup is
+explicit, since it cannot be inferred. -/
+theorem mem_commensurator_left (H₂ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) :
+    (g : G) ∈ commensurator H₁ :=
+  le_commensurator_left (H₂ := H₂) g.2
+
+/-- Conjugating the right subgroup by an element of `Δ` gives a subgroup commensurable with
+the left one; this is the finiteness underlying `DoubleCoset.DecompQuotient H₁ H₂`. -/
+theorem commensurable_conjAct_right [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) :
+    Commensurable (ConjAct.toConjAct (g : G) • H₂) H₁ := by
+  have hg : Commensurable (ConjAct.toConjAct (g : G) • H₂) H₂ := mem_commensurator_right H₁ g
+  exact hg.trans (commensurable (Δ := Δ)).symm
+
+/-- Conjugating the left subgroup by an element of `Δ` gives a subgroup commensurable with
+the right one; this is the finiteness underlying `DoubleCoset.DecompQuotient H₂ H₁`. -/
+theorem commensurable_conjAct_left [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) :
+    Commensurable (ConjAct.toConjAct (g : G) • H₁) H₂ := by
+  have hg : Commensurable (ConjAct.toConjAct (g : G) • H₁) H₁ := mem_commensurator_left H₂ g
+  exact hg.trans (commensurable (Δ := Δ))
 
 /-- The reversed datum `(H₂, Δ, H₁)`. Not an instance, since instance search would loop. -/
 theorem symm [IsHeckeCosetModule Δ H₁ H₂] : IsHeckeCosetModule Δ H₂ H₁ :=
