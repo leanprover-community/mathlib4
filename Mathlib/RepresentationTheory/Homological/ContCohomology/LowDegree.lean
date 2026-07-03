@@ -20,7 +20,7 @@ namespace ContinuousCohomology
 
 open CategoryTheory Functor TopRep ContRepresentation
 
-variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k] [IsTopologicalRing k]
+variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
 set_option allowUnsafeReducibility true in

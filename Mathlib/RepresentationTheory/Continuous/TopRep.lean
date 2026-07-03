@@ -25,11 +25,9 @@ submodules induced by a morphism `f : res φ X ⟶ Y`.
 
 universe w u v
 
--- do we really need topological ring?
 /-- The category of topological representations of a monoid `G` over a topological ring `k`, and
 their morphisms. -/
-structure TopRep (k : Type u) (G : Type v) [TopologicalSpace k] [Ring k]
-    [IsTopologicalRing k] [Monoid G] where
+structure TopRep (k : Type u) (G : Type v) [Ring k] [TopologicalSpace k] [Monoid G] where
   private mk ::
   /-- the underlying type of an object in `TopRep k G` -/
   V : Type w
@@ -44,7 +42,7 @@ structure TopRep (k : Type u) (G : Type v) [TopologicalSpace k] [Ring k]
 namespace TopRep
 
 variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [Ring k]
-  [IsTopologicalRing k] [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
+  [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
   [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddCommGroup Y] [Module k Y] [TopologicalSpace Y]
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y}
@@ -161,7 +159,7 @@ instance : Preadditive (TopRep k G) where
 section Linear
 
 variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing k]
-  [IsTopologicalRing k] [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
+  [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
   [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddCommGroup Y] [Module k Y] [TopologicalSpace Y]
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}

@@ -35,7 +35,7 @@ namespace ContinuousCohomology
 
 open TopRep ContRepresentation
 
-variable {k : Type u} {G H K : Type v} [Ring k] [TopologicalSpace k] [IsTopologicalRing k]
+variable {k : Type u} {G H K : Type v} [Ring k] [TopologicalSpace k]
   [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
   [Group K] [TopologicalSpace K] [IsTopologicalGroup K]

@@ -43,7 +43,7 @@ See `TopRep.d`.
 
 @[expose] public section
 
-variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k] [IsTopologicalRing k]
+variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
 open CategoryTheory ContRepresentation Limits
