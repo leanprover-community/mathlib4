@@ -26,11 +26,11 @@ defined using pentagonal numbers. We then show that this series is equal to both
 
 * `PowerSeries.WithPiTopology.hasProd_one_sub_X_pow`: `PowerSeries.pentagonalSeries` is equal to
   infinite product on the left-hand side of the formula.
-  * `PowerSeries.coeff_prod_one_sub_X_pow_eventually_eq` is the version without requiring topology.
+* `PowerSeries.coeff_prod_one_sub_X_pow_eventually_eq` restates the left-hand side without requiring
+  topology.
 * `PowerSeries.WithPiTopology.hasSum_pentagonalSeries`: `PowerSeries.pentagonalSeries` is equal to
   the infinite sum on the right-hand side of the formula.
-  * `PowerSeries.coeff_pentagonalSeries` is an explicit statement of the coefficients without
-    requiring topology.
+* `PowerSeries.coeff_pentagonalSeries` restates the right-hand side without requiring topology.
 -/
 
 open Filter PowerSeries WithPiTopology Topology
