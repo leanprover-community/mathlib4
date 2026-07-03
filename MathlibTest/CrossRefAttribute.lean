@@ -99,14 +99,16 @@ info:
 
 namespace LMFDB
 
-@[lmfdb lmfdb.tag "A comment"]
-theorem lmfdbTagged : 1 + 1 = 2 := by
+@[lmfdb group.abelian "A vacouous comment"]
+theorem IsAbelian : 1 + 1 = 2 := by
   rfl
 
-/-- info: some ([LMFDB lmfdb.tag](https://www.lmfdb.org/knowledge/show/lmfdb.tag) (A comment)) -/
+/--
+info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacouous comment))
+-/
 #guard_msgs in
 run_cmd
-  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `LMFDB.lmfdbTagged}"
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `LMFDB.IsAbelian}"
 
 /--
 error: <input>:1:9: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
@@ -123,7 +125,7 @@ error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, pe
 
 /--
 info:
-[LMFDB lmfdb.tag](https://www.lmfdb.org/knowledge/show/lmfdb.tag) corresponds to declaration 'lmfdbTagged'. (A comment)
+[LMFDB group.abelian](https://www.lmfdb.org/knowledge/group.abelian) corresponds to declaration 'IsAbelian'. (A vacouous comment)
 -/
 #guard_msgs in
 #lmfdb_tags
