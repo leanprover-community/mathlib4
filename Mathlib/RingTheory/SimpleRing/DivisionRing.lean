@@ -15,7 +15,7 @@ This file contains some results about simple modules over division rings.
 
 # Main results
 
-* `nonempty_linearEquiv_of_divisionRing_of_isSimpleModule` : There is an unique simple module over
+* `DivisionRing.nonempty_linearEquiv_of_isSimpleModule` : There is an unique simple module over
   a division ring, up to isomorphism.
 * `isSimpleModule_iff_eq_zero_or_injective` : A module is simple if and only if it is nontrivial
   and every linear map from it is either zero or injective, this is the module analogue of
