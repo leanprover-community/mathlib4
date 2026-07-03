@@ -295,6 +295,7 @@ theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
 theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk ⁻¹' {a} :=
   Set.ext fun _ => mem_carrier_iff_mk_eq
 
+@[simp]
 lemma mk_mulAut {α : Type*} [Group α] (m x : α) :
     ConjClasses.mk (MulAut.conj m x) = ConjClasses.mk x := by
   rw [mk_eq_mk_iff_isConj, MulAut.conj_apply]
