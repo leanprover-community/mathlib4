@@ -36,7 +36,7 @@ variable (r) in
 length of `l₁` or one more and if the `i`-th rightmost element of `l₁` is `r`-related to both the
 `i`-th and `i + 1`-st rightmost elements of `l₂`, except possibly when `i = l₁.length`.
 
-For example, `[1, 3]` `(· ≥ ·)`-interleaves `[0, 2, 4]`.
+For example, `[1, 3]` `(· ≥ ·)`-interleaves both of `[0, 2, 4]` and `[0, 2]`.
 
 See `interleaves_iff_length_isChain_interleave` for the connection with `List.interleave`. -/
 @[mk_iff]
