@@ -33,6 +33,7 @@ variable {A : Type u} [Category.{v} A] {X : TopCat.{w}}
 namespace TopCat
 
 variable (A X) in
+/-- The category of `A`-valued presheaves on a (bundled) topological space `X` -/
 abbrev KPresheaf : Type max u v w := (Compacts X)ᵒᵖ ⥤ A
 
 namespace KPresheaf
@@ -98,6 +99,7 @@ end KPresheaf
 variable [T2Space X]
 
 variable (X A) in
+/-- The pbject property of being a KSheaf -/
 abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := fun P ↦ P.IsKSheaf
 
 variable (X A) in
@@ -128,3 +130,4 @@ lemma hom_K_ext (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op 
 end KSheaf
 
 end TopCat
+#lint
