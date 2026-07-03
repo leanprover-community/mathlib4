@@ -6,15 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Batteries.Data.List.Interleave
-public import Batteries.Data.List.Lemmas
-public import Mathlib.Logic.Function.Defs
-public import Mathlib.Order.Defs.Unbundled
+public import Mathlib.Data.Nat.SuccPred
 
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.ChainOfFn
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Simproc.ExistsAndEq
-import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Interleaving lists
@@ -32,9 +27,10 @@ namespace List
 variable {α : Type*} {r s : α → α → Prop} {l l₁ l₂ l₃ l₄ : List α} {a b c : α}
 
 variable (r) in
-/-- Relation for interleaving lists. `l₁` `r`-interleaves `l₂` if the length of `l₂` is either the
-length of `l₁` or one more and if the `i`-th rightmost element of `l₁` is `r`-related to both the
-`i`-th and `i + 1`-st rightmost elements of `l₂`, except possibly when `i = l₁.length`.
+/-- Relation for interleaving lists. `l₁.Interleaves l₂ r` means that `l₁` `r`-interleaves `l₂`,
+i.e. the length of `l₂` is either the length of `l₁` or one more and for each `i` the `i`-th
+rightmost element of `l₁` is `r`-related to both the `i`-th and `i + 1`-st rightmost elements of
+`l₂`, except possibly when `i = l₁.length`.
 
 For example, `[1, 3]` `(· ≥ ·)`-interleaves both of `[0, 2, 4]` and `[0, 2]`.
 
@@ -75,17 +71,15 @@ lemma Interleaves.mono (hrs : ∀ ⦃a b⦄, r a b → s a b) :
   | _, _, .cons_symm hl hab => .cons_symm (hl.mono hrs) <| hrs hab
 
 lemma interleaves_iff_length_isChain_interleave :
-    ∀ {l₁ l₂ : List α},
-    Interleaves r l₁ l₂ ↔
-      (l₁.length = l₂.length ∨ l₁.length + 1 = l₂.length) ∧ (l₂.interleave l₁).IsChain r
+    ∀ {l₁ l₂ : List α}, Interleaves r l₁ l₂ ↔ l₁.length ⩿ l₂.length ∧ (l₂.interleave l₁).IsChain r
   | [], [] => by simp
-  | [], b :: l₂ => by simp +contextual
-  | a :: l₁, [] => by simp
-  | a :: l₁, [b] => by rw [interleaves_iff]; simp +contextual
+  | [], b :: l₂ => by simp +contextual [wcovBy_iff_eq_or_covBy]
+  | a :: l₁, [] => by simp [wcovBy_iff_eq_or_covBy]
+  | a :: l₁, [b] => by rw [interleaves_iff]; simp +contextual [wcovBy_iff_eq_or_covBy]
   | a :: l₁, b :: l₂ => by
     rw [interleaves_iff]
     simp [interleaves_iff_length_isChain_interleave (l₁ := l₂) (l₂ := a :: l₁), or_comm, eq_comm,
-      and_comm, and_assoc]
+      and_comm, and_assoc, wcovBy_iff_eq_or_covBy]
 termination_by l₁ l₂ => l₁.length + l₂.length
 
 @[simp]
@@ -110,19 +104,20 @@ lemma interleaves_reverse_reverse_of_length_eq_length_add_one (h : l₁.length +
   simp [interleaves_iff_length_isChain_interleave, ← reverse_interleave_of_length_eq_length_add_one,
     isChain_reverse, *]
 
-lemma interleaves_ofFn {n : ℕ} {f g : Fin n → α} :
+lemma interleaves_ofFn_even {n : ℕ} {f g : Fin n → α} :
     Interleaves r (ofFn f) (ofFn g) ↔
       (∀ i, r (g i) (f i)) ∧ ∀ (i : ℕ) (hi : i + 1 < n), r (f ⟨i, by lia⟩) (g ⟨i + 1, hi⟩) := by
-  simp only [interleaves_iff_length_isChain_interleave, length_ofFn, Nat.succ_ne_self, or_false,
+  simp only [interleaves_iff_length_isChain_interleave, length_ofFn, WCovBy.rfl,
     interleave_ofFn_ofFn_even, isChain_ofFn, true_and]
   refine ⟨fun h ↦ ?_, by grind⟩
   exact ⟨fun i ↦ by have := h (2 * i); grind, fun i hi ↦ by have := h (2 * i + 1); grind⟩
 
-lemma interleaves_ofFn' {n : ℕ} {f : Fin n → α} {g : Fin (n + 1) → α} :
+lemma interleaves_ofFn_odd {n : ℕ} {f : Fin n → α} {g : Fin (n + 1) → α} :
     Interleaves r (ofFn f) (ofFn g) ↔
       (∀ i : Fin n, r (f i) (g i.succ)) ∧ ∀ i : Fin n, r (g i.castSucc) (f i) := by
-  simp only [interleaves_iff_length_isChain_interleave, length_ofFn, Nat.left_eq_add,
-    interleave_ofFn_ofFn_odd, isChain_ofFn, Nat.succ_ne_self, or_true, true_and]
+  simp only [interleaves_iff_length_isChain_interleave, length_ofFn, interleave_ofFn_ofFn_odd,
+    wcovBy_iff_eq_or_covBy, Nat.left_eq_add, one_ne_zero, Order.covBy_add_one, or_true, true_and,
+    isChain_ofFn]
   -- FIXME: Why doesn't `grind unfold these?
   unfold Fin.castSucc Fin.castAdd Fin.castLE
   refine ⟨fun h ↦ ?_, fun h i hi ↦ by grind⟩
