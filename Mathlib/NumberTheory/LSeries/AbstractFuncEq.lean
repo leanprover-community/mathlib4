@@ -95,11 +95,12 @@ structure WeakFEPair where
   (hf_top (r : ℝ) : (f · - f₀) =O[atTop] (· ^ r))
   (hg_top (r : ℝ) : (g · - g₀) =O[atTop] (· ^ r))
 
-/-- A structure designed to hold the hypotheses for the Mellin-functional-equation argument
-(version without constant terms) -/
-structure StrongFEPair extends WeakFEPair E where (hf₀ : f₀ = 0) (hg₀ : g₀ = 0)
-
 variable {E}
+
+/-- A *strong FE-pair* is a weak FE-pair in which `f₀` and `g₀` are zero. -/
+structure IsStrongFEPair (P : WeakFEPair E) : Prop where
+  hf₀ : P.f₀ = 0
+  hg₀ : P.g₀ = 0
 
 section symmetry
 
@@ -111,8 +112,8 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field [P.hε, (rpow_pos_of_pos hx _).ne']
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
+@[simps]
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   f := P.g
   g := P.f
@@ -128,22 +129,26 @@ def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   hk := P.hk
   h_feq  := P.h_feq'
 
-/-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
-def StrongFEPair.symm (P : StrongFEPair E) : StrongFEPair E where
-  toWeakFEPair := P.toWeakFEPair.symm
-  hf₀ := P.hg₀
-  hg₀ := P.hf₀
+@[simp] lemma isStrongFEPair_symm {P : WeakFEPair E} :
+    IsStrongFEPair P.symm ↔ IsStrongFEPair P where
+  mp h := ⟨h.hg₀, h.hf₀⟩
+  mpr h := ⟨h.hg₀, h.hf₀⟩
+
+lemma IsStrongFEPair.symm {P : WeakFEPair E} (hP : IsStrongFEPair P) :
+    IsStrongFEPair P.symm := isStrongFEPair_symm.2 hP
 
 end symmetry
 
 namespace WeakFEPair
+
+variable (P : WeakFEPair E)
 
 /-!
 ## Auxiliary results I: lemmas on asymptotics
 -/
 
 /-- As `x → 0`, we have `f x = x ^ (-P.k) • constant` up to a rapidly decaying error. -/
-lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
+lemma hf_zero (r : ℝ) :
     (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
   have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_nhdsGT_zero
   simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
@@ -165,8 +170,7 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
     field
 
 /-- Power asymptotic for `f - f₀` as `x → 0`. -/
-lemma hf_zero' (P : WeakFEPair E) :
-    (fun x : ℝ ↦ P.f x - P.f₀) =O[𝓝[>] 0] (· ^ (-P.k)) := by
+lemma hf_zero' : (fun x : ℝ ↦ P.f x - P.f₀) =O[𝓝[>] 0] (· ^ (-P.k)) := by
   simp_rw [← fun x ↦ sub_add_sub_cancel (P.f x) ((P.ε * ↑(x ^ (-P.k))) • P.g₀) P.f₀]
   refine (P.hf_zero _).add (IsBigO.sub ?_ ?_)
   · rw [← isBigO_norm_norm]
@@ -178,51 +182,21 @@ lemma hf_zero' (P : WeakFEPair E) :
     rw [norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_neg hx.le]
     exact (one_le_inv₀ (rpow_pos_of_pos hx _)).2 (rpow_le_one hx.le hx' P.hk.le)
 
-end WeakFEPair
+/-- The completed L-function.
 
-namespace StrongFEPair
+This definition and the lemmas about it are private, because it will later be "overwritten" with a
+more complicated definition which is mathematically equal but not definitionally so; this is
+necessary in order to present a uniform API in the weak and strong cases. -/
+private def Λ_aux (P : WeakFEPair E) (s : ℂ) : E := mellin P.f s
 
-variable (P : StrongFEPair E)
+private lemma Λ_aux_eq : P.Λ_aux = mellin P.f := rfl
 
-/-- As `x → ∞`, `f x` decays faster than any power of `x`. -/
-lemma hf_top' (r : ℝ) : P.f =O[atTop] (· ^ r) := by
-  simpa [P.hf₀] using P.hf_top r
+private lemma symm_Λ_aux_eq : P.symm.Λ_aux = mellin P.g := rfl
 
-/-- As `x → 0`, `f x` decays faster than any power of `x`. -/
-lemma hf_zero' (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ r) := by
-  simpa using (P.hg₀ ▸ P.hf_zero r :)
-
-/-!
-## Main theorems on strong FE-pairs
--/
-
-/-- The completed L-function. -/
-def Λ : ℂ → E := mellin P.f
-
-/-- The Mellin transform of `f` is well-defined and equal to `P.Λ s`, for all `s`. -/
-theorem hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
-  let ⟨_, ht⟩ := exists_gt s.re
-  let ⟨_, hu⟩ := exists_lt s.re
-  ⟨mellinConvergent_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu, rfl⟩
-
-lemma Λ_eq : P.Λ = mellin P.f := rfl
-
-lemma symm_Λ_eq : P.symm.Λ = mellin P.g := rfl
-
-/-- If `(f, g)` are a strong FE pair, then the Mellin transform of `f` is entire. -/
-theorem differentiable_Λ : Differentiable ℂ P.Λ := fun s ↦
-  let ⟨_, ht⟩ := exists_gt s.re
-  let ⟨_, hu⟩ := exists_lt s.re
-  mellin_differentiableAt_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu
-
-/-- Main theorem about strong FE pairs: if `(f, g)` are a strong FE pair, then the Mellin
-transforms of `f` and `g` are related by `s ↦ k - s`.
-
-This is proved by making a substitution `t ↦ t⁻¹` in the Mellin transform integral. -/
-theorem functional_equation (s : ℂ) :
-    P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
+private theorem functional_equation_aux (s : ℂ) :
+    P.Λ_aux (P.k - s) = P.ε • P.symm.Λ_aux s := by
   -- unfold definition:
-  rw [P.Λ_eq, P.symm_Λ_eq]
+  rw [P.Λ_aux_eq, P.symm_Λ_aux_eq]
   -- substitute `t ↦ t⁻¹` in `mellin P.g s`
   have step1 := mellin_comp_rpow P.g (-s) (-1)
   simp_rw [abs_neg, abs_one, inv_one, one_smul, ofReal_neg, ofReal_one, div_neg, div_one, neg_neg,
@@ -242,7 +216,32 @@ theorem functional_equation (s : ℂ) :
   have : (t : ℂ) ^ (P.k : ℂ) ≠ 0 := by simpa [← ofReal_cpow ht.le] using (rpow_pos_of_pos ht _).ne'
   field_simp [P.hε]
 
-end StrongFEPair
+end WeakFEPair
+
+namespace IsStrongFEPair
+
+variable {P : WeakFEPair E} (hP : IsStrongFEPair P)
+include hP
+
+/-- As `x → ∞`, `f x` decays faster than any power of `x`. -/
+lemma hf_top (r : ℝ) : P.f =O[atTop] (· ^ r) := by
+  simpa [hP.hf₀] using P.hf_top r
+
+/-- As `x → 0`, `f x` decays faster than any power of `x`. -/
+lemma hf_zero (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ r) := by
+  simpa using (hP.hg₀ ▸ P.hf_zero r :)
+
+private theorem hasMellin_aux (s : ℂ) : HasMellin P.f s (P.Λ_aux s) :=
+  let ⟨_, ht⟩ := exists_gt s.re
+  let ⟨_, hu⟩ := exists_lt s.re
+  ⟨mellinConvergent_of_isBigO_rpow P.hf_int (hP.hf_top _) ht (hP.hf_zero _) hu, rfl⟩
+
+private theorem differentiable_Λ_aux : Differentiable ℂ P.Λ_aux := fun s ↦
+  let ⟨_, ht⟩ := exists_gt s.re
+  let ⟨_, hu⟩ := exists_lt s.re
+  mellin_differentiableAt_of_isBigO_rpow P.hf_int (hP.hf_top _) ht (hP.hf_zero _) hu
+
+end IsStrongFEPair
 
 namespace WeakFEPair
 
@@ -301,10 +300,9 @@ lemma hf_modif_top (r : ℝ) :
   filter_upwards [eventually_gt_atTop 1] with x hx
   simp [f_modif, mem_Ioi.mpr hx, notMem_Ioo_of_ge hx.le]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
-def toStrongFEPair : StrongFEPair E where
+def toStrongFEPair : WeakFEPair E where
   f := P.f_modif
   g := P.symm.f_modif
   k := P.k
@@ -316,10 +314,12 @@ def toStrongFEPair : StrongFEPair E where
   h_feq := P.hf_modif_FE
   hε := P.hε
   hk := P.hk
-  hf₀ := rfl
-  hg₀ := rfl
   hf_top := P.hf_modif_top
   hg_top := P.symm.hf_modif_top
+
+lemma isStrongFEPair_toStrongFEPair : IsStrongFEPair P.toStrongFEPair where
+  hf₀ := rfl
+  hg₀ := rfl
 
 /- Alternative form for the difference between `f - f₀` and its modified term. -/
 lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
@@ -396,7 +396,8 @@ lemma symm_Λ₀_eq (s : ℂ) :
   rw [P.symm.Λ₀_eq]
   rfl
 
-theorem differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.toStrongFEPair.differentiable_Λ
+theorem differentiable_Λ₀ : Differentiable ℂ P.Λ₀ :=
+  P.isStrongFEPair_toStrongFEPair.differentiable_Λ_aux
 
 theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P.k ∨ P.g₀ = 0) :
     DifferentiableAt ℂ P.Λ s := by
@@ -410,7 +411,9 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
       simpa [sub_eq_zero, eq_comm]
     · simp [hs']
 
-/-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined. -/
+/-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined.
+(Compare `IsStrongFEPair.hasMellin` for a version without assumptions on `s.re` assuming the
+FE-pair is strong.) -/
 theorem hasMellin [CompleteSpace E]
     {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.Λ s) := by
   have hc1 : MellinConvergent (P.f · - P.f₀) s :=
@@ -418,7 +421,7 @@ theorem hasMellin [CompleteSpace E]
     mellinConvergent_of_isBigO_rpow (P.hf_int.sub (locallyIntegrableOn_const _)) (P.hf_top _) ht
       P.hf_zero' hs
   refine ⟨hc1, ?_⟩
-  have hc2 : HasMellin P.f_modif s (P.Λ₀ s) := P.toStrongFEPair.hasMellin s
+  have hc2 : HasMellin P.f_modif s (P.Λ₀ s) := P.isStrongFEPair_toStrongFEPair.hasMellin_aux s
   have hc3 : mellin (fun x ↦ f_modif P x - f P x + P.f₀) s =
     (1 / s) • P.f₀ + (P.ε / (↑P.k - s)) • P.g₀ := P.f_modif_aux2 hs
   have := (hasMellin_sub hc2.1 hc1).2
@@ -427,13 +430,13 @@ theorem hasMellin [CompleteSpace E]
 
 /-- Functional equation formulated for `Λ₀`. -/
 theorem functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.Λ₀ s :=
-  P.toStrongFEPair.functional_equation s
+  P.toStrongFEPair.functional_equation_aux s
 
 /-- Functional equation formulated for `Λ`. -/
 theorem functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
   linear_combination (norm := module) P.functional_equation₀ s - P.Λ₀_eq (P.k - s)
-    + congr(P.ε • $(P.symm_Λ₀_eq s)) + congr(($(mul_inv_cancel₀ P.hε) / ((P.k:ℂ) - s)) • P.f₀)
+    + congr(P.ε • $(P.symm_Λ₀_eq s)) + congr(($(mul_inv_cancel₀ P.hε) / (P.k - s)) • P.f₀)
 
 /-- The residue of `Λ` at `s = k` is equal to `ε • g₀`. -/
 theorem Λ_residue_k :
@@ -466,3 +469,38 @@ theorem Λ_residue_zero :
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
 
 end WeakFEPair
+
+namespace IsStrongFEPair
+/-!
+## Main theorems on strong FE-pairs
+-/
+
+open WeakFEPair
+
+variable {P : WeakFEPair E} (hP : IsStrongFEPair P)
+include hP
+
+/-- Check compatibility between `WeakFEPair.Λ` applied to a `StrongFEPair`, and the (private)
+`StrongFEPair.Λ_aux`. -/
+private lemma Λ_aux_eq_Λ : P.Λ_aux = P.Λ := by
+  ext s
+  simp only [Λ_aux_eq, mellin, Λ, Λ₀, f_modif, hP.hf₀, sub_zero, hP.hg₀, smul_zero]
+  refine integral_congr_ae <| (ae_restrict_iff' measurableSet_Ioi).mpr ?_
+  filter_upwards [compl_mem_ae_iff.mpr (Subsingleton.measure_zero (s := {1}) (by simp) _)]
+    with t (ht₁ : t ≠ 1) (ht₀ : 0 < t)
+  by_cases ht : t < 1 <;> [rw [add_comm] ; skip] <;>
+  rw [Pi.add_apply, indicator_of_mem (by grind), indicator_of_notMem (by grind), add_zero]
+
+/-- The Mellin transform of `f` is well-defined and equal to `P.Λ s`, for all `s`. -/
+theorem hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
+  hP.Λ_aux_eq_Λ ▸ hP.hasMellin_aux s
+
+lemma Λ_eq : P.Λ = mellin P.f := funext fun s ↦ (hP.hasMellin s).2.symm
+
+lemma symm_Λ_eq : P.symm.Λ = mellin P.g := funext fun s ↦ (hP.symm.hasMellin s).2.symm
+
+/-- If `(f, g)` are a strong FE pair, then the Mellin transform of `f` is entire. -/
+theorem differentiable_Λ : Differentiable ℂ P.Λ :=
+  hP.Λ_aux_eq_Λ ▸ hP.differentiable_Λ_aux
+
+end IsStrongFEPair
