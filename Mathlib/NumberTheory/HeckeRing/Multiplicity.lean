@@ -14,14 +14,16 @@ Shimura's multiplicity (Proposition 3.2 of [Shimura][shimura1971]) counts, for d
 `Γ₁gΓ₂`, `Γ₂hΓ₃` and `Γ₁dΓ₃`, the pairs of left-coset representatives `(σᵢ, τⱼ)` with
 `σᵢ g τⱼ h Γ₃ = d Γ₃`. These natural numbers are the structure constants of the Hecke product
 defined in later files: the diagonal case `Γ₁ = Γ₂ = Γ₃` gives the multiplication of the Hecke
-ring, and the general case gives the composition of Hecke bimodules. This file defines the
-multiplicity, the map `mulMap` sending a pair of representatives to the double coset of their
-product, and the uniqueness lemmas for the fibres of the multiplicity.
+ring, and the general case gives the composition of Hecke coset modules between different
+levels. This file defines the multiplicity, the map `mulMap` sending a pair of representatives
+to the mixed double coset of their product, and the uniqueness lemmas for the fibres of the
+multiplicity.
 
 ## Main definitions
 
 * `DoubleCoset.multiplicity`: Shimura's multiplicity, a natural number structure constant.
-* `HeckePair.mulMap`: the double coset `H (σᵢ g₁ τⱼ g₂) H` of a pair of coset representatives.
+* `HeckeCoset.mulMap`: the double coset `H₁ (σᵢ g₁ τⱼ g₂) H₃` of a pair of coset
+  representatives.
 -/
 
 @[expose] public section
@@ -85,29 +87,29 @@ lemma fst_eq_of_mul_snd_mem {Γ₁ Γ₂ : Subgroup G} {g h d : G} {i₁ i₂ : 
 
 end DoubleCoset
 
-namespace HeckePair
+namespace HeckeCoset
 
 open DoubleCoset
 
-variable {G : Type*} [Group G] (P : HeckePair G)
+variable {G : Type*} [Group G] {Δ : Submonoid G}
 
-attribute [local instance] HeckePair.doubleCosetSetoid
+/-- The map sending a pair of coset representatives `(σᵢ, τⱼ)` to the mixed double coset
+`H₁ (σᵢ g₁ τⱼ g₂) H₃` of their product. -/
+noncomputable def mulMap (H₁ H₂ H₃ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂]
+    [IsHeckeCosetModule Δ H₂ H₃] (g₁ g₂ : Δ)
+    (p : DecompQuotient H₁ H₂ (g₁ : G) × DecompQuotient H₂ H₃ (g₂ : G)) : HeckeCoset Δ H₁ H₃ :=
+  mk H₁ H₃ ⟨(p.1.out : G) * g₁ * ((p.2.out : G) * g₂),
+    Δ.mul_mem (Δ.mul_mem (IsHeckeCosetModule.mem_left H₂ p.1.out.2) g₁.2)
+      (Δ.mul_mem (IsHeckeCosetModule.mem_left H₃ p.2.out.2) g₂.2)⟩
 
-/-- The map sending a pair of coset representatives `(σᵢ, τⱼ)` to the double coset
-of their product `H (σᵢ g₁ τⱼ g₂) H`. -/
-noncomputable def mulMap (g₁ g₂ : P.Δ)
-    (p : DecompQuotient P.H P.H (g₁ : G) × DecompQuotient P.H P.H (g₂ : G)) : HeckeCoset P :=
-  ⟦⟨(p.1.out : G) * g₁ * ((p.2.out : G) * g₂),
-    P.Δ.mul_mem (P.Δ.mul_mem (P.subgroup_le p.1.out.2) g₁.2)
-      (P.Δ.mul_mem (P.subgroup_le p.2.out.2) g₂.2)⟩⟧
-
-/-- If `σᵢ g₁ τⱼ g₂ H = d H` then the double coset of `σᵢ g₁ τⱼ g₂` equals that of `d`. -/
-lemma mulMap_eq_of_mk_eq {g₁ g₂ d : P.Δ}
-    {p : DecompQuotient P.H P.H (g₁ : G) × DecompQuotient P.H P.H (g₂ : G)}
-    (h : ((p.1.out : G) * g₁ * ((p.2.out : G) * g₂) : G ⧸ P.H) = ((d : G) : G ⧸ P.H)) :
-    P.mulMap g₁ g₂ p = (⟦d⟧ : HeckeCoset P) := by
+/-- If `σᵢ g₁ τⱼ g₂ H₃ = d H₃` then the double coset of `σᵢ g₁ τⱼ g₂` equals that of `d`. -/
+lemma mulMap_eq_of_mk_eq {H₁ H₂ H₃ : Subgroup G} [IsHeckeCosetModule Δ H₁ H₂]
+    [IsHeckeCosetModule Δ H₂ H₃] {g₁ g₂ d : Δ}
+    {p : DecompQuotient H₁ H₂ (g₁ : G) × DecompQuotient H₂ H₃ (g₂ : G)}
+    (h : ((p.1.out : G) * g₁ * ((p.2.out : G) * g₂) : G ⧸ H₃) = ((d : G) : G ⧸ H₃)) :
+    mulMap H₁ H₂ H₃ g₁ g₂ p = mk H₁ H₃ d := by
   rw [QuotientGroup.eq] at h
   exact HeckeCoset.mk_eq_mk_of_mem (DoubleCoset.mem_doubleCoset.mpr
-    ⟨1, P.H.one_mem, _, P.H.inv_mem h, by rw [one_mul, mul_inv_rev, inv_inv, mul_inv_cancel_left]⟩)
+    ⟨1, H₁.one_mem, _, H₃.inv_mem h, by rw [one_mul, mul_inv_rev, inv_inv, mul_inv_cancel_left]⟩)
 
-end HeckePair
+end HeckeCoset

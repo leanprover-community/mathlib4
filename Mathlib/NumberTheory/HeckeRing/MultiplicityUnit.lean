@@ -13,8 +13,8 @@ public import Mathlib.NumberTheory.HeckeRing.Multiplicity
 For `e ∈ Γ₂` the double coset `Γ₂eΓ₂` is `Γ₂` itself, the identity of the Hecke ring of `Γ₂`;
 this file proves the two computations expressing this at the level of Shimura's multiplicity:
 multiplying by such an `e` on either side, the multiplicity is `1` exactly on the diagonal
-`Γ₁gΓ₂ = Γ₁dΓ₂`. Specialised to a Hecke pair, these compute the products `T(g) * T(1)` and
-`T(1) * T(g)` in later files.
+`Γ₁gΓ₂ = Γ₁dΓ₂`. Specialised to a Hecke coset module, these compute the products `T(g) * T(1)`
+and `T(1) * T(g)` in later files.
 
 ## Main results
 
@@ -110,45 +110,45 @@ theorem multiplicity_eq_one_iff_of_mem_left {e g d : G} (he : e ∈ Γ₁) :
 
 end DoubleCoset
 
-namespace HeckePair
+namespace HeckeCoset
 
 open DoubleCoset
 
-variable {G : Type*} [Group G] (P : HeckePair G)
+variable {G : Type*} [Group G] {Δ : Submonoid G} {H₁ H₂ : Subgroup G}
 
-attribute [local instance] HeckePair.doubleCosetSetoid
-
-/-- Every pair of representatives multiplies into `⟦g₁⟧` when the second double coset is the
-identity. -/
-lemma mulMap_one_right (g₁ : P.Δ)
-    (p : DecompQuotient P.H P.H (g₁ : G) × DecompQuotient P.H P.H ((1 : HeckeCoset P).rep : G)) :
-    P.mulMap g₁ (1 : HeckeCoset P).rep p = (⟦g₁⟧ : HeckeCoset P) :=
+/-- Every pair of representatives multiplies into `mk H₁ H₂ g₁` when the second double coset is
+the identity. -/
+lemma mulMap_one_right [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₂] (g₁ : Δ)
+    (p : DecompQuotient H₁ H₂ (g₁ : G) ×
+      DecompQuotient H₂ H₂ (((1 : HeckeCoset Δ H₂ H₂).rep : G))) :
+    mulMap H₁ H₂ H₂ g₁ (1 : HeckeCoset Δ H₂ H₂).rep p = mk H₁ H₂ g₁ :=
   HeckeCoset.mk_eq_mk_of_mem (mem_doubleCoset.mpr ⟨(p.1.out : G), p.1.out.2,
-    (p.2.out : G) * ((1 : HeckeCoset P).rep : G),
-    P.H.mul_mem p.2.out.2 HeckeCoset.rep_one_mem, rfl⟩)
+    (p.2.out : G) * ((1 : HeckeCoset Δ H₂ H₂).rep : G),
+    H₂.mul_mem p.2.out.2 HeckeCoset.rep_one_mem, rfl⟩)
 
-/-- Every pair of representatives multiplies into `⟦g₁⟧` when the first double coset is the
-identity. -/
-lemma mulMap_one_left (g₁ : P.Δ)
-    (p : DecompQuotient P.H P.H ((1 : HeckeCoset P).rep : G) × DecompQuotient P.H P.H (g₁ : G)) :
-    P.mulMap (1 : HeckeCoset P).rep g₁ p = (⟦g₁⟧ : HeckeCoset P) :=
+/-- Every pair of representatives multiplies into `mk H₁ H₂ g₁` when the first double coset is
+the identity. -/
+lemma mulMap_one_left [IsHeckeCosetModule Δ H₁ H₁] [IsHeckeCosetModule Δ H₁ H₂] (g₁ : Δ)
+    (p : DecompQuotient H₁ H₁ (((1 : HeckeCoset Δ H₁ H₁).rep : G)) ×
+      DecompQuotient H₁ H₂ (g₁ : G)) :
+    mulMap H₁ H₁ H₂ (1 : HeckeCoset Δ H₁ H₁).rep g₁ p = mk H₁ H₂ g₁ :=
   HeckeCoset.mk_eq_mk_of_mem (mem_doubleCoset.mpr
-    ⟨(p.1.out : G) * ((1 : HeckeCoset P).rep : G) * (p.2.out : G),
-      P.H.mul_mem (P.H.mul_mem p.1.out.2 HeckeCoset.rep_one_mem) p.2.out.2, 1, P.H.one_mem,
+    ⟨(p.1.out : G) * ((1 : HeckeCoset Δ H₁ H₁).rep : G) * (p.2.out : G),
+      H₁.mul_mem (H₁.mul_mem p.1.out.2 HeckeCoset.rep_one_mem) p.2.out.2, 1, H₂.one_mem,
       by simp [mul_assoc]⟩)
 
 /-- Right multiplication by the identity double coset has multiplicity `1` exactly on the
 diagonal. -/
-theorem multiplicity_mul_one (g d : P.Δ) :
-    multiplicity P.H P.H P.H (g : G) ((1 : HeckeCoset P).rep : G) (d : G) = 1 ↔
-      (⟦g⟧ : HeckeCoset P) = ⟦d⟧ := by
+theorem multiplicity_mul_one (g d : Δ) :
+    multiplicity H₁ H₂ H₂ (g : G) ((1 : HeckeCoset Δ H₂ H₂).rep : G) (d : G) = 1 ↔
+      mk H₁ H₂ g = mk H₁ H₂ d := by
   rw [multiplicity_eq_one_iff_of_mem_right HeckeCoset.rep_one_mem, HeckeCoset.eq_iff]
 
 /-- Left multiplication by the identity double coset has multiplicity `1` exactly on the
 diagonal. -/
-theorem multiplicity_one_mul (g d : P.Δ) :
-    multiplicity P.H P.H P.H ((1 : HeckeCoset P).rep : G) (g : G) (d : G) = 1 ↔
-      (⟦g⟧ : HeckeCoset P) = ⟦d⟧ := by
+theorem multiplicity_one_mul (g d : Δ) :
+    multiplicity H₁ H₁ H₂ ((1 : HeckeCoset Δ H₁ H₁).rep : G) (g : G) (d : G) = 1 ↔
+      mk H₁ H₂ g = mk H₁ H₂ d := by
   rw [multiplicity_eq_one_iff_of_mem_left HeckeCoset.rep_one_mem, HeckeCoset.eq_iff]
 
-end HeckePair
+end HeckeCoset
