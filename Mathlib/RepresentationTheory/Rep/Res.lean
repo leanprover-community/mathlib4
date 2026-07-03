@@ -9,6 +9,7 @@ public import Mathlib.RepresentationTheory.Rep.Basic
 
 /-!
 # Restriction of representations
+
 Given a group homomorphism `f : H →* G`, we have the restriction functor
 `resFunctor f : Rep k G ⥤ Rep k H` which sends a `G`-representation `ρ` to the
 `H`-representation `ρ.comp f`.
