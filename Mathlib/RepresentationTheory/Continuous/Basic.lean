@@ -415,6 +415,25 @@ def invariants (π : ContRepresentation R G V) : Submodule R V where
 lemma mem_invariants {π : ContRepresentation R G V} (v : V) :
     v ∈ π.invariants ↔ ∀ g, π g v = v := Iff.rfl
 
+/-- The map induced on `G`-invariant elements by a continuous intertwining map. -/
+def _root_.ContIntertwiningMap.mapInvariants
+    {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
+    (f : π →ⁱL π') : π.invariants →L[R] π'.invariants :=
+  f.toContinuousLinearMap.restrict <| by
+    simp +contextual [f.toContinuousLinearMap_apply, ← f.isIntertwining]
+
+-- provided for rewrite
+lemma _root_.ContIntertwiningMap.mapInvariants_apply
+    {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
+    (f : π →ⁱL π') (v : π.invariants) :
+    f.mapInvariants v = f v := rfl
+
+@[simp]
+lemma _root_.ContIntertwiningMap.mk_mapInvariants_apply
+    {π : ContRepresentation R G V} {π' : ContRepresentation R G W}
+    (f : π →ⁱL π') (v : V) (hv : v ∈ π.invariants) :
+    f.mapInvariants ⟨v, hv⟩ = f v := rfl
+
 -- TODO : define `IsTopologicalMonoid` and then replace `Homeomorph.mulLeft g⁻¹` with the
 -- `ContinuousMap.mulRight g` to make `coind₁` work for monoids.
 variable {G H : Type*} [Group G] [TopologicalSpace G] [TopologicalSpace R]
@@ -483,7 +502,7 @@ def coind₁Map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R
 /-- The naturality of the transformation from `𝟭 ⟶ coind₁`. -/
 @[simps]
 def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
-  toFun := .const G
+  toFun := ContinuousMap.const G
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   isIntertwining' := by aesop
