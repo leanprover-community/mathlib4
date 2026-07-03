@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
 # Every number field has a ramified prime over `ℚ`
+
 ...except `ℚ` itself.
 
 This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
@@ -84,6 +85,6 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (map_dvd (algebraMap _ _) p.associated_natAbs.symm.dvd) (by simpa using hQ)
   have : .span {p} = Ideal.under ℤ Q :=
     ((Ideal.liesOver_span_iff Ideal.IsPrime.ne_top' this).mpr hQ).1
-  rwa [← Ideal.ramificationIdx'_eq_one_iff,
+  rwa [← Ideal.ramificationIdx_eq_one_iff,
     ← Ideal.ramificationIdxIn_eq_ramificationIdx (Q.under ℤ) _ Gal(K/ℚ), ← this, ← hp,
-    Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ), Ideal.ramificationIdx'_eq_one_iff]
+    Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ), Ideal.ramificationIdx_eq_one_iff]

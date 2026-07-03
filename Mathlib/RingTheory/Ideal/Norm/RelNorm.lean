@@ -413,7 +413,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   obtain ⟨s, hs⟩ := exists_relNorm_eq_pow_of_isPrime P p
   suffices s = P.inertiaDeg' R by rwa [this] at hs
   have h₀ : ∀ Q ∈ (p.primesOver S).toFinset,
-      relNorm R Q ^ Q.ramificationIdx' R = p ^ ((p.ramificationIdxIn S) * s) := by
+      relNorm R Q ^ Q.ramificationIdx R = p ^ ((p.ramificationIdxIn S) * s) := by
     intro Q hQ
     rw [Set.mem_toFinset] at hQ
     have : Q.IsPrime := hQ.1
@@ -468,14 +468,9 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
     have : Q.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hQ' hQ.1
     let P := under R Q
     let p := absNorm (under ℤ P)
-    have : NeZero P := ⟨under_ne_bot R hQ'⟩
-    have : Q.LiesOver P := by simp [liesOver_iff, P]
     have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
-    have : Fact (p.Prime) := ⟨Nat.absNorm_under_prime _⟩
-    have hp : Prime (p : ℤ) := Nat.prime_iff_prime_int.mp <| Nat.absNorm_under_prime _
-    rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, absNorm_eq_pow_inertiaDeg Q hp,
-      absNorm_eq_pow_inertiaDeg P hp, inertiaDeg_algebra_tower (span {(p : ℤ)}) P Q, pow_mul,
-      ← inertiaDeg_eq_inertiaDeg' P]
+    rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, ← pow_inertiaDeg' p, ← pow_inertiaDeg' p,
+      ← pow_mul, ← inertiaDeg'_tower]
 
 theorem relNorm_int (I : Ideal S) :
     relNorm ℤ I = Ideal.span {(absNorm I : ℤ)} := by
