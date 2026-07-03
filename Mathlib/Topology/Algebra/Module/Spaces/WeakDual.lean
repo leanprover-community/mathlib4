@@ -201,13 +201,19 @@ end WeakDual
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
-deriving AddCommMonoid, TopologicalSpace, ContinuousAdd
+deriving TopologicalSpace
 
 section Semiring
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+-- The `SMul` instance exists to avoid an nsmul diamond.
+variable [CommSemiring 𝕝] [Module 𝕝 E] in
+deriving instance SMul 𝕝 for WeakSpace 𝕜 E
+
+deriving instance AddCommMonoid, ContinuousAdd for WeakSpace
 
 namespace WeakSpace
 
@@ -298,3 +304,4 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
 end WeakSpace
 
 end Ring
+#lint
