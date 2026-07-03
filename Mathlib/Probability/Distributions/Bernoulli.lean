@@ -141,15 +141,6 @@ lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
   classical
   simp_all [bernoulliMeasure_real_apply]
 
-@[simp]
-lemma bernoulliMeasure_real_apply_singleton_left [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
-    Ber(x, y, p).real {x} = p := by
-  simp [h.symm]
-
-lemma bernoulliMeasure_real_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
-    Ber(x, y, p).real {y} = 1 - p := by
-  simp [h]
-
 instance : IsProbabilityMeasure Ber(x, y, p) where
   measure_univ := by simp [bernoulliMeasure_def]
 
