@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
 public import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
@@ -122,6 +123,12 @@ lemma chainComplex_hom_ext {n : ℕ} {T : C} {f g : (X.chainComplex R).X n ⟶ T
     (h : ∀ (x : X _⦋n⦌), X.ιChainComplex x ≫ f = X.ιChainComplex x ≫ g) :
     f = g :=
   (X.isColimitChainComplexXCofan R n).hom_ext (fun _ ↦ h _)
+
+lemma isZero_chainComplex [X.HasDimensionLT 0] :
+    IsZero (X.chainComplex R) := by
+  rw [IsZero.iff_id_eq_zero]
+  ext n x
+  exact ((X.notNonempty_iff_hasDimensionLT_zero.mpr inferInstance) (.mk x)).elim
 
 variable [CategoryWithHomology C]
 

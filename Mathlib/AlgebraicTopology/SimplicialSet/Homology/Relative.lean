@@ -202,6 +202,12 @@ with coefficients in `R : C` (e.g. `C := Ab` and `R := ℤ`.) -/
 noncomputable abbrev chainComplex : ChainComplex C ℕ :=
   ((SSetPair.chainComplexFunctor C).obj R).obj P
 
+variable {P P'} in
+/-- The morphism of simplicial chain complexes induces by a morphism
+of simplicial sets. -/
+noncomputable abbrev chainComplexMap : P.chainComplex R ⟶ P'.chainComplex R :=
+  ((SSetPair.chainComplexFunctor C).obj R).map f
+
 /-- Given a pair of simplicial sets `i : X ⟶ Y` (with `i` a monomorphism),
 this is the morphism from the chain complex of `Y` to the
 chain complex of the pair. -/
@@ -248,6 +254,15 @@ noncomputable def isColimitCokernelCoforkChainComplex :
 instance : Epi (P.chainComplexπ R) :=
   Cofork.IsColimit.epi (P.isColimitCokernelCoforkChainComplex R)
 
+instance isIso_chainComplexπ [P.left.HasDimensionLT 0] : IsIso (P.chainComplexπ R) :=
+  CokernelCofork.IsColimit.isIso_π _ (P.isColimitCokernelCoforkChainComplex R) (
+    (P.left.isZero_chainComplex _).eq_of_src ..)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isZero_chainComplex [IsIso P.hom] : IsZero (P.chainComplex R) := by
+  simp [IsZero.iff_id_eq_zero, ← cancel_epi (P.chainComplexπ R),
+    ← dsimp% cancel_epi (SSet.chainComplexMap P.hom R)]
+
 /--
 Given a pair of simplicial sets `i : X ⟶ Y` (with `i` a monomorphism),
 `R : C` (e.g. `C := Ab` and `R := ℤ`) and `n : ℕ`, this is the cokernel cofork
@@ -286,12 +301,6 @@ instance : Mono (P.chainComplexShortComplex R).f := by dsimp; infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
 instance : Epi (P.chainComplexShortComplex R).g := by dsimp; infer_instance
-
-variable {P P'} in
-/-- The morphism of simplicial chain complexes induces by a morphism
-of simplicial sets. -/
-noncomputable abbrev chainComplexMap : P.chainComplex R ⟶ P'.chainComplex R :=
-  ((SSetPair.chainComplexFunctor C).obj R).map f
 
 section
 
@@ -335,6 +344,10 @@ set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_hom_homologyπ (n : ℕ) :
     SSet.homologyMap P.hom R n ≫ P.homologyπ R n = 0 := by
   simp [← HomologicalComplex.homologyMap_comp]
+
+instance isIso_homologyπ [P.left.HasDimensionLT 0] (n : ℕ) : IsIso (P.homologyπ R n) := by
+  dsimp [homologyπ]
+  infer_instance
 
 end
 

@@ -383,6 +383,15 @@ lemma opcyclesMap_comp : opcyclesMap (φ ≫ ψ) i = opcyclesMap φ i ≫ opcycl
   dsimp [opcyclesMap]
   rw [Functor.map_comp, ShortComplex.opcyclesMap_comp]
 
+instance [IsIso φ] : IsIso (homologyMap φ i) where
+  out := ⟨homologyMap (inv φ) i, by simp [← homologyMap_comp]⟩
+
+instance [IsIso φ] : IsIso (cyclesMap φ i) where
+  out := ⟨cyclesMap (inv φ) i, by simp [← cyclesMap_comp]⟩
+
+instance [IsIso φ] : IsIso (opcyclesMap φ i) where
+  out := ⟨opcyclesMap (inv φ) i, by simp [← opcyclesMap_comp]⟩
+
 variable (K L)
 
 @[simp]
