@@ -100,7 +100,7 @@ lemma coe_decomposeTensor_apply (x : (⨁ (i : ι), decomposeTensor ℳ N i)) :
     ((DirectSum.decomposeLinearEquiv ℳ).symm.rTensor N)
     ((TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N).symm
       ((DirectSum.congrLinearEquiv fun a ↦ decomposeTensorEquiv ℳ N a).symm x)) := by
-  rw [← LinearEquiv.rTensor_symm, LinearEquiv.eq_symm_apply]
+  rw [← LinearEquiv.symm_rTensor, LinearEquiv.eq_symm_apply]
   induction x using DirectSum.induction_on with
   | zero => simp
   | of i x =>
@@ -124,9 +124,9 @@ noncomputable def tensorDecomposition (N : Type*) [AddCommGroup N] [Module R N] 
     (TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N
       ((DirectSum.decomposeLinearEquiv ℳ).rTensor N x))
   left_inv x := by
-    simp [coe_decomposeTensor_apply ℳ N _, ← LinearEquiv.rTensor_symm]
+    simp [coe_decomposeTensor_apply ℳ N _, ← LinearEquiv.symm_rTensor]
   right_inv x := by
-    simp [coe_decomposeTensor_apply ℳ N _, ← LinearEquiv.rTensor_symm]
+    simp [coe_decomposeTensor_apply ℳ N _, ← LinearEquiv.symm_rTensor]
 
 end TensorModule
 
