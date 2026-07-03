@@ -166,7 +166,7 @@ def condition : RightHomotopy (f ≫ π f) 0 where
   comm := by simp [π]
 
 set_option backward.isDefEq.respectTransparency false in
-instance isEpi_π : Epi ((quotient V).map (π f)) :=
+instance : Epi ((quotient V).map (π f)) :=
   have : IsIso ((π f).right) := by simp only [π, homMk_right]; infer_instance
   epi_of_isIso_right _
 
