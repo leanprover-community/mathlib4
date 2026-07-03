@@ -47,10 +47,8 @@ namespace IsCardinalAccessibleCategory
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-
 lemma uniformization'
-    (F : C ⥤ D)
-    {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
+    (F : C ⥤ D) {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
     [IsCardinalAccessibleCategory C κ₁] [IsCardinalAccessibleCategory D κ₁]
     [F.IsCardinalAccessible κ₁] (hκ : κ₁.SharplyLT κ₂)
     (hF : isCardinalPresentable C κ₁ ≤ (isCardinalPresentable D κ₂).inverseImage F) :
@@ -109,22 +107,6 @@ lemma uniformization_of_small
       (fun X hX ↦ isCardinalPresentable_monotone _ h₂.le _
         (hκ₀ i _ (ObjectProperty.prop_map_obj _ _ hX)))⟩
 
-lemma uniformization_pair (F₁ F₂ : C ⥤ D)
-    [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
-    [Functor.IsAccessible.{w} F₁] [Functor.IsAccessible.{w} F₂] :
-    ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
-      IsCardinalAccessibleCategory C κ ∧
-      IsCardinalAccessibleCategory D κ ∧
-      F₁.IsCardinalAccessible κ ∧ F₂.IsCardinalAccessible κ ∧
-        isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F₁ ∧
-        isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F₂ := by
-  let F (i : Fin 2) : C ⥤ D := match i with | 0 => F₁ | 1 => F₂
-  have (i : Fin 2) : Functor.IsAccessible.{w} (F i) := match i with
-    | 0 => by assumption
-    | 1 => by assumption
-  obtain ⟨κ, _, h₁, h₂, h₃, h₄⟩ := uniformization_of_small F
-  exact ⟨κ, inferInstance, h₁, h₂, h₃ 0, h₃ 1, h₄ 0, h₄ 1⟩
-
 lemma uniformization (F : C ⥤ D)
     [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
     [Functor.IsAccessible.{w} F] :
@@ -135,6 +117,56 @@ lemma uniformization (F : C ⥤ D)
         isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F := by
   obtain ⟨κ, _, h₁, h₂, h₃, h₄⟩ := uniformization_of_small (fun (_ : Fin 1) ↦ F)
   exact ⟨κ, inferInstance, h₁, h₂, h₃ 0, h₄ 0⟩
+
+lemma uniformization_pair
+    {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂]
+    (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
+    [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
+    [IsAccessibleCategory.{w} D₁] [IsAccessibleCategory.{w} D₂]
+    [Functor.IsAccessible.{w} F₁] [Functor.IsAccessible.{w} F₂] :
+    ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+      IsCardinalAccessibleCategory C₁ κ ∧ IsCardinalAccessibleCategory D₁ κ ∧
+      IsCardinalAccessibleCategory C₂ κ ∧ IsCardinalAccessibleCategory D₂ κ ∧
+      F₁.IsCardinalAccessible κ ∧ F₂.IsCardinalAccessible κ ∧
+        isCardinalPresentable _ κ ≤ (isCardinalPresentable _ κ).inverseImage F₁ ∧
+        isCardinalPresentable _ κ ≤ (isCardinalPresentable _ κ).inverseImage F₂ := by
+  obtain ⟨κ, _, _, _, _, _, _, _⟩ :
+      ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+        IsCardinalAccessibleCategory C₁ κ ∧ IsCardinalAccessibleCategory D₁ κ ∧
+        IsCardinalAccessibleCategory C₂ κ ∧ IsCardinalAccessibleCategory D₂ κ ∧
+        F₁.IsCardinalAccessible κ ∧ F₂.IsCardinalAccessible κ := by
+    obtain ⟨κ₁, _, _⟩ := IsAccessibleCategory.exists_cardinal C₁
+    obtain ⟨κ₁', _, _⟩ := IsAccessibleCategory.exists_cardinal D₁
+    obtain ⟨κ₁'', _, _⟩ := Functor.IsAccessible.exists_cardinal F₁
+    obtain ⟨κ₂, _, _⟩ := IsAccessibleCategory.exists_cardinal C₂
+    obtain ⟨κ₂', _, _⟩ := IsAccessibleCategory.exists_cardinal D₂
+    obtain ⟨κ₂'', _, _⟩ := Functor.IsAccessible.exists_cardinal F₂
+    obtain ⟨α₁, _, h₁, h₁', h₁''⟩ := Cardinal.SharplyLT.exists_of_triple κ₁ κ₁' κ₁''
+    obtain ⟨α₂, _, h₂, h₂', h₂''⟩ := Cardinal.SharplyLT.exists_of_triple κ₂ κ₂' κ₂''
+    obtain ⟨κ, _, hκ₁, hκ₂⟩ := Cardinal.SharplyLT.exists_of_pair α₁ α₂
+    exact ⟨κ, inferInstance,
+      (h₁.trans hκ₁).isCardinalAccessibleCategory C₁,
+      (h₁'.trans hκ₁).isCardinalAccessibleCategory D₁,
+      (h₂.trans hκ₂).isCardinalAccessibleCategory C₂,
+      (h₂'.trans hκ₂).isCardinalAccessibleCategory D₂,
+      Functor.isCardinalAccessible_of_le _ (h₁''.trans hκ₁).le,
+      Functor.isCardinalAccessible_of_le _ (h₂''.trans hκ₂).le⟩
+  obtain ⟨κ₁, _, hκ₁⟩ :=
+    ObjectProperty.le_isCardinalPresentable.{w} ((isCardinalPresentable C₁ κ).map F₁)
+  obtain ⟨κ₂, _, hκ₂⟩ :=
+    ObjectProperty.le_isCardinalPresentable.{w} ((isCardinalPresentable C₂ κ).map F₂)
+  obtain ⟨κ', _, hκ, hκ₁', hκ₂'⟩ := Cardinal.SharplyLT.exists_of_triple κ κ₁ κ₂
+  refine ⟨κ', inferInstance, hκ.isCardinalAccessibleCategory _,
+    hκ.isCardinalAccessibleCategory _, hκ.isCardinalAccessibleCategory _,
+    hκ.isCardinalAccessibleCategory _,
+    Functor.isCardinalAccessible_of_le _ hκ.le,
+    Functor.isCardinalAccessible_of_le _ hκ.le,
+    uniformization' _ hκ (fun X₁ hX₁ ↦ ?_),
+    uniformization' _ hκ (fun X₂ hX₂ ↦ ?_)⟩
+  · have := hκ₁ _ (ObjectProperty.prop_map_obj _ F₁ hX₁)
+    exact isCardinalPresentable_of_le _ hκ₁'.le
+  · have := hκ₂ _ (ObjectProperty.prop_map_obj _ F₂ hX₂)
+    exact isCardinalPresentable_of_le _ hκ₂'.le
 
 end IsCardinalAccessibleCategory
 
