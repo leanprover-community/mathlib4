@@ -5,7 +5,7 @@ Authors: Joël Riou, Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.Dense
+public import Mathlib.CategoryTheory.Presentable.Comma
 public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 
 /-!
@@ -19,16 +19,15 @@ universe w
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D]
 
--- when the uniformization theorem and the accessibility of comma categories
--- enters mathlib, the assumption can be changed
 attribute [local instance] IsFiltered.nonempty in
 lemma SolutionSetCondition.of_isCardinalAccessible
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [∀ (Y : D), IsCardinalAccessibleCategory.{w} (StructuredArrow Y F) κ] :
+    [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
+    (F : C ⥤ D) [Functor.IsAccessible.{w} F] :
     SolutionSetCondition.{w} F := by
   intro Y
+  obtain ⟨κ, _, _⟩ := IsAccessibleCategory.exists_cardinal.{w} (StructuredArrow Y F)
   obtain ⟨ι, X₀, h⟩ := ObjectProperty.EssentiallySmall.exists_eq_isoClosure_ofObj.{w}
     (isCardinalPresentable (StructuredArrow Y F) κ)
   refine ⟨ι, fun i ↦ (X₀ i).right, fun i ↦ (X₀ i).hom,

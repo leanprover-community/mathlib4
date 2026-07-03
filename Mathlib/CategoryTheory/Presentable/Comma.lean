@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.Dense
+public import Mathlib.CategoryTheory.Presentable.IsDiscrete
 public import Mathlib.CategoryTheory.Presentable.Uniformization
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Limits.Comma
@@ -431,17 +432,71 @@ end
 
 end Comma
 
+namespace Arrow
+
+variable [IsAccessibleCategory.{w} D]
+
+instance : IsAccessibleCategory.{w} (Arrow D) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (Comma _ _))
+
+instance : Functor.IsAccessible.{w} (Arrow.leftFunc : Arrow D ⥤ D) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (Comma.fst _ _))
+
+instance : Functor.IsAccessible.{w} (Arrow.rightFunc : Arrow D ⥤ D) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (Comma.snd _ _))
+
+end Arrow
+
 namespace CostructuredArrow
 
 variable
-  [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂] (F : C₁ ⥤ C₂)
-  [Functor.IsAccessible.{w} F] (Y : C₂)
+  [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
+  (F : C₁ ⥤ C₂) [Functor.IsAccessible.{w} F] (Y : C₂)
 
-instance : IsAccessibleCategory.{w} (CostructuredArrow F Y) := by
-  change IsAccessibleCategory.{w} (Comma _ _)
-  --apply Comma.test
-  sorry
+instance : IsAccessibleCategory.{w} (CostructuredArrow F Y) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (Comma _ _))
+
+instance : Functor.IsAccessible.{w} (CostructuredArrow.proj F Y) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (Comma.fst _ _))
 
 end CostructuredArrow
+
+namespace StructuredArrow
+
+variable
+  [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
+  (F : C₁ ⥤ C₂) [Functor.IsAccessible.{w} F] (X : C₂)
+
+instance : IsAccessibleCategory.{w} (StructuredArrow X F) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (Comma _ _))
+
+instance : Functor.IsAccessible.{w} (StructuredArrow.proj X F) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (Comma.snd _ _))
+
+end StructuredArrow
+
+namespace Over
+
+variable [IsAccessibleCategory.{w} D] (Y : D)
+
+instance : IsAccessibleCategory.{w} (Over Y) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (CostructuredArrow _ _))
+
+instance : Functor.IsAccessible.{w} (Over.forget Y) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (CostructuredArrow.proj _ _))
+
+end Over
+
+namespace Under
+
+variable [IsAccessibleCategory.{w} D] (X : D)
+
+instance : IsAccessibleCategory.{w} (Under X) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (StructuredArrow _ _))
+
+instance : Functor.IsAccessible.{w} (Under.forget X) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (StructuredArrow.proj _ _))
+
+end Under
 
 end CategoryTheory
