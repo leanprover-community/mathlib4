@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Basic
 
 /-!
 # Morphisms of root pairings
+
 This file defines morphisms of root pairings, following the definition of morphisms of root data
 given in SGA III Exp. 21 Section 6.
 

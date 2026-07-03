@@ -10,6 +10,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Nullstellensatz
+
 This file establishes a version of Hilbert's classical Nullstellensatz for `MvPolynomial`s.
 The main statement of the theorem is `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`.
 

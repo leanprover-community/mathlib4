@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Eisenstein polynomials
+
 In this file we gather more miscellaneous results about Eisenstein polynomials
 
 ## Main results

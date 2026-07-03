@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
+
 and elements of a monoid satisfying `IsRelPrime`
 
 These lemmas are in a separate file to the definition of `IsCoprime` or `IsRelPrime`

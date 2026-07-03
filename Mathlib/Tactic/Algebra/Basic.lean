@@ -10,6 +10,7 @@ public import Mathlib.Tactic.Algebra.Lemmas
 
 /-!
 # The `algebra` tactic
+
 A suite of three tactics for solving equations in commutative algebras over commutative (semi)rings,
 where the exponents can also contain variables.
 
