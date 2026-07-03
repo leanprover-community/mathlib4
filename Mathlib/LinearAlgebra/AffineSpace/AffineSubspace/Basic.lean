@@ -811,14 +811,12 @@ end AffineSubspace
 
 end MapComap
 
-section Prod
-
 namespace AffineSubspace
 
 variable {k V₁ V₂ P₁ P₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁] [AffineSpace V₁ P₁]
   [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
 
-/-- The product of two affine subspaces is an affine subspace. -/
+/-- The product of two affine subspaces as an affine subspace. -/
 def prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) : AffineSubspace k (P₁ × P₂) where
   carrier := (s : Set P₁) ×ˢ (t : Set P₂)
   smul_vsub_vadd_mem' c _ _ _ hp₁ hp₂ hp₃ :=
@@ -885,7 +883,6 @@ theorem _root_.coe_affineSpan_prod (s : Set P₁) (t : Set P₂) :
   simp [affineSpan_prod]
 
 end AffineSubspace
-end Prod
 
 namespace AffineSubspace
 
