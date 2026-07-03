@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
+public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 
 /-!
 # The uniformization theorem
@@ -128,8 +129,8 @@ lemma uniformization_pair
       IsCardinalAccessibleCategory C₁ κ ∧ IsCardinalAccessibleCategory D₁ κ ∧
       IsCardinalAccessibleCategory C₂ κ ∧ IsCardinalAccessibleCategory D₂ κ ∧
       F₁.IsCardinalAccessible κ ∧ F₂.IsCardinalAccessible κ ∧
-        isCardinalPresentable _ κ ≤ (isCardinalPresentable _ κ).inverseImage F₁ ∧
-        isCardinalPresentable _ κ ≤ (isCardinalPresentable _ κ).inverseImage F₂ := by
+        F₁.PreservesCardinalPresentable κ ∧
+        F₂.PreservesCardinalPresentable κ := by
   obtain ⟨κ, _, _, _, _, _, _, _⟩ :
       ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
         IsCardinalAccessibleCategory C₁ κ ∧ IsCardinalAccessibleCategory D₁ κ ∧
@@ -159,8 +160,8 @@ lemma uniformization_pair
     hκ.isCardinalAccessibleCategory _,
     Functor.isCardinalAccessible_of_le _ hκ.le,
     Functor.isCardinalAccessible_of_le _ hκ.le,
-    uniformization' _ hκ (fun X₁ hX₁ ↦ ?_),
-    uniformization' _ hκ (fun X₂ hX₂ ↦ ?_)⟩
+    ⟨uniformization' _ hκ (fun X₁ hX₁ ↦ ?_)⟩,
+    ⟨uniformization' _ hκ (fun X₂ hX₂ ↦ ?_)⟩⟩
   · have := hκ₁ _ (ObjectProperty.prop_map_obj _ F₁ hX₁)
     exact isCardinalPresentable_of_le _ hκ₁'.le
   · have := hκ₂ _ (ObjectProperty.prop_map_obj _ F₂ hX₂)

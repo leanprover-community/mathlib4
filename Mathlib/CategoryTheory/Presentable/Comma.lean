@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.Dense
-public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
+public import Mathlib.CategoryTheory.Presentable.Uniformization
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Final
@@ -26,16 +26,18 @@ namespace CategoryTheory
 
 open Limits
 
+variable {C₁ : Type u₁} [Category.{v₁} C₁] {C₂ : Type u₂} [Category.{v₂} C₂]
+  {D : Type u₃} [Category.{v₃} D]
+
 namespace Comma
 
-variable {C₁ : Type u₁} [Category.{v₁} C₁] {C₂ : Type u₂} [Category.{v₂} C₂]
-  {D : Type u₃} [Category.{v₃} D] (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D)
-  (κ : Cardinal.{w}) [Fact κ.IsRegular]
+variable (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D)
 
 section
 
-variable [F₁.IsCardinalAccessible κ]
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
   [HasCardinalFilteredColimits C₁ κ] [HasCardinalFilteredColimits C₂ κ]
+  [F₁.IsCardinalAccessible κ]
 
 instance : HasCardinalFilteredColimits (Comma F₁ F₂) κ where
   hasColimitsOfShape J _ _ := by
@@ -53,6 +55,10 @@ instance : (Comma.snd F₁ F₂).IsCardinalAccessible κ where
     infer_instance
 
 end
+
+section
+
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
@@ -398,6 +404,44 @@ instance : (Comma.snd F₁ F₂).PreservesCardinalPresentable κ where
     simp only [Comma.isCardinalPresentable_iff] at hf
     tauto
 
+end
+
+section
+
+variable [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
+  [Functor.IsAccessible.{w} F₁] [Functor.IsAccessible.{w} F₂]
+  [IsAccessibleCategory.{w} D]
+
+instance test : IsAccessibleCategory.{w} (Comma F₁ F₂) := by
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ :=
+    IsCardinalAccessibleCategory.uniformization_pair F₁ F₂
+  exact ⟨κ, inferInstance, inferInstance⟩
+
+instance : Functor.IsAccessible.{w} (Comma.fst F₁ F₂) := by
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ :=
+    IsCardinalAccessibleCategory.uniformization_pair F₁ F₂
+  exact ⟨κ, inferInstance, inferInstance⟩
+
+instance : Functor.IsAccessible.{w} (Comma.snd F₁ F₂) := by
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ :=
+    IsCardinalAccessibleCategory.uniformization_pair F₁ F₂
+  exact ⟨κ, inferInstance, inferInstance⟩
+
+end
+
 end Comma
+
+namespace CostructuredArrow
+
+variable
+  [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂] (F : C₁ ⥤ C₂)
+  [Functor.IsAccessible.{w} F] (Y : C₂)
+
+instance : IsAccessibleCategory.{w} (CostructuredArrow F Y) := by
+  change IsAccessibleCategory.{w} (Comma _ _)
+  --apply Comma.test
+  sorry
+
+end CostructuredArrow
 
 end CategoryTheory

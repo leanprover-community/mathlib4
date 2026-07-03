@@ -26,7 +26,7 @@ variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 attribute [local instance] IsFiltered.nonempty in
 lemma SolutionSetCondition.of_isCardinalAccessible
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [∀ (Y : D), IsCardinalAccessibleCategory (StructuredArrow Y F) κ] :
+    [∀ (Y : D), IsCardinalAccessibleCategory.{w} (StructuredArrow Y F) κ] :
     SolutionSetCondition.{w} F := by
   intro Y
   obtain ⟨ι, X₀, h⟩ := ObjectProperty.EssentiallySmall.exists_eq_isoClosure_ofObj.{w}
