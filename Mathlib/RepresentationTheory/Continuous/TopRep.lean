@@ -240,8 +240,7 @@ abbrev invariantsFunctor : TopRep k G ⥤ TopModuleCat k where
 
 instance : (invariantsFunctor k G).Additive where
 
-instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
-    (invariantsFunctor k G).Linear k where
+instance {k : Type u} [CommRing k] [TopologicalSpace k] : (invariantsFunctor k G).Linear k where
 
 /-- The top rep induced by the coinduced representation. -/
 abbrev coind₁ (A : TopRep k G) : TopRep k G := of A.ρ.coind₁
@@ -255,8 +254,7 @@ abbrev coind₁Functor : TopRep k G ⥤ TopRep k G where
 
 instance : (TopRep.coind₁Functor k G).Additive where
 
-instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
-    (coind₁Functor k G).Linear k where
+instance {k : Type u} [CommRing k] [TopologicalSpace k] : (coind₁Functor k G).Linear k where
 
 /-- The constant function `rep ⟶ C(G, rep)` as a natural transformation. -/
 @[implicit_reducible, simps]
