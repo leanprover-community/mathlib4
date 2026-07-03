@@ -112,13 +112,13 @@ theorem deriv_log_log {x : ℝ} : deriv (fun x ↦ log (log x)) x = x⁻¹ / log
       mt continuousAt not_continuousAt_log_log_neg_one
   simp_all
 
-theorem differentiableAt_log_log {x : ℝ} (hx : 1 < x) :
+theorem differentiableAt_log_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1) :
     DifferentiableAt ℝ (fun x ↦ log (log x)) x :=
-  (differentiableAt_log (by linarith)).log (by simp; grind)
+  (differentiableAt_log (by grind)).log (by simp; grind)
 
-theorem hasDerivAt_log_log {x : ℝ} (hx : 1 < x) :
+theorem hasDerivAt_log_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1) :
     HasDerivAt (fun x ↦ log (log x)) (x⁻¹ / log x) x := by
-  simpa using (differentiableAt_log_log hx).hasDerivAt
+  simpa using (differentiableAt_log_log hx₀ hx₁ hx₂).hasDerivAt
 
 theorem differentiableOn_log_log : DifferentiableOn ℝ (fun x ↦ log (log x)) (.Ioi 1) :=
   (differentiableOn_log.mono (by grind)).log (by simp; grind)
