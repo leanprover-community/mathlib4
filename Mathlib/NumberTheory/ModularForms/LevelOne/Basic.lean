@@ -16,7 +16,7 @@ This file contains results specific to modular forms of level one, i.e. modular 
 `SL(2, ℤ)`.
 
 Finite-dimensionality of these spaces is proved in a later file
-(Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula).
+(`Mathlib/NumberTheory/ModularForms/LevelOne/DimensionFormula.lean`).
 -/
 
 public section
