@@ -184,42 +184,41 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_desc : π f ≫ desc f g h = g := by ext <;> simp [π, desc]
 
-end Candidate
-
 variable {X : RightFreyd V} {a : (quotient V).obj v ⟶ X} (eq : (quotient V).map f ≫ a = 0)
 
 /-- Let `f : u ⟶ v` be a morphism in `Arrow V`, and let `a : (quotient V).obj v ⟶ X` be
 a morphism in `RightFreyd V` such that `(quotient V).map f ≫ a = 0`. This is the morphism
 `(quotient V).obj (Candidate.cokernel f) ⟶ X` that will serve as `cokernel.desc f`. -/
-def desc : (quotient V).obj (Candidate.cokernel f) ⟶ X := by
-  (quotient V).map (Candidate.desc _ ((quotient V).map_surjective a).choose
+def desc' : (quotient V).obj (cokernel f) ⟶ X :=
+  (quotient V).map (desc _ ((quotient V).map_surjective a).choose
     (homotopyOfEq _ _ (by
       rwa [← ((quotient V).map_surjective a).choose_spec] at eq)))
 
-lemma π_desc : (quotient V).map (Candidate.π f) ≫ desc f eq = a := by
+lemma π_desc' : (quotient V).map (Candidate.π f) ≫ desc' f eq = a := by
   rw [← ((quotient V).map_surjective a).choose_spec] at eq
   conv_rhs => rw [← ((quotient V).map_surjective a).choose_spec,
-                      ← Candidate.π_desc _ _ (homotopyOfEq _ _ eq)]
+                      ← π_desc _ _ (homotopyOfEq _ _ eq)]
   rfl
 
 /-- For `f` a morphism in `Arrow V`, this is a cokernel cofork of `(quotient V).map f`. -/
-def CandidateCokernelCofork : CokernelCofork ((quotient V).map f) :=
-  CokernelCofork.ofπ ((quotient V).map (Candidate.π f))
-  (eq_of_rightHomotopy _ _ (Candidate.condition f))
+def cokernelCofork : CokernelCofork ((quotient V).map f) :=
+  CokernelCofork.ofπ ((quotient V).map (π f)) (eq_of_rightHomotopy _ _ (condition f))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For `f` a morphism in `Arrow V`, the cokernel cofork of `(quotient V).map f` constructed
 in `CandidateCokernelCofork` is a colimit cofork. -/
-def candidateCokernelCoforkIsCokernel : IsColimit (CandidateCokernelCofork f) :=
-  CokernelCofork.IsColimit.ofπ' ((quotient V).map (Candidate.π f))
-    (eq_of_rightHomotopy _ _ (Candidate.condition f)) (fun _ eq ↦ ⟨desc f eq, π_desc f eq⟩)
+def isColimitCokernelCofork : IsColimit (cokernelCofork f) :=
+  CokernelCofork.IsColimit.ofπ' ((quotient V).map (π f))
+    (eq_of_rightHomotopy _ _ (condition f)) (fun _ eq ↦ ⟨desc' f eq, π_desc' f eq⟩)
+
+end Candidate
 
 /-- The category `RightFreyd V` has all cokernels if `V` has finite products. -/
 instance : HasCokernels (RightFreyd V) where
   has_colimit {X Y} f := {
     exists_colimit := by
       obtain ⟨f, rfl⟩ := (quotient V).map_surjective f
-      exact Nonempty.intro ⟨_, candidateCokernelCoforkIsCokernel f⟩ }
+      exact Nonempty.intro ⟨_, Candidate.isColimitCokernelCofork f⟩ }
 
 end RightFreyd
 
