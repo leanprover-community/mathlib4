@@ -18,7 +18,7 @@ This is `ConditionallyCompleteLinearOrderedField.inducedOrderRingIso`.
 Moreover this isomorphism is unique.
 
 We show all conditionally complete linear ordered fields are
-archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
+archimedean. We also construct the natural map from a linearly ordered field to such a field.
 
 ## Main definitions
 

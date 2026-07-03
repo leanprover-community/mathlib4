@@ -11,6 +11,7 @@ public import Mathlib.Data.Rel
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Simple graphs
@@ -88,7 +89,7 @@ The relation describes which pairs of vertices are adjacent.
 There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
-@[ext, aesop safe constructors (rule_sets := [SimpleGraph])]
+@[ext, aesop safe constructors (rule_sets := [SimpleGraph]), wikidata Q141488]
 structure SimpleGraph (V : Type u) where
   /-- The adjacency relation of a simple graph. -/
   Adj : V → V → Prop
@@ -315,6 +316,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
+@[wikidata Q45715]
 abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
 
 /-- The graph with no edges on a given vertex type `V`. -/
@@ -1017,10 +1019,72 @@ theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
   h.symm.not_isIsolated_left
 
 @[simp]
-theorem isIsolated_bot : IsIsolated ⊥ v :=
+protected theorem IsIsolated.bot : IsIsolated ⊥ v :=
   neighborSet_eq_empty _ |>.mp neighborSet_bot
+
+@[deprecated (since := "2026-06-19")]
+alias isIsolated_bot := IsIsolated.bot
 
 theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
   simp [eq_bot_iff_forall_not_adj, ← neighborSet_eq_empty, Set.eq_empty_iff_forall_notMem]
+
+section IsUniversal
+
+variable {G}
+
+/-- A vertex in a graph is universal if it's adjacent to every other vertex. -/
+def IsUniversal (G : SimpleGraph V) (v : V) : Prop := ∀ ⦃w⦄, v ≠ w → G.Adj v w
+
+@[simp] lemma insert_neighborSet_eq_univ :
+    insert v (G.neighborSet v) = Set.univ ↔ G.IsUniversal v := by
+  simp only [Set.ext_iff, Set.mem_insert_iff, mem_neighborSet, IsUniversal]
+  grind
+
+@[simp] lemma neighborSet_eq_compl_singleton : G.neighborSet v = {v}ᶜ ↔ G.IsUniversal v := by
+  grind [insert_neighborSet_eq_univ, notMem_neighborSet_self]
+
+protected alias ⟨IsUniversal.of_neighborSet_eq, IsUniversal.neighborSet_eq⟩ :=
+  neighborSet_eq_compl_singleton
+
+@[simp]
+theorem IsUniversal.of_subsingleton [Subsingleton V] : G.IsUniversal v :=
+  fun _ hne ↦ False.elim <| hne (Subsingleton.elim ..)
+
+theorem IsUniversal.not_isIsolated [Nontrivial V] (h : G.IsUniversal v) (w : V) :
+    ¬G.IsIsolated w := by
+  by_cases h' : v = w
+  · obtain ⟨u, hu⟩ := exists_ne v
+    exact h' ▸ Adj.not_isIsolated_left (h hu.symm)
+  · exact Adj.not_isIsolated_right (h h')
+
+theorem IsIsolated.not_isUniversal [Nontrivial V] (h : G.IsIsolated v) (w : V) :
+    ¬G.IsUniversal w := by
+  contrapose! h
+  exact h.not_isIsolated v
+
+@[simp]
+theorem isUniversal_compl_iff_isIsolated : Gᶜ.IsUniversal v ↔ G.IsIsolated v := by
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
+  · simpa [hx] using h hx.ne
+  · simpa [hx] using h x
+
+alias ⟨IsIsolated.of_isUniversal_compl, _⟩ := isUniversal_compl_iff_isIsolated
+
+@[simp]
+theorem isIsolated_compl_iff_isUniversal : Gᶜ.IsIsolated v ↔ G.IsUniversal v := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simpa using isUniversal_compl_iff_isIsolated.mpr h
+  · exact isUniversal_compl_iff_isIsolated.mp (by simpa)
+
+alias ⟨IsUniversal.of_isIsolated_compl, _⟩ := isIsolated_compl_iff_isUniversal
+
+theorem eq_top_iff_forall_isUniversal : G = ⊤ ↔ ∀ v, G.IsUniversal v := by
+  simp [eq_top_iff_forall_ne_adj, IsUniversal]
+
+@[simp]
+protected theorem IsUniversal.top : IsUniversal ⊤ v :=
+  eq_top_iff_forall_isUniversal.mp rfl v
+
+end IsUniversal
 
 end SimpleGraph
