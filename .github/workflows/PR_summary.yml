@@ -231,7 +231,7 @@ jobs:
         techDebtVar="$("${CI_SCRIPTS_DIR}/reporting/technical-debt-metrics.sh" pr_summary)"
 
         # If the PR decreased technical debt, add the `tech debt` label.
-        # The metrics script emits a summary line "Decrease in '<level>' tech debt:" for each
+        # The metrics script emits a summary line "Decrease in <level> tech debt:" for each
         # level (strong/weak) that went down (and "Increase ..."/"No changes ..." otherwise),
         # so matching either of those two lines means the PR reduced some tech debt.
         if grep -qE "Decrease in (strong|weak) tech debt" <<< "${techDebtVar}"
