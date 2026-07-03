@@ -167,29 +167,6 @@ theorem hom_ext_iff {f g : Homogenization k P1 →ₗ[k] W} :
     f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
   ⟨by rintro rfl _; rfl, hom_ext⟩
 
-/-- The linear map that is constantly `1` when restricted to `P`. -/
-def weight : Homogenization k P →ₗ[k] k :=
-  .snd ..
-
-@[simp]
-theorem weight_ofVector {v : V} : weight (k := k) (P := P) (ofVector v) = 0 :=
-  (rfl)
-
-@[simp]
-theorem weight_ofPoint {p : P} : weight (k := k) (ofPoint p) = 1 :=
-  (rfl)
-
-theorem weight_eq_zero_iff {x : Homogenization k P} : weight x = 0 ↔ ∃ v, x = ofVector v where
-  mp := by cases x; simp_all
-  mpr := by rintro ⟨_, rfl⟩; rw [weight_ofVector]
-
-theorem weight_eq_one_iff {x : Homogenization k P} : weight x = 1 ↔ ∃ p, x = ofPoint p where
-  mp h := by
-    cases x with | _ v c p =>
-    exists v +ᵥ p
-    simp_all
-  mpr := by rintro ⟨_, rfl⟩; rw [weight_ofPoint]
-
 /-- Auxiliary definition used for defining `Homogenization.lift`. -/
 def lift.aux (f : P →ᵃ[k] W) : Homogenization k P →ₗ[k] W :=
   f.linear.coprod <| LinearMap.id.smulRight (f (Classical.arbitrary P))
@@ -237,10 +214,6 @@ theorem lift_symm_id : lift.symm LinearMap.id = ofPoint (k := k) (P := P) :=
 theorem lift_ofPoint : lift (k := k) (P := P) ofPoint = LinearMap.id :=
   hom_ext <| by simp
 
-theorem lift_const_apply {u : W} {x : Homogenization k P} :
-    lift (AffineMap.const k P u) x = weight x • u := by
-  cases x; simp
-
 section SMul
 
 variable {R : Type*} [Semiring R] [Module R W] [SMulCommClass k R W]
@@ -269,6 +242,34 @@ theorem coe_liftₗ_symm : ⇑(liftₗ (k := k) (P := P) (W := W) R).symm = lift
   rfl
 
 end SMul
+
+/-- The linear map that is constantly `1` when restricted to `P`. -/
+@[expose]
+def weight : Homogenization k P →ₗ[k] k :=
+  lift (AffineMap.const k P 1)
+
+@[simp]
+theorem weight_ofVector {v : V} : weight (k := k) (P := P) (ofVector v) = 0 := by
+  simp [weight]
+
+@[simp]
+theorem weight_ofPoint {p : P} : weight (k := k) (ofPoint p) = 1 := by
+  simp [weight]
+
+theorem weight_eq_zero_iff {x : Homogenization k P} : weight x = 0 ↔ ∃ v, x = ofVector v where
+  mp := by cases x; simp_all
+  mpr := by rintro ⟨_, rfl⟩; rw [weight_ofVector]
+
+theorem weight_eq_one_iff {x : Homogenization k P} : weight x = 1 ↔ ∃ p, x = ofPoint p where
+  mp h := by
+    cases x with | _ v c p =>
+    exists v +ᵥ p
+    simp_all
+  mpr := by rintro ⟨_, rfl⟩; rw [weight_ofPoint]
+
+theorem lift_const_apply {u : W} {x : Homogenization k P} :
+    lift (AffineMap.const k P u) x = weight x • u := by
+  cases x; simp
 
 /-- An affine map between two affine spaces extends to a linear map between their homogenizations.
 -/
