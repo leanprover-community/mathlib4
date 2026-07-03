@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Complex.Arg
 
 /-!
 # Evaluating cyclotomic polynomials
+
 This file states some results about evaluating cyclotomic polynomials in various different ways.
 
 ## Main definitions

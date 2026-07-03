@@ -127,6 +127,11 @@ theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
   C.isIndepSet_colorClass c
 
+/-- Coloring induced from a homomorphism to a colored graph. -/
+abbrev Coloring.comap {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
+    (f : G →g G') : G.Coloring α :=
+  C.comp f
+
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   classical
@@ -289,9 +294,9 @@ noncomputable def Colorable.toColoring [Fintype α] {n : ℕ} (hc : G.Colorable 
   rw [← Fintype.card_fin n] at hn
   exact G.recolorOfCardLE hn hc.some
 
-theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') {n : ℕ}
+theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} {n : ℕ} (f : G →g G')
     (h : G'.Colorable n) : G.Colorable n :=
-  ⟨(h.toColoring (by simp)).comp f⟩
+  ⟨h.some.comap f⟩
 
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
@@ -406,9 +411,9 @@ theorem chromaticNumber_mono (G' : SimpleGraph V)
     (h : G ≤ G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_le_of_forall_imp fun _ => Colorable.mono_left h
 
-theorem chromaticNumber_mono_of_hom {V' : Type*} {G' : SimpleGraph V'}
-    (f : G →g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
-  chromaticNumber_le_of_forall_imp fun _ => Colorable.of_hom f
+theorem chromaticNumber_mono_of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') :
+    G.chromaticNumber ≤ G'.chromaticNumber :=
+  chromaticNumber_le_of_forall_imp fun _ hc => hc.of_hom f
 
 lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     card α ≤ G.chromaticNumber ↔ ∀ C : G.Coloring α, Surjective C := by
@@ -615,10 +620,23 @@ theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
 
 end completeMultipartiteGraph
 
+variable {W : Type*} {H : SimpleGraph W}
+
 /-- If `H` is not `n`-colorable and `G` is `n`-colorable, then `G` is `H.Free`. -/
-theorem free_of_colorable {W : Type*} {H : SimpleGraph W}
-    (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
-  contrapose nhc with hc'
-  exact ⟨hc.some.comp hc'.some.toHom⟩
+theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
+  contrapose! nhc with hc'
+  exact hc.of_hom hc'.some.toHom
+
+/-! ### Isomorphisms -/
+
+/-- Equivalence of colorings induced by isomorphisms of graphs and equivalence of colors. -/
+def coloringCongr (f : G ≃g H) (g : α ≃ β) : G.Coloring α ≃ H.Coloring β :=
+  f.homCongr (Iso.completeGraph g)
+
+lemma colorable_congr (f : G ≃g H) : G.Colorable n ↔ H.Colorable n :=
+  ⟨fun hc ↦ hc.of_hom f.symm.toHom, fun hc ↦ hc.of_hom f.toHom⟩
+
+lemma chromaticNumber_congr (f : G ≃g H) : G.chromaticNumber = H.chromaticNumber :=
+  le_antisymm (chromaticNumber_mono_of_hom f.toHom) (chromaticNumber_mono_of_hom f.symm.toHom)
 
 end SimpleGraph
