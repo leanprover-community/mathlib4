@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finite.Defs
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -36,7 +37,7 @@ variable {α : Sort u} {β : Sort v}
 -/
 
 /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
-@[mk_iff countable_iff_exists_injective]
+@[mk_iff countable_iff_exists_injective, wikidata Q66707394]
 class Countable (α : Sort u) : Prop where
   /-- A type `α` is countable if there exists an injective map `α → ℕ`. -/
   exists_injective_nat' : ∃ f : α → ℕ, Injective f

@@ -217,7 +217,7 @@ theorem map_inter [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ :
 
 theorem map_sdiff [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
     (s₁ \ s₂).map f = s₁.map f \ s₂.map f :=
-  mod_cast Set.image_diff f.injective (s := s₁) (t := s₂)
+  mod_cast Set.image_sdiff f.injective (s := s₁) (t := s₂)
 
 @[simp]
 theorem map_singleton (f : α ↪ β) (a : α) : map f {a} = {f a} :=
@@ -330,6 +330,26 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
   image_nonempty.2 h
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
+
+/-- If the image of a finset is nontrivial, the finset is nontrivial.
+For the converse direction under an injectivity hypothesis see `Finset.Nontrivial.image_of_injOn`,
+and for the combined iff see `Finset.image_nontrivial_iff_of_injOn`. -/
+theorem nontrivial_of_image (h : (s.image f).Nontrivial) : s.Nontrivial := by
+  simp only [Finset.Nontrivial, coe_image] at h ⊢
+  exact Set.nontrivial_of_image _ _ h
+
+/-- The image of a nontrivial finset under a function injective on the finset is nontrivial.
+For the version assuming `Function.Injective` see `Finset.map_nontrivial`, and for the combined
+iff see `Finset.image_nontrivial_iff_of_injOn`. -/
+protected theorem Nontrivial.image_of_injOn (hs : s.Nontrivial) (hf : Set.InjOn f s) :
+    (s.image f).Nontrivial := by
+  obtain ⟨x, hx, y, hy, hxy⟩ := hs
+  exact ⟨f x, mem_image_of_mem _ hx, f y, mem_image_of_mem _ hy, (hxy <| hf hx hy ·)⟩
+
+/-- A finset is nontrivial iff its image under a function injective on the finset is. -/
+theorem image_nontrivial_iff_of_injOn (hf : Set.InjOn f s) :
+    (s.image f).Nontrivial ↔ s.Nontrivial :=
+  ⟨nontrivial_of_image, (·.image_of_injOn hf)⟩
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
@@ -474,11 +494,11 @@ theorem empty_eq_image : ∅ = s.image f ↔ s = ∅ := by rw [eq_comm, image_eq
 
 theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s \ t).image f = s.image f \ t.image f :=
-  mod_cast Set.image_diff hf s t
+  mod_cast Set.image_sdiff hf s t
 
 lemma image_sdiff_of_injOn [DecidableEq α] {t : Finset α} (hf : Set.InjOn f s) (hts : t ⊆ s) :
     (s \ t).image f = s.image f \ t.image f :=
-  mod_cast Set.image_diff_of_injOn hf <| coe_subset.2 hts
+  mod_cast Set.image_sdiff_of_injOn hf <| coe_subset.2 hts
 
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=

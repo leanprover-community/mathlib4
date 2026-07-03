@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # ℒp spaces and products

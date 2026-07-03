@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
-public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.TietzeExtension
 
@@ -135,7 +134,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : FiniteMeasure Ω → M
 
 instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
-  coe_injective' μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
+  coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
     simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
 
 lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
