@@ -21,98 +21,156 @@ open scoped Real
 open Filter Complex MatrixGroups Asymptotics
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
-  {k : ℤ} (hk : 0 < k) {F : Type*} [FunLike F ℍ ℂ]
+  {k : ℤ} (hk : 0 < k) {F : Type*} [FunLike F ℍ ℂ] (f : F) {s : ℂ}
 
-lemma tendsto_ofComplex_I_mul_atTop_atImInfty :
+local notation "h" => Subgroup.strictWidthInfty
+
+open ConjAct Pointwise in
+private local instance :
+    Subgroup.IsArithmetic (toConjAct (ModularGroup.S : GL (Fin 2) ℝ)⁻¹ • Γ) := by
+  convert Subgroup.IsArithmetic.conj Γ ↑(ModularGroup.S⁻¹)
+  simp only [ModularGroup.S_inv, ← map_inv]
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [ModularGroup.S]
+
+namespace ModularForm
+
+variable [ModularFormClass F Γ k]
+
+section asymptotics -- private lemmas about aymptotics along `I * ℝ`
+
+private lemma tendsto_ofComplex_I_mul_atTop_atImInfty :
     Tendsto (fun t : ℝ ↦ ofComplex (I * t)) atTop atImInfty := by
   rw [atImInfty, tendsto_comap_iff]
   refine tendsto_id.congr' ?_
   filter_upwards [eventually_gt_atTop 0] with t ht
-  simp [ofComplex_apply_of_im_pos, ht, ← UpperHalfPlane.coe_im]
+  simp [ofComplex_apply_of_im_pos, ht, ← coe_im]
 
-lemma continuousOn_ofComplex_I_mul :
+private lemma continuousOn_ofComplex_I_mul :
     ContinuousOn (fun t : ℝ ↦ ofComplex (I * ↑t)) (Set.Ioi 0) := by
   have : Continuous (fun t : ℝ ↦ I * ↑t) := by fun_prop
   simp only [ofComplex_apply_eq_ite, I_mul_im, ofReal_re,
     continuousOn_iff_continuous_restrict, continuous_induced_rng]
   exact (this.comp continuous_subtype_val).congr (by simp +contextual)
 
-namespace ModularForm
+include F k Γ in -- conclusion doesn't explicitly refer these
+private lemma isBigO_sub_valueAtInfty_comp_ofComplex_I_mul (r : ℝ) :
+    (fun t : ℝ ↦ f (ofComplex (I * t)) - valueAtInfty f) =O[atTop] (fun t ↦ t ^ r) := by
+  obtain ⟨C, hCpos, hCO⟩ := ModularFormClass.exp_decay_sub_atImInfty' f
+  refine (hCO.comp_tendsto tendsto_ofComplex_I_mul_atTop_atImInfty).trans ?_
+  refine (EventuallyEq.isBigO ?_).trans (isLittleO_exp_neg_mul_rpow_atTop hCpos r).isBigO
+  filter_upwards [eventually_gt_atTop 0] with t ht
+  simp [ht, ofComplex_apply_of_im_pos, ← coe_im]
 
-variable [ModularFormClass F 𝒮ℒ k]
+end asymptotics
 
-/-- A `WeakFEPair` structure associated to a level 1 modular form. -/
-noncomputable def weakFEPair (f : F) : WeakFEPair ℂ where
+/-- A `WeakFEPair` structure associated to a modular form. -/
+@[simps] noncomputable def weakFEPair : WeakFEPair ℂ where
   f t := f (ofComplex (I * t))
-  g t := f (ofComplex (I * t))
+  g t := translate f ModularGroup.S (ofComplex (I * t))
   k := k
   hk := mod_cast hk
   ε := I ^ k
   hε := zpow_ne_zero _ I_ne_zero
   f₀ := valueAtInfty f
-  g₀ := valueAtInfty f
+  g₀ := valueAtInfty (translate f ModularGroup.S)
   hf_int := by
     apply ContinuousOn.locallyIntegrableOn _ measurableSet_Ioi
-    exact (show Continuous f by fun_prop).comp_continuousOn continuousOn_ofComplex_I_mul
+    exact (show Continuous _ by fun_prop).comp_continuousOn continuousOn_ofComplex_I_mul
   hg_int := by
     apply ContinuousOn.locallyIntegrableOn _ measurableSet_Ioi
-    exact (show Continuous f by fun_prop).comp_continuousOn continuousOn_ofComplex_I_mul
+    exact (show Continuous _ by fun_prop).comp_continuousOn continuousOn_ofComplex_I_mul
   h_feq t (ht : 0 < t) := by
-    have : ↑ModularGroup.S ∈ 𝒮ℒ := ⟨ModularGroup.S, rfl⟩
-    convert SlashInvariantForm.slash_action_eqn' f this ⟨I * t, by simpa using ht⟩
-    · ext
-      rw [coe_smul_of_det_pos (by simp), ofComplex_apply_of_im_pos (by simpa using ht)]
-      simp [ModularGroup.S, num, denom, div_eq_mul_inv, mul_comm]
-    · simp [mul_zpow, ModularGroup.S, ofComplex_apply_eq_ite, ht]
+    rw [coe_translate, slash_def]
+    suffices f (ofComplex (I * (↑t)⁻¹)) = I ^ k * ↑t ^ k *
+        (f ((ModularGroup.S : GL (Fin 2) ℝ) • ofComplex (I * t)) * (ofComplex (I * t)) ^ (-k)) by
+      simpa [ModularGroup.S, σ, denom]
+    rw [ofComplex_apply_of_im_pos (by simpa), ofComplex_apply_of_im_pos (by simpa),
+      mul_comm (f _), ← mul_assoc, ← mul_zpow, zpow_neg,
+      mul_inv_cancel₀ (zpow_ne_zero _ (by aesop))]
+    simp only [one_mul]
+    congr 1
+    ext
+    rw [coe_smul_of_det_pos (by simp)]
+    simp [num, denom, div_eq_mul_inv, mul_comm, ModularGroup.S]
   hf_top r := by
-    obtain ⟨C, hCpos, hCO⟩ := ModularFormClass.exp_decay_sub_atImInfty' f
-    refine (hCO.comp_tendsto tendsto_ofComplex_I_mul_atTop_atImInfty).trans ?_
-    refine (EventuallyEq.isBigO ?_).trans (isLittleO_exp_neg_mul_rpow_atTop hCpos r).isBigO
-    filter_upwards [eventually_gt_atTop 0] with t ht
-    simp [ht, ofComplex_apply_of_im_pos, ← coe_im]
+    exact isBigO_sub_valueAtInfty_comp_ofComplex_I_mul f r
   hg_top r := by
-    obtain ⟨C, hCpos, hCO⟩ := ModularFormClass.exp_decay_sub_atImInfty' f
-    refine (hCO.comp_tendsto tendsto_ofComplex_I_mul_atTop_atImInfty).trans ?_
-    refine (EventuallyEq.isBigO ?_).trans (isLittleO_exp_neg_mul_rpow_atTop hCpos r).isBigO
-    filter_upwards [eventually_gt_atTop 0] with t ht
-    simp [ht, ofComplex_apply_of_im_pos, ← coe_im]
+    exact isBigO_sub_valueAtInfty_comp_ofComplex_I_mul (translate f ModularGroup.S) r
 
 /-- The `L`-series of a modular form (including its Archimedean `Γ`-factor). -/
-noncomputable def Λ (f : F) : ℂ → ℂ := (weakFEPair hk f).Λ
+noncomputable def Λ : ℂ → ℂ := (weakFEPair hk f).Λ
 
-lemma hasSum_Λ (f : F) {s : ℂ} (hk : 0 < k) (hs : k + 1 < s.re) :
-    HasSum (fun n ↦ π ^ (-s) * Gamma s *
-      (UpperHalfPlane.qExpansion 1 f).coeff n / ↑(2 * n : ℝ) ^ s) (Λ hk f s) := by
-  have hk' : 0 < (k : ℝ) := mod_cast hk
-  have : (weakFEPair hk f).k < s.re := by simp only [weakFEPair]; linarith
-  have := ((weakFEPair hk f).hasMellin this).2
-  rw [Λ, ← this]
-  refine hasSum_mellin_pi_mul₀ (fun _ ↦ by positivity) (by linarith) ?_ ?_
-  · intro t (ht : 0 < t)
-    have hh : 0 < (1 : ℝ) := zero_lt_one
-    have hΓ : 1 ∈ Subgroup.strictPeriods 𝒮ℒ := by simp [Subgroup.strictPeriods_SL2Z]
-    have := UpperHalfPlane.hasSum_qExpansion (f := f) hh ?_ (ModularFormClass.holo f)
-      (ModularFormClass.bdd_at_infty f) (ofComplex (I * t))
-    · convert! hasSum_ite_sub_hasSum this 0 using 2 with n
-      · rcases Nat.eq_zero_or_pos n with rfl | hn
-        · simp
-        · have := I_sq
-          simp [hn.ne', Function.Periodic.qParam, ofComplex_apply_eq_ite, ht, ← exp_nat_mul]
-          grind
-      · simp only [weakFEPair]
-        rw [qExpansion_coeff_zero one_pos, pow_zero, smul_eq_mul, mul_one]
-        · exact ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ
-        · exact SlashInvariantFormClass.periodic_comp_ofComplex f hΓ
-    · exact SlashInvariantFormClass.periodic_comp_ofComplex f hΓ
-  · simp_rw [Real.mul_rpow two_pos.le (Nat.cast_nonneg _), mul_comm, ← div_div]
+/-- Shared Dirichlet-series summability argument for modular and cusp forms. -/
+private lemma hasSum_Λ_of_qExpansion_isBigO {r : ℝ}
+    (hpos : 0 < s.re) (hs : r + 1 < s.re)
+    (hΛ : Λ hk f s = mellin (fun t ↦ (weakFEPair hk f).f t - (weakFEPair hk f).f₀) s)
+    (hcoeff : (fun n ↦ (qExpansion (h Γ) f).coeff n) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
+    HasSum (fun n ↦ π ^ (-s) * Gamma s * (qExpansion (h Γ) f).coeff n /
+      ↑(2 * n / h Γ : ℝ) ^ s) (Λ hk f s) := by
+  rw [hΛ]
+  have hh := Γ.strictWidthInfty_pos
+  have hΓ := Γ.strictWidthInfty_mem_strictPeriods
+  refine hasSum_mellin_pi_mul₀ (fun _ ↦ by positivity) hpos ?_ ?_
+  · -- show `q`-expansion converges to `f` on positive imaginary axis
+    intro t (ht : 0 < t)
+    have := hasSum_qExpansion f hh hΓ (ofComplex (I * t))
+    convert! hasSum_ite_sub_hasSum this 0 using 2 with n
+    · rcases Nat.eq_zero_or_pos n with rfl | hn
+      · simp
+      · simp [hn.ne', Function.Periodic.qParam, ofComplex_apply_eq_ite, ht, ← exp_nat_mul]
+        grind [I_sq]
+    · simp only [weakFEPair]
+      rw [qExpansion_coeff_zero hh, pow_zero, mul_one]
+      · exact ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ
+      · exact SlashInvariantFormClass.periodic_comp_ofComplex f hΓ
+  · -- show summability of Dirichlet series
+    simp_rw [mul_comm (2 : ℝ), mul_div_assoc,
+      Real.mul_rpow (Nat.cast_nonneg _) (show 0 ≤ 2 / h Γ by positivity), ← div_div]
     apply Summable.div_const
-    apply summable_of_isBigO_nat (Real.summable_nat_rpow.mpr <| show k - s.re < -1 by linarith)
-    simp only [Real.rpow_sub' (Nat.cast_nonneg _) (show k - s.re ≠ 0 by linarith)]
+    apply summable_of_isBigO_nat (Real.summable_nat_rpow.mpr <| show r - s.re < -1 by linarith)
+    simp only [Real.rpow_sub' (Nat.cast_nonneg _) (show r - s.re ≠ 0 by linarith)]
     apply IsBigO.mul _ (isBigO_refl _ _)
-    simpa [Subgroup.strictWidthInfty_SL2Z] using (ModularFormClass.qExpansion_isBigO hk.le f)
+    simpa using hcoeff.norm_left
+
+lemma hasSum_Λ (hs : k + 1 < s.re) :
+    HasSum (fun n ↦ π ^ (-s) * Gamma s * (qExpansion (h Γ) f).coeff n /
+      ↑(2 * n / h Γ : ℝ) ^ s) (Λ hk f s) := by
+  refine hasSum_Λ_of_qExpansion_isBigO hk f (r := k)
+    (by linarith [show (0 : ℝ) < k from mod_cast hk]) (by exact_mod_cast hs) ?_ ?_
+  · rw [Λ, ← ((weakFEPair hk f).hasMellin <| by grind [weakFEPair]).2]
+  · simpa using ModularFormClass.qExpansion_isBigO hk.le f
 
 /-- The `L`-series of a modular form (without its Archimedean `Γ`-factor). -/
-noncomputable def L (f : F) (s : ℂ) : ℂ :=  Λ hk f s * (2 / Gammaℂ s)
+noncomputable def L (s : ℂ) : ℂ :=  Λ hk f s * (2 / Gammaℂ s)
+
+/-- Shared conversion from the completed `Λ`-series to the ordinary `L`-series. -/
+private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
+    (hΛ : HasSum (fun n ↦ π ^ (-s) * Gamma s *
+      (qExpansion (h Γ) f).coeff n / ↑(2 * n / h Γ : ℝ) ^ s) (Λ hk f s)) :
+    HasSum (fun i ↦ (qExpansion (h Γ) f).coeff i / ↑i ^ s) (h Γ ^ (-s) * L hk f s) := by
+  convert! hΛ.mul_right (2 / Gammaℂ s * h Γ ^ (-s)) using 1
+  · ext n
+    generalize (PowerSeries.coeff n) (qExpansion (h Γ) f) = p
+    rw [Gammaℂ, ← div_div, ← div_div, div_self two_ne_zero, one_div, cpow_neg (2 * _), inv_inv,
+      ← ofReal_ofNat, mul_cpow_ofReal_nonneg two_pos.le Real.pi_pos.le]
+    simp only [ofReal_div, ofReal_mul, ofReal_ofNat, ofReal_natCast]
+    have : (2 * n / h Γ : ℂ) ^ s = 2 ^ s * n ^ s / h Γ ^ s := by
+      have := Γ.strictWidthInfty_nonneg
+      rw [← ofReal_ofNat, ← ofReal_natCast, div_eq_mul_inv, ← ofReal_inv, ← ofReal_mul,
+        mul_cpow_ofReal_nonneg (by grind) (by positivity), ofReal_mul,
+        ← mul_cpow_ofReal_nonneg (by grind) (by grind), div_eq_mul_inv, ofReal_inv, inv_cpow]
+      rw [arg_ofReal_of_nonneg Γ.strictWidthInfty_nonneg]
+      positivity
+    rw [this, cpow_neg, cpow_neg]
+    have := Gamma_ne_zero_of_re_pos hs
+    have := cpow_ne_zero_iff (y := s).mpr (.inl <| ofReal_ne_zero.mpr Γ.strictWidthInfty_pos.ne')
+    field_simp
+  · grind [L]
+
+theorem hasSum_L (hs : k + 1 < s.re) :
+    HasSum (fun n ↦ (qExpansion (h Γ) f).coeff n / n ^ s) (h Γ ^ (-s) * L hk f s) :=
+  hasSum_L_of_hasSum_Λ hk f (by linarith [show (0 : ℝ) < k from mod_cast hk]) (hasSum_Λ hk f hs)
 
 end ModularForm
 
@@ -120,47 +178,32 @@ open ModularForm
 
 namespace CuspForm
 
-variable [CuspFormClass F 𝒮ℒ k]
+variable [CuspFormClass F Γ k]
 
-/-- A `StrongFEPair` structure associated to a level 1 cusp form. -/
-noncomputable def strongFEPair (f : F) : StrongFEPair ℂ where
-  __ := ModularForm.weakFEPair hk f
-  hf₀ := (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
-  hg₀ := (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
+/-- A `StrongFEPair` structure associated to a cusp form. -/
+noncomputable def strongFEPair : StrongFEPair ℂ where
+  __ := weakFEPair hk f
+  hf₀ := by exact (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
+  hg₀ := by exact (CuspFormClass.zero_at_infty <| translate f ModularGroup.S).valueAtInfty_eq_zero
 
-lemma differentiable_Λ (f : F) : Differentiable ℂ (Λ hk f) :=
+@[simp] lemma strongFEPair_toWeakFEPair : (strongFEPair hk f).toWeakFEPair = weakFEPair hk f :=
+  rfl
+
+lemma differentiable_Λ : Differentiable ℂ (Λ hk f) :=
   (strongFEPair hk f).differentiable_Λ
 
-lemma Λ_eq_mellin (f : F) : Λ hk f = mellin (fun t ↦ f (ofComplex (I * t))) :=
+lemma Λ_eq_mellin : Λ hk f = mellin (fun t ↦ f (ofComplex (I * t))) :=
   (strongFEPair hk f).Λ_eq
 
-lemma hasSum_Λ (f : F) {s : ℂ} (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
+lemma hasSum_Λ (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
     HasSum (fun n ↦ π ^ (-s) * Gamma s *
-      (UpperHalfPlane.qExpansion 1 f).coeff n / ↑(2 * n : ℝ) ^ s) (Λ hk f s) := by
-  rw [Λ_eq_mellin]
-  refine hasSum_mellin_pi_mul ?_ (by linarith [show (0 : ℝ) < k from mod_cast hk]) ?_ ?_
-  · intro i
-    rcases eq_or_ne i 0 with rfl | hi
-    · rw [UpperHalfPlane.qExpansion_coeff_zero (by simp)
-          (ModularFormClass.analyticAt_cuspFunction_zero f (by simp) (by simp))
-          (SlashInvariantFormClass.periodic_comp_ofComplex f (by simp)),
-        (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero]
-      tauto
-    · right
-      positivity
-  · intro t (ht : 0 < t)
-    convert ModularForm.hasSum_qExpansion f one_pos (by simp) (ofComplex (I * t)) with n
-    · rw [Function.Periodic.qParam, Complex.ofReal_exp, ← exp_nat_mul]
-      simp [ofComplex_apply_eq_ite, ht]
-      grind [I_sq]
-  · simp_rw [Real.mul_rpow two_pos.le (Nat.cast_nonneg _), mul_comm, ← div_div]
-    apply Summable.div_const
-    apply summable_of_isBigO_nat (Real.summable_nat_rpow.mpr <| show k/2 - s.re < -1 by linarith)
-    simp only [Real.rpow_sub' (Nat.cast_nonneg _) (show k/2 - s.re ≠ 0 by linarith)]
-    apply IsBigO.mul _ (isBigO_refl _ _)
-    simpa [Subgroup.strictWidthInfty_SL2Z] using CuspFormClass.qExpansion_isBigO f
+      (qExpansion (h Γ) f).coeff n / ↑(2 * n / h Γ : ℝ) ^ s) (Λ hk f s) := by
+  refine hasSum_Λ_of_qExpansion_isBigO hk f (r := k / 2)
+    (by linarith [show (0 : ℝ) < k from mod_cast hk]) hs ?_ ?_
+  · simp [Λ_eq_mellin, (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero]
+  · simpa using CuspFormClass.qExpansion_isBigO f
 
-lemma differentiable_L (f : F) : Differentiable ℂ (L hk f) := by
+lemma differentiable_L : Differentiable ℂ (L hk f) := by
   refine (differentiable_Λ hk f).mul ?_
   apply (differentiable_const _).mul ?_
   simp only [Gammaℂ_def, mul_inv]
@@ -168,13 +211,8 @@ lemma differentiable_L (f : F) : Differentiable ℂ (L hk f) := by
   simp only [cpow_neg, inv_inv]
   exact differentiable_id.const_cpow (by simp)
 
-theorem hasSum_L (f : F) {s : ℂ} (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
-    HasSum (fun i ↦ (UpperHalfPlane.qExpansion 1 f).coeff i / ↑i ^ s) (L hk f s) := by
-  convert! (CuspForm.hasSum_Λ f hk hs).mul_right (2 / Gammaℂ s) using 1
-  ext n
-  rw [Gammaℂ, ← ofReal_ofNat, ofReal_mul, mul_cpow_ofReal_nonneg two_pos.le (Nat.cast_nonneg _),
-    mul_cpow_ofReal_nonneg two_pos.le Real.pi_pos.le, cpow_neg (2 : ℝ), ofReal_natCast]
-  field_simp [Gamma_ne_zero_of_re_pos
-    (show 0 < s.re by linarith [show (0 : ℝ) < k from mod_cast hk])]
+theorem hasSum_L (hs : k / 2 + 1 < s.re) :
+    HasSum (fun n ↦ (qExpansion (h Γ) f).coeff n / n ^ s) (h Γ ^ (-s) * L hk f s) :=
+  hasSum_L_of_hasSum_Λ hk f (by linarith [show (0 : ℝ) < k from mod_cast hk]) (hasSum_Λ f hk hs)
 
 end CuspForm
