@@ -68,8 +68,6 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   (p : Ideal R) (q : Ideal S) (r : Ideal T)
 
-/-- Inertia degree for prime ideals equals degree of the residue fields.
-See `inertiaDeg'_eq'` for the maximal ideal version. -/
 theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
     [Localization.AtPrime.IsLiesOverAlgebra p q] :
@@ -99,8 +97,6 @@ theorem inertiaDeg'_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
   simp [← IsScalarTower.algebraMap_apply]
 
-/-- Inertia degree for maximal ideals equals degree of the quotient fields.
-See `inertiaDeg'_eq'` for the prime ideal version. -/
 theorem inertiaDeg'_eq_of_isMaximal [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     q.inertiaDeg' R = Module.finrank (R ⧸ p) (S ⧸ q) := by
   let : Field (R ⧸ p) := Quotient.field p

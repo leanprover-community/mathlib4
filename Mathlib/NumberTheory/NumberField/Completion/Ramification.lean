@@ -94,7 +94,7 @@ theorem inertiaDeg_of_liesOver [w.1.LiesOver v.1] :
 
 theorem inertiaDeg_eq_finrank [w.1.LiesOver v.1] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
-  rw [inertiaDeg_of_liesOver, Ideal.inertiaDeg'_eq' ⊥]
+  rw [inertiaDeg_of_liesOver, Ideal.inertiaDeg'_eq_of_isMaximal ⊥]
   exact Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
     (RingEquiv.quotientBot w.Completion) (by ext; simp [RingHom.algebraMap_toAlgebra])
 
