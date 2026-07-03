@@ -65,7 +65,7 @@ theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / lo
 
 theorem differentiableAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1)
     : DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x :=
-  (differentiableAt_log hx.ne.symm).inv (by simp; grind : log x ≠ 0)
+  by fun_prop (disch := grind [log_ne_zero])
 
 theorem hasDerivAt_inv_log {x : ℝ} (hx : 0 < x) (hx' : x ≠ 1) :
     HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
