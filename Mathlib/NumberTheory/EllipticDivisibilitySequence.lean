@@ -37,9 +37,9 @@ and an *elliptic divisibility sequence* (EDS) if it is a divisibility sequence t
 `W` is an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be
 normalised such that `W(1) = 1`, in which case it can be characterised completely by
 
-* the *even relations* `ERₐ(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
-  `W(2m) = W(m - 1)²W(m)W(m + 2) - W(m - 2)W(m)W(m + 1)²` for all `m ∈ ℤ`, and
-* the *odd relations* `ERₐ(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+* the *even relations* `ER(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+  `W(2m)W(2) = W(m - 1)²W(m)W(m + 2) - W(m - 2)W(m)W(m + 1)²` for all `m ∈ ℤ`, and
+* the *odd relations* `ER(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m + 1) = W(m + 2)W(m)³ - W(m - 1)W(m + 1)³` for all `m ∈ ℤ`,
 
 with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b` for some
@@ -263,11 +263,13 @@ lemma rel_neg (odd : W.Odd) (p q r s : ℤ) : rel W (-p) (-q) (-r) (-s) = rel W 
   simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg₁ odd, atomRel_neg₂ odd, atomRel_neg₃ odd,
     atomRel_neg₄]
 
+/-- The even elliptic relator `ER(m + 1, m - 1, 1, 0)` for all `m ∈ ℤ`. -/
 lemma rel_even (m : ℤ) : rel W (m + 1) (m - 1) 1 0 = W (2 * m) * W 2 * W 1 ^ 2 -
     W (m - 1) ^ 2 * W m * W (m + 2) + W (m - 2) * W m * W (m + 1) ^ 2 := by
   rw [rel]
   ring_nf
 
+/-- The odd elliptic relator `ER(m + 1, m, 1, 0)` for all `m ∈ ℤ`. -/
 lemma rel_odd (m : ℤ) : rel W (m + 1) m 1 0 =
     W (2 * m + 1) * W 1 ^ 3 - W (m + 2) * W m ^ 3 + W (m - 1) * W (m + 1) ^ 3 := by
   rw [rel]
