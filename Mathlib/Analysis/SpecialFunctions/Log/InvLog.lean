@@ -110,7 +110,7 @@ theorem deriv_log_log {x : ℝ} : deriv (fun x ↦ log (log x)) x = x⁻¹ / log
   rcases eq_or_ne x (-1) with rfl | _
   · simpa using deriv_zero_of_not_differentiableAt <|
       mt continuousAt not_continuousAt_log_log_neg_one
-  rw [deriv.log (differentiableAt_log (by grind)) (by simp; grind), deriv_log]
+  simp_all
 
 theorem differentiableAt_log_log {x : ℝ} (hx : 1 < x) :
     DifferentiableAt ℝ (fun x ↦ log (log x)) x :=
