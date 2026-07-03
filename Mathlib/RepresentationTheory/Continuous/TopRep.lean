@@ -14,12 +14,18 @@ public import Mathlib.RepresentationTheory.Continuous.Basic
 
 This file defines the category `TopRep k G` of topological representations of a monoid `G` over a
 topological ring `k`, and shows that it is equivalent to the category `Action (TopModuleCat k) G`.
+
+For a topological group `G` we define the invariants functor `TopRep.invariantsFunctor`, the
+coinduction functor `TopRep.coind₁Functor`, the restriction functor `TopRep.resFunctor` along a
+group homomorphism `φ : H →* G`, and the morphism `TopRep.invariantsResMap φ f` between invariant
+submodules induced by a morphism `f : res φ X ⟶ Y`.
 -/
 
 @[expose] public section
 
 universe w u v
 
+-- do we really need topological ring?
 /-- The category of topological representations of a monoid `G` over a topological ring `k`, and
 their morphisms. -/
 structure TopRep (k : Type u) (G : Type v) [TopologicalSpace k] [Ring k]
@@ -192,8 +198,9 @@ def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where
 /-- The functor sending an object in `Action (TopModuleCat k) G` to the corresponding topological
 representation. -/
 def fromActionTopModFunc : Action (TopModuleCat.{w} k) G ⥤ TopRep k G where
-  obj X := .of <| (TopModuleCat.endRingEquiv X.V).toMonoidHom.comp X.ρ
-  map {X Y} f := ofHom ⟨f.hom.hom, fun g ↦ by simpa using congr(TopModuleCat.Hom.hom $(f.comm g))⟩
+  obj X := .of <| .ofMonoidHom <| (TopModuleCat.endRingEquiv X.V).toMonoidHom.comp X.ρ
+  map {X Y} f := ofHom ⟨f.hom.hom, fun g ↦ by
+    simpa [← toMonoidHom_apply] using congr(TopModuleCat.Hom.hom $(f.comm g))⟩
 
 /-- The unit isomorphism of the equivalence `TopRepIsoActionTop`. -/
 def toActionFromAction (X : TopRep.{w} k G) :
@@ -246,7 +253,7 @@ variable (k G) in
 The `G` action is defined by `g • f := x ↦ g • f (g⁻¹ * x)`. -/
 abbrev coind₁Functor : TopRep k G ⥤ TopRep k G where
   obj := coind₁
-  map φ := ofHom <| ContRepresentation.coind₁Map _ _ φ.hom
+  map φ := ofHom <| ContRepresentation.coind₁Map φ.hom
 
 instance : (TopRep.coind₁Functor k G).Additive where
 
@@ -257,5 +264,41 @@ instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
 @[implicit_reducible, simps]
 def coind₁ι : 𝟭 (TopRep k G) ⟶ coind₁Functor k G where
   app rep := ofHom rep.ρ.coind₁ι
+
+abbrev res {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] (φ : H →* G)
+    (A : TopRep k G) : TopRep k H :=
+  of (A.ρ.restrict φ)
+
+abbrev resFunctor {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] (φ : H →* G) :
+    TopRep k G ⥤ TopRep k H where
+  obj := res φ
+  map f := ofHom <| f.hom.restrict φ
+
+section invariantsResMap
+
+omit [TopologicalSpace G] [IsTopologicalGroup G]
+
+variable {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
+
+@[simp]
+lemma resFunctor_map_hom (φ : H →* G) {A B : TopRep k G} (f : A ⟶ B) :
+    ((resFunctor φ).map f).hom = f.hom.restrict φ := rfl
+
+/-- The morphism between invariant submodules induced by a morphism `res φ X ⟶ Y` of
+topological `H`-representations, where `φ : H →* G` is a group homomorphism. -/
+def invariantsResMap (φ : H →* G) {X : TopRep k G} {Y : TopRep k H} (f : res φ X ⟶ Y) :
+    X.invariants ⟶ Y.invariants :=
+  TopModuleCat.ofHom (f.hom.mapInvariantsOfRes φ)
+
+lemma invariantsResMap_comp {X : TopRep k G} {Y Y' : TopRep k H} (φ : H →* G)
+    (f : res φ X ⟶ Y) (g : Y ⟶ Y') :
+    invariantsResMap φ (f ≫ g) = invariantsResMap φ f ≫ (invariantsFunctor k H).map g := rfl
+
+lemma invariantsResMap_map_comp {X X' : TopRep k G} {Y : TopRep k H} (φ : H →* G)
+    (f : X ⟶ X') (g : res φ X' ⟶ Y) :
+    invariantsResMap φ ((resFunctor φ).map f ≫ g) =
+      (invariantsFunctor k G).map f ≫ invariantsResMap φ g := rfl
+
+end invariantsResMap
 
 end TopRep
