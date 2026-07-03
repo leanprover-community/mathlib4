@@ -52,6 +52,7 @@ variable (R G V W U : Type*) [Monoid G] [Ring R] [AddCommGroup V] [TopologicalSp
   is a homomorphism `G →* V →L[R] V`. -/
 structure ContRepresentation where
   ofMonoidHom ::
+  /-- The underlying monoid homomorphism of a continuous representation. -/
   toMonoidHom : G →* V →L[R] V
 
 instance : FunLike (ContRepresentation R G V) G (V →L[R] V) where
