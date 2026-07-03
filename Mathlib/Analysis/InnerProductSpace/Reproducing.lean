@@ -396,10 +396,9 @@ lemma EquivOfKernel_symm_kerFun_eq (x : X) (v : V) :
   rw [← EquivOfKernel_kerFun_eq, LinearIsometryEquiv.symm_apply_apply]
 
 private theorem equiv_eq (h : kernel H = kernel (OfKernel (kernel H))) :
-    equiv_aux h = LinearIsometryEquiv.refl 𝕜 (OfKernel (kernel H)) := by
+    equiv_aux h = .refl 𝕜 (OfKernel (kernel H)) := by
   apply LinearIsometryEquiv.toLinearIsometry_injective
-  apply LinearIsometry.ext
-  intro x
+  refine LinearIsometry.ext fun x ↦ ?_
   refine UniformSpace.Completion.induction_on x
     (isClosed_eq (equiv_aux h).toLinearIsometry.continuous continuous_id) fun f ↦ ?_
   nth_rw 2 [← Finsupp.sum_single f]
