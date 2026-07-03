@@ -37,68 +37,6 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 
 variable {α β : Type*}
 
-set_option allowUnsafeReducibility true
-attribute [implicit_reducible] Additive Multiplicative
-
-section NewInsts
-
-instance instLEAdditive' [LE α] : LE (Additive α) :=
-  (inferInstanceAs <| LE α)
-
-instance instLTAdditive' [LT α] : LT (Additive α) :=
-  (inferInstanceAs <| LT α)
-
-instance instLEMultiplicative' [LE α] : LE (Multiplicative α) :=
-  (inferInstanceAs <| LE α)
-
-instance instLTMultiplicative' [LT α] : LT (Multiplicative α) :=
-  (inferInstanceAs <| LT α)
-
-instance Multiplicative.preorder' [Preorder α] : Preorder (Multiplicative α) :=
-  inferInstanceAs <| Preorder α
-
-instance Additive.preorder' [Preorder α] : Preorder (Additive α) :=
-  inferInstanceAs <| Preorder α
-
-instance Multiplicative.partialOrder' [PartialOrder α] : PartialOrder (Multiplicative α) :=
-  inferInstanceAs <| PartialOrder α
-
-instance Additive.partialOrder' [PartialOrder α] : PartialOrder (Additive α) :=
-  inferInstanceAs <| PartialOrder α
-
-instance Multiplicative.linearOrder' [LinearOrder α] : LinearOrder (Multiplicative α) :=
-  inferInstanceAs <| LinearOrder α
-
-instance Additive.linearOrder' [LinearOrder α] : LinearOrder (Additive α) :=
-  inferInstanceAs <| LinearOrder α
-
-instance Multiplicative.orderBot' [LE α] [OrderBot α] : OrderBot (Multiplicative α) :=
-  inferInstanceAs <| OrderBot α
-
-instance Additive.orderBot' [LE α] [OrderBot α] : OrderBot (Additive α) :=
-  inferInstanceAs <| OrderBot α
-
-instance Multiplicative.orderTop' [LE α] [OrderTop α] : OrderTop (Multiplicative α) :=
-  inferInstanceAs <| OrderTop α
-
-instance Additive.orderTop' [LE α] [OrderTop α] : OrderTop (Additive α) :=
-  inferInstanceAs <| OrderTop α
-
-instance Multiplicative.boundedOrder' [LE α] [BoundedOrder α] : BoundedOrder (Multiplicative α) :=
-  inferInstanceAs <| BoundedOrder α
-
-instance Additive.boundedOrder' [LE α] [BoundedOrder α] : BoundedOrder (Additive α) :=
-  inferInstanceAs <| BoundedOrder α
-
-instance Multiplicative.existsMulOfLe' [Add α] [LE α] [ExistsAddOfLE α] :
-    ExistsMulOfLE (Multiplicative α) :=
-  ⟨@exists_add_of_le α _ _ _⟩
-
-instance Additive.existsAddOfLe' [Mul α] [LE α] [ExistsMulOfLE α] : ExistsAddOfLE (Additive α) :=
-  ⟨@exists_mul_of_le α _ _ _⟩
-
-end NewInsts
-
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
     PosMulStrictMono α, OrderBot α, IsBotZeroClass α where
@@ -160,12 +98,7 @@ instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
   top_add' a := by ext; simp [bot_eq_zero]
   isAddLeftRegular_of_ne_top := by simp +contextual [IsRegular.of_ne_zero, bot_eq_zero]
 
--- attribute [local instance] Additive.leAdditiveOfLE in
--- instance Additive.orderBot' [LE (Additive α)] : ∀ [OrderBot α], OrderBot (Additive α) :=
---   fun {inst} => inst
 
-set_option trace.Meta.synthInstance true in
-set_option trace.Meta.isDefEq true in
 instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
   top_add' a := by ext; simp; simp [bot_eq_zero (α := α)]
@@ -588,10 +521,6 @@ instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α]
 instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
 
-set_option backward.isDefEq.instanceTypes false in
-set_option trace.Meta.isDefEq true in
-set_option trace.Meta.isDefEq.printTransparency true in
-set_option trace.Meta.synthInstance true in
 -- Add a shortcut instance for the common case, to speed up unification.
 instance : LinearOrderedCommGroupWithZero ℤᵐ⁰ := inferInstance
 
@@ -653,7 +582,6 @@ lemma lt_mul_exp_iff_le {x y : ℤᵐ⁰} (hy : y ≠ 0) : x < y * exp 1 ↔ x �
   lift x to Multiplicative ℤ using hx
   rw [← log_le_log, ← log_lt_log] <;> simp [log_mul, Int.lt_add_one_iff]
 
--- set_option backward.isDefEq.instanceTypes false in
 lemma exists_exp_neg_natCast_lt {x : ℤᵐ⁰} (hx : x ≠ 0) :
     ∃ (k : ℕ), exp (-(k : ℤ)) < x := by
   obtain ⟨y, hnz, hyx⟩ := WithZero.exists_ne_zero_and_lt hx
