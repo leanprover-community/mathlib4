@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Analysis.LocallyConvex.AbsConvex
+import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
@@ -198,5 +199,40 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
       exact hab ▸ Set.add_mem_add ha (hV.1.antitone hi hb))
 
 end michael
+
+section michaelOn
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [AddCommGroup β] [Module ℝ β] [UniformSpace β] [IsUniformAddGroup β]
+    [ContinuousSMul ℝ β] [LocallyConvexSpace ℝ β] [FirstCountableTopology β] [CompleteSpace β]
+    {f : E → Set β}
+
+omit [NormedSpace ℝ E] in
+/-- **Michael's selection theorem on a subset**: A correspondence that is lower hemicontinuous on a
+subset `s` of a real normed space, with nonempty convex closed values on `s`, admits a continuous
+selection on `s`. This is the `LowerHemicontinuousOn` variant obtained by restricting to the
+subspace `↥s` (which is metrizable, hence paracompact and normal) and applying Michael's selection
+theorem. -/
+theorem LowerHemicontinuousOn.exists_continuousOn_selection {s : Set E}
+    (hf : LowerHemicontinuousOn f s)
+    (hf_nonempty : ∀ x ∈ s, (f x).Nonempty) (hf_convex : ∀ x ∈ s, Convex ℝ (f x))
+    (hf_isClosed : ∀ x ∈ s, IsClosed (f x)) :
+    ∃ g : E → β, ContinuousOn g s ∧ ∀ x ∈ s, g x ∈ f x := by
+  classical
+  -- On the subspace `↥s`, the correspondence `f ∘ Subtype.val` is lower hemicontinuous.
+  have hf' : LowerHemicontinuous (f ∘ (Subtype.val : s → E)) :=
+    lowerHemicontinuousOn_univ_iff.mp
+      (hf.comp continuous_subtype_val.continuousOn fun x _ ↦ x.2)
+  obtain ⟨g', hg'_cont, hg'_mem⟩ := hf'.exists_continuous_selection
+    (fun x ↦ hf_nonempty x.1 x.2) (fun x ↦ hf_convex x.1 x.2) (fun x ↦ hf_isClosed x.1 x.2)
+  -- Extend the selection from `↥s` back to `E`.
+  refine ⟨fun x ↦ if h : x ∈ s then g' ⟨x, h⟩ else 0, ?_, fun x hx ↦ ?_⟩
+  · rw [continuousOn_iff_continuous_restrict]
+    have : (s.restrict fun x ↦ if h : x ∈ s then g' ⟨x, h⟩ else 0) = g' :=
+      funext fun x ↦ dif_pos x.2
+    rwa [this]
+  · simpa [hx] using hg'_mem ⟨x, hx⟩
+
+end michaelOn
 
 end
