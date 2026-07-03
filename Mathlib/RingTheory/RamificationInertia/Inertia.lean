@@ -77,25 +77,30 @@ theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
   exact inertiaDeg'_def q R
 
 theorem inertiaDeg'_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
-    (K L : Type*) [Field K] [Field L] [Algebra (R ⧸ p) K] [Algebra (S ⧸ q) L]
-    [IsFractionRing (R ⧸ p) K] [IsFractionRing (S ⧸ q) L] [Algebra K L]
-    [Algebra (R ⧸ p) L] [IsScalarTower (R ⧸ p) K L] [IsScalarTower (R ⧸ p) (S ⧸ q) L] :
+    (K L : Type*) [Field K] [Field L]
+    [Algebra (R ⧸ p) K] [IsFractionRing (R ⧸ p) K]
+    [Algebra (S ⧸ q) L] [IsFractionRing (S ⧸ q) L]
+    [Algebra R K] [IsScalarTower R (R ⧸ p) K]
+    [Algebra S L] [IsScalarTower S (S ⧸ q) L]
+    [Algebra K L] [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] :
     q.inertiaDeg' R = Module.finrank K L := by
   let := Localization.AtPrime.algebraOfLiesOver p q
   rw [inertiaDeg'_eq p q]
-  let f : (R ⧸ p) ≃ₐ[R ⧸ p] (R ⧸ p) := AlgEquiv.refl
-  let g : (S ⧸ q) ≃ₐ[S ⧸ q] (S ⧸ q) := AlgEquiv.refl
-  let f' : p.ResidueField ≃ₐ[R ⧸ p] K := IsFractionRing.algEquivOfAlgEquiv f
-  let g' : q.ResidueField ≃ₐ[S ⧸ q] L := IsFractionRing.algEquivOfAlgEquiv g
-  apply Algebra.finrank_eq_of_equiv_equiv f' g'
+  apply Algebra.finrank_eq_of_equiv_equiv
+    (IsFractionRing.algEquivOfAlgEquiv (R := R) (A := R ⧸ p) (K := p.ResidueField) (L := K) .refl)
+    (IsFractionRing.algEquivOfAlgEquiv (R := S) (A := S ⧸ q) (K := q.ResidueField) (L := L) .refl)
   apply IsFractionRing.ringHom_ext (A := R ⧸ p)
   intro x
-  suffices ∀ x, (algebraMap p.ResidueField q.ResidueField) ((algebraMap (R ⧸ p) p.ResidueField) x) =
-      ((algebraMap (S ⧸ q) q.ResidueField) ((algebraMap (R ⧸ p) (S ⧸ q)) x)) by
-    simp [← IsScalarTower.algebraMap_apply, this]
-  intro x
-  obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
-  simp [← IsScalarTower.algebraMap_apply]
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  simp [← IsScalarTower.algebraMap_apply R p.ResidueField q.ResidueField,
+    IsScalarTower.algebraMap_apply R S q.ResidueField,
+    ← IsScalarTower.algebraMap_apply R K L, ← IsScalarTower.algebraMap_apply R S L]
+
+theorem inertiaDeg'_eq' [q.LiesOver p] [q.IsPrime] [p.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
+  exact inertiaDeg'_eq_of_isFractionRing p q p.ResidueField q.ResidueField
 
 theorem inertiaDeg'_eq_of_isMaximal [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     q.inertiaDeg' R = Module.finrank (R ⧸ p) (S ⧸ q) := by
