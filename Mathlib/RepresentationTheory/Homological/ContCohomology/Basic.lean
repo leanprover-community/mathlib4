@@ -126,8 +126,8 @@ lemma homogeneousCochains.d_apply (X : TopRep k G) (i : ℕ)
   rw [homogeneousCochains.d_eq]
   dsimp [ContIntertwiningMap.mapInvariants_apply]
 
-/-- The continuous cohomology of a continuous representation defined
-by `continuousCohomologyFunctor`. -/
+/-- The continuous cohomology of a continuous representation defined by taking homology
+of the homogeneous cochains. -/
 noncomputable abbrev _root_.continuousCohomology (n : ℕ) (A : TopRep k G) :
     TopModuleCat k := (homogeneousCochains A).homology n
 

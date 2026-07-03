@@ -63,7 +63,8 @@ instance : MonoidHomClass (ContRepresentation R G V) G (V →L[R] V) where
   map_one π := π.toMonoidHom.map_one
   map_mul π := π.toMonoidHom.map_mul
 
-lemma toMonoidHom_apply (π : ContRepresentation R G V) (g : G) : π.toMonoidHom g = π g := rfl
+lemma ContRepresentation.toMonoidHom_apply (π : ContRepresentation R G V) (g : G) :
+    π.toMonoidHom g = π g := rfl
 
 /-- Every continuous representation "is" a representation. -/
 abbrev ContRepresentation.toRepresentation (π : ContRepresentation R G V) :
@@ -490,28 +491,29 @@ lemma _root_.ContIntertwiningMap.mk_mapInvariants_apply
     (f : π →ⁱL π') (v : V) (hv : v ∈ π.invariants) :
     f.mapInvariants ⟨v, hv⟩ = f v := rfl
 
-lemma invariants_le_invariants_restrict {H : Type*} [Monoid H] (π : ContRepresentation R G V)
-    (φ : H →* G) : π.invariants ≤ (π.restrict φ).invariants :=
+variable {H : Type*} [Monoid H]
+
+lemma invariants_le_invariants_restrict (π : ContRepresentation R G V) (φ : H →* G) :
+    π.invariants ≤ (π.restrict φ).invariants :=
   fun _ hv h ↦ hv (φ h)
+
+variable {π : ContRepresentation R G V} {π' : ContRepresentation R H W}
 
 /-- Given a monoid homomorphism `φ : H →* G`, a `G`-representation `π` and an
 `H`-representation `π'`, a continuous intertwining map `f : π.restrict φ →ⁱL π'` induces a
 continuous linear map `π.invariants →L[R] π'.invariants` between the invariant submodules. -/
-def _root_.ContIntertwiningMap.mapInvariantsOfRes {H : Type*} [Monoid H]
-    {π : ContRepresentation R G V} {π' : ContRepresentation R H W} (φ : H →* G)
+def _root_.ContIntertwiningMap.mapInvariantsOfRes (φ : H →* G)
     (f : π.restrict φ →ⁱL π') : π.invariants →L[R] π'.invariants :=
   f.toContinuousLinearMap.restrict <| by
     simp +contextual [f.toContinuousLinearMap_apply, ← f.isIntertwining]
 
 -- provided for rewriting
-lemma _root_.ContIntertwiningMap.mapInvariantsOfRes_apply {H : Type*} [Monoid H]
-    {π : ContRepresentation R G V} {π' : ContRepresentation R H W} (φ : H →* G)
+lemma _root_.ContIntertwiningMap.mapInvariantsOfRes_apply (φ : H →* G)
     (f : π.restrict φ →ⁱL π') (v : π.invariants) :
     f.mapInvariantsOfRes φ v = f v := rfl
 
 @[simp]
-lemma _root_.ContIntertwiningMap.mk_mapInvariantsOfRes_apply {H : Type*} [Monoid H]
-    {π : ContRepresentation R G V} {π' : ContRepresentation R H W} (φ : H →* G)
+lemma _root_.ContIntertwiningMap.mk_mapInvariantsOfRes_apply (φ : H →* G)
     (f : π.restrict φ →ⁱL π') (v : V) (hv : v ∈ π.invariants) :
     f.mapInvariantsOfRes φ ⟨v, hv⟩ = f v := rfl
 

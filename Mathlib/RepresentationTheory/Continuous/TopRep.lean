@@ -277,13 +277,13 @@ abbrev resFunctor {H : Type*} [Monoid H] (φ : H →* G) :
 
 section invariantsResMap
 
-omit [TopologicalSpace G] [IsTopologicalGroup G]
-
-variable {H : Type*} [Group H]
+variable {G H : Type*} [Group G]
 
 @[simp]
-lemma resFunctor_map_hom (φ : H →* G) {A B : TopRep k G} (f : A ⟶ B) :
+lemma resFunctor_map_hom [Monoid H] (φ : H →* G) {A B : TopRep k G} (f : A ⟶ B) :
     ((resFunctor φ).map f).hom = f.hom.restrict φ := rfl
+
+variable [Group H]
 
 /-- The morphism between invariant submodules induced by a morphism `res φ X ⟶ Y` of
 topological `H`-representations, where `φ : H →* G` is a group homomorphism. -/
