@@ -64,7 +64,19 @@ end TensorAlgebra
 /-- The tensor algebra of the module `M` over the commutative semiring `R`.
 -/
 def TensorAlgebra := TensorAlgebra.ringCon R M |>.Quotient
-deriving Inhabited, Semiring
+deriving Inhabited
+
+namespace TensorAlgebra
+
+-- This instance exists to avoid an nsmul diamond.
+@[nolint unusedArguments]
+instance {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
+    [Algebra R A] [Module R M] [Module A M]
+    [IsScalarTower R A M] :
+    SMul R (TensorAlgebra A M) :=
+  inferInstanceAs <| SMul R (RingCon.Quotient _)
+
+deriving instance Semiring for TensorAlgebra
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
@@ -89,8 +101,6 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemi
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
   inferInstanceAs <| IsScalarTower R S (RingCon.Quotient _)
-
-namespace TensorAlgebra
 
 instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   inferInstanceAs <| Ring (RingCon.Quotient _)

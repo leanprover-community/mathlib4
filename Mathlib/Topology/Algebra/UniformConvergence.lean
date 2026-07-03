@@ -118,6 +118,9 @@ lemma UniformOnFun.toFun_div [Div β] (f g : α →ᵤ[𝔖] β) :
 lemma UniformOnFun.ofFun_div [Div β] (f g : α → β) : ofFun 𝔖 (f / g) = ofFun 𝔖 f / ofFun 𝔖 g := rfl
 
 @[to_additive]
+instance {M : Type*} [Pow β M] : Pow (α →ᵤ β) M := inferInstanceAs <| Pow (α → β) M
+
+@[to_additive]
 instance [Monoid β] : Monoid (α →ᵤ β) := inferInstanceAs <| Monoid (α → β)
 
 @[to_additive]
@@ -140,8 +143,6 @@ instance [CommGroup β] : CommGroup (α →ᵤ β) := inferInstanceAs <| CommGro
 
 @[to_additive]
 instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) := inferInstanceAs <| CommGroup (α → β)
-
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := inferInstanceAs <| SMul M (α → β)
 
 @[simp]
 lemma UniformFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ β) :
