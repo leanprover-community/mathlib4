@@ -107,10 +107,14 @@ namespace IsHeckeCosetModule
 /-- For a Hecke coset module datum, the decomposition quotient of any `g : Δ` is finite: `Δ`
 commensurates `H₂`, which is commensurable with `H₁`. -/
 noncomputable instance {Δ : Submonoid G} {H₁ H₂ : Subgroup G} [IsHeckeCosetModule Δ H₁ H₂]
-    (g : Δ) : Fintype (DecompQuotient H₁ H₂ (g : G)) := by
-  have hg : Commensurable (ConjAct.toConjAct (g : G) • H₂) H₂ :=
-    IsHeckeCosetModule.le_commensurator H₁ g.2
-  exact Subgroup.fintypeOfIndexNeZero
-    (hg.trans (IsHeckeCosetModule.commensurable (Δ := Δ)).symm).1
+    (g : Δ) : Fintype (DecompQuotient H₁ H₂ (g : G)) :=
+  Subgroup.fintypeOfIndexNeZero (IsHeckeCosetModule.commensurable_conjAct_right g).1
+
+/-- The decomposition quotient with the two subgroups swapped is finite from the same datum,
+since `Δ` also commensurates the left subgroup (`le_commensurator_left`). Lower priority, so
+that the unswapped instance is preferred in the diagonal case. -/
+noncomputable instance (priority := 900) {Δ : Submonoid G} {H₁ H₂ : Subgroup G}
+    [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) : Fintype (DecompQuotient H₂ H₁ (g : G)) :=
+  Subgroup.fintypeOfIndexNeZero (IsHeckeCosetModule.commensurable_conjAct_left g).1
 
 end IsHeckeCosetModule
