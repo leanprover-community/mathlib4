@@ -45,6 +45,10 @@ namespace AddSubgroup
 theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :=
   rfl
 
+theorem finsetSup_zmultiples (s : Finset A) : s.sup zmultiples = closure s := by
+  simp_rw [s.sup_eq_iSup, zmultiples_eq_closure, ← closure_iUnion, ← Finset.set_biUnion_coe,
+    Set.biUnion_of_singleton]
+
 section Ring
 
 variable {R : Type*} [Ring R] (r : R) (k : ℤ)
@@ -93,8 +97,7 @@ theorem zmultiples_sup (a b : ℤ) : zmultiples a ⊔ zmultiples b = zmultiples 
   simp_rw [← closure_eq_zmultiples, zmultiples_eq_closure, ← closure_union, Set.singleton_union]
 
 theorem finsetSup_zmultiples (s : Finset ℤ) : s.sup zmultiples = zmultiples (s.gcd id) := by
-  simp_rw [← closure_eq_zmultiples_finsetGcd, s.sup_eq_iSup, zmultiples_eq_closure,
-    ← closure_iUnion, ← Finset.set_biUnion_coe, Set.biUnion_of_singleton]
+  rw [AddSubgroup.finsetSup_zmultiples, closure_eq_zmultiples_finsetGcd]
 
 theorem zmultiples_inf (a b : ℤ) : zmultiples a ⊓ zmultiples b = zmultiples (a.lcm b : ℤ) := by
   ext z
