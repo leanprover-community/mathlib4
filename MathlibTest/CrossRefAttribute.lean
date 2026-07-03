@@ -99,7 +99,7 @@ info:
 
 namespace LMFDB
 
-@[lmfdb group.abelian "A vacouous comment"]
+@[lmfdb group.abelian "A vacuous comment"]
 theorem IsAbelian : 1 + 1 = 2 := by
   rfl
 
