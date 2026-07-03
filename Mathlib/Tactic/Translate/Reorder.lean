@@ -213,15 +213,13 @@ partial def reorderForall (reorder : ArgReorder) (e : Expr) : MetaM Expr := do
 
 /-- Reorder the arguments of a function using the given `ArgReorder`. -/
 partial def reorderLambda (reorder : ArgReorder) (e : Expr) : MetaM Expr := do
-  let (mvars, bis, e) ← lambdaMetaTelescope e reorder.range
-  let (mvars', bis', _) ← forallMetaBoundedTelescope (← inferType e) (reorder.range - mvars.size)
-  let mut mvars := mvars ++ mvars'
+  let (mvars, bis, _) ← forallMetaBoundedTelescope (← inferType e) reorder.range
   unless mvars.size = reorder.range do
     throwError "the permutation (reorder := {reorder}) is out of bounds, \
       the function{indentExpr e}\nhas only {mvars.size} arguments"
-  let bis := reorder.permute! (bis ++ bis') |>.toList
+  let bis := reorder.permute! bis |>.toList
   -- Note that `mkLambdaFVars` also works with mvars.
-  fixBinderInfos bis <$> mkLambdaFVars (← reorderMVars mvars reorder) (mkAppN e mvars')
+  fixBinderInfos bis <$> mkLambdaFVars (← reorderMVars mvars reorder) (e.beta mvars)
 
 end
 
