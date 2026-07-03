@@ -172,4 +172,3 @@ meta def evalvonMangoldt : PositivityExt where eval {u α} _zα pα? e :=
   | _, _, _ => throwError "not von Mangoldt"
 
 end Mathlib.Meta.Positivity
-
