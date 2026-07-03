@@ -151,8 +151,8 @@ theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b
 
 /-- A recursor for `AsBoolAlg`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
-protected def AsBoolAlg.rec {β : AsBoolAlg α → Sort*} (motive : ∀ a, β (toBoolAlg a)) :
-    ∀ a, β a := fun a ↦ motive (ofBoolAlg a)
+protected def AsBoolAlg.rec {motive : AsBoolAlg α → Sort*} (toBoolAlg : ∀ a, motive (toBoolAlg a)) :
+    ∀ a, motive a := fun a ↦ toBoolAlg (ofBoolAlg a)
 
 instance [Inhabited α] : Inhabited (AsBoolAlg α) :=
   ‹Inhabited α›
@@ -374,8 +374,9 @@ theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a
 
 /-- A recursor for `AsBoolRing`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
-protected def AsBoolRing.rec {β : AsBoolRing α → Sort*} (motive : ∀ a, β (toBoolRing a)) :
-    ∀ a, β a := fun a ↦ motive (ofBoolRing a)
+protected def AsBoolRing.rec {motive : AsBoolRing α → Sort*}
+    (toBoolRing : ∀ a, motive (toBoolRing a)) : ∀ a, motive a :=
+  fun a ↦ toBoolRing (ofBoolRing a)
 
 instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ⟨default (α := α)⟩
