@@ -102,7 +102,8 @@ theorem inertiaDeg'_pos' [P.IsPrime] [Module.Finite R S] [P.LiesOver p] : 0 < in
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_pos' := inertiaDeg'_pos'
 
-theorem inertiaDeg'_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg' p P ≠ 0 :=
+theorem inertiaDeg'_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] :
+    inertiaDeg' p P ≠ 0 :=
   (Nat.ne_of_lt (inertiaDeg'_pos p P)).symm
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_ne_zero := inertiaDeg'_ne_zero
