@@ -412,7 +412,7 @@ theorem denseRange_algebraMap_pi {ι : Type*} [Finite ι] {v : ι → AbsoluteVa
   have := Fintype.ofFinite ι
   refine Metric.denseRange_iff.mpr fun z r hr ↦ ?_
   choose a hx using exists_one_lt_lt_one_pi_of_not_isEquiv h hv
-  let y := fun n : ℕ => ∑ i, (1 / (1 + (a i)⁻¹ ^ n)) * WithAbs.equiv (v i) (z i)
+  let y := fun n : ℕ ↦ ∑ i, (1 / (1 + (a i)⁻¹ ^ n)) * WithAbs.equiv (v i) (z i)
   have htend : atTop.Tendsto (fun n i => (WithAbs.equiv (v i)).symm (y n)) (𝓝 z) := by
     refine tendsto_pi_nhds.mpr fun u => ?_
     simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
