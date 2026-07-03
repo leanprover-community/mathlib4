@@ -119,14 +119,14 @@ lemma orthRadius_injective (s : Sphere P) : Injective s.orthRadius :=
 lemma finrank_orthRadius [FiniteDimensional ℝ V] {s : Sphere P} {p : P} (hp : p ≠ s.center) :
     Module.finrank ℝ (s.orthRadius p).direction + 1 = Module.finrank ℝ V := by
   rw [orthRadius, add_comm, direction_mk']
-  convert (ℝ ∙ (p -ᵥ s.center)).finrank_add_finrank_orthogonal
+  convert! (ℝ ∙ (p -ᵥ s.center)).finrank_add_finrank_orthogonal
   exact (finrank_span_singleton (vsub_ne_zero.2 hp)).symm
 
 lemma orthRadius_map {s : Sphere P} (p : P) {f : P ≃ᵃⁱ[ℝ] P} (h : f s.center = s.center) :
     (s.orthRadius p).map f.toAffineMap = s.orthRadius (f p) := by
   rw [orthRadius, map_mk', orthRadius]
-  convert rfl using 2
-  convert (Submodule.map_orthogonal_equiv (ℝ ∙ (p -ᵥ s.center)) f.linearIsometryEquiv).symm
+  convert! rfl using 2
+  convert! (Submodule.map_orthogonal_equiv (ℝ ∙ (p -ᵥ s.center)) f.linearIsometryEquiv).symm
   simp [Submodule.map_span, Set.image_singleton, h]
 
 lemma direction_orthRadius_le_iff {s : Sphere P} {p q : P} :
@@ -239,7 +239,6 @@ lemma inter_orthRadius_eq_empty_of_finrank_eq_one {s : Sphere P} {p : P} (hpc : 
   rw [eq_comm, sub_eq_zero, eq_comm, sq_eq_sq₀ dist_nonneg hr]
   exact hp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
     (s ∩ s.orthRadius p : Set P) = ∅ ↔ s.radius < dist p s.center ∨
       (Module.finrank ℝ V = 1 ∧ dist p s.center < s.radius ∧ p ≠ s.center) ∨
@@ -300,7 +299,6 @@ lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
     simpa using h.symm
   · simp [h, inter_orthRadius_eq_empty_of_radius_lt_dist]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
 lies within `s` and not at its center.
 
@@ -352,13 +350,13 @@ lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 
     (hv : v ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ) (hv0 : v ≠ 0) :
     (s ∩ s.orthRadius p : Set P) = {(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p,
       -(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p} := by
-  convert inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one hp hpc (v := ‖v‖⁻¹ • v)
-    (Submodule.smul_mem _ _ hv) ?_ using 2
+  convert!
+    inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one hp hpc (v := ‖v‖⁻¹ • v)
+      (Submodule.smul_mem _ _ hv) ?_ using 2
   · simp [div_eq_mul_inv, smul_smul]
   · simp [div_eq_mul_inv, smul_smul]
   · simp [norm_smul, norm_ne_zero_iff.2 hv0]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at exactly two points so long as `p`
 lies strictly within `s` and not at its center. -/
 lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finrank ℝ V = 2)]

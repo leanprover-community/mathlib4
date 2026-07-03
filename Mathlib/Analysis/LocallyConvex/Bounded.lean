@@ -225,7 +225,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
     filter_upwards [hε] with n hn
     rw [absorbs_iff_norm] at hVS
-    push_neg at hVS
+    push Not at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
     refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩
@@ -257,7 +257,7 @@ theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
     [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
     {s : Set E} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕝 s := by
   obtain ⟨ε, hε, hε₀⟩ : ∃ ε : ℕ → 𝕜, Tendsto ε atTop (𝓝 0) ∧ ∀ᶠ n in atTop, ε n ≠ 0 := by
-    simpa only [tendsto_nhdsWithin_iff] using exists_seq_tendsto (𝓝[≠] (0 : 𝕜))
+    simpa only [tendsto_nhdsWithin_iff] using! exists_seq_tendsto (𝓝[≠] (0 : 𝕜))
   refine isVonNBounded_of_smul_tendsto_zero (ε := (ε · • 1)) (by simpa) fun x hx ↦ ?_
   have := h.smul_tendsto_zero (.of_forall hx) hε
   simpa only [Pi.smul_def', smul_one_smul]
@@ -274,9 +274,7 @@ theorem IsVonNBounded.closure [T1Space E] [RegularSpace E] [ContinuousConstSMul 
   rcases exists_mem_nhds_isClosed_subset hV with ⟨W, hW₁, hW₂, hW₃⟩
   specialize ha hW₁
   filter_upwards [ha] with b ha'
-  grw [closure_mono ha', closure_smul₀ b]
-  apply smul_set_mono
-  grw [closure_subset_iff_isClosed.mpr hW₂, hW₃]
+  grw [ha', closure_smul₀ b, closure_subset_iff_isClosed.mpr hW₂, hW₃]
 
 variable [ContinuousSMul 𝕜 E]
 
@@ -362,9 +360,6 @@ theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
 
-@[deprecated (since := "2025-11-14")]
-alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
-
 variable (𝕜 E)
 
 -- See note [reducible non-instances]
@@ -409,13 +404,20 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
       h'' <| mk_mem_prod hz1 hz2
     refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
-    -- TODO: with dot notation, Lean timeouts on the next line. Why?
-    exact Absorbent.vadd_absorbs (absorbent_nhds_zero hx.1.1) hx.2.2.absorbs_self
+    exact (absorbent_nhds_zero hx.1.1).vadd_absorbs hx.2.2.absorbs_self
   else
     haveI : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
     exact Bornology.IsVonNBounded.of_boundedSpace
 
 end IsUniformAddGroup
+
+variable (𝕜) in
+theorem IsCompact.isVonNBounded [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {s : Set E}
+    (hs : IsCompact s) : Bornology.IsVonNBounded 𝕜 s :=
+  letI := IsTopologicalAddGroup.rightUniformSpace E
+  haveI := isUniformAddGroup_of_addCommGroup (G := E)
+  hs.totallyBounded.isVonNBounded 𝕜
 
 variable (𝕜) in
 theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]

@@ -12,7 +12,7 @@ public import Mathlib.GroupTheory.GroupAction.ConjAct
 # Conjugation action of a group with zero on itself
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
@@ -21,7 +21,7 @@ variable {α G₀ : Type*}
 namespace ConjAct
 variable [GroupWithZero G₀]
 
-instance : GroupWithZero (ConjAct G₀) := ‹GroupWithZero G₀›
+instance : GroupWithZero (ConjAct G₀) := inferInstanceAs <| GroupWithZero G₀
 
 @[simp] lemma ofConjAct_zero : ofConjAct 0 = (0 : G₀) := rfl
 @[simp] lemma toConjAct_zero : toConjAct (0 : G₀) = 0 := rfl

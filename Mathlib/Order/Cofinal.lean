@@ -17,15 +17,14 @@ import Mathlib.Data.Set.Lattice
 A set `s` in an ordered type `α` is cofinal when for every `a : α` there exists an element of `s`
 greater or equal to it. This file provides a basic API for the `IsCofinal` predicate.
 
-For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality.lean`.
+For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality/Basic.lean`.
 
 ## TODO
 
-- Define `Order.cof` in terms of `Cofinal`.
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -34,12 +33,16 @@ variable {α β : Type*}
 section LE
 variable [LE α]
 
-theorem IsCofinal.of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
+theorem IsCofinal.of_isEmpty [IsEmpty α] {s : Set α} : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
 theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty _⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty⟩
   simpa using h a
+
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (hs : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  exact (hs default).imp fun _ ↦ And.left
 
 @[simp]
 theorem isCofinal_singleton_iff {x : α} : IsCofinal {x} ↔ IsTop x := by
@@ -145,7 +148,7 @@ theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s
   exact ⟨x, fun y hy ↦ (h y hy).le⟩
 
 theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
-  contrapose! h
+  contrapose h
   exact .of_not_isCofinal h
 
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
@@ -169,5 +172,9 @@ theorem isCofinal_setOf_imp_lt (r : α → α → Prop) [h : IsWellFounded α r]
   refine ⟨b, fun c hc ↦ ?_, hb⟩
   by_contra! hc'
   exact hb' c (hb.trans hc') hc
+
+theorem isCofinal_range_of_strictMono [WellFoundedLT α] {f : α → α} (hf : StrictMono f) :
+    IsCofinal (range f) :=
+  fun x ↦ ⟨_, ⟨x, rfl⟩, hf.le_apply⟩
 
 end LinearOrder

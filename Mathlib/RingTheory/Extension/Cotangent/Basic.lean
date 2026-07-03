@@ -68,6 +68,12 @@ def cotangentComplex : P.Cotangent →ₗ[S] P.CotangentSpace :=
 lemma cotangentComplex_mk (x) : P.cotangentComplex (.mk x) = 1 ⊗ₜ .D _ _ x :=
   rfl
 
+lemma Cotangent.mk_C_mem_ker_cotangentComplex {σ : Type*} (G : Generators R S σ)
+    {r : R} (hr : C r ∈ G.ker) :
+    Extension.Cotangent.mk ⟨C r, hr⟩ ∈ G.toExtension.cotangentComplex.ker := by
+  have : D R G.toExtension.Ring (C r) = 0 := Derivation.map_algebraMap ..
+  simp [this]
+
 section baseChange
 
 variable {A : Type*} [CommRing A] [Algebra S A] [Algebra P.Ring A] [IsScalarTower P.Ring S A]
@@ -223,7 +229,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         Function.comp_apply,
         ker, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
         algebraMap_σ, sub_self, toAlgHom_apply]
-  convert this using 1
+  convert! this using 1
   simp only [map_mul]
   ring
 
@@ -412,6 +418,12 @@ lemma H1Cotangent.map_comp
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
 
+omit [IsScalarTower R S S'] in
+@[simp]
+lemma H1Cotangent.map_comp_apply (f : Hom P P') (g : Hom P' P'') (x : P.H1Cotangent) :
+    map (g.comp f) x = map g (map f x) :=
+  congr($(H1Cotangent.map_comp f g) x)
+
 /-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
 induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
 @[simps! apply]
@@ -428,6 +440,11 @@ def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ :
     show (map f₁ ∘ₗ map f₂) x = LinearMap.id (R := S) x by
     rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₁.comp f₂),
       Extension.H1Cotangent.map_comp]; rfl
+
+omit [IsScalarTower R S S'] in
+lemma Cotangent.map_comp_h1Cotangentι (f : P.Hom P') :
+    Cotangent.map f ∘ₗ P.h1Cotangentι =
+      P'.h1Cotangentι.restrictScalars S ∘ₗ H1Cotangent.map f := rfl
 
 end Extension
 
@@ -449,6 +466,7 @@ lemma cotangentSpaceBasis_repr_tmul (r x i) :
   simp only [cotangentSpaceBasis, Basis.baseChange_repr_tmul, mvPolynomialBasis_repr_apply,
     Algebra.smul_def, mul_comm r, algebraMap_apply, toExtension]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma cotangentSpaceBasis_repr_one_tmul (x i) :
     P.cotangentSpaceBasis.repr (1 ⊗ₜ .D _ _ x) i = aeval P.val (pderiv i x) := by
@@ -470,6 +488,7 @@ def cotangentRestrict {σ : Type*} {u : σ → ι} (hu : Function.Injective u) :
   Finsupp.lcomapDomain u hu ∘ₗ P.cotangentSpaceBasis.repr.toLinearMap ∘ₗ
     P.toExtension.cotangentComplex
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma cotangentRestrict_mk {σ : Type*} {u : σ → ι} (hu : Function.Injective u) (x : P.ker) :
     cotangentRestrict P hu (Extension.Cotangent.mk x) =
@@ -511,6 +530,7 @@ lemma repr_CotangentSpaceMap (f : Hom P P') (i j) :
   rw [CotangentSpace.map_tmul, map_one]
   erw [cotangentSpaceBasis_repr_one_tmul, Hom.toAlgHom_X]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma toKaehler_tmul_D (i) :
     P.toExtension.toKaehler (1 ⊗ₜ D R P.Ring (X i)) = D _ _ (P.val i) :=
@@ -524,6 +544,7 @@ lemma toKaehler_cotangentSpaceBasis (i) :
 
 end Generators
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be considered normalising?
 set_option linter.flexible false in
@@ -594,6 +615,7 @@ abbrev Generators.equivH1Cotangent (P : Generators R S ι) :
     P.toExtension.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   Generators.H1Cotangent.equiv _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be considered normalising?
 set_option linter.flexible false in
