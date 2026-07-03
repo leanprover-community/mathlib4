@@ -670,7 +670,7 @@ end Bilinear
 
 instance {R S : Type*} [Ring R] [Ring S] (F : ModuleCat R ⥤ ModuleCat S) [F.Full] [F.Faithful]
     (M : ModuleCat R) [h : Nontrivial M] : Nontrivial (F.obj M) := by
-  by_contra! inst1
+  by_contra!
   exact ((not_iff_not.2 ModuleCat.isZero_iff_subsingleton).2 <|
     not_subsingleton_iff_nontrivial.2 h) <| IsZero.of_full_of_faithful_of_isZero F _ <|
     ModuleCat.isZero_of_subsingleton <| F.obj M

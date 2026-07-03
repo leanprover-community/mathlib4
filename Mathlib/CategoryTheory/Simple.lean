@@ -87,17 +87,16 @@ theorem Simple.iff_of_iso {X Y : C} (i : X ≅ Y) : Simple X ↔ Simple Y :=
 
 theorem simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] (X : C) [Simple X] : Simple (F.obj X) := by
-  let e := F.asEquivalence
-  change Simple (e.functor.obj X)
-  have := e.counitIso.app (e.functor.obj X)
+  rw [← F.asEquivalence_functor]
+  have := F.asEquivalence.counitIso.app (F.asEquivalence.functor.obj X)
   rw [Functor.comp_obj, Functor.id_obj] at this
   have := Simple.of_iso <| Functor.preimageIso _ this
-  exact Functor.simple_of_simple_obj e.inverse _
+  exact Functor.simple_of_simple_obj F.asEquivalence.inverse _
 
 theorem simple_obj_iff {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] (X : C) :
     Simple (F.obj X) ↔ Simple X :=
-  ⟨fun _ => Functor.simple_of_simple_obj F X, fun _ => simple_obj F X⟩
+  ⟨fun _ ↦ Functor.simple_of_simple_obj F X, fun _ ↦ simple_obj F X⟩
 
 theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
     (w : f ≠ 0) : kernel.ι f = 0 := by
