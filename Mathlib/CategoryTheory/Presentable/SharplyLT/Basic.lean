@@ -343,7 +343,7 @@ lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
     (j := ⟨a, ha⟩) (j' := ⟨b, hb⟩) (homOfLE hab)
 
 set_option backward.defeqAttrib.useBackward true in
-/-- The functoriality of `colimimt` with respect to the subset `A`. -/
+/-- The functoriality of `colimit` with respect to the subset `A`. -/
 noncomputable def colimit.map
     {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)} (hA : A₁ ≤ A₂) :
     colimit κ₁ κ₂ p A₁ ⟶ colimit κ₁ κ₂ p A₂ :=
