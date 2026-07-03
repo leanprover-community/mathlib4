@@ -5,13 +5,12 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.Order.Filter.ENNReal
 public import Mathlib.Probability.UniformOn
 
 /-!
 # Essential supremum and infimum
+
 We define the essential supremum and infimum of a function `f : α → β` with respect to a measure
 `μ` on `α`. The essential supremum is the infimum of the constants `c : β` such that `f x ≤ c`
 almost everywhere.
