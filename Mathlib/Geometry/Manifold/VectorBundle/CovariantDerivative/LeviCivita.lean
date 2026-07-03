@@ -575,38 +575,40 @@ lemma contMDiffAt_iff_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [Fini
         (_hZ : CMDiffAt k (T% Z) x), CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x :=
   ⟨fun hW _Z hZ ↦ hW.inner_bundle' hZ, fun h ↦ contMDiffAt_of_inner k h⟩
 
-variable {I} in
-/-- A vector field on a Riemannian manifold `(M, g)` is `C^n` if if its pairing
-with any `C^n` vector field is `C^n`. This version assumes `M` is a `C^{n+1}`-manifold
-with a `C^n` metric. -/
-lemma contMDiff_of_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
-    [IsManifold I k M] [IsManifold I (k + 1) M]
-    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
-    (hW : ∀ {Z : (x : M) → TangentSpace% x}
-      (hZ : CMDiff k (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
-    CMDiff k (T% W) := by
-  intro x
-  apply contMDiffAt_of_inner
-  intro Z₀ hZ₀
-  -- TODO: right now, our extension construction is not strong enough
-  let Z := FiberBundle.extend E (Z₀ x)
-  -- this needs a different argument, to get away with something weaker
-  have scifi : CMDiff k(T% Z) := sorry
-  -- this also needs an upgraded construction
-  have scifi2 : Z₀ =ᶠ[nhds x] Z := sorry
-  apply (hW scifi x).congr_of_eventuallyEq <| scifi2.mono (by grind)
+-- unused
+-- variable {I} in
+-- /-- A vector field on a Riemannian manifold `(M, g)` is `C^n` if if its pairing
+-- with any `C^n` vector field is `C^n`. This version assumes `M` is a `C^{n+1}`-manifold
+-- with a `C^n` metric. -/
+-- lemma contMDiff_of_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+--     [IsManifold I k M] [IsManifold I (k + 1) M]
+--     [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)]
+--     (hW : ∀ {Z : (x : M) → TangentSpace% x}
+--       (hZ : CMDiff k (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
+--     CMDiff k (T% W) := by
+--   intro x
+--   apply contMDiffAt_of_inner
+--   intro Z₀ hZ₀
+--   -- TODO: right now, our extension construction is not strong enough
+--   let Z := FiberBundle.extend E (Z₀ x)
+--   -- this needs a different argument, to get away with something weaker
+--   have scifi : CMDiff k(T% Z) := sorry
+--   -- this also needs an upgraded construction
+--   have scifi2 : Z₀ =ᶠ[nhds x] Z := sorry
+--   apply (hW scifi x).congr_of_eventuallyEq <| scifi2.mono (by grind)
 
-variable {I} in
-/-- A vector field on a Riemannian manifold `(M, g)` is `C^n` if and only if its pairing
-with any `C^n` vector field is `C^n`.
-This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
-lemma contMDiff_iff_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
-    [IsManifold I k M] [IsManifold I (k + 1) M]
-    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] :
-    CMDiff k (T% W) ↔
-      ∀ {Z : (x : M) → TangentSpace% x}
-        (_hZ : CMDiff k (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫) :=
-  ⟨fun h _Z hZ ↦ ContMDiff.inner_bundle' h hZ, fun h ↦ contMDiff_of_inner k h⟩
+-- unused
+-- variable {I} in
+-- /-- A vector field on a Riemannian manifold `(M, g)` is `C^n` if and only if its pairing
+-- with any `C^n` vector field is `C^n`.
+-- This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
+-- lemma contMDiff_iff_inner (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
+--     [IsManifold I k M] [IsManifold I (k + 1) M]
+--     [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] :
+--     CMDiff k (T% W) ↔
+--       ∀ {Z : (x : M) → TangentSpace% x}
+--         (_hZ : CMDiff k (T% Z)), CMDiff k (fun x ↦ ⟪W x, Z x⟫) :=
+--   ⟨fun h _Z hZ ↦ ContMDiff.inner_bundle' h hZ, fun h ↦ contMDiff_of_inner k h⟩
 
 -- Straightforward version, but sufficient in practice??
 variable {I} in
@@ -659,17 +661,6 @@ lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
   intro i
   simp_rw [real_inner_comm]
   exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx)
-
--- TODO: can I use step2a above to prove this?
--- or is a variant true, with just C^n at x in the condition?
-variable {I} in
-lemma step2 (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
-    [IsManifold I (k + 2) M]
-    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
-    (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiff (k + 1) (T% Z)),
-      CMDiff k (fun x ↦ ⟪W x, Z x⟫)) :
-    CMDiff k (T% W) := by
-  sorry
 
 open Module in
 variable {I} in
