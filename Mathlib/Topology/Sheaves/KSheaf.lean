@@ -33,28 +33,9 @@ variable {A : Type u} [Category.{v} A] {X : TopCat.{w}}
 namespace TopCat
 
 variable (A X) in
-/-- The category of `A`-valued presheaves on a (bundled) topological space `X`. -/
-def KPresheaf : Type max u v w := (Compacts X)ᵒᵖ ⥤ A
-
-instance : Category (KPresheaf.{w, v, u} A X) :=
-  inferInstanceAs (Category ((Compacts X)ᵒᵖ ⥤ A : Type max u v w))
+abbrev KPresheaf : Type max u v w := (Compacts X)ᵒᵖ ⥤ A
 
 namespace KPresheaf
-
-@[simp]
-theorem id_app (P : KPresheaf A X) (K : (Compacts X)ᵒᵖ) : NatTrans.app (𝟙 P) K = 𝟙 _ := rfl
-
-@[simp]
-theorem comp_app (P Q R : KPresheaf A X) (K : (Compacts X)ᵒᵖ) (f : P ⟶ Q) (g : Q ⟶ R) :
-    (f ≫ g).app K = f.app K ≫ g.app K := rfl
-
-@[ext]
-lemma ext (P Q : KPresheaf A X) (f g : P ⟶ Q) (w : ∀ K : Compacts X, f.app (op K) = g.app (op K)) :
-    f = g := by
-  apply NatTrans.ext
-  ext K
-  induction K with | _ K => ?_
-  apply w
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
@@ -117,8 +98,11 @@ end KPresheaf
 variable [T2Space X]
 
 variable (X A) in
+abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := fun P ↦ P.IsKSheaf
+
+variable (X A) in
 /-- The category of Ksheaves taking values in `A` on a T2Space. -/
-abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.IsKSheaf (X := X) (A := A))
+abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
 
 namespace KSheaf
 
