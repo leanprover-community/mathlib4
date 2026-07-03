@@ -108,11 +108,9 @@ def rightFunctor : V ⥤ Arrow V where
   obj X := Arrow.mk (0 : 0 ⟶ X)
   map f := Arrow.homMk 0 f
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (rightFunctor V).Additive where
-  map_add {_ _ _ _} := by
-    ext
-    · exact HasZeroObject.from_zero_ext _ _
-    · rfl
+  map_add {_ _ _ _} := by cat_disch
 
 /-- The fully faithful additive functor from  `V` to `RightFreyd V` sending an object `X` of `V`
 to the class of the arrow `0 ⟶ X`. -/
