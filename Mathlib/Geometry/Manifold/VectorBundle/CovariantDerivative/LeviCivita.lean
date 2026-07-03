@@ -631,14 +631,12 @@ open Module in
 variable {I} in
 lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional ℝ E]
     [IsManifold I (k + 2) M]
-    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)]
-    [IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x)] {x : M}
+    [IsContMDiffRiemannianBundle I (k + 1) E (fun (x : M) ↦ TangentSpace% x)] {x : M}
     (hW : ∀ {Z : (x : M) → TangentSpace% x} (hZ : CMDiffAt (k + 1) (T% Z) x),
       CMDiffAt k (fun x ↦ ⟪W x, Z x⟫) x) :
     CMDiffAt k (T% W) x := by
-  -- This does not quite match, because clm_bundle_of_apply requires the fiber to be a space of
-  -- F →L[𝕜] F --- not merely a normed space E.
-  --#check' ContMDiffAt.clm_bundle_of_apply (IB := I) (B := M) (x := x)
+  -- TODO: can we (add and) use `ContMDiff.clm_bundle_of_apply₂ (IB := I) (B := M) (x := x)`
+  -- to simplify the proof here?
   nontriviality E
   -- Take an orthonormal frame.
   let b := Basis.ofVectorSpace ℝ E
@@ -652,6 +650,8 @@ lemma step2a (k : ℕ∞) {W : (x : M) → TangentSpace% x} [FiniteDimensional �
     exact r
   have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  have : IsContMDiffRiemannianBundle I k E (fun (x : M) ↦ TangentSpace% x) :=
+    IsContMDiffRiemannianBundle.of_le (n' := k) (n := k + 1) (by norm_num)
   have : IsManifold I (↑k + 1 + 1) M := by rwa [show (k : ℕ∞ω) + 1 + 1 = k + 2 by ring]
   have : ContMDiffVectorBundle (k + 1) E (fun (x : M) ↦ TangentSpace% x) I :=
     TangentBundle.contMDiffVectorBundle
