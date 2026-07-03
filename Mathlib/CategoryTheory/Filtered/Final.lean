@@ -92,6 +92,14 @@ theorem isCofiltered_costructuredArrow_of_isCofiltered_of_exists [IsCofilteredOr
     obtain ⟨c', t, ht⟩ := h₂ s.unop s'.unop
     exact ⟨op c', Quiver.Hom.op t, Quiver.Hom.unop_inj ht⟩
 
+theorem exists_eq_of_isCofiltered_costructuredArrow {d : D}
+    [IsCofiltered (CostructuredArrow F d)] {c₁ c₂ : C}
+    (s₁ : F.obj c₁ ⟶ d) (s₂ : F.obj c₂ ⟶ d) :
+    ∃ (c : C) (t₁ : c ⟶ c₁) (t₂ : c ⟶ c₂), F.map t₁ ≫ s₁ = F.map t₂ ≫ s₂ := by
+  obtain ⟨W, p₁, p₂, -⟩ := IsCofilteredOrEmpty.cone_objs
+    (CostructuredArrow.mk s₁) (CostructuredArrow.mk s₂)
+  exact ⟨W.left, p₁.left, p₂.left, (CostructuredArrow.w p₁).trans (CostructuredArrow.w p₂).symm⟩
+
 /-- If `C` is filtered, then we can give an explicit condition for a functor `F : C ⥤ D` to
 be final. The converse is also true, see `final_iff_of_isFiltered`. -/
 theorem Functor.final_of_exists_of_isFiltered [IsFilteredOrEmpty C]
@@ -482,3 +490,19 @@ lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J
       exact ⟨j₁, ⟨homOfLE h₁⟩⟩
     · intro _ c _ _
       exact ⟨c, 𝟙 _, rfl⟩
+
+lemma Monotone.initial_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
+    [IsCodirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
+    hf.functor.Initial ↔ ( ∀ j₁,∃ j₂, f j₂ ≤ j₁) := by
+  rw [Functor.initial_iff_of_isCofiltered]
+  constructor
+  · rintro ⟨h, _⟩ j₂
+    obtain ⟨j₁, ⟨φ⟩⟩ := h j₂
+    exact ⟨j₁,leOfHom φ⟩
+  · intro h
+    constructor
+    · intro j₂
+      obtain ⟨j₁, h₁⟩ := h j₂
+      exact ⟨j₁, ⟨homOfLE h₁⟩⟩
+    · intro _ c _ _
+      exact ⟨ c, 𝟙 _, rfl⟩

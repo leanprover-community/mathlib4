@@ -110,7 +110,7 @@ noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B :
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the induced `H`-representation `ind φ A`, with action on maps induced by left tensoring. -/
-@[simps obj map]
+@[implicit_reducible, simps obj map]
 noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
   obj A := ind φ A
   map f := indMap φ f
@@ -152,8 +152,6 @@ noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u
     simpa using (hom_comm_apply f h⁻¹ (IndV.mk φ A.ρ 1 a)).symm
   right_inv _ := by ext; simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, the induction functor `Rep k G ⥤ Rep k H` is left
 adjoint to the restriction functor along `φ`. -/
@@ -262,8 +260,7 @@ noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ resFunctor φ ⋙ (coinvariantsTensor k G).obj A :=
   NatIso.ofComponents (fun B => coinvariantsTensorIndIso φ A B) fun {X Y} f => by
     ext
-    simp [coinvariantsTensorIndHom, coinvariantsTensorMk,
-      hom_comm_apply, Representation.IntertwiningMap.toLinearMap_apply]
+    simp [coinvariantsTensorIndHom, coinvariantsTensorMk, hom_comm_apply]
 
 end
 end Rep
