@@ -82,7 +82,8 @@ theorem inertiaDeg'_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
     [Algebra (S ⧸ q) L] [IsFractionRing (S ⧸ q) L]
     [Algebra R K] [IsScalarTower R (R ⧸ p) K]
     [Algebra S L] [IsScalarTower S (S ⧸ q) L]
-    [Algebra K L] [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] :
+    [Algebra R L] [IsScalarTower R S L]
+    [Algebra K L] [IsScalarTower R K L] :
     q.inertiaDeg' R = Module.finrank K L := by
   let := Localization.AtPrime.algebraOfLiesOver p q
   rw [inertiaDeg'_eq p q]
