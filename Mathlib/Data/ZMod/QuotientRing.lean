@@ -84,12 +84,12 @@ def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
   quotientInfRingEquivPiQuotient _ this |>.trans <|
   RingEquiv.piCongrRight fun i ↦ Int.quotientSpanNatEquivZMod (a i)
 
-open scoped Function in
+open Finset Function in
 @[simp]
 theorem ZMod.prodEquivPi_apply {ι : Type*} [Fintype ι] (a : ι → ℕ)
  (coprime : Pairwise (Nat.Coprime on a)) (b : ZMod (∏ i, a i)) (i : ι) :
    ZMod.prodEquivPi a coprime b i =
-   ZMod.castHom (Finset.dvd_prod_of_mem a (Finset.mem_univ i)) (ZMod (a i)) b :=
+   ZMod.castHom (dvd_prod_of_mem a (mem_univ i)) _ b :=
   RingHom.congr_fun (Subsingleton.elim ((Pi.evalRingHom (fun i => ZMod (a i)) i).comp
   (ZMod.prodEquivPi a coprime).toRingHom) _) b
 
