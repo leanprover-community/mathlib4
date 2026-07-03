@@ -319,13 +319,12 @@ variable {W}
 protected lemma id : IsEllipticSequence (id : ℤ → ℤ) :=
   IsEllipticNet.id.isEllipticSequence
 
-@[deprecated (since := "2026-07-01")] alias isEllSequence_id := id
-
 protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| x • W :=
   fun p q r ↦ by linear_combination (norm := (simp [IsEllipticNet.rel]; ring1)) x ^ 4 * h p q r
 
 end IsEllipticSequence
 
+@[deprecated (since := "2026-07-01")] alias isEllSequence_id := IsEllipticSequence.id
 @[deprecated (since := "2026-07-01")] alias IsEllSequence.smul := IsEllipticSequence.smul
 
 namespace IsEllipticDvdSequence
@@ -336,13 +335,12 @@ variable {W}
 protected theorem id : IsEllipticDvdSequence (id : ℤ → ℤ) :=
   ⟨IsEllipticSequence.id, .id ℤ⟩
 
-@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := id
-
 protected lemma smul (h : IsEllipticDvdSequence W) (x : R) : IsEllipticDvdSequence <| x • W :=
   ⟨h.left.smul x, h.right.smul x⟩
 
 end IsEllipticDvdSequence
 
+@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := IsEllipticDvdSequence.id
 @[deprecated (since := "2026-06-30")] alias IsEllDivSequence.smul := IsEllipticDvdSequence.smul
 
 variable (b c d : R)
