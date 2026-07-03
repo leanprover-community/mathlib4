@@ -196,6 +196,7 @@ section HasLaw
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
+/-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]
     [MeasurableSpace M] [MeasurableSingletonClass M] (c : M) {s : Set Ω}
     (hs : NullMeasurableSet s P) :
@@ -211,6 +212,7 @@ theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [
       simp_all [Set.indicator_const_preimage_eq_union, measure_compl₀ hs, ENNReal.coe_nnreal_eq,
         ENNReal.ofReal_sub]
 
+/-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_one_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M] [One M]
     [MeasurableSpace M] [MeasurableSingletonClass M] {s : Set Ω} (hs : NullMeasurableSet s P) :
     HasLaw (s.indicator (1 : Ω → M)) Ber(1, 0, ⟨P.real s, by simp⟩) P :=
