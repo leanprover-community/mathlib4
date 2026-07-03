@@ -419,6 +419,11 @@ lemma toENNReal_sub {x y : EReal} (hy : 0 ≤ y) :
       ofReal_sub x (EReal.coe_nonneg.mp hy)]
     simp
 
+lemma add_sub_add_comm {a b c d : EReal} (h1 : c ≠ ⊥ ∨ d ≠ ⊤) (h2 : c ≠ ⊤ ∨ d ≠ ⊥) :
+    a + b - (c + d) = (a - c) + (b - d) := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, sub_eq_add_neg, EReal.neg_add h1 h2, sub_eq_add_neg]
+  grind
+
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   cases a <;> norm_cast
   exact _root_.add_sub_cancel_right _ _
@@ -487,6 +492,27 @@ lemma sub_lt_of_lt_add {a b c : EReal} (h : a < b + c) : a - c < b :=
 /-- See also `EReal.sub_lt_of_lt_add`. -/
 lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
   sub_lt_of_lt_add <| by rwa [add_comm]
+
+lemma sub_lt_sub_of_le_of_gt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
+    (hx_top : x ≠ ⊤) (hy_bot : y ≠ ⊥) :
+    x - t < y - z := by
+  refine sub_lt_of_lt_add' ?_
+  rw [add_sub_assoc', add_comm, add_sub_assoc]
+  by_cases hy_top : y = ⊤
+  · rw [hy_top, top_add_of_ne_bot]
+    · exact hx_top.lt_top
+    · exact ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le
+  by_cases hxy : x = y
+  · rw [hxy]
+    lift y to ℝ using ⟨hy_top, hy_bot⟩
+    by_cases htz_top : t - z = ⊤
+    · simp_all
+    rw [← coe_toReal htz_top <| ne_bot_of_le_ne_bot (by simp) (sub_pos.mpr h').le]
+    norm_cast
+    refine lt_add_of_pos_right y ?_
+    exact EReal.toReal_pos (sub_pos.mpr h') htz_top
+  · rw [← add_zero x]
+    exact add_lt_add (by grind) (sub_pos.mpr h')
 
 /-! ### Addition and order -/
 
@@ -790,6 +816,11 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
   exact right_distrib_of_nonneg ha hb
 
+lemma mul_sub_of_nonneg_of_nonpos {a b c : EReal} (hb : 0 ≤ b) (hc : c ≤ 0) :
+    a * (b - c) = a * b - a * c := by
+  rw [sub_eq_add_neg, left_distrib_of_nonneg hb (by simpa)]
+  simp [← neg_mul, sub_eq_add_neg]
+
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
@@ -804,6 +835,16 @@ lemma right_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     (y + z) * x = y * x + z * x := by
   simpa only [EReal.mul_comm] using left_distrib_of_nonneg_of_ne_top hx_nonneg hx_ne_top y z
+
+lemma mul_sub_of_nonneg_of_ne_top {a b c : EReal} (ha : 0 ≤ a) (ha' : a ≠ ⊤) :
+    a * (b - c) = a * b - a * c := by
+  rw [sub_eq_add_neg, left_distrib_of_nonneg_of_ne_top ha ha']
+  simp [← neg_mul, sub_eq_add_neg]
+
+lemma sub_mul_of_nonneg_of_ne_top {a b c : EReal} (ha : 0 ≤ a) (ha' : a ≠ ⊤) :
+    (b - c) * a = b * a - c * a := by
+  rw [sub_eq_add_neg, right_distrib_of_nonneg_of_ne_top ha ha']
+  simp [← neg_mul, sub_eq_add_neg]
 
 @[simp]
 lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
