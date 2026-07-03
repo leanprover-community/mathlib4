@@ -199,6 +199,9 @@ class Weight where
   upperBound : ℝ
   le_first' : ∀ x ≥ 1, lowerBound ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, toFun n - log x
   first_le' : ∀ x ≥ 1, ∑ n ∈ Ioc 0 ⌊x⌋₊, toFun n - log x ≤ upperBound
+  /-- A constant for the pointwise bound on the function -/
+  C₀ : ℝ
+  toFun_bound (n : ℕ) : |toFun n| ≤ C₀ * log n / n
 
 namespace Weight
 
@@ -231,11 +234,18 @@ lemma le_first {t : ℝ} (ht : t ≥ 1) : lowerBound ≤ E₁ t := le_first' t h
 
 lemma first_le {t : ℝ} (ht : t ≥ 1) : E₁ t ≤ upperBound := first_le' t ht
 
+lemma apply_bound (n : ℕ) : |f n| ≤ C₀ * log n / n := f.toFun_bound n
+
 lemma hi_nonneg : 0 ≤ upperBound := by
   simpa [(by rfl : Icc 0 1 = {0, 1})] using first_le' 1 (by rfl)
 
 lemma lo_nonpos : lowerBound ≤ 0 := by
   simpa [(by rfl : Icc 0 1 = {0, 1})] using le_first' 1 (by rfl)
+
+lemma C₀_nonneg : 0 ≤ C₀ := by
+  refine le_of_mul_le_mul_of_pos_right ?_ (by positivity : 0 < log ↑(2 : ℕ) / ↑(2 : ℕ))
+  grw [← mul_div_assoc, ← mul_div_assoc, ← apply_bound 2, ← abs_nonneg]
+  simp
 
 /-- An absolute value bound for the first Mertens error. -/
 noncomputable def C₁ := max (-lowerBound) upperBound
@@ -551,8 +561,7 @@ private lemma mul_sum_prime_le :
     gcongr with p _
     split_ifs with hp
     · simp [vonMangoldt_apply_prime hp]
-    have : 0 ≤ Λ p := vonMangoldt_nonneg
-    positivity
+    positivity [vonMangoldt_nonneg (n := p)]
 
 private lemma sum_prime_le {x : ℝ} (hx : 1 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊, primeFun n ≤ log x + log 4 := by
@@ -720,6 +729,12 @@ noncomputable def Weight.vonMangoldt : Weight := {
     unfold vonMangoldtFun
     linarith [sum_prime_le hx, E₁_le, sum_vonMangoldt_le_sum_prime_add_E₁ hx,
       sum_prime_eq ⌊x⌋₊]
+  C₀ := 1
+  toFun_bound n := by
+    unfold vonMangoldtFun
+    rw [abs_of_nonneg, one_mul]
+    · gcongr; exact vonMangoldt_le_log
+    · positivity [vonMangoldt_nonneg (n := n)]
 }
 
 @[simp]
@@ -750,6 +765,12 @@ noncomputable def Weight.prime : Weight := {
     have : -2 ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x := Weight.vonMangoldt.le_first' x hx
     linarith [E₁_le, sum_vonMangoldt_le_sum_prime_add_E₁ hx, sum_prime_eq ⌊x⌋₊]
   first_le' x hx := by linarith [sum_prime_le hx]
+  C₀ := 1
+  toFun_bound n := by
+    unfold primeFun
+    split_ifs
+    · rw [abs_of_nonneg, one_mul]; positivity
+    · rw [abs_zero]; positivity
 }
 
 @[simp]
