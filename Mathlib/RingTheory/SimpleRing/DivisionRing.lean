@@ -19,7 +19,7 @@ This file contains some results about simple modules over division rings.
   a division ring, up to isomorphism.
 * `isSimpleModule_iff_eq_zero_or_injective` : A module is simple if and only if it is nontrivial
   and every linear map from it is either zero or injective, this is the module analogue of
-  `RingHom.Injective`
+  `RingHom.injective`
 * `IsSimpleModule.obj_of_isEquivalence` : If `M` is a simple module over a ring `R`, and
   `e : ModuleCat R ⥤ ModuleCat S` is an equivalence of categories,
   then `e(M)` is a simple module over `S`.
