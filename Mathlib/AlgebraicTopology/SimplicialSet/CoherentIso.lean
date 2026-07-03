@@ -185,7 +185,6 @@ def invStructHom : Edge.InvStruct.{u} coherentIso.hom where
 
 /-- For a simplicial set `X`, if an edge in `X` is equal to the image of `hom`
 under a morphism of simplicial sets, this edge has an inverse. -/
-this edge has an inverse. -/
 abbrev invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
     {g : coherentIso ⟶ X}
