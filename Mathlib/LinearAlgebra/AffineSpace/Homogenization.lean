@@ -271,6 +271,10 @@ theorem lift_const_apply {u : W} {x : Homogenization k P} :
     lift (AffineMap.const k P u) x = weight x • u := by
   cases x; simp
 
+theorem weight_surjective : Function.Surjective (weight (k := k) (P := P)) :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  fun c => ⟨c • ofPoint p, by simp⟩
+
 /-- An affine map between two affine spaces extends to a linear map between their homogenizations.
 -/
 @[expose]
