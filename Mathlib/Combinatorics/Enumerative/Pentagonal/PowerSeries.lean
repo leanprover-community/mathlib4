@@ -41,7 +41,7 @@ namespace Pentagonal
 
 theorem tendsto_order_pow_mul_prod_one_sub_pow (k : ℕ) :
     Tendsto (fun i ↦ (X ^ ((k + 1) * i) *
-      ∏ i ∈ Finset.range (i + 1), (1 - X ^ (k + i + 1)) : R⟦X⟧).order) atTop (𝓝 ⊤) := by
+      ∏ j ∈ Finset.range (i + 1), (1 - X ^ (k + j + 1)) : R⟦X⟧).order) atTop (𝓝 ⊤) := by
   nontriviality R using Subsingleton.eq_zero
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n + 1, ?_⟩
   intro m hm
@@ -60,7 +60,7 @@ variable [TopologicalSpace R]
 
 theorem summable_pow_mul_prod_one_sub_pow (k : ℕ) :
     Summable
-      (fun n ↦ (X ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - X ^ (k + i + 1)) : R⟦X⟧)) :=
+      fun n ↦ (X ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - X ^ (k + i + 1)) : R⟦X⟧) :=
   summable_of_tendsto_order_atTop_nhds_top R (tendsto_order_pow_mul_prod_one_sub_pow R k)
 
 theorem multipliable_one_sub_X_pow (k : ℕ) : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + k + 1) := by

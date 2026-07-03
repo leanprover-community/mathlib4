@@ -16,11 +16,13 @@ This is an intermediate file that proves the pentagonal number theorem in a gene
 modulo summability and multipliability. The complete proof for formal power series is in
 `Mathlib/RingTheory/PowerSeries/Pentagonal.lean`. TODO: also prove for real/complex numbers.
 
-# Declarations
+## Declarations
+
 * `Pentagonal.tprod_one_sub_pow`: pentagonal number theorem with a few summability and
   multipliability assumptions.
 
-Reference:
+## References
+
 https://math.stackexchange.com/questions/55738/how-to-prove-eulers-pentagonal-theorem-some-hints-will-help
 
 -/
