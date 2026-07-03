@@ -15,14 +15,14 @@ Basic API for the double cosets `HeckeCoset` indexing a Hecke coset module, foll
 [Shimura][shimura1971], Chapter 3. This file provides representatives of double cosets, the
 characterisation of when two elements give the same double coset, and the quotient
 `Γ₁ ⧸ (Γ₁ ∩ gΓ₂g⁻¹)` indexing the left cosets inside a double coset `Γ₁gΓ₂`, which is used to
-define the Hecke product in later files and is finite for a Hecke coset module datum.
+define the Hecke product in later files and is finite for a Hecke triple.
 
 ## Main definitions
 
 * `HeckeCoset.toSet`: the underlying set `H₁gH₂` of a double coset.
 * `HeckeCoset.rep`: a chosen representative in `Δ`.
 * `DoubleCoset.DecompQuotient`: the quotient `Γ₁ ⧸ (Γ₁ ∩ gΓ₂g⁻¹)` indexing the left cosets
-  in `Γ₁gΓ₂`; finite for a Hecke coset module datum.
+  in `Γ₁gΓ₂`; finite for a Hecke triple.
 
 ## Main results
 
@@ -102,19 +102,19 @@ instance (Γ₁ Γ₂ : Subgroup G) (g : G) : Nonempty (DecompQuotient Γ₁ Γ�
 
 end DoubleCoset
 
-namespace IsHeckeCosetModule
+namespace IsHeckeTriple
 
-/-- For a Hecke coset module datum, the decomposition quotient of any `g : Δ` is finite: `Δ`
+/-- For a Hecke triple, the decomposition quotient of any `g : Δ` is finite: `Δ`
 commensurates `H₂`, which is commensurable with `H₁`. -/
-noncomputable instance {Δ : Submonoid G} {H₁ H₂ : Subgroup G} [IsHeckeCosetModule Δ H₁ H₂]
+noncomputable instance {Δ : Submonoid G} {H₁ H₂ : Subgroup G} [IsHeckeTriple Δ H₁ H₂]
     (g : Δ) : Fintype (DecompQuotient H₁ H₂ (g : G)) :=
-  Subgroup.fintypeOfIndexNeZero (IsHeckeCosetModule.commensurable_conjAct_right g).1
+  Subgroup.fintypeOfIndexNeZero (IsHeckeTriple.commensurable_conjAct_right g).1
 
 /-- The decomposition quotient with the two subgroups swapped is finite from the same datum,
 since `Δ` also commensurates the left subgroup (`le_commensurator_left`). Lower priority, so
 that the unswapped instance is preferred in the diagonal case. -/
 noncomputable instance (priority := 900) {Δ : Submonoid G} {H₁ H₂ : Subgroup G}
-    [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) : Fintype (DecompQuotient H₂ H₁ (g : G)) :=
-  Subgroup.fintypeOfIndexNeZero (IsHeckeCosetModule.commensurable_conjAct_left g).1
+    [IsHeckeTriple Δ H₁ H₂] (g : Δ) : Fintype (DecompQuotient H₂ H₁ (g : G)) :=
+  Subgroup.fintypeOfIndexNeZero (IsHeckeTriple.commensurable_conjAct_left g).1
 
-end IsHeckeCosetModule
+end IsHeckeTriple

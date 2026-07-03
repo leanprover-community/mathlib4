@@ -118,7 +118,7 @@ variable {G : Type*} [Group G] {Δ : Submonoid G} {H₁ H₂ : Subgroup G}
 
 /-- Every pair of representatives multiplies into `mk H₁ H₂ g₁` when the second double coset is
 the identity. -/
-lemma mulMap_one_right [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₂] (g₁ : Δ)
+lemma mulMap_one_right [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₂] (g₁ : Δ)
     (p : DecompQuotient H₁ H₂ (g₁ : G) ×
       DecompQuotient H₂ H₂ (((1 : HeckeCoset Δ H₂ H₂).rep : G))) :
     mulMap H₁ H₂ H₂ g₁ (1 : HeckeCoset Δ H₂ H₂).rep p = mk H₁ H₂ g₁ :=
@@ -128,7 +128,7 @@ lemma mulMap_one_right [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ 
 
 /-- Every pair of representatives multiplies into `mk H₁ H₂ g₁` when the first double coset is
 the identity. -/
-lemma mulMap_one_left [IsHeckeCosetModule Δ H₁ H₁] [IsHeckeCosetModule Δ H₁ H₂] (g₁ : Δ)
+lemma mulMap_one_left [IsHeckeTriple Δ H₁ H₁] [IsHeckeTriple Δ H₁ H₂] (g₁ : Δ)
     (p : DecompQuotient H₁ H₁ (((1 : HeckeCoset Δ H₁ H₁).rep : G)) ×
       DecompQuotient H₁ H₂ (g₁ : G)) :
     mulMap H₁ H₁ H₂ (1 : HeckeCoset Δ H₁ H₁).rep g₁ p = mk H₁ H₂ g₁ :=

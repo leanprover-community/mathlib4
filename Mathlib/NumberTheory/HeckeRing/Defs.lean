@@ -15,7 +15,7 @@ public import Mathlib.GroupTheory.DoubleCoset
 The abstract Hecke ring of a *Hecke pair* `(H, Δ)` and, more generally, the Hecke coset modules
 attached to a triple `(H₁, Δ, H₂)`, following [Shimura][shimura1971], Chapter 3, and
 [Krieg][krieg1990], Chapter I. This file sets up the underlying types: the compatibility
-conditions `IsHeckeCosetModule Δ H₁ H₂` on a submonoid `Δ` and a pair of subgroups, the
+conditions `IsHeckeTriple Δ H₁ H₂` on a submonoid `Δ` and a pair of subgroups, the
 double-coset quotient `HeckeCoset Δ H₁ H₂` of `Δ` by `H₁gH₂ = H₁hH₂`, and the Hecke coset module
 `𝕋 Δ H₁ H₂ Z` of formal finitely-supported linear combinations of double cosets. The convolution
 product `𝕋 Δ H₁ H₂ Z × 𝕋 Δ H₂ H₃ Z → 𝕋 Δ H₁ H₃ Z` and the ring structure on the diagonal
@@ -29,10 +29,10 @@ subgroups `H₁ ≠ H₂` arise for Hecke operators between different levels, e.
 
 ## Main definitions
 
-* `IsHeckeCosetModule Δ H₁ H₂`: the compatibility conditions `H₁ ≤ Δ`, `H₂ ≤ Δ`,
-  `Commensurable H₁ H₂` and `Δ ≤ commensurator H₂` making the double cosets `H₁\Δ/H₂` finite
+* `IsHeckeTriple Δ H₁ H₂`: `(H₁, Δ, H₂)` is a Hecke triple, i.e. `H₁ ≤ Δ`, `H₂ ≤ Δ`,
+  `Commensurable H₁ H₂` and `Δ ≤ commensurator H₂`, making the double cosets `H₁\Δ/H₂` finite
   unions of left cosets. The classical Hecke pair `(H, Δ)` is the diagonal case
-  `IsHeckeCosetModule Δ H H`.
+  `IsHeckeTriple Δ H H`.
 * `HeckeCoset Δ H₁ H₂`: the quotient of `Δ` by the relation `H₁gH₂ = H₁hH₂`, i.e. the double
   cosets `H₁\Δ/H₂` forming the basis of the Hecke coset module.
 * `HeckeCosetModule Δ H₁ H₂ Z`, notation `𝕋 Δ H₁ H₂ Z`: the Hecke coset module with
@@ -42,7 +42,7 @@ subgroups `H₁ ≠ H₂` arise for Hecke operators between different levels, e.
 ## Implementation notes
 
 The data `(Δ, H₁, H₂)` enters unbundled, with the compatibility conditions collected in the
-Prop-valued class `IsHeckeCosetModule`: the types `HeckeCoset Δ H₁ H₂` and `𝕋 Δ H₁ H₂ Z` are
+Prop-valued class `IsHeckeTriple`: the types `HeckeCoset Δ H₁ H₂` and `𝕋 Δ H₁ H₂ Z` are
 built from the data alone and depend on no proofs, and a single ambient `Δ` shared by all levels
 (as in [Shimura][shimura1971]) means products of double cosets over different subgroups,
 `H₁g₁H₂ * H₂g₂H₃ ⊆ Δ`, need no compatibility hypotheses. The conditions are only needed for the
@@ -63,11 +63,12 @@ open scoped Pointwise
 
 variable {G : Type*} [Group G]
 
-/-- The compatibility conditions on a submonoid `Δ` and a pair of subgroups `H₁, H₂` of `G`
-making the double cosets `H₁\Δ/H₂` finite unions of left cosets: both subgroups are contained
-in `Δ`, they are commensurable, and `Δ` commensurates them. The classical Hecke pair `(H, Δ)`
-of [Shimura][shimura1971], Chapter 3, is the diagonal case `IsHeckeCosetModule Δ H H`. -/
-class IsHeckeCosetModule (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Prop where
+/-- A *Hecke triple* `(H₁, Δ, H₂)`: the compatibility conditions on a submonoid `Δ` and a pair
+of subgroups `H₁, H₂` of `G` making the double cosets `H₁\Δ/H₂` finite unions of left cosets:
+both subgroups are contained in `Δ`, they are commensurable, and `Δ` commensurates them. The
+classical Hecke pair `(H, Δ)` of [Shimura][shimura1971], Chapter 3, is the diagonal case
+`IsHeckeTriple Δ H H`. -/
+class IsHeckeTriple (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Prop where
   /-- The left subgroup is contained in `Δ`. -/
   left_le : H₁.toSubmonoid ≤ Δ
   /-- The right subgroup is contained in `Δ`. -/
@@ -78,80 +79,80 @@ class IsHeckeCosetModule (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Prop wher
   being commensurable, also in that of the left one; see `le_commensurator_left`). -/
   le_commensurator : Δ ≤ (commensurator H₂).toSubmonoid
 
-namespace IsHeckeCosetModule
+namespace IsHeckeTriple
 
 variable {Δ : Submonoid G} {H₁ H₂ H₃ : Subgroup G}
 
 /-- A Hecke pair `(H, Δ)` with `H ≤ Δ ≤ commensurator H` is the diagonal case. -/
 theorem of_diagonal {H : Subgroup G} (h : H.toSubmonoid ≤ Δ)
-    (hc : Δ ≤ (commensurator H).toSubmonoid) : IsHeckeCosetModule Δ H H :=
+    (hc : Δ ≤ (commensurator H).toSubmonoid) : IsHeckeTriple Δ H H :=
   ⟨h, h, .refl H, hc⟩
 
 /-- Elements of the left subgroup lie in `Δ`. The right subgroup is explicit, since it cannot
 be inferred. -/
-theorem mem_left (H₂ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂] {x : G} (hx : x ∈ H₁) : x ∈ Δ :=
+theorem mem_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₁) : x ∈ Δ :=
   left_le (H₂ := H₂) hx
 
 /-- Elements of the right subgroup lie in `Δ`. The left subgroup is explicit, since it cannot
 be inferred. -/
-theorem mem_right (H₁ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂] {x : G} (hx : x ∈ H₂) : x ∈ Δ :=
+theorem mem_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₂) : x ∈ Δ :=
   right_le (H₁ := H₁) hx
 
 /-- The submonoid `Δ` also lies in the commensurator of the left subgroup. -/
-theorem le_commensurator_left [IsHeckeCosetModule Δ H₁ H₂] :
+theorem le_commensurator_left [IsHeckeTriple Δ H₁ H₂] :
     Δ ≤ (commensurator H₁).toSubmonoid := by
   rw [Subgroup.Commensurable.eq (commensurable (Δ := Δ) (H₁ := H₁) (H₂ := H₂))]
   exact le_commensurator H₁
 
 /-- Elements of `Δ` lie in the commensurator of the right subgroup. The left subgroup is
 explicit, since it cannot be inferred. -/
-theorem mem_commensurator_right (H₁ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) :
+theorem mem_commensurator_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     (g : G) ∈ commensurator H₂ :=
   le_commensurator H₁ g.2
 
 /-- Elements of `Δ` lie in the commensurator of the left subgroup. The right subgroup is
 explicit, since it cannot be inferred. -/
-theorem mem_commensurator_left (H₂ : Subgroup G) [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) :
+theorem mem_commensurator_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     (g : G) ∈ commensurator H₁ :=
   le_commensurator_left (H₂ := H₂) g.2
 
 /-- Conjugating the right subgroup by an element of `Δ` gives a subgroup commensurable with
 the left one; this is the finiteness underlying `DoubleCoset.DecompQuotient H₁ H₂`. -/
-theorem commensurable_conjAct_right [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) :
+theorem commensurable_conjAct_right [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     Commensurable (ConjAct.toConjAct (g : G) • H₂) H₁ := by
   have hg : Commensurable (ConjAct.toConjAct (g : G) • H₂) H₂ := mem_commensurator_right H₁ g
   exact hg.trans (commensurable (Δ := Δ)).symm
 
 /-- Conjugating the left subgroup by an element of `Δ` gives a subgroup commensurable with
 the right one; this is the finiteness underlying `DoubleCoset.DecompQuotient H₂ H₁`. -/
-theorem commensurable_conjAct_left [IsHeckeCosetModule Δ H₁ H₂] (g : Δ) :
+theorem commensurable_conjAct_left [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     Commensurable (ConjAct.toConjAct (g : G) • H₁) H₂ := by
   have hg : Commensurable (ConjAct.toConjAct (g : G) • H₁) H₁ := mem_commensurator_left H₂ g
   exact hg.trans (commensurable (Δ := Δ))
 
 /-- The reversed datum `(H₂, Δ, H₁)`. Not an instance, since instance search would loop. -/
-theorem symm [IsHeckeCosetModule Δ H₁ H₂] : IsHeckeCosetModule Δ H₂ H₁ :=
+theorem symm [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₂ H₁ :=
   ⟨right_le (H₁ := H₁), left_le (H₂ := H₂), (commensurable (Δ := Δ)).symm,
     le_commensurator_left (H₂ := H₂)⟩
 
 /-- Hecke coset module data compose. Not an instance, since the middle subgroup cannot be
 inferred from the goal. -/
-theorem trans [IsHeckeCosetModule Δ H₁ H₂] [IsHeckeCosetModule Δ H₂ H₃] :
-    IsHeckeCosetModule Δ H₁ H₃ :=
+theorem trans [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃] :
+    IsHeckeTriple Δ H₁ H₃ :=
   ⟨left_le (H₂ := H₂), right_le (H₁ := H₂),
     (commensurable (Δ := Δ) (H₁ := H₁) (H₂ := H₂)).trans
       (commensurable (Δ := Δ) (H₁ := H₂) (H₂ := H₃)),
     le_commensurator (H₁ := H₂)⟩
 
 /-- The left diagonal datum `(H₁, Δ, H₁)`. Not an instance, since `H₂` cannot be inferred. -/
-theorem diag_left [IsHeckeCosetModule Δ H₁ H₂] : IsHeckeCosetModule Δ H₁ H₁ :=
+theorem diag_left [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₁ H₁ :=
   ⟨left_le (H₂ := H₂), left_le (H₂ := H₂), .refl H₁, le_commensurator_left (H₂ := H₂)⟩
 
 /-- The right diagonal datum `(H₂, Δ, H₂)`. Not an instance, since `H₁` cannot be inferred. -/
-theorem diag_right [IsHeckeCosetModule Δ H₁ H₂] : IsHeckeCosetModule Δ H₂ H₂ :=
+theorem diag_right [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₂ H₂ :=
   ⟨right_le (H₁ := H₁), right_le (H₁ := H₁), .refl H₂, le_commensurator (H₁ := H₁)⟩
 
-end IsHeckeCosetModule
+end IsHeckeTriple
 
 /-- The setoid on `Δ` identifying elements with the same double coset `H₁gH₂ = H₁hH₂`, pulled
 back from `DoubleCoset.setoid` along the inclusion `Δ ↪ G`.
