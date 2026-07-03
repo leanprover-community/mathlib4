@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.MeasureTheory.Order.Lattice
+public import Mathlib.MeasureTheory.Order.Group.Lattice
 
 /-!
 # Aux lemmas: move them elsewhere
@@ -42,37 +43,5 @@ lemma EReal.posPart_fun_sub_negPart_fun (f : α → EReal) : f⁺ - f⁻ = f := 
 lemma EReal.posPart_fun_eq_zero_or_negPart_fun_eq_zero (f : α → EReal) (x : α) :
     f⁺ x = 0 ∨ f⁻ x = 0 := by
   rcases le_total 0 (f x) with h | h <;> simp [posPart_def, negPart_def, h]
-
-variable {β : Type*} {mβ : MeasurableSpace β} [DivInvMonoid β] [Lattice β] [MeasurableSup β]
-  {μ : Measure α} {f : α → β}
-
-@[to_additive (attr := fun_prop)]
-lemma Measurable.oneLePart (hf : Measurable f) : Measurable f⁺ᵐ := hf.sup_const 1
-
-@[to_additive (attr := fun_prop)]
-lemma Measurable.oneLePart' (hf : Measurable f) : Measurable (fun x ↦ (f x)⁺ᵐ) := hf.sup_const 1
-
-@[to_additive (attr := fun_prop)]
-lemma Measurable.leOnePart [MeasurableInv β] (hf : Measurable f) : Measurable f⁻ᵐ :=
-  hf.inv.sup_const 1
-
-@[to_additive (attr := fun_prop)]
-lemma Measurable.leOnePart' [MeasurableInv β] (hf : Measurable f) : Measurable (fun x ↦ (f x)⁻ᵐ) :=
-  hf.inv.sup_const 1
-
-@[to_additive (attr := fun_prop)]
-lemma AEMeasurable.oneLePart (hf : AEMeasurable f μ) : AEMeasurable f⁺ᵐ μ := hf.sup_const 1
-
-@[to_additive (attr := fun_prop)]
-lemma AEMeasurable.oneLePart' (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ (f x)⁺ᵐ) μ :=
-  hf.sup_const 1
-
-@[to_additive (attr := fun_prop)]
-lemma AEMeasurable.leOnePart [MeasurableInv β] (hf : AEMeasurable f μ) : AEMeasurable f⁻ᵐ μ :=
-  hf.inv.sup_const 1
-
-@[to_additive (attr := fun_prop)]
-lemma AEMeasurable.leOnePart' [MeasurableInv β] (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x ↦ (f x)⁻ᵐ) μ := hf.inv.sup_const 1
 
 end PosNeg
