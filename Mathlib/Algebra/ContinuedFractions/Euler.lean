@@ -253,6 +253,6 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
 /-- The transformation `toEuler` preserves the convergents. -/
 theorem convs_toEuler (hB : ∀ m, g.dens m ≠ 0) :
     g.toEuler.convs = g.convs :=
-  funext fun m => convs_toEuler_of_forall_le  (fun m _ => hB m) m m.le_succ
+  funext fun m => convs_toEuler_of_forall_le (fun m _ => hB m) m m.le_succ
 
 end GenContFract
