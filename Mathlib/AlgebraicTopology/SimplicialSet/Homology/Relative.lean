@@ -290,7 +290,7 @@ expressing the chain complex `SSetPair.chainComplex` of the pair
 in degree `n` as a cokernel of the
 map `(X.chainComplex R).X n ⟶ (Y.chainComplex R).X n`.
 -/
-noncomputable def cokernelCoforkChainComplexX (n : ℕ) :
+noncomputable abbrev cokernelCoforkChainComplexX (n : ℕ) :
     CokernelCofork ((SSet.chainComplexMap P.hom R).f n) :=
   CokernelCofork.ofπ _ (chainComplex_condition_f ..)
 
@@ -309,6 +309,91 @@ noncomputable def isColimitCokernelCoforkChainComplexX (n : ℕ) :
 instance (n : ℕ) : Epi ((P.chainComplexπ R).f n) :=
   Cofork.IsColimit.epi (P.isColimitCokernelCoforkChainComplexX R n)
 
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma ι_chainComplexπ_f_eq_zero {n : ℕ} (x : P.left _⦋n⦌) :
+    P.right.ιChainComplex (P.hom.app _ x) ≫ (P.chainComplexπ R).f n = 0 := by
+  simp [← dsimp% SSet.ι_chainComplexMap_f_assoc P.hom (R := R) x]
+
+@[reassoc (attr := simp)]
+lemma ι_chainComplexπ_f_eq_zero' {X Y : SSet.{w}} (i : X ⟶ Y) [Mono i]
+    {n : ℕ} (x : X _⦋n⦌) :
+    Y.ιChainComplex (i.app _ x) ≫ ((of i).chainComplexπ R).f n = 0 :=
+  (of i).ι_chainComplexπ_f_eq_zero R x
+
+set_option backward.isDefEq.respectTransparency false in
+variable {P R} in
+lemma chainComplex_hom_ext {n : ℕ} {T : C} {f g : (P.chainComplex R).X n ⟶ T}
+    (h : ∀ (x : P.right _⦋n⦌) (_ : x ∉ Set.range (P.hom.app _)),
+      P.right.ιChainComplex x ≫ (P.chainComplexπ R).f n ≫ f =
+      P.right.ιChainComplex x ≫ (P.chainComplexπ R).f n ≫ g) :
+    f = g :=
+  Cofork.IsColimit.hom_ext (P.isColimitCokernelCoforkChainComplexX R n) (by
+    ext x
+    by_cases hx : x ∈ Set.range (P.hom.app _)
+    · obtain ⟨x, rfl⟩ := hx
+      simp
+    · exact h x hx)
+
+open Classical in
+variable {R} in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+private lemma chainComplexDesc'_aux {n : ℕ} {T : C}
+    (f : ∀ (x : P.right _⦋n⦌) (_ : x ∉ Set.range (P.hom.app _)), R ⟶ T) :
+    ∃ (l : (P.chainComplex R).X n ⟶ T),
+      ∀ (x : P.right _⦋n⦌) (hx : x ∉ Set.range (P.hom.app _)),
+        P.right.ιChainComplex x ≫ (P.chainComplexπ R).f n ≫ l = f x hx := by
+  let f' (x) := if hx : x ∉ Set.range (P.hom.app _) then f x hx else 0
+  let l :=
+    Cofork.IsColimit.desc' (P.isColimitCokernelCoforkChainComplexX R n)
+      (Cofan.IsColimit.desc (P.right.isColimitChainComplexXCofan R n) f')
+      (by
+        dsimp
+        ext x
+        simp only [SSet.ι_chainComplexMap_f_assoc, zero_comp, comp_zero,
+          dsimp% Cofan.IsColimit.fac (P.right.isColimitChainComplexXCofan R n)]
+        exact dif_neg (by simp))
+  refine ⟨l.1, fun x hx ↦ ?_⟩
+  rw [dsimp% (P.right.chainComplexXCofan R n).inj x ≫= l.2,
+    dsimp% Cofan.IsColimit.fac (P.right.isColimitChainComplexXCofan R n) f' x]
+  exact dif_pos hx
+
+variable {R} in
+set_option backward.isDefEq.respectTransparency false in
+@[no_expose]
+noncomputable def chainComplexDesc' {n : ℕ} {T : C}
+    (f : ∀ (x : P.right _⦋n⦌) (_ : x ∉ Set.range (P.hom.app _)), R ⟶ T) :
+    (P.chainComplex R).X n ⟶ T :=
+  (P.chainComplexDesc'_aux f).choose
+
+variable {R} in
+@[reassoc]
+lemma ι_chainComplexDesc' {n : ℕ} {T : C}
+    (f : ∀ (x : P.right _⦋n⦌) (_ : x ∉ Set.range (P.hom.app _)), R ⟶ T)
+    (x : P.right _⦋n⦌) (hx : x ∉ Set.range (P.hom.app _)) :
+    P.right.ιChainComplex x ≫ (P.chainComplexπ R).f n ≫ P.chainComplexDesc' f =
+      f x hx :=
+  (P.chainComplexDesc'_aux f).choose_spec x hx
+
+variable {R} in
+noncomputable def chainComplexDesc {n : ℕ} {T : C}
+    (f : P.right _⦋n⦌ → (R ⟶ T)) (_ : ∀ (x : P.left _⦋n⦌), f (P.hom.app _ x) = 0) :
+    (P.chainComplex R).X n ⟶ T :=
+  P.chainComplexDesc' (fun x _ ↦ f x)
+
+variable {R} in
+@[reassoc (attr := simp)]
+lemma ι_chainComplexDesc {n : ℕ} {T : C}
+    (f : P.right _⦋n⦌ → (R ⟶ T)) (hf : ∀ (x : P.left _⦋n⦌), f (P.hom.app _ x) = 0)
+    (x : P.right _⦋n⦌) :
+    P.right.ιChainComplex x ≫ (P.chainComplexπ R).f n ≫ P.chainComplexDesc f hf =
+      f x := by
+  by_cases hx : x ∈ Set.range (P.hom.app _)
+  · obtain ⟨x, rfl⟩ := hx
+    simp [dsimp% hf]
+  · exact ι_chainComplexDesc' _ _ _ hx
+
 /-- Given a pair of simplicial sets corresponding to a monomorphism `i : X ⟶ Y`,
 this is the (short exact) short complex which relates
 the chain complex of `X`, of `Y` and of the pair. -/
@@ -321,18 +406,6 @@ instance : Mono (P.chainComplexShortComplex R).f := by dsimp; infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
 instance : Epi (P.chainComplexShortComplex R).g := by dsimp; infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
-lemma ι_chainComplexπ_f_eq_zero {n : ℕ} (x : P.left _⦋n⦌) :
-    P.right.ιChainComplex (P.hom.app _ x) ≫ (P.chainComplexπ R).f n = 0 := by
-  simp [← dsimp% SSet.ι_chainComplexMap_f_assoc P.hom (R := R) x]
-
-@[reassoc (attr := simp)]
-lemma ι_chainComplexπ_f_eq_zero' {X Y : SSet.{w}} (i : X ⟶ Y) [Mono i]
-    {n : ℕ} (x : X _⦋n⦌) :
-    Y.ιChainComplex (i.app _ x) ≫ ((of i).chainComplexπ R).f n = 0 :=
-  (of i).ι_chainComplexπ_f_eq_zero R x
 
 section
 
