@@ -11,8 +11,9 @@ public import Mathlib.CategoryTheory.Quotient.Preadditive
 /-!
 # The right Freyd category
 
-Let `V` be a preadditive category. The right Freyd category `RightFreyd V` of `V` is the quotient
-of `Arrow V` by the right homotopy relation. This is a preadditive category with a fully
+Let `V` be a preadditive category. The right Freyd category of `V` is the quotient of
+`Arrow V` by the right homotopy relation. (This is simply called "Freyd category"
+in the reference.) This is a preadditive category with a fully
 faithful additive functor `RightFreyd.functor : V ⥤ RightFreyd V`.
 
 We also show that, if `V` has finite products, then `RightFreyd V` has cokernels. In fact
