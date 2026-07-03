@@ -187,7 +187,7 @@ lemma π_desc : π f ≫ desc f g h = g := by ext <;> simp [π, desc]
 /-- For `f` a morphism in `Arrow V`, this is a cokernel cofork of `(quotient V).map f`. -/
 def cokernelCofork : CokernelCofork ((quotient V).map f) :=
   CokernelCofork.ofπ ((quotient V).map (Candidate.π f))
-  (eq_of_rightHomotopy _ _ (Candidate.condition f))
+    (eq_of_rightHomotopy _ _ (Candidate.condition f))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For `f` a morphism in `Arrow V`, the cokernel cofork of `(quotient V).map f` constructed
