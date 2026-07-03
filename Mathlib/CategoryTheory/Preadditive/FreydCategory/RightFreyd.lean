@@ -97,7 +97,7 @@ variable (V)
 
 open ZeroObject in
 set_option backward.defeqAttrib.useBackward true in
-/-- If `V` has a zero object, this the functor from `V` to `Arrow V`
+/-- If `V` has a zero object, this is the functor from `V` to `Arrow V`
 that sends an object `X` to the arrow `0 ⟶ X`. -/
 def rightFunctor : V ⥤ Arrow V where
   obj X := Arrow.mk (0 : 0 ⟶ X)
