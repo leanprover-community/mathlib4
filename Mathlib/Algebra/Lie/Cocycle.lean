@@ -329,7 +329,7 @@ variable {L M R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup
   [LieRingModule L M] [LieModule R L M]
 
 /-- version with removeNth -/
-def coboundary_first_summand {n : ℕ} (f : MultilinearMap R (fun _ : Fin n => L) M)
+def coboundaryFirstSummand {n : ℕ} (f : MultilinearMap R (fun _ : Fin n => L) M)
     (i : Fin (n + 1)) : MultilinearMap R (fun _ : Fin (n + 1) => L) M where
   toFun g := (Int.negOnePow i.val • ⁅g i, f (i.removeNth g)⁆)
   map_update_add' {inst} g j x y := by
@@ -357,7 +357,7 @@ def coboundary_first_summand {n : ℕ} (f : MultilinearMap R (fun _ : Fin n => L
       · simp [Fin.removeNth_update_of_gt hgt _ g]
 
 omit [LieModule R L M] in
-lemma coboundary_first_summand_alt (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) {g : Fin (n + 1) → L}
+lemma coboundaryFirstSummand_alt (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) {g : Fin (n + 1) → L}
     {i j k : Fin (n + 1)} (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k) (hg : g i = g j) :
     Int.negOnePow k.val • ⁅g k, f fun j ↦ g (k.succAbove j)⁆ = 0 := by
   refine smul_eq_zero_of_right _ ?_
@@ -367,10 +367,10 @@ lemma coboundary_first_summand_alt (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) {g :
   rw [this]
   exact lie_zero (g k)
 
-lemma coboundary_first_alternating (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) (g : Fin (n + 1) → L)
+lemma coboundaryFirst_alternating (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) (g : Fin (n + 1) → L)
     (i j : Fin (n + 1)) (h : g i = g j) (hij : i ≠ j) :
-    (∑ i : Fin (n + 1), coboundary_first_summand f.toMultilinearMap i).toFun g = 0 := by
-  simp only [coboundary_first_summand, AlternatingMap.coe_multilinearMap,
+    (∑ i : Fin (n + 1), coboundaryFirstSummand f.toMultilinearMap i).toFun g = 0 := by
+  simp only [coboundaryFirstSummand, AlternatingMap.coe_multilinearMap,
     MultilinearMap.toFun_eq_coe, FunLike.coe_sum, MultilinearMap.coe_mk, Finset.sum_apply]
   rw [Finset.sum_eq_add_of_mem i j (Finset.mem_univ i) (Finset.mem_univ j) hij]
   · simp_rw [h, Units.smul_def, ← lie_smul, ← lie_add]
@@ -386,18 +386,18 @@ lemma coboundary_first_alternating (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) (g :
       omega
     exact AlternatingMap.negOnePow_smul_apply_removeNth_add_eq_zero_of_eq f h hij
   · intro k hk hijk
-    exact coboundary_first_summand_alt n f hij hijk.1.symm hijk.2.symm h
+    exact coboundaryFirstSummand_alt n f hij hijk.1.symm hijk.2.symm h
 
 /-- The first half of the coboundary map. -/
-def coboundary_first (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) :
+def coboundaryFirst (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) :
     L [⋀^Fin (n + 1)]→ₗ[R] M :=
-  ⟨∑ i : Fin (n + 1), coboundary_first_summand f i,
-    fun g i j h hi ↦ coboundary_first_alternating n f g i j h hi⟩
+  ⟨∑ i : Fin (n + 1), coboundaryFirstSummand f i,
+    fun g i j h hi ↦ coboundaryFirst_alternating n f g i j h hi⟩
 
 --TODO: show that this is linear
 
 /-- The summand for the coboundary map. -/
-def coboundary_second_aux {n : ℕ} (g : Fin (n + 1 + 1) → L) {i j : Fin (n + 1 + 1)} (h : i < j) :
+def coboundarySecondAux {n : ℕ} (g : Fin (n + 1 + 1) → L) {i j : Fin (n + 1 + 1)} (h : i < j) :
     Fin (n + 1) → L :=
   Fin.cons ⁅g i, g j⁆ (fun k => (i.castPred (Fin.ne_last_of_lt h)).removeNth (j.removeNth g) k)
 
@@ -415,12 +415,12 @@ def coboundary_second_sum (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M) (g : Fi
 --look at MultilinearMap.restr
 
 /-- The image of the second sum of the differential on a cochain, as a multilinear map. -/
-def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M)
+def coboundarySecondSummandMultilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M)
     {i j : Fin (n + 1 + 1)} (h : i < j) : MultilinearMap R (fun _ : Fin (n + 1 + 1) => L) M where
-  toFun g := Int.negOnePow (i.val + j.val) • f (coboundary_second_aux g h)
+  toFun g := Int.negOnePow (i.val + j.val) • f (coboundarySecondAux g h)
   map_update_add' {inst} g k x y := by
     cases Subsingleton.elim inst (instDecidableEqFin (n + 1 + 1))
-    simp only [coboundary_second_aux]
+    simp only [coboundarySecondAux]
     rw [← smul_add]
     congr 1
     by_cases hik : i = k
@@ -458,7 +458,7 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
             simp [Fin.removeNth_update_of_gt this]
   map_update_smul' {inst} g k r x := by
     cases Subsingleton.elim inst (instDecidableEqFin (n + 1 + 1))
-    simp only [coboundary_second_aux]
+    simp only [coboundarySecondAux]
     rw [smul_comm r (Int.negOnePow (i.val + j.val)) _]
     congr 1
     obtain hki | hki | hki := lt_trichotomy k i
@@ -498,10 +498,10 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
         simp [Fin.removeNth_update_of_lt this]
 
 /-- The second sum in the Lie algebra coboundary map, as a multilinear map. -/
-def coboundary_second_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M) :
+def coboundarySecondMultilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M) :
     MultilinearMap R (fun _ : Fin (n + 1 + 1) => L) M :=
   ∑ i ∈ Finset.univ (α := Fin (n + 1 + 1)), ∑ j ∈ Finset.univ (α := Fin (n + 1 + 1)),
-    if h : j < i then coboundary_second_summand_multilinear n f h else 0
+    if h : j < i then coboundarySecondSummandMultilinear n f h else 0
 
 /-!
 /-- The image of the second sum of the differential on a cochain, as a multilinear map. -/

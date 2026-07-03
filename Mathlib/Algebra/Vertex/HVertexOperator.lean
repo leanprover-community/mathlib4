@@ -328,6 +328,7 @@ A to X₁, B to X₂, C to X₃.
 
 
 -/
+/-- An additive equivalence between a 3-fold Lex product and `Fin 3 → ℤ`. -/
 @[simps]
 def ofLex3 : (ℤ ×ₗ (ℤ ×ₗ ℤ)) ≃+ (Fin 3 → ℤ) where
   toFun a n := if n = 0 then (ofLex a).1 else

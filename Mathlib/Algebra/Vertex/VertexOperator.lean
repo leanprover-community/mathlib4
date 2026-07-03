@@ -863,7 +863,7 @@ lemma comp_local (A B C : VertexOperator R V) (n p q r : ℤ) (k l m : ℕ)
 
 
 /-- Dong's Lemma (Matsuo-Nagatomo Lemma 1.5.5): if vertex operators `A` `B` `C` are pairwise local,
-then `A` is local to `B_n C`　for all integers `n`. -/
+then `A` is local to `B_n C` for all integers `n`. -/
 theorem local_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
     (hAB : IsLocalToOrderLeq A B k) (hAC : IsLocalToOrderLeq A C l)
     (hBC : IsLocalToOrderLeq B C m) :

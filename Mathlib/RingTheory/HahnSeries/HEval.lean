@@ -183,7 +183,7 @@ lemma supp_eq_univ_of_pos (σ : Type*) (y : σ →₀ HahnSeries Γ R)
 
 /-- A finsupp whose every element has positive order has fintype source. -/
 @[reducible]
-def Fintype_of_pos_order (σ : Type*) (y : σ →₀ HahnSeries Γ R)
+def fintypeOfPosOrder (σ : Type*) (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i : σ, 0 < (y i).order) : Fintype σ := by
   refine Set.fintypeOfFiniteUniv ?_
   rw [← supp_eq_univ_of_pos σ y hy]
@@ -358,7 +358,7 @@ variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Comm
 -- see also Finsupp.restrictSupportEquiv
 
 /-- An equiv between finsupp and maps from a finset. -/
-def equiv_map_on_finset_finsupp (s : Finset σ) :
+def equivMapOnFinsetFinsupp (s : Finset σ) :
     ((i : σ) → i ∈ s → ℕ) ≃ ({i // i ∈ s} →₀ ℕ) where
   toFun f := Finsupp.equivFunOnFinite.symm (fun i => f i.1 i.2)
   invFun f := fun i hi => (Finsupp.equivFunOnFinite f) ⟨i, hi⟩
@@ -366,7 +366,7 @@ def equiv_map_on_finset_finsupp (s : Finset σ) :
   right_inv f := by simp
 
 /-- The equivalence between maps on a finite totality and finitely supported functions. -/
-def equiv_map_on_fintype_finsupp [Fintype σ] :
+def equivMapOnFintypeFinsupp [Fintype σ] :
     ((i : σ) → i ∈ Finset.univ → ℕ) ≃ (σ →₀ ℕ) where
   toFun f := Finsupp.equivFunOnFinite.symm (fun i => f i (mem_univ i))
   invFun f := fun i _ => (Finsupp.equivFunOnFinite f) i
@@ -376,14 +376,14 @@ def equiv_map_on_fintype_finsupp [Fintype σ] :
 /-- A multivariable family given by all possible unit-coefficient monomials -/
 def mvPowers [Fintype σ] (y : σ →₀ HahnSeries Γ V) :
     SummableFamily Γ V (σ →₀ ℕ) :=
-  Equiv equiv_map_on_fintype_finsupp (PiFamily Finset.univ (fun _ => ℕ)
+  Equiv equivMapOnFintypeFinsupp (PiFamily Finset.univ (fun _ => ℕ)
     (fun i => powers (y i)))
 
 @[simp]
 theorem mvPowers_apply {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i, 0 < (y i).orderTop) (n : σ →₀ ℕ) :
     (mvPowers y) n = ∏ i, y i ^ n i := by
-  simp [mvPowers, equiv_map_on_fintype_finsupp, hy]
+  simp [mvPowers, equivMapOnFintypeFinsupp, hy]
 
 open Classical in
 theorem mvpow_finite_co_support {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
@@ -454,7 +454,7 @@ theorem mvPowerSeriesFamily_supp_subset {σ : Type*} [Fintype σ] (y : σ →₀
   convert he.choose_spec.2
   · exact Eq.symm (mvPowers_apply y hy n)
   · exact Eq.symm (mvPowers_apply y hy n)
-  · simp [mvPowers, equiv_map_on_fintype_finsupp]
+  · simp [mvPowers, equivMapOnFintypeFinsupp]
     congr 1
     funext i
     have h : he.choose.1 i + he.choose.2 i = n i := by

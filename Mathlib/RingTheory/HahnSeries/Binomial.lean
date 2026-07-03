@@ -45,33 +45,33 @@ namespace MonoidAlgebra
 variable [Ring R]
 
 /-- A unit monomial minus a unit monomial. -/
-def single_sub_single (g g' : Γ) : MonoidAlgebra R Γ := single g 1 - single g' 1
+def singleSubSingle (g g' : Γ) : MonoidAlgebra R Γ := single g 1 - single g' 1
 
 @[simp]
-theorem single_sub_single_of_subsingleton [Subsingleton R] (g g' : Γ) :
-    single_sub_single g g' = (0 : MonoidAlgebra R Γ) :=
-  Subsingleton.eq_zero (single_sub_single g g')
+theorem singleSubSingle_of_subsingleton [Subsingleton R] (g g' : Γ) :
+    singleSubSingle g g' = (0 : MonoidAlgebra R Γ) :=
+  Subsingleton.eq_zero (singleSubSingle g g')
 
 @[simp]
-theorem single_sub_single_eq_zero_iff [Nontrivial R] (g g' : Γ) :
-    single_sub_single g g' = (0 : MonoidAlgebra R Γ) ↔ g = g' := by
-  refine ⟨?_, fun h ↦ (by simp [single_sub_single, h])⟩
+theorem singleSubSingle_eq_zero_iff [Nontrivial R] (g g' : Γ) :
+    singleSubSingle g g' = (0 : MonoidAlgebra R Γ) ↔ g = g' := by
+  refine ⟨?_, fun h ↦ (by simp [singleSubSingle, h])⟩
   intro h
   by_contra hgg'
-  rw [single_sub_single, sub_eq_zero, MonoidAlgebra.ext_iff] at h
+  rw [singleSubSingle, sub_eq_zero, MonoidAlgebra.ext_iff] at h
   specialize h g
   classical
   rw [single_apply, single_apply] at h
   simp [Ne.symm hgg'] at h
 
-theorem single_sub_single_neg (g g' : Γ) :
-    - single_sub_single g g' (R := R) = single_sub_single g' g := by
-  simp [single_sub_single]
+theorem singleSubSingle_neg (g g' : Γ) :
+    - singleSubSingle g g' (R := R) = singleSubSingle g' g := by
+  simp [singleSubSingle]
 
-theorem single_sub_single_pow [CommMonoid Γ] (g g' : Γ) (n : ℕ) :
-    (single_sub_single g g' (R := R)) ^ n = ∑ i ∈ antidiagonal n,
+theorem singleSubSingle_pow [CommMonoid Γ] (g g' : Γ) (n : ℕ) :
+    (singleSubSingle g g' (R := R)) ^ n = ∑ i ∈ antidiagonal n,
       Int.negOnePow (i.2) • n.choose (i.1) • single (g ^ (i.1) * g' ^ i.2) 1 := by
-  rw [single_sub_single, Ring.sub_eq_add_neg, Commute.add_pow']
+  rw [singleSubSingle, Ring.sub_eq_add_neg, Commute.add_pow']
   · refine sum_congr rfl ?_
     intro i hi
     rw [← Int.negOnePow_smul_pow, mul_smul_comm, single_pow, one_pow, single_pow, single_mul_single,
@@ -140,7 +140,7 @@ theorem binomialPow_one {g g' : Γ} (h : g < g') :
     PowerSeries.heval_C, one_smul, mul_add, mul_one, single_mul_single, one_mul, single_neg,
     add_sub_cancel, sub_eq_add_neg]
 
-theorem ofAddMonoidAlgebra_single_sub_single {g g' : Γ} (h : g < g') :
+theorem ofAddMonoidAlgebra_singleSubSingle {g g' : Γ} (h : g < g') :
     ofAddMonoidAlgebra (AddMonoidAlgebra.single g (1 : A) - AddMonoidAlgebra.single g' 1) =
       binomialPow A g g' (Nat.cast (R := R) 1) := by
   rw [binomialPow_one A h, map_sub]

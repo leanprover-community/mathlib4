@@ -310,12 +310,12 @@ lemma ofTwoCocycle_proj_apply (x : (ofTwoCocycle c).L) :
 
 /-- The standard section of the extension, coming from the product decomposition. -/
 @[simps]
-def section_ofTwoCocycle : L →ₗ[R] (ofTwoCocycle c).L where
+def sectionOfTwoCocycle : L →ₗ[R] (ofTwoCocycle c).L where
   toFun x := ofAlg c (ofProd c (x, 0))
   map_add' _ _ := by rw [← Prod.mk_zero_add_mk_zero, of_add, map_add]
   map_smul' _ _ := by rw [← Prod.smul_mk_zero, of_smul, map_smul, RingHom.id_apply]
 
-lemma section_proj_leftInverse : LeftInverse (ofTwoCocycle c).proj (section_ofTwoCocycle c) := by
+lemma section_proj_leftInverse : LeftInverse (ofTwoCocycle c).proj (sectionOfTwoCocycle c) := by
   intro x
   simp
 
@@ -476,7 +476,7 @@ lemma twoCocycleOf_ofTwoCocycle [LieRingModule L M] [LieModule R L M] [IsLieAbel
     (twoCocycleOf (ofTwoCocycle c) (section_proj_leftInverse c)).1 = c := by
   ext x y
   simp only [twoCocycleOf_coe_coe, LinearMap.compr₂_apply, LinearMap.coe_mk,
-    section_ofTwoCocycle_apply, AddHom.coe_mk, LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
+    sectionOfTwoCocycle_apply, AddHom.coe_mk, LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
   refine (LinearEquiv.symm_apply_eq (ofTwoCocycle c).toKer.toLinearEquiv).mpr ?_
   refine (Subtype.coe_eq_of_eq_mk ?_).symm
   rw [bracket]

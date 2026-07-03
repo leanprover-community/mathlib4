@@ -49,24 +49,24 @@ variable {R : Type u} [Semiring R] {S : Type v}
 variable [AddCommMonoid S] [MulActionWithZero R S] [Pow S ℕ+] (p : ℕ+ →₀ R) (x : S)
 
 /-- Scalar multiplication by a positive power. -/
-def smul_ppow : ℕ+ → R → S := fun n r => r • x^n
+def smulPPow : ℕ+ → R → S := fun n r => r • x^n
 
 /-- Evaluate a Finsupp `p` on `ℕ+` in the scalar commutative semiring `R` (essentially a polynomial
 with vanishing constant term) at an element `x` in the target object `S` with scalar multiplication
 by `R`. -/
-irreducible_def smnueval : S := p.sum (smul_ppow x)
+irreducible_def smnueval : S := p.sum (smulPPow x)
 
-theorem smnueval_eq_sum : smnueval p x = p.sum (smul_ppow x) := by
+theorem smnueval_eq_sum : smnueval p x = p.sum (smulPPow x) := by
   rw [smnueval_def]
 
 theorem smnueval_zero : smnueval (0 : ℕ+ →₀ R ) x = (0 : S) := by
   simp only [smnueval_eq_sum, Finsupp.sum_zero_index]
 
 theorem smnueval_X : smnueval (Finsupp.single 1 (1 : R)) x = x ^ (1 : ℕ+) := by
-  simp only [smnueval_eq_sum, smul_ppow, zero_smul, Finsupp.sum_single_index, one_smul]
+  simp only [smnueval_eq_sum, smulPPow, zero_smul, Finsupp.sum_single_index, one_smul]
 
 theorem smnueval_monomial (r : R) (n : ℕ+) : smnueval (Finsupp.single n r) x = r • x ^ n := by
-  simp only [smnueval_eq_sum, smul_ppow, zero_smul, Finsupp.sum_single_index]
+  simp only [smnueval_eq_sum, smulPPow, zero_smul, Finsupp.sum_single_index]
 
 theorem smnueval_X_pow {n : ℕ+} : smnueval (Finsupp.single n (1 : R)) x = x ^ n := by
   rw [← one_smul R (x^n)]
@@ -87,16 +87,16 @@ theorem _root_.zero_ppow (n : ℕ+) : (0:S)^n = 0 := by
   intro n _
   rw [ppow_add, ppow_one, mul_zero]
 
-theorem smul_ppow_zero (n : ℕ+) (r : R) : smul_ppow (0 : S) n r = 0 := by
+theorem smulPPow_zero (n : ℕ+) (r : R) : smulPPow (0 : S) n r = 0 := by
   refine PNat.recOn n ?_ ?_
-  · rw [smul_ppow, ppow_one, smul_zero]
+  · rw [smulPPow, ppow_one, smul_zero]
   intro n _
-  rw [smul_ppow, ppow_add, ppow_one, mul_zero, smul_zero]
+  rw [smulPPow, ppow_add, ppow_one, mul_zero, smul_zero]
 
 theorem smnueval_at_zero : smnueval p (0:S) = 0 := by
   simp only [smnueval_eq_sum]
   rw[Finsupp.sum]
-  simp_rw [smul_ppow_zero]
+  simp_rw [smulPPow_zero]
   simp only [sum_const_zero]
 
 -- smnueval_mul_X, smnuevalcomp, etc.

@@ -129,20 +129,20 @@ theorem ncoeff_nonzero_at_neg_order_minus_one (a b : V) (h : Y a b ≠ 0) :
 
 /-- The first sum in the Borcherds identity, giving the `x^t z^s` coefficient of
 `x^r (1 + z/x)^r (a(x)b)(z)c`. -/
-noncomputable def Borcherds_sum_1 (a b c : V) (r s t : ℤ) : V :=
+noncomputable def borcherdsSum_1 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-t - order Y a b)))
     (fun i ↦ (Ring.choose r i) • ncoeff (Y (ncoeff (Y a) (t+i) b)) (r+s-i) c)
 
 /-- The second sum in the Borcherds identity, giving the `y^r z^s` coefficient of
 `y^t (1 - z/y)^t a(y)b(z)c`. -/
-noncomputable def Borcherds_sum_2 (a b c : V) (r s t : ℤ) : V :=
+noncomputable def borcherdsSum_2 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-s - order Y b c)))
     (fun i ↦ (-1)^i • (Ring.choose t i) • ncoeff (Y a) (r+t-i)
     (ncoeff (Y b) (s+i) c))
 
 /-- The third sum in the Borcherds identity, giving the `y^r z^s` coefficient of
 `-(-y)^t (1 - y/z)^t b(z)a(y)c`. -/
-noncomputable def Borcherds_sum_3 (a b c : V) (r s t : ℤ) : V :=
+noncomputable def borcherdsSum_3 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-r - order Y a c)))
     (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • ncoeff (Y b) (s+t-i)
     (ncoeff (Y a) (r+i) c))
@@ -150,8 +150,8 @@ noncomputable def Borcherds_sum_3 (a b c : V) (r s t : ℤ) : V :=
 /-- The Borcherds identity, also called the Jacobi identity or Cauchy-Jacobi identity when put in
 power-series form.  It is a formal distribution analogue of the combination of commutativity and
 associativity. -/
-noncomputable def Borcherds_id (a b c : V) (r s t : ℤ) : Prop :=
-  Borcherds_sum_1 Y a b c r s t = Borcherds_sum_2 Y a b c r s t + Borcherds_sum_3 Y a b c r s t
+noncomputable def borcherdsId (a b c : V) (r s t : ℤ) : Prop :=
+  borcherdsSum_1 Y a b c r s t = borcherdsSum_2 Y a b c r s t + borcherdsSum_3 Y a b c r s t
 
 /-- The associativity property of vertex algebras. -/
 def associativity (a b c : V) (s t : ℤ) : Prop :=
@@ -162,7 +162,7 @@ def associativity (a b c : V) (s t : ℤ) : Prop :=
     (ncoeff (Y a) i c))
 
 /-- The commutator formula for vertex algebras. -/
-def commutator_formula (a b c : V) (r s : ℤ) : Prop :=
+def commutatorFormula (a b c : V) (r s : ℤ) : Prop :=
   ncoeff (Y a) r (ncoeff (Y b) s c) - ncoeff (Y b) s (ncoeff (Y a) r c) =
   Finset.sum (Finset.range (Int.toNat (- order Y a b))) (fun i ↦ (Ring.choose r i) •
   ncoeff (Y (ncoeff (Y a) i b)) (r+s-i) c)
@@ -173,13 +173,13 @@ sufficiently large `N`.  That is, the vertex operators commute up to finite orde
 diagonal. -/
 def IsLocal (a b : V) : Prop :=
   ∃ n, IsLocalToOrderLeq (Y a) (Y b) n
--- was Borcherds_sum_2 R a b c r s t + Borcherds_sum_3 R a b c r s t = 0
+-- was borcherdsSum_2 R a b c r s t + borcherdsSum_3 R a b c r s t = 0
 -- weak associativity needs to be changed to the vertex operator definition.
 -/
 /-- The weak associativity property for vertex algebras, asserting
 `x^N Y(Y(a,x)b,y)c = x^N Y(a,x) Y(b,x + y)c`. -/
-def weak_associativity (a b c : V) (r s t : ℤ) : Prop :=
-  Borcherds_sum_1 Y a b c r s t = Borcherds_sum_2 Y a b c r s t
+def weakAssociativity (a b c : V) (r s t : ℤ) : Prop :=
+  borcherdsSum_1 Y a b c r s t = borcherdsSum_2 Y a b c r s t
 
 end VertexAlg
 
@@ -210,13 +210,13 @@ def T (Y : stateField R V) (n : ℕ) : Module.End R V where
   map_smul' := by intros; simp only [coeff_smul_left_eq, RingHom.id_apply]
 
 /-- The skew-symmetry property for vertex algebras: `Y(u,z)v = exp(Tz)Y(v,-z)u`. -/
-def skew_symmetry (Y : stateField R V) (a b : V) (n : ℤ) : Prop :=
+def skewSymmetry (Y : stateField R V) (a b : V) (n : ℤ) : Prop :=
   ncoeff (Y b) n a = Finset.sum (Finset.range (Int.toNat (-n - order Y a b)))
     (fun i ↦ (-1:ℤˣ)^(n + i + 1) • T Y i (ncoeff (Y a) (n+i) b))
 
 /-- A field is translation covariant with respect to a divided-power system of endomorphisms that
 stabilizes identity if left translation satisfies the Leibniz rule.  We omit conditions on `f`. -/
-def translation_covariance (Y : stateField R V) (A : VertexOperator R V) (f : ℕ → Module.End R V) :
+def translationCovariance (Y : stateField R V) (A : VertexOperator R V) (f : ℕ → Module.End R V) :
     Prop :=
   ∀ (i : ℕ) (n : ℤ), f i * HVertexOperator.coeff A n =
     Finset.sum (Finset.HasAntidiagonal.antidiagonal i) fun m =>
@@ -238,7 +238,7 @@ class VertexAlgebra (R : Type*) (V : Type*) [CommRing R] [AddCommGroupWithOne V]
   /-- The multiplication operation. -/
   Y : VertexAlg.stateField R V
   /-- The Borcherds identity holds. -/
-  Borcherds_id : ∀ (a b c : V) (r s t : ℤ), VertexAlg.Borcherds_id Y a b c r s t
+  Borcherds_id : ∀ (a b c : V) (r s t : ℤ), VertexAlg.borcherdsId Y a b c r s t
   /-- Right multiplication by the unit vector is nonsingular. -/
   unit_comm : ∀ (a : V), VertexAlg.order Y a 1 = 0
   /-- The constant coefficient of right multiplication by the unit vector is identity. -/
@@ -249,7 +249,7 @@ namespace VertexAlg
 variable {R : Type*} {V : Type*} [CommRing R] [AddCommGroupWithOne V] [VertexAlgebra R V]
 
 theorem Borcherds_identity (a b c : V) (r s t : ℤ) :
-    Borcherds_id VertexAlgebra.Y (R := R) a b c r s t :=
+    borcherdsId VertexAlgebra.Y (R := R) a b c r s t :=
   VertexAlgebra.Borcherds_id a b c r s t
 
 theorem unit_comm (a : V) : order VertexAlgebra.Y (R := R) a 1 = 0 := VertexAlgebra.unit_comm a
