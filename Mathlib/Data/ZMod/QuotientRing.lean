@@ -88,10 +88,10 @@ open Finset Function in
 @[simp]
 theorem ZMod.prodEquivPi_apply {ι : Type*} [Fintype ι] (a : ι → ℕ)
  (coprime : Pairwise (Nat.Coprime on a)) (b : ZMod (∏ i, a i)) (i : ι) :
-   ZMod.prodEquivPi a coprime b i =
-   ZMod.castHom (dvd_prod_of_mem a (mem_univ i)) _ b :=
+   prodEquivPi a coprime b i =
+   castHom (dvd_prod_of_mem a (mem_univ i)) _ b :=
   RingHom.congr_fun (Subsingleton.elim ((Pi.evalRingHom (fun i => ZMod (a i)) i).comp
-  (ZMod.prodEquivPi a coprime).toRingHom) _) b
+  (prodEquivPi a coprime).toRingHom) _) b
 
 /-- The **Chinese remainder theorem**, version for `ZMod n`. -/
 def ZMod.equivPi (hn : n ≠ 0) :
