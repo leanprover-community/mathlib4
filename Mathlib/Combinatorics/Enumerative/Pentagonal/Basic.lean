@@ -5,7 +5,6 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Data.Int.SuccPred
 
 /-!
