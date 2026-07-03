@@ -12,6 +12,7 @@ public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 
 /-!
 # The finite adèle ring of a Dedekind domain
+
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
@@ -101,7 +102,7 @@ instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
 
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
   coe a := a.1
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 namespace FiniteAdeleRing
 

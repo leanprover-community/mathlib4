@@ -104,7 +104,7 @@ instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFinite
 
 instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
   measure_univ_lt_top := by
-    rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+    rw [Measure.smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
@@ -148,7 +148,7 @@ theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measur
   contrapose! hμ
   simpa [measureUnivNNReal_eq_zero, Nat.le_zero] using hμ
 
-/-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
+/-- `le_of_add_le_add_left` is normally applicable to ordered cancellative monoids,
 but it holds for measures with the additional assumption that μ is finite. -/
 theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ μ + ν₂) : ν₁ ≤ ν₂ :=
   fun S => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S)
@@ -206,12 +206,12 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
     (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
     |μ.real s - μ.real t| ≤ μ.real (s ∆ t) := by
   simp only [Measure.real]
-  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset diff_subset hs').ne
-  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
+  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset sdiff_subset hs').ne
+  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset sdiff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
     convert! abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
-  rw [measure_diff' s ht ht', measure_diff' t hs hs',
+  rw [measure_sdiff' s ht ht', measure_sdiff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     union_comm t s]

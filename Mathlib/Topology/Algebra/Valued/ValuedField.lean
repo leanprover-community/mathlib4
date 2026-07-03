@@ -354,7 +354,6 @@ lemma extension_eq_zero_iff {x : hat K} : extension x = 0 ↔ x = 0 := by
     simpa only [extensionValuation_toFun, map_eq_zero]
   rw [Valuation.zero_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
   rcases eq_or_ne x 0 with (rfl | h)
   · exact ⟨0, extensionValuation_apply_coe 0⟩
