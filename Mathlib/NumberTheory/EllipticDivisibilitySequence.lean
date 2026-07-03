@@ -231,11 +231,8 @@ lemma atomRel_abs₄ (a b c d : ℤ) : atomRel W a b c |d| = atomRel W a b c d :
 lemma atomRel_avg_sub {a b c d : ℤ} (parity : d % 2 = a % 2 ∧ d % 2 = b % 2 ∧ d % 2 = c % 2) :
     atomRel W ((a + b + c + d) / 2 - d) ((a + b + c + d) / 2 - c) ((a + b + c + d) / 2 - b)
       ((a + b + c + d) / 2 - a) = atomRel W a b c d := by
-  have h {m n : ℤ} (h : n % 2 = m % 2) : 2 ∣ m + n := by
-    rw [Int.dvd_iff_emod_eq_zero, Int.add_emod, h, ← two_mul, Int.mul_emod_right]
-  simp_rw [add_assoc <| a + b, atomRel, atom, sub_add_sub_comm, ← two_mul,
-    Int.mul_ediv_cancel' <| Int.dvd_add (h <| parity.2.1 ▸ parity.1) <| h parity.2.2]
-  ring_nf
+  simp_rw [add_assoc <| a + b, atomRel, atom, sub_add_sub_comm, ← two_mul]
+  repeat rw [Int.mul_ediv_cancel'] <;> grind
 
 @[simp]
 lemma map_atomRel (a b c d : ℤ) : f (atomRel W a b c d) = atomRel (f ∘ W) a b c d := by
