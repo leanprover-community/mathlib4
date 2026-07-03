@@ -372,7 +372,7 @@ def EquivOfKernel : H ≃ₗᵢ[𝕜] OfKernel (kernel H) := (equiv_aux rfl).sym
 lemma EquivOfKernel_symm (g : OfKernel (kernel H)) : (EquivOfKernel H).symm g =
     UniformSpace.Completion.extension (α := H₀ (kernel H))
      (Finsupp.linearCombination 𝕜 fun xv => RKHS.kerFun H xv.1 xv.2) g := by
-  simp [EquivOfKernel]; rfl
+  rfl
 
 lemma kerFun_eq_coe'_single (x : X) (v : V) : kerFun (OfKernel K) x v =
     .coe' (.single (x, v) 1 : H₀ K) := by
@@ -386,6 +386,7 @@ lemma EquivOfKernel_kerFun_eq_coe'_single (x : X) (v : V) : EquivOfKernel H (ker
     (toH₁ H rfl).isometry.uniformContinuous
   simp [EquivOfKernel_symm, UniformSpace.Completion.extension_coe h_uni _]
 
+@[simp]
 lemma EquivOfKernel_kerFun_eq (x : X) (v : V) : EquivOfKernel H (kerFun H x v) =
     kerFun (OfKernel (kernel H)) x v := by
   rw [EquivOfKernel_kerFun_eq_coe'_single, kerFun_eq_coe'_single]
@@ -393,6 +394,25 @@ lemma EquivOfKernel_kerFun_eq (x : X) (v : V) : EquivOfKernel H (kerFun H x v) =
 lemma EquivOfKernel_symm_kerFun_eq (x : X) (v : V) :
     (EquivOfKernel H).symm (kerFun (OfKernel (kernel H)) x v) = kerFun H x v := by
   rw [← EquivOfKernel_kerFun_eq, LinearIsometryEquiv.symm_apply_apply]
+
+private theorem equiv_eq (h : kernel H = kernel (OfKernel (kernel H))) :
+    equiv_aux h = LinearIsometryEquiv.refl 𝕜 (OfKernel (kernel H)) := by
+  apply LinearIsometryEquiv.toLinearIsometry_injective
+  apply LinearIsometry.ext
+  intro x
+  refine UniformSpace.Completion.induction_on x
+    (isClosed_eq (equiv_aux h).toLinearIsometry.continuous continuous_id) fun f ↦ ?_
+  nth_rw 2 [← Finsupp.sum_single f]
+  simp [equiv_aux, -Finsupp.sum_single,
+    UniformSpace.Completion.extension_coe (toH₁ H h).isometry.uniformContinuous f]
+  simp [toH₁, Finsupp.linearCombination_apply, kerFun_eq_coe'_single,
+    ← UniformSpace.Completion.coe_smul, Finsupp.sum, ← UniformSpace.Completion.coe_sum, Finsupp.sum]
+
+@[simp]
+lemma coe_EquivOfKernel (f : H) : ⇑(EquivOfKernel H f) = f := by
+  ext
+  refine ext_inner_left 𝕜 fun v ↦ ?_
+  simp [← kerFun_inner, ← LinearIsometryEquiv.inner_map_map (EquivOfKernel H)]
 
 end Equiv
 
@@ -407,14 +427,21 @@ variable [RKHS 𝕜 H₁ X V]
 def Equiv (h : kernel H = kernel H₁) : H ≃ₗᵢ[𝕜] H₁ :=
   (OfKernel.EquivOfKernel H).trans (OfKernel.equiv_aux h)
 
+@[simp]
 theorem Equiv_kerFun_eq_kerFun (h : kernel H = kernel H₁) (x : X) (v : V) :
     Equiv h (kerFun H x v) = kerFun H₁ x v := by
-  simp [Equiv, OfKernel.EquivOfKernel_kerFun_eq_coe'_single, OfKernel.equiv_aux,
+  simp [Equiv, -OfKernel.EquivOfKernel_kerFun_eq, OfKernel.EquivOfKernel_kerFun_eq_coe'_single,
+    OfKernel.equiv_aux,
     UniformSpace.Completion.extension_coe (OfKernel.toH₁ H h).isometry.uniformContinuous]
   simp [OfKernel.toH₁]
 
+theorem Equiv_eq_EquivOfKernel (h : kernel H = kernel (OfKernel (kernel H))) :
+    Equiv h = (OfKernel.EquivOfKernel H) := by
+  simp [Equiv, OfKernel.equiv_eq, OfKernel.EquivOfKernel]
+
 /-- If the two RKHS have the same kernel, then the functions in the RKHSs agree as functions on
 `X → V`. -/
+@[simp]
 theorem coe_Equiv (h : kernel H = kernel H₁) (f : H) : ⇑(Equiv h f) = f := by
   ext
   refine ext_inner_left 𝕜 fun v ↦ ?_
