@@ -1016,7 +1016,6 @@ lemma integralAgainstBilinCLM_eq_setIntegral {B : F₁ →L[𝕜] F₂ →L[𝕜
 
 end Integral
 
-
 section Multiplication
 
 section bilin
@@ -1031,9 +1030,9 @@ variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G : Ty
 variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [IsScalarTower ℝ 𝕜 F₂] [NormedSpace ℝ F₃]
   [IsScalarTower ℝ 𝕜 F₃] [SMulCommClass ℝ 𝕜 F₁] [SMulCommClass ℝ 𝕜 F₂] [SMulCommClass ℝ 𝕜 F₃]
 
-open ContinuousLinearMap
+open ContinuousLinearMap Finset
 
-noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g):
+noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
     𝓓^{n}_{K}(E, F₁) →L[𝕜] 𝓓^{n}_{K}(E, F₃) :=
   letI T : 𝓓^{n}_{K}(E, F₁) →ₗ[𝕜] 𝓓^{n}_{K}(E, F₃) := {
     toFun φ := ⟨fun x ↦ B (φ x) (g x),
@@ -1046,21 +1045,17 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
     refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
       (ContDiffMapSupportedIn.withSeminorms ..) _ (fun k ↦ ?_)
     by_cases k_le_n : k ≤ n
-    · have q := fun i : Finset.range (k+1) ↦ K.isCompact.exists_bound_of_continuousOn
-        (hg.continuous_iteratedFDeriv (m := i)
-        (mod_cast le_trans (show i ≤ (k : ℕ∞) by aesop) k_le_n)).continuousOn
-      have : ∀ (i : ↥(Finset.range (k + 1))), ∃ C, 0 ≤ C ∧ ∀ x ∈ ↑K, ‖iteratedFDeriv ℝ (↑i) g x‖ ≤ C := by
-        intro i
-        by_cases hK : Nonempty K
-        · rcases q i with ⟨C, hC⟩
-          refine ⟨C, ?_, hC⟩
-          apply le_trans (norm_nonneg _) (hC (hK.some) (by aesop))
-        · refine ⟨0, le_refl 0, by aesop⟩
-      choose fG hfG using this
-      set G := Finset.univ.sup' (by aesop) fG with G_def
-      have G_pos : 0 ≤ G := by
-        rw [G_def, Finset.le_sup'_iff]
-        refine ⟨⟨0, by aesop⟩, by aesop, by aesop⟩
+    · have hcont : Continuous fun x ↦ (Finset.range (k + 1)).sup' Finset.nonempty_range_add_one
+          (fun i ↦ ‖iteratedFDeriv ℝ i g x‖) :=
+        Continuous.finset_sup'_apply Finset.nonempty_range_add_one fun i hi ↦
+          (hg.continuous_iteratedFDeriv (m := i) (WithTop.coe_le_coe.2
+            (le_trans (WithTop.coe_le_coe.2 (mem_range_succ_iff.mp hi)) (k_le_n)))).norm
+      obtain ⟨C₀, hC₀⟩ := K.isCompact.exists_bound_of_continuousOn hcont.continuousOn
+      set G := max C₀ 0 with G_def
+      have G_pos : 0 ≤ G := le_max_right _ _
+      have hfG : ∀ i ≤ k, ∀ x ∈ K, ‖iteratedFDeriv ℝ i g x‖ ≤ G := fun i hi x hx ↦
+        (Finset.le_sup' _ (Finset.mem_range_succ_iff.2 hi)).trans
+          ((Real.le_norm_self _).trans (hC₀ x hx) |>.trans (le_max_left _ _))
       set C : ℝ≥0 := ⟨‖B‖*((k : ℝ) + 1)*(Nat.pow k k)*G, by positivity⟩ with C_def
       refine ⟨Finset.Iic k, C, fun φ ↦ ?_⟩
       apply ((T φ).seminorm_le_iff 𝕜 (by positivity) k).2
@@ -1085,15 +1080,10 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
           apply_mod_cast le_trans (show (i : ℕ∞) ≤ (k : ℕ∞) by aesop) k_le_n
         have := norm_iteratedFDeriv_apply_le_seminorm 𝕜 i_le_n (f := φ) (x := x)
         refine le_trans this (Seminorm.le_finset_sup_apply (by aesop))
-      · have := (hfG ⟨(k-i), by grind⟩).2 x x_in_K
-        apply le_trans this
-        rw [G_def, Finset.le_sup'_iff]
-        have : k - i ∈ Finset.range (k+1) := by aesop
-        aesop
+      · exact hfG (k-i) (by simp) x x_in_K
     · refine ⟨{0}, 0, fun φ ↦ ?_⟩
       simp [ContDiffMapSupportedIn.seminorm_eq_bot_of_gt 𝕜 (not_le.1 k_le_n)]
   }⟩
-
 
 end bilin
 
