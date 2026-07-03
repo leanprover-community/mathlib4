@@ -851,16 +851,18 @@ theorem _root_.Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
 theorem _root_.Relation.eqvGen_idem : EqvGen (EqvGen r) = EqvGen r :=
   Equivalence.eqvGen_eq (EqvGen.is_equivalence r)
 
-theorem lift {p : β → β → Prop} {a b : α} (f : α → β) (h : ∀ a b, r a b → p (f a) (f b))
-    (hab : EqvGen r a b) : EqvGen p (f a) (f b) := by
+theorem lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
+    EqvGen r ≤ (EqvGen p on f) := by
+  intro _ _ hab
   induction hab with
   | rel a b ab => exact rel (f a) (f b) (h a b ab)
   | refl a => exact refl (f a)
   | symm a b ab ih => exact symm (f a) (f b) ih
   | trans a b c ab bc ih₁ ih₂ => exact trans (f a) (f b) (f c) ih₁ ih₂
 
-theorem lift' {p : β → β → Prop} {a b : α} (f : α → β) (h : ∀ a b, r a b → EqvGen p (f a) (f b))
-    (hab : EqvGen r a b) : EqvGen p (f a) (f b) := by
+theorem lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (EqvGen p on f)) :
+    EqvGen r ≤ (EqvGen p on f) := by
+  intro _ _ hab
   simpa [eqvGen_idem] using hab.lift f h
 
 theorem _root_.Relation.reflTransGen_eq_eqvGen [Std.Symm r] : ReflTransGen r = EqvGen r := by
