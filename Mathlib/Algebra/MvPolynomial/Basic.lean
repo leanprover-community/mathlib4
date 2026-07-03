@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Order.SymmDiff
+public meta import Mathlib.Tactic.Polynomial.Core
 
 /-!
 # Multivariate polynomials
@@ -106,8 +107,12 @@ def C : R →+* MvPolynomial σ R :=
 
 variable (R σ)
 
-@[simp]
+@[simp, polynomial_post]
 theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
+  rfl
+
+@[polynomial_pre]
+theorem C_eq_algebraMap : MvPolynomial.C = algebraMap R (MvPolynomial σ R) :=
   rfl
 
 variable {R σ}
@@ -593,6 +598,15 @@ theorem coeff_C [DecidableEq σ] (m) (a) :
     coeff m (C a : MvPolynomial σ R) = if 0 = m then a else 0 :=
   Finsupp.single_apply
 
+theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) (a : R) : coeff m (C a) = 0 := by
+  classical rw [coeff_C, if_neg h.symm]
+
+-- The intended use case of this theorem is for `n = 1` (often useful for `pderiv`).
+@[simp]
+theorem coeff_add_single_C {n : ℕ} [NeZero n] {m : σ →₀ ℕ} (a : R) (i : σ) :
+    coeff (m + Finsupp.single i n) (C a) = 0 :=
+  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($(H) i)) a
+
 lemma eq_C_of_isEmpty [IsEmpty σ] (p : MvPolynomial σ R) :
     p = C (p.coeff 0) := by
   obtain ⟨x, rfl⟩ := C_surjective σ p
@@ -1068,5 +1082,18 @@ end Algebra
 end coeffsIn
 
 end CommSemiring
+
+meta section Meta
+
+open Mathlib.Tactic.Polynomial in
+/-- Infer base ring for `MvPolynomial _ R`. Used by the `polynomial` tactic. -/
+@[polynomial_infer_base]
+def mvPolynomialInferBaseImpl : PolynomialExt where
+  infer e := do
+  match_expr e with
+  | MvPolynomial _ R _ => pure R
+  | _ => failure
+
+end Meta
 
 end MvPolynomial

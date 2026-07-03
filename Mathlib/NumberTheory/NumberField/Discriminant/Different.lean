@@ -87,7 +87,7 @@ lemma discr_mem_differentIdeal : ↑(discr K) ∈ differentIdeal ℤ 𝒪 := by
 
 attribute [local instance] FractionRing.liftAlgebra in
 theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : Type*) [Field L]
-    [NumberField L] [CommRing 𝒪'] [Algebra 𝒪' L] [IsFractionRing 𝒪' L] [IsIntegralClosure 𝒪' ℤ L]
+    [NumberField L] [CommRing 𝒪'] [Algebra 𝒪' L] [IsFractionRing 𝒪' L]
     [IsDedekindDomain 𝒪'] [CharZero 𝒪'] [Algebra K L] [Algebra 𝒪 𝒪'] [Algebra 𝒪 L]
     [IsScalarTower 𝒪 K L] [IsScalarTower 𝒪 𝒪' L] [IsTorsionFree 𝒪 𝒪'] [Free ℤ 𝒪']
     [Module.Finite ℤ 𝒪'] [Module.Finite 𝒪 𝒪'] :
@@ -189,9 +189,23 @@ lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
     exact ⟨P, hP, ⟨h₁.symm⟩, h₂⟩
   · rintro ⟨P, hP, hP', hP''⟩
     have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
-    rw [absNorm_differentIdeal K, Ideal.absNorm_eq_pow_inertiaDeg P hp,
+    rw [absNorm_differentIdeal K, ← Ideal.natAbs_pow_inertiaDeg' p,
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
-    exact (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne').trans this
+    exact (dvd_pow_self _ (Ideal.inertiaDeg'_pos ..).ne').trans this
+
+/-- A prime `p` does not divide `discr K` if and only if `p` (as the ideal `span {p}`) is
+unramified in the ring of integers `𝒪`.
+
+Also see `not_dvd_discr_iff_forall_liesOver` and `not_dvd_discr_iff_forall_mem` for variants
+whose RHS does not use `Algebra.IsUnramifiedIn`. -/
+lemma not_dvd_discr_iff_isUnramifiedIn [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
+    ¬ p ∣ discr K ↔ Algebra.IsUnramifiedIn 𝒪 (Ideal.span {p}) := by
+  have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
+  have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
+  have := CharZero.of_module (R := 𝒪) K
+  rw [not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
+  exact (Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain'
+    (Ideal.span_singleton_eq_bot.not.mpr hp.ne_zero)).symm
 
 /-- Also see `not_dvd_discr_iff_forall_liesOver` for a slightly easier to prove RHS. -/
 lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :

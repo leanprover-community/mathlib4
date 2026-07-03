@@ -101,7 +101,7 @@ instance Ordinal.isEquivalent : Setoid WellOrder where
     ⟨fun _ => ⟨RelIso.refl _⟩, fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans e₂⟩⟩
 
 /-- `Ordinal.{u}` is the type of well orders in `Type u`, up to order isomorphism. -/
-@[pp_with_univ]
+@[pp_with_univ, wikidata Q191780]
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 
@@ -1268,6 +1268,10 @@ def ord.orderEmbedding : Cardinal ↪o Ordinal :=
 @[deprecated ord (since := "2026-02-27")]
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
+
+lemma nonempty_ord_toType {c : Cardinal} (h : c ≠ 0) :
+    Nonempty c.ord.ToType := by
+  rwa [Ordinal.nonempty_toType_iff, ne_eq, ord_eq_zero]
 
 end Cardinal
 
