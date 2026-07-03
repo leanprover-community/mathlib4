@@ -40,8 +40,8 @@ namespace Pentagonal
 -- private auxiliary lemma
 
 theorem tendsto_order_pow_mul_prod_one_sub_pow (k : ℕ) :
-    Tendsto (fun i ↦ (X ^ ((k + 1) * i) *
-      ∏ j ∈ Finset.range (i + 1), (1 - X ^ (k + j + 1)) : R⟦X⟧).order) atTop (𝓝 ⊤) := by
+    Tendsto (fun n ↦ (X ^ ((k + 1) * n) *
+      ∏ i ∈ Finset.range (n + 1), (1 - X ^ (k + i + 1)) : R⟦X⟧).order) atTop (𝓝 ⊤) := by
   nontriviality R using Subsingleton.eq_zero
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n + 1, ?_⟩
   intro m hm
