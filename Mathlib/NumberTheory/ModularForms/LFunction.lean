@@ -180,7 +180,7 @@ namespace CuspForm
 
 variable [CuspFormClass F Γ k]
 
-/-- A `StrongFEPair` structure associated to a cusp form. -/
+/-- For cusp forms the FE-pair is a strong FE-pair. -/
 lemma isStrongFEPair : IsStrongFEPair (weakFEPair hk f) where
   hf₀ := by exact (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
   hg₀ := by exact (CuspFormClass.zero_at_infty <| translate f ModularGroup.S).valueAtInfty_eq_zero
