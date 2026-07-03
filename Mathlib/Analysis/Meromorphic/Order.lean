@@ -29,6 +29,8 @@ open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {R : Type*} [NormedRing R] [NoZeroDivisors R]
+  [Module R E] [IsBoundedSMul R E] [Module.IsTorsionFree R E]
   {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   {f f₁ f₂ : 𝕜 → E} {x : 𝕜}
 
@@ -405,8 +407,8 @@ theorem meromorphicOrderAt_fun_neg {f : 𝕜 → E} :
     meromorphicOrderAt f x = meromorphicOrderAt (fun z ↦ -f z) x := meromorphicOrderAt_neg
 
 /-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
-@[to_fun] theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
-    (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+@[to_fun] theorem meromorphicOrderAt_smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E]
+    {f : 𝕜 → R} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     meromorphicOrderAt (f • g) x = meromorphicOrderAt f x + meromorphicOrderAt g x := by
   -- Trivial cases: one of the functions vanishes around z₀
   cases h₂f : meromorphicOrderAt f x with
@@ -429,24 +431,8 @@ theorem meromorphicOrderAt_fun_neg {f : 𝕜 → E} :
 /-- The order is additive when multiplying meromorphic functions. -/
 @[to_fun] theorem meromorphicOrderAt_mul {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x)
     (hg : MeromorphicAt g x) :
-    meromorphicOrderAt (f * g) x = meromorphicOrderAt f x + meromorphicOrderAt g x := by
-  -- Trivial cases: one of the functions vanishes around z₀
-  cases h₂f : meromorphicOrderAt f x with
-  | top =>
-    simp only [top_add, meromorphicOrderAt_eq_top_iff] at h₂f ⊢
-    filter_upwards [h₂f] with z hz using by simp [hz]
-  | coe m =>
-    cases h₂g : meromorphicOrderAt g x with
-    | top =>
-      simp only [add_top, meromorphicOrderAt_eq_top_iff] at h₂g ⊢
-      filter_upwards [h₂g] with z hz using by simp [hz]
-    | coe n => -- Non-trivial case: both functions do not vanish around z₀
-      rw [← WithTop.coe_add, meromorphicOrderAt_eq_int_iff (hf.mul hg)]
-      obtain ⟨F, h₁F, h₂F, h₃F⟩ := (meromorphicOrderAt_eq_int_iff hf).1 h₂f
-      obtain ⟨G, h₁G, h₂G, h₃G⟩ := (meromorphicOrderAt_eq_int_iff hg).1 h₂g
-      use F * G, h₁F.smul h₁G, by simp [h₂F, h₂G]
-      filter_upwards [self_mem_nhdsWithin, h₃F, h₃G] with a ha hfa hga
-      simp [hfa, hga, smul_comm ((a - x) ^ n), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
+    meromorphicOrderAt (f * g) x = meromorphicOrderAt f x + meromorphicOrderAt g x :=
+  meromorphicOrderAt_smul hf hg
 
 /--
 The order is additive in products of meromorphic functions.
