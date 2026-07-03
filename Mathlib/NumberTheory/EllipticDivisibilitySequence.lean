@@ -322,24 +322,22 @@ lemma IsEllipticDvdSequence.smul (h : IsEllipticDvdSequence W) (x : R) :
   ⟨h.left.smul x, h.right.smul x⟩
 
 @[deprecated (since := "2026-07-01")] alias IsEllDvdSequence.smul := IsEllipticDvdSequence.smul
-@[deprecated (since := "2026-06-30")] alias IsEllipticDivSequence.smul := IsEllipticDvdSequence.smul
 @[deprecated (since := "2026-06-30")] alias IsEllDivSequence.smul := IsEllipticDvdSequence.smul
 
-lemma isEllipticNet_id : IsEllipticNet id :=
+lemma isEllipticNet.id : IsEllipticNet id :=
   fun _ _ _ _ ↦ by simp_rw [IsEllipticNet.rel, id_eq]; ring1
 
-lemma isEllipticSequence_id : IsEllipticSequence id :=
-  isEllipticNet_id.isEllipticSequence
+lemma isEllipticSequence.id : IsEllipticSequence id :=
+  isEllipticNet.id.isEllipticSequence
 
-@[deprecated (since := "2026-07-01")] alias isEllSequence_id := isEllipticSequence_id
+@[deprecated (since := "2026-07-01")] alias isEllSequence_id := isEllipticSequence.id
 
 /-- The identity sequence is an EDS. -/
-theorem isEllipticDvdSequence_id : IsEllipticDvdSequence id :=
-  ⟨isEllipticSequence_id, .id ℤ⟩
+theorem isEllipticDvdSequence.id : IsEllipticDvdSequence id :=
+  ⟨isEllipticSequence.id, .id ℤ⟩
 
-@[deprecated (since := "2026-07-01")] alias isEllDvdSequence_id := isEllipticDvdSequence_id
-@[deprecated (since := "2026-06-30")] alias isEllipticDivSequence_id := isEllipticDvdSequence_id
-@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := isEllipticDvdSequence_id
+@[deprecated (since := "2026-07-01")] alias isEllDvdSequence_id := isEllipticDvdSequence.id
+@[deprecated (since := "2026-06-30")] alias isEllDivSequence_id := isEllipticDvdSequence.id
 
 variable (b c d : R)
 
