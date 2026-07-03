@@ -109,43 +109,37 @@ variable [HasZeroObject V]
 
 variable (V)
 
-/-- If `V` has a zero object, the functor from `V` to `Arrow V` that sends an object `X`
-to the arrow `0 ⟶ X`. -/
+open ZeroObject in
+set_option backward.defeqAttrib.useBackward true in
+/-- If `V` has a zero object, this is the functor from `V` to `Arrow V`
+that sends an object `X` to the arrow `0 ⟶ X`. -/
+@[simps]
 def rightFunctor : V ⥤ Arrow V where
-  obj X := Arrow.mk 0
-  map f := Arrow.homMk 0 f (HasZeroObject.from_zero_ext _ _)
-  map_id _ := by
-    ext
-    · exact HasZeroObject.from_zero_ext _ _
-    · rfl
+  obj X := Arrow.mk (0 : 0 ⟶ X)
+  map f := Arrow.homMk 0 f
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (rightFunctor V).Additive where
-  map_add {_ _ _ _} := by
-    ext
-    · exact HasZeroObject.from_zero_ext _ _
-    · rfl
+  map_add {_ _ _ _} := by cat_disch
 
 /-- The fully faithful additive functor from  `V` to `RightFreyd V` sending an object `X` of `V`
 to the class of the arrow `0 ⟶ X`. -/
-def functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
+abbrev functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
 
 instance : (functor V).Additive := by dsimp [functor]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (functor V).Full where
   map_surjective a := by
     obtain ⟨u, rfl⟩ := (quotient V).map_surjective a
-    use u.right
-    apply congrArg (quotient V).map
-    ext
-    · exact HasZeroObject.from_zero_ext _ _
-    · rfl
+    exact ⟨u.right, (quotient V).congr_map (by cat_disch)⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (functor V).Faithful where
-  map_injective {_ _} _ _ eq := by
-    refine eq_of_sub_eq_zero (((quotient_map_eq_iff _ _).mp eq).some.comm.trans ?_)
-    convert comp_zero
-    · exact HasZeroObject.from_zero_ext _ _
-    · rfl
+  map_injective {_ _} f g eq := by
+    dsimp at eq
+    rw [quotient_map_eq_iff] at eq
+    simpa [← sub_eq_zero] using! eq.some.comm
 
 end Functor
 
