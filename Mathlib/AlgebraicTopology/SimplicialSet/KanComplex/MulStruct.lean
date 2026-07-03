@@ -300,41 +300,43 @@ variable {f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f₀₃ : X.PtSimplex n x} {i 
 
 namespace assocAux
 
-def α (j : Fin (n + 3)) (_ : j ≠ i.castSucc.castSucc.succ := by grind) :
+/-- Auxiliary definition for `SSet.PtSimplex.MulStruct.assocAux`. -/
+@[no_expose]
+private def α (j : Fin (n + 3)) (_ : j ≠ i.castSucc.castSucc.succ := by grind) :
     Δ[n + 1] ⟶ X :=
   if j = i.castSucc.castSucc.castSucc then h₁₃.map else
     if j = i.castSucc.succ.succ then h.map else
       if j = i.succ.succ.succ then h₀₂.map else
         const x
 
-lemma α_of_lt (j : Fin (n + 3)) (hj : j < i.castSucc.castSucc.castSucc := by grind) :
+private lemma α_of_lt (j : Fin (n + 3)) (hj : j < i.castSucc.castSucc.castSucc := by grind) :
     α h₀₂ h₁₃ h j = const x := by
   dsimp [α]
   rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
 
-lemma α_of_gt (j : Fin (n + 3)) (hj : i.succ.succ.succ < j := by grind) :
+private lemma α_of_gt (j : Fin (n + 3)) (hj : i.succ.succ.succ < j := by grind) :
     α h₀₂ h₁₃ h j = const x := by
   dsimp [α]
   rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
 
 @[simp]
-lemma α_castSucc_castSucc_castSucc :
+private lemma α_castSucc_castSucc_castSucc :
     α h₀₂ h₁₃ h i.castSucc.castSucc.castSucc = h₁₃.map := by
   simp [α]
 
 @[simp]
-lemma α_castSucc_succ_succ :
+private lemma α_castSucc_succ_succ :
     α h₀₂ h₁₃ h (i.castSucc.succ.succ) = h.map := by
   dsimp [α]
   rw [if_neg (by grind), if_pos (by simp)]
 
 @[simp]
-lemma α_succ_succ_succ :
+private lemma α_succ_succ_succ :
     α h₀₂ h₁₃ h i.succ.succ.succ = h₀₂.map := by
   dsimp [α]
   rw [if_neg (by grind), if_neg (by grind), if_pos (by simp)]
 
-lemma isCompatible_α : horn.IsCompatible (fun j hj ↦ α h₀₂ h₁₃ h j hj) := by
+private lemma isCompatible_α : horn.IsCompatible (fun j hj ↦ α h₀₂ h₁₃ h j hj) := by
   rw [horn.isCompatible_iff]
   intro j k hj hk hjk
   obtain ⟨j, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hjk)
@@ -385,8 +387,8 @@ lemma isCompatible_α : horn.IsCompatible (fun j hj ↦ α h₀₂ h₁₃ h j h
 
 end assocAux
 
-@[simps]
-def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
+/-- Auxiliary definition for `SSet.PtSimplex.MulStruct.assoc`. -/
+private def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
     (hφ : ∀ (j : Fin (n + 3)) (hj : j ≠ i.castSucc.castSucc.succ),
       stdSimplex.δ j ≫ φ = assocAux.α h₀₂ h₁₃ h j hj) :
     MulStruct f₀₂ f₂₃ f₀₃ i where
@@ -411,13 +413,26 @@ def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
       hφ _ (by grind), assocAux.α_of_gt _ _ _ _ (by grind)]
     simp
 
+end
+
+/-- Given `f₀₁`, `f₁₂`, `f₂₃`, `f₀₂`, `f₁₃` and `f₀₃` in `X.PtSimplex n x`,
+if "the" multiplication of `f₀₁` and `f₁₂` is `f₀₂`,
+the multiplication of `f₁₂` and `f₂₃` is `f₁₃`,
+and the multiplication of `f₀₁` and `f₁₃` is `f₀₃`,
+then the multiplication of `f₀₂` and `f₂₃` is `f₀₃`. -/
 @[no_expose]
-noncomputable def assoc [KanComplex X] : MulStruct f₀₂ f₂₃ f₀₃ i :=
+noncomputable def assoc [KanComplex X]
+    {f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f₀₃ : X.PtSimplex n x} {i : Fin n}
+    (h₀₂ : MulStruct f₀₁ f₁₂ f₀₂ i) (h₁₃ : MulStruct f₁₂ f₂₃ f₁₃ i)
+    (h : MulStruct f₀₁ f₁₃ f₀₃ i) : MulStruct f₀₂ f₂₃ f₀₃ i :=
   assocAux h₀₂ h₁₃ h (assocAux.isCompatible_α h₀₂ h₁₃ h).liftOfKanComplex
     (fun j hj ↦ (assocAux.isCompatible_α h₀₂ h₁₃ h).δ_liftOfKanComplex j hj)
 
-end
-
+/-- Given `f₀₁`, `f₁₂`, `f₂₃`, `f₀₂`, `f₁₃` and `f₀₃` in `X.PtSimplex n x`,
+if "the" multiplication of `f₀₁` and `f₁₂` is `f₀₂`,
+the multiplication of `f₁₂` and `f₂₃` is `f₁₃`,
+and the multiplication of `f₀₂` and `f₂₃` is `f₀₃`,
+then the multiplication of `f₀₁` and `f₁₃` is `f₀₃`. -/
 @[no_expose]
 noncomputable def assoc' [KanComplex X]
     {f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f₀₃ : X.PtSimplex n x} {i : Fin n}
