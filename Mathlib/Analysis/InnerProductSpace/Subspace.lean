@@ -34,7 +34,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- Induced inner product on a submodule. -/
 instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
-  .induced W.subtype
+  fast_instance% .induced W.subtype
 
 /-- The inner product on submodules is the same as on the ambient space. -/
 @[simp]

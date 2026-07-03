@@ -116,7 +116,7 @@ theorem reachable_fromEdgeSet_eq_reflTransGen_toRel {s : Set (Sym2 V)} :
   ext
   simpa [Relation.reflGen_iff] using by tauto
 
-theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Symmetric r) :
+theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Std.Symm r) :
     (fromEdgeSet <| Sym2.fromRel sym).Reachable = Relation.ReflTransGen r :=
   reachable_fromEdgeSet_eq_reflTransGen_toRel
 
@@ -196,6 +196,12 @@ lemma Reachable.degree_pos_left {G : SimpleGraph V} {u v : V} [Fintype (G.neighb
 lemma Reachable.degree_pos_right {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
     (huv : u ≠ v) (hreach : G.Reachable u v) : 0 < G.degree v :=
   hreach.symm.degree_pos_left huv.symm
+
+lemma Reachable.of_isUniversal {G : SimpleGraph V} {u : V} (v : V) (h : G.IsUniversal u) :
+    G.Reachable u v := by
+  by_cases! h' : u = v
+  · exact h' ▸ Reachable.rfl
+  · exact (h h').reachable
 
 lemma not_reachable_of_neighborSet_left_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
     (hu : G.neighborSet u = ∅) : ¬G.Reachable u v :=
@@ -373,6 +379,11 @@ theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := b
 
 theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected :=
   G.connected_or_preconnected_compl.elim .inl (.inr ⟨·⟩)
+
+variable {G v} in
+lemma Connected.of_isUniversal (h : G.IsUniversal v) : G.Connected := by
+  refine connected_iff _ |>.mpr ⟨fun u w ↦ ?_, ⟨v⟩⟩
+  exact (Reachable.of_isUniversal u h).symm.trans (Reachable.of_isUniversal w h)
 
 /-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
 components of a graph. -/
@@ -753,6 +764,11 @@ theorem isBridge_iff {u v : V} :
 
 @[simp] lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) :
     G.IsBridge s(u, v) := fun h ↦ huv <| h.mono <| deleteEdges_le _
+
+theorem IsBridge.reachable_iff_adj (h : G.IsBridge s(u, v)) : G.Reachable u v ↔ G.Adj u v := by
+  refine ⟨fun hreach ↦ G.mem_edgeSet.mp ?_, Adj.reachable⟩
+  have : G.deleteEdges {s(u, v)} < G := deleteEdges_le _ |>.lt_of_ne <| by grind [isBridge_iff]
+  grind [edgeSet_strict_mono this, edgeSet_deleteEdges]
 
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
   cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
