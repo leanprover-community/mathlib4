@@ -36,6 +36,15 @@ abbrev of {X Y : SSet.{u}} (i : X ⟶ Y) [Mono i] : SSetPair.{u} :=
 abbrev forget : SSetPair.{u} ⥤ Arrow SSet.{u} :=
   MorphismProperty.Arrow.forget _ _ _
 
+/-- Constructor for morphisms in `SSetPair`. -/
+abbrev homMk {P₁ P₂ : SSetPair.{u}} (left : P₁.left ⟶ P₂.left) (right : P₁.right ⟶ P₂.right)
+    (h : left ≫ P₂.hom = P₁.hom ≫ right := by cat_disch) :
+    P₁ ⟶ P₂ where
+  left := left
+  right := right
+  prop_hom_left := by simp
+  prop_hom_right := by simp
+
 end SSetPair
 
 /-- Given a subcomplex `A` of a simplical set `X`, this is the pair in `SSetPair`

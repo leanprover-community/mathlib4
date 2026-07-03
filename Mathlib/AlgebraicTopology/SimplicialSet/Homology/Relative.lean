@@ -208,11 +208,31 @@ of simplicial sets. -/
 noncomputable abbrev chainComplexMap : P.chainComplex R ⟶ P'.chainComplex R :=
   ((SSetPair.chainComplexFunctor C).obj R).map f
 
+variable {P P' P''} in
+@[reassoc]
+lemma chainComplexMap_comp :
+    chainComplexMap (f ≫ g) R = chainComplexMap f R ≫ chainComplexMap g R := by
+  simp
+
 /-- Given a pair of simplicial sets `i : X ⟶ Y` (with `i` a monomorphism),
 this is the morphism from the chain complex of `Y` to the
 chain complex of the pair. -/
 noncomputable def chainComplexπ : P.right.chainComplex R ⟶ P.chainComplex R :=
   ((chainComplexFunctorπ.{w} C).app R).app P
+
+variable {P P'} in
+@[reassoc (attr := simp)]
+lemma chainComplexπ_naturality :
+    P.chainComplexπ R ≫ chainComplexMap f R =
+      SSet.chainComplexMap f.right R ≫ P'.chainComplexπ R :=
+  (((chainComplexFunctorπ.{w} C).app R).naturality f).symm
+
+variable {P P'} in
+@[reassoc (attr := simp)]
+lemma chainComplexπ_f_naturality (n : ℕ) :
+    (P.chainComplexπ R).f n ≫ (chainComplexMap f R).f n =
+      (SSet.chainComplexMap f.right R).f n ≫ (P'.chainComplexπ R).f n := by
+  simp [← HomologicalComplex.comp_f]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -301,6 +321,18 @@ instance : Mono (P.chainComplexShortComplex R).f := by dsimp; infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
 instance : Epi (P.chainComplexShortComplex R).g := by dsimp; infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma ι_chainComplexπ_f_eq_zero {n : ℕ} (x : P.left _⦋n⦌) :
+    P.right.ιChainComplex (P.hom.app _ x) ≫ (P.chainComplexπ R).f n = 0 := by
+  simp [← dsimp% SSet.ι_chainComplexMap_f_assoc P.hom (R := R) x]
+
+@[reassoc (attr := simp)]
+lemma ι_chainComplexπ_f_eq_zero' {X Y : SSet.{w}} (i : X ⟶ Y) [Mono i]
+    {n : ℕ} (x : X _⦋n⦌) :
+    Y.ιChainComplex (i.app _ x) ≫ ((of i).chainComplexπ R).f n = 0 :=
+  (of i).ι_chainComplexπ_f_eq_zero R x
 
 section
 

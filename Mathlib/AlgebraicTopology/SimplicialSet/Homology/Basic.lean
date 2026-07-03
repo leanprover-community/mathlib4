@@ -97,6 +97,7 @@ lemma ιChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
       ∑ (i : Fin (n + 2)), (-1) ^ i.val • X.ιChainComplex (X.δ i x) := by
   simp [ιChainComplex, chainComplex, chainComplexFunctor, Preadditive.comp_sum]
 
+variable {X Y} in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_chainComplexMap_f {n : ℕ} (x : X _⦋n⦌) :
