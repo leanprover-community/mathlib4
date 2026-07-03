@@ -27,7 +27,7 @@ fraction obtained by an explicit transformation of its coefficient stream.
 ## Main results
 
 * `euler_convs` : explicit formula for convergents of an Euler-transformed continued fraction.
-* `convs_toEuler_eq_convs` : equivalence of convergents between a generalized continued fraction
+* `convs_toEuler` : equivalence of convergents between a generalized continued fraction
   and its corresponding Euler continued fraction.
 
 ## References
