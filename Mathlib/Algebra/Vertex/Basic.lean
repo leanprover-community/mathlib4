@@ -149,7 +149,7 @@ theorem Borcherds_sum_1_eq_zero (a b c : V) (r s t : ℤ) (h : -order Y a b ≤ 
   rw [hrange, Finset.range_zero, Finset.sum_empty]
 
 theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s : ℤ) :
-    (Finset.sum (Finset.antidiagonal (Int.toNat (-s - order Y b c))) fun m ↦
+    (Finset.sum (Finset.HasAntidiagonal.antidiagonal (Int.toNat (-s - order Y b c))) fun m ↦
     (-1) ^ m.2 • Nat.choose (Int.toNat (-s - order Y b c)) m.2 •
     (HVertexOperator.coeff (Y a) (-r - 1 - m.1))
     ((HVertexOperator.coeff (Y b) (-s - 1 - m.2)) c)) =
@@ -175,9 +175,9 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s : ℤ) :
     linarith
   rw [h, LinearMap.map_zero, smul_zero, smul_zero]
 
-theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s : ℤ) : Finset.sum (Finset.antidiagonal
-    (Int.toNat (-r - order Y a c))) (fun m => -(-1)^(m.2) • (Nat.choose (Int.toNat
-    (-r - order Y a c)) m.2) • HVertexOperator.coeff (Y b) (-s - 1 - m.2)
+theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s : ℤ) : Finset.sum
+    (Finset.HasAntidiagonal.antidiagonal (Int.toNat (-r - order Y a c))) (fun m => -(-1)^(m.2) •
+    (Nat.choose (Int.toNat (-r - order Y a c)) m.2) • HVertexOperator.coeff (Y b) (-s - 1 - m.2)
     (HVertexOperator.coeff (Y a) (-r - 1 - m.1) c)) =
     Borcherds_sum_3 Y a b c r s (Int.toNat (-r - order Y a c)) := by
   unfold Borcherds_sum_3 ncoeff

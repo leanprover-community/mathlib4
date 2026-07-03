@@ -610,8 +610,7 @@ def trivialLift [IsLieAbelian N] (E : Extension R N M) {s : M →ₗ[R] E.L} (hs
 lemma domRestrict_section_injective (E : Extension R N M) {s : M →ₗ[R] E.L}
     (hs : LeftInverse E.proj s) (P : LieSubalgebra R M) :
     Injective (s.domRestrict P) := by
-  rw [LinearMap.injective_domRestrict_iff, LinearMap.ker_eq_bot.mpr (LeftInverse.injective hs),
-    inf_bot_eq]
+  simp [LinearMap.ker_eq_bot.mpr (LeftInverse.injective hs)]
 
 lemma domRestrict_proj_injective [IsLieAbelian N] (E : Extension R N M) {s : M →ₗ[R] E.L}
     (hs : LeftInverse E.proj s) {P : LieSubalgebra R M}

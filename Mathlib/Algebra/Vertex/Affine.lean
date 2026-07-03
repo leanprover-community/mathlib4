@@ -40,13 +40,17 @@ variable {R L M : Type*}
 section LoopAlgebra
 
 /-
+Need a class for graded LieRingModules. Ordering on grading set should a class parameter,
+homogeneous action should be part of the definition of graded module. To use `ofCoeff`, I need a
+`isPWO` condition. IsPWO should follow from finiteness (except when working with Laurent series lie
+algebras, when it needs to be `bounded below support in a locally finite order`)
+
 /-- A representation has `positive energy` if the energy spectrum is non-negative. -/
 class positiveEnergy [CommRing R] [IsAddTorsionFree R] [LieRing L] [LieAlgebra R L] [AddCommGroup M]
     [Module R M] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ)
     [LieRingModule (LieAlgebra.LoopAlgebra.extension R ℤ L Φ hΦ hΦs).L M] where
   graded (by linearly ordered group): sorry
-  homogeneous_action : sorry
   support_bounded_below : sorry
 
 /-- Traditionally, a representation of a topological group is `smooth` if all stabilizers are open
@@ -57,11 +61,11 @@ class smooth [CommRing R] [IsAddTorsionFree R] [LieRing L] [LieAlgebra R L] [Add
     [LieRingModule (LieAlgebra.LoopAlgebra.extension R ℤ L Φ hΦ hΦs).L M] where
   locally_finite_rank : ∀m : M, Module.rank R
 
+def affineVertexOperator (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
+    (hΦs : LinearMap.BilinForm.IsSymm Φ) (x : g) (V : positiveEnergy Φ hΦ hΦs) :
+    VertexOperator R V :=
+  of_coeff R fun n v => x t^n • v
 -/
-
---def affineVertexOperator (x : g) (V : positiveEnergy) : VertexOperator R V :=
---  of_coeff R fun n v => x t^n • v
-
 end LoopAlgebra
 
 section VertexAlgebra

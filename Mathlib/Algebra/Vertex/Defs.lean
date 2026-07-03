@@ -219,8 +219,8 @@ stabilizes identity if left translation satisfies the Leibniz rule.  We omit con
 def translation_covariance (Y : stateField R V) (A : VertexOperator R V) (f : ℕ → Module.End R V) :
     Prop :=
   ∀ (i : ℕ) (n : ℤ), f i * HVertexOperator.coeff A n =
-    Finset.sum (Finset.antidiagonal i) fun m => (-1 : ℤˣ) ^ m.fst • Ring.choose n m.fst •
-      (HVertexOperator.coeff A (n - m.fst) * T Y m.snd)
+    Finset.sum (Finset.HasAntidiagonal.antidiagonal i) fun m =>
+      (-1 : ℤˣ) ^ m.fst • Ring.choose n m.fst • (HVertexOperator.coeff A (n - m.fst) * T Y m.snd)
 
 end VertexAlg
 

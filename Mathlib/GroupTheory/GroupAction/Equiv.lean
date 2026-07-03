@@ -133,8 +133,8 @@ export MulActionSemiEquivClass (map_smulₛₗ)
 export AddActionSemiEquivClass (map_vaddₛₗ)
 
 @[to_additive]
-instance (F : Type*) [SMul M X] [SMul N Y]
-    [EquivLike F X Y] [MulActionSemiEquivClass F φ X Y] : MulActionSemiHomClass F φ X Y where
+instance (F : Type*) [EquivLike F X Y] [MulActionSemiEquivClass F φ X Y] :
+    MulActionSemiHomClass F φ X Y where
   map_smulₛₗ := MulActionSemiEquivClass.map_smulₛₗ
 
 /-- `MulActionEquivClass F M X Y` states that `F` is a type of
