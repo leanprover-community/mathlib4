@@ -120,6 +120,30 @@ lemma UniformOnFun.ofFun_div [Div β] (f g : α → β) : ofFun 𝔖 (f / g) = o
 @[to_additive]
 instance {M : Type*} [Pow β M] : Pow (α →ᵤ β) M := inferInstanceAs <| Pow (α → β) M
 
+@[to_additive (attr := simp)]
+lemma UniformFun.toFun_smul {M : Type*} [Pow β M] (c : M) (f : α →ᵤ β) :
+    toFun (f ^ c) = toFun f ^ c :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformFun.ofFun_smul {M : Type*} [Pow β M] (c : M) (f : α → β) :
+    ofFun (f ^ c) = ofFun f ^ c :=
+  rfl
+
+@[to_additive]
+instance {M : Type*} [Pow β M] : Pow (α →ᵤ[𝔖] β) M := inferInstanceAs <| Pow (α → β) M
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.toFun_smul {M : Type*} [Pow β M] (c : M) (f : α →ᵤ[𝔖] β) :
+    toFun 𝔖 (f ^ c) = toFun 𝔖 f ^ c :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.ofFun_smul {M : Type*} [Pow β M] (c : M) (f : α → β) :
+    ofFun 𝔖 (f ^ c) = ofFun 𝔖 f ^ c :=
+  rfl
+
+
 @[to_additive]
 instance [Monoid β] : Monoid (α →ᵤ β) := inferInstanceAs <| Monoid (α → β)
 
@@ -143,28 +167,6 @@ instance [CommGroup β] : CommGroup (α →ᵤ β) := inferInstanceAs <| CommGro
 
 @[to_additive]
 instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) := inferInstanceAs <| CommGroup (α → β)
-
-@[simp]
-lemma UniformFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ β) :
-    toFun (c • f) = c • toFun f :=
-  rfl
-
-@[simp]
-lemma UniformFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
-    ofFun (c • f) = c • ofFun f :=
-  rfl
-
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := inferInstanceAs <| SMul M (α → β)
-
-@[simp]
-lemma UniformOnFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ[𝔖] β) :
-    toFun 𝔖 (c • f) = c • toFun 𝔖 f :=
-  rfl
-
-@[simp]
-lemma UniformOnFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
-    ofFun 𝔖 (c • f) = c • ofFun 𝔖 f :=
-  rfl
 
 instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ β) :=
