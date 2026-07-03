@@ -151,10 +151,8 @@ lemma uniformization_pair
       (h₂'.trans hκ₂).isCardinalAccessibleCategory D₂,
       Functor.isCardinalAccessible_of_le _ (h₁''.trans hκ₁).le,
       Functor.isCardinalAccessible_of_le _ (h₂''.trans hκ₂).le⟩
-  obtain ⟨κ₁, _, hκ₁⟩ :=
-    ObjectProperty.le_isCardinalPresentable.{w} ((isCardinalPresentable C₁ κ).map F₁)
-  obtain ⟨κ₂, _, hκ₂⟩ :=
-    ObjectProperty.le_isCardinalPresentable.{w} ((isCardinalPresentable C₂ κ).map F₂)
+  obtain ⟨κ₁, _, hκ₁⟩ := ((isCardinalPresentable C₁ κ).map F₁).le_isCardinalPresentable
+  obtain ⟨κ₂, _, hκ₂⟩ := ((isCardinalPresentable C₂ κ).map F₂).le_isCardinalPresentable
   obtain ⟨κ', _, hκ, hκ₁', hκ₂'⟩ := Cardinal.SharplyLT.exists_of_triple κ κ₁ κ₂
   refine ⟨κ', inferInstance, hκ.isCardinalAccessibleCategory _,
     hκ.isCardinalAccessibleCategory _, hκ.isCardinalAccessibleCategory _,
