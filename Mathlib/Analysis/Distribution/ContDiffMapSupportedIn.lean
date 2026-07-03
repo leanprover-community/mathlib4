@@ -1075,5 +1075,3 @@ end bilin
 end Multiplication
 
 end ContDiffMapSupportedIn
-
-#min_imports
