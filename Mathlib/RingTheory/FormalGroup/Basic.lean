@@ -112,9 +112,10 @@ lemma FormalGroup.comm' (F : FormalGroup R) [F.IsComm] {f g : MvPowerSeries σ R
 
 namespace FormalGroup
 
-variable {σ : Type*} (F : FormalGroup R)
+variable (F : FormalGroup R) (S : Type*) [CommRing S] [UniformSpace S] [IsLinearTopology S S]
+  [UniformSpace R]
 
-set_option linter.unusedVariables false in
+-- set_option linter.unusedVariables false in
 /-- `F.Point σ` represents the mathematical space of points of a formal group $F$
 taking values in the formal power series ring `MvPowerSeries σ R` with the property
 that constant coefficient is nilpotent.
@@ -123,22 +124,22 @@ TODO: Mathematically, a 1-dimensional formal group law $F$ over a ring $R$ defin
 structure on the elements of a complete local $R$-algebra (specifically, its maximal ideal)
 via the substitution operation $x +_F y = F(x, y)$. -/
 @[nolint unusedArguments]
-def Point (F : FormalGroup R) (σ : Type*) := {f : MvPowerSeries σ R // PowerSeries.HasSubst f}
+def Point (_F : FormalGroup R) := topologicalNilradical S
 
-instance : Add (F.Point σ) where
-  add x y := ⟨F.toPowerSeries.subst ![x.val, y.val],
-    IsNilpotent_subst (by simp [hasSubst_of_constantCoeff_nilpotent, x.prop, y.prop])
-      (F.zero_constantCoeff ▸ IsNilpotent.zero)⟩
+-- instance : Add (F.Point S) where
+--   add x y := by
+--     refine ⟨F.toPowerSeries.aeval ![x.val, y.val],
+--     ?_⟩
 
-@[simp]
-lemma add_apply {x y : F.Point σ} : (x + y).val = F.toPowerSeries.subst ![x.val, y.val] := by
-  rfl
+-- @[simp]
+-- lemma add_apply {x y : F.Point σ} : (x + y).val = F.toPowerSeries.subst ![x.val, y.val] := by
+--   rfl
 
-instance : Zero (F.Point σ) where
-  zero := ⟨0, PowerSeries.HasSubst.zero⟩
+-- instance : Zero (F.Point σ) where
+--   zero := ⟨0, PowerSeries.HasSubst.zero⟩
 
-@[simp]
-lemma zero_apply : (0 : F.Point σ).val = (0 : MvPowerSeries σ R) := rfl
+-- @[simp]
+-- lemma zero_apply : (0 : F.Point σ).val = (0 : MvPowerSeries σ R) := rfl
 
 /-- Additive formal group law `𝔾ₐ(X,Y) = X + Y`. -/
 @[simps]
@@ -328,14 +329,14 @@ theorem zero_add {f : MvPowerSeries σ R} (hf : PowerSeries.HasSubst f) :
     _ = _ := by
       simp [zeroX_eq_X, PowerSeries.subst_X hf]
 
-instance : AddMonoid (F.Point σ) where
-  zero_add x := Subtype.ext (zero_add F x.prop)
-  add_zero x := Subtype.ext (add_zero F x.prop)
-  nsmul := nsmulRec
-  add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
+-- instance : AddMonoid (F.Point σ) where
+--   zero_add x := Subtype.ext (zero_add F x.prop)
+--   add_zero x := Subtype.ext (add_zero F x.prop)
+--   nsmul := nsmulRec
+--   add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
 
-instance [F.IsComm] : AddCommMonoid (F.Point σ) where
-  add_comm x y := Subtype.ext <| F.comm' x.prop y.prop
+-- instance [F.IsComm] : AddCommMonoid (F.Point σ) where
+--   add_comm x y := Subtype.ext <| F.comm' x.prop y.prop
 
 end FormalGroup
 
