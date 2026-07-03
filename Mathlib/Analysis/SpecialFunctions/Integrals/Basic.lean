@@ -370,12 +370,10 @@ theorem integral_div_sq_add_sq {c : ℝ} :
 @[simp]
 theorem integral_inv_div_log (ha : 1 < a) (hb : 1 < b) :
     ∫ t in a..b, t⁻¹ / log t = log (log b) - log (log a) := by
-  have (t : ℝ) (ht: t ∈ Set.uIcc a b) : deriv (fun t ↦ log (log t)) t = t⁻¹ / log t
-    := deriv_log_log (by grind [Set.uIcc])
-  rw [← intervalIntegral.integral_congr this]
+  rw [← intervalIntegral.integral_congr (fun _ _ ↦ deriv_log_log)]
   refine integral_deriv_eq_sub (fun _ _ ↦ ?_) ?_
   · exact differentiableOn_log_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
-  refine (?_ : ContinuousOn _ _).congr this |>.intervalIntegrable
+  refine (?_ : ContinuousOn _ _).congr (fun _ _ ↦ deriv_log_log) |>.intervalIntegrable
   fun_prop (disch := grind [log_pos, Set.uIcc])
 
 @[simp]
@@ -386,7 +384,7 @@ theorem integral_inv_div_log_sq (ha : 1 < a) (hb : 1 < b) :
     linarith
   refine integral_deriv_eq_sub (fun _ _ ↦ ?_) (ContinuousOn.intervalIntegrable ?_)
   · exact differentiableOn_inv_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
-  suffices ContinuousOn (fun x ↦ (-x⁻¹) * ((log x)⁻¹)^2) (Set.uIcc a b) by
+  suffices ContinuousOn (fun x ↦ (-x⁻¹) * ((log x)⁻¹)^2) (.uIcc a b) by
     convert this using 2 with x
     simp [field]
   fun_prop (disch := grind [log_pos, Set.uIcc])
