@@ -16,7 +16,7 @@ Let `V` be a preadditive category. The right Freyd category of `V` is the quotie
 in the reference.) This is a preadditive category with a fully
 faithful additive functor `RightFreyd.functor : V ⥤ RightFreyd V`.
 
-We also show that, if `V` has binaray biproducts, then `RightFreyd V` has cokernels. In fact
+We also show that, if `V` has binary biproducts, then `RightFreyd V` has cokernels. In fact
 we construct, given a morphism `f : u ⟶ v` in `Arrow V`, a morphism
 `Candidate.π f : v ⟶ Candidate.cokernel f` in `Arrow V` such that
 `f ≫ Candidate.π f` is right homotopic to `0` (see `Candidate.condition`).
