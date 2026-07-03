@@ -104,6 +104,7 @@ theorem toEuler_s_succ :
 
 end Translation
 
+@[simp]
 theorem euler_h : (euler h ρ).h = h := by rfl
 
 private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
@@ -115,6 +116,7 @@ private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
         (terminatedAt_euler_iff_terminatedAt (K := K) |>.eq ▸ not_terminatedAt_zero) |>.choose_spec)
 
 /-- The denominators of an Euler continued fraction are all 1. -/
+@[simp]
 theorem dens_euler : (euler h ρ).dens n = 1 := by
   set g := euler h ρ
   induction n using Nat.strong_induction_on with | h n ih =>
@@ -212,7 +214,7 @@ theorem toEuler_toEuler :
         exists_euler_s_of_not_terminatedAt_succ hρₙ
       grind [dens_euler]
 
-theorem convs_toEuler_eq_convs_of_forall_le_dens_ne_zero (hB : ∀ m ≤ n, g.dens m ≠ 0) :
+theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
     ∀ m ≤ n, g.toEuler.convs m = g.convs m := by
   intro m hm
   conv_lhs =>
@@ -248,9 +250,8 @@ theorem convs_toEuler_eq_convs_of_forall_le_dens_ne_zero (hB : ∀ m ≤ n, g.de
       nums_recurrence g_toEuler_mth_eq rfl rfl, convs, hB m, hB (m + 1), hB (m + 2)]
 
 /-- The transformation `toEuler` preserves the convergents. -/
-theorem convs_toEuler_eq_convs (hB : ∀ m, g.dens m ≠ 0) :
+theorem convs_toEuler (hB : ∀ m, g.dens m ≠ 0) :
     g.toEuler.convs = g.convs :=
-  funext fun m =>
-    convs_toEuler_eq_convs_of_forall_le_dens_ne_zero (fun m _ => hB m) m m.le_succ
+  funext fun m => convs_toEuler_of_forall_le  (fun m _ => hB m) m m.le_succ
 
 end GenContFract
