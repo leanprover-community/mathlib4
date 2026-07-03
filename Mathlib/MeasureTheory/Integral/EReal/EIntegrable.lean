@@ -61,7 +61,7 @@ lemma eintegrable_const {μ : Measure α} {c : EReal} : EIntegrable (fun _ ↦ c
   rcases le_total c 0 with hc | hc <;> simp [EIntegrable, hc]
 
 @[simp]
-lemma eintegrable_zero {μ : Measure α} : EIntegrable (fun _ ↦ 0) μ := by simp [EIntegrable]
+lemma eintegrable_zero {μ : Measure α} : EIntegrable 0 μ := by simp [EIntegrable]
 
 lemma EIntegrable.neg {f : α → EReal} (hf : EIntegrable f μ) : EIntegrable (fun x ↦ - f x) μ := by
   cases hf with
