@@ -65,7 +65,7 @@ theorem Functor.simple_of_simple_obj {D : Type*} [Category* D] [HasZeroMorphisms
     rw [← isIso_iff_of_reflects_iso g F, Simple.mono_isIso_iff_nonzero (F.map g),
       ne_eq, ne_eq, not_iff_not, F.map_eq_zero_iff]
 
-theorem simple_map {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+theorem simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] (X : C) [Simple X] : Simple (F.obj X) := by
   let e := F.asEquivalence
   refine .mk fun {Y} f hf => ?_
