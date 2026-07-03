@@ -130,4 +130,3 @@ lemma hom_K_ext (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op 
 end KSheaf
 
 end TopCat
-#lint
