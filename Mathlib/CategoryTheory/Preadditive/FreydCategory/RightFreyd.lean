@@ -181,7 +181,7 @@ def desc : cokernel f ⟶ w :=
     (by simp [← h.comm]))
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma π_desc : π f ≫ desc f g h = g := by ext <;> simp [π, desc]
 
 end Candidate
