@@ -224,7 +224,7 @@ alias ⟨_, sub_le_self⟩ := sub_le_self_iff
 
 variable [MulRightMono α]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem inv_le_inv_iff : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
   rw [← mul_le_mul_iff_left a, ← mul_le_mul_iff_right b]
   simp

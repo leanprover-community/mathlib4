@@ -239,7 +239,9 @@ end Submartingale
 section Submartingale
 
 -- attribute [to_dual self] EventuallyLE.eq_1
--- attribute [to_dual ae_nonpos_of_forall_setIntegral_nonpos] ae_nonneg_of_forall_setIntegral_nonneg
+attribute [to_dual_do_translate] Real
+attribute [to_dual] ae_const_le_iff_forall_lt_measure_zero
+attribute [to_dual ae_nonpos_of_forall_setIntegral_nonpos] ae_nonneg_of_forall_setIntegral_nonneg
 
 @[to_dual]
 theorem submartingale_of_setIntegral_le [SigmaFiniteFiltration μ ℱ]
@@ -247,7 +249,6 @@ theorem submartingale_of_setIntegral_le [SigmaFiniteFiltration μ ℱ]
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j : ι,
       i ≤ j → ∀ s : Set Ω, MeasurableSet[ℱ i] s → ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ) :
     Submartingale f ℱ μ := by
-  sorry
   refine ⟨hadp, fun i j hij => ?_, hint⟩
   suffices f i ≤ᵐ[μ.trim (ℱ.le i)] μ[f j | ℱ i] by exact ae_le_of_ae_le_trim this
   suffices 0 ≤ᵐ[μ.trim (ℱ.le i)] μ[f j | ℱ i] - f i by

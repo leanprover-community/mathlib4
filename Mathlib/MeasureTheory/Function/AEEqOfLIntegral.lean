@@ -44,8 +44,9 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
     (∀ᵐ x ∂μ, c ≤ f x) ↔ ∀ b < c, μ {x | f x ≤ b} = 0 := by
   simp_rw [eventually_const_le_iff_forall_lt_eventually_const_lt, ae_iff, not_lt]
 
+@[to_dual existing ae_const_le_iff_forall_lt_measure_zero]
 lemma ae_le_const_iff_forall_gt_measure_zero {β} [LinearOrder β] [TopologicalSpace β]
-    [OrderTopology β] [FirstCountableTopology β] {μ : Measure α} (f : α → β) (c : β) :
+    [OrderTopology β] [FirstCountableTopology β] (f : α → β) (c : β) :
     (∀ᵐ x ∂μ, f x ≤ c) ↔ ∀ b, c < b → μ {x | b ≤ f x} = 0 :=
   ae_const_le_iff_forall_lt_measure_zero (β := βᵒᵈ) _ _
 

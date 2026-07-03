@@ -21,7 +21,7 @@ variable {α γ : Type*}
 
 section OrderTopology
 
-variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
+variable [TopologicalSpace α] [PartialOrder α] [OrderTopology α]
 
 theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
     ∃ᶠ x in 𝓝[≤] a, x ∈ s := by

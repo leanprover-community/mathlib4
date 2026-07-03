@@ -705,6 +705,7 @@ lemma Integrable.measure_ge_lt_top {f : α → β} [Lattice β] [HasSolidNorm β
 
 /-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
+@[to_dual existing Integrable.measure_ge_lt_top]
 lemma Integrable.measure_le_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
     (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
@@ -723,6 +724,7 @@ lemma Integrable.measure_gt_lt_top {f : α → β} [Lattice β] [HasSolidNorm β
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x < c}` has finite
 measure. -/
+@[to_dual existing Integrable.measure_gt_lt_top]
 lemma Integrable.measure_lt_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
     (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a < c} < ∞ :=

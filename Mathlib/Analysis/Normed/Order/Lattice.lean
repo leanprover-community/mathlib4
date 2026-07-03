@@ -55,12 +55,12 @@ theorem isClosed_le_of_isClosed_nonneg (h : IsClosed { x : G | 0 ≤ x }) :
   rw [this]
   exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
 
--- @[to_dual] -- TODO
-instance (priority := 100) [ClosedIciTopology G] : OrderClosedTopology G :=
-  ⟨isClosed_le_of_isClosed_nonneg isClosed_Ici⟩
+-- TODO: see library note ... non instance
+abbrev ClosedIciTopology.orderClosedTopology [ClosedIciTopology G] : OrderClosedTopology G :=
+  ⟨isClosed_le_of_isClosed_nonneg (isClosed_Ici _)⟩
 
-instance (priority := 100) [ClosedIicTopology G] : OrderClosedTopology G :=
-  ⟨isClosed_le_of_isClosed_nonneg sorry⟩
+abbrev ClosedIicTopology.orderClosedTopology [ClosedIicTopology G] : OrderClosedTopology G :=
+  ⟨isClosed_le_of_isClosed_nonneg sorry⟩ -- TODO
 
 end
 
@@ -199,12 +199,11 @@ lemma continuous_posPart : Continuous (posPart : α → α) := lipschitzWith_pos
 @[fun_prop]
 lemma continuous_negPart : Continuous (negPart : α → α) := lipschitzWith_negPart.continuous
 
-instance (priority := 100) : ClosedIciTopology α := by
+instance (priority := 100) : OrderClosedTopology α := by
+  suffices ClosedIciTopology α from this.orderClosedTopology
   refine ⟨fun a ↦ ?_⟩
   rw [← (Homeomorph.subRight a).isClosed_image]
   simp only [Homeomorph.subRight_apply, Set.image_sub_const_Ici, sub_self]
   have : Set.Ici (0 : α) = negPart ⁻¹' {0} := by ext; simp [negPart_eq_zero]
   rw [this]
   exact isClosed_singleton.preimage continuous_negPart
-
-example : OrderClosedTopology α := inferInstance
