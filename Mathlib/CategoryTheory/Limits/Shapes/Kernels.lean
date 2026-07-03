@@ -474,6 +474,8 @@ def kernelIsIsoComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel
   hom := kernel.lift _ (kernel.ι _ ≫ f) (by simp)
   inv := kernel.lift _ (kernel.ι _ ≫ inv f) (by simp)
 
+@[deprecated (since := "2026-07-03")] alias kernel.congr := kernelIsoOfEq
+
 lemma isZero_kernel_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] [HasKernel f] :
     IsZero (kernel f) :=
   KernelFork.IsLimit.isZero_of_mono (c := KernelFork.ofι _ (kernel.condition f))
@@ -998,6 +1000,8 @@ def cokernelEpiComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [HasCokernel
         rw [← cancel_epi f, ← Category.assoc]
         simp)
 
+@[deprecated (since := "2026-07-03")] alias cokernel.congr := cokernelIsoOfEq
+
 lemma isZero_cokernel_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] [HasCokernel f] :
     IsZero (cokernel f) :=
   CokernelCofork.IsColimit.isZero_of_epi (c := CokernelCofork.ofπ _ (cokernel.condition f))
@@ -1310,4 +1314,5 @@ set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)] lemma coker.condition : Arrow.leftToRight ≫ π C = 0 := by cat_disch
 
 end HasCokernels
+
 end CategoryTheory.Limits
