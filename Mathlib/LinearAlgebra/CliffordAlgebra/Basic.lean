@@ -82,7 +82,7 @@ instance {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [IsScalarTower R A M] : SMul R (CliffordAlgebra Q) :=
   inferInstanceAs <| SMul R (RingCon.Quotient _)
 
-deriving instance Ring for CliffordAlgebra Q
+deriving instance Ring for CliffordAlgebra
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
