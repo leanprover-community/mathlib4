@@ -496,6 +496,7 @@ structure Presentation extends Relations.{w₀, w₁} A,
 
 variable {A M}
 
+set_option simps.defeqWarn false in
 /-- Constructor for `Module.Presentation`. -/
 @[simps toRelations toSolution]
 def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
@@ -505,6 +506,7 @@ def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
   toSolution := solution
   toIsPresentation := h
 
+set_option simps.defeqWarn false in
 /-- The presentation of an `A`-module `N` that is deduced from a presentation of
 a module `M` and a linear equivalence `e : M ≃ₗ[A] N`. -/
 @[simps! toRelations toSolution]

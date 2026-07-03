@@ -472,6 +472,7 @@ namespace TopHom
 
 variable [LE α] [OrderTop α] [LE β] [OrderTop β] [LE γ] [OrderTop γ]
 
+set_option simps.defeqWarn false in
 /-- Reinterpret a top homomorphism as a bot homomorphism between the dual lattices. -/
 @[to_dual (attr := simps) /--
 Reinterpret a bot homomorphism as a top homomorphism between the dual lattices. -/]

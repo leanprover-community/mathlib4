@@ -190,12 +190,14 @@ section End
 
 variable {M : Type*}
 
+set_option simps.defeqWarn false in
 /-- `Monoid.End M` is equivalent to `AddMonoid.End (Additive M)`. -/
 @[simps! apply]
 def MulEquiv.Monoid.End [Monoid M] : Monoid.End M ≃* AddMonoid.End (Additive M) where
   __ := MonoidHom.toAdditive
   map_mul' := fun _ _ ↦ rfl
 
+set_option simps.defeqWarn false in
 /-- `AddMonoid.End M` is equivalent to `Monoid.End (Multiplicative M)`. -/
 @[simps! apply]
 def MulEquiv.AddMonoid.End [AddMonoid M] :

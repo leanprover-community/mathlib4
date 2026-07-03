@@ -23,6 +23,7 @@ variable {R M : Type*} [Semiring R] [Mul M]
 
 namespace MonoidAlgebra
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of a monoid algebra is equivalent as a ring to the opposite monoid algebra over the
 opposite ring. -/

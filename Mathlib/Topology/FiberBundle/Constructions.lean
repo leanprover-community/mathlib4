@@ -188,6 +188,7 @@ theorem Prod.continuous_inv_fun :
 
 variable (e₁ e₂)
 
+set_option simps.defeqWarn false in
 /-- Given trivializations `e₁`, `e₂` for bundle types `E₁`, `E₂` over a base `B`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`, whose base set is
 `e₁.baseSet ∩ e₂.baseSet`. -/
@@ -303,6 +304,7 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
 variable {E F}
 variable [∀ _b, Nonempty (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
+set_option simps.defeqWarn false in
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 @[simps]
 noncomputable def Bundle.Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :

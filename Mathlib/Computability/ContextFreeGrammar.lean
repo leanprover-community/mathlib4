@@ -279,6 +279,7 @@ end ContextFreeRule
 namespace ContextFreeGrammar
 variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)} {w : List T}
 
+set_option simps.defeqWarn false in
 /-- Grammar for a reversed language. -/
 @[simps] def reverse (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
   ⟨g.NT, g.initial, g.rules.map (⟨ContextFreeRule.reverse, ContextFreeRule.reverse_injective⟩)⟩

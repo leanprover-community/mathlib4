@@ -67,6 +67,7 @@ instance nonempty_cokernelData :
 
 variable {g₁ f} (data : pres₂.CokernelData f g₁)
 
+set_option simps.defeqWarn false in
 /-- The shape of the presentation by generators and relations of the cokernel
 of `f : M₁ →ₗ[A] M₂`. It consists of a generator for each generator of `M₂`, and
 there are two types of relations: one for each relation in the presentation in `M₂`,
@@ -125,6 +126,7 @@ lemma isPresentation : (pres₂.cokernelSolution data).IsPresentation :=
 
 end cokernelSolution
 
+set_option simps.defeqWarn false in
 /-- The presentation of the cokernel of a linear map `f : M₁ →ₗ[A] M₂` that is obtained
 from a presentation `pres₂` of `M₂`, a choice of generators `g₁ : ι → M₁` of `M₁`,
 and an additional data in `pres₂.CokernelData f g₁`. -/
@@ -134,6 +136,7 @@ def cokernel : Presentation A (M₂ ⧸ LinearMap.range f) :=
 
 end Cokernel
 
+set_option simps.defeqWarn false in
 /-- Given an exact sequence of `A`-modules `M₁ → M₂ → M₃ → 0`, this is the presentation
 of `M₃` that is obtained from a presentation `pres₂` of `M₂`, a choice of generators
 `g₁ : ι → M₁` of `M₁`, and an additional data in a `Presentation.CokernelData` structure. -/
