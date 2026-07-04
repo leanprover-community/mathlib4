@@ -96,20 +96,6 @@ lemma opEquiv'_apply {a' : ℤ} (f : ShiftedHom X Y a') (n a : ℤ) (h : n + a =
       opEquiv n (f ≫ (shiftFunctorAdd' C a n a' (by lia)).hom.app Y) := by
   rfl
 
-lemma opEquiv'_symm_apply_eq {n a a' : ℤ} (h : n + a = a')
-    (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧)
-    (g : ShiftedHom X Y a') :
-    (opEquiv' (C := C) (X := X) (Y := Y) n a a' h).symm f = g
-      ↔ f = opEquiv' (C := C) (X := X) (Y := Y) n a a' h g :=
-  (opEquiv' (C := C) (X := X) (Y := Y) n a a' h).symm_apply_eq
-
-lemma opEquiv'_eq_symm_apply {n a a' : ℤ} (h : n + a = a')
-    (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧)
-    (g : ShiftedHom X Y a') :
-    g = (opEquiv' (C := C) (X := X) (Y := Y) n a a' h).symm f
-      ↔ opEquiv' (C := C) (X := X) (Y := Y) n a a' h g = f :=
-  (opEquiv' (C := C) (X := X) (Y := Y) n a a' h).eq_symm_apply
-
 set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv'_symm_op_opShiftFunctorEquivalence_counitIso_inv_app_op_shift
     {n m : ℤ} (f : ShiftedHom X Y n) (g : ShiftedHom Y Z m)
