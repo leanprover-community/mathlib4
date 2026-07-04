@@ -87,9 +87,7 @@ theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
 
 theorem isPiSystem_Ioo_rat :
     IsPiSystem (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
-  convert! isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
-  ext x
-  simp [eq_comm]
+  simpa [iUnion_ofPred, ← ofPred_eq_eq_singleton'] using isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
 
 theorem isPiSystem_Iio_rat : IsPiSystem (⋃ a : ℚ, {Iio (a : ℝ)}) := by
   convert! isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)

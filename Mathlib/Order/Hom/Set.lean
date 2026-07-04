@@ -24,6 +24,12 @@ variable {α β γ : Type*}
 
 namespace Set
 
+/-- Membership as an order isomorphism between sets and predicates. -/
+@[simps!]
+def memOrderIso : Set α ≃o (α → Prop) where
+  toEquiv := memEquiv
+  map_rel_iff' := .rfl
+
 /-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
 @[simps apply]
 def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where

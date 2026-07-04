@@ -32,7 +32,7 @@ class ToSet (Iα : Type*) (α : outParam Type*) where
   toSet : Iα → Set α
 
 instance {Iα α : Type*} [ToSet Iα α] : Membership α Iα where
-  mem s a := ToSet.toSet s a
+  mem s a := a ∈ ToSet.toSet s
 
 lemma ToSet.mem_def {Iα α : Type*} [ToSet Iα α] (a : α) (s : Iα) :
     a ∈ s ↔ a ∈ ToSet.toSet s := Iff.rfl

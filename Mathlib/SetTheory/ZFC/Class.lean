@@ -196,6 +196,12 @@ set_option linter.deprecated false in
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩
 
+set_option linter.deprecated false in
+/-- `Class` is treated as (the definitionally equal) `ZFSet → Prop`, so that `A x` means that the
+ZFC set `x` belongs to the class `A`. -/
+instance : CoeFun Class fun _ => ZFSet → Prop :=
+  ⟨Set.Mem⟩
+
 namespace Class
 
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
@@ -462,10 +468,10 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
     (by
       by_contra! hnA
       exact
-        WellFounded.min_mem ZFSet.mem_wf _ hnA
+        WellFounded.min_mem ZFSet.mem_wf {x | ¬ A x} hnA
           (hA fun x hx =>
             Classical.not_not.1 fun hB =>
-              WellFounded.not_lt_min ZFSet.mem_wf _ hB <| coe_apply.1 hx))
+              WellFounded.not_lt_min ZFSet.mem_wf {x | ¬ A x} hB <| coe_apply.1 hx))
 
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
 @[deprecated ZFClass.iota +typeChanged (since := "2026-09-05")]
@@ -491,7 +497,7 @@ theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
 /-- Function value -/
 @[deprecated ZFClass.fval +typeChanged (since := "2026-09-05")]
 def fval (F A : Class.{u}) : Class.{u} :=
-  iota fun y => ToSet (fun x => F (ZFSet.pair x y)) A
+  iota {y | ToSet {x | F (ZFSet.pair x y)} A}
 
 @[deprecated ZFClass.fval_ex +typeChanged (since := "2026-09-05")]
 theorem fval_ex (F A : Class.{u}) : F.fval A ∈ univ.{u} :=
