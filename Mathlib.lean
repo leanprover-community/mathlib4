@@ -7253,6 +7253,7 @@ public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import Mathlib.Tactic.ClickSuggestions.Util
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.ComputablePolynomial.MvBasic
 public import Mathlib.Tactic.ComputablePolynomial.MvDegrees
 public import Mathlib.Tactic.ComputablePolynomial.MvDegreesOrder
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
