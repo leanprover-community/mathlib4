@@ -265,4 +265,3 @@ instance : WOrdering nvars where
     have h2 : b.degrees.toList.length = c.degrees.toList.length := by aesop
     exact list_lex_add_le_add a.degrees.toList b.degrees.toList c.degrees.toList h1 h2 hab
   wf := mvDegrees_lex_wf
-
