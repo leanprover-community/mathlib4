@@ -100,6 +100,22 @@ noncomputable def fromCompletion' (f : E →SL[σ₁₂] F) :
     Completion E →SL[σ₁₂] F :=
   fromCompletion f.uniformContinuous
 
+lemma coe_fromCompletion' (f : E →SL[σ₁₂] F) :
+    fromCompletion' f = Completion.extension f := rfl
+
+@[simp]
+lemma fromCompletion'_apply (f : E →SL[σ₁₂] F) (e : Completion E) :
+    fromCompletion' f e = Completion.extension f e := rfl
+
+lemma uniformContinuous_fromCompletion' (f : E →SL[σ₁₂] F) :
+    UniformContinuous (fromCompletion' f) :=
+  uniformContinuous_fromCompletion f.uniformContinuous
+
+lemma fromCompletion'_unique (f : E →SL[σ₁₂] F)
+    {g : Completion E →SL[σ₁₂] F} (hg : UniformContinuous g) (h : ∀ (e : E), f e = g e) :
+    fromCompletion' f = g :=
+  fromCompletion_unique f.uniformContinuous hg h
+
 end fromCompletion
 
 end ContinuousLinearMap
