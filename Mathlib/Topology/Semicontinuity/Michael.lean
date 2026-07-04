@@ -37,12 +37,10 @@ variable {α β : Type*} {f : α → Set β} [TopologicalSpace α]
 
 section tvs
 
-lemma LowerHemicontinuous.hasOpenCGraph_of_add_isOpen
-      [TopologicalSpace β] [AddGroup β] [IsTopologicalAddGroup β]
-      (hf : LowerHemicontinuous f) {V : Set β} (hV : IsOpen V) :
+lemma LowerHemicontinuous.hasOpenCGraph_of_add_isOpen [TopologicalSpace β] [AddGroup β]
+    [IsTopologicalAddGroup β] (hf : LowerHemicontinuous f) {V : Set β} (hV : IsOpen V) :
     HasOpenCGraph (fun x ↦ f x + V) := by
-  unfold HasOpenCGraph
-  rw [isOpen_prod_iff]
+  rw [HasOpenCGraph, isOpen_prod_iff]
   intro a b hab
   obtain ⟨y, hy, w, hw, rfl⟩ := Set.mem_add.mp hab
   have hOpen_pre := hV.preimage <| continuous_fst.neg.add continuous_snd
@@ -58,19 +56,18 @@ lemma LowerHemicontinuous.hasOpenCGraph_of_add_isOpen
 
 end tvs
 
-variable {g : α → β} [NormalSpace α] [ParacompactSpace α]
+variable {g : α → β} [NormalSpace α] [ParacompactSpace α] [AddCommGroup β] [Module ℝ β]
 
 section approximate
 
-variable [AddCommGroup β] [Module ℝ β] [TopologicalSpace β] [ContinuousAdd β]
-  [ContinuousSMul ℝ β] {f : α → Set β}
+variable [TopologicalSpace β] [ContinuousSMul ℝ β]
 
 /-- **Michael's selection theorem (approximate):** A correspondence with open lower sections and
 convex, nonempty values admits a continuous selection. This holds in any topological vector space
-over ℝ. -/
-lemma HasOpenLowerSections.exists_continuous_selection (hf : HasOpenLowerSections f)
-    (hf_nonempty : ∀ x, (f x).Nonempty) (hf_convex : ∀ x, Convex ℝ (f x)) :
-    ∃ h : α → β, Continuous h ∧ ∀ x, h x ∈ f x := by
+over `ℝ`. -/
+lemma HasOpenLowerSections.exists_continuous_selection [ContinuousAdd β]
+    (hf : HasOpenLowerSections f) (hf_nonempty : ∀ x, (f x).Nonempty)
+    (hf_convex : ∀ x, Convex ℝ (f x)) : ∃ h : α → β, Continuous h ∧ ∀ x, h x ∈ f x := by
   choose F hF using hf_nonempty
   obtain ⟨φ, hφ⟩ := PartitionOfUnity.exists_isSubordinate isClosed_univ
     _ (fun x' ↦ hf.isOpen (F x')) (fun x _ ↦ Set.mem_iUnion.mpr ⟨x, hF x⟩)
@@ -79,12 +76,10 @@ lemma HasOpenLowerSections.exists_continuous_selection (hf : HasOpenLowerSection
     (hf_convex y).finsum_mem (fun i ↦ φ.nonneg i y) (φ.sum_eq_one (mem_univ y)) fun x' hx' ↦
       hφ x' (subset_tsupport _ hx')⟩
 
-omit [ContinuousAdd β] in
-variable [IsTopologicalAddGroup β] in
 /-- **Michael's selection theorem (iteration):** An approximate continuous selection `g` to a
 correspondence `f` with open lower sections and convex values can be refined to an approximate
 continuous selection `h` whose values `h x` are both closer to `f x` and are close to `g x`. -/
-lemma LowerHemicontinuous.exists_continuous_selection_refine
+lemma LowerHemicontinuous.exists_continuous_selection_refine [IsTopologicalAddGroup β]
     (hf : LowerHemicontinuous f) (hf_convex : ∀ x, Convex ℝ (f x))
     {g : α → β} (hg : Continuous g) {W V : Set β} (hW_open : IsOpen W) (hW_convex : Convex ℝ W)
     (hV_open : IsOpen V) (hV_convex : Convex ℝ V) (hW_zero : 0 ∈ W) (hV_symm : V = -V)
@@ -106,8 +101,8 @@ end approximate
 
 section michael
 
-variable [AddCommGroup β] [Module ℝ β] [UniformSpace β] [IsUniformAddGroup β]
-    [ContinuousSMul ℝ β] [LocallyConvexSpace ℝ β] [FirstCountableTopology β] [CompleteSpace β]
+variable [UniformSpace β] [IsUniformAddGroup β] [ContinuousSMul ℝ β]
+  [LocallyConvexSpace ℝ β] [FirstCountableTopology β] [CompleteSpace β]
 
 /-- **Michael's selection theorem**: A lower hemicontinuous function from a paracompact Hausdorff
 space (which is necessarily normal) to a Frechet space with nonempty convex closed values
@@ -150,7 +145,7 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
         obtain ⟨_, rfl, v, hv, hv'⟩ := hh_mem_ball j x
         have h1 : h (j + 1) x - h j x ∈ V (k + 1) := by
           simpa [← hv'] using hV.1.antitone hj hv
-        have h2 : h (j + 1 + m) x - h (j + 1) x ∈ V (k + 1) := ih (k + 1) (j + 1) x (by omega)
+        have h2 : h (j + 1 + m) x - h (j + 1) x ∈ V (k + 1) := ih (k + 1) (j + 1) x (by lia)
         convert (hV.2 k).2.2.1 (Set.add_mem_add h1 h2) using 1
         abel_nf
     filter_upwards [(Filter.eventually_ge_atTop (n + 1)).prod_mk
@@ -169,70 +164,14 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
     apply (hUnif.tendstoUniformlyOn_of_tendsto (fun x hx ↦ hH x)).continuousOn
     exact Filter.Frequently.of_forall (by simp [hh_cont])
   intro x
-  have key : ⋂ n, closure (f x + V n) ⊆ f x := by
-    calc ⋂ n, closure (f x + V n)
-        ⊆ ⋂ n, closure (f x + V (n + 1)) :=
-          fun y hy ↦ mem_iInter.mpr fun n ↦ mem_iInter.mp hy (n + 1)
-      _ ⊆ ⋂ n, f x + V n :=
-          iInter_mono fun n y hy ↦ by
-            -- {z | y - z ∈ V(n+1)} is an open nbhd of y intersecting f x + V(n+1)
-            have hV1_zero := mem_of_mem_nhds (hV.1.mem (n + 1))
-            have h_nbhd : {z : β | y - z ∈ V (n + 1)} ∈ 𝓝 y := by
-              have hcont : ContinuousAt (fun z : β ↦ y - z) y := by fun_prop
-              exact hcont ((hV.2 (n + 1)).1.mem_nhds (by simp [hV1_zero]))
-            obtain ⟨z, hz, hzfx⟩ := mem_closure_iff_nhds.mp hy _ h_nbhd
-            obtain ⟨a, ha, v, hv, hz_eq⟩ := Set.mem_add.mp hzfx
-            -- y = a + (v + (y - z)), with v + (y - z) ∈ V(n+1) + V(n+1) ⊆ V n
-            exact ⟨a, ha, v + (y - z), (hV.2 n).2.2.1 (Set.add_mem_add hv hz),
-              by rw [← hz_eq]; abel_nf⟩
-      _ ⊆ f x := by
-          intro y hy
-          rw [← (hf_isClosed x).closure_eq, mem_closure_iff_nhds]
-          intro U hU
-          obtain ⟨n, hn⟩ := hV.1.mem_iff.mp <|
-            (continuous_const_add y).continuousAt |>.preimage_mem_nhds (by simpa)
-          obtain ⟨a, ha_f, v, hv, rfl⟩ := mem_iInter.mp hy n
-          exact ⟨a, by simpa using hn ((hV.2 n).2.1.1.neg_mem_iff.mpr hv), ha_f⟩
-  exact key (Set.mem_iInter.mpr fun n ↦ mem_closure_of_tendsto (hH x) <|
-    (Filter.eventually_ge_atTop n).mono fun i hi ↦ by
-      obtain ⟨a, ha, b, hb, hab⟩ := Set.mem_add.mp (hh_mem i x)
-      exact hab ▸ Set.add_mem_add ha (hV.1.antitone hi hb))
+  rw [← (hf_isClosed x).iInter_closure_add_eq hV.1.toHasBasis]
+  simp only [Set.iInter_true]
+  rintro _ ⟨n, rfl⟩
+  apply mem_closure_of_tendsto (hH x)
+  filter_upwards [Filter.eventually_ge_atTop n] with m hm
+  obtain ⟨a, ha, b, hb, hab⟩ := Set.mem_add.mp (hh_mem m x)
+  exact hab ▸ Set.add_mem_add ha (hV.1.antitone hm hb)
 
 end michael
-
-section michaelOn
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [AddCommGroup β] [Module ℝ β] [UniformSpace β] [IsUniformAddGroup β]
-    [ContinuousSMul ℝ β] [LocallyConvexSpace ℝ β] [FirstCountableTopology β] [CompleteSpace β]
-    {f : E → Set β}
-
-omit [NormedSpace ℝ E] in
-/-- **Michael's selection theorem on a subset**: A correspondence that is lower hemicontinuous on a
-subset `s` of a real normed space, with nonempty convex closed values on `s`, admits a continuous
-selection on `s`. This is the `LowerHemicontinuousOn` variant obtained by restricting to the
-subspace `↥s` (which is metrizable, hence paracompact and normal) and applying Michael's selection
-theorem. -/
-theorem LowerHemicontinuousOn.exists_continuousOn_selection {s : Set E}
-    (hf : LowerHemicontinuousOn f s)
-    (hf_nonempty : ∀ x ∈ s, (f x).Nonempty) (hf_convex : ∀ x ∈ s, Convex ℝ (f x))
-    (hf_isClosed : ∀ x ∈ s, IsClosed (f x)) :
-    ∃ g : E → β, ContinuousOn g s ∧ ∀ x ∈ s, g x ∈ f x := by
-  classical
-  -- On the subspace `↥s`, the correspondence `f ∘ Subtype.val` is lower hemicontinuous.
-  have hf' : LowerHemicontinuous (f ∘ (Subtype.val : s → E)) :=
-    lowerHemicontinuousOn_univ_iff.mp
-      (hf.comp continuous_subtype_val.continuousOn fun x _ ↦ x.2)
-  obtain ⟨g', hg'_cont, hg'_mem⟩ := hf'.exists_continuous_selection
-    (fun x ↦ hf_nonempty x.1 x.2) (fun x ↦ hf_convex x.1 x.2) (fun x ↦ hf_isClosed x.1 x.2)
-  -- Extend the selection from `↥s` back to `E`.
-  refine ⟨fun x ↦ if h : x ∈ s then g' ⟨x, h⟩ else 0, ?_, fun x hx ↦ ?_⟩
-  · rw [continuousOn_iff_continuous_restrict]
-    have : (s.restrict fun x ↦ if h : x ∈ s then g' ⟨x, h⟩ else 0) = g' :=
-      funext fun x ↦ dif_pos x.2
-    rwa [this]
-  · simpa [hx] using hg'_mem ⟨x, hx⟩
-
-end michaelOn
 
 end

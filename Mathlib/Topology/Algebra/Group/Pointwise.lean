@@ -152,9 +152,8 @@ theorem closure_subset_mul_left_of_mem_nhds_one_of_inv {s : Set G} (s' : Set G)
     (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) :
     closure s' ⊆ s * s' := by
   intro y hy
-  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
-    mem_closure_iff_nhds.mp hy ((· * y) '' s)
-      (by simpa using (isOpenMap_mul_right y).image_mem_nhds hs₀)
+  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ := mem_closure_iff_nhds.mp hy ((· * y) '' s)
+    (by simpa using (isOpenMap_mul_right y).image_mem_nhds hs₀)
   simpa using Set.mul_mem_mul (h_symm b hb) hc
 
 @[to_additive]
@@ -162,8 +161,7 @@ theorem closure_subset_mul_right_of_mem_nhds_one_of_inv (s : Set G) {s' : Set G}
     (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') :
     closure s ⊆ s * s' := by
   intro y hy
-  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
-    mem_closure_iff_nhds.mp hy ((y * ·) '' s')
+  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ := mem_closure_iff_nhds.mp hy ((y * ·) '' s')
       (by simpa using (isOpenMap_mul_left y).image_mem_nhds hs'₀)
   simpa using Set.mul_mem_mul hc (h_symm b hb)
 
@@ -289,14 +287,106 @@ lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
   compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
 
 @[to_additive]
+theorem closure_subset_mul_right_mem_nhds_one {V : Set G} (U : Set G) (hV : V ∈ 𝓝 1) :
+    closure U ⊆ U * V := by
+  apply closure_subset_mul_right_of_mem_nhds_one_of_inv U
+    (Filter.inter_mem hV (inv_mem_nhds_one _ hV))
+    (fun x ⟨hx, hx'⟩ ↦ ⟨Set.mem_inv.mp hx', Set.inv_mem_inv.mpr hx⟩) |>.trans
+  gcongr; simp
+
+@[to_additive]
+theorem closure_subset_mul_left_mem_nhds_one {U : Set G} (V : Set G) (hU : U ∈ 𝓝 1) :
+    closure V ⊆ U * V := by
+  apply closure_subset_mul_left_of_mem_nhds_one_of_inv V
+    (Filter.inter_mem hU (inv_mem_nhds_one _ hU))
+    (fun x ⟨hx, hx'⟩ ↦ ⟨Set.mem_inv.mp hx', Set.inv_mem_inv.mpr hx⟩) |>.trans
+  gcongr; simp
+
+@[to_additive]
 theorem closure_subset_mul_self_of_mem_nhds_one {U : Set G} (hU : U ∈ 𝓝 1) :
-    closure U ⊆ U * U := by
-  intro x hx
-  rw [mem_closure_iff_nhds] at hx
-  have hkey : (fun y => x / y) ⁻¹' U ∈ 𝓝 x :=
-    ContinuousAt.preimage_mem_nhds (by fun_prop) (by simpa)
-  obtain ⟨a, ha_mem, ha_s⟩ := hx _ hkey
-  exact Set.mem_mul.mpr ⟨x / a, ha_mem, a, ha_s, div_mul_cancel x a⟩
+    closure U ⊆ U * U := closure_subset_mul_left_mem_nhds_one U hU
+
+/-- In a topological group, the closure of a set `s` is the intersection of `s * U` where `U`
+ranges over any basis of `𝓝 1`. Note that `s * U` does _not_ constitute a basis of `𝓝ˢ s` -/
+@[to_additive /-- In a topological additive group, the closure of a set `s` is the intersection of
+`s + U` where `U` ranges over any basis of `𝓝 0`. Note that `s + U` does _not_ constitute a basis
+of `𝓝ˢ s` -/]
+theorem Filter.HasBasis.iInter_mul_right_eq_closure {ι : Type*} {s : Set G} {p : ι → Prop}
+    {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) : ⋂ (i) (_ : p i), s * U i = closure s := by
+  refine Set.Subset.antisymm ?_ ?_
+  · intro y hy
+    simp only [Set.mem_iInter] at hy
+    rw [mem_closure_iff_nhds]
+    intro W hW
+    let W₀ := (fun x ↦ y * x) ⁻¹' W
+    let W₁ := W₀ ∩ W₀⁻¹
+    have hW₀ : W₀ ∈ 𝓝 1 := by rwa [← map_mul_left_nhds_one y, Filter.mem_map] at hW
+    have hW₁ : W₁ ∈ 𝓝 1 := Filter.inter_mem hW₀ (inv_mem_nhds_one _ hW₀)
+    obtain ⟨i, hi, hiU⟩ := hU.mem_iff.mp hW₁
+    obtain ⟨t, ht, b, hb, htb⟩ := hy i hi
+    refine ⟨t, ?_, ht⟩
+    rw [eq_mul_inv_of_mul_eq htb]
+    exact Set.mem_inv.mp (hiU hb).2
+  · exact Set.subset_iInter₂ fun i hi ↦ closure_subset_mul_right_mem_nhds_one s (hU.mem_of_mem hi)
+
+/-- In a topological group, the closure of a set `s` is the intersection of `U * s` where `U`
+ranges over any basis of `𝓝 1`. Note that `U * s` does _not_ constitute a basis of `𝓝ˢ s` -/
+@[to_additive /-- In a topological additive group, the closure of a set `s` is the intersection of
+`U + s` where `U` ranges over any basis of `𝓝 0`. Note that `U + s` does _not_ constitute a basis
+of `𝓝ˢ s` -/]
+theorem Filter.HasBasis.iInter_mul_left_eq_closure {ι : Type*} {s : Set G} {p : ι → Prop}
+    {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) : ⋂ (i) (_ : p i), U i * s = closure s := by
+  refine Set.Subset.antisymm ?_ ?_
+  · intro y hy
+    simp only [Set.mem_iInter] at hy
+    rw [mem_closure_iff_nhds]
+    intro W hW
+    let W₀ := (fun x ↦ x * y) ⁻¹' W
+    let W₁ := W₀ ∩ W₀⁻¹
+    have hW₀ : W₀ ∈ 𝓝 1 := by rwa [← map_mul_right_nhds_one y, Filter.mem_map] at hW
+    have hW₁ : W₁ ∈ 𝓝 1 := Filter.inter_mem hW₀ (inv_mem_nhds_one _ hW₀)
+    obtain ⟨i, hi, hiU⟩ := hU.mem_iff.mp hW₁
+    obtain ⟨b, hb, t, ht, htb⟩ := hy i hi
+    refine ⟨t, ?_, ht⟩
+    rw [eq_inv_mul_of_mul_eq htb]
+    exact Set.mem_inv.mp (hiU hb).2
+  · exact Set.subset_iInter₂ fun i hi ↦ closure_subset_mul_left_mem_nhds_one s (hU.mem_of_mem hi)
+
+/-- In a topological group, the closure of a set `s` is the intersection of `closure (s * U)` where
+`U` ranges over any basis of `𝓝 1`. -/
+@[to_additive /-- In a topological additive group, the closure of a set `s` is the intersection of
+`closure (s + U)` where `U` ranges over any basis of `𝓝 0`. -/]
+theorem Filter.HasBasis.iInter_closure_mul_right_eq_closure {ι : Type*} {s : Set G}
+    {p : ι → Prop} {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) :
+    ⋂ (i) (_ : p i), closure (s * U i) = closure s := by
+  refine Set.Subset.antisymm ?_ ?_
+  · rw [← hU.mul_self.iInter_mul_right_eq_closure]
+    refine Set.subset_iInter₂ fun j hj ↦ (Set.iInter₂_subset j hj).trans ?_
+    simpa [← mul_assoc] using closure_subset_mul_right_mem_nhds_one _ (hU.mem_of_mem hj)
+  · refine Set.subset_iInter₂ fun i hi ↦ ?_
+    have h1 := (mem_of_mem_nhds (hU.mem_of_mem hi))
+    exact closure_mono fun a ha ↦ by simpa using Set.mul_mem_mul ha h1
+
+/-- In a topological group, the closure of a set `s` is the intersection of `closure (s * U)` where
+`U` ranges over any basis of `𝓝 1`. -/
+@[to_additive /-- In a topological additive group, the closure of a set `s` is the intersection of
+`closure (s + U)` where `U` ranges over any basis of `𝓝 0`. -/]
+theorem Filter.HasBasis.iInter_closure_mul_left_eq_closure {ι : Type*} {s : Set G}
+    {p : ι → Prop} {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) :
+    ⋂ (i) (_ : p i), closure (U i * s) = closure s := by
+  refine Set.Subset.antisymm ?_ ?_
+  · rw [← hU.mul_self.iInter_mul_left_eq_closure]
+    refine Set.subset_iInter₂ fun j hj ↦ (Set.iInter₂_subset j hj).trans ?_
+    simpa [mul_assoc] using closure_subset_mul_left_mem_nhds_one _ (hU.mem_of_mem hj)
+  · refine Set.subset_iInter₂ fun i hi ↦ ?_
+    have h1 := (mem_of_mem_nhds (hU.mem_of_mem hi))
+    exact closure_mono fun a ha ↦ by simpa using Set.mul_mem_mul h1 ha
+
+@[to_additive]
+theorem IsClosed.iInter_closure_mul_eq {ι : Type*} {s : Set G} (hs : IsClosed s)
+    {p : ι → Prop} {U : ι → Set G} (hU : (𝓝 1).HasBasis p U) :
+    ⋂ (i) (_ : p i), closure (s * U i) = s := by
+  rw [hU.iInter_closure_mul_right_eq_closure, hs.closure_eq]
 
 end IsTopologicalGroup
 
