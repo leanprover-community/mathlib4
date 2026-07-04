@@ -20,12 +20,12 @@ fraction obtained by an explicit transformation of its coefficient stream.
   continued fraction.
 * `GenContFract.euler` : constructs a generalized continued fraction from a head term `h`
   and a coefficient stream `ρ`.
-* `GenContFract.toEuler` : transforms a generalized continued fraction to a Euler continued
+* `GenContFract.toEuler` : transforms a generalized continued fraction to an Euler continued
   fraction.
 
 ## Main results
 
-* `convs_euler` : explicit formula for convergents of an Euler-transformed continued fraction.
+* `convs_euler` : explicit formula for convergents of an Euler continued fraction.
 * `convs_toEuler` : equivalence of convergents between a generalized continued fraction
   and its corresponding Euler continued fraction.
 
