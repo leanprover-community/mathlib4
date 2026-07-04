@@ -458,7 +458,7 @@ theorem second_theorem_asymp_nat :
 open ENNReal in
 theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) = - log (s - 1) - Real.eulerMascheroniConstant + M
-    + ∫ x in .Ioi 1, (E₂ x ^ s⁻¹) * x⁻¹ := calc
+    + ∫ x in .Ioi 1, (E₂ (x ^ (s - 1)⁻¹)) * x ^ (-2 : ℝ) := calc
   _ = ∑' n : ℕ, ∫ x in .Ioi 1, (log n)⁻¹ * f n * (Set.Ioi (n : ℝ)).indicator
       (fun x ↦ ((s - 1) * x ^ (-s))) x := by
     congr! with n
@@ -531,17 +531,30 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     simp_rw [sum_div_log_eq', add_mul, ← MeasureTheory.integral_const_mul]
     exact setIntegral_congr_fun (by measurability) (fun x hx ↦ by ring)
   _ = _ := by
-    have h1 : IntegrableOn (fun x ↦ log (log x) * x ^ (-s)) (.Ioi 1) := by sorry
-    have h2 : IntegrableOn (M * · ^ (-s)) (.Ioi 1) := by sorry
+    have h1 := integrableOn_log_log_mul_rpow hs
+    have h2 : IntegrableOn (M * · ^ (-s)) (.Ioi 1) :=
+      Integrable.const_mul (integrableOn_Ioi_rpow_of_lt (by linarith) (by norm_num)) M
     have h3 : IntegrableOn (fun x ↦ E₂ x * x ^ (-s)) (.Ioi 1) := by sorry
     rw [MeasureTheory.integral_add, MeasureTheory.integral_add, mul_add, mul_add,
         eulerMascheroniConstant_eq_neg_integral_log_log hs, MeasureTheory.integral_const_mul,
-        integral_Ioi_rpow_of_lt (by linarith)]
-    · sorry
+        integral_Ioi_rpow_of_lt (by linarith) (by norm_num)]
+    · nth_rw 4 [← integral_comp_rpow_Ioi_of_pos' (by linarith : 0 < s - 1) (by norm_num)]
+      simp only [Real.one_rpow, neg_add_rev, sub_add_cancel_left, neg_neg, smul_eq_mul]
+      congr
+      · grind
+      rw [← MeasureTheory.integral_const_mul]
+      refine setIntegral_congr_fun (by measurability) (fun x hx ↦ ?_)
+      have : 0 < x := by grind
+      rw [← rpow_mul this.le, ← rpow_mul this.le, mul_inv_cancel₀ (by linarith), Real.rpow_one]
+      calc
+        _ = (s - 1) * (E₂ x * (x ^ (s - 1 - 1) * x ^ ((s - 1) * -2))) := by
+          rw [← rpow_add this]; ring_nf
+        _ = _ := by ring
     exacts [h1, h2, h1.add h2, h3]
 
 theorem sum_div_log_mul_pow_add_tendsto :
-  Tendsto (fun s ↦ ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) + log (s - 1)) (𝓝[>] 1) (𝓝 M) := by
+    Tendsto (fun s ↦ ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) + log (s - 1)) (𝓝[>] 1)
+    (𝓝 (M - Real.eulerMascheroniConstant)) := by
   sorry
 
 end Weight
