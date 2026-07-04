@@ -373,7 +373,7 @@ variable [HasDerivedCategory C] (F' : DerivedCategory.Plus C ⥤ H)
   (α : F ⟶ DerivedCategory.Plus.Qh ⋙ F')
   [F'.IsRightDerivedFunctor α (HomotopyCategory.Plus.quasiIso C)]
 
-instance (K : HomotopyCategory.Plus C) [(∀ (n : ℤ), Injective (K.obj.as.X n))] :
+instance (K : HomotopyCategory.Plus C) [∀ (n : ℤ), Injective (K.obj.as.X n)] :
     IsIso (α.app K) := by
   have (Y : HomotopyCategory.Plus (InjectiveObject C)) :
       IsIso (α.app ((InjectiveObject.ι C).mapHomotopyCategoryPlus.obj Y)) :=
@@ -388,6 +388,15 @@ instance (K : HomotopyCategory.Plus C) [(∀ (n : ℤ), Injective (K.obj.as.X n)
     rwa [CochainComplex.Plus.modelCategoryQuillen.isFibrant_iff]
   rw [← NatTrans.isIso_app_iff_of_iso α e]
   infer_instance
+
+instance (K : CochainComplex.Plus C) (n : ℤ) [Injective (K.obj.X n)] :
+    Injective (((HomotopyCategory.Plus.quotient C).obj K).obj.as.X n) := by
+  assumption
+
+instance (K : CochainComplex.Plus (InjectiveObject C)) (n : ℤ) :
+    Injective (((HomotopyCategory.Plus.quotient C).obj
+        ((InjectiveObject.ι C).mapCochainComplexPlus.obj K)).obj.as.X n) :=
+  (K.obj.X n).property
 
 example (X : HomotopyCategory.Plus (InjectiveObject C)) :
     IsIso ((F.totalRightDerivedUnit DerivedCategory.Plus.Qh
