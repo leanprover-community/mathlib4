@@ -72,6 +72,7 @@ public import Mathlib.Tactic.ComputablePolynomial.Basic
 public import Mathlib.Tactic.ComputablePolynomial.OfList
 public import Mathlib.Tactic.ComputablePolynomial.Reflect
 public import Mathlib.Tactic.ComputablePolynomial.Ring
+public import Mathlib.Tactic.ComputablePolynomial.Tactics
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
