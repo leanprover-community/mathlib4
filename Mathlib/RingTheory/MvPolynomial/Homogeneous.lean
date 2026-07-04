@@ -168,7 +168,7 @@ lemma homogeneousSubmodule_zero :
 
 theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
   apply isHomogeneous_monomial
-  simp only [degree_apply, Finsupp.support_zero, zero_apply, Finset.sum_const_zero]
+  simp only [degree_apply, Finsupp.support_zero, Finsupp.zero_apply, Finset.sum_const_zero]
 
 variable (R)
 

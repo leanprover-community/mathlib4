@@ -347,7 +347,7 @@ theorem range_smul_pow_stabilizes (r : R) :
   monotone_stabilizes
     ⟨fun n => LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M), fun n m h x ⟨y, hy⟩ =>
       ⟨r ^ (m - n) • y, by
-        dsimp at hy ⊢
+        simp only [smul_apply, LinearMap.id_coe, id_eq] at hy ⊢
         rw [← smul_assoc, smul_eq_mul, ← pow_add, ← hy, add_tsub_cancel_of_le h]⟩⟩
 
 variable {M}

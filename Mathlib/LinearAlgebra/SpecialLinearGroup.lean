@@ -466,7 +466,7 @@ noncomputable def centerEquivRootsOfUnity :
         apply FaithfulSMul.eq_of_smul_eq_smul (α := V)
         intro x
         rw [LinearMap.ext_iff] at this
-        simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq] at this
+        simp only [_root_.smul_apply, LinearMap.id_coe, id_eq] at this
         rw [this x]
       rw [← H.choose_spec.2]
       simp [centerEquivRootsOfUnity_invFun]
@@ -561,7 +561,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
       rw [← Units.val_inj]
       apply FaithfulSMul.eq_of_smul_eq_smul (α := V)
       intro x
-      simp only [MulEquiv.trans_apply, LinearMap.ext_iff, LinearMap.smul_apply, LinearMap.id_coe,
+      simp only [MulEquiv.trans_apply, LinearMap.ext_iff, _root_.smul_apply, LinearMap.id_coe,
         id_eq] at this
       rw [MulEquiv.trans_apply, this]
     simp only [MulEquiv.trans_apply]
@@ -571,7 +571,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
     ext x
     have := centerEquivRootsOfUnity_apply_apply g' x
     simp only [Subgroup.smul_def, Units.smul_def] at this
-    simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
+    simp only [_root_.smul_apply, LinearMap.id_coe, id_eq]
     rw [this, ← LinearEquiv.coe_toLinearMap, hgg',
       Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq,
       Matrix.SpecialLinearGroup.eq_scalar_center_equiv_rootsOfUnity g,

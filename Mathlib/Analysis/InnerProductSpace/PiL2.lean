@@ -1203,7 +1203,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     intro x
     -- Apply M to the orthogonal decomposition of x
     have Mx_decomp : M x = L (p1 x) + L3 (p2 x) := by
-      simp only [M, LinearMap.add_apply, LinearMap.comp_apply, LinearMap.comp_apply,
+      simp only [M, _root_.add_apply, LinearMap.comp_apply, LinearMap.comp_apply,
         LinearIsometry.coe_toLinearMap]
     -- Mx_decomp is the orthogonal decomposition of M x
     have Mx_orth : ⟪L (p1 x), L3 (p2 x)⟫ = 0 := by

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.BigOperators.Pi
 
 /-!
 
@@ -265,21 +266,12 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₛₗ[σ₁₂] M₂} {p 
     (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
 
-theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
-    (∑ d ∈ t, f d) b = ∑ d ∈ t, f d b :=
-  _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
+@[deprecated (since := "2026-06-10")] protected alias sum_apply := sum_apply
 
-@[simp, norm_cast]
-theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(∑ i ∈ t, f i) = ∑ i ∈ t, (f i : M → M₂) :=
-  _root_.map_sum
-    (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
-      from { toFun := DFunLike.coe,
-             map_zero' := rfl
-             map_add' := fun _ _ => rfl }) _ _
+@[deprecated (since := "2026-06-10")] alias coe_sum := FunLike.coe_sum
 
 @[deprecated (since := "2025-11-24")]
-alias coeFn_sum := coe_sum
+alias coeFn_sum := FunLike.coe_sum
 
 theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M}
     {g : Module.End R N} {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ}

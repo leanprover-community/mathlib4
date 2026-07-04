@@ -149,7 +149,7 @@ lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap �
 
 lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) (v : V) :
     (∑ i ∈ s, f i) v = ∑ i ∈ s, f i v := by
-  simp [← toLinearMap_apply _ _ (∑ _ ∈ s, _), toLinearMap_sum, LinearMap.sum_apply]
+  simp [← toLinearMap_apply _ _ (∑ _ ∈ s, _), toLinearMap_sum, _root_.sum_apply]
 
 section group
 

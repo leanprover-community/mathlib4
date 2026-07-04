@@ -537,7 +537,7 @@ lemma LinearIndependent.update [DecidableEq ι] [CommRing R] [AddCommGroup M] [M
   intros l' hl'
   apply_fun (r • ·) at hl'
   simp_rw [Pi.update_eq_sub_add_single, ← bilinearCombination_apply _ (S := R), map_add, map_sub,
-    bilinearCombination_apply, LinearMap.add_apply, LinearMap.sub_apply,
+    bilinearCombination_apply, _root_.add_apply, _root_.sub_apply,
     linearCombination_single_index, smul_add, smul_sub, smul_zero, smul_comm r (l' i) m,
     hg, ← LinearMap.map_smul, smul_smul, ← linearCombination_single, ← map_sub, ← map_add] at hl'
   replace hl' : ∀ j, (r * l' j - (single i (r * l' i)) j) + l' i * l j = 0 :=

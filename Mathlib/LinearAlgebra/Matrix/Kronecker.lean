@@ -222,7 +222,7 @@ theorem kroneckerMapBilinear_mul_mul [Semiring S] [Semiring R] [Fintype m] [Fint
   ext ⟨i, i'⟩ ⟨j, j'⟩
   simp only [kroneckerMapBilinear_apply_apply, mul_apply, ← Finset.univ_product_univ,
     Finset.sum_product, kroneckerMap_apply]
-  simp_rw [map_sum f, LinearMap.sum_apply, map_sum, h_comm]
+  simp_rw [map_sum f, _root_.sum_apply, map_sum, h_comm]
 
 /-- `trace` distributes over `Matrix.kroneckerMapBilinear`.
 

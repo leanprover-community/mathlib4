@@ -132,7 +132,7 @@ lemma convolution_indicator_one_left (L : E →ₗ[S] F →ₗ[S] F) (e : E) (f 
     Set.indicator {1} (fun _ => e) ⋆[L] f = f := by
   classical
   ext x; simp only [convolution, Set.indicator_apply]
-  rw [tsum_eq_single (⟨(1, x), by grind⟩ : mulFiber x) (by grind [LinearMap.zero_apply])]
+  rw [tsum_eq_single (⟨(1, x), by grind⟩ : mulFiber x) (by grind)]
   simp [hL]
 
 @[to_additive (dont_translate := S E F) (attr := simp) addConvolution_indicator_zero_right]
@@ -141,7 +141,7 @@ lemma convolution_indicator_one_right (L : F →ₗ[S] E →ₗ[S] F) (f : M →
     f ⋆[L] Set.indicator {1} (fun _ => e) = f := by
   classical
   ext x; simp only [convolution, Set.indicator_apply]
-  rw [tsum_eq_single (⟨(x, 1), by grind⟩ : mulFiber x) (by grind [LinearMap.zero_apply])]
+  rw [tsum_eq_single (⟨(x, 1), by grind⟩ : mulFiber x) (by grind)]
   simp [hL]
 
 end BasicProperties

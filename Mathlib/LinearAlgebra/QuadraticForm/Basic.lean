@@ -427,7 +427,7 @@ end SMul
 instance : Zero (QuadraticMap R M N) :=
   ⟨{  toFun := fun _ => 0
       toFun_smul := fun a _ => by simp only [smul_zero]
-      exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
+      exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, _root_.zero_apply]⟩ }⟩
 
 @[simp, norm_cast]
 theorem coeFn_zero : ⇑(0 : QuadraticMap R M N) = 0 :=
@@ -448,7 +448,7 @@ instance : Add (QuadraticMap R M N) :=
         let ⟨B, h⟩ := Q.exists_companion
         let ⟨B', h'⟩ := Q'.exists_companion
         ⟨B + B', fun x y => by
-          simp_rw [Pi.add_apply, h, h', LinearMap.add_apply, add_add_add_comm]⟩ }⟩
+          simp_rw [Pi.add_apply, h, h', _root_.add_apply, add_add_add_comm]⟩ }⟩
 
 @[simp, norm_cast]
 theorem coeFn_add (Q Q' : QuadraticMap R M N) : ⇑(Q + Q') = Q + Q' :=
@@ -521,7 +521,7 @@ instance : Neg (QuadraticMap R M N) :=
       toFun_smul := fun a x => by simp only [Pi.neg_apply, Q.map_smul, smul_neg]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
-        ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
+        ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, neg_apply, neg_add]⟩ }⟩
 
 @[simp, norm_cast]
 theorem coeFn_neg (Q : QuadraticMap R M N) : ⇑(-Q) = -Q :=
@@ -639,7 +639,7 @@ def linMulLin (f g : M →ₗ[R] A) : QuadraticMap R M A where
       smul_mul_assoc, mul_smul_comm, ← smul_assoc, smul_eq_mul]
   exists_companion' :=
     ⟨(LinearMap.mul R A).compl₁₂ f g + (LinearMap.mul R A).flip.compl₁₂ g f, fun x y => by
-      simp only [Pi.mul_apply, map_add, left_distrib, right_distrib, LinearMap.add_apply,
+      simp only [Pi.mul_apply, map_add, left_distrib, right_distrib, _root_.add_apply,
         LinearMap.compl₁₂_apply, LinearMap.mul_apply', LinearMap.flip_apply]
       abel_nf⟩
 
@@ -711,7 +711,7 @@ variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
   toFun x := B x x
-  toFun_smul a x := by simp only [map_smul, LinearMap.smul_apply, smul_smul]
+  toFun_smul a x := by simp only [map_smul, _root_.smul_apply, smul_smul]
   exists_companion' := ⟨B + LinearMap.flip B, fun x y => by simp [add_add_add_comm, add_comm]⟩
 
 @[simp]
@@ -800,7 +800,7 @@ theorem toQuadraticMap_sub (B₁ B₂ : BilinMap R M N) :
   rfl
 
 theorem polar_toQuadraticMap (x y : M) : polar (toQuadraticMap B) x y = B x y + B y x := by
-  simp only [polar, toQuadraticMap_apply, map_add, add_apply, add_assoc, add_comm (B y x) _,
+  simp only [polar, toQuadraticMap_apply, map_add, _root_.add_apply, add_assoc, add_comm (B y x) _,
     add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
 
 theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :=
@@ -863,12 +863,14 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
     (1 : Module.End R M)
   invOf_mul_self := by
     ext m
-    dsimp [Submonoid.smul_def]
+    simp only [smul_one_mul, _root_.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
+      Module.End.one_apply]
     rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
   mul_invOf_self := by
     ext m
-    dsimp [Submonoid.smul_def]
-    rw [← ofNat_smul_eq_nsmul R, smul_invOf_smul (2 : R) m]
+    simp only [mul_smul_one, _root_.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
+      Module.End.one_apply]
+    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
@@ -909,9 +911,8 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Twice the associated bilinear map of `Q` is the same as the polar of `Q`. -/
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
-  dsimp [associated_apply]
-  rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', Module.End.one_apply,
-    polar]
+  simp only [_root_.smul_apply, associated_apply, polarBilin_apply_apply, ← smul_assoc]
+  rw [nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', polar, one_smul]
 
 theorem associated_isSymm (Q : QuadraticMap R M N) (x y : M) :
     associatedHom S Q x y = associatedHom S Q y x := by
@@ -936,7 +937,7 @@ theorem associated_comp {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N' →
 
 theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     associatedHom S B.toQuadraticMap x y = ⅟(2 : Module.End R N) • (B x y + B y x) := by
-  simp only [associated_apply, BilinMap.toQuadraticMap_apply, map_add, LinearMap.add_apply,
+  simp only [associated_apply, BilinMap.toQuadraticMap_apply, map_add, _root_.add_apply,
     Module.End.smul_def, map_sub]
   abel_nf
 
@@ -1018,8 +1019,8 @@ theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
     associated (R := R) (N := R) (linMulLin f g) =
       ⅟(2 : R) • ((mul R R).compl₁₂ f g + (mul R R).compl₁₂ g f) := by
   ext
-  simp only [associated_apply, linMulLin_apply, map_add, smul_add, LinearMap.add_apply,
-    LinearMap.smul_apply, compl₁₂_apply, mul_apply', smul_eq_mul, invOf_smul_eq_iff]
+  simp only [associated_apply, linMulLin_apply, map_add, smul_add, _root_.add_apply,
+    _root_.smul_apply, compl₁₂_apply, mul_apply', smul_eq_mul, invOf_smul_eq_iff]
   simp only [Module.End.smul_def, Module.End.ofNat_apply, nsmul_eq_mul, Nat.cast_ofNat,
     mul_invOf_cancel_left']
   ring_nf
@@ -1066,8 +1067,8 @@ theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm) :
     B.toQuadraticMap.IsOrtho x y ↔ B x y = 0 := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstance : AddCommMonoid R) with }
-  simp_rw [isOrtho_def, B.toQuadraticMap_apply, map_add,
-    LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
+  simp_rw [isOrtho_def, B.toQuadraticMap_apply, map_add, _root_.add_apply, add_comm _ (B y y),
+    add_add_add_comm _ _ (B y y), add_comm (B y y)]
   rw [add_eq_left (a := B x x + B y y), ← h.eq, RingHom.id_apply, add_self_eq_zero]
 
 end CommSemiring

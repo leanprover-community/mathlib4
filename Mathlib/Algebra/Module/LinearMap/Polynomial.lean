@@ -270,7 +270,7 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     intro kl
     rw [toMatrix_apply, tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
       basis_apply, TensorProduct.lift.tmul, coe_restrictScalars]
-    dsimp only [coe_mk, AddHom.coe_mk, smul_apply, baseChangeHom_apply]
+    simp only [coe_mk, AddHom.coe_mk, _root_.smul_apply, baseChangeHom_apply]
     rw [one_smul, Basis.baseChange_end, Basis.repr_self_apply]
 
 open LinearMap in

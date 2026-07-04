@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Module.RingHom
 public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Data.FunLike.Group
 
 /-!
 # (Semi)linear maps
@@ -746,13 +747,12 @@ instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
       map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
 
-@[simp]
-theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
-  rfl
+instance : IsSMulApply S (M →ₛₗ[σ₁₂] M₂) M M₂ where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem coe_smul (a : S) (f : M →ₛₗ[σ₁₂] M₂) : (a • f : M →ₛₗ[σ₁₂] M₂) = a • (f : M → M₂) :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias smul_apply := _root_.smul_apply
+
+@[deprecated (since := "2026-05-20")] protected alias coe_smul := FunLike.coe_smul
 
 instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun _ _ _ ↦ ext fun _ ↦ smul_comm _ _ _⟩
@@ -785,12 +785,12 @@ instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := by simp
       map_smul' := by simp }⟩
 
-@[simp] lemma coe_zero_iff (f : M →ₛₗ[σ₁₂] M₂) : ⇑f = 0 ↔ f = 0 := by
-  aesop
+instance : IsZeroApply (M →ₛₗ[σ₁₂] M₂) M M₂ where
+  zero_apply _ := rfl
 
-@[simp]
-theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias zero_apply := _root_.zero_apply
+
+@[deprecated (since := "2026-06-10")] alias coe_zero_iff := FunLike.coe_zero_iff
 
 @[simp]
 theorem comp_zero (g : M₂ →ₛₗ[σ₂₃] M₃) : (g.comp (0 : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = 0 :=
@@ -830,9 +830,10 @@ instance : Add (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := by simp [add_comm, add_left_comm]
       map_smul' := by simp [smul_add] }⟩
 
-@[simp]
-theorem add_apply (f g : M →ₛₗ[σ₁₂] M₂) (x : M) : (f + g) x = f x + g x :=
-  rfl
+instance : IsAddApply (M →ₛₗ[σ₁₂] M₂) M M₂ where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-05-20")] protected alias add_apply := _root_.add_apply
 
 theorem add_comp (f : M →ₛₗ[σ₁₂] M₂) (g h : M₂ →ₛₗ[σ₂₃] M₃) :
     ((h + g).comp f : M →ₛₗ[σ₁₃] M₃) = h.comp f + g.comp f :=
@@ -843,12 +844,10 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
   ext fun _ ↦ h.map_add _ _
 
 -- The `AddMonoid` instance exists to help speedup unification
-instance addMonoid : AddMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
-  DFunLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance addMonoid : AddMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance% FunLike.addMonoid
 
 /-- The type of linear maps is an additive monoid. -/
-instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance% FunLike.addCommMonoid
 
 /-- The negation of a linear map is linear. -/
 instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
@@ -857,11 +856,12 @@ instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
       map_add' := by simp [add_comm]
       map_smul' := by simp }⟩
 
-@[simp] protected theorem coe_neg (f : M →ₛₗ[σ₁₂] N₂) : ⇑(-f) = -⇑f := rfl
+instance : IsNegApply (M →ₛₗ[σ₁₂] N₂) M N₂ where
+  neg_apply _ _ := rfl
 
-@[simp]
-theorem neg_apply (f : M →ₛₗ[σ₁₂] N₂) (x : M) : (-f) x = -f x :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias neg_apply := _root_.neg_apply
+
+@[deprecated (since := "2026-05-20")] protected alias coe_neg := FunLike.coe_neg
 
 @[simp]
 theorem neg_comp (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] N₃) : (-g).comp f = -g.comp f :=
@@ -878,9 +878,10 @@ instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
       map_smul' := fun r x ↦ by simp [Pi.sub_apply, smul_sub] }⟩
 
-@[simp]
-theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=
-  rfl
+instance : IsSubApply (M →ₛₗ[σ₁₂] N₂) M N₂ where
+  sub_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-05-20")] protected alias sub_apply := _root_.sub_apply
 
 theorem sub_comp (f : M →ₛₗ[σ₁₂] M₂) (g h : M₂ →ₛₗ[σ₂₃] N₃) :
     (g - h).comp f = g.comp f - h.comp f :=
@@ -891,15 +892,13 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
   ext fun _ ↦ h.map_sub _ _
 
 /-- The type of linear maps is an additive group. -/
-instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) := fast_instance% FunLike.addCommGroup
 
 /-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
 @[simps]
 def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
   toFun f := f a
-  map_add' f g := LinearMap.add_apply f g a
+  map_add' f g := add_apply f g a
   map_zero' := rfl
 
 /-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/

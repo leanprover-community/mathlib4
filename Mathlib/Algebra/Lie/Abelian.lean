@@ -141,7 +141,7 @@ protected def ker : LieIdeal R L :=
 
 @[simp]
 protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅x, m⁆ = 0 := by
-  simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
+  simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, _root_.zero_apply,
     toEnd_apply_apply]
 
 lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
@@ -248,7 +248,7 @@ def maxTrivLinearMapEquivLieModuleHom : maxTrivSubmodule R L (M →ₗ[R] N) ≃
   toFun f :=
     { toLinearMap := f.val
       map_lie' := fun {x m} => by
-        have hf : ⁅x, f.val⁆ m = 0 := by rw [f.property x, LinearMap.zero_apply]
+        have hf : ⁅x, f.val⁆ m = 0 := by rw [f.property x, _root_.zero_apply]
         rw [LieHom.lie_apply, sub_eq_zero, ← LinearMap.toFun_eq_coe] at hf; exact hf.symm }
   map_add' f g := by ext; simp
   map_smul' F G := by ext; simp

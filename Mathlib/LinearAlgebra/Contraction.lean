@@ -76,7 +76,7 @@ theorem transpose_dualTensorHom (f : Module.Dual R M) (m : M) :
   ext f' m'
   simp only [Dual.transpose_apply, coe_comp, Function.comp_apply, dualTensorHom_apply,
     map_smulₛₗ, RingHom.id_apply, smul_eq_mul, Dual.eval_apply,
-    LinearMap.smul_apply]
+    _root_.smul_apply]
   exact mul_comm _ _
 
 @[simp]
@@ -85,7 +85,7 @@ theorem dualTensorHom_prodMap_zero (f : Module.Dual R M) (p : P) :
       dualTensorHom R (M × N) (P × Q) ((f ∘ₗ fst R M N) ⊗ₜ inl R P Q p) := by
   ext <;>
     simp only [coe_comp, coe_inl, Function.comp_apply, prodMap_apply, dualTensorHom_apply,
-      fst_apply, Prod.smul_mk, LinearMap.zero_apply, smul_zero]
+      fst_apply, Prod.smul_mk, _root_.zero_apply, smul_zero]
 
 @[simp]
 theorem zero_prodMap_dualTensorHom (g : Module.Dual R N) (q : Q) :
@@ -93,7 +93,7 @@ theorem zero_prodMap_dualTensorHom (g : Module.Dual R N) (q : Q) :
       dualTensorHom R (M × N) (P × Q) ((g ∘ₗ snd R M N) ⊗ₜ inr R P Q q) := by
   ext <;>
     simp only [coe_comp, coe_inr, Function.comp_apply, prodMap_apply, dualTensorHom_apply,
-      snd_apply, Prod.smul_mk, LinearMap.zero_apply, smul_zero]
+      snd_apply, Prod.smul_mk, _root_.zero_apply, smul_zero]
 
 attribute [-ext] AlgebraTensorModule.curry_injective in
 theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q : Q) :
@@ -108,7 +108,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
     dualTensorHom R N P (g ⊗ₜ[R] p) ∘ₗ dualTensorHom R M N (f ⊗ₜ[R] n) =
       g n • dualTensorHom R M P (f ⊗ₜ p) := by
   ext m
-  simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, map_smul, LinearMap.smul_apply]
+  simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, map_smul, _root_.smul_apply]
   rw [smul_comm]
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
@@ -131,14 +131,15 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
     (∑ i, TensorProduct.mk R _ N (b.dualBasis i) ∘ₗ (LinearMap.applyₗ (R := R) (b i)))
     (by
       ext f m
-      simp only [applyₗ_apply_apply, coe_sum, dualTensorHom_apply, mk_apply, id_coe, _root_.id,
-        Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, Basis.coord_apply, ←
-        f.map_smul, _root_.map_sum (dualTensorHom R M N), ← _root_.map_sum f, b.sum_repr])
+      simp only [applyₗ_apply_apply, FunLike.coe_sum, dualTensorHom_apply, mk_apply, id_coe,
+        _root_.id, Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp,
+        Basis.coord_apply, ← f.map_smul, _root_.map_sum (dualTensorHom R M N), ← _root_.map_sum f,
+        b.sum_repr])
     (by
       ext f m
-      simp only [applyₗ_apply_apply, coe_sum, dualTensorHom_apply, mk_apply, id_coe, _root_.id,
-        Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, compr₂ₛₗ_apply,
-        tmul_smul, smul_tmul', ← sum_tmul, Basis.sum_dual_apply_smul_coord])
+      simp only [applyₗ_apply_apply, FunLike.coe_sum, dualTensorHom_apply, mk_apply, id_coe,
+        _root_.id, Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp,
+        compr₂ₛₗ_apply, tmul_smul, smul_tmul', ← sum_tmul, Basis.sum_dual_apply_smul_coord])
 
 @[simp]
 theorem dualTensorHomEquivOfBasis_apply (x : Module.Dual R M ⊗[R] N) :

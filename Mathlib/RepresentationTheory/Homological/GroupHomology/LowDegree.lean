@@ -120,6 +120,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma d₁₀_comp_coinvariantsMk : d₁₀ A ≫ (coinvariantsMk k G).app A = 0 := by
   ext
   simp [d₁₀]
+  rfl
 
 /-- The 0th differential in the complex of inhomogeneous chains of a `G`-representation `A` as a
 linear map into the `k`-submodule of `A` spanned by elements of the form

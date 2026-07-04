@@ -98,9 +98,7 @@ theorem Derivation.tensorProductTo_mul (D : Derivation R S M) (x y : S ⊗[R] S)
   simp only [TensorProduct.tmul_mul_tmul, Derivation.tensorProductTo,
     TensorProduct.AlgebraTensorModule.lift_apply,
     TensorProduct.lmul'_apply_tmul]
-  dsimp
-  rw [D.leibniz]
-  simp only [smul_smul, smul_add, mul_comm (x * y) x₁, mul_right_comm x₁ x₂, ← mul_assoc]
+  simp [smul_smul, mul_comm (x * y) x₁, mul_right_comm x₁ x₂, ← mul_assoc]
 
 variable (R S)
 

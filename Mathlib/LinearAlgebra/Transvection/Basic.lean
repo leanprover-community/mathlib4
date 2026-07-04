@@ -175,7 +175,7 @@ theorem trans_of_right_eq {f g : Dual R V} {v : V}
   ext; simp [comp_of_right_eq_apply hf]
 
 @[simp]
-theorem of_left_eq_zero (v : V) (hv := LinearMap.zero_apply v) :
+theorem of_left_eq_zero (v : V) (hv := _root_.zero_apply v) :
     transvection hv = refl R V := by
   ext; simp [transvection]
 
@@ -470,7 +470,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
       rw [← LinearEquiv.toLinearMap_inj,
         ← sub_eq_zero, ← LinearMap.ker_eq_top, eq_top_iff, ← eq_top]
       simp only [LinearEquiv.transvection.coe_toLinearMap,
-        sup_le_iff, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, LinearMap.sub_apply,
+        sup_le_iff, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, _root_.sub_apply,
         LinearEquiv.coe_coe]
       constructor
       · intro x hx

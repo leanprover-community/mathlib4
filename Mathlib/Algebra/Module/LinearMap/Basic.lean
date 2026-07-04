@@ -104,7 +104,7 @@ section Module
 variable [Semiring S] [Module S M] [Module S M'] [SMulCommClass R' S M']
 
 instance [Module.IsTorsionFree S M'] : Module.IsTorsionFree S (M →ₛₗ[σ₁₂] M') :=
-  coe_injective.moduleIsTorsionFree _ coe_smul
+  coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
 set_option backward.isDefEq.respectTransparency false in
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M') where

@@ -95,11 +95,11 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
   intro i j
   obtain rfl | qj := eq_or_ne q j
   · by_cases iq : i = q
-    · simp [iq, N, zMx, single, mul_apply, sum_apply, ite_and, sub_mul]
+    · simp [iq, N, zMx, single, Matrix.mul_apply, Matrix.sum_apply, ite_and, sub_mul]
     · convert! I.mul_mem_left (-M i p * x) zMx
-      simp [iq, N, single, mul_apply, sum_apply, ite_and, sub_mul]
+      simp [iq, N, single, mul_apply, Matrix.sum_apply, ite_and, sub_mul]
       simp [sub_add, mul_add, mul_sub, mul_assoc]
-  · simp [N, qj, sum_apply, mul_apply]
+  · simp [N, qj, Matrix.sum_apply, Matrix.mul_apply]
 
 /-- For any left ideal $I ≤ R$, we have $Mₙ(J(I)) ≤ J(Mₙ(I))$. -/
 theorem matrix_jacobson_le (I : Ideal R) :
@@ -342,7 +342,7 @@ private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
   -- Proof generalized from example 8 in
   -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-basic-examples/
   intro M Mmem p q
-  simp only [zero_apply, ← mem_iff]
+  simp only [Matrix.zero_apply, ← mem_iff]
   rw [mem_jacobson_iff]
   replace Mmem := mul_mem_right _ _ (single q p 1) Mmem
   rw [mem_jacobson_iff] at Mmem

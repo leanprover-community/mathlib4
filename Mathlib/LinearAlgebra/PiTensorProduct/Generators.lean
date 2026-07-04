@@ -147,7 +147,7 @@ lemma submodule_span_eq_top
       ⨂ₜ[R] (i : ι), g (j i))) = ⊤ := by
   rw [← (Submodule.span R _).ker_mkQ, LinearMap.ker_eq_top]
   refine ext_of_span_eq_top hg (fun j ↦ ?_)
-  simp only [Submodule.mkQ_apply, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
+  simp only [Submodule.mkQ_apply, zero_apply, Submodule.Quotient.mk_eq_zero]
   exact Submodule.subset_span ⟨j, rfl⟩
 
 end PiTensorProduct

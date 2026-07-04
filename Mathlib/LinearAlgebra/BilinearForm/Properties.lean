@@ -137,7 +137,7 @@ variable {R : Type*} [Field R] [NeZero (2 : R)] [Module R M] {B C : BilinForm R 
 it takes on the diagonal. -/
 lemma IsSymm.polarization (x y : M) (hB : B.IsSymm) :
     B x y = (B (x + y) (x + y) - B x x - B y y) / 2 := by
-  simp only [map_add, LinearMap.add_apply]
+  simp only [map_add, _root_.add_apply]
   rw [hB.eq y x]
   ring_nf
   rw [mul_assoc, inv_mul_cancel₀ two_ne_zero, mul_one]
@@ -167,8 +167,7 @@ lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     obtain ⟨fy, ty, iy, -, hy⟩ := Submodule.mem_span_iff_exists_finset_subset.1
       (by simp : y ∈ Submodule.span R (Set.range b))
     rw [← hx, ← hy]
-    simp only [map_sum, map_smul, coe_sum, Finset.sum_apply, smul_apply, smul_eq_mul,
-      Finset.mul_sum]
+    simp only [map_sum, map_smul, _root_.sum_apply, smul_apply, smul_eq_mul, Finset.mul_sum]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl (fun b₁ h₁ ↦ Finset.sum_congr rfl fun b₂ h₂ ↦ ?_)
     rw [mul_left_comm]

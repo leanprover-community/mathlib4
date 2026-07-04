@@ -742,7 +742,7 @@ def HomEquiv.fromExtendScalars {X : ModuleCat R} {Y : ModuleCat S}
     { toFun s := HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) ↦ ?_,
       map_smul' := fun (r : R) (s : S) ↦ ?_ }
     · ext
-      dsimp only [m2, evalAt_apply, LinearMap.add_apply]
+      simp only [m2, evalAt_apply, add_apply]
       rw [← add_smul]
     · ext x
       apply mul_smul (f r) s (g x)

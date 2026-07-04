@@ -144,7 +144,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
-  rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
+  rw [comapSMul_single, Finsupp.smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
     single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
@@ -158,7 +158,7 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
-  rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
+  rw [comapSMul_single, Finsupp.smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
     smul_eq_mul, single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 

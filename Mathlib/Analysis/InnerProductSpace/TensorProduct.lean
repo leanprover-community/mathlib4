@@ -91,7 +91,7 @@ private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E �
     conv_lhs => rw [← (e.toBasis.tensorProduct f.toBasis).sum_repr x]
     simp [← Finset.sum_product', Basis.tensorProduct_apply']
   conv_lhs => rw [this]
-  simp only [inner_def, map_sum, LinearMap.sum_apply]
+  simp only [inner_def, map_sum, _root_.sum_apply]
   simp [OrthonormalBasis.inner_eq_ite, ← Finset.sum_product', RCLike.mul_conj]
 
 set_option backward.privateInPublic true in
