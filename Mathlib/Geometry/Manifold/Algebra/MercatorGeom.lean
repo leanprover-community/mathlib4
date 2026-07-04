@@ -18,6 +18,8 @@ import Mathlib
 open Bundle
 open scoped Manifold Topology ContDiff
 
+set_option linter.style.longLine false
+
 noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -36,14 +38,18 @@ lemma mdifferentiableAt_mfderiv_apply
     (hσ : MDifferentiableAt I (I.prod 𝓘(𝕜, E))
       (fun y => TotalSpace.mk' E y (σ y)) x) :
     MDifferentiableAt I 𝓘(𝕜, 𝕜) (fun y => (mfderiv I 𝓘(𝕜, 𝕜) f y) (σ y)) x := by
-  have h_map : MDifferentiableAt I (𝓘(𝕜, 𝕜).prod 𝓘(𝕜, 𝕜)) (fun y => TotalSpace.mk' 𝕜 (f y) ((mfderiv I 𝓘(𝕜, 𝕜) f y) (σ y))) x := by
-    have h_map : MDifferentiableAt I (𝓘(𝕜, E →L[𝕜] 𝕜)) (fun y => (inTangentCoordinates I 𝓘(𝕜, 𝕜) id f (fun y => mfderiv I 𝓘(𝕜, 𝕜) f y) x) y) x := by
-      convert ( hf.mfderiv_const ( show 1 + 1 ≤ 2 by norm_num ) ) |> ContMDiffAt.mdifferentiableAt using 1;
-      simp +decide;
-    convert MDifferentiableAt.clm_apply_of_inCoordinates h_map hσ ( hf.mdifferentiableAt ( by norm_num ) ) using 1;
+  have h_map : MDifferentiableAt I (𝓘(𝕜, 𝕜).prod 𝓘(𝕜, 𝕜)) (fun y => TotalSpace.mk' 𝕜 (f y)
+    ((mfderiv I 𝓘(𝕜, 𝕜) f y) (σ y))) x := by
+    have h_map : MDifferentiableAt I (𝓘(𝕜, E →L[𝕜] 𝕜))
+      (fun y => (inTangentCoordinates I 𝓘(𝕜, 𝕜) id f (fun y => mfderiv I 𝓘(𝕜, 𝕜) f y) x) y) x := by
+      convert ( hf.mfderiv_const ( show 1 + 1 ≤ 2 by norm_num ) ) |>
+        ContMDiffAt.mdifferentiableAt using 1;
+      simp +decide only [forall_const];
+    convert MDifferentiableAt.clm_apply_of_inCoordinates h_map hσ
+      ( hf.mdifferentiableAt ( by norm_num ) ) using 1;
   rw [ mdifferentiableAt_totalSpace ] at h_map;
   convert h_map.2.congr_of_eventuallyEq _ using 1;
-  simp +decide [ trivializationAt ]
+  simp +decide only [trivializationAt, trivializationAt_model_space_apply, Filter.EventuallyEq.refl]
 
 end
 
@@ -57,16 +63,29 @@ lemma arg_contDiffAt {z : ℂ} (hz : z ∈ Complex.slitPlane) :
   revert z;
   -- Prove pointwise equality (valid on the stated open region):
   have h1 : ∀ z : ℂ, 0 < z.re → Complex.arg z = Real.arctan (z.im / z.re) := by
-    intro z hz; rw [ Complex.arg, eq_comm ] ; rw [ Real.arctan_eq_arcsin ] ; ring_nf ; norm_num [ hz.ne', Complex.normSq, Complex.norm_def ] ;
+    intro z hz; rw [ Complex.arg, eq_comm ] ; rw [ Real.arctan_eq_arcsin ] ; ring_nf ;
+    norm_num [ hz.ne', Complex.normSq, Complex.norm_def ] ;
     field_simp;
-    rw [ if_pos hz.le, Real.sqrt_div ( by positivity ), Real.sqrt_sq hz.le, mul_div_cancel₀ _ hz.ne' ]
+    rw [ if_pos hz.le, Real.sqrt_div ( by positivity ),
+         Real.sqrt_sq hz.le, mul_div_cancel₀ _ hz.ne' ]
   have h2 : ∀ z : ℂ, 0 < z.im → Complex.arg z = Real.pi / 2 - Real.arctan (z.re / z.im) := by
     intro z hz
     have h_arg : Complex.arg z ∈ Set.Ioo 0 Real.pi := by
       rw [ Complex.arg ];
-      split_ifs <;> simp_all +decide [ Complex.normSq, Complex.norm_def ];
-      · exact ⟨ by nlinarith, lt_of_le_of_lt ( Real.arcsin_le_pi_div_two _ ) ( by linarith [ Real.pi_pos ] ) ⟩;
-      · exact ⟨ by linarith [ Real.neg_pi_div_two_le_arcsin ( -z.im / Real.sqrt ( z.re * z.re + z.im * z.im ) ), Real.arcsin_le_pi_div_two ( -z.im / Real.sqrt ( z.re * z.re + z.im * z.im ) ), Real.pi_pos ], div_neg_of_neg_of_pos ( neg_neg_of_pos hz ) ( Real.sqrt_pos.mpr ( by nlinarith ) ) ⟩;
+      split_ifs <;> simp_all +decide only [Complex.norm_def, Complex.normSq,
+                                           MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Set.mem_Ioo,
+                                          Real.arcsin_pos, div_pos_iff_of_pos_left, Real.sqrt_pos,
+                                          not_le, Complex.neg_im, add_lt_iff_neg_right,
+                                          Real.arcsin_lt_zero, sub_pos];
+      · exact ⟨ by nlinarith,
+                lt_of_le_of_lt ( Real.arcsin_le_pi_div_two _ ) ( by linarith [ Real.pi_pos ] ) ⟩;
+      · exact ⟨
+        by linarith [ Real.neg_pi_div_two_le_arcsin
+                        ( -z.im / Real.sqrt ( z.re * z.re + z.im * z.im ) ),
+                      Real.arcsin_le_pi_div_two ( -z.im / Real.sqrt ( z.re * z.re + z.im * z.im ) ),
+                      Real.pi_pos ],
+                      div_neg_of_neg_of_pos ( neg_neg_of_pos hz )
+                                            ( Real.sqrt_pos.mpr ( by nlinarith ) ) ⟩;
       · linarith;
     have h_tan : Real.tan (Real.pi / 2 - Complex.arg z) = z.re / z.im := by
       rw [ Real.tan_pi_div_two_sub, Complex.tan_arg ];
@@ -75,18 +94,20 @@ lemma arg_contDiffAt {z : ℂ} (hz : z ∈ Complex.slitPlane) :
   have h3 : ∀ z : ℂ, z.im < 0 → Complex.arg z = -Real.arctan (z.re / z.im) - Real.pi / 2 := by
     intro z hz
     have h_arg_neg : Complex.arg z = -Complex.arg (starRingEnd ℂ z) := by
-      simp +decide [ Complex.arg_conj ];
-      split_ifs <;> simp_all +decide [ Complex.arg_eq_pi_iff ];
-    rw [ h_arg_neg, h2 ] <;> simp +decide [ hz ];
+      simp +decide only [Complex.arg_conj];
+      split_ifs <;> simp_all +decide only [Complex.arg_eq_pi_iff, lt_self_iff_false, not_and,
+                                           neg_neg];
+    rw [ h_arg_neg, h2 ] <;> simp +decide only [Complex.conj_re, Complex.conj_im, neg_sub,
+                                                sub_left_inj, Left.neg_pos_iff, hz];
     rw [ ← Real.arctan_neg, div_neg ];
   intro z hz;
   by_cases hz_re : 0 < z.re;
-  · refine' ContDiffAt.congr_of_eventuallyEq _ ( Filter.eventuallyEq_of_mem ( IsOpen.mem_nhds ( isOpen_lt continuous_const Complex.continuous_re ) hz_re ) fun x hx => h1 x hx );
+  · refine ContDiffAt.congr_of_eventuallyEq ?_ ( Filter.eventuallyEq_of_mem ( IsOpen.mem_nhds ( isOpen_lt continuous_const Complex.continuous_re ) hz_re ) fun x hx => h1 x hx );
     exact ContDiffAt.arctan ( ContDiffAt.div ( Complex.imCLM.contDiff.contDiffAt ) ( Complex.reCLM.contDiff.contDiffAt ) hz_re.ne' );
-  · cases lt_or_gt_of_ne ( show z.im ≠ 0 from by rintro h; simp_all +decide [ Complex.slitPlane ] ) <;> simp_all +decide [ Complex.slitPlane ];
-    · refine' ContDiffAt.congr_of_eventuallyEq _ ( Filter.eventuallyEq_of_mem ( IsOpen.mem_nhds ( isOpen_lt Complex.continuous_im continuous_const ) ‹_› ) fun x hx => h3 x hx );
+  · cases lt_or_gt_of_ne ( show z.im ≠ 0 from by rintro h; simp_all +decide only [Complex.slitPlane, ne_eq, Set.mem_setOf_eq, not_true_eq_false, or_self] ) <;> simp_all +decide only [Complex.slitPlane, ne_eq, Set.mem_setOf_eq, false_or, not_lt];
+    · refine ContDiffAt.congr_of_eventuallyEq ?_ ( Filter.eventuallyEq_of_mem ( IsOpen.mem_nhds ( isOpen_lt Complex.continuous_im continuous_const ) ‹_› ) fun x hx => h3 x hx );
       exact ContDiffAt.sub ( ContDiffAt.neg ( ContDiffAt.arctan ( ContDiffAt.div ( Complex.reCLM.contDiff.contDiffAt ) ( Complex.imCLM.contDiff.contDiffAt ) hz ) ) ) ( contDiffAt_const );
-    · refine' ContDiffAt.congr_of_eventuallyEq _ ( Filter.eventuallyEq_of_mem ( IsOpen.mem_nhds ( isOpen_lt continuous_const Complex.continuous_im ) ‹_› ) fun w hw => h2 w hw );
+    · refine ContDiffAt.congr_of_eventuallyEq ?_ ( Filter.eventuallyEq_of_mem ( IsOpen.mem_nhds ( isOpen_lt continuous_const Complex.continuous_im ) ‹_› ) fun w hw => h2 w hw );
       exact ContDiffAt.sub contDiffAt_const <| Real.contDiff_arctan.contDiffAt.comp _ <| ContDiffAt.div ( Complex.reCLM.contDiff.contDiffAt ) ( Complex.imCLM.contDiff.contDiffAt ) <| by positivity;
 
 /-! ## Sphere infrastructure and the spherical chart
@@ -106,9 +127,9 @@ noncomputable section Sphere
 /-! ### The sphere and its open subset -/
 abbrev S2 := sphere (0 : EuclideanSpace ℝ (Fin 3)) 1
 def northPole : S2 := ⟨(WithLp.equiv 2 (Fin 3 → ℝ)).symm ![0, 0, 1], by
-  simp [EuclideanSpace.norm_eq, Fin.sum_univ_three]⟩
+  simp only [WithLp.equiv_symm_apply, mem_sphere_iff_norm, sub_zero, EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, Fin.sum_univ_three, Fin.isValue, Matrix.cons_val_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, Matrix.cons_val_one, add_zero, Matrix.cons_val, one_pow, zero_add, sqrt_one]⟩
 def southPole : S2 := ⟨(WithLp.equiv 2 (Fin 3 → ℝ)).symm ![0, 0, -1], by
-  simp [EuclideanSpace.norm_eq, Fin.sum_univ_three]⟩
+  simp only [WithLp.equiv_symm_apply, mem_sphere_iff_norm, sub_zero, EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, Fin.sum_univ_three, Fin.isValue, Matrix.cons_val_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, Matrix.cons_val_one, add_zero, Matrix.cons_val, even_two, Even.neg_pow, one_pow, zero_add, sqrt_one]⟩
 -- S² minus the poles.
 def S2_open : Set S2 := {p | p ≠ northPole ∧ p ≠ southPole}
 
@@ -116,7 +137,7 @@ def S2_open : Set S2 := {p | p ≠ northPole ∧ p ≠ southPole}
 lemma S2_coord_sq (p : S2) :
     (p.val 0) ^ 2 + (p.val 1) ^ 2 + (p.val 2) ^ 2 = 1 := by
   have h_norm : ‖p.val‖ ^ 2 = 1 := by
-    simp +zetaDelta at *;
+    simp +zetaDelta only [norm_eq_of_mem_sphere, one_pow] at *;
   rw [ ← h_norm, EuclideanSpace.norm_eq ] ; norm_num [ Fin.sum_univ_three ] ; ring_nf!;
   rw [ Real.sq_sqrt ( add_nonneg ( add_nonneg ( sq_nonneg _ ) ( sq_nonneg _ ) ) ( sq_nonneg _ ) ) ]
 
@@ -198,9 +219,9 @@ lemma sph_left_inv : ∀ p ∈ sphSource, sphInv (sphFwd p) = p := by
       · exact ne_of_gt <| Real.sqrt_pos.mpr <| by
           rcases hp with (hp | hp)
           · exact add_pos_of_pos_of_nonneg
-              (mul_self_pos.mpr <| by simpa using hp.ne') (mul_self_nonneg _)
+              (mul_self_pos.mpr <| by simpa only [Fin.isValue, ne_eq] using hp.ne') (mul_self_nonneg _)
           · exact add_pos_of_nonneg_of_pos
-              (mul_self_nonneg _) (mul_self_pos.mpr <| by simpa using hp)
+              (mul_self_nonneg _) (mul_self_pos.mpr <| by simpa only [Fin.isValue, ne_eq] using hp)
     · cases hp <;> aesop
   · rw [mul_div, div_eq_iff] <;> norm_num [Complex.normSq, Complex.norm_def]
     · rw [show (1 - (p.val 2) ^ 2 : ℝ) = (p.val 0) ^ 2 + (p.val 1) ^ 2
@@ -323,10 +344,10 @@ lemma z_sq_lt_one {x : S2} (hx : x ∈ S2_open) : (x.val 2) ^ 2 < 1 := by
     rcases mul_eq_zero.mp h2 with h2 | h2
     · refine hx.1 (Subtype.ext ?_)
       ext i
-      fin_cases i <;> simp [northPole, h0, h1, sub_eq_zero.mp h2]
+      fin_cases i <;> simp only [Fin.zero_eta, Fin.isValue, h0, northPole, WithLp.equiv_symm_apply, Matrix.cons_val_zero, Fin.mk_one, h1, Matrix.cons_val_one, Fin.reduceFinMk, sub_eq_zero.mp h2, Matrix.cons_val]
     · refine hx.2 (Subtype.ext ?_)
       ext i
-      fin_cases i <;> simp [southPole, h0, h1, eq_neg_of_add_eq_zero_left h2]
+      fin_cases i <;> simp only [Fin.zero_eta, Fin.isValue, h0, southPole, WithLp.equiv_symm_apply, Matrix.cons_val_zero, Fin.mk_one, h1, Matrix.cons_val_one, Fin.reduceFinMk, eq_neg_of_add_eq_zero_left h2, Matrix.cons_val]
 
 /-- Away from the poles, `sin θ ≠ 0`. -/
 theorem sinθ_ne_zero (x : S2) (hx : x ∈ S2_open) : Real.sin (θ_coord x) ≠ 0 := by
@@ -347,7 +368,7 @@ lemma θ_coord_contMDiffAt {x : S2} (hx : x ∈ S2_open) :
     ContMDiffAt (𝓡 2) 𝓘(ℝ, ℝ) ⊤ θ_coord x := by
   convert ContMDiffAt.comp x ( Real.contDiffAt_arccos ?_ ?_ |> ContDiffAt.contMDiffAt ) ?_;
   · have := z_sq_lt_one hx; nlinarith!;
-  · intro h; have := z_sq_lt_one hx; simp_all +decide ;
+  · intro h; have := z_sq_lt_one hx; simp_all +decide only [Fin.isValue, one_pow, lt_self_iff_false];
   · -- The projection function `v ↦ v 2` is `C^∞` since it is linear.
     have h_proj : ContDiff ℝ ⊤ (fun (v : EuclideanSpace ℝ (Fin 3)) => v 2) := by
       fun_prop;
@@ -359,7 +380,7 @@ The `φ` coordinate `arg (x + i y)` is `C^∞` at points of `sphSource`.
 lemma φ_coord_contMDiffAt {x : S2} (hx : x ∈ sphSource) :
     ContMDiffAt (𝓡 2) 𝓘(ℝ, ℝ) ∞ φ_coord x := by
   haveI : Fact (Module.finrank ℝ (EuclideanSpace ℝ (Fin 3)) = 2 + 1) :=
-    ⟨by simp⟩
+    ⟨by simp only [finrank_euclideanSpace, Fintype.card_fin, Nat.reduceAdd]⟩
   have hcoe : ContMDiffAt (𝓡 2) 𝓘(ℝ, EuclideanSpace ℝ (Fin 3)) ∞
       (fun p : S2 => (p : EuclideanSpace ℝ (Fin 3))) x := (contMDiff_coe_sphere).contMDiffAt
   have h0 : ContMDiffAt (𝓡 2) 𝓘(ℝ, ℝ) ∞ (fun p : S2 => (p.val 0 : ℝ)) x :=
@@ -373,16 +394,16 @@ lemma φ_coord_contMDiffAt {x : S2} (hx : x ∈ sphSource) :
   have h_smooth : ContMDiffAt (𝓡 2) 𝓘(ℝ, ℂ) ∞
       (fun p : S2 => (p.val 0 : ℂ) + (p.val 1 : ℂ) * Complex.I) x := by
     refine (hA.add hB).congr_of_eventuallyEq (Filter.Eventually.of_forall (fun p => ?_))
-    simp [Complex.real_smul]
+    simp only [Fin.isValue, Complex.real_smul, Pi.add_apply]
   have hmem : ((x.val 0 : ℂ) + (x.val 1 : ℂ) * Complex.I) ∈ Complex.slitPlane := by
     rw [Complex.mem_slitPlane_iff]
-    simpa using hx
+    simpa only [Fin.isValue, Complex.add_re, Complex.ofReal_re, Complex.mul_re, Complex.I_re, mul_zero, Complex.ofReal_im, Complex.I_im, mul_one, sub_self, add_zero, Complex.add_im, Complex.mul_im, zero_add, ne_eq] using hx
   have h_arg : ContMDiffAt (𝓡 2) 𝓘(ℝ, ℝ) ∞
       (fun p : S2 => Complex.arg ((p.val 0 : ℂ) + (p.val 1 : ℂ) * Complex.I)) x :=
     (arg_contDiffAt hmem).contMDiffAt.comp x h_smooth
   have hfun : φ_coord = fun p : S2 => Complex.arg ((p.val 0 : ℂ) + (p.val 1 : ℂ) * Complex.I) := by
     funext p
-    simp [φ_coord, sphericalChart, sphFwd, Complex.equivRealProd_symm_apply]
+    simp only [φ_coord, sphericalChart, OpenPartialHomeomorph.mk_coe, sphFwd, Fin.isValue, Complex.equivRealProd_symm_apply, WithLp.equiv_symm_apply, Matrix.cons_val_one, Matrix.cons_val_fin_one]
   rw [hfun]; exact h_arg
 
 /-
@@ -392,9 +413,9 @@ lemma sphInv_contMDiff : ContMDiff 𝓘(ℝ, EuclideanSpace ℝ (Fin 2)) (𝓡 2
   convert ContMDiff.codRestrict_sphere _ _;
   · infer_instance;
   · rw [ contMDiff_iff_contDiff ];
-    refine' ContDiff.comp ( _ : ContDiff ℝ ω _ ) _;
+    refine ContDiff.comp ( ?_ : ContDiff ℝ ω _ ) ?_;
     · fun_prop;
-    · refine' contDiff_pi.2 _;
+    · refine contDiff_pi.2 ?_;
       intro i; fin_cases i <;> norm_num [ Real.contDiff_sin, Real.contDiff_cos ] ;
       · fun_prop;
       · fun_prop;
@@ -405,8 +426,8 @@ The forward spherical map is differentiable at points of `sphSource`.
 -/
 lemma sphFwd_mdiffAt {x : S2} (hx : x ∈ sphSource) :
     MDifferentiableAt (𝓡 2) 𝓘(ℝ, EuclideanSpace ℝ (Fin 2)) sphFwd x := by
-  refine' MDifferentiableAt.congr_of_eventuallyEq _ _;
-  exact fun p => ( WithLp.equiv 2 ( Fin 2 → ℝ ) ).symm ![ θ_coord p, φ_coord p ];
+  refine MDifferentiableAt.congr_of_eventuallyEq
+    (f := fun p => ( WithLp.equiv 2 ( Fin 2 → ℝ ) ).symm ![ θ_coord p, φ_coord p ]) ?_ ?_
   · have h_diff : MDifferentiableAt (𝓡 2) (𝓘(ℝ, Fin 2 → ℝ)) (fun p => ![θ_coord p, φ_coord p]) x := by
       have h_diff : MDifferentiableAt (𝓡 2) (𝓘(ℝ, ℝ)) θ_coord x ∧ MDifferentiableAt (𝓡 2) (𝓘(ℝ, ℝ)) φ_coord x := by
         exact ⟨ θ_coord_contMDiffAt ( sphSource_subset_S2_open hx ) |> ContMDiffAt.mdifferentiableAt <| by norm_num, φ_coord_contMDiffAt hx |> ContMDiffAt.mdifferentiableAt <| by norm_num ⟩;
@@ -414,11 +435,11 @@ lemma sphFwd_mdiffAt {x : S2} (hx : x ∈ sphSource) :
       constructor;
       · exact tendsto_pi_nhds.mpr fun i => by fin_cases i <;> [ exact h_diff.1.1; exact h_diff.2.continuousAt ] ;
       · rw [ mdifferentiableAt_iff ] at h_diff;
-        refine' DifferentiableWithinAt.congr _ _ _;
-        use fun p => ![writtenInExtChartAt (𝓡 2) 𝓘(ℝ, ℝ) x θ_coord p, writtenInExtChartAt (𝓡 2) 𝓘(ℝ, ℝ) x φ_coord p];
+        refine DifferentiableWithinAt.congr
+          (f := fun p => ![writtenInExtChartAt (𝓡 2) 𝓘(ℝ, ℝ) x θ_coord p, writtenInExtChartAt (𝓡 2) 𝓘(ℝ, ℝ) x φ_coord p]) ?_ ?_ ?_
         · exact differentiableWithinAt_pi.mpr fun i => by fin_cases i <;> [ exact h_diff.1.2; exact h_diff.2.2 ] ;
-        · simp +decide [ writtenInExtChartAt ];
-        · simp +decide [ writtenInExtChartAt ];
+        · simp +decide only [modelWithCornersSelf_coe, range_id, mem_univ, writtenInExtChartAt, Nat.succ_eq_add_one, Nat.reduceAdd, extChartAt, OpenPartialHomeomorph.extend, OpenPartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_coe, OpenPartialHomeomorph.coe_coe_symm, Function.comp_apply, id_eq, imp_self, implies_true];
+        · simp +decide only [writtenInExtChartAt, Nat.succ_eq_add_one, Nat.reduceAdd, extChartAt, OpenPartialHomeomorph.extend, OpenPartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_coe, OpenPartialHomeomorph.coe_coe_symm, OpenPartialHomeomorph.toFun_eq_coe, Function.comp_apply, mem_chart_source, OpenPartialHomeomorph.left_inv, id_eq];
     have h_diff : MDifferentiableAt (𝓘(ℝ, Fin 2 → ℝ)) (𝓡 2) (fun p : Fin 2 → ℝ => (WithLp.equiv 2 (Fin 2 → ℝ)).symm p) ![θ_coord x, φ_coord x] := by
       have h_diff : ContDiffAt ℝ ⊤ (fun p : Fin 2 → ℝ => (WithLp.equiv 2 (Fin 2 → ℝ)).symm p) ![θ_coord x, φ_coord x] := by
         fun_prop;
@@ -464,13 +485,9 @@ lemma frame_dual {x : S2} (hx : x ∈ sphSource) (v : TangentSpace (𝓡 2) x) :
   -- By definition of `dθ` and `dφ`, we have `dθ x v = (EuclideanSpace.proj 0) (Dfwd v)` and `dφ x v = (EuclideanSpace.proj 1) (Dfwd v)`.
   have h_dθ_dφ : dθ x v = (Dfwd v) 0 ∧ dφ x v = (Dfwd v) 1 := by
     have h_deriv_fst : dθ x = (EuclideanSpace.proj 0).comp Dfwd := by
-      apply HasMFDerivAt.mfderiv;
-      have h_dθ : HasMFDerivAt (𝓡 2) 𝓘(ℝ, EuclideanSpace ℝ (Fin 2)) sphFwd x Dfwd := by
-        grind +suggestions;
-      convert HasMFDerivAt.comp x ( show HasMFDerivAt ( 𝓡 2 ) 𝓘(ℝ, ℝ) ( fun p : EuclideanSpace ℝ ( Fin 2 ) => p 0 ) ( sphFwd x ) ( EuclideanSpace.proj 0 ) from ?_ ) h_dθ using 1;
-      constructor;
-      · exact Continuous.continuousAt ( by exact continuous_apply _ |> Continuous.comp <| by exact continuous_induced_dom );
-      · simp +decide [ hasFDerivWithinAt_iff_tendsto ]
+      apply HasMFDerivAt.mfderiv
+      apply HasMFDerivAt.comp x (ContinuousLinearMap.hasMFDerivAt (EuclideanSpace.proj 0))
+        (sphFwd_mdiffAt hx).hasMFDerivAt
     have h_deriv_snd : dφ x = (EuclideanSpace.proj 1).comp Dfwd := by
       apply_rules [ HasMFDerivAt.mfderiv ];
       apply HasMFDerivAt.comp x (ContinuousLinearMap.hasMFDerivAt (EuclideanSpace.proj 1)) (sphFwd_mdiffAt hx).hasMFDerivAt;
@@ -493,6 +510,6 @@ lemma frame_dual {x : S2} (hx : x ∈ sphSource) (v : TangentSpace (𝓡 2) x) :
   rw [ h_dθ_dφ.1, h_dθ_dφ.2, h_Xθ_Xφ.1, h_Xθ_Xφ.2 ];
   convert h_Dinv_Dfwd using 1;
   rw [ ← Dinv.map_smul, ← Dinv.map_smul ];
-  rw [ ← Dinv.map_add ] ; congr ; ext i ; fin_cases i <;> simp +decide
+  rw [ ← Dinv.map_add ] ; congr ; ext i ; fin_cases i <;> simp +decide only [Fin.isValue, Fin.zero_eta, PiLp.add_apply, PiLp.smul_apply, PiLp.single_apply, ↓reduceIte, smul_eq_mul, mul_one, mul_zero, add_zero, Fin.mk_one, zero_add]
 
 end Sphere
