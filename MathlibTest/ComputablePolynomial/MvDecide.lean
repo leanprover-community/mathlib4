@@ -42,4 +42,3 @@ theorem sq_expand : ((X 0 + X 1) ^ 2 : MvPolynomial (Fin 2) ℤ)
 -- bare numerals (no `C`) also work, axiom-free:
 example : ((X 0 + 1) * (X 0 + 2) : MvPolynomial (Fin 1) ℤ) = X 0 ^ 2 + 3 * X 0 + 2 := by
   mv_decide
-
