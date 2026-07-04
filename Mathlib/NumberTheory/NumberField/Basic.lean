@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Number fields
+
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
