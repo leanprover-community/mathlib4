@@ -41,7 +41,7 @@ public section
 
 namespace GenContFract
 
-variable {α K : Type*} [Field K]
+variable {K : Type*} [Field K]
 
 variable {n : ℕ} {h : K} {ρ : Stream'.Seq K} {g : GenContFract K}
 
@@ -54,8 +54,8 @@ $$
                                                                {1 + \rho_3 - \dots}}}}
 $$
 -/
-def IsEuler (g : GenContFract α) [One α] [Add α] : Prop :=
-  ∀ (n : ℕ) (aₙ bₙ : α), g.s.get? n = some ⟨aₙ, bₙ⟩ -> if n = 0 then bₙ = 1 else aₙ + bₙ = 1
+def IsEuler (g : GenContFract K) : Prop :=
+  ∀ (n : ℕ) (aₙ bₙ : K), g.s.get? n = some ⟨aₙ, bₙ⟩ -> if n = 0 then bₙ = 1 else aₙ + bₙ = 1
 
 /-- `euler h ρ` constructs an Euler continued fraction whose coefficients are obtained
 from the stream `ρ` with head term `h`.
@@ -88,14 +88,41 @@ theorem exists_euler_s_of_not_terminatedAt_succ
     ∃ a, (euler h ρ).s.get? (n + 1) = some ⟨-a, 1 + a⟩ := by
   simpa [euler] using Option.ne_none_iff_exists'.mp not_terminatedAt_n_succ
 
+@[simp]
 theorem isEuler_euler : IsEuler (euler h ρ) := by
   intro n a b hn
   rcases n with _ | n'
   · simp [euler] at hn; simp [hn]
   · replace hn : ∃ ρₙ, ρ.get? (n' + 1) = some ρₙ ∧ -ρₙ = a ∧ 1 + ρₙ = b := by simp_all [euler]
-    obtain ⟨ρ, ⟨_, rfl, rfl⟩⟩ := hn
+    obtain ⟨ρ, _, rfl, rfl⟩ := hn
     simp
 
+theorem IsEuler.exists (h : g.IsEuler) : ∃ ρ, g = euler g.h ρ := by
+  use g.s.enum.map fun (n, ⟨a, b⟩) => n.casesOn a fun _ => -a
+  ext n ⟨a, b⟩
+  · rfl
+  match n with
+  | 0 =>
+    suffices g.s.get? 0 = some ⟨a, b⟩ ↔
+      ∃ ab, g.s.get? 0 = some ab ∧ ab.a = a ∧ 1 = b by
+      simpa [euler]
+    refine ⟨fun h' => by grind [h 0 a b], ?_⟩
+    rintro ⟨⟨a, b⟩, h', rfl, rfl⟩
+    specialize h 0 a b h'
+    grind
+  | n' + 1 =>
+    suffices g.s.get? (n' + 1) = some ⟨a, b⟩ ↔
+      ∃ ab, g.s.get? (n' + 1) = some ab ∧ ab.a = a ∧ 1 + -ab.a = b by
+      simpa [euler] using this
+    refine ⟨fun h' => by grind [h (n' + 1) a b], ?_⟩
+    rintro ⟨⟨a, b⟩, h', rfl, rfl⟩
+    specialize h (n' + 1) a b h'
+    grind
+
+theorem isEuler_iff_exists : IsEuler g ↔ ∃ ρ, g = euler g.h ρ :=
+  ⟨IsEuler.exists, fun ⟨_, hρ⟩ => hρ ▸ isEuler_euler⟩
+
+@[simp]
 theorem isEuler_toEuler : IsEuler (toEuler g) := isEuler_euler
 
 @[simp]
@@ -105,16 +132,16 @@ theorem terminatedAt_toEuler : g.toEuler.TerminatedAt n ↔ g.TerminatedAt n := 
 
 theorem toEuler_s_zero : (toEuler g).s.get? 0 = (g.s.get? 0).map fun ⟨a, b⟩ => ⟨a / b, 1⟩ := by
   simp only [toEuler, euler, map_get?, get?_enum]
-  rcases g.s.get? 0 with _ | ⟨a, b⟩ <;> simp
+  rcases g.s.get? 0 with _ | _ <;> simp
 
 theorem toEuler_s_succ :
     (toEuler g).s.get? (n + 1) =
       (g.s.get? (n + 1)).map
         fun ⟨a, _⟩ => ⟨a * g.dens n / g.dens (n + 2), 1 - a * g.dens n / g.dens (n + 2)⟩ := by
   simp only [toEuler, euler, map_get?, get?_enum]
-  rcases g.s.get? (n + 1) with _ | a
+  rcases g.s.get? (n + 1) with _ | _
   · simp
-  · simpa [neg_div] using SubNegMonoid.sub_eq_add_neg .. |>.symm
+  · simpa [neg_div] using sub_eq_add_neg .. |>.symm
 
 end Translation
 
@@ -124,22 +151,23 @@ theorem euler_h : (euler h ρ).h = h := by rfl
 private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
   Decidable.em ((euler h ρ).TerminatedAt 0) |>.elim
     (fun terminatedAt_zero =>
-      (dens_stable_of_terminated (Nat.zero_le 1) <| terminatedAt_zero) ▸ zeroth_den_eq_one)
+      (dens_stable_of_terminated zero_le_one <| terminatedAt_zero) ▸ zeroth_den_eq_one)
     (fun not_terminatedAt_zero =>
       first_den_eq <| exists_euler_s_of_not_terminatedAt_zero
         (terminatedAt_euler (K := K) |>.eq ▸ not_terminatedAt_zero) |>.choose_spec)
 
 /-- The denominators of an Euler continued fraction are all 1. -/
 @[simp]
-theorem dens_euler : (euler h ρ).dens n = 1 := by
-  set g := euler h ρ
+theorem IsEuler.dens_eq_one (h : g.IsEuler) : g.dens n = 1 := by
+  obtain ⟨ρ, hρ⟩ := h.exists
+  rw [hρ]
+  set g := euler g.h ρ
   induction n using Nat.strong_induction_on with | h n ih =>
   match n with
   | 0 => exact zeroth_den_eq_one
   | n + 1 =>
   rcases Decidable.em <| g.TerminatedAt n with terminatedAt_n | not_terminatedAt_n
-  · specialize ih n n.lt_add_one
-    rwa [dens_stable_of_terminated n.le_succ terminatedAt_n]
+  · simpa only [dens_stable_of_terminated n.le_succ terminatedAt_n] using ih n n.lt_add_one
   rw [terminatedAt_euler] at not_terminatedAt_n
   match n with
   | 0 => exact dens_euler_one
@@ -163,18 +191,18 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
     ∏ j ∈ Finset.range (n + 1), (ρ.get? j).getD 0 := by
   set g := euler h ρ
   induction n with
-  | zero => simp [g, nums_euler_one, euler_h]
+  | zero => simp [g, nums_euler_one]
   | succ n ih =>
   rw [Finset.prod_range_succ, ← ih]
   rcases Decidable.em <| ρ.TerminatedAt n.succ with terminatedAt_n_succ | not_terminatedAt_n_succ
-  · rw [nums_stable_of_terminated n.succ.le_succ <| terminatedAt_euler.mpr terminatedAt_n_succ,
-      terminatedAt_n_succ]
-    grind
-  · obtain ⟨a, g_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
-      exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n_succ
-    rw [nums_recurrence g_n_succ_eq rfl rfl]
-    simp [g, euler] at g_n_succ_eq
-    grind
+  · rw [nums_stable_of_terminated (n + 1).le_succ <| terminatedAt_euler.mpr terminatedAt_n_succ,
+      terminatedAt_n_succ, Option.getD_none, mul_zero, sub_self]
+  obtain ⟨a, g_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
+    exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n_succ
+  rw [nums_recurrence g_n_succ_eq rfl rfl]
+  simp [g, euler] at g_n_succ_eq
+  simp [g_n_succ_eq]
+  ring
 
 /-- The numerators of an Euler continued fraction are given by the formula
 $$
@@ -201,39 +229,34 @@ for example:
 theorem convs_euler :
     (euler h ρ).convs n =
       h + ∑ i ∈ Finset.range n, ∏ j ∈ Finset.range (i + 1), (ρ.get? j).getD 0 := by
-  rw [convs, dens_euler, nums_euler, div_one]
+  simp [convs, nums_euler]
 
 /-- The transformation `toEuler` is idempotent. -/
-theorem toEuler_toEuler :
-  g.toEuler.toEuler = g.toEuler := by
-  set h : K := g.h
-  set ρ : Stream'.Seq K := g.s.enum.map fun (n, ⟨a, b⟩) =>
-    n.casesOn (a / b) fun n' => - a * g.dens n' / g.dens (n' + 2)
-  change (euler h ρ).toEuler = euler h ρ
+@[simp]
+protected theorem IsEuler.toEuler (hg : g.IsEuler) : g.toEuler = g := by
+  obtain ⟨ρ, hρ⟩ := hg.exists
+  rw [hρ]
   ext n : 2
   · rfl
   match n with
   | 0 =>
     rw [toEuler_s_zero, euler]
-    rcases hρ₀ : ρ.get? 0 with _ | a <;> simp [hρ₀]
+    rcases hρ₀ : ρ.get? 0 with _ | _ <;> simp [hρ₀]
   | n' + 1 =>
     rcases Decidable.em <| ρ.TerminatedAt (n' + 1) with hρₙ | hρₙ
-    · rw [← terminatedAt_euler (h := h)] at hρₙ
+    · rw [← terminatedAt_euler (h := g.h)] at hρₙ
       rw [hρₙ]
       rw [← terminatedAt_toEuler] at hρₙ
       rw [hρₙ]
     · rw [toEuler_s_succ]
-      obtain ⟨a, g_n_succ_eq⟩ : ∃ a, (euler h ρ).s.get? (n' + 1) = some ⟨-a, 1 + a⟩ :=
+      obtain ⟨a, g_n_succ_eq⟩ : ∃ a, (euler g.h ρ).s.get? (n' + 1) = some ⟨-a, 1 + a⟩ :=
         exists_euler_s_of_not_terminatedAt_succ hρₙ
-      grind [dens_euler]
+      simp [g_n_succ_eq]
 
 theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
     ∀ m ≤ n, g.toEuler.convs m = g.convs m := by
   intro m hm
-  conv_lhs =>
-    rw [convs]
-    conv => rhs; rw [toEuler, dens_euler]
-    rw [div_one]
+  conv_lhs => simp [convs]
   induction m using Nat.strong_induction_on with | h m ih =>
   match m with
   | 0 => simp [toEuler, euler_h]
@@ -263,8 +286,7 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
       nums_recurrence g_toEuler_mth_eq rfl rfl, convs, hB m, hB (m + 1), hB (m + 2)]
 
 /-- The transformation `toEuler` preserves the convergents. -/
-theorem convs_toEuler (hB : ∀ m, g.dens m ≠ 0) :
-    g.toEuler.convs = g.convs :=
+theorem convs_toEuler (hB : ∀ m, g.dens m ≠ 0) : g.toEuler.convs = g.convs :=
   funext fun m => convs_toEuler_of_forall_le (fun m _ => hB m) m m.le_succ
 
 end GenContFract
