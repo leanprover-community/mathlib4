@@ -53,4 +53,3 @@ theorem big_dvd : (X - 1 : Polynomial ℚ) ∣ (X ^ 6 - 1) := by poly_dvd_cert
 /-- info: 'big_dvd' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms big_dvd
-
