@@ -26,6 +26,8 @@ namespace ContinuousLinearMap
 
 open UniformSpace Completion
 
+section completion
+
 variable {α β : Type*} {R₁ R₂ : Type*} [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
   [Semiring R₁] [Module R₁ α] [UniformContinuousConstSMul R₁ α] [Semiring R₂] [UniformSpace β]
   [AddCommGroup β] [IsUniformAddGroup β] [Module R₂ β] [UniformContinuousConstSMul R₂ β]
@@ -55,5 +57,40 @@ lemma coe_completion (f : α →SL[σ] β) :
 @[simp]
 theorem completion_apply_coe (f : α →SL[σ] β) (a : α) :
     f.completion a = f a := by simp [coe_completion, map_coe]
+
+end completion
+
+section fromCompletion
+
+variable {R₁ R₂ E F : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R₁ →+* R₂} [UniformSpace E]
+    [AddCommGroup E] [Module R₁ E] [UniformContinuousConstSMul R₁ E] [IsUniformAddGroup E]
+    [UniformSpace F] [AddCommGroup F] [Module R₂ F] [T2Space F] [ContinuousAdd F] [CompleteSpace F]
+    [ContinuousConstSMul R₂ F]
+
+/-- Extension of a linear function to a linear function over the completion. This is the continuous
+linear version of `UniformSpace.Completion.extension`. -/
+noncomputable def fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) :
+    Completion E →SL[σ₁₂] F where
+  toFun := Completion.extension f
+  map_add' a b := induction_on₂ a b (isClosed_eq (by fun_prop) (by fun_prop)) <| by
+    simp [extension_coe, hf, ← coe_add]
+  map_smul' c a := induction_on a
+      (isClosed_eq (continuous_extension.comp (continuous_const_smul c)) (by fun_prop)) <| by
+    simp [← Completion.coe_smul, hf, extension_coe]
+
+@[simp]
+lemma fromCompletion_apply {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) (e : Completion E) :
+    fromCompletion hf e = Completion.extension f e := rfl
+
+lemma uniformContinuous_fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) :
+    UniformContinuous (fromCompletion hf) :=
+  uniformContinuous_def.mpr (uniformContinuous_extension)
+
+lemma fromCompletion_unique {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f)
+    {g : Completion E →SL[σ₁₂] F} (hg : UniformContinuous g) (h : ∀ (e : E), f e = g e) :
+    fromCompletion hf = g := by
+  ext; simp [extension_unique hf hg h]
+
+end fromCompletion
 
 end ContinuousLinearMap
