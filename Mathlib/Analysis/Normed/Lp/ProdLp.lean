@@ -1225,22 +1225,6 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ₗᵢ[𝕜] α where
   __ := (WithLp.linearEquiv _ _ _).trans LinearEquiv.prodUnique
   norm_map' := (IsometryEquiv.withLpProdUnique _ _ _).isometry.norm_map_of_map_zero rfl
 
-theorem withLpProdUnique_apply_symm_apply [Unique β] {x} :
-    (withLpProdUnique p 𝕜 α β) ((withLpProdUnique p 𝕜 α β).symm x) = x :=
-  LinearIsometryEquiv.apply_symm_apply _ _
-
-theorem withLpProdUnique_symm_apply_apply [Unique β] {x} :
-    (withLpProdUnique p 𝕜 α β).symm (withLpProdUnique p 𝕜 α β x) = x :=
-  LinearIsometryEquiv.symm_apply_apply _ _
-
-theorem withLpProdUnique_symm_apply_eq [Unique β] {x y} :
-    (withLpProdUnique p 𝕜 α β).symm x = y ↔ x = withLpProdUnique p 𝕜 α β y :=
-  LinearIsometryEquiv.symm_apply_eq _
-
-theorem withLpProdUnique_eq_symm_apply [Unique β] {x y} :
-    y = (withLpProdUnique p 𝕜 α β).symm x ↔ withLpProdUnique p 𝕜 α β y = x :=
-  LinearIsometryEquiv.eq_symm_apply _
-
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = WithLp.fst :=
   rfl
 
