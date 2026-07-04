@@ -218,7 +218,7 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ 
     apply Ideal.primesOver.isMaximal
   have := liesOver_primesOverSpanEquivMonicFactorsMod_symm hp hQ
   rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span,
-    ← inertiaDeg_eq_inertiaDeg' (span {(p : ℤ)}), inertiaDeg_algebraMap,
+    inertiaDeg'_eq_of_isMaximal (span {(p : ℤ)}),
     ← finrank_quotient_span_eq_natDegree]
   refine Algebra.finrank_eq_of_equiv_equiv (Int.quotientSpanNatEquivZMod p) ?_ (by ext; simp)
   exact (ZModXQuotSpanEquivQuotSpanPair hp hQ).symm
@@ -237,12 +237,12 @@ The ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]`
 -/
 theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : ℤ[X]} (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
-    ramificationIdx'
+    ramificationIdx
       ((primesOverSpanEquivMonicFactorsMod hp).symm
         ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) ℤ =
           multiplicity (Q.map (Int.castRingHom (ZMod p)))
             ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
-  rw [ramificationIdx'_eq_multiplicity (span {↑p}) _ (map_ne_bot_of_ne_bot (by simp [NeZero.ne p]))]
+  rw [ramificationIdx_eq_multiplicity (span {↑p}) _ (map_ne_bot_of_ne_bot (by simp [NeZero.ne p]))]
   · apply multiplicity_eq_of_emultiplicity_eq
     rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
       emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
@@ -255,7 +255,7 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
 
 theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
-    ramificationIdx'
+    ramificationIdx
       ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) ℤ =
         multiplicity Q ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
