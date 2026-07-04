@@ -27,4 +27,3 @@ theorem sq_expand : ((X + C 1) ^ 2 : Polynomial ℤ) = X ^ 2 + C 2 * X + C 1 := 
 /-- info: 'sq_expand' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms sq_expand
-
