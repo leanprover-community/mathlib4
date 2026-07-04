@@ -15,6 +15,7 @@ public import Mathlib.Analysis.SpecialFunctions.Stirling
 public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.NumberTheory.Chebyshev
+public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 public import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -456,7 +457,7 @@ theorem second_theorem_asymp_nat :
 
 open ENNReal in
 theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
-    ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) = - log (s - 1) + M
+    ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) = - log (s - 1) - Real.eulerMascheroniConstant + M
     + ∫ x in .Ioi 1, (E₂ x ^ s⁻¹) * x⁻¹ := calc
   _ = ∑' n : ℕ, ∫ x in .Ioi 1, (log n)⁻¹ * f n * (Set.Ioi (n : ℝ)).indicator
       (fun x ↦ ((s - 1) * x ^ (-s))) x := by
@@ -509,11 +510,33 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
           suffices ∑' (i : ℕ), ENNReal.ofReal (↑i ^ (-s)) < ⊤ by finiteness
           exact (summable_nat_rpow.mpr (by linarith)).tsum_ofReal_lt_top
   _ = ∫ x in .Ioi 1, (∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n) * ((s - 1) * x ^ (-s)) := by
-    sorry
+    apply setIntegral_congr_ae (by measurability)
+    have : ∀ᵐ (x : ℝ), ∀ n : ℕ, x ≠ n :=
+      eventually_countable_forall.mpr (fun n ↦ Measure.ae_ne volume (n : ℝ))
+    filter_upwards [this] with x hx
+    intro hx'
+    calc
+      _ = ∑' (n : ℕ), Set.indicator (Finset.Icc 0 ⌊x⌋₊)
+          (fun (n : ℕ) ↦ (log ↑n)⁻¹ * toFun n * (s - 1) * x ^ (-s)) n := by
+        congr! with n
+        have : 0 ≤ x := by grind
+        simp only [Set.indicator, Set.mem_Ioi, mul_ite, mul_zero, coe_Icc, Set.mem_Icc,
+          _root_.zero_le, Nat.le_floor_iff this, true_and]
+        specialize hx n
+        split_ifs <;> grind
+      _ = _ := by
+        rw [← sum_eq_tsum_indicator, ← sum_mul, ← sum_mul]
+        ring
   _ = (s - 1) * ∫ x in .Ioi 1, log (log x) * x ^ (-s) + M * x ^ (-s) + E₂ x * x ^ (-s) := by
-    sorry
+    simp_rw [sum_div_log_eq', add_mul, ← MeasureTheory.integral_const_mul]
+    exact setIntegral_congr_fun (by measurability) (fun x hx ↦ by ring)
   _ = _ := by
-    sorry
+    have h1 : IntegrableOn (fun x ↦ log (log x) * x ^ (-s)) (.Ioi 1) := by sorry
+    have h2 : IntegrableOn (fun x ↦ M * x ^ (-s)) (.Ioi 1) := by sorry
+    have h3 : IntegrableOn (fun x ↦ E₂ x * x ^ (-s)) (.Ioi 1) := by sorry
+    rw [MeasureTheory.integral_add, MeasureTheory.integral_add]
+    · sorry
+    exacts [h1, h2, h1.add h2, h3]
 
 theorem sum_div_log_mul_pow_add_tendsto :
   Tendsto (fun s ↦ ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) + log (s - 1)) (𝓝[>] 1) (𝓝 M) := by
@@ -561,7 +584,8 @@ private lemma le_mul_sum_vonMangoldt {x : ℝ} (hx : 0 ≤ x) :
   _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by simp [mul_sum, vonMangoldtFun]; ring_nf
   _ ≥ _ := by
     rw [sum_log_eq_sum_mangoldt]
-    gcongr; exacts [vonMangoldt_nonneg, floor_le <| div_nonneg (by linarith) (by linarith)]
+    gcongr
+    exact floor_le <| div_nonneg (by linarith) (by linarith)
 
 private lemma mul_sum_prime_le :
     x * ∑ n ∈ Ioc 0 ⌊x⌋₊, primeFun n ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + θ x := calc
@@ -575,7 +599,7 @@ private lemma mul_sum_prime_le :
     gcongr with p _
     split_ifs with hp
     · simp [vonMangoldt_apply_prime hp]
-    positivity [vonMangoldt_nonneg (n := p)]
+    positivity
 
 private lemma sum_prime_le {x : ℝ} (hx : 1 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊, primeFun n ≤ log x + log 4 := by
@@ -746,9 +770,9 @@ noncomputable def Weight.vonMangoldt : Weight := {
   C₀ := 1
   toFun_bound n := by
     unfold vonMangoldtFun
-    rw [abs_of_nonneg, one_mul]
-    · gcongr; exact vonMangoldt_le_log
-    · positivity [vonMangoldt_nonneg (n := n)]
+    rw [abs_of_nonneg (by positivity), one_mul]
+    gcongr
+    exact vonMangoldt_le_log
 }
 
 @[simp]
