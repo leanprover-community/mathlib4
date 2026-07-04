@@ -261,7 +261,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("sup", ["Union"]),
   ("sInf", ["SInter"]),
   ("sSup", ["SUnion"]),
-  ("iSup", ["IUnion"]),
+  ("iInf", ["IInter"]),
   ("iSup", ["IUnion"]),
 ]
 
@@ -298,6 +298,8 @@ initialize
               value := .lam ident cls value .instImplicit
             value ← mkLambdaFVars #[x] value
           return (value, levels)
+      liftCommandElabM <| Elab.Command.elabCommand (← `(command|
+        attribute [nolint unusedArguments] $(mkCIdent tgt)))
   }
 
 end Mathlib.Meta.SetNotationForOrder
