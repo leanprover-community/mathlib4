@@ -407,6 +407,8 @@ theorem not_cliqueFree_iff_top_isContained (n : ℕ) : ¬G.CliqueFree n ↔ comp
 theorem cliqueFree_iff_free_top_fin : G.CliqueFree n ↔ (completeGraph (Fin n)).Free G :=
   not_cliqueFree_iff_top_isContained n |>.not_right
 
+alias ⟨CliqueFree.free_top_fin, _⟩ := cliqueFree_iff_free_top_fin
+
 theorem cliqueFree_iff_isEmpty_copy_top_fin {n : ℕ} :
     G.CliqueFree n ↔ IsEmpty (Copy (completeGraph <| Fin n) G) := by
   contrapose!
