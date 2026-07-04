@@ -55,16 +55,17 @@ def SemilatticeSup.casesOn' {α} {motive : SemilatticeSup α → Sort*} (t : Sem
   t.casesOn mk
 
 /--
-info: SemilatticeInf.casesOn'.{u_1} {α : Type} {motive : SemilatticeInf α → Sort u_1}
-  (mk :
-    [inst : Min α] →
-      [inst_1 : PartialOrder α] →
-        (sup_le : ∀ (b a c : α), c ≤ a → c ≤ b → c ≤ a ⊓ b) →
-          motive { toPartialOrder := inst_1, toMin := inst, le_inf := ⋯ })
-  (t : SemilatticeInf α) : motive t
+info: @[expose] def SemilatticeInf.casesOn'.{u_1} : {α : Type} →
+  {motive : SemilatticeInf α → Sort u_1} →
+    ([inst : Min α] →
+        [inst_1 : PartialOrder α] →
+          (sup_le : ∀ (b a c : α), c ≤ a → c ≤ b → c ≤ a ⊓ b) →
+            motive { toPartialOrder := inst_1, toMin := inst, le_inf := ⋯ }) →
+      (t : SemilatticeInf α) → motive t :=
+fun {α} {motive} mk t => SemilatticeInf.casesOn t fun [PartialOrder α] [Min α] sup_le => mk ⋯
 -/
 #guard_msgs in
-#check SemilatticeInf.casesOn'
+#print SemilatticeInf.casesOn'
 
 class Semilattice (α : Type) extends SemilatticeInf α, SemilatticeSup α
 attribute [to_dual existing] Semilattice.toSemilatticeSup

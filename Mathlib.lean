@@ -3244,6 +3244,7 @@ public import Mathlib.CategoryTheory.Preadditive.Comma
 public import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 public import Mathlib.CategoryTheory.Preadditive.EndoFunctor
 public import Mathlib.CategoryTheory.Preadditive.FreydCategory.Homotopy
+public import Mathlib.CategoryTheory.Preadditive.FreydCategory.RightFreyd
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
 public import Mathlib.CategoryTheory.Preadditive.Indization
@@ -6385,6 +6386,7 @@ public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
 public import Mathlib.RepresentationTheory.FiniteIndex
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
+public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.LowDegree
 public import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
@@ -6990,6 +6992,7 @@ public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.RingTheory.SimpleRing.Congr
 public import Mathlib.RingTheory.SimpleRing.Defs
+public import Mathlib.RingTheory.SimpleRing.DivisionRing
 public import Mathlib.RingTheory.SimpleRing.Field
 public import Mathlib.RingTheory.SimpleRing.Matrix
 public import Mathlib.RingTheory.SimpleRing.Principal
@@ -8119,6 +8122,7 @@ public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Separation.SeparatedNhds
 public import Mathlib.Topology.Sequences
+public import Mathlib.Topology.Sets.BaseChangeNhds
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.CompactOpenCovered
 public import Mathlib.Topology.Sets.Compacts
