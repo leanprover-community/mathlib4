@@ -394,6 +394,20 @@ theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b 
 def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
 @[to_dual existing (reorder := α β γ) universeTest1]
 def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+
+-- Due to the reordering of arguments, the equation theorem of the dual has a different shape,
+-- so we get this warning.
+/--
+warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to `universeTest1''._to_dual_1.eq_1`. Please silence this warning and add a translation manually. Error:
+
+`to_dual` validation failed: expected
+  universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
+but 'universeTest1''._to_dual_1.eq_1' has type
+  ∀ (α : Type u) (β : Type v) (γ : Type w), universeTest1''._to_dual_1 α β γ = universeTest1' β γ α
+
+Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
+-/
+#guard_msgs in
 @[to_dual none] alias universeTest1'' := universeTest1
 
 @[to_dual (reorder := u₁ u₂) universeTest2']

@@ -1000,7 +1000,8 @@ def insertTranslationChecked (t : TranslateData) (src tgt : Name) (cfg : Config)
     catch ex =>
       Linter.logLintIf linter.translate.warnInvalid cfg.ref m!"\
         @[{t.attrName}] failed to add a translation from `{.ofConstName src}` to \
-        `{.ofConstName tgt}`. Please add a translation manually. Error:\n\n{ex.toMessageData}"
+        `{.ofConstName tgt}`.\nPlease silence this warning and add a translation manually. \
+        Error:\n\n{ex.toMessageData}"
       return
   insertTranslation t src tgt reorder relevantArg cfg.ref
 
