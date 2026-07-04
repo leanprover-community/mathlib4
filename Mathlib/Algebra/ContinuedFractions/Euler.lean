@@ -130,23 +130,51 @@ theorem terminatedAt_toEuler : g.toEuler.TerminatedAt n ↔ g.TerminatedAt n := 
   rw [toEuler, terminatedAt_euler, TerminatedAt]
   simp [Stream'.Seq.TerminatedAt]
 
+theorem euler_s_zero : (euler h ρ).s.get? 0 = (ρ.get? 0).map fun ρ => ⟨ρ, 1⟩ := by
+  simp only [euler, map_get?, get?_enum]
+  rcases ρ.get? 0 with _ | _ <;> simp
+
+theorem euler_s_succ : (euler h ρ).s.get? (n + 1) = (ρ.get? (n + 1)).map fun ρ => ⟨-ρ, 1 + ρ⟩ := by
+  simp only [euler, map_get?, get?_enum]
+  rcases ρ.get? (n + 1) with _ | _ <;> simp
+
 theorem toEuler_s_zero : (toEuler g).s.get? 0 = (g.s.get? 0).map fun ⟨a, b⟩ => ⟨a / b, 1⟩ := by
-  simp only [toEuler, euler, map_get?, get?_enum]
-  rcases g.s.get? 0 with _ | _ <;> simp
+  simp [toEuler, euler_s_zero]
+  congr
 
 theorem toEuler_s_succ :
     (toEuler g).s.get? (n + 1) =
       (g.s.get? (n + 1)).map
         fun ⟨a, _⟩ => ⟨a * g.dens n / g.dens (n + 2), 1 - a * g.dens n / g.dens (n + 2)⟩ := by
-  simp only [toEuler, euler, map_get?, get?_enum]
-  rcases g.s.get? (n + 1) with _ | _
-  · simp
-  · simpa [neg_div] using sub_eq_add_neg .. |>.symm
+  simp only [toEuler, neg_mul, map_get?, get?_enum, Option.map_map, euler_s_succ]
+  congr
+  ext
+  simp [neg_div, sub_eq_add_neg]
 
 end Translation
 
 @[simp]
 theorem euler_h : (euler h ρ).h = h := by rfl
+
+@[simp]
+theorem zeroth_partNum_euler : (euler h ρ).partNums.get? 0 = ρ.get? 0 := by
+  rw [partNums, @Stream'.Seq.map_get?, euler_s_zero]
+  rcases ρ.get? 0 with _ | _ <;> simp
+
+@[simp]
+theorem zeroth_partDen_euler : (euler h ρ).partDens.get? 0 = (ρ.get? 0).map (fun _ => 1) := by
+  rw [partDens, @Stream'.Seq.map_get?, euler_s_zero]
+  rcases ρ.get? 0 with _ | _ <;> simp
+
+@[simp]
+theorem partNums_euler_succ : (euler h ρ).partNums.get? (n + 1) = (ρ.get? (n + 1)).map (- ·) := by
+  rw [partNums, @Stream'.Seq.map_get?, euler_s_succ]
+  rcases ρ.get? (n + 1) with _ | _ <;> simp
+
+@[simp]
+theorem partDens_euler_succ : (euler h ρ).partDens.get? (n + 1) = (ρ.get? (n + 1)).map (1 + ·) := by
+  rw [partDens, @Stream'.Seq.map_get?, euler_s_succ]
+  rcases ρ.get? (n + 1) with _ | _ <;> simp
 
 private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
   Decidable.em ((euler h ρ).TerminatedAt 0) |>.elim
