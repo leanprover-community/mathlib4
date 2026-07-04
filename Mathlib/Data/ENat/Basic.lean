@@ -282,10 +282,8 @@ theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
-theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
-  rcases eq_or_ne m ⊤ with rfl | hm
-  · simpa
-  · exact add_one_le_iff hm
+theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
+  Order.add_one_le_iff_of_not_isMax' (not_isMax_iff_ne_top.mpr hn)
 
 @[deprecated Order.one_le_iff_ne_zero (since := "2026-05-25")]
 protected theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
