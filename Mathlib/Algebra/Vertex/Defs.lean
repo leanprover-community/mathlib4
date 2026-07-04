@@ -129,20 +129,20 @@ theorem ncoeff_nonzero_at_neg_order_minus_one (a b : V) (h : Y a b ≠ 0) :
 
 /-- The first sum in the Borcherds identity, giving the `x^t z^s` coefficient of
 `x^r (1 + z/x)^r (a(x)b)(z)c`. -/
-noncomputable def borcherdsSum_1 (a b c : V) (r s t : ℤ) : V :=
+noncomputable def borcherdsSum1 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-t - order Y a b)))
     (fun i ↦ (Ring.choose r i) • ncoeff (Y (ncoeff (Y a) (t+i) b)) (r+s-i) c)
 
 /-- The second sum in the Borcherds identity, giving the `y^r z^s` coefficient of
 `y^t (1 - z/y)^t a(y)b(z)c`. -/
-noncomputable def borcherdsSum_2 (a b c : V) (r s t : ℤ) : V :=
+noncomputable def borcherdsSum2 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-s - order Y b c)))
     (fun i ↦ (-1)^i • (Ring.choose t i) • ncoeff (Y a) (r+t-i)
     (ncoeff (Y b) (s+i) c))
 
 /-- The third sum in the Borcherds identity, giving the `y^r z^s` coefficient of
 `-(-y)^t (1 - y/z)^t b(z)a(y)c`. -/
-noncomputable def borcherdsSum_3 (a b c : V) (r s t : ℤ) : V :=
+noncomputable def borcherdsSum3 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-r - order Y a c)))
     (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • ncoeff (Y b) (s+t-i)
     (ncoeff (Y a) (r+i) c))
@@ -151,7 +151,7 @@ noncomputable def borcherdsSum_3 (a b c : V) (r s t : ℤ) : V :=
 power-series form.  It is a formal distribution analogue of the combination of commutativity and
 associativity. -/
 noncomputable def borcherdsId (a b c : V) (r s t : ℤ) : Prop :=
-  borcherdsSum_1 Y a b c r s t = borcherdsSum_2 Y a b c r s t + borcherdsSum_3 Y a b c r s t
+  borcherdsSum1 Y a b c r s t = borcherdsSum2 Y a b c r s t + borcherdsSum3 Y a b c r s t
 
 /-- The associativity property of vertex algebras. -/
 def associativity (a b c : V) (s t : ℤ) : Prop :=
@@ -173,13 +173,13 @@ sufficiently large `N`.  That is, the vertex operators commute up to finite orde
 diagonal. -/
 def IsLocal (a b : V) : Prop :=
   ∃ n, IsLocalToOrderLeq (Y a) (Y b) n
--- was borcherdsSum_2 R a b c r s t + borcherdsSum_3 R a b c r s t = 0
+-- was borcherdsSum2 R a b c r s t + borcherdsSum3 R a b c r s t = 0
 -- weak associativity needs to be changed to the vertex operator definition.
 -/
 /-- The weak associativity property for vertex algebras, asserting
 `x^N Y(Y(a,x)b,y)c = x^N Y(a,x) Y(b,x + y)c`. -/
 def weakAssociativity (a b c : V) (r s t : ℤ) : Prop :=
-  borcherdsSum_1 Y a b c r s t = borcherdsSum_2 Y a b c r s t
+  borcherdsSum1 Y a b c r s t = borcherdsSum2 Y a b c r s t
 
 end VertexAlg
 
