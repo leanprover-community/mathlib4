@@ -28,7 +28,7 @@ variable {α ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 
 lemma enorm_indicator_eq_indicator_enorm :
     ‖indicator s f a‖ₑ = indicator s (fun a => ‖f a‖ₑ) a :=
-  flip congr_fun a (indicator_comp_of_zero (enorm_zero (E := ε))).symm
+  congr($((indicator_comp_of_zero (enorm_zero (E := ε))).symm) a)
 
 theorem enorm_indicator_le_of_subset (h : s ⊆ t) (f : α → ε) (a : α) :
     ‖indicator s f a‖ₑ ≤ ‖indicator t f a‖ₑ := by
@@ -49,11 +49,11 @@ section SeminormedAddGroup
 variable {α E : Type*} [SeminormedAddGroup E] {s t : Set α} (f : α → E) (a : α)
 
 theorem norm_indicator_eq_indicator_norm : ‖indicator s f a‖ = indicator s (fun a => ‖f a‖) a :=
-  flip congr_fun a (indicator_comp_of_zero norm_zero).symm
+  congr($((indicator_comp_of_zero norm_zero).symm) a)
 
 theorem nnnorm_indicator_eq_indicator_nnnorm :
     ‖indicator s f a‖₊ = indicator s (fun a => ‖f a‖₊) a :=
-  flip congr_fun a (indicator_comp_of_zero nnnorm_zero).symm
+  congr($((indicator_comp_of_zero nnnorm_zero).symm) a)
 
 theorem norm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
     ‖indicator s f a‖ ≤ ‖indicator t f a‖ := by

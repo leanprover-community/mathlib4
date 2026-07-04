@@ -851,9 +851,7 @@ theorem of_countable_not_continuousAt [MeasurableSpace α] [TopologicalSpace α]
     [h : SecondCountableTopologyEither α β] {f : α → β}
     (hf : Set.Countable {x | ¬ ContinuousAt f x}) : StronglyMeasurable f := by
   have : ContinuousOn f {x | ContinuousAt f x} := fun x hx ↦ hx.continuousWithinAt
-  apply this.stronglyMeasurable_of_countable_compl
-  convert hf
-  grind
+  exact this.stronglyMeasurable_of_countable_compl hf
 
 @[fun_prop]
 theorem _root_.MeasurableEmbedding.stronglyMeasurable_extend {f : α → β} {g : α → γ} {g' : γ → β}

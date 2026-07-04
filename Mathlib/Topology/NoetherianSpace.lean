@@ -169,7 +169,7 @@ theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace �
       lift z₂ to Closeds α using hz₂
       rcases H (s ⊓ z₁) (inf_lt_left.2 hz₁') with ⟨S₁, hSf₁, hS₁, h₁⟩
       rcases H (s ⊓ z₂) (inf_lt_left.2 hz₂') with ⟨S₂, hSf₂, hS₂, h₂⟩
-      refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, Set.union_subset_iff.2 ⟨hS₁, hS₂⟩, ?_⟩
+      refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, by grind, ?_⟩
       rwa [sSup_union, ← h₁, ← h₂, ← inf_sup_left, left_eq_inf]
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/

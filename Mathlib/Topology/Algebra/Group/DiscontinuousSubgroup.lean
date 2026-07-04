@@ -27,7 +27,6 @@ protected lemma Subgroup.properlyDiscontinuousSMul_iff
   rw [properlyDiscontinuousSMul_iff]
   congr! with K L hK hL
   convert! injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
-  ext g
   simp [Set.subtype_smul_set, and_comm]
 
 @[to_additive]

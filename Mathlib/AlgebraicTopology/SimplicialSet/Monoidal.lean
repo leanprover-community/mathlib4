@@ -126,7 +126,7 @@ namespace Subcomplex
 /-- The external product of subcomplexes of simplicial sets. -/
 @[simps]
 def prod {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex) : (X ⊗ Y).Subcomplex where
-  obj Δ := (A.obj Δ).prod (B.obj Δ)
+  obj Δ := A.obj Δ ×ˢ B.obj Δ
   map i _ hx := ⟨A.map i hx.1, B.map i hx.2⟩
 
 lemma prod_monotone {X Y : SSet.{u}}
@@ -247,11 +247,10 @@ variable {X Y : SSet.{u}} (S : X.Subcomplex) (T : Y.Subcomplex)
 /-- Given `S ≤ X` and `T ≤ Y`, this is the subcomplex of `X ⊗ Y` given by `(X ⊗ T) ⊔ (S ⊗ Y)`. -/
 def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
 
-set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_unionProd_iff {n : SimplexCategoryᵒᵖ} (x : (X ⊗ Y).obj n) :
     dsimp% x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
-  dsimp [unionProd, Set.prod]
-  cat_disch
+  simp [unionProd, Set.mem_prod (α := X.obj n)]
 
 lemma top_prod_le_unionProd : (⊤ : X.Subcomplex).prod T ≤ S.unionProd T := le_sup_left
 
@@ -288,13 +287,10 @@ lemma ι₁_ι : ι₁ S T ≫ (unionProd S T).ι = X ◁ T.ι := rfl
 @[reassoc (attr := simp)]
 lemma ι₂_ι : ι₂ S T ≫ (unionProd S T).ι = S.ι ▷ Y := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma bicartSq : BicartSq (S.prod T) ((⊤ : X.Subcomplex).prod T) (S.prod ⊤) (unionProd S T) where
   sup_eq := rfl
-  inf_eq := by
-    ext n ⟨x, y⟩
-    change _ ∧ _ ↔ _
-    simp [prod, Set.prod, Membership.mem, Set.Mem, Set.ofPred]
-    tauto
+  inf_eq := by ext n; simp [Set.mem_prod (α := X.obj n), and_comm]
 
 lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
     (unionProd.ι₁ S T) (unionProd.ι₂ S T) :=

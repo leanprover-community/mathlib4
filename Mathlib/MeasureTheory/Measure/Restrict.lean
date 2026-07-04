@@ -734,7 +734,7 @@ theorem ae_restrict_of_ae_eq_of_ae_restrict {s t : Set α} (hst : s =ᵐ[μ] t) 
 
 /-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
-theorem ae_restrict_congr_set {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
+theorem ae_restrict_congr_set {s t : Set α} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ.restrict t, p x :=
   ⟨ae_restrict_of_ae_eq_of_ae_restrict hst, ae_restrict_of_ae_eq_of_ae_restrict hst.symm⟩
 
