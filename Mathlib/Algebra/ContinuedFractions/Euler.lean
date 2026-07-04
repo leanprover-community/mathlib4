@@ -5,10 +5,7 @@ Authors: Emlis
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
-public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.ContinuedFractions.Determinant
 
 /-!
 # Euler continued fraction
@@ -204,33 +201,14 @@ theorem IsEuler.dens_eq_one (h : g.IsEuler) : g.dens n = 1 := by
     exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n
   simp [dens_recurrence s_n_succ_eq, ih]
 
-private theorem nums_euler_one : (euler h ρ).nums 1 = h + (ρ.get? 0).getD 0 := by
-  set g := euler h ρ
-  rcases Decidable.em <| ρ.TerminatedAt 0 with terminatedAt_zero | not_terminatedAt_zero
-  · rw [g.nums_stable_of_terminated zero_le_one <| terminatedAt_euler.mpr terminatedAt_zero]
-    simp [show ρ.get? 0 = none from terminatedAt_zero, g, euler_h]
-  · obtain ⟨a, g_zeroth_eq⟩ : ∃ a, (euler h ρ).s.get? 0 = some ⟨a, 1⟩ :=
-      exists_euler_s_of_not_terminatedAt_zero not_terminatedAt_zero
-    rw [first_num_eq g_zeroth_eq]
-    simp [euler] at g_zeroth_eq
-    grind [euler_h]
-
 private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n =
     ∏ j ∈ Finset.range (n + 1), (ρ.get? j).getD 0 := by
-  set g := euler h ρ
-  induction n with
-  | zero => simp [g, nums_euler_one]
-  | succ n ih =>
-  rw [Finset.prod_range_succ, ← ih]
-  rcases Decidable.em <| ρ.TerminatedAt n.succ with terminatedAt_n_succ | not_terminatedAt_n_succ
-  · rw [nums_stable_of_terminated (n + 1).le_succ <| terminatedAt_euler.mpr terminatedAt_n_succ,
-      terminatedAt_n_succ, Option.getD_none, mul_zero, sub_self]
-  obtain ⟨a, g_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
-    exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n_succ
-  rw [nums_recurrence g_n_succ_eq rfl rfl]
-  simp [g, euler] at g_n_succ_eq
-  simp [g_n_succ_eq]
-  ring
+  have det := determinant (g := euler h ρ) (n := n)
+  simp only [isEuler_euler, IsEuler.dens_eq_one, mul_one, one_mul] at det
+  rw [← neg_sub, det, Finset.prod_range_succ', Finset.prod_range_succ']
+  simp only [partNums_euler_succ, zeroth_partNum_euler, mul_neg, neg_neg, mul_eq_mul_right_iff]
+  left; congr; ext n'
+  rcases ρ.get? (n' + 1) with _ | _ <;> simp
 
 /-- The numerators of an Euler continued fraction are given by the formula
 $$
