@@ -76,22 +76,36 @@ theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
   subst this
   exact inertiaDeg'_def q R
 
-theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
-    p.inertiaDeg q = q.inertiaDeg' R := by
+theorem inertiaDeg'_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
+    (K L : Type*) [Field K] [Field L]
+    [Algebra (R ⧸ p) K] [IsFractionRing (R ⧸ p) K]
+    [Algebra (S ⧸ q) L] [IsFractionRing (S ⧸ q) L]
+    [Algebra R K] [IsScalarTower R (R ⧸ p) K]
+    [Algebra S L] [IsScalarTower S (S ⧸ q) L]
+    [Algebra R L] [IsScalarTower R S L]
+    [Algebra K L] [IsScalarTower R K L] :
+    q.inertiaDeg' R = Module.finrank K L := by
+  let := Localization.AtPrime.algebraOfLiesOver p q
+  rw [inertiaDeg'_eq p q]
+  apply Algebra.finrank_eq_of_equiv_equiv
+    (IsFractionRing.algEquivOfAlgEquiv (R := R) (A := R ⧸ p) (K := p.ResidueField) (L := K) .refl)
+    (IsFractionRing.algEquivOfAlgEquiv (R := S) (A := S ⧸ q) (K := q.ResidueField) (L := L) .refl)
+  apply IsFractionRing.ringHom_ext (A := R ⧸ p)
+  intro x
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  simp [← IsScalarTower.algebraMap_apply R p.ResidueField q.ResidueField,
+    IsScalarTower.algebraMap_apply R S q.ResidueField,
+    ← IsScalarTower.algebraMap_apply R K L, ← IsScalarTower.algebraMap_apply R S L]
+
+theorem inertiaDeg'_eq_of_isMaximal [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
+    q.inertiaDeg' R = Module.finrank (R ⧸ p) (S ⧸ q) := by
   let : Field (R ⧸ p) := Quotient.field p
   let : Field (S ⧸ q) := Quotient.field q
-  let := Localization.AtPrime.algebraOfLiesOver p q
-  rw [inertiaDeg'_eq p q, inertiaDeg_algebraMap]
-  let f := (algebraMap (S ⧸ q) q.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ q))
-  let g := (algebraMap p.ResidueField q.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField)
-  have h : f = g := by ext; simp [f, g, ← IsScalarTower.algebraMap_apply]
-  let : Algebra (R ⧸ p) q.ResidueField := f.toAlgebra
-  have : IsScalarTower (R ⧸ p) (S ⧸ q) q.ResidueField := IsScalarTower.of_algebraMap_eq' rfl
-  have : IsScalarTower (R ⧸ p) p.ResidueField q.ResidueField := IsScalarTower.of_algebraMap_eq' h
-  rw [← mul_one (Module.finrank (R ⧸ p) (S ⧸ q)),
-    ← Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField q),
-    Module.finrank_mul_finrank, ← Module.finrank_mul_finrank (R ⧸ p) p.ResidueField q.ResidueField,
-    Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField p), one_mul]
+  exact inertiaDeg'_eq_of_isFractionRing p q (R ⧸ p) (S ⧸ q)
+
+theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
+    p.inertiaDeg q = q.inertiaDeg' R := by
+  rw [inertiaDeg_algebraMap, inertiaDeg'_eq_of_isMaximal p q]
 
 theorem inertiaDeg'_tower [r.LiesOver q] :
     r.inertiaDeg' R = q.inertiaDeg' R * r.inertiaDeg' S := by
@@ -104,6 +118,24 @@ theorem inertiaDeg'_tower [r.LiesOver q] :
     rw [inertiaDeg'_def, inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
     apply Module.finrank_mul_finrank
   · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
+
+theorem inertiaDeg'_below_dvd [r.LiesOver q] :
+    q.inertiaDeg' R ∣ r.inertiaDeg' R := by
+  use r.inertiaDeg' S
+  rw [← inertiaDeg'_tower]
+
+theorem inertiaDeg'_above_dvd [r.LiesOver q] :
+    r.inertiaDeg' S ∣ r.inertiaDeg' R := by
+  use q.inertiaDeg' R
+  rw [mul_comm, ← inertiaDeg'_tower]
+
+theorem inertiaDeg'_below_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] :
+    q.inertiaDeg' R ≤ r.inertiaDeg' R :=
+  Nat.le_of_dvd (r.inertiaDeg'_pos R) (q.inertiaDeg'_below_dvd r)
+
+theorem inertiaDeg'_above_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] :
+    r.inertiaDeg' S ≤ r.inertiaDeg' R :=
+  Nat.le_of_dvd (r.inertiaDeg'_pos R) (q.inertiaDeg'_above_dvd r)
 
 variable (R) in
 open Pointwise in
@@ -119,6 +151,33 @@ theorem inertiaDeg'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulComm
     rw [inertiaDeg'_eq p q, inertiaDeg'_eq p (g • q)]
     let e₂ := Ideal.residueFieldAlgEquiv' p (g • q) q f₀.symm (comap_symm f₀.toRingEquiv).symm
     exact e₂.toLinearEquiv.finrank_eq
+
+theorem cardQuot_pow_inertiaDeg' [Module.Finite R S] [p.IsMaximal] [q.IsMaximal] [q.LiesOver p] :
+    p.cardQuot ^ q.inertiaDeg' R = q.cardQuot := by
+  let _ : Field (R ⧸ p) := Quotient.field p
+  rw [← inertiaDeg_eq_inertiaDeg' p q, inertiaDeg_algebraMap p q]
+  exact Module.natCard_eq_pow_finrank.symm
+
+theorem absNorm_pow_inertiaDeg' [Module.Finite R S] [q.IsPrime] [q.LiesOver p]
+    [IsDedekindDomain R] [IsDedekindDomain S] [Module.Free ℤ R] [Module.Free ℤ S] :
+    p.absNorm ^ q.inertiaDeg' R = q.absNorm := by
+  by_cases hp : p = ⊥
+  · subst hp
+    simpa [eq_bot_of_liesOver_bot R q] using (inertiaDeg'_pos q R).ne'
+  have := isPrime_of_liesOver q p
+  have := isMaximal_of_isPrime_of_ne_bot p hp
+  have := IsMaximal.of_liesOver_isMaximal q p
+  exact cardQuot_pow_inertiaDeg' p q
+
+theorem natAbs_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] (p : ℤ)
+    (P : Ideal R) [P.IsPrime] [P.LiesOver (span {p})] :
+    p.natAbs ^ P.inertiaDeg' ℤ = absNorm P := by
+  simpa using absNorm_pow_inertiaDeg' (span {p}) P
+
+theorem pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] (p : ℕ)
+    (P : Ideal R) [P.IsPrime] [P.LiesOver (span {(p : ℤ)})] :
+    p ^ P.inertiaDeg' ℤ = absNorm P :=
+  natAbs_pow_inertiaDeg' p P
 
 end
 

@@ -11,6 +11,7 @@ public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Summable families of Hahn Series
+
 We introduce a notion of formal summability for families of Hahn series, and define a formal sum
 function. This theory is applied to characterize invertible Hahn series whose coefficients are in a
 commutative domain.
