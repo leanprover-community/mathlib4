@@ -506,10 +506,10 @@ theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
 theorem symm_symm : e.symm.symm = e := rfl
 
 theorem symm_apply_eq {x y} : e.symm x = y ↔ x = e y :=
-  Equiv.symm_apply_eq _
+  e.toAffineEquiv.symm_apply_eq
 
 theorem eq_symm_apply {x y} : y = e.symm x ↔ e y = x :=
-  Equiv.eq_symm_apply _
+  e.toAffineEquiv.eq_symm_apply
 
 theorem symm_bijective : Bijective (AffineIsometryEquiv.symm : (P₂ ≃ᵃⁱ[𝕜] P) → _) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
