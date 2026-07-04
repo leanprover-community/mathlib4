@@ -1130,22 +1130,6 @@ theorem withLpProdComm_apply (x : WithLp p (α × β)) :
 theorem withLpProdComm_symm : (withLpProdComm p α β).symm = withLpProdComm p β α :=
   rfl
 
-theorem withLpProdComm_apply_symm_apply {x} :
-    (withLpProdComm p α β) ((withLpProdComm p α β).symm x) = x :=
-  Equiv.apply_symm_apply _ _
-
-theorem withLpProdComm_symm_apply_apply {x} :
-    (withLpProdComm p α β).symm (withLpProdComm p α β x) = x :=
-  Equiv.symm_apply_apply _ _
-
-theorem withLpProdComm_symm_apply_eq {x y} :
-    (withLpProdComm p α β).symm x = y ↔ x = withLpProdComm p α β y :=
-  Equiv.symm_apply_eq _
-
-theorem withLpProdComm_eq_symm_apply {x y} :
-    y = (withLpProdComm p α β).symm x ↔ withLpProdComm p α β y = x :=
-  Equiv.eq_symm_apply _
-
 /-- Associativity of the `L^p` product as an isometric equivalence. -/
 @[simps apply symm_apply]
 def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α × WithLp p (β × γ)) where
