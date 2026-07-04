@@ -119,8 +119,8 @@ lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex
     have h₂ := h.2
     have h₃ := h.3
     rw [ShortComplex.exact_map_iff_of_faithful] at h₁
-    simp only [ShortComplex.map_f, Representation.IntertwiningMap.coe_eq_toLinearMap,
-      mono_iff_injective, ShortComplex.map_g, epi_iff_surjective] at h₂ h₃
+    simp only [ShortComplex.map_f, mono_iff_injective, ShortComplex.map_g,
+      epi_iff_surjective] at h₂ h₃
     exact {exact := h₁, mono_f := mono_iff_injective _|>.2 h₂, epi_g := epi_iff_surjective _|>.2 h₃}
   · rintro @⟨_, mono_f, epi_g⟩
     exact {
