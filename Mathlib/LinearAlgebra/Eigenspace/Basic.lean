@@ -514,13 +514,10 @@ theorem hasEigenvalue_iff_exists_map_eq_smul {f : End R M} {a : R} :
     f.HasEigenvalue a ↔ ∃ v ≠ 0, f v = a • v := by
   simp [hasEigenvalue_iff, Submodule.ne_bot_iff, and_comm]
 
-theorem mem_spectrum_iff_exists_map_eq_smul [FiniteDimensional K V] {f : End K V} {a : K} :
-    a ∈ spectrum K f ↔ ∃ v ≠ 0, f v = a • v := by
-  rw [← hasEigenvalue_iff_mem_spectrum, hasEigenvalue_iff_exists_map_eq_smul]
-
 theorem isUnit_iff_forall_map_eq_zero [FiniteDimensional K V] {f : End K V} :
     IsUnit f ↔ ∀ v, f v = 0 → v = 0 := by
-  simp_rw [← spectrum.zero_notMem_iff K, mem_spectrum_iff_exists_map_eq_smul, zero_smul]
+  simp_rw [← spectrum.zero_notMem_iff K, ← hasEigenvalue_iff_mem_spectrum,
+    hasEigenvalue_iff_exists_map_eq_smul, zero_smul]
   grind only
 
 theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :

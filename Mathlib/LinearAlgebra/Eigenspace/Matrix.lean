@@ -143,7 +143,8 @@ theorem mem_spectrum_of_mulVec_eq_smul {A : Matrix n n R} {v : n → R} {a : R} 
 
 theorem mem_spectrum_iff_exists_mulVec_eq_smul {K : Type*} [Field K] {A : Matrix n n K} {a : K} :
     a ∈ spectrum K A ↔ ∃ v ≠ 0, A *ᵥ v = a • v := by
-  simp_rw [← spectrum_toLin', mem_spectrum_iff_exists_map_eq_smul, toLin'_apply]
+  simp_rw [← spectrum_toLin', ← hasEigenvalue_iff_mem_spectrum,
+    hasEigenvalue_iff_exists_map_eq_smul, toLin'_apply]
 
 theorem isUnit_iff_forall_mulVec_eq_zero {K : Type*} [Field K] {A : Matrix n n K} :
     IsUnit A ↔ ∀ v, A *ᵥ v = 0 → v = 0 := by
