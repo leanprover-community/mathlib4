@@ -487,6 +487,10 @@ example {r : ℝ} (hr : 0 < r) : 0 < Real.sin (Real.arctan r) := by positivity
 example {r : ℝ} (hr : r ≠ 0) : Real.sin (Real.arctan r) ≠ 0 := by positivity
 example {r : ℝ} (hr : 0 ≤ r) : 0 ≤ Real.sin (Real.arctan r) := by positivity
 
+example (n : ℕ) : 0 ≤ ArithmeticFunction.vonMangoldt n := by positivity
+example (x : ℝ) : 0 ≤ Chebyshev.theta x := by positivity
+example (x : ℝ) : 0 ≤ Chebyshev.psi x := by positivity
+
 end SpecialFunctions
 
 /-! ### `sqrt` on `ℝ` and `ℝ≥0` -/
