@@ -612,7 +612,7 @@ theorem congr_tprod (f : Π i, s i ≃ₗ[R] t i) (m : Π i, s i) :
 @[simp]
 theorem congr_symm_tprod (f : Π i, s i ≃ₗ[R] t i) (p : Π i, t i) :
     (congr f).symm (tprod R p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
-  simp only [congr, LinearEquiv.ofLinearMap_symm, LinearEquiv.coe_ofLinearMap, map_tprod,
+  simp only [congr, LinearEquiv.symm_ofLinearMap, LinearEquiv.coe_ofLinearMap, map_tprod,
     LinearEquiv.coe_coe]
 
 /--

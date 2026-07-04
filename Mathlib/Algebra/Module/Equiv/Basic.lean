@@ -491,7 +491,7 @@ def ofLinearMap (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ
 theorem coe_ofLinearMap (h₁ h₂) : ⇑(ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
 @[simp]
-theorem ofLinearMap_symm (h₁ h₂) :
+theorem symm_ofLinearMap (h₁ h₂) :
     (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = (ofLinearMap g f h₂ h₁) :=
   rfl
 
@@ -506,13 +506,13 @@ abbrev ofLinear (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ
 theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
   rfl
 
-@[deprecated "Follows from simp lemmas `ofLinearMap_symm` and `coe_ofLinearMap`"
+@[deprecated "Follows from simp lemmas `symm_ofLinearMap` and `coe_ofLinearMap`"
   (since := "2026-06-23")]
 theorem ofLinear_symm_apply {h₁ h₂} (x : M₂) :
     (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm x = g x :=
   rfl
 
-@[deprecated "Follows from simp lemmas `ofLinearMap_symm` and `toLinearMap_ofLinearMap`"
+@[deprecated "Follows from simp lemmas `symm_ofLinearMap` and `toLinearMap_ofLinearMap`"
   (since := "2026-06-23")]
 theorem ofLinear_symm_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = g := rfl
 
