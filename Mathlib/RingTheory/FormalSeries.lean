@@ -223,8 +223,8 @@ the finite fibered hypothesis means we don't make it an instance. The `m`-th coe
 noncomputable def FinFibMonoidAlgSmul (R : Type*) [Semiring R] [SMul G Γ]
    [SMul R C] (h : isFiniteFibered G Γ) : SMul (MonoidAlgebra R G) (FormalSeries Γ C) where
   smul x f := {
-    coef := fun m => x.sum (fun g _ => Finset.sum (Set.Finite.toFinset (h g m))
-    fun n => (x g) • f.coef n)
+    coef := fun m => x.coeff.sum (fun g _ => Finset.sum (Set.Finite.toFinset (h g m))
+    fun n => (x.coeff g) • f.coef n)
   }
 
 /-!

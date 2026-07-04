@@ -126,8 +126,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toFinsupp_single_tmul (c : A) (z : L) (r : R) :
     ((toFinsupp R A L) (AddMonoidAlgebra.single c r ⊗ₜ[R] z)) = Finsupp.single c (r • z) := by
   ext a
-  by_cases h : c = a <;> simp [toFinsupp, h, AddMonoidAlgebra.basis, AddMonoidAlgebra.single,
-    LinearEquiv.refl, LinearMap.id]
+  simp only [AddMonoidAlgebra.single]
+  by_cases h : c = a <;> simp [toFinsupp, h, AddMonoidAlgebra.basis]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma support_toFinsupp_mapMonomialLieHom {B : Type*} [AddCommMonoid A] [AddCommMonoid B]
