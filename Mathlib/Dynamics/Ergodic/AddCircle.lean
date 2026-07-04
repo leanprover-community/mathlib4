@@ -115,7 +115,7 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
         rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.natCast_pow, Int.natCast_natAbs, ← abs_pow,
           abs_dvd]
       have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j =>
-        (vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)).eventuallyEq
+        .of_eq <| vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)
       have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
         simp_rw [hu₀]; exact tendsto_pow_atTop_atTop_of_one_lt hn
       rw [eventuallyConst_set']

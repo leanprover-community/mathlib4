@@ -29,7 +29,7 @@ Given a type `X` and a predicate `p : X → Prop`:
 
 ## Implementation issues
 
-As in Lean 3, `Set X := X → Prop`
+`Set X` is a one-field structure wrapping a predicate `X → Prop`.
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
 -/
@@ -43,12 +43,15 @@ variable {α : Type u}
 
 /-- A set is a collection of elements of some type `α`.
 
-Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
-relied on. Instead, `Set.ofPred` (also written `{x | p x}`) and membership of a set (`∈`) should be
-used to convert between sets and predicates.
--/
+To build a set (an element of `Set α`) out of a predicate `p : α → Prop`, use the set builder
+notation `{a | p a}`. To get a predicate `α → Prop` from a set `s : Set α`, use the `∈` notation,
+as in `a ∈ s` or `(· ∈ s)`. -/
 @[use_set_notation_for_order]
-def Set (α : Type u) := α → Prop
+structure Set (α : Type u) where
+  /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
+  ofPred ::
+  /-- Membership in a set. Use the `∈` notation instead. -/
+  protected Mem : α → Prop
 
 /-
 We don't translate the order on sets (i.e. turning `s ⊆ t` into `t ⊆ s`).
@@ -62,26 +65,20 @@ But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `
 -/
 attribute [to_dual_dont_translate] Set
 
-/-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
-@[implicit_reducible]
-def Set.ofPred {α : Type u} (p : α → Prop) : Set α :=
-  p
-
 @[deprecated (since := "2026-07-09")] alias setOf := Set.ofPred
 
 namespace Set
 
-/-- Membership in a set -/
-@[implicit_reducible]
-protected def Mem (s : Set α) (a : α) : Prop :=
-  s a
-
 instance : Membership α (Set α) :=
   ⟨Set.Mem⟩
 
+/-- One should always prefer the `∈` notation over `Set.Mem`. This simp lemma ensures that the
+latter is removed from the goal as early as possible if accidentally exposed. -/
+@[simp] lemma mem_iff_mem {s : Set α} {a : α} : s.Mem a ↔ a ∈ s := .rfl
+
 @[ext, grind ext]
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
-  funext (fun x ↦ propext (h x))
+  congrArg ofPred (funext fun x ↦ propext (h x))
 
 /-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
 
@@ -93,9 +90,6 @@ protected def Subset (s₁ s₂ : Set α) :=
 to subset hypotheses. -/
 instance : LE (Set α) :=
   ⟨Set.Subset⟩
-
-instance : EmptyCollection (Set α) :=
-  ⟨fun _ ↦ False⟩
 
 end Set
 
@@ -207,6 +201,9 @@ end Mathlib.Meta
 
 namespace Set
 
+instance : EmptyCollection (Set α) :=
+  ⟨{_a | False}⟩
+
 /-- The universal set on a type `α` is the set containing all elements of `α`.
 
 This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory
@@ -268,8 +265,8 @@ def image {β : Type v} (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 instance : Functor Set where map := @Set.image
 
 instance : LawfulFunctor Set where
-  id_map _ := funext fun _ ↦ propext ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
-  comp_map g h _ := funext <| fun c ↦ propext
+  id_map _ := ext fun _ ↦ ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := ext fun c ↦
     ⟨fun ⟨a, ⟨h₁, h₂⟩⟩ ↦ ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      fun ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ ↦ ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl

@@ -177,7 +177,7 @@ at this point. -/
 @[fun_prop]
 theorem ContDiffWithinAt.add {s : Set E} {f g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x => f x + g x) s x :=
-  contDiff_add.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
+  contDiff_add.contDiffWithinAt.comp x (hf.prodMk hg) (mapsTo_univ ..)
 
 /-- The sum of two `C^n` functions at a point is `C^n` at this point. -/
 @[fun_prop]
@@ -251,7 +251,7 @@ this point. -/
 @[fun_prop]
 theorem ContDiffWithinAt.neg {s : Set E} {f : E → F} (hf : ContDiffWithinAt 𝕜 n f s x) :
     ContDiffWithinAt 𝕜 n (fun x => -f x) s x :=
-  contDiff_neg.contDiffWithinAt.comp x hf subset_preimage_univ
+  contDiff_neg.contDiffWithinAt.comp x hf (mapsTo_univ ..)
 
 /-- The negative of a `C^n` function at a point is `C^n` at this point. -/
 @[fun_prop]
@@ -560,7 +560,7 @@ set at this point. -/
 @[to_fun (attr := fun_prop)]
 theorem ContDiffWithinAt.smul {s : Set E} {f : E → 𝕜'} {g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (f • g) s x :=
-  contDiff_smul.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
+  contDiff_smul.contDiffWithinAt.comp x (hf.prodMk hg) (mapsTo_univ ..)
 
 /-- The scalar multiplication of two `C^n` functions at a point is `C^n` at this point. -/
 @[to_fun (attr := fun_prop)]

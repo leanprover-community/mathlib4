@@ -509,9 +509,7 @@ theorem ContinuousOn.measurable_of_countable_compl [MeasurableSingletonClass α]
 theorem measurable_of_countable_not_continuousAt [MeasurableSingletonClass α]
     {f : α → γ} (hf : Set.Countable {x | ¬ ContinuousAt f x}) : Measurable f := by
   have : ContinuousOn f {x | ContinuousAt f x} := fun x hx ↦ hx.continuousWithinAt
-  apply this.measurable_of_countable_compl
-  convert hf
-  grind
+  exact this.measurable_of_countable_compl hf
 
 theorem Topology.IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) :
     Measurable f :=
