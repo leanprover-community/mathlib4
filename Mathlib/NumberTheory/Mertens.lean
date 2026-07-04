@@ -15,7 +15,7 @@ public import Mathlib.Analysis.SpecialFunctions.Stirling
 public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.NumberTheory.Chebyshev
-public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -534,7 +534,9 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     have h1 : IntegrableOn (fun x ↦ log (log x) * x ^ (-s)) (.Ioi 1) := by sorry
     have h2 : IntegrableOn (fun x ↦ M * x ^ (-s)) (.Ioi 1) := by sorry
     have h3 : IntegrableOn (fun x ↦ E₂ x * x ^ (-s)) (.Ioi 1) := by sorry
-    rw [MeasureTheory.integral_add, MeasureTheory.integral_add]
+    rw [MeasureTheory.integral_add, MeasureTheory.integral_add, mul_add, mul_add,
+        eulerMascheroniConstant_eq_neg_integral_log_log hs, MeasureTheory.integral_const_mul,
+        integral_Ioi_rpow_of_lt (by linarith)]
     · sorry
     exacts [h1, h2, h1.add h2, h3]
 
