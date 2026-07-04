@@ -764,6 +764,7 @@ lemma toENNReal_eq_toENNReal {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     x.toENNReal = y.toENNReal ↔ x = y := by
   induction x <;> induction y <;> simp_all
 
+@[gcongr]
 lemma toENNReal_le_toENNReal {x y : EReal} (h : x ≤ y) : x.toENNReal ≤ y.toENNReal := by
   induction x
   · simp

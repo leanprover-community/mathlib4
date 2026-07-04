@@ -27,7 +27,7 @@ of the positive and negative parts is finite.
 
 @[expose] public section
 
-open scoped ENNReal
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -183,24 +183,21 @@ lemma EIntegrable.smul_measure {X : α → EReal} (hX : EIntegrable X μ) {c : �
   | inl hX => left; simp [hc, hX, ENNReal.mul_eq_top]
   | inr hX => right; simp [hc, hX, ENNReal.mul_eq_top]
 
+lemma EIntegrable.nnreal_smul_measure {X : α → EReal} (hX : EIntegrable X μ) (c : ℝ≥0) :
+    EIntegrable X (c • μ) := hX.smul_measure (by simp)
+
 lemma eintegrable_map {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → EReal}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g (μ.map f)) :
      EIntegrable g (μ.map f) ↔ EIntegrable (g ∘ f) μ := by
   unfold EIntegrable
-  congr!
-  · rw [lintegral_map' (by fun_prop) hf]
-    rfl
-  · rw [lintegral_map' (by fun_prop) hf]
-    rfl
+  congr! <;> rw [lintegral_map' (by fun_prop) hf] <;> rfl
 
 lemma eintegrable_of_le {f : α → EReal} {b : EReal} (hf : ∀ x, f x ≤ b) (hb : b ≠ ⊤)
     (P : Measure α) [IsFiniteMeasure P] :
     EIntegrable f P := by
   refine .inl (ne_of_lt ?_)
   calc ∫⁻ x, (f x).toENNReal ∂P
-  _ ≤ ∫⁻ x, b.toENNReal ∂P := by
-    gcongr
-    exact EReal.toENNReal_le_toENNReal (hf _) -- missing gcongr
+  _ ≤ ∫⁻ x, b.toENNReal ∂P := by gcongr; exact hf _
   _ = b.toENNReal * P .univ := by simp [lintegral_const]
   _ < ⊤ := by simp [hb, lt_top_iff_ne_top, ENNReal.mul_eq_top]
 
