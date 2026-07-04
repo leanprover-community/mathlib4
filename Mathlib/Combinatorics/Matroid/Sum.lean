@@ -73,17 +73,17 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
     exact ⟨univ.sigma B, by simpa⟩
 
   isBase_exchange B₁ B₂ h₁ h₂ := by
-    simp only [mem_diff, Sigma.exists, and_imp, Sigma.forall]
+    simp only [mem_sdiff, Sigma.exists, and_imp, Sigma.forall]
     intro i e he₁ he₂
     have hf_ex := (h₁ i).exchange (h₂ i) ⟨he₁, by simpa⟩
     obtain ⟨f, ⟨hf₁, hf₂⟩, hfB⟩ := hf_ex
     refine ⟨i, f, ⟨hf₁, hf₂⟩, fun j ↦ ?_⟩
-    rw [← union_singleton, preimage_union, preimage_diff]
+    rw [← union_singleton, preimage_union, preimage_sdiff]
     obtain (rfl | hne) := eq_or_ne i j
     · simpa only [show ∀ x, {⟨i,x⟩} = Sigma.mk i '' {x} by simp,
         preimage_image_eq _ sigma_mk_injective, union_singleton]
     rw [preimage_singleton_eq_empty.2 (by simpa), preimage_singleton_eq_empty.2 (by simpa),
-      diff_empty, union_empty]
+      sdiff_empty, union_empty]
     exact h₁ j
 
   maximality X _ I hI hIX := by

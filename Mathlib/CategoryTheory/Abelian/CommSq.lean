@@ -56,6 +56,7 @@ lemma exact_shortComplex (h : IsPushout t l r b) : h.shortComplex.Exact :=
   h.shortComplex.exact_of_g_is_cokernel
     h.isColimitCokernelCofork
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a pushout square in an abelian category
 ```

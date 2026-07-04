@@ -47,8 +47,8 @@ instance instAddCommGroup : AddCommGroup ℤ where
   zsmul := (· * ·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
-    simp only [natCast_succ, Int.add_mul, Int.add_comm, Int.one_mul]
-  zsmul_neg' m n := by simp only [negSucc_eq, natCast_succ, Int.neg_mul]
+    simp only [HSMul.hSMul, SMul.smul, natCast_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  zsmul_neg' m n := by simp only [HSMul.hSMul, SMul.smul, negSucc_eq, natCast_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 
 -- This instance can also be found from the `LinearOrderedCommMonoidWithZero ℤ` instance by

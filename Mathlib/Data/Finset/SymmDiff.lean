@@ -44,6 +44,8 @@ variable [DecidableEq α] {s t : Finset α} {a b : α}
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
   simp_rw [symmDiff, sup_eq_union, mem_union, mem_sdiff]
 
+protected theorem symmDiff_def (s t : Finset α) : s ∆ t = s \ t ∪ t \ s := rfl
+
 @[simp, norm_cast]
 theorem coe_symmDiff : (↑(s ∆ t) : Set α) = (s : Set α) ∆ t :=
   Set.ext fun x => by simp [mem_symmDiff, Set.mem_symmDiff]

@@ -55,13 +55,18 @@ runtime is devoted to type class inference. -/
 section Typeclass
 
 /-- `CommSemiring` implies `AddMonoidWithOne`. -/
-abbrev amwo_of_cs (α : Type*) [CommSemiring α] : AddMonoidWithOne α := inferInstance
+abbrev addMonoidWithOneOfCommSemiring (α : Type*) [CommSemiring α] : AddMonoidWithOne α :=
+  inferInstance
 
 /-- `PartialOrder` implies `LE`. -/
-abbrev le_of_po (α : Type*) [PartialOrder α] : LE α := inferInstance
+abbrev leOfPartialOrder (α : Type*) [PartialOrder α] : LE α := inferInstance
 
 /-- `PartialOrder` implies `LT`. -/
-abbrev lt_of_po (α : Type*) [PartialOrder α] : LT α := inferInstance
+abbrev ltOfPartialOrder (α : Type*) [PartialOrder α] : LT α := inferInstance
+
+@[deprecated (since := "2026-05-27")] alias amwo_of_cs := addMonoidWithOneOfCommSemiring
+@[deprecated (since := "2026-05-27")] alias le_of_po := leOfPartialOrder
+@[deprecated (since := "2026-05-27")] alias lt_of_po := ltOfPartialOrder
 
 end Typeclass
 
@@ -124,12 +129,13 @@ def evalLE {v : Level} {α : Q(Type v)}
     (ics : Q(CommSemiring $α)) (_ : Q(PartialOrder $α)) (_ : Q(IsOrderedRing $α))
     {a b : Q($α)} (va : Ring.ExSum q($ics) a) (vb : Ring.ExSum q($ics) b) :
     MetaM (Except ExceptType Q($a ≤ $b)) := do
-  let lα : Q(LE $α) := q(le_of_po $α)
+  let lα : Q(LE $α) := q(leOfPartialOrder $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) q(nat_lit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(addMonoidWithOneOfCommSemiring $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_cs $α) q(nat_lit 0) (q(NormNum.isNat_ofNat $α $pz):)
-  match va, vb with
+    NormNum.Result.isNat q(addMonoidWithOneOfCommSemiring $α) q(nat_lit 0)
+                        (q(NormNum.isNat_ofNat $α $pz):)
+  match (dependent := true) va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
   /- For numerals `ca` and `cb`, `ca + x ≤ cb + x` if `ca ≤ cb` -/
@@ -162,12 +168,13 @@ def evalLT {v : Level} {α : Q(Type v)}
     (ics : Q(CommSemiring $α)) (_ : Q(PartialOrder $α)) (_ : Q(IsStrictOrderedRing $α))
     {a b : Q($α)} (va : Ring.ExSum q($ics) a) (vb : Ring.ExSum q($ics) b) :
     MetaM (Except ExceptType Q($a < $b)) := do
-  let lα : Q(LT $α) := q(lt_of_po $α)
+  let lα : Q(LT $α) := q(ltOfPartialOrder $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) q(nat_lit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(addMonoidWithOneOfCommSemiring $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_cs $α) q(nat_lit 0) (q(NormNum.isNat_ofNat $α $pz):)
-  match va, vb with
+    NormNum.Result.isNat q(addMonoidWithOneOfCommSemiring $α) q(nat_lit 0)
+                        (q(NormNum.isNat_ofNat $α $pz):)
+  match (dependent := true) va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall
   /- For numerals `ca` and `cb`, `ca + x < cb + x` if `ca < cb` -/

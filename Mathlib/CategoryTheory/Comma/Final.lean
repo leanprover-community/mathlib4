@@ -5,12 +5,8 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.IsConnected
-public import Mathlib.CategoryTheory.Limits.Sifted
 public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.CategoryTheory.Filtered.Flat
-public import Mathlib.CategoryTheory.Grothendieck
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
 /-!
@@ -41,59 +37,95 @@ namespace Comma
 
 open Limits Functor CostructuredArrow
 
-section Small
-
-variable {A : Type v₁} [Category.{v₁} A]
-variable {B : Type v₁} [Category.{v₁} B]
-variable {T : Type v₁} [Category.{v₁} T]
-variable (L : A ⥤ T) (R : B ⥤ T)
-
-set_option backward.isDefEq.respectTransparency false in
-private lemma final_fst_small [R.Final] : (fst L R).Final := by
-  rw [Functor.final_iff_isIso_colimit_pre]
-  intro G
-  let i : colimit G ≅ colimit (fst L R ⋙ G) :=
-    colimitIsoColimitGrothendieck L G ≪≫
-    (Final.colimitIso (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ G)).symm ≪≫
-    HasColimit.isoOfNatIso (Iso.refl _) ≪≫
-    Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor (fst L R ⋙ G)
-  convert! i.isIso_inv
-  apply colimit.hom_ext
-  intro ⟨a, b, f⟩
-  simp only [colimit.ι_pre, comp_obj, fst_obj, grothendieckPrecompFunctorEquivalence_functor,
-    Iso.trans_inv, Iso.symm_inv, Category.assoc, i]
-  change _ = colimit.ι (fst L R ⋙ G)
-    ((grothendieckPrecompFunctorToComma L R).obj ⟨b, CostructuredArrow.mk f⟩) ≫ _
-  simp
-
-end Small
-
-section NonSmall
-
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
-instance final_fst [R.Final] : (fst L R).Final := by
-  let sA : A ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} A := AsSmall.equiv
-  let sB : B ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} B := AsSmall.equiv
-  let sT : T ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} T := AsSmall.equiv
-  let L' := sA.inverse ⋙ L ⋙ sT.functor
-  let R' := sB.inverse ⋙ R ⋙ sT.functor
-  let fC : Comma L R ⥤ Comma L' R' :=
-    map (F₁ := sA.functor) (F := sT.functor) (F₂ := sB.functor)
-      (isoWhiskerRight sA.unitIso (L ⋙ sT.functor)).hom
-      (isoWhiskerRight sB.unitIso (R ⋙ sT.functor)).hom
-  have : Final (fst L' R') := final_fst_small _ _
-  apply final_of_natIso (F := (fC ⋙ fst L' R' ⋙ sA.inverse))
-  exact (Functor.associator _ _ _).symm.trans (Iso.compInverseIso (mapFst _ _))
+section Relative
 
-instance initial_snd [L.Initial] : (snd L R).Initial := by
-  have : ((opFunctor L R).leftOp ⋙ fst R.op L.op).Final :=
-    final_equivalence_comp (opEquiv L R).functor.leftOp (fst R.op L.op)
-  have : (snd L R).op.Final := final_of_natIso (opFunctorCompFst _ _)
-  apply initial_of_final_op
+lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
+    [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : IsCofiltered (Comma L R) where
+  nonempty := by
+    obtain ⟨b⟩ := IsCofiltered.nonempty (C := B)
+    obtain ⟨X⟩ : Nonempty (CostructuredArrow L (R.obj b)) := IsCofiltered.nonempty
+    exact ⟨⟨X.left, b, X.hom⟩⟩
+  toIsCofilteredOrEmpty := by
+    refine ⟨fun j₁ j₂ ↦ ?_, fun j₁ j₂ u v ↦ ?_⟩
+    · obtain ⟨Q⟩ : Nonempty (CostructuredArrow L (R.obj (IsCofiltered.min j₁.right j₂.right))) :=
+        IsCofiltered.nonempty
+      obtain ⟨ia, va₁, va₂, heqa⟩ := exists_eq_of_isCofiltered_costructuredArrow L
+        (Q.hom ≫ R.map (IsCofiltered.minToLeft j₁.right j₂.right)) j₁.hom
+      obtain ⟨ib, vb₁, vb₂, heqb⟩ := exists_eq_of_isCofiltered_costructuredArrow L
+        (Q.hom ≫ R.map (IsCofiltered.minToRight j₁.right j₂.right)) j₂.hom
+      obtain ⟨i₀, il₀, ir₀, heq⟩ := IsCofiltered.cospan va₁ vb₁
+      exact ⟨⟨i₀, IsCofiltered.min j₁.right j₂.right, L.map (il₀ ≫ va₁) ≫ Q.hom⟩,
+        ⟨il₀ ≫ va₂, IsCofiltered.minToLeft _ _, by simp [← heqa]⟩,
+        ⟨ir₀ ≫ vb₂, IsCofiltered.minToRight _ _, by cat_disch⟩, trivial⟩
+    · obtain ⟨Q⟩ : Nonempty (CostructuredArrow L (R.obj (IsCofiltered.eq u.right v.right))) :=
+        IsCofiltered.nonempty
+      obtain ⟨ia, va₁, va₂, heqa⟩ := exists_eq_of_isCofiltered_costructuredArrow L
+        (Q.hom ≫ R.map (IsCofiltered.eqHom u.right v.right)) j₁.hom
+      obtain ⟨i₀, α, β, hα, hβ⟩ := IsCofiltered.bowtie u.left (va₂ ≫ v.left) (𝟙 _) va₂
+      have := IsCofiltered.eq_condition u.right v.right
+      exact ⟨⟨i₀, IsCofiltered.eq u.right v.right, L.map (β ≫ va₁) ≫ Q.hom⟩,
+        ⟨β ≫ va₂, IsCofiltered.eqHom u.right v.right, by cat_disch⟩, by cat_disch⟩
+
+set_option backward.isDefEq.respectTransparency false in
+lemma initial_fst_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
+    [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : (fst L R).Initial := by
+  have := isCofiltered_of_isCofiltered_costructuredArrow L R
+  rw [Functor.initial_iff_of_isCofiltered]
+  refine ⟨fun a ↦ ?_, fun {a} A' s s' ↦ ?_⟩
+  · obtain ⟨b⟩ := IsCofiltered.nonempty (C := B)
+    obtain ⟨X⟩ : Nonempty (CostructuredArrow L (R.obj b)) := IsCofiltered.nonempty
+    exact ⟨⟨IsCofiltered.min a X.left, b, L.map (IsCofiltered.minToRight a X.left) ≫ X.hom⟩,
+      ⟨IsCofiltered.minToLeft a X.left⟩⟩
+  · exact ⟨⟨_, A'.right, L.map (IsCofiltered.eqHom s s') ≫ A'.hom⟩,
+      ⟨IsCofiltered.eqHom s s', 𝟙 A'.right, by simp⟩, IsCofiltered.eq_condition s s'⟩
+
+lemma initial_snd_of_isConnected_costructuredArrow
+    [∀ b, IsConnected (CostructuredArrow L (R.obj b))] : (snd L R).Initial where
+  out b := by
+    have := final_of_adjunction (costructuredArrowSndAdjunction L R b)
+    rw [← isConnected_iff_of_final (costructuredArrowSndInclusion L R b)]
+    infer_instance
+
+lemma isFiltered_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
+    [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : IsFiltered (Comma L R) := by
+  have (a : Aᵒᵖ) : IsCofiltered (CostructuredArrow R.op (L.op.obj a)) :=
+    IsCofiltered.of_equivalence (structuredArrowOpEquivalence R (L.obj a.unop))
+  have : IsCofiltered (Comma R.op L.op) := isCofiltered_of_isCofiltered_costructuredArrow _ _
+  exact IsFiltered.of_equivalence (opEquiv L R).symm
+
+lemma final_fst_of_isConnected_structuredArrow
+    [∀ a, IsConnected (StructuredArrow (L.obj a) R)] : (fst L R).Final := by
+  have (a : Aᵒᵖ) : IsConnected (CostructuredArrow R.op (L.op.obj a)) :=
+    (isConnected_iff_of_equivalence (structuredArrowOpEquivalence R (L.obj a.unop))).mp
+      inferInstance
+  have : (snd R.op L.op).Initial := initial_snd_of_isConnected_costructuredArrow _ _
+  have : ((opFunctor L R).leftOp ⋙ snd R.op L.op).Initial :=
+    initial_equivalence_comp (opEquiv L R).functor.leftOp _
+  have : (fst L R).op.Initial := initial_of_natIso <| opFunctorCompSnd _ _
+  apply final_of_initial_op
+
+lemma final_snd_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
+    [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : (snd L R).Final := by
+  have (a : Aᵒᵖ) : IsCofiltered (CostructuredArrow R.op (L.op.obj a)) :=
+    IsCofiltered.of_equivalence (structuredArrowOpEquivalence R (L.obj a.unop))
+  have : (fst R.op L.op).Initial := initial_fst_of_isCofiltered_costructuredArrow _ _
+  have : ((opFunctor L R).leftOp ⋙ fst R.op L.op).Initial :=
+    initial_equivalence_comp (opEquiv L R).functor.leftOp _
+  have : (snd L R).op.Initial := initial_of_natIso <| opFunctorCompFst _ _
+  apply final_of_initial_op
+
+end Relative
+
+instance initial_snd [L.Initial] : (snd L R).Initial :=
+  initial_snd_of_isConnected_costructuredArrow L R
+
+instance final_fst [R.Final] : (fst L R).Final :=
+  final_fst_of_isConnected_structuredArrow L R
 
 /-- `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `R` is final and `A` is
 connected. -/
@@ -105,8 +137,7 @@ connected. -/
 instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected (Comma L R) := by
   rwa [isConnected_iff_of_initial (snd L R)]
 
-end NonSmall
-
+set_option backward.defeqAttrib.useBackward true in
 /-- Let the following diagram commute up to isomorphism:
 
 ```
@@ -146,52 +177,30 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v
 
 section Filtered
 
-variable {A : Type u₁} [Category.{v₁} A]
-variable {B : Type u₂} [Category.{v₂} B]
-variable {T : Type u₃} [Category.{v₃} T]
-variable (L : A ⥤ T) (R : B ⥤ T)
-
-attribute [local instance] map_final in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
 comma category `Comma L R` is filtered. -/
 instance isFiltered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
-  haveI (a : A) : IsFiltered (Comma (fromPUnit (L.obj a)) R) :=
-    R.final_iff_isFiltered_structuredArrow.mp inferInstance (L.obj a)
-  have (a : A) : (fromPUnit (Over.mk (𝟙 a))).Final := final_const_of_isTerminal Over.mkIdTerminal
-  let η (a : A) : fromPUnit (Over.mk (𝟙 a)) ⋙ Over.forget a ⋙ L ≅ fromPUnit (L.obj a) :=
-    NatIso.ofComponents (fun _ => Iso.refl _)
-  have (a : A) := IsFiltered.of_final (map (L := fromPUnit (L.obj a)) (F := 𝟭 T) (η a).hom
-    ((Iso.refl (𝟭 B ⋙ R)).inv))
-  have : RepresentablyCoflat (fst L R) :=
-    ⟨fun a => IsFiltered.of_equivalence (CostructuredArrow.ofCommaFstEquivalence L R a).symm⟩
-  apply isFiltered_of_representablyCoflat (fst L R)
+  have := R.final_iff_isFiltered_structuredArrow.mp inferInstance
+  exact isFiltered_of_isFiltered_structuredArrow L R
 
-attribute [local instance] isFiltered_of_final in
 /-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
 comma category `Comma L R` is cofiltered. -/
 lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
-    IsCofiltered (Comma L R) :=
-  IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
+    IsCofiltered (Comma L R) := by
+  have := L.initial_iff_isCofiltered_costructuredArrow.mp inferInstance
+  exact isCofiltered_of_isCofiltered_costructuredArrow L R
 
-attribute [local instance] final_of_isFiltered_of_pUnit in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the
 projection `snd L R : Comma L R ⥤ B` is final. -/
 instance final_snd [IsFiltered A] [IsFiltered B] [R.Final] : (snd L R).Final := by
-  let iL : star.{1} A ⋙ 𝟭 _ ≅ L ⋙ star _ := Iso.refl _
-  let iR : 𝟭 B ⋙ star.{1} B ≅ R ⋙ star _ := Iso.refl _
-  have := map_final iL iR
-  let s := (equivProd (𝟭 _) (star B)).trans <| prod.leftUnitorEquivalence B
-  let iS : map iL.hom iR.inv ⋙ s.functor ≅ snd L R :=
-    NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [iL, iR, s])
-  apply final_of_natIso iS
+  have := R.final_iff_isFiltered_structuredArrow.mp inferInstance
+  exact final_snd_of_isFiltered_structuredArrow L R
 
 /-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
 projection `fst L R : Comma L R ⥤ A` is initial. -/
 instance initial_fst [IsCofiltered A] [IsCofiltered B] [L.Initial] : (fst L R).Initial := by
-  have : ((opFunctor L R).leftOp ⋙ snd R.op L.op).Final :=
-    final_equivalence_comp (opEquiv L R).functor.leftOp _
-  have : (fst L R).op.Final := final_of_natIso <| opFunctorCompSnd _ _
-  apply initial_of_final_op
+  have := L.initial_iff_isCofiltered_costructuredArrow.mp inferInstance
+  exact initial_fst_of_isCofiltered_costructuredArrow L R
 
 end Filtered
 

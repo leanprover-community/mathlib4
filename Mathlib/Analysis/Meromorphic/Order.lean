@@ -459,6 +459,17 @@ theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f :
   convert! meromorphicOrderAt_prod hf
   exact (Finset.prod_apply _ s f).symm
 
+/--
+A finprod of functions that do not vanish locally does not vanish locally.
+-/
+lemma meromorphicOrderAt_finprod_ne_top {x : 𝕜} {ι : Type*} {F : ι → 𝕜 → 𝕜}
+    (h₁ : ∀ c, MeromorphicAt (F c) x) (h₂ : ∀ c, meromorphicOrderAt (F c) x ≠ ⊤) :
+    meromorphicOrderAt (∏ᶠ c, F c) x ≠ ⊤ := by
+  classical
+  by_cases hF : F.HasFiniteMulSupport
+  · simpa [finprod_eq_prod F hF, meromorphicOrderAt_prod (fun x _ ↦ h₁ x)] using fun x _ ↦ h₂ x
+  simp [finprod_of_not_hasFiniteMulSupport hF]
+
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
 @[to_fun] theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
     meromorphicOrderAt (f ^ n) x = n * meromorphicOrderAt f x := by
@@ -694,14 +705,20 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · rw [h₁w]
       tauto
     -- Nontrivial case: w ≠ z
-    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_diff h₁y) (mem_of_mem_inter_right h₁y)
+    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
     constructor
     · exact h₂t'.sdiff isClosed_singleton
-    · apply (mem_diff w).1
+    · apply (mem_sdiff w).1
       exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
-/-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
-`f` has finite order at every point. -/
+/--
+On a connected set, there exists a point where a meromorphic function `f` has finite order iff `f`
+has finite order at every point.
+
+See `Meromorphic.exists_meromorphicOrderAt_ne_top_iff_forall` in file
+`Mathlib/Analysis/Meromorphic/RCLike` for a related result assuming that `f` is meromorphic on all
+of `𝕜`.
+-/
 theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU : IsConnected U) :
     (∃ u : U, meromorphicOrderAt f u ≠ ⊤) ↔ (∀ u : U, meromorphicOrderAt f u ≠ ⊤) := by
   constructor
@@ -719,6 +736,16 @@ theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU
   · intro h₂f
     obtain ⟨v, hv⟩ := hU.nonempty
     use ⟨v, hv⟩, h₂f ⟨v, hv⟩
+
+/--
+Variant of `MeromorphicOn.exists_meromorphicOrderAt_ne_top_iff_forall`, with membership in lieu of
+subtypes.
+-/
+theorem exists_meromorphicOrderAt_ne_top_iff_forall_mem (hf : MeromorphicOn f U)
+    (hU : IsConnected U) :
+    (∃ u ∈ U, meromorphicOrderAt f u ≠ ⊤) ↔ (∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) := by
+  convert exists_meromorphicOrderAt_ne_top_iff_forall hf hU
+  <;> simp
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
@@ -777,10 +804,10 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
     rw [eventually_nhdsWithin_iff, eventually_nhds_iff] at h₁a ⊢
     obtain ⟨t, h₁t, h₂t, h₃t⟩ := h₁a
     use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
-    exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_diff_of_mem h₃t hax⟩
+    exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_sdiff_of_mem h₃t hax⟩
   · filter_upwards [hf.eventually_analyticAt_or_mem_compl hx, h₁f] with a h₁a h'₁a
-    simp only [mem_compl_iff, mem_diff, mem_image, mem_setOf_eq, Subtype.exists, exists_and_right,
-      exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
+    simp only [mem_compl_iff, Set.mem_sdiff, mem_image, mem_setOf_eq, Subtype.exists,
+      exists_and_right, exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
     rcases h₁a with h' | h'
     · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
     · exact fun ha ↦ (h' ha).elim
@@ -865,3 +892,43 @@ lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt �
   meromorphicOrderAt_smul_of_ne_zero hg hg'
 
 end smul
+
+/-!
+## Order at a Point of the Derivative
+-/
+
+section deriv
+
+/-- The meromorphic order of the derivative is one less than the order of the original function.
+This however is not true if the characteristic of the domain field divides the original order,
+where the order of the derivative can rise to a larger integer. -/
+lemma meromorphicOrderAt_deriv_eq_sub_one [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
+    (hn : (n : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑n) :
+    meromorphicOrderAt (deriv f) x = ↑(n - 1) := by
+  have hmero : MeromorphicAt f x := meromorphicAt_of_meromorphicOrderAt_ne_zero (by aesop)
+  rw [meromorphicOrderAt_eq_int_iff hmero] at hf
+  rw [meromorphicOrderAt_eq_int_iff hmero.deriv]
+  obtain ⟨g, hga, hg0, (hg : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z)⟩ := hf
+  refine ⟨fun z ↦ (n : 𝕜) • g z + (z - x) • deriv g z, by fun_prop, by simpa using ⟨hn, hg0⟩, ?_⟩
+  filter_upwards [hga.eventually_analyticAt.filter_mono (nhdsWithin_le_nhds),
+    eventually_mem_nhdsWithin, hg.nhdsNE_deriv] with z hgz hmem hz
+  have hzx : z - x ≠ 0 := by simpa [sub_eq_zero] using hmem
+  calc
+    deriv f z = deriv (fun z ↦ (z - x) ^ n • g z) z :=
+      hz
+    _ = (z - x) ^ n • deriv g z + deriv ((· ^ n) ∘ (· - x)) z • g z :=
+      deriv_fun_smul (by fun_prop (disch := grind)) hgz.differentiableAt
+    _ = (z - x) ^ n • deriv g z + (n * (z - x) ^ (n - 1)) • g z := by
+      rw [deriv_comp _ (by fun_prop (disch := grind)) (by fun_prop)]
+      simp [deriv_zpow]
+    _ = (z - x) ^ (n - 1) • ((n : 𝕜) • g z + (z - x) • deriv g z) := by
+      simp [smul_smul, ← zpow_add_one₀ hzx, add_comm, mul_comm]
+
+/-- Equivalent to `meromorphicOrderAt_deriv_eq_sub_one` with a slightly different statement so the
+conclusion matches more targets -/
+lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
+    (hn : (↑(n + 1) : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑(n + 1)) :
+    meromorphicOrderAt (deriv f) x = ↑n := by
+  simpa using meromorphicOrderAt_deriv_eq_sub_one hn hf
+
+end deriv

@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.Portmanteau
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
@@ -670,7 +669,7 @@ theorem eq_convergenceInDistribution :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
       = TopologicalSpace.coinduced LevyProkhorov.toMeasure inferInstance :=
   le_convergenceInDistribution.antisymm' fun s hs ↦ by
-    simpa using hs.preimage continuous_ofMeasure_probabilityMeasure
+    simpa using! hs.preimage continuous_ofMeasure_probabilityMeasure
 
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/

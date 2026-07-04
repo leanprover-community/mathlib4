@@ -197,7 +197,7 @@ theorem accPt_iff_clusterPt {x : X} {F : Filter X} : AccPt x F ↔ ClusterPt x (
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem accPt_principal_iff_clusterPt {x : X} {C : Set X} :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ { x })) := by
-  rw [accPt_iff_clusterPt, inf_principal, inter_comm, diff_eq]
+  rw [accPt_iff_clusterPt, inf_principal, inter_comm, sdiff_eq]
 
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
@@ -239,7 +239,7 @@ theorem clusterPt_principal {x : X} {C : Set X} :
   · intro h
     by_contra! hc
     rw [accPt_principal_iff_clusterPt] at hc
-    simp_all only [not_false_eq_true, diff_singleton_eq_self, not_true_eq_false, hc.1]
+    simp_all only [not_false_eq_true, sdiff_singleton_eq_self, not_true_eq_false, hc.1]
   · rintro (h | h)
     · exact clusterPt_principal_iff.mpr fun _ mem ↦ ⟨x, ⟨mem_of_mem_nhds mem, h⟩⟩
     · exact h.clusterPt

@@ -49,7 +49,7 @@ theorem isSuccPrelimit_apply_iff (f : α ≤i β) : IsSuccPrelimit (f a) ↔ IsS
 
 @[simp]
 theorem isSuccLimit_apply_iff (f : α ≤i β) : IsSuccLimit (f a) ↔ IsSuccLimit a := by
-  simp [IsSuccLimit]
+  simp [isSuccLimit_iff]
 
 alias ⟨_, map_isSuccPrelimit⟩ := isSuccPrelimit_apply_iff
 alias ⟨_, map_isSuccLimit⟩ := isSuccLimit_apply_iff

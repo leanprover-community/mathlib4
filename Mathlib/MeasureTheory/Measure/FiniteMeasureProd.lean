@@ -6,7 +6,6 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Products of finite measures and probability measures

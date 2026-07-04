@@ -116,7 +116,7 @@ lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
 theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
-  DFunLike.coe_injective'
+  DFunLike.coe_injective
 
 protected theorem coe_inj {e₁ e₂ : α ≃ β} : (e₁ : α → β) = e₂ ↔ e₁ = e₂ :=
   @DFunLike.coe_fn_eq _ _ _ _ e₁ e₂
@@ -271,8 +271,11 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
     e ∘ (e : α ≃ β).symm = id :=
   (e : α ≃ β).self_comp_symm
 
-@[simp, grind =] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
+theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
+
+@[simp, grind =]
+theorem symm_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g).symm = g.symm.trans f.symm := rfl
 
 theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 

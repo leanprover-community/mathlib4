@@ -24,7 +24,7 @@ namespace Counterexample
 
 @[simp]
 theorem add_one_eq_one (x : WithZero Unit) : x + 1 = 1 :=
-  WithZero.cases_on x (by rfl) fun h => by rfl
+  WithZero.cases_on x rfl fun h => by rfl
 
 theorem withZero_unit_charP_zero : CharP (WithZero Unit) 0 :=
   ⟨fun x => by cases x <;> simp⟩

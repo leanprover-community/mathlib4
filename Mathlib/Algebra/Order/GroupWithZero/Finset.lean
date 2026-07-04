@@ -6,7 +6,7 @@ Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!

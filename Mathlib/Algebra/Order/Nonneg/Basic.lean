@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Algebra.Ring.Defs

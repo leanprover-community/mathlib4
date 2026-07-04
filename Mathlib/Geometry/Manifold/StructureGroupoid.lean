@@ -108,7 +108,7 @@ instance : Membership (OpenPartialHomeomorph H H) (StructureGroupoid H) :=
 instance (H : Type*) [TopologicalSpace H] :
     SetLike (StructureGroupoid H) (OpenPartialHomeomorph H H) where
   coe s := s.members
-  coe_injective' N O h := by cases N; cases O; congr
+  coe_injective N O h := by cases N; cases O; congr
 
 instance : Min (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
@@ -208,7 +208,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
     rcases (mem_union _ _ _).1 he with E | E
     · simp [mem_singleton_iff.mp E]
     · right
-      simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using E
+      simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using! E
   id_mem' := mem_union_left _ rfl
   locality' e he := by
     rcases e.source.eq_empty_or_nonempty with h | h
@@ -222,7 +222,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
         exact ⟨hx, xs⟩
       rcases hs with hs | hs
       · replace hs : OpenPartialHomeomorph.restr e s = OpenPartialHomeomorph.refl H := by
-          simpa only using hs
+          simpa only using! hs
         have : (e.restr s).source = univ := by
           rw [hs]
           simp
@@ -231,7 +231,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
           rw [← this]
           exact inter_subset_right
         have : s = univ := by rwa [open_s.interior_eq, univ_subset_iff] at this
-        simpa only [this, restr_univ] using hs
+        simpa only [this, restr_univ] using! hs
       · exfalso
         rw [mem_setOf_eq] at hs
         rwa [hs] at x's

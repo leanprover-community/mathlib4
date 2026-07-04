@@ -115,17 +115,17 @@ theorem fderiv_smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜
 @[fun_prop]
 theorem HasStrictFDerivAt.smul_const (hc : HasStrictFDerivAt c c' x) (f : F) :
     HasStrictFDerivAt (fun y => c y • f) (c'.smulRight f) x := by
-  simpa only [smul_zero, zero_add] using hc.smul (hasStrictFDerivAt_const f x)
+  simpa only [smul_zero, zero_add] using! hc.smul (hasStrictFDerivAt_const f x)
 
 @[fun_prop]
 theorem HasFDerivWithinAt.smul_const (hc : HasFDerivWithinAt c c' s x) (f : F) :
     HasFDerivWithinAt (fun y => c y • f) (c'.smulRight f) s x := by
-  simpa only [smul_zero, zero_add] using hc.smul (hasFDerivWithinAt_const f x s)
+  simpa only [smul_zero, zero_add] using! hc.smul (hasFDerivWithinAt_const f x s)
 
 @[fun_prop]
 theorem HasFDerivAt.smul_const (hc : HasFDerivAt c c' x) (f : F) :
     HasFDerivAt (fun y => c y • f) (c'.smulRight f) x := by
-  simpa only [smul_zero, zero_add] using hc.smul (hasFDerivAt_const f x)
+  simpa only [smul_zero, zero_add] using! hc.smul (hasFDerivAt_const f x)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.smul_const (hc : DifferentiableWithinAt 𝕜 c s x) (f : F) :
@@ -662,7 +662,7 @@ theorem hasFDerivAt_ringInverse (x : Rˣ) :
     HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
-  simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
+  simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using! this
 
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :

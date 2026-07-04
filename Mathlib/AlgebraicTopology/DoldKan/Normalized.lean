@@ -43,6 +43,7 @@ universe v
 
 variable {A : Type*} [Category* A] [Abelian A] {X : SimplicialObject A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
@@ -72,10 +73,12 @@ def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
       ← alternatingFaceMapComplex_obj_d]
     exact PInfty.comm (n + 1) n
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap (X : SimplicialObject A) :
     PInftyToNormalizedMooreComplex X ≫ inclusionOfMooreComplexMap X = PInfty := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
@@ -83,6 +86,7 @@ theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f 
       PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PInfty_comp_PInftyToNormalizedMooreComplex (X : SimplicialObject A) :
@@ -96,6 +100,7 @@ theorem inclusionOfMooreComplexMap_comp_PInfty (X : SimplicialObject A) :
     simp only [comp_id]
   · exact (HigherFacesVanish.inclusionOfMooreComplexMap n).comp_P_eq_self
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Mono (inclusionOfMooreComplexMap X) :=
   ⟨fun _ _ hf => by
     ext n
@@ -115,6 +120,7 @@ def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
 
 variable (A)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When the category `A` is abelian,
 the functor `N₁ : SimplicialObject A ⥤ Karoubi (ChainComplex A ℕ)` defined

@@ -233,8 +233,8 @@ instance instMonoid : Monoid αˣ :=
         inv := a⁻¹ ^ n
         val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
         inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
-    npow_zero := fun a ↦ by ext; simp
-    npow_succ := fun n a ↦ by ext; simp [pow_succ] }
+    npow_zero := fun a ↦ by simp only [HPow.hPow, Pow.pow]; ext; simp
+    npow_succ := fun n a ↦ by simp only [HPow.hPow, Pow.pow]; ext; simp [pow_succ] }
 
 /-- Units of a monoid have division -/
 @[to_additive /-- Additive units of an additive monoid have subtraction. -/]
@@ -251,9 +251,9 @@ instance instDivInvMonoid : DivInvMonoid αˣ where
   zpow := fun n a ↦ match n, a with
     | Int.ofNat n, a => a ^ n
     | Int.negSucc n, a => (a ^ n.succ)⁻¹
-  zpow_zero' := fun a ↦ by simp
-  zpow_succ' := fun n a ↦ by simp [pow_succ]
-  zpow_neg' := fun n a ↦ by simp
+  zpow_zero' := fun a ↦ by simp only [HPow.hPow, Pow.pow]; simp
+  zpow_succ' := fun n a ↦ by simp only [HPow.hPow, Pow.pow]; simp [pow_succ]
+  zpow_neg' := fun n a ↦ rfl
 
 /-- Units of a monoid form a group. -/
 @[to_additive /-- Additive units of an additive monoid form an additive group. -/]

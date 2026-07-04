@@ -128,7 +128,7 @@ theorem adjustToOrientation_apply_eq_or_eq_neg (i : ι) :
 theorem det_adjustToOrientation :
     (e.adjustToOrientation x).toBasis.det = e.toBasis.det ∨
       (e.adjustToOrientation x).toBasis.det = -e.toBasis.det := by
-  simpa using e.toBasis.det_adjustToOrientation x
+  simpa using! e.toBasis.det_adjustToOrientation x
 
 theorem abs_det_adjustToOrientation (v : ι → E) :
     |(e.adjustToOrientation x).toBasis.det v| = |e.toBasis.det v| := by

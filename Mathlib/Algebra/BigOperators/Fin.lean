@@ -702,7 +702,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   by_cases him : iv < m
   · conv in Sigma.mk _ _ =>
       equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]
-    simpa using ih _
+    simpa using! ih _
   · replace him := Nat.eq_of_lt_succ_of_not_lt hi him
     subst him
     conv in Sigma.mk _ _ =>

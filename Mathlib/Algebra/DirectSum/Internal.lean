@@ -247,8 +247,9 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 
 variable [Sub ι] [OrderedSub ι] [AddLeftReflectLE ι]
 
-/- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for the above typeclasses for convenience. -/
+/-! The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
+state them for the above typeclasses for convenience. -/
+
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -319,7 +320,7 @@ theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [CommSemiring S] [Sem
 theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     DirectSum.coeAlgHom A (DirectSum.of (fun i => A i) i x) = x :=
-  DirectSum.toSemiring_of _ (by rfl) (fun _ _ => (by rfl)) _ _
+  DirectSum.toSemiring_of _ rfl (fun _ _ => rfl) _ _
 
 end DirectSum
 

@@ -56,8 +56,8 @@ lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKInjective] [L.IsKInjective
   obtain ⟨g, hg⟩ := (Qh_map_bijective _ _).surjective
     ((quotientCompQhIso C).hom.app L ≫ inv (Q.map f) ≫ (quotientCompQhIso C).inv.app K)
   refine ⟨g, (Qh_map_bijective _ _).injective ?_, (Qh_map_bijective _ _).injective ?_⟩
-  · simp [hg]
-  · simp [hg, ← quotientCompQhIso_inv_naturality, -NatTrans.naturality]
+  · simp [hg]; rfl
+  · simp [hg, ← quotientCompQhIso_inv_naturality, -NatTrans.naturality]; rfl
 
 end IsKInjective
 

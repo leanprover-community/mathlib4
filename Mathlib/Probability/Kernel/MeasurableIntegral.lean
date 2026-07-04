@@ -51,6 +51,7 @@ namespace MeasureTheory
 variable [NormedSpace ℝ E]
 
 omit [IsSFiniteKernel κ] in
+@[fun_prop]
 theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ ∫ y, f y ∂κ x := by
   classical

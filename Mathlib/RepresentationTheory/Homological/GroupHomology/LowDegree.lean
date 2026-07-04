@@ -112,8 +112,9 @@ theorem range_d₁₀_eq_coinvariantsKer :
     | zero => simp [← hy]
     | single_add _ _ _ _ _ h =>
       simpa [← hy, add_sub_add_comm, sum_add_index, d₁₀_single (G := G)]
-        using Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
+        using! Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma d₁₀_comp_coinvariantsMk : d₁₀ A ≫ (coinvariantsMk k G).app A = 0 := by
@@ -638,7 +639,7 @@ def cyclesOfIsCycle₁ (x : G →₀ A) (hx : IsCycle₁ x) :
 theorem isCycle₁_of_mem_cycles₁
     (x : G →₀ A) (hx : x ∈ cycles₁ (Rep.ofDistribMulAction k G A)) :
     IsCycle₁ x := by
-  simpa using (mem_cycles₁_iff (A := Rep.ofDistribMulAction k G A) x).1 hx
+  simpa using! (mem_cycles₁_iff (A := Rep.ofDistribMulAction k G A) x).1 hx
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a finsupp
 `x : G →₀ A` satisfying the 1-boundary condition, produces a 1-boundary for the representation
@@ -750,6 +751,7 @@ def isoCycles₁ : cycles A 1 ≅ ModuleCat.of k (cycles₁ A) :=
     cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
       (shortComplexH1 A).moduleCatLeftHomologyData
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₁_hom_comp_i :
@@ -797,6 +799,7 @@ def isoCycles₂ : cycles A 2 ≅ ModuleCat.of k (cycles₂ A) :=
     cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
       (shortComplexH2 A).moduleCatLeftHomologyData
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₂_hom_comp_i :
@@ -914,6 +917,7 @@ instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries₁ A := by
   have h := leftHomologyπ_naturality'_assoc (isoShortComplexH1 A).inv
@@ -942,6 +946,7 @@ chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler t
 def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
   (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_hom :
@@ -949,6 +954,7 @@ lemma π_comp_H1Iso_hom :
       (shortComplexH1 A).moduleCatLeftHomologyData.π := by
   simp [H1Iso, isoCycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_inv :
     (shortComplexH1 A).moduleCatLeftHomologyData.π ≫ (H1Iso A).inv = H1π A :=
@@ -989,6 +995,7 @@ def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[
       simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
         shortComplexH1]).comp <| AddMonoidHomClass.toAddMonoidHom (H1Iso A).hom.hom).toIntLinearMap
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 @[simp]
@@ -1023,7 +1030,7 @@ def H1AddEquivOfIsTrivial :
         -- todo: change this proof so that we don't need `change` and `simpa` that both abuse defeq.
         change TensorProduct.lift _ (QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _)) = _
         simpa [AddSubgroup.subtype, -π_comp_H1Iso_inv_apply, QuotientAddGroup.mk',
-          cycles₁IsoOfIsTrivial_inv_apply (A := A)] using (π_comp_H1Iso_inv_apply A _).symm)
+          cycles₁IsoOfIsTrivial_inv_apply (A := A)] using! (π_comp_H1Iso_inv_apply A _).symm)
 
 @[simp]
 lemma H1AddEquivOfIsTrivial_single (g : G) (a : A) :
@@ -1056,6 +1063,7 @@ instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries₂ A := by
   have h := leftHomologyπ_naturality'_assoc (isoShortComplexH2 A).inv

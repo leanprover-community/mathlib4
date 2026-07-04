@@ -101,7 +101,7 @@ lemma neg_Z (P : Fin 3 → R) : W'.neg P z = P z :=
   rfl
 
 protected lemma neg_smul (P : Fin 3 → R) (u : R) : W'.neg (u • P) = u • W'.neg P := by
-  simpa only [neg, negY_smul] using (smul_fin3 (W'.neg P) u).symm
+  simpa only [neg, negY_smul] using! (smul_fin3 (W'.neg P) u).symm
 
 lemma neg_smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.neg (u • P) ≈ W'.neg P :=
   ⟨hu.unit, (W'.neg_smul ..).symm⟩

@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Group.IntegralConvolution
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
@@ -110,9 +108,9 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
   obtain ⟨w, hw⟩ := hg
   rw [hw]
   have hsum (P : Measure V) [IsFiniteMeasure P] :
-      ∫ v, ∑ a ∈ w.support, w a * e (L v a) ∂P = ∑ a ∈ w.support, ∫ v, w a * e (L v a) ∂P :=
-    integral_finsetSum w.support
-      fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
+      ∫ v, w.coeff.sum (fun a z ↦ z * e (L v a)) ∂P =
+        w.coeff.sum (fun a z ↦ ∫ v, z * e (L v a) ∂P) :=
+    integral_finsetSum _ fun a ha ↦ ((char he hL a).integrable P).const_mul  _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
   simp only [MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
@@ -373,8 +371,7 @@ lemma charFun_toDual_symm_eq_charFunDual {E : Type*} [NormedAddCommGroup E] [Com
 lemma charFunDual_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F)
     (L' : StrongDual ℝ F) : charFunDual (μ.map L) L' = charFunDual μ (L'.comp L) := by
   rw [charFunDual_eq_charFun_map_one, charFunDual_eq_charFun_map_one,
-    Measure.map_map (by fun_prop) (by fun_prop)]
-  simp
+    Measure.map_map (by fun_prop) (by fun_prop), ContinuousLinearMap.coe_comp]
 
 @[simp]
 lemma charFunDual_dirac [OpensMeasurableSpace E] {x : E} (L : StrongDual ℝ E) :

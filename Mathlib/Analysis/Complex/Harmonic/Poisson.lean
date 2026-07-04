@@ -60,7 +60,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
   · apply h₂F
     grind [mem_ball]
   -- CircleIntegrable (fun z ↦ ((z - c + (w - c)) / (z - c - (w - c))).re • F z) c R
-  apply (ContinuousOn.smul _ _).circleIntegrable'
+  apply (ContinuousOn.fun_smul _ _).circleIntegrable'
   · apply (continuousOn_herglotz_riesz hw).mono
     grind [mem_ball, dist_eq_norm, mem_sphere_iff_norm, (pos_of_mem_ball hw)]
   · apply (h₁F.mono _).continuousOn (𝕜 := ℂ)

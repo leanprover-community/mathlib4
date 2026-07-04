@@ -43,6 +43,8 @@ namespace ProfiniteGrp
 
 /-- The functor from `OpenNormalSubgroup P` to `FiniteGrp` sending `U` to `P ⧸ U`,
 where `P : ProfiniteGrp`. -/
+@[to_additive /-- The functor from `OpenNormalAddSubgroup P` to `FiniteAddGrp` sending `U` to
+`P ⧸ U`, where `P : ProfiniteAddGrp`. -/]
 def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp where
   obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
   map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
@@ -51,18 +53,22 @@ def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ Finite
     _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
 
 /-- The diagram of finite quotients of `P` viewed in `ProfiniteGrp`. -/
-@[simps! obj map]
+@[to_additive (attr := simps! obj map)
+/-- The diagram of finite quotients of `P` viewed in `ProfiniteAddGrp`. -/]
 def diagram (P : ProfiniteGrp.{u}) : OpenNormalSubgroup P ⥤ ProfiniteGrp.{u} :=
   toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp
 
 /-- The `MonoidHom` from a profinite group `P` to the projective limit of its quotients by
 open normal subgroups ordered by inclusion -/
+@[to_additive /-- The `AddMonoidHom` from a profinite additive group `P` to the projective limit of
+its quotients by open normal subgroups ordered by inclusion -/]
 def toLimitFun (P : ProfiniteGrp.{u}) : P →* limit (diagram P) where
   toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ ↦ fun _ _ ↦ rfl⟩
   map_one' := Subtype.val_inj.mp rfl
   map_mul' _ _ := Subtype.val_inj.mp rfl
 
 set_option backward.isDefEq.respectTransparency false in
+@[to_additive]
 lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) := by
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
@@ -81,6 +87,8 @@ lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) :
 
 /-- The morphism in the category of `ProfiniteGrp` from a profinite group `P` to
 the projective limit of its quotients by open normal subgroups ordered by inclusion -/
+@[to_additive /-- The morphism in the category of `ProfiniteAddGrp` from a profinite additive group
+`P` to the projective limit of its quotients by open normal subgroups ordered by inclusion -/]
 def toLimit (P : ProfiniteGrp.{u}) : P ⟶ limit (diagram P) :=
   ofHom { toLimitFun P with
   continuous_toFun := toLimitFun_continuous P }
@@ -115,6 +123,7 @@ theorem toLimit_surjective (P : ProfiniteGrp.{u}) : Function.Surjective (toLimit
   rw [← Set.range_eq_univ, ← closure_eq_iff_isClosed.mpr this,
     Dense.closure_eq (denseRange_toLimit P)]
 
+@[to_additive]
 theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P) := by
   change Function.Injective (toLimit P).hom.toMonoidHom
   rw [← MonoidHom.ker_eq_bot_iff, Subgroup.eq_bot_iff_forall]
@@ -144,6 +153,7 @@ noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivLimittoFiniteQuotientFunctor P)
 
 /-- The projection from `P` to the quotient by an open normal subgroup. -/
+@[to_additive /-- The projection from `P` to the quotient by an open normal subgroup. -/]
 def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).obj U :=
   ProfiniteGrp.ofHom (Y := (diagram P).obj U) {
     toFun := QuotientGroup.mk
@@ -154,7 +164,7 @@ def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).o
   }
 
 /-- The canonical cone over `diagram P` with point `P`. -/
-@[simps]
+@[to_additive (attr := simps) /-- The canonical cone over `diagram P` with point `P`. -/]
 def cone (P : ProfiniteGrp.{u}) : Limits.Cone (diagram P) where
   pt := P
   π := { app := proj }

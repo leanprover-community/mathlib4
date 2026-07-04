@@ -58,7 +58,7 @@ def toRingSeminorm' (f : AlgebraNorm R S) : RingSeminorm S :=
 
 instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h := by
+  coe_injective f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe] at h
     cases f; cases f'; congr
     simp only at h
@@ -150,7 +150,7 @@ variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
 
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h := by
+  coe_injective f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 
@@ -211,15 +211,11 @@ namespace MulRingNorm
 
 variable {R : Type*} [NonAssocRing R]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The ring norm underlying a multiplicative ring norm. -/
 def toRingNorm (f : MulRingNorm R) : RingNorm R where
-  toFun       := f
-  map_zero'   := f.map_zero'
-  add_le'     := f.add_le'
-  neg'        := f.neg'
+  toFun := f
+  __ := f
   mul_le' x y := le_of_eq (f.map_mul' x y)
-  eq_zero_of_map_eq_zero' := f.eq_zero_of_map_eq_zero'
 
 /-- A multiplicative ring norm is power-multiplicative. -/
 theorem isPowMul {A : Type*} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by

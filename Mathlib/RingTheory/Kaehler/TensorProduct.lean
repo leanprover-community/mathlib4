@@ -198,7 +198,6 @@ def tensorKaehlerEquivBase [h : Algebra.IsPushout R S A B] :
     | zero => simp
     | add x y e₁ e₂ => simp only [map_add, e₁, e₂]
     | tmul x y =>
-      dsimp
       -- We use the specialized version of `map_smul` here for performance.
       simp only [Derivation.tensorProductTo_tmul, LinearMap.map_smul,
         Derivation.liftKaehlerDifferential_comp_D, map_liftBaseChange_smul]

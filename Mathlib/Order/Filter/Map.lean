@@ -60,11 +60,7 @@ theorem mem_map' : t ∈ map m f ↔ { x | m x ∈ t } ∈ f :=
 theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
   f.sets_of_superset hs <| subset_preimage_image m s
 
--- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
   ⟨fun h => by rwa [← preimage_image_eq s hf], image_mem_map⟩
 
@@ -326,7 +322,7 @@ nonrec theorem _root_.Function.RightInverse.filter_comap {f : α → β} {g : β
 
 theorem _root_.Set.LeftInvOn.filter_map_Iic {f : α → β} {g : β → α} (hfg : LeftInvOn g f s) :
     LeftInvOn (map g) (map f) (Iic <| 𝓟 s) := fun F (hF : F ≤ 𝓟 s) ↦ by
-  have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using hfg
+  have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using! hfg
   rw [map_map, map_congr (this.filter_mono hF), map_id]
 
 nonrec theorem _root_.Set.RightInvOn.filter_map_Iic {f : α → β} {g : β → α}

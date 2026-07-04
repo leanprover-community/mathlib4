@@ -40,6 +40,7 @@ theorem exists_bounded_zero_one_of_closed {X : Type*} [TopologicalSpace X] [Norm
   let ⟨f, hfs, hft, hf⟩ := exists_continuous_zero_one_of_isClosed hs ht hd
   ⟨⟨f, 1, fun _ _ => Real.dist_le_of_mem_Icc_01 (hf _) (hf _)⟩, hfs, hft, hf⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
 and `a ≤ b` are two real numbers, then there exists a continuous function `f : X → ℝ` such that
 

@@ -296,9 +296,9 @@ theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →
   refine ⟨g, ?_, ?_⟩
   · ext x
     have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.2
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
 
 open Submodule LinearMap
 

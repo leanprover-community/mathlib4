@@ -59,7 +59,7 @@ theorem polar_closure (s : Set E) : StrongDual.polar 𝕜 (closure s) = StrongDu
   ((topDualPairing 𝕜 E).flip.polar_antitone subset_closure).antisymm <|
     (topDualPairing 𝕜 E).flip.polar_gc.l_le <|
       closure_minimal ((topDualPairing 𝕜 E).flip.polar_gc.le_u_l s) <| by
-        simpa [LinearMap.flip_flip] using
+        simpa [LinearMap.flip_flip] using!
           (isClosed_polar _ _).preimage (ContinuousLinearMap.apply 𝕜 𝕜 (E := E)).continuous
 
 variable {𝕜}
@@ -113,7 +113,7 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   intro x' h
   simp only [mem_closedBall_zero_iff]
   refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
-  simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
+  simpa only [one_div] using! LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
 theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : StrongDual.polar 𝕜 (ball (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by

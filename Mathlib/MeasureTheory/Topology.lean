@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.Topology.DiscreteSubset
 
 /-!
@@ -22,7 +22,7 @@ open Filter MeasureTheory
 everywhere" filter of co-null sets. -/
 theorem ae_restrict_le_codiscreteWithin
     {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [SecondCountableTopology α]
-    {μ : Measure α} [NoAtoms μ] {U : Set α} (hU : MeasurableSet U) :
+    {μ : Measure α} [NullSingletonClass μ] {U : Set α} (hU : MeasurableSet U) :
     ae (μ.restrict U) ≤ codiscreteWithin U := by
   intro s hs
   have : DiscreteTopology ↑(sᶜ ∩ U) := isDiscrete_iff_discreteTopology.mp

@@ -82,7 +82,8 @@ theorem isChain_of_trichotomous [Std.Trichotomous r] (s : Set α) : IsChain r s 
 
 protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
     IsChain r (insert a s) :=
-  hs.insert_of_symmetric (fun _ _ => Or.symm) ha
+  have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
+  hs.insert_of_symm ha
 
 lemma IsChain.pair (h : r a b) : IsChain r {a, b} :=
   IsChain.singleton.insert fun _ hb _ ↦ .inl <| (eq_of_mem_singleton hb).symm.recOn ‹_›
@@ -106,7 +107,8 @@ theorem IsChain.preimage (r : α → α → Prop) (s : β → β → Prop) (f : 
 
 lemma isChain_union {s t : Set α} :
     IsChain r (s ∪ t) ↔ IsChain r s ∧ IsChain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∨ r b a := by
-  rw [IsChain, IsChain, IsChain, pairwise_union_of_symmetric fun _ _ ↦ Or.symm]
+  have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
+  rw [IsChain, IsChain, IsChain, pairwise_union_of_symm]
 
 lemma Monotone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
     (hf : Monotone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
@@ -117,12 +119,20 @@ theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (h
   rw [← image_univ]
   exact hf.isChain_image (isChain_of_trichotomous _)
 
+lemma Antitone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : Antitone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
+  hf.dual_left.isChain_image hs.symm
+
+theorem Antitone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+    IsChain (· ≤ ·) (range f) :=
+  hf.dual_left.isChain_range
+
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
 
 @[simp] protected theorem IsChain.diff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
-  h.mono Set.diff_subset
+  h.mono Set.sdiff_subset
 
 theorem isChain_preimage_subtypeVal (s t : Set α) :
     @IsChain ↑s (r · ·) (s ↓∩ t) ↔ IsChain r (s ∩ t) := by
@@ -219,6 +229,15 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
   exact ⟨z', mem5, _root_.trans H1 H3, _root_.trans H2 H3, H4⟩
 
 end Total
+
+/-- A chain in a partial order is a linear order. -/
+@[implicit_reducible]
+def IsChain.linearOrder [PartialOrder α] [DecidableLE α] {s : Set α} (hs : IsChain (· ≤ ·) s) :
+    LinearOrder s where
+  le_total := by
+    rintro ⟨a, ha⟩ ⟨b, hb⟩
+    exact hs.total ha hb
+  toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
@@ -322,7 +341,7 @@ variable [LE α] {s t : Flag α} {a : α}
 
 instance : SetLike (Flag α) α where
   coe := carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     cases s
     cases t
     congr

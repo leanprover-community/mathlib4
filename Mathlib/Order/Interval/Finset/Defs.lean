@@ -389,6 +389,9 @@ theorem _root_.Fintype.card_Ioi (a : α) [Fintype (Set.Ioi a)] :
     Fintype.card (Set.Ioi a) = #(Ioi a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
+@[to_additive (attr := simp)]
+lemma Ici_one_eq_univ [One α] [IsBotOneClass α] [Fintype α] : Ici (1 : α) = univ := by ext; simp
+
 end LocallyFiniteOrderTop
 
 section OrderTop
@@ -1082,11 +1085,11 @@ instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
 
 @[to_dual]
 instance [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
-  simpa only [coe_Iic] using (Finset.Iic y).finite_toSet
+  simpa only [coe_Iic] using! (Finset.Iic y).finite_toSet
 
 @[to_dual]
 instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
-  simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
+  simpa only [coe_Iio] using! (Finset.Iio y).finite_toSet
 
 namespace Set
 variable {α : Type*} [Preorder α]

@@ -73,7 +73,7 @@ variable (X) in
 
 variable (X) in
 /-- `ContinuousMap.realToRCLike` as a ⋆-algebra map. -/
-@[simps!] noncomputable def realToRCLikeStarAlgHom : C(X, ℝ) →⋆ₐ[ℝ] C(X, 𝕜) :=
+noncomputable def realToRCLikeStarAlgHom : C(X, ℝ) →⋆ₐ[ℝ] C(X, 𝕜) :=
   compStarAlgHom X (RCLike.ofRealStarAlgHom 𝕜) RCLike.continuous_ofReal
 
 @[simp] lemma realToRCLikeStarAlgHom_apply (f : C(X, ℝ)) :

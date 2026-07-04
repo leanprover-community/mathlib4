@@ -72,11 +72,11 @@ section coe
 
 instance : FunLike (𝒜 →+*ᵍ ℬ) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance : GradedFunLike (𝒜 →+*ᵍ ℬ) 𝒜 ℬ where

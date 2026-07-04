@@ -458,14 +458,14 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if stx.isOfKind ``Lean.Parser.Module.header then return
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
-    let stx := ← do
+    let stx ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
         let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader
           { inputString := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
-        return impMods.raw
-      else return stx
+        pure impMods.raw
+      else pure stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
     let maxLineLength := linter.style.longLine.maxLineLength.get (← getOptions)
@@ -648,7 +648,7 @@ def showLinter : Linter where run := withSetOptionIn fun stx => do
         let (goal :: goals) := tac.goalsBefore | return
         let (goal' :: goals') := tac.goalsAfter | return
         if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
-        if goal == goal' then return -- same goal, no need to check
+        -- Even if `goal == goal'`, the tactic may have assigned metavariables.
         let diff ← ci.runCoreM do
           let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }
           let after ← (do instantiateMVars (← goal'.getType)).run' {} { mctx := tac.mctxAfter }

@@ -243,11 +243,9 @@ when `X` is cofibrant and `Y` is fibrant. -/
 def leftHomotopyClassEquivRightHomotopyClass :
     LeftHomotopyClass X Y ≃ RightHomotopyClass X Y where
   toFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
-    dsimp
     rw [RightHomotopyClass.mk_eq_mk_iff]
     exact h.rightHomotopyRel)
   invFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
-    dsimp
     rw [LeftHomotopyClass.mk_eq_mk_iff]
     exact h.leftHomotopyRel)
   left_inv := by rintro ⟨f⟩; rfl

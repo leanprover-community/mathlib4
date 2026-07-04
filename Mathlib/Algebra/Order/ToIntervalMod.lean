@@ -16,9 +16,8 @@ import Mathlib.GroupTheory.QuotientGroup.ModEq
 /-!
 # Reducing to an interval modulo its length
 
-This file defines operations that reduce a number (in an `Archimedean`
-`LinearOrderedAddCommGroup`) to a number in a given interval, modulo the length of that
-interval.
+This file defines operations that reduce a number (in an archimedean linearly ordered abelian group)
+to a number in a given interval, modulo the length of that interval.
 
 ## Main definitions
 

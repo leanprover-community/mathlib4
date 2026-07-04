@@ -204,7 +204,8 @@ theorem primaryComponent.map_surjective {M₁ M₂ : Type*}
   refine (Submodule.disjoint_def.mp (iSupIndep_primaryComponent A M₂ P)) _ ?_ ?_
   · exact Submodule.sub_mem _ hy (primaryComponent_map_mem _ _ _)
   · have hdiff : φ b - φ ↑(f P) = ∑ Q ∈ f.support \ {P}, φ ↑(f Q) := by
-      rw [sub_eq_iff_eq_add', ← Finset.sum_eq_add_sum_diff_singleton P (fun P ↦ φ (f P)) (by aesop)]
+      rw [sub_eq_iff_eq_add',
+        ← Finset.sum_eq_add_sum_sdiff_singleton P (fun P ↦ φ (f P)) (by aesop)]
       simpa [DFinsupp.sumAddHom_apply, DFinsupp.sum] using congr(φ $hf).symm
     rw [hdiff]
     exact Submodule.sum_mem _ fun Q hQ ↦ Submodule.mem_iSup_of_mem Q <|

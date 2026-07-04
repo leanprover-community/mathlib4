@@ -42,7 +42,7 @@ def MeasuredSets (μ : Measure α) : Type _ := {s : Set α // MeasurableSet s}
 
 instance : SetLike (MeasuredSets μ) α where
   coe s := s.1
-  coe_injective' := Subtype.coe_injective
+  coe_injective := Subtype.coe_injective
 
 noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)
@@ -56,7 +56,7 @@ lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : edist s t = μ ((s : Set 
 
 We cannot state this in terms of `LipschitzWith`, because `ℝ≥0∞` is not a `PseudoEMetricSpace`. -/
 lemma MeasuredSets.sub_le_edist (s t : MeasuredSets μ) : μ s - μ t ≤ edist s t :=
-  le_measure_diff.trans <| measure_mono subset_union_left
+  le_measure_sdiff.trans <| measure_mono subset_union_left
 
 lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) ↦ μ s) := by
   refine continuous_of_le_add_edist 1 ENNReal.one_ne_top fun s t ↦ ?_
@@ -80,7 +80,6 @@ lemma MeasuredSets.lipschitzWith_measureReal [IsFiniteMeasure μ] :
     LipschitzWith 1 (fun s : MeasuredSets μ ↦ μ.real s) :=
   .of_le_add fun s t ↦ sub_le_iff_le_add'.mp <| real_sub_real_le_dist s t
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a ring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, any measurable set can be approximated by elements of `C`. -/
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
@@ -125,7 +124,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
       obtain ⟨n, hn⟩ : ∃ n, μ (accumulate f n)ᶜ < ε / 2 :=
         ((tendsto_order.1 this).2 _ (ENNReal.half_pos εpos.ne')).exists
       exact ⟨accumulate f n, fC n, hn⟩
-    refine ⟨t' \ t, hC.diff_mem t'C tC, ?_⟩
+    refine ⟨t' \ t, hC.sdiff_mem t'C tC, ?_⟩
     calc μ ((t' \ t) ∆ sᶜ)
       _ ≤ μ (t ∆ s ∪ t'ᶜ) := by gcongr; grind
       _ ≤ μ (t ∆ s) + μ (t'ᶜ) := measure_union_le _ _
@@ -188,7 +187,7 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.2 εpos with ⟨t, tC, ht⟩
   have t_meas : MeasurableSet t := by rw [h]; exact measurableSet_generateFrom tC
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
-  simpa [MeasuredSets.edist_def] using ht
+  simpa [MeasuredSets.edist_def] using! ht
 
 /-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, finite unions of elements of `C` are dense among measurable sets. -/
@@ -200,7 +199,7 @@ lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
   rintro s ε εpos
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.2 εpos
     with ⟨t, tC, ht⟩
-  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using ht, tC⟩
+  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using! ht, tC⟩
   rw [h]
   exact measurableSet_generateFrom_of_mem_supClosure tC
 

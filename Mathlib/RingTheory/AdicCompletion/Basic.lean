@@ -123,7 +123,7 @@ theorem IsHausdorff.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorf
   ext r
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
-  simpa using h n r
+  simpa using! h n r
 
 /--
 A variant of `IsHausdorff.StrictMono.funext`, where the target is a ring instead of a module.
@@ -135,7 +135,7 @@ theorem IsHausdorff.StrictMono.funext' {R S : Type*} [CommRing S] (I : Ideal S) 
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
   apply SModEq.mono (Submodule.pow_smul_top_le I S ha.le_apply)
-  simpa using h n m
+  simpa using! h n m
 
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →

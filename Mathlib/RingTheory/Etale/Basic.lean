@@ -71,6 +71,8 @@ theorem of_formallyUnramified_and_formallySmooth [FormallyUnramified R A]
     [FormallySmooth R A] : FormallyEtale R A :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr ⟨‹_›, ‹_›⟩
 
+instance : FormallyEtale R R := of_formallyUnramified_and_formallySmooth
+
 variable (R A) in
 lemma comp_bijective [FormallyEtale R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
     Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
@@ -128,6 +130,7 @@ lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
     Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
   ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2025-12-09")]
 alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
 
@@ -140,6 +143,7 @@ lemma iff_of_surjective
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
     and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2025-12-09")]
 alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
 
@@ -222,6 +226,8 @@ end
 namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
+
+instance : Etale R R where
 
 instance [Etale R A] : Smooth R A where
 

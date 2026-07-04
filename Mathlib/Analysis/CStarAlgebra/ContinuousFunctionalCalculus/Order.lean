@@ -374,11 +374,11 @@ lemma le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (↑b : A)) :
 
 lemma one_le_inv_iff_le_one {a : Aˣ} (ha : 0 ≤ (a : A)) :
     1 ≤ (↑a⁻¹ : A) ↔ a ≤ 1 := by
-  simpa using CStarAlgebra.le_inv_iff (a := 1) (by simp) ha
+  simpa using! CStarAlgebra.le_inv_iff (a := 1) (by simp) ha
 
 lemma inv_le_one_iff_one_le {a : Aˣ} (ha : 0 ≤ (a : A)) :
     (↑a⁻¹ : A) ≤ 1 ↔ 1 ≤ a := by
-  simpa using CStarAlgebra.inv_le_iff ha (b := 1) (by simp)
+  simpa using! CStarAlgebra.inv_le_iff ha (b := 1) (by simp)
 
 lemma inv_le_one {a : Aˣ} (ha : 1 ≤ a) : (↑a⁻¹ : A) ≤ 1 :=
   CStarAlgebra.inv_le_one_iff_one_le (zero_le_one.trans ha) |>.mpr ha

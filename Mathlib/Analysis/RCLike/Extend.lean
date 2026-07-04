@@ -103,9 +103,6 @@ variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- Extend `fr : StrongDual ℝ F` to `StrongDual 𝕜 F`.
 
-It would be possible to use `LinearMap.mkContinuous` here, but we would need to know that the
-continuity of `fr` implies it has bounded norm and we want to avoid that dependency here.
-
 Norm properties of this extension can be found in
 `Mathlib/Analysis/Normed/Module/RCLike/Extend.lean`. -/
 noncomputable def extendRCLike (fr : StrongDual ℝ F) : StrongDual 𝕜 F where

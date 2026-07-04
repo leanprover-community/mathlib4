@@ -103,8 +103,7 @@ theorem add (hf : AbsolutelyMonotoneOn f s) (hg : AbsolutelyMonotoneOn g s) :
   obtain ⟨p, hp, hp_nn⟩ := hf
   obtain ⟨q, hq, hq_nn⟩ := hg
   refine ⟨p + q, hp.add hq, fun n x hx => ?_⟩
-  simp only [Pi.add_apply, FormalMultilinearSeries.add_apply,
-    ContinuousMultilinearMap.add_apply]
+  simp only [Pi.add_apply, FormalMultilinearSeries.add_apply, add_apply]
   exact add_nonneg (hp_nn n hx) (hq_nn n hx)
 
 /-- A nonnegative scalar multiple of an absolutely monotone function is absolutely monotone. -/
@@ -116,7 +115,7 @@ theorem smul {c : ℝ} (hf : AbsolutelyMonotoneOn f s) (hc : 0 ≤ c) :
   have hcomp : (T ∘ f) = c • f := by ext x; simp [hT, smul_eq_mul]
   refine ⟨_, hcomp ▸ hp.continuousLinearMap_comp T, fun n x hx => ?_⟩
   simp only [ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, hT,
-    ContinuousLinearMap.smul_apply, ContinuousLinearMap.id_apply, smul_eq_mul]
+    smul_apply, ContinuousLinearMap.id_apply, smul_eq_mul]
   exact mul_nonneg hc (hp_nn n hx)
 
 end AbsolutelyMonotoneOn

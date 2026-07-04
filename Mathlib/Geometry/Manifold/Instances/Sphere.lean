@@ -89,18 +89,18 @@ the orthogonal complement of an element `v` of `E`. It is smooth away from the a
 through `v` parallel to the orthogonal complement.  It restricts on the sphere to the stereographic
 projection. -/
 def stereoToFun (x : E) : (ℝ ∙ v)ᗮ :=
-  (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjection x
+  (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x
 
 variable {v}
 
 @[simp]
 theorem stereoToFun_apply (x : E) :
-    stereoToFun v x = (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjection x :=
+    stereoToFun v x = (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x :=
   rfl
 
 theorem contDiffOn_stereoToFun {n : ℕ∞ω} :
     ContDiffOn ℝ n (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
-  refine ContDiffOn.fun_smul ?_ (ℝ ∙ v)ᗮ.orthogonalProjection.contDiff.contDiffOn
+  refine ContDiffOn.fun_smul ?_ (ℝ ∙ v)ᗮ.orthogonalProjectionOnto.contDiff.contDiffOn
   refine contDiff_const.contDiffOn.div ?_ ?_
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
   · intro x h h'
@@ -208,7 +208,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   simp only [stereoToFun_apply, stereoInvFun_apply, smul_add]
   -- name two frequently-occurring quantities and write down their basic properties
   set a : ℝ := innerSL _ v x
-  set y := (ℝ ∙ v)ᗮ.orthogonalProjection x
+  set y := (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x
   have split : ↑x = a • v + ↑y := by
     rw [← ((ℝ ∙ v).starProjection_add_starProjection_orthogonal x),
       Submodule.starProjection_unit_singleton ℝ hv x]
@@ -234,9 +234,9 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul,
-    innerSL_apply_apply, Submodule.orthogonalProjection_mem_subspace_eq_self]
-  have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjection v = 0 :=
-    Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero v
+    innerSL_apply_apply, Submodule.orthogonalProjectionOnto_mem_subspace_eq_self]
+  have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjectionOnto v = 0 :=
+    Submodule.orthogonalProjectionOnto_orthogonalComplement_singleton_eq_zero v
   have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
   have h₃ : ⟪v, v⟫ = 1 := by simp [hv]
   rw [h₁, h₂, h₃]
@@ -269,7 +269,7 @@ def stereographic (hv : ‖v‖ = 1) : OpenPartialHomeomorph (sphere (0 : E) 1) 
   continuousOn_invFun := (continuous_stereoInvFun hv).continuousOn
 
 theorem stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
-    stereographic hv x = (2 / ((1 : ℝ) - ⟪v, x⟫)) • (ℝ ∙ v)ᗮ.orthogonalProjection x :=
+    stereographic hv x = (2 / ((1 : ℝ) - ⟪v, x⟫)) • (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x :=
   rfl
 
 @[simp]
@@ -283,7 +283,7 @@ theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Se
 @[simp]
 theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by
-  simp [stereographic_apply, Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero]
+  simp [stereographic_apply]
 
 @[simp]
 theorem stereographic_neg_apply (v : sphere (0 : E) 1) :
@@ -469,6 +469,7 @@ theorem contMDiff_neg_sphere {m : ℕ∞ω} {n : ℕ} [Fact (finrank ℝ E = n +
   apply contDiff_neg.contMDiff.comp _
   exact contMDiff_coe_sphere
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     stereographic' n (-v) v = 0 := by
@@ -476,6 +477,7 @@ private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   simp only [EmbeddingLike.map_eq_zero_iff]
   apply stereographic_neg_apply
 
+-- TODO: rephrase this using `mvfderiv`, avoiding the defeq abuse
 set_option backward.isDefEq.respectTransparency false in
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
@@ -517,6 +519,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     rw [Submodule.neg_mem_iff]
     exact Submodule.mem_span_singleton_self (v : E)
 
+-- TODO: rephrase this using `mvfderiv`, avoiding the defeq abuse
 set_option backward.isDefEq.respectTransparency false in
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/
@@ -535,7 +538,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
     simp
   have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
-  rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
+  rw [ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe]
   simpa [-Subtype.val_injective] using Subtype.val_injective
 
 end ContMDiffManifold

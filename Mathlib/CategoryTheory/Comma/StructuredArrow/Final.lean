@@ -33,6 +33,7 @@ variable {T : Type u₁} [SmallCategory T]
 
 attribute [local instance] Grothendieck.final_map
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The version of `final_of_final_costructuredArrowToOver` on small categories used to prove the
 full statement. -/
@@ -68,6 +69,7 @@ end Small
 variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor `L : A ⥤ T` is final if there is a final functor `R : B ⥤ T` such that for all
 `b : B`, the canonical functor `CostructuredArrow L (R.obj b) ⥤ Over (R.obj b)` is final. -/

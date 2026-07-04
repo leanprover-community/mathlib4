@@ -12,7 +12,7 @@ public import Mathlib.Tactic.FastInstance
 /-!
 # Algebraic structures on the set of positive numbers
 
-In this file we define various instances (`AddSemigroup`, `OrderedCommMonoid` etc) on the
+In this file we define various instances (`AddSemigroup`, `IsOrderedMonoid` etc) on the
 type `{x : R // 0 < x}`. In each case we try to require the weakest possible typeclass
 assumptions on `R` but possibly, there is a room for improvements.
 -/

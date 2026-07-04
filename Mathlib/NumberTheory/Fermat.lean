@@ -51,7 +51,7 @@ lemma two_lt_fermatNumber (n : ℕ) : 2 < fermatNumber n := three_le_fermatNumbe
 lemma fermatNumber_ne_one (n : ℕ) : fermatNumber n ≠ 1 := by have := three_le_fermatNumber n; lia
 
 theorem odd_fermatNumber (n : ℕ) : Odd (fermatNumber n) :=
-  (even_pow.mpr ⟨even_two, (pow_pos two_pos n).ne'⟩).add_one
+  (even_two.pow_of_ne_zero (pow_pos two_pos n).ne').add_one
 
 theorem prod_fermatNumber (n : ℕ) : ∏ k ∈ range n, fermatNumber k = fermatNumber n - 2 := by
   induction n with | zero => rfl | succ n hn =>
@@ -127,11 +127,11 @@ theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ 
   rw [one_pow, hP.dvd_iff_eq (Nat.lt_add_right 1 ha).ne', add_left_inj, pow_eq_self_iff ha] at h
   rw [h, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Fₙ = 2^(2^n)+1` is prime if `3^(2^(2^n-1)) = -1 mod Fₙ` (**Pépin's test**). -/
 lemma pepin_primality (n : ℕ) (h : 3 ^ (2 ^ (2 ^ n - 1)) = (-1 : ZMod (fermatNumber n))) :
     (fermatNumber n).Prime := by
   have := Fact.mk (two_lt_fermatNumber n)
+  unfold fermatNumber at h this
   have key : 2 ^ n = 2 ^ n - 1 + 1 := (Nat.sub_add_cancel Nat.one_le_two_pow).symm
   apply lucas_primality (p := 2 ^ (2 ^ n) + 1) (a := 3)
   · rw [Nat.add_sub_cancel, key, pow_succ, pow_mul, ← pow_succ, ← key, h, neg_one_sq]
@@ -175,7 +175,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
     ∃ k, p = k * 2 ^ (n + 2) + 1 := by
   have : Fact p.Prime := Fact.mk hp
   have hp2 : p ≠ 2 := by
-    exact ((even_pow.mpr ⟨even_two, pow_ne_zero n two_ne_zero⟩).add_one).ne_two_of_dvd_nat hpdvd
+    exact (even_two.pow_of_ne_zero <| pow_ne_zero n two_ne_zero).add_one.ne_two_of_dvd_nat hpdvd
   have hp8 : p % 8 = 1 := by
     obtain ⟨k, rfl⟩ := pow_pow_add_primeFactors_one_lt hp hp2 hpdvd
     obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn

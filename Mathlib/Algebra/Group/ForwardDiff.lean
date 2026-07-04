@@ -151,7 +151,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
   rw [← coe_fwdDiffₗ, this, ← Module.End.pow_apply]
   -- use binomial theorem `Commute.add_pow` to expand this
   have : Commute (shiftₗ M G h) (-1) := (Commute.one_right _).neg_right
-  convert! congr_fun (LinearMap.congr_fun (this.add_pow n) f) y using 3
+  convert congr_fun (LinearMap.congr_fun (this.add_pow n) f) y
   · simp only [sub_eq_add_neg]
   · rw [LinearMap.sum_apply, sum_apply]
     congr 1 with k

@@ -262,10 +262,10 @@ instance NNReal.isBoundedSMul : IsBoundedSMul ℝ≥0 ℝ≥0 where
 /-- If a scalar is central, then its right action is bounded when its left action is. -/
 instance IsBoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : IsBoundedSMul αᵐᵒᵖ β where
   dist_smul_pair' :=
-    MulOpposite.rec' fun x y₁ y₂ => by simpa only [op_smul_eq_smul] using dist_smul_pair x y₁ y₂
+    MulOpposite.rec' fun x y₁ y₂ => by simpa only [op_smul_eq_smul] using! dist_smul_pair x y₁ y₂
   dist_pair_smul' :=
     MulOpposite.rec' fun x₁ =>
-      MulOpposite.rec' fun x₂ y => by simpa only [op_smul_eq_smul] using dist_pair_smul x₁ x₂ y
+      MulOpposite.rec' fun x₂ y => by simpa only [op_smul_eq_smul] using! dist_pair_smul x₁ x₂ y
 
 end IsBoundedSMul
 

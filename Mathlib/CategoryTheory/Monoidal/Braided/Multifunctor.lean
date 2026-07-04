@@ -19,6 +19,8 @@ phrased as equalities of natural transformations between trifunctors
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory

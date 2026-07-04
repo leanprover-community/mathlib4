@@ -52,7 +52,7 @@ variable [Zero R] [Add R] [LE R] (d : PseudoMetric X R)
 
 instance : FunLike (PseudoMetric X R) X (X → R) where
   coe := PseudoMetric.toFun
-  coe_injective' _ := by aesop
+  coe_injective _ := by aesop
 
 @[simp, norm_cast]
 lemma coe_mk (d : X → X → R) (refl symm triangle) : mk d refl symm triangle = d := rfl

@@ -81,12 +81,13 @@ class CreatesLimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
   CreatesLimit : ∀ {K : J ⥤ C}, CreatesLimit K F := by infer_instance
 
 -- This should be used with explicit universe variables.
+set_option linter.checkUnivs false in
 /-- `F` creates limits if it creates limits of shape `J` for any `J`. -/
 -- After https://github.com/leanprover/lean4/pull/12286 and
 -- https://github.com/leanprover/lean4/pull/12423, the shape universes in
 -- `CreatesLimitsOfSize` and `CreatesColimitsOfSize` would default to universe output parameters.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class CreatesLimitsOfSize (F : C ⥤ D) where
   CreatesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesLimitsOfShape J F := by
     infer_instance
@@ -114,8 +115,9 @@ class CreatesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
   CreatesColimit : ∀ {K : J ⥤ C}, CreatesColimit K F := by infer_instance
 
 -- This should be used with explicit universe variables.
+set_option linter.checkUnivs false in
 /-- `F` creates colimits if it creates colimits of shape `J` for any small `J`. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class CreatesColimitsOfSize (F : C ⥤ D) where
   CreatesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesColimitsOfShape J F := by
     infer_instance
@@ -154,8 +156,8 @@ lemma liftedLimitMapsToOriginal_hom_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j = F.map ((liftLimit t).π.app j) := by
   rw [← liftedLimitMapsToOriginal_inv_map_π (t := t)]
-  simp only [Functor.mapCone_pt, Functor.comp_obj, ← Category.assoc, ← Cone.category_comp_hom,
-    Iso.hom_inv_id, Cone.category_id_hom, Category.id_comp, Functor.const_obj_obj]
+  simp only [← Category.assoc, ← Cone.category_comp_hom,
+    Iso.hom_inv_id, Cone.category_id_hom, Category.id_comp]
 
 /-- The lifted cone is a limit. -/
 def liftedLimitIsLimit {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)}
@@ -317,6 +319,7 @@ def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
     CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (limit.isLimit _) c i
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
@@ -441,6 +444,7 @@ def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.
     CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfLift' (colimit.isColimit _) c i
 
+set_option backward.defeqAttrib.useBackward true in
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
 -- so the constructed colimits may not be ideal, definitionally.
@@ -494,6 +498,7 @@ instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits 
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
     PreservesColimitsOfSize.{w, w'} F where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Transfer creation of limits along a natural isomorphism in the diagram. -/
 @[implicit_reducible]
 def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [CreatesLimit K₁ F] :
@@ -532,6 +537,7 @@ def createsLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimitsOfSize.{w,
     CreatesLimitsOfSize.{w, w'} G where
   CreatesLimitsOfShape := createsLimitsOfShapeOfNatIso h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` creates limits of shape `J` and `J ≌ J'`, then `F` creates limits of shape `J'`. -/
 @[implicit_reducible]
 def createsLimitsOfShapeOfEquiv {J' : Type w₁} [Category.{w'₁} J'] (e : J ≌ J') (F : C ⥤ D)
@@ -546,6 +552,7 @@ def createsLimitsOfShapeOfEquiv {J' : Type w₁} [Category.{w'₁} J'] (e : J �
         exact Cone.ext (Iso.refl _)
       toReflectsLimit := have := reflectsLimitsOfShape_of_equiv e F; inferInstance }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Transfer creation of colimits along a natural isomorphism in the diagram. -/
 @[implicit_reducible]
 def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [CreatesColimit K₁ F] :
@@ -585,6 +592,7 @@ def createsColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimitsOfSize
     CreatesColimitsOfSize.{w, w'} G where
   CreatesColimitsOfShape := createsColimitsOfShapeOfNatIso h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` creates colimits of shape `J` and `J ≌ J'`, then `F` creates colimits of shape `J'`. -/
 @[implicit_reducible]
 def createsColimitsOfShapeOfEquiv {J' : Type w₁} [Category.{w'₁} J'] (e : J ≌ J') (F : C ⥤ D)
@@ -615,6 +623,7 @@ def liftsToColimitOfCreates (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F] (c 
   validLift := liftedColimitMapsToOriginal t
   makesColimit := liftedColimitIsColimit t
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Any cone lifts through the identity functor. -/
 def idLiftsCone (c : Cone (K ⋙ 𝟭 C)) : LiftableCone K (𝟭 C) c where
   liftedCone :=
@@ -627,6 +636,7 @@ instance idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C) where
   CreatesLimitsOfShape :=
     { CreatesLimit := { lifts := fun c _ => idLiftsCone c } }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Any cocone lifts through the identity functor. -/
 def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c where
   liftedCocone :=

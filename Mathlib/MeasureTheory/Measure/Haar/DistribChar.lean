@@ -83,7 +83,7 @@ variable (μ) in
 lemma distribHaarChar_mul (g : G) (s : Set A) : distribHaarChar A g * μ s = μ (g • s) := by
   have : (DomMulAct.mk g • μ) s = μ (g • s) := by simp [domSMul_apply]
   rw [eq_comm, ← nnreal_smul_coe_apply, ← addHaarScalarFactor_smul_eq_distribHaarChar μ,
-    ← this, ← smul_apply, ← isAddLeftInvariant_eq_smul_of_regular]
+    ← this, ← Measure.smul_apply, ← isAddLeftInvariant_eq_smul_of_regular]
 
 lemma distribHaarChar_eq_div (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (g : G) :
     distribHaarChar A g = μ (g • s) / μ s := by

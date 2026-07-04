@@ -165,6 +165,7 @@ def Functor.closedSieves : Subfunctor (Functor.sieves C) where
   obj X := {S : Sieve X.unop | J₁.IsClosed S}
   map f _ := J₁.isClosed_pullback f.unop _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf of `J`-closed sieves is a `J`-sheaf.
 The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
@@ -215,6 +216,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
     rw [← J₁.pullback_close, this _ hf]
     apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).2) (J₁.le_close _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A sieve `S` is covering for `J` if and only if the subobject classifier
 is a sheaf for `S`. -/

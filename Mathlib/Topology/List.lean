@@ -35,7 +35,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     | nil => exact le_rfl
     | cons a l ih =>
       suffices List.cons <$> pure a <*> pure l ≤ List.cons <$> 𝓝 a <*> traverse 𝓝 l by
-        simpa only [functor_norm] using this
+        simpa only [functor_norm] using! this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
   · intro l s hs
     rcases (mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩

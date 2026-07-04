@@ -148,9 +148,9 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
     obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
-      -- was `simpa using [...]` and very slow
+      -- was `simpa using! [...]` and very slow
       -- (https://github.com/leanprover-community/mathlib4/issues/19751)
-      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using
+      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using!
         (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
             (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
     rw [genWeightSpaceChain]
@@ -172,6 +172,7 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpo
 section IsCartanSubalgebra
 
 variable [H.IsCartanSubalgebra] [IsNoetherian R L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 lemma trace_toEnd_genWeightSpaceChain_eq_zero
     (hp : genWeightSpace M (p • α + χ) = ⊥)
@@ -239,7 +240,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
-  convert_to _ =
+  convert_to! _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
   simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,

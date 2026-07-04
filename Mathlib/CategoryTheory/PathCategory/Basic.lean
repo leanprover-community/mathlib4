@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The category paths on a quiver.
+
 When `C` is a quiver, `paths C` is the category of paths.
 
 ## When the quiver is itself a category
@@ -137,6 +138,7 @@ theorem lift_toPath {C} [Category* C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
   dsimp [Quiver.Hom.toPath, lift]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem lift_spec {C} [Category* C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
   fapply Prefunctor.ext
   · rintro X
@@ -146,6 +148,7 @@ theorem lift_spec {C} [Category* C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPref
     dsimp [lift, Quiver.Hom.toPath]
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
@@ -251,6 +254,10 @@ two paths are related if they compose to the same morphism. -/
 def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
   (pathComposition C).map p = (pathComposition C).map q
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] pathsHomRel.eq_1
+
 /-- The functor from a category to the canonical quotient of its path category. -/
 @[simps]
 def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
@@ -265,6 +272,7 @@ to the original category. -/
 def quotientPathsTo : Quotient (pathsHomRel C) ⥤ C :=
   Quotient.lift _ (pathComposition C) fun _ _ _ _ w => w
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical quotient of the path category of a category
 is equivalent to the original category. -/
 def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where

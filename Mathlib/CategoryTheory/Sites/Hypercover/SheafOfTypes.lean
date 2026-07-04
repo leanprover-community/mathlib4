@@ -41,6 +41,7 @@ namespace PreZeroHypercover
 
 variable {S : C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the pre-`0`-hypercover `E` has pairwise pullbacks, the sections over the multifork
 associated to a presheaf of types are equivalent to the compatible families on `E`. -/
@@ -186,7 +187,7 @@ lemma IsStronglySheafFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySheafF
     have : t (g ≫ f) (by simp [hf]) = t (w ≫ E.f i) (by simp [heq, hf]) := by
       congr 1
       rw [heq]
-    simpa [← heq, ht' i, ← t.comp_of_compatible _ ht, this] using hs i w _
+    simpa [← heq, ht' i, ← t.comp_of_compatible _ ht, this] using! hs i w _
   · refine hunique _ fun i ↦ huniq _ _ fun Z g hg ↦ ?_
     simp [Presieve.FamilyOfElements.pullback, ← hy _ hg]
 

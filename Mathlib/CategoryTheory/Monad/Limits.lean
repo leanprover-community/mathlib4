@@ -25,6 +25,8 @@ and `T` preserves.
 This is generalised to the case of a comonadic functor `D ⥤ C`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -47,6 +49,7 @@ namespace ForgetCreatesLimits
 
 variable (D : J ⥤ Algebra T) (c : Cone (D ⋙ T.forget)) (t : IsLimit c)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) The natural transformation used to define the new cone -/
 @[simps]
 def γ : D ⋙ T.forget ⋙ ↑T ⟶ D ⋙ T.forget where app j := (D.obj j).a
@@ -410,11 +413,11 @@ def coconePoint : Coalgebra T where
   A := c.pt
   a := t.desc (newCocone D c)
   counit := t.hom_ext fun j ↦ by
-    simp only [Functor.comp_obj, forget_obj, Functor.id_obj, Functor.const_obj_obj,
+    simp only [Functor.comp_obj, forget_obj, Functor.id_obj,
       IsColimit.fac_assoc, newCocone_ι_app, assoc, NatTrans.naturality, Functor.id_map, comp_id]
     rw [← Category.assoc, (D.obj j).counit, Category.id_comp]
   coassoc := t.hom_ext fun j ↦ by
-    simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, IsColimit.fac_assoc,
+    simp only [Functor.comp_obj, forget_obj, IsColimit.fac_assoc,
       newCocone_ι_app, assoc, NatTrans.naturality, Functor.comp_map]
     rw [← Category.assoc, (D.obj j).coassoc, ← Functor.map_comp, t.fac (newCocone D c) j,
       newCocone_ι_app, Functor.map_comp, assoc]

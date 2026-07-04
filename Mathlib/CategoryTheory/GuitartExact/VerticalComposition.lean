@@ -16,6 +16,8 @@ is Guitart exact.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -41,6 +43,7 @@ def whiskerVertical (α : L ⟶ L') (β : R' ⟶ R) :
 
 namespace GuitartExact
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A 2-square stays Guitart exact if we replace the left and right functors
 by isomorphic functors. See also `whiskerVertical_iff`. -/
 lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :

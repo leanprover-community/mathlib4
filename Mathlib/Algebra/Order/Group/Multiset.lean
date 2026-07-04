@@ -63,6 +63,12 @@ lemma mem_nsmul {a : α} {s : Multiset α} {n : ℕ} : a ∈ n • s ↔ n ≠ 0
 lemma mem_nsmul_of_ne_zero {a : α} {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : a ∈ n • s ↔ a ∈ s := by
   simp [*]
 
+theorem smul_subset_self (s : Multiset α) (n : ℕ) : n • s ⊆ s :=
+  subset_iff.mpr fun _ ↦ mem_of_mem_nsmul
+
+theorem subset_smul_self_of_ne_zero (s : Multiset α) {n : ℕ} (hn : n ≠ 0) : s ⊆ n • s :=
+  subset_iff.mpr fun _ ↦ mem_nsmul_of_ne_zero hn |>.mpr
+
 lemma nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
     n • (a ::ₘ s) = n • ({a} : Multiset α) + n • s := by
   rw [← singleton_add, nsmul_add]
@@ -180,6 +186,14 @@ lemma count_nsmul (a : α) (n s) : count a (n • s) = n * count a s := by
 
 end
 
+theorem le_card_smul_iff_subset {s t : Multiset α} : s ≤ s.card • t ↔ s ⊆ t := by
+  classical
+  refine ⟨fun hle ↦ Subset.trans (subset_of_le hle) (t.smul_subset_self s.card), ?_⟩
+  refine fun hsub ↦ le_iff_count.mpr fun a ↦ ?_
+  by_cases! has : a ∉ s
+  · simp [count_eq_zero_of_notMem has]
+  grw [count_le_card, count_nsmul, ← one_le_count_iff_mem.mpr <| mem_of_subset hsub has, mul_one]
+
 -- TODO: This should be `addMonoidHom_ext`
 @[ext]
 lemma addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f {x} = g {x}) : f = g := by
@@ -189,14 +203,6 @@ lemma addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f
   | cons a s ih => simp only [← singleton_add, _root_.map_add, ih, h]
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
-  ⟨(s.map fun a => count a s).fold max 0,
-    le_iff_count.2 fun a => by
-      rw [count_nsmul]; by_cases h : a ∈ s
-      · grw [← one_le_count_iff_mem.2 <| mem_dedup.2 h]
-        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) := by
-          simp
-        rw [cons_erase h] at this
-        simpa [mul_succ] using this
-      · simp [count_eq_zero.2 h, Nat.zero_le]⟩
+  ⟨s.card, le_card_smul_iff_subset.mpr s.subset_dedup⟩
 
 end Multiset

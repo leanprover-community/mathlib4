@@ -55,7 +55,7 @@ variable {K V}
 
 instance : SetLike (Subspace K V) (ℙ K V) where
   coe := carrier
-  coe_injective' A B := by
+  coe_injective A B := by
     cases A
     cases B
     simp

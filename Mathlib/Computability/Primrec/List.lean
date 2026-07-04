@@ -207,7 +207,7 @@ theorem list_getElem? : Primrec₂ ((·[·]? : List α → ℕ → Option α)) :
       · dsimp [F]
         clear IH
         induction l <;> simp_all
-      · simpa using IH ..
+      · simpa using! IH ..
 
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
   simp only [List.getD_eq_getElem?_getD]
@@ -371,7 +371,7 @@ theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
       (Primrec₂.uncurry.mpr hm)
       (list_map (hl.comp fst snd) (Primrec₂.pair.comp₂ (fst.comp₂ .left) .right))
       (hg.comp₂ (fst.comp₂ .left) (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right))
-      (by simpa using Ord) (by simpa [Function.comp] using H)
+      (by simpa using! Ord) (by simpa [Function.comp] using! H)
 
 /-- `List.drop` is primitive recursive. -/
 theorem list_drop : Primrec₂ (List.drop : ℕ → List α → List α) :=

@@ -71,6 +71,7 @@ theorem e0_mul_e0 : e0 Q * e0 Q = -1 :=
 theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
   (ι_sq_scalar _ _).trans <| by simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans ?_)
   dsimp [QuadraticMap.polar]

@@ -42,6 +42,9 @@ def coeMulHom : F →ₙ* α → β where
   toFun f := f
   map_mul' := coe_mul
 
+@[to_additive (attr := simp)]
+theorem coeMulHom_apply (f : F) : coeMulHom F α β f = f := rfl
+
 @[to_additive (attr := norm_cast)]
 theorem coe_coeMulHom : (coeMulHom F α β : F → α → β) = DFunLike.coe := rfl
 
@@ -64,6 +67,9 @@ def coeMonoidHom : F →* α → β where
   toFun f := f
   map_one' := coe_one
   map_mul' := coe_mul
+
+@[to_additive (attr := simp)]
+theorem coeMonoidHom_apply (f : F) : coeMonoidHom F α β f = f := rfl
 
 @[to_additive (attr := norm_cast)]
 theorem coe_coeMonoidHom : (coeMonoidHom F α β : F → α → β) = DFunLike.coe := rfl

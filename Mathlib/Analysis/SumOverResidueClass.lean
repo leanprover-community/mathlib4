@@ -44,7 +44,7 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
       intro n hn
       contrapose! hn
       exact (Nat.range_mul_add m k).symm ▸ mem_of_indicator_ne_zero hn
-    convert! (Function.Injective.summable_iff hg hg').symm using 3
+    convert (Function.Injective.summable_iff hg hg').symm
     simp only [Function.comp_apply, mem_setOf_eq, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
       zero_mul, zero_add, le_add_iff_nonneg_left, zero_le, and_self, indicator_of_mem, g]
 

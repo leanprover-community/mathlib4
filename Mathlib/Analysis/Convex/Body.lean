@@ -59,7 +59,7 @@ variable [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
 
 instance : SetLike (ConvexBody V) V where
   coe := ConvexBody.carrier
-  coe_injective' K L h := by
+  coe_injective K L h := by
     cases K
     cases L
     congr

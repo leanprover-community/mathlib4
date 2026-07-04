@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.NumberTheory.MulChar.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Dirichlet Characters
@@ -35,6 +36,7 @@ dirichlet character, multiplicative character
 -/
 
 /-- The type of Dirichlet characters of level `n`. -/
+@[wikidata Q1063579]
 abbrev DirichletCharacter (R : Type*) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
 
 open MulChar
@@ -48,6 +50,12 @@ lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.u
 lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
 
 lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
+
+lemma apply_ne_zero_iff [Nontrivial R] (a : ℤ) : χ a ≠ 0 ↔ IsCoprime a n := by
+  rw [MulChar.apply_ne_zero_iff, ZMod.coe_int_isUnit_iff_isCoprime, isCoprime_comm]
+
+lemma apply_eq_zero_iff [Nontrivial R] (a : ℤ) : χ a = 0 ↔ ¬ IsCoprime a n := by
+  rw [← (apply_ne_zero_iff χ a).not, ne_eq, not_not]
 
 /-!
 ### Changing levels
@@ -96,6 +104,11 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
   simp [changeLevel_def, ZMod.unitsMap_val]
+
+lemma changeLevel_eq_cast_of_dvd' {m : ℕ} (hm : n ∣ m) {a : ℤ} (ha : IsCoprime a m) :
+    changeLevel hm χ a = χ a := by
+  rw [← ZMod.coe_unitOfIsCoprime _ ha, changeLevel_eq_cast_of_dvd _ hm, ZMod.coe_unitOfIsCoprime,
+    ZMod.cast_intCast hm]
 
 /-- `χ` of level `n` factors through a Dirichlet character `χ₀` of level `d` if `d ∣ n` and
 `χ₀ = χ ∘ (ZMod n → ZMod d)`. -/
@@ -312,6 +325,11 @@ lemma primitiveCharacter_one [NeZero n] : (1 : DirichletCharacter R n).primitive
     (isPrimitive_def _).1 (1 : DirichletCharacter R n).primitiveCharacter_isPrimitive,
     conductor_one]
 
+theorem primitiveCharacter_apply_of_isCoprime {a : ℤ} (ha : IsCoprime a n) :
+    χ.primitiveCharacter a = χ a := by
+  rw [← changeLevel_eq_cast_of_dvd' χ.primitiveCharacter χ.conductor_dvd_level ha,
+    changeLevel_primitiveCharacter]
+
 theorem conductor_dvd_of_mem_conductorSet {d : ℕ} [NeZero n] (hd : d ∈ χ.conductorSet) :
     χ.conductor ∣ d := by
   have : NeZero d := ⟨by
@@ -340,6 +358,36 @@ divides `d`. -/
 theorem mem_conductorSet_iff_conductor_dvd {d : ℕ} [NeZero n] (hd : d ∣ n) :
     d ∈ χ.conductorSet ↔ χ.conductor ∣ d :=
   ⟨conductor_dvd_of_mem_conductorSet χ, fun h ↦ χ.factorsThrough_conductor.mono χ h hd⟩
+
+/-- The conductor is invariant under `changeLevel`: lifting a Dirichlet character `χ` of level `n`
+to a multiple level `m` does not change its conductor. -/
+theorem conductor_changeLevel {m : ℕ} [NeZero m] (hm : n ∣ m) :
+    (changeLevel hm χ).conductor = χ.conductor := by
+  have : NeZero n := ⟨by aesop⟩
+  have h : (changeLevel hm χ).conductor ∣ χ.conductor := by
+    refine conductor_dvd_of_mem_conductorSet _
+      ⟨χ.conductor_dvd_level.trans hm, χ.primitiveCharacter, ?_⟩
+    rw [changeLevel_trans _ χ.conductor_dvd_level, changeLevel_primitiveCharacter]
+  refine h.antisymm <| conductor_dvd_of_mem_conductorSet _
+    ⟨h.trans χ.conductor_dvd_level, (changeLevel hm χ).primitiveCharacter, ?_⟩
+  apply changeLevel_injective hm
+  rw [← changeLevel_trans, changeLevel_primitiveCharacter]
+
+/-- The primitive character of `changeLevel hm χ` is equal to the primitive character of `χ`.
+This is stated as a pointwise equality because the equality of Dirichlet characters does
+not typecheck. -/
+theorem primitiveCharacter_changeLevel_apply [Nontrivial R] {m : ℕ} [NeZero m] (hm : n ∣ m)
+    (χ : DirichletCharacter R n) (a : ℤ) :
+    (changeLevel hm χ).primitiveCharacter a = χ.primitiveCharacter a := by
+  by_cases ha : IsCoprime a χ.conductor
+  · suffices changeLevel (dvd_of_eq <| conductor_changeLevel ..)
+        (changeLevel hm χ).primitiveCharacter = χ.primitiveCharacter by
+      have := DFunLike.congr_fun this (a : ZMod _)
+      rwa [changeLevel_eq_cast_of_dvd' _ _ ha] at this
+    apply changeLevel_injective (χ.conductor_dvd_level.trans hm)
+    rw [← changeLevel_trans, changeLevel_primitiveCharacter,
+      χ.primitiveCharacter.changeLevel_trans χ.conductor_dvd_level, changeLevel_primitiveCharacter]
+  · rw [(apply_eq_zero_iff ..).mpr ha, (apply_eq_zero_iff ..).mpr (by rwa [conductor_changeLevel])]
 
 lemma conductor_zpow_dvd (χ : DirichletCharacter R n) (m : ℤ) :
     conductor (χ ^ m) ∣ conductor χ := by
@@ -392,6 +440,10 @@ theorem conductor_mul_dvd_lcm_conductor (χ ψ : DirichletCharacter R n) :
   rw [mul, MonoidHom.map_mul, ← changeLevel_trans, ← changeLevel_trans,
     changeLevel_primitiveCharacter, changeLevel_primitiveCharacter]
 
+/-!
+### Specific subgroups
+-/
+
 /-- The subgroup of Dirichlet characters of level `n` whose conductor is coprime to `d`. -/
 def subgroupOfCoprimeConductor [NeZero n] (d : ℕ) :
     Subgroup (DirichletCharacter R n) where
@@ -405,6 +457,68 @@ def subgroupOfCoprimeConductor [NeZero n] (d : ℕ) :
 @[simp]
 lemma mem_subgroupOfCoprimeConductor [NeZero n] {d : ℕ} {χ : DirichletCharacter R n} :
     χ ∈ subgroupOfCoprimeConductor d ↔ d.Coprime χ.conductor := Iff.rfl
+
+variable (R) in
+/-- The annihilator of a set `H` of units mod `n`: the subgroup of Dirichlet characters
+of level `n` that send every element of `H` to `1`. -/
+noncomputable def annihilator (H : Set (ZMod n)ˣ) :
+    Subgroup (DirichletCharacter R n) :=
+  (MulChar.restrictHom ((Submonoid.closure H).map (Units.coeHom (ZMod n))) _).ker
+
+theorem mem_annihilator_iff_mem_closure {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
+    χ ∈ annihilator R H ↔ ∀ x ∈ Submonoid.closure H, χ x = 1 := by
+  simp only [annihilator, MonoidHom.mem_ker, MulChar.restrictHom_apply, MulChar.restrict_eq_one_iff]
+  refine ⟨fun hχ x hx ↦ ?_, fun h u ↦ ?_⟩
+  · exact hχ <| (Submonoid.unitsEquivUnitsType _) <|
+      ⟨x, Submonoid.mem_units_of_val_mem_inv_val_mem _ ⟨x, hx, rfl⟩
+        ⟨x⁻¹, by simpa [← Subgroup.closure_toSubmonoid_of_finite] using hx, rfl⟩⟩
+  · obtain ⟨y, hy, hyu⟩ := Submonoid.mem_map.mp u.val.prop
+    exact hyu ▸ h _ hy
+
+@[simp]
+theorem mem_annihilator_iff {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
+    χ ∈ annihilator R H ↔ ∀ a ∈ H, χ a = 1 := by
+  rw [mem_annihilator_iff_mem_closure]
+  refine ⟨fun h a ha ↦ h a (Submonoid.subset_closure ha), fun h x hx ↦ ?_⟩
+  refine Submonoid.closure_induction h (by simp) (fun a b _ _ ha hb ↦ ?_) hx
+  simp [map_mul, ha, hb]
+
+variable (R n) in
+/-- The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
+to `1`. See `mem_subgroupOfPrimitiveMapToOne_iff` for this characterization.
+
+TODO: Generalize to an arbitrary nonzero integer `d`, replacing the hypothesis `p.Prime` with
+a coprimality condition and `n / p ^ n.factorization p` with the largest factor of `n` coprime
+to `d`. This would require additional Mathlib API for that construction. -/
+noncomputable def subgroupOfPrimitiveMapToOne [NeZero n] (p : ℕ) [hp : Fact p.Prime] :
+    Subgroup (DirichletCharacter R n) :=
+  (annihilator R (n := n / p ^ n.factorization p)
+    {ZMod.unitOfCoprime p (Nat.coprime_ordCompl hp.out (NeZero.ne n))}).map
+      (changeLevel (Nat.ordCompl_dvd n p))
+
+@[simp]
+theorem mem_subgroupOfPrimitiveMapToOne_iff [NeZero n] [Nontrivial R] (p : ℕ) [hp : Fact p.Prime] :
+    χ ∈ subgroupOfPrimitiveMapToOne R n p ↔ χ.primitiveCharacter p = 1 := by
+  have : NeZero (n / p ^ n.factorization p) := ⟨(Nat.ordCompl_pos p (NeZero.ne n)).ne'⟩
+  have hcop := Nat.coprime_ordCompl hp.out (NeZero.ne n)
+  simp only [subgroupOfPrimitiveMapToOne, Subgroup.mem_map, mem_annihilator_iff,
+    Set.mem_singleton_iff, forall_eq, ZMod.coe_unitOfCoprime]
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨ψ, hψ, rfl⟩
+    rw [← Int.cast_natCast] at hψ ⊢
+    rw [primitiveCharacter_changeLevel_apply, primitiveCharacter_apply_of_isCoprime, hψ]
+    exact Nat.isCoprime_iff_coprime.mpr hcop
+  · have hdvd : χ.conductor ∣ n / p ^ n.factorization p := by
+      apply Nat.dvd_ordCompl_of_dvd_not_dvd χ.conductor_dvd_level
+      simp [← hp.out.coprime_iff_not_dvd, ← Nat.isCoprime_iff_coprime,
+        ← apply_ne_zero_iff (χ := χ.primitiveCharacter), h]
+    refine ⟨changeLevel hdvd χ.primitiveCharacter, ?_, ?_⟩
+    · rw [show (p : ZMod (n / p ^ n.factorization p))
+          = ((p : ℤ) : ZMod (n / p ^ n.factorization p)) from (Int.cast_natCast p).symm,
+        changeLevel_eq_cast_of_dvd' χ.primitiveCharacter hdvd (Nat.isCoprime_iff_coprime.mpr hcop),
+        Int.cast_natCast]
+      exact h
+    · rw [← changeLevel_trans, changeLevel_primitiveCharacter]
 
 /-
 ### Even and odd characters

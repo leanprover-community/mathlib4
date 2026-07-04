@@ -181,7 +181,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
       refine (h_pathConn.somePath_mem t₁).elim id fun ⟨y, hy⟩ ↦ ?_
       have : (p t₁).1 = 0 := by simp only [p, ← hy.2]
       exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
-    simpa only [a, ← hx_eq] using hxI
+    simpa only [a, ← hx_eq] using! hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=
     (isPreconnected_Icc.image _ <| xcoord_pathContinuous.continuousOn).Icc_subset
       (show 0 ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₀, ⟨le_rfl, ht₁.1.le⟩, ‹_›⟩)

@@ -65,7 +65,7 @@ attribute [coe] toFun
 
 instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     simpa only [ElementaryEmbedding.mk.injEq]
@@ -203,7 +203,7 @@ def liftWithConstants (f : M ↪ₑ[L] N) (A : Set M) :
       ↑A ⊕ Fin n → f.toEmbedding.withConstants A) =
     f ∘ Sum.elim (fun a ↦ ↑(L.con a)) x :=
     (Sum.comp_elim _ _ _).symm
-  simpa only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv, h] using
+  simpa only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv, h] using!
     f.map_formula
       (BoundedFormula.constantsVarsEquiv φ)
       (Sum.elim (fun a ↦ ↑(L.con a)) x)

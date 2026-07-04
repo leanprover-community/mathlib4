@@ -49,7 +49,7 @@ proof_wanted SimplyConnectedSpace.nonempty_homeomorph_sphere_three
     Nonempty (M ≃ₜ 𝕊³)
 
 /-- The 3-dimensional smooth Poincaré conjecture (proven by Perelman) -/
-proof_wanted SimplyConnectedSpace.nonempty_diffeomorph_sphere_three
+proof_wanted SimplyConnectedSpace.nonempty_sdiffeomorph_sphere_three
     [T2Space M] [ChartedSpace ℝ³ M] [IsManifold (𝓡 3) ∞ M]
     [SimplyConnectedSpace M] [CompactSpace M] :
     Nonempty (M ≃ₘ⟮𝓡 3, 𝓡 3⟯ 𝕊³)

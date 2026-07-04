@@ -57,7 +57,7 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 /-- `Finset.mulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` that multiply to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/
-@[to_additive /-- `Finset.addAntidiagonal hs ht a` is the set of all pairs of an element in
+@[to_additive /-- `Finset.antidiagonal hs ht a` is the set of all pairs of an element in
 `s` and an element in `t` that add to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/]
 noncomputable def mulAntidiagonal : Finset (α × α) :=
@@ -107,5 +107,16 @@ theorem mulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α] [IsOrd
     exact ⟨rfl, mul_left_cancel hst⟩
   · rintro ⟨rfl, rfl⟩
     exact ⟨hs.min_mem _, ht.min_mem _, rfl⟩
+
+@[deprecated (since := "2026-06-08")] alias addAntidiagonal := antidiagonal
+@[deprecated (since := "2026-06-08")] alias mem_addAntidiagonal := mem_antidiagonal
+@[deprecated (since := "2026-06-08")] alias addAntidiagonal_mono_left := antidiagonal_mono_left
+@[deprecated (since := "2026-06-08")] alias addAntidiagonal_mono_right := antidiagonal_mono_right
+@[deprecated (since := "2026-06-08")] alias swap_mem_addAntidiagonal := swap_mem_antidiagonal
+@[deprecated (since := "2026-06-08")]
+alias support_addAntidiagonal_subset_add := support_antidiagonal_subset_add
+@[deprecated (since := "2026-06-08")]
+alias isPWO_support_addAntidiagonal := isPWO_support_antidiagonal
+@[deprecated (since := "2026-06-08")] alias addAntidiagonal_min_mul_min := antidiagonal_min_add_min
 
 end Finset

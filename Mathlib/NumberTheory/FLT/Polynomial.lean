@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.Tactic.GCongr
+import Mathlib.RingTheory.Polynomial.IsIntegral
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -245,12 +246,8 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   set d := gcd a b
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
-  have hdc : d ∣ c := by
-    -- TODO: This is basically reproving `IsIntegrallyClosed.pow_dvd_pow_iff`
-    have hn : 0 < n := by lia
-    have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
-    simpa [dvd_iff_normalizedFactors_le_normalizedFactors, Multiset.le_iff_count, *] using hdncn
-  obtain ⟨c', eq_c⟩ := hdc
+  obtain ⟨c', eq_c⟩ : ∃ c', c = d * c' :=
+    (IsIntegrallyClosed.pow_dvd_pow_iff (by lia)).mp ⟨_, heq.symm⟩
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb
   rw [eq_c, mul_ne_zero_iff] at hc

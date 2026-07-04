@@ -48,28 +48,35 @@ class inductive HasSmallInductiveDimensionLT.{u} :
       (h : ∀ U ∈ s, HasSmallInductiveDimensionLT ↑(frontier U) n) :
       HasSmallInductiveDimensionLT X (n + 1)
 
-variable (X : Type) [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
+variable (X) in
 /-- A topological space has dimension `≤ n` if it has dimension `< n + 1`. -/
 abbrev HasSmallInductiveDimensionLE (n : ℕ) :=
   HasSmallInductiveDimensionLT X (n + 1)
 
+variable (X) in
 /-- The small inductive dimension of a topological space. -/
 noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasSmallInductiveDimensionLT X i}
 
-lemma HasSmallInductiveDimensionLT_zero_iff :
-    HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
+lemma hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
   ⟨fun h ↦ by cases h; assumption, fun _ ↦ .zero⟩
 
-lemma HasSmallInductiveDimensionLT_one_iff :
+@[deprecated (since := "2026-06-21")]
+alias HasSmallInductiveDimensionLT_zero_iff := hasSmallInductiveDimensionLT_zero_iff
+
+lemma hasSmallInductiveDimensionLT_one_iff :
     HasSmallInductiveDimensionLT X 1 ↔ IsTopologicalBasis { s : Set X | IsClopen s } := by
   constructor
   · intro (.succ _ s hs h)
     refine hs.of_isOpen_of_subset (fun _ hU ↦ hU.isOpen) (fun U hU ↦ ⟨?_, hs.isOpen hU⟩)
     rw [← closure_subset_iff_isClosed]
     cases h U hU
-    rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, diff_eq_empty] at ‹_›
+    rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, sdiff_eq_empty] at ‹_›
   · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
+
+@[deprecated (since := "2026-06-21")]
+alias HasSmallInductiveDimensionLT_one_iff := hasSmallInductiveDimensionLT_one_iff
 
 end

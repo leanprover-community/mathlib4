@@ -48,7 +48,7 @@ theorem toSubsemiring_injective :
 
 instance setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
   coe x := x.carrier
-  coe_injective' _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
 
 instance : PartialOrder (HomogeneousSubsemiring 𝒜) := .ofSetLike (HomogeneousSubsemiring 𝒜) A
 

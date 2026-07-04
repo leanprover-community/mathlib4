@@ -49,7 +49,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
     intro s hsm hfs
     by_contra H
     obtain ⟨hs, hs'⟩ : μ s ≠ 0 ∧ μ sᶜ ≠ 0 := by
-      simpa [eventuallyConst_set, ae_iff, and_comm] using H
+      simpa [eventuallyConst_set, ae_iff, and_comm] using! H
     have hcond : c • μ[|s] = μ := by
       apply h.2 (this hsm hfs hs) (this hsm.compl (by rw [preimage_compl, hfs]) hs')
       refine ⟨μ s / c, μ sᶜ / c, ENNReal.div_pos hs hc, ENNReal.div_pos hs' hc, ?_, ?_⟩

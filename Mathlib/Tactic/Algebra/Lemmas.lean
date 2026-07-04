@@ -93,7 +93,7 @@ theorem ofNat_smul {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 theorem neg_ofNat_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {a : A} [n.AtLeastTwo] :
     (- ofNat(n) : R) • a = - (ofNat(n)) * a := by
-  simpa [← nat_rawCast_2] using ofNat_smul
+  simpa [← nat_rawCast_2] using! ofNat_smul
 
 theorem neg_1_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {a : A} :
     (-1 : R) • a = - a := by

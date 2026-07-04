@@ -76,8 +76,8 @@ theorem uniformContinuous_weierstrass {a : ℝ} (ha : a ∈ Set.Ioo 0 1) (b : �
 
 To show that Weierstrass function $f(x)$ is not differentiable at any $x$, we choose a sequence
 $\{x_m\}$ such that, as $m\to\infty$
- - $\{x_m\}$ converges to $x$
- - The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded,
+- $\{x_m\}$ converges to $x$
+- The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded,
    which means the derivative $f'(x)$ cannot exist.
 -/
 

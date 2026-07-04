@@ -5,11 +5,11 @@ Authors: Heather Macbeth
 -/
 module
 
+public meta import Lean.Meta.Tactic.NormCast
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Tactic.Ring
 public import Mathlib.Util.AtomM
-public meta import Mathlib.Algebra.Algebra.Defs
 
 /-! # A tactic for normalization over modules
 
@@ -571,7 +571,7 @@ most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into
 (`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
-  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   -- augment this list with the `algebraMapThms` lemmas, which handle `algebraMap` operations
   for thm in algebraMapThms do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)

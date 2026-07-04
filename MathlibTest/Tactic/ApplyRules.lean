@@ -17,7 +17,7 @@ example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
 -- `apply_rules` works up to that bound and returns the remaining goals.
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
     a + c * e + a + c + 0 ≤ b + d * e + b + d + e := by
-  apply_rules (config := {maxDepth := 9}) [Nat.add_le_add, Nat.mul_le_mul_right]
+  apply_rules (maxDepth := 9) [Nat.add_le_add, Nat.mul_le_mul_right]
   guard_target = 0 ≤ e
   assumption
 

@@ -412,9 +412,9 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
             -- Extract just the tactic name, ignoring trailing comments/whitespace
             -- Use try/catch because ppTactic can fail on certain syntax (e.g., `congr($h x)`)
             let oldTacticPP := (← try
-              return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trimAscii
+              pure (((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trimAscii)
             catch _ =>
-              return i.tacI.stx.reprint.getD "???")
+              pure (i.tacI.stx.reprint.getD "???"))
             let newTacticPP ← label.getDM (try
               return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trimAscii.copy
             catch _ =>

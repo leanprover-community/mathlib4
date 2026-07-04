@@ -65,7 +65,7 @@ theorem natCast_eq_mod (n : ℕ) : (n : R) = (n % 2 : ℕ) := by
   simp [natCast_eq_ite, Nat.even_iff]
 
 @[scoped simp]
-theorem ofNat_eq_mod (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) = (ofNat(n) % 2 : ℕ) :=
+theorem ofNat_eq_mod (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R) = (ofNat(n) % 2 : ℕ) :=
   natCast_eq_mod n
 
 example : (37 : R) = 1 := by simp

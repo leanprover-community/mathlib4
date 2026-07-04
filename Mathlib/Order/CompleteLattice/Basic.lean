@@ -98,9 +98,11 @@ theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ 
   (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 
 @[to_dual (attr := simp)]
-theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
-  (sSup_le_sSup diff_subset).antisymm <|
-    sSup_le_sSup_of_subset_insert_bot <| subset_insert_diff_singleton _ _
+theorem sSup_sdiff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
+  (sSup_le_sSup sdiff_subset).antisymm <|
+    sSup_le_sSup_of_subset_insert_bot <| subset_insert_sdiff_singleton _ _
+
+@[deprecated (since := "2026-06-03")] alias sSup_diff_singleton_bot := sSup_sdiff_singleton_bot
 
 @[to_dual]
 theorem sSup_pair {a b : α} : sSup {a, b} = a ⊔ b :=
@@ -479,7 +481,7 @@ theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
 @[to_dual]
 lemma Equiv.biSup_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
     ⨆ i ∈ e.symm '' s, g (e i) = ⨆ i ∈ s, g i := by
-  simpa only [iSup_subtype'] using (image e.symm s).symm.iSup_comp (g := g ∘ (↑))
+  simpa only [iSup_subtype'] using! (image e.symm s).symm.iSup_comp (g := g ∘ (↑))
 
 @[to_dual biInf_le]
 lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : f i ≤ ⨆ i ∈ s, f i :=
@@ -716,7 +718,7 @@ theorem iSup_of_empty [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
 
 @[to_dual]
 theorem isLUB_biSup {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, f x) := by
-  simpa only [range_comp, Subtype.range_coe, iSup_subtype'] using
+  simpa only [range_comp, Subtype.range_coe, iSup_subtype'] using!
     @isLUB_iSup α s _ (f ∘ fun x => (x : β))
 
 @[to_dual]

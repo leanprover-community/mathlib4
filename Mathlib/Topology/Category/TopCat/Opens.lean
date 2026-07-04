@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Category.GaloisConnection
 public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Limits.Preorder
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Sets.Opens
 
@@ -49,7 +51,7 @@ the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
 
 instance opensHom.instFunLike : FunLike (U ⟶ V) U V where
   coe f := Set.inclusion f.le
-  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
+  coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
 lemma apply_def (f : U ⟶ V) (x : U) : f x = ⟨x, f.le x.2⟩ := rfl
 
@@ -341,6 +343,15 @@ lemma Topology.IsOpenEmbedding.functor_obj_injective {X Y : TopCat.{u}} {f : X �
     (hf : IsOpenEmbedding f) : Function.Injective hf.functor.obj :=
   fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.injective (congr_arg (↑· : Opens Y → Set Y) e))
 
+lemma Topology.IsOpenEmbedding.functor_obj_iInf {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hf : Topology.IsOpenEmbedding f) {ι : Type*} [Nonempty ι] [Finite ι]
+    (g : ι → TopologicalSpace.Opens X) :
+    hf.functor.obj (⨅ i, g i) = ⨅ i, hf.functor.obj (g i) := by
+  ext : 1
+  simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.coe_iInf]
+  rw [Set.InjOn.image_iInter_eq]
+  exact hf.injective.injOn
+
 namespace Topology.IsInducing
 
 /-- Given an inducing map `X ⟶ Y` and some `U : Opens X`, this is the union of all open sets
@@ -456,10 +467,22 @@ theorem map_functor_eq {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     ((Opens.map U.inclusion').obj <| U.isOpenEmbedding.functor.obj V) = V :=
   TopologicalSpace.Opens.map_functor_eq' _ U.isOpenEmbedding V
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     U.isOpenEmbedding.isOpenMap.adjunction.counit.app (U.isOpenEmbedding.functor.obj V) =
       eqToHom (by dsimp; rw [map_functor_eq V]) := by
   subsingleton
+
+open Limits in
+instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι : Type*}
+    [Nonempty ι] [Finite ι] :
+    PreservesLimitsOfShape (Discrete ι) hf.functor := by
+  apply +allowSynthFailures preservesLimitsOfShape_of_discrete
+  intro g
+  refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
+  refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
+  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_obj_iInf]
+  apply isGLB_iInf
 
 end TopologicalSpace.Opens

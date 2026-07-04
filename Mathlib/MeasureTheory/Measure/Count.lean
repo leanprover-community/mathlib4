@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.Measure.Dirac
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Counting measure

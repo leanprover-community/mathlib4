@@ -230,7 +230,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
           _ < ε := by
                 rw [← add_halves ε]
                 apply _root_.add_lt_add
-                · rw [measure_diff (h_fin := measure_ne_top _ _),
+                · rw [measure_sdiff (h_fin := measure_ne_top _ _),
                     toReal_sub_of_le (ha := measure_ne_top _ _)]
                   · apply lt_of_le_of_lt (sub_le_dist ..)
                     simp only [Finset.mem_range, Nat.lt_add_one_iff]
@@ -273,9 +273,9 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
     -- We use partial unions of (Sₙ) to get a monotone family spanning `X`.
     let T := accumulate S.set
     have T_mem (n) : T n ∈ 𝒜 := by
-      simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
+      simpa using! h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
     have T_finite (n) : μ (T n) < ∞ := by
-      simpa using measure_biUnion_lt_top {k | k ≤ n}.toFinset.finite_toSet
+      simpa using! measure_biUnion_lt_top {k | k ≤ n}.toFinset.finite_toSet
         (fun k _ ↦ S.finite k)
     have T_spanning : ⋃ n, T n = univ := S.spanning ▸ iUnion_accumulate
     -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,
@@ -307,7 +307,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
               exact measure_symmDiff_le _ _ _
         _ < ENNReal.ofReal (ε / 2) + ENNReal.ofReal (ε / 2) := by
               apply ENNReal.add_lt_add
-              · rw [measure_diff
+              · rw [measure_sdiff
                     (inter_subset_left ..)
                     (ms.inter (hgen ▸ measurableSet_generateFrom (T_mem N))).nullMeasurableSet
                     (ne_top_of_le_ne_top hμs (measure_mono (inter_subset_left ..))),
@@ -392,7 +392,7 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
         rcases h𝒜.approx s ms this ε ε_pos with ⟨t, t_mem, ht⟩
         refine ⟨t ∩ μ.sigmaFiniteSet, ⟨t, t_mem, rfl⟩, ?_⟩
         have : μ (s ∆ (t ∩ μ.sigmaFiniteSet) \ μ.sigmaFiniteSet) = 0 := by
-          rw [diff_eq_compl_inter, inter_symmDiff_distrib_left, ← ENNReal.bot_eq_zero, eq_bot_iff]
+          rw [sdiff_eq_compl_inter, inter_symmDiff_distrib_left, ← ENNReal.bot_eq_zero, eq_bot_iff]
           calc
             μ ((μ.sigmaFiniteSetᶜ ∩ s) ∆ (μ.sigmaFiniteSetᶜ ∩ (t ∩ μ.sigmaFiniteSet)))
               ≤ μ ((μ.sigmaFiniteSetᶜ ∩ s) ∪ (μ.sigmaFiniteSetᶜ ∩ (t ∩ μ.sigmaFiniteSet))) :=
@@ -402,7 +402,7 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
             _ = 0 := by
                 rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm,
                   ← inter_assoc, inter_compl_self, empty_inter, measure_empty, zero_add]
-        rwa [← measure_inter_add_diff _ measurableSet_sigmaFiniteSet, this, add_zero,
+        rwa [← measure_inter_add_sdiff _ measurableSet_sigmaFiniteSet, this, add_zero,
           inter_symmDiff_distrib_right, inter_assoc, inter_self, ← inter_symmDiff_distrib_right,
           ← μ.restrict_apply' measurableSet_sigmaFiniteSet]
       · refine False.elim <| hμs ?_

@@ -32,7 +32,7 @@ def CWComplex.OneSkeletonGraph (C : Set X) [CWComplex C] : Graph (cell C 0) (cel
   vertexSet := univ
   edgeSet := univ
   IsLink e x y := cellFrontier 1 e = closedCell 0 x ∪ closedCell 0 y
-  isLink_symm _ _ x y h := by grind
+  isLink_symm := by grind [symm_def]
   eq_or_eq_of_isLink_of_isLink e x y z w h1 h2 := by
     simp_rw [closedCell_zero_eq_singleton] at h1 h2
     rw [h1] at h2

@@ -43,7 +43,7 @@ namespace Closeds
 
 instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (Closeds α) := fast_instance% .ofSetLike (Closeds α) α
 
@@ -320,7 +320,7 @@ namespace Clopens
 
 instance : SetLike (Clopens α) α where
   coe s := s.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (Clopens α) := fast_instance% .ofSetLike (Clopens α) α
 
@@ -408,7 +408,7 @@ namespace IrreducibleCloseds
 
 instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (IrreducibleCloseds α) := fast_instance% .ofSetLike (IrreducibleCloseds α) α
 

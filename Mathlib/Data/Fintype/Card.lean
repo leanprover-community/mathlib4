@@ -127,11 +127,13 @@ theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Fin
     #sᶜ < Fintype.card α ↔ s.Nonempty :=
   sᶜ.card_lt_iff_ne_univ.trans s.compl_ne_univ_iff_nonempty
 
-theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
+theorem Finset.card_univ_sdiff [DecidableEq α] [Fintype α] (s : Finset α) :
     #(univ \ s) = Fintype.card α - #s := by grind
 
+@[deprecated (since := "2026-06-03")] alias Finset.card_univ_diff := Finset.card_univ_sdiff
+
 theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) : #sᶜ = Fintype.card α - #s :=
-  Finset.card_univ_diff s
+  Finset.card_univ_sdiff s
 
 @[simp]
 theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
@@ -252,6 +254,13 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
     _ < card β :=
       Finset.card_lt_univ_of_notMem (x := b) <| by
         rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
+
+/-- Given an injective map `f : α → β` such that `β` has cardinality one more
+than `α`, there exists a unique element of `β` not in the image of `f`. -/
+theorem existsUnique_notMem_image_of_injective_of_card_eq_add_one [DecidableEq β]
+    (f : α → β) (hf : f.Injective) (h : card β = card α + 1) : ∃! x, x ∉ univ.image f := by
+    simpa using existsUnique_notMem_image_of_injOn_of_card_eq_add_one
+      (s := .univ) (t := .univ) (Set.injOn_of_injective hf) (by simp) (by simpa)
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=

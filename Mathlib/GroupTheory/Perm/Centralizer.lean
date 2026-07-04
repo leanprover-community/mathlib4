@@ -212,7 +212,7 @@ structure Basis (g : Equiv.Perm α) where
 
 instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
   coe a := a.toFun
-  coe_injective' a a' _ := by cases a; cases a'; congr
+  coe_injective a a' _ := by cases a; cases a'; congr
 
 namespace Basis
 

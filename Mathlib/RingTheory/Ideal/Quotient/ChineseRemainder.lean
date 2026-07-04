@@ -56,7 +56,7 @@ theorem ker_tensorProductMk_quotient :
   · simpa only [ker_pi, Submodule.ker_mkQ]
   rintro _ ⟨x, rfl⟩
   refine x.induction_on (by simp) (fun r m ↦ Submodule.smul_mem_smul ?_ ⟨⟩) fun _ _ ↦ ?_
-  · simpa only [← (I _).ker_mkQ, ← ker_pi] using Subtype.mem _
-  · simpa using add_mem
+  · simpa only [← (I _).ker_mkQ, ← ker_pi] using! Subtype.mem _
+  · simpa using! add_mem
 
 end Ideal

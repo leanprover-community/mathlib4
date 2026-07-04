@@ -160,7 +160,7 @@ lemma ContMDiffWithinAt.sum_section {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simpa only [Finset.sum_empty] using contMDiffWithinAt_zeroSection ..
+    simpa only [Finset.sum_empty] using! contMDiffWithinAt_zeroSection ..
   | insert i s hi h =>
     simp only [Finset.sum_insert hi]
     apply (hs _ (s.mem_insert_self i)).add_section
@@ -301,7 +301,7 @@ variable {I} {n} {F} {V}
 
 instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr
 
 variable {s t : Cₛ^n⟮I; F, V⟯}
 

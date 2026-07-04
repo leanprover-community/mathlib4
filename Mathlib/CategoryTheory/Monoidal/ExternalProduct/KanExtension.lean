@@ -45,6 +45,7 @@ abbrev extensionUnitLeft : H ⊠ K ⟶ L.prod (𝟭 E) ⋙ H' ⊠ K :=
 abbrev extensionUnitRight : K ⊠ H ⟶ (𝟭 E).prod L ⋙ K ⊠ H' :=
     (externalProductBifunctor E D V).map (K.leftUnitor.inv ×ₘ α)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` at `(d : D')`
 and if tensoring right with an object preserves colimits in `V`,
 then `H' ⊠ K : D' × E ⥤ V` is a pointwise left Kan extension along `L × (𝟭 E)` at `(d, e)`
@@ -91,6 +92,7 @@ def isPointwiseLeftKanExtensionExtensionUnitLeft
     Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K) |>.IsPointwiseLeftKanExtension :=
   fun ⟨d, e⟩ ↦ isPointwiseLeftKanExtensionAtExtensionUnitLeft H' α K d (P d) e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` at `d : D'` and
 if tensoring left with an object preserves colimits in `V`,
 then `K ⊠ H' : D' × E ⥤ V` is a pointwise left Kan extension along `(𝟭 E) × L` at `(e, d)` for

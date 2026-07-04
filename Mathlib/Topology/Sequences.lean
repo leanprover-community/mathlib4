@@ -184,7 +184,7 @@ lemma isClosed_iUnion_closure_singleton_of_not_tendsto {x : ℕ → X} [Sequenti
   · have (j : ℕ) : ∃ᶠ k in atTop, ∃ n ≥ j, y n ∈ closure {x k} := by
       refine frequently_atTop.2 fun a => ?_
       have := (Filter.eventually_all_finite (by simp : (Iic a).Finite)).2 fun i hi => hm i
-      simp only [mem_Iic, eventually_atTop, ge_iff_le] at this
+      simp only [mem_Iic, eventually_atTop] at this
       obtain ⟨c, hc⟩ := this
       obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
       refine ⟨b, ?_, c + j, j.le_add_left c, hb⟩
@@ -357,7 +357,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   contrapose! h
   obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
     simp only [not_subset, mem_iUnion₂, not_exists, exists_prop] at h
-    simpa only [forall_and, forall_mem_image, not_and] using seq_of_forall_finite_exists h
+    simpa only [forall_and, forall_mem_image, not_and] using! seq_of_forall_finite_exists h
   refine ⟨u, u_in, fun x _ φ hφ huφ => ?_⟩
   obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V :=
     huφ.cauchySeq.mem_entourage V_in
@@ -379,7 +379,7 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
       rw [le_principal_iff] at hls
       have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ˢ l := fun n => inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
       simpa only [l.basis_sets.prod_self.mem_iff, true_imp_iff, subset_inter_iff,
-        prod_self_subset_prod_self, and_assoc] using this
+        prod_self_subset_prod_self, and_assoc] using! this
     choose t htl htW hts using this
     have : ∀ n : ℕ, ⋂ k ≤ n, t k ⊆ t n := fun n => by apply iInter₂_subset; rfl
     exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>

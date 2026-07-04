@@ -106,7 +106,7 @@ theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = 
 
 @[simp]
 theorem eraseNone_image_some [DecidableEq (Option α)] (s : Finset α) :
-    eraseNone (s.image some) = s := by simpa only [map_eq_image] using eraseNone_map_some s
+    eraseNone (s.image some) = s := by simpa only [map_eq_image] using! eraseNone_map_some s
 
 @[simp]
 theorem coe_eraseNone (s : Finset (Option α)) : (eraseNone s : Set α) = some ⁻¹' s :=

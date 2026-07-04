@@ -56,7 +56,7 @@ lemma aemeasurable_of_aemeasurable_exp_mul {t : ℝ}
     (ht : t ≠ 0) (hf : AEMeasurable (fun x ↦ exp (t * f x)) μ) :
     AEMeasurable f μ := by
   simpa only [mul_div_cancel_left₀ _ ht]
-    using (aemeasurable_of_aemeasurable_exp hf).div (aemeasurable_const (b := t))
+    using (aemeasurable_of_aemeasurable_exp hf).fun_div (aemeasurable_const (b := t))
 
 theorem measurable_sin : Measurable sin :=
   continuous_sin.measurable

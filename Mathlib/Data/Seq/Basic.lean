@@ -711,11 +711,11 @@ theorem set_cons_succ (n : ℕ) : (cons hd tl).set (n + 1) x = cons hd (tl.set n
 
 theorem get?_set_of_not_terminatedAt {s : Seq α} {n : ℕ} (h_not_terminated : ¬ s.TerminatedAt n) :
     (s.set n x).get? n = x := by
-  simpa [set, update, ← Option.ne_none_iff_exists'] using h_not_terminated
+  simpa [set, update, ← Option.ne_none_iff_exists'] using! h_not_terminated
 
 theorem get?_set_of_terminatedAt {s : Seq α} {n : ℕ} (h_terminated : s.TerminatedAt n) :
     (s.set n x).get? n = .none := by
-  simpa [set, get?_update] using h_terminated
+  simpa [set, get?_update] using! h_terminated
 
 theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) : (s.set m x).get? n = s.get? n := by
   simp [set, get?_update, h]

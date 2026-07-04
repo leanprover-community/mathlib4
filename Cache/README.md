@@ -4,6 +4,9 @@ This directory contains the implementation of Mathlib's build cache system (`lak
 
 > **Note**: A new `lake cache` command is currently being designed and implemented in Lake itself. This will eventually replace the Mathlib-specific `lake exe cache` and work for all repositories. Until then, this cache system remains the primary way to get pre-built artifacts for Mathlib.
 
+> **Trust model & security**: see [`SECURITY.md`](./SECURITY.md) for the
+> trust model behind the multi-container split.
+
 ## Quick Start
 
 ```bash
@@ -34,6 +37,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `clean`         | Delete non-linked files                                             |
 | `clean!`        | Delete everything on the local cache                                |
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
+| `query`         | Find the most recent commit with cached entries on the current branch |
 
 ### Privilege Required (CI/Maintainers)
 
@@ -61,37 +65,47 @@ When arguments are provided, only the specified files and their transitive impor
 | Option              | Description                                                                                |
 |---------------------|--------------------------------------------------------------------------------------------|
 | `--repo=OWNER/REPO` | Override the repository to fetch cache from (e.g., `--repo=leanprover-community/mathlib4`) |
+| `--cache-from=LIST` | For `get`/`get!`/`get-`/`lookup`: trust-ordered, comma-separated list of containers to read from. Overrides the per-repo default (see [Trust-ordered containers](#trust-ordered-containers)). |
+| `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Triggers the non-default-scope security notice. |
+| `--unsafe`          | For `get`/`get!`/`get-`: instead of pinning one `--scope`, automatically walk this branch's history and read the `forks` container at the most recent cached fork commit (newest first if `--unsafe-window` allows more than one), until the cache is satisfied (see [Unsafe automatic scope walk](#unsafe-automatic-scope-walk)). Mutually exclusive with `--scope`; always triggers the security notice. |
+| `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
+| `--container=NAME`  | For `put`/`put!`/`put-unpacked`/`put-staged`/`commit`/`commit!`: target container for upload. |
+
+Container names (known to both flags): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+
+## Trust-ordered containers
+
+The cache is split across multiple Azure Blob Storage containers on the
+`lakecache` storage account. Container names accepted by `--container=NAME`
+and `--cache-from=LIST`: `master`, `forks`, `nightly-testing`,
+`pr-toolchain-tests`, `legacy`.
+
+`cache get` resolves a file by trying a default chain of containers in
+order, depending on the repo:
+
+| GitHub repo                                     | Container order tried       |
+|-------------------------------------------------|-----------------------------|
+| `leanprover-community/mathlib4`                 | `master`, `legacy`          |
+| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` |
+| any fork (PRs)                                  | `master`, `forks`, `legacy` |
+
+Override the read chain with `--cache-from=LIST`:
+
+```bash
+# Read only from the master container
+lake exe cache get --cache-from=master
+
+# Read master first, then forks
+lake exe cache get --cache-from=master,forks
+```
+
+Uploads target a single container via `--container=NAME`.
 
 ## Environment Variables
-
-### Cache Location
 
 | Variable            | Description                        | Default                                         |
 |---------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
-
-### Cache Backend Selection
-
-| Variable                       | Description                                              | Default     |
-|--------------------------------|----------------------------------------------------------|-------------|
-| `MATHLIB_CACHE_USE_CLOUDFLARE` | Set to `1` or `true` to use Cloudflare R2 instead of Azure | Azure cache |
-
-### Custom Cache URLs
-
-These allow overriding the cache endpoints, useful for mirrors or custom deployments:
-
-| Variable                | Description                     | Default                                                           |
-|-------------------------|---------------------------------|-------------------------------------------------------------------|
-| `MATHLIB_CACHE_GET_URL` | URL for downloading cache files | Azure or Cloudflare URL based on `MATHLIB_CACHE_USE_CLOUDFLARE`   |
-| `MATHLIB_CACHE_PUT_URL` | URL for uploading cache files   | Azure or Cloudflare URL based on `MATHLIB_CACHE_USE_CLOUDFLARE`   |
-
-### Authentication (for uploads)
-
-| Variable                 | Description                                    |
-|--------------------------|------------------------------------------------|
-| `MATHLIB_CACHE_AZURE_BEARER_TOKEN` | Azure bearer token (preferred for Azure backend) |
-| `MATHLIB_CACHE_SAS`      | Azure SAS token fallback (for Azure backend)   |
-| `MATHLIB_CACHE_S3_TOKEN` | S3 credentials (when using Cloudflare backend) |
 
 ## How It Works
 
@@ -140,92 +154,134 @@ The cache covers these packages:
 - `Archive`
 - `Counterexamples`
 
-## Default Cache Backends
+## Finding Cached Commits with `query`
 
-### Azure Blob Storage (Default)
-
-- **Download URL**: `https://lakecache.blob.core.windows.net/mathlib4`
-- Used by default for downloads and uploads
-
-### Cloudflare R2
-
-- **Download URL**: `https://mathlib4.lean-cache.cloud`
-- **Upload URL**: `https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4`
-- Enable with `MATHLIB_CACHE_USE_CLOUDFLARE=1`
-
-## Setting Up Your Own Cache Endpoint
-
-You can host your own cache mirror or private cache using any S3-compatible storage or HTTP server.
-
-### Requirements
-
-Your endpoint must support:
-
-1. **GET requests** for downloading files at:
-   - `/f/{repo}/{hash}.ltar` - for fork caches
-   - `/f/{hash}.ltar` - for main mathlib cache (Azure only)
-   - `/c/{commit_hash}` - for commit manifests
-
-2. **PUT requests** for uploading (if you need upload capability)
-
-### Using a Custom Endpoint
+For branches with per-commit SHA scoping (e.g., fork PRs), you can use
+`lake exe cache query` to discover which recent commits on your branch have
+cached entries. This is useful when your current branch has diverged from
+upstream and you want to avoid waiting for CI to build everything.
 
 ```bash
-# Download from a custom mirror
-export MATHLIB_CACHE_GET_URL="https://my-mirror.example.com/mathlib4"
-lake exe cache get
+# Find the most recent cached commit on the current branch
+lake exe cache query
 
-# Upload to a custom endpoint
-export MATHLIB_CACHE_PUT_URL="https://my-upload.example.com/mathlib4"
-export MATHLIB_CACHE_AZURE_BEARER_TOKEN="your-bearer-token"  # preferred for Azure
-# export MATHLIB_CACHE_SAS="your-sas-token"                  # Azure fallback
-# export MATHLIB_CACHE_S3_TOKEN="ACCESS_KEY:SECRET_KEY"      # for S3/Cloudflare
-lake exe cache put
+# Example output:
+# Most recent cached commit on branch: 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
+# Repository: leanprover-community/mathlib4
+# Container: forks
+#
+# To use this cache, run:
+#   lake exe cache get --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
 ```
 
-### Example: S3-Compatible Storage
+The `query` command walks your git log backwards from `HEAD`, stopping at the
+merge base with `master` or a hard cap of 50 commits (whichever comes first),
+and probes each commit for a completed SHA-scoped upload in the `forks`
+container. That signal is written by `put-staged` only after a successful
+upload, so its presence is a reliable "this commit was cached" signal. `query`
+prints the SHA to stdout (and does not auto-apply it) — you manually copy the
+result into your `cache get` command if desired.
 
-For S3-compatible storage (MinIO, Cloudflare R2, AWS S3, etc.):
+### Boolean probe on a single commit
 
-1. Create a bucket (e.g., `mathlib-cache`)
-2. Configure public read access for downloads (or use signed URLs)
-3. Set up authentication for uploads
-4. Set the environment variables:
+`lake exe cache query <REF>` checks a specific commit and exits with 0 (cached)
+or 1 (not cached). The ref can be `HEAD`, a branch name, a tag, or a SHA — anything
+`git rev-parse` accepts.
 
 ```bash
-export MATHLIB_CACHE_GET_URL="https://your-bucket.s3.region.amazonaws.com/mathlib-cache"
-export MATHLIB_CACHE_PUT_URL="https://your-bucket.s3.region.amazonaws.com/mathlib-cache"
-export MATHLIB_CACHE_USE_CLOUDFLARE=1  # Use S3-style auth
-export MATHLIB_CACHE_S3_TOKEN="ACCESS_KEY:SECRET_KEY"
+# Is the current checkout's HEAD cached?
+lake exe cache query HEAD && echo "yes" || echo "no"
+
+# Is a specific SHA cached?
+lake exe cache query 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
+# prints "cached: 5a3c7e9a..." (exit 0) or "not cached: 5a3c7e9a..." (exit 1)
 ```
 
-### Example: Simple HTTP Mirror
+By default `query` (both modes) targets the cwd's git remote — pass `--repo=`
+to override.
 
-For a read-only mirror using nginx or any static file server:
+### Unsafe automatic scope walk
 
-1. Periodically sync files from the official cache
-2. Serve them at a public URL
-3. Point users to your mirror:
+`cache get --unsafe` folds the `query` discovery into the download itself: rather
+than asking you to copy one SHA into `--scope=`, it walks your branch history
+(`HEAD` back to the merge base with `master`) for commits that have a cached fork
+build and reads the `forks` container at their scope. By
+default it uses just the single most recent such commit; `--unsafe-window=N`
+widens this to the `N` most recent, tried newest first with files fetched in one
+round dropped from the next.
 
 ```bash
-export MATHLIB_CACHE_GET_URL="https://mathlib-mirror.myorg.com"
-lake exe cache get
+lake exe cache get --unsafe             # use the most recent cached fork commit
+lake exe cache get --unsafe-window=10   # try the 10 most recent (implies --unsafe)
 ```
 
-### URL Structure
+The trust-ordered container chain is unchanged: `master` is still tried first and
+serves the bulk of every fork's files by hash; only the `forks` round is expanded
+into one round per discovered SHA. If no cached fork commit is found in range,
+`--unsafe` falls back to a plain unscoped read.
 
-The cache uses this URL pattern:
+`--unsafe` trusts the artifacts of *every* commit it tries, so it always prints
+the [non-default-scope security notice](#security-warning-non-default-scope). It
+is mutually exclusive with `--scope=` (which pins exactly one commit).
+
+### Heads-up note from `cache get`
+
+When you run `cache get` on a fork-trust repo and HEAD has not been built and
+cached at fork-trust level, the tool prints a stderr note pointing you at
+`cache query` (and warning that picking a different commit means trusting its
+artifacts). Costs one HTTP HEAD per `cache get` invocation; only fires when the
+resolved repo's default chain includes `forks` and no `--scope=` / `--cache-from`
+override is supplied.
+
+## Security Warning: Non-Default Scope
+
+When you read cache artifacts at a non-default scope, the cache tool prints a
+security warning to stderr. This happens when:
+
+1. **`--unsafe` is passed** — you are letting the tool walk history and trust the
+   artifacts of whichever recent fork commit(s) it finds cached.
+2. **`--scope=` is passed** — you are reading from a specific commit's
+   namespace instead of the repo's default trust chain.
+3. **`--cache-from` widens the read chain** — you are explicitly telling the tool
+   to trust containers beyond the repo default.
+4. **`--repo` overrides the detected git remote** — you are reading cache for a
+   different repository than your cwd's git remote.
+
+Example warning:
 
 ```
-{BASE_URL}/f/{repo}/{filename}.ltar  # Fork/branch caches
-{BASE_URL}/f/{filename}.ltar         # Main mathlib cache (Azure)
-{BASE_URL}/c/{commit_hash}           # Commit manifests
+=================================================================
+SECURITY: reading cache at a non-default scope
+=================================================================
+You are reading cache artifacts at a scope outside the default trust
+boundary for this repo. The cache cannot verify the contents of these
+artifacts; you are choosing to trust whoever uploaded them.
+
+Repository: leanprover-community/mathlib4
+Reason: --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e (explicit per-commit scope)
+=================================================================
 ```
 
-Where:
-- `{repo}` is like `leanprover-community/mathlib4` or `username/mathlib4`
-- `{filename}` is a hash like `1234567890abcdef`
-- `{commit_hash}` is a git commit SHA
+This warning is always printed — it cannot be suppressed with `--quiet`. The
+warning is purely informational; it does not prompt for confirmation (so it
+doesn't interfere with CI).
+
+## Tests
+
+The cache tool's pure logic (container URL construction, per-repo allowlist,
+CLI parsing) is covered by a standalone test exe:
+
+```bash
+lake exe cache-test
+```
+
+The exe builds only `Cache.*` and its direct deps — it does not require
+Mathlib or `MathlibTest`. Exits 0 on success, non-zero on failure.
+
+> A Lake package has a single `testDriver`, which the enclosing `mathlib`
+> package already binds to `MathlibTest`. If the cache tool ever moves to
+> its own Lake project, the `cache-test` exe can be promoted to that
+> project's `testDriver` so `lake test` invokes it directly.
 
 ## Dependencies
 

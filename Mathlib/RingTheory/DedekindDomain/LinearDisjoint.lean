@@ -18,8 +18,8 @@ and `Frac R` denotes the fraction field of a domain `R`.
 
 ## Main results and definitions
 
-* `FractionalIdeal.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
-* `FractionalIdeal.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
+* `IsDedekindDomain.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
+* `IsDedekindDomain.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
   `𝓓(B/A) = 𝓓(R₁/A) * 𝓓(R₂/A)`.
 * `Module.Basis.ofIsCoprimeDifferentIdeal`: Construct a `R₁`-basis of `B` by lifting an
   `A`-basis of `R₂`.

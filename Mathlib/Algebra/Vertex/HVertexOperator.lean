@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 # Vertex operators
+
 In this file we introduce heterogeneous vertex operators using Hahn series.  When `R = ℂ`, `V = W`,
 and `Γ = ℤ`, then this is the usual notion of "meromorphic left-moving 2D field".  The notion we use
 here allows us to consider composites and scalar-multiply by multivariable Laurent series.

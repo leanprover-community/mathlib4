@@ -74,6 +74,10 @@ class FormallySmooth : Prop where
 attribute [instance] FormallySmooth.projective_kaehlerDifferential
   FormallySmooth.subsingleton_h1Cotangent
 
+@[deprecated (since := "2025-10-25")]
+alias FormallySmooth.iff_subsingleton_and_projective := Algebra.formallySmooth_iff
+
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
@@ -87,7 +91,7 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
     ⟨P.toExtension.subsingleton_h1Cotangent.mp FormallySmooth.subsingleton_h1Cotangent,
       Module.projective_lifting_property _ _ P.toExtension.toKaehler_surjective⟩).2
   obtain ⟨g, hg⟩ := retractionKerCotangentToTensorEquivSection (R := R) P.algebraMap_surjective
-    ⟨⟨⟨Cotangent.val, by simp⟩, by simpa using Cotangent.val_smul' (P := P.toExtension)⟩ ∘ₗ
+    ⟨⟨⟨Cotangent.val, by simp⟩, by simpa using! Cotangent.val_smul' (P := P.toExtension)⟩ ∘ₗ
       l.restrictScalars P.toExtension.Ring, LinearMap.ext fun x ↦ congr($hl x)⟩
   let σ := Function.surjInv (f := algebraMap B (B ⧸ I)) Ideal.Quotient.mk_surjective
   have H (x : P.Ring) : ↑(aeval (σ ∘ f) x) = f (algebraMap _ A x) := by
@@ -104,9 +108,10 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
       (Ideal.Quotient.mkₐ R _).comp l := by
     refine Ideal.Quotient.algHom_ext _ (MvPolynomial.algHom_ext fun i ↦ ?_)
     change f (algebraMap P.Ring A (.X i)) = algebraMap _ _ (MvPolynomial.aeval (σ ∘ f) (.X i))
-    simpa using (Function.surjInv_eq _ _).symm
+    simpa using! (Function.surjInv_eq _ _).symm
   exact ⟨l.comp g, by rw [← AlgHom.comp_assoc, ← this, AlgHom.comp_assoc, hg, AlgHom.comp_id]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance instFormallySmoothMvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P := Generators.mvPolynomial R σ
   have : Subsingleton ↥P.toExtension.ker :=
@@ -172,7 +177,7 @@ theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker g) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
-  conv_rhs => rw [← AlgEquiv.coe_algHom, ← AlgHom.comp_apply,
+  conv_rhs => rw [← AlgEquiv.coe_toAlgHom, ← AlgHom.comp_apply,
     ← FormallySmooth.mk_lift (A := A) _ hg']
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
   rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply]
@@ -356,7 +361,7 @@ theorem of_comp_surjective
   refine ⟨g, AlgHom.ext fun x ↦ congr(f.kerSquareLift.kerLift ($hg x)).trans ?_⟩
   obtain ⟨x, rfl⟩ := (Ideal.quotientKerAlgEquivOfSurjective surj).surjective x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.coe_algHom, AlgEquiv.symm_apply_apply,
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.coe_toAlgHom, AlgEquiv.symm_apply_apply,
     AlgHom.coe_id, id_eq]
   simp only [Ideal.quotientKerAlgEquivOfSurjective_apply]
 

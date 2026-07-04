@@ -23,6 +23,7 @@ open Limits
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Retract.isCardinalPresentable
     {X Y : C} (h : Retract Y X) (κ : Cardinal.{w}) [Fact κ.IsRegular]

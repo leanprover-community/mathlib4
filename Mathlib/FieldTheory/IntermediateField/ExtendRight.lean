@@ -87,7 +87,7 @@ noncomputable instance algebra : Algebra S (F.extendRight M) where
   algebraMap := (algebraMap S M).codRestrict (F.extendRight M).toSubalgebra (algebraMap_mem F M ·)
   commutes' _ _ := Subtype.ext <| by simp [Algebra.commutes]
   smul_def' s x := Subtype.ext <| by
-    convert_to s • (x : M) = _
+    convert_to! s • (x : M) = _
     rw [MulMemClass.coe_mul, RingHom.codRestrict_apply, ← Algebra.smul_def]
 
 -- Check there is no diamond

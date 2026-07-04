@@ -6,7 +6,6 @@ Authors: Chris Birkbeck
 module -- shake: keep-all
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
-public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module "Use `Mathlib.NumberTheory.ModularForms.LevelOne.Basic` instead."
   (since := "2026-05-06")

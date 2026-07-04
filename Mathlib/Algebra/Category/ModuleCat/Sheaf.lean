@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
@@ -103,6 +104,20 @@ noncomputable def forgetToSheafModuleCat
       (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
   map f := { hom := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
+set_option backward.defeqAttrib.useBackward true in
+/-- Isomorphism on `forgetToSheafModuleCat` when given isomorphic initial objects. -/
+noncomputable def forgetToSheafModuleCatOfIso (X Y : Cᵒᵖ) (hX : Limits.IsInitial X)
+    (hY : Limits.IsInitial Y) (φ : X ≅ Y) :
+    forgetToSheafModuleCat R X hX ≅ forgetToSheafModuleCat R Y hY ⋙
+      sheafCompose J (ModuleCat.restrictScalars (R.obj.map φ.hom).hom) := by
+  refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
+  · refine NatIso.ofComponents (fun U ↦ ?_) ?_
+    · dsimp [PresheafOfModules.forgetToPresheafModuleCatObjObj]
+      refine ModuleCat.restrictScalarsComp'App _ _ _ ?_ _
+      simpa using congr((R.obj.map $(hX.hom_ext (hX.to U) (φ.hom ≫ hY.to U))).hom)
+    cat_disch
+  cat_disch
+
 /-- The canonical isomorphism between
 `SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrpCat.{v}`
 and `SheafOfModules.forget R ⋙ PresheafOfModules.toPresheaf R.val`. -/
@@ -151,8 +166,6 @@ variable (R) in
 def sectionsFunctor : SheafOfModules.{v} R ⥤ Type _ where
   obj M := M.sections
   map f := ↾(sectionsMap f)
-
-variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 variable (R) in
 /-- The obvious free sheaf of modules of rank `1`. -/

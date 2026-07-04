@@ -63,7 +63,7 @@ instance : Inhabited (Function.End α) := ⟨1⟩
 
 namespace Equiv.Perm
 
-attribute [to_additive_dont_translate] Perm
+attribute [to_additive_dont_translate] Perm Equiv
 
 instance instOne : One (Perm α) where one := Equiv.refl _
 instance instMul : Mul (Perm α) where mul f g := Equiv.trans g f

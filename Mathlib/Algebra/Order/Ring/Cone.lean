@@ -11,8 +11,7 @@ public import Mathlib.Algebra.Ring.Subsemiring.Order
 /-!
 # Construct ordered rings from rings with a specified positive cone.
 
-In this file we provide the structure `RingCone`
-that encodes axioms of `OrderedRing` and `LinearOrderedRing`
+In this file we provide the structure `RingCone` that encodes axioms of ordered rings
 in terms of the subset of non-negative elements.
 
 We also provide constructors that convert between
@@ -36,7 +35,7 @@ add_decl_doc RingCone.toAddGroupCone
 
 instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R where
   coe C := C.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R) R
 

@@ -12,6 +12,7 @@ import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2008 Q3
+
 Prove that there exist infinitely many positive integers `n` such that `n^2 + 1` has a prime
 divisor which is greater than `2n + √(2n)`.
 

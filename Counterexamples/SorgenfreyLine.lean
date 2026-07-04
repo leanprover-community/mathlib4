@@ -118,7 +118,7 @@ theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed 
 @[simp]
 theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
   refine ((nhds_basis_Ico a).map _).eq_of_same_basis ?_
-  simpa only [toReal.image_eq_preimage_symm] using nhdsGE_basis_Ico (toReal a)
+  simpa only [toReal.image_eq_preimage_symm] using! nhdsGE_basis_Ico (toReal a)
 
 theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
   simp_rw [← map_toReal_nhds, map_map, Function.comp_def, toReal.symm_apply_apply, map_id']

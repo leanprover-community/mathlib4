@@ -176,4 +176,4 @@ lemma summable_of_absolute_convergence_real {f : ℕ → ℝ} :
   | ⟨r, hr⟩ => by
     refine .of_norm ⟨r, (hasSum_iff_tendsto_nat_of_nonneg ?_ _).2 ?_⟩
     · exact fun i ↦ norm_nonneg _
-    · simpa only using hr
+    · simpa only using! hr

@@ -117,6 +117,7 @@ lemma pullHom'_p₁_p₂ (i₁ i₂ : ι) :
     pullHom' hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (by simp) (by simp) = hom i₁ i₂ := by
   simp [pullHom'_eq_pullHom hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (𝟙 _)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma pullHom'_self' (hom_self : ∀ i, pullHom' hom (f i) (𝟙 (X i)) (𝟙 (X i)) = 𝟙 _)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q := by cat_disch) :
@@ -286,6 +287,7 @@ def ofDescentData (D : F.DescentData f) : F.DescentData' sq sq₃ where
       D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p, D.hom_comp]
     all_goals cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 variable (sq sq₃) in
 @[simp]
 lemma pullHom'_ofDescentData_hom (D : F.DescentData f)
@@ -308,6 +310,7 @@ noncomputable def toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentDa
     { hom := φ.hom
       comm := comm φ }
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] DescentData.Hom.comm in
 /-- The functor `F.DescentData f ⥤ F.DescentData' sq sq₃`. -/
 @[simps]
@@ -315,6 +318,7 @@ noncomputable def fromDescentDataFunctor : F.DescentData f ⥤ F.DescentData' sq
   obj D := .ofDescentData _ _ D
   map φ := { hom := φ.hom }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `F.DescentData' sq sq₃ ≌ F.DescentData f`. -/
 @[simps]
 noncomputable def descentDataEquivalence : F.DescentData' sq sq₃ ≌ F.DescentData f where

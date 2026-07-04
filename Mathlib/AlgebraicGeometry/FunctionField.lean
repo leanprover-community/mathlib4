@@ -91,6 +91,13 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
   change _ = (X.presheaf.germ U x x.2 ≫ _).hom
   rw [X.presheaf.germ_stalkSpecializes]
 
+@[simp]
+lemma Scheme.algebraMap_germ_eq_germToFunctionField [IrreducibleSpace X]
+    {U : X.Opens} [Nonempty U] {x : X} (hx : x ∈ U) (f : Γ(X, U)) :
+    algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) =
+      X.germToFunctionField U f := by
+  simp [RingHom.algebraMap_toAlgebra, ← ConcreteCategory.comp_apply]
+
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Spec R).functionField :=
   -- TODO: can we write this normally after the refactor finishes?
@@ -170,5 +177,28 @@ instance [IsIntegral X] (x : X) :
 
 instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
   Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
+
+/--
+For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that
+`f` is a unit in `Γ(X, U)`.
+-/
+lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) :
+    ∃ U ∈ X.affineOpens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
+      X.germToFunctionField U f' = f ∧ IsUnit f' := by
+  obtain ⟨U, hU, g, hg⟩ := X.presheaf.exists_germ_eq f
+  obtain ⟨_, ⟨A, hA, rfl⟩, hxA, hAU⟩ :=
+    X.isBasis_affineOpens.exists_subset_of_mem_open hU U.isOpen
+  have : Nonempty A := ⟨_, hxA⟩
+  let gA : Γ(X, A) := X.presheaf.map (homOfLE hAU).op g
+  have h_germ_gA : X.presheaf.germ A (genericPoint X) hxA gA = f := by
+    simp only [← hg, ← X.presheaf.germ_res_apply (homOfLE hAU) (genericPoint X) hxA g, gA]
+    rfl
+  have hxV : genericPoint X ∈ X.basicOpen gA := by
+    rwa [Scheme.mem_basicOpen X gA (genericPoint X) hxA, h_germ_gA, isUnit_iff_ne_zero]
+  have : Nonempty (X.basicOpen gA) := ⟨⟨_, hxV⟩⟩
+  refine ⟨X.basicOpen gA, hA.basicOpen gA,
+    X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
+    X.toRingedSpace.isUnit_res_basicOpen gA⟩
+  simpa using h_germ_gA
 
 end AlgebraicGeometry

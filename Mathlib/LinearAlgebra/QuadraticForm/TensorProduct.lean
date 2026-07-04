@@ -110,8 +110,10 @@ protected abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.tmul Q₂).associated = BilinForm.tmul Q₁.associated Q₂.associated := by
   rw [BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply, ← BilinMap.tmul,
-    ← QuadraticMap.associated_tmul Q₁ Q₂]
-  aesop
+    ← QuadraticMap.associated_tmul Q₁ Q₂, LinearEquiv.coe_coe, LinearEquiv.congrRight₂_apply]
+  ext : 6
+  simp [associated_apply]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
@@ -147,6 +149,7 @@ end QuadraticForm
 
 end InvertibleTwo
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
 In other words, if a base change exists for a quadratic map, it is unique.

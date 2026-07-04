@@ -125,15 +125,15 @@ lemma recOneCoe_coe {motive : WithOne α → Sort*} (h₁ h₂) (a : α) :
   rfl
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
-@[to_additive unzero
+@[to_additive
 /-- Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`. -/]
 def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 
-@[to_additive (attr := simp) unzero_coe]
+@[to_additive (attr := simp)]
 theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
   rfl
 
-@[to_additive (attr := simp) coe_unzero]
+@[to_additive (attr := simp)]
 lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
   | (x : α), _ => rfl
 
@@ -193,5 +193,37 @@ instance instCommMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
+
+/--
+Specialization of `Option.getD` to values in `WithOne α` that respects API boundaries.
+-/
+@[to_additive
+  /-- Specialization of `Option.getD` to values in `WithZero α` that respects API boundaries. -/]
+def unoneD (d : α) (x : WithOne α) : α := recOneCoe d id x
+
+@[to_additive (attr := simp)]
+theorem unoneD_one (d : α) : unoneD d 1 = d :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem unoneD_coe (d x : α) : unoneD d x = x :=
+  rfl
+
+@[to_additive]
+theorem unoneD_eq_iff {d y : α} {x : WithOne α} : unoneD d x = y ↔ x = y ∨ x = 1 ∧ y = d := by
+  induction x <;> simp [@eq_comm _ d]
+
+@[to_additive (attr := simp)]
+theorem unoneD_eq_self_iff {d : α} {x : WithOne α} : unoneD d x = d ↔ x = d ∨ x = 1 := by
+  simp [unoneD_eq_iff]
+
+@[to_additive]
+theorem unoneD_eq_unoneD_iff {d : α} {x y : WithOne α} :
+    unoneD d x = unoneD d y ↔ x = y ∨ x = d ∧ y = 1 ∨ x = 1 ∧ y = d := by
+  induction y <;> simp [unoneD_eq_iff, or_comm]
+
+@[to_additive]
+lemma unoneD_eq_unone {d : α} {x : WithOne α} (hx : x ≠ 1) : unoneD d x = unone hx := by
+  simp [unoneD_eq_iff]
 
 end WithOne

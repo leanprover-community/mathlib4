@@ -64,7 +64,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
 scoped[InitialSeg] infixl:25 " ≼i " => InitialSeg
 
 /-- An `InitialSeg` between the `<` relations of two types. -/
-notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
+notation3:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
 
 namespace InitialSeg
 
@@ -73,7 +73,7 @@ instance : Coe (r ≼i s) (r ↪r s) :=
 
 instance : FunLike (r ≼i s) α β where
   coe f := f.toFun
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
     congr with x
     exact congr_fun h x
@@ -251,7 +251,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
 scoped[InitialSeg] infixl:25 " ≺i " => PrincipalSeg
 
 /-- A `PrincipalSeg` between the `<` relations of two types. -/
-notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
+notation3:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
 
 open scoped InitialSeg
 

@@ -48,7 +48,7 @@ The field `app` provides the components of the natural transformation.
 
 Naturality is expressed by `α.naturality`.
 -/
-@[ext, to_dual self (reorder := F G)]
+@[ext, to_dual self (reorder := F G), wikidata Q1442189]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   /-- The component of a natural transformation. -/
   app (X : C) : F.obj X ⟶ G.obj X

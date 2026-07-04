@@ -275,7 +275,7 @@ lemma eq_or_eq_of_isPushout' (h : IsPushout t l r b)
   · exact Or.inl h₁
   · by_cases h₂ : x₃ ∈ Set.range l
     · obtain ⟨x₁, rfl⟩ := h₂
-      exact Or.inl ⟨t x₁, by simpa only [← hx₃] using ConcreteCategory.congr_hom h.w x₁⟩
+      exact Or.inl ⟨t x₁, by simpa only [← hx₃] using! ConcreteCategory.congr_hom h.w x₁⟩
     · exact Or.inr ⟨x₃, hx₃, h₂⟩
 
 /-- A pushout square in `Type` where the top map is injective is a pullback square.

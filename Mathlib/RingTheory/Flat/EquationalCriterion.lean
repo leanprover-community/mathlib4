@@ -178,7 +178,7 @@ If $M$ is flat, then every relation $\sum_i f_i x_i = 0$ in $M$ is trivial. -/
 theorem isTrivialRelation_of_sum_smul_eq_zero [Flat R M] {ι : Type*} [Fintype ι] {f : ι → R}
     {x : ι → M} (h : ∑ i, f i • x i = 0) : IsTrivialRelation f x :=
   (Fintype.equivFin ι).symm.isTrivialRelation_comp.mp <| iff_forall_isTrivialRelation.mp ‹_› <| by
-    simpa only [← (Fintype.equivFin ι).symm.sum_comp] using h
+    simpa only [← (Fintype.equivFin ι).symm.sum_comp] using! h
 
 /-- **Equational criterion for flatness**, backward direction.
 

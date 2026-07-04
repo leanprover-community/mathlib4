@@ -42,6 +42,12 @@ lemma generateFrom_singleton_le {m : MeasurableSpace α} {s : Set α} (hs : Meas
     MeasurableSpace.generateFrom {s} ≤ m :=
   generateFrom_le (fun _ ht ↦ mem_singleton_iff.1 ht ▸ hs)
 
+lemma comap_indicator_const_le_generateFrom_singleton {M : Type*} [Zero M] [MeasurableSpace M]
+    (s : Set α) (c : M) :
+    MeasurableSpace.comap (s.indicator (fun _ ↦ c)) inferInstance ≤
+      MeasurableSpace.generateFrom {s} :=
+  (measurable_const.indicator (measurableSet_generateFrom (by simp))).comap_le
+
 end MeasurableSpace
 
 namespace MeasureTheory

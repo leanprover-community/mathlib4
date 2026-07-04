@@ -148,7 +148,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
   use abs ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
-  dsimp; constructor
+  constructor
   · rw [xeq, ← abs_map]; rfl
   rw [yeq, ← abs_map]; rfl
 

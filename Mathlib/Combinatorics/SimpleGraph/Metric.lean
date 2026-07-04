@@ -328,7 +328,7 @@ theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u
     p.IsPath := by
   classical
   have : p.bypass = p := by
-    apply Walk.bypass_eq_self_of_length_le
+    apply bypass_eq_self_of_length_le_length_bypass
     calc p.length
       _ = G.dist u v := hp
       _ ≤ p.bypass.length := dist_le p.bypass

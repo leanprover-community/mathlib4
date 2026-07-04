@@ -88,7 +88,7 @@ def toFormat_propTypes (ctx : ContextInfo) (lc : LocalContext) (es : Array (Expr
 also a `Format`ted version of the corresponding Type. -/
 public partial
 def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
-  InfoTree.foldInfoM (init := #[]) fun ctx info args => return args ++ (← do
+  InfoTree.foldInfoM (init := #[]) fun ctx info args => return args ++ (← (do
     let .ofTacticInfo i := info | return #[]
     let stx := i.stx
     let .original .. := stx.getHeadInfo | return #[]
@@ -109,7 +109,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     -- Now, we get the `MetaM` state up and running to find the types of each entry of `newDecls`.
     -- For each entry which is a `Type`, we print a warning on `have`.
     let fmts ← toFormat_propTypes ctx lc (newDecls.map (fun e ↦ (e.type, e.userName))).toArray
-    return fmts.map fun (fmt, na) ↦ (stx, f!"{na} : {fmt}"))
+    return fmts.map fun (fmt, na) ↦ (stx, f!"{na} : {fmt}")))
 
 /-- The main implementation of the `have` vs `let` linter. -/
 def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do

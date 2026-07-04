@@ -72,7 +72,7 @@ open Function Option
 
 instance : FunLike (α ≃. β) α (Option β) :=
   { coe := toFun
-    coe_injective' := by
+    coe_injective := by
       rintro ⟨f₁, f₂, hf⟩ ⟨g₁, g₂, hg⟩ (rfl : f₁ = g₁)
       congr with y x
       simp only [hf, hg] }

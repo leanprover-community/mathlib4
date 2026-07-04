@@ -37,6 +37,7 @@ namespace FunctorCategory
 
 variable {F G : C ⥤ D} (α : F ⟶ G) (X : C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The abelian coimage in a functor category can be calculated componentwise. -/
 @[simps!]
 def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
@@ -47,6 +48,7 @@ def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
         simp only [Category.comp_id, PreservesKernel.iso_hom]
         exact (kernelComparison_comp_ι _ ((evaluation C D).obj X)).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The abelian image in a functor category can be calculated componentwise. -/
 @[simps!]
@@ -60,6 +62,7 @@ def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
         simp only [PreservesCokernel.iso_inv, Category.id_comp, Category.comp_id]
         exact (π_comp_cokernelComparison _ ((evaluation C D).obj X)).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 theorem coimageImageComparison_app :
     coimageImageComparison (α.app X) =
       (coimageObjIso α X).inv ≫ (coimageImageComparison α).app X ≫ (imageObjIso α X).hom := by

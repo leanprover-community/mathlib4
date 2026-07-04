@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Fin.Tuple.Embedding
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Card
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Existence of embeddings from finite types
 
@@ -48,7 +48,7 @@ theorem exists_embedding_disjoint_range_of_add_le_ENat_card
   · use y.trans (subtype _)
     rw [Set.disjoint_right]
     rintro _ ⟨i, rfl⟩
-    simpa only [← mem_compl_iff] using Subtype.coe_prop (y i)
+    simpa only [← mem_compl_iff] using! Subtype.coe_prop (y i)
   rcases finite_or_infinite α with hα | hα
   · let _ : Fintype α := Fintype.ofFinite α
     classical

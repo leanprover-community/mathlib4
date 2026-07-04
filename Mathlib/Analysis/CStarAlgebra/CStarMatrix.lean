@@ -141,8 +141,12 @@ instance instZero [Zero A] : Zero (CStarMatrix m n A) :=
 instance instAddZeroClass [AddZeroClass A] : AddZeroClass (CStarMatrix m n A) :=
   inferInstanceAs <| AddZeroClass (Matrix m n A)
 
-instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) :=
-  inferInstanceAs <| AddMonoid (Matrix m n A)
+instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
+  inferInstanceAs <| SMul R (Matrix m n A)
+
+instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) where
+  nsmul := letI := instSMul (R := ℕ) (A := A) (m := m) (n := n); (· • · )
+  __ : AddMonoid (CStarMatrix m n A) := inferInstanceAs <| AddMonoid (Matrix m n A)
 
 instance instAddCommMonoid [AddCommMonoid A] : AddCommMonoid (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommMonoid (Matrix m n A)
@@ -153,8 +157,9 @@ instance instNeg [Neg A] : Neg (CStarMatrix m n A) :=
 instance instSub [Sub A] : Sub (CStarMatrix m n A) :=
   inferInstanceAs <| Sub (Matrix m n A)
 
-instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) :=
-  inferInstanceAs <| AddGroup (Matrix m n A)
+instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) where
+  zsmul := letI := instSMul (R := ℤ) (A := A) (m := m) (n := n); (· • · )
+  __ : AddGroup (CStarMatrix m n A) := inferInstanceAs <| AddGroup (Matrix m n A)
 
 instance instAddCommGroup [AddCommGroup A] : AddCommGroup (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommGroup (Matrix m n A)
@@ -167,9 +172,6 @@ instance instSubsingleton [Subsingleton A] : Subsingleton (CStarMatrix m n A) :=
 
 instance instNontrivial [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
   inferInstanceAs <| Nontrivial (Matrix m n A)
-
-instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
-  inferInstanceAs <| SMul R (Matrix m n A)
 
 instance instSMulCommClass [SMul R A] [SMul S A] [SMulCommClass R S A] :
     SMulCommClass R S (CStarMatrix m n A) :=
@@ -485,13 +487,13 @@ noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A
     ext
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.add_apply, WithCStarModule.add_apply]
+      WithCStarModule.equiv_symm_pi_apply, _root_.add_apply, WithCStarModule.add_apply]
     rw [Matrix.vecMul_add, Pi.add_apply]
   map_smul' c M := by
     ext x i
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.smul_apply,
+      WithCStarModule.equiv_symm_pi_apply, _root_.smul_apply,
       WithCStarModule.smul_apply, RingHom.id_apply]
     rw [Matrix.vecMul_smul, Pi.smul_apply]
 
@@ -579,9 +581,9 @@ lemma norm_def' {M : CStarMatrix n n A} : ‖M‖ = ‖toCLMNonUnitalAlgHom (A :
 lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM M).opNorm_nonneg
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
-  norm_triangle M₁ M₂ := by simpa [← map_add] using norm_add_le (toCLM M₁) (toCLM M₂)
+  norm_triangle M₁ M₂ := by simpa [← map_add] using! norm_add_le (toCLM M₁) (toCLM M₂)
   norm_eq_zero_iff := by
-    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using toCLM_injective
+    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using! toCLM_injective
 
 open WithCStarModule in
 lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :

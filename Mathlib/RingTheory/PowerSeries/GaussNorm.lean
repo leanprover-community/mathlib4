@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.MvPowerSeries.GaussNorm
 
 /-!
 # Gauss norm for power series
+
 This file defines the Gauss norm for power series using the gaussNorm for multivariate power series.
 Given a power series `f` in `R⟦X⟧`, a function `v : R → ℝ` and a real number `c`, the Gauss norm is
 defined as the supremum of the set of all values of `v (f.coeff i) * c ^ i` for all `i : ℕ`.

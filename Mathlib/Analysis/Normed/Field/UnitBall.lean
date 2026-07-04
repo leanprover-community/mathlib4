@@ -141,6 +141,10 @@ def Submonoid.unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 
     carrier := closedBall 0 1
     one_mem' := mem_closedBall_zero_iff.2 norm_one.le }
 
+@[simp] lemma Submonoid.mem_unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 𝕜] {x : 𝕜} :
+    x ∈ Submonoid.unitClosedBall 𝕜 ↔ ‖x‖ ≤ 1 := by
+  simp [Submonoid.unitClosedBall]
+
 instance Metric.unitClosedBall.instMonoid [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     Monoid (closedBall (0 : 𝕜) 1) :=
   inferInstanceAs <| Monoid (Submonoid.unitClosedBall 𝕜)

@@ -48,6 +48,7 @@ universe w v u
 open Category Iso
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- In a bicategory, we can compose the 1-morphisms `f : a ⟶ b` and `g : b ⟶ c` to obtain
 a 1-morphism `f ≫ g : a ⟶ c`. This composition does not need to be strictly associative,
 but there is a specified associator, `α_ f g h : (f ≫ g) ≫ h ≅ f ≫ (g ≫ h)`.
@@ -57,7 +58,6 @@ These associators and unitors satisfy the pentagon and triangle equations.
 
 See https://ncatlab.org/nlab/show/bicategory.
 -/
-@[nolint checkUnivs]
 class Bicategory (B : Type u) extends CategoryStruct.{v} B where
   /-- The category structure on the collection of 1-morphisms -/
   homCategory : ∀ a b : B, Category.{w} (a ⟶ b) := by infer_instance
@@ -465,6 +465,7 @@ def precomp (c : B) (f : a ⟶ b) : (b ⟶ c) ⥤ (a ⟶ c) where
   obj := (f ≫ ·)
   map := (f ◁ ·)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Precomposition of a 1-morphism as a functor from the category of 1-morphisms `a ⟶ b` into the
 category of functors `(b ⟶ c) ⥤ (a ⟶ c)`. -/
 @[simps]
@@ -478,6 +479,7 @@ def postcomp (a : B) (f : b ⟶ c) : (a ⟶ b) ⥤ (a ⟶ c) where
   obj := (· ≫ f)
   map := (· ▷ f)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Postcomposition of a 1-morphism as a functor from the category of 1-morphisms `b ⟶ c` into the
 category of functors `(a ⟶ b) ⥤ (a ⟶ c)`. -/
 @[simps]
@@ -485,12 +487,14 @@ def postcomposing (a b c : B) : (b ⟶ c) ⥤ (a ⟶ b) ⥤ (a ⟶ c) where
   obj f := postcomp a f
   map η := { app := (· ◁ η) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left component of the associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIsoLeft (a : B) (g : b ⟶ c) (h : c ⟶ d) :
     (postcomposing a ..).obj g ⋙ (postcomposing ..).obj h ≅ (postcomposing ..).obj (g ≫ h) :=
   NatIso.ofComponents (α_ · g h)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Middle component of the associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIsoMiddle (f : a ⟶ b) (h : c ⟶ d) :
@@ -498,17 +502,20 @@ def associatorNatIsoMiddle (f : a ⟶ b) (h : c ⟶ d) :
       (postcomposing ..).obj h ⋙ (precomposing ..).obj f :=
   NatIso.ofComponents (α_ f · h)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right component of the associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIsoRight (f : a ⟶ b) (g : b ⟶ c) (d : B) :
     (precomposing _ _ d).obj (f ≫ g) ≅ (precomposing ..).obj g ⋙ (precomposing ..).obj f :=
   NatIso.ofComponents (α_ f g ·)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso (a b : B) : (precomposing _ _ b).obj (𝟙 a) ≅ 𝟭 (a ⟶ b) :=
   NatIso.ofComponents (λ_ ·)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso (a b : B) : (postcomposing a _ _).obj (𝟙 b) ≅ 𝟭 (a ⟶ b) :=

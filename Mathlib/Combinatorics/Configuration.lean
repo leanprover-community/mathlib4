@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
+
 This file introduces abstract configurations of points and lines, and proves some basic properties.
 
 ## Main definitions

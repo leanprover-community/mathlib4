@@ -388,8 +388,8 @@ theorem dvd_of_infinite_eval_dvd_eval
   rw [← modByMonic_eq_zero_iff_dvd mQ]
   set R := P %ₘ Q
   apply eq_zero_of_infinite_isRoot
-  refine (h.diff (finite_abs_eval_le_of_degree_lt degR)).mono fun x mx ↦ ?_
-  simp only [Set.mem_diff, Set.mem_setOf_eq, not_le] at mx
+  refine (h.sdiff (finite_abs_eval_le_of_degree_lt degR)).mono fun x mx ↦ ?_
+  simp only [Set.mem_sdiff, Set.mem_setOf_eq, not_le] at mx
   rw [← eqR, eval_add, eval_mul, Int.dvd_add_self_mul, ← abs_dvd] at mx
   exact Int.eq_zero_of_abs_lt_dvd mx.1 mx.2
 

@@ -79,7 +79,7 @@ instance : IsMarkovKernel κ†μ := by rw [posterior]; infer_instance
 
 /-- The main property of the posterior. -/
 lemma compProd_posterior_eq_map_swap : (κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap := by
-  simpa using ((μ ⊗ₘ κ).map Prod.swap).disintegrate ((μ ⊗ₘ κ).map Prod.swap).condKernel
+  simpa using! ((μ ⊗ₘ κ).map Prod.swap).disintegrate ((μ ⊗ₘ κ).map Prod.swap).condKernel
 
 lemma compProd_posterior_eq_swap_comp : (κ ∘ₘ μ) ⊗ₘ κ†μ = Kernel.swap Ω 𝓧 ∘ₘ μ ⊗ₘ κ := by
   rw [compProd_posterior_eq_map_swap, Measure.swap_comp]

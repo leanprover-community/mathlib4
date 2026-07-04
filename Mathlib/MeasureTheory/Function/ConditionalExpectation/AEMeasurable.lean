@@ -430,9 +430,9 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   let f' := (s_f \ s_g).indicator (hfm.mk f)
   have hff' : f =ᵐ[μ] f' := by
     have : s_f \ s_g =ᵐ[μ] s_f := by
-      rw [← Set.diff_inter_self_eq_diff, Set.inter_comm]
+      rw [← Set.sdiff_inter_self_eq_sdiff, Set.inter_comm]
       refine ((ae_eq_refl s_f).diff h_inter_empty).trans ?_
-      rw [Set.diff_empty]
+      rw [Set.sdiff_empty]
     refine ((indicator_ae_eq_of_ae_eq_set this).trans ?_).symm
     rw [Set.indicator_support]
     exact hfm.ae_eq_mk.symm
@@ -441,9 +441,9 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   let g' := (s_g \ s_f).indicator (hgm.mk g)
   have hgg' : g =ᵐ[μ] g' := by
     have : s_g \ s_f =ᵐ[μ] s_g := by
-      rw [← Set.diff_inter_self_eq_diff]
+      rw [← Set.sdiff_inter_self_eq_sdiff]
       refine ((ae_eq_refl s_g).diff h_inter_empty).trans ?_
-      rw [Set.diff_empty]
+      rw [Set.sdiff_empty]
     refine ((indicator_ae_eq_of_ae_eq_set this).trans ?_).symm
     rw [Set.indicator_support]
     exact hgm.ae_eq_mk.symm

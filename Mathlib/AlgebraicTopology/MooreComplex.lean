@@ -120,6 +120,7 @@ def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
 
 variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The normalized Moore complex functor, on morphisms.
 -/
 @[simps!]
@@ -139,6 +140,7 @@ end NormalizedMooreComplex
 
 open NormalizedMooreComplex
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
@@ -153,6 +155,7 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
 
+set_option backward.defeqAttrib.useBackward true in
 -- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n := by

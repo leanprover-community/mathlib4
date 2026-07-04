@@ -48,7 +48,7 @@ variable (K : Type*) [Field K]
 namespace NumberField.canonicalEmbedding
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
-def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
+def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := RingHom.pi fun φ => φ
 
 theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.canonicalEmbedding K) := RingHom.injective _
@@ -188,18 +188,18 @@ abbrev mixedSpace :=
 
 /-- The mixed embedding of a number field `K` into the mixed space of `K`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
-  RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
-    (Pi.ringHom fun w => w.val.embedding)
+  RingHom.prod (RingHom.pi fun w => embedding_of_isReal w.prop)
+    (RingHom.pi fun w => w.val.embedding)
 
 @[simp]
 theorem mixedEmbedding_apply_isReal (x : K) (w : {w // IsReal w}) :
     (mixedEmbedding K x).1 w = embedding_of_isReal w.prop x := by
-  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+  simp_rw [mixedEmbedding, RingHom.prod_apply, RingHom.pi_apply]
 
 @[simp]
 theorem mixedEmbedding_apply_isComplex (x : K) (w : {w // IsComplex w}) :
     (mixedEmbedding K x).2 w = w.val.embedding x := by
-  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+  simp_rw [mixedEmbedding, RingHom.prod_apply, RingHom.pi_apply]
 
 instance [NumberField K] : Nontrivial (mixedSpace K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
@@ -231,14 +231,15 @@ instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) :=
   prod.instIsAddHaarMeasure volume volume
 
 open Classical in
-instance : NoAtoms (volume : Measure (mixedSpace K)) := by
+instance : NullSingletonClass (volume : Measure (mixedSpace K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
-  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) := pi_noAtoms ⟨w, hw⟩
-    exact prod.instNoAtoms_fst
-  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
-      pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
-    exact prod.instNoAtoms_snd
+  · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) :=
+      pi_nullSingletonClass ⟨w, hw⟩
+    exact prod.instNullSingletonClass_fst
+  · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
+      pi_nullSingletonClass ⟨w, not_isReal_iff_isComplex.mp hw⟩
+    exact prod.instNullSingletonClass_snd
 
 variable {K} in
 open Classical in
@@ -276,7 +277,7 @@ theorem commMap_apply_of_isComplex (x : (K →+* ℂ) → ℂ) {w : InfinitePlac
 @[simp]
 theorem commMap_canonical_eq_mixed (x : K) :
     commMap K (canonicalEmbedding K x) = mixedEmbedding K x := by
-  simp only [canonicalEmbedding, commMap, LinearMap.coe_mk, AddHom.coe_mk, Pi.ringHom_apply,
+  simp only [canonicalEmbedding, commMap, LinearMap.coe_mk, AddHom.coe_mk, RingHom.pi_apply,
     mixedEmbedding, RingHom.prod_apply, Prod.mk.injEq]
   exact ⟨rfl, rfl⟩
 
@@ -359,7 +360,7 @@ theorem normAtPlace_apply_of_isComplex {w : InfinitePlace K} (hw : IsComplex w) 
 theorem normAtPlace_apply (w : InfinitePlace K) (x : K) :
     normAtPlace w (mixedEmbedding K x) = w x := by
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mixedEmbedding,
-    RingHom.prod_apply, Pi.ringHom_apply, norm_embedding_of_isReal, norm_embedding_eq, dite_eq_ite,
+    RingHom.prod_apply, RingHom.pi_apply, norm_embedding_of_isReal, norm_embedding_eq, dite_eq_ite,
     ite_id]
 
 theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
@@ -604,15 +605,15 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
     rcases c with ⟨w, j⟩
     fin_cases j
     · simp only [Fin.zero_eta, Fin.isValue, stdBasis_apply_isComplex_fst, re_eq_add_conj,
-        mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
-        submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, ite_mul, cons_val_one, sum_add_distrib, sum_ite_eq,
-        mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
+        mul_neg, fromBlocks_apply₂₁, Matrix.zero_apply, zero_mul, sum_const_zero,
+        fromBlocks_apply₂₂, submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply,
+        cons_val', cons_val_zero, empty_val', cons_val_fin_one, ite_mul, cons_val_one,
+        sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring
     · simp only [Fin.mk_one, Fin.isValue, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
-        mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
-        submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
+        mul_neg, fromBlocks_apply₂₁, Matrix.zero_apply, zero_mul, sum_const_zero,
+        fromBlocks_apply₂₂, submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply,
+        cons_val', cons_val_zero, empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
         sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring_nf; simp [field]
 
@@ -952,7 +953,7 @@ theorem negAt_symm :
   · by_cases hw : w ∈ s
     · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
         prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
-        neg_apply]
+        ContinuousLinearEquiv.neg_apply]
     · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
         prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
         refl_apply]

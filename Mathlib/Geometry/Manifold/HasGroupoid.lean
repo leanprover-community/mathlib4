@@ -105,6 +105,16 @@ theorem mem_maximalAtlas_iff {e : OpenPartialHomeomorph M H} :
     e ∈ G.maximalAtlas M ↔ ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G :=
   Iff.rfl
 
+theorem StructureGroupoid.compatible_of_mem_maximalAtlas_right
+    {e' : OpenPartialHomeomorph M H} {x : M}
+    (he' : e' ∈ G.maximalAtlas M) : (chartAt H x).symm ≫ₕ e' ∈ G :=
+  (he' _ (ChartedSpace.chart_mem_atlas x)).2
+
+theorem StructureGroupoid.compatible_of_mem_maximalAtlas_left
+    {e' : OpenPartialHomeomorph M H} {x : M}
+    (he' : e' ∈ G.maximalAtlas M) : e'.symm ≫ₕ chartAt H x ∈ G :=
+  (he' _ (ChartedSpace.chart_mem_atlas x)).1
+
 /-- Changing coordinates between two elements of the maximal atlas gives rise to an element
 of the structure groupoid. -/
 theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : OpenPartialHomeomorph M H}

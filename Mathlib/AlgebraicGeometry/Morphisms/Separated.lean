@@ -133,7 +133,7 @@ instance [IsSeparated g] :
   rw [← MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion (pullback.fst f (𝟙 Y))]
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (pullback.congrHom rfl (Category.id_comp g)).inv]
-  convert! (inferInstance : IsClosedImmersion (pullback.mapDesc f (𝟙 _) g)) using 1
+  convert (inferInstance : IsClosedImmersion (pullback.mapDesc f (𝟙 _) g))
   ext : 1 <;> simp [pullback.condition]
 
 end IsSeparated
@@ -144,6 +144,7 @@ open Scheme Pullback
 
 variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.f i)).OpenCover)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
     (hf : Function.Injective f) :
@@ -171,6 +172,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
     Set.range (pullback.diagonal f) ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by

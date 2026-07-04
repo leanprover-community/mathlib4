@@ -1,19 +1,20 @@
-module
+-- This file tests that `public import` of a deprecated module produces warnings.
+-- Core Lean 4 generates deprecation warnings at import time.
+module --deprecated_module: ignore
 
 public import MathlibTest.Linter.DeprecatedModule.ImportBase
 
 
-/--
-warning: Testing public import deprecation
-'MathlibTest.Linter.DeprecatedModule.ImportBase' has been deprecated: please replace this import by
-
-import Mathlib.Tactic.Linter.DocPrime
-import Mathlib.Tactic.Linter.DocString
-
-
-Note: This linter can be disabled with `set_option linter.deprecated.module false`
--/
-#guard_msgs in
 /-!
 This file imports a deprecated module with `public import`.
 -/
+
+/--
+info: Deprecated modules
+
+'MathlibTest.Linter.DeprecatedModule.ImportBase' deprecates to
+#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
+with message 'Testing public import deprecation'
+-/
+#guard_msgs in
+#show_deprecated_modules

@@ -32,7 +32,7 @@ public section
 
 universe u
 
-open CategoryTheory MonoidalCategory Simplicial
+open CategoryTheory MonoidalCategory Simplicial Opposite
 
 namespace SSet
 
@@ -103,5 +103,80 @@ lemma Nonsingular.δ_injective [X.Nonsingular]
   apply stdSimplex.objEquiv.symm.injective
   have := mono' x hx
   exact injective_of_mono ((yonedaEquiv.symm x).app _) hij
+
+lemma Nonsingular.injective_map
+    [X.Nonsingular] {n : ℕ} (x : X _⦋n⦌) (hx : x ∈ X.nonDegenerate n)
+    {m : SimplexCategory} {f g : m ⟶ ⦋n⦌}
+    (h : X.map f.op x = X.map g.op x) :
+    f = g := by
+  have := Nonsingular.mono' x hx
+  apply stdSimplex.{u}.map_injective
+  rw [← cancel_mono (yonedaEquiv.symm x)]
+  apply yonedaEquiv.injective
+  simpa [yonedaEquiv_comp, yonedaEquiv_map]
+
+lemma Nonsingular.isIso_toOfSimplex [X.Nonsingular]
+    {n : ℕ} (x : X _⦋n⦌) (hx : x ∈ X.nonDegenerate n) :
+    IsIso (Subcomplex.toOfSimplex x) := by
+  rw [Subcomplex.isIso_toOfSimplex_iff]
+  exact Nonsingular.mono' x hx
+
+/-- If `x : X _⦋n⦌` is a nondegenerate simplex of a nonsingular simplcial set,
+this is the isomorphism `Δ[n] ≅ Subcomplex.ofSimplex x` induced by `x`. -/
+@[expose, simps! hom]
+noncomputable def Nonsingular.iso
+    [X.Nonsingular] {n : ℕ} (x : X _⦋n⦌) (hx : x ∈ X.nonDegenerate n) :
+    Δ[n] ≅ Subcomplex.ofSimplex x :=
+  letI := Nonsingular.isIso_toOfSimplex x hx
+  asIso (Subcomplex.toOfSimplex x)
+
+namespace N
+
+variable [X.Nonsingular] {x y z : X.N} (h : x ≤ y)
+
+include h in
+lemma existsUnique_of_le :
+    ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Mono f ∧ X.map f.op y.1.2 = x.1.2 :=
+  existsUnique_of_exists_of_unique (by
+    obtain ⟨f, _, hf⟩ := le_iff_exists_mono.1 h
+    exact ⟨f, inferInstance, hf⟩) (fun f₁ f₂ ⟨_, hf₁⟩ ⟨_, hf₂⟩ ↦ by
+    exact Nonsingular.injective_map _ y.nonDegenerate (by rw [hf₁, hf₂]))
+
+/-- Given an inequality `x ≤ y` between nondegenerate simplices of a
+nonsingular simplicial set `X`, this is the corresponding morphism
+`⦋x.dim⦌ ⟶ ⦋y.dim⦌` in the simplex category. -/
+noncomputable def monoOfLE : ⦋x.dim⦌ ⟶ ⦋y.dim⦌ :=
+  (existsUnique_of_le h).exists.choose
+
+instance : Mono (monoOfLE h) :=
+  (existsUnique_of_le h).exists.choose_spec.1
+
+@[simp]
+lemma map_monoOfLE : X.map (monoOfLE h).op y.simplex = x.simplex :=
+  (existsUnique_of_le h).exists.choose_spec.2
+
+@[reassoc, simp]
+lemma stdSimplex_map_monoOfLE_yonedaEquiv_symm_simplex :
+    stdSimplex.map (monoOfLE h) ≫ yonedaEquiv.symm y.simplex =
+      yonedaEquiv.symm x.simplex := by
+  rw [yonedaEquiv_symm_naturality_left, map_monoOfLE]
+
+lemma monoOfLE_eq_iff (h : x ≤ y) (g : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Mono g] :
+    monoOfLE h = g ↔ X.map g.op y.simplex = x.simplex :=
+  ⟨by rintro rfl; simp,
+    fun h' ↦ (existsUnique_of_le h).unique ⟨inferInstance, by simp⟩ ⟨inferInstance, h'⟩⟩
+
+variable (x) in
+@[simp]
+lemma monoOfLE_refl : monoOfLE (le_refl x) = 𝟙 _ := by
+  simp [monoOfLE_eq_iff]
+
+@[reassoc (attr := simp)]
+lemma monoOfLE_comp (h' : y ≤ z) :
+    monoOfLE h ≫ monoOfLE h' = monoOfLE (h.trans h') := by
+  symm
+  simp [monoOfLE_eq_iff]
+
+end N
 
 end SSet

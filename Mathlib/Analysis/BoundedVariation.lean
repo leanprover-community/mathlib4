@@ -14,7 +14,7 @@ public import Mathlib.Topology.EMetricSpace.BoundedVariation
 # Almost everywhere differentiability of functions with locally bounded variation
 
 In this file we show that a bounded variation function is differentiable almost everywhere.
-This implies that Lipschitz functions from the real line into finite-dimensional vector space
+This implies that Lipschitz functions from the real line into finite-dimensional vector spaces
 are also differentiable almost everywhere.
 
 ## Main definitions and results

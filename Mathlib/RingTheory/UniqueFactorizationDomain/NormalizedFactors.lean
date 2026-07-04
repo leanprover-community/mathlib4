@@ -41,8 +41,7 @@ if `M` has a trivial group of units. -/
 theorem factors_eq_normalizedFactors {M : Type*} [CommMonoidWithZero M]
     [UniqueFactorizationMonoid M] [Subsingleton Mˣ] (x : M) : factors x = normalizedFactors x := by
   unfold normalizedFactors
-  convert! (Multiset.map_id (factors x)).symm
-  ext p
+  convert (Multiset.map_id (factors x)).symm with p
   exact normalize_eq p
 
 theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :

@@ -84,7 +84,7 @@ variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     congr

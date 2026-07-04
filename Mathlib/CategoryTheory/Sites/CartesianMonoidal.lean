@@ -64,8 +64,8 @@ variable {X Y}
 variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
 @[simp] lemma cartesianMonoidalCategoryLift_hom : (lift f g).hom = lift f.hom g.hom := rfl
-@[simp] lemma cartesianMonoidalCategoryWhiskerLeft_hom : (X ◁ f).hom = X.obj ◁ f.hom := rfl
-@[simp] lemma cartesianMonoidalCategoryWhiskerRight_hom : (f ▷ X).hom = f.hom ▷ X.obj := rfl
+lemma cartesianMonoidalCategoryWhiskerLeft_hom : (X ◁ f).hom = X.obj ◁ f.hom := rfl
+lemma cartesianMonoidalCategoryWhiskerRight_hom : (f ▷ X).hom = f.hom ▷ X.obj := rfl
 
 @[deprecated (since := "2026-03-05")]
 alias cartesianMonoidalCategoryLift_val := cartesianMonoidalCategoryLift_hom

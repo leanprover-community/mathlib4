@@ -240,7 +240,7 @@ lemma continuous_convexCombPair_of_isBounded
       (add_sub_cancel ..) (x t) (y j)), dist_convexCombPair_convexCombPair_le]
     simp only [dist_self, mul_zero, add_zero, dist_convexCombPair_left]
     grw [abs_sub_comm, ← le_abs_self] at hj'
-    grw [hj, hj', hf1, hD]
+    grw [hj.le, hj'.le, hf1, hD]
     · field_simp; norm_num
     · exact hf0 _
 

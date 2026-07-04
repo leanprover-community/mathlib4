@@ -73,8 +73,8 @@ lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
     MeasurableSet[𝓕.predictable] <| Set.Ioc i j ×ˢ s := by
   obtain hij | hij := le_total j i
   · simp [hij]
-  · rw [← Set.Ioi_diff_Ioi, (by simp : (Set.Ioi i \ Set.Ioi j) ×ˢ s
-      = Set.Ioi i ×ˢ (s \ s) ∪ (Set.Ioi i \ Set.Ioi j) ×ˢ s), ← Set.prod_diff_prod]
+  · rw [← Set.Ioi_sdiff_Ioi, (by simp : (Set.Ioi i \ Set.Ioi j) ×ˢ s
+      = Set.Ioi i ×ˢ (s \ s) ∪ (Set.Ioi i \ Set.Ioi j) ×ˢ s), ← Set.prod_sdiff_prod]
     exact (measurableSet_predictable_Ioi_prod hs).diff
       (measurableSet_predictable_Ioi_prod <| 𝓕.mono hij _ hs)
 

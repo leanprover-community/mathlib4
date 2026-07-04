@@ -9,6 +9,7 @@ public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
+
 Consider two dynamical systems `(X, S)` and `(Y, T)` together with a semiconjugacy `φ`:
 
 

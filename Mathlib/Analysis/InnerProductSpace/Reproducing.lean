@@ -64,7 +64,7 @@ Each element of a reproducing kernel Hilbert space may be coerced into a functio
 -/
 instance instFunLike : FunLike H X V where
   coe f := coeCLM 𝕜 f
-  coe_injective' := coeCLM_injective
+  coe_injective := coeCLM_injective
 
 @[ext]
 lemma ext {f g : H} (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
@@ -109,6 +109,12 @@ lemma kernel_apply (x y : X) : kernel H x y = (kerFun H x).adjoint ∘L kerFun H
   simp [kerFun, kernel]
 
 variable {H} in
+/-- Point evaluation `f ↦ f x` is the adjoint of the kernel function `kerFun H x`. -/
+@[simp]
+lemma adjoint_kerFun (x : X) (f : H) : (kerFun H x).adjoint f = f x := by
+  simp [kerFun]
+
+variable {H} in
 /-- The "reproducing" property of the kernel functions, left version. -/
 @[simp]
 lemma kerFun_inner (x : X) (v : V) (f : H) : ⟪kerFun H x v, f⟫_𝕜 = ⟪v, f x⟫_𝕜 := by
@@ -137,6 +143,12 @@ lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √�
 
 lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
   grw [norm_kernel_le]; simp [mul_pow]
+
+variable {H} in
+/-- The evaluation of an element `f` of a reproducing kernel Hilbert space at a point `x` is
+bounded by `‖f‖` times the square root of the kernel diagonal `‖kernel H x x‖` at `x`. -/
+lemma norm_apply_le (f : H) (x : X) : ‖f x‖ ≤ ‖f‖ * √‖kernel H x x‖ := by
+  grw [← adjoint_kerFun, le_opNorm, norm_map, norm_kerFun_eq_sqrt_norm_kernel, mul_comm]
 
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
@@ -188,8 +200,8 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
   refine this fun hHerm ↦ ?_
   simp only [nonneg_iff_isPositive, isPositive_def', isSelfAdjoint_finsuppSum hHerm,
     reApplyInnerSelf_apply, true_and]
-  simp only [star_eq_adjoint, zero_apply, add_apply, implies_true, Finsupp.sum_apply'', coe_mul',
-    Function.comp_apply, Finsupp.sum_inner, adjoint_inner_left]
+  simp only [star_eq_adjoint, zero_apply, add_apply, implies_true, Finsupp.sum_apply'',
+    FunLike.coe_mul_eq_comp, Function.comp_apply, Finsupp.sum_inner, adjoint_inner_left]
   -- FIXME: nontriviality should work here
   refine (subsingleton_or_nontrivial V).elim (fun h ↦ ?_) fun _ ↦ ?_
   · have : ∀ v : V, v = 0 := fun v ↦ Subsingleton.elim v 0

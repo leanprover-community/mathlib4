@@ -232,9 +232,11 @@ theorem isMax_iterate_succ_of_eq_of_ne {n m : ℕ} (h_eq : succ^[n] a = succ^[m]
   · rw [h_eq]
     exact isMax_iterate_succ_of_eq_of_lt h_eq.symm (lt_of_le_of_ne h h_ne.symm)
 
-@[to_dual]
-theorem Iic_subset_Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iic a ⊆ Iio (succ a) :=
-  fun _ => (lt_succ_of_le_of_not_isMax · ha)
+@[to_dual (attr := deprecated "use `gcongr`/`grw` and `lt_succ_of_not_isMax"
+  (since := "2026-06-06"))]
+theorem Iic_subset_Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iic a ⊆ Iio (succ a) := by
+  gcongr
+  exact lt_succ_of_not_isMax ha
 
 @[to_dual]
 theorem Ici_succ_of_not_isMax (ha : ¬IsMax a) : Ici (succ a) = Ioi a :=
@@ -242,15 +244,13 @@ theorem Ici_succ_of_not_isMax (ha : ¬IsMax a) : Ici (succ a) = Ioi a :=
 
 @[to_dual Icc_subset_Ioc_pred_left_of_not_isMin]
 theorem Icc_subset_Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Icc a b ⊆ Ico a (succ b) := by
-  rw [← Ici_inter_Iio, ← Ici_inter_Iic]
   gcongr
-  exact Iic_subset_Iio_succ_of_not_isMax hb
+  exact lt_succ_of_not_isMax hb
 
 @[to_dual Ico_subset_Ioo_pred_left_of_not_isMin]
 theorem Ioc_subset_Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioc a b ⊆ Ioo a (succ b) := by
-  rw [← Ioi_inter_Iio, ← Ioi_inter_Iic]
   gcongr
-  exact Iic_subset_Iio_succ_of_not_isMax hb
+  exact lt_succ_of_not_isMax hb
 
 @[to_dual Icc_pred_right_of_not_isMin]
 theorem Icc_succ_left_of_not_isMax (ha : ¬IsMax a) : Icc (succ a) b = Ioc a b := by

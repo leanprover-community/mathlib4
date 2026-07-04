@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.Group.Torsor
 
 /-!
 # Topological properties of affine spaces and maps

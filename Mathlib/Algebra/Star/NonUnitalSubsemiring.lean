@@ -53,7 +53,7 @@ namespace NonUnitalStarSubsemiring
 instance instSetLike {R : Type v} [NonUnitalNonAssocSemiring R] [Star R] :
     SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 initialize_simps_projections NonUnitalStarSubsemiring (carrier → coe, as_prefix coe)
 

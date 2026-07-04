@@ -10,8 +10,8 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 
 /-!
-
 # House of an algebraic number
+
 This file defines the house of an algebraic number `α`, which is
 the largest of the modulus of its conjugates.
 

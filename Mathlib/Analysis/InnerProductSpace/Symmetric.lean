@@ -370,7 +370,7 @@ theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmet
   simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
     inner_zero_right] at hf'
   simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
-    (forall_comm.eq ▸ hf')] using h
+    (forall_comm.eq ▸ hf')] using! h
 
 end LinearMap
 

@@ -81,6 +81,7 @@ variable
   {M₃ : Type*} [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R M₃]
   {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R M₄]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two bounded linear maps, as a bounded linear map. -/
 protected def prod (f₁ : M₁ →L[R] M₂) (f₂ : M₁ →L[R] M₃) :
     M₁ →L[R] M₂ × M₃ where

@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 
@@ -632,7 +632,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   have : ∀ p ∈ s, J * ∏ q ∈ s, q.asIdeal < J * ∏ q ∈ s \ {p}, q.asIdeal := by
     intro p hps
     conv_rhs => rw [← mul_one (J * _)]
-    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem hps, ← mul_assoc,
+    rw [Finset.prod_eq_mul_prod_sdiff_singleton_of_mem hps, ← mul_assoc,
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
@@ -666,7 +666,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   by_cases hqp : q = p'
   · subst hqp
     convert! sub_mem H₁ H₂
-    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hp's, add_sub_cancel_right]
+    rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
 
@@ -742,8 +742,6 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
-set_option maxHeartbeats 212000 in
--- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
 then `I/J ≃ I'/J'` as quotient `R`-modules. -/
@@ -821,7 +819,7 @@ If `p` is a maximal ideal, then the lift of `p` in an extension is the product o
 over `p` to the power the ramification index.
 -/
 theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
-    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ p.ramificationIdx P := by
+    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ P.ramificationIdx S := by
   classical
   have h : map (algebraMap S R) p ≠ 0 := map_ne_bot_of_ne_bot hp
   rw [← finprod_heightOneSpectrum_factorization (I := p.map (algebraMap S R)) h]
@@ -832,8 +830,8 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
     ← Finset.prod_set_coe]
   · let _ : Fintype {v : HeightOneSpectrum R // v.asIdeal ∣ map (algebraMap S R) p} := hF
     refine Fintype.prod_equiv (equivPrimesOver _ hp) _ _ fun ⟨v, _⟩ ↦ ?_
-    simp [maxPowDividing_eq_pow_multiset_count _ h,
-      ramificationIdx_eq_factors_count h v.isPrime v.ne_bot]
+    have : v.asIdeal.LiesOver p := by rwa [Ideal.liesOver_iff_dvd_map v.2.ne_top]
+    simp [maxPowDividing_eq_pow_multiset_count _ h, ramificationIdx_eq_factors_count p v h]
   · intro v hv
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,
       Associates.count_ne_zero_iff_dvd h (irreducible v)] using hv

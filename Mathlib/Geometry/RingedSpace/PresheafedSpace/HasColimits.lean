@@ -55,6 +55,7 @@ attribute [local simp] eqToHom_map
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- although it doesn't appear to help in this file, in any case.
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
     (F.map (𝟙 j)).c.app U =
@@ -62,6 +63,7 @@ theorem map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
         (pushforwardEq (by simp) (F.obj j).presheaf).hom.app U := by
   simp [PresheafedSpace.congr_app (F.map_id j)]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
     (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃) (U) :
@@ -71,6 +73,7 @@ theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
           (pushforwardEq (congr_arg Hom.base (F.map_comp f g).symm) _).hom.app U := by
   simp [PresheafedSpace.congr_app (F.map_comp f g)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram of `PresheafedSpace C`s, its colimit is computed by pushing the sheaves onto
 the colimit of the underlying spaces, and taking componentwise limit.
@@ -88,6 +91,7 @@ def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
 
 variable [HasColimitsOfShape J TopCat.{v}]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram of presheafed spaces,
 we can push all the presheaves forward to the colimit `X` of the underlying topological spaces,
@@ -144,6 +148,7 @@ theorem colimit_presheaf (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     (colimit F).presheaf = limit (pushforwardDiagramToColimit F).leftOp :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
@@ -165,6 +170,7 @@ variable [HasLimitsOfShape Jᵒᵖ C]
 
 namespace ColimitCoconeIsColimit
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit`.
 -/
@@ -197,6 +203,7 @@ def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens 
     rw [w']
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem desc_c_naturality (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F)
     {U V : (Opens s.pt.carrier)ᵒᵖ} (i : U ⟶ V) :
@@ -219,6 +226,7 @@ def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ 
     { app := fun U => descCApp F s U
       naturality := fun _ _ i => desc_c_naturality F s i }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
@@ -235,6 +243,7 @@ end ColimitCoconeIsColimit
 
 open ColimitCoconeIsColimit
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
@@ -264,6 +273,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
 instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
   has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{v, u, v} C) :=
   ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
@@ -316,6 +326,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
       ← (F.obj (unop Y)).presheaf.map_comp]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ PresheafedSpace.{_, _, v} C)

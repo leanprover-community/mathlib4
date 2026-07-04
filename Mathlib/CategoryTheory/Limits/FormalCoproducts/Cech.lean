@@ -53,6 +53,7 @@ noncomputable abbrev powerFan :
     Fan (fun (_ : α) ↦ U) :=
   Fan.mk (U.power α) U.powerπ
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `U.power α` identifies to the product of copies of `U` indexed by `α`. -/
 noncomputable def isLimitPowerFan : IsLimit (U.powerFan α) :=
@@ -88,12 +89,14 @@ noncomputable def powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V) (α : Typ
   f i := f.f ∘ i
   φ i := Pi.map (fun a ↦ f.φ (i a))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma powerMap_id (U : FormalCoproduct.{w} C) (α : Type t) [HasProductsOfShape α C] :
     powerMap (𝟙 U) α = 𝟙 _ := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma powerMap_comp {U V W : FormalCoproduct.{w} C} (f : U ⟶ V) (g : V ⟶ W) (α : Type t)
@@ -125,6 +128,7 @@ noncomputable def mapPower (U : FormalCoproduct.{w} C) {α β : Type t}
   f i := i ∘ f
   φ _ := Pi.lift (fun _ ↦ Pi.π _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
@@ -132,6 +136,7 @@ lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
     U.mapPower (id : α → α) = 𝟙 _ := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
@@ -144,6 +149,7 @@ lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
     ext
     simp [Function.comp_def]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
@@ -155,6 +161,7 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
     ext
     simp [Function.comp_def]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
@@ -164,6 +171,7 @@ lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
 
 attribute [local simp] mapPower_comp mapPower_powerMap
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `(Type t)ᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C`
 which sends a type `α` and `U : FormalCoproduct C` to `U.power α`. -/
@@ -184,6 +192,7 @@ noncomputable def cech (U : FormalCoproduct.{w} C) :
   obj n := U.power (ToType n.unop)
   map f := U.mapPower f.unop.toOrderHom.toFun
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `FormalCoproduct C ⥤ SimplicialObject (FormalCoproduct C)`
 which sends a formal coproduct to its Cech object. -/
 @[simps]

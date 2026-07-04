@@ -179,15 +179,15 @@ theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [Submono
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
--- Note: Using `gcongr` since `congr` doesn't accept this lemma.
-@[to_additive (attr := gcongr)]
+-- Note: Using `gcongr only` since `congr` doesn't accept this lemma.
+@[to_additive (attr := gcongr only)]
 theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.support, g1 x (f x) = g2 x (f x)) :
     f.prod g1 = f.prod g2 :=
   Finset.prod_congr rfl h
 
 /-- The product over two finsupps agree if the functions agree and are well-behaved within the
 shared support. -/
-@[to_additive (attr := gcongr)
+@[to_additive (attr := gcongr only)
 /-- The sum over two finsupps agree if the functions agree and are well-behaved within the
 shared support. -/]
 theorem prod_congr_of_eq_on_union [DecidableEq α] {f1 f2 : α →₀ M} {g1 g2 : α → M → N}

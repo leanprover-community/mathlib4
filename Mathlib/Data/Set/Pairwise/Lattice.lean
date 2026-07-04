@@ -128,13 +128,15 @@ theorem pairwiseDisjoint_prod_left {s : Set ι} {t : Set ι'} {f : ι × ι' →
 
 end Frame
 
-theorem biUnion_diff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t).PairwiseDisjoint f) :
+theorem biUnion_sdiff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t).PairwiseDisjoint f) :
     ((⋃ i ∈ s, f i) \ ⋃ i ∈ t, f i) = ⋃ i ∈ s \ t, f i := by
   refine
-    (biUnion_diff_biUnion_subset f s t).antisymm
-      (iUnion₂_subset fun i hi a ha => (mem_diff _).2 ⟨mem_biUnion hi.1 ha, ?_⟩)
+    (biUnion_sdiff_biUnion_subset f s t).antisymm
+      (iUnion₂_subset fun i hi a ha => (mem_sdiff _).2 ⟨mem_biUnion hi.1 ha, ?_⟩)
   rw [mem_iUnion₂]; rintro ⟨j, hj, haj⟩
   exact (h (Or.inl hi.1) (Or.inr hj) (ne_of_mem_of_not_mem hj hi.2).symm).le_bot ⟨ha, haj⟩
+
+@[deprecated (since := "2026-06-03")] alias biUnion_diff_biUnion_eq := biUnion_sdiff_biUnion_eq
 
 
 /-- Equivalence between a disjoint bounded union and a dependent sum. -/

@@ -39,6 +39,7 @@ and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
 @[nolint unusedArguments]
 def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
+  deriving AddCommMonoid, Module R
 
 instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A]
     [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M] :
@@ -49,12 +50,8 @@ variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMon
 
 namespace AEval
 
-instance instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (AddCommMonoid M)
-
-instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
-
 instance instFiniteOrig [Module.Finite R M] : Module.Finite R <| AEval R M a :=
-  ‹Module.Finite R M›
+  inferInstanceAs <| Module.Finite R M
 
 noncomputable instance instModulePolynomial : Module R[X] <| AEval R M a :=
   compHom M (aeval a).toRingHom
@@ -146,7 +143,7 @@ noncomputable def mapSubmodule :
           AddSubmonoid.mem_map, Submodule.mem_toAddSubmonoid]
         exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a p.2, of_aeval_smul a f m⟩ }
   invFun q := ⟨(Submodule.orderIsoMapComap (of R M a)).symm (q.restrictScalars R), fun m hm ↦ by
-    simpa [← X_smul_of] using q.smul_mem (X : R[X]) hm⟩
+    simpa [← X_smul_of] using! q.smul_mem (X : R[X]) hm⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
   map_rel_iff' {p p'} := ⟨fun h x hx ↦ by aesop (rule_sets := [SetLike!]), fun h x hx ↦ by aesop⟩

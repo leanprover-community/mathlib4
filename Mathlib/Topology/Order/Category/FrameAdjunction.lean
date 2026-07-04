@@ -114,7 +114,7 @@ def counitAppCont : FrameHom L (Opens <| PT L) where
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
 def adjunctionTopToLocalePT : topToLocale ⊣ pt where
   unit := { app := fun X ↦ TopCat.ofHom ⟨localePointOfSpacePoint X, continuous_def.2 <|
-        by rintro _ ⟨u, rfl⟩; simpa using u.2⟩ }
+        by rintro _ ⟨u, rfl⟩; simpa using! u.2⟩ }
   counit := { app := fun L ↦ ⟨Frm.ofHom (counitAppCont L)⟩ }
 
 end locale_top_adjunction

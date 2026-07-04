@@ -244,8 +244,7 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
           Algebra.Generators.ofSurjective] using congr($H _)
       suffices e ((e.symm (P.relation j)).pderiv i) = (P.relation j).pderiv (P.map i) by
         simp [Algebra.PreSubmersivePresentation.jacobiMatrix_apply, this]
-      simp [e, MvPolynomial.pderiv_sumToIter, ← MvPolynomial.pderiv_rename e₀.injective,
-        show e₀ (Sum.inl i) = P.map i from rfl] }
+      simp [e, ← MvPolynomial.pderiv_rename e₀.injective, show e₀ (Sum.inl i) = P.map i from rfl] }
   exact etale_algebraMap.mpr (Algebra.Etale.iff_isStandardSmoothOfRelativeDimension_zero.mpr
     ⟨_, _, _, inferInstance, P', by simp [Algebra.Presentation.dimension]⟩)
 

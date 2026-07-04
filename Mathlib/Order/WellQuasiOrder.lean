@@ -96,7 +96,7 @@ theorem WellQuasiOrdered.pi {ι : Type*} {α : ι → Type*} [Finite ι] {r : �
     ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ i, i ∈ s → r i ((f ∘ g) a i) ((f ∘ g) b i) by
     rw [wellQuasiOrdered_iff_exists_monotone_subseq]
     intro f
-    simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f
+    simpa only [Finset.mem_univ, true_imp_iff] using! this Finset.univ f
   refine Finset.cons_induction ?_ ?_
   · intro f
     exists RelEmbedding.refl (· ≤ ·)

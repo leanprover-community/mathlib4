@@ -69,8 +69,6 @@ namespace Finset
 
 open Colex
 
-instance : Inhabited (Colex (Finset α)) := ⟨toColex ∅⟩
-
 namespace Colex
 section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)}

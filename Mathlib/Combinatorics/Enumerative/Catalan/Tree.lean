@@ -26,17 +26,17 @@ import Mathlib.Tactic.Field
 
 open Finset
 
-open Finset.antidiagonal (fst_le snd_le)
+open Finset.HasAntidiagonal.antidiagonal (fst_le snd_le)
 
-namespace Tree
+namespace BinaryTree
 
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
-abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
+abbrev pairwiseNode (a b : Finset (BinaryTree Unit)) : Finset (BinaryTree Unit) :=
   (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/
-def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
+def treesOfNumNodesEq : ℕ → Finset (BinaryTree Unit)
   | 0 => {nil}
   | n + 1 =>
     (antidiagonal n).attach.biUnion fun ijh =>
@@ -44,6 +44,12 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   decreasing_by
     · simp_wf; have := fst_le ijh.2; lia
     · simp_wf; have := snd_le ijh.2; lia
+
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.treesOfNumNodesEq`. -/
+@[deprecated BinaryTree.treesOfNumNodesEq (since := "2026-06-07")]
+abbrev _root_.Tree.treesOfNumNodesEq : ℕ → Finset (Tree Unit) :=
+  BinaryTree.treesOfNumNodesEq
 
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
@@ -57,17 +63,17 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
   simp
 
 @[simp]
-theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
+theorem mem_treesOfNumNodesEq {x : BinaryTree Unit} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
-  induction x using Tree.unitRecOn generalizing n <;> cases n <;>
+  induction x using BinaryTree.unitRecOn generalizing n <;> cases n <;>
     simp [treesOfNumNodesEq_succ, *]
 
-theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
+theorem mem_treesOfNumNodesEq_numNodes (x : BinaryTree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
   mem_treesOfNumNodesEq.mpr rfl
 
 @[simp, norm_cast]
 theorem coe_treesOfNumNodesEq (n : ℕ) :
-    ↑(treesOfNumNodesEq n) = { x : Tree Unit | x.numNodes = n } :=
+    ↑(treesOfNumNodesEq n) = { x : BinaryTree Unit | x.numNodes = n } :=
   Set.ext (by simp)
 
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = catalan n := by
@@ -81,4 +87,4 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = c
     · simp_rw [Set.PairwiseDisjoint, Set.Pairwise, disjoint_left]
       aesop
 
-end Tree
+end BinaryTree

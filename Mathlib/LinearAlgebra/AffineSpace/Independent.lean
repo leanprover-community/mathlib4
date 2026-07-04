@@ -115,7 +115,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)
         have hf2g2 : ∀ x : { x // x ≠ i1 }, f2 x = g2 x := by
           simp only [g2, hf2def]
-          refine fun x => ?_
+          intro x
           rw [hfg]
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s2 f p hf (p i1),
           Finset.weightedVSubOfPoint_insert, Finset.weightedVSubOfPoint_apply,
@@ -148,8 +148,8 @@ theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} 
     have hv : ∀ v : (fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁}), (v : V) +ᵥ p₁ ∈ s \ {p₁} := fun v =>
       (vsub_left_injective p₁).mem_set_image.1 ((vadd_vsub (v : V) p₁).symm ▸ v.property)
     let f : (fun p : P => (p -ᵥ p₁ : V)) '' (s \ {p₁}) → { x : s // x ≠ ⟨p₁, hp₁⟩ } := fun x =>
-      ⟨⟨(x : V) +ᵥ p₁, Set.mem_of_mem_diff (hv x)⟩, fun hx =>
-        Set.notMem_of_mem_diff (hv x) (Subtype.ext_iff.1 hx)⟩
+      ⟨⟨(x : V) +ᵥ p₁, Set.mem_of_mem_sdiff (hv x)⟩, fun hx =>
+        Set.notMem_of_mem_sdiff (hv x) (Subtype.ext_iff.1 hx)⟩
     convert!
       h.comp f fun x1 x2 hx =>
         Subtype.ext (vadd_right_cancel p₁ (Subtype.ext_iff.1 (Subtype.ext_iff.1 hx)))
@@ -170,9 +170,9 @@ theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Se
   rw [affineIndependent_set_iff_linearIndependent_vsub k
       (Set.mem_union_left _ (Set.mem_singleton p₁))]
   have h : (fun p => (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v => v +ᵥ p₁) '' s) \ {p₁}) = s := by
-    simp_rw [Set.union_diff_left, Set.image_diff (vsub_left_injective p₁), Set.image_image,
+    simp_rw [Set.union_sdiff_left, Set.image_sdiff (vsub_left_injective p₁), Set.image_image,
       Set.image_singleton, vsub_self, vadd_vsub, Set.image_id']
-    exact Set.diff_singleton_eq_self fun h => hs 0 h rfl
+    exact Set.sdiff_singleton_eq_self fun h => hs 0 h rfl
   rw [h]
 
 /-- A family is affinely independent if and only if any affine
@@ -470,7 +470,7 @@ lemma AffineIndependent.inf_affineSpan_eq_affineSpan_inter [Nontrivial k] {p : �
     rw [affineIndependent_iff_indicator_eq_of_affineCombination_eq] at ha
     replace ha := ha fs₁ fs₂ w₁ w₂ hw₁ hw₂ hw₁₂
     refine ⟨fs₁ ∩ fs₂, by grind, w₁, ?_, ?_⟩
-    · rw [← hw₁, ← fs₁.sum_inter_add_sum_diff fs₂, eq_comm]
+    · rw [← hw₁, ← fs₁.sum_inter_add_sum_sdiff fs₂, eq_comm]
       convert! add_zero _
       refine Finset.sum_eq_zero ?_
       intro i hi
@@ -528,9 +528,12 @@ protected theorem AffineIndependent.mem_affineSpan_iff [Nontrivial k] {p : ι �
 /-- If a family is affinely independent, a point in the family is not
 in the affine span of the other points, if the underlying ring is
 nontrivial. -/
-theorem AffineIndependent.notMem_affineSpan_diff [Nontrivial k] {p : ι → P}
+theorem AffineIndependent.notMem_affineSpan_sdiff [Nontrivial k] {p : ι → P}
     (ha : AffineIndependent k p) (i : ι) (s : Set ι) : p i ∉ affineSpan k (p '' (s \ {i})) := by
   simp [ha]
+
+@[deprecated (since := "2026-06-03")]
+alias AffineIndependent.notMem_affineSpan_diff := AffineIndependent.notMem_affineSpan_sdiff
 
 lemma AffineIndependent.injective_affineSpan_image [Nontrivial k] {p : ι → P}
     (ha : AffineIndependent k p) : Injective fun (s : Set ι) ↦ affineSpan k (p '' s) := by
@@ -797,7 +800,7 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
   haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
   refine .of_subsingleton default ?_
   rw [he' default]
-  simpa using h.symm
+  simpa using! h.symm
 
 variable {k}
 

@@ -92,22 +92,22 @@ theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf :
 
 variable [TopologicalSpace β] {g : β → α} {b : β} {s : Set β}
 
-@[to_additive]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
-    ContinuousWithinAt (fun x => c • g x) s b :=
+    ContinuousWithinAt (c • g) s b :=
   hg.const_smul c
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
-    ContinuousAt (fun x => c • g x) b :=
+    ContinuousAt (c • g) b :=
   hg.const_smul c
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
-    ContinuousOn (fun x => c • g x) s := fun x hx => (hg x hx).const_smul c
+    ContinuousOn (c • g) s := fun x hx => (hg x hx).const_smul c
 
-@[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
+@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
+theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous (c • g) :=
   (continuous_const_smul _).comp hg
 
 /-- If a scalar is central, then its right action is continuous when its left action is. -/
@@ -157,7 +157,7 @@ theorem Topology.IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [Topo
     {g : β → α} (hg : IsInducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
     ContinuousConstSMul N β where
   continuous_const_smul c := by
-    simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.const_smul (f c)
+    simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.fun_const_smul (f c)
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=

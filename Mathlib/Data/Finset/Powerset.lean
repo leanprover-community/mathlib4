@@ -227,7 +227,7 @@ theorem filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
   · rintro ⟨y, ⟨hyt, hyn⟩, rfl⟩
     refine ⟨⟨union_subset (hyt.trans sdiff_subset) hst, ?_⟩, subset_union_right⟩
     rw [card_union_of_disjoint (disjoint_of_subset_left hyt disjoint_sdiff_self_left), hyn]
-    omega
+    lia
 
 /-- The number of `n`-element subsets of `t` containing `s` equals
 `Nat.choose (#t - #s) (n - #s)`. -/

@@ -110,7 +110,7 @@ theorem support_mul_single_eq_image {r : k} {x : G} (rx : IsRightRegular x)
 end DecidableEq
 
 theorem support_mul_single [IsRightCancelMul G] (r : k) (x : G)
-   (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
+    (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
     (f * single x r).support = f.support.map (mulRightEmbedding x) := by
   classical
   ext a

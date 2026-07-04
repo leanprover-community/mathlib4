@@ -56,7 +56,6 @@ lemma Algebra.IsInvariant.isIntegral_of_profinite
     ⟨x, fun g ↦ hN g.2⟩
   exact this.map (FixedPoints.subalgebra A B N.1.1).val
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `G` acts transitively on the prime ideals of `B` above a given prime ideal of `A`. -/
 lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
     [Algebra.IsInvariant A B G] (P Q : Ideal B) [P.IsPrime] [Q.IsPrime]
@@ -70,7 +69,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
       obtain ⟨x, hx⟩ := x
       obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
       simpa only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, ← Ideal.comap_coe
-        (F := RingEquiv _ _)] using congr(Ideal.comap (Subalgebra.inclusion h).toRingHom $hx)⟩
+        (F := RingEquiv _ _)] using! congr(Ideal.comap (Subalgebra.inclusion h).toRingHom $hx)⟩
     map_id N := by ext ⟨⟨x⟩, hx⟩; rfl
     map_comp f g := by ext ⟨⟨x⟩, hx⟩; rfl }
   have (N : _) : Nonempty (F.obj N) := by
@@ -121,7 +120,7 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
   obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
   replace hx := congr(Ideal.comap (Subalgebra.inclusion h) $hx)
   simpa only [Ideal.pointwise_smul_eq_comap,
-    ← Ideal.comap_coe (F := RingEquiv _ _), Ideal.comap_comap] using hx
+    ← Ideal.comap_coe (F := RingEquiv _ _), Ideal.comap_comap] using! hx
 
 /-- (Implementation)
 The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ` in `G ⧸ N`.

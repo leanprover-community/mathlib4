@@ -153,7 +153,7 @@ protected theorem dist : LipschitzWith 2 (Function.uncurry <| @dist α _) := by
 theorem dist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
     dist (f^[n] x) (f^[n + 1] x) ≤ dist x (f x) * (K : ℝ) ^ n := by
   rw [iterate_succ, mul_comm]
-  simpa only [NNReal.coe_pow] using (hf.iterate n).dist_le_mul x (f x)
+  simpa only [NNReal.coe_pow] using! (hf.iterate n).dist_le_mul x (f x)
 
 theorem _root_.lipschitzWith_max : LipschitzWith 1 fun p : ℝ × ℝ => max p.1 p.2 :=
   LipschitzWith.of_le_add fun _ _ => sub_le_iff_le_add'.1 <|
@@ -165,7 +165,7 @@ theorem _root_.lipschitzWith_min : LipschitzWith 1 fun p : ℝ × ℝ => min p.1
 
 lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ ?_)
-  simpa only [NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
+  simpa only [NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using!
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
 end Metric
@@ -176,11 +176,11 @@ variable [PseudoEMetricSpace α] {f g : α → ℝ} {Kf Kg : ℝ≥0}
 
 protected theorem max (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => max (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_max.comp (hf.prodMk hg)
+  simpa only [(· ∘ ·), one_mul] using! lipschitzWith_max.comp (hf.prodMk hg)
 
 protected theorem min (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => min (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prodMk hg)
+  simpa only [(· ∘ ·), one_mul] using! lipschitzWith_min.comp (hf.prodMk hg)
 
 theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max (f x) a := by
   simpa using hf.max (LipschitzWith.const a)

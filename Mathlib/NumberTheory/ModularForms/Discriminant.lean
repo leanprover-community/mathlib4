@@ -198,7 +198,7 @@ lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
     (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
   intro q hq
   by_cases hq0 : q = 0
-  · simpa [hq0] using Periodic.cuspFunction_zero_of_zero_at_inf one_pos
+  · simpa [hq0] using! Periodic.cuspFunction_zero_of_zero_at_inf one_pos
       discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
   · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
       (by simpa [dist_zero_right] using hq) hq0

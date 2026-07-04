@@ -300,9 +300,9 @@ stacks, but we have only one tape, so we must "multiplex" them all together. Pic
 1 contains `[a, b]` and stack 2 contains `[c, d, e, f]` then the tape looks like this:
 
 ```
- bottom:  ... | _ | T | _ | _ | _ | _ | ...
- stack 1: ... | _ | b | a | _ | _ | _ | ...
- stack 2: ... | _ | f | e | d | c | _ | ...
+bottom:  ... | _ | T | _ | _ | _ | _ | ...
+stack 1: ... | _ | b | a | _ | _ | _ | ...
+stack 2: ... | _ | f | e | d | c | _ | ...
 ```
 
 where a tape element is a vertical slice through the diagram. Here the alphabet is
@@ -713,7 +713,6 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
     rw [this, List.getElem?_map, proj, PointedMap.mk_val]
-    simp only []
     by_cases h : k' = k
     · subst k'
       simp only [Function.update_self]

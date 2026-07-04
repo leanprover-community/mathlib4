@@ -64,7 +64,7 @@ variable [Zero β] [SMulZeroClass α β] {s : Finset α} {t : Finset β} {a : α
 lemma smul_zero_subset (s : Finset α) : s • (0 : Finset β) ⊆ 0 := by simp [subset_iff, mem_smul]
 
 lemma Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
-  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
+  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using! hs
 
 lemma zero_mem_smul_finset (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
   mem_smul_finset.2 ⟨0, h, smul_zero _⟩
@@ -82,7 +82,7 @@ because `0 • ∅ ≠ 0`.
 lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp [subset_iff, mem_smul]
 
 lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
-  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
+  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using! ht
 
 /-- A nonempty set is scaled by zero to the singleton set containing zero. -/
 @[simp] lemma zero_smul_finset {s : Finset β} (h : s.Nonempty) : (0 : α) • s = (0 : Finset β) :=

@@ -90,7 +90,7 @@ lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
   have hfm' : Multipliable fun pk : Nat.Primes × ℕ ↦ f (pk.fst ^ (pk.snd + 1)) :=
     prodNatEquiv.symm.multipliable_iff.mp <| by
       simpa only [← coe_prodNatEquiv_apply, Prod.eta, Function.comp_def, Equiv.apply_symm_apply]
-        using hfm.subtype _
+        using! hfm.subtype _
   simp only [← tprod_subtype_eq_of_mulSupport_subset hf, Set.coe_setOf, ← prodNatEquiv.tprod_eq,
     ← hfm'.tprod_prod]
   refine tprod_congr fun (p, k) ↦ congrArg f <| coe_prodNatEquiv_apply ..

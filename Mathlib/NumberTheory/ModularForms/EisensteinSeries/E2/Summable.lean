@@ -89,7 +89,7 @@ private lemma aux_G2_tendsto : Tendsto
 lemma hasSum_e2Summand_symmetricIcc : HasSum (e2Summand · z)
     (2 * riemannZeta 2 - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : ℕ)) (symmetricIcc ℤ) := by
   simpa [HasSum, -symmetricIcc_filter, symmetricIcc_eq_map_Icc_nat, Function.comp_def,
-    G2_partial_sum_eq] using (aux_G2_tendsto z).const_add _
+    G2_partial_sum_eq] using! (aux_G2_tendsto z).const_add _
 
 lemma summable_e2Summand_symmetricIcc : Summable (e2Summand · z) (symmetricIcc ℤ) :=
   (hasSum_e2Summand_symmetricIcc z).summable
@@ -103,20 +103,37 @@ lemma E2_eq_tsum_cexp : E2 z = 1 - 24 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : �
   simp [E2, G2_eq_tsum_cexp, riemannZeta_two]
   field
 
+/-- The `q`-expansion of `E2` as a `HasSum` over `ℕ`. -/
+theorem hasSum_qExpansion_E2 :
+    HasSum (fun m : ℕ ↦ (if m = 0 then 1 else -24 * σ 1 m : ℂ) • 𝕢 z ^ m) (E2 z) := by
+  have hS : Summable fun n : ℕ ↦ σ 1 (n + 1) * 𝕢 z ^ (n + 1) :=
+    (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (k := 2) (one_le_two) z)
+  rw [← hasSum_nat_add_iff' 1]
+  convert! (hS.mul_left (-24)).hasSum using 1
+  · ext : 1
+    simp [mul_assoc]
+  · rw [E2_eq_tsum_cexp, tsum_pnat_eq_tsum_succ (f := fun n ↦ σ 1 n * 𝕢 z ^ n), tsum_mul_left]
+    simp
+
+/-- `E2` is bounded at `i∞`. -/
+theorem isBoundedAtImInfty_E2 : IsBoundedAtImInfty E2 :=
+  isBoundedAtImInfty_of_hasSum_qExpansion one_pos fun τ ↦ by
+    simpa only [Function.Periodic.qParam, ofReal_one, div_one] using hasSum_qExpansion_E2 (z := τ)
+
 lemma tendsto_e2Summand_atTop_nhds_zero : Tendsto (e2Summand · z) atTop (𝓝 0) :=
   (summable_e2Summand_symmetricIcc z).tendsto_zero_of_even_summable_symmetricIcc (e2Summand_even _)
 
 lemma hasSum_e2Summand_symmetricIco : HasSum (e2Summand · z)
     (2 * riemannZeta 2 - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : ℕ)) (symmetricIco ℤ) := by
   apply (hasSum_e2Summand_symmetricIcc z).hasSum_symmetricIco_of_hasSum_symmetricIcc
-  simpa using (tendsto_e2Summand_atTop_nhds_zero z).neg.comp tendsto_natCast_atTop_atTop
+  simpa using! (tendsto_e2Summand_atTop_nhds_zero z).neg.comp tendsto_natCast_atTop_atTop
 
 lemma summable_e2Summand_symmetricIco : Summable (e2Summand · z) (symmetricIco ℤ) :=
   (hasSum_e2Summand_symmetricIco z).summable
 
 lemma G2_eq_tsum_symmetricIco : G2 z = ∑'[symmetricIco ℤ] m, e2Summand m z := by
   rw [G2, tsum_symmetricIcc_eq_tsum_symmetricIco (summable_e2Summand_symmetricIcc z)]
-  simpa using (tendsto_e2Summand_atTop_nhds_zero z).neg.comp tendsto_natCast_atTop_atTop
+  simpa using! (tendsto_e2Summand_atTop_nhds_zero z).neg.comp tendsto_natCast_atTop_atTop
 
 section Auxiliary
 
@@ -164,7 +181,7 @@ lemma tendsto_double_sum_S_act :
   have := ((summable_e2Summand_symmetricIco (S • z)).mul_left (z.1 ^ 2)⁻¹).hasSum
   simp only [HasSum, symmetricIco, tendsto_map'_iff, modular_S_smul, ← Nat.map_cast_int_atTop] at *
   apply this.congr (fun N ↦ ?_)
-  simpa [e2Summand, eisSummand, ← mul_sum] using aux_sum_Ico_S_identity z N
+  simpa [e2Summand, eisSummand, ← mul_sum] using! aux_sum_Ico_S_identity z N
 
 lemma tsum_symmetricIco_tsum_eq_S_act :
     ∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, 1 / ((m : ℂ) * z + n) ^ 2 =
@@ -173,7 +190,7 @@ lemma tsum_symmetricIco_tsum_eq_S_act :
   rw [hasSum_symmetricIco_int_iff]
   apply (tendsto_double_sum_S_act z).congr (fun x ↦ ?_)
   rw [Summable.tsum_finsetSum]
-  exact fun i hi ↦ by simpa using linear_left_summable (ne_zero z) i le_rfl
+  exact fun i hi ↦ by simpa using! linear_left_summable (ne_zero z) i le_rfl
 
 private lemma telescope_aux (z : ℂ) (m : ℤ) (b : ℕ) :
     ∑ n ∈ Ico (-b : ℤ) b, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
@@ -203,7 +220,7 @@ private lemma aux_tsum_identity_1 (d : ℕ+) :
     · apply (summable_pnat_iff_summable_nat.mpr ((summable_int_iff_summable_nat_and_neg.mp
         (summable_left_one_div_linear_sub_one_div_linear z (-d) d)).2)).congr
       grind [Int.cast_neg, Int.cast_natCast, neg_mul, one_div]
-  · simpa using summable_left_one_div_linear_sub_one_div_linear z (-d) d
+  · simpa using! summable_left_one_div_linear_sub_one_div_linear z (-d) d
 
 /- The sum of four terms can now be combined into a sum where `z` has changed for `-1 / z`.-/
 private lemma aux_tsum_identity_2 (d : ℕ+) :
@@ -257,9 +274,9 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
   simp only [telescope_aux, aux_tsum_identity_1] at this
   rw [funext this, show -2 * π * I / z = 0 + -2 * π * I / z by ring]
   apply Tendsto.add
-  · simpa [← PNat.tendsto_comp_val_iff] using
+  · simpa [← PNat.tendsto_comp_val_iff] using!
       (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℂ)).const_mul (-2)
-  · simpa only [aux_tsum_identity_2, ← PNat.tendsto_comp_val_iff] using aux_tendsto_tsum z
+  · simpa only [aux_tsum_identity_2, ← PNat.tendsto_comp_val_iff] using! aux_tendsto_tsum z
 
 /- These are the two key lemmas, which show that swapping the order of summation gives
 results differing by the term `-2 * π * I / z`. -/

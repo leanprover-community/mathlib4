@@ -100,6 +100,7 @@ private noncomputable def abstractFilteredClosureRealization : AbstractFilteredC
 
 end FilteredClosureSmall
 
+set_option backward.defeqAttrib.useBackward true in
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (filteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
@@ -250,6 +251,7 @@ private noncomputable def abstractCofilteredClosureRealization : AbstractCofilte
 
 end CofilteredClosureSmall
 
+set_option backward.defeqAttrib.useBackward true in
 theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (cofilteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists

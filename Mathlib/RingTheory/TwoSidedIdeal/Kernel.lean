@@ -19,8 +19,6 @@ We put this in a separate file so that we could import it in
 
 @[expose] public section
 
-assert_not_exists Finset
-
 namespace TwoSidedIdeal
 
 section ker
@@ -33,7 +31,8 @@ variable (f : F)
 The kernel of a ring homomorphism, as a two-sided ideal.
 -/
 def ker : TwoSidedIdeal R :=
-  .mk
+  .ofRingCon
+  -- TODO: use `RingCon.ker`
   { r := fun x y ↦ f x = f y
     iseqv := by constructor <;> aesop
     mul' := by intro; simp_all

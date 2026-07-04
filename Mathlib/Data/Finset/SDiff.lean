@@ -140,6 +140,14 @@ theorem union_sdiff_cancel_left (h : Disjoint s t) : (s ∪ t) \ s = t :=
 theorem union_sdiff_cancel_right (h : Disjoint s t) : (s ∪ t) \ t = s :=
   h.sup_sdiff_cancel_right
 
+/-- `· ∪ s` is injective on finsets disjoint from `s`. -/
+lemma disjoint_injOn_union_left (s : Finset α) : {t | Disjoint s t}.InjOn (· ∪ s) := by
+  grind [Set.InjOn, union_sdiff_cancel_right]
+
+/-- `· \ s` is injective on finsets containing `s`. -/
+lemma superset_injOn_sdiff (s : Finset α) : {t | s ⊆ t}.InjOn (· \ s) := by
+  grind [Set.InjOn, sdiff_union_of_subset]
+
 theorem union_sdiff_symm : s ∪ t \ s = t ∪ s \ t := by simp [union_comm]
 
 theorem sdiff_union_inter (s t : Finset α) : s \ t ∪ s ∩ t = s :=

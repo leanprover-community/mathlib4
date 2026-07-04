@@ -175,10 +175,10 @@ open Lean Meta Qq
 that shows it is equal to `∏ i, f i`. -/
 meta def mkProdEqQ {u : Level} {α : Q(Type u)}
     (inst : Q(CommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
-    MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) := do
+    MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) :=
   match n with
-  | 0 => return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
-  | m + 1 =>
+  | 0 => do return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
+  | m + 1 => do
     let nezero : Q(NeZero ($m + 1)) := q(⟨Nat.succ_ne_zero _⟩)
     let val ← makeRHS (m + 1) f nezero (m + 1)
     let _ : $val =Q FinVec.prod $f := ⟨⟩
@@ -198,10 +198,10 @@ where
 that shows it is equal to `∑ i, f i`. -/
 meta def mkSumEqQ {u : Level} {α : Q(Type u)}
     (inst : Q(AddCommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
-    MetaM <| (val : Q($α)) × Q(∑ i, $f i = $val) := do
+    MetaM <| (val : Q($α)) × Q(∑ i, $f i = $val) :=
   match n with
   | 0 => return ⟨q((0 : $α)), q(Fin.sum_univ_zero $f)⟩
-  | m + 1 =>
+  | m + 1 => do
     let nezero : Q(NeZero ($m + 1)) := q(⟨Nat.succ_ne_zero _⟩)
     let val ← makeRHS (m + 1) f nezero (m + 1)
     let _ : $val =Q FinVec.sum $f := ⟨⟩
@@ -228,7 +228,7 @@ open Qq Lean FinVec
 simproc_decl prod_univ_ofNat (∏ _ : Fin _, _) := .ofQ fun u _ e => do
   match u, e with
   | .succ _, ~q(@Finset.prod (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
-    match (generalizing := false) n.nat? with
+    match n.nat? with
     | none =>
       return .continue
     | some nVal =>

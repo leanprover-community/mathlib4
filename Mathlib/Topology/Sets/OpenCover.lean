@@ -61,6 +61,14 @@ lemma isTopologicalBasis (hu : IsOpenCover u)
     IsTopologicalBasis (⋃ i, (Subtype.val '' ·) '' B i) :=
   isTopologicalBasis_of_cover (fun i ↦ (u i).2) hu.iSup_set_eq_univ hB
 
+lemma exists_finite_of_compactSpace (hu : IsOpenCover u) [CompactSpace X] :
+    ∃ (s : Finset ι), IsOpenCover (fun i : s ↦ u i.1) := by
+  rw [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe] at hu
+  obtain ⟨s, hs⟩ := IsCompact.elim_finite_subcover isCompact_univ _ (fun i ↦ (u i).2)
+    (by simpa using hu)
+  use s
+  simpa [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe, Set.iUnion_subtype] using hs
+
 end IsOpenCover
 
 lemma Opens.IsBasis.isOpenCover {S : Set (Opens X)} (hS : Opens.IsBasis S) :

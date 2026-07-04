@@ -37,7 +37,7 @@ variable (e' : OpenPartialHomeomorph Y Z)
 
 /-- Composition of two open partial homeomorphisms when the target of the first and the source of
 the second coincide. -/
-@[simps! apply symm_apply toPartialEquiv, simps! -isSimp source target]
+@[simps! apply symm_apply toPartialHomeomorph, simps! -isSimp source target]
 protected def trans' (h : e.target = e'.source) : OpenPartialHomeomorph X Z where
   toPartialEquiv := PartialEquiv.trans' e.toPartialEquiv e'.toPartialEquiv h
   open_source := e.open_source
@@ -71,7 +71,7 @@ theorem trans_apply {x : X} : (e.trans e') x = e' (e x) :=
 
 theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := rfl
 
-/- This could be considered as a simp lemma, but there are many situations where it makes something
+/-- This could be considered as a simp lemma, but there are many situations where it makes something
 simple into something more complicated. -/
 theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
   PartialEquiv.trans_source e.toPartialEquiv e'.toPartialEquiv
@@ -103,11 +103,11 @@ theorem trans_assoc (e'' : OpenPartialHomeomorph Z Z') :
 
 @[simp, mfld_simps]
 theorem trans_refl : e.trans (OpenPartialHomeomorph.refl Y) = e :=
-  toPartialEquiv_injective e.1.trans_refl
+  toPartialHomeomorph_injective (PartialHomeomorph.toPartialEquiv_injective e.1.trans_refl)
 
 @[simp, mfld_simps]
 theorem refl_trans : (OpenPartialHomeomorph.refl X).trans e = e :=
-  toPartialEquiv_injective e.1.refl_trans
+  toPartialHomeomorph_injective (PartialHomeomorph.toPartialEquiv_injective e.1.refl_trans)
 
 theorem trans_ofSet {s : Set Y} (hs : IsOpen s) : e.trans (ofSet s hs) = e.restr (e ⁻¹' s) :=
   OpenPartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) <| by
@@ -197,7 +197,8 @@ variable (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
 @[simp, mfld_simps]
 theorem trans_toOpenPartialHomeomorph : (e.trans e').toOpenPartialHomeomorph =
     e.toOpenPartialHomeomorph.trans e'.toOpenPartialHomeomorph :=
-  OpenPartialHomeomorph.toPartialEquiv_injective <| Equiv.trans_toPartialEquiv _ _
+  OpenPartialHomeomorph.toPartialHomeomorph_injective <|
+    PartialHomeomorph.toPartialEquiv_injective <| Equiv.trans_toPartialEquiv _ _
 
 /-- Precompose an open partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/

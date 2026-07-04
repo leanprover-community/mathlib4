@@ -69,9 +69,7 @@ variable {n : ℕ}
 theorem stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_eq_zero : ifp_n.fr = 0) :
     IntFractPair.stream v (n + 1) = none := by
-  obtain ⟨_, fr⟩ := ifp_n
-  change fr = 0 at nth_fr_eq_zero
-  simp [IntFractPair.stream, stream_nth_eq, nth_fr_eq_zero]
+  grind [IntFractPair.stream]
 
 /-- Gives a recurrence to compute the `n + 1`th value of the sequence of integer and fractional
 parts of a value in case of termination.
@@ -158,14 +156,13 @@ process.
 theorem IntFractPair.seq1_fst_eq_of : (IntFractPair.seq1 v).fst = IntFractPair.of v :=
   rfl
 
-theorem of_h_eq_intFractPair_seq1_fst_b : (of v).h = (IntFractPair.seq1 v).fst.b := by
-  cases aux_seq_eq : IntFractPair.seq1 v
-  simp [of, aux_seq_eq]
+theorem of_h_eq_intFractPair_seq1_fst_b : (of v).h = (IntFractPair.seq1 v).fst.b :=
+  rfl
 
 /-- The head term of the gcf of `v` is `⌊v⌋`. -/
 @[simp]
-theorem of_h_eq_floor : (of v).h = ⌊v⌋ := by
-  simp [of_h_eq_intFractPair_seq1_fst_b, IntFractPair.of]
+theorem of_h_eq_floor : (of v).h = ⌊v⌋ :=
+  rfl
 
 end Head
 
@@ -219,11 +216,10 @@ Now let's show how the values of the sequences correspond to one another.
 theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair K}
     (s_nth_eq : (of v).s.get? n = some gp_n) :
     ∃ ifp : IntFractPair K, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b := by
-  obtain ⟨ifp, stream_succ_nth_eq, gp_n_eq⟩ :
-    ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ Pair.mk 1 (ifp.b : K) = gp_n := by
+  obtain ⟨ifp, stream_succ_nth_eq, rfl⟩ :
+      ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ Pair.mk 1 (ifp.b : K) = gp_n := by
     unfold of IntFractPair.seq1 at s_nth_eq
-    simpa [Stream'.Seq.get?_tail, Stream'.Seq.map_get?] using s_nth_eq
-  cases gp_n_eq
+    simpa using s_nth_eq
   simp_all only [Option.some.injEq, exists_eq_left']
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
@@ -233,7 +229,7 @@ theorem get?_of_eq_some_of_succ_get?_intFractPair_stream {ifp_succ_n : IntFractP
     (stream_succ_nth_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) :
     (of v).s.get? n = some ⟨1, ifp_succ_n.b⟩ := by
   unfold of IntFractPair.seq1
-  simp [Stream'.Seq.map_tail, Stream'.Seq.get?_tail, Stream'.Seq.map_get?, stream_succ_nth_eq]
+  simp [stream_succ_nth_eq]
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
 fractional parts of the stream of integer and fractional parts.

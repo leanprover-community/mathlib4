@@ -22,8 +22,10 @@ open Int
 
 noncomputable section
 
+namespace Int
+
 open scoped Classical in
-instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder ℤ where
+instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
   __ := LinearOrder.toLattice
   sSup s :=
@@ -42,8 +44,6 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
     exact (isLeast_coe_leastOfBdd ..).isGLB
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
-
-namespace Int
 
 theorem csSup_eq_greatestOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, z ≤ b)
     (Hinh : ∃ z : ℤ, z ∈ s) : sSup s = greatestOfBdd b Hb Hinh := by

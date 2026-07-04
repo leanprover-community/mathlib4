@@ -146,7 +146,7 @@ theorem isProperMap_eval [ProperSpace R] (p : R[X]) (h : 0 < degree p) : IsPrope
 
 theorem isClosedMap_eval [ProperSpace R] (p : R[X]) : IsClosedMap p.eval := by
   obtain h | h := le_or_gt p.degree 0
-  · rw [degree_le_zero_iff.mp h]; simpa using isClosedMap_const
+  · rw [degree_le_zero_iff.mp h]; simpa using! isClosedMap_const
   · exact (p.isProperMap_eval h).isClosedMap
 
 variable (R) in

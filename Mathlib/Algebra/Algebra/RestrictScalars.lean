@@ -128,7 +128,7 @@ theorem IsScalarTower.restrictScalars [Module S M] :
 /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as an instance.
 -/
 instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
-   IsScalarTower.restrictScalars R S M
+  IsScalarTower.restrictScalars R S M
 
 end
 

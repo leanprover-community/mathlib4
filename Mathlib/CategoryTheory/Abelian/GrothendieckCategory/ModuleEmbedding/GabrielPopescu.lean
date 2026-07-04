@@ -73,6 +73,7 @@ theorem ι_d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of 
     Sigma.ι _ m ≫ d g = g.hom m := by
   simp [d]
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] IsFiltered.isConnected in
 /-- This is the "Lemma" in [mitchell1981]. -/
 theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat (End G)ᵐᵒᵖ}
@@ -120,8 +121,9 @@ theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaO
     simp only [ModuleCat.hom_id, LinearMap.id_coe, id_eq, d] at h
     refine ⟨epiDesc _ _ h, ?_⟩
     ext q
-    simpa [-comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
+    simpa [-comp_epiDesc] using! Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     (preadditiveCoyonedaObj G).PreservesInjectiveObjects where
@@ -135,7 +137,7 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
       refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
         (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap, ?_⟩
       intro f hf
-      simpa [d] using Sigma.ι _ ⟨f, hf⟩ ≫= hl
+      simpa [d] using! Sigma.ι _ ⟨f, hf⟩ ≫= hl
     · rw [ModuleCat.mono_iff_injective]
       cat_disch
 

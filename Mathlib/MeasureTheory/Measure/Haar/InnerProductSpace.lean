@@ -192,7 +192,7 @@ theorem WithLp.volume_preserving_symm_measurableEquiv_toLp_prod :
     convert! this
     ext uv
     <;> simp [volumePreservingSymmMeasurableEquivToLpProdAux, MeasurableEquiv.coe_sumPiEquivProdPi,
-      LinearEquiv.prodCongr_symm, MeasurableEquiv.prodCongr]
+      MeasurableEquiv.prodCongr]
   refine (LinearIsometryEquiv.measurePreserving _).trans ?_
   refine (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp _).trans ?_
   refine (measurePreserving_sumPiEquivProdPi _).trans ?_

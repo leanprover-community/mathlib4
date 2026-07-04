@@ -16,6 +16,8 @@ It also shows that rotation gives an equivalence on the category of triangles.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -81,6 +83,7 @@ attribute [local simp] shift_shift_neg' shift_neg_shift'
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Rotating triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]

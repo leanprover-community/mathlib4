@@ -199,7 +199,7 @@ theorem Continuous.closure_preimage_subset (hf : Continuous f) (t : Set Y) :
 
 theorem Continuous.frontier_preimage_subset (hf : Continuous f) (t : Set Y) :
     frontier (f ⁻¹' t) ⊆ f ⁻¹' frontier t :=
-  diff_subset_diff (hf.closure_preimage_subset t) (preimage_interior_subset_interior_preimage hf)
+  sdiff_subset_sdiff (hf.closure_preimage_subset t) (preimage_interior_subset_interior_preimage hf)
 
 /-- If a continuous map `f` maps `s` to `t`, then it maps `closure s` to `closure t`. -/
 protected theorem Set.MapsTo.closure {t : Set Y} (h : MapsTo f s t)

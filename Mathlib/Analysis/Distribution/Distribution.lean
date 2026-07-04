@@ -192,7 +192,8 @@ end mapCLM
 section DiracDelta
 
 /-- The Dirac delta distribution. This is zero if `x` does not belong to `Ω`. -/
-def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
+@[wikidata Q209675]
+noncomputable def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
   toFun f := f x
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -257,6 +258,11 @@ variable (𝕜) in
 lemma lineDerivOp_eq_lineDerivCLM {v : E} {T : 𝓓'(Ω, F)} :
     ∂_{v} T = lineDerivCLM v T :=
   rfl
+
+@[simp]
+theorem lineDerivOp_apply_apply (f : 𝓓'(Ω, F)) (g : 𝓓(Ω, ℝ)) (m : E) :
+    ∂_{m} f g = f (- ∂_{m} g) := by
+  rw [map_neg]; rfl
 
 noncomputable instance : LineDerivAdd E 𝓓'(Ω, F) 𝓓'(Ω, F) where
   lineDerivOp_add v := map_add (lineDerivCLM v)

@@ -81,14 +81,14 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     rintro s ⟨i⟩
     ext (x : Z i)
     simpa only [Discrete.functor_obj_eq_as, coproductCocone, Cofan.mk_pt, Functor.const_obj_obj,
-      Cofan.mk_ι_app, hom_comp, LinearMap.coe_comp, Function.comp_apply] using
+      Cofan.mk_ι_app, hom_comp, LinearMap.coe_comp, Function.comp_apply] using!
       DirectSum.toModule_lof (ι := ι) R (M := fun i ↦ Z i) i x
   uniq := by
     rintro s f h
     ext : 1
     refine DirectSum.linearMap_ext _ fun i ↦ ?_
     ext x
-    simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
+    simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using!
       congr($(h ⟨i⟩) x)
 
 variable [HasCoproduct Z]

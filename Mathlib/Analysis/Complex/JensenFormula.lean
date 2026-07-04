@@ -139,9 +139,9 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
       refine Classical.or_iff_not_imp_right.mpr fun h ↦ ?_
       apply norm_herglotzLogIntegrand_circleMap_le hR hρ (by positivity) (by linarith) hn
         (hr_lt n).le
-      simpa using h
+      simpa using! h
     apply measure_mono_null (t := {θ | ‖circleMap 0 R θ - ρ‖ = 0}) (by grind)
-    simpa [sub_eq_zero] using
+    simpa [sub_eq_zero] using!
       (countable_singleton ρ).preimage_circleMap 0 (hR.ne') |>.measure_zero _
   · -- IntervalIntegrable bound volume 0 (2 * π)
     apply (IntervalIntegrable.add (by simp) (by simp)).add ?_ |>.const_mul
@@ -279,7 +279,7 @@ lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ
   · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
       fun x ↦ by simp +contextual
     simp only [finsum_eq_sum_of_support_subset _ this,
-      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
+      Finset.sum_eq_sum_sdiff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
       norm_zero, log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
     refine Finset.sum_congr rfl fun x hx ↦ ?_
     simp only [Finset.mem_sdiff, Finset.notMem_singleton] at hx
@@ -335,7 +335,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
         apply compl_notMem
         apply mem_nhdsWithin.mpr
         use ball c |R|
-        simpa [hR] using fun _ ⟨h, _⟩ ↦ ball_subset_closedBall h
+        simpa [hR] using! fun _ ⟨h, _⟩ ↦ ball_subset_closedBall h
       simp [MeromorphicOn.log_norm_meromorphicTrailingCoeffAt_extract_zeros_poles h₃f t₀ t₁
         (h₁f c t₀) (h₁g c t₀) (h₂g ⟨c, t₀⟩) h₃g]
     _ = ∑ᶠ u, divisor f CB u * log R - ∑ᶠ u, divisor f CB u * log ‖c - u‖

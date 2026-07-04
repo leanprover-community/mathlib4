@@ -324,7 +324,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     rw [hi] at h_equiv
     exact h_chi_not_in_q (h_equiv.mpr (by
       rw [hj, Weight.toLinear_neg]
-      convert! q.smul_mem (-1) hαq using 1
+      convert q.smul_mem (-1) hαq
       rw [neg_smul, one_smul]))
   obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α hα₀

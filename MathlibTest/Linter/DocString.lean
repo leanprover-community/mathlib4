@@ -127,6 +127,23 @@ structure X where
   -/
   y : Unit
 
+-- Syntax quotation patterns involving `declModifiers` should not trigger a false
+-- "empty docstring" warning. This is a regression test for a false positive where
+-- `getDeclModifiers` would recurse into definition bodies and find `declModifiers`
+-- nodes from syntax quotation patterns, treating their empty docstring slots as
+-- actual empty docstrings.
+section
+open Lean Elab Command Parser Term in
+#guard_msgs in
+/-- A function that pattern-matches on `declModifiers`. -/
+def extractAttrs (stx : TSyntax ``Command.declModifiers) :
+    CommandElabM (Array <| TSyntax ``attrInstance) := do
+  match stx with
+  | `(declModifiers| $(_)? @[$[$atts],*] $(_)? $(_)? $(_)? $(_)?) =>
+    return atts
+  | _ => return #[]
+end
+
 
 /-! # Tests for Verso-compatible docstrings -/
 
