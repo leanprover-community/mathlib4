@@ -469,7 +469,8 @@ theorem second_theorem_asymp_nat :
   convert! f.second_theorem_asymp.comp_tendsto tendsto_natCast_atTop_atTop
   simp
 
-open ENNReal in
+open ENNReal
+
 theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) = - log (s - 1) - Real.eulerMascheroniConstant + M
     + ∫ x in .Ioi 1, (E₂ (x ^ (s - 1)⁻¹)) * x ^ (-2 : ℝ) := calc
@@ -577,7 +578,47 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
 theorem sum_div_log_mul_pow_add_tendsto :
     Tendsto (fun s ↦ ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) + log (s - 1)) (𝓝[>] 1)
     (𝓝 (M - Real.eulerMascheroniConstant)) := by
-  sorry
+  suffices Tendsto (fun (s : ℝ) ↦ ∫ x in .Ioi 1, (E₂ (x ^ (s - 1)⁻¹)) * x ^ (-2 : ℝ)) (𝓝[>] 1)
+      (𝓝 0) by
+    rw [← tendsto_sub_nhds_zero_iff]
+    apply this.congr'
+    filter_upwards [eventually_mem_nhdsWithin] with s hs
+    rw [sum_div_log_mul_pow_eq hs]
+    ring
+  refine squeeze_zero_norm (fun _ ↦ norm_integral_le_lintegral_norm _) ?_
+  apply (tendsto_toReal zero_ne_top).comp
+  convert tendsto_lintegral_filter_of_dominated_convergence (l := 𝓝[>] (1 : ℝ)) (f := 0)
+    (fun (x : ℝ) ↦ ENNReal.ofReal ((|log (log x)| + |M| + C₂ / log 2) * x ^ (-2 : ℝ)))
+    ?_ ?_ ?_ ?_
+  · simp
+  · unfold E₂; exact Eventually.of_forall (fun _ ↦ by fun_prop)
+  · filter_upwards [eventually_mem_nhdsWithin] with s hs
+    filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
+    gcongr
+    rw [Set.mem_Ioi] at hs hx
+    grw [norm_eq_abs, abs_mul, abs_of_nonneg (by positivity : 0 ≤ x ^ (-2 : ℝ))]
+    gcongr
+    rcases le_or_gt 2 (x ^ (s - 1)⁻¹) with h | h
+    · have := C₂_nonneg
+      grw [second_theorem' h, ← h, le_add_iff_nonneg_left]
+      positivity
+    · have : 1 ≤ x ^ (s - 1)⁻¹ := by sorry
+      grw [second_theorem_weak this]
+      gcongr 2
+      sorry
+  · sorry
+  · filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
+    suffices Tendsto (fun s : ℝ ↦ E₂ (x ^ (s - 1)⁻¹) * x ^ (-2 : ℝ)) (𝓝[>] 1)
+        (𝓝 (0 * x ^ (-2 : ℝ))) by simpa using ENNReal.tendsto_ofReal this.norm
+    have h1 : Tendsto E₂ atTop (𝓝 0) := by sorry
+    have h4 : Tendsto (fun s: ℝ ↦ (s - 1)) (𝓝[>] 1) (𝓝[>] 0) := by
+      sorry
+    have h3 : Tendsto (fun s: ℝ ↦ (s - 1)⁻¹) (𝓝[>] 1) atTop := tendsto_inv_nhdsGT_zero.comp h4
+    have h5 : Tendsto (fun u : ℝ ↦ x ^ u) atTop atTop := by
+      
+      sorry
+    have h2 : Tendsto (fun s : ℝ ↦ x ^ (s - 1)⁻¹) (𝓝[>] 1) atTop := h5.comp h3
+    exact (h1.comp h2).mul_const _
 
 end Weight
 
