@@ -218,7 +218,7 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ 
     apply Ideal.primesOver.isMaximal
   have := liesOver_primesOverSpanEquivMonicFactorsMod_symm hp hQ
   rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span,
-    ← inertiaDeg_eq_inertiaDeg' (span {(p : ℤ)}), inertiaDeg_algebraMap,
+    inertiaDeg'_eq_of_isMaximal (span {(p : ℤ)}),
     ← finrank_quotient_span_eq_natDegree]
   refine Algebra.finrank_eq_of_equiv_equiv (Int.quotientSpanNatEquivZMod p) ?_ (by ext; simp)
   exact (ZModXQuotSpanEquivQuotSpanPair hp hQ).symm

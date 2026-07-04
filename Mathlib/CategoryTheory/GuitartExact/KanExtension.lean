@@ -118,7 +118,7 @@ end Functor.LeftExtension
 namespace TwoSquare
 
 variable {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ ⥤ C₄}
-   (w : TwoSquare T L R B)
+  (w : TwoSquare T L R B)
 
 include w
 

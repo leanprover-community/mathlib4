@@ -131,6 +131,10 @@ theorem zero_of_epi_comp {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] (h : f 
   rw [← comp_zero, cancel_epi] at h
   exact h
 
+lemma comp_eq_zero_iff_of_epi {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] :
+    f ≫ g = 0 ↔ g = 0 :=
+  ⟨zero_of_epi_comp _, by simp +contextual⟩
+
 theorem eq_zero_of_image_eq_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : image.ι f = 0) :
     f = 0 := by rw [← image.fac f, w, HasZeroMorphisms.comp_zero]
 

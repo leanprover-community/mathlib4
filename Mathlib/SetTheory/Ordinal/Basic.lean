@@ -1269,6 +1269,10 @@ def ord.orderEmbedding : Cardinal ↪o Ordinal :=
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
 
+lemma nonempty_ord_toType {c : Cardinal} (h : c ≠ 0) :
+    Nonempty c.ord.ToType := by
+  rwa [Ordinal.nonempty_toType_iff, ne_eq, ord_eq_zero]
+
 end Cardinal
 
 namespace Ordinal
