@@ -1205,7 +1205,7 @@ theorem integral_comp_mul_left_Ioi' (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 
 
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     ∫ x in Ioi a, g (x * b) = b⁻¹ • ∫ x in Ioi (a * b), g x := by
-  simpa only [mul_comm] using integral_comp_mul_left_Ioi g a hb
+  simpa [mul_comm] using integral_comp_mul_left_Ioi g a hb
 
 theorem integral_comp_mul_right_Ioi' (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     b • ∫ x in Ioi a, g (x * b) = ∫ x in Ioi (a * b), g x := by
