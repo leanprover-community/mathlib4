@@ -176,6 +176,9 @@ instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
 @[no_expose, to_additive]
 instance : Add R[M] := coeffEquiv.add
 
+@[to_additive instAddMonoid]
+instance instAddMonoid : AddMonoid R[M] := fast_instance% coeffEquiv.addMonoid
+
 @[to_additive instAddCommMonoid]
 instance instAddCommMonoid : AddCommMonoid R[M] := fast_instance% coeffEquiv.addCommMonoid
 
