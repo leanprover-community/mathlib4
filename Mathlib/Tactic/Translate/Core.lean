@@ -164,11 +164,6 @@ register_option linter.translateRedundant : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute is redundant" }
 
-/-- Linter explaining how to use `deprecated` in combination with translate attributes. -/
-register_option linter.translate.deprecated : Bool := {
-  defValue := true
-  descr := "Linter explaining how to use `deprecated` in combination with translate attributes." }
-
 /-- `RelevantArg` represents an optional argument that should be checked to determine
 whether or not to translate the given constant. -/
 inductive RelevantArg where
@@ -887,15 +882,6 @@ def copyAliasAttribute (t : TranslateData) (src tgt : Name) : CoreM Unit := do
       setAliasInfo tgtInfo tgt
       addAliasDocstring tgt tgtInfo
 
-/-- If `src` was deprecated, then also mark `tgt` as deprecated.
-This makes it convenient to write e.g. `@[deprected ..., to_additive ...]`. -/
-def copyDeprecatedAttribute (t : TranslateData) (src tgt : Name) : CoreM Unit := do
-  let env ← getEnv
-  if let some srcDepr := Linter.deprecatedAttr.getParam? env src then
-    let tgtDepr := { srcDepr with
-      newName? := srcDepr.newName?.bind (findTranslationName? env t) }
-    Linter.setDeprecated tgt tgtDepr
-
 /-- Warn the user when the declaration has an attribute. -/
 def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
     (thisAttr attrName src tgt : Name) : CoreM Unit := do
@@ -914,6 +900,11 @@ def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
 def warnAttr {α β : Type} [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
     (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
   warnAttrCore stx (f <| attr.getState ·) thisAttr attrName src tgt
+
+/-- Warn the user when the declaration has a parametric attribute. -/
+def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : ParametricAttribute β)
+    (thisAttr attrName src tgt : Name) : CoreM Unit :=
+  warnAttrCore stx (attr.getParam? · · |>.isSome) thisAttr attrName src tgt
 
 /-- `translateLemmas names argInfo desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
@@ -1175,7 +1166,6 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     -- Copy the `instance` attribute, since it is nice to directly tag `instance` declarations.
     copyInstanceAttribute src tgt
     copyAliasAttribute t src tgt
-    copyDeprecatedAttribute t src tgt
   -- Warn users if the original declaration has an attribute
   if !cfg.existing && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
@@ -1193,6 +1183,7 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     warnAttr cfg.ref Lean.Meta.Symm.symmExt (·.values.contains ·) t.attrName `symm src tgt
     warnAttr cfg.ref Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
     warnAttr cfg.ref Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
+    warnParametricAttr cfg.ref Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
     warnAttrCore cfg.ref Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
@@ -1215,13 +1206,22 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
         translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
           (impl · attr.stx attr.kind)
     else
+      let mut attr := attr
+      -- Set the target of `(attr := deprecated)` when applied to an `alias`
       if attr.name == `deprecated then
-        Linter.logLintIf linter.translate.deprecated cfg.ref m!"\
-          Instead of `@[{t.attrName} (attr := deprecated ...)]`, \
-          the deprecation should be added separately, before the `{t.attrName}` attribute:\n\n\
-          `@[deprecated ..., {t.attrName}]`.\n\n\
-          Then `{t.attrName}` will automatically deprecate the newly generated declaration."
-      for decl in allDecls do
+        if let some info ← Batteries.Tactic.Alias.getAliasInfo? src then
+          if let `(attr| deprecated%$tk $[$desc:str]? $[(since := $since)]?) := attr.stx then
+            attr := { attr with stx := ← `(attr|
+              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[(since := $since)]?) }
+      for decl in allDecls, i in 0...* do
+        if i != 0 then
+          -- Translate the target of `(attr := deprecated)` if possible
+          if attr.name == `deprecated then
+            if let `(attr| deprecated%$tk $name $[$desc]? $[(since := $since)]?) := attr.stx then
+              let name ← realizeGlobalConstNoOverload name
+              if let some name := findTranslationName? (← getEnv) t name then
+                attr := { attr with stx := ← `(attr|
+                  deprecated%$tk $(mkCIdent name) $[$desc]? $[(since := $since)]?) }
         Term.applyAttributes decl #[attr]
   return nestedDecls
 

@@ -987,8 +987,16 @@ run_cmd
 
 /-! Deprecated attribute -/
 
-@[deprecated mul_comm (since := "today"), to_additive]
+@[to_additive (attr := deprecated mul_comm (since := "today"))]
 theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
+
+/--
+warning: `old_mul_comm` has been deprecated: Use `mul_comm` instead
+---
+info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * b = b * a
+-/
+#guard_msgs in
+#check @old_mul_comm
 
 /--
 warning: `old_add_comm` has been deprecated: Use `add_comm` instead
@@ -998,15 +1006,21 @@ info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a
 #guard_msgs in
 #check @old_add_comm
 
+@[to_additive (attr := deprecated (since := "today"))]
+alias mul_comm_alias := mul_comm
+
 /--
-warning: Instead of `@[to_additive (attr := deprecated ...)]`, the deprecation should be added separately, before the `to_additive` attribute:
-
-`@[deprecated ..., to_additive]`.
-
-Then `to_additive` will automatically deprecate the newly generated declaration.
-
-Note: This linter can be disabled with `set_option linter.translate.deprecated false`
+warning: `mul_comm_alias` has been deprecated: Use `mul_comm` instead
+---
+info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
 -/
 #guard_msgs in
-@[to_additive (attr := deprecated mul_comm (since := "today"))]
-theorem old_mul_comm' {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
+#check @mul_comm_alias
+
+/--
+warning: `add_comm_alias` has been deprecated: Use `add_comm` instead
+---
+info: @add_comm_alias : ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a + b = b + a
+-/
+#guard_msgs in
+#check @add_comm_alias
