@@ -532,7 +532,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     exact setIntegral_congr_fun (by measurability) (fun x hx ↦ by ring)
   _ = _ := by
     have h1 : IntegrableOn (fun x ↦ log (log x) * x ^ (-s)) (.Ioi 1) := by sorry
-    have h2 : IntegrableOn (fun x ↦ M * x ^ (-s)) (.Ioi 1) := by sorry
+    have h2 : IntegrableOn (M * · ^ (-s)) (.Ioi 1) := by sorry
     have h3 : IntegrableOn (fun x ↦ E₂ x * x ^ (-s)) (.Ioi 1) := by sorry
     rw [MeasureTheory.integral_add, MeasureTheory.integral_add, mul_add, mul_add,
         eulerMascheroniConstant_eq_neg_integral_log_log hs, MeasureTheory.integral_const_mul,
