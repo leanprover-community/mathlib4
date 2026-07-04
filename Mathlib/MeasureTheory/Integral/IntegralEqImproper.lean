@@ -1200,7 +1200,7 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
     Function.comp_def]
 
 theorem integral_comp_mul_left_Ioi' (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
-    b • (∫ x in Ioi a, g (b * x)) = ∫ x in Ioi (b * a), g x := by
+    b • ∫ x in Ioi a, g (b * x) = ∫ x in Ioi (b * a), g x := by
   simp [integral_comp_mul_left_Ioi g a hb, smul_smul, mul_inv_cancel₀ hb.ne']
 
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
@@ -1208,7 +1208,7 @@ theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 
   simpa only [mul_comm] using integral_comp_mul_left_Ioi g a hb
 
 theorem integral_comp_mul_right_Ioi' (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
-    b • (∫ x in Ioi a, g (x * b)) = ∫ x in Ioi (a * b), g x := by
+    b • ∫ x in Ioi a, g (x * b) = ∫ x in Ioi (a * b), g x := by
   simp [integral_comp_mul_right_Ioi g a hb, smul_smul, mul_inv_cancel₀ hb.ne']
 
 end IoiChangeVariables
