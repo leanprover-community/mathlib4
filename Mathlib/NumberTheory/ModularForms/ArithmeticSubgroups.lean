@@ -76,20 +76,14 @@ instance (Γ : Subgroup (GL n R)) [HasDetOne Γ] (g : ConjAct <| GL n R) :
     HasDetOne (g • Γ) where
   det_eq {h} hh := by
     rw [mem_pointwise_smul_iff_inv_smul_mem] at hh
-    have := HasDetOne.det_eq hh
-    rwa [← ConjAct.toConjAct_ofConjAct g⁻¹, ConjAct.toConjAct_smul,
-      map_mul, map_mul, map_inv, map_inv, inv_inv, mul_right_comm, inv_mul_cancel,
-      one_mul] at this
+    simpa [ConjAct.smul_def] using HasDetOne.det_eq hh
 
 open scoped Pointwise in
 instance (Γ : Subgroup (GL n R)) [HasDetPlusMinusOne Γ] (g : ConjAct <| GL n R) :
     HasDetPlusMinusOne (g • Γ) where
   det_eq {h} hh := by
     rw [mem_pointwise_smul_iff_inv_smul_mem] at hh
-    have := HasDetPlusMinusOne.det_eq hh
-    rwa [← ConjAct.toConjAct_ofConjAct g⁻¹, ConjAct.toConjAct_smul,
-      map_mul, map_mul, map_inv, map_inv, inv_inv, mul_right_comm, inv_mul_cancel,
-      one_mul] at this
+    simpa [ConjAct.smul_def] using HasDetPlusMinusOne.det_eq hh
 
 end det_typeclasses
 
