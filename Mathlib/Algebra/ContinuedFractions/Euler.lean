@@ -16,6 +16,8 @@ fraction obtained by an explicit transformation of its coefficient stream.
 
 ## Main definitions
 
+* `GenContFract.IsEuler` : predicate for a generalized continued fraction to be an Euler
+  continued fraction.
 * `GenContFract.euler` : constructs a generalized continued fraction from a head term `h`
   and a coefficient stream `ρ`.
 * `GenContFract.toEuler` : transforms a generalized continued fraction to a Euler continued
@@ -23,7 +25,7 @@ fraction obtained by an explicit transformation of its coefficient stream.
 
 ## Main results
 
-* `euler_convs` : explicit formula for convergents of an Euler-transformed continued fraction.
+* `convs_euler` : explicit formula for convergents of an Euler-transformed continued fraction.
 * `convs_toEuler` : equivalence of convergents between a generalized continued fraction
   and its corresponding Euler continued fraction.
 
