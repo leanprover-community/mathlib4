@@ -188,7 +188,7 @@ theorem iff_adjoin_image (s : Set ι) :
 theorem iff_adjoin_image_compl (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
       AlgebraicIndepOn (adjoin R (x '' sᶜ)) x s := by
-  convert! ← iff_adjoin_image _; apply compl_compl
+  convert ← iff_adjoin_image _; apply compl_compl
 
 theorem iff_transcendental_adjoin_image (i : ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧

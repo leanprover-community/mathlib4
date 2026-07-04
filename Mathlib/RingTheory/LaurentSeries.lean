@@ -789,11 +789,8 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
   to show that both terms are in `ℱ`, which is easy in light of their definition. -/
   · simp only [Set.mem_Iio, inter_mem_iff]
     constructor
-    · have := (exists_lb_coeff_ne hℱ).choose_spec
-      rw [Filter.eventually_iff] at this
-      convert! this
-      ext
-      simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
+    · simpa [φ, Set.iInter_ofPred, Filter.eventually_iff, ℓ]
+        using (exists_lb_coeff_ne hℱ).choose_spec
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
       intro i _
       apply (coeff_tendsto hℱ _).eventually

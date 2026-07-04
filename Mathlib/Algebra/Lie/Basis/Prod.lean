@@ -216,8 +216,9 @@ lemma lie_snd_eq_zero_of_mem_prodCartan
     mem_image_of_mem (prodSymmEquiv eι b₁ b₂).symm hy
   rw [prodCartan, map_lieSpan] at hy
   rw [prodCartan]
-  convert hy
-  ext; simp; grind
+  convert hy with x
+  simp
+  grind
 
 end CommRing
 
