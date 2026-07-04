@@ -71,6 +71,7 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.ComputablePolynomial.Basic
 public import Mathlib.Tactic.ComputablePolynomial.Content
 public import Mathlib.Tactic.ComputablePolynomial.Degree
+public import Mathlib.Tactic.ComputablePolynomial.DivRem
 public import Mathlib.Tactic.ComputablePolynomial.OfList
 public import Mathlib.Tactic.ComputablePolynomial.Ring
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
