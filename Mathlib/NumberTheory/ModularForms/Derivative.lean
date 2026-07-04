@@ -6,7 +6,6 @@ Authors: Seewoo Lee
 module
 
 public import Mathlib.Analysis.Complex.Liouville
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.IsBoundedAtImInfty
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
@@ -287,8 +286,7 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} {z : ℍ} {r M 
   calc ‖D F z‖ = (2 * π)⁻¹ * ‖deriv (F ∘ ofComplex) (z : ℂ)‖ := by
         simp only [normalizedDerivOfComplex, norm_mul, hnorm]
     _ ≤ (2 * π)⁻¹ * (M / r) := by
-        gcongr
-        exact norm_deriv_le_of_forall_mem_sphere_norm_le hr hd hb
+        gcongr; exact norm_deriv_le_of_forall_mem_sphere_norm_le hr hd hb
     _ = M / (2 * π * r) := by ring
 
 /-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
@@ -299,7 +297,6 @@ theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDif
   rw [isBoundedAtImInfty_iff] at hb ⊢
   obtain ⟨M, A, hMA⟩ := hb
   refine ⟨M / π, 2 * max A 0 + 1, fun z hz => ?_⟩
-  have hR_pos : 0 < z.im / 2 := by linarith [z.im_pos]
   have hcl := closedBall_subset_upperHalfPlane z
   have hsphere : ∀ w ∈ Metric.sphere (z : ℂ) (z.im / 2), ‖(F ∘ ofComplex) w‖ ≤ M := by
     intro w hw
@@ -308,16 +305,14 @@ theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDif
     rw [Complex.sub_im, ← dist_eq_norm, Metric.mem_sphere.mp hw, UpperHalfPlane.coe_im] at habs
     have hw_im_ge_A : A ≤ w.im := by
       linarith [(abs_le.mp habs).1, le_max_left A 0, le_max_right A 0]
-    have hwM := hMA ⟨w, hw_im⟩ hw_im_ge_A
-    simpa only [Function.comp_apply, ofComplex_apply_of_im_pos hw_im] using hwM
-  have hz_im_ge_1 : (1 : ℝ) ≤ z.im := by linarith [le_max_right A 0]
-  have hzA : A ≤ z.im := by linarith [le_max_left A 0, le_max_right A 0]
-  have hM_nonneg : 0 ≤ M := le_trans (norm_nonneg _) (hMA z hzA)
+    simpa only [Function.comp_apply, ofComplex_apply_of_im_pos hw_im] using
+      hMA ⟨w, hw_im⟩ hw_im_ge_A
+  have hM_nonneg : 0 ≤ M :=
+    le_trans (norm_nonneg _) (hMA z (by linarith [le_max_left A 0, le_max_right A 0]))
   calc ‖D F z‖ ≤ M / (2 * π * (z.im / 2)) :=
-        norm_normalizedDerivOfComplex_le hR_pos (diffContOnCl_comp_ofComplex hF hcl) hsphere
-    _ = M / (π * z.im) := by ring
-    _ ≤ M / (π * 1) := by gcongr
-    _ = M / π := by ring
+        norm_normalizedDerivOfComplex_le (by linarith [z.im_pos])
+          (diffContOnCl_comp_ofComplex hF hcl) hsphere
+    _ ≤ M / π := by gcongr; nlinarith [hz, le_max_right A 0, Real.pi_pos]
 
 /-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
 infinity. -/
