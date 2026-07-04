@@ -333,14 +333,10 @@ protected theorem image {C : EdgeLabeling G' K} {f : G ↪g G'}
     (h : (C.pullback f.toHom).MonochromaticOf X k) : C.MonochromaticOf (f '' X) k :=
   MonochromaticBetween.image h
 
-theorem image_top {C : TopEdgeLabeling V' K} {f : V ↪ V'}
-    (h : (C.pullback f).MonochromaticOf X k) : C.MonochromaticOf (f '' X) k := by
-  simpa [TopEdgeLabeling.monochromaticOf_iff_ne_imp_get_eq]
-
 theorem map_top {C : TopEdgeLabeling V' K} {f : V ↪ V'} {m : Finset V}
     (h : (C.pullback f).MonochromaticOf m k) : C.MonochromaticOf (m.map f) k := by
   rw [coe_map]
-  exact h.image_top
+  exact h.image (f := SimpleGraph.Embedding.completeGraph f)
 
 end MonochromaticOf
 
