@@ -68,8 +68,9 @@ theorem mk_carrier_map_mul_left :
 theorem prod_carrier_mulAut (f : G → H) :
     ∏ h ∈ (ConjClasses.mk g).carrier, f (MulAut.conj g h) =
     ∏ h ∈ (ConjClasses.mk g).carrier, f h := by
-  change ((ConjClasses.mk g).carrier.toFinset.1.map (f ∘ MulAut.conj g)).prod = _
-  rw [← Multiset.map_map, mk_carrier_map_conj, Finset.prod_eq_multiset_prod]
+  simp only [← Function.comp_apply (f := f)]
+  rw [Finset.prod_eq_multiset_prod, ← Multiset.map_map, mk_carrier_map_conj,
+    Finset.prod_eq_multiset_prod]
 
 /-- Multiplying `f (g * h)` over `h` in the conjugacy class of `g` equals multiplying
 `f (h * g)` over `h`. -/
@@ -79,9 +80,9 @@ theorem prod_carrier_mulAut (f : G → H) :
 theorem prod_carrier_mul_left (f : G → H) :
     ∏ h ∈ (ConjClasses.mk g).carrier, f (g * h) =
     ∏ h ∈ (ConjClasses.mk g).carrier, f (h * g) := by
-  change ((ConjClasses.mk g).carrier.toFinset.1.map (f ∘ (fun x ↦ g * x))).prod = _
-  rw [← Multiset.map_map, mk_carrier_map_mul_left, Finset.prod_eq_multiset_prod,
-    Multiset.map_map]; rfl
+  simp only [← Function.comp_apply (f := f)]
+  rw [Finset.prod_eq_multiset_prod, ← Multiset.map_map, mk_carrier_map_mul_left,
+    Finset.prod_eq_multiset_prod, Multiset.map_map]; rfl
 
 end Group
 
