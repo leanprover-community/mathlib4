@@ -92,7 +92,7 @@ lemma isRightAdjoint_of_preservesLimits_of_solutionSetCondition [HasLimitsOfSize
     obtain ⟨i, _, t⟩ := g _ A'.hom
     exact ⟨i, ⟨StructuredArrow.homMk _ t⟩⟩
   obtain ⟨T, hT⟩ := has_weakly_initial_of_weakly_initial_set_and_hasProducts hB'
-  exact hasInitial_of_weakly_initial_and_hasWideEqualizers.{w} hT
+  exact hasInitial_of_weakly_initial_and_hasWideEqualizers hT
 
 end GeneralAdjointFunctorTheorem
 
@@ -111,7 +111,7 @@ lemma isRightAdjoint_of_preservesLimits_of_isCoseparating [HasLimitsOfSize.{w, w
   have := hasFiniteLimits_of_hasLimitsOfSize D
   have := PreservesLimitsOfSize.preservesFiniteLimits G
   have (A : C) : HasInitial (StructuredArrow A G) :=
-    hasInitial_of_isCoseparating.{w} (StructuredArrow.isCoseparating_inverseImage_proj A G hP)
+    hasInitial_of_isCoseparating (StructuredArrow.isCoseparating_inverseImage_proj A G hP)
   exact isRightAdjointOfStructuredArrowInitials _
 
 /-- The special adjoint functor theorem: if `F : C ⥤ D` preserves colimits and `C` is cocomplete,
