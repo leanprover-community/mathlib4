@@ -333,7 +333,7 @@ theorem single_one_one : single (1 : G) (1 : k) = 1 := rfl
 
 theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 
-@[simp]
+@[deprecated coeff_one (since := "2026-07-04")]
 theorem coeff_one_one : coeff (1 : SkewMonoidAlgebra k G) 1 = 1 := by simp
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := by
