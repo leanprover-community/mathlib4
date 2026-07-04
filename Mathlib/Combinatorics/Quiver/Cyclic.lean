@@ -174,16 +174,13 @@ theorem exists_cyclic_partition_of_strongly_connected [Nonempty V]
   apply Fin.ext
   calc (P j).length % h = ((P i).length + 1) % h := ?_
        _   = ((P i).length % h + 1) % h := ?_
-  · have hdvd1 : h ∣ ((P j).comp s).length := by
-      simpa [indexOfImprimitivity, i0] using
-        divides_cycle_length (i := i0) (k := ((P j).comp s).length)
-          (mem_CycleLengths_of_comp_right (p := P j) (s := s) hs_pos)
+  · have hdvd1 : h ∣ ((P j).comp s).length :=
+      divides_cycle_length (mem_CycleLengths_of_comp_right (p := P j) (s := s) hs_pos)
     have h1 : Nat.ModEq h ((P j).length + s.length) 0 := by
       simpa [Nat.ModEq, Path.length_comp] using Nat.mod_eq_zero_of_dvd hdvd1
-    have hdvd2 : h ∣ (((P i).cons e).comp s).length := by
-      simpa [indexOfImprimitivity, i0] using
-        divides_cycle_length (i := i0) (k := (((P i).cons e).comp s).length)
-          (mem_CycleLengths_of_cons_comp_right (p := P i) (e := e) (s := s) hs_pos)
+    have hdvd2 : h ∣ (((P i).cons e).comp s).length :=
+      divides_cycle_length
+        (mem_CycleLengths_of_cons_comp_right (p := P i) (e := e) (s := s) hs_pos)
     have h2 : Nat.ModEq h ((P i).length + 1 + s.length) 0 := by
       simpa [Nat.ModEq, Path.length_comp, Path.length_cons, Nat.add_assoc] using
         Nat.mod_eq_zero_of_dvd hdvd2
