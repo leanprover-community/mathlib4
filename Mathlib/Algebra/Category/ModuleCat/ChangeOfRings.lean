@@ -994,7 +994,7 @@ lemma homEquiv_extendScalarsComp (M : ModuleCat R₁) :
         (restrictScalars f₁₂).map ((extendRestrictScalarsAdj f₂₃).unit.app _) ≫
         (restrictScalarsComp f₁₂ f₂₃).inv.app _ := by
   dsimp [extendScalarsComp, conjugateIsoEquiv, conjugateEquiv]
-  simp only [Functor.id_obj, Functor.comp_obj, Category.assoc, Category.id_comp,
+  simp only [Functor.comp_obj, Category.assoc, Category.id_comp,
     Category.comp_id, Adjunction.comp_unit_app, Adjunction.homEquiv_unit,
     Functor.map_comp, Adjunction.unit_naturality_assoc,
     Adjunction.right_triangle_components]
