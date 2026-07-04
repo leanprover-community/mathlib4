@@ -147,7 +147,7 @@ lemma sum_def' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ →
 
 lemma sum_def {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) := by
-  simp only [sum_def', SkewMonoidAlgebra.sum_def, Finsupp.sum, toFinsupp_apply]
+  simp only [sum_def', SkewMonoidAlgebra.sum_def, Finsupp.sum]
   apply Finset.sum_of_injOn (toAdd) (Injective.injOn fun ⦃a₁ a₂⦄ a ↦ a) (fun _ ↦ ?_) <;>
   simp +contextual [coeff]
 
@@ -203,8 +203,8 @@ lemma monomial_eq_zero_iff (t : R) : monomial n t = 0 ↔ t = 0 :=
 lemma monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
     monomial m a = monomial n b ↔ m = n ∧ a = b ∨ a = 0 ∧ b = 0 := by
   rw [← Finsupp.single_eq_single_iff m n a b]
-  simp only [monomial_def, ← toFinsupp_single, toFinsupp_inj]
-  simp only [← ofFinsupp_single, SkewMonoidAlgebra.ofFinsupp_inj, Finsupp.single_eq_single_iff,
+  simp only [monomial_def, ← coeff_single, coeff_inj]
+  simp only [← ofCoeff_single, SkewMonoidAlgebra.ofCoeff_inj, Finsupp.single_eq_single_iff,
     EmbeddingLike.apply_eq_iff_eq]
 
 lemma induction {motive : SkewPolynomial R → Prop} (p : SkewPolynomial R) (h0 : motive 0)
@@ -240,7 +240,8 @@ lemma monomial_mul_monomial [MulSemiringAction (Multiplicative ℕ) R] (n m : �
 lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R] : f * g =
     f.sum fun (a₁ : ℕ) b₁ ↦ g.sum fun (a₂ : ℕ) b₂ ↦ monomial (a₁ + a₂) (b₁ * φ^[a₁] b₂) := by
   ext
-  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, coeff_single_apply]
+  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, SkewMonoidAlgebra.coeff_sum']
+  simp [SkewMonoidAlgebra.sum, Finsupp.single_apply]
 
 section Constant
 
@@ -586,7 +587,7 @@ end Sum
 
 @[simp]
 lemma coeff_add (p q : SkewPolynomial R) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n :=
-  SkewMonoidAlgebra.coeff_add p q n
+  by simp [coeff]
 
 end Semiring
 
@@ -697,8 +698,8 @@ lemma update_def (p : SkewPolynomial R) (n : ℕ) (a : R) :
     p.update n a = SkewMonoidAlgebra.update p (ofAdd n) a := rfl
 
 lemma coeff_update (p : SkewPolynomial R) (n : ℕ) (a : R) :
-    (p.update n a).coeff = Function.update p.coeff n a :=
-  SkewMonoidAlgebra.coeff_update _ _ _
+    (p.update n a).coeff = Function.update p.coeff n a := by
+  ext; simp [coeff, update]; rfl
 
 lemma coeff_update_apply (p : SkewPolynomial R) (n : ℕ) (a : R) (i : ℕ) :
     (p.update n a).coeff i = if i = n then a else p.coeff i :=
