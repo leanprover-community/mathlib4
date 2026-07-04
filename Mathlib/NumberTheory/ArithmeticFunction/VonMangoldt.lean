@@ -163,7 +163,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the von Mangoldt function is nonnegative. -/
 @[positivity ArithmeticFunction.vonMangoldt _]
-meta def evalvonMangoldt : PositivityExt where eval {u α} _zα pα? e :=
+meta def evalVonMangoldt : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@ArithmeticFunction.vonMangoldt $a) =>
