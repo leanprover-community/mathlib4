@@ -391,6 +391,20 @@ theorem second_theorem' {x : ℝ} (hx : 2 ≤ x) :
           inv_div_log_sq_nonneg ht hx', le_first (by grind)]
       _ = _ := by rw [integ_div_mul_log_sq _ hx]; simp [field]
 
+/-- A technical weak variant of the second theorem that covers a larger range of `x`. -/
+theorem second_theorem_weak {x : ℝ} (hx : 1 ≤ x) :
+    |f.E₂ x| ≤ |log (log x)| + |M| + C₂ / log x := by
+  rcases le_or_gt 2 x with hx' | hx'
+  · grw [second_theorem' hx', le_add_iff_nonneg_left]
+    positivity
+  unfold E₂
+  grw [abs_sub, abs_sub, sum_eq_zero, abs_zero, zero_add, le_add_iff_nonneg_right]
+  · exact div_nonneg C₂_nonneg (log_nonneg (by grind))
+  intro n hn
+  grw [mem_Icc, le_floor_iff (by linarith), hx'] at hn
+  have : n = 0 ∨ n = 1 := by norm_cast at hn; omega
+  rcases this with rfl | rfl <;> simp
+
 theorem second_theorem {x : ℝ} (hx : 2 ≤ x) :
     |∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M| ≤ C₂ / log x := by
   grw [← second_theorem' hx, sum_div_log_eq x]; ring_nf; rfl
