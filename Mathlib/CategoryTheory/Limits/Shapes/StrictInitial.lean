@@ -156,6 +156,11 @@ theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
       haveI := h A (f ≫ hI.to _)
       ⟨⟨hI.to _ ≫ inv (f ≫ hI.to (⊥_ C)), by rw [← assoc, IsIso.hom_inv_id], hI.hom_ext _ _⟩⟩ }
 
+instance [Quiver.IsThin C] : HasStrictInitialObjects C where
+  out {I A} f hI := by
+    rw [isIso_iff_of_thin]
+    exact ⟨hI.to _⟩
+
 end StrictInitial
 
 section StrictTerminal
@@ -195,6 +200,7 @@ theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I
 
 variable {J : Type v} [SmallCategory J]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If all but one object in a diagram is strict terminal, then the limit is isomorphic to the
 said object via `limit.π`. -/
@@ -250,6 +256,11 @@ theorem hasStrictTerminalObjects_of_terminal_is_strict (I : C) (h : ∀ (A) (f :
   { out := fun {I' A} f hI' =>
       haveI := h A (hI'.from _ ≫ f)
       ⟨⟨inv (hI'.from I ≫ f) ≫ hI'.from I, hI'.hom_ext _ _, by rw [assoc, IsIso.inv_hom_id]⟩⟩ }
+
+instance [Quiver.IsThin C] : HasStrictTerminalObjects C where
+  out {I A} f hI := by
+    rw [CategoryTheory.isIso_iff_of_thin]
+    exact ⟨hI.from _⟩
 
 end StrictTerminal
 

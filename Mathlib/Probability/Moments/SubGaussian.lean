@@ -690,7 +690,7 @@ protected lemma const_mul (h : HasSubgaussianMGF X c μ) (r : ℝ) :
 lemma integrableExpSet_eq_univ (hX : HasSubgaussianMGF X c μ) :
     integrableExpSet X μ = Set.univ := by
   ext t
-  simpa using hX.integrable_exp_mul t
+  simpa using! hX.integrable_exp_mul t
 
 lemma memLp (hX : HasSubgaussianMGF X c μ) (p : ℝ≥0) : MemLp X p μ :=
   memLp_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX]) p
@@ -852,7 +852,7 @@ lemma hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ]
     _ ≤ exp ((‖-a - -b‖₊ / 2) ^ 2 * (-t) ^ 2 / 2) := by
       apply ProbabilityTheory.mgf_le_of_mem_Icc_of_integral_eq_zero (hm.neg)
       · filter_upwards [hb] with ω ⟨hl, hr⟩ using ⟨neg_le_neg_iff.2 hr, neg_le_neg_iff.2 hl⟩
-      · rw [integral_neg, hc, neg_zero]
+      · simp only [Pi.neg_apply]; rw [integral_neg, hc, neg_zero]
       · rwa [Left.neg_pos_iff]
     _ = exp (((‖b - a‖₊ / 2) ^ 2) * t ^ 2 / 2) := by ring_nf
 
