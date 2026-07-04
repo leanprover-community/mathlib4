@@ -905,7 +905,16 @@ theorem RelIso.coe_toMap (r : α → α → Prop) (f : α ≃ β) : ⇑(RelIso.t
   rfl
 
 @[simp]
+theorem RelIso.toEquiv_toMap (r : α → α → Prop) (f : α ≃ β) : RelIso.toMap r f = f :=
+  rfl
+
+@[simp]
 theorem RelIso.coe_symm_toMap (r : α → α → Prop) (f : α ≃ β) : ⇑(RelIso.toMap r f).symm = f.symm :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_symm_toMap (r : α → α → Prop) (f : α ≃ β) :
+    (RelIso.toMap r f).symm = f.symm :=
   rfl
 
 /-- For a `β`-relation `r`, a function `f : α → β` induces a relation homomorphism from `r.onFun f`
@@ -939,6 +948,15 @@ theorem RelIso.coe_ofOnFun (r : β → β → Prop) (f : α ≃ β) : ⇑(RelIso
   rfl
 
 @[simp]
+theorem RelIso.toEquiv_ofOnFun (r : β → β → Prop) (f : α ≃ β) : RelIso.ofOnFun r f = f :=
+  rfl
+
+@[simp]
 theorem RelIso.coe_symm_ofOnFun (r : β → β → Prop) (f : α ≃ β) :
     ⇑(RelIso.ofOnFun r f).symm = f.symm :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_symm_ofOnFun (r : β → β → Prop) (f : α ≃ β) :
+    (RelIso.ofOnFun r f).symm = f.symm :=
   rfl
