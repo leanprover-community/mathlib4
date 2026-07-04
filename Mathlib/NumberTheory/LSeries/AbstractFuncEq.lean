@@ -41,11 +41,6 @@ The poles (and their residues) are explicitly given in terms of `f₀` and `g₀
 See the sections *Main theorems on weak FE-pairs* and
 *Main theorems on strong FE-pairs* below.
 
-* Strong FE pairs:
-  - `StrongFEPair.Λ` : function of `s : ℂ`
-  - `StrongFEPair.differentiable_Λ`: `Λ` is entire
-  - `StrongFEPair.hasMellin`: `Λ` is everywhere equal to the Mellin transform of `f`
-  - `StrongFEPair.functional_equation`: the functional equation for `Λ`
 * Weak FE pairs:
   - `WeakFEPair.Λ₀`: and `WeakFEPair.Λ`: functions of `s : ℂ`
   - `WeakFEPair.differentiable_Λ₀`: `Λ₀` is entire
@@ -55,6 +50,10 @@ See the sections *Main theorems on weak FE-pairs* and
   - `WeakFEPair.functional_equation`: the functional equation for `Λ`
   - `WeakFEPair.Λ_residue_k`: computation of the residue at `k`
   - `WeakFEPair.Λ_residue_zero`: computation of the residue at `0`.
+
+* Strong FE pairs:
+  - `IsStrongFEPair.differentiable_Λ`: `Λ` is entire
+  - `IsStrongFEPair.hasMellin`: `Λ` is everywhere equal to the Mellin transform of `f`
 -/
 
 @[expose] public section
@@ -182,11 +181,17 @@ lemma hf_zero' : (fun x : ℝ ↦ P.f x - P.f₀) =O[𝓝[>] 0] (· ^ (-P.k)) :=
     rw [norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_neg hx.le]
     exact (one_le_inv₀ (rpow_pos_of_pos hx _)).2 (rpow_le_one hx.le hx' P.hk.le)
 
-/-- The completed L-function.
+/-- First version of the completed L-function.
 
-This definition and the lemmas about it are private, because it will later be "overwritten" with a
-more complicated definition which is mathematically equal but not definitionally so; this is
-necessary in order to present a uniform API in the weak and strong cases. -/
+This function is the completed `L`-function when evaluated in the range where the Mellin integral
+is convergent, and junk otherwise. So for strong FE-pairs it is entire, and takes the "correct"
+value, for all `s`; but for weak FE-pairs it it is only interesting for `s.re` large.
+
+(This definition and the lemmas about it are private, because even for strong FE-pairs, it will
+later be "overwritten" with a more complicated definition which is mathematically equal but not
+definitionally so; this is necessary in order to present a uniform API in the weak and strong
+cases.)
+-/
 private def Λ_aux (P : WeakFEPair E) (s : ℂ) : E := mellin P.f s
 
 private lemma Λ_aux_eq : P.Λ_aux = mellin P.f := rfl
@@ -301,7 +306,10 @@ lemma hf_modif_top (r : ℝ) :
   simp [f_modif, mem_Ioi.mpr hx, notMem_Ioo_of_ge hx.le]
 
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
-correction terms from `f` and `g`. -/
+correction terms from `f` and `g`.
+
+(See `WeakFEPair.isStrongFEPair_toStrongFEPair` for the proof that this is actually a strong
+FE-pair.) -/
 def toStrongFEPair : WeakFEPair E where
   f := P.f_modif
   g := P.symm.f_modif
