@@ -1112,22 +1112,6 @@ def withLpProdCongr (f : α ≃ᵢ α') (g : β ≃ᵢ β') : WithLp p (α × β
   __ := WithLp.congr p (f.toEquiv.prodCongr g.toEquiv)
   isometry_toFun := f.isometry.withLpProdMap p g.isometry
 
-theorem withLpProdCongr_apply_symm_apply (f : α ≃ᵢ α') (g : β ≃ᵢ β') {x} :
-    (withLpProdCongr p f g) ((withLpProdCongr p f g).symm x) = x :=
-  Equiv.apply_symm_apply _ _
-
-theorem withLpProdCongr_symm_apply_apply (f : α ≃ᵢ α') (g : β ≃ᵢ β') {x} :
-    (withLpProdCongr p f g).symm ((withLpProdCongr p f g) x) = x :=
-  Equiv.symm_apply_apply _ _
-
-theorem withLpProdCongr_symm_apply_eq (f : α ≃ᵢ α') (g : β ≃ᵢ β') {x y} :
-    (withLpProdCongr p f g).symm x = y ↔ x = (withLpProdCongr p f g) y :=
-  Equiv.symm_apply_eq _
-
-theorem withLpProdCongr_eq_symm_apply (f : α ≃ᵢ α') (g : β ≃ᵢ β') {x y} :
-    y = (withLpProdCongr p f g).symm x ↔ (withLpProdCongr p f g) y = x :=
-  Equiv.eq_symm_apply _
-
 /-- Commutativity of the `L^p` product as an isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ᵢ WithLp p (β × α) where
   __ := WithLp.congr p (Equiv.prodComm α β)
