@@ -561,22 +561,6 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
 lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
     (prodContinuousLinearEquiv p 𝕜 α β).symm x = toLp p x := rfl
 
-theorem prodContinuousLinearEquiv_apply_symm_apply {x} :
-    (prodContinuousLinearEquiv p 𝕜 α β) ((prodContinuousLinearEquiv p 𝕜 α β).symm x) = x :=
-  ContinuousLinearEquiv.apply_symm_apply _ _
-
-theorem prodContinuousLinearEquiv_symm_apply_apply {x} :
-    (prodContinuousLinearEquiv p 𝕜 α β).symm ((prodContinuousLinearEquiv p 𝕜 α β) x) = x :=
-  ContinuousLinearEquiv.symm_apply_apply _ _
-
-theorem prodContinuousLinearEquiv_symm_apply_eq {x y} :
-    (prodContinuousLinearEquiv p 𝕜 α β).symm x = y ↔ x = (prodContinuousLinearEquiv p 𝕜 α β) y :=
-  ContinuousLinearEquiv.symm_apply_eq _
-
-theorem prodContinuousLinearEquiv_eq_symm_apply {x y} :
-    y = (prodContinuousLinearEquiv p 𝕜 α β).symm x ↔ (prodContinuousLinearEquiv p 𝕜 α β) y = x :=
-  ContinuousLinearEquiv.eq_symm_apply _
-
 /-- `WithLp.fst` as a continuous linear map. -/
 @[simps! coe apply]
 def fstL : WithLp p (α × β) →L[𝕜] α where
