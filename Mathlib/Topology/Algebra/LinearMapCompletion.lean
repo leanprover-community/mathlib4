@@ -78,6 +78,9 @@ noncomputable def fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformCont
       (isClosed_eq (continuous_extension.comp (continuous_const_smul c)) (by fun_prop)) <| by
     simp [← Completion.coe_smul, hf, extension_coe]
 
+lemma coe_fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) :
+    fromCompletion hf = Completion.extension f := rfl
+
 @[simp]
 lemma fromCompletion_apply {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) (e : Completion E) :
     fromCompletion hf e = Completion.extension f e := rfl
