@@ -20,8 +20,8 @@ and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular
 - `normalizedDerivOfComplex`: $D = \frac{1}{2\pi i} \frac{d}{dz}$
 - `serreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
 - `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
-- `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. it maps a weight `k`
-  level `1` modular form to a weight `k + 2` level `1` modular form.
+- `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. for a subgroup `Γ` of
+  `SL(2, ℤ)` it maps a weight `k` level `Γ` modular form to a weight `k + 2` level `Γ` modular form.
 
 TODO:
 - Use the above to prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
@@ -327,24 +327,23 @@ theorem serreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) (hF : MDi
     (Filter.BoundedAtFilter.neg hE2)
 
 /--
-The Serre derivative preserves modularity: if `f` is a modular form of weight `k` and
-level `1`, then `∂ₖ f` is a modular form of weight `k + 2` and level `1`.
+The Serre derivative preserves modularity: if `f` is a modular form of weight `k` for a subgroup
+`Γ` of `SL(2, ℤ)`, then `∂ₖ f` is a modular form of weight `k + 2` for `Γ`.
 -/
-noncomputable def serreDerivativeMF (k : ℤ) (f : ModularForm 𝒮ℒ k) :
-    ModularForm 𝒮ℒ (k + 2) where
+noncomputable def serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
+    (f : ModularForm Γ k) (hΓ : Γ ≤ 𝒮ℒ := by exact le_rfl) : ModularForm Γ (k + 2) where
   toSlashInvariantForm :=
     { toFun := serreDerivative (k : ℂ) f
       slash_action_eq' := fun g hg => by
-        obtain ⟨γ, rfl⟩ := hg
-        have hf : (f : ℍ → ℂ) ∣[k] γ = f := f.slash_action_eq' _ ⟨γ, rfl⟩
-        exact serreDerivative_slash_invariant f.holo' hf }
+        obtain ⟨γ, rfl⟩ := hΓ hg
+        exact serreDerivative_slash_invariant f.holo' (f.slash_action_eq' _ hg) }
   holo' := serreDerivative_mdifferentiable (k : ℂ) f.holo'
   bdd_at_cusps' {c} hc := by
-    rw [OnePoint.isBoundedAt_iff_forall_SL2Z hc]
-    intro γ _
-    rw [serreDerivative_slash_invariant (F := (f : ℍ → ℂ)) f.holo' (f.slash_action_eq' _ ⟨γ, rfl⟩)]
-    exact serreDerivative_isBoundedAtImInfty (k : ℂ) f.holo'
-      (ModularFormClass.bdd_at_infty f)
+    rw [OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)]
+    intro γ hγ
+    rw [serreDerivative_slash_equivariant (F := (f : ℍ → ℂ)) f.holo']
+    exact serreDerivative_isBoundedAtImInfty (k : ℂ) (f.holo'.slash k γ)
+      ((OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)).mp (f.bdd_at_cusps' hc) γ hγ)
 
 end
 
