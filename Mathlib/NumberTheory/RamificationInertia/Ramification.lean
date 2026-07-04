@@ -239,6 +239,7 @@ theorem ramificationIdx'_map_self_eq_one [IsDedekindDomain S]
   ramificationIdx'_map_self_eq_one
 
 variable (p P) in
+@[deprecated "Use `Ideal.ramificationIdx_above_le` instead." (since := "2026-07-04")]
 theorem ramificationIdx'_le_ramificationIdx' {T : Type*} [CommRing T] [Algebra R T]
     [Algebra S T] [IsScalarTower R S T] (Q : Ideal T) (hp : p = comap f P)
     (h : ramificationIdx' p Q ≠ 0) : ramificationIdx' P Q ≤ ramificationIdx' p Q := by
@@ -254,6 +255,8 @@ namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
 
+@[deprecated "Use Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count."
+  (since := "2026-07-04")]
 theorem ramificationIdx'_eq_normalizedFactors_count
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
     (hP0 : P ≠ ⊥) : ramificationIdx' p P = (normalizedFactors (map f p)).count P := by
@@ -264,6 +267,8 @@ theorem ramificationIdx'_eq_normalizedFactors_count
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
   exact (Nat.lt_succ_self _).not_ge
 
+@[deprecated "Use `Ideal.IsDedekindDomain.ramificationIdx_eq_multiplicity` instead."
+  (since := "2026-07-04")]
 theorem ramificationIdx'_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) :
     ramificationIdx' p P = multiplicity P (Ideal.map f p) := by
   classical
@@ -275,12 +280,15 @@ theorem ramificationIdx'_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime)
     ← UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors _ hp, normalize_eq]
   exact irreducible_iff_prime.mpr <| prime_of_isPrime hP₂ hP
 
+@[deprecated "Use `Ideal.IsDedekindDomain.ramificationIdx_eq_factors_count` instead."
+  (since := "2026-07-04")]
 theorem ramificationIdx'_eq_factors_count
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
     ramificationIdx' p P = (factors (map f p)).count P := by
   rw [IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hp0 hP hP0,
     factors_eq_normalizedFactors]
 
+@[deprecated "Use `Ideal.ramificationIdx_pos` instead." (since := "2026-07-04")]
 theorem ramificationIdx'_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : map f p ≤ P) :
     ramificationIdx' p P ≠ 0 := by
   classical
@@ -295,6 +303,7 @@ theorem ramificationIdx'_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : 
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_ne_zero := ramificationIdx'_ne_zero
 
+@[deprecated "Use `Ideal.ramificationIdx_pos` instead." (since := "2026-07-04")]
 theorem ramificationIdx'_ne_zero_of_liesOver [IsDomain R] [IsTorsionFree R S]
     (P : Ideal S) [hP : P.IsPrime] {p : Ideal R} (hp : p ≠ ⊥) [hPp : P.LiesOver p] :
     ramificationIdx' p P ≠ 0 :=
@@ -326,6 +335,7 @@ lemma ramificationIdx'_eq_one_iff
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_one_iff :=
   ramificationIdx'_eq_one_iff
 
+@[deprecated "Use `Ideal.ramificationIdx_above_le` instead." (since := "2026-07-04")]
 theorem ramificationIdx'_le_ramificationIdx' [IsDomain R] [IsTorsionFree R S] {S₀ : Type*}
     [CommRing S₀] [Algebra R S₀] [Algebra S₀ S] [IsScalarTower R S₀ S] (p : Ideal R)
     (P : Ideal S₀) (Q : Ideal S) [Q.LiesOver p] [hP : P.LiesOver p] [Q.IsPrime] (hp : p ≠ ⊥) :
@@ -391,6 +401,7 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, Q` be ideals in `R, S, T` respectively,
   and `P` and `Q` are prime. If `P = Q ∩ S`, then `e (Q | p) = e (P | p) * e (Q | P)`. -/
+@[deprecated "Use `Ideal.ramificationIdx_tower` instead." (since := "2026-07-04")]
 theorem ramificationIdx'_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     {p : Ideal R} {P : Ideal S} {Q : Ideal T} [hpm : P.IsPrime] [hqm : Q.IsPrime]
     (hg0 : map (algebraMap S T) P ≠ ⊥)
@@ -421,6 +432,7 @@ theorem ramificationIdx'_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_algebra_tower :=
   ramificationIdx'_algebra_tower
 
+@[deprecated "Use `Ideal.ramificationIdx_tower` instead." (since := "2026-07-04")]
 theorem ramificationIdx'_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T] [IsDomain R]
     [Module.IsTorsionFree R S] [Module.IsTorsionFree S T] (p : Ideal R) (P : Ideal S) (Q : Ideal T)
     [Q.IsPrime] [Q.LiesOver P] [P.LiesOver p] :

@@ -91,17 +91,20 @@ theorem inertiaDeg'_algebraMap [P.LiesOver p] :
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_algebraMap := inertiaDeg'_algebraMap
 
+@[deprecated "Use `Ideal.inertiaDeg_pos` instead." (since := "2026-07-04")]
 theorem inertiaDeg'_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg' p P :=
   have : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg'_algebraMap p P).symm
 
 /-- Variant with a weaker constraint, but on the prime upstairs instead. -/
+@[deprecated "Use `Ideal.inertiaDeg_pos` instead." (since := "2026-07-04")]
 theorem inertiaDeg'_pos' [P.IsPrime] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg' p P :=
   have : p.IsPrime := Ideal.over_def P p ▸ inferInstance
   Module.finrank_pos.trans_eq (inertiaDeg'_algebraMap p P).symm
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_pos' := inertiaDeg'_pos'
 
+@[deprecated "Use `Ideal.inertiaDeg_pos` instead." (since := "2026-07-04")]
 theorem inertiaDeg'_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] :
     inertiaDeg' p P ≠ 0 :=
   (Nat.ne_of_lt (inertiaDeg'_pos p P)).symm
@@ -139,6 +142,7 @@ theorem inertiaDeg'_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg_bot := inertiaDeg'_bot
 
+@[deprecated "Use `Ideal.inertiaDeg_above_le`." (since := "2026-07-04")]
 theorem inertiaDeg'_le_inertiaDeg' {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
     [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
     [p.IsPrime] : inertiaDeg' P Q ≤ inertiaDeg' p Q := by
@@ -155,6 +159,7 @@ end DecEq
 
 section absNorm
 
+@[deprecated "Use `Ideal.absNorm_pow_inertiaDeg` instead." (since := "2026-07-04")]
 lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekindDomain S]
     [Module.Free ℤ S] [IsDedekindDomain R] [Module.Free ℤ R] [Algebra S R] [Module.Finite S R]
     (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
@@ -169,6 +174,7 @@ lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekin
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg' P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
+@[deprecated "Use `Ideal.absNorm_pow_inertiaDeg` instead." (since := "2026-07-04")]
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg' P) := by
@@ -178,6 +184,7 @@ lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module
 /-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
 `p ^ ((span {p}).inertiaDeg' P)`.
 See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
+@[deprecated "Use `Ideal.absNorm_pow_inertiaDeg` instead." (since := "2026-07-04")]
 lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
     absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg' P) :=
@@ -193,6 +200,7 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
   and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
   then `f (I | p) = f (P | p) * f (I | P)`. -/
+@[deprecated "Use `Ideal.inertiaDeg_tower`." (since := "2026-07-04")]
 theorem inertiaDeg'_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.IsMaximal]
     [P.IsMaximal] [P.LiesOver p] [I.LiesOver P] : inertiaDeg' p I =
     inertiaDeg' p P * inertiaDeg' P I := by
