@@ -239,11 +239,11 @@ noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M
     (cond : finrank R M = finrank R M') : M ≃ₗ[R] M' :=
   Classical.choice <| FiniteDimensional.nonempty_linearEquiv_of_finrank_eq cond
 
+namespace Module
+
 theorem nonempty_linearEquiv_iff_rank_eq_one :
     Nonempty (R ≃ₗ[R] M) ↔ Module.rank R M = 1 := by
-  simp [LinearEquiv.nonempty_equiv_iff_lift_rank_eq, eq_comm]
-
-namespace Module
+  simp [nonempty_linearEquiv_iff_lift_rank_eq, eq_comm]
 
 /-- A free module of rank zero is trivial. -/
 lemma subsingleton_of_rank_zero (h : Module.rank R M = 0) : Subsingleton M := by
