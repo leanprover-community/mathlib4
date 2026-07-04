@@ -614,6 +614,9 @@ theorem coe_nnreal_lt_top (x : ℝ≥0) : ((x : ℝ≥0∞) : EReal) < ⊤ := co
 theorem coe_ennreal_le_coe_ennreal_iff {x y : ℝ≥0∞} : (x : EReal) ≤ (y : EReal) ↔ x ≤ y :=
   coe_ennreal_strictMono.le_iff_le
 
+@[gcongr]
+alias ⟨_, coe_ennreal_le_coe_ennreal⟩ := coe_ennreal_le_coe_ennreal_iff
+
 @[simp, norm_cast]
 theorem coe_ennreal_lt_coe_ennreal_iff {x y : ℝ≥0∞} : (x : EReal) < (y : EReal) ↔ x < y :=
   coe_ennreal_strictMono.lt_iff_lt

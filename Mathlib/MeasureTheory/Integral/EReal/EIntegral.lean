@@ -150,7 +150,6 @@ lemma eintegral_lt_top_of_le {f : α → EReal} {b : EReal} (hf : ∀ x, f x ≤
   _ ≤ ∫⁻ x, (f x).toENNReal ∂P - 0 := EReal.sub_le_sub le_rfl (by positivity)
   _ ≤ ∫⁻ x, b.toENNReal ∂P := by
     simp only [sub_zero]
-    refine EReal.coe_ennreal_le_coe_ennreal_iff.mpr ?_ -- missing gcongr
     gcongr
     exact hf _
   _ = b.toENNReal * P .univ := by simp [lintegral_const]
