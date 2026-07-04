@@ -40,8 +40,10 @@ noncomputable def egirth (G : SimpleGraph α) : ℕ∞ :=
 lemma le_egirth {n : ℕ∞} : n ≤ G.egirth ↔ ∀ a (w : G.Walk a a), w.IsCycle → n ≤ w.length := by
   simp [egirth]
 
-lemma egirth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.egirth ≤ w.length :=
+lemma Walk.IsCycle.egirth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.egirth ≤ w.length :=
   le_egirth.mp le_rfl a w h
+
+@[deprecated (since := "2026-07-05")] alias egirth_le_length := Walk.IsCycle.egirth_le_length
 
 lemma Walk.IsCircuit.egirth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
     G.egirth ≤ w.length := by
@@ -52,7 +54,7 @@ lemma Walk.IsCircuit.egirth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
   have hwlg' : w'.length < G.egirth := by
     grw [w.length_cycleBypass_le_length]
     exact hlg
-  exact not_le_of_gt hwlg' (SimpleGraph.egirth_le_length hwc')
+  exact not_le_of_gt hwlg' hwc'.egirth_le_length
 
 @[simp]
 lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcyclic]
@@ -87,7 +89,7 @@ theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 
     { edges_nodup := by aesop
       ne_nil := by aesop
       support_nodup := by aesop }
-  grw [egirth_le_length this]
+  grw [this.egirth_le_length]
   simp [hw]
 
 @[gcongr only]
@@ -96,7 +98,7 @@ lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
   · simp [hacyc.egirth_eq_top]
   obtain ⟨a, w, hw, hwl⟩ := exists_egirth_eq_length.mpr hacyc
   rw [hwl, ← w.length_map h.some.toHom]
-  exact egirth_le_length <| hw.map h.some.injective
+  exact hw.map h.some.injective |>.egirth_le_length
 
 @[gcongr only]
 lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
@@ -114,8 +116,10 @@ acyclic.
 noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
 
-lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
-  ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans <| egirth_le_length h
+lemma Walk.IsCycle.girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
+  ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans h.egirth_le_length
+
+@[deprecated (since := "2026-07-05")] alias girth_le_length := Walk.IsCycle.girth_le_length
 
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
