@@ -71,6 +71,7 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.ComputablePolynomial.MvBasic
 public import Mathlib.Tactic.ComputablePolynomial.MvDegrees
 public import Mathlib.Tactic.ComputablePolynomial.MvDegreesOrder
+public import Mathlib.Tactic.ComputablePolynomial.MvOfList
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
