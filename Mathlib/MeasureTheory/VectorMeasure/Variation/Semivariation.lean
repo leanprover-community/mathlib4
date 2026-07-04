@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 import Mathlib.Analysis.Normed.Module.HahnBanach
-import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # The semivariation of a vector measure
