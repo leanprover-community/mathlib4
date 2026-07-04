@@ -58,7 +58,7 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toMulPosStrictMono :
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsOrderedMonoid :
-   IsOrderedMonoid α where
+    IsOrderedMonoid α where
   mul_le_mul_left a b hab c := by
     obtain rfl | hc := eq_or_ne c 0
     · simp

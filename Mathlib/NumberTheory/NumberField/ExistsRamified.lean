@@ -27,20 +27,25 @@ open scoped NumberField nonZeroDivisors
 variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
 variable [IsIntegralClosure 𝒪 ℤ K]
 
+/-- If `K` is a number field with positive rank, then some prime is ramified in `K`. -/
+lemma NumberField.exists_not_isUnramifiedIn (H : Module.finrank ℚ K ≠ 1) :
+    ∃ p : ℕ, p.Prime ∧ ¬ Algebra.IsUnramifiedIn 𝒪 (Ideal.span {(p : ℤ)}) := by
+  have : 0 < Module.finrank ℚ K := Module.finrank_pos
+  have : 2 < |discr K| := abs_discr_gt_two (by lia)
+  obtain ⟨p, hp1, hp2⟩ := (discr K).exists_prime_and_dvd (by linarith)
+  use p.natAbs, p.prime_iff_natAbs_prime.mp hp1
+  simpa [← not_dvd_discr_iff_isUnramifiedIn K 𝒪 hp1]
+
 /-- If `K` is a number field with positive rank, then there exists some maximal ideal of `𝓞 K`
 that is ramified over `ℤ`. -/
 lemma NumberField.exists_not_isUnramifiedAt_int (H : Module.finrank ℚ K ≠ 1) :
     ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), ¬ Algebra.IsUnramifiedAt ℤ P := by
+  obtain ⟨p, hp1, hp2⟩ := NumberField.exists_not_isUnramifiedIn (𝒪 := 𝒪) H
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
-  have := CharZero.of_module (R := 𝒪) K
-  have := Module.finrank_pos (R := ℚ) (M := K)
-  have := NumberField.abs_discr_gt_two (K := K) (by lia)
-  obtain ⟨q, hq, hqK⟩ := Int.exists_prime_and_dvd (n := discr K) (by zify; linarith)
-  have := (not_dvd_discr_iff_forall_mem K 𝒪 hq).not_right.mp hqK
-  push Not at this
-  obtain ⟨P, hP, h, H⟩ := this
-  exact ⟨P, hP.isMaximal (by aesop), H⟩
+  have := IsIntegralClosure.isTorsionFree ℤ (A := 𝒪) K
+  have := IsIntegralClosure.isIntegral_algebra ℤ (A := 𝒪) K
+  grind [Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain]
 
 /-- Any number field that is unramified over `ℚ` has rank `1`. -/
 lemma NumberField.finrank_eq_one_of_unramified [Algebra.Unramified ℤ 𝒪] :
