@@ -69,7 +69,7 @@ instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
 
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
-@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
+@[to_additive (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
 def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffEquiv.linearEquiv _
 
