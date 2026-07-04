@@ -361,14 +361,17 @@ theorem reflGen_le_reflTransGen : ReflGen r ≤ ReflTransGen r
   | a, _, .refl => by rfl
   | _, _, .single h => ReflTransGen.tail ReflTransGen.refl h
 
+theorem reflGen_le_eqvGen : ReflGen r ≤ EqvGen r
+  | a, _, .refl => .refl a
+  | _, _, .single h => .rel _ _ h
+
 namespace ReflGen
 
 theorem to_reflTransGen {a b} : ReflGen r a b → ReflTransGen r a b :=
   reflGen_le_reflTransGen a b
 
-theorem to_eqvGen : ∀ {a b}, ReflGen r a b → EqvGen r a b
-  | a, _, refl => .refl a
-  | _, _, single h => .rel _ _ h
+theorem to_eqvGen {a b} : ReflGen r a b → EqvGen r a b :=
+  reflGen_le_eqvGen a b
 
 theorem mono {p : α → α → Prop} (hp : r ≤ p) : ReflGen r ≤ ReflGen p
   | a, _, ReflGen.refl => by rfl
@@ -394,12 +397,16 @@ instance [IsTrans α r] : IsTrans α (ReflGen r) where
 
 end ReflGen
 
-namespace SymmGen
-
-theorem to_eqvGen {a b} (h : SymmGen r a b) : EqvGen r a b := by
+theorem symmGen_le_eqvGen : SymmGen r ≤ EqvGen r := by
+  intro a b h
   cases h with
   | inl hab => exact .rel a b hab
   | inr hba => exact .symm _ _ (.rel b a hba)
+
+namespace SymmGen
+
+theorem to_eqvGen {a b} : SymmGen r a b → EqvGen r a b :=
+  symmGen_le_eqvGen a b
 
 theorem of_rel (h : r a b) : SymmGen r a b :=
   Or.inl h
@@ -512,11 +519,15 @@ theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a
         exact Or.inl ec
     · exact Or.inr (IH.tail bd)
 
-theorem to_eqvGen {a b} (h : ReflTransGen r a b) : EqvGen r a b := by
+theorem _root_.Relation.reflTransGen_le_eqvGen : ReflTransGen r ≤ EqvGen r := by
+  intro _ _ h
   induction h using trans_induction_on with
   | refl a => exact .refl a
   | single hab => exact .rel _ _ hab
   | trans _ _ hab hbc => exact .trans _ _ _ hab hbc
+
+theorem to_eqvGen {a b} : ReflTransGen r a b → EqvGen r a b :=
+  reflTransGen_le_eqvGen a b
 
 end ReflTransGen
 
@@ -571,10 +582,14 @@ theorem trans_induction_on {motive : ∀ {a b : α}, TransGen r a b → Prop} {a
   | single h => exact single h
   | tail hab hbc h_ih => exact trans hab (.single hbc) h_ih (single hbc)
 
-theorem to_eqvGen {a b} (h : TransGen r a b) : EqvGen r a b := by
+theorem _root_.Relation.transGen_le_eqvGen : TransGen r ≤ EqvGen r := by
+  intro _ _ h
   induction h using trans_induction_on with
   | single h => exact .rel _ _ h
   | trans _ _ hab hbc => exact .trans _ _ _ hab hbc
+
+theorem to_eqvGen {a b} : TransGen r a b → EqvGen r a b :=
+  transGen_le_eqvGen a b
 
 theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen r a c := by
   induction hbc with
