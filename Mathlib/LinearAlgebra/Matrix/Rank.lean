@@ -26,6 +26,19 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 * `Matrix.cRank`: the rank of a matrix as a cardinal
 * `Matrix.eRank`: the rank of a matrix as a term in `ℕ∞`.
 
+## Main results
+
+* `Matrix.rank_eq_finrank_range_toLin`: the rank equals the dimension of the range of the
+corresponding linear map, and is therefore independent of the choice of bases.
+* `Matrix.rank_eq_finrank_span_cols`, `Matrix.rank_eq_finrank_span_row`: the rank equals the
+dimension of the space spanned by the columns (resp. rows).
+* `Matrix.rank_transpose`: transposing a matrix does not change its rank.
+* `Matrix.rank_mul_le`: the rank of `A * B` is at most the rank of `A` and at most the rank of `B`.
+* `Matrix.rank_mul_eq_left_of_isUnit_det`, `Matrix.rank_mul_eq_right_of_isUnit_det`: multiplying by
+an invertible matrix does not change the rank.
+* `Matrix.exists_rank_normal_form`: every square matrix over a field can be brought, by left and
+right multiplication by invertible matrices, into the block form `fromBlocks 1 0 0 0`, where the
+identity block has size equal to the rank of the matrix.
 -/
 
 @[expose] public section
@@ -278,6 +291,8 @@ theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
   eRank_submatrix ..
 
+/-- The rank of a matrix equals the dimension of the range of the corresponding linear map,
+and is therefore independent of the choice of bases. -/
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [CommSemiring R]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R)
     (v₁ : Basis m R M₁) (v₂ : Basis n R M₂) :

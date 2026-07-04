@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Matej Penciak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Matej Penciak, Moritz Doll, Fabien Clery, Seed Prover
+Authors: Matej Penciak, Moritz Doll, Fabien Clery, Seed Prover, Huanyu Zheng
 -/
 module
 
@@ -23,20 +23,23 @@ This file defines the symplectic group and proves elementary properties.
 
 ## Implementation Notes
 
-* `SymplecticGroup.det_eq_one`: To prove that symplectic matrices have determinant 1,
-we first rewrite the symplectic condition for a block matrix as the three block identities
-recorded in `SymplecticGroup.fromBlocks_mem_iff`.
+* `SymplecticGroup.det_eq_one`: Symplectic matrices have determinant 1. The proof strategy
+comes in two steps:
 
-If the upper-left block is invertible, a Schur complement argument gives the determinant
-computation directly.
+1. Consider a symplectic matrix `M` over a local ring, we can construct a matrix of the
+form `fromBlocks 1 X 0 1` s.t. the upper-left block of `(fromBlocks 1 X 0 1) * M` is invertible.
+From this we can calculate the determinate.
 
-In general, we modify the upper-left block by multiplying on the left by a symplectic block shear
-`fromBlocks 1 X 0 1`, so that the new upper-left block becomes `A + X * C`, which is invertible.
-Over a field, such an `X` is constructed by putting `C` into the block form `fromBlocks 1 0 0 0`.
-Over a local ring, we reduce to the residue field, construct `X` there, and lift it back.
+2. For symplectic matrix `M` over general commutative ring `R`, we note that by step 1,
+`M.det - 1 = 0` in any localization at a maximal ideal in `R`. Therefore `M.det = 1` in `R`.
 
-This proves the determinant statement over local rings. The final theorem over an arbitrary
-commutative ring then follows from a local-global principle.
+Developing the proof in two steps is helpful, since the local ring hypothesis allows us to
+construct the desired `X` in step 1 within residue field, and lift back to the ring while keeping
+the upper-left block invertible.
+
+Note that theoretically we can inline everything and directly consider localization at all
+maximal ideals throughout the proof. But that will result in excessively long and heavy single
+proof. Hence current code structure is an abstraction for the sake of clarity.
 
 ## TODO
 * For `n = 1` the symplectic group coincides with the special linear group.
@@ -238,8 +241,7 @@ theorem fromBlocks_mem_iff :
       add_zero, neg_mul, ← sub_eq_add_neg, fromBlocks_inj, sub_eq_zero]
     exact ⟨h.1.symm, by grind, by simpa using congr(transpose $(h.2.2)), h.2.1.symm⟩
 
-/-- Schur complement step: a symplectic block matrix has determinant 1 once its upper-left
-block is invertible. -/
+/-- The determinant of a symplectic matrix is 1 if its upper-left block is invertible. -/
 private lemma det_one_if_fromBlocks_invertible [Invertible A]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
     (fromBlocks A B C D).det = 1 := by
@@ -248,13 +250,17 @@ private lemma det_one_if_fromBlocks_invertible [Invertible A]
     mul_sub, ← mul_assoc, ← mul_assoc, h_block.1, mul_assoc Cᵀ,
     mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
 
-/-- Field case: assume that the only vector annihilated by both `A` and `C` is 0,
-and that `Aᵀ * C = Cᵀ * A`. Then one can construct a symmetric matrix `X` such that
-`A + X * C` is invertible. -/
+/-- Given square matrices `A` and `C` over a field, if the only vector annihilated by both of
+them is 0, and `Aᵀ * C = Cᵀ * A`, then one can construct a symmetric matrix `X` such that
+`A + X * C` is invertible.
+
+This lemma, together with the one after, is used to turn the upper-left block into invertible
+matrix in the main proof, so that we can use the previous lemma to calculate the determinant. -/
 private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Type*} [Field R]
     {A C : Matrix l l R} (hker : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0)
     (hsymm : Aᵀ * C = Cᵀ * A) :
     ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C) := by
+  -- `C` is transformed into `P = fromBlocks 1 0 0 0` by invertible matrices `V` and `U`.
   rcases exists_rank_normal_form C with ⟨V, U, s, hV, hU, heq⟩
   set P := V * C * U with P_def; set Q := Vᵀ⁻¹ * A * U with Q_def
   set f := fun (x : Matrix l l R) ↦ x.submatrix s.symm s.symm
@@ -264,10 +270,9 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
   have _ : Invertible V := hV.invertible
   have _ : Invertible U := hU.invertible
   have _ : Invertible (f Vᵀ) := (f_unit (V.isUnit_transpose.2 hV)).invertible
-  -- The hypothesis that the only vector annihilated by both matrices is zero
-  -- is preserved by this change of coordinates.
+  -- The hypothesis that the only vector annihilated by both matrices is 0, holds for `P` and `Q`.
   have con1 (x : Fin C.rank ⊕ Fin (Fintype.card l - C.rank) → R)
-      (heq1 : (f (Vᵀ⁻¹ * A * U)) • x = 0) (heq2 : (f (V * C * U)) • x = 0) : x = 0 := by
+      (heq1 : (f Q) • x = 0) (heq2 : (f P) • x = 0) : x = 0 := by
     refine (f_unit hU).smul_left_cancel.1 ?_
     rw [f_mul, f_mul, mul_assoc, mul_smul, IsUnit.smul_eq_zero, mul_smul, hf,
       smul_eq_mulVec, submatrix_mulVec_equiv, Equiv.symm_symm] at heq1 heq2
@@ -275,7 +280,7 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
       exact s.surjective.injective_comp_right <| by simpa using hker _ heq1 heq2
     · exact f_unit hV
     · exact f_unit <| isUnit_nonsing_inv_iff.2 <| V.isUnit_transpose.2 hV
-  -- The symmetry relation is also invariant under the same change of coordinates.
+  -- The symmetry relation also holds for `P` and `Q`.
   have con2 : Qᵀ * P = Pᵀ * Q := by
     simp only [P_def, mul_assoc, transpose_mul, transpose_nonsing_inv, transpose_transpose, Q_def,
       inv_mul_cancel_left_of_invertible, mul_inv_cancel_left_of_invertible]
@@ -286,22 +291,21 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
       ← transpose_submatrix, ← hf Q, ← (f Q).fromBlocks_toBlocks, hf (_)ᵀ, hf
       ((fromBlocks 1 0 0 0).submatrix _ _)] at con2
     simp [fromBlocks_transpose, fromBlocks_multiply] at con2; tauto
-  -- The remaining lower-right block of `Q` is invertible.
+  -- The lower-right block of `Q` is invertible.
   have con3 : IsUnit (f Q).toBlocks₂₂ := by
     refine mulVec_injective_iff_isUnit.1 ?_
     rw [← coe_mulVecLin, ← LinearMap.ker_eq_bot]
     refine ker_mulVecLin_eq_bot_iff.2 fun x hx ↦ Sum.elim_injective' <|
       (con1 _ ?_ ?_).trans Sum.elim_zero_zero.symm
     · rw [← (f Q).fromBlocks_toBlocks]; simp [hx, con2.2, fromBlocks_mulVec]
-    · simp [← P_def, hf, heq, fromBlocks_mulVec]
+    · simp [hf, heq, fromBlocks_mulVec]
   set Y : Matrix (Fin C.rank ⊕ Fin (Fintype.card l - C.rank)) (Fin C.rank ⊕
     Fin (Fintype.card l - C.rank)) R := fromBlocks (1 - (f Q).toBlocks₁₁) 0 0 0 with Y_def
   have hY_symm : Y.IsSymm := by
     rw [Y_def, isSymm_fromBlocks_iff]
     exact ⟨IsSymm.sub isSymm_one con2.1, by simp⟩
-  -- We now transport `Y` back to the original coordinates.
+  -- We now take `X = Vᵀ * Y * V` and this gives the desired matrix `X.submatrix s s`.
   set X := (f Vᵀ) * Y * (f V) with X_def
-  -- This gives the desired matrix `X.submatrix s s`.
   refine ⟨X.submatrix s s, IsSymm.submatrix ?_ s, (isUnit_submatrix_equiv s.symm s.symm).1 ?_⟩
   · simp_rw [X_def, Matrix.IsSymm, transpose_mul, hY_symm.eq, hf, transpose_submatrix,
       transpose_transpose, mul_assoc]
@@ -315,12 +319,16 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
       simpa [hf, fromBlocks_multiply, fromBlocks_add]
     · exact f_unit <| isUnit_nonsing_inv_iff.2 hU
 
-/-- Local ring analogue of the field case: the final determinant theorem is proved
-by a local-global argument, so we transfer the field case to the local ring setting by
-reducing modulo the maximal ideal and then lifting back. -/
+/-- For any symplectic matrix `fromBlocks A B C D` over a local ring `R`, we can construct
+a symmetric `X` s.t. `A + X * C` is invertible.
+
+Introducing local ring hypothesis enables us to transport the construction of `X`
+(from the previous lemma, which operates only over field) back to `R` while keeping
+`A + X * C` invertible. -/
 private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
     ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C).det := by
+  -- We utilize the previous result on field by mapping the symplectic matrix to residue field.
   set k := IsLocalRing.ResidueField R; set f := IsLocalRing.residue R
   set A' := f.mapMatrix A; set C' := f.mapMatrix C
   set F' := fromBlocks A' (f.mapMatrix B) C' (f.mapMatrix D) with F'_def
@@ -328,29 +336,34 @@ private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R
     refine F'.isUnit_iff_isUnit_det.2 ?_
     convert (symplectic_det hA).map f
     rw [RingHom.map_det, RingHom.mapMatrix_apply, Matrix.fromBlocks_map]; rfl
-  have h_rank (x : l → k) (hx1 : A' *ᵥ x = 0) (hx2 : C' *ᵥ x = 0) : x = 0 := by
-    have h_v0 : F' *ᵥ (Sum.elim x 0) = F' *ᵥ (Sum.elim 0 0) := by
+  have hker (x : l → k) (hx1 : A' *ᵥ x = 0) (hx2 : C' *ᵥ x = 0) : x = 0 := by
+    have hv0 : F' *ᵥ (Sum.elim x 0) = F' *ᵥ (Sum.elim 0 0) := by
       simp [fromBlocks_mulVec, hx1, hx2, F'_def]
-    exact (Sum.elim_eq_iff.1 (mulVec_injective_iff_isUnit.2 hF' h_v0)).1
+    exact (Sum.elim_eq_iff.1 (mulVec_injective_iff_isUnit.2 hF' hv0)).1
+  -- Now we have a symmetric matrix `Y` over the residue field s.t. `A' + Y * C'` is invertible
+  -- where `A'` and `C'` are images of `A` and `C` under quotient map from `R` to its residue field.
   obtain ⟨Y, hY_symm, hY_det⟩ :=
-    exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot h_rank <| by
+    exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot hker <| by
       change f.mapMatrix Aᵀ * f.mapMatrix C = f.mapMatrix Cᵀ * f.mapMatrix A
       rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
+  -- Lift `Y` back to the ring `R` and we have the `X` we need.
   obtain ⟨X, hX_symm, hXY⟩ : ∃ X : Matrix l l R, X.IsSymm ∧ X.map f = Y := by
     choose s hs using @IsLocalRing.residue_surjective R _ _
     exact ⟨Y.map s, hY_symm.map s, Matrix.ext fun i j ↦ hs (Y i j)⟩
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
+  -- Ensure `A + X * C` is still invertible in `R`.
   rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hXY]
   exact ((isUnit_iff_isUnit_det _).1 hY_det).ne_zero
 
-/-- Local determinant step: after a symmetric shear makes the upper-left block invertible, the
-Schur complement step proves the determinant of symplectic matrices over a local ring is 1. -/
+/-- Symplectic matrices over a local ring have determinant 1. -/
 private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l ⊕ l) R}
     (hM : M ∈ symplecticGroup l R) : M.det = 1 := by
   set A := M.toBlocks₁₁; set B := M.toBlocks₁₂
   set C := M.toBlocks₂₁; set D := M.toBlocks₂₂
   obtain ⟨X, hX_symm, hA_isUnit⟩ := exists_symmetric_X_isUnit_det_add_mul_of_symplectic <|
     M.fromBlocks_toBlocks ▸ hM
+  -- `fromBlocks 1 X 0 1` turns the upper-left block of `M` into an invertible matrix, here `X`
+  -- is obtained via previous result.
   have Lx_mul : (fromBlocks 1 X 0 1) * M = fromBlocks (A + X * C) (B + X * D) C D := by
     rw [← M.fromBlocks_toBlocks, fromBlocks_multiply]
     simp only [one_mul, zero_mul, zero_add]; rfl
@@ -359,14 +372,20 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
     refine (symplecticGroup l R).mul_mem ?_ hM
     simp [mem_iff, fromBlocks_transpose, hX_symm.eq, J, fromBlocks_multiply]
   have _ : Invertible (A + X * C) := (A + X * C).invertibleOfIsUnitDet hA_isUnit
+  -- And we know that a symmetric matrix with invertible upper-left block has determinant 1.
   have h_main : ((fromBlocks 1 X 0 1) * M).det = 1 := by
     rw [Lx_mul, det_one_if_fromBlocks_invertible h_fromBlocks_in]
   rwa [det_mul, det_fromBlocks_zero₂₁, det_one, one_mul, one_mul] at h_main
 
 /-- Symplectic matrices have determinant 1.
 
-The proof proceeds by proving the local ring case via a symmetric block shear
-and then applying a local-global principle. -/
+The proof strategy comes in two steps:
+1. Consider a symplectic matrix `M` over a local ring, we can construct a matrix of the
+form `fromBlocks 1 X 0 1` s.t. the upper-left block of `(fromBlocks 1 X 0 1) * M` is invertible.
+From this we can calculate the determinant.
+
+2. For symplectic matrix `M` over general commutative ring `R`, we note that by step 1,
+`M.det - 1 = 0` in any localization at a maximal ideal in `R`. Therefore `M.det = 1` in `R`. -/
 theorem det_eq_one {M : Matrix (l ⊕ l) (l ⊕ l) R} (hM : M ∈ symplecticGroup l R) :
     M.det = 1 := by
   refine sub_eq_zero.1 <| eq_zero_of_localization _ fun _ _ ↦ ?_
