@@ -159,7 +159,7 @@ end ArithmeticFunction
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: the von Mangoldt function is nonnegative. -/
 @[positivity ArithmeticFunction.vonMangoldt _]
