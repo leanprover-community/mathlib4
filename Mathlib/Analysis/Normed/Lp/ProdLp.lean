@@ -1141,22 +1141,6 @@ def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α �
     · simp [WithLp.prod_edist_eq_sup, max_assoc]
     · simp [WithLp.prod_edist_eq_add hp, ENNReal.rpow_inv_rpow hp.ne', add_assoc]
 
-theorem withLpProdAssoc_apply_symm_apply {x} :
-    (withLpProdAssoc p α β γ) ((withLpProdAssoc p α β γ).symm x) = x :=
-  Equiv.apply_symm_apply _ _
-
-theorem withLpProdAssoc_symm_apply_apply {x} :
-    (withLpProdAssoc p α β γ).symm ((withLpProdAssoc p α β γ) x) = x :=
-  Equiv.symm_apply_apply _ _
-
-theorem withLpProdAssoc_symm_apply_eq {x y} :
-    (withLpProdAssoc p α β γ).symm x = y ↔ x = (withLpProdAssoc p α β γ) y :=
-  Equiv.symm_apply_eq _
-
-theorem withLpProdAssoc_eq_symm_apply {x y} :
-    y = (withLpProdAssoc p α β γ).symm x ↔ (withLpProdAssoc p α β γ) y = x :=
-  Equiv.eq_symm_apply _
-
 /-- Right identity of the `L^p` product as an isometric equivalence. -/
 @[simps! apply symm_apply]
 def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
