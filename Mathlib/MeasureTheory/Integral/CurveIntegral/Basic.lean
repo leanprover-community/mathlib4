@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Field.Pointwise
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.AffineMap
 public import Mathlib.Analysis.Calculus.Deriv.Shift
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!

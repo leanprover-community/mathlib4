@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Valuation.IsTrivialOn
 
 /-!
 # Generalities on the polynomial structure of rational functions
+
 * Main evaluation properties
 * Study of the X-adic valuation
 
