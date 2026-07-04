@@ -160,6 +160,9 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
 instance {A : Type*} [SMulZeroClass A R] : SMul A R[M] where
   smul a x := x.mapRange (a • ·) (smul_zero _)
 
+@[to_additive] instance addMonoid : AddMonoid R[M] :=
+  inferInstanceAs <| AddMonoid <| M →₀ R
+
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
   inferInstanceAs <| AddCommMonoid <| M →₀ R
 
