@@ -1141,6 +1141,11 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
   refine setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ ?_)
   rw [abs_mul, abs_of_nonneg (rpow_nonneg (le_of_lt hx) _)]
 
+theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
+    ∫ x in Ioi 0, (p * x ^ (p - 1)) • g (x ^ p) = ∫ y in Ioi 0, g y := by
+  convert! integral_comp_rpow_Ioi g hp.ne'
+  rw [abs_of_nonneg hp.le]
+
 theorem integral_comp_rpow_Ioi_of_pos' {g : ℝ → E} {p : ℝ} (hp : 0 < p) {c : ℝ} (hc : 0 ≤ c) :
     ∫ x in Ioi (c ^ p⁻¹), (p * x ^ (p - 1)) • g (x ^ p) = ∫ y in Ioi c, g y := by
   have : 0 ≤ c ^ p⁻¹ := by positivity
@@ -1148,18 +1153,12 @@ theorem integral_comp_rpow_Ioi_of_pos' {g : ℝ → E} {p : ℝ} (hp : 0 < p) {c
     rw [(continuous_rpow_const hp.le).continuousOn.image_Ioi_of_strictMonoOn
           ((strictMonoOn_rpow_Ici_of_exponent_pos hp).mono (by grind)) (tendsto_rpow_atTop hp)]
     simp [← rpow_mul hc, hp.ne.symm]
-  rw [this, integral_image_eq_integral_abs_deriv_smul (f' := (p * · ^ (p - 1)))
-      (measurableSet_Ioi (a := c ^ p⁻¹))
+  rw [this, integral_image_eq_integral_abs_deriv_smul (measurableSet_Ioi (a := c ^ p⁻¹))
       (fun _ _ ↦ (hasDerivAt_rpow_const (by grind)).hasDerivWithinAt)
       ((rpow_left_injOn hp.ne.symm).mono (Set.Ioi_subset_Ici (by positivity)))]
   refine setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ ?_)
   have : 0 ≤ x := by grind
   rw [abs_of_nonneg (by positivity)]
-
-theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
-    ∫ x in Ioi 0, (p * x ^ (p - 1)) • g (x ^ p) = ∫ y in Ioi 0, g y := by
-  convert! integral_comp_rpow_Ioi g hp.ne'
-  rw [abs_of_nonneg hp.le]
 
 /-- Substitution `y = exp x` in integrals over `Ioi a` -/
 theorem integral_comp_exp_Ioi (g : ℝ → E) (a : ℝ) :
