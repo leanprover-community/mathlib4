@@ -1152,22 +1152,6 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
     · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
         ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
 
-theorem withLpProdUnique_apply_symm_apply [Unique β] {x} :
-    (withLpProdUnique p α β) ((withLpProdUnique p α β).symm x) = x :=
-  Equiv.apply_symm_apply _ _
-
-theorem withLpProdUnique_symm_apply_apply [Unique β] {x} :
-    (withLpProdUnique p α β).symm (withLpProdUnique p α β x) = x :=
-  Equiv.symm_apply_apply _ _
-
-theorem withLpProdUnique_symm_apply_eq [Unique β] {x y} :
-    (withLpProdUnique p α β).symm x = y ↔ x = withLpProdUnique p α β y :=
-  Equiv.symm_apply_eq _
-
-theorem withLpProdUnique_eq_symm_apply [Unique β] {x y} :
-    y = (withLpProdUnique p α β).symm x ↔ withLpProdUnique p α β y = x :=
-  Equiv.eq_symm_apply _
-
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithLp.fst :=
   rfl
 
