@@ -13,8 +13,8 @@ public import Mathlib.Tactic.Attr.Register
 # Basic properties of sets
 
 Sets in Lean are homogeneous; all their elements have the same type. Sets whose elements
-have type `X` are thus defined as `Set X := X → Prop`. Note that this function need not
-be decidable. The definition is in the module `Mathlib/Data/Set/Defs.lean`.
+have type `X` are thus defined as a structure wrapping a predicate `X → Prop`. Note that this
+predicate need not be decidable. The definition is in the module `Mathlib/Data/Set/Defs.lean`.
 
 This file provides some basic definitions related to sets and functions not present in the
 definitions file, as well as extra lemmas for functions defined in the definitions file and
@@ -70,21 +70,35 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := injective_id
-protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := surjective_id
-protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) := bijective_id
+protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) :=
+  fun _ _ h => congrArg ofPred h
+protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) :=
+  fun p => ⟨ofPred p, rfl⟩
+protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) :=
+  ⟨Set.mem_injective, Set.mem_surjective⟩
 
 instance instDistribLattice : DistribLattice (Set α) where
-  __ : DistribLattice (α → Prop) := inferInstance
   le := (· ≤ ·)
   lt := fun s t => s ⊆ t ∧ ¬t ⊆ s
   sup := (· ∪ ·)
   inf := (· ∩ ·)
+  le_refl _ _ := id
+  le_trans _ _ _ hst htu _ ha := htu (hst ha)
+  le_antisymm _ _ hst hts := Set.ext fun _ => ⟨fun h => hst h, fun h => hts h⟩
+  le_sup_left _ _ _ := .inl
+  le_sup_right _ _ _ := .inr
+  sup_le _ _ _ hs ht _ ha := ha.elim (fun h => hs h) fun h => ht h
+  inf_le_left _ _ _ := And.left
+  inf_le_right _ _ _ := And.right
+  le_inf _ _ _ hs ht _ ha := ⟨hs ha, ht ha⟩
+  le_sup_inf _ _ _ _ h :=
+    h.1.elim .inl fun hy => h.2.elim .inl fun hz => .inr ⟨hy, hz⟩
 
 instance instBoundedOrder : BoundedOrder (Set α) where
-  __ : BoundedOrder (α → Prop) := inferInstance
   bot := ∅
   top := univ
+  le_top _ _ _ := trivial
+  bot_le _ _ := False.elim
 
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
@@ -191,18 +205,18 @@ instance : Inhabited (Set α) :=
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 
-theorem ofPred_injective : Function.Injective (@ofPred α) := injective_id
+theorem ofPred_injective : Function.Injective (@ofPred α) := fun _ _ h => congrArg Set.Mem h
 
 @[deprecated (since := "2026-07-09")] alias setOf_injective := ofPred_injective
 
-theorem ofPred_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
+theorem ofPred_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := ofPred_injective.eq_iff
 
 @[deprecated (since := "2026-07-09")] alias setOf_inj := ofPred_inj
 
 /-! ### Lemmas about `mem` and `ofPred` -/
 
 theorem ofPred_bijective : Bijective (ofPred : (α → Prop) → Set α) :=
-  bijective_id
+  ⟨ofPred_injective, fun s => ⟨s.Mem, rfl⟩⟩
 
 @[deprecated (since := "2026-07-09")] alias setOf_bijective := ofPred_bijective
 
@@ -957,7 +971,7 @@ theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | 
 theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q x } :=
   inter_union_distrib_left s {x | p x} {x | q x}
 
-@[simp]
+-- Note: We do not make this simp because it is already proved by `simp only [mem_ofPred_eq]`.
 theorem sep_ofPred : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
   rfl
 
@@ -1092,8 +1106,10 @@ instance decidableUniv : Decidable (a ∈ univ) := Decidable.isTrue (by simp)
 instance decidableInsert [Decidable (a = b)] [Decidable (a ∈ s)] : Decidable (a ∈ insert b s) :=
   inferInstanceAs (Decidable (_ ∨ _))
 
-instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
+instance decidableOfPred (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
+
+@[deprecated (since := "2026-07-03")] alias decidableSetOf := decidableOfPred
 
 /-- `Set α` almost never has decidable equality.
 In fact, for an inhabited type `α`, `Set α` has decidable equality iff

@@ -259,6 +259,11 @@ theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
 instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
   inferInstanceAs (Subsingleton (Antisymmetrization ..))
 
+-- Shortcut instance for computability
+@[to_additive]
+instance : PartialOrder (MulArchimedeanClass M) :=
+  inferInstanceAs <| PartialOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·))
+
 @[to_additive]
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) :=

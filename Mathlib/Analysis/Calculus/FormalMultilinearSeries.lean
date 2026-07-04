@@ -285,7 +285,7 @@ theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by s
 
 set_option backward.isDefEq.respectTransparency false in
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
-    p.order = Nat.find hp := by convert! Nat.sInf_def hp
+    p.order = Nat.find hp := by convert! Nat.sInf_def (s := {n | p n ≠ 0}) hp
 
 theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
     p.order = Nat.find (FormalMultilinearSeries.ne_iff.mp hp) :=
@@ -299,7 +299,7 @@ theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
   simp [order_eq_zero_iff', hp]
 
 theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 :=
-  Nat.sInf_mem (FormalMultilinearSeries.ne_iff.1 hp)
+  Nat.sInf_mem (s := {n | p n ≠ 0}) (FormalMultilinearSeries.ne_iff.1 hp)
 
 theorem apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=
   apply_order_ne_zero (ne_zero_of_order_ne_zero hp)

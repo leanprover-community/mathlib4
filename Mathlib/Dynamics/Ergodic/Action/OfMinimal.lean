@@ -53,7 +53,7 @@ If a null measurable set `s` is a.e. equal
 to its preimages under the action of a dense set of elements of `M`,
 then it is either null or conull. -/]
 theorem aeconst_of_dense_setOfPred_preimage_smul_ae (hsm : NullMeasurableSet s μ)
-    (hd : Dense {g : M | (g • ·) ⁻¹' s =ᵐ[μ] s}) : EventuallyConst s (ae μ) := by
+    (hd : Dense {g : M | (g • ·) ⁻¹' s =ᵐ[μ] s}) : EventuallyConst (· ∈ s) (ae μ) := by
   borelize M
   refine aeconst_of_forall_preimage_smul_ae_eq M hsm ?_
   rwa [dense_iff_closure_eq, IsClosed.closure_eq, eq_univ_iff_forall] at hd
@@ -69,8 +69,9 @@ alias aeconst_of_dense_setOf_preimage_vadd_ae := aeconst_of_dense_setOfPred_prei
 
 @[to_additive]
 theorem aeconst_of_dense_setOfPred_preimage_smul_eq (hsm : NullMeasurableSet s μ)
-    (hd : Dense {g : M | (g • ·) ⁻¹' s = s}) : EventuallyConst s (ae μ) :=
-  aeconst_of_dense_setOfPred_preimage_smul_ae hsm <| hd.mono fun _ h ↦ mem_ofPred.2 <| .of_eq h
+    (hd : Dense {g : M | (g • ·) ⁻¹' s = s}) : EventuallyConst (· ∈ s) (ae μ) :=
+  aeconst_of_dense_setOfPred_preimage_smul_ae hsm <| hd.mono fun _ h ↦ mem_ofPred.2 <| .of_eq
+    congr((· ∈ $h))
 
 @[deprecated (since := "2026-07-09")]
 alias aeconst_of_dense_setOf_preimage_smul_eq := aeconst_of_dense_setOfPred_preimage_smul_eq
@@ -132,7 +133,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousInv G]
 
 @[to_additive]
 theorem aeconst_of_dense_aestabilizer_smul (hsm : NullMeasurableSet s μ)
-    (hd : Dense (MulAction.aestabilizer G μ s : Set G)) : EventuallyConst s (ae μ) :=
+    (hd : Dense (MulAction.aestabilizer G μ s : Set G)) : EventuallyConst (· ∈ s) (ae μ) :=
   aeconst_of_dense_setOfPred_preimage_smul_ae hsm <|
     (hd.preimage (isOpenMap_inv _)).mono fun g hg ↦ by
     simpa only [preimage_smul] using! hg

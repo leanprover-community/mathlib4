@@ -42,7 +42,7 @@ variable {α : Type*} {m : MeasurableSpace α} {s : Set α}
 /-- A map `f : α → α` is said to be pre-ergodic with respect to a measure `μ` if any measurable
 strictly invariant set is either almost empty or full. -/
 structure PreErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop where
-  aeconst_set ⦃s : Set α⦄ : MeasurableSet s → f ⁻¹' s = s → EventuallyConst s (ae μ)
+  aeconst_set ⦃s : Set α⦄ : MeasurableSet s → f ⁻¹' s = s → EventuallyConst (· ∈ s) (ae μ)
 
 /-- A map `f : α → α` is said to be ergodic with respect to a measure `μ` if it is measure
 preserving and pre-ergodic. -/
@@ -124,7 +124,7 @@ end MeasureTheory.MeasurePreserving
 namespace QuasiErgodic
 
 theorem aeconst_set₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ) (hs : f ⁻¹' s =ᵐ[μ] s) :
-    EventuallyConst s (ae μ) :=
+    EventuallyConst (· ∈ s) (ae μ) :=
   let ⟨_t, h₀, h₁, h₂⟩ := hf.toQuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae hsm hs
   (hf.aeconst_set h₀ h₂).congr h₁
 

@@ -1347,7 +1347,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
 def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
-  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_inter_left hv⟩, by aesop⟩
+  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_sdiff hv⟩, by aesop⟩
   invFun := fun ⟨v, hv⟩ ↦ ⟨v, by simp_all⟩
   map_rel_iff' := by simp
 

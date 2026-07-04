@@ -607,6 +607,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
     (⋃ (f : R[X]) (_ : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
         ((f.map m).roots.toFinset : Set S)).Finite :=
   Set.Finite.biUnion
+    (s := {f : R[X] | f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U})
     (by
       -- We prove that the set of polynomials under consideration is finite because its
       -- image by the injective map `π` is finite

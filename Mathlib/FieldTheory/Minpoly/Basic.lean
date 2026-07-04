@@ -39,7 +39,9 @@ the minimal polynomial of `f` is `minpoly 𝕜 f`.
 -/
 @[stacks 09GM]
 noncomputable def minpoly (x : B) : A[X] :=
-  if hx : IsIntegral A x then degree_lt_wf.min _ hx else 0
+  if hx : IsIntegral A x then
+    degree_lt_wf.min {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx
+  else 0
 
 end MinPolyDef
 
@@ -54,7 +56,7 @@ variable {x : B}
 theorem monic (hx : IsIntegral A x) : Monic (minpoly A x) := by
   delta minpoly
   rw [dif_pos hx]
-  exact (degree_lt_wf.min_mem _ hx).1
+  exact (degree_lt_wf.min_mem {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx).1
 
 /-- A minimal polynomial is nonzero. -/
 theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
@@ -89,7 +91,7 @@ variable (A x)
 theorem aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
   split_ifs with hx
-  · exact (degree_lt_wf.min_mem _ hx).2
+  · exact (degree_lt_wf.min_mem {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx).2
   · exact aeval_zero _
 
 /-- Given any `f : B →ₐ[A] B'` and any `x : L`, the minimal polynomial of `x` vanishes at `f x`. -/

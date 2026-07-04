@@ -220,7 +220,7 @@ alias polarSubmodule_eq_setOf := polarSubmodule_eq_setOfPred
 
 lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S)
     (y : StrongDual 𝕜 E) : y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 :=
-  propext_iff.mp congr($(polarSubmodule_eq_setOfPred 𝕜 m) y)
+  Set.ext_iff.mp (polarSubmodule_eq_setOfPred 𝕜 m) y
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : StrongDual 𝕜 E) ∈ polar 𝕜 s :=

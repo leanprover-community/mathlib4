@@ -218,7 +218,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
   rintro ⟨x, y⟩ H
   obtain rfl : x + y = c := by
     change (x, y) ∈ {p : ℝₗ × ℝₗ | p.1 + p.2 = c}
-    exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
+    exact closure_minimal (fun x hx ↦ hs x hx) (isClosed_antidiagonal c) H
   rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 self_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
   convert! H

@@ -48,8 +48,7 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
     (hv : Integers v O) :
     WellFounded ((· > ·) on (v ∘ algebraMap O F)) ↔
       Nonempty (MonoidHom.mrange v ≃*o ℤᵐ⁰) := by
-  rw [←
-    LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
+  rw [← LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
     one_ne_zero, ← Set.wellFoundedOn_range]
   classical
   refine ⟨fun h ↦ (h.mapsTo Subtype.val ?_).mono' (by simp), fun h ↦ (h.mapsTo ?_ ?_).mono' ?_⟩

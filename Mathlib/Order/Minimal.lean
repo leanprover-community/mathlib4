@@ -578,30 +578,37 @@ theorem map_minimal_mem (f : s ≃o t) (hx : Minimal (· ∈ s) x) :
     (f.toOrderEmbedding.trans (OrderEmbedding.subtype (· ∈ t))) (s := univ) (x := ⟨x, hx.prop⟩)
 
 /-- If two sets are order isomorphic, their minimals are also order isomorphic. -/
-def mapSetOfMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Minimal (· ∈ t) x} where
+def mapOfPredMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Minimal (· ∈ t) x} where
   toFun x := ⟨f ⟨x, x.2.1⟩, f.map_minimal_mem x.2⟩
   invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_minimal_mem x.2⟩
   left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
   right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
   map_rel_iff' := f.map_rel_iff
 
+@[deprecated (since := "2026-07-03")] alias mapSetOfMinimal := mapOfPredMinimal
+
 /-- If two sets are order isomorphic, their maximals are also order isomorphic. -/
 @[to_dual existing]
-def mapSetOfMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) x} where
+def mapOfPredMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) x} where
   toFun x := ⟨f ⟨x, x.2.1⟩, f.map_maximal_mem x.2⟩
   invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_maximal_mem x.2⟩
   left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
   right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
   map_rel_iff' := f.map_rel_iff
 
+@[deprecated (since := "2026-07-03")] alias mapSetOfMaximal := mapOfPredMaximal
+
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 @[to_dual /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/]
 def setOfPredMinimalIsoSetOfPredMaximal (f : s ≃o tᵒᵈ) :
     {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} where
-      toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal x).2⟩
+      toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapOfPredMinimal x).2⟩
       invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
-        ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMinimal x).2⟩
-      __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal
+        ((show ofDual ⁻¹' t ≃o s from f.symm).mapOfPredMinimal x).2⟩
+      __ := (show s ≃o ofDual ⁻¹' t from f).mapOfPredMinimal
+
+@[deprecated (since := "2026-07-03")] alias setOfMinimalIsoSetOfMaximal :=
+  ofPredMinimalIsoOfPredMaximal
 
 @[deprecated (since := "2026-07-09")]
 alias setOfMinimalIsoSetOfMaximal := setOfPredMinimalIsoSetOfPredMaximal

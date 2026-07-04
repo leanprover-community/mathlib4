@@ -33,7 +33,7 @@ namespace Types
 /-- The jointly surjective precoverage in the category of types has the jointly surjective
 families as coverings. -/
 def jointlySurjectivePrecoverage : Precoverage (Type u) where
-  coverings X R := ∀ x : X, ∃ (Y : Type u) (g : Y ⟶ X), R g ∧ x ∈ Set.range g
+  coverings X := {R | ∀ x : X, ∃ (Y : Type u) (g : Y ⟶ X), R g ∧ x ∈ Set.range g}
 
 lemma mem_jointlySurjectivePrecoverage_iff {X : Type u} {R : Presieve X} :
     R ∈ jointlySurjectivePrecoverage X ↔
@@ -73,7 +73,7 @@ instance : jointlySurjectivePrecoverage.IsStableUnderComposition where
     simp
 
 instance : jointlySurjectivePrecoverage.IsStableUnderSup where
-  sup_mem_coverings {X} R S hR _ x := by
+  sup_mem_coverings {X R S} hR _ x := by
     obtain ⟨Y, f, hf, hx⟩ := hR x
     use Y, f, .inl hf
 

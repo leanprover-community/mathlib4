@@ -870,7 +870,9 @@ variable [MeasurableSpace α] {p q : α → Prop}
 @[simp] theorem measurable_mem : Measurable (· ∈ s) ↔ MeasurableSet s :=
   measurableSet_setOfPred.symm
 
-alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
+@[simp] theorem measurable_mem : Measurable (· ∈ s) ↔ MeasurableSet s := measurableSet_ofPred.symm
+
+alias ⟨_, Measurable.setOf⟩ := measurableSet_ofPred
 
 @[fun_prop]
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
