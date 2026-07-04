@@ -611,14 +611,14 @@ theorem sum_div_log_mul_pow_add_tendsto :
     suffices Tendsto (fun s : ℝ ↦ E₂ (x ^ (s - 1)⁻¹) * x ^ (-2 : ℝ)) (𝓝[>] 1)
         (𝓝 (0 * x ^ (-2 : ℝ))) by simpa using ENNReal.tendsto_ofReal this.norm
     have h1 : Tendsto E₂ atTop (𝓝 0) := by sorry
-    have h4 : Tendsto (fun s: ℝ ↦ (s - 1)) (𝓝[>] 1) (𝓝[>] 0) := by
+    have h4 : Tendsto (· - (1 : ℝ)) (𝓝[>] 1) (𝓝[>] 0) := by
+      convert Filter.tendsto_map
+      simpa using Filter.map_add_right_nhdsGT (c := (-1 : ℝ))
       sorry
-    have h3 : Tendsto (fun s: ℝ ↦ (s - 1)⁻¹) (𝓝[>] 1) atTop := tendsto_inv_nhdsGT_zero.comp h4
-    have h5 : Tendsto (fun u : ℝ ↦ x ^ u) atTop atTop := by
-      
-      sorry
-    have h2 : Tendsto (fun s : ℝ ↦ x ^ (s - 1)⁻¹) (𝓝[>] 1) atTop := h5.comp h3
-    exact (h1.comp h2).mul_const _
+--    have h3 : Tendsto (fun s: ℝ ↦ (s - 1)⁻¹) (𝓝[>] 1) atTop := tendsto_inv_nhdsGT_zero.comp h4
+    have h5 : Tendsto (fun u : ℝ ↦ x ^ u) atTop atTop := tendsto_rpow_atTop_of_base_gt_one hx
+--    have h2 : Tendsto (fun s : ℝ ↦ x ^ (s - 1)⁻¹) (𝓝[>] 1) atTop := h5.comp h3
+    exact (h1.comp (h5.comp (tendsto_inv_nhdsGT_zero.comp h4))).mul_const _
 
 end Weight
 
