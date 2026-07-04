@@ -91,6 +91,10 @@ lemma fromCompletion_unique {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuou
     fromCompletion hf = g := by
   ext; simp [extension_unique hf hg h]
 
+noncomputable def fromCompletion' [IsUniformAddGroup F] (f : E →SL[σ₁₂] F) :
+    Completion E →SL[σ₁₂] F :=
+  fromCompletion (uniformContinuous_of_continuousAt_zero f (by exact f.continuous.continuousAt))
+
 end fromCompletion
 
 end ContinuousLinearMap
