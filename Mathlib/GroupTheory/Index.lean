@@ -520,7 +520,7 @@ lemma disjoint_of_coprime_natCard (h : Nat.card H |>.Coprime <| Nat.card K) : Di
   disjoint_iff.mpr <| card_eq_one.mp <| Nat.eq_one_of_dvd_coprimes h
     (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
 
-@[deprecated disjoint_of_coprime_natCard (since := "2026-05-28"), to_additive]
+@[to_additive (attr := deprecated disjoint_of_coprime_natCard (since := "2026-05-28"))]
 lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
   disjoint_iff.mp <| disjoint_of_coprime_natCard h
 
