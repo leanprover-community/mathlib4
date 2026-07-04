@@ -241,10 +241,6 @@ noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M
 
 namespace Module
 
-theorem nonempty_linearEquiv_iff_rank_eq_one :
-    Nonempty (R ≃ₗ[R] M) ↔ Module.rank R M = 1 := by
-  simp [nonempty_linearEquiv_iff_lift_rank_eq, eq_comm]
-
 /-- A free module of rank zero is trivial. -/
 lemma subsingleton_of_rank_zero (h : Module.rank R M = 0) : Subsingleton M := by
   rw [← Basis.mk_eq_rank'' (Module.Free.chooseBasis R M), Cardinal.mk_eq_zero_iff] at h
@@ -300,6 +296,10 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
   · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
     · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
+
+theorem nonempty_linearEquiv_iff_rank_eq_one :
+    Nonempty (R ≃ₗ[R] M) ↔ Module.rank R M = 1 := by
+  simp [nonempty_linearEquiv_iff_lift_rank_eq, eq_comm]
 
 theorem nonempty_linearEquiv_iff_finrank_eq_one :
     Nonempty (R ≃ₗ[R] M) ↔ Module.finrank R M = 1 := by
