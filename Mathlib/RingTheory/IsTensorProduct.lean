@@ -166,13 +166,13 @@ end map
 section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
- {M₁ M₂ M₃ M₁₂ M₂₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
- [AddCommMonoid M₁₂] [AddCommMonoid M₂₃]
- [Module R M₁]
- [Module R M₂] [Module S M₂] [IsScalarTower R S M₂]
- [Module R M₃] [Module S M₃] [IsScalarTower R S M₃]
- [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
- [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
+  {M₁ M₂ M₃ M₁₂ M₂₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [AddCommMonoid M₁₂] [AddCommMonoid M₂₃]
+  [Module R M₁]
+  [Module R M₂] [Module S M₂] [IsScalarTower R S M₂]
+  [Module R M₃] [Module S M₃] [IsScalarTower R S M₃]
+  [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
+  [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation): Use the more linear `IsTensorProduct.assoc`. -/
