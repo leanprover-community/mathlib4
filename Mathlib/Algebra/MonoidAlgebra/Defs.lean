@@ -173,6 +173,9 @@ instance instUnique [Subsingleton R] : Unique R[M] := fast_instance% coeffEquiv.
 instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
   coeffEquiv.decidableEq
 
+@[to_additive instAddMonoid]
+instance instAddMonoid : AddMonoid R[M] := fast_instance% coeffEquiv.addMonoid
+
 @[to_additive instAddCommMonoid]
 instance instAddCommMonoid : AddCommMonoid R[M] := fast_instance% coeffEquiv.addCommMonoid
 
