@@ -61,6 +61,23 @@ private theorem convert_shifted_plane [FiniteDimensional ℝ V]
       affineSpan_pair_altitudeFoot_eq_altitude, direction_altitude, htop, inf_top_eq,
       direction_affineSpan, orthogonal_orthogonal]
 
+/-- The volume of the cross-section is scaled from the base because of homothety -/
+private theorem measure_cross_section (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+    (μHE[n] <| s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) ·)
+      =ᵐ[MeasureSpace.volume.restrict (Set.Icc 0 1)]
+      (‖·‖₊ ^ n • μHE[n] (s.faceOpposite i).closedInterior) := by
+  rw [← restrict_Ioc_eq_restrict_Icc]
+  refine ae_restrict_of_forall_mem (by simp) fun x hx ↦ ?_
+  simp [s.closedInterior_inter_shift_eq_homothety i (Set.Ioc_subset_Icc_self hx),
+    euclideanHausdorffMeasure_homothety_image _ _ hx.1.ne.symm]
+
+/-- Cross-section vanishes outside of the simplex. -/
+private theorem cross_section_support (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+    Function.support (μHE[n] <| s.closedInterior ∩
+      (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) ·) ⊆ Set.Icc 0 1 := by
+  refine Function.support_subset_iff'.mpr fun x hx ↦ ?_
+  rw [(s.disjoint_closedInterior_shift i (by grind)).inter_eq, measure_empty]
+
 /-- Simplex volume formula that requires matching dimension of the simplex and the ambient space.
 For the public version without this requirement, use
 `Affine.Simplex.euclideanHausdorffMeasure_closedInterior`. -/
@@ -77,23 +94,8 @@ private theorem euclideanHausdorffMeasure_closedInterior_aux [FiniteDimensional 
     s.measurableSet_closedInterior, enorm_eq_nnnorm, ← norm_toNNReal, ENNReal.ofNNReal_toNNReal,
     ← dist_eq_norm_vsub', ← Simplex.height, Nat.sub_eq_of_eq_add hn]
   simp_rw [convert_shifted_plane hn s i]
-  -- for `x ∈ [0, 1]`, LHS is the homothety of the base
-  have hcongr : (μHE[n] <| s.closedInterior ∩
-      (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) ·)
-      =ᵐ[MeasureSpace.volume.restrict (Set.Icc 0 1)]
-      (‖·‖₊ ^ n • μHE[n] (s.faceOpposite i).closedInterior) := by
-    rw [← restrict_Ioc_eq_restrict_Icc]
-    refine ae_restrict_of_forall_mem (by simp) fun x hx ↦ ?_
-    simp only
-    rw [s.closedInterior_inter_shift_eq_homothety i
-      (Set.mem_of_mem_of_subset hx Set.Ioc_subset_Icc_self),
-      euclideanHausdorffMeasure_homothety_image _ _ hx.1.ne.symm]
-  -- outside `[0, 1]`, the cross-section is empty, thus having null measure
-  have hsupport : Function.support (μHE[n] <| s.closedInterior ∩
-      (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) ·) ⊆ Set.Icc 0 1 := by
-    refine Function.support_subset_iff'.mpr fun x hx ↦ ?_
-    rw [(s.disjoint_closedInterior_shift i (by grind)).inter_eq, measure_empty]
-  rw [← setLIntegral_eq_of_support_subset hsupport, lintegral_congr_ae hcongr]
+  rw [← setLIntegral_eq_of_support_subset (cross_section_support s i),
+    lintegral_congr_ae (measure_cross_section s i)]
   -- Cancel common factors and reduce it to `∫ x in 0..1, x ^ n`
   simp_rw [nnreal_smul_coe_apply]
   rw [lintegral_mul_const _ (by fun_prop), ← mul_assoc, mul_comm (ENNReal.ofReal (s.height i))]
@@ -110,7 +112,7 @@ private theorem euclideanHausdorffMeasure_closedInterior_aux [FiniteDimensional 
       setLIntegral_congr_fun (by simp) fun x hx ↦ ?_]
     rw [← nnnorm_pow, ← enorm_eq_nnnorm, Real.enorm_eq_ofReal (by simp [hx.1])]
   _ = ∫ x in 0..1, x ^ n := by
-    simp [intervalIntegral.intervalIntegral_eq_integral_uIoc, integral_Icc_eq_integral_Ioc]
+    rw [intervalIntegral.integral_of_le (by simp), integral_Icc_eq_integral_Ioc]
   _ = _ := by
     rw [ENNReal.toReal_inv, ENNReal.toReal_ofReal (by positivity)]
     simp
@@ -124,7 +126,7 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
     rw [direction_affineSpan]
     exact s.independent.finrank_vectorSpan (by simp)
   convert ← (s.restrict _ le_rfl).euclideanHausdorffMeasure_closedInterior_aux hn i using 0
-  congrm (?_ = _ * ENNReal.ofReal ?_ * ?_)
+  congrm ?_ = _ * ENNReal.ofReal ?_ * ?_
   · rw [closedInterior_restrict, isometry_subtype_coe.euclideanHausdorffMeasure_preimage]
     congrm μHE[n + 1] $(by simpa using closedInterior_subset_affineSpan)
   · simp
