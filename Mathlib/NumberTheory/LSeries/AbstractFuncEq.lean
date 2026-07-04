@@ -181,27 +181,8 @@ lemma hf_zero' : (fun x : ℝ ↦ P.f x - P.f₀) =O[𝓝[>] 0] (· ^ (-P.k)) :=
     rw [norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_neg hx.le]
     exact (one_le_inv₀ (rpow_pos_of_pos hx _)).2 (rpow_le_one hx.le hx' P.hk.le)
 
-/-- First version of the completed L-function.
-
-This function is the completed `L`-function when evaluated in the range where the Mellin integral
-is convergent, and junk otherwise. So for strong FE-pairs it is entire, and takes the "correct"
-value, for all `s`; but for weak FE-pairs it it is only interesting for `s.re` large.
-
-(This definition and the lemmas about it are private, because even for strong FE-pairs, it will
-later be "overwritten" with a more complicated definition which is mathematically equal but not
-definitionally so; this is necessary in order to present a uniform API in the weak and strong
-cases.)
--/
-private def Λ_aux (P : WeakFEPair E) (s : ℂ) : E := mellin P.f s
-
-private lemma Λ_aux_eq : P.Λ_aux = mellin P.f := rfl
-
-private lemma symm_Λ_aux_eq : P.symm.Λ_aux = mellin P.g := rfl
-
 private theorem functional_equation_aux (s : ℂ) :
-    P.Λ_aux (P.k - s) = P.ε • P.symm.Λ_aux s := by
-  -- unfold definition:
-  rw [P.Λ_aux_eq, P.symm_Λ_aux_eq]
+    mellin P.f (P.k - s) = P.ε • mellin P.g s := by
   -- substitute `t ↦ t⁻¹` in `mellin P.g s`
   have step1 := mellin_comp_rpow P.g (-s) (-1)
   simp_rw [abs_neg, abs_one, inv_one, one_smul, ofReal_neg, ofReal_one, div_neg, div_one, neg_neg,
@@ -236,12 +217,16 @@ lemma hf_top (r : ℝ) : P.f =O[atTop] (· ^ r) := by
 lemma hf_zero (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ r) := by
   simpa using (hP.hg₀ ▸ P.hf_zero r :)
 
-private theorem hasMellin_aux (s : ℂ) : HasMellin P.f s (P.Λ_aux s) :=
+/-- The Mellin transform of `P.f` is globally convergent. Private since it is superseded by
+`IsStrongFEPair.hasMellin` below, which also identifies its Mellin transform as `P.Λ`. -/
+private theorem mellinConvergent (s : ℂ) : MellinConvergent P.f s :=
   let ⟨_, ht⟩ := exists_gt s.re
   let ⟨_, hu⟩ := exists_lt s.re
-  ⟨mellinConvergent_of_isBigO_rpow P.hf_int (hP.hf_top _) ht (hP.hf_zero _) hu, rfl⟩
+  mellinConvergent_of_isBigO_rpow P.hf_int (hP.hf_top _) ht (hP.hf_zero _) hu
 
-private theorem differentiable_Λ_aux : Differentiable ℂ P.Λ_aux := fun s ↦
+/-- The Mellin transform of `P.f` is globally convergent. Private since it is superseded by
+`IsStrongFEPair.differentiable_Λ` below. -/
+private theorem differentiable_mellin : Differentiable ℂ (mellin P.f) := fun s ↦
   let ⟨_, ht⟩ := exists_gt s.re
   let ⟨_, hu⟩ := exists_lt s.re
   mellin_differentiableAt_of_isBigO_rpow P.hf_int (hP.hf_top _) ht (hP.hf_zero _) hu
@@ -301,7 +286,7 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
 
 lemma hf_modif_top (r : ℝ) :
     (fun x ↦ P.f_modif x - 0) =O[atTop] fun x ↦ x ^ r := by
-  refine (P.hf_top r).congr' ?_ (by rfl)
+  refine (P.hf_top r).congr' ?_ .rfl
   filter_upwards [eventually_gt_atTop 1] with x hx
   simp [f_modif, mem_Ioi.mpr hx, notMem_Ioo_of_ge hx.le]
 
@@ -336,13 +321,11 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
   intro x (hx : 0 < x)
   simp_rw [f_modif, Pi.add_apply]
   rcases lt_trichotomy x 1 with hx' | rfl | hx'
-  · simp_rw [indicator_of_notMem (notMem_Ioi.mpr hx'.le),
-      indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩),
+  · simp_rw [indicator_of_notMem (notMem_Ioi.mpr hx'.le), indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩),
       indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne)]
     abel
   · simp [add_comm, sub_eq_add_neg]
-  · simp_rw [indicator_of_mem (mem_Ioi.mpr hx'),
-      indicator_of_notMem (notMem_Ioo_of_ge hx'.le),
+  · simp_rw [indicator_of_mem (mem_Ioi.mpr hx'), indicator_of_notMem (notMem_Ioo_of_ge hx'.le),
       indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne')]
     abel
 
@@ -378,12 +361,12 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
     · refine (Integrable.smul_const ?_ _).smul _
       rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
       exact intervalIntegral.intervalIntegrable_cpow' h_re2
-  _ = _ := by simp_rw [← intervalIntegral.integral_of_le zero_le_one,
-      integral_cpow (Or.inl h_re1), integral_cpow (Or.inl h_re2), ofReal_zero, ofReal_one,
-      one_cpow, sub_add_cancel, zero_cpow fun h ↦ lt_irrefl _ (P.hk.le.trans_lt (zero_re ▸ h ▸ hs)),
-      zero_cpow (sub_ne_zero.mpr (fun h ↦ lt_irrefl _ ((ofReal_re _) ▸ h ▸ hs)) : s - P.k ≠ 0),
-      sub_zero, sub_eq_add_neg (_ • _), ← mul_smul, ← neg_smul, mul_one_div, ← div_neg, neg_sub]
-
+  _ = _ := by
+      simp_rw [← intervalIntegral.integral_of_le zero_le_one]
+      match_scalars
+      · simp [integral_cpow (.inl h_re1), zero_cpow (show s ≠ 0 by grind [P.hk, zero_re])]
+      · simp [integral_cpow (.inl h_re2), zero_cpow (show s - P.k ≠ 0 by grind [P.hk, ofReal_re])]
+        grind
 /-!
 ## Main theorems on weak FE-pairs
 -/
@@ -401,22 +384,19 @@ lemma Λ₀_eq (s : ℂ) : P.Λ₀ s = P.Λ s + (1 / s) • P.f₀ + (P.ε / (P.
 
 lemma symm_Λ₀_eq (s : ℂ) :
     P.symm.Λ₀ s = P.symm.Λ s + (1 / s) • P.g₀ + (P.ε⁻¹ / (P.k - s)) • P.f₀ := by
-  rw [P.symm.Λ₀_eq]
-  rfl
+  simp [P.symm.Λ₀_eq]
 
 theorem differentiable_Λ₀ : Differentiable ℂ P.Λ₀ :=
-  P.isStrongFEPair_toStrongFEPair.differentiable_Λ_aux
+  P.isStrongFEPair_toStrongFEPair.differentiable_mellin
 
 theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P.k ∨ P.g₀ = 0) :
     DifferentiableAt ℂ P.Λ s := by
   refine ((P.differentiable_Λ₀ s).sub ?_).sub ?_
   · rcases hs with hs | hs
-    · simpa using (differentiableAt_inv hs).smul_const _
+    · fun_prop
     · simp [hs]
   · rcases hs' with hs' | hs'
-    · apply DifferentiableAt.smul_const
-      apply (differentiableAt_const _).div ((differentiableAt_const _).sub (differentiable_id _))
-      simpa [sub_eq_zero, eq_comm]
+    · fun_prop (disch := grind)
     · simp [hs']
 
 /-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined.
@@ -429,12 +409,13 @@ theorem hasMellin [CompleteSpace E]
     mellinConvergent_of_isBigO_rpow (P.hf_int.sub (locallyIntegrableOn_const _)) (P.hf_top _) ht
       P.hf_zero' hs
   refine ⟨hc1, ?_⟩
-  have hc2 : HasMellin P.f_modif s (P.Λ₀ s) := P.isStrongFEPair_toStrongFEPair.hasMellin_aux s
+  have hc2 : MellinConvergent P.f_modif s :=
+    P.isStrongFEPair_toStrongFEPair.mellinConvergent s
   have hc3 : mellin (fun x ↦ f_modif P x - f P x + P.f₀) s =
     (1 / s) • P.f₀ + (P.ε / (↑P.k - s)) • P.g₀ := P.f_modif_aux2 hs
-  have := (hasMellin_sub hc2.1 hc1).2
-  simp_rw [← sub_add, hc3, eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', ← sub_sub] at this
-  exact this
+  have := (hasMellin_sub hc2 hc1).2
+  simp only [Λ, Λ₀] at *
+  grind
 
 /-- Functional equation formulated for `Λ₀`. -/
 theorem functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.Λ₀ s :=
@@ -451,27 +432,26 @@ theorem Λ_residue_k :
     Tendsto (fun s : ℂ ↦ (s - P.k) • P.Λ s) (𝓝[≠] P.k) (𝓝 (P.ε • P.g₀)) := by
   simp_rw [Λ, smul_sub, (by simp : 𝓝 (P.ε • P.g₀) = 𝓝 (0 - 0 - -P.ε • P.g₀))]
   refine ((Tendsto.sub ?_ ?_).mono_left nhdsWithin_le_nhds).sub ?_
-  · rw [(by rw [sub_self, zero_smul] : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • P.Λ₀ P.k))]
+  · rw [(by simp : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • P.Λ₀ P.k))]
     apply ((continuous_sub_right _).smul P.differentiable_Λ₀.continuous).tendsto
-  · rw [(by rw [sub_self, zero_smul] : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • (1 / P.k : ℂ) • P.f₀))]
+  · rw [(by simp : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • (1 / P.k : ℂ) • P.f₀))]
     refine (continuous_sub_right _).continuousAt.smul (ContinuousAt.smul ?_ continuousAt_const)
     have := ofReal_ne_zero.mpr P.hk.ne'
     fun_prop
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
-    refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
+    filter_upwards [self_mem_nhdsWithin] with s (hs : s ≠ P.k)
     match_scalars
-    field [sub_ne_zero.mpr hs.symm]
+    grind
 
 /-- The residue of `Λ` at `s = 0` is equal to `-f₀`. -/
-theorem Λ_residue_zero :
-    Tendsto (fun s : ℂ ↦ s • P.Λ s) (𝓝[≠] 0) (𝓝 (-P.f₀)) := by
+theorem Λ_residue_zero : Tendsto (fun s ↦ s • P.Λ s) (𝓝[≠] 0) (𝓝 (-P.f₀)) := by
   simp_rw [Λ, smul_sub, (by simp : 𝓝 (-P.f₀) = 𝓝 (((0 : ℂ) • P.Λ₀ 0) - P.f₀ - 0))]
   refine ((Tendsto.mono_left ?_ nhdsWithin_le_nhds).sub ?_).sub ?_
   · exact (continuous_id.smul P.differentiable_Λ₀.continuous).tendsto _
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
-    refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ 0) ↦ ?_)
+    filter_upwards [self_mem_nhdsWithin] with s (hs : s ≠ 0)
     match_scalars
-    field [sub_ne_zero.mpr hs.symm]
+    grind
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
@@ -488,27 +468,24 @@ open WeakFEPair
 variable {P : WeakFEPair E} (hP : IsStrongFEPair P)
 include hP
 
-/-- Check compatibility between `WeakFEPair.Λ` applied to a `StrongFEPair`, and the (private)
-`StrongFEPair.Λ_aux`. -/
-private lemma Λ_aux_eq_Λ : P.Λ_aux = P.Λ := by
+/-- For strong FE-pairs, `P.Λ` is everywhere equal to the Mellin transform of `P.f`. -/
+lemma Λ_eq : P.Λ = mellin P.f := by
   ext s
-  simp only [Λ_aux_eq, mellin, Λ, Λ₀, f_modif, hP.hf₀, sub_zero, hP.hg₀, smul_zero]
+  simp only [mellin, Λ, Λ₀, f_modif, hP.hf₀, sub_zero, hP.hg₀, smul_zero]
   refine integral_congr_ae <| (ae_restrict_iff' measurableSet_Ioi).mpr ?_
   filter_upwards [compl_mem_ae_iff.mpr (Subsingleton.measure_zero (s := {1}) (by simp) _)]
     with t (ht₁ : t ≠ 1) (ht₀ : 0 < t)
   by_cases ht : t < 1 <;> [rw [add_comm] ; skip] <;>
   rw [Pi.add_apply, indicator_of_mem (by grind), indicator_of_notMem (by grind), add_zero]
 
+lemma symm_Λ_eq : P.symm.Λ = mellin P.g := hP.symm.Λ_eq
+
 /-- The Mellin transform of `f` is well-defined and equal to `P.Λ s`, for all `s`. -/
 theorem hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
-  hP.Λ_aux_eq_Λ ▸ hP.hasMellin_aux s
+  ⟨hP.mellinConvergent s, congr_fun hP.Λ_eq.symm s⟩
 
-lemma Λ_eq : P.Λ = mellin P.f := funext fun s ↦ (hP.hasMellin s).2.symm
-
-lemma symm_Λ_eq : P.symm.Λ = mellin P.g := funext fun s ↦ (hP.symm.hasMellin s).2.symm
-
-/-- If `(f, g)` are a strong FE pair, then the Mellin transform of `f` is entire. -/
+/-- If `P` is a strong FE pair, then `P.Λ` is entire. -/
 theorem differentiable_Λ : Differentiable ℂ P.Λ :=
-  hP.Λ_aux_eq_Λ ▸ hP.differentiable_Λ_aux
+  hP.Λ_eq ▸ hP.differentiable_mellin
 
 end IsStrongFEPair
