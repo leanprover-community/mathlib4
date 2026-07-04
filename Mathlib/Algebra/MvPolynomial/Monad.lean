@@ -341,14 +341,16 @@ instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R where
 instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R where
   pure_bind := by intros; simp [pure, bind]
   bind_assoc := by intros; simp [bind, ← bind₁_comp_bind₁]
-  seqLeft_eq := by intros; simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; rfl
+  seqLeft_eq _ _ := by
+    simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; simp [rename_eq_aeval]; rfl
   seqRight_eq := by intros; simp [SeqRight.seqRight, Seq.seq, (· <$> ·), bind₁_rename]; rfl
   pure_seq := by intros; simp [(· <$> ·), pure, Seq.seq]
-  bind_pure_comp := by aesop
+  bind_pure_comp _ _ := congr(⇑$((rename_eq_aeval ..).symm) _)
   bind_map := by aesop
 
 /-
 Possible TODO for the future:
+
 Enable the following definitions, and write a lot of supporting lemmas.
 
 def bind (f : R →+* mv_polynomial τ S) (g : σ → mv_polynomial τ S) :
