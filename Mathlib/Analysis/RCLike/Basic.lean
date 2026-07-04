@@ -729,9 +729,7 @@ theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
     I_mul_I_of_nonzero hI, norm_neg, norm_one]
 
 theorem norm_I : ‖(I : K)‖ = if (I : K) ≠ 0 then 1 else 0 := by
-  split_ifs with h
-  · exact norm_I_of_ne_zero h
-  · rw [norm_eq_zero, not_ne_iff.mp h]
+  grind [norm_I_of_ne_zero, norm_eq_zero]
 
 theorem re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
   rw [mul_conj, ← ofReal_pow]; simp [-map_pow]
