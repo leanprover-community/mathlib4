@@ -512,10 +512,7 @@ theorem mem_spectrum_of_map_eq_smul {f : End R M} {v : M} {a : R} (h0 : v ≠ 0)
 
 theorem mem_spectrum_iff_exists_map_eq_smul [FiniteDimensional K V] {f : End K V} {a : K} :
     a ∈ spectrum K f ↔ ∃ v ≠ 0, f v = a • v := by
-  refine ⟨fun h ↦ ?_, fun ⟨v, h0, h⟩ ↦ mem_spectrum_of_map_eq_smul h0 h⟩
-  rw [← hasEigenvalue_iff_mem_spectrum] at h
-  refine h.exists_hasEigenvector.imp fun v h ↦ ?_
-  simpa using h.symm
+  simp [← hasEigenvalue_iff_mem_spectrum, hasEigenvalue_iff, Submodule.ne_bot_iff, and_comm]
 
 theorem isUnit_iff_forall_map_eq_zero [FiniteDimensional K V] {f : End K V} :
     IsUnit f ↔ ∀ v, f v = 0 → v = 0 := by
