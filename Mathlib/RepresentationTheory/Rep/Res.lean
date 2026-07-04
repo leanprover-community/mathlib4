@@ -122,8 +122,7 @@ lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex
     simp only [ShortComplex.map_f, Representation.IntertwiningMap.coe_eq_toLinearMap,
       mono_iff_injective, ShortComplex.map_g, epi_iff_surjective] at h₂ h₃
     exact {exact := h₁, mono_f := mono_iff_injective _|>.2 h₂, epi_g := epi_iff_surjective _|>.2 h₃}
-  · rintro ⟨h⟩
-    expose_names
+  · rintro @⟨_, mono_f, epi_g⟩
     exact {
       exact := by rwa [ShortComplex.exact_map_iff_of_faithful]
       mono_f := by simpa [mono_iff_injective] using! mono_f
