@@ -190,7 +190,7 @@ correspond to maximal ideals in the original ring `R` that don't contain `y`.
 This lemma gives the correspondence in the particular case of an ideal and its map.
 See `le_relIso_of_maximal` for the more general statement, and the reverse of this implication -/
 theorem IsLocalization.isMaximal_of_isMaximal_notMem
-    [IsJacobsonRing R] (I : Ideal R) (hI : I.IsMaximal)
+    (I : Ideal R) (hI : I.IsMaximal)
     (hy : y ∉ I) : (I.map (algebraMap R S)).IsMaximal :=
   isMaximal_of_isMaximal_disjoint (powers y) S I
     ((disjoint_powers_iff_notMem_of_isPrime y).mpr hy)
