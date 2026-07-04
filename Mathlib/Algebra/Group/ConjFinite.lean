@@ -43,4 +43,36 @@ variable [Fintype α] [DecidableRel (IsConj : α → α → Prop)]
 instance {x : ConjClasses α} : Fintype (carrier x) :=
   Quotient.recOnSubsingleton x fun _ => conjugatesOf.fintype
 
+section Group
+
+variable {G H : Type*} [Group G] [Fintype G] [DecidableEq G] [CommMonoid H] (g : G)
+
+theorem mk_carrier_map_conj :
+    (ConjClasses.mk g).carrier.toFinset.1.map (MulAut.conj g) =
+    (ConjClasses.mk g).carrier.toFinset.1 := by
+  have hbij := bijOn_conj g (ConjClasses.mk g)
+  rw [← Finset.image_val_of_injOn <| hbij.injOn.mono <| Set.subset_toFinset.1 fun ⦃_⦄ x ↦ x,
+    Finset.val_inj, ← Finset.coe_inj, Finset.coe_image, Set.coe_toFinset, hbij.image_eq]
+
+theorem mk_carrier_map_mul_left :
+    (ConjClasses.mk g).carrier.toFinset.1.map (fun h ↦ g * h) =
+    (ConjClasses.mk g).carrier.toFinset.1.map (fun h ↦ h * g) := by
+  conv_rhs => rw [← ConjClasses.mk_carrier_map_conj, Multiset.map_map]
+  exact Multiset.map_congr rfl fun _ _ ↦ by simp [MulAut.conj_apply]
+
+theorem prod_carrier_mulAut (f : G → H) :
+    ∏ h ∈ (ConjClasses.mk g).carrier, f (MulAut.conj g h) =
+    ∏ h ∈ (ConjClasses.mk g).carrier, f h := by
+  change ((ConjClasses.mk g).carrier.toFinset.1.map (f ∘ MulAut.conj g)).prod = _
+  rw [← Multiset.map_map, mk_carrier_map_conj, Finset.prod_eq_multiset_prod]
+
+theorem prod_carrier_mul_left (f : G → H) :
+    ∏ h ∈ (ConjClasses.mk g).carrier, f (g * h) =
+    ∏ h ∈ (ConjClasses.mk g).carrier, f (h * g) := by
+  change ((ConjClasses.mk g).carrier.toFinset.1.map (f ∘ (fun x ↦ g * x))).prod = _
+  rw [← Multiset.map_map, mk_carrier_map_mul_left, Finset.prod_eq_multiset_prod,
+    Multiset.map_map]; rfl
+
+end Group
+
 end ConjClasses
