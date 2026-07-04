@@ -152,7 +152,7 @@ lemma eintegral_lt_top_of_le {f : α → EReal} {b : EReal} (hf : ∀ x, f x ≤
     simp only [sub_zero]
     refine EReal.coe_ennreal_le_coe_ennreal_iff.mpr ?_ -- missing gcongr
     gcongr
-    exact EReal.toENNReal_le_toENNReal (hf _)
+    exact hf _
   _ = b.toENNReal * P .univ := by simp [lintegral_const]
   _ < ⊤ := by
     norm_cast
