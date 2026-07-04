@@ -168,8 +168,8 @@ theorem equivQuotientMapMaximalIdeal_apply_mk [p.IsMaximal] (x : S) :
 
 theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
     [(Ideal.map (algebraMap S Sₚ) P).LiesOver (maximalIdeal Rₚ)] :
-    (maximalIdeal Rₚ).inertiaDeg (P.map (algebraMap S Sₚ)) = p.inertiaDeg P := by
-  rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+    (maximalIdeal Rₚ).inertiaDeg' (P.map (algebraMap S Sₚ)) = p.inertiaDeg' P := by
+  rw [inertiaDeg'_algebraMap, inertiaDeg'_algebraMap]
   refine Algebra.finrank_eq_of_equiv_equiv (equivQuotMaximalIdeal p Rₚ).symm
     (equivQuotientMapOfIsMaximal p Sₚ P).symm ?_
   ext x
@@ -238,8 +238,8 @@ theorem primesOverEquivPrimesOver_symm_apply (hp : p ≠ ⊥) (Q : (maximalIdeal
     ((primesOverEquivPrimesOver p Rₚ Sₚ hp).symm Q).1 = Ideal.comap (algebraMap S Sₚ) Q := rfl
 
 theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) (P : p.primesOver S) :
-    (maximalIdeal Rₚ).inertiaDeg (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
-      p.inertiaDeg P.val := by
+    (maximalIdeal Rₚ).inertiaDeg' (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
+      p.inertiaDeg' P.val := by
   have : NeZero p := ⟨hp⟩
   have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
     (ne_bot_of_mem_primesOver (NeZero.ne _) P.prop) inferInstance

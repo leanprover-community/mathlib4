@@ -40,7 +40,7 @@ In the case of `to_additive`, we may want to apply it multiple times,
 (such as in `a ^ n` -> `n • a` -> `n +ᵥ a`). In this case, you should use the syntax
 `to_additive (attr := some_other_attr, to_additive)`, which will apply `some_other_attr` to all
 three generated declarations.
- -/
+-/
 syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
 
 syntax reorderOption := &"reorder" " := " translateReorder
