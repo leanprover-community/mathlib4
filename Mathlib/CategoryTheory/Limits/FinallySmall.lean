@@ -217,8 +217,7 @@ theorem initiallySmall_of_essentiallySmall_weakly_initial_objectProperty
     [IsCofilteredOrEmpty J] (P : ObjectProperty J) [ObjectProperty.EssentiallySmall.{v} P]
     (hP : ∀ i, ∃ j, P j ∧ Nonempty (j ⟶ i)) : InitiallySmall.{v} J := by
   obtain ⟨Q, H, hQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le'.{v} P
-  have : Small.{v} (show Set _ from Q) := by assumption
-  refine initiallySmall_of_small_weakly_initial_set Q (fun i ↦ ?_)
+  refine initiallySmall_of_small_weakly_initial_set {j | Q j} fun i ↦ ?_
   obtain ⟨j, hj, ⟨f⟩⟩ := hP i
   obtain ⟨k, hk, ⟨e⟩⟩ := hQ _ hj
   exact ⟨k, hk, ⟨e.inv ≫ f⟩⟩

@@ -191,7 +191,7 @@ lemma hittingAfter_mem_set [WellFoundedLT ι] (h_exists : ∃ j, n ≤ j ∧ u j
   rw [hittingAfter, ite_eq_left h_exists]
   have h_nonempty : {i : ι | n ≤ i ∧ u i ω ∈ s}.Nonempty := by
     obtain ⟨k, hk₁, hk₂⟩ := h_exists
-    exact ⟨k, Set.mem_inter hk₁ hk₂⟩
+    exact ⟨k, hk₁, hk₂⟩
   exact (csInf_mem h_nonempty).2
 
 theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}

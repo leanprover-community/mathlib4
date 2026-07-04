@@ -229,7 +229,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : CMDiff[Icc a b] 1 �
     refine ⟨⟨f, hf.continuous⟩, ?_, ?_⟩ <;>
     simp [f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
   have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv% g x 1‖ₑ := by
-    rw [riemannianEDist]; exact biInf_le _ hf
+    rw [riemannianEDist]; exact iInf₂_le g hf
   apply A.trans_eq
   rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
   have E : pathELength I (g ∘ projIcc 0 1 zero_le_one) 0 1 = pathELength I (γ ∘ η) 0 1 := by

@@ -248,7 +248,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
   · filter_upwards [(hσ n).mono] with ω hω
     intros i j hij
     specialize hω hij
-    simp [Set.ofPred] at *
+    simp at *
     grind
   · refine fun i ↦ .nullMeasurableSet ?_
     simp_rw [lt_inf_iff, Set.ofPred_and]

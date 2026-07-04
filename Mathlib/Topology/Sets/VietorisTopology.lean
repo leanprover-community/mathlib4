@@ -262,7 +262,8 @@ private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     the compactness of `Lᵢ`. -/
     obtain ⟨L, hL, hLu⟩ := hsu
     rw [sUnion_eq_biUnion] at hLu
-    obtain ⟨T, hTS, hT, hLT⟩ := (hs L hL).elim_finite_subcover_image (fun _ h => h.1) hLu
+    obtain ⟨T, hTS, hT, hLT⟩ :=
+      (hs L hL).elim_finite_subcover_image (b := u) (fun _ h => h.1) hLu
     refine ⟨(fun U => {s | (s ∩ U).Nonempty}) '' T, by grind [image_subset_iff], hT.image _, ?_⟩
     simp_rw [sUnion_image, ← ofPred_exists, ← nonempty_iUnion, ← inter_iUnion]
     grw [← hLT]
@@ -275,7 +276,8 @@ private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     · /- If `K \ ⋃ Uⱼ ⊆ U`, then every subset of `K` is either a subset of `U` or intersects some
       `Uⱼ`. By the compactness of `K \ U`, `Uⱼ` can be chosen from a finite subfamily. -/
       rw [mem_powerset_iff, sdiff_subset_comm, sUnion_eq_biUnion] at hUu
-      obtain ⟨T, hTS, hT, hKT⟩ := (hK.diff hU).elim_finite_subcover_image (fun _ h => h.1) hUu
+      obtain ⟨T, hTS, hT, hKT⟩ :=
+        (hK.diff hU).elim_finite_subcover_image (b := u) (fun _ h => h.1) hUu
       refine ⟨insert U.powerset ((fun V => {s | (s ∩ V).Nonempty}) '' T),
         insert_subset hUS <| Set.image_subset_iff.mpr <| hTS.trans fun _ h => h.2,
         (hT.image _).insert _, ?_⟩
@@ -333,8 +335,7 @@ instance [T1Space α] : T0Space (Set α) where
 theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} := by
   rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
-  · convert isPreconnected_empty
-    grind [Set.not_nonempty_empty]
+  · simp +contextual [and_iff_right_of_imp, Set.nonempty_iff_ne_empty, isPreconnected_empty]
   suffices {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} =
       ⋃ n : ℕ+, range (ι := Fin n) '' Set.pi univ fun _ => s by
     rw [this]

@@ -40,7 +40,8 @@ theorem accumulate_eq_biInter_lt {s : ℕ → Set β} {n : ℕ} : accumulate s n
 theorem mem_accumulate [LE α] {x : α} {z : β} : z ∈ accumulate s x ↔ ∃ y ≤ x, z ∈ s y := by
   simp_rw [accumulate_def, mem_iUnion₂, exists_prop]
 
-theorem subset_accumulate [Preorder α] {x : α} : s x ⊆ accumulate s x := fun _ => mem_biUnion le_rfl
+theorem subset_accumulate [Preorder α] {x : α} : s x ⊆ accumulate s x := fun _ hz =>
+  mem_accumulate.2 ⟨x, le_rfl, hz⟩
 
 theorem accumulate_subset_iUnion [LE α] (x : α) : accumulate s x ⊆ ⋃ i, s i :=
   (biUnion_subset_biUnion_left (subset_univ _)).trans_eq (biUnion_univ _)
