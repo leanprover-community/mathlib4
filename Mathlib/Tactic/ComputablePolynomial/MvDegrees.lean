@@ -297,4 +297,3 @@ instance : AddCommMonoid (MvDegrees nvars) where
       exact array_nsmul_succ a.degrees n
     · change a.totalDegree * (n + 1) = a.totalDegree * n + a.totalDegree
       grind
-
