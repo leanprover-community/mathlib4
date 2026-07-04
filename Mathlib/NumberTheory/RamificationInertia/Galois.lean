@@ -58,7 +58,7 @@ open scoped Classical in
   maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
 noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
-  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.ramificationIdx' A
+  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.ramificationIdx A
   else 0
 
 open scoped Classical in
@@ -138,9 +138,9 @@ instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesO
 include p G in
 /-- All the `Ideal.ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
-    P.ramificationIdx' A = Q.ramificationIdx' A := by
+    P.ramificationIdx A = Q.ramificationIdx A := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
-  rw [ramificationIdx'_smul]
+  rw [ramificationIdx_smul]
 
 include p G in
 /-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
@@ -152,7 +152,7 @@ theorem inertiaDeg_eq_of_isGaloisGroup :
 include p G in
 /-- The `ramificationIdxIn` is equal to any ramification index over the same ideal. -/
 theorem ramificationIdxIn_eq_ramificationIdx :
-    ramificationIdxIn p B = P.ramificationIdx' A := by
+    ramificationIdxIn p B = P.ramificationIdx A := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
   rw [ramificationIdxIn, dif_pos h]
@@ -163,7 +163,7 @@ theorem ramificationIdxIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Id
     p.ramificationIdxIn B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [ramificationIdxIn_eq_ramificationIdx p P G]
-  exact (P.1.ramificationIdx'_pos A).ne'
+  exact (P.1.ramificationIdx_pos A).ne'
 
 include G in
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
@@ -203,7 +203,7 @@ theorem ramificationIdxIn_mul_ramificationIdxIn [Flat B C] :
   obtain ⟨⟨Q, _, hQ⟩⟩ := (inferInstance : Nonempty (primesOver P C))
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
-    ramificationIdxIn_eq_ramificationIdx P Q GBC, ← ramificationIdx'_tower P Q]
+    ramificationIdxIn_eq_ramificationIdx P Q GBC, ← ramificationIdx_tower P Q]
 
 @[deprecated (since := "2026-06-18")] alias ramificationIdxIn_mul_ramificationIdxIn' :=
   ramificationIdxIn_mul_ramificationIdxIn
@@ -232,37 +232,45 @@ end fundamental_identity
 
 section tower
 
-variable {A B : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
-  [Algebra A B] [Flat A B] {p : Ideal A} (P : Ideal B) [p.IsPrime]
+variable {A B : Type*} [CommRing A] [CommRing B]
+  [Algebra A B] [FaithfulSMul A B] {p : Ideal A} (P : Ideal B)
   [P.IsPrime] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
   [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDomain C] [Algebra A C]
-  [Algebra B C] [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [Flat A C]
-  [Flat B C] [IsScalarTower A B C]
+  [Algebra B C] [FaithfulSMul B C] [IsScalarTower A B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
-  (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
 
--- todo: use transitivity to prove this under much weaker assumptions
-include G GAC GBC in
+include G GAC in
+open IsGaloisGroup MulAction in
 theorem ncard_primesOver_mul_ncard_primesOver :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
-  let := IsFractionRing.mulSemiringAction G B (FractionRing B)
-  let := IsFractionRing.mulSemiringAction GAC C (FractionRing C)
-  let := IsFractionRing.mulSemiringAction GBC C (FractionRing C)
-  have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
-    mul_ne_zero (ramificationIdxIn_ne_zero GAC) (inertiaDegIn_ne_zero GAC)
-  rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p C GAC]
-  calc
-    _ = ((p.primesOver B).ncard * (p.ramificationIdxIn B * p.inertiaDegIn B)) *
-          ((P.primesOver C).ncard * (P.ramificationIdxIn C * P.inertiaDegIn C)) := by
-      rw [← inertiaDegIn_mul_inertiaDegIn p P G C GAC GBC,
-        ← ramificationIdxIn_mul_ramificationIdxIn P G C GAC GBC]
-      ring
-    _ = Nat.card GAC := by
-      rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G,
-        ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn P C GBC,
-        (IsGaloisGroup.toFractionRing G A B).card_eq_finrank,
-        (IsGaloisGroup.toFractionRing GAC A C).card_eq_finrank,
-        (IsGaloisGroup.toFractionRing GBC B C).card_eq_finrank, Module.finrank_mul_finrank]
+  have : Algebra.IsIntegral A C := isInvariant.isIntegral A C GAC
+  have : Algebra.IsIntegral B C := Algebra.IsIntegral.tower_top A
+  let f := restrictHom GAC G A B C
+  let H := (stabilizer G P).comap f
+  have key (Q Q' : Ideal C) [Q.LiesOver P] [Q'.LiesOver P] g (hg : g • Q = Q') : g ∈ H := by
+    simpa [← restrictHom_smul_under GAC G A, ← over_def _ P, H] using congr_arg (under B) hg
+  obtain ⟨Q, _, _⟩ := (inferInstance : Nonempty (P.primesOver C))
+  have : Q.LiesOver p := .trans Q P p
+  have orbit_eq : orbit H Q = P.primesOver C := by
+    ext Q'
+    constructor
+    · rintro ⟨g, rfl : g • Q = Q'⟩
+      refine ⟨inferInstance, ?_⟩
+      rw [liesOver_iff, H.smul_def, ← restrictHom_smul_under GAC G A B C, ← Q.over_def P]
+      exact g.2.symm
+    · rintro ⟨_, _⟩
+      have : Q'.LiesOver p := .trans Q' P p
+      obtain ⟨g, hg⟩ :=
+        IsInvariant.exists_smul_of_under_eq A C GAC Q Q' ((Q.over_def p).symm.trans (Q'.over_def p))
+      exact ⟨⟨g, key Q Q' g hg.symm⟩, by simpa [Subgroup.smul_def] using hg.symm⟩
+  have stabilizer_eq : stabilizer H Q = (stabilizer GAC Q).subgroupOf H := by
+    simp [Subgroup.ext_iff, Subgroup.mem_subgroupOf]
+  rw [← IsInvariant.orbit_eq_primesOver A B G p P, ← index_stabilizer,
+    ← orbit_eq, ← index_stabilizer, stabilizer_eq, ← Subgroup.relIndex,
+    ← IsInvariant.orbit_eq_primesOver A C GAC p Q, ← index_stabilizer,
+    ← (stabilizer G P).index_comap_of_surjective (restrictHom_surjective GAC G A B C),
+    mul_comm, Subgroup.relIndex_mul_index]
+  exact key Q Q
 
 end tower
 
