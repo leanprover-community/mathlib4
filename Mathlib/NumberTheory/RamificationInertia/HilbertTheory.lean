@@ -283,7 +283,6 @@ private lemma instances (hp : p ≠ ⊥) :
   exact ⟨inst₁, inst₂, inst₃, inst₄, inst₅, Ideal.ne_bot_of_liesOver_of_ne_bot hp 𝓟D⟩
 
 variable [FiniteDimensional K L] [Ring.HasFiniteQuotients A] [𝓟D.IsMaximal] [P.IsMaximal]
-  [p.IsMaximal]
 
 include K L D P in
 private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
@@ -297,8 +296,7 @@ private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
     exact 𝓟D.ramificationIdx_above_le P
   · rw [inertiaDegIn_eq_inertiaDeg p P Gal(L/K),
       inertiaDegIn_eq_inertiaDeg _ P (stabilizer Gal(L/K) P)]
-    rw [← inertiaDeg_eq_inertiaDeg' p, ← inertiaDeg_eq_inertiaDeg' 𝓟D]
-    exact inertiaDeg_le_inertiaDeg p 𝓟D P
+    exact inertiaDeg'_above_le 𝓟D P
   · have := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝓟D B (stabilizer Gal(L/K) P)
     rw [primesOver_eq_singleton K L P D 𝓞D, Set.ncard_singleton, one_mul] at this
     rw [this, IsGaloisGroup.card_eq_finrank (stabilizer Gal(L/K) P) D L,
