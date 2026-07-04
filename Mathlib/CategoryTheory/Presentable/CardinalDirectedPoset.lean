@@ -392,7 +392,7 @@ instance : IsCardinalFiltered (Subtype J.PropSet) κ :=
     · have hκ : Cardinal.aleph0 ≤ κ :=  Cardinal.IsRegular.aleph0_le Fact.out
       exact hasCardinalLT_union hκ (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).2.1))
         (hasCardinalLT_of_finite _ _ hκ)
-    · simp only [← Subtype.coe_le_coe, Set.le_eq_subset]
+    · simp only [← Subtype.coe_le_coe]
       exact subset_trans (Set.subset_iUnion_of_subset k (subset_refl _)) Set.subset_union_left )
 
 instance : IsFiltered (Subtype J.PropSet) := isFiltered_of_isCardinalFiltered _ κ
