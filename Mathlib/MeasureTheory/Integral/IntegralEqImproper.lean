@@ -1184,7 +1184,7 @@ theorem integral_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
   convert (integral_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a)).symm with x
   <;> simp [exp_log ha]
 
-theorem integrableOn_comp_log_Ioi (g : ·→ E) {a : ℝ} (ha : 0 < a) :
+theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x ↦ x⁻¹ • g (log x)) (Ioi a) ↔ IntegrableOn g (Ioi (log a)) := by
   symm
   convert integrableOn_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a) with x
