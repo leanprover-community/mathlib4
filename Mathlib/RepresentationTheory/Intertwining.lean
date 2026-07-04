@@ -226,6 +226,84 @@ lemma comp_add (f₁ f₂ : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
 lemma add_comp (f : IntertwiningMap σ τ) (g₁ g₂ : IntertwiningMap ρ σ) :
     comp f (g₁ + g₂) = comp f g₁ + comp f g₂ := by ext1; simp [LinearMap.comp_add]
 
+variable (A) in
+/-- The projection of a product representation onto its first component is an intertwining map. -/
+def fst : IntertwiningMap (ρ.prod σ) ρ where
+  toLinearMap := LinearMap.fst A V W
+  isIntertwining' _ := LinearMap.ext <| by simp
+
+variable (A) in
+/-- The projection of a product representation onto its second component is an intertwining map. -/
+def snd : IntertwiningMap (ρ.prod σ) σ where
+  toLinearMap := LinearMap.snd A V W
+  isIntertwining' _ := LinearMap.ext <| by simp
+
+@[simp]
+lemma fst_apply (v : V × W) : fst A ρ σ v = v.1 := rfl
+
+@[simp]
+lemma snd_apply (v : V × W) : snd A ρ σ v = v.2 := rfl
+
+@[simp, norm_cast] lemma coe_fst : ⇑(fst A ρ σ) = Prod.fst := rfl
+
+@[simp, norm_cast] lemma coe_snd : ⇑(snd A ρ σ) = Prod.snd := rfl
+
+lemma fst_surjective : Function.Surjective (fst A ρ σ) := LinearMap.fst_surjective
+
+lemma snd_surjective : Function.Surjective (snd A ρ σ) := LinearMap.snd_surjective
+
+section prod
+
+variable {ρ σ τ}
+/-- The product of two intertwining maps is an intertwining map. -/
+def prod (f : IntertwiningMap ρ σ) (g : IntertwiningMap ρ τ) : IntertwiningMap ρ (σ.prod τ) where
+  toLinearMap := f.toLinearMap.prod g.toLinearMap
+  isIntertwining' _ := LinearMap.ext <| by simp [f.isIntertwining, g.isIntertwining]
+
+@[simp]
+lemma fst_prod (f : IntertwiningMap ρ σ) (g : IntertwiningMap ρ τ) :
+    (fst A σ τ).comp (prod f g) = f := IntertwiningMap.ext <| LinearMap.fst_prod _ _
+
+@[simp]
+lemma snd_prod (f : IntertwiningMap ρ σ) (g : IntertwiningMap ρ τ) :
+    (snd A σ τ).comp (prod f g) = g := IntertwiningMap.ext <| LinearMap.snd_prod _ _
+
+lemma prod_comp (X : Type*) [AddCommMonoid X] [Module A X] {π : Representation A G X}
+    (f : IntertwiningMap ρ σ) (g₁ : IntertwiningMap σ τ) (g₂ : IntertwiningMap σ π) :
+    (prod g₁ g₂).comp f = prod (g₁.comp f) (g₂.comp f) :=
+  IntertwiningMap.ext <| LinearMap.prod_comp ..
+
+variable (A ρ σ) in
+/-- The left inclusion of a product representation is an intertwining map. -/
+def inl : IntertwiningMap ρ (ρ.prod σ) := prod (id ρ) 0
+
+variable (A ρ σ) in
+/-- The right inclusion of a product representation is an intertwining map. -/
+def inr : IntertwiningMap σ (ρ.prod σ) := prod (0 : IntertwiningMap σ ρ) (id σ)
+
+lemma range_inl : (inl A ρ σ).range = (snd A ρ σ).ker :=
+  Subrepresentation.ext <| LinearMap.range_inl ..
+
+lemma range_inr : (inr A ρ σ).range = (fst A ρ σ).ker :=
+  Subrepresentation.ext <| LinearMap.range_inr ..
+
+@[simp] lemma fst_comp_inl : (fst A ρ σ).comp (inl A ρ σ) = id ρ :=
+  IntertwiningMap.ext <| LinearMap.fst_comp_inl ..
+
+@[simp] lemma snd_comp_inl : (snd A ρ σ).comp (inl A ρ σ) = 0 :=
+  IntertwiningMap.ext <| LinearMap.snd_comp_inl ..
+
+@[simp] lemma fst_comp_inr : (fst A ρ σ).comp (inr A ρ σ) = 0 :=
+  IntertwiningMap.ext <| LinearMap.fst_comp_inr ..
+
+@[simp] lemma snd_comp_inr : (snd A ρ σ).comp (inr A ρ σ) = id σ :=
+  IntertwiningMap.ext <| LinearMap.snd_comp_inr ..
+
+@[simp] lemma coprod_inl_inr : (inl A ρ σ).comp (fst A ρ σ) + (inr A ρ σ).comp (snd A ρ σ) =
+    .id _ := IntertwiningMap.ext <| LinearMap.coprod_inl_inr
+
+end prod
+
 end IntertwiningMap
 
 /-- Equivalence between representations is a bijective intertwining map. -/
