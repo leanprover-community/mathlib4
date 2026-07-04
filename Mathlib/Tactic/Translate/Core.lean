@@ -1207,7 +1207,7 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
           (impl · attr.stx attr.kind)
     else
       let mut attr := attr
-      -- Set the target of `(attr := deprecated)` when applied to an `alias`
+      -- Set the target of `(attr := deprecated)` when applied to an `alias`.
       if attr.name == `deprecated then
         if let some info ← Batteries.Tactic.Alias.getAliasInfo? src then
           if let `(attr| deprecated%$tk $[$desc:str]? $[(since := $since)]?) := attr.stx then
@@ -1215,7 +1215,7 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
               deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[(since := $since)]?) }
       for decl in allDecls, i in 0...* do
         if i != 0 then
-          -- Translate the target of `(attr := deprecated)` if possible
+          -- Translate the target of `(attr := deprecated)` if possible.
           if attr.name == `deprecated then
             if let `(attr| deprecated%$tk $name $[$desc]? $[(since := $since)]?) := attr.stx then
               let name ← realizeGlobalConstNoOverload name
