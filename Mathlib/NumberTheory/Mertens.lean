@@ -391,11 +391,11 @@ theorem second_theorem' {x : ℝ} (hx : 2 ≤ x) :
           inv_div_log_sq_nonneg ht hx', le_first (by grind)]
       _ = _ := by rw [integ_div_mul_log_sq _ hx]; simp [field]
 
-/-- A technical weak variant of the second theorem that covers a larger range of `x`. -/
-theorem second_theorem_weak {x : ℝ} (hx : 1 ≤ x) :
-    |f.E₂ x| ≤ |log (log x)| + |M| + C₂ / log x := by
+private theorem second_theorem_weak {x : ℝ} (hx : 1 ≤ x) :
+    |f.E₂ x| ≤ |log (log x)| + |M| + C₂ / log 2 := by
+  have := C₂_nonneg
   rcases le_or_gt 2 x with hx' | hx'
-  · grw [second_theorem' hx', le_add_iff_nonneg_left]
+  · grw [second_theorem' hx', hx', le_add_iff_nonneg_left]
     positivity
   unfold E₂
   grw [abs_sub, abs_sub, sum_eq_zero, abs_zero, zero_add, le_add_iff_nonneg_right]
@@ -546,9 +546,17 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     exact setIntegral_congr_fun (by measurability) (fun x hx ↦ by ring)
   _ = _ := by
     have h1 := integrableOn_log_log_mul_rpow hs
-    have h2 : IntegrableOn (M * · ^ (-s)) (.Ioi 1) :=
-      Integrable.const_mul (integrableOn_Ioi_rpow_of_lt (by linarith) (by norm_num)) M
-    have h3 : IntegrableOn (fun x ↦ E₂ x * x ^ (-s)) (.Ioi 1) := by sorry
+    have h2 (C : ℝ) : IntegrableOn (C * · ^ (-s)) (.Ioi 1) :=
+      Integrable.const_mul (integrableOn_Ioi_rpow_of_lt (by linarith) (by norm_num)) C
+    have h3 : IntegrableOn (fun x ↦ E₂ x * x ^ (-s)) (.Ioi 1) := by
+      refine Integrable.mono'
+        (g := fun x ↦ |log (log x) * x ^ (-s)| + (|M| + C₂ / log 2) * x ^ (-s))
+        (h1.abs.add (h2 _)) (Measurable.aestronglyMeasurable (by unfold E₂; fun_prop))
+        (ae_restrict_of_forall_mem measurableSet_Ioi (fun x hx ↦ ?_))
+      have : 0 < x := by grind
+      have : 0 ≤ x ^ (-s) := by positivity
+      grw [norm_mul, abs_mul, norm_eq_abs, norm_eq_abs, abs_of_nonneg this, second_theorem_weak]
+      <;> grind
     rw [MeasureTheory.integral_add, MeasureTheory.integral_add, mul_add, mul_add,
         eulerMascheroniConstant_eq_neg_integral_log_log hs, MeasureTheory.integral_const_mul,
         integral_Ioi_rpow_of_lt (by linarith) (by norm_num)]
@@ -564,7 +572,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
         _ = (s - 1) * (E₂ x * (x ^ (s - 1 - 1) * x ^ ((s - 1) * -2))) := by
           rw [← rpow_add this]; ring_nf
         _ = _ := by ring
-    exacts [h1, h2, h1.add h2, h3]
+    exacts [h1, h2 M, h1.add (h2 M), h3]
 
 theorem sum_div_log_mul_pow_add_tendsto :
     Tendsto (fun s ↦ ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) + log (s - 1)) (𝓝[>] 1)
