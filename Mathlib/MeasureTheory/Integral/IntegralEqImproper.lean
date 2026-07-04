@@ -1156,7 +1156,7 @@ theorem integral_comp_rpow_Ioi_of_pos' {g : ℝ → E} {p : ℝ} (hp : 0 < p) {c
   rw [this, integral_image_eq_integral_abs_deriv_smul (measurableSet_Ioi (a := c ^ p⁻¹))
       (fun _ _ ↦ (hasDerivAt_rpow_const (by grind)).hasDerivWithinAt)
       ((rpow_left_injOn hp.ne.symm).mono (Set.Ioi_subset_Ici (by positivity)))]
-  refine setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ ?_)
+  refine setIntegral_congr_fun measurableSet_Ioi (fun x _ ↦ ?_)
   have : 0 ≤ x := by grind
   rw [abs_of_nonneg (by positivity)]
 
@@ -1192,7 +1192,7 @@ theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     ∫ x in Ioi a, g (b * x) = b⁻¹ • ∫ x in Ioi (b * a), g x := by
   have : ∀ c : ℝ, MeasurableSet (Ioi c) := fun c => measurableSet_Ioi
-  rw [← integral_indicator (this a), ← integral_indicator (this (b * a)),
+  rw [← integral_indicator (this _), ← integral_indicator (this _),
     ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr
   ext1 x
