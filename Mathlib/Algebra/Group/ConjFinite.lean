@@ -60,12 +60,22 @@ theorem mk_carrier_map_mul_left :
   conv_rhs => rw [← ConjClasses.mk_carrier_map_conj, Multiset.map_map]
   exact Multiset.map_congr rfl fun _ _ ↦ by simp [MulAut.conj_apply]
 
+/-- Multiplying `f (g * h * g⁻¹)` over `h` in the conjugacy class of `g` equals multiplying
+`f h` over `h`. -/
+@[to_additive (dont_translate := G) ConjClasses.sum_carrier_mulAut
+/-- Summing `f (g * h * g⁻¹)` over `h` in the conjugacy class of `g` equals summing
+`f h` over `h`. -/]
 theorem prod_carrier_mulAut (f : G → H) :
     ∏ h ∈ (ConjClasses.mk g).carrier, f (MulAut.conj g h) =
     ∏ h ∈ (ConjClasses.mk g).carrier, f h := by
   change ((ConjClasses.mk g).carrier.toFinset.1.map (f ∘ MulAut.conj g)).prod = _
   rw [← Multiset.map_map, mk_carrier_map_conj, Finset.prod_eq_multiset_prod]
 
+/-- Multiplying `f (g * h)` over `h` in the conjugacy class of `g` equals multiplying
+`f (h * g)` over `h`. -/
+@[to_additive (dont_translate := G) ConjClasses.sum_carrier_mul_left
+/-- Summing `f (g * h)` over `h` in the conjugacy class of `g` equals summing
+`f (h * g)` over `h`. -/]
 theorem prod_carrier_mul_left (f : G → H) :
     ∏ h ∈ (ConjClasses.mk g).carrier, f (g * h) =
     ∏ h ∈ (ConjClasses.mk g).carrier, f (h * g) := by
