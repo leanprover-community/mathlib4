@@ -1233,22 +1233,6 @@ theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = 
 def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ₗᵢ[𝕜] β :=
   (withLpProdComm p 𝕜 α β).trans (withLpProdUnique p 𝕜 β α)
 
-theorem withLpUniqueProd_apply_symm_apply [Unique α] {x} :
-    (withLpUniqueProd p 𝕜 α β) ((withLpUniqueProd p 𝕜 α β).symm x) = x :=
-  LinearIsometryEquiv.apply_symm_apply _ _
-
-theorem withLpUniqueProd_symm_apply_apply [Unique α] {x} :
-    (withLpUniqueProd p 𝕜 α β).symm (withLpUniqueProd p 𝕜 α β x) = x :=
-  LinearIsometryEquiv.symm_apply_apply _ _
-
-theorem withLpUniqueProd_symm_apply_eq [Unique α] {x y} :
-    (withLpUniqueProd p 𝕜 α β).symm x = y ↔ x = withLpUniqueProd p 𝕜 α β y :=
-  LinearIsometryEquiv.symm_apply_eq _
-
-theorem withLpUniqueProd_eq_symm_apply [Unique α] {x y} :
-    y = (withLpUniqueProd p 𝕜 α β).symm x ↔ withLpUniqueProd p 𝕜 α β y = x :=
-  LinearIsometryEquiv.eq_symm_apply _
-
 theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p 𝕜 α β) = WithLp.snd :=
   rfl
 
