@@ -302,7 +302,7 @@ theorem sup_eq_iSup' [ConditionallyCompleteLinearOrderBot β] (s : Finset α) (f
     intro a ha
     apply le_ciSup_of_le
     · exact ⟨s.sup f, fun _ ⟨x, hx⟩ => hx ▸ ciSup_le' fun h => Finset.le_sup h⟩
-    · exact le_ciSup ⟨f a, fun b ⟨_, h⟩ => h ▸ le_refl _⟩ ha
+    · exact le_ciSup ⟨f a, fun b ⟨_, h⟩ => h ▸ le_rfl⟩ ha
   · exact ciSup_le' fun a => ciSup_le' fun ha => Finset.le_sup ha
 
 @[to_dual]
