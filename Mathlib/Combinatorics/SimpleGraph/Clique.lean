@@ -404,15 +404,23 @@ theorem not_cliqueFree_iff_top_isContained (n : ℕ) : ¬G.CliqueFree n ↔ comp
 
 @[deprecated (since := "2026-03-23")] alias not_cliqueFree_iff := not_cliqueFree_iff_top_isContained
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (Copy (completeGraph <| Fin n) G) := by
+theorem cliqueFree_iff_free_top_fin : G.CliqueFree n ↔ (completeGraph (Fin n)).Free G :=
+  not_cliqueFree_iff_top_isContained n |>.not_right
+
+theorem cliqueFree_iff_isEmpty_copy_top_fin {n : ℕ} :
+    G.CliqueFree n ↔ IsEmpty (Copy (completeGraph <| Fin n) G) := by
   contrapose!
   exact not_cliqueFree_iff_top_isContained n
 
+@[deprecated (since := "2026-07-04")] alias cliqueFree_iff := cliqueFree_iff_isEmpty_copy_top_fin
+
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
-theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
+theorem cliqueFree_card_iff_free_top {β : Type*} [Fintype β] :
     G.CliqueFree (card β) ↔ (⊤ : SimpleGraph β).Free G := by
   rw [← not_iff_not, not_free, not_cliqueFree_iff_top_isContained,
     isContained_congr (Iso.completeGraph (equivFin β)) Iso.refl]
+
+@[deprecated (since := "2026-07-04")] alias cliqueFree_iff_top_free := cliqueFree_card_iff_free_top
 
 theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G) :
     ¬G.CliqueFree (card α) := by
@@ -459,15 +467,15 @@ theorem CliqueFree.comap {H : SimpleGraph β} (hle : H ⊑ G) (h : G.CliqueFree 
 
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
-  rw [cliqueFree_iff]
+  rw [cliqueFree_iff_free_top_fin]
   contrapose! hc
   simpa only [Fintype.card_fin] using card_le_of_embedding hc.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
 theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
     (hc : card ι < n) : (completeMultipartiteGraph V).CliqueFree n := by
-  rw [cliqueFree_iff, isEmpty_iff]
-  intro f
+  rw [cliqueFree_iff_free_top_fin]
+  intro ⟨f⟩
   obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
   rw [← top_adj, ← f.topEmbedding.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
@@ -486,7 +494,7 @@ def topEmbedding (f : ∀ (i : ι), V i) :
 
 theorem not_cliqueFree_of_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
-  fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <|
+  fun hf ↦ (cliqueFree_iff_isEmpty_copy_top_fin.1 <| hf.mono hc).elim' <|
     topEmbedding V f |>.toCopy.comp (Iso.completeGraph (equivFin ι).symm).toCopy
 
 theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
