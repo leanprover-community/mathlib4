@@ -933,12 +933,8 @@ abbrev linearization : Action (Type w) G ⥤ Rep.{max w u} k G where
   obj X := .of <| .linearize k G X
   map f := Rep.ofHom <| Representation.linearizeMap f
 
--- False positive
-set_option linter.style.setOption false in
 open MonoidalCategory Representation.LinearizeMonoidal in
-set_option maxHeartbeats 300000 in
--- This was already on the brink of timing out.
-instance : (linearization k G).Monoidal where
+instance : (linearization k G).LaxMonoidal where
   ε := ofHom (ε k G)
   μ X Y := ofHom (μ X Y)
   μ_natural_left f Z := hom_ext <| μ_comp_rTensor f Z
@@ -946,6 +942,9 @@ instance : (linearization k G).Monoidal where
   associativity X Y Z := by ext1; simp [μ_comp_assoc _]
   left_unitality X := hom_ext <| μ_leftUnitor X
   right_unitality X := hom_ext <| μ_rightUnitor X
+
+open MonoidalCategory Representation.LinearizeMonoidal in
+instance : (linearization k G).OplaxMonoidal where
   η := ofHom (η k G)
   δ X Y := ofHom (δ X Y)
   δ_natural_left f Z := hom_ext <| rTensor_comp_δ Z f
@@ -953,6 +952,9 @@ instance : (linearization k G).Monoidal where
   oplax_associativity X Y Z := hom_ext <| by simpa using assoc_comp_δ X Y Z (k := k)
   oplax_left_unitality X := hom_ext <| leftUnitor_δ X
   oplax_right_unitality X := hom_ext <| rightUnitor_δ X
+
+open MonoidalCategory Representation.LinearizeMonoidal in
+instance : (linearization k G).Monoidal where
   ε_η := hom_ext <| η_ε k G
   η_ε := hom_ext <| ε_η k G
   μ_δ X Y := hom_ext <| δ_μ (k := k) X Y

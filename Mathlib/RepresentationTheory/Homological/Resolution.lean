@@ -262,8 +262,6 @@ def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom
   ⟨(Finsupp.linearCombination _ fun _ ↦ (1 : k)) ∘ₗ (MonoidAlgebra.coeffLinearEquiv k).toLinearMap,
     fun _ ↦ MonoidAlgebra.lhom_ext' fun _ => LinearMap.ext_ring <| by simp⟩
 
-set_option maxHeartbeats 800000 in
--- became slow after the `MonoidAlgebra` refactor
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
