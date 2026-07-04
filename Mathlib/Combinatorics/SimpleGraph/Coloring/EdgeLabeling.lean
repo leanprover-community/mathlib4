@@ -213,12 +213,12 @@ theorem TopEdgeLabeling.labelGraph_toTopEdgeLabeling [DecidableEq V]
 namespace EdgeLabeling
 
 /-- The predicate `C.MonochromaticBetween X Y k` says every edge between `X` and `Y` is labelled
-`k` by the labelling `C`. -/
+`k` by the labeling `C`. -/
 def MonochromaticBetween (C : EdgeLabeling G K) (X Y : Set V) (k : K) : Prop :=
   ∀ ⦃x⦄, x ∈ X → ∀ ⦃y⦄, y ∈ Y → (h : G.Adj x y) → C.get x y h = k
 
 /-- Given an edge labeling of a simple graph `G`, a subset `X` of the vertices of `G` is said to be
-monochromatic of color `k` if every edge in `X` is labelled `k` by the labelling `C`. -/
+monochromatic of color `k` if every edge in `X` is labelled `k` by the labeling `C`. -/
 def MonochromaticOf (C : EdgeLabeling G K) (X : Set V) (k : K) : Prop :=
   MonochromaticBetween C X X k
 
@@ -271,7 +271,7 @@ protected theorem image {C : EdgeLabeling G' K} {f : G ↪g G'}
     C.MonochromaticBetween (f '' X) (f '' Y) k := by
   simpa [MonochromaticBetween]
 
-theorem compRight (h : C.MonochromaticBetween X Y k) (e : K → K') :
+protected theorem compRight (h : C.MonochromaticBetween X Y k) (e : K → K') :
     (C.compRight e).MonochromaticBetween X Y (e k) := by
   intro x hx y hy h'
   rw [compRight_get, h hx hy h']
@@ -289,12 +289,14 @@ theorem monochromaticBetween_singleton_right {y : V} :
     C.MonochromaticBetween X {y} k ↔ ∀ ⦃x⦄, x ∈ X → (h : G.Adj x y) → C.get x y h = k := by
   simp [MonochromaticBetween]
 
-theorem monochromaticBetween_union_left : C.MonochromaticBetween (X ∪ Y) Z k ↔
-    C.MonochromaticBetween X Z k ∧ C.MonochromaticBetween Y Z k := by
+theorem monochromaticBetween_union_left :
+    C.MonochromaticBetween (X ∪ Y) Z k ↔
+      C.MonochromaticBetween X Z k ∧ C.MonochromaticBetween Y Z k := by
   grind [MonochromaticBetween]
 
-theorem monochromaticBetween_union_right : C.MonochromaticBetween X (Y ∪ Z) k ↔
-    C.MonochromaticBetween X Y k ∧ C.MonochromaticBetween X Z k := by
+theorem monochromaticBetween_union_right :
+    C.MonochromaticBetween X (Y ∪ Z) k ↔
+      C.MonochromaticBetween X Y k ∧ C.MonochromaticBetween X Z k := by
   grind [MonochromaticBetween]
 
 theorem monochromaticBetween_self : C.MonochromaticBetween X X k ↔ C.MonochromaticOf X k :=
