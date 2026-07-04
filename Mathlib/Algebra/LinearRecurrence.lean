@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Linear recurrence
@@ -48,6 +49,7 @@ open Polynomial
 
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
+@[wikidata Q364089]
 structure LinearRecurrence (R : Type*) [CommSemiring R] where
   /-- Order of the linear recurrence -/
   order : ℕ
@@ -155,10 +157,11 @@ theorem repr_basis_eq (u : E.solSpace) :
 theorem repr_basis_apply (u : E.solSpace) (n : Fin E.order) : E.basis.repr u n = u.val n :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two solutions are equal iff their initial conditions are equal. -/
 theorem eq_iff_eqOn_range_order (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
     u = v ↔ Set.EqOn u v ↑(range E.order) := by
+  replace hu : u ∈ E.solSpace := (is_sol_iff_mem_solSpace _ _).mp hu
+  replace hv : v ∈ E.solSpace := (is_sol_iff_mem_solSpace _ _).mp hv
   rw [← Subtype.mk.injEq u hu v hv, ← E.basis.repr.injective.eq_iff]
   constructor
   · exact fun h n hn ↦ congr($h ⟨n, Finset.mem_range.mp hn⟩)
@@ -216,7 +219,7 @@ theorem charPoly_degree_eq_order [Nontrivial R] : (charPoly E).degree = E.order 
 theorem charPoly_monic : charPoly E |>.Monic := by
   nontriviality R
   rw [Monic, leadingCoeff, natDegree_eq_of_degree_eq_some <| charPoly_degree_eq_order _, charPoly,
-    coeff_sub, coeff_monomial_same, finset_sum_coeff, sub_eq_self]
+    coeff_sub, coeff_monomial_same, finsetSum_coeff, sub_eq_self]
   refine sum_eq_zero fun _ _ ↦ coeff_eq_zero_of_degree_lt ?_
   grw [degree_monomial_le]
   simp
@@ -226,7 +229,7 @@ theorem charPoly_monic : charPoly E |>.Monic := by
 theorem geom_sol_iff_root_charPoly (q : R) :
     (E.IsSolution fun n ↦ q ^ n) ↔ E.charPoly.IsRoot q := by
   rw [charPoly, Polynomial.IsRoot.def, Polynomial.eval]
-  simp only [Polynomial.eval₂_finset_sum, one_mul, RingHom.id_apply, Polynomial.eval₂_monomial,
+  simp only [Polynomial.eval₂_finsetSum, one_mul, RingHom.id_apply, Polynomial.eval₂_monomial,
     Polynomial.eval₂_sub]
   constructor
   · intro h

@@ -199,16 +199,16 @@ are non-positive integers. -/
 theorem ordinaryHypergeometricSeries_radius_eq_one
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) :
     (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
-  convert ofScalars_radius_eq_of_tendsto 𝔸 _ one_ne_zero ?_
+  convert! ofScalars_radius_eq_of_tendsto 𝔸 _ one_ne_zero ?_
   suffices Tendsto (fun k : ℕ ↦ (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k)) atTop (𝓝 1) by
     simp_rw [ordinaryHypergeometricSeries_norm_div_succ_norm a b c _ (fun n _ ↦ habc n)]
     simp only [← norm_inv, ← norm_mul, NNReal.coe_one]
-    convert Filter.Tendsto.norm this
+    convert! Filter.Tendsto.norm this
     exact norm_one.symm
   have (k : ℕ) : (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k) =
         (c + k) / (a + k) * ((1 + k) / (b + k)) := by field
   simp_rw [this]
   apply (mul_one (1 : 𝕂)) ▸ Filter.Tendsto.mul <;>
-  convert tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
+  convert! tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
 
 end RCLike

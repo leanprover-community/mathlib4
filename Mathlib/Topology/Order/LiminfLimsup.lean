@@ -26,7 +26,7 @@ The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace �
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
 
-@[expose] public section
+public section
 
 open Filter TopologicalSpace
 open scoped Topology
@@ -406,7 +406,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLatti
     Tendsto (fun r : α ↦ ⨆ i, u i r) atTop (𝓝 c) := by
   classical
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨n0⟩⟩
-  · simpa using h_limsup
+  · simpa using! h_limsup
   refine tendsto_order.mpr ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
   · filter_upwards with r
     have : c ≤ u n0 r := (h_anti n0).le_of_tendsto (h_all n0) r
@@ -424,7 +424,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLatti
     · filter_upwards [(tendsto_order.1 h_limsup).2 b hb] with r hr
       contrapose! h
       exact ⟨limsup (u · r) cofinite, h, hr⟩
-  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (u · s) cofinite ≤ b' := by simpa using this
+  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (u · s) cofinite ≤ b' := by simpa using! this
   obtain ⟨b'', hb''b, hb''⟩ : ∃ b'' ∈ Set.Ico b' b, ∀ᶠ n in cofinite, u n r ≤ b'' := by
     rcases Set.eq_empty_or_nonempty (Set.Ioo b' b) with h | ⟨b'', hb'b'', hb''b⟩
     · refine ⟨b', ⟨le_rfl, hb'b⟩, ?_⟩
@@ -437,7 +437,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLatti
       filter_upwards [h_lt] with n hn using hn.le
   have A (n) : ∃ r, ∀ s ≥ r, u n s ≤ b'' := by
     suffices ∀ᶠ r in atTop, u n r ≤ b' by
-      simp only [eventually_atTop, ge_iff_le] at this
+      simp only [eventually_atTop] at this
       rcases this with ⟨r, hr⟩
       exact ⟨r, fun s hs ↦ (hr s hs).trans hb''b.1⟩
     simp only [b']
@@ -448,7 +448,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLatti
       contrapose! h
       exact ⟨u n r, h, hr⟩
   choose rs hrs using A
-  simp only [eventually_atTop, ge_iff_le]
+  simp only [eventually_atTop]
   refine ⟨r ⊔ ⨆ n : {n | b'' < u n r}, rs n, fun v hv ↦ ?_⟩
   -- `⊢ ⨆ i, u i v < b`
   apply lt_of_le_of_lt (iSup_le fun n ↦ ?_) hb''b.2
@@ -460,7 +460,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLatti
     _ ≤ ⨆ n : {n | b'' < u n r}, rs n := by
       refine le_ciSup (f := fun (x : {n | b'' < u n r}) ↦ rs x) ?_
         (⟨n, by simp [hn]⟩ : {n | b'' < u n r})
-      have : Finite {n | b'' < u n r} := by simpa using hb''
+      have : Finite {n | b'' < u n r} := by simpa using! hb''
       exact Finite.bddAbove_range _
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_right
     _ ≤ v := hv
@@ -510,7 +510,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       exists_lt_of_lt_csSup (bdd_above.recOn fun x hx ↦ ⟨f x, Set.mem_image_of_mem f hx⟩) hc
     apply lt_csSup_of_lt ?_ ?_ h'd
     · simpa only [BddAbove, upperBounds]
-        using Antitone.isCoboundedUnder_ge_of_isCobounded f_decr cobdd
+        using! Antitone.isCoboundedUnder_ge_of_isCobounded f_decr cobdd
     · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
       filter_upwards [he] with x hx using (fe_eq_d.symm ▸ f_decr hx)
   · by_cases! h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
@@ -531,7 +531,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     obtain ⟨l, l_lt, h'l⟩ :
         ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f } := by
       apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
-      simpa [IsBot] using not_bot
+      simpa [IsBot] using! not_bot
     obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
       contrapose! h'
       exact ⟨l, l_lt, h'⟩

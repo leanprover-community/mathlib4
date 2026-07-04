@@ -23,6 +23,7 @@ bounds for its q-expansion coefficients. The main results are
 * `CuspFormClass.qExpansion_isBigO`: **Hecke's bound** for a a cusp form of weight `k` (for
   an arithmetic subgroup `Γ`): the `n`-th q-expansion coefficient is `O(n ^ (k / 2))`.
 -/
+
 public section
 
 open Filter Topology Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup
@@ -152,8 +153,8 @@ lemma exists_bound_of_invariant
     {f : ℍ → E} (hf_cont : Continuous f) (hf_infinity : IsBoundedAtImInfty f)
     (hf_inv : ∀ (g : SL(2, ℤ)) τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C := by
-  simpa using exists_bound_of_invariant_of_isBigO hf_cont le_rfl
-    (by simpa only [Real.rpow_zero] using hf_infinity) hf_inv
+  simpa using! exists_bound_of_invariant_of_isBigO hf_cont le_rfl
+    (by simpa only [Real.rpow_zero] using! hf_infinity) hf_inv
 
 /-- A function on `ℍ` which is invariant under an arithmetic subgroup and bounded at all cusps,
 is uniformly bounded. -/
@@ -161,8 +162,8 @@ lemma exists_bound_of_subgroup_invariant {f : ℍ → E} (hf_cont : Continuous f
     (hf_infinity : ∀ (g : SL(2, ℤ)), IsBoundedAtImInfty fun τ ↦ f (g • τ))
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] (hf_inv : ∀ g ∈ Γ, ∀ τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C := by
-  simpa using exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO hf_cont le_rfl
-    (by simpa only [Real.rpow_zero] using hf_infinity) hf_inv
+  simpa using! exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO hf_cont le_rfl
+    (by simpa only [Real.rpow_zero] using! hf_infinity) hf_inv
 
 end ModularGroup
 
@@ -195,7 +196,7 @@ lemma CuspFormClass.petersson_bounded_left
   simp_rw [← UpperHalfPlane.petersson_slash_SL]
   have : ((toConjAct (g : GL (Fin 2) ℝ)⁻¹) • Γ).IsArithmetic := by
     simpa [(show Rat.castHom ℝ = algebraMap ℚ ℝ by rfl), map_inv, map_mapGL]
-      using Subgroup.IsArithmetic.conj Γ (mapGL ℚ g)⁻¹
+      using! Subgroup.IsArithmetic.conj Γ (mapGL ℚ g)⁻¹
   exact (zero_at_infty <| CuspForm.translate f g).petersson_isZeroAtImInfty_left k _
     (ModularForm.translate f' g)
 
@@ -247,7 +248,6 @@ local notation "𝕢" => Function.Periodic.qParam
 
 open Complex ModularFormClass
 
-set_option backward.isDefEq.respectTransparency false in
 /-- General result on bounding q-expansion coefficients using a bound on the norm of the function.
 This will get used twice over, once for cusp forms (with `e = k / 2`) and once for modular forms
 (with `e = k`). -/
