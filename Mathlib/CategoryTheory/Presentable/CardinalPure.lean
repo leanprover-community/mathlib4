@@ -137,7 +137,7 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
   obtain ⟨j', l', r', _, _, sq'⟩ :=
     IsCardinalPresentable.exists_commSq_of_isColimit κ f hc₁ hc₂ _ (by cat_disch) sq
   have := hf j'
-  obtain ⟨ρ, hρ⟩ := IsCardinalPure.exists_of_commSq κ sq'
+  obtain ⟨ρ, _⟩ := IsCardinalPure.exists_of_commSq κ sq'
   exact ⟨ρ ≫ c₁.ι.app j', by cat_disch⟩
 
 end CategoryTheory
