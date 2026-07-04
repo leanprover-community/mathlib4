@@ -37,6 +37,17 @@ namespace Ideal
 
 section
 
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) (q : Ideal S)
+    [q.LiesOver p] [q.IsPrime] [Module.Finite R S] :
+    IsArtinianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q))) := by
+  have : p.IsPrime := isPrime_of_liesOver q p
+  let Sq := Localization.AtPrime q
+  let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
+  have : q = r.1.comap Algebra.TensorProduct.includeRight := by
+    rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
+  let := Localization.AtPrime.algebraOfLiesOver p (r.1.comap Algebra.TensorProduct.includeRight)
+  convert (Fiber.localizationAlgEquivQuotient p r.1).toRingEquiv.isArtinianRing
+
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
 open Classical in
@@ -66,26 +77,6 @@ theorem ramificationIdx_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx R
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_of_not_isPrime :=
   ramificationIdx_of_not_isPrime
-
-theorem ramificationIdx_pos [q.IsPrime] [Module.Finite R S] : 0 < q.ramificationIdx R := by
-  let p := q.under R
-  let Sq := Localization.AtPrime q
-  rw [ramificationIdx_def]
-  apply ENat.toNat_pos
-  · rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff,
-      IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top]
-    grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal]
-    exact (IsLocalRing.maximalIdeal.isMaximal _).lt_top
-  · let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
-    have : q = r.1.comap Algebra.TensorProduct.includeRight := by
-      rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
-    let := Localization.AtPrime.algebraOfLiesOver p (r.1.comap Algebra.TensorProduct.includeRight)
-    have : IsArtinianRing (Sq ⧸ map (algebraMap R Sq) p) := by
-      convert (Fiber.localizationAlgEquivQuotient p r.1).toRingEquiv.isArtinianRing
-    rwa [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
-      Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength]
-
-@[deprecated (since := "2026-07-01")] alias ramificationIdx'_pos := ramificationIdx_pos
 
 theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
     [Algebra.IsUnramifiedAt R q] : q.ramificationIdx R = 1 := by
@@ -135,6 +126,38 @@ theorem ramificationIdx_eq [q.LiesOver p] [q.IsPrime] :
   rw [ramificationIdx_def, over_def q p]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq := ramificationIdx_eq
+
+theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
+    (hq : q ∈ (p.map (algebraMap R S)).minimalPrimes)
+    [IsNoetherianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q)))] :
+      0 < q.ramificationIdx R := by
+  let Sq := Localization.AtPrime q
+  rw [ramificationIdx_eq p q]
+  apply ENat.toNat_pos
+  · rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff,
+      IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top]
+    grw [Ideal.over_def q p, map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal]
+    exact (IsLocalRing.maximalIdeal.isMaximal _).lt_top
+  · rw [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
+      Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength,
+      isArtinianRing_iff_krullDimLE_zero, Ring.krullDimLE_zero_iff]
+    intro r hr
+    apply Ideal.isMaximal_of_isIntegral_of_isMaximal_comap (R := Sq)
+    sorry
+
+theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
+    [IsNoetherianRing S] [Ring.DimensionLEOne S]
+    (hpS : p.map (algebraMap R S) ≠ ⊥) : 0 < q.ramificationIdx R :=
+  ramificationIdx_pos_of_mem_minimalPrimes p q
+    ⟨⟨‹_›, map_le_of_le_comap (q.over_def p).le⟩, fun r ⟨hr, hpr⟩ hrq ↦
+      ((hr.isMaximal (ne_bot_of_le_ne_bot hpS hpr)).eq_of_le IsPrime.ne_top' hrq).ge⟩
+
+variable (R) in
+theorem ramificationIdx_pos [q.IsPrime] [Module.Finite R S] :
+    0 < q.ramificationIdx R :=
+  ramificationIdx_pos_of_mem_minimalPrimes (q.under R) q (IsIntegral.mem_minimalPrimes_map_under q)
+
+@[deprecated (since := "2026-07-01")] alias ramificationIdx'_pos := ramificationIdx_pos
 
 open Localization IsLocalization.AtPrime in
 theorem ramificationIdx'_eq_ramificationIdx' [IsDedekindDomain S]
