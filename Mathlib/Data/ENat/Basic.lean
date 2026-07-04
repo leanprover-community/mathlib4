@@ -287,6 +287,12 @@ theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
   · simpa
   · exact add_one_le_iff hm
 
+theorem coe_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
+  add_one_le_iff <| coe_ne_top m
+
+theorem add_one_le_coe_iff {m : ℕ∞} {n : ℕ} : m + 1 ≤ n ↔ m < n :=
+  add_one_le_iff' <| coe_ne_top n
+
 @[deprecated Order.one_le_iff_ne_zero (since := "2026-05-25")]
 protected theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   Order.one_le_iff_ne_zero
@@ -320,6 +326,9 @@ theorem lt_add_one_iff' {m n : ENat} (hm : m ≠ ⊤) :
 
 theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
   lt_add_one_iff (coe_ne_top n)
+
+theorem coe_lt_add_one_iff {m : ℕ} {n : ℕ∞} : m < n + 1 ↔ m ≤ n :=
+  lt_add_one_iff' (coe_ne_top m)
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
