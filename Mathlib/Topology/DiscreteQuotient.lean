@@ -78,6 +78,9 @@ structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X whe
 
 namespace DiscreteQuotient
 
+@[deprecated (since := "2026-07-03")] protected alias isOpen_setOf_rel :=
+  DiscreteQuotient.isOpen_ofPred_rel
+
 variable (S : DiscreteQuotient X)
 
 @[deprecated (since := "2026-07-09")]
