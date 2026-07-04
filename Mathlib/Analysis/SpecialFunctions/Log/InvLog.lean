@@ -18,7 +18,7 @@ We prove properties of the functions `x ↦ (log x)⁻¹` and `x ↦ log (log x)
 
 - `deriv_inv_log` gives a formula for the derivative of `x ↦ (log x)⁻¹` which holds for all values.
 - `deriv_log_log` gives a formula for the derivative of `x ↦ log (log x)` which holds for all
-positive values other than 1.
+values.
 -/
 
 public section
