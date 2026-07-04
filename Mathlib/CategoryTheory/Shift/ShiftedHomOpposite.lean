@@ -43,18 +43,6 @@ lemma opEquiv_symm_apply {n : ℤ} (f : ShiftedHom (Opposite.op Y) (Opposite.op 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app (Opposite.op X)).unop ≫ f.unop⟦n⟧' :=
   rfl
 
-lemma opEquiv_symm_apply_eq {n : ℤ}
-    (f : ShiftedHom (Opposite.op Y) (Opposite.op X) n)
-    (g : ShiftedHom X Y n) :
-    (opEquiv n).symm f = g ↔ f = opEquiv n g :=
-  (opEquiv n).symm_apply_eq
-
-lemma opEquiv_eq_symm_apply {n : ℤ}
-    (f : ShiftedHom (Opposite.op Y) (Opposite.op X) n)
-    (g : ShiftedHom X Y n) :
-    g = (opEquiv n).symm f ↔ opEquiv n g = f :=
-  (opEquiv n).eq_symm_apply
-
 set_option backward.defeqAttrib.useBackward true in
 lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
     (f : ShiftedHom (Opposite.op X) (Opposite.op Y) a) {b : ℤ} {Z : C}
