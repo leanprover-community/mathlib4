@@ -510,9 +510,13 @@ theorem mem_spectrum_of_map_eq_smul {f : End R M} {v : M} {a : R} (h0 : v ≠ 0)
     a ∈ spectrum R f :=
   hasEigenvalue_of_hasEigenvector ⟨by simp [h], h0⟩ |>.mem_spectrum
 
+theorem hasEigenvalue_iff_exists_map_eq_smul {f : End R M} {a : R} :
+    f.HasEigenvalue a ↔ ∃ v ≠ 0, f v = a • v := by
+  simp [hasEigenvalue_iff, Submodule.ne_bot_iff, and_comm]
+
 theorem mem_spectrum_iff_exists_map_eq_smul [FiniteDimensional K V] {f : End K V} {a : K} :
     a ∈ spectrum K f ↔ ∃ v ≠ 0, f v = a • v := by
-  simp [← hasEigenvalue_iff_mem_spectrum, hasEigenvalue_iff, Submodule.ne_bot_iff, and_comm]
+  rw [← hasEigenvalue_iff_mem_spectrum, hasEigenvalue_iff_exists_map_eq_smul]
 
 theorem isUnit_iff_forall_map_eq_zero [FiniteDimensional K V] {f : End K V} :
     IsUnit f ↔ ∀ v, f v = 0 → v = 0 := by
