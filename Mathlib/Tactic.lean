@@ -73,6 +73,7 @@ public import Mathlib.Tactic.ComputablePolynomial.MvDegrees
 public import Mathlib.Tactic.ComputablePolynomial.MvDegreesOrder
 public import Mathlib.Tactic.ComputablePolynomial.MvMul
 public import Mathlib.Tactic.ComputablePolynomial.MvOfList
+public import Mathlib.Tactic.ComputablePolynomial.MvReflect
 public import Mathlib.Tactic.ComputablePolynomial.MvRing
 public import Mathlib.Tactic.ComputablePolynomial.MvToPoly
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
