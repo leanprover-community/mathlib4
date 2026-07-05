@@ -938,15 +938,15 @@ lemma Weight.prime_C₂_eq : prime.C₂ = log 4 + 3 := by simp [C₂]
 
 /-- The standard formula for the Meissel-Mertens constant. -/
 theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
-  + ∑' p : Primes, (log (1 - 1 / p) - 1 / p) := by
+  + ∑' p : Primes, (log (1 - 1 / p) + 1 / p) := by
   rw [← sub_eq_iff_eq_add']
   apply tendsto_nhds_unique prime.sum_div_log_mul_pow_add_tendsto
   have h := log_riemannZeta_add_log_sub_isLittleO_ofReal
   rw [isLittleO_one_iff] at h
   suffices Tendsto (fun s : ℝ ↦ ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2) * s)))
-    (𝓝[>] 1) (𝓝 (∑' (p : Primes), (1 / p - log (1 - 1 / p)))) by
+    (𝓝[>] 1) (𝓝 (∑' (p : Primes), (- 1 / p - log (1 - 1 / p)))) by
     convert tendsto_nhdsWithin_congr (fun s hs ↦ ?_) (h.sub this)
-    · simp [← tsum_neg]
+    · simp [← tsum_neg, division_def]
     rw [log_riemannZeta_eq hs]
     nth_rw 1 [tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
     · have : ∑' (p : Primes), Λ p / (p ^ s * log p)
@@ -984,9 +984,20 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
       field_simp
       apply le_abs_self
     · intro; simp +contextual [vonMangoldt_ne_zero_iff]
-  have (p : Primes) : 1 / p - log (1 - 1 / p)
+  have (p : Primes) : - 1 / p - log (1 - 1 / p)
       = ∑' (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2))) := by
-    sorry
+    symm; apply HasSum.tsum_eq
+    let c : ℕ → ℝ := fun k ↦ 1 / ((k + 1 : ℝ) * (p : ℝ) ^ ((k + 1)))
+    suffices HasSum (fun k ↦ c (k + 1)) (- 1 / ↑↑p - log (1 - 1 / ↑↑p)) by
+      convert this using 2 with n; unfold c; norm_cast
+    rw [hasSum_nat_add_iff 1]
+    simp only [one_div, mul_inv_rev, range_one, sum_singleton, zero_add, pow_one,
+      CharP.cast_eq_zero, inv_one, mul_one, c]
+    have : 1 < (p : ℝ) := mod_cast p.property.one_lt
+    convert! (1 / (p : ℝ)).hasSum_pow_div_log_of_abs_lt_one
+        (by grw [abs_of_pos (by positivity), ← this]; simp) using 1
+    · ext; simp [division_def]
+    simp [division_def]; abel
   apply tendsto_tsum_of_dominated_convergence
     ((summable_one_div_nat_pow.mpr (by norm_num : 1 < 2)).subtype Nat.Prime)
   · intro p
