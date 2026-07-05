@@ -361,10 +361,17 @@ theorem reflGen_le_reflTransGen : ReflGen r ≤ ReflTransGen r
   | a, _, .refl => by rfl
   | _, _, .single h => ReflTransGen.tail ReflTransGen.refl h
 
+theorem reflGen_le_eqvGen : ReflGen r ≤ EqvGen r
+  | a, _, .refl => .refl a
+  | _, _, .single h => .rel _ _ h
+
 namespace ReflGen
 
 theorem to_reflTransGen {a b} : ReflGen r a b → ReflTransGen r a b :=
   reflGen_le_reflTransGen a b
+
+theorem to_eqvGen {a b} : ReflGen r a b → EqvGen r a b :=
+  reflGen_le_eqvGen a b
 
 theorem mono {p : α → α → Prop} (hp : r ≤ p) : ReflGen r ≤ ReflGen p
   | a, _, ReflGen.refl => by rfl
@@ -390,7 +397,16 @@ instance [IsTrans α r] : IsTrans α (ReflGen r) where
 
 end ReflGen
 
+theorem symmGen_le_eqvGen : SymmGen r ≤ EqvGen r := by
+  intro a b h
+  cases h with
+  | inl hab => exact .rel a b hab
+  | inr hba => exact .symm _ _ (.rel b a hba)
+
 namespace SymmGen
+
+theorem to_eqvGen {a b} : SymmGen r a b → EqvGen r a b :=
+  symmGen_le_eqvGen a b
 
 theorem of_rel (h : r a b) : SymmGen r a b :=
   Or.inl h
@@ -503,6 +519,16 @@ theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a
         exact Or.inl ec
     · exact Or.inr (IH.tail bd)
 
+theorem _root_.Relation.reflTransGen_le_eqvGen : ReflTransGen r ≤ EqvGen r := by
+  intro _ _ h
+  induction h using trans_induction_on with
+  | refl a => exact .refl a
+  | single hab => exact .rel _ _ hab
+  | trans _ _ hab hbc => exact .trans _ _ _ hab hbc
+
+theorem to_eqvGen {a b} : ReflTransGen r a b → EqvGen r a b :=
+  reflTransGen_le_eqvGen a b
+
 end ReflTransGen
 
 theorem transGen_le_reflTransGen : TransGen r ≤ ReflTransGen r := by
@@ -555,6 +581,15 @@ theorem trans_induction_on {motive : ∀ {a b : α}, TransGen r a b → Prop} {a
   induction h with
   | single h => exact single h
   | tail hab hbc h_ih => exact trans hab (.single hbc) h_ih (single hbc)
+
+theorem _root_.Relation.transGen_le_eqvGen : TransGen r ≤ EqvGen r := by
+  intro _ _ h
+  induction h using trans_induction_on with
+  | single h => exact .rel _ _ h
+  | trans _ _ hab hbc => exact .trans _ _ _ hab hbc
+
+theorem to_eqvGen {a b} : TransGen r a b → EqvGen r a b :=
+  transGen_le_eqvGen a b
 
 theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen r a c := by
   induction hbc with
@@ -812,6 +847,48 @@ theorem mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p 
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
 
+variable {r}
+
+theorem _root_.Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
+  Iff.intro
+    (by
+      intro h
+      induction h with
+      | rel => assumption
+      | refl => exact h.1 _
+      | symm => apply h.symm; assumption
+      | trans _ _ _ _ _ hab hbc => exact h.trans hab hbc)
+    (EqvGen.rel a b)
+
+theorem _root_.Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
+  funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
+
+theorem _root_.Relation.eqvGen_idem : EqvGen (EqvGen r) = EqvGen r :=
+  Equivalence.eqvGen_eq (EqvGen.is_equivalence r)
+
+theorem lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
+    EqvGen r ≤ (EqvGen p on f) := by
+  intro _ _ hab
+  induction hab with
+  | rel a b ab => exact rel (f a) (f b) (h a b ab)
+  | refl a => exact refl (f a)
+  | symm a b ab ih => exact symm (f a) (f b) ih
+  | trans a b c ab bc ih₁ ih₂ => exact trans (f a) (f b) (f c) ih₁ ih₂
+
+theorem lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (EqvGen p on f)) :
+    EqvGen r ≤ (EqvGen p on f) := by
+  intro _ _ hab
+  simpa [eqvGen_idem] using hab.lift f h
+
+theorem _root_.Relation.reflTransGen_eq_eqvGen [Std.Symm r] : ReflTransGen r = EqvGen r := by
+  ext a b
+  refine ⟨ReflTransGen.to_eqvGen, fun hab => ?_⟩
+  induction hab with
+  | rel a b ab => exact .single ab
+  | refl a => exact .refl
+  | symm a b ab ih => grind [Std.Symm.swap_eq, reflTransGen_swap]
+  | trans a b c ab bc ih₁ ih₂ => exact .trans ih₁ ih₂
+
 end EqvGen
 
 /-- The join of a relation on a single type is a new relation for which
@@ -928,19 +1005,5 @@ theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
     (fun _ _ _ IH ↦ Eq.symm IH)
     (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
-
-theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
-  Iff.intro
-    (by
-      intro h
-      induction h with
-      | rel => assumption
-      | refl => exact h.1 _
-      | symm => apply h.symm; assumption
-      | trans _ _ _ _ _ hab hbc => exact h.trans hab hbc)
-    (EqvGen.rel a b)
-
-theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
-  funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
 
 end EqvGen
