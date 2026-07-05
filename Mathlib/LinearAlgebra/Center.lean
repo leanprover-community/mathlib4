@@ -58,11 +58,7 @@ theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
     [Module R V] {f : V →ₗ[R] V} {a : R}
     (hf : ∀ x, f x = a • x) :
     f ∈ center (End R V) := by
-  simp only [mem_center_iff, isMulCentral_iff, mul_assoc,
-    implies_true, and_self, and_true, commute_iff_eq]
-  intro g
-  ext x
-  simp [hf]
+  simp [mem_center_iff, isMulCentral_iff, commute_iff_eq, mul_assoc, LinearMap.ext_iff, hf]
 
 /-- A linear endomorphism of a free module of rank at least 2
 that commutes with transvections consists of homotheties with central ratio. -/
