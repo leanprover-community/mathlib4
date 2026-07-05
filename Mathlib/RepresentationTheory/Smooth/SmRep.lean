@@ -52,9 +52,10 @@ section ring
 variable (k : Type u) [Ring k]
 variable (G : Type v) [TopologicalSpace G] [Group G]
 
+/-- Smoothness is an `ObjectProperty` of `Rep k G`. -/
 def smoothProperty : ObjectProperty (Rep k G) := fun A ↦ (IsSmooth A.ρ)
 
-/-- `SmoothRep` is the full subcategory of `Rep` consisting of smooth representations. -/
+/-- `SmoothRep k G` is the full subcategory of `Rep k G` consisting of smooth representations. -/
 abbrev SmoothRep := (smoothProperty k G).FullSubcategory
 
 variable {k G}
@@ -127,6 +128,7 @@ lemma ihom_eq_RepOfSmoothHom (A B : SmoothRep k G)
     : ((ihom A).obj B).obj = Rep.of (smoothHom A.obj.ρ B.obj.ρ) := by
   rfl
 
+/-- An auxiliary form of `tensorHomAdjunction`. -/
 noncomputable def tensorHomAdjunction' (A : SmoothRep k G)
     : ι ⋙ (tensorLeft (ι.obj A)) ⊣ (Rep.ihom (ι.obj A)) ⋙ smVec :=
   smVecAdjunction.comp (ihom.adjunction (ι.obj A))

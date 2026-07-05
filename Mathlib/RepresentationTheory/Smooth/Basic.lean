@@ -182,6 +182,7 @@ theorem isSmooth_smoothVectors {ρ : Representation k G V} :
     IsSmooth ((smoothVectors ρ).toRepresentation) := by
   simp [isSmooth_iff, isSmoothVector_iff]
 
+/-- `IntertwiningMap` decends to `smoothVectors`. -/
 def IntertwiningMap.smoothVectors {ρ : Representation k G V} {ρ' : Representation k G V'}
     (f : ρ.IntertwiningMap ρ')
     : ((smoothVectors ρ).toRepresentation).IntertwiningMap (smoothVectors ρ').toRepresentation where
