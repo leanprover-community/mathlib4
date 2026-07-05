@@ -84,6 +84,7 @@ instance : (smoothProperty k G).IsClosedUnderIsomorphisms := ⟨by
 
 variable [IsTopologicalGroup G]
 
+/-- The canonical inclusion functor from `SmoothRep` to `Rep`. -/
 abbrev ι : SmoothRep k G ⥤ Rep k G := (smoothProperty k G).ι
 
 /-- The functor of taking the maximal smooth subrepresentation. -/
