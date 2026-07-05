@@ -69,7 +69,7 @@ variable {L}
 
 theorem exponent_def [HasExponent K L] (a : L) :
     a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range :=
-      open Classical in
+  open Classical in
   Nat.find_spec ‹HasExponent K L›.has_exponent a
 
 /-- Version of `exponent_def` using `ExpChar`. -/
@@ -81,7 +81,7 @@ variable {K}
 
 theorem exponent_min [HasExponent K L] {e : ℕ} (h : e < exponent K L) :
     ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range :=
-      open Classical in
+  open Classical in
   not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
 
 /-- Version of `exponent_min` using `ExpChar`. -/
@@ -136,7 +136,7 @@ noncomputable def elemReduct (a : L) : K :=
 
 theorem minpoly_eq (a : L) :
     minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) :=
-      open Classical in
+  open Classical in
   Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
 /-- Version of `minpoly_eq` using `ExpChar`. -/

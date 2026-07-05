@@ -223,7 +223,7 @@ theorem factors_eq_singleton_of_irreducible {a : α} (ha : Irreducible a) :
 
 theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Rel Associated (factors (x * y)) (factors x + factors y) := by
-      classical
+  classical
   refine
     factors_unique irreducible_of_factor
       (fun a ha =>

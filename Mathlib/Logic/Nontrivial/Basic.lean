@@ -67,7 +67,7 @@ variable {I : Type*} {f : I → Type*}
 /-- A pi type is nontrivial if it's nonempty everywhere and nontrivial somewhere. -/
 theorem nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')] :
     Nontrivial (∀ i : I, f i) := by
-      classical
+  classical
   letI := Classical.decEq (∀ i : I, f i)
   exact (Function.update_injective (fun i ↦ Classical.choice (inst i)) i').nontrivial
 

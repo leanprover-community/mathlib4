@@ -124,7 +124,7 @@ theorem emultiplicity_factors_map_eq_emultiplicity
     emultiplicity J (I.map (algebraMap R S)) =
       emultiplicity (↑(normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' ⟨J, hJ⟩))
         (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
-          classical
+  classical
   rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk, Equiv.coe_trans, Function.comp_apply,
     Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
     IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]

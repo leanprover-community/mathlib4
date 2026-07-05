@@ -456,7 +456,7 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
   completeEquipartiteGraph (r + 1) t ⊑ G
     ↔ ∃ᵉ (K : G.CompleteEquipartiteSubgraph r t) (s : Finset V),
         #s = t ∧ ∀ p ∈ K.parts, G.IsCompleteBetween p s := by
-          classical
+  classical
   by_cases ht : t = 0
   · have (r' : ℕ) : IsEmpty (Fin r' × Fin t) := by simp [ht, Fin.isEmpty]
     have h_bot (r' : ℕ) : completeEquipartiteGraph r' t = ⊥ :=
