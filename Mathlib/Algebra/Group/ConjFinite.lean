@@ -45,44 +45,32 @@ instance {x : ConjClasses α} : Fintype (carrier x) :=
 
 section Group
 
-variable {G H : Type*} [Group G] [Fintype G] [DecidableEq G] [CommMonoid H] (g : G)
+variable {G H : Type*} [Group G] [Fintype G] [DecidableEq G] [CommMonoid H]
+  (c : ConjClasses G) (g : G)
 
-theorem mk_carrier_map_conj :
-    (ConjClasses.mk g).carrier.toFinset.1.map (MulAut.conj g) =
-    (ConjClasses.mk g).carrier.toFinset.1 := by
-  have hbij := bijOn_conj g (ConjClasses.mk g)
-  rw [← Finset.image_val_of_injOn <| hbij.injOn.mono <| Set.subset_toFinset.1 fun ⦃_⦄ x ↦ x,
-    Finset.val_inj, ← Finset.coe_inj, Finset.coe_image, Set.coe_toFinset, hbij.image_eq]
-
-theorem mk_carrier_map_mul_left :
-    (ConjClasses.mk g).carrier.toFinset.1.map (fun h ↦ g * h) =
-    (ConjClasses.mk g).carrier.toFinset.1.map (fun h ↦ h * g) := by
-  conv_rhs => rw [← ConjClasses.mk_carrier_map_conj, Multiset.map_map]
-  exact Multiset.map_congr rfl fun _ _ ↦ by simp [MulAut.conj_apply]
-
-/-- Multiplying `f (g * h * g⁻¹)` over `h` in the conjugacy class of `g` equals multiplying
+/-- Multiplying `f (g * h * g⁻¹)` over `h` in any conjugacy class of `G` equals multiplying
 `f h` over `h`. -/
 @[to_additive (dont_translate := G) ConjClasses.sum_carrier_mulAut
-/-- Summing `f (g * h * g⁻¹)` over `h` in the conjugacy class of `g` equals summing
+/-- Summing `f (g * h * g⁻¹)` over `h` in any conjugacy class of `G` equals summing
 `f h` over `h`. -/]
 theorem prod_carrier_mulAut (f : G → H) :
-    ∏ h ∈ (ConjClasses.mk g).carrier, f (MulAut.conj g h) =
-    ∏ h ∈ (ConjClasses.mk g).carrier, f h := by
-  simp only [← Function.comp_apply (f := f)]
-  rw [Finset.prod_eq_multiset_prod, ← Multiset.map_map, mk_carrier_map_conj,
-    Finset.prod_eq_multiset_prod]
+    ∏ h ∈ c.carrier, f (MulAut.conj g h) =
+    ∏ h ∈ c.carrier, f h := by
+  rw [← Finset.prod_set_coe, ← Finset.prod_set_coe]
+  refine Fintype.prod_equiv (bijOn_conj g _).equiv _ _ fun _ ↦ ?_
+  simp [Set.BijOn.equiv]
 
-/-- Multiplying `f (g * h)` over `h` in the conjugacy class of `g` equals multiplying
+/-- Multiplying `f (g * h)` over `h` in any conjugacy class of `G` equals multiplying
 `f (h * g)` over `h`. -/
 @[to_additive (dont_translate := G) ConjClasses.sum_carrier_mul_left
-/-- Summing `f (g * h)` over `h` in the conjugacy class of `g` equals summing
+/-- Summing `f (g * h)` over `h` in any conjugacy class of `G` equals summing
 `f (h * g)` over `h`. -/]
 theorem prod_carrier_mul_left (f : G → H) :
-    ∏ h ∈ (ConjClasses.mk g).carrier, f (g * h) =
-    ∏ h ∈ (ConjClasses.mk g).carrier, f (h * g) := by
-  simp only [← Function.comp_apply (f := f)]
-  rw [Finset.prod_eq_multiset_prod, ← Multiset.map_map, mk_carrier_map_mul_left,
-    Finset.prod_eq_multiset_prod, Multiset.map_map]; rfl
+    ∏ h ∈ c.carrier, f (g * h) =
+    ∏ h ∈ c.carrier, f (h * g) := by
+  rw [← Finset.prod_set_coe, ← Finset.prod_set_coe]
+  refine Fintype.prod_equiv (bijOn_conj g _).equiv _ _ fun _ ↦ ?_
+  simp [Set.BijOn.equiv]
 
 end Group
 
