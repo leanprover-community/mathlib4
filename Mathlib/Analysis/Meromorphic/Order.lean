@@ -269,11 +269,12 @@ theorem meromorphicOrderAt_congr (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
   cases h₁f₁ : meromorphicOrderAt f₁ x with
   | top =>
     rw [meromorphicOrderAt_eq_top_iff] at h₁f₁ ⊢
-    exact EventuallyEq.rw h₁f₁ (fun x => Eq (f₂ x)) hf₁₂.symm
+    filter_upwards [hf₁₂, h₁f₁] using by grind
   | coe n =>
     obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 h₁f₁
     rw [meromorphicOrderAt_eq_int_iff (hf₁.congr hf₁₂)]
-    exact ⟨g, h₁g, h₂g, EventuallyEq.rw h₃g (fun x => Eq (f₂ x)) hf₁₂.symm⟩
+    use g, h₁g, h₂g
+    filter_upwards [hf₁₂, h₃g] using by grind
 
 /-- Compatibility of notions of `order` for analytic and meromorphic functions. -/
 lemma AnalyticAt.meromorphicOrderAt_eq (hf : AnalyticAt 𝕜 f x) :
