@@ -672,8 +672,8 @@ lemma preconnected_induce_inter {a b : Set V} (ht : G.IsTree)
   obtain ⟨wb, hwb⟩ := preconnected_induce_iff_forall_exists_walk.mp hb hx.2 hy.2
   have heq : wa.toPath = wb.toPath := ht.isAcyclic.path_unique _ _
   exact ⟨wa.toPath.val.induce (a ∩ b) fun z hz ↦
-    ⟨hwa _ (Walk.support_toPath_subset _ hz),
-     hwb _ (Walk.support_toPath_subset _ (heq ▸ hz))⟩⟩
+    ⟨hwa _ (Walk.support_toPath_subset_support _ hz),
+     hwb _ (Walk.support_toPath_subset_support _ (heq ▸ hz))⟩⟩
 
 /-- In a tree, given two connected induced subgraphs `a, b` with intersecting vertex sets, every
 walk from a vertex of `a` to a vertex of `b` passes through a vertex of `a ∩ b`. -/
@@ -693,13 +693,13 @@ lemma mem_walk_of_inter_nonempty (hT : G.IsTree) {a b : Set V}
   obtain ⟨d, hd_in, hd_fst_a, hd_snd_not_a⟩ :=
     W.toPath.val.exists_boundary_dart a hx hy_a
   have hd_fst_w : d.fst ∈ w.toSubgraph.verts :=
-    w.mem_verts_toSubgraph.mpr (Walk.support_toPath_subset w
+    w.mem_verts_toSubgraph.mpr (Walk.support_toPath_subset_support w
       (hW_eq ▸ W.toPath.val.dart_fst_mem_support_of_mem_darts hd_in))
   suffices hd_fst_b : d.fst ∈ b from ⟨d.fst, ⟨hd_fst_w, hd_fst_a⟩, hd_fst_b⟩
   -- The boundary edge is on `W.toPath`, hence on one of `wxm_g`, `wmy_g`.
   obtain he_xm | he_my : s(d.fst, d.snd) ∈ wxm_g.edges ∨ s(d.fst, d.snd) ∈ wmy_g.edges := by
     rw [← List.mem_append, ← Walk.edges_append]
-    exact Walk.edges_toPath_subset _ (List.mem_map.mpr ⟨d, hd_in, rfl⟩)
+    exact Walk.edges_toPath_subset_edges _ (List.mem_map.mpr ⟨d, hd_in, rfl⟩)
   · exact absurd (hwxm_a _ (wxm_g.snd_mem_support_of_mem_edges he_xm)) hd_snd_not_a
   · exact hwmy_b _ (wmy_g.fst_mem_support_of_mem_edges he_my)
 
