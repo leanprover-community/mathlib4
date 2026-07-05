@@ -57,12 +57,6 @@ def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSub
   map_mul' x y := by ext; simp
 
 @[simp]
-lemma toRepresentation_apply_mk {ρ' : Subrepresentation ρ} {g : G} {v w : W} {hv : v ∈ ρ'}
-    {hw : w ∈ ρ'}
-    : ρ'.toRepresentation g ⟨v, hv⟩ = ⟨w, hw⟩ ↔ ρ g v = w := by
-  rw [Subtype.ext_iff]; rfl
-
-@[simp]
 lemma toRepresentation_apply_coe {ρ' : Subrepresentation ρ} {g : G} {v w : ρ'.toSubmodule}
     : ρ'.toRepresentation g v = w ↔ ρ g v.1 = w.1 := by
   rw [Subtype.ext_iff]; rfl
