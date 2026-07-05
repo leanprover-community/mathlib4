@@ -22,7 +22,7 @@ morphisms are monomorphisms.
 
 -/
 
-@[expose] public section
+public section
 
 universe w
 
