@@ -13,6 +13,7 @@ public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.Analysis.SpecialFunctions.Stirling
 public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+public import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
@@ -474,6 +475,8 @@ theorem second_theorem_asymp_nat :
 
 open ENNReal
 
+/-- A formula for the Dirichlet series associated to Mertens' second theorem, with exact
+error term. -/
 theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
     ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) = - log (s - 1) - Real.eulerMascheroniConstant + M
     + ∫ x in .Ioi 1, (E₂ (x ^ (s - 1)⁻¹)) * x ^ (-2 : ℝ) := calc
@@ -578,6 +581,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
         _ = _ := by ring
     exacts [h1, h2 M, h1.add (h2 M), h3]
 
+/-- An asymptotic for the Dirichlet series associated to Mertens' second theorem. -/
 theorem sum_div_log_mul_pow_add_tendsto :
     Tendsto (fun s ↦ ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) + log (s - 1)) (𝓝[>] 1)
     (𝓝 (M - Real.eulerMascheroniConstant)) := by
@@ -963,14 +967,64 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
           = ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2 : ℝ) * s)) := by
         congr! 4 with p k
         simp [ArithmeticFunction.vonMangoldt, p.property.isPrimePow.pow, p.property.pow_minFac]
-        have : 0 < log p := p.property.log_pos
+        have := p.property.log_pos
         field_simp
         rw [rpow_mul (by positivity)]
         norm_cast
       linarith
-    · sorry
+    · apply (summable_one_div_nat_rpow.mpr hs).of_norm_bounded
+      intro n
+      rcases eq_or_ne 0 n with rfl | h
+      · simp [zero_rpow_nonneg]
+      rcases eq_or_ne 1 n with rfl | h
+      · simp
+      simp only [norm_div, norm_eq_abs, norm_mul, one_div]
+      grw [vonMangoldt_le_log]
+      have : 0 < log n := log_pos (mod_cast (by lia))
+      field_simp
+      apply le_abs_self
     · intro; simp +contextual [vonMangoldt_ne_zero_iff]
-  sorry
+  have (p : Primes) : 1 / p - log (1 - 1 / p)
+      = ∑' (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2))) := by
+    sorry
+  apply tendsto_tsum_of_dominated_convergence
+    ((summable_one_div_nat_pow.mpr (by norm_num : 1 < 2)).subtype Nat.Prime)
+  · intro p
+    rw [this p]
+    have : (p : ℝ) ≠ 0 := mod_cast p.property.ne_zero
+    have : 1 ≤ (p : ℝ) := mod_cast p.property.one_le
+    have : 2 ≤ (p : ℝ) := mod_cast p.property.two_le
+    apply tendsto_tsum_of_dominated_convergence summable_geometric_two
+    · intro k
+      convert! tendsto_const_nhds.div (b := (k + 2) * (p : ℝ) ^ (k + 2))
+        (Tendsto.mono_left _ nhdsWithin_le_nhds) (by positivity) using 1
+      have : Continuous (fun s : ℝ ↦ (k + 2) * (p : ℝ) ^ ((k + 2) * s)) := by fun_prop
+      convert this.tendsto 1
+      norm_cast; simp
+    · filter_upwards [eventually_mem_nhdsWithin] with s hs
+      rw [Set.mem_Ioi] at hs
+      intro
+      rw [norm_eq_abs, abs_of_nonneg (by positivity)]
+      grw [← hs, ← this, mul_one, one_div_pow]
+      norm_cast; gcongr; grind
+  · filter_upwards [eventually_mem_nhdsWithin] with s hs
+    rw [Set.mem_Ioi] at hs
+    intro p
+    have h0 : 0 < (p : ℝ) := mod_cast p.property.pos
+    have h1 : 1 ≤ (p : ℝ) := mod_cast p.property.one_le
+    have h2 : 2 ≤ (p : ℝ) := mod_cast p.property.two_le
+    rw [norm_eq_abs, abs_of_nonneg (by positivity)]
+    refine tsum_le_of_sum_range_le (fun n ↦ by positivity) (fun N ↦ ?_)
+    grw [← hs]
+    simp only [mul_one, rpow_add h0, rpow_natCast, rpow_ofNat, one_div, mul_inv_rev, mul_assoc,
+      ← mul_sum, Function.comp_apply]
+    apply mul_le_of_le_one_right (by positivity)
+    calc
+      _ ≤ (1 - (2 : ℝ)⁻¹) * ∑ n ∈ range N, ((2 : ℝ)⁻¹)^n := by
+        rw [mul_sum]; apply Finset.sum_le_sum; intro n hn
+        grw [← h2, inv_pow, mul_comm]
+        gcongr; field_simp; grind
+      _ ≤ _ := by rw [mul_neg_geom_sum, sub_le_self_iff]; positivity
 
 end ConstructWeights
 
