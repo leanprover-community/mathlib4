@@ -186,7 +186,7 @@ variable {P}
 section Adjunction
 
 lemma IsSeparating.strictMap_leftAdjoint
-    (hP : P.IsSeparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful] [G.Full]
+    (hP : P.IsSeparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful]
     (adj : F ⊣ G) :
     (P.strictMap F).IsSeparating :=
   fun Y Z f g h ↦ G.map_injective (hP _ _
@@ -196,7 +196,7 @@ lemma IsSeparating.strictMap_leftAdjoint
 
 set_option backward.isDefEq.respectTransparency false in
 lemma IsCoseparating.strictMap_rightAdjoint
-    (hP : P.IsCoseparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful] [G.Full]
+    (hP : P.IsCoseparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful]
     (adj : G ⊣ F) :
     (P.strictMap F).IsCoseparating :=
   fun Y Z f g h ↦ G.map_injective (hP _ _
@@ -580,12 +580,12 @@ end Equivalence
 section Adjunction
 
 lemma IsSeparator.leftAdjoint_obj {X : C} (hX : IsSeparator X)
-    {F : C ⥤ D} {G : D ⥤ C} [G.Full] [G.Faithful] (adj : F ⊣ G) :
+    {F : C ⥤ D} {G : D ⥤ C} [G.Faithful] (adj : F ⊣ G) :
     IsSeparator (F.obj X) := by
   simpa using! hX.strictMap_leftAdjoint adj
 
 lemma IsCoseparator.rightAdjoint_obj {X : C} (hX : IsCoseparator X)
-    {F : C ⥤ D} {G : D ⥤ C} [G.Full] [G.Faithful] (adj : G ⊣ F) :
+    {F : C ⥤ D} {G : D ⥤ C} [G.Faithful] (adj : G ⊣ F) :
     IsCoseparator (F.obj X) := by
   simpa using! hX.strictMap_rightAdjoint adj
 
