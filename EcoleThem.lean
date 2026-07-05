@@ -383,7 +383,3 @@ theorem Cantor (f : α → Set α) : ¬ Function.Surjective f := by
   exact iff_not_self this
 
 /- ---------------------------------------- -/
-
-
-
-
