@@ -43,14 +43,11 @@ bounded for `x ≥ 1`.
 - Mertens' second theorem: if `f` is a Mertens weight, then
 `∑ n ∈ Ioc 0 ⌊x⌋₊, f n / log n - log (log x) - M` decays like `1 / log x`, where `M` is the
 Meissel--Mertens constant associated to `f`.
+- In the case of the von Mangoldt weight, the Meissel--Mertens constant is equal to the
+Euler--Mascheroni constant `γ`.
+- Mertens' third theorem: `∏ p ∈ primesLE ⌊x⌋₊, (1 - 1 / p) ~ exp(-γ) / log x` as `x → ∞`.
 
 Explicit constants are available in all cases.
-
-## TODO
-
-- Establish that the Meissel--Mertens constant for the von Mangoldt function is equal to the
-Euler--Mascheroni constant.
-- Establish Mertens' third theorem.
 
 ## References
 
@@ -1331,6 +1328,7 @@ theorem prod_prime_one_minus_inv_eq {x : ℝ} (hx : 1 < x) :
   field_simp
   exact prod_congr rfl fun p hp ↦ (exp_log (hpos (mem_filter.mp hp).2)).symm
 
+/-- A completely explicit upper bound on the error term. -/
 theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) :
     |E₃ x| ≤ (log 4 + 3) / log x + 1 / ⌊x⌋₊ := by
   have hx' := floor_mono hx
