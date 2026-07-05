@@ -25,32 +25,37 @@ def Abelian.Subobject.cokernelOrderIso (Y : Subobject X) :
   left_inv p := epi_image_inverseImage (cokernel.π Y.arrow) p
   right_inv := by
     rintro ⟨q, hq : Y ≤ q⟩
-    dsimp only
-    congr
-    dsimp
-    /-
-    dsimp [kernelSubobject]
-    refine mk_eq_of_comm _ ?_ ?_
-    · refine Iso.symm ?_
-      sorry
-    · sorry
-    -/
     apply le_antisymm
-    · let r : cokernel (Y.arrow) ⟶ cokernel (q.arrow) := (cokernel.desc _ (cokernel.π (q.arrow)))
-        (by simp only [← ofLE_arrow hq, Category.assoc, cokernel.condition, comp_zero])
+    · simp only [inverseImage, homOfLE_leOfHom, image, Subtype.mk_le_mk]
+      refine mk_le_of_comm ?_ ?_
+      · refine ?_ ≫ (isoKernelCokernel q.arrow).inv
+        refine kernel.lift _ (kernel.ι _) ?_
+        have := kernel.condition
+          (cokernel.π Y.arrow ≫ cokernel.π (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow)
+        let I := imageSubobject (q.arrow ≫ cokernel.π Y.arrow)
+        let c := (cokernel.π Y.arrow ≫ cokernel.π I.arrow)
+        change kernel.ι c ≫ cokernel.π q.arrow = 0
 
-      sorry
-    · apply le_kernelSubobject
-      obtain ⟨⟨I, m, e, fac⟩, _⟩ := imageStrongEpiMonoFactorisation (q.arrow ≫ cokernel.π Y.arrow)
-      simp only [← Category.assoc, ← fac]
-      rw [Category.assoc]
-      have : m ≫ cokernel.π (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow = 0 := by
-        have := cokernel.condition (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow
-        rw [← imageSubobject_arrow, Category.assoc, Preadditive.IsIso.comp_left_eq_zero,
-          imageSubobject_arrow] at this
-        rw [← image.isoStrongEpiMono_hom_comp_ι e m fac, Category.assoc, this, comp_zero]
-      rw [this, comp_zero]
-  map_rel_iff' := by cat_disch
+        let r : cokernel Y.arrow ⟶ cokernel q.arrow := (cokernel.desc _ (cokernel.π (q.arrow)))
+          (by simp only [← ofLE_arrow hq, Category.assoc, cokernel.condition, comp_zero])
+        have : I.arrow ≫ r = 0 := by
+          simp [I, r]
+          apply imageSubobject_arrow_comp_eq_zero
+          simp
+
+        let u : cokernel I.arrow ⟶ cokernel q.arrow := cokernel.desc I.arrow r this
+
+        have : c ≫ u = cokernel.π q.arrow := by
+          simp [c, u, r]
+
+        rw [← this]
+        simp
+      · cat_disch
+    · exact inverseImage_image_le _ _
+  map_rel_iff' := by
+    intro a b
+    simp
+    sorry
 
 variable (X Y : C)
 
