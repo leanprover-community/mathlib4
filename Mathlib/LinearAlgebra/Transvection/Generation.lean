@@ -92,7 +92,7 @@ theorem le_one_add_finrank_fixedSubmodule_dilatransvection_mul (hf : f ∈ dilat
   linarith
 
 theorem finrank_fixedSubmodule_dilatransvection_mul_le (hf : f ∈ dilatransvections K V) :
-     finrank K (f * e).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
+    finrank K (f * e).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
   conv_rhs => rw [show e = f⁻¹ * (f * e) by simp]
   rw [← inv_mem_dilatransvections_iff] at hf
   exact le_one_add_finrank_fixedSubmodule_dilatransvection_mul (f * e) f⁻¹ hf
@@ -141,7 +141,6 @@ theorem fixedSubmodule_transvection_mul
     simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap,
       LinearEquiv.mul_apply, transvection.apply]
     simp [hfv']
-
 
 /-- A linear equivalence `u : V ≃ₗ[K] V` is exceptional if
 it is a nontrivial homothety modulo `u.fixedSubmodule`. -/
@@ -243,11 +242,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one
           map_sub, sub_eq_zero]
         simp [← fixedReduce_mk, he]
       set t := auxTransvection (e := e) (f := f) (u := v) (by
-        simp only [sup_le_iff, hf, true_and, span_singleton_le_iff_mem]
-        apply hf
-        rw [← e.fixedSubmodule.ker_mkQ, LinearMap.mem_ker,
-          map_sub, sub_eq_zero]
-        simp [← fixedReduce_mk, he]) with ht
+        simpa [hf] using hf (sub_mem_comm_iff.mp hv')) with ht
       refine ⟨t⁻¹, ?_, t * e, ?_, by simp⟩
       · -- We prove that `t⁻¹` is a transvection
         rw [inv_mem_transvections_iff, ht]
@@ -466,7 +461,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
           have : ∃ x, g (e x) = 1 := by
             suffices ∃ w, g w ≠ 0 by
               obtain ⟨w, hw⟩ := this
-              use (1 / g w) • e⁻¹ w
+              use (g w)⁻¹ • e⁻¹ w
               simp [hw]
             contrapose! hg1
             rwa [LinearMap.ext_iff]
