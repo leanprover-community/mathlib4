@@ -84,7 +84,7 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
   X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.1
 
-@[simp, nolint simpVarHead]
+@[simp]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
     (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
   Hom.toShHom ⟨f, hf⟩ = InducedCategory.homMk f := rfl
@@ -99,7 +99,7 @@ instance : Quiver LocallyRingedSpace :=
 /-- A morphism of locally ringed spaces `f : X ⟶ Y` induces
 a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
 -/
-noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : X) :
+noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
   f.toShHom.hom.stalkMap x
 

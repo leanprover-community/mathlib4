@@ -238,7 +238,7 @@ noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M 
     MulAction M (Completion X) where
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=
-    ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by
+    ext' (continuous_const_smul _) ((continuous_const_smul _).fun_const_smul _) fun a => by
       simp only [← coe_smul, mul_smul]
 
 end Completion
