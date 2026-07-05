@@ -16,6 +16,8 @@ public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
+public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 public import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -880,6 +882,20 @@ lemma Weight.vonMangoldt_C₁_eq : vonMangoldt.C₁ = log 4 + 1 := by
 @[simp]
 lemma Weight.vonMangoldt_C₂_eq : vonMangoldt.C₂ = log 4 + 3 := by simp [C₂]; linarith
 
+@[simp]
+lemma Weight.vonMangoldt_M_eq : vonMangoldt.M = eulerMascheroniConstant := by
+  rw [← sub_eq_zero]
+  apply tendsto_nhds_unique vonMangoldt.sum_div_log_mul_pow_add_tendsto
+  have := log_riemannZeta_add_log_sub_isLittleO_ofReal
+  rw [isLittleO_one_iff] at this
+  refine tendsto_nhdsWithin_congr (fun s hs ↦ ?_) this
+  rw [log_riemannZeta_eq hs]
+  congr! 3 with n
+  rcases eq_or_ne 0 n with rfl | h <;> simp
+  field_simp
+  rw [mul_assoc, ← rpow_add (mod_cast (by lia))]
+  congr; ring_nf; simp
+
 /-- The prime weight `f : ℕ → ℝ := fun n ↦ 1 / n` if `n` is prime and `0` otherwise. -/
 @[reducible]
 noncomputable def Weight.prime : Weight := {
@@ -1016,11 +1032,6 @@ section SecondTheorem
 
 /-
 ## The second Mertens theorem
-
-We give most of the second Mertens theorem here, except that the proof that
-`Weight.vonMangoldt.M = eulerMascheroni` is currently missing.  Once that theorem is
-added, the relevant versions of the second Mertens theorem will be migrated to after
-that theorem.
 -/
 
 variable {x : ℝ} (N : ℕ)
@@ -1038,19 +1049,16 @@ private lemma Weight.prime_sum_inv_log_mul_eq {N : ℕ} :
   have := hp.log_pos
   field_simp
 
-/-- Preliminary version - will be migrated once `Weight.vonMangoldt.M` is proven to
-equal `eulerMascheroni` -/
 theorem sum_vonMangoldt_div_mul_log_bound (hx : 2 ≤ x) :
-    |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - Weight.vonMangoldt.M| ≤
+    |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant| ≤
       (log 4 + 3) / log x := by
+    rw [← Weight.vonMangoldt_M_eq]
     convert! Weight.vonMangoldt.second_theorem hx using 2
     · rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
     simp
 
-/-- Preliminary version - will be migrated once `Weight.vonMangoldt.M` is proven to
-equal `eulerMascheroni` -/
 theorem sum_vonMangoldt_div_mul_log_bound_nat (hN : 2 ≤ N) :
-    |∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - Weight.vonMangoldt.M| ≤
+    |∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant| ≤
       (log 4 + 3) / log N := by
     convert sum_vonMangoldt_div_mul_log_bound (x := ↑N) (mod_cast hN)
     simp
@@ -1068,19 +1076,18 @@ theorem sum_prime_div_mul_log_bound_nat (hN : 2 ≤ N) :
     convert sum_prime_div_mul_log_bound (x := ↑N) (mod_cast hN)
     simp
 
-/-- Preliminary version - will be migrated once `Weight.vonMangoldt.M` is proven to
-equal `eulerMascheroni` -/
 theorem sum_vonMangoldt_div_mul_log_bound_bigO_inv_log :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - Weight.vonMangoldt.M)
+    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant)
     =O[atTop] fun x ↦ (log x)⁻¹ := by
+  rw [← Weight.vonMangoldt_M_eq]
   convert Weight.vonMangoldt.second_theorem_error_bigO_inv_log using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
-/-- Preliminary version - will be migrated once `Weight.vonMangoldt.M` is proven to
-equal `eulerMascheroni` -/
+
 theorem sum_vonMangoldt_div_mul_log_bound_bigO_inv_log_nat :
-    (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - Weight.vonMangoldt.M)
+    (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant)
     =O[atTop] (fun N ↦ (log N)⁻¹) := by
+  rw [← Weight.vonMangoldt_M_eq]
   convert Weight.vonMangoldt.second_theorem_error_bigO_inv_log_nat using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
@@ -1096,19 +1103,17 @@ theorem sum_prime_div_mul_log_bound_bigO_inv_log_nat :
   convert Weight.prime.second_theorem_error_bigO_inv_log_nat using 4
   rw [Weight.prime_sum_inv_log_mul_eq]
 
-/-- Preliminary version - will be migrated once `Weight.vonMangoldt.M` is proven to
-equal `eulerMascheroni` -/
 theorem sum_vonMangoldt_div_mul_log_bound_littleO_one :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - Weight.vonMangoldt.M)
+    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant)
     =o[atTop] (fun _ ↦ (1:ℝ)) := by
+  rw [← Weight.vonMangoldt_M_eq]
   convert Weight.vonMangoldt.second_theorem_error_littleO_one using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
-/-- Preliminary version - will be migrated once `Weight.vonMangoldt.M` is proven to
-equal `eulerMascheroni` -/
 theorem sum_vonMangoldt_div_mul_log_bound_littleO_one_nat :
-    (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - Weight.vonMangoldt.M)
+    (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant)
     =o[atTop] (fun _ ↦ (1:ℝ)) := by
+  rw [← Weight.vonMangoldt_M_eq]
   convert Weight.vonMangoldt.second_theorem_error_littleO_one_nat using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
