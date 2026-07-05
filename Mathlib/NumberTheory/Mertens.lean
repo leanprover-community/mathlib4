@@ -1290,6 +1290,9 @@ section ThirdTheorem
 
 /-
 ## The third Mertens theorem
+
+It will be convenient to express the third Mertens theorem in terms of an error term
+`E₃ x = ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ)) + log (log x) + eulerMascheroniConstant`.
 -/
 
 private lemma neg_inv_sub_log_sub_inv_nonneg (p : Primes) : 0 ≤ - 1 / p - log (1 - 1 / p) := by
@@ -1309,7 +1312,26 @@ private lemma neg_inv_sub_log_sub_inv_le (p : Primes) : - 1 / p - log (1 - 1 / p
 noncomputable def E₃ (x : ℝ) :=
   ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ)) + log (log x) + eulerMascheroniConstant
 
-theorem sum_prime_log_sub_inv_sub_sub_bound {x : ℝ} (hx : 2 ≤ x) :
+theorem sum_prime_log_sub_inv_eq (x : ℝ) : ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ))
+    = - log (log x) - eulerMascheroniConstant + E₃ x := by
+  unfold E₃; ring
+
+theorem sum_prime_log_sub_inv_eq_nat (N : ℕ) : ∑ p ∈ primesLE N, log (1 - 1 / (p : ℝ))
+    = - log (log N) - eulerMascheroniConstant + E₃ N := by
+  simpa using sum_prime_log_sub_inv_eq N
+
+theorem prod_prime_one_minus_inv_eq {x : ℝ} (hx : 1 < x) :
+    ∏ p ∈ primesLE ⌊x⌋₊, (1 - (1 : ℝ) / p) =
+      exp (-eulerMascheroniConstant) * exp (E₃ x) / log x := by
+  have hlog : 0 < log x := log_pos hx
+  have hpos : ∀ {p : ℕ}, p.Prime → (0 : ℝ) < 1 - 1 / p := fun {p} hp ↦ by
+    have : (2 : ℝ) ≤ p := mod_cast hp.two_le
+    grind [one_div_le_one_div_of_le two_pos this]
+  rw [E₃, exp_add, exp_add, exp_sum, exp_log hlog, exp_neg]
+  field_simp
+  exact prod_congr rfl fun p hp ↦ (exp_log (hpos (mem_filter.mp hp).2)).symm
+
+theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) :
     |E₃ x| ≤ (log 4 + 3) / log x + 1 / ⌊x⌋₊ := by
   have hx' := floor_mono hx
   simp only [floor_ofNat] at hx'
@@ -1355,6 +1377,61 @@ theorem sum_prime_log_sub_inv_sub_sub_bound {x : ℝ} (hx : 2 ≤ x) :
       simp at h1 h2 ⊢
       grind
     simp
+
+theorem E₃_isBigO : E₃ =O[atTop] fun x ↦ (log x)⁻¹ := by
+  trans (fun x ↦ (log 4 + 3) / log x + 1 / ⌊x⌋₊)
+  · apply Eventually.isBigO
+    filter_upwards [eventually_ge_atTop 2] with x hx
+    simpa using E₃_bound hx
+  · apply IsBigO.add
+    · simp_rw [division_def]
+      apply isBigO_const_mul_self
+    · apply Asymptotics.IsBigO.of_bound 2
+      filter_upwards [eventually_gt_atTop 2] with x hx
+      have := log_pos (by linarith : 1 < x)
+      simp [abs_of_pos this]
+      have := Nat.lt_floor_add_one x
+      have : 0 < (⌊x⌋₊ : ℝ) := by linarith
+      field_simp
+      grw [Real.log_le_self] <;> linarith
+      
+theorem E₃_isLittleO : E₃ =o[atTop] fun _ ↦ (1 : ℝ) :=
+  E₃_isBigO.trans_isLittleO inv_log_isLittleO_one
+
+theorem E₃_tendsto : Tendsto E₃ atTop (𝓝 0) := by simpa [isLittleO_one_iff] using E₃_isLittleO
+
+theorem exp_E₃_sub_isBigO : (fun x ↦ exp (E₃ x) - 1) =O[atTop] fun x ↦ (log x)⁻¹ := by
+  suffices (fun y ↦ exp y - 1) =O[𝓝 0] fun y ↦ y from
+    (this.comp_tendsto E₃_tendsto).trans E₃_isBigO
+  simpa using differentiable_exp.differentiableAt.isBigO_sub (x₀ := 0)
+
+theorem exp_E₃_sub_isLittleO : (fun x ↦ exp (E₃ x) - 1) =o[atTop] fun _ ↦ (1 : ℝ) :=
+  exp_E₃_sub_isBigO.trans_isLittleO inv_log_isLittleO_one
+
+theorem exp_E₃_tensdto : Tendsto (fun x ↦ exp (E₃ x)) atTop (𝓝 1) := by
+  rw [← tendsto_sub_nhds_zero_iff, ← isLittleO_one_iff (F := ℝ)]
+  exact exp_E₃_sub_isLittleO
+
+theorem sum_primes_log_sub_add_log_log_isBigO :
+    (fun x : ℝ ↦ ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ)) + log (log x))
+    =O[atTop] fun _ ↦ (1 : ℝ) := by
+  suffices (fun x : ℝ ↦ E₃ x - eulerMascheroniConstant) =O[atTop] fun _ ↦ (1 : ℝ) by
+    apply this.congr _ (by simp)
+    intro
+    rw [sum_prime_log_sub_inv_eq]
+    abel
+  exact E₃_isLittleO.isBigO.sub (isBigO_const_one ..)
+
+theorem log_mul_prod_prime_one_minus_inv_tendsto :
+    Tendsto (fun x ↦ log x * ∏ p ∈ primesLE ⌊x⌋₊, (1 - (1 : ℝ) / p)) atTop
+    (𝓝 (exp (-eulerMascheroniConstant))) := by
+  have := exp_E₃_tensdto.const_mul (exp (-eulerMascheroniConstant))
+  rw [mul_one] at this
+  apply this.congr'
+  filter_upwards [eventually_gt_atTop 1] with x hx
+  have := log_pos hx
+  rw [prod_prime_one_minus_inv_eq hx]
+  field_simp
 
 end ThirdTheorem
 
