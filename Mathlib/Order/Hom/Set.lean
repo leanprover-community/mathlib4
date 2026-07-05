@@ -155,6 +155,17 @@ theorem orderIsoOfSurjective_self_symm_apply (b : β) :
 
 end StrictMono
 
+/-- Two order embeddings with the same range are equal if their domain has no nontrivial order
+automorphisms. -/
+lemma OrderEmbedding.eq_of_range_eq [Preorder α] [Preorder β] [Subsingleton (α ≃o α)]
+    {f g : α ↪o β} (h : Set.range f = Set.range g) : f = g := by
+  let e : α ≃o α := f.orderIso.trans ((OrderIso.setCongr _ _ h).trans g.orderIso.symm)
+  have he : e = OrderIso.refl α := Subsingleton.elim _ _
+  ext x
+  have : g (e x) = f x := congrArg Subtype.val <|
+    g.orderIso.apply_symm_apply (OrderIso.setCongr _ _ h (f.orderIso x))
+  simp_all
+
 /-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
 lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [Preorder β] {f g : α ↪o β} :
     Set.range f = Set.range g ↔ f = g := by
