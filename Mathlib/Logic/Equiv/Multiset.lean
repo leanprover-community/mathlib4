@@ -42,7 +42,6 @@ def decodeMultiset (n : ℕ) : Option (Multiset α) :=
   ((↑) : List α → Multiset α) <$> decode (α := List α) n
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `α` is encodable, then so is `Multiset α`. -/
 instance _root_.Multiset.encodable : Encodable (Multiset α) :=
   ⟨encodeMultiset, decodeMultiset, fun s => by simp [encodeMultiset, decodeMultiset, encodek]⟩

@@ -261,7 +261,6 @@ theorem countable_leftLim_ne [OrderTopology R] (f : StieltjesFunction R) :
 
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
@@ -273,7 +272,6 @@ def length (s : Set R) : ℝ≥0∞ :=
   else ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma length_eq [Nonempty R] (s : Set R) :
     f.length s = ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a) := by
   simp [length]
@@ -310,7 +308,6 @@ theorem length_mono {s₁ s₂ : Set R} (h : s₁ ⊆ s₂) : f.length s₁ ≤ 
   exact iInf_mono fun a => biInf_mono fun b h' => (sdiff_subset_sdiff_left h).trans h'
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem length_sdiff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
@@ -330,7 +327,6 @@ theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
 variable [OrderTopology R] [CompactIccSpace R]
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
 `f b - f a ≤ ∑ f (d i) - f (c i)`. This is an auxiliary technical statement to prove the same
 statement for half-open intervals, the point of the current statement being that one can use
