@@ -33,12 +33,6 @@ an `Sq`-module.
 
 @[expose] public section
 
--- DedekindDomain/Basic
-theorem mem_minimalPrimes_of_ne_bot {R : Type*} [CommRing R] [Ring.DimensionLEOne R]
-    {p q : Ideal R} [q.IsPrime] (hp : p ≠ ⊥) (hpq : p ≤ q) : q ∈ p.minimalPrimes :=
-  ⟨⟨‹_›, hpq⟩, fun r ⟨hr1, hr2⟩ h ↦
-    ((hr1.isMaximal (ne_bot_of_le_ne_bot hp hr2)).eq_of_le Ideal.IsPrime.ne_top' h).ge⟩
-
 namespace Ideal
 
 section
@@ -127,31 +121,27 @@ theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
     [IsNoetherianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q)))] :
       0 < q.ramificationIdx R := by
   let Sq := Localization.AtPrime q
+  have max := IsLocalRing.maximalIdeal.isMaximal Sq
   rw [ramificationIdx_eq p q]
   apply ENat.toNat_pos
   · rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff,
-      IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top]
-    grw [Ideal.over_def q p, map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal]
-    exact (IsLocalRing.maximalIdeal.isMaximal _).lt_top
+      IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top, q.over_def p]
+    grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal, max.lt_top]
   · rw [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
       Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength,
       isArtinianRing_iff_krullDimLE_zero, Ring.krullDimLE_zero_iff]
     intro r hr
     apply Ideal.isMaximal_of_isIntegral_of_isMaximal_comap (R := Sq)
     change (r.under Sq).IsMaximal
-    have key : p.map (algebraMap R Sq) ≤ r.under Sq := by
-      conv_lhs => rw [← (p.map (algebraMap R Sq)).mk_ker]
-      apply ker_le_comap
-    have h1 := hq.2 (y := r.under S) ⟨hr.under S, ?_⟩
+    have key : map (algebraMap R S) p ≤ under S r := by
+      have := r.ker_le_comap (algebraMap Sq _)
+      rw [Ideal.Quotient.algebraMap_eq, mk_ker] at this
+      rwa [map_le_iff_le_comap] at this ⊢
+    have h1 := hq.2 (y := r.under S) ⟨hr.under S, key⟩
     simp_rw [← Localization.AtPrime.under_maximalIdeal (I := q),
-      ← under_under  (A := S) (B := Sq) (C := Sq ⧸ _),
+      ← under_under (A := S) (B := Sq) (C := Sq ⧸ _),
       IsLocalization.under_le_under_iff q.primeCompl Sq] at h1
-    specialize h1 (IsLocalRing.le_maximalIdeal_of_isPrime (r.under Sq))
-    rw [← (IsLocalRing.maximalIdeal.isMaximal Sq).eq_of_le ?_ h1]
-    exact IsLocalRing.maximalIdeal.isMaximal Sq
-    exact IsPrime.ne_top'
-    rwa [map_le_iff_le_comap, ← under_def, under_under, ← under_under (B := Sq),
-      ← map_le_iff_le_comap]
+    rwa [← max.eq_of_le IsPrime.ne_top' (h1 (IsLocalRing.le_maximalIdeal_of_isPrime (r.under Sq)))]
 
 theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
     [IsNoetherianRing S] [Ring.DimensionLEOne S]
