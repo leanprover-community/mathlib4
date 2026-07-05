@@ -27,6 +27,7 @@ variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W]
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`
 which is stable under the `G`-action.
 -/
+@[ext]
 structure Subrepresentation where
   /-- A subrepresentation is a submodule. -/
   toSubmodule : Submodule A W
