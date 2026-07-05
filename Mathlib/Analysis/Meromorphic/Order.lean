@@ -892,3 +892,43 @@ lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt �
   meromorphicOrderAt_smul_of_ne_zero hg hg'
 
 end smul
+
+/-!
+## Order at a Point of the Derivative
+-/
+
+section deriv
+
+/-- The meromorphic order of the derivative is one less than the order of the original function.
+This however is not true if the characteristic of the domain field divides the original order,
+where the order of the derivative can rise to a larger integer. -/
+lemma meromorphicOrderAt_deriv_eq_sub_one [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
+    (hn : (n : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑n) :
+    meromorphicOrderAt (deriv f) x = ↑(n - 1) := by
+  have hmero : MeromorphicAt f x := meromorphicAt_of_meromorphicOrderAt_ne_zero (by aesop)
+  rw [meromorphicOrderAt_eq_int_iff hmero] at hf
+  rw [meromorphicOrderAt_eq_int_iff hmero.deriv]
+  obtain ⟨g, hga, hg0, (hg : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z)⟩ := hf
+  refine ⟨fun z ↦ (n : 𝕜) • g z + (z - x) • deriv g z, by fun_prop, by simpa using ⟨hn, hg0⟩, ?_⟩
+  filter_upwards [hga.eventually_analyticAt.filter_mono (nhdsWithin_le_nhds),
+    eventually_mem_nhdsWithin, hg.nhdsNE_deriv] with z hgz hmem hz
+  have hzx : z - x ≠ 0 := by simpa [sub_eq_zero] using hmem
+  calc
+    deriv f z = deriv (fun z ↦ (z - x) ^ n • g z) z :=
+      hz
+    _ = (z - x) ^ n • deriv g z + deriv ((· ^ n) ∘ (· - x)) z • g z :=
+      deriv_fun_smul (by fun_prop (disch := grind)) hgz.differentiableAt
+    _ = (z - x) ^ n • deriv g z + (n * (z - x) ^ (n - 1)) • g z := by
+      rw [deriv_comp _ (by fun_prop (disch := grind)) (by fun_prop)]
+      simp [deriv_zpow]
+    _ = (z - x) ^ (n - 1) • ((n : 𝕜) • g z + (z - x) • deriv g z) := by
+      simp [smul_smul, ← zpow_add_one₀ hzx, add_comm, mul_comm]
+
+/-- Equivalent to `meromorphicOrderAt_deriv_eq_sub_one` with a slightly different statement so the
+conclusion matches more targets -/
+lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ}
+    (hn : (↑(n + 1) : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑(n + 1)) :
+    meromorphicOrderAt (deriv f) x = ↑n := by
+  simpa using meromorphicOrderAt_deriv_eq_sub_one hn hf
+
+end deriv

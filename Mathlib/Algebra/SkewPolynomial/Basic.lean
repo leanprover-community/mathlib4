@@ -42,7 +42,7 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 * `SkewPolynomial.monomial n a` is the skew polynomial `a X ^ n`. Note that
   `SkewPolynomial.monomial n` is defined as an `R`-linear map.
 * `SkewPolynomial.C a` is the constant skew polynomial `a`. Note that `C` is defined as an additive
-   homomorphism.
+  homomorphism.
 * `SkewPolynomial.CRingHom a` is the constant skew polynomial `a`, as a ring homomorphism. This
   requires to assume `[MulSemiringAction (Multiplicative ℕ) R]`.
 * `SkewPolynomial.X` is the skew polynomial `X`, i.e., `SkewPolynomial.monomial 1 1`.
@@ -173,8 +173,7 @@ def monomial : R →ₗ[R] SkewPolynomial R := lsingle R (ofAdd n)
 
 lemma monomial_zero_right : monomial n (0 : R) = 0 := single_zero _
 
-lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial 0 (1 : R) = 1 :=
-  rfl
+lemma monomial_zero_one : monomial 0 (1 : R) = 1 := rfl
 
 lemma monomial_def (a : R) : monomial n a = single (ofAdd n) a := rfl
 
@@ -187,7 +186,7 @@ lemma smul_monomial {S} [Semiring S] [Module S R] (a : S) (b : R) :
 
 @[simp]
 lemma sum_monomial (f : SkewPolynomial R) : f.sum (fun (a : ℕ) ↦ monomial a) = f :=
- SkewMonoidAlgebra.sum_single _
+  SkewMonoidAlgebra.sum_single _
 
 @[simp]
 lemma sum_monomial_index {N} [AddCommMonoid N] {n : ℕ} {b : R} {h : ℕ → R → N}
@@ -348,8 +347,7 @@ lemma coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 :=
 
 @[simp] lemma coeff_zero (n : ℕ) : coeff (0 : SkewPolynomial R) n = 0 := rfl
 
-@[simp] lemma coeff_one_zero [MulSemiringAction (Multiplicative ℕ) R] :
-    coeff (1 : SkewPolynomial R) 0 = 1 := coeff_monomial
+@[simp] lemma coeff_one_zero : coeff (1 : SkewPolynomial R) 0 = 1 := coeff_monomial
 
 lemma coeff_one [MulSemiringAction (Multiplicative ℕ) R] (n : ℕ) :
     coeff (1 : SkewPolynomial R) n = if 0 = n then 1 else 0 := by
