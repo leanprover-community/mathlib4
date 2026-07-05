@@ -351,7 +351,7 @@ theorem coeff_smul_left [SMulWithZero R V] {x : R⟦Γ⟧}
 open AddMonoidAlgebra MonoidAlgebra Finsupp in
 theorem ofFinsupp_smul_coeff {R} [Semiring R] [Module R V] (f : AddMonoidAlgebra R Γ)
     (x : HahnModule Γ' R V) :
-    ((HahnSeries.ofFinsupp f) • x).carrier.coeff = f • x.carrier.coeff := by
+    ((HahnSeries.ofFinsupp f.coeff) • x).carrier.coeff = f • x.carrier.coeff := by
   ext g
   rw [coeff_smul, AddMonoidAlgebra.smul_eq, HahnSeries.coeff_ofFinsupp]
   refine (Finset.sum_of_injOn (M := V) id (Set.injOn_id _) ?_ ?_ ?_).symm
@@ -1480,19 +1480,18 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R R⟦Γ⟧) :=
 @[simps]
 def ofAddMonoidAlgebra {Γ} [PartialOrder Γ] [AddCancelCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] :
     AddMonoidAlgebra R Γ →ₐ[R] HahnSeries Γ R where
-  toFun := ofFinsupp
+  toFun f := ofFinsupp f.coeff
   map_one' := by
     ext g
     by_cases h : g = 0 <;> simp [h, AddMonoidAlgebra.one_def]
   map_mul' x y := by
       ext g
       rw [← of_symm_smul_of_eq_mul,
-        HahnModule.ofFinsupp_smul_coeff x (HahnModule.of R (ofFinsupp y)), Equiv.coe_fn_mk,
-        coeff_ofFinsupp, coeff_ofFinsupp, AddMonoidAlgebra.smul_eq_addMonoidAlgebra_mul]
+        HahnModule.ofFinsupp_smul_coeff x (HahnModule.of R (ofFinsupp y.coeff)), Equiv.coe_fn_mk,
+        coeff_ofFinsupp, coeff_ofFinsupp, ← AddMonoidAlgebra.smul_eq_addMonoidAlgebra_mul]
+      rfl
   map_zero' := rfl
-  map_add' x y := by
-    simp only [← ofFinsuppLinearMap_apply R, ← map_add]
-    exact LinearMap.congr_fun rfl (x + y) --defeq problem here
+  map_add' x y := by simp only [← ofFinsuppLinearMap_apply R, ← map_add, AddMonoidAlgebra.coeff_add]
   commutes' r := by
     ext g
     by_cases h : g = 0

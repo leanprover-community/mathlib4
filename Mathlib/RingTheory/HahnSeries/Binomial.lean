@@ -59,10 +59,8 @@ theorem singleSubSingle_eq_zero_iff [Nontrivial R] (g g' : Γ) :
   intro h
   by_contra hgg'
   rw [singleSubSingle, sub_eq_zero, MonoidAlgebra.ext_iff] at h
-  specialize h g
-  classical
-  rw [single_apply, single_apply] at h
-  simp [Ne.symm hgg'] at h
+  have := DFunLike.congr_fun h g
+  simp [Finsupp.single_eq_of_ne hgg'] at this
 
 theorem singleSubSingle_neg (g g' : Γ) :
     - singleSubSingle g g' (R := R) = singleSubSingle g' g := by
