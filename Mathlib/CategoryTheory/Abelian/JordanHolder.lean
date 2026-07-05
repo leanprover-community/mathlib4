@@ -28,34 +28,35 @@ def Abelian.Subobject.cokernelOrderIso (Y : Subobject X) :
     apply le_antisymm
     · simp only [inverseImage, homOfLE_leOfHom, image, Subtype.mk_le_mk]
       refine mk_le_of_comm ?_ ?_
-      · refine ?_ ≫ (isoKernelCokernel q.arrow).inv
-        refine kernel.lift _ (kernel.ι _) ?_
-        have := kernel.condition
-          (cokernel.π Y.arrow ≫ cokernel.π (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow)
-        let I := imageSubobject (q.arrow ≫ cokernel.π Y.arrow)
-        let c := (cokernel.π Y.arrow ≫ cokernel.π I.arrow)
-        change kernel.ι c ≫ cokernel.π q.arrow = 0
+      · refine kernel.lift _ (kernel.ι _) ?_ ≫ (isoKernelCokernel q.arrow).inv
 
-        let r : cokernel Y.arrow ⟶ cokernel q.arrow := (cokernel.desc _ (cokernel.π (q.arrow)))
+        let c := cokernel.π Y.arrow ≫
+          cokernel.π (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow
+
+        let r := cokernel.desc Y.arrow (cokernel.π (q.arrow))
           (by simp only [← ofLE_arrow hq, Category.assoc, cokernel.condition, comp_zero])
-        have : I.arrow ≫ r = 0 := by
-          simp [I, r]
-          apply imageSubobject_arrow_comp_eq_zero
-          simp
 
-        let u : cokernel I.arrow ⟶ cokernel q.arrow := cokernel.desc I.arrow r this
+        let u := cokernel.desc (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow r
+          (imageSubobject_arrow_comp_eq_zero (by simp [r]))
 
-        have : c ≫ u = cokernel.π q.arrow := by
-          simp [c, u, r]
+        have : cokernel.π q.arrow = c ≫ u := by
+          simp only [Category.assoc, cokernel.π_desc, c, u, r]
 
-        rw [← this]
-        simp
+        rw [this]
+        simp only [c, u, r, kernel.condition_assoc, zero_comp]
       · cat_disch
     · exact inverseImage_image_le _ _
   map_rel_iff' := by
     intro a b
-    simp
-    sorry
+    simp only [inverseImage, homOfLE_leOfHom, image, Equiv.coe_fn_mk, Subtype.mk_le_mk]
+    constructor
+    · rintro (h : kernelSubobject (cokernel.π Y.arrow ≫ cokernel.π a.arrow) ≤
+        kernelSubobject (cokernel.π Y.arrow ≫ cokernel.π b.arrow))
+
+      sorry
+    · intro h
+      exact mk_le_mk_of_comm
+        (kernel.map _ _ (𝟙 _) (cokernel.map _ _ (ofLE a b h) (𝟙 _) (by simp)) (by simp)) (by simp)
 
 variable (X Y : C)
 
