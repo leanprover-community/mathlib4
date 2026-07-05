@@ -663,8 +663,10 @@ instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
   rw [key]
   infer_instance
 
-instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
-  rw [← withDensity_const]
+instance [SFinite μ] {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) :
+    SFinite (c • μ) := by
+  have : c • μ = c • ((1 : ℝ≥0∞) • μ) := by simp
+  rw [this, ← smul_assoc, ← withDensity_const]
   infer_instance
 
 /-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
@@ -727,10 +729,12 @@ theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : M
 
 -- `prod_smul_left` is in the `Prod` file. This lemma is here because this is the file in which
 -- we prove the instance that gives `SFinite (c • ν)`.
-lemma Measure.prod_smul_right (c : ℝ≥0∞) : μ.prod (c • ν) = c • (μ.prod ν) := by
+lemma Measure.prod_smul_right {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) :
+    μ.prod (c • ν) = c • (μ.prod ν) := by
   ext s hs
-  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
-  rw [lintegral_const_mul]
+  have A (s : Set β) : c • ν s = (c • 1) * ν s := by simp
+  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, A]
+  rw [lintegral_const_mul, smul_one_mul]
   exact measurable_measure_prodMk_left hs
 
 end Prod
