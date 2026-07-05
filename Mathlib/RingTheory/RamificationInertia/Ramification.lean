@@ -143,21 +143,38 @@ theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
       IsLocalization.under_le_under_iff q.primeCompl Sq] at h1
     rwa [← max.eq_of_le IsPrime.ne_top' (h1 (IsLocalRing.le_maximalIdeal_of_isPrime (r.under Sq)))]
 
+/-- This theorem proves positivity of `ramificationIdx` when `S` is a Dedekind domain.
+See `Ideal.ramificationIdx_pos` for a version that holds when `S` is finite as an `R`-module. -/
 theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
-    [IsNoetherianRing S] [Ring.DimensionLEOne S] (hpS : p.map (algebraMap R S) ≠ ⊥) :
+    (hp : p.map (algebraMap R S) ≠ ⊥) [Ring.DimensionLEOne S]
+    [IsNoetherianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q)))] :
     0 < q.ramificationIdx R :=
   ramificationIdx_pos_of_mem_minimalPrimes p q
-    (mem_minimalPrimes_of_ne_bot hpS (map_le_of_le_comap (q.over_def p).le))
+    (mem_minimalPrimes_of_ne_bot hp (map_le_of_le_comap (q.over_def p).le))
 
 theorem ramificationIdx_pos_of_isDedekindDomain' [q.IsPrime] [q.LiesOver p]
-    [IsNoetherianRing S] [Ring.DimensionLEOne S] [FaithfulSMul R S] (hpS : p ≠ ⊥) :
+    (hp : p ≠ ⊥) [FaithfulSMul R S] [Ring.DimensionLEOne S]
+    [IsNoetherianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q)))] :
     0 < q.ramificationIdx R :=
-  ramificationIdx_pos_of_isDedekindDomain p q (map_ne_bot_of_ne_bot hpS)
+  ramificationIdx_pos_of_isDedekindDomain p q (map_ne_bot_of_ne_bot hp)
+
+/-- Ramification index is positive when `S` is finite as an `R`-module. -/
+example [q.IsPrime] [q.LiesOver p] (hp : p ≠ ⊥) [FaithfulSMul R S] [IsDedekindDomain S] :
+    0 < q.ramificationIdx R :=
+  ramificationIdx_pos_of_isDedekindDomain' p q hp
 
 variable (R) in
-theorem ramificationIdx_pos [q.IsPrime] [Module.Finite R S] :
+/-- This theorem proves positivity of `ramificationIdx` when `S` is finite as an `R`-module.
+See `Ideal.ramificationIdx_pos_of_isDedekindDomain` for a version that holds when `S` is a Dedekind
+domain. -/
+theorem ramificationIdx_pos [q.IsPrime] [Algebra.IsIntegral R S]
+    [IsNoetherianRing (Localization.AtPrime q ⧸
+      (q.under R).map (algebraMap R (Localization.AtPrime q)))] :
     0 < q.ramificationIdx R :=
   ramificationIdx_pos_of_mem_minimalPrimes (q.under R) q (IsIntegral.mem_minimalPrimes_map_under q)
+
+/-- Ramification index is positive when `S` is finite as an `R`-module. -/
+example [q.IsPrime] [Module.Finite R S] : 0 < q.ramificationIdx R := q.ramificationIdx_pos R
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_pos := ramificationIdx_pos
 
