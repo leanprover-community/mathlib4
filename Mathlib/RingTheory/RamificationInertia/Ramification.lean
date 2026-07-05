@@ -158,7 +158,7 @@ theorem ramificationIdx_pos_of_isDedekindDomain' [q.IsPrime] [q.LiesOver p]
     0 < q.ramificationIdx R :=
   ramificationIdx_pos_of_isDedekindDomain p q (map_ne_bot_of_ne_bot hp)
 
-/-- Ramification index is positive when `S` is finite as an `R`-module. -/
+/-- Ramification index is positive when `S` is a Dedekind domain. -/
 example [q.IsPrime] [q.LiesOver p] (hp : p ≠ ⊥) [FaithfulSMul R S] [IsDedekindDomain S] :
     0 < q.ramificationIdx R :=
   ramificationIdx_pos_of_isDedekindDomain' p q hp
