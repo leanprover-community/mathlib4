@@ -431,7 +431,7 @@ theorem second_theorem_error_bigO_inv_log_nat :
 
 theorem second_theorem_error_littleO_one :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M) =o[atTop] fun _ ↦ (1:ℝ) :=
-  f.second_theorem_error_bigO_inv_log.trans_isLittleO inv_log_eq_o_one
+  f.second_theorem_error_bigO_inv_log.trans_isLittleO inv_log_isLittleO_one
 
 theorem second_theorem_error_littleO_one_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M)
@@ -464,7 +464,7 @@ theorem second_theorem_error_bigO_one_nat :
 
 theorem second_theorem_asymp :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n) ~[atTop] fun x ↦ log (log x) :=
-  (f.second_theorem_error_bigO_one.trans_isLittleO one_eq_o_log_log).isEquivalent
+  (f.second_theorem_error_bigO_one.trans_isLittleO one_isLittleO_log_log).isEquivalent
 
 theorem second_theorem_asymp_nat :
     (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n) ~[atTop] fun N ↦ log (log N) := by
