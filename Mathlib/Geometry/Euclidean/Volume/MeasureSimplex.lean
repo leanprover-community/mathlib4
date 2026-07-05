@@ -91,8 +91,8 @@ private theorem euclideanHausdorffMeasure_closedInterior_aux [FiniteDimensional 
   have haltitudeFoot : s.altitudeFoot i -ᵥ s.points i ≠ 0 :=
     vsub_eq_zero_iff_eq.ne.mpr (s.ne_altitudeFoot i).symm
   rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (s.points i) haltitudeFoot
-    s.measurableSet_closedInterior, enorm_eq_nnnorm, ← norm_toNNReal, ENNReal.ofNNReal_toNNReal,
-    ← dist_eq_norm_vsub', ← Simplex.height, Nat.sub_eq_of_eq_add hn]
+    s.measurableSet_closedInterior, ← ofReal_norm, ← dist_eq_norm_vsub', ← Simplex.height,
+    Nat.sub_eq_of_eq_add hn]
   simp_rw [convert_shifted_plane hn s i]
   rw [← setLIntegral_eq_of_support_subset (cross_section_support s i),
     lintegral_congr_ae (measure_cross_section s i)]
