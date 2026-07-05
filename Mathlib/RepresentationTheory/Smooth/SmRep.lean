@@ -170,3 +170,5 @@ lemma unop_dualObj_eq_contragredient (A : SmoothRep k G)
 end monoidal
 
 end commring
+
+end Representation.Smooth.SmRep
