@@ -1022,11 +1022,11 @@ end Dual
 section Adjunction
 
 theorem HasSeparator.of_adjunction [HasSeparator C] {F : C ⥤ D} {G : D ⥤ C}
-    [G.Faithful] [G.Full] (adj : F ⊣ G) : HasSeparator D :=
+    [G.Faithful] (adj : F ⊣ G) : HasSeparator D :=
   ⟨_, (isSeparator_separator C).leftAdjoint_obj adj⟩
 
 theorem HasCoseparator.of_adjunction [HasCoseparator C] {F : C ⥤ D} {G : D ⥤ C}
-    [G.Faithful] [G.Full] (adj : G ⊣ F) :
+    [G.Faithful] (adj : G ⊣ F) :
     HasCoseparator D :=
   ⟨_, (isCoseparator_coseparator C).rightAdjoint_obj adj⟩
 
