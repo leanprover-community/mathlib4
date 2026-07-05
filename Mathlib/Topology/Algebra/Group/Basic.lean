@@ -1117,6 +1117,17 @@ theorem Filter.map_divRight_nhdsLT {c a : H} : map (· / c) (𝓝[<] a) = (𝓝[
   simp
 
 @[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhdsNE {c a : G} :
+    map (· / c) (𝓝[≠] a) = (𝓝[≠] (a / c)) := by
+  convert! (Homeomorph.divRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp [div_eq_mul_inv]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhds {c a : G} :
+    map (· / c) (𝓝 a) = (𝓝 (a / c)) := by
+  convert! (Homeomorph.divRight c).map_nhds_eq .. using 2
+
+@[to_additive (attr := simp)]
 theorem Filter.map_divLeft_nhdsGT {c a : H} : map (c / ·) (𝓝[>] a) = (𝓝[<] (c / a)) := by
   convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
@@ -1125,6 +1136,17 @@ theorem Filter.map_divLeft_nhdsGT {c a : H} : map (c / ·) (𝓝[>] a) = (𝓝[<
 theorem Filter.map_divLeft_nhdsLT {c a : H} : map (c / ·) (𝓝[<] a) = (𝓝[>] (c / a)) := by
   convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhdsNE {c a : G} :
+    map (c / ·) (𝓝[≠] a) = (𝓝[≠] (c / a)) := by
+  convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp [image_div_left]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhds {c a : G} :
+    map (c / ·) (𝓝 a) = (𝓝 (c / a)) := by
+  convert! (Homeomorph.divLeft c).map_nhds_eq .. using 2
 
 end DivInvTopologicalGroup
 
