@@ -99,6 +99,7 @@ lemma bijective_algebraMap_quotient [IsFiniteSplit k R] (p : Ideal R) [p.IsPrime
 variable (k R) in
 /-- If `R` is finite split over a field `k`, the `k`-rational points of `R`
 are in one-to-one correspondence with its prime spectrum. -/
+@[expose]
 noncomputable
 def algHomEquivPrimeSpectrum [IsFiniteSplit k R] : (R →ₐ[k] k) ≃ PrimeSpectrum R where
   toFun f := ⟨RingHom.ker f, RingHom.ker_isPrime f⟩
@@ -120,6 +121,11 @@ def algHomEquivPrimeSpectrum [IsFiniteSplit k R] : (R →ₐ[k] k) ≃ PrimeSpec
     rw [← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom, AlgEquiv.toAlgHom_toRingHom,
       AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot, ← RingHom.ker_coe_toRingHom,
       Ideal.Quotient.mkₐ_ker]
+
+@[simp]
+lemma coe_algHomEquivPrimeSpectrum [IsFiniteSplit k R] (f : R →ₐ[k] k) :
+    algHomEquivPrimeSpectrum k R f = RingHom.ker f :=
+  rfl
 
 instance [IsSepClosed k] [EssFiniteType k R] [FormallyEtale k R] : IsFiniteSplit k R := by
   have := FormallyUnramified.finite_of_free k R
