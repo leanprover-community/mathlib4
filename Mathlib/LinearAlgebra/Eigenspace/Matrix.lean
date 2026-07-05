@@ -148,7 +148,7 @@ theorem mem_spectrum_iff_exists_mulVec_eq_smul {K : Type*} [Field K] {A : Matrix
 
 theorem isUnit_iff_forall_mulVec_eq_zero {K : Type*} [Field K] {A : Matrix n n K} :
     IsUnit A ↔ ∀ v, A *ᵥ v = 0 → v = 0 := by
-  simp_rw [← isUnit_toLin'_iff, isUnit_iff_forall_map_eq_zero, toLin'_apply]
+  simp_rw [← isUnit_toLin'_iff, A.toLin'.isUnit_iff_ker_eq_bot, A.toLin'.ker_eq_bot', toLin'_apply]
 
 end Matrix
 
