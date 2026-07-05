@@ -9,6 +9,7 @@ public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy via nets
+
 We implement Bowen-Dinaburg's definitions of the topological entropy, via nets.
 
 The major design decisions are the same as in
