@@ -110,11 +110,4 @@ noncomputable instance {Δ : Submonoid G} {H₁ H₂ : Subgroup G} [IsHeckeTripl
     (g : Δ) : Fintype (DecompQuotient H₁ H₂ (g : G)) :=
   Subgroup.fintypeOfIndexNeZero (IsHeckeTriple.commensurable_conjAct_right g).1
 
-/-- The decomposition quotient with the two subgroups swapped is finite from the same datum,
-since `Δ` also commensurates the left subgroup (`le_commensurator_left`). Lower priority, so
-that the unswapped instance is preferred in the diagonal case. -/
-noncomputable instance (priority := 900) {Δ : Submonoid G} {H₁ H₂ : Subgroup G}
-    [IsHeckeTriple Δ H₁ H₂] (g : Δ) : Fintype (DecompQuotient H₂ H₁ (g : G)) :=
-  Subgroup.fintypeOfIndexNeZero (IsHeckeTriple.commensurable_conjAct_left g).1
-
 end IsHeckeTriple
