@@ -1394,7 +1394,7 @@ theorem E₃_isBigO : E₃ =O[atTop] fun x ↦ (log x)⁻¹ := by
       have : 0 < (⌊x⌋₊ : ℝ) := by linarith
       field_simp
       grw [Real.log_le_self] <;> linarith
-      
+
 theorem E₃_isLittleO : E₃ =o[atTop] fun _ ↦ (1 : ℝ) :=
   E₃_isBigO.trans_isLittleO inv_log_isLittleO_one
 
@@ -1431,6 +1431,17 @@ theorem log_mul_prod_prime_one_minus_inv_tendsto :
   filter_upwards [eventually_gt_atTop 1] with x hx
   have := log_pos hx
   rw [prod_prime_one_minus_inv_eq hx]
+  field_simp
+
+theorem prod_prime_one_minus_inv_asymp :
+    (fun x ↦ ∏ p ∈ primesLE ⌊x⌋₊, (1 - (1 : ℝ) / p)) ~[atTop]
+    (fun x ↦ exp (-eulerMascheroniConstant) / log x) := by
+  have := log_mul_prod_prime_one_minus_inv_tendsto.const_mul (exp eulerMascheroniConstant)
+  simp [← exp_add] at this
+  refine isEquivalent_of_tendsto_one (this.congr' ?_)
+  filter_upwards [eventually_gt_atTop 1] with x hx
+  have := log_pos hx
+  simp [exp_neg]
   field_simp
 
 end ThirdTheorem
