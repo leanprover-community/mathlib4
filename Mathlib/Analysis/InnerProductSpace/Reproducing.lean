@@ -435,7 +435,7 @@ theorem equiv_kerFun_eq_kerFun (h : kernel H = kernel H₁) (x : X) (v : V) :
   simp [OfKernel.toH₁]
 
 theorem equiv_eq_equivOfKernel :
-    equiv OfKernel.kernel_ofKernel.symm = (OfKernel.equivOfKernel H) := by
+    equiv OfKernel.kernel_ofKernel.symm = OfKernel.equivOfKernel H := by
   simp [equiv, OfKernel.equiv_eq, OfKernel.equivOfKernel]
 
 /-- If the two RKHS have the same kernel, then the functions in the RKHSs agree as functions on
