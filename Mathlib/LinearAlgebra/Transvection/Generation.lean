@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Transvection.Basic
 /-!
 # Dilatransvections generate the special linear group
 
-We prove the theorem of [Dieudonné-1955][J. Dieudonné, “Sur les générateurs
+We prove the theorem of [dieudonne-1955][J. Dieudonné, “Sur les générateurs
 des groupes classiques”].
 
 Let `K` be a division ring and `V` be a `K`-module.
