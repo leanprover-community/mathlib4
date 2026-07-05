@@ -43,10 +43,10 @@ def IsExtremal (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → P
 
 lemma IsExtremal.prop {p : SimpleGraph V → Prop} (h : G.IsExtremal p) : p G := h.1
 
-open Classical in
 /-- If one simple graph satisfies `p`, then there exists an extremal graph satisfying `p`. -/
 theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
     (∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal p) ↔ ∃ G, p G := by
+      classical
   refine ⟨fun ⟨_, _, h⟩ ↦ ⟨_, h.1⟩, fun ⟨G, hp⟩ ↦ ?_⟩
   obtain ⟨G', hp', h⟩ := by
     apply exists_max_image { G | p G } (#·.edgeFinset)

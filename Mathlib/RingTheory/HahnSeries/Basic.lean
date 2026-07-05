@@ -323,7 +323,6 @@ theorem coeff_eq_zero_of_lt_orderTop {x : R⟦Γ⟧} {i : Γ} (hi : i < x.orderT
   rw [orderTop_of_ne_zero hx, WithTop.coe_lt_coe]
   exact Set.IsWF.not_lt_min _ _ hi
 
-open Classical in
 /-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
 zero if the series vanishes. -/
 def leadingCoeff (x : R⟦Γ⟧) : R := x.orderTop.recTopCoe 0 x.coeff

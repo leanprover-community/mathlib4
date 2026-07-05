@@ -115,7 +115,6 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
   · refine (Ideal.normalizedFactorsEquivSpanNormalizedFactors ?_).symm
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
-open Classical in
 /-- The second half of the **Kummer-Dedekind Theorem**, stating that the
 bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem emultiplicity_factors_map_eq_emultiplicity
@@ -125,6 +124,7 @@ theorem emultiplicity_factors_map_eq_emultiplicity
     emultiplicity J (I.map (algebraMap R S)) =
       emultiplicity (↑(normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' ⟨J, hJ⟩))
         (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
+          classical
   rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk, Equiv.coe_trans, Function.comp_apply,
     Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
     IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
