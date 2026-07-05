@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.Analysis.Convex.MetricSpace
 public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
@@ -133,20 +133,19 @@ theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Fin
     (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
 
-/-- The `Lᵖ`-seminorm (for `1 ≤ p`) of a convex combination `∑ i ∈ s, w i • f i` (with `w i ≥ 0`
+/-- The `Lᵖ`-seminorm (for `1 ≤ p`) of a convex combination `∑ i ∈ s, w i • f i` (with `0 ≤ w i`
 and `∑ i ∈ s, w i = 1`) of functions each of `Lᵖ`-seminorm at most `B` is itself at most `B`. -/
-theorem eLpNorm_sum_smul_le [NormedSpace ℝ E] {ι : Type*} {s : Finset ι} {w : ι → ℝ}
-    (hw₀ : ∀ i ∈ s, 0 ≤ w i) (hw₁ : ∑ i ∈ s, w i = 1) {f : ι → α → E}
-    (hf : ∀ i, AEStronglyMeasurable (f i) μ) (hp : 1 ≤ p) {B : ℝ≥0∞}
-    (hB : ∀ i, eLpNorm (f i) p μ ≤ B) :
+theorem eLpNorm_sum_smul_le [ContinuousAdd ε'] [SMul ℝ ε'] [ENormSMulClass ℝ ε']
+    [ContinuousConstSMul ℝ ε'] {ι : Type*} {s : Finset ι} {w : ι → ℝ}
+    (hw₀ : ∀ i ∈ s, 0 ≤ w i) (hw₁ : ∑ i ∈ s, w i = 1) {f : ι → α → ε'}
+    (hf : ∀ i ∈ s, AEStronglyMeasurable (f i) μ) (hp1 : 1 ≤ p) {B : ℝ≥0∞}
+    (hB : ∀ i ∈ s, eLpNorm (f i) p μ ≤ B) :
     eLpNorm (∑ i ∈ s, w i • f i) p μ ≤ B :=
   calc eLpNorm (∑ i ∈ s, w i • f i) p μ
-      ≤ ∑ i ∈ s, eLpNorm (w i • f i) p μ :=
-        eLpNorm_sum_le (fun i _ ↦ (hf i).const_smul _) hp
-    _ ≤ ∑ i ∈ s, ENNReal.ofReal (w i) * B :=
-        Finset.sum_le_sum fun i hi ↦ by
-          rw [eLpNorm_const_smul, Real.enorm_eq_ofReal (hw₀ i hi)]
-          exact mul_le_mul_right (hB i) _
+      ≤ ∑ i ∈ s, eLpNorm (w i • f i) p μ := eLpNorm_sum_le (fun i hi ↦ (hf i hi).const_smul _) hp1
+    _ ≤ ∑ i ∈ s, ENNReal.ofReal (w i) * B := Finset.sum_le_sum fun i hi ↦ by
+        rw [← Real.enorm_eq_ofReal (hw₀ i hi)]
+        exact eLpNorm_const_smul_le'.trans (mul_le_mul_right (hB i hi) _)
     _ = B := by
         rw [← Finset.sum_mul, ← ENNReal.ofReal_sum_of_nonneg hw₀, hw₁, ENNReal.ofReal_one, one_mul]
 
