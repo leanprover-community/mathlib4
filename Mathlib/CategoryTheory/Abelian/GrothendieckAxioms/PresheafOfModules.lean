@@ -25,9 +25,9 @@ namespace PresheafOfModules
 public instance {C : Type u} [SmallCategory C] (R : Cᵒᵖ ⥤ RingCat.{u}) :
     IsGrothendieckAbelian.{u} (PresheafOfModules.{u} R) where
   hasFilteredColimitsOfSize := ⟨fun _ ↦ ⟨fun _ ↦ inferInstance⟩⟩
-  ab5OfSize := ⟨fun J _ _ ↦ ⟨⟨fun K _ _ ↦ ⟨fun {F} ↦ by
-    have : PreservesLimit F (colim (J := J) ⋙ PresheafOfModules.toPresheaf R) := by
-      apply preservesLimit_of_natIso _ (preservesColimitNatIso (toPresheaf R)).symm
-    apply preservesLimit_of_reflects_of_preserves _ (PresheafOfModules.toPresheaf R)⟩⟩⟩⟩
+  ab5OfSize := ⟨fun J _ _ ↦ ⟨⟨fun K _ _ ↦ ⟨fun {F} ↦
+    have : PreservesLimit F (colim (J := J) ⋙ PresheafOfModules.toPresheaf R) :=
+      preservesLimit_of_natIso _ (preservesColimitNatIso (toPresheaf R)).symm
+    preservesLimit_of_reflects_of_preserves _ (PresheafOfModules.toPresheaf R)⟩⟩⟩⟩
 
 end PresheafOfModules
