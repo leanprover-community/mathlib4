@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.CDF
 public import Mathlib.Probability.Distributions.Gamma
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-! # Exponential distributions over ℝ
 
@@ -90,6 +91,7 @@ end ExponentialPDF
 open MeasureTheory
 
 /-- Measure defined by the exponential distribution -/
+@[wikidata Q237193]
 noncomputable
 def expMeasure (r : ℝ) : Measure ℝ := gammaMeasure 1 r
 
