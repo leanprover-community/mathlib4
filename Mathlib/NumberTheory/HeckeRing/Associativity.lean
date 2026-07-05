@@ -12,8 +12,9 @@ public import Mathlib.NumberTheory.HeckeRing.One
 # Hecke rings: associativity
 
 Associativity of the convolution product of Hecke coset modules, in the mixed-level generality
-`𝕋 Δ H₁ H₂ R × 𝕋 Δ H₂ H₃ R × 𝕋 Δ H₃ H₄ R`, following Proposition 3.2 of
-[Shimura][shimura1971]. The combinatorial input is the invariance of Shimura's multiplicity
+`HeckeCosetModule Δ H₁ H₂ R × HeckeCosetModule Δ H₂ H₃ R × HeckeCosetModule Δ H₃ H₄ R`, following
+Proposition 3.2 of [Shimura][shimura1971]. The combinatorial input is the invariance of Shimura's
+multiplicity
 `m(g, h; d)` in `d` under the double coset of `d`: both associations of a triple product then
 count the triples of representatives `(σᵢ, τⱼ, υₖ)` with `σᵢ g₁ τⱼ g₂ υₖ g₃ Γ₄ = d Γ₄`, and the
 two bookkeepings are matched through the one-sided description of the multiplicity
@@ -26,7 +27,7 @@ two bookkeepings are matched through the one-sided description of the multiplici
 * `DoubleCoset.multiplicity_doubleCoset_congr`: `m(g, h; d)` depends on `d` only through the
   double coset `Γ₁dΓ₃`.
 * `HeckeCosetModule.mul_assoc'`: associativity of the convolution product at mixed levels.
-* the `Semiring (𝕋 Δ H H R)` instance.
+* the `Semiring (𝕋 Δ H R)` instance.
 -/
 
 @[expose] public section
@@ -190,8 +191,8 @@ private lemma sum_ite_mem_multiplicity [IsHeckeTriple Δ H₂ H₃] [IsHeckeTrip
     obtain ⟨w, hw, y, hy, rfl⟩ := mem_doubleCoset.mp (multiplicity_ne_zero_iff.mp hne)
     obtain ⟨β, hβ, c, hc, rfl⟩ := mem_doubleCoset.mp hw
     have hxΔ : β * (g₂ : G) * c * (g₃ : G) * y ∈ Δ :=
-      Δ.mul_mem (Δ.mul_mem (Δ.mul_mem (Δ.mul_mem (IsHeckeTriple.mem_left H₃ hβ) g₂.2)
-        (IsHeckeTriple.mem_left H₄ hc)) g₃.2) (IsHeckeTriple.mem_right H₃ hy)
+      Δ.mul_mem (Δ.mul_mem (Δ.mul_mem (Δ.mul_mem (IsHeckeTriple.mem_of_mem_left H₃ hβ) g₂.2)
+        (IsHeckeTriple.mem_of_mem_left H₄ hc)) g₃.2) (IsHeckeTriple.mem_of_mem_right H₃ hy)
     set xΔ : Δ := ⟨β * (g₂ : G) * c * (g₃ : G) * y, hxΔ⟩
     have hrep : ((HeckeCoset.mk H₂ H₄ xΔ).rep : G) ∈ doubleCoset (xΔ : G) H₂ H₄ := by
       have h1 := HeckeCoset.rep_mem (HeckeCoset.mk H₂ H₄ xΔ)
@@ -294,8 +295,8 @@ lemma sum_image_mulMap_multiplicity_left [IsHeckeTriple Δ H₁ H₂]
   -- product of the representatives of `p`.
   set wG : G := (p.1.out : G) * g₁ * ((p.2.out : G) * g₂) with hwG
   have hwΔ : wG ∈ Δ :=
-    Δ.mul_mem (Δ.mul_mem (IsHeckeTriple.mem_left H₂ p.1.out.2) g₁.2)
-      (Δ.mul_mem (IsHeckeTriple.mem_left H₃ p.2.out.2) g₂.2)
+    Δ.mul_mem (Δ.mul_mem (IsHeckeTriple.mem_of_mem_left H₂ p.1.out.2) g₁.2)
+      (Δ.mul_mem (IsHeckeTriple.mem_of_mem_left H₃ p.2.out.2) g₂.2)
   set E₀ : HeckeCoset Δ H₁ H₃ := HeckeCoset.mk H₁ H₃ ⟨wG, hwΔ⟩ with hE₀def
   have hE₀mem : E₀ ∈ Finset.univ.image (mulMap H₁ H₂ H₃ g₁ g₂) :=
     Finset.mem_image.mpr ⟨p, Finset.mem_univ p, rfl⟩
@@ -379,41 +380,42 @@ private lemma support_structureConstants_subset [IsHeckeTriple Δ H₁ H₂]
       Finset.univ.image (HeckeCoset.mulMap H₁ H₂ H₃ g₁ g₂) :=
   Finsupp.support_onFinset_subset
 
-/-- `Finsupp.sum_smul_index`, restated for the wrapper type `𝕋 Δ H₁ H₂ R`. -/
-private lemma sum_smul_index_T {N : Type*} [AddCommMonoid N] (a : R) (f : 𝕋 Δ H₁ H₂ R)
-    (F : HeckeCoset Δ H₁ H₂ → R → N) (h0 : ∀ D, F D 0 = 0) :
+/-- `Finsupp.sum_smul_index`, restated for the wrapper type `HeckeCosetModule Δ H₁ H₂ R`. -/
+private lemma sum_smul_index_T {N : Type*} [AddCommMonoid N] (a : R)
+    (f : HeckeCosetModule Δ H₁ H₂ R) (F : HeckeCoset Δ H₁ H₂ → R → N) (h0 : ∀ D, F D 0 = 0) :
     (a • f).sum F = f.sum fun D c ↦ F D (a * c) :=
   Finsupp.sum_smul_index h0
 
-/-- `Finsupp.smul_apply`, restated for the wrapper type `𝕋 Δ H₁ H₂ R`. -/
-private lemma smul_apply_T (a : R) (f : 𝕋 Δ H₁ H₂ R) (D : HeckeCoset Δ H₁ H₂) :
+/-- `Finsupp.smul_apply`, restated for the wrapper type `HeckeCosetModule Δ H₁ H₂ R`. -/
+private lemma smul_apply_T (a : R) (f : HeckeCosetModule Δ H₁ H₂ R) (D : HeckeCoset Δ H₁ H₂) :
     (a • f) D = a * f D :=
   rfl
 
 /-- Unfolding `Finsupp.sum` with the wrapper-type coercion. -/
-private lemma sum_eq_sum_T {N : Type*} [AddCommMonoid N] (f : 𝕋 Δ H₁ H₂ R)
+private lemma sum_eq_sum_T {N : Type*} [AddCommMonoid N] (f : HeckeCosetModule Δ H₁ H₂ R)
     (F : HeckeCoset Δ H₁ H₂ → R → N) : f.sum F = ∑ D ∈ f.support, F D (f D) :=
   rfl
 
-/-- `Finsupp.notMem_support_iff`, restated for the wrapper type `𝕋 Δ H₁ H₂ R`. -/
-private lemma apply_eq_zero_of_notMem_support_T (f : 𝕋 Δ H₁ H₂ R)
+/-- `Finsupp.notMem_support_iff`, restated for the wrapper type `HeckeCosetModule Δ H₁ H₂ R`. -/
+private lemma apply_eq_zero_of_notMem_support_T (f : HeckeCosetModule Δ H₁ H₂ R)
     (D : HeckeCoset Δ H₁ H₂) (h : D ∉ f.support) : f D = 0 :=
   Finsupp.notMem_support_iff.mp h
 
-/-- `Finsupp.zero_apply`, restated for the wrapper type `𝕋 Δ H₁ H₂ R`. -/
-private lemma zero_apply_T (D : HeckeCoset Δ H₁ H₂) : (0 : 𝕋 Δ H₁ H₂ R) D = 0 :=
+/-- `Finsupp.zero_apply`, restated for the wrapper type `HeckeCosetModule Δ H₁ H₂ R`. -/
+private lemma zero_apply_T (D : HeckeCoset Δ H₁ H₂) : (0 : HeckeCosetModule Δ H₁ H₂ R) D = 0 :=
   rfl
 
-/-- `Finsupp.sum_apply`, restated for the wrapper type `𝕋 Δ H₁ H₂ R`. -/
-private lemma sum_apply_T {H₁ H₂ H₃ H₄ : Subgroup G} (f : 𝕋 Δ H₁ H₂ R)
-    (F : HeckeCoset Δ H₁ H₂ → R → 𝕋 Δ H₃ H₄ R) (D : HeckeCoset Δ H₃ H₄) :
+/-- `Finsupp.sum_apply`, restated for the wrapper type `HeckeCosetModule Δ H₁ H₂ R`. -/
+private lemma sum_apply_T {H₁ H₂ H₃ H₄ : Subgroup G} (f : HeckeCosetModule Δ H₁ H₂ R)
+    (F : HeckeCoset Δ H₁ H₂ → R → HeckeCosetModule Δ H₃ H₄ R) (D : HeckeCoset Δ H₃ H₄) :
     (f.sum F) D = f.sum fun E c ↦ F E c D :=
   Finsupp.sum_apply
 
 /-- The convolution product commutes with scalar multiplication on the left factor. (Note
 that the corresponding statement for the right factor fails over a noncommutative `R`.) -/
 lemma smul_mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃] (a : R)
-    (f : 𝕋 Δ H₁ H₂ R) (g : 𝕋 Δ H₂ H₃ R) : mul R (a • f) g = a • mul R f g := by
+    (f : HeckeCosetModule Δ H₁ H₂ R) (g : HeckeCosetModule Δ H₂ H₃ R) :
+    mul R (a • f) g = a • mul R f g := by
   rw [mul_eq_sum, mul_eq_sum, sum_smul_index_T R a f _ fun D₁ ↦ by simp,
     Finsupp.sum, Finsupp.sum, Finset.smul_sum]
   refine Finset.sum_congr rfl fun D₁ _ ↦ ?_
@@ -422,7 +424,7 @@ lemma smul_mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃] (a : R)
 
 /-- Evaluation of the convolution product against a basis element on the left. -/
 lemma single_mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
-    (D₁ : HeckeCoset Δ H₁ H₂) (b₁ : R) (g : 𝕋 Δ H₂ H₃ R) :
+    (D₁ : HeckeCoset Δ H₁ H₂) (b₁ : R) (g : HeckeCosetModule Δ H₂ H₃ R) :
     mul R (single R D₁ b₁) g =
       g.sum fun D₂ b₂ ↦ b₁ • b₂ • structureConstants R H₁ H₂ H₃ D₁.rep D₂.rep := by
   rw [mul_eq_sum, single]
@@ -430,16 +432,17 @@ lemma single_mul [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
 
 /-- Evaluation of the convolution product against a basis element on the right. -/
 lemma mul_single [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
-    (f : 𝕋 Δ H₁ H₂ R) (D₂ : HeckeCoset Δ H₂ H₃) (b₂ : R) :
+    (f : HeckeCosetModule Δ H₁ H₂ R) (D₂ : HeckeCoset Δ H₂ H₃) (b₂ : R) :
     mul R f (single R D₂ b₂) =
       f.sum fun D₁ b₁ ↦ b₁ • b₂ • structureConstants R H₁ H₂ H₃ D₁.rep D₂.rep := by
   rw [mul_eq_sum]
   exact Finsupp.sum_congr fun D₁ _ ↦ Finsupp.sum_single_index (by simp)
 
-/-- `Finsupp.induction_linear`, restated for the wrapper type `𝕋 Δ H₁ H₂ R` so that the
-hypotheses match the `HeckeCosetModule` vocabulary. -/
-private lemma induction_linear {p : 𝕋 Δ H₁ H₂ R → Prop} (f : 𝕋 Δ H₁ H₂ R) (h0 : p 0)
-    (hadd : ∀ f g : 𝕋 Δ H₁ H₂ R, p f → p g → p (f + g))
+/-- `Finsupp.induction_linear`, restated for the wrapper type `HeckeCosetModule Δ H₁ H₂ R` so
+that the hypotheses match the `HeckeCosetModule` vocabulary. -/
+private lemma induction_linear {p : HeckeCosetModule Δ H₁ H₂ R → Prop}
+    (f : HeckeCosetModule Δ H₁ H₂ R) (h0 : p 0)
+    (hadd : ∀ f g : HeckeCosetModule Δ H₁ H₂ R, p f → p g → p (f + g))
     (hsingle : ∀ (D : HeckeCoset Δ H₁ H₂) (b : R), p (single R D b)) : p f :=
   Finsupp.induction_linear f h0 hadd hsingle
 
@@ -447,7 +450,8 @@ private lemma induction_linear {p : 𝕋 Δ H₁ H₂ R → Prop} (f : 𝕋 Δ H
 (Proposition 3.2 of [Shimura][shimura1971]). -/
 theorem mul_assoc' [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
     [IsHeckeTriple Δ H₃ H₄] [IsHeckeTriple Δ H₁ H₃] [IsHeckeTriple Δ H₂ H₄]
-    (f : 𝕋 Δ H₁ H₂ R) (g : 𝕋 Δ H₂ H₃ R) (h : 𝕋 Δ H₃ H₄ R) :
+    (f : HeckeCosetModule Δ H₁ H₂ R) (g : HeckeCosetModule Δ H₂ H₃ R)
+    (h : HeckeCosetModule Δ H₃ H₄ R) :
     mul R (mul R f g) h = mul R f (mul R g h) := by
   classical
   induction f using HeckeCosetModule.induction_linear with
@@ -498,8 +502,8 @@ theorem mul_assoc' [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃]
           (HeckeCoset.sum_multiplicity_assoc D₁.rep D₂.rep D₃.rep D.rep)
 
 /-- The Hecke ring is a semiring: the convolution product is associative. -/
-noncomputable instance {H : Subgroup G} [IsHeckeTriple Δ H H] : Semiring (𝕋 Δ H H R) :=
-  { (inferInstance : NonAssocSemiring (𝕋 Δ H H R)) with
+noncomputable instance {H : Subgroup G} [IsHeckeTriple Δ H H] : Semiring (𝕋 Δ H R) :=
+  { (inferInstance : NonAssocSemiring (𝕋 Δ H R)) with
     mul_assoc := fun f g h ↦ mul_assoc' R f g h }
 
 end HeckeCosetModule

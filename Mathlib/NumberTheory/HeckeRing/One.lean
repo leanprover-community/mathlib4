@@ -11,18 +11,18 @@ public import Mathlib.NumberTheory.HeckeRing.Multiplication
 # Hecke rings: the identity and the unital non-associative semiring
 
 The identity double coset `(1 : HeckeCoset Δ H H)` gives the multiplicative identity of the
-Hecke ring `𝕋 Δ H H R`, following [Shimura][shimura1971], Chapter 3. This file proves that the
+Hecke ring `𝕋 Δ H R`, following [Shimura][shimura1971], Chapter 3. This file proves that the
 structure constants collapse to a single basis element on convolution by the identity, deduces
 the unit laws `1 * f = f` and `f * 1 = f` of the convolution product of Hecke coset modules
 (where the two identities live at the two different levels), and assembles the
-`NonAssocSemiring (𝕋 Δ H H R)` instance.
+`NonAssocSemiring (𝕋 Δ H R)` instance.
 
 ## Main results
 
-* `HeckeCosetModule.one_def`: `(1 : 𝕋 Δ H H R) = single R 1 1`.
+* `HeckeCosetModule.one_def`: `(1 : 𝕋 Δ H R) = single R 1 1`.
 * `HeckeCosetModule.one_mul'`, `HeckeCosetModule.mul_one'`: the identities of the diagonal
   Hecke rings are one-sided units for the convolution product of Hecke coset modules.
-* the `NonAssocSemiring (𝕋 Δ H H R)` instance.
+* the `NonAssocSemiring (𝕋 Δ H R)` instance.
 -/
 
 @[expose] public section
@@ -82,14 +82,14 @@ lemma structureConstants_one_left [IsHeckeTriple Δ H₁ H₁] [IsHeckeTriple Δ
 
 /-- The multiplicative identity of the Hecke ring is the basis element of the identity double
 coset. -/
-noncomputable instance {H : Subgroup G} : One (𝕋 Δ H H R) := ⟨single R 1 1⟩
+noncomputable instance {H : Subgroup G} : One (𝕋 Δ H R) := ⟨single R 1 1⟩
 
-theorem one_def {H : Subgroup G} : (1 : 𝕋 Δ H H R) = single R 1 1 := rfl
+theorem one_def {H : Subgroup G} : (1 : 𝕋 Δ H R) = single R 1 1 := rfl
 
 /-- The identity of the Hecke ring at the left level is a left unit for the convolution
 product of Hecke coset modules. -/
 theorem one_mul' [IsHeckeTriple Δ H₁ H₁] [IsHeckeTriple Δ H₁ H₂]
-    (f : 𝕋 Δ H₁ H₂ R) : mul R (1 : 𝕋 Δ H₁ H₁ R) f = f := by
+    (f : HeckeCosetModule Δ H₁ H₂ R) : mul R (1 : 𝕋 Δ H₁ R) f = f := by
   classical
   rw [one_def, mul_eq_sum, single, Finsupp.sum_single_index (by simp)]
   have inner : ∀ (D₂ : HeckeCoset Δ H₁ H₂) (b₂ : R),
@@ -102,7 +102,7 @@ theorem one_mul' [IsHeckeTriple Δ H₁ H₁] [IsHeckeTriple Δ H₁ H₂]
 /-- The identity of the Hecke ring at the right level is a right unit for the convolution
 product of Hecke coset modules. -/
 theorem mul_one' [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₂]
-    (f : 𝕋 Δ H₁ H₂ R) : mul R f (1 : 𝕋 Δ H₂ H₂ R) = f := by
+    (f : HeckeCosetModule Δ H₁ H₂ R) : mul R f (1 : HeckeCosetModule Δ H₂ H₂ R) = f := by
   classical
   rw [one_def, mul_eq_sum, single]
   have inner : ∀ (D₁ : HeckeCoset Δ H₁ H₂) (b₁ : R),
@@ -117,9 +117,9 @@ theorem mul_one' [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₂]
 /-- The Hecke ring is a non-associative semiring: the identity double coset is a two-sided
 identity. -/
 noncomputable instance {H : Subgroup G} [IsHeckeTriple Δ H H] :
-    NonAssocSemiring (𝕋 Δ H H R) :=
-  { (inferInstance : NonUnitalNonAssocSemiring (𝕋 Δ H H R)),
-    (inferInstance : One (𝕋 Δ H H R)) with
+    NonAssocSemiring (𝕋 Δ H R) :=
+  { (inferInstance : NonUnitalNonAssocSemiring (𝕋 Δ H R)),
+    (inferInstance : One (𝕋 Δ H R)) with
     natCast := fun n ↦ single R 1 n
     natCast_zero := by rw [Nat.cast_zero, single, Finsupp.single_zero]; rfl
     natCast_succ := fun n ↦ by

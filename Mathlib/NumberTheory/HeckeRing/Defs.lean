@@ -12,14 +12,15 @@ public import Mathlib.GroupTheory.DoubleCoset
 /-!
 # Hecke rings: definitions
 
-The abstract Hecke ring of a *Hecke pair* `(H, Δ)` and, more generally, the Hecke coset modules
-attached to a triple `(H₁, Δ, H₂)`, following [Shimura][shimura1971], Chapter 3, and
-[Krieg][krieg1990], Chapter I. This file sets up the underlying types: the compatibility
+This file introduces the abstract Hecke ring of a *Hecke pair* `(H, Δ)` and, more generally, the
+Hecke coset modules attached to a triple `(H₁, Δ, H₂)`, following [Shimura][shimura1971],
+Chapter 3, and [Krieg][krieg1990], Chapter I. It sets up the underlying types: the compatibility
 conditions `IsHeckeTriple Δ H₁ H₂` on a submonoid `Δ` and a pair of subgroups, the
 double-coset quotient `HeckeCoset Δ H₁ H₂` of `Δ` by `H₁gH₂ = H₁hH₂`, and the Hecke coset module
-`𝕋 Δ H₁ H₂ Z` of formal finitely-supported linear combinations of double cosets. The convolution
-product `𝕋 Δ H₁ H₂ Z × 𝕋 Δ H₂ H₃ Z → 𝕋 Δ H₁ H₃ Z` and the ring structure on the diagonal
-`𝕋 Δ H H Z` are developed in later files.
+`HeckeCosetModule Δ H₁ H₂ Z` of formal finitely-supported linear combinations of double cosets.
+The convolution product `HeckeCosetModule Δ H₁ H₂ Z × HeckeCosetModule Δ H₂ H₃ Z →
+HeckeCosetModule Δ H₁ H₃ Z` and the ring structure on the diagonal Hecke ring `𝕋 Δ H Z` are
+developed in later files.
 
 The relevance of the submonoid `Δ` may not be immediately obvious; a natural example is
 `H = GL₂(ℤ)` inside `G = GL₂(ℚ)` with `Δ` the submonoid of integral matrices with nonzero
@@ -35,15 +36,17 @@ subgroups `H₁ ≠ H₂` arise for Hecke operators between different levels, e.
   `IsHeckeTriple Δ H H`.
 * `HeckeCoset Δ H₁ H₂`: the quotient of `Δ` by the relation `H₁gH₂ = H₁hH₂`, i.e. the double
   cosets `H₁\Δ/H₂` forming the basis of the Hecke coset module.
-* `HeckeCosetModule Δ H₁ H₂ Z`, notation `𝕋 Δ H₁ H₂ Z`: the Hecke coset module with
-  coefficients in `Z`, the finitely-supported `Z`-linear combinations of double cosets. For
-  `H₁ = H₂` this is the underlying module of the Hecke ring.
+* `HeckeCosetModule Δ H₁ H₂ Z`: the Hecke coset module with coefficients in `Z`, the
+  finitely-supported `Z`-linear combinations of double cosets.
+* `HeckeRing Δ H Z`, notation `𝕋 Δ H Z`: the Hecke ring, the diagonal case
+  `HeckeCosetModule Δ H H Z` of the Hecke coset module.
 
 ## Implementation notes
 
 The data `(Δ, H₁, H₂)` enters unbundled, with the compatibility conditions collected in the
-Prop-valued class `IsHeckeTriple`: the types `HeckeCoset Δ H₁ H₂` and `𝕋 Δ H₁ H₂ Z` are
-built from the data alone and depend on no proofs, and a single ambient `Δ` shared by all levels
+Prop-valued class `IsHeckeTriple`: the types `HeckeCoset Δ H₁ H₂` and `HeckeCosetModule Δ H₁ H₂ Z`
+are built from the data alone and depend on no proofs, and a single ambient `Δ` shared by all
+levels
 (as in [Shimura][shimura1971]) means products of double cosets over different subgroups,
 `H₁g₁H₂ * H₂g₂H₃ ⊆ Δ`, need no compatibility hypotheses. The conditions are only needed for the
 finiteness of the coset decompositions, which enters through the `Fintype` instance on
@@ -77,7 +80,7 @@ class IsHeckeTriple (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Prop where
   commensurable : Commensurable H₁ H₂
   /-- The submonoid `Δ` lies in the commensurator of the right subgroup (hence, the subgroups
   being commensurable, also in that of the left one; see `le_commensurator_left`). -/
-  le_commensurator : Δ ≤ (commensurator H₂).toSubmonoid
+  le_commensurator_right : Δ ≤ (commensurator H₂).toSubmonoid
 
 namespace IsHeckeTriple
 
@@ -90,25 +93,25 @@ theorem of_diagonal {H : Subgroup G} (h : H.toSubmonoid ≤ Δ)
 
 /-- Elements of the left subgroup lie in `Δ`. The right subgroup is explicit, since it cannot
 be inferred. -/
-theorem mem_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₁) : x ∈ Δ :=
+theorem mem_of_mem_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₁) : x ∈ Δ :=
   left_le (H₂ := H₂) hx
 
 /-- Elements of the right subgroup lie in `Δ`. The left subgroup is explicit, since it cannot
 be inferred. -/
-theorem mem_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₂) : x ∈ Δ :=
+theorem mem_of_mem_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₂) : x ∈ Δ :=
   right_le (H₁ := H₁) hx
 
 /-- The submonoid `Δ` also lies in the commensurator of the left subgroup. -/
-theorem le_commensurator_left [IsHeckeTriple Δ H₁ H₂] :
+theorem le_commensurator_left [h : IsHeckeTriple Δ H₁ H₂] :
     Δ ≤ (commensurator H₁).toSubmonoid := by
-  rw [Subgroup.Commensurable.eq (commensurable (Δ := Δ) (H₁ := H₁) (H₂ := H₂))]
-  exact le_commensurator H₁
+  rw [h.commensurable.eq]
+  exact h.le_commensurator_right
 
 /-- Elements of `Δ` lie in the commensurator of the right subgroup. The left subgroup is
 explicit, since it cannot be inferred. -/
 theorem mem_commensurator_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     (g : G) ∈ commensurator H₂ :=
-  le_commensurator H₁ g.2
+  le_commensurator_right H₁ g.2
 
 /-- Elements of `Δ` lie in the commensurator of the left subgroup. The right subgroup is
 explicit, since it cannot be inferred. -/
@@ -117,23 +120,12 @@ theorem mem_commensurator_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] 
   le_commensurator_left (H₂ := H₂) g.2
 
 /-- Conjugating the right subgroup by an element of `Δ` gives a subgroup commensurable with
-the left one; this is the finiteness underlying `DoubleCoset.DecompQuotient H₁ H₂`. -/
+the left one; the intersection `H₁ ∩ gH₂g⁻¹` this bounds is the one underlying
+`DoubleCoset.DecompQuotient H₁ H₂ g`. -/
 theorem commensurable_conjAct_right [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     Commensurable (ConjAct.toConjAct (g : G) • H₂) H₁ := by
   have hg : Commensurable (ConjAct.toConjAct (g : G) • H₂) H₂ := mem_commensurator_right H₁ g
   exact hg.trans (commensurable (Δ := Δ)).symm
-
-/-- Conjugating the left subgroup by an element of `Δ` gives a subgroup commensurable with
-the right one; this is the finiteness underlying `DoubleCoset.DecompQuotient H₂ H₁`. -/
-theorem commensurable_conjAct_left [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
-    Commensurable (ConjAct.toConjAct (g : G) • H₁) H₂ := by
-  have hg : Commensurable (ConjAct.toConjAct (g : G) • H₁) H₁ := mem_commensurator_left H₂ g
-  exact hg.trans (commensurable (Δ := Δ))
-
-/-- The reversed datum `(H₂, Δ, H₁)`. Not an instance, since instance search would loop. -/
-theorem symm [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₂ H₁ :=
-  ⟨right_le (H₁ := H₁), left_le (H₂ := H₂), (commensurable (Δ := Δ)).symm,
-    le_commensurator_left (H₂ := H₂)⟩
 
 /-- Hecke coset module data compose. Not an instance, since the middle subgroup cannot be
 inferred from the goal. -/
@@ -142,7 +134,7 @@ theorem trans [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃] :
   ⟨left_le (H₂ := H₂), right_le (H₁ := H₂),
     (commensurable (Δ := Δ) (H₁ := H₁) (H₂ := H₂)).trans
       (commensurable (Δ := Δ) (H₁ := H₂) (H₂ := H₃)),
-    le_commensurator (H₁ := H₂)⟩
+    le_commensurator_right (H₁ := H₂)⟩
 
 /-- The left diagonal datum `(H₁, Δ, H₁)`. Not an instance, since `H₂` cannot be inferred. -/
 theorem diag_left [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₁ H₁ :=
@@ -150,7 +142,7 @@ theorem diag_left [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₁ H₁ :=
 
 /-- The right diagonal datum `(H₂, Δ, H₂)`. Not an instance, since `H₁` cannot be inferred. -/
 theorem diag_right [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₂ H₂ :=
-  ⟨right_le (H₁ := H₁), right_le (H₁ := H₁), .refl H₂, le_commensurator (H₁ := H₁)⟩
+  ⟨right_le (H₁ := H₁), right_le (H₁ := H₁), .refl H₂, le_commensurator_right (H₁ := H₁)⟩
 
 end IsHeckeTriple
 
@@ -158,8 +150,8 @@ end IsHeckeTriple
 back from `DoubleCoset.setoid` along the inclusion `Δ ↪ G`.
 
 This is a `def` rather than a global instance: the subgroups `H₁, H₂` cannot be inferred from
-the type `↥Δ`, so this cannot participate in instance search (and a global instance would also
-create a `Setoid` diamond on `↥Δ` with the left-coset setoid). The quotient map is
+the submonoid `Δ`, so this cannot participate in instance search (and a global instance would
+also create a `Setoid` diamond on `↥Δ` with the left-coset setoid). The quotient map is
 `HeckeCoset.mk`. -/
 @[reducible] def HeckeCoset.setoid (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Setoid Δ :=
   (DoubleCoset.setoid (H₁ : Set G) H₂).comap Subtype.val
@@ -187,34 +179,41 @@ lemma one_def (H : Subgroup G) : (1 : HeckeCoset Δ H H) = mk H H ⟨1, Δ.one_m
 
 end HeckeCoset
 
-/-- The Hecke coset module with coefficients in `Z`, denoted `𝕋 Δ H₁ H₂ Z`: the
-finitely-supported `Z`-linear combinations of double cosets `H₁\Δ/H₂`. For `H₁ = H₂` this is the
-underlying module of the Hecke ring. The coefficients `Z` need only carry a `Zero` for the type
-to make sense; algebraic structure is added by the instances below at the weakest level each
+/-- The Hecke coset module with coefficients in `Z`: the finitely-supported `Z`-linear
+combinations of double cosets `H₁\Δ/H₂`. For `H₁ = H₂` this is the underlying module of the
+Hecke ring `𝕋 Δ H Z` (see `HeckeRing`). The coefficients `Z` need only carry a `Zero` for the
+type to make sense; algebraic structure is added by the instances below at the weakest level each
 requires. -/
 def HeckeCosetModule (Δ : Submonoid G) (H₁ H₂ : Subgroup G) (Z : Type*) [Zero Z] :=
   HeckeCoset Δ H₁ H₂ →₀ Z
 
-namespace HeckeCosetModule
+/-- The Hecke ring `𝕋 Δ H Z` with coefficients in `Z`: the diagonal Hecke coset module
+`HeckeCosetModule Δ H H Z`, the finitely-supported `Z`-linear combinations of double cosets
+`H\Δ/H`. The convolution product making it a ring is developed in later files. -/
+abbrev HeckeRing (Δ : Submonoid G) (H : Subgroup G) (Z : Type*) [Zero Z] :=
+  HeckeCosetModule Δ H H Z
 
 @[inherit_doc]
-scoped notation "𝕋" => HeckeCosetModule
+scoped[HeckeCosetModule] notation "𝕋" => HeckeRing
+
+namespace HeckeCosetModule
 
 variable (Δ : Submonoid G) (H₁ H₂ : Subgroup G) (Z : Type*)
 
-/-- Elements of `𝕋 Δ H₁ H₂ Z` are functions `HeckeCoset Δ H₁ H₂ → Z` (finitely supported). -/
-instance [Zero Z] : FunLike (𝕋 Δ H₁ H₂ Z) (HeckeCoset Δ H₁ H₂) Z :=
+/-- Elements of `HeckeCosetModule Δ H₁ H₂ Z` are functions `HeckeCoset Δ H₁ H₂ → Z` (finitely
+supported). -/
+instance [Zero Z] : FunLike (HeckeCosetModule Δ H₁ H₂ Z) (HeckeCoset Δ H₁ H₂) Z :=
   inferInstanceAs (FunLike (HeckeCoset Δ H₁ H₂ →₀ Z) (HeckeCoset Δ H₁ H₂) Z)
 
-noncomputable instance [AddCommMonoid Z] : AddCommMonoid (𝕋 Δ H₁ H₂ Z) :=
+noncomputable instance [AddCommMonoid Z] : AddCommMonoid (HeckeCosetModule Δ H₁ H₂ Z) :=
   inferInstanceAs (AddCommMonoid (HeckeCoset Δ H₁ H₂ →₀ Z))
 
-noncomputable instance [AddCommGroup Z] : AddCommGroup (𝕋 Δ H₁ H₂ Z) :=
+noncomputable instance [AddCommGroup Z] : AddCommGroup (HeckeCosetModule Δ H₁ H₂ Z) :=
   inferInstanceAs (AddCommGroup (HeckeCoset Δ H₁ H₂ →₀ Z))
 
 @[ext]
-lemma ext {Δ : Submonoid G} {H₁ H₂ : Subgroup G} {Z : Type*} [Zero Z] {f g : 𝕋 Δ H₁ H₂ Z}
-    (h : ∀ D, f D = g D) : f = g :=
+lemma ext {Δ : Submonoid G} {H₁ H₂ : Subgroup G} {Z : Type*} [Zero Z]
+    {f g : HeckeCosetModule Δ H₁ H₂ Z} (h : ∀ D, f D = g D) : f = g :=
   Finsupp.ext h
 
 end HeckeCosetModule
