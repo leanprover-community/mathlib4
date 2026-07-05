@@ -486,7 +486,7 @@ private lemma le_mul_sum_vonMangoldt {x : ℝ} (hx : 0 ≤ x) :
   _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by simp [mul_sum, vonMangoldtFun]; ring_nf
   _ ≥ _ := by
     rw [sum_log_eq_sum_mangoldt]
-    gcongr; exacts [vonMangoldt_nonneg, floor_le <| div_nonneg (by linarith) (by linarith)]
+    gcongr; exacts [floor_le <| div_nonneg (by linarith) (by linarith)]
 
 private lemma mul_sum_prime_le :
     x * ∑ n ∈ Ioc 0 ⌊x⌋₊, primeFun n ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + θ x := calc
