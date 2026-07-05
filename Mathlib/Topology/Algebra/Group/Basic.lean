@@ -1107,7 +1107,7 @@ variable [TopologicalSpace H] [CommGroup H] [PartialOrder H] [IsOrderedMonoid H]
 variable [IsTopologicalGroup H]
 
 @[to_additive (attr := simp)]
-theorem Filter.map_divRight_nhdsGT {c a : H} : map (· / c) (𝓝[>] a) = (𝓝[>] (a / c)) := by
+theorem Filter.map_divRight_nhdsGT {c a : H} : map (· / c) (𝓝[>] a) = 𝓝[>] (a / c) := by
   convert! (Homeomorph.divRight c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
