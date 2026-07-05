@@ -188,7 +188,7 @@ S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
 end Units
 
 instance instSubsingletonUnits [Subsingleton Mˣ] {S : Submonoid M} : Subsingleton Sˣ :=
-   .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
+  .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
 
 end Submonoid
 

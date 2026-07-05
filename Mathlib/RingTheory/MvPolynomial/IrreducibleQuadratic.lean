@@ -201,6 +201,7 @@ noncomputable def sumSMulXSMulY :
 
 variable (c : n →₀ R)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_sumSMulXSMulY [IsDomain R]
     (hc : c.support.Nontrivial)
     (h_dvd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
@@ -209,8 +210,7 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   let ι : n ↪ ((n ⊕ n) →₀ ℕ) :=
     ⟨fun i ↦ .single (.inl i) 1 + .single (.inr i) 1,
      fun i j ↦ by simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
-  -- unfortunate defeq abuse... we should have an `.embDomain`-like constructor for MvPolys
-  have aux : sumSMulXSMulY c = c.embDomain ι := by
+  have aux : sumSMulXSMulY c = .ofCoeff (c.embDomain ι) := by
     rw [← Finsupp.sum_single (Finsupp.embDomain _ _)]
     simp [Finsupp.sum_embDomain, sumSMulXSMulY, X, monomial_mul,
       Finsupp.linearCombination_apply, smul_monomial, ι]
@@ -218,7 +218,7 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   have hcoeff (i : n) : coeff (ι i) (sumSMulXSMulY c) = c i := by
     simp [aux, coeff, Finsupp.embDomain_apply]
   have hsupp : (sumSMulXSMulY c).support = c.support.map ι := by
-    rw [aux, support, Finsupp.support_embDomain]
+    simp [aux, support, Finsupp.support_embDomain]
   obtain ⟨a, ha⟩ := hc.nonempty
   apply irreducible_of_disjoint_support (d := ι a) (i := .inl a)
   · rwa [hsupp, Finset.map_nontrivial]
