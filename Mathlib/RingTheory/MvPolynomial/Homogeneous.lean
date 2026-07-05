@@ -582,12 +582,15 @@ lemma support_homogeneousComponent (n : ℕ) (p : MvPolynomial σ R) :
   rw [degree_eq_weight_one]
   exact support_weightedHomogeneousComponent n p
 
-lemma rename_homogeneousComponent {τ : Type*} {φ : σ → τ} (n : ℕ) (p : MvPolynomial σ R)
-    (h : Function.Injective φ) :
-    rename φ (homogeneousComponent n p) = homogeneousComponent n (rename φ p) := by
-  simp only [homogeneousComponent_apply n p, map_sum, rename_monomial, homogeneousComponent_apply]
-  classical simp [support_rename_of_injective h, Finset.sum_filter, coeff_rename_mapDomain _ h,
-    Finset.sum_image (Set.injOn_of_injective (Finsupp.mapDomain_injective h))]
+lemma rename_homogeneousComponent {τ : Type*} {φ : σ → τ} (n : ℕ) (p : MvPolynomial σ R) :
+      rename φ (homogeneousComponent n p) = homogeneousComponent n (rename φ p) := by
+    induction p using MvPolynomial.induction_on' with
+    | monomial d c =>
+      rw [rename_monomial,
+        homogeneousComponent_of_mem (isHomogeneous_monomial c rfl),
+        homogeneousComponent_of_mem (isHomogeneous_monomial c (Finsupp.degree_mapDomain φ d))]
+      split_ifs <;> simp [rename_monomial]
+    | add p q hp hq => simp [map_add, hp, hq]
 
 
 end HomogeneousComponent
