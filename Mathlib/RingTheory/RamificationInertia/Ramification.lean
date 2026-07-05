@@ -144,14 +144,14 @@ theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
     rwa [← max.eq_of_le IsPrime.ne_top' (h1 (IsLocalRing.le_maximalIdeal_of_isPrime (r.under Sq)))]
 
 theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
-    [IsNoetherianRing S] [Ring.DimensionLEOne S]
-    (hpS : p.map (algebraMap R S) ≠ ⊥) : 0 < q.ramificationIdx R :=
+    [IsNoetherianRing S] [Ring.DimensionLEOne S] (hpS : p.map (algebraMap R S) ≠ ⊥) :
+    0 < q.ramificationIdx R :=
   ramificationIdx_pos_of_mem_minimalPrimes p q
     (mem_minimalPrimes_of_ne_bot hpS (map_le_of_le_comap (q.over_def p).le))
 
 theorem ramificationIdx_pos_of_isDedekindDomain' [q.IsPrime] [q.LiesOver p]
-    [IsNoetherianRing S] [Ring.DimensionLEOne S] [FaithfulSMul R S]
-    (hpS : p ≠ ⊥) : 0 < q.ramificationIdx R :=
+    [IsNoetherianRing S] [Ring.DimensionLEOne S] [FaithfulSMul R S] (hpS : p ≠ ⊥) :
+    0 < q.ramificationIdx R :=
   ramificationIdx_pos_of_isDedekindDomain p q (map_ne_bot_of_ne_bot hpS)
 
 variable (R) in
