@@ -31,7 +31,6 @@ namespace CategoryTheory.Cat
 variable (X : Type u) (C : Cat)
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
 private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
   toFun F := ↾fun x ↦ F.toFunctor.obj ⟨x⟩
   invFun f := (Discrete.functor f).toCatHom
@@ -39,7 +38,6 @@ private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat
     obtain rfl := Discrete.eq_of_hom f
     simp)
 
-set_option backward.privateInPublic true in
 private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤ C where
   obj := Discrete.as
   map := eqToHom ∘ Discrete.eq_of_hom

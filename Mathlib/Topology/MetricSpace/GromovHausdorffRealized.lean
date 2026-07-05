@@ -130,25 +130,20 @@ set_option backward.privateInPublic true in
 private theorem candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
   fA.1.2 x
 
-set_option backward.privateInPublic true in
 private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
   grind [candidates_symm, candidates_triangle]
 
-set_option backward.privateInPublic true in
 private theorem candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
     f (inl x, inl y) = dist x y :=
   fA.1.1.1.1.1 x y
 
-set_option backward.privateInPublic true in
 private theorem candidates_dist_inr (fA : f ∈ candidates X Y) (x y : Y) :
     f (inr x, inr y) = dist x y :=
   fA.1.1.1.1.2 x y
 
-set_option backward.privateInPublic true in
 private theorem candidates_le_maxVar (fA : f ∈ candidates X Y) : f (x, y) ≤ maxVar X Y :=
   fA.2 x y
 
-set_option backward.privateInPublic true in
 /-- candidates are bounded by `maxVar X Y` -/
 private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
     ∀ {x y : X ⊕ Y}, f (x, y) ≤ maxVar X Y * dist x y
@@ -179,7 +174,6 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
       _ = 1 * dist (α := X ⊕ Y) (inr x) (inr y) := by ring
       _ ≤ maxVar X Y * dist (inr x) (inr y) := by gcongr; exact one_le_maxVar X Y
 
-set_option backward.privateInPublic true in
 /-- Technical lemma to prove that candidates are Lipschitz -/
 private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=

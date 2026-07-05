@@ -64,7 +64,6 @@ corresponds to the shift by `-n` on `C`. -/
 scoped instance : HasShift Cᵒᵖ ℤ :=
   inferInstanceAs <| HasShift (OppositeShiftAux C) ℤ
 
-set_option backward.privateInPublic true in
 instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
     (shiftFunctor Cᵒᵖ n).Additive :=
   inferInstanceAs <| (shiftFunctor (OppositeShiftAux C) n).Additive
@@ -73,7 +72,6 @@ end Opposite
 
 open Opposite
 
-set_option backward.privateInPublic true in
 /-- The shift functor on the opposite category identifies to the opposite functor
 of a shift functor on the original category. -/
 def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
@@ -83,7 +81,6 @@ def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
 
 variable {C}
 
-set_option backward.privateInPublic true in
 lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).hom.app X = (shiftFunctorOpIso C 0 0 (zero_add 0)).hom.app X ≫
       ((shiftFunctorZero C ℤ).inv.app X.unop).op := rfl
