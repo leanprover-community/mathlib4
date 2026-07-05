@@ -18,6 +18,7 @@ public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+public import Mathlib.NumberTheory.LSeries.PrimesInAP
 public import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -930,6 +931,46 @@ lemma Weight.prime_C₁_eq : prime.C₁ = 3 := by simp [C₁]; linarith [log_fou
 
 @[simp]
 lemma Weight.prime_C₂_eq : prime.C₂ = log 4 + 3 := by simp [C₂]
+
+/-- The standard formula for the Meissel-Mertens constant. -/
+theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
+  + ∑' p : Primes, (log (1 - 1 / p) - 1 / p) := by
+  rw [← sub_eq_iff_eq_add']
+  apply tendsto_nhds_unique prime.sum_div_log_mul_pow_add_tendsto
+  have h := log_riemannZeta_add_log_sub_isLittleO_ofReal
+  rw [isLittleO_one_iff] at h
+  suffices Tendsto (fun s : ℝ ↦ ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2) * s)))
+    (𝓝[>] 1) (𝓝 (∑' (p : Primes), (1 / p - log (1 - 1 / p)))) by
+    convert tendsto_nhdsWithin_congr (fun s hs ↦ ?_) (h.sub this)
+    · simp [← tsum_neg]
+    rw [log_riemannZeta_eq hs]
+    nth_rw 1 [tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
+    · have : ∑' (p : Primes), Λ p / (p ^ s * log p)
+          = ∑' (n : ℕ), (log n)⁻¹ * prime n * (n : ℝ) ^ (1 - s) := calc
+        _ = ∑' n, Set.indicator { n | Nat.Prime n } (fun n ↦ Λ n / (n ^ s * log n)) n := by
+          rw [← _root_.tsum_subtype]; rfl
+        _ = _ := by
+          congr! 2 with n
+          simp [Set.indicator]
+          split_ifs with h
+          · have := h.log_pos
+            have := h.pos
+            simp [vonMangoldt_apply_prime h]
+            field_simp; rw [← rpow_add (mod_cast this)]; simp
+          · rfl
+      have :  ∑' (p : Primes) (k : ℕ),
+          Λ (p ^ (k + 2)) / ((p ^ (k + 2) : ℕ) ^ s * log (p ^ (k + 2) : ℕ))
+          = ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2 : ℝ) * s)) := by
+        congr! 4 with p k
+        simp [ArithmeticFunction.vonMangoldt, p.property.isPrimePow.pow, p.property.pow_minFac]
+        have : 0 < log p := p.property.log_pos
+        field_simp
+        rw [rpow_mul (by positivity)]
+        norm_cast
+      linarith
+    · sorry
+    · intro; simp +contextual [vonMangoldt_ne_zero_iff]
+  sorry
 
 end ConstructWeights
 
