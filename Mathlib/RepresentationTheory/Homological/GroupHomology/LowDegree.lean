@@ -114,8 +114,8 @@ theorem range_d₁₀_eq_coinvariantsKer :
       simpa [← hy, add_sub_add_comm, sum_add_index, d₁₀_single (G := G)]
         using! Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma d₁₀_comp_coinvariantsMk : d₁₀ A ≫ (coinvariantsMk k G).app A = 0 := by
   ext

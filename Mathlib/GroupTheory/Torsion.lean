@@ -67,7 +67,7 @@ end Monoid
 open Monoid
 
 /-- Torsion monoids are really groups. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- Torsion additive monoids are really additive groups -/]
 noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with

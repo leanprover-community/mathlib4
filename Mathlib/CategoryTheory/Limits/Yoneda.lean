@@ -77,7 +77,6 @@ section
 variable {J : Type w} [Category.{t} J]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cone of `F` corresponding to an element in `(F ⋙ yoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompYoneda (F : J ⥤ Cᵒᵖ) (X : C)
@@ -126,7 +125,6 @@ noncomputable def Limits.Cocone.isColimitYonedaEquiv {F : J ⥤ C} (c : Cocone F
   right_inv _ := by ext; apply Subsingleton.elim
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cone of `F` corresponding to an element in `(F ⋙ coyoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompCoyoneda (F : J ⥤ C) (X : Cᵒᵖ)

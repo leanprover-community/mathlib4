@@ -196,7 +196,7 @@ lemma basis_apply (k) [Semiring k] (r : R) :
 TODO: Change the type to `DistribMulAction Gᵈᵐᵃ S[M]` and then it can be an instance.
 TODO: Generalise to a group acting on another, instead of just the left multiplication action.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def comapDistribMulActionSelf [Group G] [Semiring S] : DistribMulAction G S[G] :=
   have := Finsupp.comapDistribMulAction (G := G) (α := G) (M := S)
   fast_instance% coeffEquiv.distribMulAction _

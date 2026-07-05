@@ -133,7 +133,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
 namespace Valued
 
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
     toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _

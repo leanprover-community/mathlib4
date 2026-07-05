@@ -53,7 +53,6 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) := ⟨.mk T default
 
 variable (T)
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local ext] Hom in
 /-- The Kleisli category on a monad `T`.
 cf Definition 5.2.9 in [Riehl][riehl2017]. -/
@@ -78,7 +77,6 @@ lemma hom_ext {x y : Kleisli T} {f g : x ⟶ y} (h : f.of = g.of) : f = g :=
 
 namespace Adjunction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def toKleisli : C ⥤ Kleisli T where
@@ -88,7 +86,6 @@ def toKleisli : C ⥤ Kleisli T where
     unfold_projs
     simp [← T.η.naturality g]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def fromKleisli : Kleisli T ⥤ C where
@@ -110,7 +107,6 @@ def adj : toKleisli T ⊣ fromKleisli T :=
         simp [← T.η.naturality_assoc g] }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the adjunction gives the original functor. -/
 def toKleisliCompFromKleisliIsoSelf : toKleisli T ⋙ fromKleisli T ≅ T :=
   NatIso.ofComponents fun _ => Iso.refl _
@@ -142,7 +138,6 @@ structure Hom (c c' : Cokleisli U) where
 
 instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) := ⟨.mk U default⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The co-Kleisli category on a comonad `U`. -/
 @[simps!]
 instance category : Category (Cokleisli U) where
@@ -158,14 +153,12 @@ lemma hom_ext {x y : Cokleisli U} {f g : x ⟶ y} (h : f.of = g.of) : f = g :=
 
 namespace Adjunction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]
 def toCokleisli : C ⥤ Cokleisli U where
   obj X := .mk U X
   map {X} {_} f := .mk (U.ε.app X ≫ f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]
 def fromCokleisli : Cokleisli U ⥤ C where
@@ -174,7 +167,6 @@ def fromCokleisli : Cokleisli U ⥤ C where
   map_id _ := U.right_counit _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
 def adj : fromCokleisli U ⊣ toCokleisli U :=
   Adjunction.mkOfHomEquiv

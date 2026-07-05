@@ -632,7 +632,7 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
 
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/
-@[implicit_reducible]
+@[instance_reducible]
 def weightedDecomposition [DecidableEq M] :
     DirectSum.Decomposition (weightedHomogeneousSubmodule R w) where
   decompose' := decompose' R w
@@ -658,7 +658,7 @@ def weightedDecomposition [DecidableEq M] :
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
-@[implicit_reducible]
+@[instance_reducible]
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where
   toDecomposition := weightedDecomposition R w
