@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
@@ -1368,29 +1369,52 @@ theorem rightLim_eq {E : Type*} [PseudoMetricSpace E] [CompleteSpace E]
   simp only [univ_inter] at this
   exact this (hf.tendsto_rightLim _)
 
+theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_inter_Ici
+    [TopologicalSpace α] [OrderTopology α] (hf : BoundedVariationOn f s)
+    {a x : α} (as : a ∈ s) (xs : x ∈ s) (hx : ContinuousWithinAt f (s ∩ Ici x) x) :
+    ContinuousWithinAt (variationOnFromTo f s a) (s ∩ Ici x) x := by
+  have H : ContinuousWithinAt (fun y ↦ (eVariationOn f (s ∩ Icc x y)).toReal) (s ∩ Ici x) x := by
+    simp only [ContinuousWithinAt, Icc_self]
+    rw [eVariationOn.subsingleton _ (by grind [Set.Subsingleton])]
+    apply (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp
+    apply Tendsto.mono_left (hf.tendsto_eVariationOn_Icc_zero_right _ hx)
+    exact nhdsWithin_mono _ inter_subset_left
+  apply (H.add (continuousWithinAt_const (b := variationOnFromTo f s a x))).congr_of_mem ?_
+    ⟨xs, le_rfl⟩
+  rintro y ⟨ys, hxy⟩
+  rw [← variationOnFromTo.add hf.locallyBoundedVariationOn as xs ys, add_comm]
+  simp only [Pi.add_apply, add_left_inj]
+  grind [variationOnFromTo]
+
+theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_inter_Ici_iff
+    [TopologicalSpace α] [OrderTopology α] (hf : BoundedVariationOn f s)
+    {a x : α} (as : a ∈ s) (xs : x ∈ s) :
+    ContinuousWithinAt (variationOnFromTo f s a) (s ∩ Ici x) x
+      ↔ ContinuousWithinAt f (s ∩ Ici x) x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ hf.continuousWithinAt_variationOnFromTo_inter_Ici as xs h⟩
+  simp only [ContinuousWithinAt, tendsto_iff_edist_tendsto_0] at h ⊢
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h (by simp)
+  filter_upwards [self_mem_nhdsWithin] with y hy
+  rw [edist_eq_enorm_sub, variationOnFromTo.sub_right hf.locallyBoundedVariationOn as hy.1 xs,
+    variationOnFromTo.eq_of_le _ _ hy.2]
+  grw [eVariationOn.edist_le (s := s ∩ Icc x y) _ (by grind) (by grind)]
+  have : eVariationOn f (s ∩ Icc x y) ≠ ∞ := hf.mono inter_subset_left
+  simp [this]
+
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_Ici
     [TopologicalSpace α] [OrderTopology α] (hf : BoundedVariationOn f univ) {a x : α}
     (hx : ContinuousWithinAt f (Ici x) x) :
     ContinuousWithinAt (variationOnFromTo f univ a) (Ici x) x := by
-  have : variationOnFromTo f univ a =
-      fun y ↦ variationOnFromTo f univ a x + variationOnFromTo f univ x y := by
-    ext y
-    rw [variationOnFromTo.add hf.locallyBoundedVariationOn (mem_univ _) (mem_univ _) (mem_univ _)]
-  rw [this]
-  apply continuousWithinAt_const.add
-  suffices H : ContinuousWithinAt (fun y ↦ (eVariationOn f (univ ∩ Icc x y)).toReal) (Ici x) x from
-    H.congr_of_mem (fun y hy ↦ by grind [variationOnFromTo]) self_mem_Iic
-  simp only [ContinuousWithinAt, Icc_self]
-  rw [eVariationOn.subsingleton _ (by grind [Set.Subsingleton])]
-  apply (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp
-  apply Tendsto.mono_left _ (nhdsWithin_mono _ (subset_univ _))
-  exact hf.tendsto_eVariationOn_Icc_zero_right _ (by simpa using hx)
+  simpa using hf.continuousWithinAt_variationOnFromTo_inter_Ici (mem_univ a) (mem_univ x)
+    (hx.mono inter_subset_right)
 
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_rightLim_Ici
     [TopologicalSpace α] [OrderTopology α] [T3Space E] [CompleteSpace E]
     (hf : BoundedVariationOn f univ) {a x : α} :
     ContinuousWithinAt (variationOnFromTo f.rightLim univ a) (Ici x) x :=
   hf.rightLim.continuousWithinAt_variationOnFromTo_Ici hf.continuousWithinAt_rightLim
+
+#exit
 
 end variationOnFromTo
 
