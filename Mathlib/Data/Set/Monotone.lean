@@ -186,9 +186,9 @@ namespace Function
 
 open Set
 
-theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Type*} [PartialOrder α] [LinearOrder β]
+theorem monotoneOn_of_rightInvOn_of_mapsTo [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
-    (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
+    (φψs : RightInvOn ψ φ s) (ψts : MapsTo ψ s t) : MonotoneOn ψ s := by
   rintro x xs y ys l
   rcases le_total (ψ x) (ψ y) with (ψxy | ψyx)
   · exact ψxy
@@ -197,9 +197,42 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Type*} [PartialOrder α] [Li
     induction le_antisymm l this
     exact le_refl _
 
+theorem strictMonoOn_of_rightInvOn_of_mapsTo [Preorder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : StrictMonoOn φ t)
+    (φψs : RightInvOn ψ φ s) (ψts : MapsTo ψ s t) : StrictMonoOn ψ s := by
+  intro x xs y ys l
+  grw [← hφ.lt_iff_lt (ψts xs) (ψts ys), φψs xs, φψs ys, l]
+
 theorem antitoneOn_of_rightInvOn_of_mapsTo [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
-    (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
+    (φψs : RightInvOn ψ φ s) (ψts : MapsTo ψ s t) : AntitoneOn ψ s :=
   (monotoneOn_of_rightInvOn_of_mapsTo hφ.dual_left φψs ψts).dual_right
+
+theorem strictAntiOn_of_rightInvOn_of_mapsTo [Preorder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : StrictAntiOn φ t)
+    (φψs : RightInvOn ψ φ s) (ψts : MapsTo ψ s t) : StrictAntiOn ψ s :=
+  (strictMonoOn_of_rightInvOn_of_mapsTo hφ.dual_left φψs ψts).dual_right
+
+theorem monotone_of_rightInverse [PartialOrder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} (hφ : Monotone φ)
+    (φψ : RightInverse ψ φ) : Monotone ψ :=
+  monotoneOn_univ.mp <| monotoneOn_of_rightInvOn_of_mapsTo
+    (hφ.monotoneOn _) (φψ.rightInvOn _) (mapsTo_univ ψ _)
+
+theorem strictMono_of_rightInverse [Preorder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} (hφ : StrictMono φ)
+    (φψ : RightInverse ψ φ) : StrictMono ψ :=
+  strictMonoOn_univ.mp <| strictMonoOn_of_rightInvOn_of_mapsTo
+    (hφ.strictMonoOn _) (φψ.rightInvOn _) (mapsTo_univ ψ _)
+
+theorem antitone_of_rightInverse [PartialOrder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} (hφ : Antitone φ)
+    (φψ : RightInverse ψ φ) : Antitone ψ :=
+  (monotone_of_rightInverse hφ.dual_left φψ).dual_right
+
+theorem strictAnti_of_rightInverse [Preorder α] [LinearOrder β]
+    {φ : β → α} {ψ : α → β} (hφ : StrictAnti φ)
+    (φψ : RightInverse ψ φ) : StrictAnti ψ :=
+  (strictMono_of_rightInverse hφ.dual_left φψ).dual_right
 
 end Function
