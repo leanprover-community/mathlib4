@@ -578,6 +578,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
 theorem sum_div_log_mul_pow_add_tendsto :
     Tendsto (fun s ↦ ∑' n : ℕ, (log n)⁻¹ * f n * n ^ (1 - s) + log (s - 1)) (𝓝[>] 1)
     (𝓝 (M - Real.eulerMascheroniConstant)) := by
+  have := C₂_nonneg
   suffices Tendsto (fun (s : ℝ) ↦ ∫ x in .Ioi 1, (E₂ (x ^ (s - 1)⁻¹)) * x ^ (-2 : ℝ)) (𝓝[>] 1)
       (𝓝 0) by
     rw [← tendsto_sub_nhds_zero_iff]
@@ -592,33 +593,43 @@ theorem sum_div_log_mul_pow_add_tendsto :
     ?_ ?_ ?_ ?_
   · simp
   · unfold E₂; exact Eventually.of_forall (fun _ ↦ by fun_prop)
-  · filter_upwards [eventually_mem_nhdsWithin] with s hs
+  · filter_upwards [eventually_mem_nhdsWithin,
+      (eventually_lt_nhds (by norm_num : (1 : ℝ) < 2)).filter_mono nhdsWithin_le_nhds] with s hs hs'
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
     gcongr
     rw [Set.mem_Ioi] at hs hx
+    have : 0 < s - 1 := by linarith
     grw [norm_eq_abs, abs_mul, abs_of_nonneg (by positivity : 0 ≤ x ^ (-2 : ℝ))]
     gcongr
     rcases le_or_gt 2 (x ^ (s - 1)⁻¹) with h | h
-    · have := C₂_nonneg
-      grw [second_theorem' h, ← h, le_add_iff_nonneg_left]
+    · grw [second_theorem' h, ← h, le_add_iff_nonneg_left]
       positivity
-    · have : 1 ≤ x ^ (s - 1)⁻¹ := by sorry
+    · have hx' : x ≤ x ^ (s - 1)⁻¹ := self_le_rpow_of_one_le hx.le (by field_simp; linarith)
+      have : 1 ≤ x ^ (s - 1)⁻¹ := by linarith
       grw [second_theorem_weak this]
       gcongr 2
-      sorry
-  · sorry
+      grw [← neg_le_abs, abs_of_nonpos, neg_le_neg_iff]
+      · exact log_le_log (log_pos hx) (log_le_log (by linarith) hx')
+      apply log_nonpos (log_nonneg this)
+      grw [h, log_two_lt_d9]
+      norm_num
+  · rw [lintegral_ofReal_ne_top_iff_integrable (Measurable.aestronglyMeasurable (by fun_prop))
+        (Eventually.of_forall (fun _ ↦ by simp only [Pi.zero_apply, rpow_neg_ofNat]; positivity))]
+    simp_rw [add_assoc, add_mul _ (|M| + C₂ / log 2)]
+    apply Integrable.add
+    · exact IntegrableOn.congr_fun (integrableOn_log_log_mul_rpow (by norm_num : 1 < (2 : ℝ))).abs
+        (fun _ _ ↦ by simp [zpow_ofNat]) measurableSet_Ioi
+    · apply Integrable.const_mul (integrableOn_Ioi_rpow_of_lt (by norm_num) (by norm_num))
   · filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
     suffices Tendsto (fun s : ℝ ↦ E₂ (x ^ (s - 1)⁻¹) * x ^ (-2 : ℝ)) (𝓝[>] 1)
         (𝓝 (0 * x ^ (-2 : ℝ))) by simpa using ENNReal.tendsto_ofReal this.norm
-    have h1 : Tendsto E₂ atTop (𝓝 0) := by sorry
-    have h4 : Tendsto (· - (1 : ℝ)) (𝓝[>] 1) (𝓝[>] 0) := by
-      convert Filter.tendsto_map
-      simpa using Filter.map_add_right_nhdsGT (c := (-1 : ℝ))
-      sorry
---    have h3 : Tendsto (fun s: ℝ ↦ (s - 1)⁻¹) (𝓝[>] 1) atTop := tendsto_inv_nhdsGT_zero.comp h4
-    have h5 : Tendsto (fun u : ℝ ↦ x ^ u) atTop atTop := tendsto_rpow_atTop_of_base_gt_one hx
---    have h2 : Tendsto (fun s : ℝ ↦ x ^ (s - 1)⁻¹) (𝓝[>] 1) atTop := h5.comp h3
-    exact (h1.comp (h5.comp (tendsto_inv_nhdsGT_zero.comp h4))).mul_const _
+    have h1 : Tendsto E₂ atTop (𝓝 0) := by
+      apply squeeze_zero_norm' (a := fun x ↦ C₂ / log x) _ (tendsto_log_atTop.const_div_atTop _)
+      filter_upwards [eventually_ge_atTop 2] with x hx
+      simpa using second_theorem' hx
+    have h2 : Tendsto (· - (1 : ℝ)) (𝓝[>] 1) (𝓝[>] 0) := by convert Filter.tendsto_map; simp
+    exact (h1.comp ((tendsto_rpow_atTop_of_base_gt_one _ hx).comp
+           (tendsto_inv_nhdsGT_zero.comp h2))).mul_const _
 
 end Weight
 
