@@ -50,10 +50,10 @@ variable {G H : Type*} [Group G] [Fintype G] [DecidableEq G] [CommMonoid H]
 
 /-- Multiplying `f (g * h * g⁻¹)` over `h` in any conjugacy class of `G` equals multiplying
 `f h` over `h`. -/
-@[to_additive (dont_translate := G) ConjClasses.sum_carrier_mulAut
+@[to_additive (dont_translate := G) ConjClasses.sum_carrier_conj
 /-- Summing `f (g * h * g⁻¹)` over `h` in any conjugacy class of `G` equals summing
 `f h` over `h`. -/]
-theorem prod_carrier_mulAut (f : G → H) :
+theorem prod_carrier_conj (f : G → H) :
     ∏ h ∈ c.carrier, f (MulAut.conj g h) =
     ∏ h ∈ c.carrier, f h := by
   rw [← Finset.prod_set_coe, ← Finset.prod_set_coe]
