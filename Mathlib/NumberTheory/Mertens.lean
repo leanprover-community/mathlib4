@@ -936,6 +936,45 @@ lemma Weight.prime_C₁_eq : prime.C₁ = 3 := by simp [C₁]; linarith [log_fou
 @[simp]
 lemma Weight.prime_C₂_eq : prime.C₂ = log 4 + 3 := by simp [C₂]
 
+private lemma neg_inv_sub_log_sub_inv_eq (p : Primes) : - 1 / p - log (1 - 1 / p)
+    = ∑' (k : ℕ), 1 / ((↑k + 2) * (p : ℝ) ^ ((k + 2))) := by
+  symm; apply HasSum.tsum_eq
+  let c : ℕ → ℝ := fun k ↦ 1 / ((k + 1 : ℝ) * (p : ℝ) ^ ((k + 1)))
+  suffices HasSum (fun k ↦ c (k + 1)) (- 1 / ↑↑p - log (1 - 1 / ↑↑p)) by
+    convert this using 2 with n; unfold c; norm_cast
+  rw [hasSum_nat_add_iff 1]
+  simp only [one_div, mul_inv_rev, range_one, sum_singleton, zero_add, pow_one,
+    CharP.cast_eq_zero, inv_one, mul_one, c]
+  have : 1 < (p : ℝ) := mod_cast p.property.one_lt
+  convert! (1 / (p : ℝ)).hasSum_pow_div_log_of_abs_lt_one
+      (by grw [abs_of_pos (by positivity), ← this]; simp) using 1
+  · ext; simp [division_def]
+  simp [division_def]; abel
+
+private lemma tsum_inv_mul_pow_le {s : ℝ} (hs : 1 ≤ s) (p : Primes) :
+    ∑' (k : ℕ), 1 / ((↑k + 2) * (p : ℝ) ^ ((↑k + 2) * s)) ≤ 1 / p ^ 2 := by
+  have h0 : 0 < (p : ℝ) := mod_cast p.property.pos
+  have h1 : 1 ≤ (p : ℝ) := mod_cast p.property.one_le
+  have h2 : 2 ≤ (p : ℝ) := mod_cast p.property.two_le
+  refine tsum_le_of_sum_range_le (fun n ↦ by positivity) (fun N ↦ ?_)
+  grw [← hs]
+  simp only [mul_one, rpow_add h0, rpow_natCast, rpow_ofNat, one_div, mul_inv_rev, mul_assoc,
+    ← mul_sum]
+  apply mul_le_of_le_one_right (by positivity)
+  calc
+    _ ≤ (1 - (2 : ℝ)⁻¹) * ∑ n ∈ range N, ((2 : ℝ)⁻¹)^n := by
+      rw [mul_sum]; apply Finset.sum_le_sum; intro n hn
+      grw [← h2, inv_pow, mul_comm]
+      gcongr; field_simp; grind
+    _ ≤ _ := by rw [mul_neg_geom_sum, sub_le_self_iff]; positivity
+
+lemma tsum_primes_eq {α} [AddCommMonoid α] [TopologicalSpace α] (f : ℕ → α) :
+    ∑' p : Primes, f p = ∑' n : ℕ, if n.Prime then f n else 0 := calc
+  _ = ∑' n : ℕ, Set.indicator { n | Nat.Prime n } f n := by
+    rw [← _root_.tsum_subtype]; rfl
+  _ = _ := by
+    simp only [Set.indicator, Set.mem_setOf_eq]; congr!
+
 /-- The standard formula for the Meissel-Mertens constant. -/
 theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
   + ∑' p : Primes, (log (1 - 1 / p) + 1 / p) := by
@@ -950,18 +989,15 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
     rw [log_riemannZeta_eq hs]
     nth_rw 1 [tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
     · have : ∑' (p : Primes), Λ p / (p ^ s * log p)
-          = ∑' (n : ℕ), (log n)⁻¹ * prime n * (n : ℝ) ^ (1 - s) := calc
-        _ = ∑' n, Set.indicator { n | Nat.Prime n } (fun n ↦ Λ n / (n ^ s * log n)) n := by
-          rw [← _root_.tsum_subtype]; rfl
-        _ = _ := by
-          congr! 2 with n
-          simp [Set.indicator]
-          split_ifs with h
-          · have := h.log_pos
-            have := h.pos
-            simp [vonMangoldt_apply_prime h]
-            field_simp; rw [← rpow_add (mod_cast this)]; simp
-          · rfl
+          = ∑' (n : ℕ), (log n)⁻¹ * prime n * (n : ℝ) ^ (1 - s) := by
+        rw [tsum_primes_eq (fun p ↦ Λ p / (p ^ s * log p))]
+        congr! 2 with n
+        split_ifs with h
+        · have := h.log_pos
+          have := h.pos
+          simp [vonMangoldt_apply_prime, h]
+          field_simp; rw [← rpow_add (mod_cast this)]; simp
+        · simp [h]
       have :  ∑' (p : Primes) (k : ℕ),
           Λ (p ^ (k + 2)) / ((p ^ (k + 2) : ℕ) ^ s * log (p ^ (k + 2) : ℕ))
           = ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2 : ℝ) * s)) := by
@@ -984,24 +1020,10 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
       field_simp
       apply le_abs_self
     · intro; simp +contextual [vonMangoldt_ne_zero_iff]
-  have (p : Primes) : - 1 / p - log (1 - 1 / p)
-      = ∑' (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2))) := by
-    symm; apply HasSum.tsum_eq
-    let c : ℕ → ℝ := fun k ↦ 1 / ((k + 1 : ℝ) * (p : ℝ) ^ ((k + 1)))
-    suffices HasSum (fun k ↦ c (k + 1)) (- 1 / ↑↑p - log (1 - 1 / ↑↑p)) by
-      convert this using 2 with n; unfold c; norm_cast
-    rw [hasSum_nat_add_iff 1]
-    simp only [one_div, mul_inv_rev, range_one, sum_singleton, zero_add, pow_one,
-      CharP.cast_eq_zero, inv_one, mul_one, c]
-    have : 1 < (p : ℝ) := mod_cast p.property.one_lt
-    convert! (1 / (p : ℝ)).hasSum_pow_div_log_of_abs_lt_one
-        (by grw [abs_of_pos (by positivity), ← this]; simp) using 1
-    · ext; simp [division_def]
-    simp [division_def]; abel
   apply tendsto_tsum_of_dominated_convergence
     ((summable_one_div_nat_pow.mpr (by norm_num : 1 < 2)).subtype Nat.Prime)
   · intro p
-    rw [this p]
+    rw [neg_inv_sub_log_sub_inv_eq p]
     have : (p : ℝ) ≠ 0 := mod_cast p.property.ne_zero
     have : 1 ≤ (p : ℝ) := mod_cast p.property.one_le
     have : 2 ≤ (p : ℝ) := mod_cast p.property.two_le
@@ -1021,21 +1043,8 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
   · filter_upwards [eventually_mem_nhdsWithin] with s hs
     rw [Set.mem_Ioi] at hs
     intro p
-    have h0 : 0 < (p : ℝ) := mod_cast p.property.pos
-    have h1 : 1 ≤ (p : ℝ) := mod_cast p.property.one_le
-    have h2 : 2 ≤ (p : ℝ) := mod_cast p.property.two_le
     rw [norm_eq_abs, abs_of_nonneg (by positivity)]
-    refine tsum_le_of_sum_range_le (fun n ↦ by positivity) (fun N ↦ ?_)
-    grw [← hs]
-    simp only [mul_one, rpow_add h0, rpow_natCast, rpow_ofNat, one_div, mul_inv_rev, mul_assoc,
-      ← mul_sum, Function.comp_apply]
-    apply mul_le_of_le_one_right (by positivity)
-    calc
-      _ ≤ (1 - (2 : ℝ)⁻¹) * ∑ n ∈ range N, ((2 : ℝ)⁻¹)^n := by
-        rw [mul_sum]; apply Finset.sum_le_sum; intro n hn
-        grw [← h2, inv_pow, mul_comm]
-        gcongr; field_simp; grind
-      _ ≤ _ := by rw [mul_neg_geom_sum, sub_le_self_iff]; positivity
+    exact tsum_inv_mul_pow_le hs.le p
 
 end ConstructWeights
 
@@ -1276,5 +1285,77 @@ theorem sum_prime_div_mul_log_bound_asymp_nat :
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 end SecondTheorem
+
+section ThirdTheorem
+
+/-
+## The third Mertens theorem
+-/
+
+private lemma neg_inv_sub_log_sub_inv_nonneg (p : Primes) : 0 ≤ - 1 / p - log (1 - 1 / p) := by
+  have : 1 < (p : ℝ) := mod_cast p.property.one_lt
+  grw [log_le_sub_one_of_pos]
+  · grind
+  field_simp; grind
+
+private lemma neg_inv_sub_log_sub_inv_le (p : Primes) : - 1 / p - log (1 - 1 / p)
+    ≤ 1 / p ^ 2 := by
+  rw [neg_inv_sub_log_sub_inv_eq p]
+  have := tsum_inv_mul_pow_le (le_refl _) p
+  norm_cast at this
+  simpa using this
+
+/-- The error term in Mertens' third theorem. -/
+noncomputable def E₃ (x : ℝ) :=
+  ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ)) + log (log x) + eulerMascheroniConstant
+
+theorem sum_prime_log_sub_inv_sub_sub_bound {x : ℝ} (hx : 2 ≤ x) :
+    |E₃ x| ≤ (log 4 + 3) / log x + 1 / ⌊x⌋₊ := by
+  have hx' := floor_mono hx
+  simp only [floor_ofNat] at hx'
+  have := sum_prime_div_mul_log_bound hx
+  rw [Weight.prime_M_eq, tsum_primes_eq (fun p ↦ log (1 - 1 / p) + 1 / p),
+      ← Summable.sum_add_tsum_nat_add (⌊x⌋₊ + 1)] at this
+  · have h {a b c d : ℝ} (ha : |a| ≤ b) (hac : |a + c| ≤ d) : |c| ≤ b + d := by
+      grw [abs_add' c a, ha, hac]
+    apply h this
+    rw [← sum_filter, ← primesLE_eq_filter_range, sum_add_distrib, E₃]
+    ring_nf
+    have (i : ℕ) : 0 ≤ - (if (1 + i + ⌊x⌋₊).Prime then ((1 + i + ⌊x⌋₊ : ℕ) : ℝ)⁻¹
+        + log (1 - ((1 + i + ⌊x⌋₊ : ℕ) : ℝ)⁻¹) else 0) := by
+      split_ifs with hp
+      · have := neg_inv_sub_log_sub_inv_nonneg ⟨ _, hp ⟩
+        grind
+      · simp
+    grw [← tsum_neg, abs_of_nonneg (tsum_nonneg this)]
+    apply tsum_le_of_sum_range_le this; intro N
+    calc
+      _ ≤ ∑ i ∈ range N, (((⌊x⌋₊ + i : ℕ): ℝ)⁻¹ - ((⌊x⌋₊ + (i + 1) : ℕ): ℝ)⁻¹) := by
+        apply Finset.sum_le_sum; intro i _
+        split_ifs with h
+        · rw [neg_add']
+          calc
+            _ ≤ 1 / ((1 + i + ⌊x⌋₊ : ℕ) : ℝ)^2 := by
+              convert neg_inv_sub_log_sub_inv_le ⟨ _, h ⟩ <;> grind
+            _ ≤ _ := by
+              rw [inv_sub_inv (by positivity) (by positivity)]
+              push_cast; ring_nf; gcongr <;> grind
+        · simp only [neg_zero, cast_add, cast_one, sub_nonneg]
+          gcongr; norm_cast; lia
+      _ ≤ _ := by
+        rw [sum_range_sub', add_zero, cast_add, tsub_le_iff_right, le_add_iff_nonneg_right,
+          inv_nonneg]
+        positivity
+  · apply (summable_one_div_nat_rpow.mpr (by norm_num : 1 < (2 : ℝ))).of_norm_bounded
+    intro i
+    split_ifs with h
+    · rw [norm_eq_abs]
+      have h1 := neg_inv_sub_log_sub_inv_nonneg ⟨ _, h ⟩
+      have h2 := neg_inv_sub_log_sub_inv_le ⟨ _, h ⟩
+      simp at h1 h2 ⊢
+      grind
+    simp
+
+end ThirdTheorem
 
 end Mertens
