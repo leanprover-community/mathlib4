@@ -149,6 +149,11 @@ theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
   ramificationIdx_pos_of_mem_minimalPrimes p q
     (mem_minimalPrimes_of_ne_bot hpS (map_le_of_le_comap (q.over_def p).le))
 
+theorem ramificationIdx_pos_of_isDedekindDomain' [q.IsPrime] [q.LiesOver p]
+    [IsNoetherianRing S] [Ring.DimensionLEOne S] [FaithfulSMul R S]
+    (hpS : p ≠ ⊥) : 0 < q.ramificationIdx R :=
+  ramificationIdx_pos_of_isDedekindDomain p q (map_ne_bot_of_ne_bot hpS)
+
 variable (R) in
 theorem ramificationIdx_pos [q.IsPrime] [Module.Finite R S] :
     0 < q.ramificationIdx R :=
