@@ -347,6 +347,46 @@ theorem _root_.Wbtw.wOppSide₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbt
 
 end StrictOrderedCommRing
 
+section LinearOrderedCommRing
+
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
+
+/-- If `x` and `y` are displaced from points of `s` by multiples of a common vector whose
+coefficients have nonnegative product, they are weakly on the same side of `s`. -/
+theorem wSameSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : 0 ≤ c₁ * c₂) : s.WSameSide x y := by
+  refine ⟨p₁, hp₁, p₂, hp₂, ?_⟩
+  rw [h₁, h₂]
+  exact sameRay_smul_smul_of_mul_nonneg hc
+
+/-- If `x` and `y` are displaced from points of `s` by multiples of a common vector whose
+coefficients have nonpositive product, they are weakly on opposite sides of `s`. -/
+theorem wOppSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : c₁ * c₂ ≤ 0) : s.WOppSide x y := by
+  refine ⟨p₁, hp₁, p₂, hp₂, ?_⟩
+  have h₂' : p₂ -ᵥ y = (-c₂) • m := by rw [← neg_vsub_eq_vsub_rev, h₂, neg_smul]
+  rw [h₁, h₂']
+  exact sameRay_smul_smul_of_mul_nonneg (by rw [mul_neg]; exact neg_nonneg.2 hc)
+
+/-- If `x` and `y` lie off `s` and are displaced from points of `s` by multiples of a common
+vector whose coefficients have nonnegative product, they are strictly on the same side of `s`. -/
+theorem sSameSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : 0 ≤ c₁ * c₂) (hx : x ∉ s) (hy : y ∉ s) : s.SSameSide x y :=
+  ⟨wSameSide_of_vsub_eq_smul hp₁ hp₂ h₁ h₂ hc, hx, hy⟩
+
+/-- If `x` and `y` lie off `s` and are displaced from points of `s` by multiples of a common
+vector whose coefficients have nonpositive product, they are strictly on opposite sides of `s`. -/
+theorem sOppSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : c₁ * c₂ ≤ 0) (hx : x ∉ s) (hy : y ∉ s) : s.SOppSide x y :=
+  ⟨wOppSide_of_vsub_eq_smul hp₁ hp₂ h₁ h₂ hc, hx, hy⟩
+
+end LinearOrderedCommRing
+
 section LinearOrderedField
 
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
