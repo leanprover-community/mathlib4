@@ -96,7 +96,8 @@ theorem isEuler_euler : IsEuler (euler h ρ) := by
     obtain ⟨ρ, _, rfl, rfl⟩ := hn
     simp
 
-theorem IsEuler.exists (h : g.IsEuler) : ∃ ρ, g = euler g.h ρ := by
+theorem IsEuler.exists_euler (h : g.IsEuler) : ∃ ρ, euler g.h ρ = g := by
+  simp only [eq_comm]
   use g.s.enum.map fun (n, ⟨a, b⟩) => n.casesOn a fun _ => -a
   ext n ⟨a, b⟩
   · rfl
@@ -118,8 +119,8 @@ theorem IsEuler.exists (h : g.IsEuler) : ∃ ρ, g = euler g.h ρ := by
     specialize h (n' + 1) a b h'
     grind
 
-theorem isEuler_iff_exists : IsEuler g ↔ ∃ ρ, g = euler g.h ρ :=
-  ⟨IsEuler.exists, fun ⟨_, hρ⟩ => hρ ▸ isEuler_euler⟩
+theorem isEuler_iff_exists : IsEuler g ↔ ∃ ρ, euler g.h ρ = g :=
+  ⟨IsEuler.exists_euler, fun ⟨_, hρ⟩ => hρ ▸ isEuler_euler⟩
 
 @[simp]
 theorem isEuler_toEuler : IsEuler (toEuler g) := isEuler_euler
@@ -156,12 +157,12 @@ end Translation
 theorem euler_h : (euler h ρ).h = h := by rfl
 
 @[simp]
-theorem zeroth_partNum_euler : (euler h ρ).partNums.get? 0 = ρ.get? 0 := by
+theorem partNums_euler_zero : (euler h ρ).partNums.get? 0 = ρ.get? 0 := by
   rw [partNums, @Stream'.Seq.map_get?, euler_s_zero]
   rcases ρ.get? 0 with _ | _ <;> simp
 
 @[simp]
-theorem zeroth_partDen_euler : (euler h ρ).partDens.get? 0 = (ρ.get? 0).map (fun _ => 1) := by
+theorem partDens_euler_zero : (euler h ρ).partDens.get? 0 = (ρ.get? 0).map (fun _ => 1) := by
   rw [partDens, @Stream'.Seq.map_get?, euler_s_zero]
   rcases ρ.get? 0 with _ | _ <;> simp
 
@@ -186,8 +187,8 @@ private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
 /-- The denominators of an Euler continued fraction are all 1. -/
 @[simp]
 theorem IsEuler.dens_eq_one (h : g.IsEuler) : g.dens n = 1 := by
-  obtain ⟨ρ, hρ⟩ := h.exists
-  rw [hρ]
+  obtain ⟨ρ, hρ⟩ := h.exists_euler
+  rw [← hρ]
   set g := euler g.h ρ
   induction n using Nat.strong_induction_on with | h n ih =>
   match n with
@@ -208,7 +209,7 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
   have det := determinant (g := euler h ρ) (n := n)
   simp only [isEuler_euler, IsEuler.dens_eq_one, mul_one, one_mul] at det
   rw [← neg_sub, det, Finset.prod_range_succ', Finset.prod_range_succ']
-  simp only [partNums_euler_succ, zeroth_partNum_euler, mul_neg, neg_neg, mul_eq_mul_right_iff]
+  simp only [partNums_euler_succ, partNums_euler_zero, mul_neg, neg_neg, mul_eq_mul_right_iff]
   left; congr; ext n'
   rcases ρ.get? (n' + 1) with _ | _ <;> simp
 
@@ -242,8 +243,8 @@ theorem convs_euler :
 /-- The transformation `toEuler` is idempotent. -/
 @[simp]
 protected theorem IsEuler.toEuler (hg : g.IsEuler) : g.toEuler = g := by
-  obtain ⟨ρ, hρ⟩ := hg.exists
-  rw [hρ]
+  obtain ⟨ρ, hρ⟩ := hg.exists_euler
+  rw [← hρ]
   ext n : 2
   · rfl
   match n with
