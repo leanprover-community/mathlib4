@@ -172,6 +172,18 @@ def Subobject.isoKernelCokernel {X Y : C} {A : Subobject X} (f : (A : C) ⟶ Y) 
     (kernelIsKernel (cokernel.π f)))
   exact this
 
+def Subobject.isoKernelCokernel' {X Y : C} (f : X ⟶ Y) [Mono f] :
+    X ≅ kernel (cokernel.π f) := by
+  have := ((monoIsKernelOfCokernel _ (cokernelIsCokernel f)).conePointUniqueUpToIso
+    (kernelIsKernel (cokernel.π f)))
+  exact this
+
+def Subobject.isoCokernelKernel {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Y ≅ cokernel (kernel.ι f) := by
+  have := ((epiIsCokernelOfKernel _ (kernelIsKernel f)).coconePointUniqueUpToIso
+    (cokernelIsCokernel (kernel.ι f)))
+  exact this
+
 @[simp]
 lemma Subobject.isoKernelCokernel_hom_arrow {X Y : C} {A : Subobject X} (f : (A : C) ⟶ Y) [Mono f] :
     (isoKernelCokernel f).hom ≫ kernel.ι (cokernel.π f) = f :=

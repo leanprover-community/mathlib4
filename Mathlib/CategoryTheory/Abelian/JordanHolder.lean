@@ -14,10 +14,9 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] {X Y : C} {x : Subobject X} (f : X ⟶ Y)
 
-/-
-Given `Y ⊆ X` correspondence `{ subobjects of X/Y } ↔ { subobjects of X containing Y }`
--/
 open Subobject in
+/-- Given `Y ⊆ X`, there is an order-preserving bijection between subobjects of `X/Y` and
+  subobjects of `X` containing `Y`. -/
 noncomputable
 def Abelian.Subobject.cokernelOrderIso (Y : Subobject X) :
     Subobject (cokernel Y.arrow) ≃o Set.Ici Y where
@@ -25,15 +24,32 @@ def Abelian.Subobject.cokernelOrderIso (Y : Subobject X) :
   invFun q := (image (cokernel.π Y.arrow)).obj q
   left_inv p := epi_image_inverseImage (cokernel.π Y.arrow) p
   right_inv := by
-    rintro ⟨X', hX' : Y ≤ X'⟩
+    rintro ⟨q, hq : Y ≤ q⟩
     dsimp only
     congr
-    have t : cokernel (Y.ofLE X' hX') ⟶ cokernel (Y.arrow) :=
-      cokernel.map _ _ (𝟙 _) X'.arrow (by simp)
-    have : Mono t := sorry
-    dsimp only [image]
-    --have := cokernelImageι (q.arrow ≫ cokernel.π Y.arrow)
-    sorry
+    dsimp
+    /-
+    dsimp [kernelSubobject]
+    refine mk_eq_of_comm _ ?_ ?_
+    · refine Iso.symm ?_
+      sorry
+    · sorry
+    -/
+    apply le_antisymm
+    · let r : cokernel (Y.arrow) ⟶ cokernel (q.arrow) := (cokernel.desc _ (cokernel.π (q.arrow)))
+        (by simp only [← ofLE_arrow hq, Category.assoc, cokernel.condition, comp_zero])
+
+      sorry
+    · apply le_kernelSubobject
+      obtain ⟨⟨I, m, e, fac⟩, _⟩ := imageStrongEpiMonoFactorisation (q.arrow ≫ cokernel.π Y.arrow)
+      simp only [← Category.assoc, ← fac]
+      rw [Category.assoc]
+      have : m ≫ cokernel.π (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow = 0 := by
+        have := cokernel.condition (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow
+        rw [← imageSubobject_arrow, Category.assoc, Preadditive.IsIso.comp_left_eq_zero,
+          imageSubobject_arrow] at this
+        rw [← image.isoStrongEpiMono_hom_comp_ι e m fac, Category.assoc, this, comp_zero]
+      rw [this, comp_zero]
   map_rel_iff' := by cat_disch
 
 variable (X Y : C)
