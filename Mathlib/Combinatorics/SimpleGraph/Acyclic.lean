@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 
@@ -71,7 +72,7 @@ variable {G G'}
 /-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
 lemma IsAcyclic.comap (f : G →g G') (hinj : Function.Injective f) (h : G'.IsAcyclic) :
     G.IsAcyclic :=
-  fun _ _ ↦ map_isCycle_iff_of_injective hinj |>.not.mp <| h _
+  fun _ _ ↦ mt (.map hinj) (h _)
 
 lemma IsAcyclic.embedding (f : G ↪g G') (h : G'.IsAcyclic) : G.IsAcyclic :=
   h.comap f f.injective
@@ -186,31 +187,8 @@ alias isAcyclic_iff_forall_edge_isBridge := isAcyclic_iff_forall_isBridge
 
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
-  obtain ⟨p, hp⟩ := p
-  obtain ⟨q, hq⟩ := q
-  rw [Subtype.mk.injEq]
-  induction p with
-  | nil =>
-    exact isPath_iff_nil.mp hq |>.eq_nil.symm
-  | @cons u v _ ph p ih =>
-    rw [isAcyclic_iff_forall_isBridge] at h
-    specialize h (e := s(u, v)) (by simpa)
-    rw [isBridge_iff_forall_walk_mem_edges] at h
-    replace h := h (q.append p.reverse)
-    simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
-    rcases h with h | h
-    · cases q with
-      | nil => simp at hp
-      | cons _ q =>
-        rw [Walk.cons_isPath_iff] at hp hq
-        simp only [Walk.edges_cons, List.mem_cons, Sym2.eq_iff, true_and] at h
-        rcases h with (⟨h, rfl⟩ | ⟨rfl, rfl⟩) | h
-        · cases ih hp.1 q hq.1
-          rfl
-        · simp at hq
-        · exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hq.2
-    · rw [Walk.cons_isPath_iff] at hp
-      exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hp.2
+  have := p.isPath.exists_isCycle_of_ne q.isPath
+  grind [IsAcyclic, Subtype.coe_inj]
 
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
   intro v c hc
@@ -671,6 +649,16 @@ lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
   · rw [isAcyclic_iff_forall_isBridge]
     rintro ⟨u, v⟩ huv
     exact (isBridge_iff_not_isEdgeReachable_two huv).mpr (h huv.ne)
+
+theorem isAcyclic_iff_free_cycleGraph : G.IsAcyclic ↔ ∀ n ≥ 3, (cycleGraph n).Free G := by
+  refine ⟨fun h n hn hle ↦ ?_, fun h v p hcyc ↦ h p.length hcyc.three_le_length ?_⟩
+  · have ⟨v, p, hcyc, hlen⟩ := cycleGraph_isContained_iff hn |>.mp hle
+    exact h p hcyc
+  · exact cycleGraph_isContained_iff hcyc.three_le_length |>.mpr ⟨v, p, hcyc, rfl⟩
+
+theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n := by
+  refine not_cliqueFree_iff_top_isContained n |>.not_right.mpr fun hle ↦ ?_
+  exact isAcyclic_iff_free_cycleGraph.mp h n hn <| hle.trans' <| .of_le le_top
 
 namespace IsTree
 
