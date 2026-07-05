@@ -730,6 +730,12 @@ theorem restrict_apply {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : Me
   rw [restrict, dif_pos hi]
   exact if_pos hj
 
+@[simp] theorem restrict_apply_univ {i : Set α} :
+    v.restrict i univ = v i := by
+  by_cases hi : MeasurableSet i
+  · simp [restrict_apply, hi]
+  · simp [restrict_not_measurable, hi]
+
 theorem restrict_eq_self {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : MeasurableSet j)
     (hij : j ⊆ i) : v.restrict i j = v j := by
   rw [restrict_apply v hi hj, Set.inter_eq_left.2 hij]

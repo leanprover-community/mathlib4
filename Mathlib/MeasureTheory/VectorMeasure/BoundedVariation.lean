@@ -122,7 +122,7 @@ open scoped Classical in
   hf.exists_vectorMeasure_le_measureAux.choose +
   (if h : ∃ x, IsBot x then VectorMeasure.dirac h.choose (f.rightLim h.choose - f h.choose) else 0)
 
-lemma vectorMeasure_Ioc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
+@[simp] lemma vectorMeasure_Ioc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     hf.vectorMeasure (Ioc a b) = f.rightLim b - f.rightLim a := by
   classical
   have A : hf.exists_vectorMeasure_le_measureAux.choose (Ioc a b) =
@@ -177,21 +177,21 @@ lemma vectorMeasure_Ioc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     exact (leftLim_rightLim (hf.tendsto_leftLim _)).symm
   exact tendsto_nhds_unique L1 L2
 
-lemma vectorMeasure_Icc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
+@[simp] lemma vectorMeasure_Icc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     hf.vectorMeasure (Icc a b) = f.rightLim b - f.leftLim a := by
   rw [← Icc_union_Ioc_eq_Icc le_rfl h, VectorMeasure.of_union (by simp)
     measurableSet_Icc measurableSet_Ioc, Icc_self, hf.vectorMeasure_singleton,
     hf.vectorMeasure_Ioc h]
   simp
 
-theorem vectorMeasure_Ioo (hf : BoundedVariationOn f univ) (h : a < b) :
+@[simp] theorem vectorMeasure_Ioo (hf : BoundedVariationOn f univ) (h : a < b) :
     hf.vectorMeasure (Ioo a b) = f.leftLim b - f.rightLim a := by
   have := hf.vectorMeasure_Ioc h.le
   rw [← Ioo_union_Icc_eq_Ioc h le_rfl, VectorMeasure.of_union (by simp) measurableSet_Ioo
     measurableSet_Icc, hf.vectorMeasure_Icc le_rfl] at this
   grind
 
-theorem vectorMeasure_Ico (hf : BoundedVariationOn f univ) (h : a ≤ b) :
+@[simp] theorem vectorMeasure_Ico (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     hf.vectorMeasure (Ico a b) = f.leftLim b - f.leftLim a := by
   rcases h.eq_or_lt with rfl | h'
   · simp
@@ -199,7 +199,7 @@ theorem vectorMeasure_Ico (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     measurableSet_Ioo, hf.vectorMeasure_Icc le_rfl, hf.vectorMeasure_Ioo h']
   abel
 
-theorem vectorMeasure_Ici (hf : BoundedVariationOn f univ) (a : α) :
+@[simp] theorem vectorMeasure_Ici (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Ici a) = limUnder atTop f - f.leftLim a := by
   have : Nonempty α := ⟨a⟩
   have hlim : Tendsto f atTop (𝓝 (limUnder atTop f)) := hf.tendsto_atTop_limUnder
@@ -227,14 +227,14 @@ theorem vectorMeasure_Ici (hf : BoundedVariationOn f univ) (a : α) :
     exact (tendsto_rightLim_atTop_of_tendsto hlim).comp hu
   exact tendsto_nhds_unique A B
 
-theorem vectorMeasure_Ioi (hf : BoundedVariationOn f univ) (a : α) :
+@[simp] theorem vectorMeasure_Ioi (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Ioi a) = limUnder atTop f - f.rightLim a := by
   have := hf.vectorMeasure_Ici a
   rw [← Icc_union_Ioi_eq_Ici le_rfl, VectorMeasure.of_union (by simp) measurableSet_Icc
     measurableSet_Ioi, hf.vectorMeasure_Icc le_rfl] at this
   grind
 
-theorem vectorMeasure_Iic (hf : BoundedVariationOn f univ) (a : α) :
+@[simp] theorem vectorMeasure_Iic (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Iic a) = f.rightLim a - limUnder atBot f := by
   have : Nonempty α := ⟨a⟩
   have hlim : Tendsto f atBot (𝓝 (limUnder atBot f)) := hf.tendsto_atBot_limUnder
@@ -262,14 +262,14 @@ theorem vectorMeasure_Iic (hf : BoundedVariationOn f univ) (a : α) :
     exact (tendsto_leftLim_atBot_of_tendsto hf.tendsto_atBot_limUnder).comp hu
   exact tendsto_nhds_unique A B
 
-theorem vectorMeasure_Iio (hf : BoundedVariationOn f univ) (a : α) :
+@[simp] theorem vectorMeasure_Iio (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Iio a) = f.leftLim a - limUnder atBot f := by
   have := hf.vectorMeasure_Iic a
   rw [← Iio_union_Icc_eq_Iic le_rfl, VectorMeasure.of_union (by simp) measurableSet_Iio
     measurableSet_Icc, hf.vectorMeasure_Icc le_rfl] at this
   grind
 
-theorem vectorMeasure_univ (hf : BoundedVariationOn f univ) :
+@[simp] theorem vectorMeasure_univ (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure univ = limUnder atTop f - limUnder atBot f := by
   rcases isEmpty_or_nonempty α with hα | hα
   · simp [eq_empty_of_isEmpty, filter_eq_bot_of_isEmpty]
