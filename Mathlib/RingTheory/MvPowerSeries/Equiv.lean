@@ -329,7 +329,7 @@ private theorem image_optionElim_product_antidiagonal [DecidableEq σ]
       (z.optionElim x, w.optionElim y)) (antidiagonal n ×ˢ antidiagonal x) =
     antidiagonal (x.optionElim n) := by
   symm; ext ⟨u, v⟩
-  simp only [mem_antidiagonal, mem_image, mem_product, Prod.mk.injEq, Prod.exists]
+  simp only [HasAntidiagonal.mem_antidiagonal, mem_image, mem_product, Prod.mk.injEq, Prod.exists]
   refine ⟨fun h ↦ ⟨u none, v none, u.some, v.some, ⟨?_, ?_⟩, by simp⟩,
     fun ⟨a, b, i, j, h1, h2, h3⟩ ↦ ?_⟩
   · rw [← Finsupp.add_apply, h, optionElim_apply_none]
