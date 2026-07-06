@@ -880,10 +880,6 @@ theorem _root_.affineSpan_prod (s : Set P) (t : Set Q) :
     use ⟨x, y⟩
     aesop (add simp mem_spanPoints)
 
-theorem _root_.coe_affineSpan_prod (s : Set P) (t : Set Q) :
-    affineSpan k (s ×ˢ t) = (affineSpan k s : Set P) ×ˢ (affineSpan k t : Set Q) := by
-  simp [affineSpan_prod]
-
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector
 to all points. -/
 def Parallel (s₁ s₂ : AffineSubspace k P) : Prop :=
