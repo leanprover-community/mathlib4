@@ -878,7 +878,7 @@ theorem _root_.affineSpan_prod (s : Set P) (t : Set Q) :
   · obtain ⟨x, hx⟩ := hs
     obtain ⟨y, hy⟩ := ht
     use ⟨x, y⟩
-    aesop (add simp mem_spanPoints)
+    simp [-coe_affineSpan, mem_affineSpan, hx, hy]
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector
 to all points. -/
