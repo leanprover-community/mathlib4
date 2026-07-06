@@ -76,21 +76,21 @@ initialize_simps_projections AddConstEquiv (toFun → apply, invFun → symm_app
 
 @[simp] lemma symm_symm (e : G ≃+c[a, b] H) : e.symm.symm = e := rfl
 
-theorem sym_symm_apply_eq (e : G ≃+c[a, b] H) {a b} :
+theorem symm_apply_eq (e : G ≃+c[a, b] H) {a b} :
     e.symm a = b ↔ a = e b :=
-  e.symm_apply_eq
+  e.toEquiv.symm_apply_eq
 
-theorem sym_eq_symm_apply (e : G ≃+c[a, b] H) {a b} :
+theorem eq_symm_apply (e : G ≃+c[a, b] H) {a b} :
     b = e.symm a ↔ e b = a :=
-  e.eq_symm_apply
+  e.toEquiv.eq_symm_apply
 
-theorem sym_apply_symm_apply (e : G ≃+c[a, b] H) {a} :
+theorem apply_symm_apply (e : G ≃+c[a, b] H) {a} :
     e (e.symm a) = a :=
-  e.apply_symm_apply _
+  e.toEquiv.apply_symm_apply _
 
-theorem sym_symm_apply_apply (e : G ≃+c[a, b] H) {a} :
+theorem symm_apply_apply (e : G ≃+c[a, b] H) {a} :
     e.symm (e a) = a :=
-  e.symm_apply_apply _
+  e.toEquiv.symm_apply_apply _
 
 /-- The identity map as an `AddConstEquiv`. -/
 @[simps! toEquiv apply]
