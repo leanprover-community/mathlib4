@@ -31,9 +31,8 @@ variable {Ω : Type*} [MeasurableSpace Ω] {P : ProbabilityMeasure Ω}
 
 lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
   (μ : ProbabilityMeasure α) {Y : α → E} (hY : Measurable Y) (t : E) :
-  charFun (↑(μ.map hY.aemeasurable)) t =
-    ∫ (ω : ℝ), innerProbChar (1 : ℝ) ω ∂((μ.map (hY.inner_const (c := t)).aemeasurable).toMeasure)
-      := by
+  charFun (μ.map hY.aemeasurable) t =
+    ∫ ω, innerProbChar (1 : ℝ) ω ∂((μ.map (hY.inner_const (c := t)).aemeasurable).toMeasure) := by
   simp_rw [charFun_eq_integral_innerProbChar]
   simp only [toMeasure_map]
   rw [MeasureTheory.integral_map (hY.inner_const (c := t)).aemeasurable
