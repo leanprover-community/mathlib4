@@ -171,7 +171,6 @@ to create further variants of Mertens' theorems.  (In doing so, it may be worthw
 the Mertens weight to allow for constant multiples in front of the logarithmic factor.)
 -/
 
-
 private lemma inv_div_log_sq_nonneg {x t : ℝ} (ht : t ∈ Set.Ioi x) (hx : 1 < x)
     : 0 ≤ t⁻¹ / (log t)^2 := by
   have : 0 < t := by grind
@@ -189,6 +188,9 @@ private lemma integ_div_mul_log_sq {x : ℝ} (C : ℝ) (hx : 2 ≤ x) :
 /-- A weight `f` is a bundled function `f : ℕ → ℝ` for which the quantity
 `∑ n ∈ Icc 0 ⌊x⌋₊, f n - log x` is bounded above and below for `x ≥ 1`, and which vanishes
 at `0` and `1`.
+
+Created as a `class` rather than a `structure` in order to allow the components and methods of
+`Weight` to be accessed via instance synthesis.
 -/
 class Weight where
   /-- The underlying function -/
@@ -260,32 +262,32 @@ lemma C₁_nonneg : 0 ≤ C₁ := by simp [C₁, hi_nonneg, lo_nonpos]
 lemma C₂_nonneg : 0 ≤ C₂ := by grind [C₂, hi_nonneg, lo_nonpos]
 
 /-- The abstract Mertens first theorem. -/
-theorem first_theorem' {x : ℝ} (hx : 1 ≤ x) : |E₁ x| ≤ C₁ := by
+theorem E₁_bound {x : ℝ} (hx : 1 ≤ x) : |E₁ x| ≤ C₁ := by
   grw [abs_le, ← le_first hx, first_le hx]; grind [C₁]
 
-theorem first_theorem {x : ℝ} (hx : 1 ≤ x) : |∑ n ∈ Ioc 0 ⌊x⌋₊, f n - log x| ≤ C₁ := by
-  simpa [sum_eq x] using first_theorem' hx
+theorem sum_sub_log_bound {x : ℝ} (hx : 1 ≤ x) : |∑ n ∈ Ioc 0 ⌊x⌋₊, f n - log x| ≤ C₁ := by
+  simpa [sum_eq x] using E₁_bound hx
 
-theorem first_theorem_nat : |∑ n ∈ Ioc 0 N, f n - log N| ≤ C₁ := by
+theorem sum_sub_log_bound_nat : |∑ n ∈ Ioc 0 N, f n - log N| ≤ C₁ := by
   by_cases! hN : N = 0
   · simp [hN, C₁_nonneg]
-  simpa using first_theorem (mod_cast (by lia) : 1 ≤ (N : ℝ))
+  simpa using sum_sub_log_bound (mod_cast (by omega) : 1 ≤ (N : ℝ))
 
-theorem first_theorem_error_bounded : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, f n - log x)
+theorem sum_sub_log_bounded : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, f n - log x)
     =O[atTop] fun _ ↦ (1 : ℝ) := by
   simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
-  exact ⟨C₁, 1, fun _ ↦ first_theorem⟩
+  exact ⟨C₁, 1, fun _ ↦ sum_sub_log_bound⟩
 
-theorem first_theorem_error_bounded_nat : (fun N ↦ ∑ n ∈ Ioc 0 N, f n - log N)
+theorem sum_sub_log_bounded_nat : (fun N ↦ ∑ n ∈ Ioc 0 N, f n - log N)
     =O[atTop] fun _ ↦ (1 : ℝ) := by
-  convert! first_theorem_error_bounded.comp_tendsto tendsto_natCast_atTop_atTop
+  convert! sum_sub_log_bounded.comp_tendsto tendsto_natCast_atTop_atTop
   simp
 
-theorem first_theorem_asymp : (∑ n ∈ Ioc 0 ⌊·⌋₊, f n) ~[atTop] log :=
-  (first_theorem_error_bounded.trans_isLittleO (isLittleO_const_log_atTop)).isEquivalent
+theorem sum_asymp : (∑ n ∈ Ioc 0 ⌊·⌋₊, f n) ~[atTop] log :=
+  (sum_sub_log_bounded.trans_isLittleO (isLittleO_const_log_atTop)).isEquivalent
 
-theorem first_theorem_asymp_nat : (∑ n ∈ Ioc 0 ·, f n) ~[atTop] (log ↑·) := by
-  convert! first_theorem_asymp.comp_tendsto tendsto_natCast_atTop_atTop
+theorem sum_asymp_nat : (∑ n ∈ Ioc 0 ·, f n) ~[atTop] (log ↑·) := by
+  convert! sum_asymp.comp_tendsto tendsto_natCast_atTop_atTop
   simp
 
 /-- The Meissel--Mertens constant associated to a weight `f` is defined as
@@ -310,7 +312,7 @@ lemma integrable_mul_E₁ {x : ℝ} (hx : 2 ≤ x) :
   filter_upwards [ae_restrict_mem (by measurability)] with t ht
   simp only [Set.mem_Ioi, norm_mul, norm_eq_abs] at ht ⊢
   have : 0 < log t := log_pos (by linarith)
-  grw [f.first_theorem' (by linarith), le_abs_self f.C₁]
+  grw [f.E₁_bound (by linarith), le_abs_self f.C₁]
 
 /-- General upper and lower bounds for the Meissel--Mertens constant. -/
 theorem M_bounds :
@@ -353,7 +355,7 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
     · exact Measurable.aestronglyMeasurable (by unfold E₁; fun_prop)
     filter_upwards [ae_restrict_mem (by measurability)] with t ht
     simp only [norm_mul, norm_eq_abs, Set.mem_Ioc] at ht ⊢
-    grw [f.first_theorem' (by linarith), le_abs_self f.C₁]
+    grw [f.E₁_bound (by linarith), le_abs_self f.C₁]
     have : 0 < t := by linarith
     gcongr; order
   have : ∫ (t : ℝ) in 2..x, (t⁻¹ / (log t)^2) * log t = log (log x) - log (log 2) := by
@@ -371,7 +373,7 @@ theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
     simpa using hcont
 
 /-- The abstract Mertens second theorem. -/
-theorem second_theorem' {x : ℝ} (hx : 2 ≤ x) :
+theorem E₂_bound {x : ℝ} (hx : 2 ≤ x) :
     |f.E₂ x| ≤ C₂ / log x := by
   have hx' : 1 < x := by linarith
   have : 0 < log x := log_pos hx'
@@ -392,11 +394,11 @@ theorem second_theorem' {x : ℝ} (hx : 2 ≤ x) :
           inv_div_log_sq_nonneg ht hx', le_first (by grind)]
       _ = _ := by rw [integ_div_mul_log_sq _ hx]; simp [field]
 
-private theorem second_theorem_weak {x : ℝ} (hx : 1 ≤ x) :
+private theorem E₂_bound_weak {x : ℝ} (hx : 1 ≤ x) :
     |f.E₂ x| ≤ |log (log x)| + |M| + C₂ / log 2 := by
   have := C₂_nonneg
   rcases le_or_gt 2 x with hx' | hx'
-  · grw [second_theorem' hx', hx', le_add_iff_nonneg_left]
+  · grw [E₂_bound hx', hx', le_add_iff_nonneg_left]
     positivity
   unfold E₂
   grw [abs_sub, abs_sub, sum_eq_zero, abs_zero, zero_add, le_add_iff_nonneg_right]
@@ -406,68 +408,68 @@ private theorem second_theorem_weak {x : ℝ} (hx : 1 ≤ x) :
   have : n = 0 ∨ n = 1 := by norm_cast at hn; omega
   rcases this with rfl | rfl <;> simp
 
-theorem second_theorem {x : ℝ} (hx : 2 ≤ x) :
+theorem sum_div_log_sub_sub_bound {x : ℝ} (hx : 2 ≤ x) :
     |∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M| ≤ C₂ / log x := by
-  grw [← second_theorem' hx, sum_div_log_eq x]; ring_nf; rfl
+  grw [← E₂_bound hx, sum_div_log_eq x]; ring_nf; rfl
 
-theorem second_theorem_nat (hN : 2 ≤ N) :
+theorem sum_div_log_sub_sub_bound_nat (hN : 2 ≤ N) :
   |∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M| ≤ C₂ / log N := by
-  simpa using second_theorem (mod_cast (by lia) : 2 ≤ (N : ℝ))
+  simpa using sum_div_log_sub_sub_bound (mod_cast (by omega) : 2 ≤ (N : ℝ))
 
-theorem second_theorem_error_bigO_inv_log :
+theorem sum_div_log_sub_sub_bigO :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M)
     =O[atTop] (fun x ↦ (log x)⁻¹) := by
   simp only [isBigO_iff, norm_eq_abs, norm_inv, eventually_atTop]
   refine ⟨C₂, 2, fun x hx ↦ ?_⟩
-  convert second_theorem hx using 1
+  convert sum_div_log_sub_sub_bound hx using 1
   grind [abs_of_pos (log_pos (by linarith) : 0 < log x)]
 
-theorem second_theorem_error_bigO_inv_log_nat :
+theorem sum_div_log_sub_sub_bigO_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M)
     =O[atTop] (fun N ↦ (log N)⁻¹) := by
-  convert! f.second_theorem_error_bigO_inv_log.comp_tendsto tendsto_natCast_atTop_atTop
+  convert! f.sum_div_log_sub_sub_bigO.comp_tendsto tendsto_natCast_atTop_atTop
   simp
 
-theorem second_theorem_error_littleO_one :
+theorem sum_div_log_sub_sub_littleO :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M) =o[atTop] fun _ ↦ (1:ℝ) :=
-  f.second_theorem_error_bigO_inv_log.trans_isLittleO inv_log_isLittleO_one
+  f.sum_div_log_sub_sub_bigO.trans_isLittleO inv_log_isLittleO_one
 
-theorem second_theorem_error_littleO_one_nat :
+theorem sum_div_log_sub_sub_littleO_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M)
     =o[atTop] fun _ ↦ (1 : ℝ) := by
-  convert! f.second_theorem_error_littleO_one.comp_tendsto tendsto_natCast_atTop_atTop
+  convert! f.sum_div_log_sub_sub_littleO.comp_tendsto tendsto_natCast_atTop_atTop
   simp
 
-theorem second_theorem_error_bounded : ∃ C, ∀ x ≥ 2,
+theorem sum_div_log_sub_bounded : ∃ C, ∀ x ≥ 2,
     |∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x)| ≤ C := by
   refine ⟨ |M| + C₂ / log 2, fun x hx ↦ ?_ ⟩
   have := C₂_nonneg
-  grw [← hx, ← f.second_theorem hx, ← abs_add_le]
+  grw [← hx, ← f.sum_div_log_sub_sub_bound hx, ← abs_add_le]
   ring_nf; rfl
 
-theorem second_theorem_error_bounded_nat : ∃ C, ∀ N : ℕ, N ≥ 2 →
+theorem sum_div_log_sub_bounded_nat : ∃ C, ∀ N : ℕ, N ≥ 2 →
     |∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N)| ≤ C := by
-  obtain ⟨ C, hC ⟩ := f.second_theorem_error_bounded
+  obtain ⟨ C, hC ⟩ := f.sum_div_log_sub_bounded
   exact ⟨ C, fun N hN ↦ by simpa using hC N (mod_cast hN) ⟩
 
-theorem second_theorem_error_bigO_one :
+theorem sum_div_log_sub_bigO :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x)) =O[atTop] fun _ ↦ (1:ℝ) := by
   simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
-  obtain ⟨ C, _ ⟩ := f.second_theorem_error_bounded
+  obtain ⟨ C, _ ⟩ := f.sum_div_log_sub_bounded
   use C, 2
 
-theorem second_theorem_error_bigO_one_nat :
+theorem sum_div_log_sub_bigO_nat :
     (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N)) =O[atTop] fun _ ↦ (1 : ℝ) := by
-  convert! f.second_theorem_error_bigO_one.comp_tendsto tendsto_natCast_atTop_atTop
+  convert! f.sum_div_log_sub_bigO.comp_tendsto tendsto_natCast_atTop_atTop
   simp
 
-theorem second_theorem_asymp :
+theorem sum_div_log_asymp :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n) ~[atTop] fun x ↦ log (log x) :=
-  (f.second_theorem_error_bigO_one.trans_isLittleO one_isLittleO_log_log).isEquivalent
+  (f.sum_div_log_sub_bigO.trans_isLittleO one_isLittleO_log_log).isEquivalent
 
-theorem second_theorem_asymp_nat :
+theorem sum_div_log_asymp_nat :
     (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n) ~[atTop] fun N ↦ log (log N) := by
-  convert! f.second_theorem_asymp.comp_tendsto tendsto_natCast_atTop_atTop
+  convert! f.sum_div_log_asymp.comp_tendsto tendsto_natCast_atTop_atTop
   simp
 
 open ENNReal
@@ -518,7 +520,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
           · simp [zero_rpow (by grind : -s ≠ 0)]
           rcases eq_or_ne n 1 with rfl | _
           · simp [C₀_nonneg]
-          have : 0 < log n := log_pos (mod_cast (by lia))
+          have : 0 < log n := log_pos (mod_cast (by omega))
           grw [apply_bound n, abs_of_nonneg (by positivity)]
           field_simp
           rw [mul_assoc, ← rpow_one_add' (by positivity) (by linarith)]
@@ -559,7 +561,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
         (ae_restrict_of_forall_mem measurableSet_Ioi (fun x hx ↦ ?_))
       have : 0 < x := by grind
       have : 0 ≤ x ^ (-s) := by positivity
-      grw [norm_mul, abs_mul, norm_eq_abs, norm_eq_abs, abs_of_nonneg this, second_theorem_weak]
+      grw [norm_mul, abs_mul, norm_eq_abs, norm_eq_abs, abs_of_nonneg this, E₂_bound_weak]
       <;> grind
     rw [MeasureTheory.integral_add, MeasureTheory.integral_add, mul_add, mul_add,
         eulerMascheroniConstant_eq_neg_integral_log_log hs, MeasureTheory.integral_const_mul,
@@ -606,11 +608,11 @@ theorem sum_div_log_mul_pow_add_tendsto :
     grw [norm_eq_abs, abs_mul, abs_of_nonneg (by positivity : 0 ≤ x ^ (-2 : ℝ))]
     gcongr
     rcases le_or_gt 2 (x ^ (s - 1)⁻¹) with h | h
-    · grw [second_theorem' h, ← h, le_add_iff_nonneg_left]
+    · grw [E₂_bound h, ← h, le_add_iff_nonneg_left]
       positivity
     · have hx' : x ≤ x ^ (s - 1)⁻¹ := self_le_rpow_of_one_le hx.le (by field_simp; linarith)
       have : 1 ≤ x ^ (s - 1)⁻¹ := by linarith
-      grw [second_theorem_weak this]
+      grw [E₂_bound_weak this]
       gcongr 2
       grw [← neg_le_abs, abs_of_nonpos, neg_le_neg_iff]
       · exact log_le_log (log_pos hx) (log_le_log (by linarith) hx')
@@ -630,7 +632,7 @@ theorem sum_div_log_mul_pow_add_tendsto :
     have h1 : Tendsto E₂ atTop (𝓝 0) := by
       apply squeeze_zero_norm' (a := fun x ↦ C₂ / log x) _ (tendsto_log_atTop.const_div_atTop _)
       filter_upwards [eventually_ge_atTop 2] with x hx
-      simpa using second_theorem' hx
+      simpa using E₂_bound hx
     have h2 : Tendsto (· - (1 : ℝ)) (𝓝[>] 1) (𝓝[>] 0) := by convert Filter.tendsto_map; simp
     exact (h1.comp ((tendsto_rpow_atTop_of_base_gt_one _ hx).comp
            (tendsto_inv_nhdsGT_zero.comp h2))).mul_const _
@@ -738,7 +740,7 @@ theorem E₁_le : E₁ ≤ 1 := by
   have : ∑ n ∈ range (2 * N + 5), e₁ n = log 2 / 2 + log 3 / 6 + ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n
       := by
     convert sum_union (s₁ := {0,1,2,3,4}) (s₂ := .Ico 5 (2 * N + 5)) (by grind [disjoint_left])
-    · ext; simp; lia
+    · ext; simp; omega
     norm_num [e₁]
   have : ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n = ∑ n ∈ .range N, e₁ (2 * n + 5) := by
     apply (sum_of_injOn (2 * · + 5) (by intro; grind) (by intro; grind) _ (by simp)).symm
@@ -746,15 +748,15 @@ theorem E₁_le : E₁ ≤ 1 := by
       ite_eq_right_iff, div_eq_zero_iff, log_eq_zero, cast_eq_zero, cast_eq_one,
       _root_.mul_eq_zero, and_imp]
     intro p _ _ h hp
-    obtain ⟨ m, rfl ⟩ := hp.odd_of_ne_two (by lia)
+    obtain ⟨ m, rfl ⟩ := hp.odd_of_ne_two (by omega)
     specialize h (m - 2)
-    lia
+    omega
   let g : ℝ → ℝ := fun t ↦ log (2 * t + 3) / (2 * t + 3)^2
   have : ∑ n ∈ .range N, e₁ (2 * n + 5) ≤ (5/4) * ∑ n ∈ .range N, g (n + 1) := by
     simp only [e₁, g, cast_add, cast_mul, cast_ofNat, mul_sum]
     gcongr with i hi
     ring_nf
-    have : 0 ≤ log (5 + (i : ℝ) * 2) := log_nonneg (by norm_cast; lia)
+    have : 0 ≤ log (5 + (i : ℝ) * 2) := log_nonneg (by norm_cast; omega)
     split_ifs
     · field_simp; ring_nf; gcongr <;> norm_num
     positivity
@@ -895,7 +897,7 @@ lemma Weight.vonMangoldt_M_eq : vonMangoldt.M = eulerMascheroniConstant := by
   congr! 3 with n
   rcases eq_or_ne 0 n with rfl | h <;> simp
   field_simp
-  rw [mul_assoc, ← rpow_add (mod_cast (by lia))]
+  rw [mul_assoc, ← rpow_add (mod_cast (by omega))]
   congr; ring_nf; simp
 
 /-- The prime weight `f : ℕ → ℝ := fun n ↦ 1 / n` if `n` is prime and `0` otherwise. -/
@@ -1013,7 +1015,7 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
       · simp
       simp only [norm_div, norm_eq_abs, norm_mul, one_div]
       grw [vonMangoldt_le_log]
-      have : 0 < log n := log_pos (mod_cast (by lia))
+      have : 0 < log n := log_pos (mod_cast (by omega))
       field_simp
       apply le_abs_self
     · intro; simp +contextual [vonMangoldt_ne_zero_iff]
@@ -1063,8 +1065,8 @@ theorem le_sum_vonMangoldt_div_sub_nat : - 1 ≤ ∑ n ∈ Ioc 0 N, Λ n / n - l
   · simp [hN]
   suffices N * (log N - 1) ≤ N * ∑ n ∈ Ioc 0 ⌊(N : ℝ)⌋₊, Weight.vonMangoldt n by
     simp at this
-    linarith [le_of_mul_le_mul_left this (by norm_cast; lia)]
-  have := le_mul_sum_vonMangoldt (mod_cast (by lia) : 0 ≤ (N : ℝ))
+    linarith [le_of_mul_le_mul_left this (by norm_cast; omega)]
+  have := le_mul_sum_vonMangoldt (mod_cast (by omega) : 0 ≤ (N : ℝ))
   simp only [floor_natCast, Weight.vonMangoldt_apply, vonMangoldtFun] at this ⊢
   grw [← this, ←le_sum_log_nat]
   ring_nf; rfl
@@ -1076,7 +1078,7 @@ theorem le_sum_log_prime_div_sub (hx : 1 ≤ x) : - 3 ≤ ∑ p ∈ primesLE ⌊
 theorem le_sum_log_prime_div_sub_nat : - 2 ≤ ∑ p ∈ primesLE N, log p / p - log N := by
   by_cases! hN : N = 0
   · simp [hN]
-  have := sum_vonMangoldt_le_sum_prime_add_E₁ (mod_cast (by lia) : 1 ≤ (N : ℝ))
+  have := sum_vonMangoldt_le_sum_prime_add_E₁ (mod_cast (by omega) : 1 ≤ (N : ℝ))
   simp at this
   linarith [le_sum_vonMangoldt_div_sub_nat N, E₁_le]
 
@@ -1087,25 +1089,22 @@ theorem sum_log_prime_div_sub_le (hx : 1 ≤ x) : ∑ p ∈ primesLE ⌊x⌋₊,
     := (sum_prime_eq _).symm ▸ Weight.prime.first_le' x hx
 
 theorem abs_sum_vonMangoldt_div_sub_le (hx : 1 ≤ x) :
-    |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x| ≤ log 4 + 1 := by
-    convert! Weight.vonMangoldt.first_theorem hx
-    rw [Weight.vonMangoldt_C₁_eq]
+    |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x| ≤ log 4 + 1 :=
+  (Weight.vonMangoldt.sum_sub_log_bound hx).trans_eq Weight.vonMangoldt_C₁_eq
 
 theorem abs_sum_vonMangoldt_div_sub_le_nat :
-    |∑ n ∈ Ioc 0 N, Λ n / n - log N| ≤ log 4 + 1 := by
-    convert! Weight.vonMangoldt.first_theorem_nat N
-    rw [Weight.vonMangoldt_C₁_eq]
+    |∑ n ∈ Ioc 0 N, Λ n / n - log N| ≤ log 4 + 1 :=
+  (Weight.vonMangoldt.sum_sub_log_bound_nat N).trans_eq Weight.vonMangoldt_C₁_eq
 
 theorem abs_sum_log_prime_div_sub_le (hx : 1 ≤ x) :
-    |∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x| ≤ 3 := by
-    convert! (sum_prime_eq _).symm ▸ Weight.prime.first_theorem hx
-    rw [Weight.prime_C₁_eq]
+    |∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x| ≤ 3 :=
+  ((sum_prime_eq _).symm ▸ Weight.prime.sum_sub_log_bound hx).trans_eq Weight.prime_C₁_eq
 
 /-- A sharper bound in the case of natural numbers. -/
 theorem abs_sum_log_prime_div_sub_le_nat : |∑ p ∈ primesLE N, log p / p - log N| ≤ 2 := by
   by_cases! hN : N = 0
   · simp [hN]
-  have : 1 ≤ (N:ℝ) := mod_cast (by lia)
+  have : 1 ≤ (N:ℝ) := mod_cast (by omega)
   rw [abs_le']; constructor
   · trans log 4
     · simpa using sum_log_prime_div_sub_le this
@@ -1113,30 +1112,30 @@ theorem abs_sum_log_prime_div_sub_le_nat : |∑ p ∈ primesLE N, log p / p - lo
   linarith [le_sum_log_prime_div_sub_nat N]
 
 theorem sum_vonMangoldt_div_sub_bounded : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x)
-    =O[atTop] (fun _ ↦ (1 : ℝ)) := Weight.vonMangoldt.first_theorem_error_bounded
+    =O[atTop] (fun _ ↦ (1 : ℝ)) := Weight.vonMangoldt.sum_sub_log_bounded
 
 theorem sum_vonMangoldt_div_sub_bounded_nat : (fun N ↦ ∑ n ∈ Ioc 0 N, Λ n / n - log N)
-    =O[atTop] fun _ ↦ (1 : ℝ) := Weight.vonMangoldt.first_theorem_error_bounded_nat
+    =O[atTop] fun _ ↦ (1 : ℝ) := Weight.vonMangoldt.sum_sub_log_bounded_nat
 
 theorem sum_log_prime_div_sub_bounded : (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x)
     =O[atTop] (fun _ ↦ (1 : ℝ)) := by
-  convert Weight.prime.first_theorem_error_bounded using 3; rw [← sum_prime_eq]; rfl
+  convert Weight.prime.sum_sub_log_bounded using 3; rw [← sum_prime_eq]; rfl
 
 theorem sum_log_prime_div_sub_bounded_nat : (fun N ↦ ∑ p ∈ primesLE N, log p / p - log N)
     =O[atTop] (fun _ ↦ (1 : ℝ)) := by
-  convert Weight.prime.first_theorem_error_bounded_nat using 3; rw [← sum_prime_eq]; rfl
+  convert Weight.prime.sum_sub_log_bounded_nat using 3; rw [← sum_prime_eq]; rfl
 
 theorem sum_vonMangoldt_div_asymp : (∑ n ∈ Ioc 0 ⌊·⌋₊, Λ n / n) ~[atTop] log :=
-  Weight.vonMangoldt.first_theorem_asymp
+  Weight.vonMangoldt.sum_asymp
 
 theorem sum_vonMangoldt_div_asymp_nat : (∑ n ∈ Ioc 0 ·, Λ n / n) ~[atTop] (log ↑·) :=
-  Weight.vonMangoldt.first_theorem_asymp_nat
+  Weight.vonMangoldt.sum_asymp_nat
 
 theorem sum_log_prime_div_asymp : (∑ p ∈ primesLE ⌊·⌋₊, log p / p) ~[atTop] log := by
-  convert Weight.prime.first_theorem_asymp using 2; rw [← sum_prime_eq]; rfl
+  convert Weight.prime.sum_asymp using 2; rw [← sum_prime_eq]; rfl
 
 theorem sum_log_prime_div_asymp_nat : (∑ p ∈ primesLE ·, log p / p) ~[atTop] (log ↑·) := by
-  convert Weight.prime.first_theorem_asymp_nat using 2; rw [← sum_prime_eq]; rfl
+  convert Weight.prime.sum_asymp_nat using 2; rw [← sum_prime_eq]; rfl
 
 end FirstTheorem
 
@@ -1165,7 +1164,7 @@ theorem sum_vonMangoldt_div_mul_log_bound (hx : 2 ≤ x) :
     |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant| ≤
       (log 4 + 3) / log x := by
     rw [← Weight.vonMangoldt_M_eq]
-    convert! Weight.vonMangoldt.second_theorem hx using 2
+    convert! Weight.vonMangoldt.sum_div_log_sub_sub_bound hx using 2
     · rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
     simp
 
@@ -1178,7 +1177,7 @@ theorem sum_vonMangoldt_div_mul_log_bound_nat (hN : 2 ≤ N) :
 theorem sum_prime_div_mul_log_bound (hx : 2 ≤ x) :
     |∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x) - Weight.prime.M| ≤
       (log 4 + 3) / log x := by
-    convert! Weight.prime.second_theorem hx using 2
+    convert! Weight.prime.sum_div_log_sub_sub_bound hx using 2
     · rw [Weight.prime_sum_inv_log_mul_eq]
     simp
 
@@ -1192,7 +1191,7 @@ theorem sum_vonMangoldt_div_mul_log_bound_bigO_inv_log :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant)
     =O[atTop] fun x ↦ (log x)⁻¹ := by
   rw [← Weight.vonMangoldt_M_eq]
-  convert Weight.vonMangoldt.second_theorem_error_bigO_inv_log using 4
+  convert Weight.vonMangoldt.sum_div_log_sub_sub_bigO using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 
@@ -1200,85 +1199,85 @@ theorem sum_vonMangoldt_div_mul_log_bound_bigO_inv_log_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant)
     =O[atTop] (fun N ↦ (log N)⁻¹) := by
   rw [← Weight.vonMangoldt_M_eq]
-  convert Weight.vonMangoldt.second_theorem_error_bigO_inv_log_nat using 4
+  convert Weight.vonMangoldt.sum_div_log_sub_sub_bigO_nat using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_bigO_inv_log :
     (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x) - Weight.prime.M)
     =O[atTop] fun x ↦ (log x)⁻¹ := by
-  convert Weight.prime.second_theorem_error_bigO_inv_log using 4
+  convert Weight.prime.sum_div_log_sub_sub_bigO using 4
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_bigO_inv_log_nat :
     (fun (N : ℕ) ↦ ∑ p ∈ primesLE N, 1 / (p : ℝ) - log (log N) - Weight.prime.M)
     =O[atTop] (fun N ↦ (log N)⁻¹) := by
-  convert Weight.prime.second_theorem_error_bigO_inv_log_nat using 4
+  convert Weight.prime.sum_div_log_sub_sub_bigO_nat using 4
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_bound_littleO_one :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant)
     =o[atTop] (fun _ ↦ (1:ℝ)) := by
   rw [← Weight.vonMangoldt_M_eq]
-  convert Weight.vonMangoldt.second_theorem_error_littleO_one using 4
+  convert Weight.vonMangoldt.sum_div_log_sub_sub_littleO using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_bound_littleO_one_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant)
     =o[atTop] (fun _ ↦ (1:ℝ)) := by
   rw [← Weight.vonMangoldt_M_eq]
-  convert Weight.vonMangoldt.second_theorem_error_littleO_one_nat using 4
+  convert Weight.vonMangoldt.sum_div_log_sub_sub_littleO_nat using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_littleO_one :
     (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x) - Weight.prime.M)
     =o[atTop] (fun _ ↦ (1:ℝ)) := by
-  convert Weight.prime.second_theorem_error_littleO_one using 4
+  convert Weight.prime.sum_div_log_sub_sub_littleO using 4
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_littleO_one_nat :
     (fun (N : ℕ) ↦ ∑ p ∈ primesLE N, 1 / (p : ℝ) - log (log N) - Weight.prime.M)
     =o[atTop] (fun _ ↦ (1:ℝ)) := by
-  convert Weight.prime.second_theorem_error_littleO_one_nat using 4
+  convert Weight.prime.sum_div_log_sub_sub_littleO_nat using 4
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_bound_bigO_one :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x)) =O[atTop] (fun _ ↦ (1:ℝ)) := by
-  convert Weight.vonMangoldt.second_theorem_error_bigO_one using 3
+  convert Weight.vonMangoldt.sum_div_log_sub_bigO using 3
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_bound_bigO_one_nat
     : (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N)) =O[atTop] (fun _ ↦ (1:ℝ)) := by
-  convert Weight.vonMangoldt.second_theorem_error_bigO_one_nat using 3
+  convert Weight.vonMangoldt.sum_div_log_sub_bigO_nat using 3
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_bigO_one :
     (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x)) =O[atTop] (fun _ ↦ (1:ℝ)) := by
-  convert Weight.prime.second_theorem_error_bigO_one using 3
+  convert Weight.prime.sum_div_log_sub_bigO using 3
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_bigO_one_nat
     : (fun (N : ℕ) ↦ ∑ p ∈ primesLE N, 1 / (p : ℝ) - log (log N)) =O[atTop] (fun _ ↦ (1:ℝ)) := by
-  convert Weight.prime.second_theorem_error_bigO_one_nat using 3
+  convert Weight.prime.sum_div_log_sub_bigO_nat using 3
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_bound_asymp :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n)) ~[atTop] (fun x ↦ log (log x)) := by
-  convert Weight.vonMangoldt.second_theorem_asymp using 2
+  convert Weight.vonMangoldt.sum_div_log_asymp using 2
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_bound_asymp_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n)) ~[atTop] (fun N ↦ log (log N)) := by
-  convert Weight.vonMangoldt.second_theorem_asymp_nat using 2
+  convert Weight.vonMangoldt.sum_div_log_asymp_nat using 2
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_asymp :
     (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ)) ~[atTop] (fun x ↦ log (log x)) := by
-  convert Weight.prime.second_theorem_asymp using 2
+  convert Weight.prime.sum_div_log_asymp using 2
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_prime_div_mul_log_bound_asymp_nat :
     (fun (N : ℕ) ↦ ∑ p ∈ primesLE N, 1 / (p : ℝ)) ~[atTop] (fun N ↦ log (log N)) := by
-  convert Weight.prime.second_theorem_asymp_nat using 2
+  convert Weight.prime.sum_div_log_asymp_nat using 2
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 end SecondTheorem
@@ -1361,7 +1360,7 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) :
               rw [inv_sub_inv (by positivity) (by positivity)]
               push_cast; ring_nf; gcongr <;> grind
         · simp only [neg_zero, cast_add, cast_one, sub_nonneg]
-          gcongr; norm_cast; lia
+          gcongr; norm_cast; omega
       _ ≤ _ := by
         rw [sum_range_sub', add_zero, cast_add, tsub_le_iff_right, le_add_iff_nonneg_right,
           inv_nonneg]
