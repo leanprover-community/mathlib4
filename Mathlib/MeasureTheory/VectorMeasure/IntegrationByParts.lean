@@ -30,7 +30,7 @@ variable {α E M : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology 
 
 theorem stronglyMeasurable {f : α → M} (hf : BoundedVariationOn f univ) :
     StronglyMeasurable f :=
-  StronglyMeasurable.stronglyMeasurable_of_countable_not_continuousAt hf.countable_not_continuousAt
+  StronglyMeasurable.of_countable_not_continuousAt hf.countable_not_continuousAt
 
 theorem measurable [MeasurableSpace M] [BorelSpace M] {f : α → M} (hf : BoundedVariationOn f univ) :
     Measurable f :=
@@ -52,6 +52,40 @@ theorem memLp [IsFiniteMeasure μ] {p : ℝ≥0∞} (hf : BoundedVariationOn f u
 
 theorem integrable [IsFiniteMeasure μ] (hf : BoundedVariationOn f univ) : Integrable f μ :=
   memLp_one_iff_integrable.1 hf.memLp
+
+variable {F G : Type*} [NormedSpace ℝ E] [CompleteSpace E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
+
+@[simp] lemma rightLim_bilinear_comp
+    {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α] {f : α → E} {g : α → F}
+    (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
+    (B : E →L[ℝ] F →L[ℝ] G) :
+    (fun x ↦ B (f x) (g x)).rightLim = fun x ↦ B (f.rightLim x) (g.rightLim x) := by
+  ext x
+  rcases eq_or_neBot (𝓝[>] x) with hx | hx
+  · simp [rightLim_eq_of_eq_bot _ hx]
+  apply rightLim_eq_of_tendsto
+  suffices H : Tendsto (fun x ↦ (f x, g x)) (𝓝[>] x) (𝓝 (f.rightLim x, g.rightLim x)) by
+    have : Continuous (fun (p : E × F) ↦ B p.1 p.2) := by fun_prop
+    apply (this.continuousAt (x := (f.rightLim x, g.rightLim x))).tendsto.comp H
+  rw [nhds_prod_eq]
+  exact Tendsto.prodMk (hf.tendsto_rightLim _) (hg.tendsto_rightLim _)
+
+@[simp] lemma leftLim_bilinear_comp
+    {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α] {f : α → E} {g : α → F}
+    (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
+    (B : E →L[ℝ] F →L[ℝ] G) :
+    (fun x ↦ B (f x) (g x)).leftLim = fun x ↦ B (f.leftLim x) (g.leftLim x) := by
+  ext x
+  rcases eq_or_neBot (𝓝[<] x) with hx | hx
+  · simp [leftLim_eq_of_eq_bot _ hx]
+  apply leftLim_eq_of_tendsto
+  suffices H : Tendsto (fun x ↦ (f x, g x)) (𝓝[<] x) (𝓝 (f.leftLim x, g.leftLim x)) by
+    have : Continuous (fun (p : E × F) ↦ B p.1 p.2) := by fun_prop
+    apply (this.continuousAt (x := (f.leftLim x, g.leftLim x))).tendsto.comp H
+  rw [nhds_prod_eq]
+  exact Tendsto.prodMk (hf.tendsto_leftLim _) (hg.tendsto_leftLim _)
 
 end BoundedVariationOn
 
@@ -100,7 +134,8 @@ theorem ext_of_Icc {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   exact VectorMeasure.tendsto_vectorMeasure_iUnion_atTop_nat M (fun n ↦ measurableSet_Icc)
 
 omit [CompleteSpace G] in
-lemma glouk (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
+lemma setIntegral_Icc_rightLim_sub_leftLim_eq
+    (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
     (B : E →L[ℝ] F →L[ℝ] G) (a b : α) :
     ∫ᵛ x in Icc a b, g.rightLim x - g.leftLim a ∂[B.flip; hf.vectorMeasure]
       = ∫ᵛ y in Icc a b, f.rightLim b - f.leftLim y ∂[B; hg.vectorMeasure] := calc
@@ -138,149 +173,19 @@ lemma glouk (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
       show Icc a b ∩ Icc y b = Icc y b by grind]
     simp [hy.2]
 
-lemma foo (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
-    (B : E →L[ℝ] F →L[ℝ] G) :
-    (fun x ↦ B (f x) (g x)).rightLim = fun x ↦ B (f.rightLim x) (g.rightLim x) := by
-  ext x
-  rcases eq_or_neBot (𝓝[>] x) with hx | hx
-  · simp [rightLim_eq_of_eq_bot _ hx]
-  apply rightLim_eq_of_tendsto
-  have : Continuous (fun (p : E × F) ↦ B p.1 p.2) := by exact?
-
-
-#exit
-
-lemma foo (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
-    {B : E →L[ℝ] F →L[ℝ] G} :
+/-- Given bounded variation functions, the measure associated to their product is given by
+`d (f * g) = f⁻ dg + g⁺ df`. Version for a general pairing instead of multiplication. -/
+theorem _root_.BoundedVariationOn.vectorMeasure_bilinear_comp_eq
+    (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) {B : E →L[ℝ] F →L[ℝ] G} :
     (hf.bilinear_comp hg B).vectorMeasure = hf.vectorMeasure.withDensity g.rightLim B.flip
       + hg.vectorMeasure.withDensity f.leftLim B := by
   apply VectorMeasure.ext_of_Icc _ _ (fun a b hab ↦ ?_)
-  have := glouk hf hg B a b
+  have := setIntegral_Icc_rightLim_sub_leftLim_eq  hf hg B a b
   rw [integral_fun_sub hg.rightLim.integrable (integrable_const _),
     integral_fun_sub (integrable_const _) hf.leftLim.integrable, sub_eq_iff_eq_add] at this
   rw [add_apply, withDensity_apply hg.rightLim.integrable, withDensity_apply hf.leftLim.integrable,
     this]
-  simp [hab]
-  abel_nf
+  simp [hab, hf, hg]
+  abel
 
-
-
-
-
-
-
-
-#exit
-
-
-
-  have I : Integrable (fun p ↦ (Icc a p.1).indicator (1 : α → ℝ) p.2)
-      ((hg.vectorMeasure.restrict (Icc a b)).variation.prod
-        (hf.vectorMeasure.restrict (Icc a b)).variation) := by
-    apply Integrable.of_bound _ 1
-    · filter_upwards with p
-      grw [norm_indicator_le_norm_self]
-      simp
-    · apply Measurable.aestronglyMeasurable
-      simp only [indicator, mem_Icc, Pi.one_apply]
-      apply Measurable.piecewise ?_ (by fun_prop) (by fun_prop)
-      apply MeasurableSet.inter <;> exact measurableSet_le (by fun_prop) (by fun_prop)
-  have J :  Integrable (fun p ↦ (Ioc p.1 b).indicator (1 : α → ℝ) p.2)
-      ((hg.vectorMeasure.restrict (Icc a b)).variation.prod
-        (hf.vectorMeasure.restrict (Icc a b)).variation) := by
-    apply Integrable.of_bound _ 1
-    · filter_upwards with p
-      grw [norm_indicator_le_norm_self]
-      simp
-    · apply Measurable.aestronglyMeasurable
-      simp only [indicator, mem_Ioc, Pi.one_apply]
-      apply Measurable.piecewise ?_ (by fun_prop) (by fun_prop)
-      apply MeasurableSet.inter
-      · exact measurableSet_lt (by fun_prop) (by fun_prop)
-      · exact measurableSet_le (by fun_prop) (by fun_prop)
-  have : B (f.rightLim b - f.leftLim a) (g.rightLim b - g.leftLim a) = 0 := calc
-    B (f.rightLim b - f.leftLim a) (g.rightLim b - g.leftLim a)
-    _ = ∫ᵛ x in Icc a b, (∫ᵛ y in Icc a b, 1 ∂•hf.vectorMeasure) ∂[B; hg.vectorMeasure] := by
-      rw [VectorMeasure.setIntegral_const]
-      simp [hab]
-    _ = ∫ᵛ x in Icc a b, (∫ᵛ y in Icc a x, 1 ∂•hf.vectorMeasure
-        + ∫ᵛ y in Ioc x b, 1 ∂•hf.vectorMeasure) ∂[B; hg.vectorMeasure] := by
-      apply setIntegral_congr_ae
-      filter_upwards with x hx
-      rw [show Icc a b = Icc a x ∪ Ioc x b by grind, setIntegral_union (by grind)
-        measurableSet_Icc measurableSet_Ioc (integrable_const _) (integrable_const _)]
-    _ = ∫ᵛ x in Icc a b, (∫ᵛ y in Icc a b, (Icc a x).indicator 1 y ∂•hf.vectorMeasure
-        + ∫ᵛ y in Icc a b, (Ioc x b).indicator 1 y ∂•hf.vectorMeasure) ∂[B; hg.vectorMeasure] := by
-      apply setIntegral_congr_ae
-      filter_upwards with x hx
-      rw [setIntegral_indicator measurableSet_Icc measurableSet_Ioc,
-        setIntegral_indicator measurableSet_Icc measurableSet_Icc]
-      congr <;> grind
-    _ = ∫ᵛ x in Icc a b, (∫ᵛ y in Icc a b, (Icc a x).indicator 1 y ∂•hf.vectorMeasure)
-          ∂[B; hg.vectorMeasure]
-        + ∫ᵛ x in Icc a b, (∫ᵛ y in Icc a b, (Ioc x b).indicator 1 y ∂•hf.vectorMeasure)
-          ∂[B; hg.vectorMeasure] := by
-      rw [integral_fun_add]
-      · exact Integrable.integral_vectorMeasure_prod_left I
-      · exact Integrable.integral_vectorMeasure_prod_left J
-    _ = ∫ᵛ y in Icc a b, (∫ᵛ x in Icc a b, (Icc a x).indicator 1 y ∂•hg.vectorMeasure)
-          ∂[B.flip; hf.vectorMeasure]
-        + ∫ᵛ y in Icc a b, (∫ᵛ x in Icc a b, (Ioc x b).indicator 1 y ∂•hg.vectorMeasure)
-          ∂[B.flip; hf.vectorMeasure] := by
-      congr 1
-      · apply (integral_integral_smul_swap _).symm
-        exact I.swap
-      · apply (integral_integral_smul_swap _).symm
-        exact J.swap
-    _ = ∫ᵛ y in Icc a b, (∫ᵛ x in Icc a b, (Icc y b).indicator 1 x ∂•hg.vectorMeasure)
-          ∂[B.flip; hf.vectorMeasure]
-        + ∫ᵛ y in Icc a b, (∫ᵛ x in Icc a b, (Ico a y).indicator 1 x ∂•hg.vectorMeasure)
-          ∂[B.flip; hf.vectorMeasure] := by
-      congr 1
-      · apply setIntegral_congr_ae
-        filter_upwards with y hy
-        apply setIntegral_congr_ae
-        filter_upwards with x hx
-        simp only [indicator, Pi.one_apply]
-        grind
-      · apply setIntegral_congr_ae
-        filter_upwards with y hy
-        apply setIntegral_congr_ae
-        filter_upwards with x hx
-        simp only [indicator, Pi.one_apply]
-        grind
-    _ = ∫ᵛ y in Icc a b, (∫ᵛ x in Icc y b, 1 ∂•hg.vectorMeasure) ∂[B.flip; hf.vectorMeasure]
-        + ∫ᵛ y in Icc a b, (∫ᵛ x in Ico a y, 1 ∂•hg.vectorMeasure)
-          ∂[B.flip; hf.vectorMeasure] := by
-      congr 1
-      · apply setIntegral_congr_ae
-        filter_upwards with y hy
-        rw [setIntegral_indicator measurableSet_Icc measurableSet_Icc]
-        congr 2
-        grind
-      · apply setIntegral_congr_ae
-        filter_upwards with y hy
-        rw [setIntegral_indicator measurableSet_Icc measurableSet_Ico]
-        congr 2
-        grind
-    _ = ∫ᵛ y in Icc a b, (g.rightLim b - g.leftLim y) ∂[B.flip; hf.vectorMeasure]
-        + ∫ᵛ y in Icc a b, (∫ᵛ x in Ico a y, 1 ∂•hg.vectorMeasure)
-          ∂[B.flip; hf.vectorMeasure] := by
-
-
-
-
-
-
-
-
-
-
-
-    _ = 0 := sorry
-
-
-
-
-
-end MeasureTheory
+end MeasureTheory.VectorMeasure
