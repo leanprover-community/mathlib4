@@ -586,18 +586,24 @@ theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) 
   rw [Submonoid.mem_center_iff] at hg
   rw [← Module.End.mul_apply, ← Module.End.mul_apply, ← ρ.map_mul, ← hg g', ρ.map_mul]
 
+theorem isIntertwiningMap_of_mem_center_algebra (z : A[G]) (hz : z ∈ Submonoid.center A[G]) :
+    IsIntertwiningMap ρ ρ (ρ.asAlgebraHom z) := by
+  rw [isIntertwiningMap_iff]
+  intros
+  rw [← Module.End.mul_apply, ← Module.End.mul_apply, ← asAlgebraHom_of, ← map_mul,
+    ← Submonoid.mem_center_iff.1 hz _, map_mul, asAlgebraHom_of]
+
 /-- If `g` is a central element of a monoid `G`, then this is the action of `g`, considered as an
   intertwining map from any representation of `G` to itself. -/
 def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ where
   toLinearMap := ρ g
   isIntertwining' x := LinearMap.ext <| (isIntertwiningMap_of_mem_center ρ g hg).isIntertwining x
 
-noncomputable def centralAlgebraMul (z : A[G]) (hg : z ∈ Submonoid.center A[G]) :
+noncomputable def centralAlgebraMul (z : A[G]) (hz : z ∈ Submonoid.center A[G]) :
     ρ.IntertwiningMap ρ where
   toLinearMap := ρ.asAlgebraHom z
-  isIntertwining' _ := by
-    rw [← Module.End.mul_eq_comp, ← Module.End.mul_eq_comp, ← asAlgebraHom_of,
-      ← map_mul, ← Submonoid.mem_center_iff.1 hg _, map_mul, asAlgebraHom_of]
+  isIntertwining' x := LinearMap.ext <|
+    (isIntertwiningMap_of_mem_center_algebra ρ z hz).isIntertwining x
 
 /-- `IntertwiningMap.toLinearMap` as a linear map. -/
 @[simps] def toLinearMapl : IntertwiningMap ρ σ →ₗ[A] V →ₗ[A] W where
