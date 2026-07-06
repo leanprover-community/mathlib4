@@ -541,7 +541,7 @@ theorem sum_div_log_mul_pow_eq {s : ℝ} (hs : 1 < s) :
         ring
   _ = (s - 1) * ∫ x in .Ioi 1, log (log x) * x ^ (-s) + M * x ^ (-s) + E₂ x * x ^ (-s) := by
     simp_rw [sum_div_log_eq', add_mul, ← MeasureTheory.integral_const_mul]
-    exact setIntegral_congr_fun (by measurability) (by grind)
+    exact setIntegral_congr_fun (by measurability) (by intro; grind)
   _ = _ := by
     have h1 := integrableOn_log_log_mul_rpow hs
     have h2 (C : ℝ) : IntegrableOn (C * · ^ (-s)) (.Ioi 1) :=
@@ -831,7 +831,7 @@ theorem sum_vonMangoldt_le_sum_prime_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
       gcongr
       rw [(by rfl : Ioc 1 (max 1 ⌊log x / log 2⌋₊) = Ico 2 (max 1 ⌊log x / log 2⌋₊  + 1))]
       grw [geom_sum_Ico_le_of_lt_one (by simp)]
-      · have : (p : ℝ) ≠ 0 := mod_cast hp.1.1.ne.symm
+      · have : 0 < (p : ℝ) := mod_cast hp.1.1.pos
         apply le_of_eq
         field
       · simpa using inv_lt_one_of_one_lt₀ (mod_cast hp.2.one_lt)
