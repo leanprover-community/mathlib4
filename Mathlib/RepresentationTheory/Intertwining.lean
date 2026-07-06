@@ -591,7 +591,7 @@ theorem isIntertwiningMap_of_mem_center_algebra (z : A[G]) (hz : z ∈ Submonoid
   rw [isIntertwiningMap_iff]
   intros
   rw [← Module.End.mul_apply, ← Module.End.mul_apply, ← asAlgebraHom_of, ← map_mul,
-    ← Submonoid.mem_center_iff.1 hz _, map_mul, asAlgebraHom_of]
+    ← Submonoid.mem_center_iff.1 hz, map_mul, asAlgebraHom_of]
 
 /-- If `g` is a central element of a monoid `G`, then this is the action of `g`, considered as an
   intertwining map from any representation of `G` to itself. -/
