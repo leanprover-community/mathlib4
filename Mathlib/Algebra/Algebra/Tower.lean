@@ -260,20 +260,20 @@ theorem restrictScalars_injective :
 
 @[simp]
 lemma restrictScalars_symm (f : A ≃ₐ[S] B) :
-    f.symm.restrictScalars R = (f.restrictScalars R).symm :=
+    (f.restrictScalars R).symm = f.symm.restrictScalars R :=
   rfl
 
-@[simp]
 lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
-    (f.restrictScalars R).symm x = f.symm x := rfl
+    (f.restrictScalars R).symm x = f.symm x := by
+  simp
 
-@[simp]
 lemma toRingEquiv_restrictScalars_symm (f : A ≃ₐ[S] B) :
-    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := rfl
+    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := by
+  simp
 
-@[simp]
 lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
-    ((restrictScalars R f).symm : B → A) = f.symm := rfl
+    ((restrictScalars R f).symm : B → A) = f.symm := by
+  simp
 
 @[deprecated (since := "2026-07-06")] alias coe_restrictScalars_symm' := coe_restrictScalars_symm
 
