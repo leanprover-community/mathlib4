@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 public import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!
@@ -192,7 +192,7 @@ theorem exists_isIntegral (W : WeierstrassCurve K) :
         inv_pow, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
       apply (Valuation.mem_integer_iff _ _).mpr
       simp only [map_mul, map_inv₀, map_pow, ha]
-      refine inv_mul_le_one_of_le₀ ?_ zero_le'
+      refine inv_mul_le_one_of_le₀ ?_ zero_le
       refine (hlmax _ (by simp [l₀, l])).trans ?_
     any_goals
       apply le_self_pow hlmax_ge_1.le
@@ -319,7 +319,7 @@ the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` 
 To see how this expression arises, note that the node `(x₀, y₀)` has second order Taylor expansion
 `(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`. -/
 @[mk_iff]
-class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
+class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) : Prop
     extends W.HasMultiplicativeReduction R where
   splitMultiplicativeReduction : letI I := W.integralModel R
     Splits <| .map (algebraMap R (ResidueField R)) <|

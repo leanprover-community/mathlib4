@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Bases
 public import Mathlib.Algebra.Order.Group.Nat
@@ -287,7 +288,7 @@ theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n +
     obtain ⟨N, h⟩ := h V mV
     use N + k
     intro a ha b hb
-    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
+    convert! h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
   · exact h.comp_tendsto (tendsto_add_atTop_nat k)
 
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}
@@ -365,6 +366,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
 
 /-- A complete space is defined here using uniformities. A uniform space
   is complete if every Cauchy filter converges. -/
+@[wikidata Q848569]
 class CompleteSpace (α : Type u) [UniformSpace α] : Prop where
   /-- In a complete uniform space, every Cauchy filter converges. -/
   complete : ∀ {f : Filter α}, Cauchy f → ∃ x, f ≤ 𝓝 x
@@ -537,7 +539,7 @@ theorem totallyBounded_of_forall_isSymm {s : Set α}
     (h : ∀ V ∈ 𝓤 α, SetRel.IsSymm V → ∃ t : Set α, Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y V) :
     TotallyBounded s :=
   UniformSpace.hasBasis_symmetric.totallyBounded_iff.2 fun V ⟨_, _⟩ => by
-    simpa only [ball_eq_of_symmetry] using h V ‹_› ‹_›
+    simpa only [ball_eq_of_symmetry] using! h V ‹_› ‹_›
 
 theorem TotallyBounded.subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : TotallyBounded s₂) :
     TotallyBounded s₁ := fun d hd =>

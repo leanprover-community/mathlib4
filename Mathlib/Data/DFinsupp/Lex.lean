@@ -105,6 +105,7 @@ instance Colex.isStrictOrder [∀ i, PartialOrder (α i)] :
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
+  toLT := instLTLex
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
 
@@ -112,6 +113,7 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
 See `DFinsupp.Colex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Colex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Colex (Π₀ i, α i)) where
   le x y := ⇑(ofColex x) = ⇑(ofColex y) ∨ x < y
+  toLT := instLTColex
   __ := PartialOrder.lift (fun x : Colex (Π₀ i, α i) ↦ toColex (⇑(ofColex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
 
@@ -175,14 +177,12 @@ instance Colex.decidableLT : DecidableLT (Colex (Π₀ i, α i)) :=
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
-  __ := Lex.partialOrder
   le_total := total_of _
   toDecidableLT := decidableLT
   toDecidableLE := decidableLE
 
 /-- The linear order on `DFinsupp`s obtained by the colexicographic ordering. -/
 instance Colex.linearOrder : LinearOrder (Colex (Π₀ i, α i)) where
-  __ := Colex.partialOrder
   le_total := total_of _
   toDecidableLT := decidableLT
   toDecidableLE := decidableLE
@@ -217,6 +217,7 @@ section Left
 
 variable [∀ i, AddLeftStrictMono (α i)]
 
+set_option backward.defeqAttrib.useBackward true in
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), by dsimp; gcongr⟩⟩
 
@@ -236,6 +237,7 @@ section Right
 
 variable [∀ i, AddRightStrictMono (α i)]
 
+set_option backward.defeqAttrib.useBackward true in
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), by dsimp; gcongr⟩⟩
@@ -259,16 +261,26 @@ section OrderedAddMonoid
 variable [LinearOrder ι]
 
 instance Lex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
-    [∀ i, CanonicallyOrderedAdd (α i)] :
+    [∀ i, IsBotZeroClass (α i)] :
     OrderBot (Lex (Π₀ i, α i)) where
   bot := 0
   bot_le _ := DFinsupp.toLex_monotone bot_le
 
+instance Lex.isBotZeroClass [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsBotZeroClass (α i)] :
+    IsBotZeroClass (Lex (Π₀ i, α i)) where
+  isBot_zero := isBot_bot
+
 instance Colex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
-    [∀ i, CanonicallyOrderedAdd (α i)] :
+    [∀ i, IsBotZeroClass (α i)] :
     OrderBot (Colex (Π₀ i, α i)) where
   bot := 0
   bot_le _ := DFinsupp.toColex_monotone bot_le
+
+instance Colex.isBotZeroClass [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsBotZeroClass (α i)] :
+    IsBotZeroClass (Colex (Π₀ i, α i)) where
+  isBot_zero := isBot_bot
 
 instance Lex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedCancelAddMonoid (α i)] :

@@ -48,10 +48,10 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
   { K.reflectionLinearEquiv with
     norm_map' := by
       intro x
-      let w : K := K.orthogonalProjection x
+      let w : K := K.orthogonalProjectionOnto x
       let v := x - w
       have : ⟪v, w⟫ = 0 := starProjection_inner_eq_zero x w w.2
-      convert norm_sub_eq_norm_add this using 2
+      convert norm_sub_eq_norm_add this
       · dsimp [reflectionLinearEquiv, v, w]
         abel
       · simp only [v, add_sub_cancel] }
@@ -137,8 +137,7 @@ theorem reflection_bot : reflection (⊥ : Submodule 𝕜 E) = LinearIsometryEqu
 /-- The reflection in `K` of an element of `Kᗮ` is its negation. -/
 theorem reflection_mem_subspace_orthogonalComplement_eq_neg {v : E}
     (hv : v ∈ Kᗮ) : K.reflection v = -v := by
-  simp [starProjection_apply, reflection_apply,
-    orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero hv]
+  simp [starProjection_apply, reflection_apply, orthogonalProjectionOnto_apply_of_mem_orthogonal hv]
 
 /-- The reflection in `Kᗮ` of an element of `K` is its negation. -/
 theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg {v : E}
@@ -160,7 +159,7 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
     rw [Submodule.mem_orthogonal_singleton_iff_inner_left]
     rw [real_inner_add_sub_eq_zero_iff]
     exact h
-  convert congr_arg₂ (· + ·) h₂ h₁ using 1
+  convert! congr_arg₂ (· + ·) h₂ h₁ using 1
   · simp
   · abel
 
