@@ -302,7 +302,7 @@ theorem integrableOn_Ioi_inv_div_log_sq {c : ℝ} (hc : 1 < c) :
 
 @[simp]
 theorem integral_Ioi_inv_divlog_sq {c : ℝ} (hc : 1 < c) :
-    ∫ (t : ℝ) in .Ioi c, t⁻¹ / (log t)^2 = (log c)⁻¹ := by
+    ∫ (t : ℝ) in .Ioi c, t⁻¹ / (log t) ^ 2 = (log c)⁻¹ := by
   convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
     (integrableOn_Ioi_inv_div_log_sq hc) ?_ using 1
   · simp
