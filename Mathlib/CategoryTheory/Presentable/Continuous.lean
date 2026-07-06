@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Type
@@ -100,10 +99,6 @@ variable (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
 abbrev isCardinalContinuousMorphismProperty : MorphismProperty (Cᵒᵖ ⥤ Type w) :=
   ⨆ (J) (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ),
     MorphismProperty.ofHoms (Presheaf.preservesLimitHomFamily F)
-
-example : MorphismProperty.IsSmall.{w}
-    (isCardinalContinuousMorphismProperty C κ) := by
-  infer_instance
 
 lemma isCardinalContinuous_eq_isLocal :
     isCardinalContinuous Cᵒᵖ (Type w) κ =

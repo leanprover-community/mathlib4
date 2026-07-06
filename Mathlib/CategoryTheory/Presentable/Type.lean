@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Generator.Type
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Types.Set
 
 /-!
