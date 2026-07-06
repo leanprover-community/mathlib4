@@ -1294,9 +1294,7 @@ It will be convenient to express the third Mertens theorem in terms of an error 
 
 private lemma neg_inv_sub_log_sub_inv_nonneg (p : Primes) : 0 ≤ - 1 / p - log (1 - 1 / p) := by
   have : 1 < (p : ℝ) := mod_cast p.property.one_lt
-  grw [log_le_sub_one_of_pos]
-  · grind
-  field_simp; grind
+  grw [log_le_sub_one_of_pos] <;> field_simp <;> grind
 
 private lemma neg_inv_sub_log_sub_inv_le (p : Primes) : - 1 / p - log (1 - 1 / p)
     ≤ 1 / p ^ 2 := by
@@ -1343,8 +1341,7 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x +
     have (i : ℕ) : 0 ≤ - (if (1 + i + ⌊x⌋₊).Prime then ((1 + i + ⌊x⌋₊ : ℕ) : ℝ)⁻¹
         + log (1 - ((1 + i + ⌊x⌋₊ : ℕ) : ℝ)⁻¹) else 0) := by
       split_ifs with hp
-      · have := neg_inv_sub_log_sub_inv_nonneg ⟨ _, hp ⟩
-        grind
+      · grind [neg_inv_sub_log_sub_inv_nonneg ⟨ _, hp ⟩]
       · simp
     grw [← tsum_neg, abs_of_nonneg (tsum_nonneg this)]
     apply tsum_le_of_sum_range_le this; intro N
@@ -1352,24 +1349,21 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x +
       _ ≤ ∑ i ∈ range N, (((⌊x⌋₊ + i : ℕ): ℝ)⁻¹ - ((⌊x⌋₊ + (i + 1) : ℕ): ℝ)⁻¹) := by
         apply sum_le_sum; intro i _
         split_ifs with h
-        · rw [neg_add']
-          calc
+        · calc
             _ ≤ 1 / ((1 + i + ⌊x⌋₊ : ℕ) : ℝ)^2 := by
+              rw [neg_add']
               convert neg_inv_sub_log_sub_inv_le ⟨ _, h ⟩ <;> grind
             _ ≤ _ := by
               rw [inv_sub_inv (by positivity) (by positivity)]
               push_cast; ring_nf; gcongr <;> grind
-        · simp only [neg_zero, cast_add, cast_one, sub_nonneg]
-          gcongr; norm_cast; omega
+        · simp only [neg_zero, cast_add, cast_one, sub_nonneg]; gcongr; linarith
       _ ≤ _ := by
-        rw [sum_range_sub', add_zero, cast_add, tsub_le_iff_right, le_add_iff_nonneg_right,
-          inv_nonneg]
+        rw [sum_range_sub', add_zero, cast_add, tsub_le_iff_right, le_add_iff_nonneg_right]
         positivity
   · apply (summable_one_div_nat_rpow.mpr (by norm_num : 1 < (2 : ℝ))).of_norm_bounded
-    intro i
+    intro
     split_ifs with h
-    · rw [norm_eq_abs]
-      have h1 := neg_inv_sub_log_sub_inv_nonneg ⟨ _, h ⟩
+    · have h1 := neg_inv_sub_log_sub_inv_nonneg ⟨ _, h ⟩
       have h2 := neg_inv_sub_log_sub_inv_le ⟨ _, h ⟩
       simp at h1 h2 ⊢
       grind
@@ -1429,7 +1423,7 @@ theorem prod_prime_one_minus_inv_asymp :
   have := log_mul_prod_prime_one_minus_inv_tendsto.const_mul (exp eulerMascheroniConstant)
   simp [← exp_add] at this
   refine isEquivalent_of_tendsto_one (this.congr' ?_)
-  filter_upwards [eventually_gt_atTop 1] 
+  filter_upwards [eventually_gt_atTop 1]
   simp [exp_neg]
   grind [log_pos]
 
