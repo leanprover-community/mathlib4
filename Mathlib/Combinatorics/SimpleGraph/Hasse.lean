@@ -127,11 +127,7 @@ theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   | 0 | 1 => simp
   | n + 2 =>
     intro u v h
-    rw [pathGraph_adj] at h
-    rw [cycleGraph_adj']
-    cases h with
-    | inl h | inr h =>
-      simp [Fin.coe_sub_iff_le.mpr (Nat.lt_of_succ_le h.le).le, Nat.eq_sub_of_add_eq' h]
+    grind [pathGraph_adj, cycleGraph_adj]
 
 namespace Walk
 
