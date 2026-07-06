@@ -45,19 +45,19 @@ namespace ModuleConGen
 
 variable {R : Type u} {M : Type v} [Semiring R] [AddZeroClass M] [SMul R M]
 
-/-- The inductively defined smallest congruence relation compatible with a module structure 
+/-- The inductively defined smallest congruence relation compatible with a module structure
 containing a given binary relation. -/
 inductive Rel (r : M → M → Prop) : M → M → Prop
   | of {x y} : r x y → Rel r x y
   | refl {x} :  Rel r x x
   | symm {x y} : Rel r x y → Rel r y x
   | trans {x y z} : Rel r x y → Rel r y z → Rel r x z
-  | add {w x y z} : Rel r w x → Rel r y z → Rel r (w + y) (x + z)     
-  | smul  (s : R) {x y : M} :  Rel r x y → Rel r (s • x) (s • y)    
-  
+  | add {w x y z} : Rel r w x → Rel r y z → Rel r (w + y) (x + z)
+  | smul  (s : R) {x y : M} :  Rel r x y → Rel r (s • x) (s • y)
+
 end ModuleConGen
 
-variable {R : Type u} {M : Type v} [Semiring R] 
+variable {R : Type u} {M : Type v} [Semiring R]
 def moduleConGen [AddZeroClass M] [SMul R M] (r : M → M → Prop) : ModuleCon R M :=
  { r := ModuleConGen.Rel r
    iseqv := {
@@ -76,7 +76,7 @@ namespace ModuleCon
 homomorphism constant on `c`'s equivalence classes. -/
 def lift {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     (c : ModuleCon R M) {N : Type*} [AddCommMonoid N] [Module R N]
-    (f : M →ₗ[R] N) (H : ∀ a b, c.r a b → f a = f b) : 
+    (f : M →ₗ[R] N) (H : ∀ a b, c.r a b → f a = f b) :
     ModuleCon.Quotient M c →ₗ[R] N where
   toFun x := Quotient.liftOn x f H
   map_add' x y := Quotient.inductionOn₂ x y fun m n => map_add f m n
@@ -86,8 +86,8 @@ def mk' {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     (c : ModuleCon R M) : M →ₗ[R] c.Quotient where
   toFun := AddCon.mk' c.toAddCon
   map_add' := (AddCon.mk' c.toAddCon).map_add
-  map_smul' _ _ := rfl  
-  
+  map_smul' _ _ := rfl
+
 theorem eq {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     {c : ModuleCon R M} {x y : M} :
     c.mk' x = c.mk' y ↔ c.r x y :=
@@ -98,13 +98,13 @@ theorem lift_mk' {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Modul
     (f : M →ₗ[R] N) (H : ∀ a b, c.r a b → f a = f b) (x : M) :
     ModuleCon.lift c f H (c.mk' x) = f x :=
   rfl
-    
+
 theorem mk'_surjective
     {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     (c : ModuleCon R M) : Function.Surjective c.mk' :=
-  letI : Setoid M := c.toAddCon.toSetoid    
-  Quotient.mk'_surjective  
-  
+  letI : Setoid M := c.toAddCon.toSetoid
+  Quotient.mk'_surjective
+
 end ModuleCon
 
 --------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ theorem span_tprod_eq_top : Submodule.span R (Set.range (tprod R (ι := ι) (M :
 
 def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     (M [Σ^ι]→ₗ[R] N) ≃ₗ[R] ((Sym[R] ι M) →ₗ[R] N) :=
-    
+
   let liftFun : (M [Σ^ι]→ₗ[R] N) → (Sym[R] ι M →ₗ[R] N) := fun f =>
     ModuleCon.lift (SymmetricCon R ι M) (PiTensorProduct.lift f.toMultilinearMap) (by
       intro a b rel
@@ -193,7 +193,7 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
       | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
       | add _ _ ih₁ ih₂ => simp [map_add, ih₁, ih₂]
       | smul s _ ih => simp [map_smul, ih])
-      
+
   let inv : (Sym[R] ι M →ₗ[R] N) → (M [Σ^ι]→ₗ[R] N) := fun g => by
     let φ : (⨂[R] (_ : ι), M) →ₗ[R] N := g ∘ₗ (SymmetricCon R ι M).mk'
     let Gm := φ.compMultilinearMap (PiTensorProduct.tprod R)
@@ -204,7 +204,7 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     simp only [LinearMap.comp_apply]
     congr 1
     exact ModuleCon.eq.mpr (ModuleConGen.Rel.of (SymmetricPower.Rel.perm e v)).symm
-    
+
   { toFun := liftFun
 
     map_add' := fun f g => by
@@ -216,12 +216,12 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
            = PiTensorProduct.lift f.toMultilinearMap + PiTensorProduct.lift g.toMultilinearMap := by
         rw [SymmetricMap.toMultilinearMap_add]
         exact LinearEquiv.map_add PiTensorProduct.lift f.toMultilinearMap g.toMultilinearMap
-      
+
       have h1 : PiTensorProduct.lift (f + g).toMultilinearMap y
-           = PiTensorProduct.lift f.toMultilinearMap y 
+           = PiTensorProduct.lift f.toMultilinearMap y
              + PiTensorProduct.lift g.toMultilinearMap y :=
         LinearMap.congr_fun key y
-      
+
       exact h1
 
     map_smul' := fun r f => by
@@ -236,19 +236,19 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
       have h1 : PiTensorProduct.lift (r • f).toMultilinearMap y
           = r • PiTensorProduct.lift f.toMultilinearMap y :=
         LinearMap.congr_fun key y
-      exact h1      
+      exact h1
 
     invFun := inv
-    
+
     left_inv := fun f => by
       apply SymmetricMap.ext
       intro v
-      change ((liftFun f) ∘ₗ (SymmetricCon R ι M).mk').compMultilinearMap 
+      change ((liftFun f) ∘ₗ (SymmetricCon R ι M).mk').compMultilinearMap
         (PiTensorProduct.tprod R) v = f.toMultilinearMap v
       simp only [LinearMap.compMultilinearMap_apply, LinearMap.comp_apply, liftFun]
       exact (ModuleCon.lift_mk' (SymmetricCon R ι M) (PiTensorProduct.lift f.toMultilinearMap) _
         (PiTensorProduct.tprod R v)).trans (PiTensorProduct.lift.tprod v)
-      
+
     right_inv := fun g => by
       apply LinearMap.ext
       intro x
@@ -271,19 +271,17 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
 
 example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
   : (⨂[R] (_:ι), M) →ₗ[R] N  := by
-  exact PiTensorProduct.lift f 
+  exact PiTensorProduct.lift f
 
 example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
   : (⨂[R] (_:ι), M) →ₗ[R] N  := by
-  exact PiTensorProduct.lift f 
+  exact PiTensorProduct.lift f
 
 
 example (N : Type) [AddCommGroup N] [Module R N] (φ : Sym[R] ι M →ₗ[R] N)
     : (⨂[R] (_ : ι), M) →ₗ[R] N := by
   let π : (⨂[R] (_ : ι), M) →ₗ[R] (Sym[R] ι M) := mk R ι M
   exact φ ∘ₗ π
-    
-    
+
+
 end SymmetricPower
-
-
