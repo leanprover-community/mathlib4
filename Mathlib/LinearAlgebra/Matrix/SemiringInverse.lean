@@ -76,7 +76,7 @@ lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
     (A.submatrix f g).detp s = A.detp (s * sign (f.symm.trans g)) :=
   sum_equiv (equivCongr f g) (by simp) fun _ _ ↦ prod_equiv f (by simp) fun _ _ ↦ by simp
 
-lemma detp_submatrix_equiv (e : m ≃ n) : (A.submatrix e e).detp s = A.detp s := by
+lemma detp_submatrix_equiv_self (e : m ≃ n) : (A.submatrix e e).detp s = A.detp s := by
   simp
 
 variable {A}
