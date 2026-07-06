@@ -48,7 +48,6 @@ that the sets one uses are nonempty and bounded above as these are only conditio
 
 @[expose] public section
 
-
 open scoped NNReal ENNReal Topology UniformConvergence
 open Set Filter OrderDual
 
