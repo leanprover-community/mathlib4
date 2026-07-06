@@ -1840,6 +1840,7 @@ public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.MeanValueCountableExceptions
 public import Mathlib.Analysis.Calculus.Monotone
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
