@@ -76,18 +76,7 @@ theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation =
         (measure_union (by grind) (hs.compl.inter hr)).symm
       _ = μ.variation r := by
           rw [← Set.union_inter_distrib_right, Set.union_compl_self, Set.univ_inter]
-  · simp only [VectorMeasure.variation_apply, preVariation_apply,
-      VectorMeasure.ennrealToMeasure_apply hr, ennrealPreVariation_apply]
-    rw [preVariationFun_apply _ hr]
-    apply iSup_le
-    intro P
-    calc ∑ p ∈ P.parts, ‖μ p.val‖ₑ
-      _ ≤ ∑ p ∈ P.parts, μ.totalVariation p.val :=
-          Finset.sum_le_sum fun p _ => enorm_le_totalVariation μ p.val
-      _ = μ.totalVariation (⋃ p ∈ P.parts, p.val) :=
-          (measure_biUnion_finset (P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl)
-            (fun p _ => p.prop)).symm
-      _ = μ.totalVariation r := by
-        simp [← Finset.sup_set_eq_biUnion, P.sup_parts_apply]
+  · apply VectorMeasure.variation_le_of_forall_enorm_le
+    exact fun s _ ↦ enorm_le_totalVariation μ s
 
 end MeasureTheory.SignedMeasure
