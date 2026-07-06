@@ -338,6 +338,10 @@ protected theorem coe_pos {x : ℝ} : (0 : EReal) < x ↔ 0 < x :=
 protected theorem coe_neg' {x : ℝ} : (x : EReal) < 0 ↔ x < 0 :=
   EReal.coe_lt_coe_iff
 
+@[simp, norm_cast]
+theorem coe_max (x y : ℝ) : (↑(max x y) : EReal) = max ↑x ↑y :=
+  rfl
+
 lemma toReal_eq_zero_iff {x : EReal} : x.toReal = 0 ↔ x = 0 ∨ x = ⊤ ∨ x = ⊥ := by
   cases x <;> norm_num
 
@@ -689,6 +693,14 @@ theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) =
 @[norm_cast]
 theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = n • (x : EReal) :=
   map_nsmul (⟨⟨(↑), coe_ennreal_zero⟩, coe_ennreal_add⟩ : ℝ≥0∞ →+ EReal) _ _
+
+@[simp, norm_cast]
+theorem coe_ennreal_iSup {ι : Sort*} [hι : Nonempty ι] (f : ι → ℝ≥0∞) :
+    ((⨆ i, f i : ℝ≥0∞) : EReal) = ⨆ i, (f i : EReal) := by
+  refine le_antisymm ?_ (iSup_le fun i ↦ mod_cast le_iSup f i)
+  refine le_iSup_iff.mpr fun b hb ↦ ?_
+  lift b to ℝ≥0∞ using hι.elim fun i ↦ (EReal.coe_ennreal_nonneg _).trans (hb i)
+  exact mod_cast iSup_le fun i ↦ mod_cast hb i
 
 /-! ### toENNReal -/
 

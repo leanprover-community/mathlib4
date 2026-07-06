@@ -658,11 +658,11 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
      centered at x is ≤ ε₁ -/
   have comp : IsCompact (Box.Icc I \ U) :=
     I.isCompact_Icc.of_isClosed_subset (I.isCompact_Icc.isClosed.sdiff Uopen) Set.sdiff_subset
-  have : ∀ x ∈ (Box.Icc I \ U), oscillationWithin f (Box.Icc I) x < (ENNReal.ofReal ε₁) := by
+  have : ∀ x ∈ (Box.Icc I \ U), oscillationWithinAt f (Box.Icc I) x < (ENNReal.ofReal ε₁) := by
     intro x hx
-    suffices oscillationWithin f (Box.Icc I) x = 0 by rw [this]; exact ofReal_pos.2 ε₁0
-    simpa [OscillationWithin.eq_zero_iff_continuousWithinAt, D, hx.1] using hx.2 ∘ (fun a ↦ UD a)
-  rcases comp.uniform_oscillationWithin this with ⟨r, r0, hr⟩
+    suffices oscillationWithinAt f (Box.Icc I) x = 0 by rw [this]; exact ofReal_pos.2 ε₁0
+    simpa [OscillationWithinAt.eq_zero_iff_continuousWithinAt, D, hx.1] using hx.2 ∘ (fun a ↦ UD a)
+  rcases comp.uniform_oscillationWithinAt this with ⟨r, r0, hr⟩
   /- We prove the claim for partitions π₁ and π₂ subordinate to r/2, by writing the difference as
      an integralSum over π₁ ⊓ π₂ and considering separately the boxes of π₁ ⊓ π₂ which are/aren't
      fully contained within U. -/

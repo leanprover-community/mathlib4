@@ -98,6 +98,27 @@ theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
   tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.subset <| range_comp_subset_range _ _
 
+section TriangleInequality
+
+variable {f : α → α} {g : α → E} {n : ℕ} {x : α}
+
+@[bound]
+lemma norm_birkhoffSum_le :
+    ‖birkhoffSum f g n x‖ ≤ birkhoffSum f (‖g ·‖) n x :=
+  norm_sum_le _ _
+
+@[bound]
+lemma norm_birkhoffAverage_le {R : Type*} [RCLike R] [NormedSpace R E] :
+    ‖birkhoffAverage R f g n x‖ ≤ birkhoffAverage ℝ f (‖g ·‖) n x := by
+  by_cases! h : n = 0
+  · simp [birkhoffAverage, h]
+  apply Nat.zero_lt_of_ne_zero at h
+  simp only [birkhoffAverage, norm_smul, norm_inv, RCLike.norm_natCast, smul_eq_mul]
+  gcongr
+  exact norm_birkhoffSum_le
+
+end TriangleInequality
+
 end
 
 variable (𝕜 : Type*) {X E : Type*}

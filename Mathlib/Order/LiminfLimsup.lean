@@ -815,17 +815,17 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α]
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, eventually we have `u b < x + ε`. -/
-theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
-    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x)
-    (hε : 0 < ε) :
-    ∀ᶠ b : β in atTop, u b < x + ε :=
+theorem eventually_lt_add_pos_of_limsup_le [AddZeroClass α] [AddLeftStrictMono α]
+    {x ε : α} {u : β → α} {f : Filter β} (hu_bdd : IsBoundedUnder LE.le f u)
+    (hu : Filter.limsup u f ≤ x) (hε : 0 < ε) :
+    ∀ᶠ b : β in f, u b < x + ε :=
   eventually_lt_of_limsup_lt (lt_of_le_of_lt hu (lt_add_of_pos_right x hε)) hu_bdd
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, eventually we have `x + ε < u b`. -/
-theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
-    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop)
-    (hε : ε < 0) :
-    ∀ᶠ b : β in atTop, x + ε < u b :=
+theorem eventually_add_neg_lt_of_le_liminf [AddZeroClass α] [AddLeftStrictMono α]
+    {x ε : α} {u : β → α} {f : Filter β} (hu_bdd : IsBoundedUnder GE.ge f u)
+    (hu : x ≤ Filter.liminf u f) (hε : ε < 0) :
+    ∀ᶠ b : β in f, x + ε < u b :=
   eventually_lt_of_lt_liminf (lt_of_lt_of_le (add_lt_of_neg_right x hε) hu) hu_bdd
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, there exists a positive natural

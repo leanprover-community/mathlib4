@@ -23,7 +23,22 @@ see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 
 public section
 
-open Filter Finset Function Bornology
+namespace LinearMap
+
+variable {R M : Type*} [Semiring R]
+
+abbrev fixedPoints [AddCommMonoid M] [Module R M] (f : M →ₗ[R] M) : Submodule R M := f.eqLocus 1
+
+instance _root_.ContinuousLinearMap.completeSpace_fixedPoints
+    [AddCommMonoid M] [Module R M] [UniformSpace M] [CompleteSpace M] [T2Space M]
+    (f : M →L[R] M) : CompleteSpace f.fixedPoints :=
+  ContinuousLinearMap.completeSpace_eqLocus f (1 : M →L[R] M)
+
+abbrev coboundaries [AddCommGroup M] [Module R M] (f : M →ₗ[R] M) : Submodule R M := (f - 1).range
+
+end LinearMap
+
+open Filter Set Function Bornology Module
 open scoped Topology
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
@@ -45,9 +60,9 @@ I chose to do it in order to isolate parts of the proof that do not rely
 on the inner product space structure.
 -/
 theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace 𝕜 E]
-    (f : E →ₗ[𝕜] E) (hf : LipschitzWith 1 f) (g : E →L[𝕜] LinearMap.eqLocus f 1)
-    (hg_proj : ∀ x : LinearMap.eqLocus f 1, g x = x)
-    (hg_ker : (g.ker : Set E) ⊆ closure (LinearMap.range (f - 1))) (x : E) :
+    (f : E →ₗ[𝕜] E) (hf : LipschitzWith 1 f) (g : E →L[𝕜] f.fixedPoints)
+    (hg_proj : ∀ x : f.fixedPoints, g x = x)
+    (hg_ker : g.ker ≤ f.coboundaries.topologicalClosure) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 (g x)) := by
   /- Any point can be represented as a sum of `y ∈ LinearMap.ker g` and a fixed point `z`. -/
   obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y, g y = 0 ∧ ∃ z, IsFixedPt f z ∧ x = y + z :=
@@ -59,7 +74,7 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
     simpa [hy, hgz, birkhoffAverage, birkhoffSum, Finset.sum_add_distrib, smul_add]
       using this.add (hz.tendsto_birkhoffAverage 𝕜 _root_.id)
   /- By continuity, it suffices to prove the theorem on a dense subset of `LinearMap.ker g`.
-  By assumption, `LinearMap.range (f - 1)` is dense in the kernel of `g`,
+  By assumption, `f.coboundaries` is dense in the kernel of `g`,
   so it suffices to prove the theorem for `y = f x - x`. -/
   have : IsClosed {x | Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 0)} :=
     isClosed_setOf_tendsto_birkhoffAverage 𝕜 hf uniformContinuous_id continuous_const
@@ -78,6 +93,48 @@ variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
+open Submodule
+
+/-- The closure of the coboundaries of the form `f x - x` contains the orthogonal complement of the
+fixed points of `f`.
+-/
+theorem ContinuousLinearMap.fixedPoints_orthogonal_le_topologicalClosure_coboundary
+    (f : E →L[𝕜] E) (hf : ‖f‖ ≤ 1) : f.fixedPointsᗮ ≤ f.coboundaries.topologicalClosure := by
+  /- In other words, we need to verify that any vector that is orthogonal to the range of `f - 1`
+  is a fixed point of `f`. -/
+  rw [← Submodule.orthogonal_orthogonal_eq_closure]
+  /- To verify this, we verify `‖f x‖ ≤ ‖x‖` (because `‖f‖ ≤ 1`) and `⟪f x, x⟫ = ‖x‖²`. -/
+  refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_
+  · simpa using f.le_of_opNorm_le hf x
+  · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
+      simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
+    simp [this]
+
+theorem ContinuousLinearMap.topologicalClosure_map_simpFunc_eq_topologicalClosure_coboundary
+    (f : E →L[𝕜] E) (hf : ‖f‖ ≤ 1) : f.fixedPointsᗮ ≤ f.coboundaries.topologicalClosure := by
+  /- In other words, we need to verify that any vector that is orthogonal to the range of `f - 1`
+  is a fixed point of `f`. -/
+  rw [← Submodule.orthogonal_orthogonal_eq_closure]
+  /- To verify this, we verify `‖f x‖ ≤ ‖x‖` (because `‖f‖ ≤ 1`) and `⟪f x, x⟫ = ‖x‖²`. -/
+  refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_
+  · simpa using f.le_of_opNorm_le hf x
+  · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
+      simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
+    simp [this]
+
+theorem ContinuousLinearMap.fixedPoints_sup_topologicalClosure_coboundary_eq_top
+    (f : E →L[𝕜] E) (hf : ‖f‖ ≤ 1) : f.fixedPoints ⊔ f.coboundaries.topologicalClosure = ⊤ := by
+  have h := sup_orthogonal_of_hasOrthogonalProjection (K := f.fixedPoints)
+  rw [eq_top_iff] at *
+  grw [f.fixedPoints_orthogonal_le_topologicalClosure_coboundary hf] at h
+  assumption
+
+theorem ContinuousLinearMap.topologicalClosure_fixedPoints_sup_coboundary_eq_top
+    (f : E →L[𝕜] E) (hf : ‖f‖ ≤ 1) : (f.fixedPoints ⊔ f.coboundaries).topologicalClosure = ⊤ := by
+  rw [eq_top_iff]
+  apply (f.fixedPoints_sup_topologicalClosure_coboundary_eq_top hf).ge.trans
+  exact ClosureOperator.sup_closure_le ..
+
 set_option backward.isDefEq.respectTransparency false in
 /-- **Von Neumann Mean Ergodic Theorem** for an operator in a Hilbert space.
 For a contracting continuous linear self-map `f : E →L[𝕜] E` of a Hilbert space, `‖f‖ ≤ 1`,
@@ -88,21 +145,13 @@ birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`. -/
 theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
     (hf : ‖f‖ ≤ 1) (x : E) :
-    Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
-      (𝓝 <| (f.eqLocus (1 : E →L[𝕜] E)).orthogonalProjectionOnto x) := by
+    Tendsto (birkhoffAverage 𝕜 f id · x) atTop
+      (𝓝 <| f.fixedPoints.orthogonalProjectionOnto x) := by
   /- Due to the previous theorem, it suffices to verify
   that the range of `f - 1` is dense in the orthogonal complement
   to the submodule of fixed points of `f`. -/
   apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure (f.lipschitz.weaken hf)
-  · exact (f.eqLocus (1 : E →L[𝕜] E)).orthogonalProjectionOnto_mem_subspace_eq_self
+  · exact f.fixedPoints.orthogonalProjectionOnto_mem_subspace_eq_self
   · clear x
-    /- In other words, we need to verify that any vector that is orthogonal to the range of `f - 1`
-    is a fixed point of `f`. -/
-    rw [Submodule.ker_orthogonalProjectionOnto, ← Submodule.topologicalClosure_coe,
-      SetLike.coe_subset_coe, ← Submodule.orthogonal_orthogonal_eq_closure]
-    /- To verify this, we verify `‖f x‖ ≤ ‖x‖` (because `‖f‖ ≤ 1`) and `⟪f x, x⟫ = ‖x‖²`. -/
-    refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_
-    · simpa using f.le_of_opNorm_le hf x
-    · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
-        simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
-      simp [this]
+    rw [Submodule.ker_orthogonalProjectionOnto]
+    exact f.fixedPoints_orthogonal_le_topologicalClosure_coboundary hf

@@ -251,9 +251,13 @@ protected theorem lipschitz : LipschitzWith 1 f :=
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
   f.isometry.antilipschitz
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous : Continuous f :=
   f.isometry.continuous
+
+@[continuity, fun_prop]
+protected theorem continuous_toLinearMap : Continuous f.toLinearMap :=
+  f.continuous
 
 @[simp]
 theorem preimage_ball (x : E) (r : ℝ) : f ⁻¹' Metric.ball (f x) r = Metric.ball x r :=

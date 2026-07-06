@@ -671,10 +671,12 @@ itself a subgroup. -/
 @[to_additive
   /-- The (topological-space) closure of an additive subgroup of an additive topological group is
   itself an additive subgroup. -/]
-def Subgroup.topologicalClosure (s : Subgroup G) : Subgroup G :=
-  { s.toSubmonoid.topologicalClosure with
+def Subgroup.topologicalClosure : ClosureOperator (Subgroup G) := .mk₂
+  (fun s ↦ { s.toSubmonoid.topologicalClosure with
     carrier := _root_.closure (s : Set G)
-    inv_mem' := fun {g} hg => by simpa only [← Set.mem_inv, inv_closure, inv_coe_set] using hg }
+    inv_mem' := fun {g} hg => by simpa only [← Set.mem_inv, inv_closure, inv_coe_set] using hg })
+  (fun _ ↦ _root_.subset_closure)
+  (fun _ _ h ↦ closure_minimal h isClosed_closure)
 
 @[to_additive (attr := simp)]
 theorem Subgroup.topologicalClosure_coe {s : Subgroup G} :
