@@ -436,10 +436,6 @@ theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ �
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
-#synth ContinuousConstSMul ℕ M₂
-#synth ContinuousConstSMul ℕ+ M₂
-#synth SMul ℕ+ (M₁ →SL[σ₁₂] M₂)
-#synth IsSMulApply ℕ+ (M₁ →SL[σ₁₂] M₂) M₁ M₂
 instance instPSMul : SMul ℕ+ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
 
