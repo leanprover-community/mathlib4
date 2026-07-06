@@ -683,9 +683,7 @@ theorem linMulLin_comp (f g : M →ₗ[R] A) (h : N' →ₗ[R] M) :
 variable {n : Type*}
 
 /-- `sq` is the quadratic map sending the vector `x : A` to `x * x` -/
-@[simps!]
-def sq : QuadraticMap R A A :=
-  linMulLin LinearMap.id LinearMap.id
+@[simps!] def sq : QuadraticMap R A A := linMulLin LinearMap.id LinearMap.id
 
 /-- `proj i j` is the quadratic map sending the vector `x : n → R` to `x i * x j` -/
 def proj (i j : n) : QuadraticMap R (n → A) A :=
@@ -899,8 +897,7 @@ end
 
 section AssociatedHom
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
-variable [AddCommGroup N] [Module R N]
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
 
 -- the requirement that multiplication by `2` is invertible on the target module `N`
