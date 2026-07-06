@@ -981,18 +981,15 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
         rw [tsum_primes_eq (fun p ↦ Λ p / (p ^ s * log p))]
         congr! 2 with n
         split_ifs with h
-        · have := h.log_pos
-          have := h.pos
-          simp [vonMangoldt_apply_prime, h]
-          field_simp; rw [← rpow_add (mod_cast this)]; simp
+        · simp [vonMangoldt_apply_prime, h]
+          field_simp (disch := positivity); rw [← rpow_add (by positivity)]; simp
         · simp [h]
       have :  ∑' (p : Primes) (k : ℕ),
           Λ (p ^ (k + 2)) / ((p ^ (k + 2) : ℕ) ^ s * log (p ^ (k + 2) : ℕ))
           = ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2 : ℝ) * s)) := by
         congr! 4 with p k
         simp [ArithmeticFunction.vonMangoldt, p.property.isPrimePow.pow, p.property.pow_minFac]
-        have := p.property.log_pos
-        field_simp
+        field_simp (disch := positivity)
         rw [rpow_mul (by positivity)]
         norm_cast
       linarith
@@ -1146,8 +1143,7 @@ private lemma Weight.prime_sum_inv_log_mul_eq :
   simp only [Weight.prime_apply, mul_ite, mul_zero, primesLE_eq_filter_Ioc_zero, one_div,
     sum_filter]
   congr! 2 with p h hp
-  have := hp.log_pos
-  field_simp
+  field_simp (disch := positivity)
 
 theorem sum_vonMangoldt_div_mul_log_sub_sub_bound (hx : 2 ≤ x) :
     |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant| ≤
