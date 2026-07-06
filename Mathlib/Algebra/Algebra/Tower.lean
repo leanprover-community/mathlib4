@@ -247,7 +247,7 @@ theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R 
     (f.restrictScalars R).toLinearEquiv = f.toLinearEquiv.restrictScalars R := rfl
 
 @[simp]
-theorem toMulEquiv_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
+theorem toRingEquiv_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
 
 @[simp]
 theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
@@ -262,7 +262,7 @@ lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
     (f.restrictScalars R).symm x = f.symm x := rfl
 
 @[simp]
-lemma toMulEquiv_restrictScalars_symm (f : A ≃ₐ[S] B) :
+lemma toRingEquiv_restrictScalars_symm (f : A ≃ₐ[S] B) :
     ((f.restrictScalars R).symm : B ≃+* A) = f.symm := rfl
 
 @[simp]
