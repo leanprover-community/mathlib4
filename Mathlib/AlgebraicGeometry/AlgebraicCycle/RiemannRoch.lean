@@ -91,8 +91,6 @@ theorem riemann_roch {N : ℕ}
     (hD : D.support ⊆ {x | coheight x = 1}) [Order.KrullDimLE 1 X] : D.sheaf.eulerChar k =
     D.degree k + (0 : AlgebraicCycle X ℤ).sheaf.eulerChar k := by
   classical
-  -- On a curve (`KrullDimLE 1`), codimension-one points are minimal in the specialization
-  -- preorder, hence closed: minimality upgrades to equality since schemes are `T0`.
   have hX : ∀ x : X, coheight x = 1 → ∀ y, y ≤ x → y = x := fun x hx y hy =>
     have hmin : IsMin x :=
       Order.KrullDimLE.isMin_of_le_coheight (n := 1) (by simpa using hx.ge)
