@@ -15,12 +15,8 @@ In this file we define the following exact sequence on a curve:
 at `P` for some closed point `P`.
 
 Notes: the way this is constructed is mildly idiosyncratic, mainly for the purposes of avoiding
-tensor products of sheaves of modules like the plague. Nevertheless, this has some "practical"
-implications. Namely, nowhere do we ever assume here that the variety we're working on is a curve,
-which means regular in codimension one does not necessarily imply regular. In particular we do not
-assume that `𝒪ₓ(D)` is invertible, and so we cannot assume tensoring by `𝒪ₓ(D)` is exact.
-So, technically speaking this is a more general exact sequence than the one constructed
-in, say, Hartshorne by tensoring the closed subscheme exact sequence with `𝒪ₓ(D)`.
+tensor products of sheaves of modules like the plague. This should probably be refactored in terms
+of tensor products of sheaves of modules once these are in a slightly more mature state.
 -/
 universe u
 
@@ -31,7 +27,7 @@ open AlgebraicGeometry AlgebraicCycle Sheaf Opposite Order CategoryTheory
 variable {X : Scheme.{u}} [IsIntegral X] [IsLocallyNoetherian X]
 variable (p : X)
 
-namespace AlgebraicCycle
+namespace AlgebraicGeometry.AlgebraicCycle
 namespace Sheaf
 
 open Function.locallyFinsuppWithin
@@ -39,7 +35,8 @@ open Classical in
 /--
 A cycle supported at a single point with a positive coefficient is effective.
 -/
-lemma _root_.AlgebraicCycle.single_effective (x : X) (c : ℤ) (hc : c ≥ 0) : single x c ≥ 0 := by
+lemma _root_.AlgebraicGeometry.AlgebraicCycle.single_effective (x : X) (c : ℤ) (hc : c ≥ 0) :
+    single x c ≥ 0 := by
   intro z
   simp [single_apply]
   by_cases o : x = z
@@ -48,57 +45,66 @@ lemma _root_.AlgebraicCycle.single_effective (x : X) (c : ℤ) (hc : c ≥ 0) : 
 
 variable (D : AlgebraicCycle X ℤ) [IsRegularInCodimensionOne X]
 
-noncomputable
-def toSkyscraperFun {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
+/--
+The map from `f : Γ(𝒪ₓ(D), U)` to the residue field at `p` for `p ∈ U` defined to be the residue
+of the image of the germ of `f` at `p` under the map of stalks `Oₓ(D)ₚ -> Oₓ,ₚ`.
+-/
+noncomputable def toSkyscraperFun {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U) :
     letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
     (D.sheaf).val.obj (op U) →ₗ[Γ(X, U)] ↑(X.residueField p) :=
-  let f1 := germModuleHom (D.sheaf) U p hp'
-  let _ : Module ↑Γ(X, U) ↑(X.presheaf.stalk p) := (X.presheaf.germ U p hp').hom.toModule
-  let _ : Module ↑(X.presheaf.stalk p) ↑(X.residueField p) := (X.residue p).hom.toModule
+  letI := l (D.sheaf) U p hp'
+  letI : Module ↑Γ(X, U) ↑(X.presheaf.stalk p) := (X.presheaf.germ U p hp').hom.toModule
+  letI : Module ↑(X.presheaf.stalk p) ↑(X.residueField p) := (X.residue p).hom.toModule
   letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
-  have : IsScalarTower Γ(X, U) ↑(X.presheaf.stalk p) ↑(X.residueField p) := by
-    constructor
-    intro r s t
-    change (X.residue p).hom ((X.presheaf.germ U p hp').hom r * s) * t =
-      (X.evaluation U p hp').hom r * ((X.residue p).hom s * t)
-    rw [map_mul, mul_assoc]
-    rfl
-  let : Module ↑Γ(X, U) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p) := l (D.sheaf) U p hp'
-  -- The action of `Γ(X, U)` on the stalk of `𝒪ₓ(D)` (given by `l`, via the `RingCat`-valued
-  -- germ) agrees with acting by the germ in `X.presheaf.stalk p`.
-  have key : ∀ (r : ↑Γ(X, U)) (m : ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p)),
-      r • m = (X.presheaf.germ U p hp' r : ↑(X.presheaf.stalk p)) • m := by
-    intro r m
-    obtain ⟨W, hpW, m', rfl⟩ := TopCat.Presheaf.exists_germ_eq D.sheaf.val.presheaf m
-    have hpΩ : p ∈ U ⊓ W := ⟨hp', hpW⟩
-    change TopCat.Presheaf.germ X.ringCatSheaf.presheaf U p hp' r •
-      TopCat.Presheaf.germ D.sheaf.val.presheaf W p hpW m' = _
-    rw [← TopCat.Presheaf.germ_res_apply D.sheaf.val.presheaf
-        (homOfLE (inf_le_right : U ⊓ W ≤ W)) p hpΩ m',
-      ← TopCat.Presheaf.germ_res_apply X.ringCatSheaf.presheaf
-        (homOfLE (inf_le_left : U ⊓ W ≤ U)) p hpΩ r,
-      ← TopCat.Presheaf.germ_res_apply X.presheaf
-        (homOfLE (inf_le_left : U ⊓ W ≤ U)) p hpΩ r,
-      ← PresheafOfModules.germ_ringCat_smul (M := D.sheaf.val) p (U ⊓ W) hpΩ]
-    exact PresheafOfModules.germ_smul (R := X.presheaf) (M := D.sheaf.val) p (U ⊓ W) hpΩ _ _
-  have : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk p)
-    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p) := by
-    constructor
-    intro r s m
-    rw [key r (s • m)]
-    change ((X.presheaf.germ U p hp' r : ↑(X.presheaf.stalk p)) * s) • m = _
-    rw [mul_smul]
-  have : LinearMap.CompatibleSMul ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p)
-    ↑(X.presheaf.stalk p) ↑Γ(X, U)
-    ↑(X.presheaf.stalk p) := by
-    constructor
-    intro f r m
-    rw [key r m, map_smul]
-    rfl
-  let f2 := (stalkEquiv D hD p hp ϖ hϖ).restrictScalars Γ(X, U)
-  let f3 := (Module.compHom.toLinearMap (X.residue p).hom).restrictScalars Γ(X, U)
-  f3 ∘ₗ f2 ∘ₗ f1
+  haveI := isScalarTower_evaluation p hp'
+  haveI := isScalarTower_l (D.sheaf) U p hp'
+  haveI := compatibleSMul_l (D.sheaf) U p hp'
+  (Module.compHom.toLinearMap (X.residue p).hom).restrictScalars Γ(X, U) ∘ₗ
+    (stalkEquiv D hD p hp ϖ hϖ).restrictScalars Γ(X, U) ∘ₗ germModuleHom (D.sheaf) U p hp'
+
+/--
+The function-field realization of the stalk element of a section `s` of `𝒪ₓ(D)` over `U ∋ p`
+is `ϖ ^ D p * s`.
+-/
+lemma algebraMap_stalkEquiv_germModuleHom {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
+    (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U)
+    (s : Γ(D.sheaf, U)) :
+    algebraMap (X.presheaf.stalk p) X.functionField
+      (stalkEquiv D hD p hp ϖ hϖ (germModuleHom D.sheaf U p hp' s)) =
+      (algebraMap (X.presheaf.stalk p) X.functionField ϖ) ^ (D p) * s.1 := by
+  rw [algebraMap_stalkEquiv_apply]
+  exact congrArg _ (stalkToFunctionField_germ D p U hp' s)
+
+/--
+The stalk element of a section `s` of `𝒪ₓ(D)` vanishes iff `s` is the zero function.
+-/
+lemma stalkEquiv_germModuleHom_eq_zero_iff {U : X.Opens}
+    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ)
+    (hp : coheight p = 1) (hp' : p ∈ U) (s : Γ(D.sheaf, U)) :
+    stalkEquiv D hD p hp ϖ hϖ (germModuleHom D.sheaf U p hp' s) = 0 ↔
+      (s.1 : X.functionField) = 0 := by
+  have hϖK : algebraMap (X.presheaf.stalk p) X.functionField ϖ ≠ 0 :=
+    (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)).mpr hϖ.ne_zero
+  rw [← map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective (X.presheaf.stalk p)
+      X.functionField),
+    algebraMap_stalkEquiv_germModuleHom p D hD ϖ hϖ hp hp' s, mul_eq_zero]
+  simp [zpow_ne_zero _ hϖK]
+
+/--
+The order of vanishing at `p` of the stalk element of a nonzero section `s` of `𝒪ₓ(D)` is
+`D p + ord s p`.
+-/
+lemma ord_stalkEquiv_germModuleHom {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
+    (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U)
+    (s : Γ(D.sheaf, U)) (hs : (s.1 : X.functionField) ≠ 0) :
+    X.ord (algebraMap (X.presheaf.stalk p) X.functionField
+      (stalkEquiv D hD p hp ϖ hϖ (germModuleHom D.sheaf U p hp' s))) p =
+      D p + X.ord s.1 p := by
+  have hϖK : algebraMap (X.presheaf.stalk p) X.functionField ϖ ≠ 0 :=
+    (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)).mpr hϖ.ne_zero
+  rw [algebraMap_stalkEquiv_germModuleHom p D hD ϖ hϖ hp hp' s,
+    X.ord_mul hp (zpow_ne_zero _ hϖK) hs, ord_zpow_algebraMap_irreducible hp hϖ]
 
 open Classical in
 lemma toSkyscraperFun_ker {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
@@ -110,70 +116,21 @@ lemma toSkyscraperFun_ker {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1}
     IsRegularInCodimensionOne.stalk_dvr p hp
   ext s
   simp only [Submodule.mem_carrier, SetLike.mem_coe, LinearMap.mem_ker]
-  set a := stalkEquiv D hD p hp ϖ hϖ (germModuleHom D.sheaf U p hp' s) with ha_def
-  -- The function field realization of the stalk element associated to `s` is `ϖ ^ D p * s`.
-  have hspec : algebraMap (X.presheaf.stalk p) X.functionField a =
-      (algebraMap (X.presheaf.stalk p) X.functionField ϖ) ^ (D p) * s.1 := by
-    rw [ha_def, algebraMap_stalkEquiv_apply]
-    congr 1
-    exact stalkToFunctionField_germ D p U hp' s
-  -- Kernel membership is membership of the stalk element in the maximal ideal.
-  have hker : toSkyscraperFun p D hD ϖ hϖ hp hp' s = 0 ↔
-      a ∈ IsLocalRing.maximalIdeal (X.presheaf.stalk p) :=
-    IsLocalRing.residue_eq_zero_iff a
-  rw [hker]
+  -- Membership in the kernel of the residue map is membership in the maximal ideal.
+  rw [show (toSkyscraperFun p D hD ϖ hϖ hp hp' s = 0) ↔
+      stalkEquiv D hD p hp ϖ hϖ (germModuleHom D.sheaf U p hp' s) ∈
+        IsLocalRing.maximalIdeal (X.presheaf.stalk p) from IsLocalRing.residue_eq_zero_iff _]
   by_cases hs : (s.1 : X.functionField) = 0
   · -- Both sides hold for the zero section.
-    constructor
-    · intro _ hne
-      exact absurd hs hne
-    · intro _
-      have ha0 : a = 0 := by
-        have h0 := hspec
-        rw [hs, mul_zero] at h0
-        exact (map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)).mp h0
-      rw [ha0]
-      exact zero_mem _
-  · -- The interesting case: compare orders of vanishing at `p`.
-    have hϖK : algebraMap (X.presheaf.stalk p) X.functionField ϖ ≠ 0 := by
-      rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
-      exact hϖ.ne_zero
-    have hKa : algebraMap (X.presheaf.stalk p) X.functionField a ≠ 0 := by
-      rw [hspec]
-      exact mul_ne_zero (zpow_ne_zero _ hϖK) hs
-    have hane : a ≠ 0 := fun h => hKa (by rw [h, map_zero])
-    have hord : X.ord (algebraMap (X.presheaf.stalk p) X.functionField a) p =
-        D p + X.ord s.1 p := by
-      rw [hspec, X.ord_mul hp (zpow_ne_zero _ hϖK) hs, ord_zpow_algebraMap_irreducible hp hϖ]
-    rw [mem_maximalIdeal_iff_one_le_ord hp hane, hord]
-    constructor
-    · -- The order bound at `p` gives the section condition for `D - single p 1`.
-      intro hle hne
-      refine ⟨⟨⟨p, hp'⟩⟩, ?_⟩
-      intro z
-      simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply,
-        Function.locallyFinsuppWithin.coe_add, Pi.add_apply, restrict_apply]
-      split_ifs with hzU
-      · simp only [Function.locallyFinsuppWithin.coe_sub, Pi.sub_apply, single_apply,
-          div_eq_ord]
-        by_cases hzp : z = p
-        · subst hzp
-          omega
-        · simp only [if_neg hzp, sub_zero]
-          have h2 := (s.2 hne).2 z
-          simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply,
-            Function.locallyFinsuppWithin.coe_add, Pi.add_apply, restrict_apply, if_pos hzU,
-            div_eq_ord] at h2
-          omega
-      · simp
-    · -- Conversely, evaluate the section condition at `p`.
-      intro hcar
-      have h2 := (hcar hs).2 p
-      simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply,
-        Function.locallyFinsuppWithin.coe_add, Pi.add_apply, restrict_eq_of_mem _ _ _ hp',
-        Function.locallyFinsuppWithin.coe_sub, Pi.sub_apply, single_apply, if_true,
-        div_eq_ord] at h2
-      omega
+    refine iff_of_true ?_ fun hne => absurd hs hne
+    rw [(stalkEquiv_germModuleHom_eq_zero_iff p D hD ϖ hϖ hp hp' s).mpr hs]
+    exact zero_mem _
+  · -- For nonzero `s`, `ord (stalkEquiv (germ s)) p = D p + ord s p`, so kernel membership is
+    -- the extra order bound at `p` cutting `Γ(𝒪ₓ(D - p), U)` out of `Γ(𝒪ₓ(D), U)`.
+    rw [mem_maximalIdeal_iff_one_le_ord hp
+        ((stalkEquiv_germModuleHom_eq_zero_iff p D hD ϖ hϖ hp hp' s).not.mpr hs),
+      ord_stalkEquiv_germModuleHom p D hD ϖ hϖ hp hp' s hs]
+    exact (mem_carrier_sub_single_iff hp' hs s.2).symm
 
 open Classical in
 /--
@@ -793,4 +750,4 @@ lemma twistedClosedSubschemeComplex₂_shortExact
   exact twistedClosedSubschemeComplex_shortExact p D' hsupp ϖ hϖ hp pClosed
 
 end Sheaf
-end AlgebraicCycle
+end AlgebraicGeometry.AlgebraicCycle

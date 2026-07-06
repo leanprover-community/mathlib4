@@ -69,7 +69,7 @@ lemma IsRegularInCodimensionOne.stalk_dvr {X : Scheme.{u}} [h : IsRegularInCodim
   have := IsIntegralInCodimensionOne.stalk_domain x hx
   IsDiscreteValuationRing (X.presheaf.stalk x) := h.dvr x hx
 
-namespace AlgebraicCycle
+namespace AlgebraicGeometry.AlgebraicCycle
 namespace Sheaf
 
 /--
@@ -80,12 +80,62 @@ def carrier (D : AlgebraicCycle X ℤ) (U : X.Opens) : Set X.functionField :=
     {s : (X.functionField) | (h : s ≠ 0) → Nonempty U ∧ (div s).restrict U + D.restrict U ≥ 0}
 
 /--
+Membership in `Γ(𝒪ₓ(D), U)`, pointwise: a nonzero rational function `f` is a section of
+`𝒪ₓ(D)` over (nonempty) `U` iff `0 ≤ ord f z + D z` for every `z ∈ U`.
+-/
+lemma mem_carrier_iff {D : AlgebraicCycle X ℤ} {U : X.Opens} {f : X.functionField} :
+    f ∈ carrier D U ↔ ((h : f ≠ 0) → Nonempty U ∧ ∀ z ∈ U, 0 ≤ X.ord f z + D z) := by
+  simp only [carrier, ge_iff_le, Set.mem_setOf_eq]
+  refine forall_congr' fun hf => and_congr_right fun _ => ⟨fun h z hz => ?_, fun h => ?_⟩
+  · have h2 := h z
+    simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply,
+      Function.locallyFinsuppWithin.coe_add, Pi.add_apply,
+      AlgebraicGeometry.AlgebraicCycle.restrict_apply, div_eq_ord] at h2
+    split_ifs at h2 with hzU
+    · exact h2
+    · exact absurd hz hzU
+  · intro z
+    simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply,
+      Function.locallyFinsuppWithin.coe_add, Pi.add_apply,
+      AlgebraicGeometry.AlgebraicCycle.restrict_apply, div_eq_ord]
+    split_ifs with hz
+    · exact h z hz
+    · exact le_rfl
+
+open Classical in
+/--
+For a nonzero section `f` of `𝒪ₓ(D)` over `U ∋ p`, being a section of `𝒪ₓ(D - p)` is the
+single additional order bound `1 ≤ D p + ord f p` at `p`: away from `p` the section
+conditions for `D - single p 1` and `D` agree.
+-/
+lemma mem_carrier_sub_single_iff {D : AlgebraicCycle X ℤ} {U : X.Opens} {p : X} (hp' : p ∈ U)
+    {f : X.functionField} (hf : f ≠ 0) (hfD : f ∈ carrier D U) :
+    f ∈ carrier (D - single p 1) U ↔ 1 ≤ D p + X.ord f p := by
+  rw [mem_carrier_iff]
+  constructor
+  · intro h
+    have h2 := (h hf).2 p hp'
+    simp only [Function.locallyFinsuppWithin.coe_sub, Pi.sub_apply,
+      Function.locallyFinsuppWithin.single_apply, if_true] at h2
+    omega
+  · intro hle hne
+    refine ⟨⟨⟨p, hp'⟩⟩, fun z hz => ?_⟩
+    have h2 := (mem_carrier_iff.mp hfD hf).2 z hz
+    simp only [Function.locallyFinsuppWithin.coe_sub, Pi.sub_apply,
+      Function.locallyFinsuppWithin.single_apply]
+    rcases eq_or_ne z p with rfl | hzp
+    · simp only [if_true]
+      omega
+    · simp only [if_neg hzp, sub_zero]
+      omega
+
+/--
 The sum of two sections in `Γ(𝒪ₓ(D), U)` is another section of `Γ(𝒪ₓ(D), U)` on a scheme which is
 regular in codimension one. Note that we are using regulariy in codimension one in a fairly
 essential way here. One should note that this is the key point where regularity in codimension one
 is used in the construction of `𝒪ₓ(D)`.
 -/
-def add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Opens)
+lemma add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Opens)
     {a b : ↑X.functionField}
     (ha : a ∈ carrier D U) (hb : b ∈ carrier D U) : a + b ∈ carrier D U := by
     by_cases hU : Nonempty U
@@ -117,19 +167,19 @@ def add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Ope
 /--
 Zero is an element of `Γ(𝒪ₓ(D), U)` by definition
 -/
-def zero_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) : 0 ∈ carrier D U := by
+lemma zero_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) : 0 ∈ carrier D U := by
   simp [carrier]
 
 /--
 `Γ(𝒪ₓ(D), U)` is closed under negatives.
 -/
-def neg_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) {f : X.functionField} (hf : f ∈ carrier D U) :
+lemma neg_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) {f : X.functionField} (hf : f ∈ carrier D U) :
     (- f) ∈ carrier D U := by simp_all [carrier]
 
 /--
 On a nonempty set `U`, `Γ(𝒪ₓ(D), U)` is closed scalar multiplication by elements of `Γ(X, U)`.
 -/
-def smul_mem_nonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U))
+lemma smul_mem_nonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U))
     {f : X.functionField} (hf : f ∈ carrier D U) : a • f ∈ carrier D U := by
     simp_all only [carrier, true_and]
     intro nez z
@@ -144,7 +194,7 @@ def smul_mem_nonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a :
       · exact hf
       · exact
         (Int.add_le_add_iff_right
-              ((locallyFinsuppWithin.restrict D (of_eq_true (Set.subset_univ._simp_1 ↑U))) z)).mpr
+              ((locallyFinsuppWithin.restrict D (Set.subset_univ ↑U)) z)).mpr
           this
     by_cases hz : coheight z = 1
     · by_cases o : z ∈ U
@@ -329,6 +379,7 @@ omit [IsRegularInCodimensionOne X] in
 lemma mapFunApplyNonempty (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ U) [h : Nonempty V]
     (s : carrier D U) : (mapFun D r s).1 = s := by simp [mapFun, h]
 
+@[reducible]
 def algebra_restrict {U V : X.Opens} (k : V ≤ U) :
     Algebra Γ(X, U) Γ(X, V) := (X.presheaf.map (homOfLE k).op).hom.toAlgebra
 
@@ -399,8 +450,13 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
         exact Subsingleton.elim (h := instSubsingleTonOfEmpty hV) _ _
   }
 
+/-- The underlying function of `map D r` is `mapFun D` along the induced inclusion of opens. -/
+@[simp]
+lemma map_hom_apply (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (r : U ⟶ V)
+    (s : ToType (obj D U)) : (map D r).hom s = mapFun D (leOfHom r.unop) s := rfl
+
 set_option backward.isDefEq.respectTransparency false in
-def map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
+theorem map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
     map D (𝟙 U) = (ModuleCat.restrictScalarsId' (RingCat.Hom.hom (X.ringCatSheaf.obj.map (𝟙 U)))
     (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_id U))).inv.app (obj D U) := by
   by_cases h : Nonempty U.unop
@@ -416,7 +472,7 @@ def map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) 
     exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
 
 set_option backward.isDefEq.respectTransparency false in
-def map_comp (D : AlgebraicCycle X ℤ)
+theorem map_comp (D : AlgebraicCycle X ℤ)
   {U V W : (TopologicalSpace.Opens ↥X)ᵒᵖ} (f : U ⟶ V) (g : V ⟶ W) :
   map D (f ≫ g) = map D f ≫
     (ModuleCat.restrictScalars (RingCat.Hom.hom (X.ringCatSheaf.obj.map f))).map (map D g) ≫
@@ -433,16 +489,13 @@ def map_comp (D : AlgebraicCycle X ℤ)
       (Opens.nonempty_iff (unop V)).mpr <| Exists.imp (leOfHom g.unop) (nonempty_subtype.mp h)
     apply Subtype.ext
     simp only [mapFunApplyNonempty, op_unop]
-    /-
-    TODO: Make into a (sane) simp lemma
-    -/
-    change x.1 = (mapFun D (map._proof_1 g) (mapFun D (map._proof_1 f) x))
+    change x.1 = (mapFun D (leOfHom g.unop) (mapFun D (leOfHom f.unop) x))
     simp
   · exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
 
 open Classical in
 noncomputable
-def _root_.AlgebraicCycle.presheaf (D : AlgebraicCycle X ℤ) :
+def _root_.AlgebraicGeometry.AlgebraicCycle.presheaf (D : AlgebraicCycle X ℤ) :
     PresheafOfModules X.ringCatSheaf.obj where
   obj := obj D
   map := map D
@@ -459,13 +512,6 @@ lemma presheaf.map_eq (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens 
     (r : U ⟶ V) : (presheaf D).map r = map D r := rfl
 
 /--
-Given a family of sets indexed by `I`, `i` and `j` are `ConnectedByCover` if there is a series of
-indices `i = i₀, i_1, ..., iₙ = j` such that `iₖ ∩ iₗ` is nonempty for `l = k + 1`.
--/
-def ConnectedByCover {I : Type*} (𝒰 : I → X.Opens) :
-  Rel I I := Relation.TransGen <| fun a b ↦ Nonempty (𝒰 a ⊓ 𝒰 b : X.Opens)
-
-/--
 If sections `s : Γ(𝒪ₓ(D), U)` and `s' : Γ(𝒪ₓ(D), V)` are equal on `U ∩ V` and `U ∩ V` is nonempty,
 then `s` and `s'` have the same underlying rational function.
 -/
@@ -473,62 +519,27 @@ lemma sections_equal_of_nonempty_intersection {D : AlgebraicCycle X ℤ} {I : Ty
     {𝒰 : I → X.Opens} {i j : I} (h : Nonempty (𝒰 i ⊓ 𝒰 j : X.Opens))
     (s : (i : I) → ToType ((presheaf D).presheaf.obj (op (𝒰 i))))
     (hs : TopCat.Presheaf.IsCompatible (presheaf D).presheaf 𝒰 s) : (s i).1 = (s j).1 := by
-  specialize hs i j
+  haveI : Nonempty ↥(𝒰 i ⊓ 𝒰 j) := h
+  have hs := hs i j
   dsimp [presheaf, PresheafOfModules.presheaf, map] at hs
-  change mapFun D (map._proof_1 (TopologicalSpace.Opens.infLELeft (𝒰 i) (𝒰 j)).op) (s i) =
-    mapFun D (map._proof_1 (TopologicalSpace.Opens.infLERight (𝒰 i) (𝒰 j)).op) (s j) at hs
-  dsimp [mapFun] at hs
-  let f := (s i).1
-  let hf := (s i).2
-  have : s i = ⟨f, hf⟩ := rfl
-  rw [this] at hs
-  let g := (s j).1
-  let hg := (s j).2
-  have : s j = ⟨g, hg⟩ := rfl
-  rw [this] at hs
-  simpa [h] using hs
+  change mapFun D inf_le_left (s i) = mapFun D inf_le_right (s j) at hs
+  simpa using congrArg Subtype.val hs
 
-lemma sections_equal_of_connected_by_cover {D : AlgebraicCycle X ℤ} {I : Type*} {𝒰 : I → X.Opens}
-    {i j : I} (h : ConnectedByCover 𝒰 i j)
+/--
+Compatible sections over the members of a cover linked by a chain of pairwise-intersecting
+opens have the same underlying rational function.
+-/
+lemma sections_equal_of_transGen {D : AlgebraicCycle X ℤ} {I : Type*} {𝒰 : I → X.Opens}
+    {i j : I} (h : Relation.TransGen (fun a b => ((𝒰 a : Set X) ∩ 𝒰 b).Nonempty) i j)
     (s : (i : I) → ToType ((presheaf D).presheaf.obj (op (𝒰 i))))
     (hs : TopCat.Presheaf.IsCompatible (presheaf D).presheaf 𝒰 s) : (s i).1 = (s j).1 := by
   induction h with
-  | single h => exact sections_equal_of_nonempty_intersection h s hs
-  | tail _ step ih => rw [ih]; exact sections_equal_of_nonempty_intersection step s hs
-
+  | single h => exact sections_equal_of_nonempty_intersection (Set.nonempty_coe_sort.mpr h) s hs
+  | tail _ step ih =>
+    exact ih.trans
+      (sections_equal_of_nonempty_intersection (Set.nonempty_coe_sort.mpr step) s hs)
 
 open TopologicalSpace
-/--
-If a family of sets has a connected supremum, then between any two sets of the cover there is a
-sequence of sets in the cover which intersect nontrivially pairwise.
-
-TODO: Remove and replace with lemma that's now in mathlib (and do the same with
-all the other connectedByCover nonsense)
--/
-lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
-    (h𝒰 : _root_.IsConnected (iSup 𝒰).1) (i j : I) (hi : (𝒰 i).1.Nonempty)
-    (hj : (𝒰 j).1.Nonempty) : ConnectedByCover 𝒰 i j := by
-  by_contra hij
-  let S : Set I := {k | ConnectedByCover 𝒰 i k}
-  let U : X.Opens := ⨆ k ∈ S, 𝒰 k
-  let V : X.Opens := ⨆ k ∈ Sᶜ, 𝒰 k
-  have hsplit : iSup 𝒰 = U ⊔ V := iSup_split 𝒰 (· ∈ S)
-  have hi_S : i ∈ S :=
-    let ⟨x, hx⟩ := hi; Relation.TransGen.single ⟨x, hx, hx⟩
-  have hcover : (iSup 𝒰).1 ⊆ U.1 ∪ V.1 := by rw [hsplit]; exact subset_rfl
-  have mem_iSup_at {T : Set I} {k : I} (hk : k ∈ T) {x : X} (hx : x ∈ 𝒰 k) :
-      x ∈ (⨆ l ∈ T, 𝒰 l : X.Opens) := Opens.mem_iSup.mpr ⟨k, Opens.mem_iSup.mpr ⟨hk, hx⟩⟩
-  have hUne : ((iSup 𝒰).1 ∩ U.1).Nonempty :=
-    let ⟨x, hx⟩ := hi; ⟨x, Opens.mem_iSup.mpr ⟨i, hx⟩, mem_iSup_at hi_S hx⟩
-  have hVne : ((iSup 𝒰).1 ∩ V.1).Nonempty :=
-    let ⟨x, hx⟩ := hj; ⟨x, Opens.mem_iSup.mpr ⟨j, hx⟩, mem_iSup_at hij hx⟩
-  obtain ⟨x, -, hxU, hxV⟩ := h𝒰.isPreconnected U.1 V.1 U.2 V.2 hcover hUne hVne
-  have hxU' : x ∈ U := hxU
-  have hxV' : x ∈ V := hxV
-  simp only [U, V, Opens.mem_iSup] at hxU' hxV'
-  obtain ⟨k, hk, hxk⟩ := hxU'
-  obtain ⟨l, hl, hxl⟩ := hxV'
-  exact hl (hk.tail ⟨x, hxk, hxl⟩)
 
 open Presheaf
 /--
@@ -538,49 +549,40 @@ lemma isSheaf (D : AlgebraicCycle X ℤ) :
     TopCat.Presheaf.IsSheaf (presheaf D).presheaf := by
   rw [TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluingNontrivial]
   on_goal 2 =>
-    simp only [sheafCompose_obj_obj, presheaf, PresheafOfModules.presheaf_obj_coe, Functor.comp_obj,
-      CommRingCat.forgetToRingCat_obj, obj, carrier, ne_eq, Opens.coe_bot, Set.coe_setOf,
-      Opens.nonempty_iff, Set.not_nonempty_empty, ge_iff_le, false_and, imp_false, not_not]
+    -- Over `⊥` the only section is `0`.
+    simp only [presheaf, PresheafOfModules.presheaf_obj_coe, obj, carrier, ne_eq, Opens.coe_bot,
+      Set.coe_setOf, Opens.nonempty_iff, Set.not_nonempty_empty, ge_iff_le, false_and, imp_false,
+      not_not]
     infer_instance
   intro I hI 𝒰 h𝒰 s hs
   obtain ⟨i⟩ := hI
   have : Nonempty (iSup 𝒰 : TopologicalSpace.Opens X) := by aesop
+  -- All compatible sections share one underlying rational function: `X` is irreducible, so the
+  -- union of the cover is (pre)connected and any two nonempty members are linked by a chain of
+  -- pairwise-intersecting opens.
   have h_eq (j : I) : (s i).1 = (s j).1 := by
-    apply sections_equal_of_connected_by_cover _ s hs
-    apply connectedByCover_of_connected
-    · apply IsIrreducible.isConnected
-      have := irreducibleSpace_of_isIntegral ↑(iSup 𝒰)
-      exact isIrreducible_iff_irreducibleSpace.mpr this
-    · exact Set.nonempty_coe_sort.mp (h𝒰 i)
-    · exact Set.nonempty_coe_sort.mp (h𝒰 j)
-  let sec : carrier D (iSup 𝒰) := {
-    val := (s i).1
-    property := by
-      simp only [carrier, ne_eq, Opens.nonempty_iff, Opens.coe_iSup, Set.nonempty_iUnion, ge_iff_le,
-        Set.mem_setOf_eq]
-      intro hf
-      refine ⟨⟨i, Set.nonempty_coe_sort.mp (h𝒰 i)⟩, ?_⟩
-      rw [homogeneous_le_iff (t := ⋃ i, ↑(𝒰 i))]
-      · simp_all only [nonempty_subtype, sheafCompose_obj_obj, Opens.nonempty_iff, Opens.coe_iSup,
-        Set.nonempty_iUnion, Set.mem_iUnion, SetLike.mem_coe, locallyFinsuppWithin.coe_zero,
-        Pi.zero_apply, locallyFinsuppWithin.coe_add, Pi.add_apply, restrict_eq_of_mem,
-        forall_exists_index]
-        intro z j hz
-        simp_rw [h_eq j]
-        rw [h_eq j] at hf
-        have hsj := (s j).2
-        convert (hsj hf).2 z
-        simp_all
-      all_goals simp_all
-  }
+    refine sections_equal_of_transGen (IsPreconnected.transGen_of_iUnion ?_ (fun k => (𝒰 k).2)
+      i j (Set.nonempty_coe_sort.mp (h𝒰 i)) (Set.nonempty_coe_sort.mp (h𝒰 j))) s hs
+    have := irreducibleSpace_of_isIntegral ↑(iSup 𝒰)
+    simpa [Opens.coe_iSup] using
+      (isIrreducible_iff_irreducibleSpace.mpr this).isConnected.isPreconnected
+  -- The common function is a section over the union: the bound at `z ∈ iSup 𝒰` is the bound for
+  -- the section over any member `𝒰 j` containing `z`.
+  let sec : carrier D (iSup 𝒰) :=
+    ⟨(s i).1, mem_carrier_iff.mpr fun hf => by
+      obtain ⟨x⟩ := h𝒰 i
+      refine ⟨⟨⟨x.1, Opens.mem_iSup.mpr ⟨i, x.2⟩⟩⟩, fun z hz => ?_⟩
+      obtain ⟨j, hj⟩ := Opens.mem_iSup.mp hz
+      rw [h_eq j]
+      exact (mem_carrier_iff.mp (s j).2 (h_eq j ▸ hf)).2 z hj⟩
   refine ⟨sec, fun j ↦ ?_, fun s' h' ↦ ?_⟩
-  · change mapFun D (map._proof_1 (Opens.leSupr 𝒰 j).op) sec = s j
+  · change mapFun D (le_iSup 𝒰 j) sec = s j
     have : Nonempty ↑(𝒰 j) := h𝒰 j
     simp only [mapFun, this, sec]
     exact Subtype.ext (h_eq j)
   · simp only [sec]
     specialize h' i
-    change mapFun D (map._proof_1 (Opens.leSupr 𝒰 i).op) s' = s i at h'
+    change mapFun D (le_iSup 𝒰 i) s' = s i at h'
     simp_rw [← h']
     have : Nonempty (𝒰 i) := h𝒰 i
     obtain ⟨p, hp⟩ := s'
@@ -1023,4 +1025,4 @@ lemma mem_maximalIdeal_iff_one_le_ord [IsRegularInCodimensionOne X] {x : X}
   rw [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, hiff]
   omega
 
-end AlgebraicCycle
+end AlgebraicGeometry.AlgebraicCycle

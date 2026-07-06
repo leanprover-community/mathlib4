@@ -388,19 +388,9 @@ open Finset
 variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k))]
   (S : ShortComplex X.Modules)
 
-/-- `Hⁿ(F)`: the `n`-th cohomology of the underlying abelian sheaf `(SheafOfModules.toSheaf _).obj F`
-of the `𝒪_X`-module `F`, bundled as a `k`-vector space (an object of `ModuleCat`). Its carrier is
-exactly the cohomology type `((SheafOfModules.toSheaf _).obj F).H n`; the `ModuleCat` bundling is
-what carries the `k`-module structure (the bare cohomology type has no synthesizable `k`-action in
-this `k`-specialised context). The dimensions of these spaces define `eulerChar`. -/
-noncomputable abbrev AlgebraicGeometry.Scheme.Modules.H (F : X.Modules) (n : ℕ) :
-    ModuleCat (CommRingCat.of k) :=
-  lesH (CommRingCat.of k) F n
-
-/-- `dim_k Hⁿ(F)`, accessed through the bundled cohomology object `cohomology` (a `ModuleCat`, so its
-`k`-module structure is structural and finrank is well-behaved). -/
+/-- `dim_k Hⁿ(F)`. -/
 noncomputable def AlgebraicGeometry.Scheme.Modules.h (F : X.Modules) (n : ℕ) : ℕ :=
-  Module.finrank k (F.H k n)
+  Module.finrank k (F.H n)
 
 /-- The Euler characteristic of a sheaf of modules: `χ(F) = ∑ₙ (-1)ⁿ dim_k Hⁿ(F)`. Note that
 this is implemented using `finsum`, and so produces a junk value of `0` if this sum is not finite.
@@ -547,34 +537,44 @@ omit hS in
 `0 → X₁ → X₂ → X₃ → 0` of sheaves of modules over a field `k`, with finite-dimensional cohomology
 vanishing above some degree `N`, the Euler characteristics satisfy `χ(X₂) = χ(X₁) + χ(X₃)`.
 
-The hypotheses are phrased in terms of `S.Xᵢ.cohomology k n`, i.e. the cohomology `Hⁿ` of the
-underlying abelian sheaf bundled as a `k`-vector space: finite-dimensionality of each, and its
-vanishing (`IsZero`) above `N`.
+The hypotheses are phrased in terms of `S.Xᵢ.H n`, i.e. the cohomology `Hⁿ` of the underlying
+abelian sheaf (a `k`-module by functoriality): finite-dimensionality of each, and its vanishing
+(`Subsingleton`) above `N`.
 
 The proof splices the long exact cohomology sequence into one bounded exact `ℕ`-indexed cochain
 complex of `k`-vector spaces and applies the Euler–Poincaré formula. -/
 theorem eulerChar_additive (hSE : S.ShortExact)
-    (hf₁ : ∀ n, Module.Finite k (S.X₁.H k n))
-    (hf₂ : ∀ n, Module.Finite k (S.X₂.H k n))
-    (hf₃ : ∀ n, Module.Finite k (S.X₃.H k n))
-    (hb₁ : ∀ n, N < n → IsZero (S.X₁.H k n))
-    (hb₂ : ∀ n, N < n → IsZero (S.X₂.H k n))
-    (hb₃ : ∀ n, N < n → IsZero (S.X₃.H k n)) :
+    (hf₁ : ∀ n, Module.Finite k (S.X₁.H n))
+    (hf₂ : ∀ n, Module.Finite k (S.X₂.H n))
+    (hf₃ : ∀ n, Module.Finite k (S.X₃.H n))
+    (hb₁ : ∀ n, N < n → Subsingleton (S.X₁.H n))
+    (hb₂ : ∀ n, N < n → Subsingleton (S.X₂.H n))
+    (hb₃ : ∀ n, N < n → Subsingleton (S.X₃.H n)) :
     S.X₂.eulerChar k = S.X₁.eulerChar k + S.X₃.eulerChar k := by
   -- `toSheaf` is exact, so the short exact sequence of sheaves of modules maps to one of abelian
   -- sheaves, which is what the long exact cohomology sequence is built from.
   have hS : (S.map (Modules.toSheafAb X)).ShortExact := shortExact_map_toSheaf hSE
+  -- Repackage the vanishing as `IsZero` of the bundled cohomology (the `lesH` implementation).
+  have hz₁ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₁ n) := fun n hn =>
+    haveI : Subsingleton (lesH (CommRingCat.of k) S.X₁ n) := hb₁ n hn
+    ModuleCat.isZero_of_subsingleton _
+  have hz₂ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₂ n) := fun n hn =>
+    haveI : Subsingleton (lesH (CommRingCat.of k) S.X₂ n) := hb₂ n hn
+    ModuleCat.isZero_of_subsingleton _
+  have hz₃ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₃ n) := fun n hn =>
+    haveI : Subsingleton (lesH (CommRingCat.of k) S.X₃ n) := hb₃ n hn
+    ModuleCat.isZero_of_subsingleton _
   haveI : ∀ i, Module.Finite k ((lesComplex (CommRingCat.of k) S hS).X i) :=
     lesComplex_X_finite k S hS hf₁ hf₂ hf₃
   -- The dimensions vanish above `N`.
   have hbA : ∀ n, N < n → AlgebraicGeometry.Scheme.Modules.h k S.X₁ n = 0 := by
-    intro n hn; haveI := ModuleCat.subsingleton_of_isZero (hb₁ n hn)
+    intro n hn; haveI := hb₁ n hn
     exact Module.finrank_zero_of_subsingleton
   have hbB : ∀ n, N < n → AlgebraicGeometry.Scheme.Modules.h k S.X₂ n = 0 := by
-    intro n hn; haveI := ModuleCat.subsingleton_of_isZero (hb₂ n hn)
+    intro n hn; haveI := hb₂ n hn
     exact Module.finrank_zero_of_subsingleton
   have hbC : ∀ n, N < n → AlgebraicGeometry.Scheme.Modules.h k S.X₃ n = 0 := by
-    intro n hn; haveI := ModuleCat.subsingleton_of_isZero (hb₃ n hn)
+    intro n hn; haveI := hb₃ n hn
     exact Module.finrank_zero_of_subsingleton
   -- Euler–Poincaré: the alternating sum of dimensions equals the (vanishing) homology version.
   have hEP : (lesComplex (CommRingCat.of k) S hS).eulerChar = 0 := by
@@ -582,7 +582,7 @@ theorem eulerChar_additive (hSE : S.ShortExact)
       0 (3 * N + 2) (by omega) (fun i hi => absurd hi (Nat.not_lt_zero i)) ?_,
       lesComplex_homologyEulerChar_zero]
     intro i hi
-    exact lesXAux_isZero k S hb₁ hb₂ hb₃ i 0 (by omega)
+    exact lesXAux_isZero k S hz₁ hz₂ hz₃ i 0 (by omega)
   -- The bridge: the spliced Euler characteristic equals `χ(X₁) - χ(X₂) + χ(X₃)`.
   have heA := eulerChar_finsum_eq (AlgebraicGeometry.Scheme.Modules.h k S.X₁) hbA
   have heB := eulerChar_finsum_eq (AlgebraicGeometry.Scheme.Modules.h k S.X₂) hbB
@@ -590,7 +590,7 @@ theorem eulerChar_additive (hSE : S.ShortExact)
   have key : (lesComplex (CommRingCat.of k) S hS).eulerChar =
       S.X₁.eulerChar k - S.X₂.eulerChar k + S.X₃.eulerChar k := by
     rw [HomologicalComplex.eulerChar_eq_sum_finSet_of_finrankSupport_subset _ _
-      (finrankSupport_subset k S hS hb₁ hb₂ hb₃),
+      (finrankSupport_subset k S hS hz₁ hz₂ hz₃),
       Finset.sum_image (by
         intro x hx y hy hxy
         have hx3 : x.2 < 3 := Finset.mem_range.mp (Finset.mem_product.mp hx).2

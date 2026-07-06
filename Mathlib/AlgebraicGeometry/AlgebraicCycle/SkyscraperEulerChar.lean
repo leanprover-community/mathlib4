@@ -1,4 +1,5 @@
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.EulerCharAdditive
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.ExactSequence
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Skyscraper
 import Mathlib.Topology.Sheaves.Flasque
 
@@ -20,37 +21,10 @@ lemma smulEnd_hom_app_apply {Y : Scheme.{u}} {R : CommRingCat.{u}} [Y.Over (Spec
     (G : Y.Modules) (r : R) (U : (TopologicalSpace.Opens Y)ᵒᵖ) (y : Γ(G, U.unop)) :
     (smulEnd G r).hom.app U y = r • y := rfl
 
-/-- Flasqueness transports across an isomorphism of presheaves: the restriction maps of `G` factor
-through those of `F` by the (iso) components of `e`, hence stay epimorphisms. -/
-lemma TopCat.Presheaf.isFlasque_of_iso {C : Type*} [Category* C] {Y : TopCat}
-    {F G : TopCat.Presheaf C Y} (e : F ≅ G) [F.IsFlasque] : G.IsFlasque where
-  epi {U V} i := by
-    haveI : Epi (F.map i) := TopCat.Presheaf.IsFlasque.epi i
-    have key : G.map i = e.inv.app U ≫ F.map i ≫ e.hom.app V := by
-      rw [← Category.assoc, ← e.inv.naturality i, Category.assoc, Iso.inv_hom_id_app,
-        Category.comp_id]
-    rw [key]; infer_instance
-
-open Classical in
-/-- The underlying abelian sheaf of the skyscraper sheaf of modules is flasque: its underlying
-presheaf is isomorphic to the (flasque) abelian skyscraper sheaf at `p`. -/
-instance : TopCat.Sheaf.IsFlasque <|
-    (SheafOfModules.toSheaf _).obj
-    (skyscraperSheafOfModules p X.ringCatSheaf (X.residueField p)) := by
-  haveI : TopCat.Presheaf.IsFlasque
-      (skyscraperSheaf p (AddCommGrpCat.of (X.residueField p))).presheaf :=
-    isFlasque_skyscraperSheaf_of_hasZeroObject p (AddCommGrpCat.of (X.residueField p))
-  exact TopCat.Presheaf.isFlasque_of_iso
-    (skyscraperPresheafOfModulesPresheafIsoSkyscraper p X.ringCatSheaf (X.residueField p)).symm
-
 /-- Higher cohomology of the skyscraper sheaf vanishes, because it is flasque. -/
 lemma skyscraper_h {n : ℕ} (h : n > 0) :
     Scheme.Modules.h k (skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)) n = 0 := by
-  obtain ⟨m, rfl⟩ : ∃ m, n = m + 1 := ⟨n - 1, by omega⟩
-  have : Subsingleton (lesH (CommRingCat.of k)
-      (skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)) (m + 1)) :=
-    inferInstanceAs (Subsingleton (((SheafOfModules.toSheaf X.ringCatSheaf).obj
-      (skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p))).H (m + 1)))
+  haveI := subsingleton_H_skyscraper_of_pos p h
   exact Module.finrank_zero_of_subsingleton
 
 /-- The degree-zero cohomology of the skyscraper sheaf is its space of global sections, the residue
@@ -116,7 +90,6 @@ lemma skyscraper_h_zero :
   rw [Scheme.Modules.h]
   refine LinearEquiv.finrank_eq (AddEquiv.toLinearEquiv (e₀.trans c) (fun r x => ?_))
   -- `r • x` is by definition `H.map (smulEnd r) 0 x`.
-  --change c (e₀ (CategoryTheory.Sheaf.H.map (smulEnd (R := CommRingCat.of k) F r) 0 x)) = r • c (e₀ x)
   exact key r x
 
 /-- The Euler characteristic of the skyscraper sheaf at `p` equals the dimension of the residue
@@ -128,3 +101,39 @@ lemma eulerChar_skyscraper : Scheme.Modules.eulerChar k
     finsum_eq_single _ 0 (fun n hn => by simp [skyscraper_h k p (Nat.pos_of_ne_zero hn)])]
   simp only [pow_zero, one_mul]
   rw [skyscraper_h_zero]
+
+open AlgebraicGeometry.AlgebraicCycle AlgebraicGeometry.AlgebraicCycle.Sheaf Order
+  Function.locallyFinsuppWithin in
+/--
+Under the cohomological finiteness hypothesis `hf₁`, the cohomology of the skyscraper sheaf at a
+codimension-one point `p` is finite dimensional over `k`. In degree zero it is trapped between the
+finite-dimensional `H⁰(𝒪ₓ(p))` and `H¹(𝒪ₓ)` in the long exact sequence of
+`0 ⟶ 𝒪ₓ ⟶ 𝒪ₓ(p) ⟶ k(p) ⟶ 0`; in positive degrees it is subsingleton.
+-/
+lemma finite_H_skyscraper [IsIntegral X] [IsLocallyNoetherian X] [IsRegularInCodimensionOne X]
+    (hf₁ : ∀ (D : AlgebraicCycle X ℤ), ∀ n, Module.Finite k (D.sheaf.H n))
+    (hX : ∀ x : X, coheight x = 1 → ∀ y, y ≤ x → y = x)
+    {p : X} (hp : coheight p = 1) (n : ℕ) :
+    Module.Finite k (Scheme.Modules.H
+      (skyscraperSheafOfModules p X.ringCatSheaf (X.residueField p)) n) := by
+  classical
+  rcases n with _ | m
+  · haveI : IsDiscreteValuationRing (X.presheaf.stalk p) :=
+      IsRegularInCodimensionOne.stalk_dvr p hp
+    obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible (X.presheaf.stalk p)
+    let o := twistedClosedSubschemeComplex₂ (D := 0) (D' := single p 1) p
+      (by simp) ϖ hϖ hp (by simp)
+    have hS : (o.map (Modules.toSheafAb X)).ShortExact :=
+      shortExact_map_toSheaf (twistedClosedSubschemeComplex₂_shortExact _ _ _ _ _ _ (hX p hp))
+    -- Positions 1, 2, 3 of the spliced LES are `H⁰(𝒪ₓ(p)) →f H⁰(k(p)) →g H¹(𝒪ₓ)`; the outer
+    -- terms are Noetherian, so `isNoetherian_of_range_eq_ker` traps the middle.
+    have hex := dAux_exact (CommRingCat.of k) o hS 0 1
+    haveI : _root_.IsNoetherian k (lesXAux (CommRingCat.of k) o 0 1) :=
+      IsNoetherian.iff_fg.mpr (hf₁ (single p 1) 0)
+    haveI : _root_.IsNoetherian k (lesXAux (CommRingCat.of k) o 0 3) :=
+      IsNoetherian.iff_fg.mpr (hf₁ 0 1)
+    haveI : _root_.IsNoetherian k (lesXAux (CommRingCat.of k) o 0 2) :=
+      isNoetherian_of_range_eq_ker _ _ hex.moduleCat_range_eq_ker
+    exact IsNoetherian.iff_fg.mp ‹_›
+  · haveI := subsingleton_H_skyscraper p m
+    infer_instance

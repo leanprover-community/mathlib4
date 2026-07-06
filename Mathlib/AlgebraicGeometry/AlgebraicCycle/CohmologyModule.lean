@@ -138,3 +138,19 @@ noncomputable def smulEnd :
 noncomputable instance {n : ℕ} :
     Module R (((SheafOfModules.toSheaf _).obj F).H n) :=
   extModuleOfRingHom (smulEnd F) n
+
+/--
+The `k`-module structure on the sheaf cohomology of a scheme over `Spec (CommRingCat.of k)`,
+keyed to `k` itself. This is definitionally the instance above at `R := CommRingCat.of k`;
+restating it lets instance search find it for goals phrased directly over `k`, which cannot
+unify `k =?= ↥?R` on their own.
+-/
+noncomputable instance {k : Type u} [CommRing k] [X.Over (Spec (CommRingCat.of k))] {n : ℕ} :
+    Module k (((SheafOfModules.toSheaf _).obj F).H n) :=
+  extModuleOfRingHom (smulEnd (R := CommRingCat.of k) F) n
+
+/-- `Hⁿ(F)`: the `n`-th cohomology of the underlying abelian sheaf
+`(SheafOfModules.toSheaf _).obj F` of the `𝒪_X`-module `F`. For a scheme over `Spec R` this
+type carries an `R`-module structure by functoriality (the instances above). -/
+abbrev AlgebraicGeometry.Scheme.Modules.H (F : X.Modules) (n : ℕ) :=
+  ((SheafOfModules.toSheaf X.ringCatSheaf).obj F).H n

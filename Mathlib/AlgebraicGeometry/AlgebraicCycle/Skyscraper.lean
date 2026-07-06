@@ -3,6 +3,8 @@ import Mathlib.Topology.Sheaves.Skyscraper
 import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.CohmologyModule
+import Mathlib.Topology.Sheaves.Flasque
 
 open AlgebraicGeometry Opposite CategoryTheory Limits
 
@@ -318,3 +320,60 @@ lemma residueField_compHom_smul_eq {U : X.Opens} (hp' : p ∈ U)
     (X.evaluation U p hp').hom a * m
   rw [hpost]
   rfl
+
+/--
+The germ action of `Γ(X, U)` on the stalk at `p ∈ U` and the residue action of the stalk on the
+residue field form a scalar tower over the evaluation action of `Γ(X, U)` on the residue field,
+since `residue ∘ germ = evaluation`.
+-/
+lemma isScalarTower_evaluation {U : X.Opens} (hp' : p ∈ U) :
+    letI : Module ↑Γ(X, U) ↑(X.presheaf.stalk p) := (X.presheaf.germ U p hp').hom.toModule
+    letI : Module ↑(X.presheaf.stalk p) ↑(X.residueField p) := (X.residue p).hom.toModule
+    letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
+    IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk p) ↑(X.residueField p) := by
+  letI : Module ↑Γ(X, U) ↑(X.presheaf.stalk p) := (X.presheaf.germ U p hp').hom.toModule
+  letI : Module ↑(X.presheaf.stalk p) ↑(X.residueField p) := (X.residue p).hom.toModule
+  letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
+  constructor
+  intro r s t
+  change (X.residue p).hom ((X.presheaf.germ U p hp').hom r * s) * t =
+    (X.evaluation U p hp').hom r * ((X.residue p).hom s * t)
+  rw [map_mul, mul_assoc]
+  rfl
+
+/-- Flasqueness transports across an isomorphism of presheaves: the restriction maps of `G` factor
+through those of `F` by the (iso) components of `e`, hence stay epimorphisms. -/
+lemma TopCat.Presheaf.isFlasque_of_iso {C : Type*} [Category* C] {Y : TopCat}
+    {F G : TopCat.Presheaf C Y} (e : F ≅ G) [F.IsFlasque] : G.IsFlasque where
+  epi {U V} i := by
+    haveI : Epi (F.map i) := TopCat.Presheaf.IsFlasque.epi i
+    have key : G.map i = e.inv.app U ≫ F.map i ≫ e.hom.app V := by
+      rw [← Category.assoc, ← e.inv.naturality i, Category.assoc, Iso.inv_hom_id_app,
+        Category.comp_id]
+    rw [key]; infer_instance
+
+open Classical in
+/-- The underlying abelian sheaf of the skyscraper sheaf of modules is flasque: its underlying
+presheaf is isomorphic to the (flasque) abelian skyscraper sheaf at `p`. -/
+instance : TopCat.Sheaf.IsFlasque <|
+    (SheafOfModules.toSheaf _).obj
+    (skyscraperSheafOfModules p X.ringCatSheaf (X.residueField p)) := by
+  haveI : TopCat.Presheaf.IsFlasque
+      (skyscraperSheaf p (AddCommGrpCat.of (X.residueField p))).presheaf :=
+    isFlasque_skyscraperSheaf_of_hasZeroObject p (AddCommGrpCat.of (X.residueField p))
+  exact TopCat.Presheaf.isFlasque_of_iso
+    (skyscraperPresheafOfModulesPresheafIsoSkyscraper p X.ringCatSheaf (X.residueField p)).symm
+
+/-- Positive-degree cohomology of the (flasque) skyscraper sheaf at `p` is subsingleton. -/
+lemma subsingleton_H_skyscraper (n : ℕ) :
+    Subsingleton (Scheme.Modules.H
+      (skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)) (n + 1)) :=
+  inferInstanceAs (Subsingleton (((SheafOfModules.toSheaf X.ringCatSheaf).obj
+    (skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p))).H (n + 1)))
+
+/-- Positive-degree cohomology of the (flasque) skyscraper sheaf at `p` is subsingleton. -/
+lemma subsingleton_H_skyscraper_of_pos {n : ℕ} (hn : 0 < n) :
+    Subsingleton (Scheme.Modules.H
+      (skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)) n) := by
+  obtain ⟨m, rfl⟩ : ∃ m, n = m + 1 := ⟨n - 1, by omega⟩
+  exact subsingleton_H_skyscraper p m
