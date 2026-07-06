@@ -319,6 +319,9 @@ theorem aeval_comp {A : Type*} [Semiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp' x p q
 
+@[gcongr]
+theorem aeval_dvd (h : p ∣ q) : p.aeval x ∣ q.aeval x := _root_.map_dvd (aeval x) h
+
 section IsScalarTower
 
 variable {A : Type*} (B C : Type*) [CommSemiring A] [CommSemiring B] [Semiring C]
@@ -453,12 +456,12 @@ variable (x : Π i, A i) (p : R[X])
 /-- Polynomial evaluation on an indexed tuple is the indexed product of the evaluations
 on the components.
 Generalizes `Polynomial.aeval_prod` to indexed products. -/
-theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
+theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = AlgHom.pi (fun i ↦ aeval (x i)) :=
   (funext fun i ↦ aeval_algHom (Pi.evalAlgHom R A i) x) ▸
-    (Pi.algHom_comp R A (Pi.evalAlgHom R A) (aeval x))
+    (AlgHom.pi_comp (Pi.evalAlgHom R A) (aeval x))
 
 theorem aeval_pi_apply₂ (j : I) : p.aeval x j = p.aeval (x j) :=
-  aeval_pi (R := R) x ▸ Pi.algHom_apply R A (fun i ↦ aeval (x i)) p j
+  aeval_pi (R := R) x ▸ AlgHom.pi_apply (fun i ↦ aeval (x i)) p j
 
 /-- Polynomial evaluation on an indexed tuple is the indexed tuple of the evaluations
 on the components.
@@ -505,10 +508,8 @@ theorem aeval_eq_aeval_map [Semiring S] [CommSemiring T] [Algebra R S]
     (p : R[X]) (a : S) : aeval a p = aeval a (p.map φ) :=
   map_aeval_eq_aeval_map (by rwa [RingHom.id_comp]) p a
 
-theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
-    {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
-  rw [← eval_map_algebraMap] at h₂ ⊢
-  exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
+theorem aeval_eq_zero_of_dvd_aeval_eq_zero {x : B} (h₁ : p ∣ q) (h₂ : aeval x p = 0) :
+    aeval x q = 0 := zero_dvd_iff.mp (h₂ ▸ aeval_dvd _ h₁)
 
 section Semiring
 

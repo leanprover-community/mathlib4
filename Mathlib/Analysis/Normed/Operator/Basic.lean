@@ -39,7 +39,7 @@ suppress_compilation
 
 open Bornology Metric
 open Filter hiding map_smul
-open scoped NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity ENNReal
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
@@ -412,14 +412,6 @@ variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
 @[simp, nontriviality]
 theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := norm_of_subsingleton f
 
-/-- The fundamental property of the operator norm, expressed with extended norms:
-`‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ`. -/
-lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
-  simp_rw [← ofReal_norm]
-  rw [← ENNReal.ofReal_mul (by positivity)]
-  gcongr
-  exact f.le_opNorm x
-
 variable {f} in
 theorem homothety_norm [NontrivialTopology E] (f : E →SL[σ₁₂] F) {a : ℝ}
     (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
@@ -471,6 +463,10 @@ lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
   refine opNorm_le_bound _ hC (fun x ↦ ?_)
   refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
   exact (L i).le_of_opNorm_le (hL i) _
+
+lemma norm_postcomp_le [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] [RingHomIsometric σ₂₃]
+    (L : F →SL[σ₂₃] G) : ‖L.postcomp (σ := σ₁₂) E‖ ≤ ‖L‖ :=
+  L.postcomp (σ := σ₁₂) E |>.opNorm_le_bound (by positivity) <| opNorm_comp_le L
 
 end ContinuousLinearMap
 

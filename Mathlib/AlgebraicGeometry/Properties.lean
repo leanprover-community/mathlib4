@@ -104,6 +104,12 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersi
 instance {X : Scheme} {U : X.Opens} [IsReduced X] : IsReduced U :=
     isReduced_of_isOpenImmersion U.ι
 
+instance {𝒰 : X.OpenCover} [IsReduced X] (i : 𝒰.I₀) : IsReduced (𝒰.X i) :=
+  isReduced_of_isOpenImmersion (𝒰.f i)
+
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IsReduced ·) :=
+  ⟨fun e _ ↦ isReduced_of_isOpenImmersion e.inv⟩
+
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
   apply +allowSynthFailures isReduced_of_isReduced_stalk
   intro x
@@ -129,6 +135,9 @@ theorem IsReduced.of_openCover (𝒰 : X.OpenCover) [∀ i, IsReduced (𝒰.X i)
     exact isReduced_of_injective _
       (asIso <| (𝒰.f i).stalkMap x).commRingCatIsoToRingEquiv.injective
   exact isReduced_of_isReduced_stalk _
+
+theorem IsReduced.iff_of_openCover (𝒰 : X.OpenCover) : IsReduced X ↔ ∀ i, IsReduced (𝒰.X i) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ of_openCover X 𝒰⟩
 
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
@@ -376,6 +385,13 @@ lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
   rw [IsLocalization.AtPrime.ringKrullDim_eq_height x.asIdeal ((Spec R).presheaf.stalk x)]
   apply WithBot.coe_eq_coe.mpr
   exact idealHeight_eq_coheight R x
+
+open Order in
+variable {X} in
+lemma krullDimLE_of_coheight_le
+    {z : X} {n : ℕ} (hz : coheight z ≤ n) : Ring.KrullDimLE n (X.presheaf.stalk z) := by
+  rw [Ring.krullDimLE_iff, ringKrullDim_stalk_eq_coheight z]
+  exact_mod_cast hz
 
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by

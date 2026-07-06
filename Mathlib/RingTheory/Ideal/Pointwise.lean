@@ -27,13 +27,13 @@ Where possible, try to keep them in sync.
 
 open Set
 
-variable {M R : Type*}
+variable {M N R : Type*}
 
 namespace Ideal
 
 section Monoid
 
-variable [Monoid M] [Semiring R] [MulSemiringAction M R]
+variable [Monoid M] [Monoid N] [Semiring R] [MulSemiringAction M R] [MulSemiringAction N R]
 
 /-- The action on an ideal corresponding to applying the action to every element.
 
@@ -66,6 +66,13 @@ scoped[Pointwise] attribute [instance] Ideal.pointwiseMulSemiringAction
 theorem pointwise_smul_def {a : M} (S : Ideal R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
+
+instance [SMul M N] [IsScalarTower M N R] : IsScalarTower M N (Ideal R) where
+  smul_assoc x y z := by
+    simp_rw [pointwise_smul_def, map_map]
+    congr
+    ext
+    simp
 
 -- note: unlike with `Subring`, `pointwise_smul_toAddSubgroup` wouldn't be true
 
@@ -156,7 +163,7 @@ theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAct
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
 
 instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-  ((inertia M P).subgroupOf (MulAction.stabilizer M P)).Normal := by
+  (P.inertia (MulAction.stabilizer M P)).Normal := by
   refine (Subgroup.normal_subgroupOf_iff (inertia_le_stabilizer P)).mpr fun g s hg hs x ↦ ?_
   rw [Submodule.mem_toAddSubgroup, ← Ideal.smul_mem_pointwise_smul_iff (a := s⁻¹), smul_sub,
     smul_smul, ← mul_assoc, inv_mul_cancel_left, mul_smul, Subgroup.inv_mem _ hs]
