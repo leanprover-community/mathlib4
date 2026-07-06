@@ -20,7 +20,7 @@ open MeasureTheory Filter Complex BoundedContinuousFunction RealInnerProductSpac
 
 open scoped Topology
 
-public noncomputable section
+public section
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
