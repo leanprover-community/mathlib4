@@ -24,7 +24,9 @@ Historically, some of these were ported from the `lint-style.py` Python script.
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating
   options disallowed in mathlib: these are meant to be temporary, and not for polished code.
-  It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
+  It also checks for certain options (e.g. `maxHeartbeats` options, flexible linter exceptions and
+  backward compatibility options) being present which are not scoped to single declarations.
+  Finally, it enforces that `maxHeartBeats` changes come with a comment explaining them.
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
   of the file: enforcing this invariant makes minimising files or moving code between files easier
 - the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
@@ -80,19 +82,23 @@ public def isSetOption : Syntax → Bool :=
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
+
 This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
-`synthInstance.maxHeartbeats` option) or the `linter.flexible` or
-`backward.inferInstanceAs.wrap.reuseSubInstances ` option is set.
+`synthInstance.maxHeartbeats` option), the `linter.flexible` option or any backward compatibility
+option is set without being scoped to a single command.
+It enforces that any change of the `maxHeartbeats` option is accompanied by a comment.
+It also warns if the `backward.inferInstanceAs.wrap.reuseSubInstances ` option is set.
 
 **Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
 but should not be used in production code.
-
+The `backward.inferInstanceAs.wrap.reuseSubInstances` should not be used, as it marks new
+technical debt.
 `maxHeartbeats` options should be scoped as `set_option opt in ...` (and be followed by a comment
-explaining the need for them; another linter enforces this).
-The `linter.flexible` option should be scoped as `set_option opt in ...`.
+explaining the need for them; another linter enforces this). The `linter.flexible` option and any
+backward compatibility option should be scoped as `set_option opt in ...`.
 
-**How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
-individual commands, if they are truly necessary.
+**How to fix this?** The `maxHeartbeats`, backward compability and `linter.flexible` option changes
+can be scoped to individual commands, if they are truly necessary.
 New `backward.inferInstanceAs.wrap.reuseSubInstances` instances are technical debt,
 and should not be introduced.
 
@@ -114,7 +120,8 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
-        else if name.components.contains `maxHeartbeats || name == `linter.flexible then
+        else if name.components.contains `maxHeartbeats || name == `linter.flexible ||
+            (`backward).isPrefixOf name then
           Linter.logLint linter.style.setOption head m!"Unscoped option {name} is not allowed:\n\
           Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
           -- comment explaining why this is necessary\n\
