@@ -49,9 +49,9 @@ lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
 lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
   (hconv : ∀ t : E, Tendsto (fun n : ℕ => P.map ((hXn n).inner_const (c := t)).aemeasurable)
     atTop (𝓝 (Q.map (hX.inner_const (c := t)).aemeasurable : ProbabilityMeasure ℝ))) :
-  ∀ t : E, Tendsto (fun n ↦ charFun (P.map (hXn n).aemeasurable) t)
+  (t : E) :
+  Tendsto (fun n ↦ charFun (P.map (hXn n).aemeasurable) t)
     atTop (𝓝 (charFun (Q.map hX.aemeasurable) t)) := by
-  intro t
   let f : ℝ →ᵇ ℂ := innerProbChar (1 : ℝ)
   convert (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto ℂ).mp (hconv t) f using 1
   · ext n
