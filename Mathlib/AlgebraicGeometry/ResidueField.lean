@@ -353,7 +353,6 @@ lemma Hom.residueFieldIsoOfField_inv_residueFieldMap {X : Scheme.{u}} {k : Type 
 /-- The residue degree of a morphism `f : X ⟶ Spec k` to the spectrum of a field at a point `x`
 equals the degree of `κ(x)` as a `k`-algebra, via the canonical `k`-algebra structure on `κ(x)`
 induced by `f`. -/
-@[simp]
 lemma Hom.residueDegree_eq_finrank {X : Scheme.{u}} {k : Type u} [Field k]
     (f : X ⟶ Spec (.of k)) (x : X) :
     letI := Algebra.compHom (↑(X.residueField x))
