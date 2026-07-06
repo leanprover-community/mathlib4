@@ -96,7 +96,13 @@ theorem isEuler_euler : IsEuler (euler h ρ) := by
     obtain ⟨ρ, _, rfl, rfl⟩ := hn
     simp
 
-theorem IsEuler.exists_euler (h : g.IsEuler) : ∃ ρ, euler g.h ρ = g := by
+/-- This lemma shows that `IsEuler g` means that `g` is an Euler continued fraction in the sense
+that there exists coefficients `ρ` such that `g = euler g.h ρ`.
+
+It is not derived from `IsEuler.toEuler` because that lemma depends on `dens_eq_one`,
+which itself requires this lemma to extract the coefficients.
+-/
+private theorem IsEuler.exists_euler (h : g.IsEuler) : ∃ ρ, euler g.h ρ = g := by
   simp only [eq_comm]
   use g.s.enum.map fun (n, ⟨a, b⟩) => n.casesOn a fun _ => -a
   ext n ⟨a, b⟩
@@ -106,18 +112,16 @@ theorem IsEuler.exists_euler (h : g.IsEuler) : ∃ ρ, euler g.h ρ = g := by
     suffices g.s.get? 0 = some ⟨a, b⟩ ↔
       ∃ ab, g.s.get? 0 = some ab ∧ ab.a = a ∧ 1 = b by
       simpa [euler]
-    refine ⟨fun h' => by grind [h 0 a b], ?_⟩
+    refine ⟨fun h' => by grind [h 0 a b h'], ?_⟩
     rintro ⟨⟨a, b⟩, h', rfl, rfl⟩
-    specialize h 0 a b h'
-    grind
+    grind [h 0 a b h']
   | n' + 1 =>
     suffices g.s.get? (n' + 1) = some ⟨a, b⟩ ↔
       ∃ ab, g.s.get? (n' + 1) = some ab ∧ ab.a = a ∧ 1 + -ab.a = b by
-      simpa [euler] using this
-    refine ⟨fun h' => by grind [h (n' + 1) a b], ?_⟩
+      simpa [euler]
+    refine ⟨fun h' => by grind [h (n' + 1) a b h'], ?_⟩
     rintro ⟨⟨a, b⟩, h', rfl, rfl⟩
-    specialize h (n' + 1) a b h'
-    grind
+    grind [h (n' + 1) a b h']
 
 theorem isEuler_iff_exists : IsEuler g ↔ ∃ ρ, euler g.h ρ = g :=
   ⟨IsEuler.exists_euler, fun ⟨_, hρ⟩ => hρ ▸ isEuler_euler⟩
