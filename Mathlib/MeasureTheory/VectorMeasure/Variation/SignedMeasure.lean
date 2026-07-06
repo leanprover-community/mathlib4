@@ -74,8 +74,7 @@ theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation =
           add_le_add (μ.enorm_measure_le_variation _) (μ.enorm_measure_le_variation _)
       _ = μ.variation ((s ∩ r) ∪ (sᶜ ∩ r)) :=
         (measure_union (by grind) (hs.compl.inter hr)).symm
-      _ = μ.variation r := by
-          rw [← Set.union_inter_distrib_right, Set.union_compl_self, Set.univ_inter]
+      _ = μ.variation r := by congr; grind
   · apply VectorMeasure.variation_le_of_forall_enorm_le
     exact fun s _ ↦ enorm_le_totalVariation μ s
 
