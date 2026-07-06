@@ -291,7 +291,7 @@ theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
 
 @[simp]
 theorem integrableOn_Ioi_inv_div_log_sq {c : ℝ} (hc : 1 < c) :
-    IntegrableOn (fun t ↦ t⁻¹ / (log t)^2) (.Ioi c) volume := by
+    IntegrableOn (fun t ↦ t⁻¹ / (log t) ^ 2) (.Ioi c) volume := by
   apply integrableOn_Ioi_deriv_of_nonneg' _ _ tendsto_log_atTop.inv_tendsto_atTop.neg
   · intro t _
     convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
