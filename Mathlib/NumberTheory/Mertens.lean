@@ -1429,7 +1429,7 @@ theorem prod_prime_one_minus_inv_asymp :
   have := log_mul_prod_prime_one_minus_inv_tendsto.const_mul (exp eulerMascheroniConstant)
   simp [← exp_add] at this
   refine isEquivalent_of_tendsto_one (this.congr' ?_)
-  filter_upwards [eventually_gt_atTop 1] 
+  filter_upwards [eventually_gt_atTop 1]
   simp [exp_neg]
   grind [log_pos]
 
