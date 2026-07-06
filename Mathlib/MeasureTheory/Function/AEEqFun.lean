@@ -746,10 +746,34 @@ theorem mul_toGerm (f g : α →ₘ[μ] γ) : (f * g).toGerm = f.toGerm * g.toGe
 end Mul
 
 instance instAddMonoid [AddMonoid γ] [ContinuousAdd γ] : AddMonoid (α →ₘ[μ] γ) :=
-  toGerm_injective.addMonoid toGerm zero_toGerm add_toGerm fun _ _ => smul_toGerm _ _
+  toGerm_injective.addMonoid toGerm zero_toGerm add_toGerm (fun _ _ => smul_toGerm _ _)
+    (fun _ _ => smul_toGerm _ _)
 
 instance instAddCommMonoid [AddCommMonoid γ] [ContinuousAdd γ] : AddCommMonoid (α →ₘ[μ] γ) :=
-  toGerm_injective.addCommMonoid toGerm zero_toGerm add_toGerm fun _ _ => smul_toGerm _ _
+  toGerm_injective.addCommMonoid toGerm zero_toGerm add_toGerm (fun _ _ => smul_toGerm _ _)
+    fun _ _ => smul_toGerm _ _
+
+section Semigroup
+
+variable [Semigroup γ] [ContinuousMul γ]
+
+instance instPowPNat : Pow (α →ₘ[μ] γ) ℕ+ :=
+  ⟨fun f n => comp _ (continuous_ppow n) f⟩
+
+@[simp]
+theorem mk_ppow (f : α → γ) (hf) (n : ℕ+) :
+    (mk f hf : α →ₘ[μ] γ) ^ n =
+      mk (f ^ n) ((_root_.continuous_ppow n).comp_aestronglyMeasurable hf) :=
+  rfl
+
+theorem coeFn_ppow (f : α →ₘ[μ] γ) (n : ℕ+) : ⇑(f ^ n) =ᵐ[μ] (⇑f) ^ n :=
+  coeFn_comp _ _ _
+
+@[simp]
+theorem ppow_toGerm (f : α →ₘ[μ] γ) (n : ℕ+) : (f ^ n).toGerm = f.toGerm ^ n :=
+  comp_toGerm _ _ _
+
+end Semigroup
 
 section Monoid
 
@@ -773,7 +797,7 @@ theorem pow_toGerm (f : α →ₘ[μ] γ) (n : ℕ) : (f ^ n).toGerm = f.toGerm 
 
 @[to_additive existing]
 instance instMonoid : Monoid (α →ₘ[μ] γ) :=
-  toGerm_injective.monoid toGerm one_toGerm mul_toGerm pow_toGerm
+  toGerm_injective.monoid toGerm one_toGerm mul_toGerm ppow_toGerm pow_toGerm
 
 /-- `AEEqFun.toGerm` as a `MonoidHom`. -/
 @[to_additive (attr := simps) /-- `AEEqFun.toGerm` as an `AddMonoidHom`. -/]
@@ -786,7 +810,7 @@ end Monoid
 
 @[to_additive existing]
 instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →ₘ[μ] γ) :=
-  toGerm_injective.commMonoid toGerm one_toGerm mul_toGerm pow_toGerm
+  toGerm_injective.commMonoid toGerm one_toGerm mul_toGerm ppow_toGerm pow_toGerm
 
 @[to_additive]
 theorem coeFn_finsetProd [CommMonoid γ] [ContinuousMul γ]
@@ -874,14 +898,15 @@ end Group
 
 instance instAddGroup [AddGroup γ] [IsTopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
   toGerm_injective.addGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
-    (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
+    (fun _ _ => smul_toGerm _ _) (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
 
 instance instAddCommGroup [AddCommGroup γ] [IsTopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
   { add_comm := add_comm }
 
 @[to_additive existing]
 instance instGroup [Group γ] [IsTopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
-  toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
+  toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm ppow_toGerm pow_toGerm
+  zpow_toGerm
 
 @[to_additive existing]
 instance instCommGroup [CommGroup γ] [IsTopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
