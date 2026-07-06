@@ -383,6 +383,7 @@ variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
   (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y),
     F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e) := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
 def mkNatTrans : F ⟶ G where
   app _ := φ _
@@ -391,6 +392,7 @@ def mkNatTrans : F ⟶ G where
       morphismProperty_eq_top (fun e ↦ hφ e)
     exact this.symm.le f (by simp)
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_mk (v : V _⦋0⦌₂) :
     (mkNatTrans φ hφ).app (mk v) = φ v := rfl
@@ -403,14 +405,17 @@ variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
   (hiso : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ (iso y).hom =
     (iso x).hom ≫ G.map (homMk e) := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
   NatIso.ofComponents (fun _ ↦ iso _) (fun f ↦ (mkNatTrans _ hiso).naturality f)
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatIso_hom_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).hom.app (mk v) = (iso v).hom := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatIso_inv_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).inv.app (mk v) = (iso v).inv := rfl
