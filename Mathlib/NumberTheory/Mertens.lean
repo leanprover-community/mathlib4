@@ -702,7 +702,8 @@ private lemma sum_prime_le {x : ℝ} (hx : 1 ≤ x) :
   grw [mul_sum_prime_le, theta_le_log4_mul_x (by linarith), sum_log_le' hx]
   ring_nf; rfl
 
-/-- The summand defining the constant `E₁` below. -/
+/-- The summand defining the constant `E₁` below, with `e₁ p` defined to equal
+`log p / (p * (p - 1))` if `p` is prime and `0` otherwise. -/
 noncomputable def e₁ : ℕ → ℝ := fun p ↦ if p.Prime then log p / (p * (p - 1)) else 0
 
 /-- The constant `E₁ = 0.755366...` (https://oeis.org/A138312) is defined as the sum of
@@ -886,6 +887,8 @@ lemma Weight.vonMangoldt_C₁_eq : vonMangoldt.C₁ = log 4 + 1 := by
 @[simp]
 lemma Weight.vonMangoldt_C₂_eq : vonMangoldt.C₂ = log 4 + 3 := by simp [C₂]; linarith
 
+/-- The Meissel--Mertens constant for the von Mangoldt weight simplifies to the
+Euler--Mascheroni constant. -/
 @[simp]
 lemma Weight.vonMangoldt_M_eq : vonMangoldt.M = eulerMascheroniConstant := by
   rw [← sub_eq_zero]
@@ -1327,8 +1330,7 @@ theorem prod_prime_one_minus_inv_eq {x : ℝ} (hx : 1 < x) :
   exact prod_congr rfl fun p hp ↦ (exp_log (hpos (mem_filter.mp hp).2)).symm
 
 /-- A completely explicit upper bound on the error term. -/
-theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) :
-    |E₃ x| ≤ (log 4 + 3) / log x + 1 / ⌊x⌋₊ := by
+theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x + 1 / ⌊x⌋₊ := by
   have hx' := floor_mono hx
   simp only [floor_ofNat] at hx'
   have := sum_prime_inv_sub_sub_bound hx
@@ -1349,7 +1351,7 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) :
     apply tsum_le_of_sum_range_le this; intro N
     calc
       _ ≤ ∑ i ∈ range N, (((⌊x⌋₊ + i : ℕ): ℝ)⁻¹ - ((⌊x⌋₊ + (i + 1) : ℕ): ℝ)⁻¹) := by
-        apply Finset.sum_le_sum; intro i _
+        apply sum_le_sum; intro i _
         split_ifs with h
         · rw [neg_add']
           calc
@@ -1382,11 +1384,11 @@ theorem E₃_isBigO : E₃ =O[atTop] fun x ↦ (log x)⁻¹ := by
   · apply IsBigO.add
     · simp_rw [division_def]
       apply isBigO_const_mul_self
-    · apply Asymptotics.IsBigO.of_bound 2
+    · apply IsBigO.of_bound 2
       filter_upwards [eventually_gt_atTop 2] with x hx
       have := log_pos (by linarith : 1 < x)
       simp [abs_of_pos this]
-      have := Nat.lt_floor_add_one x
+      have := lt_floor_add_one x
       have : 0 < (⌊x⌋₊ : ℝ) := by linarith
       field_simp
       grw [Real.log_le_self] <;> linarith
@@ -1404,11 +1406,11 @@ theorem exp_E₃_sub_isBigO : (fun x ↦ exp (E₃ x) - 1) =O[atTop] fun x ↦ (
 theorem exp_E₃_sub_isLittleO : (fun x ↦ exp (E₃ x) - 1) =o[atTop] fun _ ↦ (1 : ℝ) :=
   exp_E₃_sub_isBigO.trans_isLittleO inv_log_isLittleO_one
 
-theorem exp_E₃_tensdto : Tendsto (fun x ↦ exp (E₃ x)) atTop (𝓝 1) := by
+theorem exp_E₃_tendsto : Tendsto (fun x ↦ exp (E₃ x)) atTop (𝓝 1) := by
   rw [← tendsto_sub_nhds_zero_iff, ← isLittleO_one_iff (F := ℝ)]
   exact exp_E₃_sub_isLittleO
 
-theorem sum_primes_log_sub_add_log_log_isBigO :
+theorem sum_primes_log_sub_add_isBigO :
     (fun x : ℝ ↦ ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ)) + log (log x))
     =O[atTop] fun _ ↦ (1 : ℝ) := by
   suffices (fun x : ℝ ↦ E₃ x - eulerMascheroniConstant) =O[atTop] fun _ ↦ (1 : ℝ) by
@@ -1421,7 +1423,7 @@ theorem sum_primes_log_sub_add_log_log_isBigO :
 theorem log_mul_prod_prime_one_minus_inv_tendsto :
     Tendsto (fun x ↦ log x * ∏ p ∈ primesLE ⌊x⌋₊, (1 - (1 : ℝ) / p)) atTop
     (𝓝 (exp (-eulerMascheroniConstant))) := by
-  have := exp_E₃_tensdto.const_mul (exp (-eulerMascheroniConstant))
+  have := exp_E₃_tendsto.const_mul (exp (-eulerMascheroniConstant))
   rw [mul_one] at this
   apply this.congr'
   filter_upwards [eventually_gt_atTop 1] with x hx
