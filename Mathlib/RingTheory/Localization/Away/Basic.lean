@@ -168,8 +168,7 @@ include hf
 /-- `AlgHom` version of `IsLocalization.Away.lift`. -/
 noncomputable def liftAlgHom : S →ₐ[A] P where
   __ := lift x hf
-  commutes' r := show lift x hf (algebraMap A S r) = _ by
-    simp [IsScalarTower.algebraMap_apply A R S]
+  commutes' r := by simp [IsScalarTower.algebraMap_apply A R S]
 
 theorem liftAlgHom_toRingHom : (liftAlgHom x hf : S →ₐ[A] P).toRingHom = lift x hf := rfl
 
