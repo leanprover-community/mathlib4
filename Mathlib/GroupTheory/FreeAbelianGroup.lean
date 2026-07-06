@@ -146,8 +146,8 @@ end lift
 
 section
 
-open scoped Classical in
 theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
+  open scoped Classical in
   fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
     let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
     have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| if_pos rfl

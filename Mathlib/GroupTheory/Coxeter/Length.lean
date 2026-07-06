@@ -90,8 +90,8 @@ theorem exists_isReduced (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π �
 @[deprecated (since := "2026-03-25")] alias exists_reduced_word := exists_isReduced
 @[deprecated (since := "2026-03-25")] alias exists_reduced_word' := exists_isReduced
 
-open scoped Classical in
 theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
+  open scoped Classical in
   Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, rfl, rfl⟩
 
 @[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.length_wordProd_le [])
