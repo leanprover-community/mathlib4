@@ -47,8 +47,8 @@ namespace SkewMonoidAlgebra
 
 initialize_simps_projections SkewMonoidAlgebra (as_prefix coeff)
 
-@[deprecated (since := "2026-07-06")] alias ofFinsupp := ofCoeff
-@[deprecated (since := "2026-07-06")] alias toFinsupp := coeff
+@[deprecated (since := "2026-07-06"), reducible] alias ofFinsupp := ofCoeff
+@[deprecated (since := "2026-07-06"), reducible] alias toFinsupp := coeff
 
 variable {k G : Type*}
 
