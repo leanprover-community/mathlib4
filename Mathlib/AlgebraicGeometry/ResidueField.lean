@@ -356,7 +356,7 @@ induced by `f`. -/
 @[simp]
 lemma Hom.residueDegree_eq_finrank {X : Scheme.{u}} {k : Type u} [Field k]
     (f : X ⟶ Spec (.of k)) (x : X) :
-    letI := Algebra.compHom (↑(X.residueField x))
+    letI := Algebra.compHom (X.residueField x)
       ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
     f.residueDegree x = Module.finrank k (X.residueField x) := by
   algebraize [((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom),
