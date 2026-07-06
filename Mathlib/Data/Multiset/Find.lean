@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 module
+public import Mathlib.Data.List.Find
 public import Mathlib.Data.Multiset.AddSub
 public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Data.Set.Subsingleton
@@ -31,7 +32,8 @@ theorem find?_eq_find?_of_perm {α : Type*} {p : α → Bool} {l₁ l₂ : List 
     by_cases p x <;> by_cases p y <;> grind
   | trans _ _ ih1 ih2 =>
     refine (ih1 ?_).trans (ih2 ?_) <;> grind
-
+#find_home find?_eq_find?_of_perm
+#exit
 end List
 
 namespace Multiset

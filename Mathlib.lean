@@ -4028,6 +4028,7 @@ public import Mathlib.Data.List.DropRight
 public import Mathlib.Data.List.Duplicate
 public import Mathlib.Data.List.Enum
 public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.List.Find
 public import Mathlib.Data.List.Flatten
 public import Mathlib.Data.List.Fold
 public import Mathlib.Data.List.Forall2
@@ -6406,6 +6407,7 @@ public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.Congruence.Algebra
 public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.Congruence.Defs
@@ -8118,5 +8120,6 @@ public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
+public import Mathlib.tmp
 
 set_option linter.style.longLine false
