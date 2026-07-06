@@ -189,14 +189,8 @@ lemma toSkyscraperFun_isLocallySurjective (hD : support D ⊆ {x | coheight x = 
     Function.locallyFinsupp.exists_nhd_mem_support_implies_specializes D p
   set V : X.Opens := ⟨Uh ∩ UD, hUh1.inter hUD1⟩ with hV_def
   have hpV : p ∈ V := ⟨hUh2, hUD2⟩
-  have spec_eq : ∀ (z : X), coheight z = 1 → z ⤳ p → z = p := by
-    intro z hz hspec
-    have hxz : p ≤ z := hspec
-    by_cases hzx : z ≤ p
-    · exact (Specializes.antisymm hspec (hzx : p ⤳ z)).eq
-    · have hbound := Order.coheight_add_one_le <| lt_of_le_not_ge hxz hzx
-      rw [hz, hp] at hbound
-      norm_num at hbound
+  have spec_eq : ∀ (z : X), coheight z = 1 → z ⤳ p → z = p :=
+    fun z hz hspec => hspec.eq_of_coheight_eq_one hz hp
   -- `h` is a section of `𝒪ₓ(D)` over `V`.
   have hcar : h ∈ carrier D V := by
     intro _

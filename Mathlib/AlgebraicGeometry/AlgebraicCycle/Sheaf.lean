@@ -69,6 +69,19 @@ lemma IsRegularInCodimensionOne.stalk_dvr {X : Scheme.{u}} [h : IsRegularInCodim
   have := IsIntegralInCodimensionOne.stalk_domain x hx
   IsDiscreteValuationRing (X.presheaf.stalk x) := h.dvr x hx
 
+/--
+On a scheme, a specialization between two points of coheight one is an equality: a strict
+specialization would raise the coheight.
+-/
+lemma _root_.Specializes.eq_of_coheight_eq_one {X : Scheme.{u}} {z x : X}
+    (h : z ⤳ x) (hz : coheight z = 1) (hx : coheight x = 1) : z = x := by
+  have hxz : x ≤ z := h
+  by_cases hzx : z ≤ x
+  · exact (Specializes.antisymm h (hzx : x ⤳ z)).eq
+  · have hbound := Order.coheight_add_one_le (lt_of_le_not_ge hxz hzx)
+    rw [hz, hx] at hbound
+    norm_num at hbound
+
 namespace AlgebraicGeometry.AlgebraicCycle
 namespace Sheaf
 
@@ -138,31 +151,22 @@ is used in the construction of `𝒪ₓ(D)`.
 lemma add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Opens)
     {a b : ↑X.functionField}
     (ha : a ∈ carrier D U) (hb : b ∈ carrier D U) : a + b ∈ carrier D U := by
-    by_cases hU : Nonempty U
-    · simp_all only [carrier, ne_eq, ge_iff_le, true_and, Set.mem_setOf_eq, Opens.nonempty_iff]
-      intro h
-      by_cases ha0 : a = 0
-      · simp_all
-      by_cases hb0 : b = 0
-      · simp_all
-      intro Z
-      specialize ha ha0 Z
-      specialize hb hb0 Z
-      simp_all only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply]
-      suffices min ((div a).restrict U Z) ((div b).restrict U Z) ≤
-              (div (a + b)).restrict U Z by omega
-      by_cases hZ : coheight Z = 1
-      · have := krullDimLE_of_coheight hZ
-        by_cases o : Z ∈ U
-        · simp only [restrict_eq_of_mem _ _ _ o]
-          have : IsDiscreteValuationRing ↑(X.presheaf.stalk Z) :=
-              IsRegularInCodimensionOne.stalk_dvr Z hZ
-          exact X.ord_add hZ h
-        · simp [restrict_eq_zero_of_not_mem _ _ _ o]
-      · by_cases o : Z ∈ U
-        · simp [restrict_eq_of_mem _ _ _ o, ord_eq_zero_of_coheight_neq_one hZ]
-        · simp [restrict_eq_zero_of_not_mem _ _ _ o]
-    · simp_all [carrier]
+  rcases eq_or_ne a 0 with rfl | ha0
+  · simpa using hb
+  rcases eq_or_ne b 0 with rfl | hb0
+  · simpa using ha
+  refine mem_carrier_iff.mpr fun h => ⟨(mem_carrier_iff.mp ha ha0).1, fun z hz => ?_⟩
+  have hA := (mem_carrier_iff.mp ha ha0).2 z hz
+  have hB := (mem_carrier_iff.mp hb hb0).2 z hz
+  by_cases hZ : coheight z = 1
+  · have := krullDimLE_of_coheight hZ
+    haveI : IsDiscreteValuationRing ↑(X.presheaf.stalk z) :=
+      IsRegularInCodimensionOne.stalk_dvr z hZ
+    have := X.ord_add hZ h
+    omega
+  · have h1 : X.ord (a + b) z = 0 := ord_eq_zero_of_coheight_neq_one hZ _
+    have h2 : X.ord a z = 0 := ord_eq_zero_of_coheight_neq_one hZ _
+    omega
 
 /--
 Zero is an element of `Γ(𝒪ₓ(D), U)` by definition
@@ -181,34 +185,16 @@ On a nonempty set `U`, `Γ(𝒪ₓ(D), U)` is closed scalar multiplication by el
 -/
 lemma smul_mem_nonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U))
     {f : X.functionField} (hf : f ∈ carrier D U) : a • f ∈ carrier D U := by
-    simp_all only [carrier, true_and]
-    intro nez z
-    have h : ¬ f = 0 := by
-      intro _
-      simp_all
-    specialize hf h z
-    simp only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply] at hf
-    have hU : U.1 ⊆ ⊤ := by simp_all
-    suffices (div f).restrict U z ≤ (div (a • f)).restrict U z by
-      trans (div f).restrict U z + D.restrict U z
-      · exact hf
-      · exact
-        (Int.add_le_add_iff_right
-              ((locallyFinsuppWithin.restrict D (Set.subset_univ ↑U)) z)).mpr
-          this
-    by_cases hz : coheight z = 1
-    · by_cases o : z ∈ U
-      · simp only [restrict_eq_of_mem _ _ _ o]
-        let i := TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨z, o⟩
-        have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk z) := krullDimLE_of_coheight hz
-        let test : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk z) ↑X.functionField :=
-            AlgebraicGeometry.functionField_isScalarTower X U ⟨z, o⟩
-        exact ord_le_smul hz o (left_ne_zero_of_smul nez) f
-      · simp [restrict_eq_zero_of_not_mem _ _ _ o]
-    · by_cases o : z ∈ U
-      · simp [restrict_eq_of_mem _ _ _ o,
-              ord_eq_zero_of_coheight_neq_one hz]
-      · simp [restrict_eq_zero_of_not_mem _ _ _ o]
+  refine mem_carrier_iff.mpr fun h => ⟨‹_›, fun z hz => ?_⟩
+  have hf0 : f ≠ 0 := fun h0 => h (by simp [h0])
+  have hF := (mem_carrier_iff.mp hf hf0).2 z hz
+  by_cases hZ : coheight z = 1
+  · have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk z) := krullDimLE_of_coheight hZ
+    have := ord_le_smul hZ hz (left_ne_zero_of_smul h) f
+    omega
+  · have h1 : X.ord (a • f) z = 0 := ord_eq_zero_of_coheight_neq_one hZ _
+    have h2 : X.ord f z = 0 := ord_eq_zero_of_coheight_neq_one hZ _
+    omega
 
 variable [IsRegularInCodimensionOne X]
 
@@ -353,18 +339,12 @@ def obj (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
 
 omit [IsRegularInCodimensionOne X] in
 /--
-TODO rename
+Sections of `𝒪ₓ(D)` restrict: a section over `U` is a section over any smaller nonempty `V`.
 -/
-lemma mapFunProof (D : AlgebraicCycle X ℤ) {U V : X.Opens}
-    (r : V ≤ U) [hV : Nonempty V] (f : X.functionField) (hf : f ∈ carrier D U) :
-    f ∈ carrier D V := by
-  refine fun h ↦ ⟨hV, ge_iff_le.mpr ?_⟩
-  rw [homogeneous_le_iff (t := V)]
-  on_goal 1 =>
-    intro z hz
-    have := (hf h).2 z
-    simpa [hz, r hz] using this
-  all_goals simp_all
+lemma mem_carrier_of_le (D : AlgebraicCycle X ℤ) {U V : X.Opens}
+    (r : V ≤ U) [hV : Nonempty V] {f : X.functionField} (hf : f ∈ carrier D U) :
+    f ∈ carrier D V :=
+  mem_carrier_iff.mpr fun h => ⟨hV, fun z hz => (mem_carrier_iff.mp hf h).2 z (r hz)⟩
 
 open Classical in
 /--
@@ -372,7 +352,7 @@ The function underlying the action of `𝒪ₓ(D)` on morphisms.
 -/
 noncomputable
 def mapFun (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ U) : carrier D U → carrier D V :=
-  fun ⟨f, hf⟩ ↦ if hV : Nonempty V then ⟨f, mapFunProof D r f hf⟩ else ⟨0, by simp [carrier]⟩
+  fun ⟨f, hf⟩ ↦ if hV : Nonempty V then ⟨f, mem_carrier_of_le D r hf⟩ else ⟨0, by simp [carrier]⟩
 
 omit [IsRegularInCodimensionOne X] in
 @[simp]
@@ -426,13 +406,10 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
     map_smul' m a := by
       dsimp [mapFun]
       split_ifs
-      · --dsimp [smul_eq_smulVal, smulVal]
-        apply Subtype.ext
+      · apply Subtype.ext
         rw [smul_eq_smulVal, smulVal]
-        --simp [smul_eq_smulVal, smulVal]
         split_ifs
         · let : Algebra Γ(X, U.unop) Γ(X, V.unop) := (X.sheaf.obj.map r).hom.toAlgebra
-          --apply Subtype.ext
           erw [coe_smul]
           exact algebra_compatible_smul Γ(X, V.unop) m a.1
         · have : ¬ Nonempty ↑(unop V) := by
@@ -465,7 +442,6 @@ theorem map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒ�
     intro x
     apply Subtype.ext
     simp [map]
-    --rfl
   · apply ModuleCat.hom_ext
     rw [LinearMap.ext_iff]
     intro x
@@ -724,91 +700,141 @@ rational functions which vanish to order at least `-D p` for all codimension 1 `
 -/
 lemma range_stalkToFunctionField
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
-    (x : X) (hx : coheight x = 1) :
+    (x : X) :
     Set.range (D.stalkToFunctionField x).hom =
-      {f : X.functionField | f ≠ 0 → - D x ≤ X.ord f x} := by
+      {f : X.functionField | f ≠ 0 → ∀ z, coheight z = 1 → z ⤳ x → - D z ≤ X.ord f z} := by
   ext f
   by_cases o : f = 0
-  · simp only [o]
-    constructor
-    · intro h
-      tauto
-    · intro h
-      erw [Set.mem_range]
-      use 0
-      exact AddMonoidHom.map_zero ((D.stalkToFunctionField x).hom)
+  · subst o
+    exact iff_of_true ⟨0, map_zero _⟩ fun h => absurd rfl h
   obtain ⟨U, hU1, hU2, hU3⟩ := Function.locallyFinsupp.exists_nhd_mem_support_implies_specializes
       (div f) x
   obtain ⟨V, hV1, hV2, hV3⟩ := Function.locallyFinsupp.exists_nhd_mem_support_implies_specializes
       D x
-  -- Helper: a point of coheight 1 that specializes to `x` (also coheight 1) must equal `x`.
-  have spec_eq : ∀ (z : X), coheight z = 1 → z ⤳ x → z = x := by
-    intro z hz hspec
-    letI : Preorder X := specializationPreorder X
-    have hxz : x ≤ z := hspec
-    by_cases hzx : z ≤ x
-    · exact (Specializes.antisymm hspec (hzx : x ⤳ z)).eq
-    · exfalso
-      have hlt : x < z := lt_of_le_not_ge hxz hzx
-      have hbound := Order.coheight_add_one_le hlt
-      rw [hz, hx] at hbound
-      norm_num at hbound
   constructor
-  · intro h hne
-    rw [Set.mem_range] at h
-    obtain ⟨g, hg⟩ := h
+  · rintro ⟨g, hg⟩ hne z hz hzx
     obtain ⟨W, hxW, s, rfl⟩ := TopCat.Presheaf.exists_germ_eq D.sheaf.val.presheaf g
     -- The image of `germ ... s` under `stalkToFunctionField` is `s.1`, hence `s.1 = f`.
     rw [stalkToFunctionField_germ] at hg
-    have hs_ne : (s.1 : X.functionField) ≠ 0 := hg ▸ hne
-    obtain ⟨_, hcond⟩ := s.property hs_ne
-    -- Specialize the section condition at `x`.
-    have hatx := hcond x
-    simp only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply, restrict_eq_of_mem _ _ _ hxW,
-      div_eq_ord] at hatx
-    -- Replace `s.1` with `f`.
-    rw [hg] at hatx
+    -- A point specializing to `x` lies in every open around `x`; use the section condition there.
+    have hatz := (Sheaf.mem_carrier_iff.mp s.property (hg ▸ hne)).2 z (hzx.mem_open W.2 hxW)
+    rw [hg] at hatz
     linarith
   · intro h
     rw [Set.mem_range]
     let W : X.Opens := ⟨U ∩ V, hU1.inter hV1⟩
     have hxW : x ∈ W := ⟨hU2, hV2⟩
-    have hf_carrier : f ∈ Sheaf.carrier D W := by
-      intro hne
-      refine ⟨⟨⟨x, hxW⟩⟩, ?_⟩
-      intro z
-      by_cases hzW : z ∈ W
-      · simp only [locallyFinsuppWithin.coe_zero, Pi.zero_apply, locallyFinsuppWithin.coe_add,
-          Pi.add_apply, restrict_eq_of_mem _ _ _ hzW]
-        by_cases hzx : z = x
-        · subst hzx
-          simp
-          linarith [h o]
-        · -- z ≠ x. We show both `(div f o) z = 0` and `D z = 0`.
-          have hdiv_z : (div f) z = 0 := by
-            by_cases hzcoh : coheight z = 1
-            · by_contra hord
-              -- z ∈ (div f o).support gives z ⤳ x via hU3
-              have hz_supp : z ∈ (div f).support := by
-                simp only [Function.mem_support, ne_eq]
-                exact hord
-              have hspec : z ⤳ x := hU3 z ⟨hzW.1, hz_supp⟩
-              -- z ⤳ x, with both codim 1 in an integral scheme, forces z = x.
-              exact hzx (spec_eq z hzcoh hspec)
-            · simp [ord_eq_zero_of_coheight_neq_one hzcoh]
-          have hD_z : D z = 0 := by
-            by_contra hD'
-            have hz_supp : z ∈ D.support := hD'
-            have hspec : z ⤳ x := hV3 z ⟨hzW.2, hz_supp⟩
-            -- z ⤳ x and z ≠ x. We need to handle non-codim-1 case
-            by_cases hzcoh : coheight z = 1
-            · exact hzx (spec_eq z hzcoh hspec)
-            · simp_all
-          rw [hdiv_z, hD_z]
-          simp
-      · simp [restrict_eq_zero_of_not_mem _ _ _ hzW]
-    use TopCat.Presheaf.germ D.sheaf.val.presheaf W x hxW ⟨f, hf_carrier⟩
-    exact stalkToFunctionField_germ D x W hxW ⟨f, hf_carrier⟩
+    have hf_carrier : f ∈ Sheaf.carrier D W := Sheaf.mem_carrier_iff.mpr fun hne =>
+      ⟨⟨⟨x, hxW⟩⟩, fun z hzW => by
+        -- If either `ord f z` or `D z` is nonzero, then `z` is a codimension-one point of the
+        -- support of `div f` or of `D` inside `W`, so it specializes to `x` and the hypothesis
+        -- applies; otherwise the bound is trivial.
+        rcases eq_or_ne (X.ord f z) 0 with hf0 | hf0
+        · rcases eq_or_ne (D z) 0 with hD0 | hD0
+          · omega
+          · have := h o z (hD hD0) (hV3 z ⟨hzW.2, hD0⟩)
+            omega
+        · have hzcoh : coheight z = 1 := by
+            by_contra hzc
+            exact hf0 (ord_eq_zero_of_coheight_neq_one hzc f)
+          have hsupp : z ∈ (div f).support := by
+            simp only [Function.mem_support, ne_eq, div_eq_ord]
+            exact hf0
+          have := h o z hzcoh (hU3 z ⟨hzW.1, hsupp⟩)
+          omega⟩
+    exact ⟨TopCat.Presheaf.germ D.sheaf.val.presheaf W x hxW ⟨f, hf_carrier⟩,
+      stalkToFunctionField_germ D x W hxW ⟨f, hf_carrier⟩⟩
+
+/--
+At a codimension-one point `x`, the only codimension-one point specializing to `x` is `x`
+itself, so the stalk of `𝒪ₓ(D)` at `x` is the set of rational functions of order at least
+`- D x` at `x`.
+-/
+lemma range_stalkToFunctionField_of_coheight_eq_one
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
+    (x : X) (hx : coheight x = 1) :
+    Set.range (D.stalkToFunctionField x).hom =
+      {f : X.functionField | f ≠ 0 → - D x ≤ X.ord f x} := by
+  rw [range_stalkToFunctionField D hD x]
+  ext f
+  simp only [Set.mem_setOf_eq]
+  refine forall_congr' fun hne => ⟨fun h => h x hx specializes_rfl, fun h z hz hzx => ?_⟩
+  obtain rfl := hzx.eq_of_coheight_eq_one hz hx
+  exact h
+
+omit [IsLocallyNoetherian X] in
+/--
+Nonzero elements of the local ring at a point map to nonzero rational functions.
+-/
+lemma algebraMap_functionField_ne_zero {x : X}
+    {a : ↑(X.presheaf.stalk x)} (ha : a ≠ 0) :
+    algebraMap (X.presheaf.stalk x) X.functionField a ≠ 0 :=
+  (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)).mpr ha
+
+/--
+The order of vanishing of an integer power of a uniformizer at `x` is the exponent.
+-/
+lemma ord_zpow_algebraMap_irreducible [IsRegularInCodimensionOne X]
+    {x : X} (hx : coheight x = 1) {ϖ : X.presheaf.stalk x} (hϖ : Irreducible ϖ) (n : ℤ) :
+    X.ord ((algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ n) x = n := by
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  have h1 : ordHom x hx (algebraMap (X.presheaf.stalk x) X.functionField ϖ) = WithZero.exp 1 :=
+    Ring.ordFrac_irreducible hϖ
+  rw [ord_eq_iff hx (zpow_ne_zero n (algebraMap_functionField_ne_zero hϖ.ne_zero)),
+    map_zpow₀, h1, ← WithZero.exp_zsmul, smul_eq_mul, mul_one, WithZero.exp_eq_coe_ofAdd]
+
+/--
+Rational functions coming from the local ring at `x` have nonnegative order of vanishing.
+-/
+lemma ord_algebraMap_nonneg [IsRegularInCodimensionOne X] {x : X} (hx : coheight x = 1)
+    {a : ↑(X.presheaf.stalk x)} (ha : a ≠ 0) :
+    0 ≤ X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x := by
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  rw [le_ord_iff hx (algebraMap_functionField_ne_zero ha), ofAdd_zero, WithZero.coe_one]
+  exact Ring.ordFrac_ge_one_of_ne_zero ha
+
+/--
+A nonzero element of the local ring at a codimension one point `x` lies in the maximal ideal
+iff the corresponding rational function vanishes at `x` to order at least one.
+-/
+lemma mem_maximalIdeal_iff_one_le_ord [IsRegularInCodimensionOne X] {x : X}
+    (hx : coheight x = 1) {a : ↑(X.presheaf.stalk x)} (ha : a ≠ 0) :
+    a ∈ IsLocalRing.maximalIdeal (X.presheaf.stalk x) ↔
+      1 ≤ X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x := by
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  have hnn := ord_algebraMap_nonneg hx ha
+  have hiff : IsUnit a ↔
+      X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x = 0 := by
+    rw [ord_eq_iff hx (algebraMap_functionField_ne_zero ha), ofAdd_zero, WithZero.coe_one]
+    exact Ring.isUnit_iff_ordFrac_one_of_isDiscreteValuationRing (K := X.functionField)
+  rw [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, hiff]
+  omega
+
+/--
+The image of the local ring at a codimension-one point `x` in the function field consists
+exactly of the rational functions of nonnegative order of vanishing at `x`.
+-/
+lemma mem_range_algebraMap_iff_ord_nonneg [IsRegularInCodimensionOne X] {x : X}
+    (hx : coheight x = 1) (z : X.functionField) :
+    (∃ a, algebraMap (X.presheaf.stalk x) X.functionField a = z) ↔ (z ≠ 0 → 0 ≤ X.ord z x) := by
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  constructor
+  · rintro ⟨a, rfl⟩ hz
+    exact ord_algebraMap_nonneg hx fun h => hz (by simp [h])
+  · intro h
+    rcases eq_or_ne z 0 with rfl | hz
+    · exact ⟨0, map_zero _⟩
+    refine IsDiscreteValuationRing.exists_lift_of_le_one ?_
+    have h1 : (1 : WithZero (Multiplicative ℤ)) ≤ Ring.ordFrac (X.presheaf.stalk x) z := by
+      have h0 := (le_ord_iff hx hz (n := 0)).mp (h hz)
+      rwa [ofAdd_zero, WithZero.coe_one] at h0
+    rw [Ring.ordFrac_eq_valuation_inv] at h1
+    exact (one_le_inv₀ (WithZero.pos_iff_ne_zero.mpr
+      ((Valuation.ne_zero_iff _).mpr hz))).mp h1
 
 /-
 Our map should go O_X(D)_P → K(X) → K(X) → O_X, P -> k
@@ -832,46 +858,21 @@ lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap [IsRegularI
   haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
     IsRegularInCodimensionOne.stalk_dvr x hx
   set ϖK := algebraMap (X.presheaf.stalk x) X.functionField ϖ with hϖK_def
-  have hϖK : ϖK ≠ 0 := by
-    rw [hϖK_def, ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
-    exact hϖ.ne_zero
+  have hϖK : ϖK ≠ 0 := algebraMap_functionField_ne_zero hϖ.ne_zero
   -- Integer powers of the uniformizer have the expected order of vanishing.
-  have hord_zpow : ∀ n : ℤ, X.ord (ϖK ^ n) x = n := fun n => by
-    have h1 : ordHom x hx ϖK = WithZero.exp 1 := Ring.ordFrac_irreducible hϖ
-    rw [ord_eq_iff hx (zpow_ne_zero n hϖK), map_zpow₀, h1, ← WithZero.exp_zsmul, smul_eq_mul,
-      mul_one, WithZero.exp_eq_coe_ofAdd]
-  -- The range of the algebra map is exactly the rational functions of nonnegative order at `x`.
-  have hmem : ∀ z : X.functionField,
-      (∃ a, algebraMap (X.presheaf.stalk x) X.functionField a = z) ↔
-        (z ≠ 0 → 0 ≤ X.ord z x) := by
-    intro z
-    constructor
-    · rintro ⟨a, rfl⟩ hz
-      have ha : a ≠ 0 := fun h => hz (by simp [h])
-      rw [le_ord_iff hx hz, ofAdd_zero, WithZero.coe_one]
-      exact Ring.ordFrac_ge_one_of_ne_zero ha
-    · intro h
-      rcases eq_or_ne z 0 with rfl | hz
-      · exact ⟨0, map_zero _⟩
-      refine IsDiscreteValuationRing.exists_lift_of_le_one ?_
-      have h1 : (1 : WithZero (Multiplicative ℤ)) ≤ Ring.ordFrac (X.presheaf.stalk x) z := by
-        have h0 := (le_ord_iff hx hz (n := 0)).mp (h hz)
-        rwa [ofAdd_zero, WithZero.coe_one] at h0
-      rw [Ring.ordFrac_eq_valuation_inv] at h1
-      exact (one_le_inv₀ (WithZero.pos_iff_ne_zero.mpr
-        ((Valuation.ne_zero_iff _).mpr hz))).mp h1
+  have hord_zpow : ∀ n : ℤ, X.ord (ϖK ^ n) x = n := ord_zpow_algebraMap_irreducible hx hϖ
   -- Reduce the equality of submodules to an equality of sets.
   apply SetLike.coe_injective
   simp only [LinearMap.range_comp, Submodule.map_coe, LinearMap.coe_range]
   have range_eq : Set.range (D.stalkToFunctionFieldLinearMap x) =
       {f : X.functionField | f ≠ 0 → - D x ≤ X.ord f x} := by
     simp only [stalkToFunctionFieldLinearMap]
-    erw [range_stalkToFunctionField D hD x hx]
+    erw [range_stalkToFunctionField_of_coheight_eq_one D hD x hx]
   rw [range_eq]
   ext z
   simp only [Set.mem_range, Algebra.linearMap_apply, Set.mem_image, Set.mem_setOf_eq,
     LinearMap.mulLeft_apply]
-  rw [hmem z]
+  rw [mem_range_algebraMap_iff_ord_nonneg hx z]
   constructor
   -- A function of nonnegative order is `ϖ ^ D x` times a function of order at least `- D x`.
   · intro hz
@@ -912,10 +913,8 @@ lemma stalkMap_Bijective [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ
     Function.Bijective <| stalkMap D hD x hx ϖ hϖ := by
   -- `stalkMap` is two linear equivalences composed with `f.rangeRestrict`, so it suffices to
   -- show that `f` is injective.
-  have hϖK : (algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ (D x) ≠ 0 := by
-    refine zpow_ne_zero _ ?_
-    rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
-    exact hϖ.ne_zero
+  have hϖK : (algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ (D x) ≠ 0 :=
+    zpow_ne_zero _ (algebraMap_functionField_ne_zero hϖ.ne_zero)
   have hf : Function.Injective ⇑((LinearMap.mulLeft (X.presheaf.stalk x)
       ((algebraMap (X.presheaf.stalk x) X.functionField ϖ)^(D x))) ∘ₗ
       D.stalkToFunctionFieldLinearMap x) := by
@@ -969,60 +968,5 @@ lemma algebraMap_stalkEquiv_apply [IsRegularInCodimensionOne X] (D : AlgebraicCy
     rwa [he_def, Submodule.comap_equiv_self_of_inj_of_le_apply] at h3
   rw [h1]
   exact h2
-
-/--
-The order of vanishing of an integer power of a uniformizer at `x` is the exponent.
--/
-lemma ord_zpow_algebraMap_irreducible [IsRegularInCodimensionOne X]
-    {x : X} (hx : coheight x = 1) {ϖ : X.presheaf.stalk x} (hϖ : Irreducible ϖ) (n : ℤ) :
-    X.ord ((algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ n) x = n := by
-  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
-    IsRegularInCodimensionOne.stalk_dvr x hx
-  have hϖK : algebraMap (X.presheaf.stalk x) X.functionField ϖ ≠ 0 := by
-    rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
-    exact hϖ.ne_zero
-  have h1 : ordHom x hx (algebraMap (X.presheaf.stalk x) X.functionField ϖ) = WithZero.exp 1 :=
-    Ring.ordFrac_irreducible hϖ
-  rw [ord_eq_iff hx (zpow_ne_zero n hϖK), map_zpow₀, h1, ← WithZero.exp_zsmul, smul_eq_mul,
-    mul_one, WithZero.exp_eq_coe_ofAdd]
-
-/--
-Rational functions coming from the local ring at `x` have nonnegative order of vanishing.
--/
-lemma ord_algebraMap_nonneg [IsRegularInCodimensionOne X] {x : X} (hx : coheight x = 1)
-    {a : ↑(X.presheaf.stalk x)} (ha : a ≠ 0) :
-    0 ≤ X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x := by
-  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
-    IsRegularInCodimensionOne.stalk_dvr x hx
-  have hKa : algebraMap (X.presheaf.stalk x) X.functionField a ≠ 0 := by
-    rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
-    exact ha
-  rw [le_ord_iff hx hKa, ofAdd_zero, WithZero.coe_one]
-  exact Ring.ordFrac_ge_one_of_ne_zero ha
-
-/--
-A nonzero element of the local ring at a codimension one point `x` lies in the maximal ideal
-iff the corresponding rational function vanishes at `x` to order at least one.
-
-TODO: This proof should really be a one or two liner since this lemma already exists in the form of
-Ring.isUnit_iff_ordFrac_one_of_isDiscreteValuationRing. It's not too bad as is, but still I think
-it could be quite a bit shorter
--/
-lemma mem_maximalIdeal_iff_one_le_ord [IsRegularInCodimensionOne X] {x : X}
-    (hx : coheight x = 1) {a : ↑(X.presheaf.stalk x)} (ha : a ≠ 0) :
-    a ∈ IsLocalRing.maximalIdeal (X.presheaf.stalk x) ↔
-      1 ≤ X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x := by
-  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
-    IsRegularInCodimensionOne.stalk_dvr x hx
-  have hKa : algebraMap (X.presheaf.stalk x) X.functionField a ≠ 0 := by
-    rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
-    exact ha
-  have hnn := ord_algebraMap_nonneg hx ha
-  have hiff : IsUnit a ↔
-      X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x = 0 := by
-    rw [ord_eq_iff hx hKa, ofAdd_zero, WithZero.coe_one]
-    exact Ring.isUnit_iff_ordFrac_one_of_isDiscreteValuationRing (K := X.functionField)
-  rw [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, hiff]
-  omega
 
 end AlgebraicGeometry.AlgebraicCycle
