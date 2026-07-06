@@ -1202,6 +1202,15 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
     toBoundedContinuousFunctionCLM 𝕜 E F f x = f x :=
   rfl
 
+theorem toBoundedContinuousFunctionCLM_injective :
+    Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
+  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
+
+instance : T3Space 𝓢(E, F) :=
+  suffices T2Space 𝓢(E, F) from inferInstance
+  .of_injective_continuous (toBoundedContinuousFunctionCLM_injective ℝ ..)
+    (ContinuousLinearMap.continuous _)
+
 end BoundedContinuousFunction
 
 section ZeroAtInfty
@@ -1311,6 +1320,10 @@ theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     Lp F p μ := (f.memLp p μ).toLp
+
+instance instCoeToLp {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    Coe 𝓢(E, F) (Lp F p μ) where
+  coe := (SchwartzMap.toLp · p μ)
 
 theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : f.toLp p μ =ᵐ[μ] f := (f.memLp p μ).coeFn_toLp

@@ -60,7 +60,7 @@ theorem sqrt_two_mul_sub_one_le_one : sqrt (2 * x - 1) ≤ 1 ↔ x ≤ 1 := by
 theorem isGood_iff_eq_sqrt_two (hx : x ∈ Icc (1 / 2) 1) : IsGood x A ↔ A = sqrt 2 := by
   have : sqrt (2 * x - 1) ≤ 1 := sqrt_two_mul_sub_one_le_one.2 hx.2
   simp only [isGood_iff, hx.1, abs_sub_comm _ (1 : ℝ), abs_of_nonneg (sub_nonneg.2 this), and_true]
-  suffices 2 = A * sqrt 2 ↔ A = sqrt 2 by convert! this using 2; ring
+  suffices 2 = A * sqrt 2 ↔ A = sqrt 2 by convert this; ring
   rw [← div_eq_iff, div_sqrt, eq_comm]
   positivity
 
