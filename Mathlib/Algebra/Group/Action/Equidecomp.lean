@@ -214,7 +214,6 @@ theorem eq_symm_apply (f : Equidecomp X G) {x y} (hx : x ∈ f.toPartialEquiv.ta
     (hy : y ∈ f.toPartialEquiv.source) : y = f.symm x ↔ f y = x :=
   f.toPartialEquiv.eq_symm_apply hy hx
 
-
 theorem symm_involutive : Function.Involutive (symm : Equidecomp X G → _) := symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : Equidecomp X G → _) := symm_involutive.bijective
